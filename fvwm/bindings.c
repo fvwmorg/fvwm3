@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -162,7 +162,7 @@ int ParseBinding(
 	if (!is_silent)
 	  fvwm_msg(WARN, "ParseBinding",
 	    "Got mouse button %d when the maximum is %d.\n  You can't bind "
-	     "complex function to this button.	To suppress the warning, use:"
+	     "complex function to this button.  To suppress the warning, use:"
 	     "\n  Silent Mouse %s", button, NUMBER_OF_MOUSE_BUTTONS, tline);
       }
     }
@@ -453,20 +453,20 @@ unsigned int GetUnusedModifiers(void)
 
 /***********************************************************************
  *
- *	SetModifierLocks : declares which X modifiers are actually locks
- *		and should be ignored when testing mouse/key binding modifiers.
- *	syntax :
- *		ModifierLocks [S][L][C][M][1][2][3][4][5]
+ *      SetModifierLocks : declares which X modifiers are actually locks
+ *              and should be ignored when testing mouse/key binding modifiers.
+ *      syntax :
+ *              ModifierLocks [S][L][C][M][1][2][3][4][5]
  *
- *	S is shift
- *	L is caps lock
- *	C is control
- *	M is meta, the same as mod1
- *	1-5 are mod1-mod5
- *	The default is L25 (ie. mask out caps lock, num lock & scroll lock
- *	for XFree86 3.3.3.1
+ *      S is shift
+ *      L is caps lock
+ *      C is control
+ *      M is meta, the same as mod1
+ *      1-5 are mod1-mod5
+ *      The default is L25 (ie. mask out caps lock, num lock & scroll lock
+ *      for XFree86 3.3.3.1
  *
- *	Benoit TRIQUET <benoit@adsl-216-100-248-201.dsl.pacbell.net> 2/21/99
+ *      Benoit TRIQUET <benoit@adsl-216-100-248-201.dsl.pacbell.net> 2/21/99
  ***********************************************************************/
 void CMD_IgnoreModifiers(F_CMD_ARGS)
 {

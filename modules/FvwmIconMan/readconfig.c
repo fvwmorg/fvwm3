@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -61,22 +61,22 @@ typedef struct {
  * these are now sorted so we can use bsearch on them.
  */
 FunctionType builtin_functions[] = {
-  { "bif",	   builtin_bif,		2, { ButtonArg, JmpArg } },
-  { "bifn",	   builtin_bifn,	2, { ButtonArg, JmpArg } },
-  { "gotobutton",  builtin_gotobutton,	1, { ButtonArg } },
+  { "bif",         builtin_bif,         2, { ButtonArg, JmpArg } },
+  { "bifn",        builtin_bifn,        2, { ButtonArg, JmpArg } },
+  { "gotobutton",  builtin_gotobutton,  1, { ButtonArg } },
   { "gotomanager", builtin_gotomanager, 1, { ManagerArg } },
-  { "jmp",	   builtin_jmp,		1, { JmpArg } },
-  { "label",	   builtin_label,	1, { StringArg } },
-  { "print",	   builtin_print,	1, { StringArg } },
-  { "printdebug",  builtin_printdebug,	0, {0} },
-  { "quit",	   builtin_quit,	0, {0} },
-  { "refresh",	   builtin_refresh,	0, {0} },
-  { "ret",	   builtin_ret,		0, {0} },
-  { "searchback",  builtin_searchback,	1, { StringArg } },
+  { "jmp",         builtin_jmp,         1, { JmpArg } },
+  { "label",       builtin_label,       1, { StringArg } },
+  { "print",       builtin_print,       1, { StringArg } },
+  { "printdebug",  builtin_printdebug,  0, {0} },
+  { "quit",        builtin_quit,        0, {0} },
+  { "refresh",     builtin_refresh,     0, {0} },
+  { "ret",         builtin_ret,         0, {0} },
+  { "searchback",  builtin_searchback,  1, { StringArg } },
   { "searchforward", builtin_searchforward, 1, { StringArg } },
-  { "select",	   builtin_select,	0, {0} },
+  { "select",      builtin_select,      0, {0} },
   { "sendcommand", builtin_sendcommand, 1, { StringArg } },
-  { "warp",	   builtin_warp,	0, {0} }
+  { "warp",        builtin_warp,        0, {0} }
 };
 
 static int num_builtins = sizeof (builtin_functions) / sizeof (FunctionType);
@@ -351,12 +351,12 @@ static void find_context(char *string, int *output, struct charstring *table,
 static int init_config_file (char *file)
 {
 #if FVWM_VERSION == 1
-  if ((config_fp = fopen (file, "r")) == NULL)	{
+  if ((config_fp = fopen (file, "r")) == NULL)  {
     ConsoleMessage ("Couldn't open file: %s\n", file);
     return 0;
   }
 #else
-  InitGetConfigLine(Fvwm_fd,Module);	     /* speed up */
+  InitGetConfigLine(Fvwm_fd,Module);         /* speed up */
 #endif
   return 1;
 }
@@ -1057,20 +1057,20 @@ static NameType parse_format_dependencies (char *format)
   return flags;
 }
 
-#define SET_MANAGER(manager,field,value)			   \
-   do {								   \
-     int id = manager;						   \
-     if (id == -1) {						   \
-       for (id = 0; id < globals.num_managers; id++) {		   \
-	 globals.managers[id]. field = value;			   \
-       }							   \
-     }								   \
-     else if (id < globals.num_managers) {			   \
-       globals.managers[id]. field = value;			   \
-     }								   \
-     else {							   \
+#define SET_MANAGER(manager,field,value)                           \
+   do {                                                            \
+     int id = manager;                                             \
+     if (id == -1) {                                               \
+       for (id = 0; id < globals.num_managers; id++) {             \
+	 globals.managers[id]. field = value;                      \
+       }                                                           \
+     }                                                             \
+     else if (id < globals.num_managers) {                         \
+       globals.managers[id]. field = value;                        \
+     }                                                             \
+     else {                                                        \
        ConsoleMessage ("Internal error in SET_MANAGER: %d\n", id); \
-     }								   \
+     }                                                             \
    } while (0)
 
 static void handle_button_config (int manager, int context, char *option)

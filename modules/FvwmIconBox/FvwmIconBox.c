@@ -17,12 +17,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #define NONE 0
@@ -69,7 +69,7 @@
 
 char *MyName;
 
-Display *dpy;			/* which display are we talking to */
+Display *dpy;                   /* which display are we talking to */
 int x_fd;
 fd_set_size_t fd_width;
 
@@ -179,7 +179,7 @@ int sortby = UNSORT;
 
 char* AnimCommand = NULL;
 
-int save_color_limit = 0;		    /* color limit from config */
+int save_color_limit = 0;                   /* color limit from config */
 static Bool have_double_click = False;
 static Bool is_dead_pipe = False;
 
@@ -299,7 +299,7 @@ int main(int argc, char **argv)
   SetMessageMask(fd, mx_mask);
 
   if ((local_flags & SETWMICONSIZE) && (size = XAllocIconSize()) != NULL){
-    size->max_width  = size->min_width	= max_icon_width + icon_relief;
+    size->max_width  = size->min_width  = max_icon_width + icon_relief;
     /* max_height should be >0 */
     size->max_height = size->min_height = max(1, max_icon_height) + icon_relief;
     size->width_inc  = size->height_inc = 0;
@@ -939,8 +939,8 @@ void animate(struct icon_info *item, unsigned long *body)
 
 /***********************************************************************
  * RedrawHScrollbar
- *	Based on part of Loop() of GrabWindow.c in FvwmScroll:
- *		Copyright 1994, Robert Nation.
+ *      Based on part of Loop() of GrabWindow.c in FvwmScroll:
+ *              Copyright 1994, Robert Nation.
  ***********************************************************************/
 void RedrawHScrollbar(void)
 {
@@ -955,8 +955,8 @@ void RedrawHScrollbar(void)
 
 /***********************************************************************
  * RedrawVScrollbar
- *	Based on part of Loop() of GrabWindow.c in FvwmScroll:
- *		Copyright 1994, Robert Nation.
+ *      Based on part of Loop() of GrabWindow.c in FvwmScroll:
+ *              Copyright 1994, Robert Nation.
  ***********************************************************************/
 void RedrawVScrollbar(void)
 {
@@ -974,25 +974,25 @@ void RedrawLeftButton(GC rgc, GC sgc)
   XSegment seg[4];
   int i=0;
 
-  seg[i].x1 = 1;		seg[i].y1 = bar_width/2;
-  seg[i].x2 = bar_width - 2;	seg[i++].y2 = 1;
+  seg[i].x1 = 1;                seg[i].y1 = bar_width/2;
+  seg[i].x2 = bar_width - 2;    seg[i++].y2 = 1;
 
-  seg[i].x1 = 0;		seg[i].y1 = bar_width/2;
-  seg[i].x2 = bar_width - 1;	seg[i++].y2 = 0;
+  seg[i].x1 = 0;                seg[i].y1 = bar_width/2;
+  seg[i].x2 = bar_width - 1;    seg[i++].y2 = 0;
   XDrawSegments(dpy, l_button, rgc, seg, i);
 
   i = 0;
-  seg[i].x1 = 1;		seg[i].y1 = bar_width/2;
-  seg[i].x2 = bar_width - 2;	seg[i++].y2 = bar_width - 2;
+  seg[i].x1 = 1;                seg[i].y1 = bar_width/2;
+  seg[i].x2 = bar_width - 2;    seg[i++].y2 = bar_width - 2;
 
-  seg[i].x1 = 0;		seg[i].y1 = bar_width/2;
-  seg[i].x2 = bar_width - 1;	seg[i++].y2 = bar_width - 1;
+  seg[i].x1 = 0;                seg[i].y1 = bar_width/2;
+  seg[i].x2 = bar_width - 1;    seg[i++].y2 = bar_width - 1;
 
-  seg[i].x1 = bar_width - 2;	seg[i].y1 = 1;
-  seg[i].x2 = bar_width - 2;	seg[i++].y2 = bar_width - 2;
+  seg[i].x1 = bar_width - 2;    seg[i].y1 = 1;
+  seg[i].x2 = bar_width - 2;    seg[i++].y2 = bar_width - 2;
 
-  seg[i].x1 = bar_width - 1;	seg[i].y1 = 0;
-  seg[i].x2 = bar_width - 1;	seg[i++].y2 = bar_width - 1;
+  seg[i].x1 = bar_width - 1;    seg[i].y1 = 0;
+  seg[i].x2 = bar_width - 1;    seg[i++].y2 = bar_width - 1;
   XDrawSegments(dpy, l_button, sgc, seg, i);
 }
 
@@ -1001,26 +1001,26 @@ void RedrawRightButton(GC rgc, GC sgc)
   XSegment seg[4];
   int i=0;
 
-  seg[i].x1 = 1;		seg[i].y1 = 1;
-  seg[i].x2 = 1;		seg[i++].y2 = bar_width - 2;
+  seg[i].x1 = 1;                seg[i].y1 = 1;
+  seg[i].x2 = 1;                seg[i++].y2 = bar_width - 2;
 
-  seg[i].x1 = 0;		seg[i].y1 = 0;
-  seg[i].x2 = 0;		seg[i++].y2 = bar_width - 1;
+  seg[i].x1 = 0;                seg[i].y1 = 0;
+  seg[i].x2 = 0;                seg[i++].y2 = bar_width - 1;
 
-  seg[i].x1 = 1;		seg[i].y1 = 1;
-  seg[i].x2 = bar_width - 2;	seg[i++].y2 = bar_width/2;
+  seg[i].x1 = 1;                seg[i].y1 = 1;
+  seg[i].x2 = bar_width - 2;    seg[i++].y2 = bar_width/2;
 
-  seg[i].x1 = 0;		seg[i].y1 = 0;
-  seg[i].x2 = bar_width - 1;	seg[i++].y2 = bar_width/2;
+  seg[i].x1 = 0;                seg[i].y1 = 0;
+  seg[i].x2 = bar_width - 1;    seg[i++].y2 = bar_width/2;
 
   XDrawSegments(dpy, r_button, rgc, seg, i);
 
   i = 0;
-  seg[i].x1 = 1;		seg[i].y1 = bar_width - 2;
-  seg[i].x2 = bar_width - 2;	seg[i++].y2 = bar_width/2;
+  seg[i].x1 = 1;                seg[i].y1 = bar_width - 2;
+  seg[i].x2 = bar_width - 2;    seg[i++].y2 = bar_width/2;
 
-  seg[i].x1 = 0;		seg[i].y1 = bar_width - 1;
-  seg[i].x2 = bar_width - 1;	seg[i++].y2 = bar_width/2;
+  seg[i].x1 = 0;                seg[i].y1 = bar_width - 1;
+  seg[i].x2 = bar_width - 1;    seg[i++].y2 = bar_width/2;
   XDrawSegments(dpy, r_button, sgc, seg, i);
 }
 
@@ -1029,25 +1029,25 @@ void RedrawTopButton(GC rgc, GC sgc)
   XSegment seg[4];
   int i=0;
 
-  seg[i].x1 = bar_width/2;	seg[i].y1 = 1;
-  seg[i].x2 = 1;		seg[i++].y2 = bar_width - 2;
+  seg[i].x1 = bar_width/2;      seg[i].y1 = 1;
+  seg[i].x2 = 1;                seg[i++].y2 = bar_width - 2;
 
-  seg[i].x1 = bar_width/2;	seg[i].y1 = 0;
-  seg[i].x2 = 0;		seg[i++].y2 = bar_width - 1;
+  seg[i].x1 = bar_width/2;      seg[i].y1 = 0;
+  seg[i].x2 = 0;                seg[i++].y2 = bar_width - 1;
   XDrawSegments(dpy, t_button, rgc, seg, i);
 
   i = 0;
-  seg[i].x1 = bar_width/2;	seg[i].y1 = 1;
-  seg[i].x2 = bar_width - 2;	seg[i++].y2 = bar_width - 2;
+  seg[i].x1 = bar_width/2;      seg[i].y1 = 1;
+  seg[i].x2 = bar_width - 2;    seg[i++].y2 = bar_width - 2;
 
-  seg[i].x1 = bar_width/2;	seg[i].y1 = 0;
-  seg[i].x2 = bar_width - 1;	seg[i++].y2 = bar_width - 1;
+  seg[i].x1 = bar_width/2;      seg[i].y1 = 0;
+  seg[i].x2 = bar_width - 1;    seg[i++].y2 = bar_width - 1;
 
-  seg[i].x1 = 1;		seg[i].y1 = bar_width - 2;
-  seg[i].x2 = bar_width - 2;	seg[i++].y2 = bar_width - 2;
+  seg[i].x1 = 1;                seg[i].y1 = bar_width - 2;
+  seg[i].x2 = bar_width - 2;    seg[i++].y2 = bar_width - 2;
 
-  seg[i].x1 = 0;		seg[i].y1 = bar_width - 1;
-  seg[i].x2 = bar_width - 1;	seg[i++].y2 = bar_width - 1;
+  seg[i].x1 = 0;                seg[i].y1 = bar_width - 1;
+  seg[i].x2 = bar_width - 1;    seg[i++].y2 = bar_width - 1;
   XDrawSegments(dpy, t_button, sgc, seg, i);
 }
 
@@ -1056,32 +1056,32 @@ void RedrawBottomButton(GC rgc, GC sgc)
   XSegment seg[4];
   int i=0;
 
-  seg[i].x1 = 1;		seg[i].y1 = 1;
-  seg[i].x2 = bar_width/2;	seg[i++].y2 = bar_width - 2;
+  seg[i].x1 = 1;                seg[i].y1 = 1;
+  seg[i].x2 = bar_width/2;      seg[i++].y2 = bar_width - 2;
 
-  seg[i].x1 = 0;		seg[i].y1 = 0;
-  seg[i].x2 = bar_width/2;	seg[i++].y2 = bar_width - 1;
+  seg[i].x1 = 0;                seg[i].y1 = 0;
+  seg[i].x2 = bar_width/2;      seg[i++].y2 = bar_width - 1;
 
-  seg[i].x1 = 1;		seg[i].y1 = 1;
-  seg[i].x2 = bar_width - 2;	seg[i++].y2 = 1;
+  seg[i].x1 = 1;                seg[i].y1 = 1;
+  seg[i].x2 = bar_width - 2;    seg[i++].y2 = 1;
 
-  seg[i].x1 = 0;		seg[i].y1 = 0;
-  seg[i].x2 = bar_width - 1;	seg[i++].y2 = 0;
+  seg[i].x1 = 0;                seg[i].y1 = 0;
+  seg[i].x2 = bar_width - 1;    seg[i++].y2 = 0;
   XDrawSegments(dpy, b_button, rgc, seg, i);
 
   i = 0;
-  seg[i].x1 = bar_width - 2;	seg[i].y1 = 1;
-  seg[i].x2 = bar_width/2;	seg[i++].y2 = bar_width - 2;
+  seg[i].x1 = bar_width - 2;    seg[i].y1 = 1;
+  seg[i].x2 = bar_width/2;      seg[i++].y2 = bar_width - 2;
 
-  seg[i].x1 = bar_width - 1;	seg[i].y1 = 0;
-  seg[i].x2 = bar_width/2;	seg[i++].y2 = bar_width - 1;
+  seg[i].x1 = bar_width - 1;    seg[i].y1 = 0;
+  seg[i].x2 = bar_width/2;      seg[i++].y2 = bar_width - 1;
   XDrawSegments(dpy, b_button, sgc, seg, i);
 }
 
 /************************************************************************
  * CreateWindow --Sizes and creates the window
- *	Based on CreateWindow() from GoodStuff:
- *		Copyright 1993, Robert Nation.
+ *      Based on CreateWindow() from GoodStuff:
+ *              Copyright 1993, Robert Nation.
  ***********************************************************************/
 void CreateWindow(void)
 {
@@ -1272,7 +1272,7 @@ void CreateWindow(void)
 			True);
   } else if (GetBackPixmap() == True){
     XSetWindowBackgroundPixmap(dpy, icon_win, IconwinPixmap);
-    /*	special thanks to Dave Goldberg <dsg@mitre.org>
+    /*  special thanks to Dave Goldberg <dsg@mitre.org>
 	for his helpful information */
     XFreePixmap(dpy, IconwinPixmap);
   }
@@ -1627,8 +1627,8 @@ TerminateHandler(int sig)
 
 /************************************************************************
  * DeadPipe --Dead pipe handler
- *	Based on DeadPipe() from GoodStuff:
- *		Copyright 1993, Robert Nation.
+ *      Based on DeadPipe() from GoodStuff:
+ *              Copyright 1993, Robert Nation.
  ***********************************************************************/
 void
 DeadPipe(int nonsense)
@@ -1715,8 +1715,8 @@ CleanUp(void)
 
 /************************************************************************
  * ParseOptions
- *	Based on ParseConfig() from FvwmWinList:
- *		Copyright 1994, Mike Finger.
+ *      Based on ParseConfig() from FvwmWinList:
+ *              Copyright 1994, Mike Finger.
  ***********************************************************************/
 void ParseOptions(void)
 {
@@ -2190,8 +2190,8 @@ void parsekey(char *tline)
 
 /***********************************************************************
  * change_window_name
- *	Original work from GoodStuff:
- *		Copyright 1993, Robert Nation.
+ *      Original work from GoodStuff:
+ *              Copyright 1993, Robert Nation.
  ***********************************************************************/
 void change_window_name(char *str)
 {
@@ -2209,8 +2209,8 @@ void change_window_name(char *str)
 
 /***********************************************************************
  * My_XNextEvent
- *	Original work from GoodStuff:
- *		Copyright 1993, Robert Nation.
+ *      Original work from GoodStuff:
+ *              Copyright 1993, Robert Nation.
  ***********************************************************************/
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
@@ -2258,8 +2258,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
 /**************************************************************************
  * process_message
- *	Based on ProcessMassage() from FvwmWinList:
- *		Copyright 1994, Mike Finger.
+ *      Based on ProcessMassage() from FvwmWinList:
+ *              Copyright 1994, Mike Finger.
  *************************************************************************/
 int diffx, diffy;
 void process_message(unsigned long type, unsigned long *body)
@@ -2622,8 +2622,8 @@ int window_cond(struct icon_info *item)
 
 /************************************************************************
  * AddItem
- *	Skeleton based on AddItem() from FvwmWinList:
- *		Copyright 1994, Mike Finger.
+ *      Skeleton based on AddItem() from FvwmWinList:
+ *              Copyright 1994, Mike Finger.
  ***********************************************************************/
 /*Bool AddItem(unsigned long id, long desk, unsigned long flags) */
 Bool AddItem(ConfigWinPacket *cfgpacket)
@@ -2679,8 +2679,8 @@ Bool AddItem(ConfigWinPacket *cfgpacket)
 
 /************************************************************************
  * Deletetem
- *	Skeleton based on DeleteItem() from FvwmWinList:
- *		Copyright 1994, Mike Finger.
+ *      Skeleton based on DeleteItem() from FvwmWinList:
+ *              Copyright 1994, Mike Finger.
  ***********************************************************************/
 Bool DeleteItem(unsigned long id)
 {
@@ -2719,8 +2719,8 @@ Bool DeleteItem(unsigned long id)
 
 /************************************************************************
  * UpdateItem
- *	Skeleton based on UpdateItem() from FvwmWinList:
- *		Copyright 1994, Mike Finger.
+ *      Skeleton based on UpdateItem() from FvwmWinList:
+ *              Copyright 1994, Mike Finger.
  ***********************************************************************/
 struct icon_info *UpdateItem(unsigned long type, unsigned long id, char *item)
 {
@@ -3053,7 +3053,7 @@ static int CheckActionType(
 
 /************************************************************************
  * ExecuteAction
-*	Based on part of ComplexFunction() of functions.c from fvwm:
+*       Based on part of ComplexFunction() of functions.c from fvwm:
 	Copyright 1988, Evans and Sutherland Computer Corporation,
 	Copyright 1989, Massachusetts Institute of Technology,
 	Copyright 1993, Robert Nation.

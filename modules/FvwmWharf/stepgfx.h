@@ -5,28 +5,28 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef STEPGFX_H_
 #define STEPGFX_H_
 
-#define TEXTURE_SOLID		0
-#define TEXTURE_GRADIENT	1
-#define TEXTURE_HGRADIENT	2
-#define TEXTURE_HCGRADIENT	3
-#define TEXTURE_VGRADIENT	4
-#define TEXTURE_VCGRADIENT	5
-#define TEXTURE_COLORSET	6
+#define TEXTURE_SOLID           0
+#define TEXTURE_GRADIENT        1
+#define TEXTURE_HGRADIENT       2
+#define TEXTURE_HCGRADIENT      3
+#define TEXTURE_VGRADIENT       4
+#define TEXTURE_VCGRADIENT      5
+#define TEXTURE_COLORSET        6
 
-#define TEXTURE_PIXMAP		128
+#define TEXTURE_PIXMAP          128
 
-#define TEXTURE_BUILTIN		255
+#define TEXTURE_BUILTIN         255
 
 extern int DrawVGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
 			 int from[3], int to[3], int relief, int maxcols,

@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "misc.h"
@@ -131,9 +131,9 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
   /*
    * The math looks like this:
    *
-   * minAspectX	   dwidth     maxAspectX
+   * minAspectX    dwidth     maxAspectX
    * ---------- <= ------- <= ----------
-   * minAspectY	   dheight    maxAspectY
+   * minAspectY    dheight    maxAspectY
    *
    * If that is multiplied out, then the width and height are
    * invalid in the following situations:

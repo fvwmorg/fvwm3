@@ -14,12 +14,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #if 0
@@ -181,7 +181,7 @@ void CreateWindow(int x,int y, int w, int h)
 /***********************************************************************
  *
  *  Procedure:
- *	Loop - wait for data to process
+ *      Loop - wait for data to process
  *
  ***********************************************************************/
 #define RIGHT 7
@@ -809,25 +809,25 @@ void RedrawLeftButton(GC rgc, GC sgc,int x1,int y1)
   XSegment seg[4];
   int i=0;
 
-  seg[i].x1 = x1+1;			seg[i].y1   = y1+SCROLL_BAR_WIDTH/2;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;	seg[i++].y2 = y1+1;
+  seg[i].x1 = x1+1;                     seg[i].y1   = y1+SCROLL_BAR_WIDTH/2;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;  seg[i++].y2 = y1+1;
 
-  seg[i].x1 = x1;			seg[i].y1   = y1+SCROLL_BAR_WIDTH/2;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;	seg[i++].y2 = y1;
+  seg[i].x1 = x1;                       seg[i].y1   = y1+SCROLL_BAR_WIDTH/2;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;  seg[i++].y2 = y1;
   XDrawSegments(dpy, main_win, rgc, seg, i);
 
   i = 0;
-  seg[i].x1 = x1+1;			seg[i].y1   =y1+ SCROLL_BAR_WIDTH/2;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;	seg[i++].y2 =y1+ SCROLL_BAR_WIDTH - 2;
+  seg[i].x1 = x1+1;                     seg[i].y1   =y1+ SCROLL_BAR_WIDTH/2;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;  seg[i++].y2 =y1+ SCROLL_BAR_WIDTH - 2;
 
-  seg[i].x1 = x1;			seg[i].y1   = y1+SCROLL_BAR_WIDTH/2;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
+  seg[i].x1 = x1;                       seg[i].y1   = y1+SCROLL_BAR_WIDTH/2;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;  seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
 
-  seg[i].x1 = x1+SCROLL_BAR_WIDTH - 2;	seg[i].y1   = y1+1;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
+  seg[i].x1 = x1+SCROLL_BAR_WIDTH - 2;  seg[i].y1   = y1+1;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;  seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
 
-  seg[i].x1 = x1+SCROLL_BAR_WIDTH - 1;	seg[i].y1   = y1;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
+  seg[i].x1 = x1+SCROLL_BAR_WIDTH - 1;  seg[i].y1   = y1;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;  seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
   XDrawSegments(dpy,main_win, sgc, seg, i);
 }
 
@@ -836,26 +836,26 @@ void RedrawRightButton(GC rgc, GC sgc,int x1,int y1)
   XSegment seg[4];
   int i=0;
 
-  seg[i].x1 = x1+1;		seg[i].y1   = y1+1;
-  seg[i].x2 = x1+1;		seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
+  seg[i].x1 = x1+1;             seg[i].y1   = y1+1;
+  seg[i].x2 = x1+1;             seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
 
-  seg[i].x1 = x1;		seg[i].y1 = y1;
-  seg[i].x2 = x1;		seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
+  seg[i].x1 = x1;               seg[i].y1 = y1;
+  seg[i].x2 = x1;               seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
 
-  seg[i].x1 = x1+1;		seg[i].y1 = y1+1;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH/2;
+  seg[i].x1 = x1+1;             seg[i].y1 = y1+1;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;  seg[i++].y2 = y1+SCROLL_BAR_WIDTH/2;
 
-  seg[i].x1 = x1;		seg[i].y1 = y1;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH/2;
+  seg[i].x1 = x1;               seg[i].y1 = y1;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;  seg[i++].y2 = y1+SCROLL_BAR_WIDTH/2;
 
   XDrawSegments(dpy, main_win, rgc, seg, i);
 
   i = 0;
-  seg[i].x1 = x1;		seg[i].y1 = y1+SCROLL_BAR_WIDTH - 2;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH/2;
+  seg[i].x1 = x1;               seg[i].y1 = y1+SCROLL_BAR_WIDTH - 2;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;  seg[i++].y2 = y1+SCROLL_BAR_WIDTH/2;
 
-  seg[i].x1 = x1;			seg[i].y1 = y1+SCROLL_BAR_WIDTH - 1;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH/2;
+  seg[i].x1 = x1;                       seg[i].y1 = y1+SCROLL_BAR_WIDTH - 1;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;  seg[i++].y2 = y1+SCROLL_BAR_WIDTH/2;
   XDrawSegments(dpy,main_win, sgc, seg, i);
 }
 
@@ -864,25 +864,25 @@ void RedrawTopButton(GC rgc, GC sgc,int x1,int y1)
   XSegment seg[4];
   int i=0;
 
-  seg[i].x1 = x1+SCROLL_BAR_WIDTH/2;	seg[i].y1 = y1+1;
-  seg[i].x2 = x1+1;		seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
+  seg[i].x1 = x1+SCROLL_BAR_WIDTH/2;    seg[i].y1 = y1+1;
+  seg[i].x2 = x1+1;             seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
 
-  seg[i].x1 = x1+SCROLL_BAR_WIDTH/2;	seg[i].y1 = y1;
-  seg[i].x2 = x1+0;		seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
+  seg[i].x1 = x1+SCROLL_BAR_WIDTH/2;    seg[i].y1 = y1;
+  seg[i].x2 = x1+0;             seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
   XDrawSegments(dpy, main_win, rgc, seg, i);
 
   i = 0;
-  seg[i].x1 = x1+SCROLL_BAR_WIDTH/2;	seg[i].y1 = y1+1;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
+  seg[i].x1 = x1+SCROLL_BAR_WIDTH/2;    seg[i].y1 = y1+1;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;  seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
 
-  seg[i].x1 = x1+SCROLL_BAR_WIDTH/2;	seg[i].y1 = y1;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
+  seg[i].x1 = x1+SCROLL_BAR_WIDTH/2;    seg[i].y1 = y1;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;  seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
 
-  seg[i].x1 = x1+1;		seg[i].y1 = y1+SCROLL_BAR_WIDTH - 2;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
+  seg[i].x1 = x1+1;             seg[i].y1 = y1+SCROLL_BAR_WIDTH - 2;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;  seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
 
-  seg[i].x1 = x1+0;		seg[i].y1 = y1+SCROLL_BAR_WIDTH - 1;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
+  seg[i].x1 = x1+0;             seg[i].y1 = y1+SCROLL_BAR_WIDTH - 1;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;  seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
   XDrawSegments(dpy,main_win, sgc, seg, i);
 }
 
@@ -891,24 +891,24 @@ void RedrawBottomButton(GC rgc, GC sgc,int x1, int y1)
   XSegment seg[4];
   int i=0;
 
-  seg[i].x1 = x1+1;		seg[i].y1 = y1+1;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH/2;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
+  seg[i].x1 = x1+1;             seg[i].y1 = y1+1;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH/2;    seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
 
-  seg[i].x1 = x1;		seg[i].y1 = y1+0;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH/2;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
+  seg[i].x1 = x1;               seg[i].y1 = y1+0;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH/2;    seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
 
-  seg[i].x1 = x1+1;		seg[i].y1 = y1+1;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;	seg[i++].y2 = y1+1;
+  seg[i].x1 = x1+1;             seg[i].y1 = y1+1;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 2;  seg[i++].y2 = y1+1;
 
-  seg[i].x1 = x1;		seg[i].y1 = y1+0;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;	seg[i++].y2 = y1+0;
+  seg[i].x1 = x1;               seg[i].y1 = y1+0;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH - 1;  seg[i++].y2 = y1+0;
   XDrawSegments(dpy,main_win, rgc, seg, i);
 
   i = 0;
-  seg[i].x1 = x1+SCROLL_BAR_WIDTH - 2;	seg[i].y1 = y1+1;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH/2;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
+  seg[i].x1 = x1+SCROLL_BAR_WIDTH - 2;  seg[i].y1 = y1+1;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH/2;    seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 2;
 
-  seg[i].x1 = x1+SCROLL_BAR_WIDTH - 1;	seg[i].y1 = y1+0;
-  seg[i].x2 = x1+SCROLL_BAR_WIDTH/2;	seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
+  seg[i].x1 = x1+SCROLL_BAR_WIDTH - 1;  seg[i].y1 = y1+0;
+  seg[i].x2 = x1+SCROLL_BAR_WIDTH/2;    seg[i++].y2 = y1+SCROLL_BAR_WIDTH - 1;
   XDrawSegments(dpy, main_win, sgc, seg, i);
 }

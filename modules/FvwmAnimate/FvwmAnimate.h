@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef _ANIMATE_H_
@@ -20,17 +20,17 @@
 #define ANIM_ITERATIONS 12
 
 /* delay for each iteration of the animation in ms */
-#define ANIM_DELAY	1
+#define ANIM_DELAY      1
 
 /* delay for each iteration of the close animation in ms */
-#define ANIM_DELAY2	20
+#define ANIM_DELAY2     20
 
 /* distance to spin frame around, 1.0 is one revolution.
    with large values you should up ANIM_ITERATIONS as well */
-#define ANIM_TWIST	0.5
+#define ANIM_TWIST      0.5
 
 /* default line width */
-#define ANIM_WIDTH	0
+#define ANIM_WIDTH      0
 
 /* default time */
 #define ANIM_TIME      0

@@ -15,7 +15,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -27,7 +27,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
 
-#define MYNAME	 "FvwmCommandS"
+#define MYNAME   "FvwmCommandS"
 #define MAXHOSTNAME 32
 
 static int Fd[2]; /* pipes to fvwm */
@@ -182,7 +182,7 @@ void server (char *name)
     if (!dpy_name[0] || ':' == dpy_name[0])
     {
       gethostname(hostname, MAXHOSTNAME);
-      strcat(f_stem, hostname);	 /* Put hostname before dpy if not there */
+      strcat(f_stem, hostname);  /* Put hostname before dpy if not there */
     }
     strcat(f_stem, dpy_name);
   }

@@ -7,12 +7,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "gtkpixmapmenuitem.h"
@@ -20,24 +20,24 @@
 #include <gtk/gtksignal.h>
 
 static void gtk_pixmap_menu_item_class_init    (GtkPixmapMenuItemClass *klass);
-static void gtk_pixmap_menu_item_init	       (GtkPixmapMenuItem      *menu_item);
-static void gtk_pixmap_menu_item_draw	       (GtkWidget	       *widget,
-						GdkRectangle	       *area);
-static gint gtk_pixmap_menu_item_expose	       (GtkWidget	       *widget,
-						GdkEventExpose	       *event);
+static void gtk_pixmap_menu_item_init          (GtkPixmapMenuItem      *menu_item);
+static void gtk_pixmap_menu_item_draw          (GtkWidget              *widget,
+						GdkRectangle           *area);
+static gint gtk_pixmap_menu_item_expose        (GtkWidget              *widget,
+						GdkEventExpose         *event);
 
 /* we must override the following functions */
 
-static void gtk_pixmap_menu_item_map	       (GtkWidget	 *widget);
-static void gtk_pixmap_menu_item_size_allocate (GtkWidget	 *widget,
-						GtkAllocation	 *allocation);
-static void gtk_pixmap_menu_item_forall	       (GtkContainer	*container,
-						gboolean	 include_internals,
-						GtkCallback	 callback,
-						gpointer	 callback_data);
-static void gtk_pixmap_menu_item_size_request  (GtkWidget	 *widget,
-						GtkRequisition	 *requisition);
-static void gtk_pixmap_menu_item_remove	       (GtkContainer *container,
+static void gtk_pixmap_menu_item_map           (GtkWidget        *widget);
+static void gtk_pixmap_menu_item_size_allocate (GtkWidget        *widget,
+						GtkAllocation    *allocation);
+static void gtk_pixmap_menu_item_forall        (GtkContainer    *container,
+						gboolean         include_internals,
+						GtkCallback      callback,
+						gpointer         callback_data);
+static void gtk_pixmap_menu_item_size_request  (GtkWidget        *widget,
+						GtkRequisition   *requisition);
+static void gtk_pixmap_menu_item_remove        (GtkContainer *container,
 						GtkWidget    *child);
 
 
@@ -110,7 +110,7 @@ gtk_pixmap_menu_item_init (GtkPixmapMenuItem *menu_item)
 }
 
 static void
-gtk_pixmap_menu_item_draw (GtkWidget	*widget,
+gtk_pixmap_menu_item_draw (GtkWidget    *widget,
 			   GdkRectangle *area)
 {
   g_return_if_fail (widget != NULL);
@@ -127,7 +127,7 @@ gtk_pixmap_menu_item_draw (GtkWidget	*widget,
 }
 
 static gint
-gtk_pixmap_menu_item_expose (GtkWidget	    *widget,
+gtk_pixmap_menu_item_expose (GtkWidget      *widget,
 			     GdkEventExpose *event)
 {
   g_return_val_if_fail (widget != NULL, FALSE);
@@ -147,7 +147,7 @@ gtk_pixmap_menu_item_expose (GtkWidget	    *widget,
 
 void
 gtk_pixmap_menu_item_set_pixmap (GtkPixmapMenuItem *menu_item,
-				 GtkWidget	   *pixmap)
+				 GtkWidget         *pixmap)
 {
   g_return_if_fail (menu_item != NULL);
   g_return_if_fail (pixmap != NULL);
@@ -192,7 +192,7 @@ gtk_pixmap_menu_item_map (GtkWidget *widget)
 }
 
 static void
-gtk_pixmap_menu_item_size_allocate (GtkWidget	     *widget,
+gtk_pixmap_menu_item_size_allocate (GtkWidget        *widget,
 				    GtkAllocation    *allocation)
 {
   GtkPixmapMenuItem *menu_item;
@@ -218,9 +218,9 @@ gtk_pixmap_menu_item_size_allocate (GtkWidget	     *widget,
 
 static void
 gtk_pixmap_menu_item_forall (GtkContainer    *container,
-			     gboolean	      include_internals,
+			     gboolean         include_internals,
 			     GtkCallback      callback,
-			     gpointer	      callback_data)
+			     gpointer         callback_data)
 {
   GtkPixmapMenuItem *menu_item;
 
@@ -238,7 +238,7 @@ gtk_pixmap_menu_item_forall (GtkContainer    *container,
 }
 
 static void
-gtk_pixmap_menu_item_size_request (GtkWidget	  *widget,
+gtk_pixmap_menu_item_size_request (GtkWidget      *widget,
 				   GtkRequisition *requisition)
 {
   GtkPixmapMenuItem *menu_item;
@@ -260,7 +260,7 @@ gtk_pixmap_menu_item_size_request (GtkWidget	  *widget,
 
 static void
 gtk_pixmap_menu_item_remove (GtkContainer *container,
-			     GtkWidget	  *child)
+			     GtkWidget    *child)
 {
   GtkBin *bin;
   gboolean widget_was_visible;

@@ -5,7 +5,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -62,7 +62,7 @@ typedef struct _PImageIcon {
 	int width;
 	int height;
 	int depth;
-}	 PImageIcon;
+}        PImageIcon;
 
 /**************************************************************************
  * A few function prototypes
@@ -84,7 +84,7 @@ static int MyNameLen;
 
 int timeout = 3000000; /* default time of 3 seconds */
 
-Display *dpy;			/* which display are we talking to */
+Display *dpy;                   /* which display are we talking to */
 Window Root;
 int screen;
 int x_fd;
@@ -116,8 +116,8 @@ int main(int argc, char **argv)
   string = strrchr (argv[0], '/');
   if (string != (char *) 0) string++;
 
-  MyNameLen=strlen(string)+1;		/* account for '*' */
-  MyName = safemalloc(MyNameLen+1);	/* account for \0 */
+  MyNameLen=strlen(string)+1;           /* account for '*' */
+  MyName = safemalloc(MyNameLen+1);     /* account for \0 */
   *MyName='*';
   strcpy (MyName+1, string);
 
@@ -422,7 +422,7 @@ void change_window_name(char *str)
 /***********************************************************************
  *
  *  Procedure:
- *	SIGPIPE handler - SIGPIPE means fvwm is dying
+ *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
 

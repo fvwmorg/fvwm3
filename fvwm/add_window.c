@@ -6,42 +6,42 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 /****************************************************************************
  * This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
  ****************************************************************************/
 /*****************************************************************************/
-/**	  Copyright 1988 by Evans & Sutherland Computer Corporation,	    **/
-/**			     Salt Lake City, Utah			    **/
+/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
+/**                          Salt Lake City, Utah                           **/
 /**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**			   Cambridge, Massachusetts			    **/
-/**									    **/
-/**			      All Rights Reserved			    **/
-/**									    **/
+/**                        Cambridge, Massachusetts                         **/
+/**                                                                         **/
+/**                           All Rights Reserved                           **/
+/**                                                                         **/
 /**    Permission to use, copy, modify, and distribute this software and    **/
 /**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear	 in  all    **/
-/**    copies and that both  that  copyright  notice  and  this	 permis-    **/
+/**    granted, provided that the above copyright notice appear  in  all    **/
+/**    copies and that both  that  copyright  notice  and  this  permis-    **/
 /**    sion  notice appear in supporting  documentation,  and  that  the    **/
 /**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software	 without    **/
-/**    specific, written prior permission.				    **/
-/**									    **/
+/**    in publicity pertaining to distribution of the  software  without    **/
+/**    specific, written prior permission.                                  **/
+/**                                                                         **/
 /**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
 /**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY	AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
+/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
 /**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR	ANY DAMAGES WHATSOEVER	RESULTING FROM LOSS OF USE, DATA    **/
+/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
 /**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH	THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.					    **/
+/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
+/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
 
 /* ---------------------------- included header files ----------------------- */
@@ -108,8 +108,8 @@ char NoResource[] = "NoResource"; /* Class if no res_name in class hints */
 /***********************************************************************
  *
  *  Procedure:
- *	CaptureOneWindow
- *	CaptureAllWindows
+ *      CaptureOneWindow
+ *      CaptureAllWindows
  *
  *   Decorates windows at start-up and during recaptures
  *
@@ -140,7 +140,7 @@ static void CaptureOneWindow(
 	 * recapture. */
 	MyXGrabServer(dpy);
 	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-			  &JunkHeight, &JunkBW,	 &JunkDepth))
+			  &JunkHeight, &JunkBW,  &JunkDepth))
 	{
 		/* The window has already died, do not recapture it! */
 		MyXUngrabServer(dpy);
@@ -293,15 +293,15 @@ static void hide_screen(
 /***********************************************************************
  *
  *  Procedure:
- *	MappedNotOverride - checks to see if we should really
- *		put a fvwm frame on the window
+ *      MappedNotOverride - checks to see if we should really
+ *              put a fvwm frame on the window
  *
  *  Returned Value:
- *	TRUE	- go ahead and frame the window
- *	FALSE	- don't frame the window
+ *      TRUE    - go ahead and frame the window
+ *      FALSE   - don't frame the window
  *
  *  Inputs:
- *	w	- the window to check
+ *      w       - the window to check
  *
  ***********************************************************************/
 
@@ -1096,7 +1096,7 @@ Bool setup_window_placement(
 		 * options that are meaningless since Xrm seems to allow -w to
 		 * match -workspace if there would be no ambiguity. */
 		{"-workspacf", "*junk", XrmoptionSepArg, (caddr_t) NULL},
-		{"-workspace", "*desk",	XrmoptionSepArg, (caddr_t) NULL},
+		{"-workspace", "*desk", XrmoptionSepArg, (caddr_t) NULL},
 		{"-xrn", NULL, XrmoptionResArg, (caddr_t) NULL},
 		{"-xrm", NULL, XrmoptionResArg, (caddr_t) NULL},
 	};
@@ -1969,7 +1969,7 @@ void setup_key_and_button_grabs(FvwmWindow *fw)
 /***********************************************************************
  *
  *  Procedure:
- *	AddWindow - add a new window to the fvwm list
+ *      AddWindow - add a new window to the fvwm list
  *
  ***********************************************************************/
 FvwmWindow *AddWindow(
@@ -2013,7 +2013,7 @@ FvwmWindow *AddWindow(
 	}
 
 	/****** Make sure the client window still exists.  We don't want to
-	 * leave an orphan frame window if it doesn't.	Since we now have the
+	 * leave an orphan frame window if it doesn't.  Since we now have the
 	 * server grabbed, the window can't disappear later without having been
 	 * reparented, so we'll get a DestroyNotify for it.  We won't have
 	 * gotten one for anything up to here, however. ******/
@@ -2035,7 +2035,7 @@ FvwmWindow *AddWindow(
 
 	/****** basic style and decor ******/
 	/* If the window is in the NoTitle list, or is a transient, dont
-	 * decorate it.	 If its a transient, and DecorateTransients was
+	 * decorate it.  If its a transient, and DecorateTransients was
 	 * specified, decorate anyway. */
 	/* get merged styles */
 	lookup_style(fw, &style);
@@ -2066,7 +2066,7 @@ FvwmWindow *AddWindow(
 	/*
 	 * Reparenting generates an UnmapNotify event, followed by a MapNotify.
 	 * Set the map state to FALSE to prevent a transition back to
-	 * WithdrawnState in HandleUnmapNotify.	 Map state gets set corrected
+	 * WithdrawnState in HandleUnmapNotify.  Map state gets set corrected
 	 * again in HandleMapNotify.
 	 */
 	SET_MAPPED(fw, 0);
@@ -2349,9 +2349,9 @@ FvwmWindow *AddWindow(
 		frame_free_move_resize_args(fw, mr_args);
 	}
 	if (!XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-			  &JunkHeight, &JunkBW,	 &JunkDepth))
+			  &JunkHeight, &JunkBW,  &JunkDepth))
 	{
-		/* The window has disappeared somehow.	For some reason we do
+		/* The window has disappeared somehow.  For some reason we do
 		 * not always get a DestroyNotify on the window, so make sure
 		 * it is destroyed. */
 		destroy_window(fw);
@@ -2365,10 +2365,10 @@ FvwmWindow *AddWindow(
 /***********************************************************************
  *
  *  Procedure:
- *	FetchWMProtocols - finds out which protocols the window supports
+ *      FetchWMProtocols - finds out which protocols the window supports
  *
  *  Inputs:
- *	tmp - the fvwm window structure to use
+ *      tmp - the fvwm window structure to use
  *
  ***********************************************************************/
 void FetchWmProtocols(FvwmWindow *tmp)
@@ -2441,10 +2441,10 @@ void FetchWmProtocols(FvwmWindow *tmp)
 /***********************************************************************
  *
  *  Procedure:
- *	GetWindowSizeHints - gets application supplied size info
+ *      GetWindowSizeHints - gets application supplied size info
  *
  *  Inputs:
- *	tmp - the fvwm window structure to use
+ *      tmp - the fvwm window structure to use
  *
  ***********************************************************************/
 
@@ -2639,13 +2639,13 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 		/*
 		** The math looks like this:
 		**
-		**   minAspectX	   maxAspectX
+		**   minAspectX    maxAspectX
 		**   ---------- <= ----------
-		**   minAspectY	   maxAspectY
+		**   minAspectY    maxAspectY
 		**
 		** If that is multiplied out, this must be satisfied:
 		**
-		**   minAspectX * maxAspectY <=	 maxAspectX * minAspectY
+		**   minAspectX * maxAspectY <=  maxAspectX * minAspectY
 		**
 		** So, what to do if this isn't met?  Ignoring it entirely
 		** seems safest.
@@ -2985,7 +2985,7 @@ void destroy_window(FvwmWindow *fw)
 /***********************************************************************
  *
  *  Procedure:
- *	RestoreWithdrawnLocation
+ *      RestoreWithdrawnLocation
  *
  *  Puts windows back where they were before fvwm took over
  *
@@ -3100,7 +3100,7 @@ void RestoreWithdrawnLocation(
 /***********************************************************************
  *
  *  Procedure:
- *	Reborder - Removes fvwm border windows
+ *      Reborder - Removes fvwm border windows
  *
  ************************************************************************/
 void Reborder(void)

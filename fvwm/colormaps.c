@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -53,7 +53,7 @@ void set_client_controls_colormaps(Bool flag)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleColormapNotify - colormap notify event handler
+ *      HandleColormapNotify - colormap notify event handler
  *
  * This procedure handles both a client changing its own colormap, and
  * a client explicitly installing its colormap itself (only the window
@@ -155,12 +155,12 @@ void ReInstallActiveColormap(void)
 /***********************************************************************
  *
  *  Procedure:
- *	InstallWindowColormaps - install the colormaps for one fvwm window
+ *      InstallWindowColormaps - install the colormaps for one fvwm window
  *
  *  Inputs:
- *	type	- type of event that caused the installation
- *	tmp	- for a subset of event types, the address of the
- *		  window structure, whose colormaps are to be installed.
+ *      type    - type of event that caused the installation
+ *      tmp     - for a subset of event types, the address of the
+ *                window structure, whose colormaps are to be installed.
  *
  ************************************************************************/
 
@@ -206,7 +206,7 @@ void InstallWindowColormaps(FvwmWindow *fw)
 
 			/*
 			 * On Sun X servers, don't install 24 bit TrueColor
-			 * colourmaps.	Despite what the server says, these
+			 * colourmaps.  Despite what the server says, these
 			 * colourmaps are always installed. */
 			if (last_cmap != attributes.colormap
 #if defined(sun) && defined(TRUECOLOR_ALWAYS_INSTALLED)
@@ -242,16 +242,16 @@ void InstallWindowColormaps(FvwmWindow *fw)
 /***********************************************************************
  *
  *  Procedures:
- *	<Uni/I>nstallRootColormap - Force (un)loads root colormap(s)
+ *      <Uni/I>nstallRootColormap - Force (un)loads root colormap(s)
  *
- *	   These matching routines provide a mechanism to insure that
- *	   the root colormap(s) is installed during operations like
- *	   rubber banding that require colors from
- *	   that colormap.  Calls may be nested arbitrarily deeply,
- *	   as long as there is one UninstallRootColormap call per
- *	   InstallRootColormap call.
+ *         These matching routines provide a mechanism to insure that
+ *         the root colormap(s) is installed during operations like
+ *         rubber banding that require colors from
+ *         that colormap.  Calls may be nested arbitrarily deeply,
+ *         as long as there is one UninstallRootColormap call per
+ *         InstallRootColormap call.
  *
- *	   {Uni,I}nstall{Root,Fvwm}Colormap calls may be freely intermixed
+ *         {Uni,I}nstall{Root,Fvwm}Colormap calls may be freely intermixed
  ***********************************************************************/
 void InstallRootColormap(void)
 {
@@ -298,9 +298,9 @@ void UninstallRootColormap(void)
 /***********************************************************************
  *
  *  Procedures:
- *	<Uni/I>nstallFvwmColormap - Force (un)loads fvwm colormap(s)
- *	This is used to ensure the fvwm colormap is installed during
- *	menu operations
+ *      <Uni/I>nstallFvwmColormap - Force (un)loads fvwm colormap(s)
+ *      This is used to ensure the fvwm colormap is installed during
+ *      menu operations
  *
  ***********************************************************************/
 void InstallFvwmColormap(void)
@@ -349,8 +349,8 @@ void FetchWmColormapWindows (FvwmWindow *fw)
 {
 	XWindowAttributes      getattribs;
 	XSetWindowAttributes   setattribs;
-	long int	       i;
-	unsigned long	       valuemask;
+	long int               i;
+	unsigned long          valuemask;
 
 	if (fw->cmap_windows != (Window *)NULL)
 	{
@@ -393,8 +393,8 @@ void FetchWmColormapWindows (FvwmWindow *fw)
  ****************************************************************************/
 void EnterSubWindowColormap(Window win)
 {
-	FvwmWindow	   *t;
-	long int	    i;
+	FvwmWindow         *t;
+	long int            i;
 	XWindowAttributes   attribs;
 
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)

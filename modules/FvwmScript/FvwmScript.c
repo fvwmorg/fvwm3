@@ -11,12 +11,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "types.h"
@@ -29,16 +29,16 @@
 #include "libs/FRender.h"
 #include "libs/FRenderInit.h"
 
-#ifdef MEMDEBUG			/* For debugging */
+#ifdef MEMDEBUG                 /* For debugging */
 #include <unchecked.h>
 #endif
 
 /* Variables utilise par l'analyseur syntaxique */
 extern ScriptProp *scriptprop;
-extern int nbobj;			/* Nombre d'objets */
-extern int numligne;			/* Numero de ligne */
-extern TabObj *tabobj;			/* Tableau d'objets, limite=1000 */
-extern char **TabVVar;			/* Tableau des variables du sript */
+extern int nbobj;                       /* Nombre d'objets */
+extern int numligne;                    /* Numero de ligne */
+extern TabObj *tabobj;                  /* Tableau d'objets, limite=1000 */
+extern char **TabVVar;                  /* Tableau des variables du sript */
 extern int TabIdObj[1001];
 extern Bloc **TabIObj;
 extern CaseObj *TabCObj;
@@ -54,13 +54,13 @@ extern int __bounds_debug_no_checking;
 
 
 /* Variables globales */
-char *ScriptName;	/* Nom du fichier contenat le script decrivant le GUI */
+char *ScriptName;       /* Nom du fichier contenat le script decrivant le GUI */
 char *ScriptBaseName;
 char *ScriptPath = "";
 char *ModuleName;
-int fd[2];			/* pipe pair */
+int fd[2];                      /* pipe pair */
 int fd_err;
-int x_fd;			/* fd for X */
+int x_fd;                       /* fd for X */
 Window ref;
 FlocaleWinString *FwinString;
 
@@ -69,16 +69,16 @@ extern void (*TabCom[25]) (int NbArg,long *TabArg);
 
 Display *dpy;
 int screen;
-Window	Root;
-X11base *x11base;		/* Pour le serveur X */
-TypeBuffSend BuffSend;		/* Pour les communication entre script */
+Window  Root;
+X11base *x11base;               /* Pour le serveur X */
+TypeBuffSend BuffSend;          /* Pour les communication entre script */
 int grab_server = 0;
 struct XObj *tabxobj[1000];
 char *Scrapt;
 Atom propriete,type;
 static Atom wm_del_win;
 char *imagePath = NULL;
-int save_color_limit = 0;		    /* color limit from config */
+int save_color_limit = 0;                   /* color limit from config */
 static Bool is_dead_pipe = False;
 KeySym shift_tab_ks;  /* shift-Tab keysym */
 char *LastString = NULL;  /* last string send by a SendString ot Key cmd */
@@ -100,7 +100,7 @@ ShutdownX(void)
   int NbEssai=0;
   struct timeval tv;
 
-#ifdef DEBUG			/* For debugging */
+#ifdef DEBUG                    /* For debugging */
   XSync(dpy,0);
 #endif
 
@@ -140,7 +140,7 @@ ShutdownX(void)
   XFlush(dpy);
 
   /* Attente de deux secondes afin d'etre sur que tous */
-  /* les messages soient arrives a destination	       */
+  /* les messages soient arrives a destination         */
   /* On quitte proprement le serveur X */
   for (i=0; i<nbobj; i++)
     tabxobj[i]->DestroyObj(tabxobj[i]);
@@ -177,8 +177,8 @@ void ReadConfig (char *ScriptName)
      Not very pretty, dje 12/26/99 */
   sprintf(s,"%s%s%s",ScriptPath,(!*ScriptPath ? "" : "/"),ScriptName);
   yyin = fopen(s,"r");
-  if (yyin == NULL) {			/* file not found yet, */
-    TryToFind(ScriptName);		     /* look in some other places */
+  if (yyin == NULL) {                   /* file not found yet, */
+    TryToFind(ScriptName);                   /* look in some other places */
   }
   if (yyin == NULL)
   {
@@ -206,7 +206,7 @@ static void TryToFind(char *filename) {
   extern FILE *yyin;
   char path[FILENAME_MAX];
 
-  if (filename[0] == '/') {		/* if absolute path */
+  if (filename[0] == '/') {             /* if absolute path */
     yyin = fopen(filename,"r");
     return;
   }
@@ -639,7 +639,7 @@ void BuildGUI(int IsFather)
     tabxobj[i]->iconPixmap = None;
     tabxobj[i]->icon_maskPixmap = None;
 
-    LoadIcon(tabxobj[i]);		   /* Chargement de l'icone du widget */
+    LoadIcon(tabxobj[i]);                  /* Chargement de l'icone du widget */
 
     tabxobj[i]->InitObj(tabxobj[i]);
   }
@@ -811,7 +811,7 @@ void ReadXServer (void)
   int isTab = 0;
   char *octet;
   KeySym ks;
-  static unsigned char buf[10];		/* unsigned for international */
+  static unsigned char buf[10];         /* unsigned for international */
   Bool find = False;
   char *action;
 
@@ -1145,19 +1145,19 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
   Atom myatom;
   int FisrtArg;
 
-  BuffSend.NbMsg=0;			/* Aucun message dans le buffer */
+  BuffSend.NbMsg=0;                     /* Aucun message dans le buffer */
 
   for (i=2; i<98; i++)
     x11base->TabScriptId[i]=NULL;
 
-  if (IsFather)			/* Cas du pere */
+  if (IsFather)                 /* Cas du pere */
   {
     myatom = XInternAtom(dpy,x11base->TabScriptId[1],True);
     XSetSelectionOwner(dpy, myatom, x11base->win, CurrentTime);
     FisrtArg = 9;
   }
   else
-  {				/* Cas du fils */
+  {                             /* Cas du fils */
     x11base->TabScriptId[0] = (char*)safecalloc(sizeof(char),strlen(argv[7]));
     x11base->TabScriptId[0] = strncpy(x11base->TabScriptId[0],argv[7],
 				    strlen(argv[7])-2);
@@ -1212,7 +1212,7 @@ int main (int argc, char **argv)
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST| M_STRING |
-		 M_MAP|	 M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
+		 M_MAP|  M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
 		 M_END_CONFIG_INFO| M_WINDOW_NAME | M_SENDCONFIG);
   SetMessageMask(fd, MX_PROPERTY_CHANGE);
   /* Enregistrement des arguments du script */
@@ -1236,7 +1236,7 @@ int main (int argc, char **argv)
 
   SendText(fd,"Send_WindowList",0);
 
-  ReadConfig(ScriptName);	/* Lecture et analyse du script */
+  ReadConfig(ScriptName);       /* Lecture et analyse du script */
 
   /* Fonction d'initialisation de TabCom et TabFunc   */
   InitCom();
@@ -1278,8 +1278,8 @@ int main (int argc, char **argv)
   signal (SIGTERM, TerminateHandler);
 #ifdef HAVE_SIGINTERRUPT
   siginterrupt(SIGPIPE, 1);
-  siginterrupt(SIGINT,	1);
-  siginterrupt(SIGHUP,	1);
+  siginterrupt(SIGINT,  1);
+  siginterrupt(SIGHUP,  1);
   siginterrupt(SIGQUIT, 1);
   siginterrupt(SIGTERM, 1);
 #endif

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -285,21 +285,21 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 
     if(resize) {
       ICON_DBG((stderr,"ciw: Changing icon (%s) from %dx%d to %dx%d\n",
-        fw->name,
-        fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
-        newWidth, newHeight));
+	fw->name,
+	fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
+	newWidth, newHeight));
 
       /* Resize the icon Pixmap */
       SetIconPixmapSize(&(fw->iconPixmap),
-        fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
-        fw->iconDepth, newWidth, newHeight,
-        (IS_PIXMAP_OURS(fw)));
+	fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
+	fw->iconDepth, newWidth, newHeight,
+	(IS_PIXMAP_OURS(fw)));
 
       /* Resize the icon mask Pixmap if one was defined */
       if(fw->icon_maskPixmap) {
-        SetIconPixmapSize(&(fw->icon_maskPixmap),
-          fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
-          1, newWidth, newHeight, (IS_PIXMAP_OURS(fw)));
+	SetIconPixmapSize(&(fw->icon_maskPixmap),
+	  fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
+	  1, newWidth, newHeight, (IS_PIXMAP_OURS(fw)));
       }
 
       /* Set the new dimensions of the icon window */
@@ -688,7 +688,7 @@ void DrawIconWindow(FvwmWindow *fw)
 				/* start keep label on screen. dje 8/7/97 */
 				if (x_title_w < sx) {
 					/* if new loc neg (off left edge) */
-					x_title_w = sx;	     /* move to edge */
+					x_title_w = sx;      /* move to edge */
 				}
 				else
 				{
@@ -923,7 +923,7 @@ void DrawIconWindow(FvwmWindow *fw)
  *
  *  Procedure:
  *    ChangeIconPixmap - procedure change the icon pixmap or "pixmap"
- *	window. Called in events.c and ewmh_events.c
+ *      window. Called in events.c and ewmh_events.c
  *
  ************************************************************************/
 void ChangeIconPixmap(FvwmWindow *fw)
@@ -974,7 +974,7 @@ ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", fw->name));
 /***********************************************************************
  *
  *  Procedure:
- *	RedoIconName - procedure to re-position the icon window and name
+ *      RedoIconName - procedure to re-position the icon window and name
  *
  ************************************************************************/
 void RedoIconName(FvwmWindow *fw)
@@ -997,7 +997,7 @@ void RedoIconName(FvwmWindow *fw)
 /************************************************************************
  *
  *  Procedure:
- *	AutoPlace - Find a home for an icon
+ *      AutoPlace - Find a home for an icon
  *
  ************************************************************************/
 void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
@@ -1128,19 +1128,19 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
     /* A place to hold inner and outer loop variables. */
     typedef struct dimension_struct
     {
-      int step;				/* grid size (may be negative) */
-      int start_at;			/* starting edge */
-      int real_start;			/* on screen starting edge */
-      int end_at;			/* ending edge */
-      int base;				/* base for screen */
-      int icon_dimension;		/* height or width */
-      int nom_dimension;		/* nonminal height or width */
-      int screen_dimension;		/* screen height or width */
-      int screen_offset;		/* screen offset */
+      int step;                         /* grid size (may be negative) */
+      int start_at;                     /* starting edge */
+      int real_start;                   /* on screen starting edge */
+      int end_at;                       /* ending edge */
+      int base;                         /* base for screen */
+      int icon_dimension;               /* height or width */
+      int nom_dimension;                /* nonminal height or width */
+      int screen_dimension;             /* screen height or width */
+      int screen_offset;                /* screen offset */
     } dimension;
-    dimension dim[3];			/* space for work, 1st, 2nd dimen */
-    icon_boxes *icon_boxes_ptr;		/* current icon box */
-    int i;				/* index for inner/outer loop data */
+    dimension dim[3];                   /* space for work, 1st, 2nd dimen */
+    icon_boxes *icon_boxes_ptr;         /* current icon box */
+    int i;                              /* index for inner/outer loop data */
     fscreen_scr_arg fscr;
     rectangle ref;
     rectangle g;
@@ -1167,7 +1167,7 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
     loc_ok_wrong_screen = False;
 
     /* check all boxes in order */
-    icon_boxes_ptr = NULL;		/* init */
+    icon_boxes_ptr = NULL;              /* init */
     while(do_all_iconboxes(t, &icon_boxes_ptr))
     {
       if (loc_ok == True)
@@ -1270,11 +1270,11 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
       /* save for reseting inner loop */
       dim[0].start_at = dim[2].start_at;
       loc_ok_wrong_screen2 = False;
-      while((dim[1].step < 0		/* filling reversed */
+      while((dim[1].step < 0            /* filling reversed */
 	     ? (dim[1].start_at + dim[1].icon_dimension - dim[1].nom_dimension
-		> dim[1].end_at)	/* check back edge */
+		> dim[1].end_at)        /* check back edge */
 	     : (dim[1].start_at + dim[1].nom_dimension
-		< dim[1].end_at))	/* check front edge */
+		< dim[1].end_at))       /* check front edge */
 	    && (!loc_ok)
 	    && (!loc_ok_wrong_screen2)) {  /* nothing found yet */
 	dim[1].real_start = dim[1].start_at; /* init */
@@ -1292,11 +1292,11 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
 	} /* end off other edge */
 	/* reset inner loop */
 	dim[2].start_at = dim[0].start_at;
-	while((dim[2].step < 0		  /* filling reversed */
+	while((dim[2].step < 0            /* filling reversed */
 	       ? (dim[2].start_at + dim[2].icon_dimension-dim[2].nom_dimension
-		  > dim[2].end_at)	  /* check back edge */
+		  > dim[2].end_at)        /* check back edge */
 	       : (dim[2].start_at + dim[2].nom_dimension
-		  < dim[2].end_at))	  /* check front edge */
+		  < dim[2].end_at))       /* check front edge */
 	      && (!loc_ok)
 	      && (!loc_ok_wrong_screen2)) { /* nothing found yet */
 	  dim[2].real_start = dim[2].start_at; /* init */
@@ -1402,7 +1402,7 @@ static icon_boxes *global_icon_box_ptr;
 static int
 do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 {
-  if (global_icon_box_ptr == 0) {	/* if first time */
+  if (global_icon_box_ptr == 0) {       /* if first time */
     int sx;
     int sy;
     int sw;
@@ -1419,25 +1419,25 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
     global_icon_box_ptr->IconGrid[1] = 80;
     global_icon_box_ptr->IconFlags = ICONFILLHRZ;
   }
-  if (*icon_boxes_ptr == NULL) {	/* first time? */
-    *icon_boxes_ptr = t->IconBoxes;	/* start at windows box */
-    if (!*icon_boxes_ptr) {		/* if window has no box */
+  if (*icon_boxes_ptr == NULL) {        /* first time? */
+    *icon_boxes_ptr = t->IconBoxes;     /* start at windows box */
+    if (!*icon_boxes_ptr) {             /* if window has no box */
       *icon_boxes_ptr = global_icon_box_ptr; /* use global box */
     }
-    return (1);				/* use box */
+    return (1);                         /* use box */
   }
 
   /* Here its not the first call, we are either on the chain or at
      the global box */
   if (*icon_boxes_ptr == global_icon_box_ptr) { /* if the global box */
-    return (0);				/* completely out of boxes (unlikely) */
+    return (0);                         /* completely out of boxes (unlikely) */
   }
   *icon_boxes_ptr = (*icon_boxes_ptr)->next; /* move to next one on chain */
-  if (*icon_boxes_ptr) {		/* if there is a next one */
-    return (1);				/* return it */
+  if (*icon_boxes_ptr) {                /* if there is a next one */
+    return (1);                         /* return it */
   }
   *icon_boxes_ptr = global_icon_box_ptr; /* global box */
-  return (1);				/* use it */
+  return (1);                           /* use it */
 }
 
 /****************************************************************************
@@ -1589,7 +1589,7 @@ static void GetIconBitmap(FvwmWindow *fw)
 /***********************************************************************
  *
  *  Procedure:
- *	DeIconify a window
+ *      DeIconify a window
  *
  ***********************************************************************/
 void DeIconify(FvwmWindow *fw)
@@ -1963,7 +1963,7 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
  ****************************************************************************/
 void SetMapStateProp(FvwmWindow *fw, int state)
 {
-  unsigned long data[2];		/* "suggested" by ICCCM version 1 */
+  unsigned long data[2];                /* "suggested" by ICCCM version 1 */
 
   data[0] = (unsigned long) state;
   data[1] = (unsigned long) FW_W_ICON_TITLE(fw);

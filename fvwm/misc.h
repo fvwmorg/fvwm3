@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef MISC_H
@@ -21,17 +21,17 @@
 
 /* ---------------------------- global definitions -------------------------- */
 
-#define GRAB_ALL      0	      /* sum of all grabs */
-#define GRAB_STARTUP  1	      /* Startup busy cursor */
-#define GRAB_NORMAL   2	      /* DeferExecution, Move, Resize, ... */
-#define GRAB_MENU     3	      /* a menus.c grabing */
-#define GRAB_BUSY     4	      /* BusyCursor stuff */
-#define GRAB_BUSYMENU 5	      /* Allows menus.c to regrab the cursor */
-#define GRAB_PASSIVE  6	      /* Override of passive grab, only prevents grab
+#define GRAB_ALL      0       /* sum of all grabs */
+#define GRAB_STARTUP  1       /* Startup busy cursor */
+#define GRAB_NORMAL   2       /* DeferExecution, Move, Resize, ... */
+#define GRAB_MENU     3       /* a menus.c grabing */
+#define GRAB_BUSY     4       /* BusyCursor stuff */
+#define GRAB_BUSYMENU 5       /* Allows menus.c to regrab the cursor */
+#define GRAB_PASSIVE  6       /* Override of passive grab, only prevents grab
 			       * to be released too early */
 #define GRAB_FREEZE_CURSOR 7  /* Freeze the cursor shape if a window is
 			       * pressed. */
-#define GRAB_MAXVAL   8	      /* last GRAB macro + 1 */
+#define GRAB_MAXVAL   8       /* last GRAB macro + 1 */
 
 /* ---------------------------- global macros ------------------------------- */
 

@@ -8,12 +8,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef FXPM_H
@@ -194,19 +194,19 @@ typedef struct {
 
 #define FxpmUndefPixel 0
 
-#define FxpmColorError	  1
-#define FxpmSuccess	  0
-#define FxpmOpenFailed	 -1
-#define FxpmFileInvalid	 -2
-#define FxpmNoMemory	 -3
-#define FxpmColorFailed	 -4
+#define FxpmColorError    1
+#define FxpmSuccess       0
+#define FxpmOpenFailed   -1
+#define FxpmFileInvalid  -2
+#define FxpmNoMemory     -3
+#define FxpmColorFailed  -4
 
-#define FXPM_MONO	2
-#define FXPM_GREY4	3
-#define FXPM_GRAY4	3
-#define FXPM_GREY	4
-#define FXPM_GRAY	4
-#define FXPM_COLOR	5
+#define FXPM_MONO       2
+#define FXPM_GREY4      3
+#define FXPM_GRAY4      3
+#define FXPM_GREY       4
+#define FXPM_GRAY       4
+#define FXPM_COLOR      5
 
 #define FxpmReadFileToXpmImage(a,b,c) 0
 #define FxpmCreatePixmapFromXpmImage(a,b,c,d,e,f) 0

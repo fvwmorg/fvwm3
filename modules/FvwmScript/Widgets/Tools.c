@@ -5,18 +5,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "Tools.h"
 
 /***********************************************/
-/* Fonction d'ecriture en relief	       */
+/* Fonction d'ecriture en relief               */
 /***********************************************/
 void MyDrawString(Display *dpy, struct XObj *xobj, Window win, int x, int y,
 		  char *str, unsigned long ForeC,unsigned long HiC,
@@ -54,7 +54,7 @@ void MyDrawString(Display *dpy, struct XObj *xobj, Window win, int x, int y,
 }
 
 /**************************************************/
-/* Return the x text position of the widget	  */
+/* Return the x text position of the widget       */
 /**************************************************/
 int GetXTextPosition(struct XObj *xobj, int obj_width, int str_len,
 		     int left_offset, int center_offset, int right_offset)
@@ -96,7 +96,7 @@ int GetXTextPosition(struct XObj *xobj, int obj_width, int str_len,
 }
 
 /**************************************************/
-/* Retourne le titre de l'option id du menu	  */
+/* Retourne le titre de l'option id du menu       */
 /**************************************************/
 char* GetMenuTitle(char *str, int id)
 {
@@ -124,7 +124,7 @@ char* GetMenuTitle(char *str, int id)
 }
 
 /***********************************************************/
-/* Dessine le contenu de la fenetre du popup-menu	   */
+/* Dessine le contenu de la fenetre du popup-menu          */
 /***********************************************************/
 void DrawPMenu(struct XObj *xobj, Window WinPop, int h, int StrtOpt)
 {
@@ -186,7 +186,7 @@ void UnselectMenu(struct XObj *xobj, Window WinPop, int hOpt, int value,
 }
 
 /***********************************************************/
-/* Dessine l'option active d'un menu			   */
+/* Dessine l'option active d'un menu                       */
 /***********************************************************/
 void SelectMenu(struct XObj *xobj, Window WinPop, int hOpt, int value)
 {
@@ -268,7 +268,7 @@ void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
     j = xobj->height/2 + (xobj->Ffont->height)/2 + offset - 3;
     MyDrawString(dpy,xobj,xobj->win,i,j,str,fore,hili,back,!xobj->flags[1]);
   }
-  else					/* Si l'icone existe */
+  else                                  /* Si l'icone existe */
   {
     if (len > 0)
     {
@@ -404,7 +404,7 @@ void SelectOneTextField(struct XObj *xobj)
 }
 
 /************************************************************/
-/* Dessine une fleche direction nord			    */
+/* Dessine une fleche direction nord                        */
 /************************************************************/
 void DrawArrowN(struct XObj *xobj, int x, int y, int Press)
 {
@@ -449,7 +449,7 @@ void DrawArrowN(struct XObj *xobj, int x, int y, int Press)
 }
 
 /************************************************************/
-/* Dessine une fleche direction sud			    */
+/* Dessine une fleche direction sud                         */
 /************************************************************/
 void DrawArrowS(struct XObj *xobj, int x, int y, int Press)
 {

@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef MENUTYPES_H
@@ -23,18 +23,18 @@
 
 /* ---------------------------- global macros ------------------------------- */
 
-#define MDIM_WIDTH(d)		   ((d).width)
-#define MDIM_HEIGHT(d)		   ((d).height)
-#define MDIM_ITEM_WIDTH(d)	   ((d).item_width)
+#define MDIM_WIDTH(d)              ((d).width)
+#define MDIM_HEIGHT(d)             ((d).height)
+#define MDIM_ITEM_WIDTH(d)         ((d).item_width)
 #define MDIM_SIDEPIC_X_OFFSET(d)   ((d).sidepic_x_offset)
-#define MDIM_ICON_X_OFFSET(d)	   ((d).icon_x_offset)
+#define MDIM_ICON_X_OFFSET(d)      ((d).icon_x_offset)
 #define MDIM_TRIANGLE_X_OFFSET(d)  ((d).triangle_x_offset)
-#define MDIM_ITEM_X_OFFSET(d)	   ((d).item_text_x_offset)
+#define MDIM_ITEM_X_OFFSET(d)      ((d).item_text_x_offset)
 #define MDIM_ITEM_TEXT_Y_OFFSET(d) ((d).item_text_y_offset)
 #define MDIM_HILIGHT_X_OFFSET(d)   ((d).hilight_x_offset)
-#define MDIM_HILIGHT_WIDTH(d)	   ((d).hilight_width)
-#define MDIM_SCREEN_WIDTH(d)	   ((d).screen_width)
-#define MDIM_SCREEN_HEIGHT(d)	   ((d).screen_height)
+#define MDIM_HILIGHT_WIDTH(d)      ((d).hilight_width)
+#define MDIM_SCREEN_WIDTH(d)       ((d).screen_width)
+#define MDIM_SCREEN_HEIGHT(d)      ((d).screen_height)
 
 /* ---------------------------- type definitions ---------------------------- */
 

@@ -8,33 +8,33 @@
 #include <X11/Xproto.h>
 
 Display *dpy;
-Window	Root, win;
-int	screen;
+Window  Root, win;
+int     screen;
 
 int has_focus_proto = 0;
 int has_delete_proto = 1;
 int input_mode = -1;
 
-Atom ATOM_NET_WM_WINDOW_TYPE	       = None;
+Atom ATOM_NET_WM_WINDOW_TYPE           = None;
 Atom ATOM_NET_WM_WINDOW_TYPE_DESKTOP   = None;
 Atom ATOM_NET_WM_WINDOW_TYPE_DOCK      = None;
 Atom ATOM_NET_WM_WINDOW_TYPE_TOOLBAR   = None;
 Atom ATOM_NET_WM_WINDOW_TYPE_MENU      = None;
 Atom ATOM_NET_WM_WINDOW_TYPE_DIALOG    = None;
 Atom ATOM_NET_WM_WINDOW_TYPE_NORMAL    = None;
-Atom ATOM_NET_WM_WINDOW_TYPE_SPLASH	  = None;
-Atom ATOM_NET_WM_WINDOW_TYPE_UTILITY	  = None;
+Atom ATOM_NET_WM_WINDOW_TYPE_SPLASH       = None;
+Atom ATOM_NET_WM_WINDOW_TYPE_UTILITY      = None;
 Atom ATOM_KDE_NET_WM_WINDOW_TYPE_OVERRIDE = None;
 
-Atom ATOM_NET_WM_STATE		       = None;
-Atom ATOM_NET_WM_STATE_MODAL	       = None;
-Atom ATOM_NET_WM_STATE_STICKY	       = None;
+Atom ATOM_NET_WM_STATE                 = None;
+Atom ATOM_NET_WM_STATE_MODAL           = None;
+Atom ATOM_NET_WM_STATE_STICKY          = None;
 Atom ATOM_NET_WM_STATE_MAXIMIZED_VERT  = None;
 Atom ATOM_NET_WM_STATE_MAXIMIZED_HORIZ = None;
-Atom ATOM_NET_WM_STATE_SHADED	       = None;
+Atom ATOM_NET_WM_STATE_SHADED          = None;
 Atom ATOM_NET_WM_STATE_SKIP_TASKBAR    = None;
 Atom ATOM_NET_WM_STATE_SKIP_PAGER      = None;
-Atom ATOM_NET_WM_STATE_HIDDEN	       = None;
+Atom ATOM_NET_WM_STATE_HIDDEN          = None;
 Atom ATOM_NET_WM_STATE_STAYS_ON_TOP    = None;
 Atom ATOM_NET_WM_STATE_FULLSCREEN      = None;
 
@@ -47,33 +47,33 @@ Atom ATOM_WM_TAKE_FOCUS = None;
 /* Motif window hints */
 Atom ATOM_MOTIF_WM_HINTS = None;
 
-#define MWM_HINTS_FUNCTIONS	(1L << 0)
-#define MWM_HINTS_DECORATIONS	(1L << 1)
-#define MWM_HINTS_INPUT_MODE	(1L << 2)
-#define MWM_HINTS_STATUS	(1L << 3) /* ? */
+#define MWM_HINTS_FUNCTIONS     (1L << 0)
+#define MWM_HINTS_DECORATIONS   (1L << 1)
+#define MWM_HINTS_INPUT_MODE    (1L << 2)
+#define MWM_HINTS_STATUS        (1L << 3) /* ? */
 
 /* bit definitions for MwmHints.functions */
-#define MWM_FUNC_ALL		(1L << 0)
-#define MWM_FUNC_RESIZE		(1L << 1)
-#define MWM_FUNC_MOVE		(1L << 2)
-#define MWM_FUNC_MINIMIZE	(1L << 3)
-#define MWM_FUNC_MAXIMIZE	(1L << 4)
-#define MWM_FUNC_CLOSE		(1L << 5)
+#define MWM_FUNC_ALL            (1L << 0)
+#define MWM_FUNC_RESIZE         (1L << 1)
+#define MWM_FUNC_MOVE           (1L << 2)
+#define MWM_FUNC_MINIMIZE       (1L << 3)
+#define MWM_FUNC_MAXIMIZE       (1L << 4)
+#define MWM_FUNC_CLOSE          (1L << 5)
 
 /* values for MwmHints.input_mode */
-#define MWM_INPUT_MODELESS			0
-#define MWM_INPUT_PRIMARY_APPLICATION_MODAL	1
-#define MWM_INPUT_SYSTEM_MODAL			2
-#define MWM_INPUT_FULL_APPLICATION_MODAL	3
+#define MWM_INPUT_MODELESS                      0
+#define MWM_INPUT_PRIMARY_APPLICATION_MODAL     1
+#define MWM_INPUT_SYSTEM_MODAL                  2
+#define MWM_INPUT_FULL_APPLICATION_MODAL        3
 
 /* bit definitions for MwmHints.decorations */
-#define MWM_DECOR_ALL		      (1L << 0)
-#define MWM_DECOR_BORDER	      (1L << 1)
-#define MWM_DECOR_RESIZEH	      (1L << 2)
-#define MWM_DECOR_TITLE		      (1L << 3)
-#define MWM_DECOR_MENU		      (1L << 4)
-#define MWM_DECOR_MINIMIZE	      (1L << 5)
-#define MWM_DECOR_MAXIMIZE	      (1L << 6)
+#define MWM_DECOR_ALL                 (1L << 0)
+#define MWM_DECOR_BORDER              (1L << 1)
+#define MWM_DECOR_RESIZEH             (1L << 2)
+#define MWM_DECOR_TITLE               (1L << 3)
+#define MWM_DECOR_MENU                (1L << 4)
+#define MWM_DECOR_MINIMIZE            (1L << 5)
+#define MWM_DECOR_MAXIMIZE            (1L << 6)
 
 /*
  * _MWM_HINTS property
@@ -83,13 +83,13 @@ typedef struct {
     CARD32 functions;
     CARD32 decorations;
     INT32 inputMode;
-  /*	CARD32 status; ???*/
+  /*    CARD32 status; ???*/
 } PropMotifWmHints;
 
 typedef PropMotifWmHints PropMwmHints;
 
 #define PROP_MOTIF_WM_HINTS_ELEMENTS  4
-#define PROP_MWM_HINTS_ELEMENTS	      PROP_MOTIF_WM_HINTS_ELEMENTS
+#define PROP_MWM_HINTS_ELEMENTS       PROP_MOTIF_WM_HINTS_ELEMENTS
 
 void
 Xloop(void)
@@ -141,33 +141,33 @@ Xloop(void)
 #define XIA(a) XInternAtom(dpy,a,False);
 void InitAtom(void)
 {
-  ATOM_NET_WM_WINDOW_TYPE	    = XIA("_NET_WM_WINDOW_TYPE");
+  ATOM_NET_WM_WINDOW_TYPE           = XIA("_NET_WM_WINDOW_TYPE");
   ATOM_NET_WM_WINDOW_TYPE_DESKTOP   = XIA("_NET_WM_WINDOW_TYPE_DESKTOP");
-  ATOM_NET_WM_WINDOW_TYPE_DOCK	    = XIA("_NET_WM_WINDOW_TYPE_DOCK");
+  ATOM_NET_WM_WINDOW_TYPE_DOCK      = XIA("_NET_WM_WINDOW_TYPE_DOCK");
   ATOM_NET_WM_WINDOW_TYPE_TOOLBAR   = XIA("_NET_WM_WINDOW_TYPE_TOOLBAR");
-  ATOM_NET_WM_WINDOW_TYPE_MENU	    = XIA("_NET_WM_WINDOW_TYPE_MENU");
+  ATOM_NET_WM_WINDOW_TYPE_MENU      = XIA("_NET_WM_WINDOW_TYPE_MENU");
   ATOM_NET_WM_WINDOW_TYPE_DIALOG    = XIA("_NET_WM_WINDOW_TYPE_DIALOG");
   ATOM_NET_WM_WINDOW_TYPE_NORMAL    = XIA("_NET_WM_WINDOW_TYPE_NORMAL");
   ATOM_NET_WM_WINDOW_TYPE_SPLASH    = XIA("_NET_WM_WINDOW_TYPE_SPLASH");
   ATOM_NET_WM_WINDOW_TYPE_UTILITY   = XIA("_NET_WM_WINDOW_TYPE_UTILITY");
   ATOM_KDE_NET_WM_WINDOW_TYPE_OVERRIDE = XIA("_KDE_NET_WM_WINDOW_TYPE_OVERRIDE");
 
-  ATOM_NET_WM_STATE		    = XIA("_NET_WM_STATE");
-  ATOM_NET_WM_STATE_MODAL	    = XIA("_NET_WM_STATE_MODAL");
-  ATOM_NET_WM_STATE_STICKY	    = XIA("_NET_WM_STATE_STICKY");
+  ATOM_NET_WM_STATE                 = XIA("_NET_WM_STATE");
+  ATOM_NET_WM_STATE_MODAL           = XIA("_NET_WM_STATE_MODAL");
+  ATOM_NET_WM_STATE_STICKY          = XIA("_NET_WM_STATE_STICKY");
   ATOM_NET_WM_STATE_MAXIMIZED_VERT  = XIA("_NET_WM_STATE_MAXIMIZED_VERT");
   ATOM_NET_WM_STATE_MAXIMIZED_HORIZ = XIA("_NET_WM_STATE_MAXIMIZED_HORIZ");
-  ATOM_NET_WM_STATE_SHADED	    = XIA("_NET_WM_STATE_SHADED");
+  ATOM_NET_WM_STATE_SHADED          = XIA("_NET_WM_STATE_SHADED");
   ATOM_NET_WM_STATE_SKIP_TASKBAR    = XIA("_NET_WM_STATE_SKIP_TASKBAR");
-  ATOM_NET_WM_STATE_SKIP_PAGER	    = XIA("_NET_WM_STATE_SKIP_PAGER");
-  ATOM_NET_WM_STATE_HIDDEN	    = XIA("_NET_WM_STATE_HIDDEN");
-  ATOM_NET_WM_STATE_FULLSCREEN	    = XIA("_NET_WM_STATE_FULLSCREEN");
+  ATOM_NET_WM_STATE_SKIP_PAGER      = XIA("_NET_WM_STATE_SKIP_PAGER");
+  ATOM_NET_WM_STATE_HIDDEN          = XIA("_NET_WM_STATE_HIDDEN");
+  ATOM_NET_WM_STATE_FULLSCREEN      = XIA("_NET_WM_STATE_FULLSCREEN");
   ATOM_NET_WM_STATE_STAYS_ON_TOP    = XIA("_NET_WM_STATE_STAYS_ON_TOP");
 
-  ATOM_NET_WM_DESKTOP		    = XIA("_NET_WM_DESKTOP");
+  ATOM_NET_WM_DESKTOP               = XIA("_NET_WM_DESKTOP");
 
   ATOM_WM_DELETE_WINDOW = XIA("WM_DELETE_WINDOW");
-  ATOM_WM_TAKE_FOCUS =	  XIA("WM_TAKE_FOCUS");
+  ATOM_WM_TAKE_FOCUS =    XIA("WM_TAKE_FOCUS");
 
   ATOM_MOTIF_WM_HINTS = XIA("_MOTIF_WM_HINTS");
 }

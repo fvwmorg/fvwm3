@@ -7,9 +7,9 @@
 
 /* ---------------------------- global definitions -------------------------- */
 
-#define PRE_REPEAT	 "repeat"
-#define PRE_SILENT	 "silent"
-#define PRE_BUITIN	 "builtin"
+#define PRE_REPEAT       "repeat"
+#define PRE_SILENT       "silent"
+#define PRE_BUITIN       "builtin"
 
 /* ---------------------------- global macros ------------------------------- */
 

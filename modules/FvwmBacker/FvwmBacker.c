@@ -1,7 +1,7 @@
 /* FvwmBacker Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
- *				 Mike_Finger@atk.com)
+ *                               Mike_Finger@atk.com)
  *
  * The author makes not guarantees or warantees, either express or
  * implied.  Feel free to use any contained here for any purpose, as long
@@ -32,12 +32,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -69,7 +69,7 @@ unsigned long BackerGetColor(char *color);
 
 #define EXEC_CHANGED_PAGE  0x01
 #define EXEC_CHANGED_DESK  0x02
-#define EXEC_ALWAYS	   0x04
+#define EXEC_ALWAYS        0x04
 
 struct Command
 {
@@ -80,8 +80,8 @@ struct Command
     unsigned do_ignore_page : 1;
     unsigned do_match_any_desk : 1;
   } flags;
-  int x;	/* Page X coordinate; -1 for glob */
-  int y;	/* Page Y coordinate; -1 for glob */
+  int x;        /* Page X coordinate; -1 for glob */
+  int y;        /* Page Y coordinate; -1 for glob */
   /* The command type:
    * -1 = no command
    *  0 = command to be spawned
@@ -89,7 +89,7 @@ struct Command
    *  2 = use a colorset background
    */
   int type;
-  char*	cmdStr; /* The command string (Type 0)	 */
+  char* cmdStr; /* The command string (Type 0)   */
   unsigned long solidColor; /* A solid color after X parsing (Type 1) */
   int colorset; /* The colorset to be used (Type 2) */
   struct Command *next;
@@ -113,15 +113,15 @@ int current_colorset = -1;  /* the last matched command colorset or -1 */
 int Fvwm_fd[2];
 int fd_width;
 
-char *Module;	     /* i.e. "FvwmBacker" */
+char *Module;        /* i.e. "FvwmBacker" */
 char *configPrefix;  /* i.e. "*FvwmBacker" */
 
 
 /* X Display information. */
 
-Display*	dpy;
-Window		root;
-int			screen;
+Display*        dpy;
+Window          root;
+int                     screen;
 int MyDisplayHeight;
 int MyDisplayWidth;
 Atom XA_XSETROOT_ID;
@@ -224,9 +224,9 @@ void ReadFvwmPipe()
  * happy (olicha 2001-01-17) */
 void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
 {
-  unsigned char	*retval;
-  Atom	type_ret;
-  unsigned long	 bytes_after, num_ret;
+  unsigned char *retval;
+  Atom  type_ret;
+  unsigned long  bytes_after, num_ret;
   long length;
   int  format_ret;
   void *data;

@@ -7,7 +7,7 @@
  *   Added .steprc parsing and twisty iconify.
  *
  * Copyright (c) 1998 Dan Espen <dane@mk.bellcore.com>
- *   Changed to run under fvwm.	 Lots of changes made.
+ *   Changed to run under fvwm.  Lots of changes made.
  *   This used to only animate iconify on M_CONFIGURE_WINDOW.
  *   This module no longer reads M_CONFIGURE_WINDOW.
  *   I added args to M_ICONIFY so iconification takes one message.
@@ -33,7 +33,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -50,10 +50,10 @@
 #include <unistd.h>
 #include <string.h>
 #include <ctype.h>
-#include <fcntl.h>			/* for O_WRONLY */
-#include <sys/times.h>			/* For timing things time() */
-#include <time.h>			/* For time() */
-#include <limits.h>			/* For time() */
+#include <fcntl.h>                      /* for O_WRONLY */
+#include <sys/times.h>                  /* For timing things time() */
+#include <time.h>                       /* For time() */
+#include <limits.h>                     /* For time() */
 #include "libs/fvwmsignal.h"
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
@@ -70,13 +70,13 @@ static char *MyName;
 static int MyNameLen;
 static int Channel[2];
 static XColor xcol;
-static unsigned long color;		/* color for animation */
-static Pixmap pixmap = None;		/* pixmap for weirdness */
+static unsigned long color;             /* color for animation */
+static Pixmap pixmap = None;            /* pixmap for weirdness */
 static XGCValues gcv;
-static int animate_none = 0;		/* count bypassed animations */
-static Bool stop_recvd = False;		/* got stop command */
-static Bool running = False;		/* whether we are initiialized or not */
-static Bool custom_recvd = False;	/* got custom command */
+static int animate_none = 0;            /* count bypassed animations */
+static Bool stop_recvd = False;         /* got stop command */
+static Bool running = False;            /* whether we are initiialized or not */
+static Bool custom_recvd = False;       /* got custom command */
 
 static struct
 {
@@ -152,7 +152,7 @@ typedef struct AnimateEffects {
   char *name;
   char *alias;
   void (*function)(int, int, int, int, int, int, int, int);
-  char *button;			/* used to set custom form */
+  char *button;                 /* used to set custom form */
 } ae;
 /* Note None and Random must be the first 2 entries. */
 struct AnimateEffects effects[] = {
@@ -390,7 +390,7 @@ void AnimateResizeTurn(
 
 /*
  * This makes a zooming iconify/deiconify animation for a window, like most
- * any other icon animation out there.	Parameters specify the position and
+ * any other icon animation out there.  Parameters specify the position and
  * the size of the initial window and the final window
  */
 static void AnimateResizeZoom(int x, int y, int w, int h,
@@ -554,7 +554,7 @@ void AnimateResizeRandom(
  * The variable "ants" controls whether each  iteration is drawn and then
  * erased vs. draw all the segments and then come back and erase them.
  *
- * Currently I	have this  hardcoded as the  later.   The word	"ants" is
+ * Currently I  have this  hardcoded as the  later.   The word  "ants" is
  * used, because if  "ants" is set  to 0 and the  number of iterations is
  * high, it looks a little like ants crawling across the screen.
  */
@@ -563,8 +563,8 @@ static void AnimateResizeLines(int x, int y, int w, int h,
   int i, j;
   int ants = 1, ant_ctr;
   typedef struct {
-    XSegment seg[4];		       /* draw 4 unconnected lines */
-    XSegment incr[4];		       /* x/y increments */
+    XSegment seg[4];                   /* draw 4 unconnected lines */
+    XSegment incr[4];                  /* x/y increments */
   } Endpoints;
   Endpoints ends[2];
 
@@ -579,13 +579,13 @@ static void AnimateResizeLines(int x, int y, int w, int h,
 #define BEG ends[0]
 #define INC ends[1]
 
-  if (ants == 1) {			/* if draw then erase */
-    MyXGrabServer(dpy);			  /* grab for whole animation */
+  if (ants == 1) {                      /* if draw then erase */
+    MyXGrabServer(dpy);                   /* grab for whole animation */
     XInstallColormap(dpy, Pcmap);
   }
   for (ant_ctr=0;ant_ctr<=ants;ant_ctr++) {
-    /*	Put args into arrays: */
-    BEG.UR.x1 = x;			/* upper left */
+    /*  Put args into arrays: */
+    BEG.UR.x1 = x;                      /* upper left */
     BEG.UR.y1 = y;
     /* Temporarily put width and height in Lower Left slot.
      Changed to Lower Left x/y later. */
@@ -600,32 +600,32 @@ static void AnimateResizeLines(int x, int y, int w, int h,
 
   /* The lines look a little better if they start and end a little in
      from the edges.  Allowing tuning might be overkill. */
-    for (i=0;i<2;i++) {			  /* for begin and endpoints */
-      if (ends[i].LL.x1 > 40) {		  /* if width > 40 */
-	ends[i].LL.x1 -=16;		  /* reduce width a little */
-	ends[i].UR.x1 += 8;		  /* move in a little */
+    for (i=0;i<2;i++) {                   /* for begin and endpoints */
+      if (ends[i].LL.x1 > 40) {           /* if width > 40 */
+	ends[i].LL.x1 -=16;               /* reduce width a little */
+	ends[i].UR.x1 += 8;               /* move in a little */
       }
-      if (ends[i].LL.y1 > 40) {		  /* if height > 40 */
-	ends[i].LL.y1 -=16;		  /* reduce height a little */
-	ends[i].UR.y1 += 8;		  /* move down a little */
+      if (ends[i].LL.y1 > 40) {           /* if height > 40 */
+	ends[i].LL.y1 -=16;               /* reduce height a little */
+	ends[i].UR.y1 += 8;               /* move down a little */
       }
       /* Upper Left, Use x from Upper Right + width */
       ends[i].UL.x1 = ends[i].UR.x1 + ends[i].LL.x1;
-      ends[i].UL.y1 = ends[i].UR.y1;		    /* copy y */
+      ends[i].UL.y1 = ends[i].UR.y1;                /* copy y */
       /* Lower Right, Use y from Upper Right + height */
-      ends[i].LR.x1 = ends[i].UR.x1;		    /* copy x */
+      ends[i].LR.x1 = ends[i].UR.x1;                /* copy x */
       ends[i].LR.y1 = ends[i].UR.y1 + ends[i].LL.y1;
       /* Now width and height have been used, change LL to endpoints. */
       ends[i].LL.x1 += ends[i].UR.x1;
       ends[i].LL.y1 += ends[i].UR.y1;
     }
     /* Now put the increment in the end x/y slots */
-    for (i=0;i<4;i++) {			  /* for each of 4 line segs */
+    for (i=0;i<4;i++) {                   /* for each of 4 line segs */
       INC.seg[i].x2 = (INC.seg[i].x1 - BEG.seg[i].x1)/Animate.iterations;
       INC.seg[i].y2 = (INC.seg[i].y1 - BEG.seg[i].y1)/Animate.iterations;
     }
     for (i=0; i<Animate.iterations; i++) {
-      for (j=0;j<4;j++) {		  /* all 4 line segs */
+      for (j=0;j<4;j++) {                 /* all 4 line segs */
 	BEG.seg[j].x2 = BEG.seg[j].x1 + INC.seg[j].x2; /* calc end points */
 	BEG.seg[j].y2 = BEG.seg[j].y1 + INC.seg[j].y2; /* calc end points */
       }
@@ -642,21 +642,21 @@ static void AnimateResizeLines(int x, int y, int w, int h,
       }
       XDrawSegments(dpy, Scr.root, gc, BEG.seg, 4);
       XFlush(dpy);
-      if (ant_ctr == 0) {		/* only pause on draw cycle */
+      if (ant_ctr == 0) {               /* only pause on draw cycle */
 	usleep(Animate.delay*1000);
       }
       if (ants==0) {
 	XDrawSegments(dpy, Scr.root, gc, BEG.seg, 4);
 	MyXUngrabServer(dpy);
       }
-      for (j=0;j<4;j++) {		  /* all 4 lines segs */
-	BEG.seg[j].x1 += INC.seg[j].x2;	  /* calc new starting point */
-	BEG.seg[j].y1 += INC.seg[j].y2;	  /* calc new starting point */
+      for (j=0;j<4;j++) {                 /* all 4 lines segs */
+	BEG.seg[j].x1 += INC.seg[j].x2;   /* calc new starting point */
+	BEG.seg[j].y1 += INC.seg[j].y2;   /* calc new starting point */
       } /* end 4 lines segs */
     } /* end iterations */
   } /* end for ants */
-  if (ants == 1) {			/* if draw then erase */
-    MyXUngrabServer(dpy);		  /* end grab for whole animation */
+  if (ants == 1) {                      /* if draw then erase */
+    MyXUngrabServer(dpy);                 /* end grab for whole animation */
     myaprintf((stderr,"Did ungrab\n"));
   }
   XFlush(dpy);
@@ -664,8 +664,8 @@ static void AnimateResizeLines(int x, int y, int w, int h,
 }
 
 /*
- * Animate None	 is set on during  configuration.  When set on, it causes
- * this	 module to exit	 after some  number of	animation events.  (If it
+ * Animate None  is set on during  configuration.  When set on, it causes
+ * this  module to exit  after some  number of  animation events.  (If it
  * just exited immediately, you couldn't use  this module to turn it back
  * on.)
  */
@@ -747,24 +747,24 @@ HandleTerminate(int sig) {
 
 int main(int argc, char **argv) {
   char *s;
-  char cmd[200];			/* really big area for a command */
+  char cmd[200];                        /* really big area for a command */
 
   /* Save our program  name - for error events */
-  if ((s=strrchr(argv[0], '/')))	/* strip path */
+  if ((s=strrchr(argv[0], '/')))        /* strip path */
     s++;
-  else				/* no slash */
+  else                          /* no slash */
     s = argv[0];
-  if(argc==7)			      /* if override name */
-    s = argv[6];		      /* use arg as name */
-  MyNameLen=strlen(s)+1;		/* account for '*' */
-  MyName = safemalloc(MyNameLen+1);	/* account for \0 */
+  if(argc==7)                         /* if override name */
+    s = argv[6];                      /* use arg as name */
+  MyNameLen=strlen(s)+1;                /* account for '*' */
+  MyName = safemalloc(MyNameLen+1);     /* account for \0 */
   *MyName='*';
-  strcpy(MyName+1, s);		/* append name */
+  strcpy(MyName+1, s);          /* append name */
 
   myfprintf((stderr,"%s: Starting, argv[0] is %s, len %d\n",MyName+1,
 	     argv[0],MyNameLen));
 
-  if ((argc != 6)&&(argc != 7)) {	/* Now MyName is defined */
+  if ((argc != 6)&&(argc != 7)) {       /* Now MyName is defined */
     fprintf(stderr,"%s Version "VERSION" should only be executed by fvwm!\n",
 	    MyName+1);
     exit(1);
@@ -797,10 +797,10 @@ int main(int argc, char **argv) {
 #endif
   signal(SIGTERM, HandleTerminate);
   signal(SIGINT,  HandleTerminate);
-  signal(SIGPIPE, HandleTerminate);	/* Dead pipe == Fvwm died */
+  signal(SIGPIPE, HandleTerminate);     /* Dead pipe == Fvwm died */
 #ifdef HAVE_SIGINTERRUPT
   siginterrupt(SIGTERM, True);
-  siginterrupt(SIGINT,	True);
+  siginterrupt(SIGINT,  True);
   siginterrupt(SIGPIPE, True);
 #endif
 #endif
@@ -822,18 +822,18 @@ int main(int argc, char **argv) {
 
   sprintf(cmd,"read .%s Quiet",MyName+1); /* read quiet modules config */
   SendText(Channel,cmd,0);
-  ParseOptions();			/* get cmds fvwm has parsed */
+  ParseOptions();                       /* get cmds fvwm has parsed */
 
   SetMessageMask(Channel, M_ICONIFY|M_DEICONIFY|M_STRING|M_SENDCONFIG
-		 |M_CONFIG_INFO);	 /* tell fvwm about our mask */
-  CreateDrawGC();			/* create initial GC if necc. */
+		 |M_CONFIG_INFO);        /* tell fvwm about our mask */
+  CreateDrawGC();                       /* create initial GC if necc. */
   SendText(Channel,"Nop",0);
   DefineMe();
-  running = True;			/* out of initialization phase */
+  running = True;                       /* out of initialization phase */
   SendFinishedStartupNotification(Channel); /* tell fvwm we're running */
   SetSyncMask(Channel,M_ICONIFY|M_DEICONIFY|M_STRING); /* lock on send mask */
   SetNoGrabMask(Channel,M_ICONIFY|M_DEICONIFY|M_STRING); /* ignore during recapture */
-  Loop();				/* start running */
+  Loop();                               /* start running */
   return 0;
 }
 
@@ -842,16 +842,16 @@ int main(int argc, char **argv) {
  */
 static void Loop(void) {
   FvwmPacket* packet;
-  clock_t time_start;		       /* for time() */
-  clock_t time_end;		       /* for time() */
+  clock_t time_start;                  /* for time() */
+  clock_t time_end;                    /* for time() */
   clock_t time_accum;
-  struct tms time_buffer;	       /* for time() */
+  struct tms time_buffer;              /* for time() */
   char cmd[200];
 
   myfprintf((stderr,"Starting event loop\n"));
   while ( !isTerminated ) {
     if ( (packet = ReadFvwmPacket(Channel[1])) == NULL )
-	break;			  /* FVWM is gone */
+	break;                    /* FVWM is gone */
 
       switch (packet->type) {
       case M_NEW_PAGE:
@@ -863,21 +863,21 @@ static void Loop(void) {
 	  Scr.CurrentDesk = packet->body[0];
 	  break;
       case M_DEICONIFY:
-	if (packet->size < 15		 /* If not all info needed, */
-	    || packet->body[5] == 0) {	 /* or a "noicon" icon */
-	  break;		      /* don't animate it */
+	if (packet->size < 15            /* If not all info needed, */
+	    || packet->body[5] == 0) {   /* or a "noicon" icon */
+	  break;                      /* don't animate it */
 	}
 	if (Animate.time != 0) {
 	  time_start = times(&time_buffer);
 	}
-	Animate.resize((int)packet->body[3],	 /* t->icon_x_loc */
-		       (int)packet->body[4],	 /* t->icon_y_loc */
-		       (int)packet->body[5],	 /* t->icon_p_width */
-		       (int)packet->body[6],	 /* t->icon_p_height */
-		       (int)packet->body[7],	 /* t->frame_x */
-		       (int)packet->body[8],	 /* t->frame_y */
-		       (int)packet->body[9],	 /* t->frame_width */
-		       (int)packet->body[10]);	 /* t->frame_height */
+	Animate.resize((int)packet->body[3],     /* t->icon_x_loc */
+		       (int)packet->body[4],     /* t->icon_y_loc */
+		       (int)packet->body[5],     /* t->icon_p_width */
+		       (int)packet->body[6],     /* t->icon_p_height */
+		       (int)packet->body[7],     /* t->frame_x */
+		       (int)packet->body[8],     /* t->frame_y */
+		       (int)packet->body[9],     /* t->frame_width */
+		       (int)packet->body[10]);   /* t->frame_height */
 	if (Animate.time != 0) {
 	  time_end = times(&time_buffer);
 	  time_accum = time_end - time_start;
@@ -895,30 +895,30 @@ static void Loop(void) {
 		   (int)time_accum,1));
 #if 0
 	/* So far, clk_tck seems to be non-portable...dje */
-/*		      (int)time_accum,(int)CLK_TCK)); */
+/*                    (int)time_accum,(int)CLK_TCK)); */
 #endif
 	break;
       case M_ICONIFY:
 	/* In Afterstep, this logic waited for M_CONFIGURE_WINDOW
-	     before animating.	To this time, I don't know why.
+	     before animating.  To this time, I don't know why.
 	     (One is sent right after the other.)
 	  */
-	if (packet->size < 15		 /* if not enough info */
-	    || (int)packet->body[3] == -10000	 /* or a transient window */
+	if (packet->size < 15            /* if not enough info */
+	    || (int)packet->body[3] == -10000    /* or a transient window */
 	    || (int)packet->body[5] == 0) {   /* or a "noicon" icon */
-	  break;		    /* don't animate it */
+	  break;                    /* don't animate it */
 	}
 	if (Animate.time != 0) {
 	  time_start = times(&time_buffer);
 	}
-	Animate.resize((int)packet->body[7],	 /* t->frame_x */
-		       (int)packet->body[8],	 /* t->frame_y */
-		       (int)packet->body[9],	 /* t->frame_width */
-		       (int)packet->body[10],	 /* t->frame_height */
-		       (int)packet->body[3],	 /* t->icon_x_loc */
-		       (int)packet->body[4],	 /* t->icon_y_loc */
-		       (int)packet->body[5],	 /* t->icon_p_width */
-		       (int)packet->body[6]);	 /* t->icon_p_height */
+	Animate.resize((int)packet->body[7],     /* t->frame_x */
+		       (int)packet->body[8],     /* t->frame_y */
+		       (int)packet->body[9],     /* t->frame_width */
+		       (int)packet->body[10],    /* t->frame_height */
+		       (int)packet->body[3],     /* t->icon_x_loc */
+		       (int)packet->body[4],     /* t->icon_y_loc */
+		       (int)packet->body[5],     /* t->icon_p_width */
+		       (int)packet->body[6]);    /* t->icon_p_height */
 	if (Animate.time != 0) {
 	  time_end = times(&time_buffer);
 	  time_accum = time_end - time_start;
@@ -965,10 +965,10 @@ static void Loop(void) {
 
     myfprintf((stderr,"Sending unlock\n"));
     if (packet->type != M_CONFIG_INFO)
-      SendUnlockNotification(Channel);	/* fvwm can continue now! */
+      SendUnlockNotification(Channel);  /* fvwm can continue now! */
     if ((Animate.resize == AnimateResizeNone  /* If no animation desired */
-	&& animate_none >= 1)		/* and 1 animation(s) */
-	|| stop_recvd) {		/* or stop cmd */
+	&& animate_none >= 1)           /* and 1 animation(s) */
+	|| stop_recvd) {                /* or stop cmd */
       /* This still isn't perfect, if the user turns off animation,
 	 they would expect the menu to change on the spot.
 	 On the otherhand, the menu shouldn't change if the module is
@@ -977,10 +977,10 @@ static void Loop(void) {
 	 to make this module exit.  Currently it is sending messages
 	 even when "Style NoIcon" is on for everything.
       */
-      StopCmd();			/* update menu */
+      StopCmd();                        /* update menu */
       myfprintf((stderr,"Exiting, animate none count %d, stop recvd %c\n",
 		 animate_none, stop_recvd ? 'y' : 'n'));
-      break;				/* and stop */
+      break;                            /* and stop */
     } /* end stopping */
     /* The execution of the custom command has to be delayed,
        because we first had to send the UNLOCK response.
@@ -1025,7 +1025,7 @@ static const char *table[]= {
 #define Twist_arg 10
   "Width"
 #define Width_arg 11
-};	/* Keep list in alphabetic order, using binary search! */
+};      /* Keep list in alphabetic order, using binary search! */
 static void ParseOptions(void) {
   char *buf;
 
@@ -1049,8 +1049,8 @@ void ParseConfigLine(char *buf) {
   long curtime;
   unsigned i;
 
-  if (buf[strlen(buf)-1] == '\n') {	/* if line ends with newline */
-    buf[strlen(buf)-1] = '\0';	/* strip off \n */
+  if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
+    buf[strlen(buf)-1] = '\0';  /* strip off \n */
   }
   /* capture the ImagePath setting, don't worry about ColorLimit */
   if (strncasecmp(buf, "ImagePath",9)==0) {
@@ -1059,15 +1059,15 @@ void ParseConfigLine(char *buf) {
   /* Search for MyName (normally *FvwmAnimate) */
   else if (strncasecmp(buf, MyName, MyNameLen) == 0) {/* If its for me */
     myfprintf((stderr,"Found line for me: %s\n", buf));
-    p = buf+MyNameLen;		    /* starting point */
+    p = buf+MyNameLen;              /* starting point */
     q = NULL;
     if ((e = FindToken(p,table,char *))) { /* config option ? */
       if ((strcasecmp(*e,"Stop") != 0)
 	  && (strcasecmp(*e,"Custom") != 0)
 	  && (strcasecmp(*e,"Save") != 0)) { /* no arg commands */
-	p+=strlen(*e);		/* skip matched token */
+	p+=strlen(*e);          /* skip matched token */
 	p = GetNextSimpleOption( p, &q );
-	if (!q) {			/* If arg not found */
+	if (!q) {                       /* If arg not found */
 	  fprintf(stderr,"%s: %s%s needs a parameter\n",
 		  MyName+1, MyName+1,*e);
 	  return;
@@ -1075,25 +1075,25 @@ void ParseConfigLine(char *buf) {
       }
 
       switch (e - (char**)table) {
-      case Stop_arg:			/* Stop command */
-	if (running) {			/* if not a stored command */
-	  stop_recvd = True;		/* remember to stop */
+      case Stop_arg:                    /* Stop command */
+	if (running) {                  /* if not a stored command */
+	  stop_recvd = True;            /* remember to stop */
 	}
 	break;
-      case Save_arg:			/* Save command */
+      case Save_arg:                    /* Save command */
 	SaveConfig();
 	break;
-      case Custom_arg:			/* Custom command */
-	if (running) {			/* if not a stored command */
-	  custom_recvd = True;		/* remember someone asked */
+      case Custom_arg:                  /* Custom command */
+	if (running) {                  /* if not a stored command */
+	  custom_recvd = True;          /* remember someone asked */
 	}
 	break;
-      case Color_arg:			/* Color */
+      case Color_arg:                   /* Color */
 	if (Animate.color) {
-	  free(Animate.color);		/* release storage holding color name */
-	  Animate.color = 0;		/* show its gone */
+	  free(Animate.color);          /* release storage holding color name */
+	  Animate.color = 0;            /* show its gone */
 	}
-	if ((strcasecmp(q,"None") != 0) /* If not color "none"	*/
+	if ((strcasecmp(q,"None") != 0) /* If not color "none"  */
 	    && (strcasecmp(q,"Black^White") != 0)
 	    && (strcasecmp(q,"White^Black") != 0)) {
 	  Animate.color = (char *)safestrdup(q); /* make copy of name */
@@ -1107,12 +1107,12 @@ void ParseConfigLine(char *buf) {
 	  XFreePixmap(dpy, pixmap);
 	  pixmap = None;
 	}
-	CreateDrawGC();		       /* update GC */
+	CreateDrawGC();                /* update GC */
 	break;
       case Pixmap_arg:
 	if (Animate.pixmap) {
-	  free(Animate.pixmap);	       /* release storage holding pixmap name */
-	  Animate.pixmap = 0;	       /* show its gone */
+	  free(Animate.pixmap);        /* release storage holding pixmap name */
+	  Animate.pixmap = 0;          /* show its gone */
 	}
 	if (strcasecmp(q,"None") != 0) { /* If not pixmap "none"  */
 	  Animate.pixmap = (char *)safestrdup(q); /* make copy of name */
@@ -1121,20 +1121,20 @@ void ParseConfigLine(char *buf) {
 	  XFreePixmap(dpy, pixmap);
 	  pixmap = None;
 	}
-	CreateDrawGC();			/* update GC */
+	CreateDrawGC();                 /* update GC */
 	break;
-      case Delay_arg:			/* Delay */
+      case Delay_arg:                   /* Delay */
 	Animate.delay = atoi(q);
 	break;
-      case Iterations_arg:		/* Iterations */
+      case Iterations_arg:              /* Iterations */
 	Animate.iterations = atoi(q);
 	/* Silently fix up iterations less than 1. */
 	if (Animate.iterations <= 0) {
 	  Animate.iterations = 1;
 	}
 	break;
-      case Effect_arg:		      /* Effect */
-      case Resize_arg:		      /* -or - Resize */
+      case Effect_arg:                /* Effect */
+      case Resize_arg:                /* -or - Resize */
 	for (i=0; i < NUM_EFFECTS; i++) {
 	  if (strcasecmp(q, effects[i].name)==0
 	      || (effects[i].alias
@@ -1143,7 +1143,7 @@ void ParseConfigLine(char *buf) {
 	    break;
 	  } /* end match */
 	} /* end all effects */
-	if (i > NUM_EFFECTS) {		/* If not found */
+	if (i > NUM_EFFECTS) {          /* If not found */
 	  fprintf(stderr, "%s: Unknown Effect '%s'\n", MyName+1, q);
 	}
 	/* Logically, you would only reset these when you got a command
@@ -1153,29 +1153,29 @@ void ParseConfigLine(char *buf) {
 	seed = (unsigned) curtime % INT_MAX;
 	srand(seed);
 	break;
-      case Time_arg:		      /* Time in milliseconds */
+      case Time_arg:                  /* Time in milliseconds */
 	Animate.time = (clock_t)atoi(q);
 	break;
-      case Twist_arg:		      /* Twist */
+      case Twist_arg:                 /* Twist */
 	Animate.twist = atof(q);
 	break;
-      case Width_arg:		      /* Width */
+      case Width_arg:                 /* Width */
 	Animate.width = atoi(q);
 	/* Silently fix up width less than 0. */
 	if (Animate.width < 0) {
 	  Animate.width = 0;
 	}
-	CreateDrawGC();			/* update GC */
+	CreateDrawGC();                 /* update GC */
 	break;
       default:
 	fprintf(stderr,"%s: unknown action %s\n",MyName+1,*e);
 	break;
       }
-    } else {			    /* Match Myname, but a space */
+    } else {                        /* Match Myname, but a space */
       fprintf(stderr,"%s: unknown command: %s\n",MyName+1,buf);
     }
-    if(q) {				/* if parsed an arg */
-      free(q);				/* free its memory */
+    if(q) {                             /* if parsed an arg */
+      free(q);                          /* free its memory */
     }
   } /* config line for me */
 } /* end function */
@@ -1186,13 +1186,13 @@ static void CreateDrawGC(void) {
 
   myfprintf((stderr,"Creating GC\n"));
   if (gc != NULL) {
-    XFreeGC(dpy,gc);		    /* free old GC */
+    XFreeGC(dpy,gc);                /* free old GC */
   }
   /* From builtins.c: */
   color = (BlackPixel(dpy, Scr.screen) ^ WhitePixel(dpy, Scr.screen));
   pixmap = None;
-  gcv.function = GXxor;			/* default is to xor the lines */
-  if (Animate.pixmap) {			/* if pixmap called for */
+  gcv.function = GXxor;                 /* default is to xor the lines */
+  if (Animate.pixmap) {                 /* if pixmap called for */
     FvwmPicture *picture;
 
     picture = PGetFvwmPicture(dpy, RootWindow(dpy,Scr.screen), 0,
@@ -1208,13 +1208,13 @@ static void CreateDrawGC(void) {
 			   0, 0, picture->width, picture->height, 0, 0);
       PDestroyFvwmPicture(dpy, picture);
     }
-  } else if (Animate.color) {		/* if color called for */
+  } else if (Animate.color) {           /* if color called for */
     if (XParseColor(dpy,DefaultColormap(dpy,Scr.screen),Animate.color, &xcol)) {
       if (XAllocColor(dpy, DefaultColormap(dpy,Scr.screen), &xcol)) {
 	color = xcol.pixel;
 	/* free it now, only interested in the pixel */
 	XFreeColors(dpy, DefaultColormap(dpy,Scr.screen), &xcol.pixel, 1, 0);
-	/*	   gcv.function = GXequiv;  Afterstep used this. */
+	/*         gcv.function = GXequiv;  Afterstep used this. */
       } else {
 	fprintf(stderr,"%s: could not allocate color '%s'\n",
 		MyName+1,Animate.color);
@@ -1240,15 +1240,15 @@ static void CreateDrawGC(void) {
  * Send commands to fvwm to define this modules menus.
  *
  * When I first wrote this, I thought it might be a good idea to call the
- * menu	 "FvwmAnimate", just like  the	module name.   To my surprise,	I
+ * menu  "FvwmAnimate", just like  the  module name.   To my surprise,  I
  * found that fvwm treats menus just like functions.  In fact I could no
  * longer start FvwmAnimate  because it kept  finding the menu instead of
- * the	function.   This  probably should   be fixed, but  for	now,  the
+ * the  function.   This  probably should   be fixed, but  for  now,  the
  * generated menu is  called  "MenuFvwmAnimate", or  "Menu<ModuleAlias>".
  * dje, 10/11/98.
  */
 static void DefineMe(void) {
-  char cmd[200];			/* really big area for a command */
+  char cmd[200];                        /* really big area for a command */
   myfprintf((stderr,"defining menu\n"));
 
   CMD1X("DestroyMenu Menu%s");
@@ -1333,7 +1333,7 @@ static void DefineMe(void) {
   CMD10("AddToMenu MenuEffects%s \"&N. Effect None\" %sEffect None");
 
   /* Still to be done:
-     Use of FvwmForms for Help.	 (Need to fix line spacing in FvwmForms first).
+     Use of FvwmForms for Help.  (Need to fix line spacing in FvwmForms first).
   */
 }
 
@@ -1341,8 +1341,8 @@ static void DefineMe(void) {
 static void SaveConfig(void) {
   FILE *config_file;
   unsigned i;
-  char filename[100];			/* more than enough room */
-  char msg[200];			/* even more room for msg */
+  char filename[100];                   /* more than enough room */
+  char msg[200];                        /* even more room for msg */
   /* Need to use logic to create fully qualified file name same as in
      read.c, right now, this logic only works well if fvwm is started
      from the users home directory.
@@ -1393,17 +1393,17 @@ static void DefineForm(void) {
   myfprintf((stderr,"Defining form Form%s\n", MyName+1));
   CMD1X("DestroyModuleConfig Form%s*");
   CMD1X("*Form%sWarpPointer");
-  CMD1X("*Form%sLine	     center");
-  CMD11("*Form%sText	     \"Custom settings for %s\"");
-  CMD1X("*Form%sLine	     left");
-  CMD1X("*Form%sText	     \"\"");
-  CMD1X("*Form%sLine	     left");
-  CMD1X("*Form%sText	     \"Effect:\"");
+  CMD1X("*Form%sLine         center");
+  CMD11("*Form%sText         \"Custom settings for %s\"");
+  CMD1X("*Form%sLine         left");
+  CMD1X("*Form%sText         \"\"");
+  CMD1X("*Form%sLine         left");
+  CMD1X("*Form%sText         \"Effect:\"");
   CMD1X("*Form%sSelection    meth single");
   for (i=0; i < NUM_EFFECTS; i++) {    /* for all effects */
-    effects[i].button="off";	       /* init the button setting */
+    effects[i].button="off";           /* init the button setting */
     if (Animate.resize == effects[i].function) { /* compare to curr setting */
-      effects[i].button="on";	       /* turn on one button */
+      effects[i].button="on";          /* turn on one button */
     } /* end if curr setting */
   } /* end all buttons */
   /* Macro for a command with one var */
@@ -1419,37 +1419,37 @@ static void DefineForm(void) {
   CMD1V("*Form%sChoice LINES LINES %s \"Lines\"",effects[5].button);
   CMD1V("*Form%sChoice TURN TURN %s \"Turn\"",effects[6].button);
   CMD1V("*Form%sChoice TWIST TWIST %s \"Twist\"",effects[7].button);
-  CMD1X("*Form%sLine	     left");
-  CMD1X("*Form%sText	     \"\"");
-  CMD1X("*Form%sLine	     left");
-  CMD1X("*Form%sText	     \"Iterations:\"");
-  CMD1V("*Form%sInput	     Iterations 5 \"%d\"",Animate.iterations);
-  CMD1X("*Form%sText	     \"Twists:\"");
-  CMD1V("*Form%sInput	     Twists 10 \"%f\"",Animate.twist);
-  CMD1X("*Form%sText	     \"Linewidth:\"");
-  CMD1V("*Form%sInput	     Linewidth 3 \"%d\"",Animate.width);
-  CMD1X("*Form%sText	     \"Delays:\"");
-  CMD1V("*Form%sInput	     Delays 5 \"%d\"",Animate.delay);
-  CMD1X("*Form%sLine	     left");
-  CMD1X("*Form%sText	     \"\"");
-  CMD1X("*Form%sLine	     left");
-  CMD1X("*Form%sText	     \"Color:\"");
-  CMD1V("*Form%sInput	     Color 20 \"%s\"",
+  CMD1X("*Form%sLine         left");
+  CMD1X("*Form%sText         \"\"");
+  CMD1X("*Form%sLine         left");
+  CMD1X("*Form%sText         \"Iterations:\"");
+  CMD1V("*Form%sInput        Iterations 5 \"%d\"",Animate.iterations);
+  CMD1X("*Form%sText         \"Twists:\"");
+  CMD1V("*Form%sInput        Twists 10 \"%f\"",Animate.twist);
+  CMD1X("*Form%sText         \"Linewidth:\"");
+  CMD1V("*Form%sInput        Linewidth 3 \"%d\"",Animate.width);
+  CMD1X("*Form%sText         \"Delays:\"");
+  CMD1V("*Form%sInput        Delays 5 \"%d\"",Animate.delay);
+  CMD1X("*Form%sLine         left");
+  CMD1X("*Form%sText         \"\"");
+  CMD1X("*Form%sLine         left");
+  CMD1X("*Form%sText         \"Color:\"");
+  CMD1V("*Form%sInput        Color 20 \"%s\"",
 	Animate.color ? Animate.color : "Black^White");
-  CMD1X("*Form%sLine	     left");
-  CMD1X("*Form%sText	     \"\"");
+  CMD1X("*Form%sLine         left");
+  CMD1X("*Form%sText         \"\"");
   /*
     F1 - Apply, F2 - Apply and Save, F3 - Reset, F4 - Dismiss
   */
 
-  CMD1X("*Form%sLine	     expand");
-  CMD1X("*Form%sButton	     continue \"F1 - Apply\" F1");
-  CMD11("*Form%sCommand	     *%sIterations $(Iterations)");
-  CMD11("*Form%sCommand	     *%sTwist $(Twists)");
-  CMD11("*Form%sCommand	     *%sWidth $(Linewidth)");
-  CMD11("*Form%sCommand	     *%sDelay $(Delays)");
-  CMD11("*Form%sCommand	     *%sColor $(Color)");
-  CMD11("*Form%sCommand	     *%sEffect $(RANDOM?Random)\
+  CMD1X("*Form%sLine         expand");
+  CMD1X("*Form%sButton       continue \"F1 - Apply\" F1");
+  CMD11("*Form%sCommand      *%sIterations $(Iterations)");
+  CMD11("*Form%sCommand      *%sTwist $(Twists)");
+  CMD11("*Form%sCommand      *%sWidth $(Linewidth)");
+  CMD11("*Form%sCommand      *%sDelay $(Delays)");
+  CMD11("*Form%sCommand      *%sColor $(Color)");
+  CMD11("*Form%sCommand      *%sEffect $(RANDOM?Random)\
 $(FLIP?Flip)\
 $(FRAME?Frame)\
 $(FRAME3D?Frame3d)\
@@ -1457,23 +1457,23 @@ $(LINES?Lines)\
 $(TURN?Turn)\
 $(TWIST?Twist)");
 
-  CMD1X("*Form%sButton	     continue \"F2 - Apply & Save\" F2");
-  CMD11("*Form%sCommand	     *%sIterations $(Iterations)");
-  CMD11("*Form%sCommand	     *%sTwist $(Twists)");
-  CMD11("*Form%sCommand	     *%sWidth $(Linewidth)");
-  CMD11("*Form%sCommand	     *%sDelay $(Delays)");
-  CMD11("*Form%sCommand	     *%sColor $(Color)");
-  CMD11("*Form%sCommand	     *%sEffect $(RANDOM?Random)\
+  CMD1X("*Form%sButton       continue \"F2 - Apply & Save\" F2");
+  CMD11("*Form%sCommand      *%sIterations $(Iterations)");
+  CMD11("*Form%sCommand      *%sTwist $(Twists)");
+  CMD11("*Form%sCommand      *%sWidth $(Linewidth)");
+  CMD11("*Form%sCommand      *%sDelay $(Delays)");
+  CMD11("*Form%sCommand      *%sColor $(Color)");
+  CMD11("*Form%sCommand      *%sEffect $(RANDOM?Random)\
 $(FLIP?Flip)\
 $(FRAME?Frame)\
 $(FRAME3D?Frame3d)\
 $(LINES?Lines)\
 $(TURN?Turn)\
 $(TWIST?Twist)");
-  CMD11("*Form%sCommand	     *%sSave");
+  CMD11("*Form%sCommand      *%sSave");
 
-  CMD1X("*Form%sButton	     restart   \"F3 - Reset\" F3");
+  CMD1X("*Form%sButton       restart   \"F3 - Reset\" F3");
 
-  CMD1X("*Form%sButton	     quit \"F4 - Dismiss\" F4");
+  CMD1X("*Form%sButton       quit \"F4 - Dismiss\" F4");
   CMD1X("*Form%sCommand Nop");
 }

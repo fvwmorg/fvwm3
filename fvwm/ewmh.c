@@ -7,12 +7,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /* ************************************************************************
@@ -65,10 +65,10 @@ KstItem *ewmh_KstWinList = NULL;
  * ************************************************************************* */
 ewmhInfo ewmhc =
 {
-  4,		/* NumberOfDesktops */
-  0,		/* MaxDesktops limit the number of desktops*/
-  0,		/* CurrentNumberOfDesktops */
-  False,	/* NeedsToCheckDesk */
+  4,            /* NumberOfDesktops */
+  0,            /* MaxDesktops limit the number of desktops*/
+  0,            /* CurrentNumberOfDesktops */
+  False,        /* NeedsToCheckDesk */
   {0, 0, 0, 0}, /* BaseStrut */
 };
 
@@ -83,9 +83,9 @@ ewmhInfo ewmhc =
  * need a window to operate */
 ewmh_atom ewmh_atom_client_root[] =
 {
-  ENTRY("_NET_CURRENT_DESKTOP",	   XA_CARDINAL, ewmh_CurrentDesktop),
+  ENTRY("_NET_CURRENT_DESKTOP",    XA_CARDINAL, ewmh_CurrentDesktop),
   ENTRY("_NET_DESKTOP_GEOMETRY",   XA_CARDINAL, ewmh_DesktopGeometry),
-  ENTRY("_NET_DESKTOP_NAMES",	   None,	None),
+  ENTRY("_NET_DESKTOP_NAMES",      None,        None),
   ENTRY("_NET_DESKTOP_VIEWPORT",   XA_CARDINAL, ewmh_DesktopViewPort),
   ENTRY("_NET_NUMBER_OF_DESKTOPS", XA_CARDINAL, ewmh_NumberOfDesktops),
   {NULL,0,0,0}
@@ -100,7 +100,7 @@ ewmh_atom ewmh_atom_client_win[] =
   ENTRY("_NET_CLOSE_WINDOW",  XA_WINDOW,   ewmh_CloseWindow),
   ENTRY("_NET_WM_DESKTOP",    XA_CARDINAL, ewmh_WMDesktop),
   ENTRY("_NET_WM_MOVERESIZE", XA_WINDOW,   ewmh_MoveResize),
-  ENTRY("_NET_WM_STATE",      XA_ATOM,	   ewmh_WMState),
+  ENTRY("_NET_WM_STATE",      XA_ATOM,     ewmh_WMState),
   {NULL,0,0,0}
 };
 
@@ -110,17 +110,17 @@ ewmh_atom ewmh_atom_client_win[] =
  * too */
 ewmh_atom ewmh_atom_wm_state[] =
 {
-  ENTRY("_NET_WM_STATE_FULLSCREEN",	 XA_ATOM,   ewmh_WMStateFullScreen),
-  ENTRY("_NET_WM_STATE_HIDDEN",		 XA_ATOM,   ewmh_WMStateHidden),
+  ENTRY("_NET_WM_STATE_FULLSCREEN",      XA_ATOM,   ewmh_WMStateFullScreen),
+  ENTRY("_NET_WM_STATE_HIDDEN",          XA_ATOM,   ewmh_WMStateHidden),
   ENTRY("_NET_WM_STATE_MAXIMIZED_HORIZ", XA_ATOM,   ewmh_WMStateMaxHoriz),
-  ENTRY("_NET_WM_STATE_MAXIMIZED_HORZ",	 XA_ATOM,   ewmh_WMStateMaxHoriz),
-  ENTRY("_NET_WM_STATE_MAXIMIZED_VERT",	 XA_ATOM,   ewmh_WMStateMaxVert),
-  ENTRY("_NET_WM_STATE_MODAL",		 XA_ATOM,   ewmh_WMStateModal),
-  ENTRY("_NET_WM_STATE_SHADED",		 XA_ATOM,   ewmh_WMStateShaded),
-  ENTRY("_NET_WM_STATE_SKIP_PAGER",	 XA_ATOM,   ewmh_WMStateSkipPager),
-  ENTRY("_NET_WM_STATE_SKIP_TASKBAR",	 XA_ATOM,   ewmh_WMStateSkipTaskBar),
-  ENTRY("_NET_WM_STATE_STAYS_ON_TOP",	 XA_ATOM,   ewmh_WMStateStaysOnTop),
-  ENTRY("_NET_WM_STATE_STICKY",		 XA_ATOM,   ewmh_WMStateSticky),
+  ENTRY("_NET_WM_STATE_MAXIMIZED_HORZ",  XA_ATOM,   ewmh_WMStateMaxHoriz),
+  ENTRY("_NET_WM_STATE_MAXIMIZED_VERT",  XA_ATOM,   ewmh_WMStateMaxVert),
+  ENTRY("_NET_WM_STATE_MODAL",           XA_ATOM,   ewmh_WMStateModal),
+  ENTRY("_NET_WM_STATE_SHADED",          XA_ATOM,   ewmh_WMStateShaded),
+  ENTRY("_NET_WM_STATE_SKIP_PAGER",      XA_ATOM,   ewmh_WMStateSkipPager),
+  ENTRY("_NET_WM_STATE_SKIP_TASKBAR",    XA_ATOM,   ewmh_WMStateSkipTaskBar),
+  ENTRY("_NET_WM_STATE_STAYS_ON_TOP",    XA_ATOM,   ewmh_WMStateStaysOnTop),
+  ENTRY("_NET_WM_STATE_STICKY",          XA_ATOM,   ewmh_WMStateSticky),
   {NULL,0,0,0}
 };
 #define EWMH_NUMBER_OF_STATE sizeof(ewmh_atom_wm_state)/sizeof(ewmh_atom) - 1
@@ -129,13 +129,13 @@ ewmh_atom ewmh_atom_wm_state[] =
 ewmh_atom ewmh_atom_allowed_actions[] =
 {
   ENTRY("_NET_WM_ACTION_CHANGE_DESKTOP", XA_ATOM, ewmh_AllowsYes),
-  ENTRY("_NET_WM_ACTION_CLOSE",		 XA_ATOM, ewmh_AllowsClose),
-  ENTRY("_NET_WM_ACTION_MAXIMIZE_HORZ",	 XA_ATOM, ewmh_AllowsMaximize),
-  ENTRY("_NET_WM_ACTION_MAXIMIZE_VERT",	 XA_ATOM, ewmh_AllowsMaximize),
-  ENTRY("_NET_WM_ACTION_MOVE",		 XA_ATOM, ewmh_AllowsMove),
-  ENTRY("_NET_WM_ACTION_RESIZE",	 XA_ATOM, ewmh_AllowsResize),
-  ENTRY("_NET_WM_ACTION_SHADE",		 XA_ATOM, ewmh_AllowsYes),
-  ENTRY("_NET_WM_ACTION_STICK",		 XA_ATOM, ewmh_AllowsYes),
+  ENTRY("_NET_WM_ACTION_CLOSE",          XA_ATOM, ewmh_AllowsClose),
+  ENTRY("_NET_WM_ACTION_MAXIMIZE_HORZ",  XA_ATOM, ewmh_AllowsMaximize),
+  ENTRY("_NET_WM_ACTION_MAXIMIZE_VERT",  XA_ATOM, ewmh_AllowsMaximize),
+  ENTRY("_NET_WM_ACTION_MOVE",           XA_ATOM, ewmh_AllowsMove),
+  ENTRY("_NET_WM_ACTION_RESIZE",         XA_ATOM, ewmh_AllowsResize),
+  ENTRY("_NET_WM_ACTION_SHADE",          XA_ATOM, ewmh_AllowsYes),
+  ENTRY("_NET_WM_ACTION_STICK",          XA_ATOM, ewmh_AllowsYes),
   {NULL,0,0,0}
 };
 #define EWMH_NUMBER_OF_ALLOWED_ACTIONS \
@@ -158,9 +158,9 @@ ewmh_atom ewmh_atom_window_type[] =
 ewmh_atom ewmh_atom_fixed_property[] =
 {
   ENTRY("_KDE_NET_WM_SYSTEM_TRAY_WINDOW_FOR", XA_WINDOW, None),
-  ENTRY("_NET_WM_HANDLED_ICON",		      XA_ATOM,	 None),
-  ENTRY("_NET_WM_PID",			      XA_ATOM,	 None),
-  ENTRY("_NET_WM_WINDOW_TYPE",		      XA_ATOM,	 None),
+  ENTRY("_NET_WM_HANDLED_ICON",               XA_ATOM,   None),
+  ENTRY("_NET_WM_PID",                        XA_ATOM,   None),
+  ENTRY("_NET_WM_WINDOW_TYPE",                XA_ATOM,   None),
   {NULL,0,0,0}
 };
 
@@ -169,11 +169,11 @@ ewmh_atom ewmh_atom_fixed_property[] =
  * event */
 ewmh_atom ewmh_atom_property_notify[] =
 {
-  ENTRY("_NET_WM_ICON",		 XA_CARDINAL, ewmh_WMIcon),
+  ENTRY("_NET_WM_ICON",          XA_CARDINAL, ewmh_WMIcon),
   ENTRY("_NET_WM_ICON_GEOMETRY", XA_CARDINAL, ewmh_WMIconGeometry),
-  ENTRY("_NET_WM_ICON_NAME",	 None,	      EWMH_WMIconName),
-  ENTRY("_NET_WM_NAME",		 None,	      EWMH_WMName),
-  ENTRY("_NET_WM_STRUT",	 XA_CARDINAL, ewmh_WMStrut),
+  ENTRY("_NET_WM_ICON_NAME",     None,        EWMH_WMIconName),
+  ENTRY("_NET_WM_NAME",          None,        EWMH_WMName),
+  ENTRY("_NET_WM_STRUT",         XA_CARDINAL, ewmh_WMStrut),
   {NULL,0,0,0}
 };
 
@@ -181,12 +181,12 @@ ewmh_atom ewmh_atom_property_notify[] =
 ewmh_atom ewmh_atom_fvwm_root[] =
 {
   ENTRY("_KDE_NET_SYSTEM_TRAY_WINDOWS", XA_WINDOW,   None),
-  ENTRY("_NET_CLIENT_LIST",		XA_WINDOW,   None),
-  ENTRY("_NET_CLIENT_LIST_STACKING",	XA_WINDOW,   None),
-  ENTRY("_NET_SUPPORTED",		XA_ATOM,     None),
-  ENTRY("_NET_SUPPORTING_WM_CHECK",	XA_WINDOW,   None),
-  ENTRY("_NET_VIRTUAL_ROOTS",		XA_WINDOW,   None),
-  ENTRY("_NET_WORKAREA",		XA_CARDINAL, None),
+  ENTRY("_NET_CLIENT_LIST",             XA_WINDOW,   None),
+  ENTRY("_NET_CLIENT_LIST_STACKING",    XA_WINDOW,   None),
+  ENTRY("_NET_SUPPORTED",               XA_ATOM,     None),
+  ENTRY("_NET_SUPPORTING_WM_CHECK",     XA_WINDOW,   None),
+  ENTRY("_NET_VIRTUAL_ROOTS",           XA_WINDOW,   None),
+  ENTRY("_NET_WORKAREA",                XA_CARDINAL, None),
   {NULL,0,0,0}
 };
 
@@ -195,9 +195,9 @@ ewmh_atom ewmh_atom_fvwm_root[] =
 ewmh_atom ewmh_atom_fvwm_win[] =
 {
   ENTRY("_KDE_NET_WM_FRAME_STRUT",    XA_CARDINAL, None),
-  ENTRY("_NET_WM_ALLOWED_ACTIONS",    XA_ATOM,	   None),
-  ENTRY("_NET_WM_ICON_VISIBLE_NAME",  None,	   None),
-  ENTRY("_NET_WM_VISIBLE_NAME",	      None,	   None),
+  ENTRY("_NET_WM_ALLOWED_ACTIONS",    XA_ATOM,     None),
+  ENTRY("_NET_WM_ICON_VISIBLE_NAME",  None,        None),
+  ENTRY("_NET_WM_VISIBLE_NAME",       None,        None),
   {NULL,0,0,0}
 };
 
@@ -206,16 +206,16 @@ ewmh_atom ewmh_atom_fvwm_win[] =
 #define L_ENTRY(x,y) {x,y,sizeof(y)/sizeof(ewmh_atom)}
 ewmh_atom_list atom_list[] =
 {
-  L_ENTRY(EWMH_ATOM_LIST_CLIENT_ROOT,	    ewmh_atom_client_root),
-  L_ENTRY(EWMH_ATOM_LIST_CLIENT_WIN,	    ewmh_atom_client_win),
-  L_ENTRY(EWMH_ATOM_LIST_WM_STATE,	    ewmh_atom_wm_state),
+  L_ENTRY(EWMH_ATOM_LIST_CLIENT_ROOT,       ewmh_atom_client_root),
+  L_ENTRY(EWMH_ATOM_LIST_CLIENT_WIN,        ewmh_atom_client_win),
+  L_ENTRY(EWMH_ATOM_LIST_WM_STATE,          ewmh_atom_wm_state),
   L_ENTRY(EWMH_ATOM_LIST_ALLOWED_ACTIONS,   ewmh_atom_allowed_actions),
-  L_ENTRY(EWMH_ATOM_LIST_WINDOW_TYPE,	    ewmh_atom_window_type),
+  L_ENTRY(EWMH_ATOM_LIST_WINDOW_TYPE,       ewmh_atom_window_type),
   L_ENTRY(EWMH_ATOM_LIST_FIXED_PROPERTY,    ewmh_atom_fixed_property),
   L_ENTRY(EWMH_ATOM_LIST_PROPERTY_NOTIFY,   ewmh_atom_property_notify),
-  L_ENTRY(EWMH_ATOM_LIST_FVWM_ROOT,	    ewmh_atom_fvwm_root),
-  L_ENTRY(EWMH_ATOM_LIST_FVWM_WIN,	    ewmh_atom_fvwm_win),
-  L_ENTRY(EWMH_ATOM_LIST_END,		    NULL)
+  L_ENTRY(EWMH_ATOM_LIST_FVWM_ROOT,         ewmh_atom_fvwm_root),
+  L_ENTRY(EWMH_ATOM_LIST_FVWM_WIN,          ewmh_atom_fvwm_win),
+  L_ENTRY(EWMH_ATOM_LIST_END,               NULL)
 };
 
 /* ************************************************************************* *
@@ -311,9 +311,9 @@ void ewmh_DeleteProperty(Window w,
 static
 void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
 {
-  unsigned char	*retval;
-  Atom	type_ret;
-  unsigned long	 bytes_after, num_ret;
+  unsigned char *retval;
+  Atom  type_ret;
+  unsigned long  bytes_after, num_ret;
   long length;
   int  format_ret;
   void *data;
@@ -748,8 +748,8 @@ void ewmh_ComputeAndSetWorkArea(void)
   width = Scr.MyDisplayWidth - (left + right);
   height = Scr.MyDisplayHeight - (top + bottom);
 
-  if (Scr.Desktops->ewmh_working_area.x != x	     ||
-      Scr.Desktops->ewmh_working_area.y != y	     ||
+  if (Scr.Desktops->ewmh_working_area.x != x         ||
+      Scr.Desktops->ewmh_working_area.y != y         ||
       Scr.Desktops->ewmh_working_area.width != width ||
       Scr.Desktops->ewmh_working_area.height != height)
   {
@@ -786,8 +786,8 @@ void ewmh_HandleDynamicWorkArea(void)
   width = Scr.MyDisplayWidth - (dyn_left + dyn_right);
   height = Scr.MyDisplayHeight - (dyn_top + dyn_bottom);
 
-  if (Scr.Desktops->ewmh_dyn_working_area.x != x	 ||
-      Scr.Desktops->ewmh_dyn_working_area.y != y	 ||
+  if (Scr.Desktops->ewmh_dyn_working_area.x != x         ||
+      Scr.Desktops->ewmh_dyn_working_area.y != y         ||
       Scr.Desktops->ewmh_dyn_working_area.width != width ||
       Scr.Desktops->ewmh_dyn_working_area.height != height)
   {
@@ -1388,7 +1388,7 @@ void EWMH_DLOG(char *msg, ...)
   static clock_t start_time = 0;
   static clock_t prev_time = 0;
   struct tms not_used_tms;
-  char buffer[200];			/* oversized */
+  char buffer[200];                     /* oversized */
   time_t mytime;
   struct tm *t_ptr;
 
@@ -1409,7 +1409,7 @@ void EWMH_DLOG(char *msg, ...)
   vfprintf(stderr, msg, args);
   va_end(args);
   fprintf(stderr,"\n");
-  fprintf(stderr,"	      [time]: %s\n",buffer);
+  fprintf(stderr,"            [time]: %s\n",buffer);
 }
 #endif
 

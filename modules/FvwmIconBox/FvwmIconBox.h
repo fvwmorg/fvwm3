@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*************************************************************************
@@ -86,7 +86,7 @@ extern int window_cond(struct icon_info *item);
 extern int itemcmp(struct icon_info *item1, struct icon_info *item2);
 
 
-extern Display *dpy;			/* which display are we talking to */
+extern Display *dpy;                    /* which display are we talking to */
 extern Window Root;
 extern Window main_win;
 extern Window holder_win;
@@ -120,7 +120,7 @@ struct icon_info
   int y;
   int icon_w;
   int icon_h;
-  Pixmap iconPixmap;		/* pixmap for the icon */
+  Pixmap iconPixmap;            /* pixmap for the icon */
   Pixmap icon_maskPixmap;
   Pixmap icon_alphaPixmap;
   Window IconWin;
@@ -185,19 +185,19 @@ extern int icon_relief;
 #define TIMEOUT 3
 
 /* sorting */
-#define UNSORT	   0
+#define UNSORT     0
 #define WINDOWNAME 1
 #define ICONNAME   2
-#define RESNAME	   3
+#define RESNAME    3
 #define RESCLASS   4
 
 /* local flags */
-#define HIDE_H	      (1<<0)
-#define HIDE_V	      (1<<1)
+#define HIDE_H        (1<<0)
+#define HIDE_V        (1<<1)
 #define SETWMICONSIZE (1<<2)
 #define CURRENT_ONLY  (1<<3)
 
 #define DEFAULTICON   (1<<0)
-#define NONAME	      (1<<1)
-#define NOCLASS	      (1<<2)
+#define NONAME        (1<<1)
+#define NOCLASS       (1<<2)
 

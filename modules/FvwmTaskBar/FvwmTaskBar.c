@@ -2,7 +2,7 @@
  *
  * (Much reworked version of FvwmWinList)
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
- *				 Mike_Finger@atk.com)
+ *                               Mike_Finger@atk.com)
  *
  * Two little hacks by DYB: 1) make size of a strip in hidden state tunable
  * (with *FvwmTaskBar: AutoHide <pixels>); 2) make process of TaskBar
@@ -36,12 +36,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -108,31 +108,31 @@ int   x_fd;
 
 /* X related things */
 Display *dpy;
-Window	Root, win;
-int	screen;
+Window  Root, win;
+int     screen;
 Pixel back;
 Pixel fore;
 static Pixel iconfore;
 static Pixel iconback;
 static Pixel focusfore;
 static Pixel focusback;
-GC	icongraph = None;
-GC	iconbackgraph = None;
-GC	focusgraph = None;
-GC	focusbackgraph = None;
-GC	graph = None;
-GC	shadow = None;
-GC	hilite = None;
-GC	iconshadow = None;
-GC	iconhilite = None;
-GC	focusshadow = None;
-GC	focushilite = None;
-GC	blackgc = None;
-GC	whitegc = None;
-GC	checkered = None;
-int	colorset = -1;
-int	iconcolorset = -1;
-int	focuscolorset = -1;
+GC      icongraph = None;
+GC      iconbackgraph = None;
+GC      focusgraph = None;
+GC      focusbackgraph = None;
+GC      graph = None;
+GC      shadow = None;
+GC      hilite = None;
+GC      iconshadow = None;
+GC      iconhilite = None;
+GC      focusshadow = None;
+GC      focushilite = None;
+GC      blackgc = None;
+GC      whitegc = None;
+GC      checkered = None;
+int     colorset = -1;
+int     iconcolorset = -1;
+int     focuscolorset = -1;
 FlocaleFont *FButtonFont, *FSelButtonFont;
 FlocaleWinString *FwinString;
 int fontheight;
@@ -142,8 +142,8 @@ static Bool is_dead_pipe = False;
 
 /* Module related information */
 char *Module;
-int  win_width	  = 5,
-     win_height	  = 5,
+int  win_width    = 5,
+     win_height   = 5,
      win_grav,
      win_x,
      win_y,
@@ -154,12 +154,12 @@ int  win_width	  = 5,
      win_is_shaded = 0,
      button_width = DEFAULT_BTN_WIDTH,
      Clength,
-     ButPressed	  = -1,
+     ButPressed   = -1,
      ButReleased  = -1,
-     Checked	  = 0,
+     Checked      = 0,
      WindowState  = -2, /* -2 unmaped, 1 not hidden, -1 hidden,
 			 *  0 hidden -> not hidden (for the events loop) */
-     FocusInWin = 0;	/* 1 if the Taskbar has the focus */
+     FocusInWin = 0;    /* 1 if the Taskbar has the focus */
 
 static volatile sig_atomic_t AlarmSet = NOT_SET;
 static volatile sig_atomic_t tip_window_alarm = False;
@@ -178,32 +178,32 @@ char *ClickAction[max(NUMBER_OF_MOUSE_BUTTONS, 3)] =
   DEFAULT_CLICK3
 },
      *EnterAction,
-     *BackColor	     = "white",
-     *ForeColor	     = "black",
+     *BackColor      = "white",
+     *ForeColor      = "black",
      *IconBackColor  = "white",
      *IconForeColor  = "black",
      *FocusBackColor = NULL,
      *FocusForeColor = NULL,
-     *geometry	     = NULL,
+     *geometry       = NULL,
      *font_string    = NULL,
      *selfont_string = NULL;
 
 static char *AnimCommand = NULL;
 
-int UseSkipList	   = False,
+int UseSkipList    = False,
     UseIconNames   = False,
     ShowTransients = False,
-    adjust_flag	   = False,
-    AutoStick	   = False,
-    AutoHide	   = False,
-    AutoFocus	   = False,
+    adjust_flag    = False,
+    AutoStick      = False,
+    AutoHide       = False,
+    AutoFocus      = False,
     HighlightFocus = False,
-    DeskOnly	   = False,
-    PageOnly	   = False,
-    ScreenOnly	   = False,
+    DeskOnly       = False,
+    PageOnly       = False,
+    ScreenOnly     = False,
     NoBrightFocus  = False,
-    ThreeDfvwm	   = False,
-    RowsNumber	   = 1;
+    ThreeDfvwm     = False,
+    RowsNumber     = 1;
 
 int VisiblePixels  = DEFAULT_VISIBLE_PIXELS;
 /* This macro should be used when calculating geometry */
@@ -215,7 +215,7 @@ rectangle global_scr_g;
 int NRows, RowHeight, Midline;
 
 #define COUNT_LIMIT    10000
-long DeskNumber;	       /* Added by Balaji R */
+long DeskNumber;               /* Added by Balaji R */
 int  First = 1;
 int  Count = 0;
 
@@ -387,12 +387,12 @@ int main(int argc, char **argv)
 
 
 /******************************************************************************
-  EndLessLoop -	 Read and redraw until we get killed, blocking when can't read
+  EndLessLoop -  Read and redraw until we get killed, blocking when can't read
 ******************************************************************************/
 void EndLessLoop(void)
 {
   fd_set readset;
-  fd_set_size_t	 fd_width;
+  fd_set_size_t  fd_width;
   struct timeval tv;
 
   fd_width = x_fd;
@@ -546,9 +546,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	}
 
 	XGetWMNormalHints(dpy,win,&hints,&dumy);
-	hints.min_width	  = win_width;
+	hints.min_width   = win_width;
 	hints.base_width  = win_width;
-	hints.max_width	  = win_width;
+	hints.max_width   = win_width;
 
 	XSetWMNormalHints(dpy,win,&hints);
 
@@ -737,7 +737,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
   case M_VISIBLE_NAME:
   case MX_VISIBLE_ICON_NAME:
-    if ((type == MX_VISIBLE_ICON_NAME	&& !UseIconNames) ||
+    if ((type == MX_VISIBLE_ICON_NAME   && !UseIconNames) ||
 	(type == M_VISIBLE_NAME &&  UseIconNames)) break;
     string = (char *) &body[3];
     if ((i = UpdateItemName(&windows, body[0], (char *)&body[3])) == -1)
@@ -774,7 +774,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     iconified = IsItemIconified(&windows, body[0]);
     if (((i = FindItem(&windows, body[0])) == -1)
 	|| (type == M_DEICONIFY && !iconified)
-	|| (type == M_ICONIFY	&& iconified))
+	|| (type == M_ICONIFY   && iconified))
     {
       if (AnimCommand && AnimCommand[0] != 0)
 	SendUnlockNotification(Fvwm_fd);
@@ -1803,13 +1803,13 @@ static void CreateOrUpdateGCs(void)
 
    /* brighting */
    gcmask = GCForeground | GCBackground | GCTile |
-	    GCFillStyle	 | GCGraphicsExposures;
+	    GCFillStyle  | GCGraphicsExposures;
    if (focuscolorset >= 0 || FocusBackColor != NULL)
      gcval.foreground = pfocusback;
    else
      gcval.foreground = philite;
    gcval.fill_style = FillTiled;
-   gcval.tile	    = XCreatePixmapFromBitmapData(dpy, win, (char *)gray_bits,
+   gcval.tile       = XCreatePixmapFromBitmapData(dpy, win, (char *)gray_bits,
 						  gray_width, gray_height,
 						  gcval.foreground,
 						  gcval.background,Pdepth);
@@ -1833,7 +1833,7 @@ static Bool change_colorset(int cset, Bool force)
     {
       SetWindowBackground(
 	dpy, win, win_width, win_height, &Colorset[colorset],
-	Pdepth,	graph, True);
+	Pdepth, graph, True);
     }
     do_redraw = True;
   }
@@ -1958,9 +1958,9 @@ void StartMeUp(void)
 
    hints.flags=USPosition|PPosition|USSize|PSize|PResizeInc|
      PWinGravity|PMinSize|PMaxSize|PBaseSize;
-   hints.x	     = screen_g.x;
-   hints.width	     = win_width;
-   hints.height	     = win_height;
+   hints.x           = screen_g.x;
+   hints.width       = win_width;
+   hints.height      = win_height;
    hints.width_inc   = 1;
    hints.height_inc  = RowHeight+2;
    hints.min_width   = win_width;
@@ -2030,7 +2030,7 @@ void StartMeUp(void)
 		 GrabModeAsync,None,None);
    }
 
-   /*	SetMwmHints(MWM_DECOR_ALL|MWM_DECOR_MAXIMIZE|MWM_DECOR_MINIMIZE,
+   /*   SetMwmHints(MWM_DECOR_ALL|MWM_DECOR_MAXIMIZE|MWM_DECOR_MINIMIZE,
 	       MWM_FUNC_ALL|MWM_FUNC_MAXIMIZE|MWM_FUNC_MINIMIZE,
 	       MWM_INPUT_MODELESS);
 	       */

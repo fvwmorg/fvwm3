@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -83,7 +83,7 @@
 #include <X11/Xresource.h>
 
 #if HAVE_SYS_SYSTEMINFO_H
-/* Solaris has sysinfo instead of gethostname.	*/
+/* Solaris has sysinfo instead of gethostname.  */
 #include <sys/systeminfo.h>
 #endif
 
@@ -94,13 +94,13 @@ static char sccsid[] __attribute__((__unused__))
     = "@(#)fvwm.c " VERSION " " __DATE__ " fvwm";
 #endif
 
-int master_pid;			/* process number of 1st fvwm process */
+int master_pid;                 /* process number of 1st fvwm process */
 
-ScreenInfo Scr;			/* structures for the screen */
-Display *dpy = NULL;		/* which display are we talking to */
+ScreenInfo Scr;                 /* structures for the screen */
+Display *dpy = NULL;            /* which display are we talking to */
 
-Bool fFvwmInStartup = True;	/* Set to False when startup has finished */
-Bool DoingCommandLine = False;	/* Set True before each cmd line arg */
+Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
+Bool DoingCommandLine = False;  /* Set True before each cmd line arg */
 
 /* Grab pointer state. Set by GrabEm, UngrabEm, menus.c and StartupStuff */
 #define MAX_CFG_CMDS 10
@@ -127,11 +127,11 @@ static void InitVariables(void);
 static void usage(void);
 static void setVersionInfo(void);
 
-XContext FvwmContext;		/* context for fvwm windows */
-XContext MenuContext;		/* context for fvwm menus */
+XContext FvwmContext;           /* context for fvwm windows */
+XContext MenuContext;           /* context for fvwm menus */
 
 int JunkX = 0, JunkY = 0;
-Window JunkRoot, JunkChild;		/* junk window */
+Window JunkRoot, JunkChild;             /* junk window */
 unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 
 Bool debugging = False;
@@ -174,14 +174,14 @@ static volatile sig_atomic_t fvwmRunState = FVWM_RUNNING;
 /***********************************************************************
  *
  *  Procedure:
- *	main - start of fvwm
+ *      main - start of fvwm
  *
  ***********************************************************************
  */
 int main(int argc, char **argv)
 {
-  unsigned long valuemask;	/* mask for create windows */
-  XSetWindowAttributes attributes;	/* attributes for create windows */
+  unsigned long valuemask;      /* mask for create windows */
+  XSetWindowAttributes attributes;      /* attributes for create windows */
   int i;
   extern int x_fd;
   int len;
@@ -379,7 +379,7 @@ int main(int argc, char **argv)
 
   if(!do_force_single_screen)
   {
-    int	myscreen = 0;
+    int myscreen = 0;
     char *cp;
 
     strcpy(message, XDisplayString(dpy));
@@ -399,7 +399,7 @@ int main(int argc, char **argv)
 	{
 	  cp = strchr(cp, '.');
 	  if (cp != NULL)
-	    *cp = '\0';		/* truncate at display part */
+	    *cp = '\0';         /* truncate at display part */
 	}
 	sprintf(message + strlen(message), ".%d", myscreen);
 	Pdpy = dpy = XOpenDisplay(message);
@@ -655,11 +655,11 @@ int main(int argc, char **argv)
     /* Run startup command file in 5 places: FVWM_USERDIR, FVWM_DATADIR,
        and for compatibility: ~/.fvwm2rc, $sysconfdir/system.fvwm2rc */
     if (
-      !run_command_file( CatString3(fvwm_userdir, "/",	     FVWMRC),
+      !run_command_file( CatString3(fvwm_userdir, "/",       FVWMRC),
 	&Event, NULL, C_ROOT, 1 ) &&
-      !run_command_file( CatString3(home_dir,	  "/",	     FVWMRC),
+      !run_command_file( CatString3(home_dir,     "/",       FVWMRC),
 	&Event, NULL, C_ROOT, 1 ) &&
-      !run_command_file( CatString3(FVWM_DATADIR, "/",	     FVWMRC),
+      !run_command_file( CatString3(FVWM_DATADIR, "/",       FVWMRC),
 	&Event, NULL, C_ROOT, 1 ) &&
       !run_command_file( CatString3(FVWM_DATADIR, "/system", FVWMRC),
 	&Event, NULL, C_ROOT, 1 ) &&
@@ -669,7 +669,7 @@ int main(int argc, char **argv)
       fvwm_msg( ERR, "main", "Cannot read startup file, tried: "
 	"\n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t%s/system%s\n\t%s/system%s",
 	  fvwm_userdir, FVWMRC,
-	  home_dir,	FVWMRC,
+	  home_dir,     FVWMRC,
 	  FVWM_DATADIR, FVWMRC,
 	  FVWM_DATADIR, FVWMRC,
 	  FVWM_CONFDIR, FVWMRC);
@@ -854,8 +854,8 @@ void SetRCDefaults(void)
 /***********************************************************************
  *
  *  Procedure:
- *	InternUsefulAtoms:
- *	      Dont really know what it does
+ *      InternUsefulAtoms:
+ *            Dont really know what it does
  *
  ***********************************************************************
  */
@@ -932,8 +932,8 @@ static void InternUsefulAtoms (void)
 /***********************************************************************
  *
  *  Procedure:
- *	InstallSignals: install the signal handlers, using whatever
- *	   means we have at our disposal. The more POSIXy, the better
+ *      InstallSignals: install the signal handlers, using whatever
+ *         means we have at our disposal. The more POSIXy, the better
  *
  ************************************************************************/
 void
@@ -981,9 +981,9 @@ InstallSignals(void)
    * leave SIGCHLD handler with unfinished business ...
    *
    * NOTE: We could still receive SIGPIPE signals within the
-   *	   SIGCHLD handler, but the SIGPIPE handler has the
-   *	   SA_RESTART flag set and so should not affect our
-   *	   "wait" system call.
+   *       SIGCHLD handler, but the SIGPIPE handler has the
+   *       SA_RESTART flag set and so should not affect our
+   *       "wait" system call.
    */
   sigact.sa_flags |= SA_NOCLDSTOP;
   sigact.sa_handler = ReapChildren;
@@ -1091,7 +1091,7 @@ Restart(int sig)
 /***********************************************************************
  *
  *  LoadDefaultLeftButton -- loads default left button # into
- *		assumes associated button memory is already free
+ *              assumes associated button memory is already free
  *
  ************************************************************************/
 static void LoadDefaultLeftButton(DecorFace *df, int i)
@@ -1184,7 +1184,7 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
 /***********************************************************************
  *
  *  LoadDefaultRightButton -- loads default left button # into
- *		assumes associated button memory is already free
+ *              assumes associated button memory is already free
  *
  ************************************************************************/
 static void LoadDefaultRightButton(DecorFace *df, int i)
@@ -1278,7 +1278,7 @@ static void LoadDefaultRightButton(DecorFace *df, int i)
 /***********************************************************************
  *
  *  LoadDefaultButton -- loads default button # into button structure
- *		assumes associated button memory is already free
+ *              assumes associated button memory is already free
  *
  ************************************************************************/
 void LoadDefaultButton(DecorFace *df, int i)
@@ -1294,7 +1294,7 @@ extern void FreeDecorFace(Display *dpy, DecorFace *df);
 /***********************************************************************
  *
  *  ResetOrDestroyAllButtons -- resets all buttons to defaults
- *				destroys existing buttons
+ *                              destroys existing buttons
  *
  ************************************************************************/
 void DestroyAllButtons(FvwmDecor *decor)
@@ -1342,8 +1342,8 @@ void ResetAllButtons(FvwmDecor *decor)
 /***********************************************************************
  *
  *  Procedure:
- *	CreateGCs - open fonts and create all the needed GC's.	I only
- *		    want to do this once, hence the first_time flag.
+ *      CreateGCs - open fonts and create all the needed GC's.  I only
+ *                  want to do this once, hence the first_time flag.
  *
  ***********************************************************************/
 static void CreateGCs(void)
@@ -1372,7 +1372,7 @@ static void CreateGCs(void)
 /***********************************************************************
  *
  *  Procedure:
- *	InitVariables - initialize fvwm variables
+ *      InitVariables - initialize fvwm variables
  *
  ************************************************************************/
 static void InitVariables(void)
@@ -1404,7 +1404,7 @@ static void InitVariables(void)
   /* create graphics contexts */
   CreateGCs();
 
-  if (Pdepth <= 8) {		   /* if the color is limited */
+  if (Pdepth <= 8) {               /* if the color is limited */
     /* a number > than the builtin table! */
     Scr.ColorLimit = 255;
   }
@@ -1534,7 +1534,7 @@ static void InitVariables(void)
 /***********************************************************************
  *
  *  Procedure:
- *	Done - tells FVWM to clean up and exit
+ *      Done - tells FVWM to clean up and exit
  *
  ***********************************************************************
  */
@@ -1684,7 +1684,7 @@ void Done(int restart, char *command)
       }
     }
 
-    execvp(g_argv[0], g_argv);	  /* that _should_ work */
+    execvp(g_argv[0], g_argv);    /* that _should_ work */
     fvwm_msg(ERR, "Done", "Call of '%s' failed!", g_argv[0]);
     perror("  system error description");
   }
@@ -1718,7 +1718,7 @@ int CatchRedirectError(Display *dpy, XErrorEvent *event)
 /***********************************************************************
  *
  *  Procedure:
- *	CatchFatal - Shuts down if the server connection is lost
+ *      CatchFatal - Shuts down if the server connection is lost
  *
  ************************************************************************/
 int CatchFatal(Display *dpy)
@@ -1735,7 +1735,7 @@ int CatchFatal(Display *dpy)
 /***********************************************************************
  *
  *  Procedure:
- *	FvwmErrorHandler - displays info on internal errors
+ *      FvwmErrorHandler - displays info on internal errors
  *
  ************************************************************************/
 int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
@@ -1861,7 +1861,7 @@ static int parseCommandArgs(
   const char *cptr = command;
 #define theChar (*cptr)
 #define advChar (cptr++)
-#define topChar (*cptr	   == '\\'? *(cptr+1): *cptr)
+#define topChar (*cptr     == '\\'? *(cptr+1): *cptr)
 #define popChar (*(cptr++) == '\\'? *(cptr++): *(cptr-1))
 #define canAddArgChar (totalArgLen < MAX_TOTAL_ARG_LEN-1)
 #define addArgChar(ch) (++totalArgLen, *(aptr++) = ch)

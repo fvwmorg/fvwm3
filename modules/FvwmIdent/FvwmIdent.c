@@ -16,12 +16,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -64,7 +64,7 @@ static char *MyName;
 static fd_set_size_t fd_width;
 static int fd[2];
 
-static Display *dpy;			/* which display are we talking to */
+static Display *dpy;                    /* which display are we talking to */
 static Window Root;
 static GC gc;
 
@@ -118,7 +118,7 @@ static int my_layer = default_layer;
 /***********************************************************************
  *
  *  Procedure:
- *	main - start of module
+ *      main - start of module
  *
  ***********************************************************************/
 int main(int argc, char **argv)
@@ -367,7 +367,7 @@ void process_message(unsigned long type,unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	SIGPIPE handler - SIGPIPE means fvwm is dying
+ *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
 static RETSIGTYPE
@@ -924,8 +924,8 @@ void MakeList(void)
   int bw,width,height,x1,y1,x2,y2;
   char loc[20];
   static char xstr[6],ystr[6];
-  /* GSFR - quick hack because the new macros depend on a prt reference	 */
-  struct target_struct	*targ  =  &target;
+  /* GSFR - quick hack because the new macros depend on a prt reference  */
+  struct target_struct  *targ  =  &target;
 
   ListSize = 0;
 
@@ -935,28 +935,28 @@ void MakeList(void)
 
   sprintf(desktop, "%ld",  target.desktop);
   sprintf(layer,   "%ld",  target.layer);
-  sprintf(id,	   "0x%x", (unsigned int)target.id);
+  sprintf(id,      "0x%x", (unsigned int)target.id);
   sprintf(swidth,  "%d",   width);
   sprintf(sheight, "%d",   height);
   sprintf(borderw, "%ld",  target.border_w);
-  sprintf(xstr,	   "%ld",  target.frame_x);
-  sprintf(ystr,	   "%ld",  target.frame_y);
+  sprintf(xstr,    "%ld",  target.frame_x);
+  sprintf(ystr,    "%ld",  target.frame_y);
 
-  AddToList("Name:",	      target.name);
+  AddToList("Name:",          target.name);
   AddToList("Icon Name:",     target.icon_name);
-  AddToList("Class:",	      target.class);
+  AddToList("Class:",         target.class);
   AddToList("Resource:",      target.res);
   AddToList("Window ID:",     id);
-  AddToList("Desk:",	      desktop);
-  AddToList("Layer:",	      layer);
-  AddToList("Width:",	      swidth);
-  AddToList("Height:",	      sheight);
+  AddToList("Desk:",          desktop);
+  AddToList("Layer:",         layer);
+  AddToList("Width:",         swidth);
+  AddToList("Height:",        sheight);
   AddToList("X (current page):",   xstr);
   AddToList("Y (current page):",   ystr);
   AddToList("Boundary Width:", borderw);
 
-  AddToList("Sticky:",	      (IS_STICKY(targ)	  ? yes : no));
-  AddToList("NoTitle:",	      (HAS_TITLE(targ)	  ? no : yes));
+  AddToList("Sticky:",        (IS_STICKY(targ)    ? yes : no));
+  AddToList("NoTitle:",       (HAS_TITLE(targ)    ? no : yes));
   AddToList("Iconified:",     (IS_ICONIFIED(targ) ? yes : no));
   AddToList("Transient:",     (IS_TRANSIENT(targ) ? yes : no));
 
@@ -1008,7 +1008,7 @@ void MakeList(void)
   y1 = target.frame_y;
   if(y1 < 0)
     y1 = 0;
-  y2 = DisplayHeight(dpy,screen) - y1 -	 target.frame_h;
+  y2 = DisplayHeight(dpy,screen) - y1 -  target.frame_h;
     if(y2 < 0)
     y2 = 0;
   width = (width - target.base_w)/target.width_inc;
@@ -1090,11 +1090,11 @@ void MakeList(void)
     AddToList("  - Input Field:",ifstr);
     AddToList("  - WM_TAKE_FOCUS:",tfstr);
     {
-      long supplied_return;		/* flags, hints that were supplied */
+      long supplied_return;             /* flags, hints that were supplied */
       int getrc;
       XSizeHints *size_hints = XAllocSizeHints(); /* the size hints */
       if ((getrc = XGetWMSizeHints(dpy,target.id, /* get size hints */
-			  size_hints,	 /* Hints */
+			  size_hints,    /* Hints */
 			  &supplied_return,
 			  XA_WM_ZOOM_HINTS))) {
 	if (supplied_return & PAspect) { /* if window has a aspect ratio */

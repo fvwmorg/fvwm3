@@ -15,7 +15,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -221,7 +221,7 @@ int main ( int argc, char *argv[])
     if (!dpy_name[0] || ':' == dpy_name[0])
     {
       gethostname(hostname, MAXHOSTNAME);
-      strcat(f_stem, hostname);	 /* Put hostname before dpy if not there */
+      strcat(f_stem, hostname);  /* Put hostname before dpy if not there */
     }
     strcat(f_stem, dpy_name);
   }
@@ -492,38 +492,38 @@ void usage(void)
   fprintf (stderr, "Usage: %s [OPTION] [COMMAND]...\n", MYNAME);
   fprintf (stderr, "Send commands to fvwm via %sS\n\n", MYNAME);
   fprintf (stderr,
-	   "  -c		  read and send commands from stdin\n"
-	   "			  The COMMAND if any is ignored.\n");
+	   "  -c                  read and send commands from stdin\n"
+	   "                      The COMMAND if any is ignored.\n");
   fprintf (stderr,
-	   "  -S <file name>	  "
+	   "  -S <file name>      "
 	   "invoke another %s server with fifo <file name>\n",
 	   MYNAME);
   fprintf (stderr,
-	   "  -f <file name>	  use fifo <file name> to connect to %sS\n",
+	   "  -f <file name>      use fifo <file name> to connect to %sS\n",
 	   MYNAME);
   fprintf (stderr,
-	   "  -i <info level>	  0 - error only\n" );
+	   "  -i <info level>     0 - error only\n" );
   fprintf (stderr,
-	   "			  1 - above and config info (default)\n" );
+	   "                      1 - above and config info (default)\n" );
   fprintf (stderr,
-	   "			  2 - above and static info\n" );
+	   "                      2 - above and static info\n" );
   fprintf (stderr,
-	   "			  3 - above and dynamic info\n" );
+	   "                      3 - above and dynamic info\n" );
   fprintf (stderr,
-	   "			 -1 - none (default, much faster)\n" );
+	   "                     -1 - none (default, much faster)\n" );
   fprintf (stderr,
-	   "  -F <flag info>	  0 - no flag info\n");
+	   "  -F <flag info>      0 - no flag info\n");
   fprintf (stderr,
-	   "			  2 - full flag info (default)\n");
+	   "                      2 - full flag info (default)\n");
   fprintf (stderr,
-	   "  -m		  monitor fvwm message transaction\n");
+	   "  -m                  monitor fvwm message transaction\n");
   fprintf (stderr,
-	   "  -r		  "
+	   "  -r                  "
 	   "wait for a reply (overrides waiting time)\n");
   fprintf (stderr,
-	   "  -v		  print version number\n");
+	   "  -v                  print version number\n");
   fprintf (stderr,
-	   "  -w <micro sec>	  waiting time for the reponse from fvwm\n");
+	   "  -w <micro sec>      waiting time for the reponse from fvwm\n");
   fprintf (stderr, "\nDefault fifo names are ~/.%sC and ~/.%sM\n",
 	   MYNAME, MYNAME);
   fprintf (stderr, "Default waiting time is 500,000 us\n");
@@ -923,7 +923,7 @@ void list( unsigned long *body, char *text )
  ************************************************************************/
 void list_new_page(unsigned long *body)
 {
-  printf( "	      %-20s x %ld, y %ld, desk %ld, max x %ld, max y %ld\n",
+  printf( "           %-20s x %ld, y %ld, desk %ld, max x %ld, max y %ld\n",
 	  "new page",
 	  body[0], body[1], body[2], body[3], body[4]);
 }
@@ -935,7 +935,7 @@ void list_new_page(unsigned long *body)
  ************************************************************************/
 void list_new_desk(unsigned long *body)
 {
-  printf( "	      %-20s %ld\n",  "new desk", body[0] );
+  printf( "           %-20s %ld\n",  "new desk", body[0] );
 }
 
 /*************************************************************************

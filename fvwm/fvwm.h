@@ -6,42 +6,42 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 /****************************************************************************
  * This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
  ****************************************************************************/
 /*****************************************************************************/
-/**	  Copyright 1988 by Evans & Sutherland Computer Corporation,	    **/
-/**			     Salt Lake City, Utah			    **/
+/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
+/**                          Salt Lake City, Utah                           **/
 /**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**			   Cambridge, Massachusetts			    **/
-/**									    **/
-/**			      All Rights Reserved			    **/
-/**									    **/
+/**                        Cambridge, Massachusetts                         **/
+/**                                                                         **/
+/**                           All Rights Reserved                           **/
+/**                                                                         **/
 /**    Permission to use, copy, modify, and distribute this software and    **/
 /**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear	 in  all    **/
-/**    copies and that both  that  copyright  notice  and  this	 permis-    **/
+/**    granted, provided that the above copyright notice appear  in  all    **/
+/**    copies and that both  that  copyright  notice  and  this  permis-    **/
 /**    sion  notice appear in supporting  documentation,  and  that  the    **/
 /**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software	 without    **/
-/**    specific, written prior permission.				    **/
-/**									    **/
+/**    in publicity pertaining to distribution of the  software  without    **/
+/**    specific, written prior permission.                                  **/
+/**                                                                         **/
 /**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
 /**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY	AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
+/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
 /**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR	ANY DAMAGES WHATSOEVER	RESULTING FROM LOSS OF USE, DATA    **/
+/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
 /**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH	THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.					    **/
+/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
+/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
 
 #ifndef FVWM_H
@@ -70,8 +70,8 @@
 #endif
 
 #ifndef TRUE
-#define TRUE	1
-#define FALSE	0
+#define TRUE    1
+#define FALSE   0
 #endif
 
 #define NULLSTR ((char *) NULL)
@@ -94,13 +94,13 @@
 #define FUNC_FLAGS_TYPE unsigned char
 
 /* access macros */
-#define FW_W_FRAME(fw)	      ((fw)->wins.frame)
-#define FW_W_PARENT(fw)	      ((fw)->wins.parent)
-#define FW_W_CLIENT(fw)	      ((fw)->wins.client)
-#define FW_W(fw)	      FW_W_CLIENT(fw)
-#define FW_W_TITLE(fw)	      ((fw)->wins.title)
+#define FW_W_FRAME(fw)        ((fw)->wins.frame)
+#define FW_W_PARENT(fw)       ((fw)->wins.parent)
+#define FW_W_CLIENT(fw)       ((fw)->wins.client)
+#define FW_W(fw)              FW_W_CLIENT(fw)
+#define FW_W_TITLE(fw)        ((fw)->wins.title)
 #define FW_W_BUTTON(fw,i)     ((fw)->wins.button_w[(i)])
-#define FW_W_SIDE(fw,i)	      ((fw)->wins.sides[(i)])
+#define FW_W_SIDE(fw,i)       ((fw)->wins.sides[(i)])
 #define FW_W_CORNER(fw,i)     ((fw)->wins.corners[(i)])
 #define FW_W_ICON_TITLE(fw)   ((fw)->wins.icon_title_w)
 #define FW_W_ICON_PIXMAP(fw)  ((fw)->wins.icon_pixmap_w)
@@ -120,7 +120,7 @@ struct FvwmDecor;
  * code, AddToWindow(), HandleMapRequestRaised(), ewmh_events.c and others.
  *
  * initial_state
- *   The initial window state.	By default it carries the value DontCareState.
+ *   The initial window state.  By default it carries the value DontCareState.
  *   Other states can be set if
  *    - an icon is recaptured or restarted with session management
  *    - the StartIconic style is set
@@ -129,14 +129,14 @@ struct FvwmDecor;
  *
  * do_override_ppos
  *   This flag is used in PlaceWindow().  If it is set, the position requested
- *   by the program is ignored unconditionally.	 This is used during the initial
+ *   by the program is ignored unconditionally.  This is used during the initial
  *   capture and later recapture operations.
  *
  * is_iconified_by_parent
  *   Preserves the information if the window is a transient window that was
  *   iconified along with its transientfor window.  Set when the window is
  *   recaptured and used in HandleMapRequestRaised() to set the according
- *   window state flag.	 Deleted afterwards.
+ *   window state flag.  Deleted afterwards.
  *
  * is_menu
  *   Set in menus.c or in the recapture code if the new window is a tear off
@@ -151,7 +151,7 @@ struct FvwmDecor;
  *   HandleMapRequestRaised() and used in the icon placement code.
  *
  * initial_icon_x/y
- *   The icon position that is forced during a restart with SM.	 If set it
+ *   The icon position that is forced during a restart with SM.  If set it
  *   overrides all other methods of icon placement.  Set by session.c and used
  *   in the icon placement code.
  *
@@ -216,15 +216,15 @@ typedef struct
 */
 typedef struct icon_boxes_struct
 {
-	struct icon_boxes_struct *next;	      /* next icon_boxes or zero */
+	struct icon_boxes_struct *next;       /* next icon_boxes or zero */
 	unsigned int use_count;
-	int IconBox[4];			      /* x/y x/y for iconbox */
-	int IconScreen;			      /* Xinerama screen */
-	short IconGrid[2];		      /* x incr, y incr */
-	char IconSign[4];		      /* because of -0, need to save */
+	int IconBox[4];                       /* x/y x/y for iconbox */
+	int IconScreen;                       /* Xinerama screen */
+	short IconGrid[2];                    /* x incr, y incr */
+	char IconSign[4];                     /* because of -0, need to save */
 	unsigned is_orphan : 1;
-	unsigned IconFlags : 3;		      /* some bits */
-	/* IconFill only takes 3 bits.	Defaults are top, left, vert co-ord
+	unsigned IconFlags : 3;               /* some bits */
+	/* IconFill only takes 3 bits.  Defaults are top, left, vert co-ord
 	 * first eg: t l = 0,0,0; l t = 0,0,1; b r = 1,1,0 */
 #define ICONFILLBOT (1<<0)
 #define ICONFILLRGT (1<<1)
@@ -308,8 +308,8 @@ typedef struct
 		unsigned has_stippled_title : 1;
 		unsigned icon_override : 2;
 #define NO_ACTIVE_ICON_OVERRIDE 0
-#define ICON_OVERRIDE		1
-#define NO_ICON_OVERRIDE	2
+#define ICON_OVERRIDE           1
+#define NO_ICON_OVERRIDE        2
 #define ICON_OVERRIDE_MASK    0x3
 		unsigned is_bottom_title_rotated : 1;
 		unsigned is_fixed : 1;
@@ -325,10 +325,10 @@ typedef struct
 		unsigned use_icon_position_hint : 1;
 		unsigned use_indexed_window_name : 1;
 		unsigned use_indexed_icon_name : 1;
-#define WINDOWSHADE_LAZY	  0
-#define WINDOWSHADE_ALWAYS_LAZY	  1
-#define WINDOWSHADE_BUSY	  2
-#define WINDOWSHADE_LAZY_MASK	0x3
+#define WINDOWSHADE_LAZY          0
+#define WINDOWSHADE_ALWAYS_LAZY   1
+#define WINDOWSHADE_BUSY          2
+#define WINDOWSHADE_LAZY_MASK   0x3
 		unsigned windowshade_laziness : 2;
 	} s;
 } common_flags_type;
@@ -417,16 +417,16 @@ typedef struct
 	unsigned shaded_dir : 3;
 	unsigned using_default_icon_font : 1;
 	unsigned using_default_window_font : 1;
-#define ICON_HINT_NEVER	   0
-#define ICON_HINT_ONCE	   1
+#define ICON_HINT_NEVER    0
+#define ICON_HINT_ONCE     1
 #define ICON_HINT_MULTIPLE 2
 	unsigned was_icon_hint_provided : 2;
 	unsigned was_icon_name_provided : 1;
 	unsigned has_ewmh_wm_name : 1;
 	unsigned has_ewmh_wm_icon_name : 1;
-#define EWMH_NO_ICON	 0 /* the application does not provide an ewmh icon */
-#define EWMH_TRUE_ICON	 1 /* the application does provide an ewmh icon */
-#define EWMH_FVWM_ICON	 2 /* the ewmh icon has been set by fvwm */
+#define EWMH_NO_ICON     0 /* the application does not provide an ewmh icon */
+#define EWMH_TRUE_ICON   1 /* the application does provide an ewmh icon */
+#define EWMH_FVWM_ICON   2 /* the ewmh icon has been set by fvwm */
 	unsigned has_ewmh_wm_icon_hint : 2;
 	/* says if the app have an ewmh icon of acceptable size for a mini
 	 * icon in its list of icons */
@@ -435,8 +435,8 @@ typedef struct
 	unsigned use_ewmh_icon : 1;
 	unsigned is_ewmh_modal : 1;
 #define EWMH_STATE_UNDEFINED_HINT 0
-#define EWMH_STATE_NO_HINT	  1
-#define EWMH_STATE_HAS_HINT	  2
+#define EWMH_STATE_NO_HINT        1
+#define EWMH_STATE_HAS_HINT       2
 	unsigned has_ewmh_init_fullscreen_state : 2;
 	unsigned has_ewmh_init_hidden_state : 2;
 	unsigned has_ewmh_init_maxhoriz_state : 2;
@@ -459,9 +459,9 @@ typedef struct WindowConditionMask
 		unsigned needs_current_desk : 1;
 		unsigned needs_current_page : 1;
 		unsigned needs_current_global_page : 1;
-#define NEEDS_ANY	 0
-#define NEEDS_TRUE	 1
-#define NEEDS_FALSE	 2
+#define NEEDS_ANY        0
+#define NEEDS_TRUE       1
+#define NEEDS_FALSE      2
 		unsigned needs_focus : 2;
 		unsigned needs_name : 1;
 		unsigned needs_not_name : 1;
@@ -483,11 +483,11 @@ typedef struct
 	common_flags_type common;
 	unsigned do_decorate_transient : 1;
 	/* old placement flags */
-#define PLACE_DUMB	      0x0
-#define PLACE_SMART	      0x1
-#define PLACE_CLEVER	      0x2
+#define PLACE_DUMB            0x0
+#define PLACE_SMART           0x1
+#define PLACE_CLEVER          0x2
 #define PLACE_CLEVERNESS_MASK 0x3
-#define PLACE_RANDOM	      0x4
+#define PLACE_RANDOM          0x4
 	/* new placements value, try to get a minimal backward compatibility
 	 * with the old flags:
 	 * Dumb+Active=Manual,
@@ -502,15 +502,15 @@ typedef struct
 	 * Active/Random+Dumb+Clever=Active/Random+Dumb (with Dumb Clever is
 	 * ignored); These represent the not use value: 0x2=Active+Dumb+Clever,
 	 * 0x6=Random+Dumb+Clever */
-#define PLACE_MANUAL		0x0
-#define PLACE_TILEMANUAL	0x1
-#define PLACE_MANUAL_B		0x2
+#define PLACE_MANUAL            0x0
+#define PLACE_TILEMANUAL        0x1
+#define PLACE_MANUAL_B          0x2
 #define PLACE_MINOVERLAPPERCENT 0x3
-#define PLACE_CASCADE		0x4
-#define PLACE_TILECASCADE	0x5
-#define PLACE_CASCADE_B		0x6
-#define PLACE_MINOVERLAP	0x7
-#define PLACE_MASK		0x7
+#define PLACE_CASCADE           0x4
+#define PLACE_TILECASCADE       0x5
+#define PLACE_CASCADE_B         0x6
+#define PLACE_MINOVERLAP        0x7
+#define PLACE_MASK              0x7
 	unsigned placement_mode : 3;
 	unsigned ewmh_placement_mode : 2; /* see ewmh.h */
 	unsigned do_save_under : 1;
@@ -539,7 +539,7 @@ typedef struct
 #endif
 	unsigned is_button_disabled : NUMBER_OF_BUTTONS;
 #define BACKINGSTORE_DEFAULT 0
-#define BACKINGSTORE_ON	     1
+#define BACKINGSTORE_ON      1
 #define BACKINGSTORE_OFF     2
 #define BACKINGSTORE_MASK  0x3
 	unsigned use_backing_store : 2;
@@ -778,8 +778,8 @@ typedef struct FvwmWindow
 	int shade_anim_steps;
 	unsigned char grabbed_buttons;
 
-#define FM_NO_INPUT	   0
-#define FM_PASSIVE	   1
+#define FM_NO_INPUT        0
+#define FM_PASSIVE         1
 #define FM_LOCALLY_ACTIVE  2
 #define FM_GLOBALLY_ACTIVE 3
 	unsigned char focus_model;

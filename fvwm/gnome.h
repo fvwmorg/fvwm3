@@ -1,13 +1,13 @@
 /*********************************************************/
-/* GNOME WM Compliance adapted for FVWM			 */
+/* GNOME WM Compliance adapted for FVWM                  */
 /* Properties set on the root window (or desktop window) */
-/*							 */
+/*                                                       */
 /* Even though the rest of fvwm is GPL consider this file*/
-/* Public Domain - use it however you see fit to make	 */
-/* your WM GNOME compiant				 */
-/*							 */
-/* written by Raster					 */
-/* adapted for FVWM by Jay Painter <jpaint@gnu.org>	 */
+/* Public Domain - use it however you see fit to make    */
+/* your WM GNOME compiant                                */
+/*                                                       */
+/* written by Raster                                     */
+/* adapted for FVWM by Jay Painter <jpaint@gnu.org>      */
 /*********************************************************/
 
 #ifndef GNOME_H

@@ -5,16 +5,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -87,13 +87,13 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action,
 void dragSrcInit(DragSource *ds,Display *dpy,Window root,Window client);
 static RETSIGTYPE TerminateHandler(int);
 
-int fd[2];	/*used for reading .fvwm2rc options*/
+int fd[2];      /*used for reading .fvwm2rc options*/
 	       /*fd[0] module2fvwm*/
 	       /*fd[1] fvwm2module*/
-XGlobals xg;	/*X related globals*/
+XGlobals xg;    /*X related globals*/
 DragWellMenuGlobals mg; /*menu related globals */
 DragWellButton dragBut; /*not really used as a button but rather a drag well*/
-char dropData[MAX_PATH_LEN];	/*data used for the drop*/
+char dropData[MAX_PATH_LEN];    /*data used for the drop*/
 Bool Swallowed = False;
 
 /* Don't know what this does yet...*/
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 
   sscanf (argv[4], "%x", (unsigned int *)&app_win);
 
-  /*dsg.mfsErr	= fopen("/tmp/mfsErr","w");*/
+  /*dsg.mfsErr  = fopen("/tmp/mfsErr","w");*/
 
   XStartup(argv[0]); /*initializes variables*/
   veryLongLoop(); /*event loop*/
@@ -735,7 +735,7 @@ static void change_colorset(int colorset)
 /***************************************************************************
  *
  * myXNextEvent - waits for the next event, which is either an XEvent,
- *		    or an fvwm event.
+ *                  or an fvwm event.
  * Arguements:
  *   event - the XEvent that is possibly found.
  *   fvwmMessage - the FvwmMessage that is possibly found.
@@ -816,7 +816,7 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
 	       * which seems to insert three pieces of data at the start of
 	       * the body */
 	      /* The quoting seems to be wrong in SendToModule */
-	      /* Sending "SendToModule "FvwmDragWell"	dragitem "stuff"
+	      /* Sending "SendToModule "FvwmDragWell"   dragitem "stuff"
 	       * yields ["  dragitem "stuff"]*/
 	      lptr = packet->body;
 	      msg = (char *) &(lptr[3]);

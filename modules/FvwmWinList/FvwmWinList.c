@@ -1,7 +1,7 @@
 /* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
- *				 Mike_Finger@atk.com)
+ *                               Mike_Finger@atk.com)
  *
  * The author makes not guarantees or warantees, either express or
  * implied.  Feel free to use any contained here for any purpose, as long
@@ -29,12 +29,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef NO_CONSOLE
@@ -91,7 +91,7 @@ int x_fd;
 /* X related things */
 Display *dpy;
 Window Root;
-Window	win;
+Window  win;
 int screen;
 XSizeHints g_hints;
 int g_hints_rc;
@@ -436,11 +436,11 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     {
       MiniIconPacket *mip = (MiniIconPacket *) body;
       p.picture = mip->picture;
-      p.mask	= mip->mask;
-      p.alpha	= mip->alpha;
-      p.width	= mip->width;
-      p.height	= mip->height;
-      p.depth	= mip->depth;
+      p.mask    = mip->mask;
+      p.alpha   = mip->alpha;
+      p.width   = mip->width;
+      p.height  = mip->height;
+      p.depth   = mip->depth;
 
       UpdateButtonPicture(&buttons, i, &p);
 
@@ -543,7 +543,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
   case MX_PROPERTY_CHANGE:
     if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND && body[2] == 0 &&
-	WindowState &&	win_bg == ParentRelative)
+	WindowState &&  win_bg == ParentRelative)
     {
       RedrawWindow(True, True);
     }

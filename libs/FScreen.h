@@ -5,10 +5,10 @@
 
 enum
 {
-	FSCREEN_GLOBAL	= -1,
+	FSCREEN_GLOBAL  = -1,
 	FSCREEN_CURRENT = -2,
 	FSCREEN_PRIMARY = -3,
-	FSCREEN_XYPOS	= -4
+	FSCREEN_XYPOS   = -4
 };
 
 enum

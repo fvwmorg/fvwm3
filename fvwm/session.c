@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*
@@ -55,24 +55,24 @@ extern int master_pid;
 
 typedef struct _match
 {
-  unsigned long	     win;
-  char		     *client_id;
-  char		     *res_name;
-  char		     *res_class;
-  char		     *window_role;
-  char		     *wm_name;
-  int		     wm_command_count;
-  char		     **wm_command;
-  int		      x, y, w, h, icon_x, icon_y;
-  int		      x_max, y_max, w_max, h_max;
-  int		      width_defect_max, height_defect_max;
-  int		      max_x_offset, max_y_offset;
-  int		      desktop;
-  int		      layer;
-  int		      used;
-  int		      gravity;
-  unsigned long	      ewmh_hint_desktop;
-  window_flags	      flags;
+  unsigned long      win;
+  char               *client_id;
+  char               *res_name;
+  char               *res_class;
+  char               *window_role;
+  char               *wm_name;
+  int                wm_command_count;
+  char               **wm_command;
+  int                 x, y, w, h, icon_x, icon_y;
+  int                 x_max, y_max, w_max, h_max;
+  int                 width_defect_max, height_defect_max;
+  int                 max_x_offset, max_y_offset;
+  int                 desktop;
+  int                 layer;
+  int                 used;
+  int                 gravity;
+  unsigned long       ewmh_hint_desktop;
+  window_flags        flags;
 }
 Match;
 
@@ -114,18 +114,18 @@ static int
 SaveGlobalState(FILE *f)
 {
   fprintf(f, "[GLOBAL]\n");
-  fprintf(f, "	[DESKTOP] %i\n", Scr.CurrentDesk);
-  fprintf(f, "	[VIEWPORT] %i %i %i %i\n",
+  fprintf(f, "  [DESKTOP] %i\n", Scr.CurrentDesk);
+  fprintf(f, "  [VIEWPORT] %i %i %i %i\n",
 	  Scr.Vx, Scr.Vy, Scr.VxMax, Scr.VyMax);
-  fprintf(f, "	[SCROLL] %i %i %i %i %i %i\n",
+  fprintf(f, "  [SCROLL] %i %i %i %i %i %i\n",
 	  Scr.EdgeScrollX, Scr.EdgeScrollY, Scr.ScrollResistance,
 	  Scr.MoveResistance,
 	  !!(Scr.flags.edge_wrap_x), !!(Scr.flags.edge_wrap_y));
-  fprintf(f, "	[SNAP] %i %i %i %i\n",
+  fprintf(f, "  [SNAP] %i %i %i %i\n",
 	  Scr.SnapAttraction, Scr.SnapMode, Scr.SnapGridX, Scr.SnapGridY);
-  fprintf(f, "	[MISC] %i %i %i\n",
+  fprintf(f, "  [MISC] %i %i %i\n",
 	  Scr.ClickTime, Scr.ColormapFocus, Scr.ColorLimit);
-  fprintf(f, "	[STYLE] %i %i\n", Scr.gs.EmulateMWM, Scr.gs.EmulateWIN);
+  fprintf(f, "  [STYLE] %i %i\n", Scr.gs.EmulateMWM, Scr.gs.EmulateWIN);
   return 1;
 }
 
@@ -198,8 +198,8 @@ static char *getUniqueStateFilename(void)
 void
 LoadGlobalState(char *filename)
 {
-  FILE		     *f;
-  char		      s[4096], s1[4096];
+  FILE               *f;
+  char                s[4096], s1[4096];
   /* char s2[256]; */
   int i1, i2, i3, i4, i5, i6;
 
@@ -1338,10 +1338,10 @@ Bool quitSession(void)
   SmcRequestSaveYourself(
     sm_conn,
     SmSaveLocal,
-    True,		/* shutdown */
+    True,               /* shutdown */
     SmInteractStyleAny,
-    False,		/* fast */
-    True		/* global */
+    False,              /* fast */
+    True                /* global */
   );
   return True;
 
@@ -1367,10 +1367,10 @@ Bool saveSession(void)
   SmcRequestSaveYourself(
     sm_conn,
     SmSaveBoth,
-    False,		/* shutdown */
+    False,              /* shutdown */
     SmInteractStyleAny,
-    False,		/* fast */
-    True		/* global */
+    False,              /* fast */
+    True                /* global */
   );
   return True;
 
@@ -1396,10 +1396,10 @@ Bool saveQuitSession(void)
   SmcRequestSaveYourself(
     sm_conn,
     SmSaveBoth,
-    True,		/* shutdown */
+    True,               /* shutdown */
     SmInteractStyleAny,
-    False,		/* fast */
-    True		/* global */
+    False,              /* fast */
+    True                /* global */
   );
   return True;
 

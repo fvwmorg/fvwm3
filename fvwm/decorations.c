@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -76,50 +76,50 @@ extern Atom _XA_MwmAtom;
 /* Motif  window hints */
 typedef struct
 {
-	CARD32	    flags;
-	CARD32	    functions;
-	CARD32	    decorations;
-	INT32	      inputMode;
+	CARD32      flags;
+	CARD32      functions;
+	CARD32      decorations;
+	INT32         inputMode;
 } PropMotifWmHints;
 
-typedef PropMotifWmHints	PropMwmHints;
+typedef PropMotifWmHints        PropMwmHints;
 
 /* Motif window hints */
-#define MWM_HINTS_FUNCTIONS	      (1L << 0)
-#define MWM_HINTS_DECORATIONS	      (1L << 1)
+#define MWM_HINTS_FUNCTIONS           (1L << 0)
+#define MWM_HINTS_DECORATIONS         (1L << 1)
 
 /* bit definitions for MwmHints.functions */
-#define MWM_FUNC_ALL		(1L << 0)
-#define MWM_FUNC_RESIZE		(1L << 1)
-#define MWM_FUNC_MOVE		(1L << 2)
-#define MWM_FUNC_MINIMIZE	(1L << 3)
-#define MWM_FUNC_MAXIMIZE	(1L << 4)
-#define MWM_FUNC_CLOSE		(1L << 5)
+#define MWM_FUNC_ALL            (1L << 0)
+#define MWM_FUNC_RESIZE         (1L << 1)
+#define MWM_FUNC_MOVE           (1L << 2)
+#define MWM_FUNC_MINIMIZE       (1L << 3)
+#define MWM_FUNC_MAXIMIZE       (1L << 4)
+#define MWM_FUNC_CLOSE          (1L << 5)
 
 /* bit definitions for MwmHints.decorations */
 #if 0
-#define MWM_DECOR_ALL		      (1L << 0)
-#define MWM_DECOR_BORDER	      (1L << 1)
-#define MWM_DECOR_RESIZEH	      (1L << 2)
-#define MWM_DECOR_TITLE		      (1L << 3)
-#define MWM_DECOR_MENU		      (1L << 4)
-#define MWM_DECOR_MINIMIZE	      (1L << 5)
-#define MWM_DECOR_MAXIMIZE	      (1L << 6)
+#define MWM_DECOR_ALL                 (1L << 0)
+#define MWM_DECOR_BORDER              (1L << 1)
+#define MWM_DECOR_RESIZEH             (1L << 2)
+#define MWM_DECOR_TITLE               (1L << 3)
+#define MWM_DECOR_MENU                (1L << 4)
+#define MWM_DECOR_MINIMIZE            (1L << 5)
+#define MWM_DECOR_MAXIMIZE            (1L << 6)
 #endif
 
 #define PROP_MOTIF_WM_HINTS_ELEMENTS  4
-#define PROP_MWM_HINTS_ELEMENTS	      PROP_MOTIF_WM_HINTS_ELEMENTS
+#define PROP_MWM_HINTS_ELEMENTS       PROP_MOTIF_WM_HINTS_ELEMENTS
 
 /* bit definitions for OL hints; I just
  *  made these up, OL stores hints as atoms */
-#define OL_DECOR_CLOSE		      (1L << 0)
-#define OL_DECOR_RESIZEH	      (1L << 1)
-#define OL_DECOR_HEADER		      (1L << 2)
-#define OL_DECOR_ICON_NAME	      (1L << 3)
-#define OL_DECOR_ALL		      \
+#define OL_DECOR_CLOSE                (1L << 0)
+#define OL_DECOR_RESIZEH              (1L << 1)
+#define OL_DECOR_HEADER               (1L << 2)
+#define OL_DECOR_ICON_NAME            (1L << 3)
+#define OL_DECOR_ALL                  \
   (OL_DECOR_CLOSE | OL_DECOR_RESIZEH | OL_DECOR_HEADER | OL_DECOR_ICON_NAME)
 /* indicates if there are any OL hints */
-#define OL_ANY_HINTS		      (1L << 7)
+#define OL_ANY_HINTS                  (1L << 7)
 
 /****************************************************************************
  *
@@ -159,14 +159,14 @@ void GetMwmHints(FvwmWindow *t)
  *
  * _OL_WIN_ATTR - the win_type field is the either the first atom if the
  * property has length three or the second atom if the property has
- * length five.	 It can be any of:
+ * length five.  It can be any of:
  *     _OL_WT_BASE (no changes)
  *     _OL_WT_CMD (no minimize decoration)
  *     _OL_WT_HELP (no minimize, maximize or resize handle decorations)
  *     _OL_WT_NOTICE (no minimize, maximize, system menu, resize handle
- *	   or titlebar decorations)
+ *         or titlebar decorations)
  *     _OL_WT_OTHER (no minimize, maximize, system menu, resize handle
- *	   or titlebar decorations)
+ *         or titlebar decorations)
  * In addition, if the _OL_WIN_ATTR property is in the three atom format
  * or if the type is _OL_WT_OTHER, then the icon name is not displayed
  * (same behavior as olvwm).
@@ -429,35 +429,35 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 		if (t->ol_hints & OL_DECOR_CLOSE)
 		{
 			t->functions |= MWM_FUNC_MINIMIZE;
-			decor	   |= MWM_FUNC_MINIMIZE;
+			decor      |= MWM_FUNC_MINIMIZE;
 		}
 		else
 		{
 			t->functions &= ~MWM_FUNC_MINIMIZE;
-			decor	   &= ~MWM_FUNC_MINIMIZE;
+			decor      &= ~MWM_FUNC_MINIMIZE;
 		}
 		if (t->ol_hints & OL_DECOR_RESIZEH)
 		{
 			t->functions |= (MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
-			decor	   |= (MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
+			decor      |= (MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
 		}
 		else
 		{
 			t->functions &= ~(MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
-			decor	   &= ~(MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
+			decor      &= ~(MWM_FUNC_RESIZE | MWM_FUNC_MAXIMIZE);
 		}
 		if (t->ol_hints & OL_DECOR_HEADER)
 		{
 			t->functions |= (MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
 					 MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
-			decor	   |= (MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
+			decor      |= (MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
 				       MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
 		}
 		else
 		{
 			t->functions &= ~(MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
 					  MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
-			decor	   &= ~(MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
+			decor      &= ~(MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
 					MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
 		}
 		if (t->ol_hints & OL_DECOR_ICON_NAME)
@@ -534,7 +534,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 	}
 	if (decor & MWM_DECOR_TITLE)
 	{
-		/*	A title bar with no buttons in it
+		/*      A title bar with no buttons in it
 		 * window gets a 1 pixel wide black border. */
 		SET_HAS_TITLE(t, 1);
 	}
@@ -554,7 +554,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 	set_window_border_size(t, used_width);
 	if (!(decor & MWM_DECOR_MENU))
 	{
-		/*	title-bar menu button omitted
+		/*      title-bar menu button omitted
 		 * window gets 1 pixel wide black border */
 		/* disable any buttons with the MWMDecorMenu flag */
 		int i;

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -529,9 +529,9 @@ dialog_color (int argc, char **argv)
 		       &color))
 	{
 	  double rgb[3];
-	  rgb[0] = (double) color.red	/ 65536.0;
+	  rgb[0] = (double) color.red   / 65536.0;
 	  rgb[1] = (double) color.green / 65536.0;
-	  rgb[2] = (double) color.blue	/ 65536.0;
+	  rgb[2] = (double) color.blue  / 65536.0;
 	  gtk_color_selection_set_color (GTK_COLOR_SELECTION (item), rgb);
 	}
     }

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -73,8 +73,8 @@ typedef union {
   ConfigWinPacket      add_config_data;
   m_new_page_data      new_page_data;
   m_minimal_data       minimal_data;
-  m_icon_data	       icon_data;
-  m_name_data	       name_data;
+  m_icon_data          icon_data;
+  m_name_data          name_data;
   m_mini_icon_data     mini_icon_data;
   m_property_data      property_data;
 } FvwmPacketBody;

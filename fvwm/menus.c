@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*****************************************************************************
@@ -815,7 +815,7 @@ static void handle_emacs_bindings(
 
 /***********************************************************************
  * Procedure
- *	menuShortcuts() - Menu keyboard processing
+ *      menuShortcuts() - Menu keyboard processing
  *
  * Function called from MenuInteraction instead of Keyboard_Shortcuts()
  * when a KeyPress event is received.  If the key is alphanumeric,
@@ -1341,18 +1341,18 @@ static Bool is_double_click(
 /***********************************************************************
  *
  *  Procedure:
- *	Interacts with user to Update menu display and start new submenus,
- *	return to old sub menus, etc.
+ *      Interacts with user to Update menu display and start new submenus,
+ *      return to old sub menus, etc.
  *  Input
- *	sticks = 0, transient style menu, drops on button release
- *	sticks = 1, sticky style, stays up on a click (i.e. initial release
- *		    comes soon after initial press.
+ *      sticks = 0, transient style menu, drops on button release
+ *      sticks = 1, sticky style, stays up on a click (i.e. initial release
+ *                  comes soon after initial press.
  *  Returns:
- *	MENU_ERROR on error condition
- *	MENU_SUBMENU_DONE on return from submenu to parent menu
- *	MENU_DONE on completion by non-button-release (e.g. keyboard)
- *	MENU_ABORT on abort of menu by non-button-release (e.g. keyboard)
- *	MENU_SELECTED on item selection -- returns action * in *ret_paction
+ *      MENU_ERROR on error condition
+ *      MENU_SUBMENU_DONE on return from submenu to parent menu
+ *      MENU_DONE on completion by non-button-release (e.g. keyboard)
+ *      MENU_ABORT on abort of menu by non-button-release (e.g. keyboard)
+ *      MENU_SELECTED on item selection -- returns action * in *ret_paction
  *
  ***********************************************************************/
 static void MenuInteraction(
@@ -2347,7 +2347,7 @@ static void MenuInteraction(
       } /* if (flags.do_menu) */
 
       /* Now check whether we can animate the current popup menu back to the
-       * original place to unobscure the current menu;	this happens only when
+       * original place to unobscure the current menu;  this happens only when
        * using animation */
       if (mrPopup && MR_XANIMATION(mrPopup) &&
 	  (tmi = find_entry(pmp, NULL, &tmrMi, None, -1, -1))  &&
@@ -2416,7 +2416,7 @@ static void MenuInteraction(
 	  }
 	  else if (x < mx || x >= mx + mw || y < my || y >= my + mh)
 	  {
-	    /* pointer is outside the menu but do not pop down	*/
+	    /* pointer is outside the menu but do not pop down  */
 	    flags.is_off_menu_allowed = True;
 	  }
 	  else
@@ -2642,12 +2642,12 @@ static int do_menus_overlap(
 /***********************************************************************
  *
  *  Procedure:
- *	pop_menu_up - pop up a pull down menu
+ *      pop_menu_up - pop up a pull down menu
  *
  *  Inputs:
- *	x, y	  - location of upper left of menu
- *	do_warp_to_item - warp pointer to the first item after title
- *	pops	  - pointer to the menu options for new menu
+ *      x, y      - location of upper left of menu
+ *      do_warp_to_item - warp pointer to the first item after title
+ *      pops      - pointer to the menu options for new menu
  *
  ***********************************************************************/
 static int pop_menu_up(
@@ -3479,16 +3479,16 @@ static void select_menu_item(
 /***********************************************************************
  *
  *  Procedure:
- *	pop_menu_down - unhighlight the current menu selection and
- *		      take down the menus
+ *      pop_menu_down - unhighlight the current menu selection and
+ *                    take down the menus
  *
- *	mr     - menu to pop down; this pointer is invalid after the function
- *		 returns. Don't use it anymore!
- *	parent - the menu that has spawned mr (may be NULL). this is
- *		 used to see if mr was spawned by itself on some level.
- *		 this is a hack to allow specifying 'Popup foo' within
- *		 menu foo. You must use the MenuRoot that is currently
- *		 being processed here. DO NOT USE MR_PARENT_MENU(mr) here!
+ *      mr     - menu to pop down; this pointer is invalid after the function
+ *               returns. Don't use it anymore!
+ *      parent - the menu that has spawned mr (may be NULL). this is
+ *               used to see if mr was spawned by itself on some level.
+ *               this is a hack to allow specifying 'Popup foo' within
+ *               menu foo. You must use the MenuRoot that is currently
+ *               being processed here. DO NOT USE MR_PARENT_MENU(mr) here!
  *
  ***********************************************************************/
 static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
@@ -3555,10 +3555,10 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 /***********************************************************************
  *
  *  Procedure:
- *	pop_menu_down_and_repaint_parent - Pops down a menu and repaints the
- *	overlapped portions of the parent menu. This is done only if
- *	*fSubmenuOverlaps is True. *fSubmenuOverlaps is set to False
- *	afterwards.
+ *      pop_menu_down_and_repaint_parent - Pops down a menu and repaints the
+ *      overlapped portions of the parent menu. This is done only if
+ *      *fSubmenuOverlaps is True. *fSubmenuOverlaps is set to False
+ *      afterwards.
  *
  ***********************************************************************/
 static void pop_menu_down_and_repaint_parent(
@@ -3642,12 +3642,12 @@ static void pop_menu_down_and_repaint_parent(
 /***********************************************************************
  *
  *  Procedure:
- *	get_menu_paint_item_parameters - prepares the parameters to be
- *	passed to menuitem_paint().
+ *      get_menu_paint_item_parameters - prepares the parameters to be
+ *      passed to menuitem_paint().
  *
- *	mr - the menu instance that holds the menu item
- *	mi - the menu item to redraw
- *	fw - the FvwmWindow structure to check against allowed functions
+ *      mr - the menu instance that holds the menu item
+ *      mi - the menu item to redraw
+ *      fw - the FvwmWindow structure to check against allowed functions
  *
  ***********************************************************************/
 static void get_menu_paint_item_parameters(
@@ -4027,7 +4027,7 @@ static void paint_menu_pixmap_background(
 /***********************************************************************
  *
  *  Procedure:
- *	paint_menu - draws the entire menu
+ *      paint_menu - draws the entire menu
  *
  ***********************************************************************/
 static void paint_menu(
@@ -4684,7 +4684,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 	MR_ITEM_TEXT_Y_OFFSET(msp->menu) =
 		MST_PSTDFONT(msp->menu)->ascent + relief_thickness +
 		MST_ITEM_GAP_ABOVE(msp->menu);
-	simple_entry_height =	MST_PSTDFONT(msp->menu)->height +
+	simple_entry_height =   MST_PSTDFONT(msp->menu)->height +
 		MST_ITEM_GAP_ABOVE(msp->menu) + MST_ITEM_GAP_BELOW(msp->menu);
 
 	/* mi_prev trails one behind mi, since we need to move that
@@ -4846,7 +4846,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 			strcat(tempname, "$\"");
 			free(t);
 			/* NewMenuRoot inserts at the head of the list of menus
-			   but, we need it at the end.	(Give it just the name,
+			   but, we need it at the end.  (Give it just the name,
 			   * which is 6 chars past the action since
 			   * strlen("Popup ")==6 ) */
 			t = (char *)safemalloc(strlen(MR_NAME(msp->menu)) + 2);
@@ -4947,16 +4947,16 @@ static void make_menu_window(MenuRoot *mr)
 		attributes.cursor = Scr.FvwmCursors[CRS_MENU];
 		attributes.save_under = True;
 
-		/* Create a display used to create the window.	Can't use the
-		 * normal display because 'xkill' would	 kill the window
-		 * manager if used on a tear off menu.	The display can't be
+		/* Create a display used to create the window.  Can't use the
+		 * normal display because 'xkill' would  kill the window
+		 * manager if used on a tear off menu.  The display can't be
 		 * deleted right now because that would either destroy the new
 		 * window or leave it as an orphan if fvwm dies or is
 		 * restarted. */
 		MR_CREATE_DPY(mr) = XOpenDisplay(display_name);
 		if (MR_CREATE_DPY(mr) == NULL)
 		{
-			/* Doh.	 Use the standard display instead. */
+			/* Doh.  Use the standard display instead. */
 			MR_CREATE_DPY(mr) = dpy;
 		}
 		MR_WINDOW(mr) = XCreateWindow(
@@ -5023,12 +5023,12 @@ static void make_menu(MenuRoot *mr)
 
 /***********************************************************************
  * Procedure:
- *	scanForHotkeys - Look for hotkey markers in a MenuItem
- *							(pete@tecc.co.uk)
+ *      scanForHotkeys - Look for hotkey markers in a MenuItem
+ *                                                      (pete@tecc.co.uk)
  *
  * Inputs:
- *	it	- MenuItem to scan
- *	column	- The column number in which to look for a hotkey.
+ *      it      - MenuItem to scan
+ *      column  - The column number in which to look for a hotkey.
  *
  ***********************************************************************/
 static void scanForHotkeys(
@@ -5052,7 +5052,7 @@ static void scanForHotkeys(
 			/* found a hotkey - only one hotkey per item */
 			break;
 		}
-		/* Just an escaped '&'; copy the string down over it	*/
+		/* Just an escaped '&'; copy the string down over it    */
 		for (t = s; *t != '\0'; t++)
 		{
 			t[0] = t[1];
@@ -5098,14 +5098,14 @@ static void scanForColor(
 	name = (char *)alloca(len);
 	strcpy(save_instring, instring);
 
-	/* Scan whole string	      */
+	/* Scan whole string          */
 	for (s = instring; *s != '\0'; s++)
 	{
 		if (*s != identifier)
 		{
 			continue;
 		}
-		/* Just an escaped '^'	*/
+		/* Just an escaped '^'  */
 		if (s[1] != identifier)
 		{
 			/* found the identifier */
@@ -5159,7 +5159,7 @@ static Bool scanForPixmap(
 	}
 	name = (char *)safemalloc(strlen(instring)+1);
 
-	/* Scan whole string	*/
+	/* Scan whole string    */
 	for (s = instring; *s != '\0'; s++)
 	{
 		if (*s != identifier)
@@ -5167,7 +5167,7 @@ static Bool scanForPixmap(
 			continue;
 		}
 		/* A hotkey marker? */
-		/* Just an escaped &	*/
+		/* Just an escaped &    */
 		if (s[1] != identifier)
 		{
 			break;
@@ -5246,7 +5246,7 @@ static void unlink_item_from_menu(
 	return;
 }
 
-/* Add the given menu item to the menu.	 If the first item of the menu is a
+/* Add the given menu item to the menu.  If the first item of the menu is a
  * title, and the do_replace_title flag is True, the old title is deleted and
  * replaced by the new item.  Otherwise the item is appended at the end of the
  * menu. */
@@ -5293,13 +5293,13 @@ static void append_item_to_menu(
 /***********************************************************************
  *
  *  Procedure:
- *	copy_menu_root - creates a new instance of an existing menu
+ *      copy_menu_root - creates a new instance of an existing menu
  *
  *  Returned Value:
- *	(MenuRoot *)
+ *      (MenuRoot *)
  *
  *  Inputs:
- *	mr	- the MenuRoot structure of the existing menu
+ *      mr      - the MenuRoot structure of the existing menu
  *
  ***********************************************************************/
 static MenuRoot *copy_menu_root(MenuRoot *mr)
@@ -5329,14 +5329,14 @@ static MenuRoot *copy_menu_root(MenuRoot *mr)
 /***********************************************************************
  *
  *  Procedure:
- *	clone_menu - duplicates an existing menu in newly allocated
-	memory.	 The new menu is independent of the original.
+ *      clone_menu - duplicates an existing menu in newly allocated
+	memory.  The new menu is independent of the original.
  *
  *  Returned Value:
- *	(MenuRoot *)
+ *      (MenuRoot *)
  *
  *  Inputs:
- *	mr	- the MenuRoot structure of the existing menu
+ *      mr      - the MenuRoot structure of the existing menu
  *
  ***********************************************************************/
 
@@ -5844,10 +5844,10 @@ void menu_close_tear_off_menu(FvwmWindow *fw)
  *
  * eventp = 0: menu opened by mouse, do not warp
  * eventp > 1: root menu opened by keypress with 'Menu', warp pointer and
- *	       allow 'double-keypress'.
+ *             allow 'double-keypress'.
  * eventp = 1: menu opened by keypress, warp but forbid 'double-keypress'
- *	       this should always be used except in the call in 'staysup_func'
- *	       in builtin.c
+ *             this should always be used except in the call in 'staysup_func'
+ *             in builtin.c
  *
  * Returns one of MENU_NOP, MENU_ERROR, MENU_ABORTED, MENU_DONE
  ***************************************************************************/
@@ -6196,10 +6196,10 @@ void menu_expose(XEvent *event, FvwmWindow *fw)
 /***********************************************************************
  *
  *  Procedure:
- *	ParentalMenuRePaint - repaint the menu background if it is tranparent
- *	  (ParentRelative) during an animated move.
- *	  Called in move_resize.c (AnimatedMoveAnyWindow)
- *	Performance improvement Welcome!
+ *      ParentalMenuRePaint - repaint the menu background if it is tranparent
+ *        (ParentRelative) during an animated move.
+ *        Called in move_resize.c (AnimatedMoveAnyWindow)
+ *      Performance improvement Welcome!
  *
  ***********************************************************************/
 void ParentalMenuRePaint(MenuRoot *mr)
@@ -6460,18 +6460,18 @@ MenuRoot *FollowMenuContinuations(MenuRoot *mr, MenuRoot **pmrPrior )
 /***********************************************************************
  *
  *  Procedure:
- *	AddToMenu - add an item to a root menu
+ *      AddToMenu - add an item to a root menu
  *
  *  Returned Value:
- *	(MenuItem *)
+ *      (MenuItem *)
  *
  *  Inputs:
- *	menu	- pointer to the root menu to add the item
- *	item	- the text to appear in the menu
- *	action	- the string to possibly execute
+ *      menu    - pointer to the root menu to add the item
+ *      item    - the text to appear in the menu
+ *      action  - the string to possibly execute
  *
  * ckh - need to add boolean to say whether or not to expand for pixmaps,
- *	 so built in window list can handle windows w/ * and % in title.
+ *       so built in window list can handle windows w/ * and % in title.
  *
  ***********************************************************************/
 void AddToMenu(
@@ -6752,13 +6752,13 @@ void AddToMenu(
 /***********************************************************************
  *
  *  Procedure:
- *	NewMenuRoot - create a new menu root
+ *      NewMenuRoot - create a new menu root
  *
  *  Returned Value:
- *	(MenuRoot *)
+ *      (MenuRoot *)
  *
  *  Inputs:
- *	name	- the name of the menu root
+ *      name    - the name of the menu root
  *
  ***********************************************************************/
 MenuRoot *NewMenuRoot(char *name)

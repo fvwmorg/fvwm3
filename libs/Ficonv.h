@@ -8,12 +8,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef FICONV_H
@@ -34,13 +34,13 @@
 #if FiconvSupport
 
 #define Ficonv_open(a,b)    iconv_open(a,b)
-#define Ficonv_close(a)	    iconv_close(a)
+#define Ficonv_close(a)     iconv_close(a)
 #define Ficonv(a,b,c,d,e)   iconv(a,b,c,d,e)
 
 #else
 
 #define Ficonv_open(a,b)    (Ficonv_t)-1
-#define Ficonv_close(a)	    -1
+#define Ficonv_close(a)     -1
 #define Ficonv(a,b,c,d,e)   -1
 
 #endif

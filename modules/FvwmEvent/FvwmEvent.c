@@ -1,8 +1,8 @@
 /* #define DEBUG */
 /*
  * Copyright (C) 1994 Mark Boyns (boyns@sdsu.edu) and
- *		      Mark Scott (mscott@mcd.mot.com)
- *		 1996-1998 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
+ *                    Mark Scott (mscott@mcd.mot.com)
+ *               1996-1998 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
  *
  * FvwmEvent version 1.0
  *
@@ -13,7 +13,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -47,8 +47,8 @@
    adjustments)
    FvwmAudio now supports rsynth's say command:
    *FvwmAudioPlayCmd say
-   *FvwmAudio add_window	   "add window"
-   *FvwmAudio raise_window	   'raise window'
+   *FvwmAudio add_window           "add window"
+   *FvwmAudio raise_window         'raise window'
 	       -- 08/07/96 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
 
  * Fixed FvwmAudio to reflect the changes made to the module protocol.
@@ -113,32 +113,32 @@
 #define INFO(x)
 #endif
 
-#define BUILTIN_STARTUP		(MAX_TOTAL_MESSAGES)
-#define BUILTIN_SHUTDOWN	(MAX_TOTAL_MESSAGES + 1)
-#define BUILTIN_UNKNOWN		(MAX_TOTAL_MESSAGES + 2)
-#define MAX_BUILTIN		3
+#define BUILTIN_STARTUP         (MAX_TOTAL_MESSAGES)
+#define BUILTIN_SHUTDOWN        (MAX_TOTAL_MESSAGES + 1)
+#define BUILTIN_UNKNOWN         (MAX_TOTAL_MESSAGES + 2)
+#define MAX_BUILTIN             3
 
 /* globals */
 char   *MyName;
-int	MyNameLen;
-int	fd[2];
+int     MyNameLen;
+int     fd[2];
 char   *cmd_line = NULL;
-time_t	audio_delay = 0,		/* seconds */
+time_t  audio_delay = 0,                /* seconds */
 	last_time = 0,
 	now,
 	start_audio_delay = 0;
-Bool	PassID = False;	/* don't tag on the windowID by default */
-Bool	audio_compat = False;
+Bool    PassID = False; /* don't tag on the windowID by default */
+Bool    audio_compat = False;
 char   *audio_play_dir = NULL;
 
 #ifdef HAVE_RPLAY
-int	rplay_fd = -1;
+int     rplay_fd = -1;
 #endif
 
 /* prototypes */
-void	execute_event(short, unsigned long*);
-void	config(void);
-void	DeadPipe(int) __attribute__((__noreturn__));
+void    execute_event(short, unsigned long*);
+void    config(void);
+void    DeadPipe(int) __attribute__((__noreturn__));
 
 static RETSIGTYPE TerminateHandler(int);
 
@@ -150,7 +150,7 @@ typedef struct
 
 event_entry event_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN] =
 {
-  { "new_page",	-1 },
+  { "new_page", -1 },
   { "new_desk", 0 },
   { "old_add_window", 0 },
   { "raise_window", 0 },
@@ -200,11 +200,11 @@ event_entry event_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN] =
 };
 
 /* define the action table  */
-char	*action_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
+char    *action_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
 
 #ifdef HAVE_RPLAY
 /* define the rplay table */
-RPLAY	*rplay_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
+RPLAY   *rplay_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
 #endif
 
 static volatile sig_atomic_t isTerminated = False;
@@ -212,7 +212,7 @@ static volatile sig_atomic_t isTerminated = False;
 int main(int argc, char **argv)
 {
   char *s;
-  unsigned long	header[FvwmPacketHeaderSize], body[FvwmPacketBodyMaxSize];
+  unsigned long header[FvwmPacketHeaderSize], body[FvwmPacketBodyMaxSize];
   int total, remaining, count, event;
   int is_extended_msg;
 
@@ -222,26 +222,26 @@ int main(int argc, char **argv)
   *cmd_line = 0;
   /* Save our program  name - for error events */
 
-  if ((s=strrchr(argv[0], '/')))	/* strip path */
+  if ((s=strrchr(argv[0], '/')))        /* strip path */
     s++;
-  else				/* no slash */
+  else                          /* no slash */
     s = argv[0];
   if ( argc==7 )
     {
       if (strcmp(argv[6], "-audio") == 0)
 	audio_compat = True;
       else
-	s = argv[6];			/* use an alias */
+	s = argv[6];                    /* use an alias */
     }
 
-  MyNameLen=strlen(s)+1;		/* account for '*' */
-  MyName = safemalloc(MyNameLen+1);	/* account for \0 */
+  MyNameLen=strlen(s)+1;                /* account for '*' */
+  MyName = safemalloc(MyNameLen+1);     /* account for \0 */
   *MyName='*';
-  strcpy(MyName+1, s);		/* append name */
+  strcpy(MyName+1, s);          /* append name */
   if (StrEquals("FvwmAudio", s))
-    audio_compat = True;		/* catch the FvwmAudio alias */
+    audio_compat = True;                /* catch the FvwmAudio alias */
 
-  if ((argc != 6)&&(argc != 7))	/* Now MyName is defined */
+  if ((argc != 6)&&(argc != 7)) /* Now MyName is defined */
   {
     fprintf(stderr,"%s Version "VERSION" should only be executed by fvwm!\n",
 	    MyName+1);
@@ -252,7 +252,7 @@ int main(int argc, char **argv)
 
 #ifdef HAVE_SIGACTION
   {
-    struct sigaction	sigact;
+    struct sigaction    sigact;
 
     sigemptyset(&sigact.sa_mask);
 # ifdef SA_INTERRUPT
@@ -262,11 +262,11 @@ int main(int argc, char **argv)
 # endif
     sigact.sa_handler = TerminateHandler;
 
-    sigaction(SIGPIPE,&sigact,NULL);	/* Dead pipe == Fvwm died */
-    sigaction(SIGTERM,&sigact,NULL);	/* "polite" termination signal */
+    sigaction(SIGPIPE,&sigact,NULL);    /* Dead pipe == Fvwm died */
+    sigaction(SIGTERM,&sigact,NULL);    /* "polite" termination signal */
   }
 #else
-    /* We don't have sigaction(), so fall back to less robust methods.	*/
+    /* We don't have sigaction(), so fall back to less robust methods.  */
     signal(SIGPIPE, TerminateHandler);
     signal(SIGTERM, TerminateHandler);
 #endif
@@ -276,8 +276,8 @@ int main(int argc, char **argv)
 
     INFO("--- configuring\n");
 
-    config();				/* configure events */
-    execute_event(BUILTIN_STARTUP, NULL);	/* Startup event */
+    config();                           /* configure events */
+    execute_event(BUILTIN_STARTUP, NULL);       /* Startup event */
     if (start_audio_delay) last_time = time(0);
     /* tell fvwm we're running */
 
@@ -302,7 +302,7 @@ int main(int argc, char **argv)
       /* if this read is interrrupted EINTR, the wrong event is triggered! */
 
       if( header[0] != START_FLAG )
-	goto CONTINUE;	/* should find something better for resyncing */
+	goto CONTINUE;  /* should find something better for resyncing */
 
       /* Ignore events that occur during the delay period. */
       now = time(0);
@@ -322,7 +322,7 @@ int main(int argc, char **argv)
       }
 
       if (now < last_time + audio_delay + start_audio_delay)
-	goto CONTINUE;	/* quash event */
+	goto CONTINUE;  /* quash event */
       else
 	start_audio_delay = 0;
 
@@ -348,7 +348,7 @@ int main(int argc, char **argv)
 	event = BUILTIN_UNKNOWN;
       else if (is_extended_msg)
 	event += MAX_MESSAGES;
-      execute_event(event, body);		/* execute action */
+      execute_event(event, body);               /* execute action */
 
 CONTINUE:
       if (header[1] == M_DESTROY_WINDOW)
@@ -371,7 +371,7 @@ void execute_event(short event, unsigned long *body)
 {
 #ifdef HAVE_RPLAY
 
-  if (rplay_fd != -1)		/* this is the sign that rplay is used */
+  if (rplay_fd != -1)           /* this is the sign that rplay is used */
     {
       if (rplay_table[event])
 	{
@@ -381,7 +381,7 @@ void execute_event(short event, unsigned long *body)
 	    rplay_perror("rplay");
 	}
     }
-  else	/* avoid invalid second execute */
+  else  /* avoid invalid second execute */
 #endif
     if (action_table[event])
       {
@@ -422,7 +422,7 @@ void execute_event(short event, unsigned long *body)
 	      sprintf(buf,"%s %s", cmd_line, action_table[event]);
 	    INFO(buf);
 	    INFO("\n");
-	    SendText(fd,buf,0);		/* let fvwm execute the function */
+	    SendText(fd,buf,0);         /* let fvwm execute the function */
 	    last_time = now;
 	  }
 	free(buf);
@@ -433,7 +433,7 @@ void execute_event(short event, unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	config - read the configuration file.
+ *      config - read the configuration file.
  *
  ***********************************************************************/
 
@@ -474,7 +474,7 @@ void config(void)
 #endif
   }
 
-  InitGetConfigLine(fd,MyName);		/* get config lines with my name */
+  InitGetConfigLine(fd,MyName);         /* get config lines with my name */
   while (GetConfigLine(fd,&buf), buf != NULL)
   {
     if (buf[strlen(buf)-1] == '\n')
@@ -491,12 +491,12 @@ void config(void)
       INFO("\n");
       if ((e = FindToken(p,table,char *))) /* config option ? */
       {
-	p += strlen(*e);		/* skip matched token */
+	p += strlen(*e);                /* skip matched token */
 	p = GetNextToken(p, &token);
 
 	switch (e - (char**)table)
 	{
-	case 0:	       /* Cmd */
+	case 0:        /* Cmd */
 	case 4:
 	  if (! audio_compat && e - (char**)table == 4) /* PlayCmd */
 	  {
@@ -528,7 +528,7 @@ void config(void)
 	  break; /* Delay */
 
 	case 2:
-	  if (! audio_compat)		       /* Dir */
+	  if (! audio_compat)                  /* Dir */
 	    fprintf(stderr,
 		    "%s: Dir supported only when invoked as FvwmAudio\n",
 		    MyName+1);
@@ -552,8 +552,8 @@ void config(void)
 
 #ifdef HAVE_RPLAY
 	case 5:
-	  if (token && (*token == '$'))		       /* RPlayHost */
-	  {			 /* Check for $HOSTDISPLAY */
+	  if (token && (*token == '$'))                /* RPlayHost */
+	  {                      /* Check for $HOSTDISPLAY */
 	    char *c1= (char *)getenv(token+1), *c2= host;
 	    while (c1 && *c1 != ':')
 	      *c2++ = *c1++;
@@ -589,7 +589,7 @@ void config(void)
 	p = GetNextSimpleOption( p, &action );
 
 	INFO(event);
-	INFO("	");
+	INFO("  ");
 	INFO(action);
 	INFO("\n");
 	if (!event || !*event || !action || !*action)
@@ -655,7 +655,7 @@ void config(void)
 /***********************************************************************
  *
  *  Procedure:
- *	SIGPIPE handler - SIGPIPE means fvwm is dying
+ *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
 static RETSIGTYPE
@@ -667,7 +667,7 @@ TerminateHandler(int nonsense)
 /***********************************************************************
  *
  *  Procedure:
- *	Externally callable procedure to quit
+ *      Externally callable procedure to quit
  *
  ***********************************************************************/
 void DeadPipe(int flag)

@@ -39,12 +39,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #define DOUBLECLICKTIME 1
@@ -98,18 +98,18 @@
 /*
  * You may want to raise the following values if your machine is fast
  */
-#define ANIM_STEP	2   /* must be >= 1. Greater is smoother and slower */
-#define ANIM_STEP_MAIN	1   /* same for the main folder */
-#define ANIM_DELAY	10
+#define ANIM_STEP       2   /* must be >= 1. Greater is smoother and slower */
+#define ANIM_STEP_MAIN  1   /* same for the main folder */
+#define ANIM_DELAY      10
 
 #ifdef ENABLE_SOUND
-#define WHEV_PUSH		0
-#define WHEV_CLOSE_FOLDER	1
-#define WHEV_OPEN_FOLDER	2
-#define WHEV_CLOSE_MAIN		3
-#define WHEV_OPEN_MAIN		4
-#define WHEV_DROP		5
-#define MAX_EVENTS		6
+#define WHEV_PUSH               0
+#define WHEV_CLOSE_FOLDER       1
+#define WHEV_OPEN_FOLDER        2
+#define WHEV_CLOSE_MAIN         3
+#define WHEV_OPEN_MAIN          4
+#define WHEV_DROP               5
+#define MAX_EVENTS              6
 
 int SoundActive = 0;
 char *Sounds[6]={".",".",".",".",".","."};
@@ -188,10 +188,10 @@ int MaxColors=16;
 int Withdrawn;
 static int global_colorset = -1;
 
-#define DIR_TOLEFT	1
-#define DIR_TORIGHT	2
-#define DIR_TOUP	3
-#define DIR_TODOWN	4
+#define DIR_TOLEFT      1
+#define DIR_TORIGHT     2
+#define DIR_TOUP        3
+#define DIR_TODOWN      4
 
 #ifdef ENABLE_SOUND
 void waitchild(int bullshit)
@@ -211,7 +211,7 @@ static void configure_all_icon_windows(void);
 /***********************************************************************
  *
  *  Procedure:
- *	main - start of afterstep
+ *      main - start of afterstep
  *
  ***********************************************************************
  */
@@ -244,15 +244,15 @@ int main(int argc, char **argv)
       Buttons[i].icons[j].file = NULL;
       Buttons[i].icons[j].w = 0;
       Buttons[i].icons[j].h = 0;
-      Buttons[i].icons[j].mask = None;	/* pixmap for the icon mask */
+      Buttons[i].icons[j].mask = None;  /* pixmap for the icon mask */
       Buttons[i].icons[j].icon = None;
       Buttons[i].icons[j].alpha = None;
       Buttons[i].icons[j].depth = 0;
     }
     Buttons[i].IconWin = None;
     Buttons[i].completeIcon = None;
-    Buttons[i].up = 1;			      /* Buttons start up */
-    Buttons[i].hangon = NULL;		      /* don't wait on anything yet*/
+    Buttons[i].up = 1;                        /* Buttons start up */
+    Buttons[i].hangon = NULL;                 /* don't wait on anything yet*/
     Buttons[i].folder = -1;
   }
   signal (SIGPIPE, DeadPipe);
@@ -467,7 +467,7 @@ int main(int argc, char **argv)
 /***********************************************************************
  *
  *  Procedure:
- *	Loop - wait for data to process
+ *      Loop - wait for data to process
  *
  ***********************************************************************/
 
@@ -576,7 +576,7 @@ void Loop(void)
 				    CornerX, CornerY,
 				    BUTTONWIDTH,BUTTONHEIGHT);
 		}
-	      } else {	/* vertical */
+	      } else {  /* vertical */
 		if (LastX > scr_x + scr_w/2) {
 		  CornerX = scr_x + scr_w - BUTTONWIDTH;
 		} else {
@@ -614,7 +614,7 @@ void Loop(void)
 	if (*CurrentWin!=main_win) {
 	  CurrentButton = CurrentBase + CurrentColumn*num_rows
 	    + CurrentRow*num_columns;
-	}	else {
+	}       else {
 	  CurrentButton = CurrentBase + CurrentColumn
 	    + CurrentRow*num_columns;
 	  if (CurrentButton>=num_buttons) {
@@ -698,7 +698,7 @@ void Loop(void)
 	}
 #ifdef ENABLE_DND
 	else if (Event.xclient.message_type==DndProtocol) {
-	  unsigned long	 dummy_r,size;
+	  unsigned long  dummy_r,size;
 	  Atom dummy_a;
 	  int dummy_f;
 	  unsigned char *data, *Command;
@@ -707,7 +707,7 @@ void Loop(void)
 	  int dummy_x, dummy_y, base, pos_x, pos_y;
 	  unsigned int dummy;
 
-	  /*		    if (Event.xclient.data.l[0]!=DndFile ||
+	  /*                if (Event.xclient.data.l[0]!=DndFile ||
 			    Event.xclient.data.l[0]!=DndFiles ||
 			    Event.xclient.data.l[0]!=DndExe
 			    )
@@ -794,7 +794,7 @@ void Loop(void)
 	if (*CurrentWin!=main_win) {
 	  NewButton = CurrentBase + CurrentColumn*num_rows
 	    + CurrentRow*num_columns;
-	}	else {
+	}       else {
 	  NewButton = CurrentBase + CurrentColumn
 	    + CurrentRow*num_columns;
 	}
@@ -868,7 +868,7 @@ void Loop(void)
   }
 }
 
-void OpenFolder(int folder,int x, int y, int w, int h,	int direction)
+void OpenFolder(int folder,int x, int y, int w, int h,  int direction)
 {
   int winc, hinc;
   int cx, cy, cw, ch;
@@ -1126,7 +1126,7 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row,
     else
     {
       if ((base_y % display_height) < scr_y + scr_h / 2) {
-	foldery	 =base_y+(row+1)*BUTTONHEIGHT;
+	foldery  =base_y+(row+1)*BUTTONHEIGHT;
 	dir = DIR_TODOWN;
       }
       else {
@@ -2302,7 +2302,7 @@ void process_message(unsigned long type,unsigned long *body)
 {
   switch(type)
   {
-    /*	  case M_TOGGLE_PAGING:
+    /*    case M_TOGGLE_PAGING:
 	  pageing_enabled = body[0];
 	  RedrawWindow(&main_win,0, -1, num_rows, num_columns);
 	  break;
@@ -2337,12 +2337,12 @@ void process_message(unsigned long type,unsigned long *body)
  * ICCCM Client Messages - Section 4.2.8 of the ICCCM dictates that all
  * client messages will have the following form:
  *
- *     event type	ClientMessage
- *     message type	_XA_WM_PROTOCOLS
- *     window		tmp->w
- *     format		32
- *     data[0]		message atom
- *     data[1]		time stamp
+ *     event type       ClientMessage
+ *     message type     _XA_WM_PROTOCOLS
+ *     window           tmp->w
+ *     format           32
+ *     data[0]          message atom
+ *     data[1]          time stamp
  *
  ****************************************************************************/
 void my_send_clientmessage (Window w, Atom a, Time timestamp)
@@ -2502,11 +2502,11 @@ void FindLockMods(void)
 /***********************************************************************
  *
  *  Procedure:
- *	ConstrainSize - adjust the given width and height to account for the
- *		constraints imposed by size hints
+ *      ConstrainSize - adjust the given width and height to account for the
+ *              constraints imposed by size hints
  *
- *	The general algorithm, especially the aspect ratio stuff, is
- *	borrowed from uwm's CheckConsistency routine.
+ *      The general algorithm, especially the aspect ratio stuff, is
+ *      borrowed from uwm's CheckConsistency routine.
  *
  ***********************************************************************/
 void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
@@ -2597,9 +2597,9 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
   /*
    * The math looks like this:
    *
-   * minAspectX	   dwidth     maxAspectX
+   * minAspectX    dwidth     maxAspectX
    * ---------- <= ------- <= ----------
-   * minAspectY	   dheight    maxAspectY
+   * minAspectY    dheight    maxAspectY
    *
    * If that is multiplied out, then the width and height are
    * invalid in the following situations:

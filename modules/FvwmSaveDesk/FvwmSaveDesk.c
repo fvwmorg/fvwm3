@@ -26,12 +26,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #define TRUE 1
@@ -63,7 +63,7 @@ int fd[2];
 
 struct list *list_root = NULL;
 
-Display *dpy;			/* which display are we talking to */
+Display *dpy;                   /* which display are we talking to */
 int ScreenWidth, ScreenHeight;
 int screen;
 
@@ -74,7 +74,7 @@ long CurDesk = 1;   /* actual Desktop while being called */
 /***********************************************************************
  *
  *  Procedure:
- *	main - start of module
+ *      main - start of module
  *
  ***********************************************************************/
 int main(int argc, char **argv)
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 /***********************************************************************
  *
  *  Procedure:
- *	Loop - wait for data to process
+ *      Loop - wait for data to process
  *
  ***********************************************************************/
 void Loop(int *fd)
@@ -152,7 +152,7 @@ void Loop(int *fd)
 /***********************************************************************
  *
  *  Procedure:
- *	Process message - examines packet types, and takes appropriate action
+ *      Process message - examines packet types, and takes appropriate action
  *
  ***********************************************************************/
 void process_message(unsigned long type,unsigned long *body)
@@ -191,7 +191,7 @@ void process_message(unsigned long type,unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	find_window - find a window in the current window list
+ *      find_window - find a window in the current window list
  *
  ***********************************************************************/
 struct list *find_window(unsigned long id)
@@ -214,7 +214,7 @@ struct list *find_window(unsigned long id)
 /***********************************************************************
  *
  *  Procedure:
- *	add_window - add a new window in the current window list
+ *      add_window - add a new window in the current window list
  *
  ***********************************************************************/
 void add_window(unsigned long new_win, unsigned long *body)
@@ -232,8 +232,8 @@ void add_window(unsigned long new_win, unsigned long *body)
   t->frame_width = cfgpacket->frame_width;
   t->base_width = cfgpacket->hints_base_width;
   t->base_height = cfgpacket->hints_base_height;
-  t->width_inc	= cfgpacket->hints_width_inc;
-  t->height_inc	 = cfgpacket->hints_height_inc;
+  t->width_inc  = cfgpacket->hints_width_inc;
+  t->height_inc  = cfgpacket->hints_height_inc;
   t->frame_x  = cfgpacket->frame_x;
   t->frame_y  = cfgpacket->frame_y;
   t->title_height  = cfgpacket->title_height;
@@ -250,7 +250,7 @@ void add_window(unsigned long new_win, unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_new_page - capture new-page info
+ *      list_new_page - capture new-page info
  *
  ***********************************************************************/
 void list_new_page(unsigned long *body)
@@ -261,7 +261,7 @@ void list_new_page(unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	SIGPIPE handler - SIGPIPE means fvwm is dying
+ *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
 void DeadPipe(int nonsense)
@@ -273,8 +273,8 @@ void DeadPipe(int nonsense)
 /***********************************************************************
  *
  *  Procedure:
- *	writes a command line argument to file "out"
- *	checks for qoutes and stuff
+ *      writes a command line argument to file "out"
+ *      checks for qoutes and stuff
  *
  ***********************************************************************/
 void write_string(FILE *out, char *line)
@@ -374,7 +374,7 @@ void do_save_command(FILE *out, struct list *t, int *curdesk,
       *curdesk = t->desk;
     }
 
-    fprintf( out, "%s\t\t\"I\" Exec ",	*isfirstline ? "" : "+");
+    fprintf( out, "%s\t\t\"I\" Exec ",  *isfirstline ? "" : "+");
     if (*isfirstline) *isfirstline = 0;
     fflush ( out );
     for (i=0; i < command_count; i++)
@@ -430,8 +430,8 @@ void do_save_command(FILE *out, struct list *t, int *curdesk,
 /***********************************************************************
  *
  *  Procedure:
- *	checks to see if we are supposed to take some action now,
- *	finds time for next action to be performed.
+ *      checks to see if we are supposed to take some action now,
+ *      finds time for next action to be performed.
  *
  ***********************************************************************/
 void do_save(void)

@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef FVWMLIB_PARSE_H
@@ -33,19 +33,19 @@
 #define IsBlockEnd(c,cs) (((c) == ']' && (cs) == '[') || ((c) == '}' && (cs) == '{') || ((c) == ')' && (cs) == '('))
 
 /*
- *  function:		 FindToken
- *  description:	 find the entry of type 'struct_entry'
- *			 holding 'key' in 'table'
- *  returns:		 pointer to the matching entry
- *			 NULL if not found
+ *  function:            FindToken
+ *  description:         find the entry of type 'struct_entry'
+ *                       holding 'key' in 'table'
+ *  returns:             pointer to the matching entry
+ *                       NULL if not found
  *
  *  table must be sorted in ascending order for FindToken.
  */
-#define FindToken(key,table,struct_entry)				\
-	(struct_entry *) bsearch(key,					\
-				 (char *)(table),			\
-				 sizeof(table) / sizeof(struct_entry),	\
-				 sizeof(struct_entry),			\
+#define FindToken(key,table,struct_entry)                               \
+	(struct_entry *) bsearch(key,                                   \
+				 (char *)(table),                       \
+				 sizeof(table) / sizeof(struct_entry),  \
+				 sizeof(struct_entry),                  \
 				 (int(*)(const void*, const void*))XCmpToken)
 
 /* ---------------------------- type definitions ---------------------------- */

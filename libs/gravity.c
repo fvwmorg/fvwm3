@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /* ---------------------------- included header files ----------------------- */
@@ -53,25 +53,25 @@ struct _gravity_offset
 /************************************************************************
  *
  *  Procedure:
- *	gravity_get_offsets - map gravity to (x,y) offset signs for adding
- *		to x and y when window is mapped to get proper placement.
+ *      gravity_get_offsets - map gravity to (x,y) offset signs for adding
+ *              to x and y when window is mapped to get proper placement.
  *
  ************************************************************************/
 void gravity_get_offsets(int grav, int *xp,int *yp)
 {
 	static struct _gravity_offset gravity_offsets[11] =
 		{
-			{  0,  0 },	/* ForgetGravity */
-			{ -1, -1 },	/* NorthWestGravity */
-			{  0, -1 },	/* NorthGravity */
-			{  1, -1 },	/* NorthEastGravity */
-			{ -1,  0 },	/* WestGravity */
-			{  0,  0 },	/* CenterGravity */
-			{  1,  0 },	/* EastGravity */
-			{ -1,  1 },	/* SouthWestGravity */
-			{  0,  1 },	/* SouthGravity */
-			{  1,  1 },	/* SouthEastGravity */
-			{  0,  0 },	/* StaticGravity */
+			{  0,  0 },     /* ForgetGravity */
+			{ -1, -1 },     /* NorthWestGravity */
+			{  0, -1 },     /* NorthGravity */
+			{  1, -1 },     /* NorthEastGravity */
+			{ -1,  0 },     /* WestGravity */
+			{  0,  0 },     /* CenterGravity */
+			{  1,  0 },     /* EastGravity */
+			{ -1,  1 },     /* SouthWestGravity */
+			{  0,  1 },     /* SouthGravity */
+			{  1,  1 },     /* SouthEastGravity */
+			{  0,  0 },     /* StaticGravity */
 		};
 
 	if (grav < ForgetGravity || grav > StaticGravity)
@@ -420,14 +420,14 @@ direction_type ParseDirectionArgument(
 	int rc;
 	char *next;
 	char *optlist[] = {
-		"N",  "North",	   "Top",	  "t", "Up",	     "u",
-		"E",  "East",	   "Right",	  "r", "Right",	     "r",
-		"S",  "South",	   "Bottom",	  "b", "Down",	     "d",
-		"W",  "West",	   "Left",	  "l", "Left",	     "l",
-		"NE", "NorthEast", "TopRight",	  "tr", "UpRight",   "ur",
+		"N",  "North",     "Top",         "t", "Up",         "u",
+		"E",  "East",      "Right",       "r", "Right",      "r",
+		"S",  "South",     "Bottom",      "b", "Down",       "d",
+		"W",  "West",      "Left",        "l", "Left",       "l",
+		"NE", "NorthEast", "TopRight",    "tr", "UpRight",   "ur",
 		"SE", "SouthEast", "BottomRight", "br", "DownRight", "dr",
 		"SW", "SouthWest", "BottomLeft",  "bl", "DownLeft",  "dl",
-		"NW", "NorthWest", "TopLeft",	  "tl", "UpLeft",    "ul",
+		"NW", "NorthWest", "TopLeft",     "tl", "UpLeft",    "ul",
 		NULL
 	};
 

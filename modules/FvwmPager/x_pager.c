@@ -10,12 +10,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /***********************************************************************
@@ -119,7 +119,7 @@ static char l_g_bits[] = {0x08, 0x02};
 static char s_g_bits[] = {0x01, 0x02, 0x04, 0x08};
 
 
-Window icon_win;	       /* icon window */
+Window icon_win;               /* icon window */
 
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
 extern void ExitPager(void);
@@ -147,11 +147,11 @@ static void discard_events(long event_type, Window w, XEvent *last_ev)
 /***********************************************************************
  *
  *  Procedure:
- *	CalcGeom - calculates the size and position of a mini-window
- *	given the real window size.
- *	You can always tell bad code by the size of the comments.
+ *      CalcGeom - calculates the size and position of a mini-window
+ *      given the real window size.
+ *      You can always tell bad code by the size of the comments.
  *
- *	dv: Some people say that good code does not nee lengthy comments. :-)
+ *      dv: Some people say that good code does not nee lengthy comments. :-)
  ***********************************************************************/
 static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 		     int *x_ret, int *y_ret, int *w_ret, int *h_ret)
@@ -238,8 +238,8 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 /***********************************************************************
  *
  *  Procedure:
- *	Initialize_viz_pager - creates a temp window of the correct visual
- *	so that pixmaps may be created for use with the main window
+ *      Initialize_viz_pager - creates a temp window of the correct visual
+ *      so that pixmaps may be created for use with the main window
  ***********************************************************************/
 void initialize_viz_pager(void)
 {
@@ -270,23 +270,23 @@ void initialize_viz_pager(void)
 /***********************************************************************
  *
  *  Procedure:
- *	Initialize_pager - creates the pager window, if needed
+ *      Initialize_pager - creates the pager window, if needed
  *
  *  Inputs:
- *	x,y location of the window
+ *      x,y location of the window
  *
  ***********************************************************************/
 char *pager_name = "Fvwm Pager";
 XSizeHints sizehints =
 {
   (PMinSize | PResizeInc | PBaseSize | PWinGravity),
-  0, 0, 100, 100,			/* x, y, width and height */
-  1, 1,					/* Min width and height */
-  0, 0,					/* Max width and height */
-  1, 1,					/* Width and height increments */
-  {0, 0}, {0, 0},			/* Aspect ratio - not used */
-  1, 1,					/* base size */
-  (NorthWestGravity)			/* gravity */
+  0, 0, 100, 100,                       /* x, y, width and height */
+  1, 1,                                 /* Min width and height */
+  0, 0,                                 /* Max width and height */
+  1, 1,                                 /* Width and height increments */
+  {0, 0}, {0, 0},                       /* Aspect ratio - not used */
+  1, 1,                                 /* base size */
+  (NorthWestGravity)                    /* gravity */
 };
 
 void initialize_pager(void)
@@ -2313,7 +2313,7 @@ void MoveWindow(XEvent *Event)
 /***********************************************************************
  *
  *  Procedure:
- *	FvwmErrorHandler - displays info on internal errors
+ *      FvwmErrorHandler - displays info on internal errors
  *
  ************************************************************************/
 int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
@@ -2659,7 +2659,7 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
   if (*Desks[i].balloon.label)
   {
     window_changes.width +=
-      FlocaleTextWidth(Desks[i].balloon.Ffont,	Desks[i].balloon.label,
+      FlocaleTextWidth(Desks[i].balloon.Ffont,  Desks[i].balloon.label,
 		 strlen(Desks[i].balloon.label));
   }
 

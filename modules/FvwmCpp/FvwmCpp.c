@@ -15,12 +15,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -66,7 +66,7 @@ static char *cpp_defs(Display *display, const char *host, char *m4_options, char
 #define MAXHOSTNAME 255
 #define EXTRA 20
 
-char *cpp_prog = FVWM_CPP;	    /* Name of the cpp program */
+char *cpp_prog = FVWM_CPP;          /* Name of the cpp program */
 
 char cpp_options[BUFSIZ];
 char cpp_outfile[BUFSIZ]="";
@@ -75,12 +75,12 @@ char cpp_outfile[BUFSIZ]="";
 /***********************************************************************
  *
  *  Procedure:
- *	main - start of module
+ *      main - start of module
  *
  ***********************************************************************/
 int main(int argc, char **argv)
 {
-  Display *dpy;			/* which display are we talking to */
+  Display *dpy;                 /* which display are we talking to */
   char *temp, *s;
   char *display_name = NULL;
   char *filename = NULL;
@@ -236,7 +236,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   char options[BUFSIZ];
   static char tmp_name[BUFSIZ];
   struct hostent *hostname;
-  char *vc;			/* Visual Class */
+  char *vc;                     /* Visual Class */
   FILE *tmpf;
   struct passwd *pwent;
   int fd;
@@ -300,7 +300,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   colon = strchr(server, ':');
   if (colon != NULL) *colon = '\0';
   if ((server[0] == '\0') || (!strcmp(server, "unix")))
-    strcpy(server, client);	/* must be connected to :0 or unix:0 */
+    strcpy(server, client);     /* must be connected to :0 or unix:0 */
 
   /* TWM_TYPE is fvwm, for completeness */
 
@@ -410,7 +410,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   *options = '\0';
   if (FHaveShapeExtension)
     strcat(options, "SHAPE ");
-#ifdef	XPM
+#ifdef  XPM
   strcat(options, "XPM ");
 #endif
 
@@ -429,7 +429,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 #endif
 
   /*
-   * At this point, we've sent the definitions to cpp.	Just include
+   * At this point, we've sent the definitions to cpp.  Just include
    * the fvwmrc file now.
    */
 
@@ -446,7 +446,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 /***********************************************************************
  *
  *  Procedure:
- *	SIGPIPE handler - SIGPIPE means fvwm is dying
+ *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
 void DeadPipe(int nonsense)

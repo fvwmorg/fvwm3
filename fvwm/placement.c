@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -72,9 +72,9 @@ static int SmartPlacement(
   FvwmWindow *t, rectangle *screen_g,
   int width, int height, int *x, int *y, int pdeltax, int pdeltay)
 {
-  int PageLeft	 = screen_g->x - pdeltax;
-  int PageTop	 = screen_g->y - pdeltay;
-  int PageRight	 = PageLeft + screen_g->width;
+  int PageLeft   = screen_g->x - pdeltax;
+  int PageTop    = screen_g->y - pdeltay;
+  int PageRight  = PageLeft + screen_g->width;
   int PageBottom = PageTop + screen_g->height;
   int temp_h;
   int temp_w;
@@ -108,7 +108,7 @@ static int SmartPlacement(
 	if (t == test_fw || IS_EWMH_DESKTOP(FW_W(test_fw)))
 	  continue;
 
-	/*  RBW - account for sticky windows...	 */
+	/*  RBW - account for sticky windows...  */
 	if (test_fw->Desk == t->Desk || IS_STICKY(test_fw))
 	{
 	  if (IS_STICKY(test_fw))
@@ -158,8 +158,8 @@ static int SmartPlacement(
 
 /* CleverPlacement by Anthony Martin <amartin@engr.csulb.edu>
  * This function will place a new window such that there is a minimum amount
- * of interference with other windows.	If it can place a window without any
- * interference, fine.	Otherwise, it places it so that the area of of
+ * of interference with other windows.  If it can place a window without any
+ * interference, fine.  Otherwise, it places it so that the area of of
  * interference between the new window and the other windows is minimized */
 static void CleverPlacement(
   FvwmWindow *t, style_flags *sflags, rectangle *screen_g,
@@ -424,7 +424,7 @@ static float test_fit(
   float anew;
   float cover_factor = 0;
   float avoidance_factor;
-  int PageRight	 = screen_g->x + screen_g->width - pdeltax;
+  int PageRight  = screen_g->x + screen_g->width - pdeltax;
   int PageBottom = screen_g->y + screen_g->height - pdeltay;
   int stickyx, stickyy;
   rectangle g;
@@ -576,7 +576,7 @@ Bool PlaceWindow(
    * 3. Put it on the desk it was on before the restart.
    * 4. Transients go on the same desk as their parents.
    * 5. Window groups stay together (if the KeepWindowGroupsOnDesk style is
-   *	used).
+   *    used).
    */
 
   /*
@@ -738,7 +738,7 @@ Bool PlaceWindow(
 
   /* I think it would be good to switch to the selected desk
    * whenever a new window pops up, except during initialization */
-  /*  RBW - 11/02/1998	--  I dont. */
+  /*  RBW - 11/02/1998  --  I dont. */
   if ((!win_opts->flags.do_override_ppos)&&(!DO_NOT_SHOW_ON_MAP(fw)))
   {
     goto_desk(fw->Desk);
@@ -763,11 +763,11 @@ Bool PlaceWindow(
       else if (flags.do_honor_starts_on_page)
       {
 	/*  Save the delta from current page */
-	pdeltax	    = Scr.Vx - px;
-	pdeltay	    = Scr.Vy - py;
+	pdeltax     = Scr.Vx - px;
+	pdeltay     = Scr.Vy - py;
 	PageLeft   -= pdeltax;
 	PageRight  -= pdeltax;
-	PageTop	   -= pdeltay;
+	PageTop    -= pdeltay;
 	PageBottom -= pdeltay;
       }
     }
@@ -1050,7 +1050,7 @@ Bool PlaceWindow(
     }
 
     /*
-     *	If SkipMapping, and other legalities are observed, adjust for
+     *  If SkipMapping, and other legalities are observed, adjust for
      * StartsOnPage.
      */
     if ( ( DO_NOT_SHOW_ON_MAP(fw) && flags.do_honor_starts_on_page )  &&
@@ -1061,7 +1061,7 @@ Bool PlaceWindow(
 	   ((SUSE_NO_PPOSITION(sflags)) ||
 	    !(fw->hints.flags & PPosition)) &&
 
-	   /*  RBW - allow StartsOnPage to go through, even if iconic.	*/
+	   /*  RBW - allow StartsOnPage to go through, even if iconic.  */
 	   ( ((!((fw->wmhints)&&
 		 (fw->wmhints->flags & StateHint)&&
 		 (fw->wmhints->initial_state == IconicState)))

@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -75,33 +75,33 @@ extern FvwmWindow *Fw;
 
 typedef struct FunctionItem
 {
-	struct FvwmFunction *func;	 /* the function this item is in */
-	struct FunctionItem *next_item;	 /* next function item */
-	char condition;			 /* the character string displayed on
+	struct FvwmFunction *func;       /* the function this item is in */
+	struct FunctionItem *next_item;  /* next function item */
+	char condition;                  /* the character string displayed on
 					  * left*/
-	char *action;			 /* action to be performed */
-	short type;			 /* type of built in function */
+	char *action;                    /* action to be performed */
+	short type;                      /* type of built in function */
 	FUNC_FLAGS_TYPE flags;
 } FunctionItem;
 
 typedef struct FvwmFunction
 {
-	struct FvwmFunction *next_func;	 /* next in list of root menus */
-	FunctionItem *first_item;	 /* first item in function */
-	FunctionItem *last_item;	 /* last item in function */
-	char *name;			 /* function name */
+	struct FvwmFunction *next_func;  /* next in list of root menus */
+	FunctionItem *first_item;        /* first item in function */
+	FunctionItem *last_item;         /* last item in function */
+	char *name;                      /* function name */
 	unsigned int use_depth;
 } FvwmFunction;
 
 /* Types of events for the FUNCTION builtin */
 typedef enum
 {
-	CF_IMMEDIATE =	    'i',
-	CF_MOTION =	    'm',
-	CF_HOLD =	    'h',
-	CF_CLICK =	    'c',
+	CF_IMMEDIATE =      'i',
+	CF_MOTION =         'm',
+	CF_HOLD =           'h',
+	CF_CLICK =          'c',
 	CF_DOUBLE_CLICK =   'd',
-	CF_TIMEOUT =	    '-'
+	CF_TIMEOUT =        '-'
 } cfunc_action_type;
 
 /* ---------------------------- forward declarations ------------------------ */
@@ -142,7 +142,7 @@ static int func_comp(const void *a, const void *b)
 
 static const func_type *find_builtin_function(char *func)
 {
-        static int nfuncs = 0;
+	static int nfuncs = 0;
 	func_type *ret_func;
 	char *temp;
 	char *s;
@@ -167,13 +167,13 @@ static const func_type *find_builtin_function(char *func)
 			*s = tolower(*s);
 		}
 	}
-        if (nfuncs == 0)
-        {
-                for ( ; (func_table[nfuncs]).action != NULL; nfuncs++)
-                {
-                        /* nothing to do here */
-                }
-        }
+	if (nfuncs == 0)
+	{
+		for ( ; (func_table[nfuncs]).action != NULL; nfuncs++)
+		{
+			/* nothing to do here */
+		}
+	}
 	ret_func = (func_type *)bsearch(
 		temp, func_table, nfuncs, sizeof(func_type), func_comp);
 	free(temp);
@@ -442,13 +442,13 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 		{
 		case CF_IMMEDIATE:
 			if (fw)
-                        {
+			{
 				w = FW_W_FRAME(fw);
-                        }
+			}
 			else
-                        {
+			{
 				w = None;
-                        }
+			}
 			old_execute_function(
 				&cond_func_rc, fi->action, fw, eventp, context,
 				-1, 0, arguments);
@@ -496,7 +496,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 		x = eventp->xbutton.x_root;
 		y = eventp->xbutton.y_root;
 		/* Take the click which started this fuction off the
-		 * Event queue.	 -DDN- Dan D Niles dniles@iname.com */
+		 * Event queue.  -DDN- Dan D Niles dniles@iname.com */
 		XCheckMaskEvent(dpy, ButtonPressMask, &d);
 		break;
 	default:
@@ -594,13 +594,13 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 /***********************************************************************
  *
  *  Procedure:
- *	NewFunction - create a new FvwmFunction
+ *      NewFunction - create a new FvwmFunction
  *
  *  Returned Value:
- *	(FvwmFunction *)
+ *      (FvwmFunction *)
  *
  *  Inputs:
- *	name	- the name of the function
+ *      name    - the name of the function
  *
  ***********************************************************************/
 static FvwmFunction *NewFvwmFunction(const char *name)
@@ -681,24 +681,24 @@ static void DestroyFunction(FvwmFunction *func)
 
 Bool functions_is_complex_function(const char *function_name)
 {
-        if (find_complex_function(function_name) != NULL)
-        {
-                return True;
-        }
+	if (find_complex_function(function_name) != NULL)
+	{
+		return True;
+	}
 
-        return False;
+	return False;
 }
 
 /***********************************************************************
  *
  *  Procedure:
- *	execute_function - execute a fvwm built in function
+ *      execute_function - execute a fvwm built in function
  *
  *  Inputs:
- *	Action	- the action to execute
- *	fw	- the fvwm window structure
- *	eventp	- pointer to the event that caused the function
- *	context - the context in which the button was pressed
+ *      Action  - the action to execute
+ *      fw      - the fvwm window structure
+ *      eventp  - pointer to the event that caused the function
+ *      context - the context in which the button was pressed
  *
  ***********************************************************************/
 void execute_function(exec_func_args_type *efa)
@@ -740,28 +740,28 @@ void execute_function(exec_func_args_type *efa)
 	if (efa->args)
 	{
 		for (j=0;j<11;j++)
-                {
+		{
 			arguments[j] = efa->args[j];
-                }
+		}
 	}
 	else
 	{
 		for (j=0;j<11;j++)
-                {
+		{
 			arguments[j] = NULL;
-                }
+		}
 	}
 
 	if (efa->fw == NULL || IS_EWMH_DESKTOP(FW_W(efa->fw)))
 	{
 		if (efa->flags.is_window_unmanaged)
-                {
+		{
 			w = efa->win;
-                }
+		}
 		else
-                {
+		{
 			w = Scr.Root;
-                }
+		}
 	}
 	else
 	{
@@ -1002,18 +1002,18 @@ void old_execute_function(
 /***********************************************************************
  *
  *  Procedure:
- *	DeferExecution - defer the execution of a function to the
- *	    next button press if the context is C_ROOT
+ *      DeferExecution - defer the execution of a function to the
+ *          next button press if the context is C_ROOT
  *
  *  Inputs:
- *	eventp	- pointer to XEvent to patch up
- *	w	- pointer to Window to patch up
- *	fw - pointer to FvwmWindow Structure to patch up
- *	context	- the context in which the mouse button was pressed
- *	func	- the function to defer
- *	cursor	- the cursor to display while waiting
- *	finishEvent - ButtonRelease or ButtonPress; tells what kind of event to
- *		      terminate on.
+ *      eventp  - pointer to XEvent to patch up
+ *      w       - pointer to Window to patch up
+ *      fw - pointer to FvwmWindow Structure to patch up
+ *      context - the context in which the mouse button was pressed
+ *      func    - the function to defer
+ *      cursor  - the cursor to display while waiting
+ *      finishEvent - ButtonRelease or ButtonPress; tells what kind of event to
+ *                    terminate on.
  *
  ***********************************************************************/
 int DeferExecution(
@@ -1170,9 +1170,9 @@ void find_func_type(char *action, short *func_type, unsigned char *flags)
 	if (action)
 	{
 		while (*endtok && !isspace((unsigned char)*endtok))
-                {
-                        ++endtok;
-                }
+		{
+			++endtok;
+		}
 		len = endtok - action;
 		j=0;
 		matched = FALSE;
@@ -1217,11 +1217,11 @@ void find_func_type(char *action, short *func_type, unsigned char *flags)
 /***********************************************************************
  *
  *  Procedure:
- *	AddToFunction - add an item to a FvwmFunction
+ *      AddToFunction - add an item to a FvwmFunction
  *
  *  Inputs:
- *	func	  - pointer to the FvwmFunction to add the item
- *	action	  - the definition string from the config line
+ *      func      - pointer to the FvwmFunction to add the item
+ *      action    - the definition string from the config line
  *
  ***********************************************************************/
 void AddToFunction(FvwmFunction *func, char *action)
@@ -1302,19 +1302,19 @@ void CMD_DestroyFunc(F_CMD_ARGS)
 
 	GetNextToken(action,&token);
 	if (!token)
-        {
+	{
 		return;
-        }
+	}
 	func = find_complex_function(token);
 	free(token);
 	if (!func)
-        {
+	{
 		return;
-        }
+	}
 	if (Scr.last_added_item.type == ADDED_FUNCTION)
-        {
+	{
 		set_last_added_item(ADDED_NONE, NULL);
-        }
+	}
 	DestroyFunction(func);
 
 	return;
@@ -1327,14 +1327,14 @@ void CMD_AddToFunc(F_CMD_ARGS)
 
 	action = GetNextToken(action,&token);
 	if (!token)
-        {
+	{
 		return;
-        }
+	}
 	func = find_complex_function(token);
 	if (func == NULL)
-        {
+	{
 		func = NewFvwmFunction(token);
-        }
+	}
 
 	/* Set + state to last function */
 	set_last_added_item(ADDED_FUNCTION, func);
@@ -1348,28 +1348,28 @@ void CMD_AddToFunc(F_CMD_ARGS)
 void CMD_Plus(F_CMD_ARGS)
 {
 	if (Scr.last_added_item.type == ADDED_MENU)
-        {
+	{
 		add_another_menu_item(action);
-        }
+	}
 	else if (Scr.last_added_item.type == ADDED_FUNCTION)
-        {
+	{
 		AddToFunction(Scr.last_added_item.item, action);
-        }
+	}
 #ifdef USEDECOR
 	else if (Scr.last_added_item.type == ADDED_DECOR)
-        {
+	{
 		FvwmDecor *tmp = &Scr.DefaultDecor;
 		for (; tmp; tmp = tmp->next)
-                {
+		{
 			if (tmp == Scr.last_added_item.item)
-                        {
+			{
 				break;
-                        }
-                }
+			}
+		}
 		if (!tmp)
-                {
+		{
 			return;
-                }
+		}
 		AddToDecor(tmp, action);
 	}
 #endif /* USEDECOR */

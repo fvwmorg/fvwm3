@@ -8,12 +8,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /* ---------------------------- included header files ----------------------- */
@@ -62,16 +62,16 @@ static FlocaleCharset *FLCUtf8Charset = NULL;
 /* locale charset from the locale not X */
 static FlocaleCharset *FLCLocaleCharset = NULL;
 
-static char *nullsl[]		 = {NULL};
+static char *nullsl[]            = {NULL};
 
 #if FiconvSupport
 /* from hpux iconv man page: The fromcode and tocode names can be any length,
  * but only the first four and the last letter are used to identify the code
  * set. */
 /* the first name is the gnu canonical name */
-char *armscii_8[]	  = {"ARMSCII-8", NULL};
-char *big5_0[]		  = {"BIG5",
-			     "big5",	   /* aix, hpux, osf */
+char *armscii_8[]         = {"ARMSCII-8", NULL};
+char *big5_0[]            = {"BIG5",
+			     "big5",       /* aix, hpux, osf */
 			     "zh_TW-big5", /* solaris 9? */
 			     NULL};
 char *big5hkscs_0[]          = {"BIG5-HKSCS",
@@ -87,16 +87,16 @@ char *cns11643[]          = {"EUCTW",
 			     NULL};
 char *dosencoding_cp437[] = {"CP437", NULL};
 char *dosencoding_cp850[] = {"CP850",
-			     "cp850",	/* osf */
+			     "cp850",   /* osf */
 			     "IBM-850", /* aix */
 			     NULL};
 char *gb2312_1980_0[]     = {"EUC-CN",
 			     "GB2312",
 			     "gb2312",    /* solaris */
 			     "dechanzi",  /* osf */
-			     "hp15CN",	  /* hpux */
+			     "hp15CN",    /* hpux */
 			     "IBM-eucCN", /* aix */
-			     "eucCN",	  /* irix */
+			     "eucCN",     /* irix */
 			     NULL};
 char *gbk_0[0]            = {"GBK", NULL};
 char *georgian_academy[]  = {"GEORGIAN-ACADEMY", NULL};
@@ -104,12 +104,12 @@ char *georgian_ps[]       = {"GEORGIAN-PS", NULL};
 char *ibm_cp1133[]        = {"CP850" , NULL};
 char *isiri_3342[]        = {"ISIRI-3342", NULL};
 /* embed ascii into ISO-8859-1*/
-char *iso8859_1[]	  = {"ISO-8859-1",  /* gnu */
+char *iso8859_1[]         = {"ISO-8859-1",  /* gnu */
 			     "ISO8859-1",   /* aix, irix, osf, solaris */
 			     "iso8859-1",   /* aix, irix, osf */
 			     "iso88591",    /* hpux */
-			     "8859-1",	    /* solaris ? */
-			     "iso81",	    /* hpux */
+			     "8859-1",      /* solaris ? */
+			     "iso81",       /* hpux */
 			     "ascii",
 			     "ASCII",
 			     "646", /* solaris */
@@ -117,63 +117,63 @@ char *iso8859_1[]	  = {"ISO-8859-1",  /* gnu */
 			     "ISO_646.IRV:1983", /* old glibc */
 			     "american_e",
 			     NULL};
-char *iso8859_2[]	  = {"ISO-8859-2",
+char *iso8859_2[]         = {"ISO-8859-2",
 			     "ISO8859-2",
 			     "iso8859-2",
 			     "iso88592",
 			     "8859-2",
 			     "iso82",
 			     NULL};
-char *iso8859_3[]	  = {"ISO-8859-3",
+char *iso8859_3[]         = {"ISO-8859-3",
 			     "ISO8859-3",
 			     "iso8859-3",
 			     "iso88593",
 			     "8859-3",
 			     "iso83",
 			     NULL};
-char *iso8859_4[]	  = {"ISO-8859-4",
+char *iso8859_4[]         = {"ISO-8859-4",
 			     "ISO8859-4",
 			     "iso8859-4",
 			     "iso88594",
 			     "8859-4",
 			     "iso84",
 			     NULL};
-char *iso8859_5[]	  = {"ISO-8859-5",
+char *iso8859_5[]         = {"ISO-8859-5",
 			     "ISO8859-5",
 			     "iso8859-5",
 			     "iso88595",
 			     "8859-5",
 			     "iso85",
 			     NULL};
-char *iso8859_6[]	  = {"ISO-8859-6",
+char *iso8859_6[]         = {"ISO-8859-6",
 			     "ISO8859-6",
 			     "iso8859-6",
 			     "iso88596",
 			     "8859-6",
 			     "iso86",
 			     NULL};
-char *iso8859_7[]	  = {"ISO-8859-7",
+char *iso8859_7[]         = {"ISO-8859-7",
 			     "ISO8859-7",
 			     "iso8859-7",
 			     "iso88597",
 			     "8859-7",
 			     "iso87",
 			     NULL};
-char *iso8859_8[]	  = {"ISO-8859-8",
+char *iso8859_8[]         = {"ISO-8859-8",
 			     "ISO8859-8",
 			     "iso88859-8",
 			     "iso88598",
 			     "8859-8",
 			     "iso88",
 			     NULL};
-char *iso8859_9[]	  = {"ISO-8859-9",
+char *iso8859_9[]         = {"ISO-8859-9",
 			     "ISO8859-9",
 			     "iso8859-9",
 			     "iso88599",
 			     "8859-9",
 			     "iso89",
 			     NULL};
-char *iso8859_10[]	  = {"ISO-8859-10",
+char *iso8859_10[]        = {"ISO-8859-10",
 			     "ISO8859-10",
 			     "iso8859-10",
 			     "iso885910",
@@ -181,7 +181,7 @@ char *iso8859_10[]	  = {"ISO-8859-10",
 			     "iso80", /*?*/
 			     "iso10",
 			     NULL};
-char *iso8859_13[]	  = {"ISO-8859-13",
+char *iso8859_13[]        = {"ISO-8859-13",
 			     "ISO8859-13",
 			     "iso8859-13",
 			     "iso885913",
@@ -190,7 +190,7 @@ char *iso8859_13[]	  = {"ISO-8859-13",
 			     "iso813", /*?*/
 			     "iso13",
 			     NULL};
-char *iso8859_14[]	  = {"ISO-8859-14",
+char *iso8859_14[]        = {"ISO-8859-14",
 			     "ISO8859-14",
 			     "iso8859-14",
 			     "iso885914",
@@ -198,7 +198,7 @@ char *iso8859_14[]	  = {"ISO-8859-14",
 			     "iso814",
 			     "iso14",
 			     NULL};
-char *iso8859_15[]	  = {"ISO-8859-15",
+char *iso8859_15[]        = {"ISO-8859-15",
 			     "ISO88859-15",
 			     "iso88859-15",
 			     "iso885915",
@@ -206,7 +206,7 @@ char *iso8859_15[]	  = {"ISO-8859-15",
 			     "iso815",
 			     "iso15",
 			     NULL};
-char *iso8859_16[]	  = {"ISO-8859-16",
+char *iso8859_16[]        = {"ISO-8859-16",
 			     "ISO8859-16",
 			     "iso8859-16",
 			     "iso885916",
@@ -218,12 +218,12 @@ char *jisx0201_1976_0[]   = {"JIS_X0201",
 			     "ISO-IR-14",
 			     "jis", /* hpux */
 			     NULL};
-char *jisx0208_1983_0[]	  = {"JIS_X0208", NULL};
-char *jisx0208_1990_0[]	  = {"JIS_X0208", NULL};
-char *jisx0212_1990_0[]	  = {"JIS_X0212", NULL};
-char *koi8_r[]		  = {"KOI8-R", /* gnu, solaris */
+char *jisx0208_1983_0[]   = {"JIS_X0208", NULL};
+char *jisx0208_1990_0[]   = {"JIS_X0208", NULL};
+char *jisx0212_1990_0[]   = {"JIS_X0212", NULL};
+char *koi8_r[]            = {"KOI8-R", /* gnu, solaris */
 			     NULL};
-char *koi8_u[]		  = {"KOI8-U",
+char *koi8_u[]            = {"KOI8-U",
 			     NULL};
 char *ksc5601[]           = {"KSC5636",
 			     "ko_KR-johap", /* solaris */
@@ -241,17 +241,17 @@ char *microsoft_cp1255[]  = {"CP1255",
 			     NULL};
 char *microsoft_cp1256[]  = {"CP1256",
 			     NULL};
-char *mulelao_1[]	  = {"MULELAO-1",
+char *mulelao_1[]         = {"MULELAO-1",
 			     "MULELAO",
 			     NULL};
-char *sjisx_1[]		  = {"SHIFT_JIS",
+char *sjisx_1[]           = {"SHIFT_JIS",
 			     "SJIS", /* solaris, osf */
 			     "sjis", /* hpux */
 			     "PCK",  /* solaris */
 			     NULL};
-char *tatar_cyr[]	  = {NULL};
-char *tcvn_5712[]	  = {"TCVN", NULL};
-char *tis620_0[]	  = {"TIS-620",
+char *tatar_cyr[]         = {NULL};
+char *tcvn_5712[]         = {"TCVN", NULL};
+char *tis620_0[]          = {"TIS-620",
 			     "tis620", /* hpux */
 			     "TACTIS", /* osf */
 			     NULL};
@@ -325,70 +325,70 @@ FlocaleCharset UnkownCharset =
 
 FlocaleCharset FlocaleCharsetTable[] =
 {
-	CT_ENTRY("ARMSCII-8",		armscii_8,	     NULL),
-	CT_ENTRY("BIG5-0",		big5_0,		     NULL),
+	CT_ENTRY("ARMSCII-8",           armscii_8,           NULL),
+	CT_ENTRY("BIG5-0",              big5_0,              NULL),
 	CT_ENTRY("BIG5HKSCS-0",         big5hkscs_0,         NULL),
-	CT_ENTRY("CNS11643.1986-1",	cns11643,     NULL),
-	CT_ENTRY("CNS11643.1986-2",	cns11643,     NULL),
-	CT_ENTRY("CNS11643.1992-3",	cns11643,     NULL),
-	CT_ENTRY("CNS11643.1992-4",	cns11643,     NULL),
-	CT_ENTRY("CNS11643.1992-5",	cns11643,     NULL),
-	CT_ENTRY("CNS11643.1992-6",	cns11643,     NULL),
-	CT_ENTRY("CNS11643.1992-7",	cns11643,     NULL),
-	CT_ENTRY("DOSENCODING-CP437",	dosencoding_cp437,   NULL),
-	CT_ENTRY("DOSENCODING-CP850",	dosencoding_cp850,   NULL),
-	CT_ENTRY("GB2312.1980-0",	gb2312_1980_0,	     NULL),
+	CT_ENTRY("CNS11643.1986-1",     cns11643,     NULL),
+	CT_ENTRY("CNS11643.1986-2",     cns11643,     NULL),
+	CT_ENTRY("CNS11643.1992-3",     cns11643,     NULL),
+	CT_ENTRY("CNS11643.1992-4",     cns11643,     NULL),
+	CT_ENTRY("CNS11643.1992-5",     cns11643,     NULL),
+	CT_ENTRY("CNS11643.1992-6",     cns11643,     NULL),
+	CT_ENTRY("CNS11643.1992-7",     cns11643,     NULL),
+	CT_ENTRY("DOSENCODING-CP437",   dosencoding_cp437,   NULL),
+	CT_ENTRY("DOSENCODING-CP850",   dosencoding_cp850,   NULL),
+	CT_ENTRY("GB2312.1980-0",       gb2312_1980_0,       NULL),
 	CT_ENTRY("GBK-0",               gbk_0,               NULL),
-	CT_ENTRY("GEORGIAN-ACADEMY",	georgian_academy,    NULL),
-	CT_ENTRY("GEORGIAN-PS",		georgian_ps,	     NULL),
-	CT_ENTRY("IBM-CP1133",		ibm_cp1133,	     NULL),
-	CT_ENTRY("ISIRI-3342",		isiri_3342,	     "ISIRI-3342"),
+	CT_ENTRY("GEORGIAN-ACADEMY",    georgian_academy,    NULL),
+	CT_ENTRY("GEORGIAN-PS",         georgian_ps,         NULL),
+	CT_ENTRY("IBM-CP1133",          ibm_cp1133,          NULL),
+	CT_ENTRY("ISIRI-3342",          isiri_3342,          "ISIRI-3342"),
 	/* exception ISO10646-1 implies UTF-8 and not USC-2 ! */
 	CT_ENTRY_WET("ISO10646-1",  utf_8,  "UTF-8",  FLC_ENCODING_TYPE_UTF_8),
-	CT_ENTRY("ISO8859-1",		iso8859_1,	     NULL),
-	CT_ENTRY("ISO8859-2",		iso8859_2,	     NULL),
-	CT_ENTRY("ISO8859-3",		iso8859_3,	     NULL),
-	CT_ENTRY("ISO8859-4",		iso8859_4,	     NULL),
-	CT_ENTRY("ISO8859-5",		iso8859_5,	     NULL),
-	CT_ENTRY("ISO8859-6",		iso8859_6,	     "ISO8859-6"),
-	CT_ENTRY("ISO8859-6.8X",	iso8859_6,	     "ISO8859-6"),
-	CT_ENTRY("ISO8859-7",		iso8859_7,	     NULL),
-	CT_ENTRY("ISO8859-8",		iso8859_8,	     "ISO8859-8"),
-	CT_ENTRY("ISO8859-9",		iso8859_9,	     NULL),
-	CT_ENTRY("ISO8859-9E",		iso8859_9,	     NULL),
-	CT_ENTRY("ISO8859-10",		iso8859_10,	     NULL),
-	CT_ENTRY("ISO8859-13",		iso8859_13,	     NULL),
-	CT_ENTRY("ISO8859-14",		iso8859_14,	     NULL),
-	CT_ENTRY("ISO8859-15",		iso8859_15,	     NULL),
-	CT_ENTRY("ISO8859-16",		iso8859_16,	     NULL),
-	CT_ENTRY("JISX.UDC-1",		jisx0201_1976_0,     NULL), /* ? */
-	CT_ENTRY("JISX0201.1976-0",	jisx0201_1976_0,     NULL),
-	CT_ENTRY("JISX0208.1983-0",	jisx0208_1983_0,     NULL),
-	CT_ENTRY("JISX0208.1990-0",	jisx0208_1990_0,     NULL),
-	CT_ENTRY("JISX0212.1990-0",	jisx0212_1990_0,     NULL),
-	CT_ENTRY("KOI8-C",		koi8_r,		     NULL),
-	CT_ENTRY("KOI8-R",		koi8_r,		     NULL),
-	CT_ENTRY("KOI8-U",		koi8_u,		     NULL),
-	CT_ENTRY("KSC5601.1987-0",	ksc5601,	     NULL),
-	CT_ENTRY("KSC5601.1992-0",	ksc5601,	     NULL),
-	CT_ENTRY("MICROSOFT-CP1251",	microsoft_cp1251,    NULL),
-	CT_ENTRY("MICROSOFT-CP1255",	microsoft_cp1255,    "CP1255"),
-	CT_ENTRY("MICROSOFT-CP1256",	microsoft_cp1256,    "CP1256"),
-	CT_ENTRY("MULELAO-1",		mulelao_1,	     NULL),
-	CT_ENTRY("SJISX-1",		sjisx_1,	     NULL),
-	CT_ENTRY("TATAR-CYR",		tatar_cyr,	     NULL),
-	CT_ENTRY("TCVN-5712",		tcvn_5712,	     NULL),
-	CT_ENTRY("TIS620-0",		tis620_0,	     NULL),
-	CT_ENTRY("VISCII1.1-1",		viscii1_1_1,	     NULL),
+	CT_ENTRY("ISO8859-1",           iso8859_1,           NULL),
+	CT_ENTRY("ISO8859-2",           iso8859_2,           NULL),
+	CT_ENTRY("ISO8859-3",           iso8859_3,           NULL),
+	CT_ENTRY("ISO8859-4",           iso8859_4,           NULL),
+	CT_ENTRY("ISO8859-5",           iso8859_5,           NULL),
+	CT_ENTRY("ISO8859-6",           iso8859_6,           "ISO8859-6"),
+	CT_ENTRY("ISO8859-6.8X",        iso8859_6,           "ISO8859-6"),
+	CT_ENTRY("ISO8859-7",           iso8859_7,           NULL),
+	CT_ENTRY("ISO8859-8",           iso8859_8,           "ISO8859-8"),
+	CT_ENTRY("ISO8859-9",           iso8859_9,           NULL),
+	CT_ENTRY("ISO8859-9E",          iso8859_9,           NULL),
+	CT_ENTRY("ISO8859-10",          iso8859_10,          NULL),
+	CT_ENTRY("ISO8859-13",          iso8859_13,          NULL),
+	CT_ENTRY("ISO8859-14",          iso8859_14,          NULL),
+	CT_ENTRY("ISO8859-15",          iso8859_15,          NULL),
+	CT_ENTRY("ISO8859-16",          iso8859_16,          NULL),
+	CT_ENTRY("JISX.UDC-1",          jisx0201_1976_0,     NULL), /* ? */
+	CT_ENTRY("JISX0201.1976-0",     jisx0201_1976_0,     NULL),
+	CT_ENTRY("JISX0208.1983-0",     jisx0208_1983_0,     NULL),
+	CT_ENTRY("JISX0208.1990-0",     jisx0208_1990_0,     NULL),
+	CT_ENTRY("JISX0212.1990-0",     jisx0212_1990_0,     NULL),
+	CT_ENTRY("KOI8-C",              koi8_r,              NULL),
+	CT_ENTRY("KOI8-R",              koi8_r,              NULL),
+	CT_ENTRY("KOI8-U",              koi8_u,              NULL),
+	CT_ENTRY("KSC5601.1987-0",      ksc5601,             NULL),
+	CT_ENTRY("KSC5601.1992-0",      ksc5601,             NULL),
+	CT_ENTRY("MICROSOFT-CP1251",    microsoft_cp1251,    NULL),
+	CT_ENTRY("MICROSOFT-CP1255",    microsoft_cp1255,    "CP1255"),
+	CT_ENTRY("MICROSOFT-CP1256",    microsoft_cp1256,    "CP1256"),
+	CT_ENTRY("MULELAO-1",           mulelao_1,           NULL),
+	CT_ENTRY("SJISX-1",             sjisx_1,             NULL),
+	CT_ENTRY("TATAR-CYR",           tatar_cyr,           NULL),
+	CT_ENTRY("TCVN-5712",           tcvn_5712,           NULL),
+	CT_ENTRY("TIS620-0",            tis620_0,            NULL),
+	CT_ENTRY("VISCII1.1-1",         viscii1_1_1,         NULL),
 	/* aliases */
-	/* CT_ENTRY("ADOBE-STANDARD",	iso8859_1,	     NULL), no! */
-	CT_ENTRY("ASCII-0",		iso8859_1,	     NULL),
-	CT_ENTRY("BIBIG5HKSCS",		big5_0,		     NULL), /* ? */
-	CT_ENTRY("BIG5-E0",		big5_0,		     NULL), /* emacs */
-	CT_ENTRY("BIG5-E1",		big5_0,		     NULL), /* emacs */
-	CT_ENTRY("BIG5-1",		big5_0,		     NULL),
-	CT_ENTRY("ISO646.1991-IRV",	iso8859_1,	     NULL),
-	CT_ENTRY("TIS620.2533-1",	tis620_0,	     NULL),
+	/* CT_ENTRY("ADOBE-STANDARD",   iso8859_1,           NULL), no! */
+	CT_ENTRY("ASCII-0",             iso8859_1,           NULL),
+	CT_ENTRY("BIBIG5HKSCS",         big5_0,              NULL), /* ? */
+	CT_ENTRY("BIG5-E0",             big5_0,              NULL), /* emacs */
+	CT_ENTRY("BIG5-E1",             big5_0,              NULL), /* emacs */
+	CT_ENTRY("BIG5-1",              big5_0,              NULL),
+	CT_ENTRY("ISO646.1991-IRV",     iso8859_1,           NULL),
+	CT_ENTRY("TIS620.2533-1",       tis620_0,            NULL),
 	CT_ENTRY_WET("UTF-8",  utf_8,  "UTF-8",  FLC_ENCODING_TYPE_UTF_8),
 	CT_ENTRY_WET("USC-2",  usc_2,  "USC-2",  FLC_ENCODING_TYPE_USC_2),
 	CT_ENTRY_WET("USC-4",  usc_4,  NULL,     FLC_ENCODING_TYPE_USC_4),
@@ -499,7 +499,7 @@ void FlocaleInit_X_Charset(Display *dpy, const char *module)
 			FLCXOMCharsetList =
 			    (FlocaleCharset **)safemalloc(
 				   sizeof(FlocaleCharset)*FLCXOMCharsetList_num);
-			for(i = 0; i <	FLCXOMCharsetList_num; i++)
+			for(i = 0; i <  FLCXOMCharsetList_num; i++)
 			{
 				FLCXOMCharsetList[i] =
 				    FlocaleCharsetOfXCharset(cs.charset_list[i]);

@@ -8,12 +8,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef FRENDER_H
@@ -48,25 +48,25 @@ typedef XRenderPictureAttributes FRenderPictureAttributes;
 typedef XRenderColor FRenderColor;
 typedef XGlyphInfo FGlyphInfo;
 
-#define FRenderPictFormatID	   PictFormatID
-#define FRenderPictFormatType	   PictFormatType
-#define FRenderPictFormatDepth	   PictFormatDepth
-#define FRenderPictFormatRed	   PictFormatRed
+#define FRenderPictFormatID        PictFormatID
+#define FRenderPictFormatType      PictFormatType
+#define FRenderPictFormatDepth     PictFormatDepth
+#define FRenderPictFormatRed       PictFormatRed
 #define FRenderPictFormatRedMask   PictFormatRedMask
-#define FRenderPictFormatGreen	   PictFormatGreen
+#define FRenderPictFormatGreen     PictFormatGreen
 #define FRenderPictFormatGreenMask PictFormatGreenMask
-#define FRenderPictFormatBlue	   PictFormatBlue
+#define FRenderPictFormatBlue      PictFormatBlue
 #define FRenderPictFormatBlueMask  PictFormatBlueMask
-#define FRenderPictFormatAlpha	   PictFormatAlpha
+#define FRenderPictFormatAlpha     PictFormatAlpha
 #define FRenderPictFormatAlphaMask PictFormatAlphaMask
 #define FRenderPictFormatColormap  PictFormatColormap
 
-#define FRenderBadPictFormat		    0
-#define FRenderBadPicture		    1
-#define FRenderBadPictOp		    2
-#define FRenderBadGlyphSet		    3
-#define FRenderBadGlyph			    4
-#define FRenderRenderNumberErrors	    (FRenderBadGlyph+1)
+#define FRenderBadPictFormat                0
+#define FRenderBadPicture                   1
+#define FRenderBadPictOp                    2
+#define FRenderBadGlyphSet                  3
+#define FRenderBadGlyph                     4
+#define FRenderRenderNumberErrors           (FRenderBadGlyph+1)
 
 #define FRenderPictTypeIndexed PictTypeIndexed
 #define FRenderPictTypeDirect  PictTypeDirect
@@ -91,35 +91,35 @@ typedef XGlyphInfo FGlyphInfo;
  * Operators only available in version 0.2
  */
 #if 0
-#define FRenderPictOpDisjointMinimum	 PictOpDisjointMinimum
-#define FRenderPictOpDisjointClear	 PictOpDisjointClear
-#define FRenderPictOpDisjointSrc	 PictOpDisjointSrc
-#define FRenderPictOpDisjointDst	 PictOpDisjointDst
-#define FRenderPictOpDisjointOver	 PictOpDisjointOver
+#define FRenderPictOpDisjointMinimum     PictOpDisjointMinimum
+#define FRenderPictOpDisjointClear       PictOpDisjointClear
+#define FRenderPictOpDisjointSrc         PictOpDisjointSrc
+#define FRenderPictOpDisjointDst         PictOpDisjointDst
+#define FRenderPictOpDisjointOver        PictOpDisjointOver
 #define FRenderPictOpDisjointOverReverse PictOpDisjointOverReverse
-#define FRenderPictOpDisjointIn		 PictOpDisjointIn
-#define FRenderPictOpDisjointInReverse	 PictOpDisjointInReverse
-#define FRenderPictOpDisjointOut	 PictOpDisjointOut
-#define FRenderPictOpDisjointOutReverse	 PictOpDisjointOutReverse
-#define FRenderPictOpDisjointAtop	 PictOpDisjointAtop
+#define FRenderPictOpDisjointIn          PictOpDisjointIn
+#define FRenderPictOpDisjointInReverse   PictOpDisjointInReverse
+#define FRenderPictOpDisjointOut         PictOpDisjointOut
+#define FRenderPictOpDisjointOutReverse  PictOpDisjointOutReverse
+#define FRenderPictOpDisjointAtop        PictOpDisjointAtop
 #define FRenderPictOpDisjointAtopReverse PictOpDisjointAtopReverse
-#define FRenderPictOpDisjointXor	 PictOpDisjointXor
-#define FRenderPictOpDisjointMaximum	 PictOpDisjointMaximum
+#define FRenderPictOpDisjointXor         PictOpDisjointXor
+#define FRenderPictOpDisjointMaximum     PictOpDisjointMaximum
 
-#define FRenderPictOpConjointMinimum	 PictOpConjointMinimum
-#define FRenderPictOpConjointClear	 PictOpConjointClear
-#define FRenderPictOpConjointSrc	 PictOpConjointSrc
-#define FRenderPictOpConjointDst	 PictOpConjointDst
-#define FRenderPictOpConjointOver	 PictOpConjointOver
+#define FRenderPictOpConjointMinimum     PictOpConjointMinimum
+#define FRenderPictOpConjointClear       PictOpConjointClear
+#define FRenderPictOpConjointSrc         PictOpConjointSrc
+#define FRenderPictOpConjointDst         PictOpConjointDst
+#define FRenderPictOpConjointOver        PictOpConjointOver
 #define FRenderPictOpConjointOverReverse PictOpConjointOverReverse
-#define FRenderPictOpConjointIn		 PictOpConjointIn
-#define FRenderPictOpConjointInReverse	 PictOpConjointInReverse
-#define FRenderPictOpConjointOut	 PictOpConjointOut
-#define FRenderPictOpConjointOutReverse	 PictOpConjointOutReverse
-#define FRenderPictOpConjointAtop	 PictOpConjointAtop
+#define FRenderPictOpConjointIn          PictOpConjointIn
+#define FRenderPictOpConjointInReverse   PictOpConjointInReverse
+#define FRenderPictOpConjointOut         PictOpConjointOut
+#define FRenderPictOpConjointOutReverse  PictOpConjointOutReverse
+#define FRenderPictOpConjointAtop        PictOpConjointAtop
 #define FRenderPictOpConjointAtopReverse PictOpConjointAtopReverse
-#define FRenderPictOpConjointXor	 PictOpConjointXor
-#define FRenderPictOpConjointMaximum	 PictOpConjointMaximum
+#define FRenderPictOpConjointXor         PictOpConjointXor
+#define FRenderPictOpConjointMaximum     PictOpConjointMaximum
 #endif /* 0 */
 
 #define FRenderPolyEdgeSharp  PolyEdgeSharp
@@ -128,20 +128,20 @@ typedef XGlyphInfo FGlyphInfo;
 #define FRenderPolyModePrecise
 #define FRenderPolyModeImprecise
 
-#define FRenderCPRepeat		   CPRepeat
-#define FRenderCPAlphaMap	   CPAlphaMap
-#define FRenderCPAlphaXOrigin	   CPAlphaXOrigin
-#define FRenderCPAlphaYOrigin	   CPAlphaYOrigin
-#define FRenderCPClipXOrigin	   CPClipXOrigin
-#define FRenderCPClipYOrigin	   CPClipYOrigin
-#define FRenderCPClipMask	   CPClipMask
+#define FRenderCPRepeat            CPRepeat
+#define FRenderCPAlphaMap          CPAlphaMap
+#define FRenderCPAlphaXOrigin      CPAlphaXOrigin
+#define FRenderCPAlphaYOrigin      CPAlphaYOrigin
+#define FRenderCPClipXOrigin       CPClipXOrigin
+#define FRenderCPClipYOrigin       CPClipYOrigin
+#define FRenderCPClipMask          CPClipMask
 #define FRenderCPGraphicsExposure  CPGraphicsExposure
-#define FRenderCPSubwindowMode	   CPSubwindowMode
-#define FRenderCPPolyEdge	   CPPolyEdge
-#define FRenderCPPolyMode	   CPPolyMode
-#define FRenderCPDither		   CPDither
-#define FRenderCPComponentAlpha	   CPComponentAlpha
-#define FRenderCPLastBit	   CPLastBit
+#define FRenderCPSubwindowMode     CPSubwindowMode
+#define FRenderCPPolyEdge          CPPolyEdge
+#define FRenderCPPolyMode          CPPolyMode
+#define FRenderCPDither            CPDither
+#define FRenderCPComponentAlpha    CPComponentAlpha
+#define FRenderCPLastBit           CPLastBit
 
 #define FRenderQueryExtension(a,b,c) XRenderQueryExtension(a,b,c)
 #define FRenderQueryVersion(a,b,c) XRenderQueryVersion(a,b,c)
@@ -162,8 +162,8 @@ typedef XGlyphInfo FGlyphInfo;
 
 #else /* !XRenderSupport */
 
-typedef unsigned long	FRenderPicture;
-typedef unsigned long	FRPictFormat;
+typedef unsigned long   FRenderPicture;
+typedef unsigned long   FRPictFormat;
 typedef struct {
     short   red;
     short   redMask;
@@ -175,53 +175,53 @@ typedef struct {
     short   alphaMask;
 } FRenderDirectFormat;
 typedef struct {
-    FRPictFormat	id;
-    int			type;
-    int			depth;
-    FRenderDirectFormat	direct;
-    Colormap		colormap;
+    FRPictFormat        id;
+    int                 type;
+    int                 depth;
+    FRenderDirectFormat direct;
+    Colormap            colormap;
 } FRenderPictFormat;
 
 typedef struct {
-    Visual		*visual;
-    FRenderPictFormat	*format;
+    Visual              *visual;
+    FRenderPictFormat   *format;
 } FRenderVisual;
 typedef struct {
-    int			depth;
-    int			nvisuals;
-    FRenderVisual	*visuals;
+    int                 depth;
+    int                 nvisuals;
+    FRenderVisual       *visuals;
 } FRenderDepth;
 
 typedef struct {
-    FRenderDepth	*depths;
-    int			ndepths;
-    FRenderPictFormat	*fallback;
+    FRenderDepth        *depths;
+    int                 ndepths;
+    FRenderPictFormat   *fallback;
 } FRenderScreen;
 typedef struct _FRenderInfo {
-    FRenderPictFormat	*format;
-    int			nformat;
-    FRenderScreen	*screen;
-    int			nscreen;
-    FRenderDepth	*depth;
-    int			ndepth;
-    FRenderVisual	*visual;
-    int			nvisual;
+    FRenderPictFormat   *format;
+    int                 nformat;
+    FRenderScreen       *screen;
+    int                 nscreen;
+    FRenderDepth        *depth;
+    int                 ndepth;
+    FRenderVisual       *visual;
+    int                 nvisual;
 } FRenderInfo;
 
 typedef struct _FRenderPictureAttributes {
-    Bool		repeat;
-    FRenderPicture	alpha_map;
-    int			alpha_x_origin;
-    int			alpha_y_origin;
-    int			clip_x_origin;
-    int			clip_y_origin;
-    Pixmap		clip_mask;
-    Bool		graphics_exposures;
-    int			subwindow_mode;
-    int			poly_edge;
-    int			poly_mode;
-    Atom		dither;
-    Bool		component_alpha;
+    Bool                repeat;
+    FRenderPicture      alpha_map;
+    int                 alpha_x_origin;
+    int                 alpha_y_origin;
+    int                 clip_x_origin;
+    int                 clip_y_origin;
+    Pixmap              clip_mask;
+    Bool                graphics_exposures;
+    int                 subwindow_mode;
+    int                 poly_edge;
+    int                 poly_mode;
+    Atom                dither;
+    Bool                component_alpha;
 } FRenderPictureAttributes;
 typedef struct {
     unsigned short   red;
@@ -232,10 +232,10 @@ typedef struct {
 typedef struct _FGlyphInfo {
     unsigned short  width;
     unsigned short  height;
-    short	    x;
-    short	    y;
-    short	    xOff;
-    short	    yOff;
+    short           x;
+    short           y;
+    short           xOff;
+    short           yOff;
 } FGlyphInfo;
 
 #define FRenderPictFormatID 0
@@ -251,12 +251,12 @@ typedef struct _FGlyphInfo {
 #define FRenderPictFormatAlphaMask 0
 #define FRenderPictFormatColormap 0
 
-#define FRenderBadPictFormat		    0
-#define FRenderBadPicture		    1
-#define FRenderBadPictOp		    2
-#define FRenderBadGlyphSet		    3
-#define FRenderBadGlyph			    4
-#define FRenderRenderNumberErrors	    (FRenderBadGlyph+1)
+#define FRenderBadPictFormat                0
+#define FRenderBadPicture                   1
+#define FRenderBadPictOp                    2
+#define FRenderBadGlyphSet                  3
+#define FRenderBadGlyph                     4
+#define FRenderRenderNumberErrors           (FRenderBadGlyph+1)
 
 #define FRenderPictTypeIndexed 0
 #define FRenderPictTypeDirect 0

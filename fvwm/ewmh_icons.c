@@ -7,12 +7,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -638,7 +638,7 @@ void extract_wm_icon(CARD32 *list, unsigned int size, int wanted_w, int wanted_h
   return;
 }
 
-#define MINI_ICON_WANTED_WIDTH	16
+#define MINI_ICON_WANTED_WIDTH  16
 #define MINI_ICON_WANTED_HEIGHT 16
 #define MINI_ICON_MAX_WIDTH 22
 #define MINI_ICON_MAX_HEIGHT 22

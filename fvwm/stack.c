@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -64,7 +64,7 @@ static void dump_stack_ring(void)
   fprintf(stderr,"dumping stack ring:\n");
   for (t1 = Scr.FvwmRoot.stack_next; t1 != &Scr.FvwmRoot; t1 = t1->stack_next)
   {
-    fprintf(stderr,"	l=%d fw=0x%08x f=0x%08x '%s'\n", t1->layer,
+    fprintf(stderr,"    l=%d fw=0x%08x f=0x%08x '%s'\n", t1->layer,
 	    (int)t1, (int)FW_W_FRAME(t1), t1->name.name);
   }
 
@@ -524,7 +524,7 @@ static void RaiseOrLowerWindow(
   SET_SCHEDULED_FOR_RAISE(t, 0);
 
   /* New windows are simply raised/lowered without touching the transientfor
-   * at first.	Then, further down in the code, RaiseOrLowerWindow() is called
+   * at first.  Then, further down in the code, RaiseOrLowerWindow() is called
    * again to raise/lower the transientfor if necessary.  We can not do the
    * recursion stuff for new windows because the must_move_transients() call
    * needs a properly ordered stack ring - but the new window is still at the
@@ -710,7 +710,7 @@ static void RaiseOrLowerWindow(
     }
 
 
-    /*	This needs to be done after all the raise hacks.  */
+    /*  This needs to be done after all the raise hacks.  */
     raisePanFrames();
   }
   /* If the window has been raised, make sure the decorations are updated
@@ -844,7 +844,7 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
 
 
 /*
-    RBW - 01/07/1998  -	 this is here temporarily - I mean to move it to
+    RBW - 01/07/1998  -  this is here temporarily - I mean to move it to
     libfvwm eventually, along with some other chain manipulation functions.
 */
 
@@ -1271,7 +1271,7 @@ void init_stack_and_layers(void)
 {
   Scr.BottomLayer  = DEFAULT_BOTTOM_LAYER;
   Scr.DefaultLayer = DEFAULT_DEFAULT_LAYER;
-  Scr.TopLayer	   = DEFAULT_TOP_LAYER;
+  Scr.TopLayer     = DEFAULT_TOP_LAYER;
   Scr.FvwmRoot.stack_next = &Scr.FvwmRoot;
   Scr.FvwmRoot.stack_prev = &Scr.FvwmRoot;
   set_layer(&Scr.FvwmRoot, DEFAULT_ROOT_WINDOW_LAYER);

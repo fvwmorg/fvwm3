@@ -16,7 +16,7 @@
 #include <sys/time.h>
 #include <signal.h>
 #include <unistd.h>
-#define AUDIO_DEVICE		"/dev/audio"
+#define AUDIO_DEVICE            "/dev/audio"
 
 typedef struct LList {
     struct LList *next;
@@ -58,7 +58,7 @@ void *ckmalloc(size_t size)
 
 /*
  * Register --
- *	makes a new sound entry
+ *      makes a new sound entry
  */
 void Register(char *sound_file, int code)
 {
@@ -106,7 +106,7 @@ void Register(char *sound_file, int code)
 
 /*
  * PlaySound --
- *	plays a sound
+ *      plays a sound
  */
 
 void PlaySound(int sid)
@@ -155,11 +155,11 @@ void DoNothing(int foo)
 
 /*
  * HandleRequest --
- *	 play requested sound
+ *       play requested sound
  * sound -1 is a quit command
  *
  * Note:
- *	Something not good will happed if a new play request
+ *      Something not good will happed if a new play request
  * arrives before exiting the handler
  */
 void HandleRequest(int foo)
@@ -199,7 +199,7 @@ void HandleRequest(int foo)
  * Arguments:
  * argv[1] - pipe for reading data
  * argv[2] - the name of the sound player to be used. ``-'' indicates
- *	internal player.
+ *      internal player.
  * argv[3]... - filenames of sound files with code n-3
  */
 int main(int argc, char **argv)

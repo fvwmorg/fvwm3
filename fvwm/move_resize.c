@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*****************************************************************************
@@ -183,12 +183,12 @@ static int GetOnePositionArgument(
 
 /* GetMoveArguments is used for Move & AnimatedMove
  * It lets you specify in all the following ways
- *   20	 30	     Absolute percent position, from left edge and top
- *  -50	 50	     Absolute percent position, from right edge and top
- *   10p 5p	     Absolute pixel position
- *   10p -0p	     Absolute pixel position, from bottom
- *  w+5	 w-10p	     Relative position, right 5%, up ten pixels
- *  w+5	 w-10p	     Pointer relative position, right 5%, up ten pixels
+ *   20  30          Absolute percent position, from left edge and top
+ *  -50  50          Absolute percent position, from right edge and top
+ *   10p 5p          Absolute pixel position
+ *   10p -0p         Absolute pixel position, from bottom
+ *  w+5  w-10p       Relative position, right 5%, up ten pixels
+ *  w+5  w-10p       Pointer relative position, right 5%, up ten pixels
  * Returns 2 when x & y have parsed without error, 0 otherwise
  */
 static int GetMoveArguments(
@@ -496,11 +496,11 @@ void resize_geometry_window(void)
 /***********************************************************************
  *
  *  Procedure:
- *	DisplayPosition - display the position in the dimensions window
+ *      DisplayPosition - display the position in the dimensions window
  *
  *  Inputs:
- *	tmp_win - the current fvwm window
- *	x, y	- position of the window
+ *      tmp_win - the current fvwm window
+ *      x, y    - position of the window
  *
  ************************************************************************/
 
@@ -568,12 +568,12 @@ static void DisplayPosition(
 /***********************************************************************
  *
  *  Procedure:
- *	DisplaySize - display the size in the dimensions window
+ *      DisplaySize - display the size in the dimensions window
  *
  *  Inputs:
- *	tmp_win - the current fvwm window
- *	width	- the width of the rubber band
- *	height	- the height of the rubber band
+ *      tmp_win - the current fvwm window
+ *      width   - the width of the rubber band
+ *      height  - the height of the rubber band
  *
  ***********************************************************************/
 static void DisplaySize(
@@ -1359,26 +1359,26 @@ static void DoSnapAttract(
 			/* check snapping type */
 			switch (Scr.SnapMode)
 			{
-			case 1:	 /* SameType */
+			case 1:  /* SameType */
 				if (IS_ICONIFIED(tmp) != IS_ICONIFIED(tmp_win))
 				{
 					continue;
 				}
 				break;
-			case 2:	 /* Icons */
+			case 2:  /* Icons */
 				if (!IS_ICONIFIED(tmp) ||
 				    !IS_ICONIFIED(tmp_win))
 				{
 					continue;
 				}
 				break;
-			case 3:	 /* Windows */
+			case 3:  /* Windows */
 				if (IS_ICONIFIED(tmp) || IS_ICONIFIED(tmp_win))
 				{
 					continue;
 				}
 				break;
-			case 0:	 /* All */
+			case 0:  /* All */
 			default:
 				/* NOOP */
 				break;
@@ -2686,15 +2686,15 @@ static Bool resize_window(F_CMD_ARGS)
 		{
 			ymotion = 1;
 		}
-		else if (PressedW == FW_W_SIDE(fw, 1))	/* right */
+		else if (PressedW == FW_W_SIDE(fw, 1))  /* right */
 		{
 			xmotion = -1;
 		}
-		else if (PressedW == FW_W_SIDE(fw, 2))	/* bottom */
+		else if (PressedW == FW_W_SIDE(fw, 2))  /* bottom */
 		{
 			ymotion = -1;
 		}
-		else if (PressedW == FW_W_SIDE(fw, 3))	/* left */
+		else if (PressedW == FW_W_SIDE(fw, 3))  /* left */
 		{
 			xmotion = 1;
 		}
@@ -3157,17 +3157,17 @@ void CMD_Resize(F_CMD_ARGS)
 /***********************************************************************
  *
  *  Procedure:
- *	DoResize - move the rubberband around.	This is called for
- *		   each motion event when we are resizing
+ *      DoResize - move the rubberband around.  This is called for
+ *                 each motion event when we are resizing
  *
  *  Inputs:
- *	x_root	 - the X corrdinate in the root window
- *	y_root	 - the Y corrdinate in the root window
- *	fw	 - the current fvwm window
- *	drag	 - resize internal structure
- *	orig	 - resize internal structure
- *	xmotionp - pointer to xmotion in resize_window
- *	ymotionp - pointer to ymotion in resize_window
+ *      x_root   - the X corrdinate in the root window
+ *      y_root   - the Y corrdinate in the root window
+ *      fw       - the current fvwm window
+ *      drag     - resize internal structure
+ *      orig     - resize internal structure
+ *      xmotionp - pointer to xmotion in resize_window
+ *      ymotionp - pointer to ymotion in resize_window
  *
  ************************************************************************/
 static void DoResize(
@@ -3253,14 +3253,14 @@ static void DoResize(
 /***********************************************************************
  *
  *  Procedure:
- *	draw_move_resize_grid - move a window outline
+ *      draw_move_resize_grid - move a window outline
  *
  *  Inputs:
- *	root	    - the window we are outlining
- *	x	    - upper left x coordinate
- *	y	    - upper left y coordinate
- *	width	    - the width of the rectangle
- *	height	    - the height of the rectangle
+ *      root        - the window we are outlining
+ *      x           - upper left x coordinate
+ *      y           - upper left y coordinate
+ *      width       - the width of the rectangle
+ *      height      - the height of the rectangle
  *
  ***********************************************************************/
 static int get_outline_rects(
@@ -3468,9 +3468,9 @@ static void MaximizeHeight(
 	rectangle g;
 	Bool rc;
 
-	x11 = win_x;		 /* Start x */
-	y11 = *win_y;		 /* Start y */
-	x12 = x11 + win_width;	 /* End x   */
+	x11 = win_x;             /* Start x */
+	y11 = *win_y;            /* Start y */
+	x12 = x11 + win_width;   /* End x   */
 	y12 = y11 + *win_height; /* End y   */
 	new_y1 = top_border;
 	new_y2 = bottom_border;
@@ -3547,10 +3547,10 @@ static void MaximizeWidth(
 	rectangle g;
 	Bool rc;
 
-	x11 = *win_x;		 /* Start x */
-	y11 = win_y;		 /* Start y */
-	x12 = x11 + *win_width;	 /* End x   */
-	y12 = y11 + win_height;	 /* End y   */
+	x11 = *win_x;            /* Start x */
+	y11 = win_y;             /* Start y */
+	x12 = x11 + *win_width;  /* End x   */
+	y12 = y11 + win_height;  /* End y   */
 	new_x1 = left_border;
 	new_x2 = right_border;
 
@@ -3665,7 +3665,7 @@ fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d\n", fw->max_g.
 /***********************************************************************
  *
  *  Procedure:
- *	(Un)Maximize a window.
+ *      (Un)Maximize a window.
  *
  ***********************************************************************/
 void CMD_Maximize(F_CMD_ARGS)

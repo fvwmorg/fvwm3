@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include <stdio.h>
@@ -66,7 +66,7 @@ void xevClientInit(XEvent *xev, Display *dpy, Window win, Atom messageType) {
  *   dstWin - the recipient of the event.
  *   srcWin - the drag source win
  *   typelist - the types the drag source supports, assumes that
- *		the list is NULL terminated. */
+ *              the list is NULL terminated. */
 void xdndSrcSendEnter(DragSource *ds, Window dstWin, Window srcWin, Atom * typelist)
 {
   XEvent xevent;
@@ -83,7 +83,7 @@ void xdndSrcSendEnter(DragSource *ds, Window dstWin, Window srcWin, Atom * typel
      data.l[1] : Bit 0 is set if source supports more than three types.
 		 High byte is protocol version(min of source,target).  Version
 		 is set in window property of target.
-     data.l[2,3,4] : First three types.	 Unused set to none. */
+     data.l[2,3,4] : First three types.  Unused set to none. */
 
   xevent.xclient.data.l[0] = srcWin;
   if (nTypes>3) /*this should never happen for fvwmQFS*/
@@ -129,7 +129,7 @@ void xdndSrcSendPosition(DragSource *ds, Window dstWin, Window srcWin, short x,
  *   ds - the drag source struct
  *   xev - the status event
  *   cx,cy - the mouse x,y coords, in root frame, used if the event
- *	     is cached
+ *           is cached
  *   time - the time */
 void xdndSrcReceiveStatus(DragSource *ds, XEvent *xev,unsigned short *cx,
 			  unsigned short *cy, unsigned long time)
@@ -144,13 +144,13 @@ void xdndSrcReceiveStatus(DragSource *ds, XEvent *xev,unsigned short *cx,
   /*
    *data.l[0] : XID of target window
    *data.l[1] : Bit 0 set if target accepts drop
-   *		Bit 1 set if target wants coordinates while in rectangle
+   *            Bit 1 set if target wants coordinates while in rectangle
    *data.l[2,3] : Coordinates of box. (x,y) relative to root.  Null box ok.
    *data.l[2] : (x<<16)|y
    *data.l[3] : (w<<16)|h
    *data.l[4] : action accepted by target.  Either should be one of sent
-   *		actions, XdndActionCopy, XdndActionPrivate, or None if drop
-   *		 will not be accepted
+   *            actions, XdndActionCopy, XdndActionPrivate, or None if drop
+   *             will not be accepted
    */
 
   /*Need to remember that we have received at least one status event*/
@@ -467,7 +467,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 }
 
 
-/* error handler for BadWindow errors.	Does nothing at the moment...
+/* error handler for BadWindow errors.  Does nothing at the moment...
  * dpy - the display
  * errEv - the error Event */
 int xdndErrorHandler(Display *dpy, XErrorEvent *errEv)
@@ -476,9 +476,9 @@ int xdndErrorHandler(Display *dpy, XErrorEvent *errEv)
   {
     /* Well, the specification for Xdnd states that we should handle
      * "BadWindow" errors with an error handler.  I'm not real sure how to go
-     * beyond this point. One option is to use "goto".	Another is to make
+     * beyond this point. One option is to use "goto".  Another is to make
      * doneDrag in the xdndSrcDoDrag a global, and set it to TRUE here, but
-     * that is more dangerous.	For now, we will just exit */
+     * that is more dangerous.  For now, we will just exit */
     exit(1);
     /*goto gotoLabelDone;*/
   }
@@ -486,16 +486,16 @@ int xdndErrorHandler(Display *dpy, XErrorEvent *errEv)
 }
 
 
-/* xdndInit - initializes the drag environment.	 Should only be called once.
+/* xdndInit - initializes the drag environment.  Should only be called once.
  * display - the display
  * rw - the root window */
 void xdndInit(Display *display, Window rw) {
   xdndCursorInit(display, rw); /*initializes the cursors*/
   /*Initializes the atoms.  Each DropTarget,DragSource points to this
    *  structure.  Saves space.*/
-  xdndAtoms.xdndAware =	 XInternAtom(display, "XdndAware", False);;
-  xdndAtoms.xdndEnter =	 XInternAtom(display, "XdndEnter", False);
-  xdndAtoms.xdndLeave =	 XInternAtom(display, "XdndLeave", False);
+  xdndAtoms.xdndAware =  XInternAtom(display, "XdndAware", False);;
+  xdndAtoms.xdndEnter =  XInternAtom(display, "XdndEnter", False);
+  xdndAtoms.xdndLeave =  XInternAtom(display, "XdndLeave", False);
   xdndAtoms.xdndStatus =  XInternAtom(display, "XdndStatus", False);
   xdndAtoms.xdndSelection = XInternAtom(display, "XdndSelection", False);
   xdndAtoms.xdndPosition = XInternAtom(display, "XdndPosition", False);
@@ -531,12 +531,12 @@ void dragSrcInit(DragSource *ds,Display *dpy,Window root,Window client) {
 
 
 
-/* xdndSrcQueryDndAware - queries whether the drop window is XdndAware.	 Returns 0
+/* xdndSrcQueryDndAware - queries whether the drop window is XdndAware.  Returns 0
  *   if not aware, and returns one if aware
  * ds - the drag source struct
  * window - the drop window we want to query
  * version - what version of Xdnd the drop window supports
- * typelist - not used at this	point, could be used to compare the source type list
+ * typelist - not used at this  point, could be used to compare the source type list
  *   with the drop target list if the target puts the supported types in it property list
 */
 int xdndSrcQueryDndAware (DragSource *ds, Window window, int *version,
@@ -561,7 +561,7 @@ int xdndSrcQueryDndAware (DragSource *ds, Window window, int *version,
     return 0;
   }
   types = (Atom *) data;
-  *version = ds->version < types[0] ? ds->version : types[0];	/* minimum */
+  *version = ds->version < types[0] ? ds->version : types[0];   /* minimum */
   XFree (data);
   return result;
 }

@@ -17,7 +17,7 @@
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the GNU
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Library General Public License for more details.
  *
  * You should have received a copy of the GNU Library General Public
@@ -30,36 +30,36 @@
  Port by Dan Espen, no additional copyright
 */
 
-#include "config.h"			/* must be first */
+#include "config.h"                     /* must be first */
 
 #include <stdio.h>
-#include <X11/Xproto.h>			/* for X functions in general */
-#include "fvwmlib.h"			/* prototype GetShadow GetHilit */
+#include <X11/Xproto.h>                 /* for X functions in general */
+#include "fvwmlib.h"                    /* prototype GetShadow GetHilit */
 #include "Colorset.h"
 
-#define	PCT_BRIGHTNESS			(6 * 0xffff / 100)
+#define PCT_BRIGHTNESS                  (6 * 0xffff / 100)
 
 /* How much lighter/darker to make things in default routine */
 
-#define	PCT_DARK_BOTTOM		70	/* lighter (less dark, actually) */
-#define	PCT_DARK_TOP		50	/* lighter */
-#define	PCT_LIGHT_BOTTOM	55	/* darker */
-#define	PCT_LIGHT_TOP		80	/* darker */
-#define	PCT_MEDIUM_BOTTOM_BASE	40	/* darker */
-#define	PCT_MEDIUM_BOTTOM_RANGE	25
-#define	PCT_MEDIUM_TOP_BASE	60	/* lighter */
-#define	PCT_MEDIUM_TOP_RANGE	-30
+#define PCT_DARK_BOTTOM         70      /* lighter (less dark, actually) */
+#define PCT_DARK_TOP            50      /* lighter */
+#define PCT_LIGHT_BOTTOM        55      /* darker */
+#define PCT_LIGHT_TOP           80      /* darker */
+#define PCT_MEDIUM_BOTTOM_BASE  40      /* darker */
+#define PCT_MEDIUM_BOTTOM_RANGE 25
+#define PCT_MEDIUM_TOP_BASE     60      /* lighter */
+#define PCT_MEDIUM_TOP_RANGE    -30
 
 /* The "brightness" of an RGB color.  The "right" way seems to use
  * empirical values like the default thresholds below, but it boils down
  * to red is twice as bright as blue and green is thrice blue.
  */
 
-#define	BRIGHTNESS(r,g,b) (2*(int)(r) + 3*(int)(g) + 1*(int)(b))
+#define BRIGHTNESS(r,g,b) (2*(int)(r) + 3*(int)(g) + 1*(int)(b))
 
 /* From Xm.h on Solaris */
-#define XmDEFAULT_DARK_THRESHOLD	15
-#define XmDEFAULT_LIGHT_THRESHOLD	85
+#define XmDEFAULT_DARK_THRESHOLD        15
+#define XmDEFAULT_LIGHT_THRESHOLD       85
 extern Colormap Pcmap;
 extern Display *Pdpy;
 
@@ -305,7 +305,7 @@ XColor *GetForeShadowColor(Pixel foreground, Pixel background)
 	fg[1] = color.green;
 	fg[2] = color.blue;
 	bg[0] = bg_color.red;
-	bg[1]=	bg_color.green;
+	bg[1]=  bg_color.green;
 	bg[2] = bg_color.blue;
 
 	for (i=0; i<3; i++)
@@ -344,7 +344,7 @@ Pixel GetForeShadow(Pixel foreground, Pixel background)
  * address 'output'.  It is either in rgb format ("rgb:rrrr/gggg/bbbb") if
  * use_hash is False or in hash notation ("#rrrrggggbbbb") if use_hash is true.
  * The return value is the number of characters used by the string.  The
- * rgb values of the output are undefined if the colorcell is invalid.	The
+ * rgb values of the output are undefined if the colorcell is invalid.  The
  * memory area pointed at by 'output' must be at least 64 bytes (in case of
  * future extensions and multibyte characters).*/
 int pixel_to_color_string(

@@ -15,12 +15,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -42,7 +42,7 @@ char *MyName;
 fd_set_size_t fd_width;
 int fd[2];
 
-Display *dpy;			/* which display are we talking to */
+Display *dpy;                   /* which display are we talking to */
 Window Root;
 int screen;
 GC hiliteGC, shadowGC;
@@ -59,7 +59,7 @@ Window app_win;
 /***********************************************************************
  *
  *  Procedure:
- *	main - start of module
+ *      main - start of module
  *
  ***********************************************************************/
 int main(int argc, char **argv)

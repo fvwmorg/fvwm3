@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include <libs/Picture.h>
@@ -20,31 +20,31 @@
 typedef struct ScreenInfo
 {
   unsigned long screen;
-  int MyDisplayWidth;	/* my copy of DisplayWidth(dpy, screen) */
-  int MyDisplayHeight;	/* my copy of DisplayHeight(dpy, screen) */
+  int MyDisplayWidth;   /* my copy of DisplayWidth(dpy, screen) */
+  int MyDisplayHeight;  /* my copy of DisplayHeight(dpy, screen) */
 
-  char *FvwmRoot;	/* the head of the fvwm window list */
+  char *FvwmRoot;       /* the head of the fvwm window list */
 
   Window Root;
   Window Pager_w;
 
-  Font PagerFont;	 /* font struct for window labels in pager (optional)*/
+  Font PagerFont;        /* font struct for window labels in pager (optional)*/
 
-  GC NormalGC;		 /* used for window names and setting backgrounds */
-  GC MiniIconGC;	 /* used for clipping mini-icons */
+  GC NormalGC;           /* used for window names and setting backgrounds */
+  GC MiniIconGC;         /* used for clipping mini-icons */
   GC whGC, wsGC, ahGC, asGC; /* used for 3d shadows on mini-windows */
 
-  char	*Hilite;	 /* the fvwm window that is highlighted
+  char  *Hilite;         /* the fvwm window that is highlighted
 			  * except for networking delays, this is the
 			  * window which REALLY has the focus */
-  unsigned VScale;	 /* Panner scale factor */
-  int VxMax;		 /* Max location for top left of virt desk*/
+  unsigned VScale;       /* Panner scale factor */
+  int VxMax;             /* Max location for top left of virt desk*/
   int VyMax;
-  int VxPages;		 /* desktop size */
+  int VxPages;           /* desktop size */
   int VyPages;
-  int VWidth;		 /* Size of virtual desktop */
+  int VWidth;            /* Size of virtual desktop */
   int VHeight;
-  int Vx;		 /* Current loc for top left of virt desk */
+  int Vx;                /* Current loc for top left of virt desk */
   int Vy;
   int CurrentDesk;
   Pixmap sticky_gray_pixmap;
@@ -104,13 +104,13 @@ typedef struct pager_window
 
 typedef struct balloon_window
 {
-  Window w;		 /* ID of balloon window */
-  PagerWindow *pw;	 /* pager window it's associated with */
+  Window w;              /* ID of balloon window */
+  PagerWindow *pw;       /* pager window it's associated with */
   FlocaleFont *Ffont;
-  char *label;		 /* the label displayed inside the balloon */
-  int height;		 /* height of balloon window based on font */
-  int border;		 /* border width */
-  int yoffset;		 /* pixels above (<0) or below (>0) pager win */
+  char *label;           /* the label displayed inside the balloon */
+  int height;            /* height of balloon window based on font */
+  int border;            /* border width */
+  int yoffset;           /* pixels above (<0) or below (>0) pager win */
 } BalloonWindow;
 
 
@@ -120,16 +120,16 @@ typedef struct desk_info
   Window title_w;
   Window CPagerWin;
   BalloonWindow balloon;
-  FvwmPicture *bgPixmap;		/* Pixmap used as background. */
+  FvwmPicture *bgPixmap;                /* Pixmap used as background. */
   int colorset;
   int highcolorset;
   int ballooncolorset;
   char *Dcolor;
   char *label;
-  GC NormalGC;			/* used for desk labels */
-  GC DashedGC;			/* used the the pages boundary lines */
-  GC HiliteGC;			/* used for hilighting the active desk */
-  GC rvGC;			/* used for drawing hilighted desk title */
+  GC NormalGC;                  /* used for desk labels */
+  GC DashedGC;                  /* used the the pages boundary lines */
+  GC HiliteGC;                  /* used for hilighting the active desk */
+  GC rvGC;                      /* used for drawing hilighted desk title */
   GC BalloonGC;
 } DeskInfo;
 
@@ -142,7 +142,7 @@ typedef struct pager_string_list
   int ballooncolorset;
   char *Dcolor;
   char *label;
-  FvwmPicture *bgPixmap;		/* Pixmap used as background. */
+  FvwmPicture *bgPixmap;                /* Pixmap used as background. */
 } PagerStringList;
 
 /*************************************************************************

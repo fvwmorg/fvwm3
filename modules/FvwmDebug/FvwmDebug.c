@@ -15,12 +15,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -97,7 +97,7 @@ pid_t spawn_xtee(void)
 /***********************************************************************
  *
  *  Procedure:
- *	main - start of module
+ *      main - start of module
  *
  ***********************************************************************/
 int main(int argc, char **argv)
@@ -198,7 +198,7 @@ int main(int argc, char **argv)
 /***********************************************************************
  *
  *  Procedure:
- *	Loop - wait for data to process
+ *      Loop - wait for data to process
  *
  ***********************************************************************/
 void Loop(const int *fd)
@@ -215,7 +215,7 @@ void Loop(const int *fd)
 /***********************************************************************
  *
  *  Procedure:
- *	Process message - examines packet types, and takes appropriate action
+ *      Process message - examines packet types, and takes appropriate action
  *
  ***********************************************************************/
 void process_message(unsigned long type, const unsigned long *body)
@@ -340,7 +340,7 @@ void process_message(unsigned long type, const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	SIGPIPE handler - SIGPIPE means fvwm is dying
+ *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
 void DeadPipe(int nonsense)
@@ -353,7 +353,7 @@ void DeadPipe(int nonsense)
 /***********************************************************************
  *
  *  Procedure:
- *	list_old_configure - displays packet contents to output
+ *      list_old_configure - displays packet contents to output
  *
  ***********************************************************************/
 void list_old_configure(const unsigned long *body)
@@ -386,7 +386,7 @@ void list_old_configure(const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_new_page - displays packet contents to output
+ *      list_new_page - displays packet contents to output
  *
  ***********************************************************************/
 void list_new_page(const unsigned long *body)
@@ -400,7 +400,7 @@ void list_new_page(const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_new_desk - displays packet contents to output
+ *      list_new_desk - displays packet contents to output
  *
  ***********************************************************************/
 void list_new_desk(const unsigned long *body)
@@ -412,7 +412,7 @@ void list_new_desk(const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_focus - displays packet contents to output
+ *      list_focus - displays packet contents to output
  *
  ***********************************************************************/
 void list_focus(const unsigned long *body)
@@ -426,8 +426,8 @@ void list_focus(const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_winid - displays packet contents to for three-field
- *		     window ID-bearing packets
+ *      list_winid - displays packet contents to for three-field
+ *                   window ID-bearing packets
  *
  ***********************************************************************/
 void list_winid(const unsigned long *body)
@@ -442,7 +442,7 @@ void list_winid(const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_unknown - handles an unrecognized packet.
+ *      list_unknown - handles an unrecognized packet.
  *
  ***********************************************************************/
 void list_unknown(const unsigned long *body)
@@ -455,7 +455,7 @@ void list_unknown(const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_iconify - displays packet contents to output
+ *      list_iconify - displays packet contents to output
  *
  ***********************************************************************/
 void list_icon(const unsigned long *body)
@@ -473,7 +473,7 @@ void list_icon(const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_window_name - displays packet contents to output
+ *      list_window_name - displays packet contents to output
  *
  ***********************************************************************/
 
@@ -489,7 +489,7 @@ void list_window_name(const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_restack - displays packet contents to output
+ *      list_restack - displays packet contents to output
  *
  ***********************************************************************/
 
@@ -516,7 +516,7 @@ void list_restack(const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_error - displays packet contents to output
+ *      list_error - displays packet contents to output
  *
  ***********************************************************************/
 
@@ -529,7 +529,7 @@ void list_error(const unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_configure - displays packet contents to output
+ *      list_configure - displays packet contents to output
  *
  ***********************************************************************/
 void list_configure(const unsigned long *body)

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*
@@ -27,9 +27,9 @@ extern Window main_win;
 /* Masks to apply to color components when allocating colors
  * you may want to set them to 0xffff if your display supports 16bpp+
  */
-#define RED_MASK	0xff00
-#define GREEN_MASK	0xff00
-#define BLUE_MASK	0xff00
+#define RED_MASK        0xff00
+#define GREEN_MASK      0xff00
+#define BLUE_MASK       0xff00
 /*
  ***********************************************************************
  * Allocates colors and fill a pixel value array. Color values are
@@ -152,16 +152,16 @@ int MakeColors(Display *dpy, Drawable d, int from[3], int to[3], int maxcols,
 int DrawDegradeRelief(Display *dpy, Drawable d, int x, int y, int w, int h,
 		       int from[3], int to[3], int relief, int maxcols)
 {
-    int		i = 0,j,k;
-    int		dr, dg, db;  /* delta */
-    int		dmax, dmax2;
-    GC		gc, gc2;
-    XGCValues	gcv;
-    int		px, py, pd;
+    int         i = 0,j,k;
+    int         dr, dg, db;  /* delta */
+    int         dmax, dmax2;
+    GC          gc, gc2;
+    XGCValues   gcv;
+    int         px, py, pd;
     unsigned long lightcolor, darkcolor;
-    int		alloc_relief;
+    int         alloc_relief;
     unsigned long  *colors;
-    float	c1,s1;
+    float       c1,s1;
 
     if (w <= 0 || h <= 0)
       return 0;
@@ -267,15 +267,15 @@ int DrawHGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
 		       int from[3], int to[3], int relief, int maxcols,
 		       int type)
 {
-    int		i,j;
-    XGCValues	gcv;
-    GC		gc, gc2;
-    int		dr,dg,db;
-    float	s,c;
-    int		dmax;
+    int         i,j;
+    XGCValues   gcv;
+    GC          gc, gc2;
+    int         dr,dg,db;
+    float       s,c;
+    int         dmax;
     unsigned long  *colors, lightcolor, darkcolor;
-    int		py,pd;
-    int		alloc_relief;
+    int         py,pd;
+    int         alloc_relief;
 
     if (w <= 1 || h <= 1)
       return 0;
@@ -391,15 +391,15 @@ int DrawVGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
 		       int from[3], int to[3], int relief, int maxcols,
 		       int type)
 {
-    int		i,j;
-    XGCValues	gcv;
-    GC		gc, gc2;
-    int		dr,dg,db;
-    float	s,c;
-    int		dmax;
+    int         i,j;
+    XGCValues   gcv;
+    GC          gc, gc2;
+    int         dr,dg,db;
+    float       s,c;
+    int         dmax;
     unsigned long  *colors, lightcolor, darkcolor;
-    int		px,pd;
-    int		alloc_relief;
+    int         px,pd;
+    int         alloc_relief;
 
     if (w <= 1 || h <= 1)
       return 0;

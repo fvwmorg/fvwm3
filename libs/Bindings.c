@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -612,21 +612,21 @@ Bool MatchBindingExactly(
 /***********************************************************************
  *
  *  Procedure:
- *	GrabWindowKey	     - grab needed keys for the window for one binding
- *	GrabAllWindowKeys    - grab needed keys for the window for all bindings
- *			       in blist
- *	GrabWindowButton     - same for mouse buttons
- *	GrabAllWindowButtons - same for mouse buttons
- *	GrabAllWindowKeysAndButtons - both of the above
+ *      GrabWindowKey        - grab needed keys for the window for one binding
+ *      GrabAllWindowKeys    - grab needed keys for the window for all bindings
+ *                             in blist
+ *      GrabWindowButton     - same for mouse buttons
+ *      GrabAllWindowButtons - same for mouse buttons
+ *      GrabAllWindowKeysAndButtons - both of the above
  *
  *  Inputs:
- *   w		    - the window to use (the frame window)
- *   grab	    - 1 to grab, 0 to ungrab
- *   binding	    - pointer to the bindinge to grab/ungrab
- *   contexts	    - all context bits that shall receive bindings
+ *   w              - the window to use (the frame window)
+ *   grab           - 1 to grab, 0 to ungrab
+ *   binding        - pointer to the bindinge to grab/ungrab
+ *   contexts       - all context bits that shall receive bindings
  *   dead_modifiers - modifiers to ignore for 'AnyModifier'
- *   cursor	    - the mouse cursor to use when the pointer is on the
- *		      grabbed area (mouse bindings only)
+ *   cursor         - the mouse cursor to use when the pointer is on the
+ *                    grabbed area (mouse bindings only)
  *
  ***********************************************************************/
 void GrabWindowKey(Display *dpy, Window w, Binding *binding,
@@ -815,7 +815,7 @@ void GrabWindowKeyOrButton(
 /***********************************************************************
  *
  *  Procedure:
- *	FvwmStringToKeysym
+ *      FvwmStringToKeysym
  *
  *  Like XStringToKeysym, but allows some typos and does some additional
  *  error checking.

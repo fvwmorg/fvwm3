@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*  Modification History */
@@ -33,7 +33,7 @@
 int fvwmCursorNameToIndex (char *cursor_name)
 {
   static const struct CursorNameIndex {
-    const char	*name;
+    const char  *name;
     unsigned int number;
   } cursor_table[] = {
     {"arrow", XC_arrow},
@@ -62,7 +62,7 @@ int fvwmCursorNameToIndex (char *cursor_name)
     {"draped_box", XC_draped_box},
     {"exchange", XC_exchange},
     {"fleur", XC_fleur},
-    {"gobbler",	XC_gobbler},
+    {"gobbler", XC_gobbler},
     {"gumby", XC_gumby},
     {"hand1", XC_hand1},
     {"hand2", XC_hand2},
@@ -104,7 +104,7 @@ int fvwmCursorNameToIndex (char *cursor_name)
     {"top_left_corner", XC_top_left_corner},
     {"top_right_corner", XC_top_right_corner},
     {"top_side", XC_top_side},
-    {"top_tee",	XC_top_tee},
+    {"top_tee", XC_top_tee},
     {"trek", XC_trek},
     {"ul_angle", XC_ul_angle},
     {"umbrella", XC_umbrella},

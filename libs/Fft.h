@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef FFT_H
@@ -75,25 +75,25 @@
 /* Fc (fontconfig) stuff */
 #if FftSupportUseXft2
 
-typedef FcChar8	    FftChar8;
+typedef FcChar8     FftChar8;
 typedef FcChar16    FftChar16;
 typedef FcChar32    FftChar32;
-typedef FcBool	    FftBool;
-typedef FcType	    FftType;
+typedef FcBool      FftBool;
+typedef FcType      FftType;
 typedef FcMatrix    FftMatrix;
 typedef FcResult    FftResult;
-typedef FcValue	    FftValue;
+typedef FcValue     FftValue;
 typedef FcPattern   FftPattern;
 typedef FcFontSet   FftFontSet;
 typedef FcObjectSet FftObjectSet;
 /* XftValue and are different in Xft+Fc and Xft 1 */
 typedef struct _Xft1Value {
-    FftType	type;
+    FftType     type;
     union {
-	char	*s;
-	int	i;
-	Bool	b;
-	double	d;
+	char    *s;
+	int     i;
+	Bool    b;
+	double  d;
 	FftMatrix *m;
     } u;
 } Xft1Value;
@@ -114,8 +114,8 @@ typedef struct
 typedef XftPatternElt FftPatternElt;
 /* XftPattern and FcPattern are different */
 typedef struct _Xft1Pattern {
-    int		    num;
-    int		    size;
+    int             num;
+    int             size;
     FftPatternElt   *elts;
 } Fft1Pattern;
 
@@ -124,7 +124,7 @@ typedef struct _Xft1Pattern {
 typedef XftChar8     FftChar8;
 typedef XftChar16    FftChar16;
 typedef XftChar32    FftChar32;
-typedef XftType	     FftType;
+typedef XftType      FftType;
 typedef XftMatrix    FftMatrix;
 typedef XftResult    FftResult;
 typedef XftPatternElt FftPatternElt;
@@ -145,15 +145,15 @@ typedef XftColor FftColor;
 #if FftSupportUseXft2
 /* XftFont are != in Xft+Fc and Xft */
 typedef struct _Fft1Font {
-    int		ascent;
-    int		descent;
-    int		height;
-    int		max_advance_width;
-    Bool	core;
-    Fft1Pattern	*pattern;
+    int         ascent;
+    int         descent;
+    int         height;
+    int         max_advance_width;
+    Bool        core;
+    Fft1Pattern *pattern;
     union {
 	struct {
-	    XFontStruct	    *font;
+	    XFontStruct     *font;
 	} core;
 	struct {
 	    void *font;
@@ -177,7 +177,7 @@ typedef struct
 typedef int FftResult;
 typedef struct
 {
-	FftType	type;
+	FftType type;
 	union
 	{
 		char *s;
@@ -239,32 +239,32 @@ typedef XftColor FftColor;
 typedef void FftObjectSet;
 /* XftValue are different in Xft+Fc and Xft 1 */
 typedef struct _Xft1Value {
-    FftType	type;
+    FftType     type;
     union {
-	char	*s;
-	int	i;
-	Bool	b;
-	double	d;
+	char    *s;
+	int     i;
+	Bool    b;
+	double  d;
 	FftMatrix *m;
     } u;
 } Xft1Value;
 typedef Xft1Value Fft1Value;
 /* XftPattern and XftFont are different in Xft+Fc and Xft 1 */
 typedef struct _Xft1Pattern {
-    int		    num;
-    int		    size;
+    int             num;
+    int             size;
     FftPatternElt   *elts;
 } Fft1Pattern;
 typedef struct _Fft1Font {
-    int		ascent;
-    int		descent;
-    int		height;
-    int		max_advance_width;
-    Bool	core;
-    Fft1Pattern	*pattern;
+    int         ascent;
+    int         descent;
+    int         height;
+    int         max_advance_width;
+    Bool        core;
+    Fft1Pattern *pattern;
     union {
 	struct {
-	    XFontStruct	    *font;
+	    XFontStruct     *font;
 	} core;
 	struct {
 	    void *font;
@@ -298,57 +298,57 @@ typedef struct
 
 /* Fc stuff */
 #if FftSupportUseXft2
-#define FFT_FAMILY	    FC_FAMILY
-#define FFT_STYLE	    FC_STYLE
-#define FFT_SLANT	    FC_SLANT
-#define FFT_WEIGHT	    FC_WEIGHT
-#define FFT_SIZE	    FC_SIZE
-#define FFT_PIXEL_SIZE	    FC_PIXEL_SIZE
-#define FFT_SPACING	    FC_SPACING
-#define FFT_FOUNDRY	    FC_FOUNDRY
-#define FFT_CORE	    FC_CORE
-#define FFT_ANTIALIAS	    FC_ANTIALIAS
-#define FFT_XLFD	    FC_XLFD
-#define FFT_FILE	    FC_FILE
-#define FFT_INDEX	    FC_INDEX
-#define FFT_RASTERIZER	    FC_RASTERIZER
-#define FFT_OUTLINE	    FC_OUTLINE
-#define FFT_SCALABLE	    FC_SCALABLE
-#define FFT_RGBA	    FC_RGBA
-#define FFT_SCALE	    FC_SCALE
-#define FFT_RENDER	    FC_RENDER
-#define FFT_CHAR_WIDTH	    FC_CHAR_WIDTH
-#define FFT_CHAR_HEIGHT	    FC_CHAR_HEIGHT
-#define FFT_MATRIX	    FC_MATRIX
+#define FFT_FAMILY          FC_FAMILY
+#define FFT_STYLE           FC_STYLE
+#define FFT_SLANT           FC_SLANT
+#define FFT_WEIGHT          FC_WEIGHT
+#define FFT_SIZE            FC_SIZE
+#define FFT_PIXEL_SIZE      FC_PIXEL_SIZE
+#define FFT_SPACING         FC_SPACING
+#define FFT_FOUNDRY         FC_FOUNDRY
+#define FFT_CORE            FC_CORE
+#define FFT_ANTIALIAS       FC_ANTIALIAS
+#define FFT_XLFD            FC_XLFD
+#define FFT_FILE            FC_FILE
+#define FFT_INDEX           FC_INDEX
+#define FFT_RASTERIZER      FC_RASTERIZER
+#define FFT_OUTLINE         FC_OUTLINE
+#define FFT_SCALABLE        FC_SCALABLE
+#define FFT_RGBA            FC_RGBA
+#define FFT_SCALE           FC_SCALE
+#define FFT_RENDER          FC_RENDER
+#define FFT_CHAR_WIDTH      FC_CHAR_WIDTH
+#define FFT_CHAR_HEIGHT     FC_CHAR_HEIGHT
+#define FFT_MATRIX          FC_MATRIX
 #define FFT_WEIGHT_LIGHT    FC_WEIGHT_LIGHT
 #define FFT_WEIGHT_MEDIUM   FC_WEIGHT_MEDIUM
 #define FFT_WEIGHT_DEMIBOLD FC_WEIGHT_DEMIBOLD
-#define FFT_WEIGHT_BOLD	    FC_WEIGHT_BOLD
+#define FFT_WEIGHT_BOLD     FC_WEIGHT_BOLD
 #define FFT_WEIGHT_BLACK    FC_WEIGHT_BLACK
-#define FFT_SLANT_ROMAN	    FC_SLANT_ROMAN
+#define FFT_SLANT_ROMAN     FC_SLANT_ROMAN
 #define FFT_SLANT_ITALIC    FC_SLANT_ITALIC
 #define FFT_SLANT_OBLIQUE   FC_SLANT_OBLIQUE
 #define FFT_PROPORTIONAL    FC_PROPORTIONAL
-#define FFT_MONO	    FC_MONO
-#define FFT_CHARCELL	    FC_CHARCELL
-#define FFT_RGBA_NONE	    FC_RGBA_NONE
-#define FFT_RGBA_RGB	    FC_RGBA_RGB
-#define FFT_RGBA_BGR	    FC_RGBA_BGR
+#define FFT_MONO            FC_MONO
+#define FFT_CHARCELL        FC_CHARCELL
+#define FFT_RGBA_NONE       FC_RGBA_NONE
+#define FFT_RGBA_RGB        FC_RGBA_RGB
+#define FFT_RGBA_BGR        FC_RGBA_BGR
 
 /* new in Fc */
-#define FFT_HINTING	    FC_HINTING
+#define FFT_HINTING         FC_HINTING
 #define FFT_VERTICAL_LAYOUT FC_VERTICAL_LAYOUT
-#define FFT_AUTOHINT	    FC_AUTOHINT
+#define FFT_AUTOHINT        FC_AUTOHINT
 #define FFT_GLOBAL_ADVANCE  FC_GLOBAL_ADVANCE
-#define FFT_SOURCE	    FC_SOURCE
-#define FFT_CHARSET	    FC_CHARSET
-#define FFT_LANG	    FC_LANG
+#define FFT_SOURCE          FC_SOURCE
+#define FFT_CHARSET         FC_CHARSET
+#define FFT_LANG            FC_LANG
 #define FFT_DIR_CACHE_FILE  FC_DIR_CACHE_FILE
 #define FFT_USER_CACHE_FILE FC_USER_CACHE_FILE
 /* skip all the FC_LANG_* OS/2 CodePageRange bits */
 
 /* not in Fc */
-#define FFT_ENCODING	    "encoding"
+#define FFT_ENCODING        "encoding"
 
 #else /* !FftSupportUseXft2 */
 
@@ -393,19 +393,19 @@ typedef struct
 #define FFT_RGBA_VBGR XFT_RGBA_VBGR
 
 /* new in Fc */
-#define FFT_HINTING	    ""
+#define FFT_HINTING         ""
 #define FFT_VERTICAL_LAYOUT ""
-#define FFT_AUTOHINT	    ""
+#define FFT_AUTOHINT        ""
 #define FFT_GLOBAL_ADVANCE  ""
-#define FFT_SOURCE	    ""
-#define FFT_CHARSET	    ""
-#define FFT_LANG	    ""
+#define FFT_SOURCE          ""
+#define FFT_CHARSET         ""
+#define FFT_LANG            ""
 #define FFT_DIR_CACHE_FILE  ""
 #define FFT_USER_CACHE_FILE ""
 /* skip all the FC_LANG_* OS/2 CodePageRange bits */
 
 /* not in Fc */
-#define FFT_ENCODING	    XFT_ENCODING
+#define FFT_ENCODING        XFT_ENCODING
 
 #endif /* !FftSupportUseXft2 */
 
@@ -561,18 +561,18 @@ typedef struct
 #define FFT_RGBA_VRGB 0
 #define FFT_RGBA_VBGR 0
 /* new in Fc */
-#define FFT_HINTING	    ""
+#define FFT_HINTING         ""
 #define FFT_VERTICAL_LAYOUT ""
-#define FFT_AUTOHINT	    ""
+#define FFT_AUTOHINT        ""
 #define FFT_GLOBAL_ADVANCE  ""
-#define FFT_SOURCE	    ""
-#define FFT_CHARSET	    ""
-#define FFT_LANG	    ""
+#define FFT_SOURCE          ""
+#define FFT_CHARSET         ""
+#define FFT_LANG            ""
 #define FFT_DIR_CACHE_FILE  ""
 #define FFT_USER_CACHE_FILE ""
 /* skip all the FC_LANG_* OS/2 CodePageRange bits */
 /* not in Fc */
-#define FFT_ENCODING	    ""
+#define FFT_ENCODING        ""
 
 /* Fc stuff */
 #define FftConfigSubstitute(a) False

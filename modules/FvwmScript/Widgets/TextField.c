@@ -5,18 +5,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "Tools.h"
 
 /***********************************************/
-/* Fonction for TextField		       */
+/* Fonction for TextField                      */
 /***********************************************/
 void InitTextField(struct XObj *xobj)
 {
@@ -40,7 +40,7 @@ void InitTextField(struct XObj *xobj)
 
  mask=0;
  Attr.cursor=XCreateFontCursor(dpy,XC_xterm);
- mask|=CWCursor;		/* Curseur pour la fenetre / window cursor */
+ mask|=CWCursor;                /* Curseur pour la fenetre / window cursor */
  Attr.background_pixel=xobj->TabColor[back];
  mask|=CWBackPixel;
 
@@ -161,14 +161,14 @@ void DrawTextField(struct XObj *xobj)
  /* Dessin de la zone selectionnee */
  /* selected zone drawing */
  XSetFunction(dpy,xobj->gc,GXinvert);
- if (xobj->value2>xobj->value)		/* Curseur avant la souris */
+ if (xobj->value2>xobj->value)          /* Curseur avant la souris */
  {
   x1=FlocaleTextWidth(xobj->Ffont,&xobj->title[xobj->value3],
 		      xobj->value - xobj->value3);
   x2=FlocaleTextWidth(xobj->Ffont,&xobj->title[xobj->value],
 		      xobj->value2 - xobj->value);
  }
- else		/* Curseur apres la souris / cursor after the mouse */
+ else           /* Curseur apres la souris / cursor after the mouse */
  {
   x1=FlocaleTextWidth(xobj->Ffont,&xobj->title[xobj->value3],
 		      xobj->value2 - xobj->value3);
@@ -280,7 +280,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
     }
    break;
 
-   case Button2:			/* Colle le texte */
+   case Button2:                        /* Colle le texte */
      /* Si l'application possede pas la selection, elle la demande */
      /* sinon elle lit son presse papier */
      /* read the selection */
@@ -322,7 +322,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
     }
     break;
 
-   case Button3:		/* Appuie sur le troisieme bouton */
+   case Button3:                /* Appuie sur le troisieme bouton */
     XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
     x2=x2-xobj->x;
     PosCurs=0;
@@ -441,7 +441,7 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
     SendMsg(xobj,SingleClic);
    }
   }
-  else if (i!=0)	/* Cas d'un caractere normal */
+  else if (i!=0)        /* Cas d'un caractere normal */
   {
     /* Insertion du caractere dans le titre */
     /* a normal character: insertion in the title */

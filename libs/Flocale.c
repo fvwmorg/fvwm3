@@ -8,12 +8,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /* FlocaleRotateDrawString is strongly inspired by some part of xvertext
@@ -27,7 +27,7 @@
  * copyright notice and this permission notice appear in supporting
  * documentation.  All work developed as a consequence of the use of
  * this program should duly acknowledge such use. No representations are
- * made about the suitability of this software for any purpose.	 It is
+ * made about the suitability of this software for any purpose.  It is
  * provided "as is" without express or implied warranty.
  *
  * Minor modifications by Chris Cannam for wm2/wmx
@@ -271,7 +271,7 @@ XChar2b *FlocaleStringToString2b(
 				i++;
 			}
 			j++;
-		}	
+		}       
 	}
 	*nl = j;
 	if (free_str)
@@ -365,7 +365,7 @@ void FlocaleEncodeWinString(
 				free(fws->e_str);
 			}
 			fws->e_str = NULL;
-			*do_free = True;	
+			*do_free = True;        
 		}
 	}
 }
@@ -1236,8 +1236,8 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 			*y = TR_CCW_ORIG_Y;
 			break;
 		case TEXT_ROTATED_180:
-#define REVERSE_ORIG_X	orig_x + FLF_SHADOW_RIGHT_SIZE(flf)
-#define REVERSE_ORIG_Y	orig_y
+#define REVERSE_ORIG_X  orig_x + FLF_SHADOW_RIGHT_SIZE(flf)
+#define REVERSE_ORIG_Y  orig_y
 			*x = REVERSE_ORIG_X;
 			*y = REVERSE_ORIG_Y;
 			break;

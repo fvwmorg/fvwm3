@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef FUNCTIONS_H
@@ -27,10 +27,10 @@
 /* Bits for the function flag byte. */
 enum
 {
-        FUNC_NEEDS_WINDOW = 0x01,
-        FUNC_DONT_REPEAT  = 0x02,
-        FUNC_ADD_TO	  = 0x04,
-        FUNC_DECOR	  = 0x08
+	FUNC_NEEDS_WINDOW = 0x01,
+	FUNC_DONT_REPEAT  = 0x02,
+	FUNC_ADD_TO       = 0x04,
+	FUNC_DECOR        = 0x08
 };
 
 /* ---------------------------- global macros ------------------------------- */
@@ -55,16 +55,16 @@ typedef struct
 /* ---------------------------- interface functions ------------------------- */
 
 void find_func_type(
-        char *action, short *func_type, unsigned char *flags);
+	char *action, short *func_type, unsigned char *flags);
 Bool functions_is_complex_function(
-        const char *function_name);
+	const char *function_name);
 int DeferExecution(
 	XEvent *, Window *,FvwmWindow **, unsigned long *, cursor_type, int);
 void execute_function(
-        exec_func_args_type *efa);
+	exec_func_args_type *efa);
 void old_execute_function(
 	fvwm_cond_func_rc *cond_rc, char *action, FvwmWindow *fw,
 	XEvent *eventp, unsigned long context, int Module,
-        FUNC_FLAGS_TYPE exec_flags, char *args[]);
+	FUNC_FLAGS_TYPE exec_flags, char *args[]);
 
 #endif /* FUNCTIONS_H */

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -154,7 +154,7 @@ int fqueue_get_first(
  */
 
 /* Runs the operate_func on the first record in the queue.  If that function
- * is NULL or returns 1, the record is removed from the queue.	The object of
+ * is NULL or returns 1, the record is removed from the queue.  The object of
  * the queue record must have been freed in operate_func. */
 void fqueue_remove_or_operate_from_front(
 	fqueue *fq, operate_fqueue_object_type operate_func, void *operate_args)

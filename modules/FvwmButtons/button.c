@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -153,7 +153,7 @@ int buttonFrameSigned(button_info *b)
 {
   if(b->flags&b_Frame)
     return b->framew;
-  if(b->flags&b_Container)		/* Containers usually gets 0 relief  */
+  if(b->flags&b_Container)              /* Containers usually gets 0 relief  */
     return 0;
   while((b=b->parent))
     if(b->c->flags&b_Frame)
@@ -172,7 +172,7 @@ int buttonXPad(button_info *b)
 {
   if(b->flags&b_Padding)
     return b->xpad;
-  if(b->flags&(b_Container|b_Swallow))	/* Normally no padding for these     */
+  if(b->flags&(b_Container|b_Swallow))  /* Normally no padding for these     */
     return 0;
   while((b=b->parent))
     if(b->c->flags&b_Padding)
@@ -191,7 +191,7 @@ int buttonYPad(button_info *b)
 {
   if(b->flags&b_Padding)
     return b->ypad;
-  if(b->flags&(b_Container|b_Swallow))	/* Normally no padding for these     */
+  if(b->flags&(b_Container|b_Swallow))  /* Normally no padding for these     */
     return 0;
   while((b=b->parent))
     if(b->c->flags&b_Padding)

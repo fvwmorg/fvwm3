@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /* ------------------------------- includes -------------------------------- */
@@ -88,7 +88,7 @@
 #define MySendText(a,b,c) SendText((a),(b),(c));
 #endif
 
-extern int nColorsets;	/* in libs/Colorsets.c */
+extern int nColorsets;  /* in libs/Colorsets.c */
 
 /* --------------------------- external functions -------------------------- */
 extern void DumpButtons(button_info*);
@@ -177,7 +177,7 @@ button_info *UberButton=NULL;
 int dpw;
 int dph;
 
-int save_color_limit;			/* Color limit, if any */
+int save_color_limit;                   /* Color limit, if any */
 
 Bool do_allow_bad_access = False;
 Bool was_bad_access = False;
@@ -1084,7 +1084,7 @@ void Loop(void)
       case KeyPress:
 	XLookupString(&Event.xkey,buffer,10,&keysym,0);
 	if(keysym!=XK_Return && keysym!=XK_KP_Enter && keysym!=XK_Linefeed)
-	  break;			/* fall through to ButtonPress */
+	  break;                        /* fall through to ButtonPress */
 
       case ButtonPress:
 	if (CurrentButton)
@@ -1863,7 +1863,7 @@ static void HandlePanelPress(button_info *b)
   CurrentButton = tmp;
   XSync(Dpy, 0);
   /* Give fvwm a chance to update the window.  Otherwise the window may end up
-   * too small.	 This doesn't prevent this completely, but makes it much less
+   * too small.  This doesn't prevent this completely, but makes it much less
    * likely. */
   usleep(250000);
 
@@ -2544,7 +2544,7 @@ void CheckForHangon(unsigned long *body)
       break;
     }
     else if(buttonSwallowCount(b)>=2 && (Window)body[0] == SwallowedWindow(b))
-      break;	  /* This window has already been swallowed by someone else! */
+      break;      /* This window has already been swallowed by someone else! */
   }
 }
 
@@ -2902,7 +2902,7 @@ void swallow(unsigned long *body)
 		  MX_PROPERTY_CHANGE_SWALLOW, 1, SwallowedWindow(b));
 	  SendText(fd,cmd,0);
 	}
-	if ((b->flags & b_Colorset) &&	!(b->swallow & b_FvwmModule))
+	if ((b->flags & b_Colorset) &&  !(b->swallow & b_FvwmModule))
 	{
 	  /* A short delay to give the application the chance to set the
 	   * background itself, so we can override it. If we don't do this, the

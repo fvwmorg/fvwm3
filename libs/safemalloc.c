@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -30,8 +30,8 @@ static void alloc_failed(char *c, int length)
 /***********************************************************************
  *
  *  Procedure:
- *	safemalloc - mallocs specified space or exits if there's a
- *		     problem
+ *      safemalloc - mallocs specified space or exits if there's a
+ *                   problem
  *
  ***********************************************************************/
 char *safemalloc(int length)
@@ -54,8 +54,8 @@ char *safemalloc(int length)
 /***********************************************************************
  *
  *  Procedure:
- *	safecalloc - callocs specified space or exits if there's a
- *		     problem
+ *      safecalloc - callocs specified space or exits if there's a
+ *                   problem
  *
  ***********************************************************************/
 char *safecalloc(int num, int length)
@@ -75,8 +75,8 @@ char *safecalloc(int num, int length)
 /***********************************************************************
  *
  *  Procedure:
- *	saferealloc - reallocs specified space or exits if there's a
- *		     problem
+ *      saferealloc - reallocs specified space or exits if there's a
+ *                   problem
  *
  ***********************************************************************/
 char *saferealloc(char *src, int length)
@@ -98,8 +98,8 @@ char *saferealloc(char *src, int length)
 /***********************************************************************
  *
  *  Procedure:
- *	safestrdup - duplicates a string or exits if there's a
- *		     problem
+ *      safestrdup - duplicates a string or exits if there's a
+ *                   problem
  *
  ***********************************************************************/
 char *safestrdup(const char *src)

@@ -8,12 +8,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef FLOCALE_H
@@ -63,7 +63,7 @@
 #define IS_TEXT_DRAWN_VERTICALLY(x) \
 	(x == TEXT_ROTATED_90 || x == TEXT_ROTATED_270)
 
-#define FLC_GET_X_CHARSET(fc)	      (fc != NULL)? fc->x:NULL
+#define FLC_GET_X_CHARSET(fc)         (fc != NULL)? fc->x:NULL
 #define FLC_SET_ICONV_INDEX(fc, i)    fc->iconv_index = i
 #define FLC_GET_LOCALE_CHARSET(fc, i) fc->locale[i]
 #define FLC_GET_ICONV_CHARSET(fc) \
@@ -128,8 +128,8 @@
 
 typedef enum
 {
-	TEXT_ROTATED_0	  = 0,
-	TEXT_ROTATED_90	  = 1,
+	TEXT_ROTATED_0    = 0,
+	TEXT_ROTATED_90   = 1,
 	TEXT_ROTATED_180  = 2,
 	TEXT_ROTATED_270  = 3,
 	TEXT_ROTATED_MASK = 3,
@@ -149,12 +149,12 @@ typedef struct _FlocaleFont
 	struct _FlocaleFont *next;
 	char *name;
 	int count;
-	XFontStruct *font;	/* font structure */
-	XFontSet fontset;	/* font set */
+	XFontStruct *font;      /* font structure */
+	XFontSet fontset;       /* font set */
 	FftFontType fftf;       /* fvwm xft font */
 	FlocaleCharset *fc;     /* fvwm charset of the font */
 	FlocaleCharset *str_fc; /* fvwm charset of the strings to be displayed */
-	int height;		/* height of the font: ascent + descent */
+	int height;             /* height of the font: ascent + descent */
 	int ascent;
 	int descent;
 	int max_char_width;
@@ -222,7 +222,7 @@ void FlocaleInit(
 /*
  * load a FlocaleFont (create it or load it from a cache)
  * fontname: a ";" sperated list of "," separated list of XFLD font names or
- * either "xft:" followed by a	Xft font name. Examples:
+ * either "xft:" followed by a  Xft font name. Examples:
  * "xft:Verdana:Bold:pixelsize=14:rgba=rgb"
  * "xft:Verdana:size=12;-adobe-courier-medium-r-normal--14-*,fixed"
  * module: name of the fvwm module for errors msg
@@ -232,12 +232,12 @@ void FlocaleInit(
  * 1) We try to load each element "fn" of the ";" seprated list until success
  *    as follows:
  *    a - if fn begin with "xft:", then if FftSupport fn is loaded as an xft
- *	  font; if !FftSupport fn is skipped (ignored)
+ *        font; if !FftSupport fn is skipped (ignored)
  *    b - If the locale is supported fn is loaded using XCreateFontSet. If this
- *	  fail fallback into 1-c)
+ *        fail fallback into 1-c)
  *    c - If the locale is not supported or 1-b fail fn is loaded using
- *	  XLoadQueryFont (the first loadable font in the fn "," separated list
- *	  is load)
+ *        XLoadQueryFont (the first loadable font in the fn "," separated list
+ *        is load)
  * 2) If 0) and 1) fail:
  *    - try to load MB_FALLBACK_FONT with XCreateFontSet
  *    - If this fail try to load FALLBACK_FONT with XLoadQueryFont

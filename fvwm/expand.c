@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 /* ---------------------------- included header files ----------------------- */
 
@@ -153,7 +153,7 @@ enum
 
 static int expand_vars_extended(
 	char *var_name, char *output, FvwmWindow *fw,
-        fvwm_cond_func_rc *cond_rc)
+	fvwm_cond_func_rc *cond_rc)
 {
 	char *s;
 	char *rest;
@@ -616,9 +616,9 @@ char *expand_vars(
 						xlen = expand_vars_extended(
 							var, NULL, fw, cond_rc);
 						if (xlen > 0)
-                                                {
+						{
 							l2 += xlen - (k + 2);
-                                                }
+						}
 					}
 					i += k + 2;
 					input[m] = ']';
@@ -636,13 +636,13 @@ char *expand_vars(
 			case '9':
 			case '*':
 				if (input[i+1] == '*')
-                                {
+				{
 					n = 0;
-                                }
+				}
 				else
-                                {
+				{
 					n = input[i+1] - '0' + 1;
-                                }
+				}
 				if (arguments[n] != NULL)
 				{
 					l2 += strlen(arguments[n])-2;
@@ -704,9 +704,9 @@ char *expand_vars(
 				for (k = 0; string[k] != 0; k++, l2++)
 				{
 					if (string[k] == '\'')
-                                        {
+					{
 						l2++;
-                                        }
+					}
 				}
 				string = NULL;
 			}

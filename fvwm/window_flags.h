@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef _WINDOW_FLAGS_
@@ -18,7 +18,7 @@
 
 
 /* access to the common flags of a window */
-#define FW_COMMON_FLAGS(fw)	    ((fw)->flags.common)
+#define FW_COMMON_FLAGS(fw)         ((fw)->flags.common)
 #define FW_COMMON_STATIC_FLAGS(fw)  ((fw)->flags.common.s)
 
 #define DO_GRAB_FOCUS(fw) \
@@ -26,7 +26,7 @@
 #define DO_GRAB_FOCUS_TRANSIENT(fw) \
 	  ((fw)->flags.common.s.do_grab_focus_when_transient_created)
 #define DO_LOWER_TRANSIENT(fw) ((fw)->flags.common.s.do_lower_transient)
-#define DO_NOT_SHOW_ON_MAP(fw)	\
+#define DO_NOT_SHOW_ON_MAP(fw)  \
 	  ((fw)->flags.common.s.do_not_show_on_map)
 #define DO_NOT_PASS_CLICK_FOCUS_CLICK(fw)  \
 	  ((fw)->flags.common.s.do_not_pass_click_focus_click)
@@ -40,13 +40,13 @@
 	  (fw)->flags.common.s.do_not_raise_click_focus_click = !!(x)
 #define SETM_DO_NOT_RAISE_CLICK_FOCUS_CLICK(fw,x) \
 	  (fw)->flag_mask.common.s.do_not_raise_click_focus_click = !!(x)
-#define DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(fw)	\
+#define DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(fw)  \
 	  ((fw)->flags.common.s.do_ignore_mouse_focus_click_motion)
 #define SET_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(fw,x) \
 	  (fw)->flags.common.s.do_ignore_mouse_focus_click_motion = !!(x)
 #define SETM_DO_IGNORE_MOUSE_FOCUS_CLICK_MOTION(fw,x) \
 	  (fw)->flag_mask.common.s.do_ignore_mouse_focus_click_motion = !!(x)
-#define DO_RAISE_MOUSE_FOCUS_CLICK(fw)	\
+#define DO_RAISE_MOUSE_FOCUS_CLICK(fw)  \
 	  ((fw)->flags.common.s.do_raise_mouse_focus_click)
 #define SET_DO_RAISE_MOUSE_FOCUS_CLICK(fw,x) \
 	  (fw)->flags.common.s.do_raise_mouse_focus_click = !!(x)
@@ -93,13 +93,13 @@
 	  (fw)->flag_mask.common.title_dir = DIR_MAJOR_MASK * !!(x)
 #define HAS_VERTICAL_TITLE(fw) \
 	  (HAS_TITLE_DIR(fw,DIR_W) || HAS_TITLE_DIR(fw,DIR_E))
-#define HAS_STIPPLED_TITLE(fw)	\
+#define HAS_STIPPLED_TITLE(fw)  \
 	  ((fw)->flags.common.s.has_stippled_title)
 #define SET_HAS_STIPPLED_TITLE(fw,x) \
 	  (fw)->flags.common.s.has_stippled_title = !!(x)
 #define SETM_HAS_STIPPLED_TITLE(fw,x) \
 	  (fw)->flag_mask.common.s.has_stippled_title = !!(x)
-#define ICON_OVERRIDE_MODE(fw)	\
+#define ICON_OVERRIDE_MODE(fw)  \
 	  ((fw)->flags.common.s.icon_override)
 #define SET_ICON_OVERRIDE_MODE(fw,x)  \
 	  (fw)->flags.common.s.icon_override = ((x) & ICON_OVERRIDE_MASK)
@@ -130,7 +130,7 @@
 	  (fw)->flag_mask.common.s.use_indexed_icon_name = !!(x)
 #define WINDOWSHADE_LAZINESS(fw)  \
 	  ((fw)->flags.common.s.windowshade_laziness)
-#define SET_WINDOWSHADE_LAZINESS(fw,x)	\
+#define SET_WINDOWSHADE_LAZINESS(fw,x)  \
 	  (fw)->flags.common.s.windowshade_laziness = \
 		((x) & WINDOWSHADE_LAZY_MASK)
 #define SETM_WINDOWSHADE_LAZINESS(fw,x) \
@@ -184,10 +184,10 @@
 	  (fw)->flags.common.s.is_icon_suppressed = !!(x)
 #define SETM_ICON_SUPPRESSED(fw,x) \
 	  (fw)->flag_mask.common.s.is_icon_suppressed = !!(x)
-#define IS_LENIENT(fw)	       ((fw)->flags.common.s.is_lenient)
+#define IS_LENIENT(fw)         ((fw)->flags.common.s.is_lenient)
 #define SET_LENIENT(fw,x)      (fw)->flags.common.s.is_lenient = !!(x)
 #define SETM_LENIENT(fw,x)     (fw)->flag_mask.common.s.is_lenient = !!(x)
-#define IS_STICKY(fw)	       ((fw)->flags.common.is_sticky)
+#define IS_STICKY(fw)          ((fw)->flags.common.is_sticky)
 #define SET_STICKY(fw,x)       (fw)->flags.common.is_sticky = !!(x)
 #define SETM_STICKY(fw,x)      (fw)->flag_mask.common.is_sticky = !!(x)
 #define GET_FOCUS_MODE(fw)     ((fw)->flags.common.s.focus_mode)
@@ -235,8 +235,8 @@
 			       ((fw)->flags.common.s.do_ignore_icon_boxes)
 #define DO_USE_WINDOW_GROUP_HINT(fw)  \
 			     ((fw)->flags.common.s.do_use_window_group_hint)
-#define IS_FIXED(fw)	       ((fw)->flags.common.s.is_fixed)
-#define SET_FIXED(fw,x)	       (fw)->flags.common.s.is_fixed = !!(x)
+#define IS_FIXED(fw)           ((fw)->flags.common.s.is_fixed)
+#define SET_FIXED(fw,x)        (fw)->flags.common.s.is_fixed = !!(x)
 #define SETM_FIXED(fw,x)       (fw)->flag_mask.common.s.is_fixed = !!(x)
 #define IS_FIXED_PPOS(fw)      ((fw)->flags.common.s.is_fixed_ppos)
 #define SET_FIXED_PPOS(fw,x)   (fw)->flags.common.s.is_fixed_ppos = !!(x)
@@ -282,25 +282,25 @@
 	  (fw)->flags.do_reuse_destroyed = !!(x)
 #define SETM_DO_REUSE_DESTROYED(fw,x) \
 	  (fw)->flag_mask.do_reuse_destroyed = !!(x)
-#define HAS_NO_BORDER(fw)	  ((fw)->flags.common.s.has_no_border)
-#define SET_HAS_NO_BORDER(fw,x)	  (fw)->flags.common.s.has_no_border = !!(x)
+#define HAS_NO_BORDER(fw)         ((fw)->flags.common.s.has_no_border)
+#define SET_HAS_NO_BORDER(fw,x)   (fw)->flags.common.s.has_no_border = !!(x)
 #define SETM_HAS_NO_BORDER(fw,x)  (fw)->flag_mask.common.s.has_no_border = !!(x)
-#define HAS_HANDLES(fw)	       ((fw)->flags.has_handles)
+#define HAS_HANDLES(fw)        ((fw)->flags.has_handles)
 #define SET_HAS_HANDLES(fw,x)  (fw)->flags.has_handles = !!(x)
 #define SETM_HAS_HANDLES(fw,x) (fw)->flag_mask.has_handles = !!(x)
-#define HAS_ICON_CHANGED(fw)	     ((fw)->flags.has_icon_changed)
+#define HAS_ICON_CHANGED(fw)         ((fw)->flags.has_icon_changed)
 #define SET_HAS_ICON_CHANGED(fw,x)   (fw)->flags.has_icon_changed = !!(x)
 #define SETM_HAS_ICON_CHANGED(fw,x)  (fw)->flag_mask.has_icon_changed = !!(x)
-#define HAS_TITLE(fw)	       ((fw)->flags.has_title)
+#define HAS_TITLE(fw)          ((fw)->flags.has_title)
 #define SET_HAS_TITLE(fw,x)    (fw)->flags.has_title = !!(x)
 #define SETM_HAS_TITLE(fw,x)   (fw)->flag_mask.has_title = !!(x)
-#define IS_MAPPED(fw)	       ((fw)->flags.is_mapped)
+#define IS_MAPPED(fw)          ((fw)->flags.is_mapped)
 #define SET_MAPPED(fw,x)       (fw)->flags.is_mapped = !!(x)
 #define SETM_MAPPED(fw,x)      (fw)->flag_mask.is_mapped = !!(x)
-#define IS_DECOR_CHANGED(fw)	 ((fw)->flags.is_decor_changed)
-#define SET_DECOR_CHANGED(fw,x)	 (fw)->flags.is_decor_changed = !!(x)
+#define IS_DECOR_CHANGED(fw)     ((fw)->flags.is_decor_changed)
+#define SET_DECOR_CHANGED(fw,x)  (fw)->flags.is_decor_changed = !!(x)
 #define SETM_DECOR_CHANGED(fw,x) (fw)->flag_mask.is_decor_changed = !!(x)
-#define IS_ICON_FONT_LOADED(fw)	    ((fw)->flags.is_icon_font_loaded)
+#define IS_ICON_FONT_LOADED(fw)     ((fw)->flags.is_icon_font_loaded)
 #define SET_ICON_FONT_LOADED(fw,x)  (fw)->flags.is_icon_font_loaded = !!(x)
 #define SETM_ICON_FONT_LOADED(fw,x) (fw)->flag_mask.is_icon_font_loaded = !!(x)
 #define IS_ICONIFIED(fw)       ((fw)->flags.is_iconified)
@@ -312,8 +312,8 @@
 	  (fw)->flags.is_iconified_by_parent = !!(x)
 #define SETM_ICONIFIED_BY_PARENT(fw,x) \
 	  (fw)->flag_mask.is_iconified_by_parent = !!(x)
-#define IS_ICON_ENTERED(fw)	((fw)->flags.is_icon_entered)
-#define SET_ICON_ENTERED(fw,x)	(fw)->flags.is_icon_entered = !!(x)
+#define IS_ICON_ENTERED(fw)     ((fw)->flags.is_icon_entered)
+#define SET_ICON_ENTERED(fw,x)  (fw)->flags.is_icon_entered = !!(x)
 #define SETM_ICON_ENTERED(fw,x) (fw)->flag_mask.is_icon_entered = !!(x)
 #define IS_ICON_OURS(fw)       ((fw)->flags.is_icon_ours)
 #define SET_ICON_OURS(fw,x)    (fw)->flags.is_icon_ours = !!(x)
@@ -347,19 +347,19 @@
 #define IS_PLACED_WB3(fw)      ((fw)->flags.is_placed_wb3)
 #define SET_PLACED_WB3(fw,x)   (fw)->flags.is_placed_wb3 = !!(x)
 #define SETM_PLACED_WB3(fw,x)  (fw)->flag_mask.is_placed_wb3 = !!(x)
-#define IS_PLACED_BY_FVWM(fw)	   ((fw)->flags.is_placed_by_fvwm)
+#define IS_PLACED_BY_FVWM(fw)      ((fw)->flags.is_placed_by_fvwm)
 #define SET_PLACED_BY_FVWM(fw,x)   (fw)->flags.is_placed_by_fvwm = (x)
 #define SETM_PLACED_BY_FVWM(fw,x)  (fw)->flag_mask.is_placed_by_fvwm = (x)
-#define IS_SCHEDULED_FOR_DESTROY(fw)	((fw)->flags.is_scheduled_for_destroy)
+#define IS_SCHEDULED_FOR_DESTROY(fw)    ((fw)->flags.is_scheduled_for_destroy)
 #define SET_SCHEDULED_FOR_DESTROY(fw,x) \
 	  (fw)->flags.is_scheduled_for_destroy = !!(x)
 #define IS_SCHEDULED_FOR_RAISE(fw)    ((fw)->flags.is_scheduled_for_raise)
 #define SET_SCHEDULED_FOR_RAISE(fw,x) (fw)->flags.is_scheduled_for_raise = !!(x)
-#define IS_SHADED(fw)	       ((fw)->flags.is_window_shaded)
+#define IS_SHADED(fw)          ((fw)->flags.is_window_shaded)
 #define USED_TITLE_DIR_FOR_SHADING(fw) ((fw)->flags.used_title_dir_for_shading)
 #define SET_USED_TITLE_DIR_FOR_SHADING(fw,x) \
 	((fw)->flags.used_title_dir_for_shading = !!(x))
-#define SHADED_DIR(fw)	       ((fw)->flags.shaded_dir)
+#define SHADED_DIR(fw)         ((fw)->flags.shaded_dir)
 #define SET_SHADED(fw,x)       (fw)->flags.is_window_shaded = !!(x)
 #define SET_SHADED_DIR(fw,x)   (fw)->flags.shaded_dir = (x)
 #define SETM_SHADED(fw,x)      (fw)->flag_mask.is_window_shaded = !!(x)
@@ -377,11 +377,11 @@
 #define SET_ICONIFY_AFTER_MAP(fw,x)  (fw)->flags.do_iconify_after_map = !!(x)
 #define SETM_ICONIFY_AFTER_MAP(fw,x) \
 	  (fw)->flag_mask.do_iconify_after_map = !!(x)
-#define IS_SIZE_INC_SET(fw)	((fw)->flags.is_size_inc_set)
-#define SET_SIZE_INC_SET(fw,x)	(fw)->flags.is_size_inc_set = !!(x)
+#define IS_SIZE_INC_SET(fw)     ((fw)->flags.is_size_inc_set)
+#define SET_SIZE_INC_SET(fw,x)  (fw)->flags.is_size_inc_set = !!(x)
 #define SETM_SIZE_INC_SET(fw,x) (fw)->flag_mask.is_size_inc_set = !!(x)
-#define IS_STYLE_DELETED(fw)	 ((fw)->flags.is_style_deleted)
-#define SET_STYLE_DELETED(fw,x)	 (fw)->flags.is_style_deleted = !!(x)
+#define IS_STYLE_DELETED(fw)     ((fw)->flags.is_style_deleted)
+#define SET_STYLE_DELETED(fw,x)  (fw)->flags.is_style_deleted = !!(x)
 #define SETM_STYLE_DELETED(fw,x) (fw)->flag_mask.is_style_deleted = !!(x)
 #define IS_VIEWPORT_MOVED(fw)  ((fw)->flags.is_viewport_moved)
 #define SET_VIEWPORT_MOVED(fw,x) \
@@ -427,7 +427,7 @@
 #define SET_WINDOW_FONT_LOADED(fw,x)  (fw)->flags.is_window_font_loaded = !!(x)
 #define SETM_WINDOW_FONT_LOADED(fw,x) \
 	  (fw)->flag_mask.is_window_font_loaded = !!(x)
-#define WM_DELETES_WINDOW(fw)	((fw)->flags.does_wm_delete_window)
+#define WM_DELETES_WINDOW(fw)   ((fw)->flags.does_wm_delete_window)
 #define SET_WM_DELETES_WINDOW(fw,x) \
 	  (fw)->flags.does_wm_delete_window = !!(x)
 #define SETM_WM_DELETES_WINDOW(fw,x) \
@@ -437,11 +437,11 @@
 	  (fw)->flags.does_wm_take_focus = !!(x)
 #define SETM_WM_TAKES_FOCUS(fw,x) \
 	  (fw)->flag_mask.does_wm_take_focus = !!(x)
-#define DO_FORCE_NEXT_CR(fw)	    ((fw)->flags.do_force_next_cr)
-#define SET_FORCE_NEXT_CR(fw,x)	 (fw)->flags.do_force_next_cr = !!(x)
+#define DO_FORCE_NEXT_CR(fw)        ((fw)->flags.do_force_next_cr)
+#define SET_FORCE_NEXT_CR(fw,x)  (fw)->flags.do_force_next_cr = !!(x)
 #define SETM_FORCE_NEXT_CR(fw,x) (fw)->flag_mask.do_force_next_cr = !!(x)
-#define DO_FORCE_NEXT_PN(fw)	 ((fw)->flags.do_force_next_pn)
-#define SET_FORCE_NEXT_PN(fw,x)	 (fw)->flags.do_force_next_pn = !!(x)
+#define DO_FORCE_NEXT_PN(fw)     ((fw)->flags.do_force_next_pn)
+#define SET_FORCE_NEXT_PN(fw,x)  (fw)->flags.do_force_next_pn = !!(x)
 #define SETM_FORCE_NEXT_PN(fw,x) (fw)->flag_mask.do_force_next_pn = !!(x)
 #define USING_DEFAULT_WINDOW_FONT(fw) \
 	  ((fw)->flags.using_default_window_font)
@@ -467,7 +467,7 @@
 	  (fw)->flags.was_icon_name_provided = (x)
 #define SETM_WAS_ICON_NAME_PROVIDED(fw,x) \
 	  (fw)->flag_mask.was_icon_name_provided = (x)
-#define HAS_EWMH_WM_NAME(fw)	    ((fw)->flags.has_ewmh_wm_name)
+#define HAS_EWMH_WM_NAME(fw)        ((fw)->flags.has_ewmh_wm_name)
 #define SET_HAS_EWMH_WM_NAME(fw,x)  (fw)->flags.has_ewmh_wm_name = !!(x)
 #define SETM_HAS_EWMH_WM_NAME(fw,x) (fw)->flag_mask.has_ewmh_wm_name = !!(x)
 #define HAS_EWMH_WM_ICON_NAME(fw) \
@@ -477,7 +477,7 @@
 #define SETM_HAS_EWMH_WM_ICON_NAME(fw,x) \
 	  (fw)->flag_mask.has_ewmh_wm_icon_name = !!(x)
 #define HAS_EWMH_WM_ICON_HINT(fw) ((fw)->flags.has_ewmh_wm_icon_hint)
-#define SET_HAS_EWMH_WM_ICON_HINT(fw,x)	  (fw)->flags.has_ewmh_wm_icon_hint = (x)
+#define SET_HAS_EWMH_WM_ICON_HINT(fw,x)   (fw)->flags.has_ewmh_wm_icon_hint = (x)
 #define SETM_HAS_EWMH_WM_ICON_HINT(fw,x)  (fw)->flag_mask.has_ewmh_wm_icon_hint = (x)
 #define USE_EWMH_ICON(fw) ((fw)->flags.use_ewmh_icon)
 #define SET_USE_EWMH_ICON(fw,x) (fw)->flags.use_ewmh_icon = !!(x)

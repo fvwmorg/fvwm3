@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -18,30 +18,30 @@
  * by Rob Nation
  ****************************************************************************/
 /*****************************************************************************/
-/**	  Copyright 1988 by Evans & Sutherland Computer Corporation,	    **/
-/**			     Salt Lake City, Utah			    **/
+/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
+/**                          Salt Lake City, Utah                           **/
 /**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**			   Cambridge, Massachusetts			    **/
-/**									    **/
-/**			      All Rights Reserved			    **/
-/**									    **/
+/**                        Cambridge, Massachusetts                         **/
+/**                                                                         **/
+/**                           All Rights Reserved                           **/
+/**                                                                         **/
 /**    Permission to use, copy, modify, and distribute this software and    **/
 /**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear	 in  all    **/
-/**    copies and that both  that  copyright  notice  and  this	 permis-    **/
+/**    granted, provided that the above copyright notice appear  in  all    **/
+/**    copies and that both  that  copyright  notice  and  this  permis-    **/
 /**    sion  notice appear in supporting  documentation,  and  that  the    **/
 /**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software	 without    **/
-/**    specific, written prior permission.				    **/
-/**									    **/
+/**    in publicity pertaining to distribution of the  software  without    **/
+/**    specific, written prior permission.                                  **/
+/**                                                                         **/
 /**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
 /**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY	AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
+/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
 /**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR	ANY DAMAGES WHATSOEVER	RESULTING FROM LOSS OF USE, DATA    **/
+/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
 /**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH	THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.					    **/
+/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
+/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
 
 #ifndef _MENUS_
@@ -97,36 +97,36 @@ typedef struct MenuRootStatic
 } MenuRootStatic;
 
 /* access macros to static menu members */
-#define MR_FIRST_ITEM(m)	 ((m)->s->first)
-#define MR_LAST_ITEM(m)		 ((m)->s->last)
-#define MR_COPIES(m)		 ((m)->s->copies)
-#define MR_MAPPED_COPIES(m)	 ((m)->s->usage_count)
-#define MR_NAME(m)		 ((m)->s->name)
-#define MR_DIM(m)		 ((m)->s->dim)
-#define MR_WIDTH(m)		 MDIM_WIDTH((m)->s->dim)
-#define MR_HEIGHT(m)		 MDIM_HEIGHT((m)->s->dim)
-#define MR_ITEM_WIDTH(m)	 MDIM_ITEM_WIDTH((m)->s->dim)
-#define MR_SIDEPIC_X_OFFSET(m)	 MDIM_SIDEPIC_X_OFFSET((m)->s->dim)
-#define MR_ICON_X_OFFSET(m)	 MDIM_ICON_X_OFFSET((m)->s->dim)
-#define MR_TRIANGLE_X_OFFSET(m)	 MDIM_TRIANGLE_X_OFFSET((m)->s->dim)
-#define MR_ITEM_X_OFFSET(m)	 MDIM_ITEM_X_OFFSET((m)->s->dim)
+#define MR_FIRST_ITEM(m)         ((m)->s->first)
+#define MR_LAST_ITEM(m)          ((m)->s->last)
+#define MR_COPIES(m)             ((m)->s->copies)
+#define MR_MAPPED_COPIES(m)      ((m)->s->usage_count)
+#define MR_NAME(m)               ((m)->s->name)
+#define MR_DIM(m)                ((m)->s->dim)
+#define MR_WIDTH(m)              MDIM_WIDTH((m)->s->dim)
+#define MR_HEIGHT(m)             MDIM_HEIGHT((m)->s->dim)
+#define MR_ITEM_WIDTH(m)         MDIM_ITEM_WIDTH((m)->s->dim)
+#define MR_SIDEPIC_X_OFFSET(m)   MDIM_SIDEPIC_X_OFFSET((m)->s->dim)
+#define MR_ICON_X_OFFSET(m)      MDIM_ICON_X_OFFSET((m)->s->dim)
+#define MR_TRIANGLE_X_OFFSET(m)  MDIM_TRIANGLE_X_OFFSET((m)->s->dim)
+#define MR_ITEM_X_OFFSET(m)      MDIM_ITEM_X_OFFSET((m)->s->dim)
 #define MR_ITEM_TEXT_Y_OFFSET(m) MDIM_ITEM_TEXT_Y_OFFSET((m)->s->dim)
-#define MR_HILIGHT_X_OFFSET(m)	 MDIM_HILIGHT_X_OFFSET((m)->s->dim)
-#define MR_HILIGHT_WIDTH(m)	 MDIM_HILIGHT_WIDTH((m)->s->dim)
-#define MR_SCREEN_WIDTH(m)	 MDIM_SCREEN_WIDTH((m)->s->dim)
-#define MR_SCREEN_HEIGHT(m)	 MDIM_SCREEN_HEIGHT((m)->s->dim)
-#define MR_ITEMS(m)		 ((m)->s->items)
-#define MR_SIDEPIC(m)		 ((m)->s->sidePic)
-#define MR_SIDECOLOR(m)		 ((m)->s->sideColor)
-#define MR_STYLE(m)		 ((m)->s->ms)
+#define MR_HILIGHT_X_OFFSET(m)   MDIM_HILIGHT_X_OFFSET((m)->s->dim)
+#define MR_HILIGHT_WIDTH(m)      MDIM_HILIGHT_WIDTH((m)->s->dim)
+#define MR_SCREEN_WIDTH(m)       MDIM_SCREEN_WIDTH((m)->s->dim)
+#define MR_SCREEN_HEIGHT(m)      MDIM_SCREEN_HEIGHT((m)->s->dim)
+#define MR_ITEMS(m)              ((m)->s->items)
+#define MR_SIDEPIC(m)            ((m)->s->sidePic)
+#define MR_SIDECOLOR(m)          ((m)->s->sideColor)
+#define MR_STYLE(m)              ((m)->s->ms)
 /* flags */
-#define MR_FLAGS(m)		 ((m)->s->flags)
-#define MR_POPUP_ACTION(m)	 ((m)->s->dynamic.popup_action)
-#define MR_POPDOWN_ACTION(m)	 ((m)->s->dynamic.popdown_action)
+#define MR_FLAGS(m)              ((m)->s->flags)
+#define MR_POPUP_ACTION(m)       ((m)->s->dynamic.popup_action)
+#define MR_POPDOWN_ACTION(m)     ((m)->s->dynamic.popdown_action)
 #define MR_MISSING_SUBMENU_FUNC(m) ((m)->s->dynamic.missing_submenu_func)
-#define MR_HAS_SIDECOLOR(m)	 ((m)->s->flags.has_side_color)
-#define MR_IS_LEFT_TRIANGLE(m)	 ((m)->s->flags.is_left_triangle)
-#define MR_IS_UPDATED(m)	 ((m)->s->flags.is_updated)
+#define MR_HAS_SIDECOLOR(m)      ((m)->s->flags.has_side_color)
+#define MR_IS_LEFT_TRIANGLE(m)   ((m)->s->flags.is_left_triangle)
+#define MR_IS_UPDATED(m)         ((m)->s->flags.is_updated)
 
 /* This struct contains the parts of a root menu that differ in all copies of
  * the menu */
@@ -144,7 +144,7 @@ typedef struct MenuRootDynamic
 	struct MenuRoot *parent_menu;
 	/* the menu item that popped this up, if any */
 	struct MenuItem *parent_item;
-	/* the display used to create the menu.	 Can't use the normal display
+	/* the display used to create the menu.  Can't use the normal display
 	 * because 'xkill' would kill the window manager if used on a tear off
 	 * menu. */
 	Display *create_dpy;
@@ -182,27 +182,27 @@ typedef struct MenuRootDynamic
 } MenuRootDynamic;
 
 /* access macros to static menu members */
-#define MR_ORIGINAL_MENU(m)	    ((m)->d->original_menu)
-#define MR_NEXT_MENU(m)		    ((m)->d->next_menu)
-#define MR_CONTINUATION_MENU(m)	    ((m)->d->continuation_menu)
-#define MR_PARENT_MENU(m)	    ((m)->d->parent_menu)
-#define MR_PARENT_ITEM(m)	    ((m)->d->parent_item)
-#define MR_CREATE_DPY(m)	    ((m)->d->create_dpy)
-#define MR_WINDOW(m)		    ((m)->d->window)
-#define MR_SELECTED_ITEM(m)	    ((m)->d->selected_item)
-#define MR_SUBMENU_ITEM(m)	    ((m)->d->submenu_item)
-#define MR_XANIMATION(m)	    ((m)->d->xanimation)
-#define MR_STORED_ITEM(m)	    ((m)->d->stored_item)
+#define MR_ORIGINAL_MENU(m)         ((m)->d->original_menu)
+#define MR_NEXT_MENU(m)             ((m)->d->next_menu)
+#define MR_CONTINUATION_MENU(m)     ((m)->d->continuation_menu)
+#define MR_PARENT_MENU(m)           ((m)->d->parent_menu)
+#define MR_PARENT_ITEM(m)           ((m)->d->parent_item)
+#define MR_CREATE_DPY(m)            ((m)->d->create_dpy)
+#define MR_WINDOW(m)                ((m)->d->window)
+#define MR_SELECTED_ITEM(m)         ((m)->d->selected_item)
+#define MR_SUBMENU_ITEM(m)          ((m)->d->submenu_item)
+#define MR_XANIMATION(m)            ((m)->d->xanimation)
+#define MR_STORED_ITEM(m)           ((m)->d->stored_item)
 /* flags */
-#define MR_DYNAMIC_FLAGS(m)	    ((m)->d->dflags)
-#define MR_IS_BACKGROUND_SET(m)	    ((m)->d->dflags.is_background_set)
-#define MR_IS_DESTROYED(m)	    ((m)->d->dflags.is_destroyed)
-#define MR_IS_LEFT(m)		    ((m)->d->dflags.is_left)
-#define MR_IS_RIGHT(m)		    ((m)->d->dflags.is_right)
-#define MR_IS_UP(m)		    ((m)->d->dflags.is_up)
-#define MR_IS_DOWN(m)		    ((m)->d->dflags.is_down)
-#define MR_IS_PAINTED(m)	    ((m)->d->dflags.is_painted)
-#define MR_IS_TEAR_OFF_MENU(m)	    ((m)->d->dflags.is_tear_off_menu)
+#define MR_DYNAMIC_FLAGS(m)         ((m)->d->dflags)
+#define MR_IS_BACKGROUND_SET(m)     ((m)->d->dflags.is_background_set)
+#define MR_IS_DESTROYED(m)          ((m)->d->dflags.is_destroyed)
+#define MR_IS_LEFT(m)               ((m)->d->dflags.is_left)
+#define MR_IS_RIGHT(m)              ((m)->d->dflags.is_right)
+#define MR_IS_UP(m)                 ((m)->d->dflags.is_up)
+#define MR_IS_DOWN(m)               ((m)->d->dflags.is_down)
+#define MR_IS_PAINTED(m)            ((m)->d->dflags.is_painted)
+#define MR_IS_TEAR_OFF_MENU(m)      ((m)->d->dflags.is_tear_off_menu)
 #define MR_HAS_POPPED_UP_LEFT(m)    ((m)->d->dflags.has_popped_up_left)
 #define MR_HAS_POPPED_UP_RIGHT(m)   ((m)->d->dflags.has_popped_up_right)
 

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*
@@ -60,37 +60,37 @@ void FShapeInit(Display *dpy);
 
 #else
 /* drop in replacements if shape support is not compiled in */
-#define X_ShapeQueryVersion		0
-#define X_ShapeRectangles		1
-#define X_ShapeMask			2
-#define X_ShapeCombine			3
-#define X_ShapeOffset			4
-#define X_ShapeQueryExtents		5
-#define X_ShapeSelectInput		6
-#define X_ShapeInputSelected		7
-#define X_ShapeGetRectangles		8
-#define ShapeSet			0
-#define ShapeUnion			1
-#define ShapeIntersect			2
-#define ShapeSubtract			3
-#define ShapeInvert			4
-#define ShapeBounding			0
-#define ShapeClip			1
-#define ShapeNotifyMask			(1L << 0)
-#define ShapeNotify			0
-#define ShapeNumberEvents		(FShapeNotify + 1)
+#define X_ShapeQueryVersion             0
+#define X_ShapeRectangles               1
+#define X_ShapeMask                     2
+#define X_ShapeCombine                  3
+#define X_ShapeOffset                   4
+#define X_ShapeQueryExtents             5
+#define X_ShapeSelectInput              6
+#define X_ShapeInputSelected            7
+#define X_ShapeGetRectangles            8
+#define ShapeSet                        0
+#define ShapeUnion                      1
+#define ShapeIntersect                  2
+#define ShapeSubtract                   3
+#define ShapeInvert                     4
+#define ShapeBounding                   0
+#define ShapeClip                       1
+#define ShapeNotifyMask                 (1L << 0)
+#define ShapeNotify                     0
+#define ShapeNumberEvents               (FShapeNotify + 1)
 typedef struct
 {
-  int	type;		    /* of event */
-  unsigned long serial;	  /* # of last request processed by server */
-  Bool send_event;	    /* true if this came frome a SendEvent request */
-  Display *display;	    /* Display the event was read from */
-  Window window;	    /* window of event */
-  int kind;		    /* ShapeBounding or ShapeClip */
-  int x, y;		    /* extents of new region */
+  int   type;               /* of event */
+  unsigned long serial;   /* # of last request processed by server */
+  Bool send_event;          /* true if this came frome a SendEvent request */
+  Display *display;         /* Display the event was read from */
+  Window window;            /* window of event */
+  int kind;                 /* ShapeBounding or ShapeClip */
+  int x, y;                 /* extents of new region */
   unsigned width, height;
-  Time time;		    /* server timestamp when region changed */
-  Bool shaped;	    /* true if the region exists */
+  Time time;                /* server timestamp when region changed */
+  Bool shaped;      /* true if the region exists */
 } XShapeEvent;
 #define FShapeQueryExtension(dpy, evbase, errbase) ((Bool)False)
 #define FShapeQueryVersion(dpy, vmajor, vminor) ((Status)0)
@@ -107,35 +107,35 @@ typedef struct
 #define FShapeInputSelected(dpy, w) ((unsinged long)0)
 #define FShapeGetRectangles(dpy, w, kind, count, ordering) ((XRectangle *)0)
 /* define empty dummies */
-#define FShapeEventBase		 0
-#define FShapeErrorBase		 0
+#define FShapeEventBase          0
+#define FShapeErrorBase          0
 /* Shapes supported by server? */
-#define FShapesSupported	 0
+#define FShapesSupported         0
 /* Shapes compiled in? */
-#define FHaveShapeExtension	 0
+#define FHaveShapeExtension      0
 #define FShapeInit(dpy)
 #endif
 
 /* fvwm replacements for shape lib */
-#define F_ShapeQueryVersion		X_ShapeQueryVersion
-#define F_ShapeRectangles		X_ShapeRectangles
-#define F_ShapeMask			X_ShapeMask
-#define F_ShapeCombine			X_ShapeCombine
-#define F_ShapeOffset			X_ShapeOffset
-#define F_ShapeQueryExtents		X_ShapeQueryExtents
-#define F_ShapeSelectInput		X_ShapeSelectInput
-#define F_ShapeInputSelected		X_ShapeInputSelected
-#define F_ShapeGetRectangles		X_ShapeGetRectangles
-#define FShapeSet			ShapeSet
-#define FShapeUnion			ShapeUnion
-#define FShapeIntersect			ShapeIntersect
-#define FShapeSubtract			ShapeSubtract
-#define FShapeInvert			ShapeInvert
-#define FShapeBounding			ShapeBounding
-#define FShapeClip			ShapeClip
-#define FShapeNotifyMask		ShapeNotifyMask
-#define FShapeNotify			ShapeNotify
-#define FShapeNumberEvents		ShapeNumberEvents
+#define F_ShapeQueryVersion             X_ShapeQueryVersion
+#define F_ShapeRectangles               X_ShapeRectangles
+#define F_ShapeMask                     X_ShapeMask
+#define F_ShapeCombine                  X_ShapeCombine
+#define F_ShapeOffset                   X_ShapeOffset
+#define F_ShapeQueryExtents             X_ShapeQueryExtents
+#define F_ShapeSelectInput              X_ShapeSelectInput
+#define F_ShapeInputSelected            X_ShapeInputSelected
+#define F_ShapeGetRectangles            X_ShapeGetRectangles
+#define FShapeSet                       ShapeSet
+#define FShapeUnion                     ShapeUnion
+#define FShapeIntersect                 ShapeIntersect
+#define FShapeSubtract                  ShapeSubtract
+#define FShapeInvert                    ShapeInvert
+#define FShapeBounding                  ShapeBounding
+#define FShapeClip                      ShapeClip
+#define FShapeNotifyMask                ShapeNotifyMask
+#define FShapeNotify                    ShapeNotify
+#define FShapeNumberEvents              ShapeNumberEvents
 typedef XShapeEvent FShapeEvent;
 
 

@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /* ---------------------------- included header files ----------------------- */
@@ -69,10 +69,10 @@
  *
  * Allowed: 0,1,or 2 pixel pan frames.
  *
- * 0   completely disables mouse  edge scrolling,  even	 while dragging a
+ * 0   completely disables mouse  edge scrolling,  even  while dragging a
  * window.
  *
- * 1 gives the	smallest pan frames,  which seem to  work best	except on
+ * 1 gives the  smallest pan frames,  which seem to  work best  except on
  * some servers.
  *
  * 2 is the default.
@@ -95,14 +95,14 @@ static unsigned int prev_desk_and_page_page_y = 0;
  * Parse arguments for "Desk" and "MoveToDesk" (formerly "WindowsDesk"):
  *
  * (nil)       : desk number = current desk
- * n	       : desk number = current desk + n
- * 0 n	       : desk number = n
- * n x	       : desk number = current desk + n
+ * n           : desk number = current desk + n
+ * 0 n         : desk number = n
+ * n x         : desk number = current desk + n
  * 0 n min max : desk number = n, but limit to min/max
  * n min max   : desk number = current desk + n, but wrap around at desk #min
- *		 or desk #max
+ *               or desk #max
  * n x min max : desk number = current desk + n, but wrap around at desk #min
- *		 or desk #max
+ *               or desk #max
  *
  * The current desk number is returned if not enough parameters could be
  * read (or if action is empty).
@@ -165,7 +165,7 @@ static int GetDeskNumber(char *action)
 		}
 		else
 		{
-			/*  min > max is nonsense, so swap 'em.	 */
+			/*  min > max is nonsense, so swap 'em.  */
 			min = val[m+1];
 			max = val[m];
 		}
@@ -826,10 +826,10 @@ void checkPanFrames(void)
 
 	/* correct the unmap variables if pan frame commands are set */
 	if ( edge_thickness != 0 ) {
-		if ( Scr.PanFrameLeft.command	!= NULL ) do_unmap_l = False ;
-		if ( Scr.PanFrameRight.command	!= NULL ) do_unmap_r = False ;
+		if ( Scr.PanFrameLeft.command   != NULL ) do_unmap_l = False ;
+		if ( Scr.PanFrameRight.command  != NULL ) do_unmap_r = False ;
 		if ( Scr.PanFrameBottom.command != NULL ) do_unmap_b = False ;
-		if ( Scr.PanFrameTop.command	!= NULL ) do_unmap_t = False ;
+		if ( Scr.PanFrameTop.command    != NULL ) do_unmap_t = False ;
 	}
 
 	/*
@@ -1058,10 +1058,10 @@ void MoveViewport(int newx, int newy, Bool grab)
 	  Identify the bounding rectangle that will be moved into
 	  the viewport.
 	*/
-	PageBottom    =	 Scr.MyDisplayHeight - deltay - 1;
-	PageRight     =	 Scr.MyDisplayWidth  - deltax - 1;
-	PageTop	      =	 0 - deltay;
-	PageLeft      =	 0 - deltax;
+	PageBottom    =  Scr.MyDisplayHeight - deltay - 1;
+	PageRight     =  Scr.MyDisplayWidth  - deltax - 1;
+	PageTop       =  0 - deltay;
+	PageLeft      =  0 - deltax;
 	if (deltax || deltay)
 	{
 		prev_page_x = Scr.Vx;
@@ -1080,7 +1080,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 			Scr.VxMax, Scr.VyMax);
 
 		/*
-		 * RBW - 11/13/1998	 - new:	 chase the chain
+		 * RBW - 11/13/1998      - new:  chase the chain
 		 * bidirectionally, all at once! The idea is to move the
 		 * windows that are moving out of the viewport from the bottom
 		 * of the stacking order up, to minimize the expose-redraw
@@ -1111,7 +1111,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 				t->normal_g.y -= deltay;
 				t->max_g.x -= deltax;
 				t->max_g.y -= deltay;
-				/*  Block double move.	*/
+				/*  Block double move.  */
 				SET_VIEWPORT_MOVED(t, 1);
 			}
 			if ((txr >= PageLeft && txl <= PageRight
@@ -1119,7 +1119,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 			    && !IS_VIEWPORT_MOVED(t)
 			    && !IS_WINDOW_BEING_MOVED_OPAQUE(t))
 			{
-				/*  Block double move.	*/
+				/*  Block double move.  */
 				SET_VIEWPORT_MOVED(t, 1);
 				/* If the window is iconified, and sticky
 				 * Icons is set, then the window should
@@ -1142,7 +1142,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 						t->frame_g.height, False);
 				}
 			}
-			/*  Bump to next win...	 */
+			/*  Bump to next win...  */
 			t = get_next_window_in_stack_ring(t);
 		}
 		t1 = get_prev_window_in_stack_ring(&Scr.FvwmRoot);
@@ -1182,7 +1182,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 						t1->frame_g.height, False);
 				}
 			}
-			/*  Bump to next win...	 */
+			/*  Bump to next win...  */
 			t1 = get_prev_window_in_stack_ring(t1);
 		}
 		for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
@@ -1248,7 +1248,7 @@ void goto_desk(int desk)
 		 * window for each desk.  If the active desk changes, the
 		 * pager destroys sticky mini windows and creates new ones in
 		 * the other desktop 'root'.  But the pager can't know where to
-		 * stack them.	So we have to tell it ecplicitly where they
+		 * stack them.  So we have to tell it ecplicitly where they
 		 * go :-( This should be fixed in the pager, but right now the
 		 * pager doesn't maintain the stacking order. */
 		BroadcastRestackAllWindows();
@@ -1446,7 +1446,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 	if ( direction == DIR_N ||
 	     direction == DIR_S ||
 	     direction == DIR_E ||
-	     direction == DIR_W	 )  {
+	     direction == DIR_W  )  {
 
 		/* check if the command does contain at least one token */
 		command = safestrdup( action );
@@ -1803,7 +1803,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		 * window for each desk.  If the active desk changes, the
 		 * pager destroys sticky mini windows and creates new ones in
 		 * the other desktop 'root'.  But the pager can't know where to
-		 * stack them.	So we have to tell it ecplicitly where they
+		 * stack them.  So we have to tell it ecplicitly where they
 		 * go :-( This should be fixed in the pager, but right now the
 		 * pager doesn't the stacking order. */
 		BroadcastRestackAllWindows();

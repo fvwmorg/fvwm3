@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /***********************************************************************
@@ -138,8 +138,8 @@ Bool LoadIconFile(int button, int ico)
 void CreateIconWindow(int button, Window *win)
 {
 #ifndef NO_ICONS
-  unsigned long valuemask;		/* mask for create windows */
-  XSetWindowAttributes attributes;	/* attributes for create windows */
+  unsigned long valuemask;              /* mask for create windows */
+  XSetWindowAttributes attributes;      /* attributes for create windows */
 
     /* This used to make buttons without icons explode when pushed
   if((Buttons[button].icon_w == 0)&&(Buttons[button].icon_h == 0))

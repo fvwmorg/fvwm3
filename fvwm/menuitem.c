@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /* ---------------------------- included header files ----------------------- */
@@ -62,7 +62,7 @@
 static void draw_separator(
 	Window w, GC TopGC, GC BottomGC, int x1, int y, int x2)
 {
-	XDrawLine(dpy, w, TopGC	  , x1,	  y,   x2,   y);
+	XDrawLine(dpy, w, TopGC   , x1,   y,   x2,   y);
 	XDrawLine(dpy, w, BottomGC, x1-1, y+1, x2+1, y+1);
 
 	return;
@@ -189,7 +189,7 @@ MenuItem *menuitem_clone(MenuItem *mi)
 	return new_mi;
 }
 
-/* Calculate the size of the various parts of the item.	 The sizes are returned
+/* Calculate the size of the various parts of the item.  The sizes are returned
  * through mips. */
 void menuitem_get_size(
 	MenuItem *mi, MenuItemPartSizes *mips, FlocaleFont *font,
@@ -275,11 +275,11 @@ void menuitem_get_size(
 /***********************************************************************
  *
  *  Procedure:
- *	menuitem_paint - draws a single entry in a popped up menu
+ *      menuitem_paint - draws a single entry in a popped up menu
  *
- *	mr - the menu instance that holds the menu item
- *	mi - the menu item to redraw
- *	fw - the FvwmWindow structure to check against allowed functions
+ *      mr - the menu instance that holds the menu item
+ *      mi - the menu item to redraw
+ *      fw - the FvwmWindow structure to check against allowed functions
  *
  ***********************************************************************/
 void menuitem_paint(

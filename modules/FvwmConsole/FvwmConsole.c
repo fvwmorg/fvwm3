@@ -14,12 +14,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "FvwmConsole.h"
@@ -27,7 +27,7 @@
 char *MyName;
 
 int Fd[2];  /* pipe to fvwm */
-int  Ns;	     /* socket handles */
+int  Ns;             /* socket handles */
 char Name[80]; /* name of this program in executable format */
 char *S_name;  /* socket name */
 
@@ -105,7 +105,7 @@ int main(int argc, char *argv[])
   }
 
   /* copy rest of -e args */
-  for(	; i<argc; i++, j++ ) {
+  for(  ; i<argc; i++, j++ ) {
 	  eargv[j-1] = argv[i];
   }
 
@@ -136,7 +136,7 @@ int main(int argc, char *argv[])
 }
 
 /***********************************************************************
- *	signal handler
+ *      signal handler
  ***********************************************************************/
 void DeadPipe( int dummy )
 {
@@ -151,12 +151,12 @@ void SigHandler(int dummy)
 }
 
 /*********************************************************/
-/* close sockets and spawned process			 */
+/* close sockets and spawned process                     */
 /*********************************************************/
 void CloseSocket()
 {
   send(Ns, C_CLOSE, strlen(C_CLOSE), 0);
-  close(Ns);	 /* remove the socket */
+  close(Ns);     /* remove the socket */
   unlink( S_name );
 
 }
@@ -168,8 +168,8 @@ void server ( void )
 {
   struct sockaddr_un sas, csas;
   int  len;
-  size_t clen;	   /* length of sockaddr */
-  char buf[MAX_COMMAND_SIZE];	   /*  command line buffer */
+  size_t clen;     /* length of sockaddr */
+  char buf[MAX_COMMAND_SIZE];      /*  command line buffer */
   char *tline;
   char ver[40];
   fd_set fdset;

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -64,18 +64,18 @@ static void remove_style_from_list(window_style *style, Bool do_free_style);
 /***********************************************************************
  *
  *  Procedure:
- *	blockcmpmask - compare two flag structures passed as byte
- *		       arrays. Only compare bits set in the mask.
+ *      blockcmpmask - compare two flag structures passed as byte
+ *                     arrays. Only compare bits set in the mask.
  *
  *  Returned Value:
- *	zero if the flags are the same
- *	non-zero otherwise
+ *      zero if the flags are the same
+ *      non-zero otherwise
  *
  *  Inputs:
- *	flags1 - first byte array of flags to compare
- *	flags2 - second byte array of flags to compare
- *	mask   - byte array of flags to be considered for the comparison
- *	len    - number of bytes to compare
+ *      flags1 - first byte array of flags to compare
+ *      flags2 - second byte array of flags to compare
+ *      mask   - byte array of flags to be considered for the comparison
+ *      len    - number of bytes to compare
  *
  ***********************************************************************/
 Bool blockcmpmask(char *blk1, char *blk2, char *mask, int length)
@@ -246,19 +246,19 @@ static int Get_TBLR(char *token, unsigned char *IconFill)
  * merge_styles - For a matching style, merge window_style to window_style
  *
  *  Returned Value:
- *	merged matching styles in callers window_style.
+ *      merged matching styles in callers window_style.
  *
  *  Inputs:
- *	merged_style - style resulting from the merge
- *	add_style    - the style to be added into the merge_style
- *	do_free_src_and_alloc_copy
- *		     - free allocated parts of merge_style that are replaced
- *		       from add_style.	Create a copy of of the replaced
- *		       styles in allocated memory.
+ *      merged_style - style resulting from the merge
+ *      add_style    - the style to be added into the merge_style
+ *      do_free_src_and_alloc_copy
+ *                   - free allocated parts of merge_style that are replaced
+ *                     from add_style.  Create a copy of of the replaced
+ *                     styles in allocated memory.
  *
  *  Note:
- *	The only trick here is that on and off flags/buttons are
- *	combined into the on flag/button.
+ *      The only trick here is that on and off flags/buttons are
+ *      combined into the on flag/button.
  *
  ***********************************************************************/
 
@@ -545,7 +545,7 @@ static void merge_styles(
 	/* merge the style flags */
 
 	/*** ATTENTION:
-	 ***	 This must be the last thing that is done in this function! */
+	 ***     This must be the last thing that is done in this function! */
 	merge_flags = (char *)&(merged_style->flags);
 	add_flags = (char *)&(add_style->flags);
 	merge_mask = (char *)&(merged_style->flag_mask);
@@ -665,7 +665,7 @@ void simplify_style_list(void)
 		has_modified = False;
 		/* Step 1:
 		 *   Remove styles that are completely overridden by later
-		 *   style definitions.	 At the same time...
+		 *   style definitions.  At the same time...
 		 * Step 2:
 		 *   Merge styles with the same name if there are no
 		 *   conflicting styles with other names set in between. */
@@ -776,7 +776,7 @@ void simplify_style_list(void)
 static void add_style_to_list(window_style *new_style)
 {
 	/* This used to contain logic that returned if the style didn't contain
-	 * anything.	I don't see why we should bother. dje.
+	 * anything.    I don't see why we should bother. dje.
 	 *
 	 * used to merge duplicate entries, but that is no longer
 	 * appropriate since conflicting styles are possible, and the
@@ -896,14 +896,14 @@ void CMD_DestroyStyle(F_CMD_ARGS)
 /***********************************************************************
  *
  *  Procedure:
- *	lookup_style - look through a list for a window name, or class
+ *      lookup_style - look through a list for a window name, or class
  *
  *  Returned Value:
- *	merged matching styles in callers window_style.
+ *      merged matching styles in callers window_style.
  *
  *  Inputs:
- *	fw     - FvwmWindow structure to match against
- *	styles - callers return area
+ *      fw     - FvwmWindow structure to match against
+ *      styles - callers return area
  *
  ***********************************************************************/
 void lookup_style(FvwmWindow *fw, window_style *styles)
@@ -1727,29 +1727,29 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 
 	      if (vals[i] != UNSPECIFIED_ICON_DIMENSION &&
 		  (vals[i] < MIN_ALLOWABLE_ICON_DIMENSION ||
-	           vals[i] > MAX_ALLOWABLE_ICON_DIMENSION))
+		   vals[i] > MAX_ALLOWABLE_ICON_DIMENSION))
 	      {
-	        fvwm_msg(ERR, "CMD_Style",
-	          "IconSize dimension (%d) not in valid range (%d-%d)",
-	          vals[i], MIN_ALLOWABLE_ICON_DIMENSION,
-	          MAX_ALLOWABLE_ICON_DIMENSION);
+		fvwm_msg(ERR, "CMD_Style",
+		  "IconSize dimension (%d) not in valid range (%d-%d)",
+		  vals[i], MIN_ALLOWABLE_ICON_DIMENSION,
+		  MAX_ALLOWABLE_ICON_DIMENSION);
 
-	        use_default = 1;
+		use_default = 1;
 	      }
 
 	      /* User requests default value for this dimension */
 	      else if (vals[i] == UNSPECIFIED_ICON_DIMENSION)
 	      {
-	        use_default = 1;
+		use_default = 1;
 	      }
 
 	      if (use_default)
 	      {
-	        /* Set default value for this dimension.  The
-	         * first two indexes refer to min values, the
-	         * latter two to max values. */
-	        vals[i] = i < 2 ? MIN_ALLOWABLE_ICON_DIMENSION :
-	          MAX_ALLOWABLE_ICON_DIMENSION;
+		/* Set default value for this dimension.  The
+		 * first two indexes refer to min values, the
+		 * latter two to max values. */
+		vals[i] = i < 2 ? MIN_ALLOWABLE_ICON_DIMENSION :
+		  MAX_ALLOWABLE_ICON_DIMENSION;
 	      }
 	    }
 
@@ -2713,7 +2713,7 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	    ptmpstyle->flags.use_start_on_desk = 1;
 	    ptmpstyle->flag_mask.use_start_on_desk = 1;
 	    ptmpstyle->change_mask.use_start_on_desk = 1;
-	    /*	RBW - 11/20/1998 - allow for the special case of -1  */
+	    /*  RBW - 11/20/1998 - allow for the special case of -1  */
 	    SSET_START_DESK(*ptmpstyle,
 			    (tmpno[0] > -1) ? tmpno[0] + 1 : tmpno[0]);
 	  }
@@ -3144,7 +3144,7 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
  * If valid, added to the list in a malloced area.
  *
  *
- *		      *** Important note ***
+ *                    *** Important note ***
  *
  * Remember that *all* styles need a flag, flag_mask and change_mask.
  * It is not enough to add the code for new styles in this function.

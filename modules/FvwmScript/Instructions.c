@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "types.h"
@@ -50,7 +50,7 @@ char Command[255]="None";
 time_t TimeCom=0;
 
 /*************************************************************/
-/* Utilities						     */
+/* Utilities                                                 */
 /*************************************************************/
 void setFvwmUserDir(void)
 {
@@ -80,7 +80,7 @@ void setFvwmUserDir(void)
 }
 
 /*************************************************************/
-/* Ensemble de fonction de comparaison de deux entiers	     */
+/* Ensemble de fonction de comparaison de deux entiers       */
 /*************************************************************/
 static int Inf(char *arg1,char *arg2)
 {
@@ -138,7 +138,7 @@ static char *CalcArg (long *TabArg,int *Ix)
   char *TmpStr;
   int i;
 
-  if (TabArg[*Ix]>100000)	/* Cas du codage d'un nombre */
+  if (TabArg[*Ix]>100000)       /* Cas du codage d'un nombre */
   {
     i = (int)TabArg[*Ix] - 200000;
     TmpStr = (char*)safecalloc(1,sizeof(char)*10);
@@ -150,11 +150,11 @@ static char *CalcArg (long *TabArg,int *Ix)
    TmpStr = (char*)safecalloc(1,sizeof(char)*10);
    sprintf(TmpStr,"%d",i);
   }
-  else if (TabArg[*Ix] < -100000)	/* Cas d'un id de fonction */
+  else if (TabArg[*Ix] < -100000)       /* Cas d'un id de fonction */
   {
     TmpStr = TabFunc[TabArg[*Ix]+150000](Ix,TabArg);
   }
-  else				/* Cas d'une variable */
+  else                          /* Cas d'une variable */
   {
     TmpStr=safestrdup(TabVVar[TabArg[*Ix]]);
   }
@@ -171,7 +171,7 @@ static char *FuncGetValue(int *NbArg, long *TabArg)
   char *tmp;
   long Id;
 
-  (*NbArg)++;		/* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;           /* La fonction GetValue n'a qu'un seul argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -186,7 +186,7 @@ static char *FuncGetMinValue(int *NbArg, long *TabArg)
   char *tmp;
   long Id;
 
-  (*NbArg)++;		   /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;              /* La fonction GetValue n'a qu'un seul argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -201,7 +201,7 @@ static char *FuncGetMaxValue(int *NbArg, long *TabArg)
   char *tmp;
   long Id;
 
-  (*NbArg)++;	      /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;         /* La fonction GetValue n'a qu'un seul argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -217,7 +217,7 @@ static char *FuncGetFore(int *NbArg, long *TabArg)
   long Id;
   XColor color;
 
-  (*NbArg)++;		 /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;            /* La fonction GetValue n'a qu'un seul argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -236,7 +236,7 @@ static char *FuncGetBack(int *NbArg, long *TabArg)
   long Id;
   XColor color;
 
-  (*NbArg)++;		  /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;             /* La fonction GetValue n'a qu'un seul argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -255,7 +255,7 @@ static char *FuncGetHili(int *NbArg, long *TabArg)
   long Id;
   XColor color;
 
-  (*NbArg)++;	    /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;       /* La fonction GetValue n'a qu'un seul argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -274,7 +274,7 @@ static char *FuncGetShad(int *NbArg, long *TabArg)
   long Id;
   XColor color;
 
-  (*NbArg)++;	    /* La fonction GetValue n'a qu'un seul argument */
+  (*NbArg)++;       /* La fonction GetValue n'a qu'un seul argument */
   tmp = CalcArg(TabArg,NbArg);
   Id = atoi(tmp);
   free(tmp);
@@ -381,7 +381,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
     str = (char*)safecalloc(sizeof(char),255);
     sscanf(&BufCom[j],"%s",str);
   }
-  else		/* Lecture de la ligne complete */
+  else          /* Lecture de la ligne complete */
   {
     if (i != 2) j++;
     k=j;
@@ -759,7 +759,7 @@ static char *FuncGetPid(int *NbArg,long *TabArg)
 
 /*******  SendMsgAndGet *******/
 #define IN_FIFO_NBR_OF_TRY 200
-#define IN_FIFO_TIMEOUT	   100000 /* usec: 0.1 sec (20 sec) */
+#define IN_FIFO_TIMEOUT    100000 /* usec: 0.1 sec (20 sec) */
 #define OUT_FIFO_NBR_OF_TRY  400
 #define OUT_FIFO_TIMEOUT     50000 /* usec: 0.05 sec (20 sec) */
 static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
@@ -780,7 +780,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
   (*NbArg)++;
   cmd=CalcArg(TabArg,NbArg);
   /* 0: no answer (so no locking) from the receiver  *
-   * 1: real send and get mode			     */
+   * 1: real send and get mode                       */
   (*NbArg)++;
   tmp=CalcArg(TabArg,NbArg);
   lock=atoi(tmp);
@@ -793,7 +793,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
 
   /* unlock the receiver, wait IN_FIFO_TIMEOUT * IN_FIFO_NBR_OF_TRY so that *
    * the receiver has the time to go in its communication loop at startup   *
-   * or if it do an other job than waiting for a cmd			    */
+   * or if it do an other job than waiting for a cmd                        */
   i = 0;
   while(1)
   {
@@ -850,7 +850,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
     return str;
   }
 
-  /* get the answer from the receiver.				    *
+  /* get the answer from the receiver.                              *
    * we wait OUT_FIFO_TIMEOUT * OUT_FIFO_NBR_OF_TRY for this answer */
   out_fifo =
     (char*)safecalloc(strlen(com_name)+strlen(FvwmUserDir)+15,sizeof(char));
@@ -1459,7 +1459,7 @@ static void IfThen (int NbArg,long *TabArg)
   /* Verification de la condition */
   for (j=0; j<NbArg-2; j++)
   {
-    if (TabArg[j] > 100000)	/* Cas du codage d'un nombre */
+    if (TabArg[j] > 100000)     /* Cas du codage d'un nombre */
     {
       i = (int)TabArg[j] - 200000;
       arg[CurrArg] = (char*)safecalloc(1,sizeof(char)*10);
@@ -1470,12 +1470,12 @@ static void IfThen (int NbArg,long *TabArg)
     {
       IdFuncComp = TabArg[j] + 250000;
     }
-    else if (TabArg[j] < -100000)	/* Cas d'un id de fonction */
+    else if (TabArg[j] < -100000)       /* Cas d'un id de fonction */
     {
       arg[CurrArg] = TabFunc[TabArg[j]+150000](&j,TabArg);
       CurrArg++;
     }
-    else				/* Cas d'une variable */
+    else                                /* Cas d'une variable */
     {
       arg[CurrArg] = safestrdup(TabVVar[TabArg[j]]);
       CurrArg++;
@@ -1508,17 +1508,17 @@ static void Loop (int NbArg,long *TabArg)
   /* Calcul des 2 autres arguments */
   for (i=1; i<NbArg-1; i++)
   {
-    if (TabArg[i] > 100000)	/* Cas du codage d'un nombre */
+    if (TabArg[i] > 100000)     /* Cas du codage d'un nombre */
     {
       i = (int)TabArg[i] - 200000;
       arg[CurrArg] = (char*)safecalloc(1,sizeof(char)*10);
       sprintf(arg[CurrArg],"%d",i);
     }
-    else if (TabArg[i] < -100000)	/* Cas d'un id de fonction */
+    else if (TabArg[i] < -100000)       /* Cas d'un id de fonction */
     {
       arg[CurrArg] = TabFunc[TabArg[i]+150000](&i,TabArg);
     }
-    else				/* Cas d'une variable */
+    else                                /* Cas d'une variable */
       arg[CurrArg] = safestrdup(TabVVar[TabArg[i]]);
     CurrArg++;
   }
@@ -1644,7 +1644,7 @@ static void WriteToFile (int NbArg,long *TabArg)
       memmove(&buf[CurrPos+strlen(arg[1])],&buf[CurrPos],strlen(buf)-CurrPos);
       memmove(&buf[CurrPos],arg[1],strlen(arg[1]));
     }
-    else	  /* Remplacement des anciennes commandes */
+    else          /* Remplacement des anciennes commandes */
     {
       CurrPos = CurrPos+strlen(StrBegin);
       CurrPos2 = CurrPos;

@@ -15,12 +15,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -66,26 +66,26 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
 #define MAXHOSTNAME 255
 #define EXTRA 56
 
-int  m4_enable;			/* use m4? */
-int  m4_prefix;			/* Do GNU m4 prefixing (-P) */
-int  m4_prefix_defines;		/* Add "m4_" to the names of the defines */
-char m4_options[BUFSIZ];	/* Command line options to m4 */
-char m4_outfile[BUFSIZ] = "";	/* The output filename for m4 */
-char *m4_prog = "m4";		/* Name of the m4 program */
-int  m4_default_quotes;		/* Use default m4 quotes */
-char *m4_startquote = "`";	   /* Left quote characters for m4 */
-char *m4_endquote = "'";	   /* Right quote characters for m4 */
+int  m4_enable;                 /* use m4? */
+int  m4_prefix;                 /* Do GNU m4 prefixing (-P) */
+int  m4_prefix_defines;         /* Add "m4_" to the names of the defines */
+char m4_options[BUFSIZ];        /* Command line options to m4 */
+char m4_outfile[BUFSIZ] = "";   /* The output filename for m4 */
+char *m4_prog = "m4";           /* Name of the m4 program */
+int  m4_default_quotes;         /* Use default m4 quotes */
+char *m4_startquote = "`";         /* Left quote characters for m4 */
+char *m4_endquote = "'";           /* Right quote characters for m4 */
 
 
 /***********************************************************************
  *
  *  Procedure:
- *	main - start of module
+ *      main - start of module
  *
  ***********************************************************************/
 int main(int argc, char **argv)
 {
-  Display *dpy;			/* which display are we talking to */
+  Display *dpy;                 /* which display are we talking to */
   char *temp, *s;
   char *display_name = NULL;
   char *filename = NULL;
@@ -278,7 +278,7 @@ static char *m4_defs(
   char options[BUFSIZ];
   static char tmp_name[BUFSIZ];
   struct hostent *hostname;
-  char *vc;			/* Visual Class */
+  char *vc;                     /* Visual Class */
   FILE *tmpf;
   struct passwd *pwent;
   int fd;
@@ -357,7 +357,7 @@ static char *m4_defs(
   colon = strchr(server, ':');
   if (colon != NULL) *colon = '\0';
   if ((server[0] == '\0') || (!strcmp(server, "unix")))
-    strcpy(server, client);	/* must be connected to :0 or unix:0 */
+    strcpy(server, client);     /* must be connected to :0 or unix:0 */
 
   /* TWM_TYPE is fvwm, for completeness */
 
@@ -467,7 +467,7 @@ static char *m4_defs(
   *options = '\0';
   if (FHaveShapeExtension)
     strcat(options, "SHAPE ");
-#ifdef	XPM
+#ifdef  XPM
   strcat(options, "XPM ");
 #endif
 
@@ -507,7 +507,7 @@ static char *m4_defs(
 /***********************************************************************
  *
  *  Procedure:
- *	SIGPIPE handler - SIGPIPE means fvwm is dying
+ *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
 void DeadPipe(int nonsense)

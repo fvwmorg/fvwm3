@@ -12,12 +12,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -25,7 +25,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <signal.h>
-#include <stdlib.h>			/* for getenv */
+#include <stdlib.h>                     /* for getenv */
 
 #include <sys/time.h>
 #include <fcntl.h>
@@ -37,38 +37,38 @@
 #define XK_MISCELLANY
 #include <X11/keysymdef.h>
 
-#include "libs/Module.h"		/* for headersize, etc. */
+#include "libs/Module.h"                /* for headersize, etc. */
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
 
-#include <libs/PictureBase.h>		 /* for PictureInitCMap */
+#include <libs/PictureBase.h>            /* for PictureInitCMap */
 #include "libs/Colorset.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 
-#include "FvwmForm.h"			/* common FvwmForm stuff */
+#include "FvwmForm.h"                   /* common FvwmForm stuff */
 
 /* globals that are exported, keep in sync with externs in FvwmForm.h */
-Form cur_form;			 /* current form */
+Form cur_form;                   /* current form */
 
 /* Link list roots */
-Item *root_item_ptr;		 /* pointer to root of item list */
-Line root_line = {&root_line,	 /* ->next */
-		  0,		 /* number of items */
-		  L_CENTER,0,0,	 /* justify, size x/y */
-		  0,		 /* current array size */
-		  0};		 /* items ptr */
-Line *cur_line = &root_line;		/* curr line in parse rtns */
-char preload_yorn='n';		 /* init to non-preload */
-Item *item;				/* current during parse */
-Item *cur_sel, *cur_button;		/* current during parse */
-Item *timer = NULL;			/* timeout tracking */
+Item *root_item_ptr;             /* pointer to root of item list */
+Line root_line = {&root_line,    /* ->next */
+		  0,             /* number of items */
+		  L_CENTER,0,0,  /* justify, size x/y */
+		  0,             /* current array size */
+		  0};            /* items ptr */
+Line *cur_line = &root_line;            /* curr line in parse rtns */
+char preload_yorn='n';           /* init to non-preload */
+Item *item;                             /* current during parse */
+Item *cur_sel, *cur_button;             /* current during parse */
+Item *timer = NULL;                     /* timeout tracking */
 Display *dpy;
-int fd_x;		   /* fd for X connection */
+int fd_x;                  /* fd for X connection */
 Window root, ref;
 int screen;
 char *color_names[4];
-char bg_state = 'd';			/* in default state */
+char bg_state = 'd';                    /* in default state */
   /* d = default state */
   /* s = set by command (must be in "d" state for first "back" cmd to set it) */
   /* u = used (color allocated, too late to accept "back") */
@@ -285,12 +285,12 @@ static struct CommandTable def_table[] =
    all input. */
 static void FormVarsCheck(char **p)
 {
-  if (CF.have_env_var) {		/* if cmd line vars */
+  if (CF.have_env_var) {                /* if cmd line vars */
     if (strlen(*p) + 200 > CF.expand_buffer_size) { /* fast and loose */
       CF.expand_buffer_size = strlen(*p) + 2000; /* new size */
-      if (CF.expand_buffer) {		/* already have one */
+      if (CF.expand_buffer) {           /* already have one */
 	CF.expand_buffer = saferealloc(CF.expand_buffer, CF.expand_buffer_size);
-      } else {				/* first time */
+      } else {                          /* first time */
 	CF.expand_buffer = safemalloc(CF.expand_buffer_size);
       }
     }
@@ -304,21 +304,21 @@ static void ParseDefaults(char *buf)
 {
   char *p;
   struct CommandTable *e;
-  if (buf[strlen(buf)-1] == '\n') {	/* if line ends with newline */
-    buf[strlen(buf)-1] = '\0';	/* strip off \n */
+  if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
+    buf[strlen(buf)-1] = '\0';  /* strip off \n */
   }
   /* Accept commands beginning with "*FvwmFormDefault".
      This is to make sure defaults are read first.
      Note the hack w. bg_state. */
   if (strncasecmp(buf, "*FvwmFormDefault", 16) == 0) {
     p=buf+16;
-    FormVarsCheck(&p);			 /* do var substitution if called for */
+    FormVarsCheck(&p);                   /* do var substitution if called for */
     e = FindToken(p,def_table,struct CommandTable);/* find cmd in table */
-    if (e != 0) {			/* if its valid */
-      p=p+strlen(e->name);		/* skip over name */
-      while (isspace((unsigned char)*p)) p++;	       /* skip whitespace */
-      e->function(p);			/* call cmd processor */
-      bg_state = 'd';			/* stay in default state */
+    if (e != 0) {                       /* if its valid */
+      p=p+strlen(e->name);              /* skip over name */
+      while (isspace((unsigned char)*p)) p++;          /* skip whitespace */
+      e->function(p);                   /* call cmd processor */
+      bg_state = 'd';                   /* stay in default state */
     }
   }
 } /* end function */
@@ -328,8 +328,8 @@ static void ParseConfigLine(char *buf)
 {
   char *p;
   struct CommandTable *e;
-  if (buf[strlen(buf)-1] == '\n') {	/* if line ends with newline */
-    buf[strlen(buf)-1] = '\0';	/* strip off \n */
+  if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
+    buf[strlen(buf)-1] = '\0';  /* strip off \n */
   }
 
   if (strncasecmp(buf, XINERAMA_CONFIG_STRING,
@@ -345,21 +345,21 @@ static void ParseConfigLine(char *buf)
   if (strncasecmp(buf, MyName, MyNameLen) != 0) {/* If its not for me */
     return;
   } /* Now I know its for me. */
-  p = buf+MyNameLen;		      /* jump to end of my name */
+  p = buf+MyNameLen;                  /* jump to end of my name */
   /* at this point we have recognized "*FvwmForm" */
   FormVarsCheck(&p);
   e = FindToken(p,ct_table,struct CommandTable);/* find cmd in table */
-  if (e == 0) {			      /* if no match */
+  if (e == 0) {                       /* if no match */
     fprintf(stderr,"%s: unknown command: %s\n",MyName+1,buf);
     return;
   }
 
-  p=p+strlen(e->name);			/* skip over name */
-  while (isspace((unsigned char)*p)) p++;	       /* skip whitespace */
+  p=p+strlen(e->name);                  /* skip over name */
+  while (isspace((unsigned char)*p)) p++;              /* skip whitespace */
 
-  FormVarsCheck(&p);			 /* do var substitution if called for */
+  FormVarsCheck(&p);                     /* do var substitution if called for */
 
-  e->function(p);			/* call cmd processor */
+  e->function(p);                       /* call cmd processor */
   return;
 } /* end function */
 
@@ -377,7 +377,7 @@ static void ExpandArray(Line *this_line)
 /* Function to add an item to the current line */
 static void AddToLine(Item *newItem)
 {
-  ExpandArray(cur_line);		/* expand item array if needed */
+  ExpandArray(cur_line);                /* expand item array if needed */
   cur_line->items[cur_line->n++] = newItem; /* add to lines item array */
   cur_line->size_x += newItem->header.size_x; /* incr lines width */
   if (cur_line->size_y < newItem->header.size_y) { /* new item bigger */
@@ -399,7 +399,7 @@ static void ct_ActivateOnPress(char *cp)
     return;
   }
   for (i=0,j=0;i<strlen(cp);i++) {
-    if (cp[i] != ' ') {			  /* remove any spaces */
+    if (cp[i] != ' ') {                   /* remove any spaces */
       option[j++]=tolower(cp[i]);
     }
   }
@@ -495,7 +495,7 @@ static void ct_Back(char *cp)
     if (screen_background_color)
       free(screen_background_color);
     screen_background_color = safestrdup(color_names[c_bg]);
-    bg_state = 's';			/* indicate set by command */
+    bg_state = 's';                     /* indicate set by command */
   }
   colorset = -1;
   myfprintf((stderr, "ColorBack: %s, screen background %s, bg_state %c\n",
@@ -619,8 +619,8 @@ static void ct_Line(char *cp)
   /* malloc new line */
   cur_line->next = (struct _line *)safemalloc(sizeof(struct _line));
   memset(cur_line->next, 0, sizeof(struct _line));
-  cur_line = cur_line->next;		/* new current line */
-  cur_line->next = &root_line;		/* new next ptr, (actually root) */
+  cur_line = cur_line->next;            /* new current line */
+  cur_line->next = &root_line;          /* new next ptr, (actually root) */
 
   if (strncasecmp(cp, "left", 4) == 0)
     cur_line->justify = L_LEFT;
@@ -641,13 +641,13 @@ static void ct_Line(char *cp)
 static void ct_Message(char *cp)
 {
   AddItem();
-  bg_state = 'u';			/* indicate b/g color now used. */
+  bg_state = 'u';                       /* indicate b/g color now used. */
   item->type = I_TEXT;
   /* Item now added to list of items, now it needs a pointer
      to the correct DrawTable. */
   AssignDrawTable(item);
-  item->header.name = "FvwmMessage";	/* No purpose to this? dje */
-  item->text.value = safemalloc(80);	/* point at last error recvd */
+  item->header.name = "FvwmMessage";    /* No purpose to this? dje */
+  item->text.value = safemalloc(80);    /* point at last error recvd */
   item->text.n = 80;
   strcpy(item->text.value,"A mix of chars. MM20"); /* 20 mixed width chars */
   item->header.size_x = (FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
@@ -655,11 +655,11 @@ static void ct_Message(char *cp)
 					  item->text.n/4) * 4) + 2 * TEXT_SPC;
   item->header.size_y = item->header.dt_ptr->dt_Ffont->height
     + CF.padVText;
-  memset(item->text.value,' ',80);	/* Clear it out */
+  memset(item->text.value,' ',80);      /* Clear it out */
   myfprintf((stderr, "Message area [%d, %d]\n",
 	     item->header.size_x, item->header.size_y));
   AddToLine(item);
-  CF.last_error = item;			/* save location of message item */
+  CF.last_error = item;                 /* save location of message item */
 }
 
 /* allocate colors and fonts needed */
@@ -668,10 +668,10 @@ static void CheckAlloc(Item *this_item,DrawTable *dt)
   XGCValues xgcv;
   int xgcv_mask = GCForeground;
 
-  if (dt->dt_used == 2) {		/* fonts colors shadows */
+  if (dt->dt_used == 2) {               /* fonts colors shadows */
     return;
   }
-  if (dt->dt_used == 0) {		/* if nothing allocated */
+  if (dt->dt_used == 0) {               /* if nothing allocated */
     dt->dt_colors[c_fg] = (colorset < 0)
       ? GetColor(dt->dt_color_names[c_fg])
       : Colorset[colorset].fg;
@@ -689,7 +689,7 @@ static void CheckAlloc(Item *this_item,DrawTable *dt)
     xgcv_mask |= GCBackground;
     dt->dt_GC = fvwmlib_XCreateGC(dpy, CF.frame, xgcv_mask, &xgcv);
 
-    dt->dt_used = 1;			/* fore/back font allocated */
+    dt->dt_used = 1;                    /* fore/back font allocated */
   }
   if (this_item->type == I_TEXT
       || this_item->type == I_TIMEOUT) {      /* If no shadows needed */
@@ -721,7 +721,7 @@ static void CheckAlloc(Item *this_item,DrawTable *dt)
       ? GetHilite(dt->dt_colors[c_item_bg])
       : Colorset[itemcolorset].hilite;
   }
-  dt->dt_used = 2;		       /* fully allocated */
+  dt->dt_used = 2;                     /* fully allocated */
 }
 
 
@@ -734,7 +734,7 @@ static void AssignDrawTable(Item *adt_item)
   char *match_item_fore;
   char *match_item_back;
   char *match_font;
-  DrawTable *new_dt;			/* pointer to a new one */
+  DrawTable *new_dt;                    /* pointer to a new one */
 
   match_text_fore = color_names[c_fg];
   match_text_back = color_names[c_bg];
@@ -750,9 +750,9 @@ static void AssignDrawTable(Item *adt_item)
     match_font = font_names[f_button]; /* choices same as buttons */
   }
   last_dt = 0;
-  for (find_dt = CF.roots_dt;		   /* start at front */
-       find_dt != 0;			/* until end */
-       find_dt = find_dt->dt_next) {	/* follow next pointer */
+  for (find_dt = CF.roots_dt;              /* start at front */
+       find_dt != 0;                    /* until end */
+       find_dt = find_dt->dt_next) {    /* follow next pointer */
     last_dt = find_dt;
     if ((strcasecmp(match_text_fore,find_dt->dt_color_names[c_fg]) == 0) &&
 	(strcasecmp(match_text_back,find_dt->dt_color_names[c_bg]) == 0) &&
@@ -760,7 +760,7 @@ static void AssignDrawTable(Item *adt_item)
 	(strcasecmp(match_item_back,find_dt->dt_color_names[c_item_bg]) == 0) &&
 	(strcasecmp(match_font,find_dt->dt_font_name) == 0)) { /* Match */
       adt_item->header.dt_ptr = find_dt;       /* point item to drawtable */
-      return;				/* done */
+      return;                           /* done */
     } /* end match */
   } /* end all drawtables checked, no match */
 
@@ -768,19 +768,19 @@ static void AssignDrawTable(Item *adt_item)
   /* get one */
   new_dt = (struct _drawtable *)safemalloc(sizeof(struct _drawtable));
   memset(new_dt, 0, sizeof(struct _drawtable));
-  new_dt->dt_next = 0;			/* new end of list */
-  if (CF.roots_dt == 0) {		   /* If first entry in list */
-    CF.roots_dt = new_dt;		   /* set root pointer */
-  } else {				/* not first entry */
-    last_dt->dt_next = new_dt;		/* link old to new */
+  new_dt->dt_next = 0;                  /* new end of list */
+  if (CF.roots_dt == 0) {                  /* If first entry in list */
+    CF.roots_dt = new_dt;                  /* set root pointer */
+  } else {                              /* not first entry */
+    last_dt->dt_next = new_dt;          /* link old to new */
   }
 
   new_dt->dt_font_name = safestrdup(match_font);
-  new_dt->dt_color_names[c_fg]	    = safestrdup(match_text_fore);
-  new_dt->dt_color_names[c_bg]	    = safestrdup(match_text_back);
+  new_dt->dt_color_names[c_fg]      = safestrdup(match_text_fore);
+  new_dt->dt_color_names[c_bg]      = safestrdup(match_text_back);
   new_dt->dt_color_names[c_item_fg] = safestrdup(match_item_fore);
   new_dt->dt_color_names[c_item_bg] = safestrdup(match_item_back);
-  new_dt->dt_used = 0;			/* show nothing allocated */
+  new_dt->dt_used = 0;                  /* show nothing allocated */
   new_dt->dt_Ffont = FlocaleLoadFont(dpy, new_dt->dt_font_name, MyName+1);
   FlocaleAllocateWinString(&new_dt->dt_Fstr);
 
@@ -789,19 +789,19 @@ static void AssignDrawTable(Item *adt_item)
 	     new_dt->dt_color_names[c_item_fg],
 	     new_dt->dt_color_names[c_item_bg],
 	     new_dt->dt_font_name));
-  adt_item->header.dt_ptr = new_dt;	       /* point item to new drawtable */
+  adt_item->header.dt_ptr = new_dt;            /* point item to new drawtable */
 }
 
 /* input/output is global "item" - currently allocated last item */
 static void AddItem()
 {
   Item *save_item;
-  save_item = (Item *)item;		/* save current item */
+  save_item = (Item *)item;             /* save current item */
   item = (Item *)safecalloc(sizeof(Item),1); /* get a new item */
-  if (save_item == 0) {			/* if first item */
-    root_item_ptr = item;		/* save root item */
-  } else {				/* else not first item */
-    save_item->header.next = item;	/* link prior to new */
+  if (save_item == 0) {                 /* if first item */
+    root_item_ptr = item;               /* save root item */
+  } else {                              /* else not first item */
+    save_item->header.next = item;      /* link prior to new */
   }
 }
 
@@ -809,7 +809,7 @@ static void ct_Text(char *cp)
 {
   /* syntax: *FFText "<text>" */
   AddItem();
-  bg_state = 'u';			/* indicate b/g color now used. */
+  bg_state = 'u';                       /* indicate b/g color now used. */
   item->type = I_TEXT;
   /* Item now added to list of items, now it needs a pointer
      to the correct DrawTable. */
@@ -852,7 +852,7 @@ static void ct_Timeout(char *cp)
     return;
   }
   AddItem();
-  bg_state = 'u';			/* indicate b/g color now used. */
+  bg_state = 'u';                       /* indicate b/g color now used. */
   item->type = I_TIMEOUT;
   /* Item now added to list of items, now it needs a pointer
      to the correct DrawTable. */
@@ -889,7 +889,7 @@ static void ct_Timeout(char *cp)
     tmpbuf = safestrdup(cp);
     tmpcp = tmpbuf;
     while (!isspace((unsigned char)*tmpcp)) tmpcp++;
-    *tmpcp = '\0';			  /* cutoff command at first word */
+    *tmpcp = '\0';                        /* cutoff command at first word */
     item->timeout.command = safestrdup(tmpbuf);
     free(tmpbuf);
     while (!isspace((unsigned char)*cp)) cp++; /* move past command again */
@@ -937,7 +937,7 @@ static void ct_Input(char *cp)
   item->input.size = atoi(cp);
   while (!isspace((unsigned char)*cp)) cp++;
   while (isspace((unsigned char)*cp)) cp++;
-  item->input.init_value = safestrdup("");	    /* init */
+  item->input.init_value = safestrdup("");          /* init */
   if (*cp == '\"') {
     free(item->input.init_value);
     item->input.init_value = CopyQuotedString(++cp);
@@ -947,7 +947,7 @@ static void ct_Input(char *cp)
     item->input.blanks[j] = ' ';
   item->input.buf = strlen(item->input.init_value) + 1;
   item->input.value = (char *)safemalloc(item->input.buf);
-  item->input.value[0] = 0;		/* avoid reading unitialized data */
+  item->input.value[0] = 0;             /* avoid reading unitialized data */
 
   item->header.size_x = item->header.dt_ptr->dt_Ffont->max_char_width
     * item->input.size + 2 * TEXT_SPC + 2 * BOX_SPC;
@@ -955,17 +955,17 @@ static void ct_Input(char *cp)
     + 3 * TEXT_SPC + 2 * BOX_SPC;
   myfprintf((stderr,"Input size_y is %d\n",item->header.size_y));
 
-  if (CF.cur_input == 0) {		   /* first input field */
-    item->input.next_input = item;	/* ring, next field is first field */
-    item->input.prev_input = item;	/* ring, prev field is first field */
-    CF.first_input = item;		   /* save loc of first item */
-  } else {				/* not first field */
+  if (CF.cur_input == 0) {                 /* first input field */
+    item->input.next_input = item;      /* ring, next field is first field */
+    item->input.prev_input = item;      /* ring, prev field is first field */
+    CF.first_input = item;                 /* save loc of first item */
+  } else {                              /* not first field */
     CF.cur_input->input.next_input = item; /* old next ptr point to this item */
     item->input.prev_input = CF.cur_input; /* current items prev is old item */
     item->input.next_input = CF.first_input; /* next is first item */
     CF.first_input->input.prev_input = item; /* prev in first is this item */
   }
-  CF.cur_input = item;			   /* new current input item */
+  CF.cur_input = item;                     /* new current input item */
   myfprintf((stderr, "Input, %s, [%d], \"%s\"\n", item->header.name,
 	  item->input.size, item->input.init_value));
   AddToLine(item);
@@ -974,7 +974,7 @@ static void ct_Read(char *cp)
 {
   /* syntax: *FFRead 0 | 1 */
   myfprintf((stderr,"Got read command, char is %c\n",(int)*cp));
-  endDefaultsRead = *cp;		/* copy whatever it is */
+  endDefaultsRead = *cp;                /* copy whatever it is */
 }
 /* read and save vars from a file for later use in form
    painting.
@@ -992,7 +992,7 @@ static void ct_UseData(char *cp)
   CF.leading = CopySolidString(cp);
   if (*CF.leading == 0) {
     fprintf(stderr,"UseData command missing second arg, Leading\n");
-    CF.file_to_read = 0;		   /* stop read */
+    CF.file_to_read = 0;                   /* stop read */
     return;
   }
   /* Cant do the actual reading of the data file here,
@@ -1001,10 +1001,10 @@ static void ct_UseData(char *cp)
 static void ReadFormData()
 {
   int leading_len;
-  char *line_buf;			/* ptr to curr config line */
+  char *line_buf;                       /* ptr to curr config line */
   char cmd_buffer[200];
   sprintf(cmd_buffer,"read %s Quiet",CF.file_to_read);
-  SendText(Channel,cmd_buffer,0);	/* read data */
+  SendText(Channel,cmd_buffer,0);       /* read data */
   leading_len = strlen(CF.leading);
   InitGetConfigLine(Channel, CF.leading); /* ask for certain lines */
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* while there is some */
@@ -1015,7 +1015,7 @@ static void ReadFormData()
       PutDataInForm(line_buf+leading_len); /* pass arg, space, value */
     } /* end match on arg 2, "leading" */
   } /* end while there is config data */
-  free(CF.file_to_read);		/* dont need it anymore */
+  free(CF.file_to_read);                /* dont need it anymore */
   free(CF.leading);
   CF.file_to_read = 0;
   CF.leading = 0;
@@ -1033,7 +1033,7 @@ static void PutDataInForm(char *cp)
   Item *item;
   Line *line;
 
-  var_name = CopySolidString(cp);	/* var */
+  var_name = CopySolidString(cp);       /* var */
   if (*var_name == 0) {
     return;
   }
@@ -1053,32 +1053,32 @@ static void PutDataInForm(char *cp)
 	  free(item->input.value);
 	item->input.buf = var_len+1;
 	item->input.value = safemalloc(item->input.buf);
-	strcpy(item->input.value,cp);	  /* new value in field */
-	free(var_name);			/* goto's have their uses */
+	strcpy(item->input.value,cp);     /* new value in field */
+	free(var_name);                 /* goto's have their uses */
 	return;
       }
-      item=item->input.next_input;	  /* next input field */
-    } while (item != CF.cur_input);	  /* while not end of ring */
+      item=item->input.next_input;        /* next input field */
+    } while (item != CF.cur_input);       /* while not end of ring */
   }
   /* You have a matching line, but it doesn't match an input
      field.  What to do?  I know, try a choice. */
-  line = &root_line;			 /* start at first line */
-  do {					/* for all lines */
-    for (i = 0; i < line->n; i++) {	/* all items on line */
+  line = &root_line;                     /* start at first line */
+  do {                                  /* for all lines */
+    for (i = 0; i < line->n; i++) {     /* all items on line */
       item = line->items[i];
-      if (item->type == I_CHOICE) {	/* choice is good */
+      if (item->type == I_CHOICE) {     /* choice is good */
 	if (strcasecmp(var_name,item->header.name) == 0) { /* match */
 	  item->choice.init_on = 0;
 	  if (strncasecmp(cp, "on", 2) == 0) {
-	    item->choice.init_on = 1;	/* set default state */
-	    free(var_name);		/* goto's have their uses */
+	    item->choice.init_on = 1;   /* set default state */
+	    free(var_name);             /* goto's have their uses */
 	    return;
 	  }
 	}
       }
     } /* end all items in line */
-    line = line->next;			/* go to next line */
-  } while (line != &root_line);		/* do all lines */
+    line = line->next;                  /* go to next line */
+  } while (line != &root_line);         /* do all lines */
   /* You have a matching line, it didn't match an input field,
      and it didn't match a choice.  I've got it, it may match a
      selection, in which case we should use the value to
@@ -1103,13 +1103,13 @@ static void PutDataInForm(char *cp)
       } /* end match */
     } /* end selection */
   } /* end all items */
-  free(var_name);			/* not needed now */
+  free(var_name);                       /* not needed now */
 }
 static void ct_Selection(char *cp)
 {
   /* syntax: *FFSelection <name> single | multiple */
   AddItem();
-  cur_sel = item;			/* save ptr as cur_sel */
+  cur_sel = item;                       /* save ptr as cur_sel */
   cur_sel->type = I_SELECT;
   cur_sel->header.name = CopySolidString(cp);
   cp += strlen(cur_sel->header.name);
@@ -1124,12 +1124,12 @@ static void ct_Choice(char *cp)
   /* syntax: *FFChoice <name> <value> [on | _off_] ["<text>"] */
   /* This next edit is a liitle weak, the selection should be right
      before the choice. At least a core dump is avoided. */
-  if (cur_sel == 0) {			/* need selection for a choice */
+  if (cur_sel == 0) {                   /* need selection for a choice */
     fprintf(stderr,"%s: Need selection for choice %s\n",
 	    MyName+1, cp);
     return;
   }
-  bg_state = 'u';			/* indicate b/g color now used. */
+  bg_state = 'u';                       /* indicate b/g color now used. */
   AddItem();
   item->type = I_CHOICE;
   AssignDrawTable(item);
@@ -1153,7 +1153,7 @@ static void ct_Choice(char *cp)
   item->choice.sel = cur_sel;
 
   if (cur_sel->selection.choices_array_count
-      <= cur_sel->selection.n) {	   /* no room */
+      <= cur_sel->selection.n) {           /* no room */
     cur_sel->selection.choices_array_count += CHOICES_PER_SEL_EXPANSION;
     cur_sel->selection.choices =
       (Item **)saferealloc((void *)cur_sel->selection.choices,
@@ -1252,7 +1252,7 @@ static void InitConstants () {
 /* read the configuration file */
 static void ReadDefaults ()
 {
-  char *line_buf;			/* ptr to curr config line */
+  char *line_buf;                       /* ptr to curr config line */
 
   /* default button is for initial functions */
   cur_button = &CF.def_button;
@@ -1273,9 +1273,9 @@ static void ReadDefaults ()
     */
   InitGetConfigLine(Channel,"*FvwmFormDefault");
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */
-    ParseDefaults(line_buf);		 /* process default config lines 1st */
+    ParseDefaults(line_buf);             /* process default config lines 1st */
   }
-  if (endDefaultsRead == 'y') {		/* defaults read already */
+  if (endDefaultsRead == 'y') {         /* defaults read already */
     myfprintf((stderr,"Defaults read, no need to read file.\n"));
     return;
   } /* end defaults read already */
@@ -1284,17 +1284,17 @@ static void ReadDefaults ()
 
   InitGetConfigLine(Channel,"*FvwmFormDefault");
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */
-    ParseDefaults(line_buf);		 /* process default config lines 1st */
+    ParseDefaults(line_buf);             /* process default config lines 1st */
   }
 } /* done */
 
 static void ReadConfig ()
 {
-  char *line_buf;			/* ptr to curr config line */
+  char *line_buf;                       /* ptr to curr config line */
 
   InitGetConfigLine(Channel,MyName);
   while (GetConfigLine(Channel,&line_buf),line_buf) { /* get config from fvwm */
-    ParseConfigLine(line_buf);		/* process config lines */
+    ParseConfigLine(line_buf);          /* process config lines */
   }
 } /* done */
 
@@ -1302,16 +1302,16 @@ static void ReadConfig ()
 static void MassageConfig()
 {
   int i, extra;
-  Line *line;				/* for scanning form lines */
+  Line *line;                           /* for scanning form lines */
 
-  if (CF.file_to_read) {		/* if theres a data file to read */
-    ReadFormData();			/* go read it */
+  if (CF.file_to_read) {                /* if theres a data file to read */
+    ReadFormData();                     /* go read it */
   }
   /* get the geometry right */
   CF.max_width = 0;
   CF.total_height = ITEM_VSPC;
-  line = &root_line;			 /* start at first line */
-  do {					/* for all lines */
+  line = &root_line;                     /* start at first line */
+  do {                                  /* for all lines */
     for (i = 0; i < line->n; i++) {
       line->items[i]->header.pos_y = CF.total_height;
       if (line->items[i]->header.size_y < line->size_y)
@@ -1322,9 +1322,9 @@ static void MassageConfig()
     line->size_x += (line->n + 1) * ITEM_HSPC;
     if (line->size_x > CF.max_width)
       CF.max_width = line->size_x;
-    line = line->next;			/* go to next line */
-  } while (line != &root_line);		/* do all lines */
-  do {					/* note, already back at root_line */
+    line = line->next;                  /* go to next line */
+  } while (line != &root_line);         /* do all lines */
+  do {                                  /* note, already back at root_line */
     int width;
     switch (line->justify) {
     case L_LEFT:
@@ -1387,8 +1387,8 @@ static void MassageConfig()
       }
       break;
     }
-    line = line->next;			/* go to next line */
-  } while (line != &root_line);		 /* do all lines */
+    line = line->next;                  /* go to next line */
+  } while (line != &root_line);          /* do all lines */
 }
 
 /* reset all the values (also done on first display) */
@@ -1414,20 +1414,20 @@ static void Restart ()
 	  item->input.value_history_count = 1; /* next insertion point */
 	  myfprintf((stderr,"Initial save of %s in slot 0\n",
 		     item->input.value_history_ptr[0]));
-	} else {			/* we have a history */
+	} else {                        /* we have a history */
 	  int prior;
 	  prior = item->input.value_history_count - 1;
 	  if (prior < 0) {
 	    for (prior = VH_SIZE - 1;
 		 CF.cur_input->input.value_history_ptr[prior] == 0;
-		 --prior);		/* find last used slot */
+		 --prior);              /* find last used slot */
 	  }
 	  myfprintf((stderr,"Prior is %d, compare %s to %s\n",
 		     prior, item->input.value,
 		     item->input.value_history_ptr[prior]));
 
 	  if ( strcmp(item->input.value, item->input.value_history_ptr[prior])
-	       != 0) {			/* different value */
+	       != 0) {                  /* different value */
 	    if (item->input.value_history_ptr[item->input.value_history_count]) {
 	      free(item->input.value_history_ptr[item->input.value_history_count]);
 	      myfprintf((stderr,"Freeing old item in slot %d\n",
@@ -1484,7 +1484,7 @@ void RedrawFrame ()
   }
 
   for (item = root_item_ptr; item != 0;
-       item = item->header.next) {	/* all items */
+       item = item->header.next) {      /* all items */
     switch (item->type) {
     case I_TEXT:
       RedrawText(item);
@@ -1494,11 +1494,11 @@ void RedrawFrame ()
       break;
     case I_CHOICE:
       item->header.dt_ptr->dt_Fstr->win = CF.frame;
-      item->header.dt_ptr->dt_Fstr->gc	= item->header.dt_ptr->dt_GC;
+      item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_GC;
       item->header.dt_ptr->dt_Fstr->str = item->choice.text;
-      item->header.dt_ptr->dt_Fstr->x	= item->header.pos_x
+      item->header.dt_ptr->dt_Fstr->x   = item->header.pos_x
 	+ TEXT_SPC + item->header.size_y;
-      item->header.dt_ptr->dt_Fstr->y	= item->header.pos_y + TEXT_SPC
+      item->header.dt_ptr->dt_Fstr->y   = item->header.pos_y + TEXT_SPC
 	+ item->header.dt_ptr->dt_Ffont->ascent;
       item->header.dt_ptr->dt_Fstr->len = item->choice.n;
       item->header.dt_ptr->dt_Fstr->flags.has_colorset = False;
@@ -1683,7 +1683,7 @@ void RedrawItem (Item *item, int click)
     {
       item->header.dt_ptr->dt_Fstr->str = item->input.blanks;
 #ifdef ONLY_FIXED_FONT_FOR_INPUT
-      item->header.dt_ptr->dt_Fstr->x	= BOX_SPC + TEXT_SPC
+      item->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC
 		  + item->header.dt_ptr->dt_Ffont->max_char_width
 		  * len;
 #else
@@ -1691,7 +1691,7 @@ void RedrawItem (Item *item, int click)
 	      FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
 			       item->input.blanks, len);
 #endif
-      item->header.dt_ptr->dt_Fstr->y	= BOX_SPC + TEXT_SPC
+      item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
 		  + item->header.dt_ptr->dt_Ffont->ascent;
       item->header.dt_ptr->dt_Fstr->len = item->input.size - len;
       FlocaleDrawString(dpy,
@@ -1889,15 +1889,15 @@ void DoCommand (Item *cmd)
     myfprintf((stderr, "Final command[%d]: [%s]\n", k, parsed_command));
 
     /* send command */
-    if ( parsed_command[0] == '!') {	/* If command starts with ! */
-      system(parsed_command+1);		/* Need synchronous execution */
+    if ( parsed_command[0] == '!') {    /* If command starts with ! */
+      system(parsed_command+1);         /* Need synchronous execution */
     } else {
       SendText(Channel,parsed_command, ref);
     }
   }
 
   /* post-command */
-  if (CF.last_error) {			/* if form has last_error field */
+  if (CF.last_error) {                  /* if form has last_error field */
     memset(CF.last_error->text.value, ' ', CF.last_error->text.n); /* clear */
     /* To do this more elegantly, the window resize logic should recalculate
        size_x for the Message as the window resizes.  Right now, just clear
@@ -1922,7 +1922,7 @@ void DoCommand (Item *cmd)
   else if (cmd->button.key == IB_RESTART) {
     Restart();
     for (item = root_item_ptr; item != 0;
-	 item = item->header.next) {	/* all items */
+	 item = item->header.next) {    /* all items */
       if (item->type == I_INPUT) {
 	XClearWindow(dpy, item->header.win);
 	RedrawItem(item, 0);
@@ -2051,7 +2051,7 @@ static void OpenWindows ()
   XSetWMNormalHints(dpy, CF.frame, &sh);
 
   for (item = root_item_ptr; item != 0;
-       item = item->header.next) {	/* all items */
+       item = item->header.next) {      /* all items */
     switch (item->type) {
     case I_INPUT:
       myfprintf((stderr,"Checking alloc during OpenWindow on input\n"));
@@ -2124,7 +2124,7 @@ static void OpenWindows ()
 			&Colorset[(colorset)], Pdepth,
 			root_item_ptr->header.dt_ptr->dt_GC, True);
   }
-  if (preload_yorn != 'y') {		/* if not a preload */
+  if (preload_yorn != 'y') {            /* if not a preload */
     XMapRaised(dpy, CF.frame);
     XMapSubwindows(dpy, CF.frame);
     if (CF.warp_pointer) {
@@ -2151,7 +2151,7 @@ static void ReadFvwm ()
 static void process_message(unsigned long type, unsigned long *body)
 {
   switch (type) {
-  case M_CONFIG_INFO:			/* any module config command */
+  case M_CONFIG_INFO:                   /* any module config command */
     myfprintf((stderr,"process_message: Got command: %s\n", (char *)&body[3]));
     ParseActiveMessage((char *)&body[3]);
     break;
@@ -2168,7 +2168,7 @@ static void process_message(unsigned long type, unsigned long *body)
     break;
   case M_ERROR:
   case M_STRING:
-    if (CF.last_error) {		/* if form has message area */
+    if (CF.last_error) {                /* if form has message area */
       /* ignore form size, its OK to write outside the window boundary */
       int msg_len;
       char *msg_ptr;
@@ -2214,8 +2214,8 @@ static void ParseActiveMessage(char *buf)
 {
   char *p;
   struct CommandTable *e;
-  if (buf[strlen(buf)-1] == '\n') {	/* if line ends with newline */
-    buf[strlen(buf)-1] = '\0';	/* strip off \n */
+  if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
+    buf[strlen(buf)-1] = '\0';  /* strip off \n */
   }
 
   if (strncasecmp(buf, "Colorset", 8) == 0) {
@@ -2224,7 +2224,7 @@ static void ParseActiveMessage(char *buf)
     if(n == colorset || n == itemcolorset) {
       for (item = root_item_ptr; item != 0;
 	   item = item->header.next) {
-	if (item->header.dt_ptr) {	/* if item has a drawtable */
+	if (item->header.dt_ptr) {      /* if item has a drawtable */
 	  item->header.dt_ptr->dt_used = 0;
 	  if(item->header.dt_ptr->dt_GC) {
 	    XFreeGC(dpy,item->header.dt_ptr->dt_GC);
@@ -2261,21 +2261,21 @@ static void ParseActiveMessage(char *buf)
   if (strncasecmp(buf, MyName, MyNameLen) != 0) {/* If its not for me */
     return;
   } /* Now I know its for me. */
-  p = buf+MyNameLen;		      /* jump to end of my name */
+  p = buf+MyNameLen;                  /* jump to end of my name */
   /* at this point we have recognized "*FvwmForm" */
   e = FindToken(p,am_table,struct CommandTable);/* find cmd in table */
-  if (e == 0) {			      /* if no match */
+  if (e == 0) {                       /* if no match */
     /* this may be a configuration command of another same form */
     if (FindToken(p, ct_table, struct CommandTable) == 0)
       fprintf(stderr,"%s: Active command unknown: %s\n",MyName+1,buf);
-    return;				/* ignore it */
+    return;                             /* ignore it */
   }
 
-  p=p+strlen(e->name);			/* skip over name */
-  while (isspace((unsigned char)*p)) p++;	       /* skip whitespace */
+  p=p+strlen(e->name);                  /* skip over name */
+  while (isspace((unsigned char)*p)) p++;              /* skip whitespace */
 
   FormVarsCheck(&p);
-  e->function(p);			/* call cmd processor */
+  e->function(p);                       /* call cmd processor */
   return;
 } /* end function */
 
@@ -2298,7 +2298,7 @@ static void am_Stop(char *cp)
 {
   /* syntax: *FFStop */
   myfprintf((stderr,"Got stop command.\n"));
-  exit (0);				/* why bother, just exit. */
+  exit (0);                             /* why bother, just exit. */
 }
 
 /* main event loop */
@@ -2351,17 +2351,17 @@ TimerHandler(int sig)
     myfprintf((stderr, "Final command: %s\n", parsed_command));
 
     /* send command */
-    if ( parsed_command[0] == '!') {	/* If command starts with ! */
-      system(parsed_command+1);		/* Need synchronous execution */
+    if ( parsed_command[0] == '!') {    /* If command starts with ! */
+      system(parsed_command+1);         /* Need synchronous execution */
     } else {
       SendText(Channel,parsed_command, ref);
     }
 
     /* post-command */
-    if (CF.last_error) {		  /* if form has last_error field */
+    if (CF.last_error) {                  /* if form has last_error field */
       memset(CF.last_error->text.value, ' ', CF.last_error->text.n); /* clear */
       /* To do this more elegantly, the window resize logic should recalculate
-	 size_x for the Message as the window resizes.	Right now, just clear
+	 size_x for the Message as the window resizes.  Right now, just clear
 	 a nice wide area. dje */
       XClearArea(dpy,CF.frame,
 		 CF.last_error->header.pos_x,
@@ -2402,21 +2402,21 @@ int main (int argc, char **argv)
 
   /* From FvwmAnimate start */
   /* Save our program  name - for error events */
-  if ((s=strrchr(argv[0], '/')))	/* strip path */
+  if ((s=strrchr(argv[0], '/')))        /* strip path */
     s++;
-  else				/* no slash */
+  else                          /* no slash */
     s = argv[0];
-  if(argc>=7)			      /* if override name */
-    s = argv[6];		      /* use arg as name */
-  MyNameLen=strlen(s)+1;		/* account for '*' */
-  MyName = safemalloc(MyNameLen+1);	/* account for \0 */
+  if(argc>=7)                         /* if override name */
+    s = argv[6];                      /* use arg as name */
+  MyNameLen=strlen(s)+1;                /* account for '*' */
+  MyName = safemalloc(MyNameLen+1);     /* account for \0 */
   *MyName='*';
-  strcpy(MyName+1, s);		/* append name */
+  strcpy(MyName+1, s);          /* append name */
 
   myfprintf((stderr,"%s: Starting, argv[0] is %s, len %d\n",MyName+1,
 	     argv[0],MyNameLen));
 
-  if (argc < 6) {			/* Now MyName is defined */
+  if (argc < 6) {                       /* Now MyName is defined */
     fprintf(stderr,"%s Version "VERSION" should only be executed by fvwm!\n",
 	    MyName+1);
     exit(1);
@@ -2466,19 +2466,19 @@ int main (int argc, char **argv)
   /* From FvwmAnimate end */
 
   i = 7;
-  if (argc >= 8) {			/* if have arg 7 */
+  if (argc >= 8) {                      /* if have arg 7 */
     if (strcasecmp(argv[7],"preload") == 0) { /* if its preload */
-      preload_yorn = 'y';		/* remember that. */
+      preload_yorn = 'y';               /* remember that. */
       i = 8;
     }
   }
-  for (;i<argc;i++) {			/* look at remaining args */
-    if (strchr(argv[i],'=')) {		/* if its a candidate */
-      putenv(argv[i]);			/* save it away */
-      CF.have_env_var = 'y';		/* remember we have at least one */
+  for (;i<argc;i++) {                   /* look at remaining args */
+    if (strchr(argv[i],'=')) {          /* if its a candidate */
+      putenv(argv[i]);                  /* save it away */
+      CF.have_env_var = 'y';            /* remember we have at least one */
     }
   }
-  ref = strtol(argv[4], NULL, 16);	/* capture reference window */
+  ref = strtol(argv[4], NULL, 16);      /* capture reference window */
   if (ref == 0) ref = None;
   myfprintf((stderr, "ref == %d\n", (int)ref));
 
@@ -2494,28 +2494,28 @@ int main (int argc, char **argv)
   root = RootWindow(dpy, screen);
 
   InitConstants();
-  ReadDefaults();			/* get config from fvwm */
+  ReadDefaults();                       /* get config from fvwm */
 
   if (strcasecmp(MyName+1,"FvwmForm") != 0) { /* if not already read */
     sprintf(cmd,"read %s Quiet",MyName+1); /* read quiet modules config */
     SendText(Channel,cmd,0);
   }
 
-  ReadConfig();				/* get config from fvwm */
+  ReadConfig();                         /* get config from fvwm */
 
-  MassageConfig();			/* add data, calc window x/y */
+  MassageConfig();                      /* add data, calc window x/y */
 
   /* tell fvwm about our mask */
   SetMessageMask(Channel, M_SENDCONFIG|M_CONFIG_INFO|M_ERROR|M_STRING);
   SetMessageMask(Channel, MX_PROPERTY_CHANGE);
-  OpenWindows();			/* create initial window */
+  OpenWindows();                        /* create initial window */
   SendFinishedStartupNotification(Channel);/* tell fvwm we're running */
   if (timer != NULL) {
      SetupTimer();
   }
-  MainLoop();				/* start */
+  MainLoop();                           /* start */
 
-  return 0;				/* */
+  return 0;                             /* */
 }
 
 

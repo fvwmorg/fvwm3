@@ -5,21 +5,21 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "Tools.h"
 
-#define BdWidth 2		/* Border width */
-#define SbWidth 15		/* ScrollBar width */
+#define BdWidth 2               /* Border width */
+#define SbWidth 15              /* ScrollBar width */
 
 /*************************************************/
-/* Fonction pour Liste / Functions for the List	 */
+/* Fonction pour Liste / Functions for the List  */
 /*************************************************/
 void InitList(struct XObj *xobj)
 {
@@ -547,7 +547,7 @@ void EvtKeyList(struct XObj *xobj, XKeyEvent *EvtKey)
       if(PtInRect(pt,rect))
       {
 	/* Determination de la cellule */
-	pt.y =	pt.y - rect.y;
+	pt.y =  pt.y - rect.y;
 	NPosCell =  xobj->value2 + (pt.y/(xobj->Ffont->height + 3));
 	if (NPosCell > CountOption(xobj->title))
 	  NPosCell = 0;

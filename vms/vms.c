@@ -64,7 +64,7 @@
 
 #define SELECT_ERROR -1
 #define SELECT_TIMEOUT 0
-#define MAX_DEVICE 32			    /* - Maximum FD to check - */
+#define MAX_DEVICE 32                       /* - Maximum FD to check - */
 #define MAX_DEVICENAME 256
 
 #define DEV_UNUSED 0
@@ -74,11 +74,11 @@
 
 /* --- File descriptors information. We allocate statically for it's a very oten used function. --- */
 typedef struct {
-  int eventFlag;			   /* - Event flag pour les attentes passives - */
-  unsigned short vmsChannel;		   /* - Canal VMS sur la mailbox - */
-  char deviceName[MAX_DEVICENAME];	   /* - Nom du device (la mailbox ou les X events) - */
-  char devType;				   /* - Type de device : DEV_xxx - */
-  char qioPending;			   /* - Une QIO est en attente (1) ou non (0) - */
+  int eventFlag;                           /* - Event flag pour les attentes passives - */
+  unsigned short vmsChannel;               /* - Canal VMS sur la mailbox - */
+  char deviceName[MAX_DEVICENAME];         /* - Nom du device (la mailbox ou les X events) - */
+  char devType;                            /* - Type de device : DEV_xxx - */
+  char qioPending;                         /* - Une QIO est en attente (1) ou non (0) - */
 } Pipe_Infos_Type;
 
 typedef struct {
@@ -89,8 +89,8 @@ typedef struct {
 
 /* --- Global variables. I do not like them, but, because of the AST it's the easiest way :-) They have to be volatile because
        they are modified by AST and main function. --- */
-volatile unsigned int SpecialEfn;	   /* - One ef for all. This to avoid multi ef clusters problem - */
-volatile char SpecialEfnToClear;	   /* - Special ef is set by us - */
+volatile unsigned int SpecialEfn;          /* - One ef for all. This to avoid multi ef clusters problem - */
+volatile char SpecialEfnToClear;           /* - Special ef is set by us - */
 
 /*----------------------------------------------------------------------------------------------------------------------------------
     Fonctions : AttentionAST et TimedAST
@@ -207,7 +207,7 @@ int VMS_select_pipes(int nbPipes, fd_set *readFds, fd_set *writeFds, fd_set *fil
 	sysStat = sys$clref(infosPipes[iFd].eventFlag);
 	VMS_TestStatus(sysStat, "Can't clear ef (err %d)", 1);
 	if (DBG_SEL) {
-	  fvwm_msg(DBG, "VMS_select_pipes", "FD %2d  %s	 Nom <%s>  Canal %d  Efn %d cleared", iFd,
+	  fvwm_msg(DBG, "VMS_select_pipes", "FD %2d  %s  Nom <%s>  Canal %d  Efn %d cleared", iFd,
 		   (DEV_READPIPE == infosPipes[iFd].devType)?"READ":(DEV_WRITEPIPE == infosPipes[iFd].devType)?"WRIT":"UNKN",
 		   infosPipes[iFd].deviceName, infosPipes[iFd].vmsChannel, infosPipes[iFd].eventFlag);
 	}
@@ -252,7 +252,7 @@ int VMS_select_pipes(int nbPipes, fd_set *readFds, fd_set *writeFds, fd_set *fil
 	  sysStat = sys$clref(infosPipes[iFd].eventFlag);
 	  VMS_TestStatus(sysStat, "Can't clear ef (Error %d)", 1);
 	}
-	if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "FD %2d EFN   Nom <%s>  Canal %d	 Efn %d", iFd, infosPipes[iFd].deviceName,
+	if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "FD %2d EFN   Nom <%s>  Canal %d  Efn %d", iFd, infosPipes[iFd].deviceName,
 			    infosPipes[iFd].vmsChannel, infosPipes[iFd].eventFlag);
       }
     }
@@ -329,7 +329,7 @@ int VMS_select_pipes(int nbPipes, fd_set *readFds, fd_set *writeFds, fd_set *fil
   /*
   if (! specialEfnToFree && SpecialEfnToClear) {
     nbPipesReady--;
-    if (FD_ISSET(SpecialEfn, readFds))	FD_CLR(SpecialEfn, readFds);
+    if (FD_ISSET(SpecialEfn, readFds))  FD_CLR(SpecialEfn, readFds);
     else if (FD_ISSET(SpecialEfn, writeFds)) FD_CLR(SpecialEfn, writeFds);
   }
   */
@@ -426,10 +426,10 @@ void VMS_msg(int type,char *id,char *msg,...) {
 	       freed if necessary. The pointer after the last used argument pointer is set to NULL.
 ----------------------------------------------------------------------------------------------------------------------------------*/
 void VMS_SplitCommand(
-    char *cmd,						/* - Command to split - */
-    char **argums,					/* - Array of arguments - */
-    int maxArgums,					/* - Size of the array of argumets - */
-    int *nbArgums) {					/* - Number of arguments created - */
+    char *cmd,                                          /* - Command to split - */
+    char **argums,                                      /* - Array of arguments - */
+    int maxArgums,                                      /* - Size of the array of argumets - */
+    int *nbArgums) {                                    /* - Number of arguments created - */
   int iArgum, argumLen;
   char *tmpChar, *tmpArgum;
 
@@ -501,9 +501,9 @@ void VMS_SplitCommand(
 	       The array containing splitted command is statically allocated, so we never free it and allocate it just once.
 ----------------------------------------------------------------------------------------------------------------------------------*/
 int VMS_ExecL(
-    const char *fileSpec,	       /* - Conventionnaly, image to run. With Unix, often a shell - */
-    const char *arg0,		       /* - The same as fileSpec, by convention - */
-    ...) {			       /* - Real unix command, eventually splitted - */
+    const char *fileSpec,              /* - Conventionnaly, image to run. With Unix, often a shell - */
+    const char *arg0,                  /* - The same as fileSpec, by convention - */
+    ...) {                             /* - Real unix command, eventually splitted - */
 
   int execStat, nbArgums;
   static char **argums = NULL;

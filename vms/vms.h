@@ -13,7 +13,7 @@
   #define ERR  2
 #endif
 
-#define VMS_MAX_ARGUMENT_IN_CMD 255	/* - Maximum number in a command passed to builtin functions - */
+#define VMS_MAX_ARGUMENT_IN_CMD 255     /* - Maximum number in a command passed to builtin functions - */
 
 void VMS_msg(int type,char *id,char *msg,...);
 void VMS_SplitCommand(char *cmd, char **argums, int maxArgums, int *nbArgums);

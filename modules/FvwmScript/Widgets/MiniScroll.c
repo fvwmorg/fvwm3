@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "Tools.h"
@@ -79,7 +79,7 @@ void DrawMiniScroll(struct XObj *xobj)
   DrawReliefRect(-1, -1, xobj->width+2, xobj->height+2, xobj, hili, shad);
 
   DrawArrowN(xobj, 3, 3, 0);  /* fleche du haut / top arrow    */
-  DrawArrowS(xobj, 3, 18, 0); /* fleche du bas	/ bottom arrow */
+  DrawArrowS(xobj, 3, 18, 0); /* fleche du bas  / bottom arrow */
 }
 
 void EvtMouseMiniScroll(struct XObj *xobj, XButtonEvent *EvtButton)

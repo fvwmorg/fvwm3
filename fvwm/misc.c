@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -337,7 +337,7 @@ void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
 	static clock_t start_time = 0;
 	static clock_t prev_time = 0;
 	struct tms not_used_tms;
-	char buffer[200];		      /* oversized */
+	char buffer[200];                     /* oversized */
 	time_t mytime;
 	struct tm *t_ptr;
 	static int counter = 0;

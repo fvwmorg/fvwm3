@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /* ---------------------------- included header files ----------------------- */
@@ -1563,11 +1563,11 @@ int frame_window_id_to_context(
  *     The window to move or resize.
  *   mr_mode
  *     The mode of operation:
- *	 FRAME_MR_SETUP: setup the frame
- *	 FRAME_MR_FORCE_SETUP: same, but forces all updates
- *	 FRAME_MR_OPAQUE: resize the frame in an opaque fashion
- *	 FRAME_MR_SHRINK: shrink the client window (useful for shading only)
- *	 FRAME_MR_SCROLL: scroll the client window (useful for shading only)
+ *       FRAME_MR_SETUP: setup the frame
+ *       FRAME_MR_FORCE_SETUP: same, but forces all updates
+ *       FRAME_MR_OPAQUE: resize the frame in an opaque fashion
+ *       FRAME_MR_SHRINK: shrink the client window (useful for shading only)
+ *       FRAME_MR_SCROLL: scroll the client window (useful for shading only)
  *   start_g
  *     The initial geometry of the frame.  If a NULL pointer is passed, the
  *     frame_g member of the window is used instead.
@@ -1575,10 +1575,10 @@ int frame_window_id_to_context(
  *     The desired new geometry of the frame.
  *   anim_steps
  *     The number of animation steps in between
- *	 = 0: The operation is finished in a single step.
- *	 > 0: The given number of steps are drawn in between.
- *	 < 0: Each step resizes the window by the given number of pixels.
- *	      (the sign of the number is flipped first).
+ *       = 0: The operation is finished in a single step.
+ *       > 0: The given number of steps are drawn in between.
+ *       < 0: Each step resizes the window by the given number of pixels.
+ *            (the sign of the number is flipped first).
  *     This argument is used only with FRAME_MR_SHRINK and FRAME_MR_SCROLL.
  */
 frame_move_resize_args frame_create_move_resize_args(
@@ -1672,7 +1672,7 @@ frame_move_resize_args frame_create_move_resize_args(
 		!(mra->flags.is_setup || mra->mode == FRAME_MR_OPAQUE);
 	mra->flags.do_update_shape =
 		(FShapesSupported && mra->flags.is_shading && fw->wShaped);
-	/* Lazy shading does not draw the hadle marks.	Disable them in the
+	/* Lazy shading does not draw the hadle marks.  Disable them in the
 	 * window flags if necessary.  Restores the marks when mr_args are
 	 * freed.  Lazy shading is considerably faster but causes funny looks
 	 * if either the border uses a tiled pixmap background. */
@@ -1821,24 +1821,24 @@ void frame_move_resize(
 /***********************************************************************
  *
  *  Procedure:
- *	frame_setup_window - set window sizes
+ *      frame_setup_window - set window sizes
  *
  *  Inputs:
- *	fw - the FvwmWindow pointer
- *	x	- the x coordinate of the upper-left outer corner of the frame
- *	y	- the y coordinate of the upper-left outer corner of the frame
- *	w	- the width of the frame window w/o border
- *	h	- the height of the frame window w/o border
+ *      fw - the FvwmWindow pointer
+ *      x       - the x coordinate of the upper-left outer corner of the frame
+ *      y       - the y coordinate of the upper-left outer corner of the frame
+ *      w       - the width of the frame window w/o border
+ *      h       - the height of the frame window w/o border
  *
  *  Special Considerations:
- *	This routine will check to make sure the window is not completely
- *	off the display, if it is, it'll bring some of it back on.
+ *      This routine will check to make sure the window is not completely
+ *      off the display, if it is, it'll bring some of it back on.
  *
- *	The fw->frame_XXX variables should NOT be updated with the
- *	values of x,y,w,h prior to calling this routine, since the new
- *	values are compared against the old to see whether a synthetic
- *	ConfigureNotify event should be sent.  (It should be sent if the
- *	window was moved but not resized.)
+ *      The fw->frame_XXX variables should NOT be updated with the
+ *      values of x,y,w,h prior to calling this routine, since the new
+ *      values are compared against the old to see whether a synthetic
+ *      ConfigureNotify event should be sent.  (It should be sent if the
+ *      window was moved but not resized.)
  *
  ************************************************************************/
 void frame_setup_window(

@@ -5,22 +5,22 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "FvwmConsole.h"
 
 #ifndef HAVE_READLINE
-static	 char cmd[MAX_COMMAND_SIZE];
+static   char cmd[MAX_COMMAND_SIZE];
 
 /* no readline - starts here */
 char *getline() {
-  if( fgets(cmd,MAX_COMMAND_SIZE,stdin) == NULL	 ) {
+  if( fgets(cmd,MAX_COMMAND_SIZE,stdin) == NULL  ) {
 	return(NULL);
   }
   return(cmd);
@@ -47,7 +47,7 @@ char *getline()
 	int  fdh;
 
     /* If initialization hasn't been done, do it now:
-     *	- We don't want TAB completion
+     *  - We don't want TAB completion
      */
     if (!done_init) {
 	rl_bind_key('\t', rl_insert);

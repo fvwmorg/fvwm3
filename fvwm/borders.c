@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -981,13 +981,13 @@ static void border_fetch_mwm_layout(
 	 * HHCCCCS  from outside to inside on the left and top border
 	 * SSCCCCH  from outside to inside on the bottom and right border
 	 * |||||||
-	 * |||||||__ w_shin	  (inner shadow area)
-	 * ||||||___ w_c	  (transparent area)
-	 * |||||____ w_c	  (transparent area)
-	 * ||||_____ w_c	  (transparent area)
-	 * |||______ w_c	  (transparent area)
-	 * ||_______ w_hiout	  (outer hilight area)
-	 * |________ w_hiout	  (outer hilight area)
+	 * |||||||__ w_shin       (inner shadow area)
+	 * ||||||___ w_c          (transparent area)
+	 * |||||____ w_c          (transparent area)
+	 * ||||_____ w_c          (transparent area)
+	 * |||______ w_c          (transparent area)
+	 * ||_______ w_hiout      (outer hilight area)
+	 * |________ w_hiout      (outer hilight area)
 	 *
 	 *
 	 * C = original colour
@@ -1017,13 +1017,13 @@ static void border_fetch_fvwm_layout(
 	 * SHHCCSS  from outside to inside on the left and top border
 	 * SSCCHHS  from outside to inside on the bottom and right border
 	 * |||||||
-	 * |||||||__ w_din	  (inner dark area)
-	 * ||||||___ w_shin	  (inner shadow area)
-	 * |||||____ w_trin	  (inner transparent/shadow area)
-	 * ||||_____ w_c	  (transparent area)
-	 * |||______ w_trout	  (outer transparent/hilight area)
-	 * ||_______ w_hiout	  (outer hilight area)
-	 * |________ w_dout	  (outer dark area)
+	 * |||||||__ w_din        (inner dark area)
+	 * ||||||___ w_shin       (inner shadow area)
+	 * |||||____ w_trin       (inner transparent/shadow area)
+	 * ||||_____ w_c          (transparent area)
+	 * |||______ w_trout      (outer transparent/hilight area)
+	 * ||_______ w_hiout      (outer hilight area)
+	 * |________ w_dout       (outer dark area)
 	 *
 	 * C = original colour
 	 * H = hilight
@@ -1034,11 +1034,11 @@ static void border_fetch_fvwm_layout(
 	 * SHHCS
 	 * SSCHS
 	 * |||||
-	 * |||||__ w_din	(inner dark area)
-	 * ||||___ w_trin	(inner transparent/shadow area)
-	 * |||____ w_trout	(outer transparent/hilight area)
-	 * ||_____ w_hiout	(outer hilight area)
-	 * |______ w_dout	(outer dark area)
+	 * |||||__ w_din        (inner dark area)
+	 * ||||___ w_trin       (inner transparent/shadow area)
+	 * |||____ w_trout      (outer transparent/hilight area)
+	 * ||_____ w_hiout      (outer hilight area)
+	 * |______ w_dout       (outer dark area)
 	 */
 	ret_size_descr->w_dout = 1;
 	ret_size_descr->w_hiout = 1;

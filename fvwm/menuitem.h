@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef MENUITEM_H
@@ -25,34 +25,34 @@
 
 /* ---------------------------- global macros ------------------------------- */
 
-#define MI_NEXT_ITEM(i)		((i)->next)
-#define MI_PREV_ITEM(i)		((i)->prev)
-#define MI_LABEL(i)		((i)->label)
-#define MI_LABEL_OFFSET(i)	((i)->label_offset)
-#define MI_LABEL_STRLEN(i)	((i)->label_strlen)
-#define MI_PICTURE(i)		((i)->picture)
-#define MI_MINI_ICON(i)		((i)->lpicture)
-#define MI_Y_OFFSET(i)		((i)->y_offset)
-#define MI_HEIGHT(i)		((i)->height)
-#define MI_ACTION(i)		((i)->action)
-#define MI_FUNC_TYPE(i)		((i)->func_type)
-#define MI_HOTKEY_COFFSET(i)	((i)->hotkey_coffset)
-#define MI_HOTKEY_COLUMN(i)	((i)->hotkey_column)
+#define MI_NEXT_ITEM(i)         ((i)->next)
+#define MI_PREV_ITEM(i)         ((i)->prev)
+#define MI_LABEL(i)             ((i)->label)
+#define MI_LABEL_OFFSET(i)      ((i)->label_offset)
+#define MI_LABEL_STRLEN(i)      ((i)->label_strlen)
+#define MI_PICTURE(i)           ((i)->picture)
+#define MI_MINI_ICON(i)         ((i)->lpicture)
+#define MI_Y_OFFSET(i)          ((i)->y_offset)
+#define MI_HEIGHT(i)            ((i)->height)
+#define MI_ACTION(i)            ((i)->action)
+#define MI_FUNC_TYPE(i)         ((i)->func_type)
+#define MI_HOTKEY_COFFSET(i)    ((i)->hotkey_coffset)
+#define MI_HOTKEY_COLUMN(i)     ((i)->hotkey_column)
 /* flags */
-#define MI_IS_SEPARATOR(i)	((i)->flags.is_separator)
-#define MI_IS_TEAR_OFF_BAR(i)	((i)->flags.is_tear_off_bar)
-#define MI_IS_TITLE(i)		((i)->flags.is_title)
+#define MI_IS_SEPARATOR(i)      ((i)->flags.is_separator)
+#define MI_IS_TEAR_OFF_BAR(i)   ((i)->flags.is_tear_off_bar)
+#define MI_IS_TITLE(i)          ((i)->flags.is_title)
 #define MI_IS_TITLE_CENTERED(i) ((i)->flags.is_title_centered)
-#define MI_IS_POPUP(i)		((i)->flags.is_popup)
-#define MI_IS_MENU(i)		((i)->flags.is_menu)
-#define MI_IS_CONTINUATION(i)	((i)->flags.is_continuation)
-#define MI_HAS_TEXT(i)		((i)->flags.has_text)
-#define MI_HAS_PICTURE(i)	((i)->flags.has_picture)
-#define MI_HAS_HOTKEY(i)	((i)->flags.has_hotkey)
+#define MI_IS_POPUP(i)          ((i)->flags.is_popup)
+#define MI_IS_MENU(i)           ((i)->flags.is_menu)
+#define MI_IS_CONTINUATION(i)   ((i)->flags.is_continuation)
+#define MI_HAS_TEXT(i)          ((i)->flags.has_text)
+#define MI_HAS_PICTURE(i)       ((i)->flags.has_picture)
+#define MI_HAS_HOTKEY(i)        ((i)->flags.has_hotkey)
 #define MI_IS_HOTKEY_AUTOMATIC(i) ((i)->flags.is_hotkey_automatic)
-#define MI_IS_SELECTABLE(i)	((i)->flags.is_selectable)
+#define MI_IS_SELECTABLE(i)     ((i)->flags.is_selectable)
 /* temporary flags */
-#define MI_WAS_DESELECTED(i)	((i)->flags.was_deselected)
+#define MI_WAS_DESELECTED(i)    ((i)->flags.was_deselected)
 
 /* ---------------------------- type definitions ---------------------------- */
 

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -104,7 +104,7 @@ static void handle_buttonevent (XEvent *theEvent, WinManager *man)
     win = b->drawn_state.win;
     if (win != NULL) {
       ConsoleDebug (X11, "Found the window:\n");
-      ConsoleDebug (X11, "\tid:	       %ld\n", win->app_id);
+      ConsoleDebug (X11, "\tid:        %ld\n", win->app_id);
       ConsoleDebug (X11, "\tdesknum:   %ld\n", win->desknum);
       ConsoleDebug (X11, "\tx, y:      %ld %ld\n", win->x, win->y);
       ConsoleDebug (X11, "\ticon:      %ld\n", (unsigned long)win->iconname);
@@ -170,8 +170,8 @@ Window find_frame_window (Window win, int *off_x, int *off_y)
 }
 
 /***************************************************************************/
-/*  Event handler routines						   */
-/*    everything which has its own routine can be processed recursively	   */
+/*  Event handler routines                                                 */
+/*    everything which has its own routine can be processed recursively    */
 /***************************************************************************/
 
 static void reparentnotify_event (WinManager *man, XEvent *ev)
@@ -372,7 +372,7 @@ void xevent_loop (void)
       break;
     }
     case MotionNotify:
-      /* ConsoleDebug (X11, "XEVENT: MotionNotify\n");	*/
+      /* ConsoleDebug (X11, "XEVENT: MotionNotify\n");  */
       b = xy_to_button (man, theEvent.xmotion.x, theEvent.xmotion.y);
       if (b != man->select_button) {
 	ConsoleDebug (X11, "\tmoving select\n");

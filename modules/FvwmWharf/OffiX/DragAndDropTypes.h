@@ -17,16 +17,16 @@ Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
 #ifndef __DragAndDropTypesH__
 #define __DragAndDropTypesH__
 
-#define DndNotDnd	-1
-#define DndUnknown	0
-#define DndRawData	1
-#define DndFile		2
-#define	DndFiles	3
-#define	DndText		4
-#define DndDir		5
-#define DndLink		6
-#define DndExe		7
+#define DndNotDnd       -1
+#define DndUnknown      0
+#define DndRawData      1
+#define DndFile         2
+#define DndFiles        3
+#define DndText         4
+#define DndDir          5
+#define DndLink         6
+#define DndExe          7
 
-#define DndEND		8
+#define DndEND          8
 
 #endif

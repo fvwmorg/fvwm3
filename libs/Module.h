@@ -7,12 +7,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*
@@ -30,12 +30,12 @@
 
 typedef struct {
     unsigned long start_pattern;       /* always holds START_FLAG value */
-    unsigned long type;		       /* one of the M_xxx values, below */
-    unsigned long size;		       /* number of unsigned longs in
+    unsigned long type;                /* one of the M_xxx values, below */
+    unsigned long size;                /* number of unsigned longs in
 					  entire packet, *including* header */
-    unsigned long timestamp;	       /* last time stamp received from the
+    unsigned long timestamp;           /* last time stamp received from the
 					  X server, in milliseconds */
-    unsigned long body[1];	       /* variable size -- use
+    unsigned long body[1];             /* variable size -- use
 					  FvwmPacketBodySize to get size */
 } FvwmPacket;
 
@@ -46,16 +46,16 @@ typedef struct {
 
 
 /** All size values in units of "unsigned long" **/
-#define FvwmPacketHeaderSize	    4
-#define FvwmPacketBodySize(p)	    ((p).size - FvwmPacketHeaderSize)
-#define FvwmPacketMaxSize	    256
-#define FvwmPacketBodyMaxSize	    (FvwmPacketMaxSize - FvwmPacketHeaderSize)
+#define FvwmPacketHeaderSize        4
+#define FvwmPacketBodySize(p)       ((p).size - FvwmPacketHeaderSize)
+#define FvwmPacketMaxSize           256
+#define FvwmPacketBodyMaxSize       (FvwmPacketMaxSize - FvwmPacketHeaderSize)
 
 /** There seems to be some movement afoot to measure packet sizes in bytes.
     See fvwm/module_interface.c **/
 #define FvwmPacketHeaderSize_byte  (FvwmPacketHeaderSize * sizeof(unsigned long))
 #define FvwmPacketBodySize_byte(p) (FvwmPacketBodySize(p) * sizeof(unsigned long))
-#define FvwmPacketMaxSize_byte	   (FvwmPacketMaxSize * sizeof(unsigned long))
+#define FvwmPacketMaxSize_byte     (FvwmPacketMaxSize * sizeof(unsigned long))
 #define FvwmPacketBodyMaxSize_byte (FvwmPacketBodyMaxSize * sizeof(unsigned long))
 
 
@@ -63,26 +63,26 @@ typedef struct {
 #define START_FLAG 0xffffffff
 
 #define ModuleFinishedStartupResponse "NOP FINISHED STARTUP"
-#define ModuleUnlockResponse	      "NOP UNLOCK"
+#define ModuleUnlockResponse          "NOP UNLOCK"
 
 /* Possible values of type */
-#define M_NEW_PAGE		 (1)
-#define M_NEW_DESK		 (1<<1)
-#define M_OLD_ADD_WINDOW	 (1<<2)
-#define M_RAISE_WINDOW		 (1<<3)
-#define M_LOWER_WINDOW		 (1<<4)
-#define M_OLD_CONFIGURE_WINDOW	 (1<<5)
-#define M_FOCUS_CHANGE		 (1<<6)
-#define M_DESTROY_WINDOW	 (1<<7)
-#define M_ICONIFY		 (1<<8)
-#define M_DEICONIFY		 (1<<9)
-#define M_WINDOW_NAME		 (1<<10)
-#define M_ICON_NAME		 (1<<11)
-#define M_RES_CLASS		 (1<<12)
-#define M_RES_NAME		 (1<<13)
-#define M_END_WINDOWLIST	 (1<<14)
-#define M_ICON_LOCATION		 (1<<15)
-#define M_MAP			 (1<<16)
+#define M_NEW_PAGE               (1)
+#define M_NEW_DESK               (1<<1)
+#define M_OLD_ADD_WINDOW         (1<<2)
+#define M_RAISE_WINDOW           (1<<3)
+#define M_LOWER_WINDOW           (1<<4)
+#define M_OLD_CONFIGURE_WINDOW   (1<<5)
+#define M_FOCUS_CHANGE           (1<<6)
+#define M_DESTROY_WINDOW         (1<<7)
+#define M_ICONIFY                (1<<8)
+#define M_DEICONIFY              (1<<9)
+#define M_WINDOW_NAME            (1<<10)
+#define M_ICON_NAME              (1<<11)
+#define M_RES_CLASS              (1<<12)
+#define M_RES_NAME               (1<<13)
+#define M_END_WINDOWLIST         (1<<14)
+#define M_ICON_LOCATION          (1<<15)
+#define M_MAP                    (1<<16)
 
 /* It turns out this is defined by <sys/stream.h> on Solaris 2.6.
    I suspect that simply redefining this will lead to trouble;
@@ -90,24 +90,24 @@ typedef struct {
 #ifdef M_ERROR
 #  undef M_ERROR
 #endif
-#define M_ERROR		     (1<<17)
+#define M_ERROR              (1<<17)
 
-#define M_CONFIG_INFO	     (1<<18)
+#define M_CONFIG_INFO        (1<<18)
 #define M_END_CONFIG_INFO    (1<<19)
-#define M_ICON_FILE	     (1<<20)
-#define M_DEFAULTICON	     (1<<21)
-#define M_STRING	     (1<<22)
-#define M_MINI_ICON	     (1<<23)
-#define M_WINDOWSHADE	     (1<<24)
-#define M_DEWINDOWSHADE	     (1<<25)
-#define M_VISIBLE_NAME	     (1<<26)
-#define M_SENDCONFIG	     (1<<27)
-#define M_RESTACK	     (1<<28)
-#define M_ADD_WINDOW	     (1<<29)
+#define M_ICON_FILE          (1<<20)
+#define M_DEFAULTICON        (1<<21)
+#define M_STRING             (1<<22)
+#define M_MINI_ICON          (1<<23)
+#define M_WINDOWSHADE        (1<<24)
+#define M_DEWINDOWSHADE      (1<<25)
+#define M_VISIBLE_NAME       (1<<26)
+#define M_SENDCONFIG         (1<<27)
+#define M_RESTACK            (1<<28)
+#define M_ADD_WINDOW         (1<<29)
 #define M_CONFIGURE_WINDOW   (1<<30)
-#define M_EXTENDED_MSG	     (1<<31)
-#define MAX_MESSAGES	     31
-#define MAX_MSG_MASK	     0x7fffffff
+#define M_EXTENDED_MSG       (1<<31)
+#define MAX_MESSAGES         31
+#define MAX_MSG_MASK         0x7fffffff
 
 /* to get more than the old maximum of 32 messages, the 32nd bit is reserved to
  * mark another 31 messages that have this bit and another one set.
@@ -116,18 +116,18 @@ typedef struct {
  * separate call has to be made that ors the MX_... macros.  The normal
  * M_... and MX_... macros must *never* be or'ed in one of these operations'
  */
-#define MX_VISIBLE_ICON_NAME	  ((1<<0) | M_EXTENDED_MSG)
-#define MX_ENTER_WINDOW		  ((1<<1) | M_EXTENDED_MSG)
-#define MX_LEAVE_WINDOW		  ((1<<2) | M_EXTENDED_MSG)
-#define MX_PROPERTY_CHANGE	  ((1<<3) | M_EXTENDED_MSG)
-#define MAX_EXTENDED_MESSAGES	  4
-#define DEFAULT_XMSG_MASK	  0x00000000
-#define MAX_XMSG_MASK		  0x0000000f
+#define MX_VISIBLE_ICON_NAME      ((1<<0) | M_EXTENDED_MSG)
+#define MX_ENTER_WINDOW           ((1<<1) | M_EXTENDED_MSG)
+#define MX_LEAVE_WINDOW           ((1<<2) | M_EXTENDED_MSG)
+#define MX_PROPERTY_CHANGE        ((1<<3) | M_EXTENDED_MSG)
+#define MAX_EXTENDED_MESSAGES     4
+#define DEFAULT_XMSG_MASK         0x00000000
+#define MAX_XMSG_MASK             0x0000000f
 
 #define MAX_TOTAL_MESSAGES   (MAX_MESSAGES + MAX_EXTENDED_MESSAGES)
 
 /* for MX_PROPERTY_CHANGE */
-#define MX_PROPERTY_CHANGE_NONE	       0
+#define MX_PROPERTY_CHANGE_NONE        0
 #define MX_PROPERTY_CHANGE_BACKGROUND  1
 #define MX_PROPERTY_CHANGE_SWALLOW     2
 
@@ -244,13 +244,13 @@ char *module_expand_action(
  **/
 
 typedef struct {
-    char* name;		       /* module name */
-    int to_fvwm;	       /* file descriptor to send info back to FVWM */
-    int from_fvwm;	       /* file descriptor to read packets from FVWM */
-    Window window;	       /* window context of module */
+    char* name;                /* module name */
+    int to_fvwm;               /* file descriptor to send info back to FVWM */
+    int from_fvwm;             /* file descriptor to read packets from FVWM */
+    Window window;             /* window context of module */
     unsigned long decoration;  /* decoration context of module */
-    int user_argc;	       /* number of user-specified arguments */
-    char** user_argv;	       /* vector of user-specified arguments */
+    int user_argc;             /* number of user-specified arguments */
+    char** user_argv;          /* vector of user-specified arguments */
 } ModuleArgs;
 
 

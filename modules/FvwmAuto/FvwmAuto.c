@@ -24,12 +24,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -96,19 +96,19 @@ TerminateHandler(int signo)
 /***********************************************************************
  *
  *  Procedure:
- *	main - start of module
+ *      main - start of module
  *
  ***********************************************************************/
 int
 main(int argc, char **argv)
 {
-  char *enter_fn="Silent Raise";	/* default */
+  char *enter_fn="Silent Raise";        /* default */
   char *leave_fn=NULL;
   char *buf;
   int len;
   unsigned long m_mask;
-  unsigned long last_win = 0;	/* last window handled */
-  unsigned long focus_win = 0;	/* current focus */
+  unsigned long last_win = 0;   /* last window handled */
+  unsigned long focus_win = 0;  /* current focus */
   unsigned long raised_win = 0;
   fd_set_size_t fd_width;
   int fd[2];
@@ -201,7 +201,7 @@ main(int argc, char **argv)
   }
 
   n = 7;
-  if (argv[n])			/* if specified */
+  if (argv[n])                  /* if specified */
   {
     char *token;
 
@@ -214,12 +214,12 @@ main(int argc, char **argv)
 	/*** enter command ***/
     if (*argv[n] && !StrEquals(argv[n],"NOP")) /* not empty */
     {
-      enter_fn = argv[n];		/* override default */
+      enter_fn = argv[n];               /* override default */
       n++;
     }
     else
     {
-      enter_fn = NULL;		/* nop */
+      enter_fn = NULL;          /* nop */
     }
     /* This is a hack to prevent user interaction with old configs. */
     if (enter_fn)

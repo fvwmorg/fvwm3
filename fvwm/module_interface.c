@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -88,7 +88,7 @@ static void DeleteMessageQueueBuff(int module);
 static void AddToCommandQueue(Window w, int module, char * command);
 
 /*
- * Sets the mask to the specific value.	 If M_EXTENDED_MSG is set in mask, the
+ * Sets the mask to the specific value.  If M_EXTENDED_MSG is set in mask, the
  * function operates only on the extended messages, otherwise it operates only
  * on normal messages.
  */
@@ -188,7 +188,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 
   /* Olivier: Why ? */
   /*   if(eventp->type != KeyPress) */
-  /*	 UngrabEm(); */
+  /*     UngrabEm(); */
 
   if(action == NULL)
   {
@@ -233,7 +233,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 #ifdef REMOVE_EXECUTABLE_EXTENSION
   {
       char* p = arg1 + strlen( arg1 ) - strlen( EXECUTABLE_EXTENSION );
-      if ( strcmp( p, EXECUTABLE_EXTENSION ) ==	 0 )
+      if ( strcmp( p, EXECUTABLE_EXTENSION ) ==  0 )
 	*p = 0;
   }
 #endif
@@ -348,7 +348,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   }
   else if (val ==0)
   {
-    /* this is	the child */
+    /* this is  the child */
     /* this fork execs the module */
 #ifdef FORK_CREATES_CHILD
     close(fvwm_to_app[1]);
@@ -805,9 +805,9 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 
   for (; num > 0; --num)  {
       arglen = va_arg(ap, unsigned long);
-      if (arglen != 0)	{
+      if (arglen != 0)  {
 	expandint = False;
-	}  else	 {
+	}  else  {
 	expandint = True;
 	arglen = sizeof(unsigned long);
 	}
@@ -965,38 +965,38 @@ static void BroadcastNewPacket(unsigned long event_type,
 
 #define SETOLDFLAGS \
 { int i = 1; \
-  old_flags |= 0 /* was start_iconic */		? i : 0; i<<=1; \
-  old_flags |= False /* OnTop */		? i : 0; i<<=1; \
-  old_flags |= IS_STICKY(t)			? i : 0; i<<=1; \
-  old_flags |= DO_SKIP_WINDOW_LIST(t)		? i : 0; i<<=1; \
-  old_flags |= IS_ICON_SUPPRESSED(t)		? i : 0; i<<=1; \
-  old_flags |= HAS_NO_ICON_TITLE(t)		? i : 0; i<<=1; \
-  old_flags |= IS_LENIENT(t)			? i : 0; i<<=1; \
-  old_flags |= IS_ICON_STICKY(t)		? i : 0; i<<=1; \
-  old_flags |= DO_SKIP_ICON_CIRCULATE(t)	? i : 0; i<<=1; \
-  old_flags |= DO_SKIP_CIRCULATE(t)		? i : 0; i<<=1; \
-  old_flags |= HAS_CLICK_FOCUS(t)		? i : 0; i<<=1; \
-  old_flags |= HAS_SLOPPY_FOCUS(t)		? i : 0; i<<=1; \
-  old_flags |= !DO_NOT_SHOW_ON_MAP(t)		? i : 0; i<<=1; \
-  old_flags |= !HAS_NO_BORDER(t)		? i : 0; i<<=1; \
-  old_flags |= HAS_TITLE(t)			? i : 0; i<<=1; \
-  old_flags |= IS_MAPPED(t)			? i : 0; i<<=1; \
-  old_flags |= IS_ICONIFIED(t)			? i : 0; i<<=1; \
-  old_flags |= IS_TRANSIENT(t)			? i : 0; i<<=1; \
-  old_flags |= False /* Raised */		? i : 0; i<<=1; \
-  old_flags |= IS_FULLY_VISIBLE(t)		? i : 0; i<<=1; \
-  old_flags |= IS_ICON_OURS(t)			? i : 0; i<<=1; \
-  old_flags |= IS_PIXMAP_OURS(t)		? i : 0; i<<=1; \
-  old_flags |= IS_ICON_SHAPED(t)		? i : 0; i<<=1; \
-  old_flags |= IS_MAXIMIZED(t)			? i : 0; i<<=1; \
-  old_flags |= WM_TAKES_FOCUS(t)		? i : 0; i<<=1; \
-  old_flags |= WM_DELETES_WINDOW(t)		? i : 0; i<<=1; \
-  old_flags |= IS_ICON_MOVED(t)			? i : 0; i<<=1; \
-  old_flags |= IS_ICON_UNMAPPED(t)		? i : 0; i<<=1; \
-  old_flags |= IS_MAP_PENDING(t)		? i : 0; i<<=1; \
-  old_flags |= HAS_MWM_OVERRIDE_HINTS(t)	? i : 0; i<<=1; \
-  old_flags |= HAS_MWM_BUTTONS(t)		? i : 0; i<<=1; \
-  old_flags |= HAS_MWM_BORDER(t)		? i : 0; }
+  old_flags |= 0 /* was start_iconic */         ? i : 0; i<<=1; \
+  old_flags |= False /* OnTop */                ? i : 0; i<<=1; \
+  old_flags |= IS_STICKY(t)                     ? i : 0; i<<=1; \
+  old_flags |= DO_SKIP_WINDOW_LIST(t)           ? i : 0; i<<=1; \
+  old_flags |= IS_ICON_SUPPRESSED(t)            ? i : 0; i<<=1; \
+  old_flags |= HAS_NO_ICON_TITLE(t)             ? i : 0; i<<=1; \
+  old_flags |= IS_LENIENT(t)                    ? i : 0; i<<=1; \
+  old_flags |= IS_ICON_STICKY(t)                ? i : 0; i<<=1; \
+  old_flags |= DO_SKIP_ICON_CIRCULATE(t)        ? i : 0; i<<=1; \
+  old_flags |= DO_SKIP_CIRCULATE(t)             ? i : 0; i<<=1; \
+  old_flags |= HAS_CLICK_FOCUS(t)               ? i : 0; i<<=1; \
+  old_flags |= HAS_SLOPPY_FOCUS(t)              ? i : 0; i<<=1; \
+  old_flags |= !DO_NOT_SHOW_ON_MAP(t)           ? i : 0; i<<=1; \
+  old_flags |= !HAS_NO_BORDER(t)                ? i : 0; i<<=1; \
+  old_flags |= HAS_TITLE(t)                     ? i : 0; i<<=1; \
+  old_flags |= IS_MAPPED(t)                     ? i : 0; i<<=1; \
+  old_flags |= IS_ICONIFIED(t)                  ? i : 0; i<<=1; \
+  old_flags |= IS_TRANSIENT(t)                  ? i : 0; i<<=1; \
+  old_flags |= False /* Raised */               ? i : 0; i<<=1; \
+  old_flags |= IS_FULLY_VISIBLE(t)              ? i : 0; i<<=1; \
+  old_flags |= IS_ICON_OURS(t)                  ? i : 0; i<<=1; \
+  old_flags |= IS_PIXMAP_OURS(t)                ? i : 0; i<<=1; \
+  old_flags |= IS_ICON_SHAPED(t)                ? i : 0; i<<=1; \
+  old_flags |= IS_MAXIMIZED(t)                  ? i : 0; i<<=1; \
+  old_flags |= WM_TAKES_FOCUS(t)                ? i : 0; i<<=1; \
+  old_flags |= WM_DELETES_WINDOW(t)             ? i : 0; i<<=1; \
+  old_flags |= IS_ICON_MOVED(t)                 ? i : 0; i<<=1; \
+  old_flags |= IS_ICON_UNMAPPED(t)              ? i : 0; i<<=1; \
+  old_flags |= IS_MAP_PENDING(t)                ? i : 0; i<<=1; \
+  old_flags |= HAS_MWM_OVERRIDE_HINTS(t)        ? i : 0; i<<=1; \
+  old_flags |= HAS_MWM_BUTTONS(t)               ? i : 0; i<<=1; \
+  old_flags |= HAS_MWM_BORDER(t)                ? i : 0; }
 #endif /* DISABLE_MBC */
 
 
@@ -1355,7 +1355,7 @@ void CMD_SendToModule(F_CMD_ARGS)
   int i;
 
   /* FIXME: Without this, popup menus can't be implemented properly in
-   *  modules.	Olivier: Why ? */
+   *  modules.  Olivier: Why ? */
   /* UngrabEm(); */
   if (!action)
     return;
@@ -1389,8 +1389,8 @@ void CMD_SendToModule(F_CMD_ARGS)
 /* This used to be marked "fvwm_inline".  I removed this
    when I added the lockonsend logic.  The routine seems too big to
    want to inline.  dje 9/4/98 */
-extern int myxgrabcount;		/* defined in libs/Grab.c */
-extern char *ModuleUnlock;		/* defined in libs/Module.c */
+extern int myxgrabcount;                /* defined in libs/Grab.c */
+extern char *ModuleUnlock;              /* defined in libs/Module.c */
 void PositiveWrite(int module, unsigned long *ptr, int size)
 {
 	extern int moduleTimeout;
@@ -1533,7 +1533,7 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 			 * will be read and then on returning up the third
 			 * level UNLOCK will be read at the first level. This
 			 * could be difficult to fix without turning queueing
-			 * on.	Turning queueing on may be bad because it can
+			 * on.  Turning queueing on may be bad because it can
 			 * be useful for modules to be able to inject commands
 			 * from modules in a synchronous manner. e.g.
 			 * FvwmIconMan can tell FvwmAnimate to do an animation
@@ -1633,7 +1633,7 @@ static fqueue cqueue = FQUEUE_INIT;
 /***********************************************************************
  *
  *  Procedure:
- *	AddToCommandQueue - add a module command to the command queue
+ *      AddToCommandQueue - add a module command to the command queue
  *
  ************************************************************************/
 
@@ -1657,9 +1657,9 @@ static void AddToCommandQueue(Window window, int module, char *command)
 /***********************************************************************
  *
  *  Procedure:
- *	ExecuteCommandQueue - runs command from the module command queue
- *	This may be called recursively if a module command runs a function
- *	that does a Wait, so it must be re-entrant
+ *      ExecuteCommandQueue - runs command from the module command queue
+ *      This may be called recursively if a module command runs a function
+ *      that does a Wait, so it must be re-entrant
  *
  ************************************************************************/
 void ExecuteCommandQueue(void)

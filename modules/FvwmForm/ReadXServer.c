@@ -1,5 +1,5 @@
 /*
- * This file  is  partly derived from	FvwmForm.c, this is  the original
+ * This file  is  partly derived from   FvwmForm.c, this is  the original
  * copyright:
  *
  * FvwmForm is original work of Thomas Zuwei Feng.
@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /*  Modification History */
@@ -53,7 +53,7 @@
 #include <X11/cursorfont.h>
 #define XK_MISCELLANY
 #include <X11/keysymdef.h>
-#include <X11/Xatom.h>			/* for XA_CUT_BUFFER0 */
+#include <X11/Xatom.h>                  /* for XA_CUT_BUFFER0 */
 
 #include <FvwmForm.h>
 
@@ -72,14 +72,14 @@ void ReadXServer ()
   Item *item, *old_item;
   KeySym ks;
   char *sp, *dp;
-  static unsigned char buf[10];		/* unsigned for international */
+  static unsigned char buf[10];         /* unsigned for international */
   static int n;
 
   while (XEventsQueued(dpy, QueuedAfterReading)) {
     XNextEvent(dpy, &event);
     if (event.xany.window == CF.frame) {
       switch (event.type) {
-      case ConfigureNotify:		/* has window be reconfigured */
+      case ConfigureNotify:             /* has window be reconfigured */
 	if (colorset > -1 && Colorset[colorset].pixmap == ParentRelative &&
 	    event.xconfigure.send_event)
 	{
@@ -144,7 +144,7 @@ void ReadXServer ()
 	    buf[0] = '\006';  /* ^F */
 	    break;
 	  case XK_Up:
-	    buf[0] = '\020';		/* ^P */
+	    buf[0] = '\020';            /* ^P */
 	    break;
 	  case XK_Down:
 	    buf[0] = '\016';  /* ^N */
@@ -157,13 +157,13 @@ void ReadXServer ()
 	      goto no_redraw;  /* no action for this event */
 	  }
 	}
-	switch (ks) {			/* regular key, may need adjustment */
+	switch (ks) {                   /* regular key, may need adjustment */
 	case XK_Tab:
 #ifdef XK_XKB_KEYS
 	case XK_ISO_Left_Tab:
 #endif
 	  if (event.xkey.state & ShiftMask) { /* shifted key */
-	    buf[0] = '\020';	      /* chg shift tab to ^P */
+	    buf[0] = '\020';          /* chg shift tab to ^P */
 	  }
 	  break;
 	case '>':
@@ -194,11 +194,11 @@ void ReadXServer ()
 	} else if (CF.cur_input == CF.cur_input->input.next_input) {
 	  /* 1 ip field */
 	  switch (buf[0]) {
-	  case '\020':			/* ^P previous field */
+	  case '\020':                  /* ^P previous field */
 	    process_history(-1);
 	    goto redraw_newcursor;
 	    break;
-	  case '\016':			/* ^N  next field */
+	  case '\016':                  /* ^N  next field */
 	    process_history(1);
 	    goto redraw_newcursor;
 	    break;
@@ -284,7 +284,7 @@ void ReadXServer ()
 	  CF.cur_input->input.n = CF.cur_input->input.left = 0;
 	  CF.rel_cursor = CF.abs_cursor = 0;
 	  goto redraw_newcursor;
-	case '\020':			/* ^P previous field */
+	case '\020':                    /* ^P previous field */
 	  old_item = CF.cur_input;
 	  old_item->input.o_cursor = CF.rel_cursor;
 	  CF.cur_input = old_item->input.prev_input; /* new current input fld */
@@ -306,7 +306,7 @@ void ReadXServer ()
 	  old_cursor = CF.abs_cursor;
 	  if((buf[0] >= ' ' &&
 	      buf[0] < '\177') ||
-	     (buf[0] >= 160)) {		/* regular or intl char */
+	     (buf[0] >= 160)) {         /* regular or intl char */
 	    process_regular_char_input(&buf[0]); /* insert into input field */
 	    goto redraw_newcursor;
 	  }
@@ -318,7 +318,7 @@ void ReadXServer ()
 		    item->button.keypress));
 	    if (item->type == I_BUTTON && item->button.keypress == keypress) {
 	      RedrawItem(item, 1);
-	      usleep(MICRO_S_FOR_10MS);	 /* .1 seconds */
+	      usleep(MICRO_S_FOR_10MS);  /* .1 seconds */
 	      RedrawItem(item, 0);
 	      DoCommand(item);
 	      goto no_redraw;
@@ -384,12 +384,12 @@ void ReadXServer ()
 		     x, BOX_SPC, x, dy - BOX_SPC));
 	}
       no_redraw:
-	break;	/* end of case KeyPress */
-      }	 /* end of switch (event.type) */
+	break;  /* end of case KeyPress */
+      }  /* end of switch (event.type) */
       continue;
     }  /* end of if (event.xany.window == CF.frame) */
     for (item = root_item_ptr; item != 0;
-	 item = item->header.next) {	/* all items */
+	 item = item->header.next) {    /* all items */
       if (event.xany.window == item->header.win) {
 	switch (event.type) {
 	case Expose:
@@ -452,18 +452,18 @@ void ReadXServer ()
 	  if (item->type == I_CHOICE)
 	    ToggleChoice(item);
 	  if (item->type == I_BUTTON) {
-	    RedrawItem(item, 1);	/* push button in */
+	    RedrawItem(item, 1);        /* push button in */
 	    if (CF.activate_on_press) {
-	      usleep(MICRO_S_FOR_10MS);	  /* make sure its visible */
-	      RedrawItem(item, 0);	  /* pop button out */
-	      DoCommand(item);		  /* execute the button command */
+	      usleep(MICRO_S_FOR_10MS);   /* make sure its visible */
+	      RedrawItem(item, 0);        /* pop button out */
+	      DoCommand(item);            /* execute the button command */
 	    } else {
 	      XGrabPointer(dpy, item->header.win,
-			   False,	  /* owner of events */
+			   False,         /* owner of events */
 			   ButtonReleaseMask, /* events to report */
 			   GrabModeAsync, /* keyboard mode */
 			   GrabModeAsync, /* pointer mode */
-			   None,	  /* confine to */
+			   None,          /* confine to */
 			   /* I sort of like this, the hand points in
 			      the other direction and the color is
 			      reversed. I don't know what other GUIs do,
@@ -512,20 +512,20 @@ void ReadXServer ()
    Forward yanks increment before extracting. */
 static void process_history(int direction) {
   int count;
-  if (!CF.cur_input			/* no input fields */
+  if (!CF.cur_input                     /* no input fields */
       || !CF.cur_input->input.value_history_ptr) { /* or no history */
-    return;				/* bail out */
+    return;                             /* bail out */
   }
   /* yankat is always one beyond slot to yank from. */
   count = CF.cur_input->input.value_history_yankat + direction;
   if (count < 0 || count >= VH_SIZE ||
 	     CF.cur_input->input.value_history_ptr[count] == 0 ) {
-    if (direction <= 0) {		/* going down */
+    if (direction <= 0) {               /* going down */
       for (count = VH_SIZE - 1;
 	   CF.cur_input->input.value_history_ptr[count] == 0;
-	   --count);			/* find last used slot */
-    } else {				/* going up */
-      count = 0;			/* up is the bottom */
+	   --count);                    /* find last used slot */
+    } else {                            /* going up */
+      count = 0;                        /* up is the bottom */
     }
   }
   CF.cur_input->input.value =
@@ -548,8 +548,8 @@ static int process_tabtypes(unsigned char * buf) {
   /* Note: the input field ring used with ^P above
 	     could probably make this a lot simpler. dje 12/20/98 */
 	  /* Code tracks cursor. */
-  item = root_item_ptr;		/* init item ptr */
-  if (CF.cur_input != 0) {	    /* if in text */
+  item = root_item_ptr;         /* init item ptr */
+  if (CF.cur_input != 0) {          /* if in text */
     item = CF.cur_input->header.next; /* move to next item */
   }
   for ( ; item != 0;
@@ -561,7 +561,7 @@ static int process_tabtypes(unsigned char * buf) {
       RedrawItem(old_item, 1);
       CF.rel_cursor = item->input.o_cursor;
       CF.abs_cursor = CF.rel_cursor - item->input.left;
-      return (1);			/* cause redraw */
+      return (1);                       /* cause redraw */
     }
   }
   /* end of all text input fields, check for buttons */
@@ -574,7 +574,7 @@ static int process_tabtypes(unsigned char * buf) {
       usleep(MICRO_S_FOR_10MS);
       RedrawItem(item, 0);
       DoCommand(item);
-      return (0);			/* cause no_redraw */
+      return (0);                       /* cause no_redraw */
     }
   }
   /* goto the first text input field */
@@ -587,7 +587,7 @@ static int process_tabtypes(unsigned char * buf) {
       RedrawItem(old_item, 1);
       CF.rel_cursor = item->input.o_cursor;
       CF.abs_cursor = CF.rel_cursor - item->input.left;
-      return (1);			/* goto redraw */
+      return (1);                       /* goto redraw */
     }
   }
   return (-1);
@@ -631,34 +631,34 @@ static void process_paste_request (XEvent *event, Item *item) {
   unsigned char *data, *h, buf[256];
   unsigned char *c;
 
-  nread = 0;				/* init read offset */
-  h = buf;				/* starting point */
+  nread = 0;                            /* init read offset */
+  h = buf;                              /* starting point */
   do {
     if (XGetWindowProperty (dpy,
 			    DefaultRootWindow (dpy),
 			    XA_CUT_BUFFER0,
 			    nread/4, 1024,   /* offset, length */
-			    False,	     /* delete */
+			    False,           /* delete */
 			    AnyPropertyType, /* request type */
 			    &actual_type,
 			    &actual_format, &nitems, &bytes_after,
 			    (unsigned char **)&data) != Success) {
-      return;				/* didn't work, give up */
+      return;                           /* didn't work, give up */
     } /* end didn't work */
-    if (actual_type != XA_STRING) {	/* if something other than text */
-      return;				/* give up */
+    if (actual_type != XA_STRING) {     /* if something other than text */
+      return;                           /* give up */
     }
     for (c = data; c != data + nitems; c++) { /* each char */
       switch (*c) {
-      case '\t':			/* TAB */
+      case '\t':                        /* TAB */
 	if (CF.cur_input == CF.cur_input->input.next_input) { /* 1 ip field */
 	  process_regular_char_input((unsigned char *)" "); /* paste space */
 	} else {
-	  process_tabtypes(c);		/* jump to the next field */
+	  process_tabtypes(c);          /* jump to the next field */
 	}
-      case '\015':			/* LINEFEED */
-      case '\016':			/* ^N */
-	process_tabtypes(c);		/* jump to the next field */
+      case '\015':                      /* LINEFEED */
+      case '\016':                      /* ^N */
+	process_tabtypes(c);            /* jump to the next field */
 	break;
       case '\n':
 	/* change \n to \r for pasting */
@@ -710,7 +710,7 @@ static void ResizeFrame (void) {
     ;
   XGetGeometry(dpy, CF.frame, &root, &x, &y, &width, &height, &border, &depth);
   if (width != CF.max_width) {
-    if (CF.last_error != 0) {		/* if form has message area */
+    if (CF.last_error != 0) {           /* if form has message area */
       fprintf(stderr, "Frame was %d, is %d\n",CF.max_width,width);
       /* RedrawText sets x = item->header.pos_x + TEXT_SPC;
 	 MassageConfig does :
@@ -721,7 +721,7 @@ static void ResizeFrame (void) {
       */
       int delta;
       int curr_x;
-      delta = width - CF.max_width;	/* new width - curr width */
+      delta = width - CF.max_width;     /* new width - curr width */
       curr_x = CF.last_error->header.pos_x + TEXT_SPC;
       curr_end = curr_x + CF.last_error->size_x;
 

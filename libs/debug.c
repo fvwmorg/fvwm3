@@ -5,22 +5,22 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /* File:    debug.c
  *
  * Description:
- *	Implement some debugging/log functions that can be used generically
- *	by all of fvwm + modules.
+ *      Implement some debugging/log functions that can be used generically
+ *      by all of fvwm + modules.
  *
  * Created:
- *	 6 Nov 1998 - Paul D. Smith <psmith@BayNetworks.com>
+ *       6 Nov 1998 - Paul D. Smith <psmith@BayNetworks.com>
  */
 
 #include "config.h"
@@ -44,13 +44,13 @@ int f_db_level = 0;
 
 #ifdef DEBUG
 
-/* Global variable filled by callers of the DB library.	 */
+/* Global variable filled by callers of the DB library.  */
 struct f_db_info f_db_info;
 
 static int is_db_initialized = 0;
 static FILE *f_db_file;
 
-/* Initializes the DB library.	You can't make any DB calls until this
+/* Initializes the DB library.  You can't make any DB calls until this
  * function has been called.
  */
 static void

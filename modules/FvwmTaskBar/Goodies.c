@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -88,7 +88,7 @@ void cool_get_inboxstatus();
 #define gray_height 8
 extern unsigned char gray_bits[];
 
-/*		  x  y	w  h  tw th open type *text   win */
+/*                x  y  w  h  tw th open type *text   win */
 TipStruct Tip = { 0, 0, 0, 0,  0, 0,   0,   0, NULL, None };
 
 
@@ -573,7 +573,7 @@ void CreateTipWindow(int x, int y, int w, int h)
   if (FShapesSupported)
   {
     FShapeCombineMask(dpy, Tip.win, FShapeBounding, 0, 0, pmask, FShapeSet);
-    FShapeCombineMask(dpy, Tip.win, FShapeClip,	    0, 0, pclip, FShapeSet);
+    FShapeCombineMask(dpy, Tip.win, FShapeClip,     0, 0, pclip, FShapeSet);
   }
   if (tipscolorset >= 0 && (cset->pixmap || cset->shape_mask))
   {
@@ -600,7 +600,7 @@ void DestroyTipWindow()
 }
 
 /*-----------------------------------------------------*/
-/* Get file modification time			       */
+/* Get file modification time                          */
 /* (based on the code of 'coolmail' By Byron C. Darrah */
 /*-----------------------------------------------------*/
 
@@ -614,8 +614,8 @@ void cool_get_inboxstatus()
    fd = open (mailpath, O_RDONLY, 0);
    if (fd < 0)
    {
-      anymail	 = 0;
-      newmail	 = 0;
+      anymail    = 0;
+      newmail    = 0;
       unreadmail = 0;
       newsize = 0;
    }

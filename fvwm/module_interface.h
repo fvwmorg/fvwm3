@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #ifndef FVWM_MODULE_INTERFACE_H
@@ -31,14 +31,14 @@ extern fqueue *pipeQueue;
  *
  * The stuff about not turning on lock on send is from Afterstep.
  *
- * I needed sendconfig off  to	identify open  pipes that want	config
+ * I needed sendconfig off  to  identify open  pipes that want  config
  * info messages while active.
  *
  * There really should be  a   module structure.  Ie.  the   "readPipes",
- * "writePipes", "pipeName", arrays  should be	members	 of a  structure.
+ * "writePipes", "pipeName", arrays  should be  members  of a  structure.
  * Probably a linklist of structures.  Note that if the OS number of file
- * descriptors	 gets really  large,   the  current  architecture  starts
- * creating and looping	 over  large arrays.  The  impact seems	 to be in
+ * descriptors   gets really  large,   the  current  architecture  starts
+ * creating and looping  over  large arrays.  The  impact seems  to be in
  * module.c, modconf.c and event.c.  dje 10/2/98
  */
 /* this is a bit long winded to allow MAX_MESSAGE to be 32 and not get an
@@ -70,7 +70,7 @@ extern msg_masks_type *PipeMask;
   IS_MESSAGE_IN_MASK(&PipeMask[(module)], (msg_mask))
 
 /*
- * M_SENDCONFIG for   modules to tell  fvwm that  they	want to	 see each
+ * M_SENDCONFIG for   modules to tell  fvwm that  they  want to  see each
  * module configuration command as   it is entered.  Causes  modconf.c to
  * look at each active module, find  the ones that sent M_SENDCONFIG, and
  * send a copy of the command in an M_CONFIG_INFO command.

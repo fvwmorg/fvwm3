@@ -6,42 +6,42 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 /****************************************************************************
  * This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
  ****************************************************************************/
 /*****************************************************************************/
-/**	  Copyright 1988 by Evans & Sutherland Computer Corporation,	    **/
-/**			     Salt Lake City, Utah			    **/
+/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
+/**                          Salt Lake City, Utah                           **/
 /**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**			   Cambridge, Massachusetts			    **/
-/**									    **/
-/**			      All Rights Reserved			    **/
-/**									    **/
+/**                        Cambridge, Massachusetts                         **/
+/**                                                                         **/
+/**                           All Rights Reserved                           **/
+/**                                                                         **/
 /**    Permission to use, copy, modify, and distribute this software and    **/
 /**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear	 in  all    **/
-/**    copies and that both  that  copyright  notice  and  this	 permis-    **/
+/**    granted, provided that the above copyright notice appear  in  all    **/
+/**    copies and that both  that  copyright  notice  and  this  permis-    **/
 /**    sion  notice appear in supporting  documentation,  and  that  the    **/
 /**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software	 without    **/
-/**    specific, written prior permission.				    **/
-/**									    **/
+/**    in publicity pertaining to distribution of the  software  without    **/
+/**    specific, written prior permission.                                  **/
+/**                                                                         **/
 /**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
 /**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY	AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
+/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
 /**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR	ANY DAMAGES WHATSOEVER	RESULTING FROM LOSS OF USE, DATA    **/
+/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
 /**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH	THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.					    **/
+/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
+/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
 /*****************************************************************************/
 
 /* ---------------------------- included header files ----------------------- */
@@ -102,7 +102,7 @@
 /* ---------------------------- local definitions --------------------------- */
 
 #ifndef XUrgencyHint
-#define XUrgencyHint		(1L << 8)
+#define XUrgencyHint            (1L << 8)
 #endif
 
 /*
@@ -149,12 +149,12 @@ static PFEH EventHandlerJumpTable[LASTEvent];
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
-int Context = C_NO_CONTEXT;		/* current button press context */
-FvwmWindow *ButtonWindow = NULL;	/* button press window structure */
-XEvent Event;				/* the current event */
-FvwmWindow *Fw = NULL;			/* the current fvwm window */
+int Context = C_NO_CONTEXT;             /* current button press context */
+FvwmWindow *ButtonWindow = NULL;        /* button press window structure */
+XEvent Event;                           /* the current event */
+FvwmWindow *Fw = NULL;                  /* the current fvwm window */
 int last_event_type = 0;
-Time lastTimestamp = CurrentTime;	/* until Xlib does this for us */
+Time lastTimestamp = CurrentTime;       /* until Xlib does this for us */
 Window PressedW = None;
 fd_set init_fdset;
 
@@ -262,7 +262,7 @@ static Bool test_resizing_event(
 /***********************************************************************
  *
  *  Procedure:
- *	SendConfigureNotify - inform a client window of its geometry.
+ *      SendConfigureNotify - inform a client window of its geometry.
  *
  *  The input (frame) geometry will be translated to client geometry
  *  before sending.
@@ -314,7 +314,7 @@ void SendConfigureNotify(
 /***********************************************************************
  *
  *  Procedure:
- *	HandleButtonPress - ButtonPress event handler
+ *      HandleButtonPress - ButtonPress event handler
  *
  ***********************************************************************/
 void HandleButtonPress(void)
@@ -638,7 +638,7 @@ void HandleButtonPress(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleButtonRelease - ButtonRelease event handler
+ *      HandleButtonRelease - ButtonRelease event handler
  *
  ************************************************************************/
 void HandleButtonRelease()
@@ -687,7 +687,7 @@ void HandleButtonRelease()
 /***********************************************************************
  *
  *  Procedure:
- *	HandleClientMessage - client message event handler
+ *      HandleClientMessage - client message event handler
  *
  ************************************************************************/
 void HandleClientMessage(void)
@@ -764,7 +764,7 @@ void HandleClientMessage(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleConfigureRequest - ConfigureRequest event handler
+ *      HandleConfigureRequest - ConfigureRequest event handler
  *
  ************************************************************************/
 void HandleConfigureRequest(void)
@@ -884,7 +884,7 @@ void HandleConfigureRequest(void)
 		}
 	}
 
-	/*  Stacking order change requested...	*/
+	/*  Stacking order change requested...  */
 	/*  Handle this *after* geometry changes, since we need the new
 	    geometry in occlusion calculations */
 	if ((cre->value_mask & CWStackMode) && !DO_IGNORE_RESTACK(Fw))
@@ -1188,7 +1188,7 @@ void HandleConfigureRequest(void)
 		/*
 		 * SetupWindow (x,y) are the location of the upper-left outer
 		 * corner and are passed directly to XMoveResizeWindow (frame).
-		 *  The (width,height) are the inner size of the frame.	 The
+		 *  The (width,height) are the inner size of the frame.  The
 		 * inner width is the same as the requested client window
 		 * width; the inner height is the same as the requested client
 		 * window height plus any title bar slop.
@@ -1279,7 +1279,7 @@ void HandleConfigureRequest(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleDestroyNotify - DestroyNotify event handler
+ *      HandleDestroyNotify - DestroyNotify event handler
  *
  ***********************************************************************/
 void HandleDestroyNotify(void)
@@ -1295,7 +1295,7 @@ void HandleDestroyNotify(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleEnterNotify - EnterNotify event handler
+ *      HandleEnterNotify - EnterNotify event handler
  *
  ************************************************************************/
 void HandleEnterNotify(void)
@@ -1377,7 +1377,7 @@ void HandleEnterNotify(void)
 		/* Ignore events generated by grabbing or ungrabbing the
 		 * pointer.  However, there is no way to prevent the client
 		 * application from handling this event and, for example,
-		 * grabbing the focus.	This will interfere with functions that
+		 * grabbing the focus.  This will interfere with functions that
 		 * transferred the focus to a different window. */
 		if (is_initial_ungrab_pending)
 		{
@@ -1546,7 +1546,7 @@ void HandleEnterNotify(void)
 		 do_accept_input_focus(Fw))
 	{
 		/* We have to refresh the focus window here in case we left the
-		 * focused fvwm window.	 Motif apps may lose the input focus
+		 * focused fvwm window.  Motif apps may lose the input focus
 		 * otherwise.  But do not try to refresh the focus of
 		 * applications that want to handle it themselves. */
 		FOCUS_SET(FW_W(Fw));
@@ -1574,15 +1574,15 @@ void HandleEnterNotify(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleExpose - expose event handler
+ *      HandleExpose - expose event handler
  *
  ***********************************************************************/
 void HandleExpose(void)
 {
 #if 0
 	/* This doesn't work well. Sometimes, the expose count is zero although
-	 * dozens of expose events are pending.	 This happens all the time
-	 * during a shading animation.	Simply flush expose events
+	 * dozens of expose events are pending.  This happens all the time
+	 * during a shading animation.  Simply flush expose events
 	 * unconditionally. */
 	if (Event.xexpose.count != 0)
 	{
@@ -1615,7 +1615,7 @@ void HandleExpose(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleFocusIn - handles focus in events
+ *      HandleFocusIn - handles focus in events
  *
  ************************************************************************/
 void HandleFocusIn(void)
@@ -1774,7 +1774,7 @@ void HandleFocusOut(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleKeyPress - key press event handler
+ *      HandleKeyPress - key press event handler
  *
  ************************************************************************/
 void HandleKeyPress(void)
@@ -1826,7 +1826,7 @@ void HandleKeyPress(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleLeaveNotify - LeaveNotify event handler
+ *      HandleLeaveNotify - LeaveNotify event handler
  *
  ************************************************************************/
 void HandleLeaveNotify(void)
@@ -1844,7 +1844,7 @@ void HandleLeaveNotify(void)
 		/* Ignore events generated by grabbing or ungrabbing the
 		 * pointer.  However, there is no way to prevent the client
 		 * application from handling this event and, for example,
-		 * grabbing the focus.	This will interfere with functions that
+		 * grabbing the focus.  This will interfere with functions that
 		 * transferred the focus to a different window. */
 		if (Event.xcrossing.mode == NotifyGrab && Fw &&
 		    (Event.xcrossing.window == FW_W_FRAME(Fw) ||
@@ -1919,7 +1919,7 @@ void HandleLeaveNotify(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleMapNotify - MapNotify event handler
+ *      HandleMapNotify - MapNotify event handler
  *
  ***********************************************************************/
 void HandleMapNotify(void)
@@ -2015,7 +2015,7 @@ void HandleMapNotify(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleMapRequest - MapRequest event handler
+ *      HandleMapRequest - MapRequest event handler
  *
  ************************************************************************/
 void HandleMapRequest(void)
@@ -2273,7 +2273,7 @@ void HandleMapRequestKeepRaised(
 /***********************************************************************
  *
  *  Procedure:
- *	HandleMotionNotify - MotionNotify event handler
+ *      HandleMotionNotify - MotionNotify event handler
  *
  ************************************************************************/
 void HandleMotionNotify()
@@ -2292,7 +2292,7 @@ void HandleMotionNotify()
 /***********************************************************************
  *
  *  Procedure:
- *	HandlePropertyNotify - property notify event handler
+ *      HandlePropertyNotify - property notify event handler
  *
  ***********************************************************************/
 void HandlePropertyNotify(void)
@@ -2320,7 +2320,7 @@ void HandlePropertyNotify(void)
 	{
 		/* background change */
 		/* _XA_XSETROOT_ID is used by fvwm-root, xli and more (xv sends
-		 * no property	notify?).  _XA_XROOTPMAP_ID is used by Esetroot
+		 * no property  notify?).  _XA_XROOTPMAP_ID is used by Esetroot
 		 * compatible program: the problem here is that with some
 		 * Esetroot compatible program we get the message _before_ the
 		 * background change. This is fixed with Esetroot 9.2 (not yet
@@ -2477,13 +2477,13 @@ void HandlePropertyNotify(void)
 		 * pixmap or window or has reset the hints to `no icon'.
 		 */
 		if ((Fw->wmhints->flags & IconPixmapHint) ||
-		    (old_wmhints_flags	     & IconPixmapHint))
+		    (old_wmhints_flags       & IconPixmapHint))
 		{
 ICON_DBG((stderr,"hpn: iph changed (%d) '%s'\n", !!(int)(Fw->wmhints->flags & IconPixmapHint), Fw->name));
 			has_icon_pixmap_hint_changed = True;
 		}
 		if ((Fw->wmhints->flags & IconWindowHint) ||
-		    (old_wmhints_flags	     & IconWindowHint))
+		    (old_wmhints_flags       & IconWindowHint))
 		{
 ICON_DBG((stderr,"hpn: iwh changed (%d) '%s'\n", !!(int)(Fw->wmhints->flags & IconWindowHint), Fw->name));
 			has_icon_window_hint_changed = True;
@@ -2695,7 +2695,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 				/* domivogt (07-Apr-2000): as terrible hack to
 				 * work around a xterm bug: when the font size
 				 * is changed in a xterm, xterm simply assumes
-				 * that the wm will grant its new size.	 Of
+				 * that the wm will grant its new size.  Of
 				 * course this is wrong if the xterm is
 				 * maximised.  To make xterm happy, we first
 				 * send a ConfigureNotify with the current
@@ -2772,7 +2772,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 		}
 		else if (Event.xproperty.atom == _XA_WM_COLORMAP_WINDOWS)
 		{
-			FetchWmColormapWindows (Fw);	/* frees old data */
+			FetchWmColormapWindows (Fw);    /* frees old data */
 			ReInstallActiveColormap();
 		}
 		else if (Event.xproperty.atom == _XA_WM_STATE)
@@ -2798,7 +2798,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 /***********************************************************************
  *
  *  Procedure:
- *	HandleReparentNotify - ReparentNotify event handler
+ *      HandleReparentNotify - ReparentNotify event handler
  *
  ************************************************************************/
 void HandleReparentNotify(void)
@@ -2839,7 +2839,7 @@ void HandleReparentNotify(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleShapeNotify - shape notification event handler
+ *      HandleShapeNotify - shape notification event handler
  *
  ***********************************************************************/
 void HandleShapeNotify (void)
@@ -2870,7 +2870,7 @@ void HandleShapeNotify (void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleUnmapNotify - UnmapNotify event handler
+ *      HandleUnmapNotify - UnmapNotify event handler
  *
  ************************************************************************/
 void HandleUnmapNotify(void)
@@ -2962,7 +2962,7 @@ void HandleUnmapNotify(void)
 
 	/*
 	 * The program may have unmapped the client window, from either
-	 * NormalState or IconicState.	Handle the transition to WithdrawnState.
+	 * NormalState or IconicState.  Handle the transition to WithdrawnState.
 	 *
 	 * We need to reparent the window back to the root (so that fvwm exiting
 	 * won't cause it to get mapped) and then throw away all state (pretend
@@ -3007,7 +3007,7 @@ void HandleUnmapNotify(void)
 		XSync(dpy, 0);
 		MyXUngrabServer(dpy);
 	}
-	destroy_window(Fw);		/* do not need to mash event before */
+	destroy_window(Fw);             /* do not need to mash event before */
 	if (focus_grabbed)
 	{
 		CoerceEnterNotifyOnCurrentWindow();
@@ -3020,8 +3020,8 @@ void HandleUnmapNotify(void)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleVisibilityNotify - record fully visible windows for
- *	use in the RaiseLower function and the OnTop type windows.
+ *      HandleVisibilityNotify - record fully visible windows for
+ *      use in the RaiseLower function and the OnTop type windows.
  *
  ************************************************************************/
 void HandleVisibilityNotify(void)
@@ -3064,28 +3064,28 @@ void InitEventHandlerJumpTable(void)
 	{
 		EventHandlerJumpTable[i] = NULL;
 	}
-	EventHandlerJumpTable[Expose] =		  HandleExpose;
-	EventHandlerJumpTable[DestroyNotify] =	  HandleDestroyNotify;
-	EventHandlerJumpTable[MapRequest] =	  HandleMapRequest;
-	EventHandlerJumpTable[MapNotify] =	  HandleMapNotify;
-	EventHandlerJumpTable[UnmapNotify] =	  HandleUnmapNotify;
-	EventHandlerJumpTable[ButtonPress] =	  HandleButtonPress;
-	EventHandlerJumpTable[EnterNotify] =	  HandleEnterNotify;
-	EventHandlerJumpTable[LeaveNotify] =	  HandleLeaveNotify;
-	EventHandlerJumpTable[FocusIn] =	  HandleFocusIn;
-	EventHandlerJumpTable[FocusOut] =	  HandleFocusOut;
+	EventHandlerJumpTable[Expose] =           HandleExpose;
+	EventHandlerJumpTable[DestroyNotify] =    HandleDestroyNotify;
+	EventHandlerJumpTable[MapRequest] =       HandleMapRequest;
+	EventHandlerJumpTable[MapNotify] =        HandleMapNotify;
+	EventHandlerJumpTable[UnmapNotify] =      HandleUnmapNotify;
+	EventHandlerJumpTable[ButtonPress] =      HandleButtonPress;
+	EventHandlerJumpTable[EnterNotify] =      HandleEnterNotify;
+	EventHandlerJumpTable[LeaveNotify] =      HandleLeaveNotify;
+	EventHandlerJumpTable[FocusIn] =          HandleFocusIn;
+	EventHandlerJumpTable[FocusOut] =         HandleFocusOut;
 	EventHandlerJumpTable[ConfigureRequest] = HandleConfigureRequest;
-	EventHandlerJumpTable[ClientMessage] =	  HandleClientMessage;
-	EventHandlerJumpTable[PropertyNotify] =	  HandlePropertyNotify;
-	EventHandlerJumpTable[KeyPress] =	  HandleKeyPress;
+	EventHandlerJumpTable[ClientMessage] =    HandleClientMessage;
+	EventHandlerJumpTable[PropertyNotify] =   HandlePropertyNotify;
+	EventHandlerJumpTable[KeyPress] =         HandleKeyPress;
 	EventHandlerJumpTable[VisibilityNotify] = HandleVisibilityNotify;
-	EventHandlerJumpTable[ColormapNotify] =	  HandleColormapNotify;
+	EventHandlerJumpTable[ColormapNotify] =   HandleColormapNotify;
 	if (FShapesSupported)
 	{
 		EventHandlerJumpTable[FShapeEventBase+FShapeNotify] =
 			HandleShapeNotify;
 	}
-	EventHandlerJumpTable[SelectionClear]	= HandleSelectionClear;
+	EventHandlerJumpTable[SelectionClear]   = HandleSelectionClear;
 	EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;
 	EventHandlerJumpTable[ReparentNotify] = HandleReparentNotify;
 	STROKE_CODE(EventHandlerJumpTable[ButtonRelease] = HandleButtonRelease);
@@ -3100,7 +3100,7 @@ void InitEventHandlerJumpTable(void)
 /***********************************************************************
  *
  *  Procedure:
- *	DispatchEvent - handle a single X event stored in global var Event
+ *      DispatchEvent - handle a single X event stored in global var Event
  *
  ************************************************************************/
 void DispatchEvent(Bool preserve_Fw)
@@ -3164,7 +3164,7 @@ void DispatchEvent(Bool preserve_Fw)
 /***********************************************************************
  *
  *  Procedure:
- *	HandleEvents - handle X events
+ *      HandleEvents - handle X events
  *
  ************************************************************************/
 void HandleEvents(void)
@@ -3428,7 +3428,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 /***********************************************************************
  *
  *  Procedure:
- *	Find the Fvwm context for the Event.
+ *      Find the Fvwm context for the Event.
  *
  ************************************************************************/
 int GetContext(FvwmWindow *t, XEvent *e, Window *w)
@@ -3735,8 +3735,8 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	unsigned int mask;
 	long evmask = ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|
 		KeyPressMask|KeyReleaseMask;
-        unsigned int count;
-        int use_wait_cursor;
+	unsigned int count;
+	int use_wait_cursor;
 
 	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
 			  &JunkX, &JunkY, &mask) == False)
@@ -3748,12 +3748,12 @@ void WaitForButtonsUp(Bool do_handle_expose)
 		return;
 	}
 	if (do_handle_expose)
-        {
+	{
 		evmask |= ExposureMask;
-        }
+	}
 	GrabEm(None, GRAB_NORMAL);
-        for (count = 0, use_wait_cursor = 0; mask & (DEFAULT_ALL_BUTTONS_MASK);
-             count++)
+	for (count = 0, use_wait_cursor = 0; mask & (DEFAULT_ALL_BUTTONS_MASK);
+	     count++)
 	{
 		/* handle expose events */
 		XAllowEvents(dpy, SyncPointer, CurrentTime);
@@ -3784,18 +3784,18 @@ void WaitForButtonsUp(Bool do_handle_expose)
 				 * okay here */
 			}
 		}
-                usleep(1);
-                if (use_wait_cursor == 0 && count == 20)
-                {
-                        GrabEm(CRS_WAIT, GRAB_NORMAL);
-                        use_wait_cursor = 1;
-                }
+		usleep(1);
+		if (use_wait_cursor == 0 && count == 20)
+		{
+			GrabEm(CRS_WAIT, GRAB_NORMAL);
+			use_wait_cursor = 1;
+		}
 	}
 	UngrabEm(GRAB_NORMAL);
-        if (use_wait_cursor)
-        {
-                UngrabEm(GRAB_NORMAL);
-        }
+	if (use_wait_cursor)
+	{
+		UngrabEm(GRAB_NORMAL);
+	}
 
 	return;
 }

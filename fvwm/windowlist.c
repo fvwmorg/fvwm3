@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 /****************************************************************************
@@ -51,21 +51,21 @@
 extern FvwmWindow *Fw;
 extern FvwmWindow *ButtonWindow;
 
-#define SHOW_GEOMETRY		(1<<0)
-#define SHOW_ALLDESKS		(1<<1)
-#define SHOW_NORMAL		(1<<2)
-#define SHOW_ICONIC		(1<<3)
-#define SHOW_STICKY		(1<<4)
-#define NO_DESK_SORT		(1<<6)
-#define SHOW_ICONNAME		(1<<7)
-#define SHOW_ALPHABETIC		(1<<8)
-#define SORT_CLASSNAME		(1<<9)
-#define SORT_REVERSE		(1<<10)
-#define SHOW_INFONOTGEO		(1<<11)
-#define NO_DESK_NUM		(1<<12)
-#define NO_CURRENT_DESK_TITLE	(1<<13)
-#define TITLE_FOR_ALL_DESKS	(1<<14)
-#define NO_NUM_IN_DESK_TITLE	(1<<15)
+#define SHOW_GEOMETRY           (1<<0)
+#define SHOW_ALLDESKS           (1<<1)
+#define SHOW_NORMAL             (1<<2)
+#define SHOW_ICONIC             (1<<3)
+#define SHOW_STICKY             (1<<4)
+#define NO_DESK_SORT            (1<<6)
+#define SHOW_ICONNAME           (1<<7)
+#define SHOW_ALPHABETIC         (1<<8)
+#define SORT_CLASSNAME          (1<<9)
+#define SORT_REVERSE            (1<<10)
+#define SHOW_INFONOTGEO         (1<<11)
+#define NO_DESK_NUM             (1<<12)
+#define NO_CURRENT_DESK_TITLE   (1<<13)
+#define TITLE_FOR_ALL_DESKS     (1<<14)
+#define NO_NUM_IN_DESK_TITLE    (1<<15)
 #define SHOW_EVERYTHING (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | SHOW_ICONIC | SHOW_STICKY)
 
 static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
@@ -96,7 +96,7 @@ static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
 
 /*
  * Change by PRB (pete@tecc.co.uk), 31/10/93.  Prepend a hot key
- * specifier to each item in the list.	This means allocating the
+ * specifier to each item in the list.  This means allocating the
  * memory for each item (& freeing it) rather than just using the window
  * title directly. */
 void CMD_WindowList(F_CMD_ARGS)
@@ -118,8 +118,8 @@ void CMD_WindowList(F_CMD_ARGS)
   int last_desk_done = INT_MIN;
   int last_desk_displayed = INT_MIN;
   int next_desk = 0;
-  char *t_hot=NULL;		/* Menu label with hotkey added */
-  char scut = '0';		/* Current short cut key */
+  char *t_hot=NULL;             /* Menu label with hotkey added */
+  char scut = '0';              /* Current short cut key */
   char *opts=NULL;
   char *tok=NULL;
   int desk = Scr.CurrentDesk;
@@ -399,7 +399,7 @@ void CMD_WindowList(F_CMD_ARGS)
   if (flags & (SHOW_ALPHABETIC | SORT_CLASSNAME))
   {
 	/* Which of the compare functions to sort on. */
-  	int (*compare)( const FvwmWindow **a, const FvwmWindow **b);
+	int (*compare)( const FvwmWindow **a, const FvwmWindow **b);
 	/* This will be compare or compareReverse if a reverse order
 	 * is selected.
 	 */
@@ -492,7 +492,7 @@ void CMD_WindowList(F_CMD_ARGS)
     if(!(flags & SHOW_ALLDESKS))
     {
       /* if only doing one desk and it hasn't been done */
-      if(last_desk_done	 == INT_MIN)
+      if(last_desk_done  == INT_MIN)
 	next_desk = desk; /* select the desk */
       else
 	next_desk = INT_MAX; /* flag completion */
@@ -558,7 +558,7 @@ void CMD_WindowList(F_CMD_ARGS)
 
 	t_hot = safemalloc(strlen(name) + 48);
 	if (use_hotkey)
-	  sprintf(t_hot, "&%c. ", scut);	 /* Generate label */
+	  sprintf(t_hot, "&%c. ", scut);         /* Generate label */
 	else
 	  *t_hot = 0;
 	if(!(flags & SHOW_INFONOTGEO))

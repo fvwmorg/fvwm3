@@ -10,20 +10,20 @@
 /* define if extended WM hints are enabled */
 #undef HAVE_EWMH
 
-/* Where to search for images.	*/
+/* Where to search for images. */
 #undef FVWM_IMAGEPATH
 
-/* Define if Xpm library is used.  */
+/* Define if Xpm library is used. */
 #undef XPM
 
-/* Define if ppm library is used.  */
+/* Define if ppm library is used. */
 #undef HAVE_PNG
 
 /* Define if your processor stores words with the most significant
-   byte first (like Motorola and SPARC, unlike Intel and VAX).	*/
+   byte first (like Motorola and SPARC, unlike Intel and VAX). */
 #undef WORDS_BIGENDIAN
 
-/* Define if rplay library is used.  */
+/* Define if rplay library is used. */
 #undef HAVE_RPLAY
 
 /* Define if Xinerama should be emulated on a single screen. */
@@ -41,7 +41,7 @@
 /* Define if Xft 2 library is used. */
 #undef HAVE_XFT2
 
-/* Define if Xft library can handle utf8 encoding  */
+/* Define if Xft library can handle utf8 encoding */
 #undef HAVE_XFT_UTF8
 
 /* Define if stroke library is used. */
@@ -55,7 +55,7 @@
 #    define STROKE_CODE(x)
 #endif
 
-/* Define if readline is available.  */
+/* Define if readline is available. */
 #undef HAVE_READLINE
 
 /* Define if iconv (in the libc) or libiconv is available */
@@ -91,16 +91,16 @@
  * don't normally use a shaped window, you have to decide for yourself.
  *
  * Note: if it is compiled in, run time detection is used to make sure that
- * the currently running X server supports it.	*/
+ * the currently running X server supports it. */
 #undef SHAPE
 
-/* Define if fribidi library is used.  */
+/* Define if fribidi library is used. */
 #undef HAVE_BIDI
 
 /* Enables the "MiniIcon" Style option to specify a small pixmap which
  * can be used as one of the title-bar buttons, shown in window list,
  * utilized by modules, etc.  Requires PIXMAP_BUTTONS to be defined
- * (see below).	 */
+ * (see below). */
 /* #undef MINI_ICONS */
 /* NOTE: hard coded to 1 */
 #if 1
@@ -113,7 +113,7 @@
  * windows using the UseDecor Style option, or dynamically updated
  * with ChangeDecor.  To create and destroy "decor" definitions, see
  * the man page entries for AddToDecor and DestroyDecor.  There is a
- * slight memory penalty for each additionally defined decor.  */
+ * slight memory penalty for each additionally defined decor. */
 /* #undef USEDECOR */
 /* NOTE: hard coded to 1 */
 #define USEDECOR 1
@@ -130,18 +130,18 @@
 /* Enable X output method */
 #undef HAVE_XOUTPUT_METHOD
 
-/* Specify a type for sig_atomic_t if it's not available.  */
+/* Specify a type for sig_atomic_t if it's not available. */
 #undef sig_atomic_t
 
-/* Define to the type used in argument 1 `select'.  Usually this is an `int'.  */
+/* Define to the type used in argument 1 `select'.  Usually this is an `int'. */
 #undef fd_set_size_t
 
 /* Define to the type used in arguments 2-4 of `select', if not set by system
-   headers.  */
+   headers. */
 #undef fd_set
 
 /* Define a suitable cast for arguments 2-4 of `select'.  On most systems,
-   this will be the empty string, as select usually takes pointers to fd_set.  */
+   this will be the empty string, as select usually takes pointers to fd_set. */
 #undef SELECT_FD_SET_CAST
 
 
@@ -195,7 +195,7 @@
 /* Define if the X11 ConnectionNumber is actually a file descriptor. */
 #define HAVE_X11_FD 1
 
-/* Define if fork() has unix semantics.	 On VMS, no child process is created
+/* Define if fork() has unix semantics.  On VMS, no child process is created
    until after a successful exec(). */
 #define FORK_CREATES_CHILD 1
 

@@ -5,19 +5,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "Tools.h"
 
 
 /***********************************************/
-/* Fonction pour VScrollBar		       */
+/* Fonction pour VScrollBar                    */
 /***********************************************/
 void DrawThumbV(struct XObj *xobj)
 {
@@ -94,7 +94,7 @@ void InitVScrollBar(struct XObj *xobj)
   Attr.background_pixel = xobj->TabColor[back];
   mask |= CWBackPixel;
   Attr.cursor = XCreateFontCursor(dpy,XC_hand2);
-  mask |= CWCursor;		/* Curseur pour la fenetre */
+  mask |= CWCursor;             /* Curseur pour la fenetre */
 
   xobj->win = XCreateWindow(dpy, *xobj->ParentWin,
 			    xobj->x, xobj->y, xobj->width, xobj->height, 0,

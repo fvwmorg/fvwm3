@@ -14,12 +14,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
 #include "config.h"
@@ -75,7 +75,7 @@ ScreenInfo Scr;
 PagerWindow *Start = NULL;
 PagerWindow *FocusWin = NULL;
 
-Display *dpy;			/* which display are we talking to */
+Display *dpy;                   /* which display are we talking to */
 int x_fd;
 fd_set_size_t fd_width;
 
@@ -159,7 +159,7 @@ void ExitPager(void);
 /***********************************************************************
  *
  *  Procedure:
- *	main - start of module
+ *      main - start of module
  *
  ***********************************************************************/
 int main(int argc, char **argv)
@@ -466,7 +466,7 @@ int main(int argc, char **argv)
 /***********************************************************************
  *
  *  Procedure:
- *	Loop - wait for data to process
+ *      Loop - wait for data to process
  *
  ***********************************************************************/
 void Loop(int *fd)
@@ -499,7 +499,7 @@ void Loop(int *fd)
 /***********************************************************************
  *
  *  Procedure:
- *	Process message - examines packet types, and takes appropriate action
+ *      Process message - examines packet types, and takes appropriate action
  *
  ***********************************************************************/
 void process_message( FvwmPacket* packet )
@@ -573,7 +573,7 @@ void process_message( FvwmPacket* packet )
 /***********************************************************************
  *
  *  Procedure:
- *	SIGPIPE handler - SIGPIPE means fvwm is dying
+ *      SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
 static RETSIGTYPE
@@ -590,7 +590,7 @@ void DeadPipe(int nonsense)
 /***********************************************************************
  *
  *  Procedure:
- *	list_add - displays packet contents to stderr
+ *      list_add - displays packet contents to stderr
  *
  ***********************************************************************/
 void list_add(unsigned long *body)
@@ -645,7 +645,7 @@ void list_add(unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_configure - displays packet contents to stderr
+ *      list_configure - displays packet contents to stderr
  *
  ***********************************************************************/
 void list_configure(unsigned long *body)
@@ -720,7 +720,7 @@ void list_configure(unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_destroy - displays packet contents to stderr
+ *      list_destroy - displays packet contents to stderr
  *
  ***********************************************************************/
 void list_destroy(unsigned long *body)
@@ -761,7 +761,7 @@ void list_destroy(unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_focus - displays packet contents to stderr
+ *      list_focus - displays packet contents to stderr
  *
  ***********************************************************************/
 void list_focus(unsigned long *body)
@@ -808,7 +808,7 @@ void list_focus(unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_new_page - displays packet contents to stderr
+ *      list_new_page - displays packet contents to stderr
  *
  ***********************************************************************/
 void list_new_page(unsigned long *body)
@@ -839,7 +839,7 @@ void list_new_page(unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_new_desk - displays packet contents to stderr
+ *      list_new_desk - displays packet contents to stderr
  *
  ***********************************************************************/
 void list_new_desk(unsigned long *body)
@@ -1003,7 +1003,7 @@ void list_new_desk(unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_raise - displays packet contents to stderr
+ *      list_raise - displays packet contents to stderr
  *
  ***********************************************************************/
 void list_raise(unsigned long *body)
@@ -1029,7 +1029,7 @@ void list_raise(unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_lower - displays packet contents to stderr
+ *      list_lower - displays packet contents to stderr
  *
  ***********************************************************************/
 void list_lower(unsigned long *body)
@@ -1057,7 +1057,7 @@ void list_lower(unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_iconify - displays packet contents to stderr
+ *      list_iconify - displays packet contents to stderr
  *
  ***********************************************************************/
 void list_iconify(unsigned long *body)
@@ -1109,7 +1109,7 @@ void list_iconify(unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	list_deiconify - displays packet contents to stderr
+ *      list_deiconify - displays packet contents to stderr
  *
  ***********************************************************************/
 
@@ -1212,7 +1212,7 @@ void list_window_name(unsigned long *body,unsigned long type)
 /***********************************************************************
  *
  *  Procedure:
- *	list_icon_name - displays packet contents to stderr
+ *      list_icon_name - displays packet contents to stderr
  *
  ***********************************************************************/
 void list_icon_name(unsigned long *body)
@@ -1245,7 +1245,7 @@ void list_icon_name(unsigned long *body)
 
 void list_mini_icon(unsigned long *body)
 {
-  PagerWindow	*t;
+  PagerWindow   *t;
   Window target_w;
   MiniIconPacket *mip = (MiniIconPacket *) body;
 
@@ -1255,12 +1255,12 @@ void list_mini_icon(unsigned long *body)
     t = t->next;
   if (t)
   {
-    t->mini_icon.width	 = mip->width;
-    t->mini_icon.height	 = mip->height;
-    t->mini_icon.depth	 = mip->depth;
+    t->mini_icon.width   = mip->width;
+    t->mini_icon.height  = mip->height;
+    t->mini_icon.depth   = mip->depth;
     t->mini_icon.picture = mip->picture;
-    t->mini_icon.mask	 = mip->mask;
-    t->mini_icon.alpha	 = mip->alpha;
+    t->mini_icon.mask    = mip->mask;
+    t->mini_icon.alpha   = mip->alpha;
     /* repaint by clearing window */
     if (MiniIcons && t->mini_icon.picture) {
       if (t->PagerView)
@@ -1325,7 +1325,7 @@ void list_restack(unsigned long *body, unsigned long length)
 /***********************************************************************
  *
  *  Procedure:
- *	list_end - displays packet contents to stderr
+ *      list_end - displays packet contents to stderr
  *
  ***********************************************************************/
 void list_end(void)

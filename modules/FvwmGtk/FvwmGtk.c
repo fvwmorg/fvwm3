@@ -10,7 +10,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -325,7 +325,7 @@ parse_options (void)
 {
   char *buf;
 
-  InitGetConfigLine(fvwm_fd,my_name);	/* only my config lines needed */
+  InitGetConfigLine(fvwm_fd,my_name);   /* only my config lines needed */
   while (GetConfigLine (fvwm_fd, &buf), buf != NULL)
     {
       parse_config_line (buf);
