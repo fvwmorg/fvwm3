@@ -16,6 +16,7 @@ After the *initial* checkout of the sources, (see cvs.html) you will
 need to execute the following commands from the top of the source
 tree.
 
+    aclocal
     automake --add-missing
     autoreconf
 
@@ -24,6 +25,7 @@ building from a fresh CVS tree), both commands have to be called twice
 to get the distribution built properly (this seems to be a bug in
 autoconf):
 
+    aclocal
     automake --add-missing
     autoreconf
     automake --add-missing
