@@ -199,11 +199,10 @@ print "Echo END\n";
 
 sub menuCheck {
 	my ($menuline) =  @_;
-	my $action = "";
-	my $tact = "";
-   my $path = "";
+	my $path = "";
 
-	return $menuline if (!($menuline =~ /exec/ && $menuline =~ /Exec/));
+	return $menuline unless $menuline =~ /([Ee]xec|"\s+Restart)\s+(.+)$/;
+	my $action = $2;
 	
 	if ($menuline =~ /Exec\s+cd/) {
 		$path = substr($menuline,rindex($menuline,'Exec cd'));
@@ -212,10 +211,9 @@ sub menuCheck {
 		$path =~ s/\s//g;
 		$path =~ s/\/$//;
 	}
-	$action = substr($menuline,rindex($menuline,'exec'));
 	$action =~ s/^exec\s+//;
-   $action =~ s/^killall\s+//;
-   $tact = $action;
+	$action =~ s/^killall\s+//;
+	my $tact = $action;
 	$tact = substr($tact,0,index($tact,' ')) if ($tact =~ /\s/);
 	if ($tact eq "xterm" && $menuline =~ /\-e/) {
 		$action = substr($action,index($action,'-e'));

@@ -2301,14 +2301,35 @@ PipeRead 'fvwm-menu-xlock -n MenuSLock  -t "Lock Screen" -icon-item mini.rball.x
 #------------------------------------------------------------------------------
 
 DestroyMenu Restart
-AddToMenu   Restart
-+ "&Restart%mini.turn.xpm%"		Restart
-+ "Start &fvwm%mini.fvwm.xpm%"		Restart fvwm2
-+ "Start &olvwm%mini.olwm.xpm%"		Restart olvwm
-+ "Start &Afterstep%mini.olwm.xpm%"	Restart afterstep
-+ "Start &Enlightenment%mini.paint.xpm%" Restart enlightenment
-+ "Start &twm%mini.twm.xpm%"		Restart twm
-+ "Start &mwm%mini.mwm.xpm%"		Restart mwm
+AddToMenu   Restart "Restart Window Manager" Title
++ "&Restart Self%mini.turn.xpm%"	Restart
++ "" Nop
++ "&fvwm-themes-start%mini.fvwm.xpm%"	Restart fvwm-themes-start
++ "&fvwm%mini.fvwm.xpm%"		Restart fvwm -s
++ "&fvwm2%mini.fvwm.xpm%"		Restart fvwm2 -s
++ "&fvwm95%mini.fvwm.xpm%"		Restart fvwm95 -s
++ "&AnotherLevel%mini.fvwm.xpm%"	Restart AnotherLevel
++ "&AnotherLevelUp%mini.fvwm.xpm%"	Restart AnotherLevelUp
++ "" Nop
++ "&afterstep%mini.windows.xpm%"	Restart afterstep
++ "&blackbox%mini.windows.xpm%" 	Restart blackbox
++ "&enlightenment%mini.windows.xpm%"	Restart enlightenment
++ "&flwm%mini.windows.xpm%"		Restart flwm
++ "&icewm%mini.windows.xpm%"		Restart icewm
++ "&kwm%mini.windows.xpm%"		Restart kwm
++ "&mwm%mini.mwm.xpm%"			Restart mwm
++ "&olvwm%mini.olwm.xpm%"		Restart olvwm
++ "&sawfish%mini.windows.xpm%"		Restart sawfish
++ "&sawmill%mini.windows.xpm%"		Restart sawmill
++ "&scwm%mini.windows.xpm%"		Restart scwm
++ "&twm%mini.twm.xpm%"			Restart twm
++ "&uwm%mini.windows.xpm%"		Restart uwm
++ "&wm2%mini.windows.xpm%"		Restart wm2
++ "&wmaker%mini.windows.xpm%"		Restart wmaker
++ "&wmx%mini.windows.xpm%"		Restart wmx
++ "&xfwm%mini.windows.xpm%"		Restart xfwm
++ "" Nop
++ "Just &xterm%mini.term.xpm%"		Restart xterm
 # A bit dangerous in a menu
 #+ ""					Nop
 #+ "Halt%mini.stop.xpm%"	  	Exec exec shutdown -h now

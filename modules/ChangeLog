@@ -1,7 +1,10 @@
 2001-05-30  Mikhael Goikhman  <migo@homemail.com>
 
-	* modules/FvwmScript/Scripts/FvwmScript-Setup95.in:
+	* FvwmScript/Scripts/FvwmScript-Setup95.in:
 	s/desktop/globalfeel/
+
+	* FvwmScript/Scripts/fvwm-script-setup95.pl:
+	process Restart like Exec, i.e. leave only existing WMs
 
 2001-06-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
