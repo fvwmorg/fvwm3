@@ -17,7 +17,6 @@ In addition - with the exception of the following directories
 and all files within: 
 
   modules/FvwmRearrange
-  extras/FvwmPipe
   modules/FvwmAnimate
   modules/FvwmAudio
   modules/FvwmEvents
