@@ -1,3 +1,14 @@
+2002-10-17  olicha  <olivier.chapuis@free.fr>
+
+	* NEWS:
+	A bunch of news
+
+	* libs/Colorset.c (CreateBackgroundPixmap):
+	Use a 1x1 pixmap and not a widthxheight pixmap for Plain color
+	
+	* fvwm/builtins.c (CMD_Colorset):
+	Do not BroadcastColorset in CMD_Colorset, parse_colorset do that!!!
+
 2002-10-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (AddWindow):

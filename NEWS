@@ -60,6 +60,17 @@ Changes in *experimental* release 2.5.4 (not released yet)
 
 * All conditions have a negation.
 
+* New FvwmBacker option RetainPixmap
+
+* Fixed flickering in menus, icon title, FvwmButtons, FvwmIconMan
+  and FvwmPager when xft font is used.
+
+* FvwmButtons redrawing improvement: colorsets are now usable with
+  containers.
+
+* FvwmIconMan options PlainColorset IconColorset FocusColorset and
+  SelectColorset are now strictly respected
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.3 (25-Aug-2002)

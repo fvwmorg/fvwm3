@@ -441,8 +441,8 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 	  xgcv.foreground = colorset->bg;
 	  fill_gc = fvwmlib_XCreateGC(dpy, win, GCForeground, &xgcv);
 	  /* create a solid pixmap - not very useful most of the time */
-	  pixmap = XCreatePixmap(dpy, win, width, height, depth);
-	  XFillRectangle(dpy, pixmap, fill_gc, 0, 0, width, height);
+	  pixmap = XCreatePixmap(dpy, win, 1, 1, depth);
+	  XFillRectangle(dpy, pixmap, fill_gc, 0, 0, 1, 1);
 	  XFreeGC(dpy,fill_gc);
   }
   else if (cs_keep_aspect)

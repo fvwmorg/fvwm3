@@ -2464,7 +2464,6 @@ void CMD_Colorset(F_CMD_ARGS)
 		return;
 	}
 	parse_colorset(n, token);
-	BroadcastColorset(n);
 	if (n == Scr.DefaultColorset)
 	{
 		Scr.flags.do_need_window_update = 1;

@@ -1,3 +1,8 @@
+2002-10-17  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmBacker/FvwmBacker.1: 
+	Documented RetainPixmap
+
 2002-10-16  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmBacker/FvwmBacker.c (DeleteRootAtoms):
