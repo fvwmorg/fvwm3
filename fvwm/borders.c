@@ -390,11 +390,20 @@ static enum ButtonState get_button_state(
   if (Scr.gs.use_active_down_buttons)
   {
     if (Scr.gs.use_inactive_buttons && !has_focus)
+    {
       return (toggled) ? ToggledInactive : Inactive;
+    }
     else
-      return (PressedW == w)
-	? (toggled ? ToggledActiveDown : ActiveDown)
-	: (toggled ? ToggledActiveUp : ActiveUp);
+    {
+      if (PressedW == w)
+      {
+	return (toggled) ? ToggledActiveDown : ActiveDown;
+      }
+      else
+      {
+	return (toggled) ? ToggledActiveUp : ActiveUp;
+      }
+    }
   }
   else
   {

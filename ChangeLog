@@ -1,3 +1,10 @@
+2001-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c:
+	initialise PressedW with "None"
+	(HandleButtonPress):
+	do not redraw decoration when an unbound mouse button is used
+
 2001-03-14  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/session.c (MatchWinToSM):

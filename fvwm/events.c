@@ -123,7 +123,7 @@ extern int ShapeEventBase;
 void HandleShapeNotify(void);
 #endif /* SHAPE */
 
-Window PressedW;
+Window PressedW = None;
 
 /*
 ** LASTEvent is the number of X events defined - it should be defined
@@ -1456,6 +1456,7 @@ void HandleButtonPress(void)
   Window eventw;
   Bool do_regrab_buttons = False;
   Bool do_pass_click;
+  Bool has_binding = False;
 
   DBUG("HandleButtonPress","Routine Entered");
 
@@ -1587,14 +1588,29 @@ void HandleButtonPress(void)
 
   Context = GetContext(Tmp_win, &Event, &PressedW);
   LocalContext = Context;
-  if (Tmp_win)
+  STROKE_CODE(stroke_init());
+  STROKE_CODE(send_motion = TRUE);
+  /* need to search for an appropriate mouse binding */
+  action = CheckBinding(Scr.AllBindings, STROKE_ARG(0) Event.xbutton.button,
+			Event.xbutton.state, GetUnusedModifiers(), Context,
+			MOUSE_BINDING);
+  if (action && *action)
+  {
+    has_binding = True;
+  }
+
+  if (Tmp_win && has_binding)
   {
     if (Context == C_TITLE)
+    {
       DrawDecorations(
-        Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, None);
+        Tmp_win, DRAW_TITLE, (Scr.Hilite == Tmp_win), True, PressedW);
+    }
     else if (Context & (C_LALL | C_RALL))
+    {
       DrawDecorations(
         Tmp_win, DRAW_BUTTONS, (Scr.Hilite == Tmp_win), True, PressedW);
+    }
     else
     {
       DrawDecorations(
@@ -1603,15 +1619,8 @@ void HandleButtonPress(void)
     }
   }
 
-  ButtonWindow = Tmp_win;
-
   /* we have to execute a function or pop up a menu */
-  STROKE_CODE(stroke_init());
-  STROKE_CODE(send_motion = TRUE);
-  /* need to search for an appropriate mouse binding */
-  action = CheckBinding(Scr.AllBindings, STROKE_ARG(0) Event.xbutton.button,
-			Event.xbutton.state, GetUnusedModifiers(), Context,
-			MOUSE_BINDING);
+  ButtonWindow = Tmp_win;
   do_pass_click = True;
   if (action && *action)
   {
@@ -1643,7 +1652,7 @@ void HandleButtonPress(void)
     XSync(dpy,0);
   }
 
-  if (ButtonWindow && IS_SCHEDULED_FOR_RAISE(ButtonWindow))
+  if (ButtonWindow && IS_SCHEDULED_FOR_RAISE(ButtonWindow) && has_binding)
   {
     /* now that we know the action did not restack the window we can raise it.
      */
@@ -1657,7 +1666,7 @@ void HandleButtonPress(void)
 
   OldPressedW = PressedW;
   PressedW = None;
-  if (ButtonWindow && check_if_fvwm_window_exists(ButtonWindow))
+  if (ButtonWindow && check_if_fvwm_window_exists(ButtonWindow) && has_binding)
   {
     if (LocalContext == C_TITLE)
       DrawDecorations(
@@ -1673,6 +1682,8 @@ void HandleButtonPress(void)
   }
   ButtonWindow = NULL;
   UngrabEm(GRAB_PASSIVE);
+
+  return;
 }
 
 #ifdef HAVE_STROKE
