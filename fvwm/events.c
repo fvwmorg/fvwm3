@@ -3911,8 +3911,8 @@ void WaitForButtonsUp(Bool do_handle_expose)
 				/* pointer is on a different screen - that's
 				 * okay here */
 			}
+			usleep(1);
 		}
-		usleep(1);
 		if (use_wait_cursor == 0 && count == 20)
 		{
 			GrabEm(CRS_WAIT, GRAB_NORMAL);
@@ -3923,6 +3923,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	if (use_wait_cursor)
 	{
 		UngrabEm(GRAB_NORMAL);
+		XFlush(dpy);
 	}
 
 	return;

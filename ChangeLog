@@ -1,7 +1,14 @@
 2002-08-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/style.c (parse_and_set_window_style):
+	fixed the default for passing the click-to-raise click for mousey
+	focus
+
 	* fvwm/events.c (__handle_click_to_focus):
 	removed redundant code
+	(WaitForButtonsUp):
+	fixed sluggish motion event handling when waiting for buttons to be
+	released
 
 	* fvwm/focus.c (__set_focus_to_fwin):
 	(set_focus_to_fwin):
