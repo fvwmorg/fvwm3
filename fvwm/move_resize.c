@@ -2830,7 +2830,6 @@ static Bool __resize_window(F_CMD_ARGS)
 	long evmask;
 	FvwmWindow *fw = exc->w.fw;
 
-/* 	fprintf(stderr,"dje: fvwm entering resize window\n"); */
 	bad_window = False;
 	ResizeWindow = FW_W_FRAME(fw);
 	if (FQueryPointer(
@@ -2883,7 +2882,6 @@ static Bool __resize_window(F_CMD_ARGS)
 	{
 		rectangle new_g;
 
-/* 		fprintf(stderr,"dje: resize args equal 2\n"); */
 		/* size will be less or equal to requested */
 		new_g = fw->frame_g;
 		constrain_size(
@@ -3177,18 +3175,19 @@ static Bool __resize_window(F_CMD_ARGS)
 		int rc = 0;
 		XEvent ev;
 
+		ev.type = 0;
 		/* block until there is an interesting event */
 		while (rc != -1 && !FCheckMaskEvent(dpy, evmask, &ev))
 		{
 			rc = HandlePaging(
-				&ev, Scr.EdgeScrollX, Scr.EdgeScrollY, &x,
-				&y, &delta_x, &delta_y, False, False, True);
+				(ev.type != 0) ? &ev : NULL, Scr.EdgeScrollX,
+				Scr.EdgeScrollY, &x, &y, &delta_x, &delta_y,
+				False, False, True);
 			if (rc == 1)
 			{
 				/* Fake an event to force window reposition */
 				ev.type = MotionNotify;
 				ev.xmotion.time = fev_get_evtime();
-/* 				fprintf(stderr,"dje: force redraw\n"); */
 				fForceRedraw = True;
 				break;
 			}

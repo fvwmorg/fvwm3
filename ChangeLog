@@ -2,6 +2,9 @@
 
 	* fvwm/move_resize.c (__move_loop):
 	fixed UMR
+	removed debug code
+	(__resize_window):
+	fixed UMR
 
 2003-04-28  olicha  <olivier.chapuis@free.fr>
 
