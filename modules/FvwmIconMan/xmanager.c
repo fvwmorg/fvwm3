@@ -15,7 +15,7 @@ static char const rcsid[] =
 #ifdef COMPILE_STANDALONE
 #include "fvwm.h"
 #else
-#include "../../fvwm/fvwm.h"
+#include "fvwm/fvwm.h"
 #endif
 
 /* button dirty bits: */

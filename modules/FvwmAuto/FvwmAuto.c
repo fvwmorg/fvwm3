@@ -41,8 +41,8 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "../../fvwm/module.h"
-#include "../../libs/fvwmlib.h"
+#include "fvwm/module.h"
+#include "libs/fvwmlib.h"
 
 
 /***********************************************************************

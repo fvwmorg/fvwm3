@@ -1,4 +1,4 @@
-#include "fvwmlib.h"       
+#include <libs/fvwmlib.h>
 
 /* FvwmWinList Module for Fvwm. 
  *

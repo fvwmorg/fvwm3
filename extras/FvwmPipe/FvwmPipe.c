@@ -62,8 +62,8 @@
 #include <ctype.h>
 #include <stdlib.h>
 
-#include "fvwmlib.h"
-#include "../../fvwm/module.h"
+#include <libs/fvwmlib.h>
+#include "fvwm/module.h"
 
 char *MyName;
 int fd_width;

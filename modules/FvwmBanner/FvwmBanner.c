@@ -33,11 +33,11 @@
 #include <X11/xpm.h>
 
 
-#include "../../libs/fvwmlib.h"
+#include "libs/fvwmlib.h"
 
-#include "../../icons/fvwm2_big.xpm"
+#include "icons/fvwm2_big.xpm"
 #if 0
-#include "../../icons/k2.xpm"
+#include "icons/k2.xpm"
 #endif /* 0 */
 
 

@@ -24,7 +24,7 @@
 #include <ctype.h>
 #include <string.h>
 #include <sys/time.h>
-#include "../../libs/fvwmlib.h"
+#include "libs/fvwmlib.h"
 
 extern char *Module;
 

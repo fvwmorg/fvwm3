@@ -56,7 +56,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "../../fvwm/module.h"
+#include "fvwm/module.h"
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>
@@ -66,7 +66,7 @@
 
 #include "Wharf.h"
 #define AFTER_ICONS 1
-/*#include "../../afterstep/asbuttons.h" pdg */
+/*#include "afterstep/asbuttons.h" pdg */
 
 #ifdef ENABLE_DND
 #include "OffiX/DragAndDrop.h"

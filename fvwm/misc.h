@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include "defaults.h"
 #include "menus.h"
-#include "../libs/fvwmlib.h"
+#include <libs/fvwmlib.h>
 
 /************************************************************************
  * ReapChildren - wait() for all dead child processes

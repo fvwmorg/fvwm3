@@ -82,7 +82,7 @@
 #include "fvwm/module.h"          /* for headersize, etc. */
 #include "libs/fvwmlib.h"
 
-#include <ModParse.h>                   /* for FindToken */
+#include <libs/ModParse.h>                   /* for FindToken */
 
 #define IamTheMain 1                    /* in FvwmForm.h, chg extern to "" */
 #include "FvwmForm.h"                   /* common FvwmForm stuff */

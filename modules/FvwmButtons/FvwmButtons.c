@@ -47,8 +47,8 @@
 #include <X11/extensions/shape.h>
 #endif
 
-#include "../../fvwm/module.h"
-#include "../../libs/fvwmlib.h"
+#include "fvwm/module.h"
+#include "libs/fvwmlib.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "parse.h" /* ParseOptions() */

@@ -22,8 +22,8 @@
 #include <errno.h>
 #include <string.h>
 
-#include "fvwmlib.h"
-#include "../../fvwm/module.h"
+#include <libs/fvwmlib.h>
+#include "fvwm/module.h"
 
 #define S_NAME  "/.FvConSocket"
 /* Prompts for readline support */

@@ -17,5 +17,5 @@ EXTRA_DIST = $(man_MANS) BUGS script.h
 
 LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs -lfvwm \
 	$(xpm_LIBS) $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
-INCLUDES = -I$(top_srcdir)/libs $(xpm_CFLAGS) $(X_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 

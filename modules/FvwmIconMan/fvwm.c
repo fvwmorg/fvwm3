@@ -4,8 +4,8 @@
 #include "x.h"
 #include "xmanager.h"
 
-#include "../fvwm/fvwm.h"
-#include "../fvwm/module.h"
+#include <fvwm/fvwm.h>
+#include <fvwm/module.h>
 
 static char const rcsid[] =
   "$Id$";

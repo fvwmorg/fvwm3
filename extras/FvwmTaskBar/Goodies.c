@@ -1,5 +1,5 @@
 #include "config.h"
-#include "fvwmlib.h"
+#include <libs/fvwmlib.h>
 
 #include <stdlib.h>
 #include <stdio.h>

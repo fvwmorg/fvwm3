@@ -1,5 +1,5 @@
 #include "config.h"
-#include "fvwmlib.h"
+#include <libs/fvwmlib.h>
 
 #if HAVE_SYS_SELECT_H
 #include <sys/select.h>
@@ -22,7 +22,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include "../../fvwm/module.h"
+#include "fvwm/module.h"
 
 #ifndef HAVE_STRERROR
 extern char *sys_errlist[];

@@ -2,7 +2,7 @@
 
 #include <X11/Xlib.h>
 
-#include "../../libs/fvwmlib.h"
+#include "libs/fvwmlib.h"
 #include "ButtonArray.h"
 
 extern Display *dpy;

@@ -84,8 +84,8 @@
 
 #include "config.h"
 #include <fvwm/module.h>
-#include <fvwmlib.h>
-#include <ModParse.h>
+#include <libs/fvwmlib.h>
+#include <libs/ModParse.h>
 
 /*
  * fvwm includes:

@@ -75,22 +75,18 @@
  */
 
 #include "config.h"
-#include "../../fvwm/module.h"
-#include "fvwmlib.h"     
+#include <fvwm/module.h>
+#include <libs/fvwmlib.h> 
 
 /*
  * fvwm includes:
  */
 #include <stdio.h>
-#include <stdlib.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
 
 #ifdef HAVE_RPLAY
 #include <rplay.h>

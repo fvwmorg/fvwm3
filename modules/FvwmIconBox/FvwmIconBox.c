@@ -37,7 +37,7 @@
 #include <unistd.h>
 #include <ctype.h>
 #include <stdlib.h>
-#include "../../fvwm/module.h"
+#include "fvwm/module.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

@@ -20,8 +20,8 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 
-#include "../../libs/fvwmlib.h"
-#include "../../fvwm/fvwm.h"
+#include "libs/fvwmlib.h"
+#include "fvwm/fvwm.h"
 #include "FvwmPager.h"
 
 extern ScreenInfo Scr;

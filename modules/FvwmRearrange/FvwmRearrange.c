@@ -34,9 +34,9 @@
 
 #include <X11/Xlib.h>
 
-#include "fvwmlib.h"
-#include "../../fvwm/module.h"
-#include "../../fvwm/fvwm.h"
+#include "libs/fvwmlib.h"
+#include "fvwm/module.h"
+#include "fvwm/fvwm.h"
 
 typedef struct window_item {
     Window frame;

@@ -67,7 +67,7 @@
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
 
-#include "../../fvwm/module.h"
+#include "fvwm/module.h"
 
 #include "FvwmWinList.h"
 #include "ButtonArray.h"

@@ -35,7 +35,7 @@
 #include <fcntl.h>
 #endif
 
-#include "../../libs/fvwmlib.h"
+#include "libs/fvwmlib.h"
 #include "FvwmButtons.h"
 
 #ifdef XPM

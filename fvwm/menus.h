@@ -53,7 +53,7 @@
 #define MENU_IS_UP    0x04
 #define MENU_IS_DOWN  0x08
 
-#include "../libs/fvwmlib.h"
+#include <libs/fvwmlib.h>
 
 typedef enum {
     /* menu types */

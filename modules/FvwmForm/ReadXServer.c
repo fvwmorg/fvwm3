@@ -4,7 +4,7 @@
 /*  - Add logic to allow international characters, bug id 179 */
 
 #include "config.h"
-#include "../../libs/fvwmlib.h"
+#include "libs/fvwmlib.h"
 
 #include <stdio.h>
 #include <ctype.h>

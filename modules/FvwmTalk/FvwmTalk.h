@@ -1,4 +1,4 @@
-#include "fvwmlib.h"     
+#include <libs/fvwmlib.h>
 
 #define ACTION1 1
 #define ACTION2 2

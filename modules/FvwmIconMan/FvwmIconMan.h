@@ -15,7 +15,7 @@
 #ifdef COMPILE_STANDALONE
 #include "fvwmlib.h"
 #else
-#include "../../libs/fvwmlib.h"
+#include "libs/fvwmlib.h"
 #endif
 
 #if HAVE_SYS_SELECT_H

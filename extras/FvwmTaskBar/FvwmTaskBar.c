@@ -51,8 +51,8 @@
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
 
-#include "../../fvwm/module.h"
-#include "../../libs/fvwmlib.h"  /* for pixmaps routines */
+#include "fvwm/module.h"
+#include "libs/fvwmlib.h"  /* for pixmaps routines */
 
 
 #include "FvwmTaskBar.h"

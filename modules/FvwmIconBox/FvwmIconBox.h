@@ -3,7 +3,7 @@
  * Subroutine Prototypes
  *
  *************************************************************************/
-#include "../../libs/fvwmlib.h"
+#include "libs/fvwmlib.h"
 struct icon_info;
 Bool ExecIconBoxFunction(char *msg);
 extern void   CreateWindow(void);
@@ -162,7 +162,7 @@ extern int icon_relief;
 #define TOP 2
 #define BOTTOM 3
 
-#include "../../fvwm/fvwm.h"
+#include "fvwm/fvwm.h"
 
 #define NO_CLICK 0
 #define CLICK 1

@@ -1,7 +1,7 @@
 #include "config.h"
 
-#include "../../fvwm/module.h"
-#include "fvwmlib.h"
+#include "fvwm/module.h"
+#include <libs/fvwmlib.h>
 
 #include <stdio.h>
 #include <signal.h>

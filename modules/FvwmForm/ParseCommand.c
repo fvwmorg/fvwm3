@@ -11,7 +11,7 @@
  * given, provided that this copyright is kept intact.
  */
 #include "config.h"
-#include "../../libs/fvwmlib.h"
+#include "libs/fvwmlib.h"
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/types.h>

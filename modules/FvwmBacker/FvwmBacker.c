@@ -47,7 +47,7 @@
 
 #include <stdlib.h>
 
-#include "../../fvwm/module.h"
+#include "fvwm/module.h"
 #include "FvwmBacker.h"
 #include "Mallocs.h"
 

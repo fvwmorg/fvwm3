@@ -53,8 +53,8 @@
 #include <fcntl.h>                      /* for O_WRONLY */
 #include <sys/times.h>                  /* For timing things time() */
 #include <limits.h>                     /* For time() */
-#include "../../fvwm/module.h"
-#include "../../libs/fvwmlib.h"
+#include "fvwm/module.h"
+#include "libs/fvwmlib.h"
 #include "FvwmAnimate.h"
 
 #define AS_PI 3.14159265358979323846
@@ -846,7 +846,7 @@ static void Loop() {
  * Used FvwmEvent as a model.
  *
  ****************************************************************************/
-#include <ModParse.h>
+#include <libs/ModParse.h>
 static char *table[]= {
   "Color",
 #define Color_arg 0

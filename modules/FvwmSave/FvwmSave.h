@@ -1,4 +1,4 @@
-#include "fvwmlib.h"       
+#include <libs/fvwmlib.h>
 
 #define STICKY 1
 #define ICONIFIED     32 /* is it an icon now? */

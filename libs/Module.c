@@ -9,8 +9,8 @@
 
 #include <errno.h>
 
-#include "fvwmlib.h"
-#include "../fvwm/module.h"
+#include <libs/fvwmlib.h>
+#include <fvwm/module.h>
 
 
 /************************************************************************

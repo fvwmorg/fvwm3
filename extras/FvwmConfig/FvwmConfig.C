@@ -2,9 +2,7 @@
 
 #include <stdio.h>
 #include <iostream.h>
-#include <stdlib.h>
 #include <math.h>
-#include <string.h>
 
 #include "WinBase.h"
 #include "WinButton.h"
@@ -13,9 +11,9 @@
 #include "WinColorSelector.h"
 
 extern "C" {
-#include "fvwmlib.h"
+#include <libs/fvwmlib.h>
 }
-#include "../../fvwm/module.h"
+#include <fvwm/module.h>
 
 #define ClickToFocus (1<<10)
 #define SloppyFocus (1<<11)

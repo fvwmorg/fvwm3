@@ -30,7 +30,7 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 
-#include "../../fvwm/module.h"
+#include "fvwm/module.h"
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>

@@ -37,7 +37,7 @@
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
 
-#include "../../fvwm/module.h"
+#include "fvwm/module.h"
 #include "FvwmIdent.h"
 
 char *MyName;

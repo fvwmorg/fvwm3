@@ -34,10 +34,10 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 
-#include "../../fvwm/module.h"
+#include "fvwm/module.h"
 
 #include "FvwmM4.h"
-#include "../../libs/fvwmlib.h"
+#include "libs/fvwmlib.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
 #include <X11/extensions/shape.h>
