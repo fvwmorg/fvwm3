@@ -120,7 +120,6 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   Bool NewColor = False;
   XSetWindowAttributes attributes;
   unsigned long valuemask;
-  Window w;
 #ifdef BORDERSTYLE
   int borderflags;
 #endif /* BORDERSTYLE */
@@ -157,11 +156,6 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 	TexturePixmap = GetDecor(t,BorderStyle.active.u.p->picture);
 #endif
 
-    /* set the keyboard focus */
-    if((Mapped)&&IS_MAPPED(t)&&(Scr.Hilite != t))
-      w = t->w;
-    else if(IS_ICONIFIED(t)&&(Scr.Hilite !=t)&&(!IS_ICON_SUPPRESSED(t)))
-      w = t->icon_w;
     Scr.Hilite = t;
 
     TextColor = GetDecor(t,HiColors.fore);

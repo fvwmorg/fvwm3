@@ -1,3 +1,7 @@
+1999-05-25  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
+
+	* fvwm/borders.c (SetBorder): remove unused variable `w'.
+
 1995-05-24  Bob Woodside <proteus@pcnet.com>
 
 	* fvwm/functions.c:
