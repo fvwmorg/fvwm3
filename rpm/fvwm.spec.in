@@ -3,7 +3,7 @@
 
 %define ver @VERSION@
 %define rel 1
-%define c_p --disable-multibyte
+%define c_p --disable-multibyte --sysconfdir=/etc
 %define m_p CFLAGS="-O2"
 
 # Different distributions expect sources to be in different places;

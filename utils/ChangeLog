@@ -1,3 +1,8 @@
+2001-07-08  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm24_convert.in:
+	use a correct form $ENV{'HOME'} not $$HOME
+
 2001-06-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* make_fvwmdist.sh:

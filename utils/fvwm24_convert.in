@@ -12,14 +12,14 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
 ($source,$dest) = @ARGV;
 $dest2 = "$dest.pass1";
 if ( $source eq "") {
-  $source = "$$HOME/.fvwm2rc";
+  $source = "$ENV{'HOME'}/.fvwm2rc";
 }
 if ( ! -e $source ) {
   die "Can't find source file $source, giving up.\n";
 }
 
 if ($dest eq "") {
-  $dest = "$$HOME/.fvwm/.fvwm2rc";
+  $dest = "$ENV{'HOME'}/.fvwm/.fvwm2rc";
 }
 if ( -e $dest ) {
   die "Output file $dest already exists, exiting.\n";
