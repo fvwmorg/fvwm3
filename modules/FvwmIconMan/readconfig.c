@@ -1578,7 +1578,7 @@ void read_in_resources (char *file)
 	  i = SortName;
 	}
 	else if (!strcasecmp (p, "namewithcase")) {
-	 i = SortNameCase;
+	  i = SortNameCase;
 	}
 	else if (!strcasecmp (p, "id")) {
 	  i = SortId;

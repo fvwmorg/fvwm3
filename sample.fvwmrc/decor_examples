@@ -58,8 +58,8 @@ AddToFunc	DecorWin95
 + I	Style *		Font -adobe-helvetica-bold-r-*-120-*
 + I	Style *		HilightFore white, HilightBack grey60
 + I	Style *		Button 1, Button 2, Button 4, Button 6
-+ I	Menustyle	mwm, Font -adobe-helvetica-medium-r-*-120-*
-+ I	MenuStyle	Foreground Black, Background grey75, Greyed grey40
++ I	Menustyle *	mwm, Font -adobe-helvetica-medium-r-*-120-*
++ I	MenuStyle *	Foreground Black, Background grey75, Greyed grey40
 + I	Mouse 0	1 N	Menu Window-Ops Close
 + I	Mouse 0	2 N	Close
 + I	Mouse 0	4 N	Maximize
@@ -92,8 +92,8 @@ AddToFunc	DecorMwm
 + I	Style *		Button 1, Button 2, Button 4
 + I	Style *		-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
 + I	Style *		HilightFore white, HilightBack cyan4
-+ I	Menustyle	mwm, Font -adobe-helvetica-medium-r-*-120-*
-+ I	MenuStyle	Foreground Black, Background grey75, Greyed grey40
++ I	Menustyle *	mwm, Font -adobe-helvetica-medium-r-*-120-*
++ I	MenuStyle *	Foreground Black, Background grey75, Greyed grey40
 + I	Exec		xsetroot -solid grey
 + I	Recapture
 + I	Mouse 0	1 N	Menu Window-Ops Close

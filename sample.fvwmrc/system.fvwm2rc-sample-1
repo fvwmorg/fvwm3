@@ -17,8 +17,8 @@ Style * IconFont	-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 EdgeScroll 100 100
 
 DeskTopSize 2x2
-Menustyle fvwm, Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
-MenuStyle Foreground maroon, Background grey60, Greyed grey40
+Menustyle * fvwm, Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
+MenuStyle * Foreground maroon, Background grey60, Greyed grey40
 ClickTime 750
 
 ColormapFocus FollowsMouse

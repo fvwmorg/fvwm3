@@ -1,4 +1,17 @@
+2001-03-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (RedrawBorder):
+	rewrote and fixed handle drawing
+
 2001-03-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* sample.fvwmrc/system.fvwm2rc:
+	fixed *FvwmIconMan*sort and ...*dontshow resources
+
+	* sample.fvwmrc/decor_examples:
+	* sample.fvwmrc/system.fvwm2rc-sample-1:
+	* sample.fvwmrc/system.fvwm2rc:
+	fixed MenuStyle commands
 
 	* libs/Graphics.c (AllocLinearGradient):
 	fixed rounding errors

@@ -8,8 +8,8 @@ EdgeScroll 100 100
 ClickTime 750
 
 DeskTopSize 2x2
-Menustyle fvwm, Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
-MenuStyle Foreground maroon, Background grey60, Greyed grey40
+Menustyle * fvwm, Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
+MenuStyle * Foreground maroon, Background grey60, Greyed grey40
 
 ColormapFocus FollowsMouse
 
@@ -291,12 +291,12 @@ AddToFunc ChangeDefaultFocus I Style * $0
 *FvwmIconMan*action      Mouse   2 N sendcommand "Iconify 1"
 *FvwmIconMan*action      Mouse   3 N sendcommand "FvwmIdent"
 *FvwmIconMan*followfocus true
-*FvwmIconMan*sort        false
+*FvwmIconMan*sort        name
 *FvwmIconMan*plainbutton          up black bisque3
 *FvwmIconMan*selectbutton         down black bisque3
 *FvwmIconMan*focusbutton          up yellow firebrick
 *FvwmIconMan*focusandselectButton down yellow firebrick
-*FvwmIconMan*dontshow icon=Untitled name=Untitled
+*FvwmIconMan*dontshow icon=Untitled title=Untitled
 #*FvwmIconMan*drawicons true
 *FvwmIconMan*buttongeometry  300x0
 *FvwmIconMan*managergeometry 1x5
@@ -492,3 +492,5 @@ AddToFunc ChangeDefaultFocus I Style * $0
 # to change banner pixmap
 #*FvwmBannerPixmap fvwm3.xpm
 #*FvwmBannerTimeout 2
+
+AddToFunc InitFunction I Module /home/luthien/bin/FvwmConsole

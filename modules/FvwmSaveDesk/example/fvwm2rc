@@ -2,8 +2,8 @@ DeskTopSize 1x1
 EdgeScroll 0 0
 EdgeResistance 250 50
 
-MenuStyle mwm, Font fixed
-MenuStyle Foreground Black, Background DarkTurquoise, Greyed DeepSkyBlue
+MenuStyle * mwm, Font fixed
+MenuStyle * Foreground Black, Background DarkTurquoise, Greyed DeepSkyBlue
 Style "*" HilightFore Black, HilightBack DarkTurquoise
 Style "*" Font fixed, IconFont fixed
 Style "*" MWMButtons

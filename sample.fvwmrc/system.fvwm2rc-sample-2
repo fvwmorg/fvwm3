@@ -27,10 +27,10 @@ Style * HilightFore linen, HilightBack SteelBlue4
 Style * Color linen/VioletRed4
 
 # Set colors/font for pop-up menus
-Menustyle fvwm, Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
-MenuStyle Foreground maroon, Background grey60, Greyed grey40
-#Menustyle fvwm, Font 7x13bold
-#MenuStyle Foreground black, Background grey, Greyed slategrey
+Menustyle * fvwm, Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
+MenuStyle * Foreground maroon, Background grey60, Greyed grey40
+#Menustyle * fvwm, Font 7x13bold
+#MenuStyle * Foreground black, Background grey, Greyed slategrey
 
 # Set fonts to use on title bar and icon label
 Style * Font            9x15

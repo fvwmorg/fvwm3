@@ -747,100 +747,128 @@ static void RedrawBorder(
      * FvwmBorders have 3 pixels top/left, 2 bot/right so this makes
      * calculating the length of the marks difficult, top and bottom
      * marks for FvwmBorders are different if NoInset is specified */
-    int tlength = t->boundary_width - 1;
-    int blength = tlength;
-    /* offset from bottom and right edge */
-    int badjust = 3 - cd->relief_width;
+    int inset = (w_shin || w_din);
     XSegment marks[8];
-    int j;
-
-    /* NoInset FvwmBorder windows need special treatment */
-    if ((DFS_HAS_NO_INSET(*borderstyle)) && (cd->relief_width == 2))
-      blength++;
+    int k;
 
     /*
      * draw the relief
      */
-
-    for (j = 0; j < cd->relief_width; )
+    for (k = 0; k < cd->relief_width; k++)
     {
-      /* j is incremented below */
-      /* shorten marks for beveled effect */
-      tlength -= 2 * j;
-      blength -= 2 * j;
-      badjust += j;
+      int loff = k;
+      int boff = k + w_dout + 1;
+      int length = t->boundary_width - boff - inset;
 
+      if (length < 0)
+	break;
       /* hilite marks */
       i = 0;
-
       /* top left */
-      marks[i].x2 = marks[i].x1 = t->visual_corner_width + j;
-      marks[i].y2 = (marks[i].y1 = 1 + j) + tlength;
+      marks[i].x1 = t->visual_corner_width + loff;
+      marks[i].x2 = t->visual_corner_width + loff;
+      marks[i].y1 = w_dout;
+      marks[i].y2 = marks[i].y1 + length;
       i++;
       /* top right */
-      marks[i].x2 = marks[i].x1 = t->frame_g.width - t->visual_corner_width + j;
-      marks[i].y2 = (marks[i].y1 = 1 + j) + tlength;
+      marks[i].x1 = t->frame_g.width - t->visual_corner_width + loff;
+      marks[i].x2 = t->frame_g.width - t->visual_corner_width + loff;
+      marks[i].y1 = w_dout;
+      marks[i].y2 = marks[i].y1 + length;
       i++;
       /* bot left */
-      marks[i].x2 = marks[i].x1 = t->visual_corner_width + j;
-      marks[i].y2 = (marks[i].y1 = t->frame_g.height-badjust)-blength;
+      marks[i].x1 = t->visual_corner_width + loff;
+      marks[i].x2 = t->visual_corner_width + loff;
+      marks[i].y1 = t->frame_g.height - boff;
+      marks[i].y2 = marks[i].y1 - length;
       i++;
       /* bot right */
-      marks[i].x2 = marks[i].x1 = t->frame_g.width - t->visual_corner_width+j;
-      marks[i].y2 = (marks[i].y1 = t->frame_g.height-badjust)-blength;
+      marks[i].x1 = t->frame_g.width - t->visual_corner_width + loff;
+      marks[i].x2 = t->frame_g.width - t->visual_corner_width + loff;
+      marks[i].y1 = t->frame_g.height - boff;
+      marks[i].y2 = marks[i].y1 - length;
       i++;
-
       if (!IS_SHADED(t))
       {
 	/* left top */
-	marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
-	marks[i].y2 = marks[i].y1 = t->visual_corner_width + j;
+	marks[i].x1 = w_dout;
+	marks[i].x2 = marks[i].x1 + length;
+	marks[i].y1 = t->visual_corner_width + loff;
+	marks[i].y2 = t->visual_corner_width + loff;
 	i++;
 	/* left bot */
-	marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
-	marks[i].y2 = marks[i].y1 = t->frame_g.height-t->visual_corner_width+j;
+	marks[i].x1 = w_dout;
+	marks[i].x2 = marks[i].x1 + length;
+	marks[i].y1 = t->frame_g.height-t->visual_corner_width + loff;
+	marks[i].y2 = t->frame_g.height-t->visual_corner_width + loff;
 	i++;
 	/* right top */
-	marks[i].x2 = (marks[i].x1 = t->frame_g.width-badjust) - blength;
-	marks[i].y2 = marks[i].y1 = t->visual_corner_width + j;
+	marks[i].x1 = t->frame_g.width - boff;
+	marks[i].x2 = marks[i].x1 - length;
+	marks[i].y1 = t->visual_corner_width + loff;
+	marks[i].y2 = t->visual_corner_width + loff;
 	i++;
 	/* right bot */
-	marks[i].x2 = (marks[i].x1 = t->frame_g.width-badjust) - blength;
-	marks[i].y2 = marks[i].y1 = t->frame_g.height-t->visual_corner_width +j;
+	marks[i].x1 = t->frame_g.width - boff;
+	marks[i].x2 = marks[i].x1 - length;
+	marks[i].y1 = t->frame_g.height-t->visual_corner_width + loff;
+	marks[i].y2 = t->frame_g.height-t->visual_corner_width + loff;
 	i++;
       }
-
       XDrawSegments(dpy, t->decor_w, rgc, marks, i);
 
       /* shadow marks, reuse the array (XDrawSegments doesn't trash it) */
       i = 0;
-      /* yuck, but j goes 0->1 in the first pass, 1->3 in 2nd */
-      j += j + 1;
+      loff = 1 + k + k;
       /* top left */
-      marks[i].x2 = (marks[i].x1 -= j);
+      marks[i].x1 -= loff;
+      marks[i].x2 -= loff;
+      marks[i].y1 += k;
+      marks[i].y2 += k;
       i++;
       /* top right */
-      marks[i].x2 = (marks[i].x1 -= j);
+      marks[i].x1 -= loff;
+      marks[i].x2 -= loff;
+      marks[i].y1 += k;
+      marks[i].y2 += k;
       i++;
       /* bot left */
-      marks[i].x2 = (marks[i].x1 -= j);
+      marks[i].x1 -= loff;
+      marks[i].x2 -= loff;
+      marks[i].y1 += k;
+      marks[i].y2 += k;
       i++;
       /* bot right */
-      marks[i].x2 = (marks[i].x1 -= j);
+      marks[i].x1 -= loff;
+      marks[i].x2 -= loff;
+      marks[i].y1 += k;
+      marks[i].y2 += k;
       i++;
       if (!IS_SHADED(t))
       {
 	/* left top */
-	marks[i].y2 = (marks[i].y1 -= j);
+	marks[i].x1 += k;
+	marks[i].x2 += k;
+	marks[i].y1 -= loff;
+	marks[i].y2 -= loff;
 	i++;
 	/* left bot */
-	marks[i].y2 = (marks[i].y1 -= j);
+	marks[i].x1 += k;
+	marks[i].x2 += k;
+	marks[i].y1 -= loff;
+	marks[i].y2 -= loff;
 	i++;
 	/* right top */
-	marks[i].y2 = (marks[i].y1 -= j);
+	marks[i].x1 += k;
+	marks[i].x2 += k;
+	marks[i].y1 -= loff;
+	marks[i].y2 -= loff;
 	i++;
 	/* right bot */
-	marks[i].y2 = (marks[i].y1 -= j);
+	marks[i].x1 += k;
+	marks[i].x2 += k;
+	marks[i].y1 -= loff;
+	marks[i].y2 -= loff;
 	i++;
       }
       XDrawSegments(dpy, t->decor_w, sgc, marks, i);
