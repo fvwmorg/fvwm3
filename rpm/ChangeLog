@@ -1,6 +1,11 @@
+2001-12-24  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm.spec.in:
+	synchronized configure options with Makefile; typos
+
 2001-07-30  Mikhael Goikhman  <migo@homemail.com>
 
-	* rpm/Makefile.am:
+	* Makefile.am:
 	fixed "make rpm" caused by the previous commit
 
 2001-07-08  Mikhael Goikhman  <migo@homemail.com>
@@ -16,7 +21,7 @@
 
 2001-07-03  Mikhael Goikhman  <migo@homemail.com>
 
-	rpm/fvwm.spec.in:
+	fvwm.spec.in:
 	add files ChangeLog, todo-2.4 and todo-3.0 to rpm
 
 2001-05-27  Mikhael Goikhman  <migo@homemail.com>
@@ -41,26 +46,26 @@
 
 2000-11-08  Mikhael Goikhman  <migo@homemail.com>
 
-	* rpm/Makefile.am:
-	* rpm/fvwm.spec.in:
+	* Makefile.am:
+	* fvwm.spec.in:
 	don't use redhat hadcoded SOURCES dir, pass a tarball in /tmp,
 	use /usr prefix, small changes
 
 2000-10-12  Mikhael Goikhman  <migo@homemail.com>
 
-	* rpm/Makefile.am:
-	* rpm/fvwm.spec.in:
+	* Makefile.am:
+	* fvwm.spec.in:
 	configure and make params can now be specified:
 	make rpm cparams='--enable-kanji --without-gnome' mparams='CFLAGS="-g"'
 
 2000-09-24  Mikhael Goikhman  <migo@homemail.com>
 
-	* rpm/Makefile.am:
-	* rpm/fvwm.spec.in:
+	* Makefile.am:
+	* fvwm.spec.in:
 	updated to work with older /bin/rpm, don't compile with -g and more
 
 2000-09-16  Mikhael Goikhman  <migo@homemail.com>
 
-	* rpm/Makefile.am:
-	* rpm/fvwm.spec.in:
+	* Makefile.am:
+	* fvwm.spec.in:
 	added files and rules for generating rpm archives

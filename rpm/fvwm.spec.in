@@ -3,7 +3,7 @@
 
 %define ver @VERSION@
 %define rel 1
-%define c_p --disable-multibyte --sysconfdir=/etc
+%define c_p --without-gnome --without-rplay-library --sysconfdir=/etc
 %define m_p CFLAGS="-O2"
 
 # Different distributions expect sources to be in different places;
@@ -56,10 +56,10 @@ les mouvements de souris peuvent Йtre liИs Ю des actions (stroke).
 
 %description -l ru
 FVWM является мощным оконным менеджером для X Window System, соответствующим
-стандартам ICCCM, с поддержкой множественных виртульных десктопов.
+стандартам ICCCM, с поддержкой множественных виртуальных десктопов.
 
 Версия 2.4 включает в себя новые особенности, такие как цветовые комплекты
-(colorsets), соответствие ICCCM2 и совместимость с GNOME, управление сессий,
+(colorsets), соответствие ICCCM2 и совместимость с GNOME, управление сессиями,
 улучшения во всех модулях, несколько новых модулей, переработанный код меню,
 поддержка stroke и многое другое.
 
