@@ -1032,7 +1032,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   Bool used_sm = False;
   Bool do_resize_too = False;
 
-XSynchronize(dpy, 1);
   /****** init window structure ******/
   if (!setup_window_structure(&tmptmp_win, w, ReuseWin))
     return NULL;
