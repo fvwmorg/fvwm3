@@ -1,10 +1,11 @@
-	The fvwm Logo Competition
+	The FVWM Logo Competition
 	-------------------------
 
 *** DRAFT ***
 
-(!!!give a short explanation what fvwm is and why it needs a new
-logo)
+FVWM stands for F? Virtual Window Manager (see FAQ to get an idea
+what F? may mean).  Historically, fvwm had no good logo, but this
+is going to be changed.  With your help.
 
 Competition Schedule
 --------------------
@@ -29,7 +30,7 @@ How your logo should look like
    - On the fvwm web site (about 200x120, full colour)
    - As a banner for fvwm startup (about 300x180, 256 colours)
    - As a banner with only black and white (about 300x180)
-   - Running up the left side of a menu (about 24x48, 16 colours)
+   - Running up the left side of a menu (about 24x64, low color)
 
 * You do not need to make all these different images yourself.
   Just draw a big image with all the colours you like and we will
@@ -38,7 +39,7 @@ How your logo should look like
 
 * What you should keep in mind is that the banners will be
   converted to XPM format and put in the distribution.  They
-  should look good on any background and not occupy more than 25kB
+  should look good on any background and not occupy more than 40Kb
   after compression.
 
 * Logos can be submitted in either XPM or PNG format.
@@ -46,11 +47,12 @@ How your logo should look like
 Contributing your logo
 ----------------------
 
-* Everybody may submit any number of logos by sending it as a
-  *compressed* email attachment to !!!<email address>.
+* Everybody may submit any number of logos by posting a url to the
+  work or sending the images themselves as attachment (preferably
+  compressed) to email address fvwm-logo@lists.sf.net.
 
 * The contributed logos are exhibited at
-  http://fvwm.org/logo-competition
+  http://fvwm.org/logo-competition/
 
 * Logos not created by the submitter or logos with illegal,
   discriminating or otherwise offensive contents, at the
@@ -63,19 +65,22 @@ Copyrights and License
 
 * By submitting a logo to the competition, the artist accepts that
   the logo is converted into XPM format (if necessary) and
-  distributed under the terms of the Gnu General Public License.
+  distributed under the terms of the GNU General Public License.
 
 There can be only one
 ---------------------
 
 * In the election phase, one voting email per person can be sent to
-  fvwm-workers@fvwm.org.
+  fvwm-logo@lists.sf.net.
 
 * You can give one or no votes for each logo. The email should
   contain a list of logos for which you vote.  Give a vote for
   each logo you would enjoy to see as the official fvwm logo.
 
-* The logo with the most votes wins.
+* The web interface is available too.
+
+* The logo with the most votes wins.  It requires an easy email
+  confirmation (using a mere reply) to disallow multiple voting.
 
 * The above voting mode is meant to determine the logo that is
   accepted by the broadest range of users and not disliked strogly

@@ -153,8 +153,8 @@ to be changed at any time.
 Other noteworthy differences between fvwm and other X11 window
 managers are the introduction of the
 .IR SloppyFocus " and " NeverFocus
-focus methods.  Focus policy can be specified for individual
-windows.  Windows using
+focus methods.  Focus policy can be separately specified for
+different window groups.  Windows using
 .I SloppyFocus
 acquire focus when the pointer moves into them and retain focus
 until some other window acquires it.  Such windows do not lose
@@ -191,8 +191,8 @@ Any module started by command line arguments is assumed to be
 a module that sends back config commands.  All command line modules
 have to quit before fvwm proceeds on to the InitFunction and
 setting border decorations and styles.  There is a potential deadlock
-if you start a module other than FvwmCpp/FvwmM4 but there is a timeout
-so fvwm will eventually get going.
+if you start a module other than FvwmCpp/FvwmM4/FvwmPerl but there is
+a timeout so fvwm will eventually get going.
 
 As an example,
 starting the pager this way hangs fvwm until the timeout, but this works:
@@ -8561,7 +8561,7 @@ causes a compliant application to never consider more than
 .I max
 desktops. If
 .I max
-is 0 (the default) there is no limitation.  The actual mumbler of
+is 0 (the default) there is no limitation.  The actual number of
 desktops is determined dynamically.  It is at least
 .IR num ","
 but it can be d if there is a window on desktop d-1 (or if the

@@ -1,3 +1,13 @@
+2003-03-22  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-directory.1:
+	* fvwm-menu-directory.in:
+	* fvwm-menu-headlines.1:
+	* fvwm-menu-headlines.in:
+	* fvwm-menu-xlock.1:
+	* fvwm-menu-xlock.in:
+	make the scripts to be warning safe
+
 2003-03-15  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-*.1:

@@ -45,7 +45,7 @@ my $changeMenuStyle = "";
 
 GetOptions(
 	"help|h|?"     => \&showHelp,
-	"version|v|V"  => \&showVersion,
+	"version|V"    => \&showVersion,
 	"name=s"       => \$name,
 	"title=s"      => \$title,
 	"item=s"       => \$itemF,
@@ -87,9 +87,9 @@ $links || !-l $dir || exit(-1);  # exit if linked directories are disabled
 chdir($dir) || exit(-1);  # exit if no execute permission on the directory
 
 # expand title
-expandWidthSpecifier(\$title, 'd', (split('/', $dir))[-1] || '/')
+&expandWidthSpecifier(\$title, 'd', (split('/', $dir))[-1] || '/')
 	if $title =~ /%(-?\d+)?(\*-?\d+)?d/;
-expandWidthSpecifier(\$title, 'p', $dir)
+&expandWidthSpecifier(\$title, 'p', $dir)
 	if $title =~ /%(-?\d+)?(\*-?\d+)?p/;
 $title =~ s/\\t/\t/g;
 $itemF =~ s/\\t/\t/g;
@@ -158,7 +158,7 @@ if (@specialDirs) {
 	);
 	foreach (@specialDirs) {
 		$specialDirLines .= qq(+ "" Nop\n) if $specialDirLines;
-		$specialDirLines .= evalFolderLine(@{$specialDirDef[$_ - 1]});
+		$specialDirLines .= &evalFolderLine(@{$specialDirDef[$_ - 1]});
 	}
 } else {
 	$specialDirPos = 0;
@@ -172,19 +172,19 @@ closedir(DIR);
 
 my $absOrder = abs($order);
 # To avoid warnings, '!!' must be added before '-d'. Will this slow things?
-*sortSub =
+my $sortSub =
 	$absOrder == 2? sub { -d $b <=> -d $a }:
 	$absOrder == 3? sub { -d $a <=> -d $b }:
 	$absOrder == 4? sub { $a cmp $b }:
 	$absOrder == 5? sub { -d $b <=> -d $a || $a cmp $b }:
 	$absOrder == 6? sub { -d $a <=> -d $b || $a cmp $b }:
 	sub { 0 };
-@files = sort sortSub @files if $absOrder != 1;
+@files = sort $sortSub @files if $absOrder != 1;
 @files = reverse @files if $order < 0;
 
 # dump all menu items and start adding new items
-my $menuName  = escapeFvwmName($name);
-my $menuName2 = escapeMenuName($name);
+my $menuName  = &escapeFvwmName($name);
+my $menuName2 = &escapeMenuName($name);
 print qq(DestroyMenu recreate "$menuName"\nAddToMenu "$menuName2"\n);
 
 # destroy the menu after it is popped down
@@ -211,15 +211,15 @@ foreach (@files) {
 	$filePath =~ s|/+|/|g;
 	if (-d) {
 		# it's a directory
-		print evalFolderLine($_, $filePath);
+		print &evalFolderLine($_, $filePath);
 	} else {
 		# something else, apply editor to it or run itself
-		my $itemStr = $itemF_eval? evalItem($_, $filePath): $_;
-		$itemStr = escapeItemName($itemStr);
+		my $itemStr = $itemF_eval? &evalItem($_, $filePath): $_;
+		$itemStr = &escapeItemName($itemStr);
 		my $isApp = -x && -f;
 		my $iconStr = $isApp && $iconAStr? $iconAStr: $iconFStr;
 		my $fileAct = $isApp? $commA: $commF;
-		$fileAct =~ s/%f/escapeFileName($filePath)/ge;
+		$fileAct =~ s/%f/&escapeFileName($filePath)/ge;
 		print qq(+ "$iconStr$itemStr" $fileAct\n);
 	}
 }
@@ -269,7 +269,7 @@ sub escapeFileName ($) {
 
 sub evalFolderLine ($$) {
 	my ($_name, $dir) = @_;
-	my $itemStr = $dir && $itemF_eval? evalItem($_name, $dir): $_name;
+	my $itemStr = $dir && $itemF_eval? &evalItem($_name, $dir): $_name;
 	$itemStr = escapeItemName($itemStr);
 	my $act = !$dir || $checkSubdirs && !-x $dir? "Nop": !$reuse?
 		qq(Popup ") . escapeFvwmName($dir) . qq("$submenuPos):
@@ -284,15 +284,15 @@ sub evalItem ($$) {
 
 	my $itemStr = "$itemF";
 	if ($itemF_name) {
-		expandWidthSpecifier(\$itemStr, 'n', $name);
-		expandWidthSpecifier(\$itemStr, 'N', $file);
+		&expandWidthSpecifier(\$itemStr, 'n', $name);
+		&expandWidthSpecifier(\$itemStr, 'N', $file);
 	}
 	return $itemStr unless $itemF_stat;
 
 	# / $dev, $ino, $mode, $nlink, $uid, $gid, $rdev,
 	# \ $size, $atime, $mtime, $ctime, $blksize, $blocks
-	my ($misc, $misc, $mode, $misc, $misc, $misc, $misc, $size,
-		$misc, $time) = stat($file);
+	my ($misc1, $misc2, $mode, $misc3, $misc4, $misc5, $misc6, $size,
+		$misc7, $time) = stat($file);
 	if ($itemF_date) {
 		eval 'use POSIX' unless defined $POSIX::VERSION;
 		my @time = localtime($time);
@@ -302,7 +302,7 @@ sub evalItem ($$) {
 		$itemStr =~ s/%D/$date2/g;
 	}
 	if ($itemF_size) {
-		expandWidthSpecifier(\$itemStr, 's', $size);
+		&expandWidthSpecifier(\$itemStr, 's', $size);
 	}
 	if ($itemF_type) {
 		my $type;
@@ -391,7 +391,7 @@ fvwm-menu-directory - builds a directory browsing menu for FVWM
 
 B<fvwm-menu-directory>
 [ B<--help>|B<-h>|B<-?> ]
-[ B<--version>|B<-v>|B<-V> ]
+[ B<--version>|B<-V> ]
 [ B<--name>|B<-na> NAME ]
 [ B<--title>|B<-t> NAME ]
 [ B<--item>|B<-it> NAME ]

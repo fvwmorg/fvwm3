@@ -205,24 +205,24 @@ my $timeout = 20;
 my $endl = "\r\n";  # this is preferable for http sockets to "\n"
 
 GetOptions(
-	"help|h|?"    => \&showHelp,
-	"version|v|V" => \&showVersion,
-	"info:s"   => \$info,
-	"site=s"   => \$site,
-	"name=s"   => \$name,
-	"title=s"  => \$title,
-	"item=s"   => \$itemF,
-	"exec=s"   => \$execF,
+	"help|h|?"  => \&showHelp,
+	"version|V" => \&showVersion,
+	"info:s"    => \$info,
+	"site=s"    => \$site,
+	"name=s"    => \$name,
+	"title=s"   => \$title,
+	"item=s"    => \$itemF,
+	"exec=s"    => \$execF,
 	"command=s"    => \$commF,
 	"icon-title=s" => \$iconT,
 	"icon-item=s"  => \$iconI,
 	"icon-home=s"  => \$iconH,
 	"icon-error=s" => \$iconE,
-	"wm-icons" => \$wmIcons,
-	"proxy=s"  => \$proxy,
+	"wm-icons"  => \$wmIcons,
+	"proxy=s"   => \$proxy,
 	"frontpage:s" => \$frontpage,
-	"file:s"   => \$menuFile,
-	"fake:s"   => \$fakeFile,
+	"file:s"    => \$menuFile,
+	"fake:s"    => \$fakeFile,
 	"timeout=i" => \$timeout,
 ) || wrongUsage();
 wrongUsage() if @ARGV;
@@ -237,7 +237,7 @@ if (defined $info) {
 			"Headlines:\n\thttp://$_info->{'host'}$_info->{'path'}\n",
 			"Headline fields:\n\t$_info->{'flds'}\n";
 	} else {
-		print "All supported sites:\n\t", join(", ", getAllSiteNames()),
+		print "All supported sites:\n\t", join(", ", &getAllSiteNames()),
 			"\n\nSpecify a site name after --info to get a site headlines info.\n";
 	}
 	exit(0);
@@ -297,7 +297,7 @@ local $errorMenuContent = $content;
 
 my $frontpageEntry = "";
 if (defined $frontpage) {
-	my $cmd = expandAllWidthSpecifiers($commF, {'u' => "http://$siteHost/"});
+	my $cmd = &expandAllWidthSpecifiers($commF, {'u' => "http://$siteHost/"});
 	$frontpageEntry = qq(+ "$iconHStr$siteName Frontpage" $cmd\n);
 	$errorMenuContent .= qq($frontpageEntry\n+ "" Nop\n);
 }
@@ -311,7 +311,7 @@ if (defined $frontpage && $frontpage !~ /^b/) {
 unless (defined $fakeFile) {
 	# network connection portion is pretty much stolen from 'man perlipc'
 	my $host = $proxy || $siteHost;
-	my $iaddr = inet_aton($host) || dieNet("Can't resolve host $host");
+	my $iaddr = inet_aton($host) || &dieNet("Can't resolve host $host");
 	my $paddr = sockaddr_in($port, $iaddr);
 	my $proto = getprotobyname('tcp');
 	my $redirectDepth = 0;
@@ -322,7 +322,7 @@ HTTP_CONNECTION:
 	eval {
 		socket(SOCK, PF_INET, SOCK_STREAM, $proto) &&
 		connect(SOCK, $paddr)
-	} || dieNet("Can't connect host $host");
+	} || &dieNet("Can't connect host $host");
 	alarm(0);
 	select(SOCK); $| = 1; select(STDOUT);
 
@@ -338,7 +338,7 @@ HTTP_CONNECTION:
 	}
 
 	unless (readLine() =~ m{HTTP/1\.\d (\d+) \w+}) {
-		dieNet("Invalid HTTP response from http://$siteHost$sitePath", 0);
+		&dieNet("Invalid HTTP response from http://$siteHost$sitePath", 0);
 	}
 	my $status = $1;
 	if ($status eq "302" && ++$redirectDepth < 5) {
@@ -353,7 +353,7 @@ HTTP_CONNECTION:
 			}
 		}
 	}
-	dieNet("Unexpected HTTP response $status from http://$siteHost$sitePath", 0)
+	&dieNet("Unexpected HTTP response $status from http://$siteHost$sitePath", 0)
 		unless $status eq "200";
 
 	# skip http response headers
@@ -364,16 +364,16 @@ HTTP_CONNECTION:
 	} else {
 		$fakeFile = "$workHome/$site.in";
 	}
-	open(SOCK, "<$fakeFile") || dieSys("Can't open $fakeFile");
+	open(SOCK, "<$fakeFile") || &dieSys("Can't open $fakeFile");
 }
 
 my $entries = &$siteFunc;
 
-close(SOCK) || dieNet("Error closing socket");
+close(SOCK) || &dieNet("Error closing socket");
 
 foreach (@$entries) {
-	my $text = expandAllWidthSpecifiers($itemF, $_);
-	my $comm = expandAllWidthSpecifiers($commF, $_);
+	my $text = &expandAllWidthSpecifiers($itemF, $_);
+	my $comm = &expandAllWidthSpecifiers($commF, $_);
 	$text =~ s/"/\\"/g;
 	$content .= qq(+ "$iconIStr$text" $comm\n);
 }
@@ -384,11 +384,11 @@ if (defined $frontpage && $frontpage =~ /^b/) {
 
 if (defined $menuFile) {
 	unless (-d $workHome) {
-		mkdir($workHome, 0775) || dieSys("Can't create $workHome");
+		mkdir($workHome, 0775) || &dieSys("Can't create $workHome");
 	}
-	open(MENU_FILE, ">$menuFile") || dieSys("Can't open $menuFile");
+	open(MENU_FILE, ">$menuFile") || &dieSys("Can't open $menuFile");
 	print MENU_FILE $content;
-	close(MENU_FILE) || dieSys("Can't close $menuFile");
+	close(MENU_FILE) || &dieSys("Can't close $menuFile");
 } else {
 	print $content;
 }
@@ -402,8 +402,8 @@ sub readLine {
 	alarm($timeout);
 	my $line = eval { <SOCK> };
 	if ($@) {
-		dieNet("Timeout of $timeout seconds reached") if $@ eq "timeout\n";
-		dieNet($@);
+		&dieNet("Timeout of $timeout seconds reached") if $@ eq "timeout\n";
+		&dieNet($@);
 	}
 	alarm(0);
 	print STDERR $line if $ENV{"DEBUG_DUMP_RESPONSE"};
@@ -415,8 +415,8 @@ sub readAllLines {
 	alarm($timeout * 2);
 	my $lines = eval { join('', <SOCK>) };
 	if ($@) {
-		dieNet("Timeout of $timeout seconds reached") if $@ eq "timeout\n";
-		dieNet($@);
+		&dieNet("Timeout of $timeout seconds reached") if $@ eq "timeout\n";
+		&dieNet($@);
 	}
 	alarm(0);
 	print STDERR $lines if $ENV{"DEBUG_DUMP_RESPONSE"};
@@ -882,7 +882,7 @@ fvwm-menu-headlines - builds headlines menu definition for FVWM
 
 B<fvwm-menu-headlines>
 [ B<--help>|B<-h>|B<-?> ]
-[ B<--version>|B<-v>|B<-V> ]
+[ B<--version>|B<-V> ]
 [ B<--info> [site] ]
 [ B<--site>|B<-s> site ]
 [ B<--name>|B<-n> name ]

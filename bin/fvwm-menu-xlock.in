@@ -16,11 +16,11 @@ my $wmIcons = 0;
 my $specialFirst = 0;
 
 GetOptions(
-	"help|h|?"    => \&showHelp,
-	"version|v|V" => \&showVersion,
-	"name=s"   => \$name,
-	"title=s"  => \$title,
-	"item=s"   => \$itemF,
+	"help|h|?"  => \&showHelp,
+	"version|V" => \&showVersion,
+	"name=s"    => \$name,
+	"title=s"   => \$title,
+	"item=s"    => \$itemF,
 	"icon-title=s"  => \$iconT,
 	"icon-item=s"   => \$iconI,
 	"wm-icons"      => \$wmIcons,
@@ -60,9 +60,9 @@ while (<XL>) {
 		my $dsc2 = $dsc =~ /^Shows (.*)$/? $1: $dsc;
 		my $itemStr = $itemF;
 		$itemStr =~ s/\\t/\t/g;
-		expandWidthSpecifier(\$itemStr, 'n', $name);
-		expandWidthSpecifier(\$itemStr, 'd', $dsc);
-		expandWidthSpecifier(\$itemStr, 'D', $dsc2);
+		&expandWidthSpecifier(\$itemStr, 'n', $name);
+		&expandWidthSpecifier(\$itemStr, 'd', $dsc);
+		&expandWidthSpecifier(\$itemStr, 'D', $dsc2);
 
 		$special = 1 if !$special && $name eq 'blank';
 		($special? $lines2: $lines1) .=
@@ -135,7 +135,7 @@ fvwm-menu-xlock - builds xlock menu definition for FVWM
 
 B<fvwm-menu-xlock>
 [ B<--help>|B<-h>|B<-?> ]
-[ B<--version>|B<-v>|B<-V> ]
+[ B<--version>|B<-V> ]
 [ B<--name>|B<-n> name ]
 [ B<--title>|B<-t> title ]
 [ B<--item> format ]
