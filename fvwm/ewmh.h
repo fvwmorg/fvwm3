@@ -86,7 +86,8 @@ int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style);
 
 #define EWMH_GetStyle(x,y)
 #define EWMH_WindowInit(x)
-#define EWMH_WindowDestroyed(x)
+#define EWMH_DestroyWindow(x)
+#define EWMH_WindowDestroyed()
 #define EWMH_Init()
 
 /* ewmh_events.c */

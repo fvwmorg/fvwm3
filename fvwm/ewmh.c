@@ -48,7 +48,6 @@
 typedef struct kst_item
 {
   Window w;
-  int any;
   struct  kst_item *next;
 } KstItem;
 
