@@ -1,3 +1,25 @@
+2000-11-08  Mikhael Goikhman  <migo@homemail.com>
+
+	* modules/FvwmForm/FormFvwm*:
+	* modules/FvwmForm/FvwmForm.1:
+	* modules/FvwmForm/FvwmForm.c:
+	* modules/FvwmForm/Makefile.am:
+	* modules/FvwmForm/README:
+	* modules/FvwmForm/.cvsignore:
+	use form alias names FvwmForm-Flavor instead of FormFvwmFlavor.;
+	issue a warning and auto-converting of old names
+
+	* modules/FvwmBacker/ConfigFvwmBacker:
+	* modules/FvwmButtons/ConfigFvwmButtons:
+	* modules/FvwmIconBox/ConfigFvwmIconBox:
+	* modules/FvwmIconMan/ConfigFvwmIconMan:
+	* modules/FvwmIdent/ConfigFvwmIdent:
+	* modules/FvwmPager/ConfigFvwmPager:
+	* modules/FvwmScroll/ConfigFvwmScroll:
+	* modules/FvwmTaskBar/ConfigFvwmTaskBar:
+	* modules/FvwmWinList/ConfigFvwmWinList:
+	use a new module config syntax (using colon/space as a separator)
+
 2000-10-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmScript/Widgets/ItemDraw.c (EvtMouseItemDraw):

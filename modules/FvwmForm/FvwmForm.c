@@ -52,7 +52,7 @@
    You can tab to previous input field with ^P, Up arrow, shift tab.
 
  - This module now has a configuration proceedure:
-   AddToMenu "Module-Popup" "FvwmForm Defaults" FvwmForm FormFvwmForm
+   AddToMenu "Module-Popup" "FvwmForm Defaults" FvwmForm FvwmForm-Form
 
  - Use FvwmAnimate command parsing.
    The part of the command after the module name is no longer case sensitive.
@@ -1741,6 +1741,15 @@ int main (int argc, char **argv)
   MyName = safemalloc(MyNameLen+1);	/* account for \0 */
   *MyName='*';
   strcpy(MyName+1, s);		/* append name */
+
+  /* convert aliases FormFvwmMyFlavor. used in 2.3 to FvwmForm-MyFlavor */
+  if (matchWildcards("FormFvwm*.", s))
+  {
+    strcpy(MyName + 1, "FvwmForm-");
+    strncpy(MyName + 10, s + 8, MyNameLen - 10);
+    fprintf(stderr, "FvwmForm: Please use alias name %s instead of %s\n",
+      MyName + 1, s);
+  }
 
   myfprintf((stderr,"%s: Starting, argv[0] is %s, len %d\n",MyName+1,
              argv[0],MyNameLen));

@@ -159,8 +159,11 @@ void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   struct moduleInfoList *current, *next, *prev;
   char *info;   /* info to be deleted - may contain wildcards */
   char *mi;
-  char *alias_end = skipModuleAliasToken(action);
+  char *alias_end;
   int alias_len = 0;
+
+  while (isspace(*action)) action++;
+  alias_end = skipModuleAliasToken(action);
 
   if (alias_end && alias_end[0] == MODULE_CONFIG_DELIM)
   {

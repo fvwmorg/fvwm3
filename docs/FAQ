@@ -1524,7 +1524,7 @@ A: Errors are reported to the standard error file.  You can redirect
    fvwm-errors".  X sessions started by xdm often redirect errors to a
    file named ".xsession-errors".
 
-   Alternatively, FvwmConsole or "FvwmForm FormFvwmTalk." modules
+   Alternatively, FvwmConsole or "FvwmForm FvwmForm-Talk" modules
    will display error messages.
 
 ----------------------------------------------------------------------
@@ -1547,7 +1547,7 @@ A: The error message usually looks something like this:
    FVWM has already done so (but you weren't doing it in the rc file
    for your previous window manager).  Figure out what the offending
    key binding is and remove it from your .fvwm2rc, or temporarily via
-   "FvwmForm FormFvwmTalk." by removing the FVWM binding (see the man
+   "FvwmForm FvwmForm-Talk" by removing the FVWM binding (see the man
    page for the Key & Mouse commands).
 
 ----------------------------------------------------------------------
@@ -1829,7 +1829,7 @@ A: Setting the background image is not really part of the window
    Did you know that you do not need to restart X or fvwm to see what
    most configuration commands do? There are several modules
    that allow you to issue fvwm commands at any time.  Among
-   these are FvwmCommand, "FvwmForm FormFvwmTalk." and FvwmConsole.
+   these are FvwmCommand, "FvwmForm FvwmForm-Talk" and FvwmConsole.
    Personally I use FvwmCommand and FvwmConsole.
 
    When you run FvwmConsole you get a shell like window where you can

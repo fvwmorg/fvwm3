@@ -1,4 +1,4 @@
-# This file is copied to a new users FVWM_USERDIR by form "FormFvwmSetup.".
+# This file is copied to a new user's FVWM_USERDIR by FvwmForm-Setup form.
 # This file contains the commands fvwm2 reads while starting.
 #
 
@@ -192,11 +192,12 @@ DestroyMenu MenuFvwmModules
 AddToMenu MenuFvwmModules "Fvwm Modules"        Title
 + "&1. Control Animation" Popup  MenuFvwmAnimate
 + "&B. Button-Bar"        Module FvwmButtons
-+ "&C. IconBox"           FuncFvwmConfigureIconBox
++ "&O. IconBox"           FuncFvwmConfigureIconBox
 + "&F. Forms"             Popup  MenuFvwmForms
 + "&I. Identify"          Module FvwmIdent
 + "&M. IconMan"           Module FvwmIconMan
 + "&N. Banner"            Module FvwmBanner
++ "&C. Console"           Module FvwmConsole
 + "&P. Pager"             Module FvwmPager 0 0
 + "&2. Pager (2 desks)"   Module FvwmPager 0 1
 + "&R. Backer"            Module FvwmBacker
@@ -209,7 +210,7 @@ AddToMenu MenuFvwmModules "Fvwm Modules"        Title
 DestroyMenu MenuFvwmStopModule
 AddToMenu MenuFvwmStopModule "Stop Fvwm Modules" Title
 + "&B. Stop Button-Bar"  KillModule FvwmButtons
-+ "&C. Stop IconBox"     KillModule FvwmIconBox
++ "&O. Stop IconBox"     KillModule FvwmIconBox
 + "&M. Stop IconMan"     KillModule FvwmIconMan
 + "&P. Stop Pager"       KillModule FvwmPager
 + "&R. Stop Backer"      KillModule FvwmBacker
@@ -219,19 +220,19 @@ AddToMenu MenuFvwmStopModule "Stop Fvwm Modules" Title
 + "&W. Stop WinList"     KillModule FvwmWinList
 
 DestroyMenu MenuFvwmForms
-AddToMenu MenuFvwmForms "&C. Capture" Module FvwmForm FormFvwmCapture.
-AddToMenu MenuFvwmForms "&D. Form Defaults" FvwmForm FormFvwmForm.
-AddToMenu MenuFvwmForms "&R. Rlogin" Module FvwmForm FormFvwmRlogin.
-AddToMenu MenuFvwmForms "&P. RootCursor" Module FvwmForm FormFvwmRootCursor.
-AddToMenu MenuFvwmForms "&S. Setup"    Module FvwmForm FormFvwmSetup.
-AddToMenu MenuFvwmForms "&T. Talk Form" Module FvwmForm FormFvwmTalk.
-AddToMenu MenuFvwmForms "&Q. QuitVerify" Module FvwmForm FormFvwmQuitVerify.
+AddToMenu MenuFvwmForms "&C. Capture"       Module FvwmForm FvwmForm-Capture
+AddToMenu MenuFvwmForms "&D. Form Defaults" Module FvwmForm FvwmForm-Form
+AddToMenu MenuFvwmForms "&R. Rlogin"        Module FvwmForm FvwmForm-Rlogin
+AddToMenu MenuFvwmForms "&P. RootCursor"    Module FvwmForm FvwmForm-RootCursor
+AddToMenu MenuFvwmForms "&S. Setup"         Module FvwmForm FvwmForm-Setup
+AddToMenu MenuFvwmForms "&T. Talk Form"     Module FvwmForm FvwmForm-Talk
+AddToMenu MenuFvwmForms "&Q. QuitVerify"    Module FvwmForm FvwmForm-QuitVerify
 
 # Configure and start using an iconbox on the fly
 DestroyFunc FuncFvwmConfigureIconBox
-AddToFunc FuncFvwmConfigureIconBox I module FvwmIconBox
-+                       I Style     *  NoIcon
-+                       I Recapture
+AddToFunc FuncFvwmConfigureIconBox
++ I Module FvwmIconBox
++ I Style     *  NoIcon
 
 DestroyMenu MenuFvwmQuitVerify
 AddToMenu MenuFvwmQuitVerify "Really Quit Fvwm?" Title

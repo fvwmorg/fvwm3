@@ -1,6 +1,6 @@
-DestroyModuleConfig FvwmBacker
-*FvwmBackerCommand (Desk 0) -solid steelblue
-*FvwmBackerCommand (Desk 1) -solid midnightblue
-*FvwmBackerCommand (Desk 2) -solid yellow
-*FvwmBackerCommand (Desk 3, Page 0 *) -solid black
-*FvwmBackerCommand (Desk 3, Page 1 *) -solid green
+DestroyModuleConfig FvwmBacker: *
+*FvwmBacker: Command (Desk 0) -solid steelblue
+*FvwmBacker: Command (Desk 1) -solid midnightblue
+*FvwmBacker: Command (Desk 2) -solid yellow
+*FvwmBacker: Command (Desk 3, Page 0 *) -solid black
+*FvwmBacker: Command (Desk 3, Page 1 *) -solid green

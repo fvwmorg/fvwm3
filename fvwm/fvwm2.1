@@ -3934,8 +3934,8 @@ Stroke 415963     3  R  N  Exec exec netscape
 You may prefer to use the numeric pad grid since you have such
 a grid on your machine. Here an example:
 .EX
-Stroke N78963314   3  R  N  FvwmForm FormFvwmQuitVerify.
-Stroke N789633147  3  R  N  FvwmForm FormFvwmQuitVerify.
+Stroke N78963314   3  R  N  FvwmForm FvwmForm-QuitVerify
+Stroke N789633147  3  R  N  FvwmForm FvwmForm-QuitVerify
 .EE
 This example will start the "QuitVerify" form if you draw a box
 that begin in the top left corner.
@@ -4638,8 +4638,8 @@ Example:
 .EX
 Style * ActivePlacement, DumbPlacement
 
-*FvwmEventPassID
-*FvwmEventadd_window GrowDownFunc
+*FvwmEvent: PassID
+*FvwmEvent: add_window GrowDownFunc
 AddToFunc StartFunction
 + I FvwmEvent
 
@@ -6785,7 +6785,7 @@ MenuStyle * DGradient 100 3 Red 20 Blue 30 \\
 
 # 50% from blue to green, then
 # 50% from yellow to red
-*FvwmThemeColorset 0 Blue Red HGradient \\
+*FvwmTheme: Colorset 0 Blue Red HGradient \\
   128 3 Blue 1000 Green 1 Yellow 1000 Red
 .EE
 

@@ -72,12 +72,12 @@ commands starting with "*Rlogin", and reads the optional configuration file
 
 All forms, regardless of alias,  scan first for configuration commands
 that start with  "*FvwmFormDefault".   These  commands  normally come
-from the builtin form "FormFvwmForm." which saves commands to the file
+from the builtin form "FvwmForm-Form" which saves commands to the file
 ".FvwmForm".
 
 The physical reading of the optional input file, ".FvwmForm",
 is done only the first time FvwmForm is invoked, or after
-"FormFvwmForm" updates the file.
+"FvwmForm-Form" updates the file.
 
 When the file ".FvwmForm" is read,  it is done  by sending the command
 "Read .FvwmForm  Quiet"   to fvwm.  Because of  the   way the  "read"
@@ -103,7 +103,7 @@ After all the configuration commands have been read, FvwmForm displays
 the form defined by the commands.
 
 .SH DEFAULTS
-FvwmForm creates a built-in form named "FormFvwmForm" that creates
+FvwmForm creates a built-in form named "FvwmForm-Form" that creates
 a file called ".FvwmForm".  This file contains saved default form colors and
 fonts.  Other forms use these defaults unless they are overridden within the
 form.
@@ -112,33 +112,33 @@ The default creating form would normally be invoked from a "module menu".
 For example, if you call your module menu "Module-Popup", you would
 add the line:
 .EX
-AddToMenu "Module-Popup" "FvwmForm Defaults" FvwmForm FormFvwmForm.
+AddToMenu "Module-Popup" "FvwmForm Defaults" FvwmForm FvwmForm-Form
 .EE
 When you select "FvwmForm Defaults" from your module menu,
 a form is displayed that shows the current defaults and allows you
 to change them.  If you activate the "Save Restart Me" button,
-the ".FvwmForm" file is written and "FormFvwmForm." exits and restarts
+the ".FvwmForm" file is written and "FvwmForm-Form" exits and restarts
 to show the new defaults.
 
 An example of what this file might contain after a save is:
 .EX
-  # This file last created by FormFvwmForm on Sun Nov 28 11:18:26 EST 1999.
-  *FvwmFormDefaultFont 10x20
-  *FvwmFormDefaultInputFont 8x13bold
-  *FvwmFormDefaultButtonFont 10x20
-  *FvwmFormDefaultFore white
-  *FvwmFormDefaultBack cornflowerblue
-  *FvwmFormDefaultColorset -1
-  *FvwmFormDefaultItemFore green
-  *FvwmFormDefaultItemBack gray40
-  *FvwmFormDefaultItemColorset -1
+  # This file last created by FvwmForm-Form on Sun Nov 28 11:18:26 EST 1999.
+  *FvwmFormDefault: Font 10x20
+  *FvwmFormDefault: InputFont 8x13bold
+  *FvwmFormDefault: ButtonFont 10x20
+  *FvwmFormDefault: Fore white
+  *FvwmFormDefault: Back cornflowerblue
+  *FvwmFormDefault: Colorset -1
+  *FvwmFormDefault: ItemFore green
+  *FvwmFormDefault: ItemBack gray40
+  *FvwmFormDefault: ItemColorset -1
 .EE
 The commands in this file are just like any other FvwmForm
 command except that they start with "*FvwmFormDefault".
 
 FvwmForm only reads the file ".FvwmForm" the first time it is started
-or after the file is changed by "FormFvwmForm.".  It does so
-by sending the command "*FvwmFormDefaultRead x". With "x" set to "y" or
+or after the file is changed by "FvwmForm-Form".  It does so
+by sending the command "*FvwmFormDefault: Read x". With "x" set to "y" or
 "n".  "n" makes FvwmForm send a "read .FvwmForm quiet" command to fvwm.
 
 .SH VARIABLE SUBSTITUTION
@@ -180,36 +180,36 @@ and while the form is being displayed.
 
 The following commands are accepted before the form is displayed:
 .EX
-*FvwmFormBack
-*FvwmFormButton
-*FvwmFormButtonFont
-*FvwmFormChoice
-*FvwmFormCommand
-*FvwmFormColorset
-*FvwmFormFont
-*FvwmFormFore
-*FvwmFormGrabServer
-*FvwmFormInput
-*FvwmFormInputFont
-*FvwmFormItemBack
-*FvwmFormItemColorset
-*FvwmFormItemFore
-*FvwmFormLine
-*FvwmFormMessage
-*FvwmFormPadVText
-*FvwmFormPosition
-*FvwmFormSelection
-*FvwmFormText
-*FvwmFormTitle
-*FvwmFormUseData
-*FvwmFormWarpPointer
+Back
+Button
+ButtonFont
+Choice
+Command
+Colorset
+Font
+Fore
+GrabServer
+Input
+InputFont
+ItemBack
+ItemColorset
+ItemFore
+Line
+Message
+PadVText
+Position
+Selection
+Text
+Title
+UseData
+WarpPointer
 .EE
 
 The following commands are accepted while the form is displayed:
 .EX
-*FvwmFormMap
-*FvwmFormStop
-*FvwmFormUnMap
+Map
+Stop
+UnMap
 .EE
 
 The "Map", "UnMap" and "Stop" facility is under development
@@ -229,40 +229,40 @@ The are no builtin limits on form size, number of items on
 a form, or number of fonts or colors used.
 
 .TP 4
-.B *FvwmFormGrabServer
+.B *FvwmForm: GrabServer
 This option makes FvwmForm grab the mouse pointer on startup.
 This feature is useful for things like logout verification.
 .TP 4
-.B *FvwmFormWarpPointer
+.B *FvwmForm: WarpPointer
 This option makes FvwmForm warp the mouse pointer into its window on startup.
 It saves the user some mouse-traveling.
 .TP 4
-.B *FvwmFormPosition \fIx\fP \fIy\fP
+.B *FvwmForm: Position \fIx\fP \fIy\fP
 Puts the FvwmForm window at location (\fIx\fP, \fIy\fP) on the screen.
 By convention, a negative \fIx\fP (\fIy\fP) value measures
 distance from the right (bottom) of the screen.
 
 If this option is omitted, FvwmForm starts at the center of the screen.
 .TP 4
-.B *FvwmFormColorset \fIn\fP
+.B *FvwmForm: Colorset \fIn\fP
 Tells the module to use colorset \fIn\fP. See FvwmTheme.
 .TP 4
-.B *FvwmFormBack \fIcolor\fP
+.B *FvwmForm: Back \fIcolor\fP
 Specifies the background color of the FvwmForm window
 and any text in the window.
 The first background color FvwmForm reads determines the overall
 screen background color. Switches off the Colorset option.
 See DEFAULTS.
 .TP 4
-.B *FvwmFormFore \fIcolor\fP
+.B *FvwmForm: Fore \fIcolor\fP
 Specifies the foreground color for displaying text labels.
 Switches off the Colorset option.
 See DEFAULTS.
 .TP 4
-.B *FvwmFormItemColorset \fIn\fP
+.B *FvwmForm: ItemColorset \fIn\fP
 Tells the module to use colorset \fIn\fP for items. See FvwmTheme.
 .TP 4
-.B *FvwmFormItemBack \fIcolor\fP
+.B *FvwmForm: ItemBack \fIcolor\fP
 Specifies the background color for the text input windows, and
 the buttons.
 Buttons are displayed as 3D depressible buttons.
@@ -271,24 +271,24 @@ Medium shade background colors work best.
 Switches off the ItemColorset option.
 See DEFAULTS.
 .TP 4
-.B *FvwmFormItemFore \fIcolor\fP
+.B *FvwmForm: ItemFore \fIcolor\fP
 Specifies the foreground color for the text input strings and button
 text. Switches off the ItemColorset option.
 See DEFAULTS.
 .TP 4
-.B *FvwmFormFont \fIfont\fP
+.B *FvwmForm: Font \fIfont\fP
 Specifies the font for displaying plain text.
 See DEFAULTS.
 .TP 4
-.B *FvwmFormButtonFont \fIfont\fP
+.B *FvwmForm: ButtonFont \fIfont\fP
 Specifies the font for text in the action buttons.
 See DEFAULTS.
 .TP 4
-.B *FvwmFormInputfont \fIfont\fP
+.B *FvwmForm: Inputfont \fIfont\fP
 Specifies the font for text input.  This font must have fixed width.
 See DEFAULTS.
 .TP 4
-.B *FvwmFormLine \fIjustification\fP
+.B *FvwmForm: Line \fIjustification\fP
 Starts a new line.
 A line can contain any number of text, input, buttons and choice items.
 A FvwmForm window can have any number of lines.
@@ -311,7 +311,7 @@ If there is only one item in the line, the item is centered in the window.
 If two or more items are present, they are spread to fill the whole
 width of the window.
 .TP 4
-.B *FvwmFormMessage
+.B *FvwmForm: Message
 Defines a text area on the form that contains the last error message
 from fvwm.  For purposes of determining form size, the message area
 is considered to be 80 bytes long.  Its actual length is the same as
@@ -322,7 +322,7 @@ You should not attempt to put any text, buttons or input fields on the
 same line after a message field.  Messages greater than 80 bytes will overlay
 the remainder of the line.
 .TP 4
-.B *FvwmFormPadVText "\fIPixels\fP"
+.B *FvwmForm: PadVText "\fIPixels\fP"
 The number of pixels used as vertical padding between text items, line
 to line.  The default is 6 which looks good on lines containing text
 intermixed with input boxes, choices or buttons.
@@ -333,19 +333,19 @@ zero looks better.
 (There are lots of other padding values used in form layout
 which can't currently be changed with commands.)
 .TP 4
-.B *FvwmFormText "\fIstring\fP"
+.B *FvwmForm: Text "\fIstring\fP"
 Displays \fIstring\fP as plain text.
-Line breaks must be achieved by multiple *FvwmFormLine and *FvwmFormText
+Line breaks must be achieved by multiple *FvwmForm: Line and *FvwmForm: Text
 options.
 Blanks may be used to provide extra padding between items.
 .TP 4
-.B *FvwmFormTitle "\fIstring\fP"
+.B *FvwmForm: Title "\fIstring\fP"
 Displays \fIstring\fP as the window's title.  The string
 must be enclosed in double quotes.  Using this command with anything
 other than a string enclosed in quotes creates a blank title.
 If this command is not used, the window title is the form alias.
 .TP 4
-.B *FvwmFormInput \fIname\fP \fIsize\fP "\fIinit_string\fP"
+.B *FvwmForm: Input \fIname\fP \fIsize\fP "\fIinit_string\fP"
 Specifies a text input item with name \fIname\fP.
 A sub window of \fIsize\fP characters in width is used for editing.
 If \fIinit_string\fP is present, it is the initial string when
@@ -377,7 +377,7 @@ Meta(mod2)-"<" retrieves the previous value of an input field.
 Meta(mod2)-">" retrieves the next value of an input field.
 
 .TP 4
-.B *FvwmFormSelection \fIname\fP \fItype\fP
+.B *FvwmForm: Selection \fIname\fP \fItype\fP
 This option starts a selection item with name \fIname\fP.
 Its choices are specified in following configuration commands.
 The option \fItype\fP is one of the following:
@@ -388,10 +388,10 @@ The selections are mutually exclusive.
 .B \fImultiple\fP
 This is a multiple-choice selection.
 .TP 4
-.B *FvwmFormChoice \fIname\fP \fIvalue\fP "on | off" "\fIstring\fP"
+.B *FvwmForm: Choice \fIname\fP \fIvalue\fP "on | off" "\fIstring\fP"
 Specifies a choice for a preceeding selection.
 The choice item has a \fIname\fP and a \fIvalue\fP these are used in
-commands.  See *FvwmFormCommand.
+commands.  See *FvwmForm: Command.
 The \fIstring\fP is displayed to the right of the choice button
 as a label.
 
@@ -403,11 +403,11 @@ i.e. two or none of the choices can be selected.
 However, once the user selects a choice,
 FvwmForm  assures only one is selected.
 .TP 4
-.B *FvwmFormButton \fItype\fP "\fIstring\fP" [\fIkey\fP]
+.B *FvwmForm: Button \fItype\fP "\fIstring\fP" [\fIkey\fP]
 This option specifies an action button.
 The button has \fIstring\fP as a label,
 and executes a set of Fvwm \fIcommand\fP when it is activated.
-The commands are the following *FvwmFormCommands.
+The commands are the following *FvwmForm: Commands.
 
 The optional \fIkey\fP specifies a keyboard shortcut that activates
 the button.
@@ -431,9 +431,9 @@ and then continues execution.
 quit
 FvwmForm quits after sending the commands.
 .TP 4
-.B *FvwmFormCommand \fIcommand\fP
+.B *FvwmForm: Command \fIcommand\fP
 This option specifies an Fvwm command associated with the current button.
-Commands that appear before any *FvwmFormButton option are executed
+Commands that appear before any *FvwmForm: Button option are executed
 at start-up time.  This is usually a beep that gets the user's attention.
 
 Commands starting with an exclamation mark (!) are executed by FvwmForm,
@@ -448,7 +448,7 @@ The special chars single-quote, double-quote and backslash
 are preceded by a backslash.
 
 If \fIname\fP corresponds to a choice,
-the result is the value of the choice (as specified in *FvwmFormChoice)
+the result is the value of the choice (as specified in *FvwmForm: Choice)
 if the choice is selected.
 If the choice is not selected, the result is a blank string.
 
@@ -474,13 +474,13 @@ by a right parenthesis.  If you need to put a right parenthesis in a string,
 preceed the right parenthesis with a backslash.
 
 .TP 4
-.B *FvwmFormUseData \fIdatafile\fP \fIleading\fP
+.B *FvwmForm: UseData \fIdatafile\fP \fIleading\fP
 Tells FvwmForm to read a data file and extract data from module
 commands that match the "leading" argument and an input
 or choice variable in a form.
 
 This lets a form display current fvwm module configuration data.
-For an example of how this works, examine the file "FormFvwmRlogin."
+For an example of how this works, examine the file "FvwmForm-Rlogin"
 which is installed in read-only architecture-independent data directory,
 [PREFIX/share/fvwm] and shown below.
 
@@ -496,100 +496,104 @@ The following commands create a menu to invoke the examples:
 
 .EX
 DestroyMenu Forms
-AddToMenu Forms "&Q. QuitVerify" Module FvwmForm FormFvwmQuitVerify.
-AddToMenu Forms "&C. Capture" Module FvwmForm FormFvwmCapture.
-AddToMenu Forms "&R. Rlogin" Module FvwmForm FormFvwmRlogin.
-AddToMenu Forms "&T. Talk Form" Module FvwmForm FormFvwmTalk.
+AddToMenu Forms "&Q. QuitVerify" Module FvwmForm FvwmForm-QuitVerify
+AddToMenu Forms "&C. Capture"    Module FvwmForm FvwmForm-Capture
+AddToMenu Forms "&R. Rlogin"     Module FvwmForm FvwmForm-Rlogin
+AddToMenu Forms "&T. Talk"       Module FvwmForm FvwmForm-Talk
 .EE
 .SH EXAMPLE 1 - Quit Verify
 This example simulates the mwm way of confirming logout.
 Return does the logout, Escape cancels logout.
 .EX
-DestroyModuleConfig            FormFvwmQuitVerify.*
-*FormFvwmQuitVerify.GrabServer
-*FormFvwmQuitVerify.WarpPointer
-*FormFvwmQuitVerify.Command     Beep
-*FormFvwmQuitVerify.Line        center
-*FormFvwmQuitVerify.Text        "Do you really want to logout?"
-*FormFvwmQuitVerify.Line        expand
-*FormFvwmQuitVerify.Button      quit "Logout" ^M
-*FormFvwmQuitVerify.Command     Quit
-*FormFvwmQuitVerify.Button      quit "Cancel" ^[
-*FormFvwmQuitVerify.Command     Nop
+DestroyModuleConfig  FvwmForm-QuitVerify: *
+*FvwmForm-QuitVerify: GrabServer
+*FvwmForm-QuitVerify: WarpPointer
+*FvwmForm-QuitVerify: Command     Beep
+*FvwmForm-QuitVerify: Line        center
+*FvwmForm-QuitVerify: Text        "Do you really want to logout?"
+*FvwmForm-QuitVerify: Line        expand
+*FvwmForm-QuitVerify: Button      quit "Logout" ^M
+*FvwmForm-QuitVerify: Command     Quit
+*FvwmForm-QuitVerify: Button      restart   "Restart" ^R
+*FvwmForm-QuitVerify: Command     Restart
+*FvwmForm-QuitVerify: Button      quit "Cancel" ^[
+*FvwmForm-QuitVerify: Command     Nop
 .EE
+
 .SH EXAMPLE 2 - Remote Login
 This example lets the user type in a host name,
 an optional user name,
 and opens an xterm window from the remote host.
 .EX
-DestroyModuleConfig         FormFvwmRlogin.*
-*FormFvwmRlogin.WarpPointer
-*FormFvwmRlogin.Line         center
-*FormFvwmRlogin.Text         "Login to Remote Host"
-*FormFvwmRlogin.Line         center
-*FormFvwmRlogin.Text         "Host:"
-*FormFvwmRlogin.Input        HostName        20      ""
-*FormFvwmRlogin.Line         center
-*FormFvwmRlogin.Selection    UserSel single
-*FormFvwmRlogin.Choice       Default Default on      "same user"
-*FormFvwmRlogin.Choice       Custom  Custom  off     "user:"
-*FormFvwmRlogin.Input        UserName        10      ""
-*FormFvwmRlogin.Line         expand
-*FormFvwmRlogin.Button       quit    "Login"         ^M
-*FormFvwmRlogin.Command      Exec exec rsh $(Custom?-l $(UserName)) $(HostName) xterm -T xterm@$(HostName) -display $HOSTDISPLAY &
+DestroyModuleConfig  FvwmForm-Rlogin: *
+*FvwmForm-Rlogin: WarpPointer
+*FvwmForm-Rlogin: Line         center
+*FvwmForm-Rlogin: Text         "Login to Remote Host"
+*FvwmForm-Rlogin: Line         center
+*FvwmForm-Rlogin: Text         "Host:"
+*FvwmForm-Rlogin: Input        HostName        20      ""
+*FvwmForm-Rlogin: Line         center
+*FvwmForm-Rlogin: Selection    UserSel single
+*FvwmForm-Rlogin: Choice       Default Default on      "same user"
+*FvwmForm-Rlogin: Choice       Custom  Custom  off     "user:"
+*FvwmForm-Rlogin: Input        UserName        10      ""
+*FvwmForm-Rlogin: Line         expand
+*FvwmForm-Rlogin: Button       quit    "Login"         ^M
+*FvwmForm-Rlogin: Command      Exec exec rsh $(Custom?-l $(UserName)) $(HostName) xterm -T xterm@$(HostName) -display $HOSTDISPLAY &
 # Before saving the data, remove any previously saved data:
-*FormFvwmRlogin.Command DestroyModuleConfig FvwmRloginDefault*
+*FvwmForm-Rlogin: Command DestroyModuleConfig FvwmForm-RloginDefault: *
 # The "Login" button causes a login and a saving of the current data:
-*FormFvwmRlogin.Command !/bin/echo "# This file last created by\
- FormFvwmRlogin on: `/bin/date`.\n\
-*FvwmRloginDefaultHostName $(HostName)\n\
-*FvwmRloginDefaultUserName $(UserName)\n\
-*FvwmRloginDefaultDefault $(Default?on)\n\
-*FvwmRloginDefaultCustom $(Custom?on)"\
-  > ${FVWM_USERDIR}/.FvwmRlogin
-*FormFvwmRlogin.Button       restart "Clear"
-*FormFvwmRlogin.Button       quit    "Cancel"        ^[
-*FormFvwmRlogin.Command      Nop
-# Tell FvwmForm to read vars from the .FvwmRlogin file:
-*FormFvwmRlogin.UseData .FvwmRlogin *FvwmRloginDefault
+*FvwmForm-Rlogin: Command !(                                      /bin/echo \
+  "# This file last created by FvwmForm-Rlogin on: `/bin/date`."; /bin/echo \
+  '*FvwmForm-RloginDefault: HostName $(HostName)'               ; /bin/echo \
+  '*FvwmForm-RloginDefault: UserName $(UserName)'               ; /bin/echo \
+  '*FvwmForm-RloginDefault: Default $(Default?on)'              ; /bin/echo \
+  '*FvwmForm-RloginDefault: Custom $(Custom?on)' \
+) > ${FVWM_USERDIR}/.FvwmForm-Rlogin
+*FvwmForm-Rlogin: Button       restart "Clear"
+*FvwmForm-Rlogin: Button       quit    "Cancel"        ^[
+*FvwmForm-Rlogin: Command      Nop
+# Tell FvwmForm to read vars from the .FvwmForm-RloginDefault file:
+*FvwmForm-Rlogin: UseData .FvwmForm-Rlogin *FvwmForm-RloginDefault
 .EE
+
 .SH EXAMPLE 3 - Capture Window
 This example provides a front-end to xwd, xwud, and xpr.
 .EX
-# Capture Window - This example is a front-end to xwd, xwud, and xpr.
-DestroyModuleConfig        FormFvwmCapture.*
-*FormFvwmCapture.Line       center
-*FormFvwmCapture.Text       "Capture Window"
-*FormFvwmCapture.Line       left
-*FormFvwmCapture.Text       "File: "
-*FormFvwmCapture.Input      file            25      "/tmp/Capture"
-*FormFvwmCapture.Line       left
-*FormFvwmCapture.Text       "Printer: "
-*FormFvwmCapture.Input      printer         20      "$PRINTER"
-*FormFvwmCapture.Line       expand
-*FormFvwmCapture.Selection  PtrType single
-*FormFvwmCapture.Choice     PS      ps      on      "PostScript"
-*FormFvwmCapture.Choice     Ljet    ljet    off     "HP LaserJet"
-*FormFvwmCapture.Line       left
-*FormFvwmCapture.Text       "xwd options:"
-*FormFvwmCapture.Line       expand
-*FormFvwmCapture.Selection  Options multiple
-*FormFvwmCapture.Choice     Brd     -nobdrs off     "No border"
-*FormFvwmCapture.Choice     Frm     -frame  on      "With frame"
-*FormFvwmCapture.Choice     XYZ     -xy     off     "XY format"
-*FormFvwmCapture.Line       expand
-*FormFvwmCapture.Button     continue        "Capture"       ^M
-*FormFvwmCapture.Command    Exec exec xwd -out $(file) $(Options) &
-*FormFvwmCapture.Button     continue        "Preview"
-*FormFvwmCapture.Command    Exec exec xwud -in $(file) &
-*FormFvwmCapture.Button     continue        "Print"
-*FormFvwmCapture.Command    Exec exec xpr -device $(PtrType) $(file) | lpr -P $(printer) &
-*FormFvwmCapture.Button     quit            "Quit"
+DestroyModuleConfig  FvwmForm-Capture: *
+*FvwmForm-Capture: Line       center
+*FvwmForm-Capture: Text       "Capture Window"
+*FvwmForm-Capture: Line       left
+*FvwmForm-Capture: Text       "File: "
+*FvwmForm-Capture: Input      file            25      "/tmp/Capture"
+*FvwmForm-Capture: Line       left
+*FvwmForm-Capture: Text       "Printer: "
+*FvwmForm-Capture: Input      printer         20      "$PRINTER"
+*FvwmForm-Capture: Line       expand
+*FvwmForm-Capture: Selection  PtrType single
+*FvwmForm-Capture: Choice     PS      ps      on      "PostScript"
+*FvwmForm-Capture: Choice     Ljet    ljet    off     "HP LaserJet"
+*FvwmForm-Capture: Line       left
+*FvwmForm-Capture: Text       "xwd options:"
+*FvwmForm-Capture: Line       expand
+*FvwmForm-Capture: Selection  Options multiple
+*FvwmForm-Capture: Choice     Brd     -nobdrs off     "No border"
+*FvwmForm-Capture: Choice     Frm     -frame  on      "With frame"
+*FvwmForm-Capture: Choice     XYZ     -xy     off     "XY format"
+*FvwmForm-Capture: Line       expand
+*FvwmForm-Capture: Button     continue        "Capture"       ^M
+*FvwmForm-Capture: Command    Exec exec xwd -out $(file) $(Options) &
+*FvwmForm-Capture: Button     continue        "Preview"
+*FvwmForm-Capture: Command    Exec exec xwud -in $(file) &
+*FvwmForm-Capture: Button     continue        "Print"
+*FvwmForm-Capture: Command    Exec exec xpr -device $(PtrType) $(file) | lpr -P $(printer) &
+*FvwmForm-Capture: Button     quit            "Quit"
 .EE
+
 .SH EXAMPLE 4 - Talk Form
 This example provides a replacement for the module FvwmTalk.
-There are 2 forms, "FormFvwmTalk." which executes commands,
-or sends commands to fvwm for execution, and "FormFvwmTalkHelp."
+There are 2 forms, "FvwmForm-Talk." which executes commands,
+or sends commands to fvwm for execution, and "FvwmForm-TalkHelp."
 which is a help form.
 
 These 2 forms have names ending in a special character.  This is
@@ -601,64 +605,67 @@ spacing is changed.  Normal FvwmForm line spacing assumes text is
 intermixed with buttons, help forms require different spacing.
 
 .EX
-# FormFvwmTalk. - Replacement for FvwmTalk
-DestroyModuleConfig         FormFvwmTalk.*
-*FormFvwmTalk.WarpPointer
+# FvwmForm-Talk - Basic replacement for FvwmTalk
+DestroyModuleConfig  FvwmForm-Talk: *
+*FvwmForm-Talk: WarpPointer
 # Layout
-*FormFvwmTalk.Line         center
-*FormFvwmTalk.Text         "Talk to Fvwm"
-*FormFvwmTalk.Line         left
-*FormFvwmTalk.Text         "Command:"
-*FormFvwmTalk.Input        Command 80 ""
-*FormFvwmTalk.Line         left
-*FormFvwmTalk.Text         "Msg:"
-*FormFvwmTalk.Message
-*FormFvwmTalk.Line         center
+*FvwmForm-Talk: Line         center
+*FvwmForm-Talk: Text         "Talk to Fvwm"
+*FvwmForm-Talk: Line         left
+*FvwmForm-Talk: Text         "Command:"
+*FvwmForm-Talk: Input        Command 80 ""
+*FvwmForm-Talk: Line         left
+*FvwmForm-Talk: Text         "Msg:"
+*FvwmForm-Talk: Message
+*FvwmForm-Talk: Line         center
 # Buttons
-*FormFvwmTalk.Button       continue    "Return - Execute"         ^M
-*FormFvwmTalk.Command        $(Command)
-*FormFvwmTalk.Button       continue    "F1 - Help" F1
-*FormFvwmTalk.Command        Module FvwmForm FormFvwmTalkHelp.
-*FormFvwmTalk.Button       restart     "F3 - Reset input" F3
-*FormFvwmTalk.Command        Nop
-*FormFvwmTalk.Button       quit        "F4 - Dismiss"  F4
-*FormFvwmTalk.Command        Nop
+*FvwmForm-Talk: Button       restart    "Return - Execute"         ^M
+*FvwmForm-Talk: Command        $(Command)
+*FvwmForm-Talk: Button       continue    "F1 - Help" F1
+*FvwmForm-Talk: Command        Module FvwmForm FvwmForm-TalkHelp
+*FvwmForm-Talk: Button       restart     "F3 - Reset input" F3
+*FvwmForm-Talk: Command        Nop
+*FvwmForm-Talk: Button       quit        "F4 - Dismiss"  F4
+*FvwmForm-Talk: Command        Nop
 .EE
+
 .EX
-# FormFvwmTalkHelp. - Help Text for FormFvwmTalk
-DestroyModuleConfig         FormFvwmTalkHelp.*
-*FormFvwmTalkHelp.WarpPointer
+# FvwmForm-TalkHelp - Help Text for FvwmForm-Talk
+DestroyModuleConfig  FvwmForm-TalkHelp: *
+*FvwmForm-TalkHelp: WarpPointer
 # Layout
-*FormFvwmTalkHelp.Line    center
-*FormFvwmTalkHelp.Text    "Talk to Fvwm - Help"
-*FormFvwmTalkHelp.Line    left
-*FormFvwmTalkHelp.Text    " "
-*FormFvwmTalkHelp.Line    left
-*FormFvwmTalkHelp.PadVText 0
-*FormFvwmTalkHelp.Text    "Enter commands in the \\"Command:\\" input field."
-*FormFvwmTalkHelp.Line    left
-*FormFvwmTalkHelp.Text    "Commands beginning with \\"!\\" are executed by the"
-*FormFvwmTalkHelp.Line    left
-*FormFvwmTalkHelp.Text    "shell as a sub-process of the form."
-*FormFvwmTalkHelp.Line    left
-*FormFvwmTalkHelp.Text    "All other commands are sent to fvwm for execution."
-*FormFvwmTalkHelp.Line    left
-*FormFvwmTalkHelp.Text    ""
-*FormFvwmTalkHelp.Line    left
-*FormFvwmTalkHelp.Text    "Fvwm error messages are shown on the \\"Msg:\\" line."
-*FormFvwmTalkHelp.Line    left
-*FormFvwmTalkHelp.Text    ""
+*FvwmForm-TalkHelp: Line    center
+*FvwmForm-TalkHelp: Text    "Talk to Fvwm - Help"
+*FvwmForm-TalkHelp: Line    left
+*FvwmForm-TalkHelp: Text    " "
+*FvwmForm-TalkHelp: Line    left
+*FvwmForm-TalkHelp: PadVText 0
+*FvwmForm-TalkHelp: Text    "Enter commands in the \"Command:\" input field."
+*FvwmForm-TalkHelp: Line    left
+*FvwmForm-TalkHelp: Text    "Commands beginning with \"!\" are executed by the"
+*FvwmForm-TalkHelp: Line    left
+*FvwmForm-TalkHelp: Text    "shell as a sub-process of the form."
+*FvwmForm-TalkHelp: Line    left
+*FvwmForm-TalkHelp: Text    "All other commands are sent to fvwm for execution."
+*FvwmForm-TalkHelp: Line    left
+*FvwmForm-TalkHelp: Text    ""
+*FvwmForm-TalkHelp: Line    left
+*FvwmForm-TalkHelp: Text    "Fvwm error messages are shown on the \"Msg:\" line."
+*FvwmForm-TalkHelp: Line    left
+*FvwmForm-TalkHelp: Text    ""
 # Buttons
-*FormFvwmTalkHelp.Line    center
-*FormFvwmTalkHelp.Button  quit    "Return - Dismiss"         ^M
-*FormFvwmTalkHelp.Command   Nop
+*FvwmForm-TalkHelp: Line    center
+*FvwmForm-TalkHelp: Button  quit    "Return - Dismiss"         ^M
+*FvwmForm-TalkHelp: Command   Nop
 .EE
+
 .SH BUGS AND LIMITATIONS
 FvwmForm is a fairly simple method of providing input.
 There is no input validation facility.
 FvwmForm has no way of dealing with lists.
 
 Report bugs to the fvwm-workers list.
+
 .SH COPYRIGHTS
 FvwmForm is original work of Thomas Zuwei Feng
 (ztfeng@math.princeton.edu).

@@ -12,33 +12,33 @@ module_SCRIPTS = FvwmTalk
 
 FvwmTalk:
 	echo "#!/bin/sh" > $@
-	echo exec ${moduledir}/FvwmForm '$$@' FormFvwmTalk.>> $@
+	echo exec ${moduledir}/FvwmForm '$$@' FvwmForm-Talk>> $@
 
 ## NB: Neither _MANS nor _DATA are included by default in
 ## distributions!
 EXTRA_DIST = $(man_MANS) Changes \
- FormFvwmSetup.in    \
- FormFvwmForm.       \
- FormFvwmCapture.    \
- FormFvwmQuitVerify. \
- FormFvwmRlogin.     \
- FormFvwmRootCursor. \
- FormFvwmTalk.       \
- FormFvwmTalkHelp.
+  FvwmForm-Setup.in   \
+  FvwmForm-Form       \
+  FvwmForm-Capture    \
+  FvwmForm-QuitVerify \
+  FvwmForm-Rlogin     \
+  FvwmForm-RootCursor \
+  FvwmForm-Talk       \
+  FvwmForm-TalkHelp
 
 FvwmForm_SOURCES = FvwmForm.c FvwmForm.h ReadXServer.c ParseCommand.c
 
 FvwmForm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 config_DATA =        \
- FormFvwmSetup.      \
- FormFvwmForm.       \
- FormFvwmCapture.    \
- FormFvwmQuitVerify. \
- FormFvwmRlogin.     \
- FormFvwmRootCursor. \
- FormFvwmTalk.       \
- FormFvwmTalkHelp.
+  FvwmForm-Setup      \
+  FvwmForm-Form       \
+  FvwmForm-Capture    \
+  FvwmForm-QuitVerify \
+  FvwmForm-Rlogin     \
+  FvwmForm-RootCursor \
+  FvwmForm-Talk       \
+  FvwmForm-TalkHelp
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm
@@ -48,9 +48,9 @@ LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS)  \
 
 INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
 
-FormFvwmSetup.: FormFvwmSetup.in
+FvwmForm-Setup: FvwmForm-Setup.in
 	rm -f $@
-	sed -e 's,xFVWM_DATADIRx,$(FVWM_DATADIR),' $(top_srcdir)/modules/FvwmForm/FormFvwmSetup.in > $@-t
+	sed -e 's,xFVWM_DATADIRx,$(FVWM_DATADIR),' $(top_srcdir)/modules/FvwmForm/FvwmForm-Setup.in > $@-t
 	mv $@-t $@
 
-CLEANFILES = $(module_SCRIPTS) FormFvwmSetup.
+CLEANFILES = $(module_SCRIPTS) FvwmForm-Setup

@@ -1,45 +1,45 @@
-DestroyModuleConfig FvwmIconBox
+DestroyModuleConfig FvwmIconBox: *
 ############################################################
 # Note that icons are shown in the module
 #    ONLY if NoIcon commnand is applied.
 #Style     "*"  NoIcon
 # 
 ############################################################
-*FvwmIconBoxIconBack    #cfcfcf
-*FvwmIconBoxIconHiFore  black
-*FvwmIconBoxIconHiBack  LightSkyBlue
-*FvwmIconBoxBack        #5f9ea0
-#*FvwmIconBoxFore       blue
-*FvwmIconBoxGeometry    5x1+0+0
-*FvwmIconBoxMaxIconSize 64x38
-*FvwmIconBoxFont        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
-*FvwmIconBoxSortIcons   IconName
-*FvwmIconBoxPadding     4
-*FvwmIconBoxLines       10
-*FvwmIconBoxSBWidth     11
-*FvwmIconBoxPlacement   Left Top
-*FvwmIconBoxPixmap      fvwm.xpm
-#*FvwmIconBoxHideSC Horizontal
-*FvwmIconBoxSetWMIconSize
-*FvwmIconBoxHilightFocusWin
-#*FvwmIconBoxResolution          Desk
-*FvwmIconBoxMouse       1       Click           RaiseLower
-*FvwmIconBoxMouse       1       DoubleClick     Iconify
-*FvwmIconBoxMouse       2       Click           Iconify -1, Focus
-*FvwmIconBoxMouse       3       Click           Module FvwmIdent
-*FvwmIconBoxKey         r       RaiseLower
-*FvwmIconBoxKey         space   Iconify
-*FvwmIconBoxKey         d       Close
-*FvwmIconBoxKey         n       Next
-*FvwmIconBoxKey         p       Prev
-*FvwmIconBoxKey         h       Left
-*FvwmIconBoxKey         j       Down
-*FvwmIconBoxKey         k       Up
-*FvwmIconBoxKey         l       Right
+*FvwmIconBox: IconBack    #cfcfcf
+*FvwmIconBox: IconHiFore  black
+*FvwmIconBox: IconHiBack  LightSkyBlue
+*FvwmIconBox: Back        #5f9ea0
+#*FvwmIconBox: Fore       blue
+*FvwmIconBox: Geometry    5x1+0+0
+*FvwmIconBox: MaxIconSize 64x38
+*FvwmIconBox: Font        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+*FvwmIconBox: SortIcons   IconName
+*FvwmIconBox: Padding     4
+*FvwmIconBox: Lines       10
+*FvwmIconBox: SBWidth     11
+*FvwmIconBox: Placement   Left Top
+*FvwmIconBox: Pixmap      fvwm.xpm
+#*FvwmIconBox: HideSC Horizontal
+*FvwmIconBox: SetWMIconSize
+*FvwmIconBox: HilightFocusWin
+#*FvwmIconBox: Resolution          Desk
+*FvwmIconBox: Mouse       1       Click           RaiseLower
+*FvwmIconBox: Mouse       1       DoubleClick     Iconify
+*FvwmIconBox: Mouse       2       Click           Iconify -1, Focus
+*FvwmIconBox: Mouse       3       Click           Module FvwmIdent
+*FvwmIconBox: Key         r       RaiseLower
+*FvwmIconBox: Key         space   Iconify
+*FvwmIconBox: Key         d       Close
+*FvwmIconBox: Key         n       Next
+*FvwmIconBox: Key         p       Prev
+*FvwmIconBox: Key         h       Left
+*FvwmIconBox: Key         j       Down
+*FvwmIconBox: Key         k       Up
+*FvwmIconBox: Key         l       Right
 #
 # Icon file specifications
 #
 # Mostly, you don't have to specify icon files, as FvwmIconBox now
 # reads icon files specified in Style commands.
 #
-*FvwmIconBox            "Fvwm*"         -
+#*FvwmIconBox:             "Fvwm*"         -

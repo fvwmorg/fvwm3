@@ -1,10 +1,10 @@
 ##########################FvwmWinList##################################
-DestroyModuleConfig FvwmWinList*
-*FvwmWinListBack #908090
-*FvwmWinListFore Black
-*FvwmWinListFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*FvwmWinListAction Click1 Iconify -1,Focus
-*FvwmWinListAction Click2 Iconify
-*FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
-*FvwmWinListUseSkipList
-*FvwmWinListGeometry +0-1
+DestroyModuleConfig FvwmWinList: *
+*FvwmWinList: Back #908090
+*FvwmWinList: Fore Black
+*FvwmWinList: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmWinList: Action Click1 Iconify -1,Focus
+*FvwmWinList: Action Click2 Iconify
+*FvwmWinList: Action Click3 Module "FvwmIdent" FvwmIdent
+*FvwmWinList: UseSkipList
+*FvwmWinList: Geometry +0-1

@@ -486,7 +486,7 @@ Style "desktop_icon" CirculateSkip, WindowListSkip,  NoTitle
 # xsm "panel"
 Style "xsm"	     Sticky, NoTitle, WindowListSkip, CirculateSkip
 
-Style FormFvwmQuitVerify. NoButton 1, NoButton 2, NoButton 4, NoButton 6, \
+Style FvwmForm-QuitVerify NoButton 1, NoButton 2, NoButton 4, NoButton 6, \
 				StaysOnTop, NoHandles, WindowListSkip
 
 # Some version of Netscape need the following if you want that the
@@ -651,7 +651,7 @@ Style xlogo		MiniIcon mini.x2.xpm
 # Modules, Form and script
 Style Fvwm*			MiniIcon -
 Style ScriptFvwm*		MiniIcon mini.fvwm.xpm
-Style FormFvwm*			MiniIcon mini.fvwm.xpm
+Style FvwmForm*			MiniIcon mini.fvwm.xpm
 Style FvwmIdent			MiniIcon mini.question.xpm, Icon question.xpm
 Style FvwmConsole		MiniIcon mini.xterm.xpm, Icon wterm.xpm
 Style ScriptFvwmBellSetup	MiniIcon mini.audiovol.xpm, Icon bell.xpm
@@ -665,13 +665,13 @@ Style ScriptFvwmColorset        MiniIcon mini.colors.xpm, Icon settings.xpm
 Style ScriptFvwmScreenDump	MiniIcon mini.camera.xpm, Icon resize.xpm
 Style ScriptFvwmSetup95		MiniIcon mini.fvwm.xpm, Icon settings.xpm
 Style ScriptFvwmDate		MiniIcon mini.clock.xpm, Icon date.xpm
-Style FormFvwmQuitVerify.	MiniIcon mini.question.xpm
-Style FormFvwmRlogin.		MiniIcon mini.connect.xpm, Icon Mosaic.xpm
-Style FormFvwmCapture.		MiniIcon mini.camera.xpm, Icon resize.xpm
-Style FormFvwmTalk*		MiniIcon mini.telnet.xpm, Icon rterm.xpm
-Style FormFvwmRootCursor.	MiniIcon mini.xarchie.xpm, Icon settings.xpm
-Style FormFvwmForm.		MiniIcon mini.fvwm.xpm, Icon settings.xpm
-Style FormFvwmSetup.		MiniIcon mini.fvwm.xpm, Icon settings.xpm
+Style FvwmForm-QuitVerify	MiniIcon mini.question.xpm
+Style FvwmForm-Rlogin		MiniIcon mini.connect.xpm, Icon Mosaic.xpm
+Style FvwmForm-Capture		MiniIcon mini.camera.xpm, Icon resize.xpm
+Style FvwmForm-Talk		MiniIcon mini.telnet.xpm, Icon rterm.xpm
+Style FvwmForm-RootCursor	MiniIcon mini.xarchie.xpm, Icon settings.xpm
+Style FvwmForm-Form		MiniIcon mini.fvwm.xpm, Icon settings.xpm
+Style FvwmForm-Setup		MiniIcon mini.fvwm.xpm, Icon settings.xpm
 Style FormFvwmAnimate		MiniIcon mini.iconify.xpm, Icon settings.xpm
 Style xmessage			MiniIcon mini.question.xpm, Icon settings.xpm
 Style WinMakerAppButtons*	NoIcon
@@ -1399,10 +1399,10 @@ Key Tab	A CM	WindowList Root c c NoGeometry OnlyListSkip
 #Stroke	415963		0	W	M	Exec exec netscape
 
 #STROKE 4 A clockwise box from the top left
-#Stroke	N78963214	0	R	N	FvwmForm FormFvwmQuitVerify.
-#Stroke	N789632147	0	R	N	FvwmForm FormFvwmQuitVerify.
-#Stroke	N78963214	0	W	M	FvwmForm FormFvwmQuitVerify.
-#Stroke	N789632147	0	W	M	FvwmForm FormFvwmQuitVerify.
+#Stroke	N78963214	0	R	N	FvwmForm FvwmForm-QuitVerify
+#Stroke	N789632147	0	R	N	FvwmForm FvwmForm-QuitVerify
+#Stroke	N78963214	0	W	M	FvwmForm FvwmForm-QuitVerify
+#Stroke	N789632147	0	W	M	FvwmForm FvwmForm-QuitVerify
 
 #SEG menus
 #=============================================================================#
@@ -1452,7 +1452,7 @@ AddToMenu    Utilities "FVWM Root Menu" Title
 + "&Screen Saver%mini.display.xpm%"	Popup Screen      
 + ""					Nop
 + "&Restart%mini.turn.xpm%"		Popup Restart
-+ "&Exit FVWM%mini.stop.xpm%"		FvwmForm FormFvwmQuitVerify.
++ "&Exit FVWM%mini.stop.xpm%"		FvwmForm FvwmForm-QuitVerify
 
 
 #------------------------------------------------------------------------------
@@ -1480,7 +1480,7 @@ AddToMenu   Shells
 + "X&iterm	80x40 (7x14 font)%mini.term.xpm%"  Exec exec xiterm -n $USER -T $USER -g 80x40 --font 7x14
 + "&Aterm	80x40 (7x14 font)%mini.term.xpm%"  Exec exec aterm -n $USER -T $USER -g 80x40 --font 7x14
 + ""						Nop
-+ "Remote &login	...%mini.connect.xpm%"		FvwmForm FormFvwmRlogin.
++ "Remote &login	...%mini.connect.xpm%"		FvwmForm FvwmForm-Rlogin
 
 #------------------------------------------------------------------------------
 #--------- Programs
@@ -1576,7 +1576,7 @@ AddToMenu   Accessories
 + "x&apm%mini.connect.xpm%" 		Exec exec xapm
 + "&View colormap%mini.colors.xpm%"	Exec exec xcolormap
 + "&Color viewer%mini.colors.xpm%"	Exec exec xcolorsel
-+ "&Capture Form%mini.camera.xpm%"	FvwmForm FormFvwmCapture.
++ "&Capture Form%mini.camera.xpm%"	FvwmForm FvwmForm-Capture
 + "&Sreen Dump Script%mini.camera.xpm%"	FvwmScript ScriptFvwmScreenDump
 + "X&grab%mini.camera.xpm%"		Exec exec xgrab
 + "&Ddd%mini.bug2.xpm%"		        Exec exec ddd
@@ -1649,7 +1649,7 @@ AddToMenu   Editors
 
 DestroyMenu Network
 AddToMenu   Network 
-+ "&Rlogin%mini.connect.xpm%"		Module FvwmForm FormFvwmRlogin.
++ "&Rlogin%mini.connect.xpm%"		Module FvwmForm FvwmForm-Rlogin
 + "&Vppp%mini.connect.xpm%"		Exec exec vppp
 + "&Ezppp%mini.connect.xpm%"		Exec exec ezppp
 + "&Hifs%mini.eyes.xpm%"		Exec exec xterm -ls -bg #c0c0c0 -fg black -T Hifs -name Hifs -geometry 26x24 -e hifs
@@ -1757,7 +1757,7 @@ AddToMenu   Module-Popup
 + "Identif&y%mini.question.xpm%"	RestartModule FvwmIdent
 + "Desker &Panel%mini.pager.xpm%"	RestartModuleByAlias FvwmButtons DeskerPanelButtons DeskerPanelButtons
 + "Sound &effect%mini.sound.xpm%"	RestartModule FvwmEvent
-+ "&Talk to Fvwm%mini.telnet.xpm%"	FvwmForm FormFvwmTalk.
++ "&Talk to Fvwm%mini.telnet.xpm%"	FvwmForm FvwmForm-Talk
 + "Task&Bar%mini.exp.xpm%"		RestartModule FvwmTaskBar
 + "Window &List%mini.windows.xpm%"	RestartModule FvwmWinList
 + "&Wharf%mini.pencil.xpm%"		RestartModule FvwmWharf
@@ -1780,7 +1780,7 @@ AddToMenu   Kill-Module-Popup
 + "Identif&y%mini.question.xpm%"	KillModule FvwmIdent
 + "Desker &Panel%mini.pager.xpm%"	All (DeskerPanelButtons) Close
 + "Sound &effect%mini.sound.xpm%"	KillModule FvwmEvent
-+ "&Talk%mini.telnet.xpm%"	        All (FormFvwmTalk.) Close
++ "&Talk%mini.telnet.xpm%"	        All (FvwmForm-Talk) Close
 + "Task&Bar%mini.exp.xpm"	        KillModule FvwmTaskBar
 + "Window &List%mini.windows.xpm%"	KillModule FvwmWinList
 + "&Wharf%mini.pencil.xpm%"		KillModule FvwmWharf
@@ -1822,10 +1822,10 @@ AddToMenu   Settings
 DestroyMenu FvwmConfig
 AddToMenu   FvwmConfig
 + "&Base Configuration%mini.fvwm.xpm%"		FvwmScript ScriptFvwmBaseConfig
-+ "&Form Configuration%mini.fvwm.xpm"		FvwmForm FormFvwmForm.
++ "&Form Configuration%mini.fvwm.xpm"		FvwmForm FvwmForm-Form
 + ""		Nop
 + "&Rebuild Sample 95%mini.fvwm.xpm%"		FvwmScript ScriptFvwmSetup95
-+ "&Load Default Sample%mini.fvwm.xpm%"		FvwmForm FormFvwmSetup.
++ "&Load Default Sample%mini.fvwm.xpm%"		FvwmForm FvwmForm-Setup
 
 
 #------------------------------------------------------------------------------
@@ -2148,7 +2148,7 @@ DestroyMenu X-Settings
 AddToMenu   X-Settings
 + "Back &Color%mini.colors.xpm"         Popup Backcolor
 + "Back &Animation%mini.fractal.xpm%"   Popup Background-Animation
-+ "&Root Cursor Form%mini.xarchie.xpm%"	FvwmForm FormFvwmRootCursor.
++ "&Root Cursor Form%mini.xarchie.xpm%"	FvwmForm FvwmForm-RootCursor
 + "&Video tuning%mini.monitor.xpm%"	Exec exec xterm -T Xvidtune -e xvidtune
 + "&X configuration%mini.display.xpm%"	Exec exec xterm -T Xconfig -e Xconfigurator
 
@@ -2909,7 +2909,7 @@ DestroyModuleConfig FvwmWharf*
 *FvwmWharf X           arrows2.xpm      Folder
 *FvwmWharf kill        rbomb2.xpm       Close
 *FvwmWharf Recycler    Jrecycle.xpm     Restart
-*FvwmWharf Exit	       exit.xpm         FvwmForm FormFvwmQuitVerify.
+*FvwmWharf Exit	       exit.xpm         FvwmForm FvwmForm-QuitVerify
 *FvwmWharf xlock       Jlock.xpm        Exec exec xlock -nice 10 -mode random
 *FvwmWharf ~Folder
 #PREF 3
@@ -3075,7 +3075,7 @@ DestroyModuleConfig FvwmWinList*
 # A / from the bottom to the top: your prefered file manager
 # A C from the top: xcalc
 # A N (from the bottom): netscape
-# A clockwise box from the top left: FormFvwmQuitVerify.
+# A clockwise box from the top left: FvwmForm-QuitVerify
 #
 # Add more yourself!
 #

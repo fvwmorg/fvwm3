@@ -1,3 +1,14 @@
+2000-11-08  Mikhael Goikhman  <migo@homemail.com>
+
+	* docs/FAQ:
+	* fvwm/ConfigFvwmSetup:
+	* fvwm/fvwm2.1:
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	use new form alias names FvwmForm-Flavor
+
+	* fvwm/modconf.c (DestroyModConfig):
+	handle spaces propertly after DestroyModuleConfig with a new syntax
+
 2000-11-05  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/purify/purify.fvwm2rc: Add timestamping, my ModulePath.

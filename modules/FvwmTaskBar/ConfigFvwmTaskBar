@@ -1,33 +1,33 @@
 Style "FvwmTaskBar" NoTitle,BorderWidth 4, HandleWidth 4, Sticky
 Style "FvwmTaskBar" StaysOnTop,WindowListSkip,CirculateSkip
 
-DestroyModuleConfig FvwmTaskBar*
-*FvwmTaskBarBack #c3c3c3
-*FvwmTaskBarFore black
-*FvwmTaskBarTipsBack bisque
-*FvwmTaskBarTipsFore black
-*FvwmTaskBarGeometry +0-0
-*FvwmTaskBarFont -adobe-helvetica-medium-r-*-*-14-*-*-*-*-*-*-*
-*FvwmTaskBarSelFont -adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
-*FvwmTaskBarStatusFont fixed
+DestroyModuleConfig FvwmTaskBar: *
+*FvwmTaskBar: Back #c3c3c3
+*FvwmTaskBar: Fore black
+*FvwmTaskBar: TipsBack bisque
+*FvwmTaskBar: TipsFore black
+*FvwmTaskBar: Geometry +0-0
+*FvwmTaskBar: Font -adobe-helvetica-medium-r-*-*-14-*-*-*-*-*-*-*
+*FvwmTaskBar: SelFont -adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
+*FvwmTaskBar: StatusFont fixed
 
-*FvwmTaskBarAction Click1 Iconify -1, Raise
-*FvwmTaskBarAction Click2 Iconify +1, Lower
-*FvwmTaskBarAction Click3 Iconify -1, Raise
+*FvwmTaskBar: Action Click1 Iconify -1, Raise
+*FvwmTaskBar: Action Click2 Iconify +1, Lower
+*FvwmTaskBar: Action Click3 Iconify -1, Raise
 
-*FvwmTaskBarUseSkipList
-*FvwmTaskBarUseIconNames
-*FvwmTaskBarAutoStick
-*FvwmTaskBarShowTips
+*FvwmTaskBar: UseSkipList
+*FvwmTaskBar: UseIconNames
+*FvwmTaskBar: AutoStick
+*FvwmTaskBar: ShowTips
 
-*FvwmTaskBarButtonWidth 180
-*FvwmTaskBarBellVolume 20
-*FvwmTaskBarMailBox /var/spool/mail/
-#*FvwmTaskBarMailCommand Exec xterm -e mail
-*FvwmTaskBarClockFormat %I:%M %p
+*FvwmTaskBar: ButtonWidth 180
+*FvwmTaskBar: BellVolume 20
+*FvwmTaskBar: MailBox /var/spool/mail/
+#*FvwmTaskBar: MailCommand Exec xterm -e mail
+*FvwmTaskBar: ClockFormat %I:%M %p
 
-*FvwmTaskBarStartName Start
-*FvwmTaskBarStartMenu MenuFvwmRoot
-*FvwmTaskBarStartIcon mini.fvwm.xpm
+*FvwmTaskBar: StartName Start
+*FvwmTaskBar: StartMenu MenuFvwmRoot
+*FvwmTaskBar: StartIcon mini.fvwm.xpm
 
-*FvwmTaskBarAutoHide
+*FvwmTaskBar: AutoHide

@@ -2,6 +2,6 @@ Makefile
 Makefile.in
 FvwmForm
 FvwmTalk
-FormFvwmSetup.
+FvwmForm-Setup
 .deps
 TAGS

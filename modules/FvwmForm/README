@@ -19,13 +19,16 @@ ztfeng@math.princeton.edu
 
 ------------------------------------------------------------------
 
-And now,  (January 1998),  we  have FvwmForm 2.0.   (Actually FvwmForm
-doesn't  have a version number,  it shares  the fvwm version number.)
-In addition to the files above, you will find:
+Currently in addition to the files above, you will find:
 
-.FormFvwmCapture	Installed Window Capture from man page
-.FormFvwmQuitVerify	Installed MWM Quit/Verify from man page
-.FormFvwmRlogin		Installed Rlogin from man page
+FvwmFrom-Capture        A form for Window Capture from man page
+FvwmForm-QuitVerify     A form simulaing MWM Quit/Verify from man page
+FvwmForm-Rlogin         A form for Remote login from man page
+
+FvwmForm-Form           A form to define characteristics of all FvwmForm's
+FvwmForm-RootCursor     A form to set a root cursor
+FvwmForm-Setup          A form to set up an initial FVWM configuration
+FvwmForm-Talk           A form implementing Fvwm Talk
 
 The Makefile is  gone and  the comment about   changing it no   longer
 applies  as  FvwmForm is now  part  of  Fvwm.  Similarly,  bug reports

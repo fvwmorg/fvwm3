@@ -1,0 +1,155 @@
+# This form changes the root cursor font and color.
+
+DestroyModuleConfig FvwmForm-RootCursor: *
+*FvwmForm-RootCursor: WarpPointer
+*FvwmForm-RootCursor: Font	fixed
+*FvwmForm-RootCursor: ButtonFont	6x13
+
+*FvwmForm-RootCursor: Text	"Cursor font"
+*FvwmForm-RootCursor: Selection	cursor_font single
+
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font X_cursor            off "X_cursor           "
+*FvwmForm-RootCursor: Choice cursor_font arrow               off "arrow              "
+*FvwmForm-RootCursor: Choice cursor_font based_arrow_down    off "based_arrow_down   "
+*FvwmForm-RootCursor: Choice cursor_font based_arrow_up      off "based_arrow_up     "
+*FvwmForm-RootCursor: Choice cursor_font boat                off "boat               "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font bogosity            off "bogosity           "
+*FvwmForm-RootCursor: Choice cursor_font bottom_left_corner  off "bottom_left_corner "
+*FvwmForm-RootCursor: Choice cursor_font bottom_right_corner off "bottom_right_corner"
+*FvwmForm-RootCursor: Choice cursor_font bottom_side         off "bottom_side        "
+*FvwmForm-RootCursor: Choice cursor_font bottom_tee          off "bottom_tee         "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font box_spiral          off "box_spiral         "
+*FvwmForm-RootCursor: Choice cursor_font center_ptr          off "center_ptr         "
+*FvwmForm-RootCursor: Choice cursor_font circle              off "circle             "
+*FvwmForm-RootCursor: Choice cursor_font clock               off "clock              "
+*FvwmForm-RootCursor: Choice cursor_font coffee_mug          off "coffee_mug         "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font cross               off "cross              "
+*FvwmForm-RootCursor: Choice cursor_font cross_reverse       off "cross_reverse      "
+*FvwmForm-RootCursor: Choice cursor_font crosshair           off "crosshair          "
+*FvwmForm-RootCursor: Choice cursor_font diamond_cross       off "diamond_cross      "
+*FvwmForm-RootCursor: Choice cursor_font dot                 off "dot                "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font dotbox              off "dotbox             "
+*FvwmForm-RootCursor: Choice cursor_font double_arrow        off "double_arrow       "
+*FvwmForm-RootCursor: Choice cursor_font draft_large         off "draft_large        "
+*FvwmForm-RootCursor: Choice cursor_font draft_small         off "draft_small        "
+*FvwmForm-RootCursor: Choice cursor_font draped_box          off "draped_box         "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font exchange            off "exchange           "
+*FvwmForm-RootCursor: Choice cursor_font fleur               off "fleur              "
+*FvwmForm-RootCursor: Choice cursor_font gobbler             off "gobbler            "
+*FvwmForm-RootCursor: Choice cursor_font gumby               off "gumby              "
+*FvwmForm-RootCursor: Choice cursor_font hand1               off "hand1              "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font hand2               off "hand2              "
+*FvwmForm-RootCursor: Choice cursor_font heart               off "heart              "
+*FvwmForm-RootCursor: Choice cursor_font icon                off "icon               "
+*FvwmForm-RootCursor: Choice cursor_font iron_cross          off "iron_cross         "
+*FvwmForm-RootCursor: Choice cursor_font left_ptr            on  "left_ptr           "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font left_side           off "left_side          "
+*FvwmForm-RootCursor: Choice cursor_font left_tee            off "left_tee           "
+*FvwmForm-RootCursor: Choice cursor_font leftbutton          off "leftbutton         "
+*FvwmForm-RootCursor: Choice cursor_font ll_angle            off "ll_angle           "
+*FvwmForm-RootCursor: Choice cursor_font lr_angle            off "lr_angle           "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font man                 off "man                "
+*FvwmForm-RootCursor: Choice cursor_font middlebutton        off "middlebutton       "
+*FvwmForm-RootCursor: Choice cursor_font mouse               off "mouse              "
+*FvwmForm-RootCursor: Choice cursor_font pencil              off "pencil             "
+*FvwmForm-RootCursor: Choice cursor_font pirate              off "pirate             "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font plus                off "plus               "
+*FvwmForm-RootCursor: Choice cursor_font question_arrow      off "question_arrow     "
+*FvwmForm-RootCursor: Choice cursor_font right_ptr           off "right_ptr          "
+*FvwmForm-RootCursor: Choice cursor_font right_side          off "right_side         "
+*FvwmForm-RootCursor: Choice cursor_font right_tee           off "right_tee          "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font rightbutton         off "rightbutton        "
+*FvwmForm-RootCursor: Choice cursor_font rtl_logo            off "rtl_logo           "
+*FvwmForm-RootCursor: Choice cursor_font sailboat            off "sailboat           "
+*FvwmForm-RootCursor: Choice cursor_font sb_down_arrow       off "sb_down_arrow      "
+*FvwmForm-RootCursor: Choice cursor_font sb_h_double_arrow   off "sb_h_double_arrow  "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font sb_left_arrow       off "sb_left_arrow      "
+*FvwmForm-RootCursor: Choice cursor_font sb_right_arrow      off "sb_right_arrow     "
+*FvwmForm-RootCursor: Choice cursor_font sb_up_arrow         off "sb_up_arrow        "
+*FvwmForm-RootCursor: Choice cursor_font sb_v_double_arrow   off "sb_v_double_arrow  "
+*FvwmForm-RootCursor: Choice cursor_font shuttle             off "shuttle            "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font sizing              off "sizing             "
+*FvwmForm-RootCursor: Choice cursor_font spider              off "spider             "
+*FvwmForm-RootCursor: Choice cursor_font spraycan            off "spraycan           "
+*FvwmForm-RootCursor: Choice cursor_font star                off "star               "
+*FvwmForm-RootCursor: Choice cursor_font target              off "target             "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font tcross              off "tcross             "
+*FvwmForm-RootCursor: Choice cursor_font top_left_arrow      off "top_left_arrow     "
+*FvwmForm-RootCursor: Choice cursor_font top_left_corner     off "top_left_corner    "
+*FvwmForm-RootCursor: Choice cursor_font top_right_corner    off "top_right_corner   "
+*FvwmForm-RootCursor: Choice cursor_font top_side            off "top_side           "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font top_tee             off "top_tee            "
+*FvwmForm-RootCursor: Choice cursor_font trek                off "trek               "
+*FvwmForm-RootCursor: Choice cursor_font ul_angle            off "ul_angle           "
+*FvwmForm-RootCursor: Choice cursor_font umbrella            off "umbrella           "
+*FvwmForm-RootCursor: Choice cursor_font ur_angle            off "ur_angle           "
+*FvwmForm-RootCursor: Line   expand
+*FvwmForm-RootCursor: Choice cursor_font watch               off "watch              "
+*FvwmForm-RootCursor: Choice cursor_font xterm               off "xterm              "
+
+*FvwmForm-RootCursor: Line	expand
+*FvwmForm-RootCursor: Text	"Cursor inner color"
+*FvwmForm-RootCursor: Line	expand
+
+*FvwmForm-RootCursor: Selection	cursor_fg single
+*FvwmForm-RootCursor: Line   center
+*FvwmForm-RootCursor: Choice cursor_fg black    on  "  black   "
+*FvwmForm-RootCursor: Choice cursor_fg red      off "  red     "
+*FvwmForm-RootCursor: Choice cursor_fg green    off "  green   "
+*FvwmForm-RootCursor: Choice cursor_fg blue     off "  blue    "
+*FvwmForm-RootCursor: Choice cursor_fg bisque   off "  bisque  "
+*FvwmForm-RootCursor: Choice cursor_fg brown    off "  brown   "
+*FvwmForm-RootCursor: Choice cursor_fg gray     off "  gray    "
+*FvwmForm-RootCursor: Line   center
+*FvwmForm-RootCursor: Choice cursor_fg cyan     off "  cyan    "
+*FvwmForm-RootCursor: Choice cursor_fg violet   off "  violet  "
+*FvwmForm-RootCursor: Choice cursor_fg seagreen off "  seagreen"
+*FvwmForm-RootCursor: Choice cursor_fg navy     off "  navy    "
+*FvwmForm-RootCursor: Choice cursor_fg gold     off "  gold    "
+*FvwmForm-RootCursor: Choice cursor_fg yellow   off "  yellow  "
+*FvwmForm-RootCursor: Choice cursor_fg white    off "  white   "
+
+*FvwmForm-RootCursor: Line	expand
+*FvwmForm-RootCursor: Text	"Cursor outer color"
+*FvwmForm-RootCursor: Line	expand
+
+*FvwmForm-RootCursor: Selection	cursor_bg single
+*FvwmForm-RootCursor: Line   center
+*FvwmForm-RootCursor: Choice cursor_bg black    off "  black   "
+*FvwmForm-RootCursor: Choice cursor_bg red      off "  red     "
+*FvwmForm-RootCursor: Choice cursor_bg green    off "  green   "
+*FvwmForm-RootCursor: Choice cursor_bg blue     off "  blue    "
+*FvwmForm-RootCursor: Choice cursor_bg bisque   off "  bisque  "
+*FvwmForm-RootCursor: Choice cursor_bg brown    off "  brown   "
+*FvwmForm-RootCursor: Choice cursor_bg gray     off "  gray    "
+*FvwmForm-RootCursor: Line   center
+*FvwmForm-RootCursor: Choice cursor_bg cyan     off "  cyan    "
+*FvwmForm-RootCursor: Choice cursor_bg violet   off "  violet  "
+*FvwmForm-RootCursor: Choice cursor_bg seagreen off "  seagreen"
+*FvwmForm-RootCursor: Choice cursor_bg navy     off "  navy    "
+*FvwmForm-RootCursor: Choice cursor_bg gold     off "  gold    "
+*FvwmForm-RootCursor: Choice cursor_bg yellow   off "  yellow  "
+*FvwmForm-RootCursor: Choice cursor_bg white    on  "  white   "
+
+*FvwmForm-RootCursor: Line	expand
+*FvwmForm-RootCursor: Line	expand
+
+*FvwmForm-RootCursor: Button	continue "   Set Root Cursor   "
+*FvwmForm-RootCursor: Command	CursorStyle ROOT $(cursor_font!none) $(cursor_fg) $(cursor_bg)
+*FvwmForm-RootCursor: Button	quit "   Finish   " ^[
+*FvwmForm-RootCursor: Command	Nop

@@ -1,21 +1,21 @@
 ########################### Pager #########################################
-DestroyModuleConfig FvwmPager*
-*FvwmPagerBack #908090
-*FvwmPagerFore #484048
-#*FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+DestroyModuleConfig FvwmPager: *
+*FvwmPager: Back #908090
+*FvwmPager: Fore #484048
+#*FvwmPager: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 # turn off desktop names for swallowing in above button bar example:
-*FvwmPagerFont none
-*FvwmPagerHilight #cab3ca
-*FvwmPagerGeometry -1-1
-*FvwmPagerLabel 0 Misc
-*FvwmPagerLabel 1 Maker
-*FvwmPagerLabel 2 Mail
-*FvwmPagerLabel 3 Matlab
-*FvwmPagerSmallFont 5x8
-*FvwmPagerBalloons            All
-*FvwmPagerBalloonBack         Yellow
-*FvwmPagerBalloonFore         Black
-*FvwmPagerBalloonFont         lucidasanstypewriter-12
-*FvwmPagerBalloonYOffset      +2
-*FvwmPagerBalloonBorderWidth  1
-*FvwmPagerBalloonBorderColor  Black
+*FvwmPager: Font none
+*FvwmPager: Hilight #cab3ca
+*FvwmPager: Geometry -1-1
+*FvwmPager: Label 0 Misc
+*FvwmPager: Label 1 Maker
+*FvwmPager: Label 2 Mail
+*FvwmPager: Label 3 Matlab
+*FvwmPager: SmallFont 5x8
+*FvwmPager: Balloons            All
+*FvwmPager: BalloonBack         Yellow
+*FvwmPager: BalloonFore         Black
+*FvwmPager: BalloonFont         lucidasanstypewriter-12
+*FvwmPager: BalloonYOffset      +2
+*FvwmPager: BalloonBorderWidth  1
+*FvwmPager: BalloonBorderColor  Black
