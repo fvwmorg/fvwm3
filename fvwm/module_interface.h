@@ -97,7 +97,7 @@ void SendStrToModule(F_CMD_ARGS);
 void send_list_func(F_CMD_ARGS);
 void FlushAllMessageQueues(void);
 void FlushMessageQueue(int Module);
-Bool ExecuteCommandQueue(void);
+void ExecuteCommandQueue(void);
 void PositiveWrite(int module, unsigned long *ptr, int size);
 RETSIGTYPE DeadPipe(int nonsense);
 void set_mask_function(F_CMD_ARGS);

@@ -1382,12 +1382,20 @@ static void AddToCommandQueue(Window window, int module, char *command)
  *
  *  Procedure:
  *	EmptyCommandQueue - runs command from the module command queue
+ *	This may be called recursively if a module command runs a function
+ *	that does a Wait
  *
  ************************************************************************/
-Bool ExecuteCommandQueue(void)
+static Bool CommandQueueLocked = False;
+void ExecuteCommandQueue(void)
 {
   CommandQueue *temp;
-  Bool is_not_empty = (CQstart != NULL);
+
+  /* don't drain the queue if it is busy - bad things will happen */
+  if (CommandQueueLocked)
+    return;
+
+  CommandQueueLocked = True;
 
   while (CQstart)
   {
@@ -1405,7 +1413,7 @@ Bool ExecuteCommandQueue(void)
   /* the queue is now empty so the end pointer must be changed */
   CQlast = NULL;
 
-  return is_not_empty;
+  CommandQueueLocked = False;
 }
 
 void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
