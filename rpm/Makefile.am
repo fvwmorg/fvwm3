@@ -23,10 +23,10 @@ rpm: @PACKAGE@.spec
 	echo ""; \
 	sleep 3; \
 	sed < @PACKAGE@.spec > tmp-@PACKAGE@.spec \
-		-e "s/%define ver /&$$version  %define old_ver /" \
-		-e "s/%define rel /&$$release  %define old_rel /" \
-		-e "s/%define c_p /&$$cparams  %define old_c_p /" \
-		-e "s/%define m_p /&$$mparams  %define old_m_p /" \
+		-e "s|%define ver |&$$version  %define old_ver |" \
+		-e "s|%define rel |&$$release  %define old_rel |" \
+		-e "s|%define c_p |&$$cparams  %define old_c_p |" \
+		-e "s|%define m_p |&$$mparams  %define old_m_p |" \
 	; \
 	rpm -ba tmp-@PACKAGE@.spec --clean; \
 	rm /tmp/$$tarball; \

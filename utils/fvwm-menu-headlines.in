@@ -6,7 +6,7 @@
 require 5.002;
 use strict;
 use vars qw($siteInfo @smonths @lmonths %smonthHash %lmonthHash);
-use vars qw($errorMenuContent);
+use vars qw($entityMap $errorMenuContent);
 use Getopt::Long;
 use Socket;
 use POSIX qw(strftime);
@@ -98,6 +98,27 @@ local $siteInfo = {
 		'path' => "/rss/",
 		'func' => \&processRootPrompt,
 		'flds' => 'title, link, description',
+	},
+	'newsforge' => {
+		'name' => "NewsForge",
+		'host' => "www.newsforge.com",
+		'path' => "/newsforge.xml",
+		'func' => \&processSlashdot,
+		'flds' => 'title, url, time, author, topic, comments, section, image, description',
+	},
+	'kuro5hin' => {
+		'name' => "Kuro5hin",
+		'host' => "www.kuro5hin.org",
+		'path' => "/backend.rdf",
+		'func' =>  \&processKuro5hin,
+		'flds' => 'title, link, description',
+	},
+	'bbspot' => {
+		'name' => "BBSpot",
+		'host' => "bbspot.com",
+		'path' => "/bbspot.rdf",
+		'func' => \&processPoorRdf,
+		'flds' => 'title, link',
 	},
 };
 
@@ -266,9 +287,10 @@ my $entries = &$siteFunc;
 close(SOCK) || dieNet("Error closing socket");
 
 foreach (@$entries) {
-	$content .= qq(+ "$iconIStr) .
-		expandAllWidthSpecifiers($itemF, $_) . '" ' .
-		expandAllWidthSpecifiers($commF, $_) . "\n";
+	my $text = expandAllWidthSpecifiers($itemF, $_);
+	my $comm = expandAllWidthSpecifiers($commF, $_);
+	$text =~ s/"/\\"/g;
+	$content .= qq(+ "$iconIStr$text" $comm\n);
 }
 
 if (defined $frontpage && $frontpage =~ /^b/) {
@@ -321,6 +343,15 @@ sub setEntryAliasesAndTime ($$$$) {
 	$entry->{'_'} = makeTime(&{$timeSub}($entry->{'d'}), $hOffset);
 }
 
+BEGIN {
+	$entityMap = {
+		'gt'    => '>',
+		'lt'    => '<',
+		'quot'  => '"',
+		'amp'   => '&',
+	};
+}
+
 sub processXml ($$$$) {
 	my $entryTag = shift;
 	my $aliases = shift;
@@ -328,9 +359,13 @@ sub processXml ($$$$) {
 	my $hOffset = shift;
 	my @entries = ();
 	my $doc = join("", <SOCK>);
+	print STDERR $doc if $ENV{"DEBUG_DUMP_RESPONSE"};
 
 	ENTRY:
-	foreach ($doc =~ m!<$entryTag>(.*?)</$entryTag>!sg) {
+	foreach ($doc =~ m!<$entryTag\b[^>]*>(.*?)</$entryTag>!sg) {
+		# replace &#039; with single quote and &quot; with double quote
+		s/&(?:(\w+)|#(\d+));/ $1? $entityMap->{$1} || "{$1}": chr($2) /ge;
+
 		my $entry = {};
 
 		foreach (m!(<.*?>.*?</.*?>)!sg) {
@@ -342,10 +377,6 @@ sub processXml ($$$$) {
 		}
 
 		setEntryAliasesAndTime($entry, $aliases, $timeSub, $hOffset);
-		$entry->{'h'} =~ s/&#(\d+);/chr($1)/ge;  # replace &#039; with '
-		$entry->{'h'} =~ s/&gt;/>/g;
-		$entry->{'h'} =~ s/&lt;/</g;
-		$entry->{'h'} =~ s/&amp;/&/g;
 		push @entries, $entry;
 	}
 	return \@entries;
@@ -370,6 +401,7 @@ sub processText ($$$$) {
 			};
 			last ENTRY unless defined $line;
 			next if $_ eq '_ignore_';
+			print STDERR $line if $ENV{"DEBUG_DUMP_RESPONSE"};
 
 			chomp($line);
 			$line =~ s/"/\\"/g;
@@ -492,6 +524,20 @@ sub processRootPrompt () {
 		sub ($) {
 			$_[0] =~ /(\d+) (\w+) (\d+)/;
 			($3, $smonthHash{$2}, $1);
+		}, +0,
+	);
+}
+
+sub processKuro5hin () {
+	my $linkToDate = sub ($) {
+		$_[0]->{'link'} =~ m|sid=(\d\d\d\d/\d{1,2}/\d{1,2})/|; $1;
+	};
+	return processXml(
+		'item',
+		{ 'h' => 'title', 'u' => 'link', 'd' => $linkToDate },
+		sub ($) {
+			$_[0] =~ m|(\d+)/(\d+)/(\d+)|;
+			($1, ($2 || 0) - 1, $3);
 		}, +0,
 	);
 }

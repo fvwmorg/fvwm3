@@ -12,13 +12,15 @@ Changes in beta release 2.4.1 (not released yet)
 * New conditions CurrentGlobalPage and CurrentGlobalPageAnyDesk for
   conditional commands.
 
+* Enhancements in fvwm-menu-headlines and support for 10 more sites.
+
 * Improved detection of the Shape library.
 
 * Fixed bug that caused transient windows to be buried below their
   parents with the "BugOpts RaiseOverUnmanaged on".  This occured
   with the system.fvwm2rc-sample-95 configuration.
 
-* Fixed some focus problems in conjunction with unclutter vx xv/xmms
+* Fixed some focus problems in conjunction with unclutter vs xv/xmms
   and Open Look applications.
 
 * Fixed a problem that could cause windows to be lost off screen
@@ -35,6 +37,13 @@ Changes in beta release 2.4.1 (not released yet)
 
 * Fixed a formatting problem of the man page on AIX, Solaris, and
   some other UNIX variants.
+
+* Fixed a problems with FvwmIconBox exitting on 64 bit platforms.
+
+* Fixed parameters of fvwm24_convert.
+
+* Fixed a number of building problems related to old vendor unices,
+  libstroke-0.5, autoconf-2.50, bogus gnome-config and imlib-config.
 
 _+_A NAME="2.4.0"_-_
 Changes in stable release 2.4.0 (1-Jul-2001)

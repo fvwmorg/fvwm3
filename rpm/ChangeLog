@@ -1,3 +1,8 @@
+2001-07-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* rpm/Makefile.am:
+	fixed "make rpm" caused by the previous commit
+
 2001-07-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:

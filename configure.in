@@ -139,7 +139,7 @@ dnl configure fails to find them, we fail early.
 dnl ********* shape extension
 dnl smr_SWITCH(shape, shape extensions, on, SHAPE)
 AC_ARG_ENABLE(shape,
-  [  --disable-shape          disable shaped window support],
+  [  --disable-shape         disable shaped window support],
   [ if test "$enableval" = yes; then
     with_shape="yes, check"
   else
@@ -163,7 +163,7 @@ dnl ********* xinerama
 problem_xinerama=""
 
 AC_ARG_ENABLE(xinerama,
-  [  --disable-xinerama       disable Xinerama multi screen support],
+  [  --disable-xinerama      disable Xinerama multi screen support],
   [ if test "$enableval" = yes; then
     with_xinerama="yes, check"
   else
