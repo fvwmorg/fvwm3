@@ -10,6 +10,13 @@ Changes in beta release 2.5.13 (not released yet)
    - The MoveToPage command did not work without arguments in
      2.5.11 and 2.5.12.
 
+* New module features:
+
+   - FvwmIconMan: MaxButtonWidth and MaxButtonWidthByColumns options.
+   - FvwmIconMan: added tool tips with Tips, TipsDelays, TipsFont,
+     TipsColorset, TipsFormat, TipsBorderWidth, TipsPlacement,
+     TipsJustification and TipsOffsets options.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.12 (6-Oct-2004)

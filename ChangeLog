@@ -1,3 +1,17 @@
+2004-12-02  Olivier Chapuis  <olivier.chapuis@free.fr>
+
+	* fvwm/fvwm.1.in:
+	Fixed bug #1480 by updating EWMHUseStackingOrderHints documentation
+
+	* NEWS:
+	FvwmIconMan new options
+
+	* libs/FTips.c (new file): 
+	* libs/FTips.h (new file):
+	* libs/defaults.h:
+	* libs/Makefile.am:
+	Added a set of functions for implementing tool tips
+
 2004-11-30  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1.in: Fix keysym description add XKeysymDB.

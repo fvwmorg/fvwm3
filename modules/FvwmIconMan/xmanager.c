@@ -134,10 +134,11 @@ static int num_visible_rows(int n, int cols)
 
 static int first_row_len(int n, int cols)
 {
-  int ret = n % cols;
-  if (ret == 0)
-    ret = cols;
-  return ret;
+	int ret = n % cols;
+	if (ret == 0)
+		ret = cols;
+
+	return ret;
 }
 
 static int index_to_box(WinManager *man, int index)
@@ -161,22 +162,31 @@ static int index_to_box(WinManager *man, int index)
 static int box_to_index(WinManager *man, int box)
 {
   int first_len, n, cols;
+  int index = box;
 
-  if (man->geometry.dir & GROW_DOWN) {
-    return box;
+  if (man->geometry.dir & GROW_DOWN)
+  {
+	  return index;
   }
-  else {
-    n = man->buttons.num_windows;
-    cols = man->geometry.cols;
-    first_len = first_row_len(n, cols);
+  else
+  {
+	  n = man->buttons.num_windows;
+	  cols = man->geometry.cols;
+	  first_len = first_row_len(n, cols);
 
-    box -= (man->geometry.rows - num_visible_rows(n, cols)) * cols;
-    if (!((box >= 0 && box < first_len) || box >= cols))
-      return -1;
-    if (box >= first_len)
-      box -= cols - first_len;
-    return box;
+	  index = box - (man->geometry.rows - num_visible_rows(n, cols)) * cols;
+	  if (!((index >= 0 && index < first_len) || index >= cols))
+	  {
+		  index = -1;
+	  }
+	  if (index >= first_len)
+	  {
+		  index -= cols - first_len;
+	  }
+
   }
+
+  return index;
 }
 
 static int index_to_row(WinManager *man, int index)
@@ -215,60 +225,114 @@ static int top_y_coord(WinManager *man)
 
 static ManGeometry *figure_geometry(WinManager *man)
 {
-  /* Given the number of wins in icon_list and width x height, compute
-     new geometry. */
-  /* if GROW_FIXED is set, don't change window geometry */
+	/* Given the number of wins in icon_list and width x height, compute
+	   new geometry. */
+	/* if GROW_FIXED is set, don't change window geometry */
 
-  static ManGeometry ret;
-  ManGeometry *g = &man->geometry;
-  int n = man->buttons.num_windows;
+	static ManGeometry ret;
+	ManGeometry *g = &man->geometry;
+	int n = man->buttons.num_windows;
+	Bool noWindow = False;
 
-  ret = *g;
+	ret = *g;
 
-  ConsoleDebug(X11, "figure_geometry: %s: %d, %d %d %d %d\n",
+	ConsoleDebug(
+		X11, "figure_geometry: %s: %d, %d %d %d %d\n",
 		man->titlename, n,
 		ret.width, ret.height, ret.cols, ret.rows);
 
-  if (n == 0) {
-    n = 1;
-  }
+	if (n == 0)
+	{
+		n = 1;
+		noWindow = True;
+	}
 
-  if (man->geometry.dir & GROW_FIXED) {
-    ret.cols = num_visible_rows(n, g->rows);
-    ret.boxwidth = ret.width / ret.cols;
-    if (ret.boxwidth < 1)
-      ret.boxwidth = 1;
-  }
-  else {
-    if (man->geometry.dir & GROW_VERT) {
-      if (g->cols) {
-	ret.rows = num_visible_rows(n, g->cols);
-      }
-      else {
-	ConsoleMessage("Internal error in figure_geometry\n");
-	ret.rows = 1;
-      }
-      ret.height = ret.rows * g->boxheight;
-      ret.width  = ret.cols * g->boxwidth;
-    }
-    else {
-      /* need to set resize inc  */
-      if (g->rows) {
-	ret.cols = num_visible_rows(n, g->rows);
-      }
-      else {
-	ConsoleMessage("Internal error in figure_geometry\n");
-	ret.cols = 1;
-      }
-      ret.height = ret.rows * g->boxheight;
-      ret.width = ret.cols * g->boxwidth;
-    }
-  }
+	if (man->geometry.dir & GROW_FIXED)
+	{
+		ret.cols = num_visible_rows(n, g->rows);
+		ret.boxwidth = ret.width / ret.cols;
+		if (man->max_button_width_columns > 0)
+		{
+			man->max_button_width =
+				ret.width / man->max_button_width_columns;
+		}
+		if (!noWindow && man->max_button_width > 0 &&
+		    ret.boxwidth > man->max_button_width)
+		{
+			int i = 1;
+			while(i <= g->rows)
+			{
+				if (n*man->max_button_width <= ret.width)
+				{
+					ret.cols = n;
+					break;
+				}
+				else if ((n/i)*man->max_button_width <= 
+					 ret.width)
+				{
+					ret.cols =
+						ret.width /
+						man->max_button_width;
+					break;
+				}
+				i++;
+			}
+			ret.boxwidth = man->max_button_width;
+		}
+		if (ret.boxwidth < 1)
+		{
+			ret.boxwidth = 1;
+		}
+	}
+	else
+	{
+		if (man->geometry.dir & GROW_VERT)
+		{
+			if (g->cols)
+			{
+				ret.rows = num_visible_rows(n, g->cols);
+			}
+			else
+			{
+				ConsoleMessage(
+					"Internal error in figure_geometry\n");
+				ret.rows = 1;
+			}
+			ret.height = ret.rows * g->boxheight;
+			ret.width  = ret.cols * g->boxwidth;
+			if (ret.boxwidth < 1)
+			{
+				ret.boxwidth = 1;
+			}
+		}
+		else
+		{
+			/* need to set resize inc  */
+			if (g->rows)
+			{
+				ret.cols = num_visible_rows(n, g->rows);
+			}
+			else
+			{
+				ConsoleMessage(
+					"Internal error in figure_geometry\n");
+				ret.cols = 1;
+			}
+			ret.height = ret.rows * g->boxheight;
+			ret.width = ret.cols * g->boxwidth;
+			ret.boxwidth = ret.width / ret.cols;
+			if (ret.boxwidth < 1)
+			{
+				ret.boxwidth = 1;
+			}
+		}
+	}
 
-  ConsoleDebug(X11, "figure_geometry: %d %d %d %d %d\n",
+	ConsoleDebug(
+		X11, "figure_geometry: %d %d %d %d %d\n",
 		n, ret.width, ret.height, ret.cols, ret.rows);
 
-  return &ret;
+	return &ret;
 }
 
 static ManGeometry *query_geometry(WinManager *man)
@@ -509,19 +573,25 @@ Button *button_prev(WinManager *man, Button *b)
 
 Button *xy_to_button(WinManager *man, int x, int y)
 {
-  int row = y / man->geometry.boxheight;
-  int col = x / man->geometry.boxwidth;
-  int box, index;
+	ManGeometry *g;
+	int row, col, box, index;
 
-  if (x >= 0 && x <= man->geometry.width &&
-      y >= 0 && y <= man->geometry.height) {
-    box = row * man->geometry.cols + col;
-    index = box_to_index(man, box);
-    if (index >= 0 && index < man->buttons.num_windows)
-      return man->buttons.buttons[index];
-  }
+	g = figure_geometry(man);
+	row = y / g->boxheight;
+	col = x / g->boxwidth;
+	
+	if (x >= 0 && x <= g->width &&
+	    y >= 0 && y <= g->height && col < g->cols)
+	{
+		box = row * g->cols + col;
+		index = box_to_index(man, box);
+		if (index >= 0 && index < man->buttons.num_windows)
+		{
+			return man->buttons.buttons[index];
+		}
+	}
 
-  return NULL;
+	return NULL;
 }
 
 /*
@@ -530,11 +600,14 @@ Button *xy_to_button(WinManager *man, int x, int y)
 
 static void set_button_geometry(WinManager *man, Button *box)
 {
-  box->x = index_to_col(man, box->index) * man->geometry.boxwidth;
-  box->y = index_to_row(man, box->index) * man->geometry.boxheight;
-  box->w = man->geometry.boxwidth;
-  box->h = man->geometry.boxheight;
-  box->drawn_state.dirty_flags |= GEOMETRY_CHANGED;
+	ManGeometry *g;
+
+	g = figure_geometry(man);
+	box->x = index_to_col(man, box->index) * g->boxwidth;
+	box->y = index_to_row(man, box->index) * g->boxheight;
+	box->w = g->boxwidth;
+	box->h = g->boxheight;
+	box->drawn_state.dirty_flags |= GEOMETRY_CHANGED;
 }
 
 static void clear_button(Button *b)
@@ -905,6 +978,11 @@ void set_win_displaystring(WinData *win)
   WinManager *man = win->manager;
   int maxlen;
 
+  if (man && win->button && win->button == man->tipped_button)
+  {
+	  tips_update_label(man);
+  }
+
   if (!man || ((man->format_depend & CLASS_NAME) && !win->classname)
       || ((man->format_depend & ICON_NAME) && !win->visible_icon_name)
       || ((man->format_depend & TITLE_NAME) && !win->visible_name)
@@ -1063,7 +1141,7 @@ void set_shape(WinManager *man)
     if (cols == 0 || n % cols == 0) {
       rects[0].x = 0;
       rects[0].y = top_y_coord(man);
-      rects[0].width = man->geometry.width;
+      rects[0].width = cols * man->geometry.boxwidth;
       rects[0].height = num_visible_rows(n, cols) * man->geometry.boxheight;
       if (man->shape.num_rects != 1 || !rects_equal(rects, man->shape.rects)) {
 	man->dirty_flags |= SHAPE_CHANGED;
@@ -1075,7 +1153,7 @@ void set_shape(WinManager *man)
       if (man->geometry.dir & GROW_DOWN) {
 	rects[0].x = 0;
 	rects[0].y = 0;
-	rects[0].width = man->geometry.width;
+	rects[0].width = cols * man->geometry.boxwidth;
 	rects[0].height =
 	  (num_visible_rows(n, cols) - 1) * man->geometry.boxheight;
 	rects[1].x = 0;
@@ -2272,6 +2350,7 @@ void delete_windows_button(WinData *win)
 
   spot = win->button->index;
 
+  tips_cancel(man);
   move_window_buttons(win->manager, spot + 1, buttons->num_windows - 1, -1);
   increase_num_windows(buttons, -1);
   win->button = NULL;
@@ -2422,6 +2501,120 @@ void man_exposed(WinManager *man, XEvent *theEvent)
 		draw_empty_manager(man);
 	}
 }
+
+/*
+ * tips routine
+ */
+
+static char *get_tips(WinManager *man, Button *b)
+{
+	ButtonGeometry g;
+	char *s;
+	static char *free_str = NULL;
+
+	if (man->tips == TIPS_NEVER || b == NULL)
+	{
+		return NULL;
+	}
+
+	if (free_str != NULL)
+	{
+		free(free_str);
+		free_str = NULL;
+	}
+
+	if (man->tips_formatstring && b->drawn_state.win)
+	{
+		CopyString(
+			&s, make_display_string(
+				b->drawn_state.win, man->tips_formatstring,
+				0));
+		free_str = s;
+	}
+	else
+	{
+		s = b->drawn_state.display_string;
+	}
+
+	if (s == NULL)
+	{
+		return NULL;
+	}
+
+	if (man->tips == TIPS_ALWAYS)
+	{
+		return s;
+	}
+
+	/* TIPS_NEEDED */
+	if (free_str != NULL &&
+	    (b->drawn_state.display_string == NULL || 
+	     strcmp(s, b->drawn_state.display_string)))
+	{
+		return s;
+	}
+
+	get_button_geometry(man, b, &g);
+
+	if (g.text_x + FlocaleTextWidth(man->FButtonFont, s, strlen(s))
+	    > g.button_x + g.button_w - 4)
+	{
+		return s;
+	}
+
+	return NULL;
+}
+
+void tips_cancel(WinManager *man)
+{
+	int j;
+
+	if (man)
+	{
+		man->tipped_button = NULL;
+	}
+	else
+	{
+		for (j = 0; j < globals.num_managers; j++)
+		{
+			man = &globals.managers[j];
+			man->tipped_button = NULL;
+		}
+	}
+	FTipsCancel(theDisplay);
+}
+
+void tips_on(WinManager *man, Button *b)
+{
+	char *tips_str;
+
+	if ((tips_str = get_tips(man, b)) != NULL)
+	{
+		 FTipsOn(
+			 theDisplay, man->theWindow, man->tips_conf, (void *)b,
+			 tips_str, b->x, b->y, b->w, b->h);
+		 man->tipped_button = b;
+	}
+	else
+	{
+		tips_cancel(man);
+	}
+}
+
+void tips_update_label(WinManager *man)
+{
+	char *tips_str;
+
+	if ((tips_str = get_tips(man, man->tipped_button)) != NULL)
+	{
+		 FTipsUpdateLabel(theDisplay, tips_str);
+	}
+	else
+	{
+		tips_cancel(man);
+	}
+}
+
 
 /*
  * Debugging routines

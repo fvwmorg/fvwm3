@@ -18,6 +18,7 @@
 #include "debug.h"
 #include "fvwm/fvwm.h"
 #include "libs/vpacket.h"
+#include "libs/FTips.h"
 
 #ifndef DEFAULT_ACTION
 #define DEFAULT_ACTION "Iconify"
@@ -291,6 +292,8 @@ typedef struct win_manager {
 	char *foreColorName[NUM_CONTEXTS];
 	ButtonState buttonState[NUM_CONTEXTS];
 	char *geometry_str, *button_geometry_str;
+	int max_button_width;
+	int max_button_width_columns;
 	char *titlename, *iconname;
 	char *formatstring;
 	NameType format_depend;
@@ -306,7 +309,14 @@ typedef struct win_manager {
 	Uchar showtransient;
 	rectangle managed_g;    /* dimensions of managed screen portion */
 	int relief_thickness;	/* relief thickness for each non-flat button */
-
+#define TIPS_NEVER  0
+#define TIPS_ALWAYS 1
+#define TIPS_NEEDED 2
+	int tips;
+	char *tips_fontname;
+	char *tips_formatstring;
+	ftips_config *tips_conf;
+	
 	/* X11 state */
 	Window theWindow, theFrame;
 	long sizehints_flags;
@@ -321,7 +331,7 @@ typedef struct win_manager {
 	/* button state */
 	int dirty_flags;
 	ManGeometry geometry, drawn_geometry;
-	Button *select_button, *focus_button;
+	Button *select_button, *focus_button, *tipped_button;
 	Uchar window_mapped, drawn_mapping;
 	ShapeState shape, drawn_shape;
 	ButtonArray buttons;

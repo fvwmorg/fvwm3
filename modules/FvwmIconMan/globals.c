@@ -86,6 +86,11 @@ static void init_win_manager(int id)
 	globals.managers[id].shownoiconic = 0;
 	globals.managers[id].showtransient = 0;
 	globals.managers[id].relief_thickness = 2;
+	globals.managers[id].max_button_width = 0;
+	globals.managers[id].max_button_width_columns = 0;
+	globals.managers[id].tips = TIPS_NEVER;
+	globals.managers[id].tips_fontname = NULL;
+	globals.managers[id].tips_conf = FTipsNewConfig();
 }
 
 void print_managers(void)

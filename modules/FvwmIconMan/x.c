@@ -214,6 +214,11 @@ void xevent_loop (void)
       continue;
     }
 
+    if (FTipsHandleEvents(theDisplay, &theEvent))
+    {
+	    continue;
+    }
+
     man = find_windows_manager (theEvent.xany.window);
     if (!man && theEvent.type == ConfigureNotify)
     {
@@ -310,6 +315,7 @@ void xevent_loop (void)
 
     case ButtonPress:
       ConsoleDebug (X11, "XEVENT: ButtonPress\n");
+      tips_cancel(man);
       if (!globals.transient)
 	handle_buttonevent (&theEvent, man);
       break;
@@ -329,10 +335,18 @@ void xevent_loop (void)
       move_highlight (man, b);
       run_binding (man, SELECT);
       draw_managers();
+      if (theEvent.xcrossing.mode == NotifyNormal)
+      {
+	      tips_on(man, b);
+      }
       break;
 
     case LeaveNotify:
       ConsoleDebug (X11, "XEVENT: LeaveNotify\n");
+      if (theEvent.xcrossing.mode == NotifyNormal)
+      {
+	      tips_cancel(man);
+      }
       move_highlight (man, NULL);
       break;
 
@@ -362,7 +376,6 @@ void xevent_loop (void)
 	  moved = True;
       }
       theEvent = saveEvent;
-
 #if 0
       fprintf (stderr, "Configure: %i,%i,%i,%i %i\n",
 	       theEvent.xconfigure.x, theEvent.xconfigure.y,
@@ -379,12 +392,14 @@ void xevent_loop (void)
 	      {
 		      man->geometry.x = theEvent.xconfigure.x;
 		      man->geometry.y = theEvent.xconfigure.y;
+		      tips_cancel(man);
 	      }
       }
 
       if (man->geometry.width != theEvent.xconfigure.width ||
 	  man->geometry.height != theEvent.xconfigure.height)
       {
+	      tips_cancel(man);
 	      if (man->geometry.dir & GROW_FIXED)
 	      {
 		      man->geometry.rows =
@@ -463,6 +478,7 @@ void xevent_loop (void)
 	run_binding (man, SELECT);
 	draw_managers();
       }
+      tips_on(man, b);
       break;
 
     case MapNotify:
@@ -613,6 +629,12 @@ void X_init_manager (int man_id)
     ShutMeDown (1);
   }
 
+  if (man->tips_fontname == NULL)
+    man->tips_conf->Ffont = FlocaleLoadFont(theDisplay, NULL, MyName);
+  else
+    man->tips_conf->Ffont = FlocaleLoadFont(
+	    theDisplay, man->tips_fontname, MyName)  ;
+
   for ( i = 0; i < NUM_CONTEXTS; i++ ) {
     man->pixmap[i] = None;
     if (man->colorsets[i] >= 0) {
@@ -747,8 +769,7 @@ void X_init_manager (int man_id)
     if (man->geometry.cols == 0) {
       man->geometry.dir |= GROW_HORIZ;
       man->geometry.cols = 1;
-    }
-    else {
+    }    else {
       man->geometry.dir |= GROW_HORIZ | GROW_FIXED;
     }
   }
@@ -1029,6 +1050,7 @@ void init_display (void)
   AllocColorset(0);
   FShapeInit(theDisplay);
   FRenderInit(theDisplay);
+  FTipsInit(theDisplay);
 
   x_fd = XConnectionNumber (theDisplay);
   theScreen = DefaultScreen (theDisplay);
@@ -1152,6 +1174,10 @@ void change_colorset(int color)
 			recreate_background(man, i);
 		}
 		force_manager_redraw (man);
+		if (man->tips_conf->colorset == color)
+		{
+			FTipsColorsetChanged(theDisplay, color);
+		} 
 	}
 }
 

@@ -27,6 +27,7 @@
 
 #include "libs/fvwmsignal.h"
 #include "libs/Module.h"
+#include "libs/FTips.h"
 
 
 char *MyName;
@@ -140,6 +141,8 @@ main_loop(void)
 {
 	fd_set readset, saveset;
 	fd_set_size_t fd_width = x_fd;
+	unsigned long ms;
+	struct timeval tv;
 
 	/*
 	 * Calculate which is descriptor is numerically higher:
@@ -155,13 +158,17 @@ main_loop(void)
 	FD_SET(fvwm_fd[1], &saveset);
 	FD_SET(x_fd, &saveset);
 
+	tv.tv_sec  = 60;
+	tv.tv_usec = 0;
+
 	while (!isTerminated)
 	{
 		/* Check the pipes for anything to read, and block if
 		 * there is nothing there yet ...
 		 */
 		readset = saveset;
-		if (fvwmSelect(fd_width, &readset, NULL, NULL, NULL) < 0)
+
+		if (fvwmSelect(fd_width, &readset, NULL, NULL, &tv) < 0)
 		{
 			ConsoleMessage(
 				"Internal error with select: errno=%s\n",
@@ -179,6 +186,16 @@ main_loop(void)
 				ReadFvwmPipe();
 			}
 
+		}
+		if ((ms = FTipsCheck(theDisplay)))
+		{
+			tv.tv_sec  = ms / 1000;
+			tv.tv_usec = (ms % 1000) * 1000;
+		}
+		else
+		{
+			tv.tv_sec  = 60;
+			tv.tv_usec = 0;
 		}
 	} /* while */
 }

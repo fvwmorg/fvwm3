@@ -50,4 +50,8 @@ extern Button *button_prev(WinManager *man, Button *b);
 
 extern void check_managers_consistency(void);
 
+void tips_on(WinManager *man, Button *b);
+void tips_cancel(WinManager *man);
+void tips_update_label(WinManager *man);
+
 #endif

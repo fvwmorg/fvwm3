@@ -1388,6 +1388,32 @@ void read_in_resources()
 	SET_MANAGER(manager, button_geometry_str,
 		     copy_string(&globals.managers[id].button_geometry_str, p));
       }
+      else if (!strcasecmp(option1, "maxbuttonwidth")) {
+	      p = read_next_cmd(READ_ARG);
+	      if (!p) {
+		      n = 0;
+	      }
+	      else if (extract_int(p, &n) == 0) {
+		      ConsoleMessage("This is not a number: %s\n", p);
+		      ConsoleMessage("Bad line: %s\n", current_line);
+		      continue;
+	      }
+	      SET_MANAGER(manager, max_button_width, n);
+	      SET_MANAGER(manager, max_button_width_columns, 0);
+      }
+      else if (!strcasecmp(option1, "maxbuttonwidthbycolumns")) {
+	      p = read_next_cmd(READ_ARG);
+	      if (!p) {
+		      n = 0;
+	      }
+	      else if (extract_int(p, &n) == 0) {
+		      ConsoleMessage("This is not a number: %s\n", p);
+		      ConsoleMessage("Bad line: %s\n", current_line);
+		      continue;
+	      }
+	      SET_MANAGER(manager, max_button_width, 0);
+	      SET_MANAGER(manager, max_button_width_columns, n);
+      }
       else if (!strcasecmp(option1, "dontshow")) {
 	char *token = NULL;
 	p = read_next_cmd(READ_REST_OF_LINE);
@@ -2006,6 +2032,226 @@ void read_in_resources()
 	}
 	SET_MANAGER(manager, relief_thickness, n);
       }
+      else if (!strcasecmp(option1, "tips")) {
+	      p = read_next_cmd(READ_ARG);
+	      if (!p) {
+		      ConsoleMessage("Bad line: %s\n", current_line);
+		      continue;
+	      }
+	      if (!strcasecmp(p, "always")) {
+		      i = TIPS_ALWAYS;
+	      }
+	      
+	      else if (!strcasecmp(p, "false")) {
+		      i = TIPS_NEVER;
+	      }
+	      else if (!strcasecmp(p, "needed")) {
+		      i = TIPS_NEEDED;
+	      }
+	      else {
+		      ConsoleMessage("Bad line: %s\n", current_line);
+		      ConsoleMessage("What is this: %s?\n", p);
+		      continue;
+	      }
+	      SET_MANAGER(manager, tips, i);
+      }
+      else if (!strcasecmp(option1, "tipsfont")) {
+	char *f;
+	p = read_next_cmd(READ_REST_OF_LINE);
+	trim(p);
+	if (!p) {
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	CopyStringWithQuotes(&f, p);
+	ConsoleDebug(CONFIG, "tipsfont: %s\n", f);
+
+	SET_MANAGER(manager, tips_fontname,
+		     copy_string(&globals.managers[id].tips_fontname, f));
+	free(f);
+      }
+      else if (!strcasecmp(option1, "tipscolorset")) {
+	p = read_next_cmd(READ_ARG);
+	if (!p) {
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	SET_MANAGER(manager, tips_conf->colorset, n);
+	if (n >= 0)
+	{
+		AllocColorset(n);
+	}
+      }
+      else if (!strcasecmp(option1, "tipsdelays")) {
+	p = read_next_cmd(READ_ARG);
+	if (!p) {
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (n < 0) {
+		ConsoleMessage("No negative delay: %s\n", p);
+		ConsoleMessage("Bad line: %s\n", current_line);
+		continue;
+	}
+	SET_MANAGER(manager, tips_conf->delay, n);
+	p = read_next_cmd(READ_ARG);
+	if (!p)
+	{
+		SET_MANAGER(manager, tips_conf->mapped_delay, n);
+		continue;
+	}
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (n < 0) {
+		ConsoleMessage("No negative delay: %s\n", p);
+		ConsoleMessage("Bad line: %s\n", current_line);
+		continue;
+	}
+	SET_MANAGER(manager, tips_conf->mapped_delay, n);
+      }
+      else if (!strcasecmp(option1, "tipsformat")) {
+	char *token;
+	/*NameType flags;*/
+
+	p = read_next_cmd(READ_REST_OF_LINE);
+	if (!p) {
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	DoGetNextToken(p, &token, NULL, ",", NULL);
+	if (!token)
+	  {
+	    token = (char *)safemalloc(1);
+	    *token = 0;
+	  }
+
+	SET_MANAGER(manager, tips_formatstring,
+		     copy_string (
+			     &globals.managers[id].tips_formatstring, token));
+#if 0
+	flags = parse_format_dependencies(token);
+	SET_MANAGER(manager, format_depend, flags);
+	Free(token);
+#endif
+      }
+      else if (!strcasecmp(option1, "tipsborderwidth")) {
+	p = read_next_cmd(READ_ARG);
+	if (!p) {
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (n < 0)
+	{
+		n = 0;
+	}
+	SET_MANAGER(manager, tips_conf->border_width, n);
+      }
+      else if (!strcasecmp(option1, "tipsoffsets")) {
+	p = read_next_cmd(READ_ARG);
+	if (!p) {
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (n < 1) {
+		ConsoleMessage("A tips offset must be positive: %s\n", p);
+		ConsoleMessage("Bad line: %s\n", current_line);
+		continue;
+	}
+	SET_MANAGER(manager, tips_conf->placement_offset, n);
+	p = read_next_cmd(READ_ARG);
+	if (!p)
+	{
+		ConsoleMessage("Bad line: %s\n", current_line);
+		continue;
+	}
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (n < 1) {
+		ConsoleMessage("A tips offset must be positive: %s\n", p);
+		ConsoleMessage("Bad line: %s\n", current_line);
+		continue;
+	}
+	SET_MANAGER(manager, tips_conf->justification_offset, n);
+      }
+      else if (!strcasecmp(option1, "tipsplacement")) {
+	      p = read_next_cmd(READ_ARG);
+	      if (!p) {
+		      ConsoleMessage("Bad line: %s\n", current_line);
+		      continue;
+	      }
+	      if (!strcasecmp(p, "up")) {
+		      i = FTIPS_PLACEMENT_UP;
+	      }
+	      else if (!strcasecmp(p, "down")) {
+		      i = FTIPS_PLACEMENT_DOWN;
+	      }
+	      else if (!strcasecmp(p, "left")) {
+		      i = FTIPS_PLACEMENT_LEFT;
+	      }
+	      else if (!strcasecmp(p, "right")) {
+		      i = FTIPS_PLACEMENT_RIGHT;
+	      }
+	      else if (!strcasecmp(p, "updown")) {
+		      i = FTIPS_PLACEMENT_AUTO_UPDOWN;
+	      }
+	      else if (!strcasecmp(p, "leftright")) {
+		      i = FTIPS_PLACEMENT_AUTO_LEFTRIGHT;
+	      }
+	      else {
+		      ConsoleMessage("Bad line: %s\n", current_line);
+		      ConsoleMessage("What is this: %s?\n", p);
+		      continue;
+	      }
+	      SET_MANAGER(manager, tips_conf->placement, i);
+      }
+      else if (!strcasecmp(option1, "tipsjustification")) {
+	      p = read_next_cmd(READ_ARG);
+	      if (!p) {
+		      ConsoleMessage("Bad line: %s\n", current_line);
+		      continue;
+	      }
+	      if (!strcasecmp(p, "center")) {
+		      i = FTIPS_JUSTIFICATION_CENTER;
+	      }
+	      else if (!strcasecmp(p, "leftup")) {
+		      i = FTIPS_JUSTIFICATION_LEFT_UP;
+	      }
+	      else if (!strcasecmp(p, "rightdown")) {
+		      i = FTIPS_JUSTIFICATION_RIGHT_DOWN;
+	      }
+	      else {
+		      ConsoleMessage("Bad line: %s\n", current_line);
+		      ConsoleMessage("What is this: %s?\n", p);
+		      continue;
+	      }
+	      SET_MANAGER(manager, tips_conf->justification, i);
+      }
       else {
 	ConsoleMessage("Bad line: %s\n", current_line);
 	ConsoleMessage("Unknown option: %s\n", p);
@@ -2055,6 +2301,8 @@ void process_dynamic_config_line(char *line)
 	if (strcasecmp(token, "resolution") == 0)
 	{
 		int value;
+
+		free(token);
 		line = GetNextToken(line, &token);
 		if (!token)
 		{
@@ -2082,9 +2330,49 @@ void process_dynamic_config_line(char *line)
 			free(token);
 			return;
 		}
-		free(token);
 
 		SET_MANAGER(manager, res, value);
 		remanage_winlist();
 	}
+	else if (strcasecmp(token, "tips") == 0)
+	{
+		int value;
+
+		free(token);
+		line = GetNextToken(line, &token);
+		if (!token)
+		{
+			return;
+		}
+		if (!strcasecmp(token, "always"))
+		{
+			value = TIPS_ALWAYS;
+		}
+		else if (!strcasecmp(token, "false"))
+		{
+			value = TIPS_NEVER;
+		}
+		else if (!strcasecmp(token, "needed"))
+		{
+			value = TIPS_NEEDED;
+		}
+		else
+		{
+			ConsoleMessage("Bad line: %s\n", line);
+			ConsoleMessage("What is this: %s?\n", token);
+			free(token);
+			return;
+		}
+		SET_MANAGER(manager, tips, value);
+		if (manager == -1)
+		{
+			tips_cancel(NULL);
+		}
+		else
+		{
+			tips_cancel(&globals.managers[manager]);
+		}
+	}
+
+	free(token);
 }

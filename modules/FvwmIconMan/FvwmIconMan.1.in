@@ -105,6 +105,8 @@ IconName        manger icon name           FvwmIconMan
 IconButton      style for icon buttons     up black grey
 IconColorset
 ManagerGeometry size of manager in buttons 0x1
+MaxButtonWidth  max width of a button
+MaxButtonWidthByColumns
 NoIconAction    animate iconification      NOP
 PlainButton     style for normal buttons   up black grey
 PlainColorset
@@ -120,6 +122,15 @@ ShowNoIcons     icons are not displayer    false
 ShowTransient   transient windows visible  false
 Sort            keep managers sorted       name
 SortWeight      weight for sorting
+Tips            Tool Tips mode             none
+TipsDelays      Tool Tips mapping delays   1000 300
+TipsFont        Font for Tool Tips         default fvwm font
+TipsColorset    Tool Tips Colorset         0
+TipsFormat      describes Tips label       the Format value
+TipsBorderWidth Tool Tips border size      1
+TipsPlacement   Tips placement vs button   updown
+TipsJustification Tips Just vs button      leftup
+TipsOffsets     Tips placement Offsets     3 2
 Title           manager title              FvwmIconMan
 TitleButton     style for title button     raisededge black grey
 TitleColorset
@@ -233,6 +244,18 @@ both are nonzero, then the manager window will be exactly that size, and stay
 that way. As columns are created, the buttons will narrow to accommodate.  If
 the geometry is specified with a negative y coordinate, then the window
 manager will grow upwards. Otherwise, it will grow downwards.
+
+\."#needs_lang_check
+.IP "*FvwmIconMan: [id] MaxButtonWidth \fIwidth\fP"
+Defines a maximum for the width of a button (in pixel). By default there
+is no maximum and a value of 0 reset the default. This maximum is taken in
+account only with a non growing manager (the ManagerGeometry option
+specifies non zero width and height).
+
+.IP "*FvwmIconMan: [id] MaxButtonWidthByColumns \fIcol\fP"
+This is equivalent to MaxButtonWidth ManWidth/col where ManWidth is
+the width of the Manager. 
+\."#end_needs_lang_check
 
 .IP "*FvwmIconMan: [id] NoIconAction  \fIaction\fP"
 Tells FvwmIconMan to do \fIaction\fP when a NoIcon style window is
@@ -377,6 +400,63 @@ Only iconified windows are shown if \fIboolean\fP is true.
 
 .IP "*FvwmIconMan: [id] ShowNoIcons \fIboolean\fP"
 Only windows that are not iconified are shown if \fIboolean\fP is true.
+
+
+\."#needs_lang_check
+.PP 
+The two following options control tips.
+
+.IP "*FvwmIconMan: [id] Tips \fIvalue\fP"
+where \fIvalue\fP can be always, needed or false. Default is false,
+no tips are displayed. With always, tips are enabled. With needed,
+a tip is displayed only if either the button string is truncated or
+the tip string is not equal to the button string. 
+This configuration line is respected when FvwmIconMan is running
+as well.
+
+.IP "*FvwmIconMan: [id] TipsDelays \fIdelay\fP [\fImappeddelay\fP]"
+where \fIdelay\fP and \fImappeddelay\fP are time out in milliseconds.
+If no \fImappeddelay\fP is given \fIdelay\fP is assumed. Default is
+1000 300. When the cursor is on a button, FvwmIconMan wait \fIdelay\fP
+milliseconds before displaying the tip. In the case where a tip is
+already mapped and the cursor go over an other button, FvwmIconMan
+wait \fImappeddelay\fP milliseconds before displaying the new tip.
+
+.IP "*FvwmIconMan: [id] TipsFont \fIfontname\fP"
+Specifies the font to be used for tips. Default is the default fvwm
+font.
+
+.IP "*FvwmIconMan: [id] TipsColorset \fIcolorset\fP"
+Specifies the colors for tips window. Default is colorset 0. See  FvwmTheme.
+
+.IP "*FvwmIconMan: [id] TipsFormat \fIformatstring\fP"
+Similar to the Format option but for the tips window. The default is
+the format string from the Format option.
+
+.IP "*FvwmIconMan: [id] TipsBorderWidth \fIpixels\fP"
+Specifies the border width (in pixel) of the tips window. Default is 1.
+
+.IP "*FvwmIconMan: [id] TipsPlacement \fIvalue\fP"
+where \fIvalue\fP can be up, down, right, left, updown or
+leftright. This value specifies the position of the tips window
+relatively to its button. Default is updown which means that the tips
+will be placed upon (respectively, downwards) its button if the button
+is above (respectively, below) the horizontal line which cross the 
+middle of the screen.
+
+.IP "*FvwmIconMan: [id] TipsJustification \fIvalue\fP"
+where \fIvalue\fP can be leftup, rightdown or center. Specifies
+the justification of the tips window relatively to its button after that
+the tips window has been placed. Default is leftup which means that if a tip
+is placed upon or downwards (respectively, on the left or on the right of)
+its button, then the left (respectively, the top) border of the tip and
+of the button are aligned (modulo some pixels, see the next option).
+
+.IP "*FvwmIconMan: [id] TipsOffsets \fIplacementoffset\fP \fIjustoffset\fP"
+where \fIplacementoffset\fP and \fIjustoffset\fP are offsets in pixel
+for the TipsPlacement and TipsJustification configuration option.
+Default is 3 2.
+\."#end_needs_lang_check
 
 .SH ACTIONS
 Actions are commands which may be bound to an event of the type: a key press, a

@@ -1,3 +1,37 @@
+2004-12-02  Olivier Chapuis  <olivier.chapuis@free.fr>
+
+	* FvwmIconMan/xmanager.h:
+	* FvwmIconMan/xmanager.c (set_win_displaystring): 
+	(tips_cancel):
+	(tips_on):
+	(tips_update_label):
+	* FvwmIconMan/x.c (xevent_loop):
+	(X_init_manager):
+	(init_display):
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	(process_dynamic_config_line):
+	* FvwmIconMan/globals.c (init_win_manager):
+	* FvwmIconMan/fvwm.c (new_window):
+	(destroy_window):
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/FvwmIconMan.c (main_loop):
+	* FvwmIconMan/FvwmIconMan.1.in:
+	Implemented tips
+
+	* FvwmIconMan/xmanager.c (first_row_len):
+	(index_to_box):
+	Formatting
+	
+	* FvwmIconMan/xmanager.c (figure_geometry):
+	(xy_to_button):
+	(set_button_geometry):
+	(set_shape):
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	* FvwmIconMan/globals.c (init_win_manager):
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/FvwmIconMan.1.in:
+	New options MaxButtonWidth and MaxButtonWidthByColumns
+
 2004-10-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmCommand/FvwmCommand.c (main):

@@ -468,6 +468,8 @@ static void new_window(FvwmPacketBody *body)
 	got_configure(win->manager);
 	check_win_complete(win);
 	check_in_window(win);
+	/* FIXME: not perfect, the manager is not know yet */
+	tips_cancel(win->manager);
 }
 
 static void destroy_window(FvwmPacketBody *body)
@@ -477,6 +479,10 @@ static void destroy_window(FvwmPacketBody *body)
 
 	app_id = body->minimal_data.app_id;
 	win = id_to_win(app_id);
+	if (win->manager)
+	{
+		tips_cancel(win->manager);
+	}
 	if (win == globals.focus_win)
 	{
 		globals.focus_win = NULL;
