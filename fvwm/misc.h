@@ -188,7 +188,7 @@ extern void       NextPage(void);
 extern void       PrevPage(void);
 extern void       moveLoop(FvwmWindow *,int,int,int,int,int *,int *,Bool,Bool);
 
-extern void       Keyboard_shortcuts(XEvent *, int);
+extern void       Keyboard_shortcuts(XEvent *, FvwmWindow*, int);
 extern void       RedoIconName(FvwmWindow *);
 extern void       DrawIconWindow(FvwmWindow *);
 extern void       CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y);

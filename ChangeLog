@@ -1,3 +1,22 @@
+1998-12-09  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/resize.c: don't wait for buttons up before resizing a window when
+	initially placing it
+
+	* fvwm/move.c (moveLoop): a little clean up
+	(DisplayPosition): a little clean up
+	(Keyboard_shortcuts): patch to make cursor key work when placing
+	windows invoked from a menu
+	(Keyboard_shortcuts): removed old reference to menu code (not called
+	anymore from there).
+
+	* fvwm/misc.h:
+	* fvwm/builtins.c (DeferExecution):
+	* fvwm/resize.c (resize_window):
+	* fvwm/move.c (Keyboard_shortcuts):
+	(moveLoop): patch to Keyboard_shortcut (was used for other things than
+	move/resize which didn't work well).
+
 1998-12-08  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/menus.c (menuShortcuts): fixed coredump with isgraph

@@ -554,7 +554,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
     default:
       /* There are no useful shortcuts, so don't do that.
        * (Dominik Vogt, 11-Nov-1998)
-       * Keyboard_shortcuts(Event,ButtonRelease); */
+       * Keyboard_shortcuts(Event, NULL, ButtonRelease); */
       break;
     }
 

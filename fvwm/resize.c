@@ -201,7 +201,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       /* Handle a limited number of key press events to allow mouseless
        * operation */
       if(Event.type == KeyPress)
-	Keyboard_shortcuts(&Event,ButtonRelease);
+	Keyboard_shortcuts(&Event, tmp_win, ButtonRelease);
       switch(Event.type)
 	{
 	case ButtonPress:

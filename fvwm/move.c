@@ -289,8 +289,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       done = FALSE;
       /* Handle a limited number of key press events to allow mouseless
        * operation */
-      if(Event.type == KeyPress)
-	Keyboard_shortcuts(&Event,ButtonRelease);
+      if (Event.type == KeyPress)
+	Keyboard_shortcuts(&Event, tmp_win, ButtonRelease);
       switch(Event.type)
 	{
 	case KeyPress:
@@ -606,7 +606,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
 	default:
 	  break;
-	}
+	} /* switch */
       if(!done)
       {
 	if(!opaque_move)
@@ -616,7 +616,10 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  MoveOutline(Scr.Root, xl, yt, Width, Height);
       }
     }
-  WaitForButtonsUp();
+  if (!NeedToResizeToo)
+    /* Don't wait for buttons to come up when user is placing a new window
+     * and wants to resize it. */
+    WaitForButtonsUp();
 }
 
 /***********************************************************************
@@ -643,13 +646,14 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
 	RelieveWindow(tmp_win,Scr.SizeWindow,0,0,
 		      Scr.SizeStringWidth+ SIZE_HINDENT*2,
 		      Scr.StdFont.height + SIZE_VINDENT*2,
-		      Scr.DefaultMenuFace->MenuReliefGC,Scr.DefaultMenuFace->MenuShadowGC, FULL_HILITE);
+		      Scr.DefaultMenuFace->MenuReliefGC,
+		      Scr.DefaultMenuFace->MenuShadowGC, FULL_HILITE);
 
     }
   else
     {
-      XClearArea(dpy,Scr.SizeWindow,SIZE_HINDENT,SIZE_VINDENT,Scr.SizeStringWidth,
-		 Scr.StdFont.height,False);
+      XClearArea(dpy,Scr.SizeWindow,SIZE_HINDENT,SIZE_VINDENT,
+		 Scr.SizeStringWidth, Scr.StdFont.height,False);
     }
 
   offset = (Scr.SizeStringWidth + SIZE_HINDENT*2
@@ -667,20 +671,21 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
  * shortcuts by warping the pointer.
  *
  ****************************************************************************/
-void Keyboard_shortcuts(XEvent *Event, int ReturnEvent)
+void Keyboard_shortcuts(XEvent *Event, FvwmWindow *w, int ReturnEvent)
 {
   int x,y,x_root,y_root;
-  int x_move_size,y_move_size,x_move,y_move;
+  int x_move_size = 0, y_move_size = 0;
+  int x_move,y_move;
+
   KeySym keysym;
 
-  if (!Scr.Hilite)
-    return;
-  /* Pick the size of the cursor movement, window resize increments are first
-     choice followed by height of a menu item */
-  x_move_size = Scr.Hilite->hints.width_inc;
-  y_move_size = Scr.Hilite->hints.height_inc;
-  if (y_move_size < 5) y_move_size = Scr.EntryHeight;
-  if (x_move_size < 5) x_move_size = y_move_size;
+  if (w)
+    {
+      x_move_size = w->hints.width_inc;
+      y_move_size = w->hints.height_inc;
+    }
+  if (y_move_size < 5) y_move_size = 5;
+  if (x_move_size < 5) x_move_size = 5;
   if(Event->xkey.state & ControlMask)
     x_move_size = y_move_size = 1;
   if(Event->xkey.state & ShiftMask)

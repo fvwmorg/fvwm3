@@ -91,7 +91,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
     StashEventTime(eventp);
 
     if(eventp->type == KeyPress)
-      Keyboard_shortcuts(eventp,FinishEvent);
+      Keyboard_shortcuts(eventp, NULL, FinishEvent);
     if(eventp->type == FinishEvent)
       finished = 1;
     if(eventp->type == ButtonPress)

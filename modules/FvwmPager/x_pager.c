@@ -606,7 +606,6 @@ void DispatchEvent(XEvent *Event)
 		    }
 		  XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 				&JunkX, &JunkY,&x, &y, &JunkMask);
-fprintf(stderr,"6 x = %d, y = %d\n",x,y);
 		  Scroll(desk_w, desk_h, x, y, i);
 		  break;
 		}
@@ -1314,7 +1313,6 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk)
 #ifndef NON_VIRTUAL
   char command[256];
   int sx, sy;
-fprintf(stderr,"Wait=%d, Desk=%d, CD=%d\n",Wait,Desk,Scr.CurrentDesk);
   if(Wait == 0)
     {
       /* Desk < 0 means we want to scroll an icon window */
@@ -1339,7 +1337,6 @@ fprintf(stderr,"Wait=%d, Desk=%d, CD=%d\n",Wait,Desk,Scr.CurrentDesk);
 	Scr.MyDisplayHeight;
       /* Make sure we don't get stuck a few pixels fromt the top/left border.
        * Since sx/sy are ints, values between 0 and 1 are rounded down. */
-fprintf(stderr, "sx = %d, sy = %d\n",sx,sy);
       if(sx == 0 && x == 0 && Scr.Vx != 0) sx = -1;
       if(sy == 0 && y == 0 && Scr.Vy != 0) sy = -1;
 
