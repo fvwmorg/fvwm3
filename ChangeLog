@@ -1,5 +1,9 @@
 2001-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/geometry.c (get_unshaded_geometry):
+	* fvwm/update.c (apply_window_updates):
+	fixed recapturing shaded windows on pages other than 0 0
+
 	* fvwm/builtins.c (fake_click):
 	fixed a bug in button number parsing
 	(fake_click):

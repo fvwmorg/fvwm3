@@ -198,6 +198,7 @@ void get_unshaded_geometry(
     {
       *ret_g = tmp_win->normal_g;
     }
+    get_relative_geometry(ret_g, ret_g);
   }
   else
   {
