@@ -142,6 +142,7 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS);
 void CMD_Restart(F_CMD_ARGS);
 void CMD_SaveQuitSession(F_CMD_ARGS);
 void CMD_SaveSession(F_CMD_ARGS);
+void CMD_Schedule(F_CMD_ARGS);
 void CMD_Scroll(F_CMD_ARGS);
 void CMD_Send_ConfigInfo(F_CMD_ARGS);
 void CMD_Send_WindowList(F_CMD_ARGS);

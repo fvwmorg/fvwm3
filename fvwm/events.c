@@ -94,6 +94,7 @@
 #include "move_resize.h"
 #include "virtual.h"
 #include "decorations.h"
+#include "schedule.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -2812,10 +2813,27 @@ int My_XNextEvent(Display *dpy, XEvent *event)
    * mean we have to start waiting all over again ... */
   do
   {
+    int ms;
+    Bool is_waiting_for_scheduled_command = False;
+    static struct timeval *old_timeoutP = NULL;
+
     /* The timeouts become undefined whenever the select returns, and so
      * we have to reinitialise them */
-    timeout.tv_sec = 42;
-    timeout.tv_usec = 0;
+    ms = get_next_schedule_queue_ms();
+    if (ms == 0)
+    {
+      timeout.tv_sec = 42;
+      timeout.tv_usec = 0;
+    }
+    else
+    {
+      /* scheduled commands are pending - don't wait too long */
+      timeout.tv_sec = ms / 1000;
+      timeout.tv_usec = 1000 * (ms % 1000);
+      old_timeoutP = timeoutP;
+      timeoutP = &timeout;
+      is_waiting_for_scheduled_command = True;
+    }
 
     FD_ZERO(&in_fdset);
     FD_ZERO(&out_fdset);
@@ -2834,6 +2852,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
     DBUG("My_XNextEvent","waiting for module input/output");
     num_fd = fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, timeoutP);
+    if (is_waiting_for_scheduled_command)
+    {
+      timeoutP = old_timeoutP;
+    }
 
     /* Express route out of FVWM ... */
     if ( isTerminated ) return 0;
@@ -2879,6 +2901,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       reset_style_changes();
       Scr.flags.do_need_window_update = 0;
     }
+    /* run scheduled commands if necessary */
+    execute_schedule_queue();
   }
 
   /* check for X events again, rather than return 0 and get called again */

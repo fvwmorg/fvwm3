@@ -531,3 +531,25 @@ FvwmWindow *get_pointer_fvwm_window(void)
 
 	return t;
 }
+
+
+/* Returns the current X server time */
+Time get_server_time(void)
+{
+	XEvent xev;
+	XSetWindowAttributes attr;
+
+	/* add PropChange to NoFocusWin events */
+	attr.event_mask = PropertyChangeMask;
+	XChangeWindowAttributes (dpy, Scr.NoFocusWin, CWEventMask, &attr);
+	/* provoke an event */
+	XChangeProperty(
+		dpy, Scr.NoFocusWin, XA_WM_CLASS, XA_STRING, 8, PropModeAppend,
+		NULL, 0);
+	XWindowEvent(dpy, Scr.NoFocusWin, PropertyChangeMask, &xev);
+	attr.event_mask = NoEventMask;
+	XChangeWindowAttributes(dpy, Scr.NoFocusWin, CWEventMask, &attr);
+	StashEventTime(&xev);
+
+	return xev.xproperty.time;
+}

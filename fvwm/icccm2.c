@@ -81,20 +81,10 @@ SetupICCCM2 (Bool replace_wm)
     XChangeWindowAttributes (dpy, running_wm_win, CWEventMask, &attr);
   }
 
-  /* add PropChange to NoFocusWin events */
-  attr.event_mask = PropertyChangeMask;
-  XChangeWindowAttributes (dpy, Scr.NoFocusWin, CWEventMask, &attr);
-
   /* We are not yet in the event loop, thus lastTimestamp will not
      be ready. Have to get a timestamp manually by provoking a
      PropertyNotify. */
-  XChangeProperty (dpy, Scr.NoFocusWin, XA_WM_CLASS, XA_STRING, 8,
-		   PropModeAppend, NULL, 0);
-  XWindowEvent (dpy, Scr.NoFocusWin, PropertyChangeMask, &xev);
-  attr.event_mask = NoEventMask;
-  XChangeWindowAttributes (dpy, Scr.NoFocusWin, CWEventMask, &attr);
-
-  managing_since = xev.xproperty.time;
+  managing_since = get_server_time();
 
   XSetSelectionOwner (dpy, _XA_WM_SX, Scr.NoFocusWin, managing_since);
   if (XGetSelectionOwner (dpy, _XA_WM_SX) != Scr.NoFocusWin) {

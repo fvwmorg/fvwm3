@@ -3329,6 +3329,26 @@ This command is obsolete. Please use
 instead.
 
 .TP
+.BI "Schedule " "delay_ms command"
+the
+.I command
+is executed after about
+.I delay_ms
+milliseconds.  This may be useful in some tricky setups.  The
+.I command
+is executed in the same context window as the
+.B Schedule
+command.
+Note that the
+.B Schedule
+command and its arguments undergo the usual command line
+expansion, and, when
+.I command
+is finally executed, it is expanded again.  It may therefore be
+necessary to quote the parts of the command that must not be
+expanded twice.
+
+.TP
 .BI "WindowFont [" fontname "]"
 This command is obsoleted by the
 .B Style

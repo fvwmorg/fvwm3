@@ -224,6 +224,7 @@ static const func_type func_config[] =
   CMD_ENTRY("restart", CMD_Restart, F_RESTART, 0),
   CMD_ENTRY("savequitsession", CMD_SaveQuitSession, F_SAVE_QUIT_SESSION, 0),
   CMD_ENTRY("savesession", CMD_SaveSession, F_SAVE_SESSION, 0),
+  CMD_ENTRY("schedule", CMD_Schedule, F_SCHEDULE, 0),
   CMD_ENTRY("scroll", CMD_Scroll, F_SCROLL, 0),
   CMD_ENTRY("send_configinfo", CMD_Send_ConfigInfo, F_CONFIG_LIST,
 	    FUNC_DONT_REPEAT),
