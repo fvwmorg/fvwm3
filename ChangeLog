@@ -3,6 +3,8 @@
 	* fvwm/gnome.c (GNOME_SetClientList):
 	Applied David Fries patch which fixes a possible crash with more
 	than 256 windows
+	(GNOME_SetClientList):
+	malloc -> safemalloc
 
 2003-02-09  Dan Espen  <dane@mk.telcordia.com>
 

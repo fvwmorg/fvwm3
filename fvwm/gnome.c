@@ -789,7 +789,7 @@ GNOME_SetClientList(void)
 	}
 	if(displayed)
 	{
-		wl=(Window*)malloc(sizeof(Window*)*displayed);
+		wl=(Window*)safemalloc(sizeof(Window*)*displayed);
 		for (t = Scr.FvwmRoot.next; t; t = t->next)
 		{
 			if (!DO_SKIP_WINDOW_LIST(t))
