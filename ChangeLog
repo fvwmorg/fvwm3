@@ -1,5 +1,21 @@
 2002-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/strdup.c:
+	* libs/safemalloc.c:
+	* libs/envvar.c:
+	* libs/alloca.c:
+	* libs/Target.c:
+	* libs/Parse.c:
+	* libs/Bindings.c:
+	* fvwm/menustyle.c:
+	* fvwm/menus.c:
+	* fvwm/menuitem.c:
+	* fvwm/menucmd.c:
+	* fvwm/frame.c:
+	* fvwm/events.c:
+	* fvwm/borders.c:
+	let config.h include strinh.h or strings.h
+
 	* fvwm/style.c (style_parse_one_style_option):
 	(style_parse_one_style_option):
 	fixed icon box crash

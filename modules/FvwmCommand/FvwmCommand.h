@@ -29,7 +29,6 @@
 #endif
 
 #include <errno.h>
-#include <string.h>
 
 #include <libs/Module.h>
 #include <libs/fvwmlib.h>

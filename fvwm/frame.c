@@ -20,7 +20,6 @@
 
 #include <stdio.h>
 #include <signal.h>
-#include <string.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"

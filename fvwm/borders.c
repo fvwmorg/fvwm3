@@ -28,7 +28,6 @@
 
 #include <stdio.h>
 #include <signal.h>
-#include <string.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
@@ -1725,7 +1724,7 @@ static void border_draw_decor_to_pixmap(
 			df->u.grad.xcs, df->u.grad.do_dither,
 			&df->u.grad.d_pixels, &df->u.grad.d_npixels,
 			dest_pix, 0, 0, pixmap_g->width, pixmap_g->height, NULL);
-		
+
 		break;
 	default:
 		fvwm_msg(ERR, "DrawButton", "unknown button type");

@@ -19,7 +19,6 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <string.h>
 #include <X11/Intrinsic.h>
 #include "libs/fvwmlib.h"
 #include "libs/safemalloc.h"

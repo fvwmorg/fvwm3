@@ -19,7 +19,6 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <string.h>
 #include <assert.h>
 #include <X11/keysym.h>
 
@@ -72,7 +71,7 @@ static void menustyle_free_face(MenuFace *mf)
 	switch (mf->type)
 	{
 	case GradientMenu:
-		if (Pdepth <= 8 && mf->u.grad.npixels > 0 && 
+		if (Pdepth <= 8 && mf->u.grad.npixels > 0 &&
 		    !mf->u.grad.do_dither)
 		{
 			Pixel *p;

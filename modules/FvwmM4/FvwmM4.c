@@ -28,7 +28,6 @@
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <string.h>
 #include <sys/wait.h>
 #include "libs/ftime.h"
 #include <unistd.h>

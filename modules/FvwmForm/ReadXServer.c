@@ -45,7 +45,6 @@
 
 #include <stdio.h>
 #include <ctype.h>
-#include <string.h>
 
 #include <X11/Xlib.h>
 #include <X11/X.h>

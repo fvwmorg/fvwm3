@@ -16,22 +16,24 @@
 #include "config.h"
 
 #include <stdlib.h>
-#include <string.h>
 #include "safemalloc.h"
 
 char *strdup(const char *s)
 {
-  char   *d;
-  size_t l;
+	char   *d;
+	size_t l;
 
-  if (s == NULL)
-    return NULL;
+	if (s == NULL)
+	{
+		return NULL;
+	}
+	l = strlen (s) + 1;
 
-  l = strlen (s) + 1;
+	if ((d = (char *)malloc (l)) == NULL)
+	{
+		return NULL;
+	}
+	memcpy (d, s, l);
 
-  if ((d = (char *)malloc (l)) == NULL)
-    return NULL;
-
-  memcpy (d, s, l);
-  return d;
+	return d;
 }

@@ -48,7 +48,6 @@
 #include <X11/Xlib.h>
 #include <math.h>
 #include <unistd.h>
-#include <string.h>
 #include <ctype.h>
 #include <fcntl.h>                      /* for O_WRONLY */
 #include <sys/times.h>
