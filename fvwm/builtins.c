@@ -316,7 +316,7 @@ void Maximize(F_CMD_ARGS)
     if (IS_SHADED(tmp_win))
       new_height = tmp_win->frame_g.height;
     SetupFrame(tmp_win,new_x,new_y,new_width,new_height,TRUE,False);
-    /*   SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);*/
+    SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);
   }
 }
 

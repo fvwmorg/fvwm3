@@ -1,3 +1,9 @@
+1999-05-13  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/builtins.c (Maximize): Call SetBorder when maximizing,
+	otherwise doing "Maximize Tall" from a module may forget
+	to update the maximize button.
+
 1999-05-13 Hippo
 
 	* fvwm/{lots} New command "DefaultBackground":
