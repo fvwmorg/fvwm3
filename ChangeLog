@@ -1,5 +1,9 @@
 1998-12-02  Paul D. Smith  <psmith@gnu.org>
 
+	* fvwm/fvwm.c (main): Add FVWM_MODULEDIR to the environment
+	containing the default module directory.
+	* fvwm/fvwm2.1: Document it.
+
 	* archive/purify/purify.fvwm2rc: Comment out things that cause
 	heap corruption, until they can be fixed.
 

@@ -142,6 +142,10 @@ int main(int argc, char **argv)
 
   DBUG("main","Entered, about to parse args");
 
+  /* Put the default module directory into the environment so it can be used
+     later by the config file, etc.  */
+  putenv("FVWM_MODULEDIR=" FVWM_MODULEDIR);
+
   for (i = 1; i < argc; i++)
   {
     if (strncasecmp(argv[i],"-debug",6)==0)

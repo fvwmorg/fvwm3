@@ -1586,7 +1586,8 @@ built-in and function names.
 Specifies a colon separated list of paths for \fIfvwm\fP to search
 when looking for a module to load.  Individual directories do not need
 trailing slashes.  Environment variables can be used here as well (i.e.
-$HOME or ${HOME}).
+$HOME or ${HOME}).  The builtin module path is available via the
+environment variable $FVWM_MODULEDIR.
 
 
 .IP "Mouse \fIButton Context Modifiers Function\fP"
@@ -2482,6 +2483,17 @@ displays.
 
 You may need to quit on each screen to quit from the X session
 completely.
+
+
+.SH ENVIRONMENT
+.TP
+DISPLAY
+Fvwm starts on this display unless the
+.I -display
+option is given.
+.TP
+FVWM_MODULEDIR
+Fvwm sets this to the path containing the default modules.
 
 
 .SH BUGS
