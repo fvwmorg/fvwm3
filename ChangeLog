@@ -30,6 +30,9 @@
 	(merge_styles):
 	* fvwm/update.h:
 	* fvwm/update.c (apply_window_updates):
+	New style options IconBackgroundColorset, IconTitleColorset,
+ 	HilightIconTitleColorset, IconTitleRelief, IconBackgroundRelief
+	and IconBackgroundPadding
 
 2002-12-28  Mikhael Goikhman  <migo@homemail.com>
 

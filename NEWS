@@ -24,7 +24,8 @@ Changes in developement release 2.5.6 (not released yet)
          !UseTitleDecorRotation / UseTitleDecorRotation
 
 * New style options IconBackgroundColorset, IconTitleColorset,
-  HilightIconTitleColorset, IconTitleRelief and IconBackgroundRelief
+  HilightIconTitleColorset, IconTitleRelief, IconBackgroundRelief
+  and IconBackgroundPadding
 
 -------------------------------------------------------------------
 
