@@ -1,5 +1,9 @@
 2002-03-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/functions.c (expand_extended_var):
+	implemented new extended variables pointer.x, pointer.x, pointer.wx,
+	pointer.wy, pointer.cx and pointer.cy.
+
 	* libs/Parse.c (ParseDirectionArgument):
 	allow N, S, W, E, NW, SW, SE, NE for direction arguments
 

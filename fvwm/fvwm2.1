@@ -1438,6 +1438,37 @@ These work like $[w....] but return the geometry of the icon
 .in -.5i
 
 .in +.5i
+$[pointer.x]
+$[pointer.y]
+.in +.3i
+These return the position of the pointer on the screen.  If the
+pointer is not on the screen, these variables are not expanded.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$[pointer.wx]
+$[pointer.wy]
+.in +.3i
+These return the position of the pointer in the selected window.  If the
+pointer is not on the screen, the window is iconified  or no
+window is selected, these variables are not expanded.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$[pointer.cx]
+$[pointer.cy]
+.in +.3i
+These return the position of the pointer in the client portion of
+th eselected window.  If the pointer is not on the screen, the
+window is shaded or iconified or no window is selected, these
+variables are not expanded.
+
+.in -.3i
+.in -.5i
+
+.in +.5i
 $[screen]
 .in +.3i
 The screen number fvwm is running on.  Useful for setups with

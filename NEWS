@@ -46,6 +46,9 @@ Changes in beta release 2.5.1 (not released yet)
 
   Please refer to the FvwmTaskBar man page for details.
 
+* New extended variables pointer.x, pointer.y, pointer.wx,
+  pointer.wy, pointer.cx and pointer.cy.
+
 * Fixed an FvwmScript compile problem on dec-osf5.
 
 Changes in beta release 2.5.0 (27-Jan-2002)

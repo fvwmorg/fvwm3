@@ -358,6 +358,12 @@ static char *function_vars[] =
   "schedule.last",
   "schedule.next",
   "cond.rc",
+  "pointer.x",
+  "pointer.y",
+  "pointer.wx",
+  "pointer.wy",
+  "pointer.cx",
+  "pointer.cy",
   NULL
 };
 
@@ -373,9 +379,13 @@ static int expand_extended_var(
   int n;
   int i;
   int l;
+  int x;
+  int y;
   Pixel pixel = 0;
   int val = -12345678;
   Bool is_numeric = False;
+  Bool is_x;
+  Window context_w = Scr.Root;
 
   /* allow partial matches for *.cs variables */
   switch ((i = GetTokenIndex(var_name, function_vars, -1, &rest)))
@@ -707,6 +717,50 @@ static int expand_extended_var(
       return 0;
     }
     is_numeric = True;
+    break;
+  case 37:
+  case 38:
+    /* pointer.x and pointer.y */
+    if (is_numeric == False)
+    {
+      is_numeric = True;
+      context_w = Scr.Root;
+    }
+    /* fall through */
+  case 39:
+  case 40:
+    /* pointer.wx and pointer.wy */
+    if (is_numeric == False)
+    {
+      if (!tmp_win || IS_ICONIFIED(tmp_win) || IS_EWMH_DESKTOP(tmp_win->w))
+      {
+        return 0;
+      }
+      is_numeric = True;
+      context_w = tmp_win->frame;
+    }
+    /* fall through */
+  case 41:
+  case 42:
+    /* pointer.cx and pointer.cy */
+    if (is_numeric == False)
+    {
+      if (!tmp_win || IS_ICONIFIED(tmp_win) || IS_SHADED(tmp_win) ||
+          IS_EWMH_DESKTOP(tmp_win->w))
+      {
+        return 0;
+      }
+      is_numeric = True;
+      context_w = tmp_win->w;
+    }
+    is_x = (i & 1) ? True : False;
+    if (XQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
+                      &JunkX, &JunkY, &x, &y, &JunkMask) == False)
+    {
+      /* pointer is on a different screen, don't expand */
+      return 0;
+    }
+    val = (is_x) ? x : y;
     break;
   default:
     /* unknown variable - try to find it in the environment */
