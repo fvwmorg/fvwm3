@@ -2,18 +2,14 @@
 # Find fvwm commands from function.c struct functions
 # Written by Toshi Isogai
 
-ff="FvwmCommand.sh";
-fc="../../fvwm/functions.c";
+echo "# $ff"
+echo "# Collection of fvwm2 builtin commands for FvwmCommand"
+echo ""
 
-
-echo "# $ff" > $ff;
-echo "# Collection of fvwm2 builtin commands for FvwmCommand" >> $ff
-echo "" >> $ff;
-
-echo "alias FvwmCommand='$1/FvwmCommand'" >> $ff;
-echo 'AM () { ' >> $ff
-echo 'FvwmCommand "+ $*"' >> $ff
-echo '}' >> $ff;
+echo "alias FvwmCommand='$1/FvwmCommand'"
+echo 'AM () { '
+echo 'FvwmCommand "+ $*"'
+echo '}'
 
 
 awk 'OFS="";
@@ -26,7 +22,7 @@ awk 'OFS="";
 		print  "FvwmCommand \"",$0," $*\""
         print  "}" ;
 	}
-}' $fc >> $ff;
+}'
 
 
 

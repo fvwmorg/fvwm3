@@ -1,3 +1,13 @@
+Sat Mar 13 12:48:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCommand/findcmd:
+	* FvwmCommand/findcmd.pl: rewritten as filters, so as not to be
+	dependent on finding ../../fvwm/command.c.  The makefile now takes
+	care of supplying the input & output paths.
+	
+	* FvwmCommand/Makefile.am: build and install FvwmCommand.sh and
+	FvwmCommand.pm.
+
 Sat Mar 13 11:52:39 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmCommand/INSTALL: removed obsolete file.
