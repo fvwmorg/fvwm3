@@ -1,3 +1,11 @@
+2003-08-23  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/style.c (print_styles):
+	More info on memory used
+
+	* fvwm/style.c (__simplify_style_list): 
+	Fixed upward simplication
+
 2003-08-14  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh.c (ewmh_HandleMenu):

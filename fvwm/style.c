@@ -878,107 +878,104 @@ static Bool __simplify_style_list(void)
 				remove_style_from_list(cmp, True);
 				cmp = tmp;
 				has_modified = True;
+				continue;
 			}
-			else
+
+			if (is_merge_allowed &&
+			    !blocksintersect(
+				    (char *)&cur->flag_mask,
+				    (char *)&interflags,
+				    sizeof(style_flags)) &&
+			    !blocksintersect(
+				    (char *)&cur->flag_default,
+				    (char *)&interflags,
+				    sizeof(style_flags)))
 			{
-				/* remove all styles that are overridden later
-				 * from the style */
-				free_style_mask(cmp, &sumflags);
-				blockunmask((char *)&dummyflags,
-					(char *)&sumdflags,
-					(char *)&cmp->flag_mask,
-					sizeof(style_flags));
-				free_style_mask(cmp, &dummyflags);
+				/* upward merging */
+				window_style *tmp = SGET_PREV_STYLE(*cmp);
+
+				/* merge cmp into cur and delete it
+				 * afterwards */
+				merge_styles(cmp, cur, True);
+				remove_style_from_list(cur, False);
+				/* release the style structure */
+				free(cur);
+				cur = cmp;
+				cmp = tmp;
+				has_modified = True;
+				memset(&interflags, 0, sizeof(style_flags));
 				/* Add the style to the set */
 				blockor((char *)&sumflags,
 					(char *)&sumflags,
-					(char *)&cmp->flag_mask,
+					(char *)&cur->flag_mask,
 					sizeof(style_flags));
 				blockor((char *)&sumdflags,
 					(char *)&sumflags,
-					(char *)&cmp->flag_mask,
+					(char *)&cur->flag_mask,
 					sizeof(style_flags));
 				blockor((char *)&sumdflags,
 					(char *)&sumdflags,
-					(char *)&cmp->flag_default,
+					(char *)&cur->flag_default,
 					sizeof(style_flags));
-				if (is_merge_allowed &&
-				    !blocksintersect(
-					    (char *)&cmp->flag_mask,
-					    (char *)&interflags,
-					    sizeof(style_flags)) &&
-				    !blocksintersect(
-					    (char *)&cmp->flag_default,
-					    (char *)&interflags,
-					    sizeof(style_flags)))
-				{
-					window_style *tmp =
-						SGET_PREV_STYLE(*cmp);
-					window_style *prev =
-						SGET_PREV_STYLE(*cur);
-					window_style *next =
-						SGET_NEXT_STYLE(*cur);
+				continue;
+			}
 
-					/* merge cmp into cur and delete it
-					 * afterwards */
-					merge_styles(cmp, cur, True);
-					free_style(cur);
-					memcpy(cur, cmp, sizeof(window_style));
-					/* restore fields overwritten by
-					 * memcpy */
-					SSET_PREV_STYLE(*cur, prev);
-					SSET_NEXT_STYLE(*cur, next);
-					/* remove the style without freeing the
-					 * memory */
-					remove_style_from_list(cmp, False);
-					/* release the style structure */
-					free(cmp);
-					cmp = tmp;
-					has_modified = True;
-				}
-				else if (is_merge_allowed &&
-					 !blocksintersect(
-					    (char *)&cur->flag_mask,
-					    (char *)&interflags,
-					    sizeof(style_flags)) &&
-					 !blocksintersect(
-					    (char *)&cur->flag_default,
-					    (char *)&interflags,
-					    sizeof(style_flags)))
-				{
-					window_style *tmp =
-						SGET_PREV_STYLE(*cmp);
-					window_style *prev =
-						SGET_PREV_STYLE(*cmp);
-					window_style *next =
-						SGET_NEXT_STYLE(*cmp);
+			/* remove all styles that are overridden later
+			 * from the style */
+			free_style_mask(cmp, &sumflags);
+			blockunmask((char *)&dummyflags,
+				    (char *)&sumdflags,
+				    (char *)&cmp->flag_mask,
+				    sizeof(style_flags));
+			free_style_mask(cmp, &dummyflags);
+			/* Add the style to the set */
+			blockor((char *)&sumflags,
+				(char *)&sumflags,
+				(char *)&cmp->flag_mask,
+				sizeof(style_flags));
+			blockor((char *)&sumdflags,
+				(char *)&sumflags,
+				(char *)&cmp->flag_mask,
+				sizeof(style_flags));
+			blockor((char *)&sumdflags,
+				(char *)&sumdflags,
+				(char *)&cmp->flag_default,
+				sizeof(style_flags));
+			if (is_merge_allowed &&
+			    !blocksintersect(
+				    (char *)&cmp->flag_mask,
+				    (char *)&interflags,
+				    sizeof(style_flags)) &&
+			    !blocksintersect(
+				    (char *)&cmp->flag_default,
+				    (char *)&interflags,
+				    sizeof(style_flags)))
+			{
+				window_style *tmp = SGET_PREV_STYLE(*cmp);
+				window_style *prev = SGET_PREV_STYLE(*cur);
+				window_style *next = SGET_NEXT_STYLE(*cur);
 
-					/* merge cur into cmp and delete it
-					 * afterwards */
-					merge_styles(cur, cmp, True);
-					free_style(cmp);
-					memcpy(cmp, cur, sizeof(window_style));
-					/* restore fields overwritten by
-					 * memcpy */
-					SSET_PREV_STYLE(*cmp, prev);
-					SSET_NEXT_STYLE(*cmp, next);
-					/* remove the style without freeing the
-					 * memory */
-					remove_style_from_list(cur, False);
-					/* release the style structure */
-					free(cur);
-					cur = cmp;
-					cmp = tmp;
-					has_modified = True;
-					memset(
-						&interflags, 0,
-						sizeof(style_flags));
-				}
-				else
-				{
-					is_merge_allowed = False;
-					cmp = SGET_PREV_STYLE(*cmp);
-				}
+				/* merge cmp into cur and delete it
+				 * afterwards */
+				merge_styles(cmp, cur, True);
+				free_style(cur);
+				memcpy(cur, cmp, sizeof(window_style));
+				/* restore fields overwritten by
+				 * memcpy */
+				SSET_PREV_STYLE(*cur, prev);
+				SSET_NEXT_STYLE(*cur, next);
+				/* remove the style without freeing the
+				 * memory */
+				remove_style_from_list(cmp, False);
+				/* release the style structure */
+				free(cmp);
+				cmp = tmp;
+				has_modified = True;
+			}
+			else
+			{
+				is_merge_allowed = False;
+				cmp = SGET_PREV_STYLE(*cmp);
 			}
 		}
 	}
@@ -4866,6 +4863,7 @@ void print_styles(int verbose)
 {
 	window_style *nptr;
 	int count = 0;
+	int mem = 0;
 
 	fprintf(stderr,"Info on fvwm Styles:\n");
 	if (verbose)
@@ -4875,20 +4873,120 @@ void print_styles(int verbose)
 	for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))
 	{
 		count++;
-		if (verbose)
+		if (SGET_ID_HAS_NAME(*nptr))
 		{
-			if (SGET_ID_HAS_NAME(*nptr))
+			mem += strlen(SGET_NAME(*nptr));
+			if (verbose)
 			{
 				fprintf(stderr,"    * %s\n", SGET_NAME(*nptr));
 			}
-			else
+		}
+		else
+		{
+			mem++;
+			if (verbose)
 			{
 				fprintf(stderr,"    * 0x%lx\n",
 					(unsigned long)SGET_WINDOW_ID(*nptr));
 			}
 		}
+		if (SGET_BACK_COLOR_NAME(*nptr))
+		{
+			mem += strlen(SGET_BACK_COLOR_NAME(*nptr));
+			if (verbose > 1)
+			{
+				fprintf(
+					stderr,"        Back Color: %s\n",
+					SGET_BACK_COLOR_NAME(*nptr));
+			}
+		}
+		if (SGET_FORE_COLOR_NAME(*nptr))
+		{
+			mem += strlen(SGET_FORE_COLOR_NAME(*nptr));
+			if (verbose > 1)
+			{
+				fprintf(
+					stderr,"        Fore Color: %s\n",
+					SGET_FORE_COLOR_NAME(*nptr));
+			}
+		}
+		if (SGET_BACK_COLOR_NAME_HI(*nptr))
+		{
+			mem += strlen(SGET_BACK_COLOR_NAME_HI(*nptr));
+			if (verbose > 1)
+			{
+				fprintf(
+					stderr,"        Back Color hi: %s\n",
+					SGET_BACK_COLOR_NAME_HI(*nptr));
+			}
+		}
+		if (SGET_FORE_COLOR_NAME_HI(*nptr))
+		{
+			mem += strlen(SGET_FORE_COLOR_NAME_HI(*nptr));
+			if (verbose > 1)
+			{
+				fprintf(
+					stderr,"        Fore Color hi: %s\n",
+					SGET_FORE_COLOR_NAME_HI(*nptr));
+			}
+		}
+		if (SGET_DECOR_NAME(*nptr))
+		{
+			mem += strlen(SGET_DECOR_NAME(*nptr));
+			if (verbose > 1)
+			{
+				fprintf(
+					stderr,"        Decor: %s\n",
+					SGET_DECOR_NAME(*nptr));
+			}
+		}
+		if (SGET_WINDOW_FONT(*nptr))
+		{
+			mem += strlen(SGET_WINDOW_FONT(*nptr));
+			if (verbose > 1)
+			{
+				fprintf(
+					stderr,"        Window Font: %s\n",
+					SGET_WINDOW_FONT(*nptr));
+			}
+		}
+		if (SGET_ICON_FONT(*nptr))
+		{
+			mem += strlen(SGET_ICON_FONT(*nptr));
+			if (verbose > 1)
+			{
+				fprintf(
+					stderr,"        Icon Font: %s\n",
+					SGET_ICON_FONT(*nptr));
+			}
+		}
+		if (SGET_ICON_NAME(*nptr))
+		{
+			mem += strlen(SGET_ICON_NAME(*nptr));
+			if (verbose > 1)
+			{
+				fprintf(
+					stderr,"        Icon Name: %s\n",
+					SGET_ICON_NAME(*nptr));
+			}
+		}
+		if (SGET_MINI_ICON_NAME(*nptr))
+		{
+			mem += strlen(SGET_MINI_ICON_NAME(*nptr));
+			if (verbose > 1)
+			{
+				fprintf(
+					stderr,"        MiniIcon Name: %s\n",
+					SGET_MINI_ICON_NAME(*nptr));
+			}
+		}
+		if (SGET_ICON_BOXES(*nptr))
+		{
+			mem += sizeof(icon_boxes);
+		}
 	}
-	fprintf(stderr,"  Number of styles: %i\n", count);
+	fprintf(stderr,"  Number of styles: %i, Memory Used: %i bits\n",
+		count, count*sizeof(window_style) + mem);
 }
 
 /* ---------------------------- builtin commands --------------------------- */
