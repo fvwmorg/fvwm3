@@ -14,6 +14,7 @@
 
 	* libs/Flocale.c (FlocaleDrawString):
 	(FlocaleRotateDrawString):
+	(FlocaleTextWidth):
 	* libs/FBidi.h:
 	* libs/FBidi.c (FBidiConvert):
 	* libs/FBidiJoin.c:
