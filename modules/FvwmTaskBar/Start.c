@@ -240,6 +240,13 @@ void StartButtonInit(int height)
   StartAndLaunchButtonItem *tempPtr;
 
   fpa.mask = FPAM_NO_ALLOC_PIXELS;
+  //if no start button params were specified, trick the program into thinking that they were
+  if (First_Start_Button == NULL)
+  {
+    StartButtonParseConfig("*FvwmTaskBarStartName Start");
+    StartButtonParseConfig("*FvwmTaskBarStartMenu RootMenu");
+    StartButtonParseConfig("*FvwmTaskBarStartIcon mini.start.xpm");
+  }
   /* some defaults */
   if (First_Start_Button->isStartButton == TRUE)
   {
@@ -259,7 +266,7 @@ void StartButtonInit(int height)
       pw = p->width + 12;
     else if (p != NULL) // just icon
       pw = p->width + 8; 
-    else // just caption
+    else // just title
       pw = 10;
 
     tempPtr->buttonItem = (Button *)ButtonNew(tempPtr->buttonCaption, p, BUTTON_UP,0);
