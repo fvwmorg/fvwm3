@@ -3243,7 +3243,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
  * Draws a picture on the left side of the menu
  *
  ************************************************************/
-static void paint_side_pic(MenuRoot *mr)
+static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 {
   GC ReliefGC, TextGC;
   Picture *sidePic;
@@ -3611,7 +3611,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
       paint_item(mr, mi, fw, True);
     }
   }
-  paint_side_pic(mr);
+  paint_side_pic(mr, pevent);
   XSync(dpy, 0);
 
   return;

@@ -1156,6 +1156,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
   if (!IS_MAPPED(tmp_win) && !IS_ICONIFIED(tmp_win))
     do_move_opaque = False;
+
   bad_window = None;
   if (IS_ICONIFIED(tmp_win))
   {

@@ -1058,17 +1058,10 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   unsigned long xwcm;
   int i;
   int buttons = 0;
-  int tw = tmp_win->frame_g.width - 2 * tmp_win->boundary_width;
+  int ww = tmp_win->frame_g.width - 2 * tmp_win->boundary_width;
   int rest = 0;
+  int bw;
 
-  xwcm = CWX | CWY | CWHeight | CWWidth;
-  xwc.width = tmp_win->title_g.width;
-  xwc.height = tmp_win->title_g.height;
-
-  tmp_win->title_g.x = tmp_win->boundary_width +
-    tmp_win->nr_left_buttons * tmp_win->title_g.height;
-  if(tmp_win->title_g.x >=  w - tmp_win->boundary_width)
-    tmp_win->title_g.x = -10;
   if (HAS_BOTTOM_TITLE(tmp_win))
   {
     tmp_win->title_g.y =
@@ -1078,30 +1071,33 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
   {
     tmp_win->title_g.y = tmp_win->boundary_width;
   }
-  xwc.x = tmp_win->title_g.x;
-  xwc.y = tmp_win->title_g.y;
-  XConfigureWindow(dpy, tmp_win->title_w, xwcm, &xwc);
+  tmp_win->title_g.x = tmp_win->boundary_width;
 
+  xwcm = CWX | CWY | CWHeight | CWWidth;
+  xwc.y = tmp_win->title_g.y;
   xwc.width = tmp_win->title_g.height;
+  xwc.height = tmp_win->title_g.height;
   for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
     if (tmp_win->button_w[i])
       buttons++;
   }
-  if (tw < buttons * xwc.width)
+  ww = tmp_win->frame_g.width - 2 * tmp_win->boundary_width -
+    tmp_win->title_g.width;
+  if (ww < buttons * xwc.width)
   {
-    xwc.width = tw / buttons;
+    xwc.width = ww / buttons;
     if (xwc.width < 6)
       xwc.width = 6;
     if (xwc.width > tmp_win->title_g.height)
       xwc.width = tmp_win->title_g.height;
-    rest = tw - buttons * xwc.width;
+    rest = ww - buttons * xwc.width;
     if (rest > 0)
       xwc.width++;
   }
   /* left */
   xwc.x = tmp_win->boundary_width;
-  for(i = 0; i < NUMBER_OF_BUTTONS; i += 2)
+  for(i = 0; i/2 < tmp_win->nr_left_buttons; i += 2)
   {
     if (tmp_win->button_w[i] != None)
     {
@@ -1109,6 +1105,7 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
       {
 	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
 	xwc.x += xwc.width;
+        tmp_win->title_g.x += xwc.width;
       }
       else
       {
@@ -1118,11 +1115,23 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
     }
     rest--;
     if (rest == 0)
+    {
       xwc.width--;
+    }
   }
+  bw = xwc.width;
+
+  /* title */
+  if (tmp_win->title_g.width <= 0 || ww <= 0)
+    tmp_win->title_g.x = -10;
+  xwc.x = tmp_win->title_g.x;
+  xwc.width = tmp_win->title_g.width;
+  XConfigureWindow(dpy, tmp_win->title_w, xwcm, &xwc);
+
   /* right */
+  xwc.width = bw;
   xwc.x = w - tmp_win->boundary_width - xwc.width;
-  for (i = 1 ; i < NUMBER_OF_BUTTONS; i += 2)
+  for (i = 1 ; i/2 < tmp_win->nr_right_buttons; i += 2)
   {
     if (tmp_win->button_w[i] != None)
     {
@@ -1139,8 +1148,13 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
     }
     rest--;
     if (rest == 0)
+    {
       xwc.width--;
+      xwc.x++;
+    }
   }
+
+  return;
 }
 
 
