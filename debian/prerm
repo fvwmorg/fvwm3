@@ -6,14 +6,14 @@
 set -e
 
 # summary of how this script can be called:
-#        * <postrm> `remove'
-#        * <postrm> `purge'
-#        * <old-postrm> `upgrade' <new-version>
-#        * <new-postrm> `failed-upgrade' <old-version>
-#        * <new-postrm> `abort-install'
-#        * <new-postrm> `abort-install' <old-version>
-#        * <new-postrm> `abort-upgrade' <old-version>
-#        * <disappearer's-postrm> `disappear' <r>overwrit>r> <new-version>
+#        * <prerm> `remove'
+#        * <prerm> `purge'
+#        * <old-prerm> `upgrade' <new-version>
+#        * <new-prerm> `failed-upgrade' <old-version>
+#        * <new-prerm> `abort-install'
+#        * <new-prerm> `abort-install' <old-version>
+#        * <new-prerm> `abort-upgrade' <old-version>
+#        * <disappearer's-prerm> `disappear' <overwriter> <new-version>
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
@@ -31,7 +31,7 @@ case "$1" in
 		;;
 
 	*)
-		echo "postrm called with unknown argument \`$1'" >&2
+		echo "prerm called with unknown argument \`$1'" >&2
 		exit 1
 		;;
 esac

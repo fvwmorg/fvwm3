@@ -1,3 +1,8 @@
+2003-11-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmScript/Scripts/fvwm-script-setup95.pl:
+	some clean up and added small new functionality
+
 2003-11-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmWindowMenu.in:

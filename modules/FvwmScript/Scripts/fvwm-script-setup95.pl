@@ -15,8 +15,8 @@ my $backupDir="";
 
 GetOptions(
 	"help"         => \&wrongUsage,
-   "configin=s"	=> \$ConfigIn,
-   "dirout=s"		=> \$DirOut,
+	"configin=s"	=> \$ConfigIn,
+	"dirout=s"		=> \$DirOut,
 	"fvwm=i"       => \$Fvwm,
 	"sxs=i"			=> \$Slow,
 	"km=i"			=> \$KdeMenu,
@@ -75,28 +75,28 @@ if (-f "$mainOut") {
 	system("/bin/mkdir -p '$backupDir'");
 	$backup="$backupDir/$fileOut-$date";
 	system("/bin/mv '$mainOut' '$backup'");
-   print "Echo backup $mainOut in $backup\n"
+	print "Echo backup $mainOut in $backup\n"
 }
 open(MAINOUT,">$mainOut") || die "cannot write on $mainOut";
 
-while(<IN>) {
-	$line=$_;
+while (<IN>) {
+	$line = $_;
 	chomp($line);
 
 	next if ($line =~ /^\#\!D/);
 
 	$line =~ s/^\#// if $uncomment;
-   $line = "\#$line" if $comment;
-   $uncomment-- if ($uncomment > 0);
-   $comment-- if ($comment > 0);
+	$line = "\#$line" if $comment;
+	$uncomment-- if ($uncomment > 0);
+	$comment-- if ($comment > 0);
 
-   if ((/^\#WIN/ && $Fvwm)||(/^\#FAST/ && $Slow)) {
+	if ((/^\#WIN/ && $Fvwm)||(/^\#FAST/ && $Slow)) {
 		@l=split(' ',$line);
 		$comment=$l[1];
 	}
 	
 
-	if(($line =~ /^\#FVWM/ && $Fvwm) ||
+	if (($line =~ /^\#FVWM/ && $Fvwm) ||
 			($line =~ /^\#SLOW/ && $Slow) ||
 			($line =~ /^\#K_M/ && $KdeMenu) || 
 			($line =~ /^\#K_SM/&& $KdeSysMenu) || 
@@ -114,9 +114,10 @@ while(<IN>) {
 			($line =~ /^\#STROKE/ && $Stroke) ||
 			($line =~ /^\#LAPTOP/ && $Laptop) || 
 			($line =~ /^\#PANEL_PUT/ && $PanelStaysPut) ||
-			($line =~ /^\#CDE/ && $Cde)) {
-		@l=split(' ',$line);
-		$uncomment=$l[1];
+			($line =~ /^\#CDE/ && $Cde))
+	{
+		@l=split(' ', $line);
+		$uncomment = $l[1];
 	}
 
 	if ($prefapps) {
@@ -150,14 +151,13 @@ while(<IN>) {
 	$line =~ s#/usr/include/X11/bitmap:/usr/include/X11/pixmaps#$DefImagePath# 
 		if ($line =~ /\/usr\/include\/X11\/bitmap:\/usr\/include\/X11\/pixmaps/);
 	
-	if ($line =~ /\#\!E/) {
-		$tmp = substr($line,index($line,'#!E')+3);
-		$tmp =~ s/\s//g;
-		@l = split(':',$tmp);
-		$t=0;
-		foreach $a (@l) { $t=1 if (checkApp($a)); }
-		$line = "#".$line unless $t;
-		$line =~ s/\s+\#\!E\s*.*\s*//;
+	if ($line =~ /^(.*?)\s+#!([Ee])\s+(.*?)\s*$/) {
+		$line = $1;
+		my $isApp = $2 eq "E";
+		my @files = split(':', $3);
+		my $found = 0;
+		foreach (@files) { $found = 1 if $isApp? checkApp($_): -e; }
+		$line = "#$line" unless $found;
 	}
 
 	if ($line =~ /^\#SEG/) {

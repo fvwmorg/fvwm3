@@ -1,3 +1,8 @@
+2003-11-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	several updates; added Debian menu if found
+
 2003-11-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in:

@@ -1390,17 +1390,17 @@ Key Tab	A CM	WindowList Root c c CurrentAtEnd, IconifiedAtEnd, NoGeometry, OnlyL
 #Stroke	N9874123	0	W	M	Exec exec xcalc
 
 #STROKE 11 A N (from the bottom)
-#Stroke	7415963		0	R	N	Exec exec netscape
-#Stroke	74148963	0	R	N	Exec exec netscape
-#Stroke	74158963	0	R	N	Exec exec netscape
-#Stroke	7418963		0	R	N	Exec exec netscape
-#Stroke	415963		0	R	N	Exec exec netscape
+#Stroke	7415963		0	R	N	Exec exec mozilla
+#Stroke	74148963	0	R	N	Exec exec mozilla
+#Stroke	74158963	0	R	N	Exec exec mozilla
+#Stroke	7418963		0	R	N	Exec exec mozilla
+#Stroke	415963		0	R	N	Exec exec mozilla
 #
-#Stroke	7415963		0	W	M	Exec exec netscape
-#Stroke	74148963	0	W	M	Exec exec netscape
-#Stroke	74158963	0	W	M	Exec exec netscape
-#Stroke	7418963		0	W	M	Exec exec netscape
-#Stroke	415963		0	W	M	Exec exec netscape
+#Stroke	7415963		0	W	M	Exec exec mozilla
+#Stroke	74148963	0	W	M	Exec exec mozilla
+#Stroke	74158963	0	W	M	Exec exec mozilla
+#Stroke	7418963		0	W	M	Exec exec mozilla
+#Stroke	415963		0	W	M	Exec exec mozilla
 
 #STROKE 4 A clockwise box from the top left
 #Stroke	N78963214	0	R	N	FvwmForm FvwmForm-QuitVerify
@@ -1419,21 +1419,25 @@ Key Tab	A CM	WindowList Root c c CurrentAtEnd, IconifiedAtEnd, NoGeometry, OnlyL
 #--------- Taskbar's start menu
 #------------------------------------------------------------------------------
 
+# Enabled only on Debian systems
+Read /etc/X11/fvwm/DebianMenu  #!e /etc/X11/fvwm/DebianMenu
+
 DestroyMenu StartMenu
 AddToMenu   StartMenu@side.fvwm2.xpm@^black^
-+ "&Screen Saver%screen.xpm%"           Popup Screen
-+ "&Module%modules.xpm"                 Popup Module-Popup
-+ ""					Nop
-+ "&Shells%shells.xpm%"			Popup Shells
-+ "&Programs%programs.xpm%"		Popup Programs
-+ "&Documents%documents.xpm%"		Popup Documents
-+ "&Settings%settings.xpm%"		Popup Settings
-+ "&Find%find1.xpm%"			FvwmScript FvwmScript-Find
-+ "&Help%help.xpm%"			Exec exec  xman
++ "&Shells%shells.xpm%"		Popup Shells
++ "&Programs%programs.xpm%"	Popup Programs
++ "&Documents%documents.xpm%"	Popup Documents
++ "&Settings%settings.xpm%"	Popup Settings
++ "" Nop
++ "&Debian%programs.xpm%"	Popup /Debian  #!e /etc/X11/fvwm/DebianMenu
++ "&Module%modules.xpm"		Popup Module-Popup
++ "&Find%find1.xpm%"		FvwmScript FvwmScript-Find
++ "&Help%help.xpm%"		Exec exec  xman
 #PREF 1
-+ "&Run...%run.xpm%"			Exec exec  xterm
-+ ""					Nop
-+ "Shut &Down%shutdown.xpm%"		Module FvwmScript FvwmScript-Quit
++ "&Run...%run.xpm%"		Exec exec  xterm
++ "" Nop
++ "&Screen Saver%screen.xpm%"	Popup Screen
++ "Shut &Down%shutdown.xpm%"	Module FvwmScript FvwmScript-Quit
 
 #------------------------------------------------------------------------------
 # Root Menu: This menu will fire up some very common utilities
@@ -1594,7 +1598,6 @@ AddToMenu   Accessories
 #------------------------------------------------------------------------------
 #--------- Applications
 
-
 DestroyMenu Applications
 AddToMenu   Applications
 + "&Lyx%mini.edit.xpm%"				Exec exec lyx
@@ -1667,9 +1670,9 @@ AddToMenu   Network
 
 DestroyMenu Internet
 AddToMenu   Internet
++ "&Mozilla%mini.nscape.xpm%"	Exec exec mozilla
 + "&Netscape%mini.nscape.xpm%"	Exec exec netscape
 + "&Amaya%mini.nscape.xpm%"	Exec exec amaya
-+ "&Mozilla%mini.nscape.xpm%"	Exec exec mozilla
 + "&Lynx%mini.cat.xpm%"	 Exec exec xterm -g 80x30 -n lynx -T lynx -e lynx
 + ""	Nop #!E mail:pine:mutt:elm
 + "Xfmail%mini.mail.xpm%" Exec exec xfmail
@@ -1758,7 +1761,7 @@ AddToMenu   Module-Popup
 + "B&uttons Bar%mini.pencil.xpm%"	RestartModuleByAlias FvwmButtons BarButtons BarButtons
 + "&Mini button bar%mini.pencil.xpm%"	RestartModuleByAlias FvwmButtons MiniButtons MiniButtons
 + "&WMaker buttons%mini.pencil.xpm%"	RestartModuleByAlias FvwmButtons WinMakerAppButtons WinMakerApp*
-+ "Fvwm &Console%mini.xterm.xpm%"	Module FvwmConsole -sb
++ "&Console%mini.xterm.xpm%"		Module FvwmConsole -sb
 + "&Debug%mini.bug2.xpm%"		RestartModule FvwmDebug
 + "&IconBox%mini.icons.xpm%"		RestartModule FvwmIconBox
 + "I&conMan%mini.run.xpm%"		RestartModule FvwmIconMan
@@ -1781,7 +1784,7 @@ AddToMenu   Kill-Module-Popup
 + "B&utton bar%mini.pencil.xpm%"	All (BarButtons) Close
 + "&Mini button bar%mini.pencil.xpm%"	All (MiniButtons) Close
 + "&WMaker buttons%mini.pencil.xpm%"	All (WinMakerApp*) Close
-+ "Fvwm &Console%mini.xterm.xpm%"	KillModule FvwmConsole
++ "&Console%mini.xterm.xpm%"		KillModule FvwmConsole
 + "&Debug%mini.bug2.xpm%"	        KillModule FvwmDebug
 + "&IconBox%mini.icons.xpm%"		KillModule FvwmIconBox
 + "I&conMan%mini.run.xpm%"		KillModule FvwmIconMan
@@ -2088,7 +2091,7 @@ AddToMenu   Reload-Config
 
 DestroyMenu Load-Settings
 AddToMenu   Load-Settings
-+ "Show &Fvwm Settings%mini.fvwm.xpm%"		ShowFvwmSettings
++ "Show &FVWM Settings%mini.fvwm.xpm%"		ShowFvwmSettings
 + "Show Layers Settings%mini.window.xpm%"	ShowLayers
 + "Show &X Settings%mini.x2.xpm%"		ShowXSettings
 + "" Nop
@@ -2193,8 +2196,8 @@ AddToMenu "Background-Animation"
 + "&Worm%mini.rball.xpm%"	Exec exec xlock -nice 10 -inroot -mode worm
 + "&Random%mini.rball.xpm%"	Exec exec xlock -nice 10 -inroot -mode random
   # Stop the animation in the background
-+ "&Stop It%mini.cross.xpm%"		Exec kill -9 \
-			$(ps aux | grep xlock | grep -v grep | awk '{print $2}')
++ "&Stop It%mini.cross.xpm%"	\
+	Exec kill -9 $(ps aux | grep xlock | grep -v grep | awk '{print $2}')
 
 #------------------------------------------------------------------------------
 #--------- Documents
@@ -2203,7 +2206,8 @@ AddToMenu "Background-Animation"
 DestroyMenu Documents
 AddToMenu   Documents
 + "&Xman%mini.book1.xpm%"	   Exec exec xman
-+ "&FVWM Home Page%mini.fvwm.xpm%" Exec exec netscape http://www.hpc.uh.edu/index.html
++ "&FVWM Home Page%mini.fvwm.xpm%" Exec exec mozilla http://www.fvwm.org/
++ "&FVWM Themes Home Page%mini.icons.xpm%" Exec exec mozilla http://fvwm-themes.sourceforge.net/
 + "&Sample 95 MINI-FAQ%mini.book1.xpm%"	Exec exec xterm -bg white -fg black -g 80x35 -n "Sample-95 MINI-FAQ" -T "Sample-95 MINI-FAQ" -e less +?"-- Sample-95 MINI-FAQ --" $FVWM_USERDIR/.fvwm2rc
 + "FVWM &Man Pages%mini.book1.xpm%"	Popup FvwmManPage
 + ""  Nop
@@ -2248,11 +2252,14 @@ AddToMenu   FvwmManPage "FVWM Man Pages" Title
 + "%mini.book1.xpm%FvwmEvent"           ViewManPage FvwmEvent
 + "%mini.book1.xpm%FvwmForm"            ViewManPage FvwmForm
 + "%mini.book1.xpm%FvwmGtk"             ViewManPage FvwmGtk
++ "%mini.book1.xpm%FvwmGtkDebug"        ViewManPage FvwmGtkDebug
 + "%mini.book1.xpm%FvwmIconBox"         ViewManPage FvwmIconBox
 + "%mini.book1.xpm%FvwmIconMan"         ViewManPage FvwmIconMan
 + "%mini.book1.xpm%FvwmIdent"           ViewManPage FvwmIdent
 + "%mini.book1.xpm%FvwmM4"              ViewManPage FvwmM4
 + "%mini.book1.xpm%FvwmPager"           ViewManPage FvwmPager
++ "%mini.book1.xpm%FvwmPerl"            ViewManPage FvwmPerl
++ "%mini.book1.xpm%FvwmProxy"           ViewManPage FvwmProxy
 + "%mini.book1.xpm%FvwmRearrange"       ViewManPage FvwmRearrange
 + "%mini.book1.xpm%FvwmSave"            ViewManPage FvwmSave
 + "%mini.book1.xpm%FvwmSaveDesk"        ViewManPage FvwmSaveDesk
@@ -2262,13 +2269,15 @@ AddToMenu   FvwmManPage "FVWM Man Pages" Title
 + "%mini.book1.xpm%FvwmTheme"           ViewManPage FvwmTheme
 + "%mini.book1.xpm%FvwmWharf"           ViewManPage FvwmWharf
 + "%mini.book1.xpm%FvwmWinList"         ViewManPage FvwmWinList
++ "%mini.book1.xpm%FvwmWindowMenu"      ViewManPage FvwmWindowMenu
 + "" Nop
 + "%mini.book1.xpm%fvwm-config"         ViewManPage fvwm-config
++ "%mini.book1.xpm%fvwm-perllib"        ViewManPage fvwm-perllib
++ "%mini.book1.xpm%fvwm-root"           ViewManPage fvwm-root
 + "%mini.book1.xpm%fvwm-bug"            ViewManPage fvwm-bug
 + "%mini.book1.xpm%fvwm-convert-2.2"    ViewManPage fvwm-convert-2.2
 + "%mini.book1.xpm%fvwm-convert-2.4"    ViewManPage fvwm-convert-2.4
 + "%mini.book1.xpm%fvwm-convert-2.6"    ViewManPage fvwm-convert-2.6
-+ "%mini.book1.xpm%fvwm-root"           ViewManPage fvwm-root
 + "" Nop
 + "%mini.book1.xpm%fvwm-menu-desktop"   ViewManPage fvwm-menu-desktop
 + "%mini.book1.xpm%fvwm-menu-directory" ViewManPage fvwm-menu-directory
@@ -2283,7 +2292,7 @@ DestroyMenu Screen
 AddToMenu   Screen
 + "&Screensaver%mini.display.xpm%" Exec exec xlock -nolock -nice 19 -mode random
 + "Screen&lock%mini.lock.xpm%"	Exec exec xlock -nice 19 -mode random
-+ ""   Nop #!E xlock
++ "" Nop #!E xlock
 + "&Screensaver%mini.display.xpm%"  Popup MenuSSaver #!E xlock
 + "Sc&reen&lock%mini.lock.xpm%"     Popup MenuSLock  #!E xlock
 + "" Nop #!E xscreensaver
@@ -2429,8 +2438,8 @@ AddToMenu   "Move-Window" "Move to ..." Title
 #------------------------------------------------------------------------------
 # A group version of WindowOps
 
-DestroyMenu  WindowGroupOps
-AddToMenu    WindowGroupOps "Group Ops" Title
+DestroyMenu WindowGroupOps
+AddToMenu   WindowGroupOps "Group Ops" Title
 + "&Iconify%mini.iconify1.xpm%"   Pick All ($c) Iconify on
 + "&DeIconify%mini.iconify1.xpm%" Pick All ($c) Iconify off
 + "&Shade%mini.shade1.xpm%"       Pick All ($c) WindowShade on
@@ -2525,8 +2534,8 @@ Style FvwmBanner NoTitle, Sticky, StaysOnTop, WindowListSkip, CirculateSkip
 #------------------ FvwmButtons: BarButtons
 #------------------------------------------------------------------------------
 
-Style BarButtons  NoTitle, NoHandles, Sticky, WindowListSkip,\
-                   BorderWidth 4, CirculateSkip
+Style BarButtons NoTitle, NoHandles, Sticky, WindowListSkip, \
+	BorderWidth 4, CirculateSkip
 
 DestroyModuleConfig BarButtons: *
 *BarButtons: Fore Black
@@ -2581,8 +2590,8 @@ DestroyModuleConfig BarButtons: *
 #------------------ FvwmButtons: MiniButtons
 #------------------------------------------------------------------------------
 
-Style "MiniButtons"  NoTitle,NoHandles,Sticky,WindowListSkip,BorderWidth 0,\
-	CirculateSkip
+Style "MiniButtons" NoTitle, NoHandles, Sticky, WindowListSkip, \
+	BorderWidth 0, CirculateSkip
 
 DestroyModuleConfig MiniButtons*
 *MiniButtons: Fore Black
@@ -2605,8 +2614,8 @@ DestroyModuleConfig MiniButtons*
 #------------------ FvwmButtons: DeskerPanelButtons
 #------------------------------------------------------------------------------
 
-Style "DeskerPanelButtons"  NoTitle,NoHandles,Sticky,WindowListSkip,\
-			BorderWidth 0, CirculateSkip
+Style "DeskerPanelButtons" NoTitle, NoHandles, Sticky, WindowListSkip, \
+	BorderWidth 0, CirculateSkip
 #Style "DeskerPanelButtons"  StayOnTop
 DestroyModuleConfig DeskerPanelButtons: *
 *DeskerPanelButtons: Fore Black
@@ -2625,7 +2634,7 @@ DestroyModuleConfig DeskerPanelButtons: *
 #------------------ FvwmButtons: WinMakerAppButtons & WinMakerAppPanelCd
 #------------------------------------------------------------------------------
 Style "WinMakerApp*" NoTitle, NoHandles, BorderWidth 0, Sticky, \
-		WindowListSkip, CirculateSkip
+	WindowListSkip, CirculateSkip
 DestroyModuleConfig WinMakerAppButtons: *
 
 #-------------------------------------
@@ -2724,7 +2733,7 @@ DestroyModuleConfig FvwmEvent: *
 #------------------------------------------------------------------------------
 #------------------ IconBox
 #------------------------------------------------------------------------------
-Style "FvwmIconBox"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
+Style "FvwmIconBox" NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmIconBox: *
 *FvwmIconBox: Back #c0c0c0
@@ -2773,7 +2782,7 @@ DestroyModuleConfig FvwmIconBox: *
 #------------------------------------------------------------------------------
 #------------------ IconMan
 #------------------------------------------------------------------------------
-Style "FvwmIconMan"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
+Style "FvwmIconMan" NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmIconMan: *
 
@@ -2828,7 +2837,7 @@ DestroyModuleConfig FvwmIconMan: *
 #------------------------------------------------------------------------------
 #------------------ Identify
 #------------------------------------------------------------------------------
-Style "FvwmIdent"   Sticky, NoButton 2, NoButton 4, NoButton 6
+Style "FvwmIdent" Sticky, NoButton 2, NoButton 4, NoButton 6
 
 *FvwmIdent: Back Blue4
 *FvwmIdent: Fore Yellow
@@ -2837,7 +2846,7 @@ Style "FvwmIdent"   Sticky, NoButton 2, NoButton 4, NoButton 6
 #------------------------------------------------------------------------------
 #------------------ FvwmPager:  Swallowed by ButtonBar
 #------------------------------------------------------------------------------
-Style "FvwmPagerPager"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
+Style "FvwmPagerPager" NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmPagerPager: *
 *FvwmPagerPager: Back grey60
@@ -2862,7 +2871,7 @@ DestroyModuleConfig FvwmPagerPager: *
 #------------------------------------------------------------------------------
 #------------------ FvwmPager: FvwmDesker, the panel of StartPagerButtons
 #------------------------------------------------------------------------------
-Style "FvwmDesker"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
+Style "FvwmDesker" NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmDesker: *
 *FvwmDesker: Back grey60
@@ -2897,8 +2906,8 @@ DestroyModuleConfig FvwmDesker: *
 #------------------ FvwmTaskBar
 #------------------------------------------------------------------------------
 
-Style "FvwmTaskBar" NoTitle,Sticky,WindowListSkip,CirculateSkip,NoHandles, \
-			TitleAtBottom
+Style "FvwmTaskBar" NoTitle, NoHandles, Sticky, WindowListSkip, \
+	CirculateSkip, TitleAtBottom
 # Note: Title at bottom is for shading.
 
 *FvwmTaskBar: Geometry +0-0
@@ -2928,8 +2937,8 @@ Style "FvwmTaskBar" NoTitle,Sticky,WindowListSkip,CirculateSkip,NoHandles, \
 #------------------ FvwmWharf
 #------------------------------------------------------------------------------
 
-Style "FvwmWharf"  NoTitle, NoHandles, Sticky, WindowListSkip,\
-                     BorderWidth 2,CirculateSkip
+Style "FvwmWharf" NoTitle, NoHandles, Sticky, WindowListSkip, \
+	BorderWidth 2, CirculateSkip
 
 DestroyModuleConfig FvwmWharf: *
 *FvwmWharf: Animate
@@ -2969,7 +2978,7 @@ DestroyModuleConfig FvwmWharf: *
 #------------------------------------------------------------------------------
 #------------------ FvwmWinList
 #------------------------------------------------------------------------------
-Style "FvwmWinList" NoTitle,Sticky,WindowListSkip,CirculateSkip
+Style "FvwmWinList" NoTitle, Sticky, WindowListSkip, CirculateSkip
 
 DestroyModuleConfig FvwmWinList: *
 *FvwmWinList: Back #c3c3c3

@@ -13,7 +13,7 @@ set -e
 #        * <new-postrm> `abort-install'
 #        * <new-postrm> `abort-install' <old-version>
 #        * <new-postrm> `abort-upgrade' <old-version>
-#        * <disappearer's-postrm> `disappear' <r>overwrit>r> <new-version>
+#        * <disappearer's-postrm> `disappear' <overwriter> <new-version>
 # for details, see http://www.debian.org/doc/debian-policy/ or
 # the debian-policy package
 
