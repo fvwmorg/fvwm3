@@ -1640,8 +1640,8 @@ static void border_draw_vector_to_pixmap(
 		XChangeGC(dpy, Scr.ScratchGC3, Globalgcm, &Globalgcv);
 		Globalgcv.foreground = cd->back_color;
 		XChangeGC(dpy, Scr.ScratchGC4, Globalgcm, &Globalgcv);
-		gcs[2] = Scr.ScratchGC3;
-		gcs[3] = Scr.ScratchGC4;
+		gcs[3] = Scr.ScratchGC3; /* @3 is fg */
+		gcs[2] = Scr.ScratchGC4; /* @2 is bg */
 	}
 	if (is_toggled)
 	{
