@@ -157,8 +157,8 @@ struct button_info_struct
 {
   /* required fields */
   unsigned long flags;
-  int  BPosX,BPosY;        /* position in button units from top left */
-  byte BWidth,BHeight;     /* width and height in button units  */
+  int  BPosX,BPosY;               /* position in button units from top left */
+  unsigned int BWidth,BHeight;     /* width and height in button units  */
   button_info *parent;
   int n;                   /* number in parent */
 

@@ -1,3 +1,8 @@
+2003-06-05  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmButtons/FvwmButtons.h (struct button_info_struct):
+	Fixed button geometry if width or height > 255
+
 2003-06-03  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/Goodies.c (ShowTipWindow):
