@@ -213,8 +213,8 @@ or just make your own list function from scratch, for example
 .sp
 DestroyFunc WindowListFunc
 AddToFunc WindowListFunc
-+ I WindowId $w Raise
-+ I WindowId $w WarpToWindow 50 50
++ I WindowId $[w.id] Raise
++ I WindowId $[w.id] WarpToWindow 50 50
 .sp
 .fi
 
