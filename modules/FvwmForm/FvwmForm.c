@@ -2387,9 +2387,15 @@ static void ParseActiveMessage(char *buf)
 					}
 				}
 			}
-			CheckAlloc(
-				root_item_ptr,
-				root_item_ptr->header.dt_ptr);
+			for (item = root_item_ptr; item != 0;
+			     item = item->header.next)
+			{
+				DrawTable *dt_ptr = item->header.dt_ptr;
+				if (dt_ptr)
+				{
+					CheckAlloc(item, dt_ptr);
+				}
+			}
 			if (colorset >= 0)
 			{
 				SetWindowBackground(
@@ -2404,23 +2410,17 @@ static void ParseActiveMessage(char *buf)
 			     item = item->header.next)
 			{
 				DrawTable *dt_ptr = item->header.dt_ptr;
-				if (dt_ptr)
+				if (dt_ptr && itemcolorset >= 0 &&
+				    item->header.win != 0)
 				{
-					CheckAlloc(item, dt_ptr);
-					if (itemcolorset >= 0 &&
-					    item->header.win != 0)
-					{
-						SetWindowBackground(
-							dpy, item->header.win,
-							item->header.size_x,
-							item->header.size_y,
-							&Colorset
-							[(itemcolorset)],
-							Pdepth, dt_ptr->dt_GC,
-							True);
-					}
+					SetWindowBackground(
+						dpy, item->header.win,
+						item->header.size_x,
+						item->header.size_y,
+						&Colorset[(itemcolorset)],
+						Pdepth, dt_ptr->dt_GC, True);
+					RedrawItem(item, 0, NULL);
 				} /* end item has a drawtable */
-				RedrawItem(item, 0, NULL);
 			} /* end all items */
 		}
 		return;
