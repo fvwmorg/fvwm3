@@ -773,7 +773,8 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
   if (fw == NULL)
     return;
   if(XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw)!=XCNOENT)
-  {
+  {  
+    PPosOverride = True;
     isIconicState = DontCareState;
     if(XGetWindowProperty(dpy, fw->w, _XA_WM_STATE, 0L, 3L, False,
 			  _XA_WM_STATE, &atype, &aformat, &nitems,
@@ -798,6 +799,7 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
     Destroy(fw);
     Event.xmaprequest.window = w;
     HandleMapRequestKeepRaised(BlackoutWin, fw);
+    PPosOverride = False;
     return;
   }
 }
@@ -1650,7 +1652,7 @@ void Reborder(void)
   }
 
   MyXUngrabServer (dpy);
-  XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot,CurrentTime);
+  XSetInputFocus (dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
   XSync(dpy,0);
 
 }

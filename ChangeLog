@@ -1,5 +1,8 @@
 1999-05-13  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
+	* fvwm/fvwm.c (CaptureOneWindow): set PPosOverride in 
+	CaptureOneWindow, to avoid jumping windows with RecaptureWindow
+
 	* fvwm/builtins.c (Maximize): Call SetBorder when maximizing,
 	otherwise doing "Maximize Tall" from a module may forget
 	to update the maximize button.
