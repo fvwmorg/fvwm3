@@ -149,6 +149,7 @@ ShutdownX(void)
   for (i=0; i<nbobj; i++)
     tabxobj[i]->DestroyObj(tabxobj[i]);
   XFlush(dpy);
+  fsm_close();
   sleep(2);
   XCloseDisplay(dpy);
 }
@@ -1088,6 +1089,7 @@ void MainLoop (void)
   struct timeval tv;
   struct timeval *ptv;
   fd_set_size_t fd_width = fd[1];
+  Bool fsm_pending = False;
 
   if (x_fd > fd_width) fd_width = x_fd;
   ++fd_width;
@@ -1106,6 +1108,18 @@ void MainLoop (void)
     FD_ZERO(&in_fdset);
     FD_SET(x_fd,&in_fdset);
     FD_SET(fd[1],&in_fdset);
+    fsm_fdset(&in_fdset);
+
+    if (fsm_pending)
+    {
+	    tv.tv_sec  = 0;
+	    tv.tv_usec = 10000; /* 10 ms */
+    }
+    else
+    {
+	    tv.tv_sec = 1;
+	    tv.tv_usec = 0;
+    }
 
     if (fvwmSelect(fd_width, &in_fdset, NULL, NULL, ptv) > 0)
     {
@@ -1177,7 +1191,35 @@ void MainLoop (void)
 	  else if  (packet->body[0] == MX_PROPERTY_CHANGE_SWALLOW &&
 		    packet->body[2] == x11base->win)
 	  {
-	    x11base->swallowed = packet->body[1];
+		  char *str;
+		  unsigned long u;
+		  Window s;
+		  char cmd[256];
+
+		  x11base->swallowed = packet->body[1];
+		  str = (char *)&(packet->body[3]);
+		  if (x11base->swallowed && str && sscanf(str,"%lu",&u) == 1)
+		  {
+			  x11base->swallower_win = (Window)u;
+		  }
+		  else
+		  {
+			  x11base->swallower_win = 0;
+		  }
+		  /* update the swallower */
+		  s = ((x11base->swallower_win && x11base->swallowed)?
+		       x11base->swallower_win:x11base->win);
+		  for (i=0; i<nbobj; i++)
+		  {
+			  if (tabxobj[i]->TypeWidget == SwallowExec &&
+			      tabxobj[i]->win != None)
+			  {
+				  sprintf(cmd,"PropertyChange %u %u %lu %lu",
+					  MX_PROPERTY_CHANGE_SWALLOW, 1,
+					  tabxobj[i]->win, s);
+				  SendText(fd,cmd,0);
+			  }
+		  }
 	  }
 	}
 	else if (packet->type == M_STRING) {
@@ -1194,7 +1236,10 @@ void MainLoop (void)
 	  for (i=0; i<nbobj; i++)
 	    tabxobj[i]->ProcessMsg(tabxobj[i], packet->type, packet->body);
       }
+
+      fsm_pending = fsm_process(&in_fdset);
     }
+
     if (!isTerminated && x11base->periodictasks!=NULL)
     {
       /* Execution des taches periodics */

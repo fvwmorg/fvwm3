@@ -1,5 +1,20 @@
 2003-09-01  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmScript/FvwmScript.c (MainLoop): 
+	* FvwmScript/Widgets/Swallow.c (swallow):
+	Indicate the swallower window id into the string part of the
+	MX_PROPERTY_CHANGE(MX_PROPERTY_CHANGE_SWALLOW) msg, so that swallowed
+	modules know about its swallower
+
+	* FvwmScript/Widgets/Swallow.c (InitSwallow):
+	(swallow):
+	* FvwmScript/FvwmScript.c (ShutdownX):
+	(MainLoop):
+	* FvwmScript/types.h:
+	Make FvwmScript as a session manager for its swallowed apps when fvwm
+	is runned under a session manager and FvwmScript swallow some
+	applications.
+	
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	Fixed shaded direction when the TaskBar unshade and shade itself
 	during animation

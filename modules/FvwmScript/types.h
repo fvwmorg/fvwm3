@@ -7,6 +7,7 @@
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
 #include "libs/Rectangles.h"
+#include "libs/fsm.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -165,6 +166,7 @@ typedef struct
   time_t BeginTime;
   char *TabArg[20];
   Bool swallowed;
+  Window swallower_win;
 } X11base ;
 
 typedef struct

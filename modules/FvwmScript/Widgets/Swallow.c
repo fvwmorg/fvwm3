@@ -73,6 +73,12 @@ void InitSwallow(struct XObj *xobj)
 {
 	unsigned long mask;
 	XSetWindowAttributes Attr;
+	static char *my_sm_env = NULL;
+	static char *orig_sm_env = NULL;
+	static int len = 0;
+	static Bool sm_initialized = False;
+	static Bool session_manager = False; 
+	char *cmd;
 
 	/* Enregistrement des couleurs et de la police */
 	if (xobj->colorset >= 0) {
@@ -99,13 +105,43 @@ void InitSwallow(struct XObj *xobj)
 	if (xobj->width<30)
 		xobj->width=30;
 
-	if (xobj->swallow!=NULL)
+	if (xobj->swallow == NULL)
 	{
-		SendText(fd,xobj->swallow,0);
-	}
-	else
 		fprintf(stderr,"Error\n");
+		return;
+	}
 
+	if (!sm_initialized)
+	{
+		/* use sm only when needed */
+		sm_initialized = True;
+		orig_sm_env = getenv("SESSION_MANAGER");
+		if (orig_sm_env && !StrEquals("", orig_sm_env))
+		{
+			/* this set the new SESSION_MANAGER env */
+			session_manager = fsm_init(x11base->TabArg[0]);
+		}
+	}
+
+	if (!session_manager)
+	{
+		SendText(fd, xobj->swallow, 0);
+		return;
+	}
+
+	if (my_sm_env == NULL)
+	{
+		my_sm_env = getenv("SESSION_MANAGER");
+		len = 45 + strlen(my_sm_env) + strlen(orig_sm_env);
+	}
+
+	cmd = safemalloc(len + strlen(xobj->swallow)); 
+	sprintf(
+		cmd,
+		"FSMExecFuncWithSessionManagment \"%s\" \"%s\" \"%s\"",
+		my_sm_env, xobj->swallow, orig_sm_env);
+	SendText(fd, cmd, 0);
+	free (cmd);
 }
 
 void DestroySwallow(struct XObj *xobj)
@@ -113,6 +149,7 @@ void DestroySwallow(struct XObj *xobj)
 	/* Arrete le programme swallow */
 	if (xobj->win!=None)
 		XKillClient(dpy, xobj->win);
+	xobj->win = None;
 }
 
 void DrawSwallow(struct XObj *xobj, XEvent *evp)
@@ -149,6 +186,7 @@ void CheckForHangon(struct XObj *xobj,unsigned long *body)
 
 void swallow(struct XObj *xobj,unsigned long *body)
 {
+	char cmd[256];
 
 	if(xobj->win == (Window)body[0])
 	{
@@ -156,6 +194,13 @@ void swallow(struct XObj *xobj,unsigned long *body)
 			dpy,xobj->win,*xobj->ParentWin,xobj->x,xobj->y);
 		XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
 		XMapWindow(dpy,xobj->win);
+		sprintf(
+			cmd,"PropertyChange %u %u %lu %lu",
+			MX_PROPERTY_CHANGE_SWALLOW, 1, xobj->win,
+			(x11base->swallower_win)?
+			x11base->swallower_win:x11base->win);
+		SendText(fd,cmd,0);
+		fsm_proxy(Dpy, xobj->win, getenv("SESSION_MANAGER"));
 	}
 }
 
