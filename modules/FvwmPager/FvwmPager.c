@@ -972,26 +972,9 @@ void list_new_desk(unsigned long *body)
   } /* if (fAlwaysCurrentDesk && oldDesk != Scr.CurrentDesk) */
   else if (!fAlwaysCurrentDesk)
   {
-    PagerStringList *item;
     int i;
-    char line[100];
 
     i = Scr.CurrentDesk - oldDesk;
-    item = FindDeskStrings(Scr.CurrentDesk);
-    if (Desks[i].label != NULL)
-    {
-      free(Desks[i].label);
-      Desks[i].label = NULL;
-    }
-    if (item->next != NULL && item->next->label != NULL)
-    {
-      CopyString(&Desks[i].label, item->next->label);
-    }
-    else
-    {
-      sprintf(line, "Desk %d", desk1);
-      CopyString(&Desks[i].label, line);
-    }
     XStoreName(dpy, Scr.Pager_w, Desks[i].label);
     XSetIconName(dpy, Scr.Pager_w, Desks[i].label);
   }

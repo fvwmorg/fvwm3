@@ -1,7 +1,7 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.4.7"_-_2.4.7_+_/A_-_.
 
----------------------------------------------------------------------
+-------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (not released yet)
 
@@ -9,7 +9,10 @@ Changes in alpha release 2.5.2 (not released yet)
 
 * New WindowList option IconifiedtAtEnd.
 
----------------------------------------------------------------------
+* Always display the current desk number in the FvwmPager window
+  title.
+
+-------------------------------------------------------------------
 
 Changes in alpha release 2.5.1 (26-Apr-2002)
 
@@ -112,7 +115,7 @@ Changes in alpha release 2.5.1 (26-Apr-2002)
 
 * New weighted sorting in FvwmIconMan.
 
----------------------------------------------------------------------
+-------------------------------------------------------------------
 
 Changes in alpha release 2.5.0 (27-Jan-2002)
 
@@ -190,7 +193,7 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 
 * New conditions Focused, !Focused, HasPointer and !HasPointer.
 
----------------------------------------------------------------------
+-------------------------------------------------------------------
 
 _+_A NAME="2.4.7"_-_
 Changes in stable release 2.4.7 (11-Apr-2002)
@@ -214,7 +217,7 @@ _+_/A_-_
 
 * Fixed execution on QNX.
 
----------------------------------------------------------------------
+-------------------------------------------------------------------
 
 Changes in stable release 2.4.6 (10-Mar-2002)
 
