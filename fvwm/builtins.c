@@ -1649,11 +1649,10 @@ void SetDefaultColors(F_CMD_ARGS)
 
   action = GetNextToken(action, &fore);
   action = GetNextToken(action, &back);
-
   if (!back)
     back = strdup("grey");
   if (!fore)
-    back = strdup("black");
+    fore = strdup("black");
 
   if (!StrEquals(fore, "-"))
     {
