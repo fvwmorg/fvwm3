@@ -153,24 +153,24 @@ LoadGlobalState(char *filename)
 	    }
 	  else 
 #endif /* SESSION */
-	    if (!Restarting) 
+	    if (!strcmp(s1, "[DESKTOP]"))
 	      {
- 	      /* We don't want to restore too much state if
-		 we are restarting, since that would make restarting
-		 useless for rereading changed rc files. */
-		if (!strcmp(s1, "[DESKTOP]"))
-		  {
-		    sscanf(s, "%*s %i", &i1);
-		    changeDesks(i1);
-		  }
-		else if (!strcmp(s1, "[VIEWPORT]"))
-		  {
-		    sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
-		    Scr.VxMax = i3;
-		    Scr.VyMax = i4;
-		    MoveViewport(i1, i2, True);
-		  }
-		else if (!strcmp(s1, "[SCROLL]"))
+		sscanf(s, "%*s %i", &i1);
+		changeDesks(i1);
+	      }
+	    else if (!strcmp(s1, "[VIEWPORT]"))
+	      {
+		sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
+		Scr.VxMax = i3;
+		Scr.VyMax = i4;
+		MoveViewport(i1, i2, True);
+	      }
+	    else if (!Restarting) 
+	      {
+		/* We don't want to restore too much state if
+		   we are restarting, since that would make restarting
+		   useless for rereading changed rc files. */
+		if (!strcmp(s1, "[SCROLL]"))
 		  {
 		    sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5,
 			   &i6);

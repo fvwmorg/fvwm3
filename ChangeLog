@@ -1,3 +1,8 @@
+1999-06-02  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
+
+	* fvwm/session.c (LoadGlobalState): Make restarting return to
+	the old desk/page.
+
 1999-05-31  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm.c (main): applied fixed restart patch by Mikhael Goikhman
