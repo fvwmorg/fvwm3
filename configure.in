@@ -245,7 +245,7 @@ dnl Checks for library functions.
 AC_TYPE_SIGNAL
 AC_FUNC_ALLOCA
 AC_FUNC_STRFTIME
-AC_CHECK_FUNCS(gettimeofday mkfifo putenv select setvbuf socket waitpid)
+AC_CHECK_FUNCS(gettimeofday mkfifo putenv setvbuf socket waitpid)
 AC_CHECK_FUNCS(strdup strstr strtol memmove memcpy strchr sysconf uname div)
 AC_CHECK_FUNCS(sigaction siginterrupt getpwuid)
 
@@ -255,11 +255,9 @@ if test $ac_cv_func_setvbuf = yes; then
   AC_FUNC_SETVBUF_REVERSED
 fi
 
-if test $ac_cv_func_select = yes; then
-  dnl Workaround for autoconf 2.13 bug: these headers are used (if
-  dnl present on the system) for the SELECT_ARGTYPES probe.
-  AC_CHECK_HEADERS(sys/types.h sys/time.h sys/select.h sys/socket.h)
-  AC_FUNC_SELECT_ARGTYPES
+AC_FUNC_SELECT
+if test $ac_cv_func_select != yes; then
+  AC_MSG_ERROR(select required.)
 fi
 
 dnl Check for standard functions that we have replacements for.

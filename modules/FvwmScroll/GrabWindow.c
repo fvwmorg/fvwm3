@@ -514,8 +514,7 @@ void Loop(Window target)
 
     /* no more events to process */
     /* wait for X-event or config line */
-    select((SELECT_TYPE_ARG1)fd_width, SELECT_TYPE_ARG234 &fdset,
-           SELECT_TYPE_ARG234 0, SELECT_TYPE_ARG234 0, SELECT_TYPE_ARG5 NULL);
+    select( fd_width, SELECT_FD_SET_CAST &fdset, NULL, NULL, NULL );
 
     /* parse any config lines (only the fvwm_look) */
     if (FD_ISSET(fd[1], &fdset)) {

@@ -1,3 +1,14 @@
+Sun May 16 10:22:00 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/events.c (My_XNextEvent): update select function call, and
+ 	fd_width type for new AC_FUNC_SELECT macro.
+
+	* configure.in: switch from AC_FUNC_SELECT_ARGTYPES to AC_FUNC_SELECT.
+
+	* acconfig.h: insert preprocessor symbols for AC_FUNC_SELECT macro.
+
+	* acinclude.m4: insert AC_FUNC_SELECT macro.
+
 1999-05-15  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (AddToMenu): removed and rewrote some macros; menu item

@@ -59,7 +59,8 @@ typedef struct window_item {
 Display *dpy;
 int dwidth, dheight;
 char *argv0;
-int fd[2], fd_width;
+int fd[2];
+fd_set_size_t fd_width;
 window_list wins = NULL, wins_tail = NULL;
 int wins_count = 0;
 FILE *console;
@@ -157,7 +158,7 @@ int get_window(void)
 	fd_set infds;
 	FD_ZERO(&infds);
 	FD_SET(fd[1], &infds);
-	select(fd_width,&infds, 0, 0, NULL);
+	select(fd_width, SELECT_FD_SET_CAST &infds, 0, 0, NULL);
 	if ((count = ReadFvwmPacket(fd[1],header,&body)) > 0) {
                 cfgpacket = (void *) body;
 		switch (header[1]) {
@@ -199,7 +200,7 @@ void wait_configure(window_item *wi)
 	fd_set infds;
 	FD_ZERO(&infds);
 	FD_SET(fd[1], &infds);
-	select(fd_width,&infds, 0, 0, NULL);
+	select(fd_width, SELECT_FD_SET_CAST &infds, 0, 0, NULL);
 	while (!found)
 		if ((count = ReadFvwmPacket(fd[1],header,&body)) > 0) {
 			if  ((header[1] == M_CONFIGURE_WINDOW)

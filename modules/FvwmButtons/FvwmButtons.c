@@ -128,7 +128,8 @@ char *MyName;
 XFontStruct *font;
 int screen;
 
-int x_fd,fd_width;
+int x_fd;
+fd_set_size_t fd_width;
 
 char *config_file = NULL;
 
@@ -1607,7 +1608,7 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-  if (select(fd_width,SELECT_TYPE_ARG234 &in_fdset, 0, 0, NULL) > 0)
+  if (select(fd_width,SELECT_FD_SET_CAST &in_fdset, 0, 0, NULL) > 0)
   {
 
   if(FD_ISSET(x_fd, &in_fdset))

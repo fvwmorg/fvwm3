@@ -208,7 +208,7 @@ int main ( int argc, char *argv[]) {
     tv2.tv_usec = 5;
     FD_ZERO(&fdset);
     FD_SET(STDIN_FILENO, &fdset);
-    ncnt = select(FD_SETSIZE,SELECT_TYPE_ARG234 &fdset, 0, 0, &tv2);
+    ncnt = select(FD_SETSIZE,SELECT_FD_SET_CAST &fdset, 0, 0, &tv2);
     if( ncnt && (fgets( cmd, 1, stdin )==0 || cmd[0] == 0)) {
       Bg = 1;
     }
@@ -229,7 +229,7 @@ int main ( int argc, char *argv[]) {
       if( Bg == 0 ) {
 	FD_SET(STDIN_FILENO, &fdset);
       }
-      ncnt = select(FD_SETSIZE,SELECT_TYPE_ARG234 &fdset, 0, 0, NULL);
+      ncnt = select(FD_SETSIZE,SELECT_FD_SET_CAST &fdset, 0, 0, NULL);
 
       /* message from fvwm */
       if (FD_ISSET(Fdr, &fdset)){
@@ -334,7 +334,7 @@ void receive () {
     /* wait indefinitely */
     FD_ZERO(&fdset);
     FD_SET( Fdr, &fdset);
-    ncnt = select(FD_SETSIZE, SELECT_TYPE_ARG234 &fdset, 0, 0, NULL);
+    ncnt = select(FD_SETSIZE, SELECT_FD_SET_CAST &fdset, 0, 0, NULL);
   }
 
 
@@ -344,7 +344,7 @@ void receive () {
     FD_ZERO(&fdset);
     FD_SET(Fdr, &fdset);
 
-    ncnt = select(FD_SETSIZE, SELECT_TYPE_ARG234 &fdset, 0, 0, &tv);
+    ncnt = select(FD_SETSIZE, SELECT_FD_SET_CAST &fdset, 0, 0, &tv);
 
     if( ncnt < 0 ) {
       err_quit("receive");

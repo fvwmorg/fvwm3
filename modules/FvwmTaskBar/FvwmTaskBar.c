@@ -86,7 +86,7 @@ GC checkered;
 
 /* File type information */
 FILE  *console;
-int   fd_width;
+fd_set_size_t  fd_width;
 int   Fvwm_fd[2];
 int   x_fd;
 
@@ -258,24 +258,8 @@ void EndLessLoop()
     XPending(dpy);
     tv.tv_sec  = 0;
     tv.tv_usec = 0;
-#ifdef __hpux
-    if (!select(fd_width, (int *)&readset, NULL, NULL, &tv)) {
-      while(1) {
-        FD_ZERO(&readset);
-        FD_SET(Fvwm_fd[1], &readset);
-        FD_SET(x_fd, &readset);
-        XPending(dpy);
 
-        tv.tv_sec  = UpdateInterval;
-        tv.tv_usec = 0;
-        if (select(fd_width, (int *)&readset, NULL, NULL, &tv) <= 0)
-          DrawGoodies();
-        else
-          break;
-      }
-    }
-#else
-    if (!select(fd_width, &readset, NULL, NULL, &tv)) {
+    if (!select(fd_width, SELECT_FD_SET_CAST &readset, NULL, NULL, &tv)) {
       while(1) {
         FD_ZERO(&readset);
         FD_SET(Fvwm_fd[1], &readset);
@@ -285,13 +269,12 @@ void EndLessLoop()
         tv.tv_sec  = UpdateInterval;
         tv.tv_usec = 0;
 
-        if (select(fd_width, &readset, NULL, NULL, &tv) <= 0)
+        if (select(fd_width, SELECT_FD_SET_CAST &readset, NULL, NULL, &tv) <= 0)
           DrawGoodies();
         else
           break;
       }
     }
-#endif
 
     if (FD_ISSET(x_fd, &readset))
       LoopOnEvents();

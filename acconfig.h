@@ -106,6 +106,17 @@
 /* Specify a type for sig_atomic_t if it's not available.  */
 #undef sig_atomic_t
 
+/* Define to the type used in argument 1 `select'.  Usually this is an `int'.  */
+#undef fd_set_size_t
+
+/* Define to the type used in arguments 2-4 of `select', if not set by system
+   headers.  */
+#undef fd_set
+
+/* Define a suitable cast for arguments 2-4 of `select'.  On most systems,
+   this will be the empty string, as select usually takes pointers to fd_set.  */
+#undef SELECT_FD_SET_CAST
+
 
 /*
 ** if you would like to see lots of debug messages from fvwm, for debugging

@@ -69,7 +69,7 @@
 
 /* File type information */
 FILE *console;
-int fd_width;
+fd_set_size_t fd_width;
 int Fvwm_fd[2];
 int x_fd;
 
@@ -238,7 +238,7 @@ fd_set readset;
      * having one fewer select statements
      */
     XFlush(dpy);
-    if (select(fd_width,SELECT_TYPE_ARG234 &readset,NULL,NULL,NULL) > 0) {
+    if (select(fd_width,SELECT_FD_SET_CAST &readset,NULL,NULL,NULL) > 0) {
 
       if (FD_ISSET(x_fd,&readset) || XPending(dpy)) LoopOnEvents();
       if (FD_ISSET(Fvwm_fd[1],&readset)) ReadFvwmPipe();

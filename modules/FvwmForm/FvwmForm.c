@@ -1449,7 +1449,7 @@ static void MainLoop ()
     FD_SET(fd_x, &fds);
 
     XFlush(dpy);
-    if (select(32, &fds, NULL, NULL, NULL) > 0) {
+    if (select(32, SELECT_FD_SET_CAST &fds, NULL, NULL, NULL) > 0) {
       if (FD_ISSET(Channel[1], &fds))
 	ReadFvwm();
       if (FD_ISSET(fd_x, &fds))

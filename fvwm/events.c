@@ -1692,7 +1692,8 @@ fd_set init_fdset;
 
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
-  extern int fd_width, x_fd;
+  extern fd_set_size_t fd_width;
+  extern int x_fd;
   fd_set in_fdset, out_fdset;
   Window targetWindow;
   int i;
@@ -1745,11 +1746,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   DBUG("My_XNextEvent","waiting for module input/output");
   XFlush(dpy);
-  if (select((SELECT_TYPE_ARG1)fd_width,
-             SELECT_TYPE_ARG234 &in_fdset,
-             SELECT_TYPE_ARG234 &out_fdset,
-             SELECT_TYPE_ARG234 0,
-             SELECT_TYPE_ARG5   timeoutP) > 0) {
+  if (select( fd_width,
+	      SELECT_FD_SET_CAST &in_fdset,
+	      SELECT_FD_SET_CAST &out_fdset,
+	      SELECT_FD_SET_CAST 0,
+              timeoutP) > 0) {
 
     /* Check for module input. */
     for (i=0; i<npipes; i++) {

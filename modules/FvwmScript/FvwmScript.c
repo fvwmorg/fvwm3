@@ -636,9 +636,9 @@ void MainLoop ()
   tv.tv_usec = 0;
 
   if (x11base->periodictasks!=NULL)
-   res=select(32, &in_fdset, NULL, NULL, &tv);
+   res=select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, &tv);
   else
-   res=select(32, &in_fdset, NULL, NULL, NULL);
+   res=select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
 
   if (res > 0)
   {

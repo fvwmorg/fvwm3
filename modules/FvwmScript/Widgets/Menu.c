@@ -191,7 +191,7 @@ void EvtMouseMenu(struct XObj *xobj,XButtonEvent *EvtButton)
   }
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
-  select(32, &in_fdset, NULL, NULL, NULL);
+  select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
  }
  while (!XCheckTypedEvent(xobj->display,ButtonRelease,&event));
  XDestroyWindow(xobj->display,WinPop);

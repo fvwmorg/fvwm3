@@ -72,8 +72,8 @@ int main(int argc, char **argv)
                    *body,
                    last_win = 0,	/* last window handled */
                    focus_win = 0;	/* current focus */
-    int            fd_width,
-                   fd[2],
+    fd_set_size_t  fd_width;
+    int            fd[2],
                    timeout,sec = 0,usec = 0;
     struct timeval value,
                    *delay;
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
 	    delay->tv_sec = sec;
 	    delay->tv_usec = usec;
 	}
-	select(fd_width, SELECT_TYPE_ARG234 &in_fdset, 0, 0,
+	select(fd_width, SELECT_FD_SET_CAST &in_fdset, 0, 0,
 	       (focus_win == last_win) ? NULL : delay);
 #ifdef DEBUG
 	    fprintf(stderr,"[FvwmAuto]: after select:  focus_win: 0x%08lx, last_win: 0x%08lx\n",focus_win, last_win);

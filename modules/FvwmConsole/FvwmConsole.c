@@ -209,11 +209,7 @@ void server ( void ) {
 	FD_SET(Ns, &fdset);
 	FD_SET(Fd[1], &fdset);
 
-#ifdef __hpux
-    select(FD_SETSIZE,(int *)&fdset, 0, 0, NULL);
-#else
-    select(FD_SETSIZE,&fdset, 0, 0, NULL);
-#endif  
+    select(FD_SETSIZE, SELECT_FD_SET_CAST &fdset, 0, 0, NULL);
     if (FD_ISSET(Fd[1], &fdset)){
 	  if( ReadFvwmPacket(Fd[1],header,&body) > 0)	 {
 		if(header[1] == M_PASS) { 

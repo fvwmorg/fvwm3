@@ -105,7 +105,8 @@ int PlayerChannel[2];
 char *MyName;
 
 Display *dpy;
-int x_fd,fd_width;
+int x_fd;
+fd_set_size_t fd_width;
 int ROWS = FALSE;
 
 Window Root;
@@ -2034,11 +2035,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-#ifdef __hpux
-  select(fd_width,(int *)&in_fdset, 0, 0, NULL);
-#else
-  select(fd_width,&in_fdset, 0, 0, NULL);
-#endif
+  select( fd_width, SELECT_FD_SET_CAST &in_fdset, 0, 0, NULL );
 
 
   if(FD_ISSET(x_fd, &in_fdset))

@@ -1,3 +1,31 @@
+Sun May 16 11:26:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+
+Sun May 16 10:56:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/FvwmWinList.c (MainEventLoop): 
+	* FvwmWharf/FvwmWharf.c (My_XNextEvent): 
+	* FvwmTaskBar/FvwmTaskBar.c (EndLessLoop): 
+	* FvwmScroll/FvwmScroll.h: 
+	* FvwmScroll/GrabWindow.c (Loop): 
+	* FvwmScript/Widgets/Menu.c (EvtMouseMenu): 
+	* FvwmScript/Widgets/List.c: 
+	* FvwmScript/Instructions.c (Quit): 
+	* FvwmScript/FvwmScript.c (MainLoop): 
+	* FvwmRearrange/FvwmRearrange.c: 
+	* FvwmPager/FvwmPager.c (My_XNextEvent): 
+	* FvwmIdent/FvwmIdent.c (list_end): 
+	* FvwmIconMan/FvwmIconMan.c (main_loop): 
+	* FvwmIconBox/FvwmIconBox.c (My_XNextEvent): 
+	* FvwmForm/FvwmForm.c (MainLoop):
+	* FvwmConsole/FvwmConsole.c: 
+	* FvwmCommand/FvwmCommandS.c: 
+	* FvwmCommand/FvwmCommand.c: 
+	* FvwmButtons/FvwmButtons.c (My_XNextEvent): 
+	* FvwmBanner/FvwmBanner.c (main): 
+	* FvwmAuto/FvwmAuto.c (main): update select() function call and
+ 	fd_width type, for new AC_FUNC_SELECT macro.
+
 1999-05-15  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmTaskBar/FvwmTaskBar.c: some alarm signal cleanup
