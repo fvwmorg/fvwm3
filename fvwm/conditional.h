@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -16,13 +17,25 @@
 #ifndef CONDITIONAL_H
 #define CONDITIONAL_H
 
-/* Condition matching routines
- * Originally exported for WindowList - N.Bird 24/08/99
- */
-extern char *CreateFlagString(char *string, char **restptr);
-extern void DefaultConditionMask(WindowConditionMask *mask);
-extern void CreateConditionMask(char *flags, WindowConditionMask *mask);
-extern void FreeConditionMask(WindowConditionMask *mask);
-extern Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask);
+/* ---------------------------- included header files ----------------------- */
+
+/* ---------------------------- global definitions -------------------------- */
+
+/* ---------------------------- global macros ------------------------------- */
+
+/* ---------------------------- type definitions ---------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- interface functions ------------------------- */
+
+/* Condition matching routines */
+char *CreateFlagString(char *string, char **restptr);
+void DefaultConditionMask(WindowConditionMask *mask);
+void CreateConditionMask(char *flags, WindowConditionMask *mask);
+void FreeConditionMask(WindowConditionMask *mask);
+Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask);
 
 #endif /* CONDITIONAL_H */

@@ -89,18 +89,11 @@ extern int cmsDelayDefault;
 
 typedef struct
 {
-  char *var;
-  char *env;
+	char *var;
+	char *env;
 } env_list_item;
 
 /* ---------------------------- forward declarations ------------------------ */
-
-static char *ReadTitleButton(
-    char *s, TitleButton *tb, Boolean append, int button);
-#ifdef FANCY_TITLEBARS
-static char *ReadMultiPixmapDecor(char *s, DecorFace *df);
-#endif
-static void DestroyFvwmDecor(FvwmDecor *decor);
 
 /* ---------------------------- local variables ----------------------------- */
 
@@ -186,70 +179,6 @@ static void obsolete_imagepaths( const char* pre_path )
 	strcat( path, PictureGetImagePath() );
 
 	PictureSetImagePath( path );
-
-	return;
-}
-
-static void do_title_style(F_CMD_ARGS, Bool do_add)
-{
-	char *parm;
-	char *prev;
-#ifdef USEDECOR
-	FvwmDecor *decor = Scr.cur_decor ? Scr.cur_decor : &Scr.DefaultDecor;
-#else
-	FvwmDecor *decor = &Scr.DefaultDecor;
-#endif
-
-	Scr.flags.do_need_window_update = 1;
-	decor->flags.has_changed = 1;
-	decor->titlebar.flags.has_changed = 1;
-
-	for (prev = action ; (parm = PeekToken(action, &action)); prev = action)
-	{
-		if (!do_add && StrEquals(parm,"centered"))
-		{
-			TB_JUSTIFICATION(decor->titlebar) = JUST_CENTER;
-		}
-		else if (!do_add && StrEquals(parm,"leftjustified"))
-		{
-			TB_JUSTIFICATION(decor->titlebar) = JUST_LEFT;
-		}
-		else if (!do_add && StrEquals(parm,"rightjustified"))
-		{
-			TB_JUSTIFICATION(decor->titlebar) = JUST_RIGHT;
-		}
-		else if (!do_add && StrEquals(parm,"height"))
-		{
-			int height = 0;
-			int next = 0;
-
-			if (!action ||
-			    sscanf(action, "%d%n", &height, &next) <= 0 ||
-			    height < MIN_FONT_HEIGHT ||
-			    height > MAX_FONT_HEIGHT)
-			{
-				if (height != 0)
-				{
-					fvwm_msg(ERR, "do_title_style",
-						 "bad height argument (height"
-						 " must be from 5 to 256)");
-					height = 0;
-				}
-			}
-			if (decor->title_height != height)
-			{
-				decor->title_height = height;
-				decor->flags.has_title_height_changed = 1;
-			}
-			if (action)
-				action += next;
-		}
-		else
-		{
-			action = ReadTitleButton(
-				prev, &decor->titlebar, do_add, -1);
-		}
-	}
 
 	return;
 }
@@ -428,6 +357,70 @@ static char *ReadTitleButton(
 	return end;
 }
 
+static void do_title_style(F_CMD_ARGS, Bool do_add)
+{
+	char *parm;
+	char *prev;
+#ifdef USEDECOR
+	FvwmDecor *decor = Scr.cur_decor ? Scr.cur_decor : &Scr.DefaultDecor;
+#else
+	FvwmDecor *decor = &Scr.DefaultDecor;
+#endif
+
+	Scr.flags.do_need_window_update = 1;
+	decor->flags.has_changed = 1;
+	decor->titlebar.flags.has_changed = 1;
+
+	for (prev = action ; (parm = PeekToken(action, &action)); prev = action)
+	{
+		if (!do_add && StrEquals(parm,"centered"))
+		{
+			TB_JUSTIFICATION(decor->titlebar) = JUST_CENTER;
+		}
+		else if (!do_add && StrEquals(parm,"leftjustified"))
+		{
+			TB_JUSTIFICATION(decor->titlebar) = JUST_LEFT;
+		}
+		else if (!do_add && StrEquals(parm,"rightjustified"))
+		{
+			TB_JUSTIFICATION(decor->titlebar) = JUST_RIGHT;
+		}
+		else if (!do_add && StrEquals(parm,"height"))
+		{
+			int height = 0;
+			int next = 0;
+
+			if (!action ||
+			    sscanf(action, "%d%n", &height, &next) <= 0 ||
+			    height < MIN_FONT_HEIGHT ||
+			    height > MAX_FONT_HEIGHT)
+			{
+				if (height != 0)
+				{
+					fvwm_msg(ERR, "do_title_style",
+						 "bad height argument (height"
+						 " must be from 5 to 256)");
+					height = 0;
+				}
+			}
+			if (decor->title_height != height)
+			{
+				decor->title_height = height;
+				decor->flags.has_title_height_changed = 1;
+			}
+			if (action)
+				action += next;
+		}
+		else
+		{
+			action = ReadTitleButton(
+				prev, &decor->titlebar, do_add, -1);
+		}
+	}
+
+	return;
+}
+
 #ifdef FANCY_TITLEBARS
 /*****************************************************************************
  *
@@ -472,9 +465,13 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 			s = DoPeekToken(s, &token, ",", NULL, NULL);
 		}
 		else if (StrEquals(token, "tiled"))
+		{
 			s = DoPeekToken(s, &token, ",", NULL, NULL);
+		}
 		if (!token)
+		{
 			break;
+		}
 		if (pm[pm_id])
 		{
 			fvwm_msg(WARN, "ReadMultiPixmapDecor",
@@ -483,14 +480,18 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 			continue;
 		}
 		if (stretched)
+		{
 			df->u.multi_stretch_flags |= (1 << pm_id);
+		}
 		fpa.mask = (Pdepth <= 8)? FPAM_DITHER:0; /* ? */
 		pm[pm_id] = PCacheFvwmPicture(
 			dpy, Scr.NoFocusWin, NULL, token, fpa);
 		if (!pm[pm_id])
+		{
 			fvwm_msg(ERR, "ReadMultiPixmapDecor",
 				 "Pixmap '%s' could not be loaded",
 				 token);
+		}
 		s = GetNextTokenIndex(s, pm_names, 0, &pm_id);
 	}
 
@@ -503,7 +504,9 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 		for (i=0; i < NUM_TB_PIXMAPS; i++)
 		{
 			if (pm[i])
+			{
 				PDestroyFvwmPicture(dpy, pm[i]);
+			}
 		}
 		free(pm);
 		return NULL;
@@ -542,7 +545,7 @@ static void DestroyFvwmDecor(FvwmDecor *decor)
 }
 
 static void SetLayerButtonFlag(
-  int layer, int multi, int set, FvwmDecor *decor, TitleButton *tb)
+	int layer, int multi, int set, FvwmDecor *decor, TitleButton *tb)
 {
 	int i;
 	int start = 0;
@@ -551,9 +554,13 @@ static void SetLayerButtonFlag(
 	if (multi)
 	{
 		if (multi == 2)
+		{
 			start = 1;
+		}
 		else if (multi == 3)
+		{
 			add = 1;
+		}
 		for (i = start; i < NUMBER_OF_BUTTONS; i += add)
 		{
 			if (set)
@@ -598,23 +605,35 @@ static void SetMWMButtonFlag(
 	if (multi)
 	{
 		if (multi == 2)
+		{
 			start = 1;
+		}
 		else if (multi == 3)
+		{
 			add = 1;
+		}
 		for (i = start; i < NUMBER_OF_BUTTONS; i += add)
 		{
 			if (set)
+			{
 				TB_MWM_DECOR_FLAGS(decor->buttons[i]) |= flag;
+			}
 			else
+			{
 				TB_MWM_DECOR_FLAGS(decor->buttons[i]) &= ~flag;
+			}
 		}
 	}
 	else
 	{
 		if (set)
+		{
 			TB_MWM_DECOR_FLAGS(*tb) |= flag;
+		}
 		else
+		{
 			TB_MWM_DECOR_FLAGS(*tb) &= ~flag;
+		}
 	}
 
 	return;
@@ -655,22 +674,32 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 	if (!isdigit(*parm))
 	{
 		if (StrEquals(parm,"left"))
+		{
 			multi = 1; /* affect all left buttons */
+		}
 		else if (StrEquals(parm,"right"))
+		{
 			multi = 2; /* affect all right buttons */
+		}
 		else if (StrEquals(parm,"all"))
+		{
 			multi = 3; /* affect all buttons */
+		}
 		else
 		{
 			/* we're either resetting buttons or an invalid button
 			 * set was specified */
 			if (StrEquals(parm,"reset"))
+			{
 				ResetAllButtons(decor);
+			}
 			else
+			{
 				fvwm_msg(
 					ERR, "ButtonStyle",
 					"Bad button style (2) in line %s",
 					action);
+			}
 			return;
 		}
 	}
@@ -815,9 +844,13 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 						 " %s -- line: %s", tok, text);
 				}
 				if (set)
+				{
 					free(tok);
+				}
 				else
+				{
 					free(old_tok);
+				}
 				text = GetNextToken(text, &tok);
 			}
 			break;
@@ -862,15 +895,10 @@ void refresh_window(Window w, Bool window_update)
 	attributes.save_under = False;
 	attributes.background_pixmap = None;
 	attributes.backing_store = NotUseful;
-	w = XCreateWindow(dpy,
-			  w,
-			  0, 0,
-			  (unsigned int) Scr.MyDisplayWidth,
-			  (unsigned int) Scr.MyDisplayHeight,
-			  (unsigned int) 0,
-			  CopyFromParent, (unsigned int) CopyFromParent,
-			  CopyFromParent, valuemask,
-			  &attributes);
+	w = XCreateWindow(
+		dpy, w, 0, 0, Scr.MyDisplayWidth, Scr.MyDisplayHeight, 0,
+		CopyFromParent, CopyFromParent, CopyFromParent, valuemask,
+		&attributes);
 	XMapWindow(dpy, w);
 	if (Scr.flags.do_need_window_update && window_update)
 	{
@@ -898,39 +926,60 @@ void ApplyDefaultFontAndColors(void)
 		gcv.font = Scr.DefaultFont->font->fid;
 	}
 	gcv.line_width = 0;
-	if (cset >= 0) {
+	if (cset >= 0)
+	{
 		gcv.foreground = Colorset[cset].fg;
 		gcv.background = Colorset[cset].bg;
-	} else {
+	}
+	else
+	{
 		gcv.foreground = Scr.StdFore;
 		gcv.background = Scr.StdBack;
 	}
 	if (Scr.StdGC)
+	{
 		XChangeGC(dpy, Scr.StdGC, gcm, &gcv);
+	}
 	else
+	{
 		Scr.StdGC = fvwmlib_XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+	}
 
 	gcm = GCFunction|GCLineWidth|GCForeground;
 	if (cset >= 0)
+	{
 		gcv.foreground = Colorset[cset].hilite;
+	}
 	else
+	{
 		gcv.foreground = Scr.StdHilite;
+	}
 	if (Scr.StdReliefGC)
+	{
 		XChangeGC(dpy, Scr.StdReliefGC, gcm, &gcv);
+	}
 	else
+	{
 		Scr.StdReliefGC = fvwmlib_XCreateGC(
 			dpy, Scr.NoFocusWin, gcm, &gcv);
-
+	}
 	if (cset >= 0)
+	{
 		gcv.foreground = Colorset[cset].shadow;
+	}
 	else
+	{
 		gcv.foreground = Scr.StdShadow;
+	}
 	if (Scr.StdShadowGC)
+	{
 		XChangeGC(dpy, Scr.StdShadowGC, gcm, &gcv);
+	}
 	else
+	{
 		Scr.StdShadowGC = fvwmlib_XCreateGC(
 			dpy, Scr.NoFocusWin, gcm, &gcv);
-
+	}
 	/* update the geometry window for move/resize */
 	if (Scr.SizeWindow != None)
 	{
@@ -983,18 +1032,22 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 	case PixmapButton:
 	case TiledPixmapButton:
 		if (df->u.p)
+		{
 			PDestroyFvwmPicture(dpy, df->u.p);
+		}
 		break;
 
 #ifdef FANCY_TITLEBARS
 	case MultiPixmap:
 		if (df->u.multi_pixmaps)
 		{
-			for (i=0; i < NUM_TB_PIXMAPS; i++)
+			for (i = 0; i < NUM_TB_PIXMAPS; i++)
 			{
 				if (df->u.multi_pixmaps[i])
+				{
 					PDestroyFvwmPicture(
 						dpy, df->u.multi_pixmaps[i]);
+				}
 			}
 			free(df->u.multi_pixmaps);
 		}
@@ -1004,11 +1057,18 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 	case VectorButton:
 	case DefaultVectorButton:
 		if (df->u.vector.x)
+		{
 			free (df->u.vector.x);
+		}
 		if (df->u.vector.y)
+		{
 			free (df->u.vector.y);
+		}
 		if (df->u.vector.c)
+		{
 			free (df->u.vector.c);
+		}
+		break;
 	default:
 		/* see below */
 		break;
@@ -1087,7 +1147,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				s += offset;
 			}
 			if (b >= 0 && b < NUMBER_OF_BUTTONS)
+			{
 				LoadDefaultButton(df, b);
+			}
 			else
 			{
 				if (verbose)
@@ -1112,8 +1174,11 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			{
 				num = sscanf(s,"%d%n",&num_coords,&offset);
 				s += offset;
-			} else
+			}
+			else
+			{
 				num = sscanf(style,"%d",&num_coords);
+			}
 
 			if (num != 1 || num_coords<2 ||
 			    num_coords > MAX_TITLE_BUTTON_VECTOR_LINES)
@@ -1223,16 +1288,21 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			Bool do_dither = False;
 
 			if (!IsGradientTypeSupported(style[0]))
+			{
 				return False;
-
+			}
 			/* translate the gradient string into an array of
 			 * colors etc */
 			npixels = ParseGradient(
 				s, &s, &s_colors, &perc, &nsegs);
 			while (*s && isspace(*s))
+			{
 				s++;
+			}
 			if (npixels <= 0)
+			{
 				return False;
+			}
 			/* grab the colors */
 			if (Pdepth <= 8)
 			{
@@ -1282,9 +1352,13 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 
 			memset(&df->style, 0, sizeof(df->style));
 			if (strncasecmp(style,"Tiled",5)==0)
+			{
 				DFS_FACE_TYPE(df->style) = TiledPixmapButton;
+			}
 			else
+			{
 				DFS_FACE_TYPE(df->style) = PixmapButton;
+			}
 		}
 #ifdef FANCY_TITLEBARS
 		else if (strncasecmp(style,"MultiPixmap",11)==0)
@@ -1292,15 +1366,19 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			if (button != -1)
 			{
 				if (verbose)
+				{
 					fvwm_msg(
 						ERR, "ReadDecorFace",
-						 "MultiPixmap is only valid"
+						"MultiPixmap is only valid"
 						" for TitleStyle");
+				}
 				return False;
 			}
 			s = ReadMultiPixmapDecor(s, df);
 			if (!s)
+			{
 				return False;
+			}
 		}
 #endif
 		else if (FMiniIconsSupported &&
@@ -1314,7 +1392,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			 * and a memory leak the same time without a rewrite of
 			 * large parts of the code. */
 			if (df->u.p)
+			{
 				PDestroyFvwmPicture(dpy, df->u.p);
+			}
 #endif
 			/* pixmap read in when the window is created */
 			df->u.p = NULL;
@@ -1358,20 +1438,28 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			else if (StrEquals(tok,"Left"))
 			{
 				if (set)
+				{
 					DFS_H_JUSTIFICATION(df->style) =
 						JUST_LEFT;
+				}
 				else
+				{
 					DFS_H_JUSTIFICATION(df->style) =
 						JUST_RIGHT;
+				}
 			}
 			else if (StrEquals(tok,"Right"))
 			{
 				if (set)
+				{
 					DFS_H_JUSTIFICATION(df->style) =
 						JUST_RIGHT;
+				}
 				else
+				{
 					DFS_H_JUSTIFICATION(df->style) =
 						JUST_LEFT;
+				}
 			}
 			else if (StrEquals(tok,"Centered"))
 			{
@@ -1381,49 +1469,69 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			else if (StrEquals(tok,"Top"))
 			{
 				if (set)
+				{
 					DFS_V_JUSTIFICATION(df->style) =
 						JUST_TOP;
+				}
 				else
+				{
 					DFS_V_JUSTIFICATION(df->style) =
 						JUST_BOTTOM;
+				}
 			}
 			else if (StrEquals(tok,"Bottom"))
 			{
 				if (set)
+				{
 					DFS_V_JUSTIFICATION(df->style) =
 						JUST_BOTTOM;
+				}
 				else
+				{
 					DFS_V_JUSTIFICATION(df->style) =
 						JUST_TOP;
+				}
 			}
 			else if (StrEquals(tok,"Flat"))
 			{
 				if (set)
+				{
 					DFS_BUTTON_RELIEF(df->style) =
 						DFS_BUTTON_IS_FLAT;
+				}
 				else if (DFS_BUTTON_RELIEF(df->style) ==
 					 DFS_BUTTON_IS_FLAT)
+				{
 					DFS_BUTTON_RELIEF(df->style) =
 						DFS_BUTTON_IS_UP;
+				}
 			}
 			else if (StrEquals(tok,"Sunk"))
 			{
 				if (set)
+				{
 					DFS_BUTTON_RELIEF(df->style) =
 						DFS_BUTTON_IS_SUNK;
+				}
 				else if (DFS_BUTTON_RELIEF(df->style) ==
 					 DFS_BUTTON_IS_SUNK)
+				{
 					DFS_BUTTON_RELIEF(df->style) =
 						DFS_BUTTON_IS_UP;
+				}
 			}
 			else if (StrEquals(tok,"Raised"))
 			{
 				if (set)
+				{
 					DFS_BUTTON_RELIEF(df->style) =
 						DFS_BUTTON_IS_UP;
+				}
 				else
+				{
 					DFS_BUTTON_RELIEF(df->style) =
 						DFS_BUTTON_IS_SUNK;
+				}
 			}
 			else if (StrEquals(tok,"UseTitleStyle"))
 			{
@@ -1451,25 +1559,32 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 					DFS_USE_TITLE_STYLE(df->style) = 0;
 				}
 				else
+				{
 					DFS_USE_BORDER_STYLE(df->style) = 0;
+				}
+			}
+			else if (verbose)
+			{
+				fvwm_msg(
+					ERR, "ReadDecorFace",
+					"unknown button face flag '%s'"
+					" -- line: %s", tok, action);
+			}
+			if (set)
+			{
+				free(tok);
 			}
 			else
-				if (verbose)
-				{
-					fvwm_msg(
-						ERR, "ReadDecorFace",
-						"unknown button face flag '%s'"
-						" -- line: %s", tok, action);
-				}
-			if (set)
-				free(tok);
-			else
+			{
 				free(old_tok);
+			}
 			s = GetNextToken(s, &tok);
 		}
 	}
 	if (file)
+	{
 		free(file);
+	}
 
 	return True;
 }
@@ -1483,11 +1598,17 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 void AddToDecor(FvwmDecor *decor, char *s)
 {
 	if (!s)
+	{
 		return;
+	}
 	while (*s && isspace((unsigned char)*s))
+	{
 		++s;
+	}
 	if (!*s)
+	{
 		return;
+	}
 	Scr.cur_decor = decor;
 	old_execute_function(NULL, s, NULL, &Event, C_ROOT, -1, 0, NULL);
 	Scr.cur_decor = NULL;
@@ -1585,23 +1706,24 @@ void CMD_CursorMove(F_CMD_ARGS)
 		fvwm_msg(ERR, "movecursor", "CursorMove needs 2 arguments");
 		return;
 	}
-
 	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 			  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
 	{
 		/* pointer is on a different screen */
 		return;
 	}
-
 	x = x + val1 * val1_unit / 100;
 	y = y + val2 * val2_unit / 100;
-
 	virtual_x = Scr.Vx;
 	virtual_y = Scr.Vy;
 	if (x >= 0)
+	{
 		x_pages = x / Scr.MyDisplayWidth;
+	}
 	else
+	{
 		x_pages = ((x + 1) / Scr.MyDisplayWidth) - 1;
+	}
 	virtual_x += x_pages * Scr.MyDisplayWidth;
 	x -= x_pages * Scr.MyDisplayWidth;
 	if (virtual_x < 0)
@@ -1616,9 +1738,13 @@ void CMD_CursorMove(F_CMD_ARGS)
 	}
 
 	if (y >= 0)
+	{
 		y_pages = y / Scr.MyDisplayHeight;
+	}
 	else
+	{
 		y_pages = ((y + 1) / Scr.MyDisplayHeight) - 1;
+	}
 	virtual_y += y_pages * Scr.MyDisplayHeight;
 	y -= y_pages * Scr.MyDisplayHeight;
 	if (virtual_y < 0)
@@ -1637,13 +1763,21 @@ void CMD_CursorMove(F_CMD_ARGS)
 	pan_y = (Scr.EdgeScrollY != 0) ? 2 : 0;
 	/* prevent paging if EdgeScroll is active */
 	if (x >= Scr.MyDisplayWidth - pan_x)
+	{
 		x = Scr.MyDisplayWidth - pan_x -1;
+	}
 	else if (x < pan_x)
+	{
 		x = pan_x;
+	}
 	if (y >= Scr.MyDisplayHeight - pan_y)
+	{
 		y = Scr.MyDisplayHeight - pan_y - 1;
+	}
 	else if (y < pan_y)
+	{
 		y = pan_y;
+	}
 
 	XWarpPointer(dpy, None, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 		     Scr.MyDisplayHeight, x, y);
@@ -1931,8 +2065,8 @@ void CMD_Wait(F_CMD_ARGS)
 					done = True;
 				}
 				if (Fw &&
-				   matchWildcards(wait_string, Fw->name.name) ==
-				   True)
+				    matchWildcards(wait_string, Fw->name.name)
+				    == True)
 				{
 					done = True;
 				}
@@ -2142,9 +2276,13 @@ void CMD_HilightColor(F_CMD_ARGS)
 		CMD_Style(F_PASS_ARGS);
 	}
 	if (fore)
+	{
 		free(fore);
+	}
 	if (back)
+	{
 		free(back);
+	}
 
 	return;
 }
@@ -2202,21 +2340,24 @@ void CMD_Colorset(F_CMD_ARGS)
 	char *token;
 
 	if (GetIntegerArguments(action, &token, &n, 1) != 1)
+	{
 		return;
+	}
 	if (n < 0)
+	{
 		return;
+	}
 	if (token == NULL)
+	{
 		return;
-
+	}
 	parse_colorset(n, token);
 	BroadcastColorset(n);
-
 	if (n == Scr.DefaultColorset)
 	{
 		Scr.flags.do_need_window_update = 1;
 		Scr.flags.has_default_color_changed = 1;
 	}
-
 	UpdateMenuColorset(n);
 	update_style_colorset(n);
 
@@ -2235,12 +2376,15 @@ void CMD_PropertyChange(F_CMD_ARGS)
 	unsigned long argument, data1 = 0, data2 = 0;
 
 	if (action == NULL || action == "\0")
+	{
 		return;
-
+	}
 	ret = sscanf(
 		action,"%lu %lu %lu %255c", &argument, &data1, &data2, string);
 	if (ret < 1)
+	{
 		return;
+	}
 	BroadcastPropertyChange(
 		argument, data1, data2, (string == NULL)? "":string);
 
@@ -2250,7 +2394,9 @@ void CMD_PropertyChange(F_CMD_ARGS)
 void CMD_DefaultIcon(F_CMD_ARGS)
 {
 	if (Scr.DefaultIcon)
+	{
 		free(Scr.DefaultIcon);
+	}
 	GetNextToken(action, &Scr.DefaultIcon);
 
 	return;
@@ -2261,11 +2407,14 @@ void CMD_DefaultColorset(F_CMD_ARGS)
 	int cset;
 
 	if (GetIntegerArguments(action, NULL, &cset, 1) != 1)
+	{
 		return;
-
+	}
 	Scr.DefaultColorset = cset;
 	if (Scr.DefaultColorset < 0)
+	{
 		Scr.DefaultColorset = -1;
+	}
 	alloc_colorset(Scr.DefaultColorset);
 	Scr.flags.do_need_window_update = 1;
 	Scr.flags.has_default_color_changed = 1;
@@ -2280,12 +2429,17 @@ void CMD_DefaultColors(F_CMD_ARGS)
 
 	action = GetNextToken(action, &fore);
 	if (action)
+	{
 		action = GetNextToken(action, &back);
+	}
 	if (!back)
+	{
 		back = safestrdup(DEFAULT_BACK_COLOR);
+	}
 	if (!fore)
+	{
 		fore = safestrdup(DEFAULT_FORE_COLOR);
-
+	}
 	if (!StrEquals(fore, "-"))
 	{
 		PictureFreeColors(dpy, Pcmap, &Scr.StdFore, 1, 0, True);
@@ -2318,15 +2472,17 @@ void CMD_DefaultFont(F_CMD_ARGS)
 	{
 		/* Try 'fixed', pass NULL font name */
 	}
-
 	if (!(new_font = FlocaleLoadFont(dpy, font, "FVWM")))
 	{
 		if (Scr.DefaultFont == NULL)
+		{
 			exit(1);
+		}
 		else
+		{
 			return;
+		}
 	}
-
 	FlocaleUnloadFont(dpy, Scr.DefaultFont);
 	Scr.DefaultFont = new_font;
 	/* set flags to indicate that the font has changed */
@@ -2404,20 +2560,21 @@ void CMD_ChangeDecor(F_CMD_ARGS)
 	FvwmDecor *found = NULL;
 
 	if (DeferExecution(eventp,&w,&fw,&context, CRS_SELECT,ButtonRelease))
+	{
 		return;
+	}
 	item = PeekToken(action, &action);
 	if (!action || !item)
+	{
 		return;
+	}
 	/* search for tag */
 	for (; decor; decor = decor->next)
 	{
-		if (decor->tag)
+		if (decor->tag && StrEquals(item, decor->tag))
 		{
-			if (StrEquals(item, decor->tag))
-			{
-				found = decor;
-				break;
-			}
+			found = decor;
+			break;
 		}
 	}
 	if (!found)
@@ -2470,13 +2627,10 @@ void CMD_DestroyDecor(F_CMD_ARGS)
 	/* search for tag */
 	for (; decor; decor = decor->next)
 	{
-		if (decor->tag)
+		if (decor->tag && StrEquals(item, decor->tag))
 		{
-			if (StrEquals(item, decor->tag))
-			{
-				found = decor;
-				break;
-			}
+			found = decor;
+			break;
 		}
 		prev = decor;
 	}
@@ -2543,7 +2697,9 @@ void CMD_AddToDecor(F_CMD_ARGS)
 	s = GetNextToken(s, &item);
 
 	if (!item)
+	{
 		return;
+	}
 	if (!s)
 	{
 		free(item);
@@ -2552,17 +2708,15 @@ void CMD_AddToDecor(F_CMD_ARGS)
 	/* search for tag */
 	for (decor = &Scr.DefaultDecor; decor; decor = decor->next)
 	{
-		if (decor->tag)
+		if (decor->tag && StrEquals(item, decor->tag))
 		{
-			if (StrEquals(item, decor->tag))
-			{
-				found = decor;
-				break;
-			}
+			found = decor;
+			break;
 		}
 	}
 	if (!found)
-	{ /* then make a new one */
+	{
+		/* then make a new one */
 		found = (FvwmDecor *)safemalloc(sizeof( FvwmDecor ));
 		InitFvwmDecor(found);
 		found->tag = item; /* tag it */
@@ -2610,13 +2764,10 @@ void CMD_UpdateDecor(F_CMD_ARGS)
 		/* search for tag */
 		for (decor = &Scr.DefaultDecor; decor; decor = decor->next)
 		{
-			if (decor->tag)
+			if (decor->tag && StrEquals(item, decor->tag))
 			{
-				if (strcasecmp(item, decor->tag)==0)
-				{
-					found = decor;
-					break;
-				}
+				found = decor;
+				break;
 			}
 		}
 		free(item);
@@ -2681,7 +2832,9 @@ void CMD_SetEnv(F_CMD_ARGS)
 
 	action = GetNextToken(action,&szVar);
 	if (!szVar)
+	{
 		return;
+	}
 	action = GetNextToken(action,&szValue);
 	if (!szValue)
 	{
@@ -2690,7 +2843,6 @@ void CMD_SetEnv(F_CMD_ARGS)
 		free(szVar);
 		return;
 	}
-
 	szPutenv = safemalloc(strlen(szVar)+strlen(szValue)+2);
 	sprintf(szPutenv,"%s=%s",szVar,szValue);
 	putenv(szPutenv);
@@ -2708,8 +2860,9 @@ void CMD_UnsetEnv(F_CMD_ARGS)
 
 	action = GetNextToken(action,&szVar);
 	if (!szVar)
+	{
 		return;
-
+	}
 	szPutenv = (char *)safemalloc(strlen(szVar) + 2);
 	sprintf(szPutenv, "%s=", szVar);
 	putenv(szPutenv);
@@ -2823,10 +2976,14 @@ void CMD_GlobalOpts(F_CMD_ARGS)
 		}
 		/* should never be null, but checking anyways... */
 		if (opt)
+		{
 			free(opt);
+		}
 	}
 	if (opt)
+	{
 		free(opt);
+	}
 
 	return;
 }
@@ -3030,9 +3187,13 @@ void CMD_ColorLimit(F_CMD_ARGS)
 	 * Note that the statically allocated ones are even numbered and the
 	 * dynamically changeable ones are odd numbered */
 	if (!(Pvisual->class & 1))
+	{
 		return;
-	if (Pdepth > 20) {               /* if more than 20 bit color */
-		return;                             /* ignore the limit */
+	}
+	if (Pdepth > 20)
+	{
+		/* if more than 20 bit color ignore the limit */
+		return;
 	}
 	if (GetIntegerArguments(action, NULL, &val, 1) != 1)
 	{
@@ -3055,16 +3216,13 @@ void CMD_SetAnimation(F_CMD_ARGS)
 	float pct;
 	int i = 0;
 
-	action = GetNextToken(action, &opt);
+	opt = PeekToken(action, &action);
 	if (!opt || sscanf(opt,"%d",&delay) != 1)
 	{
 		fvwm_msg(ERR,"SetAnimation",
 			 "Improper milli-second delay as first argument");
-		if (opt)
-			free(opt);
 		return;
 	}
-	free(opt);
 	if (delay > 500)
 	{
 		fvwm_msg(WARN,"SetAnimation",
@@ -3072,21 +3230,20 @@ void CMD_SetAnimation(F_CMD_ARGS)
 			 " animation delay");
 	}
 	cmsDelayDefault = delay;
-	for (action = GetNextToken(action, &opt); opt;
-	     free(opt), action = GetNextToken(action, &opt))
+	for (opt = PeekToken(action, &action); opt;
+	     opt = PeekToken(action, &action))
 	{
 		if (sscanf(opt,"%f",&pct) != 1)
 		{
 			fvwm_msg(ERR,"SetAnimation",
 				 "Use fractional values ending in 1.0 as args"
 				 " 2 and on");
-			free(opt);
 			return;
 		}
 		rgpctMovementDefault[i++] = pct;
 	}
 	/* No pct entries means don't change them at all */
-	if (i>0 && rgpctMovementDefault[i-1] != 1.0)
+	if (i > 0 && rgpctMovementDefault[i-1] != 1.0)
 	{
 		rgpctMovementDefault[i++] = 1.0;
 	}
@@ -3097,15 +3254,14 @@ void CMD_SetAnimation(F_CMD_ARGS)
 void CMD_FakeClick(F_CMD_ARGS)
 {
 	char *token;
-	char *optlist[] =
-		{
-			"press", "p",
-			"release", "r",
-			"wait", "w",
-			"modifiers", "m",
-			"depth", "d",
-			NULL
-		};
+	char *optlist[] = {
+		"press", "p",
+		"release", "r",
+		"wait", "w",
+		"modifiers", "m",
+		"depth", "d",
+		NULL
+	};
 	unsigned int mask = 0;
 	Window root = Scr.Root;
 	int maxdepth = 0;
@@ -3196,9 +3352,13 @@ void CMD_FakeClick(F_CMD_ARGS)
 					SubstructureNotifyMask | add_mask, &e);
 				XFlush(dpy);
 				if (do_unset)
+				{
 					mask &= ~(Button1Mask << (val - 1));
+				}
 				else
+				{
 					mask |= (Button1Mask << (val - 1));
+				}
 			}
 			else
 			{
@@ -3237,20 +3397,34 @@ void CMD_FakeClick(F_CMD_ARGS)
 				val = -val;
 			}
 			if (val == 6)
+			{
 				val = ShiftMask;
+			}
 			else if (val == 7)
+			{
 				val = LockMask;
+			}
 			else if (val == 8)
+			{
 				val = ControlMask;
+			}
 			else if (val >=1 && val <= 5)
+			{
 				val = (Mod1Mask << (val - 1));
+			}
 			else
+			{
 				/* error */
 				return;
+			}
 			if (do_unset)
+			{
 				mask &= ~val;
+			}
 			else
+			{
 				mask |= val;
+			}
 			break;
 		case 8:
 		case 9:
@@ -3262,7 +3436,9 @@ void CMD_FakeClick(F_CMD_ARGS)
 			return;
 		}
 		if (action)
+		{
 			token = PeekToken(action, &action);
+		}
 	}
 
 	return;
@@ -3281,7 +3457,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	char *opt = NULL;
 	Bool finish_on_release = True;
 	KeySym keysym;
-	Bool restor_repeat = False;
+	Bool restore_repeat = False;
 	Bool echo_sequence = False;
 	Bool draw_motion = False;
 	int i = 0;
@@ -3309,51 +3485,74 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 
 	/* set the default option */
 	if (eventp->type == KeyPress || eventp->type == ButtonPress)
+	{
 		finish_on_release = True;
+	}
 	else
+	{
 		finish_on_release = False;
+	}
 
 	/* parse the option */
 	for (action = GetNextSimpleOption(action, &opt); opt;
 	     action = GetNextSimpleOption(action, &opt))
 	{
 		if (StrEquals("NotStayPressed",opt))
+		{
 			finish_on_release = False;
+		}
 		else if (StrEquals("EchoSequence",opt))
+		{
 			echo_sequence = True;
+		}
 		else if (StrEquals("DrawMotion",opt))
+		{
 			draw_motion = True;
+		}
 		else if (StrEquals("FeedBack",opt))
+		{
 			feed_back = True;
+		}
 		else if (StrEquals("StrokeWidth",opt))
 		{
 			/* stroke width takes a positive integer argument */
 			if (opt)
+			{
 				free(opt);
+			}
 			action = GetNextToken(action, &opt);
 			if (!opt)
-				fvwm_msg(WARN,"StrokeWidth",
-					 "needs an integer argument");
+			{
+				fvwm_msg(
+					WARN, "StrokeWidth",
+					"needs an integer argument");
+			}
 			/* we allow stroke_width == 0 which means drawing a
 			 * `fast' line of width 1; the upper level of 100 is
 			 * arbitrary */
 			else if (!sscanf(opt, "%d", &stroke_width) ||
-				 stroke_width < 0 ||
-				 stroke_width > 100)
+				 stroke_width < 0 || stroke_width > 100)
 			{
-				fvwm_msg(WARN,"StrokeWidth",
-					 "Bad integer argument %d",
-					 stroke_width);
+				fvwm_msg(
+					WARN, "StrokeWidth",
+					"Bad integer argument %d",
+					stroke_width);
 				stroke_width = 1;
 			}
 		}
 		else
+		{
 			fvwm_msg(WARN,"StrokeFunc","Unknown option %s", opt);
+		}
 		if (opt)
+		{
 			free(opt);
+		}
 	}
 	if (opt)
+	{
 		free(opt);
+	}
 
 	/* Force auto repeat off and grab the Keyboard to get proper
 	 * KeyRelease events if we need it.
@@ -3367,7 +3566,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 		if (kstate.global_auto_repeat == AutoRepeatModeOn)
 		{
 			XAutoRepeatOff(dpy);
-			restor_repeat = True;
+			restore_repeat = True;
 		}
 		MyXGrabKeyboard(dpy);
 	}
@@ -3471,11 +3670,15 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 		case ButtonRelease:
 			if (finish_on_release && start_event_type ==
 			    ButtonPress)
+			{
 				finished = 1;
+			}
 			break;
 		case KeyRelease:
 			if (finish_on_release &&  start_event_type == KeyPress)
+			{
 				finished = 1;
+			}
 			break;
 		case KeyPress:
 			keysym = XLookupKeysym(&eventp->xkey,0);
@@ -3483,15 +3686,21 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 			 */
 			if (keysym == XK_Escape || keysym == XK_Delete ||
 			    keysym == XK_KP_Separator)
+			{
 				abort = 1;
+			}
 			/* finish on enter or space (as in menus.c) */
 			if (keysym == XK_Return || keysym == XK_KP_Enter ||
 			    keysym ==  XK_space)
+			{
 				finished = 1;
+			}
 			break;
 		case ButtonPress:
 			if (!finish_on_release)
+			{
 				finished = 1;
+			}
 			break;
 		default:
 			break;
@@ -3513,11 +3722,14 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 		free(y);
 	}
 	if (start_event_type == KeyPress && finish_on_release)
+	{
 		MyXUngrabKeyboard(dpy);
+	}
 	UngrabEm(GRAB_NORMAL);
-
-	if (restor_repeat)
+	if (restore_repeat)
+	{
 		XAutoRepeatOn(dpy);
+	}
 
 	/* get the stroke sequence */
 	stroke_trans(sequence);
@@ -3530,18 +3742,27 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 		{
 			/* Telephone to numeric pad */
 			if ('7' <= sequence[i] && sequence[i] <= '9')
+			{
 				num_seq[i] = sequence[i]-6;
+			}
 			else if ('1' <= sequence[i] && sequence[i] <= '3')
+			{
 				num_seq[i] = sequence[i]+6;
+			}
 			else
+			{
 				num_seq[i] = sequence[i];
+			}
 		}
 		num_seq[i++] = '\0';
 		fvwm_msg(INFO, "StrokeFunc", "stroke sequence: %s (N%s)",
 			 sequence, num_seq);
 	}
 
-	if (abort) return;
+	if (abort)
+	{
+		return;
+	}
 
 	/* check for a binding */
 	stroke_action = CheckBinding(
@@ -3571,8 +3792,8 @@ void CMD_State(F_CMD_ARGS)
 	int toggle;
 	int n;
 
-	if (DeferExecution(eventp, &w, &fw, &context, CRS_SELECT,
-			   ButtonRelease))
+	if (DeferExecution(
+		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
 	{
 		return;
 	}

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -15,6 +16,20 @@
 
 #ifndef DECORATIONS_H
 #define DECORATIONS_H
+
+/* ---------------------------- included header files ----------------------- */
+
+/* ---------------------------- global definitions -------------------------- */
+
+/* ---------------------------- global macros ------------------------------- */
+
+/* ---------------------------- type definitions ---------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- interface functions ------------------------- */
 
 void GetMwmHints(FvwmWindow *t);
 void GetOlHints(FvwmWindow *t);

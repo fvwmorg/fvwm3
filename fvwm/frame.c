@@ -1808,6 +1808,7 @@ void frame_move_resize(
 	{
 		UngrabEm(GRAB_FREEZE_CURSOR);
 	}
+refresh_focus(get_focus_window());
 
 	return;
 }

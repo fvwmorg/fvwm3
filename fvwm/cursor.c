@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -12,6 +13,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+/* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
 
@@ -28,6 +31,20 @@
 #include "screen.h"
 #include "cursor.h"
 #include "menus.h"
+
+/* ---------------------------- local definitions --------------------------- */
+
+/* ---------------------------- local macros -------------------------------- */
+
+/* ---------------------------- imports ------------------------------------- */
+
+/* ---------------------------- included code files ------------------------- */
+
+/* ---------------------------- local types --------------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- local variables ----------------------------- */
 
 static Cursor cursors[CRS_MAX];
 static const unsigned int default_cursors[CRS_MAX] =
@@ -59,12 +76,23 @@ static const unsigned int default_cursors[CRS_MAX] =
 	XC_plus                  /* CRS_STROKE */
 };
 
-/***********************************************************************
- *
- *  Procedure:
- *      CreateCursors - Loads fvwm cursors
- *
- ***********************************************************************/
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- local functions ----------------------------- */
+
+static void SafeDefineCursor(Window w, Cursor cursor)
+{
+	if (w)
+	{
+		XDefineCursor(dpy,w,cursor);
+	}
+
+	return;
+}
+
+/* ---------------------------- interface functions ------------------------- */
+
+/* CreateCursors - Loads fvwm cursors */
 Cursor *CreateCursors(Display *dpy)
 {
 	int i;
@@ -78,12 +106,7 @@ Cursor *CreateCursors(Display *dpy)
 	return cursors;
 }
 
-
-static void SafeDefineCursor(Window w, Cursor cursor)
-{
-	if (w)
-		XDefineCursor(dpy,w,cursor);
-}
+/* ---------------------------- builtin commands ---------------------------- */
 
 void CMD_CursorStyle(F_CMD_ARGS)
 {
@@ -406,13 +429,8 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	}
 }
 
-/***********************************************************************
- *
- *  builtin function: (set)BusyCursor
- *  Defines in which cases fvwm "grab" the cursor during execution of
- *  certain functions.
- *
- ***********************************************************************/
+/* Defines in which cases fvwm "grab" the cursor during execution of certain
+ * functions. */
 void CMD_BusyCursor(F_CMD_ARGS)
 {
 	char *option = NULL;

@@ -376,6 +376,8 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
 	verify_stack_ring_consistency();
 #endif
 	MyXUngrabServer(dpy);
+
+	return;
 }
 
 static void setup_window_structure(
@@ -459,11 +461,15 @@ static void setup_window_name_count(FvwmWindow *fw)
 	Bool done = False;
 
 	if (!fw->name.name)
+	{
 		done = True;
+	}
 
 	if (fw->icon_name.name &&
 	    strcmp(fw->name.name, fw->icon_name.name) == 0)
+	{
 		count = fw->icon_name_count;
+	}
 
 	while (!done)
 	{
@@ -498,8 +504,9 @@ static void setup_icon_name_count(FvwmWindow *fw)
 	Bool done = False;
 
 	if (!fw->icon_name.name)
+	{
 		done = True;
-
+	}
 	if (fw->name.name &&
 	    strcmp(fw->name.name, fw->icon_name.name) == 0)
 	{
@@ -662,7 +669,6 @@ static void setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
 	{
 		fw->mini_pixmap_file = NULL;
 	}
-
 	if (fw->mini_pixmap_file)
 	{
 		fpa.mask = 0;
@@ -697,6 +703,8 @@ static void setup_icon_size_limits(FvwmWindow *fw, window_style *pstyle)
 		fw->max_icon_width = MAX_ALLOWABLE_ICON_DIMENSION;
 		fw->max_icon_height = MAX_ALLOWABLE_ICON_DIMENSION;
 	}
+
+	return;
 }
 
 static void setup_frame_window(
@@ -1116,24 +1124,17 @@ static void setup_auxiliary_windows(
 
 	get_default_window_attributes(fw, &valuemask_save, &attributes);
 
-	/****** frame window ******/
 	if (setup_frame_and_parent)
 	{
 		setup_frame_window(fw);
 		setup_parent_window(fw);
 	}
-
-	/****** resize handle windows ******/
 	setup_resize_handle_windows(fw);
-
-	/****** title window ******/
 	if (HAS_TITLE(fw))
 	{
 		setup_title_window(fw, valuemask_save, &attributes);
 		setup_button_windows(fw, valuemask_save, &attributes, buttons);
 	}
-
-	/****** setup frame stacking order ******/
 	setup_frame_stacking(fw);
 	XMapSubwindows (dpy, FW_W_FRAME(fw));
 
@@ -2361,7 +2362,6 @@ FvwmWindow *AddWindow(
 		fw = NULL;
 	}
 
-
 	return fw;
 }
 
@@ -3245,9 +3245,13 @@ void CaptureAllWindows(Bool is_recapture)
 void CMD_Recapture(F_CMD_ARGS)
 {
 	do_recapture(F_PASS_ARGS, False);
+
+	return;
 }
 
 void CMD_RecaptureWindow(F_CMD_ARGS)
 {
 	do_recapture(F_PASS_ARGS, True);
+
+	return;
 }

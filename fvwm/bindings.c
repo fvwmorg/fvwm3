@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -12,6 +13,8 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+
+/* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
 
@@ -32,11 +35,25 @@
 #include "stroke.h"
 #endif /* HAVE_STROKE */
 
-static void activate_binding(
-	Binding *binding, BindingType type, Bool do_grab, Bool do_grab_root);
+/* ---------------------------- local definitions --------------------------- */
+
+/* ---------------------------- local macros -------------------------------- */
+
+/* ---------------------------- imports ------------------------------------- */
+
+/* ---------------------------- included code files ------------------------- */
+
+/* ---------------------------- local types --------------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- local variables ----------------------------- */
 
 static int mods_unused = DEFAULT_MODS_UNUSED;
 
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- local functions ----------------------------- */
 
 static void update_nr_buttons(
 	int contexts, int *nr_left_buttons, int *nr_right_buttons)
@@ -82,11 +99,107 @@ static void update_nr_buttons(
 	}
 }
 
-/****************************************************************************
- *
- *  Parses a mouse or key binding
- *
- ****************************************************************************/
+static void activate_binding(
+	Binding *binding, BindingType type, Bool do_grab, Bool do_grab_root)
+{
+	FvwmWindow *t;
+
+	if (binding == NULL)
+	{
+		return;
+	}
+	if (do_grab_root)
+	{
+		/* necessary for key bindings that work over unfocused windows
+		 */
+		GrabWindowKeyOrButton(
+			dpy, Scr.Root, binding,
+			C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_ROOT|C_ICON|
+			C_EWMH_DESKTOP, GetUnusedModifiers(), None, do_grab);
+	}
+	if (fFvwmInStartup == True)
+	{
+		return;
+	}
+
+	/* grab keys immediately */
+	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	{
+		if (!IS_EWMH_DESKTOP(FW_W(t)) &&
+		    (binding->Context & C_WINDOW) &&
+		    (binding->type == MOUSE_BINDING
+		     STROKE_CODE(|| binding->type == STROKE_BINDING)))
+		{
+			GrabWindowButton(
+				dpy, FW_W_PARENT(t), binding, C_WINDOW,
+				GetUnusedModifiers(), None, do_grab);
+		}
+		if (!IS_EWMH_DESKTOP(FW_W(t)) &&
+		    (binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|
+					 C_SIDEBAR)) &&
+		    binding->type == KEY_BINDING)
+		{
+			GrabWindowKey(
+				dpy, FW_W_FRAME(t), binding,
+				C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+				GetUnusedModifiers(), do_grab);
+		}
+		if (binding->Context & C_ICON)
+		{
+			if (FW_W_ICON_TITLE(t) != None)
+			{
+				GrabWindowKeyOrButton(
+					dpy, FW_W_ICON_TITLE(t), binding,
+					C_ICON, GetUnusedModifiers(), None,
+					do_grab);
+			}
+			if (FW_W_ICON_PIXMAP(t) != None)
+			{
+				GrabWindowKeyOrButton(
+					dpy, FW_W_ICON_PIXMAP(t), binding,
+					C_ICON, GetUnusedModifiers(), None,
+					do_grab);
+			}
+		}
+		if (IS_EWMH_DESKTOP(FW_W(t)) &&
+		    (binding->Context & C_EWMH_DESKTOP))
+		{
+			GrabWindowKeyOrButton(
+				dpy, FW_W_PARENT(t), binding, C_EWMH_DESKTOP,
+				GetUnusedModifiers(), None, do_grab);
+		}
+	}
+
+	return;
+}
+
+static void binding_cmd(F_CMD_ARGS, BindingType type, Bool do_grab_root)
+{
+	Binding *b;
+	int count;
+	unsigned char btg = Scr.buttons2grab;
+
+	count = ParseBinding(
+		dpy, &Scr.AllBindings, action, type, &Scr.nr_left_buttons,
+		&Scr.nr_right_buttons, &btg, do_grab_root,
+		Scr.flags.silent_functions);
+	if (btg != Scr.buttons2grab)
+	{
+		Scr.flags.do_need_window_update = 1;
+		Scr.flags.has_mouse_binding_changed = 1;
+		Scr.buttons2grab = btg;
+	}
+	for (b = Scr.AllBindings; count > 0; count--, b = b->NextBinding)
+	{
+		activate_binding(b, type, True, do_grab_root);
+	}
+
+	return;
+}
+
+/* ---------------------------- interface functions ------------------------- */
+
+/* Parses a mouse or key binding */
 int ParseBinding(
 	Display *dpy, Binding **pblist, char *tline, BindingType type,
 	int *nr_left_buttons, int *nr_right_buttons,
@@ -402,103 +515,18 @@ int ParseBinding(
 	return rc;
 }
 
-static void activate_binding(
-	Binding *binding, BindingType type, Bool do_grab, Bool do_grab_root)
+/* Removes all unused modifiers from in_modifiers */
+unsigned int MaskUsedModifiers(unsigned int in_modifiers)
 {
-	FvwmWindow *t;
-
-	if (binding == NULL)
-	{
-		return;
-	}
-	if (do_grab_root)
-	{
-		/* necessary for key bindings that work over unfocused windows
-		 */
-		GrabWindowKeyOrButton(
-			dpy, Scr.Root, binding,
-			C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_ROOT|C_ICON|
-			C_EWMH_DESKTOP, GetUnusedModifiers(), None, do_grab);
-	}
-	if (fFvwmInStartup == True)
-	{
-		return;
-	}
-
-	/* grab keys immediately */
-	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-	{
-		if (!IS_EWMH_DESKTOP(FW_W(t)) &&
-		    (binding->Context & C_WINDOW) &&
-		    (binding->type == MOUSE_BINDING
-		     STROKE_CODE(|| binding->type == STROKE_BINDING)))
-		{
-			GrabWindowButton(
-				dpy, FW_W_PARENT(t), binding, C_WINDOW,
-				GetUnusedModifiers(), None, do_grab);
-		}
-		if (!IS_EWMH_DESKTOP(FW_W(t)) &&
-		    (binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|
-					 C_SIDEBAR)) &&
-		    binding->type == KEY_BINDING)
-		{
-			GrabWindowKey(
-				dpy, FW_W_FRAME(t), binding,
-				C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
-				GetUnusedModifiers(), do_grab);
-		}
-		if (binding->Context & C_ICON)
-		{
-			if (FW_W_ICON_TITLE(t) != None)
-			{
-				GrabWindowKeyOrButton(
-					dpy, FW_W_ICON_TITLE(t), binding,
-					C_ICON, GetUnusedModifiers(), None,
-					do_grab);
-			}
-			if (FW_W_ICON_PIXMAP(t) != None)
-			{
-				GrabWindowKeyOrButton(
-					dpy, FW_W_ICON_PIXMAP(t), binding,
-					C_ICON, GetUnusedModifiers(), None,
-					do_grab);
-			}
-		}
-		if (IS_EWMH_DESKTOP(FW_W(t)) &&
-		    (binding->Context & C_EWMH_DESKTOP))
-		{
-			GrabWindowKeyOrButton(
-				dpy, FW_W_PARENT(t), binding, C_EWMH_DESKTOP,
-				GetUnusedModifiers(), None, do_grab);
-		}
-	}
-
-	return;
+	return in_modifiers & ~mods_unused;
 }
 
-static void binding_cmd(F_CMD_ARGS, BindingType type, Bool do_grab_root)
+unsigned int GetUnusedModifiers(void)
 {
-	Binding *b;
-	int count;
-	unsigned char btg = Scr.buttons2grab;
-
-	count = ParseBinding(
-		dpy, &Scr.AllBindings, action, type, &Scr.nr_left_buttons,
-		&Scr.nr_right_buttons, &btg, do_grab_root,
-		Scr.flags.silent_functions);
-	if (btg != Scr.buttons2grab)
-	{
-		Scr.flags.do_need_window_update = 1;
-		Scr.flags.has_mouse_binding_changed = 1;
-		Scr.buttons2grab = btg;
-	}
-	for (b = Scr.AllBindings; count > 0; count--, b = b->NextBinding)
-	{
-		activate_binding(b, type, True, do_grab_root);
-	}
-
-	return;
+	return mods_unused;
 }
+
+/* ---------------------------- builtin commands ---------------------------- */
 
 void CMD_Key(F_CMD_ARGS)
 {
@@ -530,34 +558,8 @@ void CMD_Stroke(F_CMD_ARGS)
 }
 #endif /* HAVE_STROKE */
 
-/* Removes all unused modifiers from in_modifiers */
-unsigned int MaskUsedModifiers(unsigned int in_modifiers)
-{
-	return in_modifiers & ~mods_unused;
-}
-
-unsigned int GetUnusedModifiers(void)
-{
-	return mods_unused;
-}
-
-/***********************************************************************
- *
- *      SetModifierLocks : declares which X modifiers are actually locks
- *              and should be ignored when testing mouse/key binding modifiers.
- *      syntax :
- *              ModifierLocks [S][L][C][M][1][2][3][4][5]
- *
- *      S is shift
- *      L is caps lock
- *      C is control
- *      M is meta, the same as mod1
- *      1-5 are mod1-mod5
- *      The default is L25 (ie. mask out caps lock, num lock & scroll lock
- *      for XFree86 3.3.3.1
- *
- *      Benoit TRIQUET <benoit@adsl-216-100-248-201.dsl.pacbell.net> 2/21/99
- ***********************************************************************/
+/* Declares which X modifiers are actually locks and should be ignored when
+ * testing mouse/key binding modifiers. */
 void CMD_IgnoreModifiers(F_CMD_ARGS)
 {
 	char *token;

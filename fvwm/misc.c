@@ -171,9 +171,13 @@ Bool GrabEm(int cursor, int grab_context)
 	{
 	case GRAB_BUSY:
 		if ( Scr.Hilite != NULL )
+		{
 			grab_win = FW_W(Scr.Hilite);
+		}
 		else
+		{
 			grab_win = Scr.Root;
+		}
 		/* retry to grab the busy cursor only once */
 		rep = 2;
 		break;
@@ -277,13 +281,21 @@ Bool UngrabEm(int ungrab_context)
 		case GRAB_BUSY:
 		case GRAB_MENU:
 			if (grab_count[GRAB_BUSYMENU] > 0)
+			{
 				new_cursor = CRS_WAIT;
+			}
 			else if (grab_count[GRAB_BUSY] > 0)
+			{
 				new_cursor = CRS_WAIT;
+			}
 			else if (grab_count[GRAB_MENU] > 0)
+			{
 				new_cursor = CRS_MENU;
+			}
 			else
+			{
 				new_cursor = None;
+			}
 			break;
 		case GRAB_BUSYMENU:
 			/* switch back from busymenu cursor to normal menu
@@ -417,6 +429,8 @@ void set_last_added_item(last_added_item_type type, void *item)
 {
 	Scr.last_added_item.type = type;
 	Scr.last_added_item.item = item;
+
+	return;
 }
 
 /* some fancy font handling stuff */
@@ -431,6 +445,8 @@ void NewFontAndColor(FlocaleFont *flf, Pixel color, Pixel backcolor)
 	Globalgcv.foreground = color;
 	Globalgcv.background = backcolor;
 	XChangeGC(dpy,Scr.TitleGC,Globalgcm,&Globalgcv);
+
+	return;
 }
 
 

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,15 +14,30 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _BINDINGS_
-#define _BINDINGS_
+#ifndef BINDINGS_H
+#define BINDINGS_H
+
+/* ---------------------------- included header files ----------------------- */
+
+/* ---------------------------- global definitions -------------------------- */
+
+/* ---------------------------- global macros ------------------------------- */
+
+/* ---------------------------- type definitions ---------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- interface functions ------------------------- */
 
 int ParseBinding(
-  Display *dpy, Binding **pblist, char *tline, BindingType type,
-  int *nr_left_buttons, int *nr_right_buttons, unsigned char *buttons_grabbed,
-  Bool do_ungrab_root, Bool is_silent);
+	Display *dpy, Binding **pblist, char *tline, BindingType type,
+	int *nr_left_buttons, int *nr_right_buttons,
+	unsigned char *buttons_grabbed, Bool do_ungrab_root, Bool is_silent);
 void update_key_bindings(void);
 unsigned int MaskUsedModifiers(unsigned int in_modifiers);
 unsigned int GetUnusedModifiers(void);
 
-#endif /* _BINDINGS_ */
+#endif /* BINDINGS_H */
+

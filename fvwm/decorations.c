@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -19,34 +20,9 @@
  * which reads motif mwm window manager
  * hints from a window, and makes necessary adjustments for fvwm.
  *
- * Definitions of the hint structure and the constants are courtesy of
- * mitnits@bgumail.bgu.ac.il (Roman Mitnitski ), who sent this note,
- * after conferring with a friend at the OSF:
- * Hi, Rob.
- *
- *I'm happy to announce, that you can use motif public
- *headers in any way you can... I just got the letter from
- *my friend, it says literally:
- *
- *>    Hi.
- *>
- *> Yes, you can use motif public header files, in particular
- *> because there is NO limitation on inclusion of this files
- *> in your programms....Also, no one can put copyright to the NUMBERS
- *> (I mean binary flags for decorations) or DATA STRUCTURES
- *> (I mean little structure used by motif to pass description
- *> of the decorations to the mwm). Call it another name, if you are
- *> THAT MUCH concerned.
- *>
- *> You can even use the little piece of code I've passed to you -
- *> we are talking about 10M distribution against two pages of code.
- *> Don't be silly.
- *>
- *> Best wishes.
- *> Eli.
- *
- *
  ****************************************************************************/
+
+/* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
 
@@ -70,19 +46,7 @@
 #include "style.h"
 #include "geometry.h"
 
-
-extern Atom _XA_MwmAtom;
-
-/* Motif  window hints */
-typedef struct
-{
-	CARD32      flags;
-	CARD32      functions;
-	CARD32      decorations;
-	INT32         inputMode;
-} PropMotifWmHints;
-
-typedef PropMotifWmHints        PropMwmHints;
+/* ---------------------------- local definitions --------------------------- */
 
 /* Motif window hints */
 #define MWM_HINTS_FUNCTIONS           (1L << 0)
@@ -120,6 +84,37 @@ typedef PropMotifWmHints        PropMwmHints;
   (OL_DECOR_CLOSE | OL_DECOR_RESIZEH | OL_DECOR_HEADER | OL_DECOR_ICON_NAME)
 /* indicates if there are any OL hints */
 #define OL_ANY_HINTS                  (1L << 7)
+
+/* ---------------------------- local macros -------------------------------- */
+
+/* ---------------------------- imports ------------------------------------- */
+
+extern Atom _XA_MwmAtom;
+
+/* ---------------------------- included code files ------------------------- */
+
+/* ---------------------------- local types --------------------------------- */
+
+/* Motif  window hints */
+typedef struct
+{
+	CARD32      flags;
+	CARD32      functions;
+	CARD32      decorations;
+	INT32         inputMode;
+} PropMotifWmHints;
+
+typedef PropMotifWmHints PropMwmHints;
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- local variables ----------------------------- */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- local functions ----------------------------- */
+
+/* ---------------------------- interface functions ------------------------- */
 
 /****************************************************************************
  *

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,18 +14,16 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/*
- * *************************************************************************
- * This module was all new
+/* This module was all new
  * by Rob Nation
  * Copyright 1993 Robert Nation. No restrictions are placed on this code,
  * as long as the copyright notice is preserved
  *
  * The highlight and shadow logic is now in libs/ColorUtils.c.
  * Its completely new.
- * *************************************************************************
  */
 
+/* ---------------------------- included header files ----------------------- */
 
 #include "config.h"
 
@@ -44,20 +43,39 @@
 #include "misc.h"
 #include "screen.h"
 
-/****************************************************************************
- *
- * Free an array of colours (n colours), never free black
- *
- ****************************************************************************/
+/* ---------------------------- local definitions --------------------------- */
+
+/* ---------------------------- local macros -------------------------------- */
+
+/* ---------------------------- imports ------------------------------------- */
+
+/* ---------------------------- included code files ------------------------- */
+
+/* ---------------------------- local types --------------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- local variables ----------------------------- */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- local functions ----------------------------- */
+
+/* ---------------------------- interface functions ------------------------- */
+
+/* Free an array of colours (n colours), never free black */
 void FreeColors(Pixel *pixels, int n, Bool no_limit)
 {
-  int i;
+	int i;
 
-  /* We don't ever free black - dirty hack to allow freeing colours at all */
-  /* olicha: ???? */
-  for (i = 0; i < n; i++)
-  {
-    if (pixels[i] != 0)
-      PictureFreeColors(dpy, Pcmap, pixels + i, 1, 0, no_limit);
-  }
+	/* We don't ever free black - dirty hack to allow freeing colours at
+	 * all */
+	/* olicha: ???? */
+	for (i = 0; i < n; i++)
+	{
+		if (pixels[i] != 0)
+		PictureFreeColors(dpy, Pcmap, pixels + i, 1, 0, no_limit);
+	}
+
+	return;
 }

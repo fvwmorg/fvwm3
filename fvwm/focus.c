@@ -1142,6 +1142,8 @@ void focus_force_refresh_focus(FvwmWindow *fw)
 		XSelectInput(dpy, FW_W(fw), winattrs.your_event_mask);
 	}
 	MyXUngrabServer(dpy);
+
+	return;
 }
 
 void refresh_focus(FvwmWindow *fw)

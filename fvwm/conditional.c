@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -21,6 +22,8 @@
  *     copyright remains in the source code and all documentation
  ****************************************************************************/
 
+/* ---------------------------- included header files ----------------------- */
+
 #include "config.h"
 
 #include <stdio.h>
@@ -33,6 +36,7 @@
 #include "externs.h"
 #include "cursor.h"
 #include "functions.h"
+#include "conditional.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -41,6 +45,192 @@
 #include "focus.h"
 #include "geometry.h"
 
+/* ---------------------------- local definitions --------------------------- */
+
+/* ---------------------------- local macros -------------------------------- */
+
+/* ---------------------------- imports ------------------------------------- */
+
+/* ---------------------------- included code files ------------------------- */
+
+/* ---------------------------- local types --------------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- local variables ----------------------------- */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- local functions ----------------------------- */
+
+/**************************************************************************
+ *
+ * Direction = 1 ==> "Next" operation
+ * Direction = -1 ==> "Previous" operation
+ * Direction = 0 ==> operation on current window (returns pass or fail)
+ *
+ **************************************************************************/
+static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
+{
+	int pass = 0;
+	FvwmWindow *fw, *found = NULL;
+	FvwmWindow *sf;
+	WindowConditionMask mask;
+	char *flags;
+
+	/* Create window mask */
+	flags = CreateFlagString(action, restofline);
+	DefaultConditionMask(&mask);
+	if (Direction == 0)
+	{ /* override for Current [] */
+		mask.my_flags.use_circulate_hit = 1;
+		mask.my_flags.use_circulate_hit_icon = 1;
+	}
+	CreateConditionMask(flags, &mask);
+	if (flags)
+	{
+		free(flags);
+	}
+	sf = get_focus_window();
+	if (sf)
+	{
+		if (Direction > 0)
+		{
+			fw = sf->prev;
+		}
+		else if (Direction < 0)
+		{
+			fw = sf->next;
+		}
+		else
+		{
+			fw = sf;
+		}
+	}
+	else
+	{
+		fw = NULL;
+		if (Direction == 0)
+		{
+			return NULL;
+		}
+	}
+
+	for (pass = 0; pass < 3 && !found; pass++)
+	{
+		while (fw && !found && fw != &Scr.FvwmRoot)
+		{
+			/* Make CirculateUp and CirculateDown take args. by
+			 * Y.NOMURA */
+			if (MatchesConditionMask(fw, &mask))
+			{
+				found = fw;
+			}
+			else
+			{
+				if (Direction > 0)
+				{
+					fw = fw->prev;
+				}
+				else
+				{
+					fw = fw->next;
+				}
+			}
+			if (Direction == 0)
+			{
+				FreeConditionMask(&mask);
+				return found;
+			}
+		}
+		if (!fw || fw == &Scr.FvwmRoot)
+		{
+			if (Direction > 0)
+			{
+				/* Go to end of list */
+				for (fw = &Scr.FvwmRoot; fw && fw->next;
+				     fw = fw->next)
+				{
+					/* nop */
+				}
+			}
+			else
+			{
+				/* Go to top of list */
+				fw = Scr.FvwmRoot.next;
+			}
+		}
+	}
+	FreeConditionMask(&mask);
+
+	return found;
+}
+
+static void circulate_cmd(
+	F_CMD_ARGS, int circ_dir, Bool do_use_found)
+{
+	FvwmWindow *found;
+	char *restofline;
+
+	found = Circulate(action, circ_dir, &restofline);
+	if (cond_rc != NULL)
+	{
+		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
+	}
+	if ((!found == !do_use_found) && restofline)
+	{
+		old_execute_function(
+			NULL, restofline,
+			(do_use_found) ? found : fw, eventp,
+			context, *Module, 0, NULL);
+	}
+
+	return;
+}
+
+static void select_cmd(F_CMD_ARGS)
+{
+	char *restofline;
+	char *flags;
+	WindowConditionMask mask;
+
+	if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
+	{
+		if (cond_rc != NULL)
+		{
+			*cond_rc = COND_RC_ERROR;
+		}
+		return;
+	}
+	flags = CreateFlagString(action, &restofline);
+	DefaultConditionMask(&mask);
+	mask.my_flags.use_circulate_hit = 1;
+	mask.my_flags.use_circulate_hit_icon = 1;
+	CreateConditionMask(flags, &mask);
+	if (flags)
+	{
+		free(flags);
+	}
+	if (MatchesConditionMask(fw, &mask) && restofline)
+	{
+		if (cond_rc != NULL)
+		{
+			*cond_rc = COND_RC_OK;
+		}
+		old_execute_function(
+			NULL, restofline, fw, eventp, C_WINDOW, *Module,
+			0, NULL);
+	}
+	else if (cond_rc != NULL)
+	{
+		*cond_rc = COND_RC_NO_MATCH;
+	}
+	FreeConditionMask(&mask);
+
+	return;
+}
+
+/* ---------------------------- interface functions ------------------------- */
 
 /**********************************************************************
  * Parses the flag string and returns the text between [ ] or ( )
@@ -59,15 +249,21 @@ char *CreateFlagString(char *string, char **restptr)
 
 	c = string;
 	while (isspace((unsigned char)*c) && (*c != 0))
+	{
 		c++;
+	}
 
 	if (*c == '[' || *c == '(')
 	{
 		/* Get the text between [ ] or ( ) */
 		if (*c == '[')
+		{
 			closeopt = ']';
+		}
 		else
+		{
 			closeopt = ')';
+		}
 		c++;
 		start = c;
 		length = 0;
@@ -117,6 +313,8 @@ void FreeConditionMask(WindowConditionMask *mask)
 	{
 		free(mask->name - 1);
 	}
+
+	return;
 }
 
 /* Assign the default values for the window mask
@@ -126,6 +324,8 @@ void DefaultConditionMask(WindowConditionMask *mask)
 	memset(mask, 0, sizeof(WindowConditionMask));
 	/* -2  means no layer condition, -1 means current */
 	mask->layer = -2;
+
+	return;
 }
 
 /**********************************************************************
@@ -268,7 +468,9 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			SETM_PLACED_BY_FVWM(mask, 1);
 		}
 		else if (StrEquals(condition,"CurrentDesk"))
+		{
 			mask->my_flags.needs_current_desk = 1;
+		}
 		else if (StrEquals(condition,"CurrentPage"))
 		{
 			mask->my_flags.needs_current_desk = 1;
@@ -281,15 +483,25 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		}
 		else if (StrEquals(condition,"CurrentPageAnyDesk") ||
 			 StrEquals(condition,"CurrentScreen"))
+		{
 			mask->my_flags.needs_current_page = 1;
+		}
 		else if (StrEquals(condition,"CurrentGlobbalPageAnyDesk"))
+		{
 			mask->my_flags.needs_current_global_page = 1;
+		}
 		else if (StrEquals(condition,"CirculateHit"))
+		{
 			mask->my_flags.use_circulate_hit = 1;
+		}
 		else if (StrEquals(condition,"CirculateHitIcon"))
+		{
 			mask->my_flags.use_circulate_hit_icon = 1;
+		}
 		else if (StrEquals(condition,"CirculateHitShaded"))
+		{
 			mask->my_flags.use_circulate_hit_shaded = 1;
+		}
 		else if (StrEquals(condition,"State") ||
 			 StrEquals(condition,"!State"))
 		{
@@ -351,11 +563,12 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		prev_condition = condition;
 		tmp = GetNextSimpleOption(tmp, &condition);
 	}
-
 	if (prev_condition)
 	{
 		free(prev_condition);
 	}
+
+	return;
 }
 
 /**********************************************************************
@@ -377,29 +590,24 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	{
 		return False;
 	}
-
 	if (!mask->my_flags.use_circulate_hit && DO_SKIP_CIRCULATE(fw))
 	{
 		return False;
 	}
-
 	if (!mask->my_flags.use_circulate_hit_icon && IS_ICONIFIED(fw) &&
 	    DO_SKIP_ICON_CIRCULATE(fw))
 	{
 		return False;
 	}
-
 	if (!mask->my_flags.use_circulate_hit_shaded && IS_SHADED(fw) &&
 	    DO_SKIP_SHADED_CIRCULATE(fw))
 	{
 		return False;
 	}
-
 	if (IS_ICONIFIED(fw) && IS_TRANSIENT(fw) && IS_ICONIFIED_BY_PARENT(fw))
 	{
 		return False;
 	}
-
 	if (mask->my_flags.needs_current_desk && fw->Desk != Scr.CurrentDesk)
 	{
 		return False;
@@ -524,198 +732,43 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	return True;
 }
 
-/**************************************************************************
- *
- * Direction = 1 ==> "Next" operation
- * Direction = -1 ==> "Previous" operation
- * Direction = 0 ==> operation on current window (returns pass or fail)
- *
- **************************************************************************/
-static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
-{
-	int pass = 0;
-	FvwmWindow *fw, *found = NULL;
-	FvwmWindow *sf;
-	WindowConditionMask mask;
-	char *flags;
-
-	/* Create window mask */
-	flags = CreateFlagString(action, restofline);
-	DefaultConditionMask(&mask);
-	if (Direction == 0)
-	{ /* override for Current [] */
-		mask.my_flags.use_circulate_hit = 1;
-		mask.my_flags.use_circulate_hit_icon = 1;
-	}
-	CreateConditionMask(flags, &mask);
-	if (flags)
-	{
-		free(flags);
-	}
-	sf = get_focus_window();
-	if (sf)
-	{
-		if (Direction > 0)
-		{
-			fw = sf->prev;
-		}
-		else if (Direction < 0)
-		{
-			fw = sf->next;
-		}
-		else
-		{
-			fw = sf;
-		}
-	}
-	else
-	{
-		fw = NULL;
-		if (Direction == 0)
-		{
-			return NULL;
-		}
-	}
-
-	for (pass = 0; pass < 3 && !found; pass++)
-	{
-		while (fw && !found && fw != &Scr.FvwmRoot)
-		{
-			/* Make CirculateUp and CirculateDown take args. by
-			 * Y.NOMURA */
-			if (MatchesConditionMask(fw, &mask))
-			{
-				found = fw;
-			}
-			else
-			{
-				if (Direction > 0)
-				{
-					fw = fw->prev;
-				}
-				else
-				{
-					fw = fw->next;
-				}
-			}
-			if (Direction == 0)
-			{
-				FreeConditionMask(&mask);
-				return found;
-			}
-		}
-		if (!fw || fw == &Scr.FvwmRoot)
-		{
-			if (Direction > 0)
-			{
-				/* Go to end of list */
-				for (fw = &Scr.FvwmRoot; fw && fw->next;
-				     fw = fw->next)
-				{
-					/* nop */
-				}
-			}
-			else
-			{
-				/* Go to top of list */
-				fw = Scr.FvwmRoot.next;
-			}
-		}
-	}
-	FreeConditionMask(&mask);
-
-	return found;
-}
-
-static void circulate_cmd(
-	F_CMD_ARGS, int circ_dir, Bool do_use_found)
-{
-	FvwmWindow *found;
-	char *restofline;
-
-	found = Circulate(action, circ_dir, &restofline);
-	if (cond_rc != NULL)
-	{
-		*cond_rc = (found == NULL) ? COND_RC_NO_MATCH : COND_RC_OK;
-	}
-	if ((!found == !do_use_found) && restofline)
-	{
-		old_execute_function(
-			NULL, restofline,
-			(do_use_found) ? found : fw, eventp,
-			context, *Module, 0, NULL);
-	}
-
-	return;
-}
+/* ---------------------------- builtin commands ---------------------------- */
 
 void CMD_Prev(F_CMD_ARGS)
 {
 	circulate_cmd(
 		cond_rc, eventp, w, NULL, C_WINDOW, action, Module, -1, True);
+
+	return;
 }
 
 void CMD_Next(F_CMD_ARGS)
 {
 	circulate_cmd(
 		cond_rc, eventp, w, NULL, C_WINDOW, action, Module, 1, True);
+
+	return;
 }
 
 void CMD_None(F_CMD_ARGS)
 {
 	circulate_cmd(
 		cond_rc, eventp, w, NULL, C_ROOT, action, Module, 1, False);
+
+	return;
 }
 
 void CMD_Any(F_CMD_ARGS)
 {
 	circulate_cmd(F_PASS_ARGS, 1, False);
+
+	return;
 }
 
 void CMD_Current(F_CMD_ARGS)
 {
 	circulate_cmd(
 		cond_rc, eventp, w, NULL, C_WINDOW, action, Module, 0, True);
-}
-
-static void select_cmd(F_CMD_ARGS)
-{
-	char *restofline;
-	char *flags;
-	WindowConditionMask mask;
-
-	if (!fw || IS_EWMH_DESKTOP(FW_W(fw)))
-	{
-		if (cond_rc != NULL)
-		{
-			*cond_rc = COND_RC_ERROR;
-		}
-		return;
-	}
-	flags = CreateFlagString(action, &restofline);
-	DefaultConditionMask(&mask);
-	mask.my_flags.use_circulate_hit = 1;
-	mask.my_flags.use_circulate_hit_icon = 1;
-	CreateConditionMask(flags, &mask);
-	if (flags)
-	{
-		free(flags);
-	}
-	if (MatchesConditionMask(fw, &mask) && restofline)
-	{
-		if (cond_rc != NULL)
-		{
-			*cond_rc = COND_RC_OK;
-		}
-		old_execute_function(
-			NULL, restofline, fw, eventp, C_WINDOW, *Module,
-			0, NULL);
-	}
-	else if (cond_rc != NULL)
-	{
-		*cond_rc = COND_RC_NO_MATCH;
-	}
-	FreeConditionMask(&mask);
 
 	return;
 }
@@ -789,7 +842,6 @@ void CMD_All(F_CMD_ARGS)
 		*cond_rc = (does_any_window_match == False) ?
 			COND_RC_NO_MATCH : COND_RC_OK;
 	}
-
 	free(g);
 	FreeConditionMask(&mask);
 
@@ -988,8 +1040,9 @@ void CMD_Direction(F_CMD_ARGS)
 	{
 		*cond_rc = COND_RC_NO_MATCH;
 	}
-
 	FreeConditionMask(&mask);
+
+	return;
 }
 
 void CMD_WindowId(F_CMD_ARGS)
@@ -1022,7 +1075,9 @@ void CMD_WindowId(F_CMD_ARGS)
 		}
 		use_screenroot = True;
 		if (screen < 0 || screen >= Scr.NumberOfScreens)
+		{
 			screen = 0;
+		}
 		win = XRootWindow(dpy, screen);
 		if (win == None)
 		{
@@ -1185,7 +1240,6 @@ void CMD_Cond(F_CMD_ARGS)
 		old_execute_function(
 			cond_rc, restofline, fw, eventp, context, *Module,
 			0, NULL);
-
 	}
 	if (flags != NULL)
 	{

@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,13 +14,25 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef __COLORSET_H
-#define __COLORSET_H
+#ifndef COLORSET_H
+#define COLORSET_H
 
-#include "libs/Colorset.h"
+/* ---------------------------- included header files ----------------------- */
+
+/* ---------------------------- global definitions -------------------------- */
+
+/* ---------------------------- global macros ------------------------------- */
+
+/* ---------------------------- type definitions ---------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- interface functions ------------------------- */
 
 void parse_colorset(int n, char *line);
 void cleanup_colorsets();
 void alloc_colorset(int n);
 
-#endif /* __COLORSET_H */
+#endif /* COLORSET_H */

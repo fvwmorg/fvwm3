@@ -1022,7 +1022,7 @@ void old_execute_function(
  ***********************************************************************/
 int DeferExecution(
 	XEvent *eventp, Window *w, FvwmWindow **fw, unsigned long *context,
-	cursor_type cursor, int FinishEvent)
+	cursor_t cursor, int FinishEvent)
 {
 	int done;
 	int finished = 0;

@@ -59,7 +59,7 @@ void find_func_type(
 Bool functions_is_complex_function(
 	const char *function_name);
 int DeferExecution(
-	XEvent *, Window *,FvwmWindow **, unsigned long *, cursor_type, int);
+	XEvent *, Window *,FvwmWindow **, unsigned long *, cursor_t, int);
 void execute_function(
 	exec_func_args_type *efa);
 void old_execute_function(
