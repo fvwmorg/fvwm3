@@ -1,3 +1,8 @@
+2003-02-21  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/functions.c (__run_complex_function_items): Make Break start
+	working again.
+
 2003-02-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (get_outline_rects):

@@ -758,7 +758,7 @@ static void __run_complex_function_items(
 	char c;
 	FunctionItem *fi;
 
-	for (fi = func->first_item; fi != NULL; )
+	for (fi = func->first_item; fi != NULL && *cond_func_rc != COND_RC_BREAK; )
 	{
 		/* make lower case */
 		c = fi->condition;
