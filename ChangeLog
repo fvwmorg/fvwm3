@@ -1,3 +1,13 @@
+1999-01-27  Bob Woodside  <proteus@pcnet.com>
+
+	* modules/FvwmPager/x_pager.c:  Backed out the change to prevent
+	sending focus to No Input windows regardless of the Lenience setting.
+	The change to send FVWM a Focus command had the effect of causing
+	unwanted viewport changes. We'll revisit this after 2.2; the proper
+	fix will probably involve expanding the message protocol to send the
+	wmhints, so that the module can determine whether the window should
+	get focus.
+
 1999-01-26  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/events.c:  Changed the stacking order chain rebuilder to seek

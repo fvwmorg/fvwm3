@@ -1552,9 +1552,31 @@ void MoveWindow(XEvent *Event)
           usleep(5000);
           XSync(dpy,0);
 	  if(t->flags & ICONIFIED)
+            {
+/*
+    RBW - reverting to old code for 2.2...
+    The new handling causes an unwanted viewport change whenever Button2
+    is used; the old handling causes focus to be sent to No Input windows
+    regardless of the Lenience setting. After 2.2 we will revisit this issue.
+    I suspect it will involve expanding the module message to include wmhints
+    and such.
+*/
+#if 0
             SendInfo(fd, "Focus", t->icon_w);
+#else
+            XSetInputFocus (dpy, t->icon_w, RevertToParent,
+              Event->xbutton.time);
+#endif
+            }
 	  else
+            {
+#if 0
 	    SendInfo(fd, "Focus", t->w);
+#else
+            XSetInputFocus (dpy, t->w, RevertToParent,
+              Event->xbutton.time);
+#endif
+            }
 	}
     }
 }
@@ -1877,9 +1899,25 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
       SendInfo(fd,"Raise",t->w);
 
       if(t->flags & ICONIFIED)
-        SendInfo(fd, "Focus", t->icon_w);
+        {
+/*
+    RBW - reverting to old code for 2.2...temporarily. See note above, in
+    MoveWindow.
+*/
+#if 0
+          SendInfo(fd, "Focus", t->icon_w);
+#else
+          XSetInputFocus (dpy, t->icon_w, RevertToParent, Event->xbutton.time);
+#endif
+        }
       else
-        SendInfo(fd, "Focus", t->w);
+        {
+#if 0
+          SendInfo(fd, "Focus", t->w);
+#else
+          XSetInputFocus (dpy, t->w, RevertToParent, Event->xbutton.time);
+#endif
+        }
     }
 
 }
