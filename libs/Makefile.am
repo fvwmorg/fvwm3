@@ -28,4 +28,5 @@ libfvwm_a_SOURCES = \
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) \
-	$(Bidi_CFLAGS) $(intl_CFLAGS)
+	$(iconv_CFLAGS) $(Xrender_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS) \
+	$(intl_CFLAGS)
