@@ -1,3 +1,8 @@
+Thu May  6 23:12:55 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmEvent/Makefile.am (install-exec-local): make a symlink for
+ 	FvwmAudio, instead of the shell script.
+
 1999-05-06  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmCommand/FvwmCommand.c: new report level '-1' for no reports, made

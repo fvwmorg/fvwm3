@@ -5,65 +5,76 @@
   <body BACKGROUND="black-stone1.jpg"
     bgcolor="#000000" text="#ffffff"
     link="#FFFF88" vlink="#EEDDDD" alink="#ff0000">
+
 <center>
 <h1><font color="pink">The Official FVWM Homepage - Fvwm-to-Module Communication</font></h1>
 </center>
+
 <H2> <font color="turquoise">When communication takes place</font></h2>
-Fvwm
-can send messages to the modules in either a broadcast mode, or a
+
+Fvwm can send messages to the modules in either a broadcast mode, or a
 module specific mode. Certain messages regarding important window or
-desktop manipulations are broadcast to all modules, whether they 
-want it or not. Modules are able to request information about current windows
-from fvwm, via the Send_WindowList built-in. When invoked this way,
-only requesting module receives the data.
+desktop manipulations are broadcast to all modules, whether they want
+it or not. Modules are able to request information about current
+windows from fvwm, via the Send_WindowList built-in. When invoked this
+way, only requesting module receives the data.
+
 <H2> <font color="turquoise">Communication packet format</font></h2>
+
 Packets from fvwm to modules conform to a standard format, so modules
 which are not interested in broadcast messages can easily ignore them.
 A header consisting of 4 unsigned long integers, followed by a body of
 a variable length make up a packet. The header always begins with
 0xffffffff. This is provided to help modules re-synchronize to the
 data stream if necessary. The next entry describes the packet type.
-Existing packet types are listed in the file fvwm/module.h:
+Existing packet types are listed in the file libs/Module.h:
+
 <font color="yellow"><PRE>
-#define <A href="#M_NEW_PAGE">M_NEW_PAGE</A>           (1)
-#define <A href="#M_NEW_DESK">M_NEW_DESK</A>           (1&lt;&lt;1)
-#define <A href="#M_ADD_WINDOW">M_ADD_WINDOW</A>         (1&lt;&lt;2)
-#define <A href="#M_RAISE_WINDOW">M_RAISE_WINDOW</A>       (1&lt;&lt;3)
-#define <A href="#M_LOWER_WINDOW">M_LOWER_WINDOW</A>       (1&lt;&lt;4)
-#define <A href="#M_CONFIGURE_WINDOW">M_CONFIGURE_WINDOW</A>   (1&lt;&lt;5)
-#define <A href="#M_FOCUS_CHANGE">M_FOCUS_CHANGE</A>       (1&lt;&lt;6)
-#define <A href="#M_DESTROY_WINDOW">M_DESTROY_WINDOW</A>     (1&lt;&lt;7)
-#define <A href="#M_ICONIFY">M_ICONIFY</A>            (1&lt;&lt;8)
-#define <A href="#M_DEICONIFY">M_DEICONIFY</A>          (1&lt;&lt;9)
-#define <A href="#M_WINDOW_NAME">M_WINDOW_NAME</A>        (1&lt;&lt;10)
-#define <A href="#M_ICON_NAME">M_ICON_NAME</A>          (1&lt;&lt;11)
-#define <A href="#M_RES_CLASS">M_RES_CLASS</A>          (1&lt;&lt;12)
-#define <A href="#M_RES_NAME">M_RES_NAME</A>           (1&lt;&lt;13)
-#define <A href="#M_END_WINDOWLIST">M_END_WINDOWLIST</A>     (1&lt;&lt;14)
-#define <A href="#M_ICON_LOCATION">M_ICON_LOCATION</A>      (1&lt;&lt;15)
-#define <A href="#M_MAP">M_MAP</A>                (1&lt;&lt;16)
-#define <A href="#M_ERROR">M_ERROR</A>              (1&lt;&lt;17)
-#define <A href="#M_CONFIG_INFO">M_CONFIG_INFO</A>        (1&lt;&lt;18)
-#define <A href="#M_END_CONFIG_INFO">M_END_CONFIG_INFO</A>    (1&lt;&lt;19)
-#define <A href="#M_ICON_FILE">M_ICON_FILE</A>          (1&lt;&lt;20)
-#define <A href="#M_DEFAULTICON">M_DEFAULTICON</A>        (1&lt;&lt;21)
-#define <A href="#M_STRING">M_STRING</A>             (1&lt;&lt;22)
-#define <A href="#M_MINI_ICON">M_MINI_ICON</A>          (1&lt;&lt;23)
-#define <A href="#M_WINDOWSHADE">M_WINDOWSHADE</A>        (1&lt;&lt;24)
-#define <A href="#M_DEWINDOWSHADE">M_DEWINDOWSHADE</A>      (1&lt;&lt;25)
-#define <A href="#M_LOCKONSEND">M_LOCKONSEND</A>         (1&lt;&lt;26)
-#define <A href="#M_SENDCONFIG">M_SENDCONFIG</A>         (1&lt;&lt;27)
-#define <A href="#M_RESTACK">M_RESTACK</A>            (1&lt;&lt;28)
-#define <A href="#M_NEW_LOOK">M_NEW_LOOK</A>           (1&lt;&lt;29)
+#define <A href="#M_NEW_PAGE">M_NEW_PAGE</A>             (1)
+#define <A href="#M_NEW_DESK">M_NEW_DESK</A>             (1&lt;&lt;1)
+#define <A href="#M_ADD_WINDOW">M_OLD_ADD_WINDOW</A>       (1&lt;&lt;2)
+#define <A href="#M_RAISE_WINDOW">M_RAISE_WINDOW</A>         (1&lt;&lt;3)
+#define <A href="#M_LOWER_WINDOW">M_LOWER_WINDOW</A>         (1&lt;&lt;4)
+#define <A href="#M_CONFIGURE_WINDOW">M_OLD_CONFIGURE_WINDOW</A> (1&lt;&lt;5)
+#define <A href="#M_FOCUS_CHANGE">M_FOCUS_CHANGE</A>         (1&lt;&lt;6)
+#define <A href="#M_DESTROY_WINDOW">M_DESTROY_WINDOW</A>       (1&lt;&lt;7)
+#define <A href="#M_ICONIFY">M_ICONIFY</A>              (1&lt;&lt;8)
+#define <A href="#M_DEICONIFY">M_DEICONIFY</A>            (1&lt;&lt;9)
+#define <A href="#M_WINDOW_NAME">M_WINDOW_NAME</A>          (1&lt;&lt;10)
+#define <A href="#M_ICON_NAME">M_ICON_NAME</A>            (1&lt;&lt;11)
+#define <A href="#M_RES_CLASS">M_RES_CLASS</A>            (1&lt;&lt;12)
+#define <A href="#M_RES_NAME">M_RES_NAME</A>             (1&lt;&lt;13)
+#define <A href="#M_END_WINDOWLIST">M_END_WINDOWLIST</A>       (1&lt;&lt;14)
+#define <A href="#M_ICON_LOCATION">M_ICON_LOCATION</A>        (1&lt;&lt;15)
+#define <A href="#M_MAP">M_MAP</A>                  (1&lt;&lt;16)
+#define <A href="#M_ERROR">M_ERROR</A>                (1&lt;&lt;17)
+#define <A href="#M_CONFIG_INFO">M_CONFIG_INFO</A>          (1&lt;&lt;18)
+#define <A href="#M_END_CONFIG_INFO">M_END_CONFIG_INFO</A>      (1&lt;&lt;19)
+#define <A href="#M_ICON_FILE">M_ICON_FILE</A>            (1&lt;&lt;20)
+#define <A href="#M_DEFAULTICON">M_DEFAULTICON</A>          (1&lt;&lt;21)
+#define <A href="#M_STRING">M_STRING</A>               (1&lt;&lt;22)
+#define <A href="#M_MINI_ICON">M_MINI_ICON</A>            (1&lt;&lt;23)
+#define <A href="#M_WINDOWSHADE">M_WINDOWSHADE</A>          (1&lt;&lt;24)
+#define <A href="#M_DEWINDOWSHADE">M_DEWINDOWSHADE</A>        (1&lt;&lt;25)
+#define <A href="#M_LOCKONSEND">M_LOCKONSEND</A>           (1&lt;&lt;26)
+#define <A href="#M_SENDCONFIG">M_SENDCONFIG</A>           (1&lt;&lt;27)
+#define <A href="#M_RESTACK">M_RESTACK</A>              (1&lt;&lt;28)
+#define <A href="#M_NEW_LOOK">M_ADD_WINDOW</A>           (1&lt;&lt;29)
+#define <A href="#M_NEW_LOOK">M_CONFIGURE_WINDOW</A>     (1&lt;&lt;30)
 </PRE></font>
+
 <P>
 Additional packet types will be defined in the future. The third entry
 in the header tells the total length of the packet, in unsigned longs,
 including the header. The fourth entry is the last time stamp received
 from the X server, which is expressed in milliseconds.
+
 <P>
 The body information is packet specific, as described below.
+
+
 <H2><A NAME="M_NEW_PAGE">M_NEW_PAGE</A></H2>
+
 <P>
 These packets contain 5 integers. The first two are the x and y
 coordinates of the upper left corner of the current viewport on the

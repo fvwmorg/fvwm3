@@ -19,26 +19,43 @@
 ** Module.c: code for modules to communicate with fvwm
 */
 
+/**
+ * Module packet header.
+ **/
 
+typedef struct {
+    /* always holds START_FLAG value */
+    unsigned long start_pattern;
+    /* one of the M_xxx values, below */
+    unsigned long type;
+    /* number of unsigned longs entire packet, *including* header */
+    unsigned long size;
+    /* last time stamp received from the X server, in milliseconds */
+    unsigned long timestamp;
+} fvwm_packet_t;
+
+
+/* Value of start_pattern */
 #define START_FLAG 0xffffffff
 
-#define M_NEW_PAGE           (1)
-#define M_NEW_DESK           (1<<1)
+/* Possible values of type */
+#define M_NEW_PAGE               (1)
+#define M_NEW_DESK               (1<<1)
 #define M_OLD_ADD_WINDOW         (1<<2)
-#define M_RAISE_WINDOW       (1<<3)
-#define M_LOWER_WINDOW       (1<<4)
+#define M_RAISE_WINDOW           (1<<3)
+#define M_LOWER_WINDOW           (1<<4)
 #define M_OLD_CONFIGURE_WINDOW   (1<<5)
-#define M_FOCUS_CHANGE       (1<<6)
-#define M_DESTROY_WINDOW     (1<<7)
-#define M_ICONIFY            (1<<8)
-#define M_DEICONIFY          (1<<9)
-#define M_WINDOW_NAME        (1<<10)
-#define M_ICON_NAME          (1<<11)
-#define M_RES_CLASS          (1<<12)
-#define M_RES_NAME           (1<<13)
-#define M_END_WINDOWLIST     (1<<14)
-#define M_ICON_LOCATION      (1<<15)
-#define M_MAP                (1<<16)
+#define M_FOCUS_CHANGE           (1<<6)
+#define M_DESTROY_WINDOW         (1<<7)
+#define M_ICONIFY                (1<<8)
+#define M_DEICONIFY              (1<<9)
+#define M_WINDOW_NAME            (1<<10)
+#define M_ICON_NAME              (1<<11)
+#define M_RES_CLASS              (1<<12)
+#define M_RES_NAME               (1<<13)
+#define M_END_WINDOWLIST         (1<<14)
+#define M_ICON_LOCATION          (1<<15)
+#define M_MAP                    (1<<16)
 
 /* It turns out this is defined by <sys/stream.h> on Solaris 2.6.
    I suspect that simply redefining this will lead to trouble;
