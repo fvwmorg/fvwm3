@@ -154,7 +154,7 @@ By this, I mean the file "fvwm-x.y.z.tar.gz".
 
 Steps: 1. make sure you have XPM, the strokes library and a X server with
           the shape extension
-       2. configure --enable-gnome
+       2. rerun automake --add-missing; autoreconf; configure --enable-gnome
        3. make clean
        4. double check that you get no warnings during the build (the
           options for compilers other than gcc may be different):
@@ -162,6 +162,9 @@ Steps: 1. make sure you have XPM, the strokes library and a X server with
        5. make distcheck
        6. ensure that you see the message
           "fvwm-x.y.z.tar.gz ready for distribution"
+
+The steps 2 to 5 can be done by running the script utils/make_fvwmdist.sh
+from the top level directory of the source tree.
 
 Note that you need to have actually built everything before packing
 the distribution, hence step 2.  Among other things, this generates

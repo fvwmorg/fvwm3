@@ -1,5 +1,11 @@
 Changes in beta release 2.3.10
 
+* New FvwmIconBox option: FvwmIconBoxUseSkipList.
+
+* FvwmBacker is page aware.
+
+* New 'flat' and 'sunk' options to BorderStyle command.
+
 * New commands DefaultColorset and HilightColorset.
 
 * FvwmBacker is now page-aware, a new configuration syntax.

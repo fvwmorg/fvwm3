@@ -19,12 +19,12 @@
 sub getcmd {
     $/ = "\n\n";
     while(<STDIN>) {
-	#find "struct functions func_config[] =" in various spacing
-	if (s/struct\s+functions.*\[\]\s+=(\s|\n)+\{// ) {
+	#find "func_type func_config[] =" in various spacing
+	if (s/func_type.*\[\]\s+=(\s|\n)+\{// ) {
 	    return listcmd();
 	}
     }
-    print stderr "Can't find struct functions\n";
+    print stderr "Can't find func_type\n";
     exit 1;
 }
 

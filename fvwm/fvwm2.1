@@ -2209,11 +2209,11 @@ the window.
 
 
 .TP
-.B "HideGeometryWindow" "[None|Move|Resize]"
+.B "HideGeometryWindow" "[Never|Move|Resize]"
 Hides the position or size window that is usually shown when a window
 is moved or resized interactively.  To switch it of only for move
 respectively resize operations the optional parameters \fIMove\fP and
-\fIResize\fP can be used.  To switch both on again use the \fINone\fP
+\fIResize\fP can be used.  To switch both on again use the \fINever\fP
 option.
 
 
@@ -3067,13 +3067,17 @@ this way).  If an "!"  is prefixed to any flag, flag behavior is
 negated.  If \fIstyle\fP is not specified, then one can change flags
 without resetting the style.
 
-The "HiddenHandles" flag hides the corner handle dividing lines on
+The \fIHiddenHandles\fP flag hides the corner handle dividing lines on
 windows with handles (this option has no effect for NoHandle windows).
 By default, HiddenHandles is disabled.
 
-The "NoInset" flag supplements HiddenHandles.  If given, the inner
+The \fINoInset\fP flag supplements HiddenHandles.  If given, the inner
 bevel around the window frame is not drawn.  If HiddenHandles is not
 specified, the frame will look a little strange.
+
+The \fIRaised\fP causes a raised relief pattern to be drawn (default).
+The \fISunk\fP causes a sunken relief pattern to be drawn.
+The \fIFlat\fP inhibits the relief pattern from being drawn.
 
 To decorate the active and inactive window borders with a textured
 pixmap, one might specify:

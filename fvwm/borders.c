@@ -265,6 +265,7 @@ static void RedrawBorder(
   GC rgc;
   GC sgc;
   DecorFaceStyle *borderstyle;
+  Bool is_reversed = False;
 
   /*
    * draw the border; resize handles are InputOnly so draw in the decor_w and
@@ -301,7 +302,9 @@ static void RedrawBorder(
     &GetDecor(t, BorderStyle.active.style) :
     &GetDecor(t, BorderStyle.inactive.style);
 
-  if(HAS_DEPRESSABLE_BORDER(t) && PressedW == t->decor_w)
+  is_reversed = (HAS_DEPRESSABLE_BORDER(t) && PressedW == t->decor_w);
+  is_reversed ^= (borderstyle->flags.button_relief == DFS_BUTTON_IS_SUNK);
+  if (is_reversed)
   {
     sgc = cd->relief_gc;
     rgc = cd->shadow_gc;
@@ -352,6 +355,9 @@ static void RedrawBorder(
 	rgc, 2);
     }
   }
+
+  if (borderstyle->flags.button_relief == DFS_BUTTON_IS_FLAT)
+    return;
 
   /*
    * draw the inside relief

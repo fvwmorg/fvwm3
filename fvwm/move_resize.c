@@ -1286,7 +1286,7 @@ void SetOpaque(F_CMD_ARGS)
 
 static char *hide_options[] =
 {
-  "none",
+  "never",
   "move",
   "resize",
   NULL

@@ -1362,9 +1362,20 @@ void HandleButtonPress(void)
   int LocalContext;
   char *action;
   Window OldPressedW;
+  Window eventw;
 
   DBUG("HandleButtonPress","Routine Entered");
 
+  eventw = (Event.xbutton.subwindow != None) ?
+    Event.xbutton.subwindow : Event.xany.window;
+  if (!XGetGeometry(dpy, eventw, &JunkRoot, &JunkX, &JunkY,
+		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+  {
+    /* The window has already died. Just pass the event to the application. */
+    XSync(dpy,0);
+    XAllowEvents(dpy,ReplayPointer,CurrentTime);
+    return;
+  }
   /* click to focus stuff goes here */
   if((Tmp_win)&&(HAS_CLICK_FOCUS(Tmp_win))&&(Tmp_win != Scr.Ungrabbed))
   {

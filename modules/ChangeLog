@@ -1,12 +1,22 @@
+1999-11-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/FvwmTaskBar.1:
+	fixed typo
+
+1999-11-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmCommand/findcmd.pl (getcmd):
+	use new name of 'functions' array
+
 1999-11-27  olicha   <olivier.chapuis@free.fr>
-	
-	* FvwmTaskBar/FvwmTaskBar.c (ProssesMessage): 
+
+	* FvwmTaskBar/FvwmTaskBar.c (ProssesMessage):
 	(LoopOnEvent):
 	(HideTaskBar):
 	(RevealTaskBar):
 	* FvwmTaskBar/FvwmTaskBar.1
 	FvwmTaskBarAutoHide ameliorations and bug fix: now the TaskBar does't
-	hide if the pointer is on the border; fix a problem with the first 
+	hide if the pointer is on the border; fix a problem with the first
 	tip.
 	Fixed the StartMenu tip
 
@@ -116,7 +126,6 @@
 	* FvwmWinList/FvwmWinList.c (AdjustWindow):
 	Fixed a core dump. I hope I have not completely reverted the last
  	WinList commit.
-
 
 1999-11-21  olicha  <olivier.chapuis@free.fr>
 

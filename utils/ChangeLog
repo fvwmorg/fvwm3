@@ -1,3 +1,8 @@
+1999-11-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* make_fvwmdist.sh:
+	new script to help building the distribution
+
 1999-11-24  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm-menu-desktop.1: Removed 8 bit character that was causing
