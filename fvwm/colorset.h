@@ -25,4 +25,4 @@ void parse_colorset(int n, char *line);
 void cleanup_colorsets();
 void alloc_colorset(int n);
 
-#endif __COLORSET_H
+#endif /* __COLORSET_H */
