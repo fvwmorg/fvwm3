@@ -1250,6 +1250,10 @@ void SetClick(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 
   Scr.ClickTime = (val < 0)? 0 : val;
+  /* Use a negative value during startup and change sign afterwards. This
+   * speeds things up quite a bit. */
+  if (fFvwmInStartup)
+    Scr.ClickTime = -Scr.ClickTime;
 }
 
 void SetSnapAttraction(XEvent *eventp,Window w,FvwmWindow *tmp_win,

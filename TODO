@@ -13,9 +13,6 @@ too...
 Cleanups:
 
   - Reindent the code and implement coding conventions(minimal).
-  - The directories textures and sample.fvwmrc/BradyMontz have been
-    removed from the distribution.  Should we create a new
-    distribution for them?  Remove them from CVS?
   - Modules should be installed with 'install-exec', rather than
     'install-data' target.  This requires putting 'exec' in the
     automake variable for the module directory; i.e. moduledir -->
@@ -26,7 +23,6 @@ Cleanups:
 
 Administration:
 
-  - Implement a bug tracking system
   - Copy the entries from the debian bug tracking system
     http://www.debian.org/Bugs/db/pa/lfvwm2.html
 
@@ -35,7 +31,6 @@ Administration:
 Doc cleanups:
 
   - Add to FAQ
-  - Update disclaimers?
 
 ----------------------------------------------------------------------
 
@@ -65,6 +60,7 @@ Bugfixes:
   - If programs raise their own windows (XEmacs 'other-frame', for example)
     new stacking order isn't communicated to fvwm
   - Maximize XTerm, change font, UnMaximize, XTerm goes to wrong window size
+    (still unfixed on 28-Nov-1998)
   - Colormaps and xlock -install -mode blank (& swirl) interaction still
     isn't 100% correct?
   - bring back 'TogglePage'?
@@ -85,7 +81,7 @@ New stuff:
 
   - Allow resizing to leave the x/y ratio intact?
 
-  - Pin up menus?
+  - Pin up menus? (aka known as tear-off menus)
   - Multi column menus? (for LONG lists)  Or scrolling menus?
 
   - Private colormap option for menus?
@@ -95,16 +91,11 @@ New stuff:
   - Access to certain window attribs from .fvwm2rc funcs, and
     simple if/else capabilities (or perhaps a module to do so)??
   - Simple static variables for .fvwm2rc functions (for toggles, etc)??
-  - Add $d variable for functions to get desktop number?
 
   - Add StayOnBottom style?
 
   - Add ClickToFocusDontPassClick style (so initial click inside
     window doesn't get passed to the app, just changes focus).
-  - Add ClickToFocusDontRaise style (so clicks in window don't
-    automatically raise the window when giving it focus).  Note - this
-    behavior currently exists if you compile with CLICKY_MODE_1
-    defined, I believe.
   - Add ClickToFocusNoInitialFocus so windows don't get the focus when
     they pop up.
   - Should the previous be parms to ClickToFocus instead of styles?
@@ -206,6 +197,7 @@ New stuff:
     sent (for instance, pass module prefix to look for) and be able to
     ask for PixmapPath, etc instead of sending those w/ all the config
     info, so only the modules that need it could ask for it.
+    (Note there is some functionality in libs/Parse.c to allow this).
 
   - Go to just one IconPath instead of PixmapPath too?
 

@@ -53,7 +53,7 @@ ScreenInfo Scr;		        /* structures for the screen */
 Display *dpy;			/* which display are we talking to */
 
 Window BlackoutWin=None;        /* window to hide window captures */
-
+Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
 
 char *default_config_command = "Read "FVWMRC;
 
@@ -61,7 +61,10 @@ char *default_config_command = "Read "FVWMRC;
 static char *config_commands[MAX_CFG_CMDS];
 static int num_config_commands=0;
 
+#if 0
+/* unsused */
 char *output_file = NULL;
+#endif
 
 XErrorHandler FvwmErrorHandler(Display *, XErrorEvent *);
 XIOErrorHandler CatchFatal(Display *);
@@ -186,12 +189,15 @@ int main(int argc, char **argv)
         fvwm_msg(ERR,"main","only %d -f and -cmd parms allowed!",MAX_CFG_CMDS);
       }
     }
+#if 0
+/* unused */
     else if (strncasecmp(argv[i],"-outfile",8)==0)
     {
       if (++i >= argc)
         usage();
       output_file = argv[i];
     }
+#endif
     else if (strncasecmp(argv[i],"-h",2)==0)
     {
       usage();
@@ -465,6 +471,9 @@ int main(int argc, char **argv)
   MyXUngrabServer(dpy);
   UnBlackoutScreen(); /* if we need to remove blackout window */
   CoerceEnterNotifyOnCurrentWindow();
+  /* Make sure we have the correct click time now. */
+  if (Scr.ClickTime < 0)
+    Scr.ClickTime = -Scr.ClickTime;
   DBUG("main","Entering HandleEvents loop...");
   HandleEvents();
   DBUG("main","Back from HandleEvents loop?  Exitting...");
@@ -489,10 +498,6 @@ void StartupStuff(void)
   checkPanFrames();
 #endif
 
-  /* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to speed up InitFunction
-   * and RestartFunction (this can save quite a few seconds). */
-  if (Scr.ClickTime > 0)
-    Scr.ClickTime = -Scr.ClickTime;
   if(Restarting)
   {
     mr = FindPopup("RestartFunction");
@@ -505,8 +510,6 @@ void StartupStuff(void)
     if(mr != NULL)
       ExecuteFunction("Function InitFunction",NULL,&Event,C_ROOT,-1);
   }
-  if (Scr.ClickTime < 0)
-    Scr.ClickTime = -Scr.ClickTime;
 } /* StartupStuff */
 
 
@@ -1262,7 +1265,8 @@ void InitVariables(void)
   Scr.ScrollResistance = Scr.MoveResistance = 0;
   Scr.SnapAttraction = 0;
   Scr.OpaqueSize = 5;
-  Scr.ClickTime = 150;
+  /* ClickTime is set to the positive value upon entering the event loop. */
+  Scr.ClickTime = -150;
   Scr.ColormapFocus = COLORMAP_FOLLOWS_MOUSE;
 
   /* set major operating modes */

@@ -1,3 +1,8 @@
+1998-11-28  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.c (Slide): fixed panels overlapping button
+	under certain circumstances.
+
 1998-11-25  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmPager/FvwmPager.c: fixed some memory leaks

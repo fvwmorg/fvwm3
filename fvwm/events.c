@@ -213,43 +213,56 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
     {
       if (*w == t->title_w)
 	Context = C_TITLE;
-      if ((*w == t->w)||(*w == t->Parent))
+      else if ((*w == t->w)||(*w == t->Parent))
 	Context = C_WINDOW;
-      if (*w == t->icon_w)
+      else if (*w == t->icon_w || *w == t->icon_pixmap_w)
 	Context = C_ICON;
-      if (*w == t->icon_pixmap_w)
-	Context = C_ICON;
-      if (*w == t->frame)
+      else if (*w == t->frame)
 	Context = C_SIDEBAR;
-      for(i=0;i<4;i++)
-	if(*w == t->corners[i])
+      else
+      {
+	for(i=0;i<4;i++)
 	  {
-	    Context = C_FRAME;
-	    Button = i;
+	    if(*w == t->corners[i])
+	      {
+		Context = C_FRAME;
+		break;
+	      }
+	    if(*w == t->sides[i])
+	      {
+		Context = C_SIDEBAR;
+		break;
+	      }
 	  }
-      for(i=0;i<4;i++)
-	if(*w == t->sides[i])
+	if (i < 4)
+	  Button = i;
+	else
 	  {
-	    Context = C_SIDEBAR;
-	    Button = i;
-	  }
-      for(i=0;i<Scr.nr_left_buttons;i++)
-	{
-	  if(*w == t->left_w[i])
-	    {
-	      Context = (1<<i)*C_L1;
+	    for(i=0;i<Scr.nr_left_buttons;i++)
+	      {
+		if(*w == t->left_w[i])
+		  {
+		    Context = (1<<i)*C_L1;
+		    break;
+		  }
+	      }
+	    if (i < Scr.nr_left_buttons)
 	      Button = i;
-	    }
-	}
-      for(i=0;i<Scr.nr_right_buttons;i++)
-	{
-	  if(*w == t->right_w[i])
-	    {
-	      Context = (1<<i)*C_R1;
-	      Button = i;
-	    }
-	}
-    }
+	    else
+	      {
+		for(i=0;i<Scr.nr_right_buttons;i++)
+		  {
+		    if(*w == t->right_w[i])
+		      {
+			Context = (1<<i)*C_R1;
+			Button = i;
+			break;
+		      }
+		  }
+	      }
+	  } /* if (i < 4) */
+      } /* else */
+    } /* if (t) */
   return Context;
 }
 
@@ -394,8 +407,9 @@ void HandlePropertyNotify()
 
   DBUG("HandlePropertyNotify","Routine Entered");
 
-  if ((!Tmp_win)||(XGetGeometry(dpy, Tmp_win->w, &JunkRoot, &JunkX, &JunkY,
-				&JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0))
+  if ((!Tmp_win)||
+      (XGetGeometry(dpy, Tmp_win->w, &JunkRoot, &JunkX, &JunkY,
+		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0))
     return;
 
   /*
@@ -509,7 +523,8 @@ void HandlePropertyNotify()
 	    {
 	      Tmp_win->flags &= ~ICONIFIED;
 	      Tmp_win->flags &= ~ICON_UNMAPPED;
-	      CreateIconWindow(Tmp_win,Tmp_win->icon_x_loc,Tmp_win->icon_y_loc);
+	      CreateIconWindow(Tmp_win,
+			       Tmp_win->icon_x_loc,Tmp_win->icon_y_loc);
 	      BroadcastPacket(M_ICONIFY, 7,
                               Tmp_win->w, Tmp_win->frame,
                               (unsigned long)Tmp_win,
@@ -646,7 +661,8 @@ void HandleExpose()
 	}
       else
 	{
-	  SetBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,Event.xany.window);
+	  SetBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,
+		    Event.xany.window);
 	}
     }
   return;
@@ -770,7 +786,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised)
 	case IconicState:
 	  if (Tmp_win->wmhints)
 	    {
-	      Iconify(Tmp_win, Tmp_win->wmhints->icon_x, Tmp_win->wmhints->icon_y);
+	      Iconify(Tmp_win,
+		      Tmp_win->wmhints->icon_x, Tmp_win->wmhints->icon_y);
 	    }
 	  else
 	    {
@@ -1189,16 +1206,7 @@ void HandleEnterNotify()
 
   if(!(Tmp_win->flags & ClickToFocus))
     {
-#if 0
-      if(Scr.Focus != Tmp_win)
-	{
-	  SetFocus(Tmp_win->w,Tmp_win,0);
-	}
-      else
-	SetFocus(Tmp_win->w,Tmp_win,0);
-#else
       SetFocus(Tmp_win->w,Tmp_win,1);
-#endif
     }
   if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
   {
@@ -1274,7 +1282,8 @@ void HandleConfigureRequest()
    * Instead, we'll read the current geometry.  Therefore, we should respond
    * to configuration requests for windows which have never been mapped.
    */
-  if (!Tmp_win || (Tmp_win->icon_w == cre->window))
+  if (!Tmp_win || cre->window == Tmp_win->icon_w ||
+      cre->window == Tmp_win->icon_pixmap_w)
   {
     xwcm = cre->value_mask &
       (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
@@ -1301,11 +1310,14 @@ void HandleConfigureRequest()
 
     if(Tmp_win)
     {
-      xwc.x = Tmp_win->icon_x_loc;
-      xwc.y = Tmp_win->icon_y_loc - Tmp_win->icon_p_height;
-      xwcm = cre->value_mask & (CWX | CWY);
-      if(Tmp_win->icon_pixmap_w != None)
-        XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
+      if (cre->window != Tmp_win->icon_pixmap_w &&
+	  Tmp_win->icon_pixmap_w != None)
+      {
+	xwc.x = Tmp_win->icon_x_loc;
+	xwc.y = Tmp_win->icon_y_loc - Tmp_win->icon_p_height;
+	xwcm = cre->value_mask & (CWX | CWY);
+	XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
+      }
       xwc.x = Tmp_win->icon_x_loc;
       xwc.y = Tmp_win->icon_y_loc;
       xwcm = cre->value_mask & (CWX | CWY);

@@ -1,3 +1,39 @@
+1998-11-30  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/fvwm.c (main): removed unused option -outfile
+
+	* fvwm/fvwm2.1: added description for undocumented options -blackout
+	and -h. Fixed type (ame -> same)
+
+	* fvwm/fvwm.c (StartupStuff): removed old ClickTime patch (the new one
+	is more rigorous).
+
+1998-11-29  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (SetClick):
+	* fvwm/fvwm.c (InitVariables):
+	(main):
+	More speedup with ClickTime during startup. A negative value will
+	becone positive when the event loop is entered (before that the user
+	cannot give input anyway).
+
+	* fvwm/fvwm.h:
+	* fvwm/fvwm.c: added global flag fFvwmInStartup. This is set to False
+	when the event loop is entered.
+
+1998-11-28  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* TODO: updated
+
+	* fvwm/events.c: reindented some code
+	(HandleConfigureRequest): Phew, after a 10 hour debug session I was
+	finally able to surround and bag the xterm/active icon/resize bug.
+	Xterm sends a configure request to resize the icon pixmap window, but
+	HandleConfigureRequest dealt with the icon window only. Now what was
+	this fuzz about growing windows bugs? Bring 'em on :-[
+	(HandleEnterNotify): removed garbage (old ifdef).
+	(GetContext): a little speedup
+
 1998-11-27  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/fvwm.c, fvwm/fvwm2.1: changed GlobalOpts default from
@@ -8,7 +44,7 @@
 	* fvwm/fvwm2.1: entry for 'Direction'
 
 	* fvwm/events.c (HandleMapNotify): changed logic for new
-	click-to-focus windows to receive focus (as hited at by Tim Phipps).
+	click-to-focus windows to receive focus (as hinted at by Tim Phipps).
 
 1998-11-26  Dominik Vogt  <dominik_vogt@hp.com>
 

@@ -1710,7 +1710,8 @@ void swallow(unsigned long *body)
  *   b->action[0]  = "panel-u", "panel-l", "panel-d", or "panel-r"
  *   b->hangon     = panel title (case sensitive)
  * Panel
- *   uber->flags  |= b_Container (though the following fields are ilegally used)
+ *   uber->flags  |= b_Container (though the following fields are ilegally
+ *                    used)
  *   uber->title   = the title of the panel
  *   uber->IconWinParent = the panel window, will be assigned to MyWindow
  *   uber->swallow = 0:hidden 1:shown
@@ -1720,7 +1721,8 @@ void swallow(unsigned long *body)
  *   uber->y       = y position to start the panel wrt the button b
  *   uber->w       = xneg
  *   uber->h       = yneg
- *   CurrentPanel  = the panel where the button b was pressed to popup a new panel
+ *   CurrentPanel  = the panel where the button b was pressed to popup a new
+ *                   panel
  */
 
 #define PanelPopUpStep 32
@@ -1743,28 +1745,52 @@ void Slide (panel_info *p, button_info *b)
   char direction;
   ushort i, c, xstep, ystep, wstep, hstep;
 
-  if (!p) return;                            /* no such panel */
-  else    PanelWin = p->uber->IconWinParent; /* PanelWin is found */
+  if (!p)
+    /* no such panel */
+    return;
+  /* PanelWin is found */
+  PanelWin = p->uber->IconWinParent;
 
   direction = b ? b->action[0][6] : 'u';
 
   if (p->uber->swallow)
-  { /* shown ---> hidden */
+  {
+    /* shown ---> hidden */
     root = GetRealGeometry(Dpy, PanelWin, &x, &y,
                            (ushort*)&iw, (ushort*)&ih,
                            (ushort*)&BW, (ushort*)&depth);
 
-    if      (b && b->action[0][6] == 'l')
-    { c = iw / PanelPopUpStep; xstep = wstep = PanelPopUpStep; ystep = hstep = 0; }
-    else if (b && b->action[0][6] == 'r')
-    { c = iw / PanelPopUpStep; wstep = PanelPopUpStep; xstep = ystep = hstep = 0; }
-    else if (b && b->action[0][6] == 'd')
-    { c = ih / PanelPopUpStep; hstep = PanelPopUpStep; xstep = ystep = wstep = 0; }
+    if (direction  == 'l')
+    {
+      c = iw / PanelPopUpStep;
+      xstep = wstep = PanelPopUpStep;
+      ystep = hstep = 0;
+    }
+    else if (direction == 'r')
+    {
+      c = iw / PanelPopUpStep;
+      wstep = PanelPopUpStep;
+      xstep = ystep = hstep = 0;
+                                 }
+    else if (direction == 'd')
+    {
+      c = ih / PanelPopUpStep;
+      hstep = PanelPopUpStep;
+      xstep = ystep = wstep = 0;
+    }
     else
-    { c = ih / PanelPopUpStep; ystep = hstep = PanelPopUpStep; xstep = wstep = 0; }
+    {
+      c = ih / PanelPopUpStep;
+      ystep = hstep = PanelPopUpStep;
+      xstep = wstep = 0;
+    }
 
     for (i = 1; i < c; i++)
-    { iw -= wstep; x += xstep; ih -= hstep; y += ystep;
+    {
+      iw -= wstep;
+      ih -= hstep;
+      x += xstep;
+      y += ystep;
       XMoveResizeWindow(Dpy, PanelWin, x, y, iw, ih);
     }
 
@@ -1772,7 +1798,8 @@ void Slide (panel_info *p, button_info *b)
     p->uber->swallow = 0;
   }
   else
-  { /* hidden ---> shown */
+  {
+    /* hidden ---> shown */
     int ix = buttonXPos(b, b->n);  /* button in the CurrentPanel */
     int iy = buttonYPos(b, b->n);  /* button in the CurrentPanel */
 
@@ -1787,37 +1814,76 @@ void Slide (panel_info *p, button_info *b)
 
     x += p->uber->x + ix;
     y += p->uber->y + iy;
+    c = 0;
 
     /* initial position and size */
     if (direction == 'l')
-    { h = mh; w = mw % PanelPopUpStep;
-      x -= w; c = mw / PanelPopUpStep;
-      xstep = wstep = PanelPopUpStep; ystep = hstep = 0;
+    {
+      h = mh;
+      w = mw % PanelPopUpStep;
+      if (w == 0)
+      {
+	w = PanelPopUpStep;
+	c--;
+      }
+      x -= w;
+      c += mw / PanelPopUpStep;
+      xstep = wstep = PanelPopUpStep;
+      ystep = hstep = 0;
     }
     else if (direction == 'r')
-    { h = mh; w = mw % PanelPopUpStep;
-      x += b->BWidth * b->parent->c->ButtonWidth; c = mw / PanelPopUpStep;
-      wstep = PanelPopUpStep; xstep = ystep = hstep = 0;
+    {
+      h = mh;
+      w = mw % PanelPopUpStep;
+      if (w == 0)
+      {
+	w = PanelPopUpStep;
+	c--;
+      }
+      x += b->BWidth * b->parent->c->ButtonWidth;
+      c += mw / PanelPopUpStep;
+      wstep = PanelPopUpStep;
+      xstep = ystep = hstep = 0;
     }
     else if (direction == 'd')
-    { w = mw; h = mh % PanelPopUpStep;
-      y += b->BHeight * b->parent->c->ButtonHeight; c = mh / PanelPopUpStep;
-      hstep = PanelPopUpStep; xstep = ystep = wstep = 0;
+    {
+      w = mw;
+      h = mh % PanelPopUpStep;
+      if (h == 0)
+      {
+	h = PanelPopUpStep;
+	c--;
+      }
+      y += b->BHeight * b->parent->c->ButtonHeight;
+      c += mh / PanelPopUpStep;
+      hstep = PanelPopUpStep;
+      xstep = ystep = wstep = 0;
     }
     else
-    { w = mw; h = mh % PanelPopUpStep;
-      y -= h; c = mh / PanelPopUpStep;
-      ystep = hstep = PanelPopUpStep; xstep = wstep = 0;
+    {
+      w = mw;
+      h = mh % PanelPopUpStep;
+      if (h == 0)
+      {
+	h = PanelPopUpStep;
+	c--;
+      }
+      y -= h;
+      c += mh / PanelPopUpStep;
+      ystep = hstep = PanelPopUpStep;
+      xstep = wstep = 0;
     }
-    if      (w == 0) { w = PanelPopUpStep; c--; }
-    else if (h == 0) { h = PanelPopUpStep; c--; }
 
     XMoveResizeWindow(Dpy, PanelWin, x, y, w, h);
     XMapSubwindows(Dpy, PanelWin);
     XMapWindow(Dpy, PanelWin);
 
     for (i = 0; i < c; i++)
-    { x -= xstep; w += wstep; y -= ystep; h += hstep;
+    {
+      x -= xstep;
+      w += wstep;
+      y -= ystep;
+      h += hstep;
       XMoveResizeWindow(Dpy, PanelWin, x, y, w, h);
     }
 

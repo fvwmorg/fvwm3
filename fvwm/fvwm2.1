@@ -55,7 +55,7 @@ xgraph, xclock, xbiff, etc) click-to-focus, so that your terminal
 window doesn't lose focus unnecessarily.
 
 .SH COPYRIGHTS
-Since \fIfvwm\fP is derived from \fItwm\fP code it shares \fItwm\fP's 
+Since \fIfvwm\fP is derived from \fItwm\fP code it shares \fItwm\fP's
 copyrights.  Since nearly every line of twm code has been changed, the
 twm copyright has been removed from most of the individual code files.
 I do still recognize the influence of twm code in the overall package,
@@ -266,7 +266,7 @@ used in \fIfvwm\fP and most other window managers.
 The ICCCM states that windows possessing the property
 .EX
 WM_HINTS(WM_HINTS):
-    Client accepts input or input focus: False         
+    Client accepts input or input focus: False
 .EE
 should not be given the keyboard input focus by the window manager.
 These windows can take the input focus by themselves, however.  A
@@ -282,7 +282,7 @@ M4 pre-processing is handled by a module in fvwm-2.0.  To get more
 details, try man FvwmM4.  In short, if you want fvwm to parse your
 files with m4, then replace the word "Read" with "FvwmM4" in
 your .fvwm2rc file (if it appears at all), and start fvwm with the
-command 
+command
 .EX
 fvwm -cmd "FvwmM4 .fvwm2rc"
 .EE
@@ -301,21 +301,27 @@ auto-raise module, FvwmAuto.
 
 .SH OPTIONS
 These are the command line options that are recognized by \fIfvwm\fP:
-.IP "\fB-f\fP \fIconfig_file\fP"
-Causes \fIfvwm\fP to Read \fIconfig_file\fP instead of ".fvwm2rc" 
-as its initialization file.  This is equivalent to \fB-cmd\fP "Read \fIconfig_file\fP".
+.IP "\fB-blackout\fP"
+The screen is blacked out during window recaptures and startup. This saves
+some time, especially if you have lots of windows.
 .IP "\fB-cmd\fP \fIconfig_command\fP"
-Causes \fIfvwm\fP to use \fIconfig_command\fP instead of "Read .fvwm2rc" 
+Causes \fIfvwm\fP to use \fIconfig_command\fP instead of "Read .fvwm2rc"
 as its initialization command.
 (Note that up to 10 \fB-f\fP and \fB-cmd\fP parameters can be given,
 and they are executed in the order specified.)
+.IP "\fB-d\fP \fIdisplayname\fP"
+Manage the display called "displayname" instead of the name obtained from
+the environment variable $DISPLAY.
 .IP "\fB-debug\fP"
 Puts X transactions in synchronous mode, which dramatically slows things
 down, but guarantees that \fIfvwm\fP's internal error messages are correct.
 Also causes \fIfvwm\fP to output debug messages while running.
-.IP "\fB-d\fP \fIdisplayname\fP"
-Manage the display called "displayname" instead of the name obtained from 
-the environment variable $DISPLAY.
+.IP "\fB-f\fP \fIconfig_file\fP"
+Causes \fIfvwm\fP to Read \fIconfig_file\fP instead of ".fvwm2rc"
+as its initialization file.  This is equivalent to
+\fB-cmd\fP "Read \fIconfig_file\fP".
+.IP "\fB-h\fP"
+A short usage description is printed.
 .IP "\fB-s\fP"
 On a multi-screen display, run \fIfvwm\fP only on the screen named in
 the $DISPLAY environment variable or provided through the -d
@@ -461,7 +467,7 @@ Begins or add to a function definition.  Here's an example:
 .EX
 AddToFunc Move-or-Raise "I" Raise
  + "M" Move
- + "D" Lower         
+ + "D" Lower
 .EE
 The function name is Move-or-Raise, and could be invoked from a menu
 or a mouse binding or key binding:
@@ -475,11 +481,11 @@ if the user starts moving the mouse.  "C" stands for Click, i.e., if the
 user presses and releases the mouse in a short period of time
 (ClickTime milliseconds).  "D" stands for double-click.  The action "I"
 will cause an action to be performed on the button-press, if the
-function is invoked with prior knowledge of which window to act on.  
+function is invoked with prior knowledge of which window to act on.
 
 The special symbols $d, $w and $0 through $9 are available in the
 ComplexFunctions or Macros, or whatever you want to call them.  Within
-a macro, $w is expanded to the window-id (expressed in 
+a macro, $w is expanded to the window-id (expressed in
 hex, i.e. 0x10023c) of the window for which the macro was called
 and $d is expanded to the current desk number. $0
 through $9 are the arguments to the macro, so if you call
@@ -613,14 +619,14 @@ with blue the region of the menu containing the picture.
 In all the above cases, the name of the resulting menu is name specified,
 stripped of the substrings between the various delimiters.
 
-  
+
 .IP "AnimatedMove \fIx y\fP [ \fIWarp\fP ]"
 
 Move a window in an animated way. Similar to Move command, below.
 Options are the same, except they are required, since it doesn't make
 sense to have a user move the window interactively and animatedly. If the optional
 argument \fIWarp\fP is specified the pointer is warped with the window.
-  
+
 
 .IP "Beep"
 As might be expected, this makes the terminal beep.
@@ -885,7 +891,7 @@ ChangeDecor "CustomDecor1"
 .EE
 
 .IP "ChangeMenuStyle \fImenustyle menu ...\fP"
-Changes the menu style of "menu" to "menustyle", you may specified more 
+Changes the menu style of "menu" to "menustyle", you may specified more
 than one menu in each \fIChangeMenuStyle\fP.
 .EX
 ChangeMenuStyle  pixmap1 Screensavers ScreenLock
@@ -1062,7 +1068,7 @@ causing the application to exit.
 
 
 .IP "Desk \fIarg1\fP [ \fIarg2\fP ] [ \fImin max\fP ]"
-Changes to another desktop (workspace, room). 
+Changes to another desktop (workspace, room).
 
 If \fIarg1\fP is non zero then the next desktop number will be the
 current desktop number plus \fIarg1\fP.  Desktop numbers can be
@@ -1118,7 +1124,7 @@ DestroyMenu "Utilities"
 .EE
 
 .IP "DestroyMenuStyle \fImenustyle\fP"
-Deletes the menu style named "menustyle" and changes all menus using 
+Deletes the menu style named "menustyle" and changes all menus using
 this style to the default style, you cannot destroy the default menu.
 .EX
 DestroyMenuStyle pixamp1
@@ -1252,7 +1258,7 @@ MouseFocusClickDoesntRaise/MouseFocusClickRaises,
 CaptureHonorsStartsOnPage/CaptureIgnoresStartsOnPage,
 RecaptureHonorsStartsOnPage/RecaptureIgnoresStartsOnPage,
 ActivePlacementHonorsStartsOnPage/ActivePlacementIgnoresStartsOnPage,
-NoStipledTitles/StipledTitles 
+NoStipledTitles/StipledTitles
 .EX
 GlobalOpts ClickToFocusDoesntPassClick, \\
   ClickToFocusDoesntRaise
@@ -1385,7 +1391,7 @@ drag action, the menu will stay up.  The command
 (or hits the key rapidly twice if the menu is bound to a key) when
 bringing the menu up.
 
-Several other commands affect menu operation.  See \fIMenuStyle\fP, 
+Several other commands affect menu operation.  See \fIMenuStyle\fP,
 \fISetAnimation\fP and \fISetMenuDelay\fP.  When in a menu, keyboard
 shortcuts work as expected.  Cursor keystrokes are also allowed.
 Specifically, Cursor-Down, Ctrl-N, and Ctrl-J all move to the next
@@ -1579,7 +1585,7 @@ built-in and function names.
 .IP "ModulePath"
 Specifies a colon separated list of paths for \fIfvwm\fP to search
 when looking for a module to load.  Individual directories do not need
-trailing slashes.  Environment variables can be used here as well (i.e. 
+trailing slashes.  Environment variables can be used here as well (i.e.
 $HOME or ${HOME}).
 
 
@@ -1599,7 +1605,7 @@ title-bar buttons.
 \fIModifiers\fP is any combination of N for no modifiers, C for
 control, S for shift, M for Meta, or A for any modifier.  For example,
 a modifier of SM will apply when both the Meta and Shift keys are
-down.  X11 modifiers mod1 through mod5 are represented as the digits 
+down.  X11 modifiers mod1 through mod5 are represented as the digits
 1 through 5.
 
 \fIFunction\fP is one of \fIfvwm\fP's built-in functions.
@@ -1748,7 +1754,7 @@ Pop-ups can be operated without using the mouse by binding to keys and
 operating via the up arrow, down arrow, and enter keys.
 .in -.25i
 .sp
-To bind a previously defined pop-up menu to another menu, for use as a 
+To bind a previously defined pop-up menu to another menu, for use as a
 sub-menu:
 .sp
 .in +.25i
@@ -1898,8 +1904,8 @@ though...  Can be used for module to module communication, or
 implementation of more complex commands in modules.
 
 .IP "SetAnimation \fImilliseconds-delay fractions-to-move-list\fP"
-Sets the time between frames and the list of fractional offsets to 
-customize the animated moves of the \fIAnimatedMove\fP command and 
+Sets the time between frames and the list of fractional offsets to
+customize the animated moves of the \fIAnimatedMove\fP command and
 the animation of menus (if the menu style is set to animated).  If
 the \fIfractions-to-move-list\fP is omitted, only the time between frames
 is altered.  The fractions-to-move-list specifies how far the window
@@ -1913,14 +1919,14 @@ SetAnimation 10 -.01 0 .01 .03 .08 .18 .3 \\
 Sets the delay between frames to 10ms, and sets the positions of the 16
 frames of the animation motion.  Notice that negative values are allowed,
 and in particular can be used to make the motion appear more cartoonish, by
-briefly moving slightly in the opposite direction of the main motion.  The 
+briefly moving slightly in the opposite direction of the main motion.  The
 above settings are the default.
 
 .IP "SetEnv \fIvarname stringvalue\fP"
 Set an environment variable to a new value, similar to shell's export
 or setenv command.  The variable and its value are inherited by processes
-started directly by fvwm2.  This can be especially useful in conjunction 
-with the FvwmM4 module; e.g.  "SetEnv height HEIGHT" will make the FvwmM4-set 
+started directly by fvwm2.  This can be especially useful in conjunction
+with the FvwmM4 module; e.g.  "SetEnv height HEIGHT" will make the FvwmM4-set
 variable "HEIGHT" usable by processes started by fvwm2 as the environment
 variable "$height".  If \fIstringvalue\fP includes whitespace, you should
 enclose it in quotes.
@@ -1930,22 +1936,22 @@ Sets the time to delay before popping up the current menu item's popup menu
 when you're using mwm or win menus.  See also the \fIMenuStyle\fP command.
 
 .IP "SetMenuStyle \fIstylename forecolor backcolor shadecolor activecolor font animflag style\fP"
-Sets a new menu style or changes a previously defined style.  
+Sets a new menu style or changes a previously defined style.
 The "stylename" is the style name, it maybe any word without spaces,
 and the first is always considered the default menu style, as it is
 defined in the code before loading anything, you must use the name default
 when changing the default menu style. The default menu style is used for
-every menu-like object that had not be assigned a style using the 
+every menu-like object that had not be assigned a style using the
 \fIChangeMenuStyle\fP. See also \fIDestroyMenuStyle\fP.
 When using monochrome the colors are ignored.
 The shade-color is the one used to draw a menu-selection which is
 prohibited (or not recommended) by the mwm-hints which an application
 has specified.  The active-color is the one used to draw the text of the
 selected entry. The animflag is either "anim" or "noanim", when enabled
-sub-menus that don't fit on the screen cause the parent menu to be shifted 
-to the left so the sub-menu can be seen. See also the "SetAnimation" 
-and "SetMenuDelay" commands. The style option 
-is either "fvwm" "mwm" "win" or "next (menuface)", which changes the appearance 
+sub-menus that don't fit on the screen cause the parent menu to be shifted
+to the left so the sub-menu can be seen. See also the "SetAnimation"
+and "SetMenuDelay" commands. The style option
+is either "fvwm" "mwm" "win" or "next (menuface)", which changes the appearance
 and operation of the menus.
 
 "mwm" and "win" style menus popup sub-menus automatically.
@@ -1953,8 +1959,10 @@ and operation of the menus.
 background to black.
 "fvwm" sub-menus overlap the parent menu, "mwm" and "win" style menus
 never overlap the parent menu.
-"next (menuface)" style is used to define more complex menus, you can use the 
-ame options for menuface as for ButtonStyle plus DGradient, top-left to down-right, and BGradient, down-left to top-right. see \fIButtonStyle\fP for more info.
+"next (menuface)" style is used to define more complex menus, you can use the
+same options for menuface as for ButtonStyle plus DGradient, top-left to
+down-right, and BGradient, down-left to top-right. see \fIButtonStyle\fP for
+more info.
 Some examples of menufaces are:
 
 .EX
@@ -2209,7 +2217,7 @@ Style "xbiff"       Sticky, WindowListSkip
 Style "FvwmButtons" NoHandles, Sticky,       \\
                     WindowListSkip
 Style "sxpm"        NoHandles
-Style "makerkit"  
+Style "makerkit"
 
 # Put title-bars back on xterms only!
 Style "xterm"     Title, Color black/grey
@@ -2227,7 +2235,7 @@ Style "xmag"        Icon magnifying_glass2.xpm
 Style "xgraph"      Icon graphs.xpm
 Style "FvwmButtons" Icon toolbox.xpm
 Style "Maker"       StartsOnDesk 1
-Style "signal"      StartsOnDesk 3           
+Style "signal"      StartsOnDesk 3
 
 # Fire up Netscape on the second desk, in the
 # middle of my 3x3 virtual desktop, and don't

@@ -1,6 +1,6 @@
 /****************************************************************************
- * This module is based on Twm, but has been siginificantly modified 
- * by Rob Nation 
+ * This module is based on Twm, but has been siginificantly modified
+ * by Rob Nation
  ****************************************************************************/
 /*****************************************************************************/
 /**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
@@ -73,7 +73,7 @@ it should not be an option, once it works right. HEDU 2/2/94 */
 #define SCROLL_REGION PAN_FRAME_THICKNESS /* region around screen edge that */
                                 /* triggers scrolling */
 
-#ifndef TRUE                    
+#ifndef TRUE
 #define TRUE	1
 #define FALSE	0
 #endif
@@ -141,7 +141,7 @@ typedef struct icon_boxes_struct {
 } icon_boxes;
 
 /* for each window that is on the display, one of these structures
- * is allocated and linked into a list 
+ * is allocated and linked into a list
  */
 typedef struct FvwmWindow
 {
@@ -252,7 +252,7 @@ typedef struct WindowConditionMask {
 } WindowConditionMask;
 
 /***************************************************************************
- * window flags definitions 
+ * window flags definitions
  ***************************************************************************/
 /* The first 13 items are mapped directly from the style structure's
  * flag value, so they MUST correspond to the first 13 entries in misc.h */
@@ -272,7 +272,7 @@ typedef struct WindowConditionMask {
 #define ALL_COMMON_FLAGS (STARTICONIC|ONTOP|STICKY|WINDOWLISTSKIP| \
 			  SUPPRESSICON|NOICON_TITLE|Lenience|StickyIcon| \
 			  CirculateSkipIcon|CirculateSkip|ClickToFocus| \
-			  SloppyFocus|SHOW_ON_MAP) 
+			  SloppyFocus|SHOW_ON_MAP)
 
 #define BORDER         (1<<13) /* Is this decorated with border*/
 #define TITLE          (1<<14) /* Is this decorated with title */
@@ -291,7 +291,7 @@ typedef struct WindowConditionMask {
 #define ICON_MOVED              (1<<26)
 /* was the icon unmapped, even though the window is still iconified
  * (Transients) */
-#define ICON_UNMAPPED           (1<<27) 
+#define ICON_UNMAPPED           (1<<27)
 /* Sent an XMapWindow, but didn't receive a MapNotify yet.*/
 #define MAP_PENDING             (1<<28)
 #define HintOverride            (1<<29)
@@ -332,6 +332,8 @@ extern Display *dpy;
 extern XContext FvwmContext;
 
 extern Window BlackoutWin;
+
+Bool fFvwmInStartup;
 
 extern Boolean ShapesSupported;
 
