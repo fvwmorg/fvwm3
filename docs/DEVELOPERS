@@ -184,8 +184,8 @@ Steps: 1. When building a release, update the CVS sources first. For a
 The steps 3 to 9 can be done by running the script utils/make_fvwmdist.sh
 from the top level directory of the source tree.  You can also call
 this script with the -r option.  In this case the it will also do
-the steps 9 to 12.  The release number will be increase by one after
-the second digit.  The script will ask you for a name and mail address
+the steps 10 to 12.  The release number is increased by one after
+ the second digit.  The script will ask you for a name and mail address
 to be used in the ChangeLog entry.
 
 Note that you need to have actually built everything before packing
