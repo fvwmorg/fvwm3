@@ -130,13 +130,13 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
   for (is_finished = 0; is_finished == 0; )
   {
     nconv = iconv(cd,(char **)&inptr,&insize,&outp,&outbytes_remaining);
-    if (nconv == (size_t) -1)
+    is_finished = 1;
+    if (nconv == (size_t) - 1)
     {
       switch (errno)
       {
       case EINVAL:
         /* Incomplete text, do not report an error */
-        is_finished = 1;
         break;
       case E2BIG:
       {
@@ -147,7 +147,7 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 
         outp = dest + used;
         outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
-
+	is_finished = 0;
         break;
       }
       default:
@@ -155,7 +155,6 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
                  "Error during conversion from %s to %s\n",
                  in_charset,out_charset);
         have_error = 1;
-        is_finished = 1;
         break;
       }
     }
