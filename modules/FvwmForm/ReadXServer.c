@@ -1,3 +1,8 @@
+/*  Modification History */
+
+/*  Changed on 02/27/99 by DanEspen (dje): */
+/*  - Add logic to allow international characters, bug id 179 */
+
 #include "config.h"
 #include "../../libs/fvwmlib.h"
 
@@ -25,7 +30,8 @@ void ReadXServer ()
   Item *item, *old_item;
   KeySym ks;
   char *sp, *dp, *ep;
-  static char buf[10], n;
+  static unsigned char buf[10];         /* unsigned for international */
+  static int n;
 
   while (XEventsQueued(dpy, QueuedAfterReading)) {
     XNextEvent(dpy, &event);
@@ -236,7 +242,9 @@ void ReadXServer ()
 	  break;
 	default:
 	  old_cursor = CF.abs_cursor;
-	  if (buf[0] >= ' ' && buf[0] < '\177') {  /* regular char */
+	  if((buf[0] >= ' ' &&
+              buf[0] < '\177') ||
+             (buf[0] >= 160)) {         /* regular or intl char */
 	    if (++(CF.cur_input->input.n) >= CF.cur_input->input.buf) {
 	      CF.cur_input->input.buf += CF.cur_input->input.size;
 	      CF.cur_input->input.value = 

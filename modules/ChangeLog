@@ -1,3 +1,8 @@
+Sat Feb 27 11:55:27 1999  DanEspen  <dje@blue>
+
+	*  FvwmForm/ReadXServer.c: Add    logic   to  allow  international
+characters, bug id 179.
+
 1999-02-26  Dan Espen  <dane@mk.bellcore.com>
 
 	* FvwmForm/FvwmForm.c:

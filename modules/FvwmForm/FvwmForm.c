@@ -60,6 +60,8 @@
    Add "Message" command, display "Error" and "String" messages from fvwm.
    Removed CopyNString, strdup replaces it.
 
+   Moved ParseCommand, to separate file.
+
  */
 #include "config.h"
 #include "../../libs/fvwmlib.h"
@@ -98,9 +100,6 @@ static Pixel MyGetColor(char *color,char *Myname,int bw);
 static void nocolor(char *, char *,char *);
 static void AssignDrawTable(Item *);
 static void AddItem();
-
-static char *buf;
-static int N = 8;
 
 /* copy a string until '"', or '\n', or '\0' */
 static char *CopyQuotedString (char *cp)
@@ -1083,108 +1082,6 @@ void RedrawItem (Item *item, int click)
   XFlush(dpy);
 }
 
-
-/* Macro used in following functions */
-#define AddChar(chr) \
- { if (dn >= N) {\
-     N *= 2;\
-     buf = (char *)realloc(buf, N);\
-   }\
-   buf[dn++] = (chr);\
- }
-
-/* do var substitution for command string */
-static void ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
-{
-  static char var[256];
-  char c, x, *wp, *cp, *vp;
-  int j, dn2;
-  Item *item;
-
-  while (1) {
-    c = *(sp++);
-    if (c == '\0' || c == end) {  /* end of substitution */
-      *dn1 = dn;
-      *sp1 = sp;
-      return;
-    } if (c == '\\') {  /* escape char */
-      AddChar('\\');
-      AddChar(*(sp++));
-      goto next_loop;
-    }
-    if (c == '$') {  /* variable */
-      if (*sp != '(')
-	goto normal_char;
-      wp = ++sp;
-      vp = var;
-      while (1) {
-	x = *(sp++);
-	if (x == '\\') {
-	  *(vp++) = '\\';
-	  *(vp++) = *(sp++);
-	}
-	else if (x == ')' || x == '?' || x == '!') {
-	  *(vp++) = '\0';
-	  break;
-	}
-	else if (!isspace(x))
-	  *(vp++) = x;
-      }
-      for (item = root_item_ptr; item != 0;
-           item = item->header.next) {/* all items */
-	if (strcmp(var, item->header.name) == 0) {
-	  switch (item->type) {
-	  case I_INPUT:
-	    if (x == ')') {
-	      for (cp = item->input.value; *cp != '\0'; cp++) {
-		if (*cp == '\"' || *cp == '\'' || *cp == '\\')
-		  AddChar('\\');
-		AddChar(*cp);
-	      }
-	    } else {
-	      ParseCommand(dn, sp, ')', &dn2, &sp);
-	      if ((x == '?' && strlen(item->input.value) > 0) ||
-		  (x == '!' && strlen(item->input.value) == 0))
-		dn = dn2;
-	    }
-	    break;
-	  case I_CHOICE:
-	    if (x == ')') {
-	      for (cp = item->choice.value; *cp != '\0'; cp++)
-		AddChar(*cp);
-	    } else {
-	      ParseCommand(dn, sp, ')', &dn2, &sp);
-	      if ((x == '?' && item->choice.on) ||
-		  (x == '!' && !item->choice.on))
-		dn = dn2;
-	    }
-	    break;
-	  case I_SELECT:
-	    if (x != ')')
-	      ParseCommand(dn, sp, ')', &dn2, &sp);
-	    AddChar(' ');
-	    for (j = 0; j < item->selection.n; j++) {
-	      if (item->selection.choices[j]->choice.on) {
-		for (cp = item->selection.choices[j]->choice.value;
-		     *cp != '\0'; cp++)
-		  AddChar(*cp);
-		AddChar(' ');
-	      }
-	    }
-	    break;
-	  }
-	  goto next_loop;
-	}
-      }
-      goto next_loop;
-    }
-  normal_char:
-    AddChar(c);
-  next_loop:
-      ;
-  }
-}
-  
 /* execute a command */
 void DoCommand (Item *cmd)
 {
@@ -1197,16 +1094,16 @@ void DoCommand (Item *cmd)
     XWithdrawWindow(dpy, CF.frame, screen);
 
   for (k = 0; k < cmd->button.n; k++) {
+    char *parsed_command;
     /* construct command */
-    ParseCommand(0, cmd->button.commands[k], '\0', &dn, &sp);
-    AddChar('\0');
-    myfprintf((stderr, "Final command[%d]: [%s]\n", k, buf));
+    parsed_command = ParseCommand(0, cmd->button.commands[k], '\0', &dn, &sp);
+    myfprintf((stderr, "Final command[%d]: [%s]\n", k, parsed_command));
 
     /* send command */
-    if ( buf[0] == '!') {               /* If command starts with ! */
-      system(buf+1);                    /* Need synchronous execution */
+    if ( parsed_command[0] == '!') {    /* If command starts with ! */
+      system(parsed_command+1);         /* Need synchronous execution */
     } else {
-      SendText(Channel,buf, ref);
+      SendText(Channel,parsed_command, ref);
     }
   }
   
@@ -1467,7 +1364,6 @@ int main (int argc, char **argv)
   char *s;                              /* FvwmAnimate */
   char mask_mesg[20];
   char cmd[200];
-  buf = (char *)malloc(N);              /* some kludge */
 
 #ifdef DEBUGTOFILE
   freopen(".FvwmFormDebug","w",stderr);

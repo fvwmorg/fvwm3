@@ -272,6 +272,7 @@ void RedrawItem (Item *item, int click); /* FvwmForm.c */
 void DoCommand (Item *cmd);             /* FvwmForm.c */
 int FontWidth (XFontStruct *xfs);       /* FvwmForm.c */
 void RedrawFrame ();                    /* FvwmForm.c */
+char * ParseCommand (int, char *, char, int *, char **s); /* ParseCommand.c */
 
 void DeadPipe(int nonsense);            /* FvwmForm.c */
 void DefineMe();                        /* DefineMe.c */

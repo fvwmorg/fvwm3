@@ -5,7 +5,8 @@ module_PROGRAMS = FvwmForm
 man_MANS = FvwmForm.1
 EXTRA_DIST = $(man_MANS) Changes
 
-FvwmForm_SOURCES = FvwmForm.c FvwmForm.h DefineMe.c ReadXServer.c
+FvwmForm_SOURCES = FvwmForm.c FvwmForm.h DefineMe.c ReadXServer.c \
+ ParseCommand.c
 FvwmForm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 sysconf_DATA = .FormFvwmCapture .FormFvwmRlogin .FormFvwmQuitVerify
