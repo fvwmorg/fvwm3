@@ -1,3 +1,5 @@
+# Copyright (c) 2003 Mikhael Goikhman
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -181,7 +183,7 @@ Name this module TestModuleGtk, make it executable and place in ModulePath:
     my $dialog = new Gtk::Dialog;
     my $id = $dialog->window->XWINDOW();
     $dialog->signal_connect("destroy", sub { Gtk->main_quit; });
-    $dialog->set_title("Test");
+    $dialog->set_title("Simple Test");
     my $button = new Gtk::Button "Close";
     $button->signal_connect("clicked", sub { $dialog->destroy; });
     $dialog->action_area->pack_start($button, 1, 1, 0);
@@ -190,28 +192,27 @@ Name this module TestModuleGtk, make it executable and place in ModulePath:
     $module->addDefaultErrorHandler;
     $module->addHandler(M_ICONIFY, sub {
         my $id0 = $_[1]->_win_id;
-        printf "id = %x, id0 = %x\n", $id, $id0;
-        $module->send("WindowId $id Iconify off") if $id0 == $id;
+        $module->send("Iconify off", $id) if $id0 == $id;
     });
     $module->track('Scheduler')->schedule(60, sub {
         $module->showMessage("You run this module for 1 minute")
     });
 
+    $module->send('Style "Simple Test" Sticky');
     $module->eventLoop;
 
 =head1 DESCRIPTION
 
-The B<FVWM::Module::Gtk> package is a sub-class of B<FVWM::Module> that
-overloads the methods B<eventLoop>, B<showError> and B<showMessage>
-to manage GTK+ version 1 objects as well.
+The B<FVWM::Module::Gtk> class is a sub-class of B<FVWM::Module::Toolkit>
+that overloads the methods B<eventLoop>, B<showError>, B<showMessage> and
+B<showDebug> to manage GTK+ version 1 objects as well.
 
 This manual page details only those differences. For details on the
 API itself, see L<FVWM::Module>.
 
 =head1 METHODS
 
-Only methods that are not available in B<FVWM::Module> or the overloaded ones
-are covered here:
+Only overloaded or new methods are covered here:
 
 =over 8
 

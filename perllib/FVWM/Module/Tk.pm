@@ -1,3 +1,5 @@
+# Copyright (c) 2003, Mikhael Goikhman
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -175,7 +177,7 @@ Name this module TestModuleTk, make it executable and place in ModulePath:
     use FVWM::Module::Tk;
     use Tk;  # preferably in this order
 
-    my $top = new MainWindow(-name => "Test");
+    my $top = new MainWindow(-name => "Simple Test");
     my $id = $top->wrapper->[0];
 
     my $module = new FVWM::Module::Tk(
@@ -190,28 +192,28 @@ Name this module TestModuleTk, make it executable and place in ModulePath:
     $module->addDefaultErrorHandler;
     $module->addHandler(M_ICONIFY, sub {
         my $id0 = $_[1]->_win_id;
-        $module->send("WindowId $id Iconify off") if $id0 == $id;
+        $module->send("Iconify off", $id) if $id0 == $id;
     });
     $module->track('Scheduler')->schedule(60, sub {
         $module->showMessage("You run this module for 1 minute")
     });
 
+    $module->send('Style "*imple Test" Sticky');
     $module->eventLoop;
 
 =head1 DESCRIPTION
 
-The B<FVWM::Module::Tk> package is a sub-class of B<FVWM::Module> that
-overloads the methods B<new>, B<eventLoop>, B<showMessage>, B<showDebug> and
-B<showError> to manage Tk objects as well. It also adds new method
-B<topWindow>.
+The B<FVWM::Module::Tk> class is a sub-class of B<FVWM::Module::Toolkit>
+that overloads the methods B<new>, B<eventLoop>, B<showMessage>,
+B<showDebug> and B<showError> to manage Tk objects as well. It also adds new
+method B<topWindow>.
 
 This manual page details only those differences. For details on the
 API itself, see L<FVWM::Module>.
 
 =head1 METHODS
 
-Only methods that are not available in B<FVWM::Module>, or are overloaded
-are covered here:
+Only overloaded or new methods are covered here:
 
 =over 8
 

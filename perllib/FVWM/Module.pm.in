@@ -1,3 +1,5 @@
+# Copyright (c) 2003 Mikhael Goikhman
+#
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation; either version 2 of the License, or
@@ -35,7 +37,7 @@ use Exporter;
 @ISA = qw(Exporter);
 
 # The major version part indicates major API changes
-$VERSION = '1.1';
+$VERSION = '1.2';
 
 # Set the FVWM search directories (used for non fully qualified file names)
 $General::FileSystem::SAVE_FILE_DIR = $General::FileSystem::SAVE_FILE_DIR ||
@@ -179,6 +181,7 @@ sub disconnect ($) {
 	$self->invokeHandler(new FVWM::Event(ON_EXIT));
 
 	if (defined $self->{ostream} && $self->{ostream}->opened) {
+		# TODO: should wait until fvwm actually gets it
 		$self->send("Nop", 0, 0);
 		close $self->{ostream};
 	}
@@ -356,18 +359,21 @@ sub send ($$;$$) {
 			pack("lla${len}l", $winId, $len, $line, $continue)
 		);
 	}
+	return $self;
 }
 
 sub sendReady ($) {
 	my $self = shift;
 	$self->send(RESPONSE_READY) if $self->{shouldSendReady};
 	$self->{shouldSendReady} = 0;
+	return $self;
 }
 
 sub sendUnlock ($) {
 	my $self = shift;
 	$self->send(RESPONSE_UNLOCK) if $self->{shouldSendUnlock};
 	$self->{shouldSendUnlock} = 0;
+	return $self;
 }
 
 sub sendMask ($$;$) {
@@ -385,6 +391,9 @@ sub terminate ($;$) {
 	die "!next";
 }
 
+sub waitPacket ($) {
+}
+
 sub readPacket ($) {
 	my $self = shift;
 
@@ -395,9 +404,11 @@ sub readPacket ($) {
 	my $header = "";
 	my $packet = "";
 
+	$self->waitPacket;
+
 	# read a packet's header first, sizeof(int) * HEADER_SIZE bytes long
 	my $got;
-	# With perl-5.8.0, $SIG{ALRM} causes sysread to exit with "Illegal seek",
+	# With perl-5.8.0+, $SIG{ALRM} causes sysread to exit with "Illegal seek",
 	# so loop around sysread. I am not sure this is safe.
 	do {
 		$got = sysread($self->{istream}, $header, INTSIZE * HEADER_SIZE);
@@ -576,9 +587,9 @@ sub track ($$;$@) {
 		$self->{usedTrackerClasses}->{$trackerType} = 1;
 	}
 
-	my $tracker = $params->{NoReuse} && $self->{trackers}->{$trackerType}
+	my $tracker = !$params->{NoReuse} && $self->{trackers}->{$trackerType}
 		|| $trackerClass->new($self, @_);
-	unless ($params->{NoReuse}) {
+	if ($params->{NoReuse}) {
 		$trackerType .= "+" while exists $self->{trackers}->{$trackerType};
 	}
 	$self->{trackers}->{$trackerType} = $tracker;
@@ -686,15 +697,28 @@ process, receives a module configuration and events and sends commands back.
 This class B<FVWM::Module> makes it easy to create FVWM modules in Perl.
 
 If you are interested in all module protocol details that this class tries
-to make invisible, visit the web page I<http://fvwm.org/modules.html>.
+to make invisible, visit the web page
+I<http://fvwm.org/documentation/dev_modules.php>.
 You will need an information about packet arguments anyway to be able to
 write complex modules. This is however not obligatory for simple modules
 that only send commands back when something happens.
 
-A tipical FVWM module has an initialization part including setting event
+A typical FVWM module has an initialization part including setting event
 handlers using B<addHandler> methods and entering an event loop using
 B<eventLoop> method. Most of the work is done in the event handlers although
 a module may define other execution ways, for example using C<$SIG{ALRM}>.
+
+An FVWM module receives 3 values from I<fvwm>: I<rcFile> - the file this
+module was called from or "none" if the module is called as a command from
+another module or from a binding/function (this value is not really useful),
+I<winId> - the window context of this module if it is called from window
+decoration bindings or window menu (the value is integer, 0 if there is no
+window context), and finally I<context> that indicates the place this module
+was called from, like menu or window title (see the fvwm documentation).
+All these values may be accessed as properties of the module object,
+like C<$module-E<gt>{winId}>.
+
+=head1 METHODS
 
 The following methods are available:
 
@@ -713,11 +737,11 @@ B<resetHandlers>,
 B<addHandler>,
 B<deleteHandler>,
 B<addDefaultErrorHandler>,
-B<debug>
-B<showError>
-B<showMessage>
-B<showDebug>
-B<isDummy>
+B<debug>,
+B<showError>,
+B<showMessage>,
+B<showDebug>,
+B<isDummy>.
 
 The following methods are called from other methods above, but may be useful
 in other situations as well:
@@ -735,7 +759,7 @@ B<getHandlerCategory>,
 B<readPacket>,
 B<invokeHandler>,
 B<processPacket>,
-B<emulateEvent>
+B<emulateEvent>.
 
 These methods deal with a received packet (event):
 
@@ -746,8 +770,6 @@ These methods deal with configuration directories:
 B<userDataDir>,
 B<siteDataDir>,
 B<searchDirs>
-
-=head1 METHODS
 
 =over 4
 
@@ -763,9 +785,9 @@ The following parameters may be given in the constractor:
     XMask         - the same for extended events
     SyncMask      - events to lock on
     SyncXMask     - the same for extended events
-    EnableAlias   - a module accepts an alias in command line
-    EnableOptions - a module accepts options in command line
-    Debug         - 0 is disable debug, 1 - user, 2,3,4 - perllib
+    EnableAlias   - whether a module accepts an alias in command line
+    EnableOptions - options that a module accepts in command line
+    Debug         - 0 means no debug, 1 - user debug, 2,3,4 - perllib
 
 Example:
 
@@ -778,15 +800,17 @@ Example:
 
 Event types needed for the 4 mask parameters are defined in B<FVWM::Constants>.
 
-Set I<Debug> to 2 to nicely dump all module sent and and received data,
-Setting it to 3 makes it even more verbose.
+Set I<Debug> to 2 to nicely dump all communication with fvwm (sent commands
+and received events). Setting it to 3 makes it even more verbose.
 
 Some options cause an automatically parsing of the module command line args.
 See L<Getopt::Long> for the format of the hash ref accepted by
 I<EnableOptions> parameter. If boolean I<EnableAlias> parameter is given,
 then the alias argument may be specified anywhere on the command line, for
 example before or after long/short options or even in between, as long as
-there are no conflicts with some non-mandatory option arguments.
+there are no conflicts with some non-mandatory option arguments. In which
+case "--" may be used to indicate the end of the options. All non-parsed
+command line arguments are available to the program using B<argv> method.
 
 =item B<version>
 
@@ -818,8 +842,8 @@ by a I<name>.
 
 I<mode-hash> may include parameters:
 
-    NoStart - value of 1 means the created tracker is not auto-started
-    NoReuse - value of 1 means not to reuse any existing named tracker
+    NoStart - true value means the created tracker is not auto-started
+    NoReuse - true value means not to reuse any existing named tracker
 
 I<param-hash> is specific to the tracker named I<name>. Every tracker class
 (a subclass of B<FVWM::Tracker>) has its own manual page, contact it for

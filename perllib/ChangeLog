@@ -1,8 +1,35 @@
 2003-10-25  Mikhael Goikhman  <migo@homemail.com>
 
-	* perllib/FVWM/create-commands:
-	* perllib/FVWM/Commands.pm:
-	minor fix and regenerated
+	* FVWM/create-commands:
+	* FVWM/Commands.pm:
+	small fix and regenerated
+
+	* FVWM/Event.pm:
+	* FVWM/EventNames.pm:
+	* FVWM/Module.pm.in:
+	* FVWM/Tracker.pm:
+	* FVWM/Module/Gtk.pm:
+	* FVWM/Module/Gtk2.pm:
+	* FVWM/Module/Tk.pm:
+	* FVWM/Module/Toolkit.pm:
+	* FVWM/Tracker/Colorsets.pm:
+	* FVWM/Tracker/GlobalConfig.pm:
+	* FVWM/Tracker/ModuleConfig.pm:
+	* FVWM/Tracker/PageInfo.pm:
+	* FVWM/Tracker/Scheduler.pm:
+	* FVWM/Tracker/WindowList.pm:
+	* General/FileSystem.pm:
+	* General/Parse.pm:
+	improvements in documentation and added copyright notice
+
+	* FVWM/Module/Terminal.pm:
+	new class for xterm based modules like FvwmConsole (not functional yet)
+
+	* FVWM/Module/Toolkit.pm:
+	better detection of external dialog tool and a more powerful usage
+
+	* General/FileSystem.pm:
+	small fixes in code and documentation
 
 2003-08-05  Mikhael Goikhman  <migo@homemail.com>
 
@@ -25,8 +52,8 @@
 
 2003-07-07  Mikhael Goikhman  <migo@homemail.com>
 
-	* perllib/FVWM/create-commands:
-	* perllib/FVWM/Commands.pm:
+	* FVWM/create-commands:
+	* FVWM/Commands.pm:
 	improved script and regenerated perl class
 
 2003-06-15  Mikhael Goikhman  <migo@homemail.com>

@@ -1,4 +1,4 @@
-# Copyright (C) 1998-2002, Mikhael Goikhman
+# Copyright (c) 1998-2003, Mikhael Goikhman
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -164,7 +164,8 @@ Loads file with given file-name from local filesystem.
 
 =item returns
 
-Reference to file content string on success, otherwise throws exception.
+Reference to file content string on success, otherwise either dies or warns
+and returns undef as configured.
 
 =back
 
@@ -232,7 +233,7 @@ Saves file-content to local filesystem with given file-name.
 
 =item returns
 
-C<1> on success, otherwise throws exception.
+C<1> on success, otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -289,7 +290,7 @@ Appends file-append-content to local filesystem with given file-name.
 
 =item returns
 
-C<1> on success, otherwise throws exception.
+C<1> on success, otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -335,7 +336,7 @@ Removes all files from given directory.
 
 =item returns
 
-C<1> on success, otherwise throws exception.
+C<1> on success, otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -372,7 +373,7 @@ Removes all files from given directory.
 
 =item returns
 
-C<1> on success, otherwise throws exception.
+C<1> on success, otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -411,7 +412,7 @@ Removes all files from given directory.
 
 =item returns
 
-C<1> on success, otherwise throws exception.
+C<1> on success, otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -457,7 +458,7 @@ Copies a file to another location.
 
 =item returns
 
-C<1> on success, otherwise throws exception.
+C<1> on success, otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -505,7 +506,7 @@ Moves (or renames) a file to another location.
 
 =item returns
 
-C<1> on success, otherwise throws exception.
+C<1> on success, otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -549,7 +550,7 @@ Removes all files from given directory.
 
 =item returns
 
-C<1> on success, otherwise throws exception.
+C<1> on success, otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -611,7 +612,7 @@ This is an alias to C<cleanDir(3)>.
 
 =item returns
 
-C<1> on success, otherwise throws exception.
+C<1> on success, otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -651,7 +652,7 @@ to remove it before copying.
 
 =item returns
 
-C<1> on success, otherwise throws exception.
+C<1> on success, otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -671,6 +672,7 @@ sub copyDir ($$) {
 
 	local $DEBUG_ENABLED = 0;
 
+	my $error = 0;
 	my @subdirs = ();
 	my $fileNames = listFileNames($srcDirName);
 
@@ -681,16 +683,18 @@ sub copyDir ($$) {
 		my $dstFileName = "$dstDirName/$_";
 		if (-d $srcFileName) { push @subdirs, $_; }
 		elsif (-l $srcFileName) { next if "# We ignore links for now! TO FIX!" }
-		else { copyFile($srcFileName, $dstFileName); }
+		else { copyFile($srcFileName, $dstFileName) or $error = 1; }
 	}
 
 	# process subdirs
 	foreach (@subdirs) {
 		my $srcSubDirName = "$srcDirName/$_";
 		my $dstSubDirName = "$dstDirName/$_";
-		&copyDir($srcSubDirName, $dstSubDirName);
+		&copyDir($srcSubDirName, $dstSubDirName) or $error = 1;
 	}
 
+	return callErrorHandler("Errors while copying some files/subdirs in $srcDirName to $dstDirName")
+		if $error;
 	return 1;
 }
 
@@ -719,7 +723,7 @@ to remove it before copying.
 
 =item returns
 
-C<1> on success, otherwise throws exception.
+C<1> on success, otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -765,7 +769,8 @@ Returns the file names in the given directory including all types of files
 
 =item returns
 
-Array ref of scalars (file names). Throws exception on error.
+Array ref of scalars (file names) on success.
+Otherwise either dies or warns and returns undef as configured.
 
 =back
 
@@ -907,7 +912,7 @@ C<makeDir>, C<makePath>, C<copyDir> and C<moveDir> functions.
 
 The default of this package is 0775.
 
-If no parameters specified, nothing is set (only current value is returned).
+If no parameters specified, the current value is returned.
 
 =item usage
 
@@ -915,7 +920,7 @@ If no parameters specified, nothing is set (only current value is returned).
 
 =item parameters
 
- * optional default directory permission (integer)
+  * optional default directory permission (integer)
 
 =item returns
 
@@ -967,11 +972,11 @@ If no parameters specified, nothing is set (only current value is returned).
 
 =item usage
 
- preserveStat(1);
+  preserveStat(1);
 
 =item parameters
 
- * optional flag (currently 0 or 1)
+  * optional flag (currently 0 or 1)
 
 =item returns
 
