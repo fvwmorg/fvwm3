@@ -1,3 +1,7 @@
+2000-05-11  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* configure.in: changed version to 2.3.17
+
 2000-05-10  Michael Han  <mikehan@best.com
 
 	* modules/FvwmDebug/FvwmDebug.1:
