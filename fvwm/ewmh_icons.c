@@ -199,6 +199,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 	int save_icon_depth = 0;
 	Pixmap save_icon_pixmap = None;
 	Pixmap save_icon_mask = None;
+	Pixmap save_icon_alpha = None;
 	Window save_icon_pixmap_w = None;
 	Bool is_pixmap_ours = False;
 	Bool is_icon_ours = False;
@@ -228,6 +229,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 		save_icon_depth = fwin->iconDepth;
 		save_icon_pixmap = fwin->iconPixmap;
 		save_icon_mask = fwin->icon_maskPixmap;
+		save_icon_alpha = fwin->icon_alphaPixmap;
 		save_icon_pixmap_w =  FW_W_ICON_PIXMAP(fwin);
 		is_pixmap_ours = IS_PIXMAP_OURS(fwin);
 		is_icon_ours = IS_ICON_OURS(fwin);
@@ -246,6 +248,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 		fwin->iconDepth = save_icon_depth;
 		fwin->iconPixmap = save_icon_pixmap;
 		fwin->icon_maskPixmap = save_icon_mask;
+		fwin->icon_alphaPixmap = save_icon_alpha;
 		FW_W_ICON_PIXMAP(fwin) = save_icon_pixmap_w;
 		SET_ICON_OURS(fwin, is_icon_ours);
 		SET_PIXMAP_OURS(fwin, is_pixmap_ours);

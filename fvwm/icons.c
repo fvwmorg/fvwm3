@@ -38,6 +38,7 @@
 #include "libs/FShape.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
+#include "libs/FRenderInit.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -296,6 +297,13 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 	SetIconPixmapSize(&(fw->icon_maskPixmap),
 	  fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
 	  1, newWidth, newHeight, (IS_PIXMAP_OURS(fw)));
+      }
+
+      /* Resize the icon mask Pixmap if one was defined */
+      if (fw->icon_alphaPixmap) {
+	SetIconPixmapSize(&(fw->icon_alphaPixmap),
+	  fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
+	  FRenderGetAlphaDepth(), newWidth, newHeight, (IS_PIXMAP_OURS(fw)));
       }
 
       /* Set the new dimensions of the icon window */
