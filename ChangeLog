@@ -2,6 +2,11 @@
 
 	* NEWS:
 	* configure.in:
+	increased version to 2.5.11
+	released 2.5.10
+
+	* NEWS:
+	* configure.in:
 	updated for 2.5.10 release
 
 	* libs/Graphics.c (do_relieve_rectangle_with_rotation):
