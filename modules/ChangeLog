@@ -1,3 +1,10 @@
+2002-02-27  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmRearrange/FvwmRearrange.c:
+	* FvwmRearrange/FvwmRearrange.1:
+	New arguments -maximize, -nomaximize, -animate, -noanimate.
+	Do Resize/Move in one command. Take outside duplicated code.
+
 2002-02-26  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/Makefile.am:

@@ -84,6 +84,9 @@ int incx = 0, incy = 0;
 int horizontal = 0;
 int maxnum = 0;
 
+int do_maximize = 0;
+int do_animate = 0;
+
 char FvwmTile;
 char FvwmCascade;
 
@@ -196,10 +199,9 @@ int get_window(void)
       break;
 
     default:
-fprintf(stderr,"0x%08x\n", (int)packet->type);
       fprintf(console,
-	      "%s: internal inconsistency: unknown message\n",
-	      argv0);
+	"%s: internal inconsistency: unknown message 0x%08x\n",
+	argv0, (int)packet->type);
       break;
     }
   }
@@ -239,10 +241,41 @@ int atopixel(char *s, unsigned long f)
   return (atoi(s) * f) / 100;
 }
 
+void move_resize_raise_window(
+	window_item *wi, int x, int y, int w, int h)
+{
+	static char msg[64];
+
+	if (resize)
+	{
+		const char *function = do_maximize?
+			"ResizeMoveMaximize":
+			"ResizeMove";
+		sprintf(msg, "%s %dp %dp %up %up", function, w, h, x, y);
+		SendText(fd, msg, wi->frame);
+	}
+	else
+	{
+		const char *function = do_maximize?
+			"ResizeMoveMaximize":
+			do_animate ? "AnimatedMove" : "Move";
+		if (do_maximize)
+			sprintf(msg, "%s keep keep %up %up", function, x, y);
+		else
+			sprintf(msg, "%s %up %up", function, x, y);
+		SendText(fd, msg, wi->frame);
+	}
+  
+	if (raise_window)
+		SendText(fd, "Raise", wi->frame);
+
+	wait_configure(wi);
+}
+
 void tile_windows(void)
 {
-  char msg[128];
   int cur_x = ofsx, cur_y = ofsy;
+  int final_w = -1, final_h = -1;
   int wdiv, hdiv, i, j, count = 1;
   window_item *w = reversed ? wins_tail : wins;
 
@@ -269,17 +302,12 @@ void tile_windows(void)
 	    if (nh > w->height)
 	      nh = w->height;
 	  }
-	  sprintf(msg, "Resize %lup %lup",
-		  (nw > 0) ? nw : w->width,
-		  (nh > 0) ? nh : w->height);
-	  SendInfo(fd,msg,w->frame);
+	  final_w = (nw > 0) ? nw : w->width;
+	  final_h = (nh > 0) ? nh : w->height;
 	}
-	sprintf(msg, "Move %up %up", cur_x, cur_y);
-	SendInfo(fd,msg,w->frame);
-	if (raise_window)
-	  SendInfo(fd,"Raise",w->frame);
+	move_resize_raise_window(w, cur_x, cur_y, final_w, final_h);
+
 	cur_y += hdiv;
-	wait_configure(w);
 	w = reversed ? w->prev : w->next;
       }
       cur_x += wdiv;
@@ -308,17 +336,12 @@ void tile_windows(void)
 	    if (nh > w->height)
 	      nh = w->height;
 	  }
-	  sprintf(msg, "Resize %lup %lup",
-		  (nw > 0) ? nw : w->width,
-		  (nh > 0) ? nh : w->height);
-	  SendInfo(fd,msg,w->frame);
+	  final_w = (nw > 0) ? nw : w->width;
+	  final_h = (nh > 0) ? nh : w->height;
 	}
-	sprintf(msg, "Move %up %up", cur_x, cur_y);
-	SendInfo(fd,msg,w->frame);
-	if (raise_window)
-	  SendInfo(fd,"Raise",w->frame);
+	move_resize_raise_window(w, cur_x, cur_y, final_w, final_h);
+
 	cur_x += wdiv;
-	wait_configure(w);
 	w = reversed ? w->prev : w->next;
       }
       cur_x = ofsx;
@@ -329,16 +352,12 @@ void tile_windows(void)
 
 void cascade_windows(void)
 {
-  char msg[128];
   int cur_x = ofsx, cur_y = ofsy;
+  int final_w = -1, final_h = -1;
   window_item *w = reversed ? wins_tail : wins;
   while (w)
   {
     unsigned long nw = 0, nh = 0;
-    if (raise_window)
-      SendInfo(fd,"Raise",w->frame);
-    sprintf(msg, "Move %up %up", cur_x, cur_y);
-    SendInfo(fd,msg,w->frame);
     if (resize) {
       if (nostretch) {
 	if (maxw
@@ -352,13 +371,12 @@ void cascade_windows(void)
 	nh = maxh;
       }
       if (nw || nh) {
-	sprintf(msg, "Resize %lup %lup",
-		nw ? nw : w->width,
-		nh ? nh : w->height);
-	SendInfo(fd,msg,w->frame);
+	final_w = nw ? nw : w->width;
+	final_h = nh ? nh : w->height;
       }
     }
-    wait_configure(w);
+    move_resize_raise_window(w, cur_x, cur_y, final_w, final_h);
+
     if (!flatx)
       cur_x += w->bw;
     cur_x += incx;
@@ -375,13 +393,13 @@ void parse_args(char *s, int argc, char *argv[], int argi)
   /* parse args */
   for (; argi < argc; ++argi)
   {
-    if (!strcmp(argv[argi],"-tile") || !strcmp(argv[argi],"-cascade")) {
+    if (!strcmp(argv[argi], "-tile") || !strcmp(argv[argi], "-cascade")) {
       /* ignore */
     }
-    else if (!strcmp(argv[argi],"-u")) {
+    else if (!strcmp(argv[argi], "-u")) {
       untitled = 1;
     }
-    else if (!strcmp(argv[argi],"-t")) {
+    else if (!strcmp(argv[argi], "-t")) {
       transients = 1;
     }
     else if (!strcmp(argv[argi], "-a")) {
@@ -436,6 +454,18 @@ void parse_args(char *s, int argc, char *argv[], int argi)
     }
     else if (!strcmp(argv[argi], "-incy") && ((argi + 1) < argc)) {
       incy = atopixel(argv[++argi], dheight);
+    }
+    else if (!strcmp(argv[argi], "-maximize")) {
+      do_maximize = 1;
+    }
+    else if (!strcmp(argv[argi], "-nomaximize")) {
+      do_maximize = 0;
+    }
+    else if (!strcmp(argv[argi], "-animate")) {
+      do_animate = 1;
+    }
+    else if (!strcmp(argv[argi], "-noanimate")) {
+      do_animate = 0;
     }
     else {
       if (++nsargc > 4) {
@@ -547,7 +577,7 @@ int main(int argc, char *argv[])
       maxy = dy + dheight;
   }
 
-  SendInfo(fd,"Send_WindowList",0);
+  SendText(fd, "Send_WindowList", 0);
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
