@@ -1,3 +1,18 @@
+Sat Jan 16 03:14:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* Moved ANNOUNCE, BUGS, DEVELOPERS, FAQ, TODO, and Y2K-Compliance
+	from top-level directory to docs.
+
+	* tests: Created directory; put in script to test combinations of
+	build options.
+	* tests/purify: Created directory; this holds docs and scripts
+	helpful for running purify on the source code.  This is not
+	distributed in the .tar.gz files.
+
+Fri Jan 15 22:10:18 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/fvwm2.1: Corrected the search sequence for startup files.
+
 1999-01-16  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* BUGS: updated for 2.2

@@ -434,11 +434,7 @@ void do_save(void)
      if (t->desk > maxdesk)
 	maxdesk = t->desk;
 
-#ifdef RenameFVWM2
   sprintf(fnbuf, "%s/.fvwm2desk", getenv( "HOME" ) );
-#else
-  sprintf(fnbuf, "%s/.fvwmdesk", getenv( "HOME" ) );
-#endif
   out = fopen( fnbuf, "w" );
 
   fprintf( out, "AddToFunc InitFunction");

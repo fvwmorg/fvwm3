@@ -163,9 +163,9 @@ XTerm*Desk: 1
 During initialization, \fIfvwm\fP will search for a configuration file
 which describes key and button bindings, and a few other things.  The
 format of these files will be described later.  First, \fIfvwm\fP will
-search for a file named .fvwm2rc (or .fvwmrc based on how it was
-compiled - .fvwm2rc is the default) in the users home directory.
-Failing that, it will look for /usr/lib/X11/fvwm/.fvwm2rc for
+search for a file named .fvwm2rc in the users home directory, then in
+${sysconfdir} (typically /usr/local/etc).
+Failing that, it will look for system.fvwm2rc in ${sysconfdir} for
 system-wide defaults.  If that file is not found, \fIfvwm\fP will be
 basically useless.
 
