@@ -118,7 +118,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     GetIconBitmap(tmp_win);
 
   /* figure out the icon window size */
-  if (!(HAS_NO_ICON_TITLE(tmp_win))||(tmp_win->icon_p_height == 0))
+  if (!HAS_NO_ICON_TITLE(tmp_win))
   {
     tmp_win->icon_t_width =
       XTextWidth(tmp_win->icon_font.font, tmp_win->icon_name,
@@ -159,7 +159,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 			   | VisibilityChangeMask | ExposureMask | KeyPressMask
 			   | EnterWindowMask | LeaveWindowMask
 			   | FocusChangeMask );
-  if (!(HAS_NO_ICON_TITLE(tmp_win)) || (tmp_win->icon_p_height == 0))
+  if (!HAS_NO_ICON_TITLE(tmp_win))
   {
     tmp_win->icon_w =
       XCreateWindow(
@@ -491,8 +491,12 @@ void RedoIconName(FvwmWindow *tmp_win)
   if (tmp_win->icon_w == (int)NULL)
     return;
 
-  tmp_win->icon_t_width = XTextWidth(tmp_win->icon_font.font,tmp_win->icon_name,
-				     strlen(tmp_win->icon_name));
+  if (HAS_NO_ICON_TITLE(tmp_win))
+    tmp_win->icon_t_width = 0;
+  else
+    tmp_win->icon_t_width =
+      XTextWidth(tmp_win->icon_font.font,tmp_win->icon_name,
+                 strlen(tmp_win->icon_name));
   /* clear the icon window, and trigger a re-draw via an expose event */
   if (IS_ICONIFIED(tmp_win))
     DrawIconWindow(tmp_win);
@@ -1110,6 +1114,15 @@ void DeIconify(FvwmWindow *tmp_win)
           maximize_adjust_offset(t);
 	}
       }
+      /* domivogt (1-Mar-2000): The next block is a hack to prevent animation
+       * if the window has an icon, but neither a pixmap nor a title. */
+      if (HAS_NO_ICON_TITLE(t) && t->icon_pixmap_w == None)
+      {
+        t->icon_g.width = 0;
+        t->icon_g.height = 0;
+        t->icon_p_width = 0;
+        t->icon_p_height = 0;
+      }
       if (t == tmp_win)
       {
 	BroadcastPacket(M_DEICONIFY, 11,
@@ -1246,12 +1259,22 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   }
 
   /* if no pixmap we want icon width to change to text width every iconify */
-  if( (tmp_win->icon_w != None) && (tmp_win->icon_pixmap_w == None) ) {
-    tmp_win->icon_t_width =
-      XTextWidth(tmp_win->icon_font.font,tmp_win->icon_name,
-                 strlen(tmp_win->icon_name));
-    tmp_win->icon_p_width = tmp_win->icon_t_width+6 + 4;
-    tmp_win->icon_g.width = tmp_win->icon_p_width;
+  if( (tmp_win->icon_w != None) && (tmp_win->icon_pixmap_w == None) )
+  {
+    if (HAS_NO_ICON_TITLE(tmp_win))
+    {
+      tmp_win->icon_t_width = 0;
+      tmp_win->icon_p_width = 0;
+      tmp_win->icon_g.width = 0;
+    }
+    else
+    {
+      tmp_win->icon_t_width =
+        XTextWidth(tmp_win->icon_font.font,tmp_win->icon_name,
+                   strlen(tmp_win->icon_name));
+      tmp_win->icon_p_width = tmp_win->icon_t_width + 6 + 4;
+      tmp_win->icon_g.width = tmp_win->icon_p_width;
+    }
   }
 
   /* this condition will be true unless we restore a window to
@@ -1260,7 +1283,15 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   {
     AutoPlaceIcon(tmp_win);
   }
-
+  /* domivogt (1-Mar-2000): The next block is a hack to prevent animation if the
+   * window has an icon, but neither a pixmap nor a title. */
+  if (HAS_NO_ICON_TITLE(tmp_win) && tmp_win->icon_pixmap_w == None)
+  {
+    tmp_win->icon_g.width = 0;
+    tmp_win->icon_g.height = 0;
+    tmp_win->icon_p_width = 0;
+    tmp_win->icon_p_height = 0;
+  }
   SET_ICONIFIED(tmp_win, 1);
   SET_ICON_UNMAPPED(tmp_win, 0);
   BroadcastPacket(M_ICONIFY, 11,
