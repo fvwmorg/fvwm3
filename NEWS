@@ -5,11 +5,11 @@ _+_A HREF="#2.4.7"_-_2.4.7_+_/A_-_.
 
 Changes in alpha release 2.5.2 (not released yet)
 
-* Fonts can be loaded with a shadow effect, see the FONT EFFECTS section
-of fvwm manual page.
+* Fonts can be loaded with a shadow effect, see the FONT EFFECTS
+  section of fvwm manual page.
 
-* New Colorset options: fgsh for shadow text and fg_alpha for merging
-text with the background.
+* New Colorset options: fgsh for shadow text and fg_alpha for
+  merging text with the background.
 
 * New module FvwmPerl adds perl scripting ability to fvwm commands.
 
