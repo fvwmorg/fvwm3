@@ -105,13 +105,9 @@
 
 # The default image path is:
 #         /usr/include/X11/bitmap:/usr/include/X11/pixmaps
-# if the fvwm_icons are not installed in one of these directories
-# uncomment and edit the next line
-#ImagePath :pathtofvwm_icons:+
-
-# if you uncomment the next line you add a personnal images directory to
-# the above directories
-#ImagePath $FVWM_USERHOME/images:+
+# if the fvwm_icons are not installed in one of these directories or if
+# you want to add a personal image path uncomment and edit the next line
+#ImagePath :add_dir_to_fvwm_image_path:+
 
 #K_M 1 for KDE Styles and menus
 #ImagePath +:$KDEDIR/share/icons:$KDEDIR/share/apps/kappfinder/pics/:
