@@ -1,3 +1,27 @@
+1999-12-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleFocusIn):
+	* fvwm/fvwm.c (SetRCDefaults):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/module_interface.c:
+	* fvwm/icons.c (DrawIconWindow):
+	* fvwm/add_window.c (get_default_window_background):
+	(setup_style_and_decor):
+	* fvwm/style.c (update_window_color_style):
+	(ProcessNewStyle):
+	(update_window_color_style):
+	* fvwm/borders.c (get_common_decorations):
+	* fvwm/fvwm.h (FvwmWindow):
+	new styles HiligtFore, HilightBack and HilightColorset; old commands
+	HilightColor and HilightColorset are obsolete
+
+	* fvwm/fvwm.c (CreateGCs):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/icons.c:
+	* fvwm/borders.c:
+	* fvwm/misc.c (NewFontAndColor):
+	renamed ScratchGC3 to TitleGC
+
 1999-12-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (SetBorderStyle):

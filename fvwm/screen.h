@@ -213,11 +213,13 @@ typedef struct FvwmDecor
 #ifdef USEDECOR
   char *tag;			/* general style tag */
 #endif
+#if 0
   ColorPair HiColors;		/* standard fore/back colors */
   int HiColorset;		/* standard fore/back colorset */
   ColorPair HiRelief;
   GC HiReliefGC;		/* GC for highlighted window relief */
   GC HiShadowGC;		/* GC for highlighted window shadow */
+#endif
 
   int TitleHeight;            /* height of the title bar window */
   MyFont WindowFont;          /* font structure for window titles */
@@ -236,6 +238,7 @@ typedef struct FvwmDecor
   struct
   {
     unsigned has_changed : 1;
+    unsigned has_font_changed : 1;
   } flags;
 } FvwmDecor;
 
@@ -298,7 +301,7 @@ typedef struct ScreenInfo
   GC XorGC;			/* GC to draw lines for move and resize */
   GC ScratchGC1;
   GC ScratchGC2;
-  GC ScratchGC3;
+  GC TitleGC;
   int SizeStringWidth;	        /* minimum width of size window */
   int BoundaryWidth;	        /* frame width for decorated windows */
   int NoBoundaryWidth;	        /* frame width for decorated windows */
@@ -388,6 +391,9 @@ typedef struct ScreenInfo
   {
     Bool do_save_under : 1;
     unsigned do_need_window_update : 1;
+    unsigned has_icon_font_changed : 1;
+    unsigned has_default_font_changed : 1;
+    unsigned has_default_color_changed : 1;
     unsigned has_icon_font : 1;
     unsigned has_window_font : 1;
     unsigned silent_functions : 1;

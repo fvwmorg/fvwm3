@@ -825,8 +825,8 @@ static void BroadcastNewPacket(unsigned long event_type,
             (_t)->icon_w,\
             (_t)->icon_pixmap_w,\
             (_t)->hints.win_gravity,\
-            (_t)->TextPixel,\
-            (_t)->BackPixel
+            (_t)->colors.fore,\
+            (_t)->colors.back
 
 #ifndef DISABLE_MBC
 #define OLDCONFIGARGS(_t) 24,\
@@ -852,8 +852,8 @@ static void BroadcastNewPacket(unsigned long event_type,
             (_t)->icon_w,\
             (_t)->icon_pixmap_w,\
             (_t)->hints.win_gravity,\
-            (_t)->TextPixel,\
-            (_t)->BackPixel
+            (_t)->colors.fore,\
+            (_t)->colors.back
 
 #define SETOLDFLAGS \
 { int i = 1; \
@@ -952,9 +952,9 @@ static void BroadcastNewPacket(unsigned long event_type,
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->hints.win_gravity,\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->TextPixel,\
+            &(*(_t))->colors.fore,\
 	    (unsigned long)(sizeof(unsigned long)),\
-            &(*(_t))->BackPixel,\
+            &(*(_t))->colors.back,\
 	    (unsigned long)(sizeof((*(_t))->flags)),\
             &(*(_t))->flags
 
@@ -1311,13 +1311,23 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
                    Scr.Hilite->w,
                    Scr.Hilite->frame,
 		   (unsigned long)True,
+#if 0
 		   Scr.DefaultDecor.HiColors.fore,
 		   Scr.DefaultDecor.HiColors.back);
+#else
+		   Scr.Hilite->hicolors.fore,
+		   Scr.Hilite->hicolors.back);
+#endif
       else
 	SendPacket(*Module, M_FOCUS_CHANGE, 5,
                    0, 0, (unsigned long)True,
+#if 0
                    Scr.DefaultDecor.HiColors.fore,
                    Scr.DefaultDecor.HiColors.back);
+#else
+                   GetColor("White"),
+                   GetColor("Black"));
+#endif
       if (Scr.DefaultIcon != NULL)
 	SendName(*Module, M_DEFAULTICON, 0, 0, 0, Scr.DefaultIcon);
 
@@ -1365,15 +1375,25 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
       if(Scr.Hilite == NULL)
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
                           0, 0, (unsigned long)True,
+#if 0
                           Scr.DefaultDecor.HiColors.fore,
                           Scr.DefaultDecor.HiColors.back);
+#else
+			  GetColor("White"),
+			  GetColor("Black"));
+#endif
       else
 	  BroadcastPacket(M_FOCUS_CHANGE, 5,
                           Scr.Hilite->w,
                           Scr.Hilite->frame,
                           (unsigned long)True,
+#if 0
                           Scr.DefaultDecor.HiColors.fore,
                           Scr.DefaultDecor.HiColors.back);
+#else
+                          Scr.Hilite->hicolors.fore,
+                          Scr.Hilite->hicolors.back);
+#endif
 
       SendPacket(*Module, M_END_WINDOWLIST, 0);
     }

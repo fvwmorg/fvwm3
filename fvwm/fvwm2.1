@@ -2062,17 +2062,23 @@ is BorderReliefPriority which allows the border color/pixmap to be invisible.
 
 .TP
 .B "HilightColor" "\fItextcolor backgroundcolor\fP"
-Specifies the text and background colors for the decorations on the
-window which currently has the keyboard focus.
+This command is obsoleted by the style options 'HilightFore' and
+'HilightBack'.  Please use
+.EX
+Style * HilightFore textcolor, \\
+        HilightBack backgroundcolor
+.EE
+instead.
 
 
 .TP
 .B "HilightColorset" "[\fInum\fP]"
-\fIHilightColorset\fP sets the colorset used by the focused window.
-It is similar to the \fIHilightColor\fP command above but uses the
-colors from the given colorset.  To revert back to the HilightColors
-colors use "HilightColorset -1" or any variant of the HilightColor
-command.
+This command is obsoleted by the style option 'HilightColorset'.
+Please use
+.EX
+Style * HilightColorset num
+.EE
+instead.
 
 
 .TP
@@ -3021,9 +3027,12 @@ ButtonStyle commands.
 .B "AddToDecor" "\fIdecor\fP"
 Add or divert commands to the decor named \fIdecor\fP.  A decor is a
 name given to the set of commands which affect button styles,
-title-bar styles, border styles, hilight colors, and window fonts.  If
+title-bar styles, border styles and window fonts.  If
 \fIdecor\fP does not exist it is created; otherwise the existing
 \fIdecor\fP is modified.
+Note: Earlier versions allowed to use the HilightColor and
+HilightColorset commands in decors.  This is no longer possible.
+Please use the \fIStyle\fP command with the Hilight... options.
 
 Created decors start out exactly like the default fvwm decor without
 any style definitions.  A given decor may be applied to a set of
@@ -3437,6 +3446,7 @@ StaysOnTop / StaysOnBottom / StaysPut,
 Sticky / Slippery,
 StartIconic / StartNormal,
 Color, ForeColor, BackColor, Colorset,
+HilightFore, HilightBack, HilightColorset,
 StartsOnDesk / StartsOnPage / StartsAnyWhere,
 ActivePlacementHonorsStartsOnPage / ActivePlacementIgnoresStartsOnPage,
 CaptureHonorsStartsOnPage / CaptureIgnoresStartsOnPage,
@@ -3800,13 +3810,19 @@ hints that many older XView and OLIT applications use.
 \fIColor\fP takes two arguments.  The first is the window-label text color
 and the second is the window decoration's normal background color.
 The two colors are separated with a slash.  If the use of a slash
-causes problems then the separate ForeColor and BackColor options can
-be used.
+causes problems then the separate \fIForeColor\fP and \fIBackColor\fP
+options can be used.
 
 \fIColorset\fP takes the colorset number as its sole argument and
 overrides the colors set by \fIColors\fP.  Instead, the
 corresponding colors from the given colorset are used.  Note that all
 other features of a colorset are unsupported yet.
+
+The \fIHilightFore\fP, \fIHilightBack\fP and \fIHilightColorset\fP
+styles work exactly like \fIForeColor\fP, \fIBackColor\fP and
+\fIColorset\fP but are used only if the window has the focus.
+Note that these styles replace the old commands HilightColor
+and HilightColorset.
 
 \fIUseDecor\fP accepts one argument: the name of a decor created with
 AddToDecor.  If UseDecor is not specified, the "Default" decor is

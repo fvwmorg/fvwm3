@@ -41,6 +41,7 @@
 #define SIS_BUTTON_DISABLED(sf)       ((sf)->is_button_disabled)
 #define SUSE_BACKING_STORE(sf)        ((sf)->use_backing_store)
 #define SUSE_COLORSET(sf)             ((sf)->use_colorset)
+#define SUSE_COLORSET_HI(sf)          ((sf)->use_colorset_hi)
 #define SUSE_LAYER(sf)                ((sf)->use_layer)
 #define SUSE_NO_PPOSITION(sf)         ((sf)->use_no_pposition)
 #define SUSE_START_ON_DESK(sf)        ((sf)->use_start_on_desk)
@@ -292,8 +293,14 @@
 #define SSET_FORE_COLOR_NAME(s,x)     ((s).fore_color_name = (x))
 #define SGET_BACK_COLOR_NAME(s)       ((s).back_color_name)
 #define SSET_BACK_COLOR_NAME(s,x)     ((s).back_color_name = (x))
+#define SGET_FORE_COLOR_NAME_HI(s)    ((s).fore_color_name_hi)
+#define SSET_FORE_COLOR_NAME_HI(s,x)  ((s).fore_color_name_hi = (x))
+#define SGET_BACK_COLOR_NAME_HI(s)    ((s).back_color_name_hi)
+#define SSET_BACK_COLOR_NAME_HI(s,x)  ((s).back_color_name_hi = (x))
 #define SGET_COLORSET(s)              ((s).colorset)
 #define SSET_COLORSET(s,x)            ((s).colorset = (x))
+#define SGET_COLORSET_HI(s)           ((s).colorset_hi)
+#define SSET_COLORSET_HI(s,x)         ((s).colorset_hi = (x))
 #define SGET_FLAGS_POINTER(s)         (&((s).flags))
 #define SGET_BORDER_WIDTH(s)          ((s).border_width)
 #define SSET_BORDER_WIDTH(s,x)        ((s).border_width = (x))
@@ -325,6 +332,7 @@ void check_window_style_change(
 void reset_style_changes(void);
 void update_style_colorset(int colorset);
 void update_window_color_style(FvwmWindow *tmp_win, window_style *style);
+void update_window_color_hi_style(FvwmWindow *tmp_win, window_style *style);
 void free_icon_boxes(icon_boxes *ib);
 
 #endif /* _STYLE_ */

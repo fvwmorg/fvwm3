@@ -355,7 +355,7 @@ void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor)
   Globalgcv.foreground = color;
   Globalgcv.background = backcolor;
   Globalgcm = GCFont | GCForeground | GCBackground;
-  XChangeGC(dpy,Scr.ScratchGC3,Globalgcm,&Globalgcv);
+  XChangeGC(dpy,Scr.TitleGC,Globalgcm,&Globalgcv);
 }
 
 void ReapChildren(void)

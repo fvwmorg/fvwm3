@@ -54,6 +54,7 @@
 
 #define F_CMD_ARGS XEvent *eventp, Window w, FvwmWindow *tmp_win,\
 unsigned long context,char *action, int *Module
+#define F_PASS_ARGS eventp, w, tmp_win, context, action, Module
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -144,11 +145,19 @@ typedef struct MyFont
   int y;			/* Y coordinate to draw characters */
 } MyFont;
 
-typedef struct ColorPair
+typedef struct
 {
   Pixel fore;
   Pixel back;
 } ColorPair;
+
+typedef struct
+{
+  Pixel fore;
+  Pixel back;
+  Pixel hilight;
+  Pixel shadow;
+} color_quad;
 
 
 #ifdef USEDECOR
@@ -246,6 +255,8 @@ typedef struct
   unsigned has_border_width : 1;
   unsigned has_color_back : 1;
   unsigned has_color_fore : 1;
+  unsigned has_color_back_hi : 1;
+  unsigned has_color_fore_hi : 1;
   unsigned has_decor : 1;
   unsigned has_handle_width : 1;
   unsigned has_icon : 1;
@@ -262,6 +273,7 @@ typedef struct
   unsigned is_button_disabled : 10;
   unsigned use_backing_store : 1;
   unsigned use_colorset : 1;
+  unsigned use_colorset_hi : 1;
   unsigned use_layer : 1;
   unsigned use_no_pposition : 1;
   unsigned use_start_on_desk : 1;
@@ -280,26 +292,29 @@ typedef struct
 typedef struct window_style
 {
   struct window_style *next;
-  char *name;		  	   /* the name of the window */
-  char *icon_name; /* value */               /* icon name */
+  char *name;
+  char *icon_name;
 #ifdef MINI_ICONS
-  char *mini_icon_name; /* mini_value */               /* mini icon name */
+  char *mini_icon_name;
 #endif
 #ifdef USEDECOR
-  char *decor_name; /* Decor */
+  char *decor_name;
 #endif
-  char *fore_color_name; /* ForeColor */
-  char *back_color_name; /* BackColor */
+  char *fore_color_name;
+  char *back_color_name;
+  char *fore_color_name_hi;
+  char *back_color_name_hi;
   int colorset;
+  int colorset_hi;
   int border_width;
+  int handle_width; /* resize handle width */
   int layer;
-  int handle_width; /* resize_width */
-  int start_desk; /* Desk */
-  int start_page_x; /* PageX */
-  int start_page_y; /* PageY */
+  int start_desk;
+  int start_page_x;
+  int start_page_y;
   int max_window_width;
   int max_window_height;
-  icon_boxes *icon_boxes;               /* pointer to iconbox(s) */
+  icon_boxes *icon_boxes;
   style_flags flags;
   style_flags flag_mask;
   style_flags change_mask;
@@ -395,10 +410,8 @@ typedef struct FvwmWindow
   int functions;
   Window *cmap_windows;       /* Colormap windows property */
   int number_cmap_windows;    /* Should generally be 0 */
-  Pixel ReliefPixel;
-  Pixel ShadowPixel;
-  Pixel TextPixel;
-  Pixel BackPixel;
+  color_quad colors;
+  color_quad hicolors;
   unsigned long buttons;
   icon_boxes *IconBoxes;              /* zero or more iconboxes */
 

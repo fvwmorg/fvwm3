@@ -284,6 +284,7 @@ void setup_style_and_decor(
 
   /****** window colors ******/
   update_window_color_style(tmp_win, pstyle);
+  update_window_color_hi_style(tmp_win, pstyle);
 }
 
 void setup_icon_boxes(FvwmWindow *tmp_win, window_style *pstyle)
@@ -431,7 +432,7 @@ void get_default_window_background(
   else
   {
     *pvaluemask = CWBackPixel;
-    pattributes->background_pixel = tmp_win->BackPixel;
+    pattributes->background_pixel = tmp_win->colors.back;
     pattributes->background_pixmap = None;
   }
 }
@@ -604,6 +605,9 @@ void destroy_button_windows(FvwmWindow *tmp_win, Bool do_only_delete_context)
 {
   int i;
 
+#if 0
+fprintf(stderr,"%s\n", tmp_win->name);
+#endif
   for(i = Scr.nr_left_buttons - 1; i >= 0; i--)
   {
     if(tmp_win->left_w[i] != None)

@@ -249,6 +249,36 @@ static void merge_styles(window_style *merged_style, window_style *add_style,
       SSET_BACK_COLOR_NAME(*merged_style, SGET_BACK_COLOR_NAME(*add_style));
     }
   }
+  if (add_style->flag_mask.has_color_fore_hi)
+  {
+    if (do_free)
+    {
+      SAFEFREE(SGET_FORE_COLOR_NAME_HI(*merged_style));
+      SSET_FORE_COLOR_NAME_HI(
+	*merged_style, (SGET_FORE_COLOR_NAME_HI(*add_style)) ?
+	strdup(SGET_FORE_COLOR_NAME_HI(*add_style)) : NULL);
+    }
+    else
+    {
+      SSET_FORE_COLOR_NAME_HI(
+	*merged_style, SGET_FORE_COLOR_NAME_HI(*add_style));
+    }
+  }
+  if (add_style->flag_mask.has_color_back_hi)
+  {
+    if (do_free)
+    {
+      SAFEFREE(SGET_BACK_COLOR_NAME_HI(*merged_style));
+      SSET_BACK_COLOR_NAME_HI(
+	*merged_style, (SGET_BACK_COLOR_NAME_HI(*add_style)) ?
+	strdup(SGET_BACK_COLOR_NAME_HI(*add_style)) : NULL);
+    }
+    else
+    {
+      SSET_BACK_COLOR_NAME_HI(
+	*merged_style, SGET_BACK_COLOR_NAME_HI(*add_style));
+    }
+  }
   if(add_style->flags.has_border_width)
   {
     SSET_BORDER_WIDTH(*merged_style, SGET_BORDER_WIDTH(*add_style));
@@ -304,6 +334,10 @@ static void merge_styles(window_style *merged_style, window_style *add_style,
   {
     SSET_COLORSET(*merged_style, SGET_COLORSET(*add_style));
   }
+  if (add_style->flags.use_colorset_hi)
+  {
+    SSET_COLORSET_HI(*merged_style, SGET_COLORSET_HI(*add_style));
+  }
   merged_style->has_style_changed |= add_style->has_style_changed;
   return;
 }
@@ -314,6 +348,8 @@ static void free_style(window_style *style)
   SAFEFREE(SGET_NAME(*style));
   SAFEFREE(SGET_BACK_COLOR_NAME(*style));
   SAFEFREE(SGET_FORE_COLOR_NAME(*style));
+  SAFEFREE(SGET_BACK_COLOR_NAME_HI(*style));
+  SAFEFREE(SGET_FORE_COLOR_NAME_HI(*style));
   SAFEFREE(SGET_DECOR_NAME(*style));
   SAFEFREE(SGET_ICON_NAME(*style));
   SAFEFREE(SGET_MINI_ICON_NAME(*style));
@@ -1005,6 +1041,47 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	    ptmpstyle->change_mask.has_handle_width = 1;
 	  }
         }
+        else if(StrEquals(token, "HilightFore"))
+        {
+	  found = True;
+	  GetNextToken(rest, &token);
+          if (token)
+          {
+	    SSET_FORE_COLOR_NAME_HI(*ptmpstyle, token);
+            ptmpstyle->flags.has_color_fore_hi = 1;
+            ptmpstyle->flag_mask.has_color_fore_hi = 1;
+            ptmpstyle->change_mask.has_color_fore_hi = 1;
+	    ptmpstyle->flags.use_colorset_hi = 0;
+	    ptmpstyle->flag_mask.use_colorset_hi = 1;
+	    ptmpstyle->change_mask.use_colorset_hi = 1;
+          }
+        }
+        else if(StrEquals(token, "HilightBack"))
+        {
+	  found = True;
+	  GetNextToken(rest, &token);
+          if (token)
+          {
+            SSET_BACK_COLOR_NAME_HI(*ptmpstyle, token);
+            ptmpstyle->flags.has_color_back_hi = 1;
+            ptmpstyle->flag_mask.has_color_back_hi = 1;
+            ptmpstyle->change_mask.has_color_back_hi = 1;
+	    ptmpstyle->flags.use_colorset_hi = 0;
+	    ptmpstyle->flag_mask.use_colorset_hi = 1;
+	    ptmpstyle->change_mask.use_colorset_hi = 1;
+          }
+        }
+        else if(StrEquals(token, "HilightColorset"))
+	{
+	  found = True;
+          *val = -1;
+	  GetIntegerArguments(rest, NULL, val, 1);
+	  SSET_COLORSET_HI(*ptmpstyle, *val);
+	  AllocColorset(*val);
+	  ptmpstyle->flags.use_colorset_hi = (*val >= 0);
+	  ptmpstyle->flag_mask.use_colorset_hi = 1;
+	  ptmpstyle->change_mask.use_colorset_hi = 1;
+	}
         break;
 
       case 'i':
@@ -2094,8 +2171,18 @@ void check_window_style_change(
       ret_style->change_mask.has_color_back ||
       ret_style->change_mask.use_colorset)
   {
-    flags->do_redraw_decoration = True;
     flags->do_update_window_color = True;
+  }
+  /*
+   * has_color_back_hi
+   * has_color_fore_hi
+   * use_colorset_hi
+   */
+  if (ret_style->change_mask.has_color_fore_hi ||
+      ret_style->change_mask.has_color_back_hi ||
+      ret_style->change_mask.use_colorset_hi)
+  {
+    flags->do_update_window_color_hi = True;
   }
 
   /*
@@ -2174,25 +2261,55 @@ void update_window_color_style(FvwmWindow *tmp_win, window_style *pstyle)
   {
     cs = SGET_COLORSET(*pstyle);
   }
-
   if(SGET_FORE_COLOR_NAME(*pstyle) != NULL && !SUSE_COLORSET(&pstyle->flags))
   {
-    tmp_win->TextPixel = GetColor(SGET_FORE_COLOR_NAME(*pstyle));
+    tmp_win->colors.fore = GetColor(SGET_FORE_COLOR_NAME(*pstyle));
   }
   else
   {
-    tmp_win->TextPixel = Colorset[cs].fg;
+    tmp_win->colors.fore = Colorset[cs].fg;
   }
   if(SGET_BACK_COLOR_NAME(*pstyle) != NULL && !SUSE_COLORSET(&pstyle->flags))
   {
-    tmp_win->BackPixel = GetColor(SGET_BACK_COLOR_NAME(*pstyle));
-    tmp_win->ShadowPixel = GetShadow(tmp_win->BackPixel);
-    tmp_win->ReliefPixel = GetHilite(tmp_win->BackPixel);
+    tmp_win->colors.back = GetColor(SGET_BACK_COLOR_NAME(*pstyle));
+    tmp_win->colors.shadow = GetShadow(tmp_win->colors.back);
+    tmp_win->colors.hilight = GetHilite(tmp_win->colors.back);
   }
   else
   {
-    tmp_win->ReliefPixel = Colorset[cs].hilite;
-    tmp_win->ShadowPixel = Colorset[cs].shadow;
-    tmp_win->BackPixel = Colorset[cs].bg;
+    tmp_win->colors.hilight = Colorset[cs].hilite;
+    tmp_win->colors.shadow = Colorset[cs].shadow;
+    tmp_win->colors.back = Colorset[cs].bg;
+  }
+}
+
+void update_window_color_hi_style(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  int cs = Scr.DefaultColorset;
+
+  if (SUSE_COLORSET_HI(&pstyle->flags))
+  {
+    cs = SGET_COLORSET_HI(*pstyle);
+  }
+  if(SGET_FORE_COLOR_NAME_HI(*pstyle) != NULL &&
+     !SUSE_COLORSET_HI(&pstyle->flags))
+  {
+    tmp_win->hicolors.fore = GetColor(SGET_FORE_COLOR_NAME_HI(*pstyle));
+  }
+  else
+  {
+    tmp_win->hicolors.fore = Colorset[cs].fg;
+  }
+  if(SGET_BACK_COLOR_NAME(*pstyle) != NULL && !SUSE_COLORSET_HI(&pstyle->flags))
+  {
+    tmp_win->hicolors.back = GetColor(SGET_BACK_COLOR_NAME_HI(*pstyle));
+    tmp_win->hicolors.shadow = GetShadow(tmp_win->hicolors.back);
+    tmp_win->hicolors.hilight = GetHilite(tmp_win->hicolors.back);
+  }
+  else
+  {
+    tmp_win->hicolors.hilight = Colorset[cs].hilite;
+    tmp_win->hicolors.shadow = Colorset[cs].shadow;
+    tmp_win->hicolors.back = Colorset[cs].bg;
   }
 }

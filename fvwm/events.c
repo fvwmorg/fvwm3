@@ -358,77 +358,92 @@ void HandleFocusIn(void)
 
   w= Event.xany.window;
   while(XCheckTypedEvent(dpy,FocusIn,&d))
-    {
-      w = d.xany.window;
-    }
+  {
+    w = d.xany.window;
+  }
   if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
+  {
+    Tmp_win = NULL;
+  }
+
+  if (!Tmp_win)
+  {
+    if (w != Scr.NoFocusWin)
     {
-      Tmp_win = NULL;
+      Scr.UnknownWinFocused = w;
+      focus_w = w;
     }
-
-  if(!Tmp_win)
+    else
     {
-      if(w != Scr.NoFocusWin)
-	{
-	  Scr.UnknownWinFocused = w;
-          focus_w = w;
-	}
-      else
-	{
-	  DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
-	  if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
-	    {
-	      if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
-		{
-		  InstallWindowColormaps(Scr.Hilite);
-		}
-	      else
-		{
-		  InstallWindowColormaps(NULL);
-		}
-	    }
-
-	}
-      if (Scr.DefaultDecor.HiColorset >= 0)
-      {
-          fc = Colorset[Scr.DefaultDecor.HiColorset].fg;
-          bc = Colorset[Scr.DefaultDecor.HiColorset].bg;
-      }
-      else
-      {
-          fc = Scr.DefaultDecor.HiColors.fore;
-          bc = Scr.DefaultDecor.HiColors.back;
-      }
-    }
-  else if (Tmp_win != Scr.Hilite)
-    {
-      int colorset = GetDecor(Tmp_win, HiColorset);
-
-      DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
-      focus_w = Tmp_win->w;
-      focus_fw = Tmp_win->frame;
-      if (colorset >= 0)
-      {
-          fc = Colorset[colorset].fg;
-          bc = Colorset[colorset].bg;
-      }
-      else
-      {
-          fc = GetDecor(Tmp_win,HiColors.fore);
-          bc = GetDecor(Tmp_win,HiColors.back);
-      }
+      DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
       if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
+      {
+	if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
 	{
-	  if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
-	    {
-	      InstallWindowColormaps(Scr.Hilite);
-	    }
-	  else
-	    {
-	      InstallWindowColormaps(NULL);
-	    }
+	  InstallWindowColormaps(Scr.Hilite);
 	}
+	else
+	{
+	  InstallWindowColormaps(NULL);
+	}
+      }
+
     }
+#if 0
+    if (Scr.DefaultDecor.HiColorset >= 0)
+    {
+      fc = Colorset[Scr.DefaultDecor.HiColorset].fg;
+      bc = Colorset[Scr.DefaultDecor.HiColorset].bg;
+    }
+    else
+    {
+      fc = Scr.DefaultDecor.HiColors.fore;
+      bc = Scr.DefaultDecor.HiColors.back;
+    }
+#else
+    /* Not very useful if no window that fvwm and its modules know about has the
+     * focus. */
+    fc = GetColor("White");
+    bc = GetColor("Black");
+#endif
+  }
+  else if (Tmp_win != Scr.Hilite)
+  {
+#if 0
+    int colorset = GetDecor(Tmp_win, HiColorset);
+
+    DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
+    focus_w = Tmp_win->w;
+    focus_fw = Tmp_win->frame;
+    if (colorset >= 0)
+    {
+      fc = Colorset[colorset].fg;
+      bc = Colorset[colorset].bg;
+    }
+    else
+    {
+      fc = GetDecor(Tmp_win,HiColors.fore);
+      bc = GetDecor(Tmp_win,HiColors.back);
+    }
+#else
+    DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
+    focus_w = Tmp_win->w;
+    focus_fw = Tmp_win->frame;
+    fc = Tmp_win->hicolors.fore;
+    bc = Tmp_win->hicolors.fore;
+#endif
+    if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
+    {
+      if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
+      {
+	InstallWindowColormaps(Scr.Hilite);
+      }
+      else
+      {
+	InstallWindowColormaps(NULL);
+      }
+    }
+  }
   else
   {
     return;

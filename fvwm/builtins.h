@@ -69,6 +69,7 @@ void SetTitleStyle(F_CMD_ARGS);
 #ifdef MULTISTYLE
 void AddTitleStyle(F_CMD_ARGS);
 #endif
+void ApplyDefaultFontAndColors(void);
 void SetClick(F_CMD_ARGS);
 void Recapture(F_CMD_ARGS);
 void RecaptureWindow(F_CMD_ARGS);

@@ -263,9 +263,12 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
  ****************************************************************************/
 void DrawIconWindow(FvwmWindow *tmp_win)
 {
-  GC Shadow, Relief;
-  Pixel TextColor,BackColor;
+  GC Shadow;
+  GC Relief;
+  Pixel TextColor;
+  Pixel BackColor;
   int x;
+  color_quad *draw_colors;
 
   if(IS_ICON_SUPPRESSED(tmp_win))
     return;
@@ -275,14 +278,18 @@ void DrawIconWindow(FvwmWindow *tmp_win)
   if(tmp_win->icon_pixmap_w != None)
     flush_expose (tmp_win->icon_pixmap_w);
 
+#if 0
   if(Scr.Hilite == tmp_win)
   {
-    if(Pdepth < 2) {
+    if(Pdepth < 2)
+    {
       Relief = Scr.DefaultDecor.HiShadowGC;
       Shadow = Scr.DefaultDecor.HiShadowGC;
       TextColor = Scr.DefaultDecor.HiColors.fore;
       BackColor = Scr.DefaultDecor.HiColors.back;
-    } else {
+    }
+    else
+    {
       Relief = GetDecor(tmp_win,HiReliefGC);
       Shadow = GetDecor(tmp_win,HiShadowGC);
       TextColor = GetDecor(tmp_win,HiColors.fore);
@@ -298,18 +305,46 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     }
     else
     {
-      Globalgcv.foreground = tmp_win->ReliefPixel;
+      Globalgcv.foreground = tmp_win->colors.hilight;
       Globalgcm = GCForeground;
       XChangeGC(dpy,Scr.ScratchGC1,Globalgcm,&Globalgcv);
       Relief = Scr.ScratchGC1;
 
-      Globalgcv.foreground = tmp_win->ShadowPixel;
+      Globalgcv.foreground = tmp_win->colors.shadow;
       XChangeGC(dpy,Scr.ScratchGC2,Globalgcm,&Globalgcv);
       Shadow = Scr.ScratchGC2;
     }
-    TextColor = tmp_win->TextPixel;
-    BackColor = tmp_win->BackPixel;
+    TextColor = tmp_win->colors.fore;
+    BackColor = tmp_win->colors.back;
   }
+#else
+  if(Scr.Hilite == tmp_win)
+    draw_colors = &(tmp_win->hicolors);
+  else
+    draw_colors = &(tmp_win->colors);
+  if (Pdepth < 2 && Scr.Hilite != tmp_win)
+  {
+    Relief = Scr.StdReliefGC;
+    Shadow = Scr.StdShadowGC;
+  }
+  else
+  {
+    if (Pdepth < 2 && Scr.Hilite == tmp_win)
+      Relief = Scr.ScratchGC2;
+    else
+    {
+      Globalgcv.foreground = draw_colors->hilight;
+      Globalgcm = GCForeground;
+      XChangeGC(dpy,Scr.ScratchGC1,Globalgcm,&Globalgcv);
+      Relief = Scr.ScratchGC1;
+    }
+    Globalgcv.foreground = draw_colors->shadow;
+    XChangeGC(dpy,Scr.ScratchGC2, Globalgcm, &Globalgcv);
+    Shadow = Scr.ScratchGC2;
+  }
+  TextColor = draw_colors->fore;
+  BackColor = draw_colors->back;
+#endif
 
   if(tmp_win->icon_w != None)
   {
@@ -344,7 +379,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     }
   }
 
-  /* set up ScratchGC3 for drawing the icon label */
+  /* set up TitleGC for drawing the icon label */
   NewFontAndColor(Scr.IconFont.font->fid,TextColor,BackColor);
   if(tmp_win->icon_w != None) {
     tmp_win->icon_w_height = ICON_HEIGHT;
@@ -368,14 +403,14 @@ void DrawIconWindow(FvwmWindow *tmp_win)
       r.y = 0;
       r.width = tmp_win->icon_w_width - 7;
       r.height = ICON_HEIGHT;
-      XSetClipRectangles(dpy, Scr.ScratchGC3, 0, 0, &r, 1, Unsorted);
+      XSetClipRectangles(dpy, Scr.TitleGC, 0, 0, &r, 1, Unsorted);
     }
 #ifdef I18N_MB
     XmbDrawString (dpy, tmp_win->icon_w, Scr.IconFont.fontset,
 #else
     XDrawString (dpy, tmp_win->icon_w,
 #endif
-		 Scr.ScratchGC3, x,
+		 Scr.TitleGC, x,
 		 tmp_win->icon_w_height - Scr.IconFont.height + Scr.IconFont.y
 		 - 3, tmp_win->icon_name, strlen(tmp_win->icon_name));
     RelieveRectangle(dpy, tmp_win->icon_w, 0, 0, tmp_win->icon_w_width - 1,
@@ -399,7 +434,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 	  dpy, tmp_win->icon_w, tmp_win->icon_w_width - 3 - stipple_w, i,
 	  stipple_w, 1, Shadow, Relief, 1);
       }
-      XSetClipMask(dpy, Scr.ScratchGC3, None);
+      XSetClipMask(dpy, Scr.TitleGC, None);
     }
   }
 
@@ -423,7 +458,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     {
       /* it's a bitmap */
       XCopyPlane(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
-		 Scr.ScratchGC3, 0, 0, tmp_win->icon_p_width - 4,
+		 Scr.TitleGC, 0, 0, tmp_win->icon_p_width - 4,
 		 tmp_win->icon_p_height - 4, 2, 2, 1);
     }
     else
@@ -432,7 +467,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
       {
         /* it's a pixmap that need copying */
 	XCopyArea(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
-		  Scr.ScratchGC3, 0, 0, tmp_win->icon_p_width - 4,
+		  Scr.TitleGC, 0, 0, tmp_win->icon_p_width - 4,
 		  tmp_win->icon_p_height - 4, 2, 2);
       }
       else

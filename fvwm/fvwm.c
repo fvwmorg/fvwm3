@@ -947,13 +947,13 @@ void SetRCDefaults(void)
 {
   /* set up default colors, fonts, etc */
   char *defaults[] = {
-    "HilightColor black grey",
     "XORValue 0",
     "DefaultFont fixed",
     "DefaultColors black grey",
     "MenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey",
     "TitleStyle Centered -- Raised",
     "Style * Color lightgrey/dimgrey",
+    "Style * HilightFore black, HilightBack grey",
     "AddToMenu MenuFvwmRoot \"Builtin Menu\" Title",
     "+ \"&1. XTerm\" Exec xterm",
     "+ \"&2. Setup Form\" Module FvwmForm FormFvwmSetup.",
@@ -1463,7 +1463,7 @@ static void CreateGCs(void)
 
   Scr.ScratchGC1 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   Scr.ScratchGC2 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-  Scr.ScratchGC3 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+  Scr.TitleGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   Scr.TransMaskGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
   c.pixel = GetColor("Black");
   Scr.ScratchMonoPixmap = XCreatePixmap(dpy, Scr.Root, 1, 1, 1);

@@ -843,13 +843,17 @@ void setModulePath(F_CMD_ARGS)
     need_to_free = 1;
 }
 
+#if 0
 static void ApplyHilightColors(FvwmDecor *decor)
 {
+  FvwmWindow *hilight;
   XGCValues gcv;
   unsigned long gcm;
-  FvwmWindow *hilight;
 
   gcm = GCFunction | GCLineWidth | GCForeground | GCBackground;
+  gcv.function = GXcopy;
+  gcv.line_width = 0;
+
   if (decor->HiColorset >= 0)
   {
     gcv.foreground = Colorset[decor->HiColorset].hilite;
@@ -860,9 +864,6 @@ static void ApplyHilightColors(FvwmDecor *decor)
     gcv.foreground = decor->HiRelief.fore;
     gcv.background = decor->HiRelief.back;
   }
-  gcv.function = GXcopy;
-  gcv.line_width = 0;
-
   if (decor->HiReliefGC)
     XChangeGC(dpy, decor->HiReliefGC, gcm, &gcv);
   else
@@ -890,9 +891,11 @@ static void ApplyHilightColors(FvwmDecor *decor)
     DrawDecorations(hilight, DRAW_ALL, True, True, None);
   }
 }
+#endif
 
 void SetHiColor(F_CMD_ARGS)
 {
+#if 0
   char *hifore = NULL;
   char  *hiback = NULL;
 #ifdef USEDECOR
@@ -930,11 +933,40 @@ void SetHiColor(F_CMD_ARGS)
 
   decor->HiColorset = -1;
   ApplyHilightColors(decor);
+#else
+  char *fore;
+  char *back;
+#ifdef USEDECOR
+  if (cur_decor && cur_decor != &Scr.DefaultDecor)
+  {
+    fvwm_msg(
+      ERR, "SetHiColor",
+      "Decors do not support the HilighColor command anymore.\n"
+      "    Please use 'Style <stylename> HilightFore <forecolor>' and\n"
+      "    'Style <stylename> HilightBack <backcolor>' instead.\n"
+      "    Sorry for the inconvenience.");
+    return;
+  }
+#endif
+  action = GetNextToken(action, &fore);
+  GetNextToken(action, &back);
+  if (fore && back)
+  {
+    action = safemalloc(strlen(fore) + strlen(back) + 29);
+    sprintf(action, "* HilightFore %s, HilightBack %s", fore, back);
+    ProcessNewStyle(F_PASS_ARGS);
+  }
+  if (fore)
+    free(fore);
+  if (back)
+    free(back);
+#endif
 }
 
 
 void SetHiColorset(F_CMD_ARGS)
 {
+#if 0
   int cset;
 #ifdef USEDECOR
   FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
@@ -949,6 +981,25 @@ void SetHiColorset(F_CMD_ARGS)
     decor->HiColorset = -1;
   AllocColorset(cset);
   ApplyHilightColors(decor);
+#else
+#ifdef USEDECOR
+  if (cur_decor && cur_decor != &Scr.DefaultDecor)
+  {
+    fvwm_msg(
+      ERR, "SetHiColorset",
+      "Decors do not support the HilighColorset command anymore.\n"
+      "    Please use 'Style <stylename> HilightColorset <colorset>' instead."
+      "    Sorry for the inconvenience.");
+    return;
+  }
+#endif
+  if (action)
+  {
+    action = safemalloc(strlen(action) + 12);
+    sprintf(action, "* Colorset %s", action);
+    ProcessNewStyle(F_PASS_ARGS);
+  }
+#endif
 }
 
 
@@ -1062,7 +1113,7 @@ void AddTitleStyle(F_CMD_ARGS)
 }
 #endif /* MULTISTYLE */
 
-static void ApplyDefaultFontAndColors(void)
+void ApplyDefaultFontAndColors(void)
 {
   XGCValues gcv;
   unsigned long gcm;
@@ -1162,7 +1213,9 @@ void HandleColorset(F_CMD_ARGS)
 {
   int n = -1, ret;
   char *token;
+#if 0
   FvwmDecor *decor;
+#endif
 
   token = PeekToken(action, NULL);
   if (token == NULL)
@@ -1177,17 +1230,20 @@ void HandleColorset(F_CMD_ARGS)
 
   if (n == Scr.DefaultColorset)
   {
-    ApplyDefaultFontAndColors();
+    Scr.flags.do_need_window_update = 1;
+    Scr.flags.has_default_color_changed = 1;
   }
 
+#if 0
   /* Update decors if necessary */
   for (decor = &Scr.DefaultDecor; decor != NULL; decor = decor->next)
   {
-      if (decor->HiColorset == n)
-      {
-          ApplyHilightColors(decor);
-      }
+    if (decor->HiColorset == n)
+    {
+      ApplyHilightColors(decor);
+    }
   }
+#endif
 
   UpdateMenuColorset(n);
   update_style_colorset(n);
@@ -1212,7 +1268,8 @@ void SetDefaultColorset(F_CMD_ARGS)
   if (Scr.DefaultColorset < 0)
     Scr.DefaultColorset = -1;
   AllocColorset(Scr.DefaultColorset);
-  ApplyDefaultFontAndColors();
+  Scr.flags.do_need_window_update = 1;
+  Scr.flags.has_default_color_changed = 1;
 }
 
 void SetDefaultColors(F_CMD_ARGS)
@@ -1243,7 +1300,8 @@ void SetDefaultColors(F_CMD_ARGS)
   free(back);
 
   Scr.DefaultColorset = -1;
-  ApplyDefaultFontAndColors();
+  Scr.flags.do_need_window_update = 1;
+  Scr.flags.has_default_color_changed = 1;
 }
 
 void LoadDefaultFont(F_CMD_ARGS)
@@ -1300,7 +1358,8 @@ void LoadDefaultFont(F_CMD_ARGS)
   Scr.StdFont.font = xfs;
 #endif
 
-  ApplyDefaultFontAndColors();
+  Scr.flags.do_need_window_update = 1;
+  Scr.flags.has_default_font_changed = 1;
 }
 
 static void ApplyIconFont(void)
@@ -1399,7 +1458,7 @@ static void ApplyWindowFont(FvwmDecor *decor)
   decor->WindowFont.y = decor->WindowFont.font->ascent;
   extra_height = decor->TitleHeight;
 #ifdef I18N_MB
-  decor->TitleHeight = decor->WindowFont.height+3;
+  decor->TitleHeight = decor->WindowFont.height + 3;
 #else
   decor->TitleHeight =
     decor->WindowFont.font->ascent + decor->WindowFont.font->descent + 3;
@@ -1419,7 +1478,7 @@ static void ApplyWindowFont(FvwmDecor *decor)
       continue;
     }
     new_g = tmp->frame_g;
-    gravity_resize(tmp->hints.win_gravity, &new_g, 0, -extra_height);
+    gravity_resize(tmp->hints.win_gravity, &new_g, 0, extra_height);
     SetupFrame(tmp, new_g.x, new_g.y, new_g.width, new_g.height, True);
     DrawDecorations(tmp, DRAW_ALL, (tmp == Scr.Hilite), True, None);
     tmp = tmp->next;
@@ -1439,6 +1498,9 @@ void LoadWindowFont(F_CMD_ARGS)
 #else
   FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
+
+  decor->flags.has_changed = 1;
+  decor->flags.has_font_changed = 1;
 
   action = GetNextToken(action,&font);
   if (!font)
@@ -2105,20 +2167,24 @@ void InitFvwmDecor(FvwmDecor *decor)
     int i;
     DecorFace tmpdf;
 
+#if 0
     decor->HiReliefGC = NULL;
     decor->HiShadowGC = NULL;
+    decor->HiColorset = -1;
+#endif
     decor->TitleHeight = 0;
     decor->WindowFont.font = NULL;
-    decor->HiColorset = -1;
 
 #ifdef USEDECOR
     decor->tag = NULL;
     decor->next = NULL;
 
-    if (decor != &Scr.DefaultDecor) {
-	extern void AddToDecor(FvwmDecor *, char *);
-	AddToDecor(decor, "HilightColor black grey");
-	AddToDecor(decor, "WindowFont fixed");
+    if (decor != &Scr.DefaultDecor)
+    {
+#if 0
+      AddToDecor(decor, "HilightColor black grey");
+#endif
+      AddToDecor(decor, "WindowFont fixed");
     }
 #endif
 
@@ -2193,6 +2259,7 @@ void DestroyFvwmDecor(FvwmDecor *decor)
     decor->tag = NULL;
   }
 #endif
+#if 0
   if (decor->HiReliefGC != NULL)
   {
     XFreeGC(dpy, decor->HiReliefGC);
@@ -2203,6 +2270,7 @@ void DestroyFvwmDecor(FvwmDecor *decor)
     XFreeGC(dpy, decor->HiShadowGC);
     decor->HiShadowGC = NULL;
   }
+#endif
   if (decor->WindowFont.font != NULL)
     XFreeFont(dpy, decor->WindowFont.font);
 }
@@ -2318,7 +2386,10 @@ void reset_decor_changes(void)
 #else
   FvwmDecor *decor;
   for (decor = &Scr.DefaultDecor; decor; decor = decor->next)
+  {
     decor->flags.has_changed = 0;
+    decor->flags.has_font_changed = 0;
+  }
   /*!!! must reset individual change flags too */
 #endif
 }
@@ -2934,7 +3005,9 @@ void Emulate(F_CMD_ARGS)
       fvwm_msg(ERR, "Emulate", "Unknown style '%s'", style);
     }
   free(style);
-  ApplyDefaultFontAndColors();
+  Scr.flags.do_need_window_update = 1;
+  Scr.flags.has_default_font_changed = 1;
+  Scr.flags.has_default_color_changed = 1;
   return;
 }
 /*

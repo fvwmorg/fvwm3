@@ -937,9 +937,9 @@ void RedrawTitle(common_decorations_type *cd, FvwmWindow *t, Bool has_focus)
     if(t->name != (char *)NULL)
 #ifdef I18N_MB
       XmbDrawString(dpy, t->title_w, GetDecor(t,WindowFont.fontset),
-		    Scr.ScratchGC3, hor_off,
+		    Scr.TitleGC, hor_off,
 #else
-      XDrawString(dpy, t->title_w, Scr.ScratchGC3, hor_off,
+      XDrawString(dpy, t->title_w, Scr.TitleGC, hor_off,
 #endif
                    GetDecor(t, WindowFont.y) + 1, t->name, strlen(t->name));
   }
@@ -991,9 +991,9 @@ void RedrawTitle(common_decorations_type *cd, FvwmWindow *t, Bool has_focus)
     if(t->name != (char *)NULL)
 #ifdef I18N_MB
       XmbDrawString(dpy, t->title_w, GetDecor(t, WindowFont.fontset),
-		    Scr.ScratchGC3, hor_off,
+		    Scr.TitleGC, hor_off,
 #else
-      XDrawString(dpy, t->title_w, Scr.ScratchGC3, hor_off,
+      XDrawString(dpy, t->title_w, Scr.TitleGC, hor_off,
 #endif
 		  GetDecor(t,WindowFont.y) + 1, t->name, strlen(t->name));
   }
@@ -1091,8 +1091,9 @@ static void get_common_decorations(
   common_decorations_type *cd, FvwmWindow *t, draw_window_parts draw_parts,
   Bool has_focus, int force, Window expose_win)
 {
-  int cset;
+  color_quad *draw_colors;
 
+#if 0
   if (has_focus)
   {
     /* are we using textured borders? */
@@ -1127,18 +1128,53 @@ static void get_common_decorations(
     cd->back_pixmap = Scr.light_gray_pixmap;
     if(IS_STICKY(t))
       cd->back_pixmap = Scr.sticky_gray_pixmap;
-    cd->fore_color = t->TextPixel;
-    cd->back_color = t->BackPixel;
+    cd->fore_color = t->colors.fore;
+    cd->back_color = t->colors.back;
 
-    Globalgcv.foreground = t->ReliefPixel;
+    Globalgcv.foreground = t->colors.hilight;
     Globalgcm = GCForeground;
     XChangeGC(dpy,Scr.ScratchGC1,Globalgcm,&Globalgcv);
     cd->relief_gc = Scr.ScratchGC1;
 
-    Globalgcv.foreground = t->ShadowPixel;
+    Globalgcv.foreground = t->colors.shadow;
     XChangeGC(dpy, Scr.ScratchGC2, Globalgcm, &Globalgcv);
     cd->shadow_gc = Scr.ScratchGC2;
   }
+#else
+  if (has_focus)
+  {
+    /* are we using textured borders? */
+    if (DFS_FACE_TYPE(
+      GetDecor(t, BorderStyle.active.style)) == TiledPixmapButton)
+    {
+      cd->texture_pixmap = GetDecor(t, BorderStyle.active.u.p->picture);
+    }
+    cd->back_pixmap= Scr.gray_pixmap;
+    draw_colors = &(t->hicolors);
+  }
+  else
+  {
+    if (DFS_FACE_TYPE(GetDecor(t, BorderStyle.inactive.style)) ==
+	TiledPixmapButton)
+    {
+      cd->texture_pixmap = GetDecor(t, BorderStyle.inactive.u.p->picture);
+    }
+    if(IS_STICKY(t))
+      cd->back_pixmap = Scr.sticky_gray_pixmap;
+    else
+    cd->back_pixmap = Scr.light_gray_pixmap;
+    draw_colors = &(t->colors);
+  }
+  cd->fore_color = draw_colors->fore;
+  cd->back_color = draw_colors->back;
+  Globalgcv.foreground = draw_colors->hilight;
+  Globalgcm = GCForeground;
+  XChangeGC(dpy,Scr.ScratchGC1,Globalgcm,&Globalgcv);
+  cd->relief_gc = Scr.ScratchGC1;
+  Globalgcv.foreground = draw_colors->shadow;
+  XChangeGC(dpy, Scr.ScratchGC2, Globalgcm, &Globalgcv);
+  cd->shadow_gc = Scr.ScratchGC2;
+#endif
 
   /* MWMBorder style means thin 3d effects */
   cd->relief_width = (HAS_MWM_BORDER(t) ? 1 : 2);
@@ -1159,6 +1195,7 @@ static void get_common_decorations(
     }
   }
   else
+  {
     if (Pdepth < 2)
     {
       cd->attributes.background_pixmap = cd->back_pixmap;
@@ -1173,6 +1210,7 @@ static void get_common_decorations(
       cd->notex_attributes.background_pixel = cd->back_color;
       cd->notex_valuemask = CWBackPixel;
     }
+  }
 }
 
 void DrawDecorations(

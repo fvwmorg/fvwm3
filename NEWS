@@ -3,6 +3,12 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.12 (not released yet)
 
+* New window styles HilightFore, HilightBack and HilightColorset replace
+  the old commands HilightColor and HilightColorset.
+
+* The ButtonStyle, TitleStyle and BorderStyle commands take effect
+  immediately, without a Recapture.
+
 * The WindowList menu uses the WindowList menu style if it is defined.
 
 * The CursorStyle command accepts two new cursors: 'None' for no cursor and
