@@ -24,6 +24,7 @@
 
  */
 
+#include "libs/Flocale.h"               /* for font definition stuff */
 /*
  * This next stuff should be more specific and customizable.
  * For example padVText (above) was one of the things TXT_SPC
@@ -70,8 +71,7 @@ typedef struct _drawtable {
                                            use them all */
   GC dt_GC;                             /* graphic ctx used for text */
   GC dt_item_GC;                        /* graphic ctx used for graphics */
-  Font dt_font;
-  XFontStruct *dt_font_struct;
+  FlocaleFont *dt_Ffont;                /* Fvwm font structure */
 } DrawTable;
 
 /* An "item" is something in a form. Part of the structure is common

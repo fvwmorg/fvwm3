@@ -345,15 +345,15 @@ void ReadXServer ()
 	  if (len > CF.cur_input->input.size)
 	    len = CF.cur_input->input.size;
 	  XDrawString(dpy, CF.cur_input->header.win,
-                           CF.cur_input->header.dt_ptr->dt_item_GC,
-			   BOX_SPC + TEXT_SPC,
-			   BOX_SPC + TEXT_SPC +
-                           CF.cur_input->header.dt_ptr->dt_font_struct->ascent,
-			   CF.cur_input->input.value +
-                           CF.cur_input->input.left, len);
+                      CF.cur_input->header.dt_ptr->dt_item_GC,
+                      BOX_SPC + TEXT_SPC,
+                      BOX_SPC + TEXT_SPC +
+                      CF.cur_input->header.dt_ptr->dt_Ffont->ascent,
+                      CF.cur_input->input.value +
+                      CF.cur_input->input.left, len);
 	  x = BOX_SPC + TEXT_SPC +
-            FontWidth(CF.cur_input->header.dt_ptr->dt_font_struct) *
-            CF.abs_cursor - 1;
+            FlocaleTextWidth(CF.cur_input->header.dt_ptr->dt_Ffont,"W",1)
+            * CF.abs_cursor - 1;
 	  dy = CF.cur_input->header.size_y - 1;
 	  XDrawLine(dpy, CF.cur_input->header.win,
                     CF.cur_input->header.dt_ptr->dt_item_GC,
@@ -380,9 +380,11 @@ void ReadXServer ()
 	    CF.cur_input = item;
 	    RedrawItem(old_item, 1);
 	    CF.abs_cursor = (event.xbutton.x - BOX_SPC -
-			  TEXT_SPC +
-                          FontWidth(item->header.dt_ptr->dt_font_struct) / 2)
-	      / FontWidth(item->header.dt_ptr->dt_font_struct);
+                             TEXT_SPC +
+                             FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
+                                               "W",1)
+                             / 2)
+	      / FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,"W",1);
 	    if (CF.abs_cursor < 0)
 	      CF.abs_cursor = 0;
 	    if (CF.abs_cursor > item->input.size)

@@ -45,7 +45,6 @@
 #include "libs/Colorset.h"               /* for InitPictureCMap */
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
-#include "libs/Flocale.h"
 
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
 
@@ -136,19 +135,6 @@ static char *CopySolidString (char *cp)
       *(dp++) = c;
   }
 }
-
-/* get the font height */
-static int FontHeight (XFontStruct *xfs)
-{
-  return (xfs->ascent + xfs->descent);
-}
-
-/* get the font width, for fixed-width font only */
-int FontWidth (XFontStruct *xfs)
-{
-  return (xfs->per_char[0].width);
-}
-
 
 /* Command parsing section */
 
@@ -620,12 +606,11 @@ static void ct_Message(char *cp)
   item->text.value = safemalloc(80);    /* point at last error recvd */
   item->text.n = 80;
   strcpy(item->text.value,"A mix of chars. MM20"); /* 20 mixed width chars */
-  item->header.size_x = (XTextWidth(item->header.dt_ptr->dt_font_struct,
-                                   item->text.value,
-                                   item->text.n/4) * 4) + 2 * TEXT_SPC;
-  item->header.size_y = FontHeight(item->header.dt_ptr->dt_font_struct)
+  item->header.size_x = (FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
+                                          item->text.value,
+                                          item->text.n/4) * 4) + 2 * TEXT_SPC;
+  item->header.size_y = item->header.dt_ptr->dt_Ffont->height
     + CF.padVText;
-
   memset(item->text.value,' ',80);      /* Clear it out */
   myfprintf((stderr, "Message area [%d, %d]\n",
              item->header.size_x, item->header.size_y));
@@ -651,7 +636,7 @@ static void CheckAlloc(Item *this_item,DrawTable *dt)
 
     xgcv.foreground = dt->dt_colors[c_fg];
     xgcv.background = dt->dt_colors[c_bg];
-    xgcv.font = dt->dt_font;
+    xgcv.font = dt->dt_Ffont->font->fid;
     dt->dt_GC = fvwmlib_XCreateGC(dpy, CF.frame, xgcv_mask, &xgcv);
 
     dt->dt_used = 1;                    /* fore/back font allocated */
@@ -667,7 +652,7 @@ static void CheckAlloc(Item *this_item,DrawTable *dt)
     : Colorset[itemcolorset].bg;
   xgcv.foreground = dt->dt_colors[c_item_fg];
   xgcv.background = dt->dt_colors[c_item_bg];
-  xgcv.font = dt->dt_font;
+  xgcv.font = dt->dt_Ffont->font->fid;
   dt->dt_item_GC = fvwmlib_XCreateGC(dpy, CF.frame, GCForeground | GCFont, &xgcv);
   if (Pdepth < 2) {
     dt->dt_colors[c_itemlo] = BlackPixel(dpy, screen);
@@ -738,8 +723,7 @@ static void AssignDrawTable(Item *adt_item)
   new_dt->dt_color_names[c_item_fg] = safestrdup(match_item_fore);
   new_dt->dt_color_names[c_item_bg] = safestrdup(match_item_back);
   new_dt->dt_used = 0;                  /* show nothing allocated */
-  new_dt->dt_font_struct = GetFontOrFixed(dpy, new_dt->dt_font_name);
-  new_dt->dt_font = new_dt->dt_font_struct->fid;
+  new_dt->dt_Ffont = FlocaleLoadFont(dpy, new_dt->dt_font_name, MyName+1);
   myfprintf((stderr,"Created drawtable with %s %s %s %s %s\n",
              new_dt->dt_color_names[c_fg], new_dt->dt_color_names[c_bg],
              new_dt->dt_color_names[c_item_fg],
@@ -777,12 +761,11 @@ static void ct_Text(char *cp)
     item->text.value = "";
   item->text.n = strlen(item->text.value);
 
-  item->header.size_x = XTextWidth(item->header.dt_ptr->dt_font_struct,
+  item->header.size_x = FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
                                    item->text.value,
                                    item->text.n) + 2 * TEXT_SPC;
-  item->header.size_y = FontHeight(item->header.dt_ptr->dt_font_struct)
-    + CF.padVText;
-
+  item->header.size_y = item->header.dt_ptr->dt_Ffont->height
+     + CF.padVText;
   myfprintf((stderr, "Text \"%s\" [%d, %d]\n", item->text.value,
              item->header.size_x, item->header.size_y));
   AddToLine(item);
@@ -830,9 +813,9 @@ static void ct_Input(char *cp)
   item->input.value = (char *)safemalloc(item->input.buf);
   item->input.value[0] = 0;             /* avoid reading unitialized data */
 
-  item->header.size_x = FontWidth(item->header.dt_ptr->dt_font_struct)
+  item->header.size_x = FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,"W",1)
     * item->input.size + 2 * TEXT_SPC + 2 * BOX_SPC;
-  item->header.size_y = FontHeight(item->header.dt_ptr->dt_font_struct)
+  item->header.size_y = item->header.dt_ptr->dt_Ffont->height
     + 3 * TEXT_SPC + 2 * BOX_SPC;
   myfprintf((stderr,"Input size_y is %d\n",item->header.size_y));
 
@@ -1043,13 +1026,13 @@ static void ct_Choice(char *cp)
   }
 
   cur_sel->selection.choices[cur_sel->selection.n++] = item;
-  item->header.size_y = FontHeight(item->header.dt_ptr->dt_font_struct)
-    + 2 * TEXT_SPC;
-  item->header.size_x = FontHeight(item->header.dt_ptr->dt_font_struct)
-    + 4 * TEXT_SPC +
-    XTextWidth(item->header.dt_ptr->dt_font_struct,
-               item->choice.text, item->choice.n);
-
+  item->header.size_y = item->header.dt_ptr->dt_Ffont->height
+     + 2 * TEXT_SPC;
+  /* this is weird, the x dimension is the sum of the height and width? */
+  item->header.size_x = item->header.dt_ptr->dt_Ffont->height
+     + 4 * TEXT_SPC +
+     FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,
+       item->choice.text, item->choice.n);
   myfprintf((stderr, "Choice %s, \"%s\", [%d, %d]\n", item->header.name,
           item->choice.text, item->header.size_x, item->header.size_y));
   AddToLine(item);
@@ -1082,11 +1065,11 @@ static void ct_Button(char *cp)
   else
     item->button.keypress = -1;
   item->button.len = strlen(item->button.text);
-  item->header.size_y = FontHeight(item->header.dt_ptr->dt_font_struct)
-    + 2 * TEXT_SPC + 2 * BOX_SPC;
+  item->header.size_y = item->header.dt_ptr->dt_Ffont->height
+     + 2 * TEXT_SPC + 2 * BOX_SPC;
   item->header.size_x = 2 * TEXT_SPC + 2 * BOX_SPC
-    + XTextWidth(item->header.dt_ptr->dt_font_struct, item->button.text,
-                 item->button.len);
+  + FlocaleTextWidth(item->header.dt_ptr->dt_Ffont, item->button.text,
+    item->button.len);
   AddToLine(item);
   cur_button = item;
   myfprintf((stderr,"Created button, fore %s, bg %s, text %s\n",
@@ -1358,7 +1341,7 @@ void RedrawFrame ()
     case I_CHOICE:
       x = item->header.pos_x + TEXT_SPC + item->header.size_y;
       y = item->header.pos_y + TEXT_SPC +
-        item->header.dt_ptr->dt_font_struct->ascent;
+        item->header.dt_ptr->dt_Ffont->ascent;
       XDrawString(dpy, CF.frame, item->header.dt_ptr->dt_GC,
                        x, y, item->choice.text,
                        item->choice.n);
@@ -1376,7 +1359,7 @@ void RedrawText(Item *item)
   CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
   x = item->header.pos_x + TEXT_SPC;
   y = item->header.pos_y + ( CF.padVText / 2 ) +
-    item->header.dt_ptr->dt_font_struct->ascent;
+    item->header.dt_ptr->dt_Ffont->ascent;
   len = item->text.n;
   if ((p = memchr(item->text.value, '\0', len)) != NULL)
     len = p - item->text.value;
@@ -1434,7 +1417,8 @@ void RedrawItem (Item *item, int click)
                   xsegs, 4);
 
     if (click) {
-      x = BOX_SPC + TEXT_SPC + FontWidth(item->header.dt_ptr->dt_font_struct)
+      x = BOX_SPC + TEXT_SPC +
+        FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,"W",1)
         * CF.abs_cursor - 1;
       XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
                      item->header.dt_ptr->dt_colors[c_item_bg]);
@@ -1450,19 +1434,21 @@ void RedrawItem (Item *item, int click)
       len = item->input.size;
     else
       XDrawString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
-		       BOX_SPC + TEXT_SPC
-                       + FontWidth(item->header.dt_ptr->dt_font_struct) * len,
-		       BOX_SPC + TEXT_SPC
-                       + item->header.dt_ptr->dt_font_struct->ascent,
-		       item->input.blanks, item->input.size - len);
+                  BOX_SPC + TEXT_SPC
+                  + FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,"W",1)
+                  * len,
+                  BOX_SPC + TEXT_SPC
+                  + item->header.dt_ptr->dt_Ffont->ascent,
+                  item->input.blanks, item->input.size - len);
     XDrawString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
-		     BOX_SPC + TEXT_SPC,
-		     BOX_SPC + TEXT_SPC +
-                     item->header.dt_ptr->dt_font_struct->ascent,
-		     item->input.value + item->input.left, len);
+                BOX_SPC + TEXT_SPC,
+                BOX_SPC + TEXT_SPC +
+                item->header.dt_ptr->dt_Ffont->ascent,
+                item->input.value + item->input.left, len);
     if (item == CF.cur_input && !click) {
-      x = BOX_SPC + TEXT_SPC
-        + FontWidth(item->header.dt_ptr->dt_font_struct) * CF.abs_cursor - 1;
+      x = BOX_SPC + TEXT_SPC +
+        FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,"W",1)
+        * CF.abs_cursor - 1;
       XDrawLine(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
 		x, BOX_SPC, x, dy - BOX_SPC);
       myfprintf((stderr,"Line %d/%d - %d/%d\n",
@@ -1561,7 +1547,8 @@ void RedrawItem (Item *item, int click)
     XDrawString(
       dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
       BOX_SPC + TEXT_SPC,
-      BOX_SPC + TEXT_SPC + item->header.dt_ptr->dt_font_struct->ascent,
+      BOX_SPC + TEXT_SPC +
+      item->header.dt_ptr->dt_Ffont->ascent,
       item->button.text, item->button.len);
     myfprintf((stderr,"Just put %s into a button\n",
                item->button.text));

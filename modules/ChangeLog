@@ -1,3 +1,9 @@
+2002-02-10  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmForm/FvwmForm.h: 
+	* FvwmForm/FvwmForm.c: 
+	* FvwmForm/ReadXServer.c: First pass at Flocale stuff.
+
 2002-02-10  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIdent/FvwmIdent.c (MakeList):
