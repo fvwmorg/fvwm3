@@ -1949,6 +1949,27 @@ void DrawTrianglePattern(Window w,GC GC1,GC GC2,GC GC3,GC gc,int l,int u,
 
   m = (u + b)/2;
 
+  /**************************************************************************
+   *
+   * anti-ugliness patch by Adam Rice, wysiwyg@glympton.airtime.co.uk,
+   * January 28th 1998.
+   *
+   **************************************************************************/
+
+  /* ensure vertical symmetry */
+  if (u-m > m-b) {
+    u=2*m-b;
+  } else if (u-m < m-b) {
+    b=2*m-u;
+  }
+
+  /* make (r-l)/(m-b) or its inverse be a whole number */
+  if (r-l > m-b) {
+    r=((r-l)/(m-b))*(m-b)+l;
+  } else if (r-l < m-b) {
+    r=(m-b)/((((m-b)-1)/(r-l))+1)+l;
+  }
+  
   if (!relief) {
     /* solid triangle */
     XPoint points[3];

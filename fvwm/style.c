@@ -290,6 +290,16 @@ void ProcessNewStyle(XEvent *eventp,
         }
         break;
       case 'g':
+        if(ITIS("GrabFocusOff"))
+        {
+          SKIP("GRABFOCUSOFF");
+          tname.on_flags |= GRAB_FOCUS;
+        }
+        else if(ITIS("GrabFocus"))
+        {
+          SKIP("GRABFOCUS");
+          tname.off_flags |= GRAB_FOCUS;
+        }
         break;
       case 'h':
         if(ITIS("HINTOVERRIDE"))

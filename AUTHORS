@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Nagi Aboulenein:
+Original idea for 'previous page' parameter (MoveToPage and GotoPage)
+
 Greg J. Badros:
 Substantial rewrite of fvwm2.0 menuing code to support arbitrary depth
 menus, animated menus, Win95 look, better logically-based shortcut keys,
@@ -41,6 +44,9 @@ Some autoconf/automake/portability help.  Initial cut at a generic
 debugging API.  Rework module interface API on fvwm's side.
 General code gadfly: tiptoe in; change some code; run away, run away!
 
+Benoit Triquet:
+Original idea and some code for IgnoreModifiers command.
+
 Fabien Villard:
 OpenVMS port.
 
@@ -48,7 +54,12 @@ Dominik Vogt:
 Improved ShuffleButtons algorithm (FvwmButtons), button geometries
 (FvwmButtons), Menu Position Hints, XResources.c, various move/resize
 and menu enhancements, MoveToPage, MoveToDesk, various parsing
-functions, COPYING file, a myriad of bugfixes, Rewrite of MenuStyle syntax.
+functions, COPYING file, a myriad of bugfixes, Rewrite of MenuStyle syntax,
+Silent command, GSFR preparations, various enhancements and bugfixes for
+FvwmButtons, FvwmPager and FvwmTaskBar, split function and menu code, FAQ
+rewrite, rewrite of toggling function syntax (with hints from Matthias
+Claasen), IgnoreModifiers command, enhancements of GotoPage and MoveToPage
+syntax.
 
 A.J. Weber:
 SnapAttraction patch.

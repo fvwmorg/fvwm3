@@ -210,6 +210,7 @@ void Maximize(F_CMD_ARGS)
     return;
   }
   toggle = ParseToggleArgument(action, &action, -1, 0);
+fprintf(stderr,"action = %s, toggle = %d\n", action, toggle);
   if (((toggle == 1) && (tmp_win->flags & MAXIMIZED)) ||
       ((toggle == 0) && !(tmp_win->flags & MAXIMIZED)))
     return;
@@ -228,8 +229,10 @@ void Maximize(F_CMD_ARGS)
     /* Unmaximizing is slightly tricky since we want the window to
        stay on the same page, even if we have move to a different page
        in the meantime. */
-    new_x = (tmp_win->frame_x / Scr.MyDisplayWidth) + (tmp_win->orig_x % Scr.MyDisplayWidth);
-    new_y = (tmp_win->frame_y / Scr.MyDisplayHeight) + (tmp_win->orig_y % Scr.MyDisplayHeight);
+    new_x = (tmp_win->frame_x / Scr.MyDisplayWidth) +
+      (tmp_win->orig_x % Scr.MyDisplayWidth);
+    new_y = (tmp_win->frame_y / Scr.MyDisplayHeight) +
+      (tmp_win->orig_y % Scr.MyDisplayHeight);
     new_width = tmp_win->orig_wd;
 #ifdef WINDOWSHADE
     if (tmp_win->buttons & WSHADE)
@@ -666,24 +669,26 @@ void PlaceAgain_func(F_CMD_ARGS)
 {
   int x,y;
   char *token;
-  
+
   if (DeferExecution(eventp, &w, &tmp_win, &context, SELECT, ButtonRelease))
     return;
-    
+
   /* Find new position for window */
-  SmartPlacement(tmp_win,tmp_win->frame_width,tmp_win->frame_height, &x, &y, 0,0);
+  SmartPlacement(tmp_win,tmp_win->frame_width,tmp_win->frame_height, &x, &y,
+		 0,0);
 
   /* Possibly animate the movement */
   GetNextToken(action, &token);
   if(token!=NULL && StrEquals("ANIM", token))
     AnimatedMoveOfWindow(tmp_win->frame, -1, -1, x, y, FALSE, -1, NULL);
 
-  SetupFrame(tmp_win,x,y,tmp_win->frame_width, tmp_win->frame_height, FALSE, False);
-                 
+  SetupFrame(tmp_win,x,y,tmp_win->frame_width, tmp_win->frame_height, FALSE,
+	     False);
+
   return;
 }
 
- 
+
 void iconify_function(F_CMD_ARGS)
 {
   int toggle;
@@ -949,8 +954,10 @@ void stick_function(F_CMD_ARGS)
   }
   else
   {
-    tmp_win->flags |=STICKY;
     move_window_doit(eventp, w, tmp_win, context, "", Module, FALSE, TRUE);
+    /* move_window_doit resets the STICKY flag, so we must set it after the
+     * call! */
+    tmp_win->flags |=STICKY;
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   SetTitleBar(tmp_win,(Scr.Hilite==tmp_win),True);
@@ -1530,7 +1537,7 @@ void CursorStyle(F_CMD_ARGS)
 
   action = GetNextToken(action,&cname);
   action = GetNextToken(action,&newcursor);
-     
+
   if (!cname || !newcursor)
   {
     fvwm_msg(ERR,"CursorStyle","Bad cursor style");
@@ -1582,7 +1589,7 @@ void CursorStyle(F_CMD_ARGS)
       if (Scr.FvwmCursors[index]) XFreeCursor(dpy,Scr.FvwmCursors[index]);
       Scr.FvwmCursors[index] = XCreateFontCursor(dpy,nc);
     }
-  else 
+  else
     {
       /* newcursor was not a number */
 #ifdef XPM
@@ -1596,36 +1603,36 @@ void CursorStyle(F_CMD_ARGS)
 	  free (newcursor);
 	  return;
 	}
- 
-      xpm_attributes.depth = 1; /* we need source to be a bitmap */ 
+
+      xpm_attributes.depth = 1; /* we need source to be a bitmap */
       xpm_attributes.valuemask = XpmSize | XpmDepth | XpmHotspot;
       if (XpmReadFileToPixmap (dpy, Scr.Root, path, &source, &mask,
 			       &xpm_attributes) != XpmSuccess)
 	{
-	  fvwm_msg (ERR, "CursorStyle", "Error reading cursor xpm %s", 
+	  fvwm_msg (ERR, "CursorStyle", "Error reading cursor xpm %s",
 		    newcursor);
 	  free (newcursor);
 	  return;
 	}
-      
+
       colors[0].pixel = BlackPixel(dpy, Scr.screen);
       colors[1].pixel = WhitePixel(dpy, Scr.screen);
       XQueryColors (dpy, Scr.FvwmRoot.attr.colormap, colors, 2);
 
       if (Scr.FvwmCursors[index]) XFreeCursor (dpy, Scr.FvwmCursors[index]);
-      Scr.FvwmCursors[index] = 
-	XCreatePixmapCursor (dpy, source, mask, 
+      Scr.FvwmCursors[index] =
+	XCreatePixmapCursor (dpy, source, mask,
 			     &(colors[0]), &(colors[1]),
-			     xpm_attributes.x_hotspot, 
+			     xpm_attributes.x_hotspot,
 			     xpm_attributes.y_hotspot);
-						    
+
       free (newcursor);
       free (path);
 #else /* ! XPM */
       fvwm_msg (ERR, "CursorStyle", "Bad cursor number %s", newcursor);
       free (newcursor);
       return;
-#endif      
+#endif
     }
 
    /* look for optional color arguments */
@@ -5068,7 +5075,7 @@ void setShadeAnim(F_CMD_ARGS)
       }
     }
   }
-      
+
   /* doh! something is wrong */
   fvwm_msg(ERR,"setShadeAnim","WindowShadeAnimate requires 1 argument");
   return;

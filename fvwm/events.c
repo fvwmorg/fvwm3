@@ -68,8 +68,6 @@
 #define XUrgencyHint            (1L << 8)
 #endif
 
-static unsigned int mods_used = (ShiftMask | ControlMask | Mod1Mask |
-				 Mod2Mask| Mod3Mask| Mod4Mask| Mod5Mask);
 extern int menuFromFrameOrWindowOrTitlebar;
 
 extern Boolean debugging;
@@ -393,9 +391,6 @@ void HandleFocusIn()
  ************************************************************************/
 void HandleKeyPress()
 {
-  Binding *key;
-  unsigned int modifier;
-  modifier = (Event.xkey.state & mods_used);
   ButtonWindow = Tmp_win;
 
   DBUG("HandleKeyPress","Routine Entered");
@@ -409,18 +404,8 @@ void HandleKeyPress()
   Event.xkey.keycode =
     XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,Event.xkey.keycode,0));
 
-  for (key = Scr.AllBindings; key != NULL; key = key->NextBinding)
-    {
-      if ((key->Button_Key == Event.xkey.keycode) &&
-	  ((key->Modifier == (modifier&(~LockMask)))||
-	   (key->Modifier == AnyModifier)) &&
-	  (key->Context & Context)&&
-	  (key->IsMouse == 0))
-	{
-	  ExecuteFunction(key->Action,Tmp_win, &Event,Context,-1);
-	  return;
-	}
-    }
+  /* Check if there is something bound to the key */
+  CheckBinding(Event.xkey.keycode, Event.xkey.state, Tmp_win, Context, 0);
 
   /* if we get here, no function key was bound to the key.  Send it
    * to the client if it was in a window we know about.
@@ -850,8 +835,16 @@ void HandleMapRequestKeepRaised(Window KeepRaised)
 	      XMapWindow(dpy, Tmp_win->frame);
 	      Tmp_win->flags |= MAP_PENDING;
 	      SetMapStateProp(Tmp_win, NormalState);
+#if 0
+	      /* domivogt (21-mar-1999): several people complained about
+	       * clicktofocus windows taking the focus away from other
+	       * clicktofocus windows when they were mapped for the first
+	       * time, so I changed this. */
 	      if((Tmp_win->flags & ClickToFocus)&&
 		 ((!Scr.Focus)||(Scr.Focus->flags & ClickToFocus)))
+#else
+	      if((Tmp_win->flags & GRAB_FOCUS)||(!Scr.Focus))
+#endif
 		{
                   if (OnThisPage)
                     {
@@ -964,8 +957,16 @@ void HandleMapNotify()
     BroadcastPacket(M_MAP, 3,
                     Tmp_win->w,Tmp_win->frame, (unsigned long)Tmp_win);
 
+#if 0
+  /* domivogt (21-mar-1999): several people complained about
+   * clicktofocus windows taking the focus away from other
+   * clicktofocus windows when they were mapped for the first
+   * time, so I changed this. */
   if((Tmp_win->flags & ClickToFocus)&&
      ((!Scr.Focus)||(Scr.Focus->flags & ClickToFocus)))
+#else
+  if((Tmp_win->flags & GRAB_FOCUS)||(!Scr.Focus))
+#endif
     {
       if (OnThisPage)
         {
@@ -1130,15 +1131,13 @@ void HandleUnmapNotify()
  ***********************************************************************/
 void HandleButtonPress()
 {
-  unsigned int modifier;
-  Binding *MouseEntry;
   int LocalContext;
 
   DBUG("HandleButtonPress","Routine Entered");
 
   /* click to focus stuff goes here */
   if((Tmp_win)&&(Tmp_win->flags & ClickToFocus)&&(Tmp_win != Scr.Ungrabbed) &&
-     (!(Event.xbutton.state & mods_used)))
+     (!MaskUsedModifiers(Event.xbutton.state)))
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
     if (Scr.ClickToFocusRaises ||
@@ -1169,7 +1168,7 @@ void HandleButtonPress()
 	   Scr.MouseFocusClickRaises)
   {
     if (Tmp_win != Scr.LastWindowRaised &&
-        (Event.xbutton.state & mods_used) == 0 &&
+        MaskUsedModifiers(Event.xbutton.state) == 0 &&
         GetContext(Tmp_win,&Event, &PressedW) == C_WINDOW)
     {
       RaiseWindow(Tmp_win);
@@ -1194,29 +1193,14 @@ void HandleButtonPress()
 
   ButtonWindow = Tmp_win;
 
-  /* we have to execute a function or pop up a menu
-   */
-
-  modifier = (Event.xbutton.state & mods_used);
+  /* we have to execute a function or pop up a menu */
   /* need to search for an appropriate mouse binding */
-  for (MouseEntry = Scr.AllBindings; MouseEntry != NULL;
-       MouseEntry = MouseEntry->NextBinding)
-  {
-    if(((MouseEntry->Button_Key == Event.xbutton.button)||
-        (MouseEntry->Button_Key == 0))&&
-       (MouseEntry->Context & Context)&&
-       ((MouseEntry->Modifier == AnyModifier)||
-        (MouseEntry->Modifier == (modifier& (~LockMask))))&&
-       (MouseEntry->IsMouse == 1))
-    {
-      /* got a match, now process it */
-      ExecuteFunction(MouseEntry->Action,Tmp_win, &Event,Context,-1);
-      break;
-    }
-  }
+  CheckBinding(Event.xbutton.button, Event.xkey.state, Tmp_win, Context, 1);
+
   PressedW = None;
   if(LocalContext!=C_TITLE)
-    SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,Tmp_win ? Tmp_win->frame : 0);
+    SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,
+	      Tmp_win ? Tmp_win->frame : 0);
   else
     SetTitleBar(ButtonWindow,(Scr.Hilite==ButtonWindow),False);
   ButtonWindow = NULL;

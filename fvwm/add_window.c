@@ -646,8 +646,8 @@ FvwmWindow *AddWindow(Window w)
   height = tmp_win->frame_height;
   tmp_win->frame_height = 0;
 
-  SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,width,height,
-          True, False);
+  SetupFrame(tmp_win, tmp_win->frame_x, tmp_win->frame_y,width,height,
+	     True, False);
 
 #ifdef SESSION
   if (do_maximize) {
@@ -703,7 +703,7 @@ FvwmWindow *AddWindow(Window w)
     {
       LowerWindow (tmp_win);
     }
-  else 
+  else
     {
       RaiseWindow (tmp_win);
     }
@@ -714,7 +714,7 @@ FvwmWindow *AddWindow(Window w)
       {
 	LowerWindow (tmp_win);
       }
-    else 
+    else
       {
 	RaiseWindow (tmp_win);
       }
@@ -736,7 +736,7 @@ FvwmWindow *AddWindow(Window w)
   if((tmp_win->flags & ClickToFocus) || Scr.MouseFocusClickRaises)
     {
      /* need to grab all buttons for window that we are about to
-       * unhighlight */
+      * unhighlight */
       for(i=1;i<=3;i++)
 	if(Scr.buttons2grab & (1<<i))
 	  {
@@ -744,7 +744,7 @@ FvwmWindow *AddWindow(Window w)
 	    XGrabButton(dpy,(i),0,tmp_win->frame,True,
 			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
 			Scr.FvwmCursors[SYS]);
-	    XGrabButton(dpy,(i),LockMask,tmp_win->frame,True,
+	    XGrabButton(dpy,(i),GetUnusedModifiers(),tmp_win->frame,True,
 			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
 			Scr.FvwmCursors[SYS]);
 #else
@@ -837,7 +837,7 @@ void GrabButtons(FvwmWindow *tmp_win)
 	      if(MouseEntry->Modifier != AnyModifier)
 		{
 		  XGrabButton(dpy, MouseEntry->Button_Key,
-			      (MouseEntry->Modifier | LockMask),
+			      (MouseEntry->Modifier | GetUnusedModifiers()),
 			      tmp_win->w,
 			      True, ButtonPressMask | ButtonReleaseMask,
 			      GrabModeAsync, GrabModeAsync, None,
@@ -864,19 +864,19 @@ void GrabButtons(FvwmWindow *tmp_win)
 	      if(MouseEntry->Modifier != AnyModifier)
 		{
 		  XGrabButton(dpy, 1,
-			      (MouseEntry->Modifier | LockMask),
+			      (MouseEntry->Modifier | GetUnusedModifiers()),
 			      tmp_win->w,
 			      True, ButtonPressMask | ButtonReleaseMask,
 			      GrabModeAsync, GrabModeAsync, None,
 			      Scr.FvwmCursors[DEFAULT]);
 		  XGrabButton(dpy, 2,
-			      (MouseEntry->Modifier | LockMask),
+			      (MouseEntry->Modifier | GetUnusedModifiers()),
 			      tmp_win->w,
 			      True, ButtonPressMask | ButtonReleaseMask,
 			      GrabModeAsync, GrabModeAsync, None,
 			      Scr.FvwmCursors[DEFAULT]);
 		  XGrabButton(dpy, 3,
-			      (MouseEntry->Modifier | LockMask),
+			      (MouseEntry->Modifier | GetUnusedModifiers()),
 			      tmp_win->w,
 			      True, ButtonPressMask | ButtonReleaseMask,
 			      GrabModeAsync, GrabModeAsync, None,
@@ -910,7 +910,8 @@ void GrabKeys(FvwmWindow *tmp_win)
 		   GrabModeAsync, GrabModeAsync);
 	  if(tmp->Modifier != AnyModifier)
 	    {
-	      XGrabKey(dpy, tmp->Button_Key, tmp->Modifier|LockMask,
+	      XGrabKey(dpy, tmp->Button_Key,
+		       tmp->Modifier|GetUnusedModifiers(),
 		       tmp_win->frame, True,
 		       GrabModeAsync, GrabModeAsync);
 	    }

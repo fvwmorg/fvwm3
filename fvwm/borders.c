@@ -1002,7 +1002,8 @@ void DrawLinePattern(Window win,
  *
  ************************************************************************/
 
-void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,Bool curr_shading)
+void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
+		Bool curr_shading)
 {
   XEvent client_event;
   XWindowChanges frame_wc, xwc;

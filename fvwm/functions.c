@@ -121,6 +121,7 @@ static struct functions func_config[] =
   {"ICONFONT",     LoadIconFont,     F_ICONFONT,            FUNC_NO_WINDOW},
   {"ICONIFY",      iconify_function, F_ICONIFY,             FUNC_NEEDS_WINDOW},
   {"ICONPATH",     iconPath_function,F_ICON_PATH,           FUNC_NO_WINDOW},
+  {"IGNOREMODIFIERS",ignore_modifiers,F_IGNORE_MODIFIERS,   FUNC_NO_WINDOW},
   {"IMAGEPATH",    imagePath_function,F_IMAGE_PATH,         FUNC_NO_WINDOW},
   {"KEY",          ParseKeyEntry,    F_KEY,                 FUNC_NO_WINDOW},
   {"KILLMODULE",   module_zapper,    F_ZAP,                 FUNC_NO_WINDOW},

@@ -1,6 +1,12 @@
+1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (DispatchEvent):
+	(FvwmErrorHandler): added misssing XUngrab... to fix 'transient' option
+	with mouse button 2
+
 1999-03-21  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* FvwmGtk/FvwmGtk.c: Implement option menus. 
+	* FvwmGtk/FvwmGtk.c: Implement option menus.
 
 Sat Mar 20 14:55:15 1999  DanEspen  <dje@blue>
 
@@ -45,7 +51,7 @@ Sat Mar 20 14:55:15 1999  DanEspen  <dje@blue>
 	* FvwmTaskBar/Goodies.c (DrawGoodies):
 	(GoodiesParseConfig): implemented 'Mailcheck' option
 
-Fri Mar 19 19:50:08 1999  Steve ROBBINS  
+Fri Mar 19 19:50:08 1999  Steve ROBBINS
 
 	* FvwmEvent/Makefile.am
 	* FvwmForm/Makefile.am

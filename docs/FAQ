@@ -85,7 +85,7 @@ Contents
      5.4  I have a window that is behaving unexpectedly under FVWM, but just
           fine under (whatever other window manager), or I have just some
           random bug.  What do I do?
-     5.5  Why do NumLock and CapsLock interfere with ClickToFocus
+     5.5  Why do NumLock and ScrollLock interfere with ClickToFocus
           and/or my mouse bindings?
      5.6  Menus with gradient backgrounds flicker or are very slow.
      5.7  Why won't the StartIconic style work with {Netscape, etc.}?
@@ -1067,10 +1067,18 @@ A: First, check your rc file and your .Xdefaults to make sure that
 
 ----------------------------------------------------------------------
 
-5.5  Why do NumLock and CapsLock interfere with ClickToFocus and/or my
+5.5  Why do NumLock and ScrollLock interfere with ClickToFocus and/or my
      mouse bindings?
 
-A: Because they are treated as modifiers.
+A: Because they are treated as modifiers. You can use the
+   IgnoreModifiers command to turn individual modifiers off for
+   bindings. With XFree86 the right command is
+
+     IgnoreModifiers L25
+
+   If you changed your modifiers manually or are using a different
+   X server use the 'xmodmap' command to find out which modifiers
+   correspond to the keys you want to switch off.
 
 ----------------------------------------------------------------------
 

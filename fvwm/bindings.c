@@ -13,6 +13,9 @@
 #include "module.h"
 #include <X11/keysym.h>
 
+#define MODS_UNUSED_DEFAULT LockMask
+static unsigned int mods_unused = MODS_UNUSED_DEFAULT;
+
 struct charstring
 {
   char key;
@@ -21,7 +24,7 @@ struct charstring
 
 
 /* The keys musat be in lower case! */
-struct charstring win_contexts[]=
+static struct charstring win_contexts[]=
 {
   {'w',C_WINDOW},
   {'t',C_TITLE},
@@ -45,7 +48,7 @@ struct charstring win_contexts[]=
 };
 
 /* The keys musat be in lower case! */
-struct charstring key_modifiers[]=
+static struct charstring key_modifiers[]=
 {
   {'s',ShiftMask},
   {'c',ControlMask},
@@ -327,3 +330,113 @@ void find_context(char *string, int *output, struct charstring *table,
   return;
 }
 
+
+/* Check if something is bount to a key or button press and execute the
+ * function if necessary. */
+void CheckBinding(int keycode, unsigned int modifier, FvwmWindow *Tmp_win,
+		  int Context, int IsMouse)
+{
+  Binding *key;
+
+  modifier &= ~mods_unused;
+  for (key = Scr.AllBindings; key != NULL; key = key->NextBinding)
+    {
+      if ((key->Button_Key == keycode) &&
+	  ((key->Modifier == (modifier&(~LockMask)))||
+	   (key->Modifier == AnyModifier)) &&
+	  (key->Context & Context)&&
+	  (key->IsMouse == IsMouse))
+	{
+	  ExecuteFunction(key->Action,Tmp_win, &Event,Context,-1);
+	  break;
+	}
+    }
+}
+
+/* Removes all unused modifiers from in_modifiers */
+unsigned int MaskUsedModifiers(unsigned int in_modifiers)
+{
+  return in_modifiers & ~mods_unused;
+}
+
+unsigned int GetUnusedModifiers(void)
+{
+  return mods_unused;
+}
+
+
+
+/***********************************************************************
+ *
+ *	SetModifierLocks : declares which X modifiers are actually locks
+ *		and should be ignored when testing mouse/key binding modifiers.
+ *	syntax :
+ *		ModifierLocks [S][L][C][M][1][2][3][4][5]
+ *
+ *	S is shift
+ *	L is caps lock
+ *	C is control
+ *	M is meta, the same as mod1
+ *	1-5 are mod1-mod5
+ *	The default is L25 (ie. mask out caps lock, num lock & scroll lock
+ *	for XFree86 3.3.3.1
+ *
+ *	Benoit TRIQUET <benoit@adsl-216-100-248-201.dsl.pacbell.net> 2/21/99
+ ***********************************************************************/
+void ignore_modifiers(F_CMD_ARGS)
+{
+  char *token;
+  char *tmp;
+  char c;
+
+  mods_unused = 0;
+  GetNextToken(action, &token);
+  if (!token)
+    return;
+
+  if (StrEquals(token, "default"))
+    {
+      free(token);
+      mods_unused = MODS_UNUSED_DEFAULT;
+      return;
+    }
+  tmp = token;
+  while ((c = *(tmp++)) != '\0')
+  {
+    switch (c)
+    {
+    case 's':
+    case 'S':
+      mods_unused |= ShiftMask;
+      break;
+    case 'l':
+    case 'L':
+      mods_unused |= LockMask;
+      break;
+    case 'c':
+    case 'C':
+      mods_unused |= ControlMask;
+      break;
+    case 'm':
+    case 'M':
+    case '1':
+      mods_unused |= Mod1Mask;
+      break;
+    case '2':
+      mods_unused |= Mod2Mask;
+      break;
+    case '3':
+      mods_unused |= Mod3Mask;
+      break;
+    case '4':
+      mods_unused |= Mod4Mask;
+      break;
+    case '5':
+      mods_unused |= Mod5Mask;
+      break;
+    default:
+      fvwm_msg( ERR, "SetModifierLocks", "illegal modifier: %c\n", c);
+    }
+  }
+  free(token);
+}

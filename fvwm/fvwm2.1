@@ -1123,7 +1123,7 @@ used in the bottom right corner of a window
 .in -.3i
 .in -.5i
 
-And the \fInumber-or-xpm\fP is either the numeric value of the cursor 
+And the \fInumber-or-xpm\fP is either the numeric value of the cursor
 as defined in the include file X11/cursorfont.h or the name of an xpm
 file containing a pixmap of depth 1 with a mask and an hotspot.
  An example:
@@ -1132,7 +1132,7 @@ file containing a pixmap of depth 1 with a mask and an hotspot.
 CursorStyle DESTROY 56
 CursorStyle TOP_LEFT topl.xpm
 .EE
-The defaults are shown in parenthesis above. 
+The defaults are shown in parenthesis above.
 
 The optional \fIfg\fP and \fIbg\fP arguments specify the foreground
 and background colors for the cursor, defaulting to black and white.
@@ -1383,14 +1383,14 @@ invoked from \fIWindowList\fP.
 
 .IP "Focus [ \fIfixed\fP ]"
 Sets the keyboard focus to the selected window. If the \fIfixed\fP
-argument is given, this is all it does. Otherwise it also moves the 
-viewport or window as needed to make the selected window visible and 
-raises the window if needed to make it visible.  Does not warp the pointer 
+argument is given, this is all it does. Otherwise it also moves the
+viewport or window as needed to make the selected window visible and
+raises the window if needed to make it visible.  Does not warp the pointer
 into the selected window (see WarpToWindow function).  Does not de-iconify.
 This command does not alter the order of the windowlist, it rotates the
 windowlist around so that the target window is at the start.
 
-When the \fIfixed\fP argument is given, Focus cannot transfer the 
+When the \fIfixed\fP argument is given, Focus cannot transfer the
 keyboard focus to windows on other desks.
 
 .IP "Function \fI\FunctionName\\fP"
@@ -1420,7 +1420,7 @@ CaptureHonorsStartsOnPage/CaptureIgnoresStartsOnPage,
 RecaptureHonorsStartsOnPage/RecaptureIgnoresStartsOnPage,
 ActivePlacementHonorsStartsOnPage/ActivePlacementIgnoresStartsOnPage,
 NoStipledTitles/StipledTitles,
-WindowShadeScrolls/WindowShadeShrinks
+WindowShadeScrolls/WindowShadeShrinks.
 
 Example:
 .EX
@@ -1450,14 +1450,31 @@ not in effect, because fvwm2 will switch to the proper desk/page to perform
 interactive placement. The default is ActivePlacementHonorsStartsOnPage,
 which matches the way StartsOnDesk handled the situation.
 
-.IP "GotoPage x y"
+.IP "GotoPage \fIx y\fP"
 Moves the desktop viewport to page (x,y).  The upper left page is
 (0,0), the upper right is (M,0), where M is one less than the current
 number of horizontal pages specified in the DeskTopSize command.  The
 lower left page is (0,N), and the lower right page is (M,N), where N
 is the desktop's vertical size as specified in the DeskTopSize
-command.  The GotoPage function should not be used in a pop-up menu.
+command.  To switch to a page relative to the current one add a
+trailing 'p' after any or both numerical arguments.  To go to
+last visited page use \fIprev\fP as the first argument.  The GotoPage
+function should not be used in a pop-up menu.
 
+Examples:
+.EX
+# Go to page (2,3)
+GotoPage 2 3
+
+# Go to lowest and rightmost page
+GotoPage -1 -1
+
+# Go to last page visited
+GotoPage prev
+
+# Go two pages to the right and one page up
+GotoPage +2p -1p
+.EE
 
 .IP "HilightColor \fItextcolor backgroundcolor\fP"
 Specifies the text and background colors for the decorations on the
@@ -1489,6 +1506,25 @@ Note that this syntax is obsolete, and will be removed in the future.
 
 .IP "IconPath \fIpath\fP"
 This command is obsolete. Please use \fIImagePath\fP instead.
+
+
+.IP "IgnoreModifiers \fI[ Modifiers ]\fP"
+Tells FVWM which modifiers to ignore when matching Mouse or Key
+bindings (if any binding actually have one of those modifiers,
+they will never be matched). \fIIgnoreModifiers\fP affects the
+ClickToFocus style too.
+
+\fIModifiers\fP has the same syntax as in the Mouse or Key bindings,
+with the addition of L meaning caps lock. The default is 'L'.
+\fIModifiers\fP can be omitted, meaning no modifiers are ignored.
+This command comes in handy if the num-lock and scroll-lock keys
+interfere with your shortcuts. With XFree86 '2' usually is the
+num-lock modifiers and '5' refers to scroll-lock. To turn all these
+pesky modifiers off you can use this command:
+
+.EX
+IgnoreModifiers L25
+.EE
 
 
 .IP "ImagePath \fIpath\fP"
@@ -2130,16 +2166,35 @@ is a replacement for the old WindowsDesk command, which can no longer
 be used.
 
 
-.IP "MoveToPage [ \fIx y\fP ]"
+.IP "MoveToPage [ \fIx[p]\fP \fIy\fP[p] ] | [ \fIprev\fP ]"
 Moves the selected window to another page (x,y). The upper left page is
 (0,0), the upper right is (M,0), where M is one less than the current
 number of horizontal pages specified in the DeskTopSize command.  The
 lower left page is (0,N), and the lower right page is (M,N), where N
 is the desktop's vertical size as specified in the DeskTopSize
-command. If \fIx\fP and \fIy\fP are not given, the window is moved to
+command. Negative page numbers refer to pages from the rightmost/lowest
+page.  If \fIx\fP and \fIy\fP are not given, the window is moved to
 the current page (a window that has the focus but is off-screen can
-be retrieved with this).
+be retrieved with this).  Moving windows to a page relative to the
+current one can be achieved by adding a trailing 'p' after any or
+both numerical arguments.  To move a window to the previous page use
+\fIprev\fP as the first argument.  Using MoveToPage on a sticky window
+makes the window non-sticky (see \fIStick\fP command).
 
+Examples:
+.EX
+# Move window to page (2,3)
+MoveToPage 2 3
+
+# Move window to lowest and rightmost page
+MoveToPage -1 -1
+
+# Move window to last page visited
+MoveToPage prev
+
+# Move window two pages to the right and one page up
+MoveToPage +2p -1p
+.EE
 
 .IP "Next (\fIconditions\fP) \fIcommand\fP"
 Performs \fIcommand\fP (typically Focus) on the next window which
@@ -2193,7 +2248,7 @@ Causes the current window's position to be re-computed using the initial
 window placement logic.  The window is moved to where it would have
 been if it were a new window that had just appeared.  Most useful with Smart
 or Clever (ReallySmart) placement.  If the optional argument \fIAnim\fP is
-specified, an animated move is used to place the window in its new position. 
+specified, an animated move is used to place the window in its new position.
 
 
 .IP "Popup \fIPopupName\fP [ \fIposition\fP ] [ \fIdefault-action\fP ]"
@@ -2506,7 +2561,7 @@ SmartPlacement/DumbPlacement, RandomPlacement/ActivePlacement,
 DecorateTransient/NakedTransient, SkipMapping/ShowMapping, UseDecor,
 UseStyle, NoPPosition/UsePPosition, Lenience/NoLenience,
 ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse,
-StartsLowered/StartsRaised.
+StartsLowered/StartsRaised, GrabFocus/GrabFocusOff.
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
@@ -2704,9 +2759,12 @@ such position can be found user placement or random placement (if
 specified) will be used as a fall-back method.  For the best of all
 possible worlds use both RandomPlacement and SmartPlacement.
 
-\fIStartsLowered\fP instructs fvwm to put the window initially at the 
+\fIStartsLowered\fP instructs fvwm to put the window initially at the
 bottom of its layer rather than the default \fIStartsRaised\fP.
- 
+
+\fIGrabFocus\fP causes a newly mapped window to grab the focus, wile
+\fIGrabFocusOff\fP turns this off. \fIGrabFocusOff\fP is the default.
+
 An example:
 .EX
 # Change default fvwm2 behavior to no title-
@@ -2958,15 +3016,16 @@ desk n, you will have to change it to "MoveToDesk 0 n".
 
 .IP "WindowShade [ \fImode\fP ]"
 Toggles the window shade feature for titled windows.  Windows in the
-shaded state only display a title bar.  If \fImode\fP is not given, the
-window shade state is toggled.  If \fImode\fP is 1, the window is
-forced to the shaded state.  If \fImode\fP is 2, then the window is
-forced to the non-shaded state.  Windows without titles cannot be shaded.
-See also \fIWindowShadeAnimate\fP.
+shaded state only display a title bar.  If \fImode\fP is not given or
+'toggle', the window shade state is toggled.  If \fImode\fP is 'y',
+'yes', 'on', 'true' or 't', the window is forced to the shaded state.
+If \fImode\fP is 'n', 'no', 'off', 'false' or 'f', then the window
+is forced to the non-shaded state.  Windows without titles cannot be
+shaded. See also \fIWindowShadeAnimate\fP.
 
-Note that this syntax is obsolete. You can use 'y', 'yes', 'on', 'true'
-or 't' instead of 1 and 'n', 'no', 'off', 'false' or 'f' instead
-2. The value 'toggle' is allowed too.
+For backwards compatibility, the optional argument may also be '1'
+to signifiy 'on', and '2' to signify 'off'. Note that this syntax
+is obsolete, and will be removed in the future.
 
 
 .IP "WindowShadeAnimate \fIsteps\fP"

@@ -209,6 +209,7 @@ typedef struct FvwmWindow
 #define FOCUS_CLICK   0x1
 #define FOCUS_SLOPPY  0x2
       focus_mode : 1; /* was click_focus/sloppy_focus */
+      grab_focus : 1;
       lenience : 1;
       mwm_border : 1;
       mwm_button : 1;
@@ -252,7 +253,7 @@ typedef struct FvwmWindow
       ol_decor : 1;
       suppressicon : 1;
     } new_flags;
-#else
+#else /* !GSFR */
     unsigned long flags;
 /*
     RBW - 11/13/1998 - new flags to supplement the flags word, implemented
@@ -323,21 +324,22 @@ typedef struct WindowConditionMask {
 /* The first 13 items are mapped directly from the style structure's
  * flag value, so they MUST correspond to the first 13 entries in misc.h */
 #define STARTICONIC             (1<<0)
-#define STICKY                  (1<<2) /* Does window stick to glass? */
-#define WINDOWLISTSKIP          (1<<3)
-#define SUPPRESSICON            (1<<4)
-#define NOICON_TITLE            (1<<5)
-#define Lenience                (1<<6)
-#define StickyIcon              (1<<7)
-#define CirculateSkipIcon       (1<<8)
-#define CirculateSkip           (1<<9)
-#define ClickToFocus            (1<<10)
-#define SloppyFocus             (1<<11)
-#define SHOW_ON_MAP    (1<<12) /* switch to desk when it gets mapped? */
+#define STICKY                  (1<<1) /* Does window stick to glass? */
+#define WINDOWLISTSKIP          (1<<2)
+#define SUPPRESSICON            (1<<3)
+#define NOICON_TITLE            (1<<4)
+#define Lenience                (1<<5)
+#define StickyIcon              (1<<6)
+#define CirculateSkipIcon       (1<<7)
+#define CirculateSkip           (1<<8)
+#define ClickToFocus            (1<<9)
+#define SloppyFocus             (1<<10)
+#define SHOW_ON_MAP    (1<<11) /* switch to desk when it gets mapped? */
+#define GRABFOCUS      (1<<12) /* Grab focus when mapped? */
 #define ALL_COMMON_FLAGS (STARTICONIC|STICKY|WINDOWLISTSKIP| \
 			  SUPPRESSICON|NOICON_TITLE|Lenience|StickyIcon| \
 			  CirculateSkipIcon|CirculateSkip|ClickToFocus| \
-			  SloppyFocus|SHOW_ON_MAP)
+			  SloppyFocus|SHOW_ON_MAP|GRABFOCUS)
 
 #define BORDER         (1<<13) /* Is this decorated with border*/
 #define TITLE          (1<<14) /* Is this decorated with title */

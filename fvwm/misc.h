@@ -72,17 +72,18 @@ struct config
 /* The first 13 items are mapped directly into the FvwmWindow structures
  * flag value, so they MUST correspond to the first 13 entries in fvwm.h */
 #define START_ICONIC_FLAG    (1<<0)
-#define STICKY_FLAG          (1<<2)
-#define LISTSKIP_FLAG        (1<<3)
-#define SUPPRESSICON_FLAG    (1<<4)
-#define NOICON_TITLE_FLAG    (1<<5)
-#define LENIENCE_FLAG        (1<<6)
-#define STICKY_ICON_FLAG     (1<<7)
-#define CIRCULATE_SKIP_ICON_FLAG  (1<<8)
-#define CIRCULATESKIP_FLAG   (1<<9)
-#define CLICK_FOCUS_FLAG     (1<<10)
-#define SLOPPY_FOCUS_FLAG    (1<<11)
-#define SHOW_MAPPING         (1<<12)
+#define STICKY_FLAG          (1<<1)
+#define LISTSKIP_FLAG        (1<<2)
+#define SUPPRESSICON_FLAG    (1<<3)
+#define NOICON_TITLE_FLAG    (1<<4)
+#define LENIENCE_FLAG        (1<<5)
+#define STICKY_ICON_FLAG     (1<<6)
+#define CIRCULATE_SKIP_ICON_FLAG  (1<<7)
+#define CIRCULATESKIP_FLAG   (1<<8)
+#define CLICK_FOCUS_FLAG     (1<<9)
+#define SLOPPY_FOCUS_FLAG    (1<<10)
+#define SHOW_MAPPING         (1<<11)
+#define GRAB_FOCUS           (1<<12)
 
 #define NOTITLE_FLAG         (1<<13)
 #define NOBORDER_FLAG        (1<<14)
@@ -295,6 +296,11 @@ void ReInstallActiveColormap(void);
 void ParsePopupEntry(char *,FILE *, char **, int *);
 void ParseMouseEntry(F_CMD_ARGS);
 void ParseKeyEntry(F_CMD_ARGS);
+void CheckBinding(int keycode, unsigned int modifier, FvwmWindow *Tmp_win,
+		  int Context, int IsMouse);
+unsigned int MaskUsedModifiers(unsigned int in_modifiers);
+unsigned int GetUnusedModifiers(void);
+void ignore_modifiers(F_CMD_ARGS);
 void SetOneStyle(char *text,FILE *,char **,int *);
 void ParseStyle(char *text,FILE *,char **,int *);
 void assign_string(char *text, FILE *fd, char **arg,int *);
@@ -374,6 +380,8 @@ int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
 
 void goto_page_func(F_CMD_ARGS);
+Bool get_page_arguments(char *action, unsigned int *page_x,
+			unsigned int *page_y);
 
 void wait_func(F_CMD_ARGS);
 void flip_focus_func(F_CMD_ARGS);

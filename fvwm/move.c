@@ -175,7 +175,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
   int n;
   int x,y;
   unsigned int width, height;
-  int page[2];
+  unsigned int page_x, page_y;
   Bool fWarp = FALSE;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE,ButtonPress))
@@ -204,19 +204,11 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
       fAnimated = FALSE;
       FinalX = x % Scr.MyDisplayWidth;
       FinalY = y % Scr.MyDisplayHeight;
-      if (GetIntegerArguments(action, NULL, page, 2) == 2)
+      if (get_page_arguments(action, &page_x, &page_y))
 	{
-	  if (page[0] < 0 || page[1] < 0 ||
-	      page[0]*Scr.MyDisplayWidth > Scr.VxMax ||
-	      page[1]*Scr.MyDisplayHeight > Scr.VyMax)
-	    {
-	      fvwm_msg(ERR, "move_window_doit",
-		       "MoveToPage: invalid page number");
-	      return;
-	    }
 	  tmp_win->flags &= ~STICKY;
-	  FinalX += page[0]*Scr.MyDisplayWidth - Scr.Vx;
-	  FinalY += page[1]*Scr.MyDisplayHeight - Scr.Vy;
+	  FinalX += page_x - Scr.Vx;
+	  FinalY += page_y - Scr.Vy;
 	}
     }
   else

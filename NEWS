@@ -1,5 +1,21 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* ClickToFocus windows don't take the focus from other ClickToFocus windows
+  when they are mapped the first time automatically anymore. To force this use
+  the 'GrabFocus' style (works with MouseFocus and SloppyFocus too).
+
+* IgnoreModifiers command allows to ignore this pesky num-lock key to be
+  ignored as far as key and mouse bindings are concerned. Hint: try this
+  command with XFree86:
+
+    IgnoreModifiers L25
+
+* Enhancements to MoveToPage and GotoPage: 'prev' option to refer to the last
+  visited page, negative numbers refer to lower/right page, suffix 'p'
+  indicates page number relative to current page.
+
+* Mailcheck interval option for FvwmTaskBar.
+
 * Colorlimit command does nothing if display depth is greater than 8.
   This helps if you want to use the same configuration on more than one
   display depth.  ColorLimit defaults to ON if display depth is 8 bits
@@ -18,12 +34,12 @@ Changes in alpha release 2.3.0 (February 1999)
 
 * New function PlaceAgain: moves a window to where it would be placed.
 
-* New module FvwmGtk. It implements menus, dialogs and window-lists 
+* New module FvwmGtk. It implements menus, dialogs and window-lists
   using the GTK toolkit.
 
 * NoInset is independent from HiddenHandles, it now works on NoHandles style
   windows.
-  
+
 * Made FvwmPager a bit simpler. Added -transient options to bind a transient
   pager to mouse buttons (see FvwmPager man page for an example).
 

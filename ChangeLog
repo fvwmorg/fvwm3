@@ -1,3 +1,56 @@
+1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1:
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	* fvwm/style.c (ProcessNewStyle):
+	* fvwm/fvwm.h (FvwmWindow):
+	* fvwm/add_window.c (AddWindow): implemented GrabFocus/GrabFocusOff
+	style (default is GrabFocus Off)..
+
+	* fvwm/fvwm2.1 (IgnoreModifiers): documented new command
+	(WindowShade): updated new toggling syntax
+
+	* fvwm/parse.h:
+	* fvwm/functions.c (func_config): new command IgnoreModifiers (based on
+	patch by Benoit TRIQUET <benoit@adsl-216-100-248-201.dsl.pacbell.net>)
+
+	* fvwm/focus.c (SetFocus):
+	* fvwm/add_window.c (GrabButtons):
+	(GrabKeys): use MaskUsedModifiers and GetUnusedModifiers instead of
+	global mods_used and LockMask
+
+	* fvwm/bindings.c (GetUnusedModifiers):
+	(MaskUsedModifiers):
+	(CheckBinding): new function for binding handling
+
+	* fvwm/events.c (HandleKeyPress):
+	(HandleButtonPress): moved binding checking code to bindings.c
+
+	* fvwm/builtins.c (stick_function): fixed bug in Stick function (could
+	only turn sticky off)
+
+	* fvwm/fvwm2.1 (GotoPage):
+	* fvwm/fvwm2.1 (MoveToPage): documented new syntax
+
+	* libs/Parse.c (GetSuffixedIntegerArguments): added function for
+	parsing integer arguments with suffixes
+
+	* fvwm/fvwm2.1 (Examples): documented new options for MoveToPage and
+	GotoPage
+
+1999-03-20  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/move.c (move_window_doit):
+	* fvwm/virtual.c (get_page_arguments):
+	(goto_page_func):
+	* fvwm/misc.h: implemented a 'previous page' option for GotoPage and
+	MoveToPage functions (original patch by Nagi Aboulenein). Negative page
+	numbers refer to the lowest or rightmost page. The suffix 'p' indicates
+	relative movement.
+
+	* fvwm/menus.c (DrawTrianglePattern): applied menu triangle patch for
+	low resolutions by Adam Rice <wysiwyg@glympton.airtime.co.uk>
+
 Sun Mar 21 10:29:40 1999  DanEspen  <dje@blue>
 
 	* NEWS: Updates on form pasting, ImagePath adding, ColorLimit.
@@ -330,8 +383,8 @@ Tue Mar  9 18:00:22 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
 
 1999-03-08  Hippo
 
-	* libs/Graphics.c New function RelieveWindowGC() - draws relief lines of
-	arbitrary thickness around a rectangle.
+	* libs/Graphics.c New function RelieveWindowGC() - draws relief lines
+	of arbitrary thickness around a rectangle.
 
 1999-03-07  Tomas Ogren  <stric@ing.umu.se>
 
@@ -858,9 +911,10 @@ Tue Feb 23 13:02:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/builtins.c: Emulate command updates feedback window position.
 
-	* fvwm/virtual.c: EdgeThickness command can be used at any time to alter
-	the panframe windows. Panframe windows unmapped when paging to the end
-	page and wrapping is disabled.  Panframe windows go right into the corners.
+	* fvwm/virtual.c: EdgeThickness command can be used at any time to
+	alter the panframe windows. Panframe windows unmapped when paging to
+	the end page and wrapping is disabled.  Panframe windows go right into
+	the corners.
 
 	* fvwm/windows.c: WindowList looks better when NoGeometry specified.
 
@@ -874,25 +928,26 @@ Tue Feb 23 13:02:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/{events,fvwm,modconf,module,read}.c: moved invocation of
 	StartupStuff() from ReadSubFunc to main event loop.  Initial capture
 	happens only after all command line args are finished and any modules
-	that the command line args invoke.  Any number of -cmd's can be specified
-	and the initial capture will happen when they have finished so that you
-	don't need a recapture after a restart to get the right decorations.
-	Added a timeout so that Fvwm will always do the initial capture.
-	FvwmCPP & FvwmM4 can now be rewritten to exec() the subprocess and
-	avoid using a Read of a temp file.
+	that the command line args invoke.  Any number of -cmd's can be
+	specified and the initial capture will happen when they have finished
+	so that you don't need a recapture after a restart to get the right
+	decorations. Added a timeout so that Fvwm will always do the initial
+	capture.FvwmCPP & FvwmM4 can now be rewritten to exec() the subprocess
+	and avoid using a Read of a temp file.
 
 	* fvwm/{events,focus,module}.c: FOCUS_CHANGE packet has the third
 	(previously useless) paramter set to denote FlipFocus/Focus.  Modules
 	can now accuraetly track the internal window list order.
 
-	* fvwm/borders.c: experimental rewrite of Sticky lines.  Use xmag to look
-	at the ends. If they don't line up I think you have an Xserver bug.
+	* fvwm/borders.c: experimental rewrite of Sticky lines.  Use xmag to
+	look at the ends. If they don't line up I think you have an Xserver
+	bug.
 
 	* fvwm/{{builtins,functions,fvwm}.c,fvwm2.1,misc.h}: XORPixmap.
-	Eat this Enlightenment 8-).  Actually it's meantt to improve the visibility
-	of rubberband lines in PsuedoColor displays (use Colorlimit first) but it
-	looks great on TrueColor.  It plays nicely with XORValue and I don't think
-	it leaks pixmaps.
+	Eat this Enlightenment 8-).  Actually it's meantt to improve the
+	visibility of rubberband lines in PsuedoColor displays (use Colorlimit
+	first) but it looks great on TrueColor.  It plays nicely with XORValue
+	and I don't think it leaks pixmaps.
 
 1999-02-23  Dominik Vogt  <dominik_vogt@hp.com>
 

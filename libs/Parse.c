@@ -413,13 +413,21 @@ char *GetModuleResource(char *indata, char **resource, char *module_name)
  * This function uses GetNextToken to parse action for up to num integer
  * arguments. The number of values actually found is returned.
  * If ret_action is non-NULL, a pointer to the next token is returned there.
+ * The suffixlist parameter points to a string off possible suffixes for the
+ * integer values. The index of the matched suffix is returned in
+ * ret_suffixnum (0 = no suffix, 1 = first suffix in suffixlist ...).
  *
  **************************************************************************/
-int GetIntegerArguments(char *action, char **ret_action, int retvals[],int num)
+int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
+				int num, char *suffixlist, int ret_suffixnum[])
 {
   int i;
+  int j;
   char *token;
+  int suffixes;
 
+  if (suffixlist)
+    suffixes = (suffixlist != NULL) ? strlen(suffixlist) : 0;
   for (i = 0; i < num && action; i++)
   {
     action = GetNextToken(action, &token);
@@ -427,6 +435,30 @@ int GetIntegerArguments(char *action, char **ret_action, int retvals[],int num)
       break;
     if (sscanf(token, "%d", &(retvals[i])) != 1)
       break;
+    if (suffixes != 0 && ret_suffixnum != NULL)
+      {
+	int len;
+	char c;
+
+	len = strlen(token) - 1;
+	c = token[len];
+	if (isupper(c))
+	  c = tolower(c);
+	for (j = 0; j < suffixes; j++)
+	  {
+	    char c2 = suffixlist[j];
+
+	    if (isupper(c2))
+	      c2 = tolower(c2);
+	    if (c == c2)
+	      {
+		ret_suffixnum[i] = j+1;
+		break;
+	      }
+	  }
+	if (j == suffixes)
+	  ret_suffixnum[i] = 0;
+      }
     free(token);
     token = NULL;
   }
@@ -437,6 +469,19 @@ int GetIntegerArguments(char *action, char **ret_action, int retvals[],int num)
 
   return i;
 }
+
+/****************************************************************************
+ *
+ * This function uses GetNextToken to parse action for up to num integer
+ * arguments. The number of values actually found is returned.
+ * If ret_action is non-NULL, a pointer to the next token is returned there.
+ *
+ **************************************************************************/
+int GetIntegerArguments(char *action, char **ret_action, int retvals[],int num)
+{
+  GetSuffixedIntegerArguments(action, ret_action, retvals, num, NULL, NULL);
+}
+
 
 /***************************************************************************
  *

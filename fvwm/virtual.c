@@ -32,8 +32,10 @@
  *
  * 2 is the default.
  */
-int edge_thickness = 2;
-int last_edge_thickness = 2;
+static int edge_thickness = 2;
+static int last_edge_thickness = 2;
+static unsigned int prev_page_x = 0;
+static unsigned int prev_page_y = 0;
 
 void setEdgeThickness(F_CMD_ARGS)
 {
@@ -446,6 +448,8 @@ void MoveViewport(int newx, int newy, Bool grab)
   if(grab)
     MyXGrabServer(dpy);
 
+  prev_page_x = Scr.Vx;
+  prev_page_y = Scr.Vy;
 
   if(newx > Scr.VxMax)
     newx = Scr.VxMax;
@@ -908,22 +912,69 @@ void scroll(F_CMD_ARGS)
   MoveViewport(x,y,True);
 }
 
+Bool get_page_arguments(char *action, unsigned int *page_x,
+			unsigned int *page_y)
+{
+  int val[2];
+  int suffix[2];
+  int n;
+  char *token;
+
+  GetNextToken(action, &token);
+  if (token == NULL)
+    {
+      *page_x = Scr.Vx;
+      *page_y = Scr.Vy;
+      return True;
+    }
+  if (StrEquals(token, "prev"))
+    {
+      /* last page selected */
+      *page_x = prev_page_x;
+      *page_y = prev_page_y;
+      free(token);
+      return True;
+    }
+  free(token);
+  if (GetSuffixedIntegerArguments(action, NULL, val, 2, "p", suffix) != 2)
+    return False;
+  if (val[0] >= 0)
+    *page_x = val[0] * Scr.MyDisplayWidth;
+  else
+    *page_x = (val[0]+1) * Scr.MyDisplayWidth + Scr.VxMax;
+  if (val[1] >= 0)
+    *page_y = val[1] * Scr.MyDisplayHeight;
+  else
+    *page_y = (val[1]+1) * Scr.MyDisplayHeight + Scr.VyMax;
+  /* handle 'p' suffix */
+  if (suffix[0] == 1)
+    *page_x += Scr.Vx;
+  if (suffix[1] == 1)
+    *page_y += Scr.Vy;
+
+  /* limit to desktop size */
+  if (*page_x < 0)
+    *page_x = 0;
+  if (*page_y < 0)
+    *page_y = 0;
+  if (*page_x > Scr.VxMax)
+    *page_x = Scr.VxMax;
+  if (*page_y > Scr.VyMax)
+    *page_y = Scr.VyMax;
+
+  return True;
+}
+
 void goto_page_func(F_CMD_ARGS)
 {
-  int val[2], n, x, y;
+  unsigned int x;
+  unsigned int y;
 
-  n = GetIntegerArguments(action, NULL, val, 2);
-  if(n != 2)
+  if (!get_page_arguments(action, &x, &y))
     {
-      fvwm_msg(ERR,"goto_page_func","GotoPage requires two arguments");
+      fvwm_msg(ERR,"goto_page_func","GotoPage: invalid arguments: %s", action);
       return;
     }
 
-  x = val[0] * Scr.MyDisplayWidth;
-  y = val[1] * Scr.MyDisplayHeight;
   MoveViewport(x,y,True);
 }
-
-
-
-

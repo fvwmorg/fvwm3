@@ -794,6 +794,12 @@ void DispatchEvent(XEvent *Event)
       if ((Event->xclient.format==32) &&
 	  (Event->xclient.data.l[0]==wm_del_win))
 	{
+	  if (is_transient)
+	    {
+	      XUngrabPointer(dpy,CurrentTime);
+	      MyXUngrabServer(dpy);
+	      XSync(dpy,0);
+	    }
 	  exit(0);
 	}
       break;
@@ -1796,6 +1802,12 @@ XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 		  (unsigned *)&window_w,(unsigned *)&window_h,
 		  &border_width,&depth)==0)
     {
+      if (is_transient)
+	{
+	  XUngrabPointer(dpy,CurrentTime);
+	  MyXUngrabServer(dpy);
+	  XSync(dpy,0);
+	}
       exit(0);
     }
 

@@ -1,6 +1,6 @@
 /****************************************************************************
- * This module is all original code 
- * by Rob Nation 
+ * This module is all original code
+ * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
@@ -47,7 +47,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
       /* remove Fw from list */
       if (Fw->prev) Fw->prev->next = Fw->next;
       if (Fw->next) Fw->next->prev = Fw->prev;
-      
+
       /* insert Fw at start */
       Fw->next = Scr.FvwmRoot.next;
       if (Scr.FvwmRoot.next) Scr.FvwmRoot.next->prev = Fw;
@@ -57,14 +57,14 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
     else
     {
       /* move the windowlist around so that Fw is at the top */
-      
+
       FvwmWindow *tmp_win;
-      
+
       /* find the window on the windowlist */
-      tmp_win = &Scr.FvwmRoot; 
+      tmp_win = &Scr.FvwmRoot;
       while (tmp_win && tmp_win != Fw)
         tmp_win = tmp_win->next;
-        
+
       if (tmp_win) /* the window is on the (non-zero length) windowlist */
       {
         /* make tmp_win point to the last window on the list */
@@ -84,7 +84,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
     }
   }
   lastFocusType = FocusByMouse;
-    
+
   if(Scr.NumberOfScreens > 1)
     {
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
@@ -101,7 +101,8 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 		    XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->frame,True,
 				ButtonPressMask, GrabModeSync,GrabModeAsync,
 				None,Scr.FvwmCursors[SYS]);
-		    XGrabButton(dpy,(i+1),LockMask,Scr.Ungrabbed->frame,True,
+		    XGrabButton(dpy,(i+1),GetUnusedModifiers(),
+				Scr.Ungrabbed->frame,True,
 				ButtonPressMask, GrabModeSync,GrabModeAsync,
 				None,Scr.FvwmCursors[SYS]);
 		  }
@@ -115,15 +116,15 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 
   if (Fw != NULL)
     {
-      /*  
-          Make sure at least part of window is on this page  
+      /*
+          Make sure at least part of window is on this page
           before giving it focus...
       */
       if ( (Fw->Desk == Scr.CurrentDesk) &&
-           ( ((Fw->frame_x + Fw->frame_width) >= 0 && 
+           ( ((Fw->frame_x + Fw->frame_width) >= 0 &&
               Fw->frame_x < Scr.MyDisplayWidth) &&
-             ((Fw->frame_y + Fw->frame_height) >= 0 && 
-              Fw->frame_y < Scr.MyDisplayHeight) 
+             ((Fw->frame_y + Fw->frame_height) >= 0 &&
+              Fw->frame_y < Scr.MyDisplayHeight)
            )
          )
         {
@@ -159,7 +160,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 	if(Scr.buttons2grab & (1<<i))
 	  {
 	    XUngrabButton(dpy,(i+1),0,Fw->frame);
-	    XUngrabButton(dpy,(i+1),LockMask,Fw->frame);
+	    XUngrabButton(dpy,(i+1),GetUnusedModifiers(),Fw->frame);
 	  }
       Scr.Ungrabbed = Fw;
     }
@@ -179,7 +180,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
           w = Fw->icon_pixmap_w;
         }
     }
-  
+
   if((Fw)&&(Fw->flags & Lenience))
     {
       XSetInputFocus (dpy, w, RevertToParent, lastTimestamp);
