@@ -53,8 +53,7 @@ void AllocColorset(int n)
   /* increment n to get the required array size, get a new array */
   if (Colorset == NULL)
   {
-    Colorset = (colorset_struct *)safemalloc((char *)Colorset,
-					     ++n * sizeof(colorset_struct));
+    Colorset = (colorset_struct *)safemalloc(++n * sizeof(colorset_struct));
   }
   else
   {
