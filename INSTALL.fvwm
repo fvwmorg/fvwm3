@@ -111,7 +111,7 @@ Xpm allows the use of coloured icons.  See the Xpm web page at
 http://www.inria.fr/koala/lehors/xpm.html for all the latest info and
 links to source code.  You can also get the source code from
 ftp://ftp.x.org/contrib/libraries/.  If you're having trouble building
-with XPM even after reading this, try Question #13 in the FVWM FAQ.
+with XPM even after reading this, try Question 2.4 in the FVWM FAQ.
 
 Rplay is used in a few modules (FvwmEvent, for one) for playing sounds
 without invoking an external program.  This library appears to have
@@ -130,6 +130,13 @@ following flags (examples assume library is named "foo"):
     --with-foo-library=DIR   to specify directory containing libfoo
     --with-foo-includes=DIR  to specify include directory for libfoo's
 			     headers
+
+The desired include directory is the one in which the following header
+may be found:
+
+    xpm		X11/xpm.h
+    readline	readline/readline.h
+    rplay	rplay.h
 
 Only one version of the --with-foo-library flag may be specified.
 

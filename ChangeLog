@@ -1,3 +1,8 @@
+Wed Mar 17 06:42:10 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* INSTALL.fvwm: add a note about include directories for optional
+	libraries. 
+
 1999-03-17  Bob Woodside <proteus@pcnet.com>
 
 	* docs/fvwm.lsm: corrected a couple of typos that prevented the LSM
