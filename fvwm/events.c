@@ -2126,9 +2126,6 @@ void HandleMapRequestKeepRaised(
 
 	if (IS_ICONIFIED(Fw))
 	{
-XWindowAttributes winattrs = {0};
-if (XGetWindowAttributes(dpy, FW_W(Fw), &winattrs))
-{if (winattrs.map_state == IsViewable) fake_map_unmap_notify(Fw, MapNotify); }
 		/* If no hints, or currently an icon, just "deiconify" */
 		DeIconify(Fw);
 	}
