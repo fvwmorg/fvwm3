@@ -1,0 +1,23 @@
+/* XPM */
+static char * window_move_xpm[] = {
+"16 16 4 1",
+" 	c None",
+".	c #000000000000",
+"X	c #000000006E6E",
+"o	c #FFFFFFFFFFFF",
+"                ",
+". . . . . .     ",
+"                ",
+".         .     ",
+"                ",
+".   ........... ",
+"    .XXXXXXXXX. ",
+".   .XXXXXXXXX. ",
+"    .ooooooooo. ",
+". . .ooooooooo. ",
+"    .ooooooooo. ",
+"    .ooooooooo. ",
+"    .ooooooooo. ",
+"    ........... ",
+"                ",
+"                "};

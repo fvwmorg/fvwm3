@@ -1,0 +1,31 @@
+This directory contains files to test menus.
+
+Instructions:
+
+ - Execute the shell script install.menus to copy some files needed by
+   the config file to /tmp.
+ - Start fvwm.
+ - Execute the command "Read /tmp/menus.read".
+ - A number of menus will pop up.  Verify that they work correctly.
+ - Some test information will be printed to the console.
+
+NOTE: No error messages must show up.
+
+
+functionality tested:
+---------------------
+
+- Menu layout code.
+- MenuStyle options:
+    SidePic
+    SideColor
+    SeparatorsLong / SeparatorsShort
+    TitleUnderlines0 / TitleUnderlines1 / TitleUnderlines2
+    VerticalItemSpacing
+    VerticalTitleSpacing
+    BorderWidth
+    Hilight3DThickness / Hilight3DThick / Hilight3DThin / Hilight3DOff
+    ItemFormat:
+      %l %c %r %i %| %< %> %s %(left).(right)(...) [%](space) [%](tab) %p
+- Empty menus, items, formats and missing parts in the menus, separators
+
