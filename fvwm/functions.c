@@ -659,8 +659,11 @@ static char *expand(
 	else
 	{
 	  i++;
+#if 0
+	  /* dv: Whoa! Better live with the extra whitespace. */
 	  if (isspace(input[i+1]))
 	    i++; /*eliminates extra white space*/
+#endif
 	}
 	break;
       case 'w':
@@ -1458,6 +1461,14 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
   if (taction)
   {
     arguments[0] = strdup(taction);
+    /* strip trailing newline */
+    if (arguments[0][0])
+    {
+      int l= strlen(arguments[0]);
+
+      if (arguments[0][l - 1] == '\n')
+	arguments[0][l - 1] = 0;
+    }
     /* Get the argument list */
     for(i=1;i<11;i++)
       taction = GetNextToken(taction,&arguments[i]);
