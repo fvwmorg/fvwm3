@@ -220,17 +220,8 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 static char *make_look_packet(void)
 {
   char *b = safemalloc(DEFGRAPHNUM * (sizeof(long) * 2 + 1) + DEFGRAPHLEN + 3);
-  sprintf(b, "%s %lx %lx %lx %lx %lx %lx %lx %lx %lx\n",
-	  DEFGRAPHSTR,
- 	  XVisualIDFromVisual(Scr.viz),
-	  Scr.cmap,
-	  Scr.DrawGC ? XGContextFromGC(Scr.DrawGC) : 0,
-	  Scr.bg->type.word,
-	  Scr.bg->pixmap,
-	  Scr.StdGC ? XGContextFromGC(Scr.StdGC) : 0,
-	  Scr.StdReliefGC ? XGContextFromGC(Scr.StdReliefGC) : 0,
-	  Scr.StdShadowGC ? XGContextFromGC(Scr.StdShadowGC) : 0,
-	  Scr.StdFont.font ? Scr.StdFont.font->fid : 0);
+  sprintf(b, "%s %lx %lx\n", DEFGRAPHSTR, XVisualIDFromVisual(Scr.viz),
+	  Scr.cmap);
   return b;
 }
 
@@ -239,14 +230,5 @@ void SendLook(int module)
   char *message = make_look_packet();
 
   SendName(module,M_CONFIG_INFO,0,0,0,message);
-  free(message);
-}
-
-
-void BroadcastLook()
-{
-  char *message = make_look_packet();
-
-  BroadcastName(M_CONFIG_INFO,0,0,0,message);
   free(message);
 }

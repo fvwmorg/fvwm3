@@ -1151,8 +1151,6 @@ void SetXOR(F_CMD_ARGS)
     DestroyPicture(dpy, Scr.DrawPicture);
     Scr.DrawPicture = NULL;
   }
-  XFlushGC(dpy, Scr.DrawGC);
-  BroadcastLook();
 }
 
 
@@ -1199,9 +1197,6 @@ void SetXORPixmap(F_CMD_ARGS)
     XChangeGC(dpy, Scr.DrawGC, gcm, &gcv);
   else
     Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
-
-  XFlushGC(dpy, Scr.DrawGC);
-  BroadcastLook();
 }
 
 void SetOpaque(F_CMD_ARGS)
@@ -1809,10 +1804,9 @@ static void ApplyDefaultFontAndColors(void)
 
   UpdateAllMenuStyles();
 
-  XFlushGC(dpy, Scr.StdGC);
-  XFlushGC(dpy, Scr.StdReliefGC);
-  XFlushGC(dpy, Scr.StdShadowGC);
+/* inform modules of colorset changes goes here
   BroadcastLook();
+*/
 
 }
 

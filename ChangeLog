@@ -1,3 +1,7 @@
+1999-06-24  Hippo
+
+	* fvwm/modconf.c, libs/ModGraph.c: removed Gcontext sharing stuff
+
 1999-06-24  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm2.1 (IconBox): added a hint how to get auto arranging icons

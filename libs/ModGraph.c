@@ -14,134 +14,46 @@
  */
 
 #include<stdio.h>
-#define XLIB_ILLEGAL_ACCESS
 #include "config.h"
 #include "libs/fvwmlib.h"
 
 /***************************************************************************
  * create and initialize the structure used to stash graphics things
  **************************************************************************/
-Graphics *CreateGraphics() {
-  Graphics *G = (Graphics *)safemalloc(sizeof(Graphics));
-  memset(G, 0, sizeof(Graphics));
-  G->bg = (Background *)safemalloc(sizeof(Background));
-  memset(G->bg, 0, sizeof(Background));
-  return G;
-}
-
-/***************************************************************************
- * Initialises graphics stuff ready for geting graphics config from fvwm
- **************************************************************************/
-void InitGraphics(Display *dpy, Graphics *G) {
+Graphics *CreateGraphics(Display *dpy) {
   int screen = DefaultScreen(dpy);
-  unsigned long mask = GCFunction | GCForeground | GCLineWidth | GCCapStyle;
-  XGCValues values;
+  Graphics *G = (Graphics *)safemalloc(sizeof(Graphics));
 
-  G->initialised = False; /* not filled from fvwm yet */
-  G->useFvwmLook = True; /* default to using Fvwm look */
+  memset(G, 0, sizeof(Graphics));
   G->viz = DefaultVisual(dpy, screen);
   G->cmap = DefaultColormap(dpy, screen);
-  G->bg->type.word = 0; /* it's a pixel */
-  G->bg->pixmap = (Pixmap)BlackPixel(dpy, screen);
   G->depth = DefaultDepth(dpy, screen);
-
-  /* create a gc for rubber band lines */
-  values.function = GXxor;
-  values.foreground = BlackPixel(dpy, screen) ^ WhitePixel(dpy, screen);
-  values.line_width = 0;
-  values.cap_style = CapNotLast;
-  if (G->create_drawGC)
-    G->drawGC = XCreateGC(dpy, RootWindow(dpy, screen), mask, &values);
-
-  /* create relief gc's */
-  values.function = GXcopy;
-  values.foreground = WhitePixel(dpy, screen);
-  if (G->create_reliefGC)
-    G->reliefGC = XCreateGC(dpy, RootWindow(dpy, screen), mask, &values);
-  if (G->create_shadowGC)
-    G->shadowGC = XCreateGC(dpy, RootWindow(dpy, screen), mask, &values);
-
-  /* create a gc for lines and text */
-  G->font = XLoadQueryFont(dpy, "fixed");
-  mask |= GCFont;
-  values.font = G->font->fid;
-  if (G->create_foreGC)
-    G->foreGC = XCreateGC(dpy, RootWindow(dpy, screen), mask, &values);
-
+  return G;
 }
 
 /***************************************************************************
  * Initialises graphics stuff from a graphics config line sent by fvwm
  **************************************************************************/
-Bool ParseGraphics(Display *dpy, char *line, Graphics *G) {
-  long bg, bgtype;
+void ParseGraphics(Display *dpy, char *line, Graphics *G) {
   int viscount;
   XVisualInfo vizinfo, *xvi;
   VisualID vid;
   Colormap cmap;
-  GContext drawGContext, foreGContext, relGContext, shadGContext;
-  Font fid;
-  XFontStruct *font;
 
-  /* ignore it if not using fvwm's graphics */
-  if (!G->useFvwmLook)
-    return False;
-    
   /* bail out on short lines */
-  if (strlen(line) < (size_t)(DEFGRAPHLEN + 2 * DEFGRAPHNUM)) {
-    G->useFvwmLook = False;
-    return False;
-  }
+  if (strlen(line) < (size_t)(DEFGRAPHLEN + 2 * DEFGRAPHNUM))
+    return;
 
-  if (sscanf(line + DEFGRAPHLEN + 1, "%lx %lx %lx %lx %lx %lx %lx %lx %lx\n",
-	     &vid, &cmap, &drawGContext, &bgtype, &bg, &foreGContext,
-	     &relGContext, &shadGContext, &fid) != DEFGRAPHNUM) {
-    G->useFvwmLook = False;
-    return False;
-  }
+  if (sscanf(line + DEFGRAPHLEN + 1, "%lx %lx\n", &vid, &cmap) != DEFGRAPHNUM)
+    return;
     
   /* if this is the first one grab a visual to use */
-  if (!G->initialised) {
-    vizinfo.visualid = vid;
-    xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &viscount);
-    if (viscount != 1) {
-      G->useFvwmLook = False;
-      return False;
-    }
-    G->initialised = True;
-    G->viz = xvi->visual;
-    G->depth = xvi->depth;
-    G->cmap = cmap;
-    XFree(xvi);
-  }
+  vizinfo.visualid = vid;
+  xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &viscount);
+  if (viscount != 1)
+    return;
+  G->viz = xvi->visual;
+  G->depth = xvi->depth;
+  G->cmap = cmap;
 
-  /* update the changeable entries */
-  G->bg->type.word = bgtype;
-  G->bg->pixmap = bg; /* one day may be a pixmap */
-  
-  /* copy the rest into place, I know this is horrible but GC's must be alloc'd
-   * by xlib before the fvwm suppied GContext can be used */
-  if (G->create_drawGC)
-    G->drawGC->gid = drawGContext;
-  if (G->create_foreGC)
-    G->foreGC->gid = foreGContext;
-  if (G->create_reliefGC)
-    G->reliefGC->gid = relGContext;
-  if (G->create_shadowGC)
-    G->shadowGC->gid = shadGContext;
-
-  /* get the font, this isn't as dirty as the GC stuff as X provides a way to
-   * share font id's */
-  /* this can fail if fvwm is doing lots of DefaultFont commands e.g.
-   * during a re-read of the configuration files so hang on to the old one
-   * if (fid) as been freed rather than store a NULL pointer.
-   * Return False in this case so the module doesn't redraw with incorrect font
-   * info.  Another will be coming along very soon which will fix things up */
-  if (NULL == (font = XQueryFont(dpy, fid)))
-    return False;
-  if (G->font)
-    XFreeFontInfo(NULL, G->font, 1);
-  G->font = font;
-
-  return True;
 }

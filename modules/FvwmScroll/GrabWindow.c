@@ -515,12 +515,11 @@ void Loop(Window target)
       GetConfigLine(fd, &tline);
       if (tline != NULL && (strlen(tline) > 1)) {
         if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
-          if (ParseGraphics(dpy, tline, G)) {
+          ParseGraphics(dpy, tline, G);
 /* this is where dynamic colorset changinf happens
             SetWindowBackground(dpy, main_win, tw, th, G->bg, G->depth,
 				G->shadowGC);
 */
-          }
         }
       }
 
