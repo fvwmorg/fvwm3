@@ -4,7 +4,10 @@ These are 5 small FVWM modules written in Perl:
 	Beeps, auto-raises, auto-iconifies and auto-exits in one minute.
 	
 * module-flash:
-	Shows a flash window on every page switch.
+	Shows a flash window on every page switch. Mainly for tutorial.
+
+* module-gtkflash:
+	The same using GTK+ with small additional functionality.
 
 * module-winlist:
 	Prints window names and ids to stderr and exits.

@@ -30,16 +30,16 @@ Bool use_our_color_limit = False;
 
 void usage(void)
 {
-fprintf(
-			stderr, "fvwm-root version %s with support for: XBM "
+	fprintf(
+		stderr, "fvwm-root version %s with support for: XBM"
 #ifdef XPM
-			"XPM "
+		", XPM"
 #endif
 #ifdef HAVE_PNG
-			"PNG"
+		", PNG"
 #endif
-			"\n", VERSION);
-		fprintf(stderr, "Usage: fvwm-root [-fe -np -d] file\n");
+		"\n", VERSION);
+	fprintf(stderr, "Usage: fvwm-root [-fe -np -d] file\n");
 }
 
 int main(int argc, char **argv)
@@ -55,7 +55,7 @@ int main(int argc, char **argv)
 	if (argc < 2)
 	{
 		usage();
-		fprintf(stderr, "Try Again\n");
+		fprintf(stderr, "Nothing to do, try again.\n");
 		exit(1);
 	}
 	dpy = XOpenDisplay(display_name);

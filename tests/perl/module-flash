@@ -1,5 +1,10 @@
 #!/usr/bin/perl -w
 
+# This module opens a flash window for one second when page is changed.
+# Run and stop it from fvwm as:
+#     Module /path/to/module-flash
+#     KillModule /path/to/module-flash
+
 use lib `fvwm-perllib dir`;
 use FVWM::Module;
 

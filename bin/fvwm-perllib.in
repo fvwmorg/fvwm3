@@ -89,7 +89,9 @@ $internalPods->{tutorial} = q{
 
 	tutorial - common techniques for writting FVWM modules
 
-	:head1 WHAT IS A WINDOW MANAGER
+	:head1 TUTORIAL
+
+	:head2 What is a window manager
 
 	A window manager is a program that runs on top of the X Window
 	System and manages windows, menus, key and mouse bindings, virtual
@@ -98,7 +100,7 @@ $internalPods->{tutorial} = q{
 	as root background, mouse cursors, sounds, run applications and
 	do other nice things.
 
-	:head1 WHAT IS A MODULE
+	:head2 What is a module
 
 	In the unix traditions, different functionality may be implemented
 	by separate programs to reduce a bloat. A module is an optional
@@ -113,10 +115,10 @@ $internalPods->{tutorial} = q{
 	modules may control windows or other modules. Some modules may supply
 	a GUI, others may be non interactive.
 
-	:head1 CREATING A SIMPLE MODULE
+	:head2 Creating a simple module
 
 	Let's create a module that shows a flash window for one second when
-	you change pages. We will use xmessage with nifty options for our
+	you change pages. We will use I<xmessage> with nifty options for our
 	flash purposes, but you may use your fantasy to do this better.
 
 	First, we should understand when our module works. Usually a module
@@ -134,7 +136,7 @@ $internalPods->{tutorial} = q{
 	the event we want to get new page coordinates and display them
 	using our special xmessage window.
 
-	Now from theory to practice. The header of all modules written in
+	Now, from theory to practice. The header of all modules written in
 	Perl is pretty standard:
 
 	    #!/usr/bin/perl -w
@@ -149,16 +151,20 @@ $internalPods->{tutorial} = q{
 	        Debug => 1,
 	    );
 
-	The B<Debug> option tells to print the event names we receive to
-	help writing a module. The B<Mask> option tells which events a
-	module wants to receive. It is ok not to define any event handler
-	for I<M_NEW_DESK> and to define two event handlers for
-	I<M_NEW_PAGE>. But for our purposes one I<M_NEW_PAGE> would be more
-	than enough:
+	The B<Debug> option tells to print the event names that a module
+	receives to help writing a module, it also echoes all sent commands.
+	The B<Mask> option tells which events a module wants to receive, in
+	our case these are events generated on the page and desk changes.
+
+	To handle events, event handlers that are perl functions, should be
+	defined. It is ok not to define any event handler for I<M_NEW_DESK>
+	and to define two event handlers for I<M_NEW_PAGE>. But for our
+	purposes one I<M_NEW_PAGE> would be more than enough:
 
 	    $module->addHandler(M_NEW_PAGE, \&gotNewPage);
 
-	It is a time to implement our C<gotNewPage> function.
+	It is a time to implement our C<gotNewPage> function that will be
+	called every time the desktop page is changed.
 
 	    sub gotNewPage {
 	        my ($module, $event) = @_;
@@ -188,10 +194,15 @@ $internalPods->{tutorial} = q{
 	We should do some calculations to get the page numbers from viewport
 	coordinates.
 
-	It is good to set-up the FlashWindow specially:
+	The B<send> method passes the command to I<fvwm> for execution.
+	It would be better to set-up the FlashWindow specially:
 
 	    $module->send("Style FlashWindow StaysOnTop, NoTitle, NoHandles, \
 		BorderWidth 10, WindowListSkip, NeverFocus, UsePPosition");
+
+	Finally, all persistent modules should enter the event loop:
+
+	    $module->eventLoop;
 
 	The full module source that we just wrote is available at
 	ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/module-flash .
@@ -203,16 +214,94 @@ $internalPods->{tutorial} = q{
 
 	    KillModule /path/to/module-flash
 
-	:head1 CREATING MORE COMPLEX MODULES
+	:head2 Creating a more functional module
 
-	This tutorial will be enhanced in the future.
+	Let's extend our new-page-flash example above and add a way to stop
+	our module and to define another string format. This would be
+	possible using the following I<fvwm> commands:
+
+	    SendToModule /path/to/module-flash stop
+	    SendToModule /path/to/module-flash format '[%d %d]'
+
+	To handle such commands, we should define I<M_STRING> event handler.
+
+	    use General::Parse;
+	    my $format = "(%d, %d)";  # the default format
+
+	    $module->mask($module->mask | M_STRING);
+	    $module->addHandler(M_STRING, sub {
+	        my ($module, $event) = @_;
+	        my $line = $event->_text;
+	        my ($action, @args) = getTokens($line);
+
+	        if ($action eq "stop") {
+	            $module->terminate;
+	        } elsif ($action eq "format") {
+	            $format = $args[0];
+	        }
+	    });
+
+	Now, let convert our module to be GTK+ based and not to be
+	dependent on I<xmessage>.
+
+	    use lib `fvwm-perllib dir`;
+	    use FVWM::Module::Gtk;
+	    use Gtk;
+	    init Gtk;
+
+	    my $format = "(%d, %d)";
+	    my $module = new FVWM::Module::Gtk(Mask => M_NEW_PAGE);
+
+	    $module->addHandler(M_NEW_PAGE, sub {
+	        my ($module, $event) = @_;
+
+	        my $width  = $event->_vp_width;
+	        my $height = $event->_vp_height;
+
+	        if (!$width || !$height) {
+	            return;
+	        }
+	        my $page_nx = int($event->_vp_x / $width);
+	        my $page_ny = int($event->_vp_y / $height);
+
+		# actually show the flash
+	        my ($w, $h) = (80, 50);
+	        my $string = sprintf($format, $page_nx, $page_ny);
+
+	        my $window = new Gtk::Window('toplevel');
+	        $window->set_title("FlashWindow");
+	        $window->set_border_width(5);
+	        $window->set_usize($w, $h);
+	        $window->set_uposition(($width - $w) / 2, ($height - $h) / 2);
+
+	        my $frame = new Gtk::Frame();
+	        $window->add($frame);
+	        $frame->set_shadow_type('etched_out');
+
+	        my $label = new Gtk::Label($string);
+	        $frame->add($label);
+	        $window->show_all;
+
+	        $SIG{ALRM} = sub { $window->destroy(); };
+	        alarm(1);
+	    });
+
+	    $module->eventLoop;
+
+	The full module source that we just wrote is available at
+	ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/module-gtkflash .
 
 	:head1 EXAMPLES
 
 	Currently see I<ftp://ftp.fvwm.org/pub/fvwm/devel/sources/tests/perl/>
 	for examples.
 
-	Also see sources of B<FvwmPerl>, B<FvwmDebug>, B<FvwmGtkDebug> modules.
+	Learning the sources of B<FvwmPerl>, B<FvwmDebug>, B<FvwmGtkDebug>
+	modules may help too.
+
+	:head1 SEE ALSO
+
+	See L<FVWM::Module> and L<FVWM::Module::Gtk> for the module API.
 
 	:head1 AUTHOR
 
