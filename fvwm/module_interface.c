@@ -1779,14 +1779,17 @@ void FlushMessageQueue(int module)
 			{
 				obj->done += a;
 			}
+			else if (errno == EINTR)
+			{
+				continue;
+			}
 			/* the write returns EWOULDBLOCK or EAGAIN if the pipe
 			 * is full. (This is non-blocking I/O). SunOS returns
 			 * EWOULDBLOCK, OSF/1 returns EAGAIN under these
 			 * conditions. Hopefully other OSes return one of these
 			 * values too. Solaris 2 doesn't seem to have a man
 			 * page for write(2) (!) */
-			else if ((errno == EWOULDBLOCK) || (errno == EAGAIN) ||
-				 (errno==EINTR))
+			else if (errno == EWOULDBLOCK || errno == EAGAIN)
 			{
 				fd_set writeSet;
 				struct timeval timeout;
