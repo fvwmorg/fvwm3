@@ -301,7 +301,7 @@ int main(int argc, char **argv)
 
   CreateWindow();
 
-  SendFvwmPipe(fd,"Send_WindowList",0);
+  SendText(fd,"Send_WindowList",0);
   atexit(CleanUp);
 
   /* tell fvwm we're running */

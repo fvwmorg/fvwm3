@@ -72,6 +72,7 @@ int buttonXPos(button_info *b, int i);
 int buttonYPos(button_info *b, int i);
 int buttonWidth(button_info *b);
 int buttonHeight(button_info *b);
+void get_button_root_geometry(rectangle *r, button_info *b);
 
 /* --------------------------- swallowing ---------------------------------- */
 

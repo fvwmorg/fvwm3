@@ -298,7 +298,7 @@ int main(int argc, char **argv)
   /* extended messages */
   SetMessageMask(Fvwm_fd, MX_VISIBLE_ICON_NAME | MX_PROPERTY_CHANGE);
 
-  SendFvwmPipe(Fvwm_fd, "Send_WindowList",0);
+  SendText(Fvwm_fd, "Send_WindowList",0);
 
   /* Recieve all messages from Fvwm */
   atexit(ShutMeDown);

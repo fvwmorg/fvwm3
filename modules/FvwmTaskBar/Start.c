@@ -30,6 +30,7 @@ extern char *ImagePath;
 Button *StartButton;
 int StartButtonWidth, StartButtonHeight;
 char *StartName     = NULL,
+     *StartCommand  = NULL,
      *StartPopup    = NULL,
      *StartIconName = NULL;
 
@@ -39,6 +40,7 @@ static char *startopts[] =
   "StartName",
   "StartMenu",
   "StartIcon",
+  "StartCommand",
   NULL
 };
 
@@ -63,6 +65,9 @@ Bool StartButtonParseConfig(char *tline)
   case 2: /* StartIcon */
     CopyString(&StartIconName, rest);
     break;
+  case 3: /* StartCommand */
+    CopyString(&StartCommand, rest);
+    break;
   default:
     /* unknown option */
     return False;
@@ -79,8 +84,6 @@ void StartButtonInit(int height)
   /* some defaults */
   if (StartName  == NULL)
     UpdateString(&StartName, "Start");
-  if (StartPopup == NULL)
-    UpdateString(&StartPopup, "StartMenu");
   if (StartIconName == NULL)
     UpdateString(&StartIconName, "mini-start.xpm");
 

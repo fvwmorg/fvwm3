@@ -38,6 +38,14 @@ Changes in beta release 2.5.1 (not released yet)
 
 * New options for FvwmRearange: -maximize and -animate.
 
+* New option StartCommand for FvwmTaskBar to allow placing the
+  StartMenu correctly.
+
+    *FvwmTaskBar: StartCommand Popup RootMenu \
+	rectangle $widthx$height+$left+$top 0 -100m
+
+  Please refer to the FvwmTaskBar man page for details.
+
 Changes in beta release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify

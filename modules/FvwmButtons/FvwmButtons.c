@@ -133,7 +133,7 @@ Display *Dpy;
 Window Root;
 Window MyWindow;
 char *MyName;
-static int screen;
+int screen;
 
 static int x_fd;
 static fd_set_size_t fd_width;
@@ -436,15 +436,26 @@ void AddButtonAction(button_info *b,int n,char *action)
 /**
 *** GetButtonAction()
 **/
-char *GetButtonAction(button_info *b,int n)
+char *GetButtonAction(button_info *b, int n)
 {
-  if(!b || !(b->flags&b_Action) || !(b->action) || n < 0 ||
-     n > NUMBER_OF_MOUSE_BUTTONS)
-    return NULL;
-  if (!b->action[n])
-    return NULL;
+	rectangle r;
+	char *act;
 
-  return expand_action(b->action[n], b);
+	if(!b || !(b->flags&b_Action) || !(b->action) || n < 0 ||
+	   n > NUMBER_OF_MOUSE_BUTTONS)
+	{
+		return NULL;
+	}
+	if (!b->action[n])
+	{
+		return NULL;
+	}
+	get_button_root_geometry(&r, b);
+	act = module_expand_action(
+		Dpy, screen, b->action[n], &r, UberButton->c->fore,
+		UberButton->c->back);
+
+	return act;
 }
 
 /**
@@ -1045,8 +1056,9 @@ void Loop(void)
 	  RedrawWindow(NULL);
 	}
 	else if (Event.xconfigure.window == MyWindow &&
-	    Event.xconfigure.send_event && (UberButton->c->flags & b_Colorset) &&
-	    Colorset[UberButton->c->colorset].pixmap == ParentRelative)
+		 Event.xconfigure.send_event &&
+		 (UberButton->c->flags & b_Colorset) &&
+		 Colorset[UberButton->c->colorset].pixmap == ParentRelative)
 	{
 	  update_root_transparency(&Event);
 	}
@@ -1117,19 +1129,19 @@ void Loop(void)
 	}
 	if (act && strncasecmp(act,"popup",5) != 0)
 	{
-	  if (act)
-	  {
-	    free(act);
-	    act = NULL;
-	  }
+	  free(act);
+	  act = NULL;
 	  break;
 	}
 	else /* i.e. action is Popup */
 	{
 	  XUngrabPointer(Dpy,CurrentTime); /* And fall through */
 	}
-	free(act);
-	act = NULL;
+	if (act)
+	{
+	  free(act);
+	  act = NULL;
+	}
 	/* fall through */
 
       case KeyRelease:
@@ -1374,7 +1386,9 @@ void Loop(void)
 		b->flags |= (b_Panel | b_Hangon);
 		b->newflags.panel_mapped = 0;
 	      }
-	      p = expand_action(b->spawn, NULL);
+	      p = module_expand_action(
+		      Dpy, screen, b->spawn, NULL, UberButton->c->fore,
+		      UberButton->c->back);
 	      if (p)
 	      {
 		MySendText(fd, p, 0);

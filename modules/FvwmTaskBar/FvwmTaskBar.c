@@ -168,7 +168,7 @@ int UpdateInterval = 30;
 ButtonArray buttons;
 List windows;
 
-char *ClickAction[NUMBER_OF_MOUSE_BUTTONS] =
+char *ClickAction[max(NUMBER_OF_MOUSE_BUTTONS, 3)] =
 {
   DEFAULT_CLICK1,
   DEFAULT_CLICK2,
@@ -223,6 +223,7 @@ extern TipStruct Tip;
 /* Imported from Start */
 extern int StartButtonWidth, StartButtonHeight;
 extern char *StartPopup;
+extern char *StartCommand;
 
 char *ImagePath = NULL;
 char *XineramaConfig = NULL;
@@ -361,7 +362,7 @@ int main(int argc, char **argv)
 
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
-  SendFvwmPipe(Fvwm_fd, "Send_WindowList",0);
+  SendText(Fvwm_fd, "Send_WindowList",0);
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(Fvwm_fd);
@@ -1290,14 +1291,13 @@ void CheckForTip(int x, int y)
   }
 }
 
-
 /******************************************************************************
   LoopOnEvents - Process all the X events we get
 ******************************************************************************/
 void LoopOnEvents(void)
 {
   int  num = 0;
-  char tmp[100];
+  char *tmp;
   XEvent Event;
   XEvent Event2;
   int x, y, redraw;
@@ -1329,8 +1329,26 @@ void LoopOnEvents(void)
 	if (Event.xbutton.button >= 1 &&
 	    Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
 	{
-	  SendFvwmPipe(Fvwm_fd, ClickAction[Event.xbutton.button-1],
-		       ItemID(&windows, num));
+	  rectangle r;
+	  Window tmpw;
+
+	  ButtonCoordinates(&buttons, num, &r.x, &r.y);
+	  ButtonDimensions(&buttons, &r.width, &r.height);
+	  XTranslateCoordinates(dpy, win, Root, r.x, r.y, &r.x, &r.y, &tmpw);
+	  tmp = module_expand_action(
+		  dpy, screen, ClickAction[Event.xbutton.button-1], &r, NULL,
+		  NULL);
+	  if (tmp)
+	  {
+	    SendFvwmPipe(Fvwm_fd, tmp, ItemID(&windows, num));
+	    free(tmp);
+	  }
+	  else
+	  {
+	    SendFvwmPipe(
+		    Fvwm_fd, ClickAction[Event.xbutton.button-1],
+		    ItemID(&windows, num));
+	  }
 	}
       }
 
@@ -1343,7 +1361,7 @@ void LoopOnEvents(void)
 	if (num == ButPressed)
 	  RadioButton(&buttons, num, BUTTON_DOWN);
 	if (num != -1)
-	  SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
+	  SendText(Fvwm_fd, "Focus 0", ItemID(&windows, num));
       }
       ButPressed = -1;
       redraw = 0;
@@ -1362,8 +1380,38 @@ void LoopOnEvents(void)
 	  /* bar in bottom of the screen */
 	  y = win_y - screen_g.height;
 	}
-	sprintf(tmp,"Popup %s %d %d", StartPopup, x, y);
-	SendFvwmPipe(Fvwm_fd, tmp, 0);
+	if (StartCommand != NULL)
+	{
+	  rectangle r;
+	  Window tmpw;
+
+	  r.x = 0;
+	  r.y = 0;
+	  r.width = StartButtonWidth;
+	  r.height = StartButtonHeight;
+	  XTranslateCoordinates(dpy, win, Root, r.x, r.y, &r.x, &r.y, &tmpw);
+	  tmp = module_expand_action(dpy, screen, StartCommand, &r, NULL, NULL);
+	  if (tmp)
+	  {
+	    SendText(Fvwm_fd, tmp, win);
+	    free(tmp);
+	  }
+	  else
+	  {
+	    SendText(Fvwm_fd, StartCommand, win);
+	  }
+	}
+	if (StartPopup != NULL)
+	{
+	  tmp = (char *)safemalloc(strlen(StartPopup + 7));
+	  sprintf(tmp,"Popup %s", StartPopup);
+	  SendText(Fvwm_fd, tmp, win);
+	  free(tmp);
+	}
+	if (StartPopup == NULL && StartCommand == NULL)
+	{
+	  SendText(Fvwm_fd, "Popup StartMenu", win);
+	}
       } else {
 	StartButtonUpdate(NULL, BUTTON_UP);
 	if (MouseInMail(Event.xbutton.x, Event.xbutton.y)) {
@@ -1420,7 +1468,7 @@ void LoopOnEvents(void)
 	}
       } else {
 	if (num != -1 && num != ButPressed)
-	  SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
+	  SendText(Fvwm_fd, "Focus 0", ItemID(&windows, num));
       }
 
       CheckForTip(Event.xmotion.x, Event.xmotion.y);
@@ -1477,7 +1525,7 @@ void LoopOnEvents(void)
 	  redraw = 0;
 	}
       } else if (num != -1 && num != ButPressed)
-	SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
+	SendText(Fvwm_fd, "Focus 0", ItemID(&windows, num));
 
       CheckForTip(Event.xmotion.x, Event.xmotion.y);
       break;

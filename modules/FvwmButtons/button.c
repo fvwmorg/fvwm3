@@ -852,3 +852,19 @@ button_info *select_button(button_info *ub,int x,int y)
       b, x + ub->c->xpos - buttonXPos(b, i),
       y + ub->c->ypos - buttonYPos(b, i));
 }
+
+void get_button_root_geometry(rectangle *r, button_info *b)
+{
+	int x;
+	int y;
+	int f;
+	Window win;
+
+	r->width = buttonWidth(b);
+	r->height = buttonHeight(b);
+	buttonInfo(b, &r->x, &r->y, &x, &y, &f);
+	XTranslateCoordinates(
+		Dpy, MyWindow, Root, r->x, r->y, &r->x, &r->y, &win);
+
+	return;
+}

@@ -19,6 +19,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <ctype.h>
+#include "libs/defaults.h"
 #include "Module.h"
 #include "safemalloc.h"
 
@@ -317,4 +318,170 @@ ModuleArgs* ParseModuleArgs( int argc, char* argv[], int use_arg6_as_alias )
     ma.decoration = strtoul( argv[5], NULL, 16 );
 
     return &ma;
+}
+
+/* expands certain variables in a command to be sent by a module */
+char *module_expand_action(
+	Display *dpy, int screen , char *in_action, rectangle *r,
+	char *forecolor, char *backcolor)
+{
+	char *variables[] =
+		{
+			"$",
+			"fg",
+			"bg",
+			"left",
+			"-left",
+			"right",
+			"-right",
+			"top",
+			"-top",
+			"bottom",
+			"-bottom",
+			"width",
+			"height",
+			NULL
+		};
+	char *action = NULL;
+	char *src;
+	char *dest;
+	char *string = NULL;
+	char *rest;
+	int val = 0;
+	int offset;
+	int i;
+	char *dest_org;
+	Bool is_string;
+	Bool is_value;
+	Bool has_geom;
+	Bool has_fg;
+	Bool has_bg;
+	rectangle tmpr = { 0, 0, 0, 0 };
+
+	has_geom = (r == NULL) ? False : True;
+	has_fg = (forecolor == NULL) ? False : True;
+	has_bg = (backcolor == NULL) ? False : True;
+	if (r == NULL)
+	{
+		r = &tmpr;
+	}
+	/* create a temporary storage for expanding */
+	action = (char *)safemalloc(MAX_MODULE_INPUT_TEXT_LEN);
+	for (src = in_action, dest = action; *src != 0; src++)
+	{
+		if (*src != '$')
+		{
+			*(dest++) = *src;
+			continue;
+		}
+		/* it's a variable */
+		dest_org = dest;
+		is_string = False;
+		is_value = False;
+		*(dest++) = *(src++);
+		i = GetTokenIndex(src, variables, -1, &rest);
+		if (i == -1)
+		{
+			src--;
+			continue;
+		}
+		switch (i)
+		{
+		case 0: /* $ */
+			continue;
+		case 1: /* fg */
+			string = forecolor;
+			is_string = has_fg;
+			break;
+		case 2: /* bg */
+			if (backcolor == NULL)
+			{
+				continue;
+			}
+			string = backcolor;
+			is_string = has_bg;
+			break;
+		case 3: /* left */
+			val = r->x;
+			is_value = has_geom;
+			break;
+		case 4: /* -left */
+			val = DisplayWidth(dpy, screen) - r->x - 1;
+			is_value = has_geom;
+			break;
+		case 5: /* right */
+			val = r->x + r->width;
+			is_value = has_geom;
+			break;
+		case 6: /* -right */
+			val = DisplayWidth(dpy, screen) - r->x - r->width - 1;
+			is_value = has_geom;
+			break;
+		case 7: /* top */
+			val = r->y;
+			is_value = has_geom;
+			break;
+		case 8: /* -top */
+			val = DisplayHeight(dpy, screen) - r->y - 1;
+			is_value = has_geom;
+			break;
+		case 9: /* bottom */
+			val = r->y + r->height;
+			is_value = has_geom;
+			break;
+		case 10: /* -bottom */
+			val = DisplayHeight(dpy, screen) - r->y - r->height - 1;
+			is_value = has_geom;
+			break;
+		case 11: /* width */
+			val = r->width;
+			is_value = has_geom;
+			break;
+		case 12: /* height */
+			val = r->height;
+			is_value = has_geom;
+			break;
+		default: /* unknown */
+			src--;
+			continue;
+		} /* switch */
+		if (is_value == False && is_string == False)
+		{
+			src--;
+			continue;
+		}
+		dest = dest_org;
+		src = --rest;
+		if (is_value)
+		{
+			if (MAX_MODULE_INPUT_TEXT_LEN - (dest - action) <= 16)
+			{
+				/* out of space */
+				free(action);
+				return NULL;
+			}
+			/* print the number into the string */
+			sprintf(dest, "%d%n", val, &offset);
+			dest += offset;
+		}
+		else if (is_string)
+		{
+			if (MAX_MODULE_INPUT_TEXT_LEN - (dest - action) <=
+			    strlen(string))
+			{
+				/* out of space */
+				free(action);
+				return NULL;
+			}
+			/* print the colour name into the string */
+			if (string)
+			{
+				sprintf(dest, "%s%n", string, &offset);
+				dest += offset;
+			}
+		}
+	} /* for */
+	*dest = 0;
+
+	return action;
 }

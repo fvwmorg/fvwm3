@@ -131,16 +131,16 @@ void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
     if (focuscolorset >= 0 && (cset->pixmap || cset->shape_mask))
     {
       /* we have a colorset background */
-      SetRectangleBackground(dpy, win, x + 2, y + 2, w - 4 + (2 - d), 
+      SetRectangleBackground(dpy, win, x + 2, y + 2, w - 4 + (2 - d),
 			     h - 4 + (2 - d), cset, Pdepth, focusgraph);
     }
     else
     {
-      XFillRectangle (dpy, wn, focusbackgraph, x + 2, y + 2, 
+      XFillRectangle (dpy, wn, focusbackgraph, x + 2, y + 2,
 		      w - 4 + (2 - d), h - 4 + (2 - d));
     }
     if (!NoBrightFocus)
-      XFillRectangle (dpy, wn, checkered, x + 2, y + 2, 
+      XFillRectangle (dpy, wn, checkered, x + 2, y + 2,
 		      w - 4 + (2 - d), h - 4 + (2 - d));
     XDrawLine (dpy, wn, blackgc, x, y, x+w-2, y);
     XDrawLine (dpy, wn, blackgc, x, y, x, y+h-2);
@@ -180,7 +180,7 @@ Button *ButtonNew(const char *title, Picture *p, int state, int count)
 {
   Button *new;
 
-  if (title == NULL) 
+  if (title == NULL)
     return NULL;
   new = (Button *)safemalloc(sizeof(Button));
   new->title = safemalloc(strlen(title)+1);
@@ -314,7 +314,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
   {
     FwinString->str = button->title;
     FwinString->x = x + newx;
-    FwinString->len = search_len; 
+    FwinString->len = search_len;
     FlocaleDrawString(dpy, Ffont, FwinString, FWS_HAVE_LENGTH);
   }
 }
@@ -656,19 +656,31 @@ int LocateButton(ButtonArray *array, int xp,  int yp, int *xb, int *yb,
 extern int StartButtonWidth;
 void ButtonCoordinates(ButtonArray *array, int numbut, int *xc, int *yc)
 {
-  Button *temp;
-  int x = 0;
-  int y = 0;
-  int r = 0;
+	Button *temp;
+	int x = 0;
+	int y = 0;
+	int r = 0;
 
-  for(temp=array->head; temp->count != numbut; temp=temp->next) {
-    if((x + 2*array->tw > array->w) && (r < NRows))
-      { x = 0; y += RowHeight+2; ++r; }
-    else
-     x += array->tw;
-  }
+	for(temp=array->head; temp->count != numbut; temp=temp->next)
+	{
+		if((x + 2*array->tw > array->w) && (r < NRows))
+		{
+			x = 0;
+			y += RowHeight+2;
+			++r;
+		}
+		else
+		{
+			x += array->tw;
+		}
+	}
 
-  *xc = x+StartButtonWidth+3;
-  *yc = y;
+	*xc = x+StartButtonWidth+3;
+	*yc = y;
 }
 
+void ButtonDimensions(ButtonArray *array, int *width, int *height)
+{
+	*width = array->tw;
+	*height = RowHeight+2;
+}

@@ -189,13 +189,24 @@ they are not shown.
 .IP "*FvwmTaskBar: Action \fIaction response\fP"
 Tells FvwmTaskBar to do \fIresponse\fP when \fIaction\fP is done.  The
 currently supported \fIaction\fPs are: Click1, Click2, Click3 and so on.
-By default the module supports 3 mouse buttons, but it can be compiled
+By default the module supports 5 mouse buttons, but it can be compiled
 to support more.  The currently
 supported \fIresponse\fPs are any fvwm built-in commands, including modules
 and functions.  Warning: Use of the former syntax that allowed to use comma
 separated lists of commands is strongly discouraged due to synchronization
 problems with fvwm.  Please use complex fvwm functions instead (defined with
 the AddToFunc command of fvwm).
+
+In the \fIresponse\fP part, you can use a number of predefined
+variables: \fI$left\fP, \fI$right\fP, \fI$top\fP and \fI$bottom\fP
+are substituted by the left, right, top and bottom coordinates of
+the button pressed. \fI$-left\fP, \fI$-right\fP, \fI$-top\fP and
+\fI$-bottom\fP are substituted likewise, but the coordinates are
+calculated from the bottom or the right edge of the screen instead
+(for a button that is 5 pixels away from the right screen border,
+$-right will be 5). \fI$width\fP and \fI$height\fP are replaced by
+the width or height of the button.  All this is done regardless of
+any quoting characters. To get a literal '$' use the string '$$'.
 
 .IP "*FvwmTaskBar: ButtonWidth \fIwidth\fP"
 Indicates the maximum width that window buttons should reach.
@@ -266,6 +277,25 @@ If set, draw no bitmap if there is no new mail.
 
 .SH ""
 The following options deal with the Start button at the left of the taskbar:
+
+.IP "*FvwmTaskBar: StartCommand \fIcommand\fP"
+This option specifies a command to run when the start button is
+pressed.  Some strings are replaced in the command when it is
+executed like for the other buttons.  See
+.B Action
+for details.  If both,
+.BR StartCommand " and " StartMenu
+have been defined, the command is executed first and the menu is
+opened afterwards.  The
+.B StartCommand
+can be used to exactly place a menu atop a button.
+
+.nf
+.sp
+*FvwmTaskBar: StartCommand Popup StartMenu rectangle \\
+	$widthx$height+$left+$top 0 -100m
+.sp
+.fi
 
 .IP "*FvwmTaskBar: StartName \fIstring\fP"
 This option specifies the string displayed in the Start button.

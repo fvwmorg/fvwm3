@@ -631,7 +631,7 @@ void HandleMailClick(XEvent event)
   static Time lastclick = 0;
   if (event.xbutton.time - lastclick < 250)
   {
-    SendFvwmPipe(Fvwm_fd, MailCmd, 0);
+    SendText(Fvwm_fd, MailCmd, 0);
   }
   lastclick = event.xbutton.time;
   mailcleared = 1;

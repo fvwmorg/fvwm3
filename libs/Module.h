@@ -20,6 +20,7 @@
 */
 
 #include <X11/X.h>
+#include "libs/fvwmlib.h"
 
 
 /**
@@ -220,6 +221,11 @@ void InitGetConfigLine(int *fd, char *match);
  **/
 void GetConfigLine(int *fd, char **line);
 
+
+/* expands certain variables in a command to be sent by a module */
+char *module_expand_action(
+	Display *dpy, int screen , char *in_action, rectangle *r,
+	char *forecolor, char *backcolor);
 
 /**
  * Parse the command line arguments given to the module by FVWM.

@@ -81,3 +81,4 @@ int LocateButton(ButtonArray *array, int xp,  int yp,
 void ArrangeButtonArray(ButtonArray *array);
 void ButtonDraw(Button *button, int x, int y, int w, int h);
 void ButtonCoordinates(ButtonArray *array, int numbut, int *xc, int *yc);
+void ButtonDimensions(ButtonArray *array, int *width, int *height);

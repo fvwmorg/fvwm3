@@ -1,3 +1,27 @@
+2002-03-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
+	* FvwmTaskBar/Start.c (StartButtonParseConfig):
+	(StartButtonInit):
+	implemented bottun geometry variables as in FvwmButtons
+
+	* FvwmButtons/parse.c (ParseButton):
+	* FvwmButtons/FvwmButtons.c (GetButtonAction):
+	(Loop):
+	use the new function module_expand_action
+
+	* FvwmButtons/FvwmButtons.c (Loop):
+	fixed potential core dump
+
+	* FvwmIconBox/FvwmIconBox.c (main):
+	* FvwmWinList/FvwmWinList.c (main):
+	* FvwmTaskBar/Goodies.c (HandleMailClick):
+	* FvwmTaskBar/FvwmTaskBar.c:
+	(LoopOnEvents):
+	(main):
+	(ProcessMessage):
+	Use SendText instead of SendFvwmPipe in several places
+
 2002-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmM4/FvwmM4.c (m4_defs):
