@@ -1101,7 +1101,51 @@ AC_OUTPUT(
 	fvwm/Makefile
 	modules/Makefile
 dnl
+	bin/fvwm-bug.1
+	bin/fvwm-config.1
+	bin/fvwm-convert-2.2.1
+	bin/fvwm-convert-2.4.1
+	bin/fvwm-convert-2.6.1
+	bin/fvwm-menu-desktop.1
+dnl	bin/fvwm-menu-directory.1
+dnl	bin/fvwm-menu-headlines.1
+dnl	bin/fvwm-menu-xlock.1
+dnl	bin/fvwm-perllib.1
+	bin/fvwm-root.1
 	fvwm/fvwm.1
+	modules/FvwmAnimate/FvwmAnimate.1
+	modules/FvwmAuto/FvwmAuto.1
+	modules/FvwmBacker/FvwmBacker.1
+	modules/FvwmBanner/FvwmBanner.1
+	modules/FvwmButtons/FvwmButtons.1
+	modules/FvwmCommand/FvwmCommand.1
+	modules/FvwmConsole/FvwmConsole.1
+	modules/FvwmConsole/FvwmConsoleC.pl.1
+	modules/FvwmCpp/FvwmCpp.1
+dnl	modules/FvwmDebug/FvwmDebug.1
+dnl	modules/FvwmDebug/FvwmGtkDebug.1
+dnl	modules/FvwmDebug/FvwmOldDebug.1
+	modules/FvwmDragWell/FvwmDragWell.1
+	modules/FvwmEvent/FvwmEvent.1
+	modules/FvwmForm/FvwmForm.1
+	modules/FvwmGtk/FvwmGtk.1
+	modules/FvwmIconBox/FvwmIconBox.1
+	modules/FvwmIconMan/FvwmIconMan.1
+	modules/FvwmIdent/FvwmIdent.1
+	modules/FvwmM4/FvwmM4.1
+	modules/FvwmPager/FvwmPager.1
+dnl	modules/FvwmPerl/FvwmPerl.1
+	modules/FvwmProxy/FvwmProxy.1
+	modules/FvwmRearrange/FvwmRearrange.1
+	modules/FvwmSave/FvwmSave.1
+	modules/FvwmSaveDesk/FvwmSaveDesk.1
+	modules/FvwmScript/FvwmScript.1
+	modules/FvwmScroll/FvwmScroll.1
+	modules/FvwmTaskBar/FvwmTaskBar.1
+	modules/FvwmTheme/FvwmTheme.1
+	modules/FvwmWharf/FvwmWharf.1
+	modules/FvwmWinList/FvwmWinList.1
+dnl	modules/FvwmWindowMenu/FvwmWindowMenu.1
 dnl
 	bin/Makefile
 	bin/fvwm-config
