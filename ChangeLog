@@ -1,3 +1,11 @@
+2003-02-27  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	s/fribdi_in_path/fribidi_in_path/
+
+	* todo-2.6:
+	spell checking and some reformatting
+
 2003-02-26  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/borders.c (border_setup_bar_pixmaps):

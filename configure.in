@@ -695,7 +695,7 @@ if test x"$with_bidi" != xno; then
 fi
 
 if test x"$with_bidi" != xno; then
-	fribdi_in_path=yes
+	fribidi_in_path=yes
 	ac_save_LIBS="$LIBS"
 	LIBS="$LIBS -lfiribidi"
 	AC_TRY_RUN([#include <stdlib.h>
@@ -709,7 +709,7 @@ int main()
 		logical_unicode_str);
 	return 0;
 }
-], [:], [fribdi_in_path=no])
+], [:], [fribidi_in_path=no])
 	LIBS="$ac_save_LIBS"
 	if test x"$fribidi_in_path" != xyes; then
 		ac_save_CFLAGS="$CFLAGS"
