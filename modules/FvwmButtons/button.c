@@ -355,7 +355,7 @@ button_info *alloc_button(button_info *ub,int num)
   b->h=1;
   b->bw=1;
 
-  if (ub->flags & b_FvwmLook)
+  if (ub->c->flags & b_FvwmLook)
     b->flags|=b_FvwmLook;
   return(b);
 }
@@ -368,8 +368,6 @@ void MakeContainer(button_info *b)
 {
   b->c=(container_info*)mymalloc(sizeof(container_info));
   b->flags|=b_Container;
-  if (G->useFvwmLook)
-    b->flags|=b_FvwmLook;
   b->c->buttons=NULL;
   b->c->num_buttons=0;
   b->c->num_rows=0;
@@ -383,6 +381,8 @@ void MakeContainer(button_info *b)
 	b->c->flags=b_IconParent;
       else
 	b->c->flags=0;
+      if (b->parent->c->flags&b_FvwmLook)
+        b->c->flags|=b_FvwmLook;
     }
   else /* This applies to the UberButton */
     {
@@ -393,6 +393,8 @@ void MakeContainer(button_info *b)
       b->c->back=strdup("#908090");
       b->c->fore=strdup("black");
       b->c->framew=2;
+      if (G->useFvwmLook)
+	b->c->flags|=b_FvwmLook;
     }
 
 }

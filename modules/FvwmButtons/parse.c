@@ -922,7 +922,6 @@ void ParseConfigLine(button_info **ubb,char *s)
       break;
     case 6:/* Fore */
       CopyString(&(ub->c->fore),s);
-      ub->c->flags&=~b_FvwmLook;
       break;
     case 7:/* Frame */
       i=sscanf(s,"%d",&j);
@@ -941,7 +940,7 @@ void ParseConfigLine(button_info **ubb,char *s)
       else
         CopyString(&(ub->c->back_file),s);
       ub->c->flags|=b_IconBack;
-      G->useFvwmLook = False;
+      ub->c->flags&=~b_FvwmLook;
       break;
     case 10:/* Panel */
       s = trimleft(s);

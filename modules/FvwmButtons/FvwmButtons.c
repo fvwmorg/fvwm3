@@ -1369,7 +1369,7 @@ void CreateWindow(button_info *ub,int maxx,int maxy)
 # ifdef DEBUG_INIT
   fprintf(stderr,"colors...");
 # endif
-  if (!G->useFvwmLook) {
+  if (!(ub->c->flags&b_FvwmLook)) {
     if(G->depth < 2) {
       back_pix = GetColor("white");
       fore_pix = GetColor("black");
@@ -1695,10 +1695,14 @@ void process_message(unsigned long type,unsigned long *body)
     case M_CONFIG_INFO:
       { /* there's only one config line of interest at this point */
 	char *line = (char *)&body[3];
-	if (strncasecmp(line, DEFGRAPHSTR, DEFGRAPHLEN)==0)
-	  if (ParseGraphics(Dpy, line, G))
-	    SetWindowBackground(Dpy, MyWindow, Width, Height,
-				&(G->bg), &(G->bgtype));
+	if ((strncasecmp(line, DEFGRAPHSTR, DEFGRAPHLEN)==0)
+	    && (ParseGraphics(Dpy, line, G))
+	    && (UberButton->c->flags & b_FvwmLook))
+	  SetWindowBackground(Dpy, MyWindow, UberButton->c->ButtonWidth
+			      * UberButton->c->num_columns,
+			      UberButton->c->ButtonHeight
+			      * UberButton->c->num_rows, &(G->bg),
+			      &(G->bgtype));
       }
       break;
     default:
