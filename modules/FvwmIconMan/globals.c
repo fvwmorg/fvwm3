@@ -52,6 +52,7 @@ static void init_win_manager (int id)
   globals.managers[id].formatstring = alloc_string ("%c: %i");
   globals.managers[id].format_depend = CLASS_NAME | ICON_NAME;
   globals.managers[id].geometry.dir = 0;
+  globals.managers[id].geometry.boxwidth = 0;
 #ifdef SHAPE
   globals.managers[id].shape.num_rects = 0;
 #endif
@@ -79,7 +80,7 @@ static void init_win_manager (int id)
   globals.managers[id].bindings[SELECT]   = NULL;
   globals.managers[id].we_are_drawing = 1;
   globals.managers[id].configures_expected = 0;
-}  
+}
 
 void print_managers (void)
 {
@@ -94,16 +95,16 @@ void print_managers (void)
       ConsoleDebug (CORE, "ShowDesktop\n");
     else if (globals.managers[i].res == SHOW_PAGE)
       ConsoleDebug (CORE, "ShowPage\n");
-    
+
     ConsoleDebug (CORE, "DontShow:\n");
     print_stringlist (&globals.managers[i].dontshow);
     ConsoleDebug (CORE, "Show:\n");
     print_stringlist (&globals.managers[i].show);
-    
+
     ConsoleDebug (CORE, "Font: %s\n", (globals.managers[i].fontname)?
       globals.managers[i].fontname : "(NULL)");
     ConsoleDebug (CORE, "Geometry: %s\n", globals.managers[i].geometry_str);
-    ConsoleDebug (CORE, "Button geometry: %s\n", 
+    ConsoleDebug (CORE, "Button geometry: %s\n",
 		  (globals.managers[i].button_geometry_str)?
       globals.managers[i].button_geometry_str : "(NULL)");
     ConsoleDebug (CORE, "\n");
@@ -121,7 +122,7 @@ int allocate_managers (int num)
     ConsoleMessage ("Already have set the number of managers\n");
     return 0;
   }
-  
+
   if (num < 1) {
     ConsoleMessage ("Can't have %d managers\n", num);
     return 0;
@@ -129,11 +130,11 @@ int allocate_managers (int num)
 
   globals.num_managers = num;
   globals.managers = (WinManager *)safemalloc (num * sizeof (WinManager));
-  
+
   for (i = 0; i < num; i++) {
     init_win_manager (i);
   }
-  
+
   return 1;
 }
 

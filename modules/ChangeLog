@@ -1,3 +1,21 @@
+1998-11-13  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmButtons/parse.c (ParseConfigFile): Make sure line
+	continuation loop doesn't reference memory before the start of the
+	array.
+
+	* FvwmButtons/button.c (alloc_button): Init IconWin field.
+
+	* FvwmButtons/FvwmButtons.c (main): Init font and font_string
+	fields of UberButton.
+	(GetRealGeometry): Only free children if there's something to free.
+
+	* FvwmIconMan/x.c (set_window_properties): Init wmhints structure.
+
+	* FvwmIconMan/xmanager.c (clear_empty_region): Init rects[1] to
+	avoid possible UMR.
+	(set_num_buttons): Init drawn_state.{w,h}.
+
 1998-11-12  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/FvwmButtons.1:
@@ -23,7 +41,7 @@ Tue Nov 10 07:14:40 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmRearrange/Makefile.am: Arranged the makefile to build
 	FvwmRearrange; also makes links with names FvwmCascade and
-	FvwmTile. 
+	FvwmTile.
 
 Tue Nov 10 07:13:07 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
@@ -82,4 +100,3 @@ Tue Nov 10 07:13:07 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmEvent/Makefile.am (INCLUDES): Added rplay_CFLAGS.
 
 	* FvwmAudio/Makefile.am (INCLUDES): Added rplay_CFLAGS.
-

@@ -28,7 +28,7 @@
 #include "FvwmButtons.h"
 #include "button.h"
 
-extern int w,h,x,y,xneg,yneg; /* used in ParseConfigLine */ 
+extern int w,h,x,y,xneg,yneg; /* used in ParseConfigLine */
 extern char *config_file;
 
 /* ----------------------------------- macros ------------------------------ */
@@ -97,7 +97,7 @@ void ParseBoxSize(char **ss, unsigned long *flags)
   char *opts[]={"dumb","fixed","smart",NULL};
   char *s = *ss;
   int m;
- 
+
   if (!s)
     return;
   *ss = GetNextTokenIndex(*ss, opts, 0, &m);
@@ -360,7 +360,7 @@ void ParseContainer(char **ss,button_info *b)
 	  b->c->flags|=b_Size;
 	  b->c->minx=b->c->miny=0;
 	  break;
-	  
+
 	case 10: /* Size */
 	  i=strtol(s,&t,10);
 	  j=strtol(t,&o,10);
@@ -575,7 +575,7 @@ void match_string(button_info **uberb,char *s)
 	      break;
 
 	      /* --------------------------- action ------------------------ */
-	     
+
 	    case 8: /* Action */
 	      trimleft(s);
 	      i=0;
@@ -589,7 +589,7 @@ void match_string(button_info **uberb,char *s)
 		  s+=5;
 		  i=strtol(s,&t,10);
 		  s=t;
-		  while(*s && *s!=')') 
+		  while(*s && *s!=')')
 		    s++;
 		  if(*s==')')s++;
 		}
@@ -641,7 +641,7 @@ void match_string(button_info **uberb,char *s)
 	      break;
 
 	      /* --------------------------- panel ------------------------ */
-	     
+
 	    case 13: /* Panel */
 	      trimleft(s);
 	      if(*s=='(')
@@ -659,9 +659,9 @@ void match_string(button_info **uberb,char *s)
 	      AddButtonAction(b,0,strdup(t));
 	      b->IconWin = None;
 	      t = seekright(&s);
-	      b->hangon = strdup(t);  /* which panel to popup */ 
+	      b->hangon = strdup(t);  /* which panel to popup */
 	      break;
- 
+
 	    case 14: /* Left */
 	      b->flags |= b_Left;
 	      b->flags &= ~b_Right;
@@ -881,11 +881,13 @@ void ParseConfigFile(button_info *ub)
       return;
     }
 
-  while(fgets(s,1023,f))
+  while (fgets(s, 1023, f))
     {
-      /* Got to do some preprocessing here... Line continuation: */
-      while((l=strlen(s))<sizeof(s) && s[l-1]=='\n' && s[l-2]=='\\')
-	fgets(s+l-2,sizeof(s)-l,f);
+      /* Allow for line continuation: */
+      while ((l=strlen(s)) < sizeof(s)
+             && l>=2 && s[l-1]=='\n' && s[l-2]=='\\')
+	fgets(s+l-2, sizeof(s)-l, f);
+
       /* And comments: */
       t=s;
       while(*t)

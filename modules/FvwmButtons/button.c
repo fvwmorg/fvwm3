@@ -34,7 +34,7 @@ void buttonInfo(button_info *b,int *x,int *y,int *px,int *py,int *f)
   *py=b->ypad;
   *f=b->framew;
   w&=~(b->flags&(b_Frame|b_Padding));
-  
+
   if(b->flags&b_Container && w&b_Frame)
     {
       *f=0;
@@ -62,7 +62,7 @@ void buttonInfo(button_info *b,int *x,int *y,int *px,int *py,int *f)
     }
 }
 
-/** 
+/**
 *** GetInternalSize()
 **/
 void GetInternalSize(button_info *b,int *x,int *y,int *w,int *h)
@@ -119,7 +119,7 @@ int buttonXPad(button_info *b)
 #endif
   return 0;
 }
-      
+
 /**
 *** buttonYPad()
 *** Give the y padding for this button
@@ -305,7 +305,7 @@ void alloc_buttonlist(button_info *ub,int num)
 
 /**
 *** alloc_button()
-*** Allocates memory for a new button struct. Calles alloc_buttonlist to 
+*** Allocates memory for a new button struct. Calles alloc_buttonlist to
 *** assure enough space is present. Also initiates most elements of the struct.
 **/
 button_info *alloc_button(button_info *ub,int num)
@@ -328,6 +328,7 @@ button_info *alloc_button(button_info *ub,int num)
   b->BPosX = b->BPosY = 0;
   b->parent = ub;
   b->n = -1;
+  b->IconWin = 0;
 
   b->framew = 1;
   b->xpad = 2;
@@ -399,7 +400,7 @@ char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
 {
   int i,j,k;
   container_info *c=ub->c;
-  
+
   i = x+y*c->num_columns;
   if (x>=c->num_columns || x<0)
     {
@@ -444,7 +445,7 @@ char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
 	  b->BHeight = c->num_rows-y;
 	}
     }
-  
+
   /* check if buttons are free */
   for(k=0;k<b->BHeight;k++)
     for(j=0;j<b->BWidth;j++)
@@ -466,7 +467,7 @@ char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
 void ShrinkButton(button_info *b, container_info *c)
 {
   int i,j,k,l;
-  
+
   if (!b)
     {
       fprintf(stderr,"error: shrink1: button is empty but shouldn't\n");
@@ -501,7 +502,7 @@ void ShuffleButtons(button_info *ub)
   button_info *b;
   button_info **local_buttons;
   container_info *c=ub->c;
-  
+
   /* make local copy of buttons in ub */
   num_items = c->num_buttons;
   local_buttons=(button_info**)mymalloc(sizeof(button_info)*num_items);
@@ -510,12 +511,12 @@ void ShuffleButtons(button_info *ub)
       local_buttons[i] = c->buttons[i];
       c->buttons[i] = NULL;
     }
-  
+
   /* Allow for multi-width/height buttons */
   actual_buttons_used = 0;
   for(i=0;i<num_items;i++)
     actual_buttons_used+=local_buttons[i]->BWidth*local_buttons[i]->BHeight;
-  
+
   if (!(c->flags&b_SizeFixed)||!(c->num_rows)||!(c->num_columns))
     {
       /* Size and create the window */
@@ -533,7 +534,7 @@ void ShuffleButtons(button_info *ub)
 	    c->num_rows--;
 	}
     }
-  
+
   if (c->flags&b_SizeSmart)
     {
       /* Set rows/columns to at least the height/width of largest button */
@@ -552,11 +553,11 @@ void ShuffleButtons(button_info *ub)
 	    c->num_rows=b->BHeight-b->BPosY;
 	}
     }
-  
+
   /* this was buggy before */
   c->num_buttons = c->num_rows*c->num_columns;
   alloc_buttonlist(ub,c->num_buttons);
-  
+
   /* Shuffle subcontainers */
   for(i=0;i<num_items;i++)
     {
@@ -565,7 +566,7 @@ void ShuffleButtons(button_info *ub)
       if(b && b->flags&b_Container)
 	ShuffleButtons(b);
     }
-  
+
   /* Place fixed buttons as given in BPosX and BPosY */
   for(i=0;i<num_items;i++)
     {
@@ -582,14 +583,14 @@ void ShuffleButtons(button_info *ub)
 	  exit(1);
 	}
     }
-  
+
   /* place floating buttons dynamically */
-  next_button_x = next_button_y = 0; 
+  next_button_x = next_button_y = 0;
   for(i=0;i<num_items;i++)
     {
       b=local_buttons[i];
       if (b->flags&b_PosFixed) continue;
-      
+
       if (next_button_x+b->BWidth>c->num_columns)
 	{
 	  next_button_y++;
@@ -612,11 +613,11 @@ void ShuffleButtons(button_info *ub)
 	    }
 	}
     }
-  
+
   /* shrink buttons in Container */
   for(i=0;i<num_items;i++)
     ShrinkButton(local_buttons[i], c);
-  free(local_buttons); 
+  free(local_buttons);
 }
 
 /* ----------------------------- button iterator --------------------------- */
