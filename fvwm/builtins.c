@@ -358,6 +358,7 @@ void WindowShade(F_CMD_ARGS)
 
 #ifdef GNOME
   GNOME_SetHints (tmp_win);
+  GNOME_SetWinArea(tmp_win);
 #endif
 }
 
@@ -3163,11 +3164,11 @@ void strokeFunc(F_CMD_ARGS)
 	num_seq[i] = sequence[i]-6;
       else if ('1' <= sequence[i] && sequence[i] <= '3')
 	num_seq[i] = sequence[i]+6;
-      else 
+      else
 	num_seq[i] = sequence[i];
     }
-    num_seq[i++] = '\0'; 
-    fvwm_msg(INFO, "StrokeFunc", "stroke sequence: %s (N%s)", 
+    num_seq[i++] = '\0';
+    fvwm_msg(INFO, "StrokeFunc", "stroke sequence: %s (N%s)",
 	     sequence, num_seq);
   }
 

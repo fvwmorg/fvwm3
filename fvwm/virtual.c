@@ -854,6 +854,7 @@ void MoveViewport(int newx, int newy, Bool grab)
       /*
        *If the window is not moving into the viewport...
        */
+      SET_VIEWPORT_MOVED(t, 1);
       txl = t1->frame_g.x;
       tyt = t1->frame_g.y;
       txr = t1->frame_g.x + t1->frame_g.width;
@@ -900,7 +901,13 @@ void MoveViewport(int newx, int newy, Bool grab)
     }
     for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
-      SET_VIEWPORT_MOVED(t, 0); /* Clear double move blocker. */
+      if (IS_VIEWPORT_MOVED(t))
+      {
+	SET_VIEWPORT_MOVED(t, 0); /* Clear double move blocker. */
+#ifdef GNOME
+	GNOME_SetWinArea(t);
+#endif
+      }
       /* If its an icon, and its sticking, autoplace it so
        * that it doesn't wind up on top a a stationary
        * icon */
@@ -909,7 +916,6 @@ void MoveViewport(int newx, int newy, Bool grab)
 	 !IS_ICON_UNMAPPED(t))
 	AutoPlaceIcon(t);
     }
-
   }
   checkPanFrames();
 
@@ -1174,6 +1180,7 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
 #ifdef GNOME
   GNOME_SetDeskCount();
   GNOME_SetDesk(tmp_win);
+  GNOME_SetWinArea(tmp_win);
 #endif
 }
 

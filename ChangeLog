@@ -1,7 +1,52 @@
+1999-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/ColorUtils.c (color_mult):
+	make sure the hilight and shadow colours have a minimum contrast to the
+	original colour
+
+	* fvwm/events.c (HandleButtonPress):
+	release grab explicitly after a button grab; fixes transient pager and
+	possibly some other grabbing problems
+
+	* fvwm/modconf.c (SendDataToModule):
+	send DesktopSize to modules
+
 1999-12-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/gnome.c (GNOME_SetDesk):
+	(GNOME_SetCurrentDesk):
+	fixed GNOME 'unknown desk' bug
+
+	* fvwm/virtual.c (MoveViewport):
+	* fvwm/style.c (handle_window_style_change):
+	* fvwm/icons.c (DeIconify):
+	* fvwm/move_resize.c (move_window_doit):
+	(AnimatedMoveAnyWindow):
+	(resize_window):
+	* fvwm/events.c (HandleConfigureRequest):
+	(HandlePropertyNotify):
+	* fvwm/builtins.c (WindowShade):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/geometry.c (update_absolute_geometry):
+	call GNOME_SetWinArea at the correct places; *don't* call it in
+	update_absolute_geometry
+
+	* fvwm/gnome.c (GNOME_SetWinArea):
+	* fvwm/fvwm.c:
+	* fvwm/geometry.c:
+	* fvwm/gnome.h:
+	* fvwm/move_resize.c:
+	* fvwm/virtual.c:
+	applied XA_WIN_AREA patch by Ben Winslow
+	fixed the patch to set the current viewport if the window is visible
+
+	* fvwm/style.c (handle_window_style_change):
+	fixed adding/removing title of shaded windows
 
 	* fvwm/borders.c (draw_frame_relief):
 	fixed size of lower/right outer relief with FvwmBorder style
+	(draw_frame_relief):
+	another fix
 
 	* fvwm/style.c (merge_style_list):
 	fixed bug that merged styles that had different upper/lower case

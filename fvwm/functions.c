@@ -927,7 +927,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
   {
     return True;
   }
-  if(!GrabEm(cursor,GRAB_NORMAL))
+  if(!GrabEm(cursor, GRAB_NORMAL))
   {
     XBell(dpy, 0);
     return True;

@@ -1433,6 +1433,8 @@ void ParseOptions(void)
 {
   char *tline= NULL;
   int desk;
+  int dx = 3;
+  int dy = 3;
 
   Scr.FvwmRoot = NULL;
   Scr.Hilite = NULL;
@@ -1440,15 +1442,6 @@ void ParseOptions(void)
 
   Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
-
-  Scr.VxMax = 3*Scr.MyDisplayWidth - Scr.MyDisplayWidth;
-  Scr.VyMax = 3*Scr.MyDisplayHeight - Scr.MyDisplayHeight;
-  if(Scr.VxMax <0)
-    Scr.VxMax = 0;
-  if(Scr.VyMax <0)
-    Scr.VyMax = 0;
-  Scr.Vx = 0;
-  Scr.Vy = 0;
 
   InitGetConfigLine(fd,CatString3("*",MyName,0));
   for (GetConfigLine(fd,&tline); tline != NULL; GetConfigLine(fd,&tline))
@@ -1467,7 +1460,24 @@ void ParseOptions(void)
     resource_string = arg1 = arg2 = NULL;
 
     token = PeekToken(tline, &next);
-    if (StrEquals(token, "ImagePath"))
+    if(StrEquals(token, "Colorset"))
+    {
+      LoadColorset(next);
+      continue;
+    }
+    else if (StrEquals(token, "DesktopSize"))
+    {
+      token = PeekToken(next, &next);
+      if (token)
+      {
+	sscanf(token, "%d", &dx);
+	token = PeekToken(next, &next);
+	if (token)
+	  sscanf(token, "%d", &dy);
+      }
+      continue;
+    }
+    else if (StrEquals(token, "ImagePath"))
     {
       if (ImagePath != NULL)
       {
@@ -1494,11 +1504,6 @@ void ParseOptions(void)
 	    MoveThreshold = DEFAULT_MOVE_THRESHOLD;
 	}
       }
-      continue;
-    }
-    else if(StrEquals(token, "Colorset"))
-    {
-      LoadColorset(next);
       continue;
     }
 
@@ -2020,6 +2025,16 @@ void ParseOptions(void)
     free(arg1);
     free(arg2);
   }
+
+  Scr.VxMax = dx * Scr.MyDisplayWidth - Scr.MyDisplayWidth;
+  Scr.VyMax = dy * Scr.MyDisplayHeight - Scr.MyDisplayHeight;
+  if(Scr.VxMax <0)
+    Scr.VxMax = 0;
+  if(Scr.VyMax <0)
+    Scr.VyMax = 0;
+  Scr.Vx = 0;
+  Scr.Vy = 0;
+
   return;
 }
 

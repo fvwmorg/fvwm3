@@ -280,8 +280,8 @@ static void draw_frame_relief(
 
     RelieveRectangle(
       dpy, t->decor_w, t->boundary_width - 1, t->boundary_width - 1,
-      t->frame_g.width - (t->boundary_width * 2 ) + 1, height, sgc,
-      HAS_MWM_BORDER(t) ? rgc : sgc, w_shin);
+      t->frame_g.width - (t->boundary_width * 2 ) + 1, height, sgc, rgc,
+      w_shin);
   }
 }
 

@@ -192,6 +192,7 @@ void update_absolute_geometry(FvwmWindow *tmp_win)
 #if 0
 fprintf(stderr,"uag: called for window '%s'\n", tmp_win->name);
 #endif
+
   /* store orig values in absolute coords */
   dest_g = (IS_MAXIMIZED(tmp_win)) ? &tmp_win->max_g : &tmp_win->normal_g;
   dest_g->x = tmp_win->frame_g.x + Scr.Vx;

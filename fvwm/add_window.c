@@ -993,8 +993,7 @@ void setup_focus_policy(FvwmWindow *tmp_win)
 void setup_key_and_button_grabs(FvwmWindow *tmp_win)
 {
   GrabAllWindowKeysAndButtons(dpy, tmp_win->Parent, Scr.AllBindings,
-			      C_WINDOW, GetUnusedModifiers(),
-			      /*!!!*/None, True);
+			      C_WINDOW, GetUnusedModifiers(), None, True);
   GrabAllWindowKeys(dpy, tmp_win->decor_w, Scr.AllBindings,
 		    C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
 		    GetUnusedModifiers(), True);
@@ -1308,6 +1307,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   GNOME_SetHints(tmp_win);
   GNOME_SetLayer(tmp_win);
   GNOME_SetDesk(tmp_win);
+  GNOME_SetWinArea(tmp_win);
 #endif
 
   /****** windowshade ******/

@@ -832,6 +832,7 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
     GNOME_SetHints(fw);
     GNOME_SetDesk(fw);
     GNOME_SetLayer(fw);
+    GNOME_SetWinArea(fw);
 #endif
 
     XSelectInput(dpy, fw->w, 0);

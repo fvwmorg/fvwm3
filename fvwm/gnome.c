@@ -572,9 +572,7 @@ GNOME_SetDesk(FvwmWindow *fwin)
   val = fwin->Desk;
   if (val >= gnome_max_desk)
   {
-      fvwm_msg(ERR, "GNOME_SetDesk",
-	       "Attemped to set window to desk gnome does not know about");
-      val = (gnome_max_desk -1);
+    GNOME_SetDeskCount();
   }
   XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,
 		  PropModeReplace, (unsigned char *)&val, 1);
@@ -631,7 +629,6 @@ GNOME_SetCurrentArea(void)
 		  (unsigned char *)val, 2);
 }
 
-
 /* FIXME: what to do about negative desks ? */
 /* ignore them!!! */
 void
@@ -643,6 +640,8 @@ GNOME_SetDeskCount(void)
 
   atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
   val = 0;
+  if (Scr.CurrentDesk > 0)
+    val = Scr.CurrentDesk;
   for (t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
        t != &Scr.FvwmRoot;
        t = get_next_window_in_stack_ring(t))
@@ -673,9 +672,7 @@ GNOME_SetCurrentDesk(void)
   val = (CARD32) Scr.CurrentDesk;
   if (val >= gnome_max_desk)
   {
-      fvwm_msg(ERR, "GNOME_SetCurrentDesk",
-	       "Attemped to change to desk gnome does not know about");
-      val = (gnome_max_desk -1);
+    GNOME_SetDeskCount();
   }
 
   XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
@@ -732,8 +729,37 @@ GNOME_SetClientList(void)
       XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
 		      PropModeReplace, (unsigned char *)NULL, 0);
     }
+
 }
 
+void
+GNOME_SetWinArea(FvwmWindow *w)
+{
+  Atom atom_set;
+  CARD32 val[2];
+
+  atom_set = XInternAtom(dpy, XA_WIN_AREA, False);
+
+  if (!DO_SKIP_WINDOW_LIST(w))
+  {
+    if (IsRectangleOnThisPage(&(w->frame_g), w->Desk))
+    {
+      val[0] = Scr.Vx;
+      val[1] = Scr.Vy;
+    }
+    else
+    {
+      val[0] = (w->frame_g.x + Scr.Vx) / Scr.MyDisplayWidth;
+      if (val[0] < 0 && w->frame_g.x + Scr.Vx + w->frame_g.width > 0)
+	val[0] = 0;
+      val[1] = (w->frame_g.y + Scr.Vy) / Scr.MyDisplayHeight;
+      if (val[1] < 0 && w->frame_g.y + Scr.Vy + w->frame_g.height > 0)
+	val[1] = 0;
+    }
+    XChangeProperty(dpy, w->w, atom_set, XA_CARDINAL, 32,
+		    PropModeReplace, (unsigned char *)val, 2);
+  }
+}
 
 void
 GNOME_Init(void)

@@ -840,6 +840,9 @@ void HandlePropertyNotify(void)
 	{
 	  maximize_adjust_offset(Tmp_win);
 	}
+#ifdef GNOME
+	GNOME_SetWinArea(Tmp_win);
+#endif
       }
       BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
       break;
@@ -1543,13 +1546,13 @@ void HandleButtonPress(void)
 #ifdef GNOME
   else
   {
-/*-----------------------------------------------------------------------
-    do gnome buttonpress forwarding if win == root
- -----------------------------------------------------------------------*/
-      if (Scr.Root == Event.xany.window)
-      {
-          GNOME_ProxyButtonEvent(&Event);
-      }
+    /*
+     * do gnome buttonpress forwarding if win == root
+     */
+    if (Scr.Root == Event.xany.window)
+    {
+      GNOME_ProxyButtonEvent(&Event);
+    }
   }
 #endif
 
@@ -1570,6 +1573,8 @@ void HandleButtonPress(void)
         HAS_DEPRESSABLE_BORDER(ButtonWindow), None);
   }
   ButtonWindow = NULL;
+  /* Release any automatic or passive grabs */
+  XUngrabPointer(dpy, CurrentTime);
 }
 
 #ifdef HAVE_STROKE
@@ -1951,6 +1956,9 @@ void HandleConfigureRequest(void)
     update_absolute_geometry(Tmp_win);
     if (IS_MAXIMIZED(Tmp_win))
       maximize_adjust_offset(Tmp_win);
+#ifdef GNOME
+    GNOME_SetWinArea(Tmp_win);
+#endif
   }
 
   /*  Stacking order change requested...  */

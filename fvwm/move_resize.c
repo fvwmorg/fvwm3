@@ -375,9 +375,13 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
     lastX = currentX;
     lastY = currentY;
   }
-  while (*ppctMovement != 1.0 && ppctMovement++);
+  while
+    (*ppctMovement != 1.0 && ppctMovement++);
   XUngrabKeyboard(dpy, CurrentTime);
   XFlush(dpy);
+#ifdef GNOME
+  GNOME_SetWinArea(tmp_win);
+#endif
   return;
 }
 
@@ -536,13 +540,17 @@ fprintf(stderr,"move window '%s'\n", tmp_win->name);
     tmp_win->normal_g.y += dy;
     update_absolute_geometry(tmp_win);
   }
-
+#ifdef GNOME
+  XSync(dpy, 0);
+  GNOME_SetWinArea(tmp_win);
+#endif
   return;
 }
 
 void move_window(F_CMD_ARGS)
 {
   move_window_doit(eventp,w,tmp_win,context,action,Module,False,False);
+
 }
 
 void animated_move_window(F_CMD_ARGS)
@@ -1623,6 +1631,9 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
     }
     DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
     update_absolute_geometry(tmp_win);
+#ifdef GNOME
+    GNOME_SetWinArea(tmp_win);
+#endif
     maximize_adjust_offset(tmp_win);
     ResizeWindow = None;
     return;
@@ -2050,6 +2061,9 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
   Scr.flags.edge_wrap_y = edge_wrap_y;
   update_absolute_geometry(tmp_win);
   maximize_adjust_offset(tmp_win);
+#ifdef GNOME
+  GNOME_SetWinArea(tmp_win);
+#endif
 
   return;
 }
@@ -2643,6 +2657,9 @@ fprintf(stderr,"maximize window '%s'\n", tmp_win->name);
 fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d\n", tmp_win->max_g.x, tmp_win->max_g.y, tmp_win->max_g.width, tmp_win->max_g.height, tmp_win->max_offset.x, tmp_win->max_offset.y);
 #endif
   }
+#ifdef GNOME
+  GNOME_SetWinArea(tmp_win);
+#endif
 }
 
 /* ----------------------------- stick code -------------------------------- */

@@ -166,7 +166,7 @@ int main(int argc, char **argv)
   fd_width = GetFdWidth();
 
   SetMessageMask(Fvwm_fd,
-    M_NEW_PAGE | M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
+    M_NEW_PAGE | M_NEW_DESK | M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
 
   /*
   ** we really only want the current desk/page, and window list sends it
@@ -267,6 +267,11 @@ void ProcessMessage(unsigned long type, unsigned long *body)
   case M_CONFIG_INFO:
     tline = (char*)&(body[3]);
     ExecuteMatchingCommands(ParseConfigLine(tline));
+    break;
+
+  case M_NEW_DESK:
+    current_desk = body[0];
+    ExecuteMatchingCommands(-1);
     break;
 
   case M_NEW_PAGE:

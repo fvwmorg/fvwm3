@@ -2161,8 +2161,13 @@ static void handle_window_style_change(FvwmWindow *t)
   }
   if (do_setup_frame)
   {
+    if (IS_SHADED(t))
+      get_shaded_geometry(t, &t->frame_g, &t->frame_g);
     ForceSetupFrame(t, t->frame_g.x, t->frame_g.y, t->frame_g.width,
 		    t->frame_g.height, True);
+#ifdef GNOME
+    GNOME_SetWinArea(t);
+#endif
   }
   if (do_redraw_decoration)
   {

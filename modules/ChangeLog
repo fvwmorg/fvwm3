@@ -1,3 +1,11 @@
+1999-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmBacker/FvwmBacker.c (ProcessMessage):
+	backer now takes action when the desk is changed
+
+	* FvwmPager/FvwmPager.c (ParseOptions):
+	pager handles DesktopSize correctly; DeskTopScale option finally works
+
 1999-12-14  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
@@ -5,7 +13,7 @@
 	(HideTaskBar):
 	Tried to fix user resizing with AutoHide. Fixed Hide/Reveal with
  	a lot of rows
-	
+
 1999-12-13  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.{c,h} (WarpTaskBar):

@@ -187,6 +187,11 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     match_len = strlen(match);
   }
 
+  /* send dektop geometry */
+  sprintf(msg2,"DesktopSize %d %d\n", Scr.VxMax / Scr.MyDisplayWidth + 1,
+	  Scr.VyMax / Scr.MyDisplayHeight + 1);
+  SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
+
   /* send ImagePath and ColorLimit first */
   if (ImagePath && strlen(ImagePath))
   {

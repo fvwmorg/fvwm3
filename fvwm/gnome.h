@@ -51,6 +51,7 @@ void GNOME_SetHints(FvwmWindow *fwin);
 
 void GNOME_SetLayer(FvwmWindow *fwin);
 void GNOME_SetDesk(FvwmWindow *fwin);
+void GNOME_SetWinArea(FvwmWindow *w);
 void HandleGnomePropRequest(unsigned int propm,
                             unsigned int prop,
                             Window win,

@@ -59,10 +59,14 @@
 
 #define SCALE 65535.0
 #define HALF_SCALE (SCALE / 2)
-typedef enum {
-  R_MAX_G_MIN, R_MAX_B_MIN,
-  G_MAX_B_MIN, G_MAX_R_MIN,
-  B_MAX_R_MIN, B_MAX_G_MIN
+typedef enum
+{
+  R_MAX_G_MIN,
+  R_MAX_B_MIN,
+  G_MAX_B_MIN,
+  G_MAX_R_MIN,
+  B_MAX_R_MIN,
+  B_MAX_G_MIN
 } MinMaxState;
 
 
@@ -71,12 +75,17 @@ typedef enum {
    coded. Should give better relief colors for many cases than the old
    fvwm algorithm. */
 
-/* FIXMS: This can probably be optimized more, examine later. */
+/* FIXME: This can probably be optimized more, examine later. */
 void
 color_mult (unsigned short *red,
 	    unsigned short *green,
 	    unsigned short *blue, double k)
 {
+  unsigned short ored = *red;
+  unsigned short ogreen = *green;
+  unsigned short oblue = *blue;
+  unsigned short diff = 0;
+
   if (*red == *green && *red == *blue) {
     double temp;
     /* A shade of gray */
@@ -205,13 +214,46 @@ color_mult (unsigned short *red,
     *green = (unsigned short) g;
     *blue = (unsigned short) b;
   }
+  /* make sure we have a minimum contrast */
+  if (k > 1)
+  {
+    unsigned short cmax;
+
+    cmax = max(max(ored, ogreen), oblue);
+    if (cmax < HALF_SCALE)
+    {
+      diff = max(max(*red - ored, *green - ogreen), *blue - oblue);
+      if (diff < CONTRAST_MIN)
+      {
+	*red += CONTRAST_MIN - diff;
+	*green += CONTRAST_MIN - diff;
+	*blue += CONTRAST_MIN - diff;
+      }
+    }
+  }
+  else
+  {
+    unsigned short cmin;
+
+    cmin = min(min(ored, ogreen), oblue);
+    if (cmin > HALF_SCALE)
+    {
+      diff = max(max(ored - *red, ogreen - *green), oblue - *blue);
+      if (diff < CONTRAST_MIN)
+      {
+	*red -= CONTRAST_MIN - diff;
+	*green -= CONTRAST_MIN - diff;
+	*blue -= CONTRAST_MIN - diff;
+      }
+    }
+  }
 }
 
 /*
  * This  routine  uses PictureSaveDisplay  and PictureCMap  which must be
  * created by InitPictureCMAP in Picture.c.
  *
- * If you  attempt to use GetShadow  and GetHilit, make  sure your module
+ * If you  attempt to use GetShadow and GetHilite, make  sure your module
  * calls InitPictureCMAP first.
  */
 static Pixel
