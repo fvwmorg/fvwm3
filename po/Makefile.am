@@ -201,7 +201,7 @@ install-data-local-yes: all
 
 
 installdirs-data: installdirs-data-local-@USE_NLS@
-installdirs-data-no:
+installdirs-data-local-no:
 installdirs-data-local-yes:
 	$(mkinstalldirs) $(DESTDIR)$(datadir)
 	@catalogs='$(CATALOGS)'; \
@@ -244,7 +244,7 @@ installdirs-data-local-yes:
 	done
 
 
-uninstall-local: uninstall-data-local-@USE_NLS@
+uninstall-local: uninstall-local-@USE_NLS@
 uninstall-local-no:
 uninstall-local-yes:
 	catalogs='$(CATALOGS)'; \
