@@ -28,13 +28,19 @@ AM_CFLAGS = -DFVWM_DATADIR=\"$(FVWM_DATADIR)\"
 
 # We don't autoconfigure lex/yacc, since these tools only needed for
 # developers that want to regenerate the FvwmScript syntax.
-# To override the default values use: make YACC="byson -y" syntax
+# To override the default values use: make YACC="bison -y" syntax
 LEX = flex
 YACC = yacc
 
 syntax:
+	rm -f lex.yy.c y.tab.c y.tab.h script.tab.c script.tab.h || true
 	$(LEX) $(AM_LFLAGS) $(LFLAGS) scanner.l && mv lex.yy.c scanner.c
-	$(YACC) $(AM_YFLAGS) $(YFLAGS) script.y && mv y.tab.c script.c
-	if test -f y.tab.h; then \
-	if cmp -s y.tab.h script.h; then rm -f y.tab.h; else mv y.tab.h script.h; fi; \
+
+	@# detect and prefer bison; bison without -y uses file.tab.[ch] names
+	YACC=$(YACC); if which bison >/dev/null 2>&1; then YACC="bison -y"; fi; \
+	$$YACC $(AM_YFLAGS) $(YFLAGS) script.y && mv *.tab.c script.c
+
+	@# don't touch unmodified header to reduce rebuilds
+	if test -f y.tab.h -o -f script.tab.h; then \
+	if cmp -s *.tab.h script.h; then rm -f y.tab.h; else mv *.tab.h script.h; fi; \
 	else :; fi

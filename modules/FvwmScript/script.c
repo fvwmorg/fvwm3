@@ -1,101 +1,100 @@
 
-/*  A Bison parser, made from FvwmScript/script.y
- by  GNU Bison version 1.25
-  */
+/*  A Bison parser, made from script.y
+    by GNU Bison version 1.28  */
 
 #define YYBISON 1  /* Identify Bison output.  */
 
-#define	STR	258
-#define	GSTR	259
-#define	VAR	260
-#define	NUMBER	261
-#define	WINDOWTITLE	262
-#define	WINDOWSIZE	263
-#define	WINDOWPOSITION	264
-#define	FONT	265
-#define	FORECOLOR	266
-#define	BACKCOLOR	267
-#define	SHADCOLOR	268
-#define	LICOLOR	269
-#define	COLORSET	270
-#define	OBJECT	271
-#define	INIT	272
-#define	PERIODICTASK	273
-#define	MAIN	274
-#define	END	275
-#define	PROP	276
-#define	TYPE	277
-#define	SIZE	278
-#define	POSITION	279
-#define	VALUE	280
-#define	VALUEMIN	281
-#define	VALUEMAX	282
-#define	TITLE	283
-#define	SWALLOWEXEC	284
-#define	ICON	285
-#define	FLAGS	286
-#define	WARP	287
-#define	WRITETOFILE	288
-#define	HIDDEN	289
-#define	CANBESELECTED	290
-#define	NORELIEFSTRING	291
-#define	CASE	292
-#define	SINGLECLIC	293
-#define	DOUBLECLIC	294
-#define	BEG	295
-#define	POINT	296
-#define	EXEC	297
-#define	HIDE	298
-#define	SHOW	299
-#define	CHFORECOLOR	300
-#define	CHBACKCOLOR	301
-#define	CHCOLORSET	302
-#define	GETVALUE	303
-#define	GETMINVALUE	304
-#define	GETMAXVALUE	305
-#define	GETFORE	306
-#define	GETBACK	307
-#define	GETHILIGHT	308
-#define	GETSHADOW	309
-#define	CHVALUE	310
-#define	CHVALUEMAX	311
-#define	CHVALUEMIN	312
-#define	ADD	313
-#define	DIV	314
-#define	MULT	315
-#define	GETTITLE	316
-#define	GETOUTPUT	317
-#define	STRCOPY	318
-#define	NUMTOHEX	319
-#define	HEXTONUM	320
-#define	QUIT	321
-#define	LAUNCHSCRIPT	322
-#define	GETSCRIPTFATHER	323
-#define	SENDTOSCRIPT	324
-#define	RECEIVFROMSCRIPT	325
-#define	GET	326
-#define	SET	327
-#define	SENDSIGN	328
-#define	REMAINDEROFDIV	329
-#define	GETTIME	330
-#define	GETSCRIPTARG	331
-#define	IF	332
-#define	THEN	333
-#define	ELSE	334
-#define	FOR	335
-#define	TO	336
-#define	DO	337
-#define	WHILE	338
-#define	BEGF	339
-#define	ENDF	340
-#define	EQUAL	341
-#define	INFEQ	342
-#define	SUPEQ	343
-#define	INF	344
-#define	SUP	345
-#define	DIFF	346
+#define	STR	257
+#define	GSTR	258
+#define	VAR	259
+#define	NUMBER	260
+#define	WINDOWTITLE	261
+#define	WINDOWSIZE	262
+#define	WINDOWPOSITION	263
+#define	FONT	264
+#define	FORECOLOR	265
+#define	BACKCOLOR	266
+#define	SHADCOLOR	267
+#define	LICOLOR	268
+#define	COLORSET	269
+#define	OBJECT	270
+#define	INIT	271
+#define	PERIODICTASK	272
+#define	MAIN	273
+#define	END	274
+#define	PROP	275
+#define	TYPE	276
+#define	SIZE	277
+#define	POSITION	278
+#define	VALUE	279
+#define	VALUEMIN	280
+#define	VALUEMAX	281
+#define	TITLE	282
+#define	SWALLOWEXEC	283
+#define	ICON	284
+#define	FLAGS	285
+#define	WARP	286
+#define	WRITETOFILE	287
+#define	HIDDEN	288
+#define	CANBESELECTED	289
+#define	NORELIEFSTRING	290
+#define	CASE	291
+#define	SINGLECLIC	292
+#define	DOUBLECLIC	293
+#define	BEG	294
+#define	POINT	295
+#define	EXEC	296
+#define	HIDE	297
+#define	SHOW	298
+#define	CHFORECOLOR	299
+#define	CHBACKCOLOR	300
+#define	CHCOLORSET	301
+#define	GETVALUE	302
+#define	GETMINVALUE	303
+#define	GETMAXVALUE	304
+#define	GETFORE	305
+#define	GETBACK	306
+#define	GETHILIGHT	307
+#define	GETSHADOW	308
+#define	CHVALUE	309
+#define	CHVALUEMAX	310
+#define	CHVALUEMIN	311
+#define	ADD	312
+#define	DIV	313
+#define	MULT	314
+#define	GETTITLE	315
+#define	GETOUTPUT	316
+#define	STRCOPY	317
+#define	NUMTOHEX	318
+#define	HEXTONUM	319
+#define	QUIT	320
+#define	LAUNCHSCRIPT	321
+#define	GETSCRIPTFATHER	322
+#define	SENDTOSCRIPT	323
+#define	RECEIVFROMSCRIPT	324
+#define	GET	325
+#define	SET	326
+#define	SENDSIGN	327
+#define	REMAINDEROFDIV	328
+#define	GETTIME	329
+#define	GETSCRIPTARG	330
+#define	IF	331
+#define	THEN	332
+#define	ELSE	333
+#define	FOR	334
+#define	TO	335
+#define	DO	336
+#define	WHILE	337
+#define	BEGF	338
+#define	ENDF	339
+#define	EQUAL	340
+#define	INFEQ	341
+#define	SUPEQ	342
+#define	INF	343
+#define	SUP	344
+#define	DIFF	345
 
-#line 1 "FvwmScript/script.y"
+#line 1 "script.y"
 
 #include "types.h"
 
@@ -439,7 +438,7 @@ int yyerror(char *errmsg)
 
 
 
-#line 348 "FvwmScript/script.y"
+#line 348 "script.y"
 typedef union {  char *str;
           int number;
        } YYSTYPE;
@@ -457,7 +456,7 @@ typedef union {  char *str;
 #define	YYFLAG		-32768
 #define	YYNTBASE	92
 
-#define YYTRANSLATE(x) ((unsigned)(x) <= 346 ? yytranslate[x] : 155)
+#define YYTRANSLATE(x) ((unsigned)(x) <= 345 ? yytranslate[x] : 155)
 
 static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
@@ -485,16 +484,16 @@ static const char yytranslate[] = {     0,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
      2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
-     2,     2,     2,     2,     2,     1,     2,     3,     4,     5,
-     6,     7,     8,     9,    10,    11,    12,    13,    14,    15,
-    16,    17,    18,    19,    20,    21,    22,    23,    24,    25,
-    26,    27,    28,    29,    30,    31,    32,    33,    34,    35,
-    36,    37,    38,    39,    40,    41,    42,    43,    44,    45,
-    46,    47,    48,    49,    50,    51,    52,    53,    54,    55,
-    56,    57,    58,    59,    60,    61,    62,    63,    64,    65,
-    66,    67,    68,    69,    70,    71,    72,    73,    74,    75,
-    76,    77,    78,    79,    80,    81,    82,    83,    84,    85,
-    86,    87,    88,    89,    90,    91
+     2,     2,     2,     2,     2,     1,     3,     4,     5,     6,
+     7,     8,     9,    10,    11,    12,    13,    14,    15,    16,
+    17,    18,    19,    20,    21,    22,    23,    24,    25,    26,
+    27,    28,    29,    30,    31,    32,    33,    34,    35,    36,
+    37,    38,    39,    40,    41,    42,    43,    44,    45,    46,
+    47,    48,    49,    50,    51,    52,    53,    54,    55,    56,
+    57,    58,    59,    60,    61,    62,    63,    64,    65,    66,
+    67,    68,    69,    70,    71,    72,    73,    74,    75,    76,
+    77,    78,    79,    80,    81,    82,    83,    84,    85,    86,
+    87,    88,    89,    90,    91
 };
 
 #if YYDEBUG != 0
@@ -1017,7 +1016,8 @@ static const short yycheck[] = {    34,
     25,    26,    27,    28,    29,    30,    31
 };
 /* -*-C-*-  Note some compilers choke on comments on `#line' lines.  */
-#line 3 "/usr/share/bison.simple"
+#line 3 "/usr/lib/bison.simple"
+/* This file comes from bison-1.28.  */
 
 /* Skeleton output parser for bison,
    Copyright (C) 1984, 1989, 1990 Free Software Foundation, Inc.
@@ -1034,46 +1034,66 @@ static const short yycheck[] = {    34,
 
    You should have received a copy of the GNU General Public License
    along with this program; if not, write to the Free Software
-   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  */
+   Foundation, Inc., 59 Temple Place - Suite 330,
+   Boston, MA 02111-1307, USA.  */
 
 /* As a special exception, when this file is copied by Bison into a
    Bison output file, you may use that output file without restriction.
    This special exception was added by the Free Software Foundation
    in version 1.24 of Bison.  */
 
-#ifndef alloca
-#ifdef __GNUC__
-#define alloca __builtin_alloca
-#else /* not GNU C.  */
-#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi)
-#include <alloca.h>
-#else /* not sparc */
-#if defined (MSDOS) && !defined (__TURBOC__)
-#include <malloc.h>
-#else /* not MSDOS, or __TURBOC__ */
-#if defined(_AIX)
-#include <malloc.h>
- #pragma alloca
-#else /* not MSDOS, __TURBOC__, or _AIX */
-#ifdef __hpux
-#ifdef __cplusplus
-extern "C" {
-void *alloca (unsigned int);
-};
-#else /* not __cplusplus */
-void *alloca ();
-#endif /* not __cplusplus */
-#endif /* __hpux */
-#endif /* not _AIX */
-#endif /* not MSDOS, or __TURBOC__ */
-#endif /* not sparc.  */
-#endif /* not GNU C.  */
-#endif /* alloca not defined.  */
-
 /* This is the parser code that is written into each bison parser
   when the %semantic_parser declaration is not specified in the grammar.
   It was written by Richard Stallman by simplifying the hairy parser
   used when %semantic_parser is specified.  */
+
+#ifndef YYSTACK_USE_ALLOCA
+#ifdef alloca
+#define YYSTACK_USE_ALLOCA
+#else /* alloca not defined */
+#ifdef __GNUC__
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#else /* not GNU C.  */
+#if (!defined (__STDC__) && defined (sparc)) || defined (__sparc__) || defined (__sparc) || defined (__sgi) || (defined (__sun) && defined (__i386))
+#define YYSTACK_USE_ALLOCA
+#include <alloca.h>
+#else /* not sparc */
+/* We think this test detects Watcom and Microsoft C.  */
+/* This used to test MSDOS, but that is a bad idea
+   since that symbol is in the user namespace.  */
+#if (defined (_MSDOS) || defined (_MSDOS_)) && !defined (__TURBOC__)
+#if 0 /* No need for malloc.h, which pollutes the namespace;
+	 instead, just don't use alloca.  */
+#include <malloc.h>
+#endif
+#else /* not MSDOS, or __TURBOC__ */
+#if defined(_AIX)
+/* I don't know what this was needed for, but it pollutes the namespace.
+   So I turned it off.   rms, 2 May 1997.  */
+/* #include <malloc.h>  */
+ #pragma alloca
+#define YYSTACK_USE_ALLOCA
+#else /* not MSDOS, or __TURBOC__, or _AIX */
+#if 0
+#ifdef __hpux /* haible@ilog.fr says this works for HPUX 9.05 and up,
+		 and on HPUX 10.  Eventually we can turn this on.  */
+#define YYSTACK_USE_ALLOCA
+#define alloca __builtin_alloca
+#endif /* __hpux */
+#endif
+#endif /* not _AIX */
+#endif /* not MSDOS, or __TURBOC__ */
+#endif /* not sparc */
+#endif /* not GNU C */
+#endif /* alloca not defined */
+#endif /* YYSTACK_USE_ALLOCA not defined */
+
+#ifdef YYSTACK_USE_ALLOCA
+#define YYSTACK_ALLOC alloca
+#else
+#define YYSTACK_ALLOC malloc
+#endif
 
 /* Note: there must be only one dollar sign in this file.
    It is replaced by the list of actions, each action
@@ -1083,8 +1103,8 @@ void *alloca ();
 #define yyclearin	(yychar = YYEMPTY)
 #define YYEMPTY		-2
 #define YYEOF		0
-#define YYACCEPT	return(0)
-#define YYABORT 	return(1)
+#define YYACCEPT	goto yyacceptlab
+#define YYABORT 	goto yyabortlab
 #define YYERROR		goto yyerrlab1
 /* Like YYERROR except do call yyerror.
    This remains here temporarily to ease the
@@ -1165,16 +1185,12 @@ int yydebug;			/*  nonzero means print parse trace	*/
 #ifndef YYMAXDEPTH
 #define YYMAXDEPTH 10000
 #endif
-
-#ifndef YYPARSE_RETURN_TYPE
-#define YYPARSE_RETURN_TYPE int
-#endif
-
-/* Prevent warning if -Wstrict-prototypes.  */
-#ifdef __GNUC__
-YYPARSE_RETURN_TYPE yyparse (void);
-#endif
 
+/* Define __yy_memcpy.  Note that the size argument
+   should be passed with type unsigned int, because that is what the non-GCC
+   definitions require.  With GCC, __builtin_memcpy takes an arg
+   of type size_t, but it can handle unsigned int.  */
+
 #if __GNUC__ > 1		/* GNU C and GNU C++ define this.  */
 #define __yy_memcpy(TO,FROM,COUNT)	__builtin_memcpy(TO,FROM,COUNT)
 #else				/* not GNU C or C++ */
@@ -1186,7 +1202,7 @@ static void
 __yy_memcpy (to, from, count)
      char *to;
      char *from;
-     int count;
+     unsigned int count;
 {
   register char *f = from;
   register char *t = to;
@@ -1201,10 +1217,10 @@ __yy_memcpy (to, from, count)
 /* This is the most reliable way to avoid incompatibilities
    in available built-in functions on various systems.  */
 static void
-__yy_memcpy (char *to, char *from, int count)
+__yy_memcpy (char *to, char *from, unsigned int count)
 {
-  register char *f = from;
   register char *t = to;
+  register char *f = from;
   register int i = count;
 
   while (i-- > 0)
@@ -1214,7 +1230,7 @@ __yy_memcpy (char *to, char *from, int count)
 #endif
 #endif
 
-#line 196 "/usr/share/bison.simple"
+#line 217 "/usr/lib/bison.simple"
 
 /* The user can define YYPARSE_PARAM as the name of an argument to be passed
    into yyparse.  The argument should have type void *.
@@ -1235,7 +1251,16 @@ __yy_memcpy (char *to, char *from, int count)
 #define YYPARSE_PARAM_DECL
 #endif /* not YYPARSE_PARAM */
 
-YYPARSE_RETURN_TYPE
+/* Prevent warning if -Wstrict-prototypes.  */
+#ifdef __GNUC__
+#ifdef YYPARSE_PARAM
+int yyparse (void *);
+#else
+int yyparse (void);
+#endif
+#endif
+
+int
 yyparse(YYPARSE_PARAM_ARG)
      YYPARSE_PARAM_DECL
 {
@@ -1263,6 +1288,7 @@ yyparse(YYPARSE_PARAM_ARG)
 #endif
 
   int yystacksize = YYINITDEPTH;
+  int yyfree_stacks = 0;
 
 #ifdef YYPURE
   int yychar;
@@ -1347,18 +1373,32 @@ yynewstate:
       if (yystacksize >= YYMAXDEPTH)
 	{
 	  yyerror("parser stack overflow");
+	  if (yyfree_stacks)
+	    {
+	      free (yyss);
+	      free (yyvs);
+#ifdef YYLSP_NEEDED
+	      free (yyls);
+#endif
+	    }
 	  return 2;
 	}
       yystacksize *= 2;
       if (yystacksize > YYMAXDEPTH)
 	yystacksize = YYMAXDEPTH;
-      yyss = (short *) alloca (yystacksize * sizeof (*yyssp));
-      __yy_memcpy ((char *)yyss, (char *)yyss1, size * sizeof (*yyssp));
-      yyvs = (YYSTYPE *) alloca (yystacksize * sizeof (*yyvsp));
-      __yy_memcpy ((char *)yyvs, (char *)yyvs1, size * sizeof (*yyvsp));
+#ifndef YYSTACK_USE_ALLOCA
+      yyfree_stacks = 1;
+#endif
+      yyss = (short *) YYSTACK_ALLOC (yystacksize * sizeof (*yyssp));
+      __yy_memcpy ((char *)yyss, (char *)yyss1,
+		   size * (unsigned int) sizeof (*yyssp));
+      yyvs = (YYSTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yyvsp));
+      __yy_memcpy ((char *)yyvs, (char *)yyvs1,
+		   size * (unsigned int) sizeof (*yyvsp));
 #ifdef YYLSP_NEEDED
-      yyls = (YYLTYPE *) alloca (yystacksize * sizeof (*yylsp));
-      __yy_memcpy ((char *)yyls, (char *)yyls1, size * sizeof (*yylsp));
+      yyls = (YYLTYPE *) YYSTACK_ALLOC (yystacksize * sizeof (*yylsp));
+      __yy_memcpy ((char *)yyls, (char *)yyls1,
+		   size * (unsigned int) sizeof (*yylsp));
 #endif
 #endif /* no yyoverflow */
 
@@ -1519,92 +1559,92 @@ yyreduce:
   switch (yyn) {
 
 case 2:
-#line 375 "FvwmScript/script.y"
+#line 375 "script.y"
 { InitVarGlob(); ;
     break;}
 case 4:
-#line 380 "FvwmScript/script.y"
+#line 380 "script.y"
 {		/* Titre de la fenetre */
 				 scriptprop->titlewin=yyvsp[0].str;
 				;
     break;}
 case 5:
-#line 383 "FvwmScript/script.y"
+#line 383 "script.y"
 {
 				 scriptprop->icon=yyvsp[0].str;
 				;
     break;}
 case 6:
-#line 387 "FvwmScript/script.y"
+#line 387 "script.y"
 {		/* Position et taille de la fenetre */
 				 scriptprop->x=yyvsp[-1].number;
 				 scriptprop->y=yyvsp[0].number;
 				;
     break;}
 case 7:
-#line 392 "FvwmScript/script.y"
+#line 392 "script.y"
 {		/* Position et taille de la fenetre */
 				 scriptprop->width=yyvsp[-1].number;
 				 scriptprop->height=yyvsp[0].number;
 				;
     break;}
 case 8:
-#line 396 "FvwmScript/script.y"
+#line 396 "script.y"
 { 		/* Couleur de fond */
 				 scriptprop->backcolor=yyvsp[0].str;
 				 scriptprop->colorset = -1;
 				;
     break;}
 case 9:
-#line 400 "FvwmScript/script.y"
+#line 400 "script.y"
 { 		/* Couleur des lignes */
 				 scriptprop->forecolor=yyvsp[0].str;
 				 scriptprop->colorset = -1;
 				;
     break;}
 case 10:
-#line 404 "FvwmScript/script.y"
+#line 404 "script.y"
 { 		/* Couleur des lignes */
 				 scriptprop->shadcolor=yyvsp[0].str;
 				 scriptprop->colorset = -1;
 				;
     break;}
 case 11:
-#line 408 "FvwmScript/script.y"
+#line 408 "script.y"
 { 		/* Couleur des lignes */
 				 scriptprop->hilicolor=yyvsp[0].str;
 				 scriptprop->colorset = -1;
 				;
     break;}
 case 12:
-#line 412 "FvwmScript/script.y"
+#line 412 "script.y"
 {
 				 scriptprop->colorset = yyvsp[0].number;
 				 AllocColorset(yyvsp[0].number);
 				;
     break;}
 case 13:
-#line 416 "FvwmScript/script.y"
+#line 416 "script.y"
 {
 				 scriptprop->font=yyvsp[0].str;
 				;
     break;}
 case 15:
-#line 423 "FvwmScript/script.y"
+#line 423 "script.y"
 {
 				 scriptprop->initbloc=PileBloc[TopPileB];
 				 TopPileB--; 
 				;
     break;}
 case 17:
-#line 429 "FvwmScript/script.y"
+#line 429 "script.y"
 {
 				 scriptprop->periodictasks=PileBloc[TopPileB];
 				 TopPileB--; 
 				;
     break;}
 case 20:
-#line 442 "FvwmScript/script.y"
+#line 442 "script.y"
 { nbobj++;
 				  if (nbobj>1000)
 				  { yyerror("Too many items\n");
@@ -1621,21 +1661,21 @@ case 20:
 				;
     break;}
 case 22:
-#line 459 "FvwmScript/script.y"
+#line 459 "script.y"
 {
 				 (*tabobj)[nbobj].type=yyvsp[0].str;
 				 HasType=1;
 				;
     break;}
 case 23:
-#line 463 "FvwmScript/script.y"
+#line 463 "script.y"
 {
 				 (*tabobj)[nbobj].width=yyvsp[-1].number;
 				 (*tabobj)[nbobj].height=yyvsp[0].number;
 				;
     break;}
 case 24:
-#line 467 "FvwmScript/script.y"
+#line 467 "script.y"
 {
 				 (*tabobj)[nbobj].x=yyvsp[-1].number;
 				 (*tabobj)[nbobj].y=yyvsp[0].number;
@@ -1643,102 +1683,102 @@ case 24:
 				;
     break;}
 case 25:
-#line 472 "FvwmScript/script.y"
+#line 472 "script.y"
 {
 				 (*tabobj)[nbobj].value=yyvsp[0].number;
 				;
     break;}
 case 26:
-#line 475 "FvwmScript/script.y"
+#line 475 "script.y"
 {
 				 (*tabobj)[nbobj].value2=yyvsp[0].number;
 				;
     break;}
 case 27:
-#line 478 "FvwmScript/script.y"
+#line 478 "script.y"
 {
 				 (*tabobj)[nbobj].value3=yyvsp[0].number;
 				;
     break;}
 case 28:
-#line 481 "FvwmScript/script.y"
+#line 481 "script.y"
 {
 				 (*tabobj)[nbobj].title=yyvsp[0].str;
 				;
     break;}
 case 29:
-#line 484 "FvwmScript/script.y"
+#line 484 "script.y"
 {
 				 (*tabobj)[nbobj].swallow=yyvsp[0].str;
 				;
     break;}
 case 30:
-#line 487 "FvwmScript/script.y"
+#line 487 "script.y"
 {
 				 (*tabobj)[nbobj].icon=yyvsp[0].str;
 				;
     break;}
 case 31:
-#line 490 "FvwmScript/script.y"
+#line 490 "script.y"
 {
 				 (*tabobj)[nbobj].backcolor=yyvsp[0].str;
 				 (*tabobj)[nbobj].colorset = -1;
 				;
     break;}
 case 32:
-#line 494 "FvwmScript/script.y"
+#line 494 "script.y"
 {
 				 (*tabobj)[nbobj].forecolor=yyvsp[0].str;
 				 (*tabobj)[nbobj].colorset = -1;
 				;
     break;}
 case 33:
-#line 498 "FvwmScript/script.y"
+#line 498 "script.y"
 {
 				 (*tabobj)[nbobj].shadcolor=yyvsp[0].str;
 				 (*tabobj)[nbobj].colorset = -1;
 				;
     break;}
 case 34:
-#line 502 "FvwmScript/script.y"
+#line 502 "script.y"
 {
 				 (*tabobj)[nbobj].hilicolor=yyvsp[0].str;
 				 (*tabobj)[nbobj].colorset = -1;
 				;
     break;}
 case 35:
-#line 506 "FvwmScript/script.y"
+#line 506 "script.y"
 {
 				 (*tabobj)[nbobj].colorset = yyvsp[0].number;
 				 AllocColorset(yyvsp[0].number);
 				;
     break;}
 case 36:
-#line 510 "FvwmScript/script.y"
+#line 510 "script.y"
 {
 				 (*tabobj)[nbobj].font=yyvsp[0].str;
 				;
     break;}
 case 39:
-#line 516 "FvwmScript/script.y"
+#line 516 "script.y"
 {
 				 (*tabobj)[nbobj].flags[0]=True;
 				;
     break;}
 case 40:
-#line 519 "FvwmScript/script.y"
+#line 519 "script.y"
 {
 				 (*tabobj)[nbobj].flags[1]=True;
 				;
     break;}
 case 41:
-#line 522 "FvwmScript/script.y"
+#line 522 "script.y"
 {
 				 (*tabobj)[nbobj].flags[2]=True;
 				;
     break;}
 case 42:
-#line 528 "FvwmScript/script.y"
+#line 528 "script.y"
 { 
 				  if (!HasPosition)
 				   { yyerror("No position for object");
@@ -1751,280 +1791,280 @@ case 42:
 				 ;
     break;}
 case 43:
-#line 539 "FvwmScript/script.y"
+#line 539 "script.y"
 { InitObjTabCase(0); ;
     break;}
 case 45:
-#line 543 "FvwmScript/script.y"
+#line 543 "script.y"
 { InitObjTabCase(1); ;
     break;}
 case 49:
-#line 550 "FvwmScript/script.y"
+#line 550 "script.y"
 { InitCase(-1); ;
     break;}
 case 50:
-#line 551 "FvwmScript/script.y"
+#line 551 "script.y"
 { InitCase(-2); ;
     break;}
 case 51:
-#line 554 "FvwmScript/script.y"
+#line 554 "script.y"
 { InitCase(yyvsp[0].number); ;
     break;}
 case 99:
-#line 613 "FvwmScript/script.y"
+#line 613 "script.y"
 { AddCom(1,1); ;
     break;}
 case 100:
-#line 615 "FvwmScript/script.y"
+#line 615 "script.y"
 { AddCom(2,1);;
     break;}
 case 101:
-#line 617 "FvwmScript/script.y"
+#line 617 "script.y"
 { AddCom(3,1);;
     break;}
 case 102:
-#line 619 "FvwmScript/script.y"
+#line 619 "script.y"
 { AddCom(4,2);;
     break;}
 case 103:
-#line 621 "FvwmScript/script.y"
+#line 621 "script.y"
 { AddCom(21,2);;
     break;}
 case 104:
-#line 623 "FvwmScript/script.y"
+#line 623 "script.y"
 { AddCom(22,2);;
     break;}
 case 105:
-#line 625 "FvwmScript/script.y"
+#line 625 "script.y"
 { AddCom(5,3);;
     break;}
 case 106:
-#line 627 "FvwmScript/script.y"
+#line 627 "script.y"
 { AddCom(6,3);;
     break;}
 case 107:
-#line 629 "FvwmScript/script.y"
+#line 629 "script.y"
 { AddCom(7,2);;
     break;}
 case 108:
-#line 631 "FvwmScript/script.y"
+#line 631 "script.y"
 { AddCom(8,2);;
     break;}
 case 109:
-#line 633 "FvwmScript/script.y"
+#line 633 "script.y"
 { AddCom(9,2);;
     break;}
 case 110:
-#line 635 "FvwmScript/script.y"
+#line 635 "script.y"
 { AddCom(10,2);;
     break;}
 case 111:
-#line 637 "FvwmScript/script.y"
+#line 637 "script.y"
 { AddCom(19,2);;
     break;}
 case 112:
-#line 639 "FvwmScript/script.y"
+#line 639 "script.y"
 { AddCom(24,2);;
     break;}
 case 113:
-#line 641 "FvwmScript/script.y"
+#line 641 "script.y"
 { AddCom(11,2);;
     break;}
 case 114:
-#line 643 "FvwmScript/script.y"
+#line 643 "script.y"
 { AddCom(12,2);;
     break;}
 case 115:
-#line 645 "FvwmScript/script.y"
+#line 645 "script.y"
 { AddCom(13,0);;
     break;}
 case 116:
-#line 647 "FvwmScript/script.y"
+#line 647 "script.y"
 { AddCom(17,1);;
     break;}
 case 117:
-#line 649 "FvwmScript/script.y"
+#line 649 "script.y"
 { AddCom(23,2);;
     break;}
 case 118:
-#line 651 "FvwmScript/script.y"
+#line 651 "script.y"
 { AddCom(18,2);;
     break;}
 case 122:
-#line 661 "FvwmScript/script.y"
+#line 661 "script.y"
 { AddComBloc(14,3,2); ;
     break;}
 case 125:
-#line 666 "FvwmScript/script.y"
+#line 666 "script.y"
 { EmpilerBloc(); ;
     break;}
 case 126:
-#line 668 "FvwmScript/script.y"
+#line 668 "script.y"
 { DepilerBloc(2); ;
     break;}
 case 127:
-#line 669 "FvwmScript/script.y"
+#line 669 "script.y"
 { DepilerBloc(2); ;
     break;}
 case 128:
-#line 672 "FvwmScript/script.y"
+#line 672 "script.y"
 { DepilerBloc(1); ;
     break;}
 case 129:
-#line 673 "FvwmScript/script.y"
+#line 673 "script.y"
 { DepilerBloc(1); ;
     break;}
 case 130:
-#line 677 "FvwmScript/script.y"
+#line 677 "script.y"
 { AddComBloc(15,3,1); ;
     break;}
 case 131:
-#line 681 "FvwmScript/script.y"
+#line 681 "script.y"
 { AddComBloc(16,3,1); ;
     break;}
 case 132:
-#line 686 "FvwmScript/script.y"
+#line 686 "script.y"
 { AddVar(yyvsp[0].str); ;
     break;}
 case 133:
-#line 688 "FvwmScript/script.y"
+#line 688 "script.y"
 { AddConstStr(yyvsp[0].str); ;
     break;}
 case 134:
-#line 690 "FvwmScript/script.y"
+#line 690 "script.y"
 { AddConstStr(yyvsp[0].str); ;
     break;}
 case 135:
-#line 692 "FvwmScript/script.y"
+#line 692 "script.y"
 { AddConstNum(yyvsp[0].number); ;
     break;}
 case 136:
-#line 694 "FvwmScript/script.y"
+#line 694 "script.y"
 { AddConstNum(-1); ;
     break;}
 case 137:
-#line 696 "FvwmScript/script.y"
+#line 696 "script.y"
 { AddConstNum(-2); ;
     break;}
 case 138:
-#line 698 "FvwmScript/script.y"
+#line 698 "script.y"
 { AddLevelBufArg(); ;
     break;}
 case 139:
-#line 700 "FvwmScript/script.y"
+#line 700 "script.y"
 { AddFunct(1,1); ;
     break;}
 case 140:
-#line 701 "FvwmScript/script.y"
+#line 701 "script.y"
 { AddFunct(2,1); ;
     break;}
 case 141:
-#line 702 "FvwmScript/script.y"
+#line 702 "script.y"
 { AddFunct(3,1); ;
     break;}
 case 142:
-#line 703 "FvwmScript/script.y"
+#line 703 "script.y"
 { AddFunct(4,1); ;
     break;}
 case 143:
-#line 704 "FvwmScript/script.y"
+#line 704 "script.y"
 { AddFunct(5,1); ;
     break;}
 case 144:
-#line 705 "FvwmScript/script.y"
+#line 705 "script.y"
 { AddFunct(6,1); ;
     break;}
 case 145:
-#line 706 "FvwmScript/script.y"
+#line 706 "script.y"
 { AddFunct(7,1); ;
     break;}
 case 146:
-#line 707 "FvwmScript/script.y"
+#line 707 "script.y"
 { AddFunct(8,1); ;
     break;}
 case 147:
-#line 708 "FvwmScript/script.y"
+#line 708 "script.y"
 { AddFunct(9,1); ;
     break;}
 case 148:
-#line 709 "FvwmScript/script.y"
+#line 709 "script.y"
 { AddFunct(10,1); ;
     break;}
 case 149:
-#line 710 "FvwmScript/script.y"
+#line 710 "script.y"
 { AddFunct(11,1); ;
     break;}
 case 150:
-#line 711 "FvwmScript/script.y"
+#line 711 "script.y"
 { AddFunct(12,1); ;
     break;}
 case 151:
-#line 712 "FvwmScript/script.y"
+#line 712 "script.y"
 { AddFunct(13,1); ;
     break;}
 case 152:
-#line 713 "FvwmScript/script.y"
+#line 713 "script.y"
 { AddFunct(14,1); ;
     break;}
 case 153:
-#line 714 "FvwmScript/script.y"
+#line 714 "script.y"
 { AddFunct(15,1); ;
     break;}
 case 154:
-#line 715 "FvwmScript/script.y"
+#line 715 "script.y"
 { AddFunct(16,1); ;
     break;}
 case 155:
-#line 716 "FvwmScript/script.y"
+#line 716 "script.y"
 { AddFunct(17,1); ;
     break;}
 case 156:
-#line 717 "FvwmScript/script.y"
+#line 717 "script.y"
 { AddFunct(18,1); ;
     break;}
 case 157:
-#line 718 "FvwmScript/script.y"
+#line 718 "script.y"
 { AddFunct(19,1); ;
     break;}
 case 158:
-#line 719 "FvwmScript/script.y"
+#line 719 "script.y"
 { AddFunct(20,1); ;
     break;}
 case 159:
-#line 720 "FvwmScript/script.y"
+#line 720 "script.y"
 { AddFunct(21,1); ;
     break;}
 case 160:
-#line 725 "FvwmScript/script.y"
+#line 725 "script.y"
 { ;
     break;}
 case 187:
-#line 771 "FvwmScript/script.y"
+#line 771 "script.y"
 { l=1-250000; AddBufArg(&l,1); ;
     break;}
 case 188:
-#line 772 "FvwmScript/script.y"
+#line 772 "script.y"
 { l=2-250000; AddBufArg(&l,1); ;
     break;}
 case 189:
-#line 773 "FvwmScript/script.y"
+#line 773 "script.y"
 { l=3-250000; AddBufArg(&l,1); ;
     break;}
 case 190:
-#line 774 "FvwmScript/script.y"
+#line 774 "script.y"
 { l=4-250000; AddBufArg(&l,1); ;
     break;}
 case 191:
-#line 775 "FvwmScript/script.y"
+#line 775 "script.y"
 { l=5-250000; AddBufArg(&l,1); ;
     break;}
 case 192:
-#line 776 "FvwmScript/script.y"
+#line 776 "script.y"
 { l=6-250000; AddBufArg(&l,1); ;
     break;}
 }
    /* the action file gets copied in in place of this dollarsign */
-#line 498 "/usr/share/bison.simple"
+#line 543 "/usr/lib/bison.simple"
 
   yyvsp -= yylen;
   yyssp -= yylen;
@@ -2219,6 +2259,30 @@ yyerrhandle:
 
   yystate = yyn;
   goto yynewstate;
+
+ yyacceptlab:
+  /* YYACCEPT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 0;
+
+ yyabortlab:
+  /* YYABORT comes here.  */
+  if (yyfree_stacks)
+    {
+      free (yyss);
+      free (yyvs);
+#ifdef YYLSP_NEEDED
+      free (yyls);
+#endif
+    }
+  return 1;
 }
-#line 779 "FvwmScript/script.y"
+#line 779 "script.y"
 

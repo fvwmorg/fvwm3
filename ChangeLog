@@ -1,3 +1,8 @@
+2001-02-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* INSTALL.fvwm: document --disable-sm
+	* fvwm2.1: update -version description
+
 2001-02-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MenuInteraction):

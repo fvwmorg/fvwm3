@@ -258,6 +258,22 @@ do not send the debug output.  It is almost never useful in this
 situation.
 
 
+  --disable-gnome               disable GNOME window manager hints
+
+By default, FVWM supports GNOME hints regarding windows, desks, pages
+and more.  This turns this support off.  Note, you may turn it off
+dynamically for all or individual windows by: Style * GNOMEUseHints false
+
+
+  --disable-sm                  disable session management support
+
+FVWM has experimental session management support, which is autoconfigured
+by searching for SM library, which is often shipped together with your
+X libraries.  Note, the session management support is activated when FVWM
+is run under a session manager like xsm or gnome-session.
+This option disables session management support completely.
+
+
   --enable-multibyte            multibyte character support (experimental)
 
 FVWM has limited support for multibyte charsets.  It is fully experimental
