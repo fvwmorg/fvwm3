@@ -1,3 +1,14 @@
+Sat Apr  3 15:32:40 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmButtons/output.c (SaveButtons): added braces to avoid
+	ambiguous `else's.
+
+	* FvwmButtons/FvwmButtons.c (Slide): initialize variables `xstep',
+	`ystep', `wstep', and `hstep'.
+
+	* FvwmButtons/FvwmButtons.c (Slide): initialize variables `w' and
+	`h'. 
+
 Sat Apr  3 15:12:50 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmAnimate/ChangeLog:

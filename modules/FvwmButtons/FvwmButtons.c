@@ -1859,7 +1859,7 @@ void Slide (panel_info *p, button_info *b)
   Window root;
   int x, y, iw, ih, BW, depth;
   char direction;
-  ushort i, c, xstep, ystep, wstep, hstep;
+  ushort i, c, xstep = 0, ystep = 0, wstep = 0, hstep = 0;
 
   if (!p)
     /* no such panel */
@@ -1923,10 +1923,10 @@ void Slide (panel_info *p, button_info *b)
     int ix = buttonXPos(b, b->n);  /* button in the CurrentPanel */
     int iy = buttonYPos(b, b->n);  /* button in the CurrentPanel */
 
-    int mw = p->uber->icon_w; /* panel menu width */
-    int mh = p->uber->icon_h; /* panel menu height */
-    int w;                    /* current width */
-    int h;                    /* current height */
+    int mw = p->uber->icon_w;      /* panel menu width */
+    int mh = p->uber->icon_h;      /* panel menu height */
+    int w = mw;                    /* current width */
+    int h = mh % PanelPopUpStep;   /* current height */
 
     root = GetRealGeometry(Dpy, CurrentPanel->uber->IconWinParent, &x, &y,
                            (ushort*)&iw, (ushort*)&ih,
