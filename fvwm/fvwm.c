@@ -506,10 +506,9 @@ int main(int argc, char **argv)
 
   Scr.SizeStringWidth = XTextWidth (Scr.StdFont.font,
                                     " +8888 x +8888 ", 15);
-  attributes.border_pixel = Scr.StdColors.fore;
   attributes.background_pixel = Scr.StdColors.back;
-  attributes.bit_gravity = NorthWestGravity;
-  valuemask = (CWBorderPixel | CWBackPixel | CWBitGravity);
+  valuemask = CWBackPixel;
+
   if(!Scr.gs.EmulateMWM)
   {
     x = 0;
@@ -529,8 +528,6 @@ int main(int argc, char **argv)
 				  (unsigned int) CopyFromParent,
 				  (Visual *) CopyFromParent,
 				  valuemask, &attributes);
-  if(Scr.SizeWindow != None)
-    XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdColors.back);
 
 #ifndef NON_VIRTUAL
   initPanFrames();
@@ -544,9 +541,6 @@ int main(int argc, char **argv)
   MyXUngrabServer(dpy);
   UnBlackoutScreen(); /* if we need to remove blackout window */
   CoerceEnterNotifyOnCurrentWindow();
-  /* Make sure we have the correct click time now. */
-  if (Scr.ClickTime < 0)
-    Scr.ClickTime = -Scr.ClickTime;
 
   DBUG("main","Entering HandleEvents loop...");
 
@@ -589,6 +583,10 @@ void StartupStuff(void)
 #endif
 
   fFvwmInStartup = False;
+
+  /* Make sure we have the correct click time now. */
+  if (Scr.ClickTime < 0)
+    Scr.ClickTime = -Scr.ClickTime;
   
   if(Restarting)
   {
@@ -1691,14 +1689,9 @@ void BlackoutScreen()
   {
     DBUG("BlackoutScreen","Blacking out screen during init...");
     /* blackout screen */
-    attributes.border_pixel = BlackPixel(dpy,Scr.screen);
     attributes.background_pixel = BlackPixel(dpy,Scr.screen);
-    attributes.bit_gravity = NorthWestGravity;
     attributes.override_redirect = True; /* is override redirect needed? */
-    valuemask = CWBorderPixel |
-      CWBackPixel   |
-      CWBitGravity  |
-      CWOverrideRedirect;
+    valuemask = CWBackPixel | CWOverrideRedirect;
     BlackoutWin = XCreateWindow(dpy,Scr.Root,0,0,
                                 DisplayWidth(dpy, Scr.screen),
                                 DisplayHeight(dpy, Scr.screen),0,
