@@ -4534,8 +4534,99 @@ Fvwm knows three ways to deal with this situation: smart placement,
 random placement, and interactive placement (aka active placement).
 Fvwm first tries smart placement.  If this fails (or you have specified
 .IR DumbPlacement )
-then fvwm will fall back on either random or interactive (user)
-placement.
+then fvwm will fall back on either random or interactive placement.
+
+.I NoPPosition
+instructs fvwm to ignore the program specified position (PPosition hint)
+when adding new windows.  Adherence to the PPosition field is
+required for some applications, but if you don't have one of
+those its a real headache.  Many programs set this field to something
+obnoxious like 0,0 (upper left corner).
+
+With
+.I ActivePlacement
+the user is required to place every new window manually.  The window
+will only show as a rubber band until a place is selected manually.
+The window is placed when a mouse button or any key except
+.SM Escape
+is pressed which aborts manual placement.  If the user aborts
+placing the window it is dumped in the top left corner of the screen.
+If mouse button 2 is pressed during the initial placement of a window
+(respectively
+.SM Shift
+and mouse button 1 in case Mwm emulation has been enabled with the
+.B Emulate
+command), the user is asked to resize the window too.  Pressing
+button 3 sets the
+.I MovedButton3
+condition (see
+.B Current
+command).  If you like this a lot, you will probably also want
+.IR DumbPlacement .
+See also
+.IR RandomPlacement ", " DumbPlacement ", and " SmartPlacement .
+
+Example:
+.EX
+Style * ActivePlacement, DumbPlacement
+
+*FvwmEventPassID
+*FvwmEventadd_window GrowDownFunc
+AddToFunc StartFunction
++ I FvwmEvent
+
+AddToFunc GrowDownFunc
++ I windowid $0 (MovedButton3) \\
+  Resize bottomright keep -0p
+.EE
+Now, whenever a window with the name or class "XTerm" is created
+and the user presses button 3 to finish initial placement, the
+window is automatically enlarged until it hits the bottom screen
+border.
+
+.I RandomPlacement
+causes windows which would normally require user placement to be
+automatically placed in ever-so-slightly random locations.  For
+the best of all possible worlds use both
+.IR RandomPlacement ", " SmartPlacement " and " CleverPlacement .
+See also
+.IR ActivePlacement ", " SmartPlacement " and " DumbPlacement .
+
+.I SmartPlacement
+tries to automatically place new windows in a smart
+location - a location in which they do not overlap any other
+windows on the screen.  If no such position can be found user
+placement or random placement (if specified) will be used as a
+fall-back method.  For the best of all possible worlds use both
+.IR RandomPlacement " and " SmartPlacement .
+See also
+.IR ActivePlacement ", " RandomPlacement ", and " DumbPlacement .
+
+.I CleverPlacement
+augments the
+.I SmartPlacement
+style so that it tries to avoid overlapping icons, sticky windows
+and windows on higher layers.  If
+.I SmartPlacement
+is not used,
+.I CleverPlacement
+has no effect.  To switch this style off again, use the
+.I CleverPlacementOff
+style.
+
+.I DumbPlacement
+is the opposite of SmartPlacement.  This means that fvwm will
+not even consider a smart window location.  It forces fvwm to
+use the selected
+.IR ActivePlacement " or " RandomPlacement
+behavior.  Note that the default is
+.IR SmartPlacement ,
+so if you really like your
+.IR ActivePlacement ,
+then specify this as well.
+.I DumbPlacement
+switches off both,
+.IR SmartPlacement " and " CleverPlacement .
 
 .I StartsOnDesk
 takes a numeric argument which is the desktop number on which
@@ -4634,98 +4725,6 @@ puts the window in the bottom layer. This layer can be changed
 by the built-in command
 .BR DefaultLayers ;
 the default is 2.
-
-.I NoPPosition
-instructs fvwm to ignore the program specified position (PPosition hint)
-when adding new windows.  Adherence to the PPosition field is
-required for some applications, but if you don't have one of
-those its a real headache.  Many programs set this field to something
-obnoxious like 0,0 (upper left corner).
-
-With
-.I ActivePlacement
-the user is required to place every new window manually.  The window
-will only show as a rubber band until a place is selected manually.
-The window is placed when a mouse button or any key except
-.SM Escape
-is pressed which aborts manual placement.  If the user aborts
-placing the window it is dumped in the top left corner of the screen.
-If mouse button 2 is pressed during the initial placement of a window
-(respectively
-.SM Shift
-and mouse button 1 in case Mwm emulation has been enabled with the
-.B Emulate
-command), the user is asked to resize the window too.  Pressing
-button 3 sets the
-.I MovedButton3
-condition (see
-.B Current
-command).  If you like this a lot, you will probably also want
-.IR DumbPlacement .
-See also
-.IR RandomPlacement ", " DumbPlacement ", and " SmartPlacement .
-
-Example:
-.EX
-Style * ActivePlacement, DumbPlacement
-
-*FvwmEventPassID
-*FvwmEventadd_window GrowDownFunc
-AddToFunc StartFunction
-+ I FvwmEvent
-
-AddToFunc GrowDownFunc
-+ I windowid $0 (MovedButton3) \\
-  Resize bottomright keep -0p
-.EE
-Now, whenever a window with the name or class "XTerm" is created
-and the user presses button 3 to finish initial placement, the
-window is automatically enlarged until it hits the bottom screen
-border.
-
-.I RandomPlacement
-causes windows which would normally require user placement to be
-automatically placed in ever-so-slightly random locations.  For
-the best of all possible worlds use both
-.IR RandomPlacement ", " SmartPlacement " and " CleverPlacement .
-See also
-.IR ActivePlacement ", " SmartPlacement " and " DumbPlacement .
-
-.I SmartPlacement
-tries to automatically place new windows in a smart
-location - a location in which they do not overlap any other
-windows on the screen.  If no such position can be found user
-placement or random placement (if specified) will be used as a
-fall-back method.  For the best of all possible worlds use both
-.IR RandomPlacement " and " SmartPlacement .
-See also
-.IR ActivePlacement ", " RandomPlacement ", and " DumbPlacement .
-
-.I CleverPlacement
-augments the
-.I SmartPlacement
-style so that it tries to avoid overlapping icons, sticky windows
-and windows on higher layers.  If
-.I SmartPlacement
-is not used,
-.I CleverPlacement
-has no effect.  To switch this style off again, use the
-.I CleverPlacementOff
-style.
-
-.I IDumbPlacement
-is the opposite of SmartPlacement.  This means that fvwm will
-not even consider a smart window location.  It forces fvwm to
-use the selected
-.IR ActivePlacement " or " RandomPlacement
-behavior.  Note that the default is
-.IR SmartPlacement ,
-so if you really like your
-.IR ActivePlacement ,
-then specify this as well.
-.I DumbPlacement
-switches off both,
-.IR SmartPlacement " and " CleverPlacement .
 
 .I StartsLowered
 instructs fvwm to put the window initially at the bottom of
