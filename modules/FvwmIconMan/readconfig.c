@@ -65,15 +65,15 @@ FunctionType builtin_functions[] = {
   { "jmp",         builtin_jmp,         1, { JmpArg } },
   { "label",	   builtin_label,	1, { StringArg } },
   { "print",       builtin_print,       1, { StringArg } },
-  { "printdebug",  builtin_printdebug,  0, {} },
-  { "quit",        builtin_quit,        0, {} },
-  { "refresh",     builtin_refresh,     0, {} },
-  { "ret",         builtin_ret,         0, {} },
+  { "printdebug",  builtin_printdebug,  0, {0} },
+  { "quit",        builtin_quit,        0, {0} },
+  { "refresh",     builtin_refresh,     0, {0} },
+  { "ret",         builtin_ret,         0, {0} },
   { "searchback",  builtin_searchback,  1, { StringArg } },
   { "searchforward", builtin_searchforward, 1, { StringArg } },
-  { "select",      builtin_select,      0, {} },
+  { "select",      builtin_select,      0, {0} },
   { "sendcommand", builtin_sendcommand, 1, { StringArg } },
-  { "warp",        builtin_warp,        0, {} }
+  { "warp",        builtin_warp,        0, {0} }
 };
 
 static int num_builtins = sizeof (builtin_functions) / sizeof (FunctionType);

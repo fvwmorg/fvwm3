@@ -67,7 +67,7 @@ typedef struct XGlobals_struct {
   unsigned w,h; /*width of window*/
   int dbx,dby; /* the x,y pos of drop box*/
   unsigned dbw,dbh; /*the width and height of the drop box*/
-  int xneg,yneg,usposition; /*window size stuff*/;
+  int xneg,yneg,usposition; /*window size stuff*/
   XSizeHints sizehints;
 } XGlobals;
 

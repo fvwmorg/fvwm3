@@ -1,3 +1,10 @@
+1999-12-17  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmIconMan/readconfig.c: Keep TRU64 compiler happy by changing
+	structure initialization from {} to {0}.
+
+	* FvwmDragWell/fvwmDragWell.h: remove spurious ;.
+
 1999-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmBacker/FvwmBacker.c (ProcessMessage):
