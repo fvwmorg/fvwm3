@@ -1,5 +1,13 @@
 2002-07-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmPager/x_pager.c (draw_desk_background):
+	(initialize_pager):
+	(ReConfigure):
+	fixed drawing of the active page when resizing the pager
+	(DispatchEvent):
+	fixed problem w/ pager not updating properly when getting expose events
+	right after a resize
+
 	* FvwmPager/FvwmPager.c (ParseOptions):
 	fixed negative balloon offsets
 
