@@ -552,7 +552,7 @@ Main
    If (GetValue 39) == 6 Then
      ChangeTitle 40 {gmc}
    If (GetValue 39) == 7 Then
-     ChangeTitle 40 {/usr/bin/dt/dtfile}
+     ChangeTitle 40 {/usr/dt/bin/dtfile}
    If (GetValue 39) == 8 Then
      ChangeTitle 40 {kexplorer}
   End

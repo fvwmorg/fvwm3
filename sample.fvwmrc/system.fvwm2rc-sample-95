@@ -132,7 +132,7 @@
 
 # The default image path is:
 #         /usr/include/X11/bitmap:/usr/include/X11/pixmaps
-# if the FVWM_icons are not installed in one of these directories or if
+# if the fvwm_icons are not installed in one of these directories or if
 # you want to add a personal image path uncomment and edit the next line
 #ImagePath :add_dir_to_fvwm_image_path:+
 
@@ -3042,10 +3042,10 @@ DestroyModuleConfig FvwmWinList*
 # * Some (mini-)icons are missing in menus and in buttons!
 #
 # If you have no mini(-icons) then either your ImagePath does not contain
-# the directory of the FVWM_icons or you are using a RedHat/Mandrake/... rpm
+# the directory of the fvwm_icons or you are using a RedHat/Mandrake/... rpm
 # version of fvwm-icons which uses mini- in the place of mini. for 
 # mini-icons name. If only some mini(-icons) are missing, then you are using
-# a too old version of FVWM_icons.
+# a too old version of fvwm_icons.
 #
 #                  ----------------------------------------
 #
