@@ -68,6 +68,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	MenuReturn mret;
 	FvwmWindow * const fw = exc->w.fw;
 	const Window w = exc->w.w;
+	const exec_context_t *exc2;
 
 	memset(&mops, 0, sizeof(mops));
 	memset(&mret, 0, sizeof(MenuReturn));
@@ -101,7 +102,8 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = menu;
-	mp.pexc = &exc;
+	exc2 = exc_clone_context(exc, NULL, 0);
+	mp.pexc = &exc2;
 	MR_IS_TEAR_OFF_MENU(menu) = 0;
 	mp.flags.has_default_action = (action != NULL);
 	mp.flags.is_sticky = fStaysUp;
@@ -114,8 +116,9 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	do_menu(&mp, &mret);
 	if (mret.rc == MENU_DOUBLE_CLICKED && action)
 	{
-		execute_function(cond_rc, exc, action, 0);
+		execute_function(cond_rc, exc2, action, 0);
 	}
+	exc_destroy_context(exc2);
 
 	return;
 }

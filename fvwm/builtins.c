@@ -2365,14 +2365,11 @@ void CMD_Destroy(F_CMD_ARGS)
 		return;
 	}
 	if (XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
-	{
-		destroy_window(fw);
-	}
-	else
+			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) != 0)
 	{
 		XKillClient(dpy, FW_W(fw));
 	}
+	destroy_window(fw);
 	XFlush(dpy);
 
 	return;
@@ -2398,16 +2395,13 @@ void CMD_Close(F_CMD_ARGS)
 			dpy, FW_W(fw), _XA_WM_DELETE_WINDOW, CurrentTime);
 		return;
 	}
-	else if (XGetGeometry(
+	if (XGetGeometry(
 			 dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
-	{
-		destroy_window(fw);
-	}
-	else
+			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) != 0)
 	{
 		XKillClient(dpy, FW_W(fw));
 	}
+	destroy_window(fw);
 	XFlush(dpy);
 
 	return;

@@ -1,3 +1,14 @@
+2003-04-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/builtins.c (CMD_Destroy):
+	(CMD_Close):
+	call destroy_window right after XKillClient; do not wait for the window
+	to die on its own
+
+	* fvwm/menucmd.c (menu_func):
+	* fvwm/windowlist.c (CMD_WindowList):
+	fixed core dumps
+
 2003-04-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* INSTALL.fvwm:

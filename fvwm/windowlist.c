@@ -242,6 +242,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	Bool was_get_menu_opts_called = False;
 	FvwmWindow * const fw = exc->w.fw;
 	const Window w = exc->w.w;
+	const exec_context_t *exc2;
 
 	memset(&mops, 0, sizeof(mops));
 	memset(&mret, 0, sizeof(MenuReturn));
@@ -1055,7 +1056,8 @@ void CMD_WindowList(F_CMD_ARGS)
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = mr;
-	mp.pexc = &exc;
+	exc2 = exc_clone_context(exc, NULL, 0);
+	mp.pexc = &exc2;
 	mp.flags.has_default_action = (default_action && *default_action != 0);
 	mp.flags.is_sticky = 1;
 	mp.flags.is_submenu = 0;
@@ -1074,7 +1076,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	DestroyMenu(mr, False, False);
 	if (mret.rc == MENU_DOUBLE_CLICKED && default_action && *default_action)
 	{
-		execute_function(cond_rc, exc, default_action, 0);
+		execute_function(cond_rc, exc2, default_action, 0);
 	}
 	if (default_action != NULL)
 	{
@@ -1084,6 +1086,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	{
 		FreeConditionMask(&mask);
 	}
+	exc_destroy_context(exc2);
 
 	return;
 }

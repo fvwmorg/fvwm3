@@ -6125,6 +6125,9 @@ void menu_close_tear_off_menu(FvwmWindow *fw)
  *             in builtin.c
  *
  * Returns one of MENU_NOP, MENU_ERROR, MENU_ABORTED, MENU_DONE
+ * do_menu() may destroy the *pmp->pexec member and replace it with a new
+ * copy.  Be sure not to rely on the original structure being kept intact
+ * when calling do_menu().
  ***************************************************************************/
 void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 {
