@@ -1,3 +1,7 @@
+1999-02-18  Dan Espen  <dane@mk.bellcore.com>
+
+	* side.fvwm2.xpm: Added side Pixmap and README.side.
+
 1998-11-11  Dan Espen  <dane@mk.bellcore.com>
 
 	* xterm-bsd.xpm: Replaced illegally copied xterm-bsd.xpm with a
