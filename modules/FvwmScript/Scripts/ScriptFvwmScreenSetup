@@ -1,5 +1,5 @@
 WindowTitle {Screen Setup}
-WindowSize 430 530		# Taille
+WindowSize 695 400		# Taille
 #ForeColor	{black}
 #BackColor	{grey85}
 #ShadowColor	{grey55}
@@ -8,7 +8,14 @@ WindowSize 430 530		# Taille
 
 Init
  Begin
-  WarpPointer 2
+  WarpPointer 1
+
+  Set $FILE=(GetScriptArgument 1)
+  If $FILE=={} Then
+   Set $FILE={.xinitrc-fvwm}
+  Set $CAT={cat ~/} $FILE
+
+  #Screen Saver
   Set $pos=0
   Set $finish=1
   While $finish=={1} Do
@@ -23,50 +30,88 @@ Init
   If $pos=={50} Then
   Begin
    Do {Echo ScreenSetup: uncompatible xset}
-   Quit
+   #Quit
   End
   Set $pos=(Add $pos 1)
-  If (GetOutput  {xset -q} $pos 3) == yes Then
+  If (GetOutput  {xset -q} $pos 3) == {yes} Then
    ChangeValue 10 1
   Else
    ChangeValue 11 1
   Set $pos=(Add $pos 1)
   ChangeTitle 14 (GetOutput {xset -q} $pos 2)
   ChangeTitle 15 (GetOutput {xset -q} $pos 4)
+
+  # Dpms
   Set $pos=0
   Set $finish=1
   While $finish=={1} Do
   Begin
     Set $pos=(Add $pos 1)
-    Set $tmp=(GetOutput {cat ~/.xinitrc-fvwm} $pos 3)
+    Set $tmp=(GetOutput {xset -q} $pos 1)
+    If $tmp=={Font} Then
+      Set $finish=0
+    If $pos=={30} Then
+      Set $finish=0
+  End
+  If $pos=={50} Then
+  Begin
+   Do {Echo ScreenSetup: uncompatible xset}
+   Quit
+  End
+  Set $pos=(Add $pos 4)
+  ChangeTitle 63 (GetOutput {xset -q} $pos 2)
+  ChangeTitle 65 (GetOutput {xset -q} $pos 4)
+  ChangeTitle 67 (GetOutput {xset -q} $pos 6)
+  Set $pos=(Add $pos 1)
+  If (GetOutput  {xset -q} $pos 3) == {Enabled} Then
+   ChangeValue 60 1
+  Else
+   ChangeValue 61 1
+
+  # Background
+  Set $pos=0
+  Set $finish=1
+  While $finish=={1} Do
+  Begin
+    Set $pos=(Add $pos 1)
+    Set $tmp=(GetOutput $CAT $pos 1)
     If $tmp=={#ScreenMark} Then
       Set $finish=0
     If $pos=={50} Then
       Set $finish=0
   End
-  Set $pos=(Add $pos 2)
-  Set $BColor=(StrCopy (GetOutput  {cat ~/.xinitrc-fvwm} $pos 3) 2 8)
-  If (StrCopy $BColor 1 1)<>{#} Then
+  ChangeValue 4 0
+  ChangeValue 5 0
+  ChangeValue 50 1
+  Set $BColor={#0EC4B8}
+  ChangeTitle 7 {/usr/include/X11/pixmaps/fvwm2.xpm}
+  ChangeIcon 8 /usr/include/X11/pixmaps/fvwm2.xpm
+  Set $pos=(Add $pos 1)
+  Set $test=(GetOutput  $CAT $pos 1)
+  If $test=={xpmroot} Then
   Begin
-   Set $BColor={#0EC4B8}
-   ChangeTitle 7 (GetOutput  {cat ~/.xinitrc-fvwm} $pos 2)
+   ChangeTitle 7 (GetOutput  $CAT $pos 2)
    ChangeIcon 8 (GetTitle 7)
-   ChangeValue 4 0
+   ChangeValue 50 0
    ChangeValue 5 1
   End
-  Else
+  If $test=={xsetroot} Then
   Begin
-    ChangeTitle 7 {/usr/include/X11/pixmaps/fvwm2.xpm}
-    ChangeIcon 8 /usr/include/X11/pixmaps/fvwm2.xpm
-    ChangeValue 4 1
-    ChangeValue 5 0
-    ChangeTitle 24 $BColor
-    ChangeBackColor 6 $BColor
-    ChangeValue 20 (HexToNum (StrCopy $BColor 2 3))
-    ChangeValue 21 (HexToNum (StrCopy $BColor 4 5))
-    ChangeValue 22 (HexToNum (StrCopy $BColor 6 7))
+   Set $BColor=(StrCopy (GetOutput  $CAT $pos 3) 2 8)
+   ChangeValue 4 1
+   ChangeValue 50 0
+   ChangeTitle 24 $BColor
+   ChangeBackColor 6 $BColor
+   ChangeValue 20 (HexToNum (StrCopy $BColor 2 3))
+   ChangeValue 21 (HexToNum (StrCopy $BColor 4 5))
+   ChangeValue 22 (HexToNum (StrCopy $BColor 6 7))
   End
- End
+  # xscreensaver
+  Set $pos=(Add $pos 3)
+  Set $xsstest=(GetOutput $CAT $pos 1)
+  If $xsstest=={xscreensaver} Then
+   ChangeValue 72 1
+End
 
 PeriodicTasks
  Begin
@@ -78,63 +123,114 @@ PeriodicTasks
   End
  End
 
+#-----------------------------------------------------------------------------
+# Ok, apply and cancel buttons
+
 Widget 1
 Property
- Size 50 30
- Position 100 480
+ Size 70 30
+ Position 180 355
  Type PushButton
  Title {Apply}
 Main
  Case message of
   SingleClic :
   Begin
+   # Background
+   If (GetValue 5) == 1 Then
+    Do {Exec xpmroot } (GetTitle 7)
+   If (GetValue 4) == 1 Then
+    Do {Exec xsetroot -solid "} $BColor {"}
+   # screen-saver
    Do {Exec xset s } (GetTitle 14) { } (GetTitle 15)
    If (GetValue 10)==1 Then
     Do {Exec xset s blank}
    Else
     Do {Exec xset s noblank}
-   If (GetValue 5) == 1 Then
-    Do {Exec xpmroot } (GetTitle 7)
+   # dpms
+   If (GetValue 60)==1 Then
+    Do {Exec xset dpms } (GetTitle 63) { } (GetTitle 65) { } (GetTitle 67)
    Else
-    Do {Exec xsetroot -solid "} $BColor {"}
+    Do {Exec xset -dpms}
+   # xscreensaver
+   If (GetValue 72) == 1 Then
+   Begin
+    Do {Exec xscreensaver-command -exit}
+    Do {Exec xscreensaver -no-splash&}
+   End
+   Else
+    Do {Exec exec xscreensaver-command -exit}
   End
 End
 
 Widget 2
 Property
- Size 50 30
- Position 190 480
+ Size 70 30
+ Position 315 355
  Type PushButton
  Title {OK}
 Main
  Case message of
   SingleClic :
   Begin
-   WriteToFile .xinitrc-fvwm {#ScreenMark}
+   WriteToFile $FILE {#ScreenMark}
+
+   # Background
+   If (GetValue 5)==1 Then
+   Begin
+    Do {Exec xpmroot } (GetTitle 7)
+    WriteToFile $FILE {xpmroot } (GetTitle 7)
+   End
+   If (GetValue 4)==1 Then
+   Begin
+    Do {Exec xsetroot -solid "} $BColor {"}
+    WriteToFile $FILE {xsetroot -solid "} $BColor {"}
+   End
+   If (GetValue 50)==1 Then
+     WriteToFile $FILE {#xsetroot -solid "} $BColor {"}
+
+   # saver
    If (GetValue 10)==1 Then
     Set $tmp2 = { s blank}
    Else
     Set $tmp2 = { s noblank}
    Do {Exec xset s } (GetTitle 14) { } (GetTitle 15) $tmp2
-   If (GetValue 5) == 1 Then
+   WriteToFile $FILE {xset s } (GetTitle 14) { } (GetTitle 15) $tmp2
+
+   # dpms
+   If (GetValue 60)==1 Then
    Begin
-    Do {Exec xpmroot } (GetTitle 7)
-    WriteToFile .xinitrc-fvwm {xpmroot } (GetTitle 7)
+    Do {Exec xset dpms } (GetTitle 63) { } (GetTitle 65) { } (GetTitle 67)
+    WriteToFile $FILE {xset dpms } (GetTitle 63) { } (GetTitle 65) { } (GetTitle 67)
    End
    Else
    Begin
-    Do {Exec xsetroot -solid "} $BColor {"}
-    WriteToFile .xinitrc-fvwm {xsetroot -solid "} $BColor {"}
+    Do {Exec xset -dpms}
+    WriteToFile $FILE {xset -dpms}
    End
-   WriteToFile .xinitrc-fvwm {xset s } (GetTitle 14) { } (GetTitle 15) $tmp2
+
+   # xscreensaver
+   If (GetValue 72) == 1 Then
+   Begin
+    Do {Exec xscreensaver-command -exit}
+    Do {Exec xscreensaver -no-splash&}
+    WriteToFile $FILE {xscreensaver}
+   End
+   Else
+   Begin
+    Do {Exec exec xscreensaver-command -exit}
+    WriteToFile $FILE {#xscreensaver}
+   End
+   
+   Do {Exec chmod +x } $FILE
    Quit
   End
 End
 
 Widget 3
 Property
- Size 50 30
- Position 280 480
+ Size 70 30
+ Position 450 355
  Type PushButton
  Title {Cancel}
 Main
@@ -145,31 +241,47 @@ Main
   End
 End
 
+#----------------------------------------------------------------------------
+# Left rectangle
+
+Widget 16
+Property
+ Size 410 330
+ Position 10 13
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 18
+Property
+ Position 15 5
+ Type ItemDraw
+ Title {Background}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+#---------- Uniform color
+
 Widget 4
 Property
  Position 30 30
  Type RadioButton
- Title {Uniform colour:}
- Value 1
+ Title {Uniform color:}
 Main
  Case message of
   SingleClic :
   Begin
+   ChangeValue 4 1
    ChangeValue 5 0 
-  End
-End
-
-Widget 5
-Property
- Position 30 240
- Type RadioButton
- Title {Pixmap:}
- Value 0
-Main
- Case message of
-  SingleClic :
-  Begin
-   ChangeValue 4 0 
+   ChangeValue 50 0
   End
 End
 
@@ -200,7 +312,7 @@ End
 
 Widget 24
 Property
- #Size 50 50
+ Size 50 50
  Position 58 140
  Type ItemDraw
  Title {#0EC4B8}
@@ -265,13 +377,29 @@ Main
   End
 End
 
+#--------- Pixmaps
+
+Widget 5
+Property
+ Position 30 220
+ Type RadioButton
+ Title {Pixmap:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 4 0
+   ChangeValue 5 1
+   ChangeValue 50 0
+  End
+End
+
 Widget 7
 Property
  Size 280 30
- Position 30 300
+ Position 30 280
  Type TextField
  Title {/usr/X11/include/X11/pixmaps/fvwm2.xpm}
- Value 200
 Main
  Case message of
   SingleClic :
@@ -282,7 +410,7 @@ End
 
 Widget 25
 Property
- Position 327 299
+ Position 327 279
  Type PushButton
  Title {Browser...}
 Main
@@ -297,7 +425,7 @@ End
 Widget 8
 Property
  Size 175 75
- Position 120 215
+ Position 120 195
  Type ItemDraw
  Icon /usr/X11/include/X11/pixmaps/fvwm2.xpm
 Main
@@ -310,7 +438,7 @@ End
 Widget 9
 Property
  Size 179 79
- Position 118 213
+ Position 118 193
  Type Rectangle
 Main
  Case message of
@@ -319,99 +447,31 @@ Main
   End
 End
 
-Widget 10
+#--------- Disabled
+
+Widget 50
 Property
- Position 50 380
+ Position 30 320
  Type RadioButton
- Title {Blank}
+ Title {Disable xinit background}
 Main
  Case message of
   SingleClic :
   Begin
-   ChangeValue 11 0
+   ChangeValue 4 0
+   ChangeValue 5 0
+   ChangeValue 50 1
   End
 End
 
-Widget 11
-Property
- Position 50 425
- Type RadioButton
- Title {Pattern}
-Main
- Case message of
-  SingleClic :
-  Begin
-   ChangeValue 10 0
-  End
-End
-
-Widget 12
-Property
- Position 230 380
- Type ItemDraw
- Title {Timeout(s):}
-Main
- Case message of
-  SingleClic :
-  Begin
-  End
-End
-
-Widget 13
-Property
- Position 230 425
- Type ItemDraw
- Title {Cycle(s):}
-Main
- Case message of
-  SingleClic :
-  Begin
-   ChangeValue 10 0
-  End
-End
-
-Widget 14
-Property
- Size 80 79
- Position 310 375
- Type TextField
-Main
- Case message of
-  SingleClic :
-  Begin
-  End
-End
-
-Widget 15
-Property
- Size 80 79
- Position 310 420
- Type TextField
-Main
- Case message of
-  SingleClic :
-  Begin
-   ChangeValue 10 0
-  End
-End
-
-Widget 16
-Property
- Size 410 330
- Position 10 13
- Type Rectangle
-Main
- Case message of
-  SingleClic :
-  Begin
-  End
-End
+#----------------------------------------------------------------------------
+# Right up rectangle
 
 
 Widget 17
 Property
- Size 410 105
- Position 10 355
+ Size 260 105
+ Position 425 13
  Type Rectangle
 Main
  Case message of
@@ -420,22 +480,9 @@ Main
   End
 End
 
-Widget 18
-Property
- Position 15 5
- Type ItemDraw
- Title {Background}
-Main
- Case message of
-  SingleClic :
-  Begin
-  End
-End
-
-
 Widget 19
 Property
- Position 15 347
+ Position 430 5
  Type ItemDraw
  Title {Screen-saver}
 Main
@@ -446,9 +493,281 @@ Main
 End
 
 
+Widget 10
+Property
+ Position 440 40
+ Type RadioButton
+ Title {Blank}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 11 0
+  End
+End
+
+Widget 12
+Property
+ Position 505 40
+ Type ItemDraw
+ Title {Timeout(s):}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 14
+Property
+ Size 80 79
+ Position 590 37
+ Type TextField
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 11
+Property
+ Position 440 85
+ Type RadioButton
+ Title {Pattern}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 10 0
+  End
+End
 
 
+Widget 13
+Property
+ Position 525 85
+ Type ItemDraw
+ Title {Cycle(s):}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 10 0
+  End
+End
 
+Widget 15
+Property
+ Size 80 79
+ Position 590 82
+ Type TextField
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 10 0
+  End
+End
+
+
+#----------------------------------------------------------------------------
+# Right middle rectangle
+
+
+Widget 57
+Property
+ Size 260 135
+ Position 425 128
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 59
+Property
+ Position 430 120
+ Type ItemDraw
+ Title {DPMS}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 60
+Property
+ Position 440 150
+ Type RadioButton
+ Title {Enable}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 61 0
+  End
+End
+
+
+Widget 61
+Property
+ Position 580 150
+ Type RadioButton
+ Title {Disable}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 60 0
+  End
+End
+
+Widget 62
+Property
+ Position 440 180
+ Type ItemDraw
+ Title {Standby(s):}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 63
+Property
+ Size 60 20
+ Position 530 177
+ Type TextField
+ Title{1000}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 64
+Property
+ Position 440 205
+ Type ItemDraw
+ Title {Suspend(s):}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 65
+Property
+ Size 60 20
+ Position 530 202
+ Type TextField
+ Title{1000}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 66
+Property
+ Position 440 230
+ Type ItemDraw
+ Title {Off(s):}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 67
+Property
+ Size 60 20
+ Position 530 227
+ Type TextField
+ Title{1000}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+#----------------------------------------------------------------------------
+# Right down rectangle
+
+
+Widget 70
+Property
+ Size 260 65
+ Position 425 278
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 71
+Property
+ Position 430 270
+ Type ItemDraw
+ Title {xscreensaver}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 72
+Property
+ Position 440 298
+ Type CheckBox
+ Title {Enable}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 72) == 1 Then
+   Begin
+    Set $SSTIMOUT= (GetTitle 14)
+    Set $SSCYCLE= (GetTitle 15)
+    ChangeTitle 14 {0}
+    ChangeTitle 15 {0}
+   End
+   Else
+   Begin
+    ChangeTitle 14 $SSTIMOUT
+    ChangeTitle 15 $SSCYCLE
+   End 
+  End
+End
+
+
+Widget 73
+Property
+ Position 550 295
+ Type PushButton
+ Title {Config and Demo}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do {Exec xscreensaver-command -prefs&}
+  End
+End
 
 
 

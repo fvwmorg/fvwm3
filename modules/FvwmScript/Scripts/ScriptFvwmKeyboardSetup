@@ -1,5 +1,5 @@
 WindowTitle {Keyboard Setup}
-WindowSize 360 250		# Taille
+WindowSize 360 240		# Taille
 #ForeColor	{black}
 #BackColor	{grey85}
 #ShadowColor	{grey55}
@@ -9,6 +9,10 @@ WindowSize 360 250		# Taille
 Init
  Begin
   WarpPointer 2
+  Set $FILE=(GetScriptArgument 1)
+  If $FILE=={} Then
+   Set $FILE={.xinitrc-fvwm}
+
   Set $pos=0
   Set $finish=1
   While $finish=={1} Do
@@ -36,7 +40,7 @@ Init
 Widget 1
 Property
  Size 50 30
- Position 100 200
+ Position 55 200
  Type PushButton
  Title {Apply}
 Main
@@ -54,7 +58,7 @@ End
 Widget 2
 Property
  Size 50 30
- Position 190 200
+ Position 155 200
  Type PushButton
  Title {OK}
 Main
@@ -65,13 +69,14 @@ Main
    If (GetValue 6) == 1 Then
    Begin
     Do {Exec xset r on r rate }  (GetTitle 7) { } (GetTitle 9)
-    WriteToFile .xinitrc-fvwm {xset r on r rate }  (GetTitle 7) { } (GetTitle 9) { c } (GetValue 4)
+    WriteToFile $FILE {xset r on r rate }  (GetTitle 7) { } (GetTitle 9) { c } (GetValue 4)
    End
    Else
    Begin
     Do {Exec xset r off}
-    WriteToFile .xinitrc-fvwm {xset r off c } (GetValue 4)
+    WriteToFile $FILE {xset r off c } (GetValue 4)
    End
+   Do {Exec chmod +x ~/} $FILE
    Quit
   End
 End
@@ -79,7 +84,7 @@ End
 Widget 3
 Property
  Size 50 30
- Position 280 200
+ Position 255 200
  Type PushButton
  Title {Cancel}
 Main

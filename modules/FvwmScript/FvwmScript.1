@@ -527,9 +527,11 @@ You will find examples of scripts in the fvwm configuration directory.
 
 ScriptFvwmBellSetup, ScriptFvwmKeyboardSetup, ScriptFvwmPointerSetup and
 ScriptFvwmScreenSetup are a set of scripts that modify X settings.
-These scripts save preferences into a file named ~/.xinit-fvwmrc. If you want 
-to load these preferences at every startup, you have to include the line 
-".xinit-fvwmrc" in your .xinitrc (or .xsession) file before starting fvwm.
+These scripts save preferences into a file named ~/.xinit-fvwmrc (If you want 
+to use another file name, give it as the first argument of the script). 
+If you want to load these preferences at every startup, you have to include 
+the line  ".xinit-fvwmrc" in your .xinitrc (or .xsession) file before 
+starting fvwm.
 
 ScriptFvwmBaseConfig modifies fvwm
 focus and paging mouse policy, window placement, opacity and

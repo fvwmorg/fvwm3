@@ -166,7 +166,7 @@ void SlideWindow(
     if (keep_y2)
       g_h = s_y + s_h - y;
     
-    if (w < min_w || h < min_h)
+    if (g_w < min_w || g_h < min_h)
     {
       /* don't show zero width/height windows */
       if (is_mapped)
@@ -178,6 +178,7 @@ void SlideWindow(
     else
     {
       XMoveResizeWindow(dpy, win, x, y, g_w, g_h);
+      fprintf(stderr, "x: %i, y: %i, w: %i, h: %i\n", x, y, g_w, g_h);
       if (!is_mapped)
       {
 	XMapWindow(dpy, win);

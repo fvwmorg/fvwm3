@@ -1,3 +1,11 @@
+2000-01-26 olicha	<olivier.chapuis@free.fr>
+	* FvwmScript/Scripts/ScriptFvwmBellSetup:
+	* FvwmScript/Scripts/ScriptFvwmKeyboardSetup:
+	* FvwmScript/Scripts/ScriptFvwmPointerSetup:
+	* FvwmScript/Scripts/ScriptFvwmSreenSetup:
+	* FvwmScript/FvwmScript.1:
+	Some fixes
+	
 2000-01-24  Hippo
 
 	* FvwmIconMan/xmanager.c: Fixed dissapearing mini-icons

@@ -1,5 +1,5 @@
 WindowTitle {Pointer Setup}
-WindowSize 320 290		# Taille
+WindowSize 320 250		# Taille
 #ForeColor	{black}
 #BackColor	{grey85}
 #ShadowColor	{grey55}
@@ -9,6 +9,11 @@ WindowSize 320 290		# Taille
 Init
  Begin
   WarpPointer 2
+
+  Set $FILE=(GetScriptArgument 1)
+  If $FILE=={} Then
+   Set $FILE={.xinitrc-fvwm}
+
   Set $pos=0
   Set $finish=1
   While $finish=={1} Do
@@ -39,7 +44,7 @@ Init
 Widget 1
 Property
  Size 50 30
- Position 70 230
+ Position 45 210
  Type PushButton
  Title {Apply}
 Main
@@ -57,7 +62,7 @@ End
 Widget 2
 Property
  Size 50 30
- Position 160 230
+ Position 135 210
  Type PushButton
  Title {OK}
 Main
@@ -65,17 +70,18 @@ Main
   SingleClic :
   Begin
    Do {Exec xset m } (GetValue 6) {/20 } (GetTitle 8)
-   WriteToFile .xinitrc-fvwm {xset m } (GetValue 6) {/20 } (GetTitle 8)
+   WriteToFile $FILE {xset m } (GetValue 6) {/20 } (GetTitle 8)
    If (GetValue 4) == 1 Then
    Begin
     Do {Exec xmodmap -e "pointer = 1 2 3"}
-    WriteToFile .xinitrc-fvwm {xmodmap -e "pointer = 1 2 3"}
+    WriteToFile $FILE {xmodmap -e "pointer = 1 2 3"}
    End
    Else
    Begin
     Do {Exec xmodmap -e "pointer = 3 2 1"}
-    WriteToFile .xinitrc-fvwm {xmodmap -e "pointer = 3 2 1"}
+    WriteToFile $FILE {xmodmap -e "pointer = 3 2 1"}
    End
+      Do {Exec chmod +x ~/} $FILE
    Quit
   End
 End
@@ -83,7 +89,7 @@ End
 Widget 3
 Property
  Size 50 30
- Position 250 230
+ Position 225 210
  Type PushButton
  Title {Cancel}
 Main

@@ -1,3 +1,7 @@
+2000-01-26 olicha	<olivier.chapuis@free.fr>
+	* fvwm/screen.h: a "-Wall" fix to BUSYCURSOR ifdef
+	* libs/WinMagic.c: corrected a missprint
+	
 2000-01-25  Hippo
 
 	* fvwm/fvwm.h: split into fvwm.h and externs.h for FvwmIdent
@@ -68,7 +72,6 @@
 	* fvwm/fvwm.{c,h} (StartupStuff, InitVariables):
 	* fvwm/menus.c (MenuInteraction, pop_menu_up):
 	* fvwm/misc.{c,h} (GrabEm, UngrabEm):
-	* fvwm/module_interface.c (ExecuteModuleSync):
 	* fvwm/module_interface.c (ExecuteModuleSync):
 	* fvwm/read.c (cursor_control, ReadFile, PipeRead):
 	* fvwm/screen.h (ScreenInfo):
