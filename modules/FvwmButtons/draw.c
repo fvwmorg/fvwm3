@@ -59,39 +59,39 @@
 *** Draws the relief pattern around a window.
 **/
 void RelieveButton(Window wn,int width,int x,int y,int w,int h,Pixel relief,
-		   Pixel shadow,int rev)
+		   Pixel shadow,int rev,Bool useFvwmLook)
 {
-  XSegment seg[4];
   unsigned long gcm=0;
   XGCValues gcv;
-  Pixel p;
-  int i,j;
+  GC swapGC, reliefGC, shadowGC;
 
   if(!width)
     return;
-  if(width<0)
-    {
-      width=-width;
-      p=relief;
-      relief=shadow;
-      shadow=p;
-    }
-  if(rev)
-    {
-      p=relief;
-      relief=shadow;
-      shadow=p;
-    }
 
-  gcm=GCForeground;
-  gcv.foreground=relief;
-  XChangeGC(Dpy,NormalGC,gcm,&gcv);
+  if (!useFvwmLook) {
+    gcm=GCForeground;
+    gcv.foreground=relief;
+    XChangeGC(Dpy,NormalGC,gcm,&gcv);
+    reliefGC=NormalGC;
 
-  gcm=GCForeground;
-  gcv.foreground=shadow;
-  XChangeGC(Dpy,ShadowGC,gcm,&gcv);
+    gcm=GCForeground;
+    gcv.foreground=shadow;
+    XChangeGC(Dpy,ShadowGC,gcm,&gcv);
+    shadowGC=ShadowGC;
+  } else {
+    reliefGC=G->reliefGC;
+    shadowGC=G->shadowGC;
+  }
 
-  RelieveRectangle(Dpy, wn, x, y, w-1, h-1, NormalGC, ShadowGC, width);
+  if(width<0) {
+    width=-width;
+    swapGC=reliefGC;reliefGC=shadowGC;shadowGC=swapGC;
+  }
+  if(rev) {
+    swapGC=reliefGC;reliefGC=shadowGC;shadowGC=swapGC;
+  }
+
+  RelieveRectangle(Dpy,wn,x,y,w-1,h-1,reliefGC,shadowGC,width);
 }
 
 /**
@@ -214,24 +214,8 @@ void RedrawButton(button_info *b,int clean)
 	}
     }
 
-  /* draw relief around button with lib functions if using fvwm graphics */
-  if (b->flags&b_FvwmLook)
-  {
-    GC reliefGC = G->reliefGC;
-    GC shadowGC = G->shadowGC;
-    GC temp;
-
-    if(f<0) {
-      f=-f;
-      temp=reliefGC;reliefGC=shadowGC;shadowGC=temp;
-    }
-    if(rev) {
-      temp=reliefGC;reliefGC=shadowGC;shadowGC=temp;
-    }
-    RelieveRectangle(Dpy, MyWindow, x, y, BW, BH, reliefGC, shadowGC, f);
-  }
-  else
-    RelieveButton(MyWindow,f,x,y,BW,BH,buttonHilite(b),buttonShadow(b),rev);
+  RelieveButton(MyWindow,f,x,y,BW,BH,buttonHilite(b),buttonShadow(b),rev,
+		b->flags&b_FvwmLook);
 
   /* ----------------------------------------------------------------------- */
 
