@@ -82,6 +82,9 @@ is used.
 By default FvwmWinlist will show the button for the window that has the
 input focus as pressed in. This option disables that feature.
 
+.IP "*FvwmWinListButtonFrameWidth \fIwidth\fP"
+Specify the width of the 3D borders around the buttons in FwvmWinList.
+ 
 .IP "*FvwmWinListFollowWindowList"
 Specifies that FvwmWinList will keep its list in the same order as FVWM. This is
 the order displayed by the "WindowList NoDeskSort" FVWM command. This is not the
@@ -156,6 +159,9 @@ Mouse 3   R   A   Module "FvwmWinList" FvwmWinList Transient
 #*FvwmWinListLeftJustify
 # I like it achored
 #*FvwmWinListNoAnchor
+# A flat list in most recently focused order
+#*FvwmWinListFollowWindowList
+#*FvwmWinListBorderReliefWidth 0
 
 .sp
 .fi

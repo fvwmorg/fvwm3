@@ -58,10 +58,10 @@ Button *ButtonNew(char *title, Picture *p, int up)
     new->p.width = p->width;
     new->p.height = p->height;
     new->p.depth = p->depth;
+  } else {
+    new->p.picture = 0;
+    new->p.width = 0;
   }
-  else
-
-  new->p.picture = 0;
 
   new->up = up;
   new->next = NULL;
@@ -73,14 +73,15 @@ Button *ButtonNew(char *title, Picture *p, int up)
 /******************************************************************************
   InitArray - Initialize the arrary of buttons
 ******************************************************************************/
-void InitArray(ButtonArray *array,int x,int y,int w,int h)
+void InitArray(ButtonArray *array,int x,int y,int w,int h,int rw)
 {
   array->count=0;
   array->head=array->tail=NULL;
   array->x=x;
   array->y=y;
   array->w=w;
-  array->h=h;
+  array->h=h+2*rw;
+  array->rw=rw;
 }
 
 /******************************************************************************
@@ -160,14 +161,14 @@ int AddButton(ButtonArray *array, char *title, Picture *p, int up)
   }
   array->count++;
 
-/* in Taskbar this replaces below  ArrangeButtonArray (array);
-*/
+/* in Taskbar this replaces below  ArrangeButtonArray (array);*/
 
   new->tw=XTextWidth(ButtonFont,title,strlen(title));
   new->truncatewidth=0;
   new->next=NULL;
   new->needsupdate=1;
   new->set=0;
+  new->reliefwidth=array->rw;
 
   return (array->count-1);
 }
@@ -321,13 +322,16 @@ Button *temp,*temp2;
 ******************************************************************************/
 void DoButton(Button *button, int x, int y, int w, int h)
 {
-  int up,Fontheight,newx,set;
+  int up,Fontheight,newx,set,length,adjust;
   GC topgc;
   GC bottomgc;
   char *string;
   XGCValues gcv;
   unsigned long gcm;
   XFontStruct *font;
+
+  /* The margin we want between the relief/text/pixmaps */
+  #define INNER_MARGIN 2
 
   up=button->up;
   set=button->set;
@@ -339,10 +343,8 @@ void DoButton(Button *button, int x, int y, int w, int h)
   gcv.font = font->fid;
   XChangeGC(dpy, graph[set], gcm, &gcv);
 
-
   Fontheight=ButtonFont->ascent+ButtonFont->descent;
 
- /*? XClearArea(dpy,win,x,y,w,h,False);*/
   XFillRectangle(dpy,win,background[set],x,y,w,h+1);
 
   if ((button->p.picture != 0)/* &&
@@ -350,7 +352,7 @@ void DoButton(Button *button, int x, int y, int w, int h)
 
     gcm = GCClipMask|GCClipXOrigin|GCClipYOrigin;
     gcv.clip_mask = button->p.mask;
-    gcv.clip_x_origin = x + 4;
+    gcv.clip_x_origin = x + 2 + button->reliefwidth;
     gcv.clip_y_origin = y + ((h-button->p.height) >> 1);
     XChangeGC(dpy, hilite[set], gcm, &gcv);
     XCopyArea(dpy, button->p.picture, win, hilite[set], 0, 0,
@@ -360,44 +362,44 @@ void DoButton(Button *button, int x, int y, int w, int h)
     gcv.clip_mask = None;
     XChangeGC(dpy, hilite[set], gcm, &gcv);
 
-    newx = button->p.width+6;
+    newx = button->p.width+2*INNER_MARGIN;
   }
   else
   {
     if (LeftJustify)
-      newx=4;
+      newx=INNER_MARGIN;
     else
-      newx=max((w-button->tw)/2,4);
+      newx=max((w-button->tw)/2,INNER_MARGIN);
   }
 
+  /* check if the string needs to be truncated */
   string=button->title;
 
-  if (!LeftJustify) {
-    if (TruncateLeft && (w-button->tw)/2 < 4) {
-      if (button->truncatewidth == w)
-	string=button->truncate_title;
-      else {
-	string=button->title;
-	while(*string && (w-XTextWidth(ButtonFont,string,strlen(string)))/2 < 4)
-	    string++;
-	button->truncatewidth = w;
-	button->truncate_title=string;
-      }
+  if (TruncateLeft
+      && (newx + button->tw + 2*button->reliefwidth + INNER_MARGIN) > w) { 
+    if (button->truncatewidth == w)
+      string=button->truncate_title;
+    else {
+      while(*string && (newx + XTextWidth(ButtonFont,string,strlen(string)) 
+                      + 2*button->reliefwidth + INNER_MARGIN) > w)
+      string++;
+      button->truncatewidth = w;
+      button->truncate_title=string;
     }
   }
-  XDrawString(dpy,win,graph[set],x+newx,y+3+ButtonFont->ascent,string,strlen(string));
-  button->needsupdate=0;
-
+  XDrawString(dpy,win,graph[set],x+newx+button->reliefwidth,
+              y+1+button->reliefwidth+ButtonFont->ascent,
+              string,strlen(string));
+ 
   /* Draw relief last, don't forget that XDrawLine doesn't do the last pixel */
-  XDrawLine(dpy,win,topgc,x,y,x+w-1,y);
-  XDrawLine(dpy,win,topgc,x+1,y+1,x+w-2,y+1);
-  XDrawLine(dpy,win,topgc,x,y+1,x,y+h+1);
-  XDrawLine(dpy,win,topgc,x+1,y+2,x+1,y+h);
-  XDrawLine(dpy,win,bottomgc,x+1,y+h,x+w,y+h);
-  XDrawLine(dpy,win,bottomgc,x+2,y+h-1,x+w-1,y+h-1);
-  XDrawLine(dpy,win,bottomgc,x+w-1,y,x+w-1,y+h);
-  XDrawLine(dpy,win,bottomgc,x+w-2,y+1,x+w-2,y+h-1);
+  RelieveRectangle(dpy,win,x,y,w,h,topgc,bottomgc,button->reliefwidth);
 
+  /* Make sure we have a one pixel border to the right too */
+  XDrawLine(dpy,win,background[set],
+            x+w-1-button->reliefwidth,y+1+button->reliefwidth,
+            x+w-1-button->reliefwidth,y+h-button->reliefwidth);
+
+  button->needsupdate=0;
 }
 
 /******************************************************************************

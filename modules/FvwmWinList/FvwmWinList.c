@@ -112,6 +112,7 @@ char *font_string = "fixed";
 Bool UseSkipList = False, Anchor = True, UseIconNames = False,
      LeftJustify = False, TruncateLeft = False, ShowFocus = True,
      Follow = False;
+int ReliefWidth = 2;
 
 long CurrentDesk = 0;
 int ShowCurrentDesk = 0;
@@ -206,7 +207,7 @@ int main(int argc, char **argv)
 
   InitPictureCMap(dpy, Root);
 
-  InitArray(&buttons,0,0,win_width, fontheight+6);
+  InitArray(&buttons,0,0,win_width, fontheight+2, ReliefWidth);
   InitList(&windows);
 
   fd_width = GetFdWidth();
@@ -302,7 +303,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
         }
 	break;
       }
-
       if (!(body[8]&WINDOWLISTSKIP) || !UseSkipList)
         AddItem(&windows,body[0],body[8], body[7] /* desk */);
       break;
@@ -585,6 +585,8 @@ void ParseConfig(void)
 				Clength+16)==0) ShowFocus = False;
 	  else if(strncasecmp(tline,CatString3(Module, "FollowWindowList",""),
 				Clength+16)==0) Follow = True;
+          else if(strncasecmp(tline,CatString3(Module, "ButtonFrameWidth",""),
+                                Clength+16)==0) ReliefWidth=atoi(&tline[Clength+16]);
 	}
       GetConfigLine(Fvwm_fd,&tline);
     }
@@ -757,7 +759,7 @@ void AdjustWindow(void)
   }
   new_width=max(new_width, MinWidth);
   new_width=min(new_width, MaxWidth);
-  new_height=(total*(fontheight+6+1));
+  new_height=(total*(fontheight+2+(2*ReliefWidth)+1));
   if (WindowIsUp && (new_height!=win_height  || new_width!=win_width))
   {
     if (Anchor)
