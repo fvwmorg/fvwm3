@@ -1120,7 +1120,8 @@ void gotoDeskAndPage_func(F_CMD_ARGS)
     UnmapDesk(Scr.CurrentDesk, True);
     Scr.CurrentDesk = val[0];
   }
-  MoveViewport((val[1] * Scr.MyDisplayWidth), (val[2] * Scr.MyDisplayHeight), True);
+  MoveViewport((val[1] * Scr.MyDisplayWidth), (val[2] * Scr.MyDisplayHeight),
+               True);
   if (is_new_desk)
   {
     MapDesk(val[0], True);
