@@ -227,7 +227,9 @@ static void apply_window_updates(
 	if (flags->do_update_title_text_dir)
 	{
 		if (!flags->do_update_title_dir)
+                {
 			setup_title_geometry(t, pstyle);
+                }
 		flags->do_redraw_decoration = True;
 	}
 	if (flags->do_update_title_dir)
