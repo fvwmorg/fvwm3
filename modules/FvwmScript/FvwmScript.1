@@ -531,13 +531,21 @@ These scripts save preferences into a file named ~/.xinit-fvwmrc. If you want
 to load these preferences at every startup, you have to include the line 
 ".xinit-fvwmrc" in your .xinitrc (or .xsession) file before starting fvwm.
 
-ScriptFvwmDefaultStyle allows to modify some fvwm preferences: 
-focus, colormap and paging mouse policy, opacity of the move and resize
-commands, window placement, snap attraction and shading animation.
-This script saves preferences into a file named .fvwmrc-script-setting in the
+ScriptFvwmBaseConfig allows to modify some fvwm preferences: 
+focus and paging mouse policy, window placement, opacity and others
+preferences of the move and resize commands, snap attraction and 
+shading animation.
+This script saves preferences into a file named .FvwmBaseConfig in the
 user configuration directory (i.e., $HOME or $FVWM_USERHOME if set). 
 If you want to load these preferences at every startup you must add
-the line "Read .fvwmrc-script-setting" in your fvwm configuration file.
+the line "Read .FvwmBaseConfig" in your fvwm configuration file.
+If you want to use an other file name, just give it as the first
+argument of the script.
+Moreover, When you click on Ok (respectively, Apply) a fvwm function
+named BaseConfigOkFunc (respectively, BaseConfigApplyFunc) is called
+that you may define. This allows to reload specific application styles
+that the script had destroyed 
+(e.g., AddToFunc  BaseConfigOkFunc I Read MyAppStyle).
 
 ScriptFvwmButtons is a buttons panel which can replace FvwmButtons (this 
 script supports popup menus and requires xload, xclock, FvwmPager, TkDesk).

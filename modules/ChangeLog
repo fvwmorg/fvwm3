@@ -1,3 +1,12 @@
+2000-01-04  olicha <olivier.chapuis@free.fr>
+
+	* FvwmScript/Scripts/ScriptFvwmDefaultStyle:
+	* FvwmScript/Scripts/ScriptFvwmBaseConfig:
+	* FvwmScript/FvwmScript.1 (EXAMPLES):
+	Renamed DefaultStyle to BaseConfig. BaseConfig save its
+	preferences in .FvwmBaseConfig or in a file given as first
+	argument to the script. Others, "ameliorations"
+
 2000-01-03  olicha <olivier.chapuis@free.fr>
 
 	* FvwmScript/Instructions.c (GetScriptArg):
