@@ -975,22 +975,34 @@ Bool PlaceWindow(
       }
       attr_g->x = Scr.cascade_x + PageLeft - pdeltax;
       attr_g->y = Scr.cascade_y + PageTop - pdeltay;
-      /* try to keep the window on the screen */
+
+      /* migo: what should these crazy calculations mean? */
+#if 0
       fw->frame_g.x = PageLeft + attr_g->x + fw->attr_backup.border_width + 10;
       fw->frame_g.y = PageTop + attr_g->y + fw->attr_backup.border_width + 10;
+#endif
 
+      /* try to keep the window on the screen */
       get_window_borders(fw, &b);
       if (attr_g->x + fw->frame_g.width >= PageRight)
       {
-	attr_g->x = PageRight - attr_g->width - fw->attr_backup.border_width -
-		b.total_size.width;
-	Scr.cascade_x = 0;
+	attr_g->x = PageRight - attr_g->width - b.total_size.width;
+	Scr.cascade_x = fw->title_thickness;
       }
       if (attr_g->y + fw->frame_g.height >= PageBottom)
       {
-	attr_g->y = PageBottom - attr_g->height - fw->attr_backup.border_width -
-		b.total_size.height;
-	Scr.cascade_y = 0;
+	attr_g->y = PageBottom - attr_g->height - b.total_size.height;
+	Scr.cascade_y = 2 * fw->title_thickness;
+      }
+
+      /* the left and top sides are more important in huge windows */
+      if (attr_g->x < 0)
+      {
+	attr_g->x = 0;
+      }
+      if (attr_g->y < 0)
+      {
+	attr_g->y = 0;
       }
       break;
     case PLACE_MINOVERLAP:
