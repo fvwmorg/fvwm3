@@ -81,9 +81,11 @@
 #define FBIDI_H
 
 #include "config.h"
-#include <X11/Xlib.h>  /* just for Bool */
+#include <X11/Xlib.h>
 
 #if HAVE_BIDI
+
+#include "FlocaleCharset.h"
 
 /*
  * Checks whether the string in the given charset should be BidiConvert'd.
@@ -93,13 +95,14 @@ Bool FBidiIsApplicable(const char *charset);
 /*
  * Converts the given logical string to visual string for the given charset.
  */
-char *FBidiConvert(const char *logical_str, const char *charset, Bool *is_rtl);
+char *FBidiConvert(Display *dpy, const char *logical_str, FlocaleFont *flf,
+		   Bool *is_rtl);
 
 #else /* !HAVE_BIDI */
 
 #define FBidiIsApplicable(c) False
 
-#define FBidiConvert(s,c,d) NULL
+#define FBidiConvert(y,s,c,d) NULL
 
 #endif /* HAVE_BIDI */
 

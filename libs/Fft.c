@@ -67,28 +67,39 @@ void init_fft(Display *dpy)
 }
 
 static
-Bool is_utf8_encoding(FftFont *f)
+void FftSetupEncoding(FftFontType *fftf)
 {
 	int i = 0;
 	FftPatternElt *e;
+	FftFont *f;
 
-	if (!FftUtf8Support)
-	{
-		return False;
-	}
+	if (fftf == NULL)
+		return;
+	
+	f =  fftf->fftfont;
+	fftf->utf8 = False;
+	fftf->encoding = NULL;
 
 	while(i < f->pattern->num)
 	{
 		e = &f->pattern->elts[i];
-		if (StrEquals(e->object, FFT_ENCODING))
+		if (StrEquals(e->object, XFT_ENCODING) &&
+		    e->values->value.u.s != NULL)
 		{
-			return (StrEquals(e->values->value.u.s,
-					  "iso10646-1")) ? True : False;
+			fftf->encoding = e->values->value.u.s;
+			if (FftUtf8Support &&
+			    StrEquals(fftf->encoding, "iso10646-1"))
+			{
+				fftf->utf8 = True;
+			}
+			else
+			{
+				fftf->utf8 = False;
+			}
+			return;
 		}
 		i++;
 	}
-
-	return False;
 }
 
 static
@@ -187,7 +198,7 @@ FftFontType *FftGetFont(Display *dpy, char *fontname)
 	fftf->fftfont = fftfont;
 	fftf->tb_fftfont = NULL;
 	fftf->bt_fftfont = NULL;
-	fftf->utf8 = is_utf8_encoding(fftfont);
+	FftSetupEncoding(fftf);
 
 	return fftf;
 }

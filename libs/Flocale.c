@@ -47,18 +47,13 @@
 #include <X11/Xutil.h>
 #include <X11/Xatom.h>
 
-#include "Flocale.h"
-
-#ifdef HAVE_CODESET
-#include <langinfo.h>
-#endif
-
 #include "defaults.h"
 #include "libs/fvwmlib.h"
 #include "safemalloc.h"
 #include "Strings.h"
 #include "Parse.h"
 #include "Picture.h"
+#include "Flocale.h"
 #include "FBidi.h"
 
 /* ---------------------------- local definitions --------------------------- */
@@ -77,12 +72,15 @@
 
 static FlocaleFont *FlocaleFontList = NULL;
 static char *Flocale = NULL;
-static char *Fcharset = NULL;
+static Bool FlocaleSeted = False;
 static char *Fmodifiers = NULL;
+static FlocaleCharset UnsetCharset = {"Unset", NULL, -2, NULL};
+
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- local functions ----------------------------- */
+
 
 static
 FlocaleFont *FlocaleGetFftFont(Display *dpy, char *fontname)
@@ -100,6 +98,7 @@ FlocaleFont *FlocaleGetFftFont(Display *dpy, char *fontname)
 	flf->fftf = *fftf;
 	flf->font = NULL;
 	flf->fontset = None;
+	flf->fc =  &UnsetCharset;
 	FftGetFontHeights(
 		&flf->fftf, &flf->height, &flf->ascent, &flf->descent);
 	FftGetFontWidths(
@@ -162,6 +161,7 @@ FlocaleFont *FlocaleGetFontSet(Display *dpy, char *fontname, char *module)
 	flf->fontset = fontset;
 	flf->font = NULL;
 	flf->fftf.fftfont = NULL;
+	flf->fc = &UnsetCharset;
 	fset_extents = XExtentsOfFontSet(fontset);
 	flf->height = fset_extents->max_logical_extent.height;
 	flf->ascent = - fset_extents->max_logical_extent.y;
@@ -214,6 +214,7 @@ FlocaleFont *FlocaleGetFont(Display *dpy, char *fontname)
 		flf->fftf.fftfont = NULL;
 	}
 	flf->font = font;
+	flf->fc = &UnsetCharset;
 	flf->height = flf->font->ascent + flf->font->descent;
 	flf->ascent = flf->font->ascent;
 	flf->descent = flf->font->descent;
@@ -440,22 +441,14 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 	XFreeGC(dpy, my_gc);
 }
 
-/* ---------------------------- interface functions ------------------------- */
-
-/* ***************************************************************************
- * locale initialisation
- * ***************************************************************************/
-void FlocaleInit(
-	int category,
-	const char *locale,
-	const char *modifiers,
-	const char *module  /* name of the module for errors */
-	)
+static
+void FlocaleSetlocaleForX(int category,
+			  const char *locale,
+			  const char *module
+			  )
 {
-	if (!FlocaleMultibyteSupport)
-	{
-		return;
-	}
+	FlocaleSeted = True;
+
 	if ((Flocale = setlocale(category, locale)) == NULL)
 	{
 		fprintf(stderr,
@@ -471,6 +464,26 @@ void FlocaleInit(
 			(module == NULL)? "":module, "FInitLocale",Flocale);
 		Flocale = NULL;
 	}
+}
+
+/* ---------------------------- interface functions ------------------------- */
+
+/* ***************************************************************************
+ * locale initialisation
+ * ***************************************************************************/
+
+void FlocaleInit(int category, const char *locale, const char *modifiers,
+		 const char *module)
+{
+	if (!FlocaleMultibyteSupport)
+	{
+		return;
+	}
+
+	FlocaleSetlocaleForX(category, locale, module);
+	if (Flocale == NULL)
+		return;
+
 	if (modifiers != NULL &&
 	    (Fmodifiers = XSetLocaleModifiers(modifiers)) == NULL)
 	{
@@ -478,62 +491,10 @@ void FlocaleInit(
 			"[%s][%s]: WARNING -- Cannot set locale modifiers\n",
 			(module == NULL)? "":module, "FInitLocale");
 	}
-#if 0
-	fprintf(stderr,"LOCALES: %s, %s\n", Flocale, Fmodifiers);
+#if FLOCALE_DEBUG_SETLOCALE
+	fprintf(stderr,"[%s][FlocaleInit] locale: %s, modifier: %s\n",
+		module, Flocale, Fmodifiers);
 #endif
-}
-
-void FlocaleInitCharset(const char *module)
-{
-	Fcharset = getenv("CHARSET");
-
-	if (Flocale == NULL)
-	{
-		if (setlocale(LC_CTYPE, "") == NULL)
-		{
-			fprintf(stderr,
-				"[%s][%s]: WARNNING -- Cannot set locale\n",
-				module, "FInitCharset");
-		}
-	}
-#ifdef HAVE_CODESET
-	if (!Fcharset)
-	{
-		Fcharset = nl_langinfo(CODESET);
-	}
-#endif
-#if 0
-	fprintf(stderr,"CHARSET: %s\n", (Fcharset == NULL)? "":Fcharset);
-#endif
-	if (Fcharset == NULL)
-	{
-#ifdef HAVE_CODESET
-		fprintf(stderr,
-			"[%s][%s]: WARN -- Cannot get charset with"
-			" nl_langinfo or CHARSET env\n",
-			module, "FInitCharset");
-#else
-		fprintf(stderr,
-			"[%s][%s]: WARN -- Cannot get charset with"
-			" CHARSET env variable\n",
-			module, "FInitCharset");
-#endif
-	}
-	else if (strlen(Fcharset) < 3)
-	{
-#ifdef HAVE_CODESET
-		fprintf(stderr,
-			"[%s][%s]: WARN -- Illegal charset"
-			" (nl_langinfo and CHARSET env): %s\n",
-			module, "FInitCharset", Fcharset);
-#else
-		fprintf(stderr,
-			"[%s][%s]: WARN -- Illegal charset"
-			" (CHARSET env): %s\n",
-			module, "FInitCharset", Fcharset);
-#endif
-		Fcharset = NULL;
-	}
 }
 
 /* ***************************************************************************
@@ -759,7 +720,7 @@ void FlocaleDrawString(
 	}
 
 	/* TO FIX: should use charset from font structure */
-	str2 = FBidiConvert(fstring->str, "iso8859-1", &is_rtl);
+	str2 = FBidiConvert(dpy, fstring->str, flf, &is_rtl);
 	if (str2)
 	{
 		str1 = fstring->str;
@@ -877,14 +838,18 @@ void FlocaleGetNameProperty(
 	}
 	else if (!FlocaleMultibyteSupport && !FlocaleCompoundText)
 	{
+		ret_name->name = (char *)text_prop.value;
 		return;
 	}
 	/* not STRING encoding, try to convert */
+	if (FlocaleCompoundText && !FlocaleSeted)
+	{
+		FlocaleSetlocaleForX(LC_CTYPE, "", "fvwmlibs");
+	}
 	if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
 	    && num > 0 && *list)
 	{
-		/* XXX: does not consider the conversion is REALLY
-		 * succeeded */
+		/* XXX: does not consider the conversion is REALLY succeeded */
 		XFree(text_prop.value); /* return of XGetWM(Icon)Name() */
 		if (FlocaleCompoundText)
 		{
@@ -906,25 +871,18 @@ void FlocaleGetNameProperty(
 		{
 			XFreeStringList(list);
 		}
-		XFree(text_prop.value); /* return of XGet(Icon)WMName() */
-		if (func(dpy, w, &text_prop))
+		if (FlocaleCompoundText)
 		{
-			if (FlocaleCompoundText)
-			{
-				CopyString(
-					&(ret_name->name),
-					(char *)text_prop.value);
-				XFree(text_prop.value);
-			}
-			else if (FlocaleMultibyteSupport)
-			{
-				ret_name->name = (char *)text_prop.value;
-				ret_name->name_list = NULL;
-			}
+			CopyString(&(ret_name->name), (char *)text_prop.value);
+			XFree(text_prop.value);
+		}
+		else if (FlocaleMultibyteSupport)
+		{
+			ret_name->name = (char *)text_prop.value;
+			ret_name->name_list = NULL;
 		}
 	}
 }
-
 
 void FlocaleFreeNameProperty(FlocaleNameString *ptext)
 {
@@ -935,12 +893,12 @@ void FlocaleFreeNameProperty(FlocaleNameString *ptext)
 		XFreeStringList(ptext->name_list);
 		ptext->name_list = NULL;
 	}
-	else if (FlocaleCompoundText)
+	else if (FlocaleCompoundText && ptext->name != NULL)
 	{
 		free(ptext->name); /* this is not reall needed IMHO we
 				    * can XFree I think (olicha) */
 	}
-	else
+	else if (ptext->name != NULL)
 	{
 		XFree(ptext->name);
 	}
@@ -963,7 +921,13 @@ Bool FlocaleTextListToTextProperty(
 		{
 			ret = False;
 		}
-		ret = True;
+		else
+		{
+			/* ret == Success or the number of unconvertible
+			 * characters. ret should be != XLocaleNotSupported
+			 * because in this case Flocale == NULL */
+			ret = True;
+		}
 	}
 	if (!ret)
 	{
@@ -981,7 +945,10 @@ Bool FlocaleTextListToTextProperty(
 	return ret;
 }
 
-const char *FlocaleGetCharset(void)
+/* ***************************************************************************
+ * misc
+ * ***************************************************************************/
+FlocaleCharset *FlocaleGetUnsetCharset(void)
 {
-	return (const char *)Fcharset;
+	return &UnsetCharset;
 }

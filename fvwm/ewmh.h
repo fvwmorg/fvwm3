@@ -79,23 +79,12 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon);
 
 /* ewmh_name.c */
-#ifdef HAVE_ICONV
 void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name);
 int EWMH_WMName(FvwmWindow *fwin, XEvent *ev, window_style *style,
 		unsigned long any);
-#define EWMH_WMName_func EWMH_WMName
 int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style,
 		    unsigned long any);
-#define EWMH_WMIconName_func EWMH_WMIconName
 void EWMH_SetDesktopNames(void);
-#else /* HAVE_ICONV */
-#define EWMH_SetVisibleName(x,y)
-#define EWMH_WMName(x,y,z,t)     0
-#define EWMH_WMName_func         0
-#define EWMH_WMIconName(x,y,z,t) 0
-#define EWMH_WMIconName_func     0
-#define EWMH_SetDesktopNames()
-#endif /* HAVE_ICONV */
 
 #else /* HAVE_EWMH */
 

@@ -978,6 +978,28 @@ size_t iconv();
 	fi
 ])
 
+#
+# check for  locale_charset if libiconv is used
+#
+AC_DEFUN([CHECK_LIBCHARSET],[
+	AC_MSG_CHECKING(check for libcharset)
+	ac_save_CFLAGS="$CFLAGS"
+      	ac_save_LIBS="$LIBS"
+      	CFLAGS="$CFLAGS $iconv_CFLAGS"
+      	LIBS="$LIBS $iconv_LIBS"
+	AC_TRY_LINK([
+#include <libcharset.h>],
+[const char *c;
+c = locale_charset ();
+], r=yes, r=no)
+	AC_MSG_RESULT($r)
+	if test "x$r" = "xyes"; then
+       		AC_DEFINE(HAVE_LIBCHARSET)
+	fi
+	CFLAGS="$ac_save_CFLAGS"
+        LIBS="$ac_save_LIBS"
+])
+
 #-----------------------------------------------------------------------------
 # Configure paths for FreeType2
 # Marcelo Magallon 2001-10-26, based on gtk.m4 by Owen Taylor

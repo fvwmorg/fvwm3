@@ -163,6 +163,7 @@ typedef struct
 	FftFont *fftfont;
 	FftFont *tb_fftfont;
 	FftFont *bt_fftfont;
+	char *encoding;
 	Bool utf8;
 } FftFontType;
 

@@ -21,11 +21,14 @@
  * See FBidi.h for some comments on this interface.
  */
 
+
 #include "FBidi.h"
 
 #if HAVE_BIDI
 
+#include <X11/Xlib.h>
 #include <fribidi/fribidi.h>
+#include "FlocaleCharset.h"
 
 Bool FBidiIsApplicable(const char *charset)
 {
@@ -36,10 +39,12 @@ Bool FBidiIsApplicable(const char *charset)
 	return True;
 }
 
-char *FBidiConvert(const char *logical_str, const char *charset, Bool *is_rtl)
+char *FBidiConvert(Display *dpy, const char *logical_str, FlocaleFont *flf,
+		   Bool *is_rtl)
 {
 	int str_len = strlen(logical_str);
 	char *visual_str;
+	FlocaleCharset *fc;
 
 	FriBidiCharSet fribidi_charset;
 	FriBidiChar *logical_unicode_str;
@@ -51,12 +56,24 @@ char *FBidiConvert(const char *logical_str, const char *charset, Bool *is_rtl)
 		*is_rtl = False;
 	}
 
-	fribidi_charset = fribidi_parse_charset((char *)charset);
+	if (flf == NULL)
+	{
+		return NULL;
+	}
+	else if (flf->fc == FlocaleGetUnsetCharset())
+	{
+		FlocaleCharsetSetFlocaleCharset(dpy, flf);
+	}
+	fc = flf->fc;
+	if (fc == FlocaleCharsetGetUnknownCharset() || fc->bidi == NULL)
+	{
+		return NULL;
+	}
+	fribidi_charset = fribidi_parse_charset((char *)fc->bidi);
 	if (fribidi_charset == FRIBIDI_CHARSET_NOT_FOUND)
 	{
 		return NULL;
 	}
-
 	logical_unicode_str =
 		(FriBidiChar *)malloc((str_len + 1) * sizeof(FriBidiChar));
 

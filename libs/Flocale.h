@@ -27,6 +27,7 @@
 #include <X11/Xutil.h>
 
 #include "Fft.h"
+/* FlocaleCharset.h and Ficonv.h should not be included */
 
 /* ---------------------------- global definitions -------------------------- */
 
@@ -38,10 +39,10 @@
 
 #ifdef MULTIBYTE
 #define FlocaleMultibyteSupport 1
-#else
-#define FlocaleMultibyteSupport 0
 #undef FlocaleCompoundText
 #define FlocaleCompoundText 0
+#else
+#define FlocaleMultibyteSupport 0
 #endif
 
 #define FWS_HAVE_LENGTH (1)
@@ -50,6 +51,35 @@
 
 #define IS_TEXT_DRAWN_VERTICALLY(x) \
 	(x == TEXT_ROTATED_90 || x == TEXT_ROTATED_270)
+
+
+#define FLC_INDEX_ICONV_CHARSET_NOT_FOUND         -1
+#define FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED   -2
+
+#define FLC_GET_X_CHARSET(fc)         (fc != NULL)? fc->x:NULL
+#define FLC_SET_ICONV_INDEX(fc, i)    fc->iconv_index = i
+#define FLC_GET_LOCALE_CHARSET(fc, i) fc->locale[i]
+#define FLC_GET_ICONV_CHARSET(fc) \
+      (fc != NULL && fc->iconv_index >= 0)? fc->locale[fc->iconv_index]:NULL
+#define FLC_DO_ICONV_CHARSET_INITIALIZED(fc) \
+      (fc != NULL && fc->iconv_index != FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED)
+#define FLC_HAVE_ICONV_CHARSET(fc) (fc != NULL && fc->iconv_index >= 0)
+#define FLC_GET_BIDI_CHARSET(fc) (fc != NULL)? fc->bidi : NULL
+
+#define FLC_DEBUG_GET_X_CHARSET(fc)  \
+         (fc == NULL || fc->x == NULL)? "None":fc->x
+#define FLC_DEBUG_GET_ICONV_CHARSET(fc) \
+         (fc != NULL && fc->iconv_index >= 0)? fc->locale[fc->iconv_index]:"None"
+#define FLC_DEBUG_GET_BIDI_CHARSET(fc) \
+	 (fc == NULL || fc->bidi == NULL)? "None":fc->bidi
+
+#define FLOCALE_FALLBACK_XCHARSET "ISO8859-1"
+#define FLOCALE_UTF8_XCHARSET     "ISO10646-1"
+#define FLOCALE_ICONV_CONVERSION_MAX_NUMBER_OF_WARNING 10
+
+#define FLOCALE_DEBUG_SETLOCALE 0
+#define FLOCALE_DEBUG_CHARSET   0
+#define FLOCALE_DEBUG_ICONV     0
 
 /* ---------------------------- type definitions ---------------------------- */
 
@@ -62,6 +92,14 @@ typedef enum
 	TEXT_ROTATED_MASK = 3,
 } text_rotation_type;
 
+typedef struct FlocaleCharset
+{
+	char *x;          /* X font charset */
+	char **locale;    /* list of possible charset names */
+	int iconv_index;  /* defines the iconv charset name */
+	char *bidi;       /* if not null a fribidi charset */
+} FlocaleCharset;
+
 typedef struct _FlocaleFont
 {
 	struct _FlocaleFont *next;
@@ -70,6 +108,7 @@ typedef struct _FlocaleFont
 	XFontStruct *font;	/* font structure */
 	XFontSet fontset;	/* font set */
 	FftFontType fftf;
+	FlocaleCharset *fc;
 	int height;		/* height of the font: ascent + descent */
 	int ascent;
 	int descent;
@@ -113,29 +152,17 @@ typedef struct
  * Flocale is set to NULL if the locale is not supported by the Xlib.
  * In this case the Flocale* functions below does not use the Xmb* functions
  *
+ * The function should be called as FlocaleInit(LC_CTYPE, "", "", "myname");
  */
 void FlocaleInit(
-	int category,
-	const char *local,
-	const char *modifier,
-	const char *module
-	);
+	int category, const char *local, const char *modifier,
+	const char *module);
 
 #else /* !FlocaleMultibyteSupport */
 
 #define FlocaleInit(x,y,z,t)
 
 #endif /* FlocaleMultibyteSupport */
-
-/*
- * Initialize the locale for !FlocaleMultibyteSupport and get the user Charset for iconv
- * conversion.
- * module: should be the name of the fvwm module that call the function
- * for error messages.
- * This is probably not appropriate from an X point of view
- *
- */
-void FlocaleInitCharset(const char *module);
 
 /* ***************************************************************************
  * font loading
@@ -246,8 +273,7 @@ Bool FlocaleTextListToTextProperty(
 /* ***************************************************************************
  * Misc
  * ***************************************************************************/
-
-/* Return the Flocale charset */
-const char *FlocaleGetCharset(void);
+FlocaleCharset *FlocaleGetUnsetCharset(void);
 
 #endif /* FLOCALE_H */
+

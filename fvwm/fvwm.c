@@ -41,7 +41,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
-#include "libs/Flocale.h"
+#include "libs/FlocaleCharset.h"
 #include <libs/gravity.h>
 #include "fvwm.h"
 #include "externs.h"
@@ -203,7 +203,6 @@ int main(int argc, char **argv)
   setVersionInfo();
 
   FlocaleInit(LC_CTYPE, "", "", "FVWM");
-  FlocaleInitCharset("FVWM");
 
   /* Put the default module directory into the environment so it can be used
      later by the config file, etc.  */
