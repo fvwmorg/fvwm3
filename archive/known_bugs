@@ -1,0 +1,8 @@
+Known bugs as of fvwm-2.1.3
+
+ - FvwmSave and FvwmSaveDesk are not up to date.
+ - Windows may grow a few pixels from time to time.
+ - SnapAttraction may place windows a pixel too close together.
+ - FvwmWinList creeps around the screen in some setups (this should have
+   been fixed, but if you see it again, please report it).
+ - ...
