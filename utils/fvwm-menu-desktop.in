@@ -437,13 +437,19 @@ if ($UNICONV ne "") {
 	if ($UNICONV_EXEC eq "iconv") {
 		die "iconv not found in your path\n" 
 			unless check_app("iconv");
-		$UTF8_TR = "open(U,\"echo '\$tmpLabel' | iconv -f UTF8 -t $UNICONV |\"); "
-			. "while(<U>) {chomp; \$tmpLabel = \$_}; close(U)";
+		$UTF8_TR = q{
+			open(U, "echo '$tmpLabel' | iconv -f UTF8 -t $UNICONV |");
+			while (<U>) { chomp; $tmpLabel = $_ }
+			close(U);
+		};
 	} elsif ($UNICONV_EXEC eq "uniconv") {
 		die "uniconv not found in your path\n" 
 			unless check_app("uniconv");
-		$UTF8_TR = "open(U,\"echo '\$tmpLabel' | uniconv -I UTF8 -O $UNICONV |\");"
-			. " while(<U>) {chomp; \$tmpLabel = \$_}; close(U)";	
+		$UTF8_TR = q{
+			open(U, "echo '$tmpLabel' | uniconv -I UTF8 -O $UNICONV |");
+			while (<U>) { chomp; $tmpLabel = $_ }
+			close(U);
+		};
 	} else {
 		die "--uniconv argument must be iconv or uniconv\n";
 	}
@@ -881,7 +887,7 @@ sub get_info {
 	close(DESC);
 	# kde2 give just the name of the icons and use png icons
 	# try a more general fix.
-   my $tmp = "xpm";
+	my $tmp = "xpm";
 	$tmp = "png" if $TRAN || $MENU_TYPE eq "gtk";
 	$icon = "$icon.$tmp" if $icon !~ /\....$/ && $icon ne '';
 	$mini_icon = "$mini_icon.$tmp" 
@@ -1111,7 +1117,7 @@ Options:
 	--fvwmgtk-alias NAME      FvwmGtk module name, default is FvwmGtk
 	--title NAME              menu title, default depends on --desktop
 	--name NAME               menu name, default depends on --desktop
-   --merge-user-menu         merge the system menu with the user menu
+	--merge-user-menu         merge the system menu with the user menu
 	--enable-mini-icons       enable mini-icons in menu
 	--enable-tran-mini-icons  enable mini-icons in menu and
 		translation of foo.png icon names to foo.xpm
@@ -1119,7 +1125,7 @@ Options:
 		ImagePath), default is 'mini/'
 	--png-icons-path DIR      path of .png icons, default is your ImagePath
 	--tran-mini-icons-path DIR      path of menus icons for translation
-   --check-mini-icons PATH   check if the mini icons are in PATH
+	--check-mini-icons PATH   check if the mini icons are in PATH
 	--icon-toptitle micon:law:place:sidepic:color  mini-icon for the top
 		 title and sidepic for the top menu
 	--icon-title micon:law:place:sidepic:color     as above for sub menus
@@ -1132,7 +1138,7 @@ Options:
 	--icons-path DIR          define the directory of the icons,
 		the default is very good
 	--tran-icons-path DIR     similar to the above option.
-   --check-icons PATH        check if the icons are in the PATH
+	--check-icons PATH        check if the icons are in the PATH
 	--submenu-name-prefix NAME      in general not useful
 	--dir DIR                 use path as desktop menu description
 	--destroy-type FLAG       how to destroy menu, valid values:

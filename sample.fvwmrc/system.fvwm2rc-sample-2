@@ -94,8 +94,8 @@ DeskTopSize 3 3
 ############################################################################
 # WINDOW Placement
 #
-# TileCascadePlacement makes new windows pop-up in blank regions of screen
-# If this fails, winows are placed randomly
+# TileCascadePlacement makes new windows pop-up in blank regions of screen,
+# if this fails, windows are placed randomly
 Style * TileCascadePlacement
 
 ############################################################################

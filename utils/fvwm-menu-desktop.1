@@ -222,9 +222,9 @@ default is given by KDE itself (or are similar to GNOME title).
 .IP "\fB\-\-name\fR \fINAME\fR"
 Define the menu name of the top menu. Default is the \-\-desktop
 name if you use one above.
-.IP "\fB\-\-merge-user-menu\fR" this option will try to merge the user menu
-with the system menu (gnome-sys or kde-sys is assumed as --desktop option)
-and will take in account the change to the system menu that it is now
+.IP "\fB\-\-merge-user-menu\fR" this option tries to merge the user menu
+with the system menu (gnome-sys or kde-sys, based on the --desktop option)
+and takes into account changes to the system menu that it is now
 possible to do in the "user directory" (at least with KDE version 2
 menu editor).
 
@@ -261,10 +261,10 @@ option. Default is mini/. It is
 preferable to give the complete path so that fvwm-menu-desktop can check
 if the translated mini\-icons exists (and the "re" law will apply in
 a good way).
-.IP "\fB\-\-check-mini\-icons\fR \fIPATH\fR"
-Where PATH is a list of directories with ":" as separator. Then,
-fvwm-menu-desktop checks if the mini icons can be found in one of
-these directories (this does not apply to the translated mini icons).
+.IP "\fB\-\-check\-mini\-icons\fR \fIPATH\fR"
+Where PATH is a list of directories with ":" as a separator. Then,
+fvwm-menu-desktop checks that the mini icons actually exist in one of
+these directories (this check is not done for the translated mini icons).
  
 .IP Comments
 
@@ -377,11 +377,11 @@ the path given by the \-\-mini\-icons\-path option. To set the path to ""
 you need to use "inpath".
 .IP "\fB\-\-tran\-icons\-path\fR \fIDIR\fR"
 Similar to the above option.
-.IP "\fB\-\-check-icons\fR \fIPATH\fR"
-Where PATH is a list of directories with ":" as separator. Then,
-fvwm-menu-desktop checks if the icons can be found in one of
-these directories (this does not apply to the translated icons, use a
-complete path in --tran-icons-path to do so).
+.IP "\fB\-\-check\-icons\fR \fIPATH\fR"
+Where PATH is a list of directories with ":" as a separator. Then,
+fvwm-menu-desktop checks that the icons actually exist in one of
+these directories (this chack is not done for the translated icons, use a
+full path in --tran-icons-path to do so).
 
 .IP "Other Options"
 

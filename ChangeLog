@@ -1,3 +1,9 @@
+2001-03-24  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	* sample.fvwmrc/system.fvwm2rc-sample-2:
+	small rewording/spelling
+
 2001-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/modconf.c (CMD_Send_ConfigInfo):
