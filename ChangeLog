@@ -1,3 +1,9 @@
+2002-04-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Bindings.c (CheckBinding):
+	patch by yeti@physics.muni.cz to help with a weird problem w/ czech
+	keyboards
+
 2002-04-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
@@ -28,32 +34,32 @@
 
 	* fvwm/fvwm2.1:
 	Added EdgeCommand paragraph.
-	
-	* fvwm/events.c (HandleEnterNotify): 
+
+	* fvwm/events.c (HandleEnterNotify):
 	Added execution of Scr.PanFrame*.command if set
-	
-	* fvwm/fvwm.c (InitVariables): 
+
+	* fvwm/fvwm.c (InitVariables):
 	Added init strings for pan frame commands.
 
 	* fvwm/virtual.c:
-	* fvwm/virtual.h: 
-	(checkPanFrames): 
+	* fvwm/virtual.h:
+	(checkPanFrames):
 	Avoid hiding of pan frames if pan frame command	is set.
-	(CMD_EdgeCommand): 
+	(CMD_EdgeCommand):
 	Implementation of the buildin command EdgeCommand. First
-	implementation of this function.  
+	implementation of this function.
 
-	* fvwm/screen.h (struct): 
+	* fvwm/screen.h (struct):
 	added char * command in structure Panframe to store the pan frame
 	command.
 
-	* fvwm/functions.c: 
-	added declaration of CMD_ENTRY("edgecommand") 
+	* fvwm/functions.c:
+	added declaration of CMD_ENTRY("edgecommand")
 
-	* fvwm/functions.h: 
+	* fvwm/functions.h:
 	added definition of Flag F_EDGE_COMMAND
 
-	* fvwm/commands.h: 
+	* fvwm/commands.h:
 	added definition of CMD_EdgeCommand(F_CMD_ARGS)
 
 2002-04-10  Mikhael Goikhman  <migo@homemail.com>

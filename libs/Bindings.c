@@ -559,7 +559,7 @@ void *CheckBinding(Binding *blist,
   Binding *b;
   unsigned int used_modifiers = ~dead_modifiers;
 
-  modifier &= used_modifiers;
+  modifier &= (used_modifiers & ALL_MODIFIERS);
 
   for (b = blist; b != NULL; b = b->NextBinding)
   {
