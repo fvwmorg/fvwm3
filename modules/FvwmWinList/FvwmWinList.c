@@ -341,25 +341,27 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       free(name);
       break;
     case M_FOCUS_CHANGE:
-    if ((i=FindItem(&windows,body[0]))!=-1)
-    {
-      flags=ItemFlags(&windows,body[0]);
-      UpdateItemFlags(&windows,body[0],flags);
-      RadioButton(&buttons,i);
-    }
-    redraw = 1;
-    break;
+      if ((i=FindItem(&windows,body[0]))!=-1)
+      {
+        flags=ItemFlags(&windows,body[0]);
+        UpdateItemFlags(&windows,body[0],flags);
+        RadioButton(&buttons,i);
+      }
+      else
+        RadioButton(&buttons,-1);
+      redraw = 1;
+      break;
     case M_END_WINDOWLIST:
       if (!WindowIsUp) MakeMeWindow();
-      redraw=1;
+      redraw = 1;
       break;
     case M_NEW_DESK:
-	CurrentDesk = body[0];
-	if(ShowCurrentDesk)
-	{
-	  AdjustWindow();
-	  RedrawWindow(1);
-        }
+      CurrentDesk = body[0];
+      if(ShowCurrentDesk)
+      {
+        AdjustWindow();
+        RedrawWindow(1);
+      }
       break;
     case M_NEW_PAGE:
       break;
