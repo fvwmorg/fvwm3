@@ -2761,7 +2761,6 @@ static Bool style_parse_one_style_option(
 			{
 				val2 = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
 			}
-fprintf(stderr,"mws %d %d\n", val1, val2);
 			SSET_MAX_WINDOW_WIDTH(*ps, val1);
 			SSET_MAX_WINDOW_HEIGHT(*ps, val2);
 			ps->flags.has_max_window_size = 1;
@@ -4009,11 +4008,9 @@ void check_window_style_change(
 	 */
 	if (ret_style->change_mask.has_max_window_size)
 	{
-fprintf(stderr,"ja\n");
 		flags->do_resize_window = True;
 		flags->do_update_ewmh_allowed_actions = True;
 	}
-else fprintf(stderr,"ja\n");
 
 	/*
 	 * has_color_back
