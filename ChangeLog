@@ -1,3 +1,8 @@
+1998-11-17  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/misc.c (Destroy):
+	applied mini-icon compile patch by Tim Phipps
+
 Mon Nov 16 20:30:16 1998  DanEspen  <dje@blue>
 
       * libs/ColorUtils.c (BRIGHTNESS_FACTOR): Set adjustment factors

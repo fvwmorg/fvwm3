@@ -140,10 +140,12 @@ void Destroy(FvwmWindow *Tmp_win)
       XFreePixmap(dpy, Tmp_win->icon_maskPixmap);
     }
 
+#ifdef MINI_ICON
   if (Tmp_win->mini_icon)
     {
       DestroyPicture(dpy, Tmp_win->mini_icon);
     }
+#endif
 
   if (Tmp_win->icon_w)
     {
