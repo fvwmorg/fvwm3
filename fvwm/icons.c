@@ -85,6 +85,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   Window old_icon_pixmap_w;
   Window old_icon_w;
   Bool is_old_icon_shaped = IS_ICON_SHAPED(tmp_win);
+  char icon_order[4];
+  int i;
 
   old_icon_w = tmp_win->icon_w;
   old_icon_pixmap_w = (IS_ICON_OURS(tmp_win)) ? tmp_win->icon_pixmap_w : None;
@@ -101,29 +103,68 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     return;
 
   /* First, see if it was specified in the .fvwmrc */
+  if (ICON_OVERRIDE_MODE(tmp_win) == ICON_OVERRIDE)
+  {
+    /* try fvwm provided icons before application provided icons */
+    icon_order[0] = 0;
+    icon_order[1] = 1;
+    icon_order[2] = 2;
+    icon_order[3] = 3;
+  }
+  else if (ICON_OVERRIDE_MODE(tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
+  {
+    /* use application provided icon window first, then fvwm provided icons
+     * and then application provided icon pixmap */
+    icon_order[0] = 2;
+    icon_order[1] = 0;
+    icon_order[2] = 1;
+    icon_order[3] = 3;
+  }
+  else
+  {
+    /* use application provided icon rather than fvwm provided icon */
+    icon_order[0] = 2;
+    icon_order[1] = 3;
+    icon_order[2] = 0;
+    icon_order[3] = 1;
+  }
   tmp_win->icon_p_height = 0;
   tmp_win->icon_p_width = 0;
-
-  /* First, check for a monochrome bitmap */
-  if (tmp_win->icon_bitmap_file != NULL)
-    GetBitmapFile(tmp_win);
-
+  for (i = 0; i < 4 && !tmp_win->icon_p_height && !tmp_win->icon_p_width; i++)
+  {
+    switch (icon_order[i])
+    {
+    case 0:
+      /* First, check for a monochrome bitmap */
+      if (tmp_win->icon_bitmap_file)
+	GetBitmapFile(tmp_win);
+if (tmp_win->icon_p_height || tmp_win->icon_p_width) fprintf(stderr,"  now using bitmap icon\n");
+      break;
+    case 1:
 #ifdef XPM
-  /* Next, check for a color pixmap */
-  if ((tmp_win->icon_bitmap_file != NULL) && (tmp_win->icon_p_height == 0)
-      && (tmp_win->icon_p_width == 0))
-    GetXPMFile(tmp_win);
+      /* Next, check for a color pixmap */
+      if (tmp_win->icon_bitmap_file)
+	GetXPMFile(tmp_win);
+if (tmp_win->icon_p_height || tmp_win->icon_p_width) fprintf(stderr,"  now using xpm icon\n");
 #endif /* XPM */
-
-  /* Next, See if the app supplies its own icon window */
-  if ((tmp_win->icon_p_height == 0) && (tmp_win->icon_p_width == 0)
-      && (tmp_win->wmhints) && (tmp_win->wmhints->flags & IconWindowHint))
-    GetIconWindow(tmp_win);
-
-  /* Finally, try to get icon bitmap from the application */
-  if ((tmp_win->icon_p_height == 0) && (tmp_win->icon_p_width == 0)
-      && (tmp_win->wmhints) && (tmp_win->wmhints->flags & IconPixmapHint))
-    GetIconBitmap(tmp_win);
+      break;
+    case 2:
+      /* Next, See if the app supplies its own icon window */
+      if (tmp_win->wmhints && (tmp_win->wmhints->flags & IconWindowHint))
+	GetIconWindow(tmp_win);
+if (tmp_win->icon_p_height || tmp_win->icon_p_width) fprintf(stderr,"  now using icon window hint\n");
+      break;
+    case 3:
+      /* Finally, try to get icon bitmap from the application */
+      if (tmp_win->wmhints && (tmp_win->wmhints->flags & IconPixmapHint))
+	GetIconBitmap(tmp_win);
+if (tmp_win->icon_p_height || tmp_win->icon_p_width) fprintf(stderr,"  now using icon pixmap hint\n");
+      break;
+    default:
+      /* can't happen */
+      break;
+    }
+  }
 
   /* figure out the icon window size */
   if (!HAS_NO_ICON_TITLE(tmp_win))
