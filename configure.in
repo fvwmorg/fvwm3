@@ -287,7 +287,7 @@ dnl Check the availability of gdk-imlib
 AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(IMLIB),)
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
-utils/Makefile docs/Makefile
+utils/Makefile utils/fvwmbug.sh docs/Makefile
 icons/Makefile sample.fvwmrc/Makefile tests/Makefile
 dnl
 modules/FvwmAnimate/Makefile

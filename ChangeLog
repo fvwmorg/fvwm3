@@ -1,3 +1,11 @@
+Sun May 23 16:49:12 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* utils/Makefile.am (fvwmbug): generate fvwmbug from fvwmbug.sh
+	* configure.in: generate utils/fvwmbug.sh from utils/fvwmbug.sh.in.
+
+	* utils/fvwmbug.sh.in: new file.
+	* utils/fvwmbug.1: new file.
+
 1999-05-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/module_interface.c (DeadPipe): backed out DeadPipe signal

@@ -1,5 +1,7 @@
 Changes in alpha release 2.3.3 (May 1999)
 
+* fvwmbug script for reporting bugs.
+
 * New button states ToggledActiveUp, ToggledActiveDown, ToggledInactive
   for customizing e.g. the "maximized" appearance of the maximize button.
 
@@ -76,7 +78,7 @@ Changes in alpha release 2.3.0 (February 1999)
   supported.
 
 * 'Restart fvwm2' preserves almost all per-window using the file
-  $HOME/.fvwm_restart.
+  $FVWM_USERHOME/.fvwm_restart.
 
 * #define PICK_TRUECOLOR will make fvwm use the best TrueColor Visual.  This is
   for those poor unfortunates with legacy apps that crash if the default visual
