@@ -1,16 +1,30 @@
-Fvwm 2.4.2 is a bug fix release for version 2.4.1 fixing compiling
-problems with the shaped window extension on platforms that do not
-support it (HP-UX 10.20, Solaris 2.5.1 and others).  If you did not
-encounter one of the problems listed below, you do not need to
-upgrade.
+Fvwm 2.4.3 is a bug fix release for version 2.4.2 fixing some
+problems with shaped windows that were introduced in 2.4.2.  There
+are also some improvements and fixes regarding key bindings and
+Xinerama screens.  It is recommended to upgrade from 2.4.2 or
+stick with 2.4.1 or below if you encounter none of the problems
+listed below.
 
 The release is available at the fvwm home page: http://www.fvwm.org/
 
 Bug fixes:
 ----------
 
-** Desk and page can be given as X resources in .Xdefaults, for example:
-    xterm.desk: 1
-    xterm.page: 1 2 3
+** Fixed activation of shape extension.
 
-** Several Shape compilation problems fixed.
+** Fixed problems with overriding key bindings.
+
+** Single letter key names are allowed in upper and lower case in
+   key bindings as before 2.4.0.
+
+** Fixed WindowList placement with Xinerama.
+
+** Fixed flickering icon titles.
+
+** New X resource fvwmscreen to select the Xinerama screen on which to
+   place new windows.
+
+** Coordinates of a window during motion are show relative to the
+   Xinerama screen.
+
+** Some icon placement improvements with Xinerama.
