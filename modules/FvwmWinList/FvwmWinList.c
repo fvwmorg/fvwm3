@@ -768,11 +768,12 @@ void LoopOnEvents(void)
       case Expose:
 	/* have to clear each button with its background,
 	 * let the server compute the intersections */
-	ExposeAllButtons(&buttons, &Event);
-        /* if there are no more expose events in the queue draw all icons,
+	do
+	  ExposeAllButtons(&buttons, &Event);
+	while (XCheckTypedWindowEvent(dpy, win, Expose, &Event));
+        /* No more expose events in the queue draw all icons,
          * text and shadows, but not the background */
-        if (Event.xexpose.count==0)
-          RedrawWindow(True, False);
+        RedrawWindow(True, False);
 	break;
       case ConfigureNotify:
 	{
