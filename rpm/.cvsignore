@@ -1,4 +1,5 @@
 Makefile
 Makefile.in
-fvwm.lsm
+fvwm.spec
+tmp-fvwm.spec
 TAGS

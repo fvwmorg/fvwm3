@@ -1,3 +1,24 @@
+2000-09-16  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/wild.c:
+	added #include "config.h" (for string.h) to avoid warning
+
+	* configure.in:
+	'unset' is now used only on shells which support it;
+	reverted to the old smr_CHECK_LIB, so readline usage is twice again;
+	added --with-termcap-library and --with-ncurses-library
+
+	* INSTALL.fvwm:
+	* README:
+	updated documentation
+
+	* NEWS: s/Sped/Speed/, some more
+
+	* rpm/Makefile.am:
+	* rpm/fvwm.spec.in:
+	* Makefile.am:
+	added files and rules for generating bzip2 and rpm archives
+
 2000-09-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1 (Example):

@@ -1,3 +1,9 @@
+  ____ _  _ _    _              ___     _ _     ___
+ (  __X \/ X \/\/ )\/\    ___  (__ \ . / U ) . (   \
+  ) _) \  / \    /    \  (___) / __/ _ \__ \ _ / O /
+ (__) * \/ * \/\(_/\/\_)       \___)(_)  (_/(_)\___)
+
+%% migo: just an alternative banner, can be removed. :)
   ___  __  __ __      __   _  _     ___       __ __
  | __| ||  || ||      ||  /\\//\   // \\      || ||
  ||_   ||  || ||      || // \/ \\     //      ||_||
@@ -13,20 +19,23 @@ The FVWM-Workers list is pleased to announce FVWM version 2.4 "F2K"
         fvwm was complaint, and making sure I was at work on New Years Eve. :)
 %% dan: Well it might be 3000 before we do another non-beta. :) I agree F2K
         is getting a little old already.
+%% migo: I thought only commercial firms search for 1000's in product names?
 
 Available at http://www.fvwm.org/ it includes the following
 
 Highlights:
+----------
 
- ** A new "Themes" module called FvwmTheme and "colorsets" including
+ ** A new "Theme" module called FvwmTheme and "colorsets" including
     8 kinds of gradients and pixmap support controlling the appearance
     of borders, titlebars, frames, 3D shadows, menus and modules.
 
- ** Gnome compliance as a compile time option.
-
  ** ICCCM2 compliance.
 
- ** Optional session management.
+ ** GNOME compliance.
+    GNOME hints can be turned on and off for individual windows.
+
+ ** Experimental session management support.
 
  ** FvwmAnimate support in FvwmIconBox, FvwmIconMan, FvwmTaskBar, and
     FvwmWinList.
@@ -40,16 +49,18 @@ Highlights:
 
  ** The root cursor now indicates when Fvwm is busy.
 
- ** New command to configure a way to abort Fvwm.
+ ** New command to configure a way to abort Fvwm waiting.
     Look at EscapeFunc in the fvwm2 man page.
 
  ** Dynamically generated menus and some menu generating scripts.
 
  ** Much more flexibility and control in menu definition.
 
+ ** User configuration is now searched in $HOME/.fvwm by default.
+
  ** Starting Fvwm without a config file now really works.
 
- ** For many users, the ModulePath and ImagePath commands will become
+ ** For most of users, the ModulePath and ImagePath commands will become
     unnecessary.  Both can be built in.  User specified ModulePath and
     ImagePath can add on to the built in paths.
 
@@ -60,46 +71,57 @@ Highlights:
     setting depending on the color depth.
 
  ** Control over mouse pointer colors and pixmap pointers.
+    More CursorStyle contexts.
 
- ** New module FvwmGtk for Gtk style menus.
+ ** New module FvwmGtk for Gtk style menus and dialogs.
 
  ** VMS port.
 %% domivogt: we should definitely try it out first!
+%% migo: especially FVWM_DATADIR/FVWM_USERDIR stuff, or it is hopeless?
 
  ** Animated window shading with the WindowShadeAnimate command.
 
  ** The old StaysOnTop style option has been generalized into the
-    concept of layers.  Seem the fvwm2 man page for details.
+    concept of layers.  See the fvwm2 man page for details.
 
  ** The WindowList command has options to allow better
     control of which windows are shown.
 
- ** Using alt-tab now works exactly like the other one.
+ ** Using Alt-Tab now works exactly like the other one.
 
  ** When fvwm is run remotely, startup is noticably faster.
 
  ** Killing modules running under an alias now works.
+
+ ** A non conflicting and more readable syntax for module configs.
+    *FvwmPager: DeskTopScale 32
+
+ ** A derived package fvwm-themes standardizes FVWM Themes issues.
+    More info in http://fvwm-themes.sourceforge.net/.
 
 More detailed information on the contents of this release can be
 found at:
 
   http://www.fvwm.org/NEWS.html
 
-You will  probably  have   to make   the following   changes  to  your
-configuration file:
+Suggested changes to your configuration file:
+--------------------------------------------
 
-Recapture should be removed from any style changing code.
+All fvwm user configurations should better be moved to $HOME/.fvwm
+directory; Read command supports $HOME/.fvwm by default, but not $HOME.
+
+Recapture can be removed from any style changing code.
 
 "HilightColor fore/back" becomes
-"sytle "*" Hilightfore fore, HilightBack back"
+"Style * Hilightfore fore, HilightBack back"
 
 "WindowFont font" becomes
-"Style "*" Font font"
+"Style * Font font"
 
 IconPath/PixmapPath becomes
 ImagePath
 The directories from both statements should be merged,
-any directories built in should be removed,
+any directories built in could be removed,
 and a plus sign should be added to the end.
 
 In most cases, the ModulePath statement can be removed

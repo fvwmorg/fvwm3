@@ -14,6 +14,9 @@
  */
 
 #include <stdio.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
 
 #ifndef TRUE
 #define TRUE	1

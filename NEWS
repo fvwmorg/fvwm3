@@ -7,14 +7,16 @@ Changes in beta release 2.3.22 (not released yet)
   GNOME hints for specific windows even if GNOME compliance is
   compiled in.
 
-* Sped up command execution and startup.
+* DestroyModuleConfig supports a non-conflicting syntax.
+
+* Speed up command execution and startup.
 
 * Improved handling of windows that set the "input focus" hint to "false".
 
 Changes in beta release 2.3.21 (September 2000)
 
-* Module configuration syntax now accepts a delimeter, colon and optional
-  spaces; the old syntax is supported as usual:
+* Module configuration syntax now accepts a delimeter - colon and optional
+  spaces; the old syntax is supported as usual (but it allows conflicts):
     *FvwmIconBoxMaxIconSize 48x48
     *FvwmIconBox: MaxIconSize 48x48
 

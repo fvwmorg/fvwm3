@@ -9,6 +9,7 @@ SUBDIRS = libs \
 	modules \
 	utils \
 	docs \
+	rpm \
 	sample.fvwmrc \
 	tests
 
@@ -20,3 +21,34 @@ EXTRA_DIST = INSTALL.fvwm \
 	vms/vms.c \
 	vms/vms.h \
 	vms/vms_shareables.opt
+
+## ---------------------------------------------------------------------------
+## Manage bzip2 archive together with gzip archive
+#  Usage:
+#    make dist2       # instead of make dist
+#    make distcheck2  # instead of make distcheck
+#    make distclean2  # instead of make distclean
+
+dist2: dist
+	gzip -dc $(distdir).tar.gz | bzip2 -9c >$(distdir).tar.bz2
+
+distcheck2: dist2 distcheck
+	@banner="$(distdir).tar.bz2 - ready for distribution"; \
+	dashes=`echo "$$banner" | sed s/./=/g`; \
+	echo "$$banner"; \
+	echo "$$dashes"
+
+distclean2: distclean
+
+## ---------------------------------------------------------------------------
+## Produce an rpm package using dist or from the given tarball
+#  Usage:
+#    make rpm-dist
+#    make release=1 rpm-dist
+#    make rpm-this
+#    make version=2.3.22 release=2 rpm-this
+
+rpm-dist: dist rpm-this
+
+rpm-this:
+	(cd rpm && $(MAKE) $(AM_MAKEFLAGS) rpm) || exit 1

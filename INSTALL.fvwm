@@ -30,10 +30,12 @@ What gets installed, and Where
 ==============================
 
 * fvwm2 is installed into ${prefix}/bin
-* a couple of utilities (xpmroot, etc) are also installed in ${prefix}/bin
-* all the modules (and extra modules) are installed
-  into ${libexecdir}/fvwm/${VERSION}
-* some configuration files are installed into ${sysconfdir}/fvwm
+* a couple of utilities are also installed into ${prefix}/bin; this includes
+  fvwm-config, fvwm-menu-*, FvwmCommand, fvwmbug, xpmroot, xselection
+* all FvwmModule modules are installed into ${libexecdir}/fvwm/${VERSION}
+* all manual pages are installed into ${mandir}/man1
+* some configuration files are installed into ${datadir}/fvwm, for example,
+  FvwmForm & FvwmScript configurations and others
 
 Where VERSION is the version string of FVWM, typically something like
 "2.2.0".  No other files are installed.  There are sample
@@ -42,13 +44,16 @@ see below.
 
 Unless you used configure options,
 
-* ${prefix} is /usr/local.
-* ${sysconfdir} is ${prefix}/etc,
+* ${prefix}     is /usr/local
+* ${bindir}     is ${prefix}/bin
+* ${mandir}     is ${prefix}/man
 * ${libexecdir} is ${prefix}/libexec
+* ${datadir}    is ${prefix}/share
+* ${sysconfdir} is ${prefix}/etc
 
-Thus the default locations are: /usr/local/bin,
-/usr/local/libexec/fvwm/VERSION, and /usr/local/etc/fvwm for the FVWM
-binary, modules, and configuration files, respectively.
+Thus the default locations are: /usr/local/bin, /usr/local/man/man1,
+/usr/local/libexec/fvwm/VERSION, and /usr/local/share/fvwm for the FVWM
+executables, man pages, modules, and configuration files, respectively.
 
 Note that by default, none of the executables are stripped when they're
 installed.  If you'd like them to be, run `make install-strip' instead
@@ -70,20 +75,24 @@ read only if the user's ~/.fvwm2rc is not found.
 Sample configuration files may be found in the sample.fvwm2rc
 directory.  To avoid clobbering the current configuration, no
 configuration file is installed by default.  You must copy it manually
-the first time FVWM is installed.
+the first time FVWM is installed.  But this is fully optional, FVWM
+can run without any configuration file and has an ability to install some
+configurations into the user home directory (precisely, FVWM_USERDIR).
 
-Other configuration files are installed that can be used directly
-from the configuration directory.  See the FvwmForm man page for
-some examples.
+Other system-wide configuration files are located in /usr/local/share/fvwm
+(also called FVWM_DATADIR) that can be used directly from the configuration
+directory.  See the FvwmForm man page for some examples.
 
-For users starting fvwm without
-a .fvwm2rc file, there are built-in dialogs that can copy files
-from the configuration directory into the users home directory
-to create the users starting .fvwm2rc.  See the fvwm2 man page
-under "INITIALIZATION".
+For users starting fvwm without a .fvwm2rc file, there are built-in
+dialogs that can copy files from the configuration directory into the
+users home directory to create the users starting .fvwm2rc.
+See the fvwm2 man page under "INITIALIZATION".
 
 C++
 ===
+
+This section is irrelevant for fvwm 2.3 and 2.4 series, there are no
+modules using C++ anymore.  It is left for historical reasons.
 
 FVWM proper does not need C++ to compile.  However, some modules are
 written in C++, so configure probes for a C++ compiler by default, and
@@ -155,6 +164,9 @@ may be found:
 
 Only one version of the --with-foo-library flag may be specified.
 
+FvwmGtk module requires GTK and optionally IMLIB and GNOME libraries,
+run './configure --help' for more information.
+
 
 Shared Libraries in Non-standard Places
 ---------------------------------------
@@ -169,8 +181,9 @@ path separately; the above options won't add it for you.
 A good way to do this is set the LDFLAGS variable before configure
 runs to contain the -R option.  For example:
 
-  $ LDFLAGS=-R/opt/xpm ./configure --with-xpm-library=/opt/xpm \
-                                   --with-xpm-includes=/opt/xpm
+  $ LDFLAGS=-R/opt/xpm ./configure \
+      --with-xpm-library=/opt/xpm/lib \
+      --with-xpm-includes=/opt/xpm/include
 
 In the future, hopefully, FVWM's configuration will perform this step
 automatically.

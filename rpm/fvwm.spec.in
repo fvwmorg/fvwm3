@@ -1,0 +1,71 @@
+#%define prefix %{_prefix}
+%define prefix /usr/local
+
+%define ver @VERSION@
+%define rel 1
+
+Summary:   F(?) Virtual Window Manager
+Name:      fvwm
+Version:   %{ver}
+Release:   %{rel}
+Copyright: GPL
+Group:     X11/Window Managers
+Source:    %{name}-%{PACKAGE_VERSION}.tar.gz
+URL:       http://www.fvwm.org/
+BuildRoot: %{_tmppath}/%{name}-%{version}-root
+Packager:  FVWM Workers <fvwm-workers@fvwm.org>
+Autoreq:   1
+
+Requires:  libXpm.so.4
+#Requires:  xpm >= 3.4g
+Requires:  perl >= 5.002
+
+# GTK, Imlib, stroke
+
+# RedHat should stop using fvwm name to refer to fvwm1 package.
+Provides:  fvwm, fvwm2
+
+Docdir:    %{prefix}/share/doc
+
+%description
+FVWM is a powerful ICCCM-compliant multiple virtual desktop window manager
+for the X Window System.
+
+This pre-2.4 version includes new features like colorsets, ICCCM2 and GNOME
+compliance, experimental session management, improvements in all modules,
+several new modules, revised menu code, stroke support and more.
+
+%prep
+%setup
+
+%build
+# gnome libs are only used in FvwmGtk, probably it is overhead to require it
+./configure --prefix=%{prefix} --without-gnome
+make
+
+%install
+rm -rf $RPM_BUILD_ROOT
+make prefix=$RPM_BUILD_ROOT%{prefix} install
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%files
+%defattr(-, root, root)
+
+%doc AUTHORS COPYING INSTALL INSTALL.fvwm NEWS README
+%doc docs/ANNOUNCE docs/BUGS docs/DEVELOPERS docs/FAQ docs/TODO
+%doc docs/color_combos docs/error_codes docs/fvwm.lsm docs/m4_hacks
+%{prefix}/bin/*
+%{prefix}/libexec/*
+%{prefix}/man/*/*
+%{prefix}/share/*
+
+## TODO: how to specify the current date in .spec? Or how to run a `command`?
+#%changelog
+#
+#* Wed 12 May 2000 20:00:00 IDT  FVWM Workers  <fvwm-workers@fvwm.org>
+#- Auto building %{PACKAGE_VERSION}
+#
+#* Wed 12 May 2000 20:00:00 IDT  Mikhael Goikhman  <migo@homemail.com>
+#- First try at making the package

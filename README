@@ -1,4 +1,4 @@
-Welcome to FVWM version 2.2.0.  FVWM is a multiple large virtual desktop
+Welcome to FVWM version 2.3.0.  FVWM is a multiple large virtual desktop
 window manager, originally (a looooong time ago!) derived from twm.
 
 FVWM is intended to have a smaller memory footprint but a rich feature
@@ -11,6 +11,9 @@ lot of differences.
 For users of the FVWM 2.0.x betas, please be aware that version 2.2 uses
 GNU autoconf/automake rather than Imake, so things will install in
 different places by default.
+
+For users of the FVWM 2.2.x, please read the files ANNOUNCE and NEWS to
+figure out all changes and new features in this release.
 
 FVWM's original author, Rob Nation (THANKS ROB!), has "retired" from
 work on it, so please don't bother him with silly little things like bug
@@ -28,6 +31,15 @@ found there.
 For information on compiling and installing FVWM, see the INSTALL and
 INSTALL.fvwm files (INSTALL is the boilerplate autoconf instruction
 file; INSTALL.fvwm contains FVWM-specific details).
+
+Generally, you should run:
+
+  ./configure   # for full list of options, run: ./configure --help
+  make
+  make install  # as a user with proper file system permissions
+
+It is very important to make the last step (make install) to ensure that
+FVWM works properly.
 
 For known bugs, check out the BUGS, FAQ and TODO files.
 
