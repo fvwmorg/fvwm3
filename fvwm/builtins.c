@@ -871,8 +871,8 @@ static void ApplyHilightColors(FvwmDecor *decor)
   gcm = GCFunction | GCLineWidth | GCForeground | GCBackground;
   if (decor->HiColorset >= 0)
   {
-    gcv.foreground = Colorset[decor->HiColorset].fg;
-    gcv.background = Colorset[decor->HiColorset].bg;
+    gcv.foreground = Colorset[decor->HiColorset].hilite;
+    gcv.background = Colorset[decor->HiColorset].shadow;
   }
   else
   {

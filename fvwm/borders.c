@@ -42,6 +42,7 @@
 #include "borders.h"
 #include "module_interface.h"
 #include "window_flags.h"
+#include "libs/Colorset.h"
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
@@ -1014,6 +1015,8 @@ static void get_common_decorations(
   common_decorations_type *cd, FvwmWindow *t, draw_window_parts draw_parts,
   Bool has_focus, int force, Window expose_win)
 {
+  int cset;
+
   if (has_focus)
   {
     /* are we using textured borders? */
@@ -1023,8 +1026,17 @@ static void get_common_decorations(
       cd->texture_pixmap = GetDecor(t, BorderStyle.active.u.p->picture);
     }
     cd->back_pixmap= Scr.gray_pixmap;
-    cd->fore_color = GetDecor(t, HiColors.fore);
-    cd->back_color = GetDecor(t, HiColors.back);
+    cset = GetDecor(t, HiColorset);
+    if (cset >= 0)
+    {
+      cd->fore_color = Colorset[cset].fg;
+      cd->back_color = Colorset[cset].bg;
+    }
+    else
+    {
+      cd->fore_color = GetDecor(t, HiColors.fore);
+      cd->back_color = GetDecor(t, HiColors.back);
+    }
     cd->relief_gc = GetDecor(t, HiReliefGC);
     cd->shadow_gc = GetDecor(t, HiShadowGC);
   }

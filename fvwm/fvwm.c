@@ -1395,12 +1395,12 @@ extern void FreeDecorFace(Display *dpy, DecorFace *df);
  *                 destroys existing buttons
  *
  ************************************************************************/
-void ResetAllButtons(FvwmDecor *fl)
+void ResetAllButtons(FvwmDecor *decor)
 {
     TitleButton *leftp, *rightp;
     int i=0;
 
-    for (leftp=fl->left_buttons, rightp=fl->right_buttons;
+    for (leftp=decor->left_buttons, rightp=decor->right_buttons;
          i < 5;
          ++i, ++leftp, ++rightp) {
       DecorFace *lface, *rface;
@@ -1431,9 +1431,9 @@ void ResetAllButtons(FvwmDecor *fl)
 
     /* standard MWM decoration hint assignments (veliaa@rpi.edu)
        [Menu]  - Title Bar - [Minimize] [Maximize] */
-    TB_MWM_DECOR_FLAGS(fl->left_buttons[0]) |= MWMDecorMenu;
-    TB_MWM_DECOR_FLAGS(fl->right_buttons[1]) |= MWMDecorMinimize;
-    TB_MWM_DECOR_FLAGS(fl->right_buttons[0]) |= MWMDecorMaximize;
+    TB_MWM_DECOR_FLAGS(decor->left_buttons[0]) |= MWMDecorMenu;
+    TB_MWM_DECOR_FLAGS(decor->right_buttons[1]) |= MWMDecorMinimize;
+    TB_MWM_DECOR_FLAGS(decor->right_buttons[0]) |= MWMDecorMaximize;
 }
 
 /***********************************************************************
@@ -1442,38 +1442,38 @@ void ResetAllButtons(FvwmDecor *fl)
  *	structure, but does not free the FvwmDecor itself
  *
  ************************************************************************/
-void DestroyFvwmDecor(FvwmDecor *fl)
+void DestroyFvwmDecor(FvwmDecor *decor)
 {
   int i;
   /* reset to default button set (frees allocated mem) */
-  ResetAllButtons(fl);
+  ResetAllButtons(decor);
   for (i = 0; i < 3; ++i)
   {
     int j = 0;
     for (; j < MaxButtonState; ++j)
-      FreeDecorFace(dpy, &TB_STATE(fl->titlebar)[i]);
+      FreeDecorFace(dpy, &TB_STATE(decor->titlebar)[i]);
   }
-  FreeDecorFace(dpy, &fl->BorderStyle.active);
-  FreeDecorFace(dpy, &fl->BorderStyle.inactive);
+  FreeDecorFace(dpy, &decor->BorderStyle.active);
+  FreeDecorFace(dpy, &decor->BorderStyle.inactive);
 #ifdef USEDECOR
-  if (fl->tag)
+  if (decor->tag)
   {
-    free(fl->tag);
-    fl->tag = NULL;
+    free(decor->tag);
+    decor->tag = NULL;
   }
 #endif
-  if (fl->HiReliefGC != NULL)
+  if (decor->HiReliefGC != NULL)
   {
-    XFreeGC(dpy, fl->HiReliefGC);
-    fl->HiReliefGC = NULL;
+    XFreeGC(dpy, decor->HiReliefGC);
+    decor->HiReliefGC = NULL;
   }
-  if (fl->HiShadowGC != NULL)
+  if (decor->HiShadowGC != NULL)
   {
-    XFreeGC(dpy, fl->HiShadowGC);
-    fl->HiShadowGC = NULL;
+    XFreeGC(dpy, decor->HiShadowGC);
+    decor->HiShadowGC = NULL;
   }
-  if (fl->WindowFont.font != NULL)
-    XFreeFont(dpy, fl->WindowFont.font);
+  if (decor->WindowFont.font != NULL)
+    XFreeFont(dpy, decor->WindowFont.font);
 }
 
 /***********************************************************************
