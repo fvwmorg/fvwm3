@@ -719,12 +719,15 @@ void parse_colorset(int n, char *line)
 			XImage *mask_image = None;
 			unsigned int i, j, k = 0;
 			unsigned long red = 0, blue = 0, green = 0;
+			unsigned long tred, tblue, tgreen;
+			double dred = 0.0, dblue = 0.0, dgreen = 0.0;
 			Pixmap pix;
 
 			/* chose the good pixmap (tint problems) */
 			pix =
-			   (cs->picture != NULL && cs->picture->picture != None)?
-				cs->picture->picture:cs->pixmap;
+			   (cs->picture != NULL &&
+                            cs->picture->picture != None) ?
+				cs->picture->picture : cs->pixmap;
 			/* create an array to store all the pixmap colors in */
 			colors = (XColor *)safemalloc(
 				cs->width * cs->height * sizeof(XColor));
@@ -771,19 +774,40 @@ void parse_colorset(int n, char *line)
 						dpy, Pcmap, &colors[i],
 						min(k - i, 256));
                                 }
-				/* calculate average, ignore overflow:
-				 * .red is short, red is long */
+				/* calculate average, add overflows in a double
+                                 * .red is short, red is long */
 				for (i = 0; i < k; i++)
 				{
+                                        tred = red;
 					red += colors[i].red;
+                                        if (red < tred)
+                                        {
+                                                dred += (double)tred;
+                                                red = colors[i].red;
+                                        }
+                                        tgreen = green;
 					green += colors[i].green;
+                                        if (green < tgreen)
+                                        {
+                                                dgreen += (double)tgreen;
+                                                green = colors[i].green;
+                                        }
+                                        tblue = blue;
 					blue += colors[i].blue;
+                                        if (blue < tblue)
+                                        {
+                                                dblue += (double)tblue;
+                                                blue = colors[i].blue;
+                                        }
 				}
+                                dred += red;
+                                dgreen += green;
+                                dblue += blue;
 				free(colors);
 				/* get it */
-				color.red = red / k;
-				color.green = green / k;
-				color.blue = blue / k;
+				color.red = dred / k;
+				color.green = dgreen / k;
+				color.blue = dblue / k;
 				if (privateCells)
 				{
 					color.pixel = cs->bg;
@@ -1107,7 +1131,7 @@ void parse_colorset(int n, char *line)
 	/*
 	 * ------- the pixmap is a bitmap: create here cs->pixmap -------
 	 */
-	if (cs->picture != None && pixmap_is_a_bitmap && 
+	if (cs->picture != None && pixmap_is_a_bitmap &&
 	    (has_pixmap_changed || has_bg_changed))
 	{
 		cs->pixmap = XCreatePixmap(
