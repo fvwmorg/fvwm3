@@ -261,7 +261,8 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   if(Module == -1)
     WaitForButtonsUp();
 
-  free(function);
+  if (function)
+    free(function);
   if(taction != NULL)
     free(taction);
   return;

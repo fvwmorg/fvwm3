@@ -108,13 +108,20 @@ void ProcessNewStyle(XEvent *eventp,
   restofline = GetNextToken(text,&tname.name); /* parse style name */
   /* in case there was no argument! */
   if((tname.name == NULL)||(restofline == NULL))/* If no name, or blank cmd */
-    return;                             /* drop it. */
-
+    {
+      if (tname.name)
+	free(tname.name);
+      return;                             /* drop it. */
+    }
 
   SKIPSPACE;                            /* skip over white space */
   line = restofline;
 
-  if(restofline == NULL)return;
+  if(restofline == NULL)
+    {
+      free(tname.name);
+      return;
+    }
   while((*restofline != 0)&&(*restofline != '\n'))
   {
     SKIPSPACE;                          /* skip white space */
@@ -339,8 +346,8 @@ void ProcessNewStyle(XEvent *eventp,
                 restofline++;
             }
             /* Note: here there is no test for valid co-ords, use geom */
-          } else {                      /* Not 4 numeric args dje */
-            char geom_string[25];     /* bigger than =32767x32767+32767+32767 */
+          } else {                   /* Not 4 numeric args dje */
+            char geom_string[25];    /* bigger than =32767x32767+32767+32767 */
             int geom_flags;
             GETWORD;                    /* read in 1 word w/o advancing */
             if(len > 0 && len < 24) {   /* if word found, not too long */
@@ -398,7 +405,7 @@ void ProcessNewStyle(XEvent *eventp,
           /* The grid always affects the prior iconbox */
           if (which == 0) {             /* If no current box */
             fvwm_msg(ERR,"ProcessNewStyle",
-                       "IconGrid must follow an IconBox in same Style command");
+		     "IconGrid must follow an IconBox in same Style command");
           } else {                      /* have a place to grid */
             num = sscanf(restofline,"%hd%hd", /* 2 shorts */
                          &which->IconGrid[0],
@@ -424,7 +431,7 @@ void ProcessNewStyle(XEvent *eventp,
           /* The fill always affects the prior iconbox */
           if (which == 0) {             /* If no current box */
             fvwm_msg(ERR,"ProcessNewStyle",
-                       "IconFill must follow an IconBox in same Style command");
+		     "IconFill must follow an IconBox in same Style command");
           } else {                      /* have a place to fill */
             unsigned char IconFill_1;   /* first  type direction parsed */
             unsigned char IconFill_2;   /* second type direction parsed */
@@ -437,11 +444,11 @@ void ProcessNewStyle(XEvent *eventp,
               restofline = tmp;         /* swallow it */
               SKIPSPACE;                /* skip space between words */
               GETWORD;                  /* read in second word */
-              if (Get_TBLR(restofline,&IconFill_2) == 0) { /* top/bot/lft/rgt */
+              if (Get_TBLR(restofline,&IconFill_2) == 0) {/* top/bot/lft/rgt */
                 fvwm_msg(ERR,"ProcessNewStyle",
                          "IconFill must be followed by T|B|R|L, found %.*s.",
                          len, restofline); /* its wrong */
-              } else if ((IconFill_1&ICONFILLHRZ) == (IconFill_2&ICONFILLHRZ)) {
+              } else if ((IconFill_1&ICONFILLHRZ)==(IconFill_2&ICONFILLHRZ)) {
                 fvwm_msg(ERR,"ProcessNewStyle",
                  "IconFill must specify a horizontal and vertical direction.");
               } else {                  /* Its valid! */
@@ -869,7 +876,9 @@ void ProcessNewStyle(XEvent *eventp,
     {
       fvwm_msg(ERR,"ProcessNewStyle",
                "bad style command: %s", restofline);
-      return;
+      /* Can't return here since all malloced memory will be lost. Ignore rest
+       * of line instead. */
+      break;
     }
   } /* end while still stuff on command */
 

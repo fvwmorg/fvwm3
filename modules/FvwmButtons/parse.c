@@ -48,11 +48,6 @@ char *seekright(char **s)
   char *line = *s;
 
   line = DoGetNextToken(line, &token, NULL, "),");
-  if (token && !*token)
-    {
-      free(token);
-      token = NULL;
-    }
   if (*s != NULL && line == NULL)
     line = strchr(*s, '\0');
   *s = line;

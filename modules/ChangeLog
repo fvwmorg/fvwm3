@@ -1,3 +1,8 @@
+1998-11-07  Dominik  <dominik_vogt@hp.com>
+
+	* FvwmIconMan/readconfig.c: Removed internal_GetNextToken and
+	replaced it with libs/Parse.c(DoGetNextToken);
+
 1998-11-06  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmWinList/Makefile.am (FvwmWinList_DEPENDENCIES):

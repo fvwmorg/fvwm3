@@ -119,42 +119,45 @@ void AddModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
                       unsigned long context, char *action,int* Module)
 {
-  struct moduleInfoList *this, *that, *prev;
+  struct moduleInfoList *current, *next, *prev;
   char *info;   /* info to be deleted - may contain wildcards */
   char *mi;
 
-  action = GetNextToken(action,&info); 
+  GetNextToken(action, &info); 
   if( info == NULL )
   {
     return;
   }
 
-  this = modlistroot;
+  current = modlistroot;
   prev = NULL;
 
-  while(this != NULL)
+  while(current != NULL)
   {
-    GetNextToken( this->data, &mi);
-    that = this->next;
+    GetNextToken( current->data, &mi);
+    next = current->next;
     if( matchWildcards(info, mi+1) )
     {
-      free(this->data);
-      free(this);
+      free(current->data);
+      free(current);
       if( prev )
       {
-        prev->next = that;
+        prev->next = next;
       }
       else
       {
-        modlistroot = that;
+        modlistroot = next;
       }
     }
     else
     {
-      prev = this;
+      prev = current;
     }
-    this = that;
+    current = next;
+    if (mi)
+      free(mi);
   }
+  free(info);
 }
 
 void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,

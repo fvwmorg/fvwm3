@@ -127,16 +127,15 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   *Module = 0;
 
   action = GetNextToken(action, &cptr);
+  if (!cptr)
+    return;
 
   arg1 = findIconFile(cptr,ModulePath,X_OK);
   if(arg1 == NULL)
     {
-      if(cptr != NULL)
-	{
-	  fvwm_msg(ERR,"executeModule",
-                   "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
-	  free(cptr);
-	}
+      fvwm_msg(ERR,"executeModule",
+	       "No such module '%s' in ModulePath '%s'",cptr,ModulePath);
+      free(cptr);
       return;
     }
 
@@ -147,8 +146,8 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if(i>=npipes)
     {
       fvwm_msg(ERR,"executeModule","Too many Accessories!");
-      if(cptr != NULL)
-	free(cptr);
+      free(arg1);
+      free(cptr);
       return;
     }
 
@@ -158,19 +157,22 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if(pipe(fvwm_to_app)!=0)
     {
       fvwm_msg(ERR,"executeModule","Failed to open pipe");
+      free(arg1);
+      free(cptr);
       return;
     }
   if(pipe(app_to_fvwm)!=0)
     {
       fvwm_msg(ERR,"executeModule","Failed to open pipe2");
-      if(cptr != NULL)
-	free(cptr);
+      free(arg1);
+      free(cptr);
       close(fvwm_to_app[0]);
       close(fvwm_to_app[1]);
       return;
     }
 
   pipeName[i] = stripcpy(cptr);
+  free(cptr);
   sprintf(arg2,"%d",app_to_fvwm[1]);
   sprintf(arg3,"%d",fvwm_to_app[0]);
   sprintf(arg5,"%lx",(unsigned long)win);
@@ -185,13 +187,13 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   args[4]=arg5;
   args[5]=arg6;
   nargs = 6;
-  while((action != NULL)&&(nargs < 20)&&(strlen(args[nargs-1]) > 0))
+  while((action != NULL)&&(nargs < 20)&&(args[nargs-1] != NULL))
     {
       args[nargs] = 0;
       action = GetNextToken(action,&args[nargs]);
       nargs++;
     }
-  if(strlen(args[nargs-1]) <= 0)
+  if(args[nargs-1] == NULL)
     {
       nargs--;
       if(args[nargs] != NULL)
@@ -259,6 +261,11 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
       fvwm_msg(ERR,"executeModule","Fork failed");
       free(arg1);
+      for(i=6;i<nargs;i++)
+	{
+	  if(args[i] != 0)
+	    free(args[i]);
+	}
     }
   return;
 }
@@ -405,6 +412,7 @@ void KillModuleByName(char *name)
     }
   return;
 }
+
 
 static unsigned long *
 make_vpacket(unsigned long *body, unsigned long event_type,
@@ -614,8 +622,12 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 {
   char *module,*str;
   int i;
-
+  
+  if (!action)
+    return;
   GetNextToken(action,&module);
+  if (!module)
+    return;
   str = strdup(action + strlen(module) + 1);
 
   for (i=0;i<npipes;i++)

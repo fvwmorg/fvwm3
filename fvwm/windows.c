@@ -26,14 +26,6 @@
 #include "parse.h"
 #include "screen.h"
 
-#if 0
-/* I tried to include "limits.h" to get these values, but it
- * didn't work for some reason */
-/* Minimum and maximum values a `signed int' can hold.  */
-#define MY_INT_MIN (- MY_INT_MAX - 1)
-#define MY_INT_MAX 2147483647
-#endif /* 0 */
-
 #define SHOW_GEOMETRY (1<<0)
 #define SHOW_ALLDESKS (1<<1)
 #define SHOW_NORMAL   (1<<2)
@@ -99,6 +91,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     while (line && *line)
     {
       line = GetNextOption(line, &tok);
+      if (!tok)
+	break;
 
       if (StrEquals(tok,"Function"))
       {
@@ -199,7 +193,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   /* Do alphabetic sort */
   if (flags & SHOW_ALPHABETIC)
-    qsort(windowList,numWindows,sizeof(t),(int(*)(const void*,const void*))winCompare);
+    qsort(windowList,numWindows,sizeof(t),
+	  (int(*)(const void*,const void*))winCompare);
 
   while(next_desk != INT_MAX)
   {

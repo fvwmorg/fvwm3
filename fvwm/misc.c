@@ -503,7 +503,7 @@ char *GetOneMenuPositionArgument(char *action,int x,int w,int *pFinalX,
   float factor = (float)w/100;
 
   naction = GetNextToken(action, &token);
-  if (token == NULL || *token == '\0')
+  if (token == NULL)
     return action;
   length = strlen(token);
   if (token[length-1] == 'p') {
@@ -567,7 +567,12 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     pops->pos_hints.fRelative = FALSE;
     /* parse context argument (if present) */
     naction = GetNextToken(taction, &tok);
-
+    if (!tok) {
+      /* no context string */
+      fHasContext = FALSE;
+      break;
+    }
+    
     pops->pos_hints.fRelative = TRUE; /* set to FALSE for absolute hints! */
     fUseItemOffset = FALSE;
     fHasContext = TRUE;
@@ -634,9 +639,11 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       /* no context string */
       fHasContext = FALSE;
     }
-
-    free(tok);
-    if (fHasContext) taction = naction;
+    
+    if (tok)
+      free(tok);
+    if (fHasContext)
+      taction = naction;
     else naction = action;
 
     if (!context_window || !fHasContext
@@ -697,11 +704,13 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     } else if (StrEquals(tok, "SelectWarp")) {
       pops->flags = pops->flags|MENU_SELECTWARP;
     } else {
-      free(tok);
+      if (tok)
+	free(tok);
       break;
     }
     action = naction;
-    free (tok);
+    if (tok)
+      free (tok);
   }
   if (!(pops->flags|MENU_SELECTINPLACE)) {
     pops->flags &= ~MENU_SELECTWARP;

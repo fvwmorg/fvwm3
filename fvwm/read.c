@@ -52,7 +52,6 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   char *filename= NULL,*Home, *home_file, *ofilename = NULL;
   char *option;                         /* optional arg to read */
   char *rest,*tline,line[1000];
-  int HomeLen;
   FILE *fd;
   int thisfileno;
   extern XEvent Event;
@@ -89,53 +88,49 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
   if (!piperead)
   {
-    if((fd == NULL)&&(ofilename[0] != '/'))
-    {
-      /* find the home directory to look in */
-      Home = getenv("HOME");
-      if (Home == NULL)
-        Home = "./";
-      HomeLen = strlen(Home);
-      home_file = safemalloc(HomeLen + strlen(ofilename)+3);
-      strcpy(home_file,Home);
-      strcat(home_file,"/");
-      strcat(home_file,ofilename);
-      filename = home_file;
-      fd = fopen(filename,"r");      
-    }
-    if((fd == NULL)&&(ofilename[0] != '/'))
-    {
-      if((filename != NULL)&&(filename!= ofilename))
-        free(filename);
-      /* find the home directory to look in */
-      Home = FVWM_CONFIGDIR;
-      HomeLen = strlen(Home);
-      home_file = safemalloc(HomeLen + strlen(ofilename)+3);
-      strcpy(home_file,Home);
-      strcat(home_file,"/");
-      strcat(home_file,ofilename);
-      filename = home_file;
-      fd = fopen(filename,"r");      
-    }
+    if (fd == 0 && ofilename[0] != '/')
+      {
+	/* find the home directory to look in */
+	Home = getenv("HOME");
+	if (Home == NULL)
+	  Home = ".";
+	home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
+	strcpy(home_file,Home);
+	strcat(home_file,"/");
+	strcat(home_file,ofilename);
+	filename = home_file;
+	fd = fopen(filename,"r");
+	if(fd == 0)
+	  {
+	    if((filename != NULL)&&(filename!= ofilename))
+	      free(filename);
+	    /* find the home directory to look in */
+	    Home = FVWM_CONFIGDIR;
+	    home_file = safemalloc(strlen(Home) + strlen(ofilename)+3);
+	    strcpy(home_file,Home);
+	    strcat(home_file,"/");
+	    strcat(home_file,ofilename);
+	    filename = home_file;
+	    fd = fopen(filename,"r");      
+	  }
+      }
   }
 
   if(fd == NULL)
   {
     if (missing_quiet == 'n') {         /* if quiet option not on */
       fvwm_msg(ERR,
-               piperead?"PipeRead":"Read",
-               piperead?"command '%s' not run":"file '%s' not found in $HOME or "FVWM_CONFIGDIR,
-               ofilename);
+               piperead ? "PipeRead" : "Read",
+               piperead ? "command '%s' not run" :
+	       "file '%s' not found in $HOME or "FVWM_CONFIGDIR, ofilename);
     } /* end quiet option not on */
     if((ofilename != filename)&&(filename != NULL))
     {
       free(filename);
-      filename = NULL;
     }
     if(ofilename != NULL)
     {
       free(ofilename);
-      ofilename = NULL;
     }
     last_read_failed = 1;
     return;

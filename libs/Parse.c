@@ -81,34 +81,6 @@ char *PeekToken(const char *pstr)
   return tok;
 }
 
-#if 0
-/*
-** GetToken: destructively rips next token from string, returning it
-**           (you should free returned string later)
-*/
-char *GetToken(char **pstr)
-{
-  char *new_pstr=NULL,*tok,*ws;
-
-  if (!pstr || !(tok=PeekToken(*pstr)))
-    return NULL;
-
-  /* skip leading WS, tok, and following WS/separators in pstr & realloc */
-  ws = *pstr;
-  EatWS(ws);
-  ws += strlen(tok);
-  EatWS(ws);
-
-  if (*ws)
-    new_pstr = strdup(ws);
-
-  free(*pstr);
-  *pstr = new_pstr;
-
-  return tok;
-}
-#endif
-
 /*
 ** CmpToken: does case-insensitive compare on next token in string, leaving
 **           string intact (return code like strcmp)
@@ -159,31 +131,16 @@ void NukeToken(char **pstr)
     free(tok);
 }
 
-#if 0
-/*
-** GetNextToken: equiv interface of old parsing routine, for ease of transition
-*/
-char *GetNextToken(char *indata,char **token)
-{
-  char *nindata=indata;
-
-  *token = PeekToken(indata);
-
-  if (*token)
-    nindata+=strlen(*token);
-  EatWS(nindata);
-
-  return nindata;
-}
-#else
 /****************************************************************************
  *
- * Gets the next "word" of input from char string indata.
+ * Gets the next "word" of input from string indata.
  * "word" is a string with no spaces, or a qouted string.
  * Return value is ptr to indata,updated to point to text after the word
  * which is extracted.
  * token is the extracted word, which is copied into a malloced
- * space, and must be freed after use.
+ * space, and must be freed after use. DoGetNextToken *never* returns an
+ * empty string. If the token consists only of whitespace or delimiters,
+ * the returned token is NULL instead.
  *
  * spaces = string of characters to treat as spaces
  * delims = string of characters delimiting token
@@ -271,17 +228,37 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims)
   if(*end != 0)
     end++;
 
+  if (**token == 0)
+    {
+      free(*token);
+      *token = NULL;
+    }
   return end;
 }
-#endif /* 0 */
 
 char *GetNextToken(char *indata,char **token)
 {
   return DoGetNextToken(indata, token, NULL, NULL);
 }
+
 char *GetNextOption(char *indata,char **token)
 {
   return DoGetNextToken(indata, token, ",", NULL);
+}
+
+char *SkipNTokens(char *indata, unsigned int n)
+{
+  char *tmp;
+  char *junk;
+
+  tmp = indata;
+  for ( ; n > 0 ; n--)
+    {
+      tmp = GetNextToken(tmp, &junk);
+      if (junk)
+	free(junk);
+    }
+  return tmp;
 }
 
 /****************************************************************************

@@ -53,11 +53,14 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   Bool flags;
   int val1, val2, val1_unit,val2_unit,n;
   unsigned int expect_button = ~0;
+  unsigned int mask = 0;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE, ButtonPress))
     return;
 
-  if (eventp->type == KeyPress)
+  XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
+		 &JunkX, &JunkY, &JunkX, &JunkY, &mask);    
+  if((mask&(Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))==0)
     expect_button = 0;
   if(check_allowed_function2(F_RESIZE,tmp_win) == 0
 #ifdef WINDOWSHADE
@@ -223,7 +226,8 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	      finished = TRUE;
 	      /* return pointer if aborted resize was invoked with key */
 	      if (stashed_x >= 0)
-	        XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, stashed_x,stashed_y);
+	        XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, stashed_x,
+			     stashed_y);
 	    }
 	  done = TRUE;
 	  break;
@@ -238,7 +242,8 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	case MotionNotify:
 	  x = Event.xmotion.x_root;
 	  y = Event.xmotion.y_root;
-	  /* resize before paging request to prevent resize from lagging mouse - mab */
+	  /* resize before paging request to prevent resize from lagging
+	   * mouse - mab */
 	  DoResize(x, y, tmp_win);  
 	  /* need to move the viewport */
 	  HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,&x,&y,

@@ -248,8 +248,11 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   Bool done;
   int xl,yt,delta_x,delta_y,paged;
   unsigned int expect_button;
+  unsigned int mask = 0;
 
-  if (eventp && eventp->type == KeyPress)
+  XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
+		 &JunkX, &JunkY, &JunkX, &JunkY, &mask);    
+  if((mask&(Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))==0)
     expect_button = 0;
   else
     expect_button = ~0;

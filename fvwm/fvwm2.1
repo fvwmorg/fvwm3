@@ -540,8 +540,13 @@ which should be executed if the user selects that menu item.  An empty
 menu-label ("") and the Nop function can be used to insert a separator
 into the menu.
 
-The menu title can be changed at any time just by adding a new "Title"
-line. The old title will be overwritten.
+Titles can be used within the menu. If you add the option "top" behind
+the keyword "Title", the title will be added to the top of the menu.
+If there was a title already, it is overwritten.
+
+.EX
+AddToMenu Utilities "Tools"     Title top
+.EE
 
 If the menu-label contains a sub-string which is set off by stars,
 then the text between the stars is expected to be the name of an

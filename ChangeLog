@@ -1,3 +1,49 @@
+1998-11-07  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (MenuInteraction): fixed bug with non-animated
+	fvwm-menus and <left> in a submenu
+
+	* fvwm/windows.c: removed obsolete code, added safety checks
+
+	* libs/Picture.c (GetPicture): fixed memory leak
+	(CachePicture): fixed memory leaks
+	(findIconFile): fixed memory leak
+
+	* fvwm/move.c (moveLoop): fixed move from button menu
+
+	* fvwm/resize.c (resize_window): fixed resize from button menu
+
+	* fvwm/bindings.c:
+	* fvwm/builtins.c:
+	* fvwm/complex.c:
+	* fvwm/functions.c:
+	* fvwm/menus.c:
+	* fvwm/misc.c:
+	* fvwm/modconf.c:
+	* fvwm/module.c:
+	* fvwm/read.c:
+	* fvwm/style.c:
+	* modules/FvwmIconMan/readconfig.c:
+	* libs/Parse.c:
+	Changed behaviour of GetNextToken() to fix dozens of memory leaks.
+	Some parsing stuff may be instable now (coredumps!)
+
+1998-11-06  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/module.c (executeModule): fixed memory leaks
+
+	* fvwm/modconf.c (DestroyModConfig): fixed memory leaks
+
+	* fvwm/menus.c (MrPopupForMi): some optimizing and cleanup
+	(GetPopupOptions): some optimizing, fixed memory leak
+
+	* libs/Parse.c (CmpToken): removed old code: GetToken() and old
+	version of GetNextToken.
+	(SkipNTokens): Added for smoother parsing.
+
+	* fvwm/functions.c (ExecuteFunction): Cleanup for mem-leakage
+	fixes.
+
 Sat Nov  7 02:01:41 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* configure.in: Version 2.1.1 released (CVS tag = release-2_1_1)
