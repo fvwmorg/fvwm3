@@ -1,3 +1,8 @@
+2002-05-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/FvwmTaskBar.c (redraw_buttons):
+	fixed a problem with sticky icons
+
 2002-04-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmPerl/FvwmPerl.in:
@@ -78,23 +83,23 @@
 	Use the alpha of the mini icon send by fvwm
 
 	* FvwmWinList/Makefile.am
-	* FvwmWharf/Makefile.am: 
+	* FvwmWharf/Makefile.am:
 	* FvwmTaskBar/Makefile.am:
-	* FvwmScript/Makefile.am: 
+	* FvwmScript/Makefile.am:
 	* FvwmPager/Makefile.am:
 	* FvwmIconMan/Makefile.am:
 	* FvwmIconBox/Makefile.am:
 	* FvwmBanner/Makefile.am:
-	* FvwmAnimate/Makefile.am: 
+	* FvwmAnimate/Makefile.am:
 	Links to Xrender if needed
 
-	* FvwmWharf/icons.c (GetXPMGradient): 
-	(GetXPMColorset): 
-	(GetSolidXPM): 
-	(LoadIconFile): 
-	(ConfigureIconWindow): 
+	* FvwmWharf/icons.c (GetXPMGradient):
+	(GetXPMColorset):
+	(GetSolidXPM):
+	(LoadIconFile):
+	(ConfigureIconWindow):
 	* FvwmWharf/FvwmWharf.c (main):
-	* FvwmIconBox/icons.c (GetIconFromFile): 
+	* FvwmIconBox/icons.c (GetIconFromFile):
 	(GetBackPixmap):
 	(CreateIconWindow):
 	(GetIconWindow):
