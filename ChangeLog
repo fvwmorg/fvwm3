@@ -1,3 +1,20 @@
+2003-06-14  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/style.c (__simplify_style_list):
+	(blocksintersect): 
+	(blockand):
+	Fixed blockand which always returned True. Added blocksintersect which
+	return the same value than blockand but faster.
+
+2003-06-13  olicha  <olivier.chapuis@free.fr>
+
+	* configure.in:
+	* acinclude.m4:
+	Fixed fontconfig and xft2 for version without *-config binnary. Used
+	pkg-config for this: new macro AM_CHECK_PKG_CONFIG. Really reject
+	fontconfig and xft2 if the version is < the required version
+	(even if --disable-*test).
+
 2003-06-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Graphics.c:

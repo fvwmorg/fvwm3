@@ -82,7 +82,7 @@ static Bool blockor(char *dest, char *blk1, char *blk2, int length)
 static Bool blockand(char *dest, char *blk1, char *blk2, int length)
 {
 	int i;
-	char result = (char)0xff;
+	char result = 0;
 
 	for (i = 0; i < length; i++)
 	{
@@ -118,6 +118,19 @@ static Bool blockissubset(char *sub, char *super, int length)
 	}
 
 	return True;
+}
+
+static Bool blocksintersect(char *blk1, char *blk2, int length)
+{
+	int i;
+
+	for (i = 0; i < length; i++)
+	{
+		if (blk1[i] & blk2[i])
+			return True;
+	}
+
+	return False;
 }
 
 static void remove_icon_boxes_from_style(window_style *pstyle)
@@ -829,17 +842,14 @@ static Bool __simplify_style_list(void)
 					(char *)&cmp->flag_default,
 					sizeof(style_flags));
 				if (is_merge_allowed &&
-				    !blockand(
-					    (char *)&dummyflags,
+				    !blocksintersect(
 					    (char *)&cmp->flag_mask,
 					    (char *)&interflags,
 					    sizeof(style_flags)) &&
-				    !blockand(
-					    (char *)&dummyflags,
+				    !blocksintersect(
 					    (char *)&cmp->flag_default,
 					    (char *)&interflags,
-					    sizeof(style_flags))
-					)
+					    sizeof(style_flags)))
 				{
 					window_style *tmp =
 						SGET_PREV_STYLE(*cmp);
