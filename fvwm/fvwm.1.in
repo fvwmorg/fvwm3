@@ -3208,9 +3208,14 @@ release in a menu using this style, the current menu item is
 selected.  This is intended for
 .SM Alt-Tab
 .B WindowList
-navigation.  The key name is a standard X11 key name as defined in
+navigation.
+The key name is a standard X11 key name as defined in
 .IR /usr/include/X11/keysymdef.h ,
-with the leading "XK_" omitted.  To disable this behavior, omit
+(without the 
+.I XK_
+prefix), or the keysym database
+.IR /usr/X11R6/lib/X11/XKeysymDB .
+To disable this behavior, omit
 the key name.
 
 Note: Some X servers do not support KeyRelease events.
@@ -4144,9 +4149,13 @@ to fvwm or applications.  The parameters are a list of
 commands which consist of pairs of command tokens and values.
 The
 .IR press " and " release
-commands are followed by the name of a keysym.  Standard KeySym
-names are obtained from <X11/keysymdef.h> by removing the XK_
-prefix from each name.
+commands are followed by a key name.  
+The key name is a standard X11 key name as defined in
+.IR /usr/include/X11/keysymdef.h ,
+(without the 
+.I XK_
+prefix), or the keysym database
+.IR /usr/X11R6/lib/X11/XKeysymDB .
 The
 .IR wait ", " modifiers " and " depth
 commands are the same as those used by
@@ -5929,9 +5938,13 @@ binding except that the mouse button number is replaced with a
 .IR Keyname .
 Normally, the key binding is activated when the key is pressed.
 .I Keyname
-is one of the entries from the file
+is a standard X11 key name as defined in
 .IR /usr/include/X11/keysymdef.h ,
-with the leading XK_ omitted, but only key names that are
+(without the 
+.I XK_
+prefix), or the keysym database
+.IR /usr/X11R6/lib/X11/XKeysymDB .
+Only key names that are
 generated with no modifier keys or with just the
 .SM Shift
 key held are guaranteed to work.  The
