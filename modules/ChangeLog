@@ -1,11 +1,17 @@
+2001-10-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmWinList/FvwmWinList.c (COMPLEX_WINDOW_PLACEMENT):
+	added define again that vanishes mysteriously during the Xinerama
+	patches
+
 2001-09-21  olicha  <olivier.chapuis@free.fr>
 
-        * FvwmIconMan/x.c (X_init_t_manager)
+	* FvwmIconMan/x.c (X_init_t_manager):
 	Fixed geometries
-	
+
 2001-09-21  olicha  <olivier.chapuis@free.fr>
 
-        * FvwmButtons/FvwmButtons.c (myErrorHandler)
+	* FvwmButtons/FvwmButtons.c (myErrorHandler)
 	Added BadPixmap as an acceptable error
 
 2001-09-19  Dominik Vogt  <dominik.vogt@gmx.de>

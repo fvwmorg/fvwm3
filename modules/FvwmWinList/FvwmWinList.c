@@ -83,6 +83,8 @@
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
 
+#define COMPLEX_WINDOW_PLACEMENT
+
 #define SomeButtonDown(a) ((a) & DEFAULT_ALL_BUTTONS_MASK)
 
 /* File type information */
