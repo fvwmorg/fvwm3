@@ -216,9 +216,6 @@ static
 void c100_init_base_table ()
 {
 	int i;
-	
-	if (!XpmSupport)
-		return;
 
 	for (i=0; i<NColors; i++)
 	{

@@ -1,5 +1,8 @@
 2002-04-06  olicha  <olivier.chapuis@free.fr>
 
+	* libs/FImageLoader.c (c100_init_base_table):
+	Allows init even if !XPM
+
 	* libs/Makefile.am: 
 	Remove a F
 
