@@ -1505,16 +1505,8 @@ static void InitVariables(void)
     (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0) ||
     (strcmp (ServerVendor (dpy), "Network Computing Devices Inc.") == 0);
 
-#ifdef MODALITY_IS_EVIL
-  Scr.bo.ModalityIsEvil = 1;
-#else
   Scr.bo.ModalityIsEvil = 0;
-#endif
-#ifdef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
-  Scr.bo.DisableConfigureNotify = 1;
-#else
   Scr.bo.DisableConfigureNotify = 0;
-#endif
   Scr.bo.InstallRootCmap = 0;
   Scr.bo.FlickeringQtDialogsWorkaround = 1;
 
@@ -1964,7 +1956,7 @@ static void setVersionInfo(void)
 #ifdef XPM
   strcat(support_str, " XPM,");
 #endif
-/* no sence to report Imlib and not report GTK; both are used in FvwmGtk only
+/* no sense to report Imlib and not report GTK; both are used in FvwmGtk only
 #ifdef IMLIB
   strcat(support_str, " Imlib,");
 #endif

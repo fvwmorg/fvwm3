@@ -9,13 +9,18 @@ log=$testdir/$myname.log
 typeset -i c1
 typeset -i c2
 typeset -i c3
+typeset -i i1
+typeset -i i2
+typeset -i nopts
+typeset -i copts
 
 usage ()
 {
-  echo "usage: $myname [ -0 | -1 | -2 ] [ make options ]"
+  echo "usage: $myname [-0] [-1] [-2] [-a] [make options]"
   echo "  -0: run tests with all options defined and disabled (2 builds)"
   echo "  -1: run tests with one option defined and disabled"
   echo "  -2: run tests with two options defined and disabled"
+  echo "  -a: run all possible tests"
   echo "  default is: myname -0 -1"
   echo "  logging output goes to $log and $log.*"
 }
@@ -26,6 +31,7 @@ usage ()
 run_depth_0=""
 run_depth_1=""
 run_depth_2=""
+run_all=""
 custom=""
 while [ -n "$1" ] ; do
   if [ "$1" = "-h" ] ; then
@@ -36,18 +42,21 @@ while [ -n "$1" ] ; do
     exit
   elif [ "$1" = "-0" ] ; then
     run_depth_0=1
-    run_depth_1=""
-    run_depth_2=""
+    run_all=""
     custom=1
   elif [ "$1" = "-1" ] ; then
-    run_depth_0=""
     run_depth_1=1
-    run_depth_2=""
+    run_all=""
     custom=1
   elif [ "$1" = "-2" ] ; then
+    run_depth_2=1
+    run_all=""
+    custom=1
+  elif [ "$1" = "-a" ] ; then
     run_depth_0=""
     run_depth_1=""
-    run_depth_2=1
+    run_depth_2=""
+    run_all=1
     custom=1
   else
     break;
@@ -114,25 +123,26 @@ reverse_options ()
 # call configure and make (with logging)
 build ()
 {
+  echo "+++ testing (logfile $1): $CONFIGURE_OPTS" >> $log
+  # clean up
+  echo "cleaning up..." >> $log
   clean_up
-  echo >> $log
-  echo >> $log
-  echo "++++++++++ checking configure with options $CONFIGURE_OPTS" >> $log
-  echo >> $log
-  echo "./configure --enable-extras $CONFIGURE_OPTS\n\n" > $log.$1
+  # configure
+  echo "configuring..." >> $log
+  echo "./configure $CONFIGURE_OPTS" > $log.$1
   if nice ./configure --enable-extras $CONFIGURE_OPTS >> $log.$1 2>&1; then
     echo ok >> $log
   else
     echo FAILED >> $log
   fi
-  echo >> $log
-  echo "building" >> $log
-  echo >> $log
+  # make
+  echo "building..." >> $log
   if nice make $MAKE_OPTS > $log.$1 2>&1; then
     echo ok >> $log
   else
     echo FAILED >> $log
   fi
+  echo >> $log
 }
 
 ############################
@@ -143,23 +153,27 @@ build ()
 # get the list of possible options
 #
 c1=0
+nopts=0
+copts=1
 for i in `
-grep "^smr_SWITCH" configure.in | grep -v debug-msgs |
-sed -e 's/^smr_SWITCH.//g' |
+grep "^\(dnl dummy: \)\?smr_SWITCH" configure.in |
+grep -v debug-msgs |
+sed -e 's/^.*smr_SWITCH.//g' |
 cut -f 1 -d ","`; do
   BUILD_OPTIONS[$c1]="$i"
   OPTIONS="$OPTIONS $i"
   c1=$c1+1;
+  nopts=$nopts+1;
+  copts=$copts+$copts
 done
-
-echo options: $OPTIONS
 
 #
 # now do the tests
 #
 if [ "$run_depth_1" = "1" ] ; then
+  i1=$nopts+$nopts
   echo
-  echo " +++ running tests for depth 1 +++"
+  echo " +++ running $i1 tests for depth 1 +++"
   echo
   c1=0
   while [ ! "${BUILD_OPTIONS[$c1]}" = "" ]; do
@@ -174,8 +188,9 @@ if [ "$run_depth_1" = "1" ] ; then
 fi
 
 if [ "$run_depth_2" = "1" ] ; then
+  i1="$nopts * $nopts + $nopts"
   echo
-  echo " +++ running tests for depth 2 +++"
+  echo " +++ running $i1 tests for depth 2 +++"
   echo
   c1=0
   while [ -n "${BUILD_OPTIONS[$c1]}" ]; do
@@ -195,7 +210,7 @@ fi
 
 if [ "$run_depth_0" = "1" ] ; then
   echo
-  echo " +++ running tests for depth 0 +++"
+  echo " +++ running 2 tests for depth 0 +++"
   echo
   disable_options
   reverse_options
@@ -204,4 +219,31 @@ if [ "$run_depth_0" = "1" ] ; then
   disable_options
   echo build all_enabled
   build all_enabled
+fi
+
+if [ "$run_all" = "1" ] ; then
+  i1=$copts+1
+  echo
+  echo " +++ running $i1 tests for all combination of options +++"
+  echo
+  c1=0
+  while [ ! "$c1" = "$copts" ]; do
+    c2=$c1
+    i1=0
+    opts_off=""
+    while [ ! "$i1" = "$nopts" ]; do
+      i2="$c2/2"
+      i2="$i2*2"
+      if [ "$i2" = "$c2" ]; then
+        opts_off="$opts_off $i1"
+      fi
+      i1=$i1+1
+      c2=$c2/2
+    done
+    disable_options $opts_off
+    echo "test $c1 of $copts (logfile: `basename $log.$c1`):"
+    echo "$CONFIGURE_OPTS"
+    build $c1
+    c1=$c1+1
+  done
 fi

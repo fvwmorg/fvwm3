@@ -286,32 +286,6 @@ and does not work in all places.  If you have access to a multibyte system
 and want to extend this support, contact the fvwm-workers@fvwm.org list.
 
 
-  --enable-move-bug-workaround  workaround for flickering windows during move
-  ----------------------------
-
-Try this option only if you have problems during window move.
-This only changes the default behaviour for Move.
-In any case, the default behaviour may be overriden dynamically using:
-
-  Style * FlickeringMoveWorkaround true
-  Style * FlickeringMoveWorkaround false
-
-Most of users should not enable this option.
-
-
-  --disable-modality		disable modal dialogs for applications
-  ------------------
-
-Disables motif applications ability to have modal dialogs by default.
-Without this option the default is to enable modal dialogs.
-In any case, the default may be overriden dynamically using:
-
-  Style * ModalityIsEvil true
-  Style * ModalityIsEvil false
-
-Use with care.
-
-
   --disable-shape		disable shape extensions
   ---------------
 
@@ -336,29 +310,27 @@ that the currently running X server supports it.
 The following configure options are either removed or will be removed soon:
 
 
-  --disable-mini-icons		disable MiniIcon style option
-  --------------------
+  --enable-move-bug-workaround  workaround for flickering windows during move
+  ----------------------------
 
-Disables the "MiniIcon" Style option to specify a small pixmap which
-can be used as one of the title-bar buttons, shown in window list,
-utilized by modules, etc.  Requires pixmap-buttons to be defined (see
-below).
+Try this option only if you have problems during window move.
+This only changes the default behaviour for Move.
+In any case, the default behaviour may be overriden dynamically using:
 
+  Style * FlickeringMoveWorkaround true
+  Style * FlickeringMoveWorkaround false
 
-  --disable-multistyle		disable stacked button styles
-  --------------------
-
-Disables stacked button styles (also for the title-bar if
-extended-titlestyle is enabled).  There is a slight memory penalty for
-each additional style. See the man page entries for AddButtonStyle and
-AddTitleStyle for usage information.
+Most of users should not enable this option.
 
 
-  --disable-usedecor		disable UseDecor style option
+  --disable-modality		disable modal dialogs for applications
   ------------------
 
-Disables tagged general decoration styles which can be assigned to
-windows using the UseDecor Style option, or dynamically updated with
-ChangeDecor.  To create and destroy "decor" definitions, see the man
-page entries for AddToDecor and DestroyDecor.  There is a slight
-memory penalty for each additionally defined decor.
+Disables motif applications ability to have modal dialogs by default.
+Without this option the default is to enable modal dialogs.
+In any case, the default may be overriden dynamically using:
+
+  Style * ModalityIsEvil true
+  Style * ModalityIsEvil false
+
+Use with care.

@@ -3,6 +3,8 @@ _+_A HREF="#2.2.5"_-_2.2.5_+_/A_-_.
 
 Changes in beta release 2.3.30 (not released yet)
 
+* The configure option --disable-modality was removed.
+
 * New FvwmCommand -c option to read multiple commands from standard input.
 
 Changes in beta release 2.3.29 (2001-03-02)

@@ -7,9 +7,6 @@
 /* define if GNOME WM hints are enabled */
 #undef GNOME
 
-/* define if Busy Cursor patch is enabled */
-#undef BUSYCURSOR
-
 /* Where to search for images.  */
 #undef FVWM_IMAGEPATH
 
@@ -33,14 +30,6 @@
 /* Define if readline is available.  */
 #undef HAVE_READLINE
 
-/* Define to enable a workaround if you have applications that redraw
- * themselves excessively when they are moved opaque. */
-#undef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
-
-/* Define to disable motif applications ability to have modal dialogs.
- * Use with care.  */
-#undef MODALITY_IS_EVIL
-
 /* Define if you want the Shaped window extensions.
  * Shaped window extensions seem to increase the window managers RSS
  * by about 60 Kbytes. They provide for leaving a title-bar on the window
@@ -63,14 +52,14 @@
  * utilized by modules, etc.  Requires PIXMAP_BUTTONS to be defined
  * (see below).  */
 /* #undef MINI_ICONS */
-/* NOTE: this option will be removed in the near future (i.e. hardcoded on). */
+/* NOTE: hard coded to 1 */
 #define MINI_ICONS 1
 
 /* Enables stacked button styles.  There is a slight memory
  * penalty for each additional style. See the man page entries for
  * AddButtonStyle and AddTitleStyle for usage information.  */
 /* #undef MULTISTYLE */
-/* NOTE: this option will be removed in the near future (i.e. hardcoded on). */
+/* NOTE: hard coded to 1 */
 #define MULTISTYLE 1
 
 /* Enables tagged general decoration styles which can be assigned to
@@ -79,17 +68,11 @@
  * the man page entries for AddToDecor and DestroyDecor.  There is a
  * slight memory penalty for each additionally defined decor.  */
 /* #undef USEDECOR */
-/* NOTE: this option will be removed in the near future (i.e. hardcoded on). */
+/* NOTE: hard coded to 1 */
 #define USEDECOR 1
 
 /* Enables session management functionality. */
 #undef SESSION
-
-/* Enables X11 multibyte character support */
-#undef I18N_MB
-
-/* Enables to use setlocale() provided by X */
-#undef X_LOCALE
 
 /* Enables X11 multibyte character support */
 #undef I18N_MB

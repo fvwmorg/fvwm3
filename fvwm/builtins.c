@@ -2630,11 +2630,7 @@ void CMD_BugOpts(F_CMD_ARGS)
 	Scr.bo.DisableConfigureNotify = toggle;
 	break;
       default:
-#ifdef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
-	Scr.bo.DisableConfigureNotify = 1;
-#else
 	Scr.bo.DisableConfigureNotify = 0;
-#endif
 	break;
       }
     }
@@ -2666,11 +2662,7 @@ void CMD_BugOpts(F_CMD_ARGS)
 	Scr.bo.ModalityIsEvil = toggle;
 	break;
       default:
-#ifdef MODALITY_IS_EVIL
-	Scr.bo.ModalityIsEvil = 1;
-#else
 	Scr.bo.ModalityIsEvil = 0;
-#endif
 	break;
       }
       if (Scr.bo.ModalityIsEvil)

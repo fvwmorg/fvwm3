@@ -47,13 +47,6 @@
 /* Define if readline is available.  */
 #undef HAVE_READLINE
 
-/* Define to enable a workaround if you have applications that redraw
- * themselves excessively when they are moved opaque. */
-#undef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
-
-/* Define to disable motif applications ability to have modal dialogs. Use with care.  */
-#undef MODALITY_IS_EVIL
-
 /* Define if you want the Shaped window extensions.
  * Shaped window extensions seem to increase the window managers RSS by about 60 Kbytes. They provide for leaving a title-bar
  * on the window without a border. If you don't use shaped window extension, you can either make your shaped windows undecorated,
@@ -68,16 +61,19 @@
 
 /* Enables the "MiniIcon" Style option to specify a small pixmap which can be used as one of the title-bar buttons, shown in
  * window list, utilized by modules, etc.  Requires PIXMAP_BUTTONS to be defined (see below).  */
-#define MINI_ICONS
+/* NOTE: hard coded to 1 */
+#define MINI_ICONS 1
 
 /* Enables stacked button styles.  There is a slight memory
  * penalty for each additional style. See the man page entries for AddButtonStyle and AddTitleStyle for usage information.  */
-#define MULTISTYLE
+/* NOTE: hard coded to 1 */
+#define MULTISTYLE 1
 
 /* Enables tagged general decoration styles which can be assigned to windows using the UseDecor Style option, or dynamically
  * updated with ChangeDecor.  To create and destroy "decor" definitions, see the man page entries for AddToDecor and DestroyDecor.
  * There is a slight memory penalty for each additionally defined decor.  */
-#define USEDECOR
+/* NOTE: hard coded to 1
+#define USEDECOR 1
 
 /* Enables session management functionality. */
 #undef SESSION
@@ -358,3 +354,4 @@
 #  define abs(a) (((a)>=0)?(a):-(a))
 #endif
 
+#include "libs/defaults.h"

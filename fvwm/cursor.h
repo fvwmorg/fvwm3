@@ -53,7 +53,7 @@ typedef enum
   CRS_MAX
 } cursor_type;
 
-/* busy cursor bits: just for decoration if BUSYCURSOR is not def */
+/* busy cursor bits */
 #define BUSY_NONE 0
 #define BUSY_READ (1<<0)
 #define BUSY_WAIT (1<<1)
