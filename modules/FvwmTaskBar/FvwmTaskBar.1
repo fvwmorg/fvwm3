@@ -1,6 +1,6 @@
 .\" t
 .\" @(#)FvwmTaskBar.1	6/30/96
-.TH FvwmTaskBar 1 "25 April 2002" FVWM "FVWM Modules"
+.TH FvwmTaskBar 1 "9 September 2002" FVWM "FVWM Modules"
 .UC
 .SH NAME
 FvwmTaskBar \- the FVWM taskbar module
@@ -208,9 +208,31 @@ $-right will be 5). \fI$width\fP and \fI$height\fP are replaced by
 the width or height of the button.  All this is done regardless of
 any quoting characters. To get a literal '$' use the string '$$'.
 
+.IP "*FvwmTaskBar: Button Title \fItitle\fP, Icon \fIicon\fP, Action \fIaction\fP"
+Tells FvwmTaskBar to put a shortcut minibutton in the taskbar that does
+\fIaction\fP when clicked.  The icon can have a caption denoted by \fItitle\fP,
+an icon denoted by \fIicon\fP, or a combination of the two.  The icons will
+appear to the immediate right of the start button, and will appear in the 
+order that they are declared in the .fvwm2rc file.
+
 .IP "*FvwmTaskBar: ButtonWidth \fIwidth\fP"
 Indicates the maximum width that window buttons should reach.
 (the minimum is hard coded at 32).
+
+.IP "*FvwmTaskBar: WindowButtonsLeftMargin \fImargin\fP"
+Specifies the space (in pixels) between the left side of the left-most window
+button and the right side of the start button or right-most shortcut 
+minibutton.  If this option is not specified, the default margin is 4.
+
+.IP "*FvwmTaskBar: WindowButtonsRightMargin \fImargin\fP"
+Specifies the space (in pixels) between the right side of the right-most 
+window button and the left side of the clock and tip window.  If this option 
+is not specified, the default margin is 2.
+
+.IP "*FvwmTaskBar: StartButtonRightMargin \fImargin\fP"
+Specifies the space (in pixels) between the right side of the start button 
+and the left side of the left-most shortcut minibutton.  If this option is 
+not specified, the default margin is 0.
 
 .IP "*FvwmTaskBar: 3DFvwm"
 By default the buttons use a special (asymmetric) 3D look. This option enables
@@ -372,6 +394,10 @@ StaysOnTop,WindowSkipList,CirculateSkip
 *FvwmTaskBar: StartName Start
 *FvwmTaskBar: StartMenu StartMenu
 *FvwmTaskBar: StartIcon mini-exp.xpm
+
+*FvwmTaskBar: Button Title Mozilla, Action exec exec /usr/local/mozilla/mozilla
+*FvwmTaskBar: Button Icon mini.term.xpm, Action exec exec xterm
+*FvwmTaskBar: Button Title Freeamp, Icon mini.cd.xpm, Action exec exec freeamp
 
 .sp
 .fi

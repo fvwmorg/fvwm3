@@ -170,6 +170,9 @@ static volatile sig_atomic_t stick_taskbar_alarm = False;
 
 int UpdateInterval = 30;
 
+int whichButton = -1; 
+Bool startButtonPressed = FALSE;
+
 ButtonArray buttons;
 List windows;
 
@@ -226,10 +229,11 @@ extern int stwin_width, goodies_width, goodies_fontheight;
 extern TipStruct Tip;
 
 /* Imported from Start */
-extern int StartButtonWidth, StartButtonHeight;
-extern char *StartPopup;
-extern char *StartCommand;
-
+extern int StartAndMiniButtonsWidth, StartAndMiniButtonsHeight;
+extern StartAndMiniButtonItem *First_Start_Button;
+extern StartAndMiniButtonItem *Last_Start_Button;
+extern int WindowButtonsLeftMargin;
+extern int WindowButtonsRightMargin;
 char *ImagePath = NULL;
 char *XineramaConfig = NULL;
 static int fscreen = 0;
@@ -360,9 +364,9 @@ int main(int argc, char **argv)
   StartButtonInit(RowHeight);
 
   /* init the array of buttons */
-  InitArray(&buttons, StartButtonWidth + 4, 0,
-		      win_width - stwin_width - 8 - StartButtonWidth -10,
-		      RowHeight, button_width);
+  InitArray(&buttons, StartAndMiniButtonsWidth + WindowButtonsLeftMargin, 0,
+	    win_width - stwin_width - StartAndMiniButtonsWidth - WindowButtonsLeftMargin
+	    - WindowButtonsRightMargin, RowHeight, button_width);
   InitList(&windows);
 
   /* Request a list of all windows,
@@ -559,7 +563,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  XResizeWindow(dpy, win, win_width, win_height);
 
 	UpdateArray(&buttons, -1, -1,
-		    win_width - stwin_width - 8 - StartButtonWidth -10,-1, -1);
+		    win_width - stwin_width - StartAndMiniButtonsWidth
+		    - WindowButtonsLeftMargin - WindowButtonsRightMargin,
+		    -1, -1);
 	ArrangeButtonArray (&buttons);
       }
       if (AutoStick && win_is_shaded != IS_SHADED(cfgpacket))
@@ -1274,7 +1280,7 @@ void CheckForTip(int x, int y)
   int  num, bx, by, trunc;
   char *name;
 
-  if (MouseInStartButton(x, y)) {
+  if (MouseInStartButton(x, y, &whichButton, &startButtonPressed)) {
     if (Tip.type != START_TIP) PopupTipWindow(3, 0, "Click here to start");
     Tip.type = START_TIP;
   }
@@ -1338,9 +1344,10 @@ void LoopOnEvents(void)
     case ButtonRelease:
       NewTimestamp = Event.xbutton.time;
       num = WhichButton(&buttons, Event.xbutton.x, Event.xbutton.y);
+      StartButtonUpdate(NULL, -1, BUTTON_UP);
       if (num == -1) {
-	if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y))
-	  StartButtonUpdate(NULL, BUTTON_UP);
+	if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y, &whichButton, &startButtonPressed))
+	  StartButtonUpdate(NULL, whichButton, BUTTON_UP);
       } else {
 	ButReleased = ButPressed; /* Avoid race fvwm pipe */
 	if (Event.xbutton.button >= 1 &&
@@ -1369,8 +1376,8 @@ void LoopOnEvents(void)
 	}
       }
 
-      if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y)) {
-	StartButtonUpdate(NULL, BUTTON_UP);
+      if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y, &whichButton, &startButtonPressed)) {
+	StartButtonUpdate(NULL, whichButton, BUTTON_UP);
 	redraw = 0;
 	usleep(50000);
       }
@@ -1387,8 +1394,8 @@ void LoopOnEvents(void)
     case ButtonPress:
       NewTimestamp = Event.xbutton.time;
       RadioButton(&buttons, -1, BUTTON_UP); /* no windows focused anymore */
-      if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y)) {
-	StartButtonUpdate(NULL, BUTTON_DOWN);
+      if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y, &whichButton, &startButtonPressed)) {
+	StartButtonUpdate(NULL, whichButton, BUTTON_DOWN);
 	x = win_x;
 	if (win_y < Midline) {
 	  /* bar in top half of the screen */
@@ -1397,17 +1404,16 @@ void LoopOnEvents(void)
 	  /* bar in bottom of the screen */
 	  y = win_y - screen_g.height;
 	}
-	if (StartCommand != NULL)
+	if ((First_Start_Button->buttonStartCommand != NULL) && (startButtonPressed))
 	{
 	  rectangle r;
 	  Window tmpw;
-
 	  r.x = 0;
 	  r.y = 0;
-	  r.width = StartButtonWidth;
-	  r.height = StartButtonHeight;
+	  r.width = StartAndMiniButtonsWidth;
+	  r.height = StartAndMiniButtonsHeight;
 	  XTranslateCoordinates(dpy, win, Root, r.x, r.y, &r.x, &r.y, &tmpw);
-	  tmp = module_expand_action(dpy, screen, StartCommand, &r, NULL, NULL);
+	  tmp = module_expand_action(dpy, screen, First_Start_Button->buttonStartCommand, &r, NULL, NULL);  
 	  if (tmp)
 	  {
 	    SendText(Fvwm_fd, tmp, 0);
@@ -1415,22 +1421,19 @@ void LoopOnEvents(void)
 	  }
 	  else
 	  {
-	    SendText(Fvwm_fd, StartCommand, 0);
+	    SendText(Fvwm_fd, First_Start_Button->buttonStartCommand, 0);
 	  }
 	}
-	if (StartPopup != NULL)
+	else
 	{
-	  tmp = (char *)safemalloc(strlen(StartPopup) + 7);
-	  sprintf(tmp,"Popup %s", StartPopup);
+	  tmp = (char *)safemalloc(50 * sizeof(char));  // fix this later
+	  getButtonCommand(whichButton, tmp);
 	  SendText(Fvwm_fd, tmp, 0);
 	  free(tmp);
 	}
-	if (StartPopup == NULL && StartCommand == NULL)
-	{
-	  SendText(Fvwm_fd, "Popup StartMenu", 0);
-	}
+
       } else {
-	StartButtonUpdate(NULL, BUTTON_UP);
+	StartButtonUpdate(NULL, whichButton, BUTTON_UP);
 	if (MouseInMail(Event.xbutton.x, Event.xbutton.y)) {
 	  HandleMailClick(Event);
 	} else {
@@ -1522,13 +1525,13 @@ void LoopOnEvents(void)
 
     case MotionNotify:
       NewTimestamp = Event.xmotion.time;
-      if (MouseInStartButton(Event.xmotion.x, Event.xbutton.y)) {
+      if (MouseInStartButton(Event.xmotion.x, Event.xbutton.y, &whichButton, &startButtonPressed)) {
 	if (SomeButtonDown(Event.xmotion.state))
-	  redraw = StartButtonUpdate(NULL, BUTTON_DOWN) ? 0 : -1;
+	  redraw = StartButtonUpdate(NULL, -1, BUTTON_DOWN) ? 0 : -1;
 	CheckForTip(Event.xmotion.x, Event.xmotion.y);
 	break;
       }
-      redraw = StartButtonUpdate(NULL, BUTTON_UP) ? 0 : -1;
+      redraw = StartButtonUpdate(NULL, -1, BUTTON_UP) ? 0 : -1;
       num = WhichButton(&buttons, Event.xmotion.x, Event.xmotion.y);
       if (!HighlightFocus) {
 	if (SomeButtonDown(Event.xmotion.state) && num != ButPressed) {
