@@ -452,9 +452,6 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
       break;
 
     case XK_Return:
-      return MENU_SELECTED;
-      break;
-
     case XK_KP_Enter:
       return MENU_SELECTED;
       break;
@@ -740,7 +737,6 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	/* we're on a menu item */
 	fOffMenuAllowed = FALSE;
 	mr = mi->mr;
-
 	if (mr != menu && mr != mrPopup && mr != MrPopupForMi(mi)) {
 	  /* we're on an item from a prior menu */
 	  /* DBUG("MenuInteraction","menu %s: returning popdown",menu->name);*/
@@ -839,7 +835,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	      fDoMenu = TRUE;
 	      fPopdown = (USING_FVWM_MENUS) ? TRUE : FALSE;
 	    }
-	  } /* if (mrPopup) */
+	  } /* if (!mrPopup) */
 	} /* if (fPopup) */
 	if (fDoMenu) {
 	  /* recursively do the new menu we've moved into */
@@ -852,7 +848,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  if (fPopdown || USING_FVWM_MENUS) {
 	    PopDownMenu(mrPopup);
 	    mrPopup = NULL;
-	  } else if (retval == MENU_POPDOWN) {
+	  }
+	  if (retval == MENU_POPDOWN) {
 	    c10msDelays = 0;
 	    fForceReposition = TRUE;
 	  }
@@ -1246,10 +1243,11 @@ MenuRoot *MrPopupForMi(MenuItem *mi)
   char *menu_name = NULL;
   MenuRoot *tmp = NULL;
 
-  if (mi == NULL)
+  /* This checks if mi is != NULL too */
+  if (!IS_POPUP_MENU_ITEM(mi))
     return NULL;
   /* just look past "Popup " in the action, and find that menu root */
-  GetNextToken(&mi->action[5],&menu_name);
+  GetNextToken(SkipNTokens(mi->action, 1), &menu_name);
   tmp = FindPopup(menu_name);
   if (menu_name != NULL)
     free(menu_name);
@@ -1260,18 +1258,11 @@ MenuRoot *MrPopupForMi(MenuItem *mi)
 static
 void GetPopupOptions(MenuItem *mi, MenuOptions *pops)
 {
-  char *junk = NULL, *action;
-
-  if (!IS_POPUP_MENU_ITEM(mi))
+  if (!mi)
     return;
   pops->flags &= ~MENU_HAS_POSHINTS;
-  if (mi == NULL)
-    return;
-  /* just look past "Popup " in the action */
-  action = GetNextToken(&mi->action[5],&junk);
-  if (junk != NULL)
-    free(junk);
-  action = GetMenuOptions(action,mi->mr->w,NULL,mi,pops);
+  /* just look past "Popup <name>" in the action */
+  GetMenuOptions(SkipNTokens(mi->action, 2), mi->mr->w, NULL, mi, pops);
 }
 
 
@@ -2011,7 +2002,7 @@ char scanForHotkeys(MenuItem *it, int which)
 	    char ch = txt[1];
 	    /* It's a hot key marker - work out the offset value */
 	    it->hotkey = (1 + (txt - start)) * which;
-	    for (; *txt != '\0'; txt++) txt[0] = txt[1];	/* Copy down..	*/
+	    for (; *txt != '\0'; txt++) txt[0] = txt[1];/* Copy down..	*/
 	    return ch;			/* Only one hotkey per item...	*/
 	    }
 	}
@@ -2025,14 +2016,14 @@ char scanForHotkeys(MenuItem *it, int which)
    for colorization */
 void scanForColor(char *instring, Pixel *p, Bool *c, char identifier)
 {
-  char *tstart, *txt, *save_instring;
+  char *tstart, *txt, *save_instring, *name;
   int i;
-  char name[100];
 
   *c = False;
 
   /* save instring in case can't find pixmap */
   save_instring = (char *)safemalloc(strlen(instring)+1);
+  name = (char *)safemalloc(strlen(instring)+1);
   strcpy(save_instring,instring);
 
   /* Scan whole string        */
@@ -2052,7 +2043,7 @@ void scanForColor(char *instring, Pixel *p, Bool *c, char identifier)
         tstart = txt;
         txt++;
         i=0;
-        while((*txt != identifier)&&(*txt != '\0')&&(i<99))
+        while((*txt != identifier)&&(*txt != '\0'))
           {
             name[i] = *txt;
             txt++;
@@ -2069,10 +2060,12 @@ void scanForColor(char *instring, Pixel *p, Bool *c, char identifier)
             *tstart++ = *txt++;
           }
         *tstart = 0;
-          free(save_instring);
-        return;
+	break;
       }
     }
+  free(name);
+  free(save_instring);
+  return;
 }
 
 void scanForPixmap(char *instring, Picture **p, char identifier)
@@ -2192,7 +2185,10 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 {
   MenuItem *tmp;
   char *start,*end;
-  char *taction = NULL, *taction2 = NULL;
+  char *taction = NULL;
+  char *taction2 = NULL;
+  char *option = NULL;
+  char *naction;
 
   /* Just returning will probably cause a coredump somewhere else, so I think
      we should continue with a default! */
@@ -2200,9 +2196,12 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
     return;
   /* empty items screw up our menu when painted, so we replace them with a
      separator */
-  if (item == NULL || *item == 0) item = "";
-  if (action == NULL || *action == 0) action = "Nop";
-  GetNextToken(action, &taction);
+  if (item == NULL || *item == 0)
+    item = "";
+  if (action == NULL || *action == 0)
+    action = "Nop";
+  naction = GetNextToken(action, &taction);
+  GetNextToken(naction, &option);
 
   tmp = (MenuItem *)safemalloc(sizeof(MenuItem));
   tmp->chHotkey = '\0';
@@ -2214,7 +2213,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
       menu->first = tmp;
       tmp->prev = NULL;
     }
-  else if (StrEquals(taction, "title"))
+  else if (StrEquals(taction, "title") && option && StrEquals(option, "top"))
     {
       if (menu->first->action)
 	{
@@ -2237,8 +2236,12 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
       menu->last->next = tmp;
       tmp->prev = menu->last;
     }
-  if (taction) free(taction);
-  if (taction2) free(taction2);
+  if (taction)
+    free(taction);
+  if (taction2)
+    free(taction2);
+  if (option)
+    free(option);
   menu->last = tmp;
   tmp->picture=NULL;
   tmp->lpicture=NULL;
@@ -2310,13 +2313,13 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 	  {
 	  if (FHotKeyUsedBefore(menu,ch))
 	    {
-	    fvwm_msg(WARN,"AddToMenu","Hotkey %c is reused in menu %s; second binding ignored.",ch,
-		     menu->name);
+	      fvwm_msg(WARN, "AddToMenu", "Hotkey %c is reused in menu %s; second binding ignored.",
+		       ch, menu->name);
 	    tmp->hotkey = 0;
 	    }
 	  else
 	    {
-	    tmp->chHotkey = ch;
+	      tmp->chHotkey = ch;
 	    }
 	  }
       }
