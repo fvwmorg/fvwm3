@@ -69,8 +69,6 @@ if [ $IS_RELEASE = 1 ] ; then
   echo "Your name will show up in the Changlog as $FVWMRELNAME"
   echo "Your email address will show up in the Changlog as $FVWMRELEMAIL"
 fi
-exit
-
 
 wrong_dir=1
 if [ -r "$CHECK_FILE" ] ; then
