@@ -932,7 +932,6 @@ void setup_style_and_decor(
 
 	if (IS_TRANSIENT(fw) && !pstyle->flags.do_decorate_transient)
 	{
-		SET_HAS_BORDER(fw, 0);
 		SET_HAS_HANDLES(fw, 0);
 		SET_HAS_TITLE(fw, 0);
 	}

@@ -460,7 +460,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
     SET_HAS_HANDLES(t, 1);
     used_width = handle_width;
   }
-  SET_HAS_BORDER(t, used_width);
+  SET_HAS_BORDER(t, (used_width > 0));
   SET_HAS_HANDLES(t, (HAS_BORDER(t) && HAS_HANDLES(t)));
   set_window_border_size(t, used_width);
   if(!(decor & MWM_DECOR_MENU))
