@@ -1,3 +1,12 @@
+2001-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmForm/Makefile.am (FvwmTalk):
+	* FvwmEvent/Makefile.am (install-exec-local):
+	* FvwmRearrange/Makefile.am (FvwmTile):
+	(FvwmCascade):
+	rules depend on config.h so the shell scripts are built again when the
+	module directory is changed
+
 2001-03-15  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Widget/{all widget which use fonts} (init functions):
@@ -7,8 +16,8 @@
 
 	* FvwmScript/Widget/List.c (DrawCellule):
 	Use the hili colors in the place of the shad colors as the background
-	of a selected item 
-	
+	of a selected item
+
 2001-03-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/fvwm.c (ProcessMessage):

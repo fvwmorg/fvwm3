@@ -10,7 +10,7 @@ man_MANS = FvwmForm.1
 ## This provides compatibility.
 module_SCRIPTS = FvwmTalk
 
-FvwmTalk:
+FvwmTalk: ../../config.h
 	echo "#!/bin/sh" > $@
 	echo exec ${moduledir}/FvwmForm '$$@' FvwmForm-Talk>> $@
 

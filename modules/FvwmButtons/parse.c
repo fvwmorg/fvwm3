@@ -496,10 +496,14 @@ static void ParsePanel(char **ss, byte *flags, byte *mask, char *direction,
 	  *position = SLIDE_POSITION_CENTER;
 	  break;
 	case 4: /* left */
+	  *position = SLIDE_POSITION_LEFT_TOP;
+	  break;
 	case 5: /* top  */
 	  *position = SLIDE_POSITION_LEFT_TOP;
 	  break;
 	case 6: /* right */
+	  *position = SLIDE_POSITION_RIGHT_BOTTOM;
+	  break;
 	case 7: /* bottom */
 	  *position = SLIDE_POSITION_RIGHT_BOTTOM;
 	  break;
