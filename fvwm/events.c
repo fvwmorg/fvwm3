@@ -198,7 +198,7 @@ static void fake_map_unmap_notify(const FvwmWindow *fw, int event_type)
 }
 
 static Bool test_map_request(
-	Display *display, XEvent *event, char *arg)
+	Display *display, XEvent *event, XPointer arg)
 {
 	check_if_event_args *cie_args;
 	Bool rc;
@@ -223,7 +223,7 @@ static Bool test_map_request(
 }
 
 Bool test_button_event(
-	Display *display, XEvent *event, char *arg)
+	Display *display, XEvent *event, XPointer arg)
 {
 	if (event->type == ButtonPress || event->type == ButtonRelease)
 	{
@@ -234,7 +234,7 @@ Bool test_button_event(
 }
 
 Bool test_typed_window_event(
-	Display *display, XEvent *event, char *arg)
+	Display *display, XEvent *event, XPointer arg)
 {
 	test_typed_window_event_args *ta = (test_typed_window_event_args *)arg;
 
@@ -248,7 +248,7 @@ Bool test_typed_window_event(
 }
 
 static Bool test_resizing_event(
-	Display *display, XEvent *event, char *arg)
+	Display *display, XEvent *event, XPointer arg)
 {
 	check_if_event_args *cie_args;
 	Bool rc;
@@ -790,7 +790,8 @@ static inline int __merge_cr_moveresize(
 		evh_args_t ea2;
 		exec_context_changes_t ecc;
 
-		FCheckPeekIfEvent(dpy, &e, test_resizing_event, (char *)&args);
+		FCheckPeekIfEvent(
+			dpy, &e, test_resizing_event, (XPointer)&args);
 		ecre = &e.xconfigurerequest;
 		if (args.ret_does_match == False)
 		{
@@ -820,7 +821,7 @@ static inline int __merge_cr_moveresize(
 			break;
 		}
 		/* Finally remove the event from the queue */
-		FCheckIfEvent(dpy, &e, test_resizing_event, (char *)&args);
+		FCheckIfEvent(dpy, &e, test_resizing_event, (XPointer)&args);
 		/* partially handle the event */
 		ecre->value_mask &= ~args.cr_value_mask;
 		ea2.exc = exc_clone_context(ea->exc, &ecc, ECC_ETRIGGER);
@@ -1192,7 +1193,7 @@ void __handle_configure_request(
 }
 
 static Bool __predicate_button_click(
-	Display *display, XEvent *event, char *arg)
+	Display *display, XEvent *event, XPointer arg)
 {
 	if (event->type == ButtonPress || event->type == ButtonRelease)
 	{
@@ -1209,7 +1210,6 @@ static Bool __test_for_motion(int x0, int y0)
 	int y;
 	unsigned int mask;
 	XEvent e;
-	char *args = NULL;
 
 	/* Query the pointer to do this. We can't check for events here since
 	 * the events are still needed if the pointer moves. */
@@ -1240,7 +1240,7 @@ static Bool __test_for_motion(int x0, int y0)
 			/* the pointer has moved */
 			return True;
 		}
-		if (FCheckPeekIfEvent(dpy, &e, __predicate_button_click, args))
+		if (FCheckPeekIfEvent(dpy, &e, __predicate_button_click, NULL))
 		{
 			/* click in the future */
 			return False;
@@ -1248,8 +1248,8 @@ static Bool __test_for_motion(int x0, int y0)
 		else
 		{
 			/* The predicate procedure finds no match, no event
-			 * has been removed from the queue and XFlush was called
-			 * Nothing to do */
+			 * has been removed from the queue and XFlush was
+			 * called. Nothing to do */
 		}
 	}
 
@@ -2544,7 +2544,7 @@ ENTER_DBG((stderr, "ln: *** lgw = 0x%08x\n", (int)fw));
 		}
 	}
 
-	
+
 	/* If we leave the root window, then we're really moving
 	 * another screen on a multiple screen display, and we
 	 * need to de-focus and unhighlight to make sure that we
@@ -3493,17 +3493,16 @@ void HandleUnmapNotify(const evh_args_t *ea)
 
 	if (weMustUnmap)
 	{
-		unsigned long win = (unsigned long)te->xunmap.window;
 		Bool is_map_request_pending;
 		check_if_event_args args;
 
-		args.w = win;
+		args.w = te->xunmap.window;
 		args.do_return_true = False;
 		args.do_return_true_cr = False;
 		/* Using FCheckTypedWindowEvent() does not work here.  I don't
 		 * have the slightest idea why, but using FCheckIfEvent() with
 		 * the appropriate predicate procedure works fine. */
-		FCheckIfEvent(dpy, &dummy, test_map_request, (char *)&win);
+		FCheckIfEvent(dpy, &dummy, test_map_request, (XPointer)&args);
 		/* Unfortunately, there is no procedure in X that simply tests
 		 * if an event of a certain type in on the queue without
 		 * waiting and without removing it from the queue.
@@ -4306,7 +4305,8 @@ int flush_property_notify(Atom atom, Window w)
 	args.event_type = PropertyNotify;
 	for (count = 0;
 	     FCheckPeekIfEvent(
-		     dpy, &e, test_typed_window_event, (char *)&args); count++)
+		     dpy, &e, test_typed_window_event, (XPointer)&args);
+	     count++)
 	{
 		Bool rc;
 
@@ -4316,7 +4316,7 @@ int flush_property_notify(Atom atom, Window w)
 		}
 		/* remove the event from the queue */
 		rc = FCheckIfEvent(
-			dpy, &e, test_typed_window_event, (char *)&args);
+			dpy, &e, test_typed_window_event, (XPointer)&args);
 	}
 
 	return count;
@@ -4438,7 +4438,7 @@ Bool is_resizing_event_pending(
 	args.cr_value_mask = 0;
 	args.ret_does_match = False;
 	args.ret_type = 0;
-	FCheckIfEvent(dpy, &e, test_resizing_event, (char *)&args);
+	FCheckIfEvent(dpy, &e, test_resizing_event, (XPointer)&args);
 
 	return args.ret_does_match;
 }
