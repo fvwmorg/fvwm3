@@ -1,3 +1,10 @@
+2001-04-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (Example):
+	* fvwm/move_resize.c (CMD_SnapAttraction):
+	* libs/defaults.h (DEFAULT_SNAP_ATTRACTION_ON_MODE):
+	Some corrections in man page and SnapAttraction parsing
+
 2001-04-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/icons.c (DeIconify):

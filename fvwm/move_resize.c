@@ -1675,7 +1675,6 @@ void CMD_SnapAttraction(F_CMD_ARGS)
     return;
   }
 
-  Scr.SnapMode = -1;
   if (StrEquals(token,"All"))
   {
     Scr.SnapMode = SNAP_ICONS | SNAP_WINDOWS;
@@ -1692,17 +1691,17 @@ void CMD_SnapAttraction(F_CMD_ARGS)
   {
     Scr.SnapMode = SNAP_WINDOWS;
   }
-  if (Scr.SnapMode != -1)
+  if (Scr.SnapMode == 0)
+  {
+    Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
+  }
+  else
   {
     token = PeekToken(action, &action);
     if (token == NULL)
     {
       return;
     }
-  }
-  else
-  {
-    Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
   }
 
   if (StrEquals(token, "Screen"))

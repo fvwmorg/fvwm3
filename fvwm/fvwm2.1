@@ -3530,8 +3530,8 @@ If during an interactive move the window or icon comes within
 .I proximity
 pixels of another the window or icon, it is moved to make the borders
 adjoin.  The default of 0 means that no snapping happens.  Calling this
-command without arguments reinstates the default settings.
-Please refer also to the
+command without arguments turns off snap attraction and restores the
+default behavior.  Please refer also to the
 .B SnapGrid
 command.
 
@@ -3552,13 +3552,14 @@ Similarly with
 icons snap to only other icons and windows do not snap.
 
 If the
+.I behavior
+option is not given, the snapping behavior is not changed.  The default
+behavior is
+.IR All .
+
+If the
 .I Screen
 option is present windows and or icons are snapped to the screen edges too.
-
-The default
-.B SnapAttraction
-setting for behavior is
-.IR All .
 
 .TP
 .BI "SnapGrid [" "x-grid-size y-grid-size" "]"
