@@ -200,7 +200,7 @@ void swallow(struct XObj *xobj,unsigned long *body)
 			(x11base->swallower_win)?
 			x11base->swallower_win:x11base->win);
 		SendText(fd,cmd,0);
-		fsm_proxy(Dpy, xobj->win, getenv("SESSION_MANAGER"));
+		fsm_proxy(dpy, xobj->win, getenv("SESSION_MANAGER"));
 	}
 }
 
@@ -213,6 +213,8 @@ void ProcessMsgSwallow(
 		swallow(xobj,body);
 		break;
 	case M_WINDOW_NAME:
+	case M_RES_NAME:
+	case M_RES_CLASS:
 		CheckForHangon(xobj,body);
 		break;
 	}

@@ -1,3 +1,8 @@
+2003-09-02  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/Widgets/Swallow.c (ProcessMsgSwallow):
+	Fixed swallowexec by also checking for the ressource and class names
+
 2003-09-01  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/FvwmScript.c (MainLoop): 
