@@ -194,6 +194,8 @@ char *mymalloc(int length)
 #endif
 
 #ifdef I18N_MB
+char NoName[] = "Untitled";
+
 /*
  * fake XFetchName() function
  */
@@ -229,7 +231,7 @@ static Status MyXFetchName(Display *dpy, Window win, char **winname)
           if (list)
 	    XFreeStringList(list);
           XFree(text.value); /* return of XGetWMName() */
-          if (XGetWMName(dpy, win, &text); /* XXX: read again ? */
+          if (XGetWMName(dpy, win, &text) /* XXX: read again ? */)
 	  {
 	    *winname = (char *)text.value;
 	  }
