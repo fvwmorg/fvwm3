@@ -1724,13 +1724,13 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 			FwinString->flags.has_clip_region = False;
 		}
 		FlocaleDrawString(dpy, Ffont, FwinString, 0);
-	}
-	if (region)
-	{
-		XDestroyRegion(region);
-		FwinString->flags.has_clip_region = False;
-		FwinString->clip_region = None;
-		XSetClipMask(dpy, FwinString->gc, None);
+		if (region)
+		{
+			XDestroyRegion(region);
+			FwinString->flags.has_clip_region = False;
+			FwinString->clip_region = None;
+			XSetClipMask(dpy, FwinString->gc, None);
+		}
 	}
 	
 	if (FShapesSupported)
