@@ -591,8 +591,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 {
   Bool fPopupImmediately;
   MenuItem *mi = NULL, *tmi;
-  MenuRoot *mr = NULL;
   MenuRoot *mrPopup = NULL;
+  MenuRoot *mrMiPopup = NULL;
   MenuRoot *mrNeedsPainting = NULL;
   Bool fDoPopupNow = FALSE; /* used for delay popups, to just popup the menu */
   Bool fPopupAndWarp = FALSE; /* used for keystrokes, to popup and move to
@@ -731,14 +731,12 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  if((XFindContext(dpy, Event.xany.window,MenuContext,
 			   (caddr_t *)&mrNeedsPainting)!=XCNOENT)) {
 	    /* don't redraw multiple times in a row */
-#if 1
 	    if (mrNeedsPainting == menu) {
 	      if (menu->flags.f.redrawn == 1)
 		continue;
 	      else
 		menu->flags.f.redrawn = 1;
 	    }
-#endif
 	    PaintMenu(mrNeedsPainting,&Event);
 	  }
 	  /* continue; */ /* instead of continuing, we want to
@@ -767,8 +765,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
       if (mi) {
 	/* we're on a menu item */
 	fOffMenuAllowed = FALSE;
-	mr = mi->mr;
-	if (mr != menu && mr != mrPopup && mr != MrPopupForMi(mi)) {
+	mrMiPopup = MrPopupForMi(mi);
+	if (mi->mr != menu && mi->mr != mrPopup && mi->mr != mrMiPopup) {
 	  /* we're on an item from a prior menu */
 	  /* DBUG("MenuInteraction","menu %s: returning popdown",menu->name);*/
 	  retval = MENU_POPDOWN;
@@ -805,29 +803,31 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	fPopup   = FALSE;
 	fDoMenu  = FALSE;
 
-	if (mr == mrPopup) {
+	if (mi->mr == mrPopup) {
 	  /* must make current popup menu a real menu */
 	  fDoMenu = TRUE;
 	}
 	else if (fPopupAndWarp) {
 	  /* must create a real menu and warp into it */
-	  if (mrPopup == NULL || mrPopup != MrPopupForMi(mi)) {
+	  if (mrPopup == NULL || mrPopup != mrMiPopup) {
 	    fPopup = TRUE;
 	  } else {
 	    XRaiseWindow(dpy, mrPopup->w);
 	    MiWarpPointerToItem(mrPopup->first,TRUE);
+	    fDoMenu = TRUE;
 	  }
 	}
 	else if (IS_POPUP_MENU_ITEM(mi)) {
-	  if (x_offset >= mr->width*3/4 || fDoPopupNow || fPopupImmediately){
+	  if (x_offset >= mi->mr->width*3/4 || fDoPopupNow ||
+	      fPopupImmediately) {
 	    /* must create a new menu or popup */
-	    if (mrPopup == NULL || mrPopup != MrPopupForMi(mi))
+	    if (mrPopup == NULL || mrPopup != mrMiPopup)
 	      fPopup = TRUE;
 	    else if (fPopupAndWarp)
 	      MiWarpPointerToItem(mrPopup->first,TRUE);
 	  }
 	} /* else if (IS_POPUP_MENU_ITEM(mi)) */
-	if (fPopup && mrPopup && mrPopup != MrPopupForMi(mi)) {
+	if (fPopup && mrPopup && mrPopup != mrMiPopup) {
 	  /* must remove previous popup first */
 	  fPopdown = TRUE;
 	}
@@ -845,7 +845,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  DBUG("MenuInteraction","Popping up");
           /* get pos hints for item's action */
           GetPopupOptions(mi,&mops);
-	  mrPopup = MrPopupForMi(mi);
+	  mrPopup = mrMiPopup;
 	  if (!mrPopup) {
 	    fDoMenu = FALSE;
 	    fPopdown = FALSE;

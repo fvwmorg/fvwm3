@@ -1,3 +1,7 @@
+1999-01-19  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/menus.c (MenuInteraction): fixed keyboard shortcut bug
+
 1999-01-18  Paul D. Smith  <psmith@gnu.org>
 
 	* configure.in: Update version number.
