@@ -1336,7 +1336,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		return;
 	}
 
-	
+
 	if (mode == MOVE_PAGE && IS_STICKY_ON_PAGE(fw))
 	{
 		return;
@@ -1401,7 +1401,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		n = GetMoveArguments(
 			&action, width, height, &FinalX, &FinalY, &fWarp,
 			&fPointer);
-		
+
 		if (n != 2 || fPointer)
 		{
 			InteractiveMove(&w, exc, &FinalX, &FinalY, fPointer);
@@ -2365,7 +2365,7 @@ Bool __move_loop(
 						fw, draw_parts,
 						((fw == get_focus_window())) ?
 						True : False,
-						True, CLEAR_ALL, NULL, NULL);	
+						True, CLEAR_ALL, NULL, NULL);
 				}
 				BroadcastConfig(M_CONFIGURE_WINDOW, &fw_copy);
 				FlushAllMessageQueues();
@@ -2392,7 +2392,7 @@ Bool __move_loop(
 					fw, draw_parts,
 					((fw == get_focus_window())) ?
 					True : False,
-					True, CLEAR_ALL, NULL, NULL);	
+					True, CLEAR_ALL, NULL, NULL);
 			}
 		}
 		if (bad_window == FW_W(fw))

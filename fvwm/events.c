@@ -457,7 +457,8 @@ static Bool __is_bpress_window_handled(const exec_context_t *exc)
 
 	if (exc->w.fw == NULL)
 	{
-		if (te->xbutton.window != Scr.Root &&
+		if ((te->xbutton.window != Scr.Root ||
+		     te->xbutton.subwindow != None) &&
 		    !is_pan_frame(te->xbutton.window))
 		{
 			/* Ignore events in unmanaged windows or subwindows of
@@ -1955,7 +1956,7 @@ void __handle_key_event(const evh_args_t *ea, Bool is_release)
 	sf = get_focus_window();
 	if (sf != NULL && sf != ea->exc->w.fw)
 	{
-		context2 = C_WINDOW | C_IGNORE_ALL;
+		context2 = C_WINDOW | C_ROOT;
 	}
 	else
 	{
@@ -2972,6 +2973,7 @@ void HandleUnmapNotify(const evh_args_t *ea)
 	if (te->xunmap.window == FW_W_FRAME(fw))
 	{
 		SET_ICONIFY_PENDING(fw , 0);
+		return;
 	}
 	if (must_return)
 	{
@@ -3878,205 +3880,6 @@ void CMD_XSynchronize(F_CMD_ARGS)
 
 	return;
 }
-
-#if 0
-/* experimental code */
-int addkbsubinstoarray(Window parentw, Window *winlist, int offset)
-{
-	Window *children;
-	int i;
-	int n;
-	int s;
-	Window JunkW;
-	static int depth = 0;
-
-	depth++;
-	if (XQueryTree(dpy, parentw, &JunkW, &JunkW, &children, &n) == 0)
-	{
-		depth--;
-		return offset;
-	}
-/*fprintf(stderr,"%d: 0x%08x has %d children\n", depth, (int)parentw, n);*/
-	if (n == 0)
-	{
-		depth--;
-		return offset;
-	}
-	for (i = 0; i < n; i++)
-	{
-		XWindowAttributes xwa;
-
-		if (XGetWindowAttributes(dpy, children[i], &xwa) == 0)
-		{
-			continue;
-		}
-#if 0
-		if (xwa.map_state != IsViewable)
-		{
-			continue;
-		}
-#endif
-#define KBWIN_MIN_WIDTH 100
-#define KBWIN_MIN_HEIGHT 23
-#define MASK (KeyPressMask|KeyReleaseMask)
-		s = addkbsubinstoarray(children[i], winlist, offset);
-		if ((xwa.all_event_masks & MASK) &&
-		    xwa.width >= KBWIN_MIN_WIDTH &&
-		    xwa.height >= KBWIN_MIN_HEIGHT &&
-		    s == offset)
-		{
-fprintf(stderr, "w %d (%d), h %d (%d)\n", xwa.width, KBWIN_MIN_WIDTH, xwa.height, KBWIN_MIN_HEIGHT);
-			winlist[offset] = children[i];
-			offset++;
-fprintf(stderr,"%d: + 0x%08x offset %d\n", depth, (int)children[i], offset);
-		}
-#if 1
-		else if (depth == 1 && i + 1 == n)
-		{
-			offset = s;
-			winlist[offset] = parentw;
-			offset++;
-fprintf(stderr,"%d: * 0x%08x offset %d\n", depth, (int)parentw, offset);
-		}
-#endif
-		else
-		{
-/*fprintf(stderr,"%d: v 0x%08x s %d offset %d ev 0x%x 0x%x 0x%x\n", depth, (int)children[i], s, offset, (int)xwa.all_event_masks, (int)MASK, (int)(xwa.all_event_masks & MASK));*/
-			offset = s;
-		}
-	}
-	XFree(children);
-	depth--;
-
-	return offset;
-}
-
-int findcurrentkbwininlist(Window start_win, Window *winlist, int n)
-{
-	int x;
-	int y;
-	int new_x;
-	int new_y;
-	int i;
-	int found = -1;
-	Window child;
-	Window new_child;
-
-/*fprintf(stderr,"find sw = 0x%08x\n", (int)start_win);*/
-	if (FQueryPointer(
-		    dpy, start_win, &JunkRoot, &child, &JunkX, &JunkY, &x, &y,
-		    &JunkMask) == False)
-	{
-		return None;
-	}
-	while (start_win != None)
-	{
-/*fprintf(stderr,"checking 0x%08x %d\n", (int)start_win, n);*/
-		for (i = 0; i < n; i++)
-		{
-			if (winlist[i] == start_win)
-			{
-fprintf(stderr,"is in 0x%08x\n", (int)start_win);
-				found = i;
-				break;
-			}
-		}
-		if (child != None && XTranslateCoordinates(
-			    dpy, start_win, child, x, y, &new_x, &new_y,
-			    &new_child) == False)
-		{
-			break;
-		}
-		start_win = child;
-		child = new_child;
-		x = new_x;
-		y = new_y;
-	}
-
-	return found;
-}
-
-void getkbsubwins(F_CMD_ARGS)
-{
-	Window win;
-	Window focus_win;
-	Window winlist[1000];
-	static Window prev_win = None;
-	static Window last_win = None;
-	int n;
-	int i;
-	int j;
-	char cmd[256];
-	int x;
-	int y;
-	int wid;
-	int hei;
-
-	if (!fw)
-	{
-		return;
-	}
-	win = FW_W(fw);
-fprintf(stderr,"start 0x%08x prev 0x%08x last 0x%08x\n", (int)win, (int)prev_win, (int)last_win);
-	n = addkbsubinstoarray(win, &(winlist[0]), 0);
-	if (n == 0)
-	{
-		return;
-	}
-	XGetInputFocus(dpy, &focus_win, &i);
-/*fprintf(stderr,"focus = 0x%08x\n",(int)focus_win);*/
-	if (focus_win == None)
-	{
-		return;
-	}
-	win = focus_win;
-	i = findcurrentkbwininlist(win, &(winlist[0]), n);
-	if (i < 0)
-	{
-		XBell(dpy, 0);
-		return;
-	}
-	if (winlist[i] != last_win && last_win != None && XGetGeometry(
-		    dpy, last_win, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-		    &JunkHeight, &JunkBW, &JunkMask) != 0)
-	{
-		for (j = 0; j < n; j++)
-		{
-			if (winlist[j] == last_win)
-			{
-				i = j;
-				break;
-			}
-		}
-	}
-	prev_win = winlist[i];
-XGetGeometry(dpy, winlist[i], &JunkRoot, &x,&y,&wid,&hei,&JunkBW, &JunkMask);
-fprintf(stderr,"  %d (%d %d %dx%d) -> ", i, x,y,wid,hei);
-	i++;
-	if (i >= n)
-	{
-		i = 0;
-	}
-	if (winlist[i] == focus_win && n > 1)
-	{
-		i++;
-		if (i >= n)
-		{
-			i = 0;
-		}
-	}
-	win = winlist[i];
-XGetGeometry(dpy, win, &JunkRoot, &x,&y,&wid,&hei,&JunkBW, &JunkMask);
-fprintf(stderr," %d (%d %d %dx%d)\n", i, x,y,wid,hei);
-	sprintf(cmd, "WindowId 0x%x WarpToWindow 99 99", (int)win);
-	fprintf(stderr, "%s\n", cmd);
-	execute_function(NULL, exc, cmd, 0);
-	last_win = win;
-	/*!!!*/
-
-	return;
-}
-#endif
 
 void CMD_XSync(F_CMD_ARGS)
 {

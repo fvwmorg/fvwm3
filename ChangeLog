@@ -1,3 +1,30 @@
+2002-11-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (RestoreWithdrawnLocation):
+	rixed rxvts with S/E gravity travelling off screen upon recapture after
+	they were resized.
+
+	* fvwm/events.c (__handle_key_event):
+	* fvwm/bindings.c (activate_binding):
+	(__rebind_global_key):
+	fixed unbinding pointerkey bindings removing the grab for this key
+	completely
+
+	* fvwm/events.c (__is_bpress_window_handled):
+	fixed click on override redirect windows being handled by the root
+	window
+
+	* fvwm/misc.c (GrabEm):
+	confine the pointer to the root window when grabbed
+
+	* fvwm/events.c (HandleUnmapNotify):
+	fixed reparenting problem with restarts from desks != 0
+
+2002-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c:
+	removed experimental code
+
 2002-11-28  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/borders.c (border_get_border_background):
@@ -33,16 +60,17 @@
 
 2002-11-24  Jason Weber  <baboon@imonk.com>
 
-	* fvwm/conditional.c
+	* fvwm/conditional.c (CMD_Direction):
 	Extended Direction to allow CycleWest, CycleEast, etc that guarantees
 	eventual traversal of all windows over repeated calls.  It also cycles
-	back to the opposite extent when it hits the limit in the given direction.
+	back to the opposite extent when it hits the limit in the given
+	direction.
 
 2002-11-22  olicha  <olivier.chapuis@free.fr>
-	
+
 	* fvwm/borders.h:
-	* fvwm/borders.c (get_common_decorations): 
-	(border_get_parts_and_pos_to_draw): 
+	* fvwm/borders.c (get_common_decorations):
+	(border_get_parts_and_pos_to_draw):
 	(border_get_changed_border_parts):
 	(border_get_frame_pixmap, new):
 	(border_get_border_background):

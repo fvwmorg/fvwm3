@@ -34,6 +34,7 @@
 #include "focus.h"
 #include "borders.h"
 #include "frame.h"
+extern void GetWindowSizeHints(FvwmWindow *tmp);
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -415,7 +416,7 @@ static void __frame_setup_window(
 			border_draw_decorations(
 				fw, draw_parts,
 				((fw == get_focus_window())) ? True : False,
-				True, CLEAR_ALL, NULL, NULL);	
+				True, CLEAR_ALL, NULL, NULL);
 		}
 		fw->frame_g = *frame_g;
 		do_send_configure_notify = True;
@@ -1083,12 +1084,12 @@ static void frame_has_handles_and_tiled_border(
 	{
 		*ret_has_handles = 0;
 	}
-	*ret_has_tiled_border = 
+	*ret_has_tiled_border =
 		(DFS_FACE_TYPE(df->style) == TiledPixmapButton) ||
 		(DFS_FACE_TYPE(df->style) == ColorsetButton &&
 		 !CSET_IS_TRANSPARENT_PR(df->u.acs.cs) &&
 		 CSET_HAS_PIXMAP(df->u.acs.cs));
-	
+
 	return;
 }
 
@@ -1803,10 +1804,19 @@ void frame_free_move_resize_args(
 	frame_setup_shape(fw, mra->end_g.width, mra->end_g.height);
 	if (mra->flags.do_restore_gravity)
 	{
+		mra->grav.client_grav = fw->hints.win_gravity;
 		frame_set_decor_gravities(
 			fw, &mra->grav,
 			(mra->flags.do_set_bit_gravity) ? 2 : 0);
 	}
+	else
+	{
+		XSetWindowAttributes xcwa;
+
+		xcwa.win_gravity = fw->hints.win_gravity;
+		XChangeWindowAttributes(dpy, FW_W(fw), CWWinGravity, &xcwa);
+	}
+
 	focus_grab_buttons_on_layer(fw->layer);
 	/* free the memory */
 	free(mr_args);

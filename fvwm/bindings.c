@@ -97,13 +97,14 @@ static void update_nr_buttons(
 	return;
 }
 
-static void activate_binding(Binding *binding, binding_t type, Bool do_grab)
+static int activate_binding(Binding *binding, binding_t type, Bool do_grab)
 {
 	FvwmWindow *t;
+	Bool rc = 0;
 
 	if (binding == NULL)
 	{
-		return;
+		return rc;
 	}
 	if (BIND_IS_KEY_RELEASE(type))
 	{
@@ -120,10 +121,19 @@ static void activate_binding(Binding *binding, binding_t type, Bool do_grab)
 			dpy, Scr.Root, binding,
 			C_WINDOW | C_DECOR | C_ROOT | C_ICON | C_EWMH_DESKTOP,
 			GetUnusedModifiers(), None, do_grab);
+		if (do_grab == False)
+		{
+			rc = 1;
+		}
+	}
+	if (do_grab == False && BIND_IS_KEY_BINDING(type) &&
+	    (binding->Context & C_ROOT))
+	{
+		rc = 1;
 	}
 	if (fFvwmInStartup == True)
 	{
-		return;
+		return rc;
 	}
 
 	/* grab keys immediately */
@@ -164,7 +174,7 @@ static void activate_binding(Binding *binding, binding_t type, Bool do_grab)
 		}
 	}
 
-	return;
+	return rc;
 }
 
 static int bind_get_bound_button_contexts(
@@ -205,6 +215,24 @@ static int bind_get_bound_button_contexts(
 
 	return bcontext;
 }
+
+static void __rebind_global_key(Binding **pblist, int Button_Key)
+{
+	Binding *b;
+
+	for (b = *pblist; b != NULL; b = b->NextBinding)
+	{
+		if (b->Button_Key == Button_Key &&
+		    (BIND_IS_PKEY_BINDING(b->type) || b->Context == C_ALL))
+		{
+			activate_binding(b, b->type, True);
+			return;
+		}
+	}
+
+	return;
+}
+
 /* Parses a mouse or key binding */
 static int ParseBinding(
 	Display *dpy, Binding **pblist, char *tline, binding_t type,
@@ -223,6 +251,9 @@ static int ParseBinding(
 	STROKE_CODE(char stroke[STROKE_MAX_SEQUENCE + 1] = "");
 	STROKE_CODE(int n4=0);
 	STROKE_CODE(int i);
+	Bool is_binding_removed = False;
+	Binding *b;
+	Binding *rmlist = NULL;
 
 	/* tline points after the key word "Mouse" or "Key" */
 	token = PeekToken(tline, &ptr);
@@ -404,45 +435,48 @@ static int ParseBinding(
 	/*
 	** Remove the "old" bindings if any
 	*/
+	/* BEGIN remove */
+	CollectBindingList(
+		dpy, pblist, &rmlist, type, STROKE_ARG((void *)stroke)
+		button, keysym, modifier, context);
+	if (rmlist != NULL)
 	{
-		Bool is_binding_removed = False;
-		Binding *b;
-		Binding *rmlist = NULL;
-
-		CollectBindingList(
-			dpy, pblist, &rmlist, type, STROKE_ARG((void *)stroke)
-			button, keysym, modifier, context);
-		if (rmlist != NULL)
-		{
-			is_binding_removed = True;
-			if (is_unbind_request)
-			{
-				/* remove the grabs for the key for unbind
-				 * requests */
-				for (b = rmlist; b != NULL; b = b->NextBinding)
-				{
-					/* release the grab */
-					activate_binding(b, type, False);
-				}
-			}
-			FreeBindingList(rmlist);
-		}
-		if (is_binding_removed)
-		{
-			int bcontext;
-
-			bcontext = bind_get_bound_button_contexts(
-				pblist, buttons_grabbed);
-			update_nr_buttons(
-				bcontext, nr_left_buttons, nr_right_buttons,
-				True);
-		}
-		/* return if it is an unbind request */
+		is_binding_removed = True;
 		if (is_unbind_request)
 		{
-			return 0;
+			int rc = 0;
+
+			/* remove the grabs for the key for unbind
+			 * requests */
+			for (b = rmlist; b != NULL; b = b->NextBinding)
+			{
+				/* release the grab */
+				rc |= activate_binding(b, type, False);
+			}
+			if (rc)
+			{
+				__rebind_global_key(pblist, rmlist->Button_Key);
+			}
 		}
+		FreeBindingList(rmlist);
 	}
+	if (is_binding_removed)
+	{
+		int bcontext;
+
+		bcontext = bind_get_bound_button_contexts(
+			pblist, buttons_grabbed);
+		update_nr_buttons(
+			bcontext, nr_left_buttons, nr_right_buttons,
+			True);
+	}
+	/* return if it is an unbind request */
+	if (is_unbind_request)
+	{
+		return 0;
+	}
+	/* END remove */
+
 	update_nr_buttons(context, nr_left_buttons, nr_right_buttons, False);
 	if ((modifier & AnyModifier)&&(modifier&(~AnyModifier)))
 	{
