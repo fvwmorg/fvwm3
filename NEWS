@@ -1,5 +1,8 @@
 Changes in beta release 2.3.7 (August 1999)
 
+* FvwmAnimate accepts "animate" commands from other modules or
+  other sources of commands thru "sendtomodule".
+
 * More menu Shortcut keys: Tab moves down, Shift Tab moves up,
   Space executes.  You can now reasonably operate the built-in
   windowlist with one hand.

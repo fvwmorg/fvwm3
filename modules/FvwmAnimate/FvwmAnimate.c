@@ -24,6 +24,7 @@
  *   Added Stop, Save commands.
  *   Changed so this this module uses FvwmForm for complete control on all
  *   settings.
+ *   Anything can request an animation thru "sendtomodule".
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -703,7 +704,7 @@ int main(int argc, char **argv) {
   ParseOptions();                       /* get cmds fvwm has parsed */
 
   sprintf(mask_mesg,"SET_MASK %lu\n",(unsigned long)
-          (M_ICONIFY|M_DEICONIFY
+          (M_ICONIFY|M_DEICONIFY|M_STRING
            |M_LOCKONSEND|M_SENDCONFIG|M_CONFIG_INFO));
   SendInfo(Channel, mask_mesg, 0);      /* tell fvwm about our mask */
   CreateDrawGC();			/* create initial GC if necc. */
@@ -804,6 +805,27 @@ static void Loop() {
                    (int)packet->body[5],     /* t->icon_p_width */
                    (int)packet->body[6],
                    (int)time_accum));
+        break;
+      case M_STRING:
+        /* This message lets anything create an animation. Eg:
+           sendtomodule FvwmAnimate animate 1 1 10 10 100 100 100 100
+          */
+        {
+          int locs[8];
+          int matched;
+          matched = sscanf((char *)&packet->body[3],
+                           " animate %5d %5d %5d %5d %5d %5d %5d %5d",
+                           &locs[0], &locs[1], &locs[2], &locs[3],
+                           &locs[4], &locs[5], &locs[6], &locs[7]);
+          if (matched == 8) {
+            Animate.resize(locs[0], locs[1], locs[2], locs[3],
+                           locs[4], locs[5], locs[6], locs[7]);
+            myaprintf((stderr,
+                   "animate, args %d+%d+%dx%d %d+%d+%dx%d.\n",
+                       locs[0], locs[1], locs[2], locs[3],
+                       locs[4], locs[5], locs[6], locs[7]));
+          }
+        }
         break;
       case M_CONFIG_INFO:
         myfprintf((stderr,"Got command: %s\n", (char *)&packet->body[3]));
