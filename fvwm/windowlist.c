@@ -363,7 +363,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #ifdef MINI_ICONS
         /* Add the title pixmap */
         if (t->mini_icon) {
-          mr->last->lpicture = t->mini_icon;
+          MR_LAST_ITEM(mr)->lpicture = t->mini_icon;
           t->mini_icon->count++; /* increase the cache count!!
                                     otherwise the pixmap will be
                                     eventually removed from the

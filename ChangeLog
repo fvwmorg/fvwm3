@@ -1,3 +1,18 @@
+1999-05-20  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (DestroyMenu):
+	(NewMenuRoot): changes to handle multiple instances of the same menu
+	(CopyMenuRoot): new function to create a copy of a menu
+
+	* fvwm/menus.c:
+	* fvwm/menus.h:
+	* fvwm/windowlist.c:
+	split members of MenuRoot into a dynamic part (MenuRootDynamic) and a
+	static part (MenuRootStatic). The static members can safely be shared
+	between multiple instances of the same menu while the dynamic members
+	have to be created for each instance
+	introduced MR_... macros to access MenuRoot members
+
 1999-05-19  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/screen.h (ButtonFace): reduce memory consumption by

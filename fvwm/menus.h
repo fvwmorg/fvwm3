@@ -241,11 +241,12 @@ typedef struct MenuRootStatic
       unsigned is_background_set : 1; /* is win background set? */
       unsigned is_in_use : 1;
       unsigned is_painted : 1;
+      unsigned is_continuation_menu : 1;
       unsigned is_left : 1;   /* menu direction relative to parent menu */
       unsigned is_right : 1;
       unsigned is_up : 1;
       unsigned is_down : 1;
-    } tflags;
+    } temp_flags;
     /* permanent flags */
     struct
     {
@@ -258,6 +259,25 @@ typedef struct MenuRootStatic
     } dynamic;
 } MenuRootStatic;
 
+/* access macros to static menu members */
+#define MR_FIRST_ITEM(m)    ((m)->s->first)
+#define MR_LAST_ITEM(m)     ((m)->s->last)
+#define MR_COPIES(m)        ((m)->s->copies)
+#define MR_NAME(m)          ((m)->s->name)
+#define MR_HEIGHT(m)        ((m)->s->height)
+#define MR_WIDTH0(m)        ((m)->s->width0)
+#define MR_WIDTH(m)         ((m)->s->width)
+#define MR_WIDTH2(m)        ((m)->s->width2)
+#define MR_WIDTH3(m)        ((m)->s->width3)
+#define MR_XOFFSET(m)       ((m)->s->xoffset)
+#define MR_ITEMS(m)         ((m)->s->items)
+#define MR_SIDEPIC(m)       ((m)->s->sidePic)
+#define MR_SIDECOLOR(m)     ((m)->s->sideColor)
+#define MR_STYLE(m)         ((m)->s->ms)
+#define MR_TEMP_FLAGS(m)    ((m)->s->temp_flags)
+#define MR_FLAGS(m)         ((m)->s->flags)
+#define MR_DYNAMIC(m)       ((m)->s->dynamic)
+
 
 /* This struct contains the parts of a root menu that differ in all copies of
  * the menu */
@@ -269,7 +289,7 @@ typedef struct MenuRootDynamic
 				    * (too tall for screen) */
     /* can get the menu that this popped up through selected->mr when
        selected is a popup menu item */
-    struct MenuRoot *mrDynamicPrev; /* the menu that popped this up, if any */
+    struct MenuRoot *parent; /* the menu that popped this up, if any */
     Window w;			/* the window of the menu */
     MenuItem *selected;	        /* the selected item in menu */
     int xanimation;             /* x distance window was moved by animation */
@@ -284,71 +304,24 @@ typedef struct MenuRootDynamic
 #endif
 } MenuRootDynamic;
 
+/* access macros to static menu members */
+#define MR_ORIGINAL_MENU(m)         ((m)->d->original)
+#define MR_NEXT_MENU(m)             ((m)->d->next)
+#define MR_CONTINUATION_MENU(m)     ((m)->d->continuation)
+#define MR_PARENT_MENU(m)           ((m)->d->parent)
+#define MR_WINDOW(m)                ((m)->d->w)
+#define MR_SELECTED_ITEM(m)         ((m)->d->selected)
+#define MR_XANIMATION(m)            ((m)->d->xanimation)
+#ifdef GRADIENT_BUTTONS
+#define MR_STORED_ITEM(m)           ((m)->d->stored_item)
+#endif
+
 
 
 typedef struct MenuRoot
 {
-#if 1
-    MenuItem *first;	/* first item in menu */
-    MenuItem *last;	/* last item in menu */
-    MenuItem *selected;	/* the selected item in menu */
-#ifdef GRADIENT_BUTTONS
-    struct
-    {
-      Pixmap stored;
-      int width;
-      int height;
-      int y;
-    } stored_item;
-#endif
-
-    struct MenuRoot *next;	/* next in list of root menus */
-    struct MenuRoot *continuation; /* continuation of this menu
-				    * (too tall for screen */
-    /* can get the menu that this popped up through selected->mr when
-       selected IS_POPUP_MENU_ITEM(selected) */
-    struct MenuRoot *mrDynamicPrev; /* the menu that popped this up, if any */
-
-    char *name;			/* name of root */
-    Window w;			/* the window of the menu */
-    short height;		/* height of the menu */
-    short width0;               /* width of the menu-left-picture col */
-    short width;		/* width of the menu for 1st col */
-    short width2;		/* width of the menu for 2nd col */
-    short width3;               /* width of the submenu triangle col */
-    short xoffset;              /* the distance between the left border and the
-				 * beginning of the menu items */
-    short items;		/* number of items in the menu */
-    Picture *sidePic;
-    Pixel sideColor;
-    /* Menu Face    */
-    MenuStyle *ms;
-    /* temporary flags, deleted when menu pops down! */
-    struct
-    {
-      unsigned is_background_set : 1; /* is win background set? */
-      unsigned is_in_use : 1;
-      unsigned is_painted : 1;
-      unsigned is_left : 1;   /* menu direction relative to parent menu */
-      unsigned is_right : 1;
-      unsigned is_up : 1;
-      unsigned is_down : 1;
-    } tflags;
-    /* permanent flags */
-    struct
-    {
-      unsigned has_side_color : 1;
-    } flags;
-    struct
-    {
-      char *popup_action;
-      char *popdown_action;
-    } dynamic;
-    int xanimation;      /* x distance window was moved by animation     */
-#else
     MenuRootStatic *s;
     MenuRootDynamic *d;
-#endif
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
 
