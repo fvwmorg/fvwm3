@@ -2112,6 +2112,7 @@ void HandleConfigureRequest(void)
 	cre->detail = ecre->detail;
 	/* srt (28-Apr-2001): Tk needs a ConfigureNotify event after a raise,
 	 * otherwise it would hang for two seconds */
+	new_g = Tmp_win->frame_g;
 	do_send_event = True;
       }
     } /* while */
@@ -2413,6 +2414,7 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     }
     /* srt (28-Apr-2001): Tk needs a ConfigureNotify event after a raise,
      * otherwise it would hang for two seconds */
+    new_g = Tmp_win->frame_g;
     do_send_event = True;
   }
 

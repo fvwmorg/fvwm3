@@ -1304,6 +1304,10 @@ Bool is_on_top_of_layer(FvwmWindow *fw)
   FvwmWindow *t;
   Bool ontop = True;
 
+  if (Scr.bo.RaiseOverUnmanaged)
+  {
+    return False;
+  }
   for (t = fw->stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
   {
     if (t->layer > fw->layer)

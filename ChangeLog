@@ -1,3 +1,15 @@
+2001-05-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/stack.c (is_on_top_of_layer):
+	never consider a window to be "on top" with windows X servers
+
+	* fvwm/virtual.c (checkPanFrames):
+	cleaned up code duplication and logic
+
+	* fvwm/events.c (HandleConfigureRequest):
+	fixed random client window size when ConfigureNotify caused a restack
+	but no size change; fixes "import -frame" problem
+
 2001-05-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* INSTALL.fvwm: remove a note about the old Cygwin (hopefully fixed)
@@ -10,7 +22,7 @@
 
 	* fvwm/gnome.c (GNOME_HandlePropRequest):
 	Fixed GNOME Shade state
-	
+
 2001-05-16  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm2.1:
@@ -22,11 +34,11 @@
 	in S,C,Y Gradients with the help of a very smart horse.
 
 2001-05-14  olicha  <olivier.chapuis@free.fr>
-	
+
 	* acinclude.m4:
 	Fixed (true) IMLIB test (never used) and say that we test GDK Imlib
 	in GDK Imlib test
-	
+
 2001-05-09  Hippo
 
 	* fvwm/focus.c (warp_to_fvwm_window):
