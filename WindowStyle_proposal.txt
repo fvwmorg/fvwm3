@@ -8,8 +8,10 @@ that understands all the current Style command options but operates on a
 single window.
 
 Minor objectives are:
+*) The style command would share the same pattern matching as the WindowID
+command, any enhancements (e.g. "Class==XXX") will apply to both.
 *) Remove the style list management and replace it by reusing the 
-function list managemnt code (some additions will have to be provided to 
+function list management code (some additions will have to be provided to 
 allow removing lines from a function)
 *) Simplify some commands (e.g. Sticky) to be a wrapper to a WindowStyle 
 command
@@ -19,7 +21,7 @@ WindowStyle <flag> <setting>
 <setting> is On/Off, True/False, for on/off flags
 <setting> is number for numeric flags
 <setting> is a string for all other types of flag
-Not supplying setting is equivalenbt to "True" for binary flags, 0 for 
+Not supplying setting is equivalent to "True" for binary flags, 0 for 
 numeric flags, "" for others.
 
 on/off flags: Icon, Title, TitleAtTop, StippledTitle, ResizeHandles, 
@@ -31,7 +33,7 @@ string flags: IconFile, MiniIconFile etc.
 
 (Note that these aren't exact copies of the style flags e.g "Style 
 Slippery" is "WindowStyle Sticky Off". This should make it easier to 
-write the WindowStyle command at the expense of complication the final 
+write the WindowStyle command at the expense of complicating the final 
 Style command replacement)
 
 Doing all this in one go will probably introduce a lot of bugs for a 
@@ -112,7 +114,7 @@ multiple redraws, should be zero or one.
 
 *) Rewrite the Stick command to call WindowStyle.
 
-*) Rewrite the Style command to handle comma seperated lists:
+*) Rewrite the Style command to handle comma separated lists:
    pattern = $1
    for (flag, setting) in remaining args {
      if (flag != Sticky) {
@@ -134,9 +136,9 @@ tedious, soul-destroying part. Hopefully we can take it in turns. Is it
 possible to arrange the files so that several flags can be worked on by 
 different people without too many CVS conflicts?
 
-*) Remove the OldStyle and OldDestroyStyle commands. DestroyStyle shoudl 
+*) Remove the OldStyle and OldDestroyStyle commands. DestroyStyle should 
 just be:
-   DestroyFromStleFunction $*
+   DestroyFromStyleFunction $*
 Style should just be:
    pattern = $1
    for (flag, setting) in remaining args {
@@ -160,3 +162,4 @@ can't trash it (have to use the Style command to change StyleFunction)
 
 *) Change the name of StyleFunction to some obscure unlikely name 
 (optional)
+
