@@ -1,3 +1,8 @@
+1999-08-24  Hippo
+
+	* FvwmTheme/FvwmTheme.c: can specify the background color as "average"
+	and FvwmTheme calculates the average color of the pixmap
+
 1999-08-24  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (change_colorset): small balloons/colorset fix

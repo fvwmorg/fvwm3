@@ -201,6 +201,7 @@ static char *shape_options[] =
 };
 
 static char *dash = "-";
+static char *average = "Average";
 
 /* translate a colorset spec into a colorset structure */
 static void parse_colorset(char *line)
@@ -231,12 +232,12 @@ static void parse_colorset(char *line)
     return;
   }
 
-  /* fill in the structure if color name is not "-" */
+  /* fill in the structure if color name is specified */
   if (!StrEquals(fg, dash)) {
     XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
     cs->fg = GetColor(fg);
   }
-  if (!StrEquals(bg, dash)) {
+  if (!StrEquals(bg, dash) && !StrEquals(bg, average)) {
     XFreeColors(dpy, Pcmap, &cs->bg, 3, 0);
     cs->bg = GetColor(bg);
     cs->hilite = GetHilite(cs->bg);
@@ -363,7 +364,7 @@ static void parse_colorset(char *line)
       cs->pixmap = XCreatePixmap(dpy, win, cs->width, cs->height, Pdepth);
       if (picture->mask != None)
       {
-	/* deafult to background colour where pixmap is transparent */
+	/* default to background colour where pixmap is transparent */
 	XSetForeground(dpy, gc, cs->bg);
 	XFillRectangle(dpy, cs->pixmap, gc, 0, 0, cs->width, cs->height);
 	XSetClipMask(dpy, gc, picture->mask);
@@ -416,6 +417,47 @@ static void parse_colorset(char *line)
       cs->stretch_x = !(type == V_GRADIENT);
       cs->stretch_y = !(type == H_GRADIENT);
     }
+  }
+
+  /* calculate average background color */
+  if (StrEquals(bg, average) && cs->pixmap) {
+    XColor color;
+    XColor *colors;
+    XImage *image;
+    unsigned int i, j, k = 0;
+    unsigned long red = 0, blue = 0, green = 0;
+
+    /* create an array to store all the pixmap colors in */
+    colors = (XColor *)safemalloc(cs->width * cs->height * sizeof(XColor));
+    /* get the pixmap into an image */
+    image = XGetImage(dpy, cs->pixmap, 0, 0, cs->width, cs->height, AllPlanes,
+		      ZPixmap);
+    /* get each pixel */
+    for (i = 0; i < cs->width; i++)
+      for (j = 0; j < cs->height; j++)
+	colors[k++].pixel = XGetPixel(image, i, j);
+    XDestroyImage(image);
+    /* look them all up, XQueryColors() can't handle more than 256 */
+    for (i = 0; i < k; i += 256)
+      XQueryColors(dpy, Pcmap, &colors[i], min(k - i, 256));
+    /* calculate average, ignore overflow: .red is a short, red is a long */
+    for (i = 0; i < k; i++) {
+      red += colors[i].red;
+      green += colors[i].green;
+      blue += colors[i].blue;
+    }
+    free(colors);
+    /* get it */
+    XFreeColors(dpy, Pcmap, &cs->bg, 3, 0);
+    k = cs->width * cs->height;
+    color.red = red / k;
+    color.green = green / k;
+    color.blue = blue / k;
+    color.flags = DoRed | DoGreen | DoBlue;
+    XAllocColor(dpy, Pcmap, &color);
+    cs->bg = color.pixel;
+    cs->hilite = GetHilite(cs->bg);
+    cs->shadow = GetShadow(cs->bg);
   }
 
   /* make sure the server has this to avoid races */

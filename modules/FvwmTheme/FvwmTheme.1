@@ -44,13 +44,14 @@ FvwmTheme supports only one configuration option.
 .B "*FvwmThemeColorset" "\fIn\fP \fIfg\fP \fIbg\fP [\fIshape option\fP] [\fIpixmap option\fP]"
 Will create or modify colorset \fIn\fP. Each colorset has a foreground and
 background color specified by \fIfg\fP and \fIbg\fP respectively.  If
-either \fIfg\fP or \fIbg\fP is specified as "-" it is not altered.
-Colors may be specified by name e.g. Liver or "Fava bean" or as an
-RGB hexadecimal triplet "#RRGGBB" e.g. "#551111" for a nice Chianti.
+either \fIfg\fP or \fIbg\fP is specified as "-" it is not altered. If \fIbg\fP
+is specified as "average" it is calculated as the average color of the
+backround pixmap. Colors may be specified by name e.g. Liver or "Fava bean" or
+as an RGB hexadecimal triplet "#RRGGBB" e.g. "#551111" for a nice Chianti.
 
 Each colorset may also have a pixmap associated with it as an adjunct to the
 background color.  This may be used instead of the background color and should
-have roughly the same avarage color as the background so that any 3D bevels
+have roughly the same average color as the background so that any 3D bevels
 (which are calculated from the background color) don't look strange.
 The background color is used for the transparent parts of the pixmap.
 
