@@ -1071,7 +1071,7 @@ A: Start with a new one or convert your old one.  This can be done by
    CirculateDown [ name window_name ]         Next (not compatible)
    CirculateUp [ name window_name ]           Prev (not compatible)
    Close                                      <-
-   CursorMove horizonal vertical              <-
+   CursorMove horizontal vertical             <-
    Delete                                     <-
    Desk arg1 arg2                             <-
    Destroy                                    <-
@@ -1537,7 +1537,7 @@ A: First, it may help to read about colorsets in fvwm and FvwmTheme
    If you are not sure whether you use "fvwm-root -r" or similar
    utility to set the root background, do not use RootTransparent
    option, use Transparent option without tinting, and set the bg
-   color explicitely.
+   color explicitly.
 
    Once a transparent colorset is defined, use it in menus:
 
@@ -1836,7 +1836,7 @@ A: If you plan to write a patch, *please*, first of all fetch the
    older releases may prove completely worthless, e.g. because the
    fix has already been integrated, a feature already added or
    removed or simply because the code is very different to the code
-   you patches.  You will do yourself and us a great favour.
+   you patches.  You will do yourself and us a great favor.
    Otherwise all your hard work may be wasted.
 
    People are always requesting or suggesting new features (many of
@@ -1882,7 +1882,7 @@ A: If you plan to write a patch, *please*, first of all fetch the
 
 A: First of all, please read the first section of the answer to Q5.1!
 
-   Creating a patch against CVS sources (preferrable) -
+   Creating a patch against CVS sources (preferable) -
 
         1) Execute "cvs update -AdP" to ensure there are no conflicts
            with the most recent sources.
@@ -2254,7 +2254,7 @@ A: This problem might occur on other applications besides the one
      all MWWM=MWM.
 
    Next we had Klaus Zeitler report that the Rational Rose official
-   startup script is explictly setting ALLWM to nothing.  This makes
+   startup script is explicitly setting ALLWM to nothing.  This makes
    it more difficult for an individual user to set this variable.
    If you can, you can just modify the script, otherwise, your other
    alternative is to copy the script somewhere where you can modify it
@@ -2279,7 +2279,7 @@ A: Make sure you have
       the edges, and other times I don't.  What's going on?
 
 A: The ICCCM specification allows applications to specify certain
-   properties the window manager should honour, such as aspect
+   properties the window manager should honor, such as aspect
    ratio (PAspect) or increments to be resized in (PResizeInc).  Of
    course, sometimes these properties won't perfectly match the
    size of your desktop (or ewmh struts), if that should happen,
@@ -2432,7 +2432,7 @@ A: Setting the background image is not really part of the window
    The fvwm module FvwmBacker can be used to change the background
    depending on the desk you are currently on by calling an external
    program.  One big disadvantage of external programs is that
-   changing the beckground on the fly can be pretty slow.  FvwmBacker
+   changing the background on the fly can be pretty slow.  FvwmBacker
    can use the image defined in a colorset and cached by fvwm for fast
    background changing.  For example:
 
@@ -2453,7 +2453,7 @@ A: Under this heading we've had questions about FvwmForm being all
    allocate colors.
 
    Older hardware uses something called 8 bit color.  You can also
-   misconfigure newer hardware so that its only using 8 bit color.
+   mis-configure newer hardware so that its only using 8 bit color.
    When you use 8 bit color, your display can only have 256 colors on
    it at once.
 
@@ -2971,6 +2971,10 @@ your applications request.
    install the "unclutter" program.  Unclutter hides the mouse
    pointer after you haven't moved the mouse for a while.
 
+   If you find unclutter causes the pointer to flash on and off
+   or move around on its own, run unclutter with the -noevents
+   argument.
+
 ----------------------------------------------------------------------
 
 7.16  Finding the mouse pointer.
@@ -3086,13 +3090,13 @@ your applications request.
      ;(setq live-icon-max-width 48)
 
    Make sure you are not using the style IconOverride for these
-   applications.  It idsables the use of active icons.  There may be
+   applications.  It disables the use of active icons.  There may be
    other applications with similar features.
 
 
    Assuming you want application thumbnails as icons provided by fvwm,
    you need fvwm 2.5.8 or later, as this solution requires the
-   WindowStyle command, and you should have the ImageMagick utililties
+   WindowStyle command, and you should have the ImageMagick utilities
    available in your $PATH <URL:http://www.imagemagick.org/>.
 
    The function below provides a Replacement for the Iconify command
