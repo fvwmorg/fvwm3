@@ -26,9 +26,13 @@
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 #include "libs/FRenderInit.h"
+#include "libs/FRender.h"
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
+#include "libs/gravity.h"
 #include "libs/FScreen.h"
+#include "libs/Picture.h"
+#include "libs/PictureGraphics.h"
 
 #include "FvwmProxy.h"
 
@@ -75,7 +79,6 @@ static GC miniIconGC;
 static Window rootWindow;
 static FILE *errorFile;
 static char command[256];
-static XFontStruct *font=NULL;
 static XTextProperty windowName;
 static int altState=0;
 static int deskNumber=0;
@@ -84,9 +87,12 @@ static ProxyWindow *firstWindow=NULL;
 static ProxyWindow *selectProxy=NULL;
 static XGCValues xgcv;
 static int are_windows_shown = 0;
+static FlocaleWinString *FwinString;
 
 static int cset_normal = 0;
 static int cset_select = 0;
+char *font_name = NULL;
+FlocaleFont *Ffont;
 
 static int (*originalXErrorHandler)(Display *,XErrorEvent *);
 static int (*originalXIOErrorHandler)(Display *);
@@ -133,6 +139,10 @@ static Bool parse_options(void)
 				cset_select = 0;
 			}
 		}
+		else if (StrEquals(resource, "Font"))
+		{
+			CopyStringWithQuotes(&font_name, tline);
+		}
 #if 0
 		else if (StrEquals(resource, "ProxyGeometry"))
 		{
@@ -150,10 +160,6 @@ static Bool parse_options(void)
 			{
 				/*!!!error*/
 			}
-		}
-		else if (StrEquals(resource, "Font"))
-		{
-			/*!!!*/
 		}
 #endif
 
@@ -251,21 +257,24 @@ static ProxyWindow *FindProxy(Window window)
 	return NULL;
 }
 
-static void DrawPicture(Window window,int x,int y,FvwmPicture *picture)
+static void DrawPicture(
+	Window window, int x, int y, FvwmPicture *picture, int cset)
 {
-	XGCValues gcv;
-	unsigned long gcm=(GCClipMask|GCClipXOrigin|GCClipYOrigin);
+	FvwmRenderAttributes fra;
 
-	if(!picture)
+	if(!picture || picture->picture == None)
 		return;
 
-	gcv.clip_mask=picture->mask;
-	gcv.clip_x_origin=x;
-	gcv.clip_y_origin=y;
-
-	XChangeGC(dpy,miniIconGC,gcm,&gcv);
-	XCopyArea(dpy,picture->picture,window,miniIconGC,
-		  0,0,picture->width,picture->height,x,y);
+	fra.mask = FRAM_DEST_IS_A_WINDOW;
+	if (cset >= 0)
+	{
+		fra.mask |= FRAM_HAVE_ICON_CSET;
+		fra.colorset = &Colorset[cset];
+	}
+	PGraphicsRenderPicture(
+		dpy, window, picture, &fra, window, miniIconGC, None, None,
+		0, 0, picture->width, picture->height,
+		x, y, picture->width, picture->height, False);
 }
 
 static void DrawWindow(
@@ -277,30 +286,32 @@ static void DrawWindow(
 	XCharStruct overall;
 	int edge, top;
 	int cset;
+	int text_width;
+	FvwmPicture *picture = &proxy->picture;
 
 	if (!proxy)
 	{
 		return;
 	}
-	XTextExtents(font,"Xy",2,&direction,&ascent,&descent,&overall);
 	x=0;
 	y=0;
 	w=proxy->proxyw;
 	h=proxy->proxyh;
 	if (proxy->iconname != NULL)
 	{
-		edge=(w-XTextWidth(
-			      font,proxy->iconname,strlen(proxy->iconname)))/2;
+		text_width = FlocaleTextWidth(
+			Ffont,proxy->iconname,strlen(proxy->iconname));
+		edge=(w-text_width)/2;
 	}
 	else
 	{
 		edge = w / 2;
 	}
 #if 0
-	top=h-descent-4;
+	top=h - Ffont->descent - 4;
 #endif
-	top=(h+ascent-descent)/2;	/* center */
-	top+=8;				/* HACK tweak */
+	top=(h+ Ffont->ascent - Ffont->descent)/2;	/* center */
+	top+=8;				                /* HACK tweak */
 
 	if(edge<5)
 		edge=5;
@@ -310,15 +321,29 @@ static void DrawWindow(
 	XSetBackground(dpy,fg_gc,Colorset[cset].bg);
 	XSetForeground(dpy,sh_gc,Colorset[cset].shadow);
 	XSetForeground(dpy,hi_gc,Colorset[cset].hilite);
+	/* FIXME: use clip redrawing (not really essential here) */
+	if (FLF_FONT_HAS_ALPHA(Ffont,cset) || PICTURE_HAS_ALPHA(picture,cset))
+	{
+		XClearWindow(dpy,proxy->proxy);
+	}
 	RelieveRectangle(
 		dpy, proxy->proxy, 0, 0, w - 1, h - 1, hi_gc, sh_gc, 2);
 	if (proxy->iconname != NULL)
 	{
-		XDrawString(
-			dpy, proxy->proxy, fg_gc, edge, top, proxy->iconname,
-			strlen(proxy->iconname));
+		FwinString->str = proxy->iconname;
+		FwinString->win = proxy->proxy;
+		FwinString->x = edge;
+		FwinString->y = top;
+		FwinString->gc = fg_gc;
+		FwinString->flags.has_colorset = False;
+		if (cset >= 0)
+		{
+			FwinString->colorset = &Colorset[cset];
+			FwinString->flags.has_colorset = True;
+		}
+		FlocaleDrawString(dpy, Ffont, FwinString, 0);
 	}
-	DrawPicture(proxy->proxy, (w-16)/2, 8, &proxy->picture);
+	DrawPicture(proxy->proxy, (w-16)/2, 8, picture, cset);
 }
 
 static void DrawProxy(ProxyWindow *proxy)
@@ -802,6 +827,7 @@ static void ProcessMessage(FvwmPacket* packet)
 			proxy->picture.depth=body[5];
 			proxy->picture.picture=body[6];
 			proxy->picture.mask=body[7];
+			proxy->picture.alpha=body[8];
 			UpdateOneWindow(proxy);
 		}
 		break;
@@ -1067,7 +1093,9 @@ int main(int argc, char **argv)
 
 	PictureInitCMap(dpy);
 	FScreenInit(dpy);
+	FRenderInit(dpy);
 	AllocColorset(0);
+	FlocaleAllocateWinString(&FwinString);
 	screen = DefaultScreen(dpy);
 	rootWindow = RootWindow(dpy,screen);
 #if 0
@@ -1084,10 +1112,6 @@ int main(int argc, char **argv)
 	hi_gc = fvwmlib_XCreateGC(dpy,rootWindow,GCPlaneMask,&xgcv);
 	sh_gc = fvwmlib_XCreateGC(dpy,rootWindow,GCPlaneMask,&xgcv);
 
-	font=XLoadQueryFont(dpy,"*-helvetica-bold-r-*--17-*");
-	if(font)
-		XSetFont(dpy,fg_gc,font->fid);
-
 	x_fd = XConnectionNumber(dpy);
 	fd_width = GetFdWidth();
 
@@ -1101,7 +1125,15 @@ int main(int argc, char **argv)
 	{
 		exit(1);
 	}
-
+	if ((Ffont = FlocaleLoadFont(dpy, font_name, MyName)) == NULL)
+	{
+		fprintf(stderr, "%s: Couldn't load font. Exiting!\n", MyName);
+		exit(1);
+	}
+	if (Ffont->font != NULL)
+	{
+		XSetFont(dpy,fg_gc,Ffont->font->fid);
+	}
 	SendInfo(fd,"Send_WindowList",0);
 	SendFinishedStartupNotification(fd);
 #if 0

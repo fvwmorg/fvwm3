@@ -1,3 +1,14 @@
+2002-11-09  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Fft.c (FftGetRotatedFont):
+	(FftGetFont):
+	* libs/Fft.h:
+	Check the return result of FftPatternGetMatrix
+
+	* libs/Flocale.h:
+	* libs/PictureBase.h:
+	Added two macro
+
 2002-11-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/ewmh_conf.c (set_state_workaround):

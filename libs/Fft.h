@@ -78,11 +78,18 @@ typedef FcChar32    FftChar32;
 typedef FcBool      FftBool;
 typedef FcType      FftType;
 typedef FcMatrix    FftMatrix;
-typedef FcResult    FftResult;
 typedef FcValue     FftValue;
 typedef FcPattern   FftPattern;
 typedef FcFontSet   FftFontSet;
 typedef FcObjectSet FftObjectSet;
+
+typedef enum _FftResult {
+      FftResultMatch        = FcResultMatch,
+      FftResultNoMatch      = FcResultNoMatch,
+      FftResultTypeMismatch = FcResultTypeMismatch,
+      FftFftResultNoId	    = FcResultNoId
+} FftResult;
+
 /* XftValue and are different in Xft+Fc and Xft 1 */
 typedef struct _Xft1Value {
     FftType     type;
@@ -123,7 +130,6 @@ typedef XftChar16    FftChar16;
 typedef XftChar32    FftChar32;
 typedef XftType      FftType;
 typedef XftMatrix    FftMatrix;
-typedef XftResult    FftResult;
 typedef XftPatternElt FftPatternElt;
 typedef XftFontSet   FftFontSet;
 typedef XftObjectSet FftObjectSet;
@@ -131,6 +137,13 @@ typedef XftValue     FftValue;
 typedef XftPattern   FftPattern;
 typedef XftValue     Fft1Value;
 typedef XftPattern   Fft1Pattern;
+
+typedef enum _FftResult {
+      FftResultMatch        = XftResultMatch,
+      FftResultNoMatch      = XftResultNoMatch,
+      FftResultTypeMismatch = XftResultTypeMismatch,
+      FftFftResultNoId	    = XftResultNoId
+} FftResult;
 
 #endif /* FftSupportUseXft2 */
 
@@ -171,7 +184,12 @@ typedef struct
 {
     double xx, xy, yx, yy;
 } FftMatrix;
-typedef int FftResult;
+typedef enum _FftResult {
+      FftResultMatch        = 0,
+      FftResultNoMatch      = 1,
+      FftResultTypeMismatch = 2,
+      FftFftResultNoId	    = 3
+} FftResult;
 typedef struct
 {
 	FftType type;

@@ -192,11 +192,8 @@ FftFont *FftGetRotatedFont(
 		goto bail;
 	}
 
-	if (FftPatternGetMatrix(rotated_pat, FFT_MATRIX, 0, &pm))
-	{
-		/* nothing */
-	}
-	if (pm)
+	if ((FftPatternGetMatrix(
+		rotated_pat, FFT_MATRIX, 0, &pm) == FftResultMatch) && pm)
 	{
 		/* rotate the matrice */
 		b.xx = r.xx * pm->xx + r.xy * pm->yx;
@@ -328,11 +325,8 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 		goto bail;
 	}
 	/* safty check */
-	if (FftPatternGetMatrix(load_pat, FFT_MATRIX, 0, &a))
-	{
-		/* nothing */
-	}
-	if (a)
+	if (FftPatternGetMatrix(
+		load_pat, FFT_MATRIX, 0, &a) == FftResultMatch && a)
 	{
 		FftMatrix b;
 		Bool cm = False;
@@ -359,7 +353,6 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 			}
 			if (!FftPatternAddMatrix(load_pat, FFT_MATRIX, &b))
 			{
-				fprintf(stderr,"Add matrice fail\n");
 				goto bail;
 			}
 		}
@@ -631,11 +624,8 @@ void FftPrintPatternInfo(FftFont *f, Bool vertical)
 	{
 		FftMatrix *pm = NULL;
 
-		if (FftPatternGetMatrix(f->pattern, FFT_MATRIX, 0, &pm))
-		{
-			/* nothing */
-		}
-		if (pm)
+		if (FftPatternGetMatrix(
+			f->pattern, FFT_MATRIX, 0, &pm) == FftResultMatch && pm)
 		{
 			printf("         matrix: (%f %f %f %f)\n",
 			       pm->xx, pm->xy, pm->yx, pm->yy);

@@ -162,6 +162,9 @@ typedef struct
 	colorset_t *colorset;
 } FvwmRenderAttributes;
 
+#define PICTURE_HAS_ALPHA(picture,cset) \
+    ((picture && picture->alpha != None) ||                   \
+     (cset >= 0 && Colorset[cset].icon_alpha_percent < 100))
 /* alpha limit if we cannot use the alpha channel */
 #define PICTURE_ALPHA_LIMIT 130
 

@@ -125,6 +125,9 @@
 #define FLF_SHADOW_BOTTOM_SIZE(flf) \
 	(FLF_SHADOW_FULL_SIZE((flf)) * FLF_MULTIDIR_HAS_BOTTOM((flf)))
 
+#define FLF_FONT_HAS_ALPHA(flf,cset) \
+     ((flf && flf->fftf.fftfont != None) ||                      \
+      (0 && cset >= 0 && Colorset[cset].fg_alpha_percent < 100))
 /* ---------------------------- type definitions ---------------------------- */
 
 typedef struct FlocaleCharset
