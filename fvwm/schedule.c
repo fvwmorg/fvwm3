@@ -35,10 +35,6 @@ typedef struct
 	Time time_to_execute;
 	Window window;
 	char *command;
-	struct
-	{
-		unsigned is_scheduled_for_destruction : 1;
-	} flags;
 } sq_object_type;
 
 static int last_schedule_id = 0;
@@ -80,11 +76,10 @@ static int check_deschedule_obj_func(void *object, void *args)
 {
 	sq_object_type *obj = object;
 
-	return (obj->id == *(int *)args &&
-		!obj->flags.is_scheduled_for_destruction);
+	return (obj->id == *(int *)args);
 }
 
-static void destroy_obj_func(void *object, void *args)
+static void destroy_obj_func(void *object)
 {
 	sq_object_type *obj = object;
 
@@ -96,23 +91,6 @@ static void destroy_obj_func(void *object, void *args)
 
 	return;
 }
-
-#if 0
-static void *copy_obj_func(void *object)
-{
-	sq_object_type *obj = object;
-	sq_object_type *new_obj;
-
-	new_obj = (sq_object_type *)safemalloc(sizeof(sq_object_type));
-	new_obj = obj;
-	if (obj->command != NULL)
-	{
-		new_obj->command = safestrdup(obj->command);
-	}
-
-	return new_obj;
-}
-#endif
 
 static void deschedule(int *pid)
 {
@@ -133,7 +111,8 @@ static void deschedule(int *pid)
 	}
 	/* deschedule matching jobs */
 	fqueue_remove_or_operate_all(
-		&sq, check_deschedule_obj_func, destroy_obj_func, (void *)&id);
+		&sq, check_deschedule_obj_func, NULL, destroy_obj_func,
+		(void *)&id);
 
 	return;
 }
@@ -207,11 +186,10 @@ static void execute_obj_func(void *object, void *args)
 		}
 		exc = exc_create_context(&ecc, mask);
 		execute_function(&cond_rc, exc, obj->command, 0);
-		free(obj->command);
 		exc_destroy_context(exc);
 	}
-	free(obj);
 	XFlush(dpy);
+
 	return;
 }
 
@@ -219,27 +197,15 @@ static void execute_obj_func(void *object, void *args)
 void squeue_execute(void)
 {
 	Time current_time;
-#if 0
-	fqueue *sq_copy;
-#endif
 
 	if (FQUEUE_IS_EMPTY(&sq))
 	{
 		return;
 	}
 	current_time = get_server_time();
-
-#if 0
-	sq_copy = fqueue_copy_queue(&sq, copy_obj_func);
 	fqueue_remove_or_operate_all(
-		sq_copy, check_execute_obj_func, execute_obj_func,
-		&current_time);
-	fqueue_remove_or_operate_all(sq_copy, NULL, destroy_obj_func, NULL);
-	free(sq_copy);
-#else
-	fqueue_remove_or_operate_all(
-		&sq, check_execute_obj_func, execute_obj_func, &current_time);
-#endif
+		&sq, check_execute_obj_func, execute_obj_func,
+		destroy_obj_func, &current_time);
 
 	return;
 }

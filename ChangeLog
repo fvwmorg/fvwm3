@@ -1,5 +1,22 @@
 2003-04-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/schedule.c (deschedule):
+	(squeue_execute):
+	(execute_obj_func):
+	* fvwm/module_interface.c (DeleteMessageQueueBuff):
+	(ExecuteCommandQueue):
+	* libs/queue.c (fqueue_init):
+	(fqueue_remove_or_operate_from_front):
+	(fqueue_remove_or_operate_from_end):
+	(fqueue_remove_or_operate_all):
+	(fqueue_init):
+	(fqueue_unlock_queue):
+	(fqueue_lock_queue):
+	(fqueue_add_at_front):
+	(fqueue_add_inside):
+	(fqueue_get_first):
+	core dump fixes
+
 	* libs/queue.c (fqueue_remove_or_operate_all):
 	(fqueue_remove_or_operate_from_end):
 	(fqueue_remove_or_operate_from_front):

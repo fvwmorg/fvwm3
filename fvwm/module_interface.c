@@ -1741,8 +1741,8 @@ static void DeleteMessageQueueBuff(int module)
 	{
 		/* remove from queue */
 		fqueue_remove_or_operate_from_front(
-			&pipeQueue[module], NULL, NULL, NULL);
-		/* we don't need to free the ocj->data here because it's in the
+			&pipeQueue[module], NULL, NULL, NULL, NULL);
+		/* we don't need to free the obj->data here because it's in the
 		 * same malloced block as the obj itself. */
 		free(obj);
 	}
@@ -1912,7 +1912,8 @@ void ExecuteCommandQueue(void)
 	while (fqueue_get_first(&cqueue, (void **)&obj) == 1)
 	{
 		/* remove from queue */
-		fqueue_remove_or_operate_from_front(&cqueue, NULL, NULL, NULL);
+		fqueue_remove_or_operate_from_front(
+			&cqueue, NULL, NULL, NULL, NULL);
 		/* execute and destroy */
 		if (obj->command)
 		{
