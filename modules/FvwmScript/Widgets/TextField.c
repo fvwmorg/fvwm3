@@ -64,7 +64,7 @@ void DestroyTextField(struct XObj *xobj)
 /* Dessin du curseur du texte */
 void DrawPointTxt(struct XObj *xobj,unsigned int color)
 {
- #define dec 2
+#define dec 2
  int x,y;
  XSegment segm[2];
  int asc,desc,dir;

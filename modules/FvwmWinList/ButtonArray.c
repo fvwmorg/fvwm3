@@ -332,7 +332,7 @@ void DoButton(Button *button, int x, int y, int w, int h)
   XFontStruct *font;
 
   /* The margin we want between the relief/text/pixmaps */
-  #define INNER_MARGIN 2
+#define INNER_MARGIN 2
 
   up=button->up;
   set=button->set;

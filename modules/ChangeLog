@@ -1,3 +1,8 @@
+Sat May  1 02:35:19 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/ButtonArray.c (INNER_MARGIN): 
+	* FvwmScript/Widgets/TextField.c (dec): move #define to column 1.
+
 Sat May  1 01:52:25 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmForm/FvwmForm.c: patch of 27 April causes format/arg
