@@ -913,8 +913,8 @@ static Bool __place_get_wm_pos(
 		/* either "smart" placement fail and the second
 		 * choice is a manual placement (TileManual) or we
 		 * have a manual placement in any case (Manual) */
-		xl = -1;
-		yt = -1;
+		xl = 0;
+		yt = 0;
 		if (GrabEm(CRS_POSITION, GRAB_NORMAL))
 		{
 			int mx;
@@ -964,8 +964,7 @@ static Bool __place_get_wm_pos(
 		}
 		else
 		{
-			/* couldn't grab the pointer - better do
-			 * something */
+			/* couldn't grab the pointer - better do something */
 			XBell(dpy, 0);
 			xl = 0;
 			yt = 0;
