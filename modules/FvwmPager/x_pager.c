@@ -1961,27 +1961,24 @@ void Hilight(PagerWindow *t, int on)
 
     cset = (on) ? activecolorset : windowcolorset;
     pix = (on) ? focus_pix : t->back;
-    if (t->PagerView != None)
+    if (cset < 0)
     {
-      if (cset < 0)
+      if (t->PagerView != None)
       {
 	XSetWindowBackground(dpy,t->PagerView,pix);
 	XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
       }
-      else
-      {
-	SetWindowBackground(
-	  dpy, t->PagerView, t->pager_view_width, t->pager_view_height,
-	  &Colorset[cset], Pdepth, Scr.NormalGC, True);
-      }
-    }
-    if (cset < 0)
-    {
       XSetWindowBackground(dpy,t->IconView,pix);
       XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
     }
     else
     {
+      if (t->PagerView != None)
+      {
+	SetWindowBackground(
+	  dpy, t->PagerView, t->pager_view_width, t->pager_view_height,
+	  &Colorset[cset], Pdepth, Scr.NormalGC, True);
+      }
       SetWindowBackground(
 	dpy, t->IconView, t->icon_view_width, t->icon_view_height,
 	&Colorset[cset], Pdepth, Scr.NormalGC, True);
@@ -2857,7 +2854,7 @@ void change_colorset(int colorset)
     }
   }
 
-  if (colorset == windowcolorset || colorset == activecolorset)
+  if (windowcolorset == colorset)
   {
     colorset_struct *csetp = &Colorset[colorset];
 
@@ -2866,24 +2863,28 @@ void change_colorset(int colorset)
     win_back_pix = csetp->bg;
     win_fore_pix = csetp->fg;
     win_pix_set = True;
-
-    if (colorset == windowcolorset)
+    for (t = Start; t != NULL; t = t->next)
     {
-      for (t = Start; t != NULL; t = t->next)
-      {
-	t->text = Colorset[colorset].fg;
-	if (t != FocusWin)
-	{
-	  set_window_colorset_background(t, csetp);
-	}
-      }
-    }
-    if (colorset == activecolorset)
-    {
-      if (FocusWin)
+      t->text = Colorset[colorset].fg;
+      if (t != FocusWin)
       {
 	set_window_colorset_background(t, csetp);
       }
+    }
+  }
+  if (activecolorset == colorset)
+  {
+    colorset_struct *csetp = &Colorset[colorset];
+
+    focus_fore_pix = csetp->fg;
+    XSetForeground(dpy, Scr.ahGC, csetp->hilite);
+    XSetForeground(dpy, Scr.asGC, csetp->shadow);
+    win_hi_back_pix = csetp->bg;
+    win_hi_fore_pix = csetp->fg;
+    win_hi_pix_set = True;
+    if (FocusWin)
+    {
+      set_window_colorset_background(FocusWin, csetp);
     }
   }
 

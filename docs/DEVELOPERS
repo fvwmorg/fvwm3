@@ -156,17 +156,17 @@ Steps: 1. When building a release, update the CVS sources first. For a
           stable release it is best to throw away the whole source tree
           and check it out from scratch to ensure all source files have
           been added to CVS.
-       2. make sure you have XPM, the strokes library and a X server with
-          the shape extension
-       3. rerun automake --add-missing; autoreconf
+       2. Make sure you have XPM, the strokes library and a X server with
+          the shape extension.
+       3. Rerun automake --add-missing; autoreconf
        4. If building a stable release, remove the config.cache file.
-       5. Rerun ./configure --enable-gnome
+       5. Rerun ./configure
        6. make clean
-       7. double check that you get no warnings during the build (the
+       7. Double check that you get no warnings during the build (the
           options for compilers other than gcc may be different):
           make CFLAGS="-g -O2 -Wall -Werror"
        8. make distcheck2
-       9. ensure that you see the message
+       9. Ensure that you see the message
           "fvwm-x.y.z.tar.gz ready for distribution"
 
 The steps 3 to 9 can be done by running the script utils/make_fvwmdist.sh
@@ -193,16 +193,16 @@ some day!
 If this is to be an "official", labeled release, then do also the
 following:
 
-      10. tag the CVS tree:
+      10. Tag the CVS tree:
           cvs tag version-x_y_z
-      11. increase the version number in configure.in (see above)
-          and `cvs commit' this change
+      11. Increase the version number in configure.in (see above)
+          and `cvs commit' this change.
       12. Create entries in the ChangeLog and NEWS files indicating the
           release.
-      13. upload the files fvwm-x.y.z.tar.gz and fvwm-x.y.z.tar.bz2 to
+      13. Upload the files fvwm-x.y.z.tar.gz and fvwm-x.y.z.tar.bz2 to
 	  ftp://ftp.fvwm.org/pub/incoming/fvwm
-      14. notify fvwm-owner@fvwm.org of the upload
-      15. make sure the web pages in fvwm-web point to the new release
+      14. Notify fvwm-owner@fvwm.org of the upload.
+      15. Make sure the web pages in fvwm-web point to the new release.
 
 Be sure to do steps 10 and 11 in that order, so you get the label on the
 right version of configure.in.
