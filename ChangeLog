@@ -1,3 +1,7 @@
+1999-07-08  Hippo
+
+	* fvwm/stack.c: fixed RaiseLower of partially offscreen windows
+
 1999-07-08  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/session.c (my_modulo): removed 'buggy' function
@@ -44,7 +48,7 @@
 	* fvwm/virtual.c (HandlePaging): Do not page while the mouse is moving
 	along one of the sides.
 
-1999-07-07
+1999-07-07  Hippo
 
 	* fvwm/menus.c: paint_menu(): fixed an expose bug
 

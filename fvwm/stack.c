@@ -644,17 +644,20 @@ void lower_function(F_CMD_ARGS)
 
 void raiselower_func(F_CMD_ARGS)
 {
+  FvwmWindow *s;
+
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
 
-  if (IS_FULLY_VISIBLE(tmp_win))
-    {
-      LowerWindow(tmp_win);
-    }
+  /* if RaiseWindow would do nothing then lower it */
+  for (s = Scr.FvwmRoot.stack_prev; s != &Scr.FvwmRoot; s = s->stack_prev)
+    if (tmp_win->layer < s->layer)
+      break;
+
+  if (s == tmp_win->stack_prev)
+    LowerWindow(tmp_win);
   else
-    {
-      RaiseWindow(tmp_win);
-    }
+    RaiseWindow(tmp_win);
 }
 
 void change_layer(F_CMD_ARGS)
