@@ -1,3 +1,8 @@
+2000-05-05  Mikhael Goikhman  migo@homemail.com
+
+	* FvwmWharf/FvwmWharf.1: fixed a typo
+	* FvwmCpp/FvwmCpp.c (main): the same missing space as described below
+
 2000-05-05  Brad Giaccio  bgiaccio@psrw.com
 
 	* FvwmM4/FvwmM4.c (main):

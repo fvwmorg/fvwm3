@@ -89,7 +89,7 @@ int main(int argc, char **argv)
   int lock = 0;
   int noread = 0;
 
-  sprintf(cpp_options, "-I '%s'", FVWM_DATADIR);
+  sprintf(cpp_options, "-I '%s' ", FVWM_DATADIR);
 
   /* Record the program name for error messages */
   temp = argv[0];
