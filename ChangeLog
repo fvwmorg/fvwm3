@@ -1,7 +1,7 @@
 2002-11-29  olicha  <olivier.chapuis@free.fr>
 
 	* acinclude.m4:
-	Defined AM_PATH_PROG_WITH_TEST
+	Defined AM_PATH_PROG_WITH_TEST and re-enable it
 
 	* configure.in:
 	* Makefile.am:

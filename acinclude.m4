@@ -1508,25 +1508,25 @@ AC_DEFUN([AM_PO_SUBDIRS],
   dnl Search for GNU msgfmt in the PATH.
   dnl The first test excludes Solaris msgfmt and early GNU msgfmt versions.
   dnl The second test excludes FreeBSD msgfmt.
-dnl  AM_PATH_PROG_WITH_TEST(MSGFMT, msgfmt,
-dnl    [$ac_dir/$ac_word --statistics /dev/null >/dev/null 2>&1 &&
-dnl     (if $ac_dir/$ac_word --statistics /dev/null 2>&1 >/dev/null | grep usage >/dev/null; then exit 1; else exit 0; fi)],
-dnl    :)
-dnl  AC_PATH_PROG(GMSGFMT, gmsgfmt, $MSGFMT)
+  AM_PATH_PROG_WITH_TEST(MSGFMT, msgfmt,
+    [$ac_dir/$ac_word --statistics /dev/null >/dev/null 2>&1 &&
+     (if $ac_dir/$ac_word --statistics /dev/null 2>&1 >/dev/null | grep usage >/dev/null; then exit 1; else exit 0; fi)],
+    :)
+  AC_PATH_PROG(GMSGFMT, gmsgfmt, $MSGFMT)
 
   dnl Search for GNU xgettext 0.11 or newer in the PATH.
   dnl The first test excludes Solaris xgettext and early GNU xgettext versions.
   dnl The second test excludes FreeBSD xgettext.
-dnl  AM_PATH_PROG_WITH_TEST(XGETTEXT, xgettext,
-dnl    [$ac_dir/$ac_word --omit-header --copyright-holder= /dev/null >/dev/null 2>&1 &&
-dnl     (if $ac_dir/$ac_word --omit-header --copyright-holder= /dev/null 2>&1 >/dev/null | grep usage >/dev/null; then exit 1; else exit 0; fi)],
-dnl    :)
+  AM_PATH_PROG_WITH_TEST(XGETTEXT, xgettext,
+    [$ac_dir/$ac_word --omit-header --copyright-holder= /dev/null >/dev/null 2>&1 &&
+     (if $ac_dir/$ac_word --omit-header --copyright-holder= /dev/null 2>&1 >/dev/null | grep usage >/dev/null; then exit 1; else exit 0; fi)],
+    :)
   dnl Remove leftover from FreeBSD xgettext call.
   rm -f messages.po
 
   dnl Search for GNU msgmerge 0.11 or newer in the PATH.
-dnl  AM_PATH_PROG_WITH_TEST(MSGMERGE, msgmerge,
-dnl    [$ac_dir/$ac_word --update -q /dev/null /dev/null >/dev/null 2>&1], :)
+  AM_PATH_PROG_WITH_TEST(MSGMERGE, msgmerge,
+    [$ac_dir/$ac_word --update -q /dev/null /dev/null >/dev/null 2>&1], :)
 
   dnl This could go away some day; the PATH_PROG_WITH_TEST already does it.
   dnl Test whether we really found GNU msgfmt.
