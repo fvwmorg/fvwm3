@@ -196,7 +196,8 @@ void HandleFocusIn(void)
     }
     else
     {
-      DrawDecorations(Scr.Hilite, PART_ALL, False, True, None, CLEAR_ALL);
+      border_draw_decorations(
+	      Scr.Hilite, PART_ALL, False, True, CLEAR_ALL, NULL, NULL);
       if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
       {
 	if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
@@ -226,7 +227,7 @@ void HandleFocusIn(void)
     SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 0);
     if (Fw != Scr.Hilite)
     {
-      DrawDecorations(Fw, PART_ALL, True, True, None, CLEAR_ALL);
+      border_draw_decorations(Fw, PART_ALL, True, True, CLEAR_ALL, NULL, NULL);
     }
     focus_w = FW_W(Fw);
     focus_fw = FW_W_FRAME(Fw);
@@ -427,8 +428,8 @@ void HandlePropertyNotify(void)
 
     /* fix the name in the title bar */
     if(!IS_ICONIFIED(Fw))
-      DrawDecorations(
-	Fw, PART_TITLE, (Scr.Hilite == Fw), True, None, CLEAR_ALL);
+      border_draw_decorations(
+	Fw, PART_TITLE, (Scr.Hilite == Fw), True, CLEAR_ALL, NULL, NULL);
 
     EWMH_SetVisibleName(Fw, False);
     /*
@@ -823,8 +824,6 @@ void HandleClientMessage(void)
  ***********************************************************************/
 void HandleExpose(void)
 {
-	XRectangle r;
-
 #if 0
 	/* This doesn't work well. Sometimes, the expose count is zero although
 	 * dozens of expose events are pending.  This happens all the time
@@ -841,11 +840,14 @@ void HandleExpose(void)
 	{
 		return;
 	}
-	r.x = Event.xexpose.x;
-	r.y = Event.xexpose.y;
-	r.width = Event.xexpose.width;
-	r.height = Event.xexpose.height;
-	if (IS_TEAR_OFF_MENU(Fw) && Event.xany.window == FW_W(Fw))
+	if (Event.xany.window == FW_W_ICON_TITLE(Fw))
+	{
+		border_draw_decorations(
+			Fw, PART_TITLE, (Scr.Hilite == Fw), True, CLEAR_NONE,
+			NULL, NULL);
+		return;
+	}
+	else if (IS_TEAR_OFF_MENU(Fw) && Event.xany.window == FW_W(Fw))
 	{
 		/* refresh the contents of the torn out menu */
 		menu_expose(&Event, NULL);
@@ -1255,15 +1257,13 @@ void HandleMapNotify(void)
   if (!HAS_BORDER(Fw) && !HAS_TITLE(Fw) &&
       is_window_border_minimal(Fw))
   {
-    DrawDecorations(
-      Fw, PART_ALL, False, True, None, CLEAR_ALL);
+    border_draw_decorations(Fw, PART_ALL, False, True, CLEAR_ALL, NULL, NULL);
   }
   else if (Fw == get_focus_window() && Fw != Scr.Hilite)
   {
     /* BUG 679: must redraw decorations here to make sure the window is properly
      * hilighted after being de-iconified by a key press. */
-    DrawDecorations(
-      Fw, PART_ALL, True, True, None, CLEAR_ALL);
+    border_draw_decorations(Fw, PART_ALL, True, True, CLEAR_ALL, NULL, NULL);
   }
   MyXUngrabServer (dpy);
   SET_MAPPED(Fw, 1);
@@ -1599,7 +1599,7 @@ void HandleButtonPress(void)
     }
     if (!IS_ICONIFIED(Fw))
     {
-      DrawDecorations(Fw, PART_ALL, True, True, PressedW, CLEAR_ALL);
+      border_draw_decorations(Fw, PART_ALL, True, True, CLEAR_ALL, NULL, NULL);
     }
   }
   else if (Fw && Event.xbutton.window == FW_W_PARENT(Fw) &&
@@ -1702,23 +1702,13 @@ void HandleButtonPress(void)
 
   if (Fw && has_binding)
   {
-    if (Context == C_TITLE)
-    {
-      DrawDecorations(
-        Fw, PART_TITLE, (Scr.Hilite == Fw), True, PressedW,
-	CLEAR_ALL);
-    }
-    else if (Context & (C_LALL | C_RALL))
-    {
-      DrawDecorations(
-        Fw, PART_BUTTONS, (Scr.Hilite == Fw),
-	True, PressedW, CLEAR_ALL);
-    }
-    else
-    {
-      DrawDecorations(
-	      Fw, PART_FRAME, (Scr.Hilite == Fw), 0, PressedW, CLEAR_ALL);
-    }
+    window_parts part;
+    Bool do_force;
+
+    part = border_context_to_parts(LocalContext);
+    do_force = (part & PART_TITLEBAR) ? True : False;
+    border_draw_decorations(
+      Fw, part, (Scr.Hilite == Fw), do_force, CLEAR_ALL, NULL, NULL);
   }
 
   /* we have to execute a function or pop up a menu */
@@ -1769,24 +1759,14 @@ void HandleButtonPress(void)
   PressedW = None;
   if (ButtonWindow && check_if_fvwm_window_exists(ButtonWindow) && has_binding)
   {
-    if (LocalContext == C_TITLE)
-    {
-      DrawDecorations(
-        ButtonWindow, PART_TITLE, (Scr.Hilite == ButtonWindow),
-	True, None, CLEAR_ALL);
-    }
-    else if (LocalContext & (C_LALL | C_RALL))
-    {
-      DrawDecorations(
-        ButtonWindow, PART_BUTTONS, (Scr.Hilite == ButtonWindow), True,
-        OldPressedW, CLEAR_ALL);
-    }
-    else
-    {
-      DrawDecorations(
-        ButtonWindow, PART_FRAME, (Scr.Hilite == ButtonWindow), 0, None,
-	CLEAR_ALL);
-    }
+    window_parts part;
+    Bool do_force;
+
+    part = border_context_to_parts(LocalContext);
+    do_force = (part & PART_TITLEBAR) ? True : False;
+    border_draw_decorations(
+      ButtonWindow, part, (Scr.Hilite == ButtonWindow), do_force, CLEAR_ALL,
+      NULL, NULL);
   }
   ButtonWindow = NULL;
   UngrabEm(GRAB_PASSIVE);
@@ -2064,7 +2044,9 @@ void HandleEnterNotify(void)
   /* We get an EnterNotify with mode == UnGrab when fvwm releases
      the grab held during iconification. We have to ignore this,
      or icon title will be initially raised. */
-  if (IS_ICONIFIED(Fw) && (ewp->mode == NotifyNormal))
+  if (IS_ICONIFIED(Fw) && (ewp->mode == NotifyNormal) &&
+      (ewp->window == FW_W_ICON_PIXMAP(Fw) ||
+       ewp->window == FW_W_ICON_TITLE(Fw)))
   {
     SET_ICON_ENTERED(Fw,1);
     DrawIconWindow(Fw);
@@ -2147,7 +2129,10 @@ void HandleLeaveNotify(void)
 	  DeleteFocus(True, True);
 	}
 	if (Scr.Hilite != NULL)
-	  DrawDecorations(Scr.Hilite, PART_ALL, False, True, None, CLEAR_ALL);
+	{
+	  border_draw_decorations(
+	    Scr.Hilite, PART_ALL, False, True, CLEAR_ALL, NULL, NULL);
+	}
       }
     }
   }

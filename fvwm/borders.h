@@ -67,16 +67,15 @@ typedef enum
 
 /* ---------------------------- interface functions ------------------------- */
 
+int border_context_to_parts(
+	int context);
 void border_get_part_geometry(
 	FvwmWindow *fw, window_parts part, rectangle *sidebar_g,
 	rectangle *ret_g, Window *ret_w);
 int get_button_number(int context);
-void draw_decorations_with_geom(
+void border_draw_decorations(
 	FvwmWindow *t, window_parts draw_parts, Bool has_focus, int force,
 	clear_window_parts clear_parts, rectangle *old_g, rectangle *new_g);
-void DrawDecorations(
-	FvwmWindow *t, window_parts draw_parts, Bool has_focus, int force,
-	Window expose_win, clear_window_parts clear_parts);
 void RedrawDecorations(FvwmWindow *fw);
 
 #endif /* _BORDERS_H */

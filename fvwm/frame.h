@@ -37,16 +37,6 @@ typedef enum
 
 typedef struct
 {
-	int decor_grav;
-	int title_grav;
-	int lbutton_grav;
-	int rbutton_grav;
-	int parent_grav;
-	int client_grav;
-} frame_decor_gravities_type;
-
-typedef struct
-{
         rectangle title_g;
         rectangle button_g[NUMBER_OF_BUTTONS];
 } frame_title_layout_type;
@@ -63,11 +53,11 @@ void frame_destroyed_frame(
 	Window frame_w);
 frame_move_resize_args frame_create_move_resize_args(
 	FvwmWindow *fw, frame_move_resize_mode mr_mode,
-	rectangle *start_g, rectangle *end_g, int anim_steps);
+	rectangle *start_g, rectangle *end_g, int anim_steps, int shade_dir);
 void frame_update_move_resize_args(
 	frame_move_resize_args mr_args, rectangle *end_g);
 void frame_free_move_resize_args(
-	frame_move_resize_args mr_args);
+	FvwmWindow *fw, frame_move_resize_args mr_args);
 void frame_get_title_bar_dimensions(
 	FvwmWindow *fw, rectangle *frame_g, rectangle *diff_g,
         frame_title_layout_type *title_layout);
@@ -80,11 +70,6 @@ int frame_window_id_to_context(
 	FvwmWindow *fw, Window w, int *ret_num);
 void frame_move_resize(
 	FvwmWindow *fw, frame_move_resize_args mr_args);
-void frame_get_resize_decor_gravities(
-	frame_decor_gravities_type *ret_grav, direction_type title_dir,
-	frame_move_resize_mode rmode);
-void frame_set_decor_gravities(
-	FvwmWindow *fw, frame_decor_gravities_type *grav);
 void frame_setup_window(
 	FvwmWindow *fw, int x, int y, int w, int h,
 	Bool do_send_configure_notify);

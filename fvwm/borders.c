@@ -609,7 +609,7 @@ static void get_common_decorations(
 	return;
 }
 
-static int border_context_to_parts(
+int border_context_to_parts(
 	int context)
 {
 	if (context == C_FRAME || context == C_SIDEBAR ||
@@ -728,6 +728,7 @@ static int border_get_parts_and_pos_to_draw(
 	}
 	draw_parts |= frame_get_changed_border_parts(
 		&sidebar_g_old, &br->sidebar_g);
+	draw_parts &= (PART_FRAME | PART_HANDLES);
 
 	return draw_parts;
 }
@@ -860,6 +861,7 @@ static window_parts border_get_tb_parts_to_draw(
 	{
 		draw_parts |= PART_BUTTONS;
 	}
+	draw_parts &= PART_TITLEBAR;
 
 	return draw_parts;
 }
@@ -1500,7 +1502,9 @@ static void border_draw_all_border_parts(
 	/* draw everything in a big loop */
 	draw_parts &= (PART_FRAME | PART_HANDLES);
 	draw_handles = (draw_parts & PART_HANDLES);
+#if 0
 fprintf(stderr, "drawing border parts 0x%04x\n", draw_parts);
+#endif
 	for (part = PART_BORDER_N; (part & PART_FRAME); part <<= 1)
 	{
 		if (part & draw_parts)
@@ -2132,6 +2136,9 @@ static void border_draw_title(
 	/* make a pixmap */
 	p = border_create_decor_pixmap(td->cd, &(td->layout.title_g));
 	/* set the background tile */
+#if 0
+fprintf(stderr,"drawing title\n");
+#endif
 	border_set_title_pixmap(fw, td, p);
 	/* apply the pixmap and destroy it */
 	border_set_part_background(FW_W_TITLE(fw), p);
@@ -2150,7 +2157,9 @@ static void border_draw_buttons(
 	int i;
 
 	/* draw everything in a big loop */
+#if 0
 fprintf(stderr, "drawing buttons 0x%04x\n", td->tbstate.draw_bmask);
+#endif
 	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
 	{
 		unsigned int mask = (1 << i);
@@ -2468,8 +2477,9 @@ int get_button_number(int context)
 	return -1;
 }
 
-void draw_decorations_with_geom(
-	FvwmWindow *fw, window_parts draw_parts, Bool has_focus, int force,
+
+void border_draw_decorations(
+	FvwmWindow *fw, window_parts draw_parts, Bool has_focus, Bool do_force,
 	clear_window_parts clear_parts, rectangle *old_g, rectangle *new_g)
 {
 	common_decorations_type cd;
@@ -2484,7 +2494,7 @@ void draw_decorations_with_geom(
 		return;
 	}
 	memset(&cd, 0, sizeof(cd));
-	if (force)
+	if (do_force == True)
 	{
 		force_parts = draw_parts;
 	}
@@ -2497,11 +2507,14 @@ void draw_decorations_with_geom(
 		/* don't re-draw just for kicks */
 		if (Scr.Hilite != NULL)
 		{
+			FvwmWindow *t = Scr.Hilite;
+
+			Scr.Hilite = NULL;
 			/* make sure that the previously highlighted
 			 * window got unhighlighted */
-			DrawDecorations(
-				Scr.Hilite, PART_ALL, False, True, None,
-				CLEAR_ALL);
+			border_draw_decorations(
+				t, PART_ALL, False, True, CLEAR_ALL, NULL,
+				NULL);
 		}
 		Scr.Hilite = fw;
 	}
@@ -2524,31 +2537,27 @@ void draw_decorations_with_geom(
 		item = -1;
 	}
 	pressed_parts = border_context_to_parts(context);
+	if (new_g == NULL)
+	{
+		new_g = &fw->frame_g;
+	}
 	if (do_redraw_titlebar)
 	{
 		border_draw_titlebar(
-			&cd, fw, pressed_parts, item, force_parts, clear_parts,
-			old_g, new_g, has_focus);
+			&cd, fw, pressed_parts & PART_TITLEBAR, item,
+			force_parts & PART_TITLEBAR,
+			clear_parts, old_g, new_g, has_focus);
 	}
 	if (draw_parts & PART_FRAME)
 	{
 		get_common_decorations(
 			&cd, fw, draw_parts, has_focus, True, True);
 		border_draw_border_parts(
-			&cd, fw, pressed_parts, force_parts, clear_parts,
-			old_g, new_g, has_focus);
+			&cd, fw,
+			(pressed_parts & (PART_FRAME | PART_HANDLES)),
+			(force_parts & (PART_FRAME | PART_HANDLES)),
+			clear_parts, old_g, new_g, has_focus);
 	}
-
-	return;
-}
-
-void DrawDecorations(
-	FvwmWindow *fw, window_parts draw_parts, Bool has_focus, int force,
-	Window expose_win, clear_window_parts clear_parts)
-{
-	draw_decorations_with_geom(
-		fw, draw_parts, has_focus, force, clear_parts, NULL,
-		&fw->frame_g);
 
 	return;
 }
@@ -2565,7 +2574,8 @@ void RedrawDecorations(FvwmWindow *fw)
 	/* domivogt (6-Jun-2000): Don't check if the window is visible here.
 	 * If we do, some updates are not applied and when the window becomes
 	 * visible again, the X Server may not redraw the window. */
-	DrawDecorations(fw, PART_ALL, (Scr.Hilite == fw), 2, None, CLEAR_ALL);
+	border_draw_decorations(
+		fw, PART_ALL, (Scr.Hilite == fw), 2, CLEAR_ALL, NULL, NULL);
 	Scr.Hilite = u;
 
 	return;

@@ -660,8 +660,8 @@ static Bool resize_move_window(F_CMD_ARGS)
     /* must redraw the buttons now so that the 'maximize' button does not stay
      * depressed. */
     SET_MAXIMIZED(fw, 0);
-    DrawDecorations(
-      fw, PART_BUTTONS, (fw == Scr.Hilite), True, None, CLEAR_ALL);
+    border_draw_decorations(
+      fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL, NULL, NULL);
   }
   dx = FinalX - fw->frame_g.x;
   dy = FinalY - fw->frame_g.y;
@@ -2275,6 +2275,7 @@ static Bool resize_window(F_CMD_ARGS)
   int i;
   size_borders b;
   Bool called_from_title = False;
+  frame_move_resize_args mr_args = NULL;
 
   bad_window = False;
   ResizeWindow = FW_W_FRAME(fw);
@@ -2298,8 +2299,8 @@ static Bool resize_window(F_CMD_ARGS)
   {
     /* must redraw the buttons now so that the 'maximize' button does not stay
      * depressed. */
-    DrawDecorations(
-      fw, PART_BUTTONS, (fw == Scr.Hilite), True, None, CLEAR_ALL);
+    border_draw_decorations(
+      fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL, NULL, NULL);
   }
 
   if (IS_SHADED(fw) || !IS_MAPPED(fw))
@@ -2387,7 +2388,12 @@ static Bool resize_window(F_CMD_ARGS)
     get_unshaded_geometry(fw, drag);
     SET_MAXIMIZED(fw, 0);
   }
-  if (!do_resize_opaque)
+  if (do_resize_opaque)
+  {
+     mr_args = frame_create_move_resize_args(
+	     fw, FRAME_MR_OPAQUE, &fw->frame_g, &fw->frame_g, 0, DIR_NONE);
+  }
+  else
   {
     Scr.flags.is_wire_frame_displayed = True;
   }
@@ -2754,7 +2760,15 @@ static Bool resize_window(F_CMD_ARGS)
     {
       new_g = *drag;
     }
-    frame_setup_window(fw, new_g.x, new_g.y, new_g.width, new_g.height, False);
+    if (do_resize_opaque)
+    {
+      frame_update_move_resize_args(mr_args, &new_g);
+    }
+    else
+    {
+      frame_setup_window(
+	fw, new_g.x, new_g.y, new_g.width, new_g.height, False);
+    }
     if (IS_SHADED(fw))
     {
       fw->normal_g.width = drag->width;
@@ -2764,8 +2778,8 @@ static Bool resize_window(F_CMD_ARGS)
   if (is_aborted && was_maximized)
   {
     /* force redraw */
-    DrawDecorations(
-      fw, PART_BUTTONS, (fw == Scr.Hilite), True, None, CLEAR_ALL);
+    border_draw_decorations(
+      fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL, NULL, NULL);
   }
 
   if (bad_window == FW_W(fw))
@@ -2786,6 +2800,7 @@ static Bool resize_window(F_CMD_ARGS)
     Scr.flags.is_wire_frame_displayed = False;
     MyXUngrabServer(dpy);
   }
+  frame_free_move_resize_args(fw, mr_args);
   MyXUngrabKeyboard(dpy);
   xmotion = 0;
   ymotion = 0;
@@ -3269,9 +3284,8 @@ static void maximize_fvwm_window(
 	frame_setup_window(
 		fw, geometry->x, geometry->y, geometry->width,
 		geometry->height, True);
-	DrawDecorations(
-		fw, PART_ALL, (Scr.Hilite == fw), True, None,
-		CLEAR_ALL);
+	border_draw_decorations(
+		fw, PART_ALL, (Scr.Hilite == fw), True, CLEAR_ALL, NULL, NULL);
 	update_absolute_geometry(fw);
 	/* remember the offset between old and new position in case the
 	 * maximized  window is moved more than the screen width/height. */
@@ -3672,9 +3686,9 @@ void handle_stick(F_CMD_ARGS, int toggle)
     }
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,fw);
-  DrawDecorations(
-    fw, PART_TITLE | PART_BUTTONS, (Scr.Hilite==fw),
-    True, None, CLEAR_ALL);
+  border_draw_decorations(
+    fw, PART_TITLE | PART_BUTTONS, (Scr.Hilite==fw), True, CLEAR_ALL, NULL,
+    NULL);
   if ((sf = get_focus_window()))
   {
     focus_grab_buttons(sf, True);

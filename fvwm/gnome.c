@@ -977,7 +977,8 @@ void GNOME_HandlePropRequest(unsigned int propm,
     {
       SET_STICKY(fwin, 0);
     }
-    DrawDecorations(fwin, PART_TITLE, (Scr.Hilite==fwin), True, None, CLEAR_ALL);
+    border_draw_decorations(
+      fwin, PART_TITLE, (Scr.Hilite==fwin), True, CLEAR_ALL, NULL, NULL);
   }
 /*-----------------------------------------------------------------------
     WindowShade

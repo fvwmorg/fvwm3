@@ -2455,8 +2455,8 @@ void CMD_ChangeDecor(F_CMD_ARGS)
 	frame_force_setup_window(
 		fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
 		fw->frame_g.height - extra_height, True);
-	DrawDecorations(
-		fw, PART_ALL, (Scr.Hilite == fw), 2, None, CLEAR_ALL);
+	border_draw_decorations(
+		fw, PART_ALL, (Scr.Hilite == fw), 2, CLEAR_ALL, NULL, NULL);
 
 	return;
 }
@@ -2652,24 +2652,27 @@ void CMD_UpdateDecor(F_CMD_ARGS)
 		{
 			if (fw2->decor == found)
 			{
-				DrawDecorations(
-					fw2, PART_ALL, True, True, None,
-					CLEAR_ALL);
-				DrawDecorations(
-					fw2, PART_ALL, False, True, None,
-					CLEAR_ALL);
+				border_draw_decorations(
+					fw2, PART_ALL, True, True, CLEAR_ALL,
+					NULL, NULL);
+				border_draw_decorations(
+					fw2, PART_ALL, False, True, CLEAR_ALL,
+					NULL, NULL);
 			}
 		}
 		else
 #endif
 		{
-			DrawDecorations(
-				fw2, PART_ALL, True, True, None, CLEAR_ALL);
-			DrawDecorations(
-				fw2, PART_ALL, False, True, None, CLEAR_ALL);
+			border_draw_decorations(
+				fw2, PART_ALL, True, True, CLEAR_ALL, NULL,
+				NULL);
+			border_draw_decorations(
+				fw2, PART_ALL, False, True, CLEAR_ALL, NULL,
+				NULL);
 		}
 	}
-	DrawDecorations(hilight, PART_ALL, True, True, None, CLEAR_ALL);
+	border_draw_decorations(
+		hilight, PART_ALL, True, True, CLEAR_ALL, NULL, NULL);
 }
 
 void CMD_ButtonStyle(F_CMD_ARGS)

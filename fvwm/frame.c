@@ -57,6 +57,16 @@
 
 typedef struct
 {
+	int decor_grav;
+	int title_grav;
+	int lbutton_grav;
+	int rbutton_grav;
+	int parent_grav;
+	int client_grav;
+} frame_decor_gravities_type;
+
+typedef struct
+{
 	/* filled when args are created */
 	frame_move_resize_mode mode;
 	frame_decor_gravities_type grav;
@@ -66,15 +76,20 @@ typedef struct
 	rectangle end_g;
 	rectangle delta_g;
 	rectangle current_g;
+	rectangle client_g;
 	int anim_steps;
 	Window w_with_focus;
 	int current_step;
 	int curr_titlebar_compression;
+	direction_type shade_dir;
 	/* used later */
 	int next_titlebar_compression;
 	rectangle next_sidebar_g;
 	rectangle next_g;
 	rectangle dstep_g;
+	size_rect parent_s;
+	int minimal_w_offset;
+	int minimal_h_offset;
 	struct
 	{
 		/* filled when args are created */
@@ -145,7 +160,7 @@ static void combine_decor_gravities(
 static void get_resize_decor_gravities_one_axis(
 	frame_decor_gravities_type *ret_grav, direction_type title_dir,
 	frame_move_resize_mode axis_mode, direction_type neg_dir,
-	direction_type pos_dir)
+	direction_type pos_dir, int is_moving)
 {
 
 	int title_grav;
@@ -169,19 +184,21 @@ static void get_resize_decor_gravities_one_axis(
 		ret_grav->title_grav = neg_grav;
 		ret_grav->rbutton_grav = pos_grav;
 	}
-	ret_grav->parent_grav = neg_grav;
 	switch (axis_mode)
 	{
 	case FRAME_MR_SCROLL:
-		ret_grav->client_grav = pos_grav;
+		ret_grav->client_grav = (is_moving) ? neg_grav : pos_grav;
 		break;
 	case FRAME_MR_SHRINK:
+		ret_grav->client_grav = (is_moving) ? pos_grav : neg_grav;
+		break;
 	case FRAME_MR_OPAQUE:
 	case FRAME_MR_FORCE_SETUP:
 	case FRAME_MR_SETUP:
 		ret_grav->client_grav = neg_grav;
 		break;
 	}
+	ret_grav->parent_grav = ret_grav->client_grav;
 
 	return;
 }
@@ -312,9 +329,9 @@ static void frame_setup_window_internal(
 	{
 		mr_args = frame_create_move_resize_args(
 			fw, (do_force) ? FRAME_MR_FORCE_SETUP : FRAME_MR_SETUP,
-                        NULL, &new_g, 0);
+                        NULL, &new_g, 0, DIR_NONE);
 		frame_move_resize(fw, mr_args);
-		frame_free_move_resize_args(mr_args);
+		frame_free_move_resize_args(fw, mr_args);
 		fw->frame_g = *frame_g;
 	}
 	else if (is_moved)
@@ -340,6 +357,517 @@ static void frame_setup_window_internal(
 	XFlush(dpy);
 	/* inform the modules of the change */
 	BroadcastConfig(M_CONFIGURE_WINDOW,fw);
+
+	return;
+}
+
+static void frame_reparent_hide_windows(
+	Window w)
+{
+	int i;
+
+	hide_wins.parent = w;
+	for (i = 0; i < 4 ; i++)
+	{
+		if (w == Scr.Root)
+		{
+			XUnmapWindow(dpy, hide_wins.w[i]);
+		}
+		XReparentWindow(dpy, hide_wins.w[i], w, -1, -1);
+	}
+	if (w != Scr.Root)
+	{
+		XRaiseWindow(dpy, hide_wins.w[0]);
+		XRestackWindows(dpy, hide_wins.w, 4);
+	}
+
+	return;
+}
+
+/* Returns True if the frame is so small that the parent window would have a
+ * width or height smaller than one pixel. */
+static Bool frame_is_parent_hidden(
+	FvwmWindow *fw, rectangle *frame_g)
+{
+	size_borders b;
+
+	get_window_borders(fw, &b);
+	if (frame_g->width <= b.total_size.width ||
+	    frame_g->height <= b.total_size.height)
+	{
+		return True;
+	}
+
+	return False;
+}
+
+/* Returns the number of pixels that the title bar is too short to accomodate
+ * all the title buttons and a title window that has at least a length of one
+ * pixel. */
+static int frame_get_titlebar_compression(
+	FvwmWindow *fw, rectangle *frame_g)
+{
+	size_borders b;
+	int space;
+	int need_space;
+
+	if (!HAS_TITLE(fw))
+	{
+		return 0;
+	}
+	get_window_borders(fw, &b);
+	if (HAS_VERTICAL_TITLE(fw))
+	{
+		space = frame_g->height - b.total_size.height;
+	}
+	else
+	{
+		space = frame_g->width - b.total_size.width;
+	}
+	need_space = (fw->nr_left_buttons + fw->nr_right_buttons) *
+		fw->title_thickness + MIN_WINDOW_TITLE_LENGTH;
+	if (space < need_space)
+	{
+		return need_space - space;
+	}
+
+	return 0;
+}
+
+/* Calculates the gravities for the various parts of the decor through ret_grav.
+ * This can be passed to frame_set_decor_gravities.
+ *
+ * title_dir
+ *   The direction of the title in the frame.
+ * rmode
+ *   The mode for the resize operation
+ */
+static void frame_get_resize_decor_gravities(
+	frame_decor_gravities_type *ret_grav, direction_type title_dir,
+	frame_move_resize_mode rmode, rectangle *delta_g)
+{
+	frame_decor_gravities_type grav_x;
+	frame_decor_gravities_type grav_y;
+	direction_type title_dir_x;
+	direction_type title_dir_y;
+
+	gravity_split_xy_dir(&title_dir_x, &title_dir_y, title_dir);
+	get_resize_decor_gravities_one_axis(
+		&grav_x, title_dir_x, rmode, DIR_W, DIR_E, (delta_g->x != 0));
+	get_resize_decor_gravities_one_axis(
+		&grav_y, title_dir_y, rmode, DIR_N, DIR_S, (delta_g->y != 0));
+	combine_decor_gravities(ret_grav, &grav_x, &grav_y);
+
+	return;
+}
+
+/* sets the gravity for the various parts of the window */
+static void frame_set_decor_gravities(
+	FvwmWindow *fw, frame_decor_gravities_type *grav)
+{
+	int valuemask;
+	int valuemask2;
+	XSetWindowAttributes xcwa;
+	int i;
+
+	/* using bit gravity can reduce redrawing dramatically */
+	valuemask = CWWinGravity;
+	valuemask2 = CWWinGravity | CWBitGravity;
+	xcwa.win_gravity = grav->client_grav;
+	xcwa.bit_gravity = grav->client_grav;
+	XChangeWindowAttributes(dpy, FW_W(fw), valuemask2, &xcwa);
+	xcwa.win_gravity = grav->parent_grav;
+	xcwa.bit_gravity = grav->parent_grav;
+	XChangeWindowAttributes(dpy, FW_W_PARENT(fw), valuemask, &xcwa);
+	valuemask = CWWinGravity;
+	if (!HAS_TITLE(fw))
+	{
+		return;
+	}
+	xcwa.win_gravity = grav->title_grav;
+	xcwa.win_gravity = grav->title_grav;
+	XChangeWindowAttributes(dpy, FW_W_TITLE(fw), valuemask2, &xcwa);
+	xcwa.win_gravity = grav->lbutton_grav;
+	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
+	{
+		if (FW_W_BUTTON(fw, i))
+		{
+			XChangeWindowAttributes(
+				dpy, FW_W_BUTTON(fw, i), valuemask, &xcwa);
+		}
+	}
+	xcwa.win_gravity = grav->rbutton_grav;
+	for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
+	{
+		if (FW_W_BUTTON(fw, i))
+		{
+			XChangeWindowAttributes(
+				dpy, FW_W_BUTTON(fw, i), valuemask, &xcwa);
+		}
+	}
+
+	return;
+}
+
+/* Prepares the structure for the next animation step. */
+static void frame_next_move_resize_args(
+	frame_move_resize_args mr_args)
+{
+	mr_args_internal *mra;
+
+	mra = (mr_args_internal *)mr_args;
+	mra->curr_sidebar_g = mra->next_sidebar_g;
+	mra->current_g = mra->next_g;
+	mra->flags.was_hidden = mra->flags.is_hidden;
+	mra->curr_titlebar_compression = mra->next_titlebar_compression;
+
+	return;
+}
+
+static void frame_hide_changing_window_parts(
+	mr_args_internal *mra)
+{
+	int l_add;
+	int t_add;
+	int r_add;
+	int b_add;
+	int i;
+
+	t_add = 0;
+	l_add = 0;
+	b_add = 0;
+	r_add = 0;
+	if (mra->mode == FRAME_MR_SHRINK)
+	{
+		if (mra->dstep_g.x > 0)
+		{
+			l_add = mra->dstep_g.x;
+		}
+		if (mra->dstep_g.y > 0)
+		{
+			t_add = mra->dstep_g.y;
+		}
+	}
+	else if (mra->mode == FRAME_MR_SCROLL)
+	{
+		if (mra->dstep_g.x == 0 && mra->dstep_g.width < 0)
+		{
+			l_add = mra->dstep_g.width;
+		}
+		if (mra->dstep_g.y == 0 && mra->dstep_g.height < 0)
+		{
+			t_add = mra->dstep_g.height;
+		}
+	}
+	if (l_add > 0)
+	{
+		l_add -= mra->minimal_w_offset;
+	}
+	else
+	{
+		r_add = (mra->dstep_g.width < 0) ? -mra->dstep_g.width : 0;
+		r_add -= mra->minimal_w_offset;
+	}
+	if (t_add > 0)
+	{
+		t_add -= mra->minimal_h_offset;
+	}
+	else
+	{
+		b_add = (mra->dstep_g.height < 0) ? -mra->dstep_g.height : 0;
+		b_add -= mra->minimal_h_offset;
+	}
+	/* cover top/left borders */
+	XMoveResizeWindow(
+		dpy, hide_wins.w[0], 0, 0, mra->current_g.width,
+		mra->b_g.top_left.height + t_add);
+	XMoveResizeWindow(
+		dpy, hide_wins.w[1], 0, 0, mra->b_g.top_left.width + l_add,
+		mra->current_g.height);
+	/* cover bottom/right borders and possibly part of the client */
+	XMoveResizeWindow(
+		dpy, hide_wins.w[2],
+		0, mra->current_g.height - mra->b_g.bottom_right.height - b_add,
+		mra->current_g.width, mra->b_g.bottom_right.height + b_add);
+	XMoveResizeWindow(
+		dpy, hide_wins.w[3],
+		mra->current_g.width - mra->b_g.bottom_right.width - r_add, 0,
+		mra->b_g.bottom_right.width + r_add, mra->current_g.height);
+	for (i = 0; i < 4; i++)
+	{
+		XMapWindow(dpy, hide_wins.w[i]);
+	}
+
+	return;
+}
+
+static void frame_update_hidden_window_pos(
+	FvwmWindow *fw, mr_args_internal *mra, Bool do_unhide)
+{
+	rectangle *target_g;
+	direction_type dir_x;
+	direction_type dir_y;
+	int x;
+	int y;
+
+	if (do_unhide == False)
+	{
+		gravity_split_xy_dir(&dir_x, &dir_y, mra->shade_dir);
+		x = (dir_x == DIR_E) ?
+			-mra->client_g.width + mra->parent_s.width : 0;
+		y = (dir_y == DIR_S) ?
+			-mra->client_g.height + mra->parent_s.height : 0;
+		target_g = &mra->current_g;
+	}
+	else
+	{
+		gravity_split_xy_dir(&dir_x, &dir_y, SHADED_DIR(fw));
+		if (mra->mode == FRAME_MR_SCROLL)
+		{
+			x = (dir_x == DIR_W) ?
+				-mra->client_g.width + mra->parent_s.width : 0;
+			y = (dir_y == DIR_N) ?
+				-mra->client_g.height + mra->parent_s.height :
+				0;
+		}
+		else
+		{
+			x = (dir_x == DIR_E) ?
+				-mra->client_g.width + mra->parent_s.width : 0;
+			y = (dir_y == DIR_S) ?
+				-mra->client_g.height + mra->parent_s.height :
+				0 ;
+		}
+		target_g = &mra->next_g;
+	}
+	XMoveResizeWindow(
+		dpy, FW_W_PARENT(fw), mra->b_g.top_left.width,
+		mra->b_g.top_left.height,
+		max(1, target_g->width - mra->b_g.total_size.width),
+		max(1, target_g->height - mra->b_g.total_size.height));
+	XMoveWindow(dpy, FW_W(fw), x, y);
+
+	return;
+}
+
+static void frame_move_resize_step(
+	FvwmWindow *fw, mr_args_internal *mra)
+{
+	window_parts setup_parts;
+	XSetWindowAttributes xswa;
+	Bool dummy;
+        Bool is_setup;
+        Bool is_client_resizing = False;
+        Bool do_force_static_gravity = False;
+        int do_force;
+	int i;
+	struct
+	{
+		unsigned do_hide_parent : 1;
+		unsigned do_unhide_parent : 1;
+	} flags;
+
+	/* preparations */
+        is_setup = (mra->mode == FRAME_MR_FORCE_SETUP ||
+		   mra->mode == FRAME_MR_SETUP) ? True : False;
+	if (is_setup == True || mra->mode == FRAME_MR_OPAQUE)
+	{
+		is_client_resizing = True;
+	}
+        do_force = (mra->mode == FRAME_MR_FORCE_SETUP);
+	i = mra->current_step;
+	mra->next_g = mra->start_g;
+	mra->next_g.x += (mra->delta_g.x * i) / mra->anim_steps;
+	mra->next_g.y += (mra->delta_g.y * i) / mra->anim_steps;
+	mra->next_g.width += (mra->delta_g.width * i) / mra->anim_steps;
+	mra->next_g.height += (mra->delta_g.height * i) / mra->anim_steps;
+	frame_get_sidebar_geometry(
+		fw, NULL, &mra->next_g, &mra->next_sidebar_g, &dummy, &dummy);
+	fvwmrect_subtract_rectangles(
+		&mra->dstep_g, &mra->next_g, &mra->current_g);
+	mra->next_titlebar_compression =
+		frame_get_titlebar_compression(fw, &mra->next_g);
+	mra->flags.is_hidden =
+		(frame_is_parent_hidden(fw, &mra->next_g) == True);
+	flags.do_hide_parent =
+		(!mra->flags.was_hidden && mra->flags.is_hidden);
+	flags.do_unhide_parent =
+		(mra->flags.was_hidden && !mra->flags.is_hidden);
+        if (is_setup && mra->dstep_g.x == 0 && mra->dstep_g.y == 0 &&
+            mra->dstep_g.width == 0 && mra->dstep_g.height == 0)
+        {
+                /* The caller has already set the frame geometry.  Use
+                 * StaticGravity so the sub windows are not moved to funny
+                 * places later. */
+                do_force_static_gravity = True;
+                do_force = 1;
+        }
+	/*
+	 * resize everything
+	 */
+	mra->parent_s.width = mra->next_g.width - mra->b_g.total_size.width;
+	if (mra->parent_s.width < 1)
+	{
+		mra->minimal_w_offset = 1 - mra->parent_s.width;
+		mra->parent_s.width = 1;
+	}
+	else
+	{
+		mra->minimal_w_offset = 0;
+	}
+	mra->parent_s.height = mra->next_g.height - mra->b_g.total_size.height;
+	if (mra->parent_s.height < 1)
+	{
+		mra->minimal_h_offset = 1 - mra->parent_s.height;
+		mra->parent_s.height = 1;
+	}
+	else
+	{
+		mra->minimal_h_offset = 0;
+	}
+	frame_hide_changing_window_parts(mra);
+	/* take care of hiding or unhiding the parent */
+	if (flags.do_unhide_parent)
+	{
+		Window w[2];
+
+		/* update the hidden position of the client */
+		frame_update_hidden_window_pos(fw, mra, True);
+		w[0] = hide_wins.w[3];
+		w[1] = FW_W_PARENT(fw);
+		XRestackWindows(dpy, w, 2);
+	}
+	else if (flags.do_hide_parent)
+	{
+		/* When the parent gets hidden, unmap it automatically, lower
+		 * it while hidden, then remap it.  Necessary to eliminate
+		 * flickering. */
+		xswa.win_gravity = UnmapGravity;
+		XChangeWindowAttributes(
+			dpy, FW_W_PARENT(fw), CWWinGravity, &xswa);
+	}
+        if (do_force_static_gravity == True)
+        {
+                frame_decor_gravities_type grav;
+                grav.decor_grav = StaticGravity;
+                grav.title_grav = StaticGravity;
+                grav.lbutton_grav = StaticGravity;
+                grav.rbutton_grav = StaticGravity;
+                grav.parent_grav = StaticGravity;
+                grav.client_grav = StaticGravity;
+                frame_set_decor_gravities(fw, &grav);
+        }
+	/* setup the title bar */
+	setup_parts = PART_TITLE;
+	if (mra->curr_titlebar_compression != mra->next_titlebar_compression ||
+            mra->mode == FRAME_MR_FORCE_SETUP)
+	{
+		setup_parts |= PART_BUTTONS;
+	}
+	frame_setup_title_bar(fw, &mra->next_g, setup_parts, &mra->dstep_g);
+	/* setup the border */
+	if (mra->mode == FRAME_MR_SETUP || mra->mode == FRAME_MR_FORCE_SETUP)
+	{
+		setup_parts = PART_ALL;
+	}
+	else
+	{
+		setup_parts = frame_get_changed_border_parts(
+			&mra->curr_sidebar_g, &mra->next_sidebar_g);
+	}
+	frame_setup_border(fw, &mra->next_g, setup_parts, &mra->dstep_g);
+	/* draw the border and the titlebar */
+	border_draw_decorations(
+		fw, PART_ALL, (mra->w_with_focus != None) ? True : False,
+		do_force, CLEAR_ALL, &mra->current_g, &mra->next_g);
+	/* setup the parent, the frame and the client window */
+	if (is_client_resizing)
+	{
+		XMoveResizeWindow(
+			dpy, FW_W(fw), 0, 0, mra->parent_s.width,
+			mra->parent_s.height);
+		/* reduces flickering */
+		if (is_setup == True)
+		{
+			usleep(1000);
+		}
+		XSync(dpy, 0);
+		XMoveResizeWindow(
+			dpy, FW_W_PARENT(fw), mra->b_g.top_left.width,
+			mra->b_g.top_left.height, mra->parent_s.width,
+			mra->parent_s.height);
+	}
+	else
+	{
+		int x;
+		int y;
+
+		x = mra->b_g.top_left.width;
+		y = mra->b_g.top_left.height;
+		if (mra->mode == FRAME_MR_SCROLL)
+		{
+			if (mra->dstep_g.x == 0)
+			{
+				x -= mra->dstep_g.width -
+					mra->minimal_w_offset;
+			}
+			if (mra->dstep_g.y == 0)
+			{
+				y -= mra->dstep_g.height -
+					mra->minimal_h_offset;;
+			}
+		}
+		else if (mra->mode == FRAME_MR_SHRINK)
+		{
+			x += mra->dstep_g.x;
+			y += mra->dstep_g.y;
+		}
+		if (x > 0)
+		{
+			x -= mra->minimal_w_offset;
+		}
+		else if (x < 0)
+		{
+			x += mra->minimal_w_offset;
+		}
+		if (y > 0)
+		{
+			y -= mra->minimal_h_offset;
+		}
+		else if (y < 0)
+		{
+			y += mra->minimal_h_offset;
+		}
+		XMoveResizeWindow(
+			dpy, FW_W_PARENT(fw), x, y, mra->parent_s.width,
+			mra->parent_s.height);
+	}
+	XMoveResizeWindow(
+		dpy, FW_W_FRAME(fw), mra->next_g.x, mra->next_g.y,
+		mra->next_g.width, mra->next_g.height);
+        /* restore the old gravities */
+        if (do_force_static_gravity == True)
+        {
+                frame_set_decor_gravities(fw, &mra->grav);
+        }
+	/* finish hiding the parent */
+	if (flags.do_hide_parent)
+	{
+		xswa.win_gravity = mra->grav.parent_grav;
+		XChangeWindowAttributes(
+			dpy, FW_W_PARENT(fw), CWWinGravity, &xswa);
+		/* update the hidden position of the client */
+		frame_update_hidden_window_pos(fw, mra, False);
+		XLowerWindow(dpy, FW_W_PARENT(fw));
+		XMapWindow(dpy, FW_W_PARENT(fw));
+	}
+	/* update the window shape*/
+        /*!!! adapt shape code for window shading */
+        if (FShapesSupported && fw->wShaped)
+        {
+                frame_setup_shape(fw, mra->next_g.width, mra->next_g.height);
+        }
+	fw->frame_g = mra->next_g;
 
 	return;
 }
@@ -411,6 +939,7 @@ void frame_get_title_bar_dimensions(
         int nbuttons;
         int nbuttons_big;
         int *padd_coord;
+	int *b_l;
 
 	if (!HAS_TITLE(fw))
 	{
@@ -478,6 +1007,7 @@ void frame_get_title_bar_dimensions(
                 b_h = b_length;
                 t_w = tb_thick;
                 t_h = t_length;
+		b_l = &b_h;
 	}
 	else
 	{
@@ -502,6 +1032,7 @@ void frame_get_title_bar_dimensions(
                 b_h = tb_thick;
                 t_w = t_length;
                 t_h = tb_thick;
+		b_l = &b_w;
 	}
         /* configure left buttons */
 	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
@@ -529,6 +1060,7 @@ void frame_get_title_bar_dimensions(
                 if (nbuttons_big == 0)
                 {
                         b_length--;
+			(*b_l)--;
                 }
 	}
         /* configure title */
@@ -574,6 +1106,7 @@ void frame_get_title_bar_dimensions(
                 if (nbuttons_big == 0)
                 {
                         b_length--;
+			(*b_l)--;
                 }
 	}
 
@@ -773,79 +1306,6 @@ int frame_window_id_to_context(
 	return context;
 }
 
-static void frame_reparent_hide_windows(
-	Window w)
-{
-	int i;
-
-	hide_wins.parent = w;
-	for (i = 0; i < 4 ; i++)
-	{
-		if (w == Scr.Root)
-		{
-			XUnmapWindow(dpy, hide_wins.w[i]);
-		}
-		XReparentWindow(dpy, hide_wins.w[i], w, -1, -1);
-	}
-	if (w != Scr.Root)
-	{
-		XRaiseWindow(dpy, hide_wins.w[0]);
-		XRestackWindows(dpy, hide_wins.w, 4);
-	}
-
-	return;
-}
-
-/* Returns True if the frame is so small that the parent window would have a
- * width or height smaller than one pixel. */
-static Bool frame_is_parent_hidden(
-	FvwmWindow *fw, rectangle *frame_g)
-{
-	size_borders b;
-
-	get_window_borders(fw, &b);
-	if (frame_g->width <= b.total_size.width ||
-	    frame_g->height <= b.total_size.height)
-	{
-		return True;
-	}
-
-	return False;
-}
-
-/* Returns the number of pixels that the title bar is too short to accomodate
- * all the title buttons and a title window that has at least a length of one
- * pixel. */
-static int frame_get_titlebar_compression(
-	FvwmWindow *fw, rectangle *frame_g)
-{
-	size_borders b;
-	int space;
-	int need_space;
-
-	if (!HAS_TITLE(fw))
-	{
-		return 0;
-	}
-	get_window_borders(fw, &b);
-	if (HAS_VERTICAL_TITLE(fw))
-	{
-		space = frame_g->height - b.total_size.height;
-	}
-	else
-	{
-		space = frame_g->width - b.total_size.width;
-	}
-	need_space = (fw->nr_left_buttons + fw->nr_right_buttons) *
-		fw->title_thickness + MIN_WINDOW_TITLE_LENGTH;
-	if (space < need_space)
-	{
-		return need_space - space;
-	}
-
-	return 0;
-}
-
 /* Creates a structure that must be passed to frame_move_resize().  The
  * structure *must* be deleted with frame_free_move_resize_args() as soon as the
  * move or resize operation is finished.  Prepares the window for a move/resize
@@ -876,15 +1336,18 @@ static int frame_get_titlebar_compression(
  */
 frame_move_resize_args frame_create_move_resize_args(
 	FvwmWindow *fw, frame_move_resize_mode mr_mode,
-	rectangle *start_g, rectangle *end_g, int anim_steps)
+	rectangle *start_g, rectangle *end_g, int anim_steps, int shade_dir)
 {
 	mr_args_internal *mra;
 	Bool dummy;
 	int whdiff;
+	int xydiff;
+	int diff;
 
-/*!!!disable animated window shading for now*/if (mr_mode==FRAME_MR_SHRINK||mr_mode==FRAME_MR_SCROLL)mr_mode=FRAME_MR_FORCE_SETUP;
 	mra = (mr_args_internal *)safecalloc(1, sizeof(mr_args_internal));
 	mra->mode = mr_mode;
+	get_client_geometry(fw, &mra->client_g);
+	mra->shade_dir = (direction_type)shade_dir;
 	get_window_borders(fw, &mra->b_g);
 	mra->start_g = (start_g != NULL) ? *start_g : fw->frame_g;
 	frame_get_sidebar_geometry(
@@ -902,7 +1365,7 @@ frame_move_resize_args frame_create_move_resize_args(
 	frame_reparent_hide_windows(FW_W_FRAME(fw));
 	/* Set gravities for the window parts. */
 	frame_get_resize_decor_gravities(
-		&mra->grav, GET_TITLE_DIR(fw), mra->mode);
+		&mra->grav, GET_TITLE_DIR(fw), mra->mode, &mra->delta_g);
 	frame_set_decor_gravities(fw, &mra->grav);
 	/* calcuate the number of animation steps */
 	switch (mra->mode)
@@ -910,17 +1373,23 @@ frame_move_resize_args frame_create_move_resize_args(
 	case FRAME_MR_SHRINK:
 	case FRAME_MR_SCROLL:
 		whdiff = max(abs(mra->delta_g.width), abs(mra->delta_g.height));
-		if (whdiff == 0)
+		xydiff = max(abs(mra->delta_g.x), abs(mra->delta_g.y));
+		diff = max(whdiff, xydiff);
+		if (diff == 0)
 		{
 			mra->anim_steps = 0;
 		}
-		else if (mra->anim_steps < 0)
+		else if (anim_steps < 0)
 		{
-			mra->anim_steps = (whdiff - 1) / -mra->anim_steps;
+			mra->anim_steps = -(diff - 1) / anim_steps;
 		}
-		else if (mra->anim_steps > 0 && mra->anim_steps >= whdiff)
+		else if (anim_steps > 0 && anim_steps >= diff)
 		{
-			mra->anim_steps = whdiff - 1;
+			mra->anim_steps = diff - 1;
+		}
+		else
+		{
+			mra->anim_steps = anim_steps;
 		}
 		break;
 	case FRAME_MR_FORCE_SETUP:
@@ -955,30 +1424,17 @@ void frame_update_move_resize_args(
 	return;
 }
 
-/* Prepares the structure for the next animation step. */
-static void frame_next_move_resize_args(
-	frame_move_resize_args mr_args)
-{
-	mr_args_internal *mra;
-
-	mra = (mr_args_internal *)mr_args;
-	mra->curr_sidebar_g = mra->next_sidebar_g;
-	mra->current_g = mra->next_g;
-	mra->flags.was_hidden = mra->flags.is_hidden;
-	mra->curr_titlebar_compression = mra->next_titlebar_compression;
-
-	return;
-}
-
 /* Destroys the structure allocated with frame_create_move_resize_args().  Does
  * some clean up operations on the modified window first. */
 void frame_free_move_resize_args(
-	frame_move_resize_args mr_args)
+	FvwmWindow *fw, frame_move_resize_args mr_args)
 {
 	mr_args_internal *mra;
 	FvwmWindow *sf;
 
 	mra = (mr_args_internal *)mr_args;
+	fw->frame_g = mra->end_g;
+	update_absolute_geometry(fw);
 	frame_reparent_hide_windows(Scr.Root);
 	if (mra->w_with_focus != None)
 	{
@@ -996,204 +1452,6 @@ void frame_free_move_resize_args(
 	}
 	/* free the memory */
 	free(mr_args);
-
-	return;
-}
-
-static void frame_hide_changing_window_parts(
-	mr_args_internal *mra)
-{
-	int x_add;
-	int y_add;
-	int i;
-
-	/* cover top/left borders */
-	XMoveResizeWindow(
-		dpy, hide_wins.w[0], 0, 0, mra->current_g.width,
-		mra->b_g.top_left.height);
-	XMoveResizeWindow(
-		dpy, hide_wins.w[1], 0, 0, mra->b_g.top_left.width,
-		mra->current_g.height);
-	/* cover bottom/right borders and possibly part of the client */
-	x_add = (mra->dstep_g.width < 0) ? -mra->dstep_g.width : 0;
-	y_add = (mra->dstep_g.height < 0) ? -mra->dstep_g.height : 0;
-	XMoveResizeWindow(
-		dpy, hide_wins.w[2],
-		0, mra->current_g.height - mra->b_g.bottom_right.height - y_add,
-		mra->current_g.width, mra->b_g.bottom_right.height + y_add);
-	XMoveResizeWindow(
-		dpy, hide_wins.w[3],
-		mra->current_g.width - mra->b_g.bottom_right.width - x_add, 0,
-		mra->b_g.bottom_right.width + x_add, mra->current_g.height);
-	for (i = 0; i < 4; i++)
-	{
-		XMapWindow(dpy, hide_wins.w[i]);
-	}
-
-	return;
-}
-
-static void frame_move_resize_step(
-	FvwmWindow *fw, mr_args_internal *mra)
-{
-	window_parts setup_parts;
-	XSetWindowAttributes xswa;
-	Bool dummy;
-        Bool is_setup;
-        Bool is_client_resizing = False;
-        Bool do_force_static_gravity = False;
-        int do_force;
-	int i;
-	int w;
-	int h;
-	struct
-	{
-		unsigned do_hide_parent : 1;
-		unsigned do_unhide_parent : 1;
-	} flags;
-
-	/* preparations */
-        is_setup = (mra->mode == FRAME_MR_FORCE_SETUP ||
-		   mra->mode == FRAME_MR_SETUP) ? True : False;
-	if (is_setup == True || mra->mode == FRAME_MR_OPAQUE)
-	{
-		is_client_resizing = True;
-	}
-        do_force = (mra->mode == FRAME_MR_FORCE_SETUP);
-	i = mra->current_step;
-	mra->next_g = mra->start_g;
-	mra->next_g.x += (mra->delta_g.x * i) / mra->anim_steps;
-	mra->next_g.y += (mra->delta_g.y * i) / mra->anim_steps;
-	mra->next_g.width += (mra->delta_g.width * i) / mra->anim_steps;
-	mra->next_g.height += (mra->delta_g.height * i) / mra->anim_steps;
-	frame_get_sidebar_geometry(
-		fw, NULL, &mra->next_g, &mra->next_sidebar_g, &dummy, &dummy);
-	fvwmrect_subtract_rectangles(
-		&mra->dstep_g, &mra->next_g, &mra->current_g);
-	mra->next_titlebar_compression =
-		frame_get_titlebar_compression(fw, &mra->next_g);
-	mra->flags.is_hidden =
-		(frame_is_parent_hidden(fw, &mra->next_g) == True);
-	flags.do_hide_parent =
-		(!mra->flags.was_hidden && mra->flags.is_hidden);
-	flags.do_unhide_parent =
-		(mra->flags.was_hidden && !mra->flags.is_hidden);
-        if (is_setup && mra->dstep_g.x == 0 && mra->dstep_g.y == 0 &&
-            mra->dstep_g.width == 0 && mra->dstep_g.height == 0)
-        {
-                /* The caller has already set the frame geometry.  Use
-                 * StaticGravity so the sub windows are not moved to funny
-                 * places later. */
-                do_force_static_gravity = True;
-                do_force = 1;
-        }
-	/*
-	 * resize everything
-	 */
-	frame_hide_changing_window_parts(mra);
-	/* take care of hiding or unhiding the parent */
-	if (flags.do_unhide_parent)
-	{
-		Window w[2];
-
-		/*!!! update the hidden position of the client and parent*/
-		w[0] = hide_wins.w[3];
-		w[1] = FW_W_PARENT(fw);
-		XRestackWindows(dpy, w, 2);
-	}
-	else if (flags.do_hide_parent)
-	{
-		/* When the parent gets hidden, unmap it automatically, lower
-		 * it while hidden, then remap it.  Necessary to eliminate
-		 * flickering. */
-		xswa.win_gravity = UnmapGravity;
-		XChangeWindowAttributes(
-			dpy, FW_W_PARENT(fw), CWWinGravity, &xswa);
-	}
-        if (do_force_static_gravity == True)
-        {
-                frame_decor_gravities_type grav;
-                grav.decor_grav = StaticGravity;
-                grav.title_grav = StaticGravity;
-                grav.lbutton_grav = StaticGravity;
-                grav.rbutton_grav = StaticGravity;
-                grav.parent_grav = StaticGravity;
-                grav.client_grav = StaticGravity;
-                frame_set_decor_gravities(fw, &grav);
-        }
-	/* setup the title bar */
-	setup_parts = PART_TITLE;
-	if (mra->curr_titlebar_compression != mra->next_titlebar_compression ||
-            mra->mode == FRAME_MR_FORCE_SETUP)
-	{
-		setup_parts |= PART_BUTTONS;
-	}
-	frame_setup_title_bar(fw, &mra->next_g, setup_parts, &mra->dstep_g);
-	/* setup the border */
-	if (mra->mode == FRAME_MR_SETUP || mra->mode == FRAME_MR_FORCE_SETUP)
-	{
-		setup_parts = PART_ALL;
-	}
-	else
-	{
-		setup_parts = frame_get_changed_border_parts(
-			&mra->curr_sidebar_g, &mra->next_sidebar_g);
-	}
-	frame_setup_border(fw, &mra->next_g, setup_parts, &mra->dstep_g);
-	/* draw the border and the titlebar */
-	draw_decorations_with_geom(
-		fw, PART_ALL, (mra->w_with_focus != None) ? True : False,
-		do_force, CLEAR_ALL, &mra->current_g, &mra->next_g);
-	/* setup the client and the parent windows */
-	w = mra->next_g.width - mra->b_g.total_size.width;
-	if (w < 1)
-	{
-		w = 1;
-	}
-	h = mra->next_g.height - mra->b_g.total_size.height;
-	if (h < 1)
-	{
-		h = 1;
-	}
-	/* setup the parent, the frame and the client window */
-	if (is_client_resizing)
-	{
-		XMoveResizeWindow(dpy, FW_W(fw), 0, 0, w, h);
-		/* reduces flickering */
-		if (is_setup == True)
-		{
-			usleep(1000);
-		}
-		XSync(dpy, 0);
-	}
-	XMoveResizeWindow(
-		dpy, FW_W_PARENT(fw), mra->b_g.top_left.width,
-		mra->b_g.top_left.height, w, h);
-	XMoveResizeWindow(
-		dpy, FW_W_FRAME(fw), mra->next_g.x, mra->next_g.y,
-		mra->next_g.width, mra->next_g.height);
-        /* restore the old gravities */
-        if (do_force_static_gravity == True)
-        {
-                frame_set_decor_gravities(fw, &mra->grav);
-        }
-	/* finish hiding the parent */
-	if (flags.do_hide_parent)
-	{
-		xswa.win_gravity = mra->grav.parent_grav;
-		XChangeWindowAttributes(
-			dpy, FW_W_PARENT(fw), CWWinGravity, &xswa);
-		/*!!! update the hidden position of the client and parent*/
-		XLowerWindow(dpy, FW_W_PARENT(fw));
-		XMapWindow(dpy, FW_W_PARENT(fw));
-	}
-	/* update the window shape*/
-        /*!!! may have to change this for window shading */
-        if (FShapesSupported && fw->wShaped)
-        {
-                frame_setup_shape(fw, mra->next_g.width, mra->next_g.height);
-        }
-	fw->frame_g = mra->next_g;
 
 	return;
 }
@@ -1222,84 +1480,6 @@ void frame_move_resize(
 	if (is_grabbed == True)
 	{
 		UngrabEm(GRAB_FREEZE_CURSOR);
-	}
-	/* clean up */
-	fw->frame_g = mra->end_g;
-	update_absolute_geometry(fw);
-
-	return;
-}
-
-/* Calculates the gravities for the various parts of the decor through ret_grav.
- * This can be passed to frame_set_decor_gravities.
- *
- * title_dir
- *   The direction of the title in the frame.
- * rmode
- *   The mode for the resize operation
- */
-void frame_get_resize_decor_gravities(
-	frame_decor_gravities_type *ret_grav, direction_type title_dir,
-	frame_move_resize_mode rmode)
-{
-	frame_decor_gravities_type grav_x;
-	frame_decor_gravities_type grav_y;
-	direction_type title_dir_x;
-	direction_type title_dir_y;
-
-	gravity_split_xy_dir(&title_dir_x, &title_dir_y, title_dir);
-	get_resize_decor_gravities_one_axis(
-		&grav_x, title_dir_x, rmode, DIR_W, DIR_E);
-	get_resize_decor_gravities_one_axis(
-		&grav_y, title_dir_y, rmode, DIR_N, DIR_S);
-	combine_decor_gravities(ret_grav, &grav_x, &grav_y);
-
-	return;
-}
-
-/* sets the gravity for the various parts of the window */
-void frame_set_decor_gravities(
-	FvwmWindow *fw, frame_decor_gravities_type *grav)
-{
-	int valuemask;
-	int valuemask2;
-	XSetWindowAttributes xcwa;
-	int i;
-
-	/* using bit gravity can reduce redrawing dramatically */
-	valuemask = CWWinGravity;
-	valuemask2 = CWWinGravity | CWBitGravity;
-	xcwa.win_gravity = grav->client_grav;
-	xcwa.bit_gravity = grav->client_grav;
-	XChangeWindowAttributes(dpy, FW_W(fw), valuemask2, &xcwa);
-	xcwa.win_gravity = grav->parent_grav;
-	xcwa.bit_gravity = grav->parent_grav;
-	XChangeWindowAttributes(dpy, FW_W_PARENT(fw), valuemask, &xcwa);
-	valuemask = CWWinGravity;
-	if (!HAS_TITLE(fw))
-	{
-		return;
-	}
-	xcwa.win_gravity = grav->title_grav;
-	xcwa.win_gravity = grav->title_grav;
-	XChangeWindowAttributes(dpy, FW_W_TITLE(fw), valuemask2, &xcwa);
-	xcwa.win_gravity = grav->lbutton_grav;
-	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
-	{
-		if (FW_W_BUTTON(fw, i))
-		{
-			XChangeWindowAttributes(
-				dpy, FW_W_BUTTON(fw, i), valuemask, &xcwa);
-		}
-	}
-	xcwa.win_gravity = grav->rbutton_grav;
-	for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
-	{
-		if (FW_W_BUTTON(fw, i))
-		{
-			XChangeWindowAttributes(
-				dpy, FW_W_BUTTON(fw, i), valuemask, &xcwa);
-		}
 	}
 
 	return;

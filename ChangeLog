@@ -1,4 +1,61 @@
+2002-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (border_draw_decorations):
+	* fvwm/events.c (HandleEnterNotify):
+	fixed icon title drawing
+
+	* fvwm/misc.c (GrabEm):
+	fixed a pointer grab hang with xmag?
+
+	* fvwm/move_resize.c (resize_window):
+	use frame_move_resize function to improve performance
+
+	* fvwm/add_window.c (AddWindow):
+	fixed recaturing shaded windows
+
+	* fvwm/borders.c:
+	suppress unnecessary title redraws
+
+	* fvwm/frame.c:
+	window shading works again; there are still some problems with
+	recapture, restart, border drawing and shaped windows
+
 2002-03-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/geometry.c (get_shaded_geometry_with_dir):
+	new function
+
+	* fvwm/frame.c (frame_get_title_bar_dimensions):
+	fixed minor button layout bug
+	(frame_update_hidden_window_pos):
+
+	* fvwm/ewmh_names.c (EWMH_WMName):
+	* fvwm/gnome.c (GNOME_HandlePropRequest):
+	* fvwm/focus.c (DoSetFocus):
+	* fvwm/stack.c (new_layer):
+	* fvwm/icons.c (DeIconify):
+	(Iconify):
+	* fvwm/events.c (HandleFocusIn):
+	(HandlePropertyNotify):
+	(HandleExpose):
+	(HandleMapNotify):
+	(HandleButtonPress):
+	(HandleLeaveNotify):
+	* fvwm/builtins.c (CMD_ChangeDecor):
+	(CMD_UpdateDecor):
+	* fvwm/move_resize.c (resize_move_window):
+	(resize_window):
+	(resize_window):
+	(maximize_fvwm_window):
+	(handle_stick):
+	* fvwm/borders.c (DrawDecorations):
+	(RedrawDecorations):
+	removed function DrawDecorations()
+	(border_draw_decorations):
+	renamed draw_decorations_with_geom() to border_draw_decorations()
+
+	* fvwm/events.c (HandleExpose):
+	fixed drawing icon titles
 
 	* fvwm/add_window.c (adjust_fvwm_internal_windows):
 	* fvwm/events.c (HandleFocusIn):

@@ -341,6 +341,20 @@ void get_shaded_geometry(
 	return;
 }
 
+void get_shaded_geometry_with_dir(
+	FvwmWindow *fw, rectangle *small_g, rectangle *big_g,
+	direction_type shade_dir)
+{
+	direction_type old_shade_dir;
+
+	old_shade_dir = SHADED_DIR(fw);
+	SET_SHADED_DIR(fw, shade_dir);
+	get_shaded_geometry(fw, small_g, big_g);
+	SET_SHADED_DIR(fw, old_shade_dir);
+
+	return;
+}
+
 void get_unshaded_geometry(
 	FvwmWindow *fw, rectangle *ret_g)
 {

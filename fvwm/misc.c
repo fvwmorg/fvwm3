@@ -127,13 +127,11 @@ Bool GrabEm(int cursor, int grab_context)
     {
       if (XGrabPointer(
 	    dpy, (PressedW != None) ? PressedW : Scr.Root , True, GRAB_EVMASK,
-	    GrabModeAsync, GrabModeAsync, None, None, CurrentTime) !=
-	  GrabSuccess)
+	    GrabModeAsync, GrabModeAsync, None, Scr.FvwmCursors[CRS_DEFAULT],
+	    CurrentTime) != GrabSuccess)
       {
 	return False;
       }
-      grab_count[grab_context]++;
-      grab_count[GRAB_ALL]++;
       return True;
     }
     grab_count[grab_context]++;

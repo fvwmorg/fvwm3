@@ -44,6 +44,9 @@ void get_icon_corner(
 	FvwmWindow *fw, rectangle *ret_g);
 void get_shaded_geometry(
 	FvwmWindow *fw, rectangle *small_g, rectangle *big_g);
+void get_shaded_geometry_with_dir(
+	FvwmWindow *fw, rectangle *small_g, rectangle *big_g,
+	direction_type shade_dir);
 void get_unshaded_geometry(
 	FvwmWindow *fw, rectangle *ret_g);
 void get_shaded_client_window_pos(
