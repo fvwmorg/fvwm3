@@ -1,5 +1,9 @@
 2002-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/session.c (MatchWinToSM):
+	* fvwm/add_window.c (AddWindow):
+	preserve user states over a restart
+
 	* fvwm/add_window.c (setup_window_structure):
 	preserve user states over a recapture
 

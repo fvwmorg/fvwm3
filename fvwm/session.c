@@ -798,6 +798,7 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *shade_dir, int *do_max)
       *do_shade = IS_SHADED(&(matches[i]));
       *shade_dir = SHADED_DIR(&(matches[i]));
       *do_max = IS_MAXIMIZED(&(matches[i]));
+      SET_USER_STATES(ewin, GET_USER_STATES(&(matches[i])));
       SET_ICON_MOVED(ewin, IS_ICON_MOVED(&(matches[i])));
       if (IS_ICONIFIED(&(matches[i])))
       {
