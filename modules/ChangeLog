@@ -1,3 +1,14 @@
+1999-05-12  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmGtk/Makefile.am (INCLUDES): We appear to be standardizing on
+	having modules use #include <libs/Module.h>, etc., rather than
+	#include <Module.h>.  So, we need to add -I$(top_srcdir) to the
+	includes list, not -I$(top_srcdir)/libs.  The latter won't work if
+	you build outside of the distribution directory.
+
+	* FvwmEvent/FvwmEvent.c (execute_event): free(buf) needs to go
+	inside the if statement.
+
 1999-05-12  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* FvwmPager/x_pager.c (DispatchEvent): fix desk name highlighting
@@ -6,9 +17,9 @@
 1999-05-11  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* FvwmEvent/FvwmEvent.c (event_table): bring in sync with
-	list of events in Module.h, change the parsing of 
+	list of events in Module.h, change the parsing of
 	*FvwmEvent lines to treat everything after the event type
-	as action. 
+	as action.
 
 1999-05-11  Dan Espen  <dane@mk.bellcore.com>
 
@@ -20,13 +31,13 @@
 
 	* FvwmGtk/FvwmGtk.c: improved window list; it displays
 	geometry and mini-icon now and knows the options
-	"NoGeometry", "NoMiniIcon", "Desk n", "CurrentDesk", 
-	"UseIconName", "Icons/NoIcons/OnlyIcons", 
+	"NoGeometry", "NoMiniIcon", "Desk n", "CurrentDesk",
+	"UseIconName", "Icons/NoIcons/OnlyIcons",
 	"Sticky/NoSticky/OnlySticky", "Normal/NoNormal/OnlyNormal".
 
-	* FvwmGtk/FvwmGtk.c: split off a couple of smaller files: 
+	* FvwmGtk/FvwmGtk.c: split off a couple of smaller files:
 	{dialog,expand,menu,windowlist}.[ch].
-	
+
 	* FvwmGtk/Makefile.am: add the new files.
 
 Sat May  8 11:55:10 1999  DanEspen  <dje@blue>

@@ -353,7 +353,7 @@ void execute_event(short event, unsigned long *body)
       {
 	char *buf = NULL;
 	int len = 0;
-	
+
 	len = strlen(cmd_line) + strlen(action_table[event]) + 32;
 	if (audio_play_dir)
 	  len += strlen(audio_play_dir);
@@ -385,8 +385,8 @@ void execute_event(short event, unsigned long *body)
 	    SendText(fd,buf,0);		/* let fvwm2 execute the function */
 	    last_time = now;
 	  }
+	free(buf);
       }
-  free(buf);
 }
 
 
@@ -538,7 +538,7 @@ void config(void)
       else  /* test for isspace(*p) ??? */
       {
 	p = GetNextSimpleOption( p, &event );
-#if 0 
+#if 0
 	/* this is bad for commands with whitespace */
 	p = GetNextSimpleOption( p, &action );
 #else

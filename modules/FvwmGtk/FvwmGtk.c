@@ -36,11 +36,11 @@
 #include <gdk_imlib.h>
 #endif
 
-#include "libs/Module.h"
-#include "libs/fvwmlib.h"
-#include "libs/Picture.h"
-#include "fvwm/fvwm.h"
-#include "libs/vpacket.h"
+#include <libs/Module.h>
+#include <libs/fvwmlib.h>
+#include <libs/Picture.h>
+#include <fvwm/fvwm.h>
+#include <libs/vpacket.h>
 
 #include "dialog.h"
 #include "menu.h"
@@ -64,21 +64,21 @@ GHashTable *window_list_entries = NULL;
   General overview:
 
   All widgets (menus and dialogs) are stored
-  in one hash table, widgets. 
-  They are built up piecemeal, the widget 
+  in one hash table, widgets.
+  They are built up piecemeal, the widget
   currently being built up is current.
   For dialogs, current may also point to
   a subwidget of the dialog.
   dialog contain diffent kinds of widgets:
-  
+
   * data widgets which return some value
   these all have a name and store their value
   as data on the top-level dialog under their name
-    
+
   * action widgets like buttons. these have
   a list of commands which are sent to fvwm or
-  executed by FvwmGtk itself (eg close). 
-  The commands are stored as data on the action 
+  executed by FvwmGtk itself (eg close).
+  The commands are stored as data on the action
   widget under the name "values", as a NULL-terminated
   char*-array.
 
@@ -104,8 +104,8 @@ destroy (int argc, char **argv)
 
   w = g_hash_table_lookup (widgets, argv[0]);
   if (w != NULL)
-    { 
-      if (gtk_widget_get_toplevel (current) == w) 
+    {
+      if (gtk_widget_get_toplevel (current) == w)
         {
           current = NULL;
         }
@@ -154,7 +154,7 @@ parse_rc_file (int argc, char **argv)
 }
 
 
-void 
+void
 icon_size (int argc, char **argv)
 {
   if (argc < 2)
@@ -162,7 +162,7 @@ icon_size (int argc, char **argv)
       icon_w = 0;
       icon_h = 0;
     }
-  else 
+  else
     {
       icon_w = atoi (argv[0]);
       icon_h = atoi (argv[1]);
@@ -236,23 +236,23 @@ void (*handler[])(int, char**) = {
 };
 
 
-void 
+void
 parse_arguments (char **line, int *argc, char ***argv)
 {
   char *tmp[100];
   int i;
 
-  for (i = 0; i < 100 ; i++) 
+  for (i = 0; i < 100 ; i++)
     {
       *line = GetNextSimpleOption( *line, &tmp[i] );
       if (!tmp[i]) break;
     }
   *argc = i;
-  
+
   *argv = (char **) safemalloc (i * sizeof (char *));
   for (i = 0; i < *argc; i++)
     {
-      (*argv)[i] = tmp[i]; 
+      (*argv)[i] = tmp[i];
     }
 }
 
@@ -261,58 +261,58 @@ void
 widget_not_found (char *name)
 {
   GtkWidget *dialog, *box, *item;
-  char buf[200];	
+  char buf[200];
 
   SendText (fvwm_fd, "Beep", 0);
   dialog = gtk_window_new (GTK_WINDOW_DIALOG);
   gtk_window_set_title (GTK_WINDOW (dialog), "Error");
   gtk_window_set_wmclass (GTK_WINDOW (dialog), "Error", "FvwmGtk");
-      
+
   box = gtk_vbox_new (FALSE, 10);
   gtk_container_add (GTK_CONTAINER (dialog), box);
   gtk_container_border_width (GTK_CONTAINER (dialog), 30);
-  g_snprintf (buf, sizeof (buf), "No such menu or dialog: %s", name); 
+  g_snprintf (buf, sizeof (buf), "No such menu or dialog: %s", name);
   item = gtk_label_new (buf);
   gtk_box_pack_start (GTK_BOX (box), item, FALSE, FALSE, 5);
   item = gtk_button_new_with_label ("OK");
   gtk_box_pack_start (GTK_BOX (box), item, FALSE, FALSE, 5);
-  gtk_signal_connect_object 
+  gtk_signal_connect_object
     (GTK_OBJECT (item), "clicked",
-     GTK_SIGNAL_FUNC (gtk_widget_destroy), GTK_OBJECT (dialog)); 
+     GTK_SIGNAL_FUNC (gtk_widget_destroy), GTK_OBJECT (dialog));
   gtk_widget_show_all (box);
   gtk_widget_show (dialog);
 }
 
 
-void 
-parse_config_line (char *buf) 
+void
+parse_config_line (char *buf)
 {
   int argc;
   char **argv;
   char *p;
   char **e;
 
-  if (buf[strlen(buf)-1] == '\n') 
+  if (buf[strlen(buf)-1] == '\n')
     {
-      buf[strlen(buf)-1] = '\0';	
+      buf[strlen(buf)-1] = '\0';
     }
-  if (strncasecmp (buf, my_name, my_name_len) == 0) 
+  if (strncasecmp (buf, my_name, my_name_len) == 0)
     {
       p = buf + my_name_len;
       if ((e = FindToken (p, table, char*)))
-	{ 
-	  p += strlen (*e);	
-	  parse_arguments (&p, &argc, &argv); 
+	{
+	  p += strlen (*e);
+	  parse_arguments (&p, &argc, &argv);
 	  handler[e - (char**)table] (argc, argv);
-	} 
-      else 
+	}
+      else
 	{
 	  fprintf (stderr, "%s: unknown command: %s\n", my_name + 1, buf);
 	}
     }
-  else if (strncasecmp (buf, "ImagePath", 9) == 0) 
+  else if (strncasecmp (buf, "ImagePath", 9) == 0)
     {
-      if (image_path) 
+      if (image_path)
 	{
 	  free (image_path);
 	}
@@ -321,21 +321,21 @@ parse_config_line (char *buf)
 }
 
 
-void 
-parse_options (void) 
+void
+parse_options (void)
 {
   char *buf;
-  
-  while (GetConfigLine (fvwm_fd, &buf), buf != NULL) 
+
+  while (GetConfigLine (fvwm_fd, &buf), buf != NULL)
     {
       parse_config_line (buf);
-    } 
-} 
+    }
+}
 
 
-void 
-process_message (unsigned long type, 
-		 unsigned long timestamp, 
+void
+process_message (unsigned long type,
+		 unsigned long timestamp,
 		 unsigned long *body)
 {
   int button = 0;
@@ -344,7 +344,7 @@ process_message (unsigned long type,
   char name[128];
 
   SendText (fvwm_fd, "UNLOCK", 0);
-  switch (type) 
+  switch (type)
     {
     case M_STRING:
       context = body[0]; /* this is tmp_win->w */
@@ -356,7 +356,7 @@ process_message (unsigned long type,
 	}
       else if (GTK_IS_MENU (widget))
 	{
-          opts = (window_list_options *) 
+          opts = (window_list_options *)
 	    gtk_object_get_data (GTK_OBJECT (widget), "window_list");
           if (opts)
             {
@@ -367,13 +367,13 @@ process_message (unsigned long type,
 	      open_menu (1, argv);
 	      widget = current;
 	      gtk_object_set_data (GTK_OBJECT (current), "window_list", opts);
-	      construct_window_list ();	      
+	      construct_window_list ();
             }
 
-	  gtk_menu_popup (GTK_MENU (widget), NULL, NULL, NULL, NULL, 
+	  gtk_menu_popup (GTK_MENU (widget), NULL, NULL, NULL, NULL,
 			  button, timestamp);
         }
-      else if (GTK_IS_WINDOW (widget)) 
+      else if (GTK_IS_WINDOW (widget))
 	{
 	  gtk_widget_show (GTK_WIDGET (widget));
 	}
@@ -389,7 +389,7 @@ process_message (unsigned long type,
       {
 	struct ConfigWinPacket *cfg = (void *) body;
 	window_list_entry *wle = lookup_window_list_entry (body[0]);
-	
+
 	wle->desk = cfg->desk;
 	wle->layer = 0;
 	wle->iconified = IS_ICONIFIED(cfg);
@@ -426,7 +426,7 @@ process_message (unsigned long type,
 }
 
 
-void 
+void
 read_fvwm_pipe (gpointer data, int source, GdkInputCondition cond)
 {
   unsigned long header[HEADER_SIZE], *body;
@@ -439,18 +439,18 @@ read_fvwm_pipe (gpointer data, int source, GdkInputCondition cond)
 }
 
 
-void 
+void
 DeadPipe (int nons)
 {
   exit (1);
 }
 
 
-int 
+int
 main (int argc, char **argv)
 {
   char *s;
-  
+
   if ((s = strrchr (argv[0], '/')))
     {
       s++;
@@ -487,8 +487,8 @@ main (int argc, char **argv)
   window_list_entries = g_hash_table_new (g_int_hash, g_int_equal);
 
   parse_options ();
-  
-  SetMessageMask (fvwm_fd, 
+
+  SetMessageMask (fvwm_fd,
 		  M_STRING |
 		  M_LOCKONSEND |
 		  M_CONFIG_INFO |
@@ -503,7 +503,7 @@ main (int argc, char **argv)
 
   SendText (fvwm_fd, "Send_WindowList", 0);
 
-  gtk_input_add_full (fvwm_fd[1], GDK_INPUT_READ, read_fvwm_pipe, 
+  gtk_input_add_full (fvwm_fd[1], GDK_INPUT_READ, read_fvwm_pipe,
                       NULL, NULL, NULL);
   gtk_main ();
   return 0;
