@@ -36,37 +36,12 @@
 #include "config.h"
 #include <libs/fvwmlib.h>
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <sys/time.h>
-
-extern char *Module;
-
-/**********************************************************
-  saferealloc - safely reallocate memory or exit if fails.
-***********************************************************/
-char *saferealloc(char *ptr, size_t length)
-{
-  char *newptr;
-
-  if(length <=0) length=1;
-
-  newptr = realloc(ptr,length);
-  if (newptr == NULL) {
-      fprintf(stderr,"%s:realloc failed",Module);
-      exit(1);
-  }
-  return newptr;
-}
-
 void UpdateString(char **string, const char *value)
 {
   if (value==NULL)
     return;
   *string = saferealloc(*string, strlen(value)+1);
-  strcpy(*string,value);
+  strcpy(*string, value);
 }
 
 

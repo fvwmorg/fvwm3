@@ -1,3 +1,8 @@
+1999-10-20  Hippo
+
+	* modules/*/*: moved saferealloc into libfvwm.a
+	* FvwmTheme/FvwmTheme.c: has a simpler version of AllocColorset
+
 1999-10-18 Olivier Chapuis <olivier.chapuis@free.fr>
 
 	* FvwmWinList.c (main): Fix a problem if we start WinList with

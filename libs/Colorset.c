@@ -37,41 +37,41 @@
 
 /* globals */
 colorset_struct *Colorset = NULL;
-unsigned int nColorsets = 0;
+int nColorsets = 0;
 
 /*****************************************************************************
  * AllocColorset() grows the size of the Colorset array to include set n
  * Colorset_struct *Colorset will be altered
  * returns the address of the member
  *****************************************************************************/
-void AllocColorset(unsigned int n) {
-  colorset_struct *newColorset;
-
+void AllocColorset(int n)
+{
   /* do nothing if it already exists */
   if (n < nColorsets)
     return;
 
-  /* alloc space for the whole new array */
-  newColorset = (colorset_struct *)safecalloc(n + 1, sizeof(colorset_struct));
+  /* increment n to get the required array size, get a new array */
+  Colorset = (colorset_struct *)saferealloc((char *)Colorset,
+					    ++n * sizeof(colorset_struct));
 
-  /* copy and discard the old array */
-  if (Colorset) {
-    memcpy(newColorset, Colorset, sizeof(colorset_struct) * nColorsets);
-    free(Colorset);
-  }
+  /* zero out the new members */
+  memset(&Colorset[nColorsets], 0, (n - nColorsets) * sizeof(colorset_struct));
 
-  Colorset = newColorset;
-  nColorsets = n + 1;
+  /* copy colorset 0 pixels into new members so that if undefined ones are
+   * referenced at least they don't give black on black */
+  if (n > 1)
+    while (nColorsets < n)
+      memcpy(&Colorset[nColorsets++], &Colorset[0], sizeof(Pixel) * 4);
+
+  nColorsets = n;
 }
 
 /*****************************************************************************
  * DumpColorset() returns a char * to the colorset contents in printable form
  *****************************************************************************/
 static char csetbuf[160];
-char *DumpColorset(unsigned int n)
+char *DumpColorset(int n, colorset_struct *cs)
 {
-  colorset_struct *cs = &Colorset[n];
-
   sprintf(csetbuf,
 	  "Colorset %x %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x",
 	  n, cs->fg, cs->bg, cs->hilite, cs->shadow, cs->pixmap,

@@ -664,7 +664,7 @@ int main(int argc, char **argv)
   /* create the move/resize feedback window */
   Scr.SizeStringWidth = XTextWidth (Scr.StdFont.font,
                                     " +8888 x +8888 ", 15);
-  attributes.background_pixel = Colorset[Scr.DefaultColorset].bg;
+  attributes.background_pixel = Scr.StdBack;
   attributes.colormap = Pcmap;
   attributes.border_pixel = 0;
   valuemask = CWBackPixel | CWColormap | CWBorderPixel;
@@ -1579,10 +1579,12 @@ static void InitVariables(void)
 
   Scr.DefaultColorset = -1;
   AllocColorset(0);
-  Scr.StdFore = GetColor("black");
-  Scr.StdBack = GetColor("gray");
-  Scr.StdHilite = GetHilite(Scr.StdBack);
-  Scr.StdShadow = GetShadow(Scr.StdBack);
+  /* set up colorset 0 so that if FvwmTheme fails to start any modules
+   * using colorsets don't appear black on black */
+  Colorset[0].fg = Scr.StdFore = GetColor("black");
+  Colorset[0].bg = Scr.StdBack = GetColor("gray");
+  Colorset[0].hilite = Scr.StdHilite = GetHilite(Scr.StdBack);
+  Colorset[0].shadow = Scr.StdShadow = GetShadow(Scr.StdBack);
   Scr.StdGC = 0;
   Scr.StdReliefGC = 0;
   Scr.StdShadowGC = 0;

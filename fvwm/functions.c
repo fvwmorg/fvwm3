@@ -323,19 +323,23 @@ static int expand_extended_var(char *var_name, char *output)
     if (*(rest + n) != 0)
       /* trailing characters */
       return 0;
+    if (cs < 0)
+      return 0;
+    if (nColorsets <= cs)
+      AllocColorset(cs);
     switch (i)
     {
     case 0:
-      pixel = Colorset[cs % nColorsets].fg;
+      pixel = Colorset[cs].fg;
       break;
     case 1:
-      pixel = Colorset[cs % nColorsets].bg;
+      pixel = Colorset[cs].bg;
       break;
     case 2:
-      pixel = Colorset[cs % nColorsets].hilite;
+      pixel = Colorset[cs].hilite;
       break;
     case 3:
-      pixel = Colorset[cs % nColorsets].shadow;
+      pixel = Colorset[cs].shadow;
       break;
     }
     return pixel_to_color_string(dpy, Pcmap, pixel, target, False);

@@ -1064,7 +1064,6 @@ void HandleColorset(F_CMD_ARGS)
     return;
 
   LoadColorset(action);
-  fprintf(stderr, "broadcasting colorset %d\n", n);
   BroadcastColorset(n);
 
   if (n == Scr.DefaultColorset)

@@ -22,7 +22,7 @@
 #define LIBS_COLORSETS_H
 
 typedef struct {
-  /* do not reorder this without changing FvwmTheme */
+  /* AllocColorset copies the first four pixels from colorset 0, don't move */
   Pixel fg;
   Pixel bg;
   Pixel hilite;
@@ -36,11 +36,9 @@ typedef struct {
   unsigned int shape_height : 12;
   unsigned int shape_type : 2;
 #ifdef FVWMTHEME_PRIVATE
-  /* Everything below here is used internally by FvwmTheme only. */
+  /* FvwmTheme use only. */
   Pixmap mask;
   unsigned int color_flags : 6;
-#else
-  int pad[2];
 #endif
 } colorset_struct;
 
@@ -66,12 +64,15 @@ typedef struct {
 /* colorsets are stored as an array of structs to permit fast dereferencing */
 extern colorset_struct *Colorset;
 /* this records the size of the array */
-extern unsigned int nColorsets;
+extern int nColorsets;
 
-/* Create n new colorsets */
-void AllocColorset(unsigned int n);
+#ifndef FVWMTHEME_PRIVATE
+/* Create n new colorsets, FvwmTheme does it's own thing (different size) */
+void AllocColorset(int n);
+#endif
+
 /* dump one */
-char *DumpColorset(unsigned int n);
+char *DumpColorset(int n, colorset_struct *colorset);
 /* load one */
 int LoadColorset(char *line);
 

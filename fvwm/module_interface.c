@@ -1058,17 +1058,13 @@ BroadcastMiniIcon(unsigned long event_type,
 
 /**********************************************************************
  * Reads a colorset command from a module and broadcasts it back out
- * Colorset 0 and DefaultColors are the same thing
  **********************************************************************/
 void BroadcastColorset(int n)
 {
   int i;
   char *buf;
-
-  if (-1 == n)
-    return;
-
-  buf = DumpColorset(n);
+  
+  buf = DumpColorset(n, &Colorset[n]);
   for (i=0; i < npipes; i++)
   {
     /* just a quick check to save us lots of overhead */

@@ -34,34 +34,7 @@
  */
 
 #include "config.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <string.h>
-#include <sys/time.h>
 #include "libs/fvwmlib.h"
-
-extern char *Module;
-
-/******************************************************************************
-  saferealloc - safely reallocate memory or exit if fails. (Doesn't work right)
-  (No kidding! Try it now ...)
-******************************************************************************/
-char *saferealloc(char *ptr, size_t length)
-{
-char *newptr;
-
-  if(length <=0) length=1;
-
-  /* If ptr is NULL then realloc does a malloc */
-  newptr=realloc(ptr,length);
-    if (newptr == (char *)0) {
-      fprintf(stderr,"%s:realloc failed",Module);
-      exit(1);
-    }
-  return newptr;
-}
 
 void UpdateString(char **string,const char *value)
 {

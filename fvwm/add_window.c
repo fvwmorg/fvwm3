@@ -76,7 +76,6 @@
 #include "placement.h"
 #include "builtins.h"
 #include "decorations.h"
-#include "libs/Colorset.h"
 #include "style.h"
 
 /* Used to parse command line of clients for specific desk requests. */

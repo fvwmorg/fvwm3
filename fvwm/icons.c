@@ -151,7 +151,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   valuemask = CWColormap | CWBorderPixel
     | CWBackPixel | CWCursor | CWEventMask;
   attributes.colormap = Pcmap;
-  attributes.background_pixel = Colorset[Scr.DefaultColorset].bg;
+  attributes.background_pixel = Scr.StdBack;
   attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
   attributes.border_pixel = 0;
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
@@ -165,18 +165,28 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 				    tmp_win->icon_w_height, 0, Pdepth,
 				    InputOutput, Pvisual, valuemask,
 				    &attributes);
+  if (Scr.DefaultColorset >= 0)
+    SetWindowBackground(dpy, tmp_win->icon_w, tmp_win->icon_w_width,
+			tmp_win->icon_w_height, &Colorset[Scr.DefaultColorset],
+			Pdepth, Scr.StdGC, False);
 
   /* create a window to hold the picture */
   if((IS_ICON_OURS(tmp_win)) && (tmp_win->icon_p_width > 0)
      && (tmp_win->icon_p_height > 0))
   {
     /* use fvwm's visuals in these cases */
-    if (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win))
+    if (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win)) {
       tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, def_x, def_y,
 					     tmp_win->icon_p_width,
 					     tmp_win->icon_p_height, 0,
 					     Pdepth, InputOutput,
 					     Pvisual, valuemask, &attributes);
+      if (Scr.DefaultColorset >= 0)
+	SetWindowBackground(dpy, tmp_win->icon_w, tmp_win->icon_p_width,
+			    tmp_win->icon_p_height,
+			    &Colorset[Scr.DefaultColorset], Pdepth, Scr.StdGC,
+			    False);
+    }
     else
     {
       /* client supplied icon pixmap and fvwm is using another visual */

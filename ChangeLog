@@ -1,3 +1,13 @@
+1999-10-20  Hippo
+
+	* libs/Colorset.{h,c}: AllocColorset duplicates colorset 0 into new
+	members.
+	* libs/safemalloc.{h,c}: new function saferealloc().
+	* fvwm/fvwm.c: colorset 0 defaults to black on grey in case FvwmTheme
+	fails to start.
+	* fvwm/fvwm2.1: Documented DefaultColorset command.
+	* fvwm/*.c: clean up colorset references.
+
 1999-10-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/session.c (matchWin): removed '#if 0 if (Restarting)' code

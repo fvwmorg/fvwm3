@@ -18,9 +18,9 @@
 
 #include "safemalloc.h"
 
-static void alloc_failed(char c, int length)
+static void alloc_failed(char *c, int length)
 {
-  fprintf(stderr, "%calloc of %d bytes failed. Exiting\n", c, length);
+  fprintf(stderr, "%salloc of %d bytes failed. Exiting\n", c, length);
   exit(1);
 }
 
@@ -43,7 +43,7 @@ char *safemalloc(int length)
   if(ptr == (char *)0)
   {
     /* doesn't return */
-    alloc_failed('m', length);
+    alloc_failed("m", length);
   }
   return ptr;
 }
@@ -52,7 +52,7 @@ char *safemalloc(int length)
 /***********************************************************************
  *
  *  Procedure:
- *	safecalloc - mallocs specified space or exits if there's a
+ *	safecalloc - callocs specified space or exits if there's a
  *		     problem
  *
  ***********************************************************************/
@@ -64,7 +64,28 @@ char *safecalloc(int num, int length)
   if(ptr == (char *)0)
   {
     /* doesn't return */
-    alloc_failed('c', length);
+    alloc_failed("c", length);
+  }
+  return ptr;
+}
+
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	saferealloc - reallocs specified space or exits if there's a
+ *		     problem
+ *
+ ***********************************************************************/
+char *saferealloc(char *src, int length)
+{
+  char *ptr;
+
+  ptr = realloc((void *)src, length);
+  if(ptr == (char *)0)
+  {
+    /* doesn't return */
+    alloc_failed("re", length);
   }
   return ptr;
 }

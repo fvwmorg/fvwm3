@@ -51,7 +51,6 @@ static int color_limit = 0;
 static int fd[2];			/* communication pipes */
 static Bool privateCells = False;	/* set when read/write colors used */
 static Bool sharedCells = False;	/* set after a shared color is used */
-static int nSets = 0;			/* how many color sets allocated */
 static char *black = "black";
 static char *gray = "gray";
 
@@ -293,7 +292,7 @@ static void parse_colorset(char *line)
   XGCValues xgcv;
   static GC mono_gc = None;
 
-  /* find out which colorset and make sure it exists */
+  /* find out which colorset */
   if (GetIntegerArguments(line, &line, &n, 1) != 1)
     return;
   if (n < 0)
@@ -301,12 +300,18 @@ static void parse_colorset(char *line)
     fprintf(stderr, "%s: colorset number must be zero or positive\n", name);
     return;
   }
-  AllocColorset(n);
-  cs = &Colorset[n];
 
-  /* if new colorsets are created initialize them to black on gray */
-  while (nSets <= n) {
-    colorset_struct *ncs = &Colorset[nSets];
+  /* make sure it exists and has sensible contents */
+  if (nColorsets <= n) {
+    Colorset = (colorset_struct *)saferealloc((char *)Colorset,
+					      (n + 1) * sizeof(colorset_struct));
+    memset(&Colorset[nColorsets], 0,
+	   (n + 1 - nColorsets) * sizeof(colorset_struct));
+  }
+
+  /* initialize new colorsets to black on gray */
+  while (nColorsets <= n) {
+    colorset_struct *ncs = &Colorset[nColorsets];
     short red, green, blue;
 
     have_pixels_changed = True;
@@ -333,14 +338,15 @@ static void parse_colorset(char *line)
       XStoreColor(dpy, Pcmap, &color);
     } else {
       /* grab four shareable colors */
-      Colorset[nSets].fg = GetColor(black);
-      Colorset[nSets].bg = GetColor(gray);
-      Colorset[nSets].hilite = GetHilite(Colorset[nSets].bg);
-      Colorset[nSets].shadow = GetShadow(Colorset[nSets].bg);
-      fprintf(stderr, "cset.mask = %d.%lx\n", nSets, Colorset[nSets].mask);
+      Colorset[nColorsets].fg = GetColor(black);
+      Colorset[nColorsets].bg = GetColor(gray);
+      Colorset[nColorsets].hilite = GetHilite(Colorset[nColorsets].bg);
+      Colorset[nColorsets].shadow = GetShadow(Colorset[nColorsets].bg);
     }
-  nSets++;
+  nColorsets++;
   }
+
+  cs = &Colorset[n];
 
   /* ---------- Parse the options ---------- */
   while (line && *line)
@@ -859,7 +865,7 @@ static void parse_colorset(char *line)
 
   /* inform fvwm of the change */
   if (have_pixels_changed || has_pixmap_changed || has_shape_changed)
-    SendText(fd, DumpColorset(n), 0);
+    SendText(fd, DumpColorset(n, &Colorset[n]), 0);
 
   if (fg)
     free(fg);

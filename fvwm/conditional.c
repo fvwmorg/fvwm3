@@ -45,7 +45,6 @@
 #include "gnome.h"
 #include "borders.h"
 #include "session.h"
-#include "libs/Colorset.h"
 
 
 /**********************************************************************

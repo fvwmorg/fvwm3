@@ -1858,15 +1858,21 @@ The optional \fIfg\fP and \fIbg\fP arguments specify the foreground
 and background colors for the cursor, defaulting to black and white.
 
 .TP
-.B "DefaultColors" "[\fI foreground background\fP] | [\fI Colorset num\fP]"
+.B "DefaultColors" "[\fI foreground background\fP]"
 \fIDefaultColors\fP sets the default forground and background
 colors used in miscellaneous windows created by fvwm, for example
 in the geometry feedback windows during a move or resize operation.
 If you don't want to change one color or the other, use - as its
 color name.  To revert to the builtin default colors omit both
 color names.  Note that the default colors are not used in menus,
-window titles or icon titles. You can also use a colorset for these
-windows DefaultColors Colorset <num>, see FvwmTheme.
+window titles or icon titles.
+
+
+.TP
+.B "DefaultColorset" "[\fInum\fP]"
+\fIDefaultColorset\fP sets the colorset used by the windows controlled
+by the DefaultColors command. To revert back to the DefaultColors colors
+use "DefaultColorset -1" or any variant of the DefaultColors command.
 
 
 .TP
@@ -3592,17 +3598,6 @@ be used.
 overrides the colors set by \fIColors\fP.  Instead, the
 corresponding colors from the given colorset are used.  Note that all
 other features of a colorset are unsupported yet.
-
-.B "DefaultColors" "[\fI foreground background\fP] | [\fI Colorset num\fP]"
-\fIDefaultColors\fP sets the default forground and background
-colors used in miscellaneous windows created by fvwm, for example
-in the geometry feedback windows during a move or resize operation.
-If you don't want to change one color or the other, use - as its
-color name.  To revert to the builtin default colors omit both
-color names.  Note that the default colors are not used in menus,
-window titles or icon titles. You can also use a colorset for these
-windows DefaultColors Colorset <num>, see FvwmTheme.
-
 
 \fIUseDecor\fP accepts one argument: the name of a decor created with
 AddToDecor.  If UseDecor is not specified, the "Default" decor is
