@@ -38,7 +38,6 @@
 #  include <pwd.h>
 #endif
 
-#define FVWM_COLORSET_PRIVATE
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
@@ -1520,10 +1519,10 @@ static void InitVariables(void)
   /* Not the right place for this, should only be called once somewhere .. */
 
   /* EdgeCommands - no edge commands by default */
-  Scr.PanFrameTop.command    = NULL ; 
-  Scr.PanFrameBottom.command = NULL ; 
-  Scr.PanFrameRight.command  = NULL ; 
-  Scr.PanFrameLeft.command   = NULL ; 
+  Scr.PanFrameTop.command    = NULL;
+  Scr.PanFrameBottom.command = NULL;
+  Scr.PanFrameRight.command  = NULL;
+  Scr.PanFrameLeft.command   = NULL;
 
   return;
 }

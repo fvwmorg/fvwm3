@@ -882,7 +882,6 @@ void list_new_desk(unsigned long *body)
     XStoreName(dpy, Scr.Pager_w, Desks[0].label);
     XSetIconName(dpy, Scr.Pager_w, Desks[0].label);
 
-
     if (Desks[0].bgPixmap != NULL)
     {
       PDestroyFvwmPicture(dpy, Desks[0].bgPixmap);
@@ -971,6 +970,31 @@ void list_new_desk(unsigned long *body)
     XClearWindow(dpy, Desks[0].w);
     XClearWindow(dpy, Desks[0].title_w);
   } /* if (fAlwaysCurrentDesk && oldDesk != Scr.CurrentDesk) */
+  else if (!fAlwaysCurrentDesk)
+  {
+    PagerStringList *item;
+    int i;
+    char line[100];
+
+    i = Scr.CurrentDesk - oldDesk;
+    item = FindDeskStrings(Scr.CurrentDesk);
+    if (Desks[i].label != NULL)
+    {
+      free(Desks[i].label);
+      Desks[i].label = NULL;
+    }
+    if (item->next != NULL && item->next->label != NULL)
+    {
+      CopyString(&Desks[i].label, item->next->label);
+    }
+    else
+    {
+      sprintf(line, "Desk %d", desk1);
+      CopyString(&Desks[i].label, line);
+    }
+    XStoreName(dpy, Scr.Pager_w, Desks[i].label);
+    XSetIconName(dpy, Scr.Pager_w, Desks[i].label);
+  }
 
   MovePage(True);
   DrawGrid(oldDesk - desk1,1);

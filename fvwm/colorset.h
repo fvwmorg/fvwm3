@@ -13,6 +13,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifndef __COLORSET_H
+#define __COLORSET_H
+
+#undef FVWM_COLORSET_PRIVATE
 #define FVWM_COLORSET_PRIVATE
 #include "libs/Colorset.h"
 #undef  FVWM_COLORSET_PRIVATE
@@ -20,3 +24,5 @@
 void parse_colorset(int n, char *line);
 void cleanup_colorsets();
 void alloc_colorset(int n);
+
+#endif __COLORSET_H

@@ -1,3 +1,9 @@
+2002-05-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.c:
+	* fvwm/colorset.h:
+	fixed compilation problem
+
 2002-05-20  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureImageLoader.c (PImageRGBtoPixel):
@@ -21,9 +27,9 @@
 	* libs/Flocale.c (FlocaleDrawString):
 	(FlocaleDrawUnderline):
 	* libs/Flocale.h:
-	Removed some unused and debug code  
+	Removed some unused and debug code
 
-2002-05-17  olicha  <olivier.chapuis@free.fr>	
+2002-05-17  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/menuitem.c (draw_underline):
 	* libs/Flocale.h:
@@ -39,13 +45,13 @@
 	(DisplaySize):
 	* fvwm/menuitem.c (menuitem_paint):
 	* fvwm/borders.c (get_common_decorations):
-	(border_get_titlebar_draw_descr): 
+	(border_get_titlebar_draw_descr):
 	* fvwm/fvwm.h:
 	* fvwm/icons.c (DrawIconWindow):
 	Pass the colorset to text drawing via the FlocaleWinString structure
 
 	* libs/fvwmlib.h:
-	* libs/ColorUtils.c (GetForeShadowColor): 
+	* libs/ColorUtils.c (GetForeShadowColor):
 	(GetForeShadow):
 	* fvwm/colorset.c (parse_colorset):
 	* libs/Colorset.h:
@@ -54,7 +60,7 @@
 	Added fgsh colorset and two new functions GetForeShadowColor and
 	GetForeShadow which should be modified
 
-	* libs/Makefile.am: 
+	* libs/Makefile.am:
 	* libs/Fft.h:
 	* libs/FftInterface.h (new file):
 	* libs/Fft.c (FftDrawString):
