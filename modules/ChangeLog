@@ -1,3 +1,9 @@
+1998-12-04  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmPager/FvwmPager.c (ParseOptions): Free BalloonFore variable
+	when processing that option, not BalloonBack.  Reported with
+	suggested solution by Robert H. Ford II <rhford2@lucent.com>
+
 1998-11-28  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/FvwmButtons.c (Slide): fixed panels overlapping button

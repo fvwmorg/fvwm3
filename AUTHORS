@@ -3,22 +3,32 @@ Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
 Dan Espen:
-Color Limiting, Multiple IconBoxes, Iconification Animation, new 3d hilight/shadow calc from scwm as a library routine, updated web docs.
+Color Limiting, Multiple IconBoxes, Iconification Animation, new 3d
+hilight/shadow calc from scwm as a library routine, updated web docs.
 
 German Gomez Garcia:
-Named MenuStyles
+Named MenuStyles.
 
 Steven M. Robbins:
 Autoconf & automake support.
 
+Paul D. Smith:
+Purify support (heap rot, array overwrites, memory stompage of all sorts).
+Some autoconf/automake/portability help.  Initial cut at a generic
+debugging API.  Rework module interface API on fvwm's side.
+General code gadfly: tiptoe in; change some code; run away, run away!
+
 Dominik Vogt:
-Improved ShuffleButtons algorithm (FvwmButtons), button geometries (FvwmButtons), Menu Position Hints, XResources.c, various move/resize and menu enhancements, MoveToPage, MoveToDesk, various parsing functions, COPYING file
+Improved ShuffleButtons algorithm (FvwmButtons), button geometries
+(FvwmButtons), Menu Position Hints, XResources.c, various move/resize
+and menu enhancements, MoveToPage, MoveToDesk, various parsing
+functions, COPYING file.
+
+A.J. Weber:
+SnapAttraction patch.
 
 Bob Woodside:
 StartsOnPage style, Stacking Order chain.
-
-A.J. Weber:
-SnapAttraction patch
 
 
 
@@ -95,7 +105,6 @@ William E. Roadcap
 Frank Scheelen
 Eric Schott
 Mark Scott
-Paul D. Smith
 Kit Smithers
 Nobutaka Suzuki
 Szijarto Szabolcs

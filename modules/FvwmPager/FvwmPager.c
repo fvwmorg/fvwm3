@@ -1251,8 +1251,8 @@ void ParseOptions(void)
 	{
 	  if (Scr.d_depth > 1)
 	    {
-	      if (BalloonBack)
-		free(BalloonBack);
+	      if (BalloonFore)
+		free(BalloonFore);
 	      CopyString(&BalloonFore, arg1);
 	    }
 	}
