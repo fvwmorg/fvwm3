@@ -1,3 +1,8 @@
+2002-06-20  olicha  <olivier.chapuis@free.fr>
+
+	* libs/FBidi.h (FBidiConvert):
+	Fixed compile if !HAVE_BIDI
+
 2002-06-19  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/fvwm.c (InitVariables):
