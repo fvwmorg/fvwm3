@@ -1,3 +1,8 @@
+2004-01-25  Olivier Chapuis  <olivier.chapuis@free.fr>
+
+	* fvwm/builtins.c (do_title_style):
+	Fixed MinHeight, it must reset the Height
+
 2004-01-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (menuShortcuts):

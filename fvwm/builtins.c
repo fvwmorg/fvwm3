@@ -502,6 +502,7 @@ static void do_title_style(F_CMD_ARGS, Bool do_add)
 			}
 			if (decor->min_title_height != height)
 			{
+				decor->title_height = 0;
 				decor->min_title_height = height;
 				decor->flags.has_title_height_changed = 1;
 			}
