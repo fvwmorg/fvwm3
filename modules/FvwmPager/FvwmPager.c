@@ -659,12 +659,6 @@ void list_configure(unsigned long *body)
 
       else
 	MoveResizePagerView(t);
-/*
-      if(FocusWin == t)
-	Hilight(t,True);
-      else
-	Hilight(t,False);
-*/
     }
 }
 
@@ -710,7 +704,7 @@ void list_destroy(unsigned long *body)
  ***********************************************************************/
 void list_focus(unsigned long *body)
 {
-  PagerWindow *t,*temp;
+  PagerWindow *t;
   Window target_w;
   extern Pixel focus_pix, focus_fore_pix;
   target_w = body[0];
@@ -732,13 +726,11 @@ void list_focus(unsigned long *body)
   }
   if(t != FocusWin)
   {
-    temp = FocusWin;
-    FocusWin = t;
-
-    if(temp != NULL)
-      Hilight(temp,False);
     if(FocusWin != NULL)
-      Hilight(FocusWin,True);
+      Hilight(FocusWin, False);
+    FocusWin = t;
+    if(FocusWin != NULL)
+      Hilight(FocusWin, True);
   }
 }
 
@@ -1025,12 +1017,6 @@ void list_deiconify(unsigned long *body)
 	ShowBalloons = ShowPagerBalloons;
 
       MoveResizePagerView(t);
-/*
-      if(FocusWin == t)
-	Hilight(t,True);
-      else
-	Hilight(t,False);
-*/
     }
 }
 

@@ -283,10 +283,20 @@ void initialize_pager(void)
   back_pix = GetColor(PagerBack);
   hi_pix = GetColor(HilightC);
 
-  if (WindowBack && WindowFore && WindowHiBack && WindowHiFore)
+  if (windowcolorset >= 0) {
+    win_back_pix = Colorset[windowcolorset % nColorsets].bg;
+    win_fore_pix = Colorset[windowcolorset % nColorsets].fg;
+  } else if (WindowBack && WindowFore)
   {
     win_back_pix	= GetColor(WindowBack);
     win_fore_pix	= GetColor(WindowFore);
+  }
+
+  if (activecolorset >= 0) {
+    win_hi_back_pix = Colorset[activecolorset % nColorsets].bg;
+    win_hi_fore_pix = Colorset[activecolorset % nColorsets].fg;
+  } else if (WindowHiBack && WindowHiFore)
+  {
     win_hi_back_pix	= GetColor(WindowHiBack);
     win_hi_fore_pix	= GetColor(WindowHiFore);
   }
@@ -490,6 +500,12 @@ void initialize_pager(void)
 		   &sizehints,&wmhints,&class1);
   XFree((char *)name.value);
 
+  /* change font for labelling mini-windows */
+  gcv.foreground = focus_fore_pix;
+  gcv.background = focus_pix;
+  gcv.font = windowFont->fid;
+  XChangeGC(dpy, Scr.NormalGC, GCForeground|GCBackground|GCFont, &gcv);
+  
   for(i=0;i<ndesks;i++)
     {
       w = window_w/ndesks;
@@ -1512,10 +1528,17 @@ void AddNewWindow(PagerWindow *t)
   m1 = (Scr.Vy+t->y)/Scr.MyDisplayHeight;
   x = (Scr.Vx + t->x)*(desk_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
   y = (Scr.Vy + t->y)*(desk_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
+#if 0
+  /* calculate size based on bottom right coordinate */
   w = (Scr.Vx + t->x + t->width+2)*(desk_w-n)/
     (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
   h = (Scr.Vy + t->y + t->height+2)*(desk_h-m)/
     (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
+#else
+  /* calculate size based on width, height */
+  w = t->width * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) - 2;
+  h = t->height * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) - 2;
+#endif
   if(w<1)
     w = 1;
   if(h<1)
@@ -1551,10 +1574,17 @@ void AddNewWindow(PagerWindow *t)
 
   x = (Scr.Vx + t->x)*(icon_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
   y = (Scr.Vy + t->y)*(icon_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
+#if 0
+  /* calculate size based on bottom right coordinate */
   w = (Scr.Vx + t->x + t->width+2)*(icon_w-n)/
     (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
   h = (Scr.Vy + t->y + t->height+2)*(icon_h-m)/
     (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
+#else
+  /* calculate size based on width, height */
+  w = t->width * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) - 2;
+  h = t->height * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) - 2;
+#endif
   if(w<1)
     w = 1;
   if(h<1)
@@ -1667,10 +1697,17 @@ void MoveResizePagerView(PagerWindow *t)
   m1 = (Scr.Vy+t->y)/Scr.MyDisplayHeight;
   x = (Scr.Vx + t->x)*(desk_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
   y = (Scr.Vy + t->y)*(desk_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
+#if 0
+  /* calculate size based on bottom right coordinate */
   w = (Scr.Vx + t->x + t->width+2)*(desk_w-n)/
     (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
   h = (Scr.Vy + t->y + t->height+2)*(desk_h-m)/
     (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
+#else
+  /* calculate size based on width, height */
+  w = t->width * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) - 2;
+  h = t->height * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) - 2;
+#endif
 
   if (w < 1)
     w = 1;
@@ -1695,10 +1732,17 @@ void MoveResizePagerView(PagerWindow *t)
 
   x = (Scr.Vx + t->x)*(icon_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
   y = (Scr.Vy + t->y)*(icon_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
+#if 0
+  /* calculate size based on bottom right coordinate */
   w = (Scr.Vx + t->x + t->width+2)*(icon_w-n)/
     (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
   h = (Scr.Vy + t->y + t->height+2)*(icon_h-m)/
     (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
+#else
+  /* calculate size based on width, height */
+  w = t->width * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) - 2;
+  h = t->height * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) - 2;
+#endif
 
   if (w < 1)
     w = 1;
@@ -2745,6 +2789,8 @@ void change_colorset(int colorset)
   {
     colorset_struct *acsetp = &Colorset[colorset % nColorsets];
     focus_fore_pix = acsetp->fg;
+    win_hi_back_pix = acsetp->bg;
+    win_hi_fore_pix = acsetp->fg;
     t = FocusWin;
     if (t)
     {
