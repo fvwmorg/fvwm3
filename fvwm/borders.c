@@ -714,11 +714,14 @@ static void RedrawBorder(
     else if (PressedW == t->sides[1])
     {
       /* right */
-      r.x = t->frame_g.width - t->boundary_width;
-      r.y = t->visual_corner_width;
-      r.width = t->boundary_width - 1;
-      r.height = t->frame_g.height - 2 * t->visual_corner_width;
-      is_pressed = True;
+      if (!IS_SHADED(t))
+      {
+	r.x = t->frame_g.width - t->boundary_width;
+	r.y = t->visual_corner_width;
+	r.width = t->boundary_width - 1;
+	r.height = t->frame_g.height - 2 * t->visual_corner_width;
+	is_pressed = True;
+      }
     }
     else if (PressedW == t->sides[2])
     {
@@ -732,11 +735,14 @@ static void RedrawBorder(
     else if (PressedW == t->sides[3])
     {
       /* left */
-      r.x = 1;
-      r.y = t->visual_corner_width;
-      r.width = t->boundary_width - 1;
-      r.height = t->frame_g.height - 2 * t->visual_corner_width;
-      is_pressed = True;
+      if (!IS_SHADED(t))
+      {
+	r.x = 1;
+	r.y = t->visual_corner_width;
+	r.width = t->boundary_width - 1;
+	r.height = t->frame_g.height - 2 * t->visual_corner_width;
+	is_pressed = True;
+      }
     }
     else if (PressedW == t->corners[0])
     {
