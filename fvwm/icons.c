@@ -374,6 +374,32 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
       RelieveRectangle(dpy,Tmp_win->icon_w,0,0,Tmp_win->icon_w_width - 1,
                        ICON_HEIGHT - 1,Relief,Shadow,2);
     }
+  /* CDE-like behaviour of raising the icon title if the icon
+     gets the focus (in particular if the cursor is over the icon) */
+  if (Scr.Hilite == Tmp_win)
+    {
+      if (Tmp_win->icon_w != None)
+	{
+	  XRaiseWindow (dpy, Tmp_win->icon_w);
+	  raisePanFrames ();
+	}
+    }
+  else
+    {
+      XWindowChanges xwc;
+      int mask;
+      xwc.sibling = Tmp_win->frame;
+      xwc.stack_mode = Above;
+      mask = CWSibling|CWStackMode;
+      if (Tmp_win->icon_w != None)
+	{
+	  XConfigureWindow(dpy, Tmp_win->icon_w, mask, &xwc);
+	}
+      if (Tmp_win->icon_pixmap_w != None)
+	{
+	  XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, mask, &xwc);
+	}
+    }
 }
 
 /***********************************************************************

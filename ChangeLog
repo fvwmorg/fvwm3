@@ -1,3 +1,8 @@
+1999-04-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/icons.c (DrawIconWindow): implement CDE-like raising
+	of the titles of focused icons.
+
 1999-04-17  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/screen.h (ScreenInfo): new member for go struct:
