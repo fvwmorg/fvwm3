@@ -46,6 +46,8 @@ Changes in beta release 2.5.1 (not released yet)
 
   Please refer to the FvwmTaskBar man page for details.
 
+* Fixed an FvwmScript compile problem on dec-osf5.
+
 Changes in beta release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify

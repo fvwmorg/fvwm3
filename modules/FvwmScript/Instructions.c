@@ -1427,8 +1427,8 @@ static void SendSign (int NbArg,long *TabArg)
   free(arg[1]);
 }
 
-/******* WarpPointer *******/
-static void WarpPointer(int NbArg,long *TabArg)
+/******* MyWarpPointer *******/
+static void MyWarpPointer(int NbArg,long *TabArg)
 {
   int i=0;
   char *arg;
@@ -1812,7 +1812,7 @@ void InitCom()
   TabCom[14]=IfThen;
   TabCom[15]=Loop;
   TabCom[16]=While;
-  TabCom[17]=WarpPointer;
+  TabCom[17]=MyWarpPointer;
   TabCom[18]=WriteToFile;
   TabCom[19]=ChangeBackColor;
   TabCom[21]=ChangeValueMax;
