@@ -1,3 +1,12 @@
+1999-01-14  Paul D. Smith  <psmith@gnu.org>
+
+	* configure.in: If readline doesn't work with termcap, see if it
+	works with ncurses (some installations are built against
+	ncurses).
+
+	* INSTALL.fvwm: Updated to document cpp issues.
+	Updated to document shared library / -R issues.
+
 1999-01-15  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/fvwm2.1: marked -blackout option as obsolete

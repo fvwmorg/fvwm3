@@ -23,19 +23,19 @@ What gets installed, and Where
 ==============================
 
 * fvwm2 is installed into ${prefix}/bin
-* all the modules (and extra modules) are installed 
+* all the modules (and extra modules) are installed
   into ${libexecdir}/fvwm2/${VERSION}
 
 Where VERSION is the version string of fvwm2, typically something like
-"2.0.46".  No other files are installed.  There are sample
+"2.2.0".  No other files are installed.  There are sample
 system.fvwm2rc files which you may copy manually to ${sysconfdir} ---
 see below.
 
-Unless you used configure options, 
+Unless you used configure options,
 
+* ${prefix} is /usr/local.
 * ${sysconfdir} is ${prefix}/etc,
 * ${libexecdir} is ${prefix}/libexec
-* ${prefix} is /usr/local.  
 
 Thus the default locations are: /usr/local/bin,
 /usr/local/libexec/fvwm2/VERSION, and /usr/local/etc for the fvwm2
@@ -68,6 +68,20 @@ doesn't do the right thing, specify one or the other of these flags:
     --without-cxx   to disable probing for a C++ compiler altogether
     --with-cxx=foo  to use "foo" for compiling C++ programs
 
+
+CPP
+===
+
+One of FVWM's modules, FvwmCpp, requires a C preprocessor program.  The
+configuration will look in various common places for cpp.  If one is
+not found, FvwmCpp will still compile but you'll need to invoke it with
+the -cpppath option to tell it where to get it's cpp.  If neither is
+specified, FvwmCpp will exit with an error message.
+
+You can tell configure what cpp to use by setting the FVWM_CPP
+environment variable before invoking configure:
+
+  $ FVWM_CPP=/my/special/cpp ./configure
 
 
 Optional libraries used by FVWM
@@ -102,12 +116,32 @@ following flags (examples assume library is named "foo"):
 Only one version of the --with-foo-library flag may be specified.
 
 
+Shared Libraries in Non-standard Places
+---------------------------------------
+
+Note that at this time, autoconf and fvwm don't handle systems which
+require a runtime library path separate from the link path very
+gracefully.  If you have such a system (e.g., Solaris) and you have
+installed the optional libraries in places not normally searched (e.g.,
+not in /lib or similar), you may need to specify the runtime path
+separately; the above options won't add it for you.
+
+A good way to do this is set the LDFLAGS variable before configure
+runs to contain the -R option.  For example:
+
+  $ LDFLAGS=-R/opt/xpm ./configure --with-xpm-library=/opt/xpm \
+                                   --with-xpm-includes=/opt/xpm
+
+In the future, hopefully, fvwm's configuration will perform this step
+automatically.
+
+
 Compile-time Options
 ====================
 
 Fvwm2 has a multitude of options selectable only at compile time.
 These are intended to keep fvwm2's memory footprint small, by compiling
-in the code only if requested.  
+in the code only if requested.
 
 Each such option, say "foo", is selectable by an "--enable-foo" or a
 "--disable-foo" switch.  By default, all of these options (except

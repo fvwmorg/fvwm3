@@ -244,8 +244,16 @@ AC_SUBST(rplay_CFLAGS)
 dnl FIXME: should compute availability of termcap
 smr_CHECK_LIB(readline, , , readline, readline/readline.h, -ltermcap)
 if test "$readline_LIBS"; then
-    readline_LIBS="$readline_LIBS -ltermcap"
+  readline_LIBS="$readline_LIBS -ltermcap"
+  AC_DEFINE(HAVE_READLINE)
+else
+  # We couldn't use readline with termcap; try with ncurses?
+  dnl FIXME: should compute availability of ncurses
+  smr_CHECK_LIB(readline, , , readline, readline/readline.h, -lncurses)
+  if test "$readline_LIBS"; then
+    readline_LIBS="$readline_LIBS -lncurses"
     AC_DEFINE(HAVE_READLINE)
+  fi
 fi
 AC_SUBST(readline_LIBS)
 AC_SUBST(readline_CFLAGS)
