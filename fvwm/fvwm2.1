@@ -2593,16 +2593,37 @@ AddToDecor flatness
  + TitleStyle -- flat
  + BorderStyle -- HiddenHandles NoInset
  + HilightColor white navy
-Style "flatness" UseDecor flatness, \\
-  Color white/grey40,HandleWidth 4
+ + Style "flatness" UseDecor flatness, \\
+     Color white/grey40,HandleWidth 4
 
 Style "xterm" UseStyle flatness
 .EE
 An existing window's decor may be reassigned with ChangeDecor, or a
 Style command followed by a Recapture.  The decorations of all windows
 or of a specific decor can be updated with UpdateDecor (useful after
-decorations are modified; changing Style options requires a Recapture
-instead).  A decor can be destroyed with DestroyDecor.
+decorations are modified.  A decor can be destroyed with DestroyDecor.
+If you change styles in the decor you must re-apply the style to
+all windows that are supposed to do it followed by a Recapture:
+
+.EX
+AddToDecor flatness
+ + Style "flatness" UseDecor flatness, \\
+     Color white/grey40,HandleWidth 4
+.EE
+
+and now apply the style again:
+
+.EX
+Style "xterm" UseStyle flatness
+.EE
+
+A different way to achieve this to add the 'UseStyle' style
+to the decor itself:
+
+.EX
+AddToDecor flatness
+ + Style "xterm" UseStyle flatness
+.EE
 
 
 .TP
@@ -3222,6 +3243,9 @@ for a window can be reassigned with ChangeDecor.
 \fIUseStyle\fP takes one arg, which is the name of another style.  That way
 you can have unrelated window names easily inherit similar traits
 without retyping.  For example: 'Style "rxvt" UseStyle "XTerm"'.
+Warning: If a style is built from one or more parent styles and the
+parent styles are changed, the derived style is not modified. To achieve
+this you have to issue the 'UseStyle' line again.
 
 \fISkipMapping\fP tells fvwm not to switch to the desk the window is on when
 it gets mapped initially (useful with StartsOnDesk or StartsOnPage).

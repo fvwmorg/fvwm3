@@ -1,3 +1,8 @@
+1999-09-03  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (AddToDecor):
+	(UseStyle): clarified usage of UseStyle style
+
 1999-09-02  Hippo
 
 	* fvwm/{fvwm.c,screen.h,icons.c} Fixed client supplied icon pixmaps
