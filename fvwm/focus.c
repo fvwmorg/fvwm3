@@ -451,7 +451,7 @@ static void warp_to_fvwm_window(
 	dy = (cy + Scr.Vy) / Scr.MyDisplayHeight * Scr.MyDisplayHeight;
 	if (dx != Scr.Vx || dy != Scr.Vy)
 	{
-		MoveViewport(dx,dy,True);
+		MoveViewport(dx, dy, True);
 	}
 	if (IS_ICONIFIED(t))
 	{

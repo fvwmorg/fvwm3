@@ -42,6 +42,8 @@ int StartAndLaunchButtonsHeight = 0;
 int WindowButtonsLeftMargin = 4;    /* default value is 4 */
 int WindowButtonsRightMargin = 2;   /* default value is 2 */
 int StartButtonRightMargin = 0;     /* default value is 0 */
+int has_wb_left_margin = 0;
+int has_wb_right_margin = 0;
 Bool StartButtonOpensAboveTaskBar = FALSE;
 char *StartName     = NULL,
      *StartCommand  = NULL,
@@ -294,12 +296,14 @@ Bool StartButtonParseConfig(char *tline)
 		if(atoi(rest)>=0)
 		{
 			WindowButtonsLeftMargin = atoi(rest);
+			has_wb_left_margin = 1;
 		}
 		break;
 	case 7: /* WindowButtonsRightMargin */
 		if(atoi(rest)>=0)
 		{
 			WindowButtonsRightMargin = atoi(rest);
+			has_wb_right_margin = 1;
 		}
 		break;
 	case 8: /* StartButtonRightMargin */
@@ -311,7 +315,6 @@ Bool StartButtonParseConfig(char *tline)
 	default:
 		/* unknown option */
 		return False;
-		break;
 	} /* switch */
 
 	return True;
@@ -455,10 +458,16 @@ void StartButtonInit(int height)
   }
   else
   {
-	  StartAndLaunchButtonsWidth = 0;
-	  StartButtonRightMargin = 0;
-	  WindowButtonsLeftMargin = 0;
-	  WindowButtonsRightMargin = 0;
+    StartAndLaunchButtonsWidth = 0;
+    StartButtonRightMargin = 0;
+    if (has_wb_left_margin == 0)
+    {
+      WindowButtonsLeftMargin = 0;
+    }
+    if (has_wb_right_margin == 0)
+    {
+      WindowButtonsRightMargin = 0;
+    }
   }
 }
 
