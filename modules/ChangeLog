@@ -1,3 +1,19 @@
+2001-05-22  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmAnimate/FvwmAnimate.1:
+	* FvwmBacker/FvwmBacker.1:
+	* FvwmBanner/FvwmBanner.1:
+	* FvwmDragWell/FvwmDragWell.1:
+	* FvwmForm/FvwmForm.1:
+	* FvwmIconBox/FvwmIconBox.1:
+	* FvwmIdent/FvwmIdent.1:
+	* FvwmScript/FvwmScript.1:
+	* FvwmScroll/FvwmScroll.1:
+	* FvwmTaskBar/FvwmTaskBar.1:
+	* FvwmWinList/FvwmWinList.1:
+	use a new non-conflicting module syntax;
+	other minor corrections
+
 2001-05-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* modules/FvwmCommand/FvwmCommand.h:

@@ -15,7 +15,7 @@ total desktop space consumed by the window.
 
 
 FvwmScroll reads the same .fvwmrc file as fvwm reads when it starts up,
-and looks for lines similar to "*FvwmScrollBack green".
+and looks for lines similar to "*FvwmScroll: Back green".
 
 FvwmScroll should not be used with windows which move or resize
 themselves, nor should it be used with windows which set the
@@ -61,10 +61,10 @@ want to.
 FvwmScroll reads the same .fvwmrc file as fvwm reads when it starts up,
 and looks for lines as listed below:
 
-.IP "*FvwmScrollColorset \fIn\fP"
+.IP "*FvwmScroll: Colorset \fIn\fP"
 Tells the module to use colorset \fIn\fP. See FvwmTheme.
 
-.IP "*FvwmScrollBack \fIcolor\fP"
+.IP "*FvwmScroll: Back \fIcolor\fP"
 Tells the module to use \fIcolor\fP instead of black for the window
 background. Switches off the Colorset option.
 

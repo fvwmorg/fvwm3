@@ -47,7 +47,7 @@ option of FVWM for it to be executed by FVWM.
 .SH CONFIGURATION OPTIONS
 The following is the only supported option at present:
 
-.IP "*FvwmBackerCommand \fI(Desk d, Page x y) command\fP"
+.IP "*FvwmBacker: Command \fI(Desk d, Page x y) command\fP"
 Specifies the \fIcommand\fP to execute when the viewport matches the
 arguments for the desk d, page x coordinate and y coordinate. Any or all of
 these three numeric arguments can be replaced with an asterisk (*) to indicate
@@ -68,19 +68,19 @@ Note these three lines are equivalent:
 
 .nf
 .sp
-*FvwmBackerCommand (Page * *, Desk *) -solid navy
-*FvwmBackerCommand () -solid navy
-*FvwmBackerCommand -solid navy
+*FvwmBacker: Command (Page * *, Desk *) -solid navy
+*FvwmBacker: Command () -solid navy
+*FvwmBacker: Command -solid navy
 .sp
 .fi
 
 .SH OLD-STYLE OPTIONS
 There is continued support for the now deprecated option:
 
-.IP "*FvwmBackerDesk \fId command\fP"
+.IP "*FvwmBacker: Desk \fId command\fP"
 
 It is functionally equivalent to using an asterisk for both page
-coordinates with \fI*FvwmBackerCommand\fP.
+coordinates with \fI*FvwmBacker: Command\fP.
 
 .SH SAMPLE CONFIGURATION
 The following are excepts from an .fvwm2rc file which describe
@@ -91,12 +91,12 @@ FvwmBacker initialization commands:
 ####
 # Set Up Backgrounds for different desktop pages (2 desks, 3x2 pages).
 ####
-*FvwmBackerCommand (Page 2 *) -solid steelblue
-*FvwmBackerCommand (Desk 0, Page 0 0) Exec xpmroot /usr/pixmaps/background2.xpm
-*FvwmBackerCommand (Desk 0, Page 0 1) -solid midnightblue
-*FvwmBackerCommand (Desk 0, Page 1 *) -solid yellow
-*FvwmBackerCommand (Desk 1, Page * 0) -solid navy
-*FvwmBackerCommand (Desk 1, Page * 1) Colorset 5
+*FvwmBacker: Command (Page 2 *) -solid steelblue
+*FvwmBacker: Command (Desk 0, Page 0 0) Exec xpmroot $[HOME]/bg2.xpm
+*FvwmBacker: Command (Desk 0, Page 0 1) -solid midnightblue
+*FvwmBacker: Command (Desk 0, Page 1 *) -solid yellow
+*FvwmBacker: Command (Desk 1, Page * 0) -solid navy
+*FvwmBacker: Command (Desk 1, Page * 1) Colorset 5
 .sp
 .fi
 

@@ -147,7 +147,7 @@ If you supply variables and values on the command line used to start
 FvwmForm (like this):
 
 .EX
-Module FvwmForm MyForm. ACTION=Browse "TITLE=Browse Form"
+Module FvwmForm MyForm ACTION=Browse "TITLE=Browse Form"
 .EE
 
 Then all FvwmForm input commands undergo variable substitution.
@@ -157,8 +157,8 @@ environment.  For example, assuming the above invocation
 of "MyForm", commands would be changed like this:
 
 .EX
-Before *MyForm.Text "$TITLE, Home Directory $HOME, Going to $ACTION"
-After  *MyForm.TEXT "Browse Form, Home Directory /home/me, Going to Browse"
+Before  *MyForm: Text "$TITLE, Home $HOME, Going to $ACTION"
+After   *MyForm: TEXT "Browse Form, Home /home/me, Going to Browse"
 .EE
 
 Using this facility should make it possible for one form to be used for
@@ -543,12 +543,12 @@ DestroyModuleConfig  FvwmForm-Rlogin: *
 # Before saving the data, remove any previously saved data:
 *FvwmForm-Rlogin: Command DestroyModuleConfig FvwmForm-RloginDefault: *
 # The "Login" button causes a login and a saving of the current data:
-*FvwmForm-Rlogin: Command !(                                      /bin/echo \
-  "# This file last created by FvwmForm-Rlogin on: `/bin/date`."; /bin/echo \
-  '*FvwmForm-RloginDefault: HostName $(HostName)'               ; /bin/echo \
-  '*FvwmForm-RloginDefault: UserName $(UserName)'               ; /bin/echo \
-  '*FvwmForm-RloginDefault: Default $(Default?on)'              ; /bin/echo \
-  '*FvwmForm-RloginDefault: Custom $(Custom?on)' \
+*FvwmForm-Rlogin: Command !(                        /bin/echo \\
+  "# Created by FvwmForm-Rlogin on: `/bin/date`.";  /bin/echo \\
+  '*FvwmForm-RloginDefault: HostName $(HostName)';  /bin/echo \\
+  '*FvwmForm-RloginDefault: UserName $(UserName)';  /bin/echo \\
+  '*FvwmForm-RloginDefault: Default $(Default?on)'; /bin/echo \\
+  '*FvwmForm-RloginDefault: Custom $(Custom?on)' \\
 ) > ${FVWM_USERDIR}/.FvwmForm-Rlogin
 *FvwmForm-Rlogin: Button       restart "Clear"
 *FvwmForm-Rlogin: Button       quit    "Cancel"        ^[

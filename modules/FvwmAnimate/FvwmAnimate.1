@@ -15,7 +15,7 @@ or from within an fvwm pop-up menu:
 .sp
 DestroyMenu Module-Popup
 AddToMenu   Module-Popup "Modules" Title
-AddToMenu   Module-Popup "Fvwm Animate Icons" Module FvwmAnimate OptionalName
++ "Fvwm Animate Icons" Module FvwmAnimate OptionalName
 .sp
 .fi
 
@@ -62,7 +62,7 @@ and
 in the configuration file name.   Unlike other fvwm modules, there is
 little reason to use the optional name.
 
-.IP "*FvwmAnimateColor \fBcolor\fP"
+.IP "*FvwmAnimate: Color \fBcolor\fP"
 Tells \fBFvwmAnimate\fP what color to draw with.
 The color is "XOR'ed" (exclusive ORed) onto the background.
 Depending on the display type you are using,  the effect this
@@ -76,27 +76,27 @@ by fvwm for move and resize frames.
 Other colors can be specified using standard X color notation.  Ie. color
 names like "LightBlue", or RGB values like "#FFFFFF".
 
-.IP "*FvwmAnimatePixmap \fBpixmap\fP"
+.IP "*FvwmAnimate: Pixmap \fBpixmap\fP"
 Tells \fBFvwmAnimate\fP to use \fBpixmap\fP to draw with. This can be useful
-if \fB*FvwmAnimateColor\fP gives poor results.
+if \fB*FvwmAnimate: Color\fP gives poor results.
 
-.IP "*FvwmAnimateDelay \fBmsecs\fP"
+.IP "*FvwmAnimate: Delay \fBmsecs\fP"
 Tells \fBFvwmAnimate\fP how many milliseconds to sleep
 between frames of animation.
 
-.IP "*FvwmAnimateIterations \fBiterations\fP"
+.IP "*FvwmAnimate: Iterations \fBiterations\fP"
 Tells \fBFvwmAnimate\fP how many steps to break the animation into.
 
-.IP "*FvwmAnimateTwist \fBtwist\fP"
+.IP "*FvwmAnimate: Twist \fBtwist\fP"
 Tells \fBFvwmAnimate\fP how many revolutions to twist the iconification frame.
 
-.IP "*FvwmAnimateWidth \fBwidth\fP"
+.IP "*FvwmAnimate: Width \fBwidth\fP"
 Tells \fBFvwmAnimate\fP how wide a line to draw with.
 The default width of 0 (zero) is a fast line of Width 1.
 
-.IP "*FvwmAnimateEffect \fBmode\fP"
+.IP "*FvwmAnimate: Effect \fBmode\fP"
 Tells \fBFvwmAnimate\fP which animation effect to use.
-Currently the effects are :
+Currently the effects are:
 \fIFrame\fP,
 \fILines\fP,
 \fIFlip\fP,
@@ -109,10 +109,10 @@ and
 \fINone\fP is normally set in the configuration file, in-case FvwmAnimate
 is started automatically, but an individual user doesn't want it running.
 
-.IP "*FvwmAnimateStop"
+.IP "*FvwmAnimate: Stop"
 Tells \fBFvwmAnimate\fP to stop.
 
-.IP "*FvwmAnimateSave"
+.IP "*FvwmAnimate: Save"
 Tells \fBFvwmAnimate\fP to save the current configuration in a file
 named ".FvwmAnimate" in the users home directory.  This same file is
 read automatically by FvwmAnimate during startup.

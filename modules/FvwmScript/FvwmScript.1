@@ -35,7 +35,7 @@ The file "name_of_script" can start with a slash, in which case, it's
 a fully qualified path, and the file is read.
 If "name_of_script" does not start with a slash, FvwmScript will look
 in a few different places.
-If  the   .fvwmrc contained   the  command  line  `*FvwmScriptPath
+If  the   .fvwmrc contained   the  command  line  `*FvwmScript: Path
 path_of_the_script_directory', FvwmScript will try that directory.
 If that doesn't work, FvwmScript tries the system configuration directory
 and the user configuration directory as described under the "Read"
@@ -50,27 +50,27 @@ button or keystroke to invoke it later.
 The following commands can be placed in the .fvwm2rc file. They are used
 only if the corresponding script commands are not used in the script.
 
-.IP "*FvwmScriptDefaultFont \fIfont\fP"
+.IP "*FvwmScript: DefaultFont \fIfont\fP"
 Specifies the default font to be used. If not specified with this command
 or in the script with the Font command, fixed font is assumed.
 
-.IP "*FvwmScriptDefaultFore \fIcolor\fP"
+.IP "*FvwmScript: DefaultFore \fIcolor\fP"
 Specifies the default foreground color to be used. If not specified with
 this command or in the script with the ForeColor command, black is used.
 
-.IP  "*FvwmScriptDefaultBack \fIcolor\fP"
+.IP  "*FvwmScript: DefaultBack \fIcolor\fP"
 Specifies the default background color to be used. If not specified with
 this command or in the script with the BackColor command, grey85 is used.
 
-.IP  "*FvwmScriptDefaultHilight \fIcolor\fP"
+.IP  "*FvwmScript: DefaultHilight \fIcolor\fP"
 Specifies the default hilight color to be used. If not specified with
 this command or in the script with the HilightColor command, grey100 is used.
 
-.IP  "*FvwmScriptDefaultShadow \fIcolor\fP"
+.IP  "*FvwmScript: DefaultShadow \fIcolor\fP"
 Specifies the default shadow color to be used. If not specified with this
 command or in the script with the ShadowColor command, grey55 is used.
 
-.IP "*FvwmScriptDefaultColorset \fIcolorset\fP"
+.IP "*FvwmScript: DefaultColorset \fIcolorset\fP"
 Tells the module to use colorset \fIcolorset\fP as the default colorset.
 Refer to the FvwmTheme man page for details about
 colorsets.

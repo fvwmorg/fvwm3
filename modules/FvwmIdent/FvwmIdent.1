@@ -14,7 +14,7 @@ After that, it pops up a window with information about the window
 which was selected.
 
 FvwmIdent reads the same .fvwmrc file as fvwm reads when it starts up,
-and looks for lines similar to "*FvwmIdentFore green".
+and looks for lines similar to "*FvwmIdent: Fore green".
 
 .SH COPYRIGHTS
 The FvwmIdent program, and the concept for
@@ -53,18 +53,18 @@ restarts FvwmIdent and asks for a new window to select.
 FvwmIdent reads the same .fvwmrc file as fvwm reads when it starts up,
 and looks for lines as listed below:
 
-.IP "*FvwmIdentColorset \fIn\fP"
+.IP "*FvwmIdent: Colorset \fIn\fP"
 Tells the module to use colorset \fIn\fP. See FvwmTheme.
 
-.IP "*FvwmIdentFore \fIcolor\fP"
+.IP "*FvwmIdent: Fore \fIcolor\fP"
 Tells the module to use \fIcolor\fP instead of black for text. Switches off the
 Colorset option.
 
-.IP "*FvwmIdentBack \fIcolor\fP"
+.IP "*FvwmIdent: Back \fIcolor\fP"
 Tells the module to use \fIcolor\fP instead of white for the window
 background. Switches off the Colorset option.
 
-.IP "*FvwmIdentFont \fIfontname\fP"
+.IP "*FvwmIdent: Font \fIfontname\fP"
 Tells the module to use \fIfontname\fP instead of fixed for text.
 
 
