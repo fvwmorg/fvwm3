@@ -883,6 +883,7 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 	int i;
 	int multi = 0;
 	int button = 0;
+	int do_return;
 	char *text = NULL;
 	char *prev = NULL;
 	char *parm = NULL;
@@ -910,6 +911,7 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 
 	Scr.flags.do_need_window_update = 1;
 
+	do_return = 0;
 	if (!isdigit(*parm))
 	{
 		if (StrEquals(parm,"left"))
@@ -939,13 +941,12 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 					"Bad button style (2) in line %s",
 					action);
 			}
-			return;
+			multi = 3;
+			do_return = 1;
 		}
 	}
-
 	/* mark button style and decor as changed */
 	decor->flags.has_changed = 1;
-
 	if (multi == 0)
 	{
 		/* a single button was specified */
@@ -963,7 +964,10 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 			}
 		}
 	}
-
+	if (do_return == 1)
+	{
+		return;
+	}
 	for (prev = text; (parm = PeekToken(text, &text)); prev = text)
 	{
 		if (!do_add && strcmp(parm,"-") == 0)

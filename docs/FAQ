@@ -158,6 +158,9 @@ Contents
     5.14  I'm running Rational Rose and fvwm ignores its windows.
     5.15  Although I use the WindowListSkip style for my modules
           they still show up in FvwmIconMan, FvwmWinList etc.
+    5.16  When I Maximize an application, sometimes I get gaps
+          around the edges, and other times I don't.  What's going
+          on?
 
 6. Miscellaneous
 
@@ -2268,6 +2271,25 @@ A: Make sure you have
    in your config file.  If that does not help, the modules you are
    using may not match the fvwm executable.  Recompile and reinstall
    everything and the problem should go away.
+
+----------------------------------------------------------------------
+
+5.16  When I Maximize an application, sometimes I get gaps around
+      the edges, and other times I don't.  What's going on?
+
+A: The ICCCM specification allows applications to specify certain
+   properties the window manager should honour, such as aspect
+   ratio (PAspect) or increments to be resized in (PResizeInc).  Of
+   course, sometimes these properties won't perfectly match the
+   size of your desktop (or ewmh struts), if that should happen,
+   you will get gaps.
+
+   In general, the application will have a good reason for doing
+   this (for example, a terminal window may not want to have only
+   part of a column visible), but you can make fvwm ignore the
+   hints with
+
+     Style * ResizeHintOverride
 
 ======================================================================
                           6 - Miscellaneous

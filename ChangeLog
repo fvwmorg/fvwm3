@@ -1,10 +1,15 @@
+2004-12-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/builtins.c (do_button_style):
+	ButtonStyle Reset takes effect immediately
+
 2004-12-08  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1.in: lang check.
 
 2004-12-06  Olivier Chapuis  <olivier.chapuis@free.fr>
 
-	* fvwm/fvwm.1.in: 
+	* fvwm/fvwm.1.in:
 	Really commit EWMHUseStackingOrderHints documentation update
 
 2004-12-02  Olivier Chapuis  <olivier.chapuis@free.fr>
@@ -15,7 +20,7 @@
 	* NEWS:
 	FvwmIconMan new options
 
-	* libs/FTips.c (new file): 
+	* libs/FTips.c (new file):
 	* libs/FTips.h (new file):
 	* libs/defaults.h:
 	* libs/Makefile.am:
