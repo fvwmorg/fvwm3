@@ -1,6 +1,11 @@
+2002-10-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm-root.1:
+	applied patch by Cameron Simpson
+
 2002-10-15  olicha  <olivier.chapuis@free.fr>
 
-	* fvwm-root.c (SetRootWindow): 
+	* fvwm-root.c (SetRootWindow):
 	Updated PictureInitCMapRoot
 
 2002-10-12  Mikhael Goikhman  <migo@homemail.com>
@@ -104,7 +109,7 @@
 
 2002-05-09  olicha  <olivier.chapuis@free.fr>
 
-	* fvwm-root.c (SetRootWindow): 
+	* fvwm-root.c (SetRootWindow):
 	A fix
 
 2002-04-25  Mikhael Goikhman  <migo@homemail.com>

@@ -10,6 +10,11 @@ fvwm-root \- Sets the root window of the current X display to image
 .B fvwm-root
 .RB [ \-d ]
 .RB [ \-fe ]
+.RB [ \-dither ]
+.RB [ \-no-dither ]
+.RB [ \-color-limit
+.RI [ ncolors "] ]"
+.RB [ \-no-color-limit ]
 .I image_file
 
 .SH DESCRIPTION
@@ -33,6 +38,21 @@ is transparent.
 Causes fvwm-root to free the memory associated with the ESETROOT_PMAP_ID
 property. This is useful if you  alternately use fvwm-root and an
 Esetroot compatible program.
+.TP
+.BI "-dither"
+Causes fvwm-root to dither images for "smoother" rendition on displays
+with color depth of 16 or lower.
+.TP
+.BI "-no-dither"
+Causes fvwm-root NOT to dither images.
+.TP
+.BI "-color-limit " ncolors
+Causes fvwm-root to limit its color use to
+.I ncolors
+(if specified).
+.TP
+.BI "-no-color-limit"
+Causes fvwm-root NOT to limit its color use.
 
 .SH COMPATIBILITY
 In the past this utility was called
