@@ -390,12 +390,10 @@ static Bool must_move_transients(
 {
   *found_transient = False;
 
-#if 1
   if (IS_ICONIFIED(t))
   {
     return False;
   }
-#endif
   /* raise */
   if ((!do_lower && DO_RAISE_TRANSIENT(t)) ||
       (do_lower && DO_LOWER_TRANSIENT(t)))
@@ -534,9 +532,7 @@ static void RaiseOrLowerWindow(
    * recursion stuff for new windows because the must_move_transients() call
    * needs a properly ordered stack ring - but the new window is still at the
    * front of the stack ring. */
-#if 1
   if (allow_recursion && !is_new_window && !IS_ICONIFIED(t))
-#endif
   {
     /*
      * This part makes Raise/Lower on a Transient act on its Main and sibling
@@ -556,12 +552,10 @@ static void RaiseOrLowerWindow(
       {
         if (t2->w == t->transientfor)
         {
-#if 1
 	  if (IS_ICONIFIED(t2))
 	  {
 	    break;
 	  }
-#endif
           if ((!do_lower && DO_RAISE_TRANSIENT(t2)) ||
               (do_lower && DO_LOWER_TRANSIENT(t2))  )
           {
@@ -613,10 +607,8 @@ static void RaiseOrLowerWindow(
       for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
       {
 	next = t2->stack_next;
-#if 1
 	if ((IS_TRANSIENT(t2)) && (t2->transientfor == t->w) &&
 	    (t2->layer == t->layer) && !IS_ICONIFIED(t2))
-#endif
 	{
 	  /* t2 is a transient to lower */
 	  count++;
@@ -663,10 +655,8 @@ static void RaiseOrLowerWindow(
     */
     add_window_to_stack_ring_after(t, s->stack_prev);
 
-#if 1
     if (is_new_window && IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t) &&
 	!IS_ICONIFIED(t))
-#endif
     {
       /* now that the new transient is properly positioned in the stack ring,
        * raise/lower it again so that its parent is raised/lowered too */
