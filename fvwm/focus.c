@@ -857,7 +857,8 @@ void focus_grab_buttons(FvwmWindow *fw, Bool is_focused)
 				do_grab = !(grab_buttons & (1 << i));
 			}
 #else
-			if ((grab_buttons & (1 << i)) == (fw->grabbed_buttons & (1 << i)))
+			if ((grab_buttons & (1 << i)) ==
+			    (fw->grabbed_buttons & (1 << i)))
 				continue;
 			do_grab = !!(grab_buttons & (1 << i));
 #endif
