@@ -3,7 +3,7 @@ _+_A HREF="#2.4.15"_-_2.4.15_+_/A_-_.
 
 -------------------------------------------------------------------
 
-Changes in development release 2.5.6 (not released yet)
+Changes in development release 2.5.6 (28-Feb-2003)
 
 * Fix button 3 drag in FvwmPager so that drag follows the mouse.
 

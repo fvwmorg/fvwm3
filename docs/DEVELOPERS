@@ -167,6 +167,10 @@ Preparations:
     in NEWS.  Note: For releases prior to 2.5.3, the date has to be
     updated in docs/fvwm.lsm.in and fvwm/fvwm.1 instead of
     configure.in.
+  - Verify that the version variable at the very beginning of
+    configure.in has the value of the going to be released version
+    and set ISRELEASED to "yes".  It should be "yes" in the
+    released tarballs.
   - For a stable release, update docs/ANNOUNCE file.  For the
     first version of a major release (e.g. 2.6.0) all user visible
     changes have to be mentioned.  For the following maintenance
@@ -174,10 +178,6 @@ Preparations:
     usually done by copying all entries from the NEWS file.  Don't
     forget to proof read the file as it will be sent to the
     fvwm-announce mailing list.
-  - Verify that the version variable at the very beginning of
-    configure.in has the value of the going to be released version
-    and set ISRELEASED to "yes".  It should be "yes" in the
-    released tarballs.
   - Update the ChangeLog for all the changes above.
   - Commit these changes.
 

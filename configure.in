@@ -4,14 +4,14 @@ AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
 
 dnl should be "yes" only within the released distribution
-ISRELEASED=no
+ISRELEASED=yes
 version=2.5.6
 VERSIONINFO=""
 
 dnl date of the released version (please zero pad the day in the last 2 dates)
-RELDATELONG="2 December 2002"
-RELDATESHORT="02-Dec-2002"
-RELDATENUM="2002-12-02"
+RELDATELONG="28 February 2003"
+RELDATESHORT="28-Febc-2003"
+RELDATENUM="2003-02-28"
 
 dnl constant variable settings
 FVWMNAMEUCASE="FVWM"
