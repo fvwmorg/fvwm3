@@ -1,5 +1,8 @@
 1999-12-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/ColorUtils.c:
+	raised brightness percentage to 85%
+
 	* fvwm/session.c:
 	* fvwm/events.c (MyXNextEvent):
 	* fvwm/fvwm.c (main):

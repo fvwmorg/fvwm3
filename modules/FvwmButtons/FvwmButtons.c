@@ -2159,7 +2159,7 @@ static void recursive_change_colorset(container_info *c, int colorset)
       continue;
     if (b->flags & b_Container)
     {
-      if ((b->c->flags & b_Colorset) && (colorset == b->c->colorset))
+      if (buttonColorset(b) == colorset)
       {
 	/* re-apply colorset to button */
 	RedrawButton(b, True);
@@ -2171,8 +2171,7 @@ static void recursive_change_colorset(container_info *c, int colorset)
     {
       /* swallowed window */
       if ((buttonSwallowCount(b) == 3) && (b->flags & b_Swallow) &&
-	  (b->IconWin != None) && (b->flags & b_Colorset) &&
-	  (colorset == b->colorset))
+	  (b->IconWin != None) && (buttonColorset(b) == colorset))
       {
 	/* re-apply colorset to window background */
 	change_swallowed_window_colorset(b, True);
@@ -2181,7 +2180,7 @@ static void recursive_change_colorset(container_info *c, int colorset)
     else
     {
       /* simple button */
-      if ((b->flags & b_Colorset) && (colorset == b->colorset))
+      if (buttonColorset(b) == colorset)
       {
 	/* re-apply colorset to button */
 	RedrawButton(b, True);
@@ -2260,7 +2259,7 @@ void process_message(unsigned long type,unsigned long *body)
     cfgpacket = (void *) body;
     if ( cfgpacket->w == MyWindow)
     {
-      button_lborder = button_rborder = button_tborder = button_bborder 
+      button_lborder = button_rborder = button_tborder = button_bborder
 	= cfgpacket->border_width;
       if (HAS_BOTTOM_TITLE(cfgpacket))
 	button_bborder += cfgpacket->title_height;
@@ -2369,7 +2368,7 @@ static void GetPanelGeometry(
   int *x, int *y, int *w, int *h)
 {
   int bx, by, bw, bh;
-  int  ftb = 0, fbb = 0, frb = 0, flb = 0; 
+  int  ftb = 0, fbb = 0, frb = 0, flb = 0;
   Window JunkWin;
 
   /* take in acount or not the FvwmButtons borders width */
@@ -2396,14 +2395,14 @@ static void GetPanelGeometry(
   case SLIDE_CONTEXT_MODULE: /* slide relatively to FvwmButtons */
     {
       unsigned int dum, dum2;
-      
+
       XGetGeometry(Dpy, MyWindow, &JunkWin, &bx, &by, &bw, &bh, &dum, &dum2);
       XTranslateCoordinates(Dpy, MyWindow, Root, bx, by, &bx, &by, &JunkWin);
     }
     break;
   case SLIDE_CONTEXT_ROOT: /* slide relatively to the root windows */
     switch (b->slide_direction)
-    {  
+    {
     case SLIDE_UP:
       bx = 0;
       by = dph;

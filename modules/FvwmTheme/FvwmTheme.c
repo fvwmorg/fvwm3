@@ -231,6 +231,33 @@ static char *get_simple_color(
   return rest;
 }
 
+static void free_colorset_background(colorset_struct *cs)
+{
+  if (cs->picture) {
+    if (cs->picture->picture != cs->pixmap)
+      fprintf(stderr, "FvwmTheme wrning2: cs->picture != cs->pixmap\n");
+    DestroyPicture(dpy, cs->picture);
+    cs->picture = None;
+    cs->pixmap = None;
+  }
+  if (cs->pixmap)
+  {
+    XFreePixmap(dpy, cs->pixmap);
+    cs->pixmap = None;
+  }
+  if (cs->mask)
+  {
+    XFreePixmap(dpy, cs->mask);
+    cs->mask = None;
+  }
+  if (cs->pixels && cs->nalloc_pixels) {
+    XFreeColors(dpy, Pcmap, cs->pixels, cs->nalloc_pixels, 0);
+    free(cs->pixels);
+    cs->pixels = NULL;
+    cs->nalloc_pixels = 0;
+  }
+}
+
 static char *csetopts[] =
 {
   "Foreground",
@@ -259,6 +286,11 @@ static char *csetopts[] =
   "TiledShape",
   "AspectShape",
 
+  /* switch off pixmaps and gradients */
+  "Plain",
+  /* switch off shape */
+  "NoShape",
+
   NULL
 };
 
@@ -279,6 +311,7 @@ static void parse_colorset(char *line)
   char *bg = NULL;
   char *hi = NULL;
   char *sh = NULL;
+  Bool do_remove_shape;
   Bool have_pixels_changed = False;
   Bool has_fg_changed = False;
   Bool has_bg_changed = False;
@@ -302,14 +335,16 @@ static void parse_colorset(char *line)
 
   /* make sure it exists and has sensible contents */
   if (nColorsets <= n) {
-    Colorset = (colorset_struct *)saferealloc((char *)Colorset,
-					      (n + 1) * sizeof(colorset_struct));
+    Colorset =
+      (colorset_struct *)saferealloc((char *)Colorset,
+				     (n + 1) * sizeof(colorset_struct));
     memset(&Colorset[nColorsets], 0,
 	   (n + 1 - nColorsets) * sizeof(colorset_struct));
   }
 
   /* initialize new colorsets to black on gray */
-  while (nColorsets <= n) {
+  while (nColorsets <= n)
+  {
     colorset_struct *ncs = &Colorset[nColorsets];
     have_pixels_changed = True;
     if (privateCells) {
@@ -342,7 +377,7 @@ static void parse_colorset(char *line)
       /* set flags for fg contrast, bg average in case just a pixmap is given */
       Colorset[nColorsets].color_flags = FG_CONTRAST | BG_AVERAGE;
     }
-  nColorsets++;
+    nColorsets++;
   }
 
   cs = &Colorset[n];
@@ -361,6 +396,7 @@ static void parse_colorset(char *line)
       break;
     }
 
+    do_remove_shape = False;
     switch((i = GetTokenIndex(option, csetopts, 0, NULL)))
     {
     case 0: /* Foreground */
@@ -391,29 +427,7 @@ static void parse_colorset(char *line)
     case 13: /* Pixmap */
     case 14: /* AspectPixmap */
       has_pixmap_changed = True;
-      if (cs->picture) {
-	if (cs->picture->picture != cs->pixmap)
-	  fprintf(stderr, "FvwmTheme warning1: cs->picture != cs->pixmap\n");
-	DestroyPicture(dpy, cs->picture);
-	cs->picture = None;
-	cs->pixmap = None;
-      }
-      if (cs->pixmap)
-      {
-	XFreePixmap(dpy, cs->pixmap);
-	cs->pixmap = None;
-      }
-      if (cs->mask)
-      {
-	XFreePixmap(dpy, cs->mask);
-	cs->mask = None;
-      }
-      if (cs->pixels && cs->nalloc_pixels) {
-	XFreeColors(dpy, Pcmap, cs->pixels, cs->nalloc_pixels, 0);
-	free(cs->pixels);
-	cs->pixels = NULL;
-	cs->nalloc_pixels = 0;
-      }
+      free_colorset_background(cs);
       /* set the flags */
       if (csetopts[i][0] == 'T')
 	cs->pixmap_type = PIXMAP_TILED;
@@ -482,6 +496,8 @@ static void parse_colorset(char *line)
 	XFreePixmap(dpy, cs->shape_mask);
 	cs->shape_mask = None;
       }
+      if (do_remove_shape == True)
+	break;
       /* set the flags */
       if (csetopts[i][0] == 'T')
 	cs->shape_type = SHAPE_TILED;
@@ -545,6 +561,18 @@ static void parse_colorset(char *line)
       cs->shape_mask = None;
 #endif /* SHAPE */
       break;
+    case 18: /* Plain */
+      has_pixmap_changed = True;
+      free_colorset_background(cs);
+      break;
+    case 19: /* NoShape */
+      has_shape_changed = True;
+      if (cs->shape_mask)
+      {
+	XFreePixmap(dpy, cs->shape_mask);
+	cs->shape_mask = None;
+      }
+      break;
     default:
       /* test for ?Gradient */
       if (option[0] && StrEquals(&option[1], "Gradient"))
@@ -553,29 +581,7 @@ static void parse_colorset(char *line)
 	if (!IsGradientTypeSupported(type))
 	  break;
 	has_pixmap_changed = True;
-	if (cs->picture) {
-	  if (cs->picture->picture != cs->pixmap)
-	    fprintf(stderr, "FvwmTheme wrning2: cs->picture != cs->pixmap\n");
-	  DestroyPicture(dpy, cs->picture);
-	  cs->picture = None;
-	  cs->pixmap = None;
-	}
-	if (cs->pixmap)
-	{
-	  XFreePixmap(dpy, cs->pixmap);
-	  cs->pixmap = None;
-	}
-	if (cs->mask)
-	{
-	  XFreePixmap(dpy, cs->mask);
-	  cs->mask = None;
-	}
-	if (cs->pixels && cs->nalloc_pixels) {
-	  XFreeColors(dpy, Pcmap, cs->pixels, cs->nalloc_pixels, 0);
-	  free(cs->pixels);
-	  cs->pixels = NULL;
-	  cs->nalloc_pixels = 0;
-	}
+	free_colorset_background(cs);
 	/* create a pixmap of the gradient type */
 	cs->pixmap = CreateGradientPixmapFromString(dpy, win, gc, type, args,
 						    &w, &h, &cs->pixels,
@@ -613,7 +619,6 @@ static void parse_colorset(char *line)
   {
     Bool do_set_default_background = False;
 
-    has_bg_changed = True;
     if ((cs->color_flags & BG_AVERAGE) && cs->pixmap != None)
     {
       /* calculate average background color */
@@ -695,7 +700,7 @@ static void parse_colorset(char *line)
 	  have_pixels_changed = True;
       }
     } /* user specified */
-    else if (bg == NULL)
+    else if (bg == NULL && has_bg_changed)
     {
       /* default */
       do_set_default_background = True;
@@ -715,6 +720,7 @@ static void parse_colorset(char *line)
 	  have_pixels_changed = True;
       }
     }
+    has_bg_changed = True;
   } /* has_bg_changed */
 
   /*

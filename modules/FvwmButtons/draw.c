@@ -197,6 +197,27 @@ void RedrawButton(button_info *b,int clean)
 #endif
   XGCValues gcv;
   int rev=0;
+  Pixel fc;
+  Pixel bc;
+  Pixel hc;
+  Pixel sc;
+  int cset;
+
+  cset = buttonColorset(b);
+  if (cset >= 0)
+  {
+    fc = Colorset[cset].fg;
+    bc = Colorset[cset].bg;
+    hc = Colorset[cset].hilite;
+    sc = Colorset[cset].shadow;
+  }
+  else
+  {
+    fc = buttonFore(b);
+    bc = buttonBack(b);
+    hc = buttonHilite(b);
+    sc = buttonShadow(b);
+  }
 
   BW = buttonWidth(b);
   BH = buttonHeight(b);
@@ -234,7 +255,7 @@ void RedrawButton(button_info *b,int clean)
     }
   }
 
-  RelieveButton(MyWindow,f,x,y,BW,BH,buttonHilite(b),buttonShadow(b),rev);
+  RelieveButton(MyWindow,f,x,y,BW,BH,hc,sc,rev);
 
   /* ----------------------------------------------------------------------- */
 
@@ -242,7 +263,7 @@ void RedrawButton(button_info *b,int clean)
 
   if(clean && BW>2*f && BH>2*f)
   {
-    gcv.foreground=buttonBack(b);
+    gcv.foreground = bc;
     XChangeGC(Dpy,NormalGC,GCForeground,&gcv);
 
     if(b->flags&b_Container)
@@ -302,7 +323,7 @@ void RedrawButton(button_info *b,int clean)
   {
     if (font)
     {
-      gcv.foreground=buttonFore(b);
+      gcv.foreground = fc;
       gcv.font = font->fid;
       XChangeGC(Dpy,NormalGC,GCForeground | GCFont,&gcv);
       DrawTitle(b,MyWindow,NormalGC);
@@ -323,9 +344,9 @@ void RedrawButton(button_info *b,int clean)
     }
     is = b->indicator_size;
 
-    gcv.foreground = buttonHilite(b);
+    gcv.foreground = hc;
     XChangeGC(Dpy,NormalGC,GCForeground,&gcv);
-    gcv.foreground = buttonShadow(b);
+    gcv.foreground = sc;
     XChangeGC(Dpy,ShadowGC,GCForeground,&gcv);
 
     GetInternalSize(b, &ix, &iy, &iw, &ih);

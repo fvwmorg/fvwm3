@@ -58,7 +58,7 @@ be used.  Keep your colorset numbers as small as possible.
 \fIoptions\fP is a coma separated list containing some of the keywords:
 fg, Fore, Foreground, bg, Back, Background, hi, Hilite, Hilight, sh,
 Shade, Shadow, Pixmap, TiledPixmap, AspectPixmap, Shape, TiledShape,
-AspectShape and ?Gradient.
+AspectShape, NoShape, ?Gradient and Plain.
 
 \fIfg\fP, \fIFore\fP and \fIForeground\fP take a color name as an argument and
 set the foreground color.  The special name \fIContrast\fP may be used to
@@ -113,6 +113,9 @@ is concentric squares; C is con-centric circles; R is a radar like pattern
 and Y is a Yin Yang style (but without the dots, we are not \fIthat\fP mad).
 Please refer to the \fICOLOR GRADIENTS\fP section in the \fIfvwm2\fP man page
 for the syntax of gradients.
+
+\fINoShape\fP removes tha shape mask from the colorset while \fIPlain\fP
+removes the background pixmap or gradient.
 
 .IP "*FvwmThemeReadWriteColors"
 Tells FvwmTheme to use read/write color cells for the foreground and background

@@ -310,6 +310,19 @@ Pixel buttonShadow(button_info *b)
   return None;
 }
 
+int buttonColorset(button_info *b)
+{
+  if (b->flags & b_Colorset)
+    return b->colorset;
+  while ((b = b->parent))
+  {
+    if (b->c->flags & b_Colorset)
+      return b->c->colorset;
+  }
+  return -1;
+}
+
+
 /**
 *** buttonSwallow()
 *** Give the swallowing flags for this button

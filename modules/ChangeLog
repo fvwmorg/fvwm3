@@ -1,3 +1,15 @@
+1999-12-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTheme/FvwmTheme.c (parse_colorset):
+	some clean up
+	new options 'Plain' and 'NoShape'
+	fixed bug that reset bg to default colour when the pixmap was removed
+
+	* FvwmButtons/button.c (buttonColorset):
+	* FvwmButtons/draw.c (RedrawButton):
+	* FvwmButtons/FvwmButtons.c (recursive_change_colorset):
+	Colorset fg/hilight/shdow colours are applied properly to buttons
+
 1999-12-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmCommand/FvwmCommandS.c (close_pipes):

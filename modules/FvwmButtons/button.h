@@ -43,6 +43,7 @@ Pixel buttonFore(button_info*);
 Pixel buttonBack(button_info*);
 Pixel buttonHilite(button_info*);
 Pixel buttonShadow(button_info*);
+int buttonColorset(button_info *b);
 byte buttonSwallow(button_info*);
 byte buttonJustify(button_info*);
 #define buttonNum(b) ((b)->n)
