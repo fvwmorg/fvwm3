@@ -1,3 +1,13 @@
+1999-03-01  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/fvwm.c (InitVariables): Change the default layers
+	for StaysOnTop and StaysPut from 1 and 0 to 6 and 4.
+
+	* fvwm/fvwm2.1: Adjust the documentation of DefaultLayers.
+	
+	* fvwm/add_window.c (AddWindow): Put windows at the top of
+	their layer initially. 
+
 1999-03-01 Hippo
 
 	* fvwm/*: Removed ->bw. FvwmBorder windows will look funny until I fix
@@ -5,6 +15,12 @@
 	
 	* fvwm/move.c: Fixed opaque/animated moves to not crash shaded windows,
 	removed	#ifndef NO_ETERM_SUPPORT, might want to make it a configure option.
+
+1999-02-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/add_window.c (AddWindow): Fix a bug where unmaximizing a
+	window on a non-origin page that has been restored to maximized
+	state from a saved session would make it jump to a different page.
 
 1999-02-28  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 

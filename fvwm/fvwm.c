@@ -1347,8 +1347,8 @@ void InitVariables(void)
   Scr.hasIconFont = False;
   Scr.hasWindowFont = False;
 
-  Scr.OnTopLayer = 1;
-  Scr.StaysPutLayer = 0;
+  Scr.OnTopLayer = 6;      
+  Scr.StaysPutLayer = 4;
 
   /* create graphics contexts */
   CreateGCs();

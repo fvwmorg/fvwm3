@@ -696,6 +696,11 @@ FvwmWindow *AddWindow(Window w)
     ConstrainSize (tmp_win, &w_max, &h_max, False, 0, 0);
     SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE);
     SetBorder(tmp_win, Scr.Hilite == tmp_win, True, True, None);
+    /* fix orig values to not change page on unmaximize  */
+    if (tmp_win->orig_x >= Scr.MyDisplayWidth)
+      tmp_win->orig_x = tmp_win->orig_x % Scr.MyDisplayWidth; 
+    if (tmp_win->orig_y >= Scr.MyDisplayHeight)
+      tmp_win->orig_y = tmp_win->orig_y % Scr.MyDisplayHeight; 
   }
 #endif
   /* wait until the window is iconified and the icon window is mapped
@@ -729,18 +734,14 @@ FvwmWindow *AddWindow(Window w)
 #ifndef SESSION
   RaiseWindow(tmp_win);
 #else
-  { 
+  if (tmp_win->stack_prev == &Scr.FvwmRoot) {
+    /* RaiseWindow will put the window in its layer */
+    RaiseWindow(tmp_win);
+  } else {
     XWindowChanges xwc;
-    unsigned long vm;
-    if (tmp_win->stack_next == &Scr.FvwmRoot) {
-      xwc.stack_mode = Below;
-      vm = CWStackMode;
-    } else {
-      xwc.sibling = tmp_win->stack_next->frame;
-      xwc.stack_mode = Above;
-      vm = CWSibling|CWStackMode;
-    }
-    XConfigureWindow(dpy, tmp_win->frame, vm, &xwc);
+    xwc.sibling = tmp_win->stack_next->frame;
+    xwc.stack_mode = Above;
+    XConfigureWindow(dpy, tmp_win->frame, CWSibling|CWStackMode, &xwc);
   }
 #endif
   MyXUngrabServer(dpy);
