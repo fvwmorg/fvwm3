@@ -5417,6 +5417,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR StartsLowered " / " StartsRaised ,
 .IR GrabFocus " / " GrabFocusOff ,
 .IR GrabFocusTransientOff " / " GrabFocusTransient ,
+.IR OverrideGrabFocus " / " AllowGrabFocus ,
 .IR IgnoreRestack " / " AllowRestack ,
 .IR FixedPosition " / " VariablePosition ,
 .IR FixedUSPosition " / " VariableUSPosition ,
@@ -5528,6 +5529,17 @@ This style does not apply to transient windows.  The
 styles are responsible for this behavior.  By default,
 .I GrabFocusTransient
 is turned on.
+
+The
+.I OverrideGrabFocus
+instructs fvwm to never take away the focus from such a window
+with the
+.IR GrabFocus " or " GrabFocusTransient
+styles.  This can be useful if you like to have transient windows
+receive the focus immediately, for example in a web browser, but
+not while you are working in a terminal window or a text
+processor.  To restore the default behaviour, use
+.IR AllowGrabFocus .
 
 .I Lenience
 instructs fvwm to ignore the convention in the

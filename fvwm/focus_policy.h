@@ -17,6 +17,10 @@
 #ifndef FOCUS_POLICY_H
 #define FOCUS_POLICY_H
 
+/* Note: focus_policy.[ch] is meant to manage structures of type focus_policy_t
+ * only.  No code dealing with *any* external data types belongs in here!  Put
+ * it in focus.[ch] instead. */
+
 /* ---------------------------- included header files ----------------------- */
 
 /* ---------------------------- global definitions -------------------------- */
@@ -107,6 +111,10 @@
 	((fp).do_grab_focus_transient)
 #define FPS_GRAB_FOCUS_TRANSIENT(fp,x) \
 	((fp).do_grab_focus_transient = !!(x))
+#define FP_DO_OVERRIDE_GRAB_FOCUS(fp) \
+	((fp).do_override_grab_focus)
+#define FPS_OVERRIDE_GRAB_FOCUS(fp,x) \
+	((fp).do_override_grab_focus = !!(x))
 
 /* ---------------------------- type definitions ---------------------------- */
 
@@ -139,6 +147,7 @@ typedef struct
 	/* initial focus */
 	unsigned do_grab_focus : 1;
 	unsigned do_grab_focus_transient : 1;
+	unsigned do_override_grab_focus : 1;
 } focus_policy_t;
 
 /* ---------------------------- forward declarations ------------------------ */

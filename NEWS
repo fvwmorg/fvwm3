@@ -35,6 +35,8 @@ Changes in alpha release 2.5.3 (not released yet)
 * New option "FromPointer" and direction "Center" to the Direction
   command.
 
+* New styles OverrideGrabFocus and AllowGrabFocus.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)

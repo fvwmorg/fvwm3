@@ -1,3 +1,14 @@
+2002-08-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (parse_and_set_window_style):
+	* fvwm/focus.c (focus_query_grab_focus):
+	* fvwm/events.c (HandleMapNotify):
+	(HandlePropertyNotify):
+	* fvwm/focus_policy.c (fpol_init_default_fp):
+	* libs/defaults.h:
+	new styles OverrideGrabFocus and AllowGrabFocus
+	cleaned up focus grabbing code and moved to focus.c
+
 2002-07-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/focus.c (CMD_WarpToWindow):

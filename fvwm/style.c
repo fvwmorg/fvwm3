@@ -1007,6 +1007,13 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  SMSET_DO_IGNORE_RESTACK(*ptmpstyle, 1);
 	  SCSET_DO_IGNORE_RESTACK(*ptmpstyle, 1);
 	}
+	else if (StrEquals(token, "AllowGrabFocus"))
+	{
+	  found = True;
+	  FPS_OVERRIDE_GRAB_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_OVERRIDE_GRAB_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_OVERRIDE_GRAB_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	}
 	break;
 
       case 'b':
@@ -2432,6 +2439,13 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  ptmpstyle->flags.use_parent_relative = 0;
 	  ptmpstyle->flag_mask.use_parent_relative = 1;
 	  ptmpstyle->change_mask.use_parent_relative = 1;
+	}
+	else if (StrEquals(token, "OverrideGrabFocus"))
+	{
+	  found = True;
+	  FPS_OVERRIDE_GRAB_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_OVERRIDE_GRAB_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_OVERRIDE_GRAB_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	break;
 

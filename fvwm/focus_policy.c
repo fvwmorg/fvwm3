@@ -14,6 +14,10 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+/* Note: focus_policy.[ch] is meant to manage structures of type focus_policy_t
+ * only.  No code dealing with *any* external data types belongs in here!  Put
+ * it in focus.[ch] instead. */
+
 /* ---------------------------- included header files ----------------------- */
 
 #include <config.h>
@@ -68,8 +72,8 @@ void fpol_init_default_fp(focus_policy_t *fp)
 	FPS_ALLOW_FUNC_FOCUS_CLICK(*fp, DEF_FP_ALLOW_FUNC_FOCUS_CLICK);
 	FPS_ALLOW_FUNC_RAISE_CLICK(*fp, DEF_FP_ALLOW_FUNC_RAISE_CLICK);
 	FPS_GRAB_FOCUS(*fp, DEF_FP_GRAB_FOCUS);
-	FPS_GRAB_FOCUS_TRANSIENT(
-		*fp, DEF_FP_GRAB_FOCUS_TRANSIENT);
+	FPS_GRAB_FOCUS_TRANSIENT(*fp, DEF_FP_GRAB_FOCUS_TRANSIENT);
+	FPS_OVERRIDE_GRAB_FOCUS(*fp, DEF_FP_OVERRIDE_GRAB_FOCUS);
 
 	return;
 }

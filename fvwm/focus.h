@@ -56,5 +56,7 @@ void set_last_screen_focus_window(FvwmWindow *fw);
 void update_last_screen_focus_window(FvwmWindow *fw);
 void set_focus_model(FvwmWindow *fw);
 void refresh_focus(FvwmWindow *fw);
+Bool focus_query_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win);
+Bool focus_query_restore_focus(FvwmWindow *fw);
 
 #endif /* _FOCUS_ */

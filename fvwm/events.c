@@ -2039,17 +2039,10 @@ void HandleMapNotify(void)
 			M_MAP, 3, FW_W(Fw), FW_W_FRAME(Fw), (unsigned long)Fw);
 	}
 
-	if ((!IS_TRANSIENT(Fw) &&
-	     FP_DO_GRAB_FOCUS(FW_FOCUS_POLICY(Fw))) ||
-	   (IS_TRANSIENT(Fw) &&
-	    FP_DO_GRAB_FOCUS_TRANSIENT(FW_FOCUS_POLICY(Fw)) &&
-	    get_focus_window() &&
-	    FW_W(get_focus_window()) == FW_W_TRANSIENTFOR(Fw)))
+	if (is_on_this_page &&
+	    focus_query_grab_focus(Fw, get_focus_window()) == True)
 	{
-		if (is_on_this_page)
-		{
-			SetFocusWindow(Fw, True, True);
-		}
+		SetFocusWindow(Fw, True, True);
 	}
 	border_draw_decorations(
 		Fw, PART_ALL, (Fw == get_focus_window()) ? True : False, True,
@@ -2223,36 +2216,10 @@ void HandleMapRequestKeepRaised(
 				{
 					do_grab_focus = False;
 				}
-				else if (FP_DO_GRAB_FOCUS(
-						 FW_FOCUS_POLICY(Fw)) &&
-					 (!IS_TRANSIENT(Fw) ||
-					  FW_W_TRANSIENTFOR(Fw) == Scr.Root))
+				else if (focus_query_grab_focus(
+						 Fw, get_focus_window()) ==
+					 True)
 				{
-					do_grab_focus = True;
-				}
-				else if (IS_TRANSIENT(Fw) &&
-					 FP_DO_GRAB_FOCUS_TRANSIENT(
-						 FW_FOCUS_POLICY(Fw)) &&
-					 (sf = get_focus_window()) &&
-					 FW_W(sf) == FW_W_TRANSIENTFOR(Fw))
-				{
-					/* it's a transient and its
-					 * transientfor currently has focus. */
-					do_grab_focus = True;
-				}
-				else if (IS_TRANSIENT(Fw) &&
-					 FP_DO_GRAB_FOCUS(
-						 FW_FOCUS_POLICY(Fw)) &&
-					 !(XGetGeometry(
-						   dpy, FW_W_TRANSIENTFOR(Fw),
-						   &JunkRoot, &JunkX, &JunkY,
-						   &JunkWidth, &JunkHeight,
-						   &JunkBW, &JunkDepth)))
-				{
-					/* Gee, the transientfor does not
-					 * exist! These evil application
-					 * programmers must hate us a lot ;-) */
-					FW_W_TRANSIENTFOR(Fw) = Scr.Root;
 					do_grab_focus = True;
 				}
 				else
@@ -2457,6 +2424,13 @@ void HandlePropertyNotify(void)
 		if (XGetTransientForHint(dpy, FW_W(Fw), &FW_W_TRANSIENTFOR(Fw)))
 		{
 			SET_TRANSIENT(Fw, 1);
+			if (!XGetGeometry(
+				    dpy, FW_W_TRANSIENTFOR(Fw), &JunkRoot,
+				    &JunkX, &JunkY, &JunkWidth, &JunkHeight,
+				    &JunkBW, &JunkDepth))
+			{
+				FW_W_TRANSIENTFOR(Fw) = Scr.Root;
+			}
 			RaiseWindow(Fw);
 		}
 		else
@@ -2468,7 +2442,9 @@ void HandlePropertyNotify(void)
 	case XA_WM_NAME:
 		flush_property_notify(XA_WM_NAME, FW_W(Fw));
 		if (HAS_EWMH_WM_NAME(Fw))
+		{
 			return;
+		}
 		FlocaleGetNameProperty(XGetWMName, dpy, FW_W(Fw), &new_name);
 		if (new_name.name == NULL)
 		{
@@ -2486,7 +2462,9 @@ void HandlePropertyNotify(void)
 		SET_NAME_CHANGED(Fw, 1);
 
 		if (Fw->name.name == NULL)
+		{
 			Fw->name.name = NoName; /* must not happen */
+		}
 
 		setup_visible_name(Fw, False);
 		BroadcastWindowIconNames(Fw, True, False);
@@ -2516,7 +2494,9 @@ void HandlePropertyNotify(void)
 	case XA_WM_ICON_NAME:
 		flush_property_notify(XA_WM_ICON_NAME, FW_W(Fw));
 		if (HAS_EWMH_WM_ICON_NAME(Fw))
+		{
 			return;
+		}
 		FlocaleGetNameProperty(
 			XGetWMIconName, dpy, FW_W(Fw), &new_name);
 		if (new_name.name == NULL)
@@ -2971,7 +2951,7 @@ void HandleUnmapNotify(void)
 	Window dumwin;
 	XEvent dummy;
 	int weMustUnmap;
-	int focus_grabbed = 0;
+	Bool focus_grabbed;
 	Bool must_return = False;
 
 	DBUG("HandleUnmapNotify","Routine Entered");
@@ -3043,10 +3023,7 @@ void HandleUnmapNotify(void)
 	{
 		Scr.Hilite = NULL;
 	}
-	focus_grabbed = (Fw == get_focus_window()) &&
-		((!IS_TRANSIENT(Fw) && FP_DO_GRAB_FOCUS(FW_FOCUS_POLICY(Fw))) ||
-		 (IS_TRANSIENT(Fw) &&
-		  FP_DO_GRAB_FOCUS_TRANSIENT(FW_FOCUS_POLICY(Fw))));
+	focus_grabbed = focus_query_restore_focus(Fw);
 	restore_focus_after_unmap(Fw, False);
 	if (!IS_MAPPED(Fw) && !IS_ICONIFIED(Fw))
 	{
@@ -3101,7 +3078,7 @@ void HandleUnmapNotify(void)
 		MyXUngrabServer(dpy);
 	}
 	destroy_window(Fw);             /* do not need to mash event before */
-	if (focus_grabbed)
+	if (focus_grabbed == True)
 	{
 		CoerceEnterNotifyOnCurrentWindow();
 	}

@@ -1007,3 +1007,81 @@ void refresh_focus(FvwmWindow *fw)
 
 	return;
 }
+
+/* Takes as input the window that wants the focus and the one that currently
+ * has the focus and returns if the new window should get it. */
+Bool focus_query_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win)
+{
+	if (fw == NULL)
+	{
+		return False;
+	}
+	focus_win = get_focus_window();
+	if (focus_win != NULL &&
+	    FP_DO_OVERRIDE_GRAB_FOCUS(FW_FOCUS_POLICY(focus_win)))
+	{
+		/* Don't steal the focus from the current window */
+		return False;
+	}
+	if (IS_TRANSIENT(fw) && !XGetGeometry(
+		    dpy, FW_W_TRANSIENTFOR(fw), &JunkRoot, &JunkX, &JunkY,
+		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+	{
+		/* Gee, the transientfor does not exist! These evil application
+		 * programmers must hate us a lot ;-) */
+		FW_W_TRANSIENTFOR(fw) = Scr.Root;
+	}
+	if (IS_TRANSIENT(fw) && FW_W_TRANSIENTFOR(fw) != Scr.Root)
+	{
+		if (focus_win != NULL &&
+		    FP_DO_GRAB_FOCUS_TRANSIENT(FW_FOCUS_POLICY(fw)) &&
+		    FW_W(focus_win) == FW_W_TRANSIENTFOR(fw))
+		{
+			/* it's a transient and its transientfor currently has
+			 * focus. */
+			return True;
+		}
+		else
+		{
+			return False;
+		}
+	}
+	else
+	{
+		if (FP_DO_GRAB_FOCUS(FW_FOCUS_POLICY(fw)) &&
+		    (focus_win == NULL ||
+		     !FP_DO_OVERRIDE_GRAB_FOCUS(FW_FOCUS_POLICY(focus_win))))
+		{
+			return True;
+		}
+		else
+		{
+			return False;
+		}
+	}
+
+	return False;
+}
+
+/* Returns true if the focus has to be restored to a different window after
+ * unmapping. */
+Bool focus_query_restore_focus(FvwmWindow *fw)
+{
+	if (fw == NULL || fw != get_focus_window())
+	{
+		return False;
+	}
+	if (!IS_TRANSIENT(fw) &&
+	    (FW_W_TRANSIENTFOR(fw) == Scr.Root ||
+	     FP_DO_GRAB_FOCUS(FW_FOCUS_POLICY(fw))))
+	{
+		return True;
+	}
+	else if (IS_TRANSIENT(fw) &&
+		 FP_DO_GRAB_FOCUS_TRANSIENT(FW_FOCUS_POLICY(fw)))
+	{
+		return True;
+	}
+
+	return False;
+}
