@@ -25,36 +25,33 @@
 
 #include <stdio.h>
 #include <signal.h>
-#include <ctype.h>
 #include <errno.h>
 #include <X11/keysym.h>
 
 #include "fvwm.h"
-#include "builtins.h"
-#include "bindings.h"
-#include "events.h"
-#include "style.h"
-#include "icons.h"
-#include "functions.h"
-#include "menus.h"
-#include "misc.h"
-#include "screen.h"
-#include "module_interface.h"
-#include "stack.h"
-#include "move_resize.h"
-#include "virtual.h"
-#include "defaults.h"
-#include "gnome.h"
-#include "borders.h"
-#include "session.h"
-#include "colors.h"
-#include "decorations.h"
+#include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
+#include "bindings.h"
+#include "misc.h"
+#include "cursor.h"
+#include "functions.h"
+#include "screen.h"
+#include "defaults.h"
+#include "builtins.h"
+#include "module_interface.h"
+#include "borders.h"
+#include "placement.h"
+#include "events.h"
+#include "gnome.h"
+#include "icons.h"
+#include "menus.h"
+#include "virtual.h"
+#include "decorations.h"
+#include "add_window.h"
+#include "style.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
-#include "add_window.h"
-#include "placement.h"
 
 static void ApplyIconFont(void);
 static void ApplyWindowFont(FvwmDecor *decor);

@@ -15,12 +15,15 @@
 
 #include "config.h"
 
-#include "fvwmlib.h"
-#include "screen.h"
-#include "borders.h"
-
+#include "fvwm.h"
 #include "cursor.h"
-#include <X11/cursorfont.h>
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
+#include "misc.h"
+#include "screen.h"
+#include "cursor.h"
+#include "menus.h"
 
 static Cursor cursors[CRS_MAX];
 static const unsigned int default_cursors[CRS_MAX] =

@@ -16,9 +16,6 @@
 #ifndef _BINDINGS_
 #define _BINDINGS_
 
-#include "fvwm.h"
-#include "fvwmlib.h"
-
 Binding *ParseBinding(Display *dpy, Binding ** pblist, char *tline,
 		      BindingType type, int *nr_left_buttons,
 		      int *nr_right_buttons, unsigned char *buttons_grabbed);

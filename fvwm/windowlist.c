@@ -26,21 +26,22 @@
  *
  ***********************************************************************/
 
+#include "config.h"
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <string.h>
 #include <limits.h>
 
-#include "config.h"
-#include "fvwmlib.h"
-
 #include "fvwm.h"
-#include "menus.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "stack.h"
+#include "fvwmlib.h"
+#include "menus.h"
 #include "conditional.h"
+#include "stack.h"
 
 extern FvwmWindow *Tmp_win;
 extern FvwmWindow *ButtonWindow;

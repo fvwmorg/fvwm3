@@ -37,25 +37,23 @@
  ***********************************************************************/
 #include "config.h"
 
-#include <stdio.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
-#include <unistd.h>
-
-#include "style.h"
 #include "fvwm.h"
-#include "fvwmlib.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "gnome.h"
-#include "move_resize.h"
+#include "defaults.h"
+#include "style.h"
 #include "libs/Colorset.h"
 #include "borders.h"
-#include "add_window.h"
-#include "focus.h"
+#include "gnome.h"
 #include "icons.h"
+#include "focus.h"
 #include "placement.h"
+#include "move_resize.h"
+#include "add_window.h"
 
 /* list of window names with attributes */
 static window_style *all_styles = NULL;

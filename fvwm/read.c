@@ -29,20 +29,21 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
+#endif
 #ifdef I18N_MB
 #include <X11/Xlocale.h>
 #endif
 
 #include "fvwm.h"
-#include "read.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "Module.h"
+#include "read.h"
 
 extern Boolean debugging;
 
@@ -155,19 +156,19 @@ int run_command_file( char* filename, XEvent *eventp, FvwmWindow *tmp_win,
 }
 
 /**
-* Busy Cursor Stuff for Read 
+* Busy Cursor Stuff for Read
 **/
 static void cursor_control(Bool grab)
 {
   static unsigned int read_depth = 0;
   static Bool need_ungrab = False;
 
-  if (!(Scr.BusyCursor & BUSY_READ) && !need_ungrab) 
+  if (!(Scr.BusyCursor & BUSY_READ) && !need_ungrab)
     return;
 
   if (grab)
   {
-    if (!read_depth && GrabEm(CRS_WAIT, GRAB_BUSY)) 
+    if (!read_depth && GrabEm(CRS_WAIT, GRAB_BUSY))
       need_ungrab = True;
     if (need_ungrab) read_depth++;
   }
@@ -191,7 +192,7 @@ void ReadFile(F_CMD_ARGS)
     int read_quietly;
 
     DoingCommandLine = False;
-    
+
     if (debugging)
 	fvwm_msg(DBG,"ReadFile","about to attempt '%s'",action);
 

@@ -19,8 +19,10 @@
 
 #include <stdio.h>
 
-#include "repeat.h"
+#include "fvwm.h"
+#include "cursor.h"
 #include "functions.h"
+#include "repeat.h"
 #include "libs/Parse.h"
 
 
@@ -83,8 +85,7 @@ FvwmWindow *repeat_last_fvwm_window = NULL;
  *
  * !!! [finish and update description]
  */
-Bool set_repeat_data(void *data, repeat_type type,
-		     const struct functions *builtin)
+Bool set_repeat_data(void *data, repeat_type type, const func_type *builtin)
 {
   /* No history recording during startup. */
   if (fFvwmInStartup)

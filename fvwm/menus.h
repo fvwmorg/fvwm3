@@ -58,9 +58,6 @@
 #ifndef _MENUS_
 #define _MENUS_
 
-#include <libs/fvwmlib.h>
-#include "fvwm.h"
-
 #define MENU_IS_LEFT  0x01
 #define MENU_IS_RIGHT 0x02
 #define MENU_IS_UP    0x04
@@ -569,6 +566,7 @@ typedef struct
   struct
   {
     unsigned has_default_action : 1;
+    unsigned is_invoked_by_key_press : 1;
     unsigned is_menu_from_frame_or_window_or_titlebar : 1;
     unsigned is_sticky : 1;
     unsigned is_submenu : 1;

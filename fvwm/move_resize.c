@@ -30,22 +30,25 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
-#include <string.h>
-#include <unistd.h>
-#include <X11/keysym.h>
+
 #include "fvwm.h"
-#include "events.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "module_interface.h"
+#include "defaults.h"
 #include "move_resize.h"
-#include "virtual.h"
+#include "module_interface.h"
 #include "borders.h"
-#include "colormaps.h"
-#include "decorations.h"
 #include "placement.h"
 #include "gnome.h"
+#include "colormaps.h"
+#include "virtual.h"
+#include "decorations.h"
+#include "events.h"
+#include <X11/keysym.h>
 
 /* ----- move globals ----- */
 extern XEvent Event;

@@ -30,17 +30,19 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
-#include <string.h>
 
 #include "fvwm.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
+#include "misc.h"
+#include "screen.h"
 #include "focus.h"
 #include "icons.h"
-#include "screen.h"
-#include "bindings.h"
-#include "stack.h"
-#include "virtual.h"
 #include "borders.h"
+#include "virtual.h"
+#include "stack.h"
 
 static Bool lastFocusType;
 

@@ -16,8 +16,6 @@
 #ifndef _FUNCTIONS_
 #define _FUNCTIONS_
 
-#include "cursor.h"
-
 struct FvwmFunction;               /* forward declaration */
 
 typedef struct FunctionItem
@@ -40,7 +38,7 @@ typedef struct FvwmFunction
 } FvwmFunction;
 
 /* used for parsing commands*/
-struct functions
+typedef struct
 {
   char *keyword;
 #ifdef __STDC__
@@ -50,7 +48,7 @@ struct functions
 #endif
   short func_type;
   unsigned char flags;
-};
+} func_type;
 
 /* Bits for the function flag byte. */
 #define FUNC_NEEDS_WINDOW 0x01

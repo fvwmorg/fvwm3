@@ -42,15 +42,15 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
-#include <ctype.h>
-#include <sys/socket.h>
 
 #include "fvwm.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
 #include "module_interface.h"
-#include "libs/Picture.h"
 #include "libs/Colorset.h"
 
 extern unsigned long *PipeMask;                /* in module.c */

@@ -246,12 +246,11 @@ void ExecuteMatchingCommands(int colorset)
   const Command *command;
   for (command = commands->first; command; command = command->next)
   {
-    if (
-      (command->deskglob || command->desk == current_desk) &&
-      (command->x < 0    || command->x    == current_x)    &&
-      (command->y < 0    || command->y    == current_y)    &&
-      (colorset   < 0    || colorset      == current_colorset && colorset == command->colorset)
-    )
+    if ((command->deskglob || command->desk == current_desk) &&
+	(command->x < 0 || command->x == current_x) &&
+	(command->y < 0 || command->y == current_y) &&
+	(colorset < 0 || (colorset == current_colorset &&
+			  colorset == command->colorset)))
       SetDeskPageBackground(command);
   }
 }
@@ -262,7 +261,6 @@ void ExecuteMatchingCommands(int colorset)
 void ProcessMessage(unsigned long type, unsigned long *body)
 {
   char *tline;
-  int colorset = -1;
 
   switch (type)
   {

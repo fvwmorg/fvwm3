@@ -14,24 +14,24 @@
 #ifdef GNOME
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
-#include <string.h>
-#include <unistd.h>
+#endif
 
 #include <X11/Xlib.h>
-#include <X11/Xutil.h>
 #include <X11/Xmd.h>
-#include <X11/Xatom.h>
 
 #include "fvwm.h"
-#include "screen.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
+#include "screen.h"
+#include "gnome.h"
 #include "stack.h"
-#include "virtual.h"
 #include "style.h"
-
+#include "virtual.h"
 
 
 /*********************************************************/

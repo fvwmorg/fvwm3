@@ -1,3 +1,22 @@
+1999-11-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (SetupFrame):
+	fixed X error when recapturing a shaded window
+
+	* fvwm/*.[ch]:
+	include minimal set of header files
+
+	* fvwm/menus.c (MenuInteraction):
+	(menuShortcuts):
+	(is_double_click):
+	(do_menu):
+	fixed double click action over submenu items
+
+1999-11-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	broadcast WINDOWSHADE packet when adding a shaded window
+
 1999-11-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.h:

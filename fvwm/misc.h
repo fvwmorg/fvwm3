@@ -16,17 +16,10 @@
 #ifndef MISC_H
 #define MISC_H
 
-#include <ctype.h>
-#include "defaults.h"
-#include "functions.h"
-#include <libs/fvwmlib.h>
-
 
 /************************************************************************
  * ReapChildren - wait() for all dead child processes
  ************************************************************************/
-#include <sys/types.h>
-#include <sys/wait.h>
 
 /* MB stuff: rename XmbTextEscapement() and XFreeFont() */
 #ifdef I18N_MB

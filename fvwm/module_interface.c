@@ -29,24 +29,23 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
-#include <ctype.h>
 #include <stdarg.h>
 #include <errno.h>
-#include <X11/keysym.h>
 
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
-#include <sys/time.h>
-#include <sys/socket.h>
+#endif
 
 #include "fvwm.h"
-#include "fvwmsignal.h"
-#include "events.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
 #include "module_interface.h"
+#include "events.h"
+#include "fvwmsignal.h"
 #include "libs/Colorset.h"
 
 int npipes;

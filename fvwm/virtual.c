@@ -16,20 +16,22 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <string.h>
-#include <ctype.h>
 
 #include "fvwm.h"
-#include "icons.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "Module.h"
-#include "focus.h"
-#include "move_resize.h"
+#include "defaults.h"
 #include "virtual.h"
-#include "gnome.h"
-#include "borders.h"
 #include "module_interface.h"
+#include "focus.h"
+#include "gnome.h"
+#include "move_resize.h"
+#include "borders.h"
+#include "icons.h"
 
 static void UnmapDesk(int desk, Bool grab);
 static void MapDesk(int desk, Bool grab);
@@ -774,6 +776,8 @@ void MoveViewport(int newx, int newy, Bool grab)
   BroadcastPacket(M_NEW_PAGE, 5,
                   Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
+if (deltax%Scr.MyDisplayWidth!=0 || deltay%Scr.MyDisplayHeight!=0)
+fprintf(stderr,"mv: dx=%d, dy=%d, px=%d, py=%d, nx=%d, ny=%d\n", deltax,deltay,prev_page_x,prev_page_y,newx,newy);
   if((deltax!=0)||(deltay!=0))
   {
 

@@ -16,17 +16,14 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
-#include <string.h>
-#include <ctype.h>
-#include <unistd.h>
 
-#include <X11/X.h>
-#include <X11/keysym.h>
-#include <X11/Xlib.h>
 #include "fvwm.h"
-#include "screen.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
 #include "bindings.h"
+#include "misc.h"
+#include "screen.h"
 
 
 #define MODS_UNUSED_DEFAULT LockMask

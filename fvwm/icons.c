@@ -28,9 +28,6 @@
 
 #include "config.h"
 
-#include <stdio.h>
-#include <signal.h>
-
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
@@ -41,26 +38,26 @@
 #endif /* XPM */
 
 #include "fvwm.h"
-#include "icons.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "bindings.h"
-#include "Module.h"
+#include "defaults.h"
+#include "icons.h"
+#include "borders.h"
 #include "focus.h"
+#include "colormaps.h"
 #include "stack.h"
 #include "virtual.h"
-#include "borders.h"
-#include "module_interface.h"
 #include "decorations.h"
-#include "colormaps.h"
-
+#include "module_interface.h"
+#include "libs/Colorset.h"
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
-
-#include <libs/Picture.h>
-#include "libs/Colorset.h"
 
 static int do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr);
 static void GetBitmapFile(FvwmWindow *tmp_win);

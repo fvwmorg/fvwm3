@@ -30,26 +30,21 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
-#include <ctype.h>
-#include <string.h>
-#include <unistd.h>
 
-#include <X11/Xlib.h>
 #include <X11/keysym.h>
 #include <X11/Intrinsic.h>
-#include "libs/Colorset.h"
+
 #include "fvwm.h"
-#include "events.h"
-#include "style.h"
+#include "cursor.h"
 #include "functions.h"
-#include "menus.h"
-#include "focus.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "bindings.h"
+#include "style.h"
+#include "menus.h"
+#include "focus.h"
 #include "repeat.h"
-#include "Module.h"
 #include "move_resize.h"
 #include "virtual.h"
 #include "stack.h"
@@ -64,6 +59,8 @@
 #include "icons.h"
 #include "read.h"
 #include "builtins.h"
+#include "events.h"
+#include "libs/Colorset.h"
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
@@ -99,7 +96,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 
 /* The function names in the first field *must* be in lowercase or else the
  * function cannot be called. */
-static const struct functions func_config[] =
+static const func_type func_config[] =
 {
   {"+",            add_another_item, F_ADDMENU2,            0},
 #ifdef MULTISTYLE
@@ -260,12 +257,12 @@ static const struct functions func_config[] =
 */
 static int func_comp(const void *a, const void *b)
 {
-  return (strcmp((char *)a, ((struct functions *)b)->keyword));
+  return (strcmp((char *)a, ((func_type *)b)->keyword));
 }
 
-static const struct functions *FindBuiltinFunction(char *func)
+static const func_type *FindBuiltinFunction(char *func)
 {
-  struct functions *ret_func;
+  func_type *ret_func;
   char *temp;
   char *s;
 
@@ -282,10 +279,10 @@ static const struct functions *FindBuiltinFunction(char *func)
     if (isupper(*s))
       *s = tolower(*s);
 
-  ret_func = (struct functions *)bsearch
+  ret_func = (func_type *)bsearch
     (temp, func_config,
-     sizeof(func_config) / sizeof(struct functions) - 1,
-     sizeof(struct functions), func_comp);
+     sizeof(func_config) / sizeof(func_type) - 1,
+     sizeof(func_type), func_comp);
   free(temp);
 
   return ret_func;
@@ -707,7 +704,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   char *trash2;
   char *expaction = NULL;
   char *arguments[10];
-  const struct functions *bif;
+  const func_type *bif;
   Bool set_silent;
   Bool must_free_string = False;
   int skip;

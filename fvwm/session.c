@@ -24,20 +24,20 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <pwd.h>
-#include <sys/types.h>
 #include <signal.h>
+
 #include "fvwm.h"
-#include "session.h"
-#include <X11/Xatom.h>
-#include "screen.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
-#include "virtual.h"
+#include "screen.h"
+#include "session.h"
 #include "stack.h"
-#include "gnome.h"
 #include "icccm2.h"
+#include "virtual.h"
 #include "placement.h"
 
 extern int master_pid;

@@ -21,17 +21,18 @@
 #include <stdarg.h>
 
 #include "fvwm.h"
-#include <X11/Xatom.h>
-#include <X11/Xutil.h>
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
+#include "defaults.h"
 #include "module_interface.h"
 #include "stack.h"
-#include "virtual.h"
-#include "defaults.h"
-#include "gnome.h"
 #include "borders.h"
-
+#include "virtual.h"
+#include "gnome.h"
 
 /* ----------------------------- stack ring code --------------------------- */
 

@@ -29,20 +29,15 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
-#include <string.h>
-#include <ctype.h>
-#include <stdlib.h>
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
-#include <unistd.h>
-#include <pwd.h>
-#include <math.h>
-
-#include <X11/Xproto.h>
-#include <X11/Xatom.h>
-
+#endif
 
 #include "fvwm.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
 

@@ -54,30 +54,32 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+
 #include "fvwm.h"
-#include "style.h"
-#include <X11/Xatom.h>
-#include "screen.h"
-#include "misc.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
 #include "bindings.h"
+#include "misc.h"
+#include "screen.h"
+#include "defaults.h"
+#include "add_window.h"
+#include "module_interface.h"
+#include "stack.h"
+#include "style.h"
+#include "icons.h"
+#include "gnome.h"
+#include "focus.h"
+#include "placement.h"
+#include "session.h"
+#include "move_resize.h"
 #include "borders.h"
+#include "colormaps.h"
+#include "decorations.h"
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #include <X11/Xresource.h>
 #endif /* SHAPE */
-#include "module_interface.h"
-#include "session.h"
-#include "stack.h"
-#include "move_resize.h"
-#include "colormaps.h"
-#include "gnome.h"
-#include "placement.h"
-#include "builtins.h"
-#include "decorations.h"
-#include "style.h"
-#include "focus.h"
 
 char NoName[] = "Untitled"; /* name if no name in XA_WM_NAME */
 char NoClass[] = "NoClass"; /* Class if no res_class in class hints */
@@ -1029,6 +1031,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   Bool used_sm = False;
   Bool do_resize_too = False;
 
+XSynchronize(dpy, 1);
   /****** init window structure ******/
   if (!setup_window_structure(&tmptmp_win, w, ReuseWin))
     return NULL;

@@ -24,27 +24,15 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
-#include <ctype.h>
-#include <errno.h>
-#include <X11/keysym.h>
 
 #include "fvwm.h"
-#include "events.h"
-#include "style.h"
-#include "icons.h"
+#include "cursor.h"
 #include "functions.h"
-#include "menus.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "module_interface.h"
-#include "stack.h"
-#include "move_resize.h"
-#include "virtual.h"
-#include "defaults.h"
-#include "gnome.h"
-#include "borders.h"
-#include "session.h"
+#include "style.h"
 
 
 /**********************************************************************

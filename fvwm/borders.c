@@ -35,13 +35,16 @@
 #include <string.h>
 
 #include "fvwm.h"
-#include "icons.h"
-#include "screen.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
-#include "Module.h"
+#include "screen.h"
+#include "defaults.h"
 #include "borders.h"
+#include "icons.h"
 #include "module_interface.h"
-#include "window_flags.h"
 #include "libs/Colorset.h"
 
 #ifdef SHAPE
@@ -1346,15 +1349,16 @@ void SetupFrame(
       if (!shaded)
       {
 	XMoveResizeWindow(
-	dpy, tmp_win->Parent, px, py, tmp_win->attr.width,
-	tmp_win->attr.height);
+	dpy, tmp_win->Parent, px, py, max(tmp_win->attr.width, 1),
+	max(tmp_win->attr.height, 1));
       }
       break;
     case 2:
       if (!shaded)
       {
 	XResizeWindow(
-	  dpy, tmp_win->w, tmp_win->attr.width, tmp_win->attr.height);
+	  dpy, tmp_win->w, max(tmp_win->attr.width, 1),
+	  max(tmp_win->attr.height, 1));
 	/* This reduces flickering */
 	XSync(dpy, 0);
       }

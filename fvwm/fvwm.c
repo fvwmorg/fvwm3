@@ -28,35 +28,37 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <signal.h>
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
-#include <string.h>
-#include <unistd.h>
+#endif
 
 #ifdef HAVE_GETPWUID
 #  include <pwd.h>
 #endif
 
 #include "fvwm.h"
-#include "fvwmsignal.h"
-#include "events.h"
+#include "cursor.h"
 #include "functions.h"
-#include "menus.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "Module.h"
-#include "read.h"
-#include "session.h"
-#include "virtual.h"
-#include "stack.h"
-#include "gnome.h"
-#include "colors.h"
-#include "colormaps.h"
+#include "defaults.h"
+#include "menus.h"
 #include "module_interface.h"
-#include "icccm2.h"
 #include "libs/Colorset.h"
+#include "icccm2.h"
+#include "gnome.h"
 #include "add_window.h"
+#include "fvwmsignal.h"
+#include "colormaps.h"
+#include "stack.h"
+#include "virtual.h"
+#include "session.h"
+#include "events.h"
+#include "read.h"
+#include "colors.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>

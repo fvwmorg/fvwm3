@@ -16,8 +16,6 @@
 #ifndef _VIRTUAL_
 #define _VIRTUAL_
 
-#include "fvwm.h"
-
 void setEdgeThickness(F_CMD_ARGS);
 void SetEdgeScroll(F_CMD_ARGS);
 void SetEdgeResistance(F_CMD_ARGS);

@@ -27,12 +27,15 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <unistd.h>
-#include "colormaps.h"
-#include <X11/Xatom.h>
+
+#include "fvwm.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "Module.h"
+#include "colormaps.h"
 
 FvwmWindow *colormap_win;
 extern FvwmWindow *Tmp_win;
@@ -248,7 +251,7 @@ void UninstallRootColormap(void)
     } else if (last_cmap != Pcmap) {
       last_cmap = Pcmap;
       XInstallColormap(dpy, last_cmap);
-    }      
+    }
   }
 
   return;

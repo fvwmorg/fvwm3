@@ -24,9 +24,6 @@
  * warrantees of any sort whatsoever are given or implied or anything.
  ****************************************************************************/
 
-#include "fvwm.h"
-
-
 /***********************************************************************
  *
  *  Procedure:

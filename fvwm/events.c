@@ -64,31 +64,33 @@
 #include <unistd.h>
 
 #include "fvwm.h"
-#include "fvwmsignal.h"
-#include "events.h"
-#include "icons.h"
-#include <X11/Xatom.h>
-#include "misc.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
 #include "bindings.h"
+#include "misc.h"
 #include "screen.h"
-#include "style.h"
+#include "defaults.h"
+#include "events.h"
+#include "fvwmsignal.h"
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 #include "module_interface.h"
 #include "session.h"
-#include "focus.h"
-#include "stack.h"
-#include "move_resize.h"
-#include "virtual.h"
-#include "gnome.h"
 #include "borders.h"
 #include "colormaps.h"
 #include "add_window.h"
 #include "icccm2.h"
+#include "icons.h"
+#include "gnome.h"
+#include "style.h"
+#include "stack.h"
 #include "placement.h"
+#include "focus.h"
+#include "move_resize.h"
+#include "virtual.h"
 #ifdef HAVE_STROKE
-#include <errno.h>
 #include "stroke.h"
 #endif /* HAVE_STROKE */
 
@@ -1086,6 +1088,11 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
     {
       DeIconify(Tmp_win);
     }
+  if (IS_SHADED(Tmp_win))
+  {
+    BroadcastPacket(M_WINDOWSHADE, 3, Tmp_win->w, Tmp_win->frame,
+                    (unsigned long)Tmp_win);
+  }
 
   /* Just to be on the safe side, we make sure that STARTICONIC
      can only influence the initial transition from withdrawn state. */

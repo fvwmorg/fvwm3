@@ -27,17 +27,20 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <unistd.h>
-#include <string.h>
 
 #include "fvwm.h"
-#include "style.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
+#include "placement.h"
+#include "style.h"
+#include "borders.h"
 #include "move_resize.h"
 #include "virtual.h"
 #include "stack.h"
-#include "borders.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A)<(B)? (A):(B))

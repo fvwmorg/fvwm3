@@ -51,15 +51,18 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
+
 #include "fvwm.h"
-#include "style.h"
-#include <X11/Xatom.h>
-#include <X11/Xproto.h>
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
+#include "decorations.h"
+#include <X11/Xproto.h>
 #include "lang-strings.h"
+#include "style.h"
 
 
 extern Atom _XA_MwmAtom;

@@ -16,18 +16,17 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <signal.h>
+#ifdef HAVE_FCNTL_H
 #include <fcntl.h>
-#include <string.h>
-#include <unistd.h>
+#endif
+
 #include "fvwm.h"
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "Module.h"
-
-#include <X11/Xproto.h>
-#include <X11/Xatom.h>
 
 Time managing_since;
 

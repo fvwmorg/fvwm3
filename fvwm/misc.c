@@ -27,24 +27,22 @@
  *
  **************************************************************************/
 
-
 #include "config.h"
 
 #include <stdio.h>
-#include <sys/time.h>
-#include <signal.h>
 #include <stdarg.h>
+#include <sys/wait.h>
 
 #include "fvwm.h"
-#include "events.h"
-#include <X11/Xatom.h>
-#include <X11/Xutil.h>
-#include <X11/keysym.h>
+#include "cursor.h"
+#include "functions.h"
+#include "libs/fvwmlib.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
-#include "Module.h"
-#include "focus.h"
 #include "module_interface.h"
+#include "events.h"
+#include "focus.h"
 
 /**************************************************************************
  *
