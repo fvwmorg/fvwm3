@@ -84,6 +84,36 @@ typedef struct
   MenuPosHints pos_hints;
 } saved_pos_hints;
 
+typedef struct MenuInfo
+{
+  MenuRoot *all;
+  int n_destroyed_menus;
+  struct MenuStyle *DefaultStyle;
+  struct MenuStyle *LastStyle;
+} MenuInfo;
+
+typedef struct
+{
+  MenuRoot *menu;
+  /* number of item labels present in the item format */
+  unsigned int used_item_labels;
+  /* same for mini icons */
+  unsigned int used_mini_icons;
+  struct
+  {
+    unsigned short label_width[MAX_MENU_ITEM_LABELS];
+    unsigned short sidepic_width;
+    unsigned short icon_width[MAX_MENU_ITEM_MINI_ICONS];
+    unsigned short picture_width;
+    unsigned short triangle_width;
+    unsigned short title_width;
+  } max;
+  struct
+  {
+    unsigned is_popup_indicator_used : 1;
+  } flags;
+} MenuSizingParameters;
+
 /***************************************************************
  * statics
  ***************************************************************/
@@ -96,9 +126,9 @@ static saved_pos_hints last_saved_pos_hints =
   { 0, 0, 0.0, 0.0, 0, 0, False, False, False }
 };
 
-/* These globals are here for simplicity */
-MenuRoot *parental_mr = NULL;
-FvwmWindow *parental_fw = NULL;
+/* structures for menus */
+static MenuInfo Menus;
+
 
 /***************************************************************
  * externals
@@ -113,7 +143,6 @@ extern XEvent Event;
 
 /* This one is only read, never written */
 extern Time lastTimestamp;
-
 
 /***************************************************************
  * forward declarations
@@ -157,6 +186,13 @@ static void merge_continuation_menus(MenuRoot *mr);
  * subroutines
  *
  ***************************************************************/
+
+void menus_init(void)
+{
+	memset((&Menus), 0, sizeof(MenuInfo));
+
+	return;
+}
 
 /***************************************************************
  * functions dealing with coordinates
@@ -387,7 +423,6 @@ static void animated_move_back(
 {
 	int act_x;
 	int act_y;
-	Bool Parental = False;
 
 	if (MR_XANIMATION(mr) == 0)
 	{
@@ -397,18 +432,22 @@ static void animated_move_back(
 		    mr, &JunkRoot, &act_x, &act_y, &JunkWidth, &JunkHeight,
 		    &JunkBW, &JunkDepth))
 	{
+		FvwmWindow *parental_fw;
+
 		/* move it back */
 		if (ST_HAS_MENU_CSET(MR_STYLE(mr)) &&
 		    Colorset[ST_CSET_MENU(MR_STYLE(mr))].pixmap ==
 		    ParentRelative)
 		{
-			Parental = True;
-			parental_mr = mr;
 			parental_fw = fw;
+		}
+		else
+		{
+			parental_fw = NULL;
 		}
 		AnimatedMoveOfWindow(
 			MR_WINDOW(mr), act_x, act_y, act_x - MR_XANIMATION(mr),
-			act_y, do_warp_pointer, -1, NULL, Parental);
+			act_y, do_warp_pointer, -1, NULL, parental_fw);
 		MR_XANIMATION(mr) = 0;
 	}
 
@@ -543,88 +582,93 @@ static MenuItem *find_entry(
 static int get_selectable_item_index(
   MenuRoot *mr, MenuItem *miTarget, int *ret_sections)
 {
-  int i = 0;
-  int s = 0;
-  MenuItem *mi;
-  Bool last_selectable = False;
+	int i = 0;
+	int s = 0;
+	MenuItem *mi;
+	Bool last_selectable = False;
 
-  for (mi = MR_FIRST_ITEM(mr); mi && mi != miTarget; mi = MI_NEXT_ITEM(mi))
-  {
-    if (MI_IS_SELECTABLE(mi))
-    {
-      i++;
-      last_selectable = True;
-    }
-    else if (last_selectable)
-    {
-      s++;
-      last_selectable = False;
-    }
-  }
-  if (ret_sections)
-  {
-    *ret_sections = s;
-  }
-  if (mi == miTarget)
-  {
-    return i;
-  }
-  return -1;
+	for (mi = MR_FIRST_ITEM(mr); mi && mi != miTarget;
+	     mi = MI_NEXT_ITEM(mi))
+	{
+		if (MI_IS_SELECTABLE(mi))
+		{
+			i++;
+			last_selectable = True;
+		}
+		else if (last_selectable)
+		{
+			s++;
+			last_selectable = False;
+		}
+	}
+	if (ret_sections)
+	{
+		*ret_sections = s;
+	}
+	if (mi == miTarget)
+	{
+		return i;
+	}
+	return -1;
 }
 
 static MenuItem *get_selectable_item_from_index(MenuRoot *mr, int index)
 {
-  int i = -1;
-  MenuItem *mi;
-  MenuItem *miLastOk = NULL;
+	int i = -1;
+	MenuItem *mi;
+	MenuItem *miLastOk = NULL;
 
-  for (mi = MR_FIRST_ITEM(mr); mi && (i < index || miLastOk == NULL);
-       mi=MI_NEXT_ITEM(mi))
-  {
-    if (MI_IS_SELECTABLE(mi))
-    {
-      miLastOk = mi;
-      i++;
-    }
-  }
-  return miLastOk;
+	for (mi = MR_FIRST_ITEM(mr); mi && (i < index || miLastOk == NULL);
+	     mi=MI_NEXT_ITEM(mi))
+	{
+		if (MI_IS_SELECTABLE(mi))
+		{
+			miLastOk = mi;
+			i++;
+		}
+	}
+	return miLastOk;
 }
 
 static MenuItem *get_selectable_item_from_section(MenuRoot *mr, int section)
 {
-  int i = 0;
-  MenuItem *mi;
-  MenuItem *miLastOk = NULL;
-  Bool last_selectable = False;
+	int i = 0;
+	MenuItem *mi;
+	MenuItem *miLastOk = NULL;
+	Bool last_selectable = False;
 
-  for (mi = MR_FIRST_ITEM(mr); mi && (i <= section || miLastOk == NULL);
-       mi=MI_NEXT_ITEM(mi))
-  {
-    if (MI_IS_SELECTABLE(mi))
-    {
-      if (!last_selectable)
-      {
-	miLastOk = mi;
-	last_selectable = True;
-      }
-    }
-    else if (last_selectable)
-    {
-      i++;
-      last_selectable = False;
-    }
-  }
-  return miLastOk;
+	for (mi = MR_FIRST_ITEM(mr); mi && (i <= section || miLastOk == NULL);
+	     mi=MI_NEXT_ITEM(mi))
+	{
+		if (MI_IS_SELECTABLE(mi))
+		{
+			if (!last_selectable)
+			{
+				miLastOk = mi;
+				last_selectable = True;
+			}
+		}
+		else if (last_selectable)
+		{
+			i++;
+			last_selectable = False;
+		}
+	}
+
+	return miLastOk;
 }
 
 static int get_selectable_item_count(MenuRoot *mr, int *ret_sections)
 {
-  int count;
+	int count;
 
-  count = get_selectable_item_index(mr, MR_LAST_ITEM(mr), ret_sections);
-  if (MR_LAST_ITEM(mr) && MI_IS_SELECTABLE(MR_LAST_ITEM(mr)))
-    count++;
-  return count;
+	count = get_selectable_item_index(mr, MR_LAST_ITEM(mr), ret_sections);
+	if (MR_LAST_ITEM(mr) && MI_IS_SELECTABLE(MR_LAST_ITEM(mr)))
+	{
+		count++;
+	}
+
+	return count;
 }
 
 
@@ -635,83 +679,93 @@ static int get_selectable_item_count(MenuRoot *mr, int *ret_sections)
 
 /* Search for a submenu that was popped up by the given item in the given
  * instance of the menu. */
-static MenuRoot *seek_submenu_instance(MenuRoot *parent_menu,
-				       MenuItem *parent_item)
+static MenuRoot *seek_submenu_instance(
+	MenuRoot *parent_menu, MenuItem *parent_item)
 {
-  MenuRoot *mr;
+	MenuRoot *mr;
 
-  for (mr = Menus.all; mr != NULL; mr = MR_NEXT_MENU(mr))
-  {
-    if (MR_PARENT_MENU(mr) == parent_menu &&
-	MR_PARENT_ITEM(mr) == parent_item)
-    {
-      /* here it is */
-      break;
-    }
-  }
-  return mr;
+	for (mr = Menus.all; mr != NULL; mr = MR_NEXT_MENU(mr))
+	{
+		if (MR_PARENT_MENU(mr) == parent_menu &&
+		    MR_PARENT_ITEM(mr) == parent_item)
+		{
+			/* here it is */
+			break;
+		}
+	}
+
+	return mr;
 }
 
 static Bool is_submenu_mapped(MenuRoot *parent_menu, MenuItem *parent_item)
 {
-  XWindowAttributes win_attribs;
-  MenuRoot *mr;
+	XWindowAttributes win_attribs;
+	MenuRoot *mr;
 
-  mr = seek_submenu_instance(parent_menu, parent_item);
-  if (mr == NULL)
-    return False;
+	mr = seek_submenu_instance(parent_menu, parent_item);
+	if (mr == NULL)
+	{
+		return False;
+	}
 
-  if (MR_WINDOW(mr) == None)
-    return False;
-  if (!XGetWindowAttributes(dpy, MR_WINDOW(mr), &win_attribs))
-    return False;
-  return (win_attribs.map_state == IsViewable);
+	if (MR_WINDOW(mr) == None)
+	{
+		return False;
+	}
+	if (!XGetWindowAttributes(dpy, MR_WINDOW(mr), &win_attribs))
+	{
+		return False;
+	}
+
+	return (win_attribs.map_state == IsViewable);
 }
 
 /* Returns the menu root that a given menu item pops up */
 static MenuRoot *mr_popup_for_mi(MenuRoot *mr, MenuItem *mi)
 {
-  char *menu_name;
-  MenuRoot *menu = NULL;
+	char *menu_name;
+	MenuRoot *menu = NULL;
 
-  /* This checks if mi is != NULL too */
-  if (!mi || !MI_IS_POPUP(mi))
-    return NULL;
+	/* This checks if mi is != NULL too */
+	if (!mi || !MI_IS_POPUP(mi))
+	{
+		return NULL;
+	}
 
-  /* first look for a menu that is aleady mapped */
-  menu = seek_submenu_instance(mr, mi);
-  if (menu)
-    return menu;
+	/* first look for a menu that is aleady mapped */
+	menu = seek_submenu_instance(mr, mi);
+	if (menu)
+	{
+		return menu;
+	}
 
-  /* just look past "Popup " in the action, and find that menu root */
-  menu_name = PeekToken(SkipNTokens(MI_ACTION(mi), 1), NULL);
-  menu = FindPopup(menu_name);
-  return menu;
+	/* just look past "Popup " in the action, and find that menu root */
+	menu_name = PeekToken(SkipNTokens(MI_ACTION(mi), 1), NULL);
+	menu = FindPopup(menu_name);
+
+	return menu;
 }
 
 /* FindPopup expects a token as the input. Make sure you have used
  * GetNextToken before passing a menu name to remove quotes (if necessary) */
 static MenuRoot *FindPopup(char *popup_name)
 {
-  MenuRoot *mr;
+	MenuRoot *mr;
 
-  if (popup_name == NULL)
-    return NULL;
+	if (popup_name == NULL)
+	{
+		return NULL;
+	}
+	for (mr = Menus.all; mr != NULL; mr = MR_NEXT_MENU(mr))
+	{
+		if (!MR_IS_DESTROYED(mr) && mr == MR_ORIGINAL_MENU(mr) &&
+		    MR_NAME(mr) != NULL && StrEquals(popup_name, MR_NAME(mr)))
+		{
+			break;
+		}
+	}
 
-  mr = Menus.all;
-  while (mr != NULL)
-  {
-    if (MR_NAME(mr) != NULL)
-    {
-      if (mr == MR_ORIGINAL_MENU(mr) && StrEquals(popup_name, MR_NAME(mr)))
-      {
 	return mr;
-      }
-    }
-    mr = MR_NEXT_MENU(mr);
-  }
-  return NULL;
-
 }
 
 
@@ -2066,8 +2120,7 @@ static void MenuInteraction(
       }
       if (mi != NULL)
       {
-	if (MI_FUNC_TYPE(mi) == F_TEARMENUOFF ||
-	    (Event.xbutton.button == 2 && MI_IS_TITLE(mi)))
+	if (Event.xbutton.button == 2 && MI_IS_TITLE(mi))
 	{
 	  pmret->rc = MENU_TEAR_OFF;
 	  goto DO_RETURN;
@@ -2885,6 +2938,11 @@ static void MenuInteraction(
   {
     pmret->rc = MENU_DOUBLE_CLICKED;
   }
+  if (pmret->rc == MENU_SELECTED && MI_FUNC_TYPE(mi) == F_TEARMENUOFF)
+  {
+    pmret->rc = (MR_IS_TEAR_OFF_MENU(pmp->menu)) ?
+      MENU_KILL_TEAR_OFF_MENU : MENU_TEAR_OFF;
+  }
 
   switch (pmret->rc)
   {
@@ -3108,6 +3166,7 @@ static int pop_menu_up(
   unsigned int prev_height;
   unsigned int event_mask;
   int scr_x, scr_y, scr_w, scr_h;
+  FvwmWindow *parental_fw;
 
   mr = *pmenu;
   if (!mr || (MR_MAPPED_COPIES(mr) > 0 && MR_COPIES(mr) >= MAX_MENU_COPIES))
@@ -3396,7 +3455,6 @@ static int pop_menu_up(
 	int a_left_x;
 	int a_right_x;
 	int end_x;
-	Bool Parental = False;
 	Window w;
 
 	if (use_left_submenus)
@@ -3450,9 +3508,11 @@ static int pop_menu_up(
 	    Colorset[ST_CSET_MENU(MR_STYLE(parent_menu))].pixmap ==
 	    ParentRelative)
 	{
-	  Parental = True;
-	  parental_mr = parent_menu;
 	  parental_fw = fw;
+	}
+	else
+	{
+	  parental_fw = NULL;
 	}
 
 	if (MR_IS_TEAR_OFF_MENU(parent_menu))
@@ -3475,7 +3535,8 @@ static int pop_menu_up(
 	  w = MR_WINDOW(parent_menu);
 	}
 	AnimatedMoveOfWindow(
-		w, prev_x, prev_y, end_x, prev_y, True, -1, NULL, Parental);
+		w, prev_x, prev_y, end_x, prev_y, True, -1, NULL,
+		parental_fw);
       } /* if (MST_IS_ANIMATED(mr)) */
 
       /*
@@ -4765,26 +4826,40 @@ static void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
  *      Performance improvement Welcome!
  *
  ***********************************************************************/
-void ParentalMenuRePaint(void)
+void ParentalMenuRePaint(FvwmWindow *fw)
 {
   MenuItem *mi;
-  int h = 0, s_h = 0, e_h = 0;
+  MenuRoot *mr;
+  int h = 0;
+  int s_h = 0;
+  int e_h = 0;
+
+  /* find the menu root for the window */
+  for (mr = Menus.all; mr != NULL && fw->w == MR_WINDOW(mr);
+       mr = MR_NEXT_MENU(mr))
+  {
+    /* nothing to do here */
+  }
+  if (mr == NULL)
+  {
+    return;
+  }
 
   /* redraw the background of non active item */
-  for (mi = MR_FIRST_ITEM(parental_mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
+  for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
   {
-    if (mi == MR_SELECTED_ITEM(parental_mr) && MST_DO_HILIGHT(parental_mr))
+    if (mi == MR_SELECTED_ITEM(mr) && MST_DO_HILIGHT(mr))
     {
       int left;
 
-      left = MR_HILIGHT_X_OFFSET(parental_mr) - MR_ITEM_X_OFFSET(parental_mr);
+      left = MR_HILIGHT_X_OFFSET(mr) - MR_ITEM_X_OFFSET(mr);
       if (left > 0)
       {
-	XClearArea(dpy, MR_WINDOW(parental_mr),
-		   MR_ITEM_X_OFFSET(parental_mr),
+	XClearArea(dpy, MR_WINDOW(mr),
+		   MR_ITEM_X_OFFSET(mr),
 		   MI_Y_OFFSET(mi),
 		   left,
-		   MI_HEIGHT(mi) + MST_RELIEF_THICKNESS(parental_mr), 0);
+		   MI_HEIGHT(mi) + MST_RELIEF_THICKNESS(mr), 0);
       }
       h = MI_HEIGHT(mi);
       continue;
@@ -4794,69 +4869,81 @@ void ParentalMenuRePaint(void)
     else
       e_h += MI_HEIGHT(mi);
   }
-  XClearArea(dpy, MR_WINDOW(parental_mr),
-	     MR_ITEM_X_OFFSET(parental_mr),
-	     MST_BORDER_WIDTH(parental_mr),
-	     MR_ITEM_WIDTH(parental_mr),
+  XClearArea(dpy, MR_WINDOW(mr),
+	     MR_ITEM_X_OFFSET(mr),
+	     MST_BORDER_WIDTH(mr),
+	     MR_ITEM_WIDTH(mr),
 	     s_h, 0);
   if (e_h != 0)
   {
-    XClearArea(dpy, MR_WINDOW(parental_mr),
-      MR_ITEM_X_OFFSET(parental_mr),
-      s_h + h + MST_RELIEF_THICKNESS(parental_mr) +
-	       MST_BORDER_WIDTH(parental_mr),
-      MR_ITEM_WIDTH(parental_mr), e_h, 0);
+    XClearArea(dpy, MR_WINDOW(mr),
+      MR_ITEM_X_OFFSET(mr),
+      s_h + h + MST_RELIEF_THICKNESS(mr) +
+	       MST_BORDER_WIDTH(mr),
+      MR_ITEM_WIDTH(mr), e_h, 0);
   }
 
   /* now redraw the item */
-  for (mi = MR_FIRST_ITEM(parental_mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
+  for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
   {
-    if (mi == MR_SELECTED_ITEM(parental_mr) && MST_DO_HILIGHT(parental_mr))
+    if (mi == MR_SELECTED_ITEM(mr) && MST_DO_HILIGHT(mr))
       continue;
-    paint_item(parental_mr, mi, parental_fw, True);
+    paint_item(mr, mi, fw, True);
   }
 
   /* if we have a side pic and no side colors we shound repaint the side pic */
-  if ((MR_SIDEPIC(parental_mr) || MST_SIDEPIC(parental_mr)) &&
-      !MR_HAS_SIDECOLOR(parental_mr) && !MST_HAS_SIDE_COLOR(parental_mr))
+  if ((MR_SIDEPIC(mr) || MST_SIDEPIC(mr)) &&
+      !MR_HAS_SIDECOLOR(mr) && !MST_HAS_SIDE_COLOR(mr))
   {
     Picture *sidePic;
-    if (MR_SIDEPIC(parental_mr))
-      sidePic = MR_SIDEPIC(parental_mr);
-    else if (MST_SIDEPIC(parental_mr))
-      sidePic = MST_SIDEPIC(parental_mr);
+    if (MR_SIDEPIC(mr))
+      sidePic = MR_SIDEPIC(mr);
+    else if (MST_SIDEPIC(mr))
+      sidePic = MST_SIDEPIC(mr);
     else
     return;
-    XClearArea(dpy, MR_WINDOW(parental_mr), MR_SIDEPIC_X_OFFSET(parental_mr),
-	       MST_BORDER_WIDTH(parental_mr),
+    XClearArea(dpy, MR_WINDOW(mr), MR_SIDEPIC_X_OFFSET(mr),
+	       MST_BORDER_WIDTH(mr),
 	       sidePic->width,
-	       MR_HEIGHT(parental_mr) - 2 * MST_BORDER_WIDTH(parental_mr),
+	       MR_HEIGHT(mr) - 2 * MST_BORDER_WIDTH(mr),
 	       0);
-    paint_side_pic(parental_mr, NULL);
+    paint_side_pic(mr, NULL);
   }
 }
 
 static void FreeMenuItem(MenuItem *mi)
 {
-  short i;
+	short i;
 
-  if (!mi)
-    return;
-  for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
-  {
-    if (MI_LABEL(mi)[i] != NULL)
-      free(MI_LABEL(mi)[i]);
-  }
-  if (MI_ACTION(mi) != NULL)
-    free(MI_ACTION(mi));
-  if(MI_PICTURE(mi))
-    DestroyPicture(dpy,MI_PICTURE(mi));
-  for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
-  {
-    if(MI_MINI_ICON(mi)[i])
-      DestroyPicture(dpy, MI_MINI_ICON(mi)[i]);
-  }
-  free(mi);
+	if (!mi)
+	{
+		return;
+	}
+	for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
+	{
+		if (MI_LABEL(mi)[i] != NULL)
+		{
+			free(MI_LABEL(mi)[i]);
+		}
+	}
+	if (MI_ACTION(mi) != NULL)
+	{
+		free(MI_ACTION(mi));
+	}
+	if (MI_PICTURE(mi))
+	{
+		DestroyPicture(dpy,MI_PICTURE(mi));
+	}
+	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
+	{
+		if(MI_MINI_ICON(mi)[i])
+		{
+			DestroyPicture(dpy, MI_MINI_ICON(mi)[i]);
+		}
+	}
+	free(mi);
+
+	return;
 }
 
 Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
@@ -4983,35 +5070,40 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 
 void CMD_DestroyMenu(F_CMD_ARGS)
 {
-  MenuRoot *mr;
-  MenuRoot *mrContinuation;
-  Bool do_recreate = False;
-  char *token;
+	MenuRoot *mr;
+	MenuRoot *mrContinuation;
+	Bool do_recreate = False;
+	char *token;
 
-  token = PeekToken(action, &action);
-  if (!token)
-    return;
-  if (StrEquals(token, "recreate"))
-  {
-    do_recreate = True;
-    token = PeekToken(action, NULL);
-  }
-  mr = FindPopup(token);
-  if (Scr.last_added_item.type == ADDED_MENU)
-    set_last_added_item(ADDED_NONE, NULL);
-  while (mr)
-  {
-    /* save continuation before destroy */
-    mrContinuation = MR_CONTINUATION_MENU(mr);
-    if (!DestroyMenu(mr, do_recreate, True))
-    {
-      return;
-    }
-    /* Don't recreate the continuations */
-    do_recreate = False;
-    mr = mrContinuation;
-  }
-  return;
+	token = PeekToken(action, &action);
+	if (!token)
+	{
+		return;
+	}
+	if (StrEquals(token, "recreate"))
+	{
+		do_recreate = True;
+		token = PeekToken(action, NULL);
+	}
+	mr = FindPopup(token);
+	if (Scr.last_added_item.type == ADDED_MENU)
+	{
+		set_last_added_item(ADDED_NONE, NULL);
+	}
+	while (mr)
+	{
+		/* save continuation before destroy */
+		mrContinuation = MR_CONTINUATION_MENU(mr);
+		if (!DestroyMenu(mr, do_recreate, True))
+		{
+			return;
+		}
+		/* Don't recreate the continuations */
+		do_recreate = False;
+		mr = mrContinuation;
+	}
+
+	return;
 }
 
 
@@ -5023,23 +5115,27 @@ void CMD_DestroyMenu(F_CMD_ARGS)
  ****************************************************************************/
 static void merge_continuation_menus(MenuRoot *mr)
 {
-  /* merge menu continuations into one menu again - needed when changing the
-   * font size of a long menu. */
-  while (MR_CONTINUATION_MENU(mr) != NULL)
-  {
-    MenuRoot *cont = MR_CONTINUATION_MENU(mr);
+	/* merge menu continuations into one menu again - needed when changing
+	 * the font size of a long menu. */
+	while (MR_CONTINUATION_MENU(mr) != NULL)
+	{
+		MenuRoot *cont = MR_CONTINUATION_MENU(mr);
 
-    /* link first item of continuation to item before 'more...' */
-    MI_NEXT_ITEM(MI_PREV_ITEM(MR_LAST_ITEM(mr))) = MR_FIRST_ITEM(cont);
-    MI_PREV_ITEM(MR_FIRST_ITEM(cont)) = MI_PREV_ITEM(MR_LAST_ITEM(mr));
-    FreeMenuItem(MR_LAST_ITEM(mr));
-    MR_LAST_ITEM(mr) = MR_LAST_ITEM(cont);
-    MR_CONTINUATION_MENU(mr) = MR_CONTINUATION_MENU(cont);
-    /* fake an empty menu so that DestroyMenu does not destroy the items. */
-    MR_FIRST_ITEM(cont) = NULL;
-    DestroyMenu(cont, False, False);
-  }
-  return;
+		/* link first item of continuation to item before 'more...' */
+		MI_NEXT_ITEM(MI_PREV_ITEM(MR_LAST_ITEM(mr))) =
+			MR_FIRST_ITEM(cont);
+		MI_PREV_ITEM(MR_FIRST_ITEM(cont)) =
+			MI_PREV_ITEM(MR_LAST_ITEM(mr));
+		FreeMenuItem(MR_LAST_ITEM(mr));
+		MR_LAST_ITEM(mr) = MR_LAST_ITEM(cont);
+		MR_CONTINUATION_MENU(mr) = MR_CONTINUATION_MENU(cont);
+		/* fake an empty menu so that DestroyMenu does not destroy the
+		 * items. */
+		MR_FIRST_ITEM(cont) = NULL;
+		DestroyMenu(cont, False, False);
+	}
+
+	return;
 }
 
 /****************************************************************************

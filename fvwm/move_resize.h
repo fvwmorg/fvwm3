@@ -19,7 +19,7 @@
 void switch_move_resize_grid(Bool state);
 void AnimatedMoveOfWindow(
   Window w,int startX,int startY,int endX, int endY,Bool fWarpPointerToo,
-  int cusDelay, float *ppctMovement, Bool ParentalMenu);
+  int cusDelay, float *ppctMovement, FvwmWindow *parental_menu_window);
 void AnimatedMoveFvwmWindow(
   FvwmWindow *tmp_win, Window w, int startX, int startY, int endX, int endY,
   Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);

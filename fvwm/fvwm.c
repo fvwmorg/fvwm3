@@ -92,7 +92,6 @@ static char sccsid[] __attribute__((__unused__))
 int master_pid;			/* process number of 1st fvwm process */
 
 ScreenInfo Scr;		        /* structures for the screen */
-MenuInfo Menus;                 /* structures for menus */
 Display *dpy = NULL;		/* which display are we talking to */
 
 Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
@@ -1381,9 +1380,8 @@ static void InitVariables(void)
 
   Scr.functions = NULL;
 
-  Menus.all = NULL;
-  Menus.DefaultStyle = NULL;
-  Menus.LastStyle = NULL;
+  menus_init();
+
   Scr.last_added_item.type = ADDED_NONE;
 
   Scr.DefaultIcon = NULL;

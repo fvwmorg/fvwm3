@@ -800,7 +800,8 @@ static void InteractiveMove(
  * entry */
 static void AnimatedMoveAnyWindow(
   FvwmWindow *tmp_win, Window w, int startX, int startY, int endX, int endY,
-  Bool fWarpPointerToo, int cmsDelay, float *ppctMovement, Bool ParentalMenu)
+  Bool fWarpPointerToo, int cmsDelay, float *ppctMovement,
+  FvwmWindow *parental_menu_window)
 {
   int pointerX, pointerY;
   int currentX, currentY;
@@ -849,9 +850,9 @@ static void AnimatedMoveAnyWindow(
       /* don't waste time in the same spot */
       continue;
     XMoveWindow(dpy,w,currentX,currentY);
-    if (ParentalMenu)
+    if (parental_menu_window != NULL)
     {
-      ParentalMenuRePaint();
+      ParentalMenuRePaint(parental_menu_window);
     }
     if (fWarpPointerToo == True)
     {
@@ -904,9 +905,9 @@ static void AnimatedMoveAnyWindow(
       StashEventTime(&Event);
       /* finish the move immediately */
       XMoveWindow(dpy,w,endX,endY);
-      if (ParentalMenu)
+      if (parental_menu_window != NULL)
       {
-	ParentalMenuRePaint();
+	ParentalMenuRePaint(parental_menu_window);
       }
       break;
     }
@@ -926,10 +927,10 @@ static void AnimatedMoveAnyWindow(
 void AnimatedMoveOfWindow(Window w, int startX, int startY,
 			  int endX, int endY, Bool fWarpPointerToo,
 			  int cmsDelay, float *ppctMovement,
-			  Bool ParentalMenu)
+			  FvwmWindow *parental_menu_window)
 {
   AnimatedMoveAnyWindow(NULL, w, startX, startY, endX, endY, fWarpPointerToo,
-                        cmsDelay, ppctMovement, ParentalMenu);
+                        cmsDelay, ppctMovement, parental_menu_window);
 }
 
 /* used for moving client windows */
@@ -939,7 +940,7 @@ void AnimatedMoveFvwmWindow(FvwmWindow *tmp_win, Window w, int startX,
 			    float *ppctMovement)
 {
   AnimatedMoveAnyWindow(tmp_win, w, startX, startY, endX, endY,
-			fWarpPointerToo, cmsDelay, ppctMovement, False);
+			fWarpPointerToo, cmsDelay, ppctMovement, NULL);
 }
 
 

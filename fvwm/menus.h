@@ -495,12 +495,13 @@ typedef struct MenuRootDynamic
   /* dynamic temp flags */
   struct
   {
-    unsigned is_painted : 1;
     unsigned is_background_set : 1; /* is win background set? */
-    unsigned is_left : 1;   /* menu direction relative to parent menu */
+    unsigned is_destroyed : 1;
+    unsigned is_left : 1;           /* menu direction relative to parent menu */
     unsigned is_right : 1;
     unsigned is_up : 1;
     unsigned is_down : 1;
+    unsigned is_painted : 1;
     unsigned is_tear_off_menu : 1;
     unsigned has_popped_up_left : 1;
     unsigned has_popped_up_right : 1;
@@ -528,12 +529,13 @@ typedef struct MenuRootDynamic
 #define MR_STORED_ITEM(m)           ((m)->d->stored_item)
 /* flags */
 #define MR_DYNAMIC_FLAGS(m)         ((m)->d->dflags)
-#define MR_IS_PAINTED(m)            ((m)->d->dflags.is_painted)
 #define MR_IS_BACKGROUND_SET(m)     ((m)->d->dflags.is_background_set)
+#define MR_IS_DESTROYED(m)          ((m)->d->dflags.is_destroyed)
 #define MR_IS_LEFT(m)               ((m)->d->dflags.is_left)
 #define MR_IS_RIGHT(m)              ((m)->d->dflags.is_right)
 #define MR_IS_UP(m)                 ((m)->d->dflags.is_up)
 #define MR_IS_DOWN(m)               ((m)->d->dflags.is_down)
+#define MR_IS_PAINTED(m)            ((m)->d->dflags.is_painted)
 #define MR_IS_TEAR_OFF_MENU(m)      ((m)->d->dflags.is_tear_off_menu)
 #define MR_HAS_POPPED_UP_LEFT(m)    ((m)->d->dflags.has_popped_up_left)
 #define MR_HAS_POPPED_UP_RIGHT(m)   ((m)->d->dflags.has_popped_up_right)
@@ -620,28 +622,6 @@ typedef struct
   } flags;
 } MenuParameters;
 
-typedef struct
-{
-  MenuRoot *menu;
-  /* number of item labels present in the item format */
-  unsigned int used_item_labels;
-  /* same for mini icons */
-  unsigned int used_mini_icons;
-  struct
-  {
-    unsigned short label_width[MAX_MENU_ITEM_LABELS];
-    unsigned short sidepic_width;
-    unsigned short icon_width[MAX_MENU_ITEM_MINI_ICONS];
-    unsigned short picture_width;
-    unsigned short triangle_width;
-    unsigned short title_width;
-  } max;
-  struct
-  {
-    unsigned is_popup_indicator_used : 1;
-  } flags;
-} MenuSizingParameters;
-
 /* Return values for UpdateMenu, do_menu, menuShortcuts.  This is a lame
  * hack, in that "_BUTTON" is added to mean a button-release caused the
  * return-- the macros below help deal with the ugliness. */
@@ -680,26 +660,15 @@ typedef struct
   } flags;
 } MenuReturn;
 
-
-typedef struct MenuInfo
-{
-  MenuRoot *all;
-  struct MenuStyle *DefaultStyle;
-  struct MenuStyle *LastStyle;
-} MenuInfo;
-
-extern MenuInfo Menus;
-
 #define IS_MENU_RETURN(x) \
   ((x)==MENU_DONE || (x)==MENU_ABORTED || (x)==MENU_SUBMENU_TORN_OFF)
-
 
 
 /**********************
  * EXPORTED FUNCTIONS *
  **********************/
 
-
+void menus_init(void);
 MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
@@ -715,7 +684,7 @@ void change_mr_menu_style(MenuRoot *mr, char *stylename);
 void UpdateAllMenuStyles(void);
 void UpdateMenuColorset(int cset);
 void SetMenuCursor(Cursor cursor);
-void ParentalMenuRePaint(void);
+void ParentalMenuRePaint(FvwmWindow *fw);
 void menu_expose(XEvent *event, FvwmWindow *fw);
 
 #endif /* _MENUS_ */
