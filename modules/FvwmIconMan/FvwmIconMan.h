@@ -303,6 +303,7 @@ typedef struct win_manager {
 	Uchar showonlyiconic;
 	Uchar showtransient;
 	rectangle managed_g;    /* dimensions of managed screen portion */
+	int relief_thickness;	/* relief thickness for each non-flat button */
 
 	/* X11 state */
 	Window theWindow, theFrame;

@@ -1951,6 +1951,19 @@ void read_in_resources()
 	ConsoleDebug(CONFIG, "Setting usewinlist to: %d\n", i);
 	SET_MANAGER(manager, usewinlist, i);
       }
+      else if (!strcasecmp(option1, "reliefthickness")) {
+	p = read_next_cmd(READ_ARG);
+	if (!p) {
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  continue;
+	}
+	SET_MANAGER(manager, relief_thickness, n);
+      }
       else {
 	ConsoleMessage("Bad line: %s\n", current_line);
 	ConsoleMessage("Unknown option: %s\n", p);

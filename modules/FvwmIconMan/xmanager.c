@@ -1336,13 +1336,13 @@ static void draw_button_background(
 static void draw_3d_icon(WinManager *man, int box, ButtonGeometry *g,
 			  int iconified, Contexts contextId)
 {
-  if (iconified == 0)
+  if ((iconified == 0) || (man->relief_thickness == 0))
     return;
   else
     RelieveRectangle(theDisplay, man->theWindow, g->icon_x, g->icon_y,
 		      g->icon_w - 1, g->icon_h - 1,
 		      man->reliefContext[contextId],
-		      man->shadowContext[contextId], 2);
+		      man->shadowContext[contextId], man->relief_thickness);
 }
 
 
@@ -1537,19 +1537,36 @@ static void draw_relief(WinManager *man, int button_state, ButtonGeometry *g,
 			 GC context1, GC context2)
 {
   int state;
-  state = man->buttonState[button_state];
+  int relief;
 
-  if (state == BUTTON_FLAT)
+  state = man->buttonState[button_state];
+  relief = man->relief_thickness;
+
+  /* Make sure that the relief isn't too large for the button... */
+  if ((abs(relief) > (man->geometry.boxheight / 2)) ||
+      (abs(relief) > (man->geometry.boxwidth / 2))) {
+      relief = min(man->geometry.boxheight/2, man->geometry.boxwidth/2);
+      if (man->relief_thickness < 0)
+        relief *= -1;
+      fprintf(stderr, "%s: Requested relief (%d) too large (for %dx%d box); capped to %d.\n",
+	      MyName, man->relief_thickness, man->geometry.boxwidth, man->geometry.boxheight, relief);
+      man->relief_thickness = relief;
+  }
+
+  if (state == BUTTON_FLAT || relief == 0)
     return;
   if (state == BUTTON_EDGEUP || state == BUTTON_EDGEDOWN) {
     RelieveRectangle(theDisplay, man->theWindow, g->button_x, g->button_y,
-		      g->button_w - 1, g->button_h - 1, context1, context2, 2);
+		      g->button_w - 1, g->button_h - 1, context1, context2,
+		      relief);
     RelieveRectangle(theDisplay, man->theWindow, g->button_x+2, g->button_y+2,
-		      g->button_w - 5, g->button_h - 5, context2, context1, 2);
+		      g->button_w - 5, g->button_h - 5, context2, context1,
+		      relief);
   }
   else {
     RelieveRectangle(theDisplay, man->theWindow, g->button_x, g->button_y,
-		      g->button_w - 1, g->button_h - 1, context1, context2, 2);
+		      g->button_w - 1, g->button_h - 1, context1, context2,
+		      relief);
   }
 }
 

@@ -567,3 +567,12 @@ void gravity_rotate_xy(rotation_t rot, int x, int y, int *ret_x, int *ret_y)
 
 	return;
 }
+
+rotation_t gravity_add_rotations(rotation_t rot1, rotation_t rot2)
+{
+	rotation_t rot;
+
+	rot = ((rot1 + rot2) & ROTATION_MASK);
+
+	return rot;
+}

@@ -87,22 +87,25 @@ void do_relieve_rectangle_with_rotation(
 	{
 		return;
 	}
-	if (rotation == ROTATION_270)
+	/* If line_width is negative, reverse the rotation, which will */
+	/* have the effect of inverting the relief. */
+	if (line_width < 0)
 	{
-		rotation = ROTATION_90;
+		line_width = -line_width;
+		rotation = gravity_add_rotations(rotation, ROTATION_180);
+	}
+	switch (rotation)
+	{
+	case ROTATION_180:
+	case ROTATION_270:
+		rotation = gravity_add_rotations(rotation, ROTATION_180);
 		shadow_gc = ReliefGC;
 		relief_gc = ShadowGC;
-	}
-	else if (rotation == ROTATION_180)
-	{
-		rotation = ROTATION_0;
-		shadow_gc = ReliefGC;
-		relief_gc = ShadowGC;
-	}
-	else
-	{
+		break;
+	default:
 		shadow_gc = ShadowGC;
 		relief_gc = ReliefGC;
+		break;
 	}
 	seg = (XSegment*)alloca((sizeof(XSegment) * line_width) * 2);
 	/* from 0 to the lesser of line_width & just over half w */

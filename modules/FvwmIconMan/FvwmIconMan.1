@@ -108,6 +108,7 @@ ManagerGeometry size of manager in buttons 0x1
 NoIconAction    animate iconification      NOP
 PlainButton     style for normal buttons   up black grey
 PlainColorset
+ReliefThickness size of button relief      2
 Resolution      global/desk/page/screen    page
 Reverse         normal, icon or none	   none
 SelectButton    style for selected buttons flat black grey
@@ -249,6 +250,13 @@ option is ignored, but must still be set.
 .IP "*FvwmIconMan: [id] PlainColorset \fIcolorset\fP"
 Works like plainbutton but uses colorsets instead.  The style setting can
 still only be applied with plainbutton.  See FvwmTheme.
+
+.IP "*FvwmIconMan: [id] ReliefThickness \fInum\fP"
+\fInum\fP is a positive integer specifying the number of pixels thick
+that the relief at the edge of non-flat buttons should be.  This has
+no effect on flat buttons.  In theory, you should be able to set this
+to a negative number and have it act like \fIReverse\fP, but negative
+numbers don't work.  This may change later.
 
 .IP "*FvwmIconMan: [id] Resolution \fIresolution\fP"
 Specifies when the manager will display an entry for a certain

@@ -83,6 +83,7 @@ static void init_win_manager(int id)
 	globals.managers[id].we_are_drawing = 1;
 	globals.managers[id].showonlyiconic = 0;
 	globals.managers[id].showtransient = 0;
+	globals.managers[id].relief_thickness = 2;
 }
 
 void print_managers(void)

@@ -86,5 +86,6 @@ multi_direction_t gravity_parse_multi_dir_argument(
 void gravity_get_next_multi_dir(int dir_set, multi_direction_t *dir);
 direction_t gravity_multi_dir_to_dir(multi_direction_t mdir);
 void gravity_rotate_xy(rotation_t rot, int x, int y, int *ret_x, int *ret_y);
+rotation_t gravity_add_rotations(rotation_t rot1, rotation_t rot2);
 
 #endif /* GRAVITY_H */
