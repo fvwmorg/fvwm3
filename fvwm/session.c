@@ -779,6 +779,7 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
 	  ewin->name = matches[i].wm_name;
 	}
       }
+      SET_PLACED_WB3(ewin,IS_PLACED_WB3(&(matches[i])));
       SET_PLACED_BY_FVWM(ewin,IS_PLACED_BY_FVWM(&(matches[i])));
       *do_shade = IS_SHADED(&(matches[i]));
       *do_max = IS_MAXIMIZED(&(matches[i]));

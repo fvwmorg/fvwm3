@@ -1,3 +1,10 @@
+2001-09-05  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/session.c (MatchWinToSM):
+	* fvwm/add_window.c (setup_window_structure):
+	* fvwm/move_resize.c (moveLoop):
+	Fixed PlacedByButton3 condition
+
 2001-09-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/FScreen.c:

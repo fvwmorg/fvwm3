@@ -133,3 +133,5 @@ Bug fixes:
 
 ** Fixed several escaping errors in fvwm-menu-directory, so files and
    directories containing special chars and spaces should work.
+
+** Fixed PlacedByButton3 condition

@@ -1,3 +1,9 @@
+2001-09-05  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-menu-headlines.in:
+	* fvwm-menu-headlines.1:
+	Added linuxfr.org and fix a man page misprint
+
 2001-08-25  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-directory.in:

@@ -1654,12 +1654,14 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       {
 	do_resize_too = True;
 	do_exec_placement_func = False;
+	SET_PLACED_WB3(tmp_win,False);
 	/* Fallthrough to button-release */
       }
       else if(Event.xbutton.button == 3)
       {
 	do_exec_placement_func = True;
 	do_resize_too = False;
+	SET_PLACED_WB3(tmp_win,True);
 	/* Fallthrough to button-release */
       }
       else
@@ -1669,6 +1671,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	 *    was pressed during the operation
 	 *  - no button was pressed at the beginning and any button
 	 *    except button 1 was pressed. */
+	SET_PLACED_WB3(tmp_win,False);
 	if (button_mask || (Event.xbutton.button != 1))
 	{
 	  if(!do_move_opaque)
