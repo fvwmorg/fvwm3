@@ -200,14 +200,14 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
         }
     }
 
-  if((Fw)&&(IS_LENIENT(Fw)))
+  if(Fw && IS_LENIENT(Fw))
     {
       FOCUS_SET(w);
       Scr.Focus = Fw;
       Scr.UnknownWinFocused = None;
     }
-  else if(!((Fw) && (Fw->wmhints)&&(Fw->wmhints->flags & InputHint)&&
-	    (Fw->wmhints->input == False)))
+  else if (!Fw || !(Fw->wmhints) || !(Fw->wmhints->flags & InputHint) ||
+           Fw->wmhints->input != False)
     {
       /* Window will accept input focus */
       FOCUS_SET(w);
@@ -227,7 +227,9 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 
 
   if ((Fw)&&(WM_TAKES_FOCUS(Fw)))
+  {
     send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
+  }
 
   XSync(dpy,0);
 }

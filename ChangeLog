@@ -1,3 +1,8 @@
+2000-01-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleEnterNotify):
+	Fixed a focus problem with Motif applications and ClickToFocus (#535)
+
 2000-01-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/update.c (flush_window_updates):

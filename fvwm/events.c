@@ -1702,6 +1702,12 @@ void HandleEnterNotify(void)
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
   }
+  else if (HAS_CLICK_FOCUS(Tmp_win) && Tmp_win == Scr.Focus)
+  {
+    /* We have to refresh the focus window here in case we left the focused
+     * fvwm window.  Motif apps may lose the input focus otherwise. */
+    FOCUS_SET(Tmp_win->w);
+  }
   if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
   {
     if((!IS_ICONIFIED(Tmp_win))&&(Event.xany.window == Tmp_win->w))
