@@ -564,11 +564,11 @@ void initialize_pager(void)
 
     /* create the hilight desk title drawing GC */
     if ((Pdepth < 2) || (fore_pix == hi_pix))
-      gcv.foreground = (Desks[i].colorset < 0) ? back_pix
-	: Colorset[Desks[i].colorset].bg;
+      gcv.foreground = (Desks[i].highcolorset < 0) ? back_pix
+	: Colorset[Desks[i].highcolorset].fg;
     else
-      gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
-	: Colorset[Desks[i].colorset].fg;
+      gcv.foreground = (Desks[i].highcolorset < 0) ? fore_pix
+	: Colorset[Desks[i].highcolorset].fg;
     Desks[i].rvGC = XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
 
     /* create the vrtual page boundary GC */
