@@ -19,6 +19,8 @@ Changes in developement release 2.5.5 (not released yet)
 * The Next and Prev commands start looking for a matching window at
   the context window if there is any.
 
+* The MoveToPage command does nothing with sticky windows.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.4 (20-Oct-2002)

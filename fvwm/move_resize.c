@@ -1328,6 +1328,10 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 		rectangle r;
 		rectangle s;
 
+		if (IS_STICKY(fw))
+		{
+			return;
+		}
 		do_animate = False;
 
 		if (!get_page_arguments(action, &page_x, &page_y))

@@ -1,5 +1,8 @@
 2002-11-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (__move_window):
+	ignore MoveToPage with sticky windows
+
 	* fvwm/conditional.c (Circulate):
 	(circulate_cmd):
 	Next and Prev commands begin looking at the context window, if any
