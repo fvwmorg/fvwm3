@@ -1,3 +1,11 @@
+1999-06-19  Mikhael Goikhman  <migo@homemail.com>
+	* fvwm/fvwm.c (getBasename): removed
+	(Done): Improved Restart logic - three forms (no special cases)
+	include 'Restart', 'Restart wm params', 'Restart --pass-args wm'.
+	(StartupStuff): Deleting .fvwm_restart after usage (currently
+	renaming it to .fvwm_restart.last).
+	* fvwm/fvwm2.1: updated documentation for Restart
+
 1999-06-18  Tim Cutts  <tim.cutts@incyte.com>
 
 	* libs/System.c (getostype): Code was assuming that buf had been

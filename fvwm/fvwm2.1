@@ -2775,8 +2775,8 @@ each coordinate, in which case the location is specified in pixels.
 
 .IP "Restart [ \fIWindowManagerName\fP [ \fIparams\fP ] ]"
 Causes \fIfvwm2\fP to restart itself if \fIWindowManagerName\fP is
-"fvwm2" or left blank, or to switch to an alternate window manager
-if \fIWindowManagerName\fP is other than "fvwm2".  If the window
+left blank, or to switch to an alternate window manager (or other fvwm
+version) if \fIWindowManagerName\fP is specified.  If the window
 manager is not in your default search path, then you should use the
 full path name for \fIWindowManagerName\fP.
 
@@ -2796,6 +2796,15 @@ Key F1 R N Restart xterm -n '"X console"' \\
 
 The command 'Restart' without parameters preserves most per-window state by
 writing it to a file named .fvwm_restart in the user's home directory.
+
+.IP "Restart --pass-args \fIWindowManagerName\fP"
+The same as 'Restart' without parameters but the name for a window manager
+is replaced with the specified \fIWindowManagerName\fP and original arguments
+are preserved.
+
+This command is useful if you use initial arguments (like "-cmd FvwmCpp")
+and want to switch to another fvwm version without losing the initial
+arguments.
 
 .IP "Scroll \fIhorizonal vertical\fP"
 Scrolls the virtual desktop's viewport by \fIhorizontal\fP pages in

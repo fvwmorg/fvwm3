@@ -98,7 +98,6 @@ void SetMWM_INFO(Window window);
 void SetRCDefaults(void);
 void StartupStuff(void);
 
-const char *getBasename(const char *filename);
 int parseCommandArgs(const char *cmd, char **argv, int maxv, const char **err);
 
 XContext FvwmContext;		/* context for fvwm windows */
@@ -728,7 +727,16 @@ void StartupStuff(void)
      This should be done after the initialization is finished, since
      it directly changes the global state.
    */
-  if (Restarting) LoadGlobalState(restore_filename);
+  if (Restarting) {
+    LoadGlobalState(restore_filename);
+
+    /*
+    ** migo - 19/Jun/1999 - Remove restore-file after usage.
+    ** Currently renamed for easier debugging.
+    */
+    /* unlink(restore_filename); */
+    rename(restore_filename, CatString2(restore_filename, ".last"));
+  }
 
 } /* StartupStuff */
 
@@ -1744,18 +1752,10 @@ void Done(int restart, char *command)
 
   if (restart)
   {
-    int native = 0;  /* native restart of this executable */
-
     SaveDesktopState();
 
-    if (command == NULL) command = "";
-    if (
-      command[0] == '\0' || strcmp(command, g_argv[0]) == 0 ||
-      (getBasename(command) == command || getBasename(g_argv[0]) == g_argv[0])
-      && strcmp(getBasename(command), getBasename(g_argv[0])) == 0
-    ) native = 1;
-
-    if (native)
+    if (command[0] == '\0') command = NULL; /* native restart */
+    if (!command)
       RestartInSession(restore_filename); /* won't return under SM */
 
     /* 
@@ -1777,25 +1777,45 @@ void Done(int restart, char *command)
     sleep(1);
     ReapChildren();
 
-    if (command[0] != '\0') {
-      const int MAX_ARG_SIZE = 20;
+    if (command) {
+      const int MAX_ARG_SIZE = 25;
       char *my_argv[MAX_ARG_SIZE];
       const char *errorMsg;
       int n = parseCommandArgs(command, my_argv, MAX_ARG_SIZE, &errorMsg);
+
       if (n <= 0) {
-	fvwm_msg(ERR, "Done", "Restart command parsing error in (%s): [%s]",
-		 command, errorMsg);
+        fvwm_msg(ERR, "Done", "Restart command parsing error in (%s): [%s]",
+          command, errorMsg);
+
+      } else if (StrEquals(my_argv[0], "--pass-args")) {
+        if (n != 2) {
+          fvwm_msg(ERR, "Done", "Restart --pass-args: single name expected. (restarting '%s' instead)",
+            g_argv[0]);
+
+        } else {
+          int i;
+          my_argv[0] = my_argv[1];
+          for (i = 1; i < g_argc && i < MAX_ARG_SIZE - 1; i++)
+            my_argv[i] = g_argv[i];
+          my_argv[i] = NULL;
+
+          execvp(my_argv[0], my_argv);
+          fvwm_msg(ERR, "Done", "Call of '%s' failed! (restarting '%s' instead)",
+            my_argv[0], g_argv[0]);
+          perror("  system error description");
+        }
+
       } else {
-	command = my_argv[0];
-	execvp(command, my_argv);
-	fvwm_msg(ERR, "Done", "Call of '%s' failed!!!! (restarting '%s' instead)",
-		 command, g_argv[0]);
-	perror("  system error description");
+        execvp(my_argv[0], my_argv);
+        fvwm_msg(ERR, "Done", "Call of '%s' failed! (restarting '%s' instead)",
+          my_argv[0], g_argv[0]);
+        perror("  system error description");
       }
     }
 
     execvp(g_argv[0], g_argv);    /* that _should_ work */
-    fvwm_msg(ERR,"Done","Call of '%s' failed!!!!", g_argv[0]);
+    fvwm_msg(ERR, "Done", "Call of '%s' failed!", g_argv[0]);
+    perror("  system error description");
   }
   else
   {
@@ -1943,16 +1963,6 @@ void UnBlackoutScreen(void)
   }
 } /* UnBlackoutScreen */
 
-
-/*
- * getBasename - similar to basename(1).
- */
-const char *getBasename(const char *filename) {
-  const char sep = '/';
-  const char *fptr = strrchr(filename, sep);
-  fptr = fptr? fptr + 1: filename;
-  return fptr;
-}
 
 /*
  * parseCommandArgs - parses a given command string into a given limited
