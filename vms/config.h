@@ -62,8 +62,7 @@
 /* Enables the "MiniIcon" Style option to specify a small pixmap which can be used as one of the title-bar buttons, shown in
  * window list, utilized by modules, etc.  Requires PIXMAP_BUTTONS to be defined (see below).  */
 /* NOTE: hard coded to 1 */
-#define MINI_ICONS 1
-#ifdef MINI_ICONS
+#if 1
 #define FMiniIconsSupported 1
 #else
 #define FMiniIconsSupported 0

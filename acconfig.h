@@ -84,8 +84,7 @@
  * (see below).  */
 /* #undef MINI_ICONS */
 /* NOTE: hard coded to 1 */
-#define MINI_ICONS 1
-#ifdef MINI_ICONS
+#if 1
 #define FMiniIconsSupported 1
 #else
 #define FMiniIconsSupported 0

@@ -1,6 +1,9 @@
 2002-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* acconfig.h:
 	* vms/config.h (FMiniIconsSupported):
+	removed last traces of MINI_ICONS ifdef
+
 	* fvwm/windowlist.c (CMD_WindowList):
 	* fvwm/update.c (apply_window_updates):
 	* fvwm/style.h:
