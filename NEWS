@@ -1,7 +1,9 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.4.5"_-_2.4.5_+_/A_-_.
 
-Changes in beta release 2.5.0 (not released yet)
+Changes in beta release 2.5.1 (not released yet)
+
+Changes in beta release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify
   the maximized geometry of windows and maximize them as
