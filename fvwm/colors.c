@@ -220,9 +220,6 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels)
  * types are HVDBSCRY for Horizontal, Vertical, Diagonal, Back-diagonal, Square,
  * Circular, Radar and Yin/Yang respectively (in order of bloatiness)
  */
-#ifndef PI
-#define PI    3.1415926535898
-#endif
 Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
 			    char type, char *action, unsigned int width,
 			    unsigned int height, unsigned int *width_return,
@@ -234,10 +231,9 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
   unsigned int ncolors = 0;
   char **colors;
   int *perc, nsegs;
-  register int i, j;
   XGCValues xgcv;
   XImage *image;
-  Pixel *imageData;
+  register int i, j;
 
   /* translate the gradient string into an array of colors etc */
   if (0 == (ncolors = ParseGradient(action, &colors, &perc, &nsegs))) {
@@ -286,15 +282,31 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
     case 'R':
     case 'Y':
       /* swept types need each color to occupy at least one pixel at the edge */
-      width = height = (int)((double) ncolors / PI);
+      /* get the smallest odd number that will provide enough */
+      for (width = 1; (double)(width - 1) * M_PI < (double)ncolors; width += 2)
+        ;
+      height = width;
       break;
     default:
       fvwm_msg(ERR, me, "%cGradient not supported", type);
       return None;
   }
+  
+  /* create a pixmap to use */
   pixmap = XCreatePixmap(dpy, d, width, height, depth);
   if (pixmap == None)
     return None;
+
+  /* create an XImage structure */
+  image = XCreateImage(dpy, Scr.viz, Scr.depth, ZPixmap, 0, 0, width, height,
+		       Scr.depth > 16 ? 32 : (Scr.depth > 8 ? 16 : 8), 0);
+  if (!image){
+    fvwm_msg(ERR, me, "%cGradient couldn't get image", type);
+    XFreePixmap(dpy, pixmap);
+    return None;
+  }
+  /* create space for drawing the image locally */
+  image->data = safemalloc(image->bytes_per_line * height);
 
   /* set the gc style */
   xgcv.function = GXcopy;
@@ -309,88 +321,78 @@ Pixmap CreateGradientPixmap(Display *dpy, Drawable d, unsigned int depth, GC gc,
   /* draw one pixel further than expected in case line style is CapNotLast */
   switch (type) {
     case 'H':
-      for (i = 0; i < ncolors; i++) {
-	xgcv.foreground = pixels[i];
-	XChangeGC(dpy, gc, GCForeground, &xgcv);
-	XDrawLine(dpy, pixmap, gc, i, 0, i, height);
+      for (i = 0; i < width; i++) {
+        register Pixel p = pixels[i];
+	for (j = 0; j < height; j++)
+	  XPutPixel(image, i, j, p);
       }
       break;
     case 'V':
-      for (i = 0; i < ncolors; i++) {
-	xgcv.foreground = pixels[i];
-	XChangeGC(dpy, gc, GCForeground, &xgcv);
-	XDrawLine(dpy, pixmap, gc, 0, i, width, i);
+      for (j = 0; j < height; j++) {
+        register Pixel p = pixels[j];
+        for (i = 0; i < width; i++)
+	  XPutPixel(image, i, j, p);
       }
       break;
     case 'D':
-      /* split into two stages for top left corner then bottom right corner */
-      /* drawn in a height by height rectangle (though width may be < height) */
-      for (i = 0; i < height - 1; i++) {
-	xgcv.foreground = pixels[i];
-	XChangeGC(dpy, gc, GCForeground, &xgcv);
-	XDrawLine(dpy, pixmap, gc, 0, i, i + 1, -1);
-      }
-      for (i = 0; i <= ncolors - height; i++) {
-	xgcv.foreground = pixels[i + height - 1];
-	XChangeGC(dpy, gc, GCForeground, &xgcv);
-	XDrawLine(dpy, pixmap, gc, i, height - 1, height, i - 1);
+      for (i = 0; i < width; i++) {
+	for (j = 0; j < height; j++)
+	  XPutPixel(image, i, j, pixels[i + j]);
       }
       break;
     case 'B':
-      /* split into two stages for bottom left corner then top right corner */
-      /* drawn in a height by height rectangle (though width may be < height) */
-      for (i = 0; i < height - 1; i++) {
-	xgcv.foreground = pixels[i];
-	XChangeGC(dpy, gc, GCForeground, &xgcv);
-	XDrawLine(dpy, pixmap, gc, 0, height - 1 - i, i + 1, height);
-      }
-      for (i = 0; i <= ncolors - height; i++) {
-	xgcv.foreground = pixels[i + height - 1];
-	XChangeGC(dpy, gc, GCForeground, &xgcv);
-	XDrawLine(dpy, pixmap, gc, i, 0, height, height - i);
+      for (i = 0; i < width; i++) {
+	for (j = 0; j < height; j++)
+	  XPutPixel(image, i, j, pixels[i + ncolors / 2 - j]);
       }
       break;
     case 'S':
-      j = ncolors - 1;
-      for (i = 0; i < j; i++) {
-	xgcv.foreground = pixels[i];
-	XChangeGC(dpy, gc, GCForeground, &xgcv);
-	XDrawRectangle(dpy, pixmap, gc, i, i, (j - i) * 2, (j - i) * 2);
+      {
+	/* width == height so only reference one */
+	register int w = width - 1;
+	for (i = 0; i <= w; i++) {
+	  register int pi = min(i, w - i);
+	  for (j = 0; j <= w; j++) {
+	    register int pj = min(j, w - j);
+	    XPutPixel(image, i, j, pixels[min(pi, pj)]);
+	  }
+	}
       }
-      xgcv.foreground = pixels[i];
-      XChangeGC(dpy, gc, GCForeground, &xgcv);
-      XDrawPoint(dpy, pixmap, gc, i, i);
       break;
     case 'C':
-      /* use the first one if the second fails */
-      imageData = (Pixel *)safemalloc(width * width * sizeof(Pixel));
-      image = XCreateImage(dpy, Scr.viz, Scr.depth, ZPixmap, 0,
-			   (char *)imageData, width, width, sizeof(Pixel) * 8,
-			   0);
-      if (!image){
-	fvwm_msg(ERR, me, "%cGradient couldn't get image", type);
-	if (imageData)
-	  free(imageData);
-	break;
-      }
-      fprintf(stderr, "byte_order=%d bitmap_unit=%d bitmap_bit_order=%d\n",
-	      image->byte_order, image->bitmap_unit, image->bitmap_bit_order);
-      fprintf(stderr, "bitmap_pad=%d bytes_per_line=%d bits_per_pixel=%d\n",
-	      image->bitmap_pad, image->bytes_per_line, image->bits_per_pixel);
+      /* width == height */
       for (i = 0; i < width; i++)
 	for (j = 0; j < width; j++) {
 	  register int x = (i - width / 2), y = (j - width / 2);
-	  register long pixel = ncolors - 1 - sqrt((x * x + y * y) / 2);
-	  imageData[i * width + j] = pixels[pixel];
+	  register int pixel = ncolors - 1 - sqrt((x * x + y * y) / 2);
+	  XPutPixel(image, i, j, pixels[pixel]);
 	}
-      XPutImage(dpy, pixmap, gc, image, 0, 0, 0, 0, width, width);
-      XDestroyImage(image);
+      break;
+    case 'R':
+      /* width == height, both are odd, therefore x is never 0 */
+      for (i = 0; i < width; i++)
+	for (j = 0; j < width; j++) {
+	  register double x = (i - width / 2.0), y = (width / 2.0 - j);
+	  /* angle ranges from -pi/2 to +pi/2 */
+	  register double angle = atan(y / x);
+	  /* extend to -pi/2 to 3pi/2 */
+	  angle += (x > 0) ? 0.0 : M_PI;
+	  /* move range from -pi/2:3*pi/2 to 0:2*pi */
+	  angle += (angle < 0.0) ? M_PI * 2.0 : 0.0;
+	  /* normalize to gradient */
+	  XPutPixel(image, i, j, pixels[(int)(angle * M_1_PI * 0.5 * ncolors)]);
+	}
       break;
     default:
-      /* placeholder function, just fills the pixmap */
-      XFillRectangle(dpy, pixmap, gc, 0, 0, width, height);
+      /* placeholder function, just fills the pixmap with the first color */
+      memset(image->data, 0, image->bytes_per_line * width);
+      XAddPixel(image, pixels[0]);
       break;
   }
+
+  /* copy the image to the server */
+  XPutImage(dpy, pixmap, gc, image, 0, 0, 0, 0, width, height);
+  XDestroyImage(image);
 
   /* pass back info */
   *width_return = width;
