@@ -320,9 +320,11 @@ SaveWindowStates(FILE *f)
 	    }
 	} /* !window_role */
 
+      /* It seems we have to subtract the bw here, since it
+	 is added again in AddWindow */
       fprintf(f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i\n",
-	      ewin->orig_g.x,
-              ewin->orig_g.y,
+	      ewin->orig_g.x - ewin->old_bw,
+              ewin->orig_g.y - ewin->old_bw,
 	      ewin->orig_g.width - 2*ewin->boundary_width ,
 	      ewin->orig_g.height -2*ewin->boundary_width-ewin->title_g.height,
 	      ewin->frame_g.x + Scr.Vx,

@@ -1,3 +1,8 @@
+1999-05-10  Matthias Clasen  <clasen@pong.mathematik.uni-freiburg.de>
+
+	* fvwm/session.c (SaveWindowStates): save orig_g.[xy] - old_bw
+	instead of orig_g.[xy] - the old_bw is added again in AddWindow.
+
 Sun May  9 02:43:02 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* utils/Makefile.am: don't install fvwm_make_browse_menu.sh until
