@@ -1,3 +1,8 @@
+1999-12-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Colorset.c (SetWindowBackground):
+	removed latest shaping patch
+
 1999-12-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Colorset.c (SetWindowBackground):

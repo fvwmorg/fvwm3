@@ -139,13 +139,11 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
   {
     mask = CreateBackgroundPixmap(
       dpy, 0, width, height, colorset, 1, None, True);
-    XShapeCombineMask(dpy, win, ShapeBounding, 0, 0, mask, ShapeSet);
     if (mask != None)
+    {
+      XShapeCombineMask(dpy, win, ShapeBounding, 0, 0, mask, ShapeSet);
       XFreePixmap(dpy, mask);
-  }
-  else
-  {
-    XShapeCombineMask(dpy, win, ShapeBounding, 0, 0, None, ShapeSet);
+    }
   }
 #endif
   if (!colorset->pixmap) {
