@@ -5871,7 +5871,7 @@ This command is intended to raise or lower certain windows
 when the mouse pointer leaves an edge.
 .I FvwmAuto
 can be used get a delay when raising or lowering windows.
-See example for 
+See example for
 .I EdgeCommand
 .EE
 Normally, the invisible pan frames are only on the screen edges that
@@ -9907,7 +9907,7 @@ If
 .I value
 includes whitespace, you should enclose it in quotes.  If no
 .I value
-is given, the command is ignored.
+is given, the variable is deleted.
 
 .TP
 .BI "Silent " command
@@ -10480,30 +10480,31 @@ parentheses (this is still supported for backward compatibility).
 
 In addition, the
 .I conditions
-may include one or more window names to match to.  If more than one
-window name is given, all of them must match.  The window name, icon
-name, class, and resource are considered when attempting to find a match.
-Each name may include the wildcards '*' and '?', and may consist
-of two or more alternatives, separated by the character '|', which acts
-as an OR operator.  (If OR operators are used, they must not be separated
-by spaces from the names.)  Each window name can begin with '!', which prevents
+may include one or more window names to match to.  If more than
+one window name is given, all of them must match.  The window
+name, icon name, class, and resource are considered when
+attempting to find a match. Each name may include the wildcards
+'*' and '?', and may consist of two or more alternatives,
+separated by the character '|', which acts as an OR operator.  (If
+OR operators are used, they must not be separated by spaces from
+the names.)  Each window name can begin with '!', which prevents
 .I command
-if any of the window name, icon name, class or resource match.  However, '!'
-must not be applied to individual names in a group separated by OR
-operators; it may only be applied to the beginning of the group, and
-then it operates on the whole group.
+if any of the window name, icon name, class or resource match.
+However, '!' must not be applied to individual names in a group
+separated by OR operators; it may only be applied to the beginning
+of the group, and then it operates on the whole group.
 
 Examples:
 .EX
  Next ("Netscape|konqueror|Mozilla*") WarpToWindow 99 90
 .EE
-This goes to the next web browser window, no matter which of the three
-named web browsers is being used.
+This goes to the next web browser window, no matter which of the
+three named web browsers is being used.
 .EX
  Next ("Mozilla*", "Bookmark*") WarpToWindow 99 90
 .EE
-This goes to Mozilla's bookmark manager window, ignoring other Mozilla
-windows and other browsers' bookmark windows.
+This goes to Mozilla's bookmark manager window, ignoring other
+Mozilla windows and other browsers' bookmark windows.
 .EX
  All ("XTerm|rxvt", !console) Iconify
 .EE

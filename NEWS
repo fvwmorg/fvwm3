@@ -17,6 +17,8 @@ Changes in alpha release 2.5.12 (not released yet)
 
 Changes in alpha release 2.5.11 (30-Sep-2004)
 
+* Multiple window names can be specified in conditions.
+
 * Window-specific key/mouse bindings. (Bindings no longer have to
   be global.)
 

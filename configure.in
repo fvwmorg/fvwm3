@@ -993,6 +993,9 @@ if test x$ac_cv_func_atexit = xno; then
   AC_CHECK_FUNCS(on_exit)
 fi
 
+dnl Check for unsetenv function
+AC_CHECK_FUNCS(unsetenv)
+
 
 dnl ********* GTK, IMLIB, GNOME
 dnl Check the availability of gtk

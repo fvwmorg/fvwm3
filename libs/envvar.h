@@ -80,5 +80,8 @@ const char* getFirstEnv(const char *s, int *beg, int *end);
  */
 void flib_putenv(char *var, char *env);
 
+/* Replacement for unsetenv(). */
+void flib_unsetenv(const char *name);
+
 
 #endif

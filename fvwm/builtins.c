@@ -3330,9 +3330,7 @@ void CMD_SetEnv(F_CMD_ARGS)
 	action = GetNextToken(action, &szValue);
 	if (!szValue)
 	{
-		/* no value, ignore */
-		free(szVar);
-		return;
+		szValue = safestrdup("");
 	}
 	szPutenv = safemalloc(strlen(szVar) + strlen(szValue) + 2);
 	sprintf(szPutenv,"%s=%s", szVar, szValue);
@@ -3347,18 +3345,13 @@ void CMD_SetEnv(F_CMD_ARGS)
 void CMD_UnsetEnv(F_CMD_ARGS)
 {
 	char *szVar = NULL;
-	char *szPutenv = NULL;
 
-	action = GetNextToken(action, &szVar);
+	szVar = PeekToken(action, &action);
 	if (!szVar)
 	{
 		return;
 	}
-	szPutenv = (char *)safemalloc(strlen(szVar) + 2);
-	sprintf(szPutenv, "%s=", szVar);
-	flib_putenv(szVar, szPutenv);
-	free(szVar);
-	free(szPutenv);
+	flib_unsetenv(szVar);
 
 	return;
 }

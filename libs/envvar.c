@@ -40,6 +40,13 @@
 
 /* ---------------------------- local definitions -------------------------- */
 
+#ifdef HAVE_UNSETENV
+#define FHaveUnsetenv 1
+#else
+#define unsetenv(x) do { } while (0)
+#define FHaveUnsetenv 0
+#endif
+
 /* ---------------------------- local macros ------------------------------- */
 
 #define ENV_LIST_INC 10
@@ -368,6 +375,56 @@ const char* getFirstEnv(const char *s, int *beg, int *end)
 	return env;
 }
 
+/* If env is NULL, var is removed from the environment list */
+static void add_to_envlist(char *var, char *env)
+{
+	static env_list_item *env_list = NULL;
+	static unsigned int env_len = 0;
+	unsigned int i;
+
+	/* find string in list */
+	if (env_list && env_len)
+	{
+		for (i = 0; i < env_len; i++)
+		{
+			if (strcmp(var, env_list[i].var) == 0)
+			{
+				/* found it - replace old string */
+				free(env_list[i].var);
+				free(env_list[i].env);
+				if (env != NULL)
+				{
+					env_list[i].var = var;
+					env_list[i].env = env;
+				}
+				return;
+			}
+		}
+		/* not found, add to list */
+		if (env_len % ENV_LIST_INC == 0 && env != NULL)
+		{
+			/* need more memory */
+			env_list = (env_list_item *)saferealloc(
+				(void *)env_list, (env_len + ENV_LIST_INC) *
+				sizeof(env_list_item));
+		}
+	}
+	else if (env_list == NULL && env != NULL)
+	{
+		/* list is still empty */
+		env_list = (env_list_item *)safecalloc(
+			sizeof(env_list_item), ENV_LIST_INC);
+	}
+	if (env != NULL)
+	{
+		env_list[env_len].var = var;
+		env_list[env_len].env = env;
+	}
+	env_len++;
+
+	return;
+}
+
 /* This function keeps a list of all strings that were set in the environment.
  * If a variable is written again, the old memory is freed.  This function
  * should be called instead of putenv().
@@ -380,9 +437,6 @@ const char* getFirstEnv(const char *s, int *beg, int *end)
  */
 void flib_putenv(char *var, char *env)
 {
-	static env_list_item *env_list = NULL;
-	static unsigned int env_len = 0;
-	unsigned int i;
 	char *s;
 
 	s = safestrdup(var);
@@ -390,39 +444,31 @@ void flib_putenv(char *var, char *env)
 	s = safestrdup(env);
 	env = s;
 	putenv(env);
-	/* find string in list */
-	if (env_list && env_len)
+	add_to_envlist(var, env);
+
+	return;
+}
+
+void flib_unsetenv(const char *name)
+{
+	if (FHaveUnsetenv)
 	{
-		for (i = 0; i < env_len; i++)
+		unsetenv(name);
+	}
+	else
+	{
+		int rc;
+
+		/* try putenv without '=' */
+		rc = putenv((char *)name);
+		if (rc == 0 || getenv(name) != NULL)
 		{
-			if (strcmp(var, env_list[i].var) == 0)
-			{
-				/* found it - replace old string */
-				free(env_list[i].var);
-				free(env_list[i].env);
-				env_list[i].var = var;
-				env_list[i].env = env;
-				return;
-			}
-		}
-		/* not found, add to list */
-		if (env_len % ENV_LIST_INC == 0)
-		{
-			/* need more memory */
-			env_list = (env_list_item *)saferealloc(
-				(void *)env_list, (env_len + ENV_LIST_INC) *
-				sizeof(env_list_item));
+			/* failed, write empty string */
+			flib_putenv((char *)name, "");
+			return;
 		}
 	}
-	else if (env_list == NULL)
-	{
-		/* list is still empty */
-		env_list = (env_list_item *)safecalloc(
-			sizeof(env_list_item), ENV_LIST_INC);
-	}
-	env_list[env_len].var = var;
-	env_list[env_len].env = env;
-	env_len++;
+	add_to_envlist((char *)name, NULL);
 
 	return;
 }
