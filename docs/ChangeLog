@@ -1,3 +1,8 @@
+2002-12-14  Mikhael Goikhman  <migo@homemail.com>
+
+	* COMMANDS:
+	some changes and corrections
+
 2002-12-11  Dan Espen  <dane@mk.telcordia.com>
 
 	* COMMANDS: Finish first pass.
@@ -5,6 +10,12 @@
 2002-12-10  Dan Espen  <dane@mk.telcordia.com>
 
 	* COMMANDS: A few more one liners.
+
+2002-12-08  Mikhael Goikhman  <migo@homemail.com>
+
+	* Makefile.am:
+	don't include outdated 1994 files color_combos and m4_hacks to DIST,
+	include file COMMANDS to DIST
 
 2002-12-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
