@@ -1,5 +1,10 @@
 2003-07-08  Marcus Lundblad  <ml@update.uu.se>
 
+	* libs/FBidi.h:
+	fixed FBidi.h macro to work with no FriBIDI
+	
+2003-07-08  Marcus Lundblad  <ml@update.uu.se>
+
 	* libs/CombineChars.h (CombineChars):
 	* libs/CombineChars.c (CombineChars):
 	* libs/FBidi.h (FBidiConvert):
@@ -8,7 +13,6 @@
 	(FlocaleEncodeWinString):
 	(FlocaleDrawUnderline):
 	(FlocaleTextWidth):
-
 	fixed drawing of underlines on characters to work in with BIDI
 	and combining characters
 	

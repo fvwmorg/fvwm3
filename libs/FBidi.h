@@ -87,7 +87,7 @@ char *FBidiConvert(
 
 #define FBidiIsApplicable(c) False
 
-#define FBidiConvert(s, c, l, r, o, cc) NULL
+#define FBidiConvert(s, c, l, r, o, cc, lv) NULL
 
 #endif /* HAVE_BIDI */
 
