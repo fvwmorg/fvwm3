@@ -124,9 +124,11 @@ sub new ($@) {
 	$name = $params{'Name'} || $name;
 	my $mask = $params{'Mask'} || 0;
 	my $xmask = $params{'XMask'}? $params{'XMask'} | M_EXTENDED_MSG: 0;
+	my $sync_mask = $params{'SyncMask'} || 0;
+	my $sync_xmask = $params{'SyncXMask'}? $params{'SyncXMask'} | M_EXTENDED_MSG: 0;
 
 	# initialize module from argv
-	@ARGV >= 5 or die "$name should only be run from fvwm.\n";
+	@ARGV >= 5 or die "$name should only be run by fvwm.\n";
 	my ($outFd, $inFd, $rcFile, $winId, $context) = splice(@ARGV, 0, 5);
 
 	if (@ARGV && ref($params{'EnableOptions'}) eq 'HASH') {
@@ -154,12 +156,15 @@ sub new ($@) {
 
 	$self->{lastPacket} = [];
 	$self->{handlers} = {};
+	$self->{shouldUnlock} = 0;
 
 	# bless here, so die above does not run DESTROY
 	bless $self, $class;
 	$self->name($name);
 	$self->mask($mask);
 	$self->mask($xmask) if $xmask;
+	$self->syncMask($sync_mask);
+	$self->syncMask($sync_xmask) if $sync_xmask;
 	$self->resetHandlers;
 	$self->readConfigInfo unless $params{'NoConfigInfo'};
 	return $self;
@@ -196,7 +201,7 @@ sub mask ($;$) {
 		my $oldMask = $self->{$maskId};
 		return $oldMask
 			if $mask == M_EXTENDED_MSG;
-		$self->sendText("Set_Mask $mask")
+		$self->sendText("SET_MASK $mask")
 			unless defined $oldMask && $oldMask == $mask;
 		$self->{$maskId} = $mask;
 		return $oldMask;
@@ -204,10 +209,26 @@ sub mask ($;$) {
 	return $self->{mask};
 }
 
+sub syncMask ($;$) {
+	my $self = shift;
+	my $mask = shift;
+	if (defined $mask) {
+		my $maskId = $self->isExtended($mask)? "sync_xmask": "sync_mask";
+		my $oldMask = $self->{$maskId};
+		return $oldMask
+			if $mask == M_EXTENDED_MSG;
+		$self->sendText("SET_SYNC_MASK $mask")
+			unless defined $oldMask && $oldMask == $mask;
+		$self->{$maskId} = $mask;
+		return $oldMask;
+	}
+	return $self->{sync_mask};
+}
+
 # by default the version of a module is the FVWM version
 sub version ($) {
 	my $self = shift;
-	return "@VERSION@";
+	return "2.5.2";
 }
 
 sub argv ($) {
@@ -250,6 +271,19 @@ sub sendText ($$;$$) {
 			pack("lla${len}l", $winId, $len, $line, $continue)
 		);
 	}
+}
+
+sub sendUnlock ($) {
+	my $self = shift;
+	$self->sendText(RESPONSE_UNLOCK) if $self->{shouldUnlock};
+	$self->{shouldUnlock} = 0;
+}
+
+sub terminate ($;$) {
+	my $self = shift;
+	my $continue = shift || 0;
+	die "!quit" if !$continue;
+	die "!next";
 }
 
 sub readPacket ($) {
@@ -309,8 +343,11 @@ sub invokeHandler ($$@) {
 
 				eval { &$handler($self, $type, @args); };
 
-				return 0 if $@ && $@ =~ /^quit/i;
-				die $@ if $@;
+				if ($@) {
+					return 0 if $@ =~ /^!quit/i;
+					return 1 if $@ =~ /^!next/i;
+					die $@;
+				}
 			}
 		}
 	}
@@ -330,11 +367,20 @@ sub processPacket ($;$$) {
 	# strip everything past the first null (or newline) if needed
 	$args[@args - 1] =~ s/\n*\0.*//s if $self->isPacketTextBased($type);
 
-	$self->invokeHandler($type, @args);
+	$self->{shouldUnlock} = 1 if $type &
+		($self->isExtended($type)? $self->{sync_xmask}: $self->{sync_mask});
+
+	my $continue = $self->invokeHandler($type, @args);
+
+	$self->sendUnlock if $self->{shouldUnlock};
+	return $continue;
 }
 
 sub eventLoop ($) {
 	my $self = shift;
+	my $continue = 1;
+
+	$self->sendText(RESPONSE_READY);
 
 	while (1) {
 		$self->processPacket($self->readPacket) || last;

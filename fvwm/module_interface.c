@@ -405,11 +405,10 @@ void CMD_Module(F_CMD_ARGS)
 
 void CMD_ModuleSynchronous(F_CMD_ARGS)
 {
-  extern char *ModuleFinished;		/* defined in libs/Module.c */
   int sec = 0;
   char *next;
   char *token;
-  char *expect = ModuleFinished;
+  char *expect = ModuleFinishedStartupResponse;
   int pipe_slot;
   fd_set in_fdset;
   fd_set out_fdset;
@@ -1543,7 +1542,7 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 			 * queueing make s this happen too late. */
 		}
 		while (!HandleModuleInput(
-			       targetWindow, module, ModuleUnlock, False));
+			targetWindow, module, ModuleUnlockResponse, False));
 	}
 
 	return;

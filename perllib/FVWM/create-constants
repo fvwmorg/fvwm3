@@ -22,8 +22,11 @@ outfile=`dirname $0`/Constants.pm
 	grep "#define MAX_XMSG_MASK " $infile; \
 	grep "#define FvwmPacketHeaderSize " $infile | sed 's/FvwmPacketHeaderSize/HEADER_SIZE/'; \
 	grep "#define START_FLAG " $infile; \
+	grep "#define ModuleFinishedStartupResponse " $infile | tr ' ' : | sed 's/:ModuleFinishedStartupResponse:\+/ RESPONSE_READY /'; \
+	grep "#define ModuleUnlockResponse " $infile | tr ' ' : | sed 's/:ModuleUnlockResponse:\+/ RESPONSE_UNLOCK /'; \
 ) \
 	| awk '{ print "use constant " $2 " => " $3 ";" }' \
+	| tr : ' ' \
 	>>$outfile
 
 ( \

@@ -83,10 +83,9 @@ FvwmPacket* ReadFvwmPacket( int fd )
  * finished its startup procedures and is fully operational now.
  *
  ***********************************************************************/
-char *ModuleFinished = "NOP FINISHED STARTUP";
 void SendFinishedStartupNotification(int *fd)
 {
-  SendText(fd, ModuleFinished, 0);
+  SendText(fd, ModuleFinishedStartupResponse, 0);
 }
 
 /************************************************************************
@@ -95,10 +94,9 @@ void SendFinishedStartupNotification(int *fd)
  * finished it's procedures and fvwm may proceed.
  *
  ***********************************************************************/
-char *ModuleUnlock = "NOP UNLOCK";
 void SendUnlockNotification(int *fd)
 {
-  SendText(fd, ModuleUnlock, 0);
+  SendText(fd, ModuleUnlockResponse, 0);
 }
 
 /************************************************************************
@@ -111,7 +109,7 @@ static unsigned long ModuleContinue = 1;
 void SendQuitNotification(int *fd)
 {
   ModuleContinue = 0;
-  SendText(fd, ModuleUnlock, 0); /* unlock just in case */
+  SendText(fd, ModuleUnlockResponse, 0); /* unlock just in case */
 }
 
 /************************************************************************

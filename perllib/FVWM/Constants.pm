@@ -47,6 +47,8 @@ use constant MAX_MSG_MASK => 0x7fffffff;
 use constant MAX_XMSG_MASK => 0x0000000f;
 use constant HEADER_SIZE => 4;
 use constant START_FLAG => 0xffffffff;
+use constant RESPONSE_READY => "NOP FINISHED STARTUP";
+use constant RESPONSE_UNLOCK => "NOP UNLOCK";
 use constant ON_EXIT => '1e20';
 use constant INTSIZE => 4;
 @EXPORT = qw(
@@ -93,6 +95,8 @@ use constant INTSIZE => 4;
 	MAX_XMSG_MASK
 	HEADER_SIZE
 	START_FLAG
+	RESPONSE_READY
+	RESPONSE_UNLOCK
 	ON_EXIT
 	INTSIZE
 );

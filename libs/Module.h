@@ -40,6 +40,11 @@ typedef struct {
 } FvwmPacket;
 
 
+/*
+ * If you modify constants here, please regenerate Constants.pm in perllib.
+ */
+
+
 /** All size values in units of "unsigned long" **/
 #define FvwmPacketHeaderSize        4
 #define FvwmPacketBodySize(p)       ((p).size - FvwmPacketHeaderSize)
@@ -57,6 +62,8 @@ typedef struct {
 /* Value of start_pattern */
 #define START_FLAG 0xffffffff
 
+#define ModuleFinishedStartupResponse "NOP FINISHED STARTUP"
+#define ModuleUnlockResponse          "NOP UNLOCK"
 
 /* Possible values of type */
 #define M_NEW_PAGE               (1)

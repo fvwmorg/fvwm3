@@ -1,3 +1,9 @@
+2002-04-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmPerl/FvwmPerl.in:
+	make all messages synchronous by default;
+	new eval functions stop(), skip(), unlock(), detach()
+
 2002-04-29  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/List.c (UpdateItemPicture):

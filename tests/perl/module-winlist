@@ -25,7 +25,7 @@ $module->addHandler(M_WINDOW_NAME, sub {
 $module->addHandler(M_END_WINDOWLIST, sub {
 	print $fh "-----------+--------------------\n";
 	close $fh;
-	die "quit";
+	$module->terminate;
 });
 
 print $fh "-----------+--------------------\n";

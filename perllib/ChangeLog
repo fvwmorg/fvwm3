@@ -1,3 +1,10 @@
+2002-04-30  Mikhael Goikhman  <migo@homemail.com>
+
+	* perllib/FVWM/Module.pm.in:
+	* perllib/FVWM/Constants.pm:
+	* perllib/FVWM/create-constants:
+	added support for synchronous startup and synchronous messages
+
 2002-04-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* perllib/FVWM/Module.pm.in:
