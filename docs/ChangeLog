@@ -1,5 +1,8 @@
 1998-11-12  Dan Espen  <dane@mk.bellcore.com>
 
+	* cvs.html (Deleting Directories and Files): Added description of
+	file deletion process.
+
 	*  cvs.html (Getting_Updates): Added example of  how  to resolve a
  	conflict during an update.
 

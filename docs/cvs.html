@@ -169,6 +169,21 @@ cd newdir
 cvs add -m "New module for ..." newmod.c
 </pre></font>
 
+<H2> <font color="turquoise">Deleting Directories and Files</font></h2>
+You don't directly delete directories, you delete all the files in
+a directory and the directory goes away during an "update -dP".
+To delete one or more files:
+
+<pre><font color="yellow">
+cd fvwm
+cvs tag before_delete filename...
+cvs remove -f filename...
+cvs commit -m 'deleted files because' filename...
+</pre></font>
+
+The tag "before_delete" is applied to make it easier to find the file
+if it ever needs to be recovered.
+
 <H2> <font color="turquoise">Committing Changes</font></h2>
 When you commit, you can commit from a sub-directory, or from
 the top of the tree.  If you don't indicate the file to commit,
