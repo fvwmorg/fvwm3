@@ -1014,6 +1014,14 @@ int ewmh_HandleDesktop(EWMH_CMD_ARGS)
   S_SET_DO_CIRCULATE_SKIP(SCM(*style), 1);
   S_SET_DO_CIRCULATE_SKIP(SCC(*style), 1);
 
+  S_SET_IS_UNICONIFIABLE(SCF(*style), 1);
+  S_SET_IS_UNICONIFIABLE(SCM(*style), 1);
+  S_SET_IS_UNICONIFIABLE(SCC(*style), 1);
+
+  S_SET_IS_UNMAXIMIZABLE(SCF(*style), 1);
+  S_SET_IS_UNMAXIMIZABLE(SCM(*style), 1);
+  S_SET_IS_UNMAXIMIZABLE(SCC(*style), 1);
+
   /* No border */
   SSET_BORDER_WIDTH(*style, 0);
   style->flags.has_border_width = 1;
@@ -1087,6 +1095,14 @@ int ewmh_HandleDock(EWMH_CMD_ARGS)
   S_SET_DO_CIRCULATE_SKIP(SCF(*style), 1);
   S_SET_DO_CIRCULATE_SKIP(SCM(*style), 1);
   S_SET_DO_CIRCULATE_SKIP(SCC(*style), 1);
+
+  S_SET_IS_UNICONIFIABLE(SCF(*style), 1);
+  S_SET_IS_UNICONIFIABLE(SCM(*style), 1);
+  S_SET_IS_UNICONIFIABLE(SCC(*style), 1);
+
+  S_SET_IS_UNMAXIMIZABLE(SCF(*style), 1);
+  S_SET_IS_UNMAXIMIZABLE(SCM(*style), 1);
+  S_SET_IS_UNMAXIMIZABLE(SCC(*style), 1);
 
   /* no title ? MWM hints should be used by the app but ... */
 

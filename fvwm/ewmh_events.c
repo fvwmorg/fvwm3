@@ -35,6 +35,7 @@
 #include "events.h"
 #include "ewmh.h"
 #include "ewmh_intern.h"
+#include "decorations.h"
 
 extern ewmh_atom ewmh_atom_wm_state[];
 
@@ -95,6 +96,10 @@ int ewmh_CloseWindow(EWMH_CMD_ARGS)
 {
   if (ev == NULL)
     return 0;
+  if (!is_function_allowed(F_CLOSE, NULL, fwin, True, False))
+  {
+	  return 0;
+  }
   execute_function_override_window(NULL, NULL, "Close", 0, fwin);
 
   return 0;
@@ -216,6 +221,22 @@ int ewmh_MoveResize(EWMH_CMD_ARGS)
 	move = True;
 	break;
     }
+
+    if (move)
+    {
+	    if (!is_function_allowed(F_MOVE, NULL, fwin, True, False))
+	    {
+		    return 0;
+	    }
+    }
+    else
+    {
+	    if (!is_function_allowed(F_RESIZE, NULL, fwin, True, False))
+	    {
+		    return 0;
+	    }
+    }
+  
     sprintf(cmd, "WarpToWindow %i %i",x_warp,y_warp);
     execute_function_override_window(NULL, NULL, cmd, 0, fwin);
     if (move)
@@ -293,9 +314,17 @@ int ewmh_WMState(EWMH_CMD_ARGS)
     char cmd[256];
 
     if (maximize & EWMH_MAXIMIZE_REMOVE)
-      sprintf(cmd,"Maximize off");
+    {
+	    sprintf(cmd,"Maximize off");
+    }
     else
-      sprintf(cmd,"Maximize on %i %i", max_horiz, max_vert);
+    {
+	    if (!is_function_allowed(F_MAXIMIZE, NULL, fwin, True, False))
+	    {
+		return 0;
+	    }
+	    sprintf(cmd,"Maximize on %i %i", max_horiz, max_vert);
+    }
     execute_function_override_window(NULL, NULL, cmd, 0, fwin);
   }
   return 0;
@@ -386,8 +415,12 @@ int ewmh_WMStateHidden(EWMH_CMD_ARGS)
     if ((bool_arg == NET_WM_STATE_TOGGLE && !IS_ICONIFIED(fwin)) ||
 	bool_arg == NET_WM_STATE_ADD)
     {
-      /* iconify */
-      sprintf(cmd, "Iconify on");
+	    /* iconify */
+	    if (!is_function_allowed(F_ICONIFY, NULL, fwin, True, False))
+	    {
+		return 0;
+	    }
+	    sprintf(cmd, "Iconify on");
     }
     else
     {

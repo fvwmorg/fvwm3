@@ -1,3 +1,20 @@
+2003-04-16  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/ewmh_events.c (ewmh_CloseWindow):
+	(ewmh_MoveResize):
+	(ewmh_WMState):
+	(ewmh_WMStateHidden):
+	Check if functions are allowed
+
+	* fvwm/ewmh.c (ewmh_HandleDesktop):
+	(ewmh_HandleDock):
+	Set Desktop and Dock uniconifiable and unmaximazable
+
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/screen.h:
+	Fixed greyed action with EWMH desktop
+
+	
 2003-04-16  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:

@@ -394,7 +394,8 @@ void menuitem_paint(
 		cs = offff_cs;
 	}
 	/* Note: it's ok to pass a NULL label to is_function_allowed. */
-	if (!is_function_allowed(
+	if (!IS_EWMH_DESKTOP_FW(mpip->fw) &&
+	    !is_function_allowed(
 		    MI_FUNC_TYPE(mi), MI_LABEL(mi)[0], mpip->fw, True, False))
 	{
 		gcs = ST_MENU_STIPPLE_GCS(ms);
