@@ -145,13 +145,11 @@ static Pixmap default_pixmap = None;
 static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 		     int *x_ret, int *y_ret, int *w_ret, int *h_ret)
 {
-  int virt, page, edge, size;
-  int max, pos, gap;
+  int virt, edge, size;
+  int max, pos;
 
   /* coordinate of left hand edge on virtual desktop */
   virt = Scr.Vx + t->x;
-  /* virtual page that window sits on */
-  page = virt / Scr.MyDisplayWidth;
   /* position of left hand edge of mini-window on pager window */
   edge = virt * win_w / Scr.VWidth;
   /* absolute coordinate of right hand edge on virtual desktop */
@@ -163,12 +161,10 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   {
     /* maximum amount to adjust left edge of (a right justified) mini window */
     max = MinSize - size;
-    /* position of window on virtual page */
+    /* position of centre of window on virtual page */
     pos = (virt - t->width / 2) % Scr.MyDisplayWidth;
-    /* how far right it would be to be right justified */
-    gap = Scr.MyDisplayWidth;
     /* move the window left proportional to how far right on the page it is */
-    edge -= max * pos / gap;
+    edge -= max * pos / Scr.MyDisplayWidth;
     /* change the mini-window size */
     size = MinSize;
   }
@@ -178,7 +174,6 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 
   /* same code for y axis */
   virt = Scr.Vy + t->y;
-  page = virt / Scr.MyDisplayHeight;
   edge = virt * win_h / Scr.VHeight;
   virt += t->height;
   size = virt * win_h / Scr.VHeight - edge;
@@ -186,8 +181,7 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   {
     max = MinSize - size;
     pos = (virt - t->height / 2) % Scr.MyDisplayHeight;
-    gap = Scr.MyDisplayHeight;
-    edge -= max * pos / gap;
+    edge -= max * pos / Scr.MyDisplayHeight;
     size = MinSize;
   }
   *y_ret = edge;
