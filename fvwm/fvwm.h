@@ -181,6 +181,7 @@ typedef struct
     unsigned do_circulate_skip_shaded : 1;
     unsigned do_grab_focus_when_created : 1;
     unsigned do_grab_focus_when_transient_created : 1;
+    unsigned do_ignore_gnome_hints : 1;
     unsigned do_ignore_restack : 1;
     unsigned do_lower_transient : 1;
     unsigned do_not_show_on_map : 1;

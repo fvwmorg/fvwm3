@@ -3,6 +3,10 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.22 (not released yet)
 
+* New window styles GNOMEIgnoreHints and GNOMEUseHints to disable
+  GNOME hints for specific windows even if GNOME compliance is
+  compiled in.
+
 * Sped up command execution and startup.
 
 * Improved handling of windows that set the "input focus" hint to "false".
@@ -157,9 +161,9 @@ Changes in beta release 2.3.11 (December 1999)
 
 * New option NoHotkeys to WindowList command.
 
-* The CursorStyle command has been improved.  It is now possible to restore
-  the default cursors.  Xpm images without a hot spot can be used as
-  cursors.
+* The CursorStyle command has been improved.  It is now possible
+  to restore the default cursors.  Xpm images without a hot spot
+  can be used as cursors.
 
 * New styles BackingStore/BackingStoreOff and SaveUnder/SaveUnderOff.
 

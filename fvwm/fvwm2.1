@@ -61,7 +61,7 @@ called fvwm2 to distinguish it from the former version 1.x (fvwm
 or even fvwm1).  Since version 1.x has been replaced by version 2.x
 a long time ago we will simply call version 2.x and all versions
 to come fvwm throughout this document, although the executable
-program is named fvwm2.  There is a fvwm offspring called fvwm95.
+program is named fvwm2.  There is an fvwm offspring called fvwm95.
 Although it is very similar to older versions of fvwm version 2
 it is technically a different window manager that has been developed
 by different people.  The main goal of fvwm95 was to supply a
@@ -594,7 +594,10 @@ compliant.  Check
 .B http://www.gnome.org
 for what that may mean.
 .SM GNOME
-support is a compile time option.
+support is a compile time option which is on by default.  To disable
+GNOME hints for some or all windows, the
+.I GNOMEIgnoreHints
+style can be used.
 
 .SH MWM COMPATIBILITY
 Fvwm provides options to emulate Motif Window Manager (Mwm) as
@@ -4103,6 +4106,7 @@ is a comma separated list containing one or more of the keywords
 .IR NoButton " / " Button ,
 .IR ResizeHintOverride " / " NoResizeOverride ,
 .IR OLDecor " / " NoOLDecor ,
+.IR GNOMEUseHints " / " GNOMEIgnoreHints ,
 .IR StickyIcon " / " SlipperyIcon ,
 .IR SmartPlacement " / " CleverPlacement " / " DumbPlacement ,
 .IR RandomPlacement " / " ActivePlacement ,
@@ -4541,7 +4545,7 @@ reverts back to the default.
 
 .I IgnoreRestack
 makes fvwm ignore attempts of clients to raise or lower their
-own windows.  Bye default, the opposite style,
+own windows.  By default, the opposite style,
 .I AllowRestack
 is active.
 
@@ -4904,6 +4908,15 @@ or
 .EX
 Style * Lenience
 .EE
+
+With
+.I GNOMEIgnoreHints
+fvwm ignores all GNOME hints for the window, even if GNOME compliance
+is compiled in.  This is useful for those pesky applications that
+try to be more clever than the user and use GNOME hints to force the
+window manager to ignore the user's preferences.  The
+.I GNOMEUseHints
+style switches back to the default behaviour.
 
 .I UseDecor
 accepts one argument: the name of a decor created with

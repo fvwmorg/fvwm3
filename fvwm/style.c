@@ -249,8 +249,8 @@ static int Get_TBLR(char *token, unsigned char *IconFill) {
  *
  ***********************************************************************/
 
-static void merge_styles(window_style *merged_style, window_style *add_style,
-			 Bool do_free)
+static void merge_styles(
+  window_style *merged_style, window_style *add_style, Bool do_free)
 {
   int i;
   char *merge_flags;
@@ -751,8 +751,6 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
 
   /* clear callers return area */
   memset(styles, 0, sizeof(window_style));
-  /* initialize with GNOME hints */
-  GNOME_GetStyle (tmp_win, styles);
 
   /* look thru all styles in order defined. */
   for (nptr = all_styles; nptr != NULL; nptr = SGET_NEXT_STYLE(*nptr))
@@ -771,6 +769,17 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
       merge_styles(styles, nptr, False);
     }
   }
+  if (!DO_IGNORE_GNOME_HINTS(tmp_win))
+  {
+    window_style gnome_style;
+
+    /* use GNOME hints if not overridden by user with GNOMEIgnoreHitns */
+    memset(&gnome_style, 0, sizeof(window_style));
+    GNOME_GetStyle(tmp_win, &gnome_style);
+    merge_styles(&gnome_style, styles, False);
+    memcpy(styles, &gnome_style, sizeof(window_style));
+  }
+
   return;
 }
 
@@ -855,28 +864,28 @@ void ProcessNewStyle(F_CMD_ARGS)
     switch (tolower(token[0]))
     {
       case 'a':
-        if(StrEquals(token, "ACTIVEPLACEMENT"))
+        if (StrEquals(token, "ACTIVEPLACEMENT"))
         {
 	  found = True;
           ptmpstyle->flags.placement_mode &= (~PLACE_RANDOM);
           ptmpstyle->flag_mask.placement_mode |= PLACE_RANDOM;
           ptmpstyle->change_mask.placement_mode |= PLACE_RANDOM;
         }
-	else if(StrEquals(token, "ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
+	else if (StrEquals(token, "ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.active_placement_honors_starts_on_page = 1;
 	  ptmpstyle->flag_mask.active_placement_honors_starts_on_page = 1;
 	  ptmpstyle->change_mask.active_placement_honors_starts_on_page = 1;
 	}
-	else if(StrEquals(token, "ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
+	else if (StrEquals(token, "ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.active_placement_honors_starts_on_page = 0;
 	  ptmpstyle->flag_mask.active_placement_honors_starts_on_page = 1;
 	  ptmpstyle->change_mask.active_placement_honors_starts_on_page = 1;
 	}
-        else if(StrEquals(token, "AllowRestack"))
+        else if (StrEquals(token, "AllowRestack"))
         {
           found = True;
 	  SFSET_DO_IGNORE_RESTACK(*ptmpstyle, 0);
@@ -886,7 +895,7 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'b':
-        if(StrEquals(token, "BACKCOLOR"))
+        if (StrEquals(token, "BACKCOLOR"))
         {
 	  found = True;
 	  GetNextToken(rest, &token);
@@ -914,7 +923,7 @@ void ProcessNewStyle(F_CMD_ARGS)
             ptmpstyle->change_mask.is_button_disabled |= (1 << butt);
 	  }
         }
-        else if(StrEquals(token, "BorderWidth"))
+        else if (StrEquals(token, "BorderWidth"))
         {
 	  found = True;
 	  if (GetIntegerArguments(rest, NULL, val, 1))
@@ -925,21 +934,21 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->change_mask.has_border_width = 1;
 	  }
         }
-        else if(StrEquals(token, "BackingStore"))
+        else if (StrEquals(token, "BackingStore"))
         {
           found = True;
 	  ptmpstyle->flags.use_backing_store = 1;
 	  ptmpstyle->flag_mask.use_backing_store = 1;
 	  ptmpstyle->change_mask.use_backing_store = 1;
         }
-        else if(StrEquals(token, "BackingStoreOff"))
+        else if (StrEquals(token, "BackingStoreOff"))
         {
           found = True;
 	  ptmpstyle->flags.use_backing_store = 0;
 	  ptmpstyle->flag_mask.use_backing_store = 1;
 	  ptmpstyle->change_mask.use_backing_store = 1;
         }
-	else if(StrEquals(token, "BorderColorset"))
+	else if (StrEquals(token, "BorderColorset"))
 	{
 	  found = True;
           *val = -1;
@@ -953,35 +962,35 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'c':
-        if(StrEquals(token, "CLEVERPLACEMENT"))
+        if (StrEquals(token, "CLEVERPLACEMENT"))
         {
 	  found = True;
           ptmpstyle->flags.placement_mode |= PLACE_CLEVER;
           ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVER;
           ptmpstyle->change_mask.placement_mode |= PLACE_CLEVER;
         }
-        else if(StrEquals(token, "CleverPlacementOff"))
+        else if (StrEquals(token, "CleverPlacementOff"))
         {
 	  found = True;
           ptmpstyle->flags.placement_mode &= (~PLACE_CLEVER);
           ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVER;
           ptmpstyle->change_mask.placement_mode |= PLACE_CLEVER;
         }
-	else if(StrEquals(token, "CAPTUREHONORSSTARTSONPAGE"))
+	else if (StrEquals(token, "CAPTUREHONORSSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.capture_honors_starts_on_page = 1;
 	  ptmpstyle->flag_mask.capture_honors_starts_on_page = 1;
 	  ptmpstyle->change_mask.capture_honors_starts_on_page = 1;
 	}
-	else if(StrEquals(token, "CAPTUREIGNORESSTARTSONPAGE"))
+	else if (StrEquals(token, "CAPTUREIGNORESSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.capture_honors_starts_on_page = 0;
 	  ptmpstyle->flag_mask.capture_honors_starts_on_page = 1;
 	  ptmpstyle->change_mask.capture_honors_starts_on_page = 1;
 	}
-        else if(StrEquals(token, "COLORSET"))
+        else if (StrEquals(token, "COLORSET"))
 	{
 	  found = True;
           *val = -1;
@@ -992,7 +1001,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->flag_mask.use_colorset = 1;
 	  ptmpstyle->change_mask.use_colorset = 1;
 	}
-        else if(StrEquals(token, "COLOR"))
+        else if (StrEquals(token, "COLOR"))
         {
 	  char c = 0;
 	  char *next;
@@ -1058,35 +1067,35 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->change_mask.has_color_back = 1;
 	  break;
         }
-        else if(StrEquals(token, "CirculateSkipIcon"))
+        else if (StrEquals(token, "CirculateSkipIcon"))
         {
 	  found = True;
 	  SFSET_DO_CIRCULATE_SKIP_ICON(*ptmpstyle, 1);
 	  SMSET_DO_CIRCULATE_SKIP_ICON(*ptmpstyle, 1);
 	  SCSET_DO_CIRCULATE_SKIP_ICON(*ptmpstyle, 1);
         }
-	else if(StrEquals(token, "CirculateSkipShaded"))
+	else if (StrEquals(token, "CirculateSkipShaded"))
 	{
 	  found = True;
 	  SFSET_DO_CIRCULATE_SKIP_SHADED(*ptmpstyle, 1);
 	  SMSET_DO_CIRCULATE_SKIP_SHADED(*ptmpstyle, 1);
 	  SCSET_DO_CIRCULATE_SKIP_SHADED(*ptmpstyle, 1);
 	}
-	else if(StrEquals(token, "CirculateHitShaded"))
+	else if (StrEquals(token, "CirculateHitShaded"))
 	{
 	  found = True;
 	  SFSET_DO_CIRCULATE_SKIP_SHADED(*ptmpstyle, 0);
 	  SMSET_DO_CIRCULATE_SKIP_SHADED(*ptmpstyle, 1);
 	  SCSET_DO_CIRCULATE_SKIP_SHADED(*ptmpstyle, 1);
 	}
-        else if(StrEquals(token, "CirculateHitIcon"))
+        else if (StrEquals(token, "CirculateHitIcon"))
         {
 	  found = True;
 	  SFSET_DO_CIRCULATE_SKIP_ICON(*ptmpstyle, 0);
 	  SMSET_DO_CIRCULATE_SKIP_ICON(*ptmpstyle, 1);
 	  SCSET_DO_CIRCULATE_SKIP_ICON(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "CLICKTOFOCUS"))
+        else if (StrEquals(token, "CLICKTOFOCUS"))
         {
 	  found = True;
 	  SFSET_FOCUS_MODE(*ptmpstyle, FOCUS_CLICK);
@@ -1096,42 +1105,42 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SMSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
 	  SCSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "ClickToFocusPassesClick"))
+        else if (StrEquals(token, "ClickToFocusPassesClick"))
         {
 	  found = True;
 	  SFSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 0);
 	  SMSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
 	  SCSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "ClickToFocusPassesClickOff"))
+        else if (StrEquals(token, "ClickToFocusPassesClickOff"))
         {
 	  found = True;
 	  SFSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
 	  SMSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
 	  SCSET_DO_NOT_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "ClickToFocusRaises"))
+        else if (StrEquals(token, "ClickToFocusRaises"))
         {
 	  found = True;
 	  SFSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 0);
 	  SMSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
 	  SCSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "ClickToFocusRaisesOff"))
+        else if (StrEquals(token, "ClickToFocusRaisesOff"))
         {
 	  found = True;
 	  SFSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
 	  SMSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
 	  SCSET_DO_NOT_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "CirculateSkip"))
+        else if (StrEquals(token, "CirculateSkip"))
         {
 	  found = True;
 	  SFSET_DO_CIRCULATE_SKIP(*ptmpstyle, 1);
 	  SMSET_DO_CIRCULATE_SKIP(*ptmpstyle, 1);
 	  SCSET_DO_CIRCULATE_SKIP(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "CirculateHit"))
+        else if (StrEquals(token, "CirculateHit"))
         {
 	  found = True;
 	  SFSET_DO_CIRCULATE_SKIP(*ptmpstyle, 0);
@@ -1141,42 +1150,42 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'd':
-        if(StrEquals(token, "DepressableBorder"))
+        if (StrEquals(token, "DepressableBorder"))
 	{
 	  found = True;
 	  SFSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 1);
 	  SMSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 1);
 	  SCSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 1);
 	}
-        else if(StrEquals(token, "DecorateTransient"))
+        else if (StrEquals(token, "DecorateTransient"))
         {
 	  found = True;
           ptmpstyle->flags.do_decorate_transient = 1;
           ptmpstyle->flag_mask.do_decorate_transient = 1;
           ptmpstyle->change_mask.do_decorate_transient = 1;
         }
-        else if(StrEquals(token, "DumbPlacement"))
+        else if (StrEquals(token, "DumbPlacement"))
         {
 	  found = True;
           ptmpstyle->flags.placement_mode &= (~PLACE_SMART);
           ptmpstyle->flag_mask.placement_mode |= PLACE_SMART;
           ptmpstyle->change_mask.placement_mode |= PLACE_SMART;
         }
-        else if(StrEquals(token, "DONTRAISETRANSIENT"))
+        else if (StrEquals(token, "DONTRAISETRANSIENT"))
         {
 	  found = True;
 	  SFSET_DO_RAISE_TRANSIENT(*ptmpstyle, 0);
 	  SMSET_DO_RAISE_TRANSIENT(*ptmpstyle, 1);
 	  SCSET_DO_RAISE_TRANSIENT(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "DONTLOWERTRANSIENT"))
+        else if (StrEquals(token, "DONTLOWERTRANSIENT"))
         {
 	  found = True;
 	  SFSET_DO_LOWER_TRANSIENT(*ptmpstyle, 0);
 	  SMSET_DO_LOWER_TRANSIENT(*ptmpstyle, 1);
 	  SCSET_DO_LOWER_TRANSIENT(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "DontStackTransientParent"))
+        else if (StrEquals(token, "DontStackTransientParent"))
         {
 	  found = True;
 	  SFSET_DO_STACK_TRANSIENT_PARENT(*ptmpstyle, 0);
@@ -1215,21 +1224,21 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->change_mask.use_colorset = 1;
           }
         }
-        else if(StrEquals(token, "FVWMBUTTONS"))
+        else if (StrEquals(token, "FVWMBUTTONS"))
         {
 	  found = True;
 	  SFSET_HAS_MWM_BUTTONS(*ptmpstyle, 0);
 	  SMSET_HAS_MWM_BUTTONS(*ptmpstyle, 1);
 	  SCSET_HAS_MWM_BUTTONS(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "FVWMBORDER"))
+        else if (StrEquals(token, "FVWMBORDER"))
         {
 	  found = True;
 	  SFSET_HAS_MWM_BORDER(*ptmpstyle, 0);
 	  SMSET_HAS_MWM_BORDER(*ptmpstyle, 1);
 	  SCSET_HAS_MWM_BORDER(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "FocusFollowsMouse"))
+        else if (StrEquals(token, "FocusFollowsMouse"))
         {
 	  found = True;
 	  SFSET_FOCUS_MODE(*ptmpstyle, FOCUS_MOUSE);
@@ -1239,14 +1248,14 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SMSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
 	  SCSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "FirmBorder"))
+        else if (StrEquals(token, "FirmBorder"))
 	{
 	  found = True;
 	  SFSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 0);
 	  SMSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 1);
 	  SCSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 1);
 	}
-        else if(StrEquals(token, "FixedPosition"))
+        else if (StrEquals(token, "FixedPosition"))
 	{
 	  found = True;
 	  SFSET_IS_FIXED(*ptmpstyle, 1);
@@ -1256,52 +1265,66 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'g':
-        if(StrEquals(token, "GrabFocusOff"))
+        if (StrEquals(token, "GrabFocusOff"))
         {
 	  found = True;
 	  SFSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 0);
 	  SMSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
 	  SCSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "GrabFocus"))
+        else if (StrEquals(token, "GrabFocus"))
         {
 	  found = True;
 	  SFSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
 	  SMSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
 	  SCSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "GrabFocusTransientOff"))
+        else if (StrEquals(token, "GrabFocusTransientOff"))
         {
 	  found = True;
 	  SFSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*ptmpstyle, 0);
 	  SMSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*ptmpstyle, 1);
 	  SCSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "GrabFocusTransient"))
+        else if (StrEquals(token, "GrabFocusTransient"))
         {
 	  found = True;
 	  SFSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*ptmpstyle, 1);
 	  SMSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*ptmpstyle, 1);
 	  SCSET_DO_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(*ptmpstyle, 1);
         }
+        else if (StrEquals(token, "GNOMEIgnoreHints"))
+	{
+	  found = True;
+	  SFSET_DO_IGNORE_GNOME_HINTS(*ptmpstyle, 1);
+	  SMSET_DO_IGNORE_GNOME_HINTS(*ptmpstyle, 1);
+	  SCSET_DO_IGNORE_GNOME_HINTS(*ptmpstyle, 1);
+	}
+        else if (StrEquals(token, "GNOMEUseHints"))
+	{
+	  found = True;
+	  SFSET_DO_IGNORE_GNOME_HINTS(*ptmpstyle, 0);
+	  SMSET_DO_IGNORE_GNOME_HINTS(*ptmpstyle, 1);
+	  SCSET_DO_IGNORE_GNOME_HINTS(*ptmpstyle, 1);
+	}
         break;
 
       case 'h':
-        if(StrEquals(token, "HINTOVERRIDE"))
+        if (StrEquals(token, "HINTOVERRIDE"))
         {
 	  found = True;
 	  SFSET_HAS_MWM_OVERRIDE(*ptmpstyle, 1);
 	  SMSET_HAS_MWM_OVERRIDE(*ptmpstyle, 1);
 	  SCSET_HAS_MWM_OVERRIDE(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "HANDLES"))
+        else if (StrEquals(token, "HANDLES"))
         {
 	  found = True;
           ptmpstyle->flags.has_no_border = 0;
           ptmpstyle->flag_mask.has_no_border = 1;
           ptmpstyle->change_mask.has_no_border = 1;
         }
-        else if(StrEquals(token, "HandleWidth"))
+        else if (StrEquals(token, "HandleWidth"))
         {
 	  found = True;
 	  if (GetIntegerArguments(rest, NULL, val, 1))
@@ -1312,7 +1335,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->change_mask.has_handle_width = 1;
 	  }
         }
-        else if(StrEquals(token, "HilightFore"))
+        else if (StrEquals(token, "HilightFore"))
         {
 	  found = True;
 	  GetNextToken(rest, &token);
@@ -1327,7 +1350,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->change_mask.use_colorset_hi = 1;
           }
         }
-        else if(StrEquals(token, "HilightBack"))
+        else if (StrEquals(token, "HilightBack"))
         {
 	  found = True;
 	  GetNextToken(rest, &token);
@@ -1342,7 +1365,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->change_mask.use_colorset_hi = 1;
           }
         }
-        else if(StrEquals(token, "HilightColorset"))
+        else if (StrEquals(token, "HilightColorset"))
 	{
 	  found = True;
           *val = -1;
@@ -1353,7 +1376,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->flag_mask.use_colorset_hi = 1;
 	  ptmpstyle->change_mask.use_colorset_hi = 1;
 	}
-        else if(StrEquals(token, "HilightBorderColorset"))
+        else if (StrEquals(token, "HilightBorderColorset"))
 	{
 	  found = True;
           *val = -1;
@@ -1367,7 +1390,7 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'i':
-        if(StrEquals(token, "ICON"))
+        if (StrEquals(token, "ICON"))
         {
 	  found = True;
 	  GetNextToken(rest, &token);
@@ -1392,28 +1415,28 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SCSET_HAS_ICON_FONT(*ptmpstyle, 1);
 
 	}
-	else if(StrEquals(token, "IconOverride"))
+	else if (StrEquals(token, "IconOverride"))
 	{
 	  found = True;
 	  ptmpstyle->flags.icon_override = ICON_OVERRIDE;
 	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
 	  ptmpstyle->change_mask.icon_override = ICON_OVERRIDE_MASK;
 	}
-        else if(StrEquals(token, "IgnoreRestack"))
+        else if (StrEquals(token, "IgnoreRestack"))
         {
 	  found = True;
 	  SFSET_DO_IGNORE_RESTACK(*ptmpstyle, 1);
 	  SMSET_DO_IGNORE_RESTACK(*ptmpstyle, 1);
 	  SCSET_DO_IGNORE_RESTACK(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "IconTitle"))
+        else if (StrEquals(token, "IconTitle"))
         {
 	  found = True;
 	  SFSET_HAS_NO_ICON_TITLE(*ptmpstyle, 0);
 	  SMSET_HAS_NO_ICON_TITLE(*ptmpstyle, 1);
 	  SCSET_HAS_NO_ICON_TITLE(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "IconBox"))
+        else if (StrEquals(token, "IconBox"))
         {
           icon_boxes *IconBoxes = NULL;
 
@@ -1527,7 +1550,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->flag_mask.has_icon_boxes = 1;
 	  ptmpstyle->change_mask.has_icon_boxes = 1;
         } /* end iconbox parameter */
-        else if(StrEquals(token, "ICONGRID")) {
+        else if (StrEquals(token, "ICONGRID")) {
 	  found = True;
           /* The grid always affects the prior iconbox */
           if (which == 0) {
@@ -1556,7 +1579,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	      }
             } /* end bad grid */
           } /* end place to grid */
-        } else if(StrEquals(token, "ICONFILL")) {
+        } else if (StrEquals(token, "ICONFILL")) {
 	  found = True;
 	  /* direction to fill iconbox */
           /* The fill always affects the prior iconbox */
@@ -1611,7 +1634,7 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'l':
-        if(StrEquals(token, "LENIENCE"))
+        if (StrEquals(token, "LENIENCE"))
         {
 	  found = True;
 	  SFSET_IS_LENIENT(*ptmpstyle, 1);
@@ -1640,7 +1663,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->change_mask.use_layer = 1;
 	  }
 	}
-        else if(StrEquals(token, "LOWERTRANSIENT"))
+        else if (StrEquals(token, "LOWERTRANSIENT"))
         {
 	  found = True;
 	  SFSET_DO_LOWER_TRANSIENT(*ptmpstyle, 1);
@@ -1650,7 +1673,7 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'm':
-        if(StrEquals(token, "MWMBUTTONS"))
+        if (StrEquals(token, "MWMBUTTONS"))
         {
 	  found = True;
 	  SFSET_HAS_MWM_BUTTONS(*ptmpstyle, 1);
@@ -1671,28 +1694,28 @@ void ProcessNewStyle(F_CMD_ARGS)
           }
         }
 #endif
-        else if(StrEquals(token, "MWMBORDER"))
+        else if (StrEquals(token, "MWMBORDER"))
         {
 	  found = True;
 	  SFSET_HAS_MWM_BORDER(*ptmpstyle, 1);
 	  SMSET_HAS_MWM_BORDER(*ptmpstyle, 1);
 	  SCSET_HAS_MWM_BORDER(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "MWMDECOR"))
+        else if (StrEquals(token, "MWMDECOR"))
         {
 	  found = True;
           ptmpstyle->flags.has_mwm_decor = 1;
           ptmpstyle->flag_mask.has_mwm_decor = 1;
           ptmpstyle->change_mask.has_mwm_decor = 1;
         }
-        else if(StrEquals(token, "MWMFUNCTIONS"))
+        else if (StrEquals(token, "MWMFUNCTIONS"))
         {
 	  found = True;
           ptmpstyle->flags.has_mwm_functions = 1;
           ptmpstyle->flag_mask.has_mwm_functions = 1;
           ptmpstyle->change_mask.has_mwm_functions = 1;
         }
-        else if(StrEquals(token, "MOUSEFOCUS"))
+        else if (StrEquals(token, "MOUSEFOCUS"))
         {
 	  found = True;
 	  SFSET_FOCUS_MODE(*ptmpstyle, FOCUS_MOUSE);
@@ -1702,21 +1725,21 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SMSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
 	  SCSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "MouseFocusClickRaises"))
+        else if (StrEquals(token, "MouseFocusClickRaises"))
         {
 	  found = True;
 	  SFSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
 	  SMSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
 	  SCSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "MouseFocusClickRaisesOff"))
+        else if (StrEquals(token, "MouseFocusClickRaisesOff"))
         {
 	  found = True;
 	  SFSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 0);
 	  SMSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
 	  SCSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "MAXWINDOWSIZE"))
+        else if (StrEquals(token, "MAXWINDOWSIZE"))
 	{
 	  int val1;
 	  int val2;
@@ -1754,91 +1777,91 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'n':
-	if(StrEquals(token, "NoActiveIconOverride"))
+	if (StrEquals(token, "NoActiveIconOverride"))
 	{
 	  found = True;
 	  ptmpstyle->flags.icon_override = NO_ACTIVE_ICON_OVERRIDE;
 	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
 	  ptmpstyle->change_mask.icon_override = ICON_OVERRIDE_MASK;
 	}
-	else if(StrEquals(token, "NoIconOverride"))
+	else if (StrEquals(token, "NoIconOverride"))
 	{
 	  found = True;
 	  ptmpstyle->flags.icon_override = NO_ICON_OVERRIDE;
 	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
 	  ptmpstyle->change_mask.icon_override = ICON_OVERRIDE_MASK;
 	}
-        else if(StrEquals(token, "NoIconTitle"))
+        else if (StrEquals(token, "NoIconTitle"))
         {
 	  found = True;
 	  SFSET_HAS_NO_ICON_TITLE(*ptmpstyle, 1);
 	  SMSET_HAS_NO_ICON_TITLE(*ptmpstyle, 1);
 	  SCSET_HAS_NO_ICON_TITLE(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "NOICON"))
+        else if (StrEquals(token, "NOICON"))
         {
 	  found = True;
 	  SFSET_IS_ICON_SUPPRESSED(*ptmpstyle, 1);
 	  SMSET_IS_ICON_SUPPRESSED(*ptmpstyle, 1);
 	  SCSET_IS_ICON_SUPPRESSED(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "NOTITLE"))
+        else if (StrEquals(token, "NOTITLE"))
         {
 	  found = True;
           ptmpstyle->flags.has_no_title = 1;
           ptmpstyle->flag_mask.has_no_title = 1;
           ptmpstyle->change_mask.has_no_title = 1;
         }
-        else if(StrEquals(token, "NoPPosition"))
+        else if (StrEquals(token, "NoPPosition"))
         {
 	  found = True;
           ptmpstyle->flags.use_no_pposition = 1;
           ptmpstyle->flag_mask.use_no_pposition = 1;
           ptmpstyle->change_mask.use_no_pposition = 1;
         }
-        else if(StrEquals(token, "NakedTransient"))
+        else if (StrEquals(token, "NakedTransient"))
         {
 	  found = True;
           ptmpstyle->flags.do_decorate_transient = 0;
           ptmpstyle->flag_mask.do_decorate_transient = 1;
           ptmpstyle->change_mask.do_decorate_transient = 1;
         }
-        else if(StrEquals(token, "NODECORHINT"))
+        else if (StrEquals(token, "NODECORHINT"))
         {
 	  found = True;
           ptmpstyle->flags.has_mwm_decor = 0;
           ptmpstyle->flag_mask.has_mwm_decor = 1;
           ptmpstyle->change_mask.has_mwm_decor = 1;
         }
-        else if(StrEquals(token, "NOFUNCHINT"))
+        else if (StrEquals(token, "NOFUNCHINT"))
         {
 	  found = True;
           ptmpstyle->flags.has_mwm_functions = 0;
           ptmpstyle->flag_mask.has_mwm_functions = 1;
           ptmpstyle->change_mask.has_mwm_functions = 1;
         }
-        else if(StrEquals(token, "NOOVERRIDE"))
+        else if (StrEquals(token, "NOOVERRIDE"))
         {
 	  found = True;
 	  SFSET_HAS_MWM_OVERRIDE(*ptmpstyle, 0);
 	  SMSET_HAS_MWM_OVERRIDE(*ptmpstyle, 1);
 	  SCSET_HAS_MWM_OVERRIDE(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "NORESIZEOVERRIDE"))
+        else if (StrEquals(token, "NORESIZEOVERRIDE"))
         {
 	  found = True;
 	  SFSET_HAS_OVERRIDE_SIZE(*ptmpstyle, 0);
 	  SMSET_HAS_OVERRIDE_SIZE(*ptmpstyle, 1);
 	  SCSET_HAS_OVERRIDE_SIZE(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "NOHANDLES"))
+        else if (StrEquals(token, "NOHANDLES"))
         {
 	  found = True;
           ptmpstyle->flags.has_no_border = 1;
           ptmpstyle->flag_mask.has_no_border = 1;
           ptmpstyle->change_mask.has_no_border = 1;
         }
-        else if(StrEquals(token, "NOLENIENCE"))
+        else if (StrEquals(token, "NOLENIENCE"))
         {
 	  found = True;
 	  SFSET_IS_LENIENT(*ptmpstyle, 0);
@@ -1858,14 +1881,14 @@ void ProcessNewStyle(F_CMD_ARGS)
             ptmpstyle->change_mask.is_button_disabled |= (1 << butt);
 	  }
         }
-        else if(StrEquals(token, "NOOLDECOR"))
+        else if (StrEquals(token, "NOOLDECOR"))
         {
 	  found = True;
           ptmpstyle->flags.has_ol_decor = 0;
           ptmpstyle->flag_mask.has_ol_decor = 1;
           ptmpstyle->change_mask.has_ol_decor = 1;
         }
-        else if(StrEquals(token, "NEVERFOCUS"))
+        else if (StrEquals(token, "NEVERFOCUS"))
         {
 	  found = True;
 	  SFSET_FOCUS_MODE(*ptmpstyle, FOCUS_NEVER);
@@ -1878,14 +1901,14 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'o':
-        if(StrEquals(token, "OLDECOR"))
+        if (StrEquals(token, "OLDECOR"))
         {
 	  found = True;
           ptmpstyle->flags.has_ol_decor = 1;
           ptmpstyle->flag_mask.has_ol_decor = 1;
           ptmpstyle->change_mask.has_ol_decor = 1;
         }
-        else if(StrEquals(token, "Opacity"))
+        else if (StrEquals(token, "Opacity"))
         {
           found = True;
 	  ptmpstyle->flags.use_parent_relative = 0;
@@ -1895,7 +1918,7 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'p':
-        if(StrEquals(token, "ParentalRelativity"))
+        if (StrEquals(token, "ParentalRelativity"))
         {
           found = True;
 	  ptmpstyle->flags.use_parent_relative = 1;
@@ -1908,49 +1931,49 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'r':
-        if(StrEquals(token, "RAISETRANSIENT"))
+        if (StrEquals(token, "RAISETRANSIENT"))
         {
 	  found = True;
 	  SFSET_DO_RAISE_TRANSIENT(*ptmpstyle, 1);
 	  SMSET_DO_RAISE_TRANSIENT(*ptmpstyle, 1);
 	  SCSET_DO_RAISE_TRANSIENT(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "RANDOMPLACEMENT"))
+        else if (StrEquals(token, "RANDOMPLACEMENT"))
         {
 	  found = True;
           ptmpstyle->flags.placement_mode |= PLACE_RANDOM;
           ptmpstyle->flag_mask.placement_mode |= PLACE_RANDOM;
           ptmpstyle->change_mask.placement_mode |= PLACE_RANDOM;
         }
-	else if(StrEquals(token, "RECAPTUREHONORSSTARTSONPAGE"))
+	else if (StrEquals(token, "RECAPTUREHONORSSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.recapture_honors_starts_on_page = 1;
 	  ptmpstyle->flag_mask.recapture_honors_starts_on_page = 1;
 	  ptmpstyle->change_mask.recapture_honors_starts_on_page = 1;
 	}
-	else if(StrEquals(token, "RECAPTUREIGNORESSTARTSONPAGE"))
+	else if (StrEquals(token, "RECAPTUREIGNORESSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.recapture_honors_starts_on_page = 0;
 	  ptmpstyle->flag_mask.recapture_honors_starts_on_page = 1;
 	  ptmpstyle->change_mask.recapture_honors_starts_on_page = 1;
 	}
-        else if(StrEquals(token, "RESIZEHINTOVERRIDE"))
+        else if (StrEquals(token, "RESIZEHINTOVERRIDE"))
         {
 	  found = True;
 	  SFSET_HAS_OVERRIDE_SIZE(*ptmpstyle, 1);
 	  SMSET_HAS_OVERRIDE_SIZE(*ptmpstyle, 1);
 	  SCSET_HAS_OVERRIDE_SIZE(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "ResizeOpaque"))
+        else if (StrEquals(token, "ResizeOpaque"))
         {
 	  found = True;
 	  SFSET_DO_RESIZE_OPAQUE(*ptmpstyle, 1);
 	  SMSET_DO_RESIZE_OPAQUE(*ptmpstyle, 1);
 	  SCSET_DO_RESIZE_OPAQUE(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "ResizeOutline"))
+        else if (StrEquals(token, "ResizeOutline"))
         {
 	  found = True;
 	  SFSET_DO_RESIZE_OPAQUE(*ptmpstyle, 0);
@@ -1960,49 +1983,49 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 's':
-        if(StrEquals(token, "SMARTPLACEMENT"))
+        if (StrEquals(token, "SMARTPLACEMENT"))
         {
 	  found = True;
           ptmpstyle->flags.placement_mode |= PLACE_SMART;
           ptmpstyle->flag_mask.placement_mode |= PLACE_SMART;
           ptmpstyle->change_mask.placement_mode |= PLACE_SMART;
         }
-        else if(StrEquals(token, "SkipMapping"))
+        else if (StrEquals(token, "SkipMapping"))
         {
 	  found = True;
 	  SFSET_DO_NOT_SHOW_ON_MAP(*ptmpstyle, 1);
 	  SMSET_DO_NOT_SHOW_ON_MAP(*ptmpstyle, 1);
 	  SCSET_DO_NOT_SHOW_ON_MAP(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "ShowMapping"))
+        else if (StrEquals(token, "ShowMapping"))
         {
 	  found = True;
 	  SFSET_DO_NOT_SHOW_ON_MAP(*ptmpstyle, 0);
 	  SMSET_DO_NOT_SHOW_ON_MAP(*ptmpstyle, 1);
 	  SCSET_DO_NOT_SHOW_ON_MAP(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "StackTransientParent"))
+        else if (StrEquals(token, "StackTransientParent"))
         {
 	  found = True;
 	  SFSET_DO_STACK_TRANSIENT_PARENT(*ptmpstyle, 1);
 	  SMSET_DO_STACK_TRANSIENT_PARENT(*ptmpstyle, 1);
 	  SCSET_DO_STACK_TRANSIENT_PARENT(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "StickyIcon"))
+        else if (StrEquals(token, "StickyIcon"))
         {
 	  found = True;
 	  SFSET_IS_ICON_STICKY(*ptmpstyle, 1);
 	  SMSET_IS_ICON_STICKY(*ptmpstyle, 1);
 	  SCSET_IS_ICON_STICKY(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "SlipperyIcon"))
+        else if (StrEquals(token, "SlipperyIcon"))
         {
 	  found = True;
 	  SFSET_IS_ICON_STICKY(*ptmpstyle, 0);
 	  SMSET_IS_ICON_STICKY(*ptmpstyle, 1);
 	  SCSET_IS_ICON_STICKY(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "SLOPPYFOCUS"))
+        else if (StrEquals(token, "SLOPPYFOCUS"))
         {
 	  found = True;
 	  SFSET_FOCUS_MODE(*ptmpstyle, FOCUS_SLOPPY);
@@ -2012,21 +2035,21 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SMSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
 	  SCSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "StartIconic"))
+        else if (StrEquals(token, "StartIconic"))
         {
 	  found = True;
 	  SFSET_DO_START_ICONIC(*ptmpstyle, 1);
 	  SMSET_DO_START_ICONIC(*ptmpstyle, 1);
 	  SCSET_DO_START_ICONIC(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "StartNormal"))
+        else if (StrEquals(token, "StartNormal"))
         {
 	  found = True;
 	  SFSET_DO_START_ICONIC(*ptmpstyle, 0);
 	  SMSET_DO_START_ICONIC(*ptmpstyle, 1);
 	  SCSET_DO_START_ICONIC(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "StaysOnBottom"))
+        else if (StrEquals(token, "StaysOnBottom"))
         {
 	  found = True;
 	  SSET_LAYER(*ptmpstyle, Scr.BottomLayer);
@@ -2034,7 +2057,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->flag_mask.use_layer = 1;
 	  ptmpstyle->change_mask.use_layer = 1;
         }
-        else if(StrEquals(token, "StaysOnTop"))
+        else if (StrEquals(token, "StaysOnTop"))
         {
 	  found = True;
 	  SSET_LAYER(*ptmpstyle, Scr.TopLayer);
@@ -2042,7 +2065,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->flag_mask.use_layer = 1;
 	  ptmpstyle->change_mask.use_layer = 1;
         }
-        else if(StrEquals(token, "StaysPut"))
+        else if (StrEquals(token, "StaysPut"))
         {
 	  found = True;
 	  SSET_LAYER(*ptmpstyle, Scr.DefaultLayer);
@@ -2050,21 +2073,21 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->flag_mask.use_layer = 1;
 	  ptmpstyle->change_mask.use_layer = 1;
         }
-        else if(StrEquals(token, "Sticky"))
+        else if (StrEquals(token, "Sticky"))
         {
 	  found = True;
 	  SFSET_IS_STICKY(*ptmpstyle, 1);
 	  SMSET_IS_STICKY(*ptmpstyle, 1);
 	  SCSET_IS_STICKY(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "Slippery"))
+        else if (StrEquals(token, "Slippery"))
         {
 	  found = True;
 	  SFSET_IS_STICKY(*ptmpstyle, 0);
 	  SMSET_IS_STICKY(*ptmpstyle, 1);
 	  SCSET_IS_STICKY(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "STARTSONDESK"))
+        else if (StrEquals(token, "STARTSONDESK"))
         {
 	  found = True;
 	  /*  RBW - 11/02/1998  */
@@ -2088,7 +2111,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	/*  RBW - 11/02/1998
 	 *  StartsOnPage is like StartsOnDesk-Plus
 	 */
-	else if(StrEquals(token, "STARTSONPAGE"))
+	else if (StrEquals(token, "STARTSONPAGE"))
 	{
 	  found = True;
 	  spargs = GetIntegerArguments(rest, NULL, tmpno, 3);
@@ -2130,14 +2153,14 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->change_mask.use_start_on_desk = 1;
 	  }
 	}
-	else if(StrEquals(token, "STARTSONPAGEINCLUDESTRANSIENTS"))
+	else if (StrEquals(token, "STARTSONPAGEINCLUDESTRANSIENTS"))
 	{
 	  found = True;
 	  ptmpstyle->flags.use_start_on_page_for_transient = 1;
 	  ptmpstyle->flag_mask.use_start_on_page_for_transient = 1;
 	  ptmpstyle->change_mask.use_start_on_page_for_transient = 1;
 	}
-	else if(StrEquals(token, "STARTSONPAGEIGNORESTRANSIENTS"))
+	else if (StrEquals(token, "STARTSONPAGEIGNORESTRANSIENTS"))
 	{
 	  found = True;
 	  ptmpstyle->flags.use_start_on_page_for_transient = 0;
@@ -2145,7 +2168,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->change_mask.use_start_on_page_for_transient = 1;
 	}
 	/**/
-	else if(StrEquals(token, "STARTSANYWHERE"))
+	else if (StrEquals(token, "STARTSANYWHERE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.use_start_on_desk = 0;
@@ -2166,28 +2189,28 @@ void ProcessNewStyle(F_CMD_ARGS)
           ptmpstyle->flag_mask.do_start_lowered = 1;
           ptmpstyle->change_mask.do_start_lowered = 1;
         }
-        else if(StrEquals(token, "SaveUnder"))
+        else if (StrEquals(token, "SaveUnder"))
         {
           found = True;
 	  ptmpstyle->flags.do_save_under = 1;
 	  ptmpstyle->flag_mask.do_save_under = 1;
 	  ptmpstyle->change_mask.do_save_under = 1;
         }
-        else if(StrEquals(token, "SaveUnderOff"))
+        else if (StrEquals(token, "SaveUnderOff"))
         {
           found = True;
 	  ptmpstyle->flags.do_save_under = 0;
 	  ptmpstyle->flag_mask.do_save_under = 1;
 	  ptmpstyle->change_mask.do_save_under = 1;
         }
-	else if(StrEquals(token, "StippledTitle"))
+	else if (StrEquals(token, "StippledTitle"))
 	{
 	  found = True;
 	  SFSET_HAS_STIPPLED_TITLE(*ptmpstyle, 1);
 	  SMSET_HAS_STIPPLED_TITLE(*ptmpstyle, 1);
 	  SCSET_HAS_STIPPLED_TITLE(*ptmpstyle, 1);
 	}
-	else if(StrEquals(token, "StippledTitleOff"))
+	else if (StrEquals(token, "StippledTitleOff"))
 	{
 	  found = True;
 	  SFSET_HAS_STIPPLED_TITLE(*ptmpstyle, 0);
@@ -2197,21 +2220,21 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 't':
-        if(StrEquals(token, "Title"))
+        if (StrEquals(token, "Title"))
         {
 	  found = True;
           ptmpstyle->flags.has_no_title = 0;
           ptmpstyle->flag_mask.has_no_title = 1;
           ptmpstyle->change_mask.has_no_title = 1;
         }
-	else if(StrEquals(token, "TitleAtBottom"))
+	else if (StrEquals(token, "TitleAtBottom"))
         {
 	  found = True;
 	  SFSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
 	  SMSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
 	  SCSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "TitleAtTop"))
+        else if (StrEquals(token, "TitleAtTop"))
         {
 	  found = True;
 	  SFSET_HAS_BOTTOM_TITLE(*ptmpstyle, 0);
@@ -2221,7 +2244,7 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'u':
-        if(StrEquals(token, "UsePPosition"))
+        if (StrEquals(token, "UsePPosition"))
         {
 	  found = True;
           ptmpstyle->flags.use_no_pposition = 0;
@@ -2229,7 +2252,7 @@ void ProcessNewStyle(F_CMD_ARGS)
           ptmpstyle->change_mask.use_no_pposition = 1;
         }
 #ifdef USEDECOR
-        if(StrEquals(token, "UseDecor"))
+        if (StrEquals(token, "UseDecor"))
         {
 	  found = True;
 	  SAFEFREE(SGET_DECOR_NAME(*ptmpstyle));
@@ -2240,7 +2263,7 @@ void ProcessNewStyle(F_CMD_ARGS)
           ptmpstyle->change_mask.has_decor = 1;
         }
 #endif
-        else if(StrEquals(token, "UseStyle"))
+        else if (StrEquals(token, "UseStyle"))
         {
 	  found = True;
 	  token = PeekToken(rest, &rest);
@@ -2269,7 +2292,7 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'v':
-        if(StrEquals(token, "VariablePosition"))
+        if (StrEquals(token, "VariablePosition"))
 	  {
 	    found = True;
 	    SFSET_IS_FIXED(*ptmpstyle, 0);
@@ -2279,21 +2302,21 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'w':
-        if(StrEquals(token, "WindowListSkip"))
+        if (StrEquals(token, "WindowListSkip"))
         {
 	  found = True;
 	  SFSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 1);
 	  SMSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 1);
 	  SCSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 1);
         }
-        else if(StrEquals(token, "WindowListHit"))
+        else if (StrEquals(token, "WindowListHit"))
         {
 	  found = True;
 	  SFSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 0);
 	  SMSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 1);
 	  SCSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 1);
         }
-	else if(StrEquals(token, "WindowShadeSteps"))
+	else if (StrEquals(token, "WindowShadeSteps"))
         {
           int n = 0;
           int val = 0;
@@ -2313,14 +2336,14 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->change_mask.has_window_shade_steps = 1;
           SSET_WINDOW_SHADE_STEPS(*ptmpstyle, val);
         }
-	else if(StrEquals(token, "WindowShadeScrolls"))
+	else if (StrEquals(token, "WindowShadeScrolls"))
 	{
 	  found = True;
 	  SFSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 0);
 	  SMSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
 	  SCSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
 	}
-	else if(StrEquals(token, "WindowShadeShrinks"))
+	else if (StrEquals(token, "WindowShadeShrinks"))
 	{
 	  found = True;
 	  SFSET_DO_SHRINK_WINDOWSHADE(*ptmpstyle, 1);
@@ -2360,7 +2383,7 @@ void ProcessNewStyle(F_CMD_ARGS)
   } /* end while still stuff on command */
 
   /* capture default icons */
-  if(StrEquals(SGET_NAME(*ptmpstyle), "*"))
+  if (StrEquals(SGET_NAME(*ptmpstyle), "*"))
   {
     if(ptmpstyle->flags.has_icon == 1)
     {

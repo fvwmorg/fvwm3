@@ -1,3 +1,30 @@
+2000-09-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1:
+	* fvwm/style.c (ProcessNewStyle):
+	(lookup_style):
+	* fvwm/gnome.c (GNOME_GetHints):
+	(GNOME_ProcessClientMessage):
+	(GNOME_HandlePropRequest):
+	implemented and documented GNOMEIgnoreHints and GNOMEUseHints styles
+
+	* fvwm/gnome.c (GNOME_GetHintIcons):
+	(GNOME_GetHintLayer):
+	(GNOME_GetHintState):
+	(GNOME_GetHintAppState):
+	(GNOME_GetHintDesktop):
+	(GNOME_GetHint):
+	(GNOME_GetExpandedSize):
+	made static
+
+	* fvwm/fvwm2.1:
+	fixed typo
+
+	* fvwm/style.h:
+	* fvwm/window_flags.h (DO_IGNORE_GNOME_HINTS):
+	* fvwm/fvwm.h (struct):
+	new window flag do_ignore_gnome_hints
+
 2000-09-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/gnome.c (GNOME_HandlePropRequest):
@@ -15,7 +42,6 @@
 	DestroyModuleConfig now supports a non conflicting syntax too,
 	no globing in alias is allowed. DestroyModuleConfig FvwmPager: Geomet*
 
->>>>>>> 1.999
 2000-09-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/stack.c (raise_over_unmanaged):

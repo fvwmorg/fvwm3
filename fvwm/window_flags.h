@@ -148,6 +148,8 @@
                                ((fw)->flags.common.s.has_mwm_override)
 #define HAS_OVERRIDE_SIZE_HINTS(fw)  \
                                ((fw)->flags.common.s.has_override_size)
+#define DO_IGNORE_GNOME_HINTS(fw)  \
+                               ((fw)->flags.common.s.do_ignore_gnome_hints)
 #define DO_IGNORE_RESTACK(fw)  \
                                ((fw)->flags.common.s.do_ignore_restack)
 #define IS_FIXED(fw)  \
