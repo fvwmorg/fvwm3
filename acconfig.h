@@ -1,9 +1,5 @@
 /** Compatibility stuff **/
 
-/* Defined by automake: the package and version strings.  */
-#undef PACKAGE
-#undef VERSION
-
 /* Where to search for the fvwm icons.  */
 #undef FVWM_ICONDIR
 

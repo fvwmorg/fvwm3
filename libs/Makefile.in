@@ -92,7 +92,7 @@ libfvwm_a_SOURCES = ClientMsg.c GetFont.c Grab.c ModParse.c ModParse.h 	Module.c
 
 libfvwm_a_LIBADD = @LIBOBJS@
 
-INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 

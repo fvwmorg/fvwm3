@@ -10,5 +10,5 @@ libfvwm_a_SOURCES = ClientMsg.c GetFont.c Grab.c ModParse.c ModParse.h \
 
 libfvwm_a_LIBADD = @LIBOBJS@
 
-INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 

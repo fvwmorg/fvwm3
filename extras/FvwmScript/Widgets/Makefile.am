@@ -7,5 +7,5 @@ libWidgets_a_SOURCES = CheckBox.c HDipstick.c HScrollBar.c ItemDraw.c \
 	RadioButton.c Rectangle.c Swallow.c TextField.c Tools.c \
 	Tools.h VDipstick.c VScrollBar.c Widget.c
 
-INCLUDES = -I$(top_srcdir)/libs $(X_CFLAGS) $(xpm_CFLAGS)
+INCLUDES = -I$(top_srcdir)/libs $(xpm_CFLAGS) $(X_CFLAGS)
 

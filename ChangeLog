@@ -1,3 +1,13 @@
+1999-01-19  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* configure.in: 
+	* */Makefile.am: Make sure xpm_CFLAGS preceeds X_CFLAGS, so that
+	the include directory for xpm-includes is searched ahead of the
+	system's X11 include directory.
+
+	* acconfig.h: Removed #undefs for VERSION & PACKAGE; autoheader
+	from autoconf 1.13 now generates them automatically.
+
 1999-01-19  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/menus.c (MenuInteraction): fixed keyboard shortcut bug
