@@ -1,0 +1,95 @@
+	Fvwm Logo Competition Rules
+	---------------------------
+
+*** DRAFT ***
+
+!!!
+(give a short explanation what fvwm is and why it needs a new
+logo)
+
+1. Competition Schedule
+
+* The logo competition begins on 15th of April, 2003.
+* Contributions can be made up to and including the 31st of July.
+* From the 3rd of August to the 30th of August, the winning logo
+  will be elected by the fvwm users on the fvwm mailing list.
+* The winner will be proclaimed on the 31st of August.
+
+2. Logos
+
+* Logos can be submitted in either XPM or PNG format.  All other
+  formats, including .jpg and .gif are not accepted.
+* The acceptable size of the logos is about between 240x150 pixels
+  to 360x240 pixels.
+* No more than 256 colours may be used.
+* Transparency should be used to shape the image.
+* As the winning logo is used as a banner, it should have a good
+  contrast to any background.
+* The submitted logos will be used at full size, scaled down to
+  half size, and to a height of 16 pixels.
+* The submitted logos will be converted to use no more than 16
+  colours when packed into the fvwm distribution and should still
+  look good.
+* A version using only black and white will also be part of the
+  distribution, so it must be possible to still recognize the logo
+  with only two colours.
+* The name "fvwm" must appear in the logo, without a version
+  number (i.e. *not* as "fvwm2").
+
+3. Contributing
+
+* Everybody may participate in the competition with any number of
+  contributions.
+* Logos can be submitted by
+  A. Posting the URL of the logo to fvwm@fvwm.org.
+  B. Uploading the logo to ftp://ftp.fvwm.org/pub/incoming/fvwm/
+     and sending a mail to inform the fvwm@fvwm.org list of the
+     upload.
+  C. Sending the logo as an *aggressively compressed* attachment,
+     no larger than 20kB to fvwm@fvwm.org.  Due to the possible
+     number of contributions, larger files are *not* acceptable.
+* For our convenience, please use the subject "[logo]" when you
+  send a mail to fvwm@fvwm.org.
+* The contributed logos will be exhibited on the logo web page:
+  http://!!!
+  in the three sizes mentioned above, with full colour and with 16
+  colours.
+* Logos with illegal, discriminating or otherwise offensive
+  contents, at the discretion of the fvwm developers, will not be
+  accepted.
+
+4. Copyrights and License
+
+* The artist retains full copyright of his or her work.
+* By submitting a logo to the competition, the artist accepts that
+  the logo is converted into XPM format (if necessary) and
+  distributed under the terms of the Gnu General Public License
+  (GPL).  !!!Link to GPL.
+
+5. Voting Rules
+
+* In the election phase, votes are sent to fvwm-workers@fvwm.org.
+* Everybody may vote only only once.
+* You can give one or no votes for any number of logos. The voting
+  email should contain a list of logos for which you vote.  Give a
+  vote for each logo you would enjoy to see as the official fvwm
+  logo.
+* The logo with the most votes wins.
+* The above voting mode is meant to determine the logo that is
+  accepted by the broadest range of users and not disliked strogly
+  by a large fraction of fvwm users.
+* Although everybody may count the votes sent to the fvwm-workers
+  mailing list, the current standings of the election will only be
+  published when the polls are closed.
+
+6. The winner
+
+* The winning logo will be shipped with the fvwm distribution
+  (hopefully in 2.6.0) and used as:
+
+  - A startup banner with the FvwmBanner module at full size.
+  - As a banner on the fvwm web site at full or half size.
+  - At tiny size, rotated 90 degrees counterclockwise as a menu
+    side bar.
+
+!!!prize?

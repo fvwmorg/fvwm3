@@ -8772,10 +8772,10 @@ default icon box too.  Any number that is zero or more is taken as
 the primary screen's number.  Instead, the letter 'c' indicates to
 use the current screen (containing the pointer) whenever the
 primary screen is used.  This may be very confusing under some
-circumstances.  With
-\'g', the global screen is used as the primary screen, effectively
-disabling the primary screen.  Calling this function with any
-other argument (including none) resets the primary screen to 0.
+circumstances.  With \'g', the global screen is used as the primary
+screen, effectively disabling the primary screen.  Calling this
+function with any other argument (including none) resets the
+primary screen to 0.
 
 .TP
 .BI "XineramaSls [" bool "]"
