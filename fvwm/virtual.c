@@ -670,8 +670,14 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   switch_move_resize_grid(False);
   XWarpPointer(dpy,None,Scr.Root,0,0,0,0,*xl,*yt);
   MoveViewport(Scr.Vx + *delta_x,Scr.Vy + *delta_y,False);
-  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		xl, yt, &JunkX, &JunkY, &JunkMask);
+  if (XQueryPointer(
+	dpy, Scr.Root, &JunkRoot, &JunkChild, xl, yt, &JunkX, &JunkY,
+	&JunkMask) == False)
+  {
+    /* pointer is on a different screen */
+    *xl = 0;
+    *yt = 0;
+  }
   if(Grab)
     MyXUngrabServer(dpy);
 
@@ -1687,5 +1693,5 @@ char *GetDesktopName(int desk)
   if (d == NULL)
     return NULL;
   else
-    return d->name; 
+    return d->name;
 }

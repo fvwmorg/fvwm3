@@ -626,20 +626,34 @@ void ExecuteModuleCommand(Window w, int module, char *text)
   /* Query the pointer, the pager-drag-out feature doesn't work properly.*/
   /* This is OK now that the Pager uses "Move pointer" */
   /* A real fix would be for the modules to pass the button press coords */
-  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
-		&Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask);
+  if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
+		    &Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask) ==
+      False)
+  {
+    /* pointer is not on this screen */
+    /* If a module does XUngrabPointer(), it can now get proper Popups */
+    Event.xbutton.window = Scr.Root;
+    Event.xbutton.button = 1;
+    Event.xbutton.subwindow = None;
+    tmp_win = NULL;
+    ButtonWindow = NULL;
+  }
+  else
+  {
+    Event.xbutton.window = w;
+    Event.xbutton.button = 1;
+    Event.xbutton.subwindow = None;
+    Context = GetContext(tmp_win,&Event,&w);
+    ButtonWindow = tmp_win;
+  }
   /* If a module does XUngrabPointer(), it can now get proper Popups */
   if(StrEquals(text, "popup"))
     Event.xbutton.type = ButtonPress;
   else
     Event.xbutton.type = ButtonRelease;
-  Event.xbutton.window = w;
-  Event.xbutton.button = 1;
   Event.xbutton.x = 0;
   Event.xbutton.y = 0;
-  Event.xbutton.subwindow = None;
   Context = GetContext(tmp_win,&Event,&w);
-  ButtonWindow = tmp_win;
   old_execute_function(text, tmp_win, &Event, Context, module, 0, NULL);
   ButtonWindow = NULL;
 }

@@ -310,19 +310,22 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
   /*We moved beyond the halo, now change the cursor.  Handles the
     typelist greater than three n = array_length (typelist); */
   if (XGrabPointer(ds->display, ds->rootWindow, False,
-		    ButtonMotionMask | PointerMotionMask | ButtonPressMask
-		    | ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None,
+		   ButtonMotionMask | PointerMotionMask | ButtonPressMask
+		   | ButtonReleaseMask, GrabModeAsync, GrabModeAsync, None,
 		   cursorPtr->cursor, CurrentTime) != GrabSuccess) {
 
   }
 
-  /*Main Drag loop.  trackWindow is the current window the pointer is over.  Note
+  /*Main Drag loop.  trackWindow is the current window the pointer is over. Note
     that the actual client window of the top level widget of the application is
     *not* trackWindow, but is actually one of the children of trackWindow. */
-  XQueryPointer (ds->display, XDefaultRootWindow(ds->display),
-			      &root_return, &child_return, &xev.xmotion.x_root,
-			      &xev.xmotion.y_root, &xev.xmotion.x,
-			      &xev.xmotion.y, &mask_return);
+  if (XQueryPointer(
+	ds->display, XDefaultRootWindow(ds->display), &root_return,
+	&child_return, &xev.xmotion.x_root, &xev.xmotion.y_root,
+	&xev.xmotion.x, &xev.xmotion.y, &mask_return) == False)
+  {
+    /* pointer is on a different screen - that's okay here */
+  }
   trackWindow = child_return;
 
   while (!doneDrag) {

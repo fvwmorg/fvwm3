@@ -25,32 +25,40 @@
  * if possible, if not it queries the X server. Returns False if it had to
  * query the server and the call failed.
  */
-Bool GetLocationFromEventOrQuery(Display *dpy, Window w, XEvent *eventp,
-				 int *ret_x, int *ret_y)
+Bool GetLocationFromEventOrQuery(
+	Display *dpy, Window w, XEvent *eventp, int *ret_x, int *ret_y)
 {
-  Window JunkW;
-  int JunkC;
-  unsigned int JunkM;
+	Window JunkW;
+	int JunkC;
+	unsigned int JunkM;
+	Bool rc;
 
-  switch (eventp->type)
-  {
-  case ButtonPress:
-  case ButtonRelease:
-    *ret_x = eventp->xbutton.x_root;
-    *ret_y = eventp->xbutton.y_root;
-    return True;
-  case KeyPress:
-  case KeyRelease:
-    *ret_x = eventp->xkey.x_root;
-    *ret_y = eventp->xkey.y_root;
-    return True;
-  case MotionNotify:
-    *ret_x = eventp->xmotion.x_root;
-    *ret_y = eventp->xmotion.y_root;
-    return True;
-  default:
-    return XQueryPointer(
-      dpy, w, &JunkW, &JunkW, ret_x, ret_y, &JunkC, &JunkC, &JunkM);
-  } /* switch */
-
+	switch (eventp->type)
+	{
+	case ButtonPress:
+	case ButtonRelease:
+		*ret_x = eventp->xbutton.x_root;
+		*ret_y = eventp->xbutton.y_root;
+		return True;
+	case KeyPress:
+	case KeyRelease:
+		*ret_x = eventp->xkey.x_root;
+		*ret_y = eventp->xkey.y_root;
+		return True;
+	case MotionNotify:
+		*ret_x = eventp->xmotion.x_root;
+		*ret_y = eventp->xmotion.y_root;
+		return True;
+	default:
+		rc = XQueryPointer(
+			dpy, w, &JunkW, &JunkW, ret_x, ret_y, &JunkC, &JunkC,
+			&JunkM);
+		if (rc == False)
+		{
+			/* pointer is on a different screen */
+			*ret_x = 0;
+			*ret_y = 0;
+		}
+		return rc;
+	} /* switch */
 }

@@ -510,6 +510,7 @@ void list_end(void)
     if (!XQueryPointer(
 	  dpy, Root, &JunkW, &JunkW, &x, &y, &JunkC, &JunkC, &JunkM))
     {
+      /* pointer is on a different screen */
       x = 0;
       y = 0;
     }

@@ -824,10 +824,15 @@ void HandleClientMessage(void)
       (Tmp_win)&&(Event.xclient.data.l[0]==IconicState)&&
       !IS_ICONIFIED(Tmp_win))
   {
-    XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-                   &(button.xmotion.x_root),
-                   &(button.xmotion.y_root),
-                   &JunkX, &JunkY, &JunkMask);
+    if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		      &(button.xmotion.x_root),
+		      &(button.xmotion.y_root),
+		      &JunkX, &JunkY, &JunkMask) == False)
+    {
+      /* pointer is on a different screen */
+      button.xmotion.x_root = 0;
+      button.xmotion.y_root = 0;
+    }
     button.type = 0;
     old_execute_function("Iconify", Tmp_win, &button, C_FRAME, -1, 0, NULL);
     return;
@@ -3107,6 +3112,7 @@ void CoerceEnterNotifyOnCurrentWindow(void)
   int win_x, win_y;
   Bool f = XQueryPointer(dpy, Scr.Root, &root,
                          &child, &root_x, &root_y, &win_x, &win_y, &JunkMask);
+
   if (f && child != None) {
     Event.xany.window = child;
     if (XFindContext(dpy, child, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
@@ -3209,8 +3215,11 @@ void WaitForButtonsUp(Bool do_handle_expose)
     {
       /* although this should never happen, a bit of additional safety does not
        * hurt. */
-      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
-		    &JunkX, &JunkY, &mask);
+      if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
+			&JunkX, &JunkY, &mask) == False)
+      {
+	/* pointer is on a different screen - that's okay here */
+      }
     }
   }
   MyXUngrabServer(dpy);

@@ -116,7 +116,7 @@ void DrawPopupMenu(struct XObj *xobj)
   int x,y;
   int asc,desc,dir;
   XCharStruct struc;
-  
+
   XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
   DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
 
@@ -149,7 +149,7 @@ void DrawPopupMenu(struct XObj *xobj)
   segm[1].y2 = 5 + asc;
   XSetForeground(dpy, xobj->gc, xobj->TabColor[hili]);
   XDrawSegments(dpy, xobj->win, xobj->gc, segm, 2);
-  
+
   /* Dessin du titre du popup menu */
   str = (char*)GetMenuTitle(xobj->title, xobj->value);
   y = asc + 5;
@@ -158,7 +158,7 @@ void DrawPopupMenu(struct XObj *xobj)
 		       25,8,8);
   DrawString(dpy, xobj, xobj->win, x, y, str, strlen(str), fore, hili, back,
 	     !xobj->flags[1]);
-  
+
   free(str);
 }
 
@@ -202,7 +202,7 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   Attr.border_pixel = 0;
   mask |= CWBorderPixel;
   Attr.colormap = Pcmap;
-  mask |= CWColormap; 
+  mask |= CWColormap;
   Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
   mask |= CWCursor;		/* Curseur pour la fenetre / Window cursor */
   Attr.override_redirect = True;
@@ -218,7 +218,7 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   /* Dessin du menu / Drawing the menu */
   DrawPMenu(xobj, WinPop, hOpt, 0);
   XGrabPointer(dpy, WinPop, True, GRAB_EVMASK, GrabModeAsync, GrabModeAsync,
-	       Root, None, CurrentTime);
+	       None, None, CurrentTime);
   if (EvtButton == NULL) {
     while_mask = ButtonPress;
   }
@@ -273,7 +273,7 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
       if (start_time != 0 && event.xbutton.time - start_time < MENU_DRAG_TIME) {
 	while_mask = ButtonPress;
 	start_time = 0;
-      }  
+      }
       if (while_mask == ButtonRelease)
 	End = 0;
       break;
@@ -319,10 +319,10 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
 
 
 void EvtKeyPopupMenu(struct XObj *xobj, XKeyEvent *EvtKey)
-{  
+{
   KeySym ks;
   unsigned char buf[10];
-  
+
   XLookupString(EvtKey, (char *)buf, sizeof(buf), &ks, NULL);
   if (ks == XK_Return) {
     EvtMousePopupMenu(xobj, NULL);

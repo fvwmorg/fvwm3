@@ -351,13 +351,19 @@ int main(int argc, char **argv)
 #endif
   ParseOptions();
   if (is_transient)
+  {
+    if (XQueryPointer(
+	  dpy, Scr.Root, &JunkRoot, &JunkChild, &window_x, &window_y, &JunkX,
+	  &JunkY, &JunkMask) == False)
     {
-      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		    &window_x, &window_y, &JunkX, &JunkY, &JunkMask);
-      usposition = 1;
-      xneg = 0;
-      yneg = 0;
+      /* pointer is on a different screen */
+      window_x = 0;
+      window_y = 0;
     }
+    usposition = 1;
+    xneg = 0;
+    yneg = 0;
+  }
 #ifdef DEBUG
   fprintf(stderr,
 	  "[main]: back from calling ParseOptions, calling init pager\n");

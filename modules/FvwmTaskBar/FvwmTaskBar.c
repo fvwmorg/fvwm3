@@ -1223,8 +1223,13 @@ DoAlarmAction(void)
       /* We are now "sure" that the TaskBar is not hidden for the
 	 Event loop. We send a motion notify for activating tips */
       WindowState = 1;
-      XQueryPointer(dpy, win, &dummy_rt,&dummy_c, &abs_x, &abs_y,
-		    &pos_x, &pos_y, &dummy);
+      if (XQueryPointer(dpy, win, &dummy_rt,&dummy_c, &abs_x, &abs_y,
+			&pos_x, &pos_y, &dummy) == False)
+      {
+	/* pointer is on a different screen */
+	abs_x = 0;
+	abs_y = 0;
+      }
       sevent.xmotion.x = pos_x;
       sevent.xmotion.y = pos_y;
       sevent.xany.type = MotionNotify;
@@ -2203,8 +2208,11 @@ void HideTaskBar()
 
   if (FocusInWin)
   {
-    XQueryPointer(dpy, win, &d_rt,&d_ch, &d_x, &d_y,
-		  &wx, &wy, &mask);
+    if (XQueryPointer(
+		dpy, win, &d_rt,&d_ch, &d_x, &d_y, &wx, &wy, &mask) == False)
+    {
+      /* pointer is on a different screen - that's okay here */
+    }
     if (wy >= -(win_border + win_title_height*(1-win_has_bottom_title)) &&
 	wy < win_height + win_border +
 	win_title_height*win_has_bottom_title)

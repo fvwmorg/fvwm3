@@ -1,3 +1,22 @@
+2001-12-31  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmWinList/FvwmWinList.c (LoopOnEvents):
+	(MakeMeWindow):
+	* FvwmWharf/FvwmWharf.c (Loop):
+	* FvwmTaskBar/FvwmTaskBar.c (DoAlarmAction):
+	(HideTaskBar):
+	* FvwmPager/x_pager.c (DispatchEvent):
+	(IconMoveWindow):
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmIdent/FvwmIdent.c (list_end):
+	* FvwmIconMan/x.c (X_init_manager):
+	* FvwmDragWell/xdndDragSource.c:
+	handle return code of XQueryPointer everywhere; necessary for dual head
+
+	* FvwmScript/Widgets/PopupMenu.c (EvtMousePopupMenu):
+	* FvwmScript/Widgets/Menu.c (EvtMouseMenu):
+	Pointer was warped to other screen with a dual head setup
+
 2001-12-30  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmPager/x_pager.c (initialize_pager): Some cleanup of font handling.

@@ -228,8 +228,12 @@ static int GetOnePositionArgument(
     int x = 0;
     int y = 0;
 
-    XQueryPointer(
-      dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &x, &y, &JunkMask);
+    if (XQueryPointer(
+	  dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &x, &y,
+	  &JunkMask) == False)
+    {
+      /* pointer is on a different screen - that's okay here */
+    }
     *pFinalX += (is_x) ? x : y;
   }
 
@@ -761,9 +765,14 @@ static void InteractiveMove(
 
   if (do_start_at_pointer)
   {
-    XQueryPointer(
-      dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX, &DragY, &JunkX, &JunkY,
-      &JunkMask);
+    if (XQueryPointer(
+	  dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX, &DragY, &JunkX, &JunkY,
+	  &JunkMask) == False)
+    {
+      /* pointer is on a different screen */
+      DragX = 0;
+      DragY = 0;
+    }
   }
   else
   {
@@ -902,8 +911,12 @@ static void AnimatedMoveAnyWindow(
     XMoveWindow(dpy,w,currentX,currentY);
     if (fWarpPointerToo == True)
     {
-      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		    &JunkX,&JunkY,&pointerX,&pointerY,&JunkMask);
+      if (XQueryPointer(
+	    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &pointerX,
+	    &pointerY,&JunkMask) == False)
+      {
+	/* pointer is on a different screen - that's okay here */
+      }
       pointerX += currentX - lastX;
       pointerY += currentY - lastY;
       XWarpPointer(dpy,None,Scr.Root,0,0,0,0,
@@ -1627,8 +1640,13 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   /* prevent flicker when paging */
   SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, do_move_opaque);
 
-  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
-                &JunkX, &JunkY, &button_mask);
+  if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &xl, &yt,
+		    &JunkX, &JunkY, &button_mask) == False)
+  {
+    /* pointer is on a different screen */
+    xl = 0;
+    yt = 0;
+  }
   button_mask &= DEFAULT_ALL_BUTTONS_MASK;
   xl += XOffset;
   yt += YOffset;
@@ -2270,8 +2288,12 @@ void CMD_Resize(F_CMD_ARGS)
     return;
 
   ResizeWindow = tmp_win->frame;
-  XQueryPointer( dpy, ResizeWindow, &JunkRoot, &JunkChild,
-		 &JunkX, &JunkY, &px, &py, &button_mask);
+  if (XQueryPointer(
+	dpy, ResizeWindow, &JunkRoot, &JunkChild, &JunkX, &JunkY, &px, &py,
+	&button_mask) == False)
+  {
+    /* pointer is on a different screen - that's okay here */
+  }
   button_mask &= DEFAULT_ALL_BUTTONS_MASK;
 
   if (!check_if_function_allowed(F_RESIZE, tmp_win, True, NULL))
@@ -2555,8 +2577,14 @@ void CMD_Resize(F_CMD_ARGS)
    * press */
   if (eventp->type == KeyPress)
   {
-    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		  &stashed_x,&stashed_y,&JunkX, &JunkY, &JunkMask);
+    if (XQueryPointer(
+	  dpy, Scr.Root, &JunkRoot, &JunkChild, &stashed_x, &stashed_y, &JunkX,
+	  &JunkY, &JunkMask) == False)
+    {
+      /* pointer is on a different screen */
+      stashed_x = 0;
+      stashed_y = 0;
+    }
     DoResize(stashed_x, stashed_y, tmp_win, drag, orig, &xmotion, &ymotion,
 	     do_resize_opaque);
   }

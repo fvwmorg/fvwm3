@@ -173,7 +173,7 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   Bool End = 1;
 
   DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, shad, hili);
-  
+
   XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
   hOpt = asc+desc+10;
   xobj->value3 = CountOption(xobj->title);
@@ -222,7 +222,7 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
  /* Dessin du menu / Drawing the menu */
   DrawPMenu(xobj, WinPop, hOpt, 1);
   XGrabPointer(dpy, WinPop, True, GRAB_EVMASK, GrabModeAsync, GrabModeAsync,
-	       Root, None, CurrentTime);
+	       None, None, CurrentTime);
   if (EvtButton == NULL) {
     while_mask = ButtonPress;
   }
@@ -277,7 +277,7 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
       if (start_time != 0 && event.xbutton.time - start_time < MENU_DRAG_TIME) {
 	while_mask = ButtonPress;
 	start_time = 0;
-      }  
+      }
       if (while_mask == ButtonRelease)
 	End = 0;
       break;
@@ -300,7 +300,7 @@ void EvtKeyMenu(struct XObj *xobj, XKeyEvent *EvtKey)
 {
   KeySym ks;
   unsigned char buf[10];
-  
+
   XLookupString(EvtKey, (char *)buf, sizeof(buf), &ks, NULL);
   if (ks == XK_Return) {
     EvtMouseMenu(xobj, NULL);

@@ -157,7 +157,7 @@ Bool GrabEm(int cursor, int grab_context)
   while((i < rep)&&
 	(val = XGrabPointer(
 	  dpy, grab_win, True, GRAB_EVMASK, GrabModeAsync, GrabModeAsync,
-	  Scr.Root, Scr.FvwmCursors[cursor], CurrentTime) != GrabSuccess))
+	  None, Scr.FvwmCursors[cursor], CurrentTime) != GrabSuccess))
   {
     switch (val)
     {

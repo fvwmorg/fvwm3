@@ -672,8 +672,13 @@ void CMD_Direction(F_CMD_ARGS)
   }
   else
   {
-    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		  &my_g.x, &my_g.y, &JunkX, &JunkY, &JunkMask);
+    if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		      &my_g.x, &my_g.y, &JunkX, &JunkY, &JunkMask) == False)
+    {
+      /* pointer is on a different screen */
+      my_g.x = 0;
+      my_g.y = 0;
+    }
     my_g.width = 1;
     my_g.height = 1;
     my_cx = my_g.x;

@@ -775,14 +775,19 @@ void LoopOnEvents(void)
   XEvent Event;
 #if 1
   Window dummyroot,dummychild;
-  int x,x1,y,y1;
+  int x,xdummy,y,ydummy;
   unsigned int dummy1;
 
   if (Transient && !Checked)
   {
     if (Pressed)
     {
-      XQueryPointer(dpy,win,&dummyroot,&dummychild,&x1,&y1,&x,&y,&dummy1);
+      if (XQueryPointer(
+	    dpy, win, &dummyroot, &dummychild, &xdummy, &ydummy, &x, &y,
+	    &dummy1) == False)
+      {
+	/* pointer is on a different screen - that's okay here */
+      }
       num=WhichButton(&buttons,x,y);
       if (num!=-1)
       {
@@ -1125,8 +1130,14 @@ void MakeMeWindow(void)
   {
     fscreen_scr_arg fscr;
 
-    XQueryPointer(dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,
-		  &dummy1);
+    if (XQueryPointer(
+	  dpy, Root, &dummyroot, &dummychild, &hints.x, &hints.y, &x, &y,
+	  &dummy1) == False)
+    {
+      /* pointer is on a different screen */
+      hints.x = 0;
+      hints.y = 0;
+    }
     fscr.xypos.x = hints.x;
     fscr.xypos.y = hints.y;
     FScreenGetScrRect(
@@ -1348,8 +1359,14 @@ void MakeMeWindow(void)
       fprintf(stderr,"failed to grab pointer\n");
       exit(1);
     }
-    XQueryPointer(
-      dpy,Root,&dummyroot,&dummychild,&hints.x,&hints.y,&x,&y,&dummy1);
+    if (XQueryPointer(
+	  dpy, Root, &dummyroot, &dummychild, &hints.x, &hints.y, &x, &y,
+	  &dummy1) == False)
+    {
+      /* pointer is on a different screen */
+      hints.x = 0;
+      hints.y = 0;
+    }
     Pressed = !!SomeButtonDown(dummy1);
   }
 }

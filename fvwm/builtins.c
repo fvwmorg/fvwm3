@@ -595,8 +595,12 @@ void CMD_CursorMove(F_CMD_ARGS)
     return;
   }
 
-  XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-                 &x, &y, &JunkX, &JunkY, &JunkMask);
+  if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		    &x, &y, &JunkX, &JunkY, &JunkMask) == False)
+  {
+    /* pointer is on a different screen */
+    return;
+  }
 
   x = x + val1 * val1_unit / 100;
   y = y + val2 * val2_unit / 100;
@@ -3102,8 +3106,12 @@ void CMD_FakeClick(F_CMD_ARGS)
   int maxdepth = 0;
 
   /* get the mask of pressed/released buttons */
-  XQueryPointer(
-    dpy, Scr.Root, &root, &JunkRoot, &JunkX, &JunkY, &JunkX, &JunkY, &mask);
+  if (XQueryPointer(
+	dpy, Scr.Root, &root, &JunkRoot, &JunkX, &JunkY, &JunkX, &JunkY,
+	&mask) == False)
+  {
+    /* pointer is on a different screen - that's okay here */
+  }
   token = PeekToken(action, &action);
   while (token && action)
   {
@@ -3145,7 +3153,11 @@ void CMD_FakeClick(F_CMD_ARGS)
 	     depth++)
 	{
 	  w = child_w;
-	  XQueryPointer(dpy, w, &root, &child_w, &rx, &ry, &x, &y, &JunkMask);
+	  if (XQueryPointer(
+		dpy, w, &root, &child_w, &rx, &ry, &x, &y, &JunkMask) == False)
+	  {
+	    /* pointer is on a different screen - that's okay here */
+	  }
 	}
 	if (do_unset)
 	{
@@ -3189,9 +3201,12 @@ void CMD_FakeClick(F_CMD_ARGS)
       if (val > 0 && val <= 1000000)
       {
 	usleep(1000 * val);
-	XQueryPointer(
-	  dpy, Scr.Root, &root, &JunkRoot, &JunkX, &JunkY, &JunkX, &JunkY,
-	  &mask);
+	if (XQueryPointer(
+	      dpy, Scr.Root, &root, &JunkRoot, &JunkX, &JunkY, &JunkX, &JunkY,
+	      &mask) == False)
+	{
+	  /* pointer is on a different screen - that's okay here */
+	}
       }
       else
       {
@@ -3343,8 +3358,13 @@ void CMD_StrokeFunc(F_CMD_ARGS)
   if (draw_motion)
   {
     MyXGrabServer(dpy);
-    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &x[0], &y[0],
-		&JunkX, &JunkY, &JunkMask);
+    if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &x[0], &y[0],
+		      &JunkX, &JunkY, &JunkMask) == False)
+    {
+      /* pointer is on a different screen */
+      x[0] = 0;
+      y[0] = 0;
+    }
     XSetLineAttributes(dpy,Scr.XorGC,stroke_width,LineSolid,CapButt,JoinMiter);
   }
 
@@ -3361,8 +3381,13 @@ void CMD_StrokeFunc(F_CMD_ARGS)
     case MotionNotify:
       if (eventp->xany.window != Scr.Root)
       {
-	XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &tmpx, &tmpy,
-		&JunkX, &JunkY, &JunkMask);
+	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &tmpx, &tmpy,
+			  &JunkX, &JunkY, &JunkMask) == False)
+	{
+	  /* pointer is on a different screen */
+	  tmpx = 0;
+	  tmpy = 0;
+	}
       }
       else
       {

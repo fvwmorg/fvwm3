@@ -1739,8 +1739,13 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
     XCheckMaskEvent(dpy, ButtonPressMask, &d);
     break;
   default:
-    XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-		   &x,&y,&JunkX, &JunkY, &JunkMask);
+    if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		      &x, &y, &JunkX, &JunkY, &JunkMask) == False)
+    {
+      /* pointer is on a different screen */
+      x = 0;
+      y = 0;
+    }
     break;
   }
 

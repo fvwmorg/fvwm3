@@ -703,10 +703,15 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 
   /* Try to pick a root-relative optimal x,y to
    * put the mouse right on the title w/o warping */
-  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		&x, &y, &JunkX, &JunkY, &JunkMask);
+  if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		    &x, &y, &JunkX, &JunkY, &JunkMask) == False)
+  {
+    /* pointer is on a different screen */
+    x = 0;
+    y = 0;
+  }
   /* Save these-- we want to warp back here if this is a top level
-     menu brought up by a keystroke */
+   * menu brought up by a keystroke */
   if (!pmp->flags.is_submenu)
   {
     pmp->flags.is_invoked_by_key_press = key_press;
@@ -1207,8 +1212,13 @@ fprintf(stderr,"menu torn off\n");
     if (XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
 		      &menu_width, &menu_height, &JunkBW, &JunkDepth))
     {
-      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		    &mx, &my, &JunkX, &JunkY, &JunkMask);
+      if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+			&mx, &my, &JunkX, &JunkY, &JunkMask) == False)
+      {
+	/* pointer is on a different screen */
+	mx = 0;
+	my = 0;
+      }
       if (my < menu_y + MST_BORDER_WIDTH(mr))
 	saction = SA_FIRST;
       else if (my > menu_y + menu_height - MST_BORDER_WIDTH(mr))
@@ -1466,8 +1476,13 @@ static void MenuInteraction(
   flags.do_force_reposition = 1;
   memset(&mops, 0, sizeof(mops));
   /* remember where the pointer was so we can tell if it has moved */
-  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		&x_init, &y_init, &JunkX, &JunkY, &JunkMask);
+  if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		    &x_init, &y_init, &JunkX, &JunkY, &JunkMask) == False)
+  {
+    /* pointer is on a different screen */
+    x_init = 0;
+    y_init = 0;
+  }
 
   while (True)
   {
@@ -1496,9 +1511,14 @@ static void MenuInteraction(
       {
 	/* since the pointer has been warped since the key was pressed, fake a
 	 * different key press position */
-	XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-		      &Event.xkey.x_root, &Event.xkey.y_root,
-		      &JunkX, &JunkY, &JunkMask);
+	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+			  &Event.xkey.x_root, &Event.xkey.y_root,
+			  &JunkX, &JunkY, &JunkMask) == False)
+	{
+	  /* pointer is on a different screen */
+	  Event.xkey.x_root = 0;
+	  Event.xkey.y_root = 0;
+	}
 	mi = MR_SELECTED_ITEM(pmp->menu);
       }
     } /* flags.do_recycle_event */
@@ -1809,8 +1829,13 @@ static void MenuInteraction(
 
       if (flags.has_mouse_moved == False)
       {
-	XQueryPointer(dpy, Scr.Root, &JunkRoot, &p_child,
-		      &p_rx, &p_ry, &JunkX, &JunkY, &JunkMask);
+	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &p_child,
+			  &p_rx, &p_ry, &JunkX, &JunkY, &JunkMask) == False)
+	{
+	  /* pointer is on a different screen */
+	  p_rx = 0;
+	  p_ry = 0;
+	}
 	if (p_rx - x_init > Scr.MoveThreshold ||
 	    x_init - p_rx > Scr.MoveThreshold ||
 	    p_ry - y_init > Scr.MoveThreshold ||
@@ -2326,8 +2351,14 @@ static void MenuInteraction(
 	{
 	  int x, y, mx, my;
 	  unsigned int mw, mh;
-	  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-			&x, &y, &JunkX, &JunkY, &JunkMask);
+
+	  if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+			    &x, &y, &JunkX, &JunkY, &JunkMask) == False)
+	  {
+	    /* pointer is on a different screen */
+	    x = 0;
+	    y = 0;
+	  }
 	  if (XGetGeometry(dpy, MR_WINDOW(pmp->menu), &JunkRoot, &mx, &my,
 			   &mw, &mh, &JunkBW, &JunkDepth) &&
 	      ((!MR_IS_LEFT(mrPopup)  && x < mx) ||
@@ -7574,8 +7605,14 @@ char *get_menu_options(
 	       dpy, context_window, Scr.Root, 0, 0, &x, &y, &JunkChild))
     {
       /* no window or could not get geometry */
-      XQueryPointer(dpy,Scr.Root, &JunkRoot, &JunkChild, &x, &y, &JunkX, &JunkY,
-		    &JunkMask);
+      if (XQueryPointer(
+	    dpy,Scr.Root, &JunkRoot, &JunkChild, &x, &y, &JunkX, &JunkY,
+	    &JunkMask) == False)
+      {
+	/* pointer is on a different screen - that's okay here */
+	x = 0;
+	y = 0;
+      }
       width = height = 1;
       if (!pops->pos_hints.has_screen_origin)
       {

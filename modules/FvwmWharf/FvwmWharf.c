@@ -713,11 +713,12 @@ void Loop(void)
 			    )
 			    break; */
 
-	  XQueryPointer(dpy,main_win,
-			&dummy_rt,&dummy_c,
-			&dummy_x,&dummy_y,
-			&pos_x,&pos_y,
-			&dummy);
+	  if (XQueryPointer(
+		dpy, main_win, &dummy_rt, &dummy_c, &dummy_x, &dummy_y,
+		&pos_x, &pos_y, &dummy) == False)
+	  {
+	    /* pointer is on a different screen - that's okay here */
+	  }
 	  base = 0;
 	  dummy_y = (pos_y/BUTTONHEIGHT);
 	  dummy_x= (pos_x/BUTTONWIDTH);
