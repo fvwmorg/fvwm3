@@ -1021,7 +1021,6 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 
   Event.xany.window = Event.xmaprequest.window;
 
-fprintf(stderr,"hmrkr\n");
   if (ReuseWin == NULL)
   {
     if(XFindContext(dpy, Event.xany.window, FvwmContext,

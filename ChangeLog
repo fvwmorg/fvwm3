@@ -1,5 +1,8 @@
 2000-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	removed debug fprintf
+
 	* fvwm/virtual.c (MapIt):
 	* fvwm/events.c (HandleMapNotify):
 	* fvwm/virtual.c (UnmapIt):

@@ -1477,11 +1477,10 @@ void draw_manager (WinManager *man)
   if (redraw_all || (man->buttons.dirty_flags & NUM_WINDOWS_CHANGED)) {
     ConsoleDebug (X11, "\tresizing manager\n");
     resize_manager (man, redraw_all);
-    clear_empty_region (man);
     update_geometry = 1;
     force_draw = 1;
   }
-
+  clear_empty_region (man);
 
   if (redraw_all || (man->dirty_flags & MAPPING_CHANGED)) {
     force_draw = 1;

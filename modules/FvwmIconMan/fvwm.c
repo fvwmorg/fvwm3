@@ -592,7 +592,8 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
     globals.x = body->new_page_data.x;
     globals.y = body->new_page_data.y;
     globals.desknum = body->new_page_data.desknum;
-    if (fvwm_focus_win)
+    if (fvwm_focus_win && fvwm_focus_win->manager &&
+        fvwm_focus_win->manager->followFocus)
     {
       /* need to set the focus on a page change */
       add_win_state (fvwm_focus_win, FOCUS_CONTEXT);
