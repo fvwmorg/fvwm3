@@ -88,13 +88,35 @@ int main(int argc, char **argv)
   if(argc >= 7)
     {
       extern int Reduction_H;
-      Reduction_H = atoi(argv[6]);
+      extern int Percent_H;
+      int len;
+      len = strlen(argv[6])-1;
+      if (len >= 0 && argv[6][len] == 'p')
+	{
+	  argv[6][len] = '\0';
+	  Percent_H = atoi(argv[6]);
+        }
+      else
+	{
+          Reduction_H = atoi(argv[6]);
+	}
     }
 
   if(argc >= 8)
     {
       extern int Reduction_V;
-      Reduction_V = atoi(argv[7]);
+      extern int Percent_V;
+      int len;
+      len = strlen(argv[7])-1;
+      if (len >= 0 && argv[7][len] == 'p')
+	{
+	  argv[7][len] = '\0';
+	  Percent_V = atoi(argv[7]);
+	}
+      else
+	{
+          Reduction_V = atoi(argv[7]);
+	}
     }
 
   /* Dead pipe == dead fvwm */

@@ -1,3 +1,16 @@
+1999-10-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScroll/FvwmScroll.c (main): array bounds read/write fix for last
+	patch
+
+1999-10-06 Olivier Chapuis <olivier.chapuis@free.fr>
+
+	* FvwmScroll/FvwmScroll.c (main):
+	* FvwmScroll/FvwmScroll.h :
+	* FvwmScroll/GrabWindow.c (CreateWindow):
+	Add a way to compute the size of the scrolled window as
+	a percentage of the full screen
+
 1999-10-06  Hippo
 
 	* FvwmScript/*: Man page fixes, new commands: GetFore, GetBack etc

@@ -443,6 +443,7 @@ void HandleKeyPress(void)
 			Event.xkey.state, GetUnusedModifiers(), Context,
 			KEY_BINDING);
 #endif /* HAVE_STROKE */
+
   if (action != NULL)
   {
     ButtonWindow = Tmp_win;

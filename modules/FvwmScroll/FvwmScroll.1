@@ -47,12 +47,15 @@ simply by changing the keyword  FvwmScroll to MoreScroll.
 .SH INVOCATION
 FvwmScroll can be invoked by binding the action 'Module
 FvwmScroll x y' to a menu or key-stroke in the .fvwmrc file.
-The parameter x and y are integers, which describe the horizontal and
-vertical window size reduction.
-Fvwm will search
-directory specified in the ModulePath configuration option to attempt
-to locate FvwmScroll. Although nothing keeps you from launching
-FvwmScroll at start-up time, you probably don't want to.
+The parameter x and y are either integers or integers immediately followed by
+a p, which describe the horizontal and vertical size modification of the 
+window.  An integer describe a size reduction. An integer followed by a 
+p describe a size as a percentage of the height or the width of a full screen
+but the size is never larger than the original window size (0p will do
+nothing). Fvwm will search directory specified in the ModulePath 
+configuration option to attempt to locate FvwmScroll. Although nothing 
+keeps you from launching FvwmScroll at start-up time, you probably don't 
+want to.
 
 .SH CONFIGURATION OPTIONS
 FvwmScroll reads the same .fvwmrc file as fvwm reads when it starts up,

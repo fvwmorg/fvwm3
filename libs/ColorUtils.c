@@ -249,10 +249,12 @@ adjust_pixel_brightness(Pixel pixel, double factor)
  * library closeness stuff may be the ideal model.
  * (dje 11/15/98)
  */
-Pixel GetShadow(Pixel background) {
+Pixel GetShadow(Pixel background)
+{
   return adjust_pixel_brightness(background, DARKNESS_FACTOR);
 }
-Pixel GetHilite(Pixel background) {
+Pixel GetHilite(Pixel background)
+{
   return adjust_pixel_brightness(background, BRIGHTNESS_FACTOR);
 }
 

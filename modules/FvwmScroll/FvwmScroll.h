@@ -21,7 +21,7 @@ extern GC hiliteGC, shadowGC;
 extern fd_set_size_t fd_width;
 extern int fd[2];
 extern int x_fd;
-
+extern int ScreenWidth, ScreenHeight;
 
 char *safemalloc(int length);
 void DeadPipe(int nonsense);

@@ -55,6 +55,8 @@ static int target_x_offset = 0, target_y_offset = 0;
 static int exposed;
 int Reduction_H = 2;
 int Reduction_V = 2;
+int Percent_H = -1;
+int Percent_V =-1;
 
 #define BAR_WIDTH 21
 #define SCROLL_BAR_WIDTH 9
@@ -97,8 +99,28 @@ void CreateWindow(int x,int y, int w, int h)
   mysizehints.base_height = BAR_WIDTH + PAD_WIDTH3;
   mysizehints.base_width = BAR_WIDTH + PAD_WIDTH3;
 
-  Width = w/Reduction_H + BAR_WIDTH + PAD_WIDTH3;
-  Height = h/Reduction_V + BAR_WIDTH + PAD_WIDTH3;
+  if ( Percent_V > -1 )
+    {
+      Width = (ScreenWidth * Percent_V)/100;
+      if ( Width > (w + BAR_WIDTH + PAD_WIDTH3) || Percent_V == 0 )
+	Width = w + BAR_WIDTH + PAD_WIDTH3;
+    }
+  else
+    {
+  Width = w/Reduction_V + BAR_WIDTH + PAD_WIDTH3;
+    }
+
+  if ( Percent_H > -1 )
+    {
+      Height = (ScreenHeight * Percent_H)/100;
+      if ( Height > h || Percent_H == 0 )
+	Height = h + BAR_WIDTH + PAD_WIDTH3;
+    }
+  else
+    {
+      Height = h/Reduction_H + BAR_WIDTH + PAD_WIDTH3;
+    }
+
   target_width = w;
   target_height = h;
   mysizehints.width = Width;
