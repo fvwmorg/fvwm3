@@ -1,4 +1,9 @@
-2000-04-20  olicha <olivier.chapuis@free.fr>
+1999-04-22  Mikhael Goikhman  migo@homemail.com
+
+	* fvwm/windowlist.c (do_windowList): don't free Function before
+	the last menu entry is added
+
+2000-04-20  olicha  <olivier.chapuis@free.fr>
 
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
 	Added a CDE support and a new FAST/SLOW X server option.
@@ -30,7 +35,7 @@
 	* fvwm/add_window.c (setup_window_name):
 	small change in I18N fix
 
-2000-04-16  olicha <olivier.chapuis@free.fr>
+2000-04-16  olicha  <olivier.chapuis@free.fr>
 
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
 	replaced FVWM_icons by fvwm_icons
@@ -39,14 +44,14 @@
 
 	* sample.fvwmrc/system.fvwm2rc-sample-95: first pass on adustments.
 
-2000-04-16  olicha <olivier.chapuis@free.fr>
+2000-04-16  olicha  <olivier.chapuis@free.fr>
 
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
 	Minor modifications. In particular, added "flags" for helping
 	menus/styles parsing and for multi-files building. Began a CDE
 	support.
 
-2000-04-13  olicha <olivier.chapuis@free.fr>
+2000-04-13  olicha  <olivier.chapuis@free.fr>
 
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
 	Fixed sample-95 building.
@@ -2029,7 +2034,7 @@
 	* fvwm/events.c:
 	fixed a subtle bug with clicktofocus/grabfocusoff
 
-1999-11-12 olicha <olivier.chapuis@free.fr>
+1999-11-12 olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/module_interface.c (PoistiveWrite):
 	* fvwm/module_interface.h (MAX_MASK):
@@ -2076,7 +2081,7 @@
 	* fvwm/add_window.c (AddWindow):
 	fixed handling of border width during window placement
 
-1999-11-11 olicha <olivier.chapuis@free.fr>
+1999-11-11 olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/module_interface.{c,h} (initModules):
 	(do_execute_module):
@@ -2087,7 +2092,7 @@
 	Implemented a synchronous mask that lists the messages that fvwm
 	will treat as synchronous. See FvwmWinList for an example.
 
-1999-11-11 olicha <olivier.chapuis@free.fr>
+1999-11-11 olicha  <olivier.chapuis@free.fr>
 
 	* NEWS: New builtin function StrokeFunc
 	* fvwm/builtins.{c,h} (strokeFunc): New builtin function StrokeFunc

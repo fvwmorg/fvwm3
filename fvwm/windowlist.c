@@ -469,8 +469,6 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	{
           tfunc = safemalloc(strlen(func) + 32);
           sprintf(tfunc,"%s %lu", func, t->w);
-	  free(func);
-	  func = NULL;
 	}
         AddToMenu(mr, t_hot, tfunc, FALSE, FALSE);
         free(tfunc);
