@@ -21,7 +21,7 @@ sub showHelp {
 	print "\t--version        show the version and exit\n";
 	print "\t--name=NAME      menu name,  default is '$name'\n";
 	print "\t--title=NAME     menu title, default is '$title'\n";
-	print "\t--format=FMT     menu item format, default is '$itemF'\n";
+	print "\t--item=NAME      menu item format, default is '$itemF'\n";
 	print "\t--icon=XPM       menu icon,  default is no\n";
 	print "\t--special-first  put special modes first\n";
 	print "Short options are ok if not ambiguous: -h, -t.\n";
@@ -106,10 +106,12 @@ fvwm-menu-xlock - builds xlock menu definition for FVWM
 =head1 SYNOPSIS
 
 B<fvwm-menu-xlock>
+[ B<--help>|B<-h> ]
+[ B<--version>|B<-v> ]
 [ B<--name>|B<-n> name ]
 [ B<--title>|B<-t> title ]
-[ B<--format>|B<-f> format ]
-[ B<--icon>|B<-i> icon ]
+[ B<--item> format ]
+[ B<--icon> icon ]
 [ B<--special-first>|B<-s> ]
 [ -- xlock params ]
 
@@ -128,8 +130,8 @@ B<--name>, B<--title>, B<--icon> - define menu name, menu title and menu icon
 accordingly given in the following argument. Default is name "XLockMenu",
 title "XLock Modes" and no mini-icon (equivalent to an empty icon argument).
 
-B<--format> - define menu item format in the following argument, default is
-'%n\t(%d)'. TAB can be specified as '\t', but in fvwmrc you must specify a
+B<--item> - define menu item format in the following argument, default is
+'%n\t(%d)'. TAB can be specified as '\t', but in fvwmrc you should specify a
 double backslash or a real TAB.
 
 Format specifiers:

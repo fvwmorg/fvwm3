@@ -2,7 +2,7 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.9  1999/12/17 02:51:48  migo
+''' Revision 1.1  1999/12/17 02:51:47  migo
 ''' * fvwm-menu-headlines: a new configurable script in fvwm-menu family
 ''' - Displays headlines of some popular web sites in fvwm menus.
 ''' - Supported FreshMeat, LinuxToday, Slashdot, Segfault, more to come.
@@ -101,7 +101,7 @@
 .nr % 0
 .rr F
 .\}
-.TH FVWM-MENU-XLOCK 1 "perl 5.005, patch 01" "17/Dec/99" "Fvwm Utility"
+.TH FVWM-MENU-HEADLINES 1 "perl 5.005, patch 01" "17/Dec/99" "Fvwm Utility"
 .UC
 .if n .hy 0
 .if n .na
@@ -196,78 +196,150 @@
 .\}
 .rm #[ #] #H #V #F C
 .SH "NAME"
-fvwm-menu-xlock \- builds xlock menu definition for FVWM
+fvwm-menu-headlines \- builds headlines menu definition for FVWM
 .SH "SYNOPSIS"
-\fBfvwm-menu-xlock\fR
+\fBfvwm-menu-headlines\fR
 [ \fB--help\fR|\fB\-h\fR ]
 [ \fB--version\fR|\fB\-v\fR ]
+[ \fB--site\fR|\fB\-s\fR ]
 [ \fB--name\fR|\fB\-n\fR name ]
 [ \fB--title\fR|\fB\-t\fR title ]
-[ \fB--item\fR format ]
+[ \fB--item\fR name ]
+[ \fB--exec\fR|\fB\-e\fR action ]
 [ \fB--icon\fR icon ]
-[ \fB--special-first\fR|\fB\-s\fR ]
-[ -- xlock params ]
+[ \fB--frontpage\fR [where] ]
+[ \fB--proxy\fR|\fB\-p\fR host:port ]
+[ \fB--buggyproxy\fR|\fB\-b\fR ]
+[ \fB--file\fR [file] ]
+[ \fB--fake\fR [file] ]
 .SH "DESCRIPTION"
-A simple perl script which parses xlock's output to build an fvwm 2.xx
-menu definition of all xlock's modes.
+A perl script which builds an fvwm menu definition of headlines of popular
+news web sites: FreshMeat, Slashdot, LinuxToday, Segfault etc.
 .SH "OPTIONS"
 \fB--help\fR    \- show the help and exit
 .PP
 \fB--version\fR \- show the version and exit
 .PP
+\fB--site\fR \- defile a web site, headlines of which to show, default: freshmeat
+.PP
 \fB--name\fR, \fB--title\fR, \fB--icon\fR \- define menu name, menu title and menu icon
-accordingly given in the following argument. Default is name \*(L"XLockMenu\*(R",
-title \*(L"XLock Modes\*(R" and no mini-icon (equivalent to an empty icon argument).
+accordingly given in the following argument. Default is name
+\*(L"MenuHeadlinesFreshmeat\*(R", title \*(L"Freshmeat Headlines\*(R" and no mini-icon
+(equivalent to an empty icon argument).
 .PP
-\fB--item\fR \- define menu item format in the following argument, default is
-\&'%n\e\fIt\fR\|(%d)\*(R'. TAB can be specified as \*(L'\et\*(R', but in fvwmrc you should specify a
-double backslash or a real TAB.
+\fB--item\fR, \fB--exec\fR \- define menu item or exec format in the following
+argument (what is shown and what is executed when the item is chosen),
+default is \*(L'%h\et%\*(R'. TAB can be specified as \*(L'\et\*(R', but in fvwmrc you should
+specify a double backslash or a real TAB.
 .PP
-Format specifiers:
-  \f(CW%n\fR \- mode name
-  \f(CW%d\fR \- mode description
-  \f(CW%D\fR \- mode description without \*(L"Shows \*(L" prefix if any
+Format specifiers for a news entry:
+  \f(CW%h\fR \- headline
+  \f(CW%u\fR \- url
+  \f(CW%d\fR \- date in native format
+  %[strftime-argument-string] \- date, see \fIstrftime\fR\|(3)
+  %{name} \- site-specific-named-value
+  %(text) \- arbitrary text
 .PP
-\fB--special-first\fR \- instructs to include special modes (usually black,
-bomb and random) first.
+\fB--frontpage\fR \- show site fronpage item in the menu too. Optional value can
+be used to specify where this item will be placed in the menu \- \*(L'top\*(R' or \*(L't\*(R',
+\&'bottom\*(R' or \*(L'b\*(R'.
+.PP
+\fB--proxy\fR \- define proxy host[:port] to use.
+Example: --proxy proxy.inter.net:3128
+.PP
+\fB--buggyproxy\fR \- try this if your proxy requires non standard end-of-line.
+.PP
+\fB--file\fR [file] \- write the menu output to specified file. If no filename is
+given with this option (or empty filename), the default filename
+~/.fvwm-menu-headlines/SITE.menu is used. Without this option or with \*(L'\-\*(R'
+filename, the menu output is written to standard output.
+.PP
+\fB--fake\fR [file] \- don't connect to the host using HTTP protocol, instead,
+read from ~/.fvwm-menu-headlines/SITE.in file. The following reads input from
+segfault.in (downloaded http://segfault.org/stories.txt) and saves output
+to segfault.menu (both files are in ~/.fvwm-menu-headlines):
+  fvwm-menu-headlines --site segfault --fake --file
 .PP
 Option parameters can be specified both using \*(L'=\*(R' and in the next argument.
-Short options are ok if not ambiguous: \-h, \-t; but be careful with
+Short options are ok if not ambiguous: \f(CW-h\fR, \f(CW-t\fR; but be careful with
 short options, what is now unambiguous, can became ambiguous in the next
 versions.
-.PP
-Additional arguments (after \fB--\fR) will be passed to xlock.
-.PP
-Please see the \fBxlock\fR(1) man page for the xlock options.
 .SH "USAGE"
-Add these lines to your fvwm configuration file:
+One of the ways to use this script is to define a crontab
+entry to run the script every hour or so for every monitored site:
 .PP
-.Vb 6
-\&  PipeRead 'fvwm-menu-xlock -n MenuSSaver -t "Screensaver" \e
-\&    -i mini-bball.xpm -- -nice 19 -nolock'
-\&  PipeRead 'fvwm-menu-xlock -n MenuSLock  -t "Lock Screen" \e
-\&    -i mini-rball.xpm -- -nice 19'
-\&  AddToMenu "Utilities" "Screensaver%mini-monitor.xpm%" Popup MenuSSaver
-\&  AddToMenu "Utilities" "Screenlock%mini-lock.xpm%"     Popup MenuSLock
+.Vb 3
+\&  0,30 * * * * fvwm-menu-headlines --file --site freshmeat
+\&  1,31 * * * * fvwm-menu-headlines --file --site linuxtoday
+\&  2,32 * * * * fvwm-menu-headlines --file --site slashdot
+.Ve
+Then add these lines to your fvwm configuration file:
+.PP
+.Vb 3
+\&  DestroyFunc FuncFvwmMenuHeadlines
+\&  AddToFunc FuncFvwmMenuHeadlines
+\&  + I Read "$HOME/.fvwm-menu-headlines/$0.menu"
+.Ve
+.Vb 7
+\&  DestroyMenu MenuHeadlines
+\&  AddToMenu MenuHeadlines "Headlines" Title
+\&  + MissingSubmenuFunction FuncFvwmMenuHeadlines
+\&  + "FreshMeat"  Popup freshmeat
+\&  + "LinuxToday" Popup linuxtoday
+\&  + "Slashdot"   Popup slashdot
+\&  + "Segfault"   Popup segfault
+.Ve
+Another way to use this script (only if you have fast network/proxy) is to run
+it every time you want to open your Headlines submenus.
+.PP
+In this case your fvwm configuration lines could be:
+.PP
+.Vb 3
+\&  DestroyFunc FuncFvwmMenuHeadlines
+\&  AddToFunc FuncFvwmMenuHeadlines
+\&  + I PipeRead "fvwm-menu-headlines --site $0"
+.Ve
+.Vb 7
+\&  DestroyMenu MenuHeadlines
+\&  AddToMenu MenuHeadlines "Headlines" Title
+\&  + MissingSubmenuFunction FuncFvwmMenuHeadlines
+\&  + "FreshMeat"  Popup freshmeat
+\&  + "LinuxToday" Popup linuxtoday
+\&  + "Slashdot"   Popup slashdot
+\&  + "Segfault"   Popup segfault
+.Ve
+In the end add \*(L"Popup MenuHeadlines\*(R" somewhere.
+.PP
+Here is a usual solution. Use FvwmConsole or FvwmCommand to run fvwm commands
+from a shell script. Every time you want headlines from some site, execute
+(give any additional options you want):
+.PP
+.Vb 3
+\&  PipeRead "fvwm-menu-headlines --site segfault --name MenuHeadlinesSegfault"
+\&  # after several seconds
+\&  Popup MenuHeadlinesSegfault
 .Ve
 .SH "AUTHORS"
-Charles K. Hines <chuck_hines@vnet.ibm.com>, initial version.
+This script is inspired by WMHeadlines v1.3 by
 .PP
-Mikhael Goikhman <migo@homemail.com>, 24 Feb 1999.
+.Vb 2
+\&  Jeff Meininger <jeffm@boxybutgood.com>
+\&  (http://rive.boxybutgood.com/WMHeadlines/).
+.Ve
+Reimplemented for FVWM and heavily enhanced by:
 .PP
-Mikhael Goikhman <migo@homemail.com>, 02 Aug 1999.
+.Vb 1
+\&  Mikhael Goikhman <migo@homemail.com>, 16 Dec 1999.
+.Ve
 .SH "COPYING"
 The script is distributed by the same terms as fvwm itself.
 See GNU General Public License for details.
 .SH "BUGS"
-Depends on the output of xlock. Will produce an empty menu if the structure
-of the output is changed.
-.PP
 Report bugs to fvwm-bug@fvwm.org.
 
 .rn }` ''
-.IX Title "FVWM-MENU-XLOCK 1"
-.IX Name "fvwm-menu-xlock - builds xlock menu definition for FVWM"
+.IX Title "FVWM-MENU-HEADLINES 1"
+.IX Name "fvwm-menu-headlines - builds headlines menu definition for FVWM"
 
 .IX Header "NAME"
 

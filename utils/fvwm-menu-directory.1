@@ -2,9 +2,13 @@
 ''' $RCSfile$$Revision$$Date$
 '''
 ''' $Log$
-''' Revision 1.14  1999/11/15 00:05:46  domivogt
-''' * Ran ispell over all man pages.
-''' * FAQ for 'toggling' buttons.
+''' Revision 1.15  1999/12/17 02:51:47  migo
+''' * fvwm-menu-headlines: a new configurable script in fvwm-menu family
+''' - Displays headlines of some popular web sites in fvwm menus.
+''' - Supported FreshMeat, LinuxToday, Slashdot, Segfault, more to come.
+''' * fvwm-menu-directory --special-dirs option now more configurable
+''' * fvwm-menu-directory, fvwm-menu-xlock: renamed --format to --item, warning!
+''' * fvwm-menu scripts (4 for now) are now installed.
 '''
 '''
 .de Sh
@@ -97,7 +101,7 @@
 .nr % 0
 .rr F
 .\}
-.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 03" "15/Nov/1999" "Fvwm Utility"
+.TH FVWM-MENU-DIRECTORY 1 "perl 5.005, patch 01" "17/Dec/99" "Fvwm Utility"
 .UC
 .if n .hy 0
 .if n .na
@@ -199,7 +203,7 @@ fvwm-menu-directory \- builds a directory browsing menu for FVWM
 [ \fB--version\fR|\fB\-v\fR ]
 [ \fB--name\fR|\fB\-na\fR NAME ]
 [ \fB--title\fR|\fB\-t\fR NAME ]
-[ \fB--format\fR|\fB\-f\fR NAME ]
+[ \fB--item\fR|\fB\-it\fR NAME ]
 [ \fB--icon-app\fR|\fB\-icon-a\fR XPM ]
 [ \fB--icon-dir\fR|\fB\-icon-d\fR XPM ]
 [ \fB--icon-file\fR|\fB\-icon-f\fR XPM ]
@@ -214,7 +218,7 @@ fvwm-menu-directory \- builds a directory browsing menu for FVWM
 [ \fB--exec-title\fR|\fB\-exec-t\fR CMD ]
 [ \fB--[no]reuse\fR|\fB\-r\fR ]
 [ \fB--[no]check-subdir\fR|\fB\-c\fR ]
-[ \fB--[no]special-dirs\fR|\fB\-s\fR ]
+[ \fB--special-dirs\fR|\fB\-s\fR [VALUE] ]
 [ \fB--[no]memory-for-speed\fR|\fB\-m\fR ]
 .SH "DESCRIPTION"
 A perl script which provides an output to read in with PipeRead to build an
@@ -228,7 +232,7 @@ fvwm menu containing a directory listing. Almost everything can be configured.
 .PP
 \fB--title=NAME\fR \- menu title format, default is \*(L'%*\-40p\*(R' \- last 40 characters
 of the current full path. TAB can be specified as \*(L'\et\*(R', but in fvwmrc you
-must specify a double backslash or a real TAB.
+should specify a double backslash or a real TAB.
 .PP
 Format specifiers:
   \f(CW%d\fR \- the current directory name
@@ -242,7 +246,7 @@ with \*(L"...\*(R", example: %*30x. Both can be combined: %\-10*\-20x, this inst
 get only the 20 last characters, but if the length is less then 10 \- to fill
 with up to 10 spaces on the right.
 .PP
-\fB--format=NAME\fR \- menu item format, default is \*(L'%n\*(R'. TAB and width modifiers
+\fB--item=NAME\fR \- menu item format, default is \*(L'%n\*(R'. TAB and width modifiers
 for \f(CW%n\fR, \f(CW%N\fR and \f(CW%s\fR can be specified as described in \fB--title\fR above.
 Note, specifying a non default format slows the script.
 .PP
@@ -255,7 +259,7 @@ Format specifiers:
   \f(CW%t\fR \- file/dir type (File|Dir |Link|Sock|Blck|Char|Pipe)
   \f(CW%T\fR \- file/dir type (F|D|L|S|B|C|P)
 .PP
-Example: --title \*(L'%*\-40p\etDate, Type\etSize\*(R' --format \*(L'%*40n\et%d \f(CW%t\fR\et%s\*(R'
+Example: --title \*(L'%*\-40p\etDate, Type\etSize\*(R' --item \*(L'%*40n\et%d \f(CW%t\fR\et%s\*(R'
 .PP
 \fB--icon-app=XPM\fR   \- menu application icon, default is no
 .PP
@@ -308,8 +312,13 @@ The default is --nocheck-subdirs, because: 1) enabling this slows a bit the
 script, 2) with this option enabled, if no icons used and no dir/file separate
 sorting used there is no way to know that the item is directory and not file.
 .PP
-\fB--[no]special-dirs\fR \- include .. and ~ directories, default is
---nospecial-dirs
+\fB--special-dirs\fR[=VALUE] \- add .. or ~ or / special directories according to
+given optional value. Without with option these directories are not added.
+Default value if not specified is \*(L"1,2\*(R". The value is comma separated ordered
+special directory indexes, where 1 is parent directory, 2 is home directory,
+3 is root directory. If minus is prepended to the value, special directories
+are added at the bottom of menu instead of top. Value \*(L"0\*(R" or any bad value
+is equivalent to non-specifying this option at all.
 .PP
 \fB--[no]memory-for-speed\fR \- use speed optimization, default is
 --nomemory-for-speed
@@ -319,7 +328,7 @@ sorting used there is no way to know that the item is directory and not file.
 \&    that is never free'd again while fvwm is running.
 .Ve
 Option parameters can be specified both using \*(L'=\*(R' and in the next argument.
-Short options are ok if not ambiguous: \-a, \-x, \-icon-f.
+Short options are ok if not ambiguous: \f(CW-a\fR, \f(CW-x\fR, \f(CW-icon-f\fR.
 .SH "USAGE"
 Put this into your fvwm configuration file to invoke the script:
 .PP
@@ -350,14 +359,14 @@ and enable busy cursor
 .Ve
 in your configuration file when using this script for better results.
 .PP
-Another very interesting usage (--reuse or \-r is mandatary for this):
+Another very interesting usage (\f(CW--reuse\fR or \f(CW-r\fR is mandatary for this):
 .PP
 .Vb 3
 \&  AddToMenu MenuBrowser
 \&  + DynamicPopupAction Piperead "fvwm-menu-directory -r -na MenuBrowser -d / -s"
 \&  AddToMenu SomeMenu "My Browser" Menu MenuBrowser
 .Ve
-Here --dir starting parameter is ignored if there is ~/.fmd.dir file,
+Here \f(CW--dir\fR starting parameter is ignored if there is ~/.fmd.dir file,
 you can delete it.
 .SH "AUTHORS"
 Created   on 06-07-1999 by Dominik Vogt     <domivogt@fvwm.org>.

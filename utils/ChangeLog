@@ -1,3 +1,16 @@
+1999-12-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-headlines:
+	* fvwm-menu-headlines.1:
+	A new configurable script to show popular web site headlines in fvwm
+	menus. Currently supported FreshMeat, LinuxToday, SlashDot, Segfault.
+
+	* fvwm-menu-directory.in: --special-dirs gets an argument now
+	* fvwm-menu-{directory,xlock}: --format renamed to --item
+
+	* Makefile.am: added fvwm-menu-headlines; fvwm-menu scripts now
+	are installed
+
 1999-11-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* make_fvwmdist.sh:

@@ -1,19 +1,15 @@
 ## Process this file with automake to create Makefile.in
 
 bin_PROGRAMS = @XPMROOT@ xselection
-bin_SCRIPTS = fvwmbug
-noinst_SCRIPTS = fvwm-menu-xlock fvwm-menu-directory fvwm-menu-desktop
-
-## The logic must be to add fvwm-menu-* to bin_SCRIPTS if "@PERL@" is not empty
-##bin_SCRIPTS = $(bin_SCRIPTS) fvwm-menu-xlock fvwm-menu-directory fvwm-menu-desktop
-
+bin_SCRIPTS = fvwmbug fvwm-menu-xlock fvwm-menu-directory \
+	fvwm-menu-desktop fvwm-menu-headlines
 
 EXTRA_PROGRAMS = xpmroot
 
 man_MANS = xpmroot.1 fvwmbug.1 fvwmrc_convert.1 \
-	fvwm-menu-xlock.1 fvwm-menu-directory.1 fvwm-menu-desktop.1
-EXTRA_DIST = fvwmrc_convert quantize_pixmaps $(man_MANS) \
-	fvwm-menu-xlock fvwm-menu-directory fvwm-menu-desktop
+	fvwm-menu-xlock.1 fvwm-menu-directory.1 \
+	fvwm-menu-desktop.1 fvwm-menu-headlines.1
+EXTRA_DIST = fvwmrc_convert quantize_pixmaps $(man_MANS)
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) \
 	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
@@ -38,7 +34,15 @@ _fvwm-menu-directory.1: fvwm-menu-directory.in
 	mv $$TMP/fvwm-menu-directory.1 .; \
 	rm -rf $$TMP)
 
-pod2man: _fvwm-menu-xlock.1 _fvwm-menu-directory.1
+_fvwm-menu-headlines.1: fvwm-menu-headlines.in
+	@TMP=tmp-$$$$ && (\
+	mkdir $$TMP && \
+	cp fvwm-menu-headlines.in $$TMP/fvwm-menu-headlines && \
+	pod2man --center "Fvwm Utility" $$TMP/fvwm-menu-headlines >$$TMP/fvwm-menu-headlines.1 2>/dev/null && \
+	mv $$TMP/fvwm-menu-headlines.1 .; \
+	rm -rf $$TMP)
+
+pod2man: _fvwm-menu-xlock.1 _fvwm-menu-directory.1 _fvwm-menu-headlines.1
 
 fvwmbug: fvwmbug.sh
 	@rm -f $@

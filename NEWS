@@ -3,6 +3,10 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.12 (not released yet)
 
+* A new configurable script fvwm-menu-headlines to show headlines of some
+  popular web sites in your fvwm menus. Supported sites: FreshMeat, LinuxToday,
+  Slashdot, Segfault and more to come.
+
 Changes in beta release 2.3.11 (December 1999)
 
 * Sticky icon titles are drawn similar to sticky window titles.

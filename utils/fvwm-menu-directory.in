@@ -29,7 +29,7 @@ my $links = 0;  # either follow linked dirs or not
 my $order = 5;  # -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6
 my $reuse = 0;  # non-popup mode
 my $checkSubdir = 0;  # whether check subdirs for +x permissions
-my $specialDirs = 0;  # whether include '..' and '~' dirs
+my $specialDirVal = undef;  # which of (.. ~ /) dirs include or none
 my $memoryForSpeed = 0;
 my $submenuPos = " item +100 c";  # " menu +0 +0"
 my $dirFile = "$home/.fmd.dir";
@@ -55,7 +55,7 @@ GetOptions(
 	"exec-title=s" => \$execT,
 	"reuse!"       => \$reuse,
 	"check-subdir!"     => \$checkSubdir,
-	"special-dirs!"     => \$specialDirs,
+	"special-dirs:s"    => \$specialDirVal,
 	"memory-for-speed!" => \$memoryForSpeed,
 ) || wrongUsage();
 wrongUsage() if @ARGV;
@@ -114,6 +114,30 @@ $execA = $execA =~ /^\^(.*)$/? $1: "$xterm $execA" if defined $execA;
 $execF =~ s/[\s]*$/ / if $execF;
 $execA =~ s/[\s]*$/ / if $execA;
 
+# manage special directories if needed
+my ($specialDirLines, $specialDirPos, , @specialDirs) = ("");
+$specialDirVal = "1,2" if defined $specialDirVal && $specialDirVal eq "";
+if ($specialDirVal && $specialDirVal =~ /([\d,]+)(-?)/) {
+	@specialDirs = grep(/^[1-3]$/, split(/,+/, $1));
+	$specialDirPos = $2? -1: 1;
+}
+if (@specialDirs) {
+	my $parentDir = $dir eq '/' || $dir !~ m!^(.*)/[^\/]+$!? undef: $1;
+	$parentDir = '/' if defined $parentDir && $parentDir eq '';
+	my @specialDirDef = (
+		[ '..' => $parentDir ],
+		[ '~'  => $home ],
+		[ '/'  => '/' ],
+	);
+	foreach (@specialDirs) {
+		$specialDirLines .= qq(+ "" Nop\n) if $specialDirLines;
+		$specialDirLines .= evalFolderLine(@{$specialDirDef[$_ - 1]});
+	}
+} else {
+	$specialDirPos = 0;
+}
+
+# create file listing
 opendir(DIR, ".");
 my @files = readdir(DIR);
 closedir(DIR);
@@ -147,14 +171,8 @@ print qq(+ "$iconTStr$title" $titleAct\n);
 # add a separator
 print qq(+ "" Nop\n);
 
-if ($specialDirs) {
-	my $parentDir = $dir eq '/' || $dir !~ m!^(.*)/[^\/]+$!? undef: $1;
-	$parentDir = '/' if defined $parentDir && $parentDir eq '';
-	print evalFolderLine("..", $parentDir);
-	print qq(+ "" Nop\n);
-	print evalFolderLine("~", $home);
-	print qq(+ "" Nop\n);
-}
+# add special dirs at the top if needed
+print qq($specialDirLines+ "" Nop\n) if $specialDirPos > 0;
 
 # add directory contents
 foreach (@files) {
@@ -174,6 +192,13 @@ foreach (@files) {
 		print qq(+ "$iconStr$itemStr" $fileAct\n);
 	}
 }
+
+# add special dirs at the bottom if needed
+print qq(+ "" Nop\n$specialDirLines) if $specialDirPos < 0;
+
+exit(0);
+
+# ---------------------------------------------------------------------------
 
 sub evalFolderLine ($$) {
 	my ($_name, $dir) = @_;
@@ -219,7 +244,8 @@ sub evalItem ($$) {
 #		$type = 3 if ($mode & 0060000);  # block
 #		$type = 5 if ($mode & 0020000);  # char-dev
 #		$type = 6 if ($mode & 0010000);  # fifo
-		$type = -p _? 6: -c _? 5: -b _? 3: -l $file? 1: -S _? 0: -d _? 4: 2;
+		$type = -p _? 6: -c _? 5: -b _? 3: -l $file? 1:
+			-S _? 0: -d _? 4: 2;
 		$itemStr =~ s/%t/$type1[$type]/g;
 		$itemStr =~ s/%T/$type2[$type]/g;
 	}
@@ -245,7 +271,7 @@ sub showHelp {
 	print "\t--version          show the version and exit\n";
 	print "\t--name=NAME        menu name,  default is '$name'\n";
 	print "\t--title=NAME       menu title, default is '$title'\n";
-	print "\t--format=NAME      menu item format, default is '$itemF'\n";
+	print "\t--item=NAME        menu item format, default is '$itemF'\n";
 	print "\t--icon-app=XPM     menu +x    icon, default is no\n";
 	print "\t--icon-dir=XPM     menu dir   icon, default is no\n";
 	print "\t--icon-file=XPM    menu file  icon, default is no\n";
@@ -279,6 +305,7 @@ sub wrongUsage {
 	exit -1;
 }
 
+__END__
 
 # ---------------------------------------------------------------------------
 
@@ -293,7 +320,7 @@ B<fvwm-menu-directory>
 [ B<--version>|B<-v> ]
 [ B<--name>|B<-na> NAME ]
 [ B<--title>|B<-t> NAME ]
-[ B<--format>|B<-f> NAME ]
+[ B<--item>|B<-it> NAME ]
 [ B<--icon-app>|B<-icon-a> XPM ]
 [ B<--icon-dir>|B<-icon-d> XPM ]
 [ B<--icon-file>|B<-icon-f> XPM ]
@@ -308,7 +335,7 @@ B<fvwm-menu-directory>
 [ B<--exec-title>|B<-exec-t> CMD ]
 [ B<--[no]reuse>|B<-r> ]
 [ B<--[no]check-subdir>|B<-c> ]
-[ B<--[no]special-dirs>|B<-s> ]
+[ B<--special-dirs>|B<-s> [VALUE] ]
 [ B<--[no]memory-for-speed>|B<-m> ]
 
 =head1 DESCRIPTION
@@ -326,7 +353,7 @@ B<--name=NAME>  - menu name, used only with --reuse, default is MenuBrowser
 
 B<--title=NAME> - menu title format, default is '%*-40p' - last 40 characters
 of the current full path. TAB can be specified as '\t', but in fvwmrc you
-must specify a double backslash or a real TAB.
+should specify a double backslash or a real TAB.
 
 Format specifiers:
   %d - the current directory name
@@ -340,7 +367,7 @@ with "...", example: %*30x. Both can be combined: %-10*-20x, this instructs to
 get only the 20 last characters, but if the length is less then 10 - to fill
 with up to 10 spaces on the right.
 
-B<--format=NAME> - menu item format, default is '%n'. TAB and width modifiers
+B<--item=NAME> - menu item format, default is '%n'. TAB and width modifiers
 for %n, %N and %s can be specified as described in B<--title> above.
 Note, specifying a non default format slows the script.
 
@@ -353,7 +380,7 @@ Format specifiers:
   %t - file/dir type (File|Dir |Link|Sock|Blck|Char|Pipe)
   %T - file/dir type (F|D|L|S|B|C|P)
 
-Example: --title '%*-40p\tDate, Type\tSize' --format '%*40n\t%d %t\t%s'
+Example: --title '%*-40p\tDate, Type\tSize' --item '%*40n\t%d %t\t%s'
 
 B<--icon-app=XPM>   - menu application icon, default is no
 
@@ -406,8 +433,13 @@ The default is --nocheck-subdirs, because: 1) enabling this slows a bit the
 script, 2) with this option enabled, if no icons used and no dir/file separate
 sorting used there is no way to know that the item is directory and not file.
 
-B<--[no]special-dirs> - include .. and ~ directories, default is
---nospecial-dirs
+B<--special-dirs>[=VALUE] - add .. or ~ or / special directories according to
+given optional value. Without with option these directories are not added.
+Default value if not specified is "1,2". The value is comma separated ordered
+special directory indexes, where 1 is parent directory, 2 is home directory,
+3 is root directory. If minus is prepended to the value, special directories
+are added at the bottom of menu instead of top. Value "0" or any bad value
+is equivalent to non-specifying this option at all.
 
 B<--[no]memory-for-speed> - use speed optimization, default is
 --nomemory-for-speed
@@ -416,7 +448,7 @@ B<--[no]memory-for-speed> - use speed optimization, default is
     that is never free'd again while fvwm is running.
 
 Option parameters can be specified both using '=' and in the next argument.
-Short options are ok if not ambiguous: -a, -x, -icon-f.
+Short options are ok if not ambiguous: C<-a>, C<-x>, C<-icon-f>.
 
 =head1 USAGE
 
@@ -445,13 +477,13 @@ and enable busy cursor
 
 in your configuration file when using this script for better results.
 
-Another very interesting usage (--reuse or -r is mandatary for this):
+Another very interesting usage (C<--reuse> or C<-r> is mandatary for this):
 
   AddToMenu MenuBrowser
   + DynamicPopupAction Piperead "fvwm-menu-directory -r -na MenuBrowser -d / -s"
   AddToMenu SomeMenu "My Browser" Menu MenuBrowser
 
-Here --dir starting parameter is ignored if there is ~/.fmd.dir file,
+Here C<--dir> starting parameter is ignored if there is ~/.fmd.dir file,
 you can delete it.
 
 =head1 AUTHORS

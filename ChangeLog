@@ -1,3 +1,9 @@
+1999-12-17  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS: a note about fvwm-menu-headlines
+	* configure.in: added fvwm-menu-headlines generation, added a warning
+	when perl is not found
+
 1999-12-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (RedrawBorder):
@@ -118,7 +124,7 @@
 	* libs/Colorset.c (SetWindowBackground):
 	shape from colour set can be removed too
 
-1999-12-09  olicha   <olivier.chapuis@free.fr>
+1999-12-09  olicha  <olivier.chapuis@free.fr>
 
 	* libs/WinMagic.c (SlideWindow):
 	* libs/fvwmlib.h:
@@ -227,7 +233,7 @@
 	(draw_frame_relief):
 	improved drawing of thin borders
 
-1999-11-29  olicha   <olivier.chapuis@free.fr>
+1999-11-29  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/bindings.c (ParseBinding):
 	* fvwm/builtins.c (strokeFunc):
@@ -297,7 +303,7 @@
 	* fvwm/placement.c (PlaceWindow):
 	overhauled placement code
 
-1999-11-28  olicha   <olivier.chapuis@free.fr>
+1999-11-28  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/builtins.c (strokeFunc):
 	* fvwm/fvwm2.1:
@@ -551,7 +557,7 @@
 	removed GRADIENT_BUTTONS, PIXMAP_BUTTONS, VECTOR_BUTTONS, BORDERSTYLE,
 	EXTENDED_TITLESTYLE, ACTIVEDOWN_BTNS and INACTIVE_BTNS options
 
-1999-11-18  olicha   <olivier.chapuis@free.fr>
+1999-11-18  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Module.{c,h} (SendFvwmPipe): Added SendFvwmPipe form
 	FvwmIconMan
