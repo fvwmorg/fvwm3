@@ -9,12 +9,12 @@
 .\"  context                            typeface        example
 .\"  ---------------------------------- --------------  -----------------
 .\"  filenames:                         italics (.I)    .I .fvwm2rc
-.\"  command line options of fvwm2 cmd: bold (.B)       .B \-cmd
-.\"  arguments of command line options: italics (.I)    .BI \-cmd command
+.\"  command line options of fvwm cmd:  bold (.B)       .B \-cmd
+.\"  arguments of command line options: italics (.I)    .BI "\-cmd " command
 .\"  built in commands:                 bold (.B)       .B Move
-.\"  references to built in commands:   bold (.B)       .RB See Move
-.\"  references to man page sections:   bold (.B)       .RB See SYNOPSIS
-.\"  references to style options:       italics (.I)    .RI See Lenience
+.\"  references to built in commands:   bold (.B)       .RB "See " Move
+.\"  references to man page sections:   bold (.B)       .RB "See " SYNOPSIS
+.\"  references to style options:       italics (.I)    .RI "See " Lenience
 .\"  built in command options:          italics (.I)    .BI "Move " "0 0"
 .\"  command syntax:                    bold/ita. (.BI) .BI "Move [" "x y" "]"
 .\"  environment variables:             italics (.I)    .I $DISPLAY
@@ -28,7 +28,7 @@
 .\"
 .\" The name fvwm is written in lower case throughout this man
 .\" page.  Fvwm is written without a version number, i.e. fvwm,
-.\" not fvwm2.  The latter is used only in file names.
+.\" not fvwm2.  The latter is used only in the .fvwm2rc file name.
 .\"
 .\" Note that the word "will" is rarely correct in a man page or
 .\" any document. Describe what fvwm does, not what it will do,
@@ -61,14 +61,14 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH FVWM2 1 "30 Mar 2002"
+.TH FVWM 1 "11 Apr 2002"
 .UC
 .SH NAME
 
-fvwm2 \- F(?) Virtual Window Manager (version 2) for X11
+fvwm \- F(?) Virtual Window Manager (version 2) for X11
 .SH SYNOPSIS
 
-.B fvwm2
+.B fvwm
 .RB [ \-blackout ]
 .RB [ \-clientId
 .IR       id ]
@@ -102,8 +102,8 @@ Note that there are several window managers around that have
 commonly called fvwm2 to distinguish it from the former version
 1.x (fvwm or even fvwm1).  Since version 1.x has been replaced by
 version 2.x a long time ago we simply call version 2.x and all
-versions to come, fvwm, throughout this document, although the
-executable program is named fvwm2.  There is an fvwm offspring
+versions to come, fvwm, throughout this document, and the
+executable program is named fvwm.  There is an fvwm offspring
 called fvwm95. Although it is very similar to older versions of
 fvwm version 2 it is technically a different window manager that
 has been developed by different people.  The main goal of fvwm95
@@ -719,7 +719,7 @@ The differences between
 .SM ICCCM
 2.0 compliant window manager; thus
 .EX
-fvwm2; vi .fvwm2rc; fvwm2 -replace
+fvwm; vi .fvwm2rc; fvwm -replace
 .EE
 resembles the
 .B Restart
@@ -862,7 +862,7 @@ in your
 .I .fvwm2rc
 file (if it appears at all), and start fvwm with the command
 .EX
-fvwm2 -cmd "FvwmM4 .fvwm2rc"
+fvwm -cmd "FvwmM4 .fvwm2rc"
 .EE
 
 .SH CPP PREPROCESSING
@@ -1118,7 +1118,7 @@ serious problem, since with session management, you are supposed
 to quit a session through the session manager anyway. If it is
 really needed,
 .EX
-Exec exec killall fvwm2
+Exec exec killall fvwm
 .EE
 still kills all copies of fvwm.  Your system must have the
 .B killall
@@ -2924,8 +2924,8 @@ taskbars use the IconicState WM_STATE state to determine if an
 application is iconified.  This state, according to the
 .SM ICCCM ,
 does not imply that a window is iconified (in the usual sense).
-Turning on this option forces fvwm2 to establish an equivalence
-between the IconicState WM_STATE state an iconified window.
+Turning on this option forces fvwm to establish an equivalence
+between the IconicState WM_STATE state and the iconified window.
 This violates
 .SM ICCCM
 compliance but should not cause big problems.
@@ -8728,19 +8728,19 @@ variables
 .IR $VAR " or " ${VAR} . Here are several examples:
 .EX
 Key F1 R N Restart
-Key F1 R N Restart fvwm2 -s
-Key F1 R N Restart ~/bin/fvwm2 -f $HOME/.fvwm/main
-Key F1 R N Restart fvwm1 -s -f .fvwm1rc
+Key F1 R N Restart fvwm -s
+Key F1 R N Restart ~/bin/fvwm -f $HOME/.fvwm/main
+Key F1 R N Restart fvwm1 -s -f .fvwmrc
 Key F1 R N Restart xterm -n '"X console"' \\
   -T \\"X\\ console\\" -e fvwm1 -s
 .EE
 If you need a native restart, we suggest only to use
 .B Restart
-command without parameters unless there is a reason not to. If you
-use 'Restart fvwm2', all current command line arguments are lost,
-while on Restart without parameters or with --pass-args, they are
-preserved. Here are some cases when 'Restart fvwm2' causes
-troubles:
+command without parameters unless there is a reason not to.  If you
+still use an old command 'Restart fvwm2' that was correct in 2.2.x,
+all current command line arguments are lost.  On Restart without
+parameters or with --pass-args, they are preserved.  Here are some
+cases when 'Restart fvwm2' or 'Restart fvwm' cause troubles:
 .EX
 * running fvwm under a session manager
 * running fvwm with multi headed displays
@@ -8748,9 +8748,9 @@ troubles:
 * if the first fvwm2 in the $PATH is a different one
 .EE
 This is why we are issuing a warning on an old usage. If you
-really want to restart to fvwm2 with no additional arguments, you
-may get rid of this warning by using "Restart fvwm2 -s" or
-"Restart /full/path/fvwm2".
+really want to restart to fvwm with no additional arguments, you
+may get rid of this warning by using "Restart fvwm -s" or
+"Restart /full/path/fvwm".
 
 Note, currently with multi headed displays, restart of fvwms on
 different screens works independently.

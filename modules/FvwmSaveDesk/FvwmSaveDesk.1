@@ -39,7 +39,7 @@ option -m4-prefix and then will provide the option -P to M4.
 I personally use the FvwmM4 module this way.
 .nf
 .sp
-fvwm2 -cmd "FvwmM4 -m4-prefix -m4opt -I$HOME $HOME/.fvwm2rc"
+fvwm -cmd "FvwmM4 -m4-prefix -m4opt -I$HOME $HOME/.fvwm2rc"
 .sp
 .fi
 Simply add the following line to the end of .fvwm2rc:
@@ -54,7 +54,7 @@ directives starts with the comment character '#' and will
 complain about unknown directives, if you have comments in your .fvwm2rc.
 .nf
 .sp
-fvwm2 -cmd "FvwmCpp -C-I$HOME $HOME/.fvwm2rc"
+fvwm -cmd "FvwmCpp -C-I$HOME $HOME/.fvwm2rc"
 .sp
 .fi
 Simply add the following line to the end of .fvwm2rc:

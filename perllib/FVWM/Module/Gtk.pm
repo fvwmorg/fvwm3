@@ -155,6 +155,6 @@ Kenneth Albanowski, Paolo Molaro for Gtk/Perl extension.
 
 =head1 SEE ALSO
 
-For more information, see L<fvwm2>, L<FVWM::Module> and L<Gtk>.
+For more information, see L<fvwm>, L<FVWM::Module> and L<Gtk>.
 
 =cut

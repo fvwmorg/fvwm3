@@ -278,8 +278,8 @@ void veryLongLoop()
 	    XClearArea(xg.dpy, xg.win, 0,0,0,0, True);
 	  break;
 	}
-    } else if (eventType==FOUND_FVWM_MESSAGE) { /*we have a fvwm2 message */
-      /* two cases, one where item is a file, other where we have a subdir*/
+    } else if (eventType==FOUND_FVWM_MESSAGE) { /* we have an fvwm message */
+      /* two cases, one where item is a file, other where we have a subdir */
       parseFvwmMessage(fvwmMessage);
       dragwellAnimate();
     } else {
@@ -735,7 +735,7 @@ static void change_colorset(int colorset)
 /***************************************************************************
  *
  * myXNextEvent - waits for the next event, which is either an XEvent,
- *                  or a fvwm2 event.
+ *                  or an fvwm event.
  * Arguements:
  *   event - the XEvent that is possibly found.
  *   fvwmMessage - the FvwmMessage that is possibly found.
@@ -761,7 +761,7 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
 
   FD_ZERO(&in_fdset);
   FD_SET(xg.xfd,&in_fdset); /*look for x events*/
-  FD_SET(fd[1],&in_fdset); /*look for fvwm2 events*/
+  FD_SET(fd[1],&in_fdset); /*look for fvwm events*/
   if (select(xg.fdWidth,SELECT_FD_SET_CAST &in_fdset, 0, 0, NULL) > 0) /*wait */
   {
     if(FD_ISSET(xg.xfd, &in_fdset))

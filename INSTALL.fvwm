@@ -31,9 +31,9 @@ Or you may feel more comfortable with a complete cleaning:
 What gets installed, and where
 ==============================
 
-* fvwm2 is installed into ${prefix}/bin
+* fvwm is installed into ${prefix}/bin
 * a couple of utilities are also installed into ${prefix}/bin; this includes
-  fvwm-config, fvwm-menu-*, FvwmCommand, fvwmbug, fvwm24_convert, xpmroot
+  fvwm-config, fvwm-menu-*, fvwm-bug, fvwm-convert-*, fvwm-root, FvwmCommand
 * all FvwmModule modules are installed into ${libexecdir}/fvwm/${VERSION}
 * all manual pages are installed into ${mandir}/man1
 * some configuration files are installed into ${datadir}/fvwm, for example,
@@ -88,7 +88,7 @@ directory.  See the FvwmForm man page for some examples.
 For users starting fvwm without a .fvwm2rc file, there are built-in
 dialogs that can copy files from the configuration directory into the
 users home directory to create the users starting .fvwm2rc.
-See the fvwm2 man page under "INITIALIZATION".
+See the fvwm man page under "INITIALIZATION".
 
 
 Bug Reports
@@ -171,7 +171,7 @@ Disabling both disables readline support, like --without-readline-library.
 
 LibStroke allows interpretation by fvwm of mouse strokes (i.e., motions
 of the mouse). For more informations see the  LibStroke web page at
-http://www.etla.net/~willey/projects/libstroke/ and the fvwm2 man page.
+http://www.etla.net/~willey/projects/libstroke/ and the fvwm man page.
 
 If configure doesn't do the right thing, try one or more of the
 following flags (examples assume library is named "foo"):
@@ -306,7 +306,7 @@ Note that no additional libraries are needed for supporting GNOME hints.
 
 By default, FVWM supports the extended window manager hints specification
 (used by GNOME 2 and KDE version 2 or 3). This turns this support off.
-See the fvwm2 manual page for more details on this support.
+See the fvwm manual page for more details on this support.
 
 
   --disable-sm                  disable session management support
@@ -351,7 +351,7 @@ rendering is enabled fvwm performs more redrawing that may cause text
 flickering. Moreover, this option adds a not negligible amount of shared
 memory to all fvwm processes. You need XFree version >= 4.1 and freetype2
 version >= 6.1.0 (aka version 2.0.6), but more recent versions are better.
-The FONT NAMES AND FONT LOADING section of the fvwm2 manual page explains
+The FONT NAMES AND FONT LOADING section of the fvwm manual page explains
 how to enable anti-aliased rendering.
 
 

@@ -57,7 +57,7 @@
 # KDE menus: fvwm-menu-desktop (man fvwm-menu-desktop for details). If GNOME
 # and/or KDE are installed in your machine, Setup95 will ask you which menus
 # you want to add to your Programs sub menus (G_SM_G/F means FvwmGtk/fvwm
-# gnome system menu, G_SM_G/F means FvwmGtk/fvwm2 gnome user menu, G_RHM_G/F
+# gnome system menu, G_SM_G/F means FvwmGtk/fvwm gnome user menu, G_RHM_G/F
 # means gnome redhat menu, G_M_G means that we need to start FvwmGtk, K_SM
 # means kde system menu and K_UM means kde user menu. You may have to edit
 # the line G_*M_* to set your GNOME install directory (Setup95 try to
@@ -1360,7 +1360,7 @@ Key Tab	A CM	WindowList Root c c NoGeometry, OnlyListSkip, SelectOnRelease
 #------------------------------------------------------------------------------
 #
 # You need fvwm compiled with stroke support and libstroke installed
-# See the Stroke and StrokeFunc entries in fvwm2 man page
+# See the Stroke and StrokeFunc entries in the fvwm man page
 # We use mostly simple stroke motion. For complex stroke motions we need
 # to consider many sloppy stroke motions for each action.
 
@@ -2233,7 +2233,7 @@ AddToFunc   ViewManPage
 
 DestroyMenu FvwmManPage
 AddToMenu   FvwmManPage "FVWM Man Pages" Title
-+ "%mini.book1.xpm%fvwm2"               ViewManPage fvwm2
++ "%mini.book1.xpm%fvwm"                ViewManPage fvwm
 + "%mini.book1.xpm%FvwmAnimate"         ViewManPage FvwmAnimate
 + "%mini.book1.xpm%FvwmAuto"            ViewManPage FvwmAuto
 + "%mini.book1.xpm%FvwmBacker"          ViewManPage FvwmBacker
@@ -3189,7 +3189,7 @@ DestroyModuleConfig FvwmWinList: *
 #	$F/.start-FvwmEvent; \
 #	 	do /bin/cp $i-$X $i;
 #	done;
-#	fvwm2
+#	fvwm
 #   ;;
 #   gnome)
 #	F="your FVWM_USERDIR"

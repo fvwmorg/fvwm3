@@ -133,9 +133,9 @@ from your changed Makefile.am.
 
 Makefile.am has a simple format, basically:
 
-        bin_PROGRAMS = fvwm2
+        bin_PROGRAMS = fvwm
 
-        fvmw2_SOURCES = blah.c blah.h foo.c foo.h ...
+        fvmw_SOURCES = blah.c blah.h foo.c foo.h ...
 
 Notice that you have to add all files, C-code *and* headers, to
 the _SOURCES line.  This is vital, because this is the list of
@@ -174,7 +174,7 @@ Preparations:
     and check it out from scratch to ensure all source files have
     been added to CVS.
   - For a stable release, change the dates in docs/fvwm.lsm.in,
-    fvwm/fvwm2.1 and fill in the release date in NEWS.  Commit
+    fvwm/fvwm.1 and fill in the release date in NEWS.  Commit
     these changes.
   - For a stable release, update docs/ANNOUNCE file.  For the
     first version of a major release (e.g. 2.6.0) all user visible

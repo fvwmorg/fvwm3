@@ -99,7 +99,7 @@ AddButtonStyle 8 Pixmap button-close.xpm
 # MenuStyle
 #
 # MenuStyle is perhaps the most complicated configuration option. For this
-# reason we suggest you read the fvwm2 man page.  However, using the
+# reason we suggest you read the fvwm man page.  However, using the
 # MenuStyle definition below, we will attempt to give you an idea of how to
 # use it.
 #
@@ -180,7 +180,7 @@ OpaqueMoveSize 50
 # this option to affect.  You can use wildcards (such as * or ?), thus
 # "*" specifies options for all windows.
 # The options that you can specify with the Style command are many and varied
-# and really warrant a look at the fvwm2 man page.
+# and really warrant a look at the fvwm man page.
 #
 #  We set up some global defaults here for all windows.
 Style "*" ForeColor grey40

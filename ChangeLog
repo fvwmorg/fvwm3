@@ -1,5 +1,11 @@
 2002-04-11  Mikhael Goikhman  <migo@homemail.com>
 
+	* **:
+	renamed fvwm2 executable to fvwm, fvwm2 man page to fvwm;
+	documentation updated
+
+2002-04-11  Mikhael Goikhman  <migo@homemail.com>
+
 	* NEWS:
 	added 2.4.7 entries
 
@@ -76,7 +82,6 @@
 	new Style options TopTitleRotated / TopTitleNotRotated,
 	BottomTitleRotated / BottomTitleNotRotated
 
->>>>>>> 1.1738
 2002-04-08  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Makefile.am:

@@ -189,6 +189,6 @@ Nick Ing-Simmons <Nick.Ing-Simmons@tiuk.ti.com> for Tk Perl extension.
 
 =head1 SEE ALSO
 
-For more information, see L<fvwm2>, L<FVWM::Module> and L<Tk>.
+For more information, see L<fvwm>, L<FVWM::Module> and L<Tk>.
 
 =cut

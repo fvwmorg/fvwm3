@@ -93,7 +93,7 @@ Finished off GSFR in modules.
 
 Albrecht Kadlec:
 Code & manual cleanups, enhancements, Fixes and module-library which
-partially made it into fvwm2.0.42-47d.
+partially made it into fvwm-2.0.42-47d.
 Rewrite & cleanup of FvwmAuto & FvwmAudio.
 Created FvwmEvent to supersede FvwmAudio (& FvwmAuto).
 
@@ -172,12 +172,12 @@ GSFR for the modules.
 
 Charles Hines:
 Contributed some patches in the early days of fvwm.  Later took over
-maintenance of fvwm2 after Rob Nation, the original author of fvwm, decided to
-"retire".  Made a fair amount of changes and fixes, and incorporated changes
-and fixes from numerous people all over the net.  Did this from about August
-of 1995 until May of 1998 when he came to the realization that he didn't have
-enough time to properly devote to it and decided to "retire" himself, handing
-Brady Montz the torch.  Shortly thereafter is when fvwm became "ruled by
+maintenance of fvwm-2.0.x after Rob Nation, the original author of fvwm,
+decided to "retire".  Made a fair amount of changes and fixes, and incorporated
+changes and fixes from numerous people all over the net.  Did this from about
+August of 1995 until May of 1998 when he came to the realization that he didn't
+have enough time to properly devote to it and decided to "retire" himself,
+handing Brady Montz the torch.  Shortly thereafter is when fvwm became "ruled by
 committee" and this previous fvwm dictator is now happy to see fvwm surviving
 and thriving with this new development methodology (and may even contribute
 again himself, someday).
@@ -187,7 +187,7 @@ Wrote extras/fvwmperl, before X11::Fvwm (available via CPAN) made it
 obsolete.
 
 Greg J. Badros:
-Substantial rewrite of fvwm2.0 menuing code to support arbitrary depth
+Substantial rewrite of fvwm-2.0.x menuing code to support arbitrary depth
 menus, animated menus, Win95 look, better logically-based shortcut keys,
 auto-splitting of long menus, check for re-used hot-keys, integrated
 LEFT_MENUS option.  Added primitives: animated-moves, SetEnv, fix to

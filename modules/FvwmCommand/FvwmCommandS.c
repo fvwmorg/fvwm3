@@ -564,7 +564,7 @@ void err_quit(const char *msg)
  * this is now implemented by simply adding the packet to a queue
  * and letting the main select loop handle sending from the queue to
  * the front end. In this way FvwmCommandS is always responsive to commands
- * from the input pipes. (it will also die a lot faster when fvwm2 quits)
+ * from the input pipes. (it will also die a lot faster when fvwm quits)
  */
 void relay_packet(unsigned long type, unsigned long length,
                   unsigned long *body)

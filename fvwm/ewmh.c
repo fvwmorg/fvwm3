@@ -105,7 +105,7 @@ ewmh_atom ewmh_atom_client_win[] =
 
 /* EWMH_ATOM_LIST_WM_STATE
  * the different wm state, a client can ask to add, remove or toggle
- * via a _NET_WM_STATE Client message. fvwm2 must maintain these states
+ * via a _NET_WM_STATE Client message. fvwm must maintain these states
  * too */
 ewmh_atom ewmh_atom_wm_state[] =
 {
@@ -358,7 +358,7 @@ void *ewmh_AtomGetByName(Window win, const char *atom_name,
 }
 
 /* ************************************************************************* *
- *  client_root: here the client is fvwm2
+ *  client_root: here the client is fvwm
  * ************************************************************************* */
 static
 int check_desk(void)
@@ -423,7 +423,7 @@ void EWMH_SetNumberOfDesktops(void)
 }
 
 /* ************************************************************************* *
- *  client_win: here the client is fvwm2
+ *  client_win: here the client is fvwm
  * ************************************************************************* */
 void EWMH_SetActiveWindow(Window w)
 {
@@ -449,7 +449,7 @@ void EWMH_SetWMDesktop(FvwmWindow *fwin)
 }
 
 /* ************************************************************************* *
- *  fvwm2 must maintain the _NET_WM_STATE
+ *  fvwm must maintain the _NET_WM_STATE
  * ************************************************************************* */
 
 void EWMH_SetWMState(FvwmWindow *fwin, Bool do_restore)

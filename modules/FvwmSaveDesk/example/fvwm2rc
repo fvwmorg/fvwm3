@@ -75,8 +75,7 @@ Style "DOS in a BOX"       Icon dosemu.xpm
 # restart, or switch to another WM.
 AddToMenu "Quit-Verify" "Really Quit Fvwm? " Title
 +              "Yes, Really Quit " Quit
-+              "Restart fvwm " Restart fvwm2
-+              "Restart fvwm 1.x" Restart fvwm
++              "Restart" Restart
 +              "Start mwm " Restart mwm
 +              "" Nop
 +              "No, Don't Quit " Nop

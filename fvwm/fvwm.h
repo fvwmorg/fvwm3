@@ -398,7 +398,7 @@ typedef struct
 	/* is the icon pixmap ours to free? */
 	unsigned is_pixmap_ours : 1;
 	unsigned is_placed_wb3 : 1;
-	/* fvwm2 place the window itself */
+	/* fvwm places the window itself */
 	unsigned is_placed_by_fvwm : 1;
 	/* mark window to be destroyed after last complex func has finished. */
 	unsigned is_scheduled_for_destroy : 1;

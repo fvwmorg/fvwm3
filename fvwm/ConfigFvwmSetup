@@ -1,5 +1,5 @@
 # This file is copied to a new user's FVWM_USERDIR by FvwmForm-Setup form.
-# This file contains the commands fvwm2 reads while starting.
+# This file contains the commands fvwm reads while starting.
 #
 
 EdgeResistance 250 10

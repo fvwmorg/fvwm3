@@ -1,15 +1,15 @@
 ## Process this file with automake to create Makefile.in
 
 configdir = @FVWM_DATADIR@
-bin_PROGRAMS = fvwm2
+bin_PROGRAMS = fvwm
 
 EXTRA_DIST = $(man_MANS) $(config_DATA)
-man_MANS = fvwm2.1
+man_MANS = fvwm.1
 
 config_DATA = ConfigFvwmDefaults ConfigFvwmSetup
 
 ## please keep .c file in largest first order to speed up parallel makes
-fvwm2_SOURCES = \
+fvwm_SOURCES = \
 	add_window.h bindings.h borders.h builtins.h colormaps.h colors.h \
 	commands.h conditional.h cursor.h decorations.h events.h ewmh.h \
 	ewmh_intern.h externs.h focus.h functions.h fvwm.h geometry.h \
@@ -25,7 +25,7 @@ fvwm2_SOURCES = \
 	ewmh_events.c ewmh_icons.c ewmh_names.c ewmh_conf.c schedule.c \
 	menuitem.c menustyle.c menudim.c menucmd.c windowshade.c frame.c
 
-fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+fvwm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) $(stroke_LIBS) \
 	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm \
@@ -40,3 +40,14 @@ AM_CFLAGS = \
 	-DFVWM_DATADIR=\"$(FVWM_DATADIR)\" \
 	-DFVWM_CONFDIR=\"$(FVWM_CONFDIR)\"
 
+## Create compatibility symlinks if available
+
+install-exec-local:
+	rm -f $(bindir)/fvwm2
+	$(LN_S) fvwm $(bindir)/fvwm2 || \
+		echo "Minor warning: $(bindir)/fvwm2 symlink was not created"
+
+install-data-local:
+	rm -f $(mandir)/fvwm2.1
+	$(LN_S) fvwm.1 $(mandir)/fvwm2.1 || \
+		echo "Minor warning: $(mandir)/fvwm2.1 symlink was not created"

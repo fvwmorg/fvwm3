@@ -1664,6 +1664,14 @@ void Done(int restart, char *command)
             "Use Restart without parameters if you mean to restart the same WM."
           );
         }
+        /* If we are at it, warn against a 'Restart fvwm' usage as well */
+        if (n == 1 && strcmp(my_argv[0], "fvwm") == 0)
+        {
+          fvwm_msg(WARN, "Done",
+            "`Restart fvwm' might not do what you want, see the man page.\n\t"
+            "Use Restart without parameters if you mean to restart the same WM."
+          );
+        }
         execvp(my_argv[0], my_argv);
         fvwm_msg(ERR, "Done", "Call of '%s' failed! (restarting '%s' instead)",
           my_argv[0], g_argv[0]);

@@ -3,7 +3,7 @@
 emulate zsh
 setopt magicequalsubst
 
-strings=(`strings =fvwm2 | grep -i -v restart | grep -i -v quit | grep -i -v wait | grep -i -v piperead`)
+strings=(`strings =fvwm | grep -i -v restart | grep -i -v quit | grep -i -v wait | grep -i -v piperead`)
 nstr=${#strings}
 seps=("+" "*" " " " " " " " " " " "\\" "\"" "\`" "'" "	" "	" "	" "\n")
 nsep=${#seps}

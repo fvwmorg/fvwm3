@@ -55,7 +55,7 @@ fvwm_datadir="@FVWM_DATADIR@"
 fvwm_perllibdir="@FVWM_PERLLIBDIR@"
 fvwm_imagepath="@FVWM_IMAGEPATH@"
 fvwm_userdir='$HOME/.fvwm'
-fvwm_exe='fvwm2'
+fvwm_exe='fvwm'
 
 with_bidi=@with_bidi@
 with_ewmh=@with_ewmh@

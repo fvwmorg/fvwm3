@@ -8,16 +8,16 @@ FvwmDragWell \- A XDND drag well
 \fBFvwmDragWell\fP
 
 FvwmDragWell is a Xdnd drag well.  The user sends the data and type to
-the drag well via a fvwm2 SendToModule command.  The drag well
+the drag well via a fvwm SendToModule command.  The drag well
 indicates that it received the information via a crude animation.  The
 user may then drag the information from the well to other applications
-that support the Xdnd standard.  The fvwm2 module FvwmWharf accepts
+that support the Xdnd standard.  The fvwm module FvwmWharf accepts
 drops of type "text/uri-list".
 
 .SH INITIALIZATION
 During initialization, \fIFvwmDragWell\fP gets config info from
 \fBfvwm\fP's module configuration database (see 
-.IR fvwm2 (1),
+.IR fvwm (1),
 section
 .BR "MODULE COMMANDS" ).
 If the FvwmDragWell executable is linked to another name, i.e. ln -s
@@ -65,7 +65,7 @@ SendToModule FvwmDragWell dragtype text/uri-list, \\
 .fi
 
 .SH INVOCATION
-FvwmDragWell must be invoked from fvwm2, so no command line invocation
+FvwmDragWell must be invoked from fvwm, so no command line invocation
 will work.
 
 

@@ -372,6 +372,8 @@ A: Some people find this annoying, but let me say that I did that for
           versions, since they rarely mention exactly what version
           they are running.
 
+   Note, starting from 2.5.1, the executable fvwm2 became fvwm again.
+
 ----------------------------------------------------------------------
 
 1.8  When will fvwm release X.Y.Z be ready?
@@ -396,7 +398,7 @@ A: Very easily, using the '--prefix' flag at configure time.
    needed]'.  Now, after building ("make") and installing ("make
    install"), you will find the binaries in /home/sam/bin, the
    man pages in /home/sam/man, etc.  The modules will be in
-   /home/sam/libexec, and fvwm2 binary will have this module path
+   /home/sam/libexec, and fvwm binary will have this module path
    built in.
 
 ----------------------------------------------------------------------
@@ -536,7 +538,7 @@ A: Since the latest fvwm versions are mostly GNOME compliant, you may
    help you build a list of gnome applications in fvwm menus.
 
    To ensure you will run FVWM and not gnome-session, create .Xclients
-   file in your home directory and put a call to fvwm2 in it.
+   file in your home directory and put a call to fvwm in it.
    The file ~/.xinitrc can be used for the similar purposes if you want
    to bypass any system-wide logic put by your distributor or sysadmin.
 
@@ -1233,7 +1235,7 @@ A: Please read the answer to the previous question to understand better.
 
 A: FVWM spawns itself into all found screens unless -s command line
    parameter is specified, as explained in the man page.  All spawned
-   fvwm2 processes by default use the same configuration on each screen.
+   fvwm processes by default use the same configuration on each screen.
    There are several ways to change the default behavior.
 
    Write your configuration file as you would if you had only one
@@ -1254,9 +1256,9 @@ A: FVWM spawns itself into all found screens unless -s command line
    is to specify a separate file for each screen explicitly.  For this,
    start a separate fvwm for each screen in your .xinitrc (or .Xclients):
 
-     fvwm2 -s -d :0.0 -f .fvwm2rc-0 &
-     fvwm2 -s -d :0.1 -f .fvwm2rc-1 &
-     fvwm2 -s -d :0.2 -f .fvwm2rc-2
+     fvwm -s -d :0.0 -f .fvwm2rc-0 &
+     fvwm -s -d :0.1 -f .fvwm2rc-1 &
+     fvwm -s -d :0.2 -f .fvwm2rc-2
 
    Note that only the last command is without a trailing ampersand.
    If you wish, .fvwm2rc-* files may all include line
@@ -1631,9 +1633,9 @@ A: The application won't allow it.  This has only been observed with
 5.8  How do I capture the output (e.g. errors) of fvwm?
 
 A: Errors are reported to the standard error file.  You can redirect
-   standard error to a file when fvwm is started: "fvwm2 2>
-   fvwm-errors".  X sessions started by xdm often redirect errors to a
-   file named ".xsession-errors".
+   standard error to a file when fvwm is started: "fvwm 2> fvwm-errors".
+   X sessions started by xdm often redirect errors to a file named
+   ".xsession-errors".
 
    Alternatively, FvwmConsole or "FvwmForm FvwmForm-Talk" modules
    will display error messages.

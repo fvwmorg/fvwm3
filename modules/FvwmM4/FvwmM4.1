@@ -31,7 +31,7 @@ If the user wants his entire .fvwm2rc file pre-processed with FvwmM4,
 then fvwm should be invoked as:
 
 .EX
-fvwm2 -cmd "FvwmM4 .fvwm2rc"
+fvwm -cmd "FvwmM4 .fvwm2rc"
 .EE
 
 Note that the argument to the option "-cmd" should be enclosed
@@ -39,7 +39,7 @@ in quotes, and no other quoting should be used. For example, a
 typical invocation might be:
 
 .EX
-fvwm2 -cmd "FvwmM4 -m4-squote { -m4-equote } .fvwm2rc"
+fvwm -cmd "FvwmM4 -m4-squote { -m4-equote } .fvwm2rc"
 .EE
 
 Some options can be specified on the command line:
@@ -178,7 +178,7 @@ define(COLOR,``Yes'')dnl
 define(FVWM_VERSION,``1.24l'')dnl
 define(OPTIONS,``SHAPE XPM M4 '')dnl
 define(FVWM_MODULEDIR,``/local/homes/dsp/nation/modules'')dnl
-define(FVWM_USERDIR,``/local/homes/dsp/nation/.fvwm2rc.d'')dnl
+define(FVWM_USERDIR,``/local/homes/dsp/nation/.fvwm'')dnl
 define(SESSION_MANAGER,``local/grumpy:/tmp/.ICE-unix/440,tcp/spx20:1025'')dnl
 .EE
 

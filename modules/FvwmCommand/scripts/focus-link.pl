@@ -66,10 +66,10 @@
 #  user function description are comments that start with ##
 
 # change path if necessary
-$FVWMCOMMAND = "/usr/X11/lib/X11/fvwm2/FvwmCommand";
+$FVWMCOMMAND = "/usr/X11/lib/X11/fvwm/FvwmCommand";
 # if not there, try this
 if (! -x $FVWMCOMMAND) {
-  $FVWMCOMMAND = "$ENV{HOME}/usr/X11/lib/X11/fvwm2/FvwmCommand";
+  $FVWMCOMMAND = "$ENV{HOME}/usr/X11/lib/X11/fvwm/FvwmCommand";
 }
 
 #********** user configurable function **************************

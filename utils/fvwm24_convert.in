@@ -253,7 +253,7 @@ sub parse_pass {
 	  print STDERR
 	    "Placement style names can not be converted automatically:";
 	  print STDERR
-	    "  See fvwm2(1), \"Window manager placement\" for instructions.";
+	    "  See fvwm(1), \"Window manager placement\" for instructions.";
 	}
 	print STDERR "  $_";
 	print $_;
