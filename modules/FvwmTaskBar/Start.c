@@ -28,6 +28,7 @@
 extern Display *dpy;
 extern Window Root, win;
 extern FlocaleFont *FButtonFont;
+extern char *Module;
 extern int Clength;
 extern char *ImagePath;
 extern int ColorLimit;
@@ -65,10 +66,12 @@ Bool StartButtonParseConfig(char *tline)
   char *rest;
   char *option;
   int i, j, k;
-  int titleRecorded = 0, iconRecorded = 0, actionRecorded = 0;
+  int titleRecorded = 0, iconRecorded = 0;
   char *tokens[100];  /* This seems really big */
   char *strtok_ptr;
   StartAndLaunchButtonItem *tempPtr;
+  int mouseButton;
+  char **tmpStrPtr;
 
   option = tline + Clength;
   i = GetTokenIndex(option, startopts, -1, &rest);
@@ -100,6 +103,7 @@ Bool StartButtonParseConfig(char *tline)
     CopyString(&(First_Start_Button->buttonCaption), rest);    
     break;
   case 1: /* StartMenu */
+    rest = ParseButtonOptions(rest, &mouseButton);
     if (First_Start_Button == NULL)
     {
       First_Start_Button = Last_Start_Button = (StartAndLaunchButtonItem*) safemalloc(sizeof(StartAndLaunchButtonItem));
@@ -115,12 +119,15 @@ Bool StartButtonParseConfig(char *tline)
       StartAndLaunchButtonItemInit(First_Start_Button);
       First_Start_Button->isStartButton = TRUE;      
     }
-    else if (First_Start_Button->buttonCommand  != NULL)
+    tmpStrPtr = (mouseButton ?
+                 &(First_Start_Button->buttonCommands[mouseButton-1]) :
+                 &(First_Start_Button->buttonCommand));
+    if (*tmpStrPtr)
     {
       /* declaring command twice, ignore */
       break;
     }
-    CopyString(&(First_Start_Button->buttonCommand), rest);   
+    CopyString(tmpStrPtr, rest);
     break;
   case 2: /* StartIcon */
     if (First_Start_Button == NULL)
@@ -146,6 +153,7 @@ Bool StartButtonParseConfig(char *tline)
     CopyString(&(First_Start_Button->buttonIconFileName), rest);   
    break;
   case 3: /* StartCommand */
+    rest = ParseButtonOptions(rest, &mouseButton);
     if (First_Start_Button == NULL)
     {
       First_Start_Button = Last_Start_Button = (StartAndLaunchButtonItem*) safemalloc(sizeof(StartAndLaunchButtonItem));
@@ -161,12 +169,15 @@ Bool StartButtonParseConfig(char *tline)
       StartAndLaunchButtonItemInit(First_Start_Button);
       First_Start_Button->isStartButton = TRUE;      
     }
-    else if (First_Start_Button->buttonIconFileName != NULL)
+    tmpStrPtr = (mouseButton ?
+                 &(First_Start_Button->buttonStartCommands[mouseButton-1]) :
+                 &(First_Start_Button->buttonStartCommand));
+    if (*tmpStrPtr)
     {
-      /* declaring icon twice, ignore */
+      /* declaring command twice, ignore */
       break;
     }
-    CopyString(&(First_Start_Button->buttonStartCommand), rest);   
+    CopyString(tmpStrPtr, rest);
     break;
   case 4:
     if (Last_Start_Button == NULL) 
@@ -179,7 +190,7 @@ Bool StartButtonParseConfig(char *tline)
 
     StartAndLaunchButtonItemInit(Last_Start_Button);
     j=0;
-    titleRecorded = iconRecorded = actionRecorded = 0;
+    titleRecorded = iconRecorded = 0;
     tokens[j++] = strtok_r(rest, ",", &strtok_ptr);
     while((tokens[j++] = strtok_r(NULL, ",", &strtok_ptr)))
       while(*(tokens[j-1])==' ')
@@ -206,19 +217,20 @@ Bool StartButtonParseConfig(char *tline)
       }
       else if (strncmp(tokens[k], "Action", 6)==0)
       {
-	tokens[j+1] = tokens[k] + ((sizeof(char))*6);
-	while(*(tokens[j+1])==' ')
-	  tokens[j+1]+=sizeof(char);
-	CopyString(&(Last_Start_Button->buttonCommand), tokens[j+1]);
-	actionRecorded = 1;
+	rest = tokens[k] + ((sizeof(char))*6);
+	rest = ParseButtonOptions(rest, &mouseButton);
+	tokens[j+1] = rest;
+	tmpStrPtr = (mouseButton ?
+		     &(Last_Start_Button->buttonStartCommands[mouseButton-1]) :
+		     &(Last_Start_Button->buttonStartCommand));
+	if (!(*tmpStrPtr))   /* don't let them set the same action twice */
+	  CopyString(tmpStrPtr, tokens[j+1]);
       }
     }
     if (titleRecorded==0)
       CopyString(&(Last_Start_Button->buttonCaption), "\0");
     if (iconRecorded==0)
       CopyString(&(Last_Start_Button->buttonIconFileName), "\0");
-    if (actionRecorded==0)
-      CopyString(&(Last_Start_Button->buttonCommand), "\0");
     break;
 
   case 5: /* WindowButtonsLeftMargin */
@@ -239,6 +251,68 @@ Bool StartButtonParseConfig(char *tline)
   } /* switch */
 
   return True;
+}
+
+/* Parse and set options for this taskbar button (start or launcher). This
+ * will check for a string of the form (<opt1>,<opt2>...), similar to options
+ * for an FvwmButtons button. The return value is a pointer to the rest of the
+ * config line.
+ *
+ * Currently this sets just one option, mouseButton. If no "Mouse <n>" option
+ * is found, mouseButton will be set to 0.
+ */
+char *ParseButtonOptions(char *pos, int *mouseButton)
+{
+  char *token = NULL;
+  char *rest;
+  int i;
+  static char *buttonOptions[] = {"Mouse", NULL};
+
+  *mouseButton = 0;
+  while (*pos && isspace(*pos))
+    pos++;
+  if (*pos != '(')
+    return pos;
+  pos++;
+  while (*pos && isspace(*pos))
+    pos++;
+
+  while (*pos && *pos != ')')
+  {
+    pos = GetNextToken(pos, &token);
+    if (!token)
+        break;
+    i = GetTokenIndex(token, buttonOptions, 0, NULL);
+    switch (i)
+    {
+    case 0:   /* Mouse */
+      *mouseButton = strtol(pos, &rest, 10);
+      pos = rest;
+      if (*mouseButton < 1 || *mouseButton > NUMBER_OF_MOUSE_BUTTONS)
+      {
+        fprintf(stderr,"%s: Invalid mouse button %d", Module, *mouseButton);
+        *mouseButton = 0;
+      }
+      break;
+
+    default:
+      fprintf(stderr,"%s: Invalid taskbar button option '%s'", Module, token);
+    }
+    while (*pos && *pos != ',' && *pos != ')')
+      pos++;
+    if (*pos == ',') {
+      pos++;
+      while (*pos && *pos != ',' && *pos != ')')
+        pos++;
+    }
+    free(token);
+  }
+
+  if (*pos)
+    pos++;
+  while (*pos && isspace(*pos))
+    pos++;
+  return pos;
 }
 
 void StartButtonInit(int height)
@@ -411,27 +485,36 @@ int MouseInStartButton(int x, int y, int *whichButton, Bool *startButtonPressed)
   return 0;
 }
 
-void getButtonCommand(int whichButton, char *tmp)
+void getButtonCommand(int whichButton, char *tmp, int mouseButton)
 {
   int i=0;
   StartAndLaunchButtonItem *tempPtr = First_Start_Button;
 
   for(i=0; i<whichButton; i++)
     tempPtr = tempPtr->tail;
+  mouseButton--;
 
-  if(tempPtr->isStartButton)
-      if (tempPtr->buttonCommand != NULL)
-	sprintf(tmp,"Popup %s rectangle $widthx$height+$left+$top 0 -100m", tempPtr->buttonCommand);
-      else if (tempPtr->buttonStartCommand != NULL)
-	sprintf(tmp,"%s", tempPtr->buttonStartCommand);
-      else
-	sprintf(tmp,"Popup StartMenu");
+  if (mouseButton < NUMBER_OF_MOUSE_BUTTONS && tempPtr->buttonCommands[mouseButton])
+    sprintf(tmp, "Popup %s rectangle $widthx$height+$left+$top 0 -100m",
+            tempPtr->buttonCommands[mouseButton]);
+  else if (mouseButton < NUMBER_OF_MOUSE_BUTTONS &&
+           tempPtr->buttonStartCommands[mouseButton])
+    sprintf(tmp, "%s", tempPtr->buttonStartCommands[mouseButton]);
+  else if (tempPtr->buttonCommand)
+    sprintf(tmp, "Popup %s rectangle $widthx$height+$left+$top 0 -100m",
+            tempPtr->buttonCommand);
+  else if (tempPtr->buttonStartCommand)
+    sprintf(tmp, "%s", tempPtr->buttonStartCommand);
+  else if (tempPtr->isStartButton)
+    sprintf(tmp, "Popup StartMenu");
   else
-    sprintf(tmp,"%s", tempPtr->buttonCommand);
+    sprintf(tmp, "Nop");
 }
 
 void StartAndLaunchButtonItemInit(StartAndLaunchButtonItem *item)
 {
+  int i;
+
   item->head = NULL;
   item->tail = NULL;
   item->index = 0;
@@ -444,4 +527,9 @@ void StartAndLaunchButtonItemInit(StartAndLaunchButtonItem *item)
   item->buttonCaption = NULL;
   item->buttonIconFileName = NULL;  
   item->buttonToolTip = NULL;
+  for (i=0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
+  {
+    item->buttonCommands[i] = NULL;
+    item->buttonStartCommands[i] = NULL;
+  }
 }

@@ -215,6 +215,15 @@ an icon denoted by \fIicon\fP, or a combination of the two.  The icons will
 appear to the immediate right of the start button, and will appear in the 
 order that they are declared in the .fvwm2rc file.
 
+To invoke different commands for different mouse clicks, use this syntax:
+
+.nf
+.sp
+*FvwmTaskBar: Button Title \fItitle\fP, Icon \fIicon\fP, \\
+              Action (Mouse 1) \fIaction1\fP, Action (Mouse 2) \fIaction2\fP
+.sp
+.fi
+
 .IP "*FvwmTaskBar: ButtonWidth \fIwidth\fP"
 Indicates the maximum width that window buttons should reach.
 (the minimum is hard coded at 32).
@@ -323,6 +332,15 @@ can be used to exactly place a menu atop a button.
 .sp
 .fi
 
+To invoke different commands for different mouse clicks, use this syntax:
+
+.nf
+.sp
+*FvwmTaskBar: StartCommand (Mouse 1) Popup Mouse1Menu
+*FvwmTaskBar: StartCommand (Mouse 3) Popup Mouse3Menu
+.sp
+.fi
+
 .IP "*FvwmTaskBar: StartName \fIstring\fP"
 This option specifies the string displayed in the Start button.
 ('Start' by default).
@@ -331,6 +349,15 @@ This option specifies the string displayed in the Start button.
 This option specifies the pop up menu to invoke when the start button is
 pressed. ('StartMenu' by default). The module send a 'Popup StartMenu'
 command to the fvwm window manager.
+
+To invoke different menus for different mouse clicks, use this syntax:
+
+.nf
+.sp
+*FvwmTaskBar: StartMenu (Mouse 1) Mouse1Menu
+*FvwmTaskBar: StartMenu (Mouse 3) Mouse3Menu
+.sp
+.fi
 
 .IP "*FvwmTaskBar: StartIcon \fIicon-name\fP"
 This option specifies the name of the icon to display at the left of the Start

@@ -1,3 +1,18 @@
+2002-10-06  Suzanne Skinner  <tril@igs.net>
+
+	* FvwmTaskBar/Start.c (StartButtonParseConfig):
+	(getButtonCommand):
+	(StartAndLaunchButtonItemInit):
+	(new ParseButtonOptions):
+	Implemented different actions for different mouse buttons when the
+	"start" button or mini-launchers are clicked
+	* FvwmTaskBar/Start.h (startAndLaunchButtonItem):
+	Added buttonCommands and buttonStartCommands arrays to the structure
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
+	Changed getButtonCommand call to pass the mouse button number
+	* FvwmTaskBar/FvwmTaskBar.1:
+	Documented new taskbar button functionality
+
 2002-10-06  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmGtkDebug.in:
