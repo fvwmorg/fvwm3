@@ -33,16 +33,20 @@ commands and messages sent from FVWM so that the resources can be dynamically
 changed.
 
 .SH INVOCATION
+Starting with 2.5.1, FvwmTheme is obsolete, please read fvwm man page
+about the built-in colorsets solution.  However, all options are still
+the same, so this man page defines the exact Colorset syntax.
+
 FvwmTheme must be spawned as a module by fvwm.
 .PP
-It is important that FvwmTheme is invoked before any other modules
-that use the color sets provided by FvwmTheme.  Thus FvwmTheme has
+It is highly suggested that FvwmTheme is invoked before any other modules
+that use the colorsets provided by FvwmTheme.  Thus FvwmTheme has
 to be invoked with the 'ModuleSynchronous' command by inserting the
 line 'ModuleSynchronous Timeout 5 FvwmTheme' in the .fvwm2rc file
-right after the \fIModulePath\fP and \fIImagePath\fP have been defined.
+right after the \fIImagePath\fP have been defined.
 Invoking FvwmTheme from the \fIInitFunction\fP, \fIStartFunction\fP
-or\fIRestartFunction\fP or later may not work properly and can
-cause excessive redrawing of already running modules.  It is important
+or \fIRestartFunction\fP or later can cause excessive redrawing of
+already running modules.  It is highly suggested
 that the configuration lines for FvwmTheme appear in the configuration
 file before FvwmTheme is started.  You can find a proper sample
 fvwm setup at the end of this document.
