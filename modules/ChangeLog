@@ -1,3 +1,13 @@
+1999-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScroll/FvwmScroll.c (GetTargetWindow): use library function
+	handles 'Escape' to cancel and other keystrokes
+
+	* FvwmIdent/FvwmIdent.c (GetTargetWindow): FvwmIdent can be canceled
+	with 'Escape' and select with 'Enter' and 'Space'.
+	(GetTargetWindow): handles keyboard shortcuts as well
+	moved function to lib
+
 1999-09-30  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmTheme/FvwmTheme.c (get_simple_color):

@@ -60,7 +60,6 @@ void SendInfo(int *fd,char *message,unsigned long window);
 char *safemalloc(int length);
 void DeadPipe(int nonsense);
 void process_message(unsigned long type,unsigned long *body);
-void GetTargetWindow(Window *app_win);
 void RedrawWindow(void);
 void change_window_name(char *str);
 Pixel GetColor(char *name);

@@ -45,6 +45,7 @@
 #include <X11/Xatom.h>
 #include <X11/Intrinsic.h>
 #include <X11/cursorfont.h>
+#include <X11/keysym.h>
 #ifdef I18N_MB
 #include <X11/Xlocale.h>
 #endif
@@ -193,7 +194,7 @@ int main(int argc, char **argv)
   }
 
   if(app_win == 0)
-    GetTargetWindow(&app_win);
+    fvwmlib_get_target_window(dpy, screen, MyName, &app_win, True);
 
   fd_width = GetFdWidth();
 
@@ -204,6 +205,8 @@ int main(int argc, char **argv)
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
+  if (app_win == Root)
+    exit(0);
 
   Loop(fd);
   return 0;
@@ -549,44 +552,6 @@ void list_end(void)
 }
 
 
-
-/**********************************************************************
- *
- * If no application window was indicated on the command line, prompt
- * the user to select one
- *
- *********************************************************************/
-void GetTargetWindow(Window *app_win)
-{
-  XEvent eventp;
-  int val = -10,trials;
-
-  trials = 0;
-  while((trials <100)&&(val != GrabSuccess))
-    {
-      val=XGrabPointer(dpy, Root, True,
-		       ButtonReleaseMask,
-		       GrabModeAsync, GrabModeAsync, Root,
-		       XCreateFontCursor(dpy,XC_crosshair),
-		       CurrentTime);
-      if(val != GrabSuccess)
-	{
-	  usleep(1000);
-	}
-      trials++;
-    }
-  if(val != GrabSuccess)
-    {
-      fprintf(stderr,"%s: Couldn't grab the cursor!\n",MyName);
-      exit(1);
-    }
-  XMaskEvent(dpy, ButtonReleaseMask,&eventp);
-  XUngrabPointer(dpy,CurrentTime);
-  XSync(dpy,0);
-  *app_win = eventp.xany.window;
-  if(eventp.xbutton.subwindow != None)
-    *app_win = eventp.xbutton.subwindow;
-}
 
 /************************************************************************
  *

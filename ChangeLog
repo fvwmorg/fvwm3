@@ -1,3 +1,22 @@
+1999-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Target.c: new file
+
+	* libs/Bindings.c (fvwmlib_keyboard_shortcuts):
+	* fvwm/misc.c (Keyboard_shortcuts): functionality moved to lib
+
+1999-09-29  Brad Giaccio  <bgiaccio@psrw.com>
+
+	* FvwmIconMan/x.c (X_init_manager): set pixmaps to None on init since
+	we check for it later
+	(X_init_manager): cleaned up an UMR on a print
+
+	* FvwmIconMan/globals.c: contextDefaults needed another entry since I
+	increased the number of contexts when I did the colorset stuff
+
+	* FvwmIconMan/fvwm.c (destroy_window): setting focus_win to null helps
+	avoid possible free memory reads/writes
+
 1999-09-29  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/Colorset.c (LoadColorset):
@@ -413,7 +432,7 @@ Wed Sep 15 20:44:57 1999  DanEspen  <dje@blue>
 
 1999-08-27 Hippo
 
-	* libs/Picture.{h,c}: New function GetPictureAndFree() === {
+	* libs/Picture.{h,c}: New function GetPictureAndFree() == {
 	GetPicture() then free all colors }, used by FvwmAnimate.
 	* fvwm/move_resize.c: SetXORPixmap can use the pixmap from FvwmAnimate.
 

@@ -380,5 +380,16 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
 				 unsigned int dead_modifiers,
 				 Cursor cursor, Bool fGrab);
 
+/***********************************************************************
+ * Target.c
+ ***********************************************************************/
+
+void fvwmlib_keyboard_shortcuts(
+    Display *dpy, int screen, XEvent *Event, int x_move_size, int y_move_size,
+    int ReturnEvent);
+
+void fvwmlib_get_target_window(
+    Display *dpy, int screen, char *MyName, Window *app_win,
+    Bool return_subwindow);
 
 #endif

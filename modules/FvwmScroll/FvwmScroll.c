@@ -192,43 +192,9 @@ void DeadPipe(int nonsense)
  *********************************************************************/
 void GetTargetWindow(Window *app_win)
 {
-  XEvent eventp;
-  int val = -10,trials;
   Window target_win;
 
-  trials = 0;
-  while((trials <100)&&(val != GrabSuccess))
-    {
-      val=XGrabPointer(dpy, Root, True,
-		       ButtonReleaseMask,
-		       GrabModeAsync, GrabModeAsync, Root,
-		       XCreateFontCursor(dpy,XC_crosshair),
-		       CurrentTime);
-      if(val != GrabSuccess)
-	{
-	  usleep(1000);
-	}
-      trials++;
-    }
-  if(val != GrabSuccess)
-    {
-      fprintf(stderr,"%s: Couldn't grab the cursor!\n",MyName);
-      exit(1);
-    }
-  XMaskEvent(dpy, ButtonReleaseMask,&eventp);
-  XUngrabPointer(dpy,CurrentTime);
-  XSync(dpy,0);
-  *app_win = eventp.xany.window;
-  if(eventp.xbutton.subwindow != None)
-    *app_win = eventp.xbutton.subwindow;
-
-  /* Don't allow operations on the root window */
-  if (*app_win == Root)
-  {
-    *app_win = None;
-    return;
-  }
-
+  fvwmlib_get_target_window(dpy, screen, MyName, app_win, True);
   target_win = ClientWindow(*app_win);
   if(target_win != None)
     *app_win = target_win;
@@ -237,7 +203,7 @@ void GetTargetWindow(Window *app_win)
 
 void nocolor(char *a, char *b)
 {
- fprintf(stderr,"FvwmScroll: can't %s %s\n", a,b);
+  fprintf(stderr,"FvwmScroll: can't %s %s\n", a,b);
 }
 
 
