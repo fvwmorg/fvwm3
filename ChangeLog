@@ -1,5 +1,8 @@
 2002-07-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/focus.c (CMD_WarpToWindow):
+	fixed negative arguments for unmanaged windows
+
 	* fvwm/conditional.c (CMD_Direction):
 	use PeekToken instead of GetNextToken
 	cleaned up
