@@ -458,12 +458,11 @@ the justification (direction) of the tips window relative to its button after
 the tips window has been placed.
 \."#needs_lang_check
 Default is leftup which means that if a tip is placed above or below
-(respectively, on the left or on the right of)
-its button, 
-then the left
-(respectively, the top)
-border of the tip 
-and of the button are aligned.
+its button, then the left border of the tip and of the button are
+aligned.
+If the tip is placed on the left or on the right of its button, leftup
+aligns the top borders. rightdown and center work like leftup but in
+different directions.
 \."#end_needs_lang_check
 The alignment is adjusted by the TipsOffset option.
 See next option.
