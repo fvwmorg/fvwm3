@@ -1,3 +1,10 @@
+2000-06-20  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* FvwmPager/x_pager.c: tune the mini-window height and width
+	  calculations to be identical to their previous values. However,
+	  still guarantee that the values are consistent. (I.e. restore
+	  the off-by-one error.) 
+
 2000-06-17  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* FvwmPager/x_pager.c: try to fix "variability" in size (width) of
