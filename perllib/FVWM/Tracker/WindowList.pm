@@ -113,25 +113,19 @@ sub start ($) {
 			$observable = "window added";
 		} elsif ($type & M_CONFIGURE_WINDOW) {
 			$observable = "window properties updated";
-			# The "window properties updated" observable is very broad &
-			# occurs as a result of many different operations - here we
-			# try & determine if some common operations occur & invoke more
-			# specific observables. This may reduce the amount of parsing
-			# external modules have to do.
+
+			# this observable is too broad, try to narrow
 			if ($oldHash) {
-				my $p = $self->{data}->{$winId};
-				if ($p->{width} != $oldHash->{width} ||
-					$p->{height} != $oldHash->{height})
-				{
-					$self->notify("window resized", $winId, $oldHash);
-				}
-				elsif ($p->{desk} != $oldHash->{desk} ||
-					$p->{x} != $oldHash->{x} ||
-					$p->{y} != $oldHash->{y})
-				{
-					$self->notify("window moved", $winId, $oldHash);
-				}
-				# We can easily add other specific observables here as required.
+				my $win = $self->{data}->{$winId};
+
+				$self->notify("window resized", $winId, $oldHash)
+					if $win->{width} != $oldHash->{width}
+					|| $win->{height} != $oldHash->{height};
+
+				$self->notify("window moved", $winId, $oldHash)
+					if $win->{desk} != $oldHash->{desk}
+					|| $win->{x} != $oldHash->{x}
+					|| $win->{y} != $oldHash->{y};
 			}
 		} elsif ($type & M_DESTROY_WINDOW) {
 			$observable = "window deleted";
@@ -178,12 +172,7 @@ sub calculateInternals ($$) {
 		}
 	}
 
-	# Please leave this (commented-out) code here. I often enable it
-	# when debugging -- SS.
-#	print(STDERR "Got " . $event->name() . " event\n");
-#	foreach (sort(keys %{$args})) {
-#		print(STDERR "    $_=" . $args->{$_} . "\n");
-#	}
+	#print $event->dump;
 
 	$args->{name} = delete $args->{window_name} if exists $args->{window_name};
 	@$window{keys %$args} = values %$args;
@@ -226,8 +215,8 @@ sub handlerPageInfo ($$) {
 
 	@$data{keys %$args} = values %$args;
 	if ($event->type & M_NEW_PAGE) {
-		$data->{page_nx} = $data->{vp_x} / $data->{vp_width};
-		$data->{page_ny} = $data->{vp_y} / $data->{vp_height};
+		$data->{page_nx} = int($data->{vp_x} / $data->{vp_width});
+		$data->{page_ny} = int($data->{vp_y} / $data->{vp_height});
 	}
 }
 
@@ -255,12 +244,8 @@ sub dump ($;$) {
 
 	my $string = "";
 	foreach (@ids) {
-		$string .= "Window $_\n";
 		my $window = $data->{$_};
-		foreach my $prop (sort keys %$window) {
-			next if $prop =~ /^_/;
-			$string .= "\t$prop:\t[$window->{$prop}]\n";
-		}
+		$string .= $window->dump;
 	}
 	return $string;
 }
@@ -298,6 +283,16 @@ sub match ($$) {
 		}
 	}
 	return $match;
+}
+
+sub dump ($) {
+	my $string = "Window $_\n";
+	my $window = $data->{$_};
+	foreach my $prop (sort keys %$window) {
+		next if $prop =~ /^_/;
+		$string .= "\t$prop:\t[$window->{$prop}]\n";
+	}
+	return $string;
 }
 
 # ----------------------------------------------------------------------------

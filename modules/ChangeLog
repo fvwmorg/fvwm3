@@ -1,3 +1,17 @@
+2004-07-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmDebug/FvwmDebug.in:
+	use event's dump method
+
+	* FvwmDebug/FvwmGtkDebug.in:
+	support looped args in events
+
+	* FvwmPerl/FvwmPerl.in:
+	support window context in cmd(); improve documentation
+
+	* FvwmProxy/FvwmProxy.1:
+	minor reformatting
+
 2004-07-11  Scott Smedley  <scottie7@tpg.com.au>
 
 	* FvwmButtons/FvwmButtons.1:

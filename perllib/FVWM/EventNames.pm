@@ -25,6 +25,7 @@ use constant window => 2;
 use constant pixel  => 3;
 use constant string => 4;
 use constant wflags => 5;
+use constant looped => 6;
 
 use vars qw($EVENTS_INFO);
 
@@ -309,14 +310,15 @@ $EVENTS_INFO = {
 #	},
 
 	&M_RESTACK              => {
-		format => "L3",
+		format => "L3a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
 			ptr          => number,
+			low_windows  => looped,
 		],
-		format2 => "L3",
-		fields2 => [
+		loop_format => "L3a*",
+		loop_fields => [
 			win_id       => window,
 			frame_id     => window,
 			ptr          => number,
@@ -324,7 +326,7 @@ $EVENTS_INFO = {
 	},
 
 	&M_ADD_WINDOW           => {
-		format => "L3l6S2l8L2lL2l3a*",
+		format => "L3l6l8L2lL2l3S4a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -335,8 +337,6 @@ $EVENTS_INFO = {
 			frame_height => number,
 			desk         => number,
 			layer        => number,
-			title_height => number,
-			border_width => number,
 			win_width    => number,
 			win_height   => number,
 			resize_width_inc  => number,
@@ -353,12 +353,16 @@ $EVENTS_INFO = {
 			ewmh_layer   => number,
 			ewmh_desktop => number,
 			ewmh_window_type  => number,
+			title_height => number,
+			border_width => number,
+			dummy_zero_1 => number,
+			dummy_zero_2 => number,
 			window_flags => wflags,
 		],
 	},
 
 	&M_CONFIGURE_WINDOW     => {
-		format => "L3l6S2l8L2lL2l3a*",
+		format => "L3l6l8L2lL2l3S4a*",
 		fields => [
 			win_id       => window,
 			frame_id     => window,
@@ -369,8 +373,6 @@ $EVENTS_INFO = {
 			frame_height => number,
 			desk         => number,
 			layer        => number,
-			title_height => number,
-			border_width => number,
 			win_width    => number,
 			win_height   => number,
 			resize_width_inc  => number,
@@ -387,6 +389,10 @@ $EVENTS_INFO = {
 			ewmh_layer   => number,
 			ewmh_desktop => number,
 			ewmh_window_type  => number,
+			title_height => number,
+			border_width => number,
+			dummy_zero_1 => number,
+			dummy_zero_2 => number,
 			window_flags => wflags,
 		],
 	},
@@ -451,6 +457,7 @@ use vars qw(@EXPORT @ISA $EVENT_TYPES $EVENT_NAMES $EVENT_TYPE_NAMES);
 @EXPORT = (
 	@FVWM::Constants::EXPORT,
 	qw(eventName eventArgNames eventArgTypes eventArgValues eventArgs),
+	qw(eventLoopArgNames eventLoopArgTypes),
 	qw(eventArgAliases allEventNames allEventTypes)
 );
 @ISA = qw(Exporter);
@@ -519,6 +526,18 @@ sub calculateInternals ($) {
 		push @{$eventInfo->{types}}, $_ if ($i % 2) == 1;
 		$i++;
 	}
+
+	# handle loop args if any
+	return unless exists $eventInfo->{loop_fields};
+	$eventInfo->{loop_names} = [];
+	$eventInfo->{loop_types} = [];
+
+	$i = 0;
+	foreach (@{$eventInfo->{loop_fields}}) {
+		push @{$eventInfo->{loop_names}}, $_ if ($i % 2) == 0;
+		push @{$eventInfo->{loop_types}}, $_ if ($i % 2) == 1;
+		$i++;
+	}
 }
 
 sub eventArgNames ($$) {
@@ -548,26 +567,84 @@ sub eventArgValues ($$) {
 	my $packedStr = shift;
 
 	my $eventInfo = eventInfo($type);
-	my @argValues = unpack($eventInfo->{'format'}, $packedStr);
+	my @argValues = unpack($eventInfo->{format}, $packedStr);
 	my $argFields = $eventInfo->{fields};
+
+	# process looped args
+	if (@$argFields && $argFields->[@$argFields - 1] == looped) {
+		my @loopArgValues = ();
+
+		my $restStr = pop @argValues;
+		while ($restStr ne "") {
+			my @newArgValues = unpack($eventInfo->{loop_format}, $restStr);
+			die "Internal error, no loop args unpacked ($type)\n" unless @newArgValues > 1;
+			$restStr = pop @newArgValues;
+			push @loopArgValues, @newArgValues;
+		}
+
+		push @argValues, \@loopArgValues;
+	}
+
 	# strip everything past the first null (or newline) if needed
-	$argValues[@argValues - 1] =~ s/\n*\0.*//s
-		if @$argFields && $argFields->[@$argFields - 1] == string;
+	if (@$argFields && $argFields->[-1] == string) {
+		$argValues[-1] =~ s/\n*\0.*//s;
+	}
+
 	return \@argValues;
+}
+
+sub eventLoopArgNames ($$) {
+	my $type = shift;
+	my $argValues = shift;
+
+	my $eventInfo = eventInfo($type);
+	my $argNames = $eventInfo->{loop_names};
+	return $argNames if defined $argNames;
+	calculateInternals($type);
+	return $eventInfo->{loop_names};
+}
+
+sub eventLoopArgTypes ($$) {
+	my $type = shift;
+	my $argValues = shift;
+
+	my $eventInfo = eventInfo($type);
+	my $argTypes = $eventInfo->{loop_types};
+	return $argTypes if defined $argTypes;
+	calculateInternals($type);
+	return $eventInfo->{loop_types};
 }
 
 sub eventArgs ($$) {
 	my $type = shift;
 	my $argValues = shift;
 
-   my $argNames = eventArgNames($type, $argValues);
-   my $i = 0;
-   my $suffix = "";
-   $suffix = "1" if @$argValues > @$argNames;
-   my %args = map {
-      if ($i == $argNames) { $i = 0; $suffix++; }
-      (($argNames->[$i++] || "unknown") . $suffix, $_)
-   } @$argValues;
+	my $argNames = eventArgNames($type, $argValues);
+
+	die sprintf "Internal error, event type %s (%d names, %d values)\n",
+		eventTypeToBinary($type), scalar @$argNames, scalar @$argValues
+		if @$argNames != @$argValues;
+
+	my $loopArgNames = eventLoopArgNames($type, $argValues);
+
+	die sprintf "Internal error, event type %s (%d loop names, non array)\n",
+		eventTypeToBinary($type), scalar @$loopArgNames
+		if $loopArgNames && ref($loopArgNames) ne 'ARRAY'
+			&& !@$loopArgNames && ref($argValues->[-1]) ne 'ARRAY';
+
+	my $i = 0;
+	my %args = map {
+		my $value = $_;
+		$argNames->[$i++], ref($value) ne 'ARRAY'? $value: do {
+			my $loopValue = [];
+			my $j = 0;
+			while ($j < @$value) {
+				my %loopHash = map { $_, $value->[$j++] } @$loopArgNames;
+				push @$loopValue, \%loopHash;
+			}
+			$loopValue
+		}
+	} @$argValues;
 	return \%args;
 }
 
@@ -605,13 +682,9 @@ B<M_NEW_PAGE> consists of 5 numeric arguments, B<M_MINI_ICON> consists of 10
 arguments of different types.
 
 This class provides information about all fvwm events. It provides such
-services as listing all supporting event types and their names,
+services as listing all supported event types and their names,
 converting event type to event name, listing the event argument names/types,
 constructing event argument values from the plain packet data.
-arguments
-, like event name, event
-typenames and types of all fvwm event
-arguments and event names.
 
 Usually you do not need to work with this class directly, but, instead, with
 B<FVWM::Event> objects. Hovewer, you may need this class source as a
@@ -650,6 +723,14 @@ Returns array ref of argument types of the event type.
 I<argValues> is either the real array ref of values (as returned by
 B<eventArgValues>) or a number of actual values.
 The returned array has the same number of elements.
+
+=item B<eventLoopArgNames> I<type> I<argValues>
+
+Returns array ref of looped argument names of the event type (or undef).
+
+=item B<eventLoopArgTypes> I<type> I<argValues>
+
+Returns array ref of looped argument types of the event type (or undef).
 
 =item B<eventArgs> I<type> I<argValues>
 

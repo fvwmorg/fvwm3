@@ -76,6 +76,7 @@ sub eventArgTypeToName ($) {
 		$type == FVWM::EventNames::window? "window":
 		$type == FVWM::EventNames::pixel? "color":
 		$type == FVWM::EventNames::string? "string":
+		$type == FVWM::EventNames::looped? "looped":
 		$type == FVWM::EventNames::wflags? "wflags":
 		"unknown";
 }
@@ -83,9 +84,9 @@ sub eventArgTypeToName ($) {
 sub storeEvent ($$) {
 	my ($module, $event) = @_;
 
-	my $argNames  = $event->argNames;
-	my $argTypes  = $event->argTypes;
-	my $argValues = $event->argValues;
+	my @argNames  = @{$event->argNames};
+	my @argTypes  = @{$event->argTypes};
+	my @argValues = @{$event->argValues};
 
 #	print STDERR $event->name, "\n";
 
@@ -95,11 +96,10 @@ sub storeEvent ($$) {
 		time => time(),
 		args => [],
 	};
-	my $i;
-	for ($i = 0; $i < @$argNames; $i++) {
-		my $name  = $argNames->[$i];
-		my $type  = $argTypes->[$i];
-		my $value = $argValues->[$i] || 0;
+	while (@argNames) {
+		my $name  = shift @argNames;
+		my $type  = shift @argTypes;
+		my $value = shift @argValues;
 
 		my $text;
 		if ($type == FVWM::EventNames::number) {
@@ -113,6 +113,21 @@ sub storeEvent ($$) {
 				sprintf("%06lx", $value) =~ /(..)(..)(..)/);
 		} elsif ($type == FVWM::EventNames::string) {
 			$text = qq("$value");
+		} elsif ($type == FVWM::EventNames::looped) {
+			my $loopArgNames = $event->loopArgNames;
+			my $loopArgTypes = $event->loopArgTypes;
+			my $j = 0;
+			while ($j < @$value) {
+				my $k = 0;
+				foreach (@$loopArgNames) {
+					my $i = int($j / @$loopArgNames) + 1;
+					push @argNames, "[$i] $_";
+					push @argTypes, $loopArgTypes->[$k];
+					push @argValues, $value->[$j];
+					$j++; $k++;
+				}
+			}
+			$text = sprintf("(%d)", @$value / @$loopArgNames);
 		} elsif ($type == FVWM::EventNames::wflags) {
 			my @words = unpack("l*", $value);
 			my $label = join(" ",

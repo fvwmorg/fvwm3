@@ -50,6 +50,11 @@ sub type ($) {
 	return $self->{'type'};
 }
 
+sub argValues ($) {
+	my $self = shift;
+	return $self->{'argValues'};
+}
+
 sub argNames ($) {
 	my $self = shift;
 	return eventArgNames($self->type, $self->argValues);
@@ -60,9 +65,14 @@ sub argTypes ($) {
 	return eventArgTypes($self->type, $self->argValues);
 }
 
-sub argValues ($) {
+sub loopArgNames ($) {
 	my $self = shift;
-	return $self->{'argValues'};
+	return eventLoopArgNames($self->type, $self->argValues);
+}
+
+sub loopArgTypes ($) {
+	my $self = shift;
+	return eventLoopArgTypes($self->type, $self->argValues);
 }
 
 sub args ($) {
@@ -87,6 +97,62 @@ sub propagationAllowed ($;$) {
 	$self->{'propagationAllowed'} = $value if defined $value;
 
 	return $self->{'propagationAllowed'};
+}
+
+sub dump ($) {
+	my $self = shift;
+	my $args = $self->args;
+	my $string = $self->name . "\n";
+
+	my @argNames  = @{$self->argNames};
+	my @argTypes  = @{$self->argTypes};
+	my @argValues = @{$self->argValues};
+
+	while (@argNames) {
+		my $name  = shift @argNames;
+		my $type  = shift @argTypes;
+		my $value = shift @argValues;
+
+		my $text;
+		if ($type == FVWM::EventNames::number) {
+			$text = $value;
+		} elsif ($type == FVWM::EventNames::bool) {
+			$text = $value? "True": "False";
+		} elsif ($type == FVWM::EventNames::window) {
+			$text = sprintf("0x%07lx", $value);
+		} elsif ($type == FVWM::EventNames::pixel) {
+			$text = "rgb:" . join('/',
+				sprintf("%06lx", $value) =~ /(..)(..)(..)/);
+		} elsif ($type == FVWM::EventNames::string) {
+			$value =~ s/"/\\"/g;
+			$text = qq("$value");
+		} elsif ($type == FVWM::EventNames::looped) {
+			my $loopArgNames = $self->loopArgNames;
+			my $loopArgTypes = $self->loopArgTypes;
+			my $j = 0;
+			while ($j < @$value) {
+				my $k = 0;
+				foreach (@$loopArgNames) {
+					my $i = int($j / @$loopArgNames) + 1;
+					push @argNames, "[$i] $_";
+					push @argTypes, $loopArgTypes->[$k];
+					push @argValues, $value->[$j];
+					$j++; $k++;
+				}
+			}
+			$text = sprintf("(%d)", @$value / @$loopArgNames);
+		} elsif ($type == FVWM::EventNames::wflags) {
+			$text = qq([window flags are not supported yet]);
+		} else {
+			$text = qq([unsupported arg type $type] "$value");
+		}
+
+		my $nameLen = 12;
+		$nameLen = int((length($name) + 5) / 6) * 6
+			if length($name) > $nameLen;
+		$string .= sprintf "\t%-${nameLen}s %s\n", $name, $text;
+	}
+	return $string;
 }
 
 sub AUTOLOAD ($;@) {
@@ -164,9 +230,7 @@ Returns an array ref of the event argument names.
 
     print "$_ " foreach @{$event->argNames});
 
-Note that this array of names is statical and may be not synchronized
-in some cases with the actual argument values described in the two methods
-below.
+Note that this array of names is statical for any given event type.
 
 =item B<argTypes>
 
@@ -174,15 +238,21 @@ Returns an array ref of the event argument types.
 
     print "$_ " foreach @{$event->argTypes});
 
-Note that this array of types is statical and may be not synchronized
-in some cases with the actual argument values described in the two methods
-below.
+Note that this array of types is statical for any given event type.
+
+=item B<loopArgNames>
+
+Returns an array ref of the looped argument names of the event (or undef).
+
+=item B<loopArgTypes>
+
+Returns an array ref of the looped argument types of the event (or undef).
 
 =item B<argValues>
 
 Returns an array ref of the event argument values.
 In the previous versions of the library, all argument values were passed
-to event handlers, now only one event method is passed. Calling this
+to event handlers, now only one event object is passed. Calling this
 method is the way to emulate the old behaviour.
 
 Note that you should know the order of arguments, so the suggested way
@@ -216,6 +286,11 @@ used for debugging.
 
 Sets or returns a boolean value that indicates enabling or disabling of
 this event propagation.
+
+=item B<dump>
+
+Returns a string representation of the event object, basically the event
+name and all argument name=value lines.
 
 =item B<_>I<name>
 

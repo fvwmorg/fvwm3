@@ -96,9 +96,10 @@ my ($a, $b, $c, $d, $e, $f, $g, $h, $i, $j, $k, $l, $m, $n, $o, $p)
 my (@a, @b, @c, @d, @e, @f, @g, @h, @i, @j, @k, @l, @m, @n, @o, @p);
 my (%a, %b, %c, %d, %e, %f, %g, %h, %i, %j, %k, %l, %m, %n, %o, %p);
 
-sub cmd ($) {
+sub cmd ($;$) {
 	my $command = shift;
-	$module->send($command);
+	my $winId = shift;
+	$module->send($command, $winId);
 }
 
 *command = \*cmd; *command = \*command;  # alias
@@ -476,6 +477,16 @@ synchronously; this only makes difference when invoked like:
 If B<--nolock> is added here, B<ModuleSynchronous> returns immediately.
 Note that B<Module> returns immediately regardless of this option.
 
+=head1 USING ALIAS
+
+Aliases allow to have several module invocations and work separately
+with all invocations, here is an example:
+
+    ModuleSynchronous FvwmPerl FvwmPerl-JustTest
+    SendToModule FvwmPerl-JustTest eval $a = 2 + 2; $b = $a
+    SendToModule FvwmPerl-JustTest eval cmd("Echo 2 + 2 = $b")
+    KillModule FvwmPerl FvwmPerl-JustTest
+
 =head1 PREPROCESSING EXAMPLE
 
 One of the effective proprocessing solutions is to pass the whole fvwm
@@ -680,7 +691,16 @@ to new module events.
 =item B<unlock()>
 
 Unsynchronizes the event callback from fvwm. This may be useful to prevent
-deadlocks, see also the B<detach> solution.
+deadlocks, i.e. usually fvwm kills the non-responding module if the event
+callback is not finished in I<ModuleTimeout> seconds. This prevents it.
+
+This example causes FvwmPerl to suspend its execution for one minute:
+
+    SendModule FvwmPerl eval unlock(); sleep(60);
+
+However, verify that there is no way a new message is sent by fvwm while the
+module is busy, and fvwm stays locked on this new message for too long.
+See also the B<detach> solution if you need long lasting operations.
 
 =item B<detach()>
 
@@ -690,6 +710,9 @@ callback should take a long time to complete and it may be done in the
 detached child. The detached child may still send commands to fvwm (don't
 rely on this), but not receive the events of course, it exits immediately
 after the callback execution is finished.
+
+If you use detach(), better only send commands to fvwm in one process (the
+main one or the detached one), doing otherwise may often cause conflicts.
 
 =item B<showMessage(>$msg, $title[, $useStderrToo=1]B<)>
 

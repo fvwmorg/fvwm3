@@ -111,42 +111,11 @@ sub showEvent ($$) {
 	return unless $showEvents;
 	my ($module, $event) = @_;
 
-	my $argNames  = $event->argNames;
-	my $argTypes  = $event->argTypes;
-	my $argValues = $event->argValues;
-
-	print $logStream $event->name, "\n";
-	return unless $showArgs;
-
-	my $i;
-	for ($i = 0; $i < @$argNames; $i++) {
-		my $name  = $argNames->[$i];
-		my $type  = $argTypes->[$i];
-		my $value = $argValues->[$i] || 0;
-
-		my $text;
-		if ($type == FVWM::EventNames::number) {
-			$text = $value;
-		} elsif ($type == FVWM::EventNames::bool) {
-			$text = $value? "True": "False";
-		} elsif ($type == FVWM::EventNames::window) {
-			$text = sprintf("0x%07lx", $value);
-		} elsif ($type == FVWM::EventNames::pixel) {
-			$text = "rgb:" . join('/',
-				sprintf("%06lx", $value) =~ /(..)(..)(..)/);
-		} elsif ($type == FVWM::EventNames::string) {
-			$text = qq("$value");
-		} elsif ($type == FVWM::EventNames::wflags) {
-			$text = qq([window flags are not supported yet]);
-		} else {
-			$text = qq([unsupported arg type $type] "$value");
-		}
-
-		my $nameLen = 12;
-		$nameLen = int((length($name) + 5) / 6) * 6
-			if length($name) > $nameLen;
-		printf $logStream "\t%-${nameLen}s %s\n", $name, $text;
+	unless ($showArgs) {
+		print $logStream $event->name, "\n";
+		return;
 	}
+	print $logStream $event->dump;
 }
 
 __END__

@@ -1,3 +1,15 @@
+2004-07-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Tracker/WindowList.pm:
+	new method FVWM::Window::dump; other minor rework
+
+	* FVWM/EventNames.pm:
+	support looped args in events (for M_RESTACK);
+	synchronize with new format for CONFIGURE_WINDOW events
+
+	* FVWM/Event.pm:
+	new method FVWM::Event::dump
+
 2004-07-01  Scott Smedley  <scottie7@tpg.com.au>
 
 	* FVWM/Tracker/WindowList.pm:
