@@ -1545,7 +1545,6 @@ void HandleEnterNotify(void)
 
   DBUG("HandleEnterNotify","Routine Entered");
 
-XSynchronize(dpy, 1);
   /* Ignore EnterNotify events while a window is resized or moved as a wire
    * frame; otherwise the window list may be screwed up. */
   if (Scr.flags.is_wire_frame_displayed)

@@ -840,7 +840,11 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
     pmret->rc = MENU_ABORTED;
   }
   if (!fWasAlreadyPopped)
+  {
+    /* popping down the menu may destroy the menu via the dynamic popdown
+     * action! */
     pop_menu_down(&pmp->menu, pmp);
+  }
   pmp->flags.is_menu_from_frame_or_window_or_titlebar = False;
   XFlush(dpy);
 
@@ -1850,8 +1854,8 @@ static void MenuInteraction(
 	/* popdown previous popup */
 	if (mrPopup)
 	{
-	  pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap,
-					   pmp);
+	  pop_menu_down_and_repaint_parent(
+	    &mrPopup, &does_submenu_overlap, pmp);
 	  mrPopup = NULL;
 	}
 	flags.do_popdown = False;
@@ -2889,6 +2893,7 @@ static void pop_menu_down_and_repaint_parent(
   MenuRoot **pmr, Bool *fSubmenuOverlaps, MenuParameters *pmp)
 {
   MenuRoot *parent = MR_PARENT_MENU(*pmr);
+  Window win;
   XEvent event;
   int mr_x;
   int mr_y;
@@ -2901,11 +2906,14 @@ static void pop_menu_down_and_repaint_parent(
 
   if (*fSubmenuOverlaps && parent)
   {
+    /* popping down the menu may destroy the menu via the dynamic popdown
+     * action! Thus we must not access *pmr afterwards. */
+    win = MR_WINDOW(*pmr);
     pop_menu_down(pmr, pmp);
 
     /* Create a fake event to pass into paint_menu */
     event.type = Expose;
-    if (!XGetGeometry(dpy, MR_WINDOW(*pmr), &JunkRoot, &mr_x, &mr_y,
+    if (!XGetGeometry(dpy, win, &JunkRoot, &mr_x, &mr_y,
 		      &mr_width, &mr_height, &JunkBW, &JunkDepth) ||
 	!XGetGeometry(dpy, MR_WINDOW(parent), &JunkRoot, &parent_x, &parent_y,
 		       &parent_width, &parent_height, &JunkBW, &JunkDepth))
@@ -2942,6 +2950,8 @@ static void pop_menu_down_and_repaint_parent(
   }
   else
   {
+    /* popping down the menu may destroy the menu via the dynamic popdown
+     * action! Thus we must not access *pmr afterwards. */
     pop_menu_down(pmr, pmp);
   }
   *fSubmenuOverlaps = False;
