@@ -293,7 +293,7 @@ void restore_focus_after_unmap(FvwmWindow *tmp_win)
       }
     }
   }
-  if (!set_focus_to && HAS_CLICK_FOCUS(tmp_win))
+  if (!set_focus_to && (HAS_CLICK_FOCUS(tmp_win) || HAS_SLOPPY_FOCUS(tmp_win)))
   {
     for (t = tmp_win->next; t != NULL; t = t->next)
     {
@@ -399,7 +399,10 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
   }
 
   UngrabEm(GRAB_NORMAL);
-  MoveFocus(t->w, t, FocusByMouse, NoWarp, 0);
+  if (t->Desk == Scr.CurrentDesk)
+    MoveFocus(t->w, t, FocusByMouse, NoWarp, 0);
+
+  return;
 }
 
 /**************************************************************************

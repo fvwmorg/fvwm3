@@ -1,3 +1,19 @@
+2000-12-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandlePropertyNotify):
+	removed xemacs race condition hack
+
+	* fvwm/focus.c (FocusOn):
+	fixed focus problems when trying to give focus to a window on a
+	different desk but using NoWarp option
+
+	* fvwm/virtual.c (MoveViewport):
+	M_ICON_LOCATION packets are no longer sent for windows that are not
+	iconified when switching pages
+
+	* fvwm/focus.c (restore_focus_after_unmap):
+	transfer focus to last focused window also whith sloppy focus
+
 2000-12-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/session.c (LoadWindowStates):

@@ -866,7 +866,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	 * then the window should essentially be sticky */
 	if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) && !IS_STICKY(t))
 	{
-	  if(!(IS_ICON_STICKY(t)))
+	  if (IS_ICONIFIED(t))
 	  {
 	    t->icon_g.x += deltax;
 	    t->icon_xl_loc += deltax;
@@ -914,7 +914,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	 * then the window should essentially be sticky */
 	if (!(IS_ICONIFIED(t1) && IS_ICON_STICKY(t1)) && !IS_STICKY(t1))
 	{
-	  if (!IS_ICON_STICKY(t1))
+	  if (IS_ICONIFIED(t1))
 	  {
 	    t1->icon_g.x += deltax;
 	    t1->icon_xl_loc += deltax;

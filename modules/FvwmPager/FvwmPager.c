@@ -243,13 +243,22 @@ int main(int argc, char **argv)
   /* Check for an alias */
   if (argc >= opt_num + 1)
     {
-      if (strspn(argv[opt_num], "0123456789") != strlen(argv[opt_num]) &&
-	  !StrEquals(argv[opt_num], "*"))
+      char *s;
+
+      if (!StrEquals(argv[opt_num], "*"))
+      {
+	for (s = argv[opt_num]; *s; s++)
 	{
-	  free(MyName);
-	  MyName=strdup(argv[opt_num]);
-	  opt_num++;
+	  if (!isdigit(*s) &&
+	      (*s != '-' || s != argv[opt_num] || *(s+1) == 0))
+	  {
+	    free(MyName);
+	    MyName=strdup(argv[opt_num]);
+	    opt_num++;
+	    break;
+	  }
 	}
+      }
     }
 
   if (argc < opt_num + 1)
@@ -582,6 +591,7 @@ void list_add(unsigned long *body)
   (*prev)->x = cfgpacket->frame_x;
   (*prev)->y = cfgpacket->frame_y;
   (*prev)->width = cfgpacket->frame_width;
+fprintf(stderr,"la: width := %d (%s)\n",(*prev)->width, (*prev)->window_name);
   (*prev)->height = cfgpacket->frame_height;
   (*prev)->desk = cfgpacket->desk;
   memcpy(&((*prev)->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags));
@@ -654,6 +664,7 @@ void list_configure(unsigned long *body)
     t->x = t->icon_x;
     t->y = t->icon_y;
     t->width = t->icon_width;
+fprintf(stderr,"lc1: width := %d (%s)\n",t->width, t->window_name);
     t->height = t->icon_height;
     if(IS_ICON_SUPPRESSED(t))
     {
@@ -666,6 +677,7 @@ void list_configure(unsigned long *body)
     t->x = t->frame_x;
     t->y = t->frame_y;
     t->width = t->frame_width;
+fprintf(stderr,"lc2: width := %d (%s)\n",t->width, t->window_name);
     t->height = t->frame_height;
   }
   if(t->desk != cfgpacket->desk)
@@ -673,7 +685,7 @@ void list_configure(unsigned long *body)
     ChangeDeskForWindow(t, cfgpacket->desk);
   }
   else
-    MoveResizePagerView(t);
+    MoveResizePagerView(t, False);
 }
 
 /***********************************************************************
@@ -781,7 +793,7 @@ void list_new_page(unsigned long *body)
     Scr.VHeight = Scr.VyMax + Scr.MyDisplayHeight;
     ReConfigure();
   }
-  MovePage();
+  MovePage(False);
   MoveStickyWindows();
   Hilight(FocusWin,True);
 }
@@ -922,7 +934,7 @@ void list_new_desk(unsigned long *body)
     XClearWindow(dpy, Desks[0].title_w);
   } /* if (fAlwaysCurrentDesk && oldDesk != Scr.CurrentDesk) */
 
-  MovePage();
+  MovePage(True);
   DrawGrid(oldDesk - desk1,1);
   DrawGrid(Scr.CurrentDesk - desk1,1);
   MoveStickyWindows();
@@ -1027,13 +1039,14 @@ void list_iconify(unsigned long *body)
 	t->y = t->icon_y;
       }
       t->width = t->icon_width;
+fprintf(stderr,"li: width := %d (%s)\n",t->width, t->window_name);
       t->height = t->icon_height;
 
       /* if iconifying main pager window turn balloons on or off */
       if ( t->w == Scr.Pager_w )
 	ShowBalloons = ShowIconBalloons;
 
-      MoveResizePagerView(t);
+      MoveResizePagerView(t, True);
     }
 }
 
@@ -1070,13 +1083,14 @@ void list_deiconify(unsigned long *body)
       t->x = body[7];
       t->y = body[8];
       t->width = body[9];
+fprintf(stderr,"ld: width := %d (%s)\n",t->width, t->window_name);
       t->height = body[10];
 
       /* if deiconifying main pager window turn balloons on or off */
       if ( t->w == Scr.Pager_w )
 	ShowBalloons = ShowPagerBalloons;
 
-      MoveResizePagerView(t);
+      MoveResizePagerView(t, True);
     }
 }
 

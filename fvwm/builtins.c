@@ -2114,7 +2114,7 @@ void reset_decor_changes(void)
     decor->flags.has_changed = 0;
     decor->flags.has_title_height_changed = 0;
   }
-  /*!!! must reset individual change flags too */
+  /* todo: must reset individual change flags too */
 #endif
 }
 
