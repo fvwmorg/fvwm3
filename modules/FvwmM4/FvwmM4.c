@@ -92,6 +92,7 @@ int main(int argc, char **argv)
   int m4_debug = 0;
   int lock = 0;
   int noread = 0;
+  char *user_dir;
 
   m4_enable = True;
   m4_prefix = False;
@@ -198,16 +199,22 @@ int main(int argc, char **argv)
 
   /* tell fvwm we're running if -lock is not used */
   if (!lock)
-  SendFinishedStartupNotification(fd);
+    SendFinishedStartupNotification(fd);
+
+  /* Figure out the working directory and go to it */
+  user_dir = getenv("FVWM_USERDIR");
+  if ( user_dir != NULL ) {
+    if ( chdir(user_dir) < 0 )
+      fprintf(stderr, "%s: <<Warning>> chdir to %s failed in m4_defs",
+	      MyName, user_dir);
+  }
 
   tmp_file = m4_defs(dpy, display_name,m4_options, filename);
-
   if (!noread)
     {
-  sprintf(read_string,"read %s\n",tmp_file);
-  SendInfo(fd,read_string,0);
+      sprintf(read_string,"read %s\n",tmp_file);
+      SendText(fd,read_string,0);
     }
-
   /* tell fvwm to continue if -lock is used */
   if (lock)
     SendFinishedStartupNotification(fd);
@@ -216,9 +223,17 @@ int main(int argc, char **argv)
   /* I'll let some m4 advocates clean this up */
   if(!m4_debug)
     {
-      sprintf(delete_string,"exec rm %s\n",tmp_file);
-      SendInfo(fd,delete_string,0);
+      if (tmp_file[0] != '/' && user_dir != NULL) 
+      {
+	sprintf(delete_string,"Exec /bin/rm %s/%s\n",user_dir,tmp_file);
+      }
+      else
+      {
+	sprintf(delete_string,"Exec /bin/rm %s\n",tmp_file);
+      }
+      SendText(fd,delete_string,0);
     }
+
   return 0;
 }
 
@@ -239,15 +254,6 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   int fd;
   int ScreenWidth, ScreenHeight;
   int Mscreen;
-  char *user_dir;
-
-  /* Figure out the working directory and go to it */
-  user_dir = getenv("FVWM_USERDIR");
-  if ( user_dir != NULL ) {
-    if ( chdir(user_dir) < 0 )
-      fprintf(stderr, "%s: <<Warning>> chdir to %s failed in m4_defs",
-	      MyName, user_dir);
-  }
 
   /* Generate a temporary filename.  Honor the TMPDIR environment variable,
      if set. Hope nobody deletes this file! */
@@ -300,7 +306,7 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
     perror("Cannot open pipe to m4");
     exit(0377);
   }
-
+  
   gethostname(client,MAXHOSTNAME);
 
   getostype  (ostype, sizeof ostype);

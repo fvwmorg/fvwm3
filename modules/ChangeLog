@@ -1,3 +1,9 @@
+2000-11-20  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmM4/FvwmM4.c (main)
+	Fixed removing the tmp file if -outfile is used
+
+
 2000-11-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmBacker/FvwmBacker.c (ParseConfig):

@@ -680,8 +680,10 @@ sub get_info {
 		# try a more general fix.
 		my $tmp = "xpm";
 		$tmp = "png" if $TRAN;
-		$icon = "$icon.$tmp" if $icon !~/\....$/;
-		$mini_icon = "$icon.$tmp" if $icon !~/\....$/;
+		$icon = "$icon.$tmp" if $icon !~ /\....$/ && $icon ne '';
+		$mini_icon = "$mini_icon.$tmp" 
+			if $mini_icon !~ /\....$/ && $mini_icon ne '';
+		#print STDERR "$icon,$mini_icon\n";
 	}
 
 	close(DESC);
