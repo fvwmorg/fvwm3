@@ -4383,14 +4383,6 @@ Can also be used as the double-click action for Menu.
 
 
 .TP
-.B "Pick" "\fIcommand\fP"
-Pick works like Function if invoked in the context of a window. If
-invoked in root context, it first asks the user to pick a window and
-then executes the command in the context of that window. This avoids
-annoying multiple selections with complex functions.
-
-
-.TP
 .B "PipeRead" "\fIcommand\fP [\fI quiet \fP]"
 Causes fvwm to read commands from the output of the \fIcommand\fP.
 This command is executed by /bin/sh as if you typed it on the command
@@ -4474,31 +4466,17 @@ You can escape from a Wait pause by using Ctrl-Alt-Escape (where Alt is
 the first modifier). To redefine this key sequence see the \fIEscapeFunc\fP
 command.
 
-.TP
-.B "WindowId" "\fIid (\fIconditions\fP) func\fP"
-The WindowId function is similar to the Next and Prev functions, except
-that it looks for a specific window \fIid\fP and runs the specified
-\fIfunc\fP on it. The optional \fIconditions\fP are the same as for
-\fICurrent\fP.
-.EX
-WindowId 0x34567890 Raise
-WindowId 0x34567890 WarpToWindow 50 50
-WindowId $0 (Silly_Popup) Delete
-.EE
-Mostly this is useful for functions used with the WindowList builtin,
-or for selective processing of FvwmEvent calls (as in the last example).
-
 
 .SS CONDITIONAL COMMANDS
 
 .TP
-.B "All" "(\fIconditions\fP) \fIcommand\fP"
+.B "All" "[ (\fIconditions\fP) ] \fIcommand\fP"
 Execute \fIcommand\fP on all windows meeting the conditions.
 Conditions are used exactly as with the Current command.
 
 
 .TP
-.B "Current" "(\fIconditions\fP) \fIcommand\fP"
+.B "Current" "[ (\fIconditions\fP) ] \fIcommand\fP"
 Performs \fIcommand\fP on the current window if it satisfies all
 \fIconditions\fP.  Conditions include "Iconic", "!Iconic", "Visible",
 "!Visible", "Raised", "!Raised", "Layer [n]", "Sticky", "!Sticky",
@@ -4520,7 +4498,7 @@ for backwards compatibility).
 
 
 .TP
-.B "Direction" "\fIdirection\fP (\fIconditions\fP) \fIcommand\fP"
+.B "Direction" "\fIdirection\fP [ (\fIconditions\fP) ] \fIcommand\fP"
 Performs \fIcommand\fP (typically Focus) on a window in the given
 direction which satisfies all \fIconditions\fP.  Conditions are the same
 as for \fICurrent\fP. The \fIdirection\fP may be one of North, Northeast,
@@ -4531,7 +4509,7 @@ those farther away.
 
 
 .TP
-.B "Next" "(\fIconditions\fP) \fIcommand\fP"
+.B "Next" "[ (\fIconditions\fP) ] \fIcommand\fP"
 Performs \fIcommand\fP (typically Focus) on the next window which
 satisfies all \fIconditions\fP.  Conditions are the same as for \fICurrent\fP
 with the addition of CirculateHit which overrides the CirculateSkip style
@@ -4541,15 +4519,40 @@ same for shaded windows.
 
 
 .TP
-.B "None" "(\fIconditions\fP) \fIcommand\fP"
+.B "None" "[ (\fIconditions\fP) ] \fIcommand\fP"
 Performs \fIcommand\fP if no window which satisfies all
 \fIconditions\fP exists.  Conditions are the same as for \fINext\fP.
 
 
 .TP
-.B "Prev" "(\fIconditions\fP) \fIcommand\fP"
+.B "Pick" "[ (\fIconditions\fP) ] \fIcommand\fP"
+Pick works like Function if invoked in the context of a window. If
+invoked in root context, it first asks the user to pick a window and
+then executes the command in the context of that window. This avoids
+annoying multiple selections with complex functions.  The command is
+executed only if the given \fIConditions\fP are met.  The Conditions
+are the same as for \fINext\fP.
+
+
+.TP
+.B "Prev" "[ (\fIconditions\fP) ] \fIcommand\fP"
 Performs \fIcommand\fP (typically Focus) on the previous window which
 satisfies all \fIconditions\fP.  Conditions are the same as for \fINext\fP.
+
+
+.TP
+.B "WindowId" "\fIid [ (\fIconditions\fP) ] func\fP"
+The WindowId function is similar to the Next and Prev functions, except
+that it looks for a specific window \fIid\fP and runs the specified
+\fIfunc\fP on it. The optional \fIconditions\fP are the same as for
+\fICurrent\fP.
+.EX
+WindowId 0x34567890 Raise
+WindowId 0x34567890 WarpToWindow 50 50
+WindowId $0 (Silly_Popup) Delete
+.EE
+Mostly this is useful for functions used with the WindowList builtin,
+or for selective processing of FvwmEvent calls (as in the last example).
 
 
 .SS MODULE COMMANDS

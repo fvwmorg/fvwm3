@@ -672,10 +672,20 @@ void DirectionFunc(F_CMD_ARGS)
  * for every single function in it. */
 void PickFunc(F_CMD_ARGS)
 {
+  char *restofline;
+  char *flags;
+  WindowConditionMask mask;
+
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
 
-  ExecuteFunction(action, tmp_win, eventp, C_WINDOW, *Module, EXPAND_COMMAND);
+  flags = CreateFlagString(action, &restofline);
+  DefaultConditionMask(&mask);
+  CreateConditionMask(flags, &mask);
+  if (MatchesConditionMask(tmp_win, &mask) && restofline)
+  {
+    ExecuteFunction(restofline,tmp_win,eventp,C_WINDOW,*Module,EXPAND_COMMAND);
+  }
 }
 
 void WindowIdFunc(F_CMD_ARGS)

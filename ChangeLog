@@ -1,9 +1,15 @@
+2000-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (Examples):
+	* fvwm/conditional.c (PickFunc):
+	Pick command can handle a condition mask.
+
 2000-01-19  Hippo
 
 	* libs/ColorUtils.c: Removed the color cache
 
 2000-01-18 olicha	<olivier.chapuis@free.fr>
- 	
+
 	* fvwm/builtins.c (wait_func, recapture):
 	* fvwm/cursor.{c,h} (setBusyCursor):
 	* fvwm/function.{c,h}:
@@ -15,14 +21,14 @@
 	* fvwm/read.c (cursor_control, ReadFile, PipeRead):
 	* fvwm/screen.h (ScreenInfo):
 	Do so that we can disable the "Busy Cursor" patch
-	
+
 2000-01-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/functions.c (execute_complex_function):
 	fixed executing multiple immediate functions that need a target in a
 	complex function
 
-1999-01-18  Mikhael Goikhman  <migo@homemail.com>
+2000-01-18  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/System.c (getFileStamp, setFileStamp, isFileStampChanged):
 	* libs/fvwmlib.h:
@@ -73,7 +79,7 @@
 	* fvwm/move_resize.c (DoSnapAttract):
 	fixed snapping icons with titles to other icons
 
-1999-01-14  Mikhael Goikhman  <migo@homemail.com>
+2000-01-14  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/System.c (setPath): fixed expanding '+' not at the end
 
@@ -155,7 +161,7 @@
 	* fvwm/events.c (HandleConfigureRequest):
 	fixed ConfigureRequest handling
 
-1999-01-07  Mikhael Goikhman  <migo@homemail.com>
+2000-01-07  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/style.c (ProcessNewStyle): fixed Style * Button/NoButton
 	numbering
