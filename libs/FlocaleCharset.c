@@ -530,3 +530,22 @@ FlocaleCharset *FlocaleCharsetGetUnknownCharset(void)
 	return &UnkownCharset;
 }
 
+const char *FlocaleGetBidiCharset(Display *dpy, FlocaleFont *flf)
+{
+	FlocaleCharset *fc;
+	if (flf == NULL)
+	{
+		return NULL;
+	}
+	else if (flf->fc == FlocaleGetUnsetCharset())
+	{
+		FlocaleCharsetSetFlocaleCharset(dpy, flf);
+	}
+	fc = flf->fc;
+	if (fc == FlocaleCharsetGetUnknownCharset() || fc->bidi == NULL)
+	{
+		return NULL;
+	}
+	return (const char *)fc->bidi;
+}
+
