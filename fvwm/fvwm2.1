@@ -100,15 +100,8 @@ Note that there are several window managers around that have
 "fvwm" in their name.  In the past, version 2.x of fvwm was
 commonly called fvwm2 to distinguish it from the former version
 1.x (fvwm or even fvwm1).  Since version 1.x has been replaced by
-
-.B "Menu "
-.I     menu-name
-.BI    "[ " position " ]"
-.BI    "[" double-click-action "]"
-.IP
 version 2.x a long time ago we simply call version 2.x and all
 versions to come, fvwm, throughout this document, although the
-.BI a b c
 executable program is named fvwm2.  There is an fvwm offspring
 called fvwm95. Although it is very similar to older versions of
 fvwm version 2 it is technically a different window manager that
@@ -1516,7 +1509,10 @@ cannot destroy the default menu style.
 DestroyMenuStyle pixamp1
 .EE
 
-.IP "Menu \fImenu-name\fP [ \fIposition\fP ] [ \fIdouble-click-action\fP ]"
+.IP "\fBMenu\fP \fImenu-name\fP \
+\fB[\fP \fIposition\fP \
+\fB] [\fP \fIdouble-click-action\fP \
+\fB]\fP"
 Causes a previously defined menu to be popped up in a sticky
 manner. That is, if the user invokes the menu with a click action
 instead of a drag action, the menu stays up.  The command
@@ -2649,7 +2645,7 @@ ColormapFocus FollowsFocus
 then the installed colormap is the one for the window that
 currently has the keyboard focus.
 
-.IP "CursorStyle \fIcontext\fP \fB[\fR \fInumber\fP \
+.IP "\fBCursorStyle\fP \fIcontext\fP \fB[\fP \fInumber\fP \
 \fB|\fP \fIname\fP \
 \fB|\fP \fIxpm\fP \
 \fB|\fP \fINone\fP \
@@ -3154,7 +3150,7 @@ instead.
 \fB)] [\fP \fIposition\fP \
 \fB] [\fP \fIoptions\fP \
 \fB] [\fP \fIdouble-click-action\fP \
-\fB]\fR"
+\fB]\fP"
 Generates a pop-up menu (and pops it up) in which the title and
 geometry of each of the windows currently on the desktop are
 shown.
