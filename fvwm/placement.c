@@ -106,15 +106,15 @@ static int SmartPlacement(FvwmWindow *t,
   FvwmWindow *test_window;
   int stickyx, stickyy;
 
-/*  RBW - 11/02/1998  */
-test_x = PageLeft;
-test_y = PageTop;
-/**/
+  /*  RBW - 11/02/1998  */
+  test_x = PageLeft;
+  test_y = PageTop;
+  /**/
 
   temp_h = height;
   temp_w = width;
 
-/*  RBW - 11/02/1998  */
+  /*  RBW - 11/02/1998  */
   while (test_y + temp_h < PageBottom && !loc_ok)
   {
     test_x = PageLeft;
@@ -122,7 +122,7 @@ test_y = PageTop;
     {
       loc_ok = True;
       test_window = Scr.FvwmRoot.next;
-      while (test_window != NULL && loc_ok)
+      for ( ; test_window != NULL && loc_ok; test_window = test_window->next)
       {
 	if (t == test_window)
 	  continue;
@@ -171,12 +171,11 @@ test_y = PageTop;
             }
           }
         }
-        test_window = test_window->next;
-      }
+      } /* for */
       test_x +=1;
-    }
+    } /* while */
     test_y +=1;
-  }
+  } /* while */
   /*  RBW - 11/02/1998  */
   if(loc_ok == False)
   {
