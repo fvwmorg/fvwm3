@@ -1,3 +1,9 @@
+2000-09-25  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/session.c (SetClientID):
+	* fvwm/session.h:
+	implemented forgotten function, thus fixing a bad bug with timeout
+
 2000-09-24  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/gnome.c (GNOME_ProcessClientMessage):

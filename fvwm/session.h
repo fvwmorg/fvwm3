@@ -58,7 +58,7 @@ void RestartInSession (char *filename, Bool isNative, Bool doPreserveState);
 Bool MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max);
 
 #ifdef SESSION
-void SetClientID(char *new_id);
+void SetClientID(char *client_id);
 
 /*
 **  Try to open a connection to the session manager. If non-NULL,
@@ -83,7 +83,7 @@ void ProcessICEMsgs(void);
 #define sm_fd -1
 #define ProcessICEMsgs()
 #define SessionInit()
-#define SetClientID(new_id)
+#define SetClientID(client_id)
 
 #endif
 

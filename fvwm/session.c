@@ -71,7 +71,7 @@ Match;
 
 #ifdef SESSION
 int sm_fd = -1;
-static char *client_id = NULL;
+static char *previous_sm_client_id = NULL;
 static char *sm_client_id = NULL;
 static Bool sent_save_done = 0;
 #endif
@@ -816,8 +816,9 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
 }
 
 #ifdef SESSION
-void SetClientID(char *new_id)
+void SetClientID(char *client_id)
 {
+  previous_sm_client_id = client_id;
 }
 
 static void
@@ -1081,7 +1082,6 @@ InstallIOErrorHandler (void)
 void
 SessionInit(void)
 {
-  char *previous_client_id = client_id;
   char error_string_ret[4096] = "";
   static SmPointer context;
   SmcCallbacks callbacks;
@@ -1102,7 +1102,7 @@ SessionInit(void)
 			      SmcSaveYourselfProcMask | SmcDieProcMask |
 			      SmcSaveCompleteProcMask |
 			      SmcShutdownCancelledProcMask,
-			      &callbacks, previous_client_id, &sm_client_id,
+			      &callbacks, previous_sm_client_id, &sm_client_id,
 			      4096, error_string_ret);
 
   if (!sm_conn)
@@ -1110,7 +1110,7 @@ SessionInit(void)
       /*
 	Don't annoy users which don't use a session manager
       */
-      if (previous_client_id)
+      if (previous_sm_client_id)
         {
 	  fvwm_msg(ERR, "SessionInit",
 		   "While connecting to session manager:\n%s.",
