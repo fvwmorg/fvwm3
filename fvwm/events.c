@@ -3142,7 +3142,8 @@ static int flush_property_notify(Atom atom, Window w)
   int count;
 
   XSync(dpy, 0);
-  for (count = 0; XCheckMaskEvent(dpy, PropertyChangeMask, &e); count++)
+  for (count = 0; XCheckTypedWindowEvent(dpy, w, PropertyNotify, &e);
+       count++)
   {
     if (e.xproperty.atom != atom)
     {

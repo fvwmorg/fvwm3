@@ -1,5 +1,9 @@
 2001-06-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (flush_property_notify):
+	accidentally flushed PropertyNotify events for all windows, not just the
+	given window
+
 	* fvwm/icons.c (Iconify):
 	sticky icons on desks other than 0 are mapped during a restart
 
