@@ -1,11 +1,8 @@
-2002-01-04 olicha  <olivier.chapuis@free.fr>
+2002-01-04  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
 	Fixed moving a Transparent TaskBar. Eat up excess Expose events.
 	Fixed resizing an AutoHide TaskBar
-	
-2001-12-19  olicha  <olivier.chapuis@free.fr>
-
 	
 2002-01-04  Mikhael Goikhman  <migo@homemail.com>
 
