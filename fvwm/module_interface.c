@@ -1122,8 +1122,8 @@ make_named_packet(int *len, unsigned long event_type, const char *name,
   *len =
     FvwmPacketHeaderSize + num + (strlen(name) / sizeof(unsigned long)) + 1;
   /* truncate long packets */
-  if (*len > FvwmPacketMaxSize_byte)
-    *len = FvwmPacketMaxSize_byte;
+  if (*len > FvwmPacketMaxSize)
+    *len = FvwmPacketMaxSize;
 
   body = (unsigned long *)safemalloc(*len * sizeof(unsigned long));
   body[*len-1] = 0; /* Zero out end of memory to avoid uninit memory access. */

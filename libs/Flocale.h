@@ -109,6 +109,7 @@ typedef struct _FlocaleFont
 	XFontSet fontset;	/* font set */
 	FftFontType fftf;
 	FlocaleCharset *fc;
+	Bool must_free_fc;
 	/* utf8 and mb are used only with a XFontStruct font, fftf as is own
 	 * value in the FftFontType and for XFontSet evrything is done in the
 	 * good way automatically and these parameters are not needed */
@@ -278,7 +279,6 @@ Bool FlocaleTextListToTextProperty(
 /* ***************************************************************************
  * Misc
  * ***************************************************************************/
-FlocaleCharset *FlocaleGetUnsetCharset(void);
 const char *FlocaleGetBidiCharset(Display *dpy, FlocaleFont *flf);
 
 #endif /* FLOCALE_H */

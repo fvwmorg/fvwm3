@@ -995,11 +995,7 @@ second example Luxi Mono is the Family (Other XFree TTF families:
 weights: Light, DemiBold, Bold, Black), Roman is the slant or the
 style (other possibility: Regular, Oblique, Italic) size specifies
 the point size (for a pixel size use pixelsize=), encoding allows
-for defining the charset.
-Using iso10646-1 allows for displaying UTF-8 strings
-(in menus for example)
-without multibyte support neither an UTF-8 locale
-(which is not available for all C libraries).
+for defining the charset (basically iso8859-1 or iso10646-1).
 An important parameter is "minspace=bool" where bool is True or
 False. If bool is False (the default?) Xft gives a greater font
 height to fvwm than if bool is True. This may modify text
@@ -1028,7 +1024,7 @@ video card(s)).  Moreover, the Xft protocol forces fvwm to produce
 more redrawing which can lead to text flickering. If you are not
 happy with this simply do not use Xft rendering.
 
-Finally, after an Xft font name you can add after a ";" an XLFD
+After an Xft font name you can add after a ";" an XLFD
 font name (simple or extended) as:
 .EX
 xft:Verdana:pixelsize=14;-adobe-courier-bold-r-normal--14-*
@@ -1036,6 +1032,58 @@ xft:Verdana:pixelsize=14;-adobe-courier-bold-r-normal--14-*
 then, if either loading the Xft font fails or fvwm has no Xft support,
 fvwm loads the font "-adobe-courier-bold-r-normal--14-*". This
 allows for writting portable configuration files.
+
+.\"needs_lang_check
+Fonts are not only used by fvwm to display strings, a font is also
+used by fvwm (and sometime X) to determine the encoding used. For example,
+if you use an iso10646-1 (unicode) font for menus you should use
+UTF-8 encoding in your configuration file for the menus labels.
+Also, the EWMH specification forces fvwm to convert certain window
+name from/into UTF-8, fvwm used the font encoding to found the good
+converters. Moreover, in certain case fvwm has to know encoding to display
+the string in the good way (this is the case for iso10646-1 and encoding
+for right to left languages). In normal situation all these is done
+automatically. However, it may happen that you should give some
+information to fvwm (for if, you should know what you do).
+
+What it may happen is that a font name has an exotic encoding name.
+For example
+.EX
+-misc-fixed-*--20-*-my_utf8-36
+.EE
+has "my_utf8-36" as XLFD encoding but it is not an "official"
+encoding. To solve this problem you can add after a / the
+real encoding. With the above example you should use something
+like:
+.EX
+MenuStyle * Font -misc-fixed-*--20-*-my_utf8-36/iso10646-1
+.EE
+which enforces iso10646-1 as encoding for fvwm.
+Concerning UTF-8 conversions the problem is a bit different.
+If fvwm has found the good encoding, fvwm try to found valid converts.
+Unfortunately, there are no standard here: for conversion between
+iso8859-1 and UTF-8 a GNU system use ISO-8859-1 and some other
+system use iso881 to define the converters (these two names are
+supported by fvwm). Moreover, in certain case it may be useful
+to use machine specific converters. So, if you experiment problems
+with some windows names (e.g., with KDE or GNOME applications,
+pager or task bar) you can try to get information on your iconv
+implementation ("man iconv" may help) and passes the name which
+defines the converters at the end of the font name after the encoding
+and a / (a possible other solution is to use GNU libiconv).
+For example use:
+.EX
+Style * Font -misc-fixed-*--14-*-iso8859-1/*/latin1
+.EE
+to use latin1 for defining the converters for iso8859-1 encoding.
+The "*" in between the "/" says to fvwm to found itself the
+encoding (no problems here). Use:
+.EX
+Style * Font -misc-fixed-*--14-*-local8859-6/iso8859-6/local_iso8859_6_iconv
+.EE
+to force fvwm to consider the font with iso8859-6 as encoding (useful for
+bi-directionality) and to use local_iso8859_6_iconv for defining the converters.
+.\"end
 
 .SH BI-DIRECTIONAL TEXTS
 

@@ -41,8 +41,8 @@ void FlocaleCharsetInit(Display *dpy, const char *module);
 
 FlocaleCharset *FlocaleCharsetOfLocaleCharset(char *l);
 FlocaleCharset *FlocaleCharsetOfXCharset(char *x);
-void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf);
-
+void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf,
+				     char *hints);
 FlocaleCharset *FlocaleCharsetGetFLCXOMCharset(void);
 FlocaleCharset *FlocaleCharsetGetUnknownCharset(void);
 

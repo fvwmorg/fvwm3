@@ -1,3 +1,22 @@
+2002-05-02  Mikhail Kruk  <meshko@cs.brandeis.edu>
+
+	* fvwm/module_interface.c (make_named_packet):
+	Applied Mikhail Kruk patch
+
+2002-05-02  olicha  <olivier.chapuis@free.fr>
+
+	* libs/FlocaleCharset.h:
+	* libs/Ficonv.c (FiconvSetupConversion):
+	* libs/FlocaleCharset.c (FlocaleCharsetSetFlocaleCharset):
+	* libs/Flocale.h:
+	* libs/Flocale.c (FlocaleGetFftFont): 
+	(FlocaleGetFontSet):
+	(FlocaleGetFont):
+	(FlocaleLoadFont):
+	(FlocaleUnloadFont):
+	* fvwm/fvwm.1:
+	Implemented charset/iconv hints in font name
+
 2002-04-29  Stian Sletner  <stian@sletner.com>
 
 	* fvwm/windowlist.c (CMD_WindowList):

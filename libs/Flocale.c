@@ -74,8 +74,6 @@
 static FlocaleFont *FlocaleFontList = NULL;
 static char *Flocale = NULL;
 static Bool FlocaleSeted = False;
-static FlocaleCharset UnsetCharset = {"Unset", NULL, -2, NULL};
-
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
@@ -186,24 +184,28 @@ FlocaleFont *FlocaleGetFftFont(Display *dpy, char *fontname)
 {
 	FftFontType *fftf = NULL;
 	FlocaleFont *flf = NULL;
+	char *fn, *hints = NULL;
 
-	fftf = FftGetFont(dpy, fontname);
+	hints = GetQuotedString(fontname, &fn, "/", NULL, NULL, NULL);
+	fftf = FftGetFont(dpy, fn);
 	if (fftf == NULL)
 	{
+		if (fn != NULL)
+			free(fn);
 		return NULL;
 	}
 	flf = (FlocaleFont *)safemalloc(sizeof(FlocaleFont));
+	memset(flf, '\0', sizeof(FlocaleFont));
 	flf->count = 1;
 	flf->fftf = *fftf;
-	flf->font = NULL;
-	flf->fontset = None;
-	flf->fc =  &UnsetCharset;
+	FlocaleCharsetSetFlocaleCharset(dpy, flf, hints);
 	FftGetFontHeights(
 		&flf->fftf, &flf->height, &flf->ascent, &flf->descent);
 	FftGetFontWidths(
 		&flf->fftf, &flf->max_char_width);
 	free(fftf);
-
+	if (fn != NULL)
+		free(fn);
 	return flf;
 }
 
@@ -217,13 +219,18 @@ FlocaleFont *FlocaleGetFontSet(Display *dpy, char *fontname, char *module)
 	int mc,i;
 	char *ds;
 	XFontSetExtents *fset_extents;
+	char *fn, *hints = NULL;
 
 	if (!FlocaleMultibyteSupport)
 	{
 		return NULL;
 	}
-	if (!(fontset = XCreateFontSet(dpy, fontname, &ml, &mc, &ds)))
+
+	hints = GetQuotedString(fontname, &fn, "/", NULL, NULL, NULL);
+	if (!(fontset = XCreateFontSet(dpy, fn, &ml, &mc, &ds)))
 	{
+		if (fn != NULL)
+			free(fn);
 		return NULL;
 	}
 
@@ -255,17 +262,18 @@ FlocaleFont *FlocaleGetFontSet(Display *dpy, char *fontname, char *module)
 	}
 
 	flf = (FlocaleFont *)safemalloc(sizeof(FlocaleFont));
+	memset(flf, '\0', sizeof(FlocaleFont));
 	flf->count = 1;
 	flf->fontset = fontset;
-	flf->font = NULL;
-	flf->fftf.fftfont = NULL;
-	flf->fc = &UnsetCharset;
+	FlocaleCharsetSetFlocaleCharset(dpy, flf, hints);
 	fset_extents = XExtentsOfFontSet(fontset);
 	flf->height = fset_extents->max_logical_extent.height;
 	flf->ascent = - fset_extents->max_logical_extent.y;
 	flf->descent = fset_extents->max_logical_extent.height +
 		fset_extents->max_logical_extent.y;
 	flf->max_char_width = fset_extents->max_logical_extent.width;
+	if (fn != NULL)
+		free(fn);
 
 	return flf;
 }
@@ -275,9 +283,11 @@ FlocaleFont *FlocaleGetFont(Display *dpy, char *fontname)
 {
 	XFontStruct *font = NULL;
 	FlocaleFont *flf;
-	char *str,*fn;
+	char *str,*fn,*tmp;
+	char *hints = NULL;
 
-	str = GetQuotedString(fontname, &fn, ",", NULL, NULL, NULL);
+	hints = GetQuotedString(fontname, &tmp, "/", NULL, NULL, NULL);
+	str = GetQuotedString(tmp, &fn, ",", NULL, NULL, NULL);
 	while (!font && (fn && *fn))
 	{
 		font = XLoadQueryFont(dpy, fn);
@@ -286,32 +296,27 @@ FlocaleFont *FlocaleGetFont(Display *dpy, char *fontname)
 			free(fn);
 			fn = NULL;
 		}
-		if (!font)
+		if (!font && str && *str)
 		{
 			str = GetQuotedString(str, &fn, ",", NULL, NULL, NULL);
 		}
 	}
-	if (fn != NULL)
-	{
-		free(fn);
-	}
 	if (font == NULL)
 	{
+		if (fn != NULL)
+			free(fn);
+		if (tmp != NULL)
+			free(tmp);
 		return NULL;
 	}
 
 	flf = (FlocaleFont *)safemalloc(sizeof(FlocaleFont));
+	memset(flf, '\0', sizeof(FlocaleFont));
 	flf->count = 1;
-	if (FlocaleMultibyteSupport)
-	{
-		flf->fontset = None;
-	}
-	if (FftSupport)
-	{
-		flf->fftf.fftfont = NULL;
-	}
+	flf->fontset = None;
+	flf->fftf.fftfont = NULL;
 	flf->font = font;
-	flf->fc = &UnsetCharset;
+	FlocaleCharsetSetFlocaleCharset(dpy, flf, hints);
 	flf->height = flf->font->ascent + flf->font->descent;
 	flf->ascent = flf->font->ascent;
 	flf->descent = flf->font->descent;
@@ -320,6 +325,11 @@ FlocaleFont *FlocaleGetFont(Display *dpy, char *fontname)
 		flf->mb = True;
 	else
 		flf->mb = False;
+	if (fn != NULL)
+		free(fn);
+	if (tmp != NULL)
+		free(tmp);
+
 	return flf;
 }
 
@@ -663,7 +673,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			free(fn);
 			fn = NULL;
 		}
-		if (!flf)
+		if (!flf && str && *str)
 		{
 			str = GetQuotedString(str, &fn, ";", NULL, NULL, NULL);
 		}
@@ -739,8 +749,13 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	
 	if (flf != NULL)
 	{
-		FlocaleCharsetSetFlocaleCharset(dpy, flf);
-		flf->next = FlocaleFontList;
+		if (flf->fc == FlocaleCharsetGetUnknownCharset())
+		{
+			fprintf(stderr,"[%s][FlocaleLoadFont]: "
+				"WARNING -- Unkown charset for font\n\t'%s'\n",
+				(module)? module: "FVWM", flf->name);
+		}
+			flf->next = FlocaleFontList;
 		FlocaleFontList = flf;
 	}
 
@@ -750,6 +765,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 {
 	FlocaleFont *list = FlocaleFontList;
+	int i = 0;
 
 	if (!flf)
 	{
@@ -784,6 +800,23 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 	if (flf->font != NULL)
 	{
 		XFreeFont(dpy, flf->font);
+	}
+	if (flf->must_free_fc)
+	{
+		if (flf->fc->x)
+			free(flf->fc->x);
+		if (flf->fc->bidi)
+			free(flf->fc->bidi);
+		if (flf->fc->locale != NULL)
+		{
+			while(FLC_GET_LOCALE_CHARSET(flf->fc,i) != NULL)
+			{
+				free(FLC_GET_LOCALE_CHARSET(flf->fc,i));
+				i++;
+			}
+			free(flf->fc->locale);
+		}
+		free(flf->fc);
 	}
 
 	/* Link it out of the list (it might not be there) */
@@ -1089,13 +1122,5 @@ Bool FlocaleTextListToTextProperty(
 	}
 
 	return ret;
-}
-
-/* ***************************************************************************
- * misc
- * ***************************************************************************/
-FlocaleCharset *FlocaleGetUnsetCharset(void)
-{
-	return &UnsetCharset;
 }
 

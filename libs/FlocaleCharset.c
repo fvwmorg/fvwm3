@@ -26,6 +26,7 @@
 
 #include "safemalloc.h"
 #include "Strings.h"
+#include "Parse.h"
 #include "FlocaleCharset.h"
 #include "Ficonv.h"
 
@@ -158,7 +159,6 @@ char *iso8859_9[]         = {"ISO-8859-9",
 			     "8859-9",
 			     "iso89",
 			     NULL};
-char *iso8859_9e[]        = {NULL};
 char *iso8859_10[]        = {"ISO-8859-10",
 			     "ISO8859-10",
 			     "iso8859-10",
@@ -303,7 +303,7 @@ FlocaleCharset FlocaleCharsetTable[] =
 	CT_ENTRY("ISO8859-7",           iso8859_7,           NULL),
 	CT_ENTRY("ISO8859-8",           iso8859_8,           "ISO8859-8"),
 	CT_ENTRY("ISO8859-9",           iso8859_9,           NULL),
-	CT_ENTRY("ISO8859-9E",          iso8859_9e,          NULL),
+	CT_ENTRY("ISO8859-9E",          iso8859_9,          NULL),
 	CT_ENTRY("ISO8859-10",          iso8859_10,          NULL),
 	CT_ENTRY("ISO8859-13",          iso8859_13,          NULL),
 	CT_ENTRY("ISO8859-14",          iso8859_14,          NULL),
@@ -484,45 +484,120 @@ FlocaleCharset *FlocaleCharsetOfXCharset(char *x)
 	return NULL;
 }
 
-void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf)
+void FlocaleCharsetSetFlocaleCharset(Display *dpy, FlocaleFont *flf, char *hints)
 {
-	FlocaleCharsetInit(dpy, "fvwmlibs");
-	if (FftSupport && flf->fftf.fftfont != NULL)
-	{
-		flf->fc =  FlocaleCharsetOfXCharset(flf->fftf.encoding);
-	}
-	else if (FlocaleMultibyteSupport && flf->fontset != None)
-	{
-		if (FLCXOMCharset != NULL)
-		{
-			flf->fc = FLCXOMCharset;
-		}
-		else
-		{
-			/* basically we are here if !HAVE_XOUTPUT_METHOD */
-			XFontStruct **fs_list;
-			char **ml;
+	char *charset = NULL;
+	char *iconv = NULL;
+	Bool iconv_found = False;
+	int i = 0;
 
-			if (XFontsOfFontSet(flf->fontset, &fs_list, &ml) > 0)
+	FlocaleCharsetInit(dpy, "fvwmlibs");
+
+	if (hints && *hints)
+	{
+		iconv = GetQuotedString(hints, &charset, "/", NULL, NULL, NULL);
+		if (charset && *charset && *charset != '*' )
+		{
+			flf->fc = FlocaleCharsetOfXCharset(charset);
+		}
+		if (flf->fc == NULL && charset && *charset && *charset != '*')
+		{
+			flf->fc = FlocaleCharsetOfLocaleCharset(charset);
+		}
+		if (flf->fc == NULL && iconv && *iconv)
+		{
+			flf->fc = FlocaleCharsetOfLocaleCharset(iconv);
+		}
+	}
+	if (flf->fc == NULL)
+	{
+		if (FftSupport && flf->fftf.fftfont != NULL)
+		{
+			flf->fc =  FlocaleCharsetOfXCharset(flf->fftf.encoding);
+		}
+		else if (FlocaleMultibyteSupport && flf->fontset != None)
+		{
+			if (FLCXOMCharset != NULL)
 			{
-				flf->fc = FLCXOMCharset =
-				    FlocaleCharsetOfFontStruct(dpy, fs_list[0]);
+				flf->fc = FLCXOMCharset;
+			}
+			else
+			{
+				/* we are here if !HAVE_XOUTPUT_METHOD */
+				XFontStruct **fs_list;
+				char **ml;
+
+				if (XFontsOfFontSet(
+					    flf->fontset, &fs_list, &ml) > 0)
+				{
+					flf->fc = FLCXOMCharset =
+						FlocaleCharsetOfFontStruct(
+								dpy, fs_list[0]);
+				}
 			}
 		}
-	}
-	else if (flf->font != NULL)
-	{
-		flf->fc = FlocaleCharsetOfFontStruct(dpy, flf->font);
-		if (flf->fc != NULL && StrEquals(flf->fc->x, "ISO10646-1"))
+		else if (flf->font != NULL)
 		{
-			flf->utf8 = True;
+			flf->fc = FlocaleCharsetOfFontStruct(dpy, flf->font);
+		}
+	}
+	if (flf->fc != NULL && iconv && *iconv)
+	{
+		/* the user has specified an iconv converter name:
+		 * check if we have it and force user choice */
+		while(!iconv_found && 
+		      FLC_GET_LOCALE_CHARSET(flf->fc,i) != NULL)
+		{
+			if (strcmp(iconv,FLC_GET_LOCALE_CHARSET(flf->fc,i)) == 0)
+			{
+				iconv_found = True;
+				/* Trust the user? yes ... */
+				FLC_SET_ICONV_INDEX(flf->fc,i);
+			}
+			i++;
+		}
+	}
+	if (iconv && *iconv && !iconv_found)
+	{
+		FlocaleCharset *fc;
+
+		/* the user has specified an iconv converter name and we do not
+		 * have it: must create a FlocaleCharset */
+		flf->must_free_fc = True;
+		fc = (FlocaleCharset *)safemalloc(sizeof(FlocaleCharset));
+		if (flf->fc != NULL)
+		{
+			CopyString(&fc->x, flf->fc->x);
+			if (flf->fc->bidi)
+				CopyString(&fc->bidi, flf->fc->bidi);
+			else
+				fc->bidi = NULL;
 		}
 		else
 		{
-			flf->utf8 = False;
+			CopyString(&fc->x, "Unkown"); /* for simplicity */
+			fc->bidi = NULL;
 		}
+		fc->locale = (char **)safemalloc(2*sizeof(char *));
+		CopyString(&fc->locale[0], iconv);
+		fc->locale[1] = NULL;
+		fc->iconv_index =  FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED;
+		flf->fc = fc;
 	}
-	if (flf->fc == NULL || flf->fc == FlocaleGetUnsetCharset())
+	if (flf->font != NULL && flf->fc != NULL &&
+	    StrEquals(flf->fc->x, "ISO10646-1"))
+	{
+		flf->utf8 = True;
+	}
+	else
+	{
+		flf->utf8 = False;
+	}
+	if (charset != NULL)
+	{
+		free(charset);
+	}
+	if (flf->fc == NULL)
 	{
 		flf->fc = &UnkownCharset;
 	}

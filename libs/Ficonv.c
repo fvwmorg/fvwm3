@@ -147,6 +147,7 @@ void set_iconv_charset_index(FlocaleCharset *fc)
 			FLC_SET_ICONV_INDEX(fc,i);
 			return;
 		}
+		i++;
 	}
 	FLC_SET_ICONV_INDEX(fc, FLC_INDEX_ICONV_CHARSET_NOT_FOUND);
 }
