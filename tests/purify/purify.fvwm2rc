@@ -38,6 +38,9 @@ AddToMenu TestMenu "=== TestMenu ===" Title
 AddToMenu TestMenu "Run root tail" Function RootTail
 AddToMenu TestMenu "FvwmConsole" FvwmConsole
 AddToMenu TestMenu "Xterm" Exec xterm
+AddToMenu TestMenu "Quit Fvwm" Quit
+AddToMenu TestMenu "Restart Fvwm" Restart
+AddToMenu TestMenu "Some Setup" Popup TestSetupMenu
 + "" Nop
 AddToMenu TestMenu "Run all tests" function TestFunc
 # Give the TestMenu a distinctive Style:
@@ -45,6 +48,30 @@ MenuStyle TMS fvwm, background cornflowerblue, foreground white, Hilight3DThick
 MenuStyle TMS AutomaticHotkeys, BorderWidth 5, Font 9x15bold
 ChangeMenuStyle TMS TestMenu
 DestroyFunc TestFunc
+
+# Setup
+
+DestroyFunc TestQuitFunc
+AddToFunc   TestQuitFunc I Nop
+
+DestroyFunc SetupTestQuitFunc
+AddToFunc   SetupTestQuitFunc
++ I DestroyFunc TestQuitFunc
++ I AddToFunc   TestQuitFunc I Quit
+
+DestroyFunc TestTransitionFunc
+AddToFunc   TestTransitionFunc I Nop
+
+DestroyFunc SetupTestTransitionFunc
+AddToFunc   SetupTestTransitionFunc
++ I DestroyFunc TestTransitionFunc
++ I AddToFunc   TestTransitionFunc I Pick 
+
+AddToMenu TestSetupMenu "Setup" Title
++ "Quit at the end of Test" SetupTestQuitFunc
++ "Bloc on Pick after each test" SetupTestTransitionFunc
+
+
 
 # Function to define a test:
 # Arg 0 Menu Entry/Logged test name
@@ -57,6 +84,7 @@ CreateFunc AddTest
  + I AddToFunc TestFunc I Function Log "$0"
  + I DestroyFunc $1
  + I AddToFunc TestFunc I Function $1
+ + I AddToFunc TestFunc I TestTransitionFunc
 
 # Now start defining test functions:
 
@@ -3437,7 +3465,7 @@ AddToFunc ModulePath-Func
  + I ModulePath   $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
  + I ModulePath 		$HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.1.2:/nonexist/foo/bar
  + I ModulePath
- + I ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.3.22:/opt/public/src/fvwm/2.3.22
+ + I ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.3.22:/opt/public/src/fvwm/2.3.22:/home/olivier/local/opt/fvwm/libexec/2.5.7
 
 AddTest "Test Cleanup" Cleanup-Func
 AddToFunc Cleanup-Func
@@ -3452,6 +3480,7 @@ AddToFunc Cleanup-Func
  + I All (window_shaded) destroy
  + I beep
  + I Echo ------------ ok ------------
+ + I TestQuitFunc
 # + I quit poesfj apäuofw ük-lnlöiooüp. ..a,sjdms.,x-,
 
 DestroyFunc PurifyInit
