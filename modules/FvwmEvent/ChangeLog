@@ -1,3 +1,7 @@
+1998-12-17  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* Parse.c (PeekArgument): malloc -> safemalloc
+
 1998-11-24  Paul D. Smith  <psmith@gnu.org>
 
 	* Parse.h (LFindToken):  Remove this macro.  It's not used, and it

@@ -228,23 +228,33 @@ void ParseBindEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     Scr.buttons2grab &= ~(1<<(button-1));
   }
 
+  /*
+  ** why wasn't XKeysymToKeycode used instead of this for loop?
+  ** domivogt (18-Dec-1998): because multiple key can be bound to the same
+  ** key symbol?
+  */
   if (fKey)
-  {
-    button = XKeysymToKeycode(dpy, keysym);
-    if (button == 0)
-      return;
-  }
-
-  temp = Scr.AllBindings;
-  Scr.AllBindings = (Binding *)safemalloc(sizeof(Binding));
-  Scr.AllBindings->IsMouse = (fKey)? 0 : 1;
-  Scr.AllBindings->Button_Key = button;
-  Scr.AllBindings->key_name = (fKey) ? stripcpy(key) : NULL;
-  Scr.AllBindings->Context = contexts;
-  Scr.AllBindings->Modifier = mods;
-  Scr.AllBindings->Action = stripcpy(action);
-  Scr.AllBindings->NextBinding = temp;
-
+    {
+      XDisplayKeycodes(dpy, &min, &max);
+    }
+  else
+    {
+      min = button;
+      max = button;
+    }
+  for (i=min; i<=max; i++)
+    if (!fKey || XKeycodeToKeysym(dpy, i, 0) == keysym)
+    {
+      temp = Scr.AllBindings;
+      Scr.AllBindings  = (Binding *)safemalloc(sizeof(Binding));
+      Scr.AllBindings->IsMouse = !fKey;
+      Scr.AllBindings->Button_Key = i;
+      Scr.AllBindings->key_name = fKey ? stripcpy(key) : NULL;
+      Scr.AllBindings->Context = contexts;
+      Scr.AllBindings->Modifier = mods;
+      Scr.AllBindings->Action = stripcpy(action);
+      Scr.AllBindings->NextBinding = temp;
+    }
   return;
 }
 

@@ -25,6 +25,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <signal.h>
+#include <setjmp.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/wait.h>
@@ -79,6 +80,8 @@ extern void SaveButtons(button_info*);
 /* ------------------------------ prototypes ------------------------------- */
 
 void DeadPipe(int nonsense);
+static void DeadPipeCleanup(void);
+static void DeadPipeHandler(int sig);
 void SetButtonSize(button_info*,int,int);
 /* main */
 void Loop(void) __attribute__ ((noreturn));
@@ -142,6 +145,9 @@ panel_info *MainPanel = NULL, *CurrentPanel = NULL, *PanelIndex;
 int dpw, dph;
 
 int save_color_limit;                   /* Color limit, if any */
+
+static sigjmp_buf    deadjump;
+static sig_atomic_t  canJump = False;
 /* ------------------------------ Misc functions ----------------------------*/
 
 #ifdef DEBUG
@@ -175,11 +181,34 @@ int IsThereADestroyEvent(button_info *b)
 
 /**
 *** DeadPipe()
-*** Dead pipe handler
+*** Externally callable function to quit! Note that DeadPipeCleanup
+*** is an exit-procedure and so will be called automatically
 **/
 void DeadPipe(int whatever)
 {
-#if 0 /* can't do all this in a signal handler, so just exit */
+  exit(0);
+}
+
+/**
+*** DeadPipeHandler()
+*** Signal handler that will make the event-loop terminate
+**/
+static void DeadPipeHandler(int sig)
+{
+  if (canJump)
+  {
+    canJump = False;
+    siglongjmp(deadjump,1); /* Jump to normal termination */
+  }
+  _exit(0);  /* Does NOT call chain of exit-procedures */
+}
+
+/**
+*** DeadPipeCleanup()
+*** Remove all the windows from the Button-Bar, and close them as necessary
+**/ 
+static void DeadPipeCleanup(void)
+{
   button_info *b,*ub=UberButton;
   int button=-1;
 
@@ -246,8 +275,6 @@ void DeadPipe(int whatever)
 	 && !(b->c->flags&b_TransBack))
 	DestroyPicture(Dpy,b->c->backicon);
     }
-#endif /* 0 */
-  exit(0);
 }
 
 /**
@@ -409,13 +436,12 @@ void SetTransparentBackground(button_info *ub,int w,int h)
 /**
 *** myErrorHandler()
 *** Shows X errors made by FvwmButtons.
-*** Code copied from FvwmIconBox.
 **/
 XErrorHandler oldErrorHandler=NULL;
-XErrorHandler myErrorHandler(Display *dpy, XErrorEvent *event)
+int myErrorHandler(Display *dpy, XErrorEvent *event)
 {
   fprintf(stderr,"%s: Cause of next X Error.\n",MyName);
-  (*oldErrorHandler)(dpy,event);
+  /* return (*oldErrorHandler)(dpy,event); */
   return 0;
 }
 
@@ -432,6 +458,7 @@ int main(int argc, char **argv)
   int x,y,maxx,maxy,border_width,depth;
   char *temp, *s;
   button_info *b,*ub;
+  struct sigaction  sigact;
 
   temp=argv[0];
   s=strrchr(argv[0],'/');
@@ -439,11 +466,26 @@ int main(int argc, char **argv)
   MyName=mymalloc(strlen(temp)+1);
   strcpy(MyName,temp);
 
-  signal(SIGPIPE,DeadPipe);
-  signal(SIGINT,DeadPipe);
-  signal(SIGHUP,DeadPipe);
-  signal(SIGQUIT,DeadPipe);
-  signal(SIGTERM,DeadPipe);
+  /*
+   * These 5 signals share a common handler which uses static data.
+   * Therefore we need to ensure that no two of these signals can
+   * be delivered at the same time.
+   */
+  sigemptyset(&sigact.sa_mask);
+  sigaddset(&sigact.sa_mask, SIGPIPE);
+  sigaddset(&sigact.sa_mask, SIGINT);
+  sigaddset(&sigact.sa_mask, SIGHUP);
+  sigaddset(&sigact.sa_mask, SIGQUIT);
+  sigaddset(&sigact.sa_mask, SIGTERM);
+
+  sigact.sa_flags = 0;
+  sigact.sa_handler = DeadPipeHandler;
+
+  sigaction(SIGPIPE, &sigact, NULL);
+  sigaction(SIGINT,  &sigact, NULL);
+  sigaction(SIGHUP,  &sigact, NULL);
+  sigaction(SIGQUIT, &sigact, NULL);
+  sigaction(SIGTERM, &sigact, NULL);
 
   if(argc<6 || argc>8)
     {
@@ -483,7 +525,7 @@ int main(int argc, char **argv)
     }
   d_depth = DefaultDepth(Dpy, screen);
 
-  oldErrorHandler=XSetErrorHandler((XErrorHandler)myErrorHandler);
+  oldErrorHandler=XSetErrorHandler(myErrorHandler);
 
   UberButton=(button_info*)mymalloc(sizeof(button_info));
   UberButton->flags=0;
@@ -605,7 +647,20 @@ int main(int argc, char **argv)
   fprintf(stderr,"OK\n%s: Startup complete\n",MyName);
 # endif
 
-  Loop();
+  /*
+  ** Now that we have finished initialising everything,
+  ** it is safe(r) to install the clean-up handlers ...
+  */
+  atexit(DeadPipeCleanup);
+  if ( !sigsetjmp(deadjump,1) )
+  {
+    /* ONLY attempt to jump now that the jump-buffer is initialised
+     */
+    canJump = True;
+    Loop();
+  }
+
+  return 0;
 }
 
 /* -------------------------------- Main Loop -------------------------------*/
@@ -616,10 +671,9 @@ int main(int argc, char **argv)
 void Loop(void)
 {
   XEvent Event;
-  Window root;
   KeySym keysym;
   char buffer[10],*tmp,*act;
-  int i,i2,x,y,tw,th,border_width,depth,button;
+  int i,i2,button;
   button_info *ub,*b;
 #ifndef OLD_EXPOSE
   int ex=10000,ey=10000,ex2=0,ey2=0;
@@ -1450,11 +1504,11 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
   FD_SET(fd[1],&in_fdset);
 
 #ifdef __hpux
-  select(fd_width,(int *)&in_fdset, 0, 0, NULL);
+  if (select(fd_width,(int *)&in_fdset, 0, 0, NULL) > 0)
 #else
-  select(fd_width,&in_fdset, 0, 0, NULL);
+  if (select(fd_width,&in_fdset, 0, 0, NULL) > 0)
 #endif
-
+  {
 
   if(FD_ISSET(x_fd, &in_fdset))
     {
@@ -1481,6 +1535,8 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
 	  free(body);
 	}
     }
+
+  }
   return 0;
 }
 
@@ -1729,6 +1785,8 @@ void swallow(unsigned long *body)
  *   uber->y       = y position to start the panel wrt the button b
  *   uber->w       = xneg
  *   uber->h       = yneg
+ *   uber->n       = cast to 'char' to record of the direction
+ *
  *   CurrentPanel  = the panel where the button b was pressed to popup a new
  *                   panel
  */
@@ -1759,7 +1817,7 @@ void Slide (panel_info *p, button_info *b)
   /* PanelWin is found */
   PanelWin = p->uber->IconWinParent;
 
-  direction = b ? b->action[0][6] : 'u';
+  direction = b ? b->action[0][6] : (char) p->uber->n;
 
   if (p->uber->swallow)
   {
@@ -1895,6 +1953,7 @@ void Slide (panel_info *p, button_info *b)
       XMoveResizeWindow(Dpy, PanelWin, x, y, w, h);
     }
 
+    p->uber->n = (int) direction;
     p->uber->swallow = 1;
   }
 }

@@ -631,8 +631,9 @@ stripped of the substrings between the various delimiters.
 
 Move a window in an animated way. Similar to Move command, below.
 Options are the same, except they are required, since it doesn't make
-sense to have a user move the window interactively and animatedly. If the optional
-argument \fIWarp\fP is specified the pointer is warped with the window.
+sense to have a user move the window interactively and animatedly. If
+the optional argument \fIWarp\fP is specified the pointer is warped with
+the window.
 
 
 .IP "Beep"
@@ -1188,7 +1189,9 @@ accidentally flipping pages when they don't want to.
 
 The second parameter tells how many pixels over the edge of the screen
 a window's edge must move before it actually moves partially off the
-screen.
+screen. By default the viewport is moved a full page in the requested
+direction, but if you used \fIEdgeScroll\fP and set any values other
+than zero they will be used instead.
 
 Note that, with "EdgeScroll 0 0", it is still possible to move or
 resize windows across the edge of the current screen.  By making the
@@ -1199,16 +1202,16 @@ moving over pages becomes difficult but not impossible.
 
 .IP "EdgeScroll \fIhorizontal vertical\fP"
 Specifies the percentage of a page to scroll when the cursor hits the
-edge of a page.  If you don't want any paging or scrolling when you
-hit the edge of a page include "EdgeScroll 0 0" in your .fvwm2rc file.
-If you want whole pages, use "EdgeScroll 100 100".  Both horizontal
-and vertical should be positive numbers.
+edge of a page.  A trailing "p" changes the interpretation to mean "pixels".
+If you don't want any paging or scrolling when you hit the edge of a
+page include "EdgeScroll 0 0" in your .fvwm2rc file. If you want whole
+pages, use "EdgeScroll 100 100".  Both horizontal and vertical should
+be positive numbers.
 
 If the horizontal and vertical percentages are multiplied by 1000 then
 scrolling will wrap around at the edge of the desktop.  If "EdgeScroll
 100000 100000" is used \fIfvwm\fP will scroll by whole pages, wrapping
 around at the edge of the desktop.
-
 
 .IP "Exec \fIcommand\fP"
 Executes \fIcommand\fP.  You should not use an ampersand ``&'' at the

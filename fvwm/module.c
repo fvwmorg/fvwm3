@@ -363,7 +363,6 @@ int HandleModuleInput(Window w, int channel)
 
 void DeadPipe(int nonsense)
 {
-  signal(SIGPIPE, DeadPipe);
 }
 
 

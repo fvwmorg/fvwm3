@@ -16,6 +16,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <setjmp.h>
 #include <fcntl.h>
 #include <string.h>
 #include <unistd.h>
@@ -66,10 +67,10 @@ static int num_config_commands=0;
 char *output_file = NULL;
 #endif
 
-XErrorHandler FvwmErrorHandler(Display *, XErrorEvent *);
-XIOErrorHandler CatchFatal(Display *);
-XErrorHandler CatchRedirectError(Display *, XErrorEvent *);
-void newhandler(int sig);
+int FvwmErrorHandler(Display *, XErrorEvent *);
+int CatchFatal(Display *);
+int CatchRedirectError(Display *, XErrorEvent *);
+void newhandler(int sig, sigset_t mask);
 void CreateCursors(void);
 void ChildDied(int nonsense);
 void SaveDesktopState(void);
@@ -115,6 +116,12 @@ extern XEvent Event;
 Bool Restarting = False;
 int fd_width, x_fd;
 char *display_name = NULL;
+
+typedef enum { FVWM_RUNNING=0, FVWM_DONE, FVWM_RESTART } FVWM_STATE;
+
+static FVWM_STATE    fvwmRunState = FVWM_RUNNING;
+static sig_atomic_t  canJump = False;
+static sigjmp_buf    deadjump;
 
 /***********************************************************************
  *
@@ -232,12 +239,43 @@ int main(int argc, char **argv)
 
   DBUG("main","Installing signal handlers");
 
-  newhandler (SIGINT);
-  newhandler (SIGHUP);
-  newhandler (SIGQUIT);
-  newhandler (SIGTERM);
-  signal (SIGUSR1, Restart);
-  signal (SIGPIPE, DeadPipe);
+  {
+    struct sigaction  sigact;
+
+    /*
+     * Use reliable signal semantics since they are predictable and portable.
+     */
+#ifdef SA_RESTART
+    sigact.sa_flags = SA_RESTART;
+#else
+    sigact.sa_flags = 0;
+#endif
+    sigemptyset(&sigact.sa_mask);
+
+    sigact.sa_handler = DeadPipe;  /* This handler does nothing ??? */
+    sigaction(SIGPIPE, &sigact, NULL);
+
+    /*
+     * The signals USR1, TERM, QUIT, HUP and INT are going to share some
+     * static variables so we must ensure that the handlers don't trip over
+     * each other. This signal mask will be installed while the process is in
+     * the signal handler, and will temporarily block delivery of the other
+     * four signals ...
+     */
+    sigaddset(&sigact.sa_mask, SIGUSR1);
+    sigaddset(&sigact.sa_mask, SIGTERM);
+    sigaddset(&sigact.sa_mask, SIGQUIT);
+    sigaddset(&sigact.sa_mask, SIGHUP);
+    sigaddset(&sigact.sa_mask, SIGINT);
+
+    sigact.sa_handler = Restart;
+    sigaction(SIGUSR1, &sigact, NULL);
+
+    newhandler(SIGINT,sigact.sa_mask);
+    newhandler(SIGHUP,sigact.sa_mask);
+    newhandler(SIGQUIT,sigact.sa_mask);
+    newhandler(SIGTERM,sigact.sa_mask);
+  }
 
   ReapChildren();
 
@@ -353,8 +391,8 @@ int main(int argc, char **argv)
                    XA_CARDINAL, 32, PropModeReplace, NULL, 0);
 
 
-  XSetErrorHandler((XErrorHandler)CatchRedirectError);
-  XSetIOErrorHandler((XIOErrorHandler)CatchFatal);
+  XSetErrorHandler(CatchRedirectError);
+  XSetIOErrorHandler(CatchFatal);
   XSelectInput(dpy, Scr.Root,
                LeaveWindowMask| EnterWindowMask | PropertyChangeMask |
                SubstructureRedirectMask | KeyPressMask |
@@ -362,7 +400,7 @@ int main(int argc, char **argv)
                ButtonPressMask | ButtonReleaseMask );
   XSync(dpy, 0);
 
-  XSetErrorHandler((XErrorHandler)FvwmErrorHandler);
+  XSetErrorHandler(FvwmErrorHandler);
 
   BlackoutScreen(); /* if they want to hide the capture/startup */
 
@@ -480,8 +518,23 @@ int main(int argc, char **argv)
     Scr.ClickTime = -Scr.ClickTime;
   fFvwmInStartup = False;
   DBUG("main","Entering HandleEvents loop...");
-  HandleEvents();
-  DBUG("main","Back from HandleEvents loop?  Exitting...");
+
+  switch( (fvwmRunState = sigsetjmp(deadjump,1)) )
+  {
+  case FVWM_RUNNING:
+    canJump = True;
+    HandleEvents();    /* does not return */
+
+  case FVWM_DONE:
+    Done(0, NULL);     /* does not return */
+
+  case FVWM_RESTART:
+    Done(1, *g_argv);  /* does not return */
+
+  default:
+    DBUG("main","Unknown FVWM run-state");
+  }
+
   return 0;
 }
 
@@ -790,13 +843,21 @@ void InternUsefulAtoms (void)
 /***********************************************************************
  *
  *  Procedure:
- *	newhandler: Installs new signal handler
+ *	newhandler: Installs new signal handler (reliable semantics)
  *
  ************************************************************************/
-void newhandler(int sig)
+void newhandler(int sig, sigset_t mask)
 {
-  if (signal (sig, SIG_IGN) != SIG_IGN)
-    signal (sig, SigDone);
+  struct sigaction  sigact;
+
+  sigaction(sig,NULL,&sigact);
+  if (sigact.sa_handler != SIG_IGN)
+  {
+    sigact.sa_mask = mask;
+    sigact.sa_flags = 0;
+    sigact.sa_handler = SigDone;
+    sigaction(sig,&sigact,NULL);
+  }
 }
 
 
@@ -805,8 +866,13 @@ void newhandler(int sig)
  ************************************************************************/
 RETSIGTYPE Restart(int nonsense)
 {
-  Done(1, *g_argv);
-  SIGNAL_RETURN;
+  if (canJump)
+  {
+    canJump = False;
+    siglongjmp(deadjump,FVWM_RESTART);
+  }
+
+  _exit(0);  /* Does NOT call the chain of exit procedures */
 }
 
 /***********************************************************************
@@ -1342,14 +1408,19 @@ void Reborder(void)
 /***********************************************************************
  *
  *  Procedure:
- *	Done - cleanup and exit fvwm
+ *	Done - tells FVWM to clean up and exit
  *
  ***********************************************************************
  */
 RETSIGTYPE SigDone(int nonsense)
 {
-  Done(0, NULL);
-  SIGNAL_RETURN;
+  if (canJump)
+  {
+    canJump = False;
+    siglongjmp(deadjump,FVWM_DONE);
+  }
+  
+  _exit(0);  /* Does NOT call the chain of exit-procedures */
 }
 
 void Done(int restart, char *command)
@@ -1416,11 +1487,11 @@ void Done(int restart, char *command)
   else
   {
     XCloseDisplay(dpy);
-    exit(0);
   }
+  exit(0);
 }
 
-XErrorHandler CatchRedirectError(Display *dpy, XErrorEvent *event)
+int CatchRedirectError(Display *dpy, XErrorEvent *event)
 {
   fvwm_msg(ERR,"CatchRedirectError","another WM is running");
   exit(1);
@@ -1432,7 +1503,7 @@ XErrorHandler CatchRedirectError(Display *dpy, XErrorEvent *event)
  *	CatchFatal - Shuts down if the server connection is lost
  *
  ************************************************************************/
-XIOErrorHandler CatchFatal(Display *dpy)
+int CatchFatal(Display *dpy)
 {
   /* No action is taken because usually this action is caused by someone
      using "xlogout" to be able to switch between multiple window managers
@@ -1447,7 +1518,7 @@ XIOErrorHandler CatchFatal(Display *dpy)
  *	FvwmErrorHandler - displays info on internal errors
  *
  ************************************************************************/
-XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
+int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
   extern int last_event_type;
 

@@ -70,7 +70,7 @@ char *PeekArgument(const char *pstr)
 
     if (len)
     {
-      tok = (char *)malloc(len+1);
+      tok = (char *)safemalloc(len+1);
       strncpy(tok,tmptok,len);
       tok[len]='\0';
     }
@@ -95,7 +95,7 @@ char *GetArgument(char **pstr)
   *pstr += strlen(tok);			/* != actual size (quote-collapsing) */
   EatWS(*pstr);
 
-  if (!**pstr) 
+  if (!**pstr)
       *pstr=NULL;			/* change \0 to NULL */
 
   return tok;
@@ -158,11 +158,11 @@ char *GetNextArgument(char *indata,char **token)
  * Return value is ptr to indata,updated to point to text after the word
  * which is extracted.
  * token is the extracted word, which is copied into a malloced
- * space, and must be freed after use. 
+ * space, and must be freed after use.
  *
  **************************************************************************/
 char *GetNextArgument(char *indata,char **token)
-{ 
+{
   char *t,*start, *end, *text;
 
   t = indata;
@@ -206,7 +206,7 @@ char *GetNextArgument(char *indata,char **token)
     {
       /* Check for qouted text */
       if(*start == '"')
-	{	
+	{
 	  start++;
 	  while((*start != '"')&&(*start != 0))
 	    {
@@ -261,7 +261,7 @@ const char *MatchToken(register const char *s, register const char *w)
     if (*w=='\0' &&			          /* end of word and */
 	(*s=='\0' || ispunct(*s) || isspace(*s))) /* same in string */
 	return s;				  /* return endptr */
-    else 
+    else
 	return NULL;				  /* no match */
 }
 #endif
@@ -273,7 +273,7 @@ const char *MatchToken(register const char *s, register const char *w)
                         = 0  if s = t
                         > 0  if s > t
 
-   Note arguments are not declares register, so the function can be 
+   Note arguments are not declares register, so the function can be
    used with the bsearch() <search.h> function of the c library.
 
 */
@@ -297,7 +297,7 @@ int XCmpToken(char *s, char **t)
     if ((*s=='\0' && (ispunct(*w) || isspace(*w)))||
 	(*w=='\0' && (ispunct(*s) || isspace(*s))) )
 	return 0;			/* 1st word equal */
-    else 
+    else
 	return toupper(*s)-toupper(*w);	/* smaller/greater */
 }
 

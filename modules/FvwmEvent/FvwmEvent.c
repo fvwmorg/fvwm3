@@ -92,6 +92,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <signal.h>
+#include <setjmp.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/wait.h>
@@ -139,6 +140,8 @@ int	rplay_fd = -1;
 int     execute_event(short); 
 void	config(void);
 void	DeadPipe(int);
+
+static void DeadPipeHandler(int);
 
 /* define the event table */
 char	*events[MAX_MESSAGES+MAX_BUILTIN] =
@@ -189,11 +192,15 @@ char	*action_table[MAX_MESSAGES+MAX_BUILTIN];
 RPLAY	*rplay_table[MAX_MESSAGES+MAX_BUILTIN];
 #endif
 
+static sig_atomic_t  canJump = False;
+static sigjmp_buf    deadjump;
+
 int main(int argc, char **argv)
 {
     char *s;
     unsigned long	header[HEADER_SIZE], body[MAX_BODY_SIZE];
     int			total, remaining, count, event;
+    struct sigaction    sigact;
 
 INFO("--- started ----\n");
 
@@ -218,7 +225,13 @@ INFO("--- started ----\n");
 
 INFO("--- installing signal server\n");
 
-    signal (SIGPIPE, DeadPipe);		/* Dead pipe == Fvwm died */
+    sigemptyset(&sigact.sa_mask);
+    sigaddset(&sigact.sa_mask,SIGPIPE);
+    sigaddset(&sigact.sa_mask,SIGTERM);
+    sigact.sa_flags = 0;
+    sigact.sa_handler = DeadPipeHandler;
+    sigaction(SIGPIPE,&sigact,NULL);    /* Dead pipe == Fvwm died */
+    sigaction(SIGTERM,&sigact,NULL);    /* "polite" termination signal */
 
     fd[0] = atoi(argv[1]);
     fd[1] = atoi(argv[2]);
@@ -233,6 +246,9 @@ INFO("--- configuring\n");
     
     /* main loop */
 
+    if ( !sigsetjmp(deadjump,1) )
+    {
+        canJump = True;
 
 INFO("--- waiting\n");
     while (1)				
@@ -277,8 +293,12 @@ INFO("--- waiting\n");
 	    event=BUILTIN_UNKNOWN;
 
 	execute_event(event);		/* execute action */
+    } /* while */
+
     }
-    return 0;				/* never reached */
+
+    execute_event(BUILTIN_SHUTDOWN);
+    return 0;
 }
 
 
@@ -475,9 +495,24 @@ INFO("found\n");
  *	SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
-void DeadPipe(int nonsense)
+static void DeadPipeHandler(int nonsense)
 {
-    execute_event(BUILTIN_SHUTDOWN);
-    exit(0);
+    if (canJump)
+    {
+        canJump = False;
+        siglongjmp(deadjump,1);
+    }
+    _exit(0);  /* Does NOT call chain of exit procedures */
 }
 
+/***********************************************************************
+ *
+ *  Procedure:
+ *	Externally callable procedure to quit
+ *
+ ***********************************************************************/
+void DeadPipe(int flag)
+{
+  execute_event(BUILTIN_SHUTDOWN);
+  exit(flag);
+}

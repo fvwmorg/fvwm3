@@ -511,9 +511,11 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 
 	  /* Resist moving windows over the edge of the screen! */
+fprintf(stderr, "xl=%d, Width=%d, MoveResistance=%d\n", xl,Width,Scr.MoveResistance);
 	  if(((xl + Width) >= Scr.MyDisplayWidth)&&
 	     ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
 	    xl = Scr.MyDisplayWidth - Width - tmp_win->bw;
+fprintf(stderr, "xl=%d\n",xl);
 	  if((xl <= 0)&&(xl > -Scr.MoveResistance))
 	    xl = 0;
 	  if(((yt + Height) >= Scr.MyDisplayHeight)&&
@@ -583,15 +585,14 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      /* prevent window from lagging behind mouse when paging - mab */
 	      if(paged==0)
 		{
+		  int dx;
+		  int dy;
+
 		  xl = Event.xmotion.x_root;
 		  yt = Event.xmotion.y_root;
-#if 0
-		  HandlePaging(Scr.MyDisplayWidth,Scr.MyDisplayHeight,&xl,&yt,
-			       &delta_x,&delta_y,False);
-#else /* probably should actually use EdgeScroll values: */
-		  HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,&xl,&yt,
-			       &delta_x,&delta_y,False);
-#endif
+		  dx = Scr.EdgeScrollX ? Scr.EdgeScrollX : Scr.MyDisplayWidth;
+		  dy = Scr.EdgeScrollY ? Scr.EdgeScrollY : Scr.MyDisplayHeight;
+		  HandlePaging(dx, dy, &xl,&yt, &delta_x,&delta_y,False);
 		  xl += XOffset;
 		  yt += YOffset;
 		  if ( (delta_x==0) && (delta_y==0))

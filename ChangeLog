@@ -1,4 +1,18 @@
+1998-12-18  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/bindings.c (ParseBindEntry): fixed older patch to combine
+	mouse and key binding parsing. Dos this prevent the key binding
+	problem?
+
 1998-12-17  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/module.c:
+	* fvwm/fvwm.c: applied signal handler patches by Chris Rankin
+
+	* fvwm/fvwm2.1: documented that EdgeScroll handles the "p" suffix too
+
+	* fvwm/move.c (moveLoop): fixed bug: moving windows over page
+	boundaries not possible if EdgeScroll 0 0 was used.
 
 	* fvwm/menus.c: backed out my prvious patch for 'recursive' menus and
 	did it another (much simpler) way. Now we ignore the popup completely

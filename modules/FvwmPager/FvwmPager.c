@@ -8,12 +8,13 @@
  * as long as the copyright is kept intact. */
 
 #define TRUE 1
-#define FALSE
+#define FALSE 0
 
 #include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
+#include <setjmp.h>
 #include <fcntl.h>
 #include <string.h>
 #include <sys/wait.h>
@@ -96,6 +97,11 @@ Pixel win_hi_fore_pix = -1;
 char fAlwaysCurrentDesk = 0;
 PagerStringList string_list = { NULL, 0, NULL, NULL };
 
+static sigjmp_buf    deadjump;
+static sig_atomic_t  canJump = False;
+
+static void DeadPipeHandler(int);
+
 /***********************************************************************
  *
  *  Procedure:
@@ -104,11 +110,11 @@ PagerStringList string_list = { NULL, 0, NULL, NULL };
  ***********************************************************************/
 int main(int argc, char **argv)
 {
-  char *temp, *s, *cptr;
+  char *temp, *s;
   char *display_name = NULL;
   int itemp,i;
   char line[100];
-  char mask_mesg[50];
+  struct sigaction  sigact;
 
   /* Save our program  name - for error messages */
   temp = argv[0];
@@ -135,8 +141,26 @@ int main(int argc, char **argv)
       exit(1);
     }
 
-  /* Dead pipe == Fvwm died */
-  signal (SIGPIPE, DeadPipe);
+  /*
+   * These 5 signals share a common handler which uses static data.
+   * Therefore we need to ensure that no two of these signals can
+   * be delivered at the same time.
+   */
+  sigemptyset(&sigact.sa_mask);
+  sigaddset(&sigact.sa_mask, SIGPIPE);
+  sigaddset(&sigact.sa_mask, SIGTERM);
+  sigaddset(&sigact.sa_mask, SIGQUIT);
+  sigaddset(&sigact.sa_mask, SIGINT);
+  sigaddset(&sigact.sa_mask, SIGHUP);
+
+  sigact.sa_flags = 0;
+  sigact.sa_handler = DeadPipeHandler;
+
+  sigaction(SIGPIPE, &sigact, NULL);
+  sigaction(SIGTERM, &sigact, NULL);
+  sigaction(SIGQUIT, &sigact, NULL);
+  sigaction(SIGINT,  &sigact, NULL);
+  sigaction(SIGHUP,  &sigact, NULL);
 
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
@@ -235,7 +259,13 @@ int main(int argc, char **argv)
   fprintf(stderr,"[main]: back from getting window list, looping\n");
 #endif
 
-  Loop(fd);
+  if ( !sigsetjmp(deadjump,1) )
+  {
+    canJump = True;
+    Loop(fd);
+  }
+
+  return 0;
 }
 
 /***********************************************************************
@@ -319,6 +349,16 @@ void process_message(unsigned long type,unsigned long *body)
  *	SIGPIPE handler - SIGPIPE means fvwm is dying
  *
  ***********************************************************************/
+static void DeadPipeHandler(int nonsense)
+{
+  if (canJump)
+  {
+    canJump = False;
+    siglongjmp(deadjump,1);
+  }
+  _exit(0);  /* Does NOT call chain of exit-procedures */
+}
+
 void DeadPipe(int nonsense)
 {
   exit(0);
@@ -874,12 +914,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
   unsigned long header[HEADER_SIZE];
-  int body_length;
-  int count,count2 = 0;
   static int miss_counter = 0;
   unsigned long *body;
-  int total;
-  char *cbody;
 
   if(XPending(dpy))
     {
@@ -892,11 +928,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   FD_SET(fd[1],&in_fdset);
 
 #ifdef __hpux
-  select(fd_width,(int *)&in_fdset, 0, 0, NULL);
+  if (select(fd_width,(int *)&in_fdset, 0, 0, NULL) > 0)
 #else
-  select(fd_width,&in_fdset, 0, 0, NULL);
+  if (select(fd_width,&in_fdset, 0, 0, NULL) > 0)
 #endif
-
+  {
   if(FD_ISSET(x_fd, &in_fdset))
     {
       if(XPending(dpy))
@@ -905,7 +941,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	  miss_counter = 0;
 	  return 1;
 	}
-      else
 	miss_counter++;
       if(miss_counter > 100)
 	DeadPipe(0);
@@ -913,12 +948,13 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   if(FD_ISSET(fd[1], &in_fdset))
     {
-      if(count = ReadFvwmPacket(fd[1],header,&body) > 0)
-	 {
+      if(ReadFvwmPacket(fd[1],header,&body) > 0)
+	{
 	   process_message(header[1],body);
 	   free(body);
 	 }
     }
+  }
   return 0;
 }
 
@@ -931,9 +967,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
  ****************************************************************************/
 void ParseOptions(void)
 {
-  char *tend,*tstart;
   char *tline= NULL;
-  char *colors;
   int Clength,n,desk;
 
   Scr.FvwmRoot = NULL;
