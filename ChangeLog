@@ -1,3 +1,9 @@
+2003-01-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleConfigureRequest):
+	fixed placement of icons
+	fixed size calculations of icons
+
 2003-01-18  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/expand.c:
@@ -20,7 +26,7 @@
 	* NEWS:
 	Added conditionals Closable,Iconifiable,Maximizable,FixedSize and
 	HasHandles
-	
+
 2003-01-11  Mikhael Goikhman  <migo@homemail.com>
 
 	* expand.c:
@@ -35,7 +41,7 @@
 	* fvwm/fvwm.1.in:
 	Removed duplicate styles Unclosable,Unmaximizable,Uniconifiable and
 	DisallowMaximizeFixedSize
-	
+
 2003-01-06  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1.in: Lang check.
@@ -44,7 +50,7 @@
 
 	* fvwm/commands.h:
 	* INSTALL.fvwm:
-	* fvwm/ewmh.h: 
+	* fvwm/ewmh.h:
 	* fvwm/ewmh_intern.h:
 	* fvwm/ewmh_names.c:
 	* fvwm/ewmh_icons.c:
@@ -72,7 +78,7 @@
 
 	* fvwm/fvwm.1.in:
 	Documented  the new icon style options
-		
+
 	* fvwm/fvwm.h:
 	* fvwm/icons.h:
 	* fvwm/icons.c (DrawIconTitleWindow):
@@ -158,7 +164,7 @@
 
 2002-12-30  olicha  <olivier.chapuis@free.fr>
 
-	* NEWS: 
+	* NEWS:
 	* fvwm/icons.c (setup_icon_title_size):
 	(set_icon_pixmap_background):
 	(CreateIconWindow):
@@ -178,7 +184,7 @@
 	(setup_icon_title_parameters):
 	(setup_style_and_decor):
 	(setup_icon_font):
-	* fvwm/geometry.c (move_icon_to_position): 
+	* fvwm/geometry.c (move_icon_to_position):
 	* fvwm/style.h:
 	* fvwm/style.c (check_window_style_change):
 	(update_style_colorset):
@@ -246,7 +252,7 @@
 	* libs/Graphics.c (CreateRotatedPixmap):
 	* fvwm/geometry.c (get_title_font_size_and_offset):
 	* fvwm/update.c (apply_window_updates):
-	* fvwm/borders.c (border_set_button_pixmap): 
+	* fvwm/borders.c (border_set_button_pixmap):
 	(border_get_titlebar_draw_descr):
 	(border_draw_title):
 	(border_rotate_titlebar_descr):
@@ -261,12 +267,12 @@
 	* fvwm/fvwm.1.in: Grammar: allows to -> allows for.
 
 2002-12-21  Marcus Lundblad <ml@update.uu.se>
-	
+
 	* fvwm/style.c (style_parse_one_style_option):
 	* fvwm/style.h:
 	* fvwm/fvwm.h:
 	* fvwm/window_flags:
-	* fvwm/decorations.c (is_function_allowed, 
+	* fvwm/decorations.c (is_function_allowed,
 	                      __is_resize_allowed):
 	Added styles Closable, Iconifiable, Maximizable and
 	AllowMaximizeFixedSize
@@ -275,7 +281,7 @@
 	Added conditionals Closable,Iconifiable and Maximizable
 	* fvwm/fvwm.1.in:
 	Documented styles Closable, Iconifiable, Maximizable and
-	AllowMaximizeFixedSize and conditionals 
+	AllowMaximizeFixedSize and conditionals
 	Closable,Iconifiable and Maximizable
 
 2002-12-20  olicha  <olivier.chapuis@free.fr>
@@ -320,9 +326,9 @@
 	* libs/FImage.h (new file):
 	* libs/FImage.c (new file):
 	* libs/Makefile.am:
-	* fvwm/fvwm.c (setVersionInfo): 
+	* fvwm/fvwm.c (setVersionInfo):
 	Added MIT Shared Memory Extension for XImage
-	
+
 	* NEWS:
 	Some news
 

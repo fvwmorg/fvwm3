@@ -883,15 +883,29 @@ void HandleConfigureRequest(const evh_args_t *ea)
 	if (!fw || cre.window == FW_W_ICON_TITLE(fw) ||
 	    cre.window == FW_W_ICON_PIXMAP(fw))
 	{
-		xwcm = cre.value_mask &
-			(CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
+		xwcm = (cre.value_mask &
+			(CWX | CWY | CWWidth | CWHeight | CWBorderWidth));
 		xwc.x = cre.x;
 		xwc.y = cre.y;
 		if (fw && FW_W_ICON_PIXMAP(fw) == cre.window)
 		{
-			set_icon_picture_size(
-				fw, cre.width + 2 * cre.border_width,
-				cre.height + 2 * cre.border_width);
+			int bw;
+
+			if (cre.value_mask & CWBorderWidth)
+			{
+				bw = cre.border_width;
+			}
+			else
+			{
+				bw = 0;
+			}
+			if ((cre.value_mask & (CWWidth | CWHeight)) ==
+			    (CWWidth | CWHeight))
+			{
+				set_icon_picture_size(
+					fw, cre.width + 2 * bw,
+					cre.height + 2 * bw);
+			}
 		}
 		if (fw)
 		{
@@ -913,7 +927,7 @@ void HandleConfigureRequest(const evh_args_t *ea)
 
 				get_icon_picture_geometry(fw, &g);
 				xwc.x = g.x;
-				xwc.x = g.y;
+				xwc.y = g.y;
 				xwcm = cre.value_mask & (CWX | CWY);
 				XConfigureWindow(
 					dpy, FW_W_ICON_PIXMAP(fw), xwcm, &xwc);
@@ -924,7 +938,7 @@ void HandleConfigureRequest(const evh_args_t *ea)
 
 				get_icon_title_geometry(fw, &g);
 				xwc.x = g.x;
-				xwc.x = g.y;
+				xwc.y = g.y;
 				xwcm = cre.value_mask & (CWX | CWY);
 				XConfigureWindow(
 					dpy, FW_W_ICON_TITLE(fw), xwcm, &xwc);
