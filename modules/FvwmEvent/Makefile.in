@@ -125,7 +125,7 @@ DIST_COMMON =  ChangeLog Makefile.am Makefile.in
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = tar
+TAR = gtar
 GZIP = --best
 DEP_FILES =  .deps/FvwmEvent.P .deps/Parse.P
 SOURCES = $(FvwmEvent_SOURCES)

@@ -737,7 +737,7 @@ fi
 
 PACKAGE=fvwm
 
-VERSION=2.1.5
+VERSION=2.1.6
 
 if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
   { echo "configure: error: source directory already configured; run "make distclean" there first" 1>&2; exit 1; }
@@ -4626,36 +4626,36 @@ extras/Makefile utils/Makefile xpmroot/Makefile docs/Makefile
 icons/Makefile sample.fvwmrc/Makefile
 modules/FvwmAnimate/Makefile
 modules/FvwmAudio/Makefile
-modules/FvwmAuto/Makefile 
+modules/FvwmAuto/Makefile
 modules/FvwmBacker/Makefile
 modules/FvwmBanner/Makefile
 modules/FvwmButtons/Makefile
-modules/FvwmCpp/Makefile 
-modules/FvwmEvent/Makefile 
+modules/FvwmCpp/Makefile
+modules/FvwmEvent/Makefile
 modules/FvwmForm/Makefile
-modules/FvwmIconBox/Makefile 
-modules/FvwmIconMan/Makefile 
+modules/FvwmIconBox/Makefile
+modules/FvwmIconMan/Makefile
 modules/FvwmIdent/Makefile
-modules/FvwmM4/Makefile 
-modules/FvwmPager/Makefile 
+modules/FvwmM4/Makefile
+modules/FvwmPager/Makefile
 modules/FvwmRearrange/Makefile
-modules/FvwmSave/Makefile 
+modules/FvwmSave/Makefile
 modules/FvwmSaveDesk/Makefile
-modules/FvwmScroll/Makefile 
-modules/FvwmTalk/Makefile 
+modules/FvwmScroll/Makefile
+modules/FvwmTalk/Makefile
 modules/FvwmWinList/Makefile
-extras/FvwmCommand/Makefile 
+extras/FvwmCommand/Makefile
 extras/FvwmConfig/Makefile
-extras/FvwmConsole/Makefile 
+extras/FvwmConsole/Makefile
 extras/FvwmDebug/Makefile
-extras/FvwmGoodStuff/Makefile 
+extras/FvwmGoodStuff/Makefile
 extras/FvwmPipe/Makefile
 extras/FvwmScript/Makefile
 extras/FvwmScript/Scripts/Makefile
 extras/FvwmScript/Scripts/some_nice_icons/Makefile
 extras/FvwmScript/Widgets/Makefile
 extras/FvwmTaskBar/Makefile
-extras/FvwmWharf/Makefile 
+extras/FvwmWharf/Makefile
  config.h" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
@@ -4772,36 +4772,36 @@ extras/Makefile utils/Makefile xpmroot/Makefile docs/Makefile
 icons/Makefile sample.fvwmrc/Makefile
 modules/FvwmAnimate/Makefile
 modules/FvwmAudio/Makefile
-modules/FvwmAuto/Makefile 
+modules/FvwmAuto/Makefile
 modules/FvwmBacker/Makefile
 modules/FvwmBanner/Makefile
 modules/FvwmButtons/Makefile
-modules/FvwmCpp/Makefile 
-modules/FvwmEvent/Makefile 
+modules/FvwmCpp/Makefile
+modules/FvwmEvent/Makefile
 modules/FvwmForm/Makefile
-modules/FvwmIconBox/Makefile 
-modules/FvwmIconMan/Makefile 
+modules/FvwmIconBox/Makefile
+modules/FvwmIconMan/Makefile
 modules/FvwmIdent/Makefile
-modules/FvwmM4/Makefile 
-modules/FvwmPager/Makefile 
+modules/FvwmM4/Makefile
+modules/FvwmPager/Makefile
 modules/FvwmRearrange/Makefile
-modules/FvwmSave/Makefile 
+modules/FvwmSave/Makefile
 modules/FvwmSaveDesk/Makefile
-modules/FvwmScroll/Makefile 
-modules/FvwmTalk/Makefile 
+modules/FvwmScroll/Makefile
+modules/FvwmTalk/Makefile
 modules/FvwmWinList/Makefile
-extras/FvwmCommand/Makefile 
+extras/FvwmCommand/Makefile
 extras/FvwmConfig/Makefile
-extras/FvwmConsole/Makefile 
+extras/FvwmConsole/Makefile
 extras/FvwmDebug/Makefile
-extras/FvwmGoodStuff/Makefile 
+extras/FvwmGoodStuff/Makefile
 extras/FvwmPipe/Makefile
 extras/FvwmScript/Makefile
 extras/FvwmScript/Scripts/Makefile
 extras/FvwmScript/Scripts/some_nice_icons/Makefile
 extras/FvwmScript/Widgets/Makefile
 extras/FvwmTaskBar/Makefile
-extras/FvwmWharf/Makefile 
+extras/FvwmWharf/Makefile
 "}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
