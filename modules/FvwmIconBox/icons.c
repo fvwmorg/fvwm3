@@ -70,6 +70,8 @@ ButtonReleaseMask | ButtonPressMask | EnterWindowMask | LeaveWindowMask)
  *
  * Creates an Icon Window
  * Loads an icon file and combines icon shape masks after a resize
+ * special thanks to Rich Neitzel <thor@thor.atd.ucar.edu>
+ *    for his patch to handle icon windows
  *
  ****************************************************************************/
 void CreateIconWindow(struct icon_info *item)
@@ -96,9 +98,8 @@ void CreateIconWindow(struct icon_info *item)
   if (max_icon_height == 0)
     return;
 
-  if ((item->icon_file != NULL) && (!(item->extra_flags & DEFAULTICON)
-				    || !(item->wmhints && item->wmhints->flags
-				         & (IconPixmapHint|IconWindowHint)))) {
+  /* config specified icons have priority */
+  if ((item->icon_file != NULL) && !(item->extra_flags & DEFAULTICON)) {
     /* monochrome bitmap */
     GetBitmapFile(item);
 
@@ -106,17 +107,22 @@ void CreateIconWindow(struct icon_info *item)
     if((item->icon_w == 0) && (item->icon_h == 0))
       GetXPMFile(item);
   }
+  /* next come program specified icon windows and pixmaps*/
+  if((item->icon_h == 0) && (item->icon_w == 0) && item->wmhints)
+    if (item->wmhints->flags & IconWindowHint)
+      GetIconWindow(item);
+    else if (item->wmhints->flags & IconPixmapHint)
+      GetIconBitmap(item);
 
-  /* special thanks to Rich Neitzel <thor@thor.atd.ucar.edu>
-     for his patch to handle icon windows        */
-  if((item->icon_h == 0) && (item->icon_w == 0)
-     && (item->wmhints) && (item->wmhints->flags & IconWindowHint))
-    GetIconWindow(item);
+  /* if that all fails get the default */
+  if ((item->icon_file != NULL) && (item->icon_h == 0) && (item->icon_w == 0)) {
+    /* monochrome bitmap */
+    GetBitmapFile(item);
 
-  /* icon bitmap from the application */
-  if((item->icon_h == 0) && (item->icon_w == 0)
-     && (item->wmhints)&&(item->wmhints->flags & IconPixmapHint))
-    GetIconBitmap(item);
+    /* color pixmap */
+    if((item->icon_w == 0) && (item->icon_h == 0))
+      GetXPMFile(item);
+  }
 
   /* create the window to hold the pixmap */
   /* if using a non default visual client pixmaps must have a default visual

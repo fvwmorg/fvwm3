@@ -2367,20 +2367,22 @@ struct icon_info *UpdateItem(unsigned long type, unsigned long id, char *item)
 
       switch (type){
       case M_ICON_NAME:
-	if (tmp->name != NULL)
+	if (tmp->name)
 	  free(tmp->name);
 	tmp->name = str;
 	return tmp;
       case M_ICON_FILE:
-	tmp->icon_file = str;
+	tmp->icon_file = str; /* FIXME : memory leak here */
 	tmp->extra_flags &= ~DEFAULTICON;
 	return tmp;
       case M_WINDOW_NAME:
-	if (tmp->window_name != NULL)
+	if (tmp->window_name)
 	  free(tmp->window_name);
 	tmp->window_name = str;
 	return tmp;
       case M_RES_CLASS:
+	if (tmp->res_class)
+	  free(tmp->res_class);
 	tmp->res_class = str;
 	ret = 0;
 	if (sortby == RESCLASS && strcmp(NoClass, str) == 0
@@ -2395,6 +2397,8 @@ struct icon_info *UpdateItem(unsigned long type, unsigned long id, char *item)
 	}
 	return tmp;
       case M_RES_NAME:
+	if (tmp->res_name)
+	  free(tmp->res_name);
 	tmp->res_name = str;
 	ret = 0;
 	if (sortby == RESNAME && strcmp(NoResource, str) == 0
@@ -2798,6 +2802,9 @@ static int
 myErrorHandler(Display *dpy, XErrorEvent *event)
 {
   if (event->error_code == BadWindow)
+    return 0;
+  
+  if (event->error_code == BadDrawable)
     return 0;
 
   PrintXErrorAndCoredump(dpy, event, MyName);
