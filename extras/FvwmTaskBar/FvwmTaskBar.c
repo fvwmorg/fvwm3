@@ -3,6 +3,8 @@
  * (Much reworked version of FvwmWinList)
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
+ * Minor hack by TKP to enable autohide to work with pages (leaves 2 pixels
+ * visible so that the 1 pixel panframes don't get in the way)
  *
  * The author makes not guarantees or warantees, either express or
  * implied.  Feel free to use any contained here for any purpose, as long
@@ -341,9 +343,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	win_x = win_border = (int)body[10];
 
         if (win_y > Midline)
-          win_y = ScreenHeight - (AutoHide ? 1 : win_height + win_border);
+          win_y = ScreenHeight - (AutoHide ? 2 : win_height + win_border);
         else 
-          win_y = AutoHide ? 1-win_height : win_border;
+          win_y = AutoHide ? 2 - win_height : win_border;
 
         XMoveResizeWindow(dpy, win, win_x, win_y,
                           ScreenWidth-(win_border<<1), win_height);
@@ -1402,9 +1404,9 @@ void HideTaskBar() {
   ClearAlarm();
 
   if (win_y < Midline) 
-    win_y = /*1*/ - win_height;
+    win_y = 2 - win_height;
   else
-    win_y = (int)ScreenHeight /*- 1*/;
+    win_y = (int)ScreenHeight - 2;
 
   XMoveWindow(dpy, win, win_x, win_y);
 }
