@@ -1,3 +1,8 @@
+Thu May 13 19:26:00 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/ParseCommand.c (ParseCommand): Remove quoting in commands
+	sent to fvwm.
+
 1999-05-12  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* FvwmEvent/FvwmEvent.c (config): revert the patch to the

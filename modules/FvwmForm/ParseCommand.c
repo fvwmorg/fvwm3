@@ -49,10 +49,6 @@ char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
         AddChar('\0');                  /* make sure theres a null */
       }
       return(buf);
-    } if (c == '\\') {  /* escape char */
-      AddChar('\\');
-      AddChar(*(sp++));
-      goto next_loop;
     }
     if (c == '$') {  /* variable */
       if (*sp != '(')
@@ -79,8 +75,6 @@ char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
 	  case I_INPUT:
 	    if (x == ')') {
 	      for (cp = item->input.value; *cp != '\0'; cp++) {
-		if (*cp == '\"' || *cp == '\'' || *cp == '\\')
-		  AddChar('\\');
 		AddChar(*cp);
 	      }
 	    } else {
