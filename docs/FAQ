@@ -97,7 +97,8 @@ Contents
           X).  How can I tell fvwm to use different configurations
           for the screens?
     3.21  How do I maximize a window but not cover up FvwmTaskBar?
-    3.22  Why don't buttons show on the titlebar of some windows?
+    3.22  Why my close button looks pressed in maximized windows?
+          Why don't buttons show on the titlebar of some windows?
     3.23  How to define transparent menus?
     3.24  How to define transparent modules?
     3.25  How to define transparent decorations?
@@ -1441,33 +1442,34 @@ A: Instead of Maximize use "Maximize 100 -30p" where 30 is the width
 
 ----------------------------------------------------------------------
 
-3.22  Why don't buttons show on the titlebar of some windows?
+3.22  Why my close button looks pressed in maximized windows?
+      Why don't buttons show on the titlebar of some windows?
 
 A: Fvwm has some builtin idea of what the buttons do, and some
-   applications can request that certain buttons not be shown. For
-   example, its normal for Fvwm to suppress the iconify button (button
-   2, the second button from the right) on a transient (dialog)
-   window.
+   applications can request that certain buttons not be shown.
+   For example, its normal for Fvwm to suppress the iconify button
+   (builtin button 4, the second button from the right) on a
+   transient (dialog) window.
 
    The command:
 
      Style * DecorateTransient
 
-   Tells Fvwm you want titles and buttons on transient windows.
+   tells fvwm you want titles and buttons on transient windows.
 
      Style * MwmFunctions
 
-   Tells Fvwm to accept application hints not to show certain
-   buttons.
+   tells fvwm to accept application hints to hide certain buttons.
 
      ButtonStyle 2 - Clear MWMDecorMin
 
-   Says button 2 performs the minimize (iconify) function.
+   says button 2 performs the minimize (iconify) function.
 
      Mouse 0 2 A Iconify
 
-   Makes any mouse button on button 2 iconify the window.
-   Buttons won't show until some action is assigned to them.
+   makes any mouse button on button 2 iconify the window.
+   Buttons won't show until some action is assigned to them using
+   Mouse or Key commands.
 
    Things to look for in the man page are:
 
@@ -1475,9 +1477,14 @@ A: Fvwm has some builtin idea of what the buttons do, and some
 
    So, if you use Windows-like buttons, then redefine button hints:
 
-     ButtonStyle 1 - MwmDecorMenu
-     ButtonStyle 6 - MwmDecorMin
-     ButtonStyle 4 - MwmDecorMax
+     ButtonStyle 1 - Clear MWMDecorMenu
+     ButtonStyle 2 - Clear
+     ButtonStyle 4 - Clear MWMDecorMax
+     ButtonStyle 6 - Clear MWMDecorMin
+
+   Finally, this command makes button relief to follow the state:
+
+     Style * MWMButtons
 
 ----------------------------------------------------------------------
 
