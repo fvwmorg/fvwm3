@@ -22,7 +22,7 @@ Dominik Vogt:
 Improved ShuffleButtons algorithm (FvwmButtons), button geometries
 (FvwmButtons), Menu Position Hints, XResources.c, various move/resize
 and menu enhancements, MoveToPage, MoveToDesk, various parsing
-functions, COPYING file.
+functions, COPYING file, a myriad of bugfixes, Rewrite of MenuStyle syntax.
 
 A.J. Weber:
 SnapAttraction patch.
@@ -60,7 +60,7 @@ Mike Finger
 Pete Forman
 Patrice Fortier
 Todd Fries
-lar3ry gensch
+Larry Gensch
 Romano Giannetti
 Peter Gray
 Kaj Groner

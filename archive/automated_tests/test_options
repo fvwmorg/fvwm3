@@ -16,6 +16,7 @@ clean_up ()
 {
   make clean > /dev/null 2>&1
   make distclean > /dev/null 2>&1
+  rm -f config.cache > /dev/null 2>&1
   for i in `find . -name .deps -type d` ; do rm -rf $i; done > /dev/null 2>&1
   for i in `find . -name Makefile` ; do rm -f $i; done > /dev/null 2>&1
   for i in `find . -name "*.o"` ; do rm -f $i; done > /dev/null 2>&1
@@ -80,8 +81,7 @@ done
 
 n=1
 while [ ! "${opt[$n]}" = "" ]; do
-  echo disable_options ${opt[$n]}
-  disable_options ${opt[$n]}
+  disable_options $n
   echo build ${opt[$n]}_off
   build ${opt[$n]}_off
   reverse_options
@@ -92,6 +92,8 @@ done
 
 disable_options
 reverse_options
+echo build all_disabled
 build all_disabled
 disable_options
+echo build all_enabled
 build all_enabled

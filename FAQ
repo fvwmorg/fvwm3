@@ -93,7 +93,9 @@ INDEX
            and/or my mouse bindings?
        43) I'm seeing odd things when trying to preprocess files with
            the FvwmM4/Cpp module...
-       44) FvwmButtons Swallow command does not work.
+
+       44) (question gone)
+
        45) Is it possible to raise a window when I click into the
            window itself, not just the border?
        46) Menus with gradient backgrounds flicker or are very slow.
@@ -990,24 +992,12 @@ A: Yup, I imagine that you might be.  Things like the InitFunction not
 
 ----------------------------------------------------------------------
 
-44) FvwmButtons Swallow command does not work.
-
-A: You probably forgot to quote the swallow action. Config lines like
-
-     *FvwmButtons(Swallow "FvwmPager" Module FvwmPager)
-
-   do not work. The 'Module FvwmPager' part has to be quoted:
-
-     *FvwmButtons(Swallow "FvwmPager" "Module FvwmPager")
-
-----------------------------------------------------------------------
-
 45) Is it possible to raise a window when I click into the window
     itself, not just the border?
 
 A: Any version later than 2.0.46 (i.e. 2.1.x or later) has this
    feature. Currently it is provided through the GlobalOpts command.
-   This will possibly change in the future and be made am option to
+   This will possibly change in the future and be made an option to
    the Style command:
 
      GlobalOpts MouseFocusClickRaises
