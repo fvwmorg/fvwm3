@@ -48,3 +48,9 @@ In no particular order and maybe best to do in parts (3.0, 3.2 ...)
  39) UnconstrainedMove, like Move with no resistance or snap attraction.
  40) Title tile pixmaps wrapping (avoiding) title text.
  41) Timeouts for pager balloons?
+ 42) Xinerama support:
+ 42.1) Move/Resize/Resizemove
+ 42.2) MaxWindowSize
+ 42.3) Add additional pan frames?  If some screens have different
+       sizes, part of a pan frame may be in the void and some
+       screen edges won't allow paging.
