@@ -186,8 +186,7 @@ static void binding_cmd(F_CMD_ARGS, BindingType type, Bool do_grab_root)
 }
 
 static int bind_get_bound_button_contexts(
-	Binding **pblist, int button, BindingType type,
-	unsigned char *buttons_grabbed)
+	Binding **pblist, int button, unsigned char *buttons_grabbed)
 {
 	int bcontext = 0;
 	Binding *b;
@@ -198,9 +197,12 @@ static int bind_get_bound_button_contexts(
 	}
 	for (b = *pblist; b != NULL; b = b->NextBinding)
 	{
-		if (b->type == type &&
-		    (b->Context & (C_WINDOW|C_EWMH_DESKTOP)) &&
-		    (b->Modifier == 0 || b->Modifier == AnyModifier) &&
+		if (b->type != MOUSE_BINDING
+		    STROKE_CODE(&& b->type != STROKE_BINDING))
+		{
+			continue;
+		}
+		if ((b->Context & (C_WINDOW | C_EWMH_DESKTOP)) &&
 		    buttons_grabbed != NULL)
 		{
 			if (button == 0)
@@ -213,8 +215,7 @@ static int bind_get_bound_button_contexts(
 				*buttons_grabbed |= (1 << (button - 1));
 			}
 		}
-		if (b->Context != C_ALL && (b->Context & (C_LALL | C_RALL)) &&
-		    b->type == type)
+		if (b->Context != C_ALL && (b->Context & (C_LALL | C_RALL)))
 		{
 			bcontext |= b->Context;
 		}
@@ -446,7 +447,7 @@ int ParseBinding(
 			int bcontext;
 
 			bcontext = bind_get_bound_button_contexts(
-				pblist, button, MOUSE_BINDING, buttons_grabbed);
+				pblist, button, buttons_grabbed);
 			update_nr_buttons(
 				bcontext, nr_left_buttons, nr_right_buttons,
 				True);

@@ -1,5 +1,8 @@
 2002-10-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/bindings.c (bind_get_bound_button_contexts):
+	another mouse binding fix
+
 	* fvwm/conditional.c (CreateConditionMask):
 	simplified parsing
 	all conditions have a negation with '!' prepended
