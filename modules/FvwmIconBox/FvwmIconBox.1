@@ -235,6 +235,13 @@ the width from the outer-border to the scroll-bar, and,  \fIwidth2\fP
 corresponds to the width from the scroll-bar to the internal-window
 displaying icons. The default values are 8 and 6, respectively.
 
+.IP "*FvwmIconBoxNoIconAction \fIaction\fP"
+Tells FvwmIconBox to do \fIaction\fP is when a NoIcon style window is
+iconified or de-iconified. Relevant coordinates are appended to \fIaction\fP so
+that the icon can be traced to an FvwmIconBox button. An example action
+is "*FvwmIconBoxNoIconAction SendToModule FvwmAnimate animate". A blank or null
+action turns this feature off.
+
 .SH SAMPLE CONFIGURATION
 The following are excepts from a .fvwm2rc file which describe
 FvwmIconBox initialization commands:
@@ -266,6 +273,9 @@ Style 	"*"	NoIcon
 *FvwmIconBoxSetWMIconSize
 *FvwmIconBoxHilightFocusWin
 #*FvwmIconBoxResolution		Desk
+
+*FvwmIconBoxNoIconAction SendToModule FvwmAnimate animate
+
 #
 # mouse bindings
 #

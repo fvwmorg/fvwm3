@@ -66,6 +66,7 @@ extern void AdjustIconWindow(struct icon_info *item, int n);
 extern int AdjustIconWindows(void);
 extern struct icon_info *SetFlag(unsigned long id, int t);
 extern void RedrawIcon(struct icon_info *item, int f);
+extern void animate(struct icon_info *item, unsigned long *body);
 extern void Next(void);
 extern void Prev(void);
 extern void GetDefaultPixmap(struct icon_info *item);

@@ -175,6 +175,8 @@ int ready = 0;
 unsigned long local_flags = 0;
 int sortby = UNSORT;
 
+char* AnimCommand = NULL;
+
 int save_color_limit = 0;                   /* color limit from config */
 
 static RETSIGTYPE TerminateHandler(int);
@@ -289,6 +291,9 @@ int main(int argc, char **argv)
   ParseOptions();
 
   SetMessageMask(fd, m_mask); /* it may have changed */
+
+  /* Lock on send only for iconify and deiconify (for NoIconAction) */
+  SetSyncMask(fd, M_DEICONIFY | M_ICONIFY);
 
   if ((local_flags & SETWMICONSIZE) && (size = XAllocIconSize()) != NULL){
     size->max_width  = size->min_width  = max_icon_width + icon_relief;
@@ -789,6 +794,33 @@ void RedrawIcon(struct icon_info *item, int f)
     if (max_icon_height != 0 && (IS_ICON_OURS(item)))
       XSetWindowBackground(dpy, item->icon_pixmap_w, icon_back_pix);
     XSetWindowBackground(dpy, item->IconWin, icon_back_pix);
+  }
+}
+
+void animate(struct icon_info *item, unsigned long *body)
+{
+  if(item && AnimCommand && (AnimCommand[0] != 0) )
+  {
+    char string[256];
+    int abs_x, abs_y;
+    Window junkw;
+
+    XTranslateCoordinates(dpy, holder_win, Root,
+                          item->x, item->y, &abs_x, &abs_y,
+                          &junkw);
+    if (IS_ICONIFIED(item))
+    {
+      sprintf(string, "%s %d %d %d %d %d %d %d %d",
+              AnimCommand,
+              (int)body[7], (int)body[8], (int)body[9], (int)body[10],
+              abs_x, abs_y, item->icon_w, item->icon_h);
+    } else {
+      sprintf(string, "%s %d %d %d %d %d %d %d %d",
+              AnimCommand,
+              abs_x, abs_y, item->icon_w, item->icon_h,
+              (int)body[7], (int)body[8], (int)body[9], (int)body[10]);
+    }
+    SendText(fd, string, 0);
   }
 }
 
@@ -1615,7 +1647,18 @@ void ParseOptions(void)
 	}else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Lines"),Clength+6)==0)
 	  Lines = max(1,atoi(&tline[Clength+6]));
-	else if (strncasecmp(tline,CatString3("*",MyName,
+	else if (strncasecmp(tline,CatString3("*", MyName,
+           "NoIconAction"),Clength+13) == 0) {
+	  tmp = &tline[Clength+14];
+	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
+	    tmp++;
+    if (AnimCommand) free(AnimCommand);
+
+    if (tmp[strlen(tmp)-1] == '\n') tmp[strlen(tmp) -1] = '\0';
+    AnimCommand = (char *)safemalloc((strlen(tmp) + 1) * sizeof(char));
+    strcpy(AnimCommand, tmp);
+    fprintf(stderr, "got an action %s__\n", AnimCommand);
+	} else if (strncasecmp(tline,CatString3("*",MyName,
 					      "SBWidth"),Clength+8)==0)
 	  bar_width = max(5,atoi(&tline[Clength+8]));
 	else if (strncasecmp(tline,CatString3("*",MyName,
@@ -1978,8 +2021,8 @@ void process_message(unsigned long type, unsigned long *body)
   switch(type){
   case M_CONFIGURE_WINDOW:
     if (ready){
-      if (!(local_flags & CURRENT_ONLY) 
-	  || (DO_SKIP_WINDOW_LIST(cfgpacket) && UseSkipList)) 
+      if (!(local_flags & CURRENT_ONLY)
+	  || (DO_SKIP_WINDOW_LIST(cfgpacket) && UseSkipList))
 	break;
       tmp = Head;
       while(tmp != NULL){
@@ -2129,6 +2172,8 @@ void process_message(unsigned long type, unsigned long *body)
   case M_DEICONIFY:
     if (ready && (tmp = SetFlag(body[0], type)) != NULL)
       RedrawIcon(tmp, 2);
+    animate(tmp,body);
+    SendText(fd, "Unlock 1", 0);
     break;
   case M_FOCUS_CHANGE:
     if (!ready)
@@ -2283,7 +2328,7 @@ Bool AddItem(ConfigWinPacket *cfgpacket)
   struct icon_info *new, *tmp;
   tmp = Head;
 
-  if (cfgpacket->w == main_win || (IS_TRANSIENT(cfgpacket)) 
+  if (cfgpacket->w == main_win || (IS_TRANSIENT(cfgpacket))
       || !(IS_ICON_SUPPRESSED(cfgpacket))
       || (DO_SKIP_WINDOW_LIST(cfgpacket) && UseSkipList))
     return False;

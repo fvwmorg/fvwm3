@@ -1,3 +1,13 @@
+1999-11-30  Brad Giaccio  <bgiaccio@psrw.com>
+
+	* FvwmWinList/FvwmWinList.1: fixed typo
+
+	* FvwmIconBox/FvwmIconBox.1:
+	* FvwmIconBox/FvwmIconBox.c (animate):
+	(process_message):
+	(main):
+	(ParseOptions): added support for FvwmAnimate
+
 1999-11-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTaskBar/Goodies.c:
