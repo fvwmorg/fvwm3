@@ -94,18 +94,13 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       dragHeight += (tmp_win->title_height + 2*tmp_win->boundary_width);
 
       /* size will be less or equal to requested */
-      ConstrainSize (tmp_win, &dragWidth, &dragHeight, True);
+      ConstrainSize (tmp_win, &dragWidth, &dragHeight, False);
       SetupFrame (tmp_win, tmp_win->frame_x,
 		  tmp_win->frame_y ,dragWidth, dragHeight,FALSE);
 
       ResizeWindow = None;
       return;
     }
-
-  /* Fudge factors so that interactive resize keeps the window outline always
-     outside the pointer.  If the outline is always inside the pointer and
-     there is another PointerFocus window underneath the pointer at the end of
-     the resize the focus will be changed to the window underneath - bad karma */
 
   InstallRootColormap();
 
@@ -290,7 +285,8 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   if(!abort)
     {
-      ConstrainSize (tmp_win, &dragWidth, &dragHeight, False);
+      /* size will be >= to requested */
+      ConstrainSize (tmp_win, &dragWidth, &dragHeight, True);
       SetupFrame (tmp_win, dragx - tmp_win->bw,
 		  dragy - tmp_win->bw, dragWidth, dragHeight,FALSE);
     }
@@ -359,7 +355,8 @@ void DoResize(int x_root, int y_root, FvwmWindow *tmp_win)
 
   if (action)
     {
-      ConstrainSize (tmp_win, &dragWidth, &dragHeight, False);
+      /* round up to nearest OK size to keep pointer inside rubberband */
+      ConstrainSize (tmp_win, &dragWidth, &dragHeight, True);
       if (xmotion == 1)
 	dragx = origx + origWidth - dragWidth;
       if (ymotion == 1)
@@ -437,7 +434,7 @@ void DisplaySize(FvwmWindow *tmp_win, int width, int height,Bool Init)
  *
  ***********************************************************************/
 
-void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool fNoConstrain)
+void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool roundUp)
 {
 #define makemult(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 #define _min(a,b) (((a) < (b)) ? (a) : (b))
@@ -446,18 +443,16 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool fNoCons
     int dwidth = *widthp, dheight = *heightp;
     int constrainx, constrainy;
 
-    /* Dominik Vogt (08-Dec-1998): a dirty hack to fix the growing windows problem.
-     * fNoConstrain is True if called from 'resize_window' with two arguments and
-     * nowhere else. */
-    if (fNoConstrain)
-      {
-	constrainx = 0;
-	constrainy = 0;
-      }
-    else
+    /* roundUp is True if called from an interactive resize */
+    if (roundUp)
       {
 	constrainx = tmp_win->hints.width_inc - 1;
 	constrainy = tmp_win->hints.height_inc - 1;
+      }
+    else
+      {
+	constrainx = 0;
+	constrainy = 0;
       }
     dwidth -= 2 *tmp_win->boundary_width;
     dheight -= (tmp_win->title_height + 2*tmp_win->boundary_width);
@@ -488,7 +483,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp, Bool fNoCons
 
 
     /*
-     * Second, fit to base + N * inc (<= or >= depending on resize type)
+     * Second, round to base + N * inc (up or down depending on resize type)
      */
     dwidth = ((dwidth - baseWidth + constrainx) / xinc * xinc) + baseWidth;
     dheight = ((dheight - baseHeight + constrainy) / yinc * yinc) + baseHeight;
