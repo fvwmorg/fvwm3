@@ -359,7 +359,7 @@ char *ParseButtonOptions(char *pos, int *mouseButton)
     case 0:   /* Mouse */
       *mouseButton = strtol(pos, &rest, 10);
       pos = rest;
-      if (*mouseButton < 1 || *mouseButton > NUMBER_OF_MOUSE_BUTTONS)
+      if (*mouseButton < 1 || *mouseButton > NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
       {
         fprintf(stderr,"%s: Invalid mouse button %d", Module, *mouseButton);
         *mouseButton = 0;
@@ -618,10 +618,11 @@ void getButtonCommand(int whichButton, char *tmp, int mouseButton)
     tempPtr = tempPtr->tail;
   mouseButton--;
 
-  if (mouseButton < NUMBER_OF_MOUSE_BUTTONS && tempPtr->buttonCommands[mouseButton])
+  if (mouseButton < NUMBER_OF_EXTENDED_MOUSE_BUTTONS &&
+      tempPtr->buttonCommands[mouseButton])
     sprintf(tmp, "Popup %s rectangle $widthx$height+$left+$top 0 -100m",
             tempPtr->buttonCommands[mouseButton]);
-  else if (mouseButton < NUMBER_OF_MOUSE_BUTTONS &&
+  else if (mouseButton < NUMBER_OF_EXTENDED_MOUSE_BUTTONS &&
            tempPtr->buttonStartCommands[mouseButton])
     sprintf(tmp, "%s", tempPtr->buttonStartCommands[mouseButton]);
   else if (tempPtr->buttonCommand)
@@ -651,7 +652,7 @@ void StartAndLaunchButtonItemInit(StartAndLaunchButtonItem *item)
   item->buttonCaption = NULL;
   item->buttonIconFileName = NULL;
   item->buttonToolTip = NULL;
-  for (i=0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
+  for (i=0; i < NUMBER_OF_EXTENDED_MOUSE_BUTTONS; i++)
   {
     item->buttonCommands[i] = NULL;
     item->buttonStartCommands[i] = NULL;

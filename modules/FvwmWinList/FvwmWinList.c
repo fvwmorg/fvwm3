@@ -133,7 +133,7 @@ int MinWidth=DEFMINWIDTH;
 int MaxWidth=DEFMAXWIDTH;
 ButtonArray buttons;
 List windows;
-char *ClickAction[NUMBER_OF_BUTTONS] =
+char *ClickAction[NUMBER_OF_EXTENDED_MOUSE_BUTTONS] =
 {
   "Iconify -1,Raise",
   "Iconify",
@@ -225,7 +225,7 @@ int main(int argc, char **argv)
   int i;
   short opt_num;
 
-  for (i = 3; i < NUMBER_OF_MOUSE_BUTTONS; i++)
+  for (i = 3; i < NUMBER_OF_EXTENDED_MOUSE_BUTTONS; i++)
   {
     ClickAction[i] = "Nop";
   }
@@ -894,7 +894,7 @@ void LoopOnEvents(void)
 	{
 	  num=WhichButton(&buttons,Event.xbutton.x,Event.xbutton.y);
 	  if (num!=-1 && Event.xbutton.button >= 1 &&
-	      Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
+	      Event.xbutton.button <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
 	  {
 	    SendFvwmPipe(Fvwm_fd,
 			 ClickAction[Event.xbutton.button-1],
@@ -1199,7 +1199,7 @@ char *temp;
     int i;
 
     i = sscanf(temp + 5, "%d%n", &b, &n);
-    if (i > 0 && b >=1 && b <= NUMBER_OF_MOUSE_BUTTONS)
+    if (i > 0 && b >=1 && b <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
     {
       CopyString(&ClickAction[b - 1], temp + 5 + n);
     }

@@ -320,7 +320,7 @@ static void frame_setup_titlebar(
 	}
 	frame_get_titlebar_dimensions(fw, frame_g, diff_g, &title_layout);
 	/* configure buttons */
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		if (FW_W_BUTTON(fw, i) != None && (setup_parts & PART_BUTTONS))
 		{
@@ -591,7 +591,7 @@ static void frame_set_decor_gravities(
 	{
 		xcwa.win_gravity = grav->lbutton_grav;
 	}
-	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i += 2)
 	{
 		if (FW_W_BUTTON(fw, i))
 		{
@@ -607,7 +607,7 @@ static void frame_set_decor_gravities(
 	{
 		xcwa.win_gravity = grav->rbutton_grav;
 	}
-	for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
+	for (i = 1; i < NUMBER_OF_TITLE_BUTTONS; i += 2)
 	{
 		if (FW_W_BUTTON(fw, i))
 		{
@@ -1436,10 +1436,10 @@ void frame_get_titlebar_dimensions(
 	}
 
 	/* configure left buttons */
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
-		if ((revert_button && !(i & 1)) || (!revert_button && (i & 1)) ||
-		    FW_W_BUTTON(fw, i) == None)
+		if ((revert_button && !(i & 1)) ||
+		    (!revert_button && (i & 1)) || FW_W_BUTTON(fw, i) == None)
 		{
 			continue;
 		}
@@ -1483,10 +1483,10 @@ void frame_get_titlebar_dimensions(
 	*padd_coord += t_length;
 	/* configure right buttons */
 	*padd_coord -= br_sub;
-	for (i = NUMBER_OF_BUTTONS-1; i > -1; i--)
+	for (i = NUMBER_OF_TITLE_BUTTONS-1; i > -1; i--)
 	{
-		if ((revert_button && (i & 1)) || (!revert_button && !(i & 1)) ||
-		    FW_W_BUTTON(fw, i) == None)
+		if ((revert_button && (i & 1)) ||
+		    (!revert_button && !(i & 1)) || FW_W_BUTTON(fw, i) == None)
 		{
 			continue;
 		}
@@ -1658,7 +1658,7 @@ int frame_window_id_to_context(
 	{
 		int i;
 
-		for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 		{
 			if (w == FW_W_BUTTON(fw, i) &&
 			    ((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||

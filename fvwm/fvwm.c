@@ -1580,7 +1580,8 @@ void DestroyAllButtons(FvwmDecor *decor)
 	int i;
 	int j;
 
-	for (tbp = decor->buttons, i = 0; i < NUMBER_OF_BUTTONS; i++, tbp++)
+	for (tbp = decor->buttons, i = 0; i < NUMBER_OF_TITLE_BUTTONS;
+	     i++, tbp++)
 	{
 		for (j = 0, face = TB_STATE(*tbp); j < BS_MaxButtonState;
 		     j++, face++)
@@ -1600,7 +1601,8 @@ void ResetAllButtons(FvwmDecor *decor)
 	int j;
 
 	DestroyAllButtons(decor);
-	for (tbp = decor->buttons, i = 0; i < NUMBER_OF_BUTTONS; i++, tbp++)
+	for (tbp = decor->buttons, i = 0; i < NUMBER_OF_TITLE_BUTTONS;
+	     i++, tbp++)
 	{
 		memset(&TB_FLAGS(*tbp), 0, sizeof(TB_FLAGS(*tbp)));
 		TB_JUSTIFICATION(*tbp) = JUST_CENTER;

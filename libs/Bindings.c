@@ -659,7 +659,7 @@ void GrabWindowButton(
 	       binding->Button_Key !=0))))
 	{
 		int bmin = 1;
-		int bmax = NUMBER_OF_MOUSE_BUTTONS;
+		int bmax = NUMBER_OF_EXTENDED_MOUSE_BUTTONS;
 		int button;
 
 		if(binding->Button_Key >0)

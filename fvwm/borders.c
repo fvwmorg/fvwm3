@@ -179,13 +179,13 @@ typedef struct
 
 typedef struct
 {
-	unsigned pressed_bmask : NUMBER_OF_BUTTONS;
-	unsigned lit_bmask : NUMBER_OF_BUTTONS;
-	unsigned toggled_bmask : NUMBER_OF_BUTTONS;
-	unsigned clear_bmask : NUMBER_OF_BUTTONS;
-	unsigned draw_bmask : NUMBER_OF_BUTTONS;
-	unsigned max_bmask : NUMBER_OF_BUTTONS;
-	ButtonState bstate[NUMBER_OF_BUTTONS];
+	unsigned pressed_bmask : NUMBER_OF_TITLE_BUTTONS;
+	unsigned lit_bmask : NUMBER_OF_TITLE_BUTTONS;
+	unsigned toggled_bmask : NUMBER_OF_TITLE_BUTTONS;
+	unsigned clear_bmask : NUMBER_OF_TITLE_BUTTONS;
+	unsigned draw_bmask : NUMBER_OF_TITLE_BUTTONS;
+	unsigned max_bmask : NUMBER_OF_TITLE_BUTTONS;
+	ButtonState bstate[NUMBER_OF_TITLE_BUTTONS];
 	unsigned is_title_pressed : 1;
 	unsigned is_title_lit : 1;
 	unsigned do_clear_title : 1;
@@ -602,7 +602,7 @@ static window_parts border_get_tb_parts_to_draw(
 		draw_parts |= PART_TITLE;
 	}
 	/* same for buttons */
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		unsigned int mask = (1 << i);
 
@@ -668,7 +668,7 @@ static window_parts border_get_tb_parts_to_draw(
 			}
 		}
 	}
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		unsigned int mask;
 		DecorFaceStyle *bs;
@@ -762,7 +762,7 @@ static window_parts border_get_tb_parts_to_draw(
 		}
 	}
 	td->tbstate.max_bmask = 0;
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		if (FW_W_BUTTON(fw, i) == None)
 		{
@@ -3767,7 +3767,7 @@ static void border_draw_buttons(
 #if 0
 	fprintf(stderr, "drawing buttons 0x%04x\n", td->tbstate.draw_bmask);
 #endif
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		unsigned int mask = (1 << i);
 
@@ -3798,7 +3798,7 @@ static void border_setup_use_title_style(
 	 * - for title which have a button with UseTitle style
 	 */
 	tsbs = td->tbstate.tstate;
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		bs = td->tbstate.bstate[i];
 		df = &TB_STATE(GetDecor(fw, buttons[i]))[bs];
@@ -3980,7 +3980,7 @@ static void border_rotate_titlebar_descr(
 
 	ROTATE_RECTANGLE(rotation, (&td->left_buttons_g), True, False, False)
 	ROTATE_RECTANGLE(rotation, (&td->right_buttons_g), True, False, False)
-	for (i=0; i < NUMBER_OF_BUTTONS; i++)
+	for (i=0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		ROTATE_RECTANGLE(
 			rotation, (&td->layout.button_g[i]), True, False, False)
@@ -4039,7 +4039,7 @@ static void border_get_titlebar_descr_state(
 	}
 	tbstate->is_title_lit = (do_hilight == True) ? 1 : 0;
 	tbstate->toggled_bmask = 0;
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		unsigned int mask = (1 << i);
 
@@ -4132,7 +4132,7 @@ static window_parts border_get_titlebar_descr(
 		ret_td->right_buttons_g.height = ret_td->bar_g.width;
 	}
 
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		if (FW_W_BUTTON(fw, i) == None)
 		{
@@ -4465,7 +4465,7 @@ int border_is_using_border_style(
 	{
 		return 1;
 	}
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		if (FW_W_BUTTON(fw, i) == None)
 		{
@@ -4799,7 +4799,7 @@ unsigned int border_get_transparent_decorations_part(FvwmWindow *fw)
 		fw, pressed_parts & PART_TITLEBAR, item,
 		CLEAR_ALL, (Scr.Hilite == fw), &tbstate);
 
-	for(i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for(i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		df = &TB_STATE(GetDecor(fw, buttons[i]))[tbstate.bstate[i]];
 

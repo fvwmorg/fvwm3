@@ -4283,7 +4283,8 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	{
 		/* pointer is on a different screen - that's okay here */
 	}
-	if ((mask & (DEFAULT_ALL_BUTTONS_MASK)) == 0)
+	mask &= DEFAULT_ALL_BUTTONS_MASK;
+	if (mask == 0)
 	{
 		return;
 	}
@@ -4292,8 +4293,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
 		evmask |= ExposureMask;
 	}
 	GrabEm(None, GRAB_NORMAL);
-	for (count = 0, use_wait_cursor = 0; mask & (DEFAULT_ALL_BUTTONS_MASK);
-	     count++)
+	for (count = 0, use_wait_cursor = 0; mask != 0; count++)
 	{
 		/* handle expose events */
 		XAllowEvents(dpy, SyncPointer, CurrentTime);
@@ -4302,8 +4302,13 @@ void WaitForButtonsUp(Bool do_handle_expose)
 			switch (e.type)
 			{
 			case ButtonRelease:
-				bmask = (Button1Mask << (e.xbutton.button - 1));
-				mask = e.xbutton.state & ~bmask;
+				if (e.xbutton.button <=
+				    NUMBER_OF_MOUSE_BUTTONS)
+				{
+					bmask = (Button1Mask <<
+						 (e.xbutton.button - 1));
+					mask = e.xbutton.state & ~bmask;
+				}
 				break;
 			case Expose:
 				dispatch_event(&e);
@@ -4322,6 +4327,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
 				/* pointer is on a different screen - that's
 				 * okay here */
 			}
+			mask &= DEFAULT_ALL_BUTTONS_MASK;
 			usleep(1);
 		}
 		if (use_wait_cursor == 0 && count == 20)

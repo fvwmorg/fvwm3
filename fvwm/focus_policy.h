@@ -184,7 +184,7 @@ typedef struct
 	/* application focus model */
 	unsigned is_lenient : 1;
 	/* click configuration */
-	unsigned use_mouse_buttons : NUMBER_OF_MOUSE_BUTTONS;
+	unsigned use_mouse_buttons : NUMBER_OF_EXTENDED_MOUSE_BUTTONS;
 	unsigned use_modifiers : 8;
 	/* recycling of focus and raise clicks */
 	unsigned do_pass_focus_click : 1;

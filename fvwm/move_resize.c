@@ -3274,7 +3274,7 @@ static Bool __resize_window(F_CMD_ARGS)
 	}
 	else
 	{
-		for (i = NUMBER_OF_BUTTONS; i--; )
+		for (i = NUMBER_OF_TITLE_BUTTONS; i--; )
 		{
 			/* see if the title button was pressed to that the
 			 * resize */

@@ -856,7 +856,7 @@ static void setup_button_windows(
 	pattributes->cursor = Scr.FvwmCursors[CRS_SYS];
 	pattributes->event_mask = XEVMASK_BUTTONW;
 
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		has_button = (((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
 			       ( (i & 1) && i / 2 < Scr.nr_right_buttons)) &&
@@ -894,7 +894,7 @@ static void destroy_button_windows(FvwmWindow *fw, Bool do_only_delete_context)
 	int i;
 	Bool is_deleted = False;
 
-	for (i = 0; i < NUMBER_OF_BUTTONS; i++)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 	{
 		if (FW_W_BUTTON(fw, i) != None)
 		{
@@ -1089,7 +1089,7 @@ static void setup_frame_stacking(FvwmWindow *fw)
 {
 	int i;
 	int n;
-	Window w[10 + NUMBER_OF_BUTTONS];
+	Window w[10 + NUMBER_OF_TITLE_BUTTONS];
 
 	/* Stacking order (top to bottom):
 	 *  - Parent window
@@ -1105,7 +1105,7 @@ static void setup_frame_stacking(FvwmWindow *fw)
 	}
 	if (HAS_TITLE(fw))
 	{
-		for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
+		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i += 2)
 		{
 			if (FW_W_BUTTON(fw, i) != None)
 			{

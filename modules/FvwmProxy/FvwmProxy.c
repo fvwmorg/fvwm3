@@ -128,7 +128,8 @@ typedef enum
 	PROXY_ACTION_MODIFIER_RELEASE,
 	/* this one *must* be last */
 	PROXY_ACTION_CLICK,
-	PROXY_ACTION_LAST = PROXY_ACTION_CLICK + NUMBER_OF_BUTTONS
+	PROXY_ACTION_LAST = PROXY_ACTION_CLICK +
+	NUMBER_OF_EXTENDED_MOUSE_BUTTONS
 } proxy_action_t;
 
 char *action_list[PROXY_ACTION_LAST];
@@ -150,7 +151,7 @@ static void LinkAction(char *string)
 		int b;
 		int i;
 		i = sscanf(token + 5, "%d", &b);
-		if (i > 0 && b >=1 && b <= NUMBER_OF_MOUSE_BUTTONS)
+		if (i > 0 && b >=1 && b <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
 		{
 			if (action_list[PROXY_ACTION_CLICK + b - 1] != NULL)
 			{
@@ -249,7 +250,7 @@ static Bool parse_options(void)
 	memset(action_list, 0, sizeof(action_list));
 	action_list[PROXY_ACTION_SELECT] = strdup(CMD_SELECT);
 	action_list[PROXY_ACTION_CLICK + 0] = strdup(CMD_CLICK1);
-	if (NUMBER_OF_MOUSE_BUTTONS > 2)
+	if (NUMBER_OF_EXTENDED_MOUSE_BUTTONS > 2)
 	{
 		action_list[PROXY_ACTION_CLICK + 2] = strdup(CMD_CLICK3);
 	}
@@ -1336,7 +1337,8 @@ static void DispatchEvent(XEvent *pEvent)
 		if (proxy)
 		{
 			int button=pEvent->xbutton.button;
-			if (button >= 1 && button<=NUMBER_OF_MOUSE_BUTTONS)
+			if (button >= 1 &&
+			    button <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
 			{
 				SendFvwmPipe(
 					fd, action_list

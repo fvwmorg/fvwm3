@@ -666,7 +666,7 @@ Binding *ParseMouseEntry(char *tline)
   action = DoGetNextToken(tline,&token, NULL, ",", NULL);
   if(token != NULL) {
     n1 = sscanf(token,"%d",&button);
-    if (n1 == 1 && (button < 0 || button > NUMBER_OF_MOUSE_BUTTONS))
+    if (n1 == 1 && (button < 0 || button > NUMBER_OF_EXTENDED_MOUSE_BUTTONS))
     {
       /* syntax error */
       n1 = 0;

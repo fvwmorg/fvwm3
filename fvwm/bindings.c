@@ -71,7 +71,7 @@ static void update_nr_buttons(
 		return;
 	}
 	/* check for nr_left_buttons */
-	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; i += 2)
 	{
 		if ((contexts & (C_L1 << i)))
 		{
@@ -82,7 +82,7 @@ static void update_nr_buttons(
 		}
 	}
 	/* check for nr_right_buttons */
-	for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
+	for (i = 1; i < NUMBER_OF_TITLE_BUTTONS; i += 2)
 	{
 		if ((contexts & (C_L1 << i)))
 		{
@@ -198,7 +198,9 @@ static int bind_get_bound_button_contexts(
 			if (b->Button_Key == 0)
 			{
 				*buttons_grabbed |=
-					((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+					((1 <<
+					  NUMBER_OF_EXTENDED_MOUSE_BUTTONS) -
+					 1);
 			}
 			else
 			{
@@ -541,7 +543,7 @@ static int ParseBinding(
 		if (button == 0)
 		{
 			*buttons_grabbed |=
-				((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+				((1 << NUMBER_OF_EXTENDED_MOUSE_BUTTONS) - 1);
 		}
 		else
 		{

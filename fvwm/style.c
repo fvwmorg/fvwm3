@@ -1198,7 +1198,7 @@ static void style_parse_button_style(
 	button = -1;
 	GetIntegerArguments(button_string, NULL, &button, 1);
 	button = BUTTON_INDEX(button);
-	if (button < 0 || button >= NUMBER_OF_BUTTONS)
+	if (button < 0 || button >= NUMBER_OF_TITLE_BUTTONS)
 	{
 		fvwm_msg(
 			ERR, "CMD_Style",
@@ -1296,7 +1296,7 @@ static Bool style_parse_focus_policy_style(
 			{
 				val = 0xffffffff;
 			}
-			else if (button > NUMBER_OF_MOUSE_BUTTONS)
+			else if (button > NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
 			{
 				break;
 			}
@@ -3269,7 +3269,7 @@ static Bool style_parse_one_style_option(
 			butt = -1;
 			GetIntegerArguments(rest, NULL, &butt, 1);
 			butt = BUTTON_INDEX(butt);
-			if (butt >= 0 && butt < NUMBER_OF_BUTTONS)
+			if (butt >= 0 && butt < NUMBER_OF_TITLE_BUTTONS)
 			{
 				ps->flags.is_button_disabled |= (1 << butt);
 				ps->flag_mask.is_button_disabled |= (1 << butt);

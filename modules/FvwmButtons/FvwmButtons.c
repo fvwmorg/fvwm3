@@ -387,7 +387,7 @@ void AddButtonAction(button_info *b,int n,char *action)
   char *s;
   char *t;
 
-  if(!b || n < 0 || n > NUMBER_OF_MOUSE_BUTTONS || !action)
+  if(!b || n < 0 || n > NUMBER_OF_EXTENDED_MOUSE_BUTTONS || !action)
   {
     fprintf(stderr, "%s: BUG: AddButtonAction failed\n", MyName);
     exit(2);
@@ -400,8 +400,9 @@ void AddButtonAction(button_info *b,int n,char *action)
   else
   {
     int i;
-    b->action=(char**)mymalloc((NUMBER_OF_MOUSE_BUTTONS + 1) * sizeof(char*));
-    for (i = 0; i <= NUMBER_OF_MOUSE_BUTTONS; b->action[i++] = NULL)
+    b->action=(char**)mymalloc((NUMBER_OF_EXTENDED_MOUSE_BUTTONS + 1) *
+			       sizeof(char*));
+    for (i = 0; i <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS; b->action[i++] = NULL)
       ;
     b->flags|=b_Action;
   }
@@ -444,7 +445,7 @@ char *GetButtonAction(button_info *b, int n)
 	char *act;
 
 	if(!b || !(b->flags&b_Action) || !(b->action) || n < 0 ||
-	   n > NUMBER_OF_MOUSE_BUTTONS)
+	   n > NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
 	{
 		return NULL;
 	}
@@ -3046,7 +3047,7 @@ void swallow(unsigned long *body)
 	}
 	/*error checking*/
 	for (i = 0; !(b->flags & b_ActionIgnoresClientWindow) &&
-		     i <= NUMBER_OF_MOUSE_BUTTONS; i++)
+		     i <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS; i++)
 	{
 	  if (b->action != NULL && b->action[i] != NULL)
 	  {

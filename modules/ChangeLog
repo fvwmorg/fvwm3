@@ -1,3 +1,30 @@
+2004-09-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmWinList/FvwmWinList.c (main):
+	(LoopOnEvents):
+	(LinkAction):
+	* FvwmTaskBar/FvwmTaskBar.c (ClickAction):
+	(HandleButtonRelease):
+	(LinkAction):
+	(StartMeUp):
+	(main):
+	* FvwmProxy/FvwmProxy.c (LinkAction):
+	(DispatchEvent):
+	(parse_options):
+	* FvwmIconBox/FvwmIconBox.c (parsemouse):
+	* FvwmIconMan/x.c (handle_buttonevent):
+	* FvwmIconMan/readconfig.c (ParseMouseEntry):
+	* FvwmButtons/FvwmButtons.c (AddButtonAction):
+	(GetButtonAction):
+	(swallow):
+	* FvwmTaskBar/Start.c (ParseButtonOptions):
+	(getButtonCommand):
+	(getButtonCommand):
+	(StartAndLaunchButtonItemInit):
+	* FvwmTaskBar/Start.h:
+	fixed use of NUMBER_OF_MOUSE_BUTTONS vs.
+	NUMBER_OF_EXTENDED_MOUSE_BUTTONS
+
 2004-08-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/output.c (DumpButtons):

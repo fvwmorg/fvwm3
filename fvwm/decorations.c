@@ -337,7 +337,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 		handle_width = MAX_HANDLE_WIDTH;
 	}
 
-	*buttons = (1 << NUMBER_OF_BUTTONS) - 1;
+	*buttons = (1 << NUMBER_OF_TITLE_BUTTONS) - 1;
 
 	decor = MWM_DECOR_ALL;
 	t->functions = MWM_FUNC_ALL;
@@ -554,7 +554,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 		 * window gets 1 pixel wide black border */
 		/* disable any buttons with the MWMDecorMenu flag */
 		int i;
-		for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; ++i)
 		{
 			if (TB_HAS_MWM_DECOR_MENU(GetDecor(t, buttons[i])))
 			{
@@ -569,7 +569,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 		/* disable any buttons with the MWMDecorMinimize/MWMDecorShaded
 		 * flag */
 		int i;
-		for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; ++i)
 		{
 			if (TB_HAS_MWM_DECOR_MINIMIZE(GetDecor(t, buttons[i])))
 			{
@@ -583,7 +583,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 		 * window has 1 pixel wide black border */
 		/* disable any buttons with the MWMDecorMaximize flag */
 		int i;
-		for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; ++i)
 		{
 			if (TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t, buttons[i])))
 			{
@@ -591,7 +591,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
 			}
 		}
 	}
-	for (i = (1 << (NUMBER_OF_BUTTONS - 1)); i; i >>= 1)
+	for (i = (1 << (NUMBER_OF_TITLE_BUTTONS - 1)); i; i >>= 1)
 	{
 		if (t->buttons & i)
 			*buttons &= ~i;

@@ -28,7 +28,7 @@ typedef enum
 typedef struct
 {
 	rectangle title_g;
-	rectangle button_g[NUMBER_OF_BUTTONS];
+	rectangle button_g[NUMBER_OF_TITLE_BUTTONS];
 } frame_title_layout_t;
 
 /* details are hidden in frame.c */

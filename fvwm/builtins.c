@@ -800,7 +800,7 @@ static void SetLayerButtonFlag(
 		{
 			add = 1;
 		}
-		for (i = start; i < NUMBER_OF_BUTTONS; i += add)
+		for (i = start; i < NUMBER_OF_TITLE_BUTTONS; i += add)
 		{
 			if (set)
 			{
@@ -851,7 +851,7 @@ static void SetMWMButtonFlag(
 		{
 			add = 1;
 		}
-		for (i = start; i < NUMBER_OF_BUTTONS; i += add)
+		for (i = start; i < NUMBER_OF_TITLE_BUTTONS; i += add)
 		{
 			if (set)
 			{
@@ -900,7 +900,7 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 		button = BUTTON_INDEX(button);
 	}
 
-	if (parm == NULL || button >= NUMBER_OF_BUTTONS || button < 0)
+	if (parm == NULL || button >= NUMBER_OF_TITLE_BUTTONS || button < 0)
 	{
 		fvwm_msg(
 			ERR, "ButtonStyle", "Bad button style (1) in line %s",
@@ -954,7 +954,7 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 	}
 	else
 	{
-		for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+		for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; ++i)
 		{
 			if (((multi & 1) && !(i & 1)) ||
 			    ((multi & 2) && (i & 1)))
@@ -987,7 +987,7 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 					if (multi)
 					{
 						for (i = 0;
-						     i < NUMBER_OF_BUTTONS; ++i)
+						     i < NUMBER_OF_TITLE_BUTTONS; ++i)
 						{
 							if (((multi & 1) &&
 							     !(i & 1)) ||
@@ -1098,7 +1098,7 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 		{
 			if (multi)
 			{
-				for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+				for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; ++i)
 				{
 					if (((multi & 1) && !(i & 1)) ||
 					    ((multi & 2) && (i & 1)))
@@ -1180,7 +1180,7 @@ void update_decors_colorset(int cset)
 #endif
 	{
 		has_changed = 0;
-		for(i = 0; i < NUMBER_OF_BUTTONS; i++)
+		for(i = 0; i < NUMBER_OF_TITLE_BUTTONS; i++)
 		{
 			decor->flags.has_changed |= update_titlebutton_colorset(
 				&(decor->buttons[i]), cset);
@@ -1561,7 +1561,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				b = BUTTON_INDEX(b);
 				s += offset;
 			}
-			if (b >= 0 && b < NUMBER_OF_BUTTONS)
+			if (b >= 0 && b < NUMBER_OF_TITLE_BUTTONS)
 			{
 				LoadDefaultButton(df, b);
 			}
@@ -2090,7 +2090,7 @@ void InitFvwmDecor(FvwmDecor *decor)
 
 	/* initialize title-bar button styles */
 	DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
-	for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+	for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; ++i)
 	{
 		int j = 0;
 		for (; j < BS_MaxButtonState; ++j)
@@ -3161,7 +3161,7 @@ void CMD_DestroyDecor(F_CMD_ARGS)
 			found->flags.has_changed = 1;
 			found->flags.has_title_height_changed = 0;
 			found->titlebar.flags.has_changed = 1;
-			for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
+			for (i = 0; i < NUMBER_OF_TITLE_BUTTONS; ++i)
 			{
 				TB_FLAGS(found->buttons[i]).has_changed = 1;
 			}
@@ -3821,7 +3821,8 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 			{
 				if ((GetIntegerArguments(
 					     action, &action, &val, 1) != 1) ||
-				    val < 1 || val > NUMBER_OF_MOUSE_BUTTONS)
+				    val < 1 ||
+				    val > NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
 				{
 					fvwm_msg(
 						ERR, "__fake_event",

@@ -522,7 +522,7 @@ typedef struct
 #if 0
 	unsigned has_condition_mask : 1;
 #endif
-	unsigned is_button_disabled : NUMBER_OF_BUTTONS;
+	unsigned is_button_disabled : NUMBER_OF_TITLE_BUTTONS;
 	unsigned is_unmanaged : 1;
 #define BACKINGSTORE_DEFAULT 0
 #define BACKINGSTORE_ON      1
@@ -660,7 +660,7 @@ typedef struct FvwmWindow
 		Window client;
 		/* the title bar window and button windows */
 		Window title;
-		Window button_w[NUMBER_OF_BUTTONS];
+		Window button_w[NUMBER_OF_TITLE_BUTTONS];
 		/* sides of the border */
 		Window sides[4];
 		/* corner pieces */
@@ -674,17 +674,18 @@ typedef struct FvwmWindow
 	window_flags flags;
 	struct
 	{
-		unsigned buttons_drawn : NUMBER_OF_BUTTONS;
-		unsigned buttons_lit : NUMBER_OF_BUTTONS;
-		unsigned buttons_inverted : NUMBER_OF_BUTTONS;
-		unsigned buttons_toggled : NUMBER_OF_BUTTONS;
+		unsigned buttons_drawn : NUMBER_OF_TITLE_BUTTONS;
+		unsigned buttons_lit : NUMBER_OF_TITLE_BUTTONS;
+		unsigned buttons_inverted : NUMBER_OF_TITLE_BUTTONS;
+		unsigned buttons_toggled : NUMBER_OF_TITLE_BUTTONS;
 		unsigned parts_drawn : 12;
 		unsigned parts_lit : 12;
 		unsigned parts_inverted : 12;
 	} decor_state;
 	int nr_left_buttons;
 	int nr_right_buttons;
-#define BUTTON_INDEX(b) (((b) == 0) ? (NUMBER_OF_BUTTONS - 1) : ((b) - 1))
+#define BUTTON_INDEX(b) \
+	(((b) == 0) ? (NUMBER_OF_TITLE_BUTTONS - 1) : ((b) - 1))
 #ifdef USEDECOR
 	struct FvwmDecor *decor;
 #endif

@@ -5891,14 +5891,15 @@ Defines a mouse binding, or removes the binding if
 .I Function
 is '-'.
 .I Button
-is the mouse button number (1 - 9).  If
+is the mouse button number.  If
 .I Button
 is zero then any button performs the specified function.  Note
 that only mouse buttons 1 to 5 are fully supported by X11.  Any
 number above this works only partially.  Complex functions can not
 be used with these buttons and neither any operation that requires
 dragging the pointer with the button held.  This is due to
-limitations of X11.
+limitations of X11.  By default, the highest allowed button number
+is 9.
 
 .I Context
 describes where the binding applies.  Valid contexts are 'R' for

@@ -543,16 +543,10 @@ static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool client_entered)
 	if (is_focused)
 	{
 		flag = FP_DO_RAISE_FOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
-#if 0
-fprintf(stderr,"fqgb: 0x%08x f %d '%s'\n", (int)fw, flag, fw->visible_name);
-#endif
 	}
 	else
 	{
 		flag = FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
-#if 0
-fprintf(stderr,"fqgb: 0x%08x u %d '%s'\n", (int)fw, flag, fw->visible_name);
-#endif
 	}
 
 	return (flag) ? True : False;
@@ -855,9 +849,6 @@ static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 	if (do_grab_window == True)
 	{
 		grab_buttons |= FP_USE_MOUSE_BUTTONS(FW_FOCUS_POLICY(fw));
-#if 0
-fprintf(stderr,"gb: 0x%x\n", grab_buttons);
-#endif
 	}
 	if (grab_buttons != fw->grabbed_buttons)
 	{

@@ -2350,7 +2350,7 @@ void parsemouse(char *tline)
   while((!isspace((unsigned char)*end))&&(*end!='\n')&&(*end!=0))
     end++;
   n = sscanf(start, "%d", &b);
-  if (n > 0 && b >= 0 && b <= NUMBER_OF_MOUSE_BUTTONS)
+  if (n > 0 && b >= 0 && b <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
     f->mouse = b;
   else
     f->mouse = -1;
@@ -2838,7 +2838,7 @@ void process_message(unsigned long type, unsigned long *body)
     else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == icon_win)
     {
 	    char *str;
-	    
+
 	    Swallowed = body[1];
 	    str = (char *)&body[3];
 

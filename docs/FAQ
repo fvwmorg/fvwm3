@@ -2466,24 +2466,37 @@ A: Under this heading we've had questions about FvwmForm being all
 
 6.8  I just got a mouse with 57 buttons.  How do I make Fvwm use them?
 
-A: OK, 57 is a joke, we know you don't have 57 buttons, but we've
-   seen reports of up to 7 so far.  Starting with Fvwm 2.4.0
-   Fvwm supports all five mouse buttons that X officially
-   supports.  To increase the number of buttons that Fvwm can handle,
-   you have to modify the fvwm file libs/defaults.h:
+A: Okay, we know you don't have 57 buttons, but we've seen reports
+   of up to 7 so far.  Starting with Fvwm 2.4.0 Fvwm supports all
+   five mouse buttons that X officially supports, and since
+   2.5.11, up to 9 buttons are supported by default.
 
-   Replace
+   2.5.11 and later:
 
-     #define NUMBER_OF_MOUSE_BUTTONS               5
+     To use more than 9 buttons (up to 31), modify the file
+     libs/defaults.h.  Replace
 
-   with
+       #define NUMBER_OF_EXTENDED_MOUSE_BUTTONS      9
 
-     #define NUMBER_OF_MOUSE_BUTTONS               7
+     with
 
-   and recompile and reinstall fvwm.  However, the buttons with
+       #define NUMBER_OF_EXTENDED_MOUSE_BUTTONS      15
+
+   2.4.10 to 2.5.10:
+
+     To use more than 5 buttons, modify the file libs/defaults.h.
+     Replace
+
+       #define NUMBER_OF_MOUSE_BUTTONS               5
+
+     with
+
+       #define NUMBER_OF_MOUSE_BUTTONS               7
+
+   Then recompile and reinstall fvwm.  However, the buttons with
    numbers higher than 5 do not work as well as 1 to 5.  This is
    because X does not provide the necessary interface to handle more
-   that 5 buttons in all functions.  This means that some
+   than 5 buttons in some functions.  This means that some
    functionality is not available with buttons 6 and higher.
 
    The maximum possible number you can use is 31.  Any higher value

@@ -14,8 +14,8 @@ typedef struct startAndLaunchButtonItem {
   Bool isStartButton;
   char *buttonCommand;
   char *buttonStartCommand;
-  char *buttonCommands[NUMBER_OF_MOUSE_BUTTONS];
-  char *buttonStartCommands[NUMBER_OF_MOUSE_BUTTONS];
+  char *buttonCommands[NUMBER_OF_EXTENDED_MOUSE_BUTTONS];
+  char *buttonStartCommands[NUMBER_OF_EXTENDED_MOUSE_BUTTONS];
   char *buttonCaption;
   char *buttonIconFileName;
   char *buttonToolTip;

@@ -285,7 +285,7 @@ typedef struct FvwmDecor
 	int title_height;           /* explicitly specified title bar height */
 	int min_title_height;
 	/* titlebar buttons */
-	TitleButton buttons[NUMBER_OF_BUTTONS];
+	TitleButton buttons[NUMBER_OF_TITLE_BUTTONS];
 	TitleButton titlebar;
 	struct BorderStyle
 	{

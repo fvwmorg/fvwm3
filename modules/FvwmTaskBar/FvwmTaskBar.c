@@ -178,7 +178,7 @@ Bool startButtonPressed = FALSE;
 ButtonArray buttons;
 List windows;
 
-char *ClickAction[max(NUMBER_OF_MOUSE_BUTTONS, 3)] =
+char *ClickAction[max(NUMBER_OF_EXTENDED_MOUSE_BUTTONS, 3)] =
 {
   DEFAULT_CLICK1,
   DEFAULT_CLICK2,
@@ -269,7 +269,7 @@ int main(int argc, char **argv)
   setlocale(LC_TIME, "");
   FGettextInit("FvwmTaskBar", LOCALEDIR, "FvwmTaskBar");
 
-  for (i = 3; i < NUMBER_OF_MOUSE_BUTTONS; i++)
+  for (i = 3; i < NUMBER_OF_EXTENDED_MOUSE_BUTTONS; i++)
   {
     ClickAction[i] = DEFAULT_CLICK_N;
   }
@@ -1464,7 +1464,7 @@ void HandleButtonRelease(
 	{
 		ButReleased = ButPressed; /* Avoid race fvwm pipe */
 		if (evp->xbutton.button >= 1 &&
-		    evp->xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
+		    evp->xbutton.button <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
 		{
 			rectangle r;
 			Window tmpw;
@@ -1855,7 +1855,7 @@ void LinkAction(const char *string)
     int i;
 
     i = sscanf(temp + 5, "%d%n", &b, &n);
-    if (i > 0 && b >=1 && b <= NUMBER_OF_MOUSE_BUTTONS)
+    if (i > 0 && b >=1 && b <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS)
     {
       CopyString(&ClickAction[b - 1], temp + 5 + n);
     }
@@ -2270,7 +2270,7 @@ void StartMeUp(void)
     XFree(nametext.value);
   }
 
-   for (i = 1; i <= NUMBER_OF_MOUSE_BUTTONS; i++)
+   for (i = 1; i <= NUMBER_OF_EXTENDED_MOUSE_BUTTONS; i++)
    {
      XGrabButton(dpy,i,AnyModifier,win,True,GRAB_EVENTS,GrabModeAsync,
 		 GrabModeAsync,None,None);
