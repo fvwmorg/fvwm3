@@ -11,7 +11,8 @@ Echo. Improve modules: Make FvwmM4 pass args on to m4, font-related
 seg-fault bug fix in FvwmButtons
 
 Matthias Clasen:
-Session management, layered stacking order.
+Session management, layered stacking order, maximized shaded windows,
+FvwmGtk module, colored and xpm cursors.
 
 Dan Espen:
 Color Limiting, Multiple IconBoxes, Iconification Animation, new 3d

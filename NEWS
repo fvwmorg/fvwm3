@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* Improved cursor support: CursorStyle now supports changing
+  cursor colors and creating cursors from xpm files.
+
 * New style options: StartsLowered, StartsRaised.
 
 * New function PlaceAgain: moves a window to where it would be placed.

@@ -1,3 +1,10 @@
+1999-03-17  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/builtins.c (CursorStyle): 
+	* fvwm/fvwm2.1:
+	* NEWS: enhance CursorStyle to allow specification of cursor
+	colors and creating cursors from pixmaps.
+
 1999-03-17  Tomas Ogren  <stric@ing.umu.se>
 
 	* fvwm/add_window.c fvwm/borders.c fvwm/builtins.c fvwm/events.c
