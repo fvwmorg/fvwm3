@@ -150,7 +150,7 @@ static void LinkAction(char *string)
 	{
 		int b;
 		int i;
-		i = sscanf(string, "%d", &b);
+		i = sscanf(token + 5, "%d", &b);
 		if (i > 0 && b >=1 && b <= NUMBER_OF_MOUSE_BUTTONS)
 		{
 			if (action_list[PROXY_ACTION_CLICK + b - 1] != NULL)
