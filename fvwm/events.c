@@ -324,7 +324,8 @@ void HandleButtonPress(void)
 	Window OldPressedW;
 	Window eventw;
 	Bool do_regrab_buttons = False;
-	Bool do_pass_click;
+	Bool do_pass_click = True;
+	Bool do_wait_for_button_release = False;
 	Bool has_binding = False;
 
 	DBUG("HandleButtonPress","Routine Entered");
@@ -440,7 +441,8 @@ void HandleButtonPress(void)
 			else /* don't pass click to just focused window */
 			{
 				XAllowEvents(dpy,AsyncPointer,CurrentTime);
-				UngrabEm(GRAB_PASSIVE);
+				do_wait_for_button_release = True;
+				do_pass_click = False;
 			}
 		}
 		if (!IS_ICONIFIED(Fw))
@@ -555,7 +557,6 @@ void HandleButtonPress(void)
 	{
 		has_binding = True;
 	}
-
 	if (Fw && has_binding)
 	{
 		window_parts part;
@@ -570,7 +571,6 @@ void HandleButtonPress(void)
 
 	/* we have to execute a function or pop up a menu */
 	button_window = Fw;
-	do_pass_click = True;
 	if (action && *action)
 	{
 		if (Fw && IS_ICONIFIED(Fw))
@@ -630,6 +630,10 @@ void HandleButtonPress(void)
 			do_force, CLEAR_ALL, NULL, NULL);
 	}
 	button_window = NULL;
+	if (do_wait_for_button_release)
+	{
+		WaitForButtonsUp(True);
+	}
 	UngrabEm(GRAB_PASSIVE);
 
 	return;
@@ -648,7 +652,6 @@ void HandleButtonRelease()
 	int context;
 	int real_modifier;
 	Window dummy;
-
 
 	DBUG("HandleButtonRelease","Routine Entered");
 

@@ -9,8 +9,9 @@ Changes in alpha release 2.5.3 (not released yet)
 
 * New WindowList option SortClassName.
 
-* Fixed problems with $fg and $bg variables in FvwmButtons when the
-  UseOld option was used.
+* Restored old way of handling clicks in windows with ClickToFocus
+  and ClickToFocusPassesClickOff.  This fixes a problem with
+  click+drag in an unfocused rxvt or aterm window.
 
 -------------------------------------------------------------------
 
