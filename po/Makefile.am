@@ -46,8 +46,10 @@ SUFFIXES = .po .gmo .mo .sed .sin .nop .po-update
 .po.gmo:
 	@lang=`echo $* | sed -e 's,.*/,,'`; \
 	test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
-	echo "$${cdcmd}rm -f $${lang}.gmo && $(GMSGFMT) -c --statistics -o $${lang}.gmo $${lang}.po"; \
-	cd $(srcdir) && rm -f $${lang}.gmo && $(GMSGFMT) -c --statistics -o t-$${lang}.gmo $${lang}.po && mv t-$${lang}.gmo $${lang}.gmo
+	if test -f $${lang}.po; then \
+	  echo "$${cdcmd}rm -f $${lang}.gmo && $(GMSGFMT) -c --statistics -o $${lang}.gmo $${lang}.po"; \
+	  cd $(srcdir) && rm -f $${lang}.gmo && $(GMSGFMT) -c --statistics -o t-$${lang}.gmo $${lang}.po && mv t-$${lang}.gmo $${lang}.gmo; \
+	fi
 
 .sin.sed:
 	sed -e '/^#/d' $< > t-$@
@@ -157,8 +159,10 @@ $(POFILES): $(srcdir)/$(FVWM_DOMAIN).pot $(srcdir)/$(FVWMTASKBAR_DOMAIN).pot \
 	dlang=`echo $@ | sed -e 's,.*/,,' -e 's/\.po$$//'`; \
 	dom=`echo $$dlang | sed -e 's/\..*$$//'`; \
 	test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
-	echo "$${cdcmd}$(MSGMERGE_UPDATE) $${dlang}.po $${dom}.pot"; \
-	cd $(srcdir) && $(MSGMERGE_UPDATE) $${dlang}.po $${dom}.pot
+	if test -f $${dlang}.po; then \
+	  echo "$${cdcmd}$(MSGMERGE_UPDATE) $${dlang}.po $${dom}.pot"; \
+	  cd $(srcdir) && $(MSGMERGE_UPDATE) $${dlang}.po $${dom}.pot; \
+	fi
 
 #	@lang=`echo $@ | sed -e 's,.*/,,' -e 's/\.po$$//'`; \
 #	test "$(srcdir)" = . && cdcmd="" || cdcmd="cd $(srcdir) && "; \
