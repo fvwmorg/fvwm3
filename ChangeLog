@@ -1,3 +1,10 @@
+1999-11-01  Mikhael Goikhman  migo@homemail.com
+
+	* NEWS: a note about the new default root cursor
+	* fvwm/fvwm2.1:
+	* fvwm/cursor.c (setBusyCursor):
+	'BusyCursor *' addition by Ben Winslow, some clean up.
+
 1999-10-30  Olivier Chapuis  olivier.chapuis@free.fr
 
 	* NEWS: BusyCursor, EscapeFunc and CursorStyle.

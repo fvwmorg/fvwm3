@@ -1651,7 +1651,7 @@ still kill all copies of fvwm.
 .SS MISCELLANEOUS COMMANDS
 
 .TP
-.B "BugOpts" "[\fIoption [\fIbool\fP]\fP], ..."
+.B "BugOpts" "[\fIoption\fP [\fIbool\fP]], ..."
 This command controls several workarounds for bugs in third party
 programs.  The individual options are separated by commas.  The
 optional argument \fIbool\fP is a boolean argument and controls
@@ -1690,24 +1690,27 @@ ill-mannered applications that use long-lived windows of this sort,
 contrary to ICCCM conventions.
 
 .TP
-.B "BusyCursor" "[\fIOption\fP \fIbool\fP\fP], ..."
+.B "BusyCursor" "[\fIOption\fP \fIbool\fP], ..."
 This command controls the cursor during the execution of certain
-commands. \fIOption\fP can be "DynamicMenu", "ModuleSynchronous", "Read",
-"Recapture", "Wait". An option must be followed by a boolean argument
-\fIbool\fP. You can use commas to separate individual options. If you
-set an option to True, then when the corresponding  command is run, fvwm
-displays the cursor of the WAIT context of the \fICursorStyle\fP command.
-False forces to not display the cursor. The Default is: DynamicMenu False,
-ModuleSynchronous False, Read False, Recapture True, Wait False.
+commands. \fIOption\fP can be \fIDynamicMenu\fP, \fIModuleSynchronous\fP,
+\fIRead\fP, \fIRecapture\fP, \fIWait\fP, \fI*\fP. An option must be followed
+by a boolean argument \fIbool\fP. You can use commas to separate individual
+options. If you set an option to True, then when the corresponding
+command is run, fvwm displays the cursor of the WAIT context of the
+\fICursorStyle\fP command. False forces to not display the cursor.
+The default is: DynamicMenu False, ModuleSynchronous False, Read False,
+Recapture True, Wait False.
 
-The Read option also concerns the \fIPipeRead\fP command.
+The special option "*" refers to all available options.
+
+The "Read" option also concerns the \fIPipeRead\fP command.
  
-DynamicMenu concerns the \fIDynamicPopupAction\fP and 
+The "DynamicMenu" concerns the \fIDynamicPopupAction\fP and 
 \fIMissingSubmenuFunc\fP commands. If this option is set to False, then
 the busy cursor is not displayed during a dynamic menu command even if this
 command is a \fI(Pipe)Read\fP command and the Read option is set to True. 
 
-Wait concerns only the root cursor. During the wait pause the root cursor
+The "Wait" affects only the root cursor. During a wait pause the root cursor
 is replaced by the busy cursor and fvwm is still fully functional (you can 
 escape from the pause, see the \fIEscapeFunc\fP command). If you want to 
 use this option and if you do not use the default root cursor, you must 

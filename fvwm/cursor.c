@@ -503,9 +503,11 @@ void setBusyCursor(F_CMD_ARGS)
   char *option = NULL;
   char *optstring = NULL;
   char *args = NULL;
-  int arg1 = -1;
-  char *optlist[] = {"read", "recapture", "wait", "modulesynchronous", 
-		     "dynamicmenu", NULL};
+  int flag = -1;
+  char *optlist[] = {
+    "read", "recapture", "wait", "modulesynchronous",
+    "dynamicmenu", "*", NULL
+  };
 
   while (action)
   {
@@ -515,47 +517,52 @@ void setBusyCursor(F_CMD_ARGS)
 
     args = GetNextToken(optstring, &option);
     if (!option)
-      {
-	free(optstring);
-	break;
-      }
+    {
+      free(optstring);
+      break;
+    }
 
-    arg1 = ParseToggleArgument(args, &args, -1, True); 
+    flag = ParseToggleArgument(args, &args, -1, True); 
+    if (flag == -1)
+    {
+      fvwm_msg(ERR, "BusyCursor", "error in boolean specification");
+      break;
+    }
 
     switch(GetTokenIndex(option, optlist, 0, NULL))
     {
     case 0: /* read */
-      if (arg1 == 1) Scr.BusyCursor |= BUSY_READ;
-      else if (arg1 == 0) Scr.BusyCursor &= ~BUSY_READ;
-      else fvwm_msg(ERR,"BusyCursor","error in boolean specification");
+      if (flag) Scr.BusyCursor |= BUSY_READ;
+      else Scr.BusyCursor &= ~BUSY_READ;
       break;
 
     case 1: /* recapture */
-      if (arg1 == 1) Scr.BusyCursor |= BUSY_RECAPTURE;
-      else if (arg1 == 0) Scr.BusyCursor &= ~BUSY_RECAPTURE;
-      else fvwm_msg(ERR,"BusyCursor","error in boolean specification");
+      if (flag) Scr.BusyCursor |= BUSY_RECAPTURE;
+      else Scr.BusyCursor &= ~BUSY_RECAPTURE;
       break;
 
     case 2: /* wait */
-      if (arg1 == 1) Scr.BusyCursor |= BUSY_WAIT;
-      else if (arg1 == 0) Scr.BusyCursor &= ~BUSY_WAIT;
-      else fvwm_msg(ERR,"BusyCursor","error in boolean specification");
+      if (flag) Scr.BusyCursor |= BUSY_WAIT;
+      else Scr.BusyCursor &= ~BUSY_WAIT;
       break;
 
     case 3: /* modulesynchronous */
-      if (arg1 == 1) Scr.BusyCursor |= BUSY_MODULESYNCHRONOUS;
-      else if (arg1 == 0) Scr.BusyCursor &= ~BUSY_MODULESYNCHRONOUS;
-      else fvwm_msg(ERR,"BusyCursor","error in boolean specification");
+      if (flag) Scr.BusyCursor |= BUSY_MODULESYNCHRONOUS;
+      else Scr.BusyCursor &= ~BUSY_MODULESYNCHRONOUS;
       break;
 
     case 4: /* dynamicmenu */
-      if (arg1 == 1) Scr.BusyCursor |= BUSY_DYNAMICMENU;
-      else if (arg1 == 0) Scr.BusyCursor &= ~BUSY_DYNAMICMENU;
-      else fvwm_msg(ERR,"BusyCursor","error in boolean specification");
+      if (flag) Scr.BusyCursor |= BUSY_DYNAMICMENU;
+      else Scr.BusyCursor &= ~BUSY_DYNAMICMENU;
+      break;
+
+    case 5: /* "*" */
+      if (flag) Scr.BusyCursor |= (BUSY_READ | BUSY_RECAPTURE | BUSY_WAIT | BUSY_MODULESYNCHRONOUS | BUSY_DYNAMICMENU);
+      else Scr.BusyCursor &= ~(BUSY_READ | BUSY_RECAPTURE | BUSY_WAIT | BUSY_MODULESYNCHRONOUS | BUSY_DYNAMICMENU);
       break;
 
     default:
-      fvwm_msg(ERR,"BusyCursor", "unknown context '%s'", option);
+      fvwm_msg(ERR, "BusyCursor", "unknown context '%s'", option);
       break;
     }
   }
