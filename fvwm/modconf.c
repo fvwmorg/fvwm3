@@ -58,9 +58,12 @@ extern unsigned long *PipeMask;                /* in module.c */
 
 extern int nColorsets;	/* in libs/Colorset.c */
 
+#define MODULE_CONFIG_DELIM ':'
+
 struct moduleInfoList
 {
   char *data;
+  unsigned char alias_len;
   struct moduleInfoList *next;
 };
 
@@ -95,6 +98,8 @@ void  ModuleConfig(char *action) {
 static void AddToModList(char *tline)
 {
   struct moduleInfoList *t, *prev, *this;
+  char *rline = tline;
+  char *alias_end = skipModuleAliasToken(tline + 1);
 
   /* Find end of list */
   t = modlistroot;
@@ -107,9 +112,23 @@ static void AddToModList(char *tline)
   }
 
   this = (struct moduleInfoList *)safemalloc(sizeof(struct moduleInfoList));
-  this->data = (char *)safemalloc(strlen(tline)+1);
+
+  this->alias_len = 0;
+  if (alias_end && alias_end[0] == MODULE_CONFIG_DELIM)
+  {
+    /* migo (01-Sep-2000): construct an old-style config line */
+    char *conf_start = alias_end + 1;
+    while (isspace(*conf_start)) conf_start++;
+    *alias_end = '\0';
+    rline = CatString2(tline, conf_start);
+    *alias_end = MODULE_CONFIG_DELIM;
+    this->alias_len = alias_end - tline;
+  }
+
+  this->data = (char *)safemalloc(strlen(rline)+1);
+  strcpy(this->data, rline);
+
   this->next = NULL;
-  strcpy(this->data, tline);
   if(prev == NULL)
   {
     modlistroot = this;
@@ -212,8 +231,13 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
 
   for (t = modlistroot; t != NULL; t = t->next) {
-    if (match && strncasecmp(t->data,match,match_len)) {
-      continue;
+    if (match)
+    {
+      if (t->alias_len > 0 && t->alias_len != match_len)
+        continue;
+      /* migo: this should be strncmp not strncasecmp probably. */
+      if (strncasecmp(t->data, match, match_len))
+        continue;
     }
     SendName(*Module,M_CONFIG_INFO,0,0,0,t->data);
   }

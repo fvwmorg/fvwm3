@@ -103,5 +103,6 @@ RETSIGTYPE DeadPipe(int nonsense);
 void set_mask_function(F_CMD_ARGS);
 void setSyncMaskFunc(F_CMD_ARGS);
 void setNoGrabMaskFunc(F_CMD_ARGS);
+char *skipModuleAliasToken(const char *string);
 
 #endif /* MODULE_H */

@@ -3,6 +3,11 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.21 (not released yet)
 
+* Module configuration syntax now accepts a delimeter, colon and optional
+  spaces; the old syntax is supported as usual:
+    *FvwmIconBoxMaxIconSize 48x48
+    *FvwmIconBox: MaxIconSize 48x48
+
 * SendToModule can accept aliases too.
 
 * New option StrokeWidth for StrokeFunc.

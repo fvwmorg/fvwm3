@@ -257,19 +257,10 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
       args[nargs] = 0;
       action = GetNextToken(action,&args[nargs]);
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
-      #define is_valid_first_alias_char(ch) (isalpha(ch))
-      #define is_valid_alias_char(ch) (is_valid_first_alias_char(ch) \
-        || isalnum(ch) || (ch) == '-' || (ch) == '.')
       if (pipeAlias[i] == NULL && args[nargs])
       {
-        const char *ptr = args[nargs];
-        if (is_valid_first_alias_char(*ptr))
-        {
-          ptr++;
-          while (*ptr && is_valid_alias_char(*ptr))
-            ptr++;
-        }
-        if (*ptr == '\0')
+        const char *ptr = skipModuleAliasToken(args[nargs]);
+        if (ptr && *ptr == '\0')
           pipeAlias[i] = stripcpy(args[nargs]);
       }
 #endif
@@ -1591,4 +1582,26 @@ void setNoGrabMaskFunc(F_CMD_ARGS)
 
   GetIntegerArguments(action, NULL, &val, 1);
   NoGrabMask[*Module] = (unsigned long)val;
+}
+
+/*
+ * returns a pointer inside a string (just after the alias) if ok or NULL
+ */
+char *skipModuleAliasToken(const char *string)
+{
+  #define is_valid_first_alias_char(ch) (isalpha(ch))
+  #define is_valid_alias_char(ch) (is_valid_first_alias_char(ch) \
+    || isalnum(ch) || (ch) == '-' || (ch) == '.')
+  if (is_valid_first_alias_char(*string))
+  {
+    int len = 1;
+    string++;
+    while (*string && is_valid_alias_char(*string))
+    {
+      if (++len > 250) return NULL;
+      string++;
+    }
+    return (char *)string;
+  }
+  return NULL;
 }

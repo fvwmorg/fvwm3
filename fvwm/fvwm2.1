@@ -3255,10 +3255,10 @@ corresponding dimension of the window is left untouched.
 An alternate syntax is used if the keyword
 .IR bottomright " or in short " br
 follows the command name.  In this case, the arguments
-.IR x "and " y
+.IR x " and " y
 specify the desired position of the bottom right corner of
 the window.  They are interpreted exactly like the
-.IR x "and " y
+.IR x " and " y
 arguments of the
 .B Move
 command.
@@ -4288,7 +4288,7 @@ button which is to be included/omitted.
 makes the
 .B Maximize
 button look pressed-in when the window is maximized.  See the
-.I MwmButton
+.I MwmDecorMax
 flag in
 .B ButtonStyle
 for more information.  To switch this style off again, use the
@@ -5271,7 +5271,7 @@ un-pressed and pressed states for buttons on active windows; while the
 "Inactive" state denotes buttons on inactive windows.  The
 "ToggledActiveUp", "ToggledActiveDown" and "ToggledInactive" states
 are used instead for buttons which have one of the
-.IR MwmDecorMaximize ", " MwmDecorShade " or " MwmDecorStick
+.IR MwmDecorMax ", " MwmDecorShade " or " MwmDecorStick
 hints, if the window is maximized, shaded or sticky, respectively.
 .EX
 AddToDecor Default
@@ -5956,7 +5956,7 @@ to act on.
 There is a number of predefined symbols that are replaced by
 certain values if they appear on the command line.  Please
 refer to the
-.B COMMAND LINE PARAMETER EXPANSION
+.B COMMAND EXPANSION
 section for details.
 
 Examples:
@@ -6382,6 +6382,18 @@ calls (as in the last example).
 
 
 .SS MODULE COMMANDS
+
+.TP
+.BI "*" module_config_line
+Defines a module configuration.
+.I module_config_line
+consists of a module name (or a module alias) and a module resource line.
+The new syntax allows a delimiter, a colon and optional spaces, between the
+module name and the rest of the line, this is recommended to avoid conflicts.
+.EX
+*FvwmIconBox: MaxIconSize 48x48
+*FvwmPager: WindowBorderWidth 1
+.EE
 
 .TP
 .BI "DestroyModuleConfig " module

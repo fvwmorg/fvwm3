@@ -1,3 +1,23 @@
+2000-09-02  Mikhael Goikhman  migo@homemail.com
+
+	* fvwm/functions.c (AddToFunc):
+	allow only a strict syntax, i.e. I|C|D|M|H as the first parameter
+
+	* fvwm/move_resize.c (GetOnePositionArgument):
+	correct rounding errors: 'Move w+1 w+1' + 'Move w-1 w-1' = 'Move w w'
+
+	* fvwm/modconf.c (AddToModList, SendDataToModule):
+	* fvwm/module_interface.c (skipModuleAliasToken):
+	* fvwm/module_interface.h:
+	* fvwm/fvwm2.1:
+	* NEWS:
+	module configuration now can be delimited by a colon and optional
+	spaces, like: *FvwmIconBox: MaxIconSize 48x48
+
+	* fvwm/fvwm2.1:
+	fixes like s/MwmButton|MwmDecorMaximize/MwmDecorMax/ and spacing;
+	added an entry *module_config_line
+
 2000-08-29  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/read.c (ReadFile): remove extra quotes in debug message.

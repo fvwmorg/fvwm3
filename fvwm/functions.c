@@ -1265,7 +1265,19 @@ void AddToFunction(FvwmFunction *func, char *action)
   condition = token[0];
   if (isupper(condition))
     condition = tolower(condition);
+
+  if (token[1] != '\0' || condition != CF_IMMEDIATE
+      && condition != CF_MOTION && condition != CF_HOLD
+      && condition != CF_CLICK && condition != CF_DOUBLE_CLICK)
+  {
+    fvwm_msg(  
+      ERR, "AddToFunction",
+      "Got '%s' instead of a valid function specifier", token);
+    free(token);
+    return;
+  }
   free(token);
+
   if (!action)
     return;
   while (isspace(*action))
