@@ -73,15 +73,13 @@ void setPath( char** p_path, const char* newpath, int free_old_path )
     int found_plus = strchr( newpath, '+' ) != NULL;
 
     /** Leave room for the old path, if we find a '+' in newpath **/
-    *p_path = envDupExpand( stripped_path, found_plus ? oldlen : 0 );
+    *p_path = envDupExpand( stripped_path, found_plus ? oldlen - 1 : 0 );
     free( stripped_path );
 
     if ( found_plus ) {
 	char* p = strchr( *p_path, '+' );
-	memmove( p+oldlen, p+1, strlen(p+1) );
-
-	/* copy oldlen+1 bytes to include the trailing NUL */
-	strncpy( p, oldpath, oldlen+1 );
+	memmove(p + oldlen, p + 1, strlen(p+1) + 1);
+	memmove(p, oldpath, oldlen);
     }
 
     if ( free_old_path )
