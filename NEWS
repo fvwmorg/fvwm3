@@ -3,6 +3,10 @@ _+_A HREF="#2.4.0"_-_2.4.0_+_/A_-_.
 
 Changes in beta 2.5.0 (not released yet)
 
+* FvwmForm: Customize pointers, support ISO_Tab key, buttons can activate
+  on press or release, special pointer during grab, arrow keys useful in form
+  with one input field.
+
 * New OpaqueMoveSize argument "unlimited".
 
 * Fixed binding keys with and without "Shift" modifier under some

@@ -146,6 +146,9 @@ void ReadXServer ()
 	}
         switch (ks) {                   /* regular key, may need adjustment */
         case XK_Tab:
+#ifdef XK_XKB_KEYS
+        case XK_ISO_Left_Tab:
+#endif
           if (event.xkey.state & ShiftMask) { /* shifted key */
             buf[0] = '\020';          /* chg shift tab to ^P */
           }
@@ -175,7 +178,19 @@ void ReadXServer ()
 	    }
 	  }
 	  break;
-	}
+	} else if (CF.cur_input == CF.cur_input->input.next_input) {
+          /* 1 ip field */
+          switch (buf[0]) {
+          case '\020':                  /* ^P previous field */
+            process_history(-1);
+            goto redraw_newcursor;
+            break;
+          case '\016':                  /* ^N  next field */
+            process_history(1);
+            goto redraw_newcursor;
+            break;
+          } /* end switch */
+        } /* end one input field */
 	switch (buf[0]) {
 	case '\001':  /* ^A */
 	  old_cursor = CF.abs_cursor;
