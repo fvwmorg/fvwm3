@@ -1,3 +1,19 @@
+2001-12-17  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/fvwm2.1:
+	Tried to clarify the EWMHIconicStateWorkaround BugOpts
+
+	* fvwm/ewmh.c (delete_kst_item): 
+	(set_kde_sys_tray): 
+	(EWMH_IsKdeSysTrayWindow): 
+	(EWMH_ManageKdeSysTray): 
+	* fvwm/events.c (HandleReparentNotify): 
+	Fixed reparenting management of kde system tray windows and
+	added some off debugging code
+
+	* fvwm/virtual.c (CMD_DesktopName):
+	Removed some debugging code
+	
 2001-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.h (struct):

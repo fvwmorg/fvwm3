@@ -1673,13 +1673,6 @@ void CMD_DesktopName(F_CMD_ARGS)
     free(msg);
     EWMH_SetDesktopNames();
   }
-
-  d = Scr.Desktops->next;
-  while(d != NULL)
-  {
-    fprintf(stderr,"Desk: %i, name: %s\n",d->desk, d->name);
-    d = d->next;
-  }
 }
 
 char *GetDesktopName(int desk)

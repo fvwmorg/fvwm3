@@ -2655,11 +2655,25 @@ likely safe to leave this option at its default.
 
 .\"needswork  I don't understand the part about iconified in the place
 .\"of a state.
+.\"needs_lang_check (olicha) 
 .I EWMHIconicStateWorkaround
-is needed by EWMH compliant pagers or taskbars which use the Iconic
-WM_STATE to determine if an application is iconified in the place of the
-corresponding EWMH state. This option is needed by the current KDE2
-versions. By default this option is off.
+is needed by EWMH compliant pagers or taskbars which represent
+all windows which are in a different desktop than the current one
+as iconified. This happen with pagers and taskbars which implement
+a version of the EWMH specification < to version 1.2 (this is the case
+for the current KDE2&3 versions).
+Form a technical point of view, such pagers and taskbars use the
+IconicState WM_STATE state to determine if an application is iconified.
+But this state, accordingly to the
+.SM ICCCM ,
+does not imply that a window is iconified (in the usual sense).
+Turning on this option forces fvwm2 to establish an equivalence
+between the IconicState WM_STATE state and really iconified window.
+This break the fvwm2
+.SM ICCCM
+implementation but should not cause big problems.
+By default this option is off.
+.\"end needs_lang_check
 .\"end needswork
 
 .TP

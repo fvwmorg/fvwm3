@@ -471,6 +471,7 @@ void EWMH_SetWMState(FvwmWindow *fwin)
  * ************************************************************************* */
 
 /*** kde system tray ***/
+/* #define DEBUG_KST */
 static
 void add_kst_item(Window w)
 {
@@ -528,11 +529,20 @@ void set_kde_sys_tray(void)
     wins = (Window *)safemalloc(sizeof(Window) * nbr);
 
   t = ewmh_KstWinList;
+#ifdef DEBUG_KST
+  fprintf(stderr,"ADD_TO_KST: ");
+#endif
   while (t != NULL)
   {
+#ifdef DEBUG_KST
+    fprintf(stderr,"0x%lx ",t->w);
+#endif
     wins[i++] = t->w;
     t = t->next;
   }
+#ifdef DEBUG_KST
+  fprintf(stderr,"\n");
+#endif
 
   ewmh_ChangeProperty(Scr.Root,"_KDE_NET_SYSTEM_TRAY_WINDOWS",
 		      EWMH_ATOM_LIST_FVWM_ROOT,
@@ -592,10 +602,13 @@ int EWMH_IsKdeSysTrayWindow(Window w)
 
   if (t == NULL)
     return 0;
+#ifdef DEBUG_KST
+    fprintf(stderr,"IsKdeSysTrayWindow: 0x%lx\n", w);
+#endif
   return 1;
 }
 
-void EWMH_ManageKdeSysTray(Window w, Bool is_destroy)
+void EWMH_ManageKdeSysTray(Window w, int type)
 {
   KstItem *t;
 
@@ -606,15 +619,36 @@ void EWMH_ManageKdeSysTray(Window w, Bool is_destroy)
   if (t == NULL)
     return;
 
-  if (!is_destroy)
+  switch(type)
   {
+  case UnmapNotify:
+#ifdef DEBUG_KST
+    fprintf(stderr,"KST_UNMAP: 0x%lx\n", w);
+#endif
     XSelectInput(dpy, w, StructureNotifyMask);
-  }
-  else
-  {
+    XSync(dpy, 0);
+    break;
+  case DestroyNotify:
+#ifdef DEBUG_KST
+    fprintf(stderr,"KST_DESTROY: 0x%lx\n", w);
+#endif
     XSelectInput(dpy, t->w, NoEventMask);
+    XSync(dpy, 0);
     delete_kst_item(w);
     set_kde_sys_tray();
+    break;
+  case ReparentNotify:
+#ifdef DEBUG_KST
+    fprintf(stderr,"KST_Reparent: 0x%lx\n", w);
+#endif
+    XSelectInput(dpy, w, StructureNotifyMask);
+    XSync(dpy, 0);
+    break;
+  default:
+#ifdef DEBUG_KST
+    fprintf(stderr,"KST_NO: 0x%lx\n", w);
+#endif
+    break;
   }
 }
 

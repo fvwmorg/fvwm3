@@ -917,7 +917,7 @@ void HandleDestroyNotify(void)
   DBUG("HandleDestroyNotify","Routine Entered");
 
   destroy_window(Tmp_win);
-  EWMH_ManageKdeSysTray(Event.xdestroywindow.window, True);
+  EWMH_ManageKdeSysTray(Event.xdestroywindow.window, Event.type);
   EWMH_WindowDestroyed();
   GNOME_SetClientList();
 }
@@ -1419,7 +1419,7 @@ void HandleUnmapNotify(void)
   {
     CoerceEnterNotifyOnCurrentWindow();
   }
-  EWMH_ManageKdeSysTray(Event.xunmap.window, False);
+  EWMH_ManageKdeSysTray(Event.xunmap.window, Event.type);
   EWMH_WindowDestroyed();
   GNOME_SetClientList();
 }
@@ -1449,6 +1449,7 @@ void HandleReparentNotify(void)
     XSelectInput (dpy, Event.xreparent.window, NoEventMask);
     discard_events(XEVMASK_FRAMEW);
     destroy_window(Tmp_win);
+    EWMH_ManageKdeSysTray(Event.xreparent.window, Event.type);
     EWMH_WindowDestroyed(); /* olicha: is this needed? */
   }
 
