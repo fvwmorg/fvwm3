@@ -126,7 +126,7 @@ Init
      Set $GnomePath = (GetOutput $CMD 1 -1)
      If $GnomePath <> {No} Then
        Set $GnomeY = 1
-     Set $CMD ={a=`fvwm2 -version 2>&1`; if echo $a|grep -qe 'Gnome'; then echo "1"; else echo "0"; fi}
+     Set $CMD ={if fvwm-config --supports-gnome-wm; then echo "1"; else echo "0"; fi}
      Set $GnomeS = (GetOutput $CMD 1 -1)
      If $GnomeY == {0} Then
        Set $GnomeS = 0

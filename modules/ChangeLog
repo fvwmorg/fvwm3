@@ -13,6 +13,9 @@
 	* FvwmScript/Scripts/fvwm-script-setup95.pl:
 	added several double quotes to make replacing a bit less problematic
 
+	* modules/FvwmScript/Scripts/FvwmScript-Setup95.in:
+	corrected GNOME support detection
+
 2001-05-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/draw.c (RedrawButton):

@@ -120,11 +120,11 @@ while(<IN>) {
 	}
 
 	if ($prefapps) {
-		$line =~ s# emacs# "$Editor"#;
-		$line =~ s#\^emacs#\^"$Editor"#;
+		$line =~ s# emacs# $Editor#;
+		$line =~ s#\^"emacs"#\^"$Editor"#;
 		$line =~ s#\*macs#$Reditor#;
-		$line =~ s# xfm# "$FileMgr"#;
-		$line =~ s# xterm# "$Term"#;
+		$line =~ s# xfm# $FileMgr#;
+		$line =~ s# xterm# $Term#;
 	}
 	$prefapps-- if $prefapps;
 	if ($line =~ /^\#PREF/) {

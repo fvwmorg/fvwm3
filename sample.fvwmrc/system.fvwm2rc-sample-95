@@ -282,7 +282,7 @@ MenuStyle winops VerticalItemSpacing 1 2, VerticalTitleSpacing 1 2
 #-----------------------------------------------------------------------------#
 
 # WARNING!!!!!
-# If you use Settings-->FVWM Config-->Base Config to configure your
+# If you use Settings-->Configuration-->Base Config to configure your
 # major operating modes then all the commands in this section are
 # overridden by the last line of this section. So, either comment the
 # last line of this section or you can remove all the lines of this
@@ -482,9 +482,12 @@ Style xconsole                         Sticky, StartIconic
 Style xpostit                                  WindowListSkip
 Style PostitNote                               WindowListSkip
 Style Postit       NoHandles,                  WindowListSkip
-#gnome panel & icons
+# gnome panel & icons
 Style panel        Sticky, NoTitle, WindowListSkip, CirculateSkip
 Style desktop_icon CirculateSkip, WindowListSkip,  NoTitle
+# Animation is broken in gnome panel 1.4 with GNOMEUseHints.
+# GNOMEIgnoreHints also disables panel moving itself from layer to layer.
+Style panel        GNOMEIgnoreHints
 # xsm panel
 Style xsm          Sticky, NoTitle, WindowListSkip, CirculateSkip
 
@@ -929,7 +932,7 @@ AddToFunc BaseConfigApplyFunc I Read styles
 
 DestroyFunc ModuleOn
 AddToFunc   ModuleOn
-+ I killModule $0
++ I KillModule $0
 + I Module $0 $1 $2
 + I Exec echo "AddToFunc StartFunction I $0 $1 $2" > $FVWM_USERDIR/.start-$0
 
@@ -960,14 +963,14 @@ AddToFunc   ButtonsOff
 DestroyFunc ChangeButtonsOn
 AddToFunc  ChangeButtonsOn
 + I All (BarButtons) Close
-+ I killmodule FvwmWharf
++ I KillModule FvwmWharf
 + I Exec echo "AddToFunc StartFunction I $0" > $FVWM_USERDIR/.start-FvwmButtons
 + I $0
 
 DestroyFunc ChangeButtonsOff
 AddToFunc  ChangeButtonsOff
 + I All (BarButtons) Close
-+ I killmodule FvwmWharf
++ I KillModule FvwmWharf
 + I Exec echo "# No Buttons Bar" > $FVWM_USERDIR/.start-FvwmButtons
 + I $0
 
@@ -998,13 +1001,13 @@ AddToFunc ModulesAutoRaise
 
 DestroyFunc SetBackground
 AddToFunc   SetBackground
-+ I killModule FvwmBacker
++ I KillModule FvwmBacker
 + I $0
 + I Exec echo "AddToFunc StartFunction I $0" > $FVWM_USERDIR/.start-Background
 
 DestroyFunc SetBackgroundOff
 AddToFunc   SetBackgroundOff
-+ I killModule FvwmBacker
++ I KillModule FvwmBacker
 + I Exec echo "# Background disabled" > $FVWM_USERDIR/.start-Background
 
 #------------------------------------------------------------------------------
@@ -1013,20 +1016,20 @@ AddToFunc   SetBackgroundOff
 
 DestroyFunc ChangeAppsMan
 AddToFunc  ChangeAppsMan
-+ I killModule FvwmTaskBar
-+ I killModule FvwmWinList
-+ I killModule FvwmIconMan
-+ I killModule FvwmIconBox
++ I KillModule FvwmTaskBar
++ I KillModule FvwmWinList
++ I KillModule FvwmIconMan
++ I KillModule FvwmIconBox
 + I Exec echo "AddToFunc StartFunction I $0" > $FVWM_USERDIR/.start-apps-man
 + I $0
 
 DestroyFunc AppsManNone
 AddToFunc  AppsManNone
 +  I  Style * NoIcon
-+ I killModule FvwmTaskBar
-+ I killModule FvwmWinList
-+ I killModule FvwmIconMan
-+ I killModule FvwmIconBox
++ I KillModule FvwmTaskBar
++ I KillModule FvwmWinList
++ I KillModule FvwmIconMan
++ I KillModule FvwmIconBox
 + I Exec echo "AddToFunc StartFunction I Style * NoIcon # No applications Manager" > $FVWM_USERDIR/.start-apps-man
 
 DestroyFunc UseIcons
@@ -1035,80 +1038,80 @@ AddToFunc  UseIcons
 + I Read iconstyles
 # Need to reaload menus for KDE mini-icons styles
 + I Read menus
-+ I killModule FvwmTaskBar
-+ I killModule FvwmWinList
-+ I killModule FvwmIconMan
-+ I killModule FvwmIconBox
++ I KillModule FvwmTaskBar
++ I KillModule FvwmWinList
++ I KillModule FvwmIconMan
++ I KillModule FvwmIconBox
 + I Exec echo "# Use Icons" > $FVWM_USERDIR/.start-apps-man
 
 DestroyFunc WinListDesk
 AddToFunc WinListDesk
 + I Style * NoIcon
-+ I *FvwmWinListShowCurrentDesk
++ I *FvwmWinList: ShowCurrentDesk
 + I Module FvwmWinList
 
 DestroyFunc WinListGlobal
 AddToFunc WinListGlobal
 + I Style * NoIcon
-+ I DestroyModuleConfig *FvwmWinListShowCurrent*
++ I DestroyModuleConfig FvwmWinList: ShowCurrent*
 + I Module FvwmWinList
 
 DestroyFunc TaskBarDesk
 AddToFunc TaskBarDesk
 + I Style * NoIcon
-+ I DestroyModuleConfig *FvwmTaskBarAutoHid*
-+ I *FvwmTaskBarDeskOnly
++ I DestroyModuleConfig FvwmTaskBar: AutoHid*
++ I *FvwmTaskBar: DeskOnly
 + I Module FvwmTaskBar
 
 DestroyFunc TaskBarGlobal
 AddToFunc TaskBarGlobal
 + I Style * NoIcon
-+ I DestroyModuleConfig *FvwmTaskBarAutoHid*
-+ I DestroyModuleConfig *FvwmTaskBarDesk*
++ I DestroyModuleConfig FvwmTaskBar: AutoHid*
++ I DestroyModuleConfig FvwmTaskBar: Desk*
 + I Module FvwmTaskBar
 
 DestroyFunc TaskBarDeskAutoHide
 AddToFunc TaskBarDeskAutoHide
 + I Style * NoIcon
-+ I *FvwmTaskBarDeskOnly
-+ I *FvwmTaskBarAutoHide
++ I *FvwmTaskBar: DeskOnly
++ I *FvwmTaskBar: AutoHide
 + I Module FvwmTaskBar
 
 DestroyFunc TaskBarGlobalAutoHide
 AddToFunc TaskBarGlobalAutoHide
 + I Style * NoIcon
-+ I DestroyModuleConfig *FvwmTaskBarDesk*
-+ I *FvwmTaskBarAutoHide
++ I DestroyModuleConfig FvwmTaskBar: Desk*
++ I *FvwmTaskBar: AutoHide
 + I Module FvwmTaskBar
 
 DestroyFunc IconManGlobal
 AddToFunc IconManGlobal
 + I Style * NoIcon
-+ I *FvwmIconMan*Resolution global
++ I *FvwmIconMan: *Resolution global
 + I Module FvwmIconMan
 
 DestroyFunc IconManDesk
 AddToFunc IconManDesk
 + I Style * NoIcon
-+ I *FvwmIconMan*Resolution desk
++ I *FvwmIconMan: *Resolution desk
 + I Module FvwmIconMan
 
 DestroyFunc IconManPage
 AddToFunc IconManPage
 + I Style * NoIcon
-+ I *FvwmIconMan*Resolution page
++ I *FvwmIconMan: *Resolution page
 + I Module FvwmIconMan
 
 DestroyFunc IconBoxDesk
 AddToFunc IconBoxDesk
 + I Style * NoIcon
-+ I *FvwmIconBoxResolutionDesk
++ I *FvwmIconBox: ResolutionDesk
 + I Module FvwmIconBox
 
 DestroyFunc IconBoxGlobal
 AddToFunc IconBoxGlobal
 + I Style * NoIcon
-+ I DestroyModuleConfig *FvwmIconBoxReso*
++ I DestroyModuleConfig FvwmIconBox: Reso*
 + I Module FvwmIconBox
 
 #------------------------------------------------------------------------------
@@ -1151,15 +1154,15 @@ AddToFunc LoadSettings
 + I PipeRead '[ ! -f $FVWM_USERDIR/.FvwmBaseConfig ] || (echo Read .FvwmBaseConfig; echo BaseConfigOkFunc)'
 + I Style * StaysPut
 + I Read .fvwm-layers-$0
-+ I killModule FvwmAnimate
-+ I killModule FvwmAuto
-+ I killModule FvwmEvent
-+ I killModule FvwmButtons
-+ I killModule FvwmWharf
-+ I killModule FvwmTaskBar
-+ I killModule FvwmWinList
-+ I killModule FvwmIconMan
-+ I killModule FvwmIconBox
++ I KillModule FvwmAnimate
++ I KillModule FvwmAuto
++ I KillModule FvwmEvent
++ I KillModule FvwmButtons
++ I KillModule FvwmWharf
++ I KillModule FvwmTaskBar
++ I KillModule FvwmWinList
++ I KillModule FvwmIconMan
++ I KillModule FvwmIconBox
 + I PipeRead 'F=$FVWM_USERDIR; F=$FVWM_USERDIR; for i in $F/.start-Background $F/.start-apps-man $F/.start-FvwmButtons $F/.start-DeskerPanelButtons $F/.start-MiniButtons $F/.start-WinMakerAppButtons $F/.start-FvwmAnimate $F/.start-FvwmAuto $F/.start-FvwmBanner $F/.start-FvwmEvent; do [ ! -f "$i-$0" ] || sed -e s/AddToFunc\\.StartFunction\\.I\\.// $i-$0; done; if [ -f "$F/.start-apps-man-$0" ]; then if grep -qe Icons $F/.start-apps-man-$0; then echo "Style * Icon"; echo "Read iconstyles"; echo "Read menus"; fi; fi'
 
 DestroyFunc ShowFvwmSettings
@@ -1794,7 +1797,7 @@ AddToMenu   Kill-Module-Popup
 
 DestroyMenu Settings
 AddToMenu   Settings
-+ "&FVWM Configuration%mini.fvwm.xpm%"		Popup FvwmConfig
++ "&Configuration%mini.fvwm.xpm%"		Popup FvwmConfig
 + "&Animation%mini.iconify.xpm%"		Popup Animate-Settings
 + "Applications &Managers%mini.windows.xpm%"	Popup AppsManager
 + "Auto&Raise%mini.raise.xpm%"			Popup AutoRaise-Settings
@@ -2197,9 +2200,9 @@ AddToMenu "Background-Animation"
 DestroyMenu Documents
 AddToMenu   Documents
 + "&Xman%mini.book1.xpm%"	   Exec exec xman
-+ "&Fvwm Home Page%mini.fvwm.xpm%" Exec exec netscape http://www.hpc.uh.edu/index.html
++ "&FVWM Home Page%mini.fvwm.xpm%" Exec exec netscape http://www.hpc.uh.edu/index.html
 + "&Sample 95 MINI-FAQ%mini.book1.xpm%"	Exec exec xterm -bg white -fg black -g 80x35 -n "Sample-95 MINI-FAQ" -T "Sample-95 MINI-FAQ" -e less +?"-- Sample-95 MINI-FAQ --" $FVWM_USERDIR/.fvwm2rc
-+ "Fvwm &Man%mini.book1.xpm%"		Popup FvwmManPage
++ "FVWM &Man Pages%mini.book1.xpm%"	Popup FvwmManPage
 + ""  Nop
 + "&Browser%mini.folder.xpm%"		Menu MenuBrowser
 + "Browser (&cached)%mini.folder.xpm%"	Menu MenuBrowserCached
@@ -2209,15 +2212,15 @@ AddToMenu Documents MissingSubmenuFunction FuncFvwmMenuDirectory
 
 DestroyMenu MenuBrowser
 #PREF 1
-AddToMenu   MenuBrowser DynamicPopupAction Piperead 'fvwm-menu-directory -r -na MenuBrowser -d $HOME -s --exec-file ^emacs --xte="xterm -e" --icon-dir=mini.folder.xpm --icon-title=mini.term.xpm --icon-file=mini.file.xpm --icon-app=mini.hex.xpm --check-subdir'
+AddToMenu   MenuBrowser DynamicPopupAction Piperead 'fvwm-menu-directory --reuse --name MenuBrowser --dir $HOME --special-dirs --exec-file ^"emacs" --xterm=" xterm -e" --icon-dir=mini.folder.xpm --icon-title=mini.term.xpm --icon-file=mini.file.xpm --icon-app=mini.hex.xpm --check-subdir'
 
 DestroyMenu MenuBrowserCached
 #PREF 1
-AddToMenu   MenuBrowserCached DynamicPopupAction Piperead 'fvwm-menu-directory -all -r -na MenuBrowserCached -d $HOME -s --exec-file ^emacs --xte="xterm -e" --icon-dir=mini.folder.xpm --icon-title=mini.term.xpm --icon-file=mini.file.xpm --icon-app=mini.hex.xpm --check-subdir'
+AddToMenu   MenuBrowserCached DynamicPopupAction Piperead 'fvwm-menu-directory --all --reuse --name MenuBrowserCached --dir $HOME --special-dirs --exec-file ^"emacs" --xterm=" xterm -e" --icon-dir=mini.folder.xpm --icon-title=mini.term.xpm --icon-file=mini.file.xpm --icon-app=mini.hex.xpm --check-subdir'
 
 DestroyFunc FuncFvwmMenuDirectory
 #PREF 1
-AddToFunc FuncFvwmMenuDirectory I PipeRead 'fvwm-menu-directory -d "$0" --exec-file ^emacs --xte="xterm -e" --icon-dir=mini.folder.xpm --icon-title=mini.term.xpm --icon-file=mini.file.xpm --icon-app=mini.hex.xpm --check-subdir'
+AddToFunc FuncFvwmMenuDirectory I PipeRead 'fvwm-menu-directory --dir "$0" --exec-file ^"emacs" --xterm=" xterm -e" --icon-dir=mini.folder.xpm --icon-title=mini.term.xpm --icon-file=mini.file.xpm --icon-app=mini.hex.xpm --check-subdir'
 
 #------------- FvwmManPage
 
@@ -2481,10 +2484,10 @@ ChangeMenuStyle winops Window Window-Ops2 Window-Ops3 Move-Window WindowGroupOps
 #------------------ FvwmBacker
 #------------------------------------------------------------------------------
 
-*FvwmBackerCommand(Desk 0, Page * *) -solid Blue
-*FvwmBackerCommand(Desk 1, Page * *) -solid \#7F4B7F
-*FvwmBackerCommand(Desk 2, Page * *) -solid midnightblue
-*FvwmBackerCommand(Desk 3, Page * *) -solid black
+*FvwmBacker: Command(Desk 0, Page * *) -solid Blue
+*FvwmBacker: Command(Desk 1, Page * *) -solid \#7F4B7F
+*FvwmBacker: Command(Desk 2, Page * *) -solid midnightblue
+*FvwmBacker: Command(Desk 3, Page * *) -solid black
 
 #------------------------------------------------------------------------------
 #------------------ FvwmBanner
@@ -2499,54 +2502,54 @@ Style FvwmBanner NoTitle, Sticky, StaysOnTop, WindowListSkip, CirculateSkip
 Style BarButtons  NoTitle, NoHandles, Sticky, WindowListSkip,\
                    BorderWidth 4, CirculateSkip
 
-DestroyModuleConfig BarButtons*
-*BarButtonsFore Black
-*BarButtonsBack #c3c3c3
-*BarButtonsFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+DestroyModuleConfig BarButtons: *
+*BarButtons: Fore Black
+*BarButtons: Back #c3c3c3
+*BarButtons: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 # Geometry - really likes to pick its own size, but giving a position is OK
 # Warning: I've added a size geometry to avoid pbs if the fvwm_icons are
 # not in the image path ! Remove the size in this geometry especially if
 # you add buttons
-*BarButtonsGeometry 120x445-5-84
+*BarButtons: Geometry 120x445-5-84
 # Layout: specify rows or columns, not both
-*BarButtonsColumns 2
+*BarButtons: Columns 2
 
 #LAPTOP 1 Are you a laptop user ?
-#*BarButtons(2x1, Title "xapm", Swallow(Kill) "xapm" "Exec exec xapm -geometry -1500-1500 -p")
+#*BarButtons: (2x1, Title "xapm", Swallow(Kill) "xapm" "Exec exec xapm -geometry -1500-1500 -p")
 # Define the buttons to use.....
 #PREF 3
-*BarButtons(1x2, Title FileMgr, Icon Xfm.xpm, Action 'Exec exec xfm')
-*BarButtons(1x2, Title terminal, Icon rterm2.xpm, Action 'Exec exec xterm')
-*BarButtons(1x2, Title editor, Icon lemacs.xpm, Action 'Exec exec emacs')
-*BarButtons(1x2, Title xv,   Icon xv.xpm, Action 'Exec exec xv', \
+*BarButtons: (1x2, Title FileMgr, Icon Xfm.xpm, Action 'Exec exec xfm')
+*BarButtons: (1x2, Title terminal, Icon rterm2.xpm, Action 'Exec exec xterm')
+*BarButtons: (1x2, Title editor, Icon lemacs.xpm, Action 'Exec exec emacs')
+*BarButtons: (1x2, Title xv,   Icon xv.xpm, Action 'Exec exec xv', \
     Action(Mouse 2) 'Exec exec ee', \
     Action(Mouse 3) 'Exec exec gqview')
-*BarButtons(1x2, Title Gimp,    Icon gimp.xpm,   Action 'Exec exec gimp', \
+*BarButtons: (1x2, Title Gimp,    Icon gimp.xpm,   Action 'Exec exec gimp', \
     Action(Mouse 2) 'Exec exec xpaint', \
     Action(Mouse 3) 'Exec exec kiconedit')
-*BarButtons(1x2, Title gview,   Icon  gv.xpm, Action 'Exec exec ghostview', \
+*BarButtons: (1x2, Title gview,   Icon  gv.xpm, Action 'Exec exec ghostview', \
     Action(Mouse 2) 'Exec exec xdvi', \
     Action(Mouse 3) 'Exec exec xpdf')
-*BarButtons(1x2, Title www, Icon nscape.xpm, Action 'Exec exec netscape', \
+*BarButtons: (1x2, Title www, Icon nscape.xpm, Action 'Exec exec netscape', \
     Action(Mouse 2) 'Exec exec vppp', \
     Action(Mouse 3) 'Exec exec xterm -geometry 80x30 -e mutt')
-*BarButtons(1x2, Padding 0 0, Container(Padding 0 0, Frame 2, Columns 3))
-*BarButtons(Icon mini.move1.xpm, Action Move)
-*BarButtons(Icon mini.resize3.xpm, Action Resize)
-*BarButtons(Icon mini.iconify1.xpm, Action Iconify)
-*BarButtons(Icon mini.maximize1.xpm, Action Maximize 90 90)
-*BarButtons(Icon mini.shade1.xpm, Action WindowShade)
-*BarButtons(Icon mini.stick1.xpm, Action Stick)
-*BarButtons(Icon mini.cross.xpm, Action Delete)
-*BarButtons(Icon mini.bomb.xpm, Action Destroy)
-*BarButtons(Icon mini.question.xpm, Action Module FvwmIdent)
-*BarButtons(End)
-*BarButtons(1x2, Title "xload", Swallow "xload" "Exec exec nice -16 \
+*BarButtons: (1x2, Padding 0 0, Container(Padding 0 0, Frame 2, Columns 3))
+*BarButtons: (Icon mini.move1.xpm, Action Move)
+*BarButtons: (Icon mini.resize3.xpm, Action Resize)
+*BarButtons: (Icon mini.iconify1.xpm, Action Iconify)
+*BarButtons: (Icon mini.maximize1.xpm, Action Maximize 90 90)
+*BarButtons: (Icon mini.shade1.xpm, Action WindowShade)
+*BarButtons: (Icon mini.stick1.xpm, Action Stick)
+*BarButtons: (Icon mini.cross.xpm, Action Delete)
+*BarButtons: (Icon mini.bomb.xpm, Action Destroy)
+*BarButtons: (Icon mini.question.xpm, Action Module FvwmIdent)
+*BarButtons: (End)
+*BarButtons: (1x2, Title "xload", Swallow "xload" "Exec exec nice -16 \
 		xload -nolabel -update 4 -bg grey59 -hl grey70 \
 		-geometry -1500-1500")
-*BarButtons(1x2, Title "xclock", Swallow "xclock" "Exec \
+*BarButtons: (1x2, Title "xclock", Swallow "xclock" "Exec \
 		exec xclock -padding 0 -geometry -1500-1500")
-*BarButtons(2x2, Swallow "FvwmPagerPager" 'FvwmPager FvwmPagerPager * *')
+*BarButtons: (2x2, Swallow "FvwmPagerPager" 'FvwmPager FvwmPagerPager * *')
 
 #------------------------------------------------------------------------------
 #------------------ FvwmButtons: MiniButtons
@@ -2556,21 +2559,21 @@ Style "MiniButtons"  NoTitle,NoHandles,Sticky,WindowListSkip,BorderWidth 0,\
 	CirculateSkip
 
 DestroyModuleConfig MiniButtons*
-*MiniButtonsFore Black
-*MiniButtonsBack #c0c0c0
-*MiniButtonsFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*MiniButtonsGeometry -2+2
-*MiniButtonsRows 1
-*MiniButtonsPadding 1 1
+*MiniButtons: Fore Black
+*MiniButtons: Back #c0c0c0
+*MiniButtons: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*MiniButtons: Geometry -2+2
+*MiniButtons: Rows 1
+*MiniButtons: Padding 1 1
 #PREF 3
-*MiniButtons -   mini.term.xpm      Exec exec xterm
-*MiniButtons -   mini.filemgr.xpm   Exec exec xfm
-*MiniButtons -   mini.doc1.xpm	    Exec exec emacs
-*MiniButtons -   mini.calc.xpm      Exec exec xcalc
-*MiniButtons -   mini.cd.xpm        Exec exec xplaycd
-*MiniButtons -   mini.audiovol.xpm  Exec exec xmixer
-*MiniButtons -   mini.happy.xpm     Exec exec xmine
-*MiniButtons -   mini.bomb.xpm      Destroy
+*MiniButtons: -   mini.term.xpm      Exec exec xterm
+*MiniButtons: -   mini.filemgr.xpm   Exec exec xfm
+*MiniButtons: -   mini.doc1.xpm	     Exec exec emacs
+*MiniButtons: -   mini.calc.xpm      Exec exec xcalc
+*MiniButtons: -   mini.cd.xpm        Exec exec xplaycd
+*MiniButtons: -   mini.audiovol.xpm  Exec exec xmixer
+*MiniButtons: -   mini.happy.xpm     Exec exec xmine
+*MiniButtons: -   mini.bomb.xpm      Destroy
 
 #------------------------------------------------------------------------------
 #------------------ FvwmButtons: DeskerPanelButtons
@@ -2579,117 +2582,117 @@ DestroyModuleConfig MiniButtons*
 Style "DeskerPanelButtons"  NoTitle,NoHandles,Sticky,WindowListSkip,\
 			BorderWidth 0, CirculateSkip
 #Style "DeskerPanelButtons"  StayOnTop
-DestroyModuleConfig DeskerPanelButtons*
-*DeskerPanelButtonsFore Black
-*DeskerPanelButtonsBack grey57
-*DeskerPanelButtonsFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*DeskerPanelButtonsGeometry 12x79
-*DeskerPanelButtonsRows 1
-*DeskerPanelButtonsFrame 1
-*DeskerPanelButtonsPadding 0 0
+DestroyModuleConfig DeskerPanelButtons: *
+*DeskerPanelButtons: Fore Black
+*DeskerPanelButtons: Back grey57
+*DeskerPanelButtons: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*DeskerPanelButtons: Geometry 12x79
+*DeskerPanelButtons: Rows 1
+*DeskerPanelButtons: Frame 1
+*DeskerPanelButtons: Padding 0 0
 #FAST 1
-*DeskerPanelButtons(Panel(right, steps 12, delay 0, position module top, indicator10) "FvwmDesker" 'Module FvwmPager FvwmDesker 0 3')
+*DeskerPanelButtons: (Panel(right, steps 12, delay 0, position module top, indicator10) "FvwmDesker" 'Module FvwmPager FvwmDesker 0 3')
 #SLOW 1
-#*DeskerPanelButtons(Panel(right, steps 0, position module top, indicator10) "FvwmDesker" 'Module FvwmPager FvwmDesker 0 3')
+#*DeskerPanelButtons: (Panel(right, steps 0, position module top, indicator10) "FvwmDesker" 'Module FvwmPager FvwmDesker 0 3')
 
 #------------------------------------------------------------------------------
 #------------------ FvwmButtons: WinMakerAppButtons & WinMakerAppPanelCd
 #------------------------------------------------------------------------------
 Style "WinMakerApp*" NoTitle, NoHandles, BorderWidth 0, Sticky, \
 		WindowListSkip, CirculateSkip
-DestroyModuleConfig WinMakerAppButtons*
+DestroyModuleConfig WinMakerAppButtons: *
 
 #-------------------------------------
 # Buttons:
 # We use "hands panel", the advantage is that we use the applet
 # in the panel only when we need it: Button 3 kill the panel
 
-*WinMakerAppButtonsGeometry +0+120
-*WinMakerAppButtonsColumns 1
-*WinMakerAppButtonsBack #c0c0c0
-*WinMakerAppButtonsFore black
-*WinMakerAppButtons(Frame 1, Size 64 64, \
+*WinMakerAppButtons: Geometry +0+120
+*WinMakerAppButtons: Columns 1
+*WinMakerAppButtons: Back #c0c0c0
+*WinMakerAppButtons: Fore black
+*WinMakerAppButtons: (Frame 1, Size 64 64, \
 	Swallow  "wmjmail" 'Exec exec wmjmail', Action(Mouse 1) \
 	'MyPanelButtons "WinMakerAppPanelMail" $right $top', \
 	Action(Mouse 3) 'All (WinMakerAppPanelMail) Close')
-*WinMakerAppButtons(Frame 1, Size 64 64, \
+*WinMakerAppButtons: (Frame 1, Size 64 64, \
 	Swallow  "wmppp" 'Exec exec wmppp' Action(Mouse 1) \
 	'MyPanelButtons "WinMakerAppPanelPPP" $right $top', \
 	Action(Mouse 3) 'All (WinMakerAppPanelPPP) Close')
-*WinMakerAppButtons(Frame 1, Size 64 64, \
+*WinMakerAppButtons: (Frame 1, Size 64 64, \
     Swallow "wmmount" 'Exec exec wmmount -s', Action(Mouse 1) \
     'MyPanelButtons "WinMakerAppPanelCd" $right $top', \
      Action(Mouse 3) 'All (WinMakerAppPanelCd) Close')
 
 #-----------------
 # The Mail Panel
-*WinMakerAppPanelMailRows 1
-*WinMakerAppPanelMailBack #c0c0c0
-*WinMakerAppPanelMailFore black
-*WinMakerAppPanelMail(Frame 1, Size 64 64, \
+*WinMakerAppPanelMail: Rows 1
+*WinMakerAppPanelMail: Back #c0c0c0
+*WinMakerAppPanelMail: Fore black
+*WinMakerAppPanelMail: (Frame 1, Size 64 64, \
     Swallow  "wmCalClock" 'Exec exec  wmCalClock')
-*WinMakerAppPanelMail(Frame 1, Size 64 64, \
+*WinMakerAppPanelMail: (Frame 1, Size 64 64, \
     Swallow  "wmglobe" 'Exec exec  wmglobe')
-*WinMakerAppPanelMail(Frame 1, Size 64 64, \
+*WinMakerAppPanelMail: (Frame 1, Size 64 64, \
     Swallow  "wmMoonClock" 'Exec exec  wmMoonClock')
 
 #-----------------
 # The PPP Panel
-*WinMakerAppPanelPPPRows 1
-*WinMakerAppPanelPPPBack #c0c0c0
-*WinMakerAppPanelPPPFore black
-*WinMakerAppPanelPPP(Frame 1, Size 64 64, \
+*WinMakerAppPanelPPP: Rows 1
+*WinMakerAppPanelPPP: Back #c0c0c0
+*WinMakerAppPanelPPP: Fore black
+*WinMakerAppPanelPPP: (Frame 1, Size 64 64, \
     Swallow  "wminet" 'Exec exec  wminet')
-*WinMakerAppPanelPPP(Frame 1, Size 64 64, \
+*WinMakerAppPanelPPP: (Frame 1, Size 64 64, \
     Swallow  "wmsysmon" 'Exec exec wmsysmon')
 
 #-----------------
 # The Cd Panel
-*WinMakerAppPanelCdRows 1
-*WinMakerAppPanelCdBack #c0c0c0
-*WinMakerAppPanelCdFore black
-*WinMakerAppPanelCd(Frame 1, Size 64 64, \
+*WinMakerAppPanelCd: Rows 1
+*WinMakerAppPanelCd: Back #c0c0c0
+*WinMakerAppPanelCd: Fore black
+*WinMakerAppPanelCd: (Frame 1, Size 64 64, \
     Swallow  "wmmixer" 'Exec exec  wmmixer -s')
-*WinMakerAppPanelCd(Frame 1, Size 64 64, \
+*WinMakerAppPanelCd: (Frame 1, Size 64 64, \
     Swallow  "wmcdplay" 'Exec exec  wmcdplay -s')
 
 #------------------------------------------------------------------------------
 #------------------ FvwmEvent
 #------------------------------------------------------------------------------
 
-DestroyModuleConfig FvwmEvent*
+DestroyModuleConfig FvwmEvent: *
 
 # replace rplay by a sound player that can play .au sound file
-*FvwmEventCmd "Exec exec rplay "
+*FvwmEvent: Cmd "Exec exec rplay "
 
-*FvwmEventStartDelay 3
-*FvwmEventDelay 1
+*FvwmEvent: StartDelay 3
+*FvwmEvent: Delay 1
 
-*FvwmEvent startup          "/usr/share/sounds/gong.au"
-*FvwmEvent add_window       "/usr/share/sounds/wipe.au"
-*FvwmEvent destroy_window   "/usr/share/sounds/pook.au"
-*FvwmEvent iconify          "/usr/share/sounds/clong.au"
-*FvwmEvent deiconify        "/usr/share/sounds/clong.au"
-*FvwmEvent windowshade      "/usr/share/sounds/slide.au"
-*FvwmEvent dewindowshade    "/usr/share/sounds/slide.au"
-*FvwmEvent new_page         "/usr/share/sounds/slide.au"
-*FvwmEvent new_desk         "/usr/share/sounds/slide.au"
+*FvwmEvent: startup          "/usr/share/sounds/gong.au"
+*FvwmEvent: add_window       "/usr/share/sounds/wipe.au"
+*FvwmEvent: destroy_window   "/usr/share/sounds/pook.au"
+*FvwmEvent: iconify          "/usr/share/sounds/clong.au"
+*FvwmEvent: deiconify        "/usr/share/sounds/clong.au"
+*FvwmEvent: windowshade      "/usr/share/sounds/slide.au"
+*FvwmEvent: dewindowshade    "/usr/share/sounds/slide.au"
+*FvwmEvent: new_page         "/usr/share/sounds/slide.au"
+*FvwmEvent: new_desk         "/usr/share/sounds/slide.au"
 
 #------------------------------------------------------------------------------
 #------------------ FvwmGtk for GNOME menus
 #------------------------------------------------------------------------------
 
 
-*FvwmGtkIconSize 22 22
+*FvwmGtk: IconSize 22 22
 #G_SM_G 1
-#*FvwmGtkDestroy "gnome-sys"
+#*FvwmGtk: Destroy "gnome-sys"
 #G_SM_G 1
 #PipeRead "fvwm-menu-desktop --desktop gnome-sys --install-prefix /usr --type gtk --enable-mini-icons"
 #G_RHM_G 2
-#*FvwmGtkDestroy "gnome-redhat"
+#*FvwmGtk: Destroy "gnome-redhat"
 #PipeRead "fvwm-menu-desktop --desktop gnome-redhat --type gtk --enable-mini-icons"
 #G_UM_G 2
-#*FvwmGtkDestroy "gnome-user"
+#*FvwmGtk: Destroy "gnome-user"
 #PipeRead "fvwm-menu-desktop --desktop gnome-user --type gtk --enable-mini-icons"
 
 #------------------------------------------------------------------------------
@@ -2697,47 +2700,47 @@ DestroyModuleConfig FvwmEvent*
 #------------------------------------------------------------------------------
 Style "FvwmIconBox"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 
-DestroyModuleConfig FvwmIconBox*
-*FvwmIconBoxBack #c0c0c0
-*FvwmIconBoxFore  Black
+DestroyModuleConfig FvwmIconBox: *
+*FvwmIconBox: Back #c0c0c0
+*FvwmIconBox: Fore  Black
 #WIN 1
-*FvwmIconBoxIconHiBack Blue4
+*FvwmIconBox: IconHiBack Blue4
 #FVWM 1
-#*FvwmIconBoxIconHiBack SlateBlue
-*FvwmIconBoxIconHiFore  white
-*FvwmIconBoxGeometry +0-0
-*FvwmIconBoxMaxIconSize 48x48
-*FvwmIconBoxFont -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
-*FvwmIconBoxSortIcons    IconName
-#*FvwmIconBoxSortIcons    ResClass
-*FvwmIconBoxPadding 10
-*FvwmIconBoxFrameWidth 0 0
-*FvwmIconBoxLines 6
-*FvwmIconBoxSBWidth 11
-*FvwmIconBoxPlacement Left Top
-*FvwmIconBoxHideSC Horizontal
-*FvwmIconBoxSetWMIconSize
-*FvwmIconBoxHilightFocusWin
-*FvwmIconBoxResolution  Desk
-*FvwmIconBoxUseSkipList
+#*FvwmIconBox: IconHiBack SlateBlue
+*FvwmIconBox: IconHiFore  white
+*FvwmIconBox: Geometry +0-0
+*FvwmIconBox: MaxIconSize 48x48
+*FvwmIconBox: Font -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+*FvwmIconBox: SortIcons    IconName
+#*FvwmIconBox: SortIcons    ResClass
+*FvwmIconBox: Padding 10
+*FvwmIconBox: FrameWidth 0 0
+*FvwmIconBox: Lines 6
+*FvwmIconBox: SBWidth 11
+*FvwmIconBox: Placement Left Top
+*FvwmIconBox: HideSC Horizontal
+*FvwmIconBox: SetWMIconSize
+*FvwmIconBox: HilightFocusWin
+*FvwmIconBox: Resolution  Desk
+*FvwmIconBox: UseSkipList
 # mouse bindings
-*FvwmIconBoxMouse 1 Click  DeiconifyFocusAndRaise
-*FvwmIconBoxMouse 1 DoubleClick  DeiconifyFocusAndWarp
-*FvwmIconBoxMouse 2 Click Iconify
-*FvwmIconBoxMouse 3 DoubleClick Iconify off
-*FvwmIconBoxMouse 3 Click Menu Window-Ops3 c+0 -101m
-*FvwmIconBoxMouse 3 DoubleClick FvwmIdent
+*FvwmIconBox: Mouse 1 Click  DeiconifyFocusAndRaise
+*FvwmIconBox: Mouse 1 DoubleClick  DeiconifyFocusAndWarp
+*FvwmIconBox: Mouse 2 Click Iconify
+*FvwmIconBox: Mouse 3 DoubleClick Iconify off
+*FvwmIconBox: Mouse 3 Click Menu Window-Ops3 c+0 -101m
+*FvwmIconBox: Mouse 3 DoubleClick FvwmIdent
 # Key bindings
-*FvwmIconBoxKey r RaiseLower
-*FvwmIconBoxKey space Iconify
-*FvwmIconBoxKey d Close
+*FvwmIconBox: Key r RaiseLower
+*FvwmIconBox: Key space Iconify
+*FvwmIconBox: Key d Close
 # FvwmIconBox built-in functions
-*FvwmIconBoxKey n Next
-*FvwmIconBoxKey p Prev
-*FvwmIconBoxKey h Left
-*FvwmIconBoxKey j Down
-*FvwmIconBoxKey k Up
-*FvwmIconBoxKey l Right
+*FvwmIconBox: Key n Next
+*FvwmIconBox: Key p Prev
+*FvwmIconBox: Key h Left
+*FvwmIconBox: Key j Down
+*FvwmIconBox: Key k Up
+*FvwmIconBox: Key l Right
 # animation
 *FvwmIconBoxNoIconAction SendToModule FvwmAnimate animate
 
@@ -2746,123 +2749,123 @@ DestroyModuleConfig FvwmIconBox*
 #------------------------------------------------------------------------------
 Style "FvwmIconMan"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 
-DestroyModuleConfig FvwmIconMan*
+DestroyModuleConfig FvwmIconMan: *
 
 # nbr de manager
-*FvwmIconMan*nummanagers 2
+*FvwmIconMan: *nummanagers 2
 #global, desk, or page
-#*FvwmIconMan*Resolution page
-*FvwmIconMan*Resolution global
-#*FvwmIconMan*Resolution desk
-*FvwmIconMan*background  #c0c0c0
-*FvwmIconMan*foreground Black
-*FvwmIconMan*plainbutton up Black #c0c0c0
-*FvwmIconMan*selectbutton down  Black #c0c0c0
+#*FvwmIconMan: *Resolution page
+*FvwmIconMan: *Resolution global
+#*FvwmIconMan: *Resolution desk
+*FvwmIconMan: *background  #c0c0c0
+*FvwmIconMan: *foreground Black
+*FvwmIconMan: *plainbutton up Black #c0c0c0
+*FvwmIconMan: *selectbutton down  Black #c0c0c0
 #WIN 2
-*FvwmIconMan*focusbutton up white Blue4
-*FvwmIconMan*focusandselectbutton down white Blue4
+*FvwmIconMan: *focusbutton up white Blue4
+*FvwmIconMan: *focusandselectbutton down white Blue4
 #FVWM 2
-#*FvwmIconMan*focusbutton up white SlateBlue
-#*FvwmIconMan*focusandselectbutton down white SlateBlue
-*FvwmIconMan*iconbutton down Black grey51
-*FvwmIconMan*font  -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-*-
-*FvwmIconMan*followfocus true
-*FvwmIconMan*usewinlist true
-*FvwmIconMan*sort name
-*FvwmIconMan*drawicons always
-*FvwmIconMan*2*title           "Icon Man"
+#*FvwmIconMan: *focusbutton up white SlateBlue
+#*FvwmIconMan: *focusandselectbutton down white SlateBlue
+*FvwmIconMan: *iconbutton down Black grey51
+*FvwmIconMan: *font  -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-*-
+*FvwmIconMan: *followfocus true
+*FvwmIconMan: *usewinlist true
+*FvwmIconMan: *sort name
+*FvwmIconMan: *drawicons always
+*FvwmIconMan: *2*title           "Icon Man"
 #PREF 4
-*FvwmIconMan*1*title           " emacs windows"
-*FvwmIconMan*1*iconname        "FvwmIconMan: emacs"
-*FvwmIconMan*1*format          "%i"
-*FvwmIconMan*1*show            resource=*macs
-*FvwmIconMan*2*managergeometry 1x0+0-0
-*FvwmIconMan*1*managergeometry 1x0+260-0
-*FvwmIconMan*1*buttongeometry 200x20
-*FvwmIconMan*2*buttongeometry 250x20
+*FvwmIconMan: *1*title           " emacs windows"
+*FvwmIconMan: *1*iconname        "FvwmIconMan: emacs"
+*FvwmIconMan: *1*format          "%i"
+*FvwmIconMan: *1*show            resource=*macs
+*FvwmIconMan: *2*managergeometry 1x0+0-0
+*FvwmIconMan: *1*managergeometry 1x0+260-0
+*FvwmIconMan: *1*buttongeometry 200x20
+*FvwmIconMan: *2*buttongeometry 250x20
 # action
-*FvwmIconMan*action    Mouse    1 N sendcommand DeiconifyFocusAndRaise
-*FvwmIconMan*action    Mouse    2 N sendcommand Iconify
-*FvwmIconMan*action    Mouse    3 N sendcommand "Menu Window-Ops3 c+0 -101m "
-*FvwmIconMan*action    Key    Left N gotobutton Left, select
-*FvwmIconMan*action    Key    Right N gotobutton Right, select
-*FvwmIconMan*action    Key    Up N gotobutton Up, select
-*FvwmIconMan*action    Key    Down N gotobutton Down, select
-*FvwmIconMan*action    Key    q A quit
-*FvwmIconMan*action    Key    i A sendcommand Iconify
-*FvwmIconMan*action    Key    g A sendcommand IconManGlobal
-*FvwmIconMan*action    Key    p A sendcommand IconManPage
-*FvwmIconMan*action    Key    d A sendcommand IconManDesk
+*FvwmIconMan: *action    Mouse    1 N sendcommand DeiconifyFocusAndRaise
+*FvwmIconMan: *action    Mouse    2 N sendcommand Iconify
+*FvwmIconMan: *action    Mouse    3 N sendcommand "Menu Window-Ops3 c+0 -101m "
+*FvwmIconMan: *action    Key    Left N gotobutton Left, select
+*FvwmIconMan: *action    Key    Right N gotobutton Right, select
+*FvwmIconMan: *action    Key    Up N gotobutton Up, select
+*FvwmIconMan: *action    Key    Down N gotobutton Down, select
+*FvwmIconMan: *action    Key    q A quit
+*FvwmIconMan: *action    Key    i A sendcommand Iconify
+*FvwmIconMan: *action    Key    g A sendcommand IconManGlobal
+*FvwmIconMan: *action    Key    p A sendcommand IconManPage
+*FvwmIconMan: *action    Key    d A sendcommand IconManDesk
 # animation
-*FvwmIconMan*NoIconAction "SendToModule FvwmAnimate animate"
+*FvwmIconMan: *NoIconAction "SendToModule FvwmAnimate animate"
 
 #------------------------------------------------------------------------------
 #------------------ Identify
 #------------------------------------------------------------------------------
 Style "FvwmIdent"   Sticky, NoButton 2, NoButton 4, NoButton 6
 
-*FvwmIdentBack Blue4
-*FvwmIdentFore Yellow
-*FvwmIdentFont -adobe-times-medium-r-*-*-14-*-*-*-*-*-*-*
+*FvwmIdent: Back Blue4
+*FvwmIdent: Fore Yellow
+*FvwmIdent: Font -adobe-times-medium-r-*-*-14-*-*-*-*-*-*-*
 
 #------------------------------------------------------------------------------
 #------------------ FvwmPager:  Swallowed by ButtonBar
 #------------------------------------------------------------------------------
 Style "FvwmPagerPager"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 
-DestroyModuleConfig FvwmPagerPager*
-*FvwmPagerPagerBack grey60
-*FvwmPagerPagerFore black
-*FvwmPagerPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*FvwmPagerPagerHilight white
-*FvwmPagerPagerMiniIcons
-*FvwmPagerPagerBalloons
-*FvwmPagerPagerBalloonFore black
-*FvwmPagerPagerBalloonBack bisque
-*FvwmPagerPagerGeometry 319x69+5000+5000
+DestroyModuleConfig FvwmPagerPager: *
+*FvwmPagerPager: Back grey60
+*FvwmPagerPager: Fore black
+*FvwmPagerPager: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmPagerPager: Hilight white
+*FvwmPagerPager: MiniIcons
+*FvwmPagerPager: Balloons
+*FvwmPagerPager: BalloonFore black
+*FvwmPagerPager: BalloonBack bisque
+*FvwmPagerPager: Geometry 319x69+5000+5000
 #WIN 1
-*FvwmPagerPagerWindowColors white grey51 white Blue4
+*FvwmPagerPager: WindowColors white grey51 white Blue4
 #FVWM 1
-#*FvwmPagerPagerWindowColors white grey51 white SlateBlue
-*FvwmPagerPagerLabel 0 Fvwm
-*FvwmPagerPagerLabel 1 Development
-*FvwmPagerPagerLabel 2 Internet
-*FvwmPagerPagerLabel 3 Misc
-*FvwmPagerPagerSmallFont 5x8
+#*FvwmPagerPager: WindowColors white grey51 white SlateBlue
+*FvwmPagerPager: Label 0 Fvwm
+*FvwmPagerPager: Label 1 Development
+*FvwmPagerPager: Label 2 Internet
+*FvwmPagerPager: Label 3 Misc
+*FvwmPagerPager: SmallFont 5x8
 
 #------------------------------------------------------------------------------
 #------------------ FvwmPager: FvwmDesker, the panel of StartPagerButtons
 #------------------------------------------------------------------------------
 Style "FvwmDesker"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 
-DestroyModuleConfig FvwmDesker*
-*FvwmDeskerBack grey60
-*FvwmDeskerFore black
-*FvwmDeskerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-*FvwmDeskerHilight white
-*FvwmDeskerGeometry 319x69+5000+5000
-*FvwmDeskerMiniIcons
-*FvwmDeskerBalloons
-*FvwmDeskerBalloonFore black
-*FvwmDeskerBalloonBack bisque
+DestroyModuleConfig FvwmDesker: *
+*FvwmDesker: Back grey60
+*FvwmDesker: Fore black
+*FvwmDesker: Font -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmDesker: Hilight white
+*FvwmDesker: Geometry 319x69+5000+5000
+*FvwmDesker: MiniIcons
+*FvwmDesker: Balloons
+*FvwmDesker: BalloonFore black
+*FvwmDesker: BalloonBack bisque
 #WIN 1
-*FvwmDeskerWindowColors white grey51 white Blue4
+*FvwmDesker: WindowColors white grey51 white Blue4
 #FVWM 1
-*FvwmDeskerLabel 0 Fvwm
-*FvwmDeskerLabel 1 Development
-*FvwmDeskerLabel 2 Internet
-*FvwmDeskerLabel 3 Misc
-*FvwmDeskerSmallFont 5x8
+*FvwmDesker: Label 0 Fvwm
+*FvwmDesker: Label 1 Development
+*FvwmDesker: Label 2 Internet
+*FvwmDesker: Label 3 Misc
+*FvwmDesker: SmallFont 5x8
 
 #------------------------------------------------------------------------------
 #------------------ FvwmScript
 #------------------------------------------------------------------------------
 
-*FvwmScriptDefaultFont -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
-*FvwmScriptDefaultFore black
-*FvwmScriptDefaultBack grey85
-*FvwmScriptDefaultHilight grey100
-*FvwmScriptDefaultShadow grey55
+*FvwmScript: DefaultFont -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+*FvwmScript: DefaultFore black
+*FvwmScript: DefaultBack grey85
+*FvwmScript: DefaultHilight grey100
+*FvwmScript: DefaultShadow grey55
 
 #------------------------------------------------------------------------------
 #------------------ FvwmTaskBar
@@ -2872,28 +2875,28 @@ Style "FvwmTaskBar" NoTitle,Sticky,WindowListSkip,CirculateSkip,NoHandles, \
 			TitleAtBottom
 # Note: Title at bottom is for shading.
 
-*FvwmTaskBarGeometry +0-0
-*FvwmTaskBarFore Black
-*FvwmTaskBarBack #c0c0c0
-*FvwmTaskBarIconFore Black
-*FvwmTaskBarIconBack grey51
-*FvwmTaskBarFont -adobe-times-medium-r-*-*-14-*-*-*-*-*-*-*
-*FvwmTaskBarSelFont -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
-*FvwmTaskBarStatusFont fixed
-*FvwmTaskBarAction Click1 DeiconifyFocusAndRaise
-*FvwmTaskBarAction Click2 Iconify
-*FvwmTaskBarAction Click3 Menu Window-Ops3 c+0 -101m
-*FvwmTaskBarUseSkipList
-*FvwmTaskBarAutoStick
-*FvwmTaskBarStartName Start
-*FvwmTaskBarStartMenu StartMenu mouse -100p -100m
-*FvwmTaskBarStartIcon mini.penguin.xpm
-*FvwmTaskBarShowTips
-*FvwmTaskBarShowTransients
-#*FvwmTaskBarHighlightFocus
-*FvwmTaskBarAutoHide
-*FvwmTaskBarDeskOnly
-*FvwmTaskBarNoIconAction SendToModule FvwmAnimate animate
+*FvwmTaskBar: Geometry +0-0
+*FvwmTaskBar: Fore Black
+*FvwmTaskBar: Back #c0c0c0
+*FvwmTaskBar: IconFore Black
+*FvwmTaskBar: IconBack grey51
+*FvwmTaskBar: Font -adobe-times-medium-r-*-*-14-*-*-*-*-*-*-*
+*FvwmTaskBar: SelFont -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
+*FvwmTaskBar: StatusFont fixed
+*FvwmTaskBar: Action Click1 DeiconifyFocusAndRaise
+*FvwmTaskBar: Action Click2 Iconify
+*FvwmTaskBar: Action Click3 Menu Window-Ops3 c+0 -101m
+*FvwmTaskBar: UseSkipList
+*FvwmTaskBar: AutoStick
+*FvwmTaskBar: StartName Start
+*FvwmTaskBar: StartMenu StartMenu mouse -100p -100m
+*FvwmTaskBar: StartIcon mini.penguin.xpm
+*FvwmTaskBar: ShowTips
+*FvwmTaskBar: ShowTransients
+#*FvwmTaskBar: HighlightFocus
+*FvwmTaskBar: AutoHide
+*FvwmTaskBar: DeskOnly
+*FvwmTaskBar: NoIconAction SendToModule FvwmAnimate animate
 
 #------------------------------------------------------------------------------
 #------------------ FvwmWharf
@@ -2902,17 +2905,17 @@ Style "FvwmTaskBar" NoTitle,Sticky,WindowListSkip,CirculateSkip,NoHandles, \
 Style "FvwmWharf"  NoTitle, NoHandles, Sticky, WindowListSkip,\
                      BorderWidth 2,CirculateSkip
 
-DestroyModuleConfig FvwmWharf*
-*FvwmWharfAnimate
-*FvwmWharfAnimateMain
-*FvwmWharfGeometry -2-50
-*FvwmWharfColumns 1
-*FvwmWharfBgcolor Grey
-#*FvwmWharfForceSize
-*FvwmWharfFullPush
+DestroyModuleConfig FvwmWharf: *
+*FvwmWharf: Animate
+*FvwmWharf: AnimateMain
+*FvwmWharf: Geometry -2-50
+*FvwmWharf: Columns 1
+*FvwmWharf: Bgcolor Grey
+#*FvwmWharf: ForceSize
+*FvwmWharf: FullPush
 
-*FvwmWharfTextureType 1
-*FvwmWharfTextureColor WhiteSmoke DarkGrey
+*FvwmWharf: TextureType 1
+*FvwmWharf: TextureColor WhiteSmoke DarkGrey
 
 *FvwmWharf X           arrows2.xpm      Folder
 *FvwmWharf kill        rbomb2.xpm       Close
@@ -2940,28 +2943,28 @@ DestroyModuleConfig FvwmWharf*
 #------------------------------------------------------------------------------
 #------------------ FvwmWinList
 #------------------------------------------------------------------------------
-Style "FvwmWinList" NoTitle,Sticky,WindowListSkip,CirculateSkip,
+Style "FvwmWinList" NoTitle,Sticky,WindowListSkip,CirculateSkip
 
-DestroyModuleConfig FvwmWinList*
-*FvwmWinListBack #c3c3c3
-*FvwmWinListFore Black
+DestroyModuleConfig FvwmWinList: *
+*FvwmWinList: Back #c3c3c3
+*FvwmWinList: Fore Black
 #WIN 1
-*FvwmWinListFocusBack Blue4
+*FvwmWinList: FocusBack Blue4
 #FVWM 1
-#*FvwmWinListFocusBack SlateBlue
-*FvwmWinListFocusFore white
-*FvwmWinListIconBack grey51
-*FvwmWinListIconFore Black
-*FvwmWinListFont -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
-*FvwmWinListAction Click1 DeiconifyFocusAndRaise
-*FvwmWinListAction Click2 Iconify
-*FvwmWinListAction Click3 Menu Window-Ops3 c+0 -101m
-*FvwmWinListUseSkipList
-*FvwmWinListShowCurrentDesk
-*FvwmWinListMinWidth 180
-*FvwmWinListMaxWidth 250
-*FvwmWinListGeometry +0-0
-*FvwmWinListNoIconAction SendToModule FvwmAnimate animate
+#*FvwmWinList: FocusBack SlateBlue
+*FvwmWinList: FocusFore white
+*FvwmWinList: IconBack grey51
+*FvwmWinList: IconFore Black
+*FvwmWinList: Font -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+*FvwmWinList: Action Click1 DeiconifyFocusAndRaise
+*FvwmWinList: Action Click2 Iconify
+*FvwmWinList: Action Click3 Menu Window-Ops3 c+0 -101m
+*FvwmWinList: UseSkipList
+*FvwmWinList: ShowCurrentDesk
+*FvwmWinList: MinWidth 180
+*FvwmWinList: MaxWidth 250
+*FvwmWinList: Geometry +0-0
+*FvwmWinList: NoIconAction SendToModule FvwmAnimate animate
 
 #SEG END
 #-----------------------------------------------------------------------------#
