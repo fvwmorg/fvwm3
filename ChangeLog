@@ -1,3 +1,9 @@
+2001-05-14  olicha  <olivier.chapuis@free.fr>
+	
+	* acinclude.m4:
+	Fixed (true) IMLIB test (never used) and say that we test GDK Imlib
+	in GDK Imlib test
+	
 2001-05-09  Hippo
 
 	* fvwm/focus.c (warp_to_fvwm_window):

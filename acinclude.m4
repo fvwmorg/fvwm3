@@ -541,7 +541,7 @@ dnl
 #include <stdlib.h>
 #include <Imlib.h>
 
-ImLibColor testcolor;
+ImlibImage testimage;
 
 int main ()
 {
@@ -551,7 +551,7 @@ int main ()
   system ("touch conf.imlibtest");
 
   /* HP/UX 9 (%@#!) writes to sscanf strings */
-  tmp_version = g_strdup("$min_imlib_version");
+  tmp_version = strdup("$min_imlib_version");
   if (sscanf(tmp_version, "%d.%d", &major, &minor) != 2) {
      printf("%s, bad version string\n", "$min_imlib_version");
      exit(1);
@@ -653,7 +653,7 @@ AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest       do not try to compile and 
 
   AC_PATH_PROG(IMLIBCONF, imlib-config, no)
   min_imlib_version=ifelse([$1], ,1.8.1,$1)
-  AC_MSG_CHECKING(for IMLIB - version >= $min_imlib_version)
+  AC_MSG_CHECKING(for GDK IMLIB - version >= $min_imlib_version)
   no_imlib=""
   if test "$IMLIBCONF" = "no" ; then
     no_imlib=yes

@@ -2058,6 +2058,12 @@ void PurgeConfigEvents(void)
 static int
 ErrorHandler(Display *d, XErrorEvent *event)
 {
+  /* some errors are OK=ish */
+  if (event->error_code == BadPixmap)
+    return 0;
+  if (event->error_code == BadDrawable)
+    return 0;
+
   PrintXErrorAndCoredump(d, event, Module);
   return 0;
 }
