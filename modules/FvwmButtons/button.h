@@ -73,4 +73,7 @@ int buttonXPos(button_info *b, int i);
 int buttonYPos(button_info *b, int i);
 int buttonWidth(button_info *b);
 int buttonHeight(button_info *b);
+
+/* --------------------------- swallowing ---------------------------------- */
+
 int buttonSwallowCount(button_info *b);

@@ -185,6 +185,8 @@ struct button_info_struct
   {
     unsigned is_panel : 1;     /* b_Panel */
     unsigned panel_mapped : 1; /* b_Panel */
+    unsigned panel_iconified : 1; /* b_Panel */
+    unsigned panel_shaded : 1; /* b_Panel */
   } newflags;
 #define SLIDE_UP 0
 #define SLIDE_DOWN 1

@@ -430,15 +430,30 @@ static MenuItem *find_entry(
  * only items that can be selected (i.e. nor separators or
  * titles=. The count begins with 0.
  ***************************************************************/
-static int get_selectable_item_index(MenuRoot *mr, MenuItem *miTarget)
+static int get_selectable_item_index(
+  MenuRoot *mr, MenuItem *miTarget, int *ret_sections)
 {
   int i = 0;
+  int s = 0;
   MenuItem *mi;
+  Bool last_selectable = False;
 
   for (mi = MR_FIRST_ITEM(mr); mi && mi != miTarget; mi = MI_NEXT_ITEM(mi))
   {
-    if (MI_IS_SELECTABLE(mi))
+    if (!MI_IS_SEPARATOR(mi) && !MI_IS_TITLE(mi))
+    {
       i++;
+      last_selectable = True;
+    }
+    else if (last_selectable)
+    {
+      s++;
+      last_selectable = False;
+    }
+  }
+  if (ret_sections)
+  {
+    *ret_sections = s;
   }
   if (mi == miTarget)
   {
@@ -462,13 +477,39 @@ static MenuItem *get_selectable_item_from_index(MenuRoot *mr, int index)
       i++;
     }
   }
-  /* DBUG("get_selectable_item_from_index","%d = %s",index,miLastOk->item); */
   return miLastOk;
 }
 
-static int get_selectable_item_count(MenuRoot *mr)
+static MenuItem *get_selectable_item_from_section(MenuRoot *mr, int section)
 {
-  return get_selectable_item_index(mr, MR_LAST_ITEM(mr));
+  int i = 0;
+  MenuItem *mi;
+  MenuItem *miLastOk = NULL;
+  Bool last_selectable = False;
+
+  for (mi = MR_FIRST_ITEM(mr); mi && (i <= section || miLastOk == NULL);
+       mi=MI_NEXT_ITEM(mi))
+  {
+    if (!MI_IS_SEPARATOR(mi) && !MI_IS_TITLE(mi))
+    {
+      if (!last_selectable)
+      {
+	miLastOk = mi;
+	last_selectable = True;
+      }
+    }
+    else if (last_selectable)
+    {
+      i++;
+      last_selectable = False;
+    }
+  }
+  return miLastOk;
+}
+
+static int get_selectable_item_count(MenuRoot *mr, int *ret_sections)
+{
+  return get_selectable_item_index(mr, MR_LAST_ITEM(mr), ret_sections);
 }
 
 
@@ -794,6 +835,7 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
 {
   int fControlKey = event->xkey.state & ControlMask? True : False;
   int fShiftedKey = event->xkey.state & ShiftMask? True: False;
+  int fMetaKey = event->xkey.state & Mod1Mask? True: False;
   KeySym keysym;
   char ckeychar;
   int ikeychar;
@@ -807,6 +849,7 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
   unsigned int menu_width;
   unsigned int menu_height;
   int items_to_move;
+  Bool fSkipSection = False;
 
   /* handle double-keypress */
   if (pdkp->timestamp &&
@@ -825,7 +868,7 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
   /* Try to match hot keys */
   /* Need isascii here - isgraph might coredump! */
   if (index == 1 && isascii(ikeychar) && isgraph(ikeychar) &&
-      fControlKey == False)
+      fControlKey == False && fMetaKey == False)
   {
     /* allow any printable character to be a keysym, but be sure control
        isn't pressed */
@@ -972,6 +1015,11 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
       {
 	items_to_move = 0x80000000;
       }
+      else if (fMetaKey)
+      {
+	items_to_move = -1;
+	fSkipSection = True;
+      }
       else
       {
 	items_to_move = -1;
@@ -999,6 +1047,11 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
       else if (fShiftedKey)
       {
 	items_to_move = 0x7fffffff;
+      }
+      else if (fMetaKey)
+      {
+	items_to_move = 1;
+	fSkipSection = True;
       }
       else
       {
@@ -1041,12 +1094,26 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
 			      for j or n, since those might
 			      be shortcuts too-- C-j, C-n will
 			      always work to do a single down */
-    if (items_to_move < 0)
+    if (fSkipSection)
     {
-      index = get_selectable_item_index(mr, miCurrent);
+      int section;
+      int count;
+
+      get_selectable_item_count(mr, &count);
+      get_selectable_item_index(mr, miCurrent, &section);
+      section += items_to_move;
+      if (section < 0)
+	section = count;
+      else if (section > count)
+	section = 0;
+      index = section;
+    }
+    else if (items_to_move < 0)
+    {
+      index = get_selectable_item_index(mr, miCurrent, NULL);
       if (index == 0)
 	/* wraparound */
-	index = get_selectable_item_count(mr);
+	index = get_selectable_item_count(mr, NULL);
       else if (items_to_move == 0x80000000)
 	/* move to start */
 	index = 0;
@@ -1059,20 +1126,27 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
     {
       if (items_to_move == 0x7fffffff)
 	/* move to end */
-	index = get_selectable_item_count(mr);
+	index = get_selectable_item_count(mr, NULL);
       else
       {
-	index = get_selectable_item_index(mr, miCurrent) + items_to_move;
+	index = get_selectable_item_index(mr, miCurrent, NULL) + items_to_move;
 	/* correct for the case that we're between items */
 	if (MI_IS_SEPARATOR(miCurrent) || MI_IS_TITLE(miCurrent))
 	  index--;
       }
     }
-    newItem = get_selectable_item_from_index(mr, index);
-    if (items_to_move > 0)
+    if (fSkipSection)
     {
-      if (newItem == miCurrent)
-	newItem = get_selectable_item_from_index(mr, 0);
+      newItem = get_selectable_item_from_section(mr, index);
+    }
+    else
+    {
+      newItem = get_selectable_item_from_index(mr, index);
+      if (items_to_move > 0)
+      {
+	if (newItem == miCurrent)
+	  newItem = get_selectable_item_from_index(mr, 0);
+      }
     }
     if (newItem)
     {

@@ -1095,11 +1095,10 @@ static void ParseButton(button_info **uberb,char *s)
     b->hangon=seekright(&s);
     if (!b->hangon)
       b->hangon = strdup("");
-    b->flags |= b_Hangon;
     if (tolower(*s) == 's')
-      b->flags |= b_Swallow;
+      b->flags |= b_Swallow | b_Hangon;
     else
-      b->flags |= b_Panel;
+      b->flags |= b_Panel | b_Hangon;
     b->swallow|=1;
     s = trimleft(s);
     if(!(b->swallow&b_NoHints))

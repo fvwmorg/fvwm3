@@ -191,6 +191,7 @@ void xevent_loop (void)
   Button *b;
   static int flag = 0;
   WinManager *man;
+  Bool do_redraw = False;
 
   if (flag == 0) {
     flag = 1;
@@ -292,6 +293,11 @@ void xevent_loop (void)
 		    theEvent.xconfigure.border_width);
       ConsoleDebug (X11, "\tsendevent = %d\n", theEvent.xconfigure.send_event);
 
+      /* eat up all but last ConfigureNotify events */
+      while (XPending(theDisplay) &&
+	     XCheckMaskEvent(theDisplay, ConfigureNotify, &theEvent))
+	;
+
       if (man->geometry.dir & GROW_FIXED)
       {
 	man->geometry.rows =
@@ -300,6 +306,7 @@ void xevent_loop (void)
 	  man->geometry.rows = 1;
 	man->geometry.cols =
 	  (man->buttons.num_windows - 1) / man->geometry.rows + 1;
+	do_redraw = 1;
       }
       if ( man->geometry.width != theEvent.xconfigure.width ||
            man->geometry.height != theEvent.xconfigure.height) {
@@ -326,13 +333,19 @@ void xevent_loop (void)
 	    XSetFillStyle(theDisplay, man->backContext[DEFAULT], FillSolid);
 	  }
         }
+	do_redraw = 1;
       }
 
-      set_manager_width (man, theEvent.xconfigure.width);
-      ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
-      force_manager_redraw(man);
+      if (do_redraw)
+      {
+	set_manager_width (man, theEvent.xconfigure.width);
+	ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
+	force_manager_redraw(man);
+      }
 
 #if 0
+      set_manager_width (man, theEvent.xconfigure.width);
+      ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
       draw_manager (man);
 
       /* pointer may not be in the same box as before */

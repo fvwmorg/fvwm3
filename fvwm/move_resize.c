@@ -1288,7 +1288,7 @@ void SetXORPixmap(F_CMD_ARGS)
     fvwm_msg(ERR, "SetXORPixmap", "doesn't work with the -visual option");
     return;
   }
-    
+
   action = GetNextToken(action, &PixmapName);
   if(PixmapName == NULL)
   {

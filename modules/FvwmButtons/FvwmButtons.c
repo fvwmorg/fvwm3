@@ -75,6 +75,9 @@
 /* SW_EVENTS are for swallowed windows... */
 #define SW_EVENTS   (PropertyChangeMask | StructureNotifyMask |\
 		     ResizeRedirectMask | SubstructureNotifyMask)
+/* PA_EVENTS are for swallowed panels... */
+#define PA_EVENTS   (StructureNotifyMask)
+
 
 #ifdef DEBUG_FVWM
 #define MySendText(a,b,c) {\
@@ -1562,48 +1565,64 @@ static void HandlePanelPress(button_info *b)
   Window JunkW;
   XSizeHints mysizehints;
   long supplied;
+  Bool is_mapped;
+  XWindowAttributes xwa;
 
-  if (b->newflags.panel_mapped)
-  {
-      /* get the current geometry */
-      XGetGeometry(Dpy, b->IconWin, &JunkW, &b->x, &b->y, &b->w,
-		   &b->h, &b->bw, &d);
-      XTranslateCoordinates(
-	  Dpy, b->IconWin, Root, b->x, b->y, &b->x, &b->y, &JunkW);
-  }
-  GetPanelGeometry(!!b->newflags.panel_mapped, b, &x1, &y1, &w1, &h1);
-  GetPanelGeometry(!b->newflags.panel_mapped, b, &x2, &y2, &w2, &h2);
+  XGetWindowAttributes(Dpy, b->IconWin, &xwa);
+  is_mapped = (xwa.map_state == IsViewable);
 
-  /* to force fvwm to map the window where we want */
-  if (!b->newflags.panel_mapped)
+  if (is_mapped)
   {
-      XGetWMNormalHints(Dpy, b->IconWin, &mysizehints, &supplied);
-      mysizehints.flags |= USSize | USPosition;
-      mysizehints.x = x1;
-      mysizehints.y = y1;
-      mysizehints.width  = (w1) ? w1 : 1;
-      mysizehints.height = (h1) ? h1 : 1;
-      XSetWMNormalHints(Dpy, b->IconWin, &mysizehints);
+    /* get the current geometry */
+    XGetGeometry(Dpy, b->IconWin, &JunkW, &b->x, &b->y, &b->w,
+		 &b->h, &b->bw, &d);
+    XTranslateCoordinates(
+      Dpy, b->IconWin, Root, b->x, b->y, &b->x, &b->y, &JunkW);
   }
   else
   {
-      /* don't slide the window if it has been moved or resized */
-      if (b->x != x1 || b->y != y1 || b->w != w1 || b->h != h1)
-      {
-	  steps = 0;
-      }
+    /* Make sure the icon is unmapped first. Needed to work properly with
+     * shaded and iconified windows. */
+    XWithdrawWindow(Dpy, b->IconWin, screen);
+  }
+  GetPanelGeometry(is_mapped, b, &x1, &y1, &w1, &h1);
+  GetPanelGeometry(!is_mapped, b, &x2, &y2, &w2, &h2);
+
+  /* to force fvwm to map the window where we want */
+  if (!is_mapped)
+  {
+    XGetWMNormalHints(Dpy, b->IconWin, &mysizehints, &supplied);
+    mysizehints.flags |= USSize | USPosition;
+    mysizehints.x = x1;
+    mysizehints.y = y1;
+    mysizehints.width  = (w1) ? w1 : 1;
+    mysizehints.height = (h1) ? h1 : 1;
+    XSetWMNormalHints(Dpy, b->IconWin, &mysizehints);
+  }
+  else
+  {
+    /* don't slide the window if it has been moved or resized */
+    if (b->x != x1 || b->y != y1 || b->w != w1 || b->h != h1)
+    {
+      steps = 0;
+    }
   }
 
+  if (w1 != 0 && h1 != 0)
+  {
+    XMoveResizeWindow(Dpy, b->IconWin, x1, y1, w1, h1);
+    XMapWindow(Dpy, b->IconWin);
+  }
   SlideWindow(Dpy, b->IconWin,
 	      x1, y1, w1, h1,
 	      x2, y2, w2, h2,
 	      steps, b->slide_delay_ms, NULL, False);
 
-  if (b->newflags.panel_mapped)
+  if (is_mapped)
   {
-      XUnmapWindow(Dpy, b->IconWin);
+    XUnmapWindow(Dpy, b->IconWin);
   }
-  b->newflags.panel_mapped ^= 1;
+  b->newflags.panel_mapped = ! is_mapped;
   RedrawButton(b, 1);
 
   return;
@@ -2143,6 +2162,7 @@ void process_message(unsigned long type,unsigned long *body)
       break;
     case M_CONFIG_INFO:
       handle_colorset_packet((unsigned long*)body);
+      break;
     default:
       break;
     }
@@ -2322,6 +2342,7 @@ void swallow(unsigned long *body)
   Window p;
 
   while(NextButton(&ub,&b,&button,0))
+  {
     if((b->IconWin==(Window)body[0]) && (buttonSwallowCount(b)==2))
     {
       /* Store the geometry in case we need to unswallow. Get parent */
@@ -2388,11 +2409,13 @@ void swallow(unsigned long *body)
       }
       else /* (b->flags & b_Panel) */
       {
-	XUnmapWindow(Dpy, b->IconWin);
+	XSelectInput(Dpy, b->IconWin, PA_EVENTS);
+	XWithdrawWindow(Dpy, b->IconWin, screen);
 	b->newflags.panel_mapped = 0;
       }
       break;
     }
+  }
 }
 
 #ifndef NO_OLD_PANELS
