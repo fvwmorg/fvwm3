@@ -194,12 +194,15 @@ print qq(+ DynamicPopDownAction DestroyMenu "$menuName"\n)
 # set the 'missing submenu function'
 print qq(+ MissingSubmenuFunction FuncFvwmMenuDirectory\n) unless $reuse;
 
-# add a new title
+# add a new title (item and separator, or real Title if no action)
 my $titleAct = $commT; $titleAct =~ s/%d/$dir/g;
-print qq(+ "$iconTStr$title" $titleAct\n);
-
-# add a separator
-print qq(+ "" Nop\n);
+if ($title ne "") {
+	if ($titleAct eq "") {
+		print qq(+ "$iconTStr$title" Title\n);
+	} else {
+		print qq(+ "$iconTStr$title" $titleAct\n+ "" Nop\n);
+	}
+}
 
 # add special dirs at the top if needed
 print qq($specialDirLines+ "" Nop\n) if $specialDirPos > 0;
@@ -341,10 +344,10 @@ sub showHelp {
 	print "\t--name=NAME        menu name,  default is '$name'\n";
 	print "\t--title=NAME       menu title, default is '$title'\n";
 	print "\t--item=NAME        menu item format, default is '$itemF'\n";
-	print "\t--icon-title=XPM   menu title icon, default is no\n";
-	print "\t--icon-dir=XPM     menu dir   icon, default is no\n";
-	print "\t--icon-file=XPM    menu file  icon, default is no\n";
-	print "\t--icon-app=XPM     menu +x    icon, default is no\n";
+	print "\t--icon-title=XPM   menu title icon, default is none\n";
+	print "\t--icon-dir=XPM     menu dir   icon, default is none\n";
+	print "\t--icon-file=XPM    menu file  icon, default is none\n";
+	print "\t--icon-app=XPM     menu +x    icon, default is none\n";
 	print "\t--wm-icons         define icon names to use with wm-icons\n";
 	print "\t--dir=NAME         starting dir, default is '$dir'\n";
 	print "\t--order=NUM        NUM (-6 .. 6), default is 5\n";
@@ -422,6 +425,14 @@ B<fvwm-menu-directory>
 A perl script which provides an output to read in with PipeRead to build an
 fvwm menu containing a directory listing. Almost everything can be configured.
 
+=head1 HINTS
+
+The title item with its own attached action is usually added to the menu.
+This may be used to define an action for the directory for which the menu is
+built, such as starting a terminal in this directory (the default).
+However, this may annoy some users. To disable the title action use
+B<--command-title> "", to remove the title complitely use B<--title> "".
+
 =head1 OPTIONS
 
 =over 4
@@ -477,19 +488,19 @@ Example: --title '%*-40p\tDate, Type\tSize' --item '%*40n\t%d %t\t%s'
 
 =item B<--icon-title> icon
 
-menu title icon, default is no
+menu title icon, default is none
 
 =item B<--icon-dir> icon
 
-menu dir icon, default is no
+menu dir icon, default is none
 
 =item B<--icon-file> icon
 
-menu file icon, default is no
+menu file icon, default is none
 
 =item B<--icon-app> icon
 
-menu application icon, default is no
+menu application icon, default is none
 
 =item B<--wm-icons>
 
@@ -552,8 +563,10 @@ If this option is not given (or command is '-'), the C<--exec-title>
 is used instead.
 In the command, %d is substituted with the full directory path.
 
-In fact, --exec-title=tcsh is equivalent
-to --command-title='Exec cd "%d"; xterm -e tcsh'
+In fact, I<--exec-title=tcsh> is equivalent
+to I<--command-title='Exec cd "%d"; xterm -e tcsh'>
+
+The empty value disables the title action.
 
 =item B<--command-file> command
 
@@ -633,8 +646,8 @@ Put this into your fvwm configuration file to invoke the script:
 More complex example:
 
   # AddToFunc FuncFvwmMenuDirectory
-  # + I PipeRead "fvwm-menu-directory -d '$0' -x 'Eterm -g 80x40 -e' -a -l \\
-    -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' \\
+  # + I PipeRead "fvwm-menu-directory -d '$0' -x 'Eterm -g 80x40 -e' \\
+    -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' \\
     -t 'Go to: %d' --wm-icons"
 
 And put this in the menu from which you want to pop-up the directory menus:
@@ -656,11 +669,12 @@ in your configuration file when using this script for better results.
 Another interesting usage (C<--reuse> or C<-r> is mandatary for this):
 
   AddToMenu Browser
-  + DynamicPopupAction Piperead "fvwm-menu-directory -r -na Browser -d / -s"
+  + DynamicPopupAction PipeRead \\
+    "fvwm-menu-directory -r -na Browser -d / -s"
   AddToMenu SomeMenu "My Browser" Menu Browser
 
-Here C<--dir> starting parameter is ignored if there is
-~/.fvwm/.fvwm-menu-directory.dir file, you can delete it.
+Here the C<--dir> parameter (starting directory) is ignored if there is
+~/.fvwm/.fvwm-menu-directory.dir file, which you can delete.
 
 =head1 AUTHORS
 

@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "FVWM-MENU-DIRECTORY 1"
-.TH FVWM-MENU-DIRECTORY 1 "2003-04-19" "perl v5.8.0" "FVWM Utilities"
+.TH FVWM-MENU-DIRECTORY 1 "2003-08-21" "perl v5.8.0" "FVWM Utilities"
 .SH "NAME"
 fvwm\-menu\-directory \- builds a directory browsing menu for FVWM
 .SH "SYNOPSIS"
@@ -165,6 +165,13 @@ fvwm\-menu\-directory \- builds a directory browsing menu for FVWM
 .IX Header "DESCRIPTION"
 A perl script which provides an output to read in with PipeRead to build an
 fvwm menu containing a directory listing. Almost everything can be configured.
+.SH "HINTS"
+.IX Header "HINTS"
+The title item with its own attached action is usually added to the menu.
+This may be used to define an action for the directory for which the menu is
+built, such as starting a terminal in this directory (the default).
+However, this may annoy some users. To disable the title action use
+\&\fB\-\-command\-title\fR "", to remove the title complitely use \fB\-\-title\fR "".
 .SH "OPTIONS"
 .IX Header "OPTIONS"
 .IP "\fB\-\-help\fR" 4
@@ -215,16 +222,16 @@ Format specifiers:
 Example: \-\-title '%*\-40p\etDate, Type\etSize' \-\-item '%*40n\et%d \f(CW%t\fR\et%s'
 .IP "\fB\-\-icon\-title\fR icon" 4
 .IX Item "--icon-title icon"
-menu title icon, default is no
+menu title icon, default is none
 .IP "\fB\-\-icon\-dir\fR icon" 4
 .IX Item "--icon-dir icon"
-menu dir icon, default is no
+menu dir icon, default is none
 .IP "\fB\-\-icon\-file\fR icon" 4
 .IX Item "--icon-file icon"
-menu file icon, default is no
+menu file icon, default is none
 .IP "\fB\-\-icon\-app\fR icon" 4
 .IX Item "--icon-app icon"
-menu application icon, default is no
+menu application icon, default is none
 .IP "\fB\-\-wm\-icons\fR" 4
 .IX Item "--wm-icons"
 define icon names suitable for use with wm-icons package.
@@ -279,8 +286,10 @@ If this option is not given (or command is '\-'), the \f(CW\*(C`\-\-exec\-title\
 is used instead.
 In the command, \f(CW%d\fR is substituted with the full directory path.
 .Sp
-In fact, \-\-exec\-title=tcsh is equivalent
-to \-\-command\-title='Exec cd \*(L"%d\*(R"; xterm \-e tcsh'
+In fact, \fI\-\-exec\-title=tcsh\fR is equivalent
+to \fI\-\-command\-title='Exec cd \*(L"%d\*(R"; xterm \-e tcsh'\fR
+.Sp
+The empty value disables the title action.
 .IP "\fB\-\-command\-file\fR command" 4
 .IX Item "--command-file command"
 an fvwm command to execute on regular files.
@@ -355,8 +364,8 @@ More complex example:
 .PP
 .Vb 4
 \&  # AddToFunc FuncFvwmMenuDirectory
-\&  # + I PipeRead "fvwm-menu-directory -d '$0' -x 'Eterm -g 80x40 -e' -a -l \e\e
-\&    -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' \e\e
+\&  # + I PipeRead "fvwm-menu-directory -d '$0' -x 'Eterm -g 80x40 -e' \e\e
+\&    -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' \e\e
 \&    -t 'Go to: %d' --wm-icons"
 .Ve
 .PP
@@ -382,14 +391,15 @@ in your configuration file when using this script for better results.
 .PP
 Another interesting usage (\f(CW\*(C`\-\-reuse\*(C'\fR or \f(CW\*(C`\-r\*(C'\fR is mandatary for this):
 .PP
-.Vb 3
-\&  AddToMenu MenuBrowser
-\&  + DynamicPopupAction Piperead "fvwm-menu-directory -r -na MenuBrowser -d / -s"
-\&  AddToMenu SomeMenu "My Browser" Menu MenuBrowser
+.Vb 4
+\&  AddToMenu Browser
+\&  + DynamicPopupAction PipeRead \e\e
+\&    "fvwm-menu-directory -r -na Browser -d / -s"
+\&  AddToMenu SomeMenu "My Browser" Menu Browser
 .Ve
 .PP
-Here \f(CW\*(C`\-\-dir\*(C'\fR starting parameter is ignored if there is
-~/.fvwm/.fvwm\-menu\-directory.dir file, you can delete it.
+Here the \f(CW\*(C`\-\-dir\*(C'\fR parameter (starting directory) is ignored if there is
+~/.fvwm/.fvwm\-menu\-directory.dir file, which you can delete.
 .SH "AUTHORS"
 .IX Header "AUTHORS"
 Inspired  on 1999\-06\-07 by Dominik Vogt     <domivogt@fvwm.org>.

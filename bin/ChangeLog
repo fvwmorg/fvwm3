@@ -1,3 +1,10 @@
+2003-09-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-directory.1:
+	* fvwm-menu-directory.in:
+	--title and --command-title now support empty argument
+	(suppress title action or title completely)
+
 2003-07-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-menu-headlines.1:

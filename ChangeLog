@@ -1,3 +1,8 @@
+2003-09-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* acinclude.m4:
+	fixed error message for incorrect --with-SOMETHING-library argument
+
 2003-09-03  olicha  <olivier.chapuis@free.fr>
 
 	* todo-2.6:
@@ -226,7 +231,7 @@
 
 2003-07-24  Mikhael Goikhman  <migo@homemail.com>
 
-	* M acinclude.m4
+	* acinclude.m4:
 	fixed xft/fontconfig detection with pkg-config
 
 	* fvwm/fvwm.1.in:
