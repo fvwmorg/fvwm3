@@ -887,7 +887,7 @@ treated in the same way.  Single characters can be quoted with a
 preceding backslash.  Quoting single characters works even inside
 other kinds of quotes.
 
-.SS COMMAND LINE PARAMETER EXPANSION
+.SS COMMAND EXPANSION
 
 Whenever a fvwm command line is executed, fvwm performs parameter
 expansion.  A parameter is a '$' followed by a single letter or
@@ -6566,7 +6566,8 @@ of 30 seconds.
 
 .TP
 .BI "SendToModule " "modulename string"
-Sends an arbitrary string (no quotes required) to all modules matching
+Sends an arbitrary string (no quotes required) to all modules, whose
+alias or name matching
 .IR modulename ,
 which may contain wildcards.  This only makes sense if the module
 is set up to understand and deal with these strings though.

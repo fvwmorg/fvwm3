@@ -105,6 +105,7 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <ctype.h>
+#include <values.h>
 
 #ifdef DEBUG
 #define INFO(x) fprintf(stderr,x)
@@ -272,6 +273,11 @@ int main(int argc, char **argv)
     execute_event(BUILTIN_STARTUP, NULL);	/* Startup event */
     if (start_audio_delay) last_time = time(0);
     /* tell fvwm we're running */
+
+    /* migo (19-Aug-2000): synchronize on M_DESTROY_WINDOW */
+    /* SetMessageMask(fd, MAX_MASK); */
+    SetSyncMask(fd, M_DESTROY_WINDOW);
+
     SendFinishedStartupNotification(fd);
 
     /* main loop */
@@ -279,12 +285,13 @@ int main(int argc, char **argv)
     INFO("--- waiting\n");
     while ( !isTerminated )
     {
+      unsigned long msg_bit;
       if ((count = read(fd[1],header, FvwmPacketHeaderSize_byte)) <= 0)
 	exit(0);
       /* if this read is interrrupted  EINTR, the wrong event is triggered !!! */
 
       if( header[0] != START_FLAG )
-	continue;	/* should find something better for resyncing */
+	goto CONTINUE;  /* should find something better for resyncing */
 
       /* Ignore events that occur during the delay period. */
       now = time(0);
@@ -301,7 +308,7 @@ int main(int argc, char **argv)
       }
 
       if (now < last_time + audio_delay + start_audio_delay)
-	continue;			/* quash event */
+	goto CONTINUE;  /* quash event */
       else
 	start_audio_delay = 0;
 
@@ -311,15 +318,20 @@ int main(int argc, char **argv)
        * but this should be fast enough.
        */
       event = -1;
-      while (header[1])
+      msg_bit = header[1];
+      while (msg_bit)
       {
 	event++;
-	header[1] >>= 1;
+	msg_bit >>= 1;
       }
       if (event < 0 || event >= MAX_MESSAGES)
 	event=BUILTIN_UNKNOWN;
 
       execute_event(event, body);		/* execute action */
+
+CONTINUE:
+      if (header[1] == M_DESTROY_WINDOW)
+        SendUnlockNotification(fd);
     } /* while */
 
     execute_event(BUILTIN_SHUTDOWN, NULL);

@@ -27,7 +27,7 @@ fvwm-menu-desktop
 [ \fB\-\-install\-prefix\fR \fIDIR\fR ]
 [ \fB\-\-desktop\fR \fINAME\fR ]
 [ \fB\-\-type\fR NAME\fR ]
-[ \fB\-\-fvwm\-gtk\-name\fR NAME\fR ]
+[ \fB\-\-fvwmgtk\-alias\fR NAME\fR ]
 [ \fB\-\-title\fR \fINAME\fR ]
 [ \fB\-\-name\fR \fINAME\fR ]
 [ \fB\-\-enable\-mini\-icons\fR ]
@@ -122,9 +122,9 @@ PipeRead 'fvwm-menu-desktop --type gtk --desktop gnome-redhat --enable-mini-icon
 Mouse 1  R  M  SendToModule FvwmGtk gnome-all
 .EE
 
-You can specify FvwmGtk name: Module FvwmGtk MenuGnome.
+You can specify FvwmGtk alias: Module FvwmGtk MyGnomeMenu.
 In this case you must pass an additional parameter to fvwm-menu-desktop:
---fvwm-gtk-name MenuGnome.
+--fvwmgtk-alias MyGnomeMenu.
 
 Of course you can build FVWM (i.e., no FvwmGtk) Gnome menus.
 The problem with FVWM menus is .png icons. However, if you
@@ -189,7 +189,7 @@ the \-\-dir option.
 .IP "\fB\-\-type\fR \fINAME\fR"
 If NAME is fvwm, a native FVWM menu will be built (this is
 the default). If NAME is gtk, a FvwmGtk menu will be built.
-.IP "\fB\-\-fvwm-gtk-name\fR \fINAME\fR"
+.IP "\fB\-\-fvwmgtk-alias\fR \fINAME\fR"
 The name for then FvwmGtk module to use instead of default FvwmGtk.
 .IP "\fB\-\-title\fR \fINAME\fR"
 Define the menu title of the top menu. Default

@@ -17,6 +17,8 @@
 # ---------------------------------------------------------------------------
 # Modification History
 #
+#  * migo (17/08/2000): be more quiet; s/--fvwm-gtk-name/--fvwmgtk-alias/
+#
 #  * migo (29/01/2000): Added --wm-icons; changed --i-know-what-i-do (flag)
 #    to --time-limit (integer), the default is now 15 seconds, not 10.
 #
@@ -186,7 +188,7 @@ GetOptions(
 	"install-prefix:s" => $OPT_INSTALL_PREFIX,
 	"desktop:s" => \$MENU_NAME,
 	"type:s" => \$MENU_TYPE,
-	"fvwm-gtk-name=s" => \$fvwmGtkName,
+	"fvwmgtk-alias=s" => \$fvwmGtkName,
 	"title:s" => \$OPT_MENU_TITLE,
 	"name:s" => \$OPT_MENU_NAME,
 	"enable-mini-icons" => \$MINI_ICONS,
@@ -441,7 +443,7 @@ while( $Rec_Dir_List[0] ne '+') {
 		# for gnome
 		if ( -f "$dir/.order" ) {
 			open(ORDER, "$dir/.order") || print STDERR
-			"fvwm-menu-desktop: Can't open $dir/.directory (not a fatal error"
+			"fvwm-menu-desktop: Can't open $dir/.directory (not a fatal error, "
 			. "but this is curious, is your administrator paranoid?): $!\n";
 
 			while( defined ($name = <ORDER>)) {
@@ -455,8 +457,8 @@ while( $Rec_Dir_List[0] ne '+') {
 		# for kde
 		if ( -f "$dir/.directory" ) {
 			open(ORDER, "$dir/.directory") || print STDERR
-			"fvwm-menu-desktop: Can't open $dir/.directory (not a fatal error but"
-			. "this is curious, is your administrator paranoid ?): $!\n";
+			"fvwm-menu-desktop: Can't open $dir/.directory (not a fatal error, "
+			. "but this is curious, is your administrator paranoid?): $!\n";
 
 			while(<ORDER>) {
 				if ( /^SortOrder=(.*)$/ ) {
@@ -552,7 +554,7 @@ sub build_a_level {
 		if ( -f "$dir/.directory" ) {
 			($label, $mini_icon) = get_info("$dir/.directory", 'title');
 		} else {
-			print STDERR "fvwm-menu-desktop: Bad menu description\n";
+#			print STDERR "fvwm-menu-desktop: Bad menu description, expected $dir\n";
 			$mini_icon = $dmicon{$flag . 'title'};
 		}
 		$label = $tmp_name if ( $label eq '');
@@ -875,7 +877,7 @@ Options:
 		gnome-sys (default), gnome-user, gnome-redhat,
 		kde-sys, kde-user
 	--type NAME               fvwm (default) or gtk for a FvwmGtk menu
-	--fvwm-gtk-name NAME      FvwmGtk module name, default is FvwmGtk
+	--fvwmgtk-alias NAME      FvwmGtk module name, default is FvwmGtk
 	--title NAME              menu title, default depends on --desktop
 	--name NAME               menu name, default depends on --desktop
 	--enable-mini-icons       enable mini-icons in menu

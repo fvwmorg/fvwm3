@@ -1,3 +1,15 @@
+2000-08-19  Mikhael Goikhman  migo@homemail.com
+
+	* fvwm/module_interface.c:
+	SendToModule now can accept an alias too.
+	Syncronize with appropriate messages regardless of myxgrabcount.
+
+	* NEWS: document new GNOME defaults, StrokeWidth and SendToModule
+	* AUTHORS: tried to keep a reverse chronological order
+
+	* fvwm/fvwm2.1:
+	SendToModule; s/COMMAND LINE PARAMETER EXPANSION/COMMAND EXPANSION/.
+
 2000-08-13  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/builtins.c

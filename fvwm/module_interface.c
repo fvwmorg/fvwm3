@@ -1204,7 +1204,11 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   }
   for (i=0;i<npipes;i++)
   {
-    if((pipeName[i] != NULL)&&(matchWildcards(module,pipeName[i])))
+    if((pipeName[i] != NULL)&&(matchWildcards(module,pipeName[i]))
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+      || (pipeAlias[i] && matchWildcards(module, pipeAlias[i]))
+#endif
+    )
     {
       SendName(i,M_STRING,data0,data1,data2,str);
       FlushMessageQueue(i);
@@ -1250,7 +1254,10 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
    * M_LOCKONSEND has been replaced by a separated mask which defines on
    * which messages the fvwm-to-module communication need to be lock
    * on send. olicha Nov 13, 1999 */
-  if ((SyncMask[module] & ptr[1]) && !myxgrabcount)
+  /* migo (19-Aug-2000): removed !myxgrabcount to sync M_DESTROY_WINDOW */
+/*if ((SyncMask[module] & ptr[1]) && !myxgrabcount) */
+
+  if ((SyncMask[module] & ptr[1]))
   {
     Window targetWindow;
     fd_set readSet;

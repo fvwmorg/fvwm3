@@ -1,3 +1,9 @@
+2000-08-19  Mikhael Goikhman  <migo@homemail.com>
+
+	* utils/fvwm-menu-desktop.1:
+	* utils/fvwm-menu-desktop.in:
+	be more quiet; rename --fvwm-gtk-name to --fvwmgtk-alias
+
 2000-05-14  Mikhael Goikhman  <migo@homemail.com>
 
 	* make_fvwmdist.sh:

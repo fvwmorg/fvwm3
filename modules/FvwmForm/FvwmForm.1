@@ -81,10 +81,10 @@ is done only the first time FvwmForm is invoked, or after
 
 When the file ".FvwmForm" is read,  it is done  by sending the command
 "Read .FvwmForm  Quiet"   to fvwm.  Because of  the   way the  "read"
-command works, the file can  reside in your  home directory, or be  in
-the fvwm configuration directory.  See the description of the read
+command works, the file can  reside in your personal fvwm user directory,
+or be in the fvwm data directory.  See the description of the read
 command in the fvwm2 man page for more information about the environment
-variable $FVWMUSER_HOME.
+variable $FVWM_USERDIR.
 
 Then FvwmForm reads the rest of the configuration fvwm has stored
 up.  Fvwm stores configuration on an ongoing basis.  The initial
@@ -169,7 +169,8 @@ The following commands can be set in the .fvwm2rc file or thru
 any of the other ways that fvwm can accept commands.
 The simplest technique is to create a file in the read-only
 architecture-independent data directory,
-[PREFIX/etc/fvwm] or your home directory that matches the form alias.
+[PREFIX/share/fvwm] or your personal fvwm directory [$HOME/.fvwm],
+that matches the form alias.
 
 In the following paragraphs the string "FvwmForm"
 would normally be the form alias.
@@ -481,7 +482,7 @@ or choice variable in a form.
 This lets a form display current fvwm module configuration data.
 For an example of how this works, examine the file "FormFvwmRlogin."
 which is installed in read-only architecture-independent data directory,
-[PREFIX/etc/fvwm] and shown below.
+[PREFIX/share/fvwm] and shown below.
 
 Note that for choices, the setting of the button is represented as the
 word "on",  all other values for a setting are treated as off.
@@ -489,7 +490,7 @@ word "on",  all other values for a setting are treated as off.
 .SH EXAMPLES
 All of the following "examples" are installed in the
 read-only architecture-independent data directory,
-[PREFIX/etc/fvwm], during fvwm installation.
+[PREFIX/share/fvwm], during fvwm installation.
 
 The following commands create a menu to invoke the examples:
 

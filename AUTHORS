@@ -2,21 +2,19 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
-Nagi Aboulenein:
-Original idea for 'previous page' parameter (MoveToPage and GotoPage).
+Johannes Zellner:
+StrokeWidth option for StrokeFunc.
 
-Greg J. Badros:
-Substantial rewrite of fvwm2.0 menuing code to support arbitrary depth
-menus, animated menus, Win95 look, better logically-based shortcut keys,
-auto-splitting of long menus, check for re-used hot-keys, integrated
-LEFT_MENUS option.  Added primitives: animated-moves, SetEnv, fix to
-Echo. Improve modules: Make FvwmM4 pass args on to m4, font-related
-seg-fault bug fix in FvwmButtons.
+Darren Stuart Embry:
+ActiveColorset uses colour set supplied hilight and shadow colours.
 
 Neil Bird:
 Add $c, $r, $n variables for Functions.
 Add Next/Prev conditions to WindowId and WindowList.
 Attempted fix of OLDecor hints use for decorations. Add DestroyStyle command.
+
+Alan F. Ho:
+fvwm-logo-colorful.xpm, a prototype of a current default FvwmBanner logo.
 
 Olivier Chapuis:
 fvwm: Rewrote -version command line option to print out configure options;
@@ -34,12 +32,20 @@ options, take in account the real border width for geometry computation,
 AutoHide ameliorations, A number of fixes. FvwmWinList: geometries fixes. 
 utils: fvwm-menu-desktop script for GNOME and KDE desktop menus.
 
+Mikhael Goikhman:
+Parsing Restart command, Session*Function and StartFunction special functions,
+{Save|Quit}Session commands, some work on restart logic and session stuff,
+FormFvwmRootCursor, creating fvwm-menu-* scripts, FvwmWharf improvements,
+new FvwmBacker syntax, new default FvwmBanner logo, updates to envvar lib,
+FVWM_DATADIR/FVWM_USERDIR changes, fvwm-config script, some work on configure,
+module alias support in KillModule & SendToModule, many small fixes.
+
 Matthias Clasen:
 Session management, layered stacking order, maximized shaded windows,
 FvwmGtk module, colored and xpm cursors.
 
-Darren Stuart Embry:
-ActiveColorset uses colour set supplied hilight and shadow colours.
+Nagi Aboulenein:
+Original idea for 'previous page' parameter (MoveToPage and GotoPage).
 
 Dan Espen:
 Color Limiting, Multiple IconBoxes, Iconification Animation, new 3d
@@ -56,11 +62,6 @@ $d, $x and $y macros for functions.
 Julian Gilbey:
 Fixes in the fvwmrc_convert script.
 
-Mikhael Goikhman:
-Parsing Restart command, Session*Function and StartFunction special functions,
-{Save|Quit}Session commands, some work on restart logic and session stuff,
-FormFvwmRootCursor, fvwm-menu-* scripts, small fixes.
-
 German Gomez Garcia:
 Named MenuStyles.
 
@@ -69,9 +70,6 @@ Private colormaps on subwindows.
 
 Mike Han:
 Multiple menu hotkeys.
-
-Alan F. Ho:
-fvwm-logo-colorful.xpm, a prototype of a current default FvwmBanner logo.
 
 Albrecht Kadlec:
 Code & manual cleanups, enhancements, Fixes and module-library which
@@ -152,8 +150,13 @@ Bob Woodside:
 StartsOnPage style, Stacking Order chain, new variable module packets,
 GSFR for the modules.
 
-Johannes Zellner:
-StrokeWidth option for StrokeFunc.
+Greg J. Badros:
+Substantial rewrite of fvwm2.0 menuing code to support arbitrary depth
+menus, animated menus, Win95 look, better logically-based shortcut keys,
+auto-splitting of long menus, check for re-used hot-keys, integrated
+LEFT_MENUS option.  Added primitives: animated-moves, SetEnv, fix to
+Echo. Improve modules: Make FvwmM4 pass args on to m4, font-related
+seg-fault bug fix in FvwmButtons.
 
 
 Along with a cast of thousands (well, dozens) mentioned in old

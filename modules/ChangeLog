@@ -1,3 +1,11 @@
+2000-08-19  Mikhael Goikhman  <migo@homemail.com>
+
+	* modules/FvwmEvent/FvwmEvent.c:
+	synchronize on M_DESTROY_WINDOW
+
+	* modules/FvwmForm/FvwmForm.1:
+	several corrections like s/FVWMUSER_HOME/FVWM_USERDIR/, s:etc:share:
+
 2000-07-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmCommand/FvwmCommand.c:

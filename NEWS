@@ -1,7 +1,15 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
-Changes in beta release 2.3.20 (not released yet)
+Changes in beta release 2.3.21 (not released yet)
+
+* SendToModule can accept aliases too.
+
+* New option StrokeWidth for StrokeFunc.
+
+* GNOME support is now "on" by default.
+
+Changes in beta release 2.3.20 (July 2000)
 
 * KillModule supports an optional alias parameter as given in Module.
     Module FvwmModule Alias
