@@ -537,6 +537,24 @@ fprintf(stderr,"_cdim: --- already detected (pid %d) 0x%08x '%s'\n", HAS_EWMH_WM
 #endif
 		return;
 	}
+	if (HAS_EWMH_WM_PID(fw))
+	{
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"_cdim: +++ has ewmh_wm_pid: icccm 0x%08x '%s'\n", (int)fw, fw->visible_name);
+#endif
+		SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
+		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
+		return;
+	}
+	if (fw->ewmh_window_type != EWMH_WINDOW_TYPE_NONE_ID)
+	{
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"_cdim: +++ has ewmh_window_type: icccm 0x%08x '%s'\n", (int)fw, fw->visible_name);
+#endif
+		SET_CR_MOTION_METHOD(fw, CR_MOTION_METHOD_USE_GRAV);
+		SET_CR_MOTION_METHOD_DETECTED(fw, 1);
+		return;
+	}
 	if (FShapesSupported && fw->wShaped)
 	{
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
