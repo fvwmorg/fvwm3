@@ -321,6 +321,13 @@ static void apply_window_updates(
 		}
 		flags->do_redraw_decoration = True;
 	}
+	if (flags->do_update_rotated_title)
+	{
+		if (t->title_text_rotation != ROTATION_0)
+		{
+			flags->do_redraw_decoration = True;
+		} 
+	}
 	if (0 && flags->do_update_title_dir)
 	{
 		size_borders b_old;

@@ -1055,7 +1055,7 @@ void DrawIconPixmapWindow(
 					fw->iconPixmap, fw->icon_maskPixmap,
 					fw->icon_alphaPixmap, fw->iconDepth,
 					&fra, FW_W_ICON_PIXMAP(fw),
-					Scr.TitleGC, Scr.MonoGC, None,
+					Scr.TitleGC, Scr.MonoGC, Scr.AlphaGC,
 					clip.x - r.x, clip.y - r.y,
 					clip.width, clip.height,
 					clip.x, clip.y, clip.width, clip.height,

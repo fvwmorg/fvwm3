@@ -1533,7 +1533,7 @@ void parse_colorset(int n, char *line)
 		fra.tint_percent = cs->tint_percent;
 		PGraphicsRenderPixmaps(
 			dpy, win, cs->pixmap, mask, alpha, Pdepth, &fra,
-			temp, gc, Scr.MonoGC, None,
+			temp, gc, Scr.MonoGC, Scr.AlphaGC,
 			0, 0, cs->width, cs->height,
 			0, 0, cs->width, cs->height, False);
 		if (cs->pixmap != root_pic.pixmap)

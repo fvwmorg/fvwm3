@@ -3473,6 +3473,12 @@ static Bool style_parse_one_style_option(
 			S_SET_USE_ICON_POSITION_HINT(SCM(*ps), 1);
 			S_SET_USE_ICON_POSITION_HINT(SCC(*ps), 1);
 		}
+		else if (StrEquals(token, "UseTitleDecorRotation"))
+		{
+			S_SET_USE_TITLE_DECOR_ROTATION(SCF(*ps), on);
+			S_SET_USE_TITLE_DECOR_ROTATION(SCM(*ps), 1);
+			S_SET_USE_TITLE_DECOR_ROTATION(SCC(*ps), 1);
+		}
 #ifdef USEDECOR
 		else if (StrEquals(token, "UseDecor"))
 		{
@@ -4003,6 +4009,14 @@ void check_window_style_change(
 	if (S_TITLE_DIR(SCC(*ret_style)))
 	{
 		flags->do_update_title_dir = True;
+	}
+
+	/*
+	 * use_title_decor_rotation
+	 */
+	if (S_USE_TITLE_DECOR_ROTATION(SCC(*ret_style)))
+	{
+		flags->do_update_rotated_title = True;
 	}
 
 	/*

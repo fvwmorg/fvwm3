@@ -2845,7 +2845,7 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 
 	PGraphicsRenderPicture(
 		dpy, MR_WINDOW(mr), sidePic, 0, MR_WINDOW(mr),
-		gc, Scr.MonoGC, None,
+		gc, Scr.MonoGC, Scr.AlphaGC,
 		0, ys, sidePic->width, h,
 		MR_SIDEPIC_X_OFFSET(mr), yt, sidePic->width, h, False);
 

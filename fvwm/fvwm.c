@@ -2179,20 +2179,15 @@ int main(int argc, char **argv)
 	/* use default visuals if none found so far */
 	if (visualClass == -1 && visualId == -1)
 	{
-		Colormap *cmap_list = NULL;
-		int num, i;
-
 		Pdepth = 0;
 
 		/* Detection of a card with 2 hardware colormaps (8+24) which use
 		 * depth 8 for the default. We can use our own depth 24 cmap
 		 * without affecting other applications. */
-		if (DefaultDepth(dpy, Scr.screen) <= 8 &&
-		    (cmap_list = XListInstalledColormaps(dpy, Scr.Root, &num))
-		    && num > 1)
+		if (DefaultDepth(dpy, Scr.screen) <= 8)
 		{
-			XVisualInfo template, *vizinfo;
-			int total;
+			XVisualInfo template, *vizinfo = NULL;
+			int total,i;
 
 			template.screen = Scr.screen;
 			template.class = TrueColor;
@@ -2208,17 +2203,16 @@ int main(int argc, char **argv)
 					Pdepth = vizinfo[i].depth;
 				}
 			}
-			XFree(vizinfo);
+			if (vizinfo)
+			{
+				XFree(vizinfo);
+			}
 			if (Pdepth > 0)
 			{
 				Pcmap = XCreateColormap(
 					dpy, Scr.Root, Pvisual, AllocNone);
 				Pdefault = False;
 			}
-		}
-		if (cmap_list)
-		{
-			XFree(cmap_list);
 		}
 		if (Pdepth == 0)
 		{

@@ -38,6 +38,7 @@ typedef struct
 	unsigned do_update_visible_icon_name : 1;
 	unsigned do_update_mini_icon : 1;
 	unsigned do_update_ewmh_mini_icon : 1;
+	unsigned do_update_rotated_title : 1;
 	unsigned do_update_stick : 1;
 	unsigned do_update_stick_icon : 1;
 	unsigned do_update_title_dir : 1;

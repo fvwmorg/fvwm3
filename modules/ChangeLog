@@ -1,3 +1,7 @@
+2002-12-20  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c (CreateOrUpdateGCs):
+
 2002-12-12  Jason Weber  <baboon@imonk.com>
 
 	* FvwmProxy/FvwmProxy.1:

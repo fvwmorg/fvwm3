@@ -273,6 +273,12 @@
 	(fw)->flags.common.s.is_bottom_title_rotated = !!(x)
 #define SETM_IS_BOTTOM_TITLE_ROTATED(fw,x) \
 	(fw)->flag_mask.common.s.is_bottom_title_rotated = !!(x)
+#define USE_TITLE_DECOR_ROTATION(fw) \
+	((fw)->flags.common.s.use_title_decor_rotation)
+#define SET_USE_TITLE_DECOR_ROTATION(fw,x) \
+	(fw)->flags.common.s.use_title_decor_rotation = !!(x)
+#define SETM_USE_TITLE_DECOR_ROTATION(fw,x) \
+	(fw)->flag_mask.common.s.use_title_decor_rotation = !!(x)
 
 /* access to the special flags of a window */
 #define DO_REUSE_DESTROYED(fw) \

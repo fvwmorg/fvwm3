@@ -1,3 +1,27 @@
+2002-12-20  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/window_flags.h:
+	* fvwm/update.h:
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/style.h:
+	* fvwm/style.c (style_parse_one_style_option):
+	* fvwm/fvwm.h:
+	UseTitleDecorRotation style preparation
+
+	* fvwm/fvwm.c (main):
+	Use best TrueColor visual
+
+	* fvwm/borders.c (border_get_border_gcs):
+	Create the transparent_gc with the Scr.NoFocusWin and not the FW_W_FRAME
+	window which may have a depth != Pdepth
+
+	* fvwm/menus.c (paint_side_pic):
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/icons.c (DrawIconPixmapWindow):
+	* fvwm/colorset.c (parse_colorset):
+	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
+	Used Scr.AlphaGC
+
 2002-12-19  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Graphics.c (CreateRotatedPixmap):

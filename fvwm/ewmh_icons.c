@@ -750,13 +750,11 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 		}
 		if (alpha)
 		{
-			GC my_gc = fvwmlib_XCreateGC(dpy, alpha, 0, 0);
 			na = CreateStretchPixmap(dpy, alpha, width, height,
 						 FRenderGetAlphaDepth(),
 						 wanted_w, wanted_h,
-						 my_gc);
+						 Scr.AlphaGC);
 			XFreePixmap(dpy, alpha);
-			XFreeGC(dpy, my_gc);
 			alpha = na;
 		}
 		width = wanted_w;

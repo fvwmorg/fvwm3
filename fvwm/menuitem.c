@@ -796,7 +796,7 @@ void menuitem_paint(
 			}
 			PGraphicsRenderPicture(
 				dpy, mpip->w, MI_PICTURE(mi), &fra,
-				mpip->w, tmp_gc, Scr.MonoGC, None,
+				mpip->w, tmp_gc, Scr.MonoGC, Scr.AlphaGC,
 				b.x - x, b.y - y, b.width, b.height,
 				b.x, b.y, b.width, b.height, False);
 		}
@@ -883,7 +883,7 @@ void menuitem_paint(
 				}
 				PGraphicsRenderPicture(
 					dpy, mpip->w, MI_MINI_ICON(mi)[i], &fra,
-					mpip->w, tmp_gc, Scr.MonoGC, None,
+					mpip->w, tmp_gc, Scr.MonoGC, Scr.AlphaGC,
 					b.x - MDIM_ICON_X_OFFSET(*dim)[k],
 					b.y - y, b.width, b.height,
 					b.x, b.y, b.width, b.height, False);

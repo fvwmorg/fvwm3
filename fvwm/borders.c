@@ -783,7 +783,7 @@ static void border_get_border_gcs(
 		xgcv.function = GXnoop;
 		xgcv.plane_mask = 0;
 		transparent_gc = fvwmlib_XCreateGC(
-			dpy, FW_W_FRAME(fw), GCFunction | GCPlaneMask, &xgcv);
+			dpy, Scr.NoFocusWin, GCFunction | GCPlaneMask, &xgcv);
 	}
 	ret_gcs->transparent = transparent_gc;
 	/* get the border style bits */

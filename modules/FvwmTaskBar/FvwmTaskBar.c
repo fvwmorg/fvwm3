@@ -1910,13 +1910,13 @@ static void CreateOrUpdateGCs(void)
    if (iconbackgraph)
      XChangeGC(dpy,icongraph,gcmask,&gcval);
    else
-     icongraph = fvwmlib_XCreateGC(dpy,Root,gcmask,&gcval);
+     icongraph = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = piconback;
    if (iconbackgraph)
      XChangeGC(dpy,iconbackgraph,gcmask,&gcval);
    else
-     iconbackgraph = fvwmlib_XCreateGC(dpy,Root,gcmask,&gcval);
+     iconbackgraph = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = piconshadow;
    if (iconshadow)
@@ -1935,13 +1935,13 @@ static void CreateOrUpdateGCs(void)
    if (focusbackgraph)
      XChangeGC(dpy,focusgraph,gcmask,&gcval);
    else
-     focusgraph = fvwmlib_XCreateGC(dpy,Root,gcmask,&gcval);
+     focusgraph = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = pfocusback;
       if (focusbackgraph)
      XChangeGC(dpy,focusbackgraph,gcmask,&gcval);
    else
-     focusbackgraph = fvwmlib_XCreateGC(dpy,Root,gcmask,&gcval);
+     focusbackgraph = fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = pfocusshadow;
    if (focusshadow)

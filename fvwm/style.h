@@ -298,6 +298,10 @@
 	((c).s.windowshade_laziness)
 #define S_SET_WINDOWSHADE_LAZINESS(c,x) \
 	((c).s.windowshade_laziness = (x))
+#define S_USE_TITLE_DECOR_ROTATION(c) \
+	((c).s.use_title_decor_rotation)
+#define S_SET_USE_TITLE_DECOR_ROTATION(c,x) \
+	((c).s.use_title_decor_rotation = !!(x))
 #define S_DO_EWMH_MINI_ICON_OVERRIDE(c) \
 	((c).s.do_ewmh_mini_icon_override)
 #define S_SET_DO_EWMH_MINI_ICON_OVERRIDE(c,x) \
