@@ -577,7 +577,7 @@ void HandlePropertyNotify()
 
     case XA_WM_NORMAL_HINTS:
 DB(("HandlePropertyNotify: XA_WM_NORMAL_HINTS calling GetWindowSizeHints"));
-	GetWindowSizeHints (Tmp_win);
+      GetWindowSizeHints (Tmp_win);
 #if 0
       /*
       ** ckh - not sure why this next stuff was here, but fvwm 1.xx

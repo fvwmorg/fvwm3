@@ -1,4 +1,4 @@
-/* FvwmTaskBar Module for Fvwm. 
+/* FvwmTaskBar Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
@@ -46,9 +46,12 @@ char *newptr;
 
 void UpdateString(char **string,char *value)
 {
-  if (value==NULL) return;
-  if (*string==NULL) *string=(char *)safemalloc(strlen(value)+1);
-  else *string=(char *)realloc(*string,strlen(value)+1);
+  if (value==NULL)
+    return;
+  if (*string==NULL)
+    *string=(char *)safemalloc(strlen(value)+1);
+  else
+    *string=(char *)realloc(*string,strlen(value)+1);
   strcpy(*string,value);
 }
 

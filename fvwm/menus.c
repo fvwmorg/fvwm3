@@ -713,7 +713,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	      retval == MENU_SELECTED)
 	    goto DO_RETURN;
 	  /* now warp to the new menu-item, if any */
-	  if (mi) {
+	  if (mi && mi != FindEntry(NULL)) {
 	    MiWarpPointerToItem(mi,FALSE);
 	    /* DBUG("MenuInteraction","Warping on keystroke to %s",mi->item);*/
 	  }
@@ -1364,7 +1364,6 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
     /* also warp */
     DBUG("FPopupMenu","Warping to item");
     menu->selected = MiWarpPointerToItem(menu->first, TRUE /* skip Title */);
-    menu->selected->state = True;
     SetMenuItemSelected(
       MiWarpPointerToItem(menu->first, TRUE /* skip Title */),TRUE);
   } else if(fWarpTitle) {
@@ -1417,28 +1416,38 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
       if (iy + ih > mh)
 	ih = mh - iy;
       /* grab image */
-      mi->mr->stored_item.image = XGetImage(dpy, mi->mr->w, 0, iy, mw, ih,
-					    AllPlanes, ZPixmap);
+      mi->mr->stored_item.stored = XCreatePixmap(dpy, Scr.Root, mw, ih,
+						 Scr.d_depth);
+      XCopyArea(dpy, mi->mr->w, mi->mr->stored_item.stored,
+		mi->mr->ms->look.MenuGC, 0, iy, mw, ih, 0, 0);
+      DBUG("SetMenuItemSelected", itoa(mw));
+      DBUG("SetMenuItemSelected", itoa(ih));
       mi->mr->stored_item.y = iy;
+      mi->mr->stored_item.width = mw;
+      mi->mr->stored_item.height = ih;
     }
-    else if (f == False && mi->mr->stored_item.image != None)
+    else if (f == False && mi->mr->stored_item.width != 0)
     {
       /* ungrab image */
-      XPutImage(dpy, mi->mr->w, mi->mr->ms->look.MenuGC,
-		mi->mr->stored_item.image,
-		0, 0,
-		0, mi->mr->stored_item.y,
-		mi->mr->stored_item.image->width,
-		mi->mr->stored_item.image->height);
-      XDestroyImage(mi->mr->stored_item.image);
-      mi->mr->stored_item.image = None;
+
+	XCopyArea(dpy, mi->mr->stored_item.stored, mi->mr->w,
+		  mi->mr->ms->look.MenuGC, 0,0, mi->mr->stored_item.width,
+		  mi->mr->stored_item.height, 0, mi->mr->stored_item.y);
+
+        XFreePixmap(dpy, mi->mr->stored_item.stored);
+        mi->mr->stored_item.width = 0;
+        mi->mr->stored_item.height = 0;
+        mi->mr->stored_item.y = 0;
+
     }
     break;
   default:
-    if (mi->mr->stored_item.image != None)
+    if (mi->mr->stored_item.width != 0)
     {
-      XDestroyImage(mi->mr->stored_item.image);
-      mi->mr->stored_item.image = None;
+      XFreePixmap(dpy, mi->mr->stored_item.stored);
+      mi->mr->stored_item.width = 0;
+      mi->mr->stored_item.height = 0;
+      mi->mr->stored_item.y = 0;
     }
     break;
   }
@@ -1951,7 +1960,15 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
   int border = 0;
   int width, height, x, y;
 #endif
+
 #ifdef GRADIENT_BUTTONS
+  Pixmap pmap;
+  GC	 pmapgc;
+  XGCValues gcv;
+  unsigned long gcm = 0;
+  gcv.line_width=3;
+  gcm = GCLineWidth;
+
   mr->flags.f.painted = 1;
 #endif
   if( ms )
@@ -1974,32 +1991,57 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
         bounds.height = mr->height;
 
         if ( type == HGradMenu ) {
+	  if (mr->backgroundset == False)
+	  {
 	  register int i = 0;
 	  register int dw;
+
+             pmap = XCreatePixmap(dpy, Scr.Root, mr->width, 5, Scr.d_depth);
+	     pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
+
+	     bounds.width = mr->width;
 	  dw= (float) bounds.width / ms->look.face.u.grad.npixels + 1;
 	  while (i < ms->look.face.u.grad.npixels)
           {
 	    unsigned short x = i * bounds.width / ms->look.face.u.grad.npixels;
-	    XSetForeground(dpy, Scr.TransMaskGC,
+	       XSetForeground(dpy, pmapgc,
 			   ms->look.face.u.grad.pixels[i++ ]);
-	    XFillRectangle(dpy, mr->w, Scr.TransMaskGC,
-			   bounds.x + x, bounds.y,
-			   dw, bounds.height);
+	       XFillRectangle(dpy, pmap, pmapgc,
+			      x, 0,
+			      dw, 5);
+	     }
+	     XSetWindowBackgroundPixmap(dpy, mr->w, pmap);
+	     XFreeGC(dpy,pmapgc);
+	     XFreePixmap(dpy,pmap);
+	     mr->backgroundset = True;
 	  }
+	  XClearWindow(dpy, mr->w);
         }
         else if ( type == VGradMenu )
         {
+	  if (mr->backgroundset == False)
+	  {
 	  register int i = 0;
 	  register int dh = bounds.height / ms->look.face.u.grad.npixels + 1;
+
+             pmap = XCreatePixmap(dpy, Scr.Root, 5, mr->height, Scr.d_depth);
+	     pmapgc = XCreateGC(dpy, pmap, gcm, &gcv);
+
 	  while (i < ms->look.face.u.grad.npixels)
           {
 	    unsigned short y = i*bounds.height / ms->look.face.u.grad.npixels;
-	    XSetForeground(dpy, Scr.TransMaskGC,
+	       XSetForeground(dpy, pmapgc,
 			   ms->look.face.u.grad.pixels[i++]);
-	    XFillRectangle(dpy, mr->w, Scr.TransMaskGC,
-			   bounds.x, bounds.y + y,
-			   bounds.width, dh);
+	       XFillRectangle(dpy, pmap, pmapgc,
+			      0, y,
+			      5, dh);
+	     }
+	     XSetWindowBackgroundPixmap(dpy, mr->w, pmap);
+	     XFreeGC(dpy,pmapgc);
+	     XFreePixmap(dpy,pmap);
+	     mr->backgroundset = True;
 	  }
+	  XClearWindow(dpy, mr->w);
         }
         else if ( type == DGradMenu )
         {
@@ -2474,6 +2516,7 @@ void MakeMenu(MenuRoot *mr)
   }
 
   mr->width = mr->width0 + mr->width + mr->width2 + mr->xoffset;
+  mr->backgroundset = False;
 
   mr->w = XCreateWindow (dpy, Scr.Root, 0, 0, (unsigned int) (mr->width),
 			 (unsigned int) mr->height, (unsigned int) 0,
@@ -2913,7 +2956,7 @@ MenuRoot *NewMenuRoot(char *name, Bool fFunction)
   tmp->last = NULL;
   tmp->selected = NULL;
 #ifdef GRADIENT_BUTTONS
-  tmp->stored_item.image = None;
+  tmp->stored_item.width = 0;
 #endif
   tmp->next  = Scr.menus.all;
   tmp->continuation = NULL;

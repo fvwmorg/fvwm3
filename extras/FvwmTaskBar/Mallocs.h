@@ -1,4 +1,4 @@
-/* FvwmTaskBar Module for Fvwm. 
+/* FvwmTaskBar Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
@@ -18,6 +18,9 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
+#ifndef _H_Mallocs
+#define _H_Mallocs
+
 /* Function Prototypes */
 char *safemalloc(int length);
 char *saferealloc(char *ptr, int length);
@@ -25,3 +28,4 @@ void CopyString(char **dest, char *source);
 char *CatString2(char *a, char *b);
 void UpdateString(char **string,char *value);
 
+#endif

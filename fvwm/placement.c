@@ -293,7 +293,8 @@ int get_next_y(FvwmWindow *t, int y, int pdeltay)
 }
 
 /*  RBW - 11/02/1998  */
-int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax, int pdeltay)
+int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
+	     int pdeltay)
 {
 /**/
   FvwmWindow *testw;

@@ -1,9 +1,9 @@
-/* FvwmIconBox Module --- Copyright 1994, 1995 Nobutaka Suzuki. 
- * 
+/* FvwmIconBox Module --- Copyright 1994, 1995 Nobutaka Suzuki.
+ *
  * No guarantees or warantees or anything are provided or implied in
  * any way whatsoever. Use this program at your own risk. Permission
  * to use this program for any purpose is given, as long as the
- * copyright is kept intact. 
+ * copyright is kept intact.
  *
  * The functions based on part of GoodStuff, FvwmScroll, FvwmWinList
  * and Fvwm are noted by a small copyright atop that function.
@@ -47,7 +47,7 @@
 #endif /* SHAPE */
 
 /* just as same as wild.c */
-#ifndef TRUE                    
+#ifndef TRUE
 #define TRUE    1
 #define FALSE   0
 #endif
@@ -74,12 +74,12 @@ char *ActIconFore = "black";
 char *font_string = "fixed";
 
 /* same strings as in misc.c */
-char NoClass[] = "NoClass"; 
-char NoResource[] = "NoResource"; 
+char NoClass[] = "NoClass";
+char NoResource[] = "NoResource";
 
 Pixel fore_pix, hilite_pix, back_pix, shadow_pix;
 Pixel icon_fore_pix, icon_back_pix, icon_hilite_pix, icon_shadow_pix;
-Pixel act_icon_fore_pix, act_icon_back_pix, act_icon_hilite_pix, act_icon_shadow_pix; 
+Pixel act_icon_fore_pix, act_icon_back_pix, act_icon_hilite_pix, act_icon_shadow_pix;
 
 GC  NormalGC,ShadowGC,ReliefGC,IconShadowGC,IconReliefGC;
 Window main_win;
@@ -101,7 +101,7 @@ int UWidth, UHeight;
 		       ButtonReleaseMask |ButtonPressMask | PointerMotionMask)
 #define BUTTON_EVENTS (ExposureMask | StructureNotifyMask|\
 		       ButtonReleaseMask | ButtonPressMask |\
-		       LeaveWindowMask | PointerMotionMask) 
+		       LeaveWindowMask | PointerMotionMask)
 
 unsigned long m_mask = M_CONFIGURE_WINDOW|M_ADD_WINDOW|M_DESTROY_WINDOW|
 		 M_END_WINDOWLIST| M_ICONIFY|M_DEICONIFY|M_ICON_NAME|
@@ -160,7 +160,7 @@ int sortby = UNSORT;
 int save_color_limit;                   /* color limit from config */
 
 /************************************************************************
-  Main 
+  Main
   Based on main() from GoodStuff:
   	Copyright 1993, Robert Nation.
 ************************************************************************/
@@ -180,8 +180,8 @@ int main(int argc, char **argv)
   MyName = safemalloc(strlen(temp)+1);
   strcpy(MyName, temp);
 
-  signal (SIGPIPE, DeadPipe);  
-  
+  signal (SIGPIPE, DeadPipe);
+
   if((argc != 6)&&(argc != 7))
     {
       fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",MyName,
@@ -191,8 +191,8 @@ int main(int argc, char **argv)
 
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
-  
-  if (!(dpy = XOpenDisplay(display_name))) 
+
+  if (!(dpy = XOpenDisplay(display_name)))
     {
       fprintf(stderr,"%s: can't open display %s", MyName,
 	      XDisplayName(display_name));
@@ -204,7 +204,7 @@ int main(int argc, char **argv)
 
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
-  if(Root == None) 
+  if(Root == None)
     {
       fprintf(stderr,"%s: Screen %d is not valid ", MyName, screen);
       exit(1);
@@ -215,8 +215,8 @@ int main(int argc, char **argv)
   XSetErrorHandler((XErrorHandler)myErrorHandler);
 
   ParseOptions();
-  
-  SetMessageMask(fd, m_mask);   
+
+  SetMessageMask(fd, m_mask);
 
   if ((local_flags & SETWMICONSIZE) && (size = XAllocIconSize()) != NULL){
     size->max_width  = size->min_width  = max_icon_width + icon_relief;
@@ -274,29 +274,29 @@ void Loop(void)
 		}
 	      }
 	      break;
-	      
+
 	    case ConfigureNotify:
 	      XGetGeometry(dpy,main_win,&root,&x,&y,
 			   (unsigned int *)&tw,(unsigned int *)&th,
 			   (unsigned int *)&border_width,
 			   (unsigned int *)&depth);
 	      if (ready && (tw != main_width || th != main_height)){
-		main_width = tw; 
+		main_width = tw;
 		main_height= th;
 		oldw = Width;
 		oldh = Height;
-		num_columns = (tw - h_margin - interval + 1) / UWidth;	 
+		num_columns = (tw - h_margin - interval + 1) / UWidth;
 		num_rows = (th - v_margin - interval + 1) / UHeight;
-		Width = UWidth * num_columns + interval - 1; 
-		Height = UHeight * num_rows + interval -1; 
+		Width = UWidth * num_columns + interval - 1;
+		Height = UHeight * num_rows + interval -1;
 		XMoveResizeWindow(dpy, holder_win, margin1+2,
-				  margin1+2,   
+				  margin1+2,
 				  tw - h_margin, th - v_margin);
 		if (!(local_flags & HIDE_H))
-		  XResizeWindow(dpy, h_scroll_bar, 
+		  XResizeWindow(dpy, h_scroll_bar,
 				Width - bar_width*2, bar_width);
 		if (!(local_flags & HIDE_V))
-		  XResizeWindow(dpy ,v_scroll_bar, 
+		  XResizeWindow(dpy ,v_scroll_bar,
 				bar_width, Height - bar_width*2);
 		GetIconwinSize(&diffx, &diffy);
 		if (primary == BOTTOM || secondary == BOTTOM)
@@ -313,7 +313,7 @@ void Loop(void)
 		  icon_win_y = icon_win_height - Height;
 		XMoveResizeWindow(dpy, icon_win, -icon_win_x,
 				  -icon_win_y, icon_win_width,
-				  icon_win_height);   
+				  icon_win_height);
 		AdjustIconWindows();
 		XClearWindow(dpy,main_win);
 		RedrawWindow();
@@ -357,13 +357,13 @@ void Loop(void)
 		    HORIZONTAL)
 		  HScroll(Event.xbutton.x * icon_win_width / Width);
 		else if (Event.xbutton.window == l_button && Pressed ==
-			 l_button){ 
+			 l_button){
 		  Pressed = None;
 		  RedrawLeftButton(ReliefGC, ShadowGC);
-		  HScroll(icon_win_x - UWidth); 
+		  HScroll(icon_win_x - UWidth);
 		}
 		else if (Event.xbutton.window == r_button && Pressed ==
-			 r_button){ 
+			 r_button){
 		  Pressed = None;
 		  RedrawRightButton(ReliefGC, ShadowGC);
 		  HScroll(icon_win_x + UWidth);
@@ -374,13 +374,13 @@ void Loop(void)
 		    == VERTICAL)
 		  VScroll(Event.xbutton.y * icon_win_height / Height);
 		else if (Event.xbutton.window == t_button && Pressed ==
-			 t_button){ 
+			 t_button){
 		  Pressed = None;
 		  RedrawTopButton(ReliefGC, ShadowGC);
 		  VScroll(icon_win_y - UHeight);
 		}
 		else if (Event.xbutton.window == b_button && Pressed ==
-			 b_button){ 
+			 b_button){
 		  Pressed = None;
 		  RedrawBottomButton(ReliefGC, ShadowGC);
 		  VScroll(icon_win_y + UHeight);
@@ -413,28 +413,28 @@ void Loop(void)
 		RedrawIcon(tmp, redraw_flag);
 	      }
 	      if (!(local_flags & HIDE_H) && Event.xbutton.window ==
-		  l_button && Pressed == l_button){ 
+		  l_button && Pressed == l_button){
 		Pressed = None;
 		RedrawLeftButton(ReliefGC, ShadowGC);
 	      }
 	      else if (!(local_flags & HIDE_H) && Event.xbutton.window ==
-		       r_button && Pressed == r_button){ 
+		       r_button && Pressed == r_button){
 		Pressed = None;
 		RedrawRightButton(ReliefGC, ShadowGC);
 	      }
 	      else if (!(local_flags & HIDE_V) && Event.xbutton.window ==
-		       t_button && Pressed == t_button){ 
+		       t_button && Pressed == t_button){
 		Pressed = None;
 		RedrawTopButton(ReliefGC, ShadowGC);
 	      }
 	      else if (!(local_flags & HIDE_V) && Event.xbutton.window ==
-		       b_button && Pressed == b_button){ 
+		       b_button && Pressed == b_button){
 		Pressed = None;
 		RedrawBottomButton(ReliefGC, ShadowGC);
 	      }
 	      break;
 	    case ClientMessage:
-	      if ((Event.xclient.format==32) && 
+	      if ((Event.xclient.format==32) &&
 		  (Event.xclient.data.l[0]==wm_del_win))
 		DeadPipe(1);
 	      break;
@@ -443,7 +443,7 @@ void Loop(void)
 	      case XA_WM_HINTS:
 		if (Event.xproperty.state == PropertyDelete)
 		  break;
-		tmp = Head; 
+		tmp = Head;
 		i=0;
 		while(tmp != NULL){
 		  if (Event.xproperty.window == tmp->id)
@@ -451,7 +451,7 @@ void Loop(void)
 		  tmp = tmp->next;
 		  ++i;
 		}
-		if (tmp == NULL || tmp->wmhints == NULL || !(tmp->extra_flags & DEFAULTICON)) 
+		if (tmp == NULL || tmp->wmhints == NULL || !(tmp->extra_flags & DEFAULTICON))
 		  break;
 		if (tmp->wmhints)
 		  XFree (tmp->wmhints);
@@ -469,7 +469,7 @@ void Loop(void)
 #ifdef SHAPE
 		  if (tmp->icon_maskPixmap != None)
 		    XShapeCombineMask(dpy, tmp->icon_pixmap_w,
-				      ShapeBounding, hr, hr, 
+				      ShapeBounding, hr, hr,
 				      tmp->icon_maskPixmap, ShapeSet);
 #endif
 		  AdjustIconWindow(tmp, i);
@@ -479,7 +479,7 @@ void Loop(void)
 		break;
 	      }
 	      break;
-	      
+
 	    default:
 	      break;
 	    }
@@ -535,7 +535,7 @@ struct icon_info *Search(Window w)
 
 /************************************************************************
  *
- * Draw the window 
+ * Draw the window
  *
  ***********************************************************************/
 void RedrawWindow(void)
@@ -544,16 +544,16 @@ void RedrawWindow(void)
 
   while (XCheckTypedWindowEvent (dpy, main_win, Expose, &dummy));
 
-  RelieveWindow(main_win, margin1, margin1, Width + 4, 
-		Height + 4, ShadowGC,ReliefGC);   
+  RelieveWindow(main_win, margin1, margin1, Width + 4,
+		Height + 4, ShadowGC,ReliefGC);
   if (!(local_flags & HIDE_H))
-    RelieveWindow(main_win, margin1, margin1 + 4 + Height + margin2, 
-		  Width + 4, bar_width+4, ShadowGC,ReliefGC);   
+    RelieveWindow(main_win, margin1, margin1 + 4 + Height + margin2,
+		  Width + 4, bar_width+4, ShadowGC,ReliefGC);
   if (!(local_flags & HIDE_V))
-    RelieveWindow(main_win, margin1 + 4 + Width + margin2, margin1, 
+    RelieveWindow(main_win, margin1 + 4 + Width + margin2, margin1,
 		  bar_width+4, Height + 4, ShadowGC,ReliefGC);
-  RelieveWindow(main_win, 0, 0, Width + h_margin, Height + v_margin, 
-		ReliefGC, ShadowGC);   
+  RelieveWindow(main_win, 0, 0, Width + h_margin, Height + v_margin,
+		ReliefGC, ShadowGC);
 
   /* scroll bar */
   if (!(local_flags & HIDE_H))
@@ -596,7 +596,7 @@ void RedrawIcon(struct icon_info *item, int f)
 
   hr = icon_relief/2;
 
-  if (Hilite == item){	
+  if (Hilite == item){
     XSetForeground(dpy, NormalGC, act_icon_fore_pix);
     XSetBackground(dpy, NormalGC, act_icon_back_pix);
     XSetForeground(dpy, IconReliefGC, act_icon_hilite_pix);
@@ -612,68 +612,68 @@ void RedrawIcon(struct icon_info *item, int f)
     if (item->iconPixmap != None && item->icon_pixmap_w != None){
       if (item->icon_depth != d_depth)
 	XCopyPlane(dpy, item->iconPixmap, item->icon_pixmap_w, NormalGC,
-		   0, 0, item->icon_w, item->icon_h, 
+		   0, 0, item->icon_w, item->icon_h,
 		   hr, hr, plane);
-      else 
+      else
 	XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w, NormalGC,
 		  0, 0, item->icon_w, item->icon_h, hr, hr);
       }
     if (!(item->flags & SHAPED_ICON)){
       if (item->icon_w > 0 && item->icon_h > 0)
 	RelieveWindow(item->icon_pixmap_w, 0, 0, item->icon_w
-		      +icon_relief,  
+		      +icon_relief,
 		      item->icon_h + icon_relief, IconReliefGC,
-		      IconShadowGC);   
-      else 
+		      IconShadowGC);
+      else
 	RelieveWindow(item->icon_pixmap_w, 0, 0, max_icon_width
-		    +icon_relief,  
+		    +icon_relief,
 		    max_icon_height + icon_relief, IconReliefGC,
-		    IconShadowGC);   
+		    IconShadowGC);
     }
   }
-  
+
   /* label */
   if (f & 2){
     w = max_icon_width + icon_relief;
     h = max_icon_height + icon_relief;
-    
+
     if (item->flags & ICONIFIED){
       sprintf(label, "(%s)", item->name);
     }else
       strcpy(label, item->name);
-    
+
     len = strlen(label);
     tw = XTextWidth(font, label, len);
     diff = max_icon_width + icon_relief - tw;
     lm = diff/2;
     lm = lm > 4 ? lm : 4;
 
-    if (Hilite == item){	
+    if (Hilite == item){
       XRaiseWindow(dpy, item->IconWin);
-      XMoveResizeWindow(dpy, item->IconWin, 
-			item->x + min(0, (diff - 8))/2, 
+      XMoveResizeWindow(dpy, item->IconWin,
+			item->x + min(0, (diff - 8))/2,
 			item->y + h,
 			max(tw + 8, w), 6 + font->ascent +
-			font->descent); 
+			font->descent);
       XClearWindow(dpy, item->IconWin);
       XDrawString(dpy, item->IconWin, NormalGC, lm, 3 + font->ascent,
-		  label, len); 
+		  label, len);
       RelieveWindow(item->IconWin, 0, 0,
 		    max(tw + 8, w), 6 + font->ascent +
-		    font->descent, IconReliefGC, IconShadowGC);  
+		    font->descent, IconReliefGC, IconShadowGC);
     }else{
       XMoveResizeWindow(dpy, item->IconWin, item->x, item->y + h,
 			w, 6 + font->ascent + font->descent);
       XClearWindow(dpy, item->IconWin);
       XDrawString(dpy, item->IconWin, NormalGC, lm, 3 + font->ascent,
-		  label, len); 
+		  label, len);
       RelieveWindow(item->IconWin, 0, 0,
-		    w, 6 + font->ascent + font->descent, 
-		    IconReliefGC, IconShadowGC);  
+		    w, 6 + font->ascent + font->descent,
+		    IconReliefGC, IconShadowGC);
     }
   }
-  
-  if (Hilite == item){	
+
+  if (Hilite == item){
     XSetForeground(dpy, NormalGC, icon_fore_pix);
     XSetBackground(dpy, NormalGC, icon_back_pix);
     XSetForeground(dpy, IconReliefGC, icon_hilite_pix);
@@ -687,17 +687,17 @@ void RedrawIcon(struct icon_info *item, int f)
 
 /***********************************************************************
  * RedrawHScrollbar
- * 	Based on part of Loop() of GrabWindow.c in FvwmScroll: 
+ * 	Based on part of Loop() of GrabWindow.c in FvwmScroll:
  *  		Copyright 1994, Robert Nation.
  ***********************************************************************/
 void RedrawHScrollbar(void)
 {
   int x,width;
-  
+
   x = (Width - bar_width*2) * icon_win_x / icon_win_width;
   width = (Width - bar_width*2) * Width / icon_win_width;
   XClearArea(dpy, h_scroll_bar, 0, 0, Width, bar_width,False);
-  RelieveWindow(h_scroll_bar, x, 0, width, bar_width, ReliefGC, ShadowGC);   
+  RelieveWindow(h_scroll_bar, x, 0, width, bar_width, ReliefGC, ShadowGC);
 }
 
 /***********************************************************************
@@ -712,14 +712,14 @@ void RedrawVScrollbar(void)
   y = (Height - bar_width*2) * icon_win_y / icon_win_height;
   height = (Height - bar_width*2)*  Height / icon_win_height;
   XClearArea(dpy, v_scroll_bar, 0, 0, bar_width, Height,False);
-  RelieveWindow(v_scroll_bar, 0, y, bar_width, height, ReliefGC, ShadowGC);   
+  RelieveWindow(v_scroll_bar, 0, y, bar_width, height, ReliefGC, ShadowGC);
 }
-  
+
 void RedrawLeftButton(GC rgc, GC sgc)
 {
-  XSegment seg[4];  
+  XSegment seg[4];
   int i=0;
-  
+
   seg[i].x1 = 1;		seg[i].y1 = bar_width/2;
   seg[i].x2 = bar_width - 2;	seg[i++].y2 = 1;
 
@@ -744,7 +744,7 @@ void RedrawLeftButton(GC rgc, GC sgc)
 
 void RedrawRightButton(GC rgc, GC sgc)
 {
-  XSegment seg[4];  
+  XSegment seg[4];
   int i=0;
 
   seg[i].x1 = 1;		seg[i].y1 = 1;
@@ -772,7 +772,7 @@ void RedrawRightButton(GC rgc, GC sgc)
 
 void RedrawTopButton(GC rgc, GC sgc)
 {
-  XSegment seg[4];  
+  XSegment seg[4];
   int i=0;
 
   seg[i].x1 = bar_width/2;	seg[i].y1 = 1;
@@ -799,7 +799,7 @@ void RedrawTopButton(GC rgc, GC sgc)
 
 void RedrawBottomButton(GC rgc, GC sgc)
 {
-  XSegment seg[4];  
+  XSegment seg[4];
   int i=0;
 
   seg[i].x1 = 1;		seg[i].y1 = 1;
@@ -823,7 +823,7 @@ void RedrawBottomButton(GC rgc, GC sgc)
   seg[i].x2 = bar_width/2;	seg[i++].y2 = bar_width - 1;
   XDrawSegments(dpy, b_button, sgc, seg, i);
 }
-  
+
 /************************************************************************
   RelieveWindow
     Original work from GoodStuff:
@@ -871,7 +871,7 @@ inline void RelieveWindow(Window win,int x,int y,int w,int h,
 }
 
 /************************************************************************
- * CreateWindow --Sizes and creates the window 
+ * CreateWindow --Sizes and creates the window
  * 	Based on CreateWindow() from GoodStuff:
  *		Copyright 1993, Robert Nation.
  ***********************************************************************/
@@ -916,10 +916,10 @@ void CreateWindow(void)
   mysizehints.flags = PWinGravity| PResizeInc | PMinSize;
 
   /* subtract one for the right/bottom border */
-  mysizehints.min_width = UWidth + interval - 1 + h_margin; 
-  main_width = mysizehints.width = Width + h_margin;  
+  mysizehints.min_width = UWidth + interval - 1 + h_margin;
+  main_width = mysizehints.width = Width + h_margin;
   mysizehints.min_height = UHeight + interval - 1 + v_margin;
-  main_height = mysizehints.height = Height + v_margin;  
+  main_height = mysizehints.height = Height + v_margin;
   mysizehints.width_inc = UWidth;
   mysizehints.height_inc = UHeight;
 
@@ -930,18 +930,18 @@ void CreateWindow(void)
 	  mysizehints.x = DisplayWidth(dpy,screen) + x - mysizehints.width;
 	  gravity = NorthEastGravity;
 	}
-      else 
+      else
 	mysizehints.x = x;
       if (yneg)
 	{
 	  mysizehints.y = DisplayHeight(dpy,screen) + y - mysizehints.height;
 	  gravity = SouthWestGravity;
 	}
-      else 
+      else
 	mysizehints.y = y;
 
       if((xneg) && (yneg))
-	gravity = SouthEastGravity;	
+	gravity = SouthEastGravity;
 
       mysizehints.flags |= USPosition;
     }
@@ -972,7 +972,7 @@ void CreateWindow(void)
     }
 
   main_win = XCreateSimpleWindow(dpy,Root,mysizehints.x,mysizehints.y,
-				 mysizehints.width,mysizehints.height,  
+				 mysizehints.width,mysizehints.height,
 				 0,fore_pix,back_pix);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
   XSelectInput(dpy,main_win,MW_EVENTS);
@@ -980,7 +980,7 @@ void CreateWindow(void)
   /* set normal_hits, wm_hints, and, class_hints */
   list[0]=MyName;
   list[1]=NULL;
-  if (XStringListToTextProperty(list,1,&name) == 0) 
+  if (XStringListToTextProperty(list,1,&name) == 0)
     {
       fprintf(stderr,"%s: cannot allocate window name",MyName);
       return;
@@ -994,47 +994,47 @@ void CreateWindow(void)
   mysizehints.width -= h_margin;
   mysizehints.height -= v_margin;
   holder_win = XCreateSimpleWindow(dpy,main_win,margin1+2,
-				   margin1+2,   
+				   margin1+2,
 				   mysizehints.width,
-				   mysizehints.height, 
+				   mysizehints.height,
                                    0,fore_pix,back_pix);
 
   icon_win = XCreateSimpleWindow(dpy,holder_win,-icon_win_x,-icon_win_y,
                                    icon_win_width,
                                    icon_win_height,
                                    0,fore_pix,back_pix);
-  
+
   gcm = GCForeground|GCBackground;
   gcv.foreground = hilite_pix;
   gcv.background = back_pix;
-  ReliefGC = XCreateGC(dpy, Root, gcm, &gcv);  
+  ReliefGC = XCreateGC(dpy, Root, gcm, &gcv);
 
   gcm = GCForeground|GCBackground;
   gcv.foreground = shadow_pix;
   gcv.background = back_pix;
-  ShadowGC = XCreateGC(dpy, Root, gcm, &gcv);  
+  ShadowGC = XCreateGC(dpy, Root, gcm, &gcv);
 
   gcm = GCForeground|GCBackground;
   gcv.foreground = icon_hilite_pix;
   gcv.background = icon_back_pix;
-  IconReliefGC = XCreateGC(dpy, Root, gcm, &gcv);  
+  IconReliefGC = XCreateGC(dpy, Root, gcm, &gcv);
 
   gcm = GCForeground|GCBackground;
   gcv.foreground = icon_shadow_pix;
   gcv.background = icon_back_pix;
-  IconShadowGC = XCreateGC(dpy, Root, gcm, &gcv);  
+  IconShadowGC = XCreateGC(dpy, Root, gcm, &gcv);
 
   gcm = GCForeground|GCBackground|GCFont;
   gcv.foreground = fore_pix;
   gcv.background = back_pix;
   gcv.font =  font->fid;
-  NormalGC = XCreateGC(dpy, Root, gcm, &gcv);  
+  NormalGC = XCreateGC(dpy, Root, gcm, &gcv);
 
 
   /* icon_win's background */
   if (GetBackPixmap() == True){
     XSetWindowBackgroundPixmap(dpy, icon_win, IconwinPixmap);
-    /*  special thanks to Dave Goldberg <dsg@mitre.org> 
+    /*  special thanks to Dave Goldberg <dsg@mitre.org>
 	for his helpful information */
     XFreePixmap(dpy, IconwinPixmap);
   }
@@ -1048,21 +1048,21 @@ void CreateWindow(void)
   if (!(local_flags & HIDE_H)){
     attributes.win_gravity = SouthWestGravity;
     h_scroll_bar = XCreateWindow(dpy ,main_win, margin1 + 2 +
-				 bar_width, 
+				 bar_width,
 				 margin1 + 6 + Height + margin2,
 				 Width - bar_width*2, bar_width,
 				 0, CopyFromParent,
-				 InputOutput, CopyFromParent, 
+				 InputOutput, CopyFromParent,
 				 mask, &attributes);
   XSelectInput(dpy,h_scroll_bar,SCROLL_EVENTS);
   }
   if (!(local_flags & HIDE_V)){
     attributes.win_gravity = NorthEastGravity;
     v_scroll_bar = XCreateWindow(dpy ,main_win, margin1 + 6 +
-				 Width + margin2, 
+				 Width + margin2,
 				 margin1 + 2 + bar_width,
-				 bar_width, Height - bar_width*2, 
-				 0, CopyFromParent, 
+				 bar_width, Height - bar_width*2,
+				 0, CopyFromParent,
 				 InputOutput, CopyFromParent,
 				 mask, &attributes);
   XSelectInput(dpy,v_scroll_bar,SCROLL_EVENTS);
@@ -1074,15 +1074,15 @@ void CreateWindow(void)
     l_button = XCreateWindow(dpy, main_win, margin1 + 2,
 			     margin1 + 6 + Height + margin2,
 			     bar_width, bar_width,
-			     0, CopyFromParent, 
+			     0, CopyFromParent,
 			     InputOutput, CopyFromParent,
 			     mask, &attributes);
     attributes.win_gravity = SouthEastGravity;
     r_button = XCreateWindow(dpy, main_win, margin1 + 2 + Width -
-			     bar_width, 
+			     bar_width,
 			     margin1 + 6 + Height + margin2,
 			     bar_width, bar_width,
-			     0, CopyFromParent, 
+			     0, CopyFromParent,
 			     InputOutput, CopyFromParent,
 			     mask, &attributes);
   XSelectInput(dpy,l_button,BUTTON_EVENTS);
@@ -1093,7 +1093,7 @@ void CreateWindow(void)
     t_button = XCreateWindow(dpy, main_win, margin1 + 6 +
 			     Width + margin2, margin1 + 2,
 			     bar_width, bar_width,
-			     0, CopyFromParent, 
+			     0, CopyFromParent,
 			     InputOutput, CopyFromParent,
 			     mask, &attributes);
     attributes.win_gravity = SouthEastGravity;
@@ -1101,7 +1101,7 @@ void CreateWindow(void)
 			     Width + margin2,
 			     margin1 + 2 + Height - bar_width,
 			     bar_width, bar_width,
-			     0, CopyFromParent, 
+			     0, CopyFromParent,
 			     InputOutput, CopyFromParent,
 			     mask, &attributes);
   XSelectInput(dpy,t_button,BUTTON_EVENTS);
@@ -1115,14 +1115,14 @@ void GetIconwinSize(int *dx, int *dy)
   *dy = icon_win_height;
 
   if (primary == LEFT || primary == RIGHT){
-    icon_win_width = max(Width, UWidth * Lines + interval - 1); 
+    icon_win_width = max(Width, UWidth * Lines + interval - 1);
     icon_win_height = max(Height, UHeight * (max(0,
 						 (num_icons-1))/Lines
-					     + 1) - 1 + interval); 
+					     + 1) - 1 + interval);
   }else{
     icon_win_width = max(Width, UWidth * (max(0,num_icons-1) / Lines +
-					  1) + interval - 1);  
-    icon_win_height = max(Height, UHeight * Lines - 1 + interval);  
+					  1) + interval - 1);
+    icon_win_height = max(Height, UHeight * Lines - 1 + interval);
   }
   *dx = icon_win_width - *dx;
   *dy = icon_win_height - *dy;
@@ -1151,11 +1151,11 @@ Pixel GetColor(char *name)
 
   XGetWindowAttributes(dpy,Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color)) 
+   if (!XParseColor (dpy, attributes.colormap, name, &color))
      {
        nocolor("parse",name);
      }
-   else if(!XAllocColor (dpy, attributes.colormap, &color)) 
+   else if(!XAllocColor (dpy, attributes.colormap, &color))
      {
        nocolor("alloc",name);
      }
@@ -1163,7 +1163,7 @@ Pixel GetColor(char *name)
 }
 
 /************************************************************************
-  SendFvwmPipe - Send a message back to fvwm 
+  SendFvwmPipe - Send a message back to fvwm
     Original work from FvwmWinList:
       Copyright 1994, Mike Finger.
 ************************************************************************/
@@ -1208,7 +1208,7 @@ Bool ExecIconBoxFunction(char *msg)
     Prev();
     return True;
   }else if (strncasecmp(msg, "Left", 4) == 0){
-    HScroll(icon_win_x - UWidth); 
+    HScroll(icon_win_x - UWidth);
     return True;
   }else if (strncasecmp(msg, "Right", 5) == 0){
     HScroll(icon_win_x + UWidth);
@@ -1250,11 +1250,11 @@ void Next(void)
   if (new->x < icon_win_x){
     while (new->x + UWidth * ++i < icon_win_x)
       ;
-    HScroll(icon_win_x - UWidth*i); 
+    HScroll(icon_win_x - UWidth*i);
   }else if (new->x > icon_win_x + Width){
     while (new->x - UWidth * ++i > icon_win_x + Width)
       ;
-    HScroll(icon_win_x + UWidth*i); 
+    HScroll(icon_win_x + UWidth*i);
   }
 
   i=0;
@@ -1273,7 +1273,7 @@ void Prev(void)
 {
   struct icon_info *new, *old;
   int i;
-  
+
   old = new = Hilite;
 
   if (new != NULL)
@@ -1296,11 +1296,11 @@ void Prev(void)
   if (new->x < icon_win_x){
     while (new->x + UWidth * ++i < icon_win_x)
       ;
-    HScroll(icon_win_x - UWidth*i); 
+    HScroll(icon_win_x - UWidth*i);
   }else if (new->x > icon_win_x + Width){
     while (new->x - UWidth * ++i > icon_win_x + Width)
       ;
-    HScroll(icon_win_x + UWidth*i); 
+    HScroll(icon_win_x + UWidth*i);
   }
 
   i=0;
@@ -1364,7 +1364,7 @@ void DeadPipe(int nonsense)
     freeitem(tmpi2, 0);
   }
   if ((local_flags & SETWMICONSIZE))
-    XDeleteProperty(dpy, Root, XA_WM_ICON_SIZE); 
+    XDeleteProperty(dpy, Root, XA_WM_ICON_SIZE);
   XSync(dpy,0);
 #endif /* 0 */
   exit(0);
@@ -1384,7 +1384,7 @@ void ParseOptions(void)
   Clength = strlen(MyName);
 
   GetConfigLine(fd,&tline);
-  
+
   while(tline != NULL)
     {
       int g_x, g_y, flags;
@@ -1398,13 +1398,13 @@ void ParseOptions(void)
 	    tmp++;
 	  tmp[strlen(tmp)-1] = 0;
 	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
-	  if (flags & WidthValue) 
+	  if (flags & WidthValue)
 	    num_columns = width;
-	  if (flags & HeightValue) 
+	  if (flags & HeightValue)
 	    num_rows = height;
 	  if (flags & XValue)
 	    x = g_x;
-	  if (flags & YValue) 
+	  if (flags & YValue)
 	    y = g_y;
 	  if (flags & XNegative)
 	    xneg = 1;
@@ -1418,9 +1418,9 @@ void ParseOptions(void)
 	  tmp[strlen(tmp)-1] = 0;
 
 	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
-	  if (flags & WidthValue) 
+	  if (flags & WidthValue)
 	    max_icon_width = width;
-	  if (flags & HeightValue) 
+	  if (flags & HeightValue)
 	    max_icon_height = height;
 	  if (height == 0){
 	    icon_relief = 0;
@@ -1443,19 +1443,19 @@ void ParseOptions(void)
 	  (strncasecmp(tline,CatString3("*",MyName,"IconHiBack"),Clength+11)==0)
 	  CopyString(&ActIconBack,&tline[Clength+11]);
 	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Fore"),Clength+5)==0) 
+					      "Fore"),Clength+5)==0)
 	  CopyString(&Fore,&tline[Clength+5]);
 	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Back"),Clength+5)==0) 
+					      "Back"),Clength+5)==0)
 	  CopyString(&Back,&tline[Clength+5]);
 	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Pixmap"),Clength+7)==0) 
+					      "Pixmap"),Clength+7)==0)
 	  CopyString(&IconwinPixmapFile,&tline[Clength+7]);
 	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Padding"),Clength+8)==0) 
+					      "Padding"),Clength+8)==0)
 	  interval = max(0,atoi(&tline[Clength+8]));
 	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "FrameWidth"),Clength+11)==0){ 
+					      "FrameWidth"),Clength+11)==0){
 	  sscanf(&tline[Clength+11], "%d %d", &margin1, &margin2);
 	  margin1 = max(0, margin1);
 	  margin2 = max(0, margin2);
@@ -1463,7 +1463,7 @@ void ParseOptions(void)
 					      "Lines"),Clength+6)==0)
 	  Lines = max(1,atoi(&tline[Clength+6]));
 	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "SBWidth"),Clength+8)==0) 
+					      "SBWidth"),Clength+8)==0)
 	  bar_width = max(5,atoi(&tline[Clength+8]));
 	else if (strncasecmp(tline,CatString3("*",MyName,
 						"Placement"),Clength+10)==0)
@@ -1530,7 +1530,7 @@ void ParseOptions(void)
       }
       GetConfigLine(fd,&tline);
     }
-  
+
   return;
 }
 
@@ -1542,14 +1542,14 @@ void parseicon(char *tline)
 
   tmp = (struct iconfile *)safemalloc(sizeof(struct iconfile));
 
- 
+
    /* windowname */
    tmp->name = stripcpy2(tline);
    if(tmp->name == NULL){
      free(tmp);
      return;
    }
- 
+
    /* skip windowname, based on strpcpy3 of configure.c */
    while((*tline != '"')&&(tline != NULL))
      tline++;
@@ -1562,7 +1562,7 @@ void parseicon(char *tline)
      return;
    }
    tline++;
- 
+
    /* file */
    /* skip spaces */
    while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
@@ -1579,7 +1579,7 @@ void parseicon(char *tline)
 
   if (strcmp(tmp->name, "*") == 0)
     DefaultIcon = tmp;
-  
+
   tmp->next = NULL;
 
   if (IconListHead == NULL)
@@ -1595,11 +1595,11 @@ void parseplacement(char *tline)
   char p[240], s[240];
 
   sscanf(tline, "%s %s", p, s);
-  
+
   if (strncasecmp(p, "Left", 4) == 0)
     primary = LEFT;
   else if (strncasecmp(p, "Right", 5) == 0)
-    primary = RIGHT;	
+    primary = RIGHT;
   else if (strncasecmp(p, "Top", 3) == 0)
     primary = TOP;
   else if (strncasecmp(p, "Bottom", 6) == 0)
@@ -1608,7 +1608,7 @@ void parseplacement(char *tline)
   if (strncasecmp(s, "Left", 4) == 0)
     secondary = LEFT;
   else if (strncasecmp(s, "Right", 5) == 0)
-    secondary = RIGHT;	
+    secondary = RIGHT;
   else if (strncasecmp(s, "Top", 3) == 0)
     secondary = TOP;
   else if (strncasecmp(s, "Bottom", 6) == 0)
@@ -1673,7 +1673,7 @@ void parsemouse(char *tline)
   f->action = ptr;
   f->next = MouseActions;
   MouseActions = f;
-}  
+}
 
 /***********************************************************************
   parsekey
@@ -1701,7 +1701,7 @@ void parsekey(char *tline)
   nptr = safemalloc(nlen+1);
   strncpy(nptr, start, nlen);
   nptr[nlen] = 0;
-  
+
   /* actions */
   tline = end;
   /* skip spaces */
@@ -1739,7 +1739,7 @@ void parsekey(char *tline)
 	k->next = KeyActions;
 	KeyActions = k;
       }
-}  
+}
 
 /***********************************************************************
  * change_window_name
@@ -1749,8 +1749,8 @@ void parsekey(char *tline)
 void change_window_name(char *str)
 {
   XTextProperty name;
-  
-  if (XStringListToTextProperty(&str,1,&name) == 0) 
+
+  if (XStringListToTextProperty(&str,1,&name) == 0)
     {
       fprintf(stderr,"%s: cannot allocate window name",MyName);
       return;
@@ -1769,12 +1769,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
   unsigned long header[HEADER_SIZE];
-  int body_length;
-  int count,count2 = 0;
+  int count;
   static int miss_counter = 0;
   unsigned long *body;
-  int total;
-  char *cbody;
 
   if(XPending(dpy))
     {
@@ -1806,7 +1803,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       if(miss_counter > 100)
 	DeadPipe(0);
     }
-  
+
   if(FD_ISSET(fd[1], &in_fdset))
     {
       if(count = ReadFvwmPacket(fd[1],header,&body) > 0)
@@ -1858,7 +1855,7 @@ void process_message(unsigned long type, unsigned long *body)
 	      if (icon_win_y + Height > icon_win_height)
 		icon_win_y = icon_win_height - Height;
 	      XMoveResizeWindow(dpy, icon_win, -icon_win_x, -icon_win_y,
-				icon_win_width, icon_win_height); 
+				icon_win_width, icon_win_height);
 	      if (tmp->desk == CurrentDesk){
 		XMapWindow(dpy, tmp->IconWin);
 		if (max_icon_height != 0)
@@ -1867,7 +1864,7 @@ void process_message(unsigned long type, unsigned long *body)
 		XUnmapWindow(dpy, tmp->IconWin);
 		if (max_icon_height != 0)
 		  XUnmapWindow(dpy, tmp->icon_pixmap_w);
-	      }		  
+	      }
 	      if (!(local_flags & HIDE_H) && diffx)
 		RedrawHScrollbar();
 	      if (!(local_flags & HIDE_V) && diffy)
@@ -1893,7 +1890,7 @@ void process_message(unsigned long type, unsigned long *body)
       if (diffx && (primary == RIGHT || secondary == RIGHT))
 	icon_win_x += diffx;
       XMoveResizeWindow(dpy, icon_win, -icon_win_x, -icon_win_y,
-			icon_win_width, icon_win_height); 
+			icon_win_width, icon_win_height);
     }
     break;
   case M_DESTROY_WINDOW:
@@ -1912,7 +1909,7 @@ void process_message(unsigned long type, unsigned long *body)
       if (icon_win_y + Height > icon_win_height)
 	icon_win_y = icon_win_height - Height;
       XMoveResizeWindow(dpy, icon_win, -icon_win_x, -icon_win_y,
-			icon_win_width, icon_win_height);  
+			icon_win_width, icon_win_height);
       AdjustIconWindows();
       if (!(local_flags & HIDE_H) && diffx)
 	RedrawHScrollbar();
@@ -1926,9 +1923,9 @@ void process_message(unsigned long type, unsigned long *body)
     break;
   case M_WINDOW_NAME:
     tmp = UpdateItem(type, body[0], (char *)&body[3]);
-    if (!ready || tmp == NULL) 
+    if (!ready || tmp == NULL)
       break;
-    if (sortby == WINDOWNAME && tmp->IconWin != None 
+    if (sortby == WINDOWNAME && tmp->IconWin != None
 	&& desk_cond(tmp) && SortItem(tmp) == True)
       AdjustIconWindows();
     break;
@@ -1943,20 +1940,20 @@ void process_message(unsigned long type, unsigned long *body)
       AdjustIconWindows();
       if (desk_cond(tmp)){
 	if (max_icon_height != 0)
-      XMapWindow(dpy, tmp->icon_pixmap_w);       
-      XMapWindow(dpy, tmp->IconWin);       
+      XMapWindow(dpy, tmp->icon_pixmap_w);
+      XMapWindow(dpy, tmp->IconWin);
 	if (!(local_flags & HIDE_H))
 	RedrawHScrollbar();
 	if (!(local_flags & HIDE_V))
 	RedrawVScrollbar();
     }
     }
-    break;	
+    break;
   case M_ICON_NAME:
     tmp = UpdateItem(type, body[0], (char *)&body[3]);
-    if (!ready || tmp == NULL) 
+    if (!ready || tmp == NULL)
     break;
-    if (sortby != UNSORT && tmp->IconWin != None 
+    if (sortby != UNSORT && tmp->IconWin != None
 	&& desk_cond(tmp) && SortItem(tmp) == True)
       AdjustIconWindows();
     if (tmp->IconWin != None && desk_cond(tmp))
@@ -2001,9 +1998,9 @@ void process_message(unsigned long type, unsigned long *body)
 	if (primary == RIGHT || secondary == RIGHT)
 	  icon_win_x = icon_win_width - Width;
 	XMoveResizeWindow(dpy, icon_win, -icon_win_x, -icon_win_y,
-			  icon_win_width, icon_win_height); 
-	XUnmapSubwindows(dpy, icon_win); 
-	mapicons(); 
+			  icon_win_width, icon_win_height);
+	XUnmapSubwindows(dpy, icon_win);
+	mapicons();
 	if (!(local_flags & HIDE_H))
 	  RedrawHScrollbar();
 	if (!(local_flags & HIDE_V))
@@ -2026,12 +2023,12 @@ void process_message(unsigned long type, unsigned long *body)
     if (primary == RIGHT || secondary == RIGHT)
       icon_win_x = icon_win_width - Width;
     XMoveResizeWindow(dpy, icon_win, -icon_win_x, -icon_win_y,
-		      icon_win_width, icon_win_height); 
+		      icon_win_width, icon_win_height);
     AdjustIconWindows();
     XMapWindow(dpy,main_win);
-    XMapSubwindows(dpy, main_win); 
-    XMapWindow(dpy, icon_win); 
-    mapicons(); 
+    XMapSubwindows(dpy, main_win);
+    XMapWindow(dpy, icon_win);
+    mapicons();
     ready = 1;
     break;
   default:
@@ -2056,7 +2053,7 @@ struct icon_info *SetFlag(unsigned long id, int t)
   }
   return NULL;
 }
-    
+
 void mapicons(void)
 {
   struct icon_info *tmp;
@@ -2088,7 +2085,7 @@ int AdjustIconWindows(void)
 
 int desk_cond(struct icon_info *item)
 {
-  if (!(local_flags & CURRENT_ONLY) || 
+  if (!(local_flags & CURRENT_ONLY) ||
       (item->flags & STICKY) || (item->desk == CurrentDesk))
     return 1;
 
@@ -2109,13 +2106,13 @@ Bool AddItem(unsigned long id, long desk, unsigned long flags)
     return False;
 
   while (tmp != NULL){
-    if (tmp->id == id || 
+    if (tmp->id == id ||
 	(tmp->wmhints && (tmp->wmhints->flags & IconWindowHint) &&
 	 tmp->wmhints->icon_window == id))
       return False;
     tmp = tmp->next;
   }
-  
+
   new = (struct icon_info *)safemalloc(sizeof(struct icon_info));
   new->name = NULL;
   new->window_name = NULL;
@@ -2128,7 +2125,7 @@ Bool AddItem(unsigned long id, long desk, unsigned long flags)
   new->IconWin = None;
   new->iconPixmap = None;
   new->icon_maskPixmap = None;
-  new->icon_pixmap_w = None;  
+  new->icon_pixmap_w = None;
   new->icon_depth = 0;
   new->desk = desk;
   new->id = id;
@@ -2154,7 +2151,7 @@ Bool AddItem(unsigned long id, long desk, unsigned long flags)
   else
   Head = new;
   Tail = new;
-  
+
   if (desk_cond(new)) num_icons++;
 
   return True;
@@ -2168,10 +2165,10 @@ Bool AddItem(unsigned long id, long desk, unsigned long flags)
 Bool DeleteItem(unsigned long id)
 {
   struct icon_info *tmp = Head;
-  
+
   while(tmp != NULL){
   if (tmp->id == id){
-      if (desk_cond(tmp)) 
+      if (desk_cond(tmp))
 	num_icons--;
     if (Hilite == tmp)
       Hilite = NULL;
@@ -2198,7 +2195,7 @@ Bool DeleteItem(unsigned long id)
     tmp = tmp->next;
   }
   return False;
-} 
+}
 
 /************************************************************************
  * UpdateItem
@@ -2236,7 +2233,7 @@ struct icon_info *UpdateItem(unsigned long type, unsigned long id, char *item)
       case M_RES_CLASS:
 	tmp->res_class = str;
 	ret = 0;
-	if (sortby == RESCLASS && strcmp(NoClass, str) == 0 
+	if (sortby == RESCLASS && strcmp(NoClass, str) == 0
 	    && !(ret = XGetClassHint(dpy, tmp->id, &classhint))){
 	  tmp->extra_flags |= NOCLASS;
 	}
@@ -2250,7 +2247,7 @@ struct icon_info *UpdateItem(unsigned long type, unsigned long id, char *item)
       case M_RES_NAME:
 	tmp->res_name = str;
 	ret = 0;
-	if (sortby == RESNAME && strcmp(NoResource, str) == 0 
+	if (sortby == RESNAME && strcmp(NoResource, str) == 0
 	    && !(ret = XGetClassHint(dpy, tmp->id, &classhint)))
 	  tmp->extra_flags |= NONAME;
 	if (ret){
@@ -2274,8 +2271,8 @@ Bool SortItem(struct icon_info *item)
   if (tmp1 == NULL)
     return False;
 
-  if (item != NULL && 
-      ((itemcmp(item->prev, item) <= 0) &&  
+  if (item != NULL &&
+      ((itemcmp(item->prev, item) <= 0) &&
        (itemcmp(item->next, item) >= 0)))
     return False;
 
@@ -2330,7 +2327,7 @@ struct icon_info *MinItem(struct icon_info *head)
     tmp = tmp->next;
   }
   return i_min;
-} 
+}
 
 int itemcmp(struct icon_info *item1, struct icon_info *item2)
 {
@@ -2365,7 +2362,7 @@ int itemcmp(struct icon_info *item1, struct icon_info *item2)
         ret1 = -1;
     }else if ((item2->extra_flags & NOCLASS))
       ret1 = 1;
-    else 
+    else
       ret1 = strcmp(item1->res_class, item2->res_class);
     break;
   case RESNAME:
@@ -2376,7 +2373,7 @@ int itemcmp(struct icon_info *item1, struct icon_info *item2)
         ret1 = -1;
     }else if ((item2->extra_flags & NOCLASS))
       ret1 = 1;
-    else 
+    else
       ret1 = strcmp(item1->res_name, item2->res_name);
     break;
   default:
@@ -2394,9 +2391,9 @@ void ShowItem(struct icon_info *head)
   tmp = head;
   while (tmp != NULL){
     fprintf(stderr, "id:%x  name:%s resname:%s class%s iconfile:%s\n",
-	    tmp->id, 
+	    tmp->id,
 	    tmp->name == NULL ? "NULL" : tmp->name, tmp->res_name,
-	    tmp->res_class, tmp->icon_file);  
+	    tmp->res_class, tmp->icon_file);
     tmp = tmp->next;
   }
 }
@@ -2408,10 +2405,10 @@ void ShowAction(void)
   tmp = MouseActions;
   while (tmp != NULL){
     fprintf(stderr, "mouse:%d type %d action:%s\n", tmp->mouse,
-	    tmp->type, tmp->action);  
+	    tmp->type, tmp->action);
     tmp = tmp->next;
   }
-}  
+}
 
 void ShowKAction(void)
 {
@@ -2420,10 +2417,10 @@ void ShowKAction(void)
   tmp = KeyActions;
   while (tmp != NULL){
     fprintf(stderr, "key:%s keycode:%d action:%s\n", tmp->name,
-	    tmp->keycode, tmp->action);  
+	    tmp->keycode, tmp->action);
     tmp = tmp->next;
   }
-}  
+}
 */
 
 void freeitem(struct icon_info *item, int d)
@@ -2431,7 +2428,7 @@ void freeitem(struct icon_info *item, int d)
   if (item == NULL)
     return;
 
-  if (!(item->flags & ICON_OURS)){ 
+  if (!(item->flags & ICON_OURS)){
     if (max_icon_height != 0)
     XUnmapWindow(dpy, item->icon_pixmap_w);
     if (d == 0)
@@ -2450,8 +2447,8 @@ void freeitem(struct icon_info *item, int d)
     XFree(item->wmhints);
   if (item->iconPixmap != None)
     XFreePixmap(dpy, item->iconPixmap);
-  if (item->icon_maskPixmap != None && 
-      (item->wmhints == NULL || 
+  if (item->icon_maskPixmap != None &&
+      (item->wmhints == NULL ||
        !(item->wmhints->flags & (IconPixmapHint|IconWindowHint))))
     XFreePixmap(dpy, item->icon_maskPixmap);
 
@@ -2460,7 +2457,7 @@ void freeitem(struct icon_info *item, int d)
 
 
 /************************************************************************
-  IsClick	
+  IsClick
   	Based on functions.c from Fvwm:
 	Copyright 1988, Evans and Sutherland Computer Corporation,
        	Copyright 1989, Massachusetts Institute of Technology,
@@ -2518,7 +2515,7 @@ void ExecuteAction(int x, int y, struct icon_info *item)
       ev = &d;
     }
   if((type == ONE_AND_A_HALF_CLICKS) &&
-     (IsClick(x,y,ButtonReleaseMask, &d))) 
+     (IsClick(x,y,ButtonReleaseMask, &d)))
     {
       type = DOUBLE_CLICK;
       ev = &d;
@@ -2544,7 +2541,7 @@ void ExecuteKey(XEvent event)
        return;
 
   tmp = KeyActions;
-  event.xkey.keycode = 
+  event.xkey.keycode =
     XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,event.xkey.keycode,0));
   while (tmp != NULL){
     if (tmp->keycode == event.xkey.keycode){
@@ -2580,7 +2577,7 @@ int LookInList(struct icon_info *item)
       isdefault = 1;
 
     if (matchWildcards(nptr->name, item->res_class) == TRUE){
-      value = nptr->iconfile;            
+      value = nptr->iconfile;
       if (nptr != DefaultIcon)
 	isdefault = 0;
     }
@@ -2601,13 +2598,13 @@ int LookInList(struct icon_info *item)
   if (!isdefault){
     item->icon_file = value;
     item->extra_flags &= ~DEFAULTICON;
-  }else if ((item->extra_flags & DEFAULTICON)){ 
+  }else if ((item->extra_flags & DEFAULTICON)){
     if (DefaultIcon != NULL)
       item->icon_file = DefaultIcon->iconfile;
     else if (FvwmDefaultIcon != NULL)
       item->icon_file = FvwmDefaultIcon;
   }
-   
+
   /* Icon is not shown if "-" is specified */
   if (item->icon_file != NULL && (strcmp(item->icon_file, "-") == 0)){
     DeleteItem(item->id);
@@ -2635,7 +2632,7 @@ char *stripcpy2(char *source)
   source++;
   ptr = source;
   while((*ptr!='"')&&(*ptr != 0)){
-    ptr++;  
+    ptr++;
     count++;
   }
   ptr = safemalloc(count+1);

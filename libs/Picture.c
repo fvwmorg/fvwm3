@@ -1,4 +1,4 @@
-/****************************************************************************
+      /****************************************************************************
  * This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
@@ -73,7 +73,7 @@ void InitPictureCMap(Display *dpy,Window Root)
 
 Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
 {
-  int i,l;
+  int l;
   Picture *p;
 #ifdef XPM
   XpmAttributes xpm_attributes;
@@ -232,7 +232,7 @@ char *findIconFile(char *icon, char *pathlist, int type)
 
   path = safemalloc(strlen(icon) + l + 10);
   *path = '\0';
-  if (*icon == '/' || pathlist == NULL || *pathlist == '\0') 
+  if (*icon == '/' || pathlist == NULL || *pathlist == '\0')
     {
       /* No search if icon begins with a slash */
       /* No search if pathlist is empty */

@@ -77,7 +77,7 @@ int main(int argc, char **argv)
   Display *dpy;			/* which display are we talking to */
   char *temp, *s;
   char *display_name = NULL;
-  char *filename;
+  char *filename = NULL;
   char *tmp_file, read_string[80],delete_string[80];
   int i,cpp_debug = 0;
 
@@ -368,12 +368,9 @@ void DeadPipe(int nonsense)
   exit(0);
 }
 
-
-
 static char *MkDef(char *name, char *def)
 {
   char *cp = NULL;
-  int maxsize = 0;
   int n;
 
   /* Get space to hold everything, if needed */

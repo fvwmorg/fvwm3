@@ -1,4 +1,4 @@
-/* FvwmTaskBar Module for Fvwm. 
+/* FvwmTaskBar Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
@@ -7,7 +7,7 @@
  * The functions in this source file that are the original work of Mike Finger.
  * This source file has been modified for use with fvwm95look by
  * Pekka Pietik{inen, David Barth, Hector Peraza, etc, etc...
- * 
+ *
  * No guarantees or warantees or anything are provided or implied in any way
  * whatsoever. Use this program at your own risk. Permission to use this
  * program for any purpose is given, as long as the copyright is kept intact.
@@ -64,9 +64,9 @@ void Draw3dRect(Window wn, int x, int y, int w, int h, int state)
   case BUTTON_DOWN:
     XDrawLine (dpy, win, blackgc, x, y, x+w-1, y);
     XDrawLine (dpy, win, blackgc, x, y, x, y+h-1);
-    
-    XDrawLine (dpy, win, shadow, x+1, y+1, x+w-3, y+1);   
-    XDrawLine (dpy, win, shadow, x+1, y+1, x+1, y+h-3);   
+
+    XDrawLine (dpy, win, shadow, x+1, y+1, x+w-3, y+1);
+    XDrawLine (dpy, win, shadow, x+1, y+1, x+1, y+h-3);
     XDrawLine (dpy, win, hilite, x+1, y+h-1, x+w-1, y+h-1);
     XDrawLine (dpy, win, hilite, x+w-1, y+h-1, x+w-1, y+1);
     break;
@@ -78,8 +78,7 @@ void Draw3dRect(Window wn, int x, int y, int w, int h, int state)
    ButtonNew - Allocates and fills a new button structure
    ------------------------------------------------------------------------- */
 Button *ButtonNew(char *title, Picture *p, int state)
-  {
-  int updateneeded = 0;
+{
   Button *new;
 
   new = (Button *)safemalloc(sizeof(Button));
@@ -100,20 +99,20 @@ Button *ButtonNew(char *title, Picture *p, int state)
   new->needsupdate = 1;
 
   return new;
-  }
+}
 
 /* -------------------------------------------------------------------------
    ButtonDraw - Draws the specified button
    ------------------------------------------------------------------------- */
 void ButtonDraw(Button *button, int x, int y, int w, int h)
-  {
+{
   static char *t3p = "...";
   int state, x3p, newx;
   int search_len;
   XFontStruct *font;
   XGCValues gcv;
   unsigned long gcm;
-    
+
   if (button == NULL) return;
   button->needsupdate = 0;
   state = button->state;
@@ -167,10 +166,10 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
     button->truncate = False;
   }
 
-  XDrawString(dpy, win, graph, 
+  XDrawString(dpy, win, graph,
               x+newx, y+font->ascent+4,
               button->title, search_len);
- }
+}
 
 
 /* -------------------------------------------------------------------------
@@ -350,8 +349,10 @@ void RemoveButton(ButtonArray *array, int butnum)
 
   ButtonDelete(temp2);
   array->count--;
-  if (temp != array->head) temp = temp->next;
-  for(temp; temp!=NULL; temp=temp->next) temp->needsupdate = 1;
+  if (temp != array->head)
+    temp = temp->next;
+  for(temp; temp!=NULL; temp=temp->next)
+    temp->needsupdate = 1;
 
   ArrangeButtonArray(array);
 }
@@ -361,7 +362,7 @@ void RemoveButton(ButtonArray *array, int butnum)
    ------------------------------------------------------------------------- */
 Button *find_n(ButtonArray *array, int n)
 {
-  Button *temp; 
+  Button *temp;
   int i;
 
   temp = array->head;
@@ -390,7 +391,6 @@ void FreeAllButtons(ButtonArray *array)
 void DrawButtonArray(ButtonArray *array, int all)
 {
   Button *temp;
-  extern int ScreenWidth;
   int x, y, n;
 
   x = 0;
@@ -412,7 +412,7 @@ void RadioButton(ButtonArray *array, int butnum, int state)
 {
   Button *button;
   int i;
-  
+
   for(button=array->head,i=0; button!=NULL; button=button->next,i++) {
     if (i == butnum) {
       button->state = state;
@@ -437,13 +437,12 @@ int WhichButton(ButtonArray *array, int xp, int yp)
   return LocateButton(array, xp, yp, &junkx, &junky, &junkt, &junkz);
 }
 
-int LocateButton(ButtonArray *array, int xp,  int yp, 
-                                     int *xb, int *yb,
-                                     char **name, int *trunc)
+int LocateButton(ButtonArray *array, int xp,  int yp, int *xb, int *yb,
+		 char **name, int *trunc)
 {
   Button *temp;
-  int num, cx, x, y, n;
-   
+  int num, x, y, n;
+
   if (xp < array->x || xp > array->x+array->w) return -1;
 
   x = 0;
@@ -453,7 +452,7 @@ int LocateButton(ButtonArray *array, int xp,  int yp,
     if((x + array->tw > array->w) && (n < NRows))
       { x = 0; y += RowHeight+2; ++n; }
     if( xp >= x+array->x && xp <= x+array->x+array->tw-3 &&
-        yp >= y && yp <= y+array->h) break; 
+        yp >= y && yp <= y+array->h) break;
     x += array->tw;
   }
 

@@ -4,7 +4,7 @@
  *                               Mike_Finger@atk.com)
  *
  * The functions in this header file that are the original work of Mike Finger.
- * 
+ *
  * No guarantees or warantees or anything are provided or implied in any way
  * whatsoever. Use this program at your own risk. Permission to use this
  * program for any purpose is given, as long as the copyright is kept intact.
@@ -40,7 +40,7 @@ typedef struct {
 /* Function Prototypes */
 
 void Draw3dRect(Window wn, int x, int y, int w, int h, int state);
-Button *ButtonNew(char *title, Picture *p, int state); 
+Button *ButtonNew(char *title, Picture *p, int state);
 int ButtonUpdate(Button *button, char *title, int state);
 char *ButtonName(Button *button);
 void InitArray(ButtonArray *array, int x, int y, int w, int h, int tw);
@@ -58,5 +58,6 @@ void RadioButton(ButtonArray *array, int butnum, int state);
 int WhichButton(ButtonArray *array, int x, int y);
 int LocateButton(ButtonArray *array, int xp,  int yp,
                                      int *xb, int *yb,
-                                     char **name, int *trunc); 
+                                     char **name, int *trunc);
 void ArrangeButtonArray(ButtonArray *array);
+void ButtonDraw(Button *button, int x, int y, int w, int h);

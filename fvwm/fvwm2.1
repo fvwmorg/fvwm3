@@ -1424,7 +1424,10 @@ as for a mouse binding except that the mouse button number is replaced
 with a key name.  The \fIkeyname\fP is one of the entries from
 /usr/include/X11/keysymdef.h, with the leading XK_ omitted.  The
 \fIContext\fP and \fIModifiers\fP fields are defined as in the Mouse
-binding.
+binding. However, when you press a key the context window is the
+window that has the keyboard focus. That is not necessarily the
+same as the window the pointer is over (with SloppyFocus or
+ClickToFocus).
 
 The following example binds the built in window list to pop up when
 Alt-Ctrl-Shift-F11 is hit, no matter where the mouse pointer is:

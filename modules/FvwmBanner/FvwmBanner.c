@@ -1,8 +1,8 @@
 /***************************************************************************
- * FvwmBanner                                                           
- *                                                                           
+ * FvwmBanner
+ *
  *  Show Fvwm Banner
- *                                                                           
+ *
  ***************************************************************************/
 
 #include "config.h"
@@ -33,7 +33,7 @@
 #include <X11/xpm.h>
 
 
-#include "../../libs/fvwmlib.h"     
+#include "../../libs/fvwmlib.h"
 
 #include "../../icons/fvwm2_big.xpm"
 #if 0
@@ -48,7 +48,7 @@ typedef struct _XpmIcon {
 }        XpmIcon;
 
 /**************************************************************************
- * A few function prototypes 
+ * A few function prototypes
  **************************************************************************/
 void RedrawWindow(void);
 void GetXPMData(char **);
@@ -88,20 +88,15 @@ Colormap colormap;
 int main(int argc, char **argv)
 {
   char *display_name = NULL, *string = NULL;
-  int retval;
-  XGCValues gcv;
-  unsigned long gcm;
+  int retval = 0;
   XEvent Event;
   fd_set in_fdset;
   int fd_width ;
-  time_t t;
   struct timeval value;
-  int fd[2],i;
-  int x1,x2,y1,y2;
-  XRectangle rect;
+  int fd[2];
 
   fd_width = GetFdWidth();
-  
+
   /* Save our program  name - for error messages */
   string = strrchr (argv[0], '/');
   if (string != (char *) 0) string++;
@@ -135,7 +130,7 @@ int main(int argc, char **argv)
   }
 
   /* Open the display */
-  if (!(dpy = XOpenDisplay(display_name))) 
+  if (!(dpy = XOpenDisplay(display_name)))
     {
       fprintf(stderr,"FvwmBanner: can't open display %s",
 	      XDisplayName(display_name));
@@ -151,7 +146,7 @@ int main(int argc, char **argv)
   ScreenWidth = DisplayWidth(dpy,screen);
 
   parseOptions(fd);
-  
+
   /* Get the xpm banner */
   if (pixmapName)
     GetXPMFile(pixmapName,pixmapPath);
@@ -245,7 +240,7 @@ int main(int argc, char **argv)
             exit(0);
           }
         default:
-          break;      
+          break;
       }
     }
   }
@@ -260,8 +255,6 @@ int main(int argc, char **argv)
  ****************************************************************************/
 void GetXPMData(char **data)
 {
-  int code;
-
   view.attributes.valuemask = XpmReturnPixels| XpmCloseness | XpmExtensions;
   view.attributes.closeness = 40000 /* Allow for "similar" colors */;
   if(XpmCreatePixmapFromData(dpy, Root, data,
@@ -274,8 +267,7 @@ void GetXPMData(char **data)
 }
 void GetXPMFile(char *file, char *path)
 {
-  int code;
-  char *full_file;
+  char *full_file = NULL;
 
   view.attributes.valuemask = XpmReturnPixels| XpmCloseness | XpmExtensions;
   view.attributes.closeness = 40000 /* Allow for "similar" colors */;
@@ -360,8 +352,8 @@ static void parseOptions (int fd[2])
 void change_window_name(char *str)
 {
   XTextProperty name;
-  
-  if (XStringListToTextProperty(&str,1,&name) == 0) 
+
+  if (XStringListToTextProperty(&str,1,&name) == 0)
     {
       fprintf(stderr,"FvwmBanner: cannot allocate window name");
       return;

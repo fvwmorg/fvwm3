@@ -123,6 +123,9 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE,ButtonPress))
     return;
 
+  if (tmp_win == NULL)
+    return;
+
   /* gotta have a window */
   w = tmp_win->frame;
   if(tmp_win->flags & ICONIFIED)

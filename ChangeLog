@@ -1,3 +1,22 @@
+1999-01-07  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* **/*: Applied tons of cosmetic fixes from the Red Hat patches
+	but some real bugfixes too. Sorry Paul (PDS), this one simply has
+	too many files involved with trivial patches.
+
+	* fvwm/builtins.c (DeferExecution):
+	* fvwm/move.c (move_window_doit):
+	* fvwm/resize.c (resize_window): applied Red Hat safety patch
+
+	* fvwm/menus.c: applied latest patch for gradient hilighting
+	(MenuInteraction): ignore unbound keys (warped back to center of item
+	before).
+
+	* fvwm/menus.c (FPopupMenu): fixed bug: menu item was not painted
+	properly when warped onto (with a key press)
+
+	* fvwm/fvwm2.1: Some clarification on key bindings.
+
 1999-01-08  Paul D. Smith  <psmith@gnu.org>
 
 	* configure.in: Check to see if we have sigaction() or not.

@@ -67,7 +67,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
 
   original_w = *w;
 
-  if((*context != C_ROOT)&&(*context != C_NO_CONTEXT))
+  if((*context != C_ROOT)&&(*context != C_NO_CONTEXT)&&(tmp_win != NULL))
   {
     if((FinishEvent == ButtonPress)||((FinishEvent == ButtonRelease) &&
                                       (eventp->type != ButtonPress)))

@@ -86,7 +86,7 @@ int main(int argc, char **argv)
     }
 
   /* Open the X display */
-  if (!(dpy = XOpenDisplay(display_name))) 
+  if (!(dpy = XOpenDisplay(display_name)))
     {
       fprintf(stderr,"%s: can't open display %s", MyName,
 	      XDisplayName(display_name));
@@ -97,8 +97,8 @@ int main(int argc, char **argv)
   ScreenWidth = DisplayWidth(dpy,screen);
 
   /* We should exit if our fvwm pipes die */
-  signal (SIGPIPE, DeadPipe);  
-  
+  signal (SIGPIPE, DeadPipe);
+
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
 
@@ -120,13 +120,12 @@ int main(int argc, char **argv)
 void Loop(int *fd)
 {
   unsigned long header[HEADER_SIZE], *body;
-  char *cbody;
-  int body_length,count,count2=0,total;
+  int count;
 
   while(1)
     {
       /* read a packet */
-      if(count = ReadFvwmPacket(fd[1],header,&body) > 0)
+      if((count = ReadFvwmPacket(fd[1],header,&body)) > 0)
 	{
 	  /* dispense with the new packet */
 	  process_message(header[1],body);
@@ -134,7 +133,7 @@ void Loop(int *fd)
 	}
     }
 }
- 
+
 
 /***********************************************************************
  *
@@ -178,7 +177,7 @@ void process_message(unsigned long type,unsigned long *body)
 /***********************************************************************
  *
  *  Procedure:
- *	find_window - find a window in the current window list 
+ *	find_window - find a window in the current window list
  *
  ***********************************************************************/
 struct list *find_window(unsigned long id)
@@ -201,13 +200,13 @@ struct list *find_window(unsigned long id)
 /***********************************************************************
  *
  *  Procedure:
- *	add_window - add a new window in the current window list 
+ *	add_window - add a new window in the current window list
  *
  ***********************************************************************/
 void add_window(unsigned long new_win, unsigned long *body)
 {
   struct list *t;
-  
+
   if(new_win == 0)
     return;
 
@@ -231,7 +230,7 @@ void add_window(unsigned long new_win, unsigned long *body)
   list_root = t;
 }
 
-		
+
 
 /***********************************************************************
  *
@@ -266,9 +265,9 @@ void DeadPipe(int nonsense)
 void write_string(FILE *out, char *line)
 {
   int len,space = 0, qoute = 0,i;
-  
+
   len = strlen(line);
-  
+
   for(i=0;i<len;i++)
     {
       if(isspace(line[i]))
@@ -306,7 +305,7 @@ void do_save_command(FILE *out, struct list *t, int *curdesk,
    long tVx, tVy;
 
    tname[0]=0;
-   
+
    x1 = t->frame_x;
    x2 = ScreenWidth - x1 - t->frame_width - 2;
    if(x2 < 0)
@@ -322,7 +321,7 @@ void do_save_command(FILE *out, struct list *t, int *curdesk,
    dwidth /= t->width_inc;
    dheight /= t->height_inc;
 
-   if ( t->flags & STICKY )      
+   if ( t->flags & STICKY )
      {
        tVx = 0;
        tVy = 0;
@@ -340,7 +339,7 @@ void do_save_command(FILE *out, struct list *t, int *curdesk,
    else
      sprintf(loc,"+%d",x1+(int)tVx);
    strcat(tname, loc);
-   
+
    if((t->gravity == SouthGravity)||
       (t->gravity == SouthEastGravity)||
       (t->gravity == SouthWestGravity))
@@ -401,7 +400,7 @@ void do_save_command(FILE *out, struct list *t, int *curdesk,
 	    }
        }
        if (emit_wait) {
-	  if (t->name) 
+	  if (t->name)
 	     fprintf( out, "+\t\t\"I\" Wait %s\n", t->name);
 	  else fprintf( out, "+\t\t\"I\" Wait %s\n", command_list[0]);
 	  fflush( out );

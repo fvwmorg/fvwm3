@@ -6,11 +6,11 @@
  * are provided or implied in any way whatsoever. Use this program at your
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact.
- * 
+ *
  * reworked by A.Kadlec (albrecht@auto.tuwien.ac.at) 09/96
  * to support an arbitrary enter_fn & leave_fn (command line arguments)
  * completely reworked, while I was there.
- * 
+ *
  * Modified by John Aughey (jha@cs.purdue.edu) 11/96
  * to not perform any action when entering the root window
  *
@@ -19,13 +19,13 @@
  */
 
 #define TRUE 1
-#define FALSE 
+#define FALSE
 
 #include "config.h"
 
 #if HAVE_SYS_BSDTYPES_H
 #include <sys/bsdtypes.h> /* Saul */
-#endif 
+#endif
 
 #include <stdio.h>
 #include <signal.h>
@@ -42,7 +42,7 @@
 #include <ctype.h>
 #include <stdlib.h>
 #include "../../fvwm/module.h"
-#include "../../libs/fvwmlib.h"     
+#include "../../libs/fvwmlib.h"
 
 #ifdef __hpux
 # define HPUX_CAST (int *)
@@ -73,13 +73,13 @@ int main(int argc, char **argv)
     char      	   *enter_fn="Raise",	/* default */
                    *leave_fn=NULL,
                    mask_mesg[80];
-    unsigned long  header[HEADER_SIZE], 
+    unsigned long  header[HEADER_SIZE],
                    *body,
                    last_win = 0,	/* last window handled */
                    focus_win = 0;	/* current focus */
     int            fd_width,
                    fd[2],
-                   timeout,sec,usec;
+                   timeout,sec = 0,usec = 0;
     struct timeval value,
                    *delay;
     fd_set	   in_fdset;
@@ -91,7 +91,7 @@ int main(int argc, char **argv)
     }
 
     /* Dead pipes mean fvwm died */
-    signal (SIGPIPE, DeadPipe);  
+    signal (SIGPIPE, DeadPipe);
 
     fd[0] = atoi(argv[1]);
     fd[1] = atoi(argv[2]);
@@ -101,7 +101,7 @@ int main(int argc, char **argv)
 	sec = timeout / 1000;
 	usec = (timeout % 1000) * 1000;
 	delay=&value;
-    } else 
+    } else
 	delay=NULL;
 
     if (argv[7])			/* if specified */
@@ -110,11 +110,11 @@ int main(int argc, char **argv)
 	    enter_fn=argv[7];		/* override default */
 	else
 	    enter_fn=NULL;		/* nop */
-	
-	if (argv[8] && *argv[8] && !StrEquals(argv[8],"NOP"))	
+
+	if (argv[8] && *argv[8] && !StrEquals(argv[8],"NOP"))
 					/* leave function specified */
 	    leave_fn=argv[8];
-    }	
+    }
 
 #ifdef DEBUG
     fprintf(stderr,"[FvwmAuto]: timeout: %d EnterFn: >%s< LeaveFn: >%s<\n",timeout,enter_fn,leave_fn);
@@ -134,14 +134,14 @@ int main(int argc, char **argv)
 	    delay->tv_sec = sec;
 	    delay->tv_usec = usec;
 	}
-	select(fd_width, HPUX_CAST &in_fdset, 0, 0, 
+	select(fd_width, HPUX_CAST &in_fdset, 0, 0,
 	       (focus_win == last_win) ? NULL : delay);
 #ifdef DEBUG
 	    fprintf(stderr,"[FvwmAuto]: after select:  focus_win: 0x%08lx, last_win: 0x%08lx\n",focus_win, last_win);
 	    fprintf(stderr,"[FvwmAuto]: after select:  delay: 0x%08lx, delay struct: %d.%06d sec\n",delay,delay->tv_sec,delay->tv_usec);
 #endif
 
-	if (FD_ISSET(fd[1], &in_fdset) && 
+	if (FD_ISSET(fd[1], &in_fdset) &&
 	    ReadFvwmPacket(fd[1],header, &body) > 0)
 	{
 	    focus_win = body[0];

@@ -1,3 +1,18 @@
+1999-01-08  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmTaskBar/**: some general cleanup
+
+	* FvwmTaskBar/FvwmTaskBar.c (ErrorHandler): added missing return value
+
+	* FvwmTaskBar/FvwmTaskBar.c (ReadFvwmPipe):
+	(ProcessMessage):
+	* FvwmTaskBar/ButtonArray.c (ButtonNew):
+	(DrawButtonArray):
+	(LocateButton):
+	removed unused variables
+
+	* FvwmTaskBar/Goodies.c: Applied a RedHat bugfix for "mailbox"
+
 1999-01-06  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmConsole/Makefile.am: Use X_EXTRA_LIBS instead of socket_LIBS.

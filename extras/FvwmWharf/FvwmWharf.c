@@ -1,6 +1,6 @@
-/* Wharf.c. by Bo Yang. 
+/* Wharf.c. by Bo Yang.
  *
- * Copyright 1993, Robert Nation. 
+ * Copyright 1993, Robert Nation.
  *
  * Modifications: Copyright 1995 by Bo Yang.
  *
@@ -11,18 +11,18 @@
  * swallowed button actions Copyright 1996 by Kaj Groner
  *
  * Various enhancements Copyright 1996 Alfredo K. Kojima
- * 
+ *
  *   button pushing styles
  *   configurable border drawing
  *   Change of icon creation code. Does not use shape extension anymore.
- *     each icon window now contains the whole background 
+ *     each icon window now contains the whole background
  *   OffiX drop support added
  *   animation added
  *   withdraw on button2 click
  *   icon overlaying
  *   sound bindings
- * 
- * based on GoodStuff.c by Robert Nation 
+ *
+ * based on GoodStuff.c by Robert Nation
  * The GoodStuff module, and the entire GoodStuff program, and the concept for
  * interfacing that module to the Window Manager, are all original work
  * by Robert Nation
@@ -162,7 +162,7 @@ char *BgPixmapFile=NULL;
 int FromColor[3]={0x4000,0x4000,0x4000}, ToColor[3]={0x8000,0x8000,0x8000};
 Pixel BgColor=0;
 int MaxColors=16;
-int Withdrawn; 
+int Withdrawn;
 
 #define DIR_TOLEFT	1
 #define DIR_TORIGHT	2
@@ -173,7 +173,7 @@ int Withdrawn;
 void waitchild(int bullshit)
 {
     int stat;
-    
+
     wait(&stat);
     SoundActive=0;
 }
@@ -200,37 +200,37 @@ int main(int argc, char **argv)
   char *temp, *s;
   char set_mask_mesg[50];
   temp = argv[0];
-  
+
   s=strrchr(argv[0], '/');
   if (s != NULL)
     temp = s + 1;
-  
+
   MyName = safemalloc(strlen(temp)+1);
   strcpy(MyName, temp);
-  
+
   for(i=0;i<BUTTON_ARRAY_LN;i++)
     {
 #ifdef ENABLE_DND
       Buttons[i].drop_action = NULL;
-#endif	
+#endif
       Buttons[i].title = NULL;
       Buttons[i].action = NULL;
       Buttons[i].iconno = 0;
-      for(j=0;j<MAX_OVERLAY;j++) {	
+      for(j=0;j<MAX_OVERLAY;j++) {
 	  Buttons[i].icons[j].file = NULL;
 	  Buttons[i].icons[j].w = 0;
 	  Buttons[i].icons[j].h = 0;
 	  Buttons[i].icons[j].mask = None;	/* pixmap for the icon mask */
 	  Buttons[i].icons[j].icon = None;
 	  Buttons[i].icons[j].depth = 0;
-      }	
+      }
       Buttons[i].IconWin = None;
-      Buttons[i].completeIcon = None;	
+      Buttons[i].completeIcon = None;
       Buttons[i].up = 1;                        /* Buttons start up */
       Buttons[i].hangon = NULL;                 /* don't wait on anything yet*/
       Buttons[i].folder = -1;
     }
-  signal (SIGPIPE, DeadPipe);  
+  signal (SIGPIPE, DeadPipe);
   if((argc != 6)&&(argc != 7))
     {
       fprintf(stderr,"%s Version %s should only be executed by AfterStep!\n",
@@ -239,8 +239,8 @@ int main(int argc, char **argv)
     }
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
-  
-  if (!(dpy = XOpenDisplay(display_name))) 
+
+  if (!(dpy = XOpenDisplay(display_name)))
     {
       fprintf(stderr,"%s: can't open display %s", MyName,
 	      XDisplayName(display_name));
@@ -252,14 +252,14 @@ int main(int argc, char **argv)
 
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
-  if(Root == None) 
+  if(Root == None)
     {
       fprintf(stderr,"%s: Screen %d is not valid ", MyName, screen);
       exit(1);
     }
   display_width = DisplayWidth(dpy, screen);
   display_height = DisplayHeight(dpy, screen);
-  
+
   d_depth = DefaultDepth(dpy, screen);
 
   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST | M_MAP | M_WINDOW_NAME |
@@ -267,7 +267,7 @@ int main(int argc, char **argv)
 /*
   sprintf(set_mask_mesg,"SET_MASK %lu\n",
 	  (unsigned long)(M_NEW_DESK |
-			  M_END_WINDOWLIST| 
+			  M_END_WINDOWLIST|
 			  M_MAP|
 			  M_RES_NAME|
 			  M_RES_CLASS|
@@ -281,8 +281,8 @@ int main(int argc, char **argv)
       fprintf(stderr,"%s: No Buttons defined. Quitting\n", MyName);
       exit(0);
     }
-    
-#ifdef ENABLE_SOUND    
+
+#ifdef ENABLE_SOUND
     /* startup sound subsystem */
      if (SoundActive) {
 	if (pipe(PlayerChannel)<0) {
@@ -309,9 +309,9 @@ int main(int argc, char **argv)
 		    margv[1]=safemalloc(16);
 		    close(PlayerChannel[1]);
 		    sprintf(margv[1],"%x",PlayerChannel[0]);
-		    if (SoundPlayer!=NULL) 
+		    if (SoundPlayer!=NULL)
 		      margv[2]=SoundPlayer;
-		    else 
+		    else
 		      margv[2]="-";
 		    for(i=0;i<MAX_EVENTS;i++) {
 			if (Sounds[i][0]=='.') {
@@ -331,9 +331,9 @@ int main(int argc, char **argv)
 		close(PlayerChannel[0]);
 	    }
 	}
-     }    
+     }
 #endif
-    
+
     CreateShadowGC();
 
     switch (TextureType) {
@@ -342,7 +342,7 @@ int main(int argc, char **argv)
 	    fprintf(stderr,"%s: No Button background pixmap defined.Using default\n", MyName);
 	    goto Builtin;
 	}
-	Buttons[BACK_BUTTON].icons[0].file=BgPixmapFile;	
+	Buttons[BACK_BUTTON].icons[0].file=BgPixmapFile;
 	if (GetXPMFile(BACK_BUTTON,0))
 	  break;
 	else goto Solid;
@@ -375,7 +375,7 @@ Solid:
     {
 	for(j=0;j<Buttons[i].iconno;j++) {
 	    LoadIconFile(i,j);
-	}	
+	}
     }
   for(i=num_folderbuttons;i<MAX_BUTTONS;i++) {
      	for(j=0;j<Buttons[i].iconno;j++) {
@@ -387,7 +387,7 @@ Solid:
   DndSelection=XInternAtom(dpy,"DndSelection",False);
 #endif
 
-    
+
   CreateWindow();
   for(i=0;i<num_buttons;i++) {
       CreateIconWindow(i, &main_win);
@@ -406,9 +406,9 @@ Solid:
       };
   for(i=0;i<num_folders;i++)
     for(j=0;j<Folders[i].count;j++)
-      if(num_columns < num_rows) {	  
+      if(num_columns < num_rows) {
 	ConfigureIconWindow(Folders[i].firstbutton+j,0, j);
-      } else {	  
+      } else {
 	ConfigureIconWindow(Folders[i].firstbutton+j,j, 0);
       }
   /* dirty hack to make swallowed app background be textured */
@@ -417,7 +417,7 @@ Solid:
   XMapWindow(dpy,main_win);
   for(i=0;i<num_folders;i++)
       XMapSubwindows(dpy, Folders[i].win);
-    
+
   FindLockMods();
 
   /* request a window list, since this triggers a response which
@@ -427,26 +427,24 @@ Solid:
   Loop();
 
 }
-    
+
 /***********************************************************************
  *
  *  Procedure:
  *	Loop - wait for data to process
  *
  ***********************************************************************/
-    
+
 void Loop(void)
 {
   Window *CurrentWin=None;
-  int x,y,w,h,xoff,yoff,border_width,CurrentRow,CurrentColumn,CurrentBase=0;
-  long depth;
+  int x,y,CurrentRow,CurrentColumn,CurrentBase=0;
   XEvent Event;
-  int NewButton,i,j,button,tw,th,i2, bl=-1;
+  int NewButton,i=0,j=0,button,i2, bl=-1;
   int LastMapped=-1;
-  char *temp;
   time_t t, tl = (time_t) 0;
   int CancelPush=0;
-    
+
   while(1)
     {
       if(My_XNextEvent(dpy,&Event))
@@ -475,21 +473,21 @@ void Loop(void)
 		    RedrawWindow(&main_win,0, -1, num_rows, num_columns);
 		}
 	      break;
-	      
+
 	    case ButtonPress:
 	      if (Event.xbutton.button != Button1) {
 		  if (Event.xbutton.button == Button2) {
 		      static int LastX, LastY;
-		      
+
 		      if (LastMapped != -1) {
 			  CloseFolder(LastMapped);
 			  Folders[LastMapped].mapped = NOTMAPPED;
 			  LastMapped=-1;
-		      }		      
+		      }
 		      if (Withdrawn) {
-#ifdef ENABLE_SOUND			  
+#ifdef ENABLE_SOUND
 			  PlaySound(WHEV_OPEN_MAIN);
-#endif			  	      
+#endif
 			  if (AnimationStyle>0 && AnimateMain)
 			    OpenFolder(-1,LastX,LastY,Width,Height,
 				       AnimationDir);
@@ -502,9 +500,9 @@ void Loop(void)
 			  int junk2,junk3,junk4,junk5;
 			  int CornerX, CornerY;
 
-#ifdef ENABLE_SOUND			  
+#ifdef ENABLE_SOUND
 			  PlaySound(WHEV_CLOSE_MAIN);
-#endif			  
+#endif
 			  XGetGeometry(dpy,main_win,&junk,&LastX,&LastY,
 				       &junk2,&junk3,&junk4,&junk5);
 			  XTranslateCoordinates(dpy,main_win,Root,
@@ -527,7 +525,7 @@ void Loop(void)
 				  CloseFolder(-1);
 				  XMoveWindow(dpy,main_win, CornerX, CornerY);
 			      } else {
-				  XMoveResizeWindow(dpy,main_win, 
+				  XMoveResizeWindow(dpy,main_win,
 						    CornerX, CornerY,
 						    BUTTONWIDTH,BUTTONHEIGHT);
 			      }
@@ -548,7 +546,7 @@ void Loop(void)
 				  CloseFolder(-1);
 				  XMoveWindow(dpy,main_win, CornerX, CornerY);
 			      } else {
-				  XMoveResizeWindow(dpy,main_win, 
+				  XMoveResizeWindow(dpy,main_win,
 						    CornerX, CornerY,
 						    BUTTONWIDTH,BUTTONHEIGHT);
 			      }
@@ -558,9 +556,9 @@ void Loop(void)
 		  }
 		  break;
 	      }
-#ifdef ENABLE_SOUND		    
+#ifdef ENABLE_SOUND
 		PlaySound(WHEV_PUSH);
-#endif		 
+#endif
 	      CancelPush = 0;
 	      CurrentWin = &Event.xbutton.window;
 	      CurrentBase = 0;
@@ -576,7 +574,7 @@ void Loop(void)
 		      CurrentButton = -1;
 		      break;
 		  }
-	      }		
+	      }
 
               for(x=0;x<num_buttons;x++)
                 {
@@ -592,19 +590,19 @@ void Loop(void)
 		if(*CurrentWin == Folders[x].win)
 		  {
 		    CurrentBase = Folders[x].firstbutton;
-		    if (num_rows<num_columns) 
+		    if (num_rows<num_columns)
 			CurrentButton = CurrentBase + CurrentRow;
 		     else
 			CurrentButton = CurrentBase + CurrentColumn;
 		  }
 	      i = CurrentRow+1;
 	      j = CurrentColumn +1;
-		
+
               if (Buttons[CurrentButton].swallow == 1 ||
                   Buttons[CurrentButton].swallow == 2 ||
                   Buttons[CurrentButton].action == NULL)
 		break;
-		
+
 	      if (Pushable)
 		{
                   if (Buttons[CurrentButton].swallow != 3 &&
@@ -624,16 +622,16 @@ void Loop(void)
                           &x,&y,&junk);
 /* kludge until Beat takes a look */
 if ((num_columns == 1) && (num_rows == 1))
-		MapFolder(Buttons[CurrentButton].folder, 
+		MapFolder(Buttons[CurrentButton].folder,
 			  &LastMapped,
                           x, y,
 			  1,1);
 else
-		MapFolder(Buttons[CurrentButton].folder, 
+		MapFolder(Buttons[CurrentButton].folder,
 			  &LastMapped,
                           x, y,
-			  CurrentRow, CurrentColumn);	      
-	      }		
+			  CurrentRow, CurrentColumn);
+	      }
               break;
 	     case EnterNotify:
 		CancelPush = 0;
@@ -652,13 +650,13 @@ else
 		    Window dummy_rt, dummy_c;
 		    int dummy_x, dummy_y, base, pos_x, pos_y;
 		    unsigned int dummy;
-		    
+
 /*		    if (Event.xclient.data.l[0]!=DndFile ||
 			Event.xclient.data.l[0]!=DndFiles ||
 			Event.xclient.data.l[0]!=DndExe
 			)
 		      break; */
- 
+
 		    XQueryPointer(dpy,main_win,
 				  &dummy_rt,&dummy_c,
 				  &dummy_x,&dummy_y,
@@ -698,33 +696,33 @@ else
 		    }
 #ifdef ENABLE_SOUND
 		    PlaySound(WHEV_DROP);
-#endif		      
+#endif
 		    Command=(unsigned char *)safemalloc(strlen((char *)data)
 				    + strlen((char *)(Buttons[dummy].drop_action)));
 		    sprintf((char *)Command,Buttons[dummy].drop_action,
 			    data,Event.xclient.data.l[0]);
-		    SendInfo(fd,(char *)Command,0); 
+		    SendInfo(fd,(char *)Command,0);
 		    free(Command);
 		    if (Pushable) {
 			usleep(50000);
 			XClearWindow(dpy,Buttons[dummy].IconWin);
 			RedrawUnpushedOutline(CurrentWin, dummy_y, dummy_x);
 		    }
-		} 
+		}
 		break;
-#endif /* ENABLE_DND */		      		
+#endif /* ENABLE_DND */
             case ButtonRelease:
 	      if ((Event.xbutton.button != Button1) ||
 		  (Buttons[CurrentButton].swallow == 1) ||
 		  (Buttons[CurrentButton].swallow == 2) ||
 		  (Buttons[CurrentButton].action == NULL)) {
-		  break;		  
-	      }		
+		  break;
+	      }
 
               CurrentRow = (Event.xbutton.y/BUTTONHEIGHT);
               CurrentColumn = (Event.xbutton.x/BUTTONWIDTH);
 
-              if (Pushable) 
+              if (Pushable)
               {
 		if (Buttons[CurrentButton].swallow != 3 &&
 		    Buttons[CurrentButton].swallow != 4)
@@ -741,12 +739,12 @@ else
 	      }	else {
 		  NewButton = CurrentBase + CurrentColumn
 		    + CurrentRow*num_columns;
-	      }		
-	      
+	      }
+
  	      for(x=0;x<num_folders;x++)
 		if(*CurrentWin == Folders[x].win)
 		  {
-		    if (num_rows<num_columns) 
+		    if (num_rows<num_columns)
 			NewButton = Folders[x].firstbutton + CurrentRow;
 		     else
 			NewButton = Folders[x].firstbutton + CurrentColumn;
@@ -775,10 +773,10 @@ else
 			  LastMapped = -1;
 			}
 		      SendInfo(fd,Buttons[CurrentButton].action,0);
-		    }		  
+		    }
 		  if((Buttons[CurrentButton].action)&&
 		     (strncasecmp(Buttons[CurrentButton].action,"exec",4)== 0))
-		    {  
+		    {
 		      i=4;
 		      while((Buttons[CurrentButton].action[i] != 0)&&
 			    (Buttons[CurrentButton].action[i] != '"'))
@@ -804,10 +802,10 @@ else
 		    }
                 }
               break;
-	      
+
 	      /*
 		case ClientMessage:
-		if ((Event.xclient.format==32) && 
+		if ((Event.xclient.format==32) &&
 		(Event.xclient.data.l[0]==wm_del_win))
 		{
 		DeadPipe(1);
@@ -857,7 +855,7 @@ void OpenFolder(int folder,int x, int y, int w, int h,  int direction)
 	    winc = BUTTONWIDTH/ANIM_STEP;
 	    hinc = BUTTONHEIGHT/ANIM_STEP;
     }
-    
+
     if (folder>=0) {
 	win = Folders[folder].win;
 	Folders[folder].direction = direction;
@@ -867,7 +865,7 @@ void OpenFolder(int folder,int x, int y, int w, int h,  int direction)
 	  isize = hinc;
     } else {
 	win = main_win;
-	if (direction == DIR_TOLEFT || direction == DIR_TORIGHT)	
+	if (direction == DIR_TOLEFT || direction == DIR_TORIGHT)
 	  isize = BUTTONWIDTH;
 	else
 	  isize = BUTTONHEIGHT;
@@ -875,8 +873,8 @@ void OpenFolder(int folder,int x, int y, int w, int h,  int direction)
     cx = x;    cy = y;
     ch = h;    cw = w;
     if (AnimationStyle==0) {
- 	XMapWindow(dpy, win);	
-    } else    
+ 	XMapWindow(dpy, win);
+    } else
     switch (direction) {
      case DIR_TOLEFT:
 	cx = x+w;
@@ -924,7 +922,7 @@ void OpenFolder(int folder,int x, int y, int w, int h,  int direction)
 	exit(-1);
     }
 
-    if (cw!=w || ch!=h || x != cx || cy != y || AnimationStyle==0)      
+    if (cw!=w || ch!=h || x != cx || cy != y || AnimationStyle==0)
       XMoveResizeWindow(dpy,win,x,y,w,h);
 }
 
@@ -938,9 +936,9 @@ void CloseFolder(int folder)
     int fsize, direction;
     Window win, junk_win;
 
-#ifdef ENABLE_SOUND	
+#ifdef ENABLE_SOUND
 	PlaySound(WHEV_CLOSE_FOLDER);
-#endif	
+#endif
     if (folder<0) {
 	winc = BUTTONWIDTH/ANIM_STEP_MAIN;
 	hinc = BUTTONHEIGHT/ANIM_STEP_MAIN;
@@ -983,7 +981,7 @@ void CloseFolder(int folder)
 	    XMoveResizeWindow(dpy,win,x,y, cw,h);
 	    XSync(dpy,0);
 	    usleep(ANIM_DELAY);
-	}	
+	}
 	break;
      case DIR_TOUP:
 	cy = y;
@@ -992,41 +990,41 @@ void CloseFolder(int folder)
 	    XSync(dpy,0);
 	    usleep(ANIM_DELAY);
 	    cy += hinc;
-	}	
+	}
 	break;
-     case DIR_TODOWN: 
+     case DIR_TODOWN:
 	for(ch=h;ch >= fsize; ch-=hinc) {
 	    XMoveResizeWindow(dpy,win,x,y, w, ch);
 	    XSync(dpy,0);
 	    usleep(ANIM_DELAY);
-	}	
-	break;	
+	}
+	break;
      default:
 	XBell(dpy,100);
 	fprintf(stderr,"WHARF INTERNAL BUG in CloseFolder()\n");
 	exit(-1);
     }
     Folders[folder].direction = 0;
- end:    
+ end:
     if (folder<0) {
 	XResizeWindow(dpy,win,BUTTONWIDTH,BUTTONHEIGHT);
     } else {
 	XUnmapWindow(dpy,win);
-    }    
+    }
 }
 
 
 void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row, int col)
 {
     int dir;
-    
+
   if (Folders[folder].mapped ==ISMAPPED)
     {
       CloseFolder(folder);
       Folders[folder].mapped = NOTMAPPED;
       *LastMapped = -1;
     }
-  else 
+  else
     {
       int folderx, foldery, folderw, folderh;
       if (*LastMapped != -1)
@@ -1037,7 +1035,7 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row, int
 	}
       Folders[folder].mapped = ISMAPPED;
       if(num_columns < num_rows)
-	{	    
+	{
 	  if((base_x % display_width) > display_width / 2 ) {
 	      folderx = base_x+(col-Folders[folder].count)*BUTTONWIDTH-2;
 	      dir = DIR_TOLEFT;
@@ -1045,7 +1043,7 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row, int
 	  else {
 	      folderx = base_x+(col+1)*BUTTONHEIGHT+1;
 	      dir = DIR_TORIGHT;
-	  }	    
+	  }
 	  foldery = base_y+row*BUTTONHEIGHT;
 	  folderw = Folders[folder].count*BUTTONWIDTH;
 	  folderh = BUTTONHEIGHT;
@@ -1059,33 +1057,33 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row, int
 	  else
 	    folderx = (col+1)*BUTTONHEIGHT+1;
 */
-          if (ROWS) 
+          if (ROWS)
           {
             if ((base_y % display_height) > display_height / 2) {
 		foldery = base_y-(Folders[folder].count)*BUTTONHEIGHT-2;
 		dir = DIR_TOUP;
-	    }	      
+	    }
             else {
 		foldery = base_y+BUTTONHEIGHT+2;
 		dir = DIR_TODOWN;
-	    }	      
+	    }
             folderx = base_x;
 	    folderw = BUTTONWIDTH;
-	    folderh = (Folders[folder].count)*BUTTONHEIGHT;	      
+	    folderh = (Folders[folder].count)*BUTTONHEIGHT;
           }
           else
           {
 	    if((base_x % display_width) > display_width / 2 ) {
 		folderx = base_x-(Folders[folder].count)*BUTTONWIDTH-2;
 		dir = DIR_TOLEFT;
-	    }	      
+	    }
             else {
 		folderx = base_x+BUTTONWIDTH+1;
 		dir = DIR_TORIGHT;
 	    }
             foldery = base_y-1;
 	    folderh = BUTTONHEIGHT;
-	    folderw = (Folders[folder].count)*BUTTONWIDTH;	      
+	    folderw = (Folders[folder].count)*BUTTONWIDTH;
           }
         }
       else
@@ -1103,16 +1101,16 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row, int
 	  folderh = (Folders[folder].count)*BUTTONHEIGHT;
        	}
 
-#ifdef ENABLE_SOUND	
+#ifdef ENABLE_SOUND
 	PlaySound(WHEV_OPEN_FOLDER);
-#endif	
+#endif
 	XMoveWindow(dpy, Folders[folder].win, folderx, foldery);
-	OpenFolder(folder,folderx, foldery, folderw, folderh, dir);	
+	OpenFolder(folder,folderx, foldery, folderw, folderh, dir);
 	*LastMapped = folder;
     }
 }
 
-void 
+void
 DrawOutline(Drawable d, int w, int h)
 {
     if (NoBorder)
@@ -1121,7 +1119,7 @@ DrawOutline(Drawable d, int w, int h)
     XDrawLine( dpy, d, HiInnerGC, 0, 0, w-1, 0);
     /*
     XDrawLine( dpy, d, HiInnerGC, 0, 1, w-1, 1);
-*/	 
+*/
 /* bottom */
     XFillRectangle(dpy, d, NormalGC, 0,h-2,w-1,h-1);
 
@@ -1144,12 +1142,12 @@ void RedrawUnpushed(Window *win, int i, int j)
     } else {
 	XCopyArea( dpy, Buttons[CurrentButton].completeIcon,
 		  Buttons[CurrentButton].IconWin, NormalGC, 0, 0,
-		  Buttons[BACK_BUTTON].icons[0].w, 
+		  Buttons[BACK_BUTTON].icons[0].w,
 		  Buttons[BACK_BUTTON].icons[0].h,
 		  0,0);
-    }    
+    }
     RedrawWindow(win,0, CurrentButton, num_rows, num_columns);
-    
+
     RedrawUnpushedOutline(win, i, j);
 }
 
@@ -1159,8 +1157,8 @@ void RedrawUnpushedOutline(Window *win, int i, int j)
     if (NoBorder) {
       return;
     }
-    
-    XDrawLine( dpy, *win, HiInnerGC, 
+
+    XDrawLine( dpy, *win, HiInnerGC,
 	      j*BUTTONWIDTH-BUTTONWIDTH, i*BUTTONHEIGHT-BUTTONHEIGHT,
 	      j*BUTTONWIDTH,i*BUTTONHEIGHT-BUTTONHEIGHT);
 /*
@@ -1172,25 +1170,25 @@ void RedrawUnpushedOutline(Window *win, int i, int j)
     XDrawLine( dpy, *win, HiInnerGC, j*BUTTONWIDTH-BUTTONWIDTH,
 	      i*BUTTONHEIGHT-BUTTONHEIGHT+1, j*BUTTONWIDTH-BUTTONWIDTH,
 	      i*BUTTONHEIGHT-1);
-   /* 
+   /*
     XDrawLine( dpy, *win, HiInnerGC, j*BUTTONWIDTH
-	      -BUTTONWIDTH+1, i*BUTTONHEIGHT-BUTTONHEIGHT+2, 
+	      -BUTTONWIDTH+1, i*BUTTONHEIGHT-BUTTONHEIGHT+2,
 	      j*BUTTONWIDTH-BUTTONWIDTH+1 ,i*BUTTONHEIGHT-1);
     */
     /* right */
     XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH
 	      +BUTTONWIDTH-2, i*BUTTONHEIGHT-BUTTONHEIGHT+2, j*BUTTONWIDTH
 	      -BUTTONWIDTH+BUTTONWIDTH-2 ,i*BUTTONHEIGHT-1);
-    
+
     XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH
-	      +BUTTONWIDTH-1, i*BUTTONHEIGHT-BUTTONHEIGHT+1, 
+	      +BUTTONWIDTH-1, i*BUTTONHEIGHT-BUTTONHEIGHT+1,
 	      j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-1 ,i*BUTTONHEIGHT-1);
-    
+
     /* bottom */
     XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH
 	      -BUTTONWIDTH+1, i*BUTTONHEIGHT-1, j*BUTTONWIDTH-BUTTONWIDTH
 	      +BUTTONWIDTH-2,i*BUTTONHEIGHT-1);
-    
+
     XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH
 	      +1, i*BUTTONHEIGHT-2, j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-2,
 	      i*BUTTONHEIGHT-2);
@@ -1231,11 +1229,11 @@ void RedrawPushedOutline(Window *win, int i, int j)
 	      -BUTTONHEIGHT+1);
  */
     /* Left Hilite */
-    
+
     XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH,
 	      i*BUTTONHEIGHT-BUTTONHEIGHT+1, j*BUTTONWIDTH-BUTTONWIDTH,
 	      i*BUTTONHEIGHT-1);
-   /* 
+   /*
     XDrawLine( dpy, *win, NormalGC, j*BUTTONWIDTH-BUTTONWIDTH
 	      +1, i*BUTTONHEIGHT-BUTTONHEIGHT+2, j*BUTTONWIDTH-BUTTONWIDTH+1,
 	      i*BUTTONHEIGHT-1);
@@ -1244,41 +1242,41 @@ void RedrawPushedOutline(Window *win, int i, int j)
 	gc1 = HiReliefGC;
     } else {
 	gc1 = HiInnerGC;
-    }      
+    }
 
     /* Right Hilite */
-    
+
     XDrawLine( dpy, *win, HiReliefGC, j*BUTTONWIDTH
 	      -BUTTONWIDTH+BUTTONWIDTH-2, i*BUTTONHEIGHT-BUTTONHEIGHT+2,
 	      j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-2 ,i*BUTTONHEIGHT-1);
-    
+
     XDrawLine( dpy, *win, gc1, j*BUTTONWIDTH
 	      -BUTTONWIDTH+BUTTONWIDTH-1, i*BUTTONHEIGHT-BUTTONHEIGHT+1,
 	      j*BUTTONWIDTH-BUTTONWIDTH+BUTTONWIDTH-1 ,i*BUTTONHEIGHT-1);
-    
-    /* Bottom Hilite */    
+
+    /* Bottom Hilite */
     XDrawLine( dpy, *win, gc1, j*BUTTONWIDTH
 	      -BUTTONWIDTH+1, i*BUTTONHEIGHT-1, j*BUTTONWIDTH-BUTTONWIDTH
 	      +BUTTONWIDTH-2,i*BUTTONHEIGHT-1);
-    
+
     XDrawLine( dpy, *win, HiReliefGC, j*BUTTONWIDTH
 	      -BUTTONWIDTH+1, i*BUTTONHEIGHT-2, j*BUTTONWIDTH-BUTTONWIDTH
 	      +BUTTONWIDTH-2,i*BUTTONHEIGHT-2);
 }
 /************************************************************************
  *
- * Draw the window 
+ * Draw the window
  *
  ***********************************************************************/
-void RedrawWindow(Window *win, int firstbutton, int newbutton, 
+void RedrawWindow(Window *win, int firstbutton, int newbutton,
 		  int num_rows, int num_columns)
 {
   int i,j,button;
   XEvent dummy;
-  
+
   if(ready < 1)
     return;
-  
+
   while (XCheckTypedWindowEvent (dpy, *win, Expose, &dummy));
 
   for(i=0;i<num_rows;i++)
@@ -1298,21 +1296,21 @@ void RedrawWindow(Window *win, int firstbutton, int newbutton,
 
 
 /*******************************************************************
- * 
+ *
  * Create GC's
- * 
+ *
  ******************************************************************/
 void CreateShadowGC(void)
 {
   XGCValues gcv;
   unsigned long gcm;
-    
+
     if(d_depth < 2)
     {
       back_pix = GetColor("white");
       fore_pix = GetColor("black");
     }
-  else 
+  else
     {
       if (TextureType>0 && TextureType < 128) {
 	  MakeShadowColors(dpy, FromColor, ToColor, &fore_pix, &light_grey);
@@ -1320,14 +1318,14 @@ void CreateShadowGC(void)
 	  back_pix = GetColor("grey40");
 	  fore_pix = GetColor("grey17");
 	  light_grey = GetColor("white");
-      }	
+      }
     }
   gcm = GCForeground|GCBackground|GCSubwindowMode;
   gcv.subwindow_mode = IncludeInferiors;
-      
+
   gcv.foreground = fore_pix;
   gcv.background = back_pix;
-  NormalGC = XCreateGC(dpy, Root, gcm, &gcv);  
+  NormalGC = XCreateGC(dpy, Root, gcm, &gcv);
 
   gcv.foreground = back_pix;
   gcv.background = fore_pix;
@@ -1336,17 +1334,17 @@ void CreateShadowGC(void)
   gcv.foreground = light_grey;
   gcv.background = fore_pix;
   HiInnerGC = XCreateGC(dpy, Root, gcm, &gcv);
-    
+
   gcm = GCForeground;
   gcv.foreground = fore_pix;
   MaskGC = XCreateGC(dpy, Root, gcm, &gcv);
-    
-  DefGC = DefaultGC(dpy, screen);    
+
+  DefGC = DefaultGC(dpy, screen);
 }
 
 /************************************************************************
  *
- * Sizes and creates the window 
+ * Sizes and creates the window
  *
  ***********************************************************************/
 void CreateWindow(void)
@@ -1358,13 +1356,13 @@ void CreateWindow(void)
 
   /* Allow for multi-width/height buttons */
   first_avail_button = num_buttons;
-  
+
   if(num_buttons > MAX_BUTTONS)
     {
       fprintf(stderr,"%s: Out of Buttons!\n",MyName);
       exit(0);
     }
-      
+
   /* size and create the window */
   if((num_rows == 0)&&(num_columns == 0))
     num_columns = 1;
@@ -1409,11 +1407,11 @@ void CreateWindow(void)
 	  mysizehints.y = DisplayHeight(dpy,screen) + y - mysizehints.height-2;
 	  gravity = SouthWestGravity;
 	}
-      else 
+      else
 	mysizehints.y = y;
 
       if((x < 0) && (y < 0))
-	gravity = SouthEastGravity;	
+	gravity = SouthEastGravity;
       mysizehints.flags |= USPosition;
     }
 
@@ -1446,7 +1444,7 @@ void CreateWindow(void)
       XSetWMNormalHints(dpy,Folders[i].win,&mysizehints);
       XSelectInput(dpy, Folders[i].win, MW_EVENTS);
      }
-  
+
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
   XSetWMNormalHints(dpy,main_win,&mysizehints);
@@ -1462,10 +1460,10 @@ void nocolor(char *a, char *b)
 }
 
 /****************************************************************************
- * 
+ *
  * Loads a single color
  *
- ****************************************************************************/ 
+ ****************************************************************************/
 Pixel GetColor(char *name)
 {
   XColor color;
@@ -1473,11 +1471,11 @@ Pixel GetColor(char *name)
 
   XGetWindowAttributes(dpy,Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color)) 
+   if (!XParseColor (dpy, attributes.colormap, name, &color))
      {
        nocolor("parse",name);
      }
-   else if(!XAllocColor (dpy, attributes.colormap, &color)) 
+   else if(!XAllocColor (dpy, attributes.colormap, &color))
      {
        nocolor("alloc",name);
      }
@@ -1498,7 +1496,7 @@ void DeadPipe(int nonsense)
     write(PlayerChannel[1],&val,sizeof(val));
     if (SoundThread != 0)
       kill(SoundThread,SIGUSR1);
-#endif    
+#endif
   for(i=0;i<num_rows;i++)
     for(j=0;j<num_columns; j++)
       {
@@ -1517,13 +1515,12 @@ void DeadPipe(int nonsense)
 
 int TOTHEFOLDER = -1;
 /*****************************************************************************
- * 
+ *
  * This routine is responsible for reading and parsing the config file
  *
  ****************************************************************************/
 void ParseOptions(char *filename)
 {
-  char line[256];
   char *tline,*orig_tline,*tmp;
   int Clength, len;
 
@@ -1545,15 +1542,15 @@ void ParseOptions(char *filename)
 	      tmp++;
 	    }
 	  tmp[strlen(tmp)-1] = 0;
-	  
+
 	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
-	  if (flags & WidthValue) 
+	  if (flags & WidthValue)
 	    w = width;
-	  if (flags & HeightValue) 
+	  if (flags & HeightValue)
 	    h = height;
-	  if (flags & XValue) 
+	  if (flags & XValue)
 	    x = g_x;
-	  if (flags & YValue) 
+	  if (flags & YValue)
 	    y = g_y;
 	}
       else if((strlen(&tline[0])>1)&&
@@ -1656,7 +1653,7 @@ void ParseOptions(char *filename)
 	    if ((tline[Clength+9]!='M') && (tline[Clength+9]!='m'))
 	      AnimationStyle = 1;
         }
-#ifdef ENABLE_SOUND	
+#ifdef ENABLE_SOUND
 	else if((strlen(&tline[0])>1)&&
 		(strncasecmp(tline,CatString3("*",MyName,"Player"),Clength+7)==0))
         {
@@ -1667,13 +1664,13 @@ void ParseOptions(char *filename)
 	    bind_sound(&tline[Clength+6]);
 	    SoundActive = 1;
         }
-#endif	
+#endif
 	 else if((strlen(&tline[0])>1)
 		  &&(strncasecmp(tline,CatString3("*", MyName, ""),Clength+1)==0)
 		  && (num_buttons < MAX_BUTTONS))
 	{
 	    /* check if this is a invalid option */
-	    if (!isspace(tline[Clength+1])) 
+	    if (!isspace(tline[Clength+1]))
 	      fprintf(stderr,"%s:invalid option %s\n",MyName,tline);
 	    else
 	      match_string(&tline[Clength+1]);
@@ -1686,16 +1683,16 @@ void ParseOptions(char *filename)
 	{
 	  CopyString(&pixmapPath,&tline[10]);
 	}
-#ifdef ENABLE_SOUND	
+#ifdef ENABLE_SOUND
       else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"*AudioDir",9)==0))
 	{
 	  CopyString(&SoundPath,&tline[9]);
-	} 
+	}
       else if((strlen(&tline[0])>1)&&(strncasecmp(tline,"ModulePath",11)==0))
 	{
 	  CopyString(&ModulePath,&tline[11]);
 	}
-#endif	
+#endif
       GetConfigLine(fd, &tline);
       orig_tline = tline;
     }
@@ -1719,7 +1716,7 @@ char *get_token(char *tline, int index)
     char *start, *end;
     int i,c,size;
     char *word;
-    
+
     index++; /* index is 0 based */
     size = strlen(tline);
     i=c=0;
@@ -1746,14 +1743,14 @@ char *get_token(char *tline, int index)
 }
 
 /**************************************************************************
- * 
+ *
  * Parses a sound binding
- * 
+ *
  **************************************************************************/
 void bind_sound(char *tline)
 {
     char *event, *sound;
-    
+
     event = get_token(tline,0);
     if (event==NULL) {
 	fprintf(stderr,"%s:bad sound binding %s\n",MyName,tline);
@@ -1769,7 +1766,7 @@ void bind_sound(char *tline)
 	Sounds[WHEV_OPEN_FOLDER]=sound;
     } else if (strcmp(event,"close_folder")==0) {
 	Sounds[WHEV_CLOSE_FOLDER]=sound;
-    } else if (strcmp(event,"open_main")==0) { 
+    } else if (strcmp(event,"open_main")==0) {
 	Sounds[WHEV_OPEN_MAIN]=sound;
     } else if (strcmp(event,"close_main")==0) {
 	Sounds[WHEV_CLOSE_MAIN]=sound;
@@ -1788,7 +1785,7 @@ void bind_sound(char *tline)
 
 /**************************************************************************
  *
- * Parses a button command line from the config file 
+ * Parses a button command line from the config file
  *
  *************************************************************************/
 void match_string(char *tline)
@@ -1801,7 +1798,7 @@ void match_string(char *tline)
   while(isspace(*tline)&&(*tline != '\n')&&(*tline != 0))
     tline++;
 
-  /* read next word. Its the button label. Users can specify "" 
+  /* read next word. Its the button label. Users can specify ""
    * NoIcon, or whatever to skip the label */
   /* read to next space */
   start = tline;
@@ -1833,10 +1830,10 @@ void match_string(char *tline)
       actual->folder = num_folders;
       actual->parent = &Folders[num_folders].win;
     };
-  
+
   actual->title = ptr;
 
-  /* read next word. Its the icon bitmap/pixmap label. Users can specify "" 
+  /* read next word. Its the icon bitmap/pixmap label. Users can specify ""
    * NoIcon, or whatever to skip the label */
   /* read to next space */
   start = end;
@@ -1889,14 +1886,14 @@ void match_string(char *tline)
 	  for(i=0;i<actual->iconno;i++) {
 	      free(actual->icons[i].file);
 	  }
-	  actual->iconno=0;	  
+	  actual->iconno=0;
       } else {
 	  num_folderbuttons++;
 	  free(ptr);
 	  for(i=0;i<actual->iconno;i++) {
 	      free(actual->icons[i].file);
 	  }
-	  actual->iconno=0;	  
+	  actual->iconno=0;
 	  fprintf(stderr,"Drop in Folders not supported. Ignoring option\n");
 	  return;
       }
@@ -1913,7 +1910,7 @@ void match_string(char *tline)
       strncpy(ptr,tline,len);
       ptr[len]=0;
   } else
-#endif        
+#endif
   if(strncasecmp(tline,"swallow",7)==0 || strncasecmp(tline,"maxswallow",10)==0)
     {
       /* Look for swallow "identifier", in which
@@ -1951,13 +1948,13 @@ void match_string(char *tline)
 	{
 	  ptr[0] = 0;
           actual->module = 1;
-	}	  
+	}
       else
 	strcpy(ptr,"Exec ");
       i2 = strlen(ptr);
       strncat(ptr,&tline[n],len);
       ptr[i2+len]=0;
-      SendText(fd,ptr,0);     
+      SendText(fd,ptr,0);
       free(ptr);
       actual->action = NULL;
     }
@@ -1978,7 +1975,7 @@ void match_string(char *tline)
       ptr = safemalloc(len+1);
       strncpy(ptr,tline,len);
       ptr[len]=0;
-      
+
       if (strncmp(ptr,"Folder",6)==0)
 	{
 	  TOTHEFOLDER = 0;
@@ -1999,7 +1996,7 @@ void change_window_name(char *str)
   XTextProperty name;
   int i;
 
-  if (XStringListToTextProperty(&str,1,&name) == 0) 
+  if (XStringListToTextProperty(&str,1,&name) == 0)
     {
       fprintf(stderr,"%s: cannot allocate window name",MyName);
       return;
@@ -2059,7 +2056,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       if(miss_counter > 100)
 	DeadPipe(0);
     }
-  
+
   if(FD_ISSET(fd[1], &in_fdset))
     {
       if((count = ReadFvwmPacket(fd[1], header, &body)) > 0)
@@ -2080,7 +2077,7 @@ void CheckForHangon(unsigned long *body)
   for(i=0;i<num_rows;i++)
     for(j=0;j<num_columns; j++)
       {
-	button = i*num_columns + j;      
+	button = i*num_columns + j;
 	if(Buttons[button].hangon != NULL)
 	  {
 	    if(strcmp(cbody,Buttons[button].hangon)==0)
@@ -2112,7 +2109,7 @@ void CheckForHangon(unsigned long *body)
 
 /**************************************************************************
  *
- * Process window list messages 
+ * Process window list messages
  *
  *************************************************************************/
 void process_message(unsigned long type,unsigned long *body)
@@ -2162,7 +2159,7 @@ void process_message(unsigned long type,unsigned long *body)
 void my_send_clientmessage (Window w, Atom a, Time timestamp)
 {
   XClientMessageEvent ev;
-  
+
   ev.type = ClientMessage;
   ev.window = w;
   ev.message_type = _XA_WM_PROTOCOLS;
@@ -2182,7 +2179,7 @@ void swallow(unsigned long *body)
   for(i=0;i<num_rows;i++)
     for(j=0;j<num_columns; j++)
       {
-	button = i*num_columns + j; 
+	button = i*num_columns + j;
 	if((Buttons[button].IconWin == (Window)body[0])&&
 	   (Buttons[button].swallow == 2))
 	  {
@@ -2221,18 +2218,18 @@ void swallow(unsigned long *body)
 	      Buttons[button].icons[0].h = ICON_WIN_HEIGHT;
 	    }
 	    if (!XGetWMNormalHints (dpy, Buttons[button].IconWin,
-				    &Buttons[button].hints, 
+				    &Buttons[button].hints,
 				    &supplied))
 	      Buttons[button].hints.flags = 0;
-	    
+
 	    XResizeWindow(dpy,(Window)body[0], Buttons[button].icons[0].w,
 			  Buttons[button].icons[0].h);
 	    XMoveWindow(dpy,Buttons[button].IconWin,
 			j*BUTTONWIDTH +
 			(BUTTONWIDTH - Buttons[button].icons[0].w)/2,
-			i*BUTTONHEIGHT + 
+			i*BUTTONHEIGHT +
 			(BUTTONHEIGHT - Buttons[button].icons[0].h)/2);
-	    
+
 	    XFetchName(dpy, Buttons[button].IconWin, &temp);
 	    XClearArea(dpy, main_win,j*BUTTONWIDTH, i*BUTTONHEIGHT,
 		       BUTTONWIDTH,BUTTONHEIGHT,0);
@@ -2294,14 +2291,14 @@ void FindLockMods(void)
  *
  *      The general algorithm, especially the aspect ratio stuff, is
  *      borrowed from uwm's CheckConsistency routine.
- * 
+ *
  ***********************************************************************/
 void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 {
 #define makemult(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 #define _min(a,b) (((a) < (b)) ? (a) : (b))
 
-  
+
   int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
   int baseWidth, baseHeight;
   int dwidth = *widthp, dheight = *heightp;
@@ -2335,7 +2332,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
       baseWidth = 1;
       baseHeight = 1;
     }
-  
+
   if(hints->flags & PMaxSize)
     {
       maxWidth = hints->max_width;
@@ -2356,24 +2353,24 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
       xinc = 1;
       yinc = 1;
     }
-  
+
   /*
    * First, clamp to min and max values
    */
   if (dwidth < minWidth) dwidth = minWidth;
   if (dheight < minHeight) dheight = minHeight;
-  
+
   if (dwidth > maxWidth) dwidth = maxWidth;
   if (dheight > maxHeight) dheight = maxHeight;
-  
-  
+
+
   /*
    * Second, fit to base + N * inc
    */
   dwidth = ((dwidth - baseWidth) / xinc * xinc) + baseWidth;
   dheight = ((dheight - baseHeight) / yinc * yinc) + baseHeight;
-  
-  
+
+
   /*
    * Third, adjust for aspect ratio
    */
@@ -2393,16 +2390,16 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
    *
    * minAspectX * dheight > minAspectY * dwidth
    * maxAspectX * dheight < maxAspectY * dwidth
-   * 
+   *
    */
-  
+
   if (hints->flags & PAspect)
     {
       if (minAspectX * dheight > minAspectY * dwidth)
 	{
 	  delta = makemult(minAspectX * dheight / minAspectY - dwidth,
 			   xinc);
-	  if (dwidth + delta <= maxWidth) 
+	  if (dwidth + delta <= maxWidth)
 	    dwidth += delta;
 	  else
 	    {
@@ -2411,7 +2408,7 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 	      if (dheight - delta >= minHeight) dheight -= delta;
 	    }
 	}
-      
+
       if (maxAspectX * dheight < maxAspectY * dwidth)
 	{
 	  delta = makemult(dwidth * maxAspectY / maxAspectX - dheight,
@@ -2419,14 +2416,14 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 	  if (dheight + delta <= maxHeight)
 	    dheight += delta;
 	  else
-	    { 
+	    {
 	      delta = makemult(dwidth - maxAspectX*dheight/maxAspectY,
 			       xinc);
 	      if (dwidth - delta >= minWidth) dwidth -= delta;
 	    }
 	}
     }
-  
+
   *widthp = dwidth;
   *heightp = dheight;
   return;
@@ -2437,13 +2434,13 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
 void   PlaySound(int event)
 {
     int timestamp;
-    
-    if (!SoundActive) 
+
+    if (!SoundActive)
       return;
     if (Sounds[event]==NULL) return;
     write(PlayerChannel[1],&event,sizeof(event));
     timestamp = clock();
-    write(PlayerChannel[1],&timestamp,sizeof(timestamp));    
+    write(PlayerChannel[1],&timestamp,sizeof(timestamp));
     /*
     kill(SoundThread,SIGUSR1);
      */

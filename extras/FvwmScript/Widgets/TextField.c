@@ -13,15 +13,15 @@ void InitTextField(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
 
  mask=0;
- Attr.cursor=XCreateFontCursor(xobj->display,XC_xterm); 
+ Attr.cursor=XCreateFontCursor(xobj->display,XC_xterm);
  mask|=CWCursor;		/* Curseur pour la fenetre */
  Attr.background_pixel=xobj->TabColor[back].pixel;
  mask|=CWBackPixel;
@@ -43,7 +43,7 @@ void InitTextField(struct XObj *xobj)
  if (xobj->value>strlen(xobj->title))
   xobj->value=strlen(xobj->title);
  xobj->value2=xobj->value;
- 
+
  /* Redimensionnement du widget */
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  xobj->height=asc+desc+10;
@@ -106,7 +106,7 @@ void DrawTextField(struct XObj *xobj)
  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&y1,&desc,&struc);
  XDrawImageString(xobj->display,xobj->win,xobj->gc,5,y1+5,xobj->title,strlen(xobj->title));
- 
+
  /* Dessin de la zone selectionnee */
  XSetFunction(xobj->display,xobj->gc,GXinvert);
  if (xobj->value2>xobj->value)		/* Curseur avant la souris */
@@ -143,7 +143,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
  unsigned long longueur,octets_restant;
  unsigned char *donnees="";
  XRectangle rect;
- 
+
  /* On deplace le curseur a la position de la souris */
  /* On recupere la position de la souris */
  switch (EvtButton->button)
@@ -218,7 +218,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
      SelectOneTextField(xobj);
     }
    break;
-   
+
    case Button2:			/* Colle le texte */
     /* Si l'application possede pas la selection, elle la demande */
     /* sinon elle lit son presse papier */
@@ -256,7 +256,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
      SendMsg(xobj,SingleClic);
     }
     break;
-   
+
    case Button3:		/* Appuie sur le troisieme bouton */
     XQueryPointer(xobj->display,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
     x2=x2-xobj->x;
@@ -331,7 +331,7 @@ void EvtKeyTextField(struct XObj *xobj,XKeyEvent *EvtKey)
  int i,x2;
  char car[11];
  char* carks2;
- char* carks;
+ char* carks = NULL;
  KeySym ks;
  int Size;
  int NewPos;

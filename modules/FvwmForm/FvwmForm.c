@@ -251,7 +251,7 @@ int FontWidth (XFontStruct *xfs)
 /* read the configuration file */
 void ReadConfig ()
 {
-  FILE *fp, *fopen();
+  FILE *fopen();
   int prog_name_len, i, j, l, extra;
   char *line_buf;
   char *cp;

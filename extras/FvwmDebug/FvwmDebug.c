@@ -35,7 +35,7 @@ int fd[2];
 pid_t spawn_xtee(void)
 {
   pid_t pid;
-  int PIPE[2],argno=3,i;
+  int PIPE[2],argno=3;
   char *argarray[256];
 
   setvbuf(stdout,NULL,_IOLBF,0); /* line buffered */
@@ -101,15 +101,15 @@ int main(int argc, char **argv)
     }
 
   /* Dead pipe == Fvwm died */
-  signal (SIGPIPE, DeadPipe);  
-  
+  signal (SIGPIPE, DeadPipe);
+
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
 
 #if 0
   spawn_xtee();
 #endif
-  
+
   /* Data passed in command line */
   fprintf(stderr,"Application Window 0x%s\n",argv[4]);
   fprintf(stderr,"Application Context %s\n",argv[5]);
@@ -133,12 +133,10 @@ int main(int argc, char **argv)
 void Loop(int *fd)
 {
   unsigned long header[3], *body;
-  char *cbody;
-  int body_length,count,count2=0, total;
 
   while(1)
     {
-      if(count = ReadFvwmPacket(fd[1],header,&body) > 0)
+      if(ReadFvwmPacket(fd[1],header,&body) > 0)
 	{
 	  process_message(header[1],body);
 	  free(body);
@@ -258,8 +256,8 @@ void list_add(unsigned long *body)
   fprintf(stderr,"\t window max %ld\n",(long)body[17]);
   fprintf(stderr,"\t window max %ld\n",(long)body[18]);
   fprintf(stderr,"\t icon label window %lx\n",body[19]);
-  fprintf(stderr,"\t icon pixmap window %lx\n",body[20]);  
-  fprintf(stderr,"\t window gravity %lx\n",body[21]);  
+  fprintf(stderr,"\t icon pixmap window %lx\n",body[20]);
+  fprintf(stderr,"\t window gravity %lx\n",body[21]);
 }
 
 /***********************************************************************
@@ -292,7 +290,7 @@ void list_configure(unsigned long *body)
   fprintf(stderr,"\t window max %ld\n",(long)body[18]);
   fprintf(stderr,"\t icon label window %lx\n",body[19]);
   fprintf(stderr,"\t icon pixmap window %lx\n",body[20]);
-  fprintf(stderr,"\t window gravity %lx\n",body[21]);  
+  fprintf(stderr,"\t window gravity %lx\n",body[21]);
 }
 
 /***********************************************************************

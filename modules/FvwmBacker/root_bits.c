@@ -28,30 +28,17 @@ unsigned long GetColor(char *name)
   XColor color;
 
   color.pixel = 0;
-  if (!XParseColor (dpy, DefaultColormap(dpy,screen), name, &color)) 
+  if (!XParseColor (dpy, DefaultColormap(dpy,screen), name, &color))
     {
       fprintf(stderr,"%s:  unknown color \"%s\"\n",Module,name);
       exit(1);
     }
-  else if(!XAllocColor (dpy, DefaultColormap(dpy,screen), &color)) 
+  else if(!XAllocColor (dpy, DefaultColormap(dpy,screen), &color))
     {
       fprintf(stderr, "%s:  unable to allocate color for \"%s\"\n",
 	      Module, name);
       exit(1);
     }
-
-  /* Dominik Vogt: in the original code there was this:
-   *
-   * #define Dynamic 1
-   *
-   * if ((ecolor.pixel != BlackPixel(dpy, screen)) &&
-   *	(ecolor.pixel != WhitePixel(dpy, screen)) &&
-   *	(DefaultVisual(dpy, screen)->class & Dynamic))
-   * return(ecolor.pixel);
-   *
-   * If the condition is true, the value is returned, if not, some random
-   * value from the stack was used instead. If anybody knows what this is
-   * good for feel free to change this. */
 
   return color.pixel;
 }

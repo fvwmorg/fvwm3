@@ -64,6 +64,9 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE, ButtonPress))
     return;
 
+  if (tmp_win == NULL)
+    return;
+
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
 		 &JunkX, &JunkY, &JunkX, &JunkY, &button_mask);
   button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;

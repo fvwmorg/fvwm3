@@ -20,7 +20,7 @@
 extern Display *dpy;
 extern Window Root, win;
 extern int win_width, win_height, win_y, win_border, d_depth,
-       ScreenWidth, ScreenHeight, RowHeight; 
+       ScreenWidth, ScreenHeight, RowHeight;
 extern Pixel back, fore;
 extern int Clength;
 extern GC blackgc, hilite, shadow, checkered;
@@ -54,7 +54,8 @@ TipStruct Tip = { 0, 0, 0, 0,  0, 0,   0,   0, NULL, None };
 
 
 /* Parse 'goodies' specific resources */
-void GoodiesParseConfig(char *tline, char *Module) {
+void GoodiesParseConfig(char *tline, char *Module)
+{
   if(strncasecmp(tline,CatString3(Module, "BellVolume",""),
 				Clength+10)==0) {
     BellVolume = atoi(&tline[Clength+11]);
@@ -63,7 +64,7 @@ void GoodiesParseConfig(char *tline, char *Module) {
     if (strncasecmp(&tline[Clength+11], "None", 4) == 0) {
       NoMailCheck = True;
     } else {
-      UpdateString(&mailpath, &tline[Clength+11]); 
+      UpdateString(&mailpath, &tline[Clength+8]);
     }
   } else if(strncasecmp(tline,CatString3(Module, "ClockFormat",""),
 			  Clength+11)==0) {
@@ -95,7 +96,7 @@ void InitGoodies() {
   char tmp[1024];
   XGCValues gcval;
   unsigned long gcmask;
-  
+
   if (mailpath == NULL) {
     strcpy(tmp, DEFAULT_MAIL_PATH);
     pwent = getpwuid(getuid());
@@ -111,14 +112,14 @@ void InitGoodies() {
   }
 
   fontheight = StatusFont->ascent + StatusFont->descent;
-  
+
   gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
   gcval.foreground = fore;
   gcval.background = back;
   gcval.font = StatusFont->fid;
   gcval.graphics_exposures = False;
   statusgc = XCreateGC(dpy, Root, gcmask, &gcval);
-  
+
   if (!NoMailCheck) {
     mailpix = XCreatePixmapFromBitmapData(dpy, win, (char *)minimail_bits,
 					  minimail_width, minimail_height,
@@ -126,7 +127,7 @@ void InitGoodies() {
     wmailpix = XCreatePixmapFromBitmapData(dpy, win, (char *)minimail_bits,
 					   minimail_width, minimail_height,
 					   fore,GetColor("white"), d_depth);
-    
+
     goodies_width += minimail_width + 7;
   }
   if (clockfmt) {
@@ -146,10 +147,10 @@ void InitGoodies() {
 void Draw3dBox(Window wn, int x, int y, int w, int h)
 {
   XClearArea(dpy, wn, x, y, w, h, False);
-  
+
   XDrawLine(dpy, win, shadow, x, y, x+w-2, y);
   XDrawLine(dpy, win, shadow, x, y, x, y+h-2);
-  
+
   XDrawLine(dpy, win, hilite, x, y+h-1, x+w-1, y+h-1);
   XDrawLine(dpy, win, hilite, x+w-1, y+h-1, x+w-1, y);
 }

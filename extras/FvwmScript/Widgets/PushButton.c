@@ -15,16 +15,16 @@ void InitPushButton(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
 
 
  mask=0;
- Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2); 
+ Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2);
  mask|=CWCursor;
  Attr.background_pixel=xobj->TabColor[back].pixel;
  mask|=CWBackPixel;
@@ -45,7 +45,7 @@ void InitPushButton(struct XObj *xobj)
  else
   XSetFont(xobj->display,xobj->gc,xobj->xfont->fid);
  XSetLineAttributes(xobj->display,xobj->gc,1,LineSolid,CapRound,JoinMiter);
- 
+
  /* Redimensionnement du widget */
  str=(char*)GetMenuTitle(xobj->title,1);
  if (xobj->icon==NULL)
@@ -104,10 +104,10 @@ void EvtMousePushButton(struct XObj *xobj,XButtonEvent *EvtButton)
  int x1,x2,y1,y2,i,j,oldy;
  Window Win1,Win2,WinPop;
  Window WinBut=0;
- int In;
+ int In = 0;
  char *str;
  int x,y,hOpt,yMenu,hMenu,wMenu;
- int oldvalue,newvalue;
+ int oldvalue = 0,newvalue;
  unsigned long mask;
  XSetWindowAttributes Attr;
  int asc,desc,dir;
@@ -219,7 +219,7 @@ void EvtMousePushButton(struct XObj *xobj,XButtonEvent *EvtButton)
     mask=0;
     Attr.background_pixel=xobj->TabColor[back].pixel;
     mask|=CWBackPixel;
-    Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2); 
+    Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2);
     mask|=CWCursor;		/* Curseur pour la fenetre */
     Attr.override_redirect=True;
     mask|=CWOverrideRedirect;
@@ -250,7 +250,7 @@ void EvtMousePushButton(struct XObj *xobj,XButtonEvent *EvtButton)
      SelectMenu(xobj,WinPop,hOpt,newvalue,1);
      oldvalue=newvalue;
     }
-   } 
+   }
   }
   while (!XCheckTypedEvent(xobj->display,ButtonRelease,&event));
   XDestroyWindow(xobj->display,WinPop);

@@ -178,7 +178,9 @@ typedef struct MenuRoot
 #ifdef GRADIENT_BUTTONS
     struct
     {
-      XImage *image; /* storage pointer for selected item */
+      Pixmap stored;
+      int width;
+      int height;
       int y;
     } stored_item;
 #endif
@@ -197,6 +199,7 @@ typedef struct MenuRoot
     short width2;		/* width of the menu for 2nd col */
     short width0;               /* width of the menu-left-picture col */
     short items;		/* number of items in the menu */
+    Bool backgroundset;         /* is win background set for this menu ?? */
     Bool in_use;
     int func;
     Picture *sidePic;

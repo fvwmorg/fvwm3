@@ -955,7 +955,7 @@ void IfThen (int NbArg,long *TabArg)
  char *arg[10];
  int i,j;
  int CurrArg=0;
- int IdFuncComp;
+ int IdFuncComp = 0;
 
  /* Verification de la condition */
  for (j=0;j<NbArg-2;j++)

@@ -1,10 +1,10 @@
-/* FvwmTaskBar Module for Fvwm. 
+/* FvwmTaskBar Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
  *
  * The functions in this source file are the original work of Mike Finger.
- * 
+ *
  * No guarantees or warantees or anything are provided or implied in any way
  * whatsoever. Use this program at your own risk. Permission to use this
  * program for any purpose is given, as long as the copyright is kept intact.
@@ -55,7 +55,7 @@ Item *new;
 ******************************************************************************/
 void AddItemName(List *list, char *string, long flags) {
   Item *new;
-  
+
   new = (Item *)safemalloc(sizeof(Item));
   new->id = 0L;
   new->name = NULL;
@@ -136,7 +136,7 @@ int UpdateNameItem(List *list, char *string, long id, long flags) {
     return i;
   }
 }
-  
+
 /******************************************************************************
   FreeItem - Frees allocated space for an Item
 ******************************************************************************/
@@ -194,15 +194,15 @@ Item *temp,*temp2;
 ******************************************************************************/
 void PrintList(List *list)
 {
-Item *temp;
+  Item *temp;
   ConsoleMessage("List of Items:\n");
   ConsoleMessage("   %10s %-15s %-15s %-15s %-15s Flgs\n","ID","Name","I-Name",
-    "R-Name","R-Class");
+		 "R-Name","R-Class");
   ConsoleMessage("   ---------- --------------- --------------- --------------- --------------- ----\n");
   for(temp=list->head;temp!=NULL;temp=temp->next) {
     ConsoleMessage("   %10ld %-15.15s %4d\n",temp->id,
-      (temp->name==NULL) ? "<null>" : temp->name,
-       temp->flags);
+		   (temp->name==NULL) ? "<null>" : temp->name,
+		   temp->flags);
   }
 }
 

@@ -13,15 +13,15 @@ void InitRadioButton(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]); 
+ MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
  MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
 
  mask=0;
- Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2); 
+ Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2);
  mask|=CWCursor;		/* Curseur pour la fenetre */
  Attr.background_pixel=xobj->TabColor[back].pixel;
  mask|=CWBackPixel;
@@ -68,15 +68,15 @@ void DrawRadioButton(struct XObj *xobj)
  /* Dessin du cercle arrondi */
  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
  XDrawArc(xobj->display,xobj->win,xobj->gc,1,j-11,11,11,45*64,180*64);
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);  
- XDrawArc(xobj->display,xobj->win,xobj->gc,1,j-11,11,11,225*64,180*64); 
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[white].pixel);  
+ XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
+ XDrawArc(xobj->display,xobj->win,xobj->gc,1,j-11,11,11,225*64,180*64);
+ XSetForeground(xobj->display,xobj->gc,xobj->TabColor[white].pixel);
  XFillArc(xobj->display,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[black].pixel);  
+ XSetForeground(xobj->display,xobj->gc,xobj->TabColor[black].pixel);
  XDrawArc(xobj->display,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
  if (xobj->value)
  {
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[black].pixel);  
+  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[black].pixel);
   XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
  }
 
@@ -95,7 +95,7 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
  int x1,x2,y1,y2,i,j;
  Window Win1,Win2;
  Window WinBut=0;
- int In;
+ int In = 0;
 
  j=xobj->height/2+3;
  i=(xobj->width-XTextWidth(xobj->xfont,xobj->title,strlen(xobj->title)))/2;
@@ -112,7 +112,7 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	   {
 	    WinBut=Win2;
 	    /* Mouse on button */
-	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);  
+	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
 	    XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
 	    In=1;
 	   }
@@ -121,16 +121,16 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	    if (Win2==WinBut)
 	    {
 	    /* Mouse on button */
-	     XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);  
-	     XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64); 
+	     XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
+	     XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
 	     In=1;
 	    }
 	    else if (In)
 	    {
 	     In=0;
 	     /* Mouse not on button */
-	     XSetForeground(xobj->display,xobj->gc,xobj->TabColor[white].pixel);  
-	     XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64); 
+	     XSetForeground(xobj->display,xobj->gc,xobj->TabColor[white].pixel);
+	     XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
 	    }
 	   }
 	  break;
@@ -141,14 +141,14 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	   {
 	    In=1;
 	    /* Mouse on button */
-	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);  
-	    XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64); 
+	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
+	    XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
 	   }
 	   else if (In)
 	   {
 	    /* Mouse not on button */
-	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[white].pixel);  
-	    XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64); 
+	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[white].pixel);
+	    XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
 	    In=0;
 	   }
 	  break;
@@ -159,13 +159,13 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	   {
 	    /* Envoie d'un message vide de type SingleClic pour un clique souris */
 	    xobj->value=1;
-	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[black].pixel);  
+	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[black].pixel);
 	    XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
 	    SendMsg(xobj,SingleClic);
 	   }
 	   else if (xobj->value)
 	   {
-	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[black].pixel);  
+	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[black].pixel);
 	    XFillArc(xobj->display,xobj->win,xobj->gc,3,j-9,7,7,0*64,360*64);
 	   }
 	  break;

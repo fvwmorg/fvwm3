@@ -240,9 +240,8 @@ struct timeval tv;
 ******************************************************************************/
 void ReadFvwmPipe()
 {
-  int count,total,count2=0,body_length;
   unsigned long header[HEADER_SIZE],*body;
-  char *cbody;
+
   if(ReadFvwmPacket(Fvwm_fd[1],header,&body) > 0)
     {
       ProcessMessage(header[1],body);
