@@ -85,6 +85,8 @@
 #define b_ActionIgnoresClientWindow \
                      0x01000000 /* Actions work only on the background of a
 				 * button with a swallowed app. */
+#define b_ActionOnPress \
+                     0x02000000 /* By default this only done on Popup */
 
 /* Flags for b->swallow */
 #define b_Count       0x0003 /* Init counter for swallowing */

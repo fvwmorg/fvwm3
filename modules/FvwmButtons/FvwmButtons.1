@@ -243,6 +243,13 @@ but not on the xeyes window itself.
 .IP "ActionIgnoresClientWindow"
 See the note in the description of \fIAction\fP above.
 
+.IP "ActionOnPress"
+Usually the action is executed on the button release except for the
+\fBPopup\fP action.  This option changes this behaviour, the action
+is executed on the button press.  This may be good, for example,
+with \fBMenu\fP or \fBSendToModule\fP that generates popups, or
+when \fBFrame\fP is 0 and the button would look unresponsive otherwise.
+
 .IP "Back \fIcolor\fP"
 Specifies the background color to be used drawing this box. A relief color
 and a shadow color are calculated from this.

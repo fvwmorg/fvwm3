@@ -23,6 +23,9 @@ Changes in alpha release 2.5.2 (not released yet)
 * Removed the --enable-multibyte configure option.  Multibyte
   support is nor compiled in unconditionally.
 
+* New FvwmButtons option ActionOnPress enables execution of action
+  on press rather than on release for any specific button.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.1 (26-Apr-2002)

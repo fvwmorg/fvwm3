@@ -1129,7 +1129,8 @@ void Loop(void)
 	{
 	  break;
 	}
-	if (act && strncasecmp(act,"popup",5) != 0)
+	if (act && !(b->flags & b_ActionOnPress)
+	    && strncasecmp(act, "popup", 5) != 0)
 	{
 	  free(act);
 	  act = NULL;

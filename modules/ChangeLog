@@ -1,3 +1,11 @@
+2002-05-29  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmButtons/FvwmButtons.1:
+	* FvwmButtons/FvwmButtons.h:
+	* FvwmButtons/FvwmButtons.c (Loop):
+	* FvwmButtons/parse.c (ParseButton):
+	added new ActionOnPress option
+
 2002-05-28  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmPerl/FvwmPerl.1:

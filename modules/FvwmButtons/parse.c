@@ -792,6 +792,7 @@ static void ParseButton(button_info **uberb,char *s)
       "swallow",
       "panel",
       "actionignoresclientwindow",
+      "actiononpress",
       "container",
       "end",
       "nosize",
@@ -1082,9 +1083,13 @@ static void ParseButton(button_info **uberb,char *s)
 	b->flags |= b_ActionIgnoresClientWindow;
 	break;
 
+      case 10: /* ActionIgnoresClientWindow */
+	b->flags |= b_ActionOnPress;
+	break;
+
 	/* -------------------------- container ---------------------- */
 
-      case 10: /* Container */
+      case 11: /* Container */
 	b->flags&=b_Frame|b_Back|b_Fore|b_Padding|b_Action;
 	MakeContainer(b);
 	*uberb=b;
@@ -1093,7 +1098,7 @@ static void ParseButton(button_info **uberb,char *s)
 	  ParseContainer(&s,b);
 	break;
 
-      case 11: /* End */
+      case 12: /* End */
 	*uberb=ub->parent;
 	ub->c->buttons[--(ub->c->num_buttons)]=NULL;
 	free(b);
@@ -1104,12 +1109,12 @@ static void ParseButton(button_info **uberb,char *s)
 	}
 	return;
 
-      case 12: /* NoSize */
+      case 13: /* NoSize */
 	b->flags|=b_Size;
 	b->minx=b->miny=0;
 	break;
 
-      case 13: /* Size */
+      case 14: /* Size */
 	i=strtol(s,&t,10);
 	j=strtol(t,&o,10);
 	if(t>s && o>t)
@@ -1123,21 +1128,21 @@ static void ParseButton(button_info **uberb,char *s)
 	  fprintf(stderr,"%s: Illegal size arguments\n",MyName);
 	break;
 
-      case 14: /* Left */
+      case 15: /* Left */
 	b->flags |= b_Left;
 	b->flags &= ~b_Right;
 	break;
 
-      case 15: /* Right */
+      case 16: /* Right */
 	b->flags |= b_Right;
 	b->flags &= ~b_Left;
 	break;
 
-      case 16: /* Center */
+      case 17: /* Center */
 	b->flags &= ~(b_Right|b_Left);
 	break;
 
-      case 17: /* Colorset */
+      case 18: /* Colorset */
 	i = strtol(s, &t, 10);
 	if(t > s)
 	{
@@ -1154,7 +1159,7 @@ static void ParseButton(button_info **uberb,char *s)
 
 	/* --------------------------- action ------------------------ */
 
-      case 18: /* Action */
+      case 19: /* Action */
 	s = trimleft(s);
 	i=0;
 	if(*s=='(')
