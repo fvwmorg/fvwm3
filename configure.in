@@ -29,6 +29,7 @@ smr_SWITCH(shape, shape extensions, on, SHAPE)
 smr_SWITCH(usedecor, UseDecor style option, on, USEDECOR)
 smr_SWITCH(vector-buttons, vector button style, on, VECTOR_BUTTONS)
 smr_SWITCH(windowshade, WindowShade function, on, WINDOWSHADE)
+smr_SWITCH(exceed-hack, Support for Exceed X Server, off, EXCEED_HACK)
 
 dnl FIXME: default value should be derived from computed path to X
 dnl includes.  Actually, this should probably not appear in configure

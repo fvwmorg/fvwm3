@@ -1,3 +1,15 @@
+1999-03-26  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/misc.c (RaiseWindow): add a hack to raise *all* windows
+	while keeping their stacking order; I hope this helps with
+	Exceed and native windows. Someone with access to an Exceed
+	X Server has to replace the XFree vendor id by the Exceed
+	vendor id - I don't know it. 
+
+	* configure.in (EXCEED_HACK): New flag to protect the above hack. 
+	It defaults to `off'.
+	* acconfig.h: dito
+
 1999-03-25  Hippo
 
 	* fvwm/screen.h: moved 6 globalopts ints into Scr.go bitfield
