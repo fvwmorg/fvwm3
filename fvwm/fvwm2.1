@@ -5818,7 +5818,10 @@ defined with
 so that subsequent references to it are no longer valid.  Windows
 using this
 .I decor
-revert to the "Default" decor.  The decor named "Default" cannot be
+revert to the "Default" decor.  If the decor is created again later,
+windows will not use it before the
+.I UseDecor
+style is applied again.  The decor named "Default" cannot be
 destroyed.
 .EX
 DestroyDecor CustomDecor1

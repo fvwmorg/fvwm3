@@ -1863,10 +1863,10 @@ void ChangeDecor(F_CMD_ARGS)
     XBell(dpy, 0);
     return;
   }
-  apply_decor_change(tmp_win);
-  old_height = tmp_win->decor->title_height;
+  old_height = (tmp_win->decor) ? tmp_win->decor->title_height : 0;
   tmp_win->decor = found;
-  extra_height = (HAS_TITLE(tmp_win)) ?
+  apply_decor_change(tmp_win);
+  extra_height = (HAS_TITLE(tmp_win) && old_height) ?
     (old_height - tmp_win->decor->title_height) : 0;
   ForceSetupFrame(
     tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, tmp_win->frame_g.width,
@@ -1916,6 +1916,10 @@ void DestroyDecor(F_CMD_ARGS)
     {
       if (fw->decor == found)
       {
+	/* remove the extra title height now because we delete the current decor
+	 * before calling ChangeDecor(). */
+	fw->frame_g.height -= fw->decor->title_height;
+	fw->decor = NULL;
 	old_execute_function(
 	  "ChangeDecor Default", fw, eventp, C_WINDOW, *Module, 0, NULL);
       }

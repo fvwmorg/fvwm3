@@ -1,3 +1,4 @@
+                                                                -*- text -*-
 VMS users: ignore this file, and follow the instructions in vms/README
 instead.
 
@@ -252,7 +253,9 @@ If you switch this option between builds, you need "make clean"!
   --enable-debug-msgs		enable debugging messages
 
 If you would like to see lots of debug messages from FVWM, for
-debugging purposes, enable this option.
+debugging purposes, enable this option.  When reporting bugs, please
+do not send the debug output.  It is almost never useful in this
+situation.
 
 
   --enable-multibyte            multibyte character support (experimental)

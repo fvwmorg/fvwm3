@@ -256,7 +256,14 @@ int ParseBinding(
 	   (b->Modifier == 0 || b->Modifier == AnyModifier) &&
 	   buttons_grabbed != NULL)
 	{
-	  *buttons_grabbed |= (1<<(button-1));
+	  if (button == 0)
+	  {
+	    *buttons_grabbed |= ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+	  }
+	  else
+	  {
+	    *buttons_grabbed |= (1 << (button - 1));
+	  }
 	}
 	if (nr_left_buttons != NULL || nr_right_buttons != NULL)
 	{
@@ -291,7 +298,14 @@ int ParseBinding(
   if ((type == MOUSE_BINDING)&&(contexts & C_WINDOW)&&
      (((mods==0)||mods == AnyModifier)) && (buttons_grabbed != NULL))
   {
-    *buttons_grabbed |= (1<<(button-1));
+    if (button == 0)
+    {
+      *buttons_grabbed |= ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+    }
+    else
+    {
+      *buttons_grabbed |= (1 << (button - 1));
+    }
   }
 
   return AddBinding(

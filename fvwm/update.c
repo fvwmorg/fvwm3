@@ -275,10 +275,12 @@ static void apply_window_updates(
   {
     setup_frame_attributes(t, pstyle);
   }
-  if (flags->do_update_modules_flags) {
+  if (flags->do_update_modules_flags)
+  {
     BroadcastConfig(M_CONFIGURE_WINDOW,t);
   }
   t->shade_anim_steps = pstyle->shade_anim_steps;
+
   return;
 }
 
@@ -326,6 +328,7 @@ void apply_decor_change(FvwmWindow *tmp_win)
   flags.do_redecorate = True;
   flags.do_update_window_font_height = True;
   apply_window_updates(tmp_win, &flags, &style, Scr.Focus);
+  Scr.flags.do_need_window_update = 1;
 }
 
 /* Check and apply new style to each window if the style has changed. */

@@ -2070,6 +2070,17 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     dw = 0;
     dh = 0;
 
+    if (IS_SHADED(Tmp_win))
+    {
+      /* forbid shaded applications to move their windows */
+      cre->value_mask &= ~(CWX | CWY);
+    }
+    if (IS_MAXIMIZED(Tmp_win))
+    {
+      /* dont allow clients to resize maximized windows */
+      cre->value_mask &= ~(CWWidth | CWHeight);
+    }
+
     /* for restoring */
     if (cre->value_mask & CWBorderWidth)
     {
@@ -2150,18 +2161,17 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
       gravity_resize(Tmp_win->hints.win_gravity, &new_g, 0, dh);
     }
 
-    /* dont allow clients to resize maximized windows */
-    if (!IS_MAXIMIZED(Tmp_win) || (!dw && !dh))
+    if (dx || dy || dw || dh)
     {
       if (IS_SHADED(Tmp_win))
 	get_shaded_geometry(Tmp_win, &new_g, &new_g);
       SetupFrame(
 	Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
+      /* make sure the window structure has the new position */
+      update_absolute_geometry(Tmp_win);
+      maximize_adjust_offset(Tmp_win);
+      GNOME_SetWinArea(Tmp_win);
     }
-    /* make sure the window structure has the new position */
-    update_absolute_geometry(Tmp_win);
-    maximize_adjust_offset(Tmp_win);
-    GNOME_SetWinArea(Tmp_win);
   }
 
   /*  Stacking order change requested...  */

@@ -418,22 +418,26 @@ void setup_style_and_decor(
 
 #ifdef USEDECOR
   /* search for a UseDecor tag in the style */
-  tmp_win->decor = NULL;
-  if (SGET_DECOR_NAME(*pstyle) != NULL)
+  if (tmp_win->decor == NULL)
   {
-    FvwmDecor *decor = &Scr.DefaultDecor;
-
-    for (; decor; decor = decor->next)
+    if (SGET_DECOR_NAME(*pstyle) != NULL)
     {
-      if (StrEquals(SGET_DECOR_NAME(*pstyle), decor->tag))
+      FvwmDecor *decor = &Scr.DefaultDecor;
+
+      for (; decor; decor = decor->next)
       {
-	tmp_win->decor = decor;
-	break;
+	if (StrEquals(SGET_DECOR_NAME(*pstyle), decor->tag))
+	{
+	  tmp_win->decor = decor;
+	  break;
+	}
       }
     }
+    if (tmp_win->decor == NULL)
+    {
+      tmp_win->decor = &Scr.DefaultDecor;
+    }
   }
-  if (tmp_win->decor == NULL)
-    tmp_win->decor = &Scr.DefaultDecor;
 #endif
 
   GetMwmHints(tmp_win);
@@ -1293,6 +1297,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   sflags = SGET_FLAGS_POINTER(style);
   SET_TRANSIENT(
     tmp_win, !!XGetTransientForHint(dpy, tmp_win->w, &tmp_win->transientfor));
+  tmp_win->decor = NULL;
   setup_style_and_decor(tmp_win, &style, &buttons);
 
   /****** fonts ******/

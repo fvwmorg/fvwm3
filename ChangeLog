@@ -1,3 +1,19 @@
+2001-02-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleConfigureRequest):
+	shaded applications cannot move their windows anymore. this helps with
+	jumping xv windows
+
+	* fvwm/builtins.c (DestroyDecor):
+	* fvwm/builtins.c (ChangeDecor):
+	fixed changing the decor of a window
+
+	* fvwm/add_window.c (setup_style_and_decor):
+	only update the decor if none is selected yet
+
+	* fvwm/bindings.c (ParseBinding):
+	Binding mouse button '0' enabled title buttons also
+
 2001-01-28  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
