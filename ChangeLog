@@ -1,3 +1,10 @@
+1999-10-18  Hippo
+
+	* libs/Colorset: changed signature of AllocColorset
+	* fvwm/functions.c: New function DefaultColorset
+	* fvwm/builtins.c: New function DefaultColorset, DefaultColors does
+	not mess with colorsets.
+
 1999-10-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/module_interface.c (executeModuleSync):

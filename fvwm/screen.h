@@ -306,6 +306,7 @@ typedef struct ScreenInfo
 #if defined(PIXMAP_BUTTONS) || defined(GRADIENT_BUTTONS)
   GC TransMaskGC;               /* GC for transparency masks */
 #endif
+  Pixel StdFore, StdBack, StdHilite, StdShadow; /* don't change the order */
   GC StdGC;
   GC StdReliefGC;
   GC StdShadowGC;

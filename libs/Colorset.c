@@ -44,12 +44,12 @@ unsigned int nColorsets = 0;
  * Colorset_struct *Colorset will be altered
  * returns the address of the member
  *****************************************************************************/
-colorset_struct *AllocColorset(unsigned int n) {
+void AllocColorset(unsigned int n) {
   colorset_struct *newColorset;
 
   /* do nothing if it already exists */
   if (n < nColorsets)
-    return &Colorset[n];
+    return;
 
   /* alloc space for the whole new array */
   newColorset = (colorset_struct *)safecalloc(n + 1, sizeof(colorset_struct));
@@ -62,8 +62,6 @@ colorset_struct *AllocColorset(unsigned int n) {
 
   Colorset = newColorset;
   nColorsets = n + 1;
-
-  return &Colorset[n];
 }
 
 /*****************************************************************************
@@ -75,67 +73,37 @@ char *DumpColorset(unsigned int n)
   colorset_struct *cs = &Colorset[n];
 
   sprintf(csetbuf,
-	  "Colorset %x %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x %lx %x",
+	  "Colorset %x %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x",
 	  n, cs->fg, cs->bg, cs->hilite, cs->shadow, cs->pixmap,
 	  cs->shape_mask, cs->width, cs->height, cs->pixmap_type,
-	  cs->shape_width, cs->shape_height, cs->shape_type,
-	  cs->mask, cs->color_flags);
+	  cs->shape_width, cs->shape_height, cs->shape_type);
   return csetbuf;
 }
 
 /*****************************************************************************
  * LoadColorset() takes a strings and stuffs it into the array
  *****************************************************************************/
-static int LoadColorsetConditional(char *line, Bool free)
+int LoadColorset(char *line)
 {
   colorset_struct *cs;
   unsigned int n, chars;
   Pixel fg, bg, hilite, shadow;
   Pixmap pixmap;
-  Pixmap mask;
   Pixmap shape_mask;
   unsigned int width, height, pixmap_type;
   unsigned int shape_width, shape_height, shape_type;
-  unsigned int color_flags;
 
   if (line == NULL)
     return -1;
   if (sscanf(line, "%x%n", &n, &chars) < 1)
     return -1;
   line += chars;
-  if (sscanf(line, "%lx %lx %lx %lx %lx %lx %x %x %x %x %x %x %lx %x",
+  if (sscanf(line, "%lx %lx %lx %lx %lx %lx %x %x %x %x %x %x",
 	     &fg, &bg, &hilite, &shadow, &pixmap, &shape_mask, &width, &height,
-	     &pixmap_type, &shape_width, &shape_height, &shape_type,
-	     &mask, &color_flags) != 14)
+	     &pixmap_type, &shape_width, &shape_height, &shape_type) != 12)
     return -1;
-  if (n >= nColorsets)
-    /* Don't free if colorset does not exist yet! */
-    free = False;
   AllocColorset(n);
   cs = &Colorset[n];
-  if (free) {
-    if (cs->fg != fg) {
-      XFreeColors(Pdpy, Pcmap, &cs->fg, 1, 0);
-    }
-    if (cs->bg != bg) {
-      XFreeColors(Pdpy, Pcmap, &cs->bg, 1, 0);
-    }
-    if (cs->hilite != hilite) {
-      XFreeColors(Pdpy, Pcmap, &cs->hilite, 1, 0);
-    }
-    if (cs->shadow != shadow) {
-      XFreeColors(Pdpy, Pcmap, &cs->shadow, 1, 0);
-    }
-    if (cs->pixmap && (cs->pixmap != pixmap)) {
-      XFreePixmap(Pdpy, cs->pixmap);
-    }
-    if (cs->mask && (cs->mask != mask)) {
-      XFreePixmap(Pdpy, cs->mask);
-    }
-    if (cs->shape_mask && (cs->shape_mask != shape_mask)) {
-      XFreePixmap(Pdpy, cs->shape_mask);
-    }
-  }
   cs->fg = fg;
   cs->bg = bg;
   cs->hilite = hilite;
@@ -148,17 +116,7 @@ static int LoadColorsetConditional(char *line, Bool free)
   cs->shape_width = shape_width;
   cs->shape_height = shape_height;
   cs->shape_type = shape_type;
-  cs->mask = mask;
-  cs->color_flags = color_flags;
   return n;
-}
-inline int LoadColorset(char *line)
-{
-  return LoadColorsetConditional(line, False);
-}
-inline int LoadColorsetAndFree(char *line)
-{
-  return LoadColorsetConditional(line, True);
 }
 
 /* sets a window background from a colorset

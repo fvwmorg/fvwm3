@@ -21,6 +21,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
+#define FVWMTHEME_PRIVATE
 
 #include "config.h"
 
@@ -90,6 +91,7 @@ int main(int argc, char **argv)
     fprintf(stderr,"%s: can't open display %s", name, XDisplayName(NULL));
     exit (1);
   }
+  XSynchronize(dpy, True);
   InitPictureCMap(dpy);
 
   /* This module allocates resouces that othe rmodules may rely on.
@@ -299,7 +301,8 @@ static void parse_colorset(char *line)
     fprintf(stderr, "%s: colorset number must be zero or positive\n", name);
     return;
   }
-  cs = AllocColorset(n);
+  AllocColorset(n);
+  cs = &Colorset[n];
 
   /* if new colorsets are created initialize them to black on gray */
   while (nSets <= n) {
@@ -334,6 +337,7 @@ static void parse_colorset(char *line)
       Colorset[nSets].bg = GetColor(gray);
       Colorset[nSets].hilite = GetHilite(Colorset[nSets].bg);
       Colorset[nSets].shadow = GetShadow(Colorset[nSets].bg);
+      fprintf(stderr, "cset.mask = %d.%lx\n", nSets, Colorset[nSets].mask);
     }
   nSets++;
   }

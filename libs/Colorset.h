@@ -35,10 +35,13 @@ typedef struct {
   unsigned int shape_width : 12;
   unsigned int shape_height : 12;
   unsigned int shape_type : 2;
-  /* Everything below here is used internally by FvwmTheme only. It must still
-   * be sent out to the modules in case a second FvwmTheme is running. */
+#ifdef FVWMTHEME_PRIVATE
+  /* Everything below here is used internally by FvwmTheme only. */
   Pixmap mask;
   unsigned int color_flags : 6;
+#else
+  int pad[2];
+#endif
 } colorset_struct;
 
 #define PIXMAP_TILED 0
@@ -51,12 +54,14 @@ typedef struct {
 #define SHAPE_STRETCH 1
 #define SHAPE_STRETCH_ASPECT 2
 
+#ifdef FVWMTHEME_PRIVATE
 #define FG_SUPPLIED 0x1
 #define BG_SUPPLIED 0x2
 #define HI_SUPPLIED 0x4
 #define SH_SUPPLIED 0x8
 #define FG_CONTRAST 0x10
 #define BG_AVERAGE  0x20
+#endif
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */
 extern colorset_struct *Colorset;
@@ -64,12 +69,11 @@ extern colorset_struct *Colorset;
 extern unsigned int nColorsets;
 
 /* Create n new colorsets */
-colorset_struct *AllocColorset(unsigned int n);
+void AllocColorset(unsigned int n);
 /* dump one */
 char *DumpColorset(unsigned int n);
 /* load one */
-inline int LoadColorset(char *line);
-inline int LoadColorsetAndFree(char *line);
+int LoadColorset(char *line);
 
 Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 			      colorset_struct *colorset, unsigned int depth,

@@ -1577,8 +1577,12 @@ static void InitVariables(void)
 
   Scr.DefaultIcon = NULL;
 
-  Scr.DefaultColorset = 0;
-  AllocColorset(Scr.DefaultColorset);
+  Scr.DefaultColorset = -1;
+  AllocColorset(0);
+  Scr.StdFore = GetColor("black");
+  Scr.StdBack = GetColor("gray");
+  Scr.StdHilite = GetHilite(Scr.StdBack);
+  Scr.StdShadow = GetShadow(Scr.StdBack);
   Scr.StdGC = 0;
   Scr.StdReliefGC = 0;
   Scr.StdShadowGC = 0;

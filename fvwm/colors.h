@@ -18,5 +18,4 @@
 
 void CreateGCs(void);
 void FreeColors(Pixel *pixels, int n);
-
 #endif /* COLORS_H */

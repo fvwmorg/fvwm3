@@ -138,6 +138,7 @@ static const struct functions func_config[] =
   {"cursormove",   movecursor,       F_MOVECURSOR,          0},
   {"cursorstyle",  CursorStyle,      F_CURSOR_STYLE,        0},
   {"defaultcolors",SetDefaultColors, F_DFLT_COLORS,         0},
+  {"defaultcolorset",SetDefaultColorset, F_DFLT_COLORSET,   0},
   {"defaultfont",  LoadDefaultFont,  F_DFLT_FONT,           0},
   {"defaulticon",  SetDefaultIcon,   F_DFLT_ICON,           0},
   {"defaultlayers",SetDefaultLayers, F_DFLT_LAYERS,         0},

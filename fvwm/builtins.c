@@ -960,6 +960,7 @@ static void ApplyDefaultFontAndColors(void)
   unsigned long gcm;
   int wid;
   int hei;
+  int cset = Scr.DefaultColorset;
 
   Scr.StdFont.y = Scr.StdFont.font->ascent;
 #ifndef I18N_MB
@@ -971,21 +972,32 @@ static void ApplyDefaultFontAndColors(void)
   gcv.function = GXcopy;
   gcv.font = Scr.StdFont.font->fid;
   gcv.line_width = 0;
-  gcv.foreground = Colorset[Scr.DefaultColorset].fg;
-  gcv.background = Colorset[Scr.DefaultColorset].bg;
+  if (cset >= 0) {
+    gcv.foreground = Colorset[cset].fg;
+    gcv.background = Colorset[cset].bg;
+  } else {
+    gcv.foreground = Scr.StdFore;
+    gcv.background = Scr.StdBack;
+  }
   if(Scr.StdGC)
     XChangeGC(dpy, Scr.StdGC, gcm, &gcv);
   else
     Scr.StdGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcm = GCFunction|GCLineWidth|GCForeground;
-  gcv.foreground = Colorset[Scr.DefaultColorset].hilite;
+  if (cset >= 0)
+    gcv.foreground = Colorset[cset].hilite;
+  else
+    gcv.foreground = Scr.StdHilite;
   if(Scr.StdReliefGC)
     XChangeGC(dpy, Scr.StdReliefGC, gcm, &gcv);
   else
     Scr.StdReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  gcv.foreground = Colorset[Scr.DefaultColorset].shadow;
+  if (cset >= 0)
+    gcv.foreground = Colorset[cset].shadow;
+  else
+    gcv.foreground = Scr.StdShadow;
   if(Scr.StdShadowGC)
     XChangeGC(dpy, Scr.StdShadowGC, gcm, &gcv);
   else
@@ -997,8 +1009,12 @@ static void ApplyDefaultFontAndColors(void)
     Scr.SizeStringWidth = XTextWidth(Scr.StdFont.font, " +8888 x +8888 ", 15);
     wid = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
     hei = Scr.StdFont.height + 2 * SIZE_VINDENT;
-    SetWindowBackground(dpy, Scr.SizeWindow, wid, hei, &Colorset[Scr.DefaultColorset], Pdepth,
-			Scr.StdGC, True);
+    if (cset >= 0)
+      SetWindowBackground(dpy, Scr.SizeWindow, wid, hei, &Colorset[cset],
+			  Pdepth, Scr.StdGC, False);
+    else
+      XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdBack);
+
     if(Scr.gs.EmulateMWM)
     {
       XMoveResizeWindow(dpy,Scr.SizeWindow,
@@ -1032,9 +1048,6 @@ static void ApplyDefaultFontAndColors(void)
   }
 
   UpdateAllMenuStyles();
-
-  /* inform modules of colorset change */
-  BroadcastColorset(Scr.DefaultColorset);
 }
 
 void HandleColorset(F_CMD_ARGS)
@@ -1050,15 +1063,10 @@ void HandleColorset(F_CMD_ARGS)
   if ((ret == 0) || (n < 0))
     return;
 
-  if (n)
-  {
-    LoadColorsetAndFree(action);
-    if (n != Scr.DefaultColorset) BroadcastColorset(n);
-  }
-  else
-  {
-    LoadColorsetAndFree(action);
-  }
+  LoadColorset(action);
+  fprintf(stderr, "broadcasting colorset %d\n", n);
+  BroadcastColorset(n);
+
   if (n == Scr.DefaultColorset)
   {
     ApplyDefaultFontAndColors();
@@ -1075,11 +1083,29 @@ void SetDefaultIcon(F_CMD_ARGS)
   GetNextToken(action, &Scr.DefaultIcon);
 }
 
+void SetDefaultColorset(F_CMD_ARGS)
+{
+  char *cset = NULL;
+
+fprintf(stderr, "DefaultColorset %s\n", action);
+  action = GetNextToken(action, &cset);
+  if (!cset)
+    return;
+
+  Scr.DefaultColorset = atoi(cset);
+  if (Scr.DefaultColorset < 0)
+    Scr.DefaultColorset = -1;
+  if (Scr.DefaultColorset >= nColorsets)
+    AllocColorset(Scr.DefaultColorset);
+  ApplyDefaultFontAndColors();
+}
+
 void SetDefaultColors(F_CMD_ARGS)
 {
   char *fore = NULL;
   char *back = NULL;
 
+fprintf(stderr, "DefaultColors %s\n", action);
   action = GetNextToken(action, &fore);
   action = GetNextToken(action, &back);
   if (!back)
@@ -1087,35 +1113,23 @@ void SetDefaultColors(F_CMD_ARGS)
   if (!fore)
     fore = strdup("black");
 
-  if (StrEquals(fore, "Colorset"))
-    {
-      Scr.DefaultColorset = atoi(back);
-	  AllocColorset(Scr.DefaultColorset);
-    }
-  else
-    {
   if (!StrEquals(fore, "-"))
     {
-        FreeColors(&Colorset[Scr.DefaultColorset].fg, 1);
-        Colorset[Scr.DefaultColorset].fg = GetColor(fore);
+        XFreeColors(dpy, Pcmap, &Scr.StdFore, 1, 0);
+        Scr.StdFore = GetColor(fore);
     }
   if (!StrEquals(back, "-"))
     {
-        FreeColors(&Colorset[Scr.DefaultColorset].bg, 1);
-        FreeColors(&Colorset[Scr.DefaultColorset].hilite, 1);
-        FreeColors(&Colorset[Scr.DefaultColorset].shadow, 1);
-        Colorset[Scr.DefaultColorset].bg = GetColor(back);
-        Colorset[Scr.DefaultColorset].hilite = GetHilite(Colorset[Scr.DefaultColorset].bg);
-        Colorset[Scr.DefaultColorset].shadow = GetShadow(Colorset[Scr.DefaultColorset].bg);
-    }
+        XFreeColors(dpy, Pcmap, &Scr.StdBack, 3, 0);
+        Scr.StdBack = GetColor(back);
+        Scr.StdHilite = GetHilite(Scr.StdBack);
+        Scr.StdShadow = GetShadow(Scr.StdBack);
     }
   free(fore);
   free(back);
 
-  if(Scr.DefaultColorset < nColorsets)
-  {
+  Scr.DefaultColorset = -1;
   ApplyDefaultFontAndColors();
-  }
 }
 
 void LoadDefaultFont(F_CMD_ARGS)

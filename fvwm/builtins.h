@@ -60,6 +60,7 @@ void imagePath_function(F_CMD_ARGS);
 void iconPath_function(F_CMD_ARGS);
 void pixmapPath_function(F_CMD_ARGS);
 void SetHiColor(F_CMD_ARGS);
+void SetDefaultColorset(F_CMD_ARGS);
 void SetDefaultColors(F_CMD_ARGS);
 void SetDefaultIcon(F_CMD_ARGS);
 void LoadDefaultFont(F_CMD_ARGS);
