@@ -193,6 +193,7 @@ static void get_resize_decor_gravities_one_axis(
 		break;
 	case RESIZE_MODE_SHRINK:
 	case RESIZE_MODE_RESIZE:
+	case RESIZE_MODE_SETUP:
 	default:
 		ret_grav->client_grav = neg_grav;
 		break;

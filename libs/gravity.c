@@ -406,9 +406,9 @@ direction_type ParseDirectionArgument(
 		"E",  "East",      "Right",       "Right",
 		"S",  "South",     "Bottom",      "Down",
 		"W",  "West",      "Left",        "Left",
-		"NE", "NorthEast", "TopRight"     "UpRight",
+		"NE", "NorthEast", "TopRight",    "UpRight",
 		"SE", "SouthEast", "BottomRight", "DownRight",
-		"SW", "SouthWest", "BottomLeft"   "DownLeft",
+		"SW", "SouthWest", "BottomLeft",  "DownLeft",
 		"NW", "NorthWest", "TopLeft",     "UpLeft",
 		NULL
 	};
