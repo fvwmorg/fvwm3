@@ -1,3 +1,9 @@
+1999-09-30  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTheme/FvwmTheme.c (get_simple_color):
+	(parse_colorset): rewrote colour set parsing; it now takes a comma
+	separated list of arguments.
+
 1999-09-29  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmWinList/FvwmWinList.c (ParseConfigLine): IconFore/Back default to

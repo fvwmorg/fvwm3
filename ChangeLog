@@ -1,3 +1,16 @@
+1999-09-29  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Colorset.c (LoadColorset):
+	(DumpColorset):
+	(CreateBackgroundPixmap): added shape_width and shape_height members
+	in colorset_struct
+
+	* fvwm/builtins.c (SetGlobalOptions): replaced the obsolete global
+	options with calls of the 'style' command
+
+	* fvwm/move_resize.c (move_window_doit): MoveToPage uses 'select'
+	cursor instead of 'move' cursor
+
 1999-09-29  Hippo
 
 	* libs/Colorset.{h,c} Removed unused structure member colorset.mask

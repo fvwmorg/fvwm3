@@ -1,4 +1,4 @@
-/* This program is free software; you can redistribute it and/or modify
+/* This irogram is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -306,13 +306,28 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
   GNOME_GetStyle (tmp_win, styles);
 #endif
   /* look thru all styles in order defined. */
+#if 0
+fprintf(stderr,"trying to match n='%s', r='%s', c='%s'\n", tmp_win->name, tmp_win->class.res_name, tmp_win->class.res_class);
+#endif
   for (nptr = all_styles; nptr != NULL; nptr = nptr->next) {
     /* If name/res_class/res_name match, merge */
+#if 0
+fprintf(stderr, "style='%s'\n", nptr->name);
+#endif
     if (matchWildcards(nptr->name,tmp_win->class.res_class) == TRUE) {
+#if 0
+fprintf(stderr,"matched class\n");
+#endif
       merge_styles(styles, nptr);
     } else if (matchWildcards(nptr->name,tmp_win->class.res_name) == TRUE) {
+#if 0
+fprintf(stderr,"matched resource\n");
+#endif
       merge_styles(styles, nptr);
     } else if (matchWildcards(nptr->name,tmp_win->name) == TRUE) {
+#if 0
+fprintf(stderr,"matched name\n");
+#endif
       merge_styles(styles, nptr);
     }
   }

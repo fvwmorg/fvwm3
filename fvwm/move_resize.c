@@ -376,7 +376,8 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
   int page_x, page_y;
   Bool fWarp = FALSE;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_MOVE,ButtonPress))
+  if (DeferExecution(eventp,&w,&tmp_win,&context,
+		     (fMoveToPage) ? CRS_MOVE : CRS_SELECT,ButtonPress))
     return;
 
   if (tmp_win == NULL)

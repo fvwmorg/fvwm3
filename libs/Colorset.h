@@ -32,7 +32,13 @@ typedef struct {
   unsigned int width : 12;
   unsigned int height : 12;
   unsigned int pixmap_type: 3;
+  unsigned int shape_width : 12;
+  unsigned int shape_height : 12;
   unsigned int shape_type : 2;
+  /* everything below here is used internally by FvwmTheme only and is not sent
+   * out to fvwm or the modules */
+  Pixmap mask;
+  unsigned int color_flags : 6;
 } colorset_struct;
 
 #define PIXMAP_TILED 0
@@ -45,6 +51,12 @@ typedef struct {
 #define SHAPE_STRETCH 1
 #define SHAPE_STRETCH_ASPECT 2
 
+#define FG_SUPPLIED 0x1
+#define BG_SUPPLIED 0x2
+#define HI_SUPPLIED 0x4
+#define SH_SUPPLIED 0x8
+#define FG_CONTRAST 0x10
+#define BG_AVERAGE  0x20
 
 /* colorsets are stored as an array of structs to permit fast dereferencing */
 extern colorset_struct *Colorset;

@@ -483,7 +483,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
           it's a restart or recapture, and that option's disallowed...
       */
       if (PPosOverride && (Restarting || (Scr.flags.windows_captured)) &&
-	  (!Scr.go.RecaptureHonorsStartsOnPage && !SRECAPTURE_HONORS_STARTS_ON_PAGE(sflags)))
+	  (!Scr.go.RecaptureHonorsStartsOnPage &&
+	   !SRECAPTURE_HONORS_STARTS_ON_PAGE(sflags)))
         {
           HonorStartsOnPage  =  False;
         }
@@ -491,7 +492,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
           it's a cold start window capture, and that's disallowed...
       */
       if (PPosOverride && (!Restarting && !(Scr.flags.windows_captured)) &&
-	  (!Scr.go.CaptureHonorsStartsOnPage && !SCAPTURE_HONORS_STARTS_ON_PAGE(sflags)))
+	  (!Scr.go.CaptureHonorsStartsOnPage &&
+	   !SCAPTURE_HONORS_STARTS_ON_PAGE(sflags)))
         {
           HonorStartsOnPage  =  False;
         }
@@ -505,9 +507,11 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
       /*
           it's ActivePlacement and SkipMapping, and that's disallowed.
       */
-      if (!PPosOverride && (DO_NOT_SHOW_ON_MAP(tmp_win) &&
-			    !SDO_PLACE_RANDOM(sflags) &&
-			    (!Scr.go.ActivePlacementHonorsStartsOnPage && !SACTIVE_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags))))
+      if (!PPosOverride &&
+	  (DO_NOT_SHOW_ON_MAP(tmp_win) &&
+	   !SDO_PLACE_RANDOM(sflags) &&
+	   (!Scr.go.ActivePlacementHonorsStartsOnPage &&
+	    !SACTIVE_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags))))
         {
           HonorStartsOnPage  =  False;
 	  fvwm_msg(WARN, "PlaceWindow",
@@ -581,9 +585,9 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
    * whenever a new window pops up, except during initialization */
   if((!PPosOverride)&&(!DO_NOT_SHOW_ON_MAP(tmp_win)))
 /*  RBW - 11/02/1998  --  I dont. */
-    {
-      changeDesks(tmp_win->Desk);
-    }
+  {
+    changeDesks(tmp_win->Desk);
+  }
 
 /*
     Don't move viewport if SkipMapping, or if recapturing the window,
@@ -591,30 +595,27 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
     page - it's ever so much simpler.
 */
     if (!SIS_STICKY(sflags) && SUSE_START_ON_DESK(sflags))
+    {
+      if (PageX && PageY)
       {
-        if (PageX && PageY)
-        {
-          px  =  PageX - 1;
-          py  =  PageY -1 ;
-          px  *= Scr.MyDisplayWidth;
-          py  *= Scr.MyDisplayHeight;
-          if ( (!PPosOverride) && (!DO_NOT_SHOW_ON_MAP(tmp_win)))
-            {
-              MoveViewport(px,py,True);
-            }
-          else
-            {
-              if (HonorStartsOnPage)
-                {
-                  /*  Save the delta from current page */
-                  pdeltax       =  Scr.Vx - px;
-                  pdeltay       =  Scr.Vy - py;
-                  PageRight    -=  pdeltax;
-                  PageBottom   -=  pdeltay;
-                }
-            }
-        }
+	px  =  PageX - 1;
+	py  =  PageY - 1;
+	px  *= Scr.MyDisplayWidth;
+	py  *= Scr.MyDisplayHeight;
+	if ( (!PPosOverride) && (!DO_NOT_SHOW_ON_MAP(tmp_win)))
+	{
+	  MoveViewport(px,py,True);
+	}
+	else if (HonorStartsOnPage)
+	{
+	  /*  Save the delta from current page */
+	  pdeltax       =  Scr.Vx - px;
+	  pdeltay       =  Scr.Vy - py;
+	  PageRight    -=  pdeltax;
+	  PageBottom   -=  pdeltay;
+	}
       }
+    }
 
 /**/
 
@@ -633,7 +634,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
    */
   if (!(IS_TRANSIENT(tmp_win)) &&
       !(tmp_win->hints.flags & USPosition) &&
-      ((SUSE_NO_PPOSITION(sflags))||
+      (SUSE_NO_PPOSITION(sflags)||
        !(tmp_win->hints.flags & PPosition)) &&
       !(PPosOverride) &&
       /*  RBW - allow StartsOnPage to go through, even if iconic.  */

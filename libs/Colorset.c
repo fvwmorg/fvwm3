@@ -75,9 +75,10 @@ char *DumpColorset(unsigned int n)
   colorset_struct *cs = &Colorset[n];
 
   sprintf(csetbuf,
-	  "Colorset %x %lx %lx %lx %lx %lx %lx %x %x %x %x",
-	  n, cs->fg, cs->bg, cs->hilite, cs->shadow, cs->pixmap, cs->shape_mask,
-	  cs->width, cs->height, cs->pixmap_type, cs->shape_type);
+	  "Colorset %x %lx %lx %lx %lx %lx %lx %x %x %x %x %x %x",
+	  n, cs->fg, cs->bg, cs->hilite, cs->shadow, cs->pixmap,
+	  cs->shape_mask, cs->width, cs->height, cs->pixmap_type,
+	  cs->shape_width, cs->shape_height, cs->shape_type);
   return csetbuf;
 }
 
@@ -91,16 +92,17 @@ static int LoadColorsetConditional(char *line, Bool free)
   Pixel fg, bg, hilite, shadow;
   Pixmap pixmap;
   Pixmap shape_mask;
-  unsigned int width, height, pixmap_type, shape_type;
+  unsigned int width, height, pixmap_type;
+  unsigned int shape_width, shape_height, shape_type;
 
   if (line == NULL)
     return -1;
   if (sscanf(line, "%x%n", &n, &chars) != 1)
     return -1;
   line += chars;
-  if (sscanf(line, "%lx %lx %lx %lx %lx %lx %x %x %x %x",
+  if (sscanf(line, "%lx %lx %lx %lx %lx %lx %x %x %x %x %x %x",
 	     &fg, &bg, &hilite, &shadow, &pixmap, &shape_mask, &width, &height,
-	     &pixmap_type, &shape_type) != 10)
+	     &pixmap_type, &shape_width, &shape_height, &shape_type) != 12)
     return -1;
   AllocColorset(n);
   cs = &Colorset[n];
@@ -129,6 +131,8 @@ static int LoadColorsetConditional(char *line, Bool free)
   cs->width = width;
   cs->height = height;
   cs->pixmap_type = pixmap_type;
+  cs->shape_width = shape_width;
+  cs->shape_height = shape_height;
   cs->shape_type = shape_type;
   return n;
 }
@@ -214,9 +218,6 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   }
   else
   {
-    Window junkw;
-    int junk;
-
     /* In spite of the name, win contains the pixmap */
     cs_pixmap = colorset->shape_mask;
     win = colorset->shape_mask;
@@ -228,14 +229,8 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
       shape_gc = XCreateGC(dpy, win, GCForeground|GCBackground, &xgcv);
     }
     gc = shape_gc;
-    /* fetch the width and height of the shape window. Shapes are probably used
-     * only rearely, so it does not make sense to communicate the dimensions
-     * in the colorset structure. */
-    if (!XGetGeometry(dpy, colorset->shape_mask, &junkw, &junk, &junk,
-		      &cs_width, &cs_height, &junk, &junk))
-    {
-      return None;
-    }
+    cs_width = colorset->shape_width;
+    cs_height = colorset->shape_height;
     cs_keep_aspect = (colorset->shape_type == SHAPE_STRETCH_ASPECT);
     cs_stretch_x = !(colorset->shape_type == SHAPE_TILED);
     cs_stretch_y = !(colorset->shape_type == SHAPE_TILED);
