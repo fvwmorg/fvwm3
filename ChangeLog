@@ -1,5 +1,7 @@
 1999-04-16  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/repeat.c (set_repeat_data): removed fprintfs
+
 	* fvwm/functions.c (DeferExecution): allow to abot DeferExecution with
 	Escape key
 	(ComplexFunction2): fixed use_depth

@@ -94,7 +94,6 @@ Bool set_repeat_data(void *data, repeat_type type)
   if (fFvwmInStartup)
     return True;
 
-fprintf(stderr,"srd: entered, type=%d, data=%s\n",type,data);
   switch(type)
   {
   case REPEAT_COMMAND:
@@ -104,16 +103,13 @@ fprintf(stderr,"srd: entered, type=%d, data=%s\n",type,data);
     if (data == NULL || repeat_depth != 0)
       /* Ignoring the data, must free it outside of this call. */
       return True;
-fprintf(stderr,"srd: recording: *lc=0x%x, data=0x%x %s\n",last.command,data,data);
     if (last.prev_command)
     {
-fprintf(stderr,"srd: freeing 0x%x\n", last.command);
       free(last.prev_command);
     }
     /* Store a backup. */
     last.prev_command = last.command;
     last.command = (char *)data;
-fprintf(stderr,"srd: leaving\n");
     /* Since we stored the pointer the caller must not free it. */
     return False;
   case REPEAT_MENU:
