@@ -381,7 +381,7 @@ void process_message(unsigned long type,unsigned long *body)
   {
   case M_ADD_WINDOW:
   case M_CONFIGURE_WINDOW:
-    relay_packet(type, 24 * SOL, body);
+    relay_packet(type, sizeof(struct ConfigWinPacket) * SOL, body);
     break;
 
   case M_ICON_LOCATION:

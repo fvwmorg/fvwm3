@@ -549,7 +549,7 @@ int read_f(int fd, char *p, int len)
  */
 void process_message( void )
 {
-  unsigned long type, length, body[24*SOL];
+  unsigned long type, length, body[sizeof(struct ConfigWinPacket)];
 
   read_f( Fdr, (char*)&type, SOL);
   read_f( Fdr, (char*)&length, SOL);
@@ -678,79 +678,165 @@ void process_message( void )
 
 void list_configure(unsigned long *body)
 {
-  unsigned long i;
-  char *flag;
+  struct ConfigWinPacket *cfgpacket = (void *)body;
   char *grav;
-  char *flagstr[32] =
-  {
-    "StartIconic",
-    "OnTop",
-    "Sticky",
-    "WindowListSkip",
-    "SuppressIcon",
-    "NoiconTitle",
-    "Lenience",
-    "StickyIcon",
-    "CirculateSkipIcon",
-    "CirculateSkip",
-    "ClickToFocus",
-    "SloppyFocus",
-    "SkipMapping",
-    "Handles",
-    "Title",
-    "Mapped",
-    "Iconified",
-    "Transient",
-    "Raised", /* ??? */
-    "Visible",
-    "IconOurs",
-    "PixmapOurs",
-    "ShapedIcon",
-    "Maximized",
-    "WmTakeFocus",
-    "WmDeleteWindow",
-    "IconMoved",
-    "IconUnmapped",
-    "MapPending",
-    "HintOverride",
-    "MWMButtons",
-    "MWMBorders"
-  };
 
   printf( "0x%08lx %-20s x %ld, y %ld, width %ld, height %ld\n",
-	  body[0], "frame", body[3], body[4], body[5], body[6] );
-  printf( "0x%08lx %-20s %ld\n" ,body[0], "desktop", body[7]);
+	  cfgpacket->w, "frame", cfgpacket->frame_x, cfgpacket->frame_y,
+	  cfgpacket->frame_width, cfgpacket->frame_height );
+  printf( "0x%08lx %-20s %ld\n" ,cfgpacket->w, "desktop", cfgpacket->desk);
 
+  /* Oooh, you asked for it... */
   if (Opt_flags == 2)
   {
-    for( i=0; i<=31; i++ )
-    {
-      if( body[8] & (1<<i) )
-      {
-	flag = "yes";
-      }
-      else
-      {
-	flag = "no";
-      }
-      printf( "0x%08lx %-20s %s\n", body[0], flagstr[i], flag );
-    }
+    printf( "Packet flags\n" );
+    printf( "is_sticky: %d\n",
+	    IS_STICKY( cfgpacket ) );
+    printf( "has_icon_font: %d\n",
+	    HAS_ICON_FONT( cfgpacket ) );
+    printf( "has_window_font: %d\n",
+	    HAS_WINDOW_FONT( cfgpacket ) );
+    printf( "do_circulate_skip: %d\n",
+	    DO_SKIP_CIRCULATE( cfgpacket ) );
+    printf( "do_circulate_skip_icon: %d\n",
+	    DO_SKIP_ICON_CIRCULATE( cfgpacket ) );
+    printf( "do_circulate_skip_shaded: %d\n",
+	    DO_SKIP_SHADED_CIRCULATE( cfgpacket ) );
+    printf( "do_flip_transient: %d\n",
+	    DO_FLIP_TRANSIENT( cfgpacket ) );
+    printf( "do_grab_focus_when_created: %d\n",
+	    DO_GRAB_FOCUS( cfgpacket ) );
+    printf( "do_grab_focus_when_transient_created: %d\n",
+	    DO_GRAB_FOCUS_TRANSIENT( cfgpacket ) );
+    printf( "do_ignore_restack: %d\n",
+	    DO_IGNORE_RESTACK( cfgpacket ) );
+    printf( "do_lower_transient: %d\n",
+	    DO_LOWER_TRANSIENT( cfgpacket ) );
+    printf( "do_not_show_on_map: %d\n",
+	    DO_NOT_SHOW_ON_MAP( cfgpacket ) );
+    printf( "do_not_pass_click_focus_click: %d\n",
+	    DO_NOT_PASS_CLICK_FOCUS_CLICK( cfgpacket ) );
+    printf( "do_not_raise_click_focus_click: %d\n",
+	    DO_NOT_RAISE_CLICK_FOCUS_CLICK( cfgpacket ) );
+    printf( "do_raise_mouse_focus_click: %d\n",
+	    DO_RAISE_MOUSE_FOCUS_CLICK( cfgpacket ) );
+    printf( "do_raise_transient: %d\n",
+	    DO_RAISE_TRANSIENT( cfgpacket ) );
+    printf( "do_resize_opaque: %d\n",
+	    DO_RESIZE_OPAQUE( cfgpacket ) );
+    printf( "do_shrink_windowshade: %d\n",
+	    DO_SHRINK_WINDOWSHADE( cfgpacket ) );
+    printf( "do_stack_transient_parent: %d\n",
+	    DO_STACK_TRANSIENT_PARENT( cfgpacket ) );
+    printf( "do_start_iconic: %d\n",
+	    DO_START_ICONIC( cfgpacket ) );
+    printf( "do_window_list_skip: %d\n",
+	    DO_SKIP_WINDOW_LIST( cfgpacket ) );
+    printf( "focus_mode: %d\n",
+	    GET_FOCUS_MODE( cfgpacket ) );
+    printf( "has_bottom_title: %d\n",
+	    HAS_BOTTOM_TITLE( cfgpacket ) );
+    printf( "has_depressable_border: %d\n",
+	    HAS_DEPRESSABLE_BORDER( cfgpacket ) );
+    printf( "has_mwm_border: %d\n",
+	    HAS_MWM_BORDER( cfgpacket ) );
+    printf( "has_mwm_buttons: %d\n",
+	    HAS_MWM_BUTTONS( cfgpacket ) );
+    printf( "has_mwm_override: %d\n",
+	    HAS_MWM_OVERRIDE_HINTS( cfgpacket ) );
+    printf( "has_no_icon_title: %d\n",
+	    HAS_NO_ICON_TITLE( cfgpacket ) );
+    printf( "has_override_size: %d\n",
+	    HAS_OVERRIDE_SIZE_HINTS( cfgpacket ) );
+    printf( "has_stippled_title: %d\n",
+	    HAS_STIPPLED_TITLE( cfgpacket ) );
+    printf( "is_fixed: %d\n",
+	    IS_FIXED( cfgpacket ) );
+    printf( "is_sticky_icon: %d\n",
+	    IS_ICON_STICKY( cfgpacket ) );
+    printf( "is_icon_suppressed: %d\n",
+	    IS_ICON_SUPPRESSED( cfgpacket ) );
+    printf( "is_lenient: %d\n",
+	    IS_LENIENT( cfgpacket ) );
+    printf( "does_wm_delete_window: %d\n",
+	    WM_DELETES_WINDOW( cfgpacket ) );
+    printf( "does_wm_take_focus: %d\n",
+	    WM_TAKES_FOCUS( cfgpacket ) );
+    printf( "do_iconify_after_map: %d\n",
+	    DO_ICONIFY_AFTER_MAP( cfgpacket ) );
+    printf( "do_reuse_destroyed: %d\n",
+	    DO_REUSE_DESTROYED( cfgpacket ) );
+    printf( "has_border: %d\n",
+	    HAS_BORDER( cfgpacket ) );
+    printf( "has_title: %d\n",
+	    HAS_TITLE( cfgpacket ) );
+    printf( "is_deiconify_pending: %d\n",
+	    IS_DEICONIFY_PENDING( cfgpacket ) );
+    printf( "is_fully_visible: %d\n",
+	    IS_FULLY_VISIBLE( cfgpacket ) );
+    printf( "is_iconified: %d\n",
+	    IS_ICONIFIED( cfgpacket ) );
+    printf( "is_iconfied_by_parent: %d\n",
+	    IS_ICONIFIED_BY_PARENT( cfgpacket ) );
+    printf( "is_icon_entered: %d\n",
+	    IS_ICON_ENTERED( cfgpacket ) );
+    printf( "is_icon_font_loaded: %d\n",
+	    IS_ICON_FONT_LOADED( cfgpacket ) );
+    printf( "is_icon_moved: %d\n",
+	    IS_ICON_MOVED( cfgpacket ) );
+    printf( "is_icon_ours: %d\n",
+	    IS_ICON_OURS( cfgpacket ) );
+    printf( "is_icon_shaped: %d\n",
+	    IS_ICON_SHAPED( cfgpacket ) );
+    printf( "is_icon_unmapped: %d\n",
+	    IS_ICON_UNMAPPED( cfgpacket ) );
+    printf( "is_mapped: %d\n",
+	    IS_MAPPED( cfgpacket ) );
+    printf( "is_map_pending: %d\n",
+	    IS_MAP_PENDING( cfgpacket ) );
+    printf( "is_maximized: %d\n",
+	    IS_MAXIMIZED( cfgpacket ) );
+    printf( "is_name_changed: %d\n",
+	    IS_NAME_CHANGED( cfgpacket ) );
+    printf( "is_partially_visible: %d\n",
+	    IS_PARTIALLY_VISIBLE( cfgpacket ) );
+    printf( "is_pixmap_ours: %d\n",
+	    IS_PIXMAP_OURS( cfgpacket ) );
+#ifdef POST_24_FEATURES
+    printf( "is_placed_wb3: %d\n",
+	    IS_PLACED_WB3( cfgpacket ) );
+#endif
+    printf( "is_size_inc_set: %d\n",
+	    IS_SIZE_INC_SET( cfgpacket ) );
+    printf( "is_transient: %d\n",
+	    IS_TRANSIENT( cfgpacket ) );
+    printf( "is_window_drawn_once: %d\n",
+	    cfgpacket->flags.is_window_drawn_once );
+    printf( "is_viewport_moved: %d\n",
+	    IS_VIEWPORT_MOVED( cfgpacket ) );
+    printf( "is_window_being_moved_opaque: %d\n",
+	    IS_WINDOW_BEING_MOVED_OPAQUE( cfgpacket ) );
+    printf( "is_window_font_loaded: %d\n",
+	    IS_WINDOW_FONT_LOADED( cfgpacket ) );
+    printf( "is_window_shaded %d\n",
+	    IS_SHADED( cfgpacket ) );
   }
 
   printf( "0x%08lx %-20s %ld\n",
-	  body[0], "title height", body[9]);
+	  cfgpacket->w, "title height", cfgpacket->title_height);
   printf( "0x%08lx %-20s %ld\n",
-	  body[0], "border width", body[10]);
-  printf( "0x%08lx %-20s width %ld, height %ld\n",
-	  body[0], "base size", body[11], body[12]);
-  printf( "0x%08lx %-20s width %ld, height %ld\n",
-	  body[0], "size increment", body[13], body[14]);
-  printf( "0x%08lx %-20s width %ld, height %ld\n",
-	  body[0], "min size", body[15], body[16]);
-  printf( "0x%08lx %-20s width %ld, height %ld\n",
-	  body[0], "max size", body[17], body[18]);
+	  cfgpacket->w, "border width", cfgpacket->border_width);
+  printf( "0x%08lx %-20s width %ld, height %ld\n", cfgpacket->w, "base size",
+	  cfgpacket->hints_base_width, cfgpacket->hints_base_height);
+  printf( "0x%08lx %-20s width %ld, height %ld\n", cfgpacket->w,
+	  "size increment", cfgpacket->hints_width_inc,
+	  cfgpacket->hints_height_inc);
+  printf( "0x%08lx %-20s width %ld, height %ld\n", cfgpacket->w, "min size",
+	  cfgpacket->hints_min_width, cfgpacket->hints_min_height);
+  printf( "0x%08lx %-20s width %ld, height %ld\n", cfgpacket->w, "max size",
+	  cfgpacket->hints_max_width, cfgpacket->hints_max_height);
 
-  switch(body[21])
+  switch(cfgpacket->hints_win_gravity)
   {
   case ForgetGravity:
     grav = "Forget";
@@ -789,9 +875,9 @@ void list_configure(unsigned long *body)
     grav = "Unknown";
     break;
   }
-  printf( "0x%08lx %-20s %s\n", body[0], "gravity", grav);
-  printf( "0x%08lx %-20s text 0x%lx, back 0x%lx\n",
-	  body[0], "pixel", body[22], body[23]);
+  printf( "0x%08lx %-20s %s\n", cfgpacket->w, "gravity", grav);
+  printf( "0x%08lx %-20s text 0x%lx, back 0x%lx\n", cfgpacket->w, "pixel",
+	  cfgpacket->TextPixel, cfgpacket->BackPixel);
 }
 
 /*************************************************************************

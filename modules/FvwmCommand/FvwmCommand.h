@@ -32,6 +32,9 @@
 #include <string.h>
 
 #include <libs/Module.h>
+#include <libs/fvwmlib.h>
+#include <fvwm/fvwm.h>
+#include <libs/vpacket.h>
 
 #ifndef HAVE_STRERROR
 extern char *sys_errlist[];

@@ -1,3 +1,11 @@
+2000-05-03  Michael Han  <mikehan@best.com>
+
+	* FvwmCommand.h:
+	* FvwmCommandS.c (process_message):
+	* FvwmCommand.c (process_message):
+	(list_configure):
+	Converted to ConfigWinPacket when parsing packet bodies
+
 2000-05-02  Michael Han  <mikehan@best.com>
 
 	* FvwmSave.h:
