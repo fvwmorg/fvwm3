@@ -574,10 +574,10 @@ Bool GrabEm(int cursor)
   SetFocus(Scr.NoFocusWin,NULL,0);
   mask = ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask
     | EnterWindowMask | LeaveWindowMask;
-  while((i<1000)&&(val=XGrabPointer(dpy, Scr.Root, True, mask,
-				    GrabModeAsync, GrabModeAsync, Scr.Root,
-				    Scr.FvwmCursors[cursor], CurrentTime)!=
-		   GrabSuccess))
+  while((i<1000)&&
+	(val = XGrabPointer(
+	  dpy, Scr.Root, True, mask, GrabModeAsync, GrabModeAsync, Scr.Root,
+	  Scr.FvwmCursors[cursor], CurrentTime) != GrabSuccess))
     {
       i++;
       /* If you go too fast, other windows may not get a change to release
@@ -685,7 +685,7 @@ void HandleHardFocus(FvwmWindow *t)
   /* Do something to guarantee a new time stamp! */
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
 		&JunkX, &JunkY, &x, &y, &JunkMask);
-  GrabEm(WAIT);
+  GrabEm(CRS_WAIT);
   XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 	       Scr.MyDisplayHeight,
 	       x + 2,y+2);

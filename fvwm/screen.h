@@ -56,33 +56,6 @@
 #define SIZE_HINDENT 5
 #define SIZE_VINDENT 3
 
-/* Cursor types */
-#define POSITION 0		/* upper Left corner cursor */
-#define TITLE_CURSOR 1          /* title-bar cursor */
-#define DEFAULT 2		/* cursor for apps to inherit */
-#define SYS 3        		/* sys-menu and iconify boxes cursor */
-#define MOVE 4                  /* resize cursor */
-#ifdef WAIT
-#undef WAIT
-#endif /*WAIT */
-#define WAIT 5   		/* wait a while cursor */
-#define MENU 6  		/* menu cursor */
-#define SELECT 7	        /* dot cursor for f.move, etc. from menus */
-#define DESTROY 8		/* skull and cross bones, f.destroy */
-#define TOP 9
-#define RIGHT 10
-#define BOTTOM 11
-#define LEFT 12
-#define TOP_LEFT 13
-#define TOP_RIGHT 14
-#define BOTTOM_LEFT 15
-#define BOTTOM_RIGHT 16
-#define TOP_EDGE 17
-#define RIGHT_EDGE 18
-#define BOTTOM_EDGE 19
-#define LEFT_EDGE 20
-#define MAX_CURSORS 21
-
 /* colormap focus styes */
 #define COLORMAP_FOLLOWS_MOUSE 1 /* default */
 #define COLORMAP_FOLLOWS_FOCUS 2
@@ -265,7 +238,7 @@ typedef struct ScreenInfo
 				   colormap windows */
   FvwmWindow *pushed_window;	/* saved window to install when pushes drops
 				   to zero */
-  Cursor FvwmCursors[MAX_CURSORS];
+  Cursor *FvwmCursors;
 
   char *DefaultIcon;            /* Icon to use when no other icons are found */
 

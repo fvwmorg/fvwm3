@@ -1,3 +1,9 @@
+1999-06-26  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmCommand/FvwmCommandS.c:
+	* FvwmCommand/FvwmCommand.c: Use hostname in pipe name. Patch by Neil
+	Bird.
+
 1999-06-26  Chris Rankin  <rankinc@zipworld.com.au>
 
     * FvwmForm/FvwmForm.c: new signal handling

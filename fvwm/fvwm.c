@@ -92,7 +92,6 @@ int FvwmErrorHandler(Display *, XErrorEvent *);
 int CatchFatal(Display *);
 int CatchRedirectError(Display *, XErrorEvent *);
 void InstallSignals(void);
-void CreateCursors(void);
 void ChildDied(int nonsense);
 void SaveDesktopState(void);
 void SetMWM_INFO(Window window);
@@ -567,7 +566,7 @@ int main(int argc, char **argv)
 
   BlackoutScreen(); /* if they want to hide the capture/startup */
 
-  CreateCursors();
+  Scr.FvwmCursors = CreateCursors(dpy);
   InitVariables();
   if (visualClass != -1 || visualId != -1) {
     /* this is so that menus use the (non-default) fvwm colormap */
@@ -1142,39 +1141,6 @@ RETSIGTYPE Restart(int sig)
    * BEFORE we call it ...
    */
   fvwmSetTerminate(sig);
-}
-
-/***********************************************************************
- *
- *  Procedure:
- *	CreateCursors - Loads fvwm cursors
- *
- ***********************************************************************
- */
-void CreateCursors(void)
-{
-  /* define cursors */
-  Scr.FvwmCursors[POSITION] = XCreateFontCursor(dpy,XC_top_left_corner);
-  Scr.FvwmCursors[DEFAULT] = XCreateFontCursor(dpy, XC_top_left_arrow);
-  Scr.FvwmCursors[SYS] = XCreateFontCursor(dpy, XC_hand2);
-  Scr.FvwmCursors[TITLE_CURSOR] = XCreateFontCursor(dpy, XC_top_left_arrow);
-  Scr.FvwmCursors[MOVE] = XCreateFontCursor(dpy, XC_fleur);
-  Scr.FvwmCursors[MENU] = XCreateFontCursor(dpy, XC_top_left_arrow);
-  Scr.FvwmCursors[WAIT] = XCreateFontCursor(dpy, XC_watch);
-  Scr.FvwmCursors[SELECT] = XCreateFontCursor(dpy, XC_dot);
-  Scr.FvwmCursors[DESTROY] = XCreateFontCursor(dpy, XC_pirate);
-  Scr.FvwmCursors[LEFT] = XCreateFontCursor(dpy, XC_left_side);
-  Scr.FvwmCursors[RIGHT] = XCreateFontCursor(dpy, XC_right_side);
-  Scr.FvwmCursors[TOP] = XCreateFontCursor(dpy, XC_top_side);
-  Scr.FvwmCursors[BOTTOM] = XCreateFontCursor(dpy, XC_bottom_side);
-  Scr.FvwmCursors[TOP_LEFT] = XCreateFontCursor(dpy,XC_top_left_corner);
-  Scr.FvwmCursors[TOP_RIGHT] = XCreateFontCursor(dpy,XC_top_right_corner);
-  Scr.FvwmCursors[BOTTOM_LEFT] = XCreateFontCursor(dpy,XC_bottom_left_corner);
-  Scr.FvwmCursors[BOTTOM_RIGHT] =XCreateFontCursor(dpy,XC_bottom_right_corner);
-  Scr.FvwmCursors[LEFT_EDGE] = XCreateFontCursor(dpy, XC_left_side);
-  Scr.FvwmCursors[RIGHT_EDGE] = XCreateFontCursor(dpy, XC_right_side);
-  Scr.FvwmCursors[TOP_EDGE] = XCreateFontCursor(dpy, XC_top_side);
-  Scr.FvwmCursors[BOTTOM_EDGE] = XCreateFontCursor(dpy, XC_bottom_side);
 }
 
 /***********************************************************************

@@ -524,7 +524,7 @@ void initPanFrames(void)
 			    VisibilityChangeMask);
   valuemask=  (CWEventMask | CWCursor );
 
-  attributes.cursor = Scr.FvwmCursors[TOP_EDGE];
+  attributes.cursor = Scr.FvwmCursors[CRS_TOP_EDGE];
   /* I know these overlap, it's useful when at (0,0) and the top one is unmapped */
   Scr.PanFrameTop.win =
     XCreateWindow (dpy, Scr.Root,
@@ -534,7 +534,7 @@ void initPanFrames(void)
 		   CopyFromParent, InputOnly,
 		   CopyFromParent,
 		   valuemask, &attributes);
-  attributes.cursor = Scr.FvwmCursors[LEFT_EDGE];
+  attributes.cursor = Scr.FvwmCursors[CRS_LEFT_EDGE];
   Scr.PanFrameLeft.win =
     XCreateWindow (dpy, Scr.Root,
 		   0, 0,
@@ -542,7 +542,7 @@ void initPanFrames(void)
 		   0,	/* no border */
 		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
-  attributes.cursor = Scr.FvwmCursors[RIGHT_EDGE];
+  attributes.cursor = Scr.FvwmCursors[CRS_RIGHT_EDGE];
   Scr.PanFrameRight.win =
     XCreateWindow (dpy, Scr.Root,
 		   Scr.MyDisplayWidth - edge_thickness, 0,
@@ -550,7 +550,7 @@ void initPanFrames(void)
 		   0,	/* no border */
 		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
-  attributes.cursor = Scr.FvwmCursors[BOTTOM_EDGE];
+  attributes.cursor = Scr.FvwmCursors[CRS_BOTTOM_EDGE];
   Scr.PanFrameBottom.win =
     XCreateWindow (dpy, Scr.Root,
 		   0, Scr.MyDisplayHeight - edge_thickness,
@@ -1011,7 +1011,7 @@ void move_window_to_desk(F_CMD_ARGS)
 {
   int desk;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
   desk = GetDeskNumber(action);
   if(desk == tmp_win->Desk)

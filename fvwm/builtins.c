@@ -177,7 +177,7 @@ void Maximize(F_CMD_ARGS)
   Bool grow_x = False;
   Bool grow_y = False;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
 
   if(tmp_win == NULL)
@@ -340,7 +340,7 @@ void WindowShade(F_CMD_ARGS)
   int new_x, new_y, new_height;
   int toggle;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
   if (tmp_win == NULL)
     return;
@@ -616,7 +616,7 @@ void movecursor(F_CMD_ARGS)
 
 void raise_function(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
 
   RaiseWindow(tmp_win);
@@ -624,7 +624,7 @@ void raise_function(F_CMD_ARGS)
 
 void lower_function(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT, ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT, ButtonRelease))
     return;
 
   LowerWindow(tmp_win);
@@ -632,7 +632,7 @@ void lower_function(F_CMD_ARGS)
 
 void destroy_function(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context, DESTROY, ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_DESTROY, ButtonRelease))
     return;
 
   if(check_if_function_allowed(F_DESTROY,tmp_win,True,NULL) == 0)
@@ -651,7 +651,7 @@ void destroy_function(F_CMD_ARGS)
 
 void delete_function(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context, DESTROY,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_DESTROY,ButtonRelease))
     return;
 
   if(check_if_function_allowed(F_DELETE,tmp_win,True,NULL) == 0)
@@ -672,7 +672,7 @@ void delete_function(F_CMD_ARGS)
 
 void close_function(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context, DESTROY,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_DESTROY,ButtonRelease))
     return;
 
   if(check_if_function_allowed(F_CLOSE,tmp_win,True,NULL) == 0)
@@ -796,7 +796,7 @@ void refresh_win_function(F_CMD_ARGS)
   XSetWindowAttributes attributes;
   unsigned long valuemask;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
 
   valuemask = CWOverrideRedirect | CWBackingStore | CWSaveUnder | CWBackPixmap;
@@ -823,7 +823,7 @@ void stick_function(F_CMD_ARGS)
 {
   int toggle;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
 
   toggle = ParseToggleArgument(action, &action, -1, 0);
@@ -919,7 +919,7 @@ void echo_func(F_CMD_ARGS)
 
 void raiselower_func(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
 
   if (IS_VISIBLE(tmp_win) || !CanBeRaised(tmp_win))
@@ -1376,27 +1376,28 @@ void CursorStyle(F_CMD_ARGS)
       free(newcursor);
     return;
   }
-  if (StrEquals("POSITION",cname)) index = POSITION;
-  else if (StrEquals("DEFAULT",cname)) index = DEFAULT;
-  else if (StrEquals("SYS",cname)) index = SYS;
-  else if (StrEquals("TITLE",cname)) index = TITLE_CURSOR;
-  else if (StrEquals("MOVE",cname)) index = MOVE;
-  else if (StrEquals("MENU",cname)) index = MENU;
-  else if (StrEquals("WAIT",cname)) index = WAIT;
-  else if (StrEquals("SELECT",cname)) index = SELECT;
-  else if (StrEquals("DESTROY",cname)) index = DESTROY;
-  else if (StrEquals("LEFT",cname)) index = LEFT;
-  else if (StrEquals("RIGHT",cname)) index = RIGHT;
-  else if (StrEquals("TOP",cname)) index = TOP;
-  else if (StrEquals("BOTTOM",cname)) index = BOTTOM;
-  else if (StrEquals("TOP_LEFT",cname)) index = TOP_LEFT;
-  else if (StrEquals("TOP_RIGHT",cname)) index = TOP_RIGHT;
-  else if (StrEquals("BOTTOM_LEFT",cname)) index = BOTTOM_LEFT;
-  else if (StrEquals("BOTTOM_RIGHT",cname)) index = BOTTOM_RIGHT;
-  else if (StrEquals("LEFT_EDGE",cname)) index = LEFT_EDGE;
-  else if (StrEquals("RIGHT_EDGE",cname)) index = RIGHT_EDGE;
-  else if (StrEquals("TOP_EDGE",cname)) index = TOP_EDGE;
-  else if (StrEquals("BOTTOM_EDGE",cname)) index = BOTTOM_EDGE;
+  if (StrEquals("POSITION",cname)) index = CRS_POSITION;
+  else if (StrEquals("DEFAULT",cname)) index = CRS_DEFAULT;
+  else if (StrEquals("SYS",cname)) index = CRS_SYS;
+  else if (StrEquals("TITLE",cname)) index = CRS_TITLE;
+  else if (StrEquals("MOVE",cname)) index = CRS_MOVE;
+  else if (StrEquals("RESIZE",cname)) index = CRS_RESIZE;
+  else if (StrEquals("MENU",cname)) index = CRS_MENU;
+  else if (StrEquals("WAIT",cname)) index = CRS_WAIT;
+  else if (StrEquals("SELECT",cname)) index = CRS_SELECT;
+  else if (StrEquals("DESTROY",cname)) index = CRS_DESTROY;
+  else if (StrEquals("LEFT",cname)) index = CRS_LEFT;
+  else if (StrEquals("RIGHT",cname)) index = CRS_RIGHT;
+  else if (StrEquals("TOP",cname)) index = CRS_TOP;
+  else if (StrEquals("BOTTOM",cname)) index = CRS_BOTTOM;
+  else if (StrEquals("TOP_LEFT",cname)) index = CRS_TOP_LEFT;
+  else if (StrEquals("TOP_RIGHT",cname)) index = CRS_TOP_RIGHT;
+  else if (StrEquals("BOTTOM_LEFT",cname)) index = CRS_BOTTOM_LEFT;
+  else if (StrEquals("BOTTOM_RIGHT",cname)) index = CRS_BOTTOM_RIGHT;
+  else if (StrEquals("LEFT_EDGE",cname)) index = CRS_LEFT_EDGE;
+  else if (StrEquals("RIGHT_EDGE",cname)) index = CRS_RIGHT_EDGE;
+  else if (StrEquals("TOP_EDGE",cname)) index = CRS_TOP_EDGE;
+  else if (StrEquals("BOTTOM_EDGE",cname)) index = CRS_BOTTOM_EDGE;
   else
   {
     fvwm_msg(ERR,"CursorStyle","Unknown cursor name %s",cname);
@@ -1419,7 +1420,8 @@ void CursorStyle(F_CMD_ARGS)
       free(newcursor);
 
       /* replace the cursor defn */
-      if (Scr.FvwmCursors[index]) XFreeCursor(dpy,Scr.FvwmCursors[index]);
+      if (Scr.FvwmCursors[index])
+	XFreeCursor(dpy,Scr.FvwmCursors[index]);
       Scr.FvwmCursors[index] = XCreateFontCursor(dpy,nc);
     }
   else
@@ -1452,7 +1454,8 @@ void CursorStyle(F_CMD_ARGS)
       colors[1].pixel = WhitePixel(dpy, Scr.screen);
       XQueryColors (dpy, PictureCMap, colors, 2);
 
-      if (Scr.FvwmCursors[index]) XFreeCursor (dpy, Scr.FvwmCursors[index]);
+      if (Scr.FvwmCursors[index])
+	XFreeCursor (dpy, Scr.FvwmCursors[index]);
       Scr.FvwmCursors[index] =
 	XCreatePixmapCursor (dpy, source, mask,
 			     &(colors[0]), &(colors[1]),
@@ -1485,28 +1488,28 @@ void CursorStyle(F_CMD_ARGS)
   {
     for (i=0;i<4;i++)
     {
-      SafeDefineCursor(fw->corners[i],Scr.FvwmCursors[TOP_LEFT+i]);
-      SafeDefineCursor(fw->sides[i],Scr.FvwmCursors[TOP+i]);
+      SafeDefineCursor(fw->corners[i],Scr.FvwmCursors[CRS_TOP_LEFT+i]);
+      SafeDefineCursor(fw->sides[i],Scr.FvwmCursors[CRS_TOP+i]);
     }
     for (i=0;i<Scr.nr_left_buttons;i++)
     {
-      SafeDefineCursor(fw->left_w[i],Scr.FvwmCursors[SYS]);
+      SafeDefineCursor(fw->left_w[i],Scr.FvwmCursors[CRS_SYS]);
     }
     for (i=0;i<Scr.nr_right_buttons;i++)
     {
-      SafeDefineCursor(fw->right_w[i],Scr.FvwmCursors[SYS]);
+      SafeDefineCursor(fw->right_w[i],Scr.FvwmCursors[CRS_SYS]);
     }
-    SafeDefineCursor(fw->title_w, Scr.FvwmCursors[TITLE_CURSOR]);
+    SafeDefineCursor(fw->title_w, Scr.FvwmCursors[CRS_TITLE]);
     fw = fw->next;
   }
 
   /* Do the menus for good measure */
-  SetMenuCursor(Scr.FvwmCursors[MENU]);
+  SetMenuCursor(Scr.FvwmCursors[CRS_MENU]);
 
-  SafeDefineCursor(Scr.PanFrameTop.win, Scr.FvwmCursors[TOP_EDGE]);
-  SafeDefineCursor(Scr.PanFrameBottom.win, Scr.FvwmCursors[BOTTOM_EDGE]);
-  SafeDefineCursor(Scr.PanFrameLeft.win, Scr.FvwmCursors[LEFT_EDGE]);
-  SafeDefineCursor(Scr.PanFrameRight.win, Scr.FvwmCursors[RIGHT_EDGE]);
+  SafeDefineCursor(Scr.PanFrameTop.win, Scr.FvwmCursors[CRS_TOP_EDGE]);
+  SafeDefineCursor(Scr.PanFrameBottom.win, Scr.FvwmCursors[CRS_BOTTOM_EDGE]);
+  SafeDefineCursor(Scr.PanFrameLeft.win, Scr.FvwmCursors[CRS_LEFT_EDGE]);
+  SafeDefineCursor(Scr.PanFrameRight.win, Scr.FvwmCursors[CRS_RIGHT_EDGE]);
 }
 
 
@@ -2689,7 +2692,7 @@ void ChangeDecor(F_CMD_ARGS)
     char *item;
     int x,y,width,height,old_height,extra_height;
     FvwmDecor *fl = &Scr.DefaultDecor, *found = NULL;
-    if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
+    if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
 	return;
     action = GetNextToken(action, &item);
     if (!action || !item)
@@ -3756,7 +3759,7 @@ void DirectionFunc(F_CMD_ARGS)
  * for every single function in it. */
 void PickFunc(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
 
   ExecuteFunction(action, tmp_win, eventp, C_WINDOW, *Module, EXPAND_COMMAND);
@@ -3840,13 +3843,13 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
   XEvent event;
 
   if (fSingle)
-    if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
+    if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
       return;
 
   /* Wow, this grabbing speeds up recapture tremendously! I think that is the
    * solution for this weird -blackout option. */
   MyXGrabServer(dpy);
-  GrabEm(WAIT);
+  GrabEm(CRS_WAIT);
   BlackoutScreen(); /* if they want to hide the recapture */
   if (fSingle)
     CaptureOneWindow(tmp_win, tmp_win->w);
@@ -4122,7 +4125,7 @@ void change_layer(F_CMD_ARGS)
   int n, layer, val[2];
   char *token;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
 
   if(tmp_win == NULL)

@@ -11,8 +11,10 @@
  */
 
 #include "FvwmCommand.h"
+#include "../../libs/fvwmlib.h"
 
 #define MYNAME "FvwmCommand"
+#define MAXHOSTNAME 255
 
 int  Fdr, Fdw;  /* file discriptor for fifo */
 FILE *Frun;     /* File contains pid */
@@ -30,6 +32,9 @@ int  Opt_flags;
 FILE *Fp;
 int  Rc;  /* return code */
 int  Bg;  /* FvwmCommand in background */
+
+char client[MAXHOSTNAME];
+char hostname[32];
 
 void err_msg( char *msg );
 void err_quit( char *msg );
@@ -134,12 +139,21 @@ int main ( int argc, char *argv[]) {
 
   if( f_stem == NULL ) {
     home = getenv("HOME");
-    f_stem = safemalloc( strlen(home)+ strlen(F_NAME) + 3);
+    f_stem = safemalloc( strlen(home) + strlen(F_NAME) + MAXHOSTNAME + 4);
     strcpy (f_stem, home);
     if (f_stem[strlen(f_stem)-1] != '/') {
       strcat (f_stem, "/");
     }
     strcat (f_stem, F_NAME);
+    /* Make it unique */
+    gethostname(hostname,32);
+    strcpy( client, getenv("DISPLAY") );
+    if (!client[0]  ||  ':' == client[0])
+    {
+      sprintf( client, "%s%s", hostname, client );
+    }
+    strcat (f_stem, "-");
+    strcat (f_stem, client);
   }
 
   /* create 2 fifos */

@@ -100,7 +100,7 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
     XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX, &DragY,
                   &JunkX, &JunkY, &JunkMask);
 
-  if(!GrabEm(MOVE))
+  if(!GrabEm(CRS_MOVE))
     {
       XBell(dpy, 0);
       return;
@@ -289,7 +289,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
   int page_x, page_y;
   Bool fWarp = FALSE;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE,ButtonPress))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_MOVE,ButtonPress))
     return;
 
   if (tmp_win == NULL)
@@ -1007,7 +1007,7 @@ void resize_window(F_CMD_ARGS)
   int px;
   int py;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE, ButtonPress))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_MOVE, ButtonPress))
     return;
 
   if (tmp_win == NULL)
@@ -1050,8 +1050,8 @@ void resize_window(F_CMD_ARGS)
 		      drag->width, tmp_win->frame_g.height,FALSE,False);
 	}
       else
-	SetupFrame (tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y, drag->width,
-		    drag->height,FALSE,False);
+	SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+		   drag->width, drag->height,FALSE,False);
       SetBorder(tmp_win,True,True,True,None);
 
       ResizeWindow = None;
@@ -1060,7 +1060,7 @@ void resize_window(F_CMD_ARGS)
 
   InstallRootColormap();
 
-  if(!GrabEm(MOVE))
+  if(!GrabEm(CRS_RESIZE))
     {
       XBell(dpy, 0);
       return;

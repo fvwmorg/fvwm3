@@ -10,8 +10,8 @@ config_DATA = ConfigFvwmDefaults ConfigFvwmSetup
 
 fvwm2_SOURCES = add_window.c bindings.h bindings.c borders.c \
 	builtins.c colormaps.c \
-	colormaps.h colors.c decorations.c defaults.h events.c events.h \
-	focus.c focus.h \
+	colormaps.h colors.c cursor.c cursor.h decorations.c defaults.h \
+	events.c events.h focus.c focus.h \
 	functions.c functions.h fvwm.c fvwm.h fvwmdebug.c fvwmdebug.h \
 	gnome.c icccm2.c icons.c icons.h menus.c menus.h misc.c \
 	misc.h modconf.c module_interface.c module_interface.h \

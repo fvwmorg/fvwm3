@@ -11,8 +11,10 @@
  */
 
 #include "FvwmCommand.h"
+#include "../../libs/fvwmlib.h"
 
 #define MYNAME   "FvwmCommandS"
+#define MAXHOSTNAME 255
 
 int  Fd[2];  /* pipe to fvwm */
 int  Ffdr;   /* command fifo file discriptors */
@@ -20,6 +22,9 @@ int  Ffdw;   /* message fifo file discriptors */
 char *F_name, *Fc_name, *Fm_name; /* fifo name */
 char Nounlink;   /* don't delete fifo when true */
 char Connect;    /* client is connected */
+
+char client[MAXHOSTNAME];
+char hostname[32];
 
 int  open_fifos (char *f_stem);
 void close_fifos();
@@ -94,12 +99,21 @@ void server ( char *name ) {
   if( name == NULL ) {
     /* default name */
     home = getenv("HOME");
-    f_stem = safemalloc( strlen(home)+ strlen(F_NAME) + 3);
+    f_stem = safemalloc( strlen(home) + strlen(F_NAME) + MAXHOSTNAME + 4);
     strcpy (f_stem, home);
     if (f_stem[strlen(f_stem)-1] != '/') {
       strcat (f_stem, "/");
     }
     strcat (f_stem, F_NAME);
+    /* Make it unique */
+    gethostname(hostname,32);
+    strcpy( client, getenv("DISPLAY") );
+    if (!client[0]  ||  ':' == client[0])
+    {
+      sprintf( client, "%s%s", hostname, client );
+    }
+    strcat (f_stem, "-");
+    strcat (f_stem, client);
   }else{
     f_stem = name;
   }

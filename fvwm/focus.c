@@ -122,11 +122,11 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse,
 		  {
 		    XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->frame,True,
 				ButtonPressMask, GrabModeSync,GrabModeAsync,
-				None,Scr.FvwmCursors[SYS]);
+				None,Scr.FvwmCursors[CRS_SYS]);
 		    XGrabButton(dpy,(i+1),GetUnusedModifiers(),
 				Scr.Ungrabbed->frame,True,
 				ButtonPressMask, GrabModeSync,GrabModeAsync,
-				None,Scr.FvwmCursors[SYS]);
+				None,Scr.FvwmCursors[CRS_SYS]);
 		  }
 	      Scr.Focus = NULL;
 	      Scr.Ungrabbed = NULL;
@@ -153,7 +153,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse,
 	if(Scr.buttons2grab & (1<<i))
 	  XGrabButton(dpy,(i+1),0,Scr.Ungrabbed->frame,True,
 		      ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-		      Scr.FvwmCursors[SYS]);
+		      Scr.FvwmCursors[CRS_SYS]);
       Scr.Ungrabbed = NULL;
     }
   /* if we do click to focus, remove the grab on mouse events that
@@ -345,7 +345,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
 
 void flip_focus_func(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
 
   /* Reorder the window list */
@@ -354,7 +354,7 @@ void flip_focus_func(F_CMD_ARGS)
 
 void focus_func(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
 
   FocusOn(tmp_win, FALSE, action);
@@ -365,7 +365,7 @@ void warp_func(F_CMD_ARGS)
    int val1_unit, val2_unit, n;
    int val1, val2;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
     return;
 
    n = GetTwoArguments (action, &val1, &val2, &val1_unit, &val2_unit);

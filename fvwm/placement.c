@@ -704,7 +704,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
                                        &xl,&yt, pdeltax, pdeltay);
       if(! smartlyplaced)
       {
-        if(GrabEm(POSITION))
+        if(GrabEm(CRS_POSITION))
         {
           /* Grabbed the pointer - continue */
           MyXGrabServer(dpy);
@@ -832,7 +832,8 @@ void PlaceAgain_func(F_CMD_ARGS)
   int x,y;
   char *token;
 
-  if (DeferExecution(eventp, &w, &tmp_win, &context, SELECT, ButtonRelease))
+  if (DeferExecution(eventp, &w, &tmp_win, &context, CRS_SELECT,
+		     ButtonRelease))
     return;
 
   /* Find new position for window */

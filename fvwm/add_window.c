@@ -520,7 +520,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
 
   valuemask = valuemask_save|CWCursor|CWColormap|CWBorderPixel|CWEventMask;
-  attributes.cursor = Scr.FvwmCursors[DEFAULT];
+  attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
   attributes.colormap = Scr.cmap;
   attributes.border_pixel = 0;
   attributes.event_mask = (SubstructureRedirectMask | ButtonPressMask
@@ -560,7 +560,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   if (HAS_TITLE(tmp_win)) {
     tmp_win->title_g.x = tmp_win->boundary_width + tmp_win->title_g.height + 1;
     tmp_win->title_g.y = tmp_win->boundary_width;
-    attributes.cursor = Scr.FvwmCursors[TITLE_CURSOR];
+    attributes.cursor = Scr.FvwmCursors[CRS_TITLE];
     tmp_win->title_w = XCreateWindow(dpy, tmp_win->frame,
 					tmp_win->title_g.x,
 					tmp_win->title_g.y,
@@ -569,7 +569,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 					CopyFromParent,
 					InputOutput, CopyFromParent, valuemask,
 					&attributes);
-    attributes.cursor = Scr.FvwmCursors[SYS];
+    attributes.cursor = Scr.FvwmCursors[CRS_SYS];
     for(i = 4; i >= 0; i--) {
       if((i < Scr.nr_left_buttons) && (tmp_win->left_w[i] > 0)) {
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
@@ -630,7 +630,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     /* Just dump the windows any old place and let SetupFrame take
      * care of the mess */
     for(i=0;i<4;i++) {
-      attributes.cursor = Scr.FvwmCursors[TOP_LEFT+i];
+      attributes.cursor = Scr.FvwmCursors[CRS_TOP_LEFT+i];
       tmp_win->corners[i] = XCreateWindow (dpy, tmp_win->frame, 0, 0,
 					   tmp_win->corner_width,
 					   tmp_win->corner_width, 0, 0,
@@ -639,7 +639,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 					   valuemask, &attributes);
       XLowerWindow(dpy, tmp_win->corners[i]);
 
-      attributes.cursor = Scr.FvwmCursors[TOP+i];
+      attributes.cursor = Scr.FvwmCursors[CRS_TOP+i];
       tmp_win->sides[i] = XCreateWindow (dpy, tmp_win->frame, 0, 0,
 					 tmp_win->boundary_width,
 					 tmp_win->boundary_width, 0, 0,
@@ -654,7 +654,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
      that when the client dies there is no flash of BackPixel/BackPixmap */
   /* may look odd with shaped windows if fvwm has shapes disabled */
   valuemask = CWCursor|CWColormap|CWBorderPixel|CWBackPixmap|CWEventMask;
-  attributes.cursor = Scr.FvwmCursors[DEFAULT];
+  attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
   attributes.colormap = Scr.cmap;
   attributes.background_pixmap = None;
   attributes.event_mask = SubstructureRedirectMask;
@@ -735,7 +735,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
    */
   tmp_win->icon_w = None;
   GrabAllWindowButtons(dpy, tmp_win->frame, Scr.AllBindings, C_WINDOW,
-		       GetUnusedModifiers(), Scr.FvwmCursors[DEFAULT], True);
+		       GetUnusedModifiers(), Scr.FvwmCursors[CRS_DEFAULT], True);
   GrabAllWindowKeys(dpy, tmp_win->frame, Scr.AllBindings,
 		    C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
 		    GetUnusedModifiers(), True);
@@ -795,10 +795,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #if 0
 	    XGrabButton(dpy,(i),0,tmp_win->frame,True,
 			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-			Scr.FvwmCursors[SYS]);
+			Scr.FvwmCursors[CRS_SYS]);
 	    XGrabButton(dpy,(i),GetUnusedModifiers(),tmp_win->frame,True,
 			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-			Scr.FvwmCursors[SYS]);
+			Scr.FvwmCursors[CRS_SYS]);
 #else
             /* should we accept any modifier on this button? */
 	    /* domivogt (2-Jan-1999): No. Or at least not like this. In the
@@ -806,7 +806,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 	     * anymore. They are all swallowed by the frame window. */
 	    XGrabButton(dpy,(i),AnyModifier,tmp_win->frame,True,
   			ButtonPressMask, GrabModeSync,GrabModeAsync,None,
-  			Scr.FvwmCursors[SYS]);
+  			Scr.FvwmCursors[CRS_SYS]);
 #endif
 	  }
     }

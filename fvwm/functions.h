@@ -16,6 +16,8 @@
 #ifndef _FUNCTIONS_
 #define _FUNCTIONS_
 
+#include "cursor.h"
+
 struct FvwmFunction;               /* forward declaration */
 
 typedef struct FunctionItem
@@ -72,7 +74,7 @@ FvwmFunction *FindFunction(char *function_name);
 extern FvwmFunction *NewFvwmFunction(char *name);
 void DestroyFunction(FvwmFunction *func);
 extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
-			  int, int);
+			  cursor_type, int);
 void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 		     unsigned long context, int Module,
 		     expand_command_type expand_cmd);

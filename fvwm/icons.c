@@ -144,7 +144,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
               | CWBackPixel | CWCursor | CWEventMask;
   attributes.colormap = Scr.cmap;
   attributes.background_pixel = Scr.StdColors.back;
-  attributes.cursor = Scr.FvwmCursors[DEFAULT];
+  attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
   attributes.border_pixel = 0;
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
 			   | VisibilityChangeMask | ExposureMask | KeyPressMask
@@ -213,10 +213,10 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   if(tmp_win->icon_w != None)
     {
       XSaveContext(dpy, tmp_win->icon_w, FvwmContext, (caddr_t)tmp_win);
-      XDefineCursor(dpy, tmp_win->icon_w, Scr.FvwmCursors[DEFAULT]);
+      XDefineCursor(dpy, tmp_win->icon_w, Scr.FvwmCursors[CRS_DEFAULT]);
       GrabAllWindowKeysAndButtons(dpy, tmp_win->icon_w, Scr.AllBindings,
 				  C_ICON, GetUnusedModifiers(),
-				  Scr.FvwmCursors[DEFAULT], True);
+				  Scr.FvwmCursors[CRS_DEFAULT], True);
 
       xwc.sibling = tmp_win->frame;
       xwc.stack_mode = Below;
@@ -225,10 +225,10 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   if(tmp_win->icon_pixmap_w != None)
     {
       XSaveContext(dpy, tmp_win->icon_pixmap_w, FvwmContext, (caddr_t)tmp_win);
-      XDefineCursor(dpy, tmp_win->icon_pixmap_w, Scr.FvwmCursors[DEFAULT]);
+      XDefineCursor(dpy, tmp_win->icon_pixmap_w, Scr.FvwmCursors[CRS_DEFAULT]);
       GrabAllWindowKeysAndButtons(dpy, tmp_win->icon_pixmap_w, Scr.AllBindings,
 				  C_ICON, GetUnusedModifiers(),
-				  Scr.FvwmCursors[DEFAULT], True);
+				  Scr.FvwmCursors[CRS_DEFAULT], True);
 
       xwc.sibling = tmp_win->frame;
       xwc.stack_mode = Below;
@@ -1124,7 +1124,7 @@ void iconify_function(F_CMD_ARGS)
 {
   int toggle;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT, ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT, ButtonRelease))
     return;
 
   toggle = ParseToggleArgument(action, NULL, -1, 0);

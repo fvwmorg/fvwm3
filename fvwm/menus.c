@@ -675,7 +675,7 @@ MenuStatus do_menu(MenuParameters *pmp)
     {
       /* we're a top level menu */
       has_mouse_moved = False;
-      if(!GrabEm(MENU))
+      if(!GrabEm(CRS_MENU))
       {
 	/* GrabEm specifies the cursor to use */
 	XBell(dpy, 0);
@@ -4030,7 +4030,7 @@ static void make_menu_window(MenuRoot *mr)
   attributes.colormap = Scr.cmap;
   attributes.background_pixel = MST_MENU_COLORS(mr).back;
   attributes.event_mask = (ExposureMask | EnterWindowMask);
-  attributes.cursor = Scr.FvwmCursors[MENU];
+  attributes.cursor = Scr.FvwmCursors[CRS_MENU];
   attributes.save_under = True;
 
   if(MR_WINDOW(mr) != None)

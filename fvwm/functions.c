@@ -413,8 +413,8 @@ static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d, Bool may_time_out)
 
   while(((total < Scr.ClickTime && lastTimestamp - t0 < Scr.ClickTime) ||
 	 !may_time_out) &&
-	x - xcurrent < dist && x - xcurrent > -dist &&
-	y - ycurrent < dist && y - ycurrent > -dist)
+	x - xcurrent < dist && xcurrent - x < dist &&
+	y - ycurrent < dist && ycurrent - y < dist)
     {
       usleep(20000);
       total+=20;
@@ -430,6 +430,7 @@ static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d, Bool may_time_out)
 	  StashEventTime(d);
 	}
     }
+
   return False;
 }
 
@@ -604,8 +605,8 @@ void ExecuteFunctionSaveTmpWin(char *Action, FvwmWindow *tmp_win,
  *
  ***********************************************************************/
 int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
-		   unsigned long *context, int cursor, int FinishEvent)
-
+		   unsigned long *context, cursor_type cursor,
+		   int FinishEvent)
 {
   int done;
   int finished = 0;
@@ -620,6 +621,12 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
                                       (eventp->type != ButtonPress)))
     {
       return FALSE;
+    }
+    else if (FinishEvent == ButtonRelease)
+    {
+      /* We are only waiting until the user releases the button. Do not change
+       * the cursor. */
+      cursor = CRS_NONE;
     }
   }
   if (Scr.flags.silent_functions)
@@ -679,6 +686,7 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
 
   }
 
+  UngrabEm();
   *w = eventp->xany.window;
   if(((*w == Scr.Root)||(*w == Scr.NoFocusWin))
      && (eventp->xbutton.subwindow != (Window)0))
@@ -690,14 +698,12 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
   {
     *context = C_ROOT;
     XBell(dpy, 0);
-    UngrabEm();
     return TRUE;
   }
   if (XFindContext (dpy, *w, FvwmContext, (caddr_t *)tmp_win) == XCNOENT)
   {
     *tmp_win = NULL;
     XBell(dpy, 0);
-    UngrabEm();
     return (TRUE);
   }
 
@@ -721,13 +727,11 @@ int DeferExecution(XEvent *eventp, Window *w,FvwmWindow **tmp_win,
     {
       *context = C_ROOT;
       XBell(dpy, 0);
-      UngrabEm();
       return TRUE;
     }
   }
   *context = GetContext(*tmp_win,eventp,&dummy);
 
-  UngrabEm();
   return FALSE;
 }
 
@@ -1007,7 +1011,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
    * a window to operate on */
   if(NeedsTarget)
     {
-      if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonPress))
+      if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonPress))
 	{
 	  func->use_depth--;
 	  cfunc_depth--;
@@ -1019,7 +1023,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 	}
     }
 
-  if(!GrabEm(SELECT))
+  if(!GrabEm(CRS_NONE))
     {
       func->use_depth--;
       cfunc_depth--;
@@ -1036,7 +1040,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
   XCheckMaskEvent(dpy, ButtonPressMask, &d);
 
   /* Wait and see if we have a click, or a move */
-  /* wait for0ever, see if the user releases the button */
+  /* wait forever, see if the user releases the button */
   if(IsClick(x,y,ButtonReleaseMask,&d,False))
     {
       ev = &d;
@@ -1045,7 +1049,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 
   /* If it was a click, wait to see if its a double click */
   if((HaveDoubleClick) && (type == CLICK) &&
-     (IsClick(x,y,ButtonPressMask, &d, True)))
+     (IsClick(x,y,ButtonPressMask|ButtonReleaseMask, &d, True)))
     {
       type = DOUBLE_CLICK;
       ev = &d;

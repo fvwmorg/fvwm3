@@ -1,3 +1,37 @@
+1999-06-26  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/functions.c (DeferExecution): Don't use the select cursor when
+	only waiting for a button release
+	(execute_complex_function): improved double click handling (my X server
+	seems to swallow some rapid button presses, so trigger the double
+	click when releasing a button after the first click too).
+
+	* fvwm/cursor.c (default_cursors): use crosshair instead of queastion
+	arrow (looks rather ugly). Crosshair is used by xwininfo and xwd for
+	the same purpose.
+
+	* fvwm/functions.c (execute_complex_function): Don't change the cursor
+	during function execution.
+
+	* fvwm/misc.c (GrabEm): Enhanded GrabEm so you can grab without
+	changing the cursor.
+
+	* fvwm/misc.c:
+	* fvwm/menus.c:
+	* fvwm/icons.c:
+	* fvwm/add_window.c:
+	* fvwm/virtual.c:
+	* fvwm/placement.c:
+	* fvwm/focus.c:
+	* fvwm/builtins.c:
+	* fvwm/screen.h:
+	* fvwm/functions.c:
+	* fvwm/fvwm.c:
+	* fvwm/cursor.h: created new files cursor.[ch] for cursor definitions.
+	Changed select cursor to XC_question_arrow, introduced RESIZE cursor
+	set to XC_sizing, moved cursor initialisation to cursor.c, made code a
+	bit smaller.
+
 1999-06-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.c (parseCommandArgs): use isspace()
