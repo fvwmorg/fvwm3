@@ -56,6 +56,10 @@
 #define CMD_ABORT		"Function FvwmProxyAbortFunc"
 #define CMD_SELECT		"Function FvwmProxySelectFunc"
 #define CMD_MARK		"Function FvwmProxyMarkFunc"
+#else
+#define CMD_SELECT		"WindowListFunc $w"
+#define CMD_CLICK1		"Raise"
+#define CMD_CLICK3		"Lower"
 #endif
 
 /* ---------------------------- local macros -------------------------------- */
@@ -119,25 +123,20 @@ static char *abort_command;
 static char startupText[10000];
 #endif
 
-#define PROXY_ACTION_SELECT	0
-#define PROXY_ACTION_SHOW	1
-#define PROXY_ACTION_HIDE	2
-#define PROXY_ACTION_ABORT	3
-#define PROXY_ACTION_MARK	4
-#define PROXY_ACTION_UNMARK	5
-#define PROXY_ACTION_CLICK	6
-char *ClickAction[PROXY_ACTION_CLICK+NUMBER_OF_BUTTONS] =
+typedef enum
 {
-	"WindowListFunc $w",	/* Select */
-	"Nop",			/* Mark   */
-	"Nop",			/* Show   */
-	"Nop",			/* Hide   */
-	"Nop",			/* Abort   */
-	"Nop",			/* Unmark */
-	"Raise",		/* Click1 */
-	"Nop",			/* Click2 */
-	"Lower"			/* Click3 */
-};
+	PROXY_ACTION_SELECT = 0,
+	PROXY_ACTION_SHOW,
+	PROXY_ACTION_HIDE,
+	PROXY_ACTION_ABORT,
+	PROXY_ACTION_MARK,
+	PROXY_ACTION_UNMARK,
+	/* this one *must* be last */
+	PROXY_ACTION_CLICK,
+	PROXY_ACTION_LAST = PROXY_ACTION_CLICK + NUMBER_OF_BUTTONS
+} proxy_action_t;
+
+char *ClickAction[PROXY_ACTION_LAST];
 
 static int (*originalXErrorHandler)(Display *,XErrorEvent *);
 static int (*originalXIOErrorHandler)(Display *);
@@ -148,30 +147,74 @@ static int (*originalXIOErrorHandler)(Display *);
 
 static void LinkAction(char *string)
 {
-	char *temp;
-	temp=string;
-	while(isspace((unsigned char)*temp))
-		temp++;
-	if(strncasecmp(temp, "Click", 5)==0)
+	char *token;
+
+	token = PeekToken(string, &string);
+	if (strncasecmp(token, "Click", 5) == 0)
 	{
-		int n,b,i;
-		i = sscanf(temp + 5, "%d%n", &b, &n);
+		int b;
+		int i;
+		i = sscanf(string, "%d", &b);
 		if (i > 0 && b >=1 && b <= NUMBER_OF_MOUSE_BUTTONS)
-			CopyString(&ClickAction[PROXY_ACTION_CLICK+b-1],
-				temp+5+n);
+		{
+			if (ClickAction[PROXY_ACTION_CLICK + b - 1] != NULL)
+			{
+				free(ClickAction[PROXY_ACTION_CLICK + b - 1]);
+			}
+			ClickAction[PROXY_ACTION_CLICK + b - 1] =
+				safestrdup(string);
+		}
 	}
-	else if(strncasecmp(temp, "Select", 6)==0)
-		CopyString(&ClickAction[PROXY_ACTION_SELECT],temp+6);
-	else if(strncasecmp(temp, "Show", 6)==0)
-		CopyString(&ClickAction[PROXY_ACTION_SHOW],temp+4);
-	else if(strncasecmp(temp, "Hide", 6)==0)
-		CopyString(&ClickAction[PROXY_ACTION_HIDE],temp+4);
-	else if(strncasecmp(temp, "Abort", 6)==0)
-		CopyString(&ClickAction[PROXY_ACTION_ABORT],temp+5);
-	else if(strncasecmp(temp, "Mark", 4)==0)
-		CopyString(&ClickAction[PROXY_ACTION_MARK],temp+4);
-	else if(strncasecmp(temp, "Unmark", 6)==0)
-		CopyString(&ClickAction[PROXY_ACTION_UNMARK],temp+6);
+	else if(StrEquals(token, "Select"))
+	{
+		if (ClickAction[PROXY_ACTION_SELECT] != NULL)
+		{
+			free(ClickAction[PROXY_ACTION_SELECT]);
+		}
+		ClickAction[PROXY_ACTION_SELECT] = safestrdup(string);
+	}
+	else if(StrEquals(token, "Show"))
+	{
+		if (ClickAction[PROXY_ACTION_SHOW] != NULL)
+		{
+			free(ClickAction[PROXY_ACTION_SHOW]);
+		}
+		ClickAction[PROXY_ACTION_SHOW] = safestrdup(string);
+	}
+	else if(StrEquals(token, "Hide"))
+	{
+		if (ClickAction[PROXY_ACTION_HIDE] != NULL)
+		{
+			free(ClickAction[PROXY_ACTION_HIDE]);
+		}
+		ClickAction[PROXY_ACTION_HIDE] = safestrdup(string);
+	}
+	else if(StrEquals(token, "Abort"))
+	{
+		if (ClickAction[PROXY_ACTION_ABORT] != NULL)
+		{
+			free(ClickAction[PROXY_ACTION_ABORT]);
+		}
+		ClickAction[PROXY_ACTION_ABORT] = safestrdup(string);
+	}
+	else if(StrEquals(token, "Mark"))
+	{
+		if (ClickAction[PROXY_ACTION_MARK] != NULL)
+		{
+			free(ClickAction[PROXY_ACTION_MARK]);
+		}
+		ClickAction[PROXY_ACTION_MARK] = safestrdup(string);
+	}
+	else if(StrEquals(token, "Unmark"))
+	{
+		if (ClickAction[PROXY_ACTION_UNMARK] != NULL)
+		{
+			free(ClickAction[PROXY_ACTION_UNMARK]);
+		}
+		ClickAction[PROXY_ACTION_UNMARK] = safestrdup(string);
+	}
+
+	return;
 }
 
 #if 0
@@ -202,6 +245,14 @@ static Bool parse_options(void)
 	mark_command = safestrdup(CMD_MARK);
 	select_command = safestrdup(CMD_SELECT);
 #endif
+
+	memset(ClickAction, 0, sizeof(ClickAction));
+	ClickAction[PROXY_ACTION_SELECT] = strdup(CMD_SELECT);
+	ClickAction[PROXY_ACTION_CLICK + 0] = strdup(CMD_CLICK1);
+	if (NUMBER_OF_MOUSE_BUTTONS > 2)
+	{
+		ClickAction[PROXY_ACTION_CLICK + 2] = strdup(CMD_CLICK3);
+	}
 	InitGetConfigLine(fd, CatString3("*", MyName, 0));
 	for (GetConfigLine(fd, &tline); tline != NULL;
 		GetConfigLine(fd, &tline))
@@ -249,11 +300,19 @@ static Bool parse_options(void)
 		}
 		else if (StrEquals(resource, "Font"))
 		{
-			CopyStringWithQuotes(&font_name, tline);
+			if (font_name != NULL)
+			{
+				free(font_name);
+			}
+			font_name = safestrdup(tline);
 		}
 		else if (StrEquals(resource, "LogFile"))
 		{
-			CopyStringWithQuotes(&logfilename, tline);
+			if (logfilename != NULL)
+			{
+				free(logfilename);
+			}
+			logfilename = safestrdup(tline);
 		}
 		else if (StrEquals(resource, "ShowMiniIcons"))
 		{
@@ -1340,14 +1399,10 @@ static void Loop(int *fd)
 int main(int argc, char **argv)
 {
 	char *titles[1];
-	int i;
 
 #if STARTUP_DEBUG
 	startupText[0]=0;
 #endif
-
-	for (i=3; i<NUMBER_OF_MOUSE_BUTTONS; i++)
-		ClickAction[PROXY_ACTION_CLICK+i]="Nop";
 
 	if (argc < 6)
 	{
