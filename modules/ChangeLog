@@ -1,3 +1,8 @@
+2002-09-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmPager/x_pager.c:
+	s/SendInfo/SendText/; don't send end-of-line in SendText
+
 2002-09-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmGtk/FvwmGtk.c:

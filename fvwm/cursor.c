@@ -114,120 +114,120 @@ void CMD_CursorStyle(F_CMD_ARGS)
 	char *errpos = NULL;
 	char *fore = NULL, *back = NULL;
 	XColor colors[2];
-	int index,nc,i,my_nc;
+	int index,nc, i, my_nc;
 	FvwmWindow *fw2;
 
-	action = GetNextToken(action,&cname);
-	action = GetNextToken(action,&newcursor);
+	action = GetNextToken(action, &cname);
+	action = GetNextToken(action, &newcursor);
 
 	if (!cname)
 	{
-		fvwm_msg(ERR,"CursorStyle","Bad cursor style");
+		fvwm_msg(ERR, "CursorStyle", "Bad cursor style");
 		if (cname)
 		{
 			free(cname);
 		}
 		return;
 	}
-	if (StrEquals("POSITION",cname))
+	if (StrEquals("POSITION", cname))
 	{
 		index = CRS_POSITION;
 	}
-	else if (StrEquals("DEFAULT",cname))
+	else if (StrEquals("DEFAULT", cname))
 	{
 		index = CRS_DEFAULT;
 	}
-	else if (StrEquals("SYS",cname))
+	else if (StrEquals("SYS", cname))
 	{
 		index = CRS_SYS;
 	}
-	else if (StrEquals("TITLE",cname))
+	else if (StrEquals("TITLE", cname))
 	{
 		index = CRS_TITLE;
 	}
-	else if (StrEquals("MOVE",cname))
+	else if (StrEquals("MOVE", cname))
 	{
 		index = CRS_MOVE;
 	}
-	else if (StrEquals("RESIZE",cname))
+	else if (StrEquals("RESIZE", cname))
 	{
 		index = CRS_RESIZE;
 	}
-	else if (StrEquals("MENU",cname))
+	else if (StrEquals("MENU", cname))
 	{
 		index = CRS_MENU;
 	}
-	else if (StrEquals("WAIT",cname))
+	else if (StrEquals("WAIT", cname))
 	{
 		index = CRS_WAIT;
 	}
-	else if (StrEquals("SELECT",cname))
+	else if (StrEquals("SELECT", cname))
 	{
 		index = CRS_SELECT;
 	}
-	else if (StrEquals("DESTROY",cname))
+	else if (StrEquals("DESTROY", cname))
 	{
 		index = CRS_DESTROY;
 	}
-	else if (StrEquals("LEFT",cname))
+	else if (StrEquals("LEFT", cname))
 	{
 		index = CRS_LEFT;
 	}
-	else if (StrEquals("RIGHT",cname))
+	else if (StrEquals("RIGHT", cname))
 	{
 		index = CRS_RIGHT;
 	}
-	else if (StrEquals("TOP",cname))
+	else if (StrEquals("TOP", cname))
 	{
 		index = CRS_TOP;
 	}
-	else if (StrEquals("BOTTOM",cname))
+	else if (StrEquals("BOTTOM", cname))
 	{
 		index = CRS_BOTTOM;
 	}
-	else if (StrEquals("TOP_LEFT",cname))
+	else if (StrEquals("TOP_LEFT", cname))
 	{
 		index = CRS_TOP_LEFT;
 	}
-	else if (StrEquals("TOP_RIGHT",cname))
+	else if (StrEquals("TOP_RIGHT", cname))
 	{
 		index = CRS_TOP_RIGHT;
 	}
-	else if (StrEquals("BOTTOM_LEFT",cname))
+	else if (StrEquals("BOTTOM_LEFT", cname))
 	{
 		index = CRS_BOTTOM_LEFT;
 	}
-	else if (StrEquals("BOTTOM_RIGHT",cname))
+	else if (StrEquals("BOTTOM_RIGHT", cname))
 	{
 		index = CRS_BOTTOM_RIGHT;
 	}
-	else if (StrEquals("LEFT_EDGE",cname))
+	else if (StrEquals("LEFT_EDGE", cname))
 	{
 		index = CRS_LEFT_EDGE;
 	}
-	else if (StrEquals("RIGHT_EDGE",cname))
+	else if (StrEquals("RIGHT_EDGE", cname))
 	{
 		index = CRS_RIGHT_EDGE;
 	}
-	else if (StrEquals("TOP_EDGE",cname))
+	else if (StrEquals("TOP_EDGE", cname))
 	{
 		index = CRS_TOP_EDGE;
 	}
-	else if (StrEquals("BOTTOM_EDGE",cname))
+	else if (StrEquals("BOTTOM_EDGE", cname))
 	{
 		index = CRS_BOTTOM_EDGE;
 	}
-	else if (StrEquals("ROOT",cname))
+	else if (StrEquals("ROOT", cname))
 	{
 		index = CRS_ROOT;
 	}
-	else if (StrEquals("STROKE",cname))
+	else if (StrEquals("STROKE", cname))
 	{
 		index = CRS_STROKE;
 	}
 	else
 	{
-		fvwm_msg(ERR,"CursorStyle","Unknown cursor name %s",cname);
+		fvwm_msg(ERR, "CursorStyle", "Unknown cursor name %s", cname);
 		free(cname);
 		free(newcursor);
 		return;
@@ -302,7 +302,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 					dpy, Scr.ScratchMonoPixmap,
 					Scr.ScratchMonoPixmap, &nccol, &nccol,
 					0, 0);
-				free (newcursor);
+				free(newcursor);
 			}
 		}
 		else
@@ -312,37 +312,36 @@ void CMD_CursorStyle(F_CMD_ARGS)
 			unsigned int x;
 			unsigned int y;
 
-			path = PictureFindImageFile (newcursor, NULL, R_OK);
+			path = PictureFindImageFile(newcursor, NULL, R_OK);
 			if (!path)
 			{
 				fvwm_msg(ERR, "CursorStyle",
-					  "Cursor %s not found", newcursor);
+					"Cursor %s not found", newcursor);
 				free(newcursor);
 				return;
 			}
 
-			if (!PImageLoadCursorPixmapFromFile(dpy, Scr.Root,
-							    path, &source,
-							    &mask, &x, &y))
+			if (!PImageLoadCursorPixmapFromFile(
+				dpy, Scr.Root, path, &source, &mask, &x, &y))
 			{
 				free(path);
-				free (newcursor);
+				free(newcursor);
 				return;
 			}
 			if (Scr.FvwmCursors[index])
 			{
-				XFreeCursor (dpy, Scr.FvwmCursors[index]);
+				XFreeCursor(dpy, Scr.FvwmCursors[index]);
 			}
 
 			colors[0].pixel = GetColor(DEFAULT_CURSOR_FORE_COLOR);
 			colors[1].pixel = GetColor(DEFAULT_CURSOR_BACK_COLOR);
-			XQueryColors (dpy, Pcmap, colors, 2);
+			XQueryColors(dpy, Pcmap, colors, 2);
 			Scr.FvwmCursors[index] = XCreatePixmapCursor(
 				dpy, source, mask, &(colors[0]), &(colors[1]),
 				x, y);
 
-			free (newcursor);
-			free (path);
+			free(newcursor);
+			free(path);
 		}
 	}
 
@@ -354,8 +353,9 @@ void CMD_CursorStyle(F_CMD_ARGS)
 		colors[0].pixel = GetColor(fore);
 		colors[1].pixel = GetColor(back);
 		XQueryColors (dpy, Pcmap, colors, 2);
-		XRecolorCursor(dpy, Scr.FvwmCursors[index], &(colors[0]),
-			       &(colors[1]));
+		XRecolorCursor(
+			dpy, Scr.FvwmCursors[index], &(colors[0]),
+			&(colors[1]));
 	}
 	if (fore)
 	{
@@ -374,21 +374,21 @@ void CMD_CursorStyle(F_CMD_ARGS)
 			/* Ignore windows without handles */
 			continue;
 		}
-		for (i=0;i<4;i++)
+		for (i = 0; i < 4; i++)
 		{
 			SafeDefineCursor(
 				FW_W_CORNER(fw2, i),
-				Scr.FvwmCursors[CRS_TOP_LEFT+i]);
+				Scr.FvwmCursors[CRS_TOP_LEFT + i]);
 			SafeDefineCursor(
 				FW_W_SIDE(fw2, i),
-				Scr.FvwmCursors[CRS_TOP+i]);
+				Scr.FvwmCursors[CRS_TOP + i]);
 		}
-		for (i = 0 ; i / 2 < Scr.nr_left_buttons; i += 2)
+		for (i = 0; i / 2 < Scr.nr_left_buttons; i += 2)
 		{
 			SafeDefineCursor(
 				FW_W_BUTTON(fw2, i), Scr.FvwmCursors[CRS_SYS]);
 		}
-		for (i = 1 ; i / 2 < Scr.nr_right_buttons; i += 2)
+		for (i = 1; i / 2 < Scr.nr_right_buttons; i += 2)
 		{
 			SafeDefineCursor(
 				FW_W_BUTTON(fw2, i), Scr.FvwmCursors[CRS_SYS]);

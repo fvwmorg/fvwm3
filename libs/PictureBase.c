@@ -158,13 +158,13 @@ char* PictureGetImagePath()
  * Oh well.
  *
  ****************************************************************************/
-char* PictureFindImageFile( const char* icon, const char* pathlist, int type )
+char* PictureFindImageFile(const char* icon, const char* pathlist, int type)
 {
-	if ( pathlist == NULL )
+	if (pathlist == NULL)
 	{
 		pathlist = imagePath;
 	}
 
-	return searchPath( pathlist, icon, ".gz", type );
+	return searchPath(pathlist, icon, ".gz", type);
 }
 

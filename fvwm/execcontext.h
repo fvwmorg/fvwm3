@@ -34,9 +34,9 @@ typedef struct
 /* Interface types */
 typedef enum
 {
-	EXCT_NULL = '-',
+	EXCT_NULL = 'I',
 	EXCT_EVENT ='E',
-	EXCT_MODULE ='O',
+	EXCT_MODULE ='M',
 	EXCT_MENULOOP ='m',
 	EXCT_PAGING = 'P',
 	EXCT_SCHEDULE = 'S'

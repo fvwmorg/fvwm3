@@ -47,6 +47,11 @@ Changes in *experimental* release 2.5.4 (not released yet)
 * Allow the use of mousr buttons other than the first in
   FvwmWinList when invoked transient.
 
+* ImagePath now supports directories in form "/some/directory;.png"
+  (where semicolon delimits a file extension that files in
+  /some/directory have.  This file extension replace the original
+  image extension (if any) or it is added if an image has no one.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.3 (25-Aug-2002)

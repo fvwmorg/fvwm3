@@ -1,3 +1,21 @@
+2002-09-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	* libs/System.c:
+	Path commands now support form: "path1;ext1:path2:path3;ext3"
+	where ext1 (for example, ".png") means all files in path1 should
+	be forced to have extention ".png" even if the requested icon
+	has ".xpm" ("calculator.xpm" or has no extention at all ("calculator")
+
+	* fvwm/execcontext.h:
+	small changes in latters used for EXCT_* constants
+
+	* fvwm/module_interface.c:
+	* libs/Picture.c:
+	* libs/PictureBase.c:
+	* fvwm/cursor.c:
+	some spacing reindentation
+
 2002-09-21  olicha  <olivier.chapuis@free.fr>
 
 	* libs/FRender.c (FRenderCompositeAndCheck):

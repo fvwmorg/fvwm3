@@ -14,8 +14,8 @@
  */
 
 /*
-** System.c: code for dealing with various OS system call variants
-*/
+ * System.c: code for dealing with various OS system call variants
+ */
 
 #include "config.h"
 #include "fvwmlib.h"
@@ -33,8 +33,8 @@
 
 
 /*
-** just in case...
-*/
+ * just in case...
+ */
 #ifndef FD_SETSIZE
 #define FD_SETSIZE 2048
 #endif
@@ -43,9 +43,9 @@
 int GetFdWidth(void)
 {
 #if HAVE_SYSCONF
-    return min(sysconf(_SC_OPEN_MAX),FD_SETSIZE);
+	return min(sysconf(_SC_OPEN_MAX),FD_SETSIZE);
 #else
-    return min(getdtablesize(),FD_SETSIZE);
+	return min(getdtablesize(),FD_SETSIZE);
 #endif
 }
 
@@ -54,42 +54,46 @@ int GetFdWidth(void)
 int getostype(char *buf, int max)
 {
 #if HAVE_UNAME
-    struct utsname sysname;
+	struct utsname sysname;
 
-    if ( uname( &sysname ) >= 0 ) {
-	buf[0] = '\0';
-	strncat( buf, sysname.sysname, max );
-	return 0;
-    }
+	if (uname( &sysname ) >= 0)
+	{
+		buf[0] = '\0';
+		strncat(buf, sysname.sysname, max);
+		return 0;
+	}
 #endif
-    strcpy (buf,"");
-    return -1;
+	strcpy (buf, "");
+	return -1;
 }
 
 
-/**
+/*
  * Set a colon-separated path, with environment variable expansions,
  * and expand '+' to be the value of the previous path.
- **/
-void setPath( char** p_path, const char* newpath, int free_old_path )
+ */
+void setPath(char **p_path, const char *newpath, int free_old_path)
 {
-    char* oldpath = *p_path;
-    int oldlen = strlen( oldpath );
-    char* stripped_path = stripcpy( newpath );
-    int found_plus = strchr( newpath, '+' ) != NULL;
+	char *oldpath = *p_path;
+	int oldlen = strlen(oldpath);
+	char *stripped_path = stripcpy(newpath);
+	int found_plus = strchr(newpath, '+') != NULL;
 
-    /** Leave room for the old path, if we find a '+' in newpath **/
-    *p_path = envDupExpand( stripped_path, found_plus ? oldlen - 1 : 0 );
-    free( stripped_path );
+	/* Leave room for the old path, if we find a '+' in newpath */
+	*p_path = envDupExpand(stripped_path, found_plus ? oldlen - 1 : 0);
+	free(stripped_path);
 
-    if ( found_plus ) {
-	char* p = strchr( *p_path, '+' );
-	memmove(p + oldlen, p + 1, strlen(p+1) + 1);
-	memmove(p, oldpath, oldlen);
-    }
+	if (found_plus)
+	{
+		char *p = strchr(*p_path, '+');
+		memmove(p + oldlen, p + 1, strlen(p + 1) + 1);
+		memmove(p, oldpath, oldlen);
+	}
 
-    if ( free_old_path )
-	free( oldpath );
+	if (free_old_path)
+	{
+		free(oldpath);
+	}
 }
 
 
@@ -102,62 +106,104 @@ void setPath( char** p_path, const char* newpath, int free_old_path )
  * Oh well.
  *
  ****************************************************************************/
-char* searchPath( const char* pathlist, const char* filename,
-		  const char* suffix, int type )
+#include <stdio.h>
+char *searchPath(
+	const char *pathlist, const char *filename, const char *suffix,
+	int type)
 {
-    char *path;
-    int l;
+	char *path;
+	int filename_len = strlen(filename);
+	int maxpath_len;
 
-    if ( filename == NULL || *filename == 0 )
-	return NULL;
-
-    l = (pathlist) ? strlen(pathlist) : 0;
-    l += (suffix) ? strlen(suffix) : 0;
-
-    /* +1 for extra / and +1 for null termination */
-    path = safemalloc( strlen(filename) + l + 2 );
-    *path = '\0';
-
-    if (*filename == '/' || pathlist == NULL || *pathlist == '\0')
-    {
-	/* No search if filename begins with a slash */
-	/* No search if pathlist is empty */
-	strcpy( path, filename );
-	return path;
-    }
-
-    /* Search each element of the pathlist for the file */
-    while ((pathlist)&&(*pathlist))
-    {
-	char* dir_end = strchr(pathlist, ':');
-	if (dir_end != NULL)
+	if (filename == NULL || *filename == 0)
 	{
-	    strncpy(path, pathlist, dir_end - pathlist);
-	    path[dir_end - pathlist] = 0;
+		return NULL;
 	}
-	else
-	    strcpy(path, pathlist);
 
-	strcat(path, "/");
-	strcat(path, filename);
-	if (access(path, type) == 0)
-	    return path;
+	maxpath_len = (pathlist) ? strlen(pathlist) : 0;
+	maxpath_len += (suffix) ? strlen(suffix) : 0;
 
-	if ( suffix && *suffix != 0 ) {
-	    strcat( path, suffix );
-	    if (access(path, type) == 0)
+	/* +1 for extra / and +1 for null termination */
+	path = safemalloc(maxpath_len + filename_len + 2);
+	*path = '\0';
+
+	if (*filename == '/' || pathlist == NULL || *pathlist == '\0')
+	{
+		/* No search if filename begins with a slash */
+		/* No search if pathlist is empty */
+		strcpy(path, filename);
 		return path;
 	}
 
-	/* Point to next element of the path */
-	if(dir_end == NULL)
-	    break;
-	else
-	    pathlist = dir_end + 1;
-    }
-    /* Hmm, couldn't find the file.  Return NULL */
-    free(path);
-    return NULL;
+	/* Search each element of the pathlist for the file */
+	while (pathlist && *pathlist)
+	{
+		char *path_end = strchr(pathlist, ':');
+		char *curr_end;
+
+		if (path_end != NULL)
+		{
+			strncpy(path, pathlist, path_end - pathlist);
+			path[path_end - pathlist] = '\0';
+		}
+		else
+		{
+			strcpy(path, pathlist);
+		}
+
+		/* handle specially the path extention using semicolon */
+		curr_end = strchr(path, ';');
+		if (curr_end != NULL)
+		{
+			char *dot = strrchr(filename, '.');
+			int filebase_len;
+			/* count a leading nil in newext_len too */
+			int newext_len = path + strlen(path) - curr_end;
+			if (dot != NULL)
+			{
+				filebase_len = dot - filename;
+			}
+			else
+			{
+				filebase_len = filename_len;
+			}
+			*(curr_end++) = '/';
+			memmove(curr_end + filebase_len, curr_end, newext_len);
+			strncpy(curr_end, filename, filebase_len);
+		}
+		else
+		{
+			strcat(path, "/");
+			strcat(path, filename);
+		}
+
+		if (access(path, type) == 0)
+		{
+			return path;
+		}
+
+		if (suffix && *suffix != '\0') {
+			strcat(path, suffix);
+			if (access(path, type) == 0)
+			{
+				return path;
+			}
+		}
+
+		/* Point to next element of the path */
+		if (path_end == NULL)
+		{
+			break;
+		}
+		else
+		{
+			pathlist = path_end + 1;
+		}
+	}
+
+	/* Hmm, couldn't find the file.  Return NULL */
+	free(path);
+	return NULL;
 }
 
 /*
@@ -174,21 +220,21 @@ char* searchPath( const char* pathlist, const char* filename,
 
 FileStamp getFileStamp(const char *name)
 {
-  static struct stat buf;
+	static struct stat buf;
 
-  if (!name || stat(name, &buf))
-    return 0;
-  return
-    ((FileStamp)buf.st_mtime << 13) + (FileStamp)buf.st_size;
+	if (!name || stat(name, &buf))
+	{
+		return 0;
+	}
+	return ((FileStamp)buf.st_mtime << 13) + (FileStamp)buf.st_size;
 }
 
 void setFileStamp(FileStamp *stamp, const char *name)
 {
-  *stamp = getFileStamp(name);
+	*stamp = getFileStamp(name);
 }
 
 Bool isFileStampChanged(const FileStamp *stamp, const char *name)
 {
-  return
-    *stamp != getFileStamp(name);
+	return *stamp != getFileStamp(name);
 }

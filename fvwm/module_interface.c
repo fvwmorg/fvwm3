@@ -198,8 +198,8 @@ void ClosePipes(void)
 
 static int do_execute_module(F_CMD_ARGS, Bool desperate)
 {
-	int fvwm_to_app[2],app_to_fvwm[2];
-	int i,val,nargs = 0;
+	int fvwm_to_app[2], app_to_fvwm[2];
+	int i, val, nargs = 0;
 	int ret_pipe;
 	char *cptr;
 	char **args;
@@ -241,7 +241,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 		return -1;
 	}
 
-	arg1 = searchPath( ModulePath, cptr, EXECUTABLE_EXTENSION, X_OK );
+	arg1 = searchPath(ModulePath, cptr, EXECUTABLE_EXTENSION, X_OK);
 
 	if (arg1 == NULL)
 	{
@@ -265,8 +265,8 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 	{
 		char *p;
 
-		p = arg1 + strlen( arg1 ) - strlen( EXECUTABLE_EXTENSION );
-		if (strcmp(p, EXECUTABLE_EXTENSION) ==  0)
+		p = arg1 + strlen(arg1) - strlen(EXECUTABLE_EXTENSION);
+		if (strcmp(p, EXECUTABLE_EXTENSION) == 0)
 		{
 			*p = 0;
 		}
@@ -274,14 +274,14 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 #endif
 
 	/* Look for an available pipe slot */
-	i=0;
+	i = 0;
 	while ((i<npipes) && (writePipes[i] >=0))
 	{
 		i++;
 	}
 	if (i>=npipes)
 	{
-		fvwm_msg(ERR,"executeModule","Too many Accessories!");
+		fvwm_msg(ERR, "executeModule", "Too many Accessories!");
 		free(arg1);
 		free(cptr);
 		free(args);
@@ -292,9 +292,9 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 	/* I want one-ended pipes, so I open two two-ended pipes,
 	 * and close one end of each. I need one ended pipes so that
 	 * I can detect when the module crashes/malfunctions */
-	if (pipe(fvwm_to_app)!=0)
+	if (pipe(fvwm_to_app) != 0)
 	{
-		fvwm_msg(ERR,"executeModule","Failed to open pipe");
+		fvwm_msg(ERR, "executeModule", "Failed to open pipe");
 		free(arg1);
 		free(cptr);
 		free(args);
@@ -302,7 +302,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 	}
 	if (pipe(app_to_fvwm)!=0)
 	{
-		fvwm_msg(ERR,"executeModule","Failed to open pipe2");
+		fvwm_msg(ERR, "executeModule", "Failed to open pipe2");
 		free(arg1);
 		free(cptr);
 		close(fvwm_to_app[0]);
@@ -313,10 +313,10 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 
 	pipeName[i] = stripcpy(cptr);
 	free(cptr);
-	sprintf(arg2,"%d",app_to_fvwm[1]);
-	sprintf(arg3,"%d",fvwm_to_app[0]);
-	sprintf(arg5,"%lx",(unsigned long)win);
-	sprintf(arg6,"%lx",(unsigned long)exc->w.wcontext);
+	sprintf(arg2, "%d", app_to_fvwm[1]);
+	sprintf(arg3, "%d", fvwm_to_app[0]);
+	sprintf(arg5, "%lx", (unsigned long)win);
+	sprintf(arg6, "%lx", (unsigned long)exc->w.wcontext);
 	args[0] = arg1;
 	args[1] = arg2;
 	args[2] = arg3;
@@ -391,7 +391,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 				ERR, "executeModule",
 				"module close-on-exec failed");
 		}
-		for (i=6;i<nargs;i++)
+		for (i = 6; i < nargs; i++)
 		{
 			if (args[i] != 0)
 			{
@@ -401,7 +401,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 	}
 	else if (val ==0)
 	{
-		/* this is  the child */
+		/* this is the child */
 		/* this fork execs the module */
 #ifdef FORK_CREATES_CHILD
 		close(fvwm_to_app[1]);
@@ -420,8 +420,8 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 			putenv(colormap);
 		}
 
-		/** Why is this execvp??  We've already searched the module
-		 * path! **/
+		/* Why is this execvp??  We've already searched the module
+		 * path! */
 		execvp(arg1,args);
 		fvwm_msg(
 			ERR, "executeModule", "Execution of module failed: %s",
@@ -435,9 +435,9 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 	}
 	else
 	{
-		fvwm_msg(ERR,"executeModule","Fork failed");
+		fvwm_msg(ERR, "executeModule", "Fork failed");
 		free(arg1);
-		for (i=6;i<nargs;i++)
+		for (i = 6; i < nargs; i++)
 		{
 			if (args[i] != 0)
 			{

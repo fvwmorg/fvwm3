@@ -3747,6 +3747,14 @@ for images (both monochrome and pixmap).  To find an image given
 by a relative pathname, fvwm looks into each directory listed in
 turn, and uses the first file found.
 
+If a directory is given in the form "/some/dir;.ext", this means
+all images in this directory have the extension ".ext" that should
+be forced.  The original image name (that may contain another
+extension or no extension at all) is not probed, instead ".ext"
+is added or replaces the original extension.  This is useful, for
+example, if a user has some image directories with ".xpm" images
+and other image directories with the same names, but ".png images.
+
 The
 .I path
 may contain environment variables such as

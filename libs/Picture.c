@@ -68,15 +68,15 @@ FvwmPicture *PGetFvwmPicture(
 	Display *dpy, Window Root, char *ImagePath, const char *name,
 	FvwmPictureAttributes fpa)
 {
-	char *path = PictureFindImageFile(name, ImagePath, R_OK );
+	char *path = PictureFindImageFile(name, ImagePath, R_OK);
 	FvwmPicture *p;
 
-	if ( path == NULL )
+	if (path == NULL)
 	{
 		return NULL;
 	}
 	p = PImageLoadFvwmPictureFromFile(dpy, Root, path, fpa);
-	if ( p == NULL )
+	if (p == NULL)
 	{
 		free(path);
 	}
@@ -92,7 +92,7 @@ FvwmPicture *PCacheFvwmPicture(
 	FvwmPicture *p = FvwmPictureList;
 
 	/* First find the full pathname */
-	if ( !(path = PictureFindImageFile(name,ImagePath,R_OK)) )
+	if ((path = PictureFindImageFile(name, ImagePath, R_OK)) == NULL)
 	{
 		return NULL;
 	}
@@ -102,7 +102,7 @@ FvwmPicture *PCacheFvwmPicture(
 	{
 		register char *p1, *p2;
 
-		for (p1=path, p2=p->name; *p1 && *p2; ++p1, ++p2)
+		for (p1 = path, p2 = p->name; *p1 && *p2; ++p1, ++p2)
 		{
 			if (*p1 != *p2)
 			{

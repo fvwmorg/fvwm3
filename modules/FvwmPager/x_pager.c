@@ -1015,8 +1015,8 @@ void DispatchEvent(XEvent *Event)
       if (do_move_page)
       {
 	char command[64];
-	sprintf(command,"Scroll %d %d\n", dx, dy);
-	SendInfo(fd, command, 0);
+	sprintf(command,"Scroll %d %d", dx, dy);
+	SendText(fd, command, 0);
       }
     }
     break;
@@ -1192,7 +1192,7 @@ void HandleEnterNotify(XEvent *Event)
 
   if (do_focus_on_enter)
   {
-    SendInfo(fd, "Silent FlipFocus NoWarp", t->w);
+    SendText(fd, "Silent FlipFocus NoWarp", t->w);
   }
 
 }
@@ -1541,7 +1541,7 @@ void MovePage(Bool is_new_desk)
       sptr = Desks[Scr.CurrentDesk -desk1].label;
     else
     {
-      sprintf(str,"GoToDesk %d",Scr.CurrentDesk);
+      sprintf(str, "GotoDesk %d", Scr.CurrentDesk);
       sptr = &str[0];
     }
 
@@ -1826,8 +1826,8 @@ void SwitchToDesk(int Desk)
 {
   char command[256];
 
-  sprintf(command,"GoToDesk 0 %d\n",Desk+desk1);
-  SendInfo(fd,command,0);
+  sprintf(command, "GotoDesk 0 %d", Desk + desk1);
+  SendText(fd,command,0);
 }
 
 
@@ -1843,8 +1843,8 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
     vy = Event->xbutton.y * Scr.VHeight / (desk_h * Scr.MyDisplayHeight);
     Scr.Vx = vx * Scr.MyDisplayWidth;
     Scr.Vy = vy * Scr.MyDisplayHeight;
-    sprintf(command, "GoToDeskAndPage %d %d %d\n", Desk + desk1, vx, vy);
-    SendInfo(fd, command, 0);
+    sprintf(command, "GotoDeskAndPage %d %d %d", Desk + desk1, vx, vy);
+    SendText(fd, command, 0);
 
   }
   else
@@ -1863,8 +1863,8 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
       x = Scr.VxMax / Scr.MyDisplayWidth;
     if (y * Scr.MyDisplayHeight > Scr.VyMax)
       y = Scr.VyMax / Scr.MyDisplayHeight;
-    sprintf(command, "GotoPage %d %d\n", x, y);
-    SendInfo(fd, command, 0);
+    sprintf(command, "GotoPage %d %d", x, y);
+    SendText(fd, command, 0);
   }
   Wait = 1;
 }
@@ -1873,10 +1873,10 @@ void IconSwitchPage(XEvent *Event)
 {
   char command[34];
 
-  sprintf(command,"GotoPage %d %d\n",
+  sprintf(command,"GotoPage %d %d",
 	  Event->xbutton.x * Scr.VWidth / (icon_w * Scr.MyDisplayWidth),
 	  Event->xbutton.y * Scr.VHeight / (icon_h * Scr.MyDisplayHeight));
-  SendInfo(fd, command, 0);
+  SendText(fd, command, 0);
   Wait = 1;
 }
 
@@ -2262,8 +2262,8 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	}
 	if (Wait == 0 || last_sx != sx || last_sy != sy)
 	{
-		sprintf(command,"Scroll %d %d\n",sx,sy);
-		SendInfo(fd,command,0);
+		sprintf(command, "Scroll %d %d", sx, sy);
+		SendText(fd, command, 0);
 		Wait = 1;
 	}
 	if (Wait == 0)
@@ -2401,15 +2401,15 @@ void MoveWindow(XEvent *Event)
     XUngrabPointer(dpy,CurrentTime);
     XSync(dpy,0);
     sprintf(command, "Silent Move %dp %dp", x, y);
-    SendInfo(fd,command,t->w);
+    SendText(fd, command, t->w);
     if (NewDesk != t->desk)
     {
       sprintf(command, "Silent MoveToDesk 0 %d", NewDesk);
-      SendInfo(fd, command, t->w);
+      SendText(fd, command, t->w);
       t->desk = NewDesk;
     }
-    SendInfo(fd,"Silent Raise",t->w);
-    SendInfo(fd,"Silent Move Pointer",t->w);
+    SendText(fd, "Silent Raise", t->w);
+    SendText(fd, "Silent Move Pointer", t->w);
     return;
   }
   else
@@ -2475,8 +2475,8 @@ void MoveWindow(XEvent *Event)
       }
       else if (NewDesk + desk1 != Scr.CurrentDesk)
       {
-	sprintf(command,"Silent MoveToDesk 0 %d", NewDesk + desk1);
-	SendInfo(fd,command,t->w);
+	sprintf(command, "Silent MoveToDesk 0 %d", NewDesk + desk1);
+	SendText(fd, command, t->w);
 	t->desk = NewDesk + desk1;
       }
       else
@@ -2511,18 +2511,18 @@ void MoveWindow(XEvent *Event)
 	    ty = ty + t->height - Scr.MyDisplayHeight;
 	  }
 	  sprintf(buf, "Silent Move %dp %dp", tx, ty);
-	  SendInfo(fd, buf, t->w);
+	  SendText(fd, buf, t->w);
 	}
 	XSync(dpy,0);
       }
       else
 	MoveResizePagerView(t, True);
-      SendInfo(fd, "Silent Raise", t->w);
+      SendText(fd, "Silent Raise", t->w);
     }
     if (do_switch_desk_later)
     {
       sprintf(command,"Silent MoveToDesk 0 %d", NewDesk + desk1);
-      SendInfo(fd,command,t->w);
+      SendText(fd, command, t->w);
       t->desk = NewDesk + desk1;
     }
     if(Scr.CurrentDesk == t->desk)
@@ -2531,7 +2531,7 @@ void MoveWindow(XEvent *Event)
       usleep(5000);
       XSync(dpy,0);
 
-      SendInfo(fd, "Silent FlipFocus NoWarp", t->w);
+      SendText(fd, "Silent FlipFocus NoWarp", t->w);
     }
   }
   if (is_transient)
@@ -2830,9 +2830,9 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
     XUngrabPointer(dpy,CurrentTime);
     XSync(dpy,0);
     sprintf(command, "Silent Move %dp %dp", x, y);
-    SendInfo(fd,command,t->w);
-    SendInfo(fd,"Silent Raise",t->w);
-    SendInfo(fd,"Silent Move Pointer",t->w);
+    SendText(fd, command, t->w);
+    SendText(fd, "Silent Raise", t->w);
+    SendText(fd, "Silent Move Pointer", t->w);
   }
   else
   {
@@ -2872,8 +2872,8 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
     }
     else
       MoveResizePagerView(t, True);
-    SendInfo(fd, "Silent Raise", t->w);
-    SendInfo(fd, "Silent FlipFocus NoWarp", t->w);
+    SendText(fd, "Silent Raise", t->w);
+    SendText(fd, "Silent FlipFocus NoWarp", t->w);
   }
   if (is_transient)
   {
