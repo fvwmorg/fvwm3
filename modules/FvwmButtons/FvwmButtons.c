@@ -1121,8 +1121,6 @@ void Loop(void)
       break;
 
 	case EnterNotify:
-{/*!!!*/static int ecount = 0;
-/*!!!*/fprintf(stderr, "-------- en (%d): w 0x%08x sw 0x%08x mode 0x%x detail 0x%x\n", ++ecount, (int)Event.xcrossing.window, (int)Event.xcrossing.subwindow, Event.xcrossing.mode, Event.xcrossing.detail);}
 		b = handle_new_position(
 			b, Event.xcrossing.x, Event.xcrossing.y);
 		break;
@@ -1133,8 +1131,6 @@ void Loop(void)
 
 	case LeaveNotify:
 	{
-/*!!!*/static int ecount = 0;
-/*!!!*/fprintf(stderr, "-------- ln (%d): w 0x%08x sw 0x%08x mode 0x%x detail 0x%x\n", ++ecount, (int)Event.xcrossing.window, (int)Event.xcrossing.subwindow, Event.xcrossing.mode, Event.xcrossing.detail);
 		if (reallyLeaveWindow(Event.xcrossing.x, Event.xcrossing.y,
 			Event.xcrossing.window, NULL))
 		{
@@ -1157,7 +1153,6 @@ void Loop(void)
 	  break;                        /* fall through to ButtonPress */
 
       case ButtonPress:
-/*!!!*/fprintf(stderr,"-------- bp\n");
 	if (Event.xbutton.window == MyWindow)
 	{
 	  x = Event.xbutton.x;
@@ -1236,7 +1231,6 @@ void Loop(void)
 
       case KeyRelease:
       case ButtonRelease:
-/*!!!*/fprintf(stderr,"-------- br: ab 0x%08x\n", (int)ActiveButton);
 	if (CurrentButton == NULL || !is_pointer_in_current_button)
 	{
 		if (CurrentButton)
