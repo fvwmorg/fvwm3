@@ -168,7 +168,7 @@ void SetWindowBackgroundWithOffset(
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
 			 colorset_struct *colorset, unsigned int depth, GC gc,
 			 Bool clear_area);
-void UpdateBackgroundTransparency(
+Bool UpdateBackgroundTransparency(
 	Display *dpy, Window win, int width, int height,
 	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area);
 void SetRectangleBackground(

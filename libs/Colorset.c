@@ -103,7 +103,7 @@ int LoadColorset(char *line)
     return -1;
   line += chars;
   if (sscanf(line,
-	     "%lx %lx %lx %lx %lx %lx %lx %lx %lx " 
+	     "%lx %lx %lx %lx %lx %lx %lx %lx %lx "
 	     "%x %x %x %x %x %x %x %x %x %x %x",
 	     &fg, &bg, &hilite, &shadow, &fgsh, &tint, &icon_tint, &pixmap,
 	     &shape_mask,
@@ -255,13 +255,13 @@ void SetWindowBackgroundWithOffset(
 	return;
 }
 
-void UpdateBackgroundTransparency(
+Bool UpdateBackgroundTransparency(
 	Display *dpy, Window win, int width, int height,
 	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area)
 {
 	if (!CSETS_IS_TRANSPARENT(colorset))
 	{
-		return;
+		return False;
 	}
 	else if (!CSETS_IS_TRANSPARENT_PR_PURE(colorset))
 	{
@@ -274,7 +274,7 @@ void UpdateBackgroundTransparency(
 		XClearArea(dpy, win, 0,0,0,0, clear_area);
 	}
 
-	return;
+	return True;
 }
 
 void SetWindowBackground(
@@ -331,7 +331,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 	  int sx,sy;
 	  int h,w;
 	  XID dummy;
-	  
+
 	  cs_pixmap = colorset->pixmap;
 	  cs_width = colorset->width;
 	  cs_height = colorset->height;
@@ -339,7 +339,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 	  {
 		  /* check if it is still here */
 		  XID dummy;
-		  
+
 		  if (!XGetGeometry(
 			  dpy, colorset->pixmap, &dummy, (int *)&dummy,
 			  (int *)&dummy,
@@ -477,7 +477,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 		  XFreePixmap(dpy, big_pixmap);
 	  }
   }
-  else if (!cs_stretch_x && !cs_stretch_y) 
+  else if (!cs_stretch_x && !cs_stretch_y)
   {
 	  /* it's a tiled pixmap, create an unstretched one */
 	  if (!is_shape_mask)

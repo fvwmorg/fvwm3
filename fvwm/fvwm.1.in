@@ -3753,7 +3753,7 @@ be forced.  The original image name (that may contain another
 extension or no extension at all) is not probed, instead ".ext"
 is added or replaces the original extension.  This is useful, for
 example, if a user has some image directories with ".xpm" images
-and other image directories with the same names, but ".png images.
+and other image directories with the same names, but ".png" images.
 
 The
 .I path

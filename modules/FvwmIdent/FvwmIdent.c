@@ -689,26 +689,31 @@ int ProcessXEvent(int x, int y)
 			    (x != Event.xconfigure.x ||
 			     y != Event.xconfigure.y))
 			{
+				Bool do_eat_expose = False;
 				x = Event.xconfigure.x;
 				y = Event.xconfigure.y;
 				/* flush any expose events */
-				while (FCheckTypedEvent(dpy, Expose, &Event))
-				{
-					/* nothing */
-				}
 				if (UsePixmapDrawing)
 				{
 					PixmapDrawWindow(
 						main_width, main_height);
+					do_eat_expose = True;
 				}
-				else
+				else if (UpdateBackgroundTransparency(
+						 dpy, main_win, main_width,
+						 main_height,
+						 &Colorset[(colorset)], Pdepth,
+						 gc, True) == True)
 				{
-					UpdateBackgroundTransparency(
-						dpy, main_win, main_width,
-						main_height,
-						&Colorset[(colorset)], Pdepth,
-						gc, True);
-					DrawItems(main_win, 0, 0, 65535, 65535);
+					do_eat_expose = True;
+				}
+				if (do_eat_expose == True)
+				{
+					while (FCheckTypedEvent(
+						       dpy, Expose, &Event))
+					{
+						/* nothing */
+					}
 				}
 			}
 			break;
