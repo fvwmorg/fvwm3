@@ -398,6 +398,7 @@ typedef struct ScreenInfo
 /* some protos for the decoration structures */
 void LoadDefaultButton(DecorFace *bf, int i);
 void ResetAllButtons(FvwmDecor *decor);
+void DestroyAllButtons(FvwmDecor *decor);
 
 void simplify_style_list(void);
 

@@ -102,7 +102,7 @@ int ParseBinding(
 
   /* tline points after the key word "Mouse" or "Key" */
   ptr = GetNextToken(tline, &token);
-  if(token != NULL)
+  if (token != NULL)
   {
     if (type == KEY_BINDING)
       n1 = sscanf(token,"%19s",key);
@@ -158,26 +158,26 @@ int ParseBinding(
 #ifdef HAVE_STROKE
   if (type == STROKE_BINDING)
   {
-    ptr = GetNextToken(ptr,&token);
-    if(token != NULL)
+    ptr = GetNextToken(ptr, &token);
+    if (token != NULL)
     {
-      n4 = sscanf(token,"%d",&button);
+      n4 = sscanf(token,"%d", &button);
       free(token);
     }
   }
 #endif /* HAVE_STROKE */
 
   ptr = GetNextToken(ptr, &token);
-  if(token != NULL)
+  if (token != NULL)
   {
-    n2 = sscanf(token,"%19s",context);
+    n2 = sscanf(token, "%19s", context);
     free(token);
   }
 
   action = GetNextToken(ptr, &token);
-  if(token != NULL)
+  if (token != NULL)
   {
-    n3 = sscanf(token,"%19s",modifiers);
+    n3 = sscanf(token, "%19s", modifiers);
     free(token);
   }
 

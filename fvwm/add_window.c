@@ -251,6 +251,7 @@ void setup_window_font(
   FvwmWindow *tmp_win, window_style *pstyle, Bool do_destroy)
 {
   Bool has_font = SFHAS_WINDOW_FONT(*pstyle);
+  Bool is_font_destroyed = False;
   int height;
   int old_height = 0;
 
@@ -275,9 +276,11 @@ void setup_window_font(
   if (do_destroy)
   {
     destroy_window_font(tmp_win);
+    is_font_destroyed = True;
   }
   if (has_font)
   {
+    is_font_destroyed = False;
     if (!SGET_WINDOW_FONT(*pstyle))
     {
       has_font = False;
@@ -290,10 +293,11 @@ void setup_window_font(
       }
     } /* if (do_destroy) */
   } /* if (SFHAS_WINDOW_FONT(*pstyle)) */
-  if (!has_font)
+  if (!has_font || is_font_destroyed)
   {
     /* no explicit font, use default font instead */
     tmp_win->title_font = Scr.DefaultFont;
+    has_font = False;
   }
   SET_HAS_WINDOW_FONT(tmp_win, has_font);
 
@@ -343,6 +347,7 @@ void setup_icon_font(
   FvwmWindow *tmp_win, window_style *pstyle, Bool do_destroy)
 {
   Bool has_font = SFHAS_ICON_FONT(*pstyle);
+  Bool is_font_destroyed = False;
 
   if (IS_ICON_SUPPRESSED(tmp_win) || HAS_NO_ICON_TITLE(tmp_win))
   {
@@ -357,9 +362,11 @@ void setup_icon_font(
   if (do_destroy)
   {
     destroy_icon_font(tmp_win);
+    is_font_destroyed = True;
   }
   if (has_font)
   {
+    is_font_destroyed = False;
     if (!SGET_ICON_FONT(*pstyle))
     {
       has_font = False;
@@ -372,10 +379,11 @@ void setup_icon_font(
       }
     } /* if (do_destroy) */
   } /* if (SFHAS_ICON_FONT(*pstyle)) */
-  if (!has_font)
+  if (!has_font || is_font_destroyed)
   {
     /* no explicit font, use default font instead */
     tmp_win->icon_font = Scr.DefaultFont;
+    has_font = False;
   }
   SET_HAS_ICON_FONT(tmp_win, has_font);
   SET_ICON_FONT_LOADED(tmp_win, 1);

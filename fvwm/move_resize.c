@@ -1632,25 +1632,25 @@ void SetSnapAttraction(F_CMD_ARGS)
   }
 
   action = GetNextToken(action, &token);
-  if(token == NULL)
+  if (token == NULL)
   {
     return;
   }
 
   Scr.SnapMode = -1;
-  if(StrEquals(token,"All"))
+  if (StrEquals(token,"All"))
   {
     Scr.SnapMode = 0;
   }
-  else if(StrEquals(token,"SameType"))
+  else if (StrEquals(token,"SameType"))
   {
     Scr.SnapMode = 1;
   }
-  else if(StrEquals(token,"Icons"))
+  else if (StrEquals(token,"Icons"))
   {
     Scr.SnapMode = 2;
   }
-  else if(StrEquals(token,"Windows"))
+  else if (StrEquals(token,"Windows"))
   {
     Scr.SnapMode = 3;
   }
@@ -1659,7 +1659,7 @@ void SetSnapAttraction(F_CMD_ARGS)
   {
     free(token);
     action = GetNextToken(action, &token);
-    if(token == NULL)
+    if (token == NULL)
     {
       return;
     }
@@ -1669,7 +1669,7 @@ void SetSnapAttraction(F_CMD_ARGS)
     Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
   }
 
-  if(StrEquals(token,"Screen"))
+  if (StrEquals(token,"Screen"))
   {
     Scr.SnapMode += 8;
   }

@@ -525,7 +525,10 @@ void HandlePropertyNotify(void)
 	    Tmp_win->icon_bitmap_file = NULL;
           if(!Tmp_win->icon_bitmap_file &&
              !(Tmp_win->wmhints->flags&(IconPixmapHint|IconWindowHint)))
-	    Tmp_win->icon_bitmap_file = Scr.DefaultIcon;
+	  {
+	    Tmp_win->icon_bitmap_file =
+	      (Scr.DefaultIcon) ? strdup(Scr.DefaultIcon) : NULL;
+	  }
 
 	  if (!IS_ICON_SUPPRESSED(Tmp_win) ||
 	      (Tmp_win->wmhints->flags & IconWindowHint))

@@ -106,6 +106,10 @@ Bool LoadFvwmFont(Display *dpy, char *fontname, FvwmFont *ret_font)
     fset_extents = XExtentsOfFontSet(newfontset);
     ret_font->height = fset_extents->max_logical_extent.height;
   }
+  else
+  {
+    return False;
+  }
 #else
   XFontStruct *newfont;
 
@@ -114,11 +118,11 @@ Bool LoadFvwmFont(Display *dpy, char *fontname, FvwmFont *ret_font)
     ret_font->font = newfont;
     ret_font->height = ret_font->font->ascent + ret_font->font->descent;
   }
-#endif
   else
   {
     return False;
   }
+#endif
   ret_font->y = ret_font->font->ascent;
 
   return True;

@@ -956,6 +956,7 @@ void SetHiColorset(F_CMD_ARGS)
     sprintf(newaction, "* HilightColorset %s", action);
     action = newaction;
     ProcessNewStyle(F_PASS_ARGS);
+    free(newaction);
   }
 }
 
@@ -1244,6 +1245,7 @@ void LoadIconFont(F_CMD_ARGS)
     sprintf(newaction, "* IconFont %s", action);
     action = newaction;
     ProcessNewStyle(F_PASS_ARGS);
+    free(newaction);
   }
 }
 
@@ -1268,6 +1270,7 @@ void LoadWindowFont(F_CMD_ARGS)
     sprintf(newaction, "* Font %s", action);
     action = newaction;
     ProcessNewStyle(F_PASS_ARGS);
+    free(newaction);
   }
 }
 
@@ -1420,6 +1423,8 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 	  if(verbose)fvwm_msg(ERR,"ReadDecorFace",
 			      "Bad button style (3) in line %s",
 			      action);
+	  free(vc->x);
+	  free(vc->y);
 	  return False;
 	}
 	if (line_style)
@@ -1533,14 +1538,16 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
   {
     char *tok;
     s = GetNextToken(s, &tok);
-    while (tok&&*tok)
+    while (tok && *tok)
     {
       int set = 1;
+      char *old_tok = NULL;
 
       if (*tok == '!')
       { /* flag negate */
 	set = 0;
-	++tok;
+	old_tok = tok;
+	tok++;
       }
       if (StrEquals(tok,"Clear"))
       {
@@ -1638,7 +1645,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
       if (set)
 	free(tok);
       else
-	free(tok - 1);
+	free(old_tok);
       s = GetNextToken(s, &tok);
     }
   }
@@ -1948,7 +1955,7 @@ void DestroyFvwmDecor(FvwmDecor *decor)
 {
   int i;
   /* reset to default button set (frees allocated mem) */
-  ResetAllButtons(decor);
+  DestroyAllButtons(decor);
   for (i = 0; i < 3; ++i)
   {
     int j = 0;
@@ -2201,12 +2208,14 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
       while (tok)
       {
 	int set = 1;
+	char *old_tok = NULL;
 
 	if (*tok == '!')
 	{
 	  /* flag negate */
 	  set = 0;
-	  ++tok;
+	  old_tok = tok;
+	  tok++;
 	}
 	if (StrEquals(tok,"Clear"))
 	{
@@ -2261,7 +2270,7 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 	if (set)
 	  free(tok);
 	else
-	  free(tok - 1);
+	  free(old_tok);
 	text = GetNextToken(text, &tok);
       }
       break;
@@ -2721,7 +2730,8 @@ void set_animation(F_CMD_ARGS)
   int i = 0;
 
   action = GetNextToken(action, &opt);
-  if (!opt || sscanf(opt,"%d",&delay) != 1) {
+  if (!opt || sscanf(opt,"%d",&delay) != 1)
+  {
     fvwm_msg(ERR,"SetAnimation",
 	     "Improper milli-second delay as first argument");
     if (opt)
@@ -2729,25 +2739,27 @@ void set_animation(F_CMD_ARGS)
     return;
   }
   free(opt);
-  if (delay > 500) {
+  if (delay > 500)
+  {
     fvwm_msg(WARN,"SetAnimation",
 	     "Using longer than .5 seconds as between frame animation delay");
   }
   cmsDelayDefault = delay;
-  action = GetNextToken(action, &opt);
-  while (opt) {
-    if (sscanf(opt,"%f",&pct) != 1) {
+  for (action = GetNextToken(action, &opt); opt;
+       free(opt), action = GetNextToken(action, &opt))
+  {
+    if (sscanf(opt,"%f",&pct) != 1)
+    {
       fvwm_msg(ERR,"SetAnimation",
 	       "Use fractional values ending in 1.0 as args 2 and on");
       free(opt);
       return;
     }
     rgpctMovementDefault[i++] = pct;
-    free(opt);
-    action = GetNextToken(action, &opt);
   }
   /* No pct entries means don't change them at all */
-  if (i>0 && rgpctMovementDefault[i-1] != 1.0) {
+  if (i>0 && rgpctMovementDefault[i-1] != 1.0)
+  {
     rgpctMovementDefault[i++] = 1.0;
   }
 }

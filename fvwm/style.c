@@ -382,8 +382,7 @@ static void merge_styles(
     {
       SAFEFREE(SGET_FORE_COLOR_NAME_HI(*merged_style));
       SSET_FORE_COLOR_NAME_HI(
-	*merged_style, (SGET_FORE_COLOR_NAME_HI(*add_style)) ?
-	strdup(SGET_FORE_COLOR_NAME_HI(*add_style)) : NULL);
+	*merged_style, SGET_FORE_COLOR_NAME_HI(*add_style));
     }
     else
     {
@@ -397,8 +396,7 @@ static void merge_styles(
     {
       SAFEFREE(SGET_BACK_COLOR_NAME_HI(*merged_style));
       SSET_BACK_COLOR_NAME_HI(
-	*merged_style, (SGET_BACK_COLOR_NAME_HI(*add_style)) ?
-	strdup(SGET_BACK_COLOR_NAME_HI(*add_style)) : NULL);
+	*merged_style, SGET_BACK_COLOR_NAME_HI(*add_style));
     }
     else
     {
@@ -2421,6 +2419,8 @@ void ProcessNewStyle(F_CMD_ARGS)
   {
     if(ptmpstyle->flags.has_icon == 1)
     {
+      if (Scr.DefaultIcon)
+	free(Scr.DefaultIcon);
       Scr.DefaultIcon = SGET_ICON_NAME(*ptmpstyle);
       ptmpstyle->flags.has_icon = 0;
       ptmpstyle->flag_mask.has_icon = 0;

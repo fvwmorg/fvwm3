@@ -98,15 +98,21 @@ char *SkipQuote(char *s, const char *qlong, const char *qstart,
  * malloc'd area just like GetNextToken. Quotes are not removed from the
  * returned string. The returned string is stored in *sout, the return value
  * of this call is a pointer to the first character after the delimiter or
- * to the terminating '\0'. Quoting is handled like in SkipQuote. */
+ * to the terminating '\0'. Quoting is handled like in SkipQuote. If sin is
+ * NULL, the function returns NULL in *sout. */
 char *GetQuotedString(char *sin, char **sout, const char *delims,
 		      const char *qlong, const char *qstart, const char *qend)
 {
   char *t = sin;
   unsigned int len;
 
-  if (!sout || !sin)
+  if (!sout)
     return NULL;
+  if (!sin)
+  {
+    *sout = NULL;
+    return NULL;
+  }
 
   while (*t && !strchr(delims, *t))
     t = SkipQuote(t, qlong, qstart, qend);
@@ -201,13 +207,13 @@ char *DoPeekToken(char *indata, char **token, char *spaces, char *delims,
 
   snum = (spaces) ? strlen(spaces) : 0;
   dnum = (delims) ? strlen(delims) : 0;
-  if(indata == NULL)
-    {
-      if (out_delim)
-	*out_delim = '\0';
-      *token = NULL;
-      return NULL;
-    }
+  if (indata == NULL)
+  {
+    if (out_delim)
+      *out_delim = '\0';
+    *token = NULL;
+    return NULL;
+  }
   indata = SkipSpaces(indata, spaces, snum);
   end = CopyToken(indata, tmptok, spaces, snum, delims, dnum, out_delim);
 

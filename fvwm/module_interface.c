@@ -166,7 +166,10 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   /*     UngrabEm(); */
 
   if(action == NULL)
+  {
+    free(args);
     return -1;
+  }
 
   if(tmp_win)
     win = tmp_win->w;
@@ -179,7 +182,10 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 
   action = GetNextToken(action, &cptr);
   if (!cptr)
+  {
+    free(args);
     return -1;
+  }
 
   arg1 = searchPath( ModulePath, cptr, EXECUTABLE_EXTENSION, X_OK );
 
@@ -215,6 +221,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     fvwm_msg(ERR,"executeModule","Too many Accessories!");
     free(arg1);
     free(cptr);
+    free(args);
     return -1;
   }
   ret_pipe = i;
@@ -227,6 +234,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     fvwm_msg(ERR,"executeModule","Failed to open pipe");
     free(arg1);
     free(cptr);
+    free(args);
     return -1;
   }
   if(pipe(app_to_fvwm)!=0)
@@ -236,6 +244,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
     free(cptr);
     close(fvwm_to_app[0]);
     close(fvwm_to_app[1]);
+    free(args);
     return -1;
   }
 
@@ -348,8 +357,10 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
       if(args[i] != 0)
 	free(args[i]);
     }
+    free(args);
     return -1;
   }
+  free(args);
 
   return ret_pipe;
 }

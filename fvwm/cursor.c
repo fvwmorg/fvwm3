@@ -587,7 +587,7 @@ void setBusyCursor(F_CMD_ARGS)
       break;
     }
 
-    switch(GetTokenIndex(option, optlist, 0, NULL))
+    switch (GetTokenIndex(option, optlist, 0, NULL))
     {
     case 0: /* read */
       if (flag)

@@ -189,9 +189,9 @@ void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   current = modlistroot;
   prev = NULL;
 
-  while(current != NULL)
+  while (current != NULL)
   {
-    GetNextToken( current->data, &mi);
+    GetNextToken(current->data, &mi);
     next = current->next;
     if ((!alias_len || !current->alias_len || alias_len == current->alias_len)
         && matchWildcards(info, mi+1))

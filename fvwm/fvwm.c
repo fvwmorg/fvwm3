@@ -1399,11 +1399,11 @@ extern void FreeDecorFace(Display *dpy, DecorFace *df);
 
 /***********************************************************************
  *
- *  ResetAllButtons -- resets all buttons to defaults
- *                 destroys existing buttons
+ *  ResetOrDestroyAllButtons -- resets all buttons to defaults
+ *                              destroys existing buttons
  *
  ************************************************************************/
-void ResetAllButtons(FvwmDecor *decor)
+static void ResetOrDestroyAllButtons(FvwmDecor *decor, Bool do_free_only)
 {
   TitleButton *tbp;
   DecorFace *face;
@@ -1420,7 +1420,8 @@ void ResetAllButtons(FvwmDecor *decor)
     for (j = 1; j < MaxButtonState; ++j, ++face)
     {
       FreeDecorFace(dpy, face);
-      LoadDefaultButton(face, i);
+      if (!do_free_only)
+	LoadDefaultButton(face, i);
     }
   }
 
@@ -1429,6 +1430,14 @@ void ResetAllButtons(FvwmDecor *decor)
   TB_MWM_DECOR_FLAGS(decor->buttons[0]) |= MWM_DECOR_MENU;
   TB_MWM_DECOR_FLAGS(decor->buttons[1]) |= MWM_DECOR_MAXIMIZE;
   TB_MWM_DECOR_FLAGS(decor->buttons[3]) |= MWM_DECOR_MINIMIZE;
+}
+void DestroyAllButtons(FvwmDecor *decor)
+{
+  ResetOrDestroyAllButtons(decor, True);
+}
+void ResetAllButtons(FvwmDecor *decor)
+{
+  ResetOrDestroyAllButtons(decor, False);
 }
 
 /***********************************************************************
