@@ -974,7 +974,7 @@ nconv = iconv(cd,(const char **)&in, &insize, &outp, &outbytes_remaining);]
 [use_const=yes],
 [use_const=no])
 	AC_MSG_RESULT($use_const)
-	CFLAGS="$my_CPPFLAGS"
+	CFLAGS="$my_CFLAGS"
 	if test "x$use_const" = "xyes"; then
 		AC_DEFINE(ICONV_ARG_USE_CONST)
 	fi
