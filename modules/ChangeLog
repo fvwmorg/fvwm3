@@ -1,3 +1,16 @@
+2000-05-10  olicha	<olivier.chapuis@free.fr>
+
+	* FvwmScript/Instruction.c (ReceivFromScript):
+	Fixed cpu if ReceivFromScript is used by swallowed Script
+	in periodic task
+
+	* FvwmScript/FvwmScript.c (ReadFvwmScriptArg):
+	Fixed communication between a child script and its children
+
+	* FvwmScript/Widget/List.c (DrawVSblist):
+	Fixed drawing of the List "ascenseur vertical"
+
+
 2000-05-05  Mikhael Goikhman  migo@homemail.com
 
 	* FvwmWharf/FvwmWharf.1: fixed a typo

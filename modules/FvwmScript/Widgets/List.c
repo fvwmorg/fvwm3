@@ -124,7 +124,7 @@ void DrawVSbList(struct XObj *xobj,int NbCell,int NbVisCell,int press)
  r.height=r.height-26;
 
  /* Effacement */
- XClearArea(dpy,xobj->win,r.x,r.y+1,r.width-1,r.height-2,False);
+ XClearArea(dpy,xobj->win,r.x,r.y+1,r.width,r.height-2,False);
 
  /* Dessin du pouce */
  if (NbVisCell<NbCell)

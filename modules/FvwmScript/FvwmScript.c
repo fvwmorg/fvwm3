@@ -806,8 +806,8 @@ void MainLoop (void)
 
   if (fvwmSelect(fd_width, &in_fdset, NULL, NULL, ptv) > 0)
   {
-   if (FD_ISSET(x_fd, &in_fdset))
-    ReadXServer();    
+   /* if (FD_ISSET(x_fd, &in_fdset)) */
+/*     ReadXServer(); */    
 
    if(FD_ISSET(fd[1], &in_fdset))
    {
@@ -883,7 +883,7 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
  else
  {				/* Cas du fils */
   x11base->TabScriptId[0]=(char*)calloc(sizeof(char),strlen(argv[7]));
-  x11base->TabScriptId[0]=strncpy(x11base->TabScriptId[0],argv[7],strlen("FvwmScript")+3);
+  x11base->TabScriptId[0]=strncpy(x11base->TabScriptId[0],argv[7],strlen(argv[7])-2);
   x11base->TabScriptId[1]=argv[7];
   myatom=XInternAtom(dpy,x11base->TabScriptId[1],True);
   XSetSelectionOwner(dpy,myatom,x11base->win,CurrentTime);

@@ -626,8 +626,11 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
 
  /* Recuperation du message */
  XConvertSelection(dpy,ASend,AReceiv,propriete,x11base->win,CurrentTime);
- while ((!XCheckTypedEvent(dpy,SelectionNotify,&event))&&(NbEssai<25000))
+ while ((!XCheckTypedEvent(dpy,SelectionNotify,&event))&&(NbEssai<10))
+ {
+  usleep(1);
   NbEssai++;
+ }
  if (event.xselection.property!=None)
   if (event.xselection.selection==ASend)
   {
@@ -642,7 +645,6 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
     XFree(donnees);
    }
   }
-
  return msg;
 }
 
