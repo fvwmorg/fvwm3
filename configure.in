@@ -650,9 +650,10 @@ if test x"$ac_cv_iconv" != xno; then
      CHECK_LIBCHARSET
   fi
 
-  test x"$with_lib_iconv" = xyes -o x"$with_sys_iconv" = xyes && with_iconv=yes
-  test x"$with_lib_iconv" = xyes && with_iconv_type="library"
-  test x"$with_sys_iconv" = xyes && with_iconv_type="system"
+  test x"$with_lib_iconv" = xyes -o x"$with_sys_iconv" = xyes &&
+	 with_iconv=yes && problem_iconv=""
+  test x"$with_lib_iconv" = xyes && with_iconv_type="yes (libiconv)"
+  test x"$with_sys_iconv" = xyes && with_iconv_type="yes (from C library)"
 
   if test x"$with_iconv" = xno; then
     AC_MSG_WARN([*** ])
