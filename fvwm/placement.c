@@ -1610,7 +1610,7 @@ static void __explain_placement(FvwmWindow *fw, placement_reason_t *reason)
 
 	*explanation = 0;
 	s = explanation;
-	strcat(s, "placed new window 0x%08x '%s':\n");
+	strcat(s, "placed new window 0x%x '%s':\n");
 	s += strlen(s);
 	/* desk */
 	switch (reason->desk.reason)
