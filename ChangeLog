@@ -1,5 +1,7 @@
 1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* configure.in: Change version to 2.1.13
+
 	* fvwm/add_window.c:
 	* fvwm/resize.c:
 	* fvwm/events.c: removed debug statements for wandering/growing

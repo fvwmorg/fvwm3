@@ -83,7 +83,7 @@ rplay_LIBS = @rplay_LIBS@
 xpm_CFLAGS = @xpm_CFLAGS@
 xpm_LIBS = @xpm_LIBS@
 
-EXTRA_DIST = ANNOUNCE BUGS DEVELOPERS FAQ TODO Y2K-Compliance 	color_combos error_codes fvwm-2.xx.lsm fvwm.lsm		m4_hacks black-stone1.jpg fvwm.gif fvwm_smaller.gif		run_man2html.sh txt2html.sh $(HTML)
+EXTRA_DIST = ANNOUNCE BUGS DEVELOPERS FAQ TODO Y2K-Compliance 	color_combos error_codes fvwm.lsm		m4_hacks black-stone1.jpg fvwm.gif fvwm_smaller.gif		run_man2html.sh txt2html.sh $(HTML)
 
 
 HTML = cvs.html docs.html download.html features.html ftp.html index.html 	links.html mailinglist.html man-pages.html			  	mod_changes.html mod_concept.html				  	mod_f2m_communication.html mod_initialization.html		  	mod_m2f_communication.html mod_security.html modules.html	  	version.html
@@ -96,7 +96,7 @@ DIST_COMMON =  README ChangeLog Makefile.am Makefile.in TODO
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
-TAR = gtar
+TAR = tar
 GZIP_ENV = --best
 all: all-redirect
 .SUFFIXES:

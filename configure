@@ -745,7 +745,7 @@ fi
 
 PACKAGE=fvwm
 
-VERSION=2.1.12
+VERSION=2.1.13
 
 if test "`cd $srcdir && pwd`" != "`pwd`" && test -f $srcdir/config.status; then
   { echo "configure: error: source directory already configured; run "make distclean" there first" 1>&2; exit 1; }
