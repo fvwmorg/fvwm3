@@ -202,7 +202,6 @@ typedef struct win_data {
   Picture pic;
   Picture old_pic;
 #endif
-  char *display_string; /* what gets shown in the manager window */
   Uchar iconified, state;
 
   Ulong desknum;
@@ -210,15 +209,18 @@ typedef struct win_data {
   Ulong app_id;
 /*  Ulong fvwm_flags; */
   window_flags flags;
-  char *resname;
-  char *classname;
-  char *titlename;
-  char *iconname;
   struct win_data *win_prev, *win_next;
   struct win_manager *manager;
   int app_id_set : 1;
   int geometry_set : 1;
   Uchar complete;
+
+  /* this data must be freed */
+  char *display_string; /* what gets shown in the manager window */
+  char *resname;
+  char *classname;
+  char *titlename;
+  char *iconname;
 } WinData;
 
 typedef struct button {

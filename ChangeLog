@@ -1,3 +1,25 @@
+2000-11-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (setup_icon_font):
+	(destroy_window_font):
+	(setup_window_font):
+	(destroy_icon_font):
+	fixed memory leak
+
+	* fvwm/fvwm.c (LoadDefaultRightButton):
+	(LoadDefaultLeftButton):
+	* fvwm/builtins.c (ReadDecorFace):
+	* fvwm/borders.c (DrawButton):
+	* fvwm/builtins.c (FreeDecorFace):
+	* fvwm/screen.h (DecorFace):
+	removed vector_coords from union to make sure the allocated default
+	buttons can be freed
+
+	* fvwm/builtins.c (add_to_env_list):
+	fixed uninitialised memory
+	(add_to_env_list):
+	fixed memory leak
+
 2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/ConfigFvwmDefaults:

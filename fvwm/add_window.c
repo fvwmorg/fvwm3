@@ -239,11 +239,11 @@ void setup_wm_hints(FvwmWindow *tmp_win)
 
 static void destroy_window_font(FvwmWindow *tmp_win)
 {
-  if (HAS_WINDOW_FONT(tmp_win) &&
-      tmp_win->title_font.font != Scr.DefaultFont.font)
+  if (HAS_WINDOW_FONT(tmp_win))
   {
     FreeFvwmFont(dpy, &(tmp_win->title_font));
   }
+  SET_HAS_WINDOW_FONT(tmp_win, 0);
   SET_WINDOW_FONT_LOADED(tmp_win, 0);
 }
 
@@ -251,12 +251,7 @@ void setup_window_font(
   FvwmWindow *tmp_win, window_style *pstyle, Bool do_destroy)
 {
   int height;
-  int old_height = 0;
 
-  if (!IS_WINDOW_FONT_LOADED(tmp_win))
-  {
-    old_height = tmp_win->title_g.height;
-  }
   /* get rid of old font */
   if (do_destroy)
   {
@@ -312,11 +307,11 @@ void setup_window_font(
 
 static void destroy_icon_font(FvwmWindow *tmp_win)
 {
-  if (HAS_ICON_FONT(tmp_win) &&
-      tmp_win->icon_font.font != Scr.DefaultFont.font)
+  if (HAS_ICON_FONT(tmp_win))
   {
     FreeFvwmFont(dpy, &(tmp_win->icon_font));
   }
+  SET_HAS_ICON_FONT(tmp_win, 0);
   SET_ICON_FONT_LOADED(tmp_win, 0);
 }
 
@@ -333,7 +328,7 @@ void setup_icon_font(
     return;
   }
   /* get rid of old font */
-  if (do_destroy)
+  if (do_destroy && IS_ICON_FONT_LOADED(tmp_win))
   {
     destroy_icon_font(tmp_win);
     /* destroy_icon_font resets the IS_ICON_FONT_LOADED flag */

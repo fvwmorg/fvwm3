@@ -508,6 +508,7 @@ static void clear_button (Button *b)
   assert (b);
   b->drawn_state.win = NULL;
   b->drawn_state.dirty_flags = REDRAW_BUTTON;
+  b->drawn_state.display_string = NULL;
 }
 
 static void set_window_button (WinData *win, int index)
@@ -525,7 +526,7 @@ static void set_window_button (WinData *win, int index)
 #endif
 
   b->drawn_state.win = win;
-  b->drawn_state.display_string = win->display_string;
+  copy_string(&b->drawn_state.display_string, win->display_string);
   b->drawn_state.iconified = win->iconified;
   b->drawn_state.state = win->state;
   b->drawn_state.dirty_flags = ALL_CHANGED;
@@ -737,8 +738,8 @@ void set_win_displaystring (WinData *win)
   else {
     maxlen = 0;
   }
-  copy_string (&win->display_string,
-	       make_display_string (win, man->formatstring, maxlen));
+  copy_string(
+    &win->display_string, make_display_string (win, man->formatstring, maxlen));
   if (win->button)
     win->button->drawn_state.dirty_flags |= STRING_CHANGED;
 }
@@ -1229,7 +1230,7 @@ static void get_gcs (WinManager *man, int state, int iconified,
     break;
 
   default:
-    ConsoleMessage ("Internal error in draw_button\n");
+    ConsoleMessage ("Internal error in get_gcs\n");
     return;
   }
 
@@ -1286,6 +1287,7 @@ static void draw_button (WinManager *man, int button, int force)
   dirty = b->drawn_state.dirty_flags;
 
   if (win && win->button != b) {
+fprintf(stderr,"w 0x%08x, b 0x%08x, wb 0x%08x\n", (int)win, (int)b, (int)win->button);
     ConsoleMessage ("Internal error in draw_button.\n");
     return;
   }
@@ -1349,7 +1351,7 @@ static void draw_button (WinManager *man, int button, int force)
       }
       if (STRING_CHANGED) {
 	ConsoleDebug (X11, "\tString changed: %s\n", win->display_string);
-	b->drawn_state.display_string = win->display_string;
+	copy_string(&b->drawn_state.display_string, win->display_string);
 	assert (b->drawn_state.display_string);
 	draw_icon = 1;
 	draw_background = 1;
@@ -1649,24 +1651,30 @@ static void move_window_buttons (WinManager *man, int start, int finish,
 		    n, start, finish, offset);
     return;
   }
-
   bp = man->buttons.buttons;
-
-  if (offset > 0) {
-    for (i = finish; i >= start; i--) {
-      if (bp[i]->drawn_state.win)
-	bp[i]->drawn_state.win->button = bp[i + offset];
+  if (offset > 0)
+  {
+    for (i = finish; i >= start; i--)
+    {
       bp[i + offset]->drawn_state = bp[i]->drawn_state;
       bp[i + offset]->drawn_state.dirty_flags = ALL_CHANGED;
+      if (bp[i + offset]->drawn_state.win)
+	bp[i + offset]->drawn_state.win->button = bp[i + offset];
     }
+    for (i = 0; i < offset; i++)
+      clear_button(bp[start + i]);
   }
-  else if (offset < 0) {
-    for (i = start; i <= finish; i++) {
-      if (bp[i]->drawn_state.win)
-	bp[i]->drawn_state.win->button = bp[i + offset];
+  else if (offset < 0)
+  {
+    for (i = start; i <= finish; i++)
+    {
       bp[i + offset]->drawn_state = bp[i]->drawn_state;
       bp[i + offset]->drawn_state.dirty_flags = ALL_CHANGED;
+      if (bp[i + offset]->drawn_state.win)
+	bp[i + offset]->drawn_state.win->button = bp[i + offset];
     }
+    for (i = 0; i > offset; i--)
+      clear_button(bp[finish + i]);
   }
 }
 
@@ -1731,7 +1739,6 @@ void delete_windows_button (WinData *win)
   spot = win->button->index;
 
   move_window_buttons (win->manager, spot + 1, buttons->num_windows - 1, -1);
-  clear_button (buttons->buttons[buttons->num_windows - 1]);
   increase_num_windows (buttons, -1);
   win->button = NULL;
   if (globals.focus_win == win) {

@@ -1202,7 +1202,7 @@ RETSIGTYPE Restart(int sig)
 
 static void LoadDefaultLeftButton(DecorFace *df, int i)
 {
-  struct vector_coords *v = &df->u.vector;
+  struct vector_coords *v = &df->vector;
 
   memset(&df->style, 0, sizeof(df->style));
   DFS_FACE_TYPE(df->style) = VectorButton;
@@ -1295,7 +1295,7 @@ static void LoadDefaultLeftButton(DecorFace *df, int i)
  ************************************************************************/
 static void LoadDefaultRightButton(DecorFace *df, int i)
 {
-  struct vector_coords *v = &df->u.vector;
+  struct vector_coords *v = &df->vector;
 
   memset(&df->style, 0, sizeof(df->style));
   DFS_FACE_TYPE(df->style) = VectorButton;

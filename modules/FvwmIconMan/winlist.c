@@ -207,6 +207,8 @@ void free_windata (WinData *p)
   Free (p->resname);
   Free (p->classname);
   Free (p->iconname);
+  Free (p->titlename);
+  Free (p->display_string);
   Free (p);
 }
 

@@ -1,6 +1,23 @@
+2000-11-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/winlist.c (free_windata):
+	* FvwmIconMan/xmanager.c (set_window_button):
+	(set_win_displaystring):
+	fixed memory leaks
+	(move_window_buttons):
+	(clear_button):
+	(insert_windows_button):
+	fixed memory corruption
+
+	* FvwmButtons/parse.c (ParseButton):
+	fixed core dump
+
+	* FvwmPager/FvwmPager.c (list_destroy):
+	fixed memory leak
+
 2000-11-22  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmForm/FvwmForm.c: 
+	* FvwmForm/FvwmForm.c:
 	* FvwmForm/FvwmForm.h: Move string initialization into logic.
 
 2000-11-21  Dominik Vogt  <dominik.vogt@gmx.de>

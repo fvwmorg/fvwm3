@@ -63,8 +63,8 @@
 static void init_style(
   FvwmWindow *old_t, FvwmWindow *t, window_style *pstyle, short *pbuttons)
 {
-  /* copy window structure because we still need some old values */
-  memcpy(old_t, t, sizeof(FvwmWindow));
+  /* copy the window structure because we still need some old values. */
+  memcpy(old_t, t, sizeof(t->hints));
   /* determine level of decoration */
   setup_style_and_decor(t, pstyle, pbuttons);
 }
@@ -322,7 +322,7 @@ void flush_window_updates(void)
     check_window_style_change(t, &flags, &style);
     if (Scr.flags.has_nr_buttons_changed)
       flags.do_redecorate = True;
-    /*!!!this is not optimised for minimal redrawing yet*/
+    /* TODO: this is not optimised for minimal redrawing yet*/
     if (t->decor->flags.has_changed)
     {
       flags.do_redecorate = True;

@@ -119,7 +119,7 @@ typedef struct
 typedef struct DecorFace
 {
   DecorFaceStyle style;
-  union
+  struct
   {
     Picture *p;
     Pixel back;
@@ -128,16 +128,15 @@ typedef struct DecorFace
       int npixels;
       Pixel *pixels;
       char gradient_type;
-    }
-    grad;
-    struct vector_coords
-    {
-      int num;
-      int *x;
-      int *y;
-      unsigned long line_style;
-    } vector;
+    } grad;
   } u;
+  struct vector_coords
+  {
+    int num;
+    int *x;
+    int *y;
+    unsigned long line_style;
+  } vector;
 
 #ifdef MULTISTYLE
   struct DecorFace *next;

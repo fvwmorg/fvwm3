@@ -711,6 +711,8 @@ void list_destroy(unsigned long *body)
 	free(t->res_name);
       if(t->window_name != NULL)
 	free(t->window_name);
+      if(t->icon_name != NULL)
+	free(t->icon_name);
       free(t);
     }
 }

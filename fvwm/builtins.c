@@ -1296,20 +1296,20 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
     break;
 
   case VectorButton:
-    if (df->u.vector.x)
-    {
-      free (df->u.vector.x);
-      df->u.vector.x = NULL;
-    }
-    if (df->u.vector.y)
-    {
-      free (df->u.vector.y);
-      df->u.vector.y = NULL;
-    }
-    break;
-
   default:
+    /* see below */
     break;
+  }
+  /* always free the vector buttons */
+  if (df->vector.x)
+  {
+    free (df->vector.x);
+    df->vector.x = NULL;
+  }
+  if (df->vector.y)
+  {
+    free (df->vector.y);
+    df->vector.y = NULL;
   }
 #ifdef MULTISTYLE
   /* delete any compound styles */
@@ -1390,7 +1390,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
     {
       /* normal coordinate list button style */
       int i, num_coords, num, line_style;
-      struct vector_coords *vc = &df->u.vector;
+      struct vector_coords *vc = &df->vector;
 
       /* get number of points */
       if (strncasecmp(style,"Vector",6)==0)
@@ -1425,6 +1425,8 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			      action);
 	  free(vc->x);
 	  free(vc->y);
+	  vc->x = NULL;
+	  vc->y = NULL;
 	  return False;
 	}
 	if (line_style)
@@ -2170,8 +2172,8 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
       multi = 3; /* affect all buttons */
     else
     {
-      /* we're either resetting buttons or
-	 an invalid button set was specified */
+      /* we're either resetting buttons or an invalid button set was specified
+       */
       if (StrEquals(parm,"reset"))
 	ResetAllButtons(decor);
       else
@@ -2326,8 +2328,8 @@ typedef struct
 #define ENV_LIST_INC 10
 static void add_to_env_list(char *var, char *env)
 {
+  static env_list_item *env_list = NULL;
   unsigned int env_len = 0;
-  env_list_item *env_list = NULL;
   unsigned int i;
 
   /* find string in list */
@@ -2356,7 +2358,7 @@ static void add_to_env_list(char *var, char *env)
   else if (env_list == NULL)
   {
     /* list is still empty */
-    env_list = (env_list_item *)safemalloc(env_len * sizeof(env_list_item));
+    env_list = (env_list_item *)safecalloc(sizeof(env_list_item), ENV_LIST_INC);
   }
   env_list[env_len].var = var;
   env_list[env_len].env = env;

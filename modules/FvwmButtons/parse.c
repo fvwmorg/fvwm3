@@ -1095,7 +1095,7 @@ static void ParseButton(button_info **uberb,char *s)
 	  fprintf(stderr,"%s: Unmatched END in config file\n",MyName);
 	  exit(1);
 	}
-	break;
+	return;
 
       case 12: /* NoSize */
 	b->flags|=b_Size;
