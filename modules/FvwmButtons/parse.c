@@ -683,6 +683,7 @@ void match_string(button_info **uberb,char *s)
 		else if (strncasecmp(t,"down" ,4)==0) t = "panel-d";
 		else                                  t = "panel-u";
 	      }
+	      else t = "panel-u";
 	      AddButtonAction(b, 0, (t)? t : strdup(""));
 	      b->IconWin = None;
 	      t = seekright(&s);

@@ -1,5 +1,10 @@
 1998-12-04  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* modules/FvwmButtons/parse.c (match_string): fixed 'up' panels as
+	default
+
+1998-12-04  Dominik Vogt  <dominik_vogt@hp.com>
+
 	* FvwmPager/FvwmPager.1: documented new button 3 behaviour
 
 	* FvwmPager/x_pager.c (SwitchToDeskAndPage): removed unnecessary ifdef
