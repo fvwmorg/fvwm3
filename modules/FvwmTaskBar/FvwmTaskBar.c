@@ -109,8 +109,9 @@ int   x_fd;
 
 /* X related things */
 Display *dpy;
+Graphics *G;
 Window  Root, win;
-int     screen, d_depth;
+int     screen;
 Pixel   back, fore;
 GC      graph, shadow, hilite, blackgc, whitegc;
 XFontStruct *ButtonFont, *SelButtonFont;
@@ -171,8 +172,6 @@ extern TipStruct Tip;
 /* Imported from Start */
 extern int StartButtonWidth, StartButtonHeight;
 extern char *StartPopup;
-
-Colormap PictureCMap;
 
 char *ImagePath   = NULL;
 
@@ -280,8 +279,6 @@ int main(int argc, char **argv)
   /* Setup the XConnection */
   StartMeUp();
   XSetErrorHandler(ErrorHandler);
-
-  InitPictureCMap(dpy, Root);
 
   StartButtonInit(RowHeight);
 
@@ -1029,6 +1026,7 @@ void LoopOnEvents()
 	if (Event.xmotion.x < 0 && Event.xmotion.y < 0)
 	{
 	  /* This condition means that the event was triggered by an Alarm */
+	  fprintf(stderr, "got an alarm event\n");
 	  if (hide_taskbar_alarm == True)
 	  {
 	    hide_taskbar_alarm = False;
@@ -1148,6 +1146,7 @@ void StartMeUp()
    XGCValues gcval;
    unsigned long gcmask;
    int ret;
+   XSetWindowAttributes attr;
 #ifdef I18N_MB
   char **ml;
   int mc;
@@ -1160,10 +1159,11 @@ void StartMeUp()
 	      XDisplayName(""));
       exit (1);
    }
+   G = CreateGraphics(dpy);
+   SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
    x_fd = XConnectionNumber(dpy);
    screen= DefaultScreen(dpy);
    Root = RootWindow(dpy, screen);
-   d_depth = DefaultDepth(dpy, screen);
 
    ScreenWidth  = XDisplayWidth(dpy, screen);
    ScreenHeight = XDisplayHeight(dpy, screen);
@@ -1247,7 +1247,7 @@ void StartMeUp()
    win_x = hints.x;
    win_y = hints.y;
 
-   if(d_depth < 2) {
+   if(G->depth < 2) {
      back = GetColor("white");
      fore = GetColor("black");
    } else {
@@ -1255,9 +1255,11 @@ void StartMeUp()
      fore = GetColor(ForeColor);
    }
 
-   win=XCreateSimpleWindow(dpy,Root,hints.x,hints.y,
-			   hints.width,hints.height,0,
-			   fore,back);
+   attr.background_pixel = back;
+   attr.border_pixel = 0;
+   attr.colormap = G->cmap;
+   win=XCreateWindow(dpy,Root,hints.x,hints.y,hints.width,hints.height,0,G->depth,
+		     InputOutput,G->viz,CWBackPixel|CWBorderPixel|CWColormap,&attr);
 
    wm_del_win=XInternAtom(dpy,"WM_DELETE_WINDOW",False);
    XSetWMProtocols(dpy,win,&wm_del_win,1);
@@ -1280,37 +1282,38 @@ void StartMeUp()
    gcval.background = back;
    gcval.font = SelButtonFont->fid;
    gcval.graphics_exposures = False;
-   graph = XCreateGC(dpy,Root,gcmask,&gcval);
+   graph = XCreateGC(dpy,win,gcmask,&gcval);
 
-   if(d_depth < 2)
+   if(G->depth < 2)
      gcval.foreground = GetShadow(fore);
    else
      gcval.foreground = GetShadow(back);
    gcval.background = back;
    gcmask = GCForeground | GCBackground | GCGraphicsExposures;
-   shadow = XCreateGC(dpy,Root,gcmask,&gcval);
+   shadow = XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = GetHilite(back);
    gcval.background = back;
-   hilite = XCreateGC(dpy,Root,gcmask,&gcval);
+   hilite = XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = GetColor("white");;
    gcval.background = back;
-   whitegc = XCreateGC(dpy,Root,gcmask,&gcval);
+   whitegc = XCreateGC(dpy,win,gcmask,&gcval);
 
    gcval.foreground = GetColor("black");
    gcval.background = back;
-   blackgc = XCreateGC(dpy,Root,gcmask,&gcval);
+   blackgc = XCreateGC(dpy,win,gcmask,&gcval);
 
    gcmask = GCForeground | GCBackground | GCTile |
             GCFillStyle  | GCGraphicsExposures;
    gcval.foreground = GetHilite(back);
    gcval.background = back;
    gcval.fill_style = FillTiled;
-   gcval.tile       = XCreatePixmapFromBitmapData(dpy, Root, (char *)gray_bits,
+   gcval.tile       = XCreatePixmapFromBitmapData(dpy, win, (char *)gray_bits,
 						  gray_width, gray_height,
-						  gcval.foreground, gcval.background, d_depth);
-   checkered = XCreateGC(dpy, Root, gcmask, &gcval);
+						  gcval.foreground,
+						  gcval.background,G->depth);
+   checkered = XCreateGC(dpy, win, gcmask, &gcval);
 
    XSelectInput(dpy,win,(ExposureMask | KeyPressMask | PointerMotionMask |
                          EnterWindowMask | LeaveWindowMask |

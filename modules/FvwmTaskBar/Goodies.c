@@ -38,8 +38,9 @@
 #define MAILCHECK_DEFAULT 10
 
 extern Display *dpy;
+extern Graphics *G;
 extern Window Root, win;
-extern int win_width, win_height, win_y, win_border, d_depth,
+extern int win_width, win_height, win_y, win_border,
        ScreenWidth, ScreenHeight, RowHeight;
 extern Pixel back, fore;
 extern int Clength;
@@ -177,15 +178,15 @@ void InitGoodies() {
   gcval.background = back;
   gcval.font = StatusFont->fid;
   gcval.graphics_exposures = False;
-  statusgc = XCreateGC(dpy, Root, gcmask, &gcval);
+  statusgc = XCreateGC(dpy, win, gcmask, &gcval);
 
   if (Mailcheck > 0) {
     mailpix = XCreatePixmapFromBitmapData(dpy, win, (char *)minimail_bits,
 					  minimail_width, minimail_height,
-					  fore,back, d_depth);
+					  fore,back, G->depth);
     wmailpix = XCreatePixmapFromBitmapData(dpy, win, (char *)minimail_bits,
 					   minimail_width, minimail_height,
-					   fore,GetColor("white"), d_depth);
+					   fore,GetColor("white"), G->depth);
 
     goodies_width += minimail_width + 7;
   }
@@ -319,7 +320,6 @@ void PopupTipWindow(int px, int py, char *text) {
   Window child;
 
   if (!ShowTips) return;
-
   if (Tip.win != None) DestroyTipWindow();
 
   Tip.tw = XTextWidth(StatusFont, text, strlen(text)) + 6;
@@ -340,10 +340,14 @@ void PopupTipWindow(int px, int py, char *text) {
 
   UpdateString(&Tip.text, text);
   CreateTipWindow(Tip.x, Tip.y, Tip.w, Tip.h);
-  if (Tip.open) XMapRaised(dpy, Tip.win);
+
+  if (Tip.open)
+    XMapRaised(dpy, Tip.win);
+
 }
 
 void ShowTipWindow(int open) {
+fprintf(stderr, "Showing tip win %lx %d\n", Tip.win, open);
   if (open) {
     if (Tip.win != None) {
       XMapRaised(dpy, Tip.win);
@@ -357,38 +361,36 @@ void ShowTipWindow(int open) {
 void CreateTipWindow(int x, int y, int w, int h) {
   unsigned long gcmask;
   unsigned long winattrmask = CWBackPixel | CWBorderPixel | CWEventMask |
-                              CWSaveUnder | CWOverrideRedirect;
+                              CWColormap |CWSaveUnder | CWOverrideRedirect;
   XSetWindowAttributes winattr;
   GC cgc, gc0, gc1;
   XGCValues gcval;
   Pixmap pchk;
-
   winattr.background_pixel = GetColor(DateBack);
   winattr.border_pixel = GetColor("black");
+  winattr.colormap = G->cmap;
   winattr.override_redirect = True;
   winattr.save_under = True;
   winattr.event_mask = ExposureMask;
 
-  Tip.win = XCreateWindow(dpy, Root, x, y, w+4, h+4, 0,
-                          CopyFromParent, CopyFromParent, CopyFromParent,
-                          winattrmask, &winattr);
-
+  Tip.win = XCreateWindow(dpy, Root, x, y, w+4, h+4, 0, G->depth, InputOutput,
+			  G->viz, winattrmask, &winattr);
   gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
   gcval.graphics_exposures = False;
   gcval.foreground = GetColor(DateFore);
   gcval.background = GetColor(DateBack);
   gcval.font = StatusFont->fid;
-  dategc = XCreateGC(dpy, Root, gcmask, &gcval);
+  dategc = XCreateGC(dpy, Tip.win, gcmask, &gcval);
 
-  pmask = XCreatePixmap(dpy, Root, w+4, h+4, 1);
-  pclip = XCreatePixmap(dpy, Root, w+4, h+4, 1);
+  pmask = XCreatePixmap(dpy, Tip.win, w+4, h+4, 1);
+  pclip = XCreatePixmap(dpy, Tip.win, w+4, h+4, 1);
 
   gcmask = GCForeground | GCBackground | GCFillStyle | GCStipple |
            GCGraphicsExposures;
   gcval.foreground = 1;
   gcval.background = 0;
   gcval.fill_style = FillStippled;
-  pchk = XCreatePixmapFromBitmapData(dpy, Root, (char *)gray_bits,
+  pchk = XCreatePixmapFromBitmapData(dpy, Tip.win, (char *)gray_bits,
                                      gray_width, gray_height, 1, 0, 1);
   gcval.stipple = pchk;
   cgc = XCreateGC(dpy, pmask, gcmask, &gcval);

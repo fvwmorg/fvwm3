@@ -35,9 +35,10 @@
 #include <stdio.h>
 #include <X11/Xlib.h>
 #include "Colors.h"
+#include "libs/fvwmlib.h"
 
 extern Display *dpy;
-extern Window Root;
+extern Graphics *G;
 extern char *Module;
 
 /****************************************************************************
@@ -46,13 +47,11 @@ extern char *Module;
 Pixel GetColor(char *name)
 {
   XColor color;
-  XWindowAttributes attributes;
 
-  XGetWindowAttributes(dpy,Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color))
+   if (!XParseColor (dpy, G->cmap, name, &color))
      nocolor("parse",name);
-   else if(!XAllocColor (dpy, attributes.colormap, &color))
+   else if(!XAllocColor (dpy, G->cmap, &color))
        nocolor("alloc",name);
   return color.pixel;
 }
@@ -63,15 +62,12 @@ Pixel GetColor(char *name)
 Pixel GetHilite(Pixel background)
 {
   XColor bg_color, white_p;
-  XWindowAttributes attributes;
-
-  XGetWindowAttributes(dpy,Root,&attributes);
 
   bg_color.pixel = background;
-  XQueryColor(dpy,attributes.colormap,&bg_color);
+  XQueryColor(dpy, G->cmap, &bg_color);
 
   white_p.pixel = GetColor("white");
-  XQueryColor(dpy,attributes.colormap,&white_p);
+  XQueryColor(dpy, G->cmap, &white_p);
 
   bg_color.red = max((white_p.red/5), bg_color.red);
   bg_color.green = max((white_p.green/5), bg_color.green);
@@ -81,7 +77,7 @@ Pixel GetHilite(Pixel background)
   bg_color.green = min(white_p.green, (bg_color.green*140)/100);
   bg_color.blue = min(white_p.blue, (bg_color.blue*140)/100);
 
-  if(!XAllocColor(dpy,attributes.colormap,&bg_color))
+  if(!XAllocColor(dpy, G->cmap,&bg_color))
     nocolor("alloc hilight","");
 
   return bg_color.pixel;
@@ -93,18 +89,15 @@ Pixel GetHilite(Pixel background)
 Pixel GetShadow(Pixel background)
 {
   XColor bg_color;
-  XWindowAttributes attributes;
-
-  XGetWindowAttributes(dpy,Root,&attributes);
 
   bg_color.pixel = background;
-  XQueryColor(dpy,attributes.colormap,&bg_color);
+  XQueryColor(dpy, G->cmap, &bg_color);
 
   bg_color.red = (unsigned short)((bg_color.red*60)/100); /* was 50% */
   bg_color.green = (unsigned short)((bg_color.green*60)/100);
   bg_color.blue = (unsigned short)((bg_color.blue*60)/100);
 
-  if(!XAllocColor(dpy,attributes.colormap,&bg_color))
+  if(!XAllocColor(dpy, G->cmap, &bg_color))
     nocolor("alloc shadow","");
 
   return bg_color.pixel;
