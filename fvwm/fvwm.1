@@ -5477,15 +5477,22 @@ never receives the focus.  This is useful for modules like
 for example.
 
 The focus model can be augmented with several additional options.
+
 .IR ClickToFocusPassesClickOff " and " ClickToFocusPassesClick
 controls if a mouse click to focus a window using the
 .I ClickToFocus
 model is sent to the application or not.  Similarly,
-.IR ClickToFocusRaisesOff " and " ClickToFocusRaises
-control if the window is raised, while
-.IR MouseFocusClickRaises " and " MouseFocusClickRaisesOff
-are equivalent but apply only to windows using
-.IR SloppyFocus ", " MouseFocus " and " NeverFocus .
+.I ClickToFocusRaisesOff/MouseFocusClickRaisesOff
+and
+.I ClickToFocusRaises/MouseFocusClickRaises
+control if the window is raised.
+
+Note: in fvwm versions prior to
+2.5.3, the "Click..." options applied only to windows with
+.I ClickToFocus
+while the "Mouse..." options applied to windows with a different
+focus policy.  This is no longer the case.
+
 With
 .I MouseFocusClickIgnoreMotion
 the click that would normally raise a window with the
