@@ -61,8 +61,9 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#include "safemalloc.h"
+#include "defaults.h"
 #include "fvwmlib.h"
+#include "safemalloc.h"
 #include "XineramaSupport.h"
 
 #ifdef HAVE_XINERAMA
@@ -121,7 +122,7 @@ static int grav_matrix[3][3] =
 
 
 static Display            *disp              = NULL;
-static Bool                is_xinerama_disabled = 0;
+static Bool                is_xinerama_disabled = DEFAULT_XINERAMA_DISABLED;
 static XineramaScreenInfo *screens;
 /* # of Xinerama screens, *not* counting the [0]global, 0 if disabled */
 static int                 num_screens        = 0;
@@ -143,6 +144,11 @@ static int                 randr_error_base  = -1;
 #ifdef USE_XINERAMA_EMULATION
 static Window blank_w, vert_w;
 #endif
+
+Bool XineramaSupportIsEnabled(void)
+{
+  return (is_xinerama_disabled) ? False : True;
+}
 
 static void XineramaSupportSetState(Bool onoff)
 {
@@ -550,6 +556,30 @@ void XineramaSupportGetResistanceRect(int wx, int wy, int ww, int wh,
     }
   }
 }
+
+Bool XineramaSupportIsRectangleOnThisScreen(
+  XEvent *eventp, rectangle *rec, int screen)
+{
+  int x;
+  int y;
+
+  if (screen < 0)
+  {
+    GetMouseXY(eventp, &x, &y);
+    screen = FindScreenOfXY(x, y);
+  }
+  if (screen > num_screens)
+  {
+    screen = 0;
+  }
+
+  return (rec->x + rec->width > screens[screen].x_org &&
+	  rec->x < screens[screen].x_org + screens[screen].width &&
+	  rec->y + rec->height > screens[screen].y_org &&
+	  rec->y < screens[screen].y_org + screens[screen].height) ?
+    True : False;
+}
+
 
 #if 1
 /*  XineramaSupportParseGeometry

@@ -26,6 +26,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -225,9 +226,16 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       mask->my_flags.needs_current_desk = 1;
       mask->my_flags.needs_current_page = 1;
     }
+    else if(StrEquals(condition,"CurrentGlobalPage"))
+    {
+      mask->my_flags.needs_current_desk = 1;
+      mask->my_flags.needs_current_global_page = 1;
+    }
     else if(StrEquals(condition,"CurrentPageAnyDesk") ||
 	    StrEquals(condition,"CurrentScreen"))
       mask->my_flags.needs_current_page = 1;
+    else if(StrEquals(condition,"CurrentGlobbalPageAnyDesk"))
+      mask->my_flags.needs_current_global_page = 1;
     else if(StrEquals(condition,"CirculateHit"))
       mask->my_flags.use_circulate_hit = 1;
     else if(StrEquals(condition,"CirculateHitIcon"))
@@ -314,10 +322,24 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 
   if (mask->my_flags.needs_current_desk && fw->Desk != Scr.CurrentDesk)
     return 0;
-
-  if (mask->my_flags.needs_current_page &&
-      !IsRectangleOnThisPage(&(fw->frame_g), Scr.CurrentDesk))
-    return 0;
+  if (mask->my_flags.needs_current_page)
+  {
+    if (XineramaSupportIsEnabled())
+    {
+      if (!XineramaSupportIsRectangleOnThisScreen(NULL, &(fw->frame_g), -1))
+	return 0;
+    }
+    else
+    {
+      if (!IsRectangleOnThisPage(&(fw->frame_g), Scr.CurrentDesk))
+	return 0;
+    }
+  }
+  else if (mask->my_flags.needs_current_global_page)
+  {
+    if (!IsRectangleOnThisPage(&(fw->frame_g), Scr.CurrentDesk))
+      return 0;
+  }
 
   /* Yes, I know this could be shorter, but it's hard to understand then */
   fMatchesName = matchWildcards(mask->name, fw->name);

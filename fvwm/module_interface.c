@@ -39,6 +39,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
+#include "libs/XineramaSupport.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -1217,6 +1218,25 @@ void BroadcastConfigInfoString(char *string)
       SendName(i, M_CONFIG_INFO, 0, 0, 0, string);
   }
 }
+
+
+/**********************************************************************
+ * Broadcasts the state of Xinerama support to all modules as M_CONFIG_INFO.
+ **********************************************************************/
+void broadcast_xinerama_state(void)
+{
+  if (XineramaSupportIsEnabled())
+  {
+    BroadcastConfigInfoString(XINERAMA_ENABLE_STRING);
+  }
+  else
+  {
+    BroadcastConfigInfoString(XINERAMA_DISABLE_STRING);
+  }
+
+  return;
+}
+
 
 
 /*

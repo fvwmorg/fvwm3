@@ -213,14 +213,17 @@
 #define DEFAULT_USE_ACTIVE_DOWN_BUTTONS True
 #define DEFAULT_USE_INACTIVE_BUTTONS	True
 
-
-/* Gradients */
+/*** Gradients ***/
 #define MAX_GRADIENT_SEGMENTS		1000
 #define MAX_GRADIENT_COLORS	       10000
 
+/*** Xinerama ***/
+#define DEFAULT_XINERAMA_DISABLED      False /* Xinerama on by default */
+#define XINERAMA_ENABLE_STRING             "XineramaEnable"
+#define XINERAMA_DISABLE_STRING            "XineramaDisable"
 
-/* Very long window names (600000 characters or more) seem to hang the X
- * server. */
+/*** Very long window names (600000 characters or more) seem to hang the X
+ *** server. ***/
 #define MAX_WINDOW_NAME_LEN		 200 /* characters */
 #define MAX_ICON_NAME_LEN		 200 /* characters */
 /* not tested if this hangs the server too */

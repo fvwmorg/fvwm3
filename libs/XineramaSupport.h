@@ -4,6 +4,7 @@
 /* needs X11/Xlib.h and X11/Xutil.h */
 
 /* Control */
+Bool XineramaSupportIsEnabled(void);
 void XineramaSupportInit(Display *dpy);
 void XineramaSupportDisable(void);
 void XineramaSupportEnable(void);
@@ -34,6 +35,8 @@ void XineramaSupportGetGlobalScrRect(int *x, int *y, int *w, int *h);
 
 void XineramaSupportGetResistanceRect(int wx, int wy, int ww, int wh,
                                       int *x0, int *y0, int *x1, int *y1);
+Bool XineramaSupportIsRectangleOnThisScreen(
+  XEvent *eventp, rectangle *rec, int screen);
 
 /* Geometry management */
 int XineramaSupportParseGeometry(

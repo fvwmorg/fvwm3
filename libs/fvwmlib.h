@@ -75,18 +75,40 @@
                       f_db_print _x; }while(0)
 # define DB(_x)     DBL(2,_x)
 
-struct f_db_info {
+struct f_db_info
+{
   const char *filenm;
   const char *funcnm;
   const char *module;
   long lineno;
 };
+
 extern struct f_db_info f_db_info;
 extern int f_db_level;
 
 extern void f_db_print(const char *fmt, ...)
                        __attribute__ ((__format__ (__printf__, 1, 2)));
 #endif
+
+
+
+/***********************************************************************
+ * typedefs
+ ***********************************************************************/
+typedef struct
+{
+  int x;
+  int y;
+  int width;
+  int height;
+} rectangle;
+
+typedef struct
+{
+  int x;
+  int y;
+} position;
+
 
 
 /***********************************************************************

@@ -810,8 +810,8 @@ A: From Jon Mountjoy, one of FVWM's users:
 
      # Keys on the function keypad on the Left of the Sun Keyboard:
      # F11 = Stop, F12 = Again, ..., F20 = Cut
-     Key F11    AWF   N       Next (!iconic CurrentScreen CurrentDesk) Focus
-     Key F12    AWF   N       Prev (!iconic CurrentScreen CurrentDesk) Focus
+     Key F11    AWF   N       Next (!iconic CurrentPage) Focus
+     Key F12    AWF   N       Prev (!iconic CurrentPage) Focus
      Key F13    WF    N       Maximize     100 100
      Key F15    WF    N       RaiseLower ""
      Key F17    WIF   N       Iconify ""

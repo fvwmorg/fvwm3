@@ -9,6 +9,9 @@ Changes in beta release 2.4.1 (not released yet)
 
 * New context rectangle option XineramaRoot for the menu commands.
 
+* New conditions CurrentGlobalPage and CurrentGlobalPageAnyDesk for
+  conditional commands.
+
 * Improved detection of the Shape library.
 
 * Fixed a problem that could cause windows to be lost off screen

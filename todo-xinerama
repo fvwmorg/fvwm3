@@ -7,12 +7,6 @@ Possible things to do for perfect(?) Xinerama support:
  2) Icon placement:
     a) place icons on Xinerama screens
     b) prevent icons from being placed in the void
- 3) Menus:
-    a) Place menus on Xinerama screens
-    b) Resize menus to fit Xinerama screens
-    c) Adapt position hints to Xinerama screens
- 4) Geometry window:
-    a) Place on proper Xinerama screen
  5) Modules:
     a) FvwmForm
     b) FvwmIconMan
@@ -32,8 +26,7 @@ Possible things to do for perfect(?) Xinerama support:
     g) General X geometry replacement (WxH+X+Y@Screen)?
     h) Like g, but for X resource strings?
     i) StartsOnScreen style?
- 7) Control:
-    a) Enable and Disable Xinerama on the fly (including modules)
+    j) Adapt conditional commands and add new conditions
  8) General/Performance:
     a) Introduce libs/Screen.c or something like that w/o Xinerama
        in the name.
@@ -41,6 +34,9 @@ Possible things to do for perfect(?) Xinerama support:
     c) Use the Screen library always when screen dimensions are
        needed.
     d) "Primary screen" concept
+    e) Add additional pan frames?  If some screens have different
+       sizes, part of a pan frame may be in the void and some
+       screen edges won't allow paging.
 
 Minimal set of Xinerama features:
 ---------------------------------
@@ -70,19 +66,24 @@ Optional to do:
 6g
 6h
 6i
+6j
 8a
 8c
 8d
 
 Already done:
 -------------
-3a
-3b
-3c
-4a
+ 3) Menus:
+    a) Place menus on Xinerama screens
+    b) Resize menus to fit Xinerama screens
+    c) Adapt position hints to Xinerama screens
+ 4) Geometry window:
+    a) Place on proper Xinerama screen
 5a
 6a
-7a
+6j
+ 7) Control:
+    a) Enable and Disable Xinerama on the fly (including modules)
 8b
 
 Not to be done:

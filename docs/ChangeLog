@@ -1,3 +1,8 @@
+2001-07-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FAQ (A):
+	replaced CurrentScreen with CurrentPage in example
+
 2001-07-19  Dan Espen  <dane@mk.telcordia.com>
 
 	* FAQ(5.14): Update Rational Rose information.

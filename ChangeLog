@@ -1,3 +1,27 @@
+2001-07-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1:
+	Added descriptions of conditions CurrentDesk, CurrentPage,
+	CurrentScreen, CurrentGlobalPage, CurrentPageAnyDesk and
+	CurrentGlobalPageAnyDesk
+
+	* fvwm/fvwm.h (rectangle):
+	(position):
+	typedefs moved to libs/fvwmlib.h
+
+	* fvwm/conditional.c (MatchesConditionMask):
+	* fvwm/fvwm.h (WindowConditionMask):
+	* fvwm/conditional.c:
+	introduced new conditions CurrentGlobalPage and CurrentGlobalPageAnyDesk
+	for Xinerama support
+
+	* fvwm/modconf.c (CMD_Send_ConfigInfo):
+	(send_xinerama_state):
+	* fvwm/module_interface.c (broadcast_xinerama_state):
+	* libs/XineramaSupport.c (XineramaSUpportIsEnabled):
+	* libs/defaults.h (DEFAULT_XINERAMA_DISABLED):
+	communicate xinerama state at module startup
+
 2001-07-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/XineramaSupport.c:

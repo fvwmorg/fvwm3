@@ -53,6 +53,7 @@
 #include "screen.h"
 #include "module_interface.h"
 #include "libs/Colorset.h"
+#include "libs/XineramaSupport.h"
 
 extern unsigned long *PipeMask;                /* in module.c */
 
@@ -217,6 +218,23 @@ void CMD_DestroyModuleConfig(F_CMD_ARGS)
   free(info);
 }
 
+static void send_xinerama_state(int modnum)
+{
+  char *msg;
+
+  if (XineramaSupportIsEnabled())
+  {
+    msg = XINERAMA_ENABLE_STRING;
+  }
+  else
+  {
+    msg = XINERAMA_DISABLE_STRING;
+  }
+  SendName(modnum, M_CONFIG_INFO, 0, 0, 0, msg);
+
+  return;
+}
+
 void CMD_Send_ConfigInfo(F_CMD_ARGS)
 {
   struct moduleInfoList *t;
@@ -250,6 +268,7 @@ void CMD_Send_ConfigInfo(F_CMD_ARGS)
     SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
   }
 #endif
+  send_xinerama_state(*Module);
   /* now dump the colorsets (0 first as others copy it) */
   for (n = 0; n < nColorsets; n++)
     SendName(*Module, M_CONFIG_INFO, 0, 0, 0, DumpColorset(n, &Colorset[n]));

@@ -130,20 +130,6 @@ typedef struct
 
 #define NULLSTR ((char *) NULL)
 
-typedef struct
-{
-  int x;
-  int y;
-  int width;
-  int height;
-} rectangle;
-
-typedef struct
-{
-  int x;
-  int y;
-} position;
-
 /*
   For 1 style statement, there can be any number of IconBoxes.
   The name list points at the first one in the chain.
@@ -311,6 +297,7 @@ typedef struct WindowConditionMask
   {
     unsigned needs_current_desk : 1;
     unsigned needs_current_page : 1;
+    unsigned needs_current_global_page : 1;
     unsigned needs_name : 1;
     unsigned needs_not_name : 1;
     unsigned use_circulate_hit : 1;

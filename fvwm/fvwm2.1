@@ -6815,7 +6815,8 @@ commas or whitespace.  Conditions include
 "Shaded", "!Shaded",
 "Transient", "!Transient",
 "PlacedByButton3", "!PlacedByButton3",
-"CurrentDesk", "CurrentPage", and "CurrentPageAnyDesk".
+"CurrentDesk", "CurrentPage", "CurrentScreen"
+"CurrentGlobalPage", "CurrentPageAnyDesk" and "CurrentGlobalPageAnyDesk".
 In addition, the
 .I condition
 may include one window name to match to.  The window name may
@@ -6824,6 +6825,31 @@ class, and resource are considered when attempting to find a
 match.  The window name can begin with '!' which prevents
 .I command
 if any of the window name, icon name, class or resource match.
+
+The "CurrentDesk" condition excludes all window that are not on
+the current desk.
+
+The "CurrentPage" condition excludes all window that are not on
+the current desk or not on the current page. If Xinerama support
+is enabled, only windows on the screen that contains the mouse
+pointer are considered to match.
+
+The "CurrentGlobalPage" condition excludes all window that are not
+on the current desk or not on the current page. The screen does
+not matter if Xinerama support is enabled.
+
+The "CurrentScreen" and "CurrentPageAnyDesk" conditions exclude
+all window that are not on the current page but that may be on any
+esk.
+
+The "CurrentGlobalPage" condition excludes all window that are not
+on the current desk or not on the current page. If Xinerama
+support is enabled, only windows on the screen that contains the
+mouse pointer are considered to match.
+
+The "CurrentGlobalPageAnyDesk" condition excludes all window that
+are not on the current page but that may be on any desk.  The
+screen does not matter if Xinerama support is enabled.
 
 The argument of the "Layer" condition defaults to the layer of the
 focus window.
