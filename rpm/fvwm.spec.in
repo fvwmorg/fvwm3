@@ -1,10 +1,12 @@
 #%define prefix %{_prefix}
-%define prefix /usr/local
+%define prefix /usr
 
 %define ver @VERSION@
 %define rel 1
 %define c_p --disable-kanji
 %define m_p CFLAGS="-O2"
+
+%define _sourcedir /tmp
 
 Summary:   F(?) Virtual Window Manager
 Name:      fvwm
@@ -12,7 +14,7 @@ Version:   %{ver}
 Release:   %{rel}
 Copyright: GPL
 Group:     X11/Window Managers
-Source:    %{name}-%{PACKAGE_VERSION}.tar.gz
+Source:    %{name}-%{version}.tar.gz
 URL:       http://www.fvwm.org/
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Packager:  FVWM Workers <fvwm-workers@fvwm.org>

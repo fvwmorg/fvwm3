@@ -1,3 +1,10 @@
+2000-11-08  Mikhael Goikhman  <migo@homemail.com>
+
+	* rpm/Makefile.am: 
+	* rpm/fvwm.spec.in:
+	don't use redhat hadcoded SOURCES dir, pass a tarball in /tmp,
+	use /usr prefix, small changes
+
 2000-10-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* rpm/Makefile.am: 
