@@ -1,4 +1,19 @@
+1999-08-16  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/Colorset.c (LoadColorset): fixed bug that caused colorsets 10
+	and up not to work (parsed a hex as decimal).
+
 1999-08-15  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/safemalloc.c (safecalloc): new function to use instead of
+	calloc.
+
+	* libs/Graphics.c (CreateTiledMaskPixmap): new function to for tiled
+	shape masks
+
+	* libs/Colorset.h:
+	* libs/Colorset.c (LoadColorsetConditional):
+	(DumpColorset): handle mask pixmap
 
 	* libs/Graphics.c: fixed problem occuring with XQueryBestTile and my
 	buggy XServer (XFree 3.3.3.1).

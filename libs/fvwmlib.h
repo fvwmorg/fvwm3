@@ -203,6 +203,10 @@ Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 			    unsigned int dest_width, unsigned int dest_height,
 			    GC gc);
 
+Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, unsigned int src_width,
+			     unsigned int src_height, unsigned int dest_width,
+			     unsigned int dest_height, GC gc);
+
 Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels);
 
 Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],

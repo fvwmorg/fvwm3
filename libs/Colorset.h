@@ -28,6 +28,8 @@ typedef struct {
   Pixel hilite;
   Pixel shadow;
   Pixmap pixmap;
+  Pixmap mask;
+  Pixmap shape_mask;
   unsigned int width : 12;
   unsigned int height : 12;
   unsigned int stretch_x : 1;
@@ -50,7 +52,7 @@ inline int LoadColorsetAndFree(char *line);
 
 Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 			      colorset_struct *colorset, unsigned int depth,
-			      GC gc);
+			      GC gc, Bool is_mask);
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
 			 colorset_struct *colorset, unsigned int depth, GC gc);
 

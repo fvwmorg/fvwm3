@@ -127,6 +127,32 @@ Pixmap CreateStretchPixmap(Display *dpy, Pixmap src, unsigned int src_width,
 }
 
 
+/* Creates a pixmap that is a tiled version of the input pixmap (input pixmap
+ * must be depth 1).
+ */
+Pixmap CreateTiledMaskPixmap(Display *dpy, Pixmap src, unsigned int src_width,
+			     unsigned int src_height, unsigned int dest_width,
+			     unsigned int dest_height, GC gc)
+{
+  int x;
+  int y;
+  Pixmap pixmap = XCreatePixmap(dpy, src, dest_width, dest_height, 1);
+
+  if (pixmap)
+  {
+    for (y = 0; y < dest_height; y += src_height)
+    {
+      for (x = 0; x < dest_width; x += src_width)
+      {
+	XCopyArea(dpy, src, pixmap, gc, 0, 0, src_width, src_height, x, y);
+      }
+    }
+  }
+
+  return pixmap;
+}
+
+
 /****************************************************************************
  *
  * Allocates a linear color gradient (veliaa@rpi.edu)

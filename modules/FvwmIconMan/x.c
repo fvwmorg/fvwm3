@@ -823,7 +823,7 @@ void create_manager_window (int man_id)
       man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
                        man->geometry.width, man->geometry.height,
                        &Colorset[man->colorsets[i] % nColorsets],
-                       Pdepth, man->backContext[i]);
+                       Pdepth, man->backContext[i], False);
       XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
       XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
     } else {
@@ -914,7 +914,7 @@ void change_colorset(int color) {
           man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
                                    man->geometry.width, man->geometry.height,
                                    &Colorset[man->colorsets[i] % nColorsets],
-                                   Pdepth, man->backContext[i]);
+                                   Pdepth, man->backContext[i], False);
           XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
           XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
         } else {

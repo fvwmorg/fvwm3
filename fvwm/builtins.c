@@ -1318,9 +1318,8 @@ void HandleColorset(F_CMD_ARGS)
   int n = -1, ret;
   char *token;
 
-  GetNextToken(action, &token);
+  token = PeekToken(action, NULL);
   ret = sscanf(token, "%d", &n);
-  free(token);
 
   if ((ret == 0) || (n < 0))
     return;
@@ -1334,8 +1333,6 @@ void HandleColorset(F_CMD_ARGS)
     ApplyDefaultFontAndColors();
   }
 }
-
-
 
 
 void SetDefaultIcon(F_CMD_ARGS)

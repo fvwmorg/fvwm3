@@ -884,8 +884,10 @@ int main(int argc, char **argv)
     fprintf(stderr,"OK\n%s: Creating icon windows...",MyName);
 #endif
 
-    i=-1;ub=UberButton;
+    i=-1;
+    ub=UberButton;
     while(NextButton(&ub,&b,&i,0))
+    {
       if(b->flags&b_Icon)
       {
 #ifdef DEBUG_INIT
@@ -893,6 +895,7 @@ int main(int argc, char **argv)
 #endif
 	CreateIconWindow(b);
       }
+    }
 
 #ifdef DEBUG_INIT
     fprintf(stderr,"OK\n%s: Configuring windows...",MyName);
@@ -901,7 +904,8 @@ int main(int argc, char **argv)
     XGetGeometry(Dpy,MyWindow,&root,&x,&y,&Width,&Height,
 		 &border_width,&depth);
     SetButtonSize(UberButton,Width,Height);
-    i=-1;ub=UberButton;
+    i=-1;
+    ub=UberButton;
     while(NextButton(&ub,&b,&i,0))
       ConfigureIconWindow(b);
 
@@ -910,7 +914,8 @@ int main(int argc, char **argv)
       SetTransparentBackground(UberButton,Width,Height);
 #endif
 
-    i=-1;ub=UberButton;
+    i=-1;
+    ub=UberButton;
     while(NextButton(&ub,&b,&i,0))
       MakeButton(b);
   }

@@ -29,6 +29,11 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xproto.h>
+#include <X11/Intrinsic.h>
+
+#ifdef SHAPE
+#include <X11/extensions/shape.h>
+#endif /* SHAPE */
 
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
@@ -134,7 +139,14 @@ static void main_loop(void)
 
 /* config options, the first NULL is replaced with *FvwmThemeColorset */
 /* the "Colorset" config option is what gets reflected by fvwm */
-static char *config_options[] = {"ImagePath", "ColorLimit", "Colorset", NULL, NULL};
+static char *config_options[] =
+{
+  "ImagePath",
+  "ColorLimit",
+  "Colorset",
+  NULL,
+  NULL
+};
 
 static void parse_config_line(char *line)
 {
@@ -161,8 +173,11 @@ static void parse_config_line(char *line)
 static char *pixmap_options[] =
 {
   "TiledPixmap",
+  "ShapedTiledPixmap",
   "Pixmap",
+  "ShapedPixmap",
   "AspectPixmap",
+  "ShapedAspectPixmap",
   NULL
 };
 static char *dash = "-";
@@ -180,6 +195,7 @@ static void parse_colorset(char *line)
   if (!token) {
     return;
   }
+fprintf(stderr,"1: token = %s, line = %s\n", token, line);
   ret = !sscanf(token, "%d", &n);
   if (ret)
     return;
@@ -214,11 +230,83 @@ static void parse_colorset(char *line)
   }
   if (!ret) {
     XFreePixmap(dpy, cs->pixmap);
+    XFreePixmap(dpy, cs->mask);
     cs->pixmap = None;
+    cs->mask = None;
+  }
+
+  if (StrEquals(token, "Shape") || StrEquals(token, "Shaped"))
+  {
+    /* read filename */
+    token = PeekToken(line, &line);
+#ifdef SHAPE
+    /* try to load the shape mask */
+    if (token && !ret)
+    {
+      if (cs->shape_mask)
+      {
+	XFreePixmap(dpy, cs->shape_mask);
+	cs->shape_mask = None;
+      }
+
+      /* load the shape mask */
+      picture = GetPicture(dpy, win, NULL, token, color_limit);
+      if (!picture)
+	fprintf(stderr, "%s: can't load picture %s\n", name, token);
+      else if (picture->depth != 1 && picture->mask == None)
+      {
+	fprintf(stderr, "%s: shape pixmap must be of depth 1\n", name);
+	DestroyPicture(dpy, picture);
+      }
+      else
+      {
+	Pixmap mask;
+
+	/* okay, we have what we want */
+	if (picture->mask != None)
+	  mask = picture->mask;
+	else
+	  mask = picture->picture;
+
+	if (mask != None)
+	{
+	  cs->shape_mask = XCreatePixmap(
+	    dpy, mask, picture->width, picture->height, 1);
+	  if (cs->shape_mask != None)
+	  {
+	    XGCValues xgcv;
+	    static GC shape_gc = None;
+
+	    if (shape_gc == None)
+	    {
+	      xgcv.foreground = 1;
+	      xgcv.background = 0;
+	      /* create a gc for 1 bit depth */
+	      shape_gc = XCreateGC(
+		dpy, picture->mask, GCForeground|GCBackground, &xgcv);
+	    }
+	    XCopyPlane(dpy, mask, cs->shape_mask, shape_gc, 0, 0,
+		       picture->width, picture->height, 0, 0, 1);
+fprintf(stderr,"successfully created shape mask 0x%x\n", cs->shape_mask);
+	  }
+	}
+      }
+      if (picture)
+      {
+	DestroyPicture(dpy, picture);
+	picture = None;
+      }
+    }
+#else
+    cs->shape_mask = None;
+#endif
+    /* skip filename */
+    token = PeekToken(line, &line);
   }
 
   /* if one was specified try to load it */
-  if (token && !ret) {
+  if (token && !ret)
+  {
     int type = GetTokenIndex(token, pixmap_options, 0, NULL);
     char *end;
     unsigned int w, h;
@@ -250,8 +338,33 @@ static void parse_colorset(char *line)
       cs->width = picture->width;
       cs->height = picture->height;
       cs->pixmap = XCreatePixmap(dpy, win, cs->width, cs->height, Pdepth);
+      if (picture->mask != None)
+      {
+	/* deafult to background colour where pixmap is transparent */
+	XSetForeground(dpy, gc, cs->bg);
+	XFillRectangle(dpy, cs->pixmap, gc, 0, 0, cs->width, cs->width);
+	XSetClipMask(dpy, gc, picture->mask);
+      }
       XCopyArea(dpy, picture->picture, cs->pixmap, gc, 0, 0, cs->width,
 		cs->height, 0, 0);
+      if (picture->mask != None)
+      {
+	XGCValues xgcv;
+	static GC mask_gc = None;
+
+	XSetClipMask(dpy, gc, None);
+	if (mask_gc == None)
+	{
+	  /* create a gc for 1 bit depth */
+	  mask_gc = XCreateGC(
+	    dpy, picture->mask, GCForeground|GCBackground, &xgcv);
+	}
+	cs->mask = XCreatePixmap(
+	  dpy, picture->mask, cs->width, cs->height, 1);
+	XCopyArea(dpy, picture->mask, cs->mask, mask_gc, 0, 0, cs->width,
+		  cs->height, 0, 0);
+
+      }
       DestroyPicture(dpy, picture);
       cs->keep_aspect = (type == 2);
       cs->stretch_x = cs->stretch_y = (type != 0);
@@ -282,6 +395,7 @@ static void parse_colorset(char *line)
   XSync(dpy, False);
 
   /* inform fvwm of the change */
+fprintf(stderr,"FvwmTheme: n=%d; ", n);
   SendText(fd, DumpColorset(n), 0);
 }
 
@@ -332,6 +446,7 @@ static int error_handler(Display *d, XErrorEvent *e) {
   fprintf(stderr, "%s: X error: %s\n", name, msg);
   fprintf(stderr, "Major opcode of failed request: %d \n", e->request_code);
   fprintf(stderr, "Resource id of failed request: 0x%lx \n", e->resourceid);
+
   exit(0);
 }
 

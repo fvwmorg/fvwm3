@@ -80,9 +80,93 @@ void CreateIconWindow(button_info *b)
 
   if(b->IconWin != None)
   {
-    fprintf(stderr,"%s: BUG: Iconwindow already created for 0x%lx!\n",
+    fprintf(stderr,"%s: BUG: Icon window already created for 0x%lx!\n",
 	    MyName,(unsigned long)b);
+    return;
+  }
+
+  attributes.background_pixel = buttonBack(b);
+  attributes.background_pixmap = None;
+  attributes.event_mask = ExposureMask;
+  valuemask =  CWEventMask | CWBackPixmap;
+
+  if(b->icon->width<1 || b->icon->height<1)
+  {
+    fprintf(stderr,"%s: BUG: Illegal iconwindow tried created\n",MyName);
     exit(2);
+  }
+  b->IconWin=XCreateWindow(
+    Dpy, MyWindow, 0, 0, b->icon->width, b->icon->height, 0, CopyFromParent,
+    CopyFromParent,CopyFromParent, valuemask,&attributes);
+  if (attributes.background_pixel != None)
+  {
+    XSetWindowBackground(Dpy, b->IconWin, attributes.background_pixel);
+  }
+
+#ifdef XPM
+#ifdef SHAPE
+  if (b->icon->mask!=None)
+  {
+    XShapeCombineMask(
+      Dpy, b->IconWin, ShapeBounding, 0, 0, b->icon->mask, ShapeSet);
+  }
+#endif
+#endif
+
+  if(b->icon->depth==0)
+  {
+    /* bitmap icon */
+    XGCValues gcv;
+    unsigned long gcm=0;
+    Pixmap temp;
+
+    gcm = GCForeground | GCBackground;
+    gcv.background=buttonBack(b);
+    gcv.foreground=buttonFore(b);
+    XChangeGC(Dpy,NormalGC,gcm,&gcv);
+
+#ifdef SHAPE
+    XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
+		      b->icon->picture,ShapeSet);
+#endif
+
+    temp = XCreatePixmap(Dpy,MyWindow,b->icon->width,
+			 b->icon->height,Pdepth);
+    XCopyPlane(Dpy,b->icon->picture,temp,NormalGC,
+	       0,0,b->icon->width,b->icon->height,0,0,1);
+
+    XSetWindowBackgroundPixmap(Dpy,b->IconWin,temp);
+    XFreePixmap(Dpy,temp);
+    /* We won't use the icon pixmap anymore... but we still need it for
+       width/height etc. so we can't destroy it. */
+  }
+  else
+  {
+    /* pixmap icon */
+    XSetWindowBackgroundPixmap(Dpy,b->IconWin,b->icon->picture);
+  }
+
+  return;
+#endif
+}
+
+#if 0
+void CreateBackIconWindow(button_info *b)
+{
+#ifndef NO_ICONS
+  unsigned long valuemask;		/* mask for create windows */
+  XSetWindowAttributes attributes;	/* attributes for create windows */
+
+  if(!(b->flags&b_IconBack))
+  {
+    return;
+  }
+
+  if(b->IconBackWin != None)
+  {
+    fprintf(stderr,"%s: BUG: IconBack window already created for 0x%lx!\n",
+	    MyName,(unsigned long)b);
+    return;
   }
 
   attributes.background_pixel = buttonBack(b);
@@ -147,7 +231,7 @@ void CreateIconWindow(button_info *b)
   return;
 #endif
 }
-
+#endif
 
 /****************************************************************************
  *

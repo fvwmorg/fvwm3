@@ -1,5 +1,12 @@
 1999-08-15  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* FvwmTheme/FvwmTheme.c (parse_colorset): transparent background
+	handled properly (by setting it to the backgorund colour)
+
+	* FvwmIconMan/x.c (create_manager_window):
+	* FvwmWinList/FvwmWinList.c (AdjustWindow): use new signature of
+	CreateBackgroundPixmap
+
 	* FvwmTheme/FvwmTheme.c: some cleanup
 	fixed pixmap specifier parsing
 

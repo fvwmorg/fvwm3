@@ -179,6 +179,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int match_len = 0;                    /* get length once for efficiency */
   int n = nColorsets;
   char *ImagePath = GetImagePath();
+  char *buf;
 
   GetNextToken(action, &match);
   if (match) {
@@ -200,8 +201,9 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 #endif
   /* now dump the colorsets (in reverse order to minimize mallocing lots */
+  buf = DumpColorset(n);
   while (n--)
-    SendName(*Module, M_CONFIG_INFO, 0, 0, 0, DumpColorset(n));
+    SendName(*Module, M_CONFIG_INFO, 0, 0, 0, buf);
 
   /* Dominik Vogt (8-Nov-1998): Scr.ClickTime patch to set ClickTime to
    * 'not at all' during InitFunction and RestartFunction. */

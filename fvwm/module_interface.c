@@ -609,7 +609,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 
   for (i=0; i<npipes; i++)  {
     PositiveWrite(i, (void *) &body, plen);
-    }
+  }
 }
 
 
@@ -922,12 +922,18 @@ BroadcastMiniIcon(unsigned long event_type,
 void BroadcastColorset(int n)
 {
   int i;
+  char *buf;
 
   if (-1 == n)
     return;
 
+  buf = DumpColorset(n);
   for (i=0; i < npipes; i++)
-    SendName(i, M_CONFIG_INFO, 0, 0, 0, DumpColorset(n));
+  {
+    /* just a quick check to save us lots of overhead */
+    if (pipeOn[i] >= 0)
+      SendName(i, M_CONFIG_INFO, 0, 0, 0, buf);
+  }
 }
 
 

@@ -675,10 +675,10 @@ ParseConfigLine(char *tline)
       colorset[2] = colorset[3] = atoi(&tline[Clength + 13]);
     else if (strncasecmp(tline, "Colorset", 8) == 0) {
       int cset = LoadColorset(&tline[8]);
-      
+
       if (WindowIsUp && (cset >= 0)) {
 	int i;
-	
+
 	for (i = 0; i != MAX_COLOUR_SETS; i++) {
 	  if (colorset[i] == cset) {
 	    AdjustWindow(True);
@@ -832,11 +832,11 @@ void AdjustWindow(Bool force)
   new_width=max(new_width, MinWidth);
   new_width=min(new_width, MaxWidth);
   new_height=(total * (fontheight + 3 + 2 * ReliefWidth));
-  if (force || (WindowIsUp && (new_height != win_height 
+  if (force || (WindowIsUp && (new_height != win_height
 			       || new_width != win_width))) {
     for (i = 0; i != MAX_COLOUR_SETS; i++) {
       int cset = colorset[i];
-      
+
       if (cset >= 0) {
         cset = cset % nColorsets;
 	fore[i] = Colorset[cset].fg;
@@ -851,7 +851,7 @@ void AdjustWindow(Bool force)
 	  pixmap[i] = CreateBackgroundPixmap(dpy, win, new_width,
 					     fontheight + 3 + 2 * ReliefWidth,
 					     &Colorset[cset], Pdepth,
-					     background[i]);
+					     background[i], False);
 	  XSetTile(dpy, background[i], pixmap[i]);
 	  XSetFillStyle(dpy, background[i], FillTiled);
 	} else {

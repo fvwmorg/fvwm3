@@ -161,12 +161,13 @@ struct button_info_struct
   char **action;           /* b_Action */
   char *icon_file;         /* b_Icon */
   char *hangon;            /* b_Hangon || b_Swallow */
-  Window IconWin;          /* b_Icon || b_Swallow */
   Pixel fc;                /* b_Fore */
   Pixel bc,hc,sc;          /* b_Back && !b_IconBack */
-  Picture *backicon;       /* b_Back && b_IconBack */
   ushort minx,miny;        /* b_Size */
   Picture *icon;           /* b_Icon */
+  Picture *backicon;       /* b_Back && b_IconBack */
+  Window IconWin;          /* b_Icon || b_Swallow */
+  Window BackIconWin;      /* b_Back && b_IconBack */
 
   byte swallow;            /* b_Swallow */
   byte swallow_mask;       /* b_Swallow */

@@ -16,8 +16,9 @@
 /***********************************************************************
  *
  *  Procedure:
- *	safemalloc - mallocs specified space or exits if there's a
+ *	safe?alloc - mallocs/callocs specified space or exits if there's a
  *		     problem
  *
  ***********************************************************************/
 char *safemalloc(int length);
+char *safecalloc(int num, int length);
