@@ -104,36 +104,40 @@ int get_visible_icon_window_count(FvwmWindow *fw)
 
 static void setup_icon_title_size(FvwmWindow *fw)
 {
-  if (HAS_NO_ICON_TITLE(fw))
-  {
-    fw->icon_g.title_text_width = 0;
-    fw->icon_g.title_w_g.width = 0;
-    fw->icon_g.title_w_g.height = 0;
-  }
-  else
-  {
-    fw->icon_g.title_text_width =
-      FlocaleTextWidth(
-	 fw->icon_font, fw->visible_icon_name,
-	 strlen(fw->visible_icon_name));
-    fw->icon_g.title_w_g.height = ICON_HEIGHT(fw);
-    if (fw->icon_g.picture_w_g.width == 0)
-    {
-      fw->icon_g.title_w_g.width = fw->icon_g.title_text_width +
-	2 * (ICON_TITLE_TEXT_GAP_COLLAPSED + ICON_RELIEF_WIDTH);
-      if (IS_STICKY(fw) || IS_ICON_STICKY(fw))
-      {
-	fw->icon_g.title_w_g.width +=
-	  2 * (ICON_TITLE_TO_STICK_EXTRA_GAP + ICON_TITLE_STICK_MIN_WIDTH);
-      }
-    }
-    else
-    {
-      fw->icon_g.title_w_g.width = fw->icon_g.picture_w_g.width;
-    }
-  }
+	if (HAS_NO_ICON_TITLE(fw))
+	{
+		fw->icon_g.title_text_width = 0;
+		fw->icon_g.title_w_g.width = 0;
+		fw->icon_g.title_w_g.height = 0;
+	}
+	else
+	{
+		fw->icon_g.title_text_width =
+			FlocaleTextWidth(
+				fw->icon_font, fw->visible_icon_name,
+				strlen(fw->visible_icon_name));
+		fw->icon_g.title_w_g.height = ICON_HEIGHT(fw);
+		if (fw->icon_g.picture_w_g.width == 0)
+		{
+			fw->icon_g.title_w_g.width =
+				fw->icon_g.title_text_width +
+				2 * (ICON_TITLE_TEXT_GAP_COLLAPSED +
+				     ICON_RELIEF_WIDTH);
+			if (IS_STICKY(fw) || IS_ICON_STICKY(fw))
+			{
+				fw->icon_g.title_w_g.width +=
+					2 * (ICON_TITLE_TO_STICK_EXTRA_GAP +
+					     ICON_TITLE_STICK_MIN_WIDTH);
+			}
+		}
+		else
+		{
+			fw->icon_g.title_w_g.width =
+				fw->icon_g.picture_w_g.width;
+		}
+	}
 
-  return;
+	return;
 }
 
 /* Move the icon of a window by dx/dy pixels */
@@ -144,174 +148,197 @@ static void setup_icon_title_size(FvwmWindow *fw)
  ****************************************************************************/
 void GetIconPicture(FvwmWindow *fw, Bool no_icon_window)
 {
-  char icon_order[4];
-  int i;
+	char icon_order[4];
+	int i;
 
-  /* First, see if it was specified in the .fvwmrc */
-  if (ICON_OVERRIDE_MODE(fw) == ICON_OVERRIDE)
-  {
-    /* try fvwm provided icons before application provided icons */
-    icon_order[0] = 0;
-    icon_order[1] = 1;
-    icon_order[2] = 2;
-    icon_order[3] = 3;
+	/* First, see if it was specified in the .fvwmrc */
+	if (ICON_OVERRIDE_MODE(fw) == ICON_OVERRIDE)
+	{
+		/* try fvwm provided icons before application provided icons */
+		icon_order[0] = 0;
+		icon_order[1] = 1;
+		icon_order[2] = 2;
+		icon_order[3] = 3;
 ICON_DBG((stderr,"ciw: hint order: file iwh iph '%s'\n", fw->name));
-  }
-  else if (ICON_OVERRIDE_MODE(fw) == NO_ACTIVE_ICON_OVERRIDE)
-  {
-    if (fw->wmhints && (fw->wmhints->flags & IconPixmapHint) &&
-	WAS_ICON_HINT_PROVIDED(fw) == ICON_HINT_MULTIPLE)
-    {
-      /* use application provided icon window or pixmap first, then fvwm
-       * provided icons. */
-      icon_order[0] = 1;
-      icon_order[1] = 2;
-      icon_order[2] = 3;
-      icon_order[3] = 0;
+	}
+	else if (ICON_OVERRIDE_MODE(fw) == NO_ACTIVE_ICON_OVERRIDE)
+	{
+		if (fw->wmhints && (fw->wmhints->flags & IconPixmapHint) &&
+		    WAS_ICON_HINT_PROVIDED(fw) == ICON_HINT_MULTIPLE)
+		{
+			/* use application provided icon window or pixmap
+			 * first, then fvwm provided icons. */
+			icon_order[0] = 1;
+			icon_order[1] = 2;
+			icon_order[2] = 3;
+			icon_order[3] = 0;
 ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
-    }
-    else if (Scr.DefaultIcon && fw->icon_bitmap_file == Scr.DefaultIcon)
-    {
-      /* use application provided icon window/pixmap first, then fvwm provided
-       * default icon */
-      icon_order[0] = 1;
-      icon_order[1] = 2;
-      icon_order[2] = 3;
-      icon_order[3] = 0;
+		}
+		else if (Scr.DefaultIcon &&
+			 fw->icon_bitmap_file == Scr.DefaultIcon)
+		{
+			/* use application provided icon window/pixmap first,
+			 * then fvwm provided default icon */
+			icon_order[0] = 1;
+			icon_order[1] = 2;
+			icon_order[2] = 3;
+			icon_order[3] = 0;
 ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
-    }
-    else
-    {
-      /* use application provided icon window or ewmh icon first, then fvwm
-       * provided icons and then application provided icon pixmap */
-      icon_order[0] = 1;
-      icon_order[1] = 2;
-      icon_order[2] = 0;
-      icon_order[3] = 3;
+		}
+		else
+		{
+			/* use application provided icon window or ewmh icon
+			 * first, then fvwm provided icons and then application
+			 * provided icon pixmap */
+			icon_order[0] = 1;
+			icon_order[1] = 2;
+			icon_order[2] = 0;
+			icon_order[3] = 3;
 ICON_DBG((stderr,"ciw: hint order: iwh file iph '%s'\n", fw->name));
-    }
-  }
-  else
-  {
-    /* use application provided icon rather than fvwm provided icon */
-    icon_order[0] = 1;
-    icon_order[1] = 2;
-    icon_order[2] = 3;
-    icon_order[3] = 0;
-ICON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
-  }
+		}
+	}
+	else
+	{
+		/* use application provided icon rather than fvwm provided
+		 * icon */
+		icon_order[0] = 1;
+		icon_order[1] = 2;
+		icon_order[2] = 3;
+		icon_order[3] = 0;
+CON_DBG((stderr,"ciw: hint order: iwh iph file '%s'\n", fw->name));
+	}
 
-  fw->icon_g.picture_w_g.width = 0;
-  fw->icon_g.picture_w_g.height = 0;
-  fw->iconPixmap = None;
-  fw->icon_maskPixmap = None;
-  fw->icon_alphaPixmap= None;
-  FW_W_ICON_PIXMAP(fw) = None;
-  for (i = 0; i < 4 && fw->icon_g.picture_w_g.width == 0 &&
-	 fw->icon_g.picture_w_g.height == 0; i++)
-  {
-    switch (icon_order[i])
-    {
-    case 0:
-      /* Next, check for a color pixmap */
-      if (fw->icon_bitmap_file)
-      {
-	GetIconFromFile(fw);
-      }
+	fw->icon_g.picture_w_g.width = 0;
+	fw->icon_g.picture_w_g.height = 0;
+	fw->iconPixmap = None;
+	fw->icon_maskPixmap = None;
+	fw->icon_alphaPixmap= None;
+	FW_W_ICON_PIXMAP(fw) = None;
+	for (i = 0; i < 4 && fw->icon_g.picture_w_g.width == 0 &&
+		     fw->icon_g.picture_w_g.height == 0; i++)
+	{
+		switch (icon_order[i])
+		{
+		case 0:
+			/* Next, check for a color pixmap */
+			if (fw->icon_bitmap_file)
+			{
+				GetIconFromFile(fw);
+			}
 ICON_DBG((stderr,"ciw: file%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not", fw->name));
-      break;
-    case 1:
-      /* Next, See if the app supplies its own icon window */
-      if (no_icon_window)
-	break;
-      if (fw->wmhints && (fw->wmhints->flags & IconWindowHint))
-      {
-	GetIconWindow(fw);
-      }
+			break;
+		case 1:
+			/* Next, See if the app supplies its own icon window */
+			if (no_icon_window)
+			{
+				break;
+			}
+			if (fw->wmhints &&
+			    (fw->wmhints->flags & IconWindowHint))
+			{
+				GetIconWindow(fw);
+			}
 ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not",fw->name));
-      break;
-    case 2:
-      /* try an ewmh icon */
-      if (HAS_EWMH_WM_ICON_HINT(fw) == EWMH_TRUE_ICON)
-      {
-	if (EWMH_SetIconFromWMIcon(fw, NULL, 0, False))
-	  SET_USE_EWMH_ICON(fw, True);
-      }
+			break;
+		case 2:
+			/* try an ewmh icon */
+			if (HAS_EWMH_WM_ICON_HINT(fw) == EWMH_TRUE_ICON)
+			{
+				if (EWMH_SetIconFromWMIcon(fw, NULL, 0, False))
+				{
+					SET_USE_EWMH_ICON(fw, True);
+				}
+			}
 ICON_DBG((stderr,"ciw: inh%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not",fw->name));
-      break;
-    case 3:
-      /* Finally, try to get icon bitmap from the application */
-      if (fw->wmhints && (fw->wmhints->flags & IconPixmapHint))
-      {
-	GetIconBitmap(fw);
-      }
+			break;
+		case 3:
+			/* Finally, try to get icon bitmap from the
+			 * application */
+			if (fw->wmhints &&
+			    (fw->wmhints->flags & IconPixmapHint))
+			{
+				GetIconBitmap(fw);
+			}
 ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" not",fw->name));
-      break;
-    default:
-      /* can't happen */
-      break;
-    }
-  }
+			break;
+		default:
+			/* can't happen */
+			break;
+		}
+	}
 
-  /* Resize icon if necessary */
-  if ((IS_ICON_OURS(fw)) &&
-    fw->icon_g.picture_w_g.height > 0 && fw->icon_g.picture_w_g.height > 0)
-  {
-    unsigned int newWidth = fw->icon_g.picture_w_g.width;
-    unsigned int newHeight = fw->icon_g.picture_w_g.height;
-    Boolean resize = False;
+	/* Resize icon if necessary */
+	if ((IS_ICON_OURS(fw)) && fw->icon_g.picture_w_g.height > 0 &&
+	    fw->icon_g.picture_w_g.height > 0)
+	{
+		unsigned int newWidth = fw->icon_g.picture_w_g.width;
+		unsigned int newHeight = fw->icon_g.picture_w_g.height;
+		Boolean resize = False;
 
-    if (newWidth < fw->min_icon_width) {
-      newWidth = fw->min_icon_width;
-      resize = True;
-    } else
+		if (newWidth < fw->min_icon_width)
+		{
+			newWidth = fw->min_icon_width;
+			resize = True;
+		}
+		else
+		{
+			if (newWidth > fw->max_icon_width)
+			{
+				newWidth = fw->max_icon_width;
+				resize = True;
+			}
+		}
+		if (newHeight < fw->min_icon_height)
+		{
+			newHeight = fw->min_icon_height;
+			resize = True;
+		}
+		else
+		{
+			if (newHeight > fw->max_icon_height)
+			{
+				newHeight = fw->max_icon_height;
+				resize = True;
+			}
+		}
+		if (resize)
+		{
+ICON_DBG((stderr,"ciw: Changing icon (%s) from %dx%d to %dx%d\n", fw->name, fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height, newWidth, newHeight));
+			/* Resize the icon Pixmap */
+			SetIconPixmapSize(
+				&(fw->iconPixmap),
+				fw->icon_g.picture_w_g.width,
+				fw->icon_g.picture_w_g.height, fw->iconDepth,
+				newWidth, newHeight, (IS_PIXMAP_OURS(fw)));
+			/* Resize the icon mask Pixmap if one was defined */
+			if (fw->icon_maskPixmap)
+			{
+				SetIconPixmapSize(
+					&(fw->icon_maskPixmap),
+					fw->icon_g.picture_w_g.width,
+					fw->icon_g.picture_w_g.height,
+					1, newWidth, newHeight,
+					(IS_PIXMAP_OURS(fw)));
+			}
 
-    if (newWidth > fw->max_icon_width) {
-      newWidth = fw->max_icon_width;
-      resize = True;
-    }
+			/* Resize the icon mask Pixmap if one was defined */
+			if (fw->icon_alphaPixmap)
+			{
+				SetIconPixmapSize(
+					&(fw->icon_alphaPixmap),
+					fw->icon_g.picture_w_g.width,
+					fw->icon_g.picture_w_g.height,
+					FRenderGetAlphaDepth(), newWidth,
+					newHeight, (IS_PIXMAP_OURS(fw)));
+			}
 
-    if (newHeight < fw->min_icon_height) {
-      newHeight = fw->min_icon_height;
-      resize = True;
-    } else
+			/* Set the new dimensions of the icon window */
+			fw->icon_g.picture_w_g.width = newWidth;
+			fw->icon_g.picture_w_g.height = newHeight;
+		}
+	}
 
-    if (newHeight > fw->max_icon_height) {
-      newHeight = fw->max_icon_height;
-      resize = True;
-    }
-
-    if (resize) {
-      ICON_DBG((stderr,"ciw: Changing icon (%s) from %dx%d to %dx%d\n",
-	fw->name,
-	fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
-	newWidth, newHeight));
-
-      /* Resize the icon Pixmap */
-      SetIconPixmapSize(&(fw->iconPixmap),
-	fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
-	fw->iconDepth, newWidth, newHeight,
-	(IS_PIXMAP_OURS(fw)));
-
-      /* Resize the icon mask Pixmap if one was defined */
-      if (fw->icon_maskPixmap) {
-	SetIconPixmapSize(&(fw->icon_maskPixmap),
-	  fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
-	  1, newWidth, newHeight, (IS_PIXMAP_OURS(fw)));
-      }
-
-      /* Resize the icon mask Pixmap if one was defined */
-      if (fw->icon_alphaPixmap) {
-	SetIconPixmapSize(&(fw->icon_alphaPixmap),
-	  fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
-	  FRenderGetAlphaDepth(), newWidth, newHeight, (IS_PIXMAP_OURS(fw)));
-      }
-
-      /* Set the new dimensions of the icon window */
-      fw->icon_g.picture_w_g.width = newWidth;
-      fw->icon_g.picture_w_g.height = newHeight;
-    }
-  }
+	return;
 }
 
 /****************************************************************************
@@ -370,224 +397,255 @@ void SetIconPixmapSize(
  ****************************************************************************/
 void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
 {
-  /* mask for create windows */
-  unsigned long valuemask;
-  /* attributes for create windows */
-  XSetWindowAttributes attributes;
-  XWindowChanges xwc;
-  Window old_icon_pixmap_w;
-  Window old_icon_w;
-  Bool is_old_icon_shaped = IS_ICON_SHAPED(fw);
+	/* mask for create windows */
+	unsigned long valuemask;
+	/* attributes for create windows */
+	XSetWindowAttributes attributes;
+	XWindowChanges xwc;
+	Window old_icon_pixmap_w;
+	Window old_icon_w;
+	Bool is_old_icon_shaped = IS_ICON_SHAPED(fw);
 
-  old_icon_w = FW_W_ICON_TITLE(fw);
-  old_icon_pixmap_w = (IS_ICON_OURS(fw)) ? FW_W_ICON_PIXMAP(fw) : None;
-  if (!IS_ICON_OURS(fw) && FW_W_ICON_PIXMAP(fw))
-  {
-    XUnmapWindow(dpy, FW_W_ICON_PIXMAP(fw));
-  }
-  SET_ICON_OURS(fw, 1);
-  SET_PIXMAP_OURS(fw, 0);
-  SET_ICON_SHAPED(fw, 0);
-  FW_W_ICON_PIXMAP(fw) = None;
-  fw->iconPixmap = None;
-  fw->iconDepth = 0;
+	old_icon_w = FW_W_ICON_TITLE(fw);
+	old_icon_pixmap_w = (IS_ICON_OURS(fw)) ? FW_W_ICON_PIXMAP(fw) : None;
+	if (!IS_ICON_OURS(fw) && FW_W_ICON_PIXMAP(fw))
+	{
+		XUnmapWindow(dpy, FW_W_ICON_PIXMAP(fw));
+	}
+	SET_ICON_OURS(fw, 1);
+	SET_PIXMAP_OURS(fw, 0);
+	SET_ICON_SHAPED(fw, 0);
+	FW_W_ICON_PIXMAP(fw) = None;
+	fw->iconPixmap = None;
+	fw->iconDepth = 0;
 
-  if (IS_ICON_SUPPRESSED(fw))
-    return;
+	if (IS_ICON_SUPPRESSED(fw))
+		return;
 
-  /*
-   * set up the icon picture
-   */
-  GetIconPicture(fw, False);
-  /* make space for relief to be drawn outside the icon */
-  /* this does not happen if fvwm is using a non-default visual (with
-     private colormap) and the client has supplied a pixmap (not a bitmap) */
-  if ((IS_ICON_OURS(fw)) && (fw->icon_g.picture_w_g.height > 0)
-      && (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw)))
-  {
-    fw->icon_g.picture_w_g.width += 2 * ICON_RELIEF_WIDTH;
-    fw->icon_g.picture_w_g.height += 2 * ICON_RELIEF_WIDTH;
-  }
+	/*
+	 * set up the icon picture
+	 */
+	GetIconPicture(fw, False);
+	/* make space for relief to be drawn outside the icon */
+	/* this does not happen if fvwm is using a non-default visual (with
+	 * private colormap) and the client has supplied a pixmap (not a
+	 * bitmap) */
+	if ((IS_ICON_OURS(fw)) && (fw->icon_g.picture_w_g.height > 0)
+	    && (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw)))
+	{
+		fw->icon_g.picture_w_g.width += 2 * ICON_RELIEF_WIDTH;
+		fw->icon_g.picture_w_g.height += 2 * ICON_RELIEF_WIDTH;
+	}
 
-  /*
-   * set up the icon title geometry
-   */
-  setup_icon_title_size(fw);
+	/*
+	 * set up the icon title geometry
+	 */
+	setup_icon_title_size(fw);
 
-  /*
-   * set up icon position
-   */
-  set_icon_position(fw, def_x, def_y);
+	/*
+	 * set up icon position
+	 */
+	set_icon_position(fw, def_x, def_y);
 
-  /*
-   * create the icon title window
-   */
-  valuemask = CWColormap | CWBorderPixel | CWBackPixel | CWCursor |
-    CWEventMask;
-  attributes.colormap = Pcmap;
-  attributes.background_pixel = Scr.StdBack;
-  attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
-  attributes.border_pixel = 0;
-  attributes.event_mask = XEVMASK_ICONW;
-  if (HAS_NO_ICON_TITLE(fw))
-  {
-    if (FW_W_ICON_TITLE(fw))
-    {
-      XDeleteContext(dpy, FW_W_ICON_TITLE(fw), FvwmContext);
-      XDestroyWindow(dpy, FW_W_ICON_TITLE(fw));
-      XFlush(dpy);
-      FW_W_ICON_TITLE(fw) = None;
-    }
-  }
-  else
-  {
-    if (FW_W_ICON_TITLE(fw) == None)
-    {
-      FW_W_ICON_TITLE(fw) =
-	XCreateWindow(
-	  dpy, Scr.Root, fw->icon_g.title_w_g.x,
-	  fw->icon_g.title_w_g.y, fw->icon_g.title_w_g.width,
-	  fw->icon_g.title_w_g.height, 0, Pdepth, InputOutput, Pvisual,
-	  valuemask, &attributes);
-    }
-    else
-    {
-      XMoveResizeWindow(
-	dpy, FW_W_ICON_TITLE(fw), fw->icon_g.title_w_g.x,
-	fw->icon_g.title_w_g.y, fw->icon_g.title_w_g.width,
-	fw->icon_g.title_w_g.height);
-    }
-  }
-  if (Scr.DefaultColorset >= 0)
-    SetWindowBackground(
-      dpy, FW_W_ICON_TITLE(fw), fw->icon_g.title_w_g.width,
-      fw->icon_g.title_w_g.height, &Colorset[Scr.DefaultColorset],
-      Pdepth, Scr.StdGC, False);
+	/*
+	 * create the icon title window
+	 */
+	valuemask = CWColormap | CWBorderPixel | CWBackPixel | CWCursor |
+		CWEventMask;
+	attributes.colormap = Pcmap;
+	attributes.background_pixel = Scr.StdBack;
+	attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
+	attributes.border_pixel = 0;
+	attributes.event_mask = XEVMASK_ICONW;
+	if (HAS_NO_ICON_TITLE(fw))
+	{
+		if (FW_W_ICON_TITLE(fw))
+		{
+			XDeleteContext(dpy, FW_W_ICON_TITLE(fw), FvwmContext);
+			XDestroyWindow(dpy, FW_W_ICON_TITLE(fw));
+			XFlush(dpy);
+			FW_W_ICON_TITLE(fw) = None;
+		}
+	}
+	else
+	{
+		if (FW_W_ICON_TITLE(fw) == None)
+		{
+			FW_W_ICON_TITLE(fw) = XCreateWindow(
+				dpy, Scr.Root, fw->icon_g.title_w_g.x,
+				fw->icon_g.title_w_g.y,
+				fw->icon_g.title_w_g.width,
+				fw->icon_g.title_w_g.height, 0, Pdepth,
+				InputOutput, Pvisual, valuemask, &attributes);
+		}
+		else
+		{
+			XMoveResizeWindow(
+				dpy, FW_W_ICON_TITLE(fw),
+				fw->icon_g.title_w_g.x, fw->icon_g.title_w_g.y,
+				fw->icon_g.title_w_g.width,
+				fw->icon_g.title_w_g.height);
+		}
+	}
+	if (Scr.DefaultColorset >= 0)
+	{
+		SetWindowBackground(
+			dpy, FW_W_ICON_TITLE(fw), fw->icon_g.title_w_g.width,
+			fw->icon_g.title_w_g.height,
+			&Colorset[Scr.DefaultColorset], Pdepth, Scr.StdGC,
+			False);
+	}
 
-  /*
-   * create the icon picture window
-   */
-  if (IS_ICON_OURS(fw) && fw->icon_g.picture_w_g.width > 0 &&
-      fw->icon_g.picture_w_g.height > 0)
-  {
-    /* use fvwm's visuals in these cases */
-    if (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw))
-    {
-      if (!old_icon_pixmap_w)
-      {
-	FW_W_ICON_PIXMAP(fw) =
-	  XCreateWindow(
-	    dpy, Scr.Root, fw->icon_g.picture_w_g.x,
-	    fw->icon_g.picture_w_g.y, fw->icon_g.picture_w_g.width,
-	    fw->icon_g.picture_w_g.height, 0, Pdepth, InputOutput,
-	    Pvisual, valuemask, &attributes);
-      }
-      else
-      {
-	FW_W_ICON_PIXMAP(fw) = old_icon_pixmap_w;
-	XMoveResizeWindow(
-	  dpy, FW_W_ICON_PIXMAP(fw), fw->icon_g.picture_w_g.x,
-	  fw->icon_g.picture_w_g.y, fw->icon_g.picture_w_g.width,
-	  fw->icon_g.picture_w_g.height);
-      }
-      if (FShapesSupported && Pdepth == DefaultDepth(dpy, (DefaultScreen(dpy))))
-      {
-	      XSetWindowBackgroundPixmap(
-		      dpy, FW_W_ICON_PIXMAP(fw), ParentRelative);
-      }
-      else if (Scr.DefaultColorset >= 0)
-	SetWindowBackground(
-	  dpy, FW_W_ICON_TITLE(fw), fw->icon_g.picture_w_g.width,
-	  fw->icon_g.picture_w_g.height, &Colorset[Scr.DefaultColorset],
-	  Pdepth, Scr.StdGC, False);
-    }
-    else
-    {
-      /* client supplied icon pixmap and fvwm is using another visual */
-      /* use it as the background pixmap, don't try to put relief on it
-       * because fvwm will not have the correct colors
-       * the Exceed server has problems maintaining the icon window, it usually
-       * fails to refresh the icon leaving it black so ask for expose events */
-      attributes.background_pixmap = fw->iconPixmap;
-      attributes.colormap = DefaultColormap(dpy, Scr.screen);
-      valuemask &= ~CWBackPixel;
-      valuemask |= CWBackPixmap;
-      FW_W_ICON_PIXMAP(fw) =
-	XCreateWindow(
-	  dpy, Scr.Root, fw->icon_g.picture_w_g.x,
-	  fw->icon_g.picture_w_g.y, fw->icon_g.picture_w_g.width,
-	  fw->icon_g.picture_w_g.height, 0, DefaultDepth(dpy, Scr.screen),
-	  InputOutput, DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
-    }
-  }
-  else if (FW_W_ICON_PIXMAP(fw) != None)
-  {
-    /* client supplied icon window: select events on it */
-    attributes.event_mask = XEVMASK_ICONPW;
-    valuemask = CWEventMask;
-    XChangeWindowAttributes(dpy, FW_W_ICON_PIXMAP(fw), valuemask,&attributes);
-  }
-  if (old_icon_pixmap_w != None && old_icon_pixmap_w != FW_W_ICON_PIXMAP(fw))
-  {
-    /* destroy the old window */
-    XDestroyWindow(dpy, old_icon_pixmap_w);
-    XDeleteContext(dpy, old_icon_pixmap_w, FvwmContext);
-    XFlush(dpy);
-    is_old_icon_shaped = False;
-  }
+	/*
+	 * create the icon picture window
+	 */
+	if (IS_ICON_OURS(fw) && fw->icon_g.picture_w_g.width > 0 &&
+	    fw->icon_g.picture_w_g.height > 0)
+	{
+		/* use fvwm's visuals in these cases */
+		if (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw))
+		{
+			if (!old_icon_pixmap_w)
+			{
+				FW_W_ICON_PIXMAP(fw) = XCreateWindow(
+					dpy, Scr.Root, fw->icon_g.picture_w_g.x,
+					fw->icon_g.picture_w_g.y,
+					fw->icon_g.picture_w_g.width,
+					fw->icon_g.picture_w_g.height, 0,
+					Pdepth, InputOutput, Pvisual,
+					valuemask, &attributes);
+			}
+			else
+			{
+				FW_W_ICON_PIXMAP(fw) = old_icon_pixmap_w;
+				XMoveResizeWindow(
+					dpy, FW_W_ICON_PIXMAP(fw),
+					fw->icon_g.picture_w_g.x,
+					fw->icon_g.picture_w_g.y,
+					fw->icon_g.picture_w_g.width,
+					fw->icon_g.picture_w_g.height);
+			}
+			if (FShapesSupported &&
+			    Pdepth == DefaultDepth(dpy, (DefaultScreen(dpy))))
+			{
+				XSetWindowBackgroundPixmap(
+					dpy, FW_W_ICON_PIXMAP(fw),
+					ParentRelative);
+			}
+			else if (Scr.DefaultColorset >= 0)
+				SetWindowBackground(
+					dpy, FW_W_ICON_TITLE(fw),
+					fw->icon_g.picture_w_g.width,
+					fw->icon_g.picture_w_g.height,
+					&Colorset[Scr.DefaultColorset], Pdepth,
+					Scr.StdGC, False);
+		}
+		else
+		{
+			/* client supplied icon pixmap and fvwm is using
+			 * another visual.
+			 * use it as the background pixmap, don't try to put
+			 * relief on it because fvwm will not have the correct
+			 * colors the Exceed server has problems maintaining
+			 * the icon window, it usually fails to refresh the
+			 * icon leaving it black so ask for expose events */
+			attributes.background_pixmap = fw->iconPixmap;
+			attributes.colormap = DefaultColormap(dpy, Scr.screen);
+			valuemask &= ~CWBackPixel;
+			valuemask |= CWBackPixmap;
+			FW_W_ICON_PIXMAP(fw) = XCreateWindow(
+				dpy, Scr.Root, fw->icon_g.picture_w_g.x,
+				fw->icon_g.picture_w_g.y,
+				fw->icon_g.picture_w_g.width,
+				fw->icon_g.picture_w_g.height, 0,
+				DefaultDepth(dpy, Scr.screen), InputOutput,
+				DefaultVisual(dpy, Scr.screen), valuemask,
+				&attributes);
+		}
+	}
+	else if (FW_W_ICON_PIXMAP(fw) != None)
+	{
+		/* client supplied icon window: select events on it */
+		attributes.event_mask = XEVMASK_ICONPW;
+		valuemask = CWEventMask;
+		XChangeWindowAttributes(
+			dpy, FW_W_ICON_PIXMAP(fw), valuemask,&attributes);
+	}
+	if (old_icon_pixmap_w != None &&
+	    old_icon_pixmap_w != FW_W_ICON_PIXMAP(fw))
+	{
+		/* destroy the old window */
+		XDestroyWindow(dpy, old_icon_pixmap_w);
+		XDeleteContext(dpy, old_icon_pixmap_w, FvwmContext);
+		XFlush(dpy);
+		is_old_icon_shaped = False;
+	}
 
-  if (FShapesSupported)
-  {
-    if (IS_ICON_SHAPED(fw))
-    {
-      /* when fvwm is using the non-default visual client supplied icon pixmaps
-       * are drawn in a window with no relief */
-      int off;
-      off = (Pdefault || (fw->iconDepth == 1) || IS_PIXMAP_OURS(fw)) ?
-	ICON_RELIEF_WIDTH : 0;
-      FShapeCombineMask(
-	dpy, FW_W_ICON_PIXMAP(fw), FShapeBounding, off, off,
-	fw->icon_maskPixmap, FShapeSet);
-    }
-    else if (is_old_icon_shaped && FW_W_ICON_PIXMAP(fw) == old_icon_pixmap_w)
-    {
-      /* remove the shape */
-      XRectangle r;
+	if (FShapesSupported)
+	{
+		if (IS_ICON_SHAPED(fw))
+		{
+			/* when fvwm is using the non-default visual client
+			 * supplied icon pixmaps are drawn in a window with no
+			 * relief */
+			int off;
 
-      r.x = 0;
-      r.y = 0;
-      r.width = fw->icon_g.picture_w_g.width;
-      r.height = fw->icon_g.picture_w_g.height;
-      FShapeCombineRectangles(
-	dpy, FW_W_ICON_PIXMAP(fw), FShapeBounding, 0, 0, &r, 1, FShapeSet, 0);
-    }
-  }
+			off = (Pdefault || (fw->iconDepth == 1) ||
+			       IS_PIXMAP_OURS(fw)) ? ICON_RELIEF_WIDTH : 0;
+			FShapeCombineMask(
+				dpy, FW_W_ICON_PIXMAP(fw), FShapeBounding, off,
+				off, fw->icon_maskPixmap, FShapeSet);
+		}
+		else if (is_old_icon_shaped &&
+			 FW_W_ICON_PIXMAP(fw) == old_icon_pixmap_w)
+		{
+			/* remove the shape */
+			XRectangle r;
 
-  if (FW_W_ICON_TITLE(fw) != None && FW_W_ICON_TITLE(fw) != old_icon_w)
-  {
-    XSaveContext(dpy, FW_W_ICON_TITLE(fw), FvwmContext, (caddr_t)fw);
-    XDefineCursor(dpy, FW_W_ICON_TITLE(fw), Scr.FvwmCursors[CRS_DEFAULT]);
-    GrabAllWindowKeysAndButtons(
-      dpy, FW_W_ICON_TITLE(fw), Scr.AllBindings, C_ICON, GetUnusedModifiers(),
-      Scr.FvwmCursors[CRS_DEFAULT], True);
-    xwc.sibling = FW_W_FRAME(fw);
-    xwc.stack_mode = Below;
-    XConfigureWindow(dpy, FW_W_ICON_TITLE(fw), CWSibling|CWStackMode, &xwc);
-  }
-  if (FW_W_ICON_PIXMAP(fw) != None &&
-      FW_W_ICON_PIXMAP(fw) != old_icon_pixmap_w)
-  {
-    XSaveContext(dpy, FW_W_ICON_PIXMAP(fw), FvwmContext, (caddr_t)fw);
-    XDefineCursor(dpy, FW_W_ICON_PIXMAP(fw), Scr.FvwmCursors[CRS_DEFAULT]);
-    GrabAllWindowKeysAndButtons(
-      dpy, FW_W_ICON_PIXMAP(fw), Scr.AllBindings, C_ICON,
-      GetUnusedModifiers(), Scr.FvwmCursors[CRS_DEFAULT], True);
-    xwc.sibling = FW_W_FRAME(fw);
-    xwc.stack_mode = Below;
-    XConfigureWindow(dpy,FW_W_ICON_PIXMAP(fw),CWSibling|CWStackMode,&xwc);
-  }
+			r.x = 0;
+			r.y = 0;
+			r.width = fw->icon_g.picture_w_g.width;
+			r.height = fw->icon_g.picture_w_g.height;
+			FShapeCombineRectangles(
+				dpy, FW_W_ICON_PIXMAP(fw), FShapeBounding, 0,
+				0, &r, 1, FShapeSet, 0);
+		}
+	}
 
-  return;
+	if (FW_W_ICON_TITLE(fw) != None && FW_W_ICON_TITLE(fw) != old_icon_w)
+	{
+		XSaveContext(
+			dpy, FW_W_ICON_TITLE(fw), FvwmContext, (caddr_t)fw);
+		XDefineCursor(
+			dpy, FW_W_ICON_TITLE(fw), Scr.FvwmCursors[CRS_DEFAULT]);
+		GrabAllWindowKeysAndButtons(
+			dpy, FW_W_ICON_TITLE(fw), Scr.AllBindings, C_ICON,
+			GetUnusedModifiers(), Scr.FvwmCursors[CRS_DEFAULT],
+			True);
+		xwc.sibling = FW_W_FRAME(fw);
+		xwc.stack_mode = Below;
+		XConfigureWindow(
+			dpy, FW_W_ICON_TITLE(fw), CWSibling|CWStackMode, &xwc);
+	}
+	if (FW_W_ICON_PIXMAP(fw) != None &&
+	    FW_W_ICON_PIXMAP(fw) != old_icon_pixmap_w)
+	{
+		XSaveContext(
+			dpy, FW_W_ICON_PIXMAP(fw), FvwmContext, (caddr_t)fw);
+		XDefineCursor(
+			dpy, FW_W_ICON_PIXMAP(fw),
+			Scr.FvwmCursors[CRS_DEFAULT]);
+		GrabAllWindowKeysAndButtons(
+			dpy, FW_W_ICON_PIXMAP(fw), Scr.AllBindings, C_ICON,
+			GetUnusedModifiers(), Scr.FvwmCursors[CRS_DEFAULT],
+			True);
+		xwc.sibling = FW_W_FRAME(fw);
+		xwc.stack_mode = Below;
+		XConfigureWindow(
+			dpy,FW_W_ICON_PIXMAP(fw),CWSibling|CWStackMode,&xwc);
+	}
+
+	return;
 }
 
 /****************************************************************************
@@ -877,7 +935,8 @@ void DrawIconTitleWindow(
 				ICON_TITLE_STICK_HEIGHT);
 		}
 	}
-	
+
+	return;
 }
 
 static
@@ -1050,7 +1109,8 @@ void DrawIconWindow(
 			if (FCheckTypedWindowEvent(
 			    dpy, FW_W_ICON_TITLE(fw), Expose, &e))
 			{
-				flush_accumulate_expose(FW_W_ICON_TITLE(fw), &e);
+				flush_accumulate_expose(
+					FW_W_ICON_TITLE(fw), &e);
 				DrawIconTitleWindow(
 					fw, &e, BackColor, Shadow, Relief, cs);
 			}
@@ -1190,47 +1250,53 @@ void DrawIconWindow(
  ************************************************************************/
 void ChangeIconPixmap(FvwmWindow *fw)
 {
-  rectangle g;
+	rectangle g;
 
-  if (!IS_ICONIFIED(fw))
-  {
-ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", fw->name));
-    /* update the icon later when application is iconified */
-    SET_HAS_ICON_CHANGED(fw, 1);
-  }
-  else if (IS_ICONIFIED(fw))
-  {
-    ICON_DBG((stderr,"hpn: applying new icon '%s'\n", fw->name));
-    SET_ICONIFIED(fw, 0);
-    SET_ICON_UNMAPPED(fw, 0);
-    get_icon_geometry(fw, &g);
-    CreateIconWindow(fw, g.x, g.y);
-    broadcast_icon_geometry(fw, False);
-    /* domivogt (15-Sep-1999): BroadcastConfig informs modules of the
-     * configuration change including the iconified flag. So this
-     * flag must be set here. I'm not sure if the two calls of the
-     * SET_ICONIFIED macro after BroadcastConfig are necessary, but
-     * since it's only minimal overhead I prefer to be on the safe
-     * side. */
-    SET_ICONIFIED(fw, 1);
-    BroadcastConfig(M_CONFIGURE_WINDOW, fw);
-    SET_ICONIFIED(fw, 0);
+	if (!IS_ICONIFIED(fw))
+	{
+		ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", fw->name));
+		/* update the icon later when application is iconified */
+		SET_HAS_ICON_CHANGED(fw, 1);
+	}
+	else if (IS_ICONIFIED(fw))
+	{
+		ICON_DBG((stderr,"hpn: applying new icon '%s'\n", fw->name));
+		SET_ICONIFIED(fw, 0);
+		SET_ICON_UNMAPPED(fw, 0);
+		get_icon_geometry(fw, &g);
+		CreateIconWindow(fw, g.x, g.y);
+		broadcast_icon_geometry(fw, False);
+		/* domivogt (15-Sep-1999): BroadcastConfig informs modules of
+		 * the configuration change including the iconified flag. So
+		 * this flag must be set here. I'm not sure if the two calls of
+		 * the SET_ICONIFIED macro after BroadcastConfig are necessary,
+		 * but since it's only minimal overhead I prefer to be on the
+		 * safe side. */
+		SET_ICONIFIED(fw, 1);
+		BroadcastConfig(M_CONFIGURE_WINDOW, fw);
+		SET_ICONIFIED(fw, 0);
 
-    if (!IS_ICON_SUPPRESSED(fw))
-    {
-      LowerWindow(fw);
-      AutoPlaceIcon(fw, NULL, True);
-      if (fw->Desk == Scr.CurrentDesk)
-      {
-	if (FW_W_ICON_TITLE(fw))
-	  XMapWindow(dpy, FW_W_ICON_TITLE(fw));
-	if (FW_W_ICON_PIXMAP(fw) != None)
-	  XMapWindow(dpy, FW_W_ICON_PIXMAP(fw));
-      }
-    }
-    SET_ICONIFIED(fw, 1);
-    DrawIconWindow(fw, False, True, False, NULL);
-  }
+		if (!IS_ICON_SUPPRESSED(fw))
+		{
+			LowerWindow(fw);
+			AutoPlaceIcon(fw, NULL, True);
+			if (fw->Desk == Scr.CurrentDesk)
+			{
+				if (FW_W_ICON_TITLE(fw))
+				{
+					XMapWindow(dpy, FW_W_ICON_TITLE(fw));
+				}
+				if (FW_W_ICON_PIXMAP(fw) != None)
+				{
+					XMapWindow(dpy, FW_W_ICON_PIXMAP(fw));
+				}
+			}
+		}
+		SET_ICONIFIED(fw, 1);
+		DrawIconWindow(fw, False, True, False, NULL);
+	}
+
+	return;
 }
 
 /***********************************************************************
@@ -1241,19 +1307,23 @@ ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", fw->name));
  ************************************************************************/
 void RedoIconName(FvwmWindow *fw)
 {
-  if (IS_ICON_SUPPRESSED(fw))
-    return;
-  if (FW_W_ICON_TITLE(fw) == None)
-    return;
-  setup_icon_title_size(fw);
-  /* clear the icon window, and trigger a re-draw via an expose event */
-  if (IS_ICONIFIED(fw))
-  {
-    DrawIconWindow(fw, True, False, False, NULL);
-    XClearArea(dpy, FW_W_ICON_TITLE(fw), 0, 0, 0, 0, True);
-  }
+	if (IS_ICON_SUPPRESSED(fw))
+	{
+		return;
+	}
+	if (FW_W_ICON_TITLE(fw) == None)
+	{
+		return;
+	}
+	setup_icon_title_size(fw);
+	/* clear the icon window, and trigger a re-draw via an expose event */
+	if (IS_ICONIFIED(fw))
+	{
+		DrawIconWindow(fw, True, False, False, NULL);
+		XClearArea(dpy, FW_W_ICON_TITLE(fw), 0, 0, 0, 0, True);
+	}
 
-  return;
+	return;
 }
 
 /************************************************************************
@@ -1357,6 +1427,7 @@ void AutoPlaceIcon(
 	   t->wmhints->flags & IconPositionHint)
   {
     set_icon_position(t, t->wmhints->icon_x, t->wmhints->icon_y);
+    do_move_icon = True;
   }
   /* dje 10/12/97:
      Look thru chain of icon boxes assigned to window.
@@ -1666,42 +1737,62 @@ static icon_boxes *global_icon_box_ptr;
 static int
 do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 {
-  if (global_icon_box_ptr == 0) {       /* if first time */
-    int sx;
-    int sy;
-    int sw;
-    int sh;
-    /* Right now, the global box is hard-coded, fills the primary screen,
-     * uses an 80x80 grid, and fills top-bottom, left-right */
-    FScreenGetScrRect(NULL, FSCREEN_PRIMARY, &sx, &sy, &sw, &sh);
-    global_icon_box_ptr = calloc(1, sizeof(icon_boxes));
-    global_icon_box_ptr->IconBox[0] = sx;
-    global_icon_box_ptr->IconBox[1] = sy;
-    global_icon_box_ptr->IconBox[2] = sx + sw;
-    global_icon_box_ptr->IconBox[3] = sy + sh;
-    global_icon_box_ptr->IconGrid[0] = 80;
-    global_icon_box_ptr->IconGrid[1] = 80;
-    global_icon_box_ptr->IconFlags = ICONFILLHRZ;
-  }
-  if (*icon_boxes_ptr == NULL) {        /* first time? */
-    *icon_boxes_ptr = t->IconBoxes;     /* start at windows box */
-    if (!*icon_boxes_ptr) {             /* if window has no box */
-      *icon_boxes_ptr = global_icon_box_ptr; /* use global box */
-    }
-    return (1);                         /* use box */
-  }
+	if (global_icon_box_ptr == 0)
+	{
+		/* if first time */
+		int sx;
+		int sy;
+		int sw;
+		int sh;
+		/* Right now, the global box is hard-coded, fills the primary
+		 * screen, uses an 80x80 grid, and fills top-bottom,
+		 * left-right */
+		FScreenGetScrRect(NULL, FSCREEN_PRIMARY, &sx, &sy, &sw, &sh);
+		global_icon_box_ptr = calloc(1, sizeof(icon_boxes));
+		global_icon_box_ptr->IconBox[0] = sx;
+		global_icon_box_ptr->IconBox[1] = sy;
+		global_icon_box_ptr->IconBox[2] = sx + sw;
+		global_icon_box_ptr->IconBox[3] = sy + sh;
+		global_icon_box_ptr->IconGrid[0] = 80;
+		global_icon_box_ptr->IconGrid[1] = 80;
+		global_icon_box_ptr->IconFlags = ICONFILLHRZ;
+	}
+	if (*icon_boxes_ptr == NULL)
+	{
+		/* first time? */
+		/* start at windows box */
+		*icon_boxes_ptr = t->IconBoxes;
+		if (!*icon_boxes_ptr)
+		{
+			/* if window has no box */
+			/* use global box */
+			*icon_boxes_ptr = global_icon_box_ptr;
+		}
+		/* use box */
+		return (1);
+	}
 
-  /* Here its not the first call, we are either on the chain or at
-     the global box */
-  if (*icon_boxes_ptr == global_icon_box_ptr) { /* if the global box */
-    return (0);                         /* completely out of boxes (unlikely) */
-  }
-  *icon_boxes_ptr = (*icon_boxes_ptr)->next; /* move to next one on chain */
-  if (*icon_boxes_ptr) {                /* if there is a next one */
-    return (1);                         /* return it */
-  }
-  *icon_boxes_ptr = global_icon_box_ptr; /* global box */
-  return (1);                           /* use it */
+	/* Here its not the first call, we are either on the chain or at
+	 * the global box */
+	if (*icon_boxes_ptr == global_icon_box_ptr)
+	{
+		/* if the global box */
+		/* completely out of boxes (unlikely) */
+		return (0);
+	}
+	/* move to next one on chain */
+	*icon_boxes_ptr = (*icon_boxes_ptr)->next;
+	if (*icon_boxes_ptr)
+	{
+                /* if there is a next one */
+		/* return it */
+		return (1);
+	}
+	/* global box */
+	*icon_boxes_ptr = global_icon_box_ptr;
+
+	/* use it */
+	return (1);
 }
 
 /****************************************************************************
@@ -1738,7 +1829,9 @@ static void GetIconFromFile(FvwmWindow *fw)
 	SET_PIXMAP_OURS(fw, 1);
 	free(path);
 	if (FShapesSupported && fw->icon_maskPixmap)
+	{
 		SET_ICON_SHAPED(fw, 1);
+	}
 
 	return;
 }
@@ -1750,48 +1843,49 @@ static void GetIconFromFile(FvwmWindow *fw)
  ****************************************************************************/
 static void GetIconWindow(FvwmWindow *fw)
 {
-  fw->icon_g.picture_w_g.width = 0;
-  fw->icon_g.picture_w_g.height = 0;
+	fw->icon_g.picture_w_g.width = 0;
+	fw->icon_g.picture_w_g.height = 0;
 
-  /* We are guaranteed that wmhints is non-null when calling this
-   * routine */
-  if (XGetGeometry(
-	dpy, fw->wmhints->icon_window, &JunkRoot, &JunkX, &JunkY,
-	(unsigned int *)&fw->icon_g.picture_w_g.width,
-	(unsigned int *)&fw->icon_g.picture_w_g.height,
-	&JunkBW, &JunkDepth) == 0)
-  {
-    fvwm_msg(ERR,"GetIconWindow", "Window '%s' has a bad icon window!"
-	     " Ignoring icon window.",
-	     fw->name.name);
-    /* disable the icon window hint */
-    fw->wmhints->icon_window = None;
-    fw->wmhints->flags &= ~IconWindowHint;
-    return;
-  }
-  fw->icon_g.picture_w_g.width += JunkBW<<1;
-  fw->icon_g.picture_w_g.height += JunkBW<<1;
-  /*
-   * Now make the new window the icon window for this window,
-   * and set it up to work as such (select for key presses
-   * and button presses/releases, set up the contexts for it,
-   * and define the cursor for it).
-   */
-  FW_W_ICON_PIXMAP(fw) = fw->wmhints->icon_window;
-  if (FShapesSupported)
-  {
-    if (fw->wmhints->flags & IconMaskHint)
-    {
-      SET_ICON_SHAPED(fw, 1);
-      fw->icon_maskPixmap = fw->wmhints->icon_mask;
-    }
-  }
-  /* Make sure that the window is a child of the root window ! */
-  /* Olwais screws this up, maybe others do too! */
-  XReparentWindow(dpy, FW_W_ICON_PIXMAP(fw), Scr.Root, 0,0);
-  SET_ICON_OURS(fw, 0);
+	/* We are guaranteed that wmhints is non-null when calling this
+	 * routine */
+	if (XGetGeometry(
+		    dpy, fw->wmhints->icon_window, &JunkRoot, &JunkX, &JunkY,
+		    (unsigned int *)&fw->icon_g.picture_w_g.width,
+		    (unsigned int *)&fw->icon_g.picture_w_g.height,
+		    &JunkBW, &JunkDepth) == 0)
+	{
+		fvwm_msg(
+			ERR,"GetIconWindow",
+			"Window '%s' has a bad icon window! Ignoring icon"
+			" window.", fw->name.name);
+		/* disable the icon window hint */
+		fw->wmhints->icon_window = None;
+		fw->wmhints->flags &= ~IconWindowHint;
+		return;
+	}
+	fw->icon_g.picture_w_g.width += JunkBW<<1;
+	fw->icon_g.picture_w_g.height += JunkBW<<1;
+	/*
+	 * Now make the new window the icon window for this window,
+	 * and set it up to work as such (select for key presses
+	 * and button presses/releases, set up the contexts for it,
+	 * and define the cursor for it).
+	 */
+	FW_W_ICON_PIXMAP(fw) = fw->wmhints->icon_window;
+	if (FShapesSupported)
+	{
+		if (fw->wmhints->flags & IconMaskHint)
+		{
+			SET_ICON_SHAPED(fw, 1);
+			fw->icon_maskPixmap = fw->wmhints->icon_mask;
+		}
+	}
+	/* Make sure that the window is a child of the root window ! */
+	/* Olwais screws this up, maybe others do too! */
+	XReparentWindow(dpy, FW_W_ICON_PIXMAP(fw), Scr.Root, 0,0);
+	SET_ICON_OURS(fw, 0);
 
-  return;
+	return;
 }
 
 
@@ -1802,52 +1896,55 @@ static void GetIconWindow(FvwmWindow *fw)
  ****************************************************************************/
 static void GetIconBitmap(FvwmWindow *fw)
 {
-  unsigned int width, height, depth;
+	unsigned int width, height, depth;
 
-  fw->icon_g.picture_w_g.width = 0;
-  fw->icon_g.picture_w_g.height = 0;
+	fw->icon_g.picture_w_g.width = 0;
+	fw->icon_g.picture_w_g.height = 0;
 
-  /* We are guaranteed that wmhints is non-null when calling this routine */
-  if (!XGetGeometry(dpy, fw->wmhints->icon_pixmap, &JunkRoot,
-		    &JunkX, &JunkY, &width, &height, &JunkBW, &depth))
-  {
-    fvwm_msg(ERR,"GetIconBitmap", "Window '%s' has a bad icon pixmap!"
-	     " Ignoring icon.", fw->name.name);
-    /* disable icon pixmap hint */
-    fw->wmhints->icon_pixmap = None;
-    fw->wmhints->flags &= ~IconPixmapHint;
-    return;
-  }
-  /* sanity check the pixmap depth, it must be the same as the root or 1 */
-  if ((depth != 1) && (depth != DefaultDepth(dpy,Scr.screen)))
-  {
-    fvwm_msg(ERR, "GetIconBitmap",
-	     "Window '%s' has a bad icon bitmap depth %d (should be 1 or %d)!"
-	     " Ignoring icon bitmap.",
-	     fw->name.name, depth, DefaultDepth(dpy,Scr.screen));
-    /* disable icon pixmap hint */
-    fw->wmhints->icon_pixmap = None;
-    fw->wmhints->flags &= ~IconPixmapHint;
-    return;
-  }
-  fw->iconPixmap = fw->wmhints->icon_pixmap;
-  fw->icon_g.picture_w_g.width = width;
-  fw->icon_g.picture_w_g.height = height;
-  fw->iconDepth = depth;
-  if (FShapesSupported)
-  {
-    if (fw->wmhints->flags & IconMaskHint)
-    {
-      SET_ICON_SHAPED(fw, 1);
-      fw->icon_maskPixmap = fw->wmhints->icon_mask;
-    }
-  }
-  SET_PIXMAP_OURS(fw, 0);
+	/* We are guaranteed that wmhints is non-null when calling this routine
+	 */
+	if (!XGetGeometry(dpy, fw->wmhints->icon_pixmap, &JunkRoot,
+			  &JunkX, &JunkY, &width, &height, &JunkBW, &depth))
+	{
+		fvwm_msg(
+			ERR,"GetIconBitmap",
+			"Window '%s' has a bad icon pixmap! Ignoring icon.",
+			fw->name.name);
+		/* disable icon pixmap hint */
+		fw->wmhints->icon_pixmap = None;
+		fw->wmhints->flags &= ~IconPixmapHint;
+		return;
+	}
+	/* sanity check the pixmap depth, it must be the same as the root or 1
+	 */
+	if ((depth != 1) && (depth != DefaultDepth(dpy,Scr.screen)))
+	{
+		fvwm_msg(
+			ERR, "GetIconBitmap",
+			"Window '%s' has a bad icon bitmap depth %d (should"
+			" be 1 or %d)! Ignoring icon bitmap.",
+			 fw->name.name, depth, DefaultDepth(dpy,Scr.screen));
+		/* disable icon pixmap hint */
+		fw->wmhints->icon_pixmap = None;
+		fw->wmhints->flags &= ~IconPixmapHint;
+		return;
+	}
+	fw->iconPixmap = fw->wmhints->icon_pixmap;
+	fw->icon_g.picture_w_g.width = width;
+	fw->icon_g.picture_w_g.height = height;
+	fw->iconDepth = depth;
+	if (FShapesSupported)
+	{
+		if (fw->wmhints->flags & IconMaskHint)
+		{
+			SET_ICON_SHAPED(fw, 1);
+			fw->icon_maskPixmap = fw->wmhints->icon_mask;
+		}
+	}
+	SET_PIXMAP_OURS(fw, 0);
 
-  return;
+	return;
 }
-
-
 
 /***********************************************************************
  *

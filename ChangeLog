@@ -1,5 +1,10 @@
 2002-10-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/icons.c:
+	re-indented some code
+	(AutoPlaceIcon):
+	fixed random position of icon title for icons with a position hint
+
 	* fvwm/fvwm.1.in:
 	corrected default of Use/NoIconPosition style
 
