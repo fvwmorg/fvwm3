@@ -565,23 +565,25 @@ void setBusyCursor(F_CMD_ARGS)
     "dynamicmenu", "*", NULL
   };
 
-  while (action)
+  while (action  && *action != '\0')
   {
     action = GetQuotedString(action, &optstring, ",", NULL, NULL, NULL);
     if (!optstring)
       break;
 
     args = GetNextToken(optstring, &option);
-    free(optstring);
     if (!option)
     {
+      free(optstring);
       break;
     }
 
-    flag = ParseToggleArgument(args, &args, -1, True);
+    flag = ParseToggleArgument(args, NULL, -1, True);
+    free(optstring);
     if (flag == -1)
     {
       fvwm_msg(ERR, "BusyCursor", "error in boolean specification");
+      free(option);
       break;
     }
 
@@ -635,5 +637,6 @@ void setBusyCursor(F_CMD_ARGS)
       fvwm_msg(ERR, "BusyCursor", "unknown context '%s'", option);
       break;
     }
+    free(option);
   }
 }
