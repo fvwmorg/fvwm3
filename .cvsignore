@@ -8,3 +8,8 @@ install-sh
 missing
 mkinstalldirs
 stamp-h.in
+man
+config.log
+config.cache
+config.status
+stamp-h

@@ -1,2 +1,6 @@
 Makefile
 Makefile.in
+FvwmRearrange
+.deps
+FvwmCascade
+FvwmTile
