@@ -2359,6 +2359,10 @@ void CMD_PrintInfo(F_CMD_ARGS)
 	{
 		PicturePrintColorInfo(verbose);
 	}
+	else if (StrEquals(subject, "Locale"))
+	{
+		FlocalePrintLocaleInfo(dpy, verbose);
+	}
 	else
 	{
 		fvwm_msg(ERR, "PrintInfo",

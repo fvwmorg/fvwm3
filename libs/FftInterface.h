@@ -26,5 +26,5 @@ void FftDrawString(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws,
 	Pixel fg, Pixel fgsh, Bool has_fg_pixels, int len, unsigned long flags);
 int FftTextWidth(FlocaleFont *flf, char *str, int len);
-
+void FftPrintPatternInfo(FftFont *f, Bool vertical);
 #endif

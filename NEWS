@@ -9,10 +9,12 @@ Changes in developement release 2.5.5 (not released yet)
 
 * New command RestackTransients.
 
-* Added a pixel offset to vecto button definitions.
+* Added a pixel offset to vector button definitions.
 
 * New command FocusStyle as a shorthand for setting the FP...
   styles with the Style command.
+
+* New option Locale to PrintInfo command.
 
 -------------------------------------------------------------------
 

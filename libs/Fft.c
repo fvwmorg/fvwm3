@@ -163,6 +163,7 @@ FftFont *FftGetRotatedFont(
 	FftPattern *rotated_pat;
 	FftMatrix r,b;
 	FftMatrix *pm = NULL;
+	FftFont *rf = NULL;
 
 	if (f == NULL)
 		return NULL;
@@ -170,7 +171,9 @@ FftFont *FftGetRotatedFont(
 	rotated_pat = FftPatternDuplicate(f->pattern);
 
 	if (rotated_pat == NULL)
+	{
 		return NULL;
+	}
 
 	if (rotation == ROTATION_90)
 	{
@@ -186,7 +189,7 @@ FftFont *FftGetRotatedFont(
 	}
 	else
 	{
-		return NULL;
+		goto bail;
 	}
 
 	FftPatternGetMatrix(rotated_pat, FFT_MATRIX, 0, &pm);
@@ -207,8 +210,17 @@ FftFont *FftGetRotatedFont(
 	}
 	FftPatternDel(rotated_pat, FFT_MATRIX);
 	if (!FftPatternAddMatrix(rotated_pat, FFT_MATRIX, &b))
-		return NULL;
-	return FftFontOpenPattern(dpy, rotated_pat);
+	{
+		goto bail;
+	}
+	rf = FftFontOpenPattern(dpy, rotated_pat);
+
+ bail:
+	if (!rf && rotated_pat)
+	{
+		FftPatternDestroy(rotated_pat);
+	}
+	return rf;
 }
 
 void FftPDumyFunc(void)
@@ -254,8 +266,11 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	FftFontType *fftf = NULL;
 	char *fn = NULL, *str_enc = NULL;
 	FlocaleCharset *fc;
+	FftPattern *src_pat = NULL, *load_pat = NULL;
+	FftMatrix *a = NULL;
+	FftResult result;
 
-	if (!FftSupport || !FRenderGetExtensionSupported())
+	if (!FftSupport || !(FRenderGetExtensionSupported() || 1) )
 	{
 		return NULL;
 	}
@@ -297,10 +312,51 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	{
 		fn = fontname;
 	}
-	fftfont = FftFontOpenName(dpy, fftscreen, fn);
+	if ((src_pat = FftNameParse(fn)) == NULL)
+	{
+		goto bail;
+	}
+	if ((load_pat = FftFontMatch(dpy, fftscreen, src_pat, &result)) == NULL)
+	{
+		goto bail;
+	}
+	/* safty check */
+	FftPatternGetMatrix(load_pat, FFT_MATRIX, 0, &a);
+	if (a)
+	{
+		FftMatrix b;
+		Bool cm = False;
+
+		if (a->xx < 0)
+		{
+			a->xx = -a->xx;
+			cm = True; 
+		}
+		if (a->yx != 0)
+		{
+			a->yx = 0;
+			cm = True;
+		}
+		if (cm)
+		{
+			b.xx = a->xx;
+			b.xy = a->xy;
+			b.yx = a->yx;
+			b.yy = a->yy;
+			FftPatternDel(load_pat, FFT_MATRIX);
+			if (!FftPatternAddMatrix(load_pat, FFT_MATRIX, &b))
+			{
+				fprintf(stderr,"Add matrice fail\n");
+				goto bail;
+			}
+		}
+	}
+	/* FIXME: other safty checking ? */
+	fftfont = FftFontOpenPattern(dpy, load_pat);
+
 	if (!fftfont)
 	{
-		return NULL;
+		goto bail;
 	}
 	fftf = (FftFontType *)safemalloc(sizeof(FftFontType));
 	fftf->fftfont = fftfont;
@@ -309,6 +365,15 @@ FftFontType *FftGetFont(Display *dpy, char *fontname, char *module)
 	fftf->fftfont_rotated_270 = NULL;
 	FftSetupEncoding(dpy, fftf, str_enc, module);
 
+ bail:
+	if (src_pat)
+	{
+		FftPatternDestroy(src_pat);
+	}
+	if (!fftf && load_pat)
+	{
+		FftPatternDestroy(load_pat);
+	}
 	return fftf;
 }
 
@@ -344,7 +409,11 @@ void FftDrawString(
 						  fws->flags.text_rotation);
 		}
 		uf = fftf->fftfont_rotated_90;
+#ifdef FFT_BUGGY_FREETYPE
+		y = fws->y +  FftTextWidth(flf, fws->e_str, len);
+#else
 		y = fws->y;
+#endif
 		x = fws->x - FLF_SHADOW_BOTTOM_SIZE(flf);
 	}
 	else if (fws->flags.text_rotation == ROTATION_180)
@@ -368,7 +437,11 @@ void FftDrawString(
 						  fws->flags.text_rotation);
 		}
 		uf = fftf->fftfont_rotated_270;
+#ifdef FFT_BUGGY_FREETYPE
+		y = fws->y;
+#else
 		y = fws->y + FftTextWidth(flf, fws->e_str, len);
+#endif
 		x = fws->x - FLF_SHADOW_UPPER_SIZE(flf);
 	}
 	else
@@ -527,4 +600,31 @@ int FftTextWidth(FlocaleFont *flf, char *str, int len)
 	}
 
 	return result;
+}
+
+
+void FftPrintPatternInfo(FftFont *f, Bool vertical)
+{
+	/* FftPatternPrint use stdout */
+	fflush (stderr);
+	printf("\n        height: %i, ascent: %i, descent: %i, maw: %i\n",
+	       f->height, f->ascent, f->descent, f->max_advance_width);
+	if (!vertical)
+	{
+		printf("        ");
+		FftPatternPrint(f->pattern);
+	}
+	else
+	{
+		FftMatrix *pm = NULL;
+
+		FftPatternGetMatrix(f->pattern, FFT_MATRIX, 0, &pm);
+		if (pm)
+		{
+			printf("         matrix: (%f %f %f %f)\n",
+			       pm->xx, pm->xy, pm->yx, pm->yy);
+		}
+	}
+	fflush (stdout);
+	return;
 }

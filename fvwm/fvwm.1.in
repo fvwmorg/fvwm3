@@ -3938,7 +3938,7 @@ Print information on
 on stderr.  An optional integer argument
 .I verbose
 defines the level of information which is given.
-The current valid subject is:
+The current valid subjects are:
 
 .IR Colors
 which prints information about the colors used by fvwm. This useful
@@ -3948,6 +3948,12 @@ If
 is one or greater the palette used by fvwm is printed.
 If you have a limited color palette, and you run out of colors,
 this command might be helpful.
+
+.IR Locale
+which prints information on your locale and the fonts that fvwm
+used.
+.I verbose
+can be 1 or 2.
 
 .TP
 .BI "Schedule " "delay_ms [command_id] command"

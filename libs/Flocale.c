@@ -446,7 +446,7 @@ void FlocaleRotateDrawString(
 	unsigned int normal_w, normal_h, normal_len;
 	unsigned int rotated_w, rotated_h, rotated_len;
 	char val;
-	int width, height, descent;
+	int width, height, descent, min_offset;
 	XImage *image, *rotated_image;
 	Pixmap canvas_pix, rotated_pix;
 	flocale_gstp_args gstp_args;
@@ -595,27 +595,28 @@ void FlocaleRotateDrawString(
 	XFreePixmap(dpy, canvas_pix);
 
 	/* x and y corrections: we fill a rectangle! */
+	min_offset = FlocaleGetMinOffset(flf, fws->flags.text_rotation);
 	switch (fws->flags.text_rotation)
 	{
 	case ROTATION_90:
 		/* CW */
-		xpfg = fws->x - (flf->height - flf->ascent);
+		xpfg = fws->x - min_offset;
 		ypfg = fws->y;
 		break;
 	case ROTATION_180:
 		xpfg = fws->x;
-		ypfg = fws->y - (flf->height - flf->ascent) +
+		ypfg = fws->y - min_offset +
 			FLF_SHADOW_BOTTOM_SIZE(flf);
 		break;
 	case ROTATION_270:
 		/* CCW */
-		xpfg = fws->x - flf->ascent;
+		xpfg = fws->x - min_offset;
 		ypfg = fws->y;
 		break;
 	case ROTATION_0:
 	default:
 		xpfg = fws->x;
-		ypfg = fws->y;
+		ypfg = fws->y - min_offset;
 		break;
 	}
 	xpsh = xpfg;
@@ -734,11 +735,11 @@ FlocaleFont *FlocaleGetFontSet(
 	flf->fontset = fontset;
 	FlocaleCharsetSetFlocaleCharset(dpy, flf, hints, encoding, module);
 	fset_extents = XExtentsOfFontSet(fontset);
-	flf->height = fset_extents->max_logical_extent.height;
-	flf->ascent = - fset_extents->max_logical_extent.y;
-	flf->descent = fset_extents->max_logical_extent.height +
-		fset_extents->max_logical_extent.y;
-	flf->max_char_width = fset_extents->max_logical_extent.width;
+	flf->height = fset_extents->max_ink_extent.height;
+	flf->ascent = - fset_extents->max_ink_extent.y;
+	flf->descent = fset_extents->max_ink_extent.height +
+		fset_extents->max_ink_extent.y;
+	flf->max_char_width = fset_extents->max_ink_extent.width;
 	if (fn != NULL)
 		free(fn);
 
@@ -785,10 +786,10 @@ FlocaleFont *FlocaleGetFont(
 	flf->fftf.fftfont = NULL;
 	flf->font = font;
 	FlocaleCharsetSetFlocaleCharset(dpy, flf, hints, encoding, module);
-	flf->height = flf->font->ascent + flf->font->descent;
-	flf->ascent = flf->font->ascent;
-	flf->descent = flf->font->descent;
-	flf->max_char_width = flf->font->max_bounds.width;
+	flf->height = font->max_bounds.ascent + font->max_bounds.descent;
+	flf->ascent = font->max_bounds.ascent;
+	flf->descent = font->max_bounds.descent;
+	flf->max_char_width = font->max_bounds.width;
 	if (flf->font->max_byte1 > 0)
 		flf->flags.is_mb = True;
 	if (fn != NULL)
@@ -1510,6 +1511,45 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	return result + ((result != 0)? FLF_SHADOW_WIDTH(flf):0);
 }
 
+int FlocaleGetMinOffset(
+	FlocaleFont *flf, rotation_type rotation)
+{
+	int min_offset;
+
+#ifdef FFT_BUGGY_FREETYPE
+	switch(rotation)
+	{
+	case ROTATION_270:
+	case ROTATION_180:
+		/* better than descent */ 
+		min_offset = (flf->descent + flf->height - flf->ascent)/2;
+		break;
+	case ROTATION_0:
+	case ROTATION_90:	
+	default:
+		/* better than ascent */ 
+		min_offset = (flf->ascent + flf->height - flf->descent)/2;
+		break;
+	}
+#else
+	switch(rotation)
+	{
+	case ROTATION_180:
+	case ROTATION_90:
+		/* better than descent */ 
+		min_offset = (flf->descent + flf->height - flf->ascent)/2;
+		break;
+	case ROTATION_270:
+	case ROTATION_0:
+	default:
+		/* better than ascent */ 
+		min_offset = (flf->ascent + flf->height - flf->descent)/2;
+		break;
+	}
+#endif
+	return min_offset;
+}
+
 void FlocaleAllocateWinString(FlocaleWinString **pfws)
 {
 	*pfws = (FlocaleWinString *)safemalloc(sizeof(FlocaleWinString));
@@ -1618,3 +1658,112 @@ Bool FlocaleTextListToTextProperty(
 	return ret;
 }
 
+/* ***************************************************************************
+ * Info
+ * ***************************************************************************/
+void FlocalePrintLocaleInfo(Display *dpy, int verbose)
+{
+	FlocaleFont *flf = FlocaleFontList;
+	int count = 0;
+	FlocaleCharset *cs;
+
+	fflush(stderr);
+	fflush(stdout);
+	fprintf(stderr,"FVWM info on locale:\n");
+	fprintf(stderr,"  locale: %s, Modifier: %s\n",
+		(Flocale)? Flocale:"", (Fmodifiers)? Fmodifiers:"");
+	cs = FlocaleCharsetGetDefaultCharset(dpy, NULL);
+	fprintf(stderr,"  Default Charset:  X: %s, Iconv: %s, Bidi: %s\n",
+		cs->x,
+		(cs->iconv_index >= 0)?
+		cs->locale[cs->iconv_index]:"Not defined",
+		(cs->bidi)? "Yes":"No");
+	while (flf)
+	{
+		count++;
+		flf = flf->next;
+	}
+	fprintf(stderr,"  Number of loaded font: %i\n", count);
+	if (verbose)
+	{
+		count = 0;
+		flf = FlocaleFontList;
+		while(flf)
+		{
+			cs = flf->fc;
+			fprintf(stderr,"  * Font number %i\n", count);
+			fprintf(stderr,"    fvwm info:\n");
+			fprintf(stderr,"      Name: %s\n",
+				(flf->name)?  flf->name:"");
+			fprintf(stderr,"      Cache count: %i\n", flf->count);
+			fprintf(stderr,"      Type: ");
+			if (flf->font)
+			{
+				fprintf(stderr,"FontStuct\n");
+			}
+			else if (flf->fontset)
+			{
+				fprintf(stderr,"FontSet\n");
+			}
+			else
+			{
+				fprintf(stderr,"XftFont\n");
+			}
+			fprintf(stderr, "      Charset:  X: %s, Iconv: %s, "
+				"Bidi: %s\n",
+				cs->x,
+				(cs->iconv_index >= 0)?
+				cs->locale[cs->iconv_index]:"Not defined",
+				(cs->bidi)? "Yes":"No");
+			fprintf(stderr,"      height: %i, ascent: %i, "
+				"descent: %i\n", flf->height, flf->ascent,
+				flf->descent);
+			fprintf(stderr,"      shadow size: %i, "
+				"shadow offset: %i, shadow direction:%i\n",
+				flf->shadow_size, flf->shadow_offset,
+				flf->flags.shadow_dir);
+			if (verbose >= 2)
+			{
+				if (flf->fftf.fftfont != NULL)
+				{
+					FftFontType *fftf;
+
+					fftf = &flf->fftf;
+					fprintf(stderr, "   Xft info:\n"
+						"     - Vertical font:");
+					FftPrintPatternInfo(
+						fftf->fftfont, False);
+					fprintf(stderr, "     "
+						"- Rotated font 90:");
+					if (fftf->fftfont_rotated_90)
+						FftPrintPatternInfo(
+							fftf->
+							fftfont_rotated_90,
+							True);
+					else
+						fprintf(stderr, " None\n");
+					fprintf(stderr, "     "
+						"- Rotated font 270:");
+					if (fftf->fftfont_rotated_270)
+						FftPrintPatternInfo(
+							fftf->
+							fftfont_rotated_270,
+							True);
+					else
+						fprintf(stderr, " None\n");
+					fprintf(stderr, "     "
+						"- Rotated font 180:");
+					if (fftf->fftfont_rotated_180)
+						FftPrintPatternInfo(
+							fftf->
+							fftfont_rotated_180,
+							True);
+					else
+						fprintf(stderr, " None\n");
+				}
+			}
+			count++;
+			flf = flf->next;
+		}
+	}
+}

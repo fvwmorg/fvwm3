@@ -309,6 +309,11 @@ Bool FlocaleGetShadowTextPosition(
 int FlocaleTextWidth(FlocaleFont *ff, char *str, int sl);
 
 /*
+ * "y" (or "x" position if rotated and Xft font) of the text relatively to 0
+ */
+int FlocaleGetMinOffset(FlocaleFont *flf, rotation_type rotation);
+
+/*
  * Allocate memory for a FlocaleWinString intialized to 0
  */
 void FlocaleAllocateWinString(FlocaleWinString **pfws);
@@ -342,6 +347,11 @@ void FlocaleFreeNameProperty(
 Bool FlocaleTextListToTextProperty(
 	Display *dpy, char **list, int count, XICCEncodingStyle style,
 	XTextProperty *text_prop_return);
+
+/* ***************************************************************************
+ * Info
+ * ***************************************************************************/
+void FlocalePrintLocaleInfo(Display *dpy, int verbose);
 
 /* ***************************************************************************
  * Misc

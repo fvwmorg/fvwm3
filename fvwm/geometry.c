@@ -237,7 +237,6 @@ void get_title_font_size_and_offset(
 	/* adjust font offset according to height specified in title style */
 	decor_size = fw->decor->title_height;
 	font_size = fw->title_font->height + EXTRA_TITLE_FONT_HEIGHT;
-	min_offset = fw->title_font->ascent;
 	switch (title_dir)
 	{
 	case DIR_W:
@@ -247,8 +246,6 @@ void get_title_font_size_and_offset(
 		if (is_rotated_cw)
 		{
 			fw->title_text_rotation = ROTATION_90;
-			min_offset = fw->title_font->height -
-				fw->title_font->ascent;
 		}
 		else
 		{
@@ -263,8 +260,6 @@ void get_title_font_size_and_offset(
 		if (is_rotated)
 		{
 			fw->title_text_rotation = ROTATION_180;
-			min_offset = fw->title_font->height -
-				fw->title_font->ascent;
 		}
 		else
 		{
@@ -272,6 +267,8 @@ void get_title_font_size_and_offset(
 		}
 		break;
 	}
+	min_offset =  FlocaleGetMinOffset(
+		fw->title_font, fw->title_text_rotation);
 	extra_size = (decor_size > 0) ? decor_size - font_size : 0;
 	*offset = min_offset;
 	if (extra_size > 0)

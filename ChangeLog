@@ -1,3 +1,32 @@
+2002-11-06  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Fft.c (FftGetFont):
+	(FftGetRotatedFont): 
+	Use a more perfectioned method for loading font with Xft/Fc. This
+	method allows sanity check. Preserve the matrix when rotating
+	Xft/Fc fonts.
+
+	* libs/Flocale.c (FlocaleGetMinOffset):
+	(FlocaleRotateDrawString):
+	(FlocaleGetFontSet):
+	(FlocaleGetFont):
+	* libs/Fft.c (FftDrawString):
+	(FftGetFont):
+	* libs/FftInterface.h:
+	* fvwm/geometry.c (get_title_font_size_and_offset):
+	Move the computation of the good "y" for drawing text into Flocale.
+	Use the max ascent, descent and height for font metric (in the place
+	of the min's one).
+	
+	* libs/Flocale.c (FlocalePrintLocaleInfo):
+	* libs/Flocale.h:
+	* libs/Fft.c (FftPrintPatternInfo):
+	* libs/Fft.h:
+	* fvwm/builtins.c (CMD_PrintInfo):
+	* NEWS:
+	* fvwm.1.in:
+	New option "Locale" to PrintInfo Command
+	
 2002-11-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandleExpose):
