@@ -97,7 +97,7 @@ Contents
           X).  How can I tell fvwm to use different configurations
           for the screens?
     3.21  How do I maximize a window but not cover up FvwmTaskBar?
-    3.22  Why don't buttons show on the titlebar of dialog windows?
+    3.22  Why don't buttons show on the titlebar of some windows?
     3.23  How to define transparent menus?
     3.24  How to define transparent modules?
     3.25  How to define transparent decorations?
@@ -1410,7 +1410,7 @@ A: Instead of Maximize use "Maximize 100 -30p" where 30 is the width of
 
 ----------------------------------------------------------------------
 
-3.22  I'm having problems making buttons appear on my windows.
+3.22  Why don't buttons show on the titlebar of some windows?
 
 A: Fvwm has some builtin idea of what the buttons do, and some
    applications can request that certain buttons not be shown.
