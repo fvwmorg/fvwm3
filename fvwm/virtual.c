@@ -1592,3 +1592,113 @@ Bool get_page_arguments(char *action, int *page_x, int *page_y)
 
   return True;
 }
+
+/**************************************************************************
+ *
+ * Defines the name of a desktop
+ *
+ *************************************************************************/
+void CMD_DesktopName(F_CMD_ARGS)
+{
+  int desk;
+  DesktopsInfo *t, *d, *new, **prev;
+
+  if (GetIntegerArguments(action, &action, &desk, 1) != 1)
+  {
+    fvwm_msg(ERR,"CMD_DesktopName",
+	     "First argument to DesktopName must be an integer: %s", action);
+    return;
+  }
+
+  d = Scr.Desktops->next;
+  while(d != NULL && d->desk != desk)
+  {
+    d = d->next;
+  }
+
+  if (d != NULL)
+  {
+    if (d->name != NULL)
+    {
+      free(d->name);
+      d->name = NULL;
+    }
+    if (action != NULL && *action && *action != '\n')
+      CopyString(&d->name, action);
+  }
+  else
+  {
+    /* new deskops entries: add it in order */
+    d = Scr.Desktops->next;
+    t = Scr.Desktops;
+    prev = &(Scr.Desktops->next);
+    while (d != NULL && d->desk < desk)
+    {
+      t = t->next;
+      prev = &(d->next);
+      d = d->next;
+    }
+    if (d == NULL)
+    {
+      /* add it at the end */
+      *prev = (DesktopsInfo *)safemalloc(sizeof(DesktopsInfo));
+      memset(*prev, 0, sizeof(DesktopsInfo));
+      (*prev)->desk = desk;
+      if (action != NULL && *action && *action != '\n')
+	CopyString(&((*prev)->name), action);
+    }
+    else
+    {
+      /* instert it */
+      new = (DesktopsInfo *)safemalloc(sizeof(DesktopsInfo));
+      memset(new, 0, sizeof(DesktopsInfo));
+      new->desk = desk;
+      if (action != NULL && *action && *action != '\n')
+	CopyString(&(new->name), action);
+      t->next = new;
+      new->next = d;
+     }
+    /* should check/set the working areas */
+  }
+
+  if (!fFvwmInStartup)
+  {
+    char *msg;
+    /* should send the info to the FvwmPager and set the EWMH desktop names */
+    if (action != NULL && *action && *action != '\n')
+    {
+      msg = (char *)safemalloc(strlen(action) + 44);
+      sprintf(msg, "DesktopName %d %s", desk, action);
+    }
+    else
+    {
+      msg = (char *)safemalloc(84);
+      sprintf(msg, "DesktopName %d Desk %d", desk, desk);
+    }
+    BroadcastConfigInfoString(msg);
+    free(msg);
+    EWMH_SetDesktopNames();
+  }
+
+  d = Scr.Desktops->next;
+  while(d != NULL)
+  {
+    fprintf(stderr,"Desk: %i, name: %s\n",d->desk, d->name);
+    d = d->next;
+  }
+}
+
+char *GetDesktopName(int desk)
+{
+  DesktopsInfo *d;
+
+  d = Scr.Desktops->next;
+  while(d != NULL && d->desk != desk)
+  {
+    d = d->next;
+  }
+  if (d == NULL)
+    return NULL;
+  else
+    return d->name; 
+}

@@ -64,6 +64,7 @@ static Bool need_to_get_charset = 1;
 /***********************************************************************
  * get the charset unsing nl_langinfo
  ***********************************************************************/
+static
 void get_charset(void)
 {
   charset = getenv("CHARSET");
@@ -85,6 +86,7 @@ void get_charset(void)
 /***********************************************************************
  * conversion between charsets
  ***********************************************************************/
+static
 char *convert_charsets(const char *in_charset, const char *out_charset,
 		       const unsigned char *in, unsigned int in_size)
 {
@@ -117,7 +119,7 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
     return NULL;
   }
 
-  /* in maybe a none terminate string (thanks to kde2) */
+  /* in maybe a none terminate string */
   len = in_size;
 
   outbuf_size = len + 1;
@@ -165,7 +167,7 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
   }
 
 
-  /* Terminate the output string.  */
+  /* Terminate the output string  */
   *outp = '\0';
 
   if (iconv_close (cd) != 0)
@@ -184,6 +186,7 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 /***********************************************************************
  * conversion from UTF8 to the current charset
  ***********************************************************************/
+static
 char *utf8_to_charset(const char *in, unsigned int in_size)
 {
   char *out = NULL;
@@ -200,6 +203,7 @@ char *utf8_to_charset(const char *in, unsigned int in_size)
 /***********************************************************************
  * conversion from the current charset to UTF8
  ***********************************************************************/
+static
 char *charset_to_utf8(const char *in, unsigned int in_size)
 {
   char *out = NULL;
@@ -212,6 +216,7 @@ char *charset_to_utf8(const char *in, unsigned int in_size)
 
   return out;
 }
+
 /***********************************************************************
  * set the visibale window name and icon name
  ***********************************************************************/
@@ -241,13 +246,13 @@ void EWMH_SetVisibleName(FvwmWindow *fwin, Bool is_icon_name)
   {
     ewmh_ChangeProperty(fwin->w, "_NET_WM_ICON_VISIBLE_NAME",
 			EWMH_ATOM_LIST_FVWM_WIN,
-			(unsigned char *)val, strlen(val) + 1);
+			(unsigned char *)val, strlen(val));
   }
   else
   {
     ewmh_ChangeProperty(fwin->w, "_NET_WM_VISIBLE_NAME",
 			EWMH_ATOM_LIST_FVWM_WIN,
-			(unsigned char *)val, strlen(val) + 1);
+			(unsigned char *)val, strlen(val));
   }
   free(val);
 }
@@ -363,4 +368,52 @@ int EWMH_WMName(EWMH_CMD_ARGS)
   return 0;
 }
 
+#define MAX(A,B) ((A)>(B)? (A):(B))
+/***********************************************************************
+ * set the desktop name
+ ***********************************************************************/
+void EWMH_SetDesktopNames(void)
+{
+  int nbr = 0;
+  int len = 0;
+  int i;
+  int j = 0;
+  DesktopsInfo *d,*s;
+  unsigned char **names;
+  unsigned char *val;
+
+  d = Scr.Desktops->next;
+  /* skip negative desk */
+  while (d != NULL && d->desk < 0)
+    d = d->next;
+  s = d;
+  while (d != NULL && d->name != NULL && d->desk == nbr)
+  {
+    nbr++;
+    len += strlen(d->name) + 1;
+    d = d->next;
+  }
+  if (nbr == 0)
+    return;
+
+  val = (unsigned char *)safemalloc(len);
+  names = (void *)safemalloc(sizeof(*names)*nbr);
+  for (i = 0; i < nbr; i++)
+  {
+    names[i] = 
+	(unsigned char *)charset_to_utf8(s->name, strlen(s->name));
+    s = s->next;
+  }
+  for (i = 0; i < nbr; i++)
+  {
+    memcpy(&val[j], names[i], strlen(names[i])+1);
+    j += strlen(names[i]) + 1;
+    free(names[i]);
+  }
+  free(names);
+  ewmh_ChangeProperty(Scr.Root, "_NET_DESKTOP_NAMES",
+		      EWMH_ATOM_LIST_CLIENT_ROOT,
+		      (unsigned char *)val, len);
+  free(val);
+}
 #endif /* defined(HAVE_EWMH) && defined(HAVE_ICONV) */

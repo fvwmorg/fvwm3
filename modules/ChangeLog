@@ -1,3 +1,10 @@
+2001-12-11  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmPager/FvwmPager.c (list_config_info):
+	(SetDeskLabel):
+	(ParseOptions):
+	Respect the DesktopName fvwm2 command
+
 2001-12-06  olicha  <olivier.chapuis@free.fr>
 	
 	* FvwmDebug/FvwmDebug.c:

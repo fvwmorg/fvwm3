@@ -550,6 +550,7 @@ void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
  * ***************************************************************************/
 
 #define SQUARE(X) ((X)*(X))
+static
 void extract_wm_icon(CARD32 *list, unsigned int size, int wanted_w, int wanted_h,
 		     int *start_best, int *best_w, int *best_h)
 {
@@ -593,6 +594,7 @@ void extract_wm_icon(CARD32 *list, unsigned int size, int wanted_w, int wanted_h
   return;
 }
 
+static
 int create_pixmap_from_ewmh_icon(unsigned char *list,
 				 int start, int width, int height,
 				 Pixmap pixmap, Pixmap mask)

@@ -61,7 +61,7 @@ KstItem *ewmh_KstWinList = NULL;
 ewmhInfo ewmhc =
 {
   4,            /* NumberOfDesktops */
-  0,            /* MaxDesktops limit the number od desktops*/
+  0,            /* MaxDesktops limit the number of desktops*/
   0,            /* CurrentNumberOfDesktops */
   False,        /* NeedsToCheckDesk */
   {0, 0, 0, 0}, /* BaseStrut */
@@ -84,6 +84,7 @@ ewmh_atom ewmh_atom_client_root[] =
 {
   ENTRY("_NET_CURRENT_DESKTOP",    XA_CARDINAL, ewmh_CurrentDesktop),
   ENTRY("_NET_DESKTOP_GEOMETRY",   XA_CARDINAL, ewmh_DesktopGeometry),
+  ENTRY("_NET_DESKTOP_NAMES",      None,        None),
   ENTRY("_NET_DESKTOP_VIEWPORT",   XA_CARDINAL, ewmh_DesktopViewPort),
   ENTRY("_NET_NUMBER_OF_DESKTOPS", XA_CARDINAL, ewmh_NumberOfDesktops),
   {NULL,0,0,0}
@@ -200,11 +201,13 @@ ewmh_atom_list atom_list[] =
  * Atoms utilities
  * ************************************************************************* */
 
-static int compare(const void *a, const void *b)
+static
+int compare(const void *a, const void *b)
 {
   return (strcmp((char *)a, ((ewmh_atom *)b)->name));
 }
 
+static
 ewmh_atom *get_ewmh_atom_by_name(const char *atom_name,
 				 ewmh_atom_list_name list_name)
 {
@@ -284,6 +287,7 @@ void ewmh_DeleteProperty(Window w,
   }
 }
 
+static
 void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
 {
   unsigned char	*retval;
@@ -333,6 +337,7 @@ void *ewmh_AtomGetByName(Window win, const char *atom_name,
 /* ************************************************************************* *
  *  client_root: here the client is fvwm2
  * ************************************************************************* */
+static
 int check_desk(void)
 {
   int d = -1;
@@ -449,7 +454,7 @@ void EWMH_SetWMState(FvwmWindow *fwin)
  * ************************************************************************* */
 
 /*** kde system tray ***/
-
+static
 void add_kst_item(Window w)
 {
   KstItem *t,**prev;
@@ -467,6 +472,7 @@ void add_kst_item(Window w)
   (*prev)->next = NULL;
 }
 
+static
 void delete_kst_item(Window w)
 {
   KstItem *t,**prev;
@@ -488,6 +494,7 @@ void delete_kst_item(Window w)
   free(t);
 }
 
+static
 void set_kde_sys_tray(void)
 {
   Window *wins = NULL;
@@ -626,19 +633,21 @@ void EWMH_SetClientListStacking()
 
   for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot; t = t->stack_next)
     nbr++;
+  i = nbr-1;
   if (nbr != 0)
   {
     wl = (Window *)safemalloc(sizeof (Window) * nbr);
     for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot; t = t->stack_next)
-      wl[i++] = t->w;
+      wl[i--] = t->w;
   }
   ewmh_ChangeProperty(Scr.Root,"_NET_CLIENT_LIST_STACKING",
-		      EWMH_ATOM_LIST_FVWM_ROOT, (unsigned char *)wl, i);
+		      EWMH_ATOM_LIST_FVWM_ROOT, (unsigned char *)wl, nbr);
   if (wl != NULL)
     free (wl);
 }
 
 /**** Working Area stuff ****/
+/**** At present time we support only sticky windows with strut ****/
 
 void ewmh_SetWorkArea(void)
 {
@@ -647,10 +656,10 @@ void ewmh_SetWorkArea(void)
 
   while(i < ewmhc.NumberOfDesktops && i < 256)
   {
-    val[i][0] = Scr.work_area.x;
-    val[i][1] = Scr.work_area.y;
-    val[i][2] = Scr.work_area.width;
-    val[i][3] = Scr.work_area.height;
+    val[i][0] = Scr.Desktops->ewmh_working_area.x;
+    val[i][1] = Scr.Desktops->ewmh_working_area.y;
+    val[i][2] = Scr.Desktops->ewmh_working_area.width;
+    val[i][3] = Scr.Desktops->ewmh_working_area.height;
     i++;
   }
   ewmh_ChangeProperty(Scr.Root, "_NET_WORKAREA", EWMH_ATOM_LIST_FVWM_ROOT,
@@ -668,7 +677,7 @@ void ewmh_ComputeAndSetWorkArea(void)
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-    if (DO_EWMH_IGNORE_STRUT_HINTS(t))
+    if (DO_EWMH_IGNORE_STRUT_HINTS(t) || !IS_STICKY(t))
       continue;
     left = max(left, t->strut.left);
     right = max(right, t->strut.right);
@@ -681,13 +690,15 @@ void ewmh_ComputeAndSetWorkArea(void)
   width = Scr.MyDisplayWidth - (left + right);
   height = Scr.MyDisplayHeight - (top + bottom);
   
-  if (Scr.work_area.x != x || Scr.work_area.y != y ||
-      Scr.work_area.width != width || Scr.work_area.height != height)
+  if (Scr.Desktops->ewmh_working_area.x != x         ||
+      Scr.Desktops->ewmh_working_area.y != y         ||
+      Scr.Desktops->ewmh_working_area.width != width ||
+      Scr.Desktops->ewmh_working_area.height != height)
   {
-    Scr.work_area.x = x;
-    Scr.work_area.y = y;
-    Scr.work_area.width = width; 
-    Scr.work_area.height = height;
+    Scr.Desktops->ewmh_working_area.x = x;
+    Scr.Desktops->ewmh_working_area.y = y;
+    Scr.Desktops->ewmh_working_area.width = width; 
+    Scr.Desktops->ewmh_working_area.height = height;
     ewmh_SetWorkArea();
   }
 
@@ -704,7 +715,7 @@ void ewmh_HandleDynamicWorkArea(void)
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-    if (DO_EWMH_IGNORE_STRUT_HINTS(t))
+    if (DO_EWMH_IGNORE_STRUT_HINTS(t) || !IS_STICKY(t))
       continue;
     dyn_left = max(dyn_left, t->dyn_strut.left);
     dyn_right = max(dyn_right, t->dyn_strut.right);
@@ -717,13 +728,15 @@ void ewmh_HandleDynamicWorkArea(void)
   width = Scr.MyDisplayWidth - (dyn_left + dyn_right);
   height = Scr.MyDisplayHeight - (dyn_top + dyn_bottom);
   
-  if (Scr.dyn_work_area.x != x || Scr.dyn_work_area.y != y ||
-      Scr.dyn_work_area.width != width || Scr.dyn_work_area.height != height)
+  if (Scr.Desktops->ewmh_dyn_working_area.x != x         ||
+      Scr.Desktops->ewmh_dyn_working_area.y != y         ||
+      Scr.Desktops->ewmh_dyn_working_area.width != width ||
+      Scr.Desktops->ewmh_dyn_working_area.height != height)
   {
-    Scr.dyn_work_area.x = x;
-    Scr.dyn_work_area.y = y;
-    Scr.dyn_work_area.width = width; 
-    Scr.dyn_work_area.height = height;
+    Scr.Desktops->ewmh_dyn_working_area.x = x;
+    Scr.Desktops->ewmh_dyn_working_area.y = y;
+    Scr.Desktops->ewmh_dyn_working_area.width = width; 
+    Scr.Desktops->ewmh_dyn_working_area.height = height;
     /* here we may update the maximized window ...etc */
   }
 }
@@ -738,10 +751,10 @@ void EWMH_GetWorkAreaIntersection(FvwmWindow *fwin,
 				  int *x, int *y, int *w, int *h, int type)
 {
   int nx,ny,nw,nh;
-  int area_x = Scr.work_area.x;
-  int area_y = Scr.work_area.y;
-  int area_w = Scr.work_area.width;
-  int area_h = Scr.work_area.height;
+  int area_x = Scr.Desktops->ewmh_working_area.x;
+  int area_y = Scr.Desktops->ewmh_working_area.y;
+  int area_w = Scr.Desktops->ewmh_working_area.width;
+  int area_h = Scr.Desktops->ewmh_working_area.height;
   Bool is_dynamic = False;
 
   switch(type)
@@ -760,10 +773,10 @@ void EWMH_GetWorkAreaIntersection(FvwmWindow *fwin,
 
   if (is_dynamic)
   {
-    area_x = Scr.dyn_work_area.x;
-    area_y = Scr.dyn_work_area.y;
-    area_w = Scr.dyn_work_area.width;
-    area_h = Scr.dyn_work_area.height;
+    area_x = Scr.Desktops->ewmh_dyn_working_area.x;
+    area_y = Scr.Desktops->ewmh_dyn_working_area.y;
+    area_w = Scr.Desktops->ewmh_dyn_working_area.width;
+    area_h = Scr.Desktops->ewmh_dyn_working_area.height;
   }
 
   nx = max(*x, area_x);
@@ -777,6 +790,7 @@ void EWMH_GetWorkAreaIntersection(FvwmWindow *fwin,
   *h = nh;
 }
 
+static
 float get_intersection(int x11, int y11, int x12, int y12,
 		       int x21, int y21, int x22, int y22,
 		       Bool use_percent)
@@ -810,11 +824,12 @@ float EWMH_GetStrutIntersection(
   /* left */
   x21 = 0;
   y21 = 0;
-  x22 = Scr.work_area.x;
+  x22 = Scr.Desktops->ewmh_working_area.x;
   y22 = Scr.MyDisplayHeight;
   ret += get_intersection(x11, y11, x12, y12, x21, y21, x22, y22, use_percent); 
   /* right */
-  x21 = Scr.work_area.x + Scr.work_area.width;
+  x21 = Scr.Desktops->ewmh_working_area.x
+    + Scr.Desktops->ewmh_working_area.width;
   y21 = 0;
   x22 = Scr.MyDisplayWidth;
   y22 = Scr.MyDisplayHeight;
@@ -823,11 +838,12 @@ float EWMH_GetStrutIntersection(
   x21 = 0;
   y21 = 0;
   x22 = Scr.MyDisplayWidth;
-  y22 = Scr.work_area.y;
+  y22 = Scr.Desktops->ewmh_working_area.y;
   ret += get_intersection(x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
   /* bottom */
   x21 = 0;
-  y21 = Scr.work_area.y + Scr.work_area.height;
+  y21 = Scr.Desktops->ewmh_working_area.y
+    + Scr.Desktops->ewmh_working_area.height;
   x22 = Scr.MyDisplayWidth;
   y22 = Scr.MyDisplayHeight;
   ret += get_intersection(x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
@@ -1040,6 +1056,7 @@ void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style)
 /* ************************************************************************* *
  * a workaround for ksmserver exit windows
  * ************************************************************************* */
+static
 int ksmserver_workarround(FvwmWindow *fwin)
 {
 
@@ -1113,7 +1130,7 @@ void EWMH_WindowDestroyed(void)
 /* ************************************************************************* *
  * Init Stuff 
  * ************************************************************************* */
-
+static
 int set_all_atom_in_list(ewmh_atom *list)
 {
   int l = 0;
@@ -1129,7 +1146,7 @@ int set_all_atom_in_list(ewmh_atom *list)
   return l;
 }
 
-
+static
 void set_net_supported(int l)
 {
   Atom *supported;
@@ -1151,6 +1168,7 @@ void set_net_supported(int l)
   free(supported);
 }
 
+static
 void clean_up(void)
 {
   ewmh_ChangeProperty(Scr.Root,"_KDE_NET_SYSTEM_TRAY_WINDOWS",
@@ -1203,6 +1221,7 @@ void EWMH_Init(void)
 
   clean_up();
 
+  EWMH_SetDesktopNames();
   EWMH_SetCurrentDesktop();
   EWMH_SetNumberOfDesktops();
   EWMH_SetClientList();

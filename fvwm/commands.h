@@ -53,6 +53,7 @@ void CMD_DefaultIcon(F_CMD_ARGS);
 void CMD_DefaultLayers(F_CMD_ARGS);
 void CMD_Delete(F_CMD_ARGS);
 void CMD_Desk(F_CMD_ARGS);
+void CMD_DesktopName(F_CMD_ARGS);
 void CMD_DesktopSize(F_CMD_ARGS);
 void CMD_Destroy(F_CMD_ARGS);
 #ifdef USEDECOR

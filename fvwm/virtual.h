@@ -24,5 +24,6 @@ void MoveViewport(int newx, int newy,Bool);
 void goto_desk(int desk);
 void do_move_window_to_desk(FvwmWindow *tmp_win, int desk);
 Bool get_page_arguments(char *action, int *page_x, int *page_y);
+char *GetDesktopName(int desk);
 
 #endif /* _VIRTUAL_ */

@@ -251,11 +251,12 @@ static int get_next_x(
   if (xtest > x)
     xnew = MIN(xnew, xtest);
   /* test the borders of the working area */
-  xtest = PageLeft + Scr.work_area.x;
+  xtest = PageLeft + Scr.Desktops->ewmh_working_area.x;
   if (xtest > x)
     xnew = MIN(xnew, xtest);
-  xtest =
-    PageLeft + (Scr.work_area.x + Scr.work_area.width) - t->frame_g.width;
+  xtest = PageLeft +
+    (Scr.Desktops->ewmh_working_area.x + Scr.Desktops->ewmh_working_area.width)
+    - t->frame_g.width;
   if (xtest > x)
     xnew = MIN(xnew, xtest);
   /* Test the values of the right edges of every window */
@@ -345,11 +346,12 @@ static int get_next_y(
   if (ytest > y)
     ynew = MIN(ynew, ytest);
   /* test the borders of the working area */
-  ytest = screen_g->y + Scr.work_area.y - pdeltay;
+  ytest = screen_g->y + Scr.Desktops->ewmh_working_area.y - pdeltay;
   if (ytest > y)
     ynew = MIN(ynew, ytest);
-  ytest =
-    screen_g->y + (Scr.work_area.y + Scr.work_area.height) - t->frame_g.height;
+  ytest = screen_g->y +
+    (Scr.Desktops->ewmh_working_area.y + Scr.Desktops->ewmh_working_area.height)
+    - t->frame_g.height;
   if (ytest > y)
     ynew = MIN(ynew, ytest);
   /* Test the values of the bottom edge of every window */

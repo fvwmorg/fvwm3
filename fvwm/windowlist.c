@@ -44,19 +44,24 @@
 #include "conditional.h"
 #include "stack.h"
 #include "focus.h"
+#include "virtual.h"
 
 extern FvwmWindow *Tmp_win;
 extern FvwmWindow *ButtonWindow;
 
-#define SHOW_GEOMETRY (1<<0)
-#define SHOW_ALLDESKS (1<<1)
-#define SHOW_NORMAL   (1<<2)
-#define SHOW_ICONIC   (1<<3)
-#define SHOW_STICKY   (1<<4)
-#define NO_DESK_SORT  (1<<6)
-#define SHOW_ICONNAME (1<<7)
-#define SHOW_ALPHABETIC (1<<8)
-#define SHOW_INFONOTGEO (1<<9)
+#define SHOW_GEOMETRY           (1<<0)
+#define SHOW_ALLDESKS           (1<<1)
+#define SHOW_NORMAL             (1<<2)
+#define SHOW_ICONIC             (1<<3)
+#define SHOW_STICKY             (1<<4)
+#define NO_DESK_SORT            (1<<6)
+#define SHOW_ICONNAME           (1<<7)
+#define SHOW_ALPHABETIC         (1<<8)
+#define SHOW_INFONOTGEO         (1<<9)
+#define NO_DESK_NUM             (1<<10)
+#define NO_CURRENT_DESK_TITLE   (1<<11)
+#define TITLE_FOR_ALL_DESKS     (1<<12)
+#define NO_NUM_IN_DESK_TITLE    (1<<13)
 #define SHOW_EVERYTHING (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | SHOW_ICONIC | SHOW_STICKY)
 
 /* Function to compare window title names
@@ -74,6 +79,31 @@ static int winCompareReverse(const  FvwmWindow **a, const  FvwmWindow **b)
   return -winCompare(a, b);
 }
 
+static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
+{
+  char *desk_name;
+  char *tlabel;
+
+  desk_name = GetDesktopName(desk);
+  if (desk_name != NULL)
+    tlabel = (char *)safemalloc(strlen(desk_name)+50);
+  else
+    tlabel = (char *)safemalloc(50);
+
+  if (desk_name != NULL)
+  {
+    if (flags & NO_NUM_IN_DESK_TITLE)
+      sprintf(tlabel,"%s%s", desk_name,
+	      (is_top_title && (flags & SHOW_GEOMETRY))? "\tGeometry" : "");
+    else
+      sprintf(tlabel,"%d: %s%s", desk, desk_name,
+	      (is_top_title && (flags & SHOW_GEOMETRY))? "\tGeometry" : "");
+  }
+  else
+    sprintf(tlabel,"Desk: %d%s",desk,
+	    (is_top_title && (flags & SHOW_GEOMETRY))? "\tGeometry" : "");
+  return tlabel;
+}
 
 /*
  * Change by PRB (pete@tecc.co.uk), 31/10/93.  Prepend a hot key
@@ -89,12 +119,12 @@ void CMD_WindowList(F_CMD_ARGS)
   FvwmWindow **windowList;
   int numWindows;
   int ii;
-  char tname[80] = "";
+  char tname[80];
   char loc[40];
   char *name=NULL;
   int dwidth;
   int dheight;
-  char tlabel[50]="";
+  char *tlabel;
   int last_desk_done = INT_MIN;
   int last_desk_displayed = INT_MIN;
   int next_desk = 0;
@@ -103,7 +133,7 @@ void CMD_WindowList(F_CMD_ARGS)
   char *opts=NULL;
   char *tok=NULL;
   int desk = Scr.CurrentDesk;
-  int flags = SHOW_EVERYTHING;
+  unsigned long flags = SHOW_EVERYTHING;
   char *func = NULL;
   char *tfunc = NULL;
   char *default_action = NULL;
@@ -123,6 +153,8 @@ void CMD_WindowList(F_CMD_ARGS)
   Bool do_reverse_sort_order = False;
   WindowConditionMask mask;
   char *cond_flags;
+  Bool first_desk = True;
+  Bool empty_menu = True;
 
   memset(&mops, 0, sizeof(mops));
   memset(&mret, 0, sizeof(MenuReturn));
@@ -225,6 +257,14 @@ void CMD_WindowList(F_CMD_ARGS)
 	show_listskip = 1;
       else if (StrEquals(tok,"OnlyListSkip"))
 	show_listskip = 2;
+      else if (StrEquals(tok,"NoDeskNum"))
+	flags |= NO_DESK_NUM;
+      else if (StrEquals(tok,"NoCurrentDeskTitle"))
+	flags |= NO_CURRENT_DESK_TITLE;
+      else if (StrEquals(tok,"TitleForAllDesks"))
+	flags |= TITLE_FOR_ALL_DESKS;
+      else if (StrEquals(tok,"NoNumInDeskTitle"))
+	flags |= NO_NUM_IN_DESK_TITLE;
           /*
              these are a bit dubious, but we
              should keep the OnTop options
@@ -290,18 +330,17 @@ void CMD_WindowList(F_CMD_ARGS)
         free(tok);
     }
   }
-
   globalFlags = flags;
-  if (flags & SHOW_GEOMETRY)
-  {
-    sprintf(tlabel,"Desk: %d\tGeometry",desk);
-  }
-  else
-  {
-    sprintf(tlabel,"Desk: %d",desk);
-  }
+
+
+  tlabel = get_desk_title(desk, flags, True);
   mr = NewMenuRoot(tlabel);
-  AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
+  if (!(flags & NO_CURRENT_DESK_TITLE))
+  {
+    AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
+    empty_menu = False; 
+  }
+  free(tlabel);
 
   numWindows = 0;
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
@@ -391,14 +430,31 @@ void CMD_WindowList(F_CMD_ARGS)
         if ((get_layer(t) < low_layer) || (get_layer(t) > high_layer))
           continue;  /* don't want this layer */
 
+	empty_menu = False;
         /* add separator between desks when geometry shown but not at the top*/
         if (t->Desk != last_desk_displayed)
         {
           if (last_desk_displayed != INT_MIN)
-            if ((flags & SHOW_GEOMETRY) || (flags & SHOW_INFONOTGEO))
-            AddToMenu(mr, NULL, NULL, FALSE, FALSE);
+	  {
+            if (((flags & SHOW_GEOMETRY) || (flags & SHOW_INFONOTGEO)) && 
+		!(flags & TITLE_FOR_ALL_DESKS))
+	      AddToMenu(mr, NULL, NULL, FALSE, FALSE);
+	    if (flags & TITLE_FOR_ALL_DESKS)
+	    {
+	      tlabel = get_desk_title(t->Desk, flags, False);
+	      AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
+	      free(tlabel);
+	    }
+	  }
           last_desk_displayed = t->Desk;
         }
+	if (first_desk && flags & TITLE_FOR_ALL_DESKS)
+	{
+	  tlabel = get_desk_title(t->Desk, flags, False);
+	  AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
+	  free(tlabel); 
+	}
+	first_desk = False;
 
         if(flags & SHOW_ICONNAME)
           name = t->visible_icon_name;
@@ -414,7 +470,8 @@ void CMD_WindowList(F_CMD_ARGS)
 	else
 	  *t_hot = 0;
         if(!(flags & SHOW_INFONOTGEO))
-	  strcat(t_hot, name);
+          strcat(t_hot, name);
+
 	if (*t_hot == 0)
 	  strcpy(t_hot, " ");
 
@@ -429,12 +486,12 @@ void CMD_WindowList(F_CMD_ARGS)
         if (flags & SHOW_INFONOTGEO)
         {
           tname[0]=0;
-          if(!IS_ICONIFIED(t))
+          if(!IS_ICONIFIED(t) && !(flags & NO_DESK_NUM))
           {
             sprintf(loc,"%d:", t->Desk);
             strcat(tname,loc);
           }
-          else
+          if(IS_ICONIFIED(t))
             strcat(tname, "(");
           strcat(t_hot,"\t");
           strcat(t_hot,tname);
@@ -447,7 +504,10 @@ void CMD_WindowList(F_CMD_ARGS)
           tname[0]=0;
           if(IS_ICONIFIED(t))
             strcpy(tname, "(");
-          sprintf(loc,"%d(%d):",t->Desk, get_layer(t));
+	  if (flags & NO_DESK_NUM)
+	    sprintf(loc,"(%d):",get_layer(t));
+	  else
+	    sprintf(loc,"%d(%d):",t->Desk, get_layer(t));
           strcat(tname,loc);
 
           dheight = t->frame_g.height - t->title_g.height -2*t->boundary_width;
@@ -507,6 +567,14 @@ void CMD_WindowList(F_CMD_ARGS)
           free(t_hot);
       }
     }
+  }
+
+  if (empty_menu)
+  {
+    /* force current desk title */
+    tlabel = get_desk_title(desk, flags, True);
+    AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
+    free(tlabel);
   }
 
   if (func)

@@ -247,6 +247,28 @@ typedef struct FvwmDecor
   } flags;
 } FvwmDecor;
 
+typedef struct DesktopsInfo
+{
+  int desk;
+  char *name;
+
+  struct
+  {
+    int x;
+    int y;
+    int width;
+    int height;
+  } ewmh_working_area;
+  struct
+  {
+    int x;
+    int y;
+    int width;
+    int height;
+  } ewmh_dyn_working_area;
+
+  struct DesktopsInfo *next;
+} DesktopsInfo;
 
 typedef struct ScreenInfo
 {
@@ -401,21 +423,10 @@ typedef struct ScreenInfo
     unsigned edge_wrap_y : 1;
   } flags;
 
-  FvwmWindow *EwmhDesktop;
-  struct
-  {
-    int x;
-    int y;
-    int width;
-    int height;
-  } work_area;
-  struct
-  {
-    int x;
-    int y;
-    int width;
-    int height;
-  } dyn_work_area;
+  DesktopsInfo *Desktops; /* info for some desktops; the first entries should be
+			  * generic info correct for any desktop not in the
+			  * list */
+  FvwmWindow *EwmhDesktop;   /* the window of desktop type if any */
   struct
   {
     last_added_item_type type;

@@ -3364,6 +3364,10 @@ The
 passed to WindowList can be
 .IR NoGeometry ,
 .IR NoGeometryWithInfo ,
+.IR NoDeskNum,
+.IR NoNumInDeskTitle ,
+.IR NoCurrentDeskTitle ,
+.IR TitleForAllDesks ,
 .IR "Function funcname" ,
 .IR "Desk desknum" ,
 .IR CurrentDesk ,
@@ -3408,6 +3412,34 @@ option, only windows in layers between m and n are displayed. n
 defaults to m.  With the
 .I ReverseOrder
 option the order of the windows in the list is reversed.
+
+The
+.I NoGeometry
+option causes fvwm to not display the geometries as well as
+the separators which indicate the different desktops.
+.I NoGeometryWithInfo
+removes the geometries, but keep the desktops information
+and indicates iconic windows.
+.I NoDeskNum
+causes fvwm to not display the desktop number in the geometry
+or before the window title with the
+.I NoGeometryWithInfo
+option.
+.I NoNumInDeskTitle
+is only useful if a desktop name is defined with the
+.B DesktopName
+command. It causes fvwm to not display the desktop number before
+the desktop name.
+By default, the WindowList menu have a title which indicates the current
+desk or the selected desktop if the
+.I Desk
+condition is used.
+The
+.I NoCurrentDeskTitle
+option removes this title.
+.I TitleForAllDesks
+causes fvwm to add a menu title with the desk name and/or number
+before each group of windows on the same desk.
 
 If you wanted to use the
 .B WindowList
@@ -6676,6 +6708,22 @@ This command has been renamed.  Please see
 .B GotoDesk
 command.
 
+.TP
+.BI "DesktopName " desk name
+Defines the name of the desktop number
+.I desk
+to
+.I name .
+This name is used in the
+.B WindowList
+command and in the
+.B FvwmPager
+where it override the
+.I Label
+configuration option. Moreover, if consecutive names starting from
+desktop 0 are defined, then these names can be used by any EWMH compliant
+application (as a pager).
+  
 .TP
 .BI "DeskTopSize " Horizontal x Vertical
 Defines the virtual desktop size in units of the physical screen

@@ -80,12 +80,14 @@ int EWMH_WMName(FvwmWindow *fwin, XEvent *ev, window_style *style);
 #define EWMH_WMName_func EWMH_WMName
 int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style);
 #define EWMH_WMIconName_func EWMH_WMIconName
-#else
+void EWMH_SetDesktopNames(void);
+#else /* HAVE_ICONV */
 #define EWMH_SetVisibleName(x,y)
 #define EWMH_WMName(x,y,z)     0
 #define EWMH_WMName_func       0
 #define EWMH_WMIconName(x,y,z) 0
 #define EWMH_WMIconName_func   0
+#define EWMH_SetDesktopNames()
 #endif /* HAVE_ICONV */
 
 #else /* HAVE_EWMH */
@@ -130,7 +132,7 @@ int EWMH_WMIconName(FvwmWindow *fwin, XEvent *ev, window_style *style);
 #define EWMH_SetVisibleName(x,y)
 #define EWMH_WMName(x,y,z)     0
 #define EWMH_WMIconName(x,y,z) 0
-
+#define EWMH_SetDesktopNames() 
 #endif
 
 #endif /* _EWMH_ */

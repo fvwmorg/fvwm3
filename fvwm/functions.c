@@ -128,6 +128,7 @@ static const func_type func_config[] =
   CMD_ENTRY("defaultlayers", CMD_DefaultLayers, F_DFLT_LAYERS, 0),
   CMD_ENTRY("delete", CMD_Delete, F_DELETE, FUNC_NEEDS_WINDOW),
   CMD_ENTRY("desk", CMD_Desk, F_GOTO_DESK, 0),
+  CMD_ENTRY("desktopname", CMD_DesktopName, F_DESKTOP_NAME, 0),
   CMD_ENTRY("desktopsize", CMD_DesktopSize, F_SETDESK, 0),
   CMD_ENTRY("destroy", CMD_Destroy, F_DESTROY, FUNC_NEEDS_WINDOW),
 #ifdef USEDECOR

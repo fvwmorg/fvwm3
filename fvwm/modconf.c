@@ -224,6 +224,23 @@ static void send_xinerama_state(int modnum)
   return;
 }
 
+static void send_desktop_names(int modnum)
+{
+  DesktopsInfo *d;
+  char *name;
+
+  for (d = Scr.Desktops->next; d != NULL; d = d->next)
+  {
+    if (d->name != NULL)
+    {
+      name = (char *)safemalloc(strlen(d->name) + 44);
+      sprintf(name,"DesktopName %d %s", d->desk, d->name);
+      SendName(modnum, M_CONFIG_INFO, 0, 0, 0, name);
+      free(name);
+    }
+  }
+}
+
 void CMD_Send_ConfigInfo(F_CMD_ARGS)
 {
   struct moduleInfoList *t;
@@ -274,6 +291,7 @@ void CMD_Send_ConfigInfo(F_CMD_ARGS)
   {
     SendConfigToModule(*Module, t, match, match_len);
   }
+  send_desktop_names(*Module);
   SendPacket(*Module,M_END_CONFIG_INFO,0,0,0,0,0,0,0,0);
   free(match);
 }

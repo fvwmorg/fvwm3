@@ -17,8 +17,14 @@ Changes in beta release 2.5.0 (not released yet)
 
 * New styles PlacementOverlapPenalties and PlacementOverlapPercentPenalties.
 
-* New styles ExtendedWindowName / SimpleWindowName and ExtendedIconName /
-  SimpleIconName.
+* New styles IndexedWindowName / ExactWindowName and IndexedIconName /
+  ExactIconName.
+
+* New command "DesktopName desk name" to define the name of a desktop for
+  the FvwmPager, the WindowList and ewmh compliant pagers
+
+* New window list options NoDeskNum, NoCurrentDeskTitle, TitleForAllDesks,
+  NoNumInDeskTitle
 
 _+_A NAME="2.4.4"_-_
 Changes in stable release 2.4.4 (not released yet)

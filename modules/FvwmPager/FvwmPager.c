@@ -151,7 +151,7 @@ Bool is_transient = False;
 Bool do_ignore_next_button_release = False;
 Bool error_occured = False;
 
-
+static void SetDeskLabel(int desk, const char *label);
 static RETSIGTYPE TerminateHandler(int);
 void ExitPager(void);
 
@@ -1341,6 +1341,28 @@ void list_config_info(unsigned long *body)
   {
     FScreenConfigureModule(tline);
   }
+  else if (StrEquals(token, "DesktopName"))
+  {
+    int val;
+    if (GetIntegerArguments(tline, &tline, &val, 1) > 0)
+    {
+      SetDeskLabel(val, (const char *)tline);
+    }
+    else
+    {
+      return;
+    }
+    if (fAlwaysCurrentDesk)
+    {
+      if (Scr.CurrentDesk == val)
+	val = 0;
+    }
+    else if ((val >= desk1) && (val <=desk2))
+    {
+      val = val - desk1;
+    }
+    DrawGrid(val, True);
+  }
 }
 
 
@@ -1461,6 +1483,42 @@ static void ParseColorset(char *arg1, char *arg2, void *offset_deskinfo,
   return;
 }
 
+static void SetDeskLabel(int desk, const char *label)
+{
+  PagerStringList *item;
+
+  if (fAlwaysCurrentDesk)
+  {
+    item = FindDeskStrings(desk);
+    if (item->next != NULL)
+    {
+      /* replace label */
+      if (item->next->label != NULL)
+      {
+	free(item->next->label);
+	item->next->label = NULL;
+      }
+      CopyString(&(item->next->label), label);
+    }
+    else
+    {
+      /* new Dcolor and desktop */
+      item = NewPagerStringItem(item, desk);
+      CopyString(&(item->label), label);
+    }
+    if (desk == Scr.CurrentDesk)
+    {
+      free(Desks[0].label);
+      CopyString(&Desks[0].label, label);
+    }
+  }
+  else if((desk >= desk1)&&(desk <=desk2))
+  {
+    free(Desks[desk - desk1].label);
+    CopyString(&Desks[desk - desk1].label, label);
+  }
+}
+
 /*****************************************************************************
  *
  * This routine is responsible for reading and parsing the config file
@@ -1544,6 +1602,15 @@ void ParseOptions(void)
 	  else
 	    MoveThreshold = DEFAULT_PAGER_MOVE_THRESHOLD;
 	}
+      }
+      continue;
+    }
+    else if (StrEquals(token, "DesktopName"))
+    {
+      int val;
+      if (GetIntegerArguments(next, &next, &val, 1) > 0)
+      {
+	SetDeskLabel(val, (const char *)next);
       }
       continue;
     }
@@ -1663,38 +1730,7 @@ void ParseOptions(void)
 	desk = desk1;
 	sscanf(arg1,"%d",&desk);
       }
-      if (fAlwaysCurrentDesk)
-      {
-	PagerStringList *item;
-
-	item = FindDeskStrings(desk);
-	if (item->next != NULL)
-	{
-	  /* replace label */
-	  if (item->next->label != NULL)
-	  {
-	    free(item->next->label);
-	    item->next->label = NULL;
-	  }
-	  CopyString(&(item->next->label), arg2);
-	}
-	else
-	{
-	  /* new Dcolor and desktop */
-	  item = NewPagerStringItem(item, desk);
-	  CopyString(&(item->label), arg2);
-	}
-	if (desk == Scr.CurrentDesk)
-	{
-	  free(Desks[0].label);
-	  CopyString(&Desks[0].label, arg2);
-	}
-      }
-      else if((desk >= desk1)&&(desk <=desk2))
-      {
-	free(Desks[desk - desk1].label);
-	CopyString(&Desks[desk - desk1].label, arg2);
-      }
+      SetDeskLabel(desk, (const char *)arg2);
     }
     else if (StrEquals(resource, "Font"))
     {
