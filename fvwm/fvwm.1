@@ -1173,12 +1173,19 @@ are a space separated list of fvwm directions:
 
 .IR NW ", " NorthWest ", " TopLeft ", "     tl ", " UpLeft ", "    ul
 
+.IR C ", " Center ", "     Centre
+
 a shadow is displayed in each given direction.
 .I All
 is equivalent to all the directions.  The default
 .I direction
 is
 .IR BottomRight .
+With the
+.I Center
+direction, the shadow surrounds the whole string.  Since this is a
+super set of all other directions, it is a waste of time to
+specify this along with any other directions.
 
 The shadow effect only works with colorsets.  The color of the
 shadow is defined by using the

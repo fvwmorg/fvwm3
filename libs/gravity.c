@@ -414,7 +414,7 @@ int gravity_dir_to_sign_one_axis(
  * through ret_action in this case. ret_action may be NULL. If the token
  * matches none of these strings the default_ret value is returned and the
  * action itself is passed back in ret_action. */
-direction_type ParseDirectionArgument(
+direction_type gravity_parse_dir_argument(
 	char *action, char **ret_action, direction_type default_ret)
 {
 	int index;
@@ -452,12 +452,12 @@ direction_type ParseDirectionArgument(
 	return (direction_type)rc;
 }
 
-multi_direction_type ParseMultiDirectionArgument(
+multi_direction_type gravity_parse_multi_dir_argument(
 	char *action, char **ret_action)
 {
 	int rc = MULTI_DIR_NONE;
 	char *token, *str;
-	direction_type dir = ParseDirectionArgument(action, ret_action, -1);
+	direction_type dir = gravity_parse_dir_argument(action, ret_action, -1);
 
 	if (dir != -1)
 	{
@@ -480,7 +480,7 @@ multi_direction_type ParseMultiDirectionArgument(
 	return (multi_direction_type)rc;
 }
 
-void GetNextMultiDirection(int dir_set, multi_direction_type *dir)
+void gravity_get_next_multi_dir(int dir_set, multi_direction_type *dir)
 {
 	if (*dir == MULTI_DIR_NONE)
 	{
@@ -499,6 +499,55 @@ void GetNextMultiDirection(int dir_set, multi_direction_type *dir)
 		}
 	}
 	*dir = MULTI_DIR_NONE;
+
+	return;
+}
+
+direction_type gravity_multi_dir_to_dir(multi_direction_type mdir)
+{
+	direction_type dir = DIR_NONE;
+
+	for ( ; mdir != 0; dir++)
+	{
+		mdir = (mdir >> 1);
+	}
+	if (dir > DIR_ALL_MASK)
+	{
+		dir = DIR_NONE;
+	}
+
+	return dir;
+}
+
+void gravity_rotate_xy(rotation_type rot, int x, int y, int *ret_x, int *ret_y)
+{
+	int tx;
+	int ty;
+
+	switch (rot)
+	{
+	case ROTATION_90:
+		/* CW */
+		tx = -y;
+		ty = x;
+		break;
+	case ROTATION_180:
+		tx = -x;
+		ty = -y;
+		break;
+	case ROTATION_270:
+		/* CCW */
+		tx = y;
+		ty = -x;
+		break;
+	default:
+	case ROTATION_0:
+		tx = x;
+		ty = y;
+		break;
+	}
+	*ret_x = tx;
+	*ret_y = ty;
 
 	return;
 }

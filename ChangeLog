@@ -1,9 +1,37 @@
+2002-07-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Fft.c (FftDrawString):
+	* libs/Flocale.c (FlocaleRotateDrawString):
+	(FlocaleFontStructDrawString):
+	(FlocaleDrawString):
+	fixed some text placement bugs w/ shadow text
+	(FlocaleGetShadowTextPosition):
+	implemented "center" shadows
+
 2002-07-20  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Flocale.c (FlocaleRotateDrawString):
 	Removed some static declarations
 
 2002-07-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/gravity.c (gravity_multi_dir_to_dir):
+	* libs/gravity.h (enum):
+	new function, cleaned up
+	(enum):
+	* fvwm/fvwm.h (FvwmWindow):
+	* libs/Fft.c:
+	* fvwm/geometry.c:
+	* fvwm/borders.c:
+	moved text_rotation_type to gravity.h and renamed to rotation_type
+
+	* libs/Flocale.h:
+	fixed several bugs in the access macros
+
+	* libs/Flocale.c:
+	removed unused static FlocaleSeted
+	(FlocaleFontStructDrawString):
+	simplified function
 
 	* fvwm/virtual.c (CMD_EdgeCommand):
 	* fvwm/windowshade.c (CMD_WindowShade):

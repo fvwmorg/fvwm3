@@ -102,7 +102,7 @@ void CMD_WindowShade(F_CMD_ARGS)
 		do_force_shading = False;
 	}
 	/* parse arguments */
-	shade_dir = ParseDirectionArgument(action, NULL, -1);
+	shade_dir = gravity_parse_dir_argument(action, NULL, -1);
 	if (shade_dir >= 0 && shade_dir <= DIR_MASK)
 	{
 		has_dir = True;

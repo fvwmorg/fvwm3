@@ -692,7 +692,7 @@ typedef struct FvwmWindow
 	/* Note: if the type of this variable is changed, do update the
 	 * CONFIGARGSNEW macro in module_interface.c, libs/vpacket.h and too! */
 	short title_thickness;
-	text_rotation_type title_text_rotation;
+	rotation_type title_text_rotation;
 	struct
 	{
 		/* geometry of the icon picture window */

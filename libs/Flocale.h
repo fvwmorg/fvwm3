@@ -27,11 +27,12 @@
 #include <X11/Xutil.h>
 
 #include "fvwmlib.h"
+#include "gravity.h"
 #include "Fft.h"
 #include "Colorset.h"
-#include "gravity.h"
 
 /* FlocaleCharset.h and Ficonv.h should not be included */
+
 
 /* ---------------------------- global definitions -------------------------- */
 
@@ -61,79 +62,70 @@
 /* ---------------------------- global macros ------------------------------- */
 
 #define IS_TEXT_DRAWN_VERTICALLY(x) \
-	(x == TEXT_ROTATED_90 || x == TEXT_ROTATED_270)
+	((x) == TEXT_ROTATED_90 || (x) == TEXT_ROTATED_270)
 
-#define FLC_GET_X_CHARSET(fc)         (fc != NULL)? fc->x:NULL
-#define FLC_SET_ICONV_INDEX(fc, i)    fc->iconv_index = i
-#define FLC_GET_LOCALE_CHARSET(fc, i) fc->locale[i]
+#define FLC_GET_X_CHARSET(fc)         ((fc) != NULL)? (fc)->x:NULL
+#define FLC_SET_ICONV_INDEX(fc, i)    (fc)->iconv_index = i
+#define FLC_GET_LOCALE_CHARSET(fc, i) (fc)->locale[i]
 #define FLC_GET_ICONV_CHARSET(fc) \
-      (fc != NULL && fc->iconv_index >= 0)? fc->locale[fc->iconv_index]:NULL
+	((fc) != NULL && (fc)->iconv_index >= 0)? (fc)->locale[(fc)->iconv_index]:NULL
 #define FLC_DO_ICONV_CHARSET_INITIALIZED(fc) \
-      (fc != NULL && fc->iconv_index != FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED)
-#define FLC_HAVE_ICONV_CHARSET(fc) (fc != NULL && fc->iconv_index >= 0)
-#define FLC_GET_BIDI_CHARSET(fc) (fc != NULL)? fc->bidi : NULL
+	((fc) != NULL && (fc)->iconv_index != FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED)
+#define FLC_HAVE_ICONV_CHARSET(fc) ((fc) != NULL && (fc)->iconv_index >= 0)
+#define FLC_GET_BIDI_CHARSET(fc) ((fc) != NULL)? (fc)->bidi : NULL
 #define FLC_ENCODING_TYPE_IS_UTF_8(fc) \
-      (fc != NULL && fc->encoding_type == FLC_ENCODING_TYPE_UTF_8)
+	((fc) != NULL && (fc)->encoding_type == FLC_ENCODING_TYPE_UTF_8)
 #define FLC_ENCODING_TYPE_IS_USC_2(fc) \
-      (fc != NULL && fc->encoding_type == FLC_ENCODING_TYPE_USC_2)
+	((fc) != NULL && (fc)->encoding_type == FLC_ENCODING_TYPE_USC_2)
 #define FLC_ENCODING_TYPE_IS_USC_4(fc) \
-      (fc != NULL && fc->encoding_type == FLC_ENCODING_TYPE_USC_4)
+	((fc) != NULL && (fc)->encoding_type == FLC_ENCODING_TYPE_USC_4)
 
 #define FLC_DEBUG_GET_X_CHARSET(fc)  \
-	 (fc == NULL || fc->x == NULL)? "None":fc->x
+	((fc) == NULL || (fc)->x == NULL)? "None":(fc)->x
 #define FLC_DEBUG_GET_ICONV_CHARSET(fc) \
-	 (fc != NULL && fc->iconv_index >= 0)? fc->locale[fc->iconv_index]:"None"
+	((fc) != NULL && (fc)->iconv_index >= 0)? (fc)->locale[(fc)->iconv_index]:"None"
 #define FLC_DEBUG_GET_BIDI_CHARSET(fc) \
-	 (fc == NULL || fc->bidi == NULL)? "None":fc->bidi
+	((fc) == NULL || (fc)->bidi == NULL)? "None":(fc)->bidi
 
 #define FLF_MULTIDIR_HAS_UPPER(flf) \
-	      ((flf->flags.shadow_dir & MULTI_DIR_NW) || \
-	       (flf->flags.shadow_dir & MULTI_DIR_N) || \
-	       (flf->flags.shadow_dir & MULTI_DIR_NE))
+	(((flf)->flags.shadow_dir & MULTI_DIR_NW) || \
+	 ((flf)->flags.shadow_dir & MULTI_DIR_N) || \
+	 ((flf)->flags.shadow_dir & MULTI_DIR_NE))
 #define FLF_MULTIDIR_HAS_BOTTOM(flf) \
-	      ((flf->flags.shadow_dir & MULTI_DIR_SW) || \
-	       (flf->flags.shadow_dir & MULTI_DIR_S) || \
-	       (flf->flags.shadow_dir & MULTI_DIR_SE))
+	(((flf)->flags.shadow_dir & MULTI_DIR_SW) || \
+	 ((flf)->flags.shadow_dir & MULTI_DIR_S) || \
+	 ((flf)->flags.shadow_dir & MULTI_DIR_SE))
 #define FLF_MULTIDIR_HAS_LEFT(flf) \
-	      ((flf->flags.shadow_dir & MULTI_DIR_SW) || \
-	       (flf->flags.shadow_dir & MULTI_DIR_W) || \
-	       (flf->flags.shadow_dir & MULTI_DIR_NW))
-#define FLF_MULTIDIR_HAS_RIGHT(x) \
-	      ((flf->flags.shadow_dir & MULTI_DIR_SE) || \
-	       (flf->flags.shadow_dir & MULTI_DIR_E) || \
-	       (flf->flags.shadow_dir & MULTI_DIR_NE))
+	(((flf)->flags.shadow_dir & MULTI_DIR_SW) || \
+	 ((flf)->flags.shadow_dir & MULTI_DIR_W) || \
+	 ((flf)->flags.shadow_dir & MULTI_DIR_NW))
+#define FLF_MULTIDIR_HAS_RIGHT(flf) \
+	(((flf)->flags.shadow_dir & MULTI_DIR_SE) || \
+	 ((flf)->flags.shadow_dir & MULTI_DIR_E) || \
+	 ((flf)->flags.shadow_dir & MULTI_DIR_NE))
 
-#define FLF_SHADOW_FULL_SIZE(flf) (flf->shadow_size + flf->shadow_offset)
+#define FLF_SHADOW_FULL_SIZE(flf) ((flf)->shadow_size + (flf)->shadow_offset)
 #define FLF_SHADOW_HEIGHT(flf) \
- (FLF_SHADOW_FULL_SIZE(flf) * \
-	   (FLF_MULTIDIR_HAS_UPPER(flf)+FLF_MULTIDIR_HAS_BOTTOM(flf)))
+	(FLF_SHADOW_FULL_SIZE((flf)) * \
+	 (FLF_MULTIDIR_HAS_UPPER((flf))+FLF_MULTIDIR_HAS_BOTTOM((flf))))
 #define FLF_SHADOW_WIDTH(flf) \
- (FLF_SHADOW_FULL_SIZE(flf) * \
-	    (FLF_MULTIDIR_HAS_LEFT(flf)+FLF_MULTIDIR_HAS_RIGHT(flf)))
+	(FLF_SHADOW_FULL_SIZE((flf)) * \
+	 (FLF_MULTIDIR_HAS_LEFT((flf))+FLF_MULTIDIR_HAS_RIGHT((flf))))
 #define FLF_SHADOW_ASCENT(flf) \
-	 (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_UPPER(flf))
+	(FLF_SHADOW_FULL_SIZE((flf)) * FLF_MULTIDIR_HAS_UPPER((flf)))
 #define FLF_SHADOW_DESCENT(flf) \
-	 (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_BOTTOM(flf))
+	(FLF_SHADOW_FULL_SIZE((flf)) * FLF_MULTIDIR_HAS_BOTTOM((flf)))
 
 #define FLF_SHADOW_LEFT_SIZE(flf) \
-	    (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_LEFT(flf))
+	(FLF_SHADOW_FULL_SIZE((flf)) * FLF_MULTIDIR_HAS_LEFT((flf)))
 #define FLF_SHADOW_RIGHT_SIZE(flf) \
-	    (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_RIGHT(flf))
+	(FLF_SHADOW_FULL_SIZE((flf)) * FLF_MULTIDIR_HAS_RIGHT((flf)))
 #define FLF_SHADOW_UPPER_SIZE(flf) \
-	    (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_UPPER(flf))
+	(FLF_SHADOW_FULL_SIZE((flf)) * FLF_MULTIDIR_HAS_UPPER((flf)))
 #define FLF_SHADOW_BOTTOM_SIZE(flf) \
-	    (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_BOTTOM(flf))
+	(FLF_SHADOW_FULL_SIZE((flf)) * FLF_MULTIDIR_HAS_BOTTOM((flf)))
 
 /* ---------------------------- type definitions ---------------------------- */
-
-typedef enum
-{
-	TEXT_ROTATED_0    = 0,
-	TEXT_ROTATED_90   = 1,
-	TEXT_ROTATED_180  = 2,
-	TEXT_ROTATED_270  = 3,
-	TEXT_ROTATED_MASK = 3,
-} text_rotation_type;
 
 typedef struct FlocaleCharset
 {
@@ -162,7 +154,7 @@ typedef struct _FlocaleFont
 	short shadow_offset;
 	struct
 	{
-		unsigned shadow_dir : 8;
+		unsigned shadow_dir : (DIR_ALL_MASK + 1);
 		unsigned must_free_fc : 1;
 		/* is_mb are used only with a XFontStruct font, for XFontSet
 		 * everything is done in the good way automatically and this
@@ -194,6 +186,23 @@ typedef struct
 	char *name;
 	char **name_list;
 } FlocaleNameString;
+
+typedef struct
+{
+	int step;
+	int orig_x;
+	int orig_y;
+	int offset;
+	int outer_offset;
+	multi_direction_type direction;
+	int inter_step;
+	int num_inter_steps;
+	int x_sign;
+	int y_sign;
+	int size;
+	unsigned sdir : (DIR_ALL_MASK + 1);
+	rotation_type rot;
+} flocale_gstp_args;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
@@ -282,9 +291,13 @@ void FlocaleDrawUnderline(
 /*
  * Get the position for shadow text
  */
-Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
-			    int orig_x, int orig_y,
-			    int *x, int *y, int *step);
+void FlocaleInitGstpArgs(
+	flocale_gstp_args *args, FlocaleFont *flf, FlocaleWinString *fws,
+	int start_x, int start_y);
+
+Bool FlocaleGetShadowTextPosition(
+	int *x, int *y, flocale_gstp_args *args);
+
 /*
  * Call XmbTextEscapement(ff->fontset, str, sl) if ff->fontset is not None.
  * Call XTextWith(ff->font, str, sl) if ff->font is not NULL.

@@ -45,22 +45,29 @@ typedef enum
 typedef enum
 {
 	MULTI_DIR_NONE = 0,
-	MULTI_DIR_N =  (1 << DIR_N),
-	MULTI_DIR_E =  (1 << DIR_E),
-	MULTI_DIR_S =  (1 << DIR_S),
-	MULTI_DIR_W =  (1 << DIR_W),
-	MULTI_DIR_NE = (1 << DIR_NE),
-	MULTI_DIR_SE = (1 << DIR_SE),
-	MULTI_DIR_SW = (1 << DIR_SW),
-	MULTI_DIR_NW = (1 << DIR_NW),
-	MULTI_DIR_C =  (1 << DIR_C),
-	MULTI_DIR_ALL =
-		MULTI_DIR_N | MULTI_DIR_E | MULTI_DIR_S | MULTI_DIR_W |
-		MULTI_DIR_NE | MULTI_DIR_SE | MULTI_DIR_SW | MULTI_DIR_NW
+	FIRST_MULTI_DIR = (1 << DIR_N),
+	MULTI_DIR_N =     (1 << DIR_N),
+	MULTI_DIR_E =     (1 << DIR_E),
+	MULTI_DIR_S =     (1 << DIR_S),
+	MULTI_DIR_W =     (1 << DIR_W),
+	MULTI_DIR_NE =    (1 << DIR_NE),
+	MULTI_DIR_SE =    (1 << DIR_SE),
+	MULTI_DIR_SW =    (1 << DIR_SW),
+	MULTI_DIR_NW =    (1 << DIR_NW),
+	MULTI_DIR_C =     (1 << DIR_C),
+	LAST_MULTI_DIR =  (1 << DIR_ALL_MASK),
+	MULTI_DIR_ALL =  ((1 << (DIR_ALL_MASK + 1)) - 1)
 } multi_direction_type;
 
-#define FIRST_MULTI_DIR MULTI_DIR_N
-#define LAST_MULTI_DIR  MULTI_DIR_NW
+typedef enum
+{
+	ROTATION_0    = 0,
+	ROTATION_90   = 1,
+	ROTATION_180  = 2,
+	ROTATION_270  = 3,
+	ROTATION_MASK = 3
+} rotation_type;
+
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- interface functions ------------------------- */
@@ -84,10 +91,12 @@ void gravity_split_xy_dir(
 	int *ret_dir_x, int *ret_dir_y, int in_dir);
 int gravity_dir_to_sign_one_axis(
 	direction_type dir);
-direction_type ParseDirectionArgument(
+direction_type gravity_parse_dir_argument(
 	char *action, char **ret_action, direction_type default_ret);
-multi_direction_type ParseMultiDirectionArgument(
+multi_direction_type gravity_parse_multi_dir_argument(
 	char *action, char **ret_action);
-void GetNextMultiDirection(int dir_set, multi_direction_type *dir);
+void gravity_get_next_multi_dir(int dir_set, multi_direction_type *dir);
+direction_type gravity_multi_dir_to_dir(multi_direction_type mdir);
+void gravity_rotate_xy(rotation_type rot, int x, int y, int *ret_x, int *ret_y);
 
 #endif /* GRAVITY_H */

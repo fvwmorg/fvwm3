@@ -64,9 +64,14 @@
 
 /* ---------------------------- local macros -------------------------------- */
 
-#define FIfDrawString(use_16, dpy, d, gc, x, y, s1, s2, l) (use_16) ? \
-	XDrawString16(dpy, d, gc, x, y, s2, l) : \
-	XDrawString(dpy, d, gc, x, y, s1, l)
+#define FSwitchDrawString(use_16, dpy, d, gc, x, y, s8, s16, l) \
+	(use_16) ? \
+	XDrawString16(dpy, d, gc, x, y, s16, l) : \
+	XDrawString(dpy, d, gc, x, y, s8, l)
+#define FSwitchDrawImageString(use_16, dpy, d, gc, x, y, s8, s16, l) \
+	(use_16) ? \
+	XDrawImageString16(dpy, d, gc, x, y, s16, l) : \
+	XDrawImageString(dpy, d, gc, x, y, s8, l)
 
 /* ---------------------------- imports ------------------------------------- */
 
@@ -81,7 +86,6 @@
 static FlocaleFont *FlocaleFontList = NULL;
 static char *Flocale = NULL;
 static char *Fmodifiers = NULL;
-static Bool FlocaleSeted = False;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
@@ -128,9 +132,9 @@ void FlocaleParseShadow(char *str, int *shadow_size, int *shadow_offset,
 		}
 		PeekToken(dir_str, &dir_str);
 	}
-	while(dir_str && *dir_str && *dir_str != '\n')
+	while (dir_str && *dir_str && *dir_str != '\n')
 	{
-		dir = ParseMultiDirectionArgument(dir_str, &dir_str);
+		dir = gravity_parse_multi_dir_argument(dir_str, &dir_str);
 		if (dir == MULTI_DIR_NONE)
 		{
 			fprintf(stderr,"[%s][FlocaleParseShadow]: WARNING -- "
@@ -159,7 +163,7 @@ XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
 	int i = 0, j = 0, t;
 
 	str2b = (XChar2b *)safemalloc((len+1)*sizeof(XChar2b));
-	while(i < len && str[i] != 0)
+	while (i < len && str[i] != 0)
 	{
 		if (str[i] <= 0x7f)
 		{
@@ -223,7 +227,7 @@ XChar2b *FlocaleStringToString2b(
 	str2b = (XChar2b *)safemalloc((len+1)*sizeof(XChar2b));
 	if (euc)
 	{
-		while(i < len && str[i] != 0)
+		while (i < len && str[i] != 0)
 		{
 			if (str[i] <= 0x7f)
 			{
@@ -250,7 +254,7 @@ XChar2b *FlocaleStringToString2b(
 	}
 	else /* big5 and others not yet tested */
 	{
-		while(i < len && str[i] != 0)
+		while (i < len && str[i] != 0)
 		{
 			if (str[i] <= 0x7f)
 			{
@@ -262,7 +266,6 @@ XChar2b *FlocaleStringToString2b(
 				/* a blanck char ... */
 				str2b[j].byte1 = 0x21;
 				str2b[j].byte2 = 0x21;
-				i++;
 			}
 			else if (i+1 < len)
 			{
@@ -385,45 +388,44 @@ void FlocaleFontStructDrawString(Display *dpy, FlocaleFont *flf, Drawable d,
 				 Bool has_fg_pixels, FlocaleWinString *fws,
 				 int len, Bool image)
 {
-	int xt = x, yt = y, step = 0;
+	int xt = x;
+	int yt = y;
 	int is_string16;
+	flocale_gstp_args gstp_args;
 
 	is_string16 = (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc) || flf->flags.is_mb);
 	if (is_string16 && fws->str2b == NULL)
 	{
 		return;
 	}
-
 	if (image)
 	{
 		/* for rotated drawing */
-		if (is_string16)
-		{
-			XDrawImageString16(dpy, d, gc, x, y, fws->str2b, len);
-		}
-		else
-		{
-			XDrawImageString(dpy, d, gc, x, y, fws->e_str, len);
-		}
+		FSwitchDrawImageString(
+			is_string16, dpy, d, gc, x, y, fws->e_str, fws->str2b,
+			len);
 	}
 	else
 	{
+		FlocaleInitGstpArgs(&gstp_args, flf, fws, x, y);
 		/* normal drawing */
 		if (flf->shadow_size != 0 && has_fg_pixels)
 		{
 			XSetForeground(dpy, fws->gc, fgsh);
-			while(FlocaleGetShadowTextPosition(
-				      flf, fws, x, y, &xt, &yt, &step))
+			while (FlocaleGetShadowTextPosition(
+				       &xt, &yt, &gstp_args))
 			{
-				FIfDrawString(
+				FSwitchDrawString(
 					is_string16, dpy, d, gc, xt, yt,
 					fws->e_str, fws->str2b, len);
 			}
 			XSetForeground(dpy, gc, fg);
 		}
-		FIfDrawString(
-			is_string16, dpy, d, gc, xt, yt, fws->e_str,
-			fws->str2b, len);
+		xt = gstp_args.orig_x;
+		yt = gstp_args.orig_y;
+		FSwitchDrawString(
+			is_string16, dpy, d, gc, xt,yt, fws->e_str, fws->str2b,
+			len);
 	}
 
 	return;
@@ -437,9 +439,8 @@ void FlocaleRotateDrawString(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, Pixel fg,
 	Pixel fgsh, Bool has_fg_pixels, int len)
 {
-	GC my_gc, font_gc;
+	static GC my_gc, font_gc;
 	int j, i, xpfg, ypfg, xpsh, ypsh;
-	int step = 0;
 	unsigned char *normal_data, *rotated_data;
 	unsigned int normal_w, normal_h, normal_len;
 	unsigned int rotated_w, rotated_h, rotated_len;
@@ -447,15 +448,12 @@ void FlocaleRotateDrawString(
 	int width, height, descent;
 	XImage *image, *rotated_image;
 	Pixmap canvas_pix, rotated_pix;
+	flocale_gstp_args gstp_args;
 
 	if (fws->str == NULL || len < 1)
-	{
 		return;
-	}
-	if (fws->flags.text_rotation == TEXT_ROTATED_0)
-	{
+	if (fws->flags.text_rotation == ROTATION_0)
 		return; /* should not happen */
-	}
 
 	my_gc = fvwmlib_XCreateGC(dpy, fws->win, 0, NULL);
 	XCopyGC(dpy, fws->gc, GCForeground|GCBackground, my_gc);
@@ -466,13 +464,9 @@ void FlocaleRotateDrawString(
 	descent = flf->descent - FLF_SHADOW_DESCENT(flf);;
 
 	if (width < 1)
-	{
 		width = 1;
-	}
 	if (height < 1)
-	{
 		height = 1;
-	}
 
 	/* glyph width and height of the normal text */
 	normal_w = width;
@@ -523,7 +517,7 @@ void FlocaleRotateDrawString(
 	image->format = XYBitmap;
 
 	/* width, height of the rotated text */
-	if (fws->flags.text_rotation == TEXT_ROTATED_180)
+	if (fws->flags.text_rotation == ROTATION_180)
 	{
 		rotated_w = normal_w;
 		rotated_h = normal_h;
@@ -556,19 +550,19 @@ void FlocaleRotateDrawString(
 		for (i = 0; i < rotated_w; i++)
 		{
 			/* map bits ... */
-			if (fws->flags.text_rotation == TEXT_ROTATED_270)
+			if (fws->flags.text_rotation == ROTATION_270)
 				val = normal_data[
 					i * normal_len +
 					(normal_w - j - 1) / 8
 				] & (128 >> ((normal_w - j - 1) % 8));
 
-			else if (fws->flags.text_rotation == TEXT_ROTATED_180)
+			else if (fws->flags.text_rotation == ROTATION_180)
 				val = normal_data[
 					(normal_h - j - 1) * normal_len +
 					(normal_w - i - 1) / 8
 				] & (128 >> ((normal_w - i - 1) % 8));
 
-			else /* TEXT_ROTATED_90 */
+			else /* ROTATION_90 */
 				val = normal_data[
 					(normal_h - i - 1) * normal_len +
 					j / 8
@@ -595,49 +589,55 @@ void FlocaleRotateDrawString(
 	XFreeGC(dpy, font_gc);
 
 	/* x and y corrections: we fill a rectangle! */
-	if (fws->flags.text_rotation == TEXT_ROTATED_270) /* CCW */
+	switch (fws->flags.text_rotation)
 	{
-		xpfg = fws->x - flf->ascent;
+	case ROTATION_90:
+		/* CW */
+		xpfg = fws->x - (flf->height - flf->ascent);
 		ypfg = fws->y;
-	}
-	else if (fws->flags.text_rotation == TEXT_ROTATED_180)
-	{
+		break;
+	case ROTATION_180:
 		xpfg = fws->x;
 		ypfg = fws->y - (flf->height - flf->ascent) +
 			FLF_SHADOW_BOTTOM_SIZE(flf);
-	}
-	else /* fws->flags.text_rotation == TEXT_ROTATED_90 (CW) */
-	{
-		xpfg = fws->x - (flf->height - flf->ascent);
+		break;
+	case ROTATION_270:
+		/* CCW */
+		xpfg = fws->x - flf->ascent;
 		ypfg = fws->y;
+		break;
+	case ROTATION_0:
+	default:
+		xpfg = fws->x;
+		ypfg = fws->y;
+		break;
 	}
 	xpsh = xpfg;
-	ypsh = ypsh;
+	ypsh = ypfg;
 	/* write the image on the window */
 	XSetFillStyle(dpy, my_gc, FillStippled);
 	XSetStipple(dpy, my_gc, rotated_pix);
+	FlocaleInitGstpArgs(&gstp_args, flf, fws, xpfg, ypfg);
 	if (flf->shadow_size != 0 && has_fg_pixels)
 	{
 		XSetForeground(dpy, my_gc, fgsh);
-		while(FlocaleGetShadowTextPosition(flf, fws, xpfg, ypfg,
-						   &xpsh, &ypsh, &step))
+		while (FlocaleGetShadowTextPosition(&xpsh, &ypsh, &gstp_args))
 		{
 			XSetTSOrigin(dpy, my_gc, xpsh, ypsh);
-			XFillRectangle(dpy, fws->win, my_gc, xpsh, ypsh,
-				       rotated_w, rotated_h);
+			XFillRectangle(
+				dpy, fws->win, my_gc, xpsh, ypsh, rotated_w,
+				rotated_h);
 		}
 		XSetForeground(dpy, my_gc, fg);
 	}
-	else
-	{
-		FlocaleGetShadowTextPosition(flf, fws, xpfg, ypfg,
-					     &xpsh, &ypsh, &step);
-	}
+	xpsh = gstp_args.orig_x;
+	ypsh = gstp_args.orig_y;
 	XSetTSOrigin(dpy, my_gc, xpsh, ypsh);
 	XFillRectangle(dpy, fws->win, my_gc, xpsh, ypsh, rotated_w, rotated_h);
-
 	XFreePixmap(dpy, rotated_pix);
 	XFreeGC(dpy, my_gc);
+
+	return;
 }
 
 /* ***************************************************************************
@@ -682,8 +682,8 @@ FlocaleFont *FlocaleGetFontSet(
 	static int mc_errors = 0;
 	FlocaleFont *flf = NULL;
 	XFontSet fontset = NULL;
-	char **ml = NULL;
-	int mc=0,i;
+	char **ml;
+	int mc,i;
 	char *ds;
 	XFontSetExtents *fset_extents;
 	char *fn, *hints = NULL;
@@ -736,24 +736,6 @@ FlocaleFont *FlocaleGetFontSet(
 	flf->max_char_width = fset_extents->max_logical_extent.width;
 	if (fn != NULL)
 		free(fn);
-
-#define FLOCALE_DEBUG_FONTSET 0
-#if FLOCALE_DEBUG_FONTSET
-	{
-		XFontStruct **fs;
-		char **name;
-		int m;
-
-		if ((m=XFontsOfFontSet(flf->fontset, &fs, &name)) > 0)
-		{
-			for(i= 0; i<m; i++)
-			{
-				fprintf(stderr, "fs %i: %s\n",
-					i, name[i]);
-			}
-		}
-	}
-#endif
 
 	return flf;
 }
@@ -868,8 +850,6 @@ static
 void FlocaleSetlocaleForX(
 	int category, const char *locale, const char *module)
 {
-	FlocaleSeted = True;
-
 	if ((Flocale = setlocale(category, locale)) == NULL)
 	{
 		fprintf(stderr,
@@ -1068,7 +1048,8 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			}
 			if ((flf =
 			     FlocaleGetFont(
-			       dpy, FLOCALE_FALLBACK_FONT, NULL, module))!= NULL)
+			       dpy, FLOCALE_FALLBACK_FONT, NULL, module)) !=
+			    NULL)
 			{
 				flf->name = FLOCALE_FALLBACK_FONT;
 			}
@@ -1134,6 +1115,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 	{
 		free(encoding);
 	}
+
 	return flf;
 }
 
@@ -1184,7 +1166,7 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
 			free(flf->fc->bidi);
 		if (flf->fc->locale != NULL)
 		{
-			while(FLC_GET_LOCALE_CHARSET(flf->fc,i) != NULL)
+			while (FLC_GET_LOCALE_CHARSET(flf->fc,i) != NULL)
 			{
 				free(FLC_GET_LOCALE_CHARSET(flf->fc,i));
 				i++;
@@ -1220,294 +1202,142 @@ void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
  * Width and Drawing Text
  * ***************************************************************************/
 
-Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
-				  int orig_x, int orig_y,
-				  int *x, int *y, int *step)
+void FlocaleInitGstpArgs(
+	flocale_gstp_args *args, FlocaleFont *flf, FlocaleWinString *fws,
+	int start_x, int start_y)
 {
-	static multi_direction_type direction = MULTI_DIR_NONE;
-	static unsigned short inter_step = 0;
-	static unsigned short x_sign = 0, y_sign = 0;
-
-	if (*step == 0)
+	args->step = 0;
+	args->offset = flf->shadow_offset + 1;
+	args->outer_offset = flf->shadow_offset + flf->shadow_size;
+	args->size = flf->shadow_size;
+	args->sdir = flf->flags.shadow_dir;
+	switch (fws->flags.text_rotation)
 	{
-		direction = MULTI_DIR_NONE;
+	case ROTATION_270: /* CCW */
+		args->orig_x = start_x + FLF_SHADOW_UPPER_SIZE(flf);
+		args->orig_y = start_y + FLF_SHADOW_RIGHT_SIZE(flf);
+		break;
+	case ROTATION_180:
+		args->orig_x = start_x + FLF_SHADOW_RIGHT_SIZE(flf);
+		args->orig_y = start_y;
+		break;
+	case ROTATION_90: /* CW */
+		args->orig_x = start_x + FLF_SHADOW_BOTTOM_SIZE(flf);
+		args->orig_y = start_y + FLF_SHADOW_LEFT_SIZE(flf);
+		break;
+	case ROTATION_0:
+	default:
+		args->orig_x = start_x + FLF_SHADOW_LEFT_SIZE(flf);
+		args->orig_y = start_y;
+		break;
 	}
-	if ((*step == 0 || inter_step == flf->shadow_size) &&
-	    flf->shadow_size != 0)
+	args->rot = fws->flags.text_rotation;
+
+	return;
+}
+
+Bool FlocaleGetShadowTextPosition(
+	int *x, int *y, flocale_gstp_args *args)
+{
+	if (args->step == 0)
+	{
+		args->direction = MULTI_DIR_NONE;
+		args->inter_step = 0;
+	}
+	if ((args->step == 0 || args->inter_step >= args->num_inter_steps) &&
+	    args->size != 0)
 	{
 		/* setup a new direction */
-		inter_step = 0;
-		GetNextMultiDirection(flf->flags.shadow_dir, &direction);
-	}
-	if (direction == MULTI_DIR_NONE || flf->shadow_size == 0)
-	{
-		/* finished; return the position for the no shadow drawing */
-		switch(fws->flags.text_rotation)
+		args->inter_step = 0;
+		gravity_get_next_multi_dir(args->sdir, &args->direction);
+		if (args->direction == MULTI_DIR_C)
 		{
-		case TEXT_ROTATED_270: /* CCW */
-#define TR_CCW_ORIG_X  orig_x + FLF_SHADOW_UPPER_SIZE(flf)
-#define TR_CCW_ORIG_Y  orig_y + FLF_SHADOW_RIGHT_SIZE(flf)
-			*x = TR_CCW_ORIG_X;
-			*y = TR_CCW_ORIG_Y;
-			break;
-		case TEXT_ROTATED_180:
-#define REVERSE_ORIG_X  orig_x + FLF_SHADOW_RIGHT_SIZE(flf)
-#define REVERSE_ORIG_Y  orig_y
-			*x = REVERSE_ORIG_X;
-			*y = REVERSE_ORIG_Y;
-			break;
-		case TEXT_ROTATED_90: /* CW */
-#define TR_CW_ORIG_X  orig_x + FLF_SHADOW_BOTTOM_SIZE(flf)
-#define TR_CW_ORIG_Y  orig_y + FLF_SHADOW_LEFT_SIZE(flf)
-			*x = TR_CW_ORIG_X;
-			*y = TR_CW_ORIG_Y;
-			break;
-		case TEXT_ROTATED_0:
-		default:
-#define NORMAL_ORIG_X  orig_x + FLF_SHADOW_LEFT_SIZE(flf)
-#define NORMAL_ORIG_Y  orig_y
-			*x = NORMAL_ORIG_X;
-			*y = NORMAL_ORIG_Y;
-			break;
+			int size;
+
+			size = 2 * (args->outer_offset) + 1;
+			args->num_inter_steps = size * size;
 		}
+		else
+		{
+			args->num_inter_steps = args->size;
+		}
+	}
+	if (args->direction == MULTI_DIR_NONE || args->size == 0)
+	{
+		*x = args->orig_x;
+		*y = args->orig_y;
+
 		return False;
 	}
-	if (inter_step > 0)
+	if (args->direction == MULTI_DIR_C)
+	{
+		int tx;
+		int ty;
+		int size;
+		int is_finished;
+
+		size = 2 * (args->outer_offset) + 1;
+		tx = args->inter_step % size - args->outer_offset;
+		ty = args->inter_step / size - args->outer_offset;
+		for (is_finished = 0; ty <= args->outer_offset;
+		     ty++, tx = -args->outer_offset)
+		{
+			for (; tx <= args->outer_offset; tx++)
+			{
+				if (tx <= -args->offset || tx >= args->offset ||
+				    ty <= -args->offset || ty >= args->offset)
+				{
+					is_finished = 1;
+					break;
+				}
+			}
+			if (is_finished)
+			{
+				break;
+			}
+		}
+		args->inter_step =
+			(tx + args->outer_offset) +
+			(ty + args->outer_offset) * size;
+		if (!is_finished)
+		{
+			tx = 0;
+			ty = 0;
+		}
+		*x = args->orig_x + tx;
+		*y = args->orig_y + ty;
+	}
+	else if (args->inter_step > 0)
 	{
 		/* into a directional drawing */
-		(*x) += x_sign;
-		(*y) += y_sign;
+		(*x) += args->x_sign;
+		(*y) += args->y_sign;
 	}
 	else
 	{
-		/* start a drawing in a given direction */
-		switch(fws->flags.text_rotation)
+		if (args->direction == MULTI_DIR_C)
 		{
-		case TEXT_ROTATED_270: /* CCW */
-			switch(direction)
-			{
-			case MULTI_DIR_W:
-				*x = TR_CCW_ORIG_X;
-				*y = TR_CCW_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = 0;
-				y_sign = 1;
-				break;
-			case MULTI_DIR_NW:
-				*x = TR_CCW_ORIG_X - 1 - flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = -1;
-				y_sign = 1;
-				break;
-			case MULTI_DIR_N:
-				*x = TR_CCW_ORIG_X - 1 - flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y;
-				x_sign = -1;
-				y_sign = 0;
-				break;
-			case MULTI_DIR_NE:
-				*x = TR_CCW_ORIG_X - 1 - flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = -1;
-				y_sign = -1;
-				break;
-			case MULTI_DIR_E:
-				*x = TR_CCW_ORIG_X;
-				*y = TR_CCW_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = 0;
-				y_sign = -1;
-				break;
-			case MULTI_DIR_SE:
-				*x = TR_CCW_ORIG_X + 1 + flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = 1;
-				y_sign = -1;
-				break;
-			case MULTI_DIR_S:
-				*x = TR_CCW_ORIG_X + 1 + flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y;
-				x_sign = 1;
-				y_sign = 0;
-				break;
-			case MULTI_DIR_SW:
-				*x = TR_CCW_ORIG_X + 1 + flf->shadow_offset;
-				*y = TR_CCW_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = 1;
-				y_sign = 1;
-				break;
-			default: /* never happen */
-				break;
-			}
-			break;
-		case TEXT_ROTATED_180: /* (exact "opposite" of normal dir) */
-			switch(direction)
-			{
-			case MULTI_DIR_W:
-				*x = REVERSE_ORIG_X + 1 + flf->shadow_offset;
-				*y = REVERSE_ORIG_Y;
-				x_sign = 1;
-				y_sign = 0;
-				break;
-			case MULTI_DIR_NW:
-				*x = REVERSE_ORIG_X + 1 + flf->shadow_offset;
-				*y = REVERSE_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = 1;
-				y_sign = 1;
-				break;
-			case MULTI_DIR_N:
-				*x = REVERSE_ORIG_X;
-				*y = REVERSE_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = 0;
-				y_sign = 1;
-				break;
-			case MULTI_DIR_NE:
-				*x = REVERSE_ORIG_X - 1 - flf->shadow_offset;
-				*y = REVERSE_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = -1;
-				y_sign = 1;
-				break;
-			case MULTI_DIR_E:
-				*x = REVERSE_ORIG_X - 1 - flf->shadow_offset;
-				*y = REVERSE_ORIG_Y;
-				x_sign = -1;
-				y_sign = 0;
-				break;
-			case MULTI_DIR_SE:
-				*x = REVERSE_ORIG_X - 1 - flf->shadow_offset;
-				*y = REVERSE_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = -1;
-				y_sign = -1;
-				break;
-			case MULTI_DIR_S:
-				*x = REVERSE_ORIG_X;
-				*y = REVERSE_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = 0;
-				y_sign = -1;
-				break;
-			case MULTI_DIR_SW:
-				*x = REVERSE_ORIG_X + 1 + flf->shadow_offset;
-				*y = REVERSE_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = 1;
-				y_sign = -1;
-				break;
-			default: /* never happen */
-				break;
-			}
-			break;
-		case TEXT_ROTATED_90: /* CW (exact "opposite" of CCW) */
-			switch(direction)
-			{
-			case MULTI_DIR_W:
-				*x = TR_CW_ORIG_X;
-				*y = TR_CW_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = 0;
-				y_sign = -1;
-				break;
-			case MULTI_DIR_NW:
-				*x = TR_CW_ORIG_X + 1 + flf->shadow_offset;
-				*y = TR_CW_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = 1;
-				y_sign = -1;
-				break;
-			case MULTI_DIR_N:
-				*x = TR_CW_ORIG_X + 1 + flf->shadow_offset;
-				*y = TR_CW_ORIG_Y;
-				x_sign = 1;
-				y_sign = 0;
-				break;
-			case MULTI_DIR_NE:
-				*x = TR_CW_ORIG_X + 1 + flf->shadow_offset;
-				*y = TR_CW_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = 1;
-				y_sign = 1;
-				break;
-			case MULTI_DIR_E:
-				*x = TR_CW_ORIG_X;
-				*y = TR_CW_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = 0;
-				y_sign = 1;
-				break;
-			case MULTI_DIR_SE:
-				*x = TR_CW_ORIG_X - 1 - flf->shadow_offset;
-				*y = TR_CW_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = -1;
-				y_sign = 1;
-				break;
-			case MULTI_DIR_S:
-				*x = TR_CW_ORIG_X - 1 - flf->shadow_offset;
-				*y = TR_CW_ORIG_Y;
-				x_sign = -1;
-				y_sign = 0;
-				break;
-			case MULTI_DIR_SW:
-				*x = TR_CW_ORIG_X - 1 - flf->shadow_offset;
-				*y = TR_CW_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = -1;
-				y_sign = -1;
-				break;
-			default: /* never happen */
-				break;
-			}
-			break;
-		case TEXT_ROTATED_0:
-		default: /* no rotation */
-			switch(direction)
-			{
-			case MULTI_DIR_W:
-				*x = NORMAL_ORIG_X - 1 - flf->shadow_offset;
-				*y = NORMAL_ORIG_Y;
-				x_sign = -1;
-				y_sign = 0;
-				break;
-			case MULTI_DIR_NW:
-				*x = NORMAL_ORIG_X - 1 - flf->shadow_offset;
-				*y = NORMAL_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = -1;
-				y_sign = -1;
-				break;
-			case MULTI_DIR_N:
-				*x = NORMAL_ORIG_X;
-				*y = NORMAL_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = 0;
-				y_sign = - 1;
-				break;
-			case MULTI_DIR_NE:
-				*x = NORMAL_ORIG_X + 1 + flf->shadow_offset;
-				*y = NORMAL_ORIG_Y - 1 - flf->shadow_offset;
-				x_sign = 1;
-				y_sign = -1;
-				break;
-			case MULTI_DIR_E:
-				*x = NORMAL_ORIG_X + 1 + flf->shadow_offset;
-				*y = NORMAL_ORIG_Y;
-				x_sign = 1;
-				y_sign = 0;
-				break;
-			case MULTI_DIR_SE:
-				*x = NORMAL_ORIG_X + 1 + flf->shadow_offset;
-				*y = NORMAL_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = 1;
-				y_sign = 1;
-				break;
-			case MULTI_DIR_S:
-				*x = NORMAL_ORIG_X;
-				*y = NORMAL_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = 0;
-				y_sign = 1;
-				break;
-			case MULTI_DIR_SW:
-				*x = NORMAL_ORIG_X - 1 - flf->shadow_offset;
-				*y = NORMAL_ORIG_Y + 1 + flf->shadow_offset;
-				x_sign = -1;
-				y_sign = 1;
-				break;
-			default: /* never happen */
-				break;
-			}
-			break;
+		}
+		else
+		{
+			direction_type dir;
+			direction_type dir_x;
+			direction_type dir_y;
+
+			dir = gravity_multi_dir_to_dir(args->direction);
+			gravity_split_xy_dir(&dir_x, &dir_y, dir);
+			args->x_sign = gravity_dir_to_sign_one_axis(dir_x);
+			args->y_sign = gravity_dir_to_sign_one_axis(dir_y);
+			gravity_rotate_xy(
+				args->rot, args->x_sign, args->y_sign,
+				&args->x_sign, &args->y_sign);
+			*x = args->orig_x + args->x_sign * args->offset;
+			*y = args->orig_y + args->y_sign * args->offset;
 		}
 	}
-	inter_step++;
-	(*step)++;
+	args->inter_step++;
+	args->step++;
+
 	return True;
 }
 
@@ -1519,6 +1349,7 @@ void FlocaleDrawString(
 	Bool do_free = False;
 	Pixel fg = 0, fgsh = 0;
 	Bool has_fg_pixels = False;
+	flocale_gstp_args gstp_args;
 
 	if (!fws || !fws->str)
 	{
@@ -1545,7 +1376,7 @@ void FlocaleDrawString(
 		has_fg_pixels = True;
 	}
 
-	if (fws->flags.text_rotation != TEXT_ROTATED_0 &&
+	if (fws->flags.text_rotation != ROTATION_0 &&
 	    flf->fftf.fftfont == NULL)
 	{
 		FlocaleRotateDrawString(
@@ -1558,14 +1389,15 @@ void FlocaleDrawString(
 	}
 	else if (flf->fontset != None)
 	{
-		int xt = fws->x, yt = fws->y;
-		int step = 0;
+		int xt = fws->x;
+		int yt = fws->y;
 
+		FlocaleInitGstpArgs(&gstp_args, flf, fws, fws->x, fws->y);
 		if (flf->shadow_size != 0 && has_fg_pixels)
 		{
 			XSetForeground(dpy, fws->gc, fgsh);
-			while(FlocaleGetShadowTextPosition(
-				flf, fws, fws->x, fws->y, &xt, &yt, &step))
+			while (FlocaleGetShadowTextPosition(
+				       &xt, &yt, &gstp_args))
 			{
 				XmbDrawString(
 					dpy, fws->win, flf->fontset, fws->gc,
@@ -1573,6 +1405,8 @@ void FlocaleDrawString(
 			}
 			XSetForeground(dpy, fws->gc, fg);
 		}
+		xt = gstp_args.orig_x;
+		yt = gstp_args.orig_y;
 		XmbDrawString(
 			dpy, fws->win, flf->fontset, fws->gc,
 			xt, yt, fws->e_str, len);

@@ -1664,7 +1664,7 @@ static void border_draw_decor_to_pixmap(
 			int is_left = left1right0;
 
 			if (HAS_VERTICAL_TITLE(fw) &&
-			    fw->title_text_rotation == TEXT_ROTATED_270)
+			    fw->title_text_rotation == ROTATION_270)
 			{
 				is_left = !is_left;
 			}
@@ -2039,7 +2039,7 @@ static void border_get_titlebar_draw_descr(
 		is_start = 1;
 		/* fall through */
 	case JUST_RIGHT:
-		if (tdd->has_vt && fw->title_text_rotation == TEXT_ROTATED_270)
+		if (tdd->has_vt && fw->title_text_rotation == ROTATION_270)
 		{
 			is_start = !is_start;
 		}

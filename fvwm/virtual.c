@@ -1442,7 +1442,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 	char * command;
 
 	/* get the direction */
-	direction = ParseDirectionArgument(action, &action, DIR_NONE);
+	direction = gravity_parse_dir_argument(action, &action, DIR_NONE);
 
 	if (direction >= 0 && direction <= DIR_MAJOR_MASK)
 	{

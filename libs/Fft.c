@@ -157,7 +157,7 @@ void FftSetupEncoding(
 
 static
 FftFont *FftGetRotatedFont(
-	Display *dpy, FftFont *f, text_rotation_type text_rotation)
+	Display *dpy, FftFont *f, rotation_type rotation)
 {
 	FftPattern *rotated_pat;
 	FftMatrix m;
@@ -172,15 +172,15 @@ FftFont *FftGetRotatedFont(
 
 	dummy = FftPatternDel(rotated_pat, FFT_MATRIX);
 
-	if (text_rotation == TEXT_ROTATED_90)
+	if (rotation == ROTATION_90)
 	{
 		FFT_SET_ROTATED_90_MATRIX(&m);
 	}
-	else if (text_rotation == TEXT_ROTATED_180)
+	else if (rotation == ROTATION_180)
 	{
 		FFT_SET_ROTATED_180_MATRIX(&m);
 	}
-	else if (text_rotation == TEXT_ROTATED_270)
+	else if (rotation == ROTATION_270)
 	{
 		FFT_SET_ROTATED_270_MATRIX(&m);
 	}
@@ -308,16 +308,17 @@ void FftDrawString(
 	FftColor fft_fg, fft_fgsh;
 	FftFontType *fftf;
 	FftFont *uf;
-	int x,y, xt,yt, step = 0;
+	int x,y, xt,yt;
 	float alpha_factor;
-	
+	flocale_gstp_args gstp_args;
+
 	if (!FftSupport)
 	{
 		return;
 	}
 
 	fftf = &flf->fftf;
-	if (fws->flags.text_rotation == TEXT_ROTATED_90) /* CW */
+	if (fws->flags.text_rotation == ROTATION_90) /* CW */
 	{
 		if (fftf->fftfont_rotated_90 == NULL)
 		{
@@ -329,7 +330,7 @@ void FftDrawString(
 		y = fws->y;
 		x = fws->x - FLF_SHADOW_BOTTOM_SIZE(flf);
 	}
-	else if (fws->flags.text_rotation == TEXT_ROTATED_180)
+	else if (fws->flags.text_rotation == ROTATION_180)
 	{
 		if (fftf->fftfont_rotated_180 == NULL)
 		{
@@ -341,7 +342,7 @@ void FftDrawString(
 		y = fws->y;
 		x = fws->x + FftTextWidth(flf, fws->e_str, len);
 	}
-	else if (fws->flags.text_rotation == TEXT_ROTATED_270)
+	else if (fws->flags.text_rotation == ROTATION_270)
 	{
 		if (fftf->fftfont_rotated_270 == NULL)
 		{
@@ -430,14 +431,17 @@ void FftDrawString(
 		DrawStringFunc = FftPDrawString8;
 	}
 
+	FlocaleInitGstpArgs(&gstp_args, flf, fws, x, y);
 	if (flf->shadow_size != 0 && has_fg_pixels)
 	{
-		while(FlocaleGetShadowTextPosition(flf, fws, x, y,
-						   &xt, &yt, &step))
+		while (FlocaleGetShadowTextPosition(&xt, &yt, &gstp_args))
 		{
-			DrawStringFunc(fftdraw, &fft_fgsh, uf, xt, yt, str, len);
+			DrawStringFunc(
+				fftdraw, &fft_fgsh, uf, xt, yt, str, len);
 		}
 	}
+	xt = gstp_args.orig_x;
+	yt = gstp_args.orig_y;
 	DrawStringFunc(fftdraw, &fft_fg, uf, xt, yt, str, len);
 
 	if (free_str && str != NULL)
