@@ -1,3 +1,7 @@
+2001-08-23  Dan Espen  <dane@mk.telcordia.com>
+
+	* libs/Bindings.c (MatchBinding): Unify XDisplayKeycodes avoidance.
+
 2001-08-20  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/focus.c (MoveFocus, focus_grab_buttons): Fixed passive button

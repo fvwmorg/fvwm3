@@ -75,6 +75,8 @@ static struct charstring key_modifiers[]=
   {0,0}
 };
 
+static int key_min;
+static int key_max;
 
 /****************************************************************************
  *
@@ -257,7 +259,11 @@ int AddBinding(Display *dpy, Binding **pblist, BindingType type,
   */
   if (type == KEY_BINDING)
   {
-    XDisplayKeycodes(dpy, &min, &max);
+    if (key_max == 0) {
+      XDisplayKeycodes(dpy, &key_min, &key_max);
+    }
+    min=key_min;
+    max=key_max;
     maxmods = 8;
   }
   else
@@ -293,6 +299,17 @@ int AddBinding(Display *dpy, Binding **pblist, BindingType type,
 	(*pblist)->Action = (action) ? stripcpy(action) : NULL;
 	(*pblist)->Action2 = (action2) ? stripcpy(action2) : NULL;
 	(*pblist)->NextBinding = temp;
+#if 0
+        fprintf(stderr,
+   "Bindings: added binding type %c, key %X, key name %s, ctx %X mod %X act1 %s, act2 %s\n",
+                (*pblist)->type,
+                (*pblist)->Button_Key,
+                (*pblist)->key_name ? (*pblist)->key_name : "",
+                (*pblist)->Context,
+                (*pblist)->Modifier,
+                (*pblist)->Action ? (*pblist)->Action : "",
+                (*pblist)->Action2 ? (*pblist)->Action2 : "");
+#endif
 	count++;
 	/* Add the binding only once for each KeySym value. */
 	break;
@@ -362,17 +379,15 @@ Bool MatchBinding(Display *dpy, Binding *b,
   if (type == KEY_BINDING)
   {
     const int maxmods = 8;
-    static int max = 0;
-    static int min = 0;
     KeySym tkeysym;
     int i;
     int m;
 
     if (keysym == NoSymbol)
       return False;
-    if (max == 0)
-      XDisplayKeycodes(dpy, &min, &max);
-
+    if (key_max == 0) {
+      XDisplayKeycodes(dpy, &key_min, &key_max);
+    }
     if (keysym != last_keysym)
     {
       /* Rebuild array of key symbols. This is stored between calls to reduce
@@ -381,7 +396,7 @@ Bool MatchBinding(Display *dpy, Binding *b,
       if (kc_list)
 	free(kc_list);
       kc_list = (int *)safemalloc(sizeof(int) * maxmods);
-      for (i = min; i <= max; i++)
+      for (i = key_min; i <= key_max; i++)
       {
 	for (m = 0, tkeysym = XK_Left; m <= maxmods && tkeysym != NoSymbol; m++)
 	{
