@@ -449,7 +449,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
        ConfigureNotify code.
        Not exactly: users cannot modify the win_width of the taskbar (see
        the hints in StartMeup; it is a good idea). So "we have to" modify
-       the win_with here by modifying the WMNormalHints (olicha Nov 20, 99) */ 
+       the win_width here by modifying the WMNormalHints. Moreover, 1. we want
+       that the TaskBar width with its border is execately the screen width 
+       2. be carful with dynamic border width change (olicha Nov 22, 99) */ 
     if (cfgpacket->w == win)
     {
       if (win_border != (int)cfgpacket->border_width)
@@ -457,35 +459,20 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	XSizeHints hints;
 	long dumy;
 
- 	XGetWMNormalHints(dpy,win,&hints,&dumy);
-	/* Need to inverse gravity if AutoHide */
-	if (AutoHide) {
-	  if ((int)cfgpacket->border_width > win_border) { 
-	    if (win_y < Midline)
-	      hints.win_gravity=SouthWestGravity;
-	    else
-	      hints.win_gravity=NorthWestGravity;
-	  }
-	  if ((int)cfgpacket->border_width < win_border) { 
-	    if (win_y < Midline)
-	      hints.win_gravity=NorthWestGravity;
-	    else
-	      hints.win_gravity=SouthWestGravity;
-	  }
-	}
-
 	win_border = (int)cfgpacket->border_width;
 	win_width = ScreenWidth-(win_border<<1);
        
 	if (AutoStick)
 	{
-	    if (win_y > Midline)
-	      win_y = ScreenHeight - win_height + win_border;
-	    else
-	      win_y = win_border;
+	  win_x = win_border;
+	  if (win_y > Midline)
+	    win_y = ScreenHeight - (AutoHide ? 2 : win_height + win_border);
+	  else
+	    win_y = AutoHide ? 2  - win_height : win_border;
 	}
 
 	/* allows to resize */
+	XGetWMNormalHints(dpy,win,&hints,&dumy);
 	hints.min_width   = win_width;
 	hints.max_width   = win_width;
 	XSetWMNormalHints(dpy,win,&hints);
@@ -494,7 +481,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  WarpTaskBar(win_y);
 	else if (!AutoHide)
 	  XResizeWindow(dpy, win, win_width, win_height);
-      }
+	else /* AutoHide */
+	  XMoveResizeWindow(dpy, win, win_x, win_y, win_width, win_height);
+      } 
       break;
     }
 
@@ -1420,7 +1409,7 @@ void LoopOnEvents(void)
         if ((Event.xconfigure.width != win_width ||
 	     Event.xconfigure.height != win_height)) {
 	  AdjustWindow(Event.xconfigure.width, Event.xconfigure.height);
-          if (AutoStick)
+          if (AutoStick && !AutoHide)
 	    WarpTaskBar(win_y);
 	  redraw = 1;
         }
@@ -1432,11 +1421,11 @@ void LoopOnEvents(void)
 	}
         else if ((Event.xconfigure.x != win_x || Event.xconfigure.y != win_y))
 	{
-          if (AutoStick)
+          if (AutoStick && !AutoHide)
 	  {
             WarpTaskBar(Event.xconfigure.y);
           }
-	  else
+	  else if (!AutoHide)
 	  {
             win_x = Event.xconfigure.x;
             win_y = Event.xconfigure.y;
@@ -1803,12 +1792,22 @@ void StartMeUp(void)
    if (ret & YNegative) 
    {
      if (AutoStick)
-       hints.y = ScreenHeight - (AutoHide ? 1 : win_height);
+     {
+       if (-hints.y < Midline)
+	 hints.y = ScreenHeight - (AutoHide ? 1 : win_height);
+       else
+	 hints.y = AutoHide ? 1 - win_height : 0;
+     }
      else
        hints.y += ScreenHeight - win_height;
    }
    else if (AutoStick)
-     hints.y = AutoHide ? 1 - win_height : 0;
+   {
+     if (hints.y < Midline)
+       hints.y = AutoHide ? 1 - win_height : 0;
+     else
+       hints.y = ScreenHeight - (AutoHide ? 1 : win_height);
+   }
 
     if (ret & XNegative)
     {
@@ -1835,7 +1834,7 @@ void StartMeUp(void)
    hints.base_width  = win_width;
    hints.base_height = RowHeight;
 
-   win_x = hints.x;
+   win_x = hints.x + win_border;
    win_y = hints.y;
 
    if(Pdepth < 2) {
@@ -2138,7 +2137,7 @@ void WarpTaskBar(int y)
   }
 
   if (AutoHide)
-    SetAlarm(HIDE_TASK_BAR);
+     SetAlarm(HIDE_TASK_BAR);
 
   /* Prevent oscillations caused by race with
      time delayed TaskBarHide().  Is there any way
