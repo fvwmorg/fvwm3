@@ -1149,6 +1149,11 @@ InstallSignals(void)
    * and this is a Good Thing because the terminate handlers
    * might exit abruptly via "siglongjmp". This could potentially
    * leave SIGCHLD handler with unfinished business ...  
+   *
+   * NOTE: We could still receive SIGPIPE signals within the
+   *       SIGCHLD handler, but the SIGPIPE handler has the
+   *       SA_RESTART flag set and so should not affect our
+   *       "wait" system call.
    */
   sigact.sa_flags |= SA_NOCLDSTOP;
   sigact.sa_handler = ReapChildren;

@@ -30,10 +30,12 @@
 #endif
 
 #ifdef USE_BSD_SIGNALS
-#  define BSD_BLOCK_SIGNALS    int old_mask = sigblock( fvwmGetSignalMask() )
-#  define BSD_UNBLOCK_SIGNALS  sigsetmask( old_mask )
+#  define BSD_BLOCK_SIGNALS      int old_mask = sigblock( fvwmGetSignalMask() )
+#  define BSB_BLOCK_ALL_SIGNALS  int old_mask = sigblock( ~0 )
+#  define BSD_UNBLOCK_SIGNALS    sigsetmask( old_mask )
 #else
 #  define BSD_BLOCK_SIGNALS
+#  define BSD_BLOCK_ALL_SIGNALS
 #  define BSD_UNBLOCK_SIGNALS
 #endif
 

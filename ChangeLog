@@ -1,3 +1,14 @@
+2000-11-26  Chris Rankin  <rankinc@zipworld.com.au>
+
+	* lib/fvwmsignal.h (New macro BSD_BLOCK_ALL_SIGNALS)
+	* fvwm/fvwm.c (InstallSignals)
+	Extra comments
+
+	* fvwm/events.c (My_XNextEvent)
+	Timeout is undefined when fvwmSelect returns, so must be reinitialised
+	Also, select has only timed out if it return 0. If it returns -1 then
+	this is an error and we would like to know about it.
+
 2000-11-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/virtual.c (map_window):

@@ -58,6 +58,7 @@
 #endif
 
 #include <stdio.h>
+#include <errno.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/time.h>
@@ -2247,9 +2248,15 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   extern int x_fd;
   fd_set in_fdset, out_fdset;
   Window targetWindow;
+  int num_fd;
   int i;
-  static struct timeval timeout = {42, 0};
+  static struct timeval timeout;
   static struct timeval *timeoutP = &timeout;
+
+  /* The timeouts become undefined whenever the select returns, and so
+   * we have to reinitialise them */
+  timeout.tv_sec = 42;
+  timeout.tv_usec = 0;
 
   DBUG("My_XNextEvent","Routine Entered");
 
@@ -2314,7 +2321,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   }
 
   DBUG("My_XNextEvent","waiting for module input/output");
-  if (fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, timeoutP) > 0) {
+  num_fd = fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, timeoutP);
+  if (num_fd > 0) {
 
     /* Check for module input. */
     for (i=0; i<npipes; i++) {
@@ -2342,7 +2350,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     if ((sm_fd >= 0) && (FD_ISSET(sm_fd, &in_fdset)))
       ProcessICEMsgs();
 
-  } else {
+  } else if (num_fd == 0) {
     /* select has timed out, things must have calmed down so let's decorate */
     if (fFvwmInStartup) {
       fvwm_msg(ERR, "My_XNextEvent",
@@ -2353,6 +2361,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       reset_style_changes();
       Scr.flags.do_need_window_update = 0;
     }
+  }
+  else
+  {
+    fvwm_msg(ERR, "My_XNextEvent",
+                  "Failed to wait on descriptor: %s", strerror(errno));
   }
 
   /* check for X events again, rather than return 0 and get called again */
