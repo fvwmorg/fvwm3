@@ -163,7 +163,7 @@ Full list of changes:
 New commands:
 -------------
 
- * New command UnsetEnv unsets environment variables, compliments
+ * New command UnsetEnv unsets environment variables, complements
    SetEnv.
  * New command UpdateStyles forces an immediate style update, even
    within a complex function.
@@ -365,7 +365,7 @@ New menu features:
    from a submenu to its parent menu the submenu remains visible.
  * Menus can be visible multiple times at once.
  * Dynamic menus are provided by the special menu items
-   DynamicPopupAction and DynamicPopdownAction.  See then man page
+   DynamicPopupAction and DynamicPopdownAction.  See the man page
    under AddToMenu for details.
  * New MenuStyle options: PopupAsRootmenu, PopupAsSubmenu
 
