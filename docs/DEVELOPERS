@@ -19,8 +19,15 @@ tree.
     automake --add-missing
     autoreconf
 
-If the config.h.in file is not present (after the sources have been
-checked out initially), use 'autoconf' instead of 'autoreconf'.
+If the config.h.in file at the time automake is called, (e.g. when
+building from a fresh CVS tree), both commands have to be called twice
+to get the distribution built properly (this seems to be a bug in
+autoconf):
+
+    automake --add-missing
+    autoreconf
+    automake
+    autoreconf
 
 There will be some warnings, which are ignorable as long as you get a
 working configure script: the configure script will fix all those
