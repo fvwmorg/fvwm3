@@ -273,6 +273,12 @@ void xevent_loop (void)
       break;
 
     case ConfigureNotify:
+    {
+      /* when send_event is true it means a move has taken place, transparent
+       * windows must be refreshed since the server won't do this,
+       * we must not miss ones of these */
+      Bool moved = theEvent.xconfigure.send_event;
+
       ConsoleDebug (X11, "\tcurrent geometry: %d %d %d %d\n",
 		    man->geometry.x, man->geometry.y,
 		    man->geometry.width, man->geometry.height);
@@ -297,6 +303,9 @@ void xevent_loop (void)
 	else
 	{
 	  saveEvent = theEvent;
+	  /* check for movement on all events */
+	  if (theEvent.xconfigure.send_event)
+	    moved = True;
 	}
       }
       theEvent = saveEvent;
@@ -339,10 +348,10 @@ void xevent_loop (void)
 	force_redraw = 1;
       }
       /* must refresh transparent windows when moved */
-      if ((man->geometry.x != theEvent.xconfigure.x ||
-          man->geometry.y != theEvent.xconfigure.y)
-          && man->pixmap[DEFAULT] == ParentRelative)
+      if (moved && man->pixmap[DEFAULT] == ParentRelative)
+      {
         XClearArea(theDisplay, man->theWindow, 0, 0, 0, 0, True);
+      }
 
       set_manager_width (man, theEvent.xconfigure.width);
       ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
@@ -352,7 +361,7 @@ void xevent_loop (void)
 	draw_manager (man);
 
       break;
-
+    }
     case MotionNotify:
       /* ConsoleDebug (X11, "XEVENT: MotionNotify\n");  */
       b = xy_to_button (man, theEvent.xmotion.x, theEvent.xmotion.y);
