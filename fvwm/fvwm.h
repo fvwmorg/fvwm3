@@ -377,6 +377,7 @@ typedef struct
   unsigned use_no_pposition : 1;
   unsigned use_start_on_desk : 1;
   unsigned use_start_on_page_for_transient : 1;
+  unsigned use_start_on_screen : 1;
   unsigned manual_placement_honors_starts_on_page : 1;
   unsigned capture_honors_starts_on_page : 1;
   unsigned recapture_honors_starts_on_page : 1;
@@ -414,6 +415,7 @@ typedef struct window_style
   int start_desk;
   int start_page_x;
   int start_page_y;
+  int start_screen;
   int max_window_width;
   int max_window_height;
   int shade_anim_steps;

@@ -621,7 +621,8 @@ Bool setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
 
   return PlaceWindow(
       tmp_win, &pstyle->flags, SGET_START_DESK(*pstyle),
-      SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle), PLACE_INITIAL);
+      SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle),
+      SGET_START_SCREEN(*pstyle), PLACE_INITIAL);
 }
 
 void get_default_window_attributes(

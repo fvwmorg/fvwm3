@@ -12,6 +12,8 @@ Changes in beta release 2.4.1 (not released yet)
 * New conditions CurrentGlobalPage, CurrentGlobalPageAnyDesk and
   AcceptsFocus for conditional commands.
 
+* New style option StartsOnScreen.
+
 * New Geometry option for FvwmForm.
 
 * New options PageOnly and ScreenOnly for FvwmTaskBar.

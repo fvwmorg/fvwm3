@@ -344,12 +344,15 @@ static void merge_styles(
       SSET_WINDOW_FONT(*merged_style, SGET_WINDOW_FONT(*add_style));
     }
   }
-  if(add_style->flags.use_start_on_desk)
-  /*  RBW - 11/02/1998  */
+  if (add_style->flags.use_start_on_desk)
   {
     SSET_START_DESK(*merged_style, SGET_START_DESK(*add_style));
     SSET_START_PAGE_X(*merged_style, SGET_START_PAGE_X(*add_style));
     SSET_START_PAGE_Y(*merged_style, SGET_START_PAGE_Y(*add_style));
+  }
+  if (add_style->flags.use_start_on_screen)
+  {
+    SSET_START_SCREEN(*merged_style, SGET_START_SCREEN(*add_style));
   }
   if (add_style->flag_mask.has_color_fore)
   {
@@ -826,12 +829,10 @@ void CMD_Style(F_CMD_ARGS)
   int butt;
   int num;
   int i;
-  /*  RBW - 11/02/1998  */
   int tmpno[3] = { -1, -1, -1 };
   int val[4];
   int spargs = 0;
   Bool found;
-/**/
   /* temp area to build name list */
   window_style *ptmpstyle;
   /* which current boxes to chain to */
@@ -2288,7 +2289,6 @@ void CMD_Style(F_CMD_ARGS)
         else if (StrEquals(token, "STARTSONDESK"))
         {
 	  found = True;
-	  /*  RBW - 11/02/1998  */
 	  spargs = GetIntegerArguments(rest, NULL, tmpno, 1);
           if (spargs == 1)
 	  {
@@ -2304,11 +2304,8 @@ void CMD_Style(F_CMD_ARGS)
 	    fvwm_msg(ERR,"CMD_Style",
 		     "bad StartsOnDesk arg: %s", rest);
 	  }
-          /**/
         }
-	/*  RBW - 11/02/1998
-	 *  StartsOnPage is like StartsOnDesk-Plus
-	 */
+	/* StartsOnPage is like StartsOnDesk-Plus */
 	else if (StrEquals(token, "STARTSONPAGE"))
 	{
 	  found = True;
@@ -2365,7 +2362,24 @@ void CMD_Style(F_CMD_ARGS)
 	  ptmpstyle->flag_mask.use_start_on_page_for_transient = 1;
 	  ptmpstyle->change_mask.use_start_on_page_for_transient = 1;
 	}
-	/**/
+	else if (StrEquals(token, "StartsOnScreen"))
+        {
+	  found = True;
+	  if (rest)
+	  {
+	    tmpno[0] = XineramaSupportGetScreenArgument(rest, 'c');
+	    ptmpstyle->flags.use_start_on_screen = 1;
+	    ptmpstyle->flag_mask.use_start_on_screen = 1;
+	    ptmpstyle->change_mask.use_start_on_screen = 1;
+	    SSET_START_SCREEN(*ptmpstyle, tmpno[0]);
+	  }
+          else
+	  {
+	    ptmpstyle->flags.use_start_on_screen = 0;
+	    ptmpstyle->flag_mask.use_start_on_screen = 1;
+	    ptmpstyle->change_mask.use_start_on_screen = 1;
+	  }
+        }
 	else if (StrEquals(token, "STARTSANYWHERE"))
 	{
 	  found = True;
@@ -2759,6 +2773,7 @@ void check_window_style_change(
    *   use_no_pposition
    *   use_start_on_desk
    *   use_start_on_page_for_transient
+   *   use_start_on_screen
    *   manual_placement_honors_starts_on_page
    *   capture_honors_starts_on_page
    *   recapture_honors_starts_on_page

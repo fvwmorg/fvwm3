@@ -50,6 +50,7 @@
 #define SUSE_START_ON_DESK(sf)        ((sf)->use_start_on_desk)
 #define SUSE_START_ON_PAGE_FOR_TRANSIENT(sf) \
   ((sf)->use_start_on_page_for_transient)
+#define SUSE_START_ON_SCREEN(sf)      ((sf)->use_start_on_screen)
 #define SMANUAL_PLACEMENT_HONORS_STARTS_ON_PAGE(sf) \
   ((sf)->manual_placement_honors_starts_on_page)
 #define SCAPTURE_HONORS_STARTS_ON_PAGE(sf) \
@@ -409,6 +410,8 @@
 #define SSET_START_PAGE_X(s,x)        ((s).start_page_x = (x))
 #define SGET_START_PAGE_Y(s)          ((s).start_page_y)
 #define SSET_START_PAGE_Y(s,x)        ((s).start_page_y = (x))
+#define SGET_START_SCREEN(s)          ((s).start_screen)
+#define SSET_START_SCREEN(s,x)        ((s).start_screen = (x))
 #define SGET_MAX_WINDOW_WIDTH(s)      ((s).max_window_width)
 #define SSET_MAX_WINDOW_WIDTH(s,x)    ((s).max_window_width = (x))
 #define SGET_MAX_WINDOW_HEIGHT(s)     ((s).max_window_height)

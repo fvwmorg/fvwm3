@@ -38,6 +38,7 @@
 #endif /* XPM */
 
 #include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include <stdio.h>
 #include "fvwm.h"
 #include "externs.h"
@@ -435,6 +436,11 @@ void DrawIconWindow(FvwmWindow *tmp_win)
   {
     if (IS_ICON_ENTERED(tmp_win))
     {
+      int sx;
+      int sy;
+      int sw;
+      int sh;
+
       /* resize the icon name window */
       tmp_win->icon_g.width = tmp_win->icon_t_width + 8;
       if (IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win))
@@ -443,15 +449,17 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 	tmp_win->icon_g.width = tmp_win->icon_p_width;
       tmp_win->icon_xl_loc = tmp_win->icon_g.x -
 	(tmp_win->icon_g.width - tmp_win->icon_p_width)/2;
+      XineramaSupportGetCurrentScrRect(
+	NULL, &sx, &sy, &sw, &sh);
       /* start keep label on screen. dje 8/7/97 */
-      if (tmp_win->icon_xl_loc < 0) {  /* if new loc neg (off left edge) */
-	tmp_win->icon_xl_loc = 0;      /* move to edge */
+      if (tmp_win->icon_xl_loc < sx) {  /* if new loc neg (off left edge) */
+	tmp_win->icon_xl_loc = sx;      /* move to edge */
       } else {                         /* if not on left edge */
 	/* if (new loc + width) > screen width (off edge on right) */
 	if ((tmp_win->icon_xl_loc + tmp_win->icon_g.width) >
-	    Scr.MyDisplayWidth) {      /* off right */
+	    sx + sw) {      /* off right */
 	  /* position up against right edge */
-	  tmp_win->icon_xl_loc = Scr.MyDisplayWidth-tmp_win->icon_g.width;
+	  tmp_win->icon_xl_loc = sx + sw - tmp_win->icon_g.width;
 	}
 	/* end keep label on screen. dje 8/7/97 */
       }
@@ -991,11 +999,18 @@ static int
 do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 {
   if (global_icon_box_ptr == 0) {       /* if first time */
+    int sx;
+    int sy;
+    int sw;
+    int sh;
     /* Right now, the global box is hard-coded, fills the screen,
        uses an 80x80 grid, and fills top-bottom, left-right */
+    XineramaSupportGetPrimaryScrRect(&sx, &sy, &sw, &sh);
     global_icon_box_ptr = calloc(1, sizeof(icon_boxes));
-    global_icon_box_ptr->IconBox[2] = Scr.MyDisplayWidth;
-    global_icon_box_ptr->IconBox[3] = Scr.MyDisplayHeight;
+    global_icon_box_ptr->IconBox[0] = sx;
+    global_icon_box_ptr->IconBox[1] = sy;
+    global_icon_box_ptr->IconBox[2] = sx + sw;
+    global_icon_box_ptr->IconBox[3] = sy + sh;
     global_icon_box_ptr->IconGrid[0] = 80;
     global_icon_box_ptr->IconGrid[1] = 80;
     global_icon_box_ptr->IconFlags = ICONFILLHRZ;

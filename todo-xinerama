@@ -1,9 +1,6 @@
 Possible things to do for perfect(?) Xinerama support:
 ------------------------------------------------------
 
- 1) Window placement:
-    a) place windows on Xinerama screens
-    b) prevent windows from being placed in the void
  2) Icon placement:
     a) place icons on Xinerama screens
     b) prevent icons from being placed in the void
@@ -54,21 +51,22 @@ Minimal set of Xinerama features:
 Still to do:
 ------------
 
-1b
-2b
 5e (placement only)
 6d
 
 Optional to do:
 ---------------
-1 a
 2 a
 5 b e
-6 b f h i k
-8 a c d
+6 b f k
+8 a c
 
 Already done:
 -------------
+ 1) Window placement:
+    a) place windows on Xinerama screens
+    b) prevent windows from being placed in the void
+2 b
  3) Menus:
     a) Place menus on Xinerama screens
     b) Resize menus to fit Xinerama screens
@@ -76,11 +74,12 @@ Already done:
  4) Geometry window:
     a) Place on proper Xinerama screen
 5 a c d f g h i j k l m
-6 a c g j
+6 a c g i j
  7) Control:
     a) Enable and Disable Xinerama on the fly (including modules)
-8 b
+8 b d
 
 Not to be done:
 ---------------
 6 e (not useful, EdgeResistance is good enough)
+6 h (only the X server can do this in a clean way)

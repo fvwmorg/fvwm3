@@ -651,6 +651,18 @@ static int XineramaSupportParseScreenBit(char *arg, char default_screen)
     scr = GEOMETRY_SCREEN_PRIMARY;
   else if (isdigit(c))
     scr = atoi(arg);
+  else
+  {
+    c = tolower(default_screen);
+    if (c == 'g')
+      scr = GEOMETRY_SCREEN_GLOBAL;
+    else if (c == 'c')
+      scr = GEOMETRY_SCREEN_CURRENT;
+    else if (c == 'p')
+      scr = GEOMETRY_SCREEN_PRIMARY;
+    else if (isdigit(c))
+      scr = atoi(arg);
+  }
 
   return scr;
 }
@@ -700,7 +712,8 @@ int XineramaSupportParseGeometryWithScreen(
 #if DEBUG_PRINTS
   fprintf(stderr,
 	  "copy=%s, scr_p=%s, x=%d, y=%d, w=%d, h=%d, flags:%s%s%s%s%s%s\n",
-	  copy, scr_p, *x_return, *y_return, *width_return, *height_return,
+	  copy, (scr_p)?scr_p:"(null)", *x_return, *y_return, *width_return,
+	  *height_return,
 	  ret&XValue?      " XValue":"",
 	  ret&YValue?      " YValue":"",
 	  ret&WidthValue?  " WidthValue":"",

@@ -363,10 +363,10 @@ being interpreted relative to the current viewport: the window may
 not consistently appear on a specific page, unless you always
 invoke the application from the same page.
 
-A better way to place windows on a different page or desk from the
-currently mapped viewport is to use the
-.B StartsOnPage
-style specification (the successor to the older
+A better way to place windows on a different page, screen or desk
+from the currently mapped viewport is to use the
+.IR StartsOnPage or StartsOnScreen
+style specification (the successors to the older
 .I StartsOnDesk
 style) in the
 .I .fvwm2rc
@@ -4492,6 +4492,7 @@ is a comma separated list containing one or more of the keywords
 .IR Font ,
 .IR IconFont ,
 .IR StartsOnDesk " / " StartsOnPage " / " StartsAnyWhere ,
+.IR StartsOnScreen ,
 .IR ManualPlacementHonorsStartsOnPage " / " ManualPlacementIgnoresStartsOnPage ,
 .IR CaptureHonorsStartsOnPage " / " CaptureIgnoresStartsOnPage ,
 .IR RecaptureHonorsStartsOnPage " / " RecaptureIgnoresStartsOnPage ,
@@ -5158,6 +5159,27 @@ three arguments are given, the 2nd and 3rd arguments identify the
 x,y page position on the virtual window.  If two arguments are
 given, they specify the page position, and indicate no desk
 preference.  If only one argument is given,
+.I StartsOnPage
+functions exactly like
+.IR StartsOnDesk .
+For those standard Xt programs which understand this usage, the
+starting desk/page can also be specified via a resource (e.g.,
+"-xrm 'Fvwm.Page: 1 0 2'").
+.I StartsOnPage
+in conjunction with
+.I SkipMapping
+is a useful technique when you want to start an app on some other
+page and continue with what you were doing, rather than waiting
+for it to appear.
+
+.I StartsOnScreen
+takes one argument.  It can be 'p' for the primary screen, 'c' for
+the current screen (containing the mouse pointer), 'g' for the
+global screen or the screen number itself (counting from zero).
+A new window is placed on the specified Xinerama screen.  The
+default is to place windows on the screen that contains the mouse
+pointer at the time the window is created.
+
 .I StartsOnPage
 functions exactly like
 .IR StartsOnDesk .

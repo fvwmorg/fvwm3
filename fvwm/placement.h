@@ -19,9 +19,8 @@
 #define PLACE_INITIAL 0x0
 #define PLACE_AGAIN   0x1
 
-/*  RBW - 11/02/1998  */
-int PlaceWindow(
-  FvwmWindow *tmp_win, style_flags *sflag, int Desk, int PageX,	int PageY,
-  int mode);
+Bool PlaceWindow(
+  FvwmWindow *tmp_win, style_flags *sflags,
+  int Desk, int PageX, int PageY, int XineramaScreen, int mode);
 
 #endif /* PLACEMENT_H */
