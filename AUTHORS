@@ -2,6 +2,12 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Stian Sletner:
+WindowList option IconifiedAtEnd.
+
+Jochen Klenner:
+WindowList option CurrentAtEnd.
+
 Derek B. Noonburg:
 Weighted sorting in FvwmIconMan.
 

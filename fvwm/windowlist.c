@@ -119,6 +119,7 @@ void CMD_WindowList(F_CMD_ARGS)
   char* ret_action = NULL;
   FvwmWindow *t;
   FvwmWindow **windowList;
+  FvwmWindow **iconifiedList = NULL;
   int numWindows;
   int ii;
   char tname[80];
@@ -154,6 +155,9 @@ void CMD_WindowList(F_CMD_ARGS)
   Bool use_condition = False;
   Bool do_reverse_sort_order = False;
   Bool current_at_end = False;
+  Bool iconified_at_end = False;
+  int ic = 0;
+  int ij;
   WindowConditionMask mask;
   char *cond_flags;
   Bool first_desk = True;
@@ -222,6 +226,8 @@ void CMD_WindowList(F_CMD_ARGS)
         do_reverse_sort_order = True;
       else if (StrEquals(tok,"CurrentAtEnd"))
         current_at_end = True;
+      else if (StrEquals(tok,"IconifiedAtEnd"))
+        iconified_at_end = True;
       else if (StrEquals(tok,"NoDeskSort"))
         flags |= NO_DESK_SORT;
       else if (StrEquals(tok,"UseIconName"))
@@ -362,6 +368,14 @@ void CMD_WindowList(F_CMD_ARGS)
   {
     return;
   }
+  if (iconified_at_end)
+  {
+    iconifiedList = malloc(numWindows*sizeof(t));
+    if (iconifiedList == NULL)
+    {
+      return;
+    }
+  }
   /* get the windowlist starting from the current window (if any)*/
   t = get_focus_window();
   if (t == NULL)
@@ -376,12 +390,23 @@ void CMD_WindowList(F_CMD_ARGS)
   {
     if (do_reverse_sort_order)
       windowList[numWindows - ii - 1] = t;
+    else if (iconified_at_end && IS_ICONIFIED(t))
+      iconifiedList[ic++] = t;
     else
-      windowList[ii] = t;
+      windowList[ii - ic] = t;
     if (t->next)
       t = t->next;
     else
       t = Scr.FvwmRoot.next;
+  }
+  if (iconified_at_end && ic > 0)
+  {
+    if (current_at_end)
+      windowList[numWindows - 1] = windowList[--ii - ic];
+    for (ij = 0; ij < ic; ij++)
+    {
+      windowList[ij + (ii - ic)] = iconifiedList[ij];
+    }
   }
 
   /* Do alphabetic sort */
@@ -597,6 +622,8 @@ void CMD_WindowList(F_CMD_ARGS)
   if (func)
     free(func);
   free(windowList);
+  if (iconified_at_end)
+    free(iconifiedList);
   if (!default_action && eventp && eventp->type == KeyPress)
     teventp = (XEvent *)1;
   else

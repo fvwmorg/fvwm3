@@ -1,3 +1,8 @@
+2002-04-29  Stian Sletner  <stian@sletner.com>
+
+	* fvwm/windowlist.c (CMD_WindowList):
+	Added new Windowlist option IconifiedAtEnd
+
 2002-04-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/module_interface.c:
