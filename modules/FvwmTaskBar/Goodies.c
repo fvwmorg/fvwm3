@@ -79,7 +79,9 @@ Pixmap mailpix = None;
 Pixmap wmailpix = None;
 Pixmap pmask = None;
 Pixmap pclip = None;
-int Mailcheck = MAILCHECK_DEFAULT;
+Bool do_check_mail = True;
+Bool has_mailpath = True;
+int mailcheck_interval = MAILCHECK_DEFAULT;
 char *TipsFore = "black",
      *TipsBack = "LightYellow",
      *MailCmd  = "Exec xterm -e mail";
@@ -126,7 +128,7 @@ static void CreateOrUpdateGoodyGC(void)
   else
     statusgc = XCreateGC(dpy, win, gcmask, &gcval);
 
-  if (Mailcheck > 0)
+  if (do_check_mail)
   {
     if (mailpix)
       XFreePixmap(dpy, mailpix);
@@ -188,7 +190,7 @@ Bool GoodiesParseConfig(char *tline)
   case 1: /* Mailbox */
     if (strcasecmp(rest, "None") == 0)
     {
-      Mailcheck = 0;
+      has_mailpath = False;
     }
     else
     {
@@ -198,13 +200,14 @@ Bool GoodiesParseConfig(char *tline)
       len = strlen(mailpath);
       if (len > 0 && mailpath[len-1] == '\n')
 	mailpath[len-1] = 0;
+      has_mailpath = True;
     }
+    do_check_mail = (has_mailpath && (mailcheck_interval > 0));
     break;
   case 2: /* Mailcheck */
-    Mailcheck = MAILCHECK_DEFAULT;
-    sscanf(rest, "%d", &Mailcheck);
-    if (Mailcheck < 0)
-      Mailcheck = 0;
+    do_check_mail = MAILCHECK_DEFAULT;
+    sscanf(rest, "%d", &do_check_mail);
+    do_check_mail = (has_mailpath && (mailcheck_interval > 0));
     break;
   case 3: /* ClockFormat */
     UpdateString(&clockfmt, rest);
@@ -338,7 +341,7 @@ void DrawGoodies(void)
 	      ((RowHeight - fontheight) >> 1) +StatusFont->ascent,
 	      str, strlen(str));
 
-  if (Mailcheck == 0)
+  if (!do_check_mail)
     return;
   if (timer - last_mail_check >= 10) {
     cool_get_inboxstatus();
@@ -371,14 +374,14 @@ void DrawGoodies(void)
 int MouseInClock(int x, int y)
 {
   int clockl = win_width - stwin_width;
-  int clockr = win_width - stwin_width + clock_width + (Mailcheck ? 2 : 3);
+  int clockr = win_width - stwin_width + clock_width + (do_check_mail ? 2 : 3);
   return (x>clockl && x<clockr && y>1 && y<RowHeight-2);
 }
 
 int MouseInMail(int x, int y)
 {
   int maill = win_width - stwin_width + clock_width + 2;
-  int mailr = win_width - (Mailcheck ? 0 : 3);
+  int mailr = win_width - (do_check_mail ? 0 : 3);
   return (x>=maill && x<mailr && y>1 && y<RowHeight-2);
 }
 

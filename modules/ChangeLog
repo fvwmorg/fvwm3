@@ -1,3 +1,9 @@
+2000-05-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/Goodies.c:
+	fixed checking for mail although "None" Mailbox was used if a Mailcheck
+	interval was set
+
 2000-05-12  Hippo
 
 	* modules/FvwmAnimate/FvwmAnimate.c:
@@ -24,7 +30,6 @@
 	* FvwmScript/Widget/List.c (DrawVSblist):
 	Fixed drawing of the List "ascenseur vertical"
 
-
 2000-05-05  Mikhael Goikhman  migo@homemail.com
 
 	* FvwmWharf/FvwmWharf.1: fixed a typo
@@ -38,7 +43,6 @@
 		+  sprintf(m4_options, "-I '%s' ", FVWM_DATADIR);
 	the missing space after the ' caused the next option in the commandline
 	to be ignored
-
 
 2000-05-04  Mikhael Goikhman  migo@homemail.com
 
@@ -1629,7 +1633,7 @@
 
 1999-09-08  Dominik Vogt  <dominik_vogt@gmx.de>
 
-	* FvwmButtons/FvwmButtons.c (HandlePanelPress): mape sure the panel is
+	* FvwmButtons/FvwmButtons.c (HandlePanelPress): make sure the panel is
 	mapped on the current page
 
 	* FvwmBacker/FvwmBacker.c (set_desk_background):
