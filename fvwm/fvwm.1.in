@@ -2439,9 +2439,11 @@ Example:
 # in the utils/ directory of the distribution. To use it,
 # define this function in your configuration file:
 
+DestroyFunc MakeMissingDirectoryMenu
 AddToFunc MakeMissingDirectoryMenu
-+ I Exec fvwm_make_directory_menu.sh $0
++ I PipeRead fvwm_make_directory_menu.sh $0
 
+DestroyMenu SomeMenu
 AddToMenu SomeMenu
 + MissingSubmenuFunction MakeMissingDirectoryMenu
 + "Root directory" Popup /
