@@ -74,7 +74,6 @@ Contents
      4.4  I heard about this FvwmFileMgr module.  Where can I find it?
      4.5  I used to use GoodStuff in FVWM 1.xx, but it's not in the 2.xx
           distribution.  What do I use now?
-     4.6  Version 2.2 takes ages to start and some modules don't start.
 
 5. Development, Known Problems & Bug Reports
 
@@ -899,7 +898,7 @@ A: You can do this, but it's not obvious how.  The button presses
 4.3  I'm seeing odd things when trying to preprocess files with the
      FvwmM4/Cpp module...
 
-(A: This is fixed in versions 2.2 onwards)
+(A: This is partly fixed in version 2.2, and virtually fixed in 2.4)
 
 A: Yup, I imagine that you might be.  Things like the InitFunction not
    being called or windows that were running before FVWM started not
@@ -916,22 +915,22 @@ A: Yup, I imagine that you might be.  Things like the InitFunction not
         - Start all your applications inside an InitFunction, or
         - Put a Recapture in the end of your .fvwm2rc
 
-   This problem may be corrected in Fvwm in the future. Here are
-   some solutions I've been thinking about:
-
-        - Create an exec or script that will invoke whatever
-          preprocessor you want appropriately and run that via
-          PipeRead.  All those default macros in the M4/Cpp modules
-          would need to become FVWM_* env vars, defined by fvwm and
-          used by the exec/script to pass them on as macros to the
-          preprocessor.
-        - I have a new dynamic loading module interface in mind that
-          would take care of this (among many other things), but that
-          won't happen for a while...
-        - As a simple temporary fix, FvwmM4/Cpp could send a
-          'Recapture' command back as the last thing done, plus
-          optionally an 'InitFunction' call (but that should be based
-          on a command line option).
+   Version 2.2 has a partial fix that makes FvwmCpp/FvwmM4 work if it is
+   the only -cmd or -f command line argument specified.
+   
+     fvwm -cmd "FvwmCpp .fvwmrc.cpp"
+     
+   will work but the following is unreliable
+   
+     fvwm -f /usr/local/X11/etc/system.fvwm2rc -cmd "FvwmCpp .fvwmrc.cpp"
+     
+   Version 2.4 has a more compete fix that makes the above line work
+   reliably: any module started by command line arguments is assumed to be
+   a module that sends back config commands.  All command line modules
+   have to quit before fvwm will proceed on to the InitFunction and
+   setting border decorations and styles.  There is a potential deadlock
+   if you start a module other than FvwmCpp/FvwmM4 but there is a timeout
+   so fvwm will eventually get going.
 
 ----------------------------------------------------------------------
 
@@ -949,24 +948,6 @@ A: The FvwmFileMgr module disappeared because a file manager doesn't
 
 A: GoodStuff was renamed to FvwmButtons.  Same module, new name (that
    fits in with the other modules naming convention).
-
-----------------------------------------------------------------------
-
-4.6  Version 2.2 takes ages to start and some modules don't start.
-
-A: Version 2.2 has a fix for a long standing problem with getting
-   configurations from FvwmCpp. What 2.2 does is to wait for all modules
-   that get started during start up to finish before it runs the
-   InitFunction. This was intended to make fvwm wait for FvwmCpp or
-   FvwmM4 to finish sending back configuration commands before fvwm tries
-   to decorate any windows.  Since most modules don't finish there is a
-   danger of deadlocking so a timeout was inserted.  The timeout is 42
-   seconds.
-   
-   Version 2.4 onwards uses a less stringent way of deciding when to run
-   the InitFunctions and decorate all windows.  It waits for all modules
-   specified on the command line to finish but doesn't wait for any modules
-   that are started from within start-up files.
 
 
 ======================================================================
