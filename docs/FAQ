@@ -174,7 +174,7 @@ Contents
           what happened to to rxvt and rclock which Rob Nation
           used to support?  Where can I find them now?
      6.6  How do I set the background with fvwm?
-     6.7  When I use Fvwm, my XYZ isn't the right color.  Whats
+     6.7  When I use Fvwm, my XYZ isn't the right color.  What's
           wrong?
      6.8  I just got a mouse with 57 buttons.  How do I make Fvwm
           use them?
@@ -226,7 +226,7 @@ Trivia: In all my years as an fvwm developer this has been by far the
 
 0.2  I use XMMS, but it ignores some window styles.
 
-A: XMMS wants to do evrything by itself and overrides many
+A: XMMS wants to do everything by itself and overrides many
    settings of the window manager.  Check the options menu in XMMS
    and if that does not help, ask the XMMS people about it at
 
@@ -234,7 +234,7 @@ A: XMMS wants to do evrything by itself and overrides many
 
    *Please* do not ask XMMS questions on the fvwm mailing lists
    and do not report XMMS related bugs before you tried the XMMS
-   mailing lists.  No offence meant, but we really have more
+   mailing lists.  No offense meant, but we really have more
    important things to do than providing user support for third
    party software.
 
@@ -1524,7 +1524,7 @@ A: First, it may help to read about colorsets in fvwm and FvwmTheme
      Colorset 23 RootTransparent, fg rgb:ff/ff/c4, bg darkcyan
 
    The good thing about RootTransparent is that it is possible to
-   automatically claculate the average background color (used for
+   automatically calculate the average background color (used for
    highlighting/shading) and efficiently tint the visible part of the
    root image using something like:
 
