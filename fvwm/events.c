@@ -70,7 +70,6 @@
 #include <X11/Xatom.h>
 #include "misc.h"
 #include "bindings.h"
-#include "parse.h"
 #include "screen.h"
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
@@ -82,6 +81,8 @@
 #include "move_resize.h"
 #include "virtual.h"
 #include "gnome.h"
+#include "borders.h"
+#include "colormaps.h"
 #ifdef HAVE_STROKE
 #include <errno.h>
 #include "stroke.h"
@@ -745,10 +746,9 @@ void HandleClientMessage(void)
      according to ICCCM and send these messages only if they
      when grabbed the pointer, it is OK */
   {
-    extern Bool client_controls_colormaps;
     extern Atom _XA_WM_COLORMAP_NOTIFY;
     if (Event.xclient.message_type == _XA_WM_COLORMAP_NOTIFY) {
-      client_controls_colormaps = Event.xclient.data.l[1];
+      set_client_controls_colormaps(Event.xclient.data.l[1]);
       return;
     }
   }

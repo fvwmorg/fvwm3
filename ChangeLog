@@ -1,3 +1,69 @@
+1999-06-27  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1 (ButtonState): new command
+
+	* fvwm/borders.c (cmd_button_state): new command to control former
+	configure options 'activedown-button' and 'inactive-button'
+
+	* libs/Parse.c (GetNextTokenIndex):
+	(GetModuleResource):
+	(GetSuffixedIntegerArguments):
+	(GetOnePercentArgument):
+	(GetRectangleArguments):
+	use PeekToken instead of GetNextToken
+	(ParseToggleArgument): a litte performance enhancement
+	(NukeToken): removed function
+
+	* fvwm/functions.c (func_config):
+	* fvwm/functions.h:
+	new function ButtonState
+
+	* fvwm/cursor.c (CursorStyle):
+	(SafeDefineCursor): moved from builtins.c to cursor.c
+
+	* fvwm/virtual.c:
+	* fvwm/placement.c:
+	* fvwm/move_resize.c:
+	* fvwm/icons.c:
+	* fvwm/focus.c:
+	* fvwm/events.c:
+	* fvwm/builtins.c:
+	* fvwm/borders.c:
+	* fvwm/add_window.c:
+	include borders.h
+
+	* fvwm/borders.h: new file
+
+	* libs/Module.c: include safemalloc.h
+
+	* fvwm/windowlist.c:
+	* fvwm/virtual.c:
+	* fvwm/style.c:
+	* fvwm/stack.c:
+	* fvwm/repeat.c:
+	* fvwm/read.c:
+	* fvwm/placement.c:
+	* fvwm/move_resize.c:
+	* fvwm/module_interface.c:
+	* fvwm/misc.c:
+	* fvwm/modconf.c:
+	* fvwm/menus.c:
+	* fvwm/icons.c:
+	* fvwm/icccm2.c:
+	* fvwm/fvwm.c:
+	* fvwm/functions.c:
+	* fvwm/events.c:
+	* fvwm/decorations.c:
+	* fvwm/colormaps.c:
+	* fvwm/colors.c:
+	* fvwm/builtins.c:
+	* fvwm/borders.c:
+	removed inclusion of parse.h
+
+	* fvwm/parse.h:
+	* fvwm/functions.h: moved all code from parse.h to functions.h,
+	removed file parse.h
+
 1999-06-26  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/*.h: include stack.h and gnome.h

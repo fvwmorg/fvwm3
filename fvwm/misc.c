@@ -41,7 +41,6 @@
 #include <X11/Xutil.h>
 #include <X11/keysym.h>
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 #include "Module.h"
 #include "focus.h"

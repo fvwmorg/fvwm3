@@ -43,13 +43,13 @@
 #include "fvwm.h"
 #include "icons.h"
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 #include "bindings.h"
 #include "Module.h"
 #include "focus.h"
 #include "stack.h"
 #include "virtual.h"
+#include "borders.h"
 
 
 #ifdef SHAPE

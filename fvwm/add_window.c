@@ -62,6 +62,7 @@
 #include "screen.h"
 #include "misc.h"
 #include "bindings.h"
+#include "borders.h"
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #include <X11/Xresource.h>

@@ -437,6 +437,13 @@ Window-Ops, then you don't need quotes: Popup Window-Ops, but if you
 replace the dash with a space, then you need quotes: Popup "Window
 Ops".
 
+.SH BOOLEAN ARGUMENTS
+A number of commands take one or several boolean arguments. These
+take a few equivalent inputs: 'yes', 'on', 'true', 't' and 'y' all
+evaluate to True while 'no', 'off', 'false', 'f' and 'n' evaluate
+to False. Some commands allow 'toggle' too which means that the
+feature is disabled if it is currently enabled and vice versa.
+
 .SH BUILT IN KEY AND MOUSE BINDINGS
 The following commands are built-in to fvwm2:
 .EX
@@ -854,6 +861,22 @@ BorderStyle Inactive -- !NoInset
 Title-bar buttons can inherit the border style with the UseBorderStyle
 flag (see ButtonStyle).
 
+
+.IP "ButtonState [ \fIActiveDown\fP \fIbool\fP ] [ \fIinactive\fP \fIbool\fP ]"
+The \fIButtonState\fP command controls which states of the window
+titles and title buttons are used.  The default is to use all three
+states: ActiveUp, ActiveDown and Inactive (see \fIButtonStyle\fP and
+\fITitleStyle\fP commands).  The \fIbool\fP argument after the key
+word controls if the designated state is used ('True') or not
+('False'). The ActiveUp state cannot be deactivated. If no arguments
+are provided or the given arguments are illegal, the default is
+restored.
+
+The \fIActiveDown\fP state allows different button styles for pressed
+down buttons and titles on active windows.  Otherwise the
+"ActiveUp" state is used instead.  The \fIInactive\fP state allows
+different button and title styles for inactive windows.  Otherwise
+the "ActiveUp" state is used instead.
 
 .IP "ButtonStyle \fIbutton\fP [ \fIstate\fP ] [ \fIstyle\fP ] [ -- \fI[!]flag ...\fP ]"
 Sets the button style for a title-bar button.  \fIbutton\fP is the
@@ -1694,13 +1717,12 @@ this font to the default font (see \fIDefaultFont\fP) you may omit
 \fIfontname\fP.
 
 
-.IP "Iconify [ \fImode\fP ]"
+.IP "Iconify [ \fIbool\fP ]"
 Iconifies a window if it is not already iconified or de-iconifies it
-if it is already iconified.  If the optional argument \fImode\fP is
-'y', 'yes', 'on', 'true' or 't', only iconification will be allowed,
-while if \fImode\fP is 'n', 'no', 'off', 'false' or 'f', then only
-de-iconification is allowed.  Using 'toggle' switches between between
-iconified and de-iconified state.
+if it is already iconified.  The optional argument \fIbool\fP is a
+boolean argument. 'True' means only iconification will be allowed,
+while 'False' forces de-iconification.  Using 'toggle' switches
+between iconified and de-iconified states.
 
 For backwards compatibility, the optional argument may also be a
 positive number to signifiy 'on', and negative to signify 'off'.
@@ -1812,12 +1834,12 @@ AddToFunc lower-to-bottom
  + I Lower
 .EE
 
-.IP "Maximize [ \fImode\fP ] [ \fI horizontal vertical\fP ]"
-Without its optional arguments (or if the \fImode\fP bit has the
+.IP "Maximize [ \fIbool\fP ] [ \fI horizontal vertical\fP ]"
+Without its optional arguments (or if the \fIbool\fP bit has the
 value 'toggle') Maximize causes the window to alternately switch
 from a full-screen size to its normal size. To force a window into
-maximized (unmaximized) state you can use 'y', 'yes', 'on', 'true'
-or 't' ('n', 'no', 'off', 'false' or 'f') as the \fImode\fP.
+maximized (unmaximized) state you can use a 'True' ('False') value
+for the \fIbool\fP argument.
 
 With the optional arguments horizontal and vertical, which are
 expressed as percentage of a full screen, the user can control the new
@@ -2931,12 +2953,12 @@ Y coordinates are not coupled.  For example, a window may snap to another
 window on the X axis while snapping to a grid point on the Y axis.
 Calling this command without arguments reinstates the default settings.
 
-.IP "Stick [ \fImode\fP ]"
-If the \fImode\fP argument is empty or 'toggle', the Stick command makes
+.IP "Stick [ \fIbool\fP ]"
+If the \fIbool\fP argument is empty or 'toggle', the Stick command makes
 a window sticky if it is not already sticky, or non-sticky if it
 is already sticky. To make a window sticky regardless of its current
-state the \fImode\fP argument can be one of 'y', 'yes', 'on', 'true'
-or 't'. To make it non-sticky use 'n', 'no', 'off', 'false' or 'f'.
+state the \fIbool\fP argument must be 'True'. To make it non-sticky
+use 'False'.
 
 .IP "Stroke \fIsequence button Context Modifiers Function\fP"
 Binds a mouse stroke sequence to a specified \fIfvwm2\fP built-in function,
@@ -3548,14 +3570,13 @@ syntax has changed. If you used "WindowsDesk n" to move a window to
 desk n, you will have to change it to "MoveToDesk 0 n".
 
 
-.IP "WindowShade [ \fImode\fP ]"
+.IP "WindowShade [ \fIbool\fP ]"
 Toggles the window shade feature for titled windows.  Windows in the
-shaded state only display a title bar.  If \fImode\fP is not given or
-'toggle', the window shade state is toggled.  If \fImode\fP is 'y',
-'yes', 'on', 'true' or 't', the window is forced to the shaded state.
-If \fImode\fP is 'n', 'no', 'off', 'false' or 'f', then the window
-is forced to the non-shaded state.  Windows without titles cannot be
-shaded. See also \fIWindowShadeAnimate\fP.
+shaded state only display a title bar.  If \fIbool\fP is not given or
+'toggle', the window shade state is toggled.  If \fIbool\fP is 'True',
+the window is forced to the shaded state. If \fIbool\fP is 'False',
+then the window is forced to the non-shaded state.  Windows without
+titles cannot be shaded. See also \fIWindowShadeAnimate\fP.
 
 For backwards compatibility, the optional argument may also be '1'
 to signifiy 'on', and '2' to signify 'off'. Note that this syntax

@@ -283,25 +283,6 @@ int XCmpToken(const char *s, const char **t)
 }
 
 
-/*
-** NukeToken: removes next token from string
-*/
-void NukeToken(char **pstr)
-{
-  char *tok;
-  char *next;
-  char *temp = NULL;
-
-  next = GetNextToken(*pstr, &tok);
-  if (next != NULL)
-    temp = strdup(next);
-  if (pstr && *pstr)
-    free(*pstr);
-  *pstr = temp;
-  if (tok)
-    free(tok);
-}
-
 /****************************************************************************
  *
  * Gets the next "word" of input from string indata.
@@ -388,18 +369,16 @@ char *GetModuleResource(char *indata, char **resource, char *module_name)
       *resource = NULL;
       return indata;
     }
-  next = GetNextToken(indata, &tmp);
+  tmp = PeekToken(indata, &next);
   if (!tmp)
     return next;
 
   if (tmp[0] != '*' || strncasecmp(tmp+1, module_name, strlen(module_name)))
     {
-      free(tmp);
       *resource = NULL;
       return indata;
     }
   CopyString(resource, tmp+1+strlen(module_name));
-  free(tmp);
   return next;
 }
 
@@ -429,7 +408,7 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
 
   for (i = 0; i < num && action; i++)
   {
-    action = GetNextToken(action, &token);
+    token = PeekToken(action, &action);
     if (token == NULL)
       break;
     if (sscanf(token, "%d", &(retvals[i])) != 1)
@@ -458,11 +437,7 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
 	if (j == suffixes)
 	  ret_suffixnum[i] = 0;
       }
-    free(token);
-    token = NULL;
   }
-  if (token)
-    free(token);
   if (ret_action != NULL)
     *ret_action = action;
 
@@ -544,14 +519,13 @@ char *GetNextTokenIndex(char *action, char *list[], int len, int *index)
   if (!index)
     return action;
 
-  next = GetNextToken(action, &token);
+  token = PeekToken(action, &next);
   if (!token)
-    {
-      *index = -1;
-      return action;
-    }
+  {
+    *index = -1;
+    return action;
+  }
   *index = GetTokenIndex(token, list, len, NULL);
-  free(token);
 
   return (*index == -1) ? action : next;
 }
@@ -562,12 +536,11 @@ int GetRectangleArguments(char *action, int *width, int *height)
   char *token;
   int n;
 
-  GetNextToken(action, &token);
+  token = PeekToken(action, NULL);
   if (!token)
     return 0;
   /* now try MxN style number, specifically for DeskTopSize: */
   n = sscanf(token, "%d%*c%d", width, height);
-  free(token);
 
   return (n == 2) ? 2 : 0;
 }
@@ -583,7 +556,7 @@ int GetOnePercentArgument(char *action, int *value, int *unit_io)
   *value = 0;
   if (!action)
     return 0;
-  GetNextToken(action, &token);
+  token = PeekToken(action, NULL);
   if (!token)
     return 0;
 
@@ -596,7 +569,6 @@ int GetOnePercentArgument(char *action, int *value, int *unit_io)
   }
   n = sscanf(token, "%d", value);
 
-  free(token);
   return n;
 }
 
@@ -642,7 +614,6 @@ int ParseToggleArgument(char *action, char **ret_action, int default_ret,
 {
   int index;
   int rc;
-  char *token;
   char *next;
   char *optlist[] = {
     "toggle",
@@ -654,8 +625,7 @@ int ParseToggleArgument(char *action, char **ret_action, int default_ret,
     NULL
   };
 
-  next = GetNextToken(action, &token);
-  index = GetTokenIndex(token, optlist, 0, NULL);
+  next = GetNextTokenIndex(action, optlist, 0, &index);
   if (index == 0 && no_toggle == 0)
   {
     /* toggle requested explicitly */
@@ -675,7 +645,5 @@ int ParseToggleArgument(char *action, char **ret_action, int default_ret,
 
   if (ret_action)
     *ret_action = next;
-  if (token)
-    free(token);
   return rc;
 }

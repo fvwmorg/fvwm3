@@ -8,7 +8,7 @@ man_MANS = fvwm2.1
 
 config_DATA = ConfigFvwmDefaults ConfigFvwmSetup
 
-fvwm2_SOURCES = add_window.c bindings.h bindings.c borders.c \
+fvwm2_SOURCES = add_window.c bindings.h bindings.c borders.c borders.h \
 	builtins.c colormaps.c \
 	colormaps.h colors.c cursor.c cursor.h decorations.c defaults.h \
 	events.c events.h focus.c focus.h \
@@ -16,7 +16,7 @@ fvwm2_SOURCES = add_window.c bindings.h bindings.c borders.c \
 	gnome.c gnome.h icccm2.c icons.c icons.h menus.c menus.h misc.c \
 	misc.h modconf.c module_interface.c module_interface.h \
 	move_resize.c move_resize.h \
-	parse.h placement.c read.c read.h repeat.h repeat.c screen.h \
+	placement.c read.c read.h repeat.h repeat.c screen.h \
 	session.c session.h stack.c stack.h \
 	style.c	style.h virtual.c virtual.h window_flags.h windowlist.c
 

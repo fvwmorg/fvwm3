@@ -37,11 +37,11 @@
 #include "fvwm.h"
 #include "events.h"
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 #include "module_interface.h"
 #include "move_resize.h"
 #include "virtual.h"
+#include "borders.h"
 
 /* ----- move globals ----- */
 extern XEvent Event;

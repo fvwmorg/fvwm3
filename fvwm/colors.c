@@ -44,7 +44,6 @@
 
 #include "fvwm.h"
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 
 /***********************************************************************

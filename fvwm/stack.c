@@ -24,7 +24,6 @@
 #include <X11/Xatom.h>
 #include <X11/Xutil.h>
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 #include "module_interface.h"
 #include "stack.h"

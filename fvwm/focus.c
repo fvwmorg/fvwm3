@@ -40,6 +40,7 @@
 #include "bindings.h"
 #include "stack.h"
 #include "virtual.h"
+#include "borders.h"
 
 static Bool lastFocusType;
 

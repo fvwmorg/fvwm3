@@ -22,7 +22,9 @@
 #ifndef _CURSOR_
 #define _CURSOR_
 
+#include "fvwm.h"
 #include <X11/Xlib.h>
+#include "menus.h"
 
 /* Cursor types */
 typedef enum
@@ -55,5 +57,6 @@ typedef enum
 
 
 Cursor *CreateCursors(Display *dpy);
+void CursorStyle(F_CMD_ARGS);
 
 #endif /* _CURSOR_ */

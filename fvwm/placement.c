@@ -33,11 +33,11 @@
 #include "fvwm.h"
 #include "style.h"
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 #include "move_resize.h"
 #include "virtual.h"
 #include "stack.h"
+#include "borders.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A)<(B)? (A):(B))

@@ -24,7 +24,6 @@
 #include "fvwm.h"
 #include "misc.h"
 #include "screen.h"
-#include "parse.h"
 #include "Module.h"
 
 #include <X11/Xproto.h>

@@ -13,8 +13,8 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef STACK_H
-#define STACK_H
+#ifndef _STACK_H
+#define _STACK_H
 
 void remove_window_from_stack_ring(FvwmWindow *t);
 void add_window_to_stack_ring_after(FvwmWindow *t, FvwmWindow *add_after_win);
@@ -46,4 +46,4 @@ void change_layer(F_CMD_ARGS);
 void SetDefaultLayers(F_CMD_ARGS);
 
 
-#endif /* STACK_H */
+#endif /* _STACK_H */

@@ -59,7 +59,6 @@
 #include <X11/Xproto.h>
 #include "misc.h"
 #include "screen.h"
-#include "parse.h"
 #include "lang-strings.h"
 
 

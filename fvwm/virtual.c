@@ -22,13 +22,13 @@
 #include "fvwm.h"
 #include "icons.h"
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 #include "Module.h"
 #include "focus.h"
 #include "move_resize.h"
 #include "virtual.h"
 #include "gnome.h"
+#include "borders.h"
 
 static void UnmapDesk(int desk, Bool grab);
 static void MapDesk(int desk, Bool grab);

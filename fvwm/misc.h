@@ -64,14 +64,12 @@ extern char NoResource[];
 #define F_CMD_ARGS XEvent *eventp,Window w,FvwmWindow *tmp_win,\
 unsigned long context,char *action, int *Module
 
-void SetupFrame(FvwmWindow *,int,int,int,int,Bool,Bool);
 void CreateGCs(void);
 void InstallWindowColormaps(FvwmWindow *);
 void InstallRootColormap(void);
 void UninstallRootColormap(void);
 void FetchWmProtocols(FvwmWindow *);
 void FetchWmColormapWindows (FvwmWindow *tmp);
-void SetTitleBar(FvwmWindow *, Bool,Bool);
 void RestoreWithdrawnLocation(FvwmWindow *, Bool);
 void Destroy(FvwmWindow *);
 void GetGravityOffsets (FvwmWindow *, int *, int *);
@@ -96,7 +94,6 @@ void SetTimer(int);
 int flush_expose(Window w);
 
 void do_windowList(F_CMD_ARGS);
-void SetShape(FvwmWindow *, int);
 void executeModule(F_CMD_ARGS);
 void initModules(void);
 int HandleModuleInput(Window w, int channel);
@@ -123,8 +120,6 @@ RETSIGTYPE DeadPipe(int nonsense);
 void GetMwmHints(FvwmWindow *t);
 void GetOlHints(FvwmWindow *t);
 void SelectDecor(FvwmWindow *, style_flags *, int,int);
-void SetBorder (FvwmWindow *, Bool,Bool,Bool, Window);
-void RedrawBorder (FvwmWindow *, Bool,Bool,Bool, Window);
 void set_animation(F_CMD_ARGS);
 void CreateIconWindow(FvwmWindow *, int, int);
 void SetStickyProp(FvwmWindow *, int, int, int);
@@ -144,7 +139,6 @@ void SetOneStyle(char *text,FILE *,char **,int *);
 void ParseStyle(char *text,FILE *,char **,int *);
 void assign_string(char *text, FILE *fd, char **arg,int *);
 void SetFlag(char *text, FILE *fd, char **arg,int *);
-void SetCursor(char *text, FILE *fd, char  **arg,int *);
 void SetInts(char *text, FILE *fd, char **arg,int *);
 void SetBox(char *text, FILE *fd, char **arg,int *);
 void set_func(char *, FILE *, char **,int *);
@@ -152,7 +146,6 @@ void copy_config(FILE **config_fd);
 void SetEdgeScroll(F_CMD_ARGS);
 void SetEdgeResistance(F_CMD_ARGS);
 void SetMoveThreshold(F_CMD_ARGS);
-void CursorStyle(F_CMD_ARGS);
 void ButtonStyle(F_CMD_ARGS);
 #ifdef MULTISTYLE
 void AddButtonStyle(F_CMD_ARGS);
@@ -241,9 +234,6 @@ void SetDefaultIcon(F_CMD_ARGS);
 void LoadDefaultFont(F_CMD_ARGS);
 void LoadIconFont(F_CMD_ARGS);
 void LoadWindowFont(F_CMD_ARGS);
-#ifdef BORDERSTYLE
-void SetBorderStyle(F_CMD_ARGS);
-#endif
 void SetTitleStyle(F_CMD_ARGS);
 #ifdef MULTISTYLE
 void AddTitleStyle(F_CMD_ARGS);

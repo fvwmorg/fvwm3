@@ -48,7 +48,6 @@
 
 #include "fvwm.h"
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 #include "module_interface.h"
 #include "libs/Picture.h"

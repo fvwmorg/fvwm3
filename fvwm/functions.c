@@ -43,7 +43,6 @@
 #include "menus.h"
 #include "focus.h"
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 #include "bindings.h"
 #include "repeat.h"
@@ -52,6 +51,7 @@
 #include "virtual.h"
 #include "stack.h"
 #include "gnome.h"
+#include "borders.h"
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
@@ -109,6 +109,7 @@ static const struct functions func_config[] =
 #ifdef BORDERSTYLE
   {"borderstyle",  SetBorderStyle,   F_BORDERSTYLE,         0},
 #endif /* BORDERSTYLE */
+  {"buttonstate",  cmd_button_state, F_BUTTON_STATE,        0},
   {"buttonstyle",  ButtonStyle,      F_BUTTON_STYLE,        0},
 #ifdef USEDECOR
   {"changedecor",  ChangeDecor,      F_CHANGE_DECOR,        FUNC_NEEDS_WINDOW},
@@ -121,7 +122,7 @@ static const struct functions func_config[] =
   {"current",      CurrentFunc,      F_CURRENT,             0},
   {"cursormove",   movecursor,       F_MOVECURSOR,          0},
   {"cursorstyle",  CursorStyle,      F_CURSOR_STYLE,        0},
-  {"defaultbackground",SetDefaultBackground, F_DFLT_BACK,         0},
+  {"defaultbackground",SetDefaultBackground, F_DFLT_BACK,   0},
   {"defaultcolors",SetDefaultColors, F_DFLT_COLORS,         0},
   {"defaultfont",  LoadDefaultFont,  F_DFLT_FONT,           0},
   {"defaulticon",  SetDefaultIcon,   F_DFLT_ICON,           0},
@@ -162,7 +163,7 @@ static const struct functions func_config[] =
   {"ignoremodifiers",ignore_modifiers,F_IGNORE_MODIFIERS,   0},
   {"imagepath",    imagePath_function,F_IMAGE_PATH,         0},
   {"key",          key_binding,      F_KEY,                 0},
-  {"killmodule",   module_zapper,    F_ZAP,                 0},
+  {"killmodule",   module_zapper,    F_KILL_MODULE,         0},
   {"layer",        change_layer,     F_LAYER,               FUNC_NEEDS_WINDOW},
   {"lower",        lower_function,   F_LOWER,               FUNC_NEEDS_WINDOW},
   {"maximize",     Maximize,         F_MAXIMIZE,            FUNC_NEEDS_WINDOW},

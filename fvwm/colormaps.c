@@ -31,20 +31,20 @@
 #include "colormaps.h"
 #include <X11/Xatom.h>
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 #include "Module.h"
 
-
-/* clasen@mathematik.uni-freiburg.de - 03/01/1999 - new
-   boolean for handling of client-side InstallColormap
-   as described in the ICCCM 2.0 */
-
-Bool client_controls_colormaps = False;
-
 FvwmWindow *colormap_win;
-Colormap last_cmap = None;
 extern FvwmWindow *Tmp_win;
+
+static Bool client_controls_colormaps = False;
+static Colormap last_cmap = None;
+
+void set_client_controls_colormaps(Bool flag)
+{
+  client_controls_colormaps = flag;
+  return;
+}
 
 /***********************************************************************
  *
@@ -280,5 +280,3 @@ void FetchWmColormapWindows (FvwmWindow *tmp)
       tmp->cmap_windows = NULL;
     }
 }
-
-

@@ -20,7 +20,6 @@ char *DoPeekToken(char *indata, char **token, char *spaces, char *delims,
 		  char *out_delim);
 char *PeekToken(char *indata, char **token);
 int MatchToken(char *pstr,char *tok);
-void NukeToken(char **pstr);
 
 /* old style parse routine: */
 char *DoGetNextToken(char *indata,char **token, char *spaces, char *delims,

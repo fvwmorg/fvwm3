@@ -100,3 +100,9 @@ void UninstallRootColormap(void);
  *
  ****************************************************************************/
 void FetchWmColormapWindows (FvwmWindow *tmp);
+
+/* clasen@mathematik.uni-freiburg.de - 03/01/1999 - new
+   boolean for handling of client-side InstallColormap
+   as described in the ICCCM 2.0 */
+
+void set_client_controls_colormaps(Bool flag);

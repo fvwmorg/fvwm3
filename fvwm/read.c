@@ -38,7 +38,6 @@
 #include "fvwm.h"
 #include "read.h"
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 #include "Module.h"
 
@@ -50,7 +49,7 @@ char *fvwm_file = NULL;
 /**
  * Read and execute each line from stream.
  **/
-void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win, 
+void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
 			 unsigned long context, int Module )
 {
     char *tline,line[1024];
@@ -70,9 +69,9 @@ void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
 	tline=line;
 	while(isspace(*tline))
 	    tline++;
-	if (debugging) 
+	if (debugging)
 	    fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);
-	
+
 	ExecuteFunction(tline,tmp_win,eventp,context,Module,EXPAND_COMMAND);
 	tline = fgets(line,(sizeof line)-1,f);
     }
@@ -88,7 +87,7 @@ void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *tmp_win,
  * The filename and the presence of the quiet flag are returned
  * using the pointer arguments.
  **/
-static int parse_filename( char* cmdname, char* action, 
+static int parse_filename( char* cmdname, char* action,
 			   char** filename, int* quiet_flag )
 {
     char* rest;
@@ -97,7 +96,7 @@ static int parse_filename( char* cmdname, char* action,
     /*  fvwm_msg(INFO,cmdname,"action == '%s'",action); */
 
     /* read file name arg */
-    rest = GetNextToken(action,filename); 
+    rest = GetNextToken(action,filename);
     if(*filename == NULL) {
 	fvwm_msg(ERR, cmdname, "missing filename parameter");
 	return 0;
@@ -118,7 +117,7 @@ static int parse_filename( char* cmdname, char* action,
 /**
  * Returns FALSE if file not found
  **/
-int run_command_file( char* filename, XEvent *eventp, FvwmWindow *tmp_win, 
+int run_command_file( char* filename, XEvent *eventp, FvwmWindow *tmp_win,
 		      unsigned long context, int Module )
 {
     FILE* f;
@@ -169,7 +168,7 @@ void ReadFile(F_CMD_ARGS)
     if ( !run_command_file( filename, eventp, tmp_win, context, *Module ) &&
 	 !read_quietly )
     {
-	fvwm_msg( ERR, "Read", 
+	fvwm_msg( ERR, "Read",
 		  "file '%s' not found in %s or "FVWM_CONFIGDIR,
 		  filename, user_home_dir );
     }

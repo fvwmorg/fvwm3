@@ -1,5 +1,8 @@
 Changes in beta release 2.3.5 (July 1999)
 
+* The activedow-button and inactive-button configure options have been replaced
+  with the ButtonState built in command.
+
 * Most of the configure options have been removed.
 
 * The cursors used for resizing and selecting windows and handling menus have

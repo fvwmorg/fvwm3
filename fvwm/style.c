@@ -47,7 +47,6 @@
 #include "fvwm.h"
 #include "fvwmlib.h"
 #include "misc.h"
-#include "parse.h"
 #include "screen.h"
 #include "gnome.h"
 

@@ -36,36 +36,23 @@
 
 #include "fvwm.h"
 #include "icons.h"
-#include "misc.h"
-#include "parse.h"
 #include "screen.h"
+#include "misc.h"
 #include "Module.h"
+#include "borders.h"
 
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif
 
-void DrawButton(FvwmWindow *t,
-                Window win,
-                int W,
-                int H,
-                ButtonFace *bf,
-                GC ReliefGC, GC ShadowGC,
-		Boolean inverted,
-		int stateflags);
-
-#ifdef VECTOR_BUTTONS
-void DrawLinePattern(Window win,
-                     GC ReliefGC,
-                     GC ShadowGC,
-		     struct vector_coords *coords,
-                     int w, int h);
-#endif
-
 extern Window PressedW;
+extern FvwmDecor *cur_decor;
 XGCValues Globalgcv;
 unsigned long Globalgcm;
 
+extern Boolean ReadButtonFace(
+  char *s, ButtonFace *bf, int button, int verbose);
+extern void FreeButtonFace(Display *dpy, ButtonFace *bf);
 
 /* change window background color/pixmap */
 static void change_window_color(Window w, unsigned long valuemask,
@@ -73,6 +60,174 @@ static void change_window_color(Window w, unsigned long valuemask,
 {
   XChangeWindowAttributes(dpy, w, valuemask, attributes);
   XClearWindow(dpy, w);
+}
+
+#ifdef VECTOR_BUTTONS
+/****************************************************************************
+ *
+ *  Draws a little pattern within a window (more complex)
+ *
+ ****************************************************************************/
+static void DrawLinePattern(Window win, GC ReliefGC, GC ShadowGC,
+			    struct vector_coords *coords, int w, int h)
+{
+  int i;
+  for (i = 1; i < coords->num; ++i)
+  {
+      XDrawLine(dpy,win,
+		(coords->line_style & (1 << i))  ? ReliefGC : ShadowGC,
+		w * coords->x[i-1]/100,
+		h * coords->y[i-1]/100,
+		w * coords->x[i]/100,
+		h * coords->y[i]/100);
+  }
+}
+#endif /* VECTOR_BUTTONS */
+
+/****************************************************************************
+ *
+ *  Redraws buttons (veliaa@rpi.edu)
+ *
+ ****************************************************************************/
+static void DrawButton(FvwmWindow *t, Window win, int w, int h,
+		       ButtonFace *bf, GC ReliefGC, GC ShadowGC,
+		       Boolean inverted, int stateflags)
+{
+  register int type = bf->style & ButtonFaceTypeMask;
+#ifdef PIXMAP_BUTTONS
+  Picture *p;
+  int border = 0;
+  int width, height, x, y;
+#endif
+
+  switch (type)
+    {
+    case SimpleButton:
+      break;
+
+    case SolidButton:
+      XSetWindowBackground(dpy, win, bf->u.back);
+      flush_expose(win);
+      XClearWindow(dpy,win);
+      break;
+
+#ifdef VECTOR_BUTTONS
+    case VectorButton:
+      if(HAS_MWM_BUTTONS(t) &&
+	 ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
+	  (stateflags & MWMDecorShade && IS_SHADED(t)) ||
+	  (stateflags & MWMDecorStick && IS_STICKY(t))))
+	DrawLinePattern(win, ShadowGC, ReliefGC, &bf->u.vector, w, h);
+      else
+	DrawLinePattern(win, ReliefGC, ShadowGC, &bf->u.vector, w, h);
+      break;
+#endif /* VECTOR_BUTTONS */
+
+#ifdef PIXMAP_BUTTONS
+#ifdef MINI_ICONS
+    case MiniIconButton:
+    case PixmapButton:
+      if (type == PixmapButton)
+	p = bf->u.p;
+      else {
+	if (!t->mini_icon)
+	  break;
+	p = t->mini_icon;
+      }
+#else
+    case PixmapButton:
+      p = bf->u.p;
+#endif /* MINI_ICONS */
+      if (bf->style & FlatButton)
+	border = 0;
+      else
+	border = HAS_MWM_BORDER(t) ? 1 : 2;
+      width = w - border * 2; height = h - border * 2;
+
+      x = border;
+      if (bf->style&HOffCenter) {
+	if (bf->style&HRight)
+	  x += (int)(width - p->width);
+      } else
+	x += (int)(width - p->width) / 2;
+
+      y = border;
+      if (bf->style&VOffCenter) {
+	if (bf->style&VBottom)
+	  y += (int)(height - p->height);
+      } else
+	y += (int)(height - p->height) / 2;
+
+      if (x < border)
+	x = border;
+      if (y < border)
+	y = border;
+      if (width > p->width)
+	width = p->width;
+      if (height > p->height)
+	height = p->height;
+      if (width > w - x - border)
+	width = w - x - border;
+      if (height > h - y - border)
+	height = h - y - border;
+
+      XSetClipMask(dpy, Scr.TransMaskGC, p->mask);
+      XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
+      XCopyArea(dpy, p->picture, win, Scr.TransMaskGC,
+		0, 0, width, height, x, y);
+      break;
+
+    case TiledPixmapButton:
+      XSetWindowBackgroundPixmap(dpy, win, bf->u.p->picture);
+      flush_expose(win);
+      XClearWindow(dpy,win);
+      break;
+#endif /* PIXMAP_BUTTONS */
+
+#ifdef GRADIENT_BUTTONS
+    case HGradButton:
+    case VGradButton:
+    {
+      XRectangle bounds;
+      bounds.x = bounds.y = 0;
+      bounds.width = w;
+      bounds.height = h;
+      flush_expose(win);
+
+#ifdef PIXMAP_BUTTONS
+      XSetClipMask(dpy, Scr.TransMaskGC, None);
+#endif
+      if (type == HGradButton) {
+	register int i = 0, dw = bounds.width
+	  / bf->u.grad.npixels + 1;
+	while (i < bf->u.grad.npixels)
+	  {
+	    unsigned short x = i * bounds.width / bf->u.grad.npixels;
+	    XSetForeground(dpy, Scr.TransMaskGC, bf->u.grad.pixels[ i++ ]);
+	    XFillRectangle(dpy, win, Scr.TransMaskGC,
+			   bounds.x + x, bounds.y,
+			   dw, bounds.height);
+	  }
+      } else {
+	register int i = 0, dh = bounds.height
+	  / bf->u.grad.npixels + 1;
+	while (i < bf->u.grad.npixels)
+	  {
+	    unsigned short y = i * bounds.height / bf->u.grad.npixels;
+	    XSetForeground(dpy, Scr.TransMaskGC, bf->u.grad.pixels[ i++ ]);
+	    XFillRectangle(dpy, win, Scr.TransMaskGC,
+			   bounds.x, bounds.y + y,
+			   bounds.width, dh);
+	  }
+      }
+    }
+    break;
+#endif /* GRADIENT_BUTTONS */
+
+    default:
+      fvwm_msg(ERR,"DrawButton","unknown button type");
+      break;
+    }
 }
 
 /* rules to get button state */
@@ -713,151 +868,6 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 
 }
 
-/****************************************************************************
- *
- *  Redraws buttons (veliaa@rpi.edu)
- *
- ****************************************************************************/
-void DrawButton(FvwmWindow *t, Window win, int w, int h,
-		ButtonFace *bf, GC ReliefGC, GC ShadowGC,
-		Boolean inverted, int stateflags)
-{
-  register int type = bf->style & ButtonFaceTypeMask;
-#ifdef PIXMAP_BUTTONS
-  Picture *p;
-  int border = 0;
-  int width, height, x, y;
-#endif
-
-  switch (type)
-    {
-    case SimpleButton:
-      break;
-
-    case SolidButton:
-      XSetWindowBackground(dpy, win, bf->u.back);
-      flush_expose(win);
-      XClearWindow(dpy,win);
-      break;
-
-#ifdef VECTOR_BUTTONS
-    case VectorButton:
-      if(HAS_MWM_BUTTONS(t) &&
-	 ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
-	  (stateflags & MWMDecorShade && IS_SHADED(t)) ||
-	  (stateflags & MWMDecorStick && IS_STICKY(t))))
-	DrawLinePattern(win, ShadowGC, ReliefGC, &bf->u.vector, w, h);
-      else
-	DrawLinePattern(win, ReliefGC, ShadowGC, &bf->u.vector, w, h);
-      break;
-#endif /* VECTOR_BUTTONS */
-
-#ifdef PIXMAP_BUTTONS
-#ifdef MINI_ICONS
-    case MiniIconButton:
-    case PixmapButton:
-      if (type == PixmapButton)
-	p = bf->u.p;
-      else {
-	if (!t->mini_icon)
-	  break;
-	p = t->mini_icon;
-      }
-#else
-    case PixmapButton:
-      p = bf->u.p;
-#endif /* MINI_ICONS */
-      if (bf->style & FlatButton)
-	border = 0;
-      else
-	border = HAS_MWM_BORDER(t) ? 1 : 2;
-      width = w - border * 2; height = h - border * 2;
-
-      x = border;
-      if (bf->style&HOffCenter) {
-	if (bf->style&HRight)
-	  x += (int)(width - p->width);
-      } else
-	x += (int)(width - p->width) / 2;
-
-      y = border;
-      if (bf->style&VOffCenter) {
-	if (bf->style&VBottom)
-	  y += (int)(height - p->height);
-      } else
-	y += (int)(height - p->height) / 2;
-
-      if (x < border)
-	x = border;
-      if (y < border)
-	y = border;
-      if (width > p->width)
-	width = p->width;
-      if (height > p->height)
-	height = p->height;
-      if (width > w - x - border)
-	width = w - x - border;
-      if (height > h - y - border)
-	height = h - y - border;
-
-      XSetClipMask(dpy, Scr.TransMaskGC, p->mask);
-      XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
-      XCopyArea(dpy, p->picture, win, Scr.TransMaskGC,
-		0, 0, width, height, x, y);
-      break;
-
-    case TiledPixmapButton:
-      XSetWindowBackgroundPixmap(dpy, win, bf->u.p->picture);
-      flush_expose(win);
-      XClearWindow(dpy,win);
-      break;
-#endif /* PIXMAP_BUTTONS */
-
-#ifdef GRADIENT_BUTTONS
-    case HGradButton:
-    case VGradButton:
-    {
-      XRectangle bounds;
-      bounds.x = bounds.y = 0;
-      bounds.width = w;
-      bounds.height = h;
-      flush_expose(win);
-
-#ifdef PIXMAP_BUTTONS
-      XSetClipMask(dpy, Scr.TransMaskGC, None);
-#endif
-      if (type == HGradButton) {
-	register int i = 0, dw = bounds.width
-	  / bf->u.grad.npixels + 1;
-	while (i < bf->u.grad.npixels)
-	  {
-	    unsigned short x = i * bounds.width / bf->u.grad.npixels;
-	    XSetForeground(dpy, Scr.TransMaskGC, bf->u.grad.pixels[ i++ ]);
-	    XFillRectangle(dpy, win, Scr.TransMaskGC,
-			   bounds.x + x, bounds.y,
-			   dw, bounds.height);
-	  }
-      } else {
-	register int i = 0, dh = bounds.height
-	  / bf->u.grad.npixels + 1;
-	while (i < bf->u.grad.npixels)
-	  {
-	    unsigned short y = i * bounds.height / bf->u.grad.npixels;
-	    XSetForeground(dpy, Scr.TransMaskGC, bf->u.grad.pixels[ i++ ]);
-	    XFillRectangle(dpy, win, Scr.TransMaskGC,
-			   bounds.x, bounds.y + y,
-			   bounds.width, dh);
-	  }
-      }
-    }
-    break;
-#endif /* GRADIENT_BUTTONS */
-
-    default:
-      fvwm_msg(ERR,"DrawButton","unknown button type");
-      break;
-    }
-}
 
 /****************************************************************************
  *
@@ -1038,31 +1048,6 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 
 }
 
-
-#ifdef VECTOR_BUTTONS
-/****************************************************************************
- *
- *  Draws a little pattern within a window (more complex)
- *
- ****************************************************************************/
-void DrawLinePattern(Window win,
-                     GC ReliefGC,
-                     GC ShadowGC,
-		     struct vector_coords *coords,
-                     int w, int h)
-{
-  int i;
-  for (i = 1; i < coords->num; ++i)
-  {
-      XDrawLine(dpy,win,
-		(coords->line_style & (1 << i))  ? ReliefGC : ShadowGC,
-		w * coords->x[i-1]/100,
-		h * coords->y[i-1]/100,
-		w * coords->x[i]/100,
-		h * coords->y[i]/100);
-  }
-}
-#endif /* VECTOR_BUTTONS */
 
 
 /***********************************************************************
@@ -1378,3 +1363,140 @@ void SetShape(FvwmWindow *tmp_win, int w)
   }
 #endif
 }
+
+/****************************************************************************
+ *
+ *  Sets the allowed button states
+ *
+ ****************************************************************************/
+void cmd_button_state(F_CMD_ARGS)
+{
+  char *token;
+
+  while ((token = PeekToken(action, &action)))
+  {
+    static char first = True;
+    if (!token && first)
+    {
+      Scr.gs.use_active_down_buttons = DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
+      Scr.gs.use_inactive_buttons = DEFAULT_USE_INACTIVE_BUTTONS;
+      return;
+    }
+    first = False;
+    if (StrEquals("activedown", token))
+    {
+      Scr.gs.use_active_down_buttons =
+	ParseToggleArgument(action, &action, DEFAULT_USE_ACTIVE_DOWN_BUTTONS,
+			    True);
+    }
+    else if (StrEquals("inactive", token))
+    {
+      Scr.gs.use_inactive_buttons =
+	ParseToggleArgument(action, &action, DEFAULT_USE_ACTIVE_DOWN_BUTTONS,
+			    True);
+    }
+    else
+    {
+      Scr.gs.use_active_down_buttons = DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
+      Scr.gs.use_inactive_buttons = DEFAULT_USE_INACTIVE_BUTTONS;
+      fvwm_msg(ERR, "cmd_button_state", "unknown button state %s\n", token);
+      return;
+    }
+  }
+  return;
+}
+
+
+#ifdef BORDERSTYLE
+/****************************************************************************
+ *
+ *  Sets the border style (veliaa@rpi.edu)
+ *
+ ****************************************************************************/
+void SetBorderStyle(F_CMD_ARGS)
+{
+    char *parm = NULL, *prev = action;
+#ifdef USEDECOR
+    FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
+#else
+    FvwmDecor *fl = &Scr.DefaultDecor;
+#endif
+
+    action = GetNextToken(action, &parm);
+    while (parm)
+    {
+	if (StrEquals(parm,"active") || StrEquals(parm,"inactive"))
+	{
+	    int len;
+	    char *end, *tmp;
+	    ButtonFace tmpbf, *bf;
+	    tmpbf.style = SimpleButton;
+#ifdef MULTISTYLE
+	    tmpbf.next = NULL;
+#endif
+#ifdef MINI_ICONS
+	    tmpbf.u.p = NULL;
+#endif
+	    if (StrEquals(parm,"active"))
+		bf = &fl->BorderStyle.active;
+	    else
+		bf = &fl->BorderStyle.inactive;
+	    while (isspace(*action)) ++action;
+	    if (*action != '(') {
+		if (!*action) {
+		    fvwm_msg(ERR,"SetBorderStyle",
+			     "error in %s border specification", parm);
+		    free(parm);
+		    return;
+		}
+		free(parm);
+		while (isspace(*action)) ++action;
+		if (ReadButtonFace(action, &tmpbf,-1,True)) {
+		    FreeButtonFace(dpy, bf);
+		    *bf = tmpbf;
+		}
+		break;
+	    }
+	    end = strchr(++action, ')');
+	    if (!end) {
+		fvwm_msg(ERR,"SetBorderStyle",
+			 "error in %s border specification", parm);
+		free(parm);
+		return;
+	    }
+	    len = end - action + 1;
+	    tmp = safemalloc(len);
+	    strncpy(tmp, action, len - 1);
+	    tmp[len - 1] = 0;
+	    ReadButtonFace(tmp, bf,-1,True);
+	    free(tmp);
+	    action = end + 1;
+	}
+	else if (strcmp(parm,"--")==0) {
+	    if (ReadButtonFace(prev, &fl->BorderStyle.active,-1,True))
+		ReadButtonFace(prev, &fl->BorderStyle.inactive,-1,False);
+	    free(parm);
+	    break;
+	} else {
+	    ButtonFace tmpbf;
+	    tmpbf.style = SimpleButton;
+#ifdef MULTISTYLE
+	    tmpbf.next = NULL;
+#endif
+#ifdef MINI_ICONS
+	    tmpbf.u.p = NULL;
+#endif
+	    if (ReadButtonFace(prev, &tmpbf,-1,True)) {
+		FreeButtonFace(dpy,&fl->BorderStyle.active);
+		fl->BorderStyle.active = tmpbf;
+		ReadButtonFace(prev, &fl->BorderStyle.inactive,-1,False);
+	    }
+	    free(parm);
+	    break;
+	}
+	free(parm);
+	prev = action;
+	action = GetNextToken(action,&parm);
+    }
+}
+#endif

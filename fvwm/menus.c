@@ -68,7 +68,6 @@
 #include "events.h"
 #include "menus.h"
 #include "misc.h"
-#include "parse.h"
 #include "repeat.h"
 #include "screen.h"
 
