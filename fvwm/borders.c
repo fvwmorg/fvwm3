@@ -1020,8 +1020,11 @@ static void RedrawButtons(
 	{
 	  XChangeWindowAttributes(
 	    dpy, t->button_w[i], cd->valuemask, &cd->attributes);
-	  t->button_background_pixmap[i] = df->u.p->picture;
-	  if (df->u.p->picture)
+	  if (df->u.p)
+	  {
+	    t->button_background_pixmap[i] = df->u.p->picture;
+	  }
+	  if (df->u.p && df->u.p->picture)
 	  {
 	    pass_bg_pixmap = NULL;
 	  }
@@ -1170,7 +1173,8 @@ static void RedrawTitle(
       &GetDecor(t,BorderStyle.active) : &GetDecor(t,BorderStyle.inactive);
 
     if (DFS_USE_BORDER_STYLE(*tb_style) &&
-	DFS_FACE_TYPE(df->style) == TiledPixmapButton)
+	DFS_FACE_TYPE(df->style) == TiledPixmapButton &&
+	df->u.p)
     {
       XSetWindowBackgroundPixmap(dpy, t->title_w, df->u.p->picture);
       t->title_background_pixmap = df->u.p->picture;

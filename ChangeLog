@@ -1,3 +1,9 @@
+2001-03-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (RedrawButtons):
+	(RedrawTitle):
+	fixed core dumps
+
 2001-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/functions.c (execute_complex_function):
