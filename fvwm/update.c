@@ -265,7 +265,7 @@ static void apply_window_updates(
   }
   if (flags->do_update_frame_attributes)
   {
-    setup_frame_attributes(t, pstyle, buttons);
+    setup_frame_attributes(t, pstyle);
   }
   t->shade_anim_steps = pstyle->shade_anim_steps;
 

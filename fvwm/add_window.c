@@ -898,10 +898,9 @@ void setup_auxiliary_windows(
 }
 
 void setup_frame_attributes(
-  FvwmWindow *tmp_win, window_style *pstyle, short buttons)
+  FvwmWindow *tmp_win, window_style *pstyle)
 {
   int i;
-  Bool has_button;
   XSetWindowAttributes xswa;
 
   /* Backing_store is controlled on the client, decor_w, title & buttons */
@@ -914,10 +913,7 @@ void setup_frame_attributes(
     XChangeWindowAttributes(dpy, tmp_win->title_w, CWBackingStore, &xswa);
     for (i = 0; i < NUMBER_OF_BUTTONS; i++)
     {
-      has_button = (((!(i & 1) && i / 2 < Scr.nr_left_buttons) ||
-		   ( (i & 1) && i / 2 < Scr.nr_right_buttons)) &&
-		  (buttons & (1 << i)));
-      if (has_button)
+      if (tmp_win->button_w[i])
 	XChangeWindowAttributes(dpy, tmp_win->button_w[i], CWBackingStore,
 				&xswa);
     }
@@ -1390,7 +1386,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   setup_auxiliary_windows(tmp_win, True, buttons);
 
   /****** 'backing store' and 'save under' window setup ******/
-  setup_frame_attributes(tmp_win, &style, buttons);
+  setup_frame_attributes(tmp_win, &style);
 
   /****** reparent the window ******/
   XReparentWindow(dpy, tmp_win->w, tmp_win->Parent, 0, 0);
