@@ -203,13 +203,13 @@ void CMD_WindowShade(F_CMD_ARGS)
     step = 1;
   if (tmp_win->shade_anim_steps)
   {
-    title_grav = (HAS_BOTTOM_TITLE(tmp_win)) ?
-      SouthEastGravity : NorthWestGravity;
-    parent_grav = (shade_dir == DIR_S) ? SouthEastGravity : NorthWestGravity;
-    if (!do_scroll)
-      client_grav = parent_grav;
-    else
+    title_grav =
+      (HAS_BOTTOM_TITLE(tmp_win)) ? SouthEastGravity : NorthWestGravity;
+    parent_grav = title_grav;
+    if (do_scroll)
       client_grav = (shade_dir == DIR_S) ? NorthWestGravity : SouthEastGravity;
+    else
+      client_grav = (shade_dir == DIR_S) ? SouthEastGravity : NorthWestGravity;
     set_decor_gravity(tmp_win, title_grav, parent_grav, client_grav);
     move_parent_too = HAS_BOTTOM_TITLE(tmp_win);
   }
