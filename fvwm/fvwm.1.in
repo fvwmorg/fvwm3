@@ -7473,8 +7473,10 @@ that have the corresponding
 button style set.
 Additionally, the following shotcuts may be used: "AllNormal",
 "AllToggled", "AllActive", "AllInactive", "AllUp", "AllDown".
-These are actually different masks for 4 individual states from
-8 total.
+They are actually different masks for 4 individual states from
+8 total.  These are supported too: "AllActiveUp", "AllActiveDown",
+"AllInactiveUp", "AllInactiveDown".
+
 If
 .I state
 is omitted, then the style is added to every state.  If the
@@ -7774,8 +7776,10 @@ Mouse 0 6 N WindowShade
 .EE
 Additionally, the following shotcuts may be used: "AllNormal",
 "AllToggled", "AllActive", "AllInactive", "AllUp", "AllDown".
-These are actually different masks for 4 individual states from
-8 total.
+They are actually different masks for 4 individual states from
+8 total.  These are supported too: "AllActiveUp", "AllActiveDown",
+"AllInactiveUp", "AllInactiveDown".
+
 If
 .I state
 is specified,
