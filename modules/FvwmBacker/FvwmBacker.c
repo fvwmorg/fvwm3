@@ -216,7 +216,7 @@ void set_desk_background(int desk)
   default:
     if(commands[desk].cmdStr != NULL)
     {
-      SendFvwmPipe(commands[desk].cmdStr, (unsigned long)0);
+      SendFvwmPipe(Fvwm_fd, commands[desk].cmdStr, (unsigned long)0);
     }
     break;
   } /* switch */
@@ -275,43 +275,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   default:
     break;
   } /* switch */
-}
-
-/******************************************************************************
-  SendFvwmPipe - Send a message back to fvwm
-    Based on SendInfo() from FvwmIdent:
-      Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
-void SendFvwmPipe(char *message,unsigned long window)
-{
-  int w;
-  char *hold,*temp,*temp_msg;
-  hold=message;
-
-  while(1)
-  {
-    temp=strchr(hold,',');
-    if (temp!=NULL)
-    {
-      temp_msg=malloc(temp-hold+1);
-      strncpy(temp_msg,hold,(temp-hold));
-      temp_msg[(temp-hold)]='\0';
-      hold=temp+1;
-    } else temp_msg=hold;
-
-    write(Fvwm_fd[0],&window, sizeof(unsigned long));
-
-    w=strlen(temp_msg);
-    write(Fvwm_fd[0],&w,sizeof(int));
-    write(Fvwm_fd[0],temp_msg,w);
-
-    /* keep going */
-    w=1;
-    write(Fvwm_fd[0],&w,sizeof(int));
-
-    if(temp_msg!=hold) free(temp_msg);
-    else break;
-  }
 }
 
 /***********************************************************************

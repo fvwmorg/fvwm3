@@ -123,6 +123,43 @@ void SendText(int *fd, const char *message, unsigned long window)
   write(fd[0], buf, p - buf);
 }
 
+/************************************************************************
+ *
+ * SendFvwmPipe - Sends message to fvwm:  The message is a comma-delimited 
+ * string separated into its component sections and sent one by one to fvwm.
+ * It is discouraged to use this function with a "synchronous" module. 
+ * (Form FvwmIconMan)
+ *
+ ***********************************************************************/
+void SendFvwmPipe(int *fd, const char *message, unsigned long window)
+{
+  const char *hold = message;
+  const char *temp;
+
+  while ( (temp = strchr(hold, ',')) != NULL )
+  {
+    char *temp_msg = (char*)safemalloc(temp - hold + 1);
+
+    strncpy(temp_msg, hold, (temp - hold));
+    temp_msg[(temp - hold)] = '\0';
+    hold = temp + 1;
+
+    SendText(fd, temp_msg, window);
+    free(temp_msg);
+  } /* while */
+
+  /*
+   * Send the last part of the string :
+   * we don't need to copy this into separate
+   * storage because we don't need to modify it ...
+   *
+   * NOTE: this makes this second call to SendText()
+   *       distinct from the first call. Two calls is
+   *       cleaner than hacking the loop to make only
+   *       one call. 
+   */
+  SendText(fd, hold, window);
+}
 
 void SetMessageMask(int *fd, unsigned long mask)
 {

@@ -107,7 +107,6 @@ typedef PropMotifWmHints        PropMwmHints;
 extern void EndLessLoop(void);
 extern void ReadFvwmPipe(void);
 extern void ProcessMessage(unsigned long type,unsigned long *body);
-extern void SendFvwmPipe(char *message,unsigned long window);
 extern void DeadPipe(int nonsense)  __attribute__((noreturn));
 /*
 extern void Alarm(int nonsense);

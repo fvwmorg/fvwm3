@@ -282,7 +282,7 @@ int builtin_sendcommand (int numargs, BuiltinArg *args)
     return 0;
   }
 
-  SendFvwmPipe (args[0].value.string_value, win->app_id);
+  SendFvwmPipe (Fvwm_fd, args[0].value.string_value, win->app_id);
 
   return 0;
 }

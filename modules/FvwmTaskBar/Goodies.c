@@ -35,6 +35,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
+#include "libs/Module.h"
 #include "Goodies.h"
 #include "FvwmTaskBar.h"
 #include "Mallocs.h"
@@ -45,6 +46,7 @@
 
 extern Display *dpy;
 extern Window Root, win;
+extern int Fvwm_fd[2];
 extern int screen;
 extern int win_width, win_height, win_y, win_border,
        ScreenWidth, ScreenHeight, RowHeight;
@@ -619,7 +621,7 @@ void HandleMailClick(XEvent event)
   static Time lastclick = 0;
   if (event.xbutton.time - lastclick < 250)
   {
-    SendFvwmPipe(MailCmd, 0);
+    SendFvwmPipe(Fvwm_fd, MailCmd, 0);
   }
   lastclick = event.xbutton.time;
   mailcleared = 1;

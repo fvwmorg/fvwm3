@@ -191,7 +191,8 @@ int UseSkipList    = False,
     HighlightFocus = False,
     DeskOnly       = False,
     NoBrightFocus  = False,
-    ThreeDfvwm     = False;
+    ThreeDfvwm     = False,
+    RowsNumber     = 1;
 
 unsigned int ScreenWidth, ScreenHeight;
 
@@ -331,7 +332,7 @@ int main(int argc, char **argv)
 
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
-  SendFvwmPipe("Send_WindowList",0);
+  SendFvwmPipe(Fvwm_fd, "Send_WindowList",0);
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(Fvwm_fd);
@@ -589,6 +590,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  int x, y;
 	  int abs_x, abs_y;
 
+	  fprintf(stderr, "Entring Animation\n");
 	  ButtonCoordinates(&buttons, i, &x, &y);
 	  XTranslateCoordinates(dpy, win, Root, x, y,
 				&abs_x, &abs_y, &child);
@@ -618,6 +620,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     break;
 
   case M_END_WINDOWLIST:
+    AdjustWindow(win_width, win_height);
     XMapRaised(dpy, win);
     break;
 
@@ -707,43 +710,6 @@ void redraw_buttons()
 }
 
 
-/******************************************************************************
-  SendFvwmPipe - Send a message back to fvwm
-    Based on SendInfo() from FvwmIdent:
-      Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
-void SendFvwmPipe(char *message, unsigned long window)
-{
-  int  w;
-  char *hold, *temp, *temp_msg;
-
-  hold = message;
-
-  while(1) {
-    temp = strchr(hold, ',');
-    if (temp != NULL) {
-      temp_msg = safemalloc(temp-hold+1);
-      strncpy(temp_msg, hold, (temp-hold));
-      temp_msg[(temp-hold)] = '\0';
-      hold = temp+1;
-    } else temp_msg = hold;
-
-    write(Fvwm_fd[0], &window, sizeof(unsigned long));
-
-    w=strlen(temp_msg);
-    write(Fvwm_fd[0], &w, sizeof(int));
-    write(Fvwm_fd[0], temp_msg, w);
-
-    /* keep going */
-    w = 1;
-    write(Fvwm_fd[0], &w, sizeof(int));
-
-    if(temp_msg == hold)
-      break;
-    free(temp_msg);
-  }
-}
-
 /***********************************************************************
   Detected a broken pipe - time to exit
     Based on DeadPipe() from FvwmIdent:
@@ -793,7 +759,7 @@ void RedrawWindow(int force)
     /* 98-11-21 13:45, Mohsin_Ahmed, mailto:mosh@sasi.com. */
     if( Tip.type >= 0 && AutoFocus )
     {
-      SendFvwmPipe( "Iconify off, Raise, Focus",
+      SendFvwmPipe(Fvwm_fd, "Iconify off, Raise, Focus",
 		    ItemID( &windows, Tip.type ) );
     }
   }
@@ -881,6 +847,7 @@ static char *moduleopts[] =
   "FocusBack",
   "FocusColorset",
   "3DFvwm",
+  "Rows",
   NULL
 };
 
@@ -1009,7 +976,7 @@ static void ParseConfigLine(char *tline)
 	str = safemalloc(strlen(rest) + 8);
 	sprintf(str, "Module %s", rest);
 	ConsoleMessage("Trying to: %s", str);
-	SendFvwmPipe(str, 0);
+	SendFvwmPipe(Fvwm_fd, str, 0);
 
 	/* Remember the anticipated window's name for swallowing */
 	i = 4;
@@ -1033,7 +1000,7 @@ static void ParseConfigLine(char *tline)
 	str = safemalloc(strlen(rest) + 6);
 	sprintf(str, "Exec %s", rest);
 	ConsoleMessage("Trying to: %s", str);
-	SendFvwmPipe(str, 0);
+	SendFvwmPipe(Fvwm_fd, str, 0);
 
 	/* Remember the anticipated window's name for swallowing */
 	i = 4;
@@ -1077,6 +1044,14 @@ static void ParseConfigLine(char *tline)
       break;
     case 27: /* 3DFvwm */
       ThreeDfvwm = True;
+      break;
+    case 28: /* Rows */
+      RowsNumber = atoi(rest);
+      fprintf(stderr,"RN %i\n", RowsNumber);
+      if (!(1 <= RowsNumber && RowsNumber <= 7)) {
+	fprintf(stderr,"RN %i\n", RowsNumber);
+	RowsNumber = 1;
+      }
       break;
     default:
       if (!GoodiesParseConfig(tline) &&
@@ -1240,7 +1215,7 @@ void LoopOnEvents(void)
 	} else {
           ButReleased = ButPressed; /* Avoid race fvwm pipe */
           BelayHide = True; /* Don't AutoHide when function ends */
-          SendFvwmPipe(ClickAction[Event.xbutton.button-1],
+          SendFvwmPipe(Fvwm_fd, ClickAction[Event.xbutton.button-1],
                        ItemID(&windows, num));
         }
 
@@ -1253,7 +1228,7 @@ void LoopOnEvents(void)
           if (num == ButPressed)
 	    RadioButton(&buttons, num, BUTTON_DOWN);
           if (num != -1)
-	    SendFvwmPipe("Focus 0", ItemID(&windows, num));
+	    SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
         }
         ButPressed = -1;
 	redraw = 0;
@@ -1272,7 +1247,7 @@ void LoopOnEvents(void)
             y = win_y - ScreenHeight;
           }
           sprintf(tmp,"Popup %s %d %d", StartPopup, x, y);
-          SendFvwmPipe(tmp, ItemID(&windows, num));
+          SendFvwmPipe(Fvwm_fd, tmp, ItemID(&windows, num));
         } else {
 	  StartButtonUpdate(NULL, BUTTON_UP);
 	  if (MouseInMail(Event.xbutton.x, Event.xbutton.y)) {
@@ -1330,7 +1305,7 @@ void LoopOnEvents(void)
           }
         } else {
           if (num != -1 && num != ButPressed)
-            SendFvwmPipe("Focus 0", ItemID(&windows, num));
+            SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
         }
 
         CheckForTip(Event.xmotion.x, Event.xmotion.y);
@@ -1399,7 +1374,7 @@ void LoopOnEvents(void)
             redraw = 0;
           }
         } else if (num != -1 && num != ButPressed)
-	  SendFvwmPipe("Focus 0", ItemID(&windows, num));
+	  SendFvwmPipe(Fvwm_fd, "Focus 0", ItemID(&windows, num));
 
         CheckForTip(Event.xmotion.x, Event.xmotion.y);
         break;
@@ -1781,7 +1756,7 @@ void StartMeUp(void)
    RowHeight = fontheight + 8;
 
    win_border = 4; /* default border width */
-   win_height = RowHeight;
+   win_height = RowHeight+(RowsNumber-1)*(RowHeight+2);
    win_width = ScreenWidth - (win_border << 1);
 
    ret = XParseGeometry(geometry, &hints.x, &hints.y,
@@ -1797,13 +1772,12 @@ void StartMeUp(void)
      PWinGravity|PMinSize|PMaxSize|PBaseSize;
    hints.x           = 0;
    hints.width       = win_width;
-   hints.height      = RowHeight;
+   hints.height      = win_height;
    hints.width_inc   = win_width;
    hints.height_inc  = RowHeight+2;
    hints.win_gravity = NorthWestGravity;
    hints.min_width   = win_width;
-   hints.min_height  = RowHeight;
-   hints.min_height  = win_height;
+   hints.min_height  = RowHeight-1;
    hints.max_width   = win_width;
    hints.max_height  = RowHeight+7*(RowHeight+2) + 1;
    hints.base_width  = win_width;

@@ -129,6 +129,15 @@ void SendText(int *fd, const char *message, unsigned long window);
 /** Compatibility **/
 #define SendInfo SendText
 
+/************************************************************************
+ *
+ * SendFvwmPipe - Sends message to fvwm:  The message is a comma-delimited 
+ * string separated into its component sections and sent one by one to fvwm.
+ * It is discouraged to use this function with a "synchronous" module. 
+ * (Form FvwmIconMan)
+ *
+ ***********************************************************************/
+void SendFvwmPipe(int *fd, const char *message, unsigned long window);
 
 /***************************************************************************
  *

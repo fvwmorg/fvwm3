@@ -254,7 +254,7 @@ int main(int argc, char **argv)
 		 M_END_WINDOWLIST | M_NEW_DESK | M_FOCUS_CHANGE |
 		 M_CONFIG_INFO | M_SENDCONFIG);
 
-  SendFvwmPipe("Send_WindowList",0);
+  SendFvwmPipe(Fvwm_fd, "Send_WindowList",0);
 
   /* Recieve all messages from Fvwm */
   atexit(ShutMeDown);
@@ -495,43 +495,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   if (redraw && WindowState==1) RedrawWindow(False);
 }
 
-/******************************************************************************
-  SendFvwmPipe - Send a message back to fvwm
-    Based on SendInfo() from FvwmIdent:
-      Copyright 1994, Robert Nation and Nobutaka Suzuki.
-******************************************************************************/
-void SendFvwmPipe(char *message,unsigned long window)
-{
-  int w;
-  char *hold,*temp,*temp_msg;
-
-  hold=message;
-
-  while(1)
-  {
-    temp=strchr(hold,',');
-    if (temp!=NULL)
-    {
-      temp_msg=safemalloc(temp-hold+1);
-      strncpy(temp_msg,hold,(temp-hold));
-      temp_msg[(temp-hold)]='\0';
-      hold=temp+1;
-    } else temp_msg=hold;
-
-    write(Fvwm_fd[0],&window, sizeof(unsigned long));
-
-    w=strlen(temp_msg);
-    write(Fvwm_fd[0],&w,sizeof(int));
-    write(Fvwm_fd[0],temp_msg,w);
-
-    /* keep going */
-    w=1;
-    write(Fvwm_fd[0],&w,sizeof(int));
-
-    if(temp_msg!=hold) free(temp_msg);
-    else break;
-  }
-}
 
 /***********************************************************************
   Detected a broken pipe - time to exit
@@ -786,8 +749,9 @@ void LoopOnEvents(void)
           num=WhichButton(&buttons,Event.xbutton.x,Event.xbutton.y);
           if (num!=-1)
           {
-            SendFvwmPipe(ClickAction[(Transient) ? 0:Event.xbutton.button-1],
-              ItemID(&windows,num));
+            SendFvwmPipe(Fvwm_fd, 
+			 ClickAction[(Transient) ? 0:Event.xbutton.button-1],
+			 ItemID(&windows,num));
             SwitchButton(&buttons,num);
           }
         }

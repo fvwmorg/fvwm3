@@ -1,3 +1,8 @@
+1999-11-18  olicha   <olivier.chapuis@free.fr>
+
+	* libs/Module.{c,h} (SendFvwmPipe): Added SendFvwmPipe form
+	FvwmIconMan
+	
 1999-11-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/menu.c (pop_menu_up): fixed y-location of title menu for

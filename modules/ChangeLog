@@ -1,3 +1,22 @@
+1999-11-18  olicha <olivier.chapuis@free.fr>
+
+	* FvwmBacker/FvwmBacker.{c,h}:
+	* FvwmIconBox/FvwmIconBox.{c,h}:
+	* FvwmIconMan/FvwmIconMan.{c,h}:
+	* FvwmIconMan/function.c:
+	* FvwmTaskBar/FvwmTaskBar.{c,h}:
+	* FvwmTaskBar/Goodies.c:
+	* FvwmWinList/FvwmWinList.c:
+	Now these modules used the SendFvwmPipe of the library which
+	comes from FvwmIconMan. This fixe random "crash" of WinList
+	and TaskBar
+
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	(ProcessMessage):
+	(StartMeUp):
+	* FvwmTaskBar/FvwmTaskBar.1:
+	New configuration option FvwmTaskBarRows
+	
 1999-11-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmForm/Makefile.am: removed FORCE from FvwmTalk

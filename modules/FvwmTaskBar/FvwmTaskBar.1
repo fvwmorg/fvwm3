@@ -54,10 +54,15 @@ The following options can be placed in the .fvwm2rc file
 
 .IP "*FvwmTaskBarGeometry \fI{+-}<X>x{+-}<Y>\fP"
 Specifies the location and gravity of the FvwmTaskBar window.  At the
-current version, size is not supported and the taskbar will resize itself
-to fill the full width of the screen. If the AutoStick option is also
-specified, the module will automatically "stick" to the top or the bottom
-of the screen, whichever is closest to the geometry specification.
+current version, width size is not supported and the taskbar will resize 
+itself to fill the full width of the screen. The height size is controled
+with the *FvwmTaskBarRows configuration option. If the AutoStick option 
+is also specified, the module will automatically "stick" to the top or 
+the bottom of the screen, whichever is closest to the geometry specification.
+
+.IP  "*FvwmTaskBarRows r"
+Specifies the initial number of rows of the FvwmTaskBar window. Default 
+is 1 and the maximum is 8.
 
 .IP "*FvwmTaskBarFont \fIfont\fP"
 Specifies the default font to be used for labeling the buttons, when they
@@ -113,7 +118,7 @@ the FvwmTheme module for details about colorsets.
 
 .IP "*FvwmTaskNoBrightFocus"
 By default the button which represents the window with the focus is highlighted.
-This option disables this feature.  \fINote:\fP uou will want this option 
+This option disables this feature.  \fINote:\fP you will want this option 
 if you use a pixmap (via FvwmTheme) for the background.
 
 .IP "*FvwmTaskBarTipsFore \fIcolor\fP"
@@ -121,10 +126,6 @@ Specifies the color to be used for the text in the tips windows.
 
 .IP "*FvwmTaskBarTipsBack \fIcolor\fP"
 Specifies the background color for the tips windows.
-
-.IP "*FvwmTaskBarGeometry \fIgeometry\fP"
-This option specifies the geometry of the window (only the Y coordinate is
-useful).
 
 .IP "*FvwmTaskBarAutoStick"
 This option causes the taskbar to "stick" either to the top or bottom

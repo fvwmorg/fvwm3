@@ -1311,44 +1311,6 @@ void nocolor(char *a, char *b)
  fprintf(stderr,"%s: can't %s %s\n", MyName, a,b);
 }
 
-
-/************************************************************************
-  SendFvwmPipe - Send a message back to fvwm
-    Original work from FvwmWinList:
-      Copyright 1994, Mike Finger.
-************************************************************************/
-void SendFvwmPipe(int *fd, char *message,unsigned long window)
-{
-  int w;
-  char *hold,*temp,*temp_msg;
-  hold=message;
-
-  while(1) {
-    temp=strchr(hold,',');
-    if (temp!=NULL) {
-      temp_msg=malloc(temp-hold+1);
-      strncpy(temp_msg,hold,(temp-hold));
-      temp_msg[(temp-hold)]='\0';
-      hold=temp+1;
-    } else temp_msg=hold;
-
-    if (!ExecIconBoxFunction(temp_msg)){
-      write(fd[0],&window, sizeof(unsigned long));
-
-      w=strlen(temp_msg);
-      write(fd[0],&w,sizeof(int));
-      write(fd[0],temp_msg,w);
-
-      /* keep going */
-      w=1;
-      write(fd[0],&w,sizeof(int));
-
-    }
-    if(temp_msg!=hold) free(temp_msg);
-    	else break;
-  }
-}
-
 Bool ExecIconBoxFunction(char *msg)
 {
   if (strncasecmp(msg, "Next", 4) == 0){
