@@ -129,10 +129,13 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   tmp_win->icon_y_loc = final_y;
 
   /* clip to fit on screen */
-  valuemask = CWColormap | CWBackPixel | CWCursor | CWEventMask;
+  valuemask = CWColormap | CWBackPixmap | CWBorderPixmap
+              | CWBackPixel | CWCursor | CWEventMask;
   attributes.colormap = Scr.cmap;
   attributes.background_pixel = Scr.StdColors.back;
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
+  attributes.background_pixmap = None;
+  attributes.border_pixmap = None;
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask |
 			   VisibilityChangeMask |
 			   ExposureMask | KeyPressMask|EnterWindowMask |

@@ -487,7 +487,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #endif
 
   attributes.colormap = Scr.cmap;
-  valuemask |= CWColormap;
+  attributes.background_pixmap = None;
+  attributes.border_pixmap = None;
+  valuemask |= CWColormap | CWBackPixmap | CWBorderPixmap;
   
   /* What the heck, we'll always reparent everything from now on! */
   tmp_win->frame =
@@ -529,6 +531,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* sides and corners are input only */
   /* title and buttons maybe one day */
   valuemask |= CWEventMask;
+  attributes.colormap = DefaultColormap(dpy, Scr.screen);
   attributes.event_mask = (ButtonPressMask|ButtonReleaseMask
 			   |EnterWindowMask|LeaveWindowMask);
   tmp_win->title_x = tmp_win->title_y = 0;
@@ -546,19 +549,20 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 	  tmp_win->corners[i] =
 	    XCreateWindow (dpy, tmp_win->frame, 0,0,
 			   tmp_win->corner_width, tmp_win->corner_width,
-			   0, CopyFromParent, InputOnly, CopyFromParent,
+			   0, 0, InputOnly, DefaultVisual(dpy, Scr.screen),
 			   valuemask, &attributes);
 	  attributes.cursor = Scr.FvwmCursors[TOP+i];
 	  tmp_win->sides[i] =
 	    XCreateWindow (dpy, tmp_win->frame, 0, 0, tmp_win->boundary_width,
-			   tmp_win->boundary_width, 0, CopyFromParent,
-			   InputOnly, CopyFromParent, valuemask, &attributes);
+			   tmp_win->boundary_width, 0, 0, InputOnly,
+			   DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
 	}
 
     }
 
   /* restore valuemask to remember background */
   valuemask = valuemask_save;
+  attributes.colormap = Scr.cmap;
   attributes.event_mask = (ButtonPressMask|ButtonReleaseMask
 			   |EnterWindowMask|LeaveWindowMask|ExposureMask);
 

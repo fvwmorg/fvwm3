@@ -466,10 +466,12 @@ int main(int argc, char **argv)
   attributes.event_mask = KeyPressMask|FocusChangeMask;
   attributes.override_redirect = True;
   attributes.colormap = Scr.cmap;
+  attributes.background_pixmap = None;
+  attributes.border_pixmap = None;
   Scr.NoFocusWin=XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Scr.depth,
                                InputOutput, Scr.viz,
-                               CWEventMask | CWOverrideRedirect | CWColormap,
-                               &attributes);
+                               CWEventMask | CWOverrideRedirect | CWColormap
+                               | CWBackPixmap | CWBorderPixmap, &attributes);
   XMapWindow(dpy, Scr.NoFocusWin);
 
   SetMWM_INFO(Scr.NoFocusWin);
@@ -559,7 +561,9 @@ int main(int argc, char **argv)
                                     " +8888 x +8888 ", 15);
   attributes.background_pixel = Scr.StdColors.back;
   attributes.colormap = Scr.cmap;
-  valuemask = CWBackPixel | CWColormap;
+  attributes.background_pixmap = None;
+  attributes.border_pixmap = None;
+  valuemask = CWBackPixel | CWColormap | CWBackPixmap | CWBorderPixmap;
 
   if(!Scr.gs.EmulateMWM)
   {
