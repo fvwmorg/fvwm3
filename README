@@ -1,7 +1,7 @@
 Welcome to FVWM version 2.3.0.  FVWM is a multiple large virtual desktop
 window manager, originally (a looooong time ago!) derived from twm.
 
-FVWM is intended to have a smaller memory footprint but a rich feature
+FVWM is intended to have a small memory footprint but a rich feature
 set, be extremely customizable and extendible, and have a high degree of
 Motif mwm compatibility.
 
