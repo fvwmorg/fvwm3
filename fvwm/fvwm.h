@@ -143,6 +143,7 @@ typedef struct
 #define FOCUS_MOUSE   0x0
 #define FOCUS_CLICK   0x1
 #define FOCUS_SLOPPY  0x2
+#define FOCUS_NEVER   0x3
 #define FOCUS_MASK    0x3
   unsigned focus_mode : 2;
   unsigned has_mwm_border : 1;

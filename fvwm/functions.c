@@ -474,7 +474,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   no_store = False;
   if (Action[0] == '-')
     {
-      no_store = 1;
+      no_store = True;
       Action++;
     }
 
@@ -552,6 +552,8 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   if (set_silent)
     Scr.flags.silent_functions = 0;
 
+  if (no_store && expand_cmd == EXPAND_COMMAND)
+    free(expaction);
   return;
 }
 

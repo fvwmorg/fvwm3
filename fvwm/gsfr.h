@@ -71,6 +71,8 @@
           ((fw)->gsfr_flags.common.focus_mode == FOCUS_MOUSE)
 #define HAS_SLOPPY_FOCUS(fw)   \
           ((fw)->gsfr_flags.common.focus_mode == FOCUS_SLOPPY)
+#define HAS_NEVER_FOCUS(fw)   \
+          ((fw)->gsfr_flags.common.focus_mode == FOCUS_NEVER)
 #define HAS_NO_ICON_TITLE(fw)  \
           ((fw)->gsfr_flags.common.has_no_icon_title)
 #define SET_HAS_NO_ICON_TITLE(fw,x) \

@@ -661,7 +661,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
       {
         tmp_win->attr.y = PageBottom -tmp_win->attr.height
           - tmp_win->old_bw - tmp_win->title_height -
-          2*tmp_win->boundary_width;;
+          2*tmp_win->boundary_width;
         Scr.randomy = 0;
       }
 

@@ -701,7 +701,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
       if (Event.type == MotionNotify) {
 	/* discard any extra motion events before a release */
 	while((XCheckMaskEvent(dpy,ButtonMotionMask|ButtonReleaseMask,
-			       &Event))&&(Event.type != ButtonRelease));
+			       &Event))&&(Event.type != ButtonRelease))
+	  ;
       }
 
       retval = 0;
@@ -4080,9 +4081,9 @@ void destroy_menu(F_CMD_ARGS)
   MenuRoot *mr;
   MenuRoot *mrContinuation;
 
-  char *token, *rest;
+  char *token;
 
-  rest = GetNextToken(action,&token);
+  GetNextToken(action,&token);
   if (!token)
     return;
   mr = FindPopup(token);

@@ -661,7 +661,8 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
    {
       t = s1;
    }
-  for (t2 = t, num = 1 ; t2 != s2; t2 = t2->stack_next, num++) ;
+  for (t2 = t, num = 1 ; t2 != s2; t2 = t2->stack_next, num++)
+    ;
 
   length = HEADER_SIZE + 3*num;
   body = (unsigned long *) safemalloc (length*sizeof(unsigned long));
@@ -991,4 +992,27 @@ void set_last_added_item(last_added_item_type type, void *item)
 {
   Scr.last_added_item.type = type;
   Scr.last_added_item.item = item;
+}
+
+/* some fancy font handling stuff */
+void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor)
+{
+  Globalgcv.font = newfont;
+  Globalgcv.foreground = color;
+  Globalgcv.background = backcolor;
+  Globalgcm = GCFont | GCForeground | GCBackground;
+  XChangeGC(dpy,Scr.ScratchGC3,Globalgcm,&Globalgcv);
+}
+
+void ReapChildren(void)
+{
+#if HAVE_WAITPID
+  while ((waitpid(-1, NULL, WNOHANG)) > 0)
+    ;
+#elif HAVE_WAIT3
+  while ((wait3(NULL, WNOHANG, NULL)) > 0)
+    ;
+#else
+# error One of waitpid or wait3 is needed.
+#endif
 }

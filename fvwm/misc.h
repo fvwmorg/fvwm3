@@ -28,13 +28,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-#if HAVE_WAITPID
-# define ReapChildren()  while ((waitpid(-1, NULL, WNOHANG)) > 0);
-#elif HAVE_WAIT3
-# define ReapChildren()  while ((wait3(NULL, WNOHANG, NULL)) > 0);
-#else
-# error One of waitpid or wait3 is needed.
-#endif
+void ReapChildren(void);
 
 /* used for parsing configuration */
 struct config
@@ -48,15 +42,6 @@ struct config
   char **arg;
   int *arg2;
 };
-
-/* some fancy font handling stuff */
-#define NewFontAndColor(newfont,color,backcolor) {\
-   Globalgcv.font = newfont;\
-   Globalgcv.foreground = color;\
-   Globalgcv.background = backcolor;\
-   Globalgcm = GCFont | GCForeground | GCBackground; \
-   XChangeGC(dpy,Scr.ScratchGC3,Globalgcm,&Globalgcv); \
-}
 
 extern XGCValues Globalgcv;
 extern unsigned long Globalgcm;
@@ -410,10 +395,8 @@ typedef enum {
 } last_added_item_type;
 
 void set_last_added_item(last_added_item_type type, void *item);
+void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor);
 
 
 
 #endif /* MISC_H */
-
-
-

@@ -1,5 +1,7 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* NeverFocus style.
+
 * New command: DefaultIcon to set the default icon.
 
 * New command line arguments -visual and -visualId.

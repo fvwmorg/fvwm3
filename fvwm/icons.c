@@ -893,7 +893,7 @@ void DeIconify(FvwmWindow *tmp_win)
   RaiseWindow(tmp_win); /* moved dje */
 
   if(HAS_CLICK_FOCUS(tmp_win))
-    FocusOn(tmp_win,TRUE);
+    FocusOn(tmp_win, TRUE);
 
   return;
 }

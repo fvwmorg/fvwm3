@@ -62,37 +62,36 @@ void DrawLinePattern(Window win,
                      int w, int h);
 #endif
 
-/* macro rules to get button state */
-#if defined(ACTIVEDOWN_BTNS) && defined(INACTIVE_BTNS)
-#define GetButtonState(window)						\
-        (onoroff ? ((PressedW == (window)) ? ActiveDown : ActiveUp)	\
-        : Inactive)
-#else
-#ifdef ACTIVEDOWN_BTNS
-#define GetButtonState(window)						\
-        ((PressedW == (window)) ? ActiveDown : ActiveUp)
-#endif
-#ifdef INACTIVE_BTNS
-#define GetButtonState(window) (onoroff ? ActiveUp : Inactive)
-#endif
-#endif
-
-#if !defined(ACTIVEDOWN_BTNS) && !defined(INACTIVE_BTNS)
-#define GetButtonState(window) ActiveUp
-#endif
-
-/* macro to change window background color/pixmap */
-#define ChangeWindowColor(window,valuemask) {				\
-        if(NewColor)							\
-        {								\
-          XChangeWindowAttributes(dpy,window,valuemask, &attributes);	\
-          XClearWindow(dpy,window);					\
-        }								\
-      }
-
 extern Window PressedW;
 XGCValues Globalgcv;
 unsigned long Globalgcm;
+
+
+/* change window background color/pixmap */
+static void change_window_color(Window w, unsigned long valuemask,
+				XSetWindowAttributes *attributes)
+{
+  XChangeWindowAttributes(dpy, w, valuemask, attributes);
+  XClearWindow(dpy, w);
+}
+
+/* rules to get button state */
+static enum ButtonState get_button_state(Bool onoroff, Window w)
+{
+#if defined(ACTIVEDOWN_BTNS) && defined(INACTIVE_BTNS)
+  if (!onoroff)
+    return Inactive;
+  else
+    return (PressedW == w) ? ActiveDown : ActiveUp;
+#elif defined(ACTIVEDOWN_BTNS) && !defined(INACTIVE_BTNS)
+  return (PressedW == w) ? ActiveDown : ActiveUp;
+#elif !defined(ACTIVEDOWN_BTNS) && defined(INACTIVE_BTNS)
+  return (onoroff) ? ActiveUp : Inactive;
+#elif !defined(ACTIVEDOWN_BTNS) && !defined(INACTIVE_BTNS)
+  return ActiveUp;
+#endif
+}
+
 /****************************************************************************
  *
  * Redraws the windows borders
@@ -243,15 +242,17 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 
   if(HAS_TITLE(t))
   {
-    ChangeWindowColor(t->title_w,valuemask);
+    if (NewColor)
+      change_window_color(t->title_w, valuemask, &attributes);
     for(i=0;i<Scr.nr_left_buttons;++i)
     {
 	if(t->left_w[i] != None)
 	{
-	    enum ButtonState bs = GetButtonState(t->left_w[i]);
+	    enum ButtonState bs = get_button_state(onoroff, t->left_w[i]);
 	    ButtonFace *bf = &GetDecor(t,left_buttons[i].state[bs]);
 #if !(defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE))
-	    ChangeWindowColor(t->left_w[i],valuemask);
+	    if (NewColor)
+	      change_window_color(t->left_w[i], valuemask, &attributes);
 #endif
 	    if(flush_expose(t->left_w[i])||(expose_win == t->left_w[i])||
 	       (expose_win == None)
@@ -266,8 +267,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		    XChangeWindowAttributes(dpy, t->left_w[i],
 					    valuemask, &attributes);
 		else
-		    XChangeWindowAttributes(dpy, t->left_w[i],
-					    notex_valuemask, &notex_attributes);
+		    XChangeWindowAttributes(dpy, t->left_w[i], notex_valuemask,
+					    &notex_attributes);
 		XClearWindow(dpy, t->left_w[i]);
 #endif
 #ifdef EXTENDED_TITLESTYLE
@@ -279,7 +280,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 			DrawButton(t, t->left_w[i],
 				   t->title_height, t->title_height,
 				   tsbf, ReliefGC, ShadowGC,
-				   inverted, GetDecor(t,left_buttons[i].flags));
+				   inverted,
+				   GetDecor(t,left_buttons[i].flags));
 		}
 #endif /* EXTENDED_TITLESTYLE */
 #ifdef MULTISTYLE
@@ -290,17 +292,23 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 			       bf, ReliefGC, ShadowGC,
 			       inverted, GetDecor(t,left_buttons[i].flags));
 
-		if (!(GetDecor(t,left_buttons[i].state[bs].style) & FlatButton)) {
-		    if (GetDecor(t,left_buttons[i].state[bs].style) & SunkButton)
+		if (!(GetDecor(t,left_buttons[i].state[bs].style) &
+		      FlatButton)) {
+		    if (GetDecor(t,left_buttons[i].state[bs].style) &
+			SunkButton)
 			RelieveRectangle(dpy,t->left_w[i],0,0,
-				         t->title_height - 1, t->title_height - 1,
+				         t->title_height - 1,
+					 t->title_height - 1,
 				         (inverted ? ReliefGC : ShadowGC),
-				         (inverted ? ShadowGC : ReliefGC), rwidth);
+				         (inverted ? ShadowGC : ReliefGC),
+					 rwidth);
 		    else
 			RelieveRectangle(dpy,t->left_w[i],0,0,
-				         t->title_height - 1, t->title_height - 1,
+				         t->title_height - 1,
+					 t->title_height - 1,
 				         (inverted ? ShadowGC : ReliefGC),
-				         (inverted ? ReliefGC : ShadowGC), rwidth);
+				         (inverted ? ReliefGC : ShadowGC),
+					 rwidth);
 		}
 	    }
 	}
@@ -309,10 +317,11 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     {
 	if(t->right_w[i] != None)
 	{
-	    enum ButtonState bs = GetButtonState(t->right_w[i]);
+	    enum ButtonState bs = get_button_state(onoroff, t->right_w[i]);
 	    ButtonFace *bf = &GetDecor(t,right_buttons[i].state[bs]);
 #if !(defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE))
-	    ChangeWindowColor(t->right_w[i],valuemask);
+	    if (NewColor)
+	      change_window_color(t->right_w[i], valuemask, &attributes);
 #endif
 	    if(flush_expose(t->right_w[i])||(expose_win==t->right_w[i])||
 	       (expose_win == None)
@@ -328,7 +337,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 					    valuemask, &attributes);
 		else
 		    XChangeWindowAttributes(dpy, t->right_w[i],
-					    notex_valuemask, &notex_attributes);
+					    notex_valuemask,
+					    &notex_attributes);
 		XClearWindow(dpy, t->right_w[i]);
 #endif
 #ifdef EXTENDED_TITLESTYLE
@@ -340,7 +350,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 			DrawButton(t, t->right_w[i],
 				   t->title_height, t->title_height,
 				   tsbf, ReliefGC, ShadowGC,
-				   inverted, GetDecor(t,right_buttons[i].flags));
+				   inverted,
+				   GetDecor(t,right_buttons[i].flags));
 		}
 #endif /* EXTENDED_TITLESTYLE */
 #ifdef MULTISTYLE
@@ -351,17 +362,23 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 			       bf, ReliefGC, ShadowGC,
 			       inverted, GetDecor(t,right_buttons[i].flags));
 
-		if (!(GetDecor(t,right_buttons[i].state[bs].style) & FlatButton)) {
-		    if (GetDecor(t,right_buttons[i].state[bs].style) & SunkButton)
+		if (!(GetDecor(t,right_buttons[i].state[bs].style) &
+		      FlatButton)) {
+		    if (GetDecor(t,right_buttons[i].state[bs].style) &
+			SunkButton)
 			RelieveRectangle(dpy,t->right_w[i],0,0,
-				        t->title_height - 1, t->title_height - 1,
+				        t->title_height - 1,
+					 t->title_height - 1,
 				        (inverted ? ReliefGC : ShadowGC),
-				        (inverted ? ShadowGC : ReliefGC), rwidth);
+				        (inverted ? ShadowGC : ReliefGC),
+					 rwidth);
 		    else
 			RelieveRectangle(dpy,t->right_w[i],0,0,
-                                         t->title_height - 1, t->title_height - 1,
+                                         t->title_height - 1,
+					 t->title_height - 1,
 				         (inverted ? ShadowGC : ReliefGC),
-				         (inverted ? ReliefGC : ShadowGC), rwidth);
+				         (inverted ? ReliefGC : ShadowGC),
+					 rwidth);
 		}
 	    }
 	}
@@ -371,7 +388,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   }
 
   /* draw the border */
-  /* resize handles are InputOnly so draw in the frame and it will show through */
+  /* resize handles are InputOnly so draw in the frame and it will show
+   * through */
   {
     /* for mono - put a black border on
      * for color, make it the color of the decoration background */
@@ -403,7 +421,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
         rgc=ReliefGC;
         sgc=ShadowGC;
       }
-      ChangeWindowColor(t->frame, valuemask);
+      if (NewColor)
+	change_window_color(t->frame, valuemask, &attributes);
       if((flush_expose(t->frame))||(expose_win == t->frame)||
          (expose_win == None))
       {
@@ -445,7 +464,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
           RelieveRectangle(dpy, t->frame,
                            0, 0, t->frame_width - 1, t->frame_height - 1,
                            rgc, sgc, 2);
-        else { /* FVWMBorder style has an extra line of shadow on top and left */
+        else {
+	  /* FVWMBorder style has an extra line of shadow on top and left */
           RelieveRectangle(dpy, t->frame,
                            1, 1, t->frame_width - 2, t->frame_height - 2,
                            rgc, sgc, 2);
@@ -592,10 +612,11 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
                              t->frame_height - 2 * t->corner_width - 1,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->corners[0]) { /* top left */
-            /* drawn as two relieved rectangles, this will have to change if the
-               title bar and buttons ever get to be InputOnly windows */
+            /* drawn as two relieved rectangles, this will have to change if
+	     * the title bar and buttons ever get to be InputOnly windows */
             RelieveRectangle(dpy, t->frame,
-                             t->boundary_width - rwidth, t->boundary_width - rwidth,
+                             t->boundary_width - rwidth,
+			     t->boundary_width - rwidth,
                              t->corner_width - t->boundary_width + rwidth,
                              t->corner_width - t->boundary_width + rwidth,
                              rgc, sgc, rwidth);
@@ -605,7 +626,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->corners[1]) { /* top right */
             RelieveRectangle(dpy, t->frame,
-                             t->frame_width - t->corner_width + rwidth - 2, t->boundary_width - rwidth,
+                             t->frame_width - t->corner_width + rwidth - 2,
+			     t->boundary_width - rwidth,
                              t->corner_width - t->boundary_width + rwidth,
                              t->corner_width - t->boundary_width + rwidth,
                              rgc, sgc, rwidth);
@@ -615,7 +637,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->corners[2]) { /* bottom left */
             RelieveRectangle(dpy, t->frame,
-                             t->boundary_width - rwidth, t->frame_height - t->corner_width + rwidth -2,
+                             t->boundary_width - rwidth,
+			     t->frame_height - t->corner_width + rwidth -2,
                              t->corner_width - t->boundary_width + rwidth,
                              t->corner_width - t->boundary_width + rwidth,
                              rgc, sgc, rwidth);
@@ -625,13 +648,16 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->corners[3]) { /* bottom right */
             RelieveRectangle(dpy, t->frame,
-                             t->frame_width - t->corner_width + rwidth - 2, t->frame_height - t->corner_width + rwidth - 2,
+                             t->frame_width - t->corner_width + rwidth - 2,
+			     t->frame_height - t->corner_width + rwidth - 2,
                              t->corner_width - t->boundary_width + rwidth,
                              t->corner_width - t->boundary_width + rwidth,
                              rgc, sgc, rwidth);
             RelieveRectangle(dpy, t->frame,
-                             t->frame_width - t->corner_width, t->frame_height - t->corner_width,
-                             t->corner_width - 3 + rwidth, t->corner_width - 3 + rwidth,
+                             t->frame_width - t->corner_width,
+			     t->frame_height - t->corner_width,
+                             t->corner_width - 3 + rwidth,
+			     t->corner_width - 3 + rwidth,
                              sgc, rgc, rwidth);
           }
         }
@@ -850,7 +876,7 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   else
     w = 0;
 
-  title_state = GetButtonState(t->title_w);
+  title_state = get_button_state(onoroff, t->title_w);
   tb_style = GetDecor(t,titlebar.state[title_state].style);
   tb_flags = GetDecor(t,titlebar.flags);
   if (tb_flags & HOffCenter) {
@@ -863,7 +889,8 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 
   NewFontAndColor(GetDecor(t,WindowFont.font->fid),Forecolor, BackColor);
 
-  /* the next bit tries to minimize redraw based upon compilation options (veliaa@rpi.edu) */
+  /* the next bit tries to minimize redraw based upon compilation options
+   * (veliaa@rpi.edu) */
 #ifdef EXTENDED_TITLESTYLE
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   /* we need to check for UseBorderStyle for the titlebar */
@@ -953,8 +980,8 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
                        4, i, hor_off - 10, 1,
                        ShadowGC, ReliefGC, 1);
       RelieveRectangle(dpy, t->title_w,
-                       hor_off + w + 6, i, t->title_width - hor_off - w - 11, 1,
-                       ShadowGC, ReliefGC, 1);
+                       hor_off + w + 6, i, t->title_width - hor_off - w - 11,
+		       1, ShadowGC, ReliefGC, 1);
     }
   }
 

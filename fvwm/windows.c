@@ -344,12 +344,12 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         if (!func)
         {
           tfunc = safemalloc(40);
-          sprintf(tfunc,"WindowListFunc %ld",t->w);
+          sprintf(tfunc,"WindowListFunc %lu", t->w);
         }
         else
 	{
           tfunc = safemalloc(strlen(func) + 32);
-          sprintf(tfunc,"%s %ld",func,t->w);
+          sprintf(tfunc,"%s %lu", func, t->w);
 	  free(func);
 	  func = NULL;
 	}

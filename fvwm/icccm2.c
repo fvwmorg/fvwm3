@@ -58,7 +58,7 @@ SetupICCCM2 (Bool replace_wm)
   XClientMessageEvent ev;
   char win_sx[20];
 
-  sprintf (win_sx, "WIN_S%ld", Scr.screen);
+  sprintf (win_sx, "WIN_S%lu", Scr.screen);
   _XA_WIN_SX =    XInternAtom (dpy, win_sx, False);
   _XA_MANAGER =   XInternAtom (dpy, "MANAGER", False);
   _XA_ATOM_PAIR = XInternAtom (dpy, "ATOM_PAIR", False);

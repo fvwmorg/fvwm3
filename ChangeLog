@@ -1,3 +1,62 @@
+1999-04-14  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1:
+	* fvwm/focus.c (SetFocus):
+	* fvwm/events.c (HandleMapRequestKeepRaised):
+	(HandleMapNotify):
+	(HandleUnmapNotify):
+	(HandleButtonPress):
+	* fvwm/virtual.c (changeDesks):
+	* fvwm/builtins.c (FocusOn):
+	* fvwm/style.c (ProcessNewStyle):
+	* fvwm/gsfr.h (HAS_NEVER_FOCUS):
+	* fvwm/fvwm.h (FOCUS_NEVER):
+	Implemented NeverFocus style
+
+	* fvwm/repeat.c (update_last_string): fixed memory leak
+
+	* fvwm/functions.c (ExecuteFunction): fixed memory leak
+
+	* fvwm/builtins.c (ReadButtonFace): fixed buffer overflow in scanf
+
+	* fvwm/fvwm.c (main): moved call to getenv into if statement to make
+	insure++ happy
+
+	* fvwm/windows.c (do_windowList): fixed format of sprintfs: expected
+	long but got unsigned long
+
+	* fvwm/virtual.c (scroll): fixed parsing of less than 2 parameters that
+	caused an UMR.
+
+	* fvwm/session.c (SaveWindowStates): fixed illegal parameter to fprintf
+	(int expected but got unsigned char).
+
+	* fvwm/placement.c (PlaceWindow): removed superfluous ';'
+
+	* fvwm/misc.c (BroadcastRestack): reindented empty loop body for
+	clarity
+
+	* fvwm/menus.c (MenuInteraction): reindented empty loop body for
+	clarity
+	(destroy_menu): removed unused variable 'rest'
+
+	* fvwm/icccm2.c (SetupICCCM2): fixed sign of printf string
+
+	* fvwm/misc.h:
+	* fvwm/misc.c (ReapChildren): made function from macro
+
+	* fvwm/builtins.c (FocusOn): removed unused variables x and y
+	(FocusOn): removed obsolete code
+	(add_item_to_decor): reindented empty loop body for clarity
+
+	* fvwm/misc.h:
+	* fvwm/misc.c (NewFontAndColor): made function from macro
+
+	* fvwm/borders.c (get_button_state):
+	(change_window_color): made functions from macros
+
+	* libs/Module.c (SendText): int len -> unsigned int len
+
 1999-04-14  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/misc.h: 

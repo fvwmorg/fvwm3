@@ -832,7 +832,7 @@ void changeDesks(int desk)
    * then the following lines are screwed up. */
 /*  else if (StickyWin && (StickyWin->flags && STICKY))
     SetFocus(StickyWin->w, StickyWin,1);*/
-  else
+  else if (!HAS_NEVER_FOCUS(FocusWin))
 #endif
     SetFocus(Scr.NoFocusWin,NULL,1);
 }
@@ -892,12 +892,14 @@ void move_window_to_desk(F_CMD_ARGS)
 void scroll(F_CMD_ARGS)
 {
   int x,y;
-  int val1, val2, val1_unit,val2_unit,n;
+  int val1, val2, val1_unit, val2_unit, n;
 
-  n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
+  if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
+    /* to few parameters */
+    return;
 
   if((val1 > -100000)&&(val1 < 100000))
-    x=Scr.Vx + val1*val1_unit/100;
+    x = Scr.Vx + val1*val1_unit/100;
   else
     x = Scr.Vx + (val1/1000)*val1_unit/100;
 

@@ -304,7 +304,7 @@ SaveWindowStates(FILE *f)
       fprintf(f, "  [LAYER] %i\n", ewin->layer);
       fprintf(f, "  [FLAGS] ");
       for (i = 0; i < sizeof(window_flags); i++)
-	fprintf(f, "%02x ", ((unsigned char *)&(ewin->gsfr_flags))[i]);
+	fprintf(f, "%02x ", (int)(((unsigned char *)&(ewin->gsfr_flags))[i]));
       fprintf(f, "\n");
     }
   return 1;
@@ -388,8 +388,9 @@ LoadWindowStates(char *filename)
 	      for (i = 0; i < sizeof(window_flags); i++)
 		{
 		    unsigned int f;
-		    sscanf(ts, "%02x ", &f );
-		    ((unsigned char *)&(matches[num_match-1].gsfr_flags))[i] = f;
+		    sscanf(ts, "%02x ", &f);
+		    ((unsigned char *)&(matches[num_match-1].gsfr_flags))[i]
+		      = f;
 		    ts += 3;
 		}
 	    }

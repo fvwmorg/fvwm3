@@ -914,6 +914,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flags.has_ol_decor = 0;
           tmpstyle.flag_mask.has_ol_decor = 1;
         }
+        else if(StrEquals(token, "NEVERFOCUS"))
+        {
+	  found = True;
+          tmpstyle.flags.common.focus_mode = FOCUS_NEVER;
+          tmpstyle.flag_mask.common.focus_mode = FOCUS_MASK;
+          tmpstyle.flags.common.do_grab_focus_when_created = 0;
+          tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
+        }
         break;
 
       case 'o':

@@ -344,7 +344,7 @@ int main(int argc, char **argv)
 
 #ifdef HAVE_SIGACTION
   {
-    struct sigaction  sigact;
+    struct sigaction sigact;
 
     /*
      * Use reliable signal semantics since they are predictable and portable.
@@ -532,7 +532,7 @@ int main(int argc, char **argv)
       visualId = -1;
     }
   }
-    
+
   /* use default visuals if none found so far */
   if (visualClass == -1 && visualId == -1) {
       Scr.viz = DefaultVisual(dpy, Scr.screen);

@@ -84,9 +84,6 @@ New stuff:
     simple if/else capabilities (or perhaps a module to do so)??
   - Simple static variables for .fvwm2rc functions (for toggles, etc)??
 
-  - Add StayOnBottom style?
-
-  - Add NeverFocus style?
   - Make sure fvwm handles all 4 focus states from the ICCCM (I don't
     think it handles a certain one of them 100% correctly).
 

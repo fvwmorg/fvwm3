@@ -92,7 +92,7 @@ int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body)
 void SendText(int *fd, char *message, unsigned long window)
 {
   char *p, *buf;
-  int len;
+  unsigned int len;
 
   if (!message)
     return;

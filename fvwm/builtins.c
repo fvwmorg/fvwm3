@@ -71,9 +71,12 @@ void FocusOn(FvwmWindow *t,Bool FocusByMouse)
   int dx,dy;
   int cx,cy;
 #endif
+#if 0
+  /* not used anymore (see below) */
   int x,y;
+#endif
 
-  if(t == (FvwmWindow *)0)
+  if(t == NULL || HAS_NEVER_FOCUS(t))
     return;
 
   if(t->Desk != Scr.CurrentDesk)
@@ -99,6 +102,8 @@ void FocusOn(FvwmWindow *t,Bool FocusByMouse)
   MoveViewport(dx,dy,True);
 #endif
 
+#if 0
+  /* x and y not used anymore (see below) */
   if(IS_ICONIFIED(t))
   {
     x = t->icon_xl_loc + t->icon_w_width/2;
@@ -109,11 +114,10 @@ void FocusOn(FvwmWindow *t,Bool FocusByMouse)
     x = t->frame_x;
     y = t->frame_y;
   }
-#if 0 /* don't want to warp the pointer by default anymore */
+  /* don't want to warp the pointer by default anymore */
   if(!(t->flags & ClickToFocus))
     XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x+2,y+2);
-#endif /* 0 */
-#if 0 /* don't want to raise anymore either */
+  /* don't want to raise anymore either */
   RaiseWindow(t);
 #endif /* 0 */
 
@@ -1334,7 +1338,7 @@ void SetXOR(F_CMD_ARGS)
     DestroyPicture(dpy, Scr.DrawPicture);
     Scr.DrawPicture = NULL;
   }
-  
+
   BroadcastLook();
 }
 
@@ -1975,7 +1979,7 @@ static void ApplyDefaultFontAndColors(void)
   }
 
   UpdateAllMenuStyles();
-  
+
   /* at this point the GC's are changed but need to be flushed to the server
    * before other modules can use them, XSync() doesn't do it, have to
    * actually draw something.  Size window is now unampped, use that */
@@ -2247,7 +2251,9 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
     char style[256], *file;
     char *action = s;
 
-    if (sscanf(s, "%s%n", style, &offset) < 1) {
+    /* some variants of scanf do not increase the assign count when %n is used,
+     * so a return value of 1 is no error. */
+    if (sscanf(s, "%256s%n", style, &offset) < 1) {
 	if (verbose)
           fvwm_msg(ERR, "ReadButtonFace", "error in face `%s'", s);
 	return False;
@@ -2862,7 +2868,8 @@ void add_item_to_decor(F_CMD_ARGS)
 	InitFvwmDecor(found);
 	found->tag = item; /* tag it */
 	/* add it to list */
-	for (fl = &Scr.DefaultDecor; fl->next; fl = fl->next);
+	for (fl = &Scr.DefaultDecor; fl->next; fl = fl->next)
+	  ;
 	fl->next = found;
     } else
 	free(item);

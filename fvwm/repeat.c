@@ -63,8 +63,10 @@ FvwmWindow *repeat_last_fvwm_window = NULL;
 
 void update_last_string(char **pdest, char **pdest2, char *src, Bool no_store)
 {
-  if (no_store || *pdest == src)
+  if (no_store || *pdest == src || *pdest == NULL)
     return;
+  if (*pdest2 && *pdest != *pdest2)
+    free(*pdest2);
   if (*pdest)
     free(*pdest);
   *pdest = strdup(src);

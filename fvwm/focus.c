@@ -50,8 +50,11 @@ Bool lastFocusType;
 void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 {
   int i;
-  Boolean       OnThisPage    =  False;
+  Boolean OnThisPage = False;
   extern Time lastTimestamp;
+
+  if (Fw && HAS_NEVER_FOCUS(Fw))
+    return;
 
   /* ClickToFocus focus queue manipulation - only performed for
    * Focus-by-mouse type focus events */

@@ -561,8 +561,8 @@ void HandlePropertyNotify(void)
 	return;
 
       /*
-       * rebuild icon if the client either provides an icon 
-       * pixmap or window or has reset the hints to `no icon'. 
+       * rebuild icon if the client either provides an icon
+       * pixmap or window or has reset the hints to `no icon'.
        */
       if ((Tmp_win->wmhints->flags & (IconPixmapHint|IconWindowHint)) ||
           ((old_wmhints_flags & (IconPixmapHint|IconWindowHint)) !=
@@ -629,14 +629,14 @@ void HandlePropertyNotify(void)
 	 Treat urgency changes by calling user-settable functions.
 	 These could e.g. deiconify and raise the window or temporarily
 	 change the decor. */
-      if (!(old_wmhints_flags & XUrgencyHint) && 
+      if (!(old_wmhints_flags & XUrgencyHint) &&
 	  (Tmp_win->wmhints->flags & XUrgencyHint))
 	{
 	  ExecuteFunction("Function UrgencyFunc",
 			  Tmp_win,&Event,C_WINDOW,-1,EXPAND_COMMAND);
 	}
 
-      if ((old_wmhints_flags & XUrgencyHint) && 
+      if ((old_wmhints_flags & XUrgencyHint) &&
 	  !(Tmp_win->wmhints->flags & XUrgencyHint))
 	{
 	  ExecuteFunction("Function UrgencyDoneFunc",
@@ -898,22 +898,13 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
 	      XMapWindow(dpy, Tmp_win->frame);
 	      SET_MAP_PENDING(Tmp_win, 1);
 	      SetMapStateProp(Tmp_win, NormalState);
-#if 0
-	      /* domivogt (21-mar-1999): several people complained about
-	       * clicktofocus windows taking the focus away from other
-	       * clicktofocus windows when they were mapped for the first
-	       * time, so I changed this. */
-	      if((Tmp_win->flags & ClickToFocus)&&
-		 ((!Scr.Focus)||(Scr.Focus->flags & ClickToFocus)))
-#else
 	      if((!Scr.Focus) ||
 		 (!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
 		 (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)))
-#endif
 		{
-                  if (OnThisPage)
+                  if (OnThisPage && !HAS_NEVER_FOCUS(Tmp_win))
                     {
-		      SetFocus(Tmp_win->w,Tmp_win,1);
+		      SetFocus(Tmp_win->w, Tmp_win, 1);
                     }
 		}
 	    }
@@ -927,8 +918,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
 	case IconicState:
 	  if (Tmp_win->wmhints)
 	    {
-	      Iconify(Tmp_win,
-		      Tmp_win->wmhints->icon_x, Tmp_win->wmhints->icon_y);
+	      Iconify(Tmp_win, Tmp_win->wmhints->icon_x,
+		      Tmp_win->wmhints->icon_y);
 	    }
 	  else
 	    {
@@ -1026,20 +1017,11 @@ void HandleMapNotify(void)
     BroadcastPacket(M_MAP, 3,
                     Tmp_win->w,Tmp_win->frame, (unsigned long)Tmp_win);
 
-#if 0
-  /* domivogt (21-mar-1999): several people complained about
-   * clicktofocus windows taking the focus away from other
-   * clicktofocus windows when they were mapped for the first
-   * time, so I changed this. */
-  if((Tmp_win->flags & ClickToFocus)&&
-     ((!Scr.Focus)||(Scr.Focus->flags & ClickToFocus)))
-#else
   if((!Scr.Focus) ||
      (!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)))
-#endif
     {
-      if (OnThisPage)
+      if (OnThisPage && !HAS_NEVER_FOCUS(Tmp_win))
         {
           SetFocus(Tmp_win->w,Tmp_win,1);
         }
@@ -1116,7 +1098,8 @@ void HandleUnmapNotify(void)
 
   focus_grabbed = (Tmp_win == Scr.Focus) &&
     ((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
-     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)));
+     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win))) &&
+    !HAS_NEVER_FOCUS(Tmp_win);
 
   if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
     {
@@ -1247,6 +1230,7 @@ void HandleButtonPress(void)
     }
   }
   else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
+	   !HAS_NEVER_FOCUS(Tmp_win) &&
            (Event.xbutton.window == Tmp_win->frame) &&
 	   Scr.go.MouseFocusClickRaises)
   {
@@ -1360,7 +1344,7 @@ void HandleEnterNotify(void)
   if (!Tmp_win)
     return;
 
-  if(!HAS_CLICK_FOCUS(Tmp_win))
+  if(!HAS_CLICK_FOCUS(Tmp_win) && !HAS_NEVER_FOCUS(Tmp_win))
     {
       SetFocus(Tmp_win->w,Tmp_win,1);
     }
@@ -1792,8 +1776,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 /*
     ResyncFvwmStackRing -
     Rebuilds the stacking order ring of FVWM-managed windows. For use in cases
-    where apps raise/lower their own windows in a way that makes it difficult to
-    determine exactly where they ended up in the stacking order.
+    where apps raise/lower their own windows in a way that makes it difficult
+    to determine exactly where they ended up in the stacking order.
     - Based on code from Matthias Clasen.
 */
 void  ResyncFvwmStackRing (void)
@@ -1841,11 +1825,12 @@ void  ResyncFvwmStackRing (void)
               Move the window to its new position, working from the bottom up
               (that's the way XQueryTree presents the list).
           */
-          t1->stack_prev->stack_next = t1->stack_next;  /* Pluck from chain.       */
+          t1->stack_prev->stack_next = t1->stack_next;  /* Pluck from chain. */
           t1->stack_next->stack_prev = t1->stack_prev;
-          t1->stack_next = t2;                          /* Set new pointers.       */
+          t1->stack_next = t2;                          /* Set new pointers. */
           t1->stack_prev = t2->stack_prev;
-          t2->stack_prev->stack_next = t1;              /* Insert in new position. */
+          t2->stack_prev->stack_next = t1;              /* Insert in new
+							 * position. */
           t2->stack_prev = t1;
           t2 = t1;
 

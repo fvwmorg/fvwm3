@@ -2649,7 +2649,7 @@ OLDecor/NoOLDecor, StickyIcon/SlipperyIcon,
 SmartPlacement/DumbPlacement, RandomPlacement/ActivePlacement,
 DecorateTransient/NakedTransient, SkipMapping/ShowMapping, UseDecor,
 UseStyle, NoPPosition/UsePPosition, Lenience/NoLenience,
-ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse,
+ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse/NeverFocus,
 StartsLowered/StartsRaised, GrabFocus/GrabFocusOff,
 GrabFocusTransient/GrabFocusTransientOff.
 
@@ -2832,7 +2832,9 @@ the pointer enters the window, and take it away when the pointer leaves the
 window. \fISloppyFocus\fP is similar, but doesn't give up the focus if the
 pointer leaves the window to pass over the root window or a ClickToFocus
 window (unless you click on it, that is), which makes it possible to
-move the mouse out of the way without losing focus.
+move the mouse out of the way without losing focus. A window with the
+style \fINeverFocus\fP never receives the focus. This is useful for
+FvwmButtons, for example.
 
 \fINoPPosition\fP instructs fvwm2 to ignore the PPosition field when adding
 new windows.  Adherence to the PPosition field is required for some
