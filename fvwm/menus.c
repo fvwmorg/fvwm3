@@ -1767,7 +1767,8 @@ void SelectMenuItem(MenuRoot *mr, MenuItem *mi, Bool select, FvwmWindow *fw)
 		  MR_STORED_ITEM(mr).width, MR_STORED_ITEM(mr).height,
 		  0, MR_STORED_ITEM(mr).y);
 
-        XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
+	if (MR_STORED_ITEM(mr).stored != None)
+	  XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
         MR_STORED_ITEM(mr).stored = None;
         MR_STORED_ITEM(mr).width = 0;
         MR_STORED_ITEM(mr).height = 0;
@@ -1778,7 +1779,8 @@ void SelectMenuItem(MenuRoot *mr, MenuItem *mi, Bool select, FvwmWindow *fw)
   default:
     if (MR_STORED_ITEM(mr).width != 0)
     {
-      XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
+      if (MR_STORED_ITEM(mr).stored != None)
+	XFreePixmap(dpy, MR_STORED_ITEM(mr).stored);
       MR_STORED_ITEM(mr).stored = None;
       MR_STORED_ITEM(mr).width = 0;
       MR_STORED_ITEM(mr).height = 0;

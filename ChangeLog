@@ -1,5 +1,7 @@
 1999-05-30  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/menus.c (SelectMenuItem): fixed another x error message
+
 	* fvwm/fvwm.c (main): applied restart patch by Mikhael Goikhman
 
 	* fvwm/menus.c (SelectMenuItem): Fixed X error message 54/4/14: No
