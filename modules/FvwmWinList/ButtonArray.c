@@ -129,17 +129,18 @@ void InitArray(ButtonArray *array,int x,int y,int w,int h,int rw)
 }
 
 /******************************************************************************
-  UpdateArray - Update the array specifics.  x,y, width, height
+  UpdateArray - Update the array width
 ******************************************************************************/
-void UpdateArray(ButtonArray *array,int x,int y,int w, int h)
+void UpdateArray(ButtonArray *array, int w)
 {
   Button *temp;
 
-  if (x!=-1) array->x=x;
-  if (y!=-1) array->y=y;
-  if (w!=-1) array->w=w;
-  if (h!=-1) array->h=h;
-  for(temp=array->head;temp!=NULL;temp=temp->next) temp->needsupdate=1;
+  if (w >= 0 && array->w != w)
+  {
+    array->w = w;
+    for(temp = array->head; temp != NULL; temp = temp->next)
+      temp->needsupdate = 1;
+  }
 }
 
 /******************************************************************************
@@ -218,7 +219,7 @@ int AddButton(ButtonArray *array, char *title, Picture *p, int up)
 }
 
 /******************************************************************************
-  UpdateButton - Change the name/stae of a button
+  UpdateButton - Change the name/state of a button
 ******************************************************************************/
 int UpdateButton(ButtonArray *array, int butnum, char *title, int up)
 {
@@ -381,7 +382,7 @@ Button *temp,*temp2;
 /******************************************************************************
   DoButton - Draw the specified button.  (Used internally)
 ******************************************************************************/
-void DoButton(Button *button, int x, int y, int w, int h)
+void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 {
   int up,Fontheight,newx,set,len;
   GC topgc;
@@ -407,10 +408,12 @@ void DoButton(Button *button, int x, int y, int w, int h)
   Fontheight=ButtonFont->ascent+ButtonFont->descent;
 
   /* handle transparency by clearing button, otherwise paint with background */
-  if (colorset[set] >= 0 && Colorset[colorset[set]].pixmap == ParentRelative)
-    XClearArea(dpy,win,x,y,w,h+1, False);
-  else
-    XFillRectangle(dpy,win,background[set],x,y,w,h+1);
+  if (clear_bg) {
+    if (colorset[set] >= 0 && Colorset[colorset[set]].pixmap == ParentRelative)
+      XClearArea(dpy,win,x,y,w,h+1, False);
+    else
+      XFillRectangle(dpy,win,background[set],x,y,w,h+1);
+  }
 
   if ((button->p.picture != 0)/* &&
       (w + button->p.width + w3p + 3 > MIN_BUTTON_SIZE)*/) {
@@ -494,29 +497,55 @@ void DoButton(Button *button, int x, int y, int w, int h)
 /******************************************************************************
   DrawButtonArray - Draw the whole array (all=1), or only those that need.
 ******************************************************************************/
-void DrawButtonArray(ButtonArray *barray, Bool all)
+void DrawButtonArray(ButtonArray *barray, Bool all, Bool clear_bg)
 {
   Button *btn;
   int i = 0;		/* buttons displayed */
 
   for(btn = barray->head; btn != NULL; btn = btn->next)
-  {
-    if((!ShowCurrentDesk) || ( btn->desk == CurrentDesk ) )
+    if (!ShowCurrentDesk || (btn->desk == CurrentDesk))
     {
-      if (btn->needsupdate || all)
-      {
-        DoButton
-        (
-  		btn,barray->x,
-  		barray->y+(i*(barray->h+1)),
-  		barray->w,barray->h
-    	);
-      }
+      if (all || btn->needsupdate)
+        DoButton(btn, barray->x, barray->y + (i * (barray->h + 1)),
+		 barray->w, barray->h, clear_bg);
       i++;
     }
-  }
 }
 
+/******************************************************************************
+  ExposeAllButtons - Draw all button backgrounds intersectingwith the event
+******************************************************************************/
+void ExposeAllButtons(ButtonArray *barray, XEvent *eventp)
+{
+  Button *btn;
+  int i, set;
+  XRectangle rect;
+
+  rect.x = eventp->xexpose.x;
+  rect.y = eventp->xexpose.y;
+  rect.width = eventp->xexpose.width;
+  rect.height = eventp->xexpose.height;
+
+  /* only fill the area exposed */
+  for (i = 0; i != MAX_COLOUR_SETS; i++)
+    XSetClipRectangles(dpy, background[i], 0, 0, &rect, 1, Unsorted);
+
+  i = 0;
+  for (btn = barray->head; btn != NULL; btn = btn->next)
+    if (!ShowCurrentDesk || (btn->desk == CurrentDesk))
+    {
+      set = btn->set;
+      if (colorset[set] < 0 || Colorset[colorset[set]].pixmap != ParentRelative)
+	XFillRectangle(dpy, win, background[set],
+		       barray->x, barray->y + (i * (barray->h + 1)),
+		       barray->w, barray->h + 1);
+      i++;
+    }
+
+  /* clear the clipping */
+  for (i = 0; i != MAX_COLOUR_SETS; i++)
+    XSetClipMask(dpy, background[i], None);
+}
 /******************************************************************************
   SwitchButton - Alternate the state of a button
 ******************************************************************************/
@@ -527,7 +556,7 @@ void SwitchButton(ButtonArray *array, int butnum)
   btn = find_n(array, butnum);
   btn->up =!btn->up;
   btn->needsupdate=1;
-  DrawButtonArray(array, 0);
+  DrawButtonArray(array, False, True);
 }
 
 /* -------------------------------------------------------------------------

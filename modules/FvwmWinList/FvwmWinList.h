@@ -101,7 +101,7 @@ void ReadFvwmPipe(void);
 void ProcessMessage(unsigned long type,unsigned long *body);
 void DeadPipe(int nonsense) __attribute__((noreturn));
 void MakeMeWindow(void);
-void RedrawWindow(Bool force);
+void RedrawWindow(Bool force, Bool clear_bg);
 void StartMeUp(void);
 void ShutMeDown(void);
 void ConsoleMessage(const char *fmt,...) __attribute__((format(printf,1,2)));

@@ -95,7 +95,7 @@ int screen,ScreenWidth,ScreenHeight;
 Pixel back[MAX_COLOUR_SETS], fore[MAX_COLOUR_SETS];
 GC  graph[MAX_COLOUR_SETS],shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
 GC  background[MAX_COLOUR_SETS];
-Pixmap win_bg = None;
+Pixmap win_bg;
 XFontStruct *ButtonFont;
 #ifdef I18N_MB
 XFontSet ButtonFontset;
@@ -357,7 +357,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
         {
           UpdateButtonDesk(&buttons, i, cfgpacket->desk);
           AdjustWindow(False);
-          RedrawWindow(True);
+          RedrawWindow(True, True);
         }
 	break;
       }
@@ -370,7 +370,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       RemoveButton(&buttons,i);
       if (WindowState)
         AdjustWindow(False);
-
       redraw=1;
       break;
 
@@ -396,14 +395,15 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
     case M_WINDOW_NAME:
     case M_ICON_NAME:
-      if ((type==M_ICON_NAME && !UseIconNames) ||
-          (type==M_WINDOW_NAME && UseIconNames))
+      if ((type == M_ICON_NAME) ^ UseIconNames)
 	break;
-      if ((i=UpdateItemName(&windows,body[0],(char *)&body[3]))==-1) break;
       string=(char *)&body[3];
+      if ((i=UpdateItemName(&windows,body[0],string))==-1) break;
       flagitem = ItemFlags(&windows,body[0]);
       name=makename(string, (IS_ICONIFIED(flagitem)?True:False));
+/* surely this is uneccesary
       UpdateButtonIconified(&buttons, i, IS_ICONIFIED(flagitem));
+*/
       if (UpdateButton(&buttons,i,name,-1)==-1)
       {
 	AddButton(&buttons, name, NULL, 1);
@@ -490,7 +490,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if(ShowCurrentDesk)
       {
         AdjustWindow(False);
-        RedrawWindow(True);
+        RedrawWindow(True, True);
       }
       break;
     case M_CONFIG_INFO:
@@ -498,16 +498,16 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       break;
   }
 
-  if (redraw && WindowState==1) RedrawWindow(False);
+  if (redraw && WindowState==1) RedrawWindow(False, True);
 }
 
 
 /******************************************************************************
   RedrawWindow - Update the needed lines and erase any old ones
 ******************************************************************************/
-void RedrawWindow(Bool force)
+void RedrawWindow(Bool force, Bool clear_bg)
 {
-  DrawButtonArray(&buttons, force);
+  DrawButtonArray(&buttons, force, clear_bg);
   XFlush(dpy); /** Put here for VMS; ifdef if causes performance problem **/
   if (XQLength(dpy) && !force) LoopOnEvents();
 }
@@ -686,16 +686,20 @@ ParseConfigLine(char *tline)
 
       if (WindowState && (cset >= 0)) {
 	int i;
+	Pixmap old_win_bg = win_bg;
 
+	/* set the window background */
+	win_bg = None;
+	for (i = 0; i != MAX_COLOUR_SETS; i++)
+	    if (colorset[i] >= 0 && Colorset[colorset[i]].pixmap == ParentRelative)
+	      win_bg = ParentRelative;
+	if (old_win_bg != win_bg)
+	  XSetWindowBackgroundPixmap(dpy, win, win_bg);
+	/* refresh if this colorset is used */
 	for (i = 0; i != MAX_COLOUR_SETS; i++) {
 	  if (colorset[i] == cset) {
-	    if (win_bg == None && Colorset[cset].pixmap == ParentRelative)
-	    {
-	      win_bg = ParentRelative;
-	      XSetWindowBackgroundPixmap(dpy, win, win_bg);
-	    }
 	    AdjustWindow(True);
-	    RedrawWindow(True);
+	    RedrawWindow(True, True);
 	    break;
 	  }
 	}
@@ -762,9 +766,14 @@ void LoopOnEvents(void)
         Pressed=1;
         break;
       case Expose:
+	/* have to clear each button with its background,
+	 * let the server compute the intersections */
+	ExposeAllButtons(&buttons, &Event);
+        /* if there are no more expose events in the queue draw all icons,
+         * text and shadows, but not the background */
         if (Event.xexpose.count==0)
-          RedrawWindow(True);
-        break;
+          RedrawWindow(True, False);
+	break;
       case ConfigureNotify:
 	{
 	  XEvent event;
@@ -785,15 +794,10 @@ void LoopOnEvents(void)
 	  }
 	}
         if (Event.xconfigure.send_event) {
-          int i;
           win_x = Event.xconfigure.x;
           win_y = Event.xconfigure.y;
-          for (i = 0; i < MAX_COLOUR_SETS; i++)
-            if (colorset[i] >= 0 && Colorset[colorset[i]].pixmap == ParentRelative)
-            {
-              RedrawWindow(True);
-              break;
-            }
+          if (win_bg == ParentRelative)
+            RedrawWindow(True, True);
         }
         break;
       case KeyPress:
@@ -962,7 +966,7 @@ void AdjustWindow(Bool force)
       XResizeWindow(dpy, win, new_width, new_height);
 
   }
-  UpdateArray(&buttons,-1,-1,new_width,-1);
+  UpdateArray(&buttons,new_width);
   if (new_height>0) win_height = new_height;
   if (new_width>0) win_width = new_width;
   if (WindowState==2)
@@ -977,12 +981,12 @@ void AdjustWindow(Bool force)
 ******************************************************************************/
 char *makename(const char *string, Bool iconified)
 {
-char *ptr;
+  char *ptr;
+
+  if (!iconified)
+    return strdup(string);
   ptr=safemalloc(strlen(string)+3);
-  *ptr = '\0';
-  if (iconified) strcpy(ptr,"(");
-  strcat(ptr,string);
-  if (iconified) strcat(ptr,")");
+  sprintf(ptr, "(%s)", string);
   return ptr;
 }
 
@@ -1089,7 +1093,8 @@ void MakeMeWindow(void)
   /* FvwmWinList paints the entire window and does not rely on the xserver to
    * render the background. Setting the background_pixmap to None prevents the
    * server from doing anything on expose events. The exception is when one of
-   * the colorsets is transparent whihc requires help from the server */
+   * the colorsets is transparent which requires help from the server */
+  win_bg = None;
   for (i = 0; i != MAX_COLOUR_SETS; i++)
     if (colorset[i] >= 0 && Colorset[colorset[i]].pixmap == ParentRelative)
     {
