@@ -1,3 +1,12 @@
+2001-02-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/builtins.c (SetBugOptions):
+	* fvwm/events.c (HandleFocusIn):
+	suppress focus flickering with application modal Qt dialog windows with
+	the FlickeringQtDialogsWorkaround bug option.
+
 2001-02-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* INSTALL.fvwm: document --disable-sm

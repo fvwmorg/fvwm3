@@ -155,6 +155,7 @@ void HandleFocusIn(void)
   Pixel bc = 0;
   FvwmWindow *ffw_old = Scr.Focus;
   Bool do_force_broadcast = False;
+  Bool is_unmanaged_focused = False;
   static Window last_focus_w = None;
   static Window last_focus_fw = None;
   static Bool is_never_focused = True;
@@ -165,7 +166,7 @@ void HandleFocusIn(void)
   if (Event.xfocus.detail != NotifyPointer)
   /**/
     w= Event.xany.window;
-  while(XCheckTypedEvent(dpy,FocusIn,&d))
+  while (XCheckTypedEvent(dpy,FocusIn,&d))
   {
     /* dito */
     if (d.xfocus.detail != NotifyPointer)
@@ -178,7 +179,7 @@ void HandleFocusIn(void)
     return;
   }
   /**/
-  if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
+  if (XFindContext(dpy, w, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
   {
     Tmp_win = NULL;
   }
@@ -189,6 +190,7 @@ void HandleFocusIn(void)
     {
       Scr.UnknownWinFocused = w;
       focus_w = w;
+      is_unmanaged_focused = True;
     }
     else
     {
@@ -221,7 +223,10 @@ void HandleFocusIn(void)
   {
     do_force_broadcast = IS_FOCUS_CHANGE_BROADCAST_PENDING(Tmp_win);
     SET_FOCUS_CHANGE_BROADCAST_PENDING(Tmp_win, 0);
-    DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
+    if (Tmp_win != Scr.Hilite)
+    {
+      DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
+    }
     focus_w = Tmp_win->w;
     focus_fw = Tmp_win->frame;
     fc = Tmp_win->hicolors.fore;
@@ -247,8 +252,11 @@ void HandleFocusIn(void)
       focus_w != last_focus_w || focus_fw != last_focus_fw ||
       do_force_broadcast)
   {
-    BroadcastPacket(M_FOCUS_CHANGE, 5, focus_w, focus_fw,
-                    (unsigned long)IsLastFocusSetByMouse(), fc, bc);
+    if (!Scr.bo.FlickeringQtDialogsWorkaround || !is_unmanaged_focused)
+    {
+      BroadcastPacket(M_FOCUS_CHANGE, 5, focus_w, focus_fw,
+		      (unsigned long)IsLastFocusSetByMouse(), fc, bc);
+    }
     last_focus_w = focus_w;
     last_focus_fw = focus_fw;
     is_never_focused = False;

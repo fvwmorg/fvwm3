@@ -2725,6 +2725,22 @@ void SetBugOptions(F_CMD_ARGS)
 	break;
       }
     }
+    else if (StrEquals(opt, "FlickeringQtDialogsWorkaround"))
+    {
+      switch (toggle)
+      {
+      case -1:
+	Scr.bo.FlickeringQtDialogsWorkaround ^= 1;
+	break;
+      case 0:
+      case 1:
+	Scr.bo.FlickeringQtDialogsWorkaround = toggle;
+	break;
+      default:
+	Scr.bo.FlickeringQtDialogsWorkaround = 0;
+	break;
+      }
+    }
     else
     {
       fvwm_msg(ERR, "SetBugOptions", "Unknown Bug Option '%s'", opt);

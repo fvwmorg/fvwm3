@@ -2399,6 +2399,14 @@ use long-lived windows of this sort, contrary to
 .SM ICCCM
 conventions.
 
+.I FlickeringQtDialogsWorkaround
+suppresses flickering of the focused window in some modules when using
+KDE or Qt applications with application modal dialog windows.  By
+default this option is toruned on.  This option may be visually
+disturbing for other application windows using windows not managed
+by fvwm.  Since these applications are rare it is most likely safe
+to leave this option at its default.
+
 .TP
 .BI "BusyCursor [" "Option bool" "], " ...
 This command controls the cursor during the execution of certain

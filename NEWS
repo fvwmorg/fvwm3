@@ -3,6 +3,8 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.29 (not released yet)
 
+* New BugOpts option FlickeringQtDialogsWorkaround.
+
 * New configure option --disable-package-subdirs, see INSTALL.fvwm for info.
 
 * New option "None" to the IconBox style.

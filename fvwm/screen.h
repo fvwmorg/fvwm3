@@ -353,6 +353,7 @@ typedef struct ScreenInfo
     unsigned DisableConfigureNotify : 1;
     unsigned InstallRootCmap : 1;
     unsigned RaiseOverUnmanaged : 1;
+    unsigned FlickeringQtDialogsWorkaround : 1;
   } bo; /* bug workaround control options */
   struct
   {
