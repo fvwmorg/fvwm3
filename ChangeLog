@@ -1,5 +1,7 @@
 1999-06-05  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* configure.in: changed version to 2.3.4
+
 	* fvwm/menus.c: Made position hints refering to menus play nicely with
 	SubmenusLeft.
 	Added an additional mini icon to the right of the item.
