@@ -1,3 +1,7 @@
+1999-03-29  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm.c (SetRCDefaults): changed back to MouseFocus as default
+
 Sun Mar 28 22:09:12 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/Parse.c (NukeToken): removed errant semicolon.
