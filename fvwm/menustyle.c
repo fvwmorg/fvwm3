@@ -255,10 +255,11 @@ static void parse_vertical_spacing_line(
 	return;
 }
 
-static void menustyle_parse_old_style(F_CMD_ARGS)
+static MenuStyle *menustyle_parse_old_style(F_CMD_ARGS)
 {
 	char *buffer, *rest;
 	char *fore, *back, *stipple, *font, *style, *animated;
+	MenuStyle *ms = NULL;
 
 	rest = GetNextToken(action,&fore);
 	rest = GetNextToken(rest,&back);
@@ -282,7 +283,7 @@ static void menustyle_parse_old_style(F_CMD_ARGS)
 			(animated && StrEquals(animated, "anim")) ?
 			"Animation" : "AnimationOff");
 		action = buffer;
-		menustyle_parse_style(F_PASS_ARGS);
+		ms = menustyle_parse_style(F_PASS_ARGS);
 	}
 
 	if (fore)
@@ -310,7 +311,7 @@ static void menustyle_parse_old_style(F_CMD_ARGS)
 		free(animated);
 	}
 
-	return;
+	return ms;
 }
 
 static int menustyle_get_styleopt_index(char *option)
@@ -623,7 +624,7 @@ void menustyle_update(MenuStyle *ms)
 	return;
 }
 
-void menustyle_parse_style(F_CMD_ARGS)
+MenuStyle *menustyle_parse_style(F_CMD_ARGS)
 {
 	char *name;
 	char *option = NULL;
@@ -648,14 +649,14 @@ void menustyle_parse_style(F_CMD_ARGS)
 	{
 		fvwm_msg(ERR, "NewMenuStyle",
 			 "error in %s style specification",action);
-		return;
+		return NULL;
 	}
 
 	ms = menustyle_find(name);
 	if (ms && ST_USAGE_COUNT(ms) != 0)
 	{
 		fvwm_msg(ERR,"NewMenuStyle", "menu style %s is in use", name);
-		return;
+		return ms;
 	}
 	tmpms = (MenuStyle *)safemalloc(sizeof(MenuStyle));
 	if (ms)
@@ -1319,6 +1320,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 		/* copy our new menu face over the old one */
 		memcpy(ms, tmpms, sizeof(MenuStyle));
 		free(tmpms);
+		return ms;
 	}
 	else
 	{
@@ -1331,7 +1333,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 		ST_NEXT_STYLE(before) = tmpms;
 	}
 
-	return;
+	return tmpms;
 }
 
 void menustyle_copy(MenuStyle *origms, MenuStyle *destms)
@@ -1582,9 +1584,8 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		buffer = (char *)safemalloc(strlen(destname) + 3);
 		sprintf(buffer,"\"%s\"",destname);
 		action = buffer;
-		menustyle_parse_style(F_PASS_ARGS);
+		destms = menustyle_parse_style(F_PASS_ARGS);
 		free(buffer);
-		destms = menustyle_find(destname);
 		if (!destms)
 		{
 			/* this must never happen */
@@ -1624,15 +1625,16 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 void CMD_MenuStyle(F_CMD_ARGS)
 {
 	char *option;
+	MenuStyle *dummy;
 
 	GetNextSimpleOption(SkipNTokens(action, 1), &option);
 	if (option == NULL || menustyle_get_styleopt_index(option) != -1)
 	{
-		menustyle_parse_style(F_PASS_ARGS);
+		dummy = menustyle_parse_style(F_PASS_ARGS);
 	}
 	else
 	{
-		menustyle_parse_old_style(F_PASS_ARGS);
+		dummy = menustyle_parse_old_style(F_PASS_ARGS);
 	}
 	if (option)
 	{

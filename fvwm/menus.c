@@ -5936,14 +5936,17 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	const exec_context_t *exc = NULL;
 
 	/* keep the menu open */
-	discard_window_events(MR_WINDOW(mr_to_copy), SubstructureNotifyMask);
+	if (MR_WINDOW(mr_to_copy) != None)
+	{
+		discard_window_events(
+			MR_WINDOW(mr_to_copy), SubstructureNotifyMask);
+	}
 	mr = clone_menu(mr_to_copy);
 	/* also dump the menu style */
 	buffer = (char *)safemalloc(23);
 	sprintf(buffer,"%lu",(unsigned long)mr);
 	action = buffer;
-	menustyle_parse_style(F_PASS_ARGS);
-	ms = menustyle_find(buffer);
+	ms = menustyle_parse_style(F_PASS_ARGS);
 	if (!ms)
 	{
 		/* this must never happen */
@@ -6401,8 +6404,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 				/* kill the menu */
 				do_menu_close_tear_off_menu(pmp->menu, *pmp);
 				pmret->rc = MENU_ABORTED;
-				discard_window_events(
-					MR_WINDOW(pmp->menu), EnterWindowMask);
 			}
 			else
 			{
@@ -6758,7 +6759,7 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 		MR_CREATE_DPY(mr) = NULL;
 	}
 
-	if (MR_COPIES(mr) <= 0)
+	if (MR_COPIES(mr) == 0)
 	{
 		if (MR_POPUP_ACTION(mr))
 		{

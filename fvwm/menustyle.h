@@ -273,7 +273,7 @@ typedef struct MenuStyle
 void menustyle_free(MenuStyle *ms);
 MenuStyle *menustyle_find(char *name);
 void menustyle_update(MenuStyle *ms);
-void menustyle_parse_style(F_CMD_ARGS);
+MenuStyle *menustyle_parse_style(F_CMD_ARGS);
 MenuStyle *menustyle_get_default_style(void);
 void menustyle_copy(MenuStyle *origms, MenuStyle *destms);
 
