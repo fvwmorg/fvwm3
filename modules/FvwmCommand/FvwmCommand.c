@@ -86,6 +86,7 @@ int main ( int argc, char *argv[])
   char *f_stem, *fc_name, *fm_name;
   char *sf_stem;
   char *c;
+  char *s;
   int  i;
   int  opt;
   int  ncnt;
@@ -211,7 +212,6 @@ int main ( int argc, char *argv[])
     char *dpy_name;
     char dpy_name_add[3];
     int i;
-    char *s;
 
     /* default name */
     dpy_name = getenv("DISPLAY");
