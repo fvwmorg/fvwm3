@@ -1,3 +1,15 @@
+2001-02-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (SetTransparentBackground):
+	rewrote button shape implementation
+
+2001-02-25  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (SetTransparentBackground):
+
+	* FvwmEvent/FvwmEvent.c:
+	fixed an OpenBSD compile problem by removing inclusion of <values.h>
+
 2001-02-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/icons.c (CreateIconWindow):

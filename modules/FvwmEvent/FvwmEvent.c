@@ -105,7 +105,6 @@
 #include <sys/wait.h>
 #include <sys/time.h>
 #include <ctype.h>
-#include <values.h>
 
 #ifdef DEBUG
 #define INFO(x) fprintf(stderr,x)

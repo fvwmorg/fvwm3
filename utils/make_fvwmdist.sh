@@ -70,7 +70,7 @@ fi
 
 if [ $wrong_dir = 1 ] ; then
   echo "The fvwm sources are not present in the current directory."
-  echo "Looked for AUTHORS containing \"fvwm\" and \"Robert Nation\". exit."
+  echo "Looked for "$CHECK_FILE" containing \""$CHECK_STRING1"\" and \""$CHECK_STRING2"\". exit."
   exit 11;
 fi
 

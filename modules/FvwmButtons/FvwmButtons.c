@@ -527,12 +527,14 @@ void SetTransparentBackground(button_info *ub,int w,int h)
   unsigned int depth_return;
   int number, i;
   XFontStruct *font;
+  Region shape_r;
 
   if (!ShapesSupported)
     return;
   pmap_mask = XCreatePixmap(Dpy,MyWindow,w,h,1);
   if (pmap_mask == None)
     return;
+  shape_r = XCreateRegion();
   if (trans_gc == NULL)
   {
     XGCValues gcv;
@@ -542,12 +544,10 @@ void SetTransparentBackground(button_info *ub,int w,int h)
     if (trans_gc == NULL)
       return;
   }
-
-  XSetForeground(Dpy,trans_gc,0);
-  XFillRectangle(Dpy,pmap_mask,trans_gc,0,0,w,h);
-  XSetForeground(Dpy,trans_gc,1);
-  /* apply empty shape first, then add visible parts */
-  XShapeCombineMask(Dpy, MyWindow, ShapeBounding, 0, 0, pmap_mask, ShapeSet);
+  XSetClipMask(Dpy, trans_gc, None);
+  XSetForeground(Dpy, trans_gc, 0);
+  XFillRectangle(Dpy, pmap_mask, trans_gc, 0, 0, w, h);
+  XSetForeground(Dpy, trans_gc, 1);
 
   /*
    * if button has an icon, draw a rect with the same size as the icon
@@ -578,14 +578,50 @@ void SetTransparentBackground(button_info *ub,int w,int h)
     else if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow))
     {
       Window swin = SwallowedWindow(b);
-      Window JunkW;
+      XRectangle *r;
+      int count;
+      int ordering;
+      XRectangle s;
+      Bool got_geometry = False;
 
-      if (XTranslateCoordinates(
-	    Dpy, swin, MyWindow, 0, 0, &x_return, &y_return, &JunkW))
+      if (XGetGeometry(
+	    Dpy, swin, &root_return, &x_return, &y_return, &width_return,
+	    &height_return, &border_width_return, &depth_return))
       {
-	XShapeCombineShape(
-	  Dpy, MyWindow, ShapeBounding, x_return, y_return, swin,
-	  ShapeBounding, ShapeUnion);
+	got_geometry = True;
+	s.x = x_return;
+	s.y = y_return;
+	s.width = width_return;
+	s.height = height_return;
+      }
+      else
+      {
+	s.x = buttonXPos(b, number);
+	s.y = buttonYPos(b, number);
+	s.width = buttonWidth(b);
+	s.height = buttonHeight(b);
+      }
+
+      /* get set of shape rectangles - this is all very inefficient, but I do
+       * not see another way to do it properly */
+      if (got_geometry &&
+	  (r = XShapeGetRectangles(
+	    Dpy, swin, ShapeBounding, &count, &ordering)))
+      {
+	int i;
+
+	/* merge the rectangles with the shape region */
+	for (i = 0; i < count ; i++)
+	{
+	  r[i].x += s.x;
+	  r[i].y += s.y;
+	  XUnionRectWithRegion(&(r[i]), shape_r, shape_r);
+	}
+	XFree(r);
+      }
+      else
+      {
+	XUnionRectWithRegion(&s, shape_r, shape_r);
       }
     }
     else
@@ -604,19 +640,11 @@ void SetTransparentBackground(button_info *ub,int w,int h)
       DrawTitle(b,pmap_mask,trans_gc);
     }
   }
-  XShapeCombineMask(Dpy, MyWindow, ShapeBounding, 0, 0, pmap_mask, ShapeUnion);
+  XSetRegion(Dpy, trans_gc, shape_r);
+  XFillRectangle(Dpy, pmap_mask, trans_gc, 0, 0, w, h);
+  XShapeCombineMask(Dpy, MyWindow, ShapeBounding, 0, 0, pmap_mask, ShapeSet);
   XFreePixmap(Dpy, pmap_mask);
-
-  {
-    XEvent dummy;
-
-    XSync(Dpy, 0);
-    /* Flush shape notify events */
-    while (XCheckTypedEvent(Dpy, ShapeEventBase+ShapeNotify, &dummy))
-    {
-      /* nothing */
-    }
-  }
+  XDestroyRegion(shape_r);
 
   return;
 }

@@ -2151,7 +2151,7 @@ A: Setting the background image is not really part of the window
 7.10  The cat safe desktop ^_^
 
    If your cats keep stepping on your keyboard while you are brewing
-   another cup of coffee on of these hints may help:
+   another cup of coffee, one of these hints may help:
 
      Use 'Style * MouseFocus' and move the mouse pointer over the
      background when you go away.
@@ -2160,7 +2160,7 @@ A: Setting the background image is not really part of the window
      mouse pointer into a window that takes no keyboard input and
      give it the focus (e.g. FvwmButtons or a console message
      window).  A true fanatic creates a separate window with a picture
-     of his cat for this :-)
+     of his cat for this ^_^
 
 ----------------------------------------------------------------------
 
@@ -2192,6 +2192,8 @@ A: Setting the background image is not really part of the window
      AddToFunc ToggleFvwmConsole
      + I None (FvwmConsole) Module FvwmConsole
      + I Next (FvwmConsole) Close
+     + I Next (FvwmConsole) MoveToDesk
+     + I Next (FvwmConsole) MoveToPage
 
      AddToMenu <some menu>
      + "toggle FvwmConsole" Function ToggleFvwmConsole
@@ -2199,6 +2201,9 @@ A: Setting the background image is not really part of the window
    Or if you prefer a button in the button bar:
 
      *FvwmButtons(Action ToggleFvwmConsole)
+
+   The lines with MoveToDesk and MoveToPage will bring the window
+   to the current page if it is not visible instead of closing it.
 
    If you want to toggle one specific window, e.g. an xterm, but
    still want to have other xterms that are not toggled, you must
