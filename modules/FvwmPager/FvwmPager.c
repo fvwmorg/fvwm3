@@ -768,16 +768,14 @@ void list_focus(unsigned long *body)
  ***********************************************************************/
 void list_new_page(unsigned long *body)
 {
-  Scr.Vx = (long)body[0];
-  Scr.Vy = (long)body[1];
-  if (Scr.CurrentDesk != (long)body[2])
+  Scr.Vx = body[0];
+  Scr.Vy = body[1];
+  if (Scr.CurrentDesk != body[2])
   {
       /* first handle the new desk */
-      (long)body[0] = (long)body[2];
+      body[0] = body[2];
       list_new_desk(body);
   }
-  /* Seems to be a very bad idea to update the desk here (olicha 17 Dec 99):
-  Scr.CurrentDesk = (long)body[2]; */
   if((Scr.VxMax != body[3])||(Scr.VyMax != body[4]))
   {
     Scr.VxMax = body[3];
@@ -786,9 +784,6 @@ void list_new_page(unsigned long *body)
   }
   MovePage();
   MoveStickyWindows();
-/*
-  Hilight(FocusWin,False);
-*/
   Hilight(FocusWin,True);
 }
 

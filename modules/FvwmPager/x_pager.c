@@ -2633,8 +2633,8 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
 {
   XWindowChanges window_changes;
-  Window view = -1, dummy;
-  int view_width = -1, view_height = -1;
+  Window view, dummy;
+  int view_width, view_height;
   int x, y;
   extern char *BalloonBack;
   int i;
