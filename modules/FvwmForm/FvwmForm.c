@@ -660,6 +660,7 @@ static void ct_Input(char *cp) {
     item->input.blanks[j] = ' ';
   item->input.buf = strlen(item->input.init_value) + 1;
   item->input.value = (char *)safemalloc(item->input.buf);
+  item->input.value[0] = 0;             /* avoid reading unitialized data */
 
   item->header.size_x = FontWidth(item->header.dt_ptr->dt_font_struct)
     * item->input.size + 2 * TEXT_SPC + 2 * BOX_SPC;
@@ -1580,7 +1581,6 @@ static void process_message(unsigned long type, unsigned long *body) {
       }
       strncpy(CF.last_error->text.value,msg_ptr,
               CF.last_error->text.n);
-      CF.last_error->text.value[CF.last_error->text.n] = 0;
       RedrawText(CF.last_error);
       break;
     } /* module has last_error field */

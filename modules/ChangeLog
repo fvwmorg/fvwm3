@@ -1,5 +1,12 @@
 1999-12-26  Dan Espen  <dane@mk.telcordia.com>
 
+	* FvwmForm/FvwmForm.c: Fix array bounds write when message exactly
+	matches the buffer allocated for it.
+	Suppress a UMR in referencing the first byte of unitialized input
+	fields.
+
+	* FvwmForm/ReadXServer.c: Backout code cleanup.  Needs more work.
+
 	* FvwmScript/FvwmScript.1: Describe how scripts are located for
 	reading.
 
@@ -8,10 +15,6 @@
 	"*FvwmScriptPath" unnecessary.
 
 	* FvwmScript/Makefile.am: Pass configdir into FvwmScript.
-
-	* FvwmForm/ReadXServer.c: A little goto removal and code cleanup.
-	Input redisplay seems to work, but could use more cleanup.
-	Added comments about same.
 
 	* FvwmForm/FvwmForm.c (RedrawItem): Fixed display corruption due to
 	pasting, and display corruption for multiple messages arriving from
