@@ -455,8 +455,11 @@ void list_end(void)
     attributes.background_pixel = GetColor("white");
     fore_pix = GetColor("black");
   } else {
-    attributes.background_pixel = GetColor(BackColor);
-    fore_pix = GetColor(ForeColor);
+    attributes.background_pixel = (colorset < 0)
+				  ? GetColor(BackColor)
+    				  : Colorset[colorset % nColorsets].bg;
+    fore_pix = (colorset < 0) ? GetColor(ForeColor)
+			      : Colorset[colorset % nColorsets].fg;
   }
 
   attributes.colormap = Pcmap;
@@ -474,8 +477,7 @@ void list_end(void)
   change_window_name(&MyName[1]);
 
   gcm = GCForeground|GCFont;
-  gcv.foreground = (colorset < 0) ? fore_pix
-				  : Colorset[colorset % nColorsets].fg;
+  gcv.foreground = fore_pix;
   gcv.font = font->fid;
   gc = XCreateGC(dpy, main_win, gcm, &gcv);
 
@@ -524,7 +526,7 @@ void list_end(void)
       char *tline, *token;
 
       packet = ReadFvwmPacket(fd[1]);
-      if (packet && packet->type == M_CONFIG_INFO ) {
+      if (colorset >= 0 && packet && packet->type == M_CONFIG_INFO) {
 	tline = (char*)&(packet->body[3]);
 	tline = GetNextToken(tline, &token);
 	if (StrEquals(token, "Colorset")) {
