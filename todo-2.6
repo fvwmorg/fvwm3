@@ -4,7 +4,7 @@ Issues opened recently: 6 (E.11 - E.16)
 Issues closed recently: 0
                              open / closed
 A. Release stopping bugs:       0 / 1
-B. Normal bugs:                 5 / 3
+B. Normal bugs:                 4 / 4
 C. To be verified:             17 / 9
 D. To be discussed:             1 / 0
 E. To do:                      14 / 2
@@ -23,11 +23,11 @@ todo: Entries should look like this:
             [fvwm worker(s) who want(s) to close the item]
 
 
-A. Release stopping bugs (1)
+A. Release stopping bugs
 ------------------------
 
 
-B. Normal Bugs (8)
+B. Normal Bugs
 --------------
 
   B.1 emacs and maximize [bug #991]
@@ -43,9 +43,7 @@ B. Normal Bugs (8)
 
   B.7 strange xawtv fullscreen handling [#973,2002-12-23]. Not a bug? Dominik?
 
-  B.8 Menu double-click action not working? [#955,2002-11-06]
-
-C. To be verified (26)
+C. To be verified
 -----------------
 
   C.2 StartOnScreen and Xinerama/SLS
@@ -95,19 +93,20 @@ C. To be verified (26)
        [dv: added on 02-Mar-2003; asked for a config file but go no reply]
 
 
-D. To be discussed (1)
+D. To be discussed
 ------------------
 
   D.1 Make the distinction between FVWM (project) and fvwm (core executable)?
 
 
-E. To do (10)
+E. To do
 --------
 
   E.1 Complete this document
 
   E.2 Add locale support to FvwmScript
       [Olivier]
+      [dv: why does this have to be in 2.6?  we are in feature freeze]
 
   E.3 After F.1 try to find translator
       [Olivier]
@@ -138,6 +137,7 @@ E. To do (10)
 
   E.13 Rename ~/.fvwm/.fvwm2rc to ~/.fvwm/main or ~/.fvwm/config.
        [Mikhael, after a notice and a possible discussion]
+       [dv: why? it's only confusing]
 
   E.14 Rework WindowListFunc so it works under window content and does not
        need any window id parameter (optionally pass id for compatibility).
@@ -151,7 +151,7 @@ E. To do (10)
        [Mikhael]
 
 
-F. Distribution issues (4)
+F. Distribution issues
 ----------------------
 
   F.1 Update the default config files, probably needs discussion...
@@ -161,7 +161,7 @@ F. Distribution issues (4)
   F.3 Check INSTALL.fvwm
 
 
-G. Testing (5)
+G. Testing
 ----------
 
   G.1 Update and run the purify script again
@@ -178,6 +178,8 @@ G. Testing (5)
 
 ---- Closed recently ----------------------------------------------------------
 
+  B.8 Menu double-click action not working? [#955,2002-11-06]
+      [dv: fixed on 28-Mar-2003]
 
 ---- Postponed until after 2.6 ------------------------------------------------
 
@@ -187,7 +189,9 @@ G. Testing (5)
 
   F.5 Dump fvwm and write a better window manager :-)
       (optionally dump the current life and start a new one, probably on Mars)
-
+      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      (dv: That comment is not funny and I do take it personally.  I do not
+      like being called an idiot.)
 
 ---- Closed -------------------------------------------------------------------
 

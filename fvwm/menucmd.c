@@ -114,7 +114,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 	mp.flags.is_submenu = False;
 	mp.flags.is_already_mapped = False;
 	mp.flags.is_triggered_by_keypress =
-		(!action && exc->x.etrigger->type == KeyPress);
+		(exc->x.etrigger->type == KeyPress);
 	mp.pops = &mops;
 	mp.ret_paction = &ret_action;
 	do_menu(&mp, &mret);

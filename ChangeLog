@@ -1,5 +1,8 @@
 2003-03-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menucmd.c (menu_func):
+	fixed double key presses to choose default menu action
+
 	* fvwm/focus.c (__update_windowlist):
 	fixed ordering of window list with SloopyFocus when using the Focus
 	command
