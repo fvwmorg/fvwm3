@@ -1,3 +1,14 @@
+2001-08-19  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/icons.c (AutoPlaceIcon): Apply screen dimensions as icon is
+	placed.
+
+	* fvwm/style.c (CMD_Style): Don't apply screen dimensions to iconbox
+	until later when the window is actually placed.
+
+	* fvwm/fvwm.h (icon_boxes_struct):  Save  sign  for later  screen
+ 	position calculation.
+
 2001-08-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/update.c (flush_window_updates):

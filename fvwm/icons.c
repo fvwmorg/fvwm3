@@ -794,8 +794,14 @@ void AutoPlaceIcon(FvwmWindow *t)
       dim[1].step = icon_boxes_ptr->IconGrid[1];
       /* init start from */
       dim[1].start_at = ICONBOX_TOP;
+      if (icon_boxes_ptr->IconSign[1] == '-') {
+        dim[1].start_at += Scr.MyDisplayHeight;
+      }
       /* init end at */
       dim[1].end_at = ICONBOX_BOT;
+      if (icon_boxes_ptr->IconSign[3] == '-') {
+        dim[1].end_at += Scr.MyDisplayHeight;
+      }
       /* save base */
       dim[1].base = base_y;
       /* save dimension */
@@ -812,8 +818,14 @@ void AutoPlaceIcon(FvwmWindow *t)
       dim[2].step = icon_boxes_ptr->IconGrid[0];
       /* init start from */
       dim[2].start_at = ICONBOX_LFT;
+      if (icon_boxes_ptr->IconSign[0] == '-') {
+        dim[1].start_at += Scr.MyDisplayWidth;
+      }
       /* init end at */
       dim[2].end_at = ICONBOX_RGT;
+      if (icon_boxes_ptr->IconSign[2] == '-') {
+        dim[2].end_at += Scr.MyDisplayWidth;
+      }
       /* save base */
       dim[2].base   = base_x;
       /* save dimension */

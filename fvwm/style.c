@@ -14,15 +14,6 @@
  */
 
 /****************************************************************************
- * Changed 10/06/97 by dje:
- * Change single IconBox into chain of IconBoxes.
- * Allow IconBox to be specified using X Geometry string.
- * Parse optional IconGrid.
- * Parse optional IconFill.
- * Use macros to make parsing more uniform, and easier to read.
- * Rewrote AddToList without tons of arg passing and merging.
- * Added a few comments.
- *
  * This module was all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
@@ -756,13 +747,6 @@ void CMD_DestroyStyle(F_CMD_ARGS)
  *  Inputs:
  *      tmp_win - FvwWindow structure to match against
  *      styles - callers return area
- *
- *  Changes:
- *      dje 10/06/97 test for NULL class removed, can't happen.
- *      use merge subroutine instead of coding merges 3 times.
- *      Use structure to return values, not many, many args
- *      and return value.
- *      Point at iconboxes chain, not single iconboxes elements.
  *
  ***********************************************************************/
 void lookup_style(FvwmWindow *tmp_win, window_style *styles)
@@ -1574,13 +1558,7 @@ void CMD_Style(F_CMD_ARGS)
 	      /* If leading minus sign */
 	      token = PeekToken(rest, &rest);
               if (token[0] == '-') {
-		/* if a width */
-                if (i == 0 || i == 2) {
-                  IconBoxes->IconBox[i] += Scr.MyDisplayWidth;
-                } else {
-                  /* it must be a height */
-                  IconBoxes->IconBox[i] += Scr.MyDisplayHeight;
-                } /* end width/height */
+                IconBoxes->IconSign[i]='-';
               } /* end leading minus sign */
             }
             /* Note: here there is no test for valid co-ords, use geom */
@@ -1614,19 +1592,17 @@ void CMD_Style(F_CMD_ARGS)
 		/* got valid iconbox geom */
                 if (geom_flags & XNegative) {
                   IconBoxes->IconBox[0] =
-		    /* screen width */
-		    Scr.MyDisplayWidth
 		    /* neg x coord */
                     + IconBoxes->IconBox[0]
                     - width -2;
+                  IconBoxes->IconSign[0]='-'; /* save for later */
                 }
                 if (geom_flags & YNegative) {
                   IconBoxes->IconBox[1] =
-		    /* scr height */
-		    Scr.MyDisplayHeight
 		    /* neg y coord */
                     + IconBoxes->IconBox[1]
                     - height -2;
+                  IconBoxes->IconSign[1]='-'; /* save for later */
                 }
 		/* x + wid = right x */
                 IconBoxes->IconBox[2] = width + IconBoxes->IconBox[0];
