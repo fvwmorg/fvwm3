@@ -1,3 +1,9 @@
+2000-09-04  Mikhael Goikhman  <migo@homemail.com>
+
+	* utils/fvwm-menu-desktop.in:
+	use a non-conflicting module syntax; be more tolerant to read
+	permission problems; validate an alias parameter
+
 2000-09-28  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm24_convert.in: Handle space in HighlightColor.  Leave commented

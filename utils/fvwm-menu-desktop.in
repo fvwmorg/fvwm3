@@ -214,10 +214,19 @@ GetOptions(
 ) || wrongUsage();
 wrongUsage() if @ARGV;
 
+die "fvwm-menu-desktop: Incorrect alias ($fvwmGtkName) is given\n"
+	if $fvwmGtkName !~ /^\w[\w\d\.-]*$/;
+
+sub printModuleConfig (@) {
+	foreach (@_) {
+		print "*${fvwmGtkName}: $_\n";
+	}
+}
+
 #--------------------------------
 # INITIALISATION of the variables
 
-# for limiting runing time to $timelimit
+# for limiting running time to $timelimit
 my $startime = time;
 $timelimit = 300 if $timelimit <= 0 || $timelimit > 300;
 
@@ -254,8 +263,8 @@ if ( $MENU_NAME eq 'gnome-redhat' ) {
 
 if ( $DESKTOP eq 'Kde' && $KDE_PREFIX eq '' && $DESC_DIR eq '') {
 	die "fvwm-menu-desktop: It seems that kde is _not_ installed on your\n"
-		. "machine! If it is, please used the --install-prefix or the\n"
-		. " --dir option (see the man page).\n";
+		. "machine! If it is, please use the --install-prefix or the\n"
+		. "--dir option (see the man page).\n";
 }
 
 if ( $MENU_NAME eq 'kde-sys' ) {
@@ -543,7 +552,7 @@ sub build_a_level {
 		$mini_icon = $dmicon{$flag .'toptitle'};
 		$name = $MENU_NAME;
 		($label, $mini_icon) = get_info("$APPS_DIR/.directory", 'toptitle')
-			if ( -f "$dir/.directory" );
+			if ( -r "$dir/.directory" );
 		if ( $label eq '' || $OPT_MENU_TITLE ne '') { $label = $MENU_TITLE }
 		else { $label = "$DESKTOP $label" }
 		$titletype = 'toptitle';
@@ -552,7 +561,7 @@ sub build_a_level {
 
 		$tmp_name = substr($dir,rindex ($dir,'/')+1);
 		$name = "$SUBMENUS_PREFIX$tmp_name-$level";
-		if ( -f "$dir/.directory" ) {
+		if ( -r "$dir/.directory" ) {
 			($label, $mini_icon) = get_info("$dir/.directory", 'title');
 		} else {
 #			print STDERR "fvwm-menu-desktop: Bad menu description, expected $dir\n";
@@ -565,11 +574,11 @@ sub build_a_level {
 	# Now we can print the Head of the (sub)menu
 	if ( $flag eq 'gtk_' ) {
 
-		print "*${fvwmGtkName}Destroy \"$name\"\n" if ( $level == $top_level
-			&& $MENU_DESTROY =~ /^y/ );
-		print "*${fvwmGtkName}Menu \"$name\"\n" .
-			"*${fvwmGtkName}Title \"$label\" $mini_icon\n" .
-			"*${fvwmGtkName}Separator\n";
+		printModuleConfig qq(Destroy "$name")
+			if ( $level == $top_level && $MENU_DESTROY =~ /^y/ );
+		printModuleConfig qq(Menu "$name"),
+			qq(Title "$label" $mini_icon),
+			qq(Separator);
 
 	} else {
 
@@ -597,23 +606,22 @@ sub build_a_level {
 		if ( -d "$item" ) {
 			$name = "$SUBMENUS_PREFIX$tmp_name-$nlevel";
 			($label, $mini_icon) = get_info("$item/.directory", 'folder')
-				if (-f "$item/.directory");
+				if (-r "$item/.directory");
 			$label= $tmp_name if ( $label eq "");
 			if ( $flag eq 'gtk_' ) {
-				print "*${fvwmGtkName}Destroy $name\n";
-				print "*${fvwmGtkName}SubMenu \"$label\" \"$name\" $mini_icon\n";
+				printModuleConfig qq(Destroy $name),
+					qq(SubMenu "$label" "$name" $mini_icon);
 			} else {
 				print "+ \"$label$mini_icon\" Popup \"$name\"\n";
 			}
 		}
 
 		# a file --> application
-		if (-f $item ) {
+		if (-r $item ) {
 			($name, $mini_icon, $exec) = get_info($item, 'app');
 			if ( $exec ne '' ) {
 				if ( $flag  eq 'gtk_' ) {
-					print "*${fvwmGtkName}Item \"$name\" \"Exec exec $exec\" " .
-					"$mini_icon\n";
+					printModuleConfig qq(Item "$name" "Exec exec $exec" $mini_icon);
 				} else {
 					print "+ \"$name$mini_icon\" Exec exec $exec\n";
 				}
@@ -623,9 +631,9 @@ sub build_a_level {
 		# for kde
 		if ( $item eq "$dir/SEPARATOR") {
 			if  ( $flag  eq 'gtk_' ) {
-				print "*${fvwmGtkName}Separator\n";
+				printModuleConfig "Separator";
 			} else {
-				print "+ \"\" Nop\n";
+				print qq(+ "" Nop\n);
 			}
 		}
 

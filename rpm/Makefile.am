@@ -12,7 +12,7 @@ rpm: @PACKAGE@.spec
 	release=$(release); \
 	tarball=@PACKAGE@-$$version.tar.gz; \
 	tarball_full=`cd $(top_srcdir) && pwd`/$$tarball; \
-        rpm_ver=`rpm --version | cut -d' ' -f3`; \
+	rpm_ver=`rpm --version | cut -d' ' -f3`; \
 	rh_srcdir=`awk 'BEGIN { print ('$$rpm_ver' >= 4.0? \
 		ENVIRON["HOME"]: "/usr/src") "/redhat/SOURCES" }'`; \
 	if [ ! -f $$tarball_full ]; then echo "No $$tarball"; exit -1; fi; \

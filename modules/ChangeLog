@@ -1,8 +1,13 @@
-2000-06-21  olicha  <olivier.chapuis@free.fr>
+2000-10-04  Mikhael Goikhman  <migo@homemail.com>
+
+	* modules/FvwmPager/FvwmPager.1:
+	added a reference to BalloonStringFormat instead of "can't be changed"
+
+2000-10-01  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/*:
 	Allows more widgets and variables
-	
+
 2000-09-25  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmGtk/dialog.c (widget_get_value):
