@@ -55,6 +55,7 @@
 #include "libs/Colorset.h"
 #include "icccm2.h"
 #include "gnome.h"
+#include "ewmh.h"
 #include "icons.h"
 #include "add_window.h"
 #include "fvwmsignal.h"
@@ -711,6 +712,7 @@ int main(int argc, char **argv)
 
   SessionInit();
 
+  EWMH_Init();
   GNOME_Init();
 
   DBUG("main","Entering HandleEvents loop...");

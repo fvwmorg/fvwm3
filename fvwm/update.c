@@ -53,6 +53,7 @@
 #include "libs/Colorset.h"
 #include "borders.h"
 #include "gnome.h"
+#include "ewmh.h"
 #include "icons.h"
 #include "focus.h"
 #include "geometry.h"
@@ -121,9 +122,18 @@ static void apply_window_updates(
     handle_stick(&Event, t->frame, t, C_FRAME, "", 0, SFIS_STICKY(*pstyle));
   }
 #ifdef MINI_ICONS
-  if (flags->do_update_mini_icon)
+  if (flags->do_update_mini_icon && HAS_EWMH_MINI_ICON(t) == EWMH_FVWM_ICON)
   {
     change_mini_icon(t, pstyle);
+#ifdef HAVE_EWMH
+    {
+      unsigned int sd = 0;
+      CARD32 *dummy = NULL;
+      dummy = EWMH_SetWmIconFromPixmap(t, NULL, &sd, True, True);
+      if (dummy != NULL)
+	free(dummy);
+    }
+#endif
   }
 #endif
 
@@ -222,6 +232,7 @@ static void apply_window_updates(
     ForceSetupFrame(t, t->frame_g.x, t->frame_g.y, t->frame_g.width,
 		    t->frame_g.height, True);
     GNOME_SetWinArea(t);
+    EWMH_SetFrameStrut(t);
   }
   if (flags->do_update_window_color)
   {
@@ -237,15 +248,7 @@ static void apply_window_updates(
   }
   if (flags->do_redraw_decoration)
   {
-    FvwmWindow *u = Scr.Hilite;
-
-    if (IS_SHADED(t))
-      XRaiseWindow(dpy, t->decor_w);
-    /* domivogt (6-Jun-2000): Don't check if the window is visible here.  If we
-     * do, some updates are not applied and when the window becomes visible
-     * again, the X Server may not redraw the window. */
-    DrawDecorations(t, DRAW_ALL, (Scr.Hilite == t), 2, None);
-    Scr.Hilite = u;
+    RedrawDecorations(t);
   }
   if (flags->do_update_icon_font)
   {
@@ -291,6 +294,12 @@ static void apply_window_updates(
   {
     setup_frame_attributes(t, pstyle);
   }
+#ifdef HAVE_EWMH
+  if (flags->do_update_list_skip)
+  {
+    EWMH_SetWMState(t);
+  }
+#endif
   if (flags->do_update_modules_flags)
   {
     BroadcastConfig(M_CONFIGURE_WINDOW,t);

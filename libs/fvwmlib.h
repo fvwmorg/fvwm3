@@ -393,8 +393,13 @@ int GetEqualSizeChildren(
 #define C_UNMANAGED  0x10000
 #define C_RALL       (C_R1|C_R2|C_R3|C_R4|C_R5)
 #define C_LALL       (C_L1|C_L2|C_L3|C_L4|C_L5)
+#ifdef HAVE_EWMH
+#define C_EWMH_DESKTOP 0x20000
+#else
+#define C_EWMH_DESKTOP 0x00
+#endif
 #define C_ALL   (C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|\
-                 C_LALL|C_RALL)
+                 C_LALL|C_RALL|C_EWMH_DESKTOP)
 
 #define ALL_MODIFIERS (ShiftMask|LockMask|ControlMask|Mod1Mask|Mod2Mask|\
                        Mod3Mask|Mod4Mask|Mod5Mask)

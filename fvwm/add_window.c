@@ -75,6 +75,7 @@
 #include "style.h"
 #include "icons.h"
 #include "gnome.h"
+#include "ewmh.h"
 #include "focus.h"
 #include "placement.h"
 #include "geometry.h"
@@ -136,6 +137,14 @@ Bool setup_window_structure(
     SET_SHADED(*ptmp_win, IS_SHADED(savewin));
     SET_PLACED_WB3(*ptmp_win,IS_PLACED_WB3(savewin));
     SET_PLACED_BY_FVWM(*ptmp_win, IS_PLACED_BY_FVWM(savewin));
+    SET_HAS_EWMH_ICON(*ptmp_win, HAS_EWMH_ICON(savewin));
+    SET_HAS_EWMH_MINI_ICON(*ptmp_win, HAS_EWMH_MINI_ICON(savewin));
+#ifdef HAVE_EWMH
+    (*ptmp_win)->ewmh_mini_icon_width = savewin->ewmh_mini_icon_width;
+    (*ptmp_win)->ewmh_mini_icon_height = savewin->ewmh_mini_icon_height;
+    (*ptmp_win)->ewmh_icon_width = savewin->ewmh_icon_width;
+    (*ptmp_win)->ewmh_icon_height = savewin->ewmh_icon_height;
+#endif
   }
 
   (*ptmp_win)->cmap_windows = (Window *)NULL;
@@ -225,8 +234,11 @@ static void get_name_property(
 
 void setup_window_name(FvwmWindow *tmp_win)
 {
-  GET_NAME_PROPERTY(XGetWMName, tmp_win->w, &(tmp_win->name),
-		    &(tmp_win->name_list));
+  if (!EWMH_WMName(tmp_win, NULL, NULL))
+      GET_NAME_PROPERTY(XGetWMName, tmp_win->w, &(tmp_win->name),
+			&(tmp_win->name_list));
+  EWMH_SetVisibleName(tmp_win, False);
+
   if (debugging)
     fvwm_msg(DBG,"setup_window_name","Assigned name %s'",tmp_win->name);
 }
@@ -1068,6 +1080,7 @@ ICON_DBG((stderr,"si: iwh ignored '%s'\n", tmp_win->name));
 ICON_DBG((stderr,"si: using iwh '%s'\n", tmp_win->name));
       tmp_win->icon_bitmap_file = NULL;
     }
+    SET_HAS_EWMH_ICON(tmp_win, EWMH_WINDOW_ICON);
   }
   else if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconPixmapHint))
   {
@@ -1097,8 +1110,9 @@ ICON_DBG((stderr,"si: using default '%s'\n", tmp_win->name));
   }
 
   /* icon name */
-  GET_NAME_PROPERTY(XGetWMIconName, tmp_win->w, &(tmp_win->icon_name),
-		    &(tmp_win->icon_name_list));
+  if (!EWMH_WMIconName(tmp_win, NULL, NULL));
+      GET_NAME_PROPERTY(XGetWMIconName, tmp_win->w, &(tmp_win->icon_name),
+			&(tmp_win->icon_name_list));
   if (tmp_win->icon_name == NoName)
   {
     tmp_win->icon_name = tmp_win->name;
@@ -1110,6 +1124,7 @@ ICON_DBG((stderr,"si: using default '%s'\n", tmp_win->name));
    */
   tmp_win->icon_w = None;
 
+  EWMH_SetVisibleName(tmp_win, True);
   BroadcastName(M_ICON_NAME,tmp_win->w,tmp_win->frame,
 		(unsigned long)tmp_win,tmp_win->icon_name);
   if (tmp_win->icon_bitmap_file != NULL &&
@@ -1538,6 +1553,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   /****** window colormap ******/
   InstallWindowColormaps(colormap_win);
+
+ /****** ewmh setup *******/
+  EWMH_WindowInit(tmp_win);
 
   /****** gnome setup ******/
   /* set GNOME hints on the window from flags set on tmp_win */
@@ -2026,7 +2044,7 @@ void destroy_window(FvwmWindow *tmp_win)
     adjust_fvwm_internal_windows(tmp_win);
     BroadcastPacket(M_DESTROY_WINDOW, 3,
 		    tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
-
+    EWMH_WindowDestroyed(tmp_win);
     return;
   }
 
@@ -2048,6 +2066,7 @@ void destroy_window(FvwmWindow *tmp_win)
 
     BroadcastPacket(M_DESTROY_WINDOW, 3,
 		    tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
+    EWMH_WindowDestroyed(tmp_win);
   }
 
   /****** adjust fvwm internal windows II ******/
@@ -2326,6 +2345,8 @@ void CaptureOneWindow(
     XChangeProperty (dpy, fw->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
                      PropModeReplace, (unsigned char *) data, 1);
 
+    /* are all these really needed ? */
+    /* EWMH_SetWMDesktop(fw); */
     GNOME_SetHints(fw);
     GNOME_SetDesk(fw);
     GNOME_SetLayer(fw);

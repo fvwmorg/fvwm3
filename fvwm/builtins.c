@@ -47,6 +47,7 @@
 #include "geometry.h"
 #include "events.h"
 #include "gnome.h"
+#include "ewmh.h"
 #include "icons.h"
 #include "menus.h"
 #include "virtual.h"
@@ -501,6 +502,7 @@ void CMD_WindowShade(F_CMD_ARGS)
   FlushAllMessageQueues();
   XSync(dpy, 0);
 
+  EWMH_SetWMState(tmp_win);
   GNOME_SetHints(tmp_win);
   GNOME_SetWinArea(tmp_win);
 }

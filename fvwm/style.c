@@ -43,6 +43,7 @@
 #include "style.h"
 #include "libs/Colorset.h"
 #include "borders.h"
+#include "ewmh.h"
 #include "gnome.h"
 #include "icons.h"
 #include "focus.h"
@@ -786,7 +787,17 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
       merge_styles(styles, nptr, False);
     }
   }
+  if (!DO_IGNORE_GNOME_HINTS(tmp_win))
+  {
+    window_style gnome_style;
 
+    /* use GNOME hints if not overridden by user with GNOMEIgnoreHitns */
+    memset(&gnome_style, 0, sizeof(window_style));
+    GNOME_GetStyle(tmp_win, &gnome_style);
+    merge_styles(&gnome_style, styles, False);
+    memcpy(styles, &gnome_style, sizeof(window_style));
+  }
+  EWMH_GetStyle(tmp_win, styles);
   return;
 }
 
@@ -2860,6 +2871,7 @@ void check_window_style_change(
   if (SCDO_WINDOW_LIST_SKIP(*ret_style))
   {
     flags->do_update_modules_flags = True;
+    EWMH_CODE(flags->do_update_list_skip = True;)
   }
   /*
    * has_icon

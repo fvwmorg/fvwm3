@@ -48,6 +48,7 @@
 #include "borders.h"
 #include "geometry.h"
 #include "gnome.h"
+#include "ewmh.h"
 #include "colormaps.h"
 #include "virtual.h"
 #include "decorations.h"
@@ -3219,6 +3220,9 @@ void CMD_Maximize(F_CMD_ARGS)
     FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
   }
 
+  EWMH_GetWorkAreaIntersection(tmp_win,
+			       &scr_x, &scr_y, &scr_w, &scr_h,
+			       F_MAXIMIZE);
 #if 0
   fprintf(stderr, "%s: page=(%d,%d), scr=(%d,%d, %dx%d)\n", __FUNCTION__,
           page_x, page_y, scr_x, scr_y, scr_w, scr_h);
@@ -3380,6 +3384,7 @@ fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d\n", tmp_win->m
   {
     focus_grab_buttons(sf, True);
   }
+  EWMH_SetWMState(tmp_win);
   GNOME_SetWinArea(tmp_win);
 }
 
@@ -3421,6 +3426,8 @@ void handle_stick(F_CMD_ARGS, int toggle)
   {
     focus_grab_buttons(sf, True);
   }
+  EWMH_SetWMState(tmp_win);
+  EWMH_SetWMDesktop(tmp_win);
   GNOME_SetHints(tmp_win);
 }
 

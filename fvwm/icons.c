@@ -60,6 +60,7 @@
 #include "module_interface.h"
 #include "libs/Colorset.h"
 #include "gnome.h"
+#include "ewmh.h"
 #include "geometry.h"
 
 static int do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr);
@@ -70,35 +71,13 @@ static void GetXPMFile(FvwmWindow *tmp_win);
 
 /****************************************************************************
  *
- * Creates an icon window as needed
+ * Get the Icon for the icon window (also used by ewmh_icon)
  *
  ****************************************************************************/
-void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
+void GetIcon(FvwmWindow *tmp_win, Bool no_icon_window)
 {
-  /* mask for create windows */
-  unsigned long valuemask;
-  /* attributes for create windows */
-  XSetWindowAttributes attributes;
-  XWindowChanges xwc;
-  Window old_icon_pixmap_w;
-  Window old_icon_w;
-  Bool is_old_icon_shaped = IS_ICON_SHAPED(tmp_win);
-  char icon_order[4];
+  char icon_order[5];
   int i;
-
-  old_icon_w = tmp_win->icon_w;
-  old_icon_pixmap_w = (IS_ICON_OURS(tmp_win)) ? tmp_win->icon_pixmap_w : None;
-  if (!IS_ICON_OURS(tmp_win) && tmp_win->icon_pixmap_w)
-    XUnmapWindow(dpy,tmp_win->icon_pixmap_w);
-  SET_ICON_OURS(tmp_win, 1);
-  SET_PIXMAP_OURS(tmp_win, 0);
-  SET_ICON_SHAPED(tmp_win, 0);
-  tmp_win->icon_pixmap_w = None;
-  tmp_win->iconPixmap = None;
-  tmp_win->iconDepth = 0;
-
-  if (IS_ICON_SUPPRESSED(tmp_win))
-    return;
 
   /* First, see if it was specified in the .fvwmrc */
   if (ICON_OVERRIDE_MODE(tmp_win) == ICON_OVERRIDE)
@@ -108,6 +87,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     icon_order[1] = 1;
     icon_order[2] = 2;
     icon_order[3] = 3;
+    icon_order[4] = 4;
 ICON_DBG((stderr,"ciw: hint order: xpm bmp iwh iph '%s'\n", tmp_win->name));
   }
   else if (ICON_OVERRIDE_MODE(tmp_win) == NO_ACTIVE_ICON_OVERRIDE)
@@ -119,8 +99,9 @@ ICON_DBG((stderr,"ciw: hint order: xpm bmp iwh iph '%s'\n", tmp_win->name));
        * provided icons. */
       icon_order[0] = 2;
       icon_order[1] = 3;
-      icon_order[2] = 0;
-      icon_order[3] = 1;
+      icon_order[2] = 4;
+      icon_order[3] = 0;
+      icon_order[4] = 1;
 ICON_DBG((stderr,"ciw: hint order: iwh iph xpm bmp '%s'\n", tmp_win->name));
     }
     else if (Scr.DefaultIcon && tmp_win->icon_bitmap_file == Scr.DefaultIcon)
@@ -129,18 +110,20 @@ ICON_DBG((stderr,"ciw: hint order: iwh iph xpm bmp '%s'\n", tmp_win->name));
        * default icon */
       icon_order[0] = 2;
       icon_order[1] = 3;
-      icon_order[2] = 0;
-      icon_order[3] = 1;
+      icon_order[2] = 4;
+      icon_order[3] = 0;
+      icon_order[4] = 1;
 ICON_DBG((stderr,"ciw: hint order: iwh iph xpm bmp '%s'\n", tmp_win->name));
     }
     else
     {
-      /* use application provided icon window first, then fvwm provided icons
-       * and then application provided icon pixmap */
+      /* use application provided icon window or ewmh icon first, then fvwm 
+       * provided icons and then application provided icon pixmap */
       icon_order[0] = 2;
-      icon_order[1] = 0;
-      icon_order[2] = 1;
-      icon_order[3] = 3;
+      icon_order[1] = 3;
+      icon_order[2] = 0;
+      icon_order[3] = 1;
+      icon_order[4] = 4;
 ICON_DBG((stderr,"ciw: hint order: iwh xpm bmp iph '%s'\n", tmp_win->name));
     }
   }
@@ -149,13 +132,15 @@ ICON_DBG((stderr,"ciw: hint order: iwh xpm bmp iph '%s'\n", tmp_win->name));
     /* use application provided icon rather than fvwm provided icon */
     icon_order[0] = 2;
     icon_order[1] = 3;
-    icon_order[2] = 0;
-    icon_order[3] = 1;
+    icon_order[2] = 4;
+    icon_order[3] = 0;
+    icon_order[4] = 1;
 ICON_DBG((stderr,"ciw: hint order: iwh iph bmp xpm '%s'\n", tmp_win->name));
   }
+
   tmp_win->icon_p_height = 0;
   tmp_win->icon_p_width = 0;
-  for (i = 0; i < 4 && !tmp_win->icon_p_height && !tmp_win->icon_p_width; i++)
+  for (i = 0; i < 5 && !tmp_win->icon_p_height && !tmp_win->icon_p_width; i++)
   {
     switch (icon_order[i])
     {
@@ -179,6 +164,8 @@ ICON_DBG((stderr,"ciw: bmp%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
       break;
     case 2:
       /* Next, See if the app supplies its own icon window */
+      if (no_icon_window)
+	break;
       if (tmp_win->wmhints && (tmp_win->wmhints->flags & IconWindowHint))
       {
 	GetIconWindow(tmp_win);
@@ -186,6 +173,14 @@ ICON_DBG((stderr,"ciw: bmp%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
 ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
       break;
     case 3:
+      /* try an ewmh icon */
+      if (HAS_EWMH_ICON(tmp_win) == EWMH_TRUE_ICON)
+      {
+	int ds = 0;
+	ds = EWMH_SetIconFromWMIcon(tmp_win, NULL, ds, False);
+      }
+ICON_DBG((stderr,"ciw: inh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
+    case 4:
       /* Finally, try to get icon bitmap from the application */
       if (tmp_win->wmhints && (tmp_win->wmhints->flags & IconPixmapHint))
       {
@@ -198,6 +193,39 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
       break;
     }
   }
+}
+
+/****************************************************************************
+ *
+ * Creates an icon window as needed
+ *
+ ****************************************************************************/
+void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
+{
+  /* mask for create windows */
+  unsigned long valuemask;
+  /* attributes for create windows */
+  XSetWindowAttributes attributes;
+  XWindowChanges xwc;
+  Window old_icon_pixmap_w;
+  Window old_icon_w;
+  Bool is_old_icon_shaped = IS_ICON_SHAPED(tmp_win);
+
+  old_icon_w = tmp_win->icon_w;
+  old_icon_pixmap_w = (IS_ICON_OURS(tmp_win)) ? tmp_win->icon_pixmap_w : None;
+  if (!IS_ICON_OURS(tmp_win) && tmp_win->icon_pixmap_w)
+    XUnmapWindow(dpy,tmp_win->icon_pixmap_w);
+  SET_ICON_OURS(tmp_win, 1);
+  SET_PIXMAP_OURS(tmp_win, 0);
+  SET_ICON_SHAPED(tmp_win, 0);
+  tmp_win->icon_pixmap_w = None;
+  tmp_win->iconPixmap = None;
+  tmp_win->iconDepth = 0;
+
+  if (IS_ICON_SUPPRESSED(tmp_win))
+    return;
+
+  GetIcon(tmp_win, False);
 
   /* figure out the icon window size */
   if (!HAS_NO_ICON_TITLE(tmp_win))
@@ -609,6 +637,58 @@ void DrawIconWindow(FvwmWindow *tmp_win)
   XSync(dpy, 0);
 }
 
+/***********************************************************************
+ *
+ *  Procedure:
+ *    ChangeIconPixmap - procedure change the icon pixmap or "pixmap" 
+ *      window. Called in events.c and ewmh_events.c  
+ *
+ ************************************************************************/
+void ChangeIconPixmap(FvwmWindow *tmp_win)
+{
+  if (!IS_ICONIFIED(tmp_win))
+  {
+ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", tmp_win->name));
+    /* update the icon later when application is iconified */
+    SET_HAS_ICON_CHANGED(tmp_win, 1);
+  }
+  else if (IS_ICONIFIED(tmp_win))
+  {
+    ICON_DBG((stderr,"hpn: applying new icon '%s'\n", tmp_win->name));
+    SET_ICONIFIED(tmp_win, 0);
+    SET_ICON_UNMAPPED(tmp_win, 0);
+    CreateIconWindow(tmp_win, tmp_win->icon_g.x,tmp_win->icon_g.y);
+    BroadcastPacket(M_ICONIFY, 7,
+		    tmp_win->w, tmp_win->frame,
+		    (unsigned long)tmp_win,
+		    tmp_win->icon_g.x, tmp_win->icon_g.y,
+		    tmp_win->icon_g.width, tmp_win->icon_g.height);
+    /* domivogt (15-Sep-1999): BroadcastConfig informs modules of the
+     * configuration change including the iconified flag. So this
+     * flag must be set here. I'm not sure if the two calls of the
+     * SET_ICONIFIED macro after BroadcastConfig are necessary, but
+     * since it's only minimal overhead I prefer to be on the safe
+     * side. */
+    SET_ICONIFIED(tmp_win, 1);
+    BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
+    SET_ICONIFIED(tmp_win, 0);
+    
+    if (!IS_ICON_SUPPRESSED(tmp_win))
+    {
+      LowerWindow(tmp_win);
+      AutoPlaceIcon(tmp_win);
+      if(tmp_win->Desk == Scr.CurrentDesk)
+      {
+	if(tmp_win->icon_w)
+	  XMapWindow(dpy, tmp_win->icon_w);
+	if(tmp_win->icon_pixmap_w != None)
+	  XMapWindow(dpy, tmp_win->icon_pixmap_w);
+      }
+    }
+    SET_ICONIFIED(tmp_win, 1);
+    DrawIconWindow(tmp_win);
+  }
+}
 
 /***********************************************************************
  *
@@ -1271,6 +1351,7 @@ void DeIconify(FvwmWindow *tmp_win)
 {
   FvwmWindow *t,*tmp;
   FvwmWindow *sf = get_focus_window();
+  rectangle icon_rect;
 
   if (!tmp_win)
     return;
@@ -1350,13 +1431,20 @@ void DeIconify(FvwmWindow *tmp_win)
         t->icon_p_width = 0;
         t->icon_p_height = 0;
       }
+      if (!EWMH_GetIconGeometry(t, &icon_rect))
+      {
+	icon_rect.x = t->icon_g.x;
+	icon_rect.y = t->icon_g.y;
+	icon_rect.width = t->icon_g.width;
+	icon_rect.height = t->icon_g.height+t->icon_p_height;
+      }
       if (t == tmp_win)
       {
 	BroadcastPacket(M_DEICONIFY, 11,
 			t->w, t->frame,
 			(unsigned long)t,
-			t->icon_g.x, t->icon_g.y,
-			t->icon_p_width, t->icon_p_height+t->icon_g.height,
+			icon_rect.x, icon_rect.y,
+			icon_rect.width, icon_rect.height,
 			t->frame_g.x, t->frame_g.y,
 			t->frame_g.width, t->frame_g.height);
       }
@@ -1428,6 +1516,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   FvwmWindow *sf;
   XWindowAttributes winattrs = {0};
   unsigned long eventMask;
+  rectangle icon_rect;
 
   if(!tmp_win)
     return;
@@ -1549,13 +1638,20 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   }
   SET_ICONIFIED(tmp_win, 1);
   SET_ICON_UNMAPPED(tmp_win, 0);
+  if (!EWMH_GetIconGeometry(tmp_win, &icon_rect))
+  {
+    icon_rect.x = tmp_win->icon_g.x;
+    icon_rect.y = tmp_win->icon_g.y;
+    icon_rect.width = tmp_win->icon_g.width;
+    icon_rect.height = tmp_win->icon_g.height+tmp_win->icon_p_height;
+  }
   BroadcastPacket(M_ICONIFY, 11,
                   tmp_win->w, tmp_win->frame,
                   (unsigned long)tmp_win,
-                  tmp_win->icon_g.x,
-                  tmp_win->icon_g.y,
-                  tmp_win->icon_g.width,
-                  tmp_win->icon_g.height+tmp_win->icon_p_height,
+                  icon_rect.x,
+                  icon_rect.y,
+                  icon_rect.width,
+                  icon_rect.height,
                   tmp_win->frame_g.x, /* next 4 added for Animate module */
                   tmp_win->frame_g.y,
                   tmp_win->frame_g.width,

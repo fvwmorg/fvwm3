@@ -419,7 +419,7 @@ static int expand_extended_var(
   case 13:
   case 14:
   case 15:
-    if (!tmp_win || IS_ICONIFIED(tmp_win))
+    if (!tmp_win || IS_ICONIFIED(tmp_win) || IS_EWMH_DESKTOP(tmp_win->w))
       return 0;
     else
     {
@@ -561,20 +561,21 @@ static char *expand(
 	break;
       case 'c':
 	if (tmp_win && tmp_win->class.res_class &&
-	    tmp_win->class.res_class[0])
+	    tmp_win->class.res_class[0] && !IS_EWMH_DESKTOP(tmp_win->w))
 	{
 	  string = tmp_win->class.res_class;
 	}
 	break;
       case 'r':
 	if (tmp_win && tmp_win->class.res_name &&
-	    tmp_win->class.res_name[0])
+	    tmp_win->class.res_name[0] && !IS_EWMH_DESKTOP(tmp_win->w))
 	{
 	  string = tmp_win->class.res_name;
 	}
 	break;
       case 'n':
-	if (tmp_win && tmp_win->name && tmp_win->name[0])
+	if (tmp_win && tmp_win->name && tmp_win->name[0] &&
+	    !IS_EWMH_DESKTOP(tmp_win->w))
 	{
 	  string = tmp_win->name;
 	}
@@ -684,7 +685,7 @@ static char *expand(
 	is_string = True;
 	break;
       case 'w':
-	if(tmp_win)
+	if(tmp_win && !IS_EWMH_DESKTOP(tmp_win->w))
 	  sprintf(&out[j],"0x%x",(unsigned int)tmp_win->w);
 	else
 	  sprintf(&out[j],"$w");
@@ -709,7 +710,7 @@ static char *expand(
 
       case 'c':
 	if (tmp_win && tmp_win->class.res_class &&
-	    tmp_win->class.res_class[0])
+	    tmp_win->class.res_class[0] && !IS_EWMH_DESKTOP(tmp_win->w))
 	{
 	  string = tmp_win->class.res_class;
 	}
@@ -717,14 +718,15 @@ static char *expand(
 	break;
       case 'r':
 	if (tmp_win && tmp_win->class.res_name &&
-	    tmp_win->class.res_name[0])
+	    tmp_win->class.res_name[0] && !IS_EWMH_DESKTOP(tmp_win->w))
 	{
 	  string = tmp_win->class.res_name;
 	}
 	is_string = True;
 	break;
       case 'n':
-	if (tmp_win && tmp_win->name && tmp_win->name[0])
+	if (tmp_win && tmp_win->name && tmp_win->name[0] &&
+	    !IS_EWMH_DESKTOP(tmp_win->w))
 	{
 	  string = tmp_win->name;
 	}
@@ -963,7 +965,7 @@ void execute_function(exec_func_args_type *efa)
       arguments[j] = NULL;
   }
 
-  if (efa->tmp_win == NULL)
+  if (efa->tmp_win == NULL || IS_EWMH_DESKTOP(efa->tmp_win->w))
   {
     if (efa->flags.is_window_unmanaged)
       w = efa->win;
@@ -1203,7 +1205,8 @@ int DeferExecution(
 
   original_w = *w;
 
-  if((*context != C_ROOT)&&(*context != C_NO_CONTEXT)&&(*tmp_win != NULL))
+  if((*context != C_ROOT)&&(*context != C_NO_CONTEXT)&&(*tmp_win != NULL)
+     EWMH_CODE(&& *context != C_EWMH_DESKTOP))
   {
     if((FinishEvent == ButtonPress)||((FinishEvent == ButtonRelease) &&
                                       (eventp->type != ButtonPress)))
@@ -1282,7 +1285,7 @@ int DeferExecution(
     *w = eventp->xbutton.subwindow;
     eventp->xany.window = *w;
   }
-  if (*w == Scr.Root)
+  if (*w == Scr.Root || IS_EWMH_DESKTOP(*w))
   {
     *context = C_ROOT;
     XBell(dpy, 0);
@@ -1308,7 +1311,8 @@ int DeferExecution(
   /* this ugly mess attempts to ensure that the release and press
    * are in the same window. */
   if(*w != original_w && original_w != Scr.Root &&
-     original_w != None && original_w != Scr.NoFocusWin)
+     original_w != None && original_w != Scr.NoFocusWin &&
+     !IS_EWMH_DESKTOP(original_w))
   {
     if (*w != (*tmp_win)->frame || original_w != (*tmp_win)->w)
     {
@@ -1317,6 +1321,14 @@ int DeferExecution(
       return TRUE;
     }
   }
+  
+  if (IS_EWMH_DESKTOP((*tmp_win)->w))
+  {
+    *context = C_ROOT;
+    XBell(dpy, 0);
+    return TRUE;
+  }
+
   *context = GetContext(*tmp_win,eventp,&dummy);
 
   return FALSE;

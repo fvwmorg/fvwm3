@@ -7,6 +7,15 @@
 /* define if GNOME WM hints are enabled */
 #undef GNOME
 
+/* define if extanded WM hints are enabled */
+#undef HAVE_EWMH
+
+#ifdef HAVE_EWMH
+#    define EWMH_CODE(x) x
+#else
+#    define EWMH_CODE(x)
+#endif
+
 /* Where to search for images.  */
 #undef FVWM_IMAGEPATH
 
@@ -35,6 +44,16 @@
 
 /* Define if readline is available.  */
 #undef HAVE_READLINE
+
+/* Define if iconv (in the libc) or libiconv is available */
+#undef HAVE_ICONV
+
+/* define if we use libiconv (not needed in general: for example iconv is
+* native with recent glibc) */
+#undef USE_LIBICONV
+
+/* Define if nl_langinfo is available */
+#undef HAVE_CODESET
 
 /* Define if you want the Shaped window extensions.
  * Shaped window extensions seem to increase the window managers RSS

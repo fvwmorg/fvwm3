@@ -357,5 +357,32 @@
 #define SETM_WAS_ICON_NAME_PROVIDED(fw,x) \
           (fw)->flag_mask.was_icon_name_provided = (x)
 
+#ifdef HAVE_EWMH
+#define HAS_EWMH_WM_NAME(fw)        ((fw)->flags.has_ewmh_wm_name)
+#define SET_HAS_EWMH_WM_NAME(fw,x)  (fw)->flags.has_ewmh_wm_name = !!(x)
+#define SETM_HAS_EWMH_WM_NAME(fw,x) (fw)->flag_mask.has_ewmh_wm_name = !!(x)
+#define HAS_EWMH_WM_ICON_NAME(fw) \
+          ((fw)->flags.has_ewmh_wm_icon_name)
+#define SET_HAS_EWMH_WM_ICON_NAME(fw,x) \
+          (fw)->flags.has_ewmh_wm_icon_name = !!(x)
+#define SETM_HAS_EWMH_WM_ICON_NAME(fw,x) \
+          (fw)->flag_mask.has_ewmh_wm_icon_name = !!(x)
+#define HAS_EWMH_ICON(fw) ((fw)->flags.has_ewmh_icon)
+#define SET_HAS_EWMH_ICON(fw,x)   (fw)->flags.has_ewmh_icon = (x)
+#define SETM_HAS_EWMH_ICON(fw,x)  (fw)->flag_mask.has_ewmh_icon = (x)
+#define HAS_EWMH_MINI_ICON(fw) ((fw)->flags.has_ewmh_mini_icon)
+#define SET_HAS_EWMH_MINI_ICON(fw,x)   (fw)->flags.has_ewmh_mini_icon = (x)
+#define SETM_HAS_EWMH_MINI_ICON(fw,x)  (fw)->flag_mask.has_ewmh_mini_icon = (x)
+
+#else /* HAVE_EWMH */
+
+#define HAS_EWMH_WM_NAME(fw)         0
+#define HAS_EWMH_WM_ICON_NAME(fw)    0
+#define HAS_EWMH_ICON(fw)            0
+#define SET_HAS_EWMH_ICON(fw,x)
+#define HAS_EWMH_MINI_ICON(fw)       0
+#define SET_HAS_EWMH_MINI_ICON(fw,x)
+
+#endif
 
 #endif /* _WINDOW_FLAGS_ */

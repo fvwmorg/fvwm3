@@ -85,6 +85,7 @@
 #include "icccm2.h"
 #include "icons.h"
 #include "gnome.h"
+#include "ewmh.h"
 #include "update.h"
 #include "style.h"
 #include "stack.h"
@@ -131,7 +132,6 @@ Window PressedW = None;
 #endif /* !LASTEvent */
 typedef void (*PFEH)(void);
 PFEH EventHandlerJumpTable[LASTEvent];
-static int flush_property_notify(Atom atom, Window w);
 
 /***********************************************************************
  *
@@ -250,6 +250,7 @@ void HandleFocusIn(void)
     {
       BroadcastPacket(M_FOCUS_CHANGE, 5, focus_w, focus_fw,
 		      (unsigned long)IsLastFocusSetByMouse(), fc, bc);
+      EWMH_SetActiveWindow(focus_w);
     }
     last_focus_w = focus_w;
     last_focus_fw = focus_fw;
@@ -377,6 +378,8 @@ void HandlePropertyNotify(void)
 
   case XA_WM_NAME:
     flush_property_notify(XA_WM_NAME, Tmp_win->w);
+    if (HAS_EWMH_WM_NAME(Tmp_win))
+      return;
 #ifdef I18N_MB
 #if 0
 fprintf(stderr, "hpn: got name packet for window 0x%08x", (int)Tmp_win);
@@ -465,6 +468,8 @@ fprintf(stderr, " '%s'\n", Tmp_win->name);
 
   case XA_WM_ICON_NAME:
     flush_property_notify(XA_WM_ICON_NAME, Tmp_win->w);
+    if (HAS_EWMH_WM_ICON_NAME(Tmp_win))
+      return;
 #ifdef I18N_MB
     if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
 			    MAX_ICON_NAME_LEN, False, AnyPropertyType,
@@ -595,7 +600,8 @@ ICON_DBG((stderr,"hpn: first iph ignored '%s'\n", Tmp_win->name));
 	}
 	else if (has_icon_window_hint_changed)
 	{
-ICON_DBG((stderr,"hpn: using iwh '%s'\n", Tmp_win->name));
+	  ICON_DBG((stderr,"hpn: using iwh '%s'\n", Tmp_win->name));
+	  SET_HAS_EWMH_ICON(Tmp_win, EWMH_WINDOW_ICON);
 	  has_icon_changed = True;
 	}
 	else
@@ -604,11 +610,15 @@ ICON_DBG((stderr,"hpn: iwh not changed, hint ignored '%s'\n", Tmp_win->name));
 	  has_icon_changed = False;
 	}
       }
-      else
+      else /* NO_ICON_OVERRIDE */
       {
 ICON_DBG((stderr,"hpn: using hint '%s'\n", Tmp_win->name));
 	has_icon_changed = True;
       }
+
+      if (HAS_EWMH_ICON(Tmp_win) == EWMH_TRUE_ICON)
+	has_icon_changed = False;
+
       if (has_icon_changed)
       {
 ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
@@ -625,49 +635,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
 	    (Scr.DefaultIcon) ? Scr.DefaultIcon : NULL;
 	}
 	Tmp_win->iconPixmap = (Window)NULL;
-      }
-
-      if (!IS_ICONIFIED(Tmp_win) && has_icon_changed)
-      {
-ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", Tmp_win->name));
-	/* update the icon later when application is iconified */
-	SET_HAS_ICON_CHANGED(Tmp_win, 1);
-      }
-      else if (IS_ICONIFIED(Tmp_win) && has_icon_changed)
-      {
-ICON_DBG((stderr,"hpn: applying new icon '%s'\n", Tmp_win->name));
-	SET_ICONIFIED(Tmp_win, 0);
-	SET_ICON_UNMAPPED(Tmp_win, 0);
-	CreateIconWindow(Tmp_win, Tmp_win->icon_g.x,Tmp_win->icon_g.y);
-	BroadcastPacket(M_ICONIFY, 7,
-			Tmp_win->w, Tmp_win->frame,
-			(unsigned long)Tmp_win,
-			Tmp_win->icon_g.x, Tmp_win->icon_g.y,
-			Tmp_win->icon_g.width, Tmp_win->icon_g.height);
-	/* domivogt (15-Sep-1999): BroadcastConfig informs modules of the
-	 * configuration change including the iconified flag. So this
-	 * flag must be set here. I'm not sure if the two calls of the
-	 * SET_ICONIFIED macro after BroadcastConfig are necessary, but
-	 * since it's only minimal overhead I prefer to be on the safe
-	 * side. */
-	SET_ICONIFIED(Tmp_win, 1);
-	BroadcastConfig(M_CONFIGURE_WINDOW, Tmp_win);
-	SET_ICONIFIED(Tmp_win, 0);
-
-	if (!IS_ICON_SUPPRESSED(Tmp_win))
-	{
-	  LowerWindow(Tmp_win);
-	  AutoPlaceIcon(Tmp_win);
-	  if(Tmp_win->Desk == Scr.CurrentDesk)
-	  {
-	    if(Tmp_win->icon_w)
-	      XMapWindow(dpy, Tmp_win->icon_w);
-	    if(Tmp_win->icon_pixmap_w != None)
-	      XMapWindow(dpy, Tmp_win->icon_pixmap_w);
-	  }
-	}
-	SET_ICONIFIED(Tmp_win, 1);
-	DrawIconWindow(Tmp_win);
+	ChangeIconPixmap(Tmp_win);
       }
     }
 
@@ -816,6 +784,10 @@ ICON_DBG((stderr,"hpn: applying new icon '%s'\n", Tmp_win->name));
 	}
       }
     }
+    else
+    {
+      EWMH_ProcessPropertyNotify(Tmp_win, &Event);
+    }
     break;
   }
 }
@@ -835,6 +807,10 @@ void HandleClientMessage(void)
 
   /* Process GNOME Messages */
   if (GNOME_ProcessClientMessage(Tmp_win, &Event))
+  {
+    return;
+  }
+  if (EWMH_ProcessClientMessage(Tmp_win, &Event))
   {
     return;
   }
@@ -1214,6 +1190,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   }
   /* Clean out the global so that it isn't used on additional map events. */
   isIconicState = DontCareState;
+  EWMH_SetClientList();
   GNOME_SetClientList();
 #if 0
 {void setup_window_name(FvwmWindow *tmp_win);
@@ -2934,6 +2911,12 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   {
     if (*w == t->title_w)
       Context = C_TITLE;
+#ifdef HAVE_EWMH
+    else if (Scr.EwmhDesktop &&
+	     (*w == Scr.EwmhDesktop->w || *w == Scr.EwmhDesktop->Parent ||
+	      *w == Scr.EwmhDesktop->frame))
+      Context = C_EWMH_DESKTOP;
+#endif
     else if (*w == t->w || *w == t->Parent || *w == t->frame)
       Context = C_WINDOW;
     else if (*w == t->icon_w || *w == t->icon_pixmap_w)
@@ -3150,7 +3133,7 @@ int discard_window_events(Window w, long event_mask)
 }
 
 /* Similar function for certain types of PropertyNotify. */
-static int flush_property_notify(Atom atom, Window w)
+int flush_property_notify(Atom atom, Window w)
 {
   XEvent e;
   int count;

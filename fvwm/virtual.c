@@ -32,6 +32,7 @@
 #include "module_interface.h"
 #include "focus.h"
 #include "gnome.h"
+#include "ewmh.h"
 #include "move_resize.h"
 #include "borders.h"
 #include "icons.h"
@@ -199,7 +200,12 @@ static void unmap_window(FvwmWindow *t)
     /* this is required by the ICCCM2 */
     XUnmapWindow(dpy, t->w);
 #endif
+    /* oc: We cannot do that if we want to be EWMH compliant: the only way a
+     * "taskbar" can know if a window is iconified is to look at the WM_STATE.
+     * Moreover, I am not sure than this is a good idea at all. */
+#ifndef HAVE_EWMH
     SetMapStateProp(t, IconicState);
+#endif
   }
   if (ret)
   {
@@ -251,7 +257,10 @@ static void map_window(FvwmWindow *t)
     /* this is required by the ICCCM2 */
     XMapWindow(dpy, t->w);
 #endif
+    /* see the comment in unmap_window */
+#ifndef HAVE_EWMH
     SetMapStateProp(t, NormalState);
+#endif
   }
   if (ret)
   {
@@ -1302,6 +1311,7 @@ void goto_desk(int desk)
      * This should be fixed in the pager, but right now the pager doesn't
      * maintain the stacking order. */
     BroadcastRestackAllWindows();
+    EWMH_SetCurrentDesktop();
     GNOME_SetCurrentDesk();
     GNOME_SetDeskCount();
   }
@@ -1366,6 +1376,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
     BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
   }
 
+  EWMH_SetCurrentDesktop();
   GNOME_SetCurrentDesk();
   GNOME_SetDeskCount();
 
@@ -1428,6 +1439,7 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
     }
     BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   }
+  EWMH_SetWMDesktop(tmp_win);
   GNOME_SetDeskCount();
   GNOME_SetDesk(tmp_win);
   GNOME_SetWinArea(tmp_win);

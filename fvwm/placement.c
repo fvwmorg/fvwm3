@@ -46,6 +46,7 @@
 #include "virtual.h"
 #include "stack.h"
 #include "add_window.h"
+#include "ewmh.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A)<(B)? (A):(B))
@@ -104,6 +105,12 @@ static int SmartPlacement(
       {
 	if (t == test_window)
 	  continue;
+
+#ifdef HAVE_EWMH
+	if (Scr.EwmhDesktop && test_window->w == Scr.EwmhDesktop->w)
+	  continue;
+#endif
+
         /*  RBW - account for sticky windows...  */
         if (test_window->Desk == t->Desk || IS_STICKY(test_window))
         {
@@ -247,6 +254,11 @@ static int get_next_x(
     if (testw == t || (testw->Desk != t->Desk && !IS_STICKY(testw)))
       continue;
 
+#ifdef HAVE_EWMH
+    if (Scr.EwmhDesktop && testw->w == Scr.EwmhDesktop->w)
+      continue;
+#endif
+
     if (IS_STICKY(testw))
     {
       stickyx = pdeltax;
@@ -308,6 +320,11 @@ static int get_next_y(
   {
     if (testw == t || (testw->Desk != t->Desk && !IS_STICKY(testw)))
       continue;
+
+#ifdef HAVE_EWMH
+    if (Scr.EwmhDesktop && testw->w == Scr.EwmhDesktop->w)
+      continue;
+#endif
 
     if (IS_STICKY(testw))
     {
@@ -380,6 +397,11 @@ static float test_fit(
   {
     if (testw == t || (testw->Desk != t->Desk && !IS_STICKY(testw)))
        continue;
+
+#ifdef HAVE_EWMH
+    if (Scr.EwmhDesktop && testw->w == Scr.EwmhDesktop->w)
+      continue;
+#endif
 
     if (IS_STICKY(testw))
     {
@@ -582,6 +604,11 @@ Bool PlaceWindow(
       NULL, FSCREEN_CURRENT,
       &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
   }
+
+  EWMH_GetWorkAreaIntersection(tmp_win,
+    &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height,
+    F_UNDEFINED);
+
   PageLeft   = screen_g.x - pdeltax;
   PageTop    = screen_g.y - pdeltay;
   PageRight  = PageLeft + screen_g.width;

@@ -2483,3 +2483,21 @@ void CMD_BorderStyle(F_CMD_ARGS)
     }
   }
 }
+
+/****************************************************************************
+ *
+ *  redraw the decoration when style change
+ *
+ ****************************************************************************/
+void RedrawDecorations(FvwmWindow *tmp_win)
+{
+  FvwmWindow *u = Scr.Hilite;
+
+  if (IS_SHADED(tmp_win))
+    XRaiseWindow(dpy, tmp_win->decor_w);
+  /* domivogt (6-Jun-2000): Don't check if the window is visible here.  If we
+   * do, some updates are not applied and when the window becomes visible
+   * again, the X Server may not redraw the window. */
+  DrawDecorations(tmp_win, DRAW_ALL, (Scr.Hilite == tmp_win), 2, None);
+  Scr.Hilite = u;
+}

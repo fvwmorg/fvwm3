@@ -3,6 +3,10 @@ _+_A HREF="#2.4.4"_-_2.4.4_+_/A_-_.
 
 Changes in beta release 2.5.0 (not released yet)
 
+* Fvwm respect the extended window manager hints specification (use
+  --enable-ewmh for that). This allows fvwm to work with KDE version
+  >= 2 and GNOME version 2.
+
 * New DateFormat option in FvwmTaskBar to change the date format in
   the clock's popup tip.
 

@@ -106,6 +106,17 @@ dnl Note, no gnome headers or libs are needed for FVWM to be GNOME compliant.
 smr_SWITCH(gnome-hints, GNOME window manager hints, on, GNOME)
 dnl AM_CONDITIONAL(GNOME, test "x$enable_gnome_hints" != "xno")
 
+dnl ******** ewmh
+with_ewmh=no
+smr_SWITCH(ewmh, Extended WM Hints Support, off, HAVE_EWMH)
+
+if test "x$enable_ewmh" = "xyes"; then
+  with_ewmh=yes
+  problem_ewmh=": warning, not yet completed"
+else
+  with_ewmh=no
+  problem_ewmh=": This is the default"
+fi
 
 dnl ********* session management
 dnl Check the availability of SM; we don't have to add any extra libraries,
@@ -356,6 +367,44 @@ dnl Check if Xsetlocale() is available or not.
 AC_CHECK_LIB(X11, _Xsetlocale, AC_DEFINE(X_LOCALE),, $X_LIBS -lX11)
 
 
+dnl ******** iconv
+found_iconv=no
+AC_CHECK_FUNC(iconv_open, found_iconv=yes)
+
+if test "x$found_iconv" != "xyes"; then
+   # Check for libiconv
+   $UNSET ac_cv_header_libiconv_h
+   $UNSET ac_cv_lib_libiconv_libiconv_open
+   smr_CHECK_LIB(iconv, ,if no C implementation is found,
+       libiconv_open, iconv.h)
+   if test "x$iconv_LIBS" != "x"; then
+      AC_DEFINE(USE_LIBICONV)
+      found_iconv=yes
+   fi
+fi
+AC_SUBST(iconv_LIBS)
+AC_SUBST(iconv_CFLAGS)
+
+if test "x$found_iconv" = "xno" -a "x$with_ewmh" = "xyes"; then
+   AC_MSG_WARN([*** No iconv() implementation found in C library or libiconv (for extanded WM hints)])
+fi
+if test "x$found_iconv" = "xyes"; then
+   AC_DEFINE(HAVE_ICONV)
+fi
+
+
+dnl ******** nl_langinfo and CODESET
+
+AC_MSG_CHECKING([for nl_langinfo (CODESET)])
+AC_TRY_COMPILE([#include <langinfo.h>
+#include <locale.h>],
+[char *codeset = nl_langinfo(CODESET); setlocale(LC_CTYPE, "");],
+   AC_DEFINE(HAVE_CODESET,,[Have nl_langinfo (CODESET)])
+   have_codeset=yes,
+   have_codeset=no)
+AC_MSG_RESULT($have_codeset)
+
+
 dnl Check for REQUIRED headers and functions before going any
 dnl further.
 
@@ -515,7 +564,6 @@ else
   problem_gnomehints=": Explicitly disabled"
 fi
 
-
 dnl Define some compatibility macros needed for acconfig.h.
 mg_DEFINE_IF_NOT([#include <X11/keysym.h>],
   [defined XK_Page_Up && defined XK_Page_Down],
@@ -546,6 +594,7 @@ esac
 
 
 # mainly for fvwm-config
+AC_SUBST(with_ewmh)
 AC_SUBST(with_gnomehints)
 AC_SUBST(with_gtk)
 AC_SUBST(with_gdkimlib)
@@ -621,8 +670,8 @@ eval my_datdir="`eval echo ${FVWM_DATADIR}`"
 
 case "$with_gtk" in
   yes) fvwmgtk_msg="
-  With GDK Imlib support in FvwmGtk? $with_gdkimlib$problem_gdkimlib
-  With GNOME support in FvwmGtk?     $with_gnomelibs$problem_gnomelibs" ;;
+  With GDK Imlib support in FvwmGtk?  $with_gdkimlib$problem_gdkimlib
+  With GNOME support in FvwmGtk?      $with_gnomelibs$problem_gnomelibs" ;;
   no) fvwmgtk_msg="" ;;
 esac
 
@@ -636,16 +685,17 @@ FVWM Configuration:
   Modules:     $my_moddir
   Data files:  $my_datdir
 
-  With GNOME Window Manager hints?   $with_gnomehints$problem_gnomehints
-  With GTK support for FvwmGtk?      $with_gtk$problem_gtk$fvwmgtk_msg
-  With Multibyte support?            $with_multibyte$problem_multibyte
-  With ReadLine sup. in FvwmConsole? $with_readline$problem_readline
-  With RPlay support in FvwmEvent?   $with_rplay$problem_rplay
-  With Shaped window support?        $with_shape$problem_shape
-  With Session Management support?   $with_sm$problem_sm
-  With Stroke support?               $with_stroke$problem_stroke
-  With Xinerama support?             $with_xinerama$problem_xinerama
-  With XPM support?                  $with_xpm$problem_xpm
+  With Extanded Window Manager hints? $with_ewmh$problem_ewmh
+  With GNOME Window Manager hints?    $with_gnomehints$problem_gnomehints
+  With GTK support for FvwmGtk?       $with_gtk$problem_gtk$fvwmgtk_msg
+  With Multibyte support?             $with_multibyte$problem_multibyte
+  With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline
+  With RPlay support in FvwmEvent?    $with_rplay$problem_rplay
+  With Shaped window support?         $with_shape$problem_shape
+  With Session Management support?    $with_sm$problem_sm
+  With Stroke support?                $with_stroke$problem_stroke
+  With Xinerama support?              $with_xinerama$problem_xinerama
+  With XPM support?                   $with_xpm$problem_xpm
 "
 case "$with_xinerama_emulation" in
   yes) echo "  Xinerama emulation enabled." ;;

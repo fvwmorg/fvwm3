@@ -258,7 +258,8 @@ int ParseBinding(
 	*buttons_grabbed = 0;
       for (b = *pblist; b != NULL; b = b->NextBinding)
       {
-	if(b->type == MOUSE_BINDING && (b->Context & C_WINDOW) &&
+	if(b->type == MOUSE_BINDING &&
+	   (b->Context & (C_WINDOW|C_EWMH_DESKTOP)) &&
 	   (b->Modifier == 0 || b->Modifier == AnyModifier) &&
 	   buttons_grabbed != NULL)
 	{
@@ -301,7 +302,8 @@ int ParseBinding(
     modifier = AnyModifier;
   }
 
-  if ((type == MOUSE_BINDING)&&(context & C_WINDOW)&&
+  if ((type == MOUSE_BINDING)&&
+      (context & (C_WINDOW|C_EWMH_DESKTOP))&&
      (((modifier==0)||modifier == AnyModifier)) && (buttons_grabbed != NULL))
   {
     if (button == 0)
@@ -333,7 +335,7 @@ static void activate_binding(
     /* necessary for key bindings that work over unfocused windows */
     GrabWindowKeyOrButton(
       dpy, Scr.Root, binding,
-      C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_ROOT|C_ICON,
+      C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_ROOT|C_ICON|C_EWMH_DESKTOP,
       GetUnusedModifiers(), None, do_grab);
   }
   if (fFvwmInStartup == True)
@@ -342,11 +344,23 @@ static void activate_binding(
   /* grab keys immediately */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
-    if (binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))
+    if (!IS_EWMH_DESKTOP(t->w) && (binding->Context & C_WINDOW) &&
+	(binding->type == MOUSE_BINDING
+	 STROKE_CODE(|| binding->type == STROKE_BINDING)))
     {
-      GrabWindowKeyOrButton(
-	dpy, t->frame, binding, C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+      GrabWindowButton(
+	dpy, t->Parent, binding,
+	C_WINDOW,
 	GetUnusedModifiers(), None, do_grab);
+    }
+    if (!IS_EWMH_DESKTOP(t->w) &&
+	(binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR))
+	&& binding->type == KEY_BINDING)
+    {
+      GrabWindowKey(
+	dpy, t->frame, binding,
+	C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+	GetUnusedModifiers(), do_grab);
     }
     if (binding->Context & C_ICON)
     {
@@ -362,6 +376,13 @@ static void activate_binding(
 	  None, do_grab);
       }
     }
+#ifdef HAVE_EWMH
+    if (IS_EWMH_DESKTOP(t->w) && (binding->Context & C_EWMH_DESKTOP))
+      GrabWindowKeyOrButton(
+	dpy, t->Parent, binding,
+	C_EWMH_DESKTOP,
+	GetUnusedModifiers(), None, do_grab);
+#endif
   }
 
   return;

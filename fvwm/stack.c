@@ -36,6 +36,7 @@
 #include "borders.h"
 #include "virtual.h"
 #include "gnome.h"
+#include "ewmh.h"
 
 /* ----------------------------- stack ring code --------------------------- */
 
@@ -499,6 +500,9 @@ static void restack_windows(
   XConfigureWindow (dpy, r->stack_next->frame, flags, &changes);
   XRestackWindows (dpy, wins, count);
   free(wins);
+
+  EWMH_SetClientListStacking();
+
   if (do_broadcast_all)
   {
     /* send out M_RESTACK for all windows, to make sure we don't forget
@@ -1420,6 +1424,8 @@ void CMD_Layer(F_CMD_ARGS)
     layer = 0;
   }
   new_layer(tmp_win, layer);
+
+  EWMH_SetWMState(tmp_win);
 
 #ifdef DEBUG_STACK_RING
   verify_stack_ring_consistency();

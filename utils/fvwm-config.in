@@ -55,6 +55,7 @@ fvwm_imagepath="@FVWM_IMAGEPATH@"
 fvwm_userdir='$HOME/.fvwm'
 fvwm_exe='fvwm2'
 
+with_ewmh=@with_ewmh@
 with_gnomehints=@with_gnomehints@
 with_gtk=@with_gtk@
 with_gdkimlib=@with_gdkimlib@
@@ -113,6 +114,7 @@ while test $# -gt 0; do
 			echo "$fvwm_exe" ;;
 
 		--supports|-supports|-s)
+			test "$with_ewmh"       = "yes" && echo "ewmh"
 			test "$with_gnomehints" = "yes" && echo "gnome-hints"
 			test "$with_gtk"        = "yes" && echo "gtk"
 			test "$with_gdkimlib"   = "yes" && echo "gdk-imlib"
@@ -157,6 +159,7 @@ while test $# -gt 0; do
 			echo "	Default UserDir: $fvwm_userdir"
 			echo ""
 			echo "Support for features:"
+			echo "	Extended WM hints (ewmh): $with_ewmh"
 			echo "	gnome-hints (window manager hints): $with_gnomehints"
 			echo "	gtk (FvwmGtk): $with_gtk"
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"

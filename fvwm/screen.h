@@ -403,12 +403,36 @@ typedef struct ScreenInfo
     unsigned edge_wrap_y : 1;
   } flags;
 
+#ifdef HAVE_EWMH
+  FvwmWindow *EwmhDesktop;
+  struct
+  {
+    int x;
+    int y;
+    int width;
+    int height;
+  } work_area;
+  struct
+  {
+    int x;
+    int y;
+    int width;
+    int height;
+  } dyn_work_area;
+#endif
   struct
   {
     last_added_item_type type;
     void *item;
   } last_added_item;
 } ScreenInfo;
+
+/* A macro to to simplify he "ewmh desktop code" */
+#ifdef HAVE_EWMH
+#define IS_EWMH_DESKTOP(win) (Scr.EwmhDesktop && win == Scr.EwmhDesktop->w)
+#else
+#define IS_EWMH_DESKTOP(w) 0
+#endif
 
 /*
    Macro which gets specific decor or default decor.

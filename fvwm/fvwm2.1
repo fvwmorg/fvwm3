@@ -748,6 +748,29 @@ disable GNOME hints for some or all windows, the
 .I GNOMEIgnoreHints
 style can be used.
 
+.SH EXTENDED WINDOW MANAGER HINTS
+
+Fvwm attempts to respect the extended window manager hints specification:
+.BR http://www.freedesktop.org/standards/wm-spec.html "."
+This allows fvwm to work with
+.SM KDE
+version >= 2,
+.SM GNOME
+version 2 and others applications which respect this specification (as
+any application based on
+.SM GTK+
+version 2).
+This support is a compile time option which is off by default 
+(use the --enable-ewmh option to configure to enable it).
+The commands which concern this support can be found
+in the section
+.B EXTENDED WM HINTS COMMANDS
+(not yet written as nothing is configurable yet).
+You must be award that there is a new Context 'D' for the 
+.BR Key ", " PointerKey ", " Mouse " and " Stroke
+commands. This context is for desktop
+applications (as kdesktop and Nautilus desktop).
+
 .SH MWM COMPATIBILITY
 
 Fvwm provides options to emulate Motif Window Manager (Mwm) as

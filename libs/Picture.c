@@ -342,6 +342,58 @@ void DestroyPicture(Display *dpy, Picture *p)
   free(p);
 }
 
+#ifdef HAVE_EWMH
+Picture *LoadPictureFromPixmap(Display *dpy, Window Root, char *name,
+			       Pixmap pixmap, Pixmap mask, int width, int height)
+{
+  Picture *q;
+
+  q = (Picture*)safemalloc(sizeof(Picture));
+  memset(q, 0, sizeof(Picture));
+  q->count = 1;
+  q->name = name;
+  q->next = NULL;
+  q->stamp = pixmap;
+  q->picture = pixmap;
+  q->mask = mask;
+  q->width = width;
+  q->height = height;
+  q->depth = Pdepth;
+  q->alloc_pixels = 0;
+  q->nalloc_pixels = 0;
+
+  return q;
+}
+
+Picture *CachePictureFromPixmap(Display *dpy, Window Root,char *name,
+				Pixmap pixmap, Pixmap mask,
+				int width, int height)
+{
+  Picture *p=PictureList;
+  
+  /* See if the picture is already cached */
+  for(;p!=NULL;p=p->next)
+  {
+#if 0
+    /* at th present time no good way to cache a pixmap */
+    if (!strcmp(p->name,name)) {
+      p->count++;
+      return p;
+    }
+#endif
+  }
+
+  /* Not previously cached, have to load. Put it first in list */
+  p = LoadPictureFromPixmap(dpy, Root, name, pixmap, mask, width, height);
+  if(p)
+  {
+    p->next=PictureList;
+    PictureList=p;
+  }
+
+  return p;
+}
+#endif
 
 #ifdef XPM
 /* This structure is used to quickly access the RGB values of the colors */
