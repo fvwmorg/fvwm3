@@ -389,6 +389,14 @@ Wed Mar  3 21:05:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
 
+	* fvwm/module.c (executeModule): put ifdef around code that closes
+	pipes in child processes.
+
+	* fvwm/misc.c: put ifdef around fvwm_msg; allows VMS port to
+	define its own version of this routine.  
+	
+1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
+
 	* fvwm/fvwm.h: add 'extern' keyword to Bool fFvwmInStartup,
 	otherwise it is defined in each .c file that includes <fvwm/fvwm.h>
 

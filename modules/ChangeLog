@@ -163,6 +163,14 @@ Thu Mar  4 00:39:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
 
+	* FvwmWinList/FvwmWinList.c (RedrawWindow): add XFlush() call in
+	RedrawWindow(), for VMS port.  Ifdef this if it causes problems. 
+
+	* FvwmPager/FvwmPager.c (My_XNextEvent): allow bypassing the test
+	for too many missed XEvents; needed for VMS port.
+
+1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
+
 	* FvwmPager/x_pager.c (GetBalloonLabel): add empty statement to
 	the default case of switch in order to placate SGI's cc.
 

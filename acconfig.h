@@ -178,3 +178,9 @@
 #  define abs(a) (((a)>=0)?(a):-(a))
 #endif
 
+
+/* Enable tests for missing too many XEvents.  Usually you want this. */
+#define WORRY_ABOUT_MISSED_XEVENTS 1
+
+/* Close one end of pipe in child process.  Unix wants this. */
+#define CLOSE_PIPES_IN_CHILD 1

@@ -16,10 +16,7 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
 #include <sys/time.h>
-#include <unistd.h>
 #include <signal.h>
 #include <stdarg.h>
 
@@ -1110,6 +1107,7 @@ void HandleHardFocus(FvwmWindow *t)
 }
 
 
+#ifndef fvwm_msg /* VMS port defines own version */
 /*
 ** fvwm_msg: used to send output from fvwm to files and or stderr/stdout
 **
@@ -1160,6 +1158,8 @@ void fvwm_msg(int type,char *id,char *msg,...)
 
   va_end(args);
 } /* fvwm_msg */
+#endif
+
 
 /* CoerceEnterNotifyOnCurrentWindow()
  * Pretends to get a HandleEnterNotify on the

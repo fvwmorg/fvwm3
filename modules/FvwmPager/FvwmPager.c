@@ -1106,8 +1106,10 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	  return 1;
 	}
 	miss_counter++;
-      if(miss_counter > 100)
-	DeadPipe(0);
+#ifdef WORRY_ABOUT_MISSED_XEVENTS
+	if(miss_counter > 100)
+          DeadPipe(0);
+#endif
     }
 
   if(FD_ISSET(fd[1], &in_fdset))

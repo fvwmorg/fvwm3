@@ -247,8 +247,10 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
       /* this is  the child */
       /* this fork execs the module */
+#ifdef CLOSE_PIPES_IN_CHILD
       close(fvwm_to_app[1]);
       close(app_to_fvwm[0]);
+#endif
 
       execvp(arg1,args);
       fvwm_msg(ERR,"executeModule","Execution of module failed: %s",arg1);

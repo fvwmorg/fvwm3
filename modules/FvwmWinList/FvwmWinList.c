@@ -486,6 +486,7 @@ void WaitForExpose(void)
 void RedrawWindow(int force)
 {
   DrawButtonArray(&buttons, force);
+  XFlush(dpy); /** Put here for VMS; ifdef if causes performance problem **/
   if (XQLength(dpy) && !force) LoopOnEvents();
 }
 
