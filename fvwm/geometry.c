@@ -231,14 +231,19 @@ void get_title_font_size_and_offset(
 	int extra_size;
 	int font_size;
 	int min_offset;
+        Bool is_rotated_cw;
 
 	/* adjust font offset according to height specified in title style */
 	decor_size = fw->decor->title_height;
 	font_size = fw->title_font->height + EXTRA_TITLE_FONT_HEIGHT;
+        min_offset = fw->title_font->ascent;
 	switch (title_dir)
 	{
 	case DIR_W:
-		if (is_left_title_rotated_cw)
+	case DIR_E:
+                is_rotated_cw = (title_dir == DIR_W) ?
+                        is_left_title_rotated_cw : is_right_title_rotated_cw;
+		if (is_rotated_cw)
 		{
 			fw->title_text_dir = TEXT_DIR_TOP_TO_BOTTOM;
 			min_offset = fw->title_font->height -
@@ -247,27 +252,12 @@ void get_title_font_size_and_offset(
 		else
 		{
 			fw->title_text_dir = TEXT_DIR_BOTTOM_TO_TOP;
-			min_offset = fw->title_font->ascent;
-		}
-		break;
-	case DIR_E:
-		if (!is_right_title_rotated_cw)
-		{
-			fw->title_text_dir = TEXT_DIR_BOTTOM_TO_TOP;
-			min_offset = fw->title_font->ascent;
-		}
-		else
-		{
-			fw->title_text_dir =  TEXT_DIR_TOP_TO_BOTTOM;
-			min_offset = fw->title_font->height -
-				fw->title_font->ascent;
 		}
 		break;
 	case DIR_N:
 	case DIR_S:
 	default:
 		fw->title_text_dir =  TEXT_DIR_LEFT_TO_RIGHT;
-		min_offset = fw->title_font->ascent;
 		break;
 	}
 	extra_size = (decor_size > 0) ? decor_size - font_size : 0;
@@ -277,6 +267,7 @@ void get_title_font_size_and_offset(
 		*offset += extra_size / 2;
 	}
 	*size = font_size + extra_size;
+
 	return;
 }
 

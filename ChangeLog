@@ -1,3 +1,11 @@
+2002-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/geometry.h:
+	fixed broken prototype for get_title_font_size_and_offset
+
+	* fvwm/geometry.c (get_title_font_size_and_offset):
+	simplified code a bit
+
 2002-03-18  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/geometry.h:
