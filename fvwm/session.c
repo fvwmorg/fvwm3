@@ -452,6 +452,10 @@ SaveWindowStates(FILE *f)
 			fprintf(f, "  [WINDOW_ROLE] %s\n", window_role);
 			XFree(window_role);
 		}
+		if (client_id && window_role)
+		{
+			/* we have enough information */
+		}
 		else
 		{
 			if (ewin->class.res_class)
@@ -542,7 +546,14 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 	found = 0;
 	client_id = GetClientID(w);
 
-	if (xstreq(client_id, m->client_id))
+	if (Restarting)
+	{
+		if (FW_W(w) == m->win)
+		{
+			found = 1;
+		}
+	}
+	else if (xstreq(client_id, m->client_id))
 	{
 
 		/* client_id's match */
@@ -570,7 +581,6 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 			{
 				/* for non-SM-aware clients we also
 				 * compare WM_COMMAND */
-
 				if (!XGetCommand(
 					    dpy, FW_W(w), &wm_command,
 					    &wm_command_count))
@@ -595,11 +605,10 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 						/* migo (21/Oct/1999):
 						 * on restarts compare
 						 * window ids too */
-						if (!Restarting ||
-						    FW_W(w) == m->win)
-						{
-							found = 1;
-						}
+						/* But if we restart we only need
+						 * to compare window ids
+						 * olicha (2005-01-06) */
+						found = 1;
 					}
 				} /* if (wm_command_count ==... */
 			} /* else if res_class, res_name and wm_name agree */
