@@ -362,7 +362,7 @@ static void animated_move_back(
 	MenuRepaintTransparentParameters mrtp;
 	int act_x;
 	int act_y;
-	
+
 	if (MR_XANIMATION(mr) == 0)
 	{
 		return;
@@ -3594,7 +3594,7 @@ static int pop_menu_up(
 	unsigned int prev_height;
 	unsigned int event_mask;
 	int scr_x, scr_y, scr_w, scr_h;
-	
+
 	mr = *pmenu;
 	if (!mr ||
 	    (MR_MAPPED_COPIES(mr) > 0 && MR_COPIES(mr) >= MAX_MENU_COPIES))
@@ -3812,15 +3812,6 @@ static int pop_menu_up(
 	 * Clip to screen
 	 ***************************************************************/
 
-	if (parent_menu)
-	{
-		bw = MST_BORDER_WIDTH(mr);
-		bwp = MST_BORDER_WIDTH(parent_menu);
-		x_overlap = do_menus_overlap(
-			parent_menu, x, y, MR_WIDTH(mr), MR_HEIGHT(mr), bwp,
-			bwp, bwp, True);
-	}
-
 	{
 		fscreen_scr_arg fscr;
 
@@ -3834,6 +3825,15 @@ static int pop_menu_up(
 		 * reference */
 		FScreenGetScrRect(
 			&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
+	}
+
+	if (parent_menu)
+	{
+		bw = MST_BORDER_WIDTH(mr);
+		bwp = MST_BORDER_WIDTH(parent_menu);
+		x_overlap = do_menus_overlap(
+			parent_menu, x, y, MR_WIDTH(mr), MR_HEIGHT(mr), bwp,
+			bwp, bwp, True);
 	}
 
 	/***************************************************************
@@ -4895,7 +4895,7 @@ static mloop_ret_code_t __mloop_handle_event(
 		/* grab our expose events, let the rest go through */
 		XFlush(dpy);
 		menu_expose(pmp->exc->x.elast, (*pmp->pfw));
-		/* we want to dispatch this too so that icons and maybe tear off 
+		/* we want to dispatch this too so that icons and maybe tear off
 		 * get redrawn after being obscured by menus. */
 		dispatch_event(pmp->exc->x.elast);
 		return MENU_MLOOP_RET_LOOP;
@@ -6545,7 +6545,7 @@ void repaint_transparent_menu(
 	}
 	SetWindowBackground(
 		dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
-		&Colorset[ST_CSET_MENU(ms)], Pdepth, ST_MENU_GC(ms), False); 
+		&Colorset[ST_CSET_MENU(ms)], Pdepth, ST_MENU_GC(ms), False);
 	/* redraw the background of non active item */
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
