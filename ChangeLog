@@ -1,5 +1,10 @@
 2001-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/builtins.c (fake_click):
+	fixed a bug in button number parsing
+	(fake_click):
+	properly deliver faked events
+
 	* libs/ColorUtils.c (GetShadowColor):
 	(GetHiliteColor):
 	finished reverting back to 2.3.22 colour calculations

@@ -2917,6 +2917,7 @@ void fake_click(F_CMD_ARGS)
     int rx = 0;
     int ry = 0;
     Bool do_unset;
+    long add_mask = 0;
 
     XSync(dpy, 0);
     if (GetIntegerArguments(action, &action, &val, 1) != 1)
@@ -2934,7 +2935,7 @@ void fake_click(F_CMD_ARGS)
     case 2:
     case 3:
       /* button press or release */
-      if (val >= 1 || val <= NUMBER_OF_MOUSE_BUTTONS)
+      if (val >= 1 && val <= NUMBER_OF_MOUSE_BUTTONS)
       {
 	int depth = 1;
 
@@ -2947,9 +2948,15 @@ void fake_click(F_CMD_ARGS)
 	  XQueryPointer(dpy, w, &root, &child_w, &rx, &ry, &x, &y, &JunkMask);
 	}
 	if (do_unset)
+	{
 	  e.type = ButtonRelease;
+	  add_mask = ButtonPressMask;
+	}
 	else
+	{
 	  e.type = ButtonPress;
+	  add_mask = ButtonPressMask | ButtonReleaseMask;
+	}
 	e.xbutton.display = dpy;
 	e.xbutton.window = w;
 	e.xbutton.subwindow = None;
@@ -2962,7 +2969,8 @@ void fake_click(F_CMD_ARGS)
 	e.xbutton.button = val;
 	e.xbutton.state = mask;
 	e.xbutton.same_screen = (Scr.Root == root);
-	XSendEvent(dpy, PointerWindow, True, SubstructureNotifyMask, &e);
+	XSendEvent(
+	  dpy, PointerWindow, True, SubstructureNotifyMask | add_mask, &e);
 	XSync(dpy, 0);
 	if (do_unset)
 	  mask &= ~(Button1Mask << (val - 1));

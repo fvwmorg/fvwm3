@@ -2743,8 +2743,9 @@ void swallow(unsigned long *body)
 	return;
       }
 
-      if(p!=b->IconWinParent) /* The window has been reparented */
+      if (p != b->IconWinParent)
       {
+	/* The window has been reparented */
 	fprintf(stderr,"%s: Window 0x%lx (\"%s\") was %s (window 0x%lx)\n",
 		MyName,swin,b->hangon,"grabbed by someone else",p);
 
