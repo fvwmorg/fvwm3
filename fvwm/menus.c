@@ -146,6 +146,8 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
 
   DBUG("do_menu","called");
 
+  if (fStick && cmenuDeep == 0)
+    XSync(dpy, True);
   key_press = (eventp && (eventp == (XEvent *)1 || eventp->type == KeyPress));
   /* this condition could get ugly */
   if(menu == NULL || menu->flags.f.is_in_use) {
@@ -1969,7 +1971,7 @@ void DrawTrianglePattern(Window w,GC GC1,GC GC2,GC GC3,GC gc,int l,int u,
   } else if (r-l < m-b) {
     r=(m-b)/((((m-b)-1)/(r-l))+1)+l;
   }
-  
+
   if (!relief) {
     /* solid triangle */
     XPoint points[3];

@@ -100,108 +100,130 @@ char *GetQuotedString(char *sin, char **sout, const char *delims,
   return t;
 }
 
-
-/*
-** PeekToken: returns next token from string, leaving string intact
-**            (you should free returned string later)
-**
-** notes - quotes and brakets denote blocks, which are returned MINUS
-**         the start & end delimiters.  Delims within block may be escaped
-**         with a backslash \ (which is removed when returned).  Backslash
-**         must be escaped too, if you want one... (\\).  Tokens may be up
-**         to MAX_TOKEN_LENGTH in size.
-*/
-char *PeekToken(const char *pstr)
+/* SkipSpaces: returns a pointer to the first character in indata that is
+ * neither a whitespace character nor contained in the string 'spaces'. snum
+ * is the number of characters in 'spaces'. You must not pass a NULL pointer
+ * in indata. */
+char *SkipSpaces(char *indata, char *spaces, int snum)
 {
-  char *tok=NULL;
-  const char* p;
-  char bc=0,be=0,tmptok[MAX_TOKEN_LENGTH];
-  int len=0;
-
-  if (!pstr)
-    return NULL;
-
-  p=pstr;
-  EatWS(p); /* skip leading space */
-  if (*p)
-  {
-    if (IsQuote(*p) || IsBlockStart(*p)) /* quoted string or block start? */
-    {
-      bc = *p; /* save block start char */
-      p++;
-    }
-    /* find end of token */
-    while (*p && len < MAX_TOKEN_LENGTH)
-    {
-      /* first, check stop conditions based on block or normal token */
-      if (bc)
-      {
-        if ((IsQuote(*p) && bc == *p) || IsBlockEnd(*p,bc))
-        {
-          be = *p;
-          break;
-        }
-      }
-      else /* normal token */
-      {
-        if (isspace((unsigned char)*p) || *p == ',')
-          break;
-      }
-
-      if (*p == '\\' && *(p+1)) /* if \, copy next char verbatim */
-        p++;
-      tmptok[len] = *p;
-      len++;
-      p++;
-    }
-
-    /* sanity checks: */
-    if (bc && !be) /* did we have block start, but not end? */
-    {
-      /* should yell about this */
-      return NULL;
-    }
-
-    if (len)
-    {
-      tok = (char *)malloc(len+1);
-      strncpy(tok,tmptok,len);
-      tok[len]='\0';
-    }
-  }
-
-  return tok;
+  while (*indata != 0 && (isspace((unsigned char)*indata) ||
+			  (snum && strchr(spaces, *indata))))
+    indata++;
+  return indata;
 }
 
-/*
-** CmpToken: does case-insensitive compare on next token in string, leaving
-**           string intact (return code like strcmp)
-*/
-int CmpToken(const char *pstr,char *tok)
+/* Copies a token beginning at src to a previously allocated area dest. dest
+ * must be large enough to hold the token. Leading whitespaces cause the token
+ * to be NULL. */
+char *CopyToken(char *src, char *dest, char *spaces, int snum, char *delims,
+		int dnum, char *out_delim)
 {
-  int rc=0;
-  char *ntok=PeekToken(pstr);
-  if (ntok)
-  {
-    rc = strcasecmp(tok,ntok);
-    free(ntok);
-  }
-  return rc;
+  while ( (*src != 0) && !(isspace((unsigned char)*src) ||
+			   (snum && strchr(spaces, *src)) ||
+			   (dnum && strchr(delims, *src))))
+    {
+      /* Check for qouted text */
+      if (IsQuote(*src))
+	{
+	  char c = *src;
+
+	  src++;
+	  while((*src != c)&&(*src != 0))
+	    {
+	      *(dest++) = *src;
+	      /* Skip over escaped text, ie \quote */
+	      if((*src == '\\')&&(*(src+1) != 0))
+		*(dest++) = *(++src);
+	      src++;
+	    }
+	  if(*src == c)
+	    src++;
+	}
+      else
+	{
+	  *(dest++) = *src;
+	  /* Skip over escaped text, ie \" or \space */
+	  if((*src == '\\')&&(*(src+1) != 0))
+	    *(dest++) = *(++src);
+	  src++;
+	}
+    }
+  if (out_delim)
+    *out_delim = *src;
+  *dest = 0;
+  if (*src != 0)
+    src++;
+  return src;
+}
+
+
+/*
+** DoPeekToken: returns next token from string, leaving string intact
+**              (you must not free returned string)
+**
+** For a description of the parameters see DoGetNextToken below. DoPeekToken
+** is a bit faster.
+*/
+char *DoPeekToken(char *indata, char **token, char *spaces, char *delims,
+		  char *out_delim)
+{
+  char *end;
+  int snum;
+  int dnum;
+  char tmptok[MAX_TOKEN_LENGTH];
+
+  snum = (spaces) ? strlen(spaces) : 0;
+  dnum = (delims) ? strlen(delims) : 0;
+  if(indata == NULL)
+    {
+      if (out_delim)
+	*out_delim = '\0';
+      *token = NULL;
+      return NULL;
+    }
+  indata = SkipSpaces(indata, spaces, snum);
+  end = CopyToken(indata, tmptok, spaces, snum, delims, dnum, out_delim);
+
+  if (tmptok[0] == 0)
+    *token = NULL;
+  else
+    *token = tmptok;
+  return end;
+}
+
+char *PeekToken(char *indata, char **token)
+{
+  return DoPeekToken(indata, token, NULL, NULL, NULL);
+}
+
+/* Tries to seek up to n tokens in indata. Returns the number of tokens
+ * actually found (up to a maximum of n). */
+int CheckNTokens(char *indata, unsigned int n)
+{
+  unsigned int i;
+  char *token;
+
+  for (i = 0; i < n; i++)
+    {
+      indata = PeekToken(indata, &token);
+      if (token == NULL)
+	break;
+    }
+  return i;
 }
 
 /*
 ** MatchToken: does case-insensitive compare on next token in string, leaving
 **             string intact (returns true if matches, false otherwise)
 */
-int MatchToken(const char *pstr,char *tok)
+int MatchToken(char *pstr,char *tok)
 {
   int rc=0;
-  char *ntok=PeekToken(pstr);
+  char *ntok;
+
+  DoPeekToken(pstr, &ntok, NULL, NULL, NULL);
   if (ntok)
-  {
     rc = (strcasecmp(tok,ntok)==0);
-    free(ntok);
-  }
   return rc;
 }
 
@@ -246,99 +268,16 @@ void NukeToken(char **pstr)
 char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
 		     char *out_delim)
 {
-  char *t, *start, *end, *text;
-  int snum;
-  int dnum;
+  char *tmptok;
+  char *end;
 
-  snum = (spaces) ? strlen(spaces) : 0;
-  dnum = (delims) ? strlen(delims) : 0;
-  if(indata == NULL)
-    {
-      if (out_delim)
-	*out_delim = '\0';
-      *token = NULL;
-      return NULL;
-    }
-  t = indata;
-  while ( (*t != 0) &&
-	  ( isspace((unsigned char)*t) ||
-	    (snum &&
-	     strchr(spaces, *t)) ) )
-    t++;
-  start = t;
-  while ( (*t != 0) &&
-	  !( isspace((unsigned char)*t) ||
-	     (snum &&
-	      strchr(spaces, *t)) ||
-	     (dnum &&
-	      strchr(delims, *t)) ) )
-    {
-      /* Check for qouted text */
-      if (IsQuote(*t))
-	{
-	  char c = *t;
+  end = DoPeekToken(indata, &tmptok, spaces, delims, out_delim);
 
-	  t++;
-	  while((*t != c)&&(*t != 0))
-	    {
-	      /* Skip over escaped text, ie \quote */
-	      if((*t == '\\')&&(*(t+1) != 0))
-		t++;
-	      t++;
-	    }
-	  if(*t == c)
-	    t++;
-	}
-      else
-	{
-	  /* Skip over escaped text, ie \" or \space */
-	  if((*t == '\\')&&(*(t+1) != 0))
-	    t++;
-	  t++;
-	}
-    }
-  end = t;
-  if (out_delim)
-    *out_delim = *end;
+  if (tmptok == NULL)
+    *token = NULL;
+  else
+    *token = strdup(tmptok);
 
-  text = safemalloc(end-start+1);
-  *token = text;
-
-  /* copy token */
-  while(start < end)
-    {
-      /* Check for qouted text */
-      if(IsQuote(*start))
-	{
-	  char c = *start;
-	  start++;
-	  while((*start != c)&&(*start != 0))
-	    {
-	      /* Skip over escaped text, ie \" or \space */
-	      if((*start == '\\')&&(*(start+1) != 0))
-		start++;
-	      *text++ = *start++;
-	    }
-	  if(*start == c)
-	    start++;
-	}
-      else
-	{
-	  /* Skip over escaped text, ie \" or \space */
-	  if((*start == '\\')&&(*(start+1) != 0))
-	    start++;
-	  *text++ = *start++;
-	}
-    }
-  *text = 0;
-  if(*end != 0)
-    end++;
-
-  if (**token == 0)
-    {
-      free(*token);
-      *token = NULL;
-    }
   return end;
 }
 
@@ -354,17 +293,11 @@ char *GetNextOption(char *indata, char **token)
 
 char *SkipNTokens(char *indata, unsigned int n)
 {
-  char *tmp;
   char *junk;
 
-  tmp = indata;
   for ( ; n > 0 ; n--)
-    {
-      tmp = GetNextToken(tmp, &junk);
-      if (junk)
-	free(junk);
-    }
-  return tmp;
+    indata = PeekToken(indata, &junk);
+  return indata;
 }
 
 /*

@@ -30,6 +30,10 @@ static Boolean ReadMenuFace(char *s, MenuFace *mf, int verbose);
 static void FreeMenuFace(Display *dpy, MenuFace *mf);
 static void ApplyIconFont(void);
 static void ApplyWindowFont(FvwmDecor *fl);
+void MaximizeHeight(FvwmWindow *win, int height, int x, int *ret_height,
+		    int *ret_y);
+void MaximizeWidth(FvwmWindow *win, int *ret_width, int *ret_x, int height,
+		   int y);
 
 static char *exec_shell_name="/bin/sh";
 /* button state strings must match the enumerated states */
@@ -195,8 +199,12 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
 void Maximize(F_CMD_ARGS)
 {
   int new_width, new_height,new_x,new_y;
-  int val1, val2, val1_unit,val2_unit,n;
+  int val1, val2, val1_unit, val2_unit;
   int toggle;
+  char *token;
+  char *taction;
+  Bool grow_x = False;
+  Bool grow_y = False;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
@@ -213,14 +221,36 @@ void Maximize(F_CMD_ARGS)
   if (((toggle == 1) && (tmp_win->flags & MAXIMIZED)) ||
       ((toggle == 0) && !(tmp_win->flags & MAXIMIZED)))
     return;
-  n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
-  if(n != 2)
-  {
-    val1 = 100;
-    val2 = 100;
-    val1_unit = Scr.MyDisplayWidth;
-    val2_unit = Scr.MyDisplayHeight;
-  }
+
+  /* parse first parameter */
+  val1_unit = Scr.MyDisplayWidth;
+  taction = PeekToken(action, &token);
+  if (token && StrEquals(token, "grow"))
+    {
+      grow_x = True;
+      val1 = 100;
+      val1_unit = Scr.MyDisplayWidth;
+    }
+  else if (GetOnePercentArgument(action, &val1, &val1_unit) == 0)
+    {
+      val1 = 100;
+      val1_unit = Scr.MyDisplayWidth;
+    }
+
+  /* parse second parameter */
+  val2_unit = Scr.MyDisplayHeight;
+  PeekToken(taction, &token);
+  if (token && StrEquals(token, "grow"))
+    {
+      grow_y = True;
+      val2 = 100;
+      val2_unit = Scr.MyDisplayHeight;
+    }
+  else if (GetOnePercentArgument(taction, &val2, &val2_unit) == 0)
+    {
+      val2 = 100;
+      val2_unit = Scr.MyDisplayHeight;
+    }
 
   if (tmp_win->flags & MAXIMIZED)
   {
@@ -235,35 +265,42 @@ void Maximize(F_CMD_ARGS)
     new_width = tmp_win->orig_wd;
 #ifdef WINDOWSHADE
     if (tmp_win->buttons & WSHADE)
-      {
-	new_height = tmp_win->title_height + tmp_win->boundary_width;
-      }
+      new_height = tmp_win->title_height + tmp_win->boundary_width;
     else
 #endif
-	new_height = tmp_win->orig_ht;
+      new_height = tmp_win->orig_ht;
     SetupFrame(tmp_win, new_x, new_y, new_width, new_height, TRUE,False);
     SetBorder(tmp_win,True,True,True,None);
   }
   else
   {
-    new_width = tmp_win->frame_width;
 #ifdef WINDOWSHADE
     if (tmp_win->buttons & WSHADE)
-	new_height = tmp_win->orig_ht;
+      new_height = tmp_win->orig_ht;
     else
 #endif
-    new_height = tmp_win->frame_height;
+      new_height = tmp_win->frame_height;
+    new_width = tmp_win->frame_width;
+
     new_x = tmp_win->frame_x;
     new_y = tmp_win->frame_y;
-    if(val1 >0)
+    if (grow_y)
     {
-      new_width = val1*val1_unit/100-2;
-      new_x = 0;
+      MaximizeHeight(tmp_win, new_width, new_x, &new_height, &new_y);
     }
-    if(val2 >0)
+    else if(val2 >0)
     {
       new_height = val2*val2_unit/100-2;
       new_y = 0;
+    }
+    if (grow_x)
+    {
+      MaximizeWidth(tmp_win, &new_width, &new_x, new_height, new_y);
+    }
+    else if(val1 >0)
+    {
+      new_width = val1*val1_unit/100-2;
+      new_x = 0;
     }
     if((val1==0)&&(val2==0))
     {
@@ -282,6 +319,100 @@ void Maximize(F_CMD_ARGS)
     SetupFrame(tmp_win,new_x,new_y,new_width,new_height,TRUE,False);
     /*   SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);*/
   }
+}
+
+void MaximizeHeight(FvwmWindow *win, int win_width, int win_x, int *win_height,
+		    int *win_y)
+{
+  FvwmWindow *cwin;
+  int x11, x12, x21, x22;
+  int y11, y12, y21, y22;
+  int new_y1, new_y2;
+
+  x11 = win_x;             /* Start x */
+  y11 = *win_y;            /* Start y */
+  x12 = x11 + win_width;   /* End x   */
+  y12 = y11 + *win_height; /* End y   */
+  new_y1 = 0;
+  new_y2 = Scr.MyDisplayHeight;
+
+  for (cwin = Scr.FvwmRoot.next; cwin != NULL; cwin = cwin->next) {
+    if ((cwin == win) ||
+	((cwin->Desk != win->Desk) && (!(cwin->flags & STICKY)))) {
+      continue;
+    }
+    if (cwin->flags & ICONIFIED) {
+      if(cwin->icon_w == None || cwin->flags & ICON_UNMAPPED)
+	continue;
+      x21 = cwin->icon_x_loc;
+      y21 = cwin->icon_y_loc;
+      x22 = x21 + cwin->icon_p_width;
+      y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
+    } else {
+      x21 = cwin->frame_x;
+      y21 = cwin->frame_y;
+      x22 = x21 + cwin->frame_width;
+      y22 = y21 + cwin->frame_height;
+    }
+
+    /* Are they in the same X space? */
+    if (!((x22 <= x11) || (x21 >= x12))) {
+      if ((y22 <= y11) && (y22 >= new_y1)) {
+	new_y1 = y22;
+      } else if ((y12 <= y21) && (new_y2 >= y21)) {
+	new_y2 = y21;
+      }
+    }
+  }
+  *win_height = new_y2 - new_y1;
+  *win_y = new_y1;
+}
+
+void MaximizeWidth(FvwmWindow *win, int *win_width, int *win_x, int win_height,
+		   int win_y)
+{
+  FvwmWindow *cwin;
+  int x11, x12, x21, x22;
+  int y11, y12, y21, y22;
+  int new_x1, new_x2;
+
+  x11 = *win_x;            /* Start x */
+  y11 = win_y;             /* Start y */
+  x12 = x11 + *win_width;  /* End x   */
+  y12 = y11 + win_height;  /* End y   */
+  new_x1 = 0;
+  new_x2 = Scr.MyDisplayWidth;
+
+  for (cwin = Scr.FvwmRoot.next; cwin != NULL; cwin = cwin->next) {
+    if ((cwin == win) ||
+	((cwin->Desk != win->Desk) && (!(cwin->flags & STICKY)))) {
+      continue;
+    }
+    if (cwin->flags & ICONIFIED) {
+      if(cwin->icon_w == None || cwin->flags & ICON_UNMAPPED)
+	continue;
+      x21 = cwin->icon_x_loc;
+      y21 = cwin->icon_y_loc;
+      x22 = x21 + cwin->icon_p_width;
+      y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
+    } else {
+      x21 = cwin->frame_x;
+      y21 = cwin->frame_y;
+      x22 = x21 + cwin->frame_width;
+      y22 = y21 + cwin->frame_height;
+    }
+
+    /* Are they in the same Y space? */
+    if (!((y22 <= y11) || (y21 >= y12))) {
+      if ((x22 <= x11) && (x22 >= new_x1)) {
+	new_x1 = x22;
+      } else if ((x12 <= x21) && (new_x2 >= x21)) {
+	new_x2 = x21;
+      }
+    }
+  }
+  *win_width  = new_x2 - new_x1;
+  *win_x = new_x1;
 }
 
 #ifdef WINDOWSHADE

@@ -1,15 +1,17 @@
 1999-03-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* FvwmAudio/FvwmAudio.c (config): replaced call to PeekToken by
+	GetNextToken.
+
 	* FvwmPager/x_pager.c (IconMoveWindow):
 	(MoveWindow): fixed mb2 with transient pager
-
-1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
+	(InsertExpand): fixed coredump fix that cause a coredump :)
 
 1999-02-22  Hippo
 
 	* FvwmWinList/* Applied patch from Jesper James: new option
 	ButtonFrameWidth to set relief width, 0 is valid. TruncateLeft always
-	works, not just with LeftJustify.	
+	works, not just with LeftJustify.
 
 1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
 

@@ -1133,6 +1133,7 @@ void HandleUnmapNotify()
 void HandleButtonPress()
 {
   int LocalContext;
+  Window OldPressedW;
 
   DBUG("HandleButtonPress","Routine Entered");
 
@@ -1189,18 +1190,30 @@ void HandleButtonPress()
   if(Context == C_TITLE)
     SetTitleBar(Tmp_win,(Scr.Hilite == Tmp_win),False);
   else
+#if 0
+    /* domivogt (22-mar-1999): Fix to draw title buttons correctly. May cause
+     * some other drawing problem (?) */
     SetBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,
 	      Tmp_win ? Tmp_win->frame : 0);
+#else
+    SetBorder(Tmp_win, (Scr.Hilite == Tmp_win), True, True, PressedW);
+#endif
 
   ButtonWindow = Tmp_win;
 
   /* we have to execute a function or pop up a menu */
   /* need to search for an appropriate mouse binding */
   CheckBinding(Event.xbutton.button, Event.xkey.state, Tmp_win, Context,1);
+  OldPressedW = PressedW;
   PressedW = None;
   if(LocalContext!=C_TITLE)
+#if 0
+    /* dito */
     SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,
 	      Tmp_win ? Tmp_win->frame : 0);
+#else
+    SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,OldPressedW);
+#endif
   else
     SetTitleBar(ButtonWindow,(Scr.Hilite==ButtonWindow),False);
   ButtonWindow = NULL;

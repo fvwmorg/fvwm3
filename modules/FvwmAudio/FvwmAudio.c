@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (C) 1994 Mark Boyns (boyns@sdsu.edu) and
  *                    Mark Scott (mscott@mcd.mot.com)
  *
@@ -28,16 +28,16 @@
      - keep time stamp even if no sound is played
      - minimize malloc/free
 
-   mark boyns ok-ed this patch, I reviewed it and put out those ugly 
+   mark boyns ok-ed this patch, I reviewed it and put out those ugly
    #defines for RESYNC and READ_BODY by reordering the control structures
 
  * made FvwmAudio insensitive to its name -> can be symlinked.
-   corrected some error message deficiencies, code for quoted 'sound' 
+   corrected some error message deficiencies, code for quoted 'sound'
    parameters shamelessly stolen from FvwmButtons/parse.c (with minimal
    adjustments)
    FvwmAudio now supports rsynth's say command:
    *FvwmAudioPlayCmd say
-   *FvwmAudio add_window	   "add window"      
+   *FvwmAudio add_window	   "add window"
    *FvwmAudio raise_window	   'raise window'
                -- 08/07/96 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
 
@@ -76,7 +76,7 @@
 
 #include "config.h"
 #include <fvwm/module.h>
-#include <libs/fvwmlib.h> 
+#include <libs/fvwmlib.h>
 
 /*
  * fvwm includes:
@@ -120,7 +120,7 @@ void	process_message(unsigned long,unsigned long *);
 void	DeadPipe(int);
 void	config(void);
 void	done(int);
-int     audio_play(short); 
+int     audio_play(short);
 
 /* define the message table */
 char	*messages[MAX_MESSAGES+MAX_BUILTIN] =
@@ -188,7 +188,7 @@ int main(int argc, char **argv)
 	}
 
 	/* Dead pipe == Fvwm died */
-	signal (SIGPIPE, DeadPipe);  
+	signal (SIGPIPE, DeadPipe);
 
 	fd[0] = atoi(argv[1]);
 	fd[1] = atoi(argv[2]);
@@ -254,8 +254,8 @@ void	config(void)
 	   */
 	  if (strncasecmp(buf, MyName, MyNameLen) == 0)
 	    {
-	      p = strtok(buf+MyNameLen, " \t");	
-	
+	      p = strtok(buf+MyNameLen, " \t");
+
 	      if (strcasecmp(p, "PlayCmd") == 0) {
 		p = strtok(NULL, "\n"); /* allow parameters */
 		if (p && *p) {
@@ -274,7 +274,7 @@ void	config(void)
 		  audio_delay = atoi(p);
 		}
 	      }
-	
+
 #ifdef HAVE_RPLAY
 	      /*
 	       * Check for rplay configuration options.
@@ -330,23 +330,25 @@ void	config(void)
 	       *
 	       * can even be used to call arbitrary commands,
 	       * if the following wrapper is used as FvwmAudioPlayCmd
-	       * 
+	       *
 	       *	#!/bin/tcsh
 	       *	${argv[1-]}
 	       */
 	      else  {
 		message = p;
 		p=strtok(NULL, "");	/* get rest of line */
-		sound = PeekToken(p);	/* extract next parameter */
-	
+		sound = GetNextToken(p, &sound); /* extract next parameter */
+
 		if (!message || !*message || !sound || !*sound)
 		  {
+		    if (sound)
+		      free(sound);
 		    fprintf(stderr,"%s: incomplete event definition %s\n",
 			    MyName+1, buf);
 		    GetConfigLine(fd,&buf);
 		    continue;
 		  }
-	
+
 		found = 0;
 
 	    	for (i = 0; !found && i < MAX_MESSAGES+MAX_BUILTIN; i++)
@@ -399,18 +401,18 @@ void Loop(int *fd)
 	unsigned long	header[HEADER_SIZE], body[ MAX_BODY_SIZE ];
 	int		body_length,count,count2=0, total;
 	long		code;
-	
+
 	while (1)
 	{
 	    if ((count = read(fd[1],header,
 			      HEADER_SIZE*sizeof(unsigned long))) <= 0)
 		done(0);
-		
+
 	    /* Ignore messages that occur during the delay period. */
 	    now = time(0);
-		
+
 	    body_length = header[2]-HEADER_SIZE;
-	
+
 	    if( header[ 0 ] != START_FLAG )
 		continue;	/* should find something better for resyncing */
 
@@ -423,11 +425,11 @@ void Loop(int *fd)
 		if((count2=read(fd[1],&body[total],
 				body_length*sizeof(unsigned long)-total)) >0)
 		    total += count2;
-		else 
+		else
 		    if(count2 < 0)
 			done(0);
 	    }
-		
+
 	    if (now < (last_time + audio_delay))
 		continue;		/* quash message */
 
@@ -442,7 +444,7 @@ void Loop(int *fd)
 		code++;
 		header[1] >>= 1;
 	    }
-	
+
 	    /*
 	     * Play the sound.
 	     */
@@ -484,7 +486,7 @@ void	done(int n)
  *    audio_play - actually plays sound from lookup table
  *
  **********************************************************************/
-int audio_play(short sound) 
+int audio_play(short sound)
 {
 	static char buf[BUFSIZE];
 	int ret;
@@ -515,11 +517,11 @@ int audio_play(short sound)
 		else
 			sprintf(buf,"%s %s/%s &", audio_play_cmd_line, audio_play_dir,
 				sound_table[sound]);
-		
+
 		if( ! ( ret = system(buf)))
 		        last_time = now;
 		return ret;
-	}  
+	}
 	return 1;
 }
 

@@ -299,7 +299,7 @@ are executed when the flag is set/cleared.
 Their default definitions are:
 .EX
 AddToFunc UrgencyFunc
- + "I" Iconify -1
+ + "I" Iconify off
  + "I" FlipFocus
  + "I" Raise
  + "I" WarpToWindow 5p 5p
@@ -536,7 +536,7 @@ and MailFunction is
 
 .EX
 AddToFunc MailFunction
- + "I" Next [$0] Iconify -1
+ + "I" Next [$0] Iconify off
  + "I" Next [$0] focus
  + "I" None [$0] Exec exec $0 $1
 .EE
@@ -1600,9 +1600,12 @@ With the optional arguments horizontal and vertical, which are
 expressed as percentage of a full screen, the user can control the new
 size of the window.  If horizontal is greater than 0 then the
 horizontal dimension of the window will be set to
-horizontal*screen_width/100.  The vertical resizing is similar.  For
-example, the following will add a title-bar button to switch a window
-to the full vertical size of the screen:
+horizontal*screen_width/100.  If horizontal is 'grow', it will maximize to
+current available space until finding any obstacle.  The vertical resizing
+is similar.  If both horizontal and vertical values are 'grow', it will expand
+vertically first, then horizontally to find space.  For example, the
+following will add a title-bar button to switch a window to the full
+vertical size of the screen:
 .EX
 Mouse 0 4 A Maximize 0 100
 .EE
@@ -1614,6 +1617,11 @@ This makes a window that is half the screen size in each direction:
 .EX
 Mouse 0 4 A Maximize 50 50
 .EE
+To expand a window horizontally until any other window is found:
+.EX
+Mouse 0 4 A Maximize 0 grow
+.EE
+
 Values larger than 100 can be used with caution.
 
 If the letter "p" is appended to each coordinate (horizontal and/or
@@ -2956,7 +2964,7 @@ that window passed in as $0.  By default the WindowListFunc looks like
 this:
 .EX
 AddToFunc WindowListFunc
- + "I" WindowId $0 Iconify -1
+ + "I" WindowId $0 Iconify off
  + "I" WindowId $0 FlipFocus
  + "I" WindowId $0 Raise
  + "I" WindowId $0 WarpToWindow 5p 5p
@@ -2990,7 +2998,7 @@ The \fIoptions\fP passed to WindowList can be "NoGeometry", "Function
 If you pass in a function via "Function <funcname>", $0 is the window
 id:
 .EX
-AddToFunc IFunc "I" WindowId $0 Iconify
+AddToFunc IFunc "I" WindowId $0 Iconify toggle
 WindowList Function IFunc, NoSticky, \\
   CurrentDesk, NoIcons
 .EE

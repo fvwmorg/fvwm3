@@ -346,6 +346,7 @@ Bool CheckBinding(int keycode, unsigned int modifier, FvwmWindow *Tmp_win,
 	  (key->Context & Context) &&
 	  (key->IsMouse == IsMouse))
 	{
+	  /* Make throw away excess events before executing our binding */
 	  ExecuteFunction(key->Action,Tmp_win, &Event,Context,-1);
 	  return True;
 	}

@@ -21,6 +21,9 @@ Changes in alpha release 2.3.0 (February 1999)
   display depth.  ColorLimit defaults to ON if display depth is 8 bits
   or less.  This should help new users.
   
+* Maximize can now expand until some other window is found to fully utilize
+  available screen space.
+
 * FvwmWinList option *FvwmWinListFollowWindowList to display the order that
   fvwm keeps windows in. You can now see the order that Next/Prev will take,
   Prev goes down the list, Next goes up (from the bottom).

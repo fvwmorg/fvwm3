@@ -2258,9 +2258,12 @@ void MapBalloonWindow (XEvent *event)
 
 static void InsertExpand(char **dest, char *s)
 {
-  int len = strlen(*dest) + strlen(s) + 1;
+  int len;
   char *tmp = *dest;
 
+  if (s == 0)
+    return;
+  len = strlen(*dest) + strlen(s) + 1;
   *dest = (char *)safemalloc(len);
   strcpy(*dest, tmp);
   free(tmp);

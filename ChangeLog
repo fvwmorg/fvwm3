@@ -1,8 +1,33 @@
 1999-03-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/builtins.c (Maximize):
+	(MaximizeHeight):
+	(MaximizeWidth): applied patch for maximize (maximize until another
+	window is hit).
+	(Maximize): changed syntax: use 'grow' instead of '-1'
+
+	* libs/fvwmlib.h:
+	* libs/Parse.c (CmpToken): duplicate function removed (same as
+	MatchToken)
+	(DoGetNextToken): rewritten to use new DoPeekToken, SkipSpaces and
+	CopyToken
+	(MatchToken): use new DoPeekToken fuction
+	(CopyToken): new function - use with care
+	(SkipSpaces): new function
+	(DoPeekToken): new function replaces PeekToken
+	(SkipNTokens): use new PeekToken function
+	(CheckNTokens): new function to check if there are N more tokens.
+
+	* fvwm/menus.c (do_menu): fixed bug that caused menus to believe they
+	were doubleclicked from title buttons
+
+	* fvwm/fvwm2.1: adapted iconify examples to new syntax
+
 	* fvwm/bindings.c (CheckBinding): return True if a binding was executed
 	* fvwm/events.c (HandleKeyPress): fixed bindings (key/mouse events not
 	eaten up when a binding matches)
+	(HandleButtonPress): fixed title bar button drawing but may break
+	something else
 
 1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
 
@@ -88,6 +113,12 @@ Sun Mar 21 10:29:40 1999  DanEspen  <dje@blue>
 
 	* fvwm/fvwm2.1 (ImagePath): Indicate that ImagePath adds to the front
 	of the image path.  Document that there is a builtin image path.
+
+1999-03-21  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/builtins.c: Maximize can now expand until hitting some other
+	window (with the arg(s) -1). Ideas taken from enlightenment.
+	* fvwm/builtins.c: Fixed various compiler warnings.
 
 1999-03-21  Tomas Ogren  <stric@ing.umu.se>
 
