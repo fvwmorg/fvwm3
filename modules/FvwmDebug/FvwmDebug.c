@@ -531,7 +531,7 @@ void list_configure(const unsigned long *body)
   fprintf(output,"\t desk %ld\n",p->desk);
   fprintf(output,"\t layer %ld\n",p->layer);
   fprintf(output,"\t title height %ld\n",p->title_height);
-  fprintf(output,"\t border width %ld\n",p->border_width);
+  fprintf(output,"\t border width %hd\n",p->border_width);
   fprintf(output,"\t window base width %ld\n",p->hints_base_width);
   fprintf(output,"\t window base height %ld\n",p->hints_base_height);
   fprintf(output,"\t window resize width increment %ld\n",p->hints_width_inc);

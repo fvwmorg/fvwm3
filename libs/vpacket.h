@@ -53,7 +53,7 @@ unsigned long int  dummy;
 unsigned long int  layer;
 
 unsigned long int  title_height;
-unsigned long int  border_width;
+unsigned short int border_width;
 unsigned long int  hints_base_width;
 unsigned long int  hints_base_height;
 unsigned long int  hints_width_inc;
