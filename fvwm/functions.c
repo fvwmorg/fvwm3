@@ -258,17 +258,32 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
     {
       if(input[i] == '$')
 	{
-	  n = input[i+1] - '0';
-	  if((n >= 0)&&(n <= 9)&&(arguments[n] != NULL))
+	  switch (input[i+1])
 	    {
-	      l2 += strlen(arguments[n])-2;
-	      i++;
-	    }
-	  else if(input[i+1] == 'd' || input[i+1] == 'w' ||
-		  input[i+1] == 'x' || input[i+1] == 'y')
-	    {
+	    case '0':
+	    case '1':
+	    case '2':
+	    case '3':
+	    case '4':
+	    case '5':
+	    case '6':
+	    case '7':
+	    case '8':
+	    case '9':
+	      n = input[i+1] - '0';
+	      if(arguments[n] != NULL)
+		{
+		  l2 += strlen(arguments[n])-2;
+		  i++;
+		}
+	      break;
+	    case 'w':
+	    case 'd':
+	    case 'x':
+	    case 'y':
 	      l2 += 16;
 	      i++;
+	      break;
 	    }
 	}
       i++;
@@ -477,6 +492,8 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 
   if (expand_cmd == EXPAND_COMMAND)
     expaction = expand(Action, arguments, tmp_win);
+  else
+    expaction = Action;
   taction = expaction + skip;
   j=0;
   matched = FALSE;

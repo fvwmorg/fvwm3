@@ -1,5 +1,9 @@
 1999-04-07  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/functions.c (expand): some clean up
+
+	* fvwm/Makefile.am (fvwm2_SOURCES): added gsfr.h
+
 	* configure.in: changed version to 2.3.1
 
 	* fvwm/repeat.h:

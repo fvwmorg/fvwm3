@@ -158,7 +158,7 @@ Steps: 1. make sure you have XPM and a C++ compiler
        4. ensure that you see the message
           "fvwm-x.y.z.tar.gz ready for distribution"
 
-Note that you need to have actually built everything before packing
+Note that you need to have actually build everything before packing
 the distribution, hence step 2.  Among other things, this generates
 the proper dependency information for insertion into Makefile.in's
 generated in step 3.

@@ -34,6 +34,7 @@ fvwm2_SOURCES = add_window.c			\
 	fvwmdebug.c				\
 	fvwmdebug.h				\
 	$(GNOME)				\
+	gsfr.h					\
 	icccm2.c				\
 	icons.c					\
 	menus.c					\
