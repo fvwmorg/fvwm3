@@ -1,5 +1,8 @@
 2003-09-03  olicha  <olivier.chapuis@free.fr>
 
+	* libs/Flocale.c (FlocaleTextWidth):
+	Fixed a comb_char core dump
+
 	* libs/Makefile.am:
 	Fixed compilation if either iconv, libpng or Xrender headers are
 	not at a standard place

@@ -2087,7 +2087,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	int result = 0;
 	char *tmp_str;
 	int new_l,do_free;
-	superimpose_char_t *comb_chars;
+	superimpose_char_t *comb_chars = NULL;
 
 	if (!str || sl == 0)
 		return 0;
@@ -2104,7 +2104,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	/* if we get zero-length, check to to see if there if there's any
 	   combining chars, if so use an imagninary space as a 
 	   "base character" */
-	if (strlen(tmp_str) == 0 && 
+	if (strlen(tmp_str) == 0 && comb_chars &&
 	    (comb_chars[0].c.byte1 != 0 || comb_chars[0].c.byte2 != 0))
 	{
 		result = FlocaleTextWidth(flf, " ", 1);
@@ -2145,7 +2145,10 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	{
 		free(tmp_str);
 	}
-	free(comb_chars);
+	if (comb_chars)
+	{
+		free(comb_chars);
+	}
 	
 	return result + ((result != 0)? FLF_SHADOW_WIDTH(flf):0);
 }
