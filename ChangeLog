@@ -1,3 +1,8 @@
+1998-12-28  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (MatchesConditionMask): fixed name matching broken in
+	last patch
+
 1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* libs/Parse.c (SkipQuote): fixed coredump (random return value)

@@ -4228,6 +4228,12 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
  **********************************************************************/
 Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 {
+  Bool fMatchesName;
+  Bool fMatchesIconName;
+  Bool fMatchesClass;
+  Bool fMatchesResource;
+  Bool fMatches;
+
   if ((mask->onFlags & fw->flags) != mask->onFlags)
     return 0;
 
@@ -4256,18 +4262,20 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 				  fw->frame_y + fw->frame_height > 0))
     return 0;
 
-  if (mask->needsName &&
-      !matchWildcards(mask->name, fw->name) &&
-      !matchWildcards(mask->name, fw->icon_name) &&
-      !fw->class.res_class && matchWildcards(mask->name,fw->class.res_class) &&
-      !fw->class.res_name && matchWildcards(mask->name, fw->class.res_name))
+  /* Yes, I know this could be shorter, but it's hard to understand then */
+  fMatchesName = matchWildcards(mask->name, fw->name);
+  fMatchesIconName = matchWildcards(mask->name, fw->icon_name);
+  fMatchesClass = (fw->class.res_class &&
+		   matchWildcards(mask->name,fw->class.res_class));
+  fMatchesResource = (fw->class.res_name &&
+		      matchWildcards(mask->name, fw->class.res_name));
+  fMatches = (fMatchesName || fMatchesIconName || fMatchesClass ||
+	      fMatchesResource);
+
+  if (mask->needsName && !fMatches)
     return 0;
 
-  if (mask->needsNotName &&
-      (matchWildcards(mask->name, fw->name) ||
-       matchWildcards(mask->name, fw->icon_name) ||
-       fw->class.res_class && matchWildcards(mask->name, fw->class.res_class)||
-       fw->class.res_name && matchWildcards(mask->name, fw->class.res_name)))
+  if (mask->needsNotName && fMatches)
     return 0;
 
   return 1;
