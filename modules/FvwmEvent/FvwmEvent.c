@@ -67,6 +67,9 @@
 #define BUILTIN_UNKNOWN         (MAX_TOTAL_MESSAGES + 2)
 #define MAX_BUILTIN             3
 #define MAX_RPLAY_HOSTNAME_LEN  MAX_MODULE_INPUT_TEXT_LEN
+#define SYNC_MASK_M             (M_DESTROY_WINDOW | M_LOWER_WINDOW | \
+	M_RESTACK | M_CONFIGURE_WINDOW)
+#define SYNC_MASK_MX            (M_EXTENDED_MSG)
 
 /* ---------------------------- local macros -------------------------------- */
 
@@ -167,10 +170,33 @@ static RPLAY *rplay_table[MAX_TOTAL_MESSAGES+MAX_BUILTIN];
 
 static unsigned int m_selected = 0;
 static unsigned int mx_selected = 0;
+static unsigned int m_sync = 0;
+static unsigned int mx_sync = 0;
+
 
 static volatile sig_atomic_t isTerminated = False;
 
 /* ---------------------------- local functions ----------------------------- */
+
+void unlock_event(unsigned long evtype)
+{
+	unsigned int mask;
+
+	if (evtype & M_EXTENDED_MSG)
+	{
+		mask = mx_sync;
+	}
+	else
+	{
+		mask = m_sync;
+	}
+	if (evtype & mask)
+	{
+		SendUnlockNotification(fd);
+	}
+
+	return;
+}
 
 int main(int argc, char **argv)
 {
@@ -262,13 +288,24 @@ int main(int argc, char **argv)
 		last_time = time(0);
 	}
 	/* tell fvwm we're running */
+#if 0
 	SetMessageMask(fd, m_selected);
+#endif
 	SetMessageMask(fd, mx_selected | M_EXTENDED_MSG);
-	if (m_selected & M_DESTROY_WINDOW)
+	m_sync = (m_selected & SYNC_MASK_M);
+	mx_sync = (mx_selected & SYNC_MASK_M) | M_EXTENDED_MSG;
+	/* migo (19-Aug-2000): synchronize on M_DESTROY_WINDOW
+	 * dv (6-Jul-2002: synchronize on a number of events that can hide or
+	 * destroy a window */
+	if (m_sync)
 	{
-		/* migo (19-Aug-2000): synchronize on M_DESTROY_WINDOW */
-		SetSyncMask(fd, M_DESTROY_WINDOW);
+		SetSyncMask(fd, m_sync);
 	}
+	if (mx_sync != M_EXTENDED_MSG)
+	{
+		SetSyncMask(fd, mx_sync);
+	}
+	mx_sync &= ~M_EXTENDED_MSG;
 	SendFinishedStartupNotification(fd);
 
 	/* main loop */
@@ -288,10 +325,7 @@ int main(int argc, char **argv)
 		if (header[0] != START_FLAG)
 		{
 			/* should find something better for resyncing */
-			if (header[1] == M_DESTROY_WINDOW)
-			{
-				SendUnlockNotification(fd);
-			}
+			unlock_event(header[1]);
 			continue;
 		}
 
@@ -307,10 +341,7 @@ int main(int argc, char **argv)
 			if ((count=read(fd[1],&body[total],remaining)) < 0)
 			{
 				isTerminated = 1;
-				if (header[1] == M_DESTROY_WINDOW)
-				{
-					SendUnlockNotification(fd);
-				}
+				unlock_event(header[1]);
 				continue;
 			}
 			remaining -= count;
@@ -320,10 +351,7 @@ int main(int argc, char **argv)
 		if (now < last_time + audio_delay + start_audio_delay)
 		{
 			/* quash event */
-			if (header[1] == M_DESTROY_WINDOW)
-			{
-				SendUnlockNotification(fd);
-			}
+			unlock_event(header[1]);
 			continue;
 		}
 		else
@@ -360,6 +388,7 @@ int main(int argc, char **argv)
 			event += MAX_MESSAGES;
 		}
 		execute_event(event, body);
+		unlock_event(header[1]);
 	} /* while */
 	execute_event(BUILTIN_SHUTDOWN, NULL);
 

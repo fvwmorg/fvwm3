@@ -106,6 +106,30 @@ static void set_message_mask(msg_masks_type *mask, unsigned long msg)
 	return;
 }
 
+static char *get_pipe_name(int module)
+{
+	char *name="";
+
+	if (pipeName[module] != NULL)
+	{
+		if (pipeAlias[module] != NULL)
+		{
+			name = CatString3(
+				pipeName[module], " ", pipeAlias[module]);
+		}
+		else
+		{
+			name = pipeName[module];
+		}
+	}
+	else
+	{
+		name = CatString3("(null)", "", "");
+	}
+
+	return name;
+}
+
 void initModules(void)
 {
 	int i;
@@ -1608,8 +1632,11 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 	 * mask which defines on which messages the fvwm-to-module
 	 * communication need to be lock on send. olicha Nov 13, 1999 */
 	/* migo (19-Aug-2000): removed !myxgrabcount to sync M_DESTROY_WINDOW */
-	/*if ((SyncMask[module] & ptr[1]) && !myxgrabcount) */
-	if (IS_MESSAGE_IN_MASK(&SyncMask[module], ptr[1]))
+	/* dv (06-Jul-2002): added the !myxgrabcount again.  Deadlocks *do*
+	 * happen without it.  There must be another way to fix M_DESTROY_WINDOW
+	 * handling in FvwmEvent. */
+	/*if (IS_MESSAGE_IN_MASK(&SyncMask[module], ptr[1]))*/
+	if (IS_MESSAGE_IN_MASK(&SyncMask[module], ptr[1]) && !myxgrabcount)
 	{
 		Window targetWindow;
 		fd_set readSet;
@@ -1617,6 +1644,11 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 		int channel = readPipes[module];
 
 		FlushMessageQueue(module);
+		if (readPipes[module] < 0)
+		{
+			/* Module has died, break out */
+			return;
+		}
 
 		do
 		{
@@ -1655,24 +1687,7 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 			{
 				char *name;
 
-				if (pipeName[module] != NULL)
-				{
-					if (pipeAlias[module] != NULL)
-					{
-						name = CatString3(
-							pipeName[module], " ",
-							pipeAlias[module]);
-					}
-					else
-					{
-						name = pipeName[module];
-					}
-				}
-				else
-				{
-					name = "(null)";
-				}
-
+				name = get_pipe_name(module);
 				/* Doh! Something has gone wrong - get rid of
 				 * the offender!! */
 				fvwm_msg(ERR, "PositiveWrite",
@@ -1733,6 +1748,7 @@ static void DeleteMessageQueueBuff(int module)
 
 void FlushMessageQueue(int module)
 {
+	extern int moduleTimeout;
 	mqueue_object_type *obj;
 	char *dptr;
 	int a;
@@ -1763,7 +1779,52 @@ void FlushMessageQueue(int module)
 			else if ((errno == EWOULDBLOCK) || (errno == EAGAIN) ||
 				 (errno==EINTR))
 			{
-				return;
+				fd_set writeSet;
+				struct timeval timeout;
+				int channel = writePipes[module];
+				int rc = 0;
+
+				do
+				{
+					/* Wait until the pipe accepts further
+					 * input */
+					timeout.tv_sec = moduleTimeout;
+					timeout.tv_usec = 0;
+					FD_ZERO(&writeSet);
+					FD_SET(channel, &writeSet);
+					rc = fvwmSelect(
+						channel + 1, NULL, &writeSet,
+						NULL, &timeout);
+					/* retry if select() failed with EINTR
+					 */
+				} while ((rc < 0) && !isTerminated &&
+					 (errno == EINTR));
+
+				if ( isTerminated )
+				{
+					return;
+				}
+				if (!FD_ISSET(channel, &writeSet))
+				{
+					char *name;
+
+					name = get_pipe_name(module);
+					/* Doh! Something has gone wrong - get
+					 * rid of the offender! */
+					fvwm_msg(
+						ERR, "FlushMessageQueue",
+						"Failed to write descriptor to"
+						" '%s':\n"
+						"- select rc=%d\n"
+						"- terminate signal=%c\n",
+						name, rc, isTerminated ?
+						'Y' : 'N');
+					KillModule(module);
+					return;
+				}
+
+				/* pipe accepts further input; continue */
+				continue;
 			}
 			else
 			{
@@ -2023,7 +2084,7 @@ char *skipModuleAliasToken(const char *string)
 {
 #define is_valid_first_alias_char(ch) (isalpha(ch) || (ch) == '/')
 #define is_valid_alias_char(ch) (is_valid_first_alias_char(ch) \
-    || isalnum(ch) || (ch) == '-' || (ch) == '.' || (ch) == '/')
+	|| isalnum(ch) || (ch) == '-' || (ch) == '.' || (ch) == '/')
 
 	if (is_valid_first_alias_char(*string))
 	{

@@ -29,28 +29,49 @@
 
 char* CatString3(const char *a, const char *b, const char *c)
 {
-    static char* buffer = NULL;
-    static int buffer_len = 0;
+	static char* buffer = NULL;
+	static int buffer_len = 0;
+	int len = 0;
 
-    int len = 0;
-    if (a != NULL) len += strlen(a);
-    if (b != NULL) len += strlen(b);
-    if (c != NULL) len += strlen(c);
+	if (a != NULL)
+	{
+		len += strlen(a);
+	}
+	if (b != NULL)
+	{
+		len += strlen(b);
+	}
+	if (c != NULL)
+	{
+		len += strlen(c);
+	}
 
-    /* Expand buffer to fit string, to a multiple of CHUNK_SIZE */
-    if (len > buffer_len) {
-	if ( buffer ) free( buffer );
+	/* Expand buffer to fit string, to a multiple of CHUNK_SIZE */
+	if (len > buffer_len)
+	{
+		if ( buffer )
+		{
+			free( buffer );
+		}
+		buffer_len = CHUNK_SIZE * (1 + len / CHUNK_SIZE);
+		buffer = safemalloc( buffer_len );
+	}
 
-	buffer_len = CHUNK_SIZE * (1 + len / CHUNK_SIZE);
-	buffer = safemalloc( buffer_len );
-    }
+	buffer[0] = 0;
+	if (a != NULL)
+	{
+		strcat( buffer, a );
+	}
+	if (b != NULL)
+	{
+		strcat( buffer, b );
+	}
+	if (c != NULL)
+	{
+		strcat( buffer, c );
+	}
 
-    buffer[0] = 0;
-    if (a != NULL) strcat( buffer, a );
-    if (b != NULL) strcat( buffer, b );
-    if (c != NULL) strcat( buffer, c );
-
-    return buffer;
+	return buffer;
 }
 
 #undef CHUNK_SIZE
@@ -58,42 +79,45 @@ char* CatString3(const char *a, const char *b, const char *c)
 
 void CopyString(char **dest, const char *source)
 {
-    int len;
-    const char *start;
+	int len;
+	const char *start;
 
-    if (source == NULL) {
-	*dest = NULL;
-	return;
-    }
+	if (source == NULL)
+	{
+		*dest = NULL;
+		return;
+	}
 
-    /* set 'start' to the first character of the string,
-       skipping over spaces, but not newlines
-       (newline terminates the string) */
+	/* set 'start' to the first character of the string,
+	   skipping over spaces, but not newlines
+	   (newline terminates the string) */
 
-    while ( isspace((unsigned char)*source) && (*source != '\n') )
-	source++;
-    start = source;
+	while ( isspace((unsigned char)*source) && (*source != '\n') )
+	{
+		source++;
+	}
+	start = source;
 
-    /* set 'len' to the length of the string, ignoring
-       trailing spaces */
+	/* set 'len' to the length of the string, ignoring
+	   trailing spaces */
 
-    len = 0;
-    while ( (*source != '\n') && (*source != 0) )
-    {
-	len++;
-	source++;
-    }
-    source--;
-
-    while( len > 0 && isspace((unsigned char)*source) )
-    {
-	len--;
+	len = 0;
+	while ( (*source != '\n') && (*source != 0) )
+	{
+		len++;
+		source++;
+	}
 	source--;
-    }
 
-  *dest = safemalloc(len+1);
-  strncpy(*dest,start,len);
-  (*dest)[len]=0;
+	while( len > 0 && isspace((unsigned char)*source) )
+	{
+		len--;
+		source--;
+	}
+
+	*dest = safemalloc(len+1);
+	strncpy(*dest,start,len);
+	(*dest)[len]=0;
 }
 
 
@@ -130,46 +154,66 @@ void CopyStringWithQuotes(char **dest, const char *src)
  ****************************************************************************/
 char *stripcpy( const char *source )
 {
-    const char* tmp;
-    char* ptr;
-    int len;
+	const char* tmp;
+	char* ptr;
+	int len;
 
-    if(source == NULL)
-	return NULL;
+	if(source == NULL)
+	{
+		return NULL;
+	}
 
-    while(isspace((unsigned char)*source))
-	source++;
-    len = strlen(source);
-    tmp = source + len -1;
+	while(isspace((unsigned char)*source))
+	{
+		source++;
+	}
+	len = strlen(source);
+	tmp = source + len -1;
 
-    while( (tmp >= source) && ((isspace((unsigned char)*tmp)) ||
-			       (*tmp == '\n')) )
-    {
-	tmp--;
-	len--;
-    }
-    ptr = safemalloc(len+1);
-    if (len) {
-      strncpy(ptr,source,len);
-    }
-    ptr[len]=0;
-    return ptr;
+	while( (tmp >= source) && ((isspace((unsigned char)*tmp)) ||
+				   (*tmp == '\n')) )
+	{
+		tmp--;
+		len--;
+	}
+	ptr = safemalloc(len+1);
+	if (len)
+	{
+		strncpy(ptr,source,len);
+	}
+	ptr[len]=0;
+
+	return ptr;
 }
 
 
 int StrEquals( const char *s1, const char *s2 )
 {
-    if (s1 == NULL && s2 == NULL) return 1;
-    if (s1 == NULL || s2 == NULL) return 0;
-    return strcasecmp(s1,s2) == 0;
+	if (s1 == NULL && s2 == NULL)
+	{
+		return 1;
+	}
+	if (s1 == NULL || s2 == NULL)
+	{
+		return 0;
+	}
+
+	return strcasecmp(s1,s2) == 0;
 }
 
 
 int StrHasPrefix( const char* string, const char* prefix )
 {
-    if ( prefix == NULL ) return 1;
-    if ( string == NULL ) return 0;
-    return strncasecmp( string, prefix, strlen(prefix) ) == 0;
+	if ( prefix == NULL )
+	{
+		return 1;
+	}
+	if ( string == NULL )
+	{
+		return 0;
+	}
+
+	return strncasecmp( string, prefix, strlen(prefix) ) == 0;
 }
 
 
@@ -183,15 +227,18 @@ int StrHasPrefix( const char* string, const char* prefix )
  ****************************************************************************/
 char *QuoteString(char *dest, const char *source)
 {
-  int i = 0;
-  *dest++ = '\'';
-  for(i = 0; source[i]; i++)
-  {
-    if (source[i] == '\'')
-      *dest++ = '\\';
-    *dest++ = source[i];
-  }
-  *dest++ = '\'';
-  *dest = '\0';
-  return dest;
+	int i = 0;
+	*dest++ = '\'';
+	for(i = 0; source[i]; i++)
+	{
+		if (source[i] == '\'')
+		{
+			*dest++ = '\\';
+		}
+		*dest++ = source[i];
+	}
+	*dest++ = '\'';
+	*dest = '\0';
+
+	return dest;
 }

@@ -1,6 +1,18 @@
+2002-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/module_interface.c (FlushMessageQueue):
+	(PositiveWrite):
+	(get_pipe_name):
+	tried to fix module communication deadlock w/ sync mask and a full write
+	pipe
+
+	* libs/Strings.c:
+	re-indented file
+
+	* libs/defaults.h:
 2002-07-06  olicha  <olivier.chapuis@free.fr>
 
-	* libs/Flocale.c (FlocaleGetFontSet): 
+	* libs/Flocale.c (FlocaleGetFontSet):
 	Removed some unwanted code
 
 2002-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
