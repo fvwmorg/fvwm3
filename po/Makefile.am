@@ -283,7 +283,7 @@ update-po: Makefile
 	      :; \
 	    else \
 	      echo "msgmerge for $$dlang.po failed: cannot move \
-	      $$tmpdir/$$dlang.new.po to $$dlang.po" 1>&2; \
+$$tmpdir/$$dlang.new.po to $$dlang.po" 1>&2; \
 	      exit 1; \
 	    fi; \
 	  fi; \
