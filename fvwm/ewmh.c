@@ -1022,6 +1022,11 @@ void EWMH_SetFrameStrut(FvwmWindow *fwin)
 	CARD32 val[4];
 	size_borders b;
 
+	if (EWMH_IsKdeSysTrayWindow(FW_W(fwin)))
+	{
+		/* Fixed position of tray window in kicker */
+		return;
+	}
 	get_window_borders(fwin, &b);
 
 	/* left */
@@ -1429,11 +1434,11 @@ void EWMH_WindowInit(FvwmWindow *fwin)
 	/*EWMH_DLOG("Init window 0x%lx",FW_W(fwin));*/
 	EWMH_SetWMState(fwin, False);
 	EWMH_SetWMDesktop(fwin);
-	EWMH_SetFrameStrut(fwin);
 	EWMH_SetAllowedActions(fwin);
 	ewmh_WMStrut(fwin, NULL, NULL, 0);
 	ewmh_WMIconGeometry(fwin, NULL, NULL, 0);
 	ewmh_AddToKdeSysTray(fwin);
+	EWMH_SetFrameStrut(fwin);
 	if (IS_EWMH_DESKTOP(FW_W(fwin)))
 	{
 		return;
