@@ -2249,6 +2249,12 @@ void update_style_colorset(int colorset)
       temp->change_mask.use_colorset = 1;
       Scr.flags.do_need_window_update = 1;
     }
+    if (SUSE_COLORSET_HI(&temp->flags) && SGET_COLORSET_HI(*temp) == colorset)
+    {
+      temp->has_style_changed = 1;
+      temp->change_mask.use_colorset_hi = 1;
+      Scr.flags.do_need_window_update = 1;
+    }
   }
 }
 
