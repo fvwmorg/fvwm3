@@ -44,10 +44,8 @@ The offending files or modules for 4) are:
 		Marshall Kirk McKusicki
 
 	modules/FvwmCascade
-		Andrew Veliath
-
 	modules/FvwmTile
-		Andrew Veliath
+		Andrew Veliath <andrewtv@usa.net>
 
 In docs/m4_hacks there is a notice about a potential copyright problem with
 twm code. Anybody who knows what code this refers to?
