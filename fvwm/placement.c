@@ -75,9 +75,11 @@ static void CleverPlacement(
  * high value, say 1000.  A value of 5 will try to avoid ONTOP windows if
  * practical, but if it saves a reasonable amount of area elsewhere, it will
  * place one there.  The same rules apply for the other "AVOID" factors.
- * (for CleverPlacement)
+ * (for CleverPlacement).
+ * These factors are now in libs/default.h
  */
-#define NEW_CLEVERPLACEMENT_CODE 1
+/* #define NEW_CLEVERPLACEMENT_CODE 1 */
+#define FINAL_CLEVERPLACEMENT_CODE 1
 
 /*  RBW - 11/02/1998  */
 static int SmartPlacement(FvwmWindow *t,
@@ -243,6 +245,9 @@ static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
 #ifdef NEW_CLEVERPLACEMENT_CODE
   int minx_inc = Scr.MyDisplayWidth/20;
 #endif
+#ifdef FINAL_CLEVERPLACEMENT_CODE
+  int minx_inc = Scr.MyDisplayWidth/20;
+#endif
   int stickyx, stickyy;
 
   /* Test window at far right of screen */
@@ -297,6 +302,9 @@ static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay)
 #ifdef NEW_CLEVERPLACEMENT_CODE
   xnew = MIN(xnew,x+minx_inc);
 #endif
+#ifdef FINAL_CLEVERPLACEMENT_CODE
+  xnew = MIN(xnew,x+minx_inc);
+#endif
   return xnew;
 }
 /*  RBW - 11/02/1998  */
@@ -308,6 +316,9 @@ static int get_next_y(FvwmWindow *t, int y, int pdeltay)
   FvwmWindow *testw;
   int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
 #ifdef NEW_CLEVERPLACEMENT_CODE
+  int miny_inc = Scr.MyDisplayHeight/20;
+#endif
+#ifdef FINAL_CLEVERPLACEMENT_CODE
   int miny_inc = Scr.MyDisplayHeight/20;
 #endif
   int stickyy;
@@ -355,6 +366,9 @@ static int get_next_y(FvwmWindow *t, int y, int pdeltay)
     }
   }
 #ifdef NEW_CLEVERPLACEMENT_CODE
+  ynew = MIN(ynew,y+miny_inc);
+#endif
+#ifdef FINAL_CLEVERPLACEMENT_CODE
   ynew = MIN(ynew,y+miny_inc);
 #endif
   return ynew;
@@ -450,6 +464,16 @@ static float test_fit(
       anew *= norm_factor;
       if (avoidance_factor>1)
 	avoidance_factor = avoidance_factor*6;
+#endif
+#ifdef FINAL_CLEVERPLACEMENT_CODE
+      /* normalisation */
+      if ((x22-x21)*(y22-y21) != 0 && (x12-x11)*(y12-y11) != 0)
+      {
+	float b;
+	b = MAX(anew/((x22-x21)*(y22-y21)),anew/((x12-x11)*(y12-y11)))*100;
+	if (b >= 95)
+	   avoidance_factor += 6;
+      }
 #endif
       anew *= avoidance_factor;
       aoi += anew;
