@@ -1,0 +1,114 @@
+recipients:
+  fvwm@hpc.uh.edu
+  fvwm-workers@hpc.uh.edu
+  fvwm-announce@hpc.uh.edu
+
+  Don't ask me what the mail addresses of these are. If you find out, please
+  add them to announcement-2.2:
+
+  comp.windows.x
+  comp.os.linux.x
+  www.betanews.com
+  www.coolinfo.com
+
+The F???? Virtual Window Manager workers list is pleased to
+announce the third official beta test version of Fvwm2 (version
+number 2.1.6). Available at
+
+  http://fvwm.math.uh.edu/
+
+it includes the following features (entries with '+' are new in
+this beta):
+
++) New syntax for menu styles (SetMenuStyle) with greatly
+   improved configurability.
++) The growing windows bug from the last betas has been fixed
+   (if you see it again, please contact fvwm-workers@hpc.uh.edu).
++) AutoHide bugfixes for FvwmTaskBar (EdgeThickness command).
++) New commands DefaultFont, DefaultColors and Emulate. The
+   SetMenuDelay command from the previous betas has been removed.
+*) New web site, overhauled documentation and a new Bug tracking
+   system.
+*) Improved menu handling with animated menus, improved cursor
+   key navigation, individual menu styles and better overall
+   flexibility.
+*) Enhanced window and focus handling (SnapAttraction and
+   Direction commands).
+*) New commands for desks and pages (MoveToPage, MoveToDesk,
+   FvwmPager showing the current desk).
+*) Proper Windoze95 style Alt-Tab behaviour with WindowList
+   command.
+*) Animated iconification and window movement and animated panels
+   in FvwmButtons (like CDE).
+*) Mini title windows for FvwmPager (aka Balloons).
+*) FvwmEvent is the successor of FvwmAudio. FvwmAudio is still
+   available.
+*) FvwmTile and FvwmCascade modules were replaced by
+   FvwmRearrange. Shells for FvwmTile and FvwmCascade provide
+   backward compatibility.
+*) Improved FvwmButtons button placement to give absolute control
+   over where the buttons are placed.
+*) Color limiting (previously available thru patches).
+*) Multiple Icon Boxes, Icon box grids, and Icon box fill
+   direction control (previously available thru patches).
+*) Faster startup.
+*) Lots of bug fixes to improve stability.
+*) Many small enhancements too numerous to list here.
+*) Consistent copying policy.
+*) GNU autoconf support.
+
+A lot of bugs have been fixed since fvwm-2.1.4.
+
+More detailed information on the contents of this release can be
+found at:
+
+  http://fvwm.math.uh.edu/NEWS.html
+
+Although the maintainers feel this beta is quite stable there are
+some known problems that shall be fixed before the final release
+(and some that will have to wait). You can find a list of known
+bugs in the BUGS file at the top level of the distribution.
+
+Before you report a bug, please read the manpages, the NEWS file
+and the FAQ too. If you can solve your problem this way but still
+feel the information was too hard to find, please tell us.
+
+To submit a bug, please follow the link to the FVWM bug tracking
+system on our web page.
+
+
+Beta testers needed urgently:
+=============================
+
+You like fvwm and want to help? Become a beta tester. You can just
+download the distribution and run your latest setup with the new
+beta, but I you feel like doing something really helpful, pick an
+area from the following list, try to test it as completely as you
+can and report your test setup to the fvwm-workers mailing list:
+
+  <fvwm-workers@hpc.uh.edu>
+
+ - Compile fvwm2 on as many different platforms and with as many
+   combinations of options as you can (see INSTALL.fvwm for a
+   list of options).
+
+ - Try to break fvwm with exotic setups and syntax errors in the
+   configuration file.
+
+ - Play with the new menu features (animated menus, individual
+   menu styles, position hints, cursor key movement etc.)
+
+ - Test the new features in FvwmButtons (animated panels, button
+   geometries, button placement algorithm). Panels are somewhat
+   difficult to understand so please read the manpage (there are
+   some examples).
+
+ - Thorough test of FvwmPager. The configuration parser has been
+   changed so every option should be tested.
+
+ - Thorough test of FvwmIconMan. The configuration parser has
+   been changed so every option should be tested.
+
+ - Test the new module FvwmAnimate.
+
+ - Test the new module FvwmEvent.
