@@ -1,6 +1,8 @@
 1999-08-24  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (change_colorset): small balloons/colorset fix
+	(MapBalloonWindow): fixed balloon position when balloons are vertically
+	and horizontally off screen
 
 Sat Aug 21 15:58:22 1999  DanEspen  <dje@blue>
 

@@ -2592,16 +2592,6 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
   /* make sure balloon doesn't go off screen
      (actually 2 pixels from edge rather than 0 just to be pretty :-) */
 
-  /* too close to left */
-  if ( window_changes.x < 2 )
-    window_changes.x = 2;
-
-  /* too close to right */
-  else if ( window_changes.x + window_changes.width >
-            Scr.MyDisplayWidth - (2 * Desks[i].balloon.border) - 2 )
-    window_changes.x = Scr.MyDisplayWidth - window_changes.width -
-      (2 * Desks[i].balloon.border) - 2;
-
   /* too close to top ... make yoffset +ve */
   if ( window_changes.y < 2 ) {
     y = - Desks[i].balloon.yoffset + view_height;
@@ -2618,6 +2608,16 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
     XTranslateCoordinates(dpy, view, Scr.Root, x, y,
 			  &window_changes.x, &window_changes.y, &dummy);
   }
+
+  /* too close to left */
+  if ( window_changes.x < 2 )
+    window_changes.x = 2;
+
+  /* too close to right */
+  else if ( window_changes.x + window_changes.width >
+            Scr.MyDisplayWidth - (2 * Desks[i].balloon.border) - 2 )
+    window_changes.x = Scr.MyDisplayWidth - window_changes.width -
+      (2 * Desks[i].balloon.border) - 2;
 
 
   /* make changes to window */
