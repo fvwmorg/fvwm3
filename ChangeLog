@@ -1,5 +1,9 @@
 2000-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/borders.c (DrawButton):
+	TiledPixmapButton works in window titles and buttons; heck, has this
+	*ever* been tested?
+
 	* NEWS, configure.in:
 	changed version to 2.3.25
 

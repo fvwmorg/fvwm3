@@ -289,7 +289,7 @@ Log "Test DefaultColorset"
 DefaultColorset
 DefaultColorset junk
 DefaultColorset 0
-DefaultColorset 1236789
+#DefaultColorset 1236789
 DefaultColorset -1
 
 Log "Test DefaultFont"

@@ -189,60 +189,84 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
 #ifdef MINI_ICONS
     case MiniIconButton:
     case PixmapButton:
-      if (type == PixmapButton)
+    case TiledPixmapButton:
+      if (type == PixmapButton || type == TiledPixmapButton)
 	p = df->u.p;
-      else {
+      else
+      {
 	if (!t->mini_icon)
 	  break;
 	p = t->mini_icon;
       }
 #else
     case PixmapButton:
+    case TiledPixmapButton:
       p = df->u.p;
 #endif /* MINI_ICONS */
       if (DFS_BUTTON_RELIEF(df->style) == DFS_BUTTON_IS_FLAT)
 	border = 0;
       else
 	border = HAS_MWM_BORDER(t) ? 1 : 2;
-      width = w - border * 2; height = h - border * 2;
+      width = w - border * 2;
+      height = h - border * 2;
 
       x = border;
-      if (DFS_H_JUSTIFICATION(df->style) == JUST_RIGHT)
-	x += (int)(width - p->width);
-      else if (DFS_H_JUSTIFICATION(df->style) == JUST_CENTER)
-        /* round up for left buttons, down for right buttons */
-	x += (int)(width - p->width + left1right0) / 2;
-
       y = border;
-      if (DFS_V_JUSTIFICATION(df->style) == JUST_BOTTOM)
+      if (type != TiledPixmapButton)
+      {
+	if (DFS_H_JUSTIFICATION(df->style) == JUST_RIGHT)
+	  x += (int)(width - p->width);
+	else if (DFS_H_JUSTIFICATION(df->style) == JUST_CENTER)
+	  /* round up for left buttons, down for right buttons */
+	  x += (int)(width - p->width + left1right0) / 2;
+	if (DFS_V_JUSTIFICATION(df->style) == JUST_BOTTOM)
 	  y += (int)(height - p->height);
-      else if (DFS_V_JUSTIFICATION(df->style) == JUST_CENTER)
-        /* round up */
-	y += (int)(height - p->height + 1) / 2;
-
-      if (x < border)
-	x = border;
-      if (y < border)
-	y = border;
-      if (width > p->width)
-	width = p->width;
-      if (height > p->height)
-	height = p->height;
-      if (width > w - x - border)
-	width = w - x - border;
-      if (height > h - y - border)
-	height = h - y - border;
+	else if (DFS_V_JUSTIFICATION(df->style) == JUST_CENTER)
+	  /* round up */
+	  y += (int)(height - p->height + 1) / 2;
+	if (x < border)
+	  x = border;
+	if (y < border)
+	  y = border;
+	if (width > p->width)
+	  width = p->width;
+	if (height > p->height)
+	  height = p->height;
+	if (width > w - x - border)
+	  width = w - x - border;
+	if (height > h - y - border)
+	  height = h - y - border;
+      }
 
       XSetClipMask(dpy, Scr.TransMaskGC, p->mask);
-      XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
-      XCopyArea(dpy, p->picture, win, Scr.TransMaskGC,
-		0, 0, width, height, x, y);
-      break;
+      if (type != TiledPixmapButton)
+      {
+	XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
+	XCopyArea(dpy, p->picture, win, Scr.TransMaskGC,
+		  0, 0, width, height, x, y);
+      }
+      else
+      {
+	int xi;
+	int yi;
 
-    case TiledPixmapButton:
-      XSetWindowBackgroundPixmap(dpy, win, df->u.p->picture);
-      flush_expose(win);
-      XClearWindow(dpy,win);
+	for (yi = border; yi < height; yi += p->height)
+	{
+	  for (xi = border; xi < width; xi += p->width)
+	  {
+	    int lw = width - - x - p->width;
+	    int lh = height - y - p->height;
+
+	    if (lw > p->width)
+	      lw = p->width;
+	    if (lh > p->height)
+	      lh = p->height;
+	    XSetClipOrigin(dpy, Scr.TransMaskGC, xi, yi);
+	    XCopyArea(dpy, p->picture, win, Scr.TransMaskGC,
+		      0, 0, lw, lh, xi, yi);
+	  }
+	}
+      }
       break;
 
     case GradientButton:
