@@ -177,11 +177,34 @@ void MakeButton(button_info *b)
   }
 }
 
+static int buttonBGColorset (button_info *b)
+{
+	if (b->flags & b_Hangon)
+	{
+		if (UberButton->c->flags & b_PressColorset)
+			return UberButton->c->pressColorset;
+	}
+	else if (b == ActiveButton &&
+		UberButton->c->flags & b_ActiveColorset)
+	{
+		return UberButton->c->activeColorset;
+	}
+	else if (b == CurrentButton &&
+		UberButton->c->flags & b_PressColorset)
+	{
+		return UberButton->c->pressColorset;
+	}
+
+	if (b->flags & b_Colorset)
+		return b->colorset;
+	return -1;
+}
+
+
 /**
 *** RedrawButton()
 ***
 *** draw can be:
-*** DRAW_RELIEF: draw only the relief
 *** DRAW_CLEAN:  draw the relief, the foreground bg if any and if this
 *** the case draw the title and the icon if b_Icon. This is safe
 *** but the button background may be not repaint (if the bg of the button
@@ -204,7 +227,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	int i,j,k,BH,BW;
 	int f,of,x,y,px,py;
 	int ix,iy,iw,ih;
-	FlocaleFont *Ffont=buttonFont(b);
+	// FlocaleFont *Ffont=buttonFont(b);
 	XGCValues gcv;
 	int rev = 0;
 	int rev_xor = 0;
@@ -217,15 +240,12 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	Bool clean = False;
 	Bool cleaned = False;
 	Bool clear_bg = False;
-	unsigned long iconFlag, otherIconFlag;
-	Bool has_title;
-	Bool is_hovering;
-	FvwmPicture *pic;
 
 	if (b->parent == NULL)
 	{
 		return;
 	}
+
 	cset = buttonColorset(b);
 	if (cset >= 0)
 	{
@@ -360,36 +380,6 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 	of = f;
 	f=abs(f);
 
-	iconFlag = b_Icon;
-	otherIconFlag = b_HoverIcon;
-	has_title = (b->flags & b_Title ? True : False);
-	pic = b->icon;
-	if (b == HoverButton)
-	{
-		is_hovering = True;
-	}
-	else
-	{
-		is_hovering = False;
-	}
-	if (is_hovering == True)
-	{
-		/* If no HoverIcon is specified, we use Icon (if there is
-		   one). */
-		if (b->flags & b_HoverIcon)
-		{
-			iconFlag = b_HoverIcon;
-			otherIconFlag = b_Icon;
-			pic = b->hovericon;
-		}
-		/* If no HoverTitle is specified, we use Title (if there is
-		   one). */
-		if (b->flags & b_HoverTitle)
-		{
-			has_title = True;
-		}
-	}
-
 	if (draw == DRAW_CLEAN)
 	{
 		clean = True;
@@ -490,6 +480,14 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				}
 			}
 		} /* container */
+#if 0
+		else if (UberButton->c->flags & b_TransBack)
+		{
+			/* TODO: fixme, this ain't right -- SS. */
+			fprintf(stderr, "trans back w=%d\n", UberButton->c->width);
+			SetTransparentBackground(UberButton, UberButton->c->width, UberButton->c->height);
+		}
+#endif
 		else if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
 			 b->flags&b_Colorset)
 		{
@@ -512,86 +510,31 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				/* module */
 			}
 		}
-		else if (b->flags & b_Colorset)
+		else
 		{
 			if (do_draw)
 			{
-				cleaned = True;
-				SetClippedRectangleBackground(
-					Dpy, MyWindow, x+f, y+f, BW-2*f,
-					BH-2*f, &clip, &Colorset[b->colorset],
-					Pdepth, NormalGC);
-			}
-		}
-		else if (!(b->flags&b_IconBack) && !(b->flags&b_IconParent) &&
-			 !(b->flags&b_Swallow) && !(b->flags&b_ColorsetParent))
-		{
-			if (do_draw)
-			{
-				cleaned = True;
-				if (is_hovering == True &&
-					UberButton->c->flags & b_HoverColorset)
-				{
-					SetRectangleBackground(Dpy, MyWindow,
-						clip.x, clip.y, clip.width,
-						clip.height,
-						&Colorset[UberButton->c->
-							  hoverColorset],
-						Pdepth, NormalGC);
-				}
-				else if (b == CurrentButton &&
-					UberButton->c->flags & b_PressColorset)
-				{
-					SetRectangleBackground(Dpy, MyWindow,
-						clip.x, clip.y, clip.width,
-						clip.height,
-						&Colorset[UberButton->c->
-							  pressColorset],
-						Pdepth, NormalGC);
-				}
-				else
-				{
-					XFillRectangle(Dpy, MyWindow, NormalGC,
-						clip.x, clip.y, clip.width,
-						clip.height);
-				}
-			}
-		}
-		else if (clear_bg ||
-			 (pev && !buttonBackgroundButton(b,NULL) &&
-			  ((b->flags&b_Title && Ffont &&
-			    Ffont->fftf.fftfont) || (b->flags&b_Icon))))
-		{
-			/* some times we need to clear the real bg.
-			 * The pev expose rectangle can be bigger than the real
-			 * exposed part (as we rectangle flush and pev can
-			 * be a fake event) so we need to clear with xft font
-			 * and icons. */
-			if (do_draw)
-			{
+				int cs = buttonBGColorset(b);
 				cleaned = True;
 				XClearArea(Dpy, MyWindow, clip.x,
 					clip.y, clip.width, clip.height,
 					False);
-				if (is_hovering == True &&
-					UberButton->c->flags & b_HoverColorset)
+				if (cs >= 0)
 				{
 					SetRectangleBackground(Dpy, MyWindow,
-						clip.x, clip.y, clip.width,
-						clip.height,
-						&Colorset[UberButton->c->
-							  hoverColorset],
-						Pdepth, NormalGC);
+                                                clip.x, clip.y, clip.width,
+                                                clip.height, &Colorset[cs],
+                                                Pdepth, NormalGC);
 				}
-				else if (b == CurrentButton &&
-					UberButton->c->flags & b_PressColorset)
+				else if (b->flags & b_Back &&
+					!(UberButton->c->flags & b_Colorset))
 				{
-					SetRectangleBackground(Dpy, MyWindow,
+					gcv.background = b->bc;
+					XChangeGC(Dpy,NormalGC,GCBackground,
+						&gcv);
+					XFillRectangle(Dpy, MyWindow, NormalGC,
 						clip.x, clip.y, clip.width,
-						clip.height,
-						&Colorset[UberButton->c->
-							  pressColorset],
-						Pdepth, NormalGC);
+						clip.height);
 				}
 			}
 		}
@@ -599,12 +542,12 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 
 	/* ------------------------------------------------------------------ */
 
-	if (cleaned && (b->flags & (b_Title|b_HoverTitle|b_PressTitle)))
+	if (cleaned && (b->flags & (b_Title|b_ActiveTitle|b_PressTitle)))
 	{
 		DrawTitle(b,MyWindow,NormalGC,pev,False);
 	}
 
-	if (!has_title && (b->flags & b_Panel) &&
+	if (buttonTitle(b) == NULL && (b->flags & b_Panel) &&
 	    (b->panel_flags.panel_indicator))
 	{
 		XGCValues gcv;
@@ -688,7 +631,7 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 
 	if (cleaned)
 	{
-		if (b->flags & iconFlag)
+		if (b->flags & buttonIconFlag(b))
 		{
 			/* draw icon */
 			DrawForegroundIcon(b, pev);
@@ -717,29 +660,8 @@ void DrawTitle(
 	int cset;
 	XRectangle clip;
 	Region region = None;
-	FvwmPicture *pic = b->icon;
-	unsigned long iconFlag = b_Icon;
-
-	if (b == HoverButton)
-	{
-		/* If no HoverIcon is specified, we use Icon (if there is
-		   one). */
-		if (b->flags & b_HoverIcon)
-		{
-			pic = b->hovericon;
-			iconFlag = b_HoverIcon;
-		}
-	}
-	else if (b == CurrentButton)
-	{
-		/* If no PressIcon is specified, we use Icon (if there is
-		   one). */
-		if (b->flags & b_PressIcon)
-		{
-			pic = b->pressicon;
-			iconFlag = b_PressIcon;
-		}
-	}
+	FvwmPicture *pic;
+	unsigned long iconFlag;
 
 	BH = buttonHeight(b);
 
@@ -747,15 +669,7 @@ void DrawTitle(
 
 	/* ------------------------------------------------------------------ */
 
-	/* If this is the current hover button but no explicit HoverTitle was
-	   specified, use the Title (if there is one).
-	   Similarly for PressTitle. */
-	if (b == HoverButton && b->flags & b_HoverTitle)
-		s = b->hoverTitle;
-	else if (b == CurrentButton && b->flags & b_PressTitle)
-		s = b->pressTitle;
-	else if (b->flags & b_Title)
-		s = b->title;
+	s = buttonTitle(b);
 
 	if (!s || !Ffont)
 		return;
@@ -780,6 +694,9 @@ void DrawTitle(
 		gcm |= GCFont;
 	}
 	XChangeGC(Dpy,gc,gcm,&gcv);
+
+	pic = buttonIcon(b);
+	iconFlag = buttonIconFlag(b);
 
 	/* If a title is to be shown, truncate it until it fits */
 	if(justify&b_Horizontal && !(b->flags & b_Right))

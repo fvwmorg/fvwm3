@@ -73,12 +73,12 @@
 				 * button with a swallowed app. */
 #define b_ActionOnPress \
 		     0x02000000 /* By default this only done on Popup */
-#define b_Id            0x04000000 /* Has a user defined id for referencing */
-#define b_HoverIcon     0x08000000 /* Use alternate Icon on hover */
-#define b_HoverColorset 0x10000000 /* Use alternate colorset on hover */
-#define b_HoverTitle    0x20000000 /* Use alternate Title text on hover */
-#define b_PressIcon     0x40000000 /* Use alternate Icon on press */
-#define b_PressColorset 0x80000000 /* Use alternate Colorset on press */
+#define b_Id             0x04000000 /* Has a user defined id for referencing */
+#define b_ActiveIcon     0x08000000 /* Use alternate Icon on hover */
+#define b_ActiveColorset 0x10000000 /* Use alternate colorset on hover */
+#define b_ActiveTitle    0x20000000 /* Use alternate Title text on hover */
+#define b_PressIcon      0x40000000 /* Use alternate Icon on press */
+#define b_PressColorset  0x80000000 /* Use alternate Colorset on press */
 /* FIXME: We're out of bits!
    Nasty hack: b_PressColorset is used by UberButton & it would never use
    b_PressTitle (& vice-versa) so they have the same bit-value. */
@@ -129,7 +129,7 @@ struct container_info_struct
   char *back_file;         /* b_Back && b_IconBack */
   char *fore;              /* b_Fore */
   int colorset;            /* b_Colorset */
-  int hoverColorset;       /* b_HoverColorset */
+  int activeColorset;      /* b_ActiveColorset */
   int pressColorset;       /* b_PressColorset */
   Pixel fc;                /* b_Fore */
   Pixel bc,hc,sc;          /* b_Back && !b_IconBack */
@@ -171,11 +171,11 @@ struct button_info_struct
   byte justify_mask;       /* b_Justify */
   container_info *c;       /* b_Container */
   char *title;             /* b_Title */
-  char *hoverTitle;        /* b_HoverTitle */
+  char *activeTitle;       /* b_ActiveTitle */
   char *pressTitle;        /* b_PressTitle */
   char **action;           /* b_Action */
   char *icon_file;         /* b_Icon */
-  char *hover_icon_file;   /* b_HoverIcon */
+  char *active_icon_file;  /* b_ActiveIcon */
   char *press_icon_file;   /* b_PressIcon */
   char *hangon;            /* b_Hangon || b_Swallow */
   Pixel fc;                /* b_Fore */
@@ -183,7 +183,7 @@ struct button_info_struct
   ushort minx,miny;        /* b_Size */
   FvwmPicture *icon;       /* b_Icon */
   FvwmPicture *backicon;   /* b_Back && b_IconBack */
-  FvwmPicture *hovericon;  /* b_HoverIcon */
+  FvwmPicture *activeicon; /* b_ActiveIcon */
   FvwmPicture *pressicon;  /* b_PressIcon */
   Window IconWin;          /* b_Swallow */
   Window PanelWin;         /* b_Panel */
@@ -249,7 +249,7 @@ extern Display *Dpy;
 extern Window Root;
 extern Window MyWindow;
 extern char *MyName;
-extern button_info *UberButton, *CurrentButton, *HoverButton;
+extern button_info *UberButton, *CurrentButton, *ActiveButton;
 extern Bool is_pointer_in_current_button;
 
 extern char *imagePath;

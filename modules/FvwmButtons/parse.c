@@ -115,6 +115,7 @@ static char *my_get_font(char **s)
 /**
 *** ParseBack()
 *** Parses the options possible to Back
+*** This function appears to be obsolete & should be removed -- SS.
 **/
 static int ParseBack(char **ss)
 {
@@ -802,8 +803,8 @@ static void ParseButton(button_info **uberb,char *s)
       "colorset",
       "action",
       "id",
-      "hovericon",
-      "hovertitle",
+      "activeicon",
+      "activetitle",
       "pressicon",
       "presstitle",
       NULL
@@ -1253,58 +1254,58 @@ static void ParseButton(button_info **uberb,char *s)
 	}
 	break;
 
-	/* ---------------------------- HoverIcon ------------------------- */
-	case 21: /* HoverIcon */
+	/* ---------------------------- ActiveIcon ------------------------- */
+	case 21: /* ActiveIcon */
 		t = seekright(&s);
 		if (t && *t && (t[0] != '-' || t[1] != 0))
 		{
 			if (b->flags & b_Swallow)
 			{
 				fprintf(stderr,"%s: a button can not have a "
-					"HoverIcon and a swallowed window at "
-					"the same time. Ignoring HoverIcon.",
+					"ActiveIcon and a swallowed window at "
+					"the same time. Ignoring ActiveIcon.",
 					MyName);
 			}
 			else
 			{
-				if (b->hover_icon_file)
-					free(b->hover_icon_file);
-				b->hover_icon_file = t;
-				b->flags |= b_HoverIcon;
+				if (b->active_icon_file)
+					free(b->active_icon_file);
+				b->active_icon_file = t;
+				b->flags |= b_ActiveIcon;
 			}
 		}
 		else
 		{
-			fprintf(stderr,"%s: Missing HoverIcon argument\n",
+			fprintf(stderr,"%s: Missing ActiveIcon argument\n",
 				MyName);
 			if (t)
 				free(t);
 		}
 		break;
 
-	/* ------------------------- HoverTitle ------------------------- */
-	case 22: /* HoverTitle */
+	/* ------------------------- ActiveTitle ------------------------- */
+	case 22: /* ActiveTitle */
 		s = trimleft(s);
 		if (*s=='(')
 		{
 			fprintf(stderr,"%s: justification not allowed for "
-				"HoverTitle.\n", MyName);
+				"ActiveTitle.\n", MyName);
 		}
 		t = seekright(&s);
 		if(t && *t && (t[0] != '-' || t[1] != 0))
 		{
-			if (b->hoverTitle)
-				free(b->hoverTitle);
-			b->hoverTitle = t;
+			if (b->activeTitle)
+				free(b->activeTitle);
+			b->activeTitle = t;
 #ifdef DEBUG_PARSER
-			fprintf(stderr,"PARSE: HoverTitle \"%s\"\n",
-				b->hoverTitle);
+			fprintf(stderr,"PARSE: ActiveTitle \"%s\"\n",
+				b->activeTitle);
 #endif
-			b->flags |= b_HoverTitle;
+			b->flags |= b_ActiveTitle;
 		}
 		else
 		{
-			fprintf(stderr,"%s: Missing HoverTitle argument\n",
+			fprintf(stderr,"%s: Missing ActiveTitle argument\n",
 					MyName);
 			if (t)
 				free(t);
@@ -1488,7 +1489,7 @@ static void ParseConfigLine(button_info **ubb,char *s)
     "pixmap",
     "boxsize",
     "colorset",
-    "hovercolorset",
+    "activecolorset",
     "presscolorset",
     NULL
   };
@@ -1588,17 +1589,17 @@ static void ParseConfigLine(button_info **ubb,char *s)
       ub->c->flags &= ~b_Colorset;
     }
     break;
-  case 13: /* HoverColorset */
+  case 13: /* ActiveColorset */
     i = sscanf(s, "%d", &j);
     if (i > 0)
     {
-      ub->c->hoverColorset = j;
-      ub->c->flags |= b_HoverColorset;
+      ub->c->activeColorset = j;
+      ub->c->flags |= b_ActiveColorset;
       AllocColorset(j);
     }
     else
     {
-      ub->c->flags &= ~b_HoverColorset;
+      ub->c->flags &= ~b_ActiveColorset;
     }
     break;
 

@@ -1,3 +1,8 @@
+2004-07-15  Scott Smedley  <scottie7@tpg.com.au>
+
+	* NEWS:
+	New options for FvwmButtons module.
+
 2004-07-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.1.in:

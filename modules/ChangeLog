@@ -1,3 +1,18 @@
+2004-07-15  Scott Smedley  <scottie7@tpg.com.au>
+
+	* FvwmButtons/FvwmButtons.1:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmButtons/FvwmButtons.h:
+	* FvwmButtons/button.c:
+	* FvwmButtons/button.h:
+	* FvwmButtons/draw.c:
+	* FvwmButtons/icons.c:
+	* FvwmButtons/parse.c:
+	Changed option prefix of HoverColorset, HoverIcon & HoverTitle
+	to "Active".
+	Maintain "Press" look when waiting for window to popup.
+	Lots of minor bugfixes.
+
 2004-07-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (Loop):

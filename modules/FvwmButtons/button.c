@@ -298,9 +298,14 @@ Pixel buttonShadow(button_info *b)
 
 int buttonColorset(button_info *b)
 {
-  if (b == HoverButton && UberButton->c->flags & b_HoverColorset)
-    return UberButton->c->hoverColorset;
-  if (b == CurrentButton && UberButton->c->flags & b_PressColorset)
+  if (b->flags & b_Hangon)
+  {
+	if (UberButton->c->flags & b_PressColorset)
+		return UberButton->c->pressColorset;
+  }
+  else if (b == ActiveButton && UberButton->c->flags & b_ActiveColorset)
+    return UberButton->c->activeColorset;
+  else if (b == CurrentButton && UberButton->c->flags & b_PressColorset)
     return UberButton->c->pressColorset;
 
   if (b->flags & b_Colorset)
@@ -313,6 +318,58 @@ int buttonColorset(button_info *b)
       return b->c->colorset;
   }
   return -1;
+}
+
+char *buttonTitle (button_info *b)
+{
+	if (b->flags & b_Hangon)
+	{
+	    if (b->flags & b_PressTitle)
+		return b->pressTitle;
+	}
+	/* If this is the current active button but no explicit ActiveTitle was
+	   specified, use the Title (if there is one).
+	   Similarly for PressTitle. */
+	else if (b == ActiveButton && b->flags & b_ActiveTitle)
+		return b->activeTitle;
+	else if (b == CurrentButton && b->flags & b_PressTitle)
+		return b->pressTitle;
+
+	if (b->flags & b_Title)
+		return b->title;
+
+	return NULL;
+}
+
+FvwmPicture *buttonIcon (button_info *b)
+{
+	if (b->flags & b_Hangon)
+        {
+		if (b->flags & b_PressIcon)
+			return b->pressicon;
+	}
+	else if (b == ActiveButton && b->flags & b_ActiveIcon)
+		return b->activeicon;
+	else if (b == CurrentButton && b->flags & b_PressIcon)
+		return b->pressicon;
+
+	/* b->icon == None if no icon specified */
+	return b->icon;
+}
+
+unsigned long buttonIconFlag (button_info *b)
+{
+	if (b->flags & b_Hangon)
+        {
+                if (b->flags & b_PressIcon)
+                        return b_PressIcon;
+        }
+        else if (b == ActiveButton && b->flags & b_ActiveIcon)
+                return b_ActiveIcon;
+        else if (b == CurrentButton && b->flags & b_PressIcon)
+                return b_PressIcon;
+
+        return b_Icon;
 }
 
 int buttonBackgroundButton(button_info *b, button_info **r_b)
