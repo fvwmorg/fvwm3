@@ -805,25 +805,15 @@ void animate(struct icon_info *item, unsigned long *body)
     int abs_x, abs_y;
     Window junkw;
 
-    /* check to see if any corner is displayed in the iconbox window */
-    XTranslateCoordinates(dpy, icon_win, main_win, item->x, item->y, &abs_x,
-			  &abs_y, &junkw);
-    if (junkw == None)
-      XTranslateCoordinates(dpy, icon_win, main_win, item->x + item->icon_w - 1,
-			    item->y, &abs_x, &abs_y, &junkw);
-    if (junkw == None)
-      XTranslateCoordinates(dpy, icon_win, main_win, item->x,
-			    item->y + item->icon_h - 1, &abs_x, &abs_y, &junkw);
-    if (junkw == None)
-      XTranslateCoordinates(dpy, icon_win, main_win, item->x + item->icon_w - 1,
-			    item->y + item->icon_h - 1, &abs_x, &abs_y, &junkw);
+    /* check to see if the centre of the icon is displayed in the iconbox */
+    XTranslateCoordinates(dpy, icon_win, main_win, item->x + (item->icon_w/2),
+			  item->y + (item->icon_h/2), &abs_x, &abs_y, &junkw);
     if (junkw == None)
       return;
     
     /* find out where it is on screen */
-    XTranslateCoordinates(dpy, icon_win, Root,
-                          item->x, item->y, &abs_x, &abs_y,
-                          &junkw);
+    XTranslateCoordinates(dpy, icon_win, Root, item->x, item->y, &abs_x, &abs_y,
+			  &junkw);
     if (IS_ICONIFIED(item))
     {
       sprintf(string, "%s %d %d %d %d %d %d %d %d",
