@@ -139,6 +139,43 @@ static Pixmap default_pixmap = None;
 /***********************************************************************
  *
  *  Procedure:
+ *	CalcGeom - calculates the size and position of a mini-window
+ *	given the real window size
+ ***********************************************************************/
+static void CalcGeom(PagerWindow *t, int win_w, int win_h,
+		     int *x_ret, int *y_ret, int *w_ret, int *h_ret)
+{
+  int n, m, x, y ,w ,h;
+
+  n = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
+  m = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
+  x = (Scr.Vx + t->x) * (win_w - Scr.VxPages) / Scr.VWidth + n;
+  y = (Scr.Vy + t->y) * (win_h - Scr.VyPages) / Scr.VHeight + m;
+  w = (Scr.Vx + t->x + t->width) * (win_w - Scr.VxPages) / Scr.VWidth - x + n;
+  h = (Scr.Vy + t->y + t->height) * (win_h - Scr.VyPages) / Scr.VHeight - y +m;
+
+  /* adjust size and position to keep visible and on page */
+  if (w < MinSize)
+  {
+    if (t->x > (Scr.MyDisplayWidth / 2))
+      x -= MinSize - w;
+    w = MinSize;
+  }
+  if (h < MinSize)
+  {
+    if (t->y > (Scr.MyDisplayHeight / 2))
+      y -= MinSize - h;
+    h = MinSize;
+  }
+  *x_ret = x;
+  *y_ret = y;
+  *w_ret = w;
+  *h_ret = h;
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
  *	Initialize_viz_pager - creates a temp window of the correct visual
  *      so that pixmaps may be created for use with the main window
  ***********************************************************************/
@@ -1295,43 +1332,19 @@ void ReConfigureAll(void)
 void ReConfigureIcons(void)
 {
   PagerWindow *t;
-  int x,y,w,h,n,m,n1,m1;
+  int x, y, w, h;
 
-  n = (Scr.VxMax)/Scr.MyDisplayWidth;
-  m = (Scr.VyMax)/Scr.MyDisplayHeight;
 
   t = Start;
-  while(t!= NULL)
+  while(t != NULL)
   {
-    n1 = (Scr.Vx+t->x)/Scr.MyDisplayWidth;
-    m1 = (Scr.Vy+t->y)/Scr.MyDisplayHeight;
-    x = (Scr.Vx + t->x)*(icon_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
-    y = (Scr.Vy + t->y)*(icon_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
-    w = (Scr.Vx + t->x + t->width+2)*(icon_w-n)/
-      (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
-    h = (Scr.Vy + t->y + t->height+2)*(icon_h-m)/
-      (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
-
-    /* adjust size and position to keep visible and on page */
-    if (w < MinSize)
-    {
-      if (t->x > (Scr.MyDisplayWidth / 2))
-        x -= MinSize - w;
-      w = MinSize;
-    }
-    if (h < MinSize)
-    {
-      if (t->y > (Scr.MyDisplayHeight / 2))
-        y -= MinSize - h;
-      h = MinSize;
-    }
-
-    t->icon_view_width      = w;
-    t->icon_view_height     = h;
+    CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
+    t->icon_view_width = w;
+    t->icon_view_height = h;
     if(Scr.CurrentDesk == t->desk)
-      XMoveResizeWindow(dpy,t->IconView,x,y,w,h);
+      XMoveResizeWindow(dpy, t->IconView, x, y, w, h);
     else
-      XMoveResizeWindow(dpy,t->IconView,-1000,-1000,w,h);
+      XMoveResizeWindow(dpy, t->IconView, -1000, -1000, w, h);
     t = t->next;
   }
 }
@@ -1578,43 +1591,19 @@ void AddNewWindow(PagerWindow *t)
 {
   unsigned long valuemask;
   XSetWindowAttributes attributes;
-  int i, x, y, w, h, n, m, n1, m1;
+  int i, x, y, w, h;
 
   i = t->desk - desk1;
-  n = Scr.VxMax / Scr.MyDisplayWidth;
-  m = Scr.VyMax / Scr.MyDisplayHeight;
-  n1 = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
-  m1 = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
-  x = (Scr.Vx + t->x) * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
-  y = (Scr.Vy + t->y) * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
-  /* calculate size based on bottom right coordinate */
-  w = (Scr.Vx + t->x + t->width) * (desk_w - n)
-    / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
-  h = (Scr.Vy + t->y + t->height) * (desk_h - m)
-    / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
-
-  if (w < MinSize)
-  {
-    if (t->x > (Scr.MyDisplayWidth / 2))
-      x -= MinSize - w;
-    w = MinSize;
-  }
-  if (h < MinSize)
-  {
-    if (t->y > (Scr.MyDisplayHeight / 2))
-      y -= MinSize - h;
-    h = MinSize;
-  }
-
+  CalcGeom(t, desk_w, desk_h, &x, &y, &w, &h);
   t->pager_view_width = w;
   t->pager_view_height = h;
-  valuemask = (CWBackPixel | CWEventMask);
+  valuemask = CWBackPixel | CWEventMask;
   attributes.background_pixel = t->back;
-  attributes.event_mask = (ExposureMask);
+  attributes.event_mask = ExposureMask;
 
   /* ric@giccs.georgetown.edu -- added Enter and Leave events for
      popping up balloon window */
-  attributes.event_mask = (ExposureMask | EnterWindowMask | LeaveWindowMask);
+  attributes.event_mask = ExposureMask | EnterWindowMask | LeaveWindowMask;
 
   if ((i >= 0) && (i < ndesks))
   {
@@ -1630,27 +1619,7 @@ void AddNewWindow(PagerWindow *t)
   else
     t->PagerView = None;
 
-  x = (Scr.Vx + t->x) * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
-  y = (Scr.Vy + t->y) * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
-  /* calculate size based on bottom right coordinate */
-  w = (Scr.Vx + t->x + t->width) * (icon_w - n)
-    / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
-  h = (Scr.Vy + t->y + t->height) * (icon_h - m)
-    / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
-
-  if (w < MinSize)
-  {
-    if (t->x > (Scr.MyDisplayWidth / 2))
-      x -= MinSize - w;
-    w = MinSize;
-  }
-  if (h < MinSize)
-  {
-    if (t->y > (Scr.MyDisplayHeight / 2))
-      y -= MinSize - h;
-    h = MinSize;
-  }
-
+  CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
   t->icon_view_width = w;
   t->icon_view_height = h;
   if(Scr.CurrentDesk == t->desk)
@@ -1685,7 +1654,7 @@ void AddNewWindow(PagerWindow *t)
 
 void ChangeDeskForWindow(PagerWindow *t,long newdesk)
 {
-  int i, x, y, w, h, n, m, n1, m1;
+  int i, x, y, w, h;
   Bool size_changed = False;
 
   i = newdesk - desk1;
@@ -1698,28 +1667,7 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
     return;
   }
 
-  n = Scr.VxMax / Scr.MyDisplayWidth;
-  m = Scr.VyMax / Scr.MyDisplayHeight;
-  n1 = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
-  m1 = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
-  x = (Scr.Vx + t->x) * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
-  y = (Scr.Vy + t->y) * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
-  w = (Scr.Vx + t->x + t->width) * (desk_w - n)
-    / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
-  h = (Scr.Vy + t->y + t->height) * (desk_h - m)
-    / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
-  if (w < MinSize)
-  {
-    if (t->x > (Scr.MyDisplayWidth / 2))
-      x -= MinSize - w;
-    w = MinSize;
-  }
-  if (h < MinSize)
-  {
-    if (t->y > (Scr.MyDisplayHeight / 2))
-      y -= MinSize - h;
-    h = MinSize;
-  }
+  CalcGeom(t, desk_w, desk_h, &x, &y, &w, &h);
   if ((t->pager_view_width != w) || (t->pager_view_height != h)) {
     t->pager_view_width = w;
     t->pager_view_height = h;
@@ -1752,24 +1700,7 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
   }
   t->desk = i+desk1;
 
-  x = (Scr.Vx + t->x) * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
-  y = (Scr.Vy + t->y) * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
-  w = (Scr.Vx + t->x + t->width) * (icon_w-n)
-    / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
-  h = (Scr.Vy + t->y + t->height) * (icon_h - m)
-    / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
-  if (w < MinSize)
-  {
-    if (t->x > (Scr.MyDisplayWidth / 2))
-      x -= MinSize - w;
-    w = MinSize;
-  }
-  if (h < MinSize)
-  {
-    if (t->y > (Scr.MyDisplayHeight / 2))
-      y -= MinSize - h;
-    h = MinSize;
-  }
+  CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
   if ((t->icon_view_width != w) || (t->icon_view_height != h)) {
     t->icon_view_width = w;
     t->icon_view_height = h;
@@ -1798,32 +1729,10 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
 
 void MoveResizePagerView(PagerWindow *t)
 {
-  int x, y, w, h, n, m, n1, m1;
+  int x, y, w, h;
   Bool size_changed = False;
 
-  n = Scr.VxMax / Scr.MyDisplayWidth;
-  m = Scr.VyMax / Scr.MyDisplayHeight;
-  n1 = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
-  m1 = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
-  x = (Scr.Vx + t->x) * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
-  y = (Scr.Vy + t->y) * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
-  w = (Scr.Vx + t->x + t->width) * (desk_w - n)
-      / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
-  h = (Scr.Vy + t->y + t->height) * (desk_h - m)
-      / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
-  if (w < MinSize)
-  {
-    if (t->x > (Scr.MyDisplayWidth / 2))
-      x -= MinSize - w;
-    w = MinSize;
-  }
-  if (h < MinSize)
-  {
-    if (t->y > (Scr.MyDisplayHeight / 2))
-      y -= MinSize - h;
-    h = MinSize;
-  }
-
+  CalcGeom(t, desk_w, desk_h, &x, &y, &w, &h);
   if (t->pager_view_width != w || t->pager_view_height != h) {
     t->pager_view_width = w;
     t->pager_view_height = h;
@@ -1851,25 +1760,7 @@ void MoveResizePagerView(PagerWindow *t)
       return;
     }
 
-  x = (Scr.Vx + t->x) * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
-  y = (Scr.Vy + t->y) * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
-  w = (Scr.Vx + t->x + t->width) * (icon_w - n)
-      / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
-  h = (Scr.Vy + t->y + t->height) * (icon_h - m)
-      / (Scr.VyMax + Scr.MyDisplayHeight) - y +m1;
-  if (w < MinSize)
-  {
-    if (t->x > (Scr.MyDisplayWidth / 2))
-      x -= MinSize - w;
-    w = MinSize;
-  }
-  if (h < MinSize)
-  {
-    if (t->y > (Scr.MyDisplayHeight / 2))
-      y -= MinSize - h;
-    h = MinSize;
-  }
-
+  CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
   if (t->icon_view_width != w || t->icon_view_height != h) {
     t->icon_view_width = w;
     t->icon_view_height = h;

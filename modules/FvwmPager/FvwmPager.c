@@ -780,6 +780,10 @@ void list_new_page(unsigned long *body)
   {
     Scr.VxMax = body[3];
     Scr.VyMax = body[4];
+    Scr.VxPages = Scr.VxMax / Scr.MyDisplayWidth;
+    Scr.VyPages = Scr.VyMax / Scr.MyDisplayHeight;
+    Scr.VWidth = Scr.VxMax + Scr.MyDisplayWidth;
+    Scr.VHeight = Scr.VyMax + Scr.MyDisplayHeight;
     ReConfigure();
   }
   MovePage();
@@ -2028,6 +2032,10 @@ void ParseOptions(void)
     Scr.VxMax = 0;
   if(Scr.VyMax <0)
     Scr.VyMax = 0;
+  Scr.VxPages = Scr.VxMax / Scr.MyDisplayWidth;
+  Scr.VyPages = Scr.VyMax / Scr.MyDisplayHeight;
+  Scr.VWidth = Scr.VxMax + Scr.MyDisplayWidth;
+  Scr.VHeight = Scr.VyMax + Scr.MyDisplayHeight;
   Scr.Vx = 0;
   Scr.Vy = 0;
 
