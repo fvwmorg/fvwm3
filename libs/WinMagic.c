@@ -135,17 +135,25 @@ void SlideWindow(
   /* animate the window */
   for (i = 0; i <= steps; i++)
   {
-    if (ppctMovement == NULL || i == steps)
+    if (i == steps)
     {
-      x = s_x + (int)(e_x - s_x) * i / steps;
-      y = s_y + (int)(e_y - s_y) * i / steps;
+      x = e_x;
+      y = e_y;
     }
     else
     {
-      float f = ppctMovement[i] / (float)steps;
+      float f;
 
-      x = (int)((float)(s_x + (e_x - s_x)) * f);
-      y = (int)((float)(s_y + (e_y - s_y)) * f);
+      if (ppctMovement == NULL)
+      {
+	f = (float)i / (float)steps;
+      }
+      else
+      {
+	f = ppctMovement[i] / (float)steps;
+      }
+      x = (int)((float)s_x + (float)(e_x - s_x) * f);
+      y = (int)((float)s_y + (float)(e_y - s_y) * f);
     }
     w = s_w + (int)(e_w - s_w) * i / steps;
     h = s_h + (int)(e_h - s_h) * i / steps;
@@ -195,7 +203,7 @@ void SlideWindow(
     }
   } /* for */
 
-  /* if hints and asked size are not agree try respect the caller */
+  /* if hints and asked size do not agree try to respect the caller */
   if (e_w > 0 && e_h > 0 && (!is_mapped || g_w != w || g_h != w))
   {
     XMoveResizeWindow(dpy, win, x, y, w, h);
