@@ -1,3 +1,9 @@
+2003-01-18  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/expand.c:
+	fixed $[desk.name<n>] that was masked by $[desk.n],
+	added $[desk.pagesx] and $[desk.pagesy]
+
 2003-01-16  Dan Espen  <dane@mk.telcordia.com>
 
 	* NEWS: Update news.  Spelling fixes 2.5.x news.

@@ -50,7 +50,8 @@ Changes in development release 2.5.6 (not released yet)
 * All single letter variables are deprecated now; new variables:
 
     $[w.id], $[w.name], $[w.iconname], $[w.class], $[w.resource],
-    $[desk.n], $[version.num], $[version.info], $[version.line]
+    $[desk.n], $[version.num], $[version.info], $[version.line],
+    $[desk.pagesx], $[desk.pagesy]
 
 -------------------------------------------------------------------
 

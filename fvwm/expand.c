@@ -59,10 +59,12 @@ static char *function_vars[] =
 	"shadow.cs",
 	"fgsh.cs",
 	"gt.",
-	"desk.n",
 	"desk.name",
+	"desk.n",
 	"desk.width",
 	"desk.height",
+	"desk.pagesx",
+	"desk.pagesy",
 	"vp.x",
 	"vp.y",
 	"vp.width",
@@ -118,10 +120,12 @@ enum
 	VAR_SHADOW_CS,
 	VAR_FGSH_CS,
 	VAR_GT,
-	VAR_DESK_N,
 	VAR_DESK_NAME,
+	VAR_DESK_N,
 	VAR_DESK_WIDTH,
 	VAR_DESK_HEIGHT,
+	VAR_DESK_PAGESX,
+	VAR_DESK_PAGESY,
 	VAR_VP_X,
 	VAR_VP_Y,
 	VAR_VP_WIDTH,
@@ -298,6 +302,14 @@ static int expand_vars_extended(
 	case VAR_DESK_HEIGHT:
 		is_numeric = True;
 		val = Scr.VyMax + Scr.MyDisplayHeight;
+		break;
+	case VAR_DESK_PAGESX:
+		is_numeric = True;
+		val = (int)(Scr.VxMax / Scr.MyDisplayWidth) + 1;
+		break;
+	case VAR_DESK_PAGESY:
+		is_numeric = True;
+		val = (int)(Scr.VyMax / Scr.MyDisplayHeight) + 1;
 		break;
 	case VAR_VP_X:
 		is_numeric = True;

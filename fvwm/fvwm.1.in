@@ -1709,6 +1709,16 @@ multiplied by the number of pages in x or y direction.
 .in -.5i
 
 .in +.5i
+$[desk.pagesx]
+$[desk.pagesy]
+.in +.3i
+The number of total pages in a desk in x or y direction.
+This is the same as the values set by
+.BR DesktopSize .
+.in -.3i
+.in -.5i
+
+.in +.5i
 $[page.nx]
 $[page.ny]
 .in +.3i
