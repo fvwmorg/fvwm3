@@ -44,6 +44,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "defaults.h"
+#include "geometry.h"
 #include "borders.h"
 #include "builtins.h"
 #include "icons.h"

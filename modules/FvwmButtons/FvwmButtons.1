@@ -291,7 +291,7 @@ padding to \fIheight\fP.
 Panels can be swallowed exactly like windows are swallowed by
 buttons with the \fISwallow\fP command below, but they are not displayed
 within the button.  Instead they are hidden until the user presses
-the panel's button.  Then the panel (i.e. the window of the swallowed
+the panel's button.  Then the panel (the window of the swallowed
 application) opens with a sliding animation.  The \fIoptions\fP can
 be any of the \fIflags\fP described for the Swallow command.  In addition
 a direction 'left', 'right', 'up' or 'down' can be used to specify the
@@ -309,9 +309,8 @@ smoother this way, but most applications will appear
 to grow from the button instead of sliding out.  Also, without
 the \fIsmooth\fP option the animation may be delayed a bit.
 
-If the Hints option is enabled (the default) FvwmButtons may not know
-the actual window size and
-the number of animation steps may be slightly off.
+If the \fIHints\fP option is enabled (the default) FvwmButtons may not know
+the actual window size and the number of animation steps may be slightly off.
 
 The \fInoborder\fP option tells FvwmButtons to ignore the borders
 of the window when calculating positions for the animation (equivalent
@@ -334,14 +333,14 @@ position [\fIcontext-window\fP] [\fIpos\fP] [\fIx\fP \fIy\fP] [\fIborder-opts\fP
 .fi
 The \fIcontext-window\fP can be one of: Button, Module or Root.
 It defines the window from which the Panel will be placed. Button
-specifies the panel's button, Module specifies FvwmButtons itself, 
+specifies the panel's button, Module specifies FvwmButtons itself,
 and Root specifies a virtual screen
 (on the left of the screen for sliding 'right',
 on the right of the screen for sliding 'left',
 above the screen for sliding 'down'
 and below the screen for sliding 'up').
 The context-window together with the sliding direction define a line segment
-which is one of the borders of the context-window: the top/bottom/left/right 
+which is one of the borders of the context-window: the top/bottom/left/right
 border for sliding up/down/left/right. Then, the Panel is placed so that
 its bottom/top/right/left border is contiguous to this line segment.
 
@@ -361,10 +360,10 @@ A trailing "p" changes the interpretation to mean "pixels".
 The \fIborder-opts\fP are: mlr, mtb, noplr and noptb.
 They define which borders width are taken in account. By default,
 the borders of FvwmButtons are not taken in account. mlr reverses
-this default for the left and the right border and mtb reverses this default 
+this default for the left and the right border and mtb reverses this default
 for the top and the bottom border. Conversely, by default the borders of
-the Panel are taken in account. noplr reverses this default for the left and 
-the right border and noptb reverses this default for the top and the bottom 
+the Panel are taken in account. noplr reverses this default for the left and
+the right border and noptb reverses this default for the top and the bottom
 border.
 
 The defaults are sliding up with a delay of five milliseconds and
@@ -602,7 +601,7 @@ work well with this kind of syntax so you may have to live with
 the short flashing of the window.  If you want to make a panel
 from another instance of FvwmButtons you can do so, but you must
 give it a different name ('my_first_panel' in above example).
-If you run FvwmButtons under the same name new panels will be
+If you run FvwmButtons under the same name, new panels will be
 created recursively until your system runs out of resources and
 FvwmButtons crashes! To configure a second button bar with a
 different name, simply put '*new_name' in place of '*FvwmButtons'
@@ -620,9 +619,7 @@ iconified.
 
 .nf
 .sp
-Style name_of_panel_window NoTitle
-Style name_of_panel_window Sticky
-Style name_of_panel_window NoIcon
+Style name_of_panel_window NoTitle, Sitcky, NoIcon
 .sp
 .fi
 
@@ -685,8 +682,8 @@ And perhaps you had style commands for you panels:
 
 .nf
 .sp
-Style "FvwmButtonsPanel" Title, NoHandles, BorderWidth 0
-Style "FvwmButtonsPanel" NoButton 2, NoButton 4, Sticky
+Style FvwmButtonsPanel Title, NoHandles, BorderWidth 0
+Style FvwmButtonsPanel NoButton 2, NoButton 4, Sticky
 .sp
 .fi
 
@@ -745,8 +742,8 @@ There are several reasons.  The most important one is that the
 program code implementing the panels was very disruptive and
 caused a lot of problems.  At the same time it made writing new
 features for FvwmButtons difficult at best.  The second reason is
-that most users were simply unable to make it work - it as way
-to complicated.  Even I (the author of the new code) had to spend
+that most users were simply unable to make it work - it was way
+too complicated.  Even I (the author of the new code) had to spend
 several hours before I got it working the first time.  The third
 reason is that the new panels are more versatile.  Any application
 can be a panel in FvwmButtons, not just other instances of FvwmButtons

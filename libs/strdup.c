@@ -16,6 +16,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include "safemalloc.h"
 
 char *strdup(const char *s)
 {

@@ -1,26 +1,26 @@
 New items
 
-  168, 169, 170, 171
+  172
 
 Items with highest priority / most severe problems:
 
-  117, 134, 146, 171
+  92, 134, 171, 172
 
 Closed recently:
 
- 36 168, 169, 170
+ 33, 35, 94, 95, 105, 106, 117, 146
 
 ---------- Summary: ----------------------------------------------
 
  0 to be verified
  0 to be discussed
- 4 to do
+ 3 to do
  1 distribution issues
- 8 testing
+ 2 testing
 ----------------------
- 13 open items
-158 items closed/postponed
-171 items in total
+  6 open items
+166 items closed/postponed
+172 items in total
 
 ---------- To be verified: ---------------------------------------
 
@@ -28,15 +28,14 @@ Closed recently:
 
 --------- To do: ------------------------------------------------
 
-117) Investigate icons disappearing if icon changes while on a
-     different desk.
-     [reported by Julian Gilbey/David Cunningham on 16-Mar-2000]
 134) Investigate DecWindows ConfigureRequest/Notify race condition.
      [reported by Fabien Viallard on 19-Apr-2000]
-146) Bug #542 (Winch signals).
+     [Anybody who has DecWindows and can look into this?]
 171) With virtually any border config, when moving opaqually, the borders of
      all underlying windows flick a lot. There is no any flicking in 2.2.x.
      [reported by Mikhael]
+172) Investigate travelling rxvt-2.7.4
+     [reported by PDS]
 
 ---------- Distribution issues: ----------------------------------
 
@@ -45,19 +44,25 @@ Closed recently:
 
 ---------- Testing: ----------------------------------------------
 
- 33) Test the GNOME patches.
  34) Update and run the purify script again.
      [in progress]
- 35) Test the strokes patch.
- 92) Test new session management code.
- 94) Test colour set support in modules and fvwm.
- 95) Test new panel implementation in FvwmButtons.
-105) Test binding code.
-106) Test window position code.
+ 92) Test session management restart code.
 
 ========== Closed recently: ======================================
 
+ 33) Test the GNOME patches.
+     [skipped, patches are simple, fix problems when they show up]
+ 35) Test the strokes patch.
+     [skipped, patches are simple, fix problems when they show up]
  36) Test the new menu styles (ItemFormat and menu layout)
+ 94) Test colour set support in modules and fvwm.
+     [skipped, tested thoroughly in Fvwm-theme]
+ 95) Test new panel implementation in FvwmButtons.
+     [skipped, was tested completely when I wrote it, fix problems when they
+     show up]
+105) Test binding code.
+106) Test window position code.
+     [skipped, code has been around for 2 years without problems]
 168) Fix SIGCHLD handling in Piperead which interrupts select().
 169) Clean up placement algorithm.
 170) Update man page for Restart command w/ multi head.
@@ -78,6 +83,9 @@ Closed recently:
      -> [Dominik: I know the problem is there, but it is difficult to debug and
      perhaps not worth to delay the release]
      -> [not critical; delayed until after 2.4]
+117) Investigate icons disappearing if icon changes while on a
+     different desk.
+     [reported by Julian Gilbey/David Cunningham on 16-Mar-2000]
 118) Investigate "FvwmPager & StaysOnTop" bug (#543).
      [reported by Nadim Shaikli <nadim.shaikli@intel.com>]
      [no response, consider this fixed]
@@ -99,6 +107,7 @@ Closed recently:
      -> [unreproducible]
 143) Bug #603 (TaskBar bugs): investigate and possibly fix.
      -> [unreproducible, fixed a related AutoStick problem]
+146) Bug #542 (Winch signals).
 156) xterm client window cursor corrupted.
      [reported by Nagi Aboulenein on 2-Nov-1999]
      -> [unreproducible]
