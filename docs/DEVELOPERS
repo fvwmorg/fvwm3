@@ -133,14 +133,14 @@ files that are packed into the distribution.  If you leave one
 out, nobody will be able to build the distributed tar file!
 
 
-Changing configure.ac
+Changing configure.in
 ---------------------
 
 The most common reason to do this is to change the version string.
 If you're editing it for any other reason, I will assume you know
 what you're doing.
 
-Steps: 1. edit configure.ac, and find the line containing
+Steps: 1. edit configure.in, and find the line containing
           AM_INIT_AUTOMAKE(fvwm, x.y.z) at the top of the file
        2. change x.y.z to the new version string
        3. re-run "make" from the top of the build directory
@@ -163,10 +163,10 @@ Preparations:
     stable release it is best to throw away the whole source tree
     and check it out from scratch to ensure all source files have
     been added to CVS.
-  - Change the date in configure.ac and fill in the release date
+  - Change the date in configure.in and fill in the release date
     in NEWS.  Commit these changes.  Note: For releases prior to
     2.5.3, the date has to be updated in docs/fvwm.lsm.in and
-    fvwm/fvwm.1 instead of configure.ac.
+    fvwm/fvwm.1 instead of configure.in.
   - For a stable release, update docs/ANNOUNCE file.  For the
     first version of a major release (e.g. 2.6.0) all user visible
     changes have to be mentioned.  For the following maintenance
@@ -174,7 +174,7 @@ Preparations:
     usually done by copying all entries from the NEWS file.  Don't
     forget to proof read the file as it will be sent to the
     fvwm-announce mailing list.
-  - Edit the version numbers at the beginning of configure.ac and
+  - Edit the version numbers at the beginning of configure.in and
     remove the "-devel" suffix.
   - Update the ChangeLog for all the changes above.
   - Commit these changes.
@@ -272,7 +272,7 @@ Upload the release:
 
 Increase the version number:
 
-  - Increase the version number in configure.ac (see above) and
+  - Increase the version number in configure.in (see above) and
     add the "-devel" suffix.
   - Create a new section for future changes in the NEWS file.
   - Add a ChangeLog entry indicating that a new version started.

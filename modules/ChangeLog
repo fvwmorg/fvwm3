@@ -2,6 +2,7 @@
 
 	* FvwmButtons/dynamic.c (parse_message_line):
 	-Wall fix
+	compile fix (?)
 
 2002-08-26  Mikhael Goikhman  <migo@homemail.com>
 

@@ -19,6 +19,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <X11/Xdefs.h>
 #include "libs/FShape.h"
 #include "libs/Module.h"
 #include "libs/Strings.h"
