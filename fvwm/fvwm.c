@@ -53,6 +53,7 @@
 #include "libs/Colorset.h"
 #include "icccm2.h"
 #include "gnome.h"
+#include "icons.h"
 #include "add_window.h"
 #include "fvwmsignal.h"
 #include "colormaps.h"
@@ -64,6 +65,7 @@
 #include "colors.h"
 #include "focus.h"
 #include "update.h"
+#include "window_flags.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
@@ -814,10 +816,6 @@ void CaptureOneWindow(
   FvwmWindow *fw, Window window, Window keep_on_top_win, Window parent_win)
 {
   Window w;
-  Atom atype;
-  int aformat;
-  unsigned long nitems, bytes_remain;
-  unsigned char *prop = NULL;
   unsigned long data[1];
 
   isIconicState = DontCareState;
@@ -848,17 +846,17 @@ void CaptureOneWindow(
     Bool f = PPosOverride;
 
     PPosOverride = True;
-    if(XGetWindowProperty(dpy, fw->w, _XA_WM_STATE, 0L, 3L, False,
-			  _XA_WM_STATE, &atype, &aformat, &nitems,
-			  &bytes_remain, &prop) == Success)
+    if (IS_ICONIFIED(fw))
     {
-      if(prop != NULL)
-      {
-	isIconicState = *(long *)prop;
-	isIconifiedByParent =
-	  (isIconicState == IconicState) ? IS_ICONIFIED_BY_PARENT(fw) : 0;
-	XFree(prop);
-      }
+      isIconicState = IconicState;
+      isIconifiedByParent = IS_ICONIFIED_BY_PARENT(fw);
+    }
+    else
+    {
+      isIconicState = NormalState;
+      isIconifiedByParent = 0;
+      if (Scr.CurrentDesk != fw->Desk)
+	SetMapStateProp(fw, NormalState);
     }
     data[0] = (unsigned long) fw->Desk;
     XChangeProperty (dpy, fw->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
@@ -1804,6 +1802,11 @@ static void Reborder(void)
   for (tmp = Scr.FvwmRoot.stack_prev; tmp != &Scr.FvwmRoot;
        tmp = tmp->stack_prev)
   {
+    if (!IS_ICONIFIED(tmp) && Scr.CurrentDesk != tmp->Desk)
+    {
+      XMapWindow(dpy, tmp->w);
+      SetMapStateProp(tmp, NormalState);
+    }
     RestoreWithdrawnLocation (tmp, True, Scr.Root);
     XUnmapWindow(dpy,tmp->frame);
     XDestroyWindow(dpy,tmp->frame);

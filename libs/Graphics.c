@@ -980,8 +980,12 @@ GC fvwmlib_XCreateGC(
   XGCValues *values)
 {
   GC gc;
-  Bool f = values->graphics_exposures;
+  Bool f;
+  XGCValues gcv;
 
+  if (!values)
+    values = &gcv;
+  f = values->graphics_exposures;
   if (!(valuemask & GCGraphicsExposures))
   {
     valuemask |= GCGraphicsExposures;

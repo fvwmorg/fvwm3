@@ -1,5 +1,12 @@
 2000-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/Graphics.c (fvwmlib_XCreateGC):
+	core dump fix for buggy FvwmScript
+
+	* fvwm/fvwm.c (Reborder):
+	(CaptureOneWindow):
+	fixed state of windows after restart
+
 	* fvwm/builtins.c (LoadDefaultFont):
 	removed duplicate error message
 
