@@ -1200,37 +1200,34 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   if (!XGetGeometry(dpy, move_w, &JunkRoot, &x_bak, &y_bak,
 		    &JunkWidth, &JunkHeight, &JunkBW,&JunkDepth))
   {
-    /* fall thorugh to end of function */
-    bad_window = tmp_win->w;
+    /* This is allright here since the window may not be mapped yet. */
   }
-  else
+
+  if (IS_ICONIFIED(tmp_win))
   {
-    if (IS_ICONIFIED(tmp_win))
-    {
-      orig_icon_x = tmp_win->icon_g.x;
-      orig_icon_y = tmp_win->icon_g.y;
-    }
-
-    /* make a copy of the tmp_win structure for sending to the pager */
-    memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
-    /* prevent flicker when paging */
-    SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, do_move_opaque);
-
-    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
-		  &JunkX, &JunkY, &button_mask);
-    button_mask &= DEFAULT_ALL_BUTTONS_MASK;
-    xl += XOffset;
-    yt += YOffset;
-    xl_orig = xl;
-    yt_orig = yt;
-
-    /* draw initial outline */
-    if (!IS_ICONIFIED(tmp_win) &&
-	((!do_move_opaque && !Scr.gs.EmulateMWM) || !IS_MAPPED(tmp_win)))
-      MoveOutline(xl, yt, Width - 1, Height - 1);
-
-    DisplayPosition(tmp_win,xl,yt,True);
+    orig_icon_x = tmp_win->icon_g.x;
+    orig_icon_y = tmp_win->icon_g.y;
   }
+
+  /* make a copy of the tmp_win structure for sending to the pager */
+  memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
+  /* prevent flicker when paging */
+  SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, do_move_opaque);
+
+  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
+                &JunkX, &JunkY, &button_mask);
+  button_mask &= DEFAULT_ALL_BUTTONS_MASK;
+  xl += XOffset;
+  yt += YOffset;
+  xl_orig = xl;
+  yt_orig = yt;
+
+  /* draw initial outline */
+  if (!IS_ICONIFIED(tmp_win) &&
+      ((!do_move_opaque && !Scr.gs.EmulateMWM) || !IS_MAPPED(tmp_win)))
+    MoveOutline(xl, yt, Width - 1, Height - 1);
+
+  DisplayPosition(tmp_win,xl,yt,True);
 
   while (!finished && bad_window != tmp_win->w)
   {
@@ -1501,7 +1498,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       XBell(dpy, 0);
     }
   }
-  if (!aborted && bad_window != tmp_win->w&& IS_ICONIFIED(tmp_win))
+  if (!aborted && bad_window != tmp_win->w && IS_ICONIFIED(tmp_win))
   {
     SET_ICON_MOVED(tmp_win, 1);
   }
