@@ -8,7 +8,7 @@ that understands all the current Style command options but operates on a
 single window.
 
 Minor objectives are:
-*) The style command would share the same pattern matching as the WindowID
+*) The Style command would share the same pattern matching as the ThisWindow
 command, any enhancements (e.g. "Class==XXX") will apply to both.
 *) Remove the style list management and replace it by reusing the 
 function list management code (some additions will have to be provided to 
@@ -17,19 +17,21 @@ allow removing lines from a function)
 command
 
 WindowStyle Command usage:
-WindowStyle <flag> <setting>
-<setting> is On/Off, True/False, for on/off flags
-<setting> is number for numeric flags
-<setting> is a string for all other types of flag
-Not supplying setting is equivalent to "True" for binary flags, 0 for 
-numeric flags, "" for others.
 
-on/off flags: Icon, Title, TitleAtTop, StippledTitle, ResizeHandles, 
-WindowList, CirculateSkip, Sticky, StartIconic etc.
+  WindowStyle <flag> <setting>
+  <setting> is On/Off, True/False, for on/off flags
+    (flag prefix '!' may be used instead of setting Off, like !Sticky)
+  <setting> is number for numeric flags
+  <setting> is a string for all other types of flag
+  Not supplying setting is equivalent to "True" for binary flags, 0 for 
+  numeric flags, "" for others.
 
-numeric flags: BorderWidth, StartOnDesk, StartsOnPage etc.
+  on/off flags: IconWindow, Title, TitleAtTop, StippledTitle, ResizeHandles, 
+  WindowListSkip, CirculateSkip, Sticky, StartIconic etc.
 
-string flags: IconFile, MiniIconFile etc.
+  numeric flags: BorderWidth, StartsOnDesk, StartsOnPage etc.
+
+  string flags: Icon, MiniIcon etc.
 
 (Note that these aren't exact copies of the style flags e.g "Style 
 Slippery" is "WindowStyle Sticky Off". This should make it easier to 
@@ -55,7 +57,7 @@ sets/clears the X flag on the current window.
 
 *) Write a SetOneStyle command that is effectively
    AddToFunc SetOneStyle
-   + I AddToFunc StyleFunction I WindowId $w ($0) WindowStyle $1 $2
+   + I AddToFunc StyleFunction I ThisWindow ($0) WindowStyle $1 $2
    + I All StyleFunction
 
 *) Test it with "SetOneStyle <style-pattern> X On" etc
@@ -63,7 +65,7 @@ sets/clears the X flag on the current window.
 *) Write a DumpFunction command to print out StyleFunction
 
 *) Make sure StyleFunction looks like:
-   + I WindowId $w (<style pattern>) WindowStyle X On
+   + I ThisWindow (<style pattern>) WindowStyle X On
 
 *) Rename the Style command to OldStyle
 

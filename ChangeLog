@@ -1,3 +1,8 @@
+2003-06-09  Mikhael Goikhman  <migo@homemail.com>
+
+	* WindowStyle_proposal.txt:
+	s/WindowId/ThisWindow/ and other minor changes
+
 2003-06-06  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureImageLoader.c (PImageLoadPng):
