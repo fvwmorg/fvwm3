@@ -276,14 +276,6 @@ int check_if_function_allowed(int function, FvwmWindow *t,
 			      Bool override_allowed, char *menu_string);
 void ReInstallActiveColormap(void);
 
-/* --- bindings.c --- */
-void key_binding(F_CMD_ARGS);
-void mouse_binding(F_CMD_ARGS);
-unsigned int MaskUsedModifiers(unsigned int in_modifiers);
-unsigned int GetUnusedModifiers(void);
-void ignore_modifiers(F_CMD_ARGS);
-/* --- end of bindings.c --- */
-
 void SetOneStyle(char *text,FILE *,char **,int *);
 void ParseStyle(char *text,FILE *,char **,int *);
 void assign_string(char *text, FILE *fd, char **arg,int *);
@@ -428,6 +420,7 @@ void ReadFile(F_CMD_ARGS);
 void PipeRead(F_CMD_ARGS);
 void module_zapper(F_CMD_ARGS);
 void Recapture(F_CMD_ARGS);
+void RecaptureWindow(F_CMD_ARGS);
 void HandleHardFocus(FvwmWindow *t);
 void DestroyModConfig(F_CMD_ARGS);
 void AddModConfig(F_CMD_ARGS);

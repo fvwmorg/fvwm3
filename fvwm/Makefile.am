@@ -17,6 +17,7 @@ GNOME =
 endif
 
 fvwm2_SOURCES = add_window.c			\
+	bindings.h				\
 	bindings.c				\
 	borders.c				\
 	builtins.c				\
@@ -46,6 +47,8 @@ fvwm2_SOURCES = add_window.c			\
 	parse.h					\
 	placement.c				\
 	read.c					\
+	repeat.h				\
+	repeat.c				\
 	resize.c				\
 	screen.h				\
 	session.c				\

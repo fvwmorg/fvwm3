@@ -56,6 +56,7 @@
 #include "fvwm.h"
 #include <X11/Xatom.h>
 #include "misc.h"
+#include "bindings.h"
 #include "parse.h"
 #include "screen.h"
 #ifdef SHAPE

@@ -1,4 +1,47 @@
+1999-04-07  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/repeat.h:
+	* fvwm/repeat.c:
+	* fvwm/functions.c:
+	* fvwm/functions.h:
+	moved all code for Repeat command to repeat.c and repeat.h
+
+	* fvwm/Makefile.am (fvwm2_SOURCES): added bindings.h, repeat.c,
+	repeat.h
+
 1999-04-06  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm.c (CaptureAllWindows):
+	(CaptureOneWindow):
+	fixed coredump
+
+	* fvwm/icons.c:
+	* fvwm/functions.c:
+	* fvwm/focus.c:
+	* fvwm/events.c:
+	* fvwm/bindings.c:
+	* fvwm/add_window.c:
+	use bindings.h
+
+	* fvwm/misc.h: moved prototypes for bindings.c to bindings.h
+	* fvwm/bindings.h: new file
+
+	* fvwm/fvwm2.1 (RecaptureWindow):
+	* fvwm/misc.h:
+	* fvwm/parse.h:
+	* fvwm/functions.c (func_config):
+	* fvwm/builtins.c (do_recapture):
+	(Recapture):
+	(RecaptureWindow):
+	made 'window' option of recapture a new command 'RecaptureWindow' for
+	sake of consistency with RefreshWindow
+
+	* fvwm/functions.c (expand): some speedup
+
+	* fvwm/functions.h:
+	* fvwm/functions.c (ComplexFunction2):
+	(ComplexFunction2):
+	made functions static
 
 	* fvwm/misc.h:
 	* fvwm/screen.h:
@@ -85,7 +128,6 @@ Sun Apr  4 10:53:17 1999  DanEspen  <dje@blue>
 
 	* fvwm/module.c (executeModule): Export FVWM_USERHOME to modules.
 
-  Window w;
 	* fvwm/read.c (ReadSubFunc): New logic to read either from $HOME, using
 	a leading dot, or the users config dir without the dot, or the config
 	dir without the dot.

@@ -45,11 +45,13 @@
 #include <X11/Xatom.h>
 #include "screen.h"
 #include "misc.h"
+#include "bindings.h"
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #include <X11/Xresource.h>
 #endif /* SHAPE */
 #include "module.h"
+#include "bindings.h"
 
 
 /* Used to parse command line of clients for specific desk requests. */

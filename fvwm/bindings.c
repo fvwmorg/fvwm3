@@ -11,6 +11,7 @@
 #include <X11/Xlib.h>
 #include "fvwm.h"
 #include "screen.h"
+#include "bindings.h"
 
 
 #define MODS_UNUSED_DEFAULT LockMask

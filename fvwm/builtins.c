@@ -3859,17 +3859,13 @@ void module_zapper(F_CMD_ARGS)
  *	Reborder - Removes fvwm border windows
  *
  ************************************************************************/
-void Recapture(F_CMD_ARGS)
+static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
   XEvent event;
-  Bool fSingle = False;
 
-  if (StrEquals(PeekToken(action, NULL), "Window"))
-  {
+  if (fSingle)
     if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
       return;
-    fSingle = True;
-  }
 
   /* Wow, this grabbing speeds up recapture tremendously! I think that is the
    * solution for this weird -blackout option. */
@@ -3886,11 +3882,22 @@ void Recapture(F_CMD_ARGS)
    * moment and the click goes through to the root window. Not goot */
   while (XCheckMaskEvent(dpy, ButtonPressMask|ButtonReleaseMask|
 			 ButtonMotionMask|PointerMotionMask|EnterWindowMask|
-			 LeaveWindowMask, &event) != False)
+			 LeaveWindowMask|KeyPressMask|KeyReleaseMask,
+			 &event) != False)
     ;
   UngrabEm();
   MyXUngrabServer(dpy);
   XSync(dpy, 0);
+}
+
+void Recapture(F_CMD_ARGS)
+{
+  do_recapture(eventp, w, tmp_win, context, action, Module, False);
+}
+
+void RecaptureWindow(F_CMD_ARGS)
+{
+  do_recapture(eventp, w, tmp_win, context, action, Module, True);
 }
 
 void SetGlobalOptions(F_CMD_ARGS)

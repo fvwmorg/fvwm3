@@ -2424,11 +2424,15 @@ and read the file from the subdirectory.  Otherwise the file is read
 from $HOME.  If the file is still not found, the file is read from
 the system configuration directory with the leading dot removed.
 
-.IP "Recapture [ \fIWindow\fP ]"
+.IP "Recapture"
 Causes fvwm2 to recapture all of its windows.  This ensures that the
 latest style parameters will be used.  The recapture operation is
-visually disturbing.  With the optional string "Window" only the window
-with the focus is recaptured.
+visually disturbing.
+
+.IP "RecaptureWindow"
+Causes fvwm2 to recapture the current window.  This ensures that the
+latest style parameters will be used.  The recapture operation is
+visually disturbing.
 
 
 .IP "Refresh"
@@ -2436,7 +2440,7 @@ Causes all windows on the screen to redraw themselves.
 
 
 .IP "RefreshWindow"
-Causes current (or chosen) window to redraw itself.
+Causes the current (or chosen) window to redraw itself.
 
 
 .IP "Resize [ \fIx y\fP ]"

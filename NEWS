@@ -1,5 +1,7 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* New command: RecaptureWindow captures a single window.
+
 * 'GotoDesk' command replaces former command 'Desk' (the old name is still
   supported.
 

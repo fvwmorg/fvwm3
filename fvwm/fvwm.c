@@ -709,6 +709,8 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
   unsigned char *prop;
   unsigned long data[1];
 
+  if (fw == NULL)
+    return;
   if(XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw)!=XCNOENT)
   {
     isIconicState = DontCareState;
@@ -801,7 +803,7 @@ void CaptureAllWindows(void)
   {
     /* reborder all windows */
     tmp = Scr.FvwmRoot.next;
-    for(i=0;i<nchildren;i++)
+    for(i=0;i<nchildren && tmp != NULL;i++)
     {
       next = tmp->next;
       CaptureOneWindow(tmp, children[i]);

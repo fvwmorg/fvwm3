@@ -22,6 +22,7 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
+#include "bindings.h"
 #include "module.h"
 
 

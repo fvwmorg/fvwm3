@@ -26,23 +26,17 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
+#include "bindings.h"
+#include "repeat.h"
 #include "module.h"
 
 
-/* please ignore unused variables beginning with 'repeat_' for now. Thanks,
- * Dominik */
-static char *repeat_last_function = NULL;
-static char *repeat_last_complex_function = NULL;
-static char *repeat_last_builtin_function = NULL;
-static char *repeat_last_module = NULL;
-/*
-static char *repeat_last_top_function = NULL;
-static char *repeat_last_menu = NULL;
-static FvwmWindow *repeat_last_fvwm_window = NULL;
-*/
-
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
+
+/* forward declarations */
+static void ComplexFunction(F_CMD_ARGS);
+static void ComplexFunction2(F_CMD_ARGS, Bool *desperate);
 
 /*
  * be sure to keep this list properly ordered for bsearch routine!
@@ -64,8 +58,6 @@ extern FvwmWindow *Tmp_win;
  * dje 12/19/98.
  */
 
-#define PRE_NOEXPAND     "NOEXPAND"
-#define PRE_NOEXPAND_LEN 8
 #define PRE_REPEAT       "REPEAT"
 #define PRE_SILENT       "SILENT"
 
@@ -172,6 +164,7 @@ static struct functions func_config[] =
   {"RAISELOWER",   raiselower_func,  F_RAISELOWER,          FUNC_NEEDS_WINDOW},
   {"READ",         ReadFile,         F_READ,                FUNC_NO_WINDOW},
   {"RECAPTURE",    Recapture,        F_RECAPTURE,           FUNC_NO_WINDOW},
+  {"RECAPTUREWINDOW",RecaptureWindow,F_RECAPTURE_WINDOW,    FUNC_NO_WINDOW},
   {"REFRESH",      refresh_function, F_REFRESH,             FUNC_NO_WINDOW},
   {"REFRESHWINDOW",refresh_win_function, F_REFRESH,         FUNC_NEEDS_WINDOW},
   {PRE_REPEAT,     repeat_function,  F_REPEAT,              FUNC_NO_WINDOW},
@@ -207,18 +200,6 @@ static struct functions func_config[] =
   {"",0,0,0}
 };
 
-
-static void update_last_string(char **pdest, char **pdest2, char *src,
-			       Bool no_store)
-{
-  if (no_store || *pdest == src)
-    return;
-  if (*pdest)
-    free(*pdest);
-  *pdest = strdup(src);
-  *pdest2 = *pdest;
-  return;
-}
 
 /*
 ** do binary search on func list
@@ -264,8 +245,7 @@ static struct functions *FindBuiltinFunction(char *func)
 }
 
 
-static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
-		    Bool fAddNoexpand)
+static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 {
   int l,i,l2,n,k,j;
   char *out;
@@ -295,62 +275,63 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
     }
 
   i=0;
-  if (fAddNoexpand)
-    {
-      out = safemalloc(l2+PRE_NOEXPAND_LEN+2);
-      strcpy(out, PRE_NOEXPAND" ");
-      j = PRE_NOEXPAND_LEN+1;
-    }
-  else
-    {
-      out = safemalloc(l2+1);
-      j=0;
-    }
+  out = safemalloc(l2+1);
+  j=0;
   while(i<l)
     {
       if(input[i] == '$')
 	{
-	  n = input[i+1] - '0';
-	  if((n >= 0)&&(n <= 9)&&(arguments[n] != NULL))
+	  switch (input[i+1])
 	    {
-	      for(k=0;k<strlen(arguments[n]);k++)
-		out[j++] = arguments[n][k];
-	      i++;
-	    }
-	  else if(input[i+1] == 'w')
-	    {
+	    case '0':
+	    case '1':
+	    case '2':
+	    case '3':
+	    case '4':
+	    case '5':
+	    case '6':
+	    case '7':
+	    case '8':
+	    case '9':
+	      n = input[i+1] - '0';
+	      if(arguments[n] != NULL)
+		{
+		  for(k=0;k<strlen(arguments[n]);k++)
+		    out[j++] = arguments[n][k];
+		  i++;
+		}
+	      break;
+	    case 'w':
 	      if(tmp_win)
 		sprintf(&out[j],"0x%x",(unsigned int)tmp_win->w);
 	      else
 		sprintf(&out[j],"$w");
 	      j += strlen(&out[j]);
 	      i++;
-	    }
-	  else if(input[i+1] == 'd')
-	    {
+	      break;
+	    case 'd':
 	      sprintf(&out[j], "%d", Scr.CurrentDesk);
 	      j += strlen(&out[j]);
 	      i++;
-	    }
-	  else if(input[i+1] == 'x')
-	    {
+	      break;
+	    case 'x':
 	      sprintf(&out[j], "%d", Scr.Vx);
 	      j += strlen(&out[j]);
 	      i++;
-	    }
-	  else if(input[i+1] == 'y')
-	    {
+	      break;
+	    case 'y':
 	      sprintf(&out[j], "%d", Scr.Vy);
 	      i++;
-	    }
-	  else if(input[i+1] == '$')
-	    {
+	      break;
+	    case '$':
 	      out[j++] = '$';
 	      i++;
-	    }
-	  else
-	    out[j++] = input[i];
-	}
+	      break;
+	    default:
+	      out[j++] = input[i];
+	      break;
+	    } /* switch */
+	} /* if '$' */
       else
 	out[j++] = input[i];
       i++;
@@ -361,6 +342,7 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
 
 /*****************************************************************************
  *
+ * Builtin which determines if the button press was a click or double click...
  * Waits Scr.ClickTime, or until it is evident that the user is not
  * clicking, but is moving the cursor
  *
@@ -422,7 +404,6 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   char *arguments[10];
   struct functions *bif;
   Bool set_silent;
-  Bool no_expand;
   Bool no_store;
   int skip;
 
@@ -456,7 +437,6 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     w = eventp->xbutton.subwindow;
 
   set_silent = False;
-  no_expand = False;
   no_store = False;
   if (Action[0] == '-')
     {
@@ -469,9 +449,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   action = PeekToken(taction, &t2action);
   while (action)
     {
-      if (StrEquals(action, PRE_NOEXPAND))
-	no_expand = True;
-      else if (StrEquals(action, PRE_SILENT))
+      if (StrEquals(action, PRE_SILENT))
 	{
 	  if (Scr.flags.silent_functions == 0)
 	    {
@@ -497,13 +475,8 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     }
   skip = taction - Action;
 
-  if (no_expand)
-    expaction = Action;
-  else
-    {
-      expaction = expand(Action, arguments, tmp_win, True);
-      skip += PRE_NOEXPAND_LEN+1;
-    }
+  if (expand_cmd == EXPAND_COMMAND)
+    expaction = expand(Action, arguments, tmp_win);
   taction = expaction + skip;
   j=0;
   matched = FALSE;
@@ -860,19 +833,14 @@ FvwmFunction *FindFunction(char *function_name)
 }
 
 
-/*****************************************************************************
- *
- * Builtin which determines if the button press was a click or double click...
- *
- ****************************************************************************/
-void ComplexFunction(F_CMD_ARGS)
+static void ComplexFunction(F_CMD_ARGS)
 {
   Bool desperate = 0;
 
   ComplexFunction2(eventp, w, tmp_win, context, action, Module, &desperate);
 }
 
-void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
+static void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 {
   char type = MOTION;
   char c;
@@ -926,7 +894,7 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 	    w = tmp_win->frame;
 	  else
 	    w = None;
-	  taction = expand(fi->action,arguments,tmp_win,False);
+	  taction = expand(fi->action,arguments,tmp_win);
 	  ExecuteFunction(taction,tmp_win,eventp,context,-2,EXPAND_COMMAND);
 	  free(taction);
 	}
@@ -1002,7 +970,7 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 	    w = tmp_win->frame;
 	  else
 	    w = None;
-	  taction = expand(fi->action,arguments,tmp_win,False);
+	  taction = expand(fi->action,arguments,tmp_win);
 	  ExecuteFunction(taction,tmp_win,ev,context,-2,EXPAND_COMMAND);
 	  free(taction);
 	}
@@ -1013,44 +981,4 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
   for(i=0;i<10;i++)
     if(arguments[i] != NULL)free(arguments[i]);
   func->use_depth--;
-}
-
-
-void repeat_function(F_CMD_ARGS)
-{
-  int index;
-  char *optlist[] = {
-    "function",
-    "complex",
-    "builtin",
-    "module",
-    "top",
-    NULL
-  };
-
-  GetNextTokenIndex(action, optlist, 0, &index);
-  switch (index)
-  {
-  case 1: /* complex */
-fprintf(stderr,"repeating complex %s\n",repeat_last_complex_function);
-    ExecuteFunction(repeat_last_complex_function, tmp_win, eventp, context,
-		    *Module, DONT_EXPAND_COMMAND);
-    break;
-  case 2: /* builtin */
-fprintf(stderr,"repeating builtin %s\n",repeat_last_builtin_function);
-    ExecuteFunction(repeat_last_builtin_function, tmp_win, eventp, context,
-		    *Module, DONT_EXPAND_COMMAND);
-    break;
-  case 3: /* module */
-fprintf(stderr,"repeating module %s\n",repeat_last_module);
-    ExecuteFunction(repeat_last_module, tmp_win, eventp, context, *Module,
-		    DONT_EXPAND_COMMAND);
-    break;
-  case 0: /* function */
-  default:
-fprintf(stderr,"repeating %s\n",repeat_last_function);
-    ExecuteFunction(repeat_last_function, tmp_win, eventp, context, *Module,
-		    DONT_EXPAND_COMMAND);
-    break;
-  }
 }

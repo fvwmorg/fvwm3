@@ -1,5 +1,5 @@
-#ifndef _FUNCTION_
-#define _FUNCTION_
+#ifndef _FUNCTIONS_
+#define _FUNCTIONS_
 
 struct FvwmFunction;               /* forward declaration */
 
@@ -54,8 +54,6 @@ typedef enum
 void find_func_type(char *action, short *func_type, Bool *func_needs_window);
 FvwmFunction *FindFunction(char *function_name);
 extern FvwmFunction *NewFvwmFunction(char *name);
-void ComplexFunction(F_CMD_ARGS);
-void ComplexFunction2(F_CMD_ARGS, Bool *desperate);
 void DestroyFunction(FvwmFunction *func);
 extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
 			  int, int);
@@ -63,6 +61,5 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 		     unsigned long context, int Module,
 		     expand_command_type expand_cmd);
 void AddToFunction(FvwmFunction *func, char *action);
-void repeat_function(F_CMD_ARGS);
 
-#endif /* _FUNCTION_ */
+#endif /* _FUNCTIONS_ */
