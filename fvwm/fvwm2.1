@@ -2265,7 +2265,7 @@ There are a number of style options which influence the appearance and
 behaviour of icons (eg \fIStickyIcon\fP, \fINoIcon\fP).
 
 .TP
-.B "Maximize" "[\fIbool\fP] [\fI horizontal vertical\fP]"
+.B "Maximize" "[\fIbool\fP] [\fIhorizontal vertical\fP]"
 Without its optional arguments (or if the \fIbool\fP bit has the
 value 'toggle') Maximize causes the window to alternately switch
 from a full-screen size to its normal size. To force a window into
@@ -2274,9 +2274,12 @@ for the \fIbool\fP argument.
 
 With the optional arguments horizontal and vertical, which are
 expressed as percentage of a full screen, the user can control the new
-size of the window.  If horizontal is greater than 0 then the
-horizontal dimension of the window will be set to
-horizontal*screen_width/100.  If horizontal is 'grow', it will maximize to
+size of the window.  An optional suffix 'p' can be used to indicate
+pixels instead of percents of the screen size.  If horizontal is greater
+than 0 then the horizontal dimension of the window will be set to
+horizontal*screen_width/100.  If the value is smaller than 0 the
+size is subtracted from the screen width, i.e. '-25' is the same
+as '75'. If horizontal is 'grow', it will maximize to
 current available space until finding any obstacle.  The vertical resizing
 is similar.  If both horizontal and vertical values are 'grow', it will expand
 vertically first, then horizontally to find space.  For example, the
@@ -2296,6 +2299,11 @@ Mouse 0 4 A Maximize 50 50
 To expand a window horizontally until any other window is found:
 .EX
 Mouse 0 4 A Maximize 0 grow
+.EE
+To expand a window but leave the lower 60 pixels of the screen
+unoccupied
+.EX
+Mouse 0 4 A Maximize 100 -60p
 .EE
 
 Values larger than 100 can be used with caution.

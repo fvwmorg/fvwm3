@@ -2461,10 +2461,25 @@ void Maximize(F_CMD_ARGS)
     val1 = 100;
     val1_unit = Scr.MyDisplayWidth;
   }
-  else if (GetOnePercentArgument(action, &val1, &val1_unit) == 0)
+  else
   {
-    val1 = 100;
-    val1_unit = Scr.MyDisplayWidth;
+    if (GetOnePercentArgument(token, &val1, &val1_unit) == 0)
+    {
+      val1 = 100;
+      val1_unit = Scr.MyDisplayWidth;
+    }
+    else if (val1 < 0)
+    {
+      /* handle negative offsets */
+      if (val1_unit == Scr.MyDisplayWidth)
+      {
+	val1 = 100 + val1;
+      }
+      else
+      {
+	val1 = Scr.MyDisplayWidth + val1;
+      }
+    }
   }
 
   /* parse second parameter */
@@ -2476,10 +2491,25 @@ void Maximize(F_CMD_ARGS)
     val2 = 100;
     val2_unit = Scr.MyDisplayHeight;
   }
-  else if (GetOnePercentArgument(taction, &val2, &val2_unit) == 0)
+  else
   {
-    val2 = 100;
-    val2_unit = Scr.MyDisplayHeight;
+    if (GetOnePercentArgument(token, &val2, &val2_unit) == 0)
+    {
+      val2 = 100;
+      val2_unit = Scr.MyDisplayHeight;
+    }
+    else if (val2 < 0)
+    {
+      /* handle negative offsets */
+      if (val2_unit == Scr.MyDisplayHeight)
+      {
+	val2 = 100 + val2;
+      }
+      else
+      {
+	val2 = Scr.MyDisplayHeight + val2;
+      }
+    }
   }
 
   if (IS_MAXIMIZED(tmp_win))
@@ -2545,9 +2575,9 @@ void Maximize(F_CMD_ARGS)
     {
       MaximizeHeight(tmp_win, new_width, new_x, &new_height, &new_y);
     }
-    else if(val2 >0)
+    else if(val2 > 0)
     {
-      new_height = val2*val2_unit/100-2;
+      new_height = val2 * val2_unit / 100 - 2;
       new_y = page_y;
     }
     if (grow_x)
@@ -2556,7 +2586,7 @@ void Maximize(F_CMD_ARGS)
     }
     else if(val1 >0)
     {
-      new_width = val1*val1_unit/100-2;
+      new_width = val1 * val1_unit / 100 - 2;
       new_x = page_x;
     }
     if((val1==0)&&(val2==0))
