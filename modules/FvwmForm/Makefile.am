@@ -1,15 +1,17 @@
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
+configdir = @FVWM_CONFIGDIR@
+
 module_PROGRAMS = FvwmForm
 man_MANS = FvwmForm.1
-EXTRA_DIST = $(man_MANS) Changes
+EXTRA_DIST = $(man_MANS) $(config_DATA) Changes
 
 FvwmForm_SOURCES = FvwmForm.c FvwmForm.h DefineMe.c ReadXServer.c \
  ParseCommand.c
 FvwmForm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
-sysconf_DATA = .FormFvwmCapture .FormFvwmRlogin .FormFvwmQuitVerify
+config_DATA = .FormFvwmCapture .FormFvwmRlogin .FormFvwmQuitVerify
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm

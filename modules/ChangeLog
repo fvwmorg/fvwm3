@@ -1,3 +1,9 @@
+1999-03-01  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmForm/Makefile.am (configdir): install the data files into
+	FVWM_CONFIGDIR, which may be different from sysconfdir.  Also,
+	the data files need to be explicitly listed for EXTRA_DIST.
+
 Sat Feb 27 11:55:27 1999  DanEspen  <dje@blue>
 
 	*  FvwmForm/ReadXServer.c: Add    logic   to  allow  international
