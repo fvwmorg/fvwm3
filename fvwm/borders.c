@@ -43,6 +43,7 @@
 #include "screen.h"
 #include "defaults.h"
 #include "borders.h"
+#include "builtins.h"
 #include "icons.h"
 #include "module_interface.h"
 #include "libs/Colorset.h"
@@ -76,8 +77,6 @@ unsigned long Globalgcm;
 
 extern Window PressedW;
 extern FvwmDecor *cur_decor;
-extern Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose);
-extern void FreeDecorFace(Display *dpy, DecorFace *df);
 
 static void change_window_background(
   Window w, unsigned long valuemask, XSetWindowAttributes *attributes)
@@ -1767,17 +1766,20 @@ void cmd_button_state(F_CMD_ARGS)
  ****************************************************************************/
 void SetBorderStyle(F_CMD_ARGS)
 {
-  char *parm = NULL, *prev = action;
+  char *parm;
+  char *prev;
 #ifdef USEDECOR
-  FvwmDecor *fl = cur_decor ? cur_decor : &Scr.DefaultDecor;
+  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
-  FvwmDecor *fl = &Scr.DefaultDecor;
+  FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
 
-  action = GetNextToken(action, &parm);
-  while (parm)
+  Scr.flags.do_need_window_update = 1;
+  decor->flags.has_changed = 1;
+
+  for (prev = action; (parm = PeekToken(action, &action)); prev = action)
   {
-    if (StrEquals(parm,"active") || StrEquals(parm,"inactive"))
+    if (StrEquals(parm, "active") || StrEquals(parm, "inactive"))
     {
       int len;
       char *end, *tmp;
@@ -1791,9 +1793,10 @@ void SetBorderStyle(F_CMD_ARGS)
       tmpdf.u.p = NULL;
 #endif
       if (StrEquals(parm,"active"))
-	df = &fl->BorderStyle.active;
+	df = &decor->BorderStyle.active;
       else
-	df = &fl->BorderStyle.inactive;
+	df = &decor->BorderStyle.inactive;
+      df->flags.has_changed = 1;
       while (isspace(*action))
 	++action;
       if (*action != '(')
@@ -1802,10 +1805,8 @@ void SetBorderStyle(F_CMD_ARGS)
 	{
 	  fvwm_msg(ERR,"SetBorderStyle",
 		   "error in %s border specification", parm);
-	  free(parm);
 	  return;
 	}
-	free(parm);
 	while (isspace(*action))
 	  ++action;
 	if (ReadDecorFace(action, &tmpdf,-1,True))
@@ -1820,7 +1821,6 @@ void SetBorderStyle(F_CMD_ARGS)
       {
 	fvwm_msg(ERR,"SetBorderStyle",
 		 "error in %s border specification", parm);
-	free(parm);
 	return;
       }
       len = end - action + 1;
@@ -1833,9 +1833,10 @@ void SetBorderStyle(F_CMD_ARGS)
     }
     else if (strcmp(parm,"--")==0)
     {
-      if (ReadDecorFace(prev, &fl->BorderStyle.active,-1,True))
-	ReadDecorFace(prev, &fl->BorderStyle.inactive,-1,False);
-      free(parm);
+      if (ReadDecorFace(prev, &decor->BorderStyle.active,-1,True))
+	ReadDecorFace(prev, &decor->BorderStyle.inactive,-1,False);
+      decor->BorderStyle.active.flags.has_changed = 1;
+      decor->BorderStyle.inactive.flags.has_changed = 1;
       break;
     }
     else
@@ -1851,15 +1852,13 @@ void SetBorderStyle(F_CMD_ARGS)
 #endif
       if (ReadDecorFace(prev, &tmpdf,-1,True))
       {
-	FreeDecorFace(dpy,&fl->BorderStyle.active);
-	fl->BorderStyle.active = tmpdf;
-	ReadDecorFace(prev, &fl->BorderStyle.inactive,-1,False);
+	FreeDecorFace(dpy,&decor->BorderStyle.active);
+	decor->BorderStyle.active = tmpdf;
+	ReadDecorFace(prev, &decor->BorderStyle.inactive,-1,False);
+	decor->BorderStyle.active.flags.has_changed = 1;
+	decor->BorderStyle.inactive.flags.has_changed = 1;
       }
-      free(parm);
       break;
     }
-    free(parm);
-    prev = action;
-    action = GetNextToken(action,&parm);
   }
 }

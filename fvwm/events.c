@@ -85,6 +85,7 @@
 #include "icccm2.h"
 #include "icons.h"
 #include "gnome.h"
+#include "update.h"
 #include "style.h"
 #include "stack.h"
 #include "geometry.h"
@@ -244,9 +245,9 @@ void HandleEvents(void)
   while ( !isTerminated )
   {
     last_event_type = 0;
-    if (Scr.flags.has_any_style_changed)
+    if (Scr.flags.do_need_window_update)
     {
-      handle_style_changes();
+      update_windows();
     }
     if(My_XNextEvent(dpy, &Event))
     {
@@ -2257,6 +2258,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       StartupStuff();
       timeoutP = NULL; /* set an infinite timeout to stop ticking */
       reset_style_changes();
+      Scr.flags.do_need_window_update = 0;
     }
   }
 

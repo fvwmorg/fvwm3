@@ -48,6 +48,7 @@
 #include "virtual.h"
 #include "decorations.h"
 #include "add_window.h"
+#include "update.h"
 #include "style.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
@@ -951,59 +952,36 @@ void SetHiColorset(F_CMD_ARGS)
 }
 
 
-#if defined(MULTISTYLE)
-/*****************************************************************************
- *
- * Appends a titlestyle (veliaa@rpi.edu)
- *
- ****************************************************************************/
-void AddTitleStyle(F_CMD_ARGS)
+void do_title_style(F_CMD_ARGS, Bool do_add)
 {
-#ifdef USEDECOR
-    FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
-#else
-    FvwmDecor *decor = &Scr.DefaultDecor;
-#endif
-    char *parm=NULL;
 
-    /* See if there's a next token.  We actually don't care what it is, so
-       GetNextToken allocating memory is overkill, but... */
-    GetNextToken(action,&parm);
-    while (parm)
-    {
-      free(parm);
-      if ((action = ReadTitleButton(action, &decor->titlebar, True, -1)) == NULL)
-        break;
-      GetNextToken(action, &parm);
-    }
-}
-#endif /* MULTISTYLE */
-
-void SetTitleStyle(F_CMD_ARGS)
-{
-  char *parm=NULL, *prev = action;
+  char *parm;
+  char *prev;
 #ifdef USEDECOR
   FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
   FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
 
-  action = GetNextToken(action,&parm);
-  while(parm)
+  Scr.flags.do_need_window_update = 1;
+  decor->flags.has_changed = 1;
+  decor->titlebar.flags.has_changed = 1;
+
+  for (prev = action ; (parm = PeekToken(action, &action)); prev = action)
   {
-    if (StrEquals(parm,"centered"))
+    if (!do_add && StrEquals(parm,"centered"))
     {
       TB_JUSTIFICATION(decor->titlebar) = JUST_CENTER;
     }
-    else if (StrEquals(parm,"leftjustified"))
+    else if (!do_add && StrEquals(parm,"leftjustified"))
     {
       TB_JUSTIFICATION(decor->titlebar) = JUST_LEFT;
     }
-    else if (StrEquals(parm,"rightjustified"))
+    else if (!do_add && StrEquals(parm,"rightjustified"))
     {
       TB_JUSTIFICATION(decor->titlebar) = JUST_RIGHT;
     }
-    else if (StrEquals(parm,"height"))
+    else if (!do_add && StrEquals(parm,"height"))
     {
       int height, next;
       if ( sscanf(action, "%d%n", &height, &next) > 0
@@ -1062,17 +1040,27 @@ void SetTitleStyle(F_CMD_ARGS)
     }
     else
     {
-      if (!(action = ReadTitleButton(prev, &decor->titlebar, False, -1)))
-      {
-	free(parm);
-	break;
-      }
+      action = ReadTitleButton(prev, &decor->titlebar, do_add, -1);
     }
-    free(parm);
-    prev = action;
-    action = GetNextToken(action,&parm);
   }
+}
+
+void SetTitleStyle(F_CMD_ARGS)
+{
+  do_title_style(eventp, w, tmp_win, context, action, Module, False);
 } /* SetTitleStyle */
+
+#if defined(MULTISTYLE)
+/*****************************************************************************
+ *
+ * Appends a titlestyle (veliaa@rpi.edu)
+ *
+ ****************************************************************************/
+void AddTitleStyle(F_CMD_ARGS)
+{
+  do_title_style(eventp, w, tmp_win, context, action, Module, True);
+}
+#endif /* MULTISTYLE */
 
 static void ApplyDefaultFontAndColors(void)
 {
@@ -1564,7 +1552,7 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
  * Reads a button face line into a structure (veliaa@rpi.edu)
  *
  ****************************************************************************/
-Boolean ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
+Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 {
   int offset;
   char style[256], *file;
@@ -2107,6 +2095,118 @@ void DestroyDecor(F_CMD_ARGS)
     }
 }
 
+/***********************************************************************
+ *
+ *  InitFvwmDecor -- initializes an FvwmDecor structure to defaults
+ *
+ ************************************************************************/
+void InitFvwmDecor(FvwmDecor *decor)
+{
+    int i;
+    DecorFace tmpdf;
+
+    decor->HiReliefGC = NULL;
+    decor->HiShadowGC = NULL;
+    decor->TitleHeight = 0;
+    decor->WindowFont.font = NULL;
+    decor->HiColorset = -1;
+
+#ifdef USEDECOR
+    decor->tag = NULL;
+    decor->next = NULL;
+
+    if (decor != &Scr.DefaultDecor) {
+	extern void AddToDecor(FvwmDecor *, char *);
+	AddToDecor(decor, "HilightColor black grey");
+	AddToDecor(decor, "WindowFont fixed");
+    }
+#endif
+
+    /* initialize title-bar button styles */
+    memset(&tmpdf.style, 0, sizeof(tmpdf.style));
+    DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
+#ifdef MULTISTYLE
+    tmpdf.next = NULL;
+#endif
+    for (i = 0; i < 5; ++i)
+    {
+      int j = 0;
+      for (; j < MaxButtonState; ++j)
+      {
+	TB_STATE(decor->left_buttons[i])[j] =
+	  TB_STATE(decor->right_buttons[i])[j] =  tmpdf;
+      }
+    }
+
+    /* reset to default button set */
+    ResetAllButtons(decor);
+
+    /* initialize title-bar styles */
+    memset(&TB_FLAGS(decor->titlebar), 0, sizeof(TB_FLAGS(decor->titlebar)));
+
+    for (i = 0; i < MaxButtonState; ++i)
+    {
+      memset(&TB_STATE(decor->titlebar)[i].style, 0,
+	     sizeof(TB_STATE(decor->titlebar)[i].style));
+      DFS_FACE_TYPE(TB_STATE(decor->titlebar)[i].style) = SimpleButton;
+#ifdef MULTISTYLE
+      TB_STATE(decor->titlebar)[i].next = NULL;
+#endif
+    }
+
+    /* initialize border texture styles */
+    memset(&decor->BorderStyle.active.style, 0,
+	   sizeof(decor->BorderStyle.active.style));
+    DFS_FACE_TYPE(decor->BorderStyle.active.style) = SimpleButton;
+    memset(&decor->BorderStyle.inactive.style, 0,
+	   sizeof(decor->BorderStyle.inactive.style));
+    DFS_FACE_TYPE(decor->BorderStyle.inactive.style) = SimpleButton;
+#ifdef MULTISTYLE
+    decor->BorderStyle.active.next = NULL;
+    decor->BorderStyle.inactive.next = NULL;
+#endif
+}
+
+/***********************************************************************
+ *
+ *  DestroyFvwmDecor -- frees all memory assocated with an FvwmDecor
+ *	structure, but does not free the FvwmDecor itself
+ *
+ ************************************************************************/
+void DestroyFvwmDecor(FvwmDecor *decor)
+{
+  int i;
+  /* reset to default button set (frees allocated mem) */
+  ResetAllButtons(decor);
+  for (i = 0; i < 3; ++i)
+  {
+    int j = 0;
+    for (; j < MaxButtonState; ++j)
+      FreeDecorFace(dpy, &TB_STATE(decor->titlebar)[i]);
+  }
+  FreeDecorFace(dpy, &decor->BorderStyle.active);
+  FreeDecorFace(dpy, &decor->BorderStyle.inactive);
+#ifdef USEDECOR
+  if (decor->tag)
+  {
+    free(decor->tag);
+    decor->tag = NULL;
+  }
+#endif
+  if (decor->HiReliefGC != NULL)
+  {
+    XFreeGC(dpy, decor->HiReliefGC);
+    decor->HiReliefGC = NULL;
+  }
+  if (decor->HiShadowGC != NULL)
+  {
+    XFreeGC(dpy, decor->HiShadowGC);
+    decor->HiShadowGC = NULL;
+  }
+  if (decor->WindowFont.font != NULL)
+    XFreeFont(dpy, decor->WindowFont.font);
+}
+
 /*****************************************************************************
  *
  * Initiates an AddToDecor (veliaa@rpi.edu)
@@ -2122,29 +2222,37 @@ void add_item_to_decor(F_CMD_ARGS)
     if (!item)
       return;
     if (!s)
-      {
-	free(item);
-	return;
-      }
+    {
+      free(item);
+      return;
+    }
     /* search for tag */
     for (decor = &Scr.DefaultDecor; decor; decor = decor->next)
-	if (decor->tag)
-	    if (StrEquals(item, decor->tag)) {
-		found = decor;
-		break;
-	    }
-    if (!found) { /* then make a new one */
-	found = (FvwmDecor *)safemalloc(sizeof( FvwmDecor ));
-	InitFvwmDecor(found);
-	found->tag = item; /* tag it */
-	/* add it to list */
-	for (decor = &Scr.DefaultDecor; decor->next; decor = decor->next)
-	  ;
-	decor->next = found;
-    } else
-	free(item);
+    {
+      if (decor->tag)
+      {
+	if (StrEquals(item, decor->tag))
+	{
+	  found = decor;
+	  break;
+	}
+      }
+    }
+    if (!found)
+    { /* then make a new one */
+      found = (FvwmDecor *)safemalloc(sizeof( FvwmDecor ));
+      InitFvwmDecor(found);
+      found->tag = item; /* tag it */
+      /* add it to list */
+      for (decor = &Scr.DefaultDecor; decor->next; decor = decor->next)
+	;
+      decor->next = found;
+    }
+    else
+      free(item);
 
-    if (found) {
+    if (found)
+    {
 	AddToDecor(found, s);
 
 	/* Set + state to last decor */
@@ -2203,6 +2311,17 @@ void UpdateDecor(F_CMD_ARGS)
   DrawDecorations(hilight, DRAW_ALL, True, True, None);
 }
 
+void reset_decor_changes(void)
+{
+#ifndef USEDECOR
+  Scr.DefaultDecor.flags.has_changed = 0;
+#else
+  FvwmDecor *decor;
+  for (decor = &Scr.DefaultDecor; decor; decor = decor->next)
+    decor->flags.has_changed = 0;
+  /*!!! must reset individual change flags too */
+#endif
+}
 
 /*****************************************************************************
  *
@@ -2248,11 +2367,14 @@ static void SetMWMButtonFlag(
   return;
 }
 
-void ButtonStyle(F_CMD_ARGS)
+static void do_button_style(F_CMD_ARGS, Bool do_add)
 {
-  int button = 0,n;
+  int i;
+  int n;
   int multi = 0;
-  char *text = action, *prev;
+  int button = 0;
+  char *text = NULL;
+  char *prev = NULL;
   char *parm = NULL;
   TitleButton *tb = NULL;
 #ifdef USEDECOR
@@ -2261,17 +2383,17 @@ void ButtonStyle(F_CMD_ARGS)
   FvwmDecor *decor = &Scr.DefaultDecor;
 #endif
 
-  text = GetNextToken(text, &parm);
+  parm = PeekToken(action, &text);
   if (parm && isdigit(*parm))
     button = atoi(parm);
 
-  if ((parm == NULL) || (button > 10) || (button < 0))
+  if (parm == NULL || button > 10 || button < 0)
   {
     fvwm_msg(ERR,"ButtonStyle","Bad button style (1) in line %s",action);
-    if (parm)
-      free(parm);
     return;
   }
+
+  Scr.flags.do_need_window_update = 1;
 
   if (!isdigit(*parm))
   {
@@ -2288,13 +2410,15 @@ void ButtonStyle(F_CMD_ARGS)
       if (StrEquals(parm,"reset"))
 	ResetAllButtons(decor);
       else
-	fvwm_msg(ERR,"ButtonStyle","Bad button style (2) in line %s",
-		 action);
-      free(parm);
+	fvwm_msg(ERR,"ButtonStyle","Bad button style (2) in line %s", action);
       return;
     }
   }
-  free(parm);
+
+  /* mark button style and decor as changed */
+  Scr.flags.do_need_window_update = 1;
+  decor->flags.has_changed = 1;
+
   if (multi == 0)
   {
     /* a single button was specified */
@@ -2314,13 +2438,22 @@ void ButtonStyle(F_CMD_ARGS)
       /* left */
       tb = &decor->left_buttons[n];
     }
+    TB_FLAGS(*tb).has_changed = 1;
+  }
+  else
+  {
+    for (i = 0; i < 5; ++i)
+    {
+      if (multi & 1)
+	TB_FLAGS(decor->left_buttons[i]).has_changed = 1;
+      if (multi & 2)
+	TB_FLAGS(decor->right_buttons[i]).has_changed = 1;
+    }
   }
 
-  prev = text;
-  text = GetNextToken(text,&parm);
-  while(parm)
+  for (prev = text; (parm = PeekToken(text, &text)); prev = text)
   {
-    if (strcmp(parm,"-")==0)
+    if (!do_add && strcmp(parm,"-") == 0)
     {
       char *tok;
       text = GetNextToken(text, &tok);
@@ -2336,7 +2469,6 @@ void ButtonStyle(F_CMD_ARGS)
 	}
 	if (StrEquals(tok,"Clear"))
 	{
-	  int i;
 	  if (multi)
 	  {
 	    if (multi & 1)
@@ -2401,33 +2533,40 @@ void ButtonStyle(F_CMD_ARGS)
 	  free(tok - 1);
 	text = GetNextToken(text, &tok);
       }
-      free(parm);
       break;
     }
     else
     {
       if (multi)
       {
-	int i;
-	if (multi&1)
+	if (multi & 1)
+	{
+	  for (i=0; i<5; ++i)
+	  {
+	    text = ReadTitleButton(
+	      prev, &decor->left_buttons[i], do_add, i*2+1);
+	  }
+	}
+	if (multi & 2)
+	{
 	  for (i=0;i<5;++i)
-	    text = ReadTitleButton(prev, &decor->left_buttons[i],
-				   False, i*2+1);
-	if (multi&2)
-	  for (i=0;i<5;++i)
-	    text = ReadTitleButton(prev, &decor->right_buttons[i],
-				   False, i*2);
+	  {
+	    text = ReadTitleButton(
+	      prev, &decor->right_buttons[i], do_add, i*2);
+	  }
+	}
       }
-      else if (!(text = ReadTitleButton(prev, tb, False, button)))
+      else if (!(text = ReadTitleButton(prev, tb, do_add, button)))
       {
-	free(parm);
 	break;
       }
     }
-    free(parm);
-    prev = text;
-    text = GetNextToken(text,&parm);
   }
+}
+
+void ButtonStyle(F_CMD_ARGS)
+{
+  do_button_style(eventp, w, tmp_win, context, action, Module, False);
 }
 
 #ifdef MULTISTYLE
@@ -2438,89 +2577,7 @@ void ButtonStyle(F_CMD_ARGS)
  ****************************************************************************/
 void AddButtonStyle(F_CMD_ARGS)
 {
-  int button = 0,n;
-  int multi = 0;
-  char *text = action, *prev;
-  char *parm = NULL;
-  TitleButton *tb = NULL;
-#ifdef USEDECOR
-  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
-#else
-  FvwmDecor *decor = &Scr.DefaultDecor;
-#endif
-
-  text = GetNextToken(text, &parm);
-  if (parm && isdigit(*parm))
-    button = atoi(parm);
-
-  if ((parm == NULL) || (button > 10) || (button < 0)) {
-    fvwm_msg(ERR,"ButtonStyle","Bad button style (1) in line %s",action);
-    if (parm)
-      free(parm);
-    return;
-  }
-
-  if (!isdigit(*parm)) {
-    if (StrEquals(parm,"left"))
-      multi = 1; /* affect all left buttons */
-    else if (StrEquals(parm,"right"))
-      multi = 2; /* affect all right buttons */
-    else if (StrEquals(parm,"all"))
-      multi = 3; /* affect all buttons */
-    else {
-      /* we're either resetting buttons or
-	 an invalid button set was specified */
-      if (StrEquals(parm,"reset"))
-	ResetAllButtons(decor);
-      else
-	fvwm_msg(ERR,"ButtonStyle","Bad button style (2) in line %s",
-		 action);
-      free(parm);
-      return;
-    }
-  }
-  free(parm);
-  if (multi == 0) {
-    /* a single button was specified */
-    if (button==10) button=0;
-    /* which arrays to use? */
-    n=button/2;
-    if((n*2) == button)
-    {
-      /* right */
-      n = n - 1;
-      if(n<0)n=4;
-      tb = &decor->right_buttons[n];
-    }
-    else {
-      /* left */
-      tb = &decor->left_buttons[n];
-    }
-  }
-
-  prev = text;
-  text = GetNextToken(text,&parm);
-  while(parm)
-  {
-    if (multi) {
-      int i;
-      if (multi&1)
-	for (i=0;i<5;++i)
-	  text = ReadTitleButton(prev, &decor->left_buttons[i], True,
-				 i*2+1);
-      if (multi&2)
-	for (i=0;i<5;++i)
-	  text = ReadTitleButton(prev, &decor->right_buttons[i], True,
-				 i*2);
-    }
-    else if (!(text = ReadTitleButton(prev, tb, True, button))) {
-      free(parm);
-      break;
-    }
-    free(parm);
-    prev = text;
-    text = GetNextToken(text,&parm);
-  }
+  do_button_style(eventp, w, tmp_win, context, action, Module, True);
 }
 #endif /* MULTISTYLE */
 

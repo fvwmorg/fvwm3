@@ -45,6 +45,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "defaults.h"
+#include "builtins.h"
 #include "menus.h"
 #include "module_interface.h"
 #include "libs/Colorset.h"
@@ -1444,114 +1445,29 @@ void ResetAllButtons(FvwmDecor *decor)
 
 /***********************************************************************
  *
- *  DestroyFvwmDecor -- frees all memory assocated with an FvwmDecor
- *	structure, but does not free the FvwmDecor itself
+ *  Procedure:
+ *	CreateGCs - open fonts and create all the needed GC's.  I only
+ *		    want to do this once, hence the first_time flag.
  *
- ************************************************************************/
-void DestroyFvwmDecor(FvwmDecor *decor)
+ ***********************************************************************/
+static void CreateGCs(void)
 {
-  int i;
-  /* reset to default button set (frees allocated mem) */
-  ResetAllButtons(decor);
-  for (i = 0; i < 3; ++i)
-  {
-    int j = 0;
-    for (; j < MaxButtonState; ++j)
-      FreeDecorFace(dpy, &TB_STATE(decor->titlebar)[i]);
-  }
-  FreeDecorFace(dpy, &decor->BorderStyle.active);
-  FreeDecorFace(dpy, &decor->BorderStyle.inactive);
-#ifdef USEDECOR
-  if (decor->tag)
-  {
-    free(decor->tag);
-    decor->tag = NULL;
-  }
-#endif
-  if (decor->HiReliefGC != NULL)
-  {
-    XFreeGC(dpy, decor->HiReliefGC);
-    decor->HiReliefGC = NULL;
-  }
-  if (decor->HiShadowGC != NULL)
-  {
-    XFreeGC(dpy, decor->HiShadowGC);
-    decor->HiShadowGC = NULL;
-  }
-  if (decor->WindowFont.font != NULL)
-    XFreeFont(dpy, decor->WindowFont.font);
-}
+  XGCValues gcv;
+  unsigned long gcm;
+  XColor c;
 
-/***********************************************************************
- *
- *  InitFvwmDecor -- initializes an FvwmDecor structure to defaults
- *
- ************************************************************************/
-void InitFvwmDecor(FvwmDecor *decor)
-{
-    int i;
-    DecorFace tmpdf;
+  /* create scratch GC's */
+  gcm = GCFunction|GCLineWidth;
+  gcv.function = GXcopy;
+  gcv.line_width = 0;
 
-    decor->HiReliefGC = NULL;
-    decor->HiShadowGC = NULL;
-    decor->TitleHeight = 0;
-    decor->WindowFont.font = NULL;
-    decor->HiColorset = -1;
-
-#ifdef USEDECOR
-    decor->tag = NULL;
-    decor->next = NULL;
-
-    if (decor != &Scr.DefaultDecor) {
-	extern void AddToDecor(FvwmDecor *, char *);
-	AddToDecor(decor, "HilightColor black grey");
-	AddToDecor(decor, "WindowFont fixed");
-    }
-#endif
-
-    /* initialize title-bar button styles */
-    memset(&tmpdf.style, 0, sizeof(tmpdf.style));
-    DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
-#ifdef MULTISTYLE
-    tmpdf.next = NULL;
-#endif
-    for (i = 0; i < 5; ++i)
-    {
-      int j = 0;
-      for (; j < MaxButtonState; ++j)
-      {
-	TB_STATE(decor->left_buttons[i])[j] =
-	  TB_STATE(decor->right_buttons[i])[j] =  tmpdf;
-      }
-    }
-
-    /* reset to default button set */
-    ResetAllButtons(decor);
-
-    /* initialize title-bar styles */
-    memset(&TB_FLAGS(decor->titlebar), 0, sizeof(TB_FLAGS(decor->titlebar)));
-
-    for (i = 0; i < MaxButtonState; ++i)
-    {
-      memset(&TB_STATE(decor->titlebar)[i].style, 0,
-	     sizeof(TB_STATE(decor->titlebar)[i].style));
-      DFS_FACE_TYPE(TB_STATE(decor->titlebar)[i].style) = SimpleButton;
-#ifdef MULTISTYLE
-      TB_STATE(decor->titlebar)[i].next = NULL;
-#endif
-    }
-
-    /* initialize border texture styles */
-    memset(&decor->BorderStyle.active.style, 0,
-	   sizeof(decor->BorderStyle.active.style));
-    DFS_FACE_TYPE(decor->BorderStyle.active.style) = SimpleButton;
-    memset(&decor->BorderStyle.inactive.style, 0,
-	   sizeof(decor->BorderStyle.inactive.style));
-    DFS_FACE_TYPE(decor->BorderStyle.inactive.style) = SimpleButton;
-#ifdef MULTISTYLE
-    decor->BorderStyle.active.next = NULL;
-    decor->BorderStyle.inactive.next = NULL;
-#endif
+  Scr.ScratchGC1 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+  Scr.ScratchGC2 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+  Scr.ScratchGC3 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+  Scr.TransMaskGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+  c.pixel = GetColor("Black");
+  Scr.ScratchMonoPixmap = XCreatePixmap(dpy, Scr.Root, 1, 1, 1);
+  Scr.MonoGC = XCreateGC(dpy, Scr.ScratchMonoPixmap, gcm, &gcv);
 }
 
 /***********************************************************************

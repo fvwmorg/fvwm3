@@ -66,6 +66,7 @@
 #include "add_window.h"
 #include "module_interface.h"
 #include "stack.h"
+#include "update.h"
 #include "style.h"
 #include "icons.h"
 #include "gnome.h"
@@ -900,6 +901,11 @@ void destroy_icon(FvwmWindow *tmp_win)
   tmp_win->icon_pixmap_w = None;
   tmp_win->iconPixmap = None;
   tmp_win->icon_maskPixmap = None;
+  tmp_win->icon_w_width = 0;
+  tmp_win->icon_w_height = 0;
+  tmp_win->icon_t_width = 0;
+  tmp_win->icon_p_width = 0;
+  tmp_win->icon_p_height = 0;
 }
 
 void change_icon(FvwmWindow *tmp_win, window_style *pstyle)

@@ -320,8 +320,9 @@ void ProcessNewStyle(F_CMD_ARGS);
 void ProcessDestroyStyle(F_CMD_ARGS);
 void lookup_style(FvwmWindow *tmp_win, window_style *styles);
 int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len);
+void check_window_style_change(
+  FvwmWindow *t, update_win *flags, window_style *ret_style);
 void reset_style_changes(void);
-void handle_style_changes(void);
 void update_style_colorset(int colorset);
 void update_window_color_style(FvwmWindow *tmp_win, window_style *style);
 void free_icon_boxes(icon_boxes *ib);

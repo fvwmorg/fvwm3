@@ -142,6 +142,11 @@ typedef struct DecorFace
 #ifdef MULTISTYLE
   struct DecorFace *next;
 #endif
+
+  struct
+  {
+    unsigned has_changed : 1;
+  } flags;
 } DecorFace;
 
 /* button style flags (per title button) */
@@ -180,25 +185,28 @@ typedef struct
   JustificationType just : 2;
   struct
   {
+    unsigned has_changed : 1;
     mwm_flags mwm_decor_flags : 5;
-  } flugs;
+  } flags;
   DecorFace styte[MaxButtonState];
 } TitleButton;
 
-#define TB_FLAGS(tb)              ((tb).flugs)
+#define TB_FLAGS(tb)              ((tb).flags)
 #define TB_STATE(tb)              ((tb).styte)
 #define TB_JUSTIFICATION(tb)      ((tb).just)
-#define TB_MWM_DECOR_FLAGS(tb)    ((tb).flugs.mwm_decor_flags)
+#define TB_MWM_DECOR_FLAGS(tb)    ((tb).flags.mwm_decor_flags)
+#define TB_HAS_CHANGED(tb)     \
+  (!!((tb).flags.has_changed))
 #define TB_HAS_MWM_DECOR_MENU(tb)     \
-  (!!((tb).flugs.mwm_decor_flags & MWM_DECOR_MENU))
+  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_MENU))
 #define TB_HAS_MWM_DECOR_MINIMIZE(tb) \
-  (!!((tb).flugs.mwm_decor_flags & MWM_DECOR_MINIMIZE))
+  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_MINIMIZE))
 #define TB_HAS_MWM_DECOR_MAXIMIZE(tb) \
-  (!!((tb).flugs.mwm_decor_flags & MWM_DECOR_MAXIMIZE))
+  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_MAXIMIZE))
 #define TB_HAS_MWM_DECOR_SHADE(tb)    \
-  (!!((tb).flugs.mwm_decor_flags & MWM_DECOR_SHADE))
+  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_SHADE))
 #define TB_HAS_MWM_DECOR_STICK(tb)    \
-  (!!((tb).flugs.mwm_decor_flags & MWM_DECOR_STICK))
+  (!!((tb).flags.mwm_decor_flags & MWM_DECOR_STICK))
 
 typedef struct FvwmDecor
 {
@@ -225,6 +233,10 @@ typedef struct FvwmDecor
 #ifdef USEDECOR
   struct FvwmDecor *next;	/* additional user-defined styles */
 #endif
+  struct
+  {
+    unsigned has_changed : 1;
+  } flags;
 } FvwmDecor;
 
 
@@ -279,6 +291,9 @@ typedef struct ScreenInfo
   GC StdGC;
   GC StdReliefGC;
   GC StdShadowGC;
+
+  Pixmap ScratchMonoPixmap;     /* A scratch 1x1x1 pixmap */
+  GC MonoGC;                    /* GC for drawing into depth 1 drawables */
 
   GC XorGC;			/* GC to draw lines for move and resize */
   GC ScratchGC1;
@@ -372,7 +387,7 @@ typedef struct ScreenInfo
   struct
   {
     Bool do_save_under : 1;
-    unsigned has_any_style_changed : 1;
+    unsigned do_need_window_update : 1;
     unsigned has_icon_font : 1;
     unsigned has_window_font : 1;
     unsigned silent_functions : 1;
@@ -404,8 +419,6 @@ void LoadDefaultLeftButton(DecorFace *bf, int i);
 void LoadDefaultRightButton(DecorFace *bf, int i);
 void LoadDefaultButton(DecorFace *bf, int i);
 void ResetAllButtons(FvwmDecor *decor);
-void InitFvwmDecor(FvwmDecor *decor);
-void DestroyFvwmDecor(FvwmDecor *decor);
 
 /*
  * Diverts a style definition to an FvwmDecor structure (veliaa@rpi.edu)

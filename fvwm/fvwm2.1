@@ -1784,7 +1784,7 @@ keyboard focus.
 
 
 .TP
-.B "CursorStyle" "\fIcontext\fP [\fInumber-or-name-or-xpm\fP [\fIfore\fP \fIback\fP]]"
+.B "CursorStyle" "\fIcontext\fP [\fInumber|name|xpm|None|Tiny\fP [\fIfore\fP \fIback\fP]]"
 Defines a new cursor for the specified context.  The various contexts
 are:
 
@@ -1912,13 +1912,15 @@ used during a StrokeFunc command.
 
 The defaults are shown in parenthesis above.  Is you ever want to
 restore the default cursor for a specific context you can omit the
-\fInumber-or-name-or-xpm\fP argument.
+second argument.
 
-The \fInumber-or-name-or-xpm\fP is either the numeric value of the
-cursor as defined in the include file X11/cursorfont.h or its name
-(without the XC_ prefix) or the name of an xpm file containing a pixmap
-of depth 1 with a mask and an optional hot-spot (if no hot-spot is defined,
-the hot-spot is placed in the center of the image).  For example:
+The second is either the numeric value of the cursor as defined in
+the include file X11/cursorfont.h or its name (without the XC_
+prefix) or the name of an xpm file containing a pixmap of depth 1
+with a mask and an optional hot-spot (if no hot-spot is defined,
+the hot-spot is placed in the center of the image).  Furthermore
+the name can be 'None' (no cursor) or 'Tiny' (a single pixel as the
+cursor).  For example:
 .EX
 # make the kill cursor be XC_gumby (both forms work):
 CursorStyle DESTROY 56
@@ -2143,6 +2145,11 @@ AddToFunc WindowListFunc
 .EE
 You can Destroy the builtin WindowListFunc and create your own if
 these defaults do not suit you.
+
+The window list menu uses the 'WindowList' menu style if it is
+defines (see \fIMenuStyle\fP command).  Otherwise the default
+menu style is used.  To switch back to the default menu style,
+issue the command 'DestroyMenuStyle WindowList'.
 
 The \fIconditions\fP can be used to exclude certain windows from
 the window list.  Please refer to the \fICurrent\fP command for

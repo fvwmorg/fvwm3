@@ -37,6 +37,7 @@
 #include "screen.h"
 #include "placement.h"
 #include "geometry.h"
+#include "update.h"
 #include "style.h"
 #include "borders.h"
 #include "move_resize.h"

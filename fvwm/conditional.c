@@ -32,6 +32,7 @@
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
+#include "update.h"
 #include "style.h"
 
 

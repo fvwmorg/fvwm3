@@ -1,3 +1,42 @@
+1999-12-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (SetBorderStyle):
+	* fvwm/builtins.c (do_button_style):
+	(do_title_style):
+	moved lots of duplicate code into a common function
+	general clean up
+	ButtonStyle, TitleStyle and BorderStyle commands take effect without a
+	recapture
+
+	* fvwm/fvwm.c (InitFvwmDecor):
+	(DestroyFvwmDecor):
+	moved to builtins.c
+
+	* fvwm/style.h:
+	* fvwm/style.c:
+	* fvwm/update.h:
+	* fvwm/update.c:
+	separated style updating from the code that determined which parts to
+	update; moved the updating code to new files update.[ch] so that this
+	can handle ...Style changes too without calling the same code several
+	times
+
+	* fvwm/windowlist.c (do_windowList):
+	* fvwm/menus.c(change_mr_menu_style):
+	WindowList uses 'WindowList' menu style if defined
+
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/fvwm.c (CreateGCs):
+	* fvwm/cursor.c (CursorStyle):
+	new members Scr.MonoGC, Scr.ScratchMonoPixmap for creating empty cursors
+	cursorstyle command understands new cursor names 'none' and 'tiny'
+
+	* fvwm/colors.c (CreateGCs):
+	function moved to fvwm.c
+
+	* fvwm/add_window.c (destroy_icon):
+	reset icon size to zero
+
 1999-12-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS: a note about fvwm-menu-headlines

@@ -386,7 +386,7 @@ void CursorStyle(F_CMD_ARGS)
 
   if (my_nc == -1)
   {
-    nc = strtol (newcursor, &errpos, 10);
+    nc = strtol(newcursor, &errpos, 10);
     if (errpos && *errpos == '\0')
       my_nc = 0;
   }
@@ -412,24 +412,44 @@ void CursorStyle(F_CMD_ARGS)
   else
     {
       /* newcursor was not a number neither a X11 cursor name */
-#ifdef XPM
-      XpmAttributes xpm_attributes;
-      Pixmap source, mask;
-      unsigned int x;
-      unsigned int y;
+      if (StrEquals("none", newcursor) || StrEquals("tiny", newcursor))
+      {
+	static Pixmap nocursor = None;
+	XColor nccol;
 
-      path = findImageFile (newcursor, NULL, R_OK);
-      if (!path)
+	if (nocursor == None)
+	{
+	  if (Scr.FvwmCursors[index])
+	    XFreeCursor (dpy, Scr.FvwmCursors[index]);
+	  XSetForeground(dpy, Scr.MonoGC, (tolower(*newcursor) == 'n') ? 0 : 1);
+	  XFillRectangle(dpy, Scr.ScratchMonoPixmap, Scr.MonoGC, 0, 0, 1, 1);
+	  Scr.FvwmCursors[index] =
+	    XCreatePixmapCursor(
+	      dpy, Scr.ScratchMonoPixmap, Scr.ScratchMonoPixmap, &nccol, &nccol,
+	      0, 0);
+	  free (newcursor);
+	}
+      }
+      else
+      {
+#ifdef XPM
+	XpmAttributes xpm_attributes;
+	Pixmap source, mask;
+	unsigned int x;
+	unsigned int y;
+
+	path = findImageFile (newcursor, NULL, R_OK);
+	if (!path)
 	{
 	  fvwm_msg (ERR, "CursorStyle", "Cursor %s not found", newcursor);
 	  free (newcursor);
 	  return;
 	}
 
-      xpm_attributes.depth = 1; /* we need source to be a bitmap */
-      xpm_attributes.valuemask = XpmSize | XpmDepth | XpmHotspot;
-      if (XpmReadFileToPixmap (dpy, Scr.Root, path, &source, &mask,
-			       &xpm_attributes) != XpmSuccess)
+	xpm_attributes.depth = 1; /* we need source to be a bitmap */
+	xpm_attributes.valuemask = XpmSize | XpmDepth | XpmHotspot;
+	if (XpmReadFileToPixmap (dpy, Scr.Root, path, &source, &mask,
+				 &xpm_attributes) != XpmSuccess)
 	{
 	  fvwm_msg (ERR, "CursorStyle", "Error reading cursor xpm %s",
 		    newcursor);
@@ -437,29 +457,30 @@ void CursorStyle(F_CMD_ARGS)
 	  return;
 	}
 
-      colors[0].pixel = GetColor("Black");
-      colors[1].pixel = GetColor("White");
-      XQueryColors (dpy, Pcmap, colors, 2);
+	colors[0].pixel = GetColor("Black");
+	colors[1].pixel = GetColor("White");
+	XQueryColors (dpy, Pcmap, colors, 2);
 
-      if (Scr.FvwmCursors[index])
-	XFreeCursor (dpy, Scr.FvwmCursors[index]);
-      x = xpm_attributes.x_hotspot;
-      if (x >= xpm_attributes.width)
-	x = xpm_attributes.width / 2;
-      y = xpm_attributes.y_hotspot;
-      if (y >= xpm_attributes.height)
-	y = xpm_attributes.height / 2;
-      Scr.FvwmCursors[index] =
-	XCreatePixmapCursor(
-	  dpy, source, mask, &(colors[0]), &(colors[1]), x, y);
+	if (Scr.FvwmCursors[index])
+	  XFreeCursor (dpy, Scr.FvwmCursors[index]);
+	x = xpm_attributes.x_hotspot;
+	if (x >= xpm_attributes.width)
+	  x = xpm_attributes.width / 2;
+	y = xpm_attributes.y_hotspot;
+	if (y >= xpm_attributes.height)
+	  y = xpm_attributes.height / 2;
+	Scr.FvwmCursors[index] =
+	  XCreatePixmapCursor(
+	    dpy, source, mask, &(colors[0]), &(colors[1]), x, y);
 
-      free (newcursor);
-      free (path);
+	free (newcursor);
+	free (path);
 #else /* ! XPM */
-      fvwm_msg (ERR, "CursorStyle", "Bad cursor name or number %s", newcursor);
-      free (newcursor);
-      return;
+	fvwm_msg(ERR, "CursorStyle", "Bad cursor name or number %s", newcursor);
+	free (newcursor);
+	return;
 #endif
+      }
     }
 
   /* look for optional color arguments */

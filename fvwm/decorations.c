@@ -62,6 +62,7 @@
 #include "decorations.h"
 #include <X11/Xproto.h>
 #include "lang-strings.h"
+#include "update.h"
 #include "style.h"
 
 

@@ -3,6 +3,11 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.12 (not released yet)
 
+* The WindowList menu uses the WindowList menu style if it is defined.
+
+* The CursorStyle command accepts two new cursors: 'None' for no cursor and
+  'Tiny' for a single pixel cursor.
+
 * A new configurable script fvwm-menu-headlines to show headlines of some
   popular web sites in your fvwm menus. Supported sites: FreshMeat, LinuxToday,
   Slashdot, Segfault and more to come.

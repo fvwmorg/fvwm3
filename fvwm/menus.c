@@ -6098,12 +6098,31 @@ void SetMenuStyle(F_CMD_ARGS)
   return;
 }
 
+/* This is called by the window list function */
+void change_mr_menu_style(MenuRoot *mr, char *stylename)
+{
+  MenuStyle *ms = NULL;
+
+  ms = FindMenuStyle(stylename);
+  if(ms == NULL)
+    return;
+  if (MR_MAPPED_COPIES(mr) != 0)
+  {
+    fvwm_msg(ERR,"ChangeMenuStyle", "menu %s is in use", MR_NAME(mr));
+  }
+  else
+  {
+    MR_STYLE(mr) = ms;
+    MR_IS_UPDATED(mr) = 1;
+  }
+}
+
 void ChangeMenuStyle(F_CMD_ARGS)
 {
-  char *name = NULL, *menuname = NULL;
+  char *name = NULL;
+  char *menuname = NULL;
   MenuStyle *ms = NULL;
   MenuRoot *mr = NULL;
-
 
   name = PeekToken(action, &action);
   if (name == NULL)

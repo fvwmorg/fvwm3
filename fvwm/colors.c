@@ -41,31 +41,6 @@
 #include "misc.h"
 #include "screen.h"
 
-/***********************************************************************
- *
- *  Procedure:
- *	CreateGCs - open fonts and create all the needed GC's.  I only
- *		    want to do this once, hence the first_time flag.
- *
- ***********************************************************************/
-void CreateGCs(void)
-{
-  XGCValues gcv;
-  unsigned long gcm;
-
-  /* create scratch GC's */
-  gcm = GCFunction|GCLineWidth;
-  gcv.function = GXcopy;
-  gcv.line_width = 0;
-
-  Scr.ScratchGC1 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-  Scr.ScratchGC2 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-  Scr.ScratchGC3 = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-  Scr.TransMaskGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-
-}
-
-
 /****************************************************************************
  *
  * Free an array of colours (n colours), never free black

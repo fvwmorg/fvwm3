@@ -46,6 +46,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "defaults.h"
+#include "update.h"
 #include "style.h"
 #include "libs/Colorset.h"
 #include "borders.h"
@@ -558,7 +559,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
   /* mark style as changed */
   ptmpstyle->has_style_changed = 1;
   /* set global flag */
-  Scr.flags.has_any_style_changed = 1;
+  Scr.flags.do_need_window_update = 1;
   /* default StartsOnPage behavior for initial capture */
   ptmpstyle->flags.capture_honors_starts_on_page = 1;
 
@@ -1945,23 +1946,17 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 }
 
 
-static void handle_window_style_change(FvwmWindow *t)
+/* This function sets the style update flags as necessary */
+void check_window_style_change(
+  FvwmWindow *t, update_win *flags, window_style *ret_style)
 {
-  window_style style;
   int i;
   char *wf;
   char *sf;
   char *sc;
-  Bool do_redraw_decoration = False;
-  Bool do_redecorate = False;
-  Bool do_update_icon = False;
-  Bool do_setup_focus_policy = False;
-  Bool do_resize_window = False;
-  Bool do_setup_frame = False;
-  Bool do_update_frame_attributes = False;
 
-  lookup_style(t, &style);
-  if (style.has_style_changed == 0)
+  lookup_style(t, ret_style);
+  if (ret_style->has_style_changed == 0)
   {
     /* nothing to do */
     return;
@@ -1972,10 +1967,10 @@ static void handle_window_style_change(FvwmWindow *t)
   /* All static common styles can simply be copied. For some there is
    * additional work to be done below. */
   wf = (char *)(&FW_COMMON_STATIC_FLAGS(t));
-  sf = (char *)(&SFGET_COMMON_STATIC_FLAGS(style));
-  sc = (char *)(&SCGET_COMMON_STATIC_FLAGS(style));
+  sf = (char *)(&SFGET_COMMON_STATIC_FLAGS(*ret_style));
+  sc = (char *)(&SCGET_COMMON_STATIC_FLAGS(*ret_style));
   /* copy the static common window flags */
-  for (i = 0; i < sizeof(SFGET_COMMON_STATIC_FLAGS(style)); i++)
+  for (i = 0; i < sizeof(SFGET_COMMON_STATIC_FLAGS(*ret_style)); i++)
   {
     wf[i] = (wf[i] & ~sc[i]) | (sf[i] & sc[i]);
   }
@@ -1983,47 +1978,40 @@ static void handle_window_style_change(FvwmWindow *t)
   /*
    * is_sticky
    * is_icon_sticky
-   *
-   * These are a bit more complicated because they can move windows to a
-   * different page or desk. */
-  if (SCIS_STICKY(style))
+   */
+  if (SCIS_STICKY(*ret_style))
   {
-    handle_stick(&Event, t->frame, t, C_FRAME, "", 0, SFIS_STICKY(style));
+    flags->do_update_stick = True;
   }
-  if (SCIS_ICON_STICKY(style))
+  if (SCIS_ICON_STICKY(*ret_style) && IS_ICONIFIED(t) && !IS_STICKY(t))
   {
-    if (IS_ICONIFIED(t) && !IS_STICKY(t))
-    {
-      /* stick and unstick the window to force the icon on the current page */
-      handle_stick(&Event, t->frame, t, C_FRAME, "", 0, 1);
-      handle_stick(&Event, t->frame, t, C_FRAME, "", 0, 0);
-    }
+    flags->do_update_stick_icon = True;
   }
 
   /*
    * focus
    */
-  if (SCFOCUS_MODE(style))
+  if (SCFOCUS_MODE(*ret_style))
   {
-    do_setup_focus_policy = True;
+    flags->do_setup_focus_policy = True;
   }
 
   /*
    * has_bottom_title
    */
-  if (SCHAS_BOTTOM_TITLE(style))
+  if (SCHAS_BOTTOM_TITLE(*ret_style))
   {
-    do_setup_frame = True;
+    flags->do_setup_frame = True;
   }
 
   /*
    * has_mwm_border
    * has_mwm_buttons
    */
-  if (SCHAS_MWM_BORDER(style) ||
-      SCHAS_MWM_BUTTONS(style))
+  if (SCHAS_MWM_BORDER(*ret_style) ||
+      SCHAS_MWM_BUTTONS(*ret_style))
   {
-    do_redecorate = True;
+    flags->do_redecorate = True;
   }
 
   /*
@@ -2061,40 +2049,40 @@ static void handle_window_style_change(FvwmWindow *t)
    * icon_override
    * is_icon_suppressed
    */
-  if (style.change_mask.has_icon ||
-      style.change_mask.icon_override ||
-      SCHAS_NO_ICON_TITLE(style) ||
-      SCIS_ICON_SUPPRESSED(style))
+  if (ret_style->change_mask.has_icon ||
+      ret_style->change_mask.icon_override ||
+      SCHAS_NO_ICON_TITLE(*ret_style) ||
+      SCIS_ICON_SUPPRESSED(*ret_style))
   {
-    do_update_icon = True;
+    flags->do_update_icon = True;
   }
 
   /*
    *   has_icon_boxes
    */
-  if (style.change_mask.has_icon_boxes)
+  if (ret_style->change_mask.has_icon_boxes)
   {
-    change_icon_boxes(t, &style);
-    do_update_icon = True;
+    flags->do_update_icon_boxes = True;
+    flags->do_update_icon = True;
   }
 
 #if MINI_ICONS
   /*
    * has_mini_icon
    */
-  if (style.change_mask.has_mini_icon)
+  if (ret_style->change_mask.has_mini_icon)
   {
-    change_mini_icon(t, &style);
-    do_redecorate = True;
+    flags->do_update_mini_icon = True;
+    flags->do_redecorate = True;
   }
 #endif
 
   /*
    * has_max_window_size
    */
-  if (style.change_mask.has_max_window_size)
+  if (ret_style->change_mask.has_max_window_size)
   {
-    do_resize_window = True;
+    flags->do_resize_window = True;
   }
 
   /*
@@ -2102,12 +2090,12 @@ static void handle_window_style_change(FvwmWindow *t)
    * has_color_fore
    * use_colorset
    */
-  if (style.change_mask.has_color_fore ||
-      style.change_mask.has_color_back ||
-      style.change_mask.use_colorset)
+  if (ret_style->change_mask.has_color_fore ||
+      ret_style->change_mask.has_color_back ||
+      ret_style->change_mask.use_colorset)
   {
-    do_redraw_decoration = True;
-    update_window_color_style(t, &style);
+    flags->do_redraw_decoration = True;
+    flags->do_update_window_color = True;
   }
 
   /*
@@ -2122,114 +2110,24 @@ static void handle_window_style_change(FvwmWindow *t)
    * has_ol_decor
    * is_button_disabled
    */
-  if (style.change_mask.do_decorate_transient ||
-      style.change_mask.has_border_width ||
-      style.change_mask.has_decor ||
-      style.change_mask.has_handle_width ||
-      style.change_mask.has_mwm_decor ||
-      style.change_mask.has_mwm_functions ||
-      style.change_mask.has_no_border ||
-      style.change_mask.has_no_title ||
-      style.change_mask.has_ol_decor ||
-      style.change_mask.is_button_disabled)
+  if (ret_style->change_mask.do_decorate_transient ||
+      ret_style->change_mask.has_border_width ||
+      ret_style->change_mask.has_decor ||
+      ret_style->change_mask.has_handle_width ||
+      ret_style->change_mask.has_mwm_decor ||
+      ret_style->change_mask.has_mwm_functions ||
+      ret_style->change_mask.has_no_border ||
+      ret_style->change_mask.has_no_title ||
+      ret_style->change_mask.has_ol_decor ||
+      ret_style->change_mask.is_button_disabled)
   {
-    do_redecorate = True;
+    flags->do_redecorate = True;
   }
 
-  if (style.change_mask.do_save_under ||
-      style.change_mask.use_backing_store)
+  if (ret_style->change_mask.do_save_under ||
+      ret_style->change_mask.use_backing_store)
   {
-    do_update_frame_attributes = True;
-  }
-
-  /****** clean up, redraw, etc. ******/
-
-  if (do_redecorate)
-  {
-    char left_buttons;
-    char right_buttons;
-    FvwmWindow old_t;
-    rectangle naked_g;
-    rectangle *new_g;
-
-    /* copy window structure because we still need some old values */
-    memcpy(&old_t, t, sizeof(FvwmWindow));
-
-    /* determine level of decoration */
-    setup_style_and_decor(t, &style, &left_buttons, &right_buttons);
-
-    /* redecorate */
-    change_auxiliary_windows(t, left_buttons, right_buttons);
-
-    /* calculate the new offsets */
-    gravity_get_naked_geometry(
-      old_t.hints.win_gravity, &old_t, &naked_g, &t->normal_g);
-    gravity_translate_to_northwest_geometry_no_bw(
-      old_t.hints.win_gravity, &old_t, &naked_g, &naked_g);
-    gravity_add_decoration(
-      old_t.hints.win_gravity, t, &t->normal_g, &naked_g);
-    if (IS_MAXIMIZED(t))
-    {
-      /* maximized windows are always considered to have NorthWestGravity */
-      gravity_get_naked_geometry(
-	NorthWestGravity, &old_t, &naked_g, &t->max_g);
-      gravity_translate_to_northwest_geometry_no_bw(
-	NorthWestGravity, &old_t, &naked_g, &naked_g);
-      gravity_add_decoration(
-	NorthWestGravity, t, &t->max_g, &naked_g);
-      new_g = &t->max_g;
-    }
-    else
-    {
-      new_g = &t->normal_g;
-    }
-    get_relative_geometry(&t->frame_g, new_g);
-
-    do_setup_frame = True;
-    do_redraw_decoration = True;
-  }
-  if (do_resize_window)
-  {
-    setup_frame_size_limits(t, &style);
-    do_setup_frame = True;
-    do_redraw_decoration = True;
-  }
-  if (do_setup_frame)
-  {
-    if (IS_SHADED(t))
-      get_shaded_geometry(t, &t->frame_g, &t->frame_g);
-    ForceSetupFrame(t, t->frame_g.x, t->frame_g.y, t->frame_g.width,
-		    t->frame_g.height, True);
-#ifdef GNOME
-    GNOME_SetWinArea(t);
-#endif
-  }
-  if (do_redraw_decoration)
-  {
-    FvwmWindow *u = Scr.Hilite;
-
-    if (IS_SHADED(t))
-      XRaiseWindow(dpy, t->decor_w);
-    if (IsRectangleOnThisPage(&t->frame_g, Scr.CurrentDesk))
-      DrawDecorations(t, DRAW_ALL, (Scr.Hilite == t), 2, None);
-    Scr.Hilite = u;
-  }
-  if (do_update_icon)
-  {
-    change_icon(t, &style);
-    if (IS_ICONIFIED(t))
-    {
-      SET_ICONIFIED(t, 0);
-      Iconify(t, 0, 0);
-    }
-  }
-  if (do_setup_focus_policy)
-  {
-    setup_focus_policy(t);
-  }
-  if (do_update_frame_attributes)
-  {
-    setup_frame_attributes(t, &style);
+    flags->do_update_frame_attributes = True;
   }
 
   return;
@@ -2247,45 +2145,6 @@ void reset_style_changes(void)
 	   sizeof(SCGET_COMMON_STATIC_FLAGS(*temp)));
     memset(&(temp->change_mask), 0, sizeof(temp->change_mask));
   }
-  Scr.flags.has_any_style_changed = 0;
-
-  return;
-}
-
-/* Check and apply new style to each window if the style has changed. */
-void handle_style_changes(void)
-{
-  FvwmWindow *t;
-  Window focus_w;
-  FvwmWindow *focus_fw;
-  Bool do_need_ungrab = False;
-
-  /* Grab the server during the style update! */
-  MyXGrabServer(dpy);
-  if (GrabEm(CRS_WAIT, GRAB_BUSY))
-    do_need_ungrab = True;
-  XSync(dpy,0);
-
-  /* This is necessary in case the focus policy changes. With ClickToFocus some
-   * buttons have to be grabbed/ungrabbed. */
-  focus_fw = Scr.Focus;
-  focus_w = (focus_fw) ? focus_fw->w : Scr.NoFocusWin;
-  SetFocus(Scr.NoFocusWin, NULL, 1);
-  /* update styles for all windows */
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-  {
-    handle_window_style_change(t);
-  }
-  /* restore the focus; also handles the case that the previously focused
-   * window is now NeverFocus */
-  SetFocus(focus_w, focus_fw, 1);
-  /* finally clean up the change flags */
-  reset_style_changes();
-
-  if (do_need_ungrab)
-    UngrabEm(GRAB_BUSY);
-  MyXUngrabServer(dpy);
-  XSync(dpy, 0);
 
   return;
 }
@@ -2301,7 +2160,7 @@ void update_style_colorset(int colorset)
     {
       temp->has_style_changed = 1;
       temp->change_mask.use_colorset = 1;
-      Scr.flags.has_any_style_changed = 1;
+      Scr.flags.do_need_window_update = 1;
     }
   }
 }

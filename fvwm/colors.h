@@ -16,6 +16,6 @@
 #ifndef COLORS_H
 #define COLORS_H
 
-void CreateGCs(void);
 void FreeColors(Pixel *pixels, int n);
+
 #endif /* COLORS_H */

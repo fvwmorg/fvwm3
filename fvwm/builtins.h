@@ -76,5 +76,10 @@ void SetEnv(F_CMD_ARGS);
 #ifdef HAVE_STROKE
 void strokeFunc(F_CMD_ARGS);
 #endif /* HAVE_STROKE */
+void InitFvwmDecor(FvwmDecor *decor);
+void DestroyFvwmDecor(FvwmDecor *decor);
+void reset_decor_changes(void);
+Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose);
+void FreeDecorFace(Display *dpy, DecorFace *df);
 
 #endif /* BUILTINS_H */

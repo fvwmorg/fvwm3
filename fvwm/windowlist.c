@@ -75,7 +75,7 @@ static int winCompare(const  FvwmWindow **a, const  FvwmWindow **b)
  * memory for each item (& freeing it) rather than just using the window
  * title directly. */
 void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		unsigned long context, char *action,int *Module)
+		   unsigned long context, char *action,int *Module)
 {
   MenuRoot *mr;
   MenuParameters mp;
@@ -270,7 +270,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   {
     sprintf(tlabel,"Desk: %d",desk);
   }
-  mr=NewMenuRoot(tlabel);
+  mr = NewMenuRoot(tlabel);
   AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
 
   numWindows = 0;
@@ -471,6 +471,9 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     teventp = (XEvent *)1;
   else
     teventp = eventp;
+
+  /* Use the WindowList menu style is there is one */
+  change_mr_menu_style(mr, "WindowList");
 
   mp.menu = mr;
   mp.parent_menu = NULL;
