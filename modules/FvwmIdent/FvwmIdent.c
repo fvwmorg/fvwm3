@@ -95,8 +95,9 @@ static Bool UsePixmapDrawing = False; /* if True draw everything in a pixamp
 static int main_width;
 static int main_height;
 
-static EventMask mw_events = ButtonPressMask | KeyPressMask |
-  ButtonReleaseMask | KeyReleaseMask;
+static EventMask mw_events =
+  ExposureMask | ButtonPressMask | KeyPressMask |
+  ButtonReleaseMask | KeyReleaseMask | StructureNotifyMask;
 
 static Atom wm_del_win;
 
@@ -112,7 +113,7 @@ static char geometry[30], mymin_aspect[11], max_aspect[11], layer[10];
 static char ewmh_init_state[512];
 
 /* FIXME: default layer should be received from fvwm */
-#define default_layer 4
+#define default_layer DEFAULT_DEFAULT_LAYER
 static int minimal_layer = default_layer;
 static int my_layer = default_layer;
 
@@ -524,7 +525,7 @@ void list_config_info(unsigned long *body)
 		/* ask for movement events iff transparent */
 		if (CSET_IS_TRANSPARENT(colorset))
 		{
-			
+
 			mw_events |= StructureNotifyMask;
 			if (CSET_IS_TRANSPARENT_PR_PURE(colorset))
 			{

@@ -1,3 +1,10 @@
+2002-09-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIdent/FvwmIdent.c (default_layer):
+	use DEFAULT_DEFAULT_LAYER from defaults.h
+	fixed event mask in FvwmIdent causing it to appear on wrong layer and
+	not redrawing properly
+
 2002-09-21  Ben Mathews  <benmathews@adelphia.net>
 
 	* FvwmTaskBar/Start.c (StartButtonInit):
@@ -31,7 +38,7 @@
 
 2002-09-18  olicha  <olivier.chapuis@free.fr>
 
-	* FvwmPager/x_pager.c (DrawGrid): 
+	* FvwmPager/x_pager.c (DrawGrid):
 	Fixed active desk label (Suzanne Skinner)
 
 2002-09-17  Dominik Vogt  <dominik.vogt@gmx.de>
@@ -292,7 +299,7 @@
 	* FvwmCommand/FvwmCommand.h:
 	* FvwmButtons/parse.c:
 	* FvwmAnimate/FvwmAnimate.c:
-	let config.h include strinh.h or strings.h
+	let config.h include string.h or strings.h
 
 2002-08-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
