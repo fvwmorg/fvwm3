@@ -3,7 +3,7 @@
 
 %define ver @VERSION@
 %define rel 1
-%define c_p --without-gnome --without-rplay-library --sysconfdir=/etc
+%define c_p --without-gnome --without-rplay-library --sysconfdir=/etc --mandir=/usr/share/man
 %define m_p CFLAGS="-O2"
 
 # Different distributions expect sources to be in different places;

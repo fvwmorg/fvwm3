@@ -94,7 +94,7 @@ fvwm \- @FVWMNAMELONG@ for X11
 .IR       config-file ]
 .RB [ \-r ]
 .RB [ \-s
-.IR       [ screen_num ] ]
+.IR       [screen_num] ]
 .RB [ \-V ]
 .RB [ \-C
 .IR       visual-class
@@ -749,7 +749,6 @@ is used instead of ExitFunction.
 .EX
 DestroyFunc StartFunction
 AddToFunc StartFunction
- + I ModuleSynchronous FvwmTheme
  + I Module FvwmPager * *
  + I Module FvwmButtons
 
@@ -1548,7 +1547,7 @@ module called "HelpMe".
 
 Note: There are many commands that affect look and feel of
 specific, some or all windows, like
-.BR Style ", " Mouse ", " Colorset, ", " TitleStyle
+.BR Style ", " Mouse ", " Colorset ", " TitleStyle
 and many others.  For performance reasons such changes are
 not applied immediately but only when fvwm is idle, i.e. no user
 interaction or module input is pending.  Specifically, new

@@ -1,3 +1,13 @@
+2003-10-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm.de.gmo:
+	* fvwm.de.po:
+	* FvwmTaskBar.de.gmo:
+	* FvwmTaskBar.de.po:
+	* FvwmScript.de.gmo:
+	* FvwmScript.de.po:
+	added German translations by Andrei Mitrofanow
+
 2003-04-16  olicha  <olivier.chapuis@free.fr>
 
 	* Makefile.am:

@@ -5,7 +5,7 @@ EXTRA_DIST = @PACKAGE@.spec
 
 version = @VERSION@
 release = 0.`date +%Y%m%d`
-cparams = --without-gnome --without-rplay-library --sysconfdir=/etc
+cparams = --without-gnome --without-rplay-library --sysconfdir=/etc --mandir=/usr/share/man
 mparams = CFLAGS="-O2"
 
 rpm: @PACKAGE@.spec

@@ -1,3 +1,9 @@
+2003-10-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* Makefile.am:
+	* fvwm.spec.in:
+	install man pages into /usr/share/man like LSB says
+
 2002-12-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:

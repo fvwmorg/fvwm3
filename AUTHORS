@@ -2,11 +2,14 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Andrei Mitrofanow:
+German translations. Debian package creation procedure.
+
 David Lazar:
 Use font for selected buttons in Start button.
 
 Scott Smedley:
-Some Perl/Tk programming.
+Wrote FvwmTabs and improved Perl/Tk module support.
 
 Francis Litterio:
 Fixed building FvwmScript under cygwin.
@@ -19,7 +22,7 @@ Added joining and shaping in bi-directional languages that need
 this, arabic translations.
 
 Richard Lister:
-New module FvwmWindowLister.
+New module FvwmWindowMenu.
 
 Marcus Lundblad:
 Vector button offsets patch.
