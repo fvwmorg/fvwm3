@@ -2,9 +2,10 @@
 
 # options:
 #
-#  -R   increase release number after building (2.3.29 -> 3.0.0)
-#  -M   increase major number after building (2.3.29 -> 2.4.0)
-#  -r   build and commit a release (tags the sources and updates version info)
+#  -r   Build and commit a release (tags the sources and updates version info).
+#  -w   Disable -Werror in compiler flags.
+#  -R   Increase release number after building (2.3.29 -> 3.0.0).
+#  -M   Increase major number after building (2.3.29 -> 2.4.0).
 #
 # environment variables:
 #
@@ -25,7 +26,9 @@ CHECK_VERSION_STRING="AM_INIT_AUTOMAKE"
 VERSION_PRE="fvwm-"
 VERSION_POST=".tar.gz"
 READY_STRING=" is ready for distribution"
-CFLAGS="-g -O2 -Wall -Werror"
+CFLAGSE="-g -O2 -Wall -Werror"
+CFLAGSW="-g -O2 -Wall"
+CFLAGS="$CFLAGSE"
 
 # parse options
 IS_RELEASE=0
@@ -51,6 +54,7 @@ while [ ! x$1 = x ] ; do
       ;;
     -R) IS_MINOR=0; IS_MAJOR=0 ;;
     -M) IS_MINOR=0; IS_MAJOR=1 ;;
+    -w) CFLAGS="$CFLAGSW" ;;
   esac
   shift
 done
@@ -147,7 +151,7 @@ automake --add-missing || exit 31
 echo running autoreconf ...
 autoreconf || exit 32
 echo running configure ...
-./configure --enable-gnome || exit 33
+./configure || exit 33
 echo running make clean ...
 $MAKE clean || exit 34
 echo running make ...
@@ -168,8 +172,8 @@ if [ $IS_RELEASE = 0 ] ; then
 else
   echo updating NEWS file
   NNEWS="new-NEWS"
-  perl -pe 's/^(.*) '$VRELNUM' (\(not released yet\))$/$1 '$VRELNUMP' $2\n\n$1 '$VRELNUM' (@{[substr(`date +%Y-%m-%d`,0,10)]})/' \
-    < NEWS > $NNEWS || exit 41
+    perl -pe 's/^(.*) '$VRELNUM' (\(not released yet\))$/$1 '$VRELNUMP' $2\n\n$1 '$VRELNUM' (@{[substr(`date +%Y-%m-%d`,0,10)]})/' \
+      < NEWS > $NNEWS || exit 41
   mv $NNEWS NEWS || exit 42
   echo tagging CVS source
   if [ ! "$FVWMRELPRECVSCOMMAND" = "" ] ; then

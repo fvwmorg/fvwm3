@@ -3,6 +3,11 @@
 	* make_fvwmdist.sh (wrong_dir):
 	fixed logic
 	partially rewritten for portability reasons
+	new options
+	  -R: skip to next release series number after building
+	  -M: skip to next major release number after building
+	  -w: disable -Werror in compiler flags
+	  -a, -b, -s: build an alpha/beta/stable release
 
 2001-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
