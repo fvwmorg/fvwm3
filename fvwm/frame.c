@@ -1220,8 +1220,6 @@ void frame_move_resize(
 	/* clean up */
 	fw->frame_g = mra->end_g;
 	update_absolute_geometry(fw);
-	print_g("max_g", &fw->max_g);
-	print_g("normal_g", &fw->normal_g);
 #if 1
 	/*!!! necessary? */
 	if (mra->delta_g.width != 0 || mra->delta_g.height != 0 ||

@@ -52,6 +52,8 @@ Changes in alpha release 2.5.1 (not released yet)
 * The Current command does not select a random window when no
   window has the focus.
 
+* New colour '@4' (transparent) in button vectors.
+
 Changes in alpha release 2.5.0 (27-Jan-2002)
 
 * New commands ResizeMaximize and ResizeMoveMaximize that modify
