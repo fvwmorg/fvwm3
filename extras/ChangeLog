@@ -1,3 +1,10 @@
+Tue Nov 10 10:23:11 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript: Added the yacc & lex output (scanner.c, script.c and
+	script.h) to the CVS tree, so you can build without having these
+	tools.  Removed the old version of the yacc/lex input (the
+	Compilers subdirectory).
+
 Tue Nov 10 10:05:05 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmScript/Makefile.am (EXTRA_DIST): Added script.h.
