@@ -52,6 +52,7 @@
 #include "stack.h"
 #include "gnome.h"
 #include "module_interface.h"
+#include "libs/Colorset.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
@@ -629,26 +630,22 @@ int main(int argc, char **argv)
   if(Pdepth<2)
   {
     Scr.gray_pixmap =
-      XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin,g_bits, g_width,g_height,
-                                  Scr.StdColors.fore,
-				  Scr.StdColors.back,
-                                  Pdepth);
+      XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin, g_bits, g_width, g_height,
+				  Colorset[0].fg, Colorset[0].bg, Pdepth);
     Scr.light_gray_pixmap =
-      XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin,l_g_bits,l_g_width,
-                                  l_g_height,Scr.StdColors.fore,
-				  Scr.StdColors.back,
-                                  Pdepth);
+      XCreatePixmapFromBitmapData(dpy, Scr.NoFocusWin, l_g_bits, l_g_width,
+				  l_g_height, Colorset[0].fg, Colorset[0].bg,
+				  Pdepth);
     Scr.sticky_gray_pixmap =
-      XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin,s_g_bits,s_g_width,
-                                  s_g_height,Scr.StdColors.fore,
-				  Scr.StdColors.back,
-                                  Pdepth);
+      XCreatePixmapFromBitmapData(dpy, Scr.NoFocusWin, s_g_bits, s_g_width,
+				  s_g_height, Colorset[0].fg, Colorset[0].bg,
+				  Pdepth);
   }
 
   /* create the move/resize feedback window */
   Scr.SizeStringWidth = XTextWidth (Scr.StdFont.font,
                                     " +8888 x +8888 ", 15);
-  attributes.background_pixel = Scr.StdColors.back;
+  attributes.background_pixel = Colorset[0].bg;
   attributes.colormap = Pcmap;
   attributes.border_pixel = 0;
   valuemask = CWBackPixel | CWColormap | CWBorderPixel;
@@ -1530,10 +1527,7 @@ static void InitVariables(void)
 
   Scr.DefaultIcon = NULL;
 
-  Scr.StdColors.fore = 0;
-  Scr.StdColors.back = 0;
-  Scr.StdRelief.fore = 0;
-  Scr.StdRelief.back = 0;
+  AllocColorset(0);
   Scr.StdGC = 0;
   Scr.StdReliefGC = 0;
   Scr.StdShadowGC = 0;

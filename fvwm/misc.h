@@ -97,6 +97,8 @@ void Maximize(F_CMD_ARGS);
 void WindowShade(F_CMD_ARGS);
 void setShadeAnim(F_CMD_ARGS);
 
+void HandleColorset(F_CMD_ARGS);
+
 Bool GrabEm(int);
 void UngrabEm(void);
 void CaptureOneWindow(FvwmWindow *fw, Window window);

@@ -13,6 +13,9 @@
 	  Added AllocGradient() & CreateGradientPixmap().
 	* modules/*/Makefile.am added -lm to LADADD to satisfy linker.
 	* modules/FvwmTheme: new module
+	* fvwm/builtins.c: DefaultColors affects Colorset[0]
+	* fvwm/functions.c: New command Colorset
+	* fvwm/module_interface.c: new function BroadcastColorset
 
 1999-07-11  Dominik Vogt  <dominik_vogt@gmx.de>
 

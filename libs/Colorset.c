@@ -80,23 +80,33 @@ char *DumpColorset(unsigned int n) {
 /*****************************************************************************
  * LoadColorset() takes a strings and stuffs it into the array
  *****************************************************************************/
-void LoadColorset(char *line) {
+int LoadColorset(char *line) {
   colorset_struct *cs;
-  unsigned int n, chars, width, height, stretch_x, stretch_y, keep_aspect;
+  unsigned int n, chars;
+  Pixel fg, bg, hilite, shadow;
+  Pixmap pixmap;
+  unsigned int width, height, stretch_x, stretch_y, keep_aspect;
 
-  if (sscanf(line, "%d%n", &n, &chars) == 0)
-    return;
+  if (sscanf(line, "%d%n", &n, &chars) != 1)
+    return -1;
   line += chars;
+  if (sscanf(line, "%lx %lx %lx %lx %lx %x %x %x %x %x", &fg, &bg, &hilite,
+	     &shadow, &pixmap, &width, &height, &stretch_x, &stretch_y,
+	     &keep_aspect) != 10)
+    return -1;
   AllocColorset(n);
   cs = &Colorset[n];
-  sscanf(line, "%lx %lx %lx %lx %lx %x %x %x %x %x", &cs->fg, &cs->bg,
-	 &cs->hilite, &cs->shadow, &cs->pixmap, &width, &height, &stretch_x,
-	 &stretch_y, &keep_aspect);
+  cs->fg = fg;
+  cs->bg = bg;
+  cs->hilite = hilite;
+  cs->shadow = shadow;
+  cs->pixmap = pixmap;
   cs->width = width;
   cs->height = height;
   cs->stretch_x = stretch_x;
   cs->stretch_y = stretch_y;
   cs->keep_aspect = keep_aspect;
+  return n;
 }
 
 /* sets a window background from a colorset
@@ -104,40 +114,33 @@ void LoadColorset(char *line) {
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
 			 colorset_struct *colorset, unsigned int depth, GC gc)
 {
-  Pixmap pixmap;
+  Pixmap pixmap = None;
 
-  if (!colorset->pixmap)
+  if (!colorset->pixmap) {
     /* use the bg pixel */
     XSetWindowBackground(dpy, win, colorset->bg);
   /* fixme: test for keep_aspect here */
-  else if (!colorset->stretch_x && !colorset->stretch_y)
+  } else if (!colorset->stretch_x && !colorset->stretch_y) {
     /* it's a tiled pixmap */
     XSetWindowBackgroundPixmap(dpy, win, colorset->pixmap);
-  else if (!colorset->stretch_y) {
-    /* it's an HGradient */
+  } else if (!colorset->stretch_x) {
+    /* it's an VGradient */
     pixmap = CreateStretchYPixmap(dpy, colorset->pixmap, colorset->width,
 				  colorset->height, depth, height, gc);
-    if (pixmap) {
-      XSetWindowBackgroundPixmap(dpy, win, pixmap);
-      XFreePixmap(dpy, pixmap);
-    }
   } else if (!colorset->stretch_y) {
     /* it's a VGradient */
     pixmap = CreateStretchXPixmap(dpy, colorset->pixmap, colorset->width,
 				 colorset->height, depth, width, gc);
-    if (pixmap) {
-      XSetWindowBackgroundPixmap(dpy, win, pixmap);
-      XFreePixmap(dpy, pixmap);
-    }
   } else {
     /* It's a full window pixmap */
     pixmap = CreateStretchPixmap(dpy, colorset->pixmap, colorset->width,
 				 colorset->height, depth, width, height, gc);
-    if (pixmap) {
-      XSetWindowBackgroundPixmap(dpy, win, pixmap);
-      XFreePixmap(dpy, pixmap);
-    }
   }
 
+  if (pixmap)
+    XSetWindowBackgroundPixmap(dpy, win, pixmap);
   XClearArea(dpy, win, 0, 0, width, height, True);
+  XFlush(dpy);
+  if (pixmap)
+    XFreePixmap(dpy, pixmap);
 }

@@ -120,6 +120,7 @@ static const struct functions func_config[] =
   {"close",        close_function,   F_CLOSE,               FUNC_NEEDS_WINDOW},
   {"colorlimit",   SetColorLimit,    F_COLOR_LIMIT,         0},
   {"colormapfocus",SetColormapFocus, F_COLORMAP_FOCUS,      0},
+  {"colorset",     HandleColorset,   F_NOP,                 0},
   {"current",      CurrentFunc,      F_CURRENT,             0},
   {"cursormove",   movecursor,       F_MOVECURSOR,          0},
   {"cursorstyle",  CursorStyle,      F_CURSOR_STYLE,        0},

@@ -45,7 +45,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "module_interface.h"
-
+#include "libs/Colorset.h"
 
 int npipes;
 int *readPipes;
@@ -910,6 +910,22 @@ BroadcastMiniIcon(unsigned long event_type,
   free(body);
 }
 #endif /* MINI_ICONS */
+
+/**********************************************************************
+ * Reads a colorset command from a module and broadcasts it back out
+ * Colorset 0 and DefaultColors are the same thing
+ **********************************************************************/
+void BroadcastColorset(int n)
+{
+  int i;
+
+  if (-1 == n)
+    return;
+
+  for (i=0; i < npipes; i++)
+    SendName(i, M_CONFIG_INFO, 0, 0, 0, DumpColorset(n));
+}
+ 
 
 /*
 ** send an arbitrary string to all instances of a module

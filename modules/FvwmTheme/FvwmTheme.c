@@ -110,11 +110,6 @@ static void main_loop(void) {
   FvwmPacket *packet;
 
   while (True) {
-    /* this module does not deal with X events so it has to explicitly
-     * flush the connection before sleeping on input from fvwm, Sync is used
-     * so that errors are reported promptly */
-    XSync(dpy, False);
-
     /* garbage collect */
     alloca(0);
 
@@ -136,7 +131,8 @@ static void main_loop(void) {
 }
 
 /* config options, the first NULL is replaced with *FvwmThemeColorset */
-static char *config_options[] = {"ImagePath", "ColorLimit", NULL, NULL};
+/* the "Colorset" config option is what gets reflected by fvwm */
+static char *config_options[] = {"ImagePath", "ColorLimit", "Colorset", NULL, NULL};
 
 static void parse_config_line(char *line) {
   char *rest;
@@ -149,6 +145,10 @@ static void parse_config_line(char *line) {
     sscanf(rest, "%d", &color_limit);
     break;
   case 2:
+    /* got a colorset config line from fvwm, maybe Defaultcolors: load it */
+    LoadColorset(rest);
+    break;
+  case 3:
     parse_colorset(rest);
     break;
   }    
@@ -271,6 +271,9 @@ static void parse_colorset(char *line) {
     }
   }
 
+  /* make sure the server has this to avoid races */
+  XSync(dpy, False);
+  
   /* inform fvwm of the change */
   SendText(fd, DumpColorset(n), 0);
 }
@@ -292,11 +295,11 @@ static void parse_config(void) {
   char *line;
 
   /* prepare the tokenizer array, [0,1] are ImagePath and ColorLimit */
-  config_options[2] = safemalloc(strlen(name) + 10);
-  sprintf(config_options[2], "*%sColorset", name);
+  config_options[3] = safemalloc(strlen(name) + 10);
+  sprintf(config_options[3], "*%sColorset", name);
 
   /* set a filter on the config lines sent */
-  InitGetConfigLine(fd, config_options[2]);
+  InitGetConfigLine(fd, config_options[3]);
   
   /* tell fvwm what we want to receive */
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO

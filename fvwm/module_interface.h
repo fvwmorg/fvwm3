@@ -81,6 +81,7 @@ void BroadcastMiniIcon(unsigned long event_type,
 		       unsigned long data5, unsigned long data6,
 		       unsigned long data7, unsigned long data8,
 		       const char *name);
+void BroadcastColorset(int n);
 void FlushOutputQueues(void);
 int PositiveWrite(int module, unsigned long *ptr, int size);
 #endif /* MODULE_H */

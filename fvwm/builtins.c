@@ -44,6 +44,7 @@
 #include "defaults.h"
 #include "gnome.h"
 #include "borders.h"
+#include "libs/Colorset.h"
 
 static void ApplyIconFont(void);
 static void ApplyWindowFont(FvwmDecor *fl);
@@ -1542,21 +1543,21 @@ static void ApplyDefaultFontAndColors(void)
   gcv.function = GXcopy;
   gcv.font = Scr.StdFont.font->fid;
   gcv.line_width = 0;
-  gcv.foreground = Scr.StdColors.fore;
-  gcv.background = Scr.StdColors.back;
+  gcv.foreground = Colorset[0].fg;
+  gcv.background = Colorset[0].bg;
   if(Scr.StdGC)
     XChangeGC(dpy, Scr.StdGC, gcm, &gcv);
   else
     Scr.StdGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcm = GCFunction|GCLineWidth|GCForeground;
-  gcv.foreground = Scr.StdRelief.fore;
+  gcv.foreground = Colorset[0].hilite;
   if(Scr.StdReliefGC)
     XChangeGC(dpy, Scr.StdReliefGC, gcm, &gcv);
   else
     Scr.StdReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  gcv.foreground = Scr.StdRelief.back;
+  gcv.foreground = Colorset[0].shadow;
   if(Scr.StdShadowGC)
     XChangeGC(dpy, Scr.StdShadowGC, gcm, &gcv);
   else
@@ -1568,7 +1569,8 @@ static void ApplyDefaultFontAndColors(void)
     Scr.SizeStringWidth = XTextWidth(Scr.StdFont.font, " +8888 x +8888 ", 15);
     wid = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
     hei = Scr.StdFont.height + 2 * SIZE_VINDENT;
-    XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdColors.back);
+    SetWindowBackground(dpy, Scr.SizeWindow, wid, hei, &Colorset[0], Pdepth,
+			Scr.StdGC);
     if(Scr.gs.EmulateMWM)
     {
       XMoveResizeWindow(dpy,Scr.SizeWindow,
@@ -1603,11 +1605,26 @@ static void ApplyDefaultFontAndColors(void)
 
   UpdateAllMenuStyles();
 
-/* inform modules of colorset changes goes here
-  BroadcastLook();
-*/
+/* inform modules of colorset change */
+  BroadcastColorset(0);
 
 }
+
+void HandleColorset(F_CMD_ARGS)
+{
+  int n = LoadColorset(action);
+
+  if (-1 == n)
+    return;
+  if (0 != n) {
+    BroadcastColorset(n);
+  } else
+    /* This broadcasts Colorset 0 */
+    ApplyDefaultFontAndColors();
+}
+
+
+
 
 void SetDefaultIcon(F_CMD_ARGS)
 {
@@ -1631,17 +1648,17 @@ void SetDefaultColors(F_CMD_ARGS)
 
   if (!StrEquals(fore, "-"))
     {
-      FreeColors(&Scr.StdColors.fore, 1);
-      Scr.StdColors.fore = GetColor(fore);
+      FreeColors(&Colorset[0].fg, 1);
+      Colorset[0].fg = GetColor(fore);
     }
   if (!StrEquals(back, "-"))
     {
-      FreeColors(&Scr.StdColors.back, 1);
-      FreeColors(&Scr.StdRelief.back, 1);
-      FreeColors(&Scr.StdRelief.fore, 1);
-      Scr.StdColors.back = GetColor(back);
-      Scr.StdRelief.fore = GetHilite(Scr.StdColors.back);
-      Scr.StdRelief.back = GetShadow(Scr.StdColors.back);
+      FreeColors(&Colorset[0].bg, 1);
+      FreeColors(&Colorset[0].hilite, 1);
+      FreeColors(&Colorset[0].shadow, 1);
+      Colorset[0].bg = GetColor(back);
+      Colorset[0].hilite = GetHilite(Colorset[0].bg);
+      Colorset[0].shadow = GetShadow(Colorset[0].bg);
     }
   free(fore);
   free(back);

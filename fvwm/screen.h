@@ -243,9 +243,6 @@ typedef struct ScreenInfo
 
   char *DefaultIcon;            /* Icon to use when no other icons are found */
 
-  ColorPair StdColors; 	/* standard fore/back colors */
-  ColorPair StdRelief;
-
   int TopLayer;
   int DefaultLayer;
   int BottomLayer;

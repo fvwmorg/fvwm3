@@ -72,6 +72,7 @@
 #include "stack.h"
 #include "move_resize.h"
 #include "gnome.h"
+#include "libs/Colorset.h"
 
 /* Used to parse command line of clients for specific desk requests. */
 /* Todo: check for multiple desks. */
@@ -482,10 +483,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   SET_ICON_UNMAPPED(tmp_win, 0);
   SET_MAXIMIZED(tmp_win, 0);
 
-  tmp_win->TextPixel = Scr.StdColors.fore;
-  tmp_win->ReliefPixel = Scr.StdRelief.fore;
-  tmp_win->ShadowPixel = Scr.StdRelief.back;
-  tmp_win->BackPixel = Scr.StdColors.back;
+  tmp_win->TextPixel = Colorset[0].fg;
+  tmp_win->ReliefPixel = Colorset[0].hilite;
+  tmp_win->ShadowPixel = Colorset[0].shadow;
+  tmp_win->BackPixel = Colorset[0].bg;
 
   if(SGET_FORE_COLOR_NAME(style) != NULL) {
     tmp_win->TextPixel = GetColor(SGET_FORE_COLOR_NAME(style));

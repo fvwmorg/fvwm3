@@ -57,7 +57,7 @@
 #endif /* SHAPE */
 
 #include <libs/Picture.h>
-
+#include "libs/Colorset.h"
 
 static int do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr);
 static void GetBitmapFile(FvwmWindow *tmp_win);
@@ -147,7 +147,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   valuemask = CWColormap | CWBorderPixel
               | CWBackPixel | CWCursor | CWEventMask;
   attributes.colormap = Pcmap;
-  attributes.background_pixel = Scr.StdColors.back;
+  attributes.background_pixel = Colorset[0].bg;
   attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
   attributes.border_pixel = 0;
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
