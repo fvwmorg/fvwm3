@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef Picture_H
@@ -28,7 +28,7 @@
 
 /* <pubfunc>PGetFvwmPicture
  * <description>
- * Return an FvwmPicture loaded from the file pictureName found in the 
+ * Return an FvwmPicture loaded from the file pictureName found in the
  * ImagePath.. If ImagePath is NULL the default image path is used.
  * </description>
  */
@@ -37,11 +37,11 @@ FvwmPicture* PGetFvwmPicture(Display* dpy, Window Root,
 			     int color_limit);
 /* <pubfunc>PCacheFvwmPicture
  * <description>
- * Return the FvwmPicture loaded from the file pictureName found in the 
- * ImagePath. Fisrt the picture is searched in the FvwmPicture cache (so 
+ * Return the FvwmPicture loaded from the file pictureName found in the
+ * ImagePath. Fisrt the picture is searched in the FvwmPicture cache (so
  * if this picture has been already loaded it is not loaded again and a
- * weight is added to the found picture). If the picture is not in the cache 
- * it is loaded from the file and added to the FvwmPicture cache. 
+ * weight is added to the found picture). If the picture is not in the cache
+ * it is loaded from the file and added to the FvwmPicture cache.
  * If ImagePath is NULL the default image path is used.
  * </description>
  */
@@ -62,7 +62,7 @@ FvwmPicture *PLoadFvwmPictureFromPixmap(Display *dpy, Window Root,
 
 /* <pubfunc>PDestroyFvwmPicture
  * <description>
- * Return a FvwmPicture from the given data. The picture is added to the 
+ * Return a FvwmPicture from the given data. The picture is added to the
  * FvwmPicture cache. This is not really usefull as it is not possible
  * to really cache a picture from the given data.
  * </description>

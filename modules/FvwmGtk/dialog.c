@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -59,7 +59,7 @@ widget_get_value (GtkWidget *w)
       GtkWidget *item;
 
       if (menu == NULL)
-        return NULL;
+	return NULL;
       item = gtk_menu_get_active (GTK_MENU (menu));
       if (item)
 	{
@@ -73,7 +73,7 @@ widget_get_value (GtkWidget *w)
   else if (GTK_IS_SCALE (w))
     {
       g_snprintf (buf, sizeof (buf), "%.*f",
-	  	  GTK_RANGE (w)->digits,
+		  GTK_RANGE (w)->digits,
 		  gtk_range_get_adjustment (GTK_RANGE (w))->value);
       return buf;
     }
@@ -275,21 +275,21 @@ open_dialog (int argc, char **argv)
 	(GTK_OBJECT (item), "delete_event",
 	 GTK_SIGNAL_FUNC (gtk_widget_hide), current);
       if (argc >= 3 && strcasecmp ("center", argv[2]) == 0)
-        {
-          gtk_window_position (GTK_WINDOW (item), GTK_WIN_POS_CENTER);
-        }
+	{
+	  gtk_window_position (GTK_WINDOW (item), GTK_WIN_POS_CENTER);
+	}
       else
-        {
-          gtk_window_position (GTK_WINDOW (item), GTK_WIN_POS_MOUSE);
-        }
+	{
+	  gtk_window_position (GTK_WINDOW (item), GTK_WIN_POS_MOUSE);
+	}
       if (argc >= 4)
-        {
-          int border_width;
+	{
+	  int border_width;
 
-          border_width = atoi (argv[3]);
+	  border_width = atoi (argv[3]);
 
-          gtk_container_border_width (GTK_CONTAINER (item), border_width);
-        }
+	  gtk_container_border_width (GTK_CONTAINER (item), border_width);
+	}
     }
   if (GTK_IS_MENU (item))
     {
@@ -529,9 +529,9 @@ dialog_color (int argc, char **argv)
 		       &color))
 	{
 	  double rgb[3];
-	  rgb[0] = (double) color.red   / 65536.0;
+	  rgb[0] = (double) color.red	/ 65536.0;
 	  rgb[1] = (double) color.green / 65536.0;
-	  rgb[2] = (double) color.blue  / 65536.0;
+	  rgb[2] = (double) color.blue	/ 65536.0;
 	  gtk_color_selection_set_color (GTK_COLOR_SELECTION (item), rgb);
 	}
     }

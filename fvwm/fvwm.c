@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -83,7 +83,7 @@
 #include <X11/Xresource.h>
 
 #if HAVE_SYS_SYSTEMINFO_H
-/* Solaris has sysinfo instead of gethostname.  */
+/* Solaris has sysinfo instead of gethostname.	*/
 #include <sys/systeminfo.h>
 #endif
 
@@ -96,10 +96,10 @@ static char sccsid[] __attribute__((__unused__))
 
 int master_pid;			/* process number of 1st fvwm process */
 
-ScreenInfo Scr;		        /* structures for the screen */
+ScreenInfo Scr;			/* structures for the screen */
 Display *dpy = NULL;		/* which display are we talking to */
 
-Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
+Bool fFvwmInStartup = True;	/* Set to False when startup has finished */
 Bool DoingCommandLine = False;	/* Set True before each cmd line arg */
 
 /* Grab pointer state. Set by GrabEm, UngrabEm, menus.c and StartupStuff */
@@ -267,38 +267,38 @@ int main(int argc, char **argv)
     else if (strncasecmp(argv[i],"-d",2)==0)
     {
       if (++i >= argc)
-        usage();
+	usage();
       display_name = argv[i];
     }
     else if (strncasecmp(argv[i],"-f",2)==0)
     {
       if (++i >= argc)
-        usage();
+	usage();
       if (num_config_commands < MAX_CFG_CMDS)
       {
-        config_commands[num_config_commands] =
-          (char *)malloc(6+strlen(argv[i]));
-        strcpy(config_commands[num_config_commands],"Read ");
-        strcat(config_commands[num_config_commands],argv[i]);
-        num_config_commands++;
+	config_commands[num_config_commands] =
+	  (char *)malloc(6+strlen(argv[i]));
+	strcpy(config_commands[num_config_commands],"Read ");
+	strcat(config_commands[num_config_commands],argv[i]);
+	num_config_commands++;
       }
       else
       {
-        fvwm_msg(ERR,"main","only %d -f and -cmd parms allowed!",MAX_CFG_CMDS);
+	fvwm_msg(ERR,"main","only %d -f and -cmd parms allowed!",MAX_CFG_CMDS);
       }
     }
     else if (strncasecmp(argv[i],"-cmd",4)==0)
     {
       if (++i >= argc)
-        usage();
+	usage();
       if (num_config_commands < MAX_CFG_CMDS)
       {
-        config_commands[num_config_commands] = safestrdup(argv[i]);
-        num_config_commands++;
+	config_commands[num_config_commands] = safestrdup(argv[i]);
+	num_config_commands++;
       }
       else
       {
-        fvwm_msg(ERR,"main","only %d -f and -cmd parms allowed!",MAX_CFG_CMDS);
+	fvwm_msg(ERR,"main","only %d -f and -cmd parms allowed!",MAX_CFG_CMDS);
       }
     }
     else if (strncasecmp(argv[i],"-h",2)==0)
@@ -320,29 +320,29 @@ int main(int argc, char **argv)
     else if (strncasecmp(argv[i],"-visualId",9)==0) {
       visualClass = -1;
       if (++i >= argc)
-        usage();
+	usage();
       if (sscanf(argv[i], "0x%x", &visualId) == 0)
-        if (sscanf(argv[i], "%d", &visualId) == 0)
-          usage();
+	if (sscanf(argv[i], "%d", &visualId) == 0)
+	  usage();
     }
     else if (strncasecmp(argv[i],"-visual",7)==0) {
       visualId = None;
       if (++i >= argc)
-        usage();
+	usage();
       if (strncasecmp(argv[i], "staticg", 7) == 0)
-        visualClass = StaticGray;
+	visualClass = StaticGray;
       else if (strncasecmp(argv[i], "g", 1) == 0)
-        visualClass = GrayScale;
+	visualClass = GrayScale;
       else if (strncasecmp(argv[i], "staticc", 7) == 0)
-        visualClass = StaticColor;
+	visualClass = StaticColor;
       else if (strncasecmp(argv[i], "p", 1) == 0)
-        visualClass = PseudoColor;
+	visualClass = PseudoColor;
       else if (strncasecmp(argv[i], "t", 1) == 0)
-        visualClass = TrueColor;
+	visualClass = TrueColor;
       else if (strncasecmp(argv[i], "d", 1) == 0)
-        visualClass = DirectColor;
+	visualClass = DirectColor;
       else
-        usage();
+	usage();
     }
     else if (strncasecmp(argv[i], "-version", 8) == 0)
     {
@@ -388,25 +388,25 @@ int main(int argc, char **argv)
     {
       if (i != Scr.screen && fork() == 0)
       {
-        myscreen = i;
+	myscreen = i;
 
-        /*
-         * Truncate the string 'whatever:n.n' to 'whatever:n',
-         * and then append the screen number.
-         */
-        cp = strchr(message, ':');
-        if (cp != NULL)
-        {
-          cp = strchr(cp, '.');
-          if (cp != NULL)
-            *cp = '\0';		/* truncate at display part */
-        }
-        sprintf(message + strlen(message), ".%d", myscreen);
-        Pdpy = dpy = XOpenDisplay(message);
-        Scr.screen = myscreen;
-        Scr.NumberOfScreens = ScreenCount(dpy);
+	/*
+	 * Truncate the string 'whatever:n.n' to 'whatever:n',
+	 * and then append the screen number.
+	 */
+	cp = strchr(message, ':');
+	if (cp != NULL)
+	{
+	  cp = strchr(cp, '.');
+	  if (cp != NULL)
+	    *cp = '\0';		/* truncate at display part */
+	}
+	sprintf(message + strlen(message), ".%d", myscreen);
+	Pdpy = dpy = XOpenDisplay(message);
+	Scr.screen = myscreen;
+	Scr.NumberOfScreens = ScreenCount(dpy);
 
-        break;
+	break;
       }
     }
 
@@ -457,7 +457,7 @@ int main(int argc, char **argv)
     gethostname(client,MAXHOSTNAME);
     rdisplay_string = safemalloc(len+14 + strlen(client));
     sprintf(rdisplay_string,"HOSTDISPLAY=%s:%s",client,
-            &display_string[13]);
+	    &display_string[13]);
     putenv(rdisplay_string);
   }
   else
@@ -484,13 +484,13 @@ int main(int argc, char **argv)
     template.screen = Scr.screen;
     template.class = visualClass;
     vizinfo = XGetVisualInfo(dpy, VisualScreenMask | VisualClassMask, &template,
-                             &total);
+			     &total);
     if (total) {
       for (i = 0; i < total; i++) {
-        if (vizinfo[i].depth > Pdepth) {
-          Pvisual = vizinfo[i].visual;
-          Pdepth = vizinfo[i].depth;
-        }
+	if (vizinfo[i].depth > Pdepth) {
+	  Pvisual = vizinfo[i].visual;
+	  Pdepth = vizinfo[i].depth;
+	}
       }
       XFree(vizinfo);
       /* have to have a colormap for non-default visual windows */
@@ -509,7 +509,7 @@ int main(int argc, char **argv)
     template.screen = Scr.screen;
     template.visualid = visualId;
     vizinfo = XGetVisualInfo(dpy, VisualScreenMask | VisualIDMask, &template,
-                             &total);
+			     &total);
     if (total) {
       /* visualID's are unique so there will only be one */
       Pvisual = vizinfo[0].visual;
@@ -597,13 +597,13 @@ int main(int argc, char **argv)
 
     if (
       XGetWindowProperty(
-        dpy, Scr.Root, _XA_WM_DESKTOP, 0L, 1L, True, _XA_WM_DESKTOP,
-        &atype, &aformat, &nitems, &bytes_remain, &prop
+	dpy, Scr.Root, _XA_WM_DESKTOP, 0L, 1L, True, _XA_WM_DESKTOP,
+	&atype, &aformat, &nitems, &bytes_remain, &prop
       ) == Success
     ) {
       if (prop != NULL) {
-        Restarting = True;
-        /* do_force_single_screen = True; */
+	Restarting = True;
+	/* do_force_single_screen = True; */
       }
     }
   }
@@ -655,24 +655,24 @@ int main(int argc, char **argv)
     /* Run startup command file in 5 places: FVWM_USERDIR, FVWM_DATADIR,
        and for compatibility: ~/.fvwm2rc, $sysconfdir/system.fvwm2rc */
     if (
-      !run_command_file( CatString3(fvwm_userdir, "/",       FVWMRC),
-        &Event, NULL, C_ROOT, 1 ) &&
-      !run_command_file( CatString3(home_dir,     "/",       FVWMRC),
-        &Event, NULL, C_ROOT, 1 ) &&
-      !run_command_file( CatString3(FVWM_DATADIR, "/",       FVWMRC),
-        &Event, NULL, C_ROOT, 1 ) &&
+      !run_command_file( CatString3(fvwm_userdir, "/",	     FVWMRC),
+	&Event, NULL, C_ROOT, 1 ) &&
+      !run_command_file( CatString3(home_dir,	  "/",	     FVWMRC),
+	&Event, NULL, C_ROOT, 1 ) &&
+      !run_command_file( CatString3(FVWM_DATADIR, "/",	     FVWMRC),
+	&Event, NULL, C_ROOT, 1 ) &&
       !run_command_file( CatString3(FVWM_DATADIR, "/system", FVWMRC),
-        &Event, NULL, C_ROOT, 1 ) &&
+	&Event, NULL, C_ROOT, 1 ) &&
       !run_command_file( CatString3(FVWM_CONFDIR, "/system", FVWMRC),
-        &Event, NULL, C_ROOT, 1 ) )
+	&Event, NULL, C_ROOT, 1 ) )
     {
       fvwm_msg( ERR, "main", "Cannot read startup file, tried: "
-        "\n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t%s/system%s\n\t%s/system%s",
-          fvwm_userdir, FVWMRC,
-          home_dir,     FVWMRC,
-          FVWM_DATADIR, FVWMRC,
-          FVWM_DATADIR, FVWMRC,
-          FVWM_CONFDIR, FVWMRC);
+	"\n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t%s/system%s\n\t%s/system%s",
+	  fvwm_userdir, FVWMRC,
+	  home_dir,	FVWMRC,
+	  FVWM_DATADIR, FVWMRC,
+	  FVWM_DATADIR, FVWMRC,
+	  FVWM_CONFDIR, FVWMRC);
     }
   }
 
@@ -859,7 +859,7 @@ void SetRCDefaults(void)
  *
  *  Procedure:
  *	InternUsefulAtoms:
- *            Dont really know what it does
+ *	      Dont really know what it does
  *
  ***********************************************************************
  */
@@ -937,7 +937,7 @@ static void InternUsefulAtoms (void)
  *
  *  Procedure:
  *	InstallSignals: install the signal handlers, using whatever
- *         means we have at our disposal. The more POSIXy, the better
+ *	   means we have at our disposal. The more POSIXy, the better
  *
  ************************************************************************/
 void
@@ -985,9 +985,9 @@ InstallSignals(void)
    * leave SIGCHLD handler with unfinished business ...
    *
    * NOTE: We could still receive SIGPIPE signals within the
-   *       SIGCHLD handler, but the SIGPIPE handler has the
-   *       SA_RESTART flag set and so should not affect our
-   *       "wait" system call.
+   *	   SIGCHLD handler, but the SIGPIPE handler has the
+   *	   SA_RESTART flag set and so should not affect our
+   *	   "wait" system call.
    */
   sigact.sa_flags |= SA_NOCLDSTOP;
   sigact.sa_handler = ReapChildren;
@@ -995,10 +995,10 @@ InstallSignals(void)
 #else
 #ifdef USE_BSD_SIGNALS
   fvwmSetSignalMask( sigmask(SIGUSR1) |
-                     sigmask(SIGINT)  |
-                     sigmask(SIGHUP)  |
-                     sigmask(SIGQUIT) |
-                     sigmask(SIGTERM) );
+		     sigmask(SIGINT)  |
+		     sigmask(SIGHUP)  |
+		     sigmask(SIGQUIT) |
+		     sigmask(SIGTERM) );
 #endif
 
   /*
@@ -1298,7 +1298,7 @@ extern void FreeDecorFace(Display *dpy, DecorFace *df);
 /***********************************************************************
  *
  *  ResetOrDestroyAllButtons -- resets all buttons to defaults
- *                              destroys existing buttons
+ *				destroys existing buttons
  *
  ************************************************************************/
 void DestroyAllButtons(FvwmDecor *decor)
@@ -1346,7 +1346,7 @@ void ResetAllButtons(FvwmDecor *decor)
 /***********************************************************************
  *
  *  Procedure:
- *	CreateGCs - open fonts and create all the needed GC's.  I only
+ *	CreateGCs - open fonts and create all the needed GC's.	I only
  *		    want to do this once, hence the first_time flag.
  *
  ***********************************************************************/
@@ -1408,7 +1408,7 @@ static void InitVariables(void)
   /* create graphics contexts */
   CreateGCs();
 
-  if (Pdepth <= 8) {               /* if the color is limited */
+  if (Pdepth <= 8) {		   /* if the color is limited */
     /* a number > than the builtin table! */
     Scr.ColorLimit = 255;
   }
@@ -1495,13 +1495,13 @@ static void InitVariables(void)
      which do not run under NT.
 
      "Hummingbird Communications Ltd."
-        is the ServerVendor string of the Exceed X server under NT,
+	is the ServerVendor string of the Exceed X server under NT,
 
      "Network Computing Devices Inc."
-        is the ServerVendor string of the PCXware X server under Windows.
+	is the ServerVendor string of the PCXware X server under Windows.
 
      "WRQ, Inc."
-        is the ServerVendor string of the Reflection X server under Windows.
+	is the ServerVendor string of the Reflection X server under Windows.
   */
   Scr.bo.RaiseHackNeeded =
     (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0) ||
@@ -1592,9 +1592,9 @@ void Done(int restart, char *command)
       while (isspace(command[0])) command++;
       if (strncmp(command, "--dont-preserve-state", 21) == 0)
       {
-        doPreserveState = False;
-        command += 21;
-        while (isspace(command[0])) command++;
+	doPreserveState = False;
+	command += 21;
+	while (isspace(command[0])) command++;
       }
     }
     if (command[0] == '\0')
@@ -1631,61 +1631,61 @@ void Done(int restart, char *command)
 
       if (n <= 0)
       {
-        fvwm_msg(ERR, "Done", "Restart command parsing error in (%s): [%s]",
-          command, errorMsg);
+	fvwm_msg(ERR, "Done", "Restart command parsing error in (%s): [%s]",
+	  command, errorMsg);
       }
       else if (StrEquals(my_argv[0], "--pass-args"))
       {
-        if (n != 2)
+	if (n != 2)
 	{
-          fvwm_msg(ERR, "Done",
+	  fvwm_msg(ERR, "Done",
 		   "Restart --pass-args: single name expected. "
 		   "(restarting '%s' instead)",
-            g_argv[0]);
+	    g_argv[0]);
 
-        }
+	}
 	else
 	{
-          int i;
-          my_argv[0] = my_argv[1];
-          for (i = 1; i < g_argc && i < MAX_ARG_SIZE - 1; i++)
-            my_argv[i] = g_argv[i];
-          my_argv[i] = NULL;
+	  int i;
+	  my_argv[0] = my_argv[1];
+	  for (i = 1; i < g_argc && i < MAX_ARG_SIZE - 1; i++)
+	    my_argv[i] = g_argv[i];
+	  my_argv[i] = NULL;
 
-          execvp(my_argv[0], my_argv);
-          fvwm_msg(ERR, "Done",
+	  execvp(my_argv[0], my_argv);
+	  fvwm_msg(ERR, "Done",
 		   "Call of '%s' failed! (restarting '%s' instead)",
-            my_argv[0], g_argv[0]);
-          perror("  system error description");
-        }
+	    my_argv[0], g_argv[0]);
+	  perror("  system error description");
+	}
 
       }
       else
       {
-        /* Warn against an old 'Restart fvwm2' usage */
-        if (n == 1 && strcmp(my_argv[0], "fvwm2") == 0)
-        {
-          fvwm_msg(WARN, "Done",
-            "`Restart fvwm2' might not do what you want, see the man page.\n\t"
-            "Use Restart without parameters if you mean to restart the same WM."
-          );
-        }
-        /* If we are at it, warn against a 'Restart fvwm' usage as well */
-        if (n == 1 && strcmp(my_argv[0], "fvwm") == 0)
-        {
-          fvwm_msg(WARN, "Done",
-            "`Restart fvwm' might not do what you want, see the man page.\n\t"
-            "Use Restart without parameters if you mean to restart the same WM."
-          );
-        }
-        execvp(my_argv[0], my_argv);
-        fvwm_msg(ERR, "Done", "Call of '%s' failed! (restarting '%s' instead)",
-          my_argv[0], g_argv[0]);
-        perror("  system error description");
+	/* Warn against an old 'Restart fvwm2' usage */
+	if (n == 1 && strcmp(my_argv[0], "fvwm2") == 0)
+	{
+	  fvwm_msg(WARN, "Done",
+	    "`Restart fvwm2' might not do what you want, see the man page.\n\t"
+	    "Use Restart without parameters if you mean to restart the same WM."
+	  );
+	}
+	/* If we are at it, warn against a 'Restart fvwm' usage as well */
+	if (n == 1 && strcmp(my_argv[0], "fvwm") == 0)
+	{
+	  fvwm_msg(WARN, "Done",
+	    "`Restart fvwm' might not do what you want, see the man page.\n\t"
+	    "Use Restart without parameters if you mean to restart the same WM."
+	  );
+	}
+	execvp(my_argv[0], my_argv);
+	fvwm_msg(ERR, "Done", "Call of '%s' failed! (restarting '%s' instead)",
+	  my_argv[0], g_argv[0]);
+	perror("  system error description");
       }
     }
 
-    execvp(g_argv[0], g_argv);    /* that _should_ work */
+    execvp(g_argv[0], g_argv);	  /* that _should_ work */
     fvwm_msg(ERR, "Done", "Call of '%s' failed!", g_argv[0]);
     perror("  system error description");
   }
@@ -1764,9 +1764,9 @@ int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 
   fvwm_msg(ERR,"FvwmErrorHandler","*** internal error ***");
   fvwm_msg(ERR,"FvwmErrorHandler","Request %d, Error %d, EventType: %d",
-           event->request_code,
-           event->error_code,
-           last_event_type);
+	   event->request_code,
+	   event->error_code,
+	   last_event_type);
   return 0;
 }
 
@@ -1791,12 +1791,12 @@ void SaveDesktopState()
   {
     data[0] = (unsigned long) t->Desk;
     XChangeProperty (dpy, FW_W(t), _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
-                     PropModeReplace, (unsigned char *) data, 1);
+		     PropModeReplace, (unsigned char *) data, 1);
   }
 
   data[0] = (unsigned long) Scr.CurrentDesk;
   XChangeProperty (dpy, Scr.Root, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
-                   PropModeReplace, (unsigned char *) data, 1);
+		   PropModeReplace, (unsigned char *) data, 1);
 
   XFlush(dpy);
 }
@@ -1862,7 +1862,7 @@ static int parseCommandArgs(
   const char *cptr = command;
 #define theChar (*cptr)
 #define advChar (cptr++)
-#define topChar (*cptr     == '\\'? *(cptr+1): *cptr)
+#define topChar (*cptr	   == '\\'? *(cptr+1): *cptr)
 #define popChar (*(cptr++) == '\\'? *(cptr++): *(cptr-1))
 #define canAddArgChar (totalArgLen < MAX_TOTAL_ARG_LEN-1)
 #define addArgChar(ch) (++totalArgLen, *(aptr++) = ch)
@@ -1878,30 +1878,30 @@ static int parseCommandArgs(
     if (theChar == '\0') break;
     while ((sQuote || !isspace(theChar)) && theChar != '\0' && canAddArgChar) {
       if (theChar == '"') {
-        if (sQuote) { sQuote = 0; }
-        else { sQuote = 1; }
-        advChar;
+	if (sQuote) { sQuote = 0; }
+	else { sQuote = 1; }
+	advChar;
       } else if (!sQuote && theChar == '\'') {
-        advChar;
-        while (theChar != '\'' && theChar != '\0' && canAddArgChar) {
-          addArgChar(popChar);
-        }
-        if (theChar == '\'') advChar;
-        else if (!canAddArgChar) break;
-        else { *errorMsg = "No closing single quote"; errorCode = -3; break; }
+	advChar;
+	while (theChar != '\'' && theChar != '\0' && canAddArgChar) {
+	  addArgChar(popChar);
+	}
+	if (theChar == '\'') advChar;
+	else if (!canAddArgChar) break;
+	else { *errorMsg = "No closing single quote"; errorCode = -3; break; }
       } else if (!sQuote && theChar == '~') {
-        if (!canAddArgStr(home_dir)) break;
-        addArgStr(home_dir);
-        advChar;
+	if (!canAddArgStr(home_dir)) break;
+	addArgStr(home_dir);
+	advChar;
       } else if (theChar == '$') {
-        int beg, len;
-        const char *str = getFirstEnv(cptr, &beg, &len);
-        if (!str || beg) { addArgChar(theChar); advChar; continue; }
-        if (!canAddArgStr(str)) { break; }
-        addArgStr(str);
-        cptr += len;
+	int beg, len;
+	const char *str = getFirstEnv(cptr, &beg, &len);
+	if (!str || beg) { addArgChar(theChar); advChar; continue; }
+	if (!canAddArgStr(str)) { break; }
+	addArgStr(str);
+	cptr += len;
       } else {
-        if (addArgChar(popChar) == '\0') break;
+	if (addArgChar(popChar) == '\0') break;
       }
     }
     if (*(aptr-1) == '\0')
@@ -1970,7 +1970,7 @@ static void setVersionInfo(void)
 
   /* Set version information string */
   sprintf(version_str, "FVWM version %s compiled on %s at %s",
-          VERSION, __DATE__, __TIME__);
+	  VERSION, __DATE__, __TIME__);
   Fvwm_VersionInfo = safestrdup(version_str);
 
 #ifdef HAVE_READLINE

@@ -14,12 +14,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -211,10 +211,10 @@ int main(int argc, char **argv)
   /* We don't have sigaction(), so fall back to less robust methods.  */
 #ifdef USE_BSD_SIGNALS
   fvwmSetSignalMask( sigmask(SIGPIPE) |
-                     sigmask(SIGTERM) |
-                     sigmask(SIGQUIT) |
-                     sigmask(SIGINT) |
-                     sigmask(SIGHUP) );
+		     sigmask(SIGTERM) |
+		     sigmask(SIGQUIT) |
+		     sigmask(SIGINT) |
+		     sigmask(SIGHUP) );
 #endif
   signal(SIGPIPE, TerminateHandler);
   signal(SIGTERM, TerminateHandler);
@@ -328,15 +328,15 @@ int main(int argc, char **argv)
 
   SetMessageMask(fd,
 		 M_VISIBLE_NAME |
-                 M_ADD_WINDOW|
-                 M_CONFIGURE_WINDOW|
-                 M_DESTROY_WINDOW|
-                 M_FOCUS_CHANGE|
-                 M_NEW_PAGE|
-                 M_NEW_DESK|
-                 M_RAISE_WINDOW|
-                 M_LOWER_WINDOW|
-                 M_ICONIFY|
+		 M_ADD_WINDOW|
+		 M_CONFIGURE_WINDOW|
+		 M_DESTROY_WINDOW|
+		 M_FOCUS_CHANGE|
+		 M_NEW_PAGE|
+		 M_NEW_DESK|
+		 M_RAISE_WINDOW|
+		 M_LOWER_WINDOW|
+		 M_ICONIFY|
 		 M_ICON_LOCATION|
 		 M_DEICONIFY|
 		 M_RES_NAME|
@@ -457,7 +457,7 @@ int main(int argc, char **argv)
   if (debug_term_signal)
   {
     fprintf(stderr,"[main]: Terminated due to signal %d\n",
-                   debug_term_signal);
+		   debug_term_signal);
   }
 #endif
   return 0;
@@ -1169,20 +1169,20 @@ void list_window_name(unsigned long *body,unsigned long type)
     {
       switch (type) {
       case M_RES_CLASS:
-        if(t->res_class != NULL)
-          free(t->res_class);
-        CopyString(&t->res_class,(char *)(&body[3]));
-        break;
+	if(t->res_class != NULL)
+	  free(t->res_class);
+	CopyString(&t->res_class,(char *)(&body[3]));
+	break;
       case M_RES_NAME:
-        if(t->res_name != NULL)
-          free(t->res_name);
-        CopyString(&t->res_name,(char *)(&body[3]));
-        break;
+	if(t->res_name != NULL)
+	  free(t->res_name);
+	CopyString(&t->res_name,(char *)(&body[3]));
+	break;
       case M_VISIBLE_NAME:
-        if(t->window_name != NULL)
-          free(t->window_name);
-        CopyString(&t->window_name,(char *)(&body[3]));
-        break;
+	if(t->window_name != NULL)
+	  free(t->window_name);
+	CopyString(&t->window_name,(char *)(&body[3]));
+	break;
       }
       /* repaint by clearing window */
       if ((FwindowFont != NULL) && (t->icon_name != NULL)
@@ -1255,12 +1255,12 @@ void list_mini_icon(unsigned long *body)
     t = t->next;
   if (t)
   {
-    t->mini_icon.width   = mip->width;
-    t->mini_icon.height  = mip->height;
-    t->mini_icon.depth   = mip->depth;
+    t->mini_icon.width	 = mip->width;
+    t->mini_icon.height	 = mip->height;
+    t->mini_icon.depth	 = mip->depth;
     t->mini_icon.picture = mip->picture;
-    t->mini_icon.mask    = mip->mask;
-    t->mini_icon.alpha   = mip->alpha;
+    t->mini_icon.mask	 = mip->mask;
+    t->mini_icon.alpha	 = mip->alpha;
     /* repaint by clearing window */
     if (MiniIcons && t->mini_icon.picture) {
       if (t->PagerView)
@@ -1463,7 +1463,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	miss_counter++;
 #ifdef WORRY_ABOUT_MISSED_XEVENTS
 	if(miss_counter > 100)
-          DeadPipe(0);
+	  DeadPipe(0);
 #endif
     }
 
@@ -1738,19 +1738,19 @@ void ParseOptions(void)
       {
 	window_x = g_x;
 	usposition = 1;
-        if (flags & XNegative)
-        {
-          xneg = 1;
-        }
+	if (flags & XNegative)
+	{
+	  xneg = 1;
+	}
       }
       if (flags & YValue)
       {
 	window_y = g_y;
 	usposition = 1;
-        if (flags & YNegative)
-        {
-          yneg = 1;
-        }
+	if (flags & YNegative)
+	{
+	  yneg = 1;
+	}
       }
     }
     else if (StrEquals(resource, "IconGeometry"))
@@ -1769,18 +1769,18 @@ void ParseOptions(void)
       if (flags & XValue)
       {
 	icon_x = g_x;
-        if (flags & XNegative)
-        {
-          icon_xneg = 1;
-        }
+	if (flags & XNegative)
+	{
+	  icon_xneg = 1;
+	}
       }
       if (flags & YValue)
       {
 	icon_y = g_y;
-        if (flags & YNegative)
-        {
-          icon_yneg = 1;
-        }
+	if (flags & YNegative)
+	{
+	  icon_yneg = 1;
+	}
       }
     }
     else if (StrEquals(resource, "Label"))

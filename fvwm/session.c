@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*
@@ -55,24 +55,24 @@ extern int master_pid;
 
 typedef struct _match
 {
-  unsigned long      win;
-  char               *client_id;
-  char               *res_name;
-  char               *res_class;
-  char               *window_role;
-  char               *wm_name;
-  int                wm_command_count;
-  char               **wm_command;
-  int                 x, y, w, h, icon_x, icon_y;
-  int                 x_max, y_max, w_max, h_max;
-  int                 width_defect_max, height_defect_max;
-  int                 max_x_offset, max_y_offset;
-  int                 desktop;
-  int                 layer;
-  int                 used;
-  int                 gravity;
-  unsigned long       ewmh_hint_desktop;
-  window_flags        flags;
+  unsigned long	     win;
+  char		     *client_id;
+  char		     *res_name;
+  char		     *res_class;
+  char		     *window_role;
+  char		     *wm_name;
+  int		     wm_command_count;
+  char		     **wm_command;
+  int		      x, y, w, h, icon_x, icon_y;
+  int		      x_max, y_max, w_max, h_max;
+  int		      width_defect_max, height_defect_max;
+  int		      max_x_offset, max_y_offset;
+  int		      desktop;
+  int		      layer;
+  int		      used;
+  int		      gravity;
+  unsigned long	      ewmh_hint_desktop;
+  window_flags	      flags;
 }
 Match;
 
@@ -114,18 +114,18 @@ static int
 SaveGlobalState(FILE *f)
 {
   fprintf(f, "[GLOBAL]\n");
-  fprintf(f, "  [DESKTOP] %i\n", Scr.CurrentDesk);
-  fprintf(f, "  [VIEWPORT] %i %i %i %i\n",
-          Scr.Vx, Scr.Vy, Scr.VxMax, Scr.VyMax);
-  fprintf(f, "  [SCROLL] %i %i %i %i %i %i\n",
+  fprintf(f, "	[DESKTOP] %i\n", Scr.CurrentDesk);
+  fprintf(f, "	[VIEWPORT] %i %i %i %i\n",
+	  Scr.Vx, Scr.Vy, Scr.VxMax, Scr.VyMax);
+  fprintf(f, "	[SCROLL] %i %i %i %i %i %i\n",
 	  Scr.EdgeScrollX, Scr.EdgeScrollY, Scr.ScrollResistance,
 	  Scr.MoveResistance,
 	  !!(Scr.flags.edge_wrap_x), !!(Scr.flags.edge_wrap_y));
-  fprintf(f, "  [SNAP] %i %i %i %i\n",
+  fprintf(f, "	[SNAP] %i %i %i %i\n",
 	  Scr.SnapAttraction, Scr.SnapMode, Scr.SnapGridX, Scr.SnapGridY);
-  fprintf(f, "  [MISC] %i %i %i\n",
+  fprintf(f, "	[MISC] %i %i %i\n",
 	  Scr.ClickTime, Scr.ColormapFocus, Scr.ColorLimit);
-  fprintf(f, "  [STYLE] %i %i\n", Scr.gs.EmulateMWM, Scr.gs.EmulateWIN);
+  fprintf(f, "	[STYLE] %i %i\n", Scr.gs.EmulateMWM, Scr.gs.EmulateWIN);
   return 1;
 }
 
@@ -198,8 +198,8 @@ static char *getUniqueStateFilename(void)
 void
 LoadGlobalState(char *filename)
 {
-  FILE               *f;
-  char                s[4096], s1[4096];
+  FILE		     *f;
+  char		      s[4096], s1[4096];
   /* char s2[256]; */
   int i1, i2, i3, i4, i5, i6;
 
@@ -251,40 +251,40 @@ LoadGlobalState(char *filename)
        * useless for rereading changed rc files. */
       if (!strcmp(s1, "[SCROLL]"))
       {
-        sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5, &i6);
-        Scr.EdgeScrollX = i1;
-        Scr.EdgeScrollY = i2;
-        Scr.ScrollResistance = i3;
-        Scr.MoveResistance = i4;
-        if (i5)
-          Scr.flags.edge_wrap_x = 1;
-        else
-          Scr.flags.edge_wrap_x = 0;
-        if (i6)
-          Scr.flags.edge_wrap_y = 1;
-        else
-          Scr.flags.edge_wrap_y = 0;
+	sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5, &i6);
+	Scr.EdgeScrollX = i1;
+	Scr.EdgeScrollY = i2;
+	Scr.ScrollResistance = i3;
+	Scr.MoveResistance = i4;
+	if (i5)
+	  Scr.flags.edge_wrap_x = 1;
+	else
+	  Scr.flags.edge_wrap_x = 0;
+	if (i6)
+	  Scr.flags.edge_wrap_y = 1;
+	else
+	  Scr.flags.edge_wrap_y = 0;
       }
       else if (!strcmp(s1, "[SNAP]"))
       {
-        sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
-        Scr.SnapAttraction = i1;
-        Scr.SnapMode = i2;
-        Scr.SnapGridX = i3;
-        Scr.SnapGridY = i4;
+	sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
+	Scr.SnapAttraction = i1;
+	Scr.SnapMode = i2;
+	Scr.SnapGridX = i3;
+	Scr.SnapGridY = i4;
       }
       else if (!strcmp(s1, "[MISC]"))
       {
-        sscanf(s, "%*s %i %i %i", &i1, &i2, &i3);
-        Scr.ClickTime = i1;
-        Scr.ColormapFocus = i2;
-        Scr.ColorLimit = i3;
+	sscanf(s, "%*s %i %i %i", &i1, &i2, &i3);
+	Scr.ClickTime = i1;
+	Scr.ColormapFocus = i2;
+	Scr.ColorLimit = i3;
       }
       else if (!strcmp(s1, "[STYLE]"))
       {
-        sscanf(s, "%*s %i %i", &i1, &i2);
-        Scr.gs.EmulateMWM = i1;
-        Scr.gs.EmulateWIN = i2;
+	sscanf(s, "%*s %i %i", &i1, &i2);
+	Scr.gs.EmulateMWM = i1;
+	Scr.gs.EmulateWIN = i2;
       }
     }
 #endif
@@ -324,15 +324,15 @@ GetClientID(Window window)
     == Success)
   {
     if (actual_type == XA_WINDOW && actual_format == 32 &&
-        nitems == 1 && bytes_after == 0)
+	nitems == 1 && bytes_after == 0)
     {
       client_leader = *((Window *) prop);
 
       if (XGetTextProperty (dpy, client_leader, &tp, _XA_SM_CLIENT_ID))
       {
-        if (tp.encoding == XA_STRING &&
-            tp.format == 8 && tp.nitems != 0)
-          client_id = (char *) tp.value;
+	if (tp.encoding == XA_STRING &&
+	    tp.format == 8 && tp.nitems != 0)
+	  client_id = (char *) tp.value;
       }
     }
 
@@ -463,25 +463,25 @@ SaveWindowStates(FILE *f)
     else
     {
       if (ewin->class.res_class)
-        fprintf(f, "  [RES_NAME] %s\n", ewin->class.res_name);
+	fprintf(f, "  [RES_NAME] %s\n", ewin->class.res_name);
       if (ewin->class.res_name)
-        fprintf(f, "  [RES_CLASS] %s\n", ewin->class.res_class);
+	fprintf(f, "  [RES_CLASS] %s\n", ewin->class.res_class);
       if (ewin->name.name)
-        fprintf(f, "  [WM_NAME] %s\n", ewin->name.name);
+	fprintf(f, "  [WM_NAME] %s\n", ewin->name.name);
 
       wm_command = NULL;
       wm_command_count = 0;
       if (XGetCommand(dpy, FW_W(ewin), &wm_command, &wm_command_count) &&
 	  wm_command && wm_command_count > 0)
       {
-        fprintf(f, "  [WM_COMMAND] %i", wm_command_count);
-        for (i = 0; i < wm_command_count; i++)
-          fprintf(f, " %s", unspace_string(wm_command[i]));
-        fprintf(f, "\n");
+	fprintf(f, "  [WM_COMMAND] %i", wm_command_count);
+	for (i = 0; i < wm_command_count; i++)
+	  fprintf(f, " %s", unspace_string(wm_command[i]));
+	fprintf(f, "\n");
       }
       if (wm_command)
       {
-        XFreeStringList(wm_command);
+	XFreeStringList(wm_command);
 	wm_command = NULL;
       }
     } /* !window_role */
@@ -641,11 +641,11 @@ LoadWindowStates(char *filename)
 
       for (i = 0; i < sizeof(window_flags); i++)
       {
-        unsigned int f;
-        sscanf(ts, "%02x ", &f);
-        ((unsigned char *)&(matches[num_match-1].flags))[i]
-          = f;
-        ts += 3;
+	unsigned int f;
+	sscanf(ts, "%02x ", &f);
+	((unsigned char *)&(matches[num_match-1].flags))[i]
+	  = f;
+	ts += 3;
       }
     }
     else if (!strcmp(s1, "[CLIENT_ID]"))
@@ -682,9 +682,9 @@ LoadWindowStates(char *filename)
 			      sizeof (char *));
       for (i = 0; i < matches[num_match - 1].wm_command_count; i++)
       {
-        sscanf (s+pos, "%s%n", s1, &pos1);
-        pos += pos1;
-        matches[num_match - 1].wm_command[i] = duplicate (s1);
+	sscanf (s+pos, "%s%n", s1, &pos1);
+	pos += pos1;
+	matches[num_match - 1].wm_command[i] = duplicate (s1);
       }
     }
   }
@@ -722,44 +722,44 @@ static Bool matchWin(FvwmWindow *w, Match *m)
     else
     {
       /* Compare res_class, res_name and WM_NAME, unless the
-         user has changed WM_NAME */
+	 user has changed WM_NAME */
 
       if (xstreq(w->class.res_name, m->res_name) &&
-          xstreq(w->class.res_class, m->res_class) &&
-          (IS_NAME_CHANGED(w) || IS_NAME_CHANGED(m) ||
-           xstreq(w->name.name, m->wm_name)))
+	  xstreq(w->class.res_class, m->res_class) &&
+	  (IS_NAME_CHANGED(w) || IS_NAME_CHANGED(m) ||
+	   xstreq(w->name.name, m->wm_name)))
       {
-        if (client_id)
-        {
-          /* If we have a client_id, we don't compare
-             WM_COMMAND, since it will be different. */
-          found = 1;
-        }
-        else
-        {
-          /* for non-SM-aware clients we also compare WM_COMMAND */
+	if (client_id)
+	{
+	  /* If we have a client_id, we don't compare
+	     WM_COMMAND, since it will be different. */
+	  found = 1;
+	}
+	else
+	{
+	  /* for non-SM-aware clients we also compare WM_COMMAND */
 
 	  if (!XGetCommand (dpy, FW_W(w), &wm_command, &wm_command_count))
 	  {
 	    wm_command = NULL;
 	    wm_command_count = 0;
 	  }
-          if (wm_command_count == m->wm_command_count)
-          {
-            for (i = 0; i < wm_command_count; i++)
-            {
-              if (strcmp(unspace_string(wm_command[i]), m->wm_command[i]) != 0)
-                break;
-            }
+	  if (wm_command_count == m->wm_command_count)
+	  {
+	    for (i = 0; i < wm_command_count; i++)
+	    {
+	      if (strcmp(unspace_string(wm_command[i]), m->wm_command[i]) != 0)
+		break;
+	    }
 
-            if (i == wm_command_count)
-            {
-              /* migo (21/Oct/1999): on restarts compare window ids too */
-              if (!Restarting || FW_W(w) == m->win)
-                found = 1;
-            }
-          } /* if (wm_command_count ==... */
-        } /* else no client id */
+	    if (i == wm_command_count)
+	    {
+	      /* migo (21/Oct/1999): on restarts compare window ids too */
+	      if (!Restarting || FW_W(w) == m->win)
+		found = 1;
+	    }
+	  } /* if (wm_command_count ==... */
+	} /* else no client id */
       } /* if res_class, res_name and wm_name agree */
     } /* else no window roles */
   } /* if client_id's agree */
@@ -1055,8 +1055,8 @@ setSmProperties (SmcConn sm_conn, char *filename, char hint)
   for (i = 0; i < g_argc; i++)
   {
     if (strcmp (g_argv[i], "-clientId") == 0 ||
-        strcmp (g_argv[i], "-restore") == 0 ||
-        strcmp (g_argv[i], "-d") == 0)
+	strcmp (g_argv[i], "-restore") == 0 ||
+	strcmp (g_argv[i], "-d") == 0)
     {
       i++;
     }
@@ -1262,11 +1262,11 @@ SessionInit(void)
 	Don't annoy users which don't use a session manager
       */
       if (previous_sm_client_id)
-        {
+	{
 	  fvwm_msg(ERR, "SessionInit",
 		   "While connecting to session manager:\n%s.",
 		   error_string_ret);
-        }
+	}
       sm_fd = -1;
     }
   else
@@ -1338,10 +1338,10 @@ Bool quitSession(void)
   SmcRequestSaveYourself(
     sm_conn,
     SmSaveLocal,
-    True,               /* shutdown */
+    True,		/* shutdown */
     SmInteractStyleAny,
-    False,              /* fast */
-    True                /* global */
+    False,		/* fast */
+    True		/* global */
   );
   return True;
 
@@ -1367,10 +1367,10 @@ Bool saveSession(void)
   SmcRequestSaveYourself(
     sm_conn,
     SmSaveBoth,
-    False,              /* shutdown */
+    False,		/* shutdown */
     SmInteractStyleAny,
-    False,              /* fast */
-    True                /* global */
+    False,		/* fast */
+    True		/* global */
   );
   return True;
 
@@ -1396,10 +1396,10 @@ Bool saveQuitSession(void)
   SmcRequestSaveYourself(
     sm_conn,
     SmSaveBoth,
-    True,               /* shutdown */
+    True,		/* shutdown */
     SmInteractStyleAny,
-    False,              /* fast */
-    True                /* global */
+    False,		/* fast */
+    True		/* global */
   );
   return True;
 

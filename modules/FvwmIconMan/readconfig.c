@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -61,22 +61,22 @@ typedef struct {
  * these are now sorted so we can use bsearch on them.
  */
 FunctionType builtin_functions[] = {
-  { "bif",         builtin_bif,         2, { ButtonArg, JmpArg } },
-  { "bifn",        builtin_bifn,        2, { ButtonArg, JmpArg } },
-  { "gotobutton",  builtin_gotobutton,  1, { ButtonArg } },
+  { "bif",	   builtin_bif,		2, { ButtonArg, JmpArg } },
+  { "bifn",	   builtin_bifn,	2, { ButtonArg, JmpArg } },
+  { "gotobutton",  builtin_gotobutton,	1, { ButtonArg } },
   { "gotomanager", builtin_gotomanager, 1, { ManagerArg } },
-  { "jmp",         builtin_jmp,         1, { JmpArg } },
+  { "jmp",	   builtin_jmp,		1, { JmpArg } },
   { "label",	   builtin_label,	1, { StringArg } },
-  { "print",       builtin_print,       1, { StringArg } },
-  { "printdebug",  builtin_printdebug,  0, {0} },
-  { "quit",        builtin_quit,        0, {0} },
-  { "refresh",     builtin_refresh,     0, {0} },
-  { "ret",         builtin_ret,         0, {0} },
-  { "searchback",  builtin_searchback,  1, { StringArg } },
+  { "print",	   builtin_print,	1, { StringArg } },
+  { "printdebug",  builtin_printdebug,	0, {0} },
+  { "quit",	   builtin_quit,	0, {0} },
+  { "refresh",	   builtin_refresh,	0, {0} },
+  { "ret",	   builtin_ret,		0, {0} },
+  { "searchback",  builtin_searchback,	1, { StringArg } },
   { "searchforward", builtin_searchforward, 1, { StringArg } },
-  { "select",      builtin_select,      0, {0} },
+  { "select",	   builtin_select,	0, {0} },
   { "sendcommand", builtin_sendcommand, 1, { StringArg } },
-  { "warp",        builtin_warp,        0, {0} }
+  { "warp",	   builtin_warp,	0, {0} }
 };
 
 static int num_builtins = sizeof (builtin_functions) / sizeof (FunctionType);
@@ -351,12 +351,12 @@ static void find_context(char *string, int *output, struct charstring *table,
 static int init_config_file (char *file)
 {
 #if FVWM_VERSION == 1
-  if ((config_fp = fopen (file, "r")) == NULL)  {
+  if ((config_fp = fopen (file, "r")) == NULL)	{
     ConsoleMessage ("Couldn't open file: %s\n", file);
     return 0;
   }
 #else
-  InitGetConfigLine(Fvwm_fd,Module);         /* speed up */
+  InitGetConfigLine(Fvwm_fd,Module);	     /* speed up */
 #endif
   return 1;
 }
@@ -725,7 +725,7 @@ Binding *ParseMouseEntry (char *tline)
   find_context(modifiers,&mods,key_modifiers,tline);
   if((mods & AnyModifier)&&(mods&(~AnyModifier))) {
     ConsoleMessage ("Binding specified AnyModifier and other modifers too. "
-                    "Excess modifiers will be ignored.");
+		    "Excess modifiers will be ignored.");
   }
 
   new = (Binding *)safemalloc(sizeof(Binding));
@@ -945,18 +945,18 @@ static char *read_next_cmd (ReadOption flag)
       cur_pos = buffer;
       skip_space (&cur_pos);
       if (!strncasecmp (Module, cur_pos, ModuleLen)) {
-        retstring = cur_pos;
-        cur_pos += ModuleLen;
+	retstring = cur_pos;
+	cur_pos += ModuleLen;
 
-        if (*cur_pos == '*')
-          cur_pos++;
-        skip_space(&cur_pos);
+	if (*cur_pos == '*')
+	  cur_pos++;
+	skip_space(&cur_pos);
 
-        if (isalnum(*cur_pos))
-          status = READ_OPTION;
-        else
-          status = READ_LINE;
-        break;
+	if (isalnum(*cur_pos))
+	  status = READ_OPTION;
+	else
+	  status = READ_LINE;
+	break;
       }
     }
     break;
@@ -1057,20 +1057,20 @@ static NameType parse_format_dependencies (char *format)
   return flags;
 }
 
-#define SET_MANAGER(manager,field,value)                           \
-   do {                                                            \
-     int id = manager;                                             \
-     if (id == -1) {                                               \
-       for (id = 0; id < globals.num_managers; id++) {             \
-	 globals.managers[id]. field = value;                      \
-       }                                                           \
-     }                                                             \
-     else if (id < globals.num_managers) {                         \
-       globals.managers[id]. field = value;                        \
-     }                                                             \
-     else {                                                        \
+#define SET_MANAGER(manager,field,value)			   \
+   do {								   \
+     int id = manager;						   \
+     if (id == -1) {						   \
+       for (id = 0; id < globals.num_managers; id++) {		   \
+	 globals.managers[id]. field = value;			   \
+       }							   \
+     }								   \
+     else if (id < globals.num_managers) {			   \
+       globals.managers[id]. field = value;			   \
+     }								   \
+     else {							   \
        ConsoleMessage ("Internal error in SET_MANAGER: %d\n", id); \
-     }                                                             \
+     }								   \
    } while (0)
 
 static void handle_button_config (int manager, int context, char *option)
@@ -1326,7 +1326,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-        for ( i = 0; i < NUM_CONTEXTS; i++ ) {
+	for ( i = 0; i < NUM_CONTEXTS; i++ ) {
 	  SET_MANAGER(manager, colorsets[i], n);
 	  AllocColorset(n);
 	}
@@ -1339,7 +1339,7 @@ void read_in_resources (char *file)
 	}
 	ConsoleDebug (CONFIG, "default background: %s\n", p);
 
-        for ( i = 0; i < NUM_CONTEXTS; i++ )
+	for ( i = 0; i < NUM_CONTEXTS; i++ )
 	  SET_MANAGER (manager, backColorName[i],
 	    conditional_copy_string (&globals.managers[id].backColorName[i],
 				     p));
@@ -1383,36 +1383,36 @@ void read_in_resources (char *file)
 	  Free(token);
       }
       else if (!strcasecmp (option1, "drawicons")) {
-        if (!FMiniIconsSupported)
-        {
-          ConsoleMessage ("DrawIcons support not compiled in\n");
-        }
-        else
-        {
+	if (!FMiniIconsSupported)
+	{
+	  ConsoleMessage ("DrawIcons support not compiled in\n");
+	}
+	else
+	{
 	  p = read_next_cmd (READ_ARG);
 	  if (!p) {
-            ConsoleMessage ("Bad line: %s\n", current_line);
-            ConsoleMessage ("Need argument to drawicons\n");
-            continue;
-          }
-          if (!strcasecmp (p, "true")) {
-            i = 1;
-          }
-          /* [NFM 3 Dec 97] added support for drawicons "always" */
-          else if (!strcasecmp (p, "always")) {
-            i = 2;
-          }
-          else if (!strcasecmp (p, "false")) {
+	    ConsoleMessage ("Bad line: %s\n", current_line);
+	    ConsoleMessage ("Need argument to drawicons\n");
+	    continue;
+	  }
+	  if (!strcasecmp (p, "true")) {
+	    i = 1;
+	  }
+	  /* [NFM 3 Dec 97] added support for drawicons "always" */
+	  else if (!strcasecmp (p, "always")) {
+	    i = 2;
+	  }
+	  else if (!strcasecmp (p, "false")) {
 	    i = 0;
-          }
-          else {
-            ConsoleMessage ("Bad line: %s\n", current_line);
-            ConsoleMessage ("What is this: %s?\n", p);
-            continue;
-          }
-          ConsoleDebug (CONFIG, "Setting drawicons to: %d\n", i);
-          SET_MANAGER (manager, draw_icons, i);
-        }
+	  }
+	  else {
+	    ConsoleMessage ("Bad line: %s\n", current_line);
+	    ConsoleMessage ("What is this: %s?\n", p);
+	    continue;
+	  }
+	  ConsoleDebug (CONFIG, "Setting drawicons to: %d\n", i);
+	  SET_MANAGER (manager, draw_icons, i);
+	}
       }
       else if (!strcasecmp (option1, "followfocus")) {
 	p = read_next_cmd (READ_ARG);
@@ -1438,20 +1438,20 @@ void read_in_resources (char *file)
       else if (!strcasecmp (option1, "showonlyiconic")) {
        p = read_next_cmd (READ_ARG);
        if (!p) {
-         ConsoleMessage ("Bad line: %s\n", current_line);
-         ConsoleMessage ("Need argument to showonlyiconic\n");
-         continue;
+	 ConsoleMessage ("Bad line: %s\n", current_line);
+	 ConsoleMessage ("Need argument to showonlyiconic\n");
+	 continue;
        }
        if (!strcasecmp (p, "true")) {
-         i = 1;
+	 i = 1;
        }
        else if (!strcasecmp (p, "false")) {
-         i = 0;
+	 i = 0;
        }
        else {
-         ConsoleMessage ("Bad line: %s\n", current_line);
-         ConsoleMessage ("What is this: %s?\n", p);
-         continue;
+	 ConsoleMessage ("Bad line: %s\n", current_line);
+	 ConsoleMessage ("What is this: %s?\n", p);
+	 continue;
        }
        ConsoleDebug (CONFIG, "Setting showonlyiconic to: %d\n", i);
        SET_MANAGER (manager, showonlyiconic, i);
@@ -1479,9 +1479,9 @@ void read_in_resources (char *file)
 	}
 	ConsoleDebug (CONFIG, "default foreground: %s\n", p);
 
-        for ( i = 0; i < NUM_CONTEXTS; i++ )
+	for ( i = 0; i < NUM_CONTEXTS; i++ )
 	SET_MANAGER (manager, foreColorName[i],
-           conditional_copy_string (&globals.managers[id].foreColorName[i],
+	   conditional_copy_string (&globals.managers[id].foreColorName[i],
 				    p));
       }
       else if (!strcasecmp (option1, "format")) {

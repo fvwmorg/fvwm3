@@ -52,7 +52,7 @@
 /* ---------------------------- local macros -------------------------------- */
 
 #define GRAB_EVMASK (ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | \
-        PointerMotionMask | EnterWindowMask | LeaveWindowMask)
+	PointerMotionMask | EnterWindowMask | LeaveWindowMask)
 
 /* ---------------------------- imports ------------------------------------- */
 
@@ -337,7 +337,7 @@ void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
 	static clock_t start_time = 0;
 	static clock_t prev_time = 0;
 	struct tms not_used_tms;
-	char buffer[200];                     /* oversized */
+	char buffer[200];		      /* oversized */
 	time_t mytime;
 	struct tm *t_ptr;
 	static int counter = 0;

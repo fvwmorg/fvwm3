@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -585,12 +585,12 @@ void DrawIconWindow(FvwmWindow *fw)
 				/* start keep label on screen. dje 8/7/97 */
 				if (x_title_w < sx) {
 					/* if new loc neg (off left edge) */
-					x_title_w = sx;      /* move to edge */
+					x_title_w = sx;	     /* move to edge */
 				}
 				else
 				{
 					/* if not on left edge */
-					/* if (new loc + width) > screen width 
+					/* if (new loc + width) > screen width
 					 * (off edge on right) */
 					if ((x_title_w + w_title_w) >sx + sw) {
 						/* off right */
@@ -757,7 +757,7 @@ void DrawIconWindow(FvwmWindow *fw)
 						fw->icon_alphaPixmap,
 						Pdepth,
 						FW_W_ICON_PIXMAP(fw),
-						Scr.TitleGC, 0, 0, 
+						Scr.TitleGC, 0, 0,
 						fw->icon_g.picture_w_g.width -
 						2 *
 						ICON_RELIEF_WIDTH,
@@ -769,7 +769,7 @@ void DrawIconWindow(FvwmWindow *fw)
 			}
 			else
 			{
-				/* it's a client pixmap and fvwm is not using 
+				/* it's a client pixmap and fvwm is not using
 				 * the root visual The icon window has no 3d
 				 * border so copy to (0,0) install the root
 				 * colormap temporarily to help the Exceed
@@ -820,7 +820,7 @@ void DrawIconWindow(FvwmWindow *fw)
  *
  *  Procedure:
  *    ChangeIconPixmap - procedure change the icon pixmap or "pixmap"
- *      window. Called in events.c and ewmh_events.c
+ *	window. Called in events.c and ewmh_events.c
  *
  ************************************************************************/
 void ChangeIconPixmap(FvwmWindow *fw)
@@ -1025,19 +1025,19 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
     /* A place to hold inner and outer loop variables. */
     typedef struct dimension_struct
     {
-      int step;                         /* grid size (may be negative) */
-      int start_at;                     /* starting edge */
-      int real_start;                   /* on screen starting edge */
-      int end_at;                       /* ending edge */
-      int base;                         /* base for screen */
-      int icon_dimension;               /* height or width */
-      int nom_dimension;                /* nonminal height or width */
-      int screen_dimension;             /* screen height or width */
-      int screen_offset;                /* screen offset */
+      int step;				/* grid size (may be negative) */
+      int start_at;			/* starting edge */
+      int real_start;			/* on screen starting edge */
+      int end_at;			/* ending edge */
+      int base;				/* base for screen */
+      int icon_dimension;		/* height or width */
+      int nom_dimension;		/* nonminal height or width */
+      int screen_dimension;		/* screen height or width */
+      int screen_offset;		/* screen offset */
     } dimension;
-    dimension dim[3];                   /* space for work, 1st, 2nd dimen */
-    icon_boxes *icon_boxes_ptr;         /* current icon box */
-    int i;                              /* index for inner/outer loop data */
+    dimension dim[3];			/* space for work, 1st, 2nd dimen */
+    icon_boxes *icon_boxes_ptr;		/* current icon box */
+    int i;				/* index for inner/outer loop data */
     fscreen_scr_arg fscr;
     rectangle ref;
     rectangle g;
@@ -1064,20 +1064,20 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
     loc_ok_wrong_screen = False;
 
     /* check all boxes in order */
-    icon_boxes_ptr = NULL;              /* init */
+    icon_boxes_ptr = NULL;		/* init */
     while(do_all_iconboxes(t, &icon_boxes_ptr))
     {
       if (loc_ok == True)
       {
 	/* leave for loop */
-        break;
+	break;
       }
       /* get the screen dimensions for the icon box */
       if (icon_boxes_ptr->IconScreen == FSCREEN_CURRENT)
 	fscr.mouse_ev = NULL;
       FScreenGetScrRect(
 	&fscr,
-        icon_boxes_ptr->IconScreen,
+	icon_boxes_ptr->IconScreen,
 	&ref.x, &ref.y, &ref.width, &ref.height);
       dim[1].screen_offset = ref.y;
       dim[1].screen_dimension = ref.height;
@@ -1088,12 +1088,12 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
       /* init start from */
       dim[1].start_at = ICONBOX_TOP + dim[1].screen_offset;
       if (icon_boxes_ptr->IconSign[1] == '-') {
-        dim[1].start_at += dim[1].screen_dimension;
+	dim[1].start_at += dim[1].screen_dimension;
       }
       /* init end at */
       dim[1].end_at = ICONBOX_BOT + dim[1].screen_offset;
       if (icon_boxes_ptr->IconSign[3] == '-') {
-        dim[1].end_at += dim[1].screen_dimension;
+	dim[1].end_at += dim[1].screen_dimension;
       }
       /* save base */
       dim[1].base = base_y;
@@ -1103,7 +1103,7 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
       {
 	/* fill from bottom */
 	/* reverse step */
-        dim[1].step = 0 - dim[1].step;
+	dim[1].step = 0 - dim[1].step;
       } /* end fill from bottom */
 
       /* x amount */
@@ -1111,12 +1111,12 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
       /* init start from */
       dim[2].start_at = ICONBOX_LFT + dim[2].screen_offset;
       if (icon_boxes_ptr->IconSign[0] == '-') {
-        dim[2].start_at += dim[2].screen_dimension;
+	dim[2].start_at += dim[2].screen_dimension;
       }
       /* init end at */
       dim[2].end_at = ICONBOX_RGT + dim[2].screen_offset;
       if (icon_boxes_ptr->IconSign[2] == '-') {
-        dim[2].end_at += dim[2].screen_dimension;
+	dim[2].end_at += dim[2].screen_dimension;
       }
       /* save base */
       dim[2].base   = base_x;
@@ -1126,103 +1126,103 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
       {
 	/* fill from right */
 	/* reverse step */
-        dim[2].step = 0 - dim[2].step;
+	dim[2].step = 0 - dim[2].step;
       } /* end fill from right */
       for (i=1;i<=2;i++)
       {
 	/* for dimensions 1 and 2 */
-        /* If the window is taller than the icon box, ignore the icon height
-         * when figuring where to put it. Same goes for the width
-         * This should permit reasonably graceful handling of big icons. */
-        dim[i].nom_dimension = dim[i].icon_dimension;
-        if (dim[i].icon_dimension >= dim[i].end_at - dim[i].start_at)
+	/* If the window is taller than the icon box, ignore the icon height
+	 * when figuring where to put it. Same goes for the width
+	 * This should permit reasonably graceful handling of big icons. */
+	dim[i].nom_dimension = dim[i].icon_dimension;
+	if (dim[i].icon_dimension >= dim[i].end_at - dim[i].start_at)
 	{
-          dim[i].nom_dimension = dim[i].end_at - dim[i].start_at - 1;
-        }
-        if (dim[i].step < 0)
+	  dim[i].nom_dimension = dim[i].end_at - dim[i].start_at - 1;
+	}
+	if (dim[i].step < 0)
 	{
 	  /* if moving backwards */
 	  /* save */
-          dim[0].start_at = dim[i].start_at;
+	  dim[0].start_at = dim[i].start_at;
 	  /* swap one */
-          dim[i].start_at = dim[i].end_at;
+	  dim[i].start_at = dim[i].end_at;
 	  /* swap the other */
-          dim[i].end_at = dim[0].start_at;
-          dim[i].start_at -= dim[i].icon_dimension;
-        } /* end moving backwards */
+	  dim[i].end_at = dim[0].start_at;
+	  dim[i].start_at -= dim[i].icon_dimension;
+	} /* end moving backwards */
 	/* adjust both to base */
-        dim[i].start_at += dim[i].base;
-        dim[i].end_at += dim[i].base;
+	dim[i].start_at += dim[i].base;
+	dim[i].end_at += dim[i].base;
       } /* end 2 dimensions */
       if (HRZ_FILL)
       {
 	/* if hrz first */
 	/* save */
-        memcpy(&dim[0],&dim[1],sizeof(dimension));
+	memcpy(&dim[0],&dim[1],sizeof(dimension));
 	/* switch one */
-        memcpy(&dim[1],&dim[2],sizeof(dimension));
+	memcpy(&dim[1],&dim[2],sizeof(dimension));
 	/* switch the other */
-        memcpy(&dim[2],&dim[0],sizeof(dimension));
+	memcpy(&dim[2],&dim[0],sizeof(dimension));
       } /* end horizontal dimension first */
       /* save for reseting inner loop */
       dim[0].start_at = dim[2].start_at;
       loc_ok_wrong_screen2 = False;
-      while((dim[1].step < 0            /* filling reversed */
-             ? (dim[1].start_at + dim[1].icon_dimension - dim[1].nom_dimension
-                > dim[1].end_at)        /* check back edge */
-             : (dim[1].start_at + dim[1].nom_dimension
-                < dim[1].end_at))       /* check front edge */
-            && (!loc_ok)
+      while((dim[1].step < 0		/* filling reversed */
+	     ? (dim[1].start_at + dim[1].icon_dimension - dim[1].nom_dimension
+		> dim[1].end_at)	/* check back edge */
+	     : (dim[1].start_at + dim[1].nom_dimension
+		< dim[1].end_at))	/* check front edge */
+	    && (!loc_ok)
 	    && (!loc_ok_wrong_screen2)) {  /* nothing found yet */
-        dim[1].real_start = dim[1].start_at; /* init */
-        if (dim[1].start_at + dim[1].icon_dimension >
+	dim[1].real_start = dim[1].start_at; /* init */
+	if (dim[1].start_at + dim[1].icon_dimension >
 	    dim[1].screen_offset + dim[1].screen_dimension - 2 + dim[1].base)
 	{
 	  /* off screen, move on screen */
-          dim[1].real_start = dim[1].screen_offset + dim[1].screen_dimension
-            - dim[1].icon_dimension + dim[1].base;
-        } /* end off screen */
-        if (dim[1].start_at < dim[1].screen_offset + dim[1].base)
+	  dim[1].real_start = dim[1].screen_offset + dim[1].screen_dimension
+	    - dim[1].icon_dimension + dim[1].base;
+	} /* end off screen */
+	if (dim[1].start_at < dim[1].screen_offset + dim[1].base)
 	{
 	  /* if off other edge, move on screen */
-          dim[1].real_start = dim[1].screen_offset + dim[1].base;
-        } /* end off other edge */
+	  dim[1].real_start = dim[1].screen_offset + dim[1].base;
+	} /* end off other edge */
 	/* reset inner loop */
-        dim[2].start_at = dim[0].start_at;
-        while((dim[2].step < 0            /* filling reversed */
-               ? (dim[2].start_at + dim[2].icon_dimension-dim[2].nom_dimension
-                  > dim[2].end_at)        /* check back edge */
-               : (dim[2].start_at + dim[2].nom_dimension
-                  < dim[2].end_at))       /* check front edge */
+	dim[2].start_at = dim[0].start_at;
+	while((dim[2].step < 0		  /* filling reversed */
+	       ? (dim[2].start_at + dim[2].icon_dimension-dim[2].nom_dimension
+		  > dim[2].end_at)	  /* check back edge */
+	       : (dim[2].start_at + dim[2].nom_dimension
+		  < dim[2].end_at))	  /* check front edge */
 	      && (!loc_ok)
 	      && (!loc_ok_wrong_screen2)) { /* nothing found yet */
-          dim[2].real_start = dim[2].start_at; /* init */
-          if (dim[2].start_at + dim[2].icon_dimension >
-              dim[2].screen_offset + dim[2].screen_dimension - 2 + dim[2].base)
+	  dim[2].real_start = dim[2].start_at; /* init */
+	  if (dim[2].start_at + dim[2].icon_dimension >
+	      dim[2].screen_offset + dim[2].screen_dimension - 2 + dim[2].base)
 	  {
 	    /* if off screen, move on screen */
-            dim[2].real_start = dim[2].screen_offset + dim[2].screen_dimension
-              - dim[2].icon_dimension + dim[2].base;
-          } /* end off screen */
-          if (dim[2].start_at < dim[2].screen_offset + dim[2].base)
+	    dim[2].real_start = dim[2].screen_offset + dim[2].screen_dimension
+	      - dim[2].icon_dimension + dim[2].base;
+	  } /* end off screen */
+	  if (dim[2].start_at < dim[2].screen_offset + dim[2].base)
 	  {
 	    /* if off other edge, move on screen */
 	    dim[2].real_start = dim[2].screen_offset + dim[2].base;
-          } /* end off other edge */
+	  } /* end off other edge */
 
-          if (HRZ_FILL)
+	  if (HRZ_FILL)
 	  {
 	    /* hrz first */
 	    /* unreverse them */
-            real_x = dim[1].real_start;
-            real_y = dim[2].real_start;
-          }
+	    real_x = dim[1].real_start;
+	    real_y = dim[2].real_start;
+	  }
 	  else
 	  {
 	    /* reverse them */
-            real_x = dim[2].real_start;
-            real_y = dim[1].real_start;
-          }
+	    real_x = dim[2].real_start;
+	    real_y = dim[1].real_start;
+	  }
 
 	  /* this may be a good location */
 	  if (FScreenIsRectangleOnScreen(&fscr, FSCREEN_XYPOS, &ref))
@@ -1233,43 +1233,43 @@ void AutoPlaceIcon(FvwmWindow *t, initial_window_options_type *win_opts)
 	  {
 	    loc_ok_wrong_screen2 = True;
 	  }
-          test_fw = Scr.FvwmRoot.next;
-          while((test_fw != (FvwmWindow *)0)
-                &&(loc_ok == True || loc_ok_wrong_screen2))
+	  test_fw = Scr.FvwmRoot.next;
+	  while((test_fw != (FvwmWindow *)0)
+		&&(loc_ok == True || loc_ok_wrong_screen2))
 	  {
 	    /* test overlap */
-            if(test_fw->Desk == t->Desk)
+	    if(test_fw->Desk == t->Desk)
 	    {
 	      rectangle g;
 
-              if((IS_ICONIFIED(test_fw)) &&
-                 (!IS_TRANSIENT(test_fw) ||
+	      if((IS_ICONIFIED(test_fw)) &&
+		 (!IS_TRANSIENT(test_fw) ||
 		  !IS_ICONIFIED_BY_PARENT(test_fw)) &&
-                 (FW_W_ICON_TITLE(test_fw)||FW_W_ICON_PIXMAP(test_fw)) &&
-                 (test_fw != t)) {
+		 (FW_W_ICON_TITLE(test_fw)||FW_W_ICON_PIXMAP(test_fw)) &&
+		 (test_fw != t)) {
 		get_icon_geometry(test_fw, &g);
-                if((g.x<(real_x+width+MIN_ICON_BOX_DIST))&&
+		if((g.x<(real_x+width+MIN_ICON_BOX_DIST))&&
 		   ((g.x+g.width+MIN_ICON_BOX_DIST) > real_x)&&
-                   (g.y<(real_y+height+MIN_ICON_BOX_DIST))&&
+		   (g.y<(real_y+height+MIN_ICON_BOX_DIST))&&
 		   ((g.y+g.height + MIN_ICON_BOX_DIST)>real_y))
 		{
 		  /* don't accept this location */
-                  loc_ok = False;
-                  loc_ok_wrong_screen2 = False;
-                } /* end if icons overlap */
-              } /* end if its an icon */
-            } /* end if same desk */
-            test_fw = test_fw->next;
-          } /* end while icons that may overlap */
+		  loc_ok = False;
+		  loc_ok_wrong_screen2 = False;
+		} /* end if icons overlap */
+	      } /* end if its an icon */
+	    } /* end if same desk */
+	    test_fw = test_fw->next;
+	  } /* end while icons that may overlap */
 	  if (loc_ok_wrong_screen2)
 	  {
 	    loc_ok_wrong_screen = True;
 	  }
 	  /* Grid inner value & direction */
-          dim[2].start_at += dim[2].step;
-        } /* end while room inner dimension */
+	  dim[2].start_at += dim[2].step;
+	} /* end while room inner dimension */
 	/* Grid outer value & direction */
-        dim[1].start_at += dim[1].step;
+	dim[1].start_at += dim[1].step;
       } /* end while room outer dimension */
     } /* end for all icon boxes, or found space */
     if (!loc_ok && !loc_ok_wrong_screen)
@@ -1299,7 +1299,7 @@ static icon_boxes *global_icon_box_ptr;
 static int
 do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
 {
-  if (global_icon_box_ptr == 0) {       /* if first time */
+  if (global_icon_box_ptr == 0) {	/* if first time */
     int sx;
     int sy;
     int sw;
@@ -1316,25 +1316,25 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
     global_icon_box_ptr->IconGrid[1] = 80;
     global_icon_box_ptr->IconFlags = ICONFILLHRZ;
   }
-  if (*icon_boxes_ptr == NULL) {        /* first time? */
-    *icon_boxes_ptr = t->IconBoxes;     /* start at windows box */
-    if (!*icon_boxes_ptr) {             /* if window has no box */
+  if (*icon_boxes_ptr == NULL) {	/* first time? */
+    *icon_boxes_ptr = t->IconBoxes;	/* start at windows box */
+    if (!*icon_boxes_ptr) {		/* if window has no box */
       *icon_boxes_ptr = global_icon_box_ptr; /* use global box */
     }
-    return (1);                         /* use box */
+    return (1);				/* use box */
   }
 
   /* Here its not the first call, we are either on the chain or at
      the global box */
   if (*icon_boxes_ptr == global_icon_box_ptr) { /* if the global box */
-    return (0);                         /* completely out of boxes (unlikely) */
+    return (0);				/* completely out of boxes (unlikely) */
   }
   *icon_boxes_ptr = (*icon_boxes_ptr)->next; /* move to next one on chain */
-  if (*icon_boxes_ptr) {                /* if there is a next one */
-    return (1);                         /* return it */
+  if (*icon_boxes_ptr) {		/* if there is a next one */
+    return (1);				/* return it */
   }
   *icon_boxes_ptr = global_icon_box_ptr; /* global box */
-  return (1);                           /* use it */
+  return (1);				/* use it */
 }
 
 /****************************************************************************
@@ -1571,8 +1571,8 @@ void DeIconify(FvwmWindow *fw)
 	  t->frame_g.y -=
 	    truncate_to_multiple(t->frame_g.y,Scr.MyDisplayHeight);
 	  XMoveWindow(dpy, FW_W_FRAME(t), t->frame_g.x, t->frame_g.y);
-          update_absolute_geometry(t);
-          maximize_adjust_offset(t);
+	  update_absolute_geometry(t);
+	  maximize_adjust_offset(t);
 	}
       }
       /* domivogt (1-Mar-2000): The next block is a hack to prevent animation
@@ -1796,16 +1796,16 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
   /* if this fails it does not overwrite icon_rect */
   EWMH_GetIconGeometry(fw, &icon_rect);
   BroadcastPacket(M_ICONIFY, 11,
-                  FW_W(fw), FW_W_FRAME(fw),
-                  (unsigned long)fw,
-                  icon_rect.x,
-                  icon_rect.y,
-                  icon_rect.width,
-                  icon_rect.height,
-                  fw->frame_g.x, /* next 4 added for Animate module */
-                  fw->frame_g.y,
-                  fw->frame_g.width,
-                  fw->frame_g.height);
+		  FW_W(fw), FW_W_FRAME(fw),
+		  (unsigned long)fw,
+		  icon_rect.x,
+		  icon_rect.y,
+		  icon_rect.width,
+		  icon_rect.height,
+		  fw->frame_g.x, /* next 4 added for Animate module */
+		  fw->frame_g.y,
+		  fw->frame_g.width,
+		  fw->frame_g.height);
   BroadcastConfig(M_CONFIGURE_WINDOW,fw);
 
   if (win_opts->initial_state != IconicState ||

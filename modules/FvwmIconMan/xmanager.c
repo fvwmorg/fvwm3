@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -28,38 +28,38 @@ extern FlocaleWinString *FwinString;
 
 /* button dirty bits: */
 #define ICON_STATE_CHANGED  1
-#define STATE_CHANGED       2
-#define PICTURE_CHANGED     4
-#define WINDOW_CHANGED      8
-#define STRING_CHANGED      16
-#define REDRAW_BUTTON       32
+#define STATE_CHANGED	    2
+#define PICTURE_CHANGED	    4
+#define WINDOW_CHANGED	    8
+#define STRING_CHANGED	    16
+#define REDRAW_BUTTON	    32
 #define GEOMETRY_CHANGED    64
 
 /* manager dirty bits: */
-/*      GEOMETRY_CHANGED    64 same as with button */
-#define MAPPING_CHANGED     2
-#define SHAPE_CHANGED       4
-#define REDRAW_MANAGER      8
-#define REDRAW_BG           16
+/*	GEOMETRY_CHANGED    64 same as with button */
+#define MAPPING_CHANGED	    2
+#define SHAPE_CHANGED	    4
+#define REDRAW_MANAGER	    8
+#define REDRAW_BG	    16
 
 /* ButtonArray dirty bits: */
 #define NUM_BUTTONS_CHANGED 1
 #define NUM_WINDOWS_CHANGED 2
 
-#define ALL_CHANGED         0x7f /* high bit is special */
+#define ALL_CHANGED	    0x7f /* high bit is special */
 
 typedef struct {
   int button_x, button_y, button_h, button_w; /* dim's of the whole button */
-  int icon_x, icon_y, icon_h, icon_w;         /* what denotes icon state */
-  int text_x, text_y, text_h, text_w;         /* text field */
-  int text_base;                              /* text baseline */
+  int icon_x, icon_y, icon_h, icon_w;	      /* what denotes icon state */
+  int text_x, text_y, text_h, text_w;	      /* text field */
+  int text_base;			      /* text baseline */
 } ButtonGeometry;
 
 static void print_button_info (Button *b);
 static void insert_windows_button (WinData *win);
 
 /***************************************************************************/
-/* Utility leaf functions                                                  */
+/* Utility leaf functions						   */
 /***************************************************************************/
 
 static int selected_button_in_man (WinManager *man)
@@ -210,10 +210,10 @@ static ManGeometry *figure_geometry (WinManager *man)
 	ret.rows = 1;
       }
       ret.height = ret.rows * g->boxheight;
-      ret.width  = ret.cols * g->boxwidth;
+      ret.width	 = ret.cols * g->boxwidth;
     }
     else {
-      /* need to set resize inc  */
+      /* need to set resize inc	 */
       if (g->rows) {
 	ret.cols = num_visible_rows (n, g->rows);
       }
@@ -339,11 +339,11 @@ static void resize_window (WinManager *man)
 static char *make_display_string (WinData *win, char *format, int len)
 {
 #define MAX_DISPLAY_SIZE 1024
-#define COPY(field)                                       \
-  temp_p = win->field;                                    \
-  if (temp_p)                                             \
+#define COPY(field)					  \
+  temp_p = win->field;					  \
+  if (temp_p)						  \
     while (*temp_p && out_p - buf < len - 1) \
-      *out_p++ = *temp_p++;                               \
+      *out_p++ = *temp_p++;				  \
   in_p++;
 
   static char buf[MAX_DISPLAY_SIZE];
@@ -486,7 +486,7 @@ Button *xy_to_button (WinManager *man, int x, int y)
 }
 
 /***************************************************************************/
-/* Routines which change dirtyable state                                   */
+/* Routines which change dirtyable state				   */
 /***************************************************************************/
 
 static void set_button_geometry (WinManager *man, Button *box)
@@ -674,13 +674,13 @@ void set_win_iconified (WinData *win, int iconified)
 			    &junkw);
       if (iconified)
       {
-        sprintf(string, "%s %d %d %d %d %d %d %d %d",
-                win->manager->AnimCommand,
+	sprintf(string, "%s %d %d %d %d %d %d %d %d",
+		win->manager->AnimCommand,
 		(int)win->x, (int)win->y, (int)win->width, (int)win->height,
 		abs_x, abs_y, win->button->w, win->button->h);
       } else {
-        sprintf(string, "%s %d %d %d %d %d %d %d %d",
-                win->manager->AnimCommand,
+	sprintf(string, "%s %d %d %d %d %d %d %d %d",
+		win->manager->AnimCommand,
 		abs_x, abs_y, win->button->w, win->button->h,
 		(int)win->x, (int)win->y, (int)win->width, (int)win->height);
       }
@@ -834,14 +834,14 @@ static void clear_empty_region (WinManager *man)
     for(n=0; n < num_rects; n++)
     {
       XClearArea(
-        theDisplay, man->theWindow, rects[n].x, rects[n].y, rects[n].width,
-        rects[n].height, False);
+	theDisplay, man->theWindow, rects[n].x, rects[n].y, rects[n].width,
+	rects[n].height, False);
     }
   }
   else
   {
     XFillRectangles (theDisplay, man->theWindow,
-                     man->backContext[DEFAULT], rects, num_rects);
+		     man->backContext[DEFAULT], rects, num_rects);
   }
 }
 
@@ -928,7 +928,7 @@ void set_manager_window_mapping (WinManager *man, int flag)
 }
 
 /***************************************************************************/
-/* Major exported functions                                                */
+/* Major exported functions						   */
 /***************************************************************************/
 
 void init_boxes (void)
@@ -1010,22 +1010,22 @@ static void resize_manager (WinManager *man, int force)
   if (oldwidth != new->width || oldheight != new->height) {
     for (i = 0; i < NUM_CONTEXTS; i++) {
       if (man->pixmap[i])
-        XFreePixmap(theDisplay, man->pixmap[i]);
+	XFreePixmap(theDisplay, man->pixmap[i]);
       if ((man->colorsets[i] >= 0) && Colorset[man->colorsets[i]].pixmap) {
-        man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
-                       man->geometry.width, man->geometry.height,
-                       &Colorset[man->colorsets[i]],
-                       Pdepth, man->backContext[i], False);
-        XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
-        XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
-        if (i == DEFAULT)
-        {
-          XSetWindowBackgroundPixmap(theDisplay, man->theWindow,
-                                     man->pixmap[i]);
-        }
+	man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
+		       man->geometry.width, man->geometry.height,
+		       &Colorset[man->colorsets[i]],
+		       Pdepth, man->backContext[i], False);
+	XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
+	XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
+	if (i == DEFAULT)
+	{
+	  XSetWindowBackgroundPixmap(theDisplay, man->theWindow,
+				     man->pixmap[i]);
+	}
       } else {
-        man->pixmap[i] = None;
-        XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
+	man->pixmap[i] = None;
+	XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
       }
     }
   }
@@ -1363,16 +1363,16 @@ static void draw_button (WinManager *man, int button, int force)
     if (draw_background) {
       ConsoleDebug (X11, "\tDrawing background\n");
       if (man->colorsets[button_state] >= 0 &&
-          Colorset[man->colorsets[button_state]].pixmap == ParentRelative)
+	  Colorset[man->colorsets[button_state]].pixmap == ParentRelative)
       {
-        XClearArea(theDisplay, man->theWindow, g.button_x, g.button_y,
-                   g.button_w, g.button_h, False);
+	XClearArea(theDisplay, man->theWindow, g.button_x, g.button_y,
+		   g.button_w, g.button_h, False);
       }
       else
       {
-        XFillRectangle(theDisplay, man->theWindow,
-                       man->backContext[button_state], g.button_x,
-                       g.button_y, g.button_w, g.button_h);
+	XFillRectangle(theDisplay, man->theWindow,
+		       man->backContext[button_state], g.button_x,
+		       g.button_y, g.button_w, g.button_h);
       }
       cleared_button = 1;
 
@@ -1411,7 +1411,7 @@ static void draw_button (WinManager *man, int button, int force)
 			man->backContext[button_state],
 			g.text_x, g.text_y, g.text_w, g.text_h);
       }
-      FwinString->str =  b->drawn_state.display_string;
+      FwinString->str =	 b->drawn_state.display_string;
       FwinString->win = man->theWindow;
       FwinString->gc = man->hiContext[button_state];
       if (man->colorsets[button_state] >= 0)
@@ -1474,12 +1474,12 @@ static void draw_empty_manager (WinManager *man)
 
   if (len > 0) {
     if (man->colorsets[state] >= 0
-        && Colorset[man->colorsets[state]].pixmap == ParentRelative) {
+	&& Colorset[man->colorsets[state]].pixmap == ParentRelative) {
       XClearArea (theDisplay, man->theWindow, g.button_x, g.button_y,
-                  g.button_w, g.button_h, False);
+		  g.button_w, g.button_h, False);
     } else {
       XFillRectangle (theDisplay, man->theWindow, man->backContext[state],
-                      g.button_x, g.button_y, g.button_w, g.button_h);
+		      g.button_x, g.button_y, g.button_w, g.button_h);
     }
   }
   if (Pdepth > 2) {
@@ -1646,9 +1646,9 @@ static int compare_windows(SortType type, WinData *a, WinData *b)
 }
 
 /* find_windows_spot: returns index of button to stick the window in.
- *                    checks win->button to see if it's already in manager.
- *                    if it isn't, then gives spot at which it should be,
- *                    if it were.
+ *		      checks win->button to see if it's already in manager.
+ *		      if it isn't, then gives spot at which it should be,
+ *		      if it were.
  */
 
 static int find_windows_spot (WinData *win)
@@ -1692,7 +1692,7 @@ static int find_windows_spot (WinData *win)
       correction = 0;
     }
     for (i = start; i != finish && bp[i]->drawn_state.win && cmp_dir *
-             compare_windows (man->sort, win, bp[i]->drawn_state.win) > 0;
+	     compare_windows (man->sort, win, bp[i]->drawn_state.win) > 0;
 	 i = i + cmp_dir)
       ;
     i += correction;
@@ -1947,7 +1947,7 @@ void man_exposed (WinManager *man, XEvent *theEvent)
 }
 
 /***************************************************************************/
-/* Debugging routines                                                      */
+/* Debugging routines							   */
 /***************************************************************************/
 
 void check_managers_consistency (void)

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "types.h"
@@ -50,7 +50,7 @@ char Command[255]="None";
 time_t TimeCom=0;
 
 /*************************************************************/
-/* Utilities                                                 */
+/* Utilities						     */
 /*************************************************************/
 void setFvwmUserDir(void)
 {
@@ -80,7 +80,7 @@ void setFvwmUserDir(void)
 }
 
 /*************************************************************/
-/* Ensemble de fonction de comparaison de deux entiers       */
+/* Ensemble de fonction de comparaison de deux entiers	     */
 /*************************************************************/
 static int Inf(char *arg1,char *arg2)
 {
@@ -759,7 +759,7 @@ static char *FuncGetPid(int *NbArg,long *TabArg)
 
 /*******  SendMsgAndGet *******/
 #define IN_FIFO_NBR_OF_TRY 200
-#define IN_FIFO_TIMEOUT    100000 /* usec: 0.1 sec (20 sec) */
+#define IN_FIFO_TIMEOUT	   100000 /* usec: 0.1 sec (20 sec) */
 #define OUT_FIFO_NBR_OF_TRY  400
 #define OUT_FIFO_TIMEOUT     50000 /* usec: 0.05 sec (20 sec) */
 static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
@@ -780,7 +780,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
   (*NbArg)++;
   cmd=CalcArg(TabArg,NbArg);
   /* 0: no answer (so no locking) from the receiver  *
-   * 1: real send and get mode                       */
+   * 1: real send and get mode			     */
   (*NbArg)++;
   tmp=CalcArg(TabArg,NbArg);
   lock=atoi(tmp);
@@ -793,7 +793,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
 
   /* unlock the receiver, wait IN_FIFO_TIMEOUT * IN_FIFO_NBR_OF_TRY so that *
    * the receiver has the time to go in its communication loop at startup   *
-   * or if it do an other job than waiting for a cmd                        */
+   * or if it do an other job than waiting for a cmd			    */
   i = 0;
   while(1)
   {
@@ -850,7 +850,7 @@ static char *FuncSendMsgAndGet(int *NbArg,long *TabArg)
     return str;
   }
 
-  /* get the answer from the receiver.                              *
+  /* get the answer from the receiver.				    *
    * we wait OUT_FIFO_TIMEOUT * OUT_FIFO_NBR_OF_TRY for this answer */
   out_fifo =
     (char*)safecalloc(strlen(com_name)+strlen(FvwmUserDir)+15,sizeof(char));

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "Tools.h"
@@ -22,7 +22,7 @@ void InitCheckBox(struct XObj *xobj)
 {
   unsigned long mask;
   XSetWindowAttributes Attr;
-  
+
   /* Enregistrement des couleurs et de la police / fonts and colors */
   if (xobj->colorset >= 0) {
     xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
@@ -81,7 +81,7 @@ void DestroyCheckBox(struct XObj *xobj)
 void DrawCheckBox(struct XObj *xobj)
 {
   XSegment segm[2];
- 
+
   /* Dessin du rectangle arrondi / drawing of the round rectangle */
   DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
 		 xobj, hili, shad);
@@ -118,7 +118,7 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
   Window WinBut = 0;
   int In = 0;
   XSegment segm[2];
-  
+
   while (End)
   {
     XNextEvent(dpy, &event);

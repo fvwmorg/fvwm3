@@ -240,7 +240,7 @@ void get_title_font_size_and_offset(
 	/* adjust font offset according to height specified in title style */
 	decor_size = fw->decor->title_height;
 	font_size = fw->title_font->height + EXTRA_TITLE_FONT_HEIGHT;
-        min_offset = fw->title_font->ascent;
+	min_offset = fw->title_font->ascent;
 	switch (title_dir)
 	{
 	case DIR_W:
@@ -559,44 +559,44 @@ void update_relative_geometry(FvwmWindow *fw)
 void update_absolute_geometry(FvwmWindow *fw)
 {
 	rectangle *dest_g;
-        rectangle frame_g;
+	rectangle frame_g;
 
 	/* store orig values in absolute coords */
 	dest_g = (IS_MAXIMIZED(fw)) ? &fw->max_g : &fw->normal_g;
-        frame_g = *dest_g;
+	frame_g = *dest_g;
 	dest_g->x = fw->frame_g.x + Scr.Vx;
 	dest_g->y = fw->frame_g.y + Scr.Vy;
-        dest_g->width = fw->frame_g.width;
-        dest_g->height = fw->frame_g.height;
+	dest_g->width = fw->frame_g.width;
+	dest_g->height = fw->frame_g.height;
 	if (IS_SHADED(fw))
-        {
-                switch (SHADED_DIR(fw))
-                {
-                case DIR_SW:
-                case DIR_S:
-                case DIR_SE:
-                        dest_g->y += fw->frame_g.height - frame_g.height;
-                        /* fall through */
-                case DIR_NW:
-                case DIR_N:
-                case DIR_NE:
-                        dest_g->height = frame_g.height;
-                        break;
-                }
-                switch (SHADED_DIR(fw))
-                {
-                case DIR_NE:
-                case DIR_E:
-                case DIR_SE:
-                        dest_g->x += fw->frame_g.width - frame_g.width;
-                        /* fall through */
-                case DIR_NW:
-                case DIR_W:
-                case DIR_SW:
-                        dest_g->width = frame_g.width;
-                        break;
-                }
-        }
+	{
+		switch (SHADED_DIR(fw))
+		{
+		case DIR_SW:
+		case DIR_S:
+		case DIR_SE:
+			dest_g->y += fw->frame_g.height - frame_g.height;
+			/* fall through */
+		case DIR_NW:
+		case DIR_N:
+		case DIR_NE:
+			dest_g->height = frame_g.height;
+			break;
+		}
+		switch (SHADED_DIR(fw))
+		{
+		case DIR_NE:
+		case DIR_E:
+		case DIR_SE:
+			dest_g->x += fw->frame_g.width - frame_g.width;
+			/* fall through */
+		case DIR_NW:
+		case DIR_W:
+		case DIR_SW:
+			dest_g->width = frame_g.width;
+			break;
+		}
+	}
 
 	return;
 }
@@ -642,11 +642,11 @@ void maximize_adjust_offset(FvwmWindow *fw)
 /***********************************************************************
  *
  *  Procedure:
- *      constrain_size - adjust the given width and height to account for the
- *              constraints imposed by size hints
+ *	constrain_size - adjust the given width and height to account for the
+ *		constraints imposed by size hints
  *
- *      The general algorithm, especially the aspect ratio stuff, is
- *      borrowed from uwm's CheckConsistency routine.
+ *	The general algorithm, especially the aspect ratio stuff, is
+ *	borrowed from uwm's CheckConsistency routine.
 *
 ***********************************************************************/
 #define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
@@ -793,9 +793,9 @@ void constrain_size(
 	/*
 	 * The math looks like this:
 	 *
-	 * minAspectX    dwidth     maxAspectX
+	 * minAspectX	 dwidth	    maxAspectX
 	 * ---------- <= ------- <= ----------
-	 * minAspectY    dheight    maxAspectY
+	 * minAspectY	 dheight    maxAspectY
 	 *
 	 * If that is multiplied out, then the width and height are
 	 * invalid in the following situations:

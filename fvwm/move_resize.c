@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*****************************************************************************
@@ -77,18 +77,18 @@ extern XEvent Event;
 
 float rgpctMovementDefault[32] =
 {
-  -.01, 0, .01, .03,.08,.18,.3,.45,.60,.75,.85,.90,.94,.97,.99,1.0
-  /* must end in 1.0 */
+	-.01, 0, .01, .03,.08,.18,.3,.45,.60,.75,.85,.90,.94,.97,.99,1.0
+	/* must end in 1.0 */
 };
 int cmsDelayDefault = 10; /* milliseconds */
 
 /* current geometry of size window */
 static rectangle sizew_g =
 {
-  -1,
-  -1,
-  -1,
-  -1
+	-1,
+	-1,
+	-1,
+	-1
 };
 
 /* ----- end of move globals ----- */
@@ -102,279 +102,303 @@ static rectangle sizew_g =
 extern Window PressedW;
 
 static void DoResize(
-  int x_root, int y_root, FvwmWindow *tmp_win, rectangle *drag,
-  rectangle *orig, int *xmotionp, int *ymotionp, Bool do_resize_opaque);
+	int x_root, int y_root, FvwmWindow *tmp_win, rectangle *drag,
+	rectangle *orig, int *xmotionp, int *ymotionp, Bool do_resize_opaque);
 static void DisplaySize(
-  FvwmWindow *tmp_win, XEvent *eventp, int width, int height, Bool Init,
-  Bool resetLast);
+	FvwmWindow *tmp_win, XEvent *eventp, int width, int height, Bool Init,
+	Bool resetLast);
 static void draw_move_resize_grid(int x, int  y, int  width, int height);
 
 /* ----- end of resize globals ----- */
 
 /* The vars are named for the x-direction, but this is used for both x and y */
 static int GetOnePositionArgument(
-  char *s1,int x,int w,int *pFinalX,float factor, int max, Bool is_x)
+	char *s1,int x,int w,int *pFinalX,float factor, int max, Bool is_x)
 {
-  int val;
-  int cch = strlen(s1);
-  Bool add_pointer_position = False;
+	int val;
+	int cch = strlen(s1);
+	Bool add_pointer_position = False;
 
-  if (cch == 0)
-    return 0;
-  if (s1[cch-1] == 'p')
-  {
-    factor = 1;  /* Use pixels, so don't multiply by factor */
-    s1[cch-1] = '\0';
-  }
-  if (strcmp(s1,"w") == 0)
-  {
-    *pFinalX = x;
-  }
-  else if (sscanf(s1,"w-%d",&val) == 1)
-  {
-    *pFinalX = x - (int)(val*factor);
-  }
-  else if (sscanf(s1,"w+%d",&val) == 1 || sscanf(s1,"w%d",&val) == 1 )
-  {
-    *pFinalX = x + (int)(val*factor);
-  }
-  else if (sscanf(s1,"m-%d",&val) == 1)
-  {
-    add_pointer_position = True;
-    *pFinalX = -(int)(val*factor);
-  }
-  else if (sscanf(s1,"m+%d",&val) == 1 || sscanf(s1,"m%d",&val) == 1 )
-  {
-    add_pointer_position = True;
-    *pFinalX = (int)(val*factor);
-  }
-  else if (sscanf(s1,"-%d",&val) == 1)
-  {
-    *pFinalX = max-w - (int)(val*factor);
-  }
-  else if (sscanf(s1,"%d",&val) == 1)
-  {
-    *pFinalX = (int)(val*factor);
-  }
-  else
-  {
-    return 0;
-  }
-  if (add_pointer_position)
-  {
-    int x = 0;
-    int y = 0;
+	if (cch == 0)
+	{
+		return 0;
+	}
+	if (s1[cch-1] == 'p')
+	{
+		factor = 1;  /* Use pixels, so don't multiply by factor */
+		s1[cch-1] = '\0';
+	}
+	if (strcmp(s1,"w") == 0)
+	{
+		*pFinalX = x;
+	}
+	else if (sscanf(s1,"w-%d",&val) == 1)
+	{
+		*pFinalX = x - (int)(val*factor);
+	}
+	else if (sscanf(s1,"w+%d",&val) == 1 || sscanf(s1,"w%d",&val) == 1 )
+	{
+		*pFinalX = x + (int)(val*factor);
+	}
+	else if (sscanf(s1,"m-%d",&val) == 1)
+	{
+		add_pointer_position = True;
+		*pFinalX = -(int)(val*factor);
+	}
+	else if (sscanf(s1,"m+%d",&val) == 1 || sscanf(s1,"m%d",&val) == 1 )
+	{
+		add_pointer_position = True;
+		*pFinalX = (int)(val*factor);
+	}
+	else if (sscanf(s1,"-%d",&val) == 1)
+	{
+		*pFinalX = max-w - (int)(val*factor);
+	}
+	else if (sscanf(s1,"%d",&val) == 1)
+	{
+		*pFinalX = (int)(val*factor);
+	}
+	else
+	{
+		return 0;
+	}
+	if (add_pointer_position)
+	{
+		int x = 0;
+		int y = 0;
 
-    if (XQueryPointer(
-	  dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &x, &y,
-	  &JunkMask) == False)
-    {
-      /* pointer is on a different screen - that's okay here */
-    }
-    *pFinalX += (is_x) ? x : y;
-  }
+		if (XQueryPointer(
+			    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,
+			    &JunkY, &x, &y, &JunkMask) == False)
+		{
+			/* pointer is on a different screen - that's okay here
+			 */
+		}
+		*pFinalX += (is_x) ? x : y;
+	}
 
-  return 1;
+	return 1;
 }
 
 /* GetMoveArguments is used for Move & AnimatedMove
  * It lets you specify in all the following ways
- *   20  30          Absolute percent position, from left edge and top
- *  -50  50          Absolute percent position, from right edge and top
- *   10p 5p          Absolute pixel position
- *   10p -0p         Absolute pixel position, from bottom
- *  w+5  w-10p       Relative position, right 5%, up ten pixels
- *  w+5  w-10p       Pointer relative position, right 5%, up ten pixels
+ *   20	 30	     Absolute percent position, from left edge and top
+ *  -50	 50	     Absolute percent position, from right edge and top
+ *   10p 5p	     Absolute pixel position
+ *   10p -0p	     Absolute pixel position, from bottom
+ *  w+5	 w-10p	     Relative position, right 5%, up ten pixels
+ *  w+5	 w-10p	     Pointer relative position, right 5%, up ten pixels
  * Returns 2 when x & y have parsed without error, 0 otherwise
  */
 static int GetMoveArguments(
-  char **paction, int w, int h, int *pFinalX, int *pFinalY,
-  Bool *fWarp, Bool *fPointer)
+	char **paction, int w, int h, int *pFinalX, int *pFinalY,
+	Bool *fWarp, Bool *fPointer)
 {
-  char *s1 = NULL;
-  char *s2 = NULL;
-  char *warp = NULL;
-  char *action;
-  char *naction;
-  int scrWidth = Scr.MyDisplayWidth;
-  int scrHeight = Scr.MyDisplayHeight;
-  int retval = 0;
+	char *s1 = NULL;
+	char *s2 = NULL;
+	char *warp = NULL;
+	char *action;
+	char *naction;
+	int scrWidth = Scr.MyDisplayWidth;
+	int scrHeight = Scr.MyDisplayHeight;
+	int retval = 0;
 
-  if (!paction)
-    return 0;
-  action = *paction;
-  action = GetNextToken(action, &s1);
-  if (s1 && fPointer && StrEquals(s1, "pointer"))
-  {
-      *fPointer = True;
-      free(s1);
-      return 0;
-  }
-  else
-  {
-    action = GetNextToken(action, &s2);
-    if (fWarp)
-    {
-      warp = PeekToken(action, &naction);
-      if (StrEquals(warp, "Warp"))
-      {
-	*fWarp = True;
-	action = naction;
-      }
-    }
-  }
+	if (!paction)
+	{
+		return 0;
+	}
+	action = *paction;
+	action = GetNextToken(action, &s1);
+	if (s1 && fPointer && StrEquals(s1, "pointer"))
+	{
+		*fPointer = True;
+		free(s1);
+		return 0;
+	}
+	else
+	{
+		action = GetNextToken(action, &s2);
+		if (fWarp)
+		{
+			warp = PeekToken(action, &naction);
+			if (StrEquals(warp, "Warp"))
+			{
+				*fWarp = True;
+				action = naction;
+			}
+		}
+	}
 
-  if (s1 != NULL && s2 != NULL)
-  {
-    retval = 0;
-    if (StrEquals(s1, "keep"))
-    {
-      retval++;
-    }
-    else if (GetOnePositionArgument(
-      s1, *pFinalX, w, pFinalX, (float)scrWidth/100, scrWidth, True))
-    {
-      retval++;
-    }
-    if (StrEquals(s2, "keep"))
-    {
-      retval++;
-    }
-    else if (GetOnePositionArgument(
-      s2, *pFinalY, h, pFinalY, (float)scrHeight/100, scrHeight, False))
-    {
-      retval++;
-    }
-    if (retval == 0)
-      *fWarp = False; /* make sure warping is off for interactive moves */
-  }
-  else
-  {
-    /* not enough arguments, switch to current page. */
-    while (*pFinalX < 0)
-    {
-      *pFinalX = Scr.MyDisplayWidth + *pFinalX;
-    }
-    while (*pFinalY < 0)
-    {
-      *pFinalY = Scr.MyDisplayHeight + *pFinalY;
-    }
-  }
+	if (s1 != NULL && s2 != NULL)
+	{
+		retval = 0;
+		if (StrEquals(s1, "keep"))
+		{
+			retval++;
+		}
+		else if (GetOnePositionArgument(
+				 s1, *pFinalX, w, pFinalX, (float)scrWidth/100,
+				 scrWidth, True))
+		{
+			retval++;
+		}
+		if (StrEquals(s2, "keep"))
+		{
+			retval++;
+		}
+		else if (GetOnePositionArgument(
+				 s2, *pFinalY, h, pFinalY,
+				 (float)scrHeight/100, scrHeight, False))
+		{
+			retval++;
+		}
+		if (retval == 0)
+		{
+			/* make sure warping is off for interactive moves */
+			*fWarp = False;
+		}
+	}
+	else
+	{
+		/* not enough arguments, switch to current page. */
+		while (*pFinalX < 0)
+		{
+			*pFinalX = Scr.MyDisplayWidth + *pFinalX;
+		}
+		while (*pFinalY < 0)
+		{
+			*pFinalY = Scr.MyDisplayHeight + *pFinalY;
+		}
+	}
 
-  if (s1)
-    free(s1);
-  if (s2)
-    free(s2);
+	if (s1)
+	{
+		free(s1);
+	}
+	if (s2)
+	{
+		free(s2);
+	}
+	*paction = action;
 
-  *paction = action;
-  return retval;
+	return retval;
 }
 
 static int ParseOneResizeArgument(
-  char *arg, int scr_size, int base_size, int size_inc, int add_size,
-  int *ret_size)
+	char *arg, int scr_size, int base_size, int size_inc, int add_size,
+	int *ret_size)
 {
-  int unit_table[3];
-  int value;
-  int suffix;
+	int unit_table[3];
+	int value;
+	int suffix;
 
-  if (StrEquals(arg, "keep"))
-  {
-    /* do not change width */
-  }
-  else
-  {
-    if (GetSuffixedIntegerArguments(arg, NULL, &value, 1, "pc", &suffix) < 1)
-    {
-      return 0;
-    }
-    else
-    {
-      /* convert the value/suffix pairs to pixels */
-      unit_table[0] = scr_size;
-      unit_table[1] = 100;
-      unit_table[2] = 100 * size_inc;
-      *ret_size = SuffixToPercentValue(value, suffix, unit_table);
-      if (*ret_size < 0)
-	*ret_size += scr_size;
-      else
-      {
-	if (suffix == 2)
+	if (StrEquals(arg, "keep"))
 	{
-	  /* account for base width and border size */
-	  *ret_size += base_size;
+		/* do not change width */
 	}
-        *ret_size += add_size;
-      }
-    }
-  }
+	else
+	{
+		if (GetSuffixedIntegerArguments(
+			    arg, NULL, &value, 1, "pc", &suffix) < 1)
+		{
+			return 0;
+		}
+		else
+		{
+			/* convert the value/suffix pairs to pixels */
+			unit_table[0] = scr_size;
+			unit_table[1] = 100;
+			unit_table[2] = 100 * size_inc;
+			*ret_size = SuffixToPercentValue(
+				value, suffix, unit_table);
+			if (*ret_size < 0)
+			{
+				*ret_size += scr_size;
+			}
+			else
+			{
+				if (suffix == 2)
+				{
+					/* account for base width and border
+					 * size */
+					*ret_size += base_size;
+				}
+				*ret_size += add_size;
+			}
+		}
+	}
 
-  return 1;
+	return 1;
 }
 
 static int GetResizeArguments(
 	char **paction, int x, int y, int w_base, int h_base, int w_inc,
 	int h_inc, size_borders *sb, int *pFinalW, int *pFinalH)
 {
-  int n;
-  char *naction;
-  char *token;
-  char *s1;
-  char *s2;
-  int w_add;
-  int h_add;
+	int n;
+	char *naction;
+	char *token;
+	char *s1;
+	char *s2;
+	int w_add;
+	int h_add;
 
-  if (!paction)
-    return 0;
+	if (!paction)
+	{
+		return 0;
+	}
+	token = PeekToken(*paction, &naction);
+	if (!token)
+	{
+		return 0;
+	}
+	if (StrEquals(token, "bottomright") || StrEquals(token, "br"))
+	{
+		int nx = x + *pFinalW - 1;
+		int ny = y + *pFinalH - 1;
 
-  token = PeekToken(*paction, &naction);
-  if (!token)
-    return 0;
-  if (StrEquals(token, "bottomright") || StrEquals(token, "br"))
-  {
-    int nx = x + *pFinalW - 1;
-    int ny = y + *pFinalH - 1;
+		n = GetMoveArguments(&naction, 0, 0, &nx, &ny, NULL, NULL);
+		if (n < 2)
+			return 0;
+		*pFinalW = nx - x + 1;
+		*pFinalH = ny - y + 1;
+		*paction = naction;
 
-    n = GetMoveArguments(&naction, 0, 0, &nx, &ny, NULL, NULL);
-    if (n < 2)
-      return 0;
-    *pFinalW = nx - x + 1;
-    *pFinalH = ny - y + 1;
-    *paction = naction;
+		return n;
+	}
+	if (StrEquals(token, "frame"))
+	{
+		w_add = 0;
+		h_add = 0;
+		naction = GetNextToken(naction, &s1);
+	}
+	else
+	{
+		w_add = sb->total_size.width;
+		h_add = sb->total_size.height;
+		s1 = safestrdup(token);
+	}
+	naction = GetNextToken(naction, &s2);
+	if (!s2)
+	{
+		free(s1);
+		return 0;
+	}
+	*paction = naction;
 
-    return n;
-  }
-  if (StrEquals(token, "frame"))
-  {
-          w_add = 0;
-          h_add = 0;
-          naction = GetNextToken(naction, &s1);
-  }
-  else
-  {
-          w_add = sb->total_size.width;
-          h_add = sb->total_size.height;
-          s1 = safestrdup(token);
-  }
-  naction = GetNextToken(naction, &s2);
-  if (!s2)
-  {
-    free(s1);
-    return 0;
-  }
-  *paction = naction;
+	n = 0;
+	n += ParseOneResizeArgument(
+		s1, Scr.MyDisplayWidth, w_base, w_inc, w_add, pFinalW);
+	n += ParseOneResizeArgument(
+		s2, Scr.MyDisplayHeight, h_base, h_inc, h_add, pFinalH);
+	free(s1);
+	free(s2);
+	if (n < 2)
+	{
+		n = 0;
+	}
 
-  n = 0;
-  n += ParseOneResizeArgument(
-    s1, Scr.MyDisplayWidth, w_base, w_inc, w_add, pFinalW);
-  n += ParseOneResizeArgument(
-    s2, Scr.MyDisplayHeight, h_base, h_inc, h_add, pFinalH);
-  free(s1);
-  free(s2);
-  if (n < 2)
-    n = 0;
-
-  return n;
+	return n;
 }
 
 static int GetResizeMoveArguments(
@@ -382,100 +406,105 @@ static int GetResizeMoveArguments(
 	size_borders *sb, int *pFinalX, int *pFinalY, int *pFinalW,
 	int *pFinalH, Bool *fWarp, Bool *fPointer)
 {
-  char *action = *paction;
+	char *action = *paction;
 
-  if (!paction)
-    return 0;
-  if (GetResizeArguments(
-    &action, *pFinalX, *pFinalY, w_base, h_base, w_inc, h_inc, sb,
-    pFinalW, pFinalH) < 2)
-  {
-    return 0;
-  }
-  if (GetMoveArguments(
-    &action, *pFinalW, *pFinalH, pFinalX, pFinalY, fWarp, NULL) < 2)
-  {
-    return 0;
-  }
-  *paction = action;
+	if (!paction)
+	{
+		return 0;
+	}
+	if (GetResizeArguments(
+		    &action, *pFinalX, *pFinalY, w_base, h_base, w_inc, h_inc,
+		    sb, pFinalW, pFinalH) < 2)
+	{
+		return 0;
+	}
+	if (GetMoveArguments(
+		    &action, *pFinalW, *pFinalH, pFinalX, pFinalY, fWarp,
+		    NULL) < 2)
+	{
+		return 0;
+	}
+	*paction = action;
 
-  return 4;
+	return 4;
 }
 
 /* Positions the SizeWindow on the current ("moused") xinerama-screen */
 static void position_geometry_window(XEvent *eventp)
 {
-  int x;
-  int y;
-  fscreen_scr_arg fscr;
+	int x;
+	int y;
+	fscreen_scr_arg fscr;
 
-  fscr.mouse_ev = eventp;
-  /* Probably should remove this positioning code from {builtins,fvwm}.c? */
-  if (Scr.gs.EmulateMWM)
-  {
-    FScreenCenterOnScreen(
-      &fscr, FSCREEN_CURRENT, &x, &y, sizew_g.width, sizew_g.height);
-  }
-  else
-  {
-    FScreenGetScrRect(&fscr, FSCREEN_CURRENT, &x, &y, NULL, NULL);
-  }
-  if (x != sizew_g.x || y != sizew_g.y)
-  {
-    switch_move_resize_grid(False);
-    XMoveWindow(dpy, Scr.SizeWindow, x, y);
-    switch_move_resize_grid(True);
-    sizew_g.x = x;
-    sizew_g.y = y;
-  }
+	fscr.mouse_ev = eventp;
+	/* Probably should remove this positioning code from {builtins,fvwm}.c?
+	 */
+	if (Scr.gs.EmulateMWM)
+	{
+		FScreenCenterOnScreen(
+			&fscr, FSCREEN_CURRENT, &x, &y, sizew_g.width,
+			sizew_g.height);
+	}
+	else
+	{
+		FScreenGetScrRect(&fscr, FSCREEN_CURRENT, &x, &y, NULL, NULL);
+	}
+	if (x != sizew_g.x || y != sizew_g.y)
+	{
+		switch_move_resize_grid(False);
+		XMoveWindow(dpy, Scr.SizeWindow, x, y);
+		switch_move_resize_grid(True);
+		sizew_g.x = x;
+		sizew_g.y = y;
+	}
 
-  return;
+	return;
 }
 
 void resize_geometry_window(void)
 {
-  int w;
-  int h;
-  int cset = Scr.DefaultColorset;
+	int w;
+	int h;
+	int cset = Scr.DefaultColorset;
 
-  Scr.SizeStringWidth =
-    FlocaleTextWidth(Scr.DefaultFont, GEOMETRY_WINDOW_STRING,
-		     sizeof(GEOMETRY_WINDOW_STRING) - 1);
-  w = Scr.SizeStringWidth + 2 * GEOMETRY_WINDOW_BW;
-  h = Scr.DefaultFont->height + 2 * GEOMETRY_WINDOW_BW;
-  if (w != sizew_g.width || h != sizew_g.height)
-  {
-    XResizeWindow(dpy, Scr.SizeWindow, w, h);
-    sizew_g.width = w;
-    sizew_g.height = h;
-  }
-  if (cset >= 0)
-  {
-    SetWindowBackground(
-      dpy, Scr.SizeWindow, w, h, &Colorset[cset], Pdepth, Scr.StdGC,
-      False);
-  }
-  else
-  {
-    XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdBack);
-  }
+	Scr.SizeStringWidth =
+		FlocaleTextWidth(Scr.DefaultFont, GEOMETRY_WINDOW_STRING,
+				 sizeof(GEOMETRY_WINDOW_STRING) - 1);
+	w = Scr.SizeStringWidth + 2 * GEOMETRY_WINDOW_BW;
+	h = Scr.DefaultFont->height + 2 * GEOMETRY_WINDOW_BW;
+	if (w != sizew_g.width || h != sizew_g.height)
+	{
+		XResizeWindow(dpy, Scr.SizeWindow, w, h);
+		sizew_g.width = w;
+		sizew_g.height = h;
+	}
+	if (cset >= 0)
+	{
+		SetWindowBackground(
+			dpy, Scr.SizeWindow, w, h, &Colorset[cset], Pdepth,
+			Scr.StdGC, False);
+	}
+	else
+	{
+		XSetWindowBackground(dpy, Scr.SizeWindow, Scr.StdBack);
+	}
 
-  return;
+	return;
 }
 
 /***********************************************************************
  *
  *  Procedure:
- *      DisplayPosition - display the position in the dimensions window
+ *	DisplayPosition - display the position in the dimensions window
  *
  *  Inputs:
- *      tmp_win - the current fvwm window
- *      x, y    - position of the window
+ *	tmp_win - the current fvwm window
+ *	x, y	- position of the window
  *
  ************************************************************************/
 
 static void DisplayPosition(
-  FvwmWindow *tmp_win, XEvent *eventp, int x, int y,int Init)
+	FvwmWindow *tmp_win, XEvent *eventp, int x, int y,int Init)
 {
 	char str[100];
 	int offset;
@@ -483,7 +512,9 @@ static void DisplayPosition(
 	FlocaleWinString fstr;
 
 	if (Scr.gs.do_hide_position_window)
+	{
 		return;
+	}
 	position_geometry_window(eventp);
 	/* Translate x,y into local screen coordinates,
 	 * in case Xinerama is used. */
@@ -536,12 +567,12 @@ static void DisplayPosition(
 /***********************************************************************
  *
  *  Procedure:
- *      DisplaySize - display the size in the dimensions window
+ *	DisplaySize - display the size in the dimensions window
  *
  *  Inputs:
- *      tmp_win - the current fvwm window
- *      width   - the width of the rubber band
- *      height  - the height of the rubber band
+ *	tmp_win - the current fvwm window
+ *	width	- the width of the rubber band
+ *	height	- the height of the rubber band
  *
  ***********************************************************************/
 static void DisplaySize(
@@ -623,370 +654,412 @@ static void DisplaySize(
 
 static Bool resize_move_window(F_CMD_ARGS)
 {
-  int FinalX = 0;
-  int FinalY = 0;
-  int FinalW = 0;
-  int FinalH = 0;
-  int n;
-  int x,y;
-  Bool fWarp = False;
-  Bool fPointer = False;
-  Bool has_focus;
-  int dx;
-  int dy;
-  size_borders b;
+	int FinalX = 0;
+	int FinalY = 0;
+	int FinalW = 0;
+	int FinalH = 0;
+	int n;
+	int x,y;
+	Bool fWarp = False;
+	Bool fPointer = False;
+	Bool has_focus;
+	int dx;
+	int dy;
+	size_borders b;
 
-  if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
-  {
-    return False;
-  }
-  if (!is_function_allowed(F_RESIZE, NULL, fw, True, True))
-  {
-    return False;
-  }
+	if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
+	{
+		return False;
+	}
+	if (!is_function_allowed(F_RESIZE, NULL, fw, True, True))
+	{
+		return False;
+	}
 
-  /* gotta have a window */
-  w = FW_W_FRAME(fw);
-  if (!XGetGeometry(dpy, w, &JunkRoot, &x, &y, (unsigned int *)&FinalW,
-		    (unsigned int *)&FinalH, &JunkBW, &JunkDepth))
-  {
-    XBell(dpy, 0);
-    return False;
-  }
+	/* gotta have a window */
+	w = FW_W_FRAME(fw);
+	if (!XGetGeometry(dpy, w, &JunkRoot, &x, &y, (unsigned int *)&FinalW,
+			  (unsigned int *)&FinalH, &JunkBW, &JunkDepth))
+	{
+		XBell(dpy, 0);
+		return False;
+	}
 
-  FinalX = x;
-  FinalY = y;
+	FinalX = x;
+	FinalY = y;
 
-  get_window_borders(fw, &b);
-  n = GetResizeMoveArguments(
-    &action,
-    fw->hints.base_width, fw->hints.base_height,
-    fw->hints.width_inc, fw->hints.height_inc,
-    &b, &FinalX, &FinalY, &FinalW, &FinalH, &fWarp, &fPointer);
-  if (n < 4)
-  {
-    return False;
-  }
+	get_window_borders(fw, &b);
+	n = GetResizeMoveArguments(
+		&action,
+		fw->hints.base_width, fw->hints.base_height,
+		fw->hints.width_inc, fw->hints.height_inc,
+		&b, &FinalX, &FinalY, &FinalW, &FinalH, &fWarp, &fPointer);
+	if (n < 4)
+	{
+		return False;
+	}
 
-  if (IS_MAXIMIZED(fw))
-  {
-    /* must redraw the buttons now so that the 'maximize' button does not stay
-     * depressed. */
-    SET_MAXIMIZED(fw, 0);
-    border_draw_decorations(
-      fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL, NULL, NULL);
-  }
-  dx = FinalX - fw->frame_g.x;
-  dy = FinalY - fw->frame_g.y;
-  /* size will be less or equal to requested */
-  constrain_size(fw, (unsigned int *)&FinalW, (unsigned int *)&FinalH,
-		 0, 0, 0);
-  if (IS_SHADED(fw))
-  {
-    frame_setup_window(
-      fw, FinalX, FinalY, FinalW, fw->frame_g.height, False);
-  }
-  else
-  {
-    frame_setup_window(fw, FinalX, FinalY, FinalW, FinalH, True);
-  }
-  if (fWarp)
-    XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
-  if (IS_MAXIMIZED(fw))
-  {
-    fw->max_g.x += dx;
-    fw->max_g.y += dy;
-  }
-  else
-  {
-    fw->normal_g.x += dx;
-    fw->normal_g.y += dy;
-  }
-  has_focus = (fw == get_focus_window())? True : False;
-  update_absolute_geometry(fw);
-  maximize_adjust_offset(fw);
-  XFlush(dpy);
-  GNOME_SetWinArea(fw);
+	if (IS_MAXIMIZED(fw))
+	{
+		/* must redraw the buttons now so that the 'maximize' button
+		 * does not stay depressed. */
+		SET_MAXIMIZED(fw, 0);
+		border_draw_decorations(
+			fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL,
+			NULL, NULL);
+	}
+	dx = FinalX - fw->frame_g.x;
+	dy = FinalY - fw->frame_g.y;
+	/* size will be less or equal to requested */
+	constrain_size(fw, (unsigned int *)&FinalW, (unsigned int *)&FinalH,
+		       0, 0, 0);
+	if (IS_SHADED(fw))
+	{
+		frame_setup_window(
+			fw, FinalX, FinalY, FinalW, fw->frame_g.height, False);
+	}
+	else
+	{
+		frame_setup_window(fw, FinalX, FinalY, FinalW, FinalH, True);
+	}
+	if (fWarp)
+	{
+		XWarpPointer(
+			dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
+	}
+	if (IS_MAXIMIZED(fw))
+	{
+		fw->max_g.x += dx;
+		fw->max_g.y += dy;
+	}
+	else
+	{
+		fw->normal_g.x += dx;
+		fw->normal_g.y += dy;
+	}
+	has_focus = (fw == get_focus_window())? True : False;
+	update_absolute_geometry(fw);
+	maximize_adjust_offset(fw);
+	XFlush(dpy);
+	GNOME_SetWinArea(fw);
 
-  return True;
+	return True;
 }
 
 void CMD_ResizeMove(F_CMD_ARGS)
 {
-  if (DeferExecution(eventp,&w,&fw,&context, CRS_RESIZE, ButtonPress))
-  {
-    return;
-  }
-  if (fw == NULL || IS_ICONIFIED(fw))
-  {
-    return;
-  }
-  resize_move_window(F_PASS_ARGS);
+	if (DeferExecution(eventp,&w,&fw,&context, CRS_RESIZE, ButtonPress))
+	{
+		return;
+	}
+	if (fw == NULL || IS_ICONIFIED(fw))
+	{
+		return;
+	}
+	resize_move_window(F_PASS_ARGS);
 
-  return;
+	return;
 }
-
 
 static void InteractiveMove(
-  Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY, XEvent *eventp,
-  Bool do_start_at_pointer)
+	Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
+	XEvent *eventp, Bool do_start_at_pointer)
 {
-  int origDragX,origDragY,DragX, DragY, DragWidth, DragHeight;
-  int XOffset, YOffset;
-  Window w;
-  Bool do_move_opaque = False;
+	int origDragX,origDragY,DragX, DragY, DragWidth, DragHeight;
+	int XOffset, YOffset;
+	Window w;
+	Bool do_move_opaque = False;
 
-  w = *win;
+	w = *win;
 
-  if (Scr.bo.InstallRootCmap)
-    InstallRootColormap();
-  else
-    InstallFvwmColormap();
-  /* warp the pointer to the cursor position from before menu appeared */
-  /* domivogt (17-May-1999): an XFlush should not hurt anyway, so do it
-   * unconditionally to remove the external */
-  XFlush(dpy);
+	if (Scr.bo.InstallRootCmap)
+	{
+		InstallRootColormap();
+	}
+	else
+	{
+		InstallFvwmColormap();
+	}
+	/* warp the pointer to the cursor position from before menu appeared */
+	/* domivogt (17-May-1999): an XFlush should not hurt anyway, so do it
+	 * unconditionally to remove the external */
+	XFlush(dpy);
 
-  if (do_start_at_pointer)
-  {
-    if (XQueryPointer(
-	  dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX, &DragY, &JunkX, &JunkY,
-	  &JunkMask) == False)
-    {
-      /* pointer is on a different screen */
-      DragX = 0;
-      DragY = 0;
-    }
-  }
-  else
-  {
-    /* Although a move is usually done with a button depressed we have to check
-     * for ButtonRelease too since the event may be faked. */
-    GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &DragX, &DragY);
-  }
+	if (do_start_at_pointer)
+	{
+		if (XQueryPointer(
+			    dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX,
+			    &DragY, &JunkX, &JunkY, &JunkMask) == False)
+		{
+			/* pointer is on a different screen */
+			DragX = 0;
+			DragY = 0;
+		}
+	}
+	else
+	{
+		/* Although a move is usually done with a button depressed we
+		 * have to check for ButtonRelease too since the event may be
+		 * faked. */
+		GetLocationFromEventOrQuery(
+			dpy, Scr.Root, &Event, &DragX, &DragY);
+	}
 
-  MyXGrabServer(dpy);
-  if (!XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
+	MyXGrabServer(dpy);
+	if (!XGetGeometry(
+		    dpy, w, &JunkRoot, &origDragX, &origDragY,
 		    (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,
 		    &JunkBW,  &JunkDepth))
-  {
-    MyXUngrabServer(dpy);
-    return;
-  }
-  MyXGrabKeyboard(dpy);
-  if (do_start_at_pointer)
-  {
-    origDragX = DragX;
-    origDragY = DragY;
-  }
+	{
+		MyXUngrabServer(dpy);
+		return;
+	}
+	MyXGrabKeyboard(dpy);
+	if (do_start_at_pointer)
+	{
+		origDragX = DragX;
+		origDragY = DragY;
+	}
 
-  if (IS_ICONIFIED(tmp_win))
-    do_move_opaque = True;
-  else if (IS_MAPPED(tmp_win))
-  {
-    float areapct;
+	if (IS_ICONIFIED(tmp_win))
+	{
+		do_move_opaque = True;
+	}
+	else if (IS_MAPPED(tmp_win))
+	{
+		float areapct;
 
-    areapct = 100.0;
-    areapct *= ((float)DragWidth / (float)Scr.MyDisplayWidth);
-    areapct *= ((float)DragHeight / (float)Scr.MyDisplayHeight);
-    /* round up */
-    areapct += 0.1;
-    if (Scr.OpaqueSize < 0 || (float)areapct <= (float)Scr.OpaqueSize)
-    {
-      do_move_opaque = True;
-    }
-  }
-  if (do_move_opaque)
-  {
-    MyXUngrabServer(dpy);
-  }
-  else
-  {
-    Scr.flags.is_wire_frame_displayed = True;
-  }
+		areapct = 100.0;
+		areapct *= ((float)DragWidth / (float)Scr.MyDisplayWidth);
+		areapct *= ((float)DragHeight / (float)Scr.MyDisplayHeight);
+		/* round up */
+		areapct += 0.1;
+		if (Scr.OpaqueSize < 0 ||
+		    (float)areapct <= (float)Scr.OpaqueSize)
+		{
+			do_move_opaque = True;
+		}
+	}
+	if (do_move_opaque)
+	{
+		MyXUngrabServer(dpy);
+	}
+	else
+	{
+		Scr.flags.is_wire_frame_displayed = True;
+	}
 
-  if (!do_move_opaque && IS_ICONIFIED(tmp_win))
-    XUnmapWindow(dpy,w);
+	if (!do_move_opaque && IS_ICONIFIED(tmp_win))
+	{
+		XUnmapWindow(dpy,w);
+	}
 
-  XOffset = origDragX - DragX;
-  YOffset = origDragY - DragY;
-  if (!Scr.gs.do_hide_position_window)
-  {
-    position_geometry_window(NULL);
-    XMapRaised(dpy,Scr.SizeWindow);
-  }
-  moveLoop(tmp_win, XOffset,YOffset,DragWidth,DragHeight, FinalX,FinalY,
-	   do_move_opaque);
-  if (!Scr.gs.do_hide_position_window)
-  {
-    XUnmapWindow(dpy,Scr.SizeWindow);
-  }
-  if (Scr.bo.InstallRootCmap)
-    UninstallRootColormap();
-  else
-    UninstallFvwmColormap();
+	XOffset = origDragX - DragX;
+	YOffset = origDragY - DragY;
+	if (!Scr.gs.do_hide_position_window)
+	{
+		position_geometry_window(NULL);
+		XMapRaised(dpy,Scr.SizeWindow);
+	}
+	moveLoop(tmp_win, XOffset,YOffset,DragWidth,DragHeight, FinalX,FinalY,
+		 do_move_opaque);
+	if (!Scr.gs.do_hide_position_window)
+	{
+		XUnmapWindow(dpy,Scr.SizeWindow);
+	}
+	if (Scr.bo.InstallRootCmap)
+	{
+		UninstallRootColormap();
+	}
+	else
+	{
+		UninstallFvwmColormap();
+	}
 
-  if (!do_move_opaque)
-  {
-    /* Throw away some events that dont interest us right now. */
-    discard_events(EnterWindowMask|LeaveWindowMask);
-    Scr.flags.is_wire_frame_displayed = False;
-    MyXUngrabServer(dpy);
-  }
-  MyXUngrabKeyboard(dpy);
+	if (!do_move_opaque)
+	{
+		/* Throw away some events that dont interest us right now. */
+		discard_events(EnterWindowMask|LeaveWindowMask);
+		Scr.flags.is_wire_frame_displayed = False;
+		MyXUngrabServer(dpy);
+	}
+	MyXUngrabKeyboard(dpy);
 
-  return;
+	return;
 }
-
 
 /* Perform the movement of the window. ppctMovement *must* have a 1.0 entry
  * somewhere in ins list of floats, and movement will stop when it hits a 1.0
  * entry */
 static void AnimatedMoveAnyWindow(
-  FvwmWindow *tmp_win, Window w, int startX, int startY, int endX, int endY,
-  Bool fWarpPointerToo, int cmsDelay, float *ppctMovement,
-  MenuRoot *menu_root)
+	FvwmWindow *tmp_win, Window w, int startX, int startY, int endX, int endY,
+	Bool fWarpPointerToo, int cmsDelay, float *ppctMovement,
+	MenuRoot *menu_root)
 {
-  int pointerX, pointerY;
-  int currentX, currentY;
-  int lastX, lastY;
-  int deltaX, deltaY;
+	int pointerX, pointerY;
+	int currentX, currentY;
+	int lastX, lastY;
+	int deltaX, deltaY;
 
-  if (!is_function_allowed(F_MOVE, NULL, tmp_win, True, False))
-    return;
+	if (!is_function_allowed(F_MOVE, NULL, tmp_win, True, False))
+	{
+		return;
+	}
 
-  /* set our defaults */
-  if (ppctMovement == NULL)
-    ppctMovement = rgpctMovementDefault;
-  if (cmsDelay < 0)
-    cmsDelay = cmsDelayDefault;
+	/* set our defaults */
+	if (ppctMovement == NULL)
+	{
+		ppctMovement = rgpctMovementDefault;
+	}
+	if (cmsDelay < 0)
+	{
+		cmsDelay = cmsDelayDefault;
+	}
 
-  if (startX < 0 || startY < 0)
-  {
-    if (!XGetGeometry(dpy, w, &JunkRoot, &currentX, &currentY,
-		      &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
-    {
-      XBell(dpy, 0);
-      return;
-    }
-    if (startX < 0)
-      startX = currentX;
-    if (startY < 0)
-      startY = currentY;
-  }
+	if (startX < 0 || startY < 0)
+	{
+		if (!XGetGeometry(dpy, w, &JunkRoot, &currentX, &currentY,
+				  &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+		{
+			XBell(dpy, 0);
+			return;
+		}
+		if (startX < 0)
+		{
+			startX = currentX;
+		}
+		if (startY < 0)
+		{
+			startY = currentY;
+		}
+	}
 
-  deltaX = endX - startX;
-  deltaY = endY - startY;
-  lastX = startX;
-  lastY = startY;
+	deltaX = endX - startX;
+	deltaY = endY - startY;
+	lastX = startX;
+	lastY = startY;
 
-  if (deltaX == 0 && deltaY == 0)
-    /* go nowhere fast */
-    return;
+	if (deltaX == 0 && deltaY == 0)
+	{
+		/* go nowhere fast */
+		return;
+	}
 
-  /* Needed for aborting */
-  MyXGrabKeyboard(dpy);
-  do
-  {
-    currentX = startX + deltaX * (*ppctMovement);
-    currentY = startY + deltaY * (*ppctMovement);
-    if (lastX == currentX && lastY == currentY)
-      /* don't waste time in the same spot */
-      continue;
-    XMoveWindow(dpy,w,currentX,currentY);
-    if (menu_root != NULL)
-    {
-      ParentalMenuRePaint(menu_root);
-    }
-    if (fWarpPointerToo == True)
-    {
-      if (XQueryPointer(
-	    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &pointerX,
-	    &pointerY,&JunkMask) == False)
-      {
-	/* pointer is on a different screen - that's okay here */
-      }
-      pointerX += currentX - lastX;
-      pointerY += currentY - lastY;
-      XWarpPointer(dpy,None,Scr.Root,0,0,0,0,
-		   pointerX,pointerY);
-    }
-    if (tmp_win && !IS_SHADED(tmp_win))
-    {
-      /* send configure notify event for windows that care about their
-       * location */
-      SendConfigureNotify(
-	tmp_win, currentX, currentY, tmp_win->frame_g.width,
-	tmp_win->frame_g.height, 0, False);
+	/* Needed for aborting */
+	MyXGrabKeyboard(dpy);
+	do
+	{
+		currentX = startX + deltaX * (*ppctMovement);
+		currentY = startY + deltaY * (*ppctMovement);
+		if (lastX == currentX && lastY == currentY)
+		{
+			/* don't waste time in the same spot */
+			continue;
+		}
+		XMoveWindow(dpy,w,currentX,currentY);
+		if (menu_root != NULL)
+		{
+			ParentalMenuRePaint(menu_root);
+		}
+		if (fWarpPointerToo == True)
+		{
+			if (XQueryPointer(
+				    dpy, Scr.Root, &JunkRoot, &JunkChild,
+				    &JunkX, &JunkY, &pointerX, &pointerY,
+				    &JunkMask) == False)
+			{
+				/* pointer is on a different screen - that's
+				 * okay here */
+			}
+			pointerX += currentX - lastX;
+			pointerY += currentY - lastY;
+			XWarpPointer(dpy,None,Scr.Root,0,0,0,0,
+				     pointerX,pointerY);
+		}
+		if (tmp_win && !IS_SHADED(tmp_win))
+		{
+			/* send configure notify event for windows that care
+			 * about their location */
+			SendConfigureNotify(
+				tmp_win, currentX, currentY,
+				tmp_win->frame_g.width,
+				tmp_win->frame_g.height, 0, False);
 #ifdef FVWM_DEBUG_MSGS
-      fvwm_msg(DBG,"AnimatedMoveAnyWindow",
-	       "Sent ConfigureNotify (w == %d, h == %d)",
-               tmp_win->frame_g.width, tmp_win->frame_g.height);
+			fvwm_msg(DBG,"AnimatedMoveAnyWindow",
+				 "Sent ConfigureNotify (w == %d, h == %d)",
+				 tmp_win->frame_g.width,
+				 tmp_win->frame_g.height);
 #endif
-    }
-    XFlush(dpy);
-    if (tmp_win)
-    {
-      tmp_win->frame_g.x = currentX;
-      tmp_win->frame_g.y = currentY;
-      update_absolute_geometry(tmp_win);
-      maximize_adjust_offset(tmp_win);
-      BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
-      FlushAllMessageQueues();
-    }
+		}
+		XFlush(dpy);
+		if (tmp_win)
+		{
+			tmp_win->frame_g.x = currentX;
+			tmp_win->frame_g.y = currentY;
+			update_absolute_geometry(tmp_win);
+			maximize_adjust_offset(tmp_win);
+			BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
+			FlushAllMessageQueues();
+		}
 
-    usleep(cmsDelay * 1000); /* usleep takes microseconds */
-    /* this didn't work for me -- maybe no longer necessary since
-     * we warn the user when they use > .5 seconds as a between-frame delay
-     * time.
-     *
-     * domivogt (28-apr-1999): That is because the keyboard was not grabbed.
-     * works nicely now.
-     */
-    if (XCheckMaskEvent(dpy, ButtonPressMask|ButtonReleaseMask|KeyPressMask,
-			&Event))
-    {
-      StashEventTime(&Event);
-      /* finish the move immediately */
-      XMoveWindow(dpy,w,endX,endY);
-      if (menu_root != NULL)
-      {
-	ParentalMenuRePaint(menu_root);
-      }
-      break;
-    }
-    lastX = currentX;
-    lastY = currentY;
-  }
-  while
-    (*ppctMovement != 1.0 && ppctMovement++);
-  MyXUngrabKeyboard(dpy);
-  XFlush(dpy);
-  if (tmp_win)
-    GNOME_SetWinArea(tmp_win);
-  return;
+		usleep(cmsDelay * 1000); /* usleep takes microseconds */
+		/* this didn't work for me -- maybe no longer necessary since
+		 * we warn the user when they use > .5 seconds as a
+		 * between-frame delay time.
+		 *
+		 * domivogt (28-apr-1999): That is because the keyboard was not
+		 * grabbed. works nicely now.
+		 */
+		if (XCheckMaskEvent(
+			    dpy, ButtonPressMask|ButtonReleaseMask|KeyPressMask,
+			    &Event))
+		{
+			StashEventTime(&Event);
+			/* finish the move immediately */
+			XMoveWindow(dpy,w,endX,endY);
+			if (menu_root != NULL)
+			{
+				ParentalMenuRePaint(menu_root);
+			}
+			break;
+		}
+		lastX = currentX;
+		lastY = currentY;
+	} while (*ppctMovement != 1.0 && ppctMovement++);
+	MyXUngrabKeyboard(dpy);
+	XFlush(dpy);
+	if (tmp_win)
+	{
+		GNOME_SetWinArea(tmp_win);
+	}
+
+	return;
 }
 
 /* used for moving menus, not a client window */
-void AnimatedMoveOfWindow(Window w, int startX, int startY,
-			  int endX, int endY, Bool fWarpPointerToo,
-			  int cmsDelay, float *ppctMovement,
-			  MenuRoot *menu_root)
+void AnimatedMoveOfWindow(
+	Window w, int startX, int startY, int endX, int endY,
+	Bool fWarpPointerToo, int cmsDelay, float *ppctMovement,
+	MenuRoot *menu_root)
 {
-  AnimatedMoveAnyWindow(NULL, w, startX, startY, endX, endY, fWarpPointerToo,
-                        cmsDelay, ppctMovement, menu_root);
+	AnimatedMoveAnyWindow(
+		NULL, w, startX, startY, endX, endY, fWarpPointerToo,
+		cmsDelay, ppctMovement, menu_root);
+
+	return;
 }
 
 /* used for moving client windows */
-void AnimatedMoveFvwmWindow(FvwmWindow *tmp_win, Window w, int startX,
-			    int startY, int endX, int endY,
-			    Bool fWarpPointerToo, int cmsDelay,
-			    float *ppctMovement)
+void AnimatedMoveFvwmWindow(
+	FvwmWindow *tmp_win, Window w, int startX, int startY, int endX,
+	int endY, Bool fWarpPointerToo, int cmsDelay, float *ppctMovement)
 {
-  AnimatedMoveAnyWindow(tmp_win, w, startX, startY, endX, endY,
-			fWarpPointerToo, cmsDelay, ppctMovement, NULL);
-}
+	AnimatedMoveAnyWindow(
+		tmp_win, w, startX, startY, endX, endY, fWarpPointerToo,
+		cmsDelay, ppctMovement, NULL);
 
+	return;
+}
 
 /****************************************************************************
  *
@@ -995,562 +1068,627 @@ void AnimatedMoveFvwmWindow(FvwmWindow *tmp_win, Window w, int startX,
  ****************************************************************************/
 static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
 {
-  int FinalX = 0;
-  int FinalY = 0;
-  int n;
-  int x,y;
-  unsigned int width, height;
-  int page_x, page_y;
-  Bool fWarp = False;
-  Bool fPointer = False;
-  int dx;
-  int dy;
+	int FinalX = 0;
+	int FinalY = 0;
+	int n;
+	int x,y;
+	unsigned int width, height;
+	int page_x, page_y;
+	Bool fWarp = False;
+	Bool fPointer = False;
+	int dx;
+	int dy;
 
-  if (DeferExecution(
-	eventp,&w,&fw,&context,
-	(mode == MOVE_NORMAL) ? CRS_MOVE : CRS_SELECT, ButtonPress))
-  {
-    return;
-  }
-  if (fw == NULL)
-    return;
-  if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
-    return;
-
-  /* gotta have a window */
-  w = FW_W_FRAME(fw);
-  if(IS_ICONIFIED(fw))
-  {
-    if(FW_W_ICON_PIXMAP(fw) != None)
-    {
-      w = FW_W_ICON_PIXMAP(fw);
-      XUnmapWindow(dpy,FW_W_ICON_TITLE(fw));
-    }
-    else
-    {
-      w = FW_W_ICON_TITLE(fw);
-    }
-  }
-  if (!XGetGeometry(dpy, w, &JunkRoot, &x, &y, &width, &height,
-		    &JunkBW, &JunkDepth))
-  {
-    return;
-  }
-
-  if (mode == MOVE_PAGE)
-  {
-    rectangle r;
-    rectangle s;
-
-    do_animate = False;
-    if (IS_STICKY(fw))
-    {
-	    handle_stick(F_PASS_ARGS, 0);
-    }
-
-    if (!get_page_arguments(action, &page_x, &page_y))
-    {
-      page_x = Scr.Vx;
-      page_y = Scr.Vy;
-    }
-    r.x = x;
-    r.y = y;
-    r.width = width;
-    r.height = height;
-    s.x = page_x - Scr.Vx;
-    s.y = page_y - Scr.Vy;
-    s.width = Scr.MyDisplayWidth;
-    s.height = Scr.MyDisplayHeight;
-    fvwmrect_move_into_rectangle(&r, &s);
-    FinalX = r.x;
-    FinalY = r.y;
-  }
-  else if (mode == MOVE_SCREEN)
-  {
-    rectangle r;
-    rectangle s;
-    rectangle p;
-    int fscreen;
-
-    do_animate = False;
-    SET_STICKY(fw, 0);
-
-    fscreen = FScreenGetScreenArgument(action, FSCREEN_SPEC_CURRENT);
-    FScreenGetScrRect(NULL, fscreen, &s.x, &s.y, &s.width, &s.height);
-    page_x = Scr.Vx;
-    page_y = Scr.Vy;
-    r.x = x;
-    r.y = y;
-    r.width = width;
-    r.height = height;
-    p.x = page_x - Scr.Vx;
-    p.y = page_y - Scr.Vy;
-    p.width = Scr.MyDisplayWidth;
-    p.height = Scr.MyDisplayHeight;
-    /* move to page first */
-    fvwmrect_move_into_rectangle(&r, &p);
-    /* then move to screen */
-    fvwmrect_move_into_rectangle(&r, &s);
-    FinalX = r.x;
-    FinalY = r.y;
-  }
-  else
-  {
-    FinalX = x;
-    FinalY = y;
-    n = GetMoveArguments(
-      &action, width, height, &FinalX, &FinalY, &fWarp, &fPointer);
-
-    if (n != 2 || fPointer)
-      InteractiveMove(&w, fw, &FinalX, &FinalY, eventp, fPointer);
-    else if (IS_ICONIFIED(fw))
-    {
-      SET_ICON_MOVED(fw, 1);
-    }
-  }
-
-  if (w == FW_W_FRAME(fw))
-  {
-    dx = FinalX - fw->frame_g.x;
-    dy = FinalY - fw->frame_g.y;
-    if (do_animate)
-    {
-      AnimatedMoveFvwmWindow(fw,w,-1,-1,FinalX,FinalY,fWarp,-1,NULL);
-    }
-    frame_setup_window(fw, FinalX, FinalY,
-	       fw->frame_g.width, fw->frame_g.height, True);
-    if (fWarp & !do_animate)
-      XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
-    if (IS_MAXIMIZED(fw))
-    {
-      fw->max_g.x += dx;
-      fw->max_g.y += dy;
-    }
-    else
-    {
-      fw->normal_g.x += dx;
-      fw->normal_g.y += dy;
-    }
-    update_absolute_geometry(fw);
-    maximize_adjust_offset(fw);
-    XFlush(dpy);
-    GNOME_SetWinArea(fw);
-  }
-  else /* icon window */
-  {
-    rectangle gt;
-    rectangle gp;
-    Bool has_icon_title;
-    Bool has_icon_picture;
-
-    set_icon_position(fw, FinalX, FinalY);
-    broadcast_icon_geometry(fw, False);
-    has_icon_title = get_visible_icon_title_geometry(fw, &gt);
-    has_icon_picture = get_visible_icon_picture_geometry(fw, &gp);
-    if (has_icon_picture)
-    {
-      if (do_animate)
-      {
-	AnimatedMoveOfWindow(
-	  FW_W_ICON_PIXMAP(fw), -1, -1, gp.x, gp.y, fWarp, -1, NULL, NULL);
-      }
-      else
-      {
-	XMoveWindow(dpy, FW_W_ICON_PIXMAP(fw), gp.x, gp.y);
-	if (fWarp)
+	if (DeferExecution(
+		    eventp,&w,&fw,&context,
+		    (mode == MOVE_NORMAL) ? CRS_MOVE : CRS_SELECT, ButtonPress))
 	{
-	  XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
+		return;
 	}
-      }
-      if (has_icon_title)
-      {
-	XMoveWindow(dpy, FW_W_ICON_TITLE(fw), gt.x, gt.y);
-	XMapWindow(dpy, FW_W_ICON_TITLE(fw));
-      }
-      XMapWindow(dpy, w);
-    }
-    else if (has_icon_title)
-    {
-      if (do_animate)
-      {
-	AnimatedMoveOfWindow(
-	  FW_W_ICON_TITLE(fw), -1, -1, gt.x, gt.y, fWarp, -1, NULL, NULL);
-      }
-      else
-      {
-	XMoveWindow(dpy, FW_W_ICON_TITLE(fw), gt.x, gt.y);
-	if (fWarp)
-	  XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
-      }
-    }
-    XFlush(dpy);
-  }
-  return;
+	if (fw == NULL)
+	{
+		return;
+	}
+	if (!is_function_allowed(F_MOVE, NULL, fw, True, False))
+	{
+		return;
+	}
+
+	/* gotta have a window */
+	w = FW_W_FRAME(fw);
+	if (IS_ICONIFIED(fw))
+	{
+		if (FW_W_ICON_PIXMAP(fw) != None)
+		{
+			w = FW_W_ICON_PIXMAP(fw);
+			XUnmapWindow(dpy,FW_W_ICON_TITLE(fw));
+		}
+		else
+		{
+			w = FW_W_ICON_TITLE(fw);
+		}
+	}
+	if (!XGetGeometry(dpy, w, &JunkRoot, &x, &y, &width, &height,
+			  &JunkBW, &JunkDepth))
+	{
+		return;
+	}
+
+	if (mode == MOVE_PAGE)
+	{
+		rectangle r;
+		rectangle s;
+
+		do_animate = False;
+
+		if (!get_page_arguments(action, &page_x, &page_y))
+		{
+			page_x = Scr.Vx;
+			page_y = Scr.Vy;
+		}
+		r.x = x;
+		r.y = y;
+		r.width = width;
+		r.height = height;
+		s.x = page_x - Scr.Vx;
+		s.y = page_y - Scr.Vy;
+		s.width = Scr.MyDisplayWidth;
+		s.height = Scr.MyDisplayHeight;
+		fvwmrect_move_into_rectangle(&r, &s);
+		FinalX = r.x;
+		FinalY = r.y;
+	}
+	else if (mode == MOVE_SCREEN)
+	{
+		rectangle r;
+		rectangle s;
+		rectangle p;
+		int fscreen;
+
+		do_animate = False;
+		SET_STICKY(fw, 0);
+
+		fscreen = FScreenGetScreenArgument(
+			action, FSCREEN_SPEC_CURRENT);
+		FScreenGetScrRect(
+			NULL, fscreen, &s.x, &s.y, &s.width, &s.height);
+		page_x = Scr.Vx;
+		page_y = Scr.Vy;
+		r.x = x;
+		r.y = y;
+		r.width = width;
+		r.height = height;
+		p.x = page_x - Scr.Vx;
+		p.y = page_y - Scr.Vy;
+		p.width = Scr.MyDisplayWidth;
+		p.height = Scr.MyDisplayHeight;
+		/* move to page first */
+		fvwmrect_move_into_rectangle(&r, &p);
+		/* then move to screen */
+		fvwmrect_move_into_rectangle(&r, &s);
+		FinalX = r.x;
+		FinalY = r.y;
+	}
+	else
+	{
+		FinalX = x;
+		FinalY = y;
+		n = GetMoveArguments(
+			&action, width, height, &FinalX, &FinalY, &fWarp,
+			&fPointer);
+
+		if (n != 2 || fPointer)
+		{
+			InteractiveMove(
+				&w, fw, &FinalX, &FinalY, eventp, fPointer);
+		}
+		else if (IS_ICONIFIED(fw))
+		{
+			SET_ICON_MOVED(fw, 1);
+		}
+	}
+
+	if (w == FW_W_FRAME(fw))
+	{
+		dx = FinalX - fw->frame_g.x;
+		dy = FinalY - fw->frame_g.y;
+		if (do_animate)
+		{
+			AnimatedMoveFvwmWindow(
+				fw, w, -1, -1, FinalX, FinalY, fWarp, -1, NULL);
+		}
+		frame_setup_window(
+			fw, FinalX, FinalY, fw->frame_g.width,
+			fw->frame_g.height, True);
+		if (fWarp & !do_animate)
+		{
+			XWarpPointer(
+				dpy, None, None, 0, 0, 0, 0, FinalX - x,
+				FinalY - y);
+		}
+		if (IS_MAXIMIZED(fw))
+		{
+			fw->max_g.x += dx;
+			fw->max_g.y += dy;
+		}
+		else
+		{
+			fw->normal_g.x += dx;
+			fw->normal_g.y += dy;
+		}
+		update_absolute_geometry(fw);
+		maximize_adjust_offset(fw);
+		XFlush(dpy);
+		GNOME_SetWinArea(fw);
+	}
+	else /* icon window */
+	{
+		rectangle gt;
+		rectangle gp;
+		Bool has_icon_title;
+		Bool has_icon_picture;
+
+		set_icon_position(fw, FinalX, FinalY);
+		broadcast_icon_geometry(fw, False);
+		has_icon_title = get_visible_icon_title_geometry(fw, &gt);
+		has_icon_picture = get_visible_icon_picture_geometry(fw, &gp);
+		if (has_icon_picture)
+		{
+			if (do_animate)
+			{
+				AnimatedMoveOfWindow(
+					FW_W_ICON_PIXMAP(fw), -1, -1, gp.x,
+					gp.y, fWarp, -1, NULL, NULL);
+			}
+			else
+			{
+				XMoveWindow(
+					dpy, FW_W_ICON_PIXMAP(fw), gp.x, gp.y);
+				if (fWarp)
+				{
+					XWarpPointer(
+						dpy, None, None, 0, 0, 0, 0,
+						FinalX - x, FinalY - y);
+				}
+			}
+			if (has_icon_title)
+			{
+				XMoveWindow(
+					dpy, FW_W_ICON_TITLE(fw), gt.x, gt.y);
+				XMapWindow(dpy, FW_W_ICON_TITLE(fw));
+			}
+			XMapWindow(dpy, w);
+		}
+		else if (has_icon_title)
+		{
+			if (do_animate)
+			{
+				AnimatedMoveOfWindow(
+					FW_W_ICON_TITLE(fw), -1, -1, gt.x,
+					gt.y, fWarp, -1, NULL, NULL);
+			}
+			else
+			{
+				XMoveWindow(
+					dpy, FW_W_ICON_TITLE(fw), gt.x, gt.y);
+				if (fWarp)
+				{
+					XWarpPointer(
+						dpy, None, None, 0, 0, 0, 0,
+						FinalX - x, FinalY - y);
+				}
+			}
+		}
+		XFlush(dpy);
+	}
+
+	return;
 }
 
 void CMD_Move(F_CMD_ARGS)
 {
-  move_window_doit(F_PASS_ARGS, False, MOVE_NORMAL);
+	move_window_doit(F_PASS_ARGS, False, MOVE_NORMAL);
+
+	return;
 }
 
 void CMD_AnimatedMove(F_CMD_ARGS)
 {
-  move_window_doit(F_PASS_ARGS, True, MOVE_NORMAL);
+	move_window_doit(F_PASS_ARGS, True, MOVE_NORMAL);
+
+	return;
 }
 
 void CMD_MoveToPage(F_CMD_ARGS)
 {
-  move_window_doit(F_PASS_ARGS, False, MOVE_PAGE);
+	move_window_doit(F_PASS_ARGS, False, MOVE_PAGE);
+
+	return;
 }
 
 void CMD_MoveToScreen(F_CMD_ARGS)
 {
-  move_window_doit(F_PASS_ARGS, False, MOVE_SCREEN);
+	move_window_doit(F_PASS_ARGS, False, MOVE_SCREEN);
+
+	return;
 }
 
 /* This function does the SnapAttraction stuff. If takes x and y coordinates
  * (*px and *py) and returns the snapped values. */
 static void DoSnapAttract(
-  FvwmWindow *tmp_win, unsigned int Width, unsigned int Height,
-  int *px, int *py)
+	FvwmWindow *tmp_win, unsigned int Width, unsigned int Height,
+	int *px, int *py)
 {
-  int nyt,nxl,dist,closestLeft,closestRight,closestBottom,closestTop;
-  rectangle self, other;
-  FvwmWindow *tmp;
-  rectangle g;
-  Bool rc;
+	int nyt,nxl,dist,closestLeft,closestRight,closestBottom,closestTop;
+	rectangle self, other;
+	FvwmWindow *tmp;
+	rectangle g;
+	Bool rc;
 
-  /* resist based on window edges */
-  closestTop = Scr.SnapAttraction;
-  closestBottom = Scr.SnapAttraction;
-  closestRight = Scr.SnapAttraction;
-  closestLeft = Scr.SnapAttraction;
-  nxl = -99999;
-  nyt = -99999;
-  self.x = *px;
-  self.y = *py;
-  self.width = Width;
-  self.height = Height;
-  rc = get_visible_icon_title_geometry(tmp_win, &g);
-  if (rc == True)
-  {
-    self.height += g.height;
-  }
-
-  /*
-   * snap attraction
-   */
-  /* snap to other windows */
-  if ((Scr.SnapMode & (SNAP_ICONS | SNAP_WINDOWS | SNAP_SAME)) &&
-      Scr.SnapAttraction > 0)
-  {
-    for (tmp = Scr.FvwmRoot.next; tmp; tmp = tmp->next)
-    {
-      if (tmp_win->Desk != tmp->Desk || tmp_win == tmp)
-      {
-	continue;
-      }
-      /* check snapping type */
-      switch (Scr.SnapMode)
-      {
-      case 1:  /* SameType */
-	if (IS_ICONIFIED(tmp) != IS_ICONIFIED(tmp_win))
+	/* resist based on window edges */
+	closestTop = Scr.SnapAttraction;
+	closestBottom = Scr.SnapAttraction;
+	closestRight = Scr.SnapAttraction;
+	closestLeft = Scr.SnapAttraction;
+	nxl = -99999;
+	nyt = -99999;
+	self.x = *px;
+	self.y = *py;
+	self.width = Width;
+	self.height = Height;
+	rc = get_visible_icon_title_geometry(tmp_win, &g);
+	if (rc == True)
 	{
-	  continue;
-	}
-	break;
-      case 2:  /* Icons */
-	if (!IS_ICONIFIED(tmp) || !IS_ICONIFIED(tmp_win))
-	{
-	  continue;
-	}
-	break;
-      case 3:  /* Windows */
-	if (IS_ICONIFIED(tmp) || IS_ICONIFIED(tmp_win))
-	{
-	  continue;
-	}
-	break;
-      case 0:  /* All */
-      default:
-	/* NOOP */
-	break;
-      }
-      /* get other window dimensions */
-      get_visible_window_or_icon_geometry(tmp, &other);
-      /* prevent that window snaps off screen */
-      if (other.x <= 0)
-      {
-	other.x -= Scr.SnapAttraction + 10000;
-	other.width += Scr.SnapAttraction + 10000;
-      }
-      if (other.y <= 0)
-      {
-	other.y -= Scr.SnapAttraction + 10000;
-	other.height += Scr.SnapAttraction + 10000;
-      }
-      if (other .x + other.width >= Scr.MyDisplayWidth)
-      {
-	other.width += Scr.SnapAttraction + 10000;
-      }
-      if (other .y + other.height >= Scr.MyDisplayHeight)
-      {
-	other.height += Scr.SnapAttraction + 10000;
-      }
-
-      /* snap horizontally */
-      if (!((other.y + (int)other.height) < (*py) ||
-	    (other.y) > (*py + (int)self.height) ))
-      {
-	dist = abs(other.x - (*px + (int)self.width));
-	if (dist < closestRight)
-	{
-	  closestRight = dist;
-	  if (((*px + (int)self.width) >= other.x) &&
-	      ((*px + (int)self.width) < other.x + Scr.SnapAttraction))
-	  {
-	    nxl = other.x - (int)self.width;
-	  }
-	  if (((*px + (int)self.width) >= other.x - Scr.SnapAttraction) &&
-	      ((*px + (int)self.width) < other.x))
-	  {
-	    nxl = other.x - (int)self.width;
-	  }
-	}
-	dist = abs(other.x + (int)other.width - *px);
-	if (dist < closestLeft)
-	{
-	  closestLeft = dist;
-	  if ((*px <= other.x + (int)other.width) &&
-	      (*px > other.x + (int)other.width - Scr.SnapAttraction))
-	  {
-	    nxl = other.x + (int)other.width;
-	  }
-	  if ((*px <= other.x + (int)other.width + Scr.SnapAttraction) &&
-	      (*px > other.x + (int)other.width))
-	  {
-	    nxl = other.x + (int)other.width;
-	  }
-	}
-      } /* horizontally */
-      /* snap vertically */
-      if (!((other.x + (int)other.width) < (*px) ||
-	    (other.x) > (*px + (int)self.width)))
-      {
-	dist = abs(other.y - (*py + (int)self.height));
-	if (dist < closestBottom)
-	{
-	  closestBottom = dist;
-	  if (((*py + (int)self.height) >= other.y) &&
-	      ((*py + (int)self.height) < other.y + Scr.SnapAttraction))
-	  {
-	    nyt = other.y - (int)self.height;
-	  }
-	  if (((*py + (int)self.height) >= other.y - Scr.SnapAttraction) &&
-	      ((*py + (int)self.height) < other.y))
-	  {
-	    nyt = other.y - (int)self.height;
-	  }
-	}
-	dist = abs(other.y + (int)other.height - *py);
-	if (dist < closestTop)
-	{
-	  closestTop = dist;
-	  if ((*py <= other.y + (int)other.height) &&
-	      (*py > other.y + (int)other.height - Scr.SnapAttraction))
-	  {
-	    nyt = other.y + (int)other.height;
-	  }
-	  if ((*py <= other.y + (int)other.height + Scr.SnapAttraction) &&
-	      (*py > other.y + (int)other.height))
-	  {
-	    nyt = other.y + (int)other.height;
-	  }
-	}
-      } /* vertically */
-    } /* for */
-  } /* snap to other windows */
-
-  /* snap to screen egdes */
-  if ((Scr.SnapMode & SNAP_SCREEN) && Scr.SnapAttraction > 0)
-  {
-    /* horizontally */
-    if (!(Scr.MyDisplayWidth < (*px) || (*px + (int)self.width) < 0))
-    {
-      dist = abs(Scr.MyDisplayHeight - (*py + (int)self.height));
-      if (dist < closestBottom)
-      {
-	closestBottom = dist;
-	if (((*py + (int)self.height) >= Scr.MyDisplayHeight) &&
-	    ((*py + (int)self.height) < Scr.MyDisplayHeight +
-	     Scr.SnapAttraction))
-	{
-	  nyt = Scr.MyDisplayHeight - (int)self.height;
-	}
-	if (((*py + (int)self.height) >= Scr.MyDisplayHeight -
-	     Scr.SnapAttraction) &&
-	    ((*py + (int)self.height) < Scr.MyDisplayHeight))
-	{
-	  nyt = Scr.MyDisplayHeight - (int)self.height;
-	}
-      }
-      dist = abs(*py);
-      if (dist < closestTop)
-      {
-	closestTop = dist;
-	if ((*py <= 0)&&(*py > - Scr.SnapAttraction))
-	{
-	  nyt = 0;
-	}
-	if ((*py <=  Scr.SnapAttraction)&&(*py > 0))
-	{
-	  nyt = 0;
-	}
-      }
-    } /* horizontally */
-    /* vertically */
-    if (!(Scr.MyDisplayHeight < (*py) || (*py + (int)self.height) < 0))
-    {
-      dist = abs(Scr.MyDisplayWidth - (*px + (int)self.width));
-      if (dist < closestRight)
-      {
-	closestRight = dist;
-
-	if (((*px + (int)self.width) >= Scr.MyDisplayWidth) &&
-	    ((*px + (int)self.width) < Scr.MyDisplayWidth +
-	     Scr.SnapAttraction))
-	{
-	  nxl = Scr.MyDisplayWidth - (int)self.width;
+		self.height += g.height;
 	}
 
-	if (((*px + (int)self.width) >= Scr.MyDisplayWidth -
-	     Scr.SnapAttraction) &&
-	    ((*px + (int)self.width) < Scr.MyDisplayWidth))
+	/*
+	 * snap attraction
+	 */
+	/* snap to other windows */
+	if ((Scr.SnapMode & (SNAP_ICONS | SNAP_WINDOWS | SNAP_SAME)) &&
+	    Scr.SnapAttraction > 0)
 	{
-	  nxl = Scr.MyDisplayWidth - (int)self.width;
-	}
-      }
-      dist = abs(*px);
-      if (dist < closestLeft)
-      {
-	closestLeft = dist;
+		for (tmp = Scr.FvwmRoot.next; tmp; tmp = tmp->next)
+		{
+			if (tmp_win->Desk != tmp->Desk || tmp_win == tmp)
+			{
+				continue;
+			}
+			/* check snapping type */
+			switch (Scr.SnapMode)
+			{
+			case 1:	 /* SameType */
+				if (IS_ICONIFIED(tmp) != IS_ICONIFIED(tmp_win))
+				{
+					continue;
+				}
+				break;
+			case 2:	 /* Icons */
+				if (!IS_ICONIFIED(tmp) ||
+				    !IS_ICONIFIED(tmp_win))
+				{
+					continue;
+				}
+				break;
+			case 3:	 /* Windows */
+				if (IS_ICONIFIED(tmp) || IS_ICONIFIED(tmp_win))
+				{
+					continue;
+				}
+				break;
+			case 0:	 /* All */
+			default:
+				/* NOOP */
+				break;
+			}
+			/* get other window dimensions */
+			get_visible_window_or_icon_geometry(tmp, &other);
+			/* prevent that window snaps off screen */
+			if (other.x <= 0)
+			{
+				other.x -= Scr.SnapAttraction + 10000;
+				other.width += Scr.SnapAttraction + 10000;
+			}
+			if (other.y <= 0)
+			{
+				other.y -= Scr.SnapAttraction + 10000;
+				other.height += Scr.SnapAttraction + 10000;
+			}
+			if (other .x + other.width >= Scr.MyDisplayWidth)
+			{
+				other.width += Scr.SnapAttraction + 10000;
+			}
+			if (other .y + other.height >= Scr.MyDisplayHeight)
+			{
+				other.height += Scr.SnapAttraction + 10000;
+			}
 
-	if ((*px <= 0) &&
-	    (*px > - Scr.SnapAttraction))
+			/* snap horizontally */
+			if (!((other.y + (int)other.height) < (*py) ||
+			      (other.y) > (*py + (int)self.height) ))
+			{
+				dist = abs(other.x - (*px + (int)self.width));
+				if (dist < closestRight)
+				{
+					closestRight = dist;
+					if (*px + (int)self.width >= other.x &&
+					    *px + (int)self.width <
+					    other.x + Scr.SnapAttraction)
+					{
+						nxl = other.x - (int)self.width;
+					}
+					if (*px + (int)self.width >=
+					    other.x - Scr.SnapAttraction &&
+					    *px + (int)self.width < other.x)
+					{
+						nxl = other.x - (int)self.width;
+					}
+				}
+				dist = abs(other.x + (int)other.width - *px);
+				if (dist < closestLeft)
+				{
+					closestLeft = dist;
+					if (*px <= other.x + (int)other.width &&
+					    *px > other.x + (int)other.width -
+					    Scr.SnapAttraction)
+					{
+						nxl = other.x +
+							(int)other.width;
+					}
+					if (*px <= other.x + (int)other.width +
+					    Scr.SnapAttraction &&
+					    *px > other.x + (int)other.width)
+					{
+						nxl = other.x +
+							(int)other.width;
+					}
+				}
+			} /* horizontally */
+			/* snap vertically */
+			if (!((other.x + (int)other.width) < (*px) ||
+			      (other.x) > (*px + (int)self.width)))
+			{
+				dist = abs(other.y - (*py + (int)self.height));
+				if (dist < closestBottom)
+				{
+					closestBottom = dist;
+					if (*py + (int)self.height >= other.y &&
+					    *py + (int)self.height < other.y +
+					    Scr.SnapAttraction)
+					{
+						nyt = other.y -
+							(int)self.height;
+					}
+					if (*py + (int)self.height >=
+					    other.y - Scr.SnapAttraction &&
+					    *py + (int)self.height < other.y)
+					{
+						nyt = other.y -
+							(int)self.height;
+					}
+				}
+				dist = abs(other.y + (int)other.height - *py);
+				if (dist < closestTop)
+				{
+					closestTop = dist;
+					if (*py <=
+					    other.y + (int)other.height &&
+					    *py > other.y + (int)other.height -
+					    Scr.SnapAttraction)
+					{
+						nyt = other.y +
+							(int)other.height;
+					}
+					if (*py <= other.y + (int)other.height +
+					    Scr.SnapAttraction &&
+					    *py > other.y + (int)other.height)
+					{
+						nyt = other.y +
+							(int)other.height;
+					}
+				}
+			} /* vertically */
+		} /* for */
+	} /* snap to other windows */
+
+	/* snap to screen egdes */
+	if ((Scr.SnapMode & SNAP_SCREEN) && Scr.SnapAttraction > 0)
 	{
-	  nxl = 0;
-	}
-	if ((*px <= Scr.SnapAttraction) &&
-	    (*px > 0))
+		/* horizontally */
+		if (!(Scr.MyDisplayWidth < (*px) ||
+		      (*px + (int)self.width) < 0))
+		{
+			dist = abs(Scr.MyDisplayHeight -
+				   (*py + (int)self.height));
+			if (dist < closestBottom)
+			{
+				closestBottom = dist;
+				if (*py + (int)self.height >=
+				    Scr.MyDisplayHeight &&
+				    *py + (int)self.height <
+				    Scr.MyDisplayHeight + Scr.SnapAttraction)
+				{
+					nyt = Scr.MyDisplayHeight -
+						(int)self.height;
+				}
+				if (*py + (int)self.height >=
+				    Scr.MyDisplayHeight - Scr.SnapAttraction &&
+				    *py + (int)self.height <
+				    Scr.MyDisplayHeight)
+				{
+					nyt = Scr.MyDisplayHeight -
+						(int)self.height;
+				}
+			}
+			dist = abs(*py);
+			if (dist < closestTop)
+			{
+				closestTop = dist;
+				if ((*py <= 0)&&(*py > - Scr.SnapAttraction))
+				{
+					nyt = 0;
+				}
+				if ((*py <=  Scr.SnapAttraction)&&(*py > 0))
+				{
+					nyt = 0;
+				}
+			}
+		} /* horizontally */
+		/* vertically */
+		if (!(Scr.MyDisplayHeight < (*py) ||
+		      (*py + (int)self.height) < 0))
+		{
+			dist = abs(Scr.MyDisplayWidth - (*px + (int)self.width));
+			if (dist < closestRight)
+			{
+				closestRight = dist;
+
+				if (*px + (int)self.width >=
+				    Scr.MyDisplayWidth &&
+				    *px + (int)self.width <
+				    Scr.MyDisplayWidth + Scr.SnapAttraction)
+				{
+					nxl = Scr.MyDisplayWidth -
+						(int)self.width;
+				}
+
+				if (*px + (int)self.width >=
+				    Scr.MyDisplayWidth - Scr.SnapAttraction &&
+				    *px + (int)self.width < Scr.MyDisplayWidth)
+				{
+					nxl = Scr.MyDisplayWidth -
+						(int)self.width;
+				}
+			}
+			dist = abs(*px);
+			if (dist < closestLeft)
+			{
+				closestLeft = dist;
+
+				if ((*px <= 0) &&
+				    (*px > - Scr.SnapAttraction))
+				{
+					nxl = 0;
+				}
+				if ((*px <= Scr.SnapAttraction) &&
+				    (*px > 0))
+				{
+					nxl = 0;
+				}
+			}
+		} /* vertically */
+	} /* snap to screen edges */
+
+	if (nxl != -99999)
 	{
-	  nxl = 0;
+		*px = nxl;
 	}
-      }
-    } /* vertically */
-  } /* snap to screen edges */
+	if (nyt != -99999)
+	{
+		*py = nyt;
+	}
 
-  if (nxl != -99999)
-  {
-    *px = nxl;
-  }
-  if (nyt != -99999)
-  {
-    *py = nyt;
-  }
+	/*
+	 * Snap grid handling
+	 */
+	if (Scr.SnapGridX > 1 && nxl == -99999)
+	{
+		if (*px != *px / Scr.SnapGridX * Scr.SnapGridX)
+		{
+			*px = (*px + ((*px >= 0) ?
+				      Scr.SnapGridX : -Scr.SnapGridX) / 2) /
+				Scr.SnapGridX * Scr.SnapGridX;
+		}
+	}
+	if (Scr.SnapGridY > 1 && nyt == -99999)
+	{
+		if (*py != *py / Scr.SnapGridY * Scr.SnapGridY)
+		{
+			*py = (*py + ((*py >= 0) ?
+				      Scr.SnapGridY : -Scr.SnapGridY) / 2) /
+				Scr.SnapGridY * Scr.SnapGridY;
+		}
+	}
 
-  /*
-   * Snap grid handling
-   */
-  if (Scr.SnapGridX > 1 && nxl == -99999)
-  {
-    if (*px != *px / Scr.SnapGridX * Scr.SnapGridX)
-    {
-      *px = (*px + ((*px >= 0) ? Scr.SnapGridX : -Scr.SnapGridX) / 2) /
-	Scr.SnapGridX * Scr.SnapGridX;
-    }
-  }
-  if (Scr.SnapGridY > 1 && nyt == -99999)
-  {
-    if (*py != *py / Scr.SnapGridY * Scr.SnapGridY)
-    {
-      *py = (*py + ((*py >= 0) ? Scr.SnapGridY : -Scr.SnapGridY) / 2) /
-	Scr.SnapGridY * Scr.SnapGridY;
-    }
-  }
+	/*
+	 * Resist moving windows beyond the edge of the screen
+	 */
+	if (Scr.MoveResistance > 0)
+	{
+		/* snap to right edge */
+		if (*px + Width >= Scr.MyDisplayWidth &&
+		    *px + Width < Scr.MyDisplayWidth + Scr.MoveResistance)
+		{
+			*px = Scr.MyDisplayWidth - Width;
+		}
+		/* snap to left edge */
+		else if ((*px <= 0) && (*px > -Scr.MoveResistance))
+		{
+			*px = 0;
+		}
+		/* snap to bottom edge */
+		if (*py + Height >= Scr.MyDisplayHeight &&
+		    *py + Height < Scr.MyDisplayHeight + Scr.MoveResistance)
+		{
+			*py = Scr.MyDisplayHeight - Height;
+		}
+		/* snap to top edge */
+		else if (*py <= 0 && *py > -Scr.MoveResistance)
+		{
+			*py = 0;
+		}
+	}
+	/* Resist moving windows between xineramascreens */
+	if (Scr.XiMoveResistance > 0 && FScreenIsEnabled())
+	{
+		int scr_x0, scr_y0, scr_x1, scr_y1;
+		Bool do_recalc_rectangle = False;
 
-  /*
-   * Resist moving windows beyond the edge of the screen
-   */
-  if (Scr.MoveResistance > 0)
-  {
-    /* snap to right edge */
-    if (((*px + Width) >= Scr.MyDisplayWidth)
-	&& ((*px + Width) < Scr.MyDisplayWidth + Scr.MoveResistance))
-    {
-      *px = Scr.MyDisplayWidth - Width;
-    }
-    /* snap to left edge */
-    else if ((*px <= 0) && (*px > -Scr.MoveResistance))
-    {
-      *px = 0;
-    }
-    /* snap to bottom edge */
-    if (((*py + Height) >= Scr.MyDisplayHeight)
-	&& ((*py + Height) < Scr.MyDisplayHeight + Scr.MoveResistance))
-    {
-      *py = Scr.MyDisplayHeight - Height;
-    }
-    /* snap to top edge */
-    else if ((*py <= 0) && (*py > -Scr.MoveResistance))
-    {
-      *py = 0;
-    }
-  }
-  /* Resist moving windows between xineramascreens */
-  if (Scr.XiMoveResistance > 0 && FScreenIsEnabled())
-  {
-    int scr_x0, scr_y0, scr_x1, scr_y1;
-    Bool do_recalc_rectangle = False;
+		FScreenGetResistanceRect(
+			*px, *py, Width, Height, &scr_x0, &scr_y0, &scr_x1,
+			&scr_y1);
 
-    FScreenGetResistanceRect(
-      *px, *py, Width, Height, &scr_x0, &scr_y0, &scr_x1, &scr_y1);
+		/* snap to right edge */
+		if (scr_x1 != Scr.MyDisplayWidth  &&
+		    *px + Width >= scr_x1 && *px + Width <
+		    scr_x1 + Scr.XiMoveResistance)
+		{
+			*px = scr_x1 - Width;
+			do_recalc_rectangle = True;
+		}
+		/* snap to left edge */
+		else if (scr_x0 != 0 &&
+			 *px <= scr_x0 && scr_x0 - *px < Scr.XiMoveResistance)
+		{
+			*px = scr_x0;
+			do_recalc_rectangle = True;
+		}
+		if (do_recalc_rectangle)
+		{
+			/* Snapping in X direction can move the window off a
+			 * screen.  Thus, it may no longer be necessary to snap
+			 * in Y direction. */
+			FScreenGetResistanceRect(
+				*px, *py, Width, Height, &scr_x0, &scr_y0,
+				&scr_x1, &scr_y1);
+		}
+		/* snap to bottom edge */
+		if (scr_y1 != Scr.MyDisplayHeight &&
+		    *py + Height >= scr_y1 && *py + Height <
+		    scr_y1 + Scr.XiMoveResistance)
+		{
+			*py = scr_y1 - Height;
+		}
+		/* snap to top edge */
+		else if (scr_y0 != 0 &&
+			 *py <= scr_y0 && scr_y0 - *py < Scr.XiMoveResistance)
+		{
+			*py = scr_y0;
+		}
+	}
 
-    /* snap to right edge */
-    if (scr_x1 != Scr.MyDisplayWidth  &&
-	*px + Width >= scr_x1 && *px + Width <  scr_x1 + Scr.XiMoveResistance)
-    {
-      *px = scr_x1 - Width;
-      do_recalc_rectangle = True;
-    }
-    /* snap to left edge */
-    else if (scr_x0 != 0 &&
-	     *px <= scr_x0 && scr_x0 - *px < Scr.XiMoveResistance)
-    {
-      *px = scr_x0;
-      do_recalc_rectangle = True;
-    }
-    if (do_recalc_rectangle)
-    {
-      /* Snapping in X direction can move the window off a screen.  Thus, it
-       * may no longer be necessary to snap in Y direction. */
-      FScreenGetResistanceRect(
-	*px, *py, Width, Height, &scr_x0, &scr_y0, &scr_x1, &scr_y1);
-    }
-    /* snap to bottom edge */
-    if (scr_y1 != Scr.MyDisplayHeight &&
-	*py + Height >= scr_y1 && *py + Height <  scr_y1 + Scr.XiMoveResistance)
-    {
-      *py = scr_y1 - Height;
-    }
-    /* snap to top edge */
-    else if (scr_y0 != 0 &&
-	     *py <= scr_y0 && scr_y0 - *py < Scr.XiMoveResistance)
-    {
-      *py = scr_y0;
-    }
-  }
-
-  return;
+	return;
 }
 
 /****************************************************************************
@@ -1560,702 +1698,797 @@ static void DoSnapAttract(
  * Returns True if the window has to be resized after the move.
  *
  ****************************************************************************/
-Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
-	      int Height, int *FinalX, int *FinalY,Bool do_move_opaque)
+Bool moveLoop(
+	FvwmWindow *tmp_win, int XOffset, int YOffset, int Width, int Height,
+	int *FinalX, int *FinalY,Bool do_move_opaque)
 {
-  extern Window bad_window;
-  Bool finished = False;
-  Bool aborted = False;
-  int xl,xl2,yt,yt2,delta_x,delta_y,paged;
-  unsigned int button_mask = 0;
-  FvwmWindow tmp_win_copy;
-  int dx = Scr.EdgeScrollX ? Scr.EdgeScrollX : Scr.MyDisplayWidth;
-  int dy = Scr.EdgeScrollY ? Scr.EdgeScrollY : Scr.MyDisplayHeight;
-  int vx = Scr.Vx;
-  int vy = Scr.Vy;
-  int xl_orig = 0;
-  int yt_orig = 0;
-  int cnx = 0;
-  int cny = 0;
-  int x_virtual_offset = 0;
-  int y_virtual_offset = 0;
-  Bool sent_cn = False;
-  Bool do_resize_too = False;
-  Bool do_exec_placement_func = False;
-  int x_bak;
-  int y_bak;
-  Window move_w = None;
-  int orig_icon_x = 0;
-  int orig_icon_y = 0;
-  Bool do_snap = True;
-  /* if Alt is initially pressed don't enable no-snap until Alt is released */
-  Bool nosnap_enabled = False;
+	extern Window bad_window;
+	Bool finished = False;
+	Bool aborted = False;
+	int xl,xl2,yt,yt2,delta_x,delta_y,paged;
+	unsigned int button_mask = 0;
+	FvwmWindow tmp_win_copy;
+	int dx = Scr.EdgeScrollX ? Scr.EdgeScrollX : Scr.MyDisplayWidth;
+	int dy = Scr.EdgeScrollY ? Scr.EdgeScrollY : Scr.MyDisplayHeight;
+	int vx = Scr.Vx;
+	int vy = Scr.Vy;
+	int xl_orig = 0;
+	int yt_orig = 0;
+	int cnx = 0;
+	int cny = 0;
+	int x_virtual_offset = 0;
+	int y_virtual_offset = 0;
+	Bool sent_cn = False;
+	Bool do_resize_too = False;
+	Bool do_exec_placement_func = False;
+	int x_bak;
+	int y_bak;
+	Window move_w = None;
+	int orig_icon_x = 0;
+	int orig_icon_y = 0;
+	Bool do_snap = True;
+	/* if Alt is initially pressed don't enable no-snap until Alt is
+	 * released */
+	Bool nosnap_enabled = False;
 
-  if (!GrabEm(CRS_MOVE, GRAB_NORMAL))
-  {
-    XBell(dpy, 0);
-    return False;
-  }
-
-  if (!IS_MAPPED(tmp_win) && !IS_ICONIFIED(tmp_win))
-    do_move_opaque = False;
-
-  bad_window = None;
-  if (IS_ICONIFIED(tmp_win))
-  {
-    if (FW_W_ICON_PIXMAP(tmp_win) != None)
-      move_w = FW_W_ICON_PIXMAP(tmp_win);
-    else if (FW_W_ICON_TITLE(tmp_win) != None)
-      move_w = FW_W_ICON_TITLE(tmp_win);
-  }
-  else
-  {
-    move_w = FW_W_FRAME(tmp_win);
-  }
-  if (!XGetGeometry(dpy, move_w, &JunkRoot, &x_bak, &y_bak,
-		    &JunkWidth, &JunkHeight, &JunkBW,&JunkDepth))
-  {
-    /* This is allright here since the window may not be mapped yet. */
-  }
-
-  if (IS_ICONIFIED(tmp_win))
-  {
-    rectangle g;
-
-    get_visible_icon_geometry(tmp_win, &g);
-    orig_icon_x = g.x;
-    orig_icon_y = g.y;
-  }
-
-  /* make a copy of the tmp_win structure for sending to the pager */
-  memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
-  /* prevent flicker when paging */
-  SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, do_move_opaque);
-
-  if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &xl, &yt,
-		    &JunkX, &JunkY, &button_mask) == False)
-  {
-    /* pointer is on a different screen */
-    xl = 0;
-    yt = 0;
-  }
-  button_mask &= DEFAULT_ALL_BUTTONS_MASK;
-  xl += XOffset;
-  yt += YOffset;
-  xl_orig = xl;
-  yt_orig = yt;
-
-  /* draw initial outline */
-  if (!IS_ICONIFIED(tmp_win) &&
-      ((!do_move_opaque && !Scr.gs.EmulateMWM) || !IS_MAPPED(tmp_win)))
-    draw_move_resize_grid(xl, yt, Width - 1, Height - 1);
-
-  DisplayPosition(tmp_win, &Event, xl, yt, True);
-
-  while (!finished && bad_window != FW_W(tmp_win))
-  {
-    int rc = 0;
-
-    /* wait until there is an interesting event */
-    while (rc != -1 && (!XPending(dpy) ||
-	   !XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-			    KeyPressMask | PointerMotionMask |
-			    ButtonMotionMask | ExposureMask, &Event)))
-    {
-      rc = HandlePaging(
-	      dx, dy, &xl, &yt, &delta_x, &delta_y, False, False, True);
-      if (rc == 1)
-      {
-	/* Fake an event to force window reposition */
-	if (delta_x)
+	if (!GrabEm(CRS_MOVE, GRAB_NORMAL))
 	{
-	  x_virtual_offset = 0;
+		XBell(dpy, 0);
+		return False;
 	}
-	if (XOffset)
+	if (!IS_MAPPED(tmp_win) && !IS_ICONIFIED(tmp_win))
 	{
-	  xl += XOffset;
+		do_move_opaque = False;
 	}
-	if (delta_y)
+	bad_window = None;
+	if (IS_ICONIFIED(tmp_win))
 	{
-	  y_virtual_offset = 0;
-	}
-	if (YOffset)
-	{
-	  yt += YOffset;
-	}
-	if (do_snap)
-	{
-	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-	}
-	Event.type = MotionNotify;
-	Event.xmotion.time = lastTimestamp;
-	Event.xmotion.x_root = xl - XOffset;
-	Event.xmotion.y_root = yt - YOffset;
-	break;
-      }
-    }
-    if (rc == -1)
-    {
-      /* block until an event arrives */
-      XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-		 KeyPressMask | PointerMotionMask |
-		 ButtonMotionMask | ExposureMask, &Event);
-    }
-    StashEventTime(&Event);
-
-    /* discard any extra motion events before a logical release */
-    if (Event.type == MotionNotify)
-    {
-      XEvent new_event;
-
-      /*** logic borrowed from icewm ***/
-      while (XPending(dpy) > 0 &&
-	     XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
-			     ButtonPressMask | ButtonRelease | KeyPressMask,
-			     &new_event))
-      {
-	if (Event.type != new_event.type)
-	{
-	  XPutBackEvent(dpy, &new_event);
-	  break;
+		if (FW_W_ICON_PIXMAP(tmp_win) != None)
+		{
+			move_w = FW_W_ICON_PIXMAP(tmp_win);
+		}
+		else if (FW_W_ICON_TITLE(tmp_win) != None)
+		{
+			move_w = FW_W_ICON_TITLE(tmp_win);
+		}
 	}
 	else
 	{
-	  Event = new_event;
+		move_w = FW_W_FRAME(tmp_win);
 	}
-      }
-      /*** end of code borrowed from icewm ***/
-      StashEventTime(&Event);
-
-    } /* if (Event.type == MotionNotify) */
-
-    /* Handle a limited number of key press events to allow mouseless
-     * operation */
-    if (Event.type == KeyPress)
-    {
-      Keyboard_shortcuts(
-	&Event, tmp_win, &x_virtual_offset, &y_virtual_offset, ButtonRelease);
-    }
-    switch(Event.type)
-    {
-    case KeyPress:
-      if (!(Event.xkey.state & Mod1Mask))
-	nosnap_enabled = True;
-      do_snap = nosnap_enabled && (Event.xkey.state & Mod1Mask) ? False : True;
-
-      /* simple code to bag out of move - CKH */
-      if (XLookupKeysym(&(Event.xkey),0) == XK_Escape)
-      {
-	if (!do_move_opaque)
-	  switch_move_resize_grid(False);
-	if (!IS_ICONIFIED(tmp_win))
+	if (!XGetGeometry(dpy, move_w, &JunkRoot, &x_bak, &y_bak,
+			  &JunkWidth, &JunkHeight, &JunkBW,&JunkDepth))
 	{
-	  if (do_move_opaque)
-	  {
-	    *FinalX = tmp_win->frame_g.x;
-	    *FinalY = tmp_win->frame_g.y;
-	  }
+		/* This is allright here since the window may not be mapped
+		 * yet. */
 	}
-	else
+
+	if (IS_ICONIFIED(tmp_win))
 	{
-	  *FinalX = orig_icon_x;
-	  *FinalY = orig_icon_y;
+		rectangle g;
+
+		get_visible_icon_geometry(tmp_win, &g);
+		orig_icon_x = g.x;
+		orig_icon_y = g.y;
 	}
-	aborted = True;
-	finished = True;
-      }
-      break;
-    case ButtonPress:
-      if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
-	  ((Button1Mask << (Event.xbutton.button - 1)) & button_mask))
-      {
-	/* No new button was pressed, just a delayed event */
-	break;
-      }
-      if(((Event.xbutton.button == 2)&&(!Scr.gs.EmulateMWM))||
-	 ((Event.xbutton.button == 1)&&(Scr.gs.EmulateMWM)&&
-	  (Event.xbutton.state & ShiftMask)))
-      {
-	do_resize_too = True;
-	do_exec_placement_func = False;
-	SET_PLACED_WB3(tmp_win,False);
-	/* Fallthrough to button-release */
-      }
-      else if(Event.xbutton.button == 3)
-      {
-	do_exec_placement_func = True;
-	do_resize_too = False;
-	SET_PLACED_WB3(tmp_win,True);
-	/* Fallthrough to button-release */
-      }
-      else
-      {
-	/* Abort the move if
-	 *  - the move started with a pressed button and another button
-	 *    was pressed during the operation
-	 *  - no button was pressed at the beginning and any button
-	 *    except button 1 was pressed. */
-	SET_PLACED_WB3(tmp_win,False);
-	if (button_mask || (Event.xbutton.button != 1))
+
+	/* make a copy of the tmp_win structure for sending to the pager */
+	memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
+	/* prevent flicker when paging */
+	SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, do_move_opaque);
+
+	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &xl, &yt,
+			  &JunkX, &JunkY, &button_mask) == False)
 	{
-	  if(!do_move_opaque)
-	    switch_move_resize_grid(False);
-	  if (!IS_ICONIFIED(tmp_win))
-	  {
-	    *FinalX = tmp_win->frame_g.x;
-	    *FinalY = tmp_win->frame_g.y;
-	  }
-	  else
-	  {
-	    *FinalX = orig_icon_x;
-	    *FinalY = orig_icon_y;
-	  }
-	  aborted = True;
-	  finished = True;
+		/* pointer is on a different screen */
+		xl = 0;
+		yt = 0;
 	}
-	break;
-      }
-    case ButtonRelease:
-      if(!do_move_opaque)
-	switch_move_resize_grid(False);
-      xl2 = Event.xbutton.x_root + XOffset + x_virtual_offset;
-      yt2 = Event.xbutton.y_root + YOffset + y_virtual_offset;
-      /* ignore the position of the button release if it was on a
-       * different page. */
-      if (!(((xl <  0 && xl2 >= 0) || (xl >= 0 && xl2 <  0) ||
-	     (yt <  0 && yt2 >= 0) || (yt >= 0 && yt2 <  0)) &&
-	    (abs(xl - xl2) > Scr.MyDisplayWidth / 2 ||
-	     abs(yt - yt2) > Scr.MyDisplayHeight / 2)))
-      {
-	xl = xl2;
-	yt = yt2;
-      }
-      if (xl != xl_orig || yt != yt_orig || vx != Scr.Vx || vy != Scr.Vy)
-      {
-	/* only snap if the window actually moved! */
-	if (do_snap)
-        {
-	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-        }
-      }
+	button_mask &= DEFAULT_ALL_BUTTONS_MASK;
+	xl += XOffset;
+	yt += YOffset;
+	xl_orig = xl;
+	yt_orig = yt;
 
-      *FinalX = xl;
-      *FinalY = yt;
-
-      finished = True;
-      break;
-
-    case MotionNotify:
-      if (!(Event.xkey.state & Mod1Mask))
-	nosnap_enabled = True;
-      do_snap = nosnap_enabled && (Event.xkey.state & Mod1Mask) ? False : True;
-
-      xl = Event.xmotion.x_root;
-      yt = Event.xmotion.y_root;
-      if (xl > 0 && xl < Scr.MyDisplayWidth - 1)
-      {
-	/* pointer was moved away from the left/right border with the mouse,
-	 * reset the virtual x offset */
-	x_virtual_offset = 0;
-      }
-      if (yt > 0 && yt < Scr.MyDisplayHeight - 1)
-      {
-	/* pointer was moved away from the top/bottom border with the mouse,
-	 * reset the virtual y offset */
-	y_virtual_offset = 0;
-      }
-      xl += XOffset + x_virtual_offset;
-      yt += YOffset + y_virtual_offset;
-
-      if (do_snap)
-      {
-        DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-      }
-
-      /* check Paging request once and only once after outline redrawn */
-      /* redraw after paging if needed - mab */
-      paged = 0;
-      while (paged <= 1)
-      {
-	if(!do_move_opaque)
-	  draw_move_resize_grid(xl, yt, Width - 1, Height - 1);
-	else
+	/* draw initial outline */
+	if (!IS_ICONIFIED(tmp_win) &&
+	    ((!do_move_opaque && !Scr.gs.EmulateMWM) || !IS_MAPPED(tmp_win)))
 	{
-	  if (IS_ICONIFIED(tmp_win))
-	  {
-	    set_icon_position(tmp_win, xl, yt);
-	    move_icon_to_position(tmp_win);
-	    broadcast_icon_geometry(tmp_win, False);
-	  }
-	  else
-	  {
-	    XMoveWindow(dpy,FW_W_FRAME(tmp_win),xl,yt);
-	  }
+		draw_move_resize_grid(xl, yt, Width - 1, Height - 1);
 	}
-	DisplayPosition(tmp_win, &Event, xl, yt, False);
 
-	/* prevent window from lagging behind mouse when paging - mab */
-	if (paged == 0)
+	DisplayPosition(tmp_win, &Event, xl, yt, True);
+
+	while (!finished && bad_window != FW_W(tmp_win))
 	{
-	  xl = Event.xmotion.x_root;
-	  yt = Event.xmotion.y_root;
-	  HandlePaging(
-		  dx, dy, &xl, &yt, &delta_x, &delta_y, False, False, False);
-	  if (delta_x)
-	  {
-	    x_virtual_offset = 0;
-	  }
-	  if (XOffset)
-	  {
-	    xl += XOffset;
-	  }
-	  if (delta_y)
-	  {
-	    y_virtual_offset = 0;
-	  }
-	  if (YOffset)
-	  {
-	    yt += YOffset;
-	  }
-	  if (do_snap)
-	  {
-	    DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-	  }
-	  if (!delta_x && !delta_y)
-	    /* break from while (paged <= 1) */
-	    break;
-	}
-	paged++;
-      }  /* end while (paged) */
+		int rc = 0;
 
-      break;
+		/* wait until there is an interesting event */
+		while (rc != -1 && (!XPending(dpy) ||
+				    !XCheckMaskEvent(
+					    dpy, ButtonPressMask |
+					    ButtonReleaseMask | KeyPressMask |
+					    PointerMotionMask |
+					    ButtonMotionMask | ExposureMask,
+					    &Event)))
+		{
+			rc = HandlePaging(
+				dx, dy, &xl, &yt, &delta_x, &delta_y, False,
+				False, True);
+			if (rc == 1)
+			{
+				/* Fake an event to force window reposition */
+				if (delta_x)
+				{
+					x_virtual_offset = 0;
+				}
+				if (XOffset)
+				{
+					xl += XOffset;
+				}
+				if (delta_y)
+				{
+					y_virtual_offset = 0;
+				}
+				if (YOffset)
+				{
+					yt += YOffset;
+				}
+				if (do_snap)
+				{
+					DoSnapAttract(
+						tmp_win, Width, Height, &xl,
+						&yt);
+				}
+				Event.type = MotionNotify;
+				Event.xmotion.time = lastTimestamp;
+				Event.xmotion.x_root = xl - XOffset;
+				Event.xmotion.y_root = yt - YOffset;
+				break;
+			}
+		}
+		if (rc == -1)
+		{
+			/* block until an event arrives */
+			XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+				   KeyPressMask | PointerMotionMask |
+				   ButtonMotionMask | ExposureMask, &Event);
+		}
+		StashEventTime(&Event);
 
-    case Expose:
-      if (!do_move_opaque)
-      {
-	/* must undraw the rubber band in case the event causes some drawing */
-	switch_move_resize_grid(False);
-      }
-      DispatchEvent(False);
-      if (!do_move_opaque)
-	draw_move_resize_grid(xl, yt, Width - 1, Height - 1);
-      break;
+		/* discard any extra motion events before a logical release */
+		if (Event.type == MotionNotify)
+		{
+			XEvent new_event;
 
-    default:
-      /* cannot happen */
-      break;
-    } /* switch */
-    xl += x_virtual_offset;
-    yt += y_virtual_offset;
-    if (do_move_opaque && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
-    {
-      /* send configure notify event for windows that care about their
-       * location; don't send anything if position didn't change */
-      if (!sent_cn || cnx != xl || cny != yt)
-      {
-        cnx = xl;
-        cny = yt;
-        sent_cn = True;
-	SendConfigureNotify(tmp_win, xl, yt, Width, Height, 0, False);
+			/*** logic borrowed from icewm ***/
+			while (XPending(dpy) > 0 &&
+			       XCheckMaskEvent(
+				       dpy, ButtonMotionMask |
+				       PointerMotionMask | ButtonPressMask |
+				       ButtonRelease | KeyPressMask,
+				       &new_event))
+			{
+				if (Event.type != new_event.type)
+				{
+					XPutBackEvent(dpy, &new_event);
+					break;
+				}
+				else
+				{
+					Event = new_event;
+				}
+			}
+			/*** end of code borrowed from icewm ***/
+			StashEventTime(&Event);
+
+		} /* if (Event.type == MotionNotify) */
+
+		/* Handle a limited number of key press events to allow
+		 * mouseless operation */
+		if (Event.type == KeyPress)
+		{
+			Keyboard_shortcuts(
+				&Event, tmp_win, &x_virtual_offset,
+				&y_virtual_offset, ButtonRelease);
+		}
+		switch(Event.type)
+		{
+		case KeyPress:
+			if (!(Event.xkey.state & Mod1Mask))
+			{
+				nosnap_enabled = True;
+			}
+			do_snap = nosnap_enabled &&
+				(Event.xkey.state & Mod1Mask) ? False : True;
+
+			/* simple code to bag out of move - CKH */
+			if (XLookupKeysym(&(Event.xkey),0) == XK_Escape)
+			{
+				if (!do_move_opaque)
+				{
+					switch_move_resize_grid(False);
+				}
+				if (!IS_ICONIFIED(tmp_win))
+				{
+					if (do_move_opaque)
+					{
+						*FinalX = tmp_win->frame_g.x;
+						*FinalY = tmp_win->frame_g.y;
+					}
+				}
+				else
+				{
+					*FinalX = orig_icon_x;
+					*FinalY = orig_icon_y;
+				}
+				aborted = True;
+				finished = True;
+			}
+			break;
+		case ButtonPress:
+			if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
+			    ((Button1Mask << (Event.xbutton.button - 1)) &
+			     button_mask))
+			{
+				/* No new button was pressed, just a delayed
+				 * event */
+				break;
+			}
+			if ((Event.xbutton.button == 2 && !Scr.gs.EmulateMWM) ||
+			    (Event.xbutton.button == 1 && Scr.gs.EmulateMWM &&
+			     (Event.xbutton.state & ShiftMask)))
+			{
+				do_resize_too = True;
+				do_exec_placement_func = False;
+				SET_PLACED_WB3(tmp_win,False);
+				/* Fallthrough to button-release */
+			}
+			else if (Event.xbutton.button == 3)
+			{
+				do_exec_placement_func = True;
+				do_resize_too = False;
+				SET_PLACED_WB3(tmp_win,True);
+				/* Fallthrough to button-release */
+			}
+			else
+			{
+				/* Abort the move if
+				 *  - the move started with a pressed button
+				 *    and another button was pressed during the
+				 *    operation
+				 *  - no button was pressed at the beginning
+				 *    and any button except button 1 was
+				 *    pressed. */
+				SET_PLACED_WB3(tmp_win,False);
+				if (button_mask || (Event.xbutton.button != 1))
+				{
+					if (!do_move_opaque)
+						switch_move_resize_grid(False);
+					if (!IS_ICONIFIED(tmp_win))
+					{
+						*FinalX = tmp_win->frame_g.x;
+						*FinalY = tmp_win->frame_g.y;
+					}
+					else
+					{
+						*FinalX = orig_icon_x;
+						*FinalY = orig_icon_y;
+					}
+					aborted = True;
+					finished = True;
+				}
+				break;
+			}
+		case ButtonRelease:
+			if (!do_move_opaque)
+				switch_move_resize_grid(False);
+			xl2 = Event.xbutton.x_root + XOffset + x_virtual_offset;
+			yt2 = Event.xbutton.y_root + YOffset + y_virtual_offset;
+			/* ignore the position of the button release if it was
+			 * on a different page. */
+			if (!(((xl <  0 && xl2 >= 0) ||
+			       (xl >= 0 && xl2 <  0) ||
+			       (yt <  0 && yt2 >= 0) ||
+			       (yt >= 0 && yt2 <  0)) &&
+			      (abs(xl - xl2) > Scr.MyDisplayWidth / 2 ||
+			       abs(yt - yt2) > Scr.MyDisplayHeight / 2)))
+			{
+				xl = xl2;
+				yt = yt2;
+			}
+			if (xl != xl_orig || yt != yt_orig || vx != Scr.Vx ||
+			    vy != Scr.Vy)
+			{
+				/* only snap if the window actually moved! */
+				if (do_snap)
+				{
+					DoSnapAttract(
+						tmp_win, Width, Height, &xl,
+						&yt);
+				}
+			}
+
+			*FinalX = xl;
+			*FinalY = yt;
+
+			finished = True;
+			break;
+
+		case MotionNotify:
+			if (!(Event.xkey.state & Mod1Mask))
+				nosnap_enabled = True;
+			do_snap = nosnap_enabled &&
+				(Event.xkey.state & Mod1Mask) ? False : True;
+
+			xl = Event.xmotion.x_root;
+			yt = Event.xmotion.y_root;
+			if (xl > 0 && xl < Scr.MyDisplayWidth - 1)
+			{
+				/* pointer was moved away from the left/right
+				 * border with the mouse, reset the virtual x
+				 * offset */
+				x_virtual_offset = 0;
+			}
+			if (yt > 0 && yt < Scr.MyDisplayHeight - 1)
+			{
+				/* pointer was moved away from the top/bottom
+				 * border with the mouse, reset the virtual y
+				 * offset */
+				y_virtual_offset = 0;
+			}
+			xl += XOffset + x_virtual_offset;
+			yt += YOffset + y_virtual_offset;
+
+			if (do_snap)
+			{
+				DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+			}
+
+			/* check Paging request once and only once after
+			 * outline redrawn
+			 * redraw after paging if needed - mab */
+			paged = 0;
+			while (paged <= 1)
+			{
+				if (!do_move_opaque)
+					draw_move_resize_grid(
+						xl, yt, Width - 1, Height - 1);
+				else
+				{
+					if (IS_ICONIFIED(tmp_win))
+					{
+						set_icon_position(
+							tmp_win, xl, yt);
+						move_icon_to_position(tmp_win);
+						broadcast_icon_geometry(
+							tmp_win, False);
+					}
+					else
+					{
+						XMoveWindow(
+							dpy,
+							FW_W_FRAME(tmp_win), xl,
+							yt);
+					}
+				}
+				DisplayPosition(tmp_win, &Event, xl, yt, False);
+
+				/* prevent window from lagging behind mouse
+				 * when paging - mab */
+				if (paged == 0)
+				{
+					xl = Event.xmotion.x_root;
+					yt = Event.xmotion.y_root;
+					HandlePaging(
+						dx, dy, &xl, &yt, &delta_x,
+						&delta_y, False, False, False);
+					if (delta_x)
+					{
+						x_virtual_offset = 0;
+					}
+					if (XOffset)
+					{
+						xl += XOffset;
+					}
+					if (delta_y)
+					{
+						y_virtual_offset = 0;
+					}
+					if (YOffset)
+					{
+						yt += YOffset;
+					}
+					if (do_snap)
+					{
+						DoSnapAttract(
+							tmp_win, Width, Height,
+							&xl, &yt);
+					}
+					if (!delta_x && !delta_y)
+					{
+						/* break from while
+						 * (paged <= 1) */
+						break;
+					}
+				}
+				paged++;
+			}  /* end while (paged) */
+
+			break;
+
+		case Expose:
+			if (!do_move_opaque)
+			{
+				/* must undraw the rubber band in case the
+				 * event causes some drawing */
+				switch_move_resize_grid(False);
+			}
+			DispatchEvent(False);
+			if (!do_move_opaque)
+			{
+				draw_move_resize_grid(
+					xl, yt, Width - 1, Height - 1);
+			}
+			break;
+
+		default:
+			/* cannot happen */
+			break;
+		} /* switch */
+		xl += x_virtual_offset;
+		yt += y_virtual_offset;
+		if (do_move_opaque && !IS_ICONIFIED(tmp_win) &&
+		    !IS_SHADED(tmp_win))
+		{
+			/* send configure notify event for windows that care
+			 * about their location; don't send anything if
+			 * position didn't change */
+			if (!sent_cn || cnx != xl || cny != yt)
+			{
+				cnx = xl;
+				cny = yt;
+				sent_cn = True;
+				SendConfigureNotify(
+					tmp_win, xl, yt, Width, Height, 0,
+					False);
 #ifdef FVWM_DEBUG_MSGS
-        fvwm_msg(
-	  DBG, "frame_setup_window","Sent ConfigureNotify (w %d, h %d)", Width, Height);
+				fvwm_msg(
+					DBG, "frame_setup_window",
+					"Sent ConfigureNotify (w %d, h %d)",
+					Width, Height);
 #endif
-      }
-    }
-    if (do_move_opaque)
-    {
-      if (!IS_ICONIFIED(tmp_win))
-      {
-	tmp_win_copy.frame_g.x = xl;
-	tmp_win_copy.frame_g.y = yt;
-      }
-      /* only do this with opaque moves, (i.e. the server is not grabbed) */
-      BroadcastConfig(M_CONFIGURE_WINDOW, &tmp_win_copy);
-      FlushAllMessageQueues();
-    }
-  } /* while (!finished) */
+			}
+		}
+		if (do_move_opaque)
+		{
+			if (!IS_ICONIFIED(tmp_win))
+			{
+				tmp_win_copy.frame_g.x = xl;
+				tmp_win_copy.frame_g.y = yt;
+			}
+			/* only do this with opaque moves, (i.e. the server is
+			 * not grabbed) */
+			BroadcastConfig(M_CONFIGURE_WINDOW, &tmp_win_copy);
+			FlushAllMessageQueues();
+		}
+	} /* while (!finished) */
 
-  if (!Scr.gs.do_hide_position_window)
-    XUnmapWindow(dpy,Scr.SizeWindow);
-  if (aborted || bad_window == FW_W(tmp_win))
-  {
-    if (vx != Scr.Vx || vy != Scr.Vy)
-    {
-      MoveViewport(vx, vy, False);
-    }
-    if (aborted && do_move_opaque)
-    {
-      XMoveWindow(dpy, move_w, x_bak, y_bak);
-    }
-    if (bad_window == FW_W(tmp_win))
-    {
-      XUnmapWindow(dpy, move_w);
-      XBell(dpy, 0);
-    }
-  }
-  if (!aborted && bad_window != FW_W(tmp_win) && IS_ICONIFIED(tmp_win))
-  {
-    SET_ICON_MOVED(tmp_win, 1);
-  }
-  UngrabEm(GRAB_NORMAL);
-  if (!do_resize_too)
-  {
-    /* Don't wait for buttons to come up when user is placing a new window
-     * and wants to resize it. */
-    WaitForButtonsUp(True);
-  }
-  SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, 0);
-  bad_window = None;
+	if (!Scr.gs.do_hide_position_window)
+	{
+		XUnmapWindow(dpy,Scr.SizeWindow);
+	}
+	if (aborted || bad_window == FW_W(tmp_win))
+	{
+		if (vx != Scr.Vx || vy != Scr.Vy)
+		{
+			MoveViewport(vx, vy, False);
+		}
+		if (aborted && do_move_opaque)
+		{
+			XMoveWindow(dpy, move_w, x_bak, y_bak);
+		}
+		if (bad_window == FW_W(tmp_win))
+		{
+			XUnmapWindow(dpy, move_w);
+			XBell(dpy, 0);
+		}
+	}
+	if (!aborted && bad_window != FW_W(tmp_win) && IS_ICONIFIED(tmp_win))
+	{
+		SET_ICON_MOVED(tmp_win, 1);
+	}
+	UngrabEm(GRAB_NORMAL);
+	if (!do_resize_too)
+	{
+		/* Don't wait for buttons to come up when user is placing a new
+		 * window and wants to resize it. */
+		WaitForButtonsUp(True);
+	}
+	SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, 0);
+	bad_window = None;
 
-  return do_resize_too;
+	return do_resize_too;
 }
 
 void CMD_MoveThreshold(F_CMD_ARGS)
 {
-  int val = 0;
+	int val = 0;
 
-  if (GetIntegerArguments(action, NULL, &val, 1) < 1 || val < 0)
-    Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
-  else
-    Scr.MoveThreshold = val;
+	if (GetIntegerArguments(action, NULL, &val, 1) < 1 || val < 0)
+	{
+		Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
+	}
+	else
+	{
+		Scr.MoveThreshold = val;
+	}
+
+	return;
 }
 
 
 void CMD_OpaqueMoveSize(F_CMD_ARGS)
 {
-  int val;
+	int val;
 
-  if (GetIntegerArguments(action, NULL, &val, 1) < 1)
-  {
-    if (strncasecmp(action, "unlimited", 9) == 0)
-      Scr.OpaqueSize = -1;
-    else
-      Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
-  }
-  else
-    Scr.OpaqueSize = val;
+	if (GetIntegerArguments(action, NULL, &val, 1) < 1)
+	{
+		if (strncasecmp(action, "unlimited", 9) == 0)
+		{
+			Scr.OpaqueSize = -1;
+		}
+		else
+		{
+			Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
+		}
+	}
+	else
+	{
+		Scr.OpaqueSize = val;
+	}
+
+	return;
 }
 
 
 static char *hide_options[] =
 {
-  "never",
-  "move",
-  "resize",
-  NULL
+	"never",
+	"move",
+	"resize",
+	NULL
 };
 
 void CMD_HideGeometryWindow(F_CMD_ARGS)
 {
-  char *token = PeekToken(action, NULL);
+	char *token = PeekToken(action, NULL);
 
-  Scr.gs.do_hide_position_window = 0;
-  Scr.gs.do_hide_resize_window = 0;
-  switch(GetTokenIndex(token, hide_options, 0, NULL))
-  {
-  case 0:
-    break;
-  case 1:
-    Scr.gs.do_hide_position_window = 1;
-    break;
-  case 2:
-    Scr.gs.do_hide_resize_window = 1;
-    break;
-  default:
-    Scr.gs.do_hide_position_window = 1;
-    Scr.gs.do_hide_resize_window = 1;
-    break;
-  }
-  return;
+	Scr.gs.do_hide_position_window = 0;
+	Scr.gs.do_hide_resize_window = 0;
+	switch(GetTokenIndex(token, hide_options, 0, NULL))
+	{
+	case 0:
+		break;
+	case 1:
+		Scr.gs.do_hide_position_window = 1;
+		break;
+	case 2:
+		Scr.gs.do_hide_resize_window = 1;
+		break;
+	default:
+		Scr.gs.do_hide_position_window = 1;
+		Scr.gs.do_hide_resize_window = 1;
+		break;
+	}
+	return;
 }
 
 
 void CMD_SnapAttraction(F_CMD_ARGS)
 {
-  int val;
-  char *token;
+	int val;
+	char *token;
 
-  if (GetIntegerArguments(action, &action, &val, 1) != 1)
-  {
-    Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
-    Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
-    return;
-  }
-  Scr.SnapAttraction = val;
-  if (val < 0)
-  {
-    Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
-  }
-  if (val == 0)
-  {
-    return;
-  }
+	if (GetIntegerArguments(action, &action, &val, 1) != 1)
+	{
+		Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
+		Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
+		return;
+	}
+	Scr.SnapAttraction = val;
+	if (val < 0)
+	{
+		Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
+	}
+	if (val == 0)
+	{
+		return;
+	}
 
-  token = PeekToken(action, &action);
-  if (token == NULL)
-  {
-    return;
-  }
+	token = PeekToken(action, &action);
+	if (token == NULL)
+	{
+		return;
+	}
 
-  if (StrEquals(token,"All"))
-  {
-    Scr.SnapMode = SNAP_ICONS | SNAP_WINDOWS;
-  }
-  else if (StrEquals(token,"SameType"))
-  {
-    Scr.SnapMode = SNAP_SAME;
-  }
-  else if (StrEquals(token,"Icons"))
-  {
-    Scr.SnapMode = SNAP_ICONS;
-  }
-  else if (StrEquals(token,"Windows"))
-  {
-    Scr.SnapMode = SNAP_WINDOWS;
-  }
-  if (Scr.SnapMode == 0)
-  {
-    Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
-  }
-  else
-  {
-    token = PeekToken(action, &action);
-    if (token == NULL)
-    {
-      return;
-    }
-  }
+	if (StrEquals(token,"All"))
+	{
+		Scr.SnapMode = SNAP_ICONS | SNAP_WINDOWS;
+	}
+	else if (StrEquals(token,"SameType"))
+	{
+		Scr.SnapMode = SNAP_SAME;
+	}
+	else if (StrEquals(token,"Icons"))
+	{
+		Scr.SnapMode = SNAP_ICONS;
+	}
+	else if (StrEquals(token,"Windows"))
+	{
+		Scr.SnapMode = SNAP_WINDOWS;
+	}
+	if (Scr.SnapMode == 0)
+	{
+		Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
+	}
+	else
+	{
+		token = PeekToken(action, &action);
+		if (token == NULL)
+		{
+			return;
+		}
+	}
 
-  if (StrEquals(token, "Screen"))
-  {
-    Scr.SnapMode |= SNAP_SCREEN;
-  }
-  else
-  {
-    fvwm_msg(ERR,"SetSnapAttraction", "Invalid argument: %s", token);
-  }
+	if (StrEquals(token, "Screen"))
+	{
+		Scr.SnapMode |= SNAP_SCREEN;
+	}
+	else
+	{
+		fvwm_msg(ERR, "SetSnapAttraction", "Invalid argument: %s",
+			 token);
+	}
 
-  return;
+	return;
 }
 
 void CMD_SnapGrid(F_CMD_ARGS)
 {
-  int val[2];
+	int val[2];
 
-  if(GetIntegerArguments(action, NULL, &val[0], 2) != 2)
-  {
-    Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
-    Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
-    return;
-  }
+	if (GetIntegerArguments(action, NULL, &val[0], 2) != 2)
+	{
+		Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
+		Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
+		return;
+	}
 
-  Scr.SnapGridX = val[0];
-  if(Scr.SnapGridX < 1)
-  {
-    Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
-  }
-  Scr.SnapGridY = val[1];
-  if(Scr.SnapGridY < 1)
-  {
-    Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
-  }
+	Scr.SnapGridX = val[0];
+	if (Scr.SnapGridX < 1)
+	{
+		Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
+	}
+	Scr.SnapGridY = val[1];
+	if (Scr.SnapGridY < 1)
+	{
+		Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
+	}
+
+	return;
 }
 
 static Pixmap XorPixmap = None;
 
 void CMD_XorValue(F_CMD_ARGS)
 {
-  int val;
-  XGCValues gcv;
-  unsigned long gcm;
+	int val;
+	XGCValues gcv;
+	unsigned long gcm;
 
-  if(GetIntegerArguments(action, NULL, &val, 1) != 1)
-  {
-    val = 0;
-  }
+	if (GetIntegerArguments(action, NULL, &val, 1) != 1)
+	{
+		val = 0;
+	}
 
-  gcm = GCFunction|GCLineWidth|GCForeground|GCFillStyle|GCSubwindowMode;
-  gcv.subwindow_mode = IncludeInferiors;
-  gcv.function = GXxor;
-  gcv.line_width = 0;
-  /* use passed in value, or try to calculate appropriate value if 0 */
-  /* ctwm method: */
-  /*
-    gcv.foreground = (val1)?(val1):((((unsigned long) 1) << Scr.d_depth) - 1);
-  */
-  /* Xlib programming manual suggestion: */
-  gcv.foreground = (val)?
-    (val):(BlackPixel(dpy,Scr.screen) ^ WhitePixel(dpy,Scr.screen));
-  gcv.fill_style = FillSolid;
-  gcv.subwindow_mode = IncludeInferiors;
+	gcm = GCFunction|GCLineWidth|GCForeground|GCFillStyle|GCSubwindowMode;
+	gcv.subwindow_mode = IncludeInferiors;
+	gcv.function = GXxor;
+	gcv.line_width = 0;
+	/* use passed in value, or try to calculate appropriate value if 0 */
+	/* ctwm method: */
+	/*
+	  gcv.foreground = (val1)?(val1):((((unsigned long) 1) <<
+	  Scr.d_depth) - 1);
+	*/
+	/* Xlib programming manual suggestion: */
+	gcv.foreground = (val)?
+		(val):(BlackPixel(dpy,Scr.screen) ^ WhitePixel(dpy,Scr.screen));
+	gcv.fill_style = FillSolid;
+	gcv.subwindow_mode = IncludeInferiors;
 
-  /* modify XorGC, only create once */
-  if (Scr.XorGC)
-    XChangeGC(dpy, Scr.XorGC, gcm, &gcv);
-  else
-    Scr.XorGC = fvwmlib_XCreateGC(dpy, Scr.Root, gcm, &gcv);
+	/* modify XorGC, only create once */
+	if (Scr.XorGC)
+	{
+		XChangeGC(dpy, Scr.XorGC, gcm, &gcv);
+	}
+	else
+	{
+		Scr.XorGC = fvwmlib_XCreateGC(dpy, Scr.Root, gcm, &gcv);
+	}
 
-  /* free up XorPixmap if neccesary */
-  if (XorPixmap != None) {
-    XFreePixmap(dpy, XorPixmap);
-    XorPixmap = None;
-  }
+	/* free up XorPixmap if neccesary */
+	if (XorPixmap != None) {
+		XFreePixmap(dpy, XorPixmap);
+		XorPixmap = None;
+	}
+
+	return;
 }
 
 
 void CMD_XorPixmap(F_CMD_ARGS)
 {
-  char *PixmapName;
-  FvwmPicture *xp;
-  XGCValues gcv;
-  unsigned long gcm;
+	char *PixmapName;
+	FvwmPicture *xp;
+	XGCValues gcv;
+	unsigned long gcm;
 
-  action = GetNextToken(action, &PixmapName);
-  if(PixmapName == NULL)
-  {
-    /* return to default value. */
-    action = "0";
-    CMD_XorValue(F_PASS_ARGS);
-    return;
-  }
-  /* get the picture in the root visual, colorlimit is ignored because the
-   * pixels will be freed */
-  PictureUseDefaultVisual();
-  xp = PGetFvwmPicture(dpy, Scr.Root, NULL, PixmapName, 0);
-  if (xp == NULL) {
-    fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
-    free(PixmapName);
-    PictureUseFvwmVisual();
-    return;
-  }
-  free(PixmapName);
-  /* free up old pixmap */
-  if (XorPixmap != None)
-    XFreePixmap(dpy, XorPixmap);
+	action = GetNextToken(action, &PixmapName);
+	if (PixmapName == NULL)
+	{
+		/* return to default value. */
+		action = "0";
+		CMD_XorValue(F_PASS_ARGS);
+		return;
+	}
+	/* get the picture in the root visual, colorlimit is ignored because the
+	 * pixels will be freed */
+	PictureUseDefaultVisual();
+	xp = PGetFvwmPicture(dpy, Scr.Root, NULL, PixmapName, 0);
+	if (xp == NULL)
+	{
+		fvwm_msg(ERR,"SetXORPixmap","Can't find pixmap %s", PixmapName);
+		free(PixmapName);
+		PictureUseFvwmVisual();
+		return;
+	}
+	free(PixmapName);
+	/* free up old pixmap */
+	if (XorPixmap != None)
+	{
+		XFreePixmap(dpy, XorPixmap);
+	}
 
-  /* make a copy of the picture pixmap */
-  XorPixmap = XCreatePixmap(dpy, Scr.Root, xp->width, xp->height, Pdepth);
-  XCopyArea(dpy, xp->picture, XorPixmap, DefaultGC(dpy, Scr.screen), 0, 0,
-	    xp->width, xp->height, 0, 0);
-  /* destroy picture and free colors */
-  PDestroyFvwmPicture(dpy, xp);
-  PictureUseFvwmVisual();
+	/* make a copy of the picture pixmap */
+	XorPixmap = XCreatePixmap(dpy, Scr.Root, xp->width, xp->height, Pdepth);
+	XCopyArea(dpy, xp->picture, XorPixmap, DefaultGC(dpy, Scr.screen), 0, 0,
+		  xp->width, xp->height, 0, 0);
+	/* destroy picture and free colors */
+	PDestroyFvwmPicture(dpy, xp);
+	PictureUseFvwmVisual();
 
-  /* create Graphics context */
-  gcm = GCFunction|GCLineWidth|GCTile|GCFillStyle|GCSubwindowMode;
-  gcv.subwindow_mode = IncludeInferiors;
-  gcv.function = GXxor;
-  /* line width of 1 is necessary for Exceed servers */
-  gcv.line_width = 1;
-  gcv.tile = XorPixmap;
-  gcv.fill_style = FillTiled;
-  gcv.subwindow_mode = IncludeInferiors;
-  /* modify XorGC, only create once */
-  if (Scr.XorGC)
-    XChangeGC(dpy, Scr.XorGC, gcm, &gcv);
-  else
-    Scr.XorGC = fvwmlib_XCreateGC(dpy, Scr.Root, gcm, &gcv);
+	/* create Graphics context */
+	gcm = GCFunction|GCLineWidth|GCTile|GCFillStyle|GCSubwindowMode;
+	gcv.subwindow_mode = IncludeInferiors;
+	gcv.function = GXxor;
+	/* line width of 1 is necessary for Exceed servers */
+	gcv.line_width = 1;
+	gcv.tile = XorPixmap;
+	gcv.fill_style = FillTiled;
+	gcv.subwindow_mode = IncludeInferiors;
+	/* modify XorGC, only create once */
+	if (Scr.XorGC)
+	{
+		XChangeGC(dpy, Scr.XorGC, gcm, &gcv);
+	}
+	else
+	{
+		Scr.XorGC = fvwmlib_XCreateGC(dpy, Scr.Root, gcm, &gcv);
+	}
+
+	return;
 }
 
 
@@ -2274,577 +2507,634 @@ void CMD_XorPixmap(F_CMD_ARGS)
  ****************************************************************************/
 static Bool resize_window(F_CMD_ARGS)
 {
-  extern Window bad_window;
-  Bool finished = False, is_done = False, is_aborted = False;
-  Bool do_resize_opaque;
-  int x,y,delta_x,delta_y,stashed_x,stashed_y;
-  Window ResizeWindow;
-  Bool fButtonAbort = False;
-  Bool fForceRedraw = False;
-  int n;
-  unsigned int button_mask = 0;
-  rectangle sdrag;
-  rectangle sorig;
-  rectangle *drag = &sdrag;
-  rectangle *orig = &sorig;
-  rectangle start_g;
-  int ymotion = 0;
-  int xmotion = 0;
-  int was_maximized;
-  unsigned edge_wrap_x;
-  unsigned edge_wrap_y;
-  int px;
-  int py;
-  int i;
-  size_borders b;
-  Bool called_from_title = False;
-  frame_move_resize_args mr_args = NULL;
+	extern Window bad_window;
+	Bool finished = False, is_done = False, is_aborted = False;
+	Bool do_resize_opaque;
+	int x,y,delta_x,delta_y,stashed_x,stashed_y;
+	Window ResizeWindow;
+	Bool fButtonAbort = False;
+	Bool fForceRedraw = False;
+	int n;
+	unsigned int button_mask = 0;
+	rectangle sdrag;
+	rectangle sorig;
+	rectangle *drag = &sdrag;
+	rectangle *orig = &sorig;
+	rectangle start_g;
+	int ymotion = 0;
+	int xmotion = 0;
+	int was_maximized;
+	unsigned edge_wrap_x;
+	unsigned edge_wrap_y;
+	int px;
+	int py;
+	int i;
+	size_borders b;
+	Bool called_from_title = False;
+	frame_move_resize_args mr_args = NULL;
 
-  bad_window = False;
-  ResizeWindow = FW_W_FRAME(fw);
-  if (XQueryPointer(
-	dpy, ResizeWindow, &JunkRoot, &JunkChild, &JunkX, &JunkY, &px, &py,
-	&button_mask) == False)
-  {
-    /* pointer is on a different screen - that's okay here */
-  }
-  button_mask &= DEFAULT_ALL_BUTTONS_MASK;
-
-  if (!is_function_allowed(F_RESIZE, NULL, fw, True, True))
-  {
-    XBell(dpy, 0);
-    return False;
-  }
-
-  was_maximized = IS_MAXIMIZED(fw);
-  SET_MAXIMIZED(fw, 0);
-  if (was_maximized)
-  {
-    /* must redraw the buttons now so that the 'maximize' button does not stay
-     * depressed. */
-    border_draw_decorations(
-      fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL, NULL, NULL);
-  }
-
-  if (IS_SHADED(fw) || !IS_MAPPED(fw))
-    do_resize_opaque = False;
-  else
-    do_resize_opaque = DO_RESIZE_OPAQUE(fw);
-
-  /* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
-  drag->width = fw->frame_g.width;
-  drag->height = fw->frame_g.height;
-  get_window_borders(fw, &b);
-  n = GetResizeArguments(
-    &action, fw->frame_g.x, fw->frame_g.y,
-    fw->hints.base_width, fw->hints.base_height,
-    fw->hints.width_inc, fw->hints.height_inc,
-    &b, &(drag->width), &(drag->height));
-
-  if (n == 2)
-  {
-    rectangle new_g;
-
-    /* size will be less or equal to requested */
-    new_g = fw->frame_g;
-    constrain_size(
-      fw, (unsigned int *)&drag->width, (unsigned int *)&drag->height,
-      xmotion, ymotion, 0);
-    gravity_resize(
-      fw->hints.win_gravity, &new_g,
-      drag->width - new_g.width, drag->height - new_g.height);
-    if (IS_SHADED(fw))
-    {
-      frame_setup_window(
-	      fw, fw->frame_g.x, fw->frame_g.y, drag->width,
-	      fw->frame_g.height, False);
-    }
-    else
-    {
-      frame_setup_window(
-	      fw, fw->frame_g.x, fw->frame_g.y, drag->width,
-	      drag->height, False);
-    }
-    update_absolute_geometry(fw);
-    maximize_adjust_offset(fw);
-    GNOME_SetWinArea(fw);
-    ResizeWindow = None;
-    return True;
-  }
-
-  if (Scr.bo.InstallRootCmap)
-    InstallRootColormap();
-  else
-    InstallFvwmColormap();
-
-  if(!GrabEm(CRS_RESIZE, GRAB_NORMAL))
-  {
-    XBell(dpy, 0);
-    return False;
-  }
-
-  /* handle problems with edge-wrapping while resizing */
-  edge_wrap_x = Scr.flags.edge_wrap_x;
-  edge_wrap_y = Scr.flags.edge_wrap_y;
-  Scr.flags.edge_wrap_x = 0;
-  Scr.flags.edge_wrap_y = 0;
-
-  if (!do_resize_opaque)
-  {
-    MyXGrabServer(dpy);
-  }
-  if (!XGetGeometry(
-	dpy, (Drawable) ResizeWindow, &JunkRoot, &drag->x, &drag->y,
-	(unsigned int *)&drag->width, (unsigned int *)&drag->height,
-	&JunkBW, &JunkDepth))
-  {
-    UngrabEm(GRAB_NORMAL);
-    if (!do_resize_opaque)
-    {
-      MyXUngrabServer(dpy);
-    }
-    return False;
-  }
-  if (IS_SHADED(fw))
-  {
-    SET_MAXIMIZED(fw, was_maximized);
-    get_unshaded_geometry(fw, drag);
-    SET_MAXIMIZED(fw, 0);
-  }
-  if (do_resize_opaque)
-  {
-     mr_args = frame_create_move_resize_args(
-	     fw, FRAME_MR_OPAQUE, &fw->frame_g, &fw->frame_g, 0, DIR_NONE);
-  }
-  else
-  {
-    Scr.flags.is_wire_frame_displayed = True;
-  }
-  MyXGrabKeyboard(dpy);
-
-  *orig = *drag;
-  start_g = *drag;
-  ymotion = 0;
-  xmotion = 0;
-
-  /* pop up a resize dimensions window */
-  if (!Scr.gs.do_hide_resize_window)
-  {
-    position_geometry_window(NULL);
-    XMapRaised(dpy, Scr.SizeWindow);
-  }
-  DisplaySize(fw, &Event, orig->width, orig->height,True,True);
-
-  if((PressedW != Scr.Root)&&(PressedW != None))
-  {
-    /* Get the current position to determine which border to resize */
-    if(PressedW == FW_W_SIDE(fw, 0))   /* top */
-      ymotion = 1;
-    else if(PressedW == FW_W_SIDE(fw, 1))  /* right */
-      xmotion = -1;
-    else if(PressedW == FW_W_SIDE(fw, 2))  /* bottom */
-      ymotion = -1;
-    else if(PressedW == FW_W_SIDE(fw, 3))  /* left */
-      xmotion = 1;
-    else if(PressedW == FW_W_CORNER(fw, 0))  /* upper-left */
-    {
-      ymotion = 1;
-      xmotion = 1;
-    }
-    else if(PressedW == FW_W_CORNER(fw, 1))  /* upper-right */
-    {
-      xmotion = -1;
-      ymotion = 1;
-    }
-    else if(PressedW == FW_W_CORNER(fw, 2)) /* lower left */
-    {
-      ymotion = -1;
-      xmotion = 1;
-    }
-    else if(PressedW == FW_W_CORNER(fw, 3))  /* lower right */
-    {
-      ymotion = -1;
-      xmotion = -1;
-    }
-  }
-
-  /* begin of code responsible for warping the pointer to the border when
-   * starting a resize. */
-  if (FW_W_TITLE(fw) != None && PressedW == FW_W_TITLE(fw))
-  {
-    /* title was pressed to thart the resize */
-    called_from_title = True;
-  }
-  else
-  {
-    for (i = NUMBER_OF_BUTTONS; i--; )
-    {
-      /* see if the title button was pressed to that the resize */
-      if (FW_W_BUTTON(fw, i) != None &&
-	  FW_W_BUTTON(fw, i) == PressedW)
-      {
-	/* yes */
-	called_from_title = True;
-      }
-    }
-  }
-  /* don't warp if the resize was triggered by a press somwhere on the title
-   * bar */
-  if(PressedW != Scr.Root && xmotion == 0 && ymotion == 0 &&
-     !called_from_title)
-  {
-    int dx = orig->width - px;
-    int dy = orig->height - py;
-    int wx = -1;
-    int wy = -1;
-    int tx;
-    int ty;
-
-    /* Now find the place to warp to. We simply use the sectors drawn when we
-     * start resizing the window. */
-#if 0
-    tx = orig->width / 10 - 1;
-    ty = orig->height / 10 - 1;
-#else
-    tx = 0;
-    ty = 0;
-#endif
-    tx = max(fw->boundary_width, tx);
-    ty = max(fw->boundary_width, ty);
-    if (px >= 0 && dx >= 0 && py >= 0 && dy >= 0)
-    {
-      if (px < tx)
-      {
-	if (py < ty)
+	bad_window = False;
+	ResizeWindow = FW_W_FRAME(fw);
+	if (XQueryPointer(
+		    dpy, ResizeWindow, &JunkRoot, &JunkChild, &JunkX, &JunkY,
+		    &px, &py, &button_mask) == False)
 	{
-	  xmotion = 1;
-	  ymotion = 1;
-	  wx = 0;
-	  wy = 0;
+		/* pointer is on a different screen - that's okay here */
 	}
-	else if (dy < ty)
-	{
-	  xmotion = 1;
-	  ymotion = -1;
-	  wx = 0;
-	  wy = orig->height -1;
-	}
-	else
-	{
-	  xmotion = 1;
-	  wx = 0;
-	  wy = orig->height/2;
-	  wy = py;
-	}
-      }
-      else if (dx < tx)
-      {
-	if (py < ty)
-	{
-	  xmotion = -1;
-	  ymotion = 1;
-	  wx = orig->width - 1;
-	  wy = 0;
-	}
-	else if (dy < ty)
-	{
-	  xmotion = -1;
-	  ymotion = -1;
-	  wx = orig->width - 1;
-	  wy = orig->height -1;
-	}
-	else
-	{
-	  xmotion = -1;
-	  wx = orig->width - 1;
-	  wy = orig->height/2;
-	  wy = py;
-	}
-      }
-      else
-      {
-	if (py < ty)
-	{
-	  ymotion = 1;
-	  wx = orig->width/2;
-	  wy = 0;
-	  wx = px;
-	}
-	else if (dy < ty)
-	{
-	  ymotion = -1;
-	  wx = orig->width/2;
-	  wy = orig->height -1;
-	  wx = px;
-	}
-      }
-    }
+	button_mask &= DEFAULT_ALL_BUTTONS_MASK;
 
-    if (wx != -1)
-    {
-      /* now warp the pointer to the border */
-      XWarpPointer(dpy, None, ResizeWindow, 0, 0, 1, 1, wx, wy);
-      XFlush(dpy);
-    }
-  }
-  /* end of code responsible for warping the pointer to the border when
-   * starting a resize. */
-
-  /* draw the rubber-band window */
-  if (!do_resize_opaque)
-    draw_move_resize_grid(drag->x, drag->y, drag->width - 1, drag->height - 1);
-  /* kick off resizing without requiring any motion if invoked with a key
-   * press */
-  if (eventp->type == KeyPress)
-  {
-    if (XQueryPointer(
-	  dpy, Scr.Root, &JunkRoot, &JunkChild, &stashed_x, &stashed_y, &JunkX,
-	  &JunkY, &JunkMask) == False)
-    {
-      /* pointer is on a different screen */
-      stashed_x = 0;
-      stashed_y = 0;
-    }
-    DoResize(stashed_x, stashed_y, fw, drag, orig, &xmotion, &ymotion,
-	     do_resize_opaque);
-  }
-  else
-    stashed_x = stashed_y = -1;
-
-  /* loop to resize */
-  while (!finished && bad_window != FW_W(fw))
-  {
-    int rc = 0;
-
-    /* block until there is an interesting event */
-    while (rc != -1 &&
-	   (!XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-			     KeyPressMask | PointerMotionMask |
-			     ButtonMotionMask | ExposureMask, &Event)))
-    {
-      rc = HandlePaging(
-	      Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y, &delta_x, &delta_y,
-	      False, False, True);
-      if (rc == 1)
-      {
-	/* Fake an event to force window reposition */
-	Event.type = MotionNotify;
-	Event.xmotion.time = lastTimestamp;
-	fForceRedraw = True;
-	break;
-      }
-    }
-    if (rc == -1)
-    {
-      XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-		 KeyPressMask | PointerMotionMask |
-		 ButtonMotionMask | ExposureMask, &Event);
-    }
-    StashEventTime(&Event);
-
-    if (Event.type == MotionNotify)
-    {
-      /* discard any extra motion events before a release */
-      while(XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
-			    ButtonReleaseMask | ButtonPressMask, &Event))
-      {
-	StashEventTime(&Event);
-	if (Event.type == ButtonRelease || Event.type == ButtonPress)
-	  break;
-      }
-    }
-
-    is_done = False;
-    /* Handle a limited number of key press events to allow mouseless
-     * operation */
-    if(Event.type == KeyPress)
-      Keyboard_shortcuts(&Event, fw, NULL, NULL, ButtonRelease);
-    switch(Event.type)
-    {
-    case ButtonPress:
-      is_done = True;
-      if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
-	  ((Button1Mask << (Event.xbutton.button - 1)) & button_mask))
-      {
-	/* No new button was pressed, just a delayed event */
-	break;
-      }
-      /* Abort the resize if
-       *  - the move started with a pressed button and another button
-       *    was pressed during the operation
-       *  - no button was started at the beginning and any button
-       *    except button 1 was pressed. */
-      if (button_mask || (Event.xbutton.button != 1))
-	fButtonAbort = True;
-    case KeyPress:
-      /* simple code to bag out of move - CKH */
-      if (XLookupKeysym(&(Event.xkey),0) == XK_Escape || fButtonAbort)
-      {
-	is_aborted = True;
-	finished = True;
-	/* return pointer if aborted resize was invoked with key */
-	if (stashed_x >= 0)
+	if (!is_function_allowed(F_RESIZE, NULL, fw, True, True))
 	{
-	  XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, stashed_x,
-		       stashed_y);
+		XBell(dpy, 0);
+		return False;
 	}
+
+	was_maximized = IS_MAXIMIZED(fw);
+	SET_MAXIMIZED(fw, 0);
 	if (was_maximized)
 	{
-	  /* since we aborted the resize, the window is still maximized */
-	  SET_MAXIMIZED(fw, 1);
+		/* must redraw the buttons now so that the 'maximize' button
+		 * does not stay depressed. */
+		border_draw_decorations(
+			fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL,
+			NULL, NULL);
+	}
+
+	if (IS_SHADED(fw) || !IS_MAPPED(fw))
+	{
+		do_resize_opaque = False;
+	}
+	else
+	{
+		do_resize_opaque = DO_RESIZE_OPAQUE(fw);
+	}
+
+	/* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
+	drag->width = fw->frame_g.width;
+	drag->height = fw->frame_g.height;
+	get_window_borders(fw, &b);
+	n = GetResizeArguments(
+		&action, fw->frame_g.x, fw->frame_g.y,
+		fw->hints.base_width, fw->hints.base_height,
+		fw->hints.width_inc, fw->hints.height_inc,
+		&b, &(drag->width), &(drag->height));
+
+	if (n == 2)
+	{
+		rectangle new_g;
+
+		/* size will be less or equal to requested */
+		new_g = fw->frame_g;
+		constrain_size(
+			fw, (unsigned int *)&drag->width,
+			(unsigned int *)&drag->height, xmotion, ymotion, 0);
+		gravity_resize(
+			fw->hints.win_gravity, &new_g,
+			drag->width - new_g.width, drag->height - new_g.height);
+		if (IS_SHADED(fw))
+		{
+			frame_setup_window(
+				fw, fw->frame_g.x, fw->frame_g.y, drag->width,
+				fw->frame_g.height, False);
+		}
+		else
+		{
+			frame_setup_window(
+				fw, fw->frame_g.x, fw->frame_g.y, drag->width,
+				drag->height, False);
+		}
+		update_absolute_geometry(fw);
+		maximize_adjust_offset(fw);
+		GNOME_SetWinArea(fw);
+		ResizeWindow = None;
+		return True;
+	}
+
+	if (Scr.bo.InstallRootCmap)
+	{
+		InstallRootColormap();
+	}
+	else
+	{
+		InstallFvwmColormap();
+	}
+	if (!GrabEm(CRS_RESIZE, GRAB_NORMAL))
+	{
+		XBell(dpy, 0);
+		return False;
+	}
+
+	/* handle problems with edge-wrapping while resizing */
+	edge_wrap_x = Scr.flags.edge_wrap_x;
+	edge_wrap_y = Scr.flags.edge_wrap_y;
+	Scr.flags.edge_wrap_x = 0;
+	Scr.flags.edge_wrap_y = 0;
+
+	if (!do_resize_opaque)
+	{
+		MyXGrabServer(dpy);
+	}
+	if (!XGetGeometry(
+		    dpy, (Drawable) ResizeWindow, &JunkRoot, &drag->x, &drag->y,
+		    (unsigned int *)&drag->width, (unsigned int *)&drag->height,
+		    &JunkBW, &JunkDepth))
+	{
+		UngrabEm(GRAB_NORMAL);
+		if (!do_resize_opaque)
+		{
+			MyXUngrabServer(dpy);
+		}
+		return False;
+	}
+	if (IS_SHADED(fw))
+	{
+		SET_MAXIMIZED(fw, was_maximized);
+		get_unshaded_geometry(fw, drag);
+		SET_MAXIMIZED(fw, 0);
 	}
 	if (do_resize_opaque)
 	{
-	  DoResize(
-	    start_g.x, start_g.y, fw, &start_g, orig, &xmotion, &ymotion,
-	    do_resize_opaque);
+		mr_args = frame_create_move_resize_args(
+			fw, FRAME_MR_OPAQUE, &fw->frame_g, &fw->frame_g, 0,
+			DIR_NONE);
 	}
-      }
-      is_done = True;
-      break;
+	else
+	{
+		Scr.flags.is_wire_frame_displayed = True;
+	}
+	MyXGrabKeyboard(dpy);
 
-    case ButtonRelease:
-      finished = True;
-      is_done = True;
-      break;
+	*orig = *drag;
+	start_g = *drag;
+	ymotion = 0;
+	xmotion = 0;
 
-    case MotionNotify:
-      if (!fForceRedraw)
-      {
-	x = Event.xmotion.x_root;
-	y = Event.xmotion.y_root;
-	/* resize before paging request to prevent resize from lagging
-	 * mouse - mab */
-	DoResize(
-	  x, y, fw, drag, orig, &xmotion, &ymotion, do_resize_opaque);
-	/* need to move the viewport */
-	HandlePaging(Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
-		     &delta_x, &delta_y, False, False, False);
-      }
-      /* redraw outline if we paged - mab */
-      if (delta_x != 0 || delta_y != 0)
-      {
-	orig->x -= delta_x;
-	orig->y -= delta_y;
-	drag->x -= delta_x;
-	drag->y -= delta_y;
+	/* pop up a resize dimensions window */
+	if (!Scr.gs.do_hide_resize_window)
+	{
+		position_geometry_window(NULL);
+		XMapRaised(dpy, Scr.SizeWindow);
+	}
+	DisplaySize(fw, &Event, orig->width, orig->height,True,True);
 
-	DoResize(
-	  x, y, fw, drag, orig, &xmotion, &ymotion, do_resize_opaque);
-      }
-      fForceRedraw = False;
-      is_done = True;
-    default:
-      break;
-    }
-    if(!is_done)
-    {
-      if (!do_resize_opaque)
-	/* must undraw the rubber band in case the event causes some drawing */
-	switch_move_resize_grid(False);
-      DispatchEvent(False);
-      if (!do_resize_opaque)
-	draw_move_resize_grid(
-	  drag->x, drag->y, drag->width - 1, drag->height - 1);
-    }
-    else
-    {
-      if (do_resize_opaque)
-      {
-	/* only do this with opaque resizes, (i.e. the server is not grabbed)
-	 */
-	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
-	FlushAllMessageQueues();
-      }
-    }
-  }
+	if ((PressedW != Scr.Root)&&(PressedW != None))
+	{
+		/* Get the current position to determine which border to resize
+		 */
+		if (PressedW == FW_W_SIDE(fw, 0))   /* top */
+		{
+			ymotion = 1;
+		}
+		else if (PressedW == FW_W_SIDE(fw, 1))	/* right */
+		{
+			xmotion = -1;
+		}
+		else if (PressedW == FW_W_SIDE(fw, 2))	/* bottom */
+		{
+			ymotion = -1;
+		}
+		else if (PressedW == FW_W_SIDE(fw, 3))	/* left */
+		{
+			xmotion = 1;
+		}
+		else if (PressedW == FW_W_CORNER(fw, 0))  /* upper-left */
+		{
+			ymotion = 1;
+			xmotion = 1;
+		}
+		else if (PressedW == FW_W_CORNER(fw, 1))  /* upper-right */
+		{
+			xmotion = -1;
+			ymotion = 1;
+		}
+		else if (PressedW == FW_W_CORNER(fw, 2)) /* lower left */
+		{
+			ymotion = -1;
+			xmotion = 1;
+		}
+		else if (PressedW == FW_W_CORNER(fw, 3))  /* lower right */
+		{
+			ymotion = -1;
+			xmotion = -1;
+		}
+	}
 
-  /* erase the rubber-band */
-  if (!do_resize_opaque)
-    switch_move_resize_grid(False);
+	/* begin of code responsible for warping the pointer to the border when
+	 * starting a resize. */
+	if (FW_W_TITLE(fw) != None && PressedW == FW_W_TITLE(fw))
+	{
+		/* title was pressed to thart the resize */
+		called_from_title = True;
+	}
+	else
+	{
+		for (i = NUMBER_OF_BUTTONS; i--; )
+		{
+			/* see if the title button was pressed to that the
+			 * resize */
+			if (FW_W_BUTTON(fw, i) != None &&
+			    FW_W_BUTTON(fw, i) == PressedW)
+			{
+				/* yes */
+				called_from_title = True;
+			}
+		}
+	}
+	/* don't warp if the resize was triggered by a press somwhere on the
+	 * title bar */
+	if (PressedW != Scr.Root && xmotion == 0 && ymotion == 0 &&
+	    !called_from_title)
+	{
+		int dx = orig->width - px;
+		int dy = orig->height - py;
+		int wx = -1;
+		int wy = -1;
+		int tx;
+		int ty;
 
-  /* pop down the size window */
-  if (!Scr.gs.do_hide_resize_window)
-    XUnmapWindow(dpy, Scr.SizeWindow);
+		/* Now find the place to warp to. We simply use the sectors
+		 * drawn when we start resizing the window. */
+#if 0
+		tx = orig->width / 10 - 1;
+		ty = orig->height / 10 - 1;
+#else
+		tx = 0;
+		ty = 0;
+#endif
+		tx = max(fw->boundary_width, tx);
+		ty = max(fw->boundary_width, ty);
+		if (px >= 0 && dx >= 0 && py >= 0 && dy >= 0)
+		{
+			if (px < tx)
+			{
+				if (py < ty)
+				{
+					xmotion = 1;
+					ymotion = 1;
+					wx = 0;
+					wy = 0;
+				}
+				else if (dy < ty)
+				{
+					xmotion = 1;
+					ymotion = -1;
+					wx = 0;
+					wy = orig->height -1;
+				}
+				else
+				{
+					xmotion = 1;
+					wx = 0;
+					wy = orig->height/2;
+					wy = py;
+				}
+			}
+			else if (dx < tx)
+			{
+				if (py < ty)
+				{
+					xmotion = -1;
+					ymotion = 1;
+					wx = orig->width - 1;
+					wy = 0;
+				}
+				else if (dy < ty)
+				{
+					xmotion = -1;
+					ymotion = -1;
+					wx = orig->width - 1;
+					wy = orig->height -1;
+				}
+				else
+				{
+					xmotion = -1;
+					wx = orig->width - 1;
+					wy = orig->height/2;
+					wy = py;
+				}
+			}
+			else
+			{
+				if (py < ty)
+				{
+					ymotion = 1;
+					wx = orig->width/2;
+					wy = 0;
+					wx = px;
+				}
+				else if (dy < ty)
+				{
+					ymotion = -1;
+					wx = orig->width/2;
+					wy = orig->height -1;
+					wx = px;
+				}
+			}
+		}
 
-  if(!is_aborted && bad_window != FW_W(fw))
-  {
-    rectangle new_g;
+		if (wx != -1)
+		{
+			/* now warp the pointer to the border */
+			XWarpPointer(
+				dpy, None, ResizeWindow, 0, 0, 1, 1, wx, wy);
+			XFlush(dpy);
+		}
+	}
+	/* end of code responsible for warping the pointer to the border when
+	 * starting a resize. */
 
-    /* size will be >= to requested */
-    constrain_size(
-      fw, (unsigned int *)&drag->width, (unsigned int *)&drag->height,
-      xmotion, ymotion, CS_ROUND_UP);
-    if (IS_SHADED(fw))
-    {
-      get_shaded_geometry(fw, &new_g, drag);
-    }
-    else
-    {
-      new_g = *drag;
-    }
-    if (do_resize_opaque)
-    {
-      frame_update_move_resize_args(mr_args, &new_g);
-    }
-    else
-    {
-      frame_setup_window(
-	fw, new_g.x, new_g.y, new_g.width, new_g.height, False);
-    }
-    if (IS_SHADED(fw))
-    {
-      fw->normal_g.width = drag->width;
-      fw->normal_g.height = drag->height;
-    }
-  }
-  if (is_aborted && was_maximized)
-  {
-    /* force redraw */
-    border_draw_decorations(
-      fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL, NULL, NULL);
-  }
+	/* draw the rubber-band window */
+	if (!do_resize_opaque)
+	{
+		draw_move_resize_grid(
+			drag->x, drag->y, drag->width - 1, drag->height - 1);
+	}
+	/* kick off resizing without requiring any motion if invoked with a key
+	 * press */
+	if (eventp->type == KeyPress)
+	{
+		if (XQueryPointer(
+			    dpy, Scr.Root, &JunkRoot, &JunkChild, &stashed_x,
+			    &stashed_y, &JunkX, &JunkY, &JunkMask) == False)
+		{
+			/* pointer is on a different screen */
+			stashed_x = 0;
+			stashed_y = 0;
+		}
+		DoResize(
+			stashed_x, stashed_y, fw, drag, orig, &xmotion,
+			&ymotion, do_resize_opaque);
+	}
+	else
+		stashed_x = stashed_y = -1;
 
-  if (bad_window == FW_W(fw))
-  {
-    XUnmapWindow(dpy, FW_W_FRAME(fw));
-    border_undraw_decorations(fw);
-    XBell(dpy, 0);
-  }
+	/* loop to resize */
+	while (!finished && bad_window != FW_W(fw))
+	{
+		int rc = 0;
 
-  if (Scr.bo.InstallRootCmap)
-    UninstallRootColormap();
-  else
-    UninstallFvwmColormap();
-  ResizeWindow = None;
-  if (!do_resize_opaque)
-  {
-    /* Throw away some events that dont interest us right now. */
-    discard_events(EnterWindowMask|LeaveWindowMask);
-    Scr.flags.is_wire_frame_displayed = False;
-    MyXUngrabServer(dpy);
-  }
-  if (mr_args != NULL)
-  {
-    frame_free_move_resize_args(fw, mr_args);
-  }
-  MyXUngrabKeyboard(dpy);
-  xmotion = 0;
-  ymotion = 0;
-  WaitForButtonsUp(True);
-  UngrabEm(GRAB_NORMAL);
-  Scr.flags.edge_wrap_x = edge_wrap_x;
-  Scr.flags.edge_wrap_y = edge_wrap_y;
-  update_absolute_geometry(fw);
-  maximize_adjust_offset(fw);
-  GNOME_SetWinArea(fw);
+		/* block until there is an interesting event */
+		while (rc != -1 &&
+		       (!XCheckMaskEvent(
+			       dpy, ButtonPressMask | ButtonReleaseMask |
+			       KeyPressMask | PointerMotionMask |
+			       ButtonMotionMask | ExposureMask, &Event)))
+		{
+			rc = HandlePaging(
+				Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
+				&delta_x, &delta_y, False, False, True);
+			if (rc == 1)
+			{
+				/* Fake an event to force window reposition */
+				Event.type = MotionNotify;
+				Event.xmotion.time = lastTimestamp;
+				fForceRedraw = True;
+				break;
+			}
+		}
+		if (rc == -1)
+		{
+			XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+				   KeyPressMask | PointerMotionMask |
+				   ButtonMotionMask | ExposureMask, &Event);
+		}
+		StashEventTime(&Event);
 
-  if (is_aborted)
-  {
-    return False;
-  }
+		if (Event.type == MotionNotify)
+		{
+			/* discard any extra motion events before a release */
+			while (XCheckMaskEvent(
+				       dpy, ButtonMotionMask |
+				       PointerMotionMask | ButtonReleaseMask |
+				       ButtonPressMask, &Event))
+			{
+				StashEventTime(&Event);
+				if (Event.type == ButtonRelease ||
+				    Event.type == ButtonPress)
+				{
+					break;
+				}
+			}
+		}
 
-  return True;
+		is_done = False;
+		/* Handle a limited number of key press events to allow
+		 * mouseless operation */
+		if (Event.type == KeyPress)
+		{
+			Keyboard_shortcuts(
+				&Event, fw, NULL, NULL, ButtonRelease);
+		}
+		switch(Event.type)
+		{
+		case ButtonPress:
+			is_done = True;
+			if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
+			    ((Button1Mask << (Event.xbutton.button - 1)) &
+			     button_mask))
+			{
+				/* No new button was pressed, just a delayed
+				 * event */
+				break;
+			}
+			/* Abort the resize if
+			 *  - the move started with a pressed button and
+			 *    another button was pressed during the operation
+			 *  - no button was started at the beginning and any
+			 *    button except button 1 was pressed. */
+			if (button_mask || (Event.xbutton.button != 1))
+			{
+				fButtonAbort = True;
+			}
+		case KeyPress:
+			/* simple code to bag out of move - CKH */
+			if (XLookupKeysym(&(Event.xkey),0) == XK_Escape ||
+			    fButtonAbort)
+			{
+				is_aborted = True;
+				finished = True;
+				/* return pointer if aborted resize was invoked
+				 * with key */
+				if (stashed_x >= 0)
+				{
+					XWarpPointer(
+						dpy, None, Scr.Root, 0, 0, 0,
+						0, stashed_x, stashed_y);
+				}
+				if (was_maximized)
+				{
+					/* since we aborted the resize, the
+					 * window is still maximized */
+					SET_MAXIMIZED(fw, 1);
+				}
+				if (do_resize_opaque)
+				{
+					DoResize(
+						start_g.x, start_g.y, fw,
+						&start_g, orig, &xmotion,
+						&ymotion, do_resize_opaque);
+				}
+			}
+			is_done = True;
+			break;
+
+		case ButtonRelease:
+			finished = True;
+			is_done = True;
+			break;
+
+		case MotionNotify:
+			if (!fForceRedraw)
+			{
+				x = Event.xmotion.x_root;
+				y = Event.xmotion.y_root;
+				/* resize before paging request to prevent
+				 * resize from lagging * mouse - mab */
+				DoResize(
+					x, y, fw, drag, orig, &xmotion,
+					&ymotion, do_resize_opaque);
+				/* need to move the viewport */
+				HandlePaging(
+					Scr.EdgeScrollX, Scr.EdgeScrollY, &x,
+					&y, &delta_x, &delta_y, False, False,
+					False);
+			}
+			/* redraw outline if we paged - mab */
+			if (delta_x != 0 || delta_y != 0)
+			{
+				orig->x -= delta_x;
+				orig->y -= delta_y;
+				drag->x -= delta_x;
+				drag->y -= delta_y;
+
+				DoResize(
+					x, y, fw, drag, orig, &xmotion,
+					&ymotion, do_resize_opaque);
+			}
+			fForceRedraw = False;
+			is_done = True;
+		default:
+			break;
+		}
+		if (!is_done)
+		{
+			if (!do_resize_opaque)
+				/* must undraw the rubber band in case the
+				 * event causes some drawing */
+				switch_move_resize_grid(False);
+			DispatchEvent(False);
+			if (!do_resize_opaque)
+			{
+				draw_move_resize_grid(
+					drag->x, drag->y, drag->width - 1,
+					drag->height - 1);
+			}
+		}
+		else
+		{
+			if (do_resize_opaque)
+			{
+				/* only do this with opaque resizes, (i.e. the
+				 * server is not grabbed) */
+				BroadcastConfig(M_CONFIGURE_WINDOW, fw);
+				FlushAllMessageQueues();
+			}
+		}
+	}
+
+	/* erase the rubber-band */
+	if (!do_resize_opaque)
+	{
+		switch_move_resize_grid(False);
+	}
+	/* pop down the size window */
+	if (!Scr.gs.do_hide_resize_window)
+	{
+		XUnmapWindow(dpy, Scr.SizeWindow);
+	}
+	if (!is_aborted && bad_window != FW_W(fw))
+	{
+		rectangle new_g;
+
+		/* size will be >= to requested */
+		constrain_size(
+			fw, (unsigned int *)&drag->width,
+			(unsigned int *)&drag->height, xmotion, ymotion,
+			CS_ROUND_UP);
+		if (IS_SHADED(fw))
+		{
+			get_shaded_geometry(fw, &new_g, drag);
+		}
+		else
+		{
+			new_g = *drag;
+		}
+		if (do_resize_opaque)
+		{
+			frame_update_move_resize_args(mr_args, &new_g);
+		}
+		else
+		{
+			frame_setup_window(
+				fw, new_g.x, new_g.y, new_g.width,
+				new_g.height, False);
+		}
+		if (IS_SHADED(fw))
+		{
+			fw->normal_g.width = drag->width;
+			fw->normal_g.height = drag->height;
+		}
+	}
+	if (is_aborted && was_maximized)
+	{
+		/* force redraw */
+		border_draw_decorations(
+			fw, PART_BUTTONS, (fw == Scr.Hilite), True, CLEAR_ALL,
+			NULL, NULL);
+	}
+	if (bad_window == FW_W(fw))
+	{
+		XUnmapWindow(dpy, FW_W_FRAME(fw));
+		border_undraw_decorations(fw);
+		XBell(dpy, 0);
+	}
+	if (Scr.bo.InstallRootCmap)
+	{
+		UninstallRootColormap();
+	}
+	else
+	{
+		UninstallFvwmColormap();
+	}
+	ResizeWindow = None;
+	if (!do_resize_opaque)
+	{
+		/* Throw away some events that dont interest us right now. */
+		discard_events(EnterWindowMask|LeaveWindowMask);
+		Scr.flags.is_wire_frame_displayed = False;
+		MyXUngrabServer(dpy);
+	}
+	if (mr_args != NULL)
+	{
+		frame_free_move_resize_args(fw, mr_args);
+	}
+	MyXUngrabKeyboard(dpy);
+	xmotion = 0;
+	ymotion = 0;
+	WaitForButtonsUp(True);
+	UngrabEm(GRAB_NORMAL);
+	Scr.flags.edge_wrap_x = edge_wrap_x;
+	Scr.flags.edge_wrap_y = edge_wrap_y;
+	update_absolute_geometry(fw);
+	maximize_adjust_offset(fw);
+	GNOME_SetWinArea(fw);
+
+	if (is_aborted)
+	{
+		return False;
+	}
+
+	return True;
 }
 
 void CMD_Resize(F_CMD_ARGS)
@@ -2866,86 +3156,95 @@ void CMD_Resize(F_CMD_ARGS)
 /***********************************************************************
  *
  *  Procedure:
- *      DoResize - move the rubberband around.  This is called for
- *                 each motion event when we are resizing
+ *	DoResize - move the rubberband around.	This is called for
+ *		   each motion event when we are resizing
  *
  *  Inputs:
- *      x_root   - the X corrdinate in the root window
- *      y_root   - the Y corrdinate in the root window
- *      fw       - the current fvwm window
- *      drag     - resize internal structure
- *      orig     - resize internal structure
- *      xmotionp - pointer to xmotion in resize_window
- *      ymotionp - pointer to ymotion in resize_window
+ *	x_root	 - the X corrdinate in the root window
+ *	y_root	 - the Y corrdinate in the root window
+ *	fw	 - the current fvwm window
+ *	drag	 - resize internal structure
+ *	orig	 - resize internal structure
+ *	xmotionp - pointer to xmotion in resize_window
+ *	ymotionp - pointer to ymotion in resize_window
  *
  ************************************************************************/
 static void DoResize(
 	int x_root, int y_root, FvwmWindow *fw, rectangle *drag,
 	rectangle *orig, int *xmotionp, int *ymotionp, Bool do_resize_opaque)
 {
-  int action = 0;
-  XEvent e;
+	int action = 0;
+	XEvent e;
 
-  if ((y_root <= orig->y) ||
-      ((*ymotionp == 1)&&(y_root < orig->y+orig->height-1)))
-  {
-    drag->y = y_root;
-    drag->height = orig->y + orig->height - y_root;
-    action = 1;
-    *ymotionp = 1;
-  }
-  else if ((y_root >= orig->y + orig->height - 1)||
-	   ((*ymotionp == -1)&&(y_root > orig->y)))
-  {
-    drag->y = orig->y;
-    drag->height = 1 + y_root - drag->y;
-    action = 1;
-    *ymotionp = -1;
-  }
+	if ((y_root <= orig->y) ||
+	    ((*ymotionp == 1)&&(y_root < orig->y+orig->height-1)))
+	{
+		drag->y = y_root;
+		drag->height = orig->y + orig->height - y_root;
+		action = 1;
+		*ymotionp = 1;
+	}
+	else if ((y_root >= orig->y + orig->height - 1)||
+		 ((*ymotionp == -1)&&(y_root > orig->y)))
+	{
+		drag->y = orig->y;
+		drag->height = 1 + y_root - drag->y;
+		action = 1;
+		*ymotionp = -1;
+	}
 
-  if ((x_root <= orig->x)||
-      ((*xmotionp == 1)&&(x_root < orig->x + orig->width - 1)))
-  {
-    drag->x = x_root;
-    drag->width = orig->x + orig->width - x_root;
-    action = 1;
-    *xmotionp = 1;
-  }
-  if ((x_root >= orig->x + orig->width - 1)||
-    ((*xmotionp == -1)&&(x_root > orig->x)))
-  {
-    drag->x = orig->x;
-    drag->width = 1 + x_root - orig->x;
-    action = 1;
-    *xmotionp = -1;
-  }
+	if ((x_root <= orig->x)||
+	    ((*xmotionp == 1)&&(x_root < orig->x + orig->width - 1)))
+	{
+		drag->x = x_root;
+		drag->width = orig->x + orig->width - x_root;
+		action = 1;
+		*xmotionp = 1;
+	}
+	if ((x_root >= orig->x + orig->width - 1)||
+	    ((*xmotionp == -1)&&(x_root > orig->x)))
+	{
+		drag->x = orig->x;
+		drag->width = 1 + x_root - orig->x;
+		action = 1;
+		*xmotionp = -1;
+	}
 
-  if (action)
-  {
-    /* round up to nearest OK size to keep pointer inside rubberband */
-    constrain_size(
-      fw, (unsigned int *)&drag->width, (unsigned int *)&drag->height,
-      *xmotionp, *ymotionp, CS_ROUND_UP);
-    if (*xmotionp == 1)
-      drag->x = orig->x + orig->width - drag->width;
-    if (*ymotionp == 1)
-      drag->y = orig->y + orig->height - drag->height;
+	if (action)
+	{
+		/* round up to nearest OK size to keep pointer inside
+		 * rubberband */
+		constrain_size(
+			fw, (unsigned int *)&drag->width,
+			(unsigned int *)&drag->height,
+			*xmotionp, *ymotionp, CS_ROUND_UP);
+		if (*xmotionp == 1)
+		{
+			drag->x = orig->x + orig->width - drag->width;
+		}
+		if (*ymotionp == 1)
+		{
+			drag->y = orig->y + orig->height - drag->height;
+		}
+		if (!do_resize_opaque)
+		{
+			draw_move_resize_grid(
+				drag->x, drag->y, drag->width - 1,
+				drag->height - 1);
+		}
+		else
+		{
+			frame_setup_window(
+				fw, drag->x, drag->y, drag->width,
+				drag->height, False);
+		}
+	}
+	e.type = MotionNotify;
+	e.xbutton.x_root = x_root;
+	e.xbutton.y_root = y_root;
+	DisplaySize(fw, &e, drag->width, drag->height,False,False);
 
-    if(!do_resize_opaque)
-    {
-      draw_move_resize_grid(
-	drag->x, drag->y, drag->width - 1, drag->height - 1);
-    }
-    else
-    {
-      frame_setup_window(
-	fw, drag->x, drag->y, drag->width, drag->height, False);
-    }
-  }
-  e.type = MotionNotify;
-  e.xbutton.x_root = x_root;
-  e.xbutton.y_root = y_root;
-  DisplaySize(fw, &e, drag->width, drag->height,False,False);
+	return;
 }
 
 
@@ -2964,316 +3263,353 @@ static void DoResize(
  *
  ***********************************************************************/
 static int get_outline_rects(
-  XRectangle *rects, int x, int y, int width, int height)
+	XRectangle *rects, int x, int y, int width, int height)
 {
-  int i;
-  int n;
-  int m;
+	int i;
+	int n;
+	int m;
 
-  n = 3;
-  m = (width - 5) / 2;
-  if (m < n)
-  {
-    n = m;
-  }
-  m = (height - 5) / 2;
-  if (m < n)
-  {
-    n = m;
-  }
-  if (n < 1)
-  {
-    n = 1;
-  }
+	n = 3;
+	m = (width - 5) / 2;
+	if (m < n)
+	{
+		n = m;
+	}
+	m = (height - 5) / 2;
+	if (m < n)
+	{
+		n = m;
+	}
+	if (n < 1)
+	{
+		n = 1;
+	}
 
-  for (i = 0; i < n; i++)
-  {
-    rects[i+i].x = x + i;
-    rects[i+i].y = y + i;
-    rects[i+i].width = width - (i << 1);
-    rects[i+i].height = height - (i << 1);
-  }
-  if (width - (n << 1) >= 5 && height - (n << 1) >= 5)
-  {
-    if (width - (n << 1) >= 10)
-    {
-      int off = (width - (n << 1)) / 3 + n;
-      rects[i+i].x = x + off;
-      rects[i+i].y = y + n;
-      rects[i+i].width = width - (off << 1);
-      rects[i+i].height = height - (n << 1);
-      i++;
-    }
-    if (height - (n << 1) >= 10)
-    {
-      int off = (height - (n << 1)) / 3 + n;
-      rects[i+i].x = x + n;
-      rects[i+i].y = y + off;
-      rects[i+i].width = width - (n << 1);
-      rects[i+i].height = height - (off << 1);
-      i++;
-    }
-  }
+	for (i = 0; i < n; i++)
+	{
+		rects[i+i].x = x + i;
+		rects[i+i].y = y + i;
+		rects[i+i].width = width - (i << 1);
+		rects[i+i].height = height - (i << 1);
+	}
+	if (width - (n << 1) >= 5 && height - (n << 1) >= 5)
+	{
+		if (width - (n << 1) >= 10)
+		{
+			int off = (width - (n << 1)) / 3 + n;
+			rects[i+i].x = x + off;
+			rects[i+i].y = y + n;
+			rects[i+i].width = width - (off << 1);
+			rects[i+i].height = height - (n << 1);
+			i++;
+		}
+		if (height - (n << 1) >= 10)
+		{
+			int off = (height - (n << 1)) / 3 + n;
+			rects[i+i].x = x + n;
+			rects[i+i].y = y + off;
+			rects[i+i].width = width - (n << 1);
+			rects[i+i].height = height - (off << 1);
+			i++;
+		}
+	}
 
-  return i;
+	return i;
 }
 
 struct
 {
-  rectangle geom;
-  struct
-  {
-    unsigned is_enabled : 1;
-  } flags;
+	rectangle geom;
+	struct
+	{
+		unsigned is_enabled : 1;
+	} flags;
 } move_resize_grid =
 {
-  { 0, 0, 0, 0 },
-  { 0 }
+	{ 0, 0, 0, 0 },
+	{ 0 }
 };
 
 static void draw_move_resize_grid(int x, int  y, int  width, int height)
 {
-  int nrects = 0;
-  XRectangle rects[10];
+	int nrects = 0;
+	XRectangle rects[10];
 
-  if (move_resize_grid.flags.is_enabled &&
-      x == move_resize_grid.geom.x &&
-      y == move_resize_grid.geom.y &&
-      width == move_resize_grid.geom.width &&
-      height == move_resize_grid.geom.height)
-  {
-    return;
-  }
+	if (move_resize_grid.flags.is_enabled &&
+	    x == move_resize_grid.geom.x &&
+	    y == move_resize_grid.geom.y &&
+	    width == move_resize_grid.geom.width &&
+	    height == move_resize_grid.geom.height)
+	{
+		return;
+	}
 
-  memset(rects, 0, 10 * sizeof(XRectangle));
-  /* place the resize rectangle into the array of rectangles */
-  /* interleave them for best visual look */
-  /* draw the new one, if any */
-  if (move_resize_grid.flags.is_enabled
-      /*move_resize_grid.geom.width && move_resize_grid.geom.height*/)
-  {
-    move_resize_grid.flags.is_enabled = 0;
-    nrects +=
-      get_outline_rects(
-	&(rects[1]), move_resize_grid.geom.x, move_resize_grid.geom.y,
-	move_resize_grid.geom.width, move_resize_grid.geom.height);
-  }
-  if (width && height)
-  {
-    move_resize_grid.flags.is_enabled = 1;
-    move_resize_grid.geom.x = x;
-    move_resize_grid.geom.y = y;
-    move_resize_grid.geom.width = width;
-    move_resize_grid.geom.height = height;
-    nrects += get_outline_rects(&(rects[0]), x, y, width, height);
-  }
-  if (nrects > 0)
-  {
-    XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, 10);
-    XFlush(dpy);
-  }
+	memset(rects, 0, 10 * sizeof(XRectangle));
+	/* place the resize rectangle into the array of rectangles */
+	/* interleave them for best visual look */
+	/* draw the new one, if any */
+	if (move_resize_grid.flags.is_enabled
+	    /*move_resize_grid.geom.width && move_resize_grid.geom.height*/)
+	{
+		move_resize_grid.flags.is_enabled = 0;
+		nrects +=
+			get_outline_rects(
+				&(rects[1]), move_resize_grid.geom.x,
+				move_resize_grid.geom.y,
+				move_resize_grid.geom.width,
+				move_resize_grid.geom.height);
+	}
+	if (width && height)
+	{
+		move_resize_grid.flags.is_enabled = 1;
+		move_resize_grid.geom.x = x;
+		move_resize_grid.geom.y = y;
+		move_resize_grid.geom.width = width;
+		move_resize_grid.geom.height = height;
+		nrects += get_outline_rects(&(rects[0]), x, y, width, height);
+	}
+	if (nrects > 0)
+	{
+		XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, 10);
+		XFlush(dpy);
+	}
 
-  return;
+	return;
 }
 
 void switch_move_resize_grid(Bool state)
 {
-  if (state == False)
-  {
-    if (move_resize_grid.flags.is_enabled)
-    {
-      draw_move_resize_grid(0, 0, 0, 0);
-    }
-    else
-    {
-      move_resize_grid.geom.x = 0;
-      move_resize_grid.geom.y = 0;
-      move_resize_grid.geom.width = 0;
-      move_resize_grid.geom.height = 0;
-    }
-  }
-  else if (!move_resize_grid.flags.is_enabled)
-  {
-    if (move_resize_grid.geom.width && move_resize_grid.geom.height)
-    {
-      draw_move_resize_grid(
-	move_resize_grid.geom.x, move_resize_grid.geom.y,
-	move_resize_grid.geom.width, move_resize_grid.geom.height);
-    }
-  }
+	if (state == False)
+	{
+		if (move_resize_grid.flags.is_enabled)
+		{
+			draw_move_resize_grid(0, 0, 0, 0);
+		}
+		else
+		{
+			move_resize_grid.geom.x = 0;
+			move_resize_grid.geom.y = 0;
+			move_resize_grid.geom.width = 0;
+			move_resize_grid.geom.height = 0;
+		}
+	}
+	else if (!move_resize_grid.flags.is_enabled)
+	{
+		if (move_resize_grid.geom.width && move_resize_grid.geom.height)
+		{
+			draw_move_resize_grid(
+				move_resize_grid.geom.x,
+				move_resize_grid.geom.y,
+				move_resize_grid.geom.width,
+				move_resize_grid.geom.height);
+		}
+	}
 
-  return;
+	return;
 }
 
 /* ----------------------------- maximizing code --------------------------- */
 
 static void move_sticky_window_to_same_page(
-  int *x11, int *x12, int *y11, int *y12, int x21, int x22, int y21, int y22)
+	int *x11, int *x12, int *y11, int *y12,
+	int x21, int x22, int y21, int y22)
 {
-  /* make sure the x coordinate is on the same page as the reference window */
-  if (*x11 >= x22)
-  {
-    while (*x11 >= x22)
-    {
-      *x11 -= Scr.MyDisplayWidth;
-      *x12 -= Scr.MyDisplayWidth;
-    }
-  }
-  else if (*x12 <= x21)
-  {
-    while (*x12 <= x21)
-    {
-      *x11 += Scr.MyDisplayWidth;
-      *x12 += Scr.MyDisplayWidth;
-    }
-  }
-  /* make sure the y coordinate is on the same page as the reference window */
-  if (*y11 >= y22)
-  {
-    while (*y11 >= y22)
-    {
-      *y11 -= Scr.MyDisplayHeight;
-      *y12 -= Scr.MyDisplayHeight;
-    }
-  }
-  else if (*y12 <= y21)
-  {
-    while (*y12 <= y21)
-    {
-      *y11 += Scr.MyDisplayHeight;
-      *y12 += Scr.MyDisplayHeight;
-    }
-  }
+	/* make sure the x coordinate is on the same page as the reference
+	 * window */
+	if (*x11 >= x22)
+	{
+		while (*x11 >= x22)
+		{
+			*x11 -= Scr.MyDisplayWidth;
+			*x12 -= Scr.MyDisplayWidth;
+		}
+	}
+	else if (*x12 <= x21)
+	{
+		while (*x12 <= x21)
+		{
+			*x11 += Scr.MyDisplayWidth;
+			*x12 += Scr.MyDisplayWidth;
+		}
+	}
+	/* make sure the y coordinate is on the same page as the reference
+	 * window */
+	if (*y11 >= y22)
+	{
+		while (*y11 >= y22)
+		{
+			*y11 -= Scr.MyDisplayHeight;
+			*y12 -= Scr.MyDisplayHeight;
+		}
+	}
+	else if (*y12 <= y21)
+	{
+		while (*y12 <= y21)
+		{
+			*y11 += Scr.MyDisplayHeight;
+			*y12 += Scr.MyDisplayHeight;
+		}
+	}
 
+	return;
 }
+
 static void MaximizeHeight(
-  FvwmWindow *win, unsigned int win_width, int win_x, unsigned int *win_height,
-  int *win_y, Bool grow_up, Bool grow_down,
-  int top_border, int bottom_border, Bool layer_grow)
+	FvwmWindow *win, unsigned int win_width, int win_x,
+	unsigned int *win_height, int *win_y, Bool grow_up, Bool grow_down,
+	int top_border, int bottom_border, Bool layer_grow)
 {
-  FvwmWindow *cwin;
-  int x11, x12, x21, x22;
-  int y11, y12, y21, y22;
-  int new_y1, new_y2;
-  Bool is_sticky;
-  rectangle g;
-  Bool rc;
+	FvwmWindow *cwin;
+	int x11, x12, x21, x22;
+	int y11, y12, y21, y22;
+	int new_y1, new_y2;
+	Bool is_sticky;
+	rectangle g;
+	Bool rc;
 
-  x11 = win_x;             /* Start x */
-  y11 = *win_y;            /* Start y */
-  x12 = x11 + win_width;   /* End x   */
-  y12 = y11 + *win_height; /* End y   */
-  new_y1 = top_border;
-  new_y2 = bottom_border;
+	x11 = win_x;		 /* Start x */
+	y11 = *win_y;		 /* Start y */
+	x12 = x11 + win_width;	 /* End x   */
+	y12 = y11 + *win_height; /* End y   */
+	new_y1 = top_border;
+	new_y2 = bottom_border;
 
-  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
-  {
-    if (IS_STICKY(cwin) || (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
-      is_sticky = True;
-    else
-      is_sticky = False;
-    if (cwin == win || (cwin->Desk != win->Desk && !is_sticky) ||
-	(layer_grow && cwin->layer <= win->layer))
-      continue;
-    rc = get_visible_window_or_icon_geometry(cwin, &g);
-    if (rc == False)
-    {
-      continue;
-    }
-    x21 = g.x;
-    y21 = g.y;
-    x22 = x21 + g.width;
-    y22 = y21 + g.height;
-    if (is_sticky)
-    {
-      move_sticky_window_to_same_page(
-	&x21, &x22, &new_y1, &new_y2, x11, x12, y11, y12);
-    }
+	for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
+	{
+		if (IS_STICKY(cwin) ||
+		    (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
+		{
+			is_sticky = True;
+		}
+		else
+		{
+			is_sticky = False;
+		}
+		if (cwin == win || (cwin->Desk != win->Desk && !is_sticky) ||
+		    (layer_grow && cwin->layer <= win->layer))
+		{
+			continue;
+		}
+		rc = get_visible_window_or_icon_geometry(cwin, &g);
+		if (rc == False)
+		{
+			continue;
+		}
+		x21 = g.x;
+		y21 = g.y;
+		x22 = x21 + g.width;
+		y22 = y21 + g.height;
+		if (is_sticky)
+		{
+			move_sticky_window_to_same_page(
+				&x21, &x22, &new_y1, &new_y2, x11, x12, y11,
+				y12);
+		}
 
-    /* Are they in the same X space? */
-    if (!((x22 <= x11) || (x21 >= x12)))
-    {
-      if ((y22 <= y11) && (y22 >= new_y1))
-      {
-	new_y1 = y22;
-      }
-      else if ((y12 <= y21) && (new_y2 >= y21))
-      {
-	new_y2 = y21;
-      }
-    }
-  }
-  if (!grow_up)
-    new_y1 = y11;
-  if (!grow_down)
-    new_y2 = y12;
-  *win_height = new_y2 - new_y1;
-  *win_y = new_y1;
+		/* Are they in the same X space? */
+		if (!((x22 <= x11) || (x21 >= x12)))
+		{
+			if ((y22 <= y11) && (y22 >= new_y1))
+			{
+				new_y1 = y22;
+			}
+			else if ((y12 <= y21) && (new_y2 >= y21))
+			{
+				new_y2 = y21;
+			}
+		}
+	}
+	if (!grow_up)
+	{
+		new_y1 = y11;
+	}
+	if (!grow_down)
+	{
+		new_y2 = y12;
+	}
+	*win_height = new_y2 - new_y1;
+	*win_y = new_y1;
+
+	return;
 }
 
 static void MaximizeWidth(
-  FvwmWindow *win, unsigned int *win_width, int *win_x, unsigned int win_height,
-  int win_y, Bool grow_left, Bool grow_right,
-  int left_border, int right_border, Bool layer_grow)
+	FvwmWindow *win, unsigned int *win_width, int *win_x,
+	unsigned int win_height, int win_y, Bool grow_left, Bool grow_right,
+	int left_border, int right_border, Bool layer_grow)
 {
-  FvwmWindow *cwin;
-  int x11, x12, x21, x22;
-  int y11, y12, y21, y22;
-  int new_x1, new_x2;
-  Bool is_sticky;
-  rectangle g;
-  Bool rc;
+	FvwmWindow *cwin;
+	int x11, x12, x21, x22;
+	int y11, y12, y21, y22;
+	int new_x1, new_x2;
+	Bool is_sticky;
+	rectangle g;
+	Bool rc;
 
-  x11 = *win_x;            /* Start x */
-  y11 = win_y;             /* Start y */
-  x12 = x11 + *win_width;  /* End x   */
-  y12 = y11 + win_height;  /* End y   */
-  new_x1 = left_border;
-  new_x2 = right_border;
+	x11 = *win_x;		 /* Start x */
+	y11 = win_y;		 /* Start y */
+	x12 = x11 + *win_width;	 /* End x   */
+	y12 = y11 + win_height;	 /* End y   */
+	new_x1 = left_border;
+	new_x2 = right_border;
 
-  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
-  {
-    if (IS_STICKY(cwin) || (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
-      is_sticky = True;
-    else
-      is_sticky = False;
-    if (cwin == win || (cwin->Desk != win->Desk && !is_sticky) ||
-	(layer_grow && cwin->layer <= win->layer))
-      continue;
-    rc = get_visible_window_or_icon_geometry(cwin, &g);
-    if (rc == False)
-    {
-      continue;
-    }
-    x21 = g.x;
-    y21 = g.y;
-    x22 = x21 + g.width;
-    y22 = y21 + g.height;
-    if (is_sticky)
-    {
-      move_sticky_window_to_same_page(
-	&new_x1, &new_x2, &y21, &y22, x11, x12, y11, y12);
-    }
+	for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
+	{
+		if (IS_STICKY(cwin) ||
+		    (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
+		{
+			is_sticky = True;
+		}
+		else
+		{
+			is_sticky = False;
+		}
+		if (cwin == win || (cwin->Desk != win->Desk && !is_sticky) ||
+		    (layer_grow && cwin->layer <= win->layer))
+		{
+			continue;
+		}
+		rc = get_visible_window_or_icon_geometry(cwin, &g);
+		if (rc == False)
+		{
+			continue;
+		}
+		x21 = g.x;
+		y21 = g.y;
+		x22 = x21 + g.width;
+		y22 = y21 + g.height;
+		if (is_sticky)
+		{
+			move_sticky_window_to_same_page(
+				&new_x1, &new_x2, &y21, &y22, x11, x12, y11,
+				y12);
+		}
 
-    /* Are they in the same Y space? */
-    if (!((y22 <= y11) || (y21 >= y12)))
-    {
-      if ((x22 <= x11) && (x22 >= new_x1))
-      {
-	new_x1 = x22;
-      }
-      else if ((x12 <= x21) && (new_x2 >= x21))
-      {
-	new_x2 = x21;
-      }
-    }
-  }
-  if (!grow_left)
-    new_x1 = x11;
-  if (!grow_right)
-    new_x2 = x12;
-  *win_width  = new_x2 - new_x1;
-  *win_x = new_x1;
+		/* Are they in the same Y space? */
+		if (!((y22 <= y11) || (y21 >= y12)))
+		{
+			if ((x22 <= x11) && (x22 >= new_x1))
+			{
+				new_x1 = x22;
+			}
+			else if ((x12 <= x21) && (new_x2 >= x21))
+			{
+				new_x2 = x21;
+			}
+		}
+	}
+	if (!grow_left)
+	{
+		new_x1 = x11;
+	}
+	if (!grow_right)
+	{
+		new_x2 = x12;
+	}
+	*win_width  = new_x2 - new_x1;
+	*win_x = new_x1;
+
+	return;
 }
 
 static void unmaximize_fvwm_window(
@@ -3333,278 +3669,294 @@ fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d\n", fw->max_g.
  ***********************************************************************/
 void CMD_Maximize(F_CMD_ARGS)
 {
-  int page_x, page_y;
-  int val1, val2, val1_unit, val2_unit;
-  int toggle;
-  char *token;
-  char *taction;
-  Bool grow_up = False;
-  Bool grow_down = False;
-  Bool grow_left = False;
-  Bool grow_right = False;
-  Bool do_force_maximize = False;
-  Bool is_screen_given = False;
-  Bool ignore_working_area = False;
-  Bool layer_grow = False;
-  Bool global_flag_parsed = False;
-  int  scr_x, scr_y, scr_w, scr_h;
-  int sx, sy, sw, sh;
-  rectangle new_g;
-  FvwmWindow *sf;
+	int page_x, page_y;
+	int val1, val2, val1_unit, val2_unit;
+	int toggle;
+	char *token;
+	char *taction;
+	Bool grow_up = False;
+	Bool grow_down = False;
+	Bool grow_left = False;
+	Bool grow_right = False;
+	Bool do_force_maximize = False;
+	Bool is_screen_given = False;
+	Bool ignore_working_area = False;
+	Bool layer_grow = False;
+	Bool global_flag_parsed = False;
+	int  scr_x, scr_y, scr_w, scr_h;
+	int sx, sy, sw, sh;
+	rectangle new_g;
+	FvwmWindow *sf;
 
-  if (DeferExecution(eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
-    return;
-  if (fw == NULL || IS_ICONIFIED(fw))
-    return;
+	if (DeferExecution(
+		    eventp, &w, &fw, &context, CRS_SELECT, ButtonRelease))
+	{
+		return;
+	}
+	if (fw == NULL || IS_ICONIFIED(fw))
+	{
+		return;
+	}
 
-  if (!is_function_allowed(F_MAXIMIZE, NULL, fw, True, False))
-  {
-    XBell(dpy, 0);
-    return;
-  }
-  /* Check for "global" flag ("absolute" is for compatibility with E) */
-  while (!global_flag_parsed)
-  {
-    token = PeekToken(action, &taction);
-    if (!token)
-    {
-      global_flag_parsed = True;
-    }
-    else
-    {
-      if (StrEquals(token, "screen"))
-      {
-	int scr;
+	if (!is_function_allowed(F_MAXIMIZE, NULL, fw, True, False))
+	{
+		XBell(dpy, 0);
+		return;
+	}
+	/* Check for "global" flag ("absolute" is for compatibility with E) */
+	while (!global_flag_parsed)
+	{
+		token = PeekToken(action, &taction);
+		if (!token)
+		{
+			global_flag_parsed = True;
+		}
+		else
+		{
+			if (StrEquals(token, "screen"))
+			{
+				int scr;
 
-	is_screen_given = True;
-	token = PeekToken(taction, &action);
-	scr = FScreenGetScreenArgument(token, FSCREEN_SPEC_PRIMARY);
-	FScreenGetScrRect(NULL, scr, &scr_x, &scr_y, &scr_w, &scr_h);
-      }
-      else if (StrEquals(token, "ewmhiwa"))
-      {
-	ignore_working_area = True;
-	action = taction;
-      }
-      else if (StrEquals(token, "layer"))
-      {
-	layer_grow = True;
-	action = taction;
-      }
-      else
-      {
-	global_flag_parsed = True;
-      }
-    }
-  }
-  toggle = ParseToggleArgument(action, &action, -1, 0);
-  if (toggle == 0 && !IS_MAXIMIZED(fw))
-    return;
+				is_screen_given = True;
+				token = PeekToken(taction, &action);
+				scr = FScreenGetScreenArgument(
+					token, FSCREEN_SPEC_PRIMARY);
+				FScreenGetScrRect(
+					NULL, scr, &scr_x, &scr_y, &scr_w,
+					&scr_h);
+			}
+			else if (StrEquals(token, "ewmhiwa"))
+			{
+				ignore_working_area = True;
+				action = taction;
+			}
+			else if (StrEquals(token, "layer"))
+			{
+				layer_grow = True;
+				action = taction;
+			}
+			else
+			{
+				global_flag_parsed = True;
+			}
+		}
+	}
+	toggle = ParseToggleArgument(action, &action, -1, 0);
+	if (toggle == 0 && !IS_MAXIMIZED(fw))
+	{
+		return;
+	}
 
-  if (toggle == 1 && IS_MAXIMIZED(fw))
-  {
-    /* Fake that the window is not maximized. */
-    do_force_maximize = True;
-  }
+	if (toggle == 1 && IS_MAXIMIZED(fw))
+	{
+		/* Fake that the window is not maximized. */
+		do_force_maximize = True;
+	}
 
-  /* find the new page and geometry */
-  new_g.x = fw->frame_g.x;
-  new_g.y = fw->frame_g.y;
-  new_g.width = fw->frame_g.width;
-  new_g.height = fw->frame_g.height;
-  if (IsRectangleOnThisPage(&fw->frame_g, fw->Desk))
-  {
-    /* maximize on visible page if any part of the window is visible */
-    page_x = 0;
-    page_y = 0;
-  }
-  else
-  {
-    int xoff = Scr.Vx % Scr.MyDisplayWidth;
-    int yoff = Scr.Vy % Scr.MyDisplayHeight;
+	/* find the new page and geometry */
+	new_g.x = fw->frame_g.x;
+	new_g.y = fw->frame_g.y;
+	new_g.width = fw->frame_g.width;
+	new_g.height = fw->frame_g.height;
+	if (IsRectangleOnThisPage(&fw->frame_g, fw->Desk))
+	{
+		/* maximize on visible page if any part of the window is
+		 * visible */
+		page_x = 0;
+		page_y = 0;
+	}
+	else
+	{
+		int xoff = Scr.Vx % Scr.MyDisplayWidth;
+		int yoff = Scr.Vy % Scr.MyDisplayHeight;
 
-    /* maximize on the page where the center of the window is */
-    page_x = truncate_to_multiple(
-      fw->frame_g.x + fw->frame_g.width / 2 + xoff,
-      Scr.MyDisplayWidth) - xoff;
-    page_y = truncate_to_multiple(
-      fw->frame_g.y + fw->frame_g.height / 2 + yoff,
-      Scr.MyDisplayHeight) - yoff;
-  }
+		/* maximize on the page where the center of the window is */
+		page_x = truncate_to_multiple(
+			fw->frame_g.x + fw->frame_g.width / 2 + xoff,
+			Scr.MyDisplayWidth) - xoff;
+		page_y = truncate_to_multiple(
+			fw->frame_g.y + fw->frame_g.height / 2 + yoff,
+			Scr.MyDisplayHeight) - yoff;
+	}
 
-  /* Check if we should constrain rectangle to some Xinerama screen */
-  if (!is_screen_given)
-  {
-    fscreen_scr_arg fscr;
+	/* Check if we should constrain rectangle to some Xinerama screen */
+	if (!is_screen_given)
+	{
+		fscreen_scr_arg fscr;
 
-    fscr.xypos.x = fw->frame_g.x + fw->frame_g.width  / 2 - page_x;
-    fscr.xypos.y = fw->frame_g.y + fw->frame_g.height / 2 - page_y;
-    FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
-  }
+		fscr.xypos.x = fw->frame_g.x + fw->frame_g.width  / 2 - page_x;
+		fscr.xypos.y = fw->frame_g.y + fw->frame_g.height / 2 - page_y;
+		FScreenGetScrRect(
+			&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
+	}
 
-  sx = scr_x;
-  sy = scr_y;
-  sw = scr_w;
-  sh = scr_h;
-  if (!ignore_working_area)
-  {
-    EWMH_GetWorkAreaIntersection(
-      fw, &sx, &sy, &sw, &sh, EWMH_MAXIMIZE_MODE(fw));
-  }
+	sx = scr_x;
+	sy = scr_y;
+	sw = scr_w;
+	sh = scr_h;
+	if (!ignore_working_area)
+	{
+		EWMH_GetWorkAreaIntersection(
+			fw, &sx, &sy, &sw, &sh, EWMH_MAXIMIZE_MODE(fw));
+	}
 #if 0
-  fprintf(stderr, "%s: page=(%d,%d), scr=(%d,%d, %dx%d)\n", __FUNCTION__,
-          page_x, page_y, scr_x, scr_y, scr_w, scr_h);
+	fprintf(stderr, "%s: page=(%d,%d), scr=(%d,%d, %dx%d)\n", __FUNCTION__,
+		page_x, page_y, scr_x, scr_y, scr_w, scr_h);
 #endif
 
-  /* parse first parameter */
-  val1_unit = sw;
-  token = PeekToken(action, &taction);
-  if (token && StrEquals(token, "grow"))
-  {
-    grow_left = True;
-    grow_right = True;
-    val1 = 100;
-    val1_unit = scr_w;
-  }
-  else if (token && StrEquals(token, "growleft"))
-  {
-    grow_left = True;
-    val1 = 100;
-    val1_unit = scr_w;
-  }
-  else if (token && StrEquals(token, "growright"))
-  {
-    grow_right = True;
-    val1 = 100;
-    val1_unit = scr_w;
-  }
-  else
-  {
-    if (GetOnePercentArgument(token, &val1, &val1_unit) == 0)
-    {
-      val1 = 100;
-      val1_unit = sw;
-    }
-    else if (val1 < 0)
-    {
-      /* handle negative offsets */
-      if (val1_unit == sw)
-      {
-	val1 = 100 + val1;
-      }
-      else
-      {
-	val1 = sw + val1;
-      }
-    }
-  }
+	/* parse first parameter */
+	val1_unit = sw;
+	token = PeekToken(action, &taction);
+	if (token && StrEquals(token, "grow"))
+	{
+		grow_left = True;
+		grow_right = True;
+		val1 = 100;
+		val1_unit = scr_w;
+	}
+	else if (token && StrEquals(token, "growleft"))
+	{
+		grow_left = True;
+		val1 = 100;
+		val1_unit = scr_w;
+	}
+	else if (token && StrEquals(token, "growright"))
+	{
+		grow_right = True;
+		val1 = 100;
+		val1_unit = scr_w;
+	}
+	else
+	{
+		if (GetOnePercentArgument(token, &val1, &val1_unit) == 0)
+		{
+			val1 = 100;
+			val1_unit = sw;
+		}
+		else if (val1 < 0)
+		{
+			/* handle negative offsets */
+			if (val1_unit == sw)
+			{
+				val1 = 100 + val1;
+			}
+			else
+			{
+				val1 = sw + val1;
+			}
+		}
+	}
 
-  /* parse second parameter */
-  val2_unit = sh;
-  token = PeekToken(taction, NULL);
-  if (token && StrEquals(token, "grow"))
-  {
-    grow_up = True;
-    grow_down = True;
-    val2 = 100;
-    val2_unit = scr_h;
-  }
-  else if (token && StrEquals(token, "growup"))
-  {
-    grow_up = True;
-    val2 = 100;
-    val2_unit = scr_h;
-  }
-  else if (token && StrEquals(token, "growdown"))
-  {
-    grow_down = True;
-    val2 = 100;
-    val2_unit = scr_h;
-  }
-  else
-  {
-    if (GetOnePercentArgument(token, &val2, &val2_unit) == 0)
-    {
-      val2 = 100;
-      val2_unit = sh;
-    }
-    else if (val2 < 0)
-    {
-      /* handle negative offsets */
-      if (val2_unit == sh)
-      {
-	val2 = 100 + val2;
-      }
-      else
-      {
-	val2 = sh + val2;
-      }
-    }
-  }
+	/* parse second parameter */
+	val2_unit = sh;
+	token = PeekToken(taction, NULL);
+	if (token && StrEquals(token, "grow"))
+	{
+		grow_up = True;
+		grow_down = True;
+		val2 = 100;
+		val2_unit = scr_h;
+	}
+	else if (token && StrEquals(token, "growup"))
+	{
+		grow_up = True;
+		val2 = 100;
+		val2_unit = scr_h;
+	}
+	else if (token && StrEquals(token, "growdown"))
+	{
+		grow_down = True;
+		val2 = 100;
+		val2_unit = scr_h;
+	}
+	else
+	{
+		if (GetOnePercentArgument(token, &val2, &val2_unit) == 0)
+		{
+			val2 = 100;
+			val2_unit = sh;
+		}
+		else if (val2 < 0)
+		{
+			/* handle negative offsets */
+			if (val2_unit == sh)
+			{
+				val2 = 100 + val2;
+			}
+			else
+			{
+				val2 = sh + val2;
+			}
+		}
+	}
 
-  if (!grow_left && !grow_right)
-  {
-    scr_x = sx;
-    scr_w = sw;
-  }
-  if (!grow_up && !grow_down)
-  {
-    scr_y = sy;
-    scr_h = sh;
-  }
+	if (!grow_left && !grow_right)
+	{
+		scr_x = sx;
+		scr_w = sw;
+	}
+	if (!grow_up && !grow_down)
+	{
+		scr_y = sy;
+		scr_h = sh;
+	}
 
 #if 0
-  fprintf(stderr, "%s: page=(%d,%d), scr=(%d,%d, %dx%d)\n", __FUNCTION__,
-          page_x, page_y, scr_x, scr_y, scr_w, scr_h);
+	fprintf(stderr, "%s: page=(%d,%d), scr=(%d,%d, %dx%d)\n", __FUNCTION__,
+		page_x, page_y, scr_x, scr_y, scr_w, scr_h);
 #endif
 
-  if (IS_MAXIMIZED(fw) && !do_force_maximize)
-  {
-    unmaximize_fvwm_window(fw);
-  }
-  else /* maximize */
-  {
-    /* handle command line arguments */
-    if (grow_up || grow_down)
-    {
-      MaximizeHeight(
-	fw, new_g.width, new_g.x, (unsigned int *)&new_g.height,
-	&new_g.y, grow_up, grow_down,
-	page_y + scr_y, page_y + scr_y + scr_h, layer_grow);
-    }
-    else if(val2 > 0)
-    {
-      new_g.height = val2 * val2_unit / 100;
-      new_g.y = page_y + scr_y;
-    }
-    if (grow_left || grow_right)
-    {
-      MaximizeWidth(
-	fw, (unsigned int *)&new_g.width, &new_g.x, new_g.height,
-	new_g.y, grow_left, grow_right,
-	page_x + scr_x, page_x + scr_x + scr_w, layer_grow);
-    }
-    else if(val1 >0)
-    {
-      new_g.width = val1 * val1_unit / 100;
-      new_g.x = page_x + scr_x;
-    }
-    if(val1 == 0 && val2 == 0)
-    {
-      new_g.x = page_x + scr_x;
-      new_g.y = page_y + scr_y;
-      new_g.height = scr_h;
-      new_g.width = scr_w;
-    }
-    /* now maximize it */
-    maximize_fvwm_window(fw, &new_g);
-  }
-  if ((sf = get_focus_window()))
-  {
-    focus_grab_buttons(sf, True);
-  }
-  EWMH_SetWMState(fw, False);
-  GNOME_SetWinArea(fw);
+	if (IS_MAXIMIZED(fw) && !do_force_maximize)
+	{
+		unmaximize_fvwm_window(fw);
+	}
+	else /* maximize */
+	{
+		/* handle command line arguments */
+		if (grow_up || grow_down)
+		{
+			MaximizeHeight(
+				fw, new_g.width, new_g.x,
+				(unsigned int *)&new_g.height, &new_g.y,
+				grow_up, grow_down, page_y + scr_y,
+				page_y + scr_y + scr_h, layer_grow);
+		}
+		else if (val2 > 0)
+		{
+			new_g.height = val2 * val2_unit / 100;
+			new_g.y = page_y + scr_y;
+		}
+		if (grow_left || grow_right)
+		{
+			MaximizeWidth(
+				fw, (unsigned int *)&new_g.width, &new_g.x,
+				new_g.height, new_g.y, grow_left, grow_right,
+				page_x + scr_x, page_x + scr_x + scr_w,
+				layer_grow);
+		}
+		else if (val1 >0)
+		{
+			new_g.width = val1 * val1_unit / 100;
+			new_g.x = page_x + scr_x;
+		}
+		if (val1 == 0 && val2 == 0)
+		{
+			new_g.x = page_x + scr_x;
+			new_g.y = page_y + scr_y;
+			new_g.height = scr_h;
+			new_g.width = scr_w;
+		}
+		/* now maximize it */
+		maximize_fvwm_window(fw, &new_g);
+	}
+	if ((sf = get_focus_window()))
+	{
+		focus_grab_buttons(sf, True);
+	}
+	EWMH_SetWMState(fw, False);
+	GNOME_SetWinArea(fw);
+
+	return;
 }
 
 /****************************************************************************
@@ -3637,8 +3989,8 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 		/* set the new geometry as the maximized geometry and restore
 		 * the old normal geometry */
 		max_g = fw->normal_g;
-                max_g.x -= Scr.Vx;
-                max_g.y -= Scr.Vy;
+		max_g.x -= Scr.Vx;
+		max_g.y -= Scr.Vy;
 		fw->normal_g = normal_g;
 		/* and mark it as maximized */
 		maximize_fvwm_window(fw, &max_g);
@@ -3671,8 +4023,8 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 		/* set the new geometry as the maximized geometry and restore
 		 * the old normal geometry */
 		max_g = fw->normal_g;
-                max_g.x -= Scr.Vx;
-                max_g.y -= Scr.Vy;
+		max_g.x -= Scr.Vx;
+		max_g.y -= Scr.Vy;
 		fw->normal_g = normal_g;
 		/* and mark it as maximized */
 		maximize_fvwm_window(fw, &max_g);
@@ -3685,54 +4037,61 @@ void CMD_ResizeMoveMaximize(F_CMD_ARGS)
 
 void handle_stick(F_CMD_ARGS, int toggle)
 {
-  FvwmWindow *sf;
+	FvwmWindow *sf;
 
-  if ((toggle == 1 && IS_STICKY(fw)) ||
-      (toggle == 0 && !IS_STICKY(fw)))
-    return;
+	if ((toggle == 1 && IS_STICKY(fw)) || (toggle == 0 && !IS_STICKY(fw)))
+	{
+		return;
+	}
 
-  if(IS_STICKY(fw))
-  {
-    SET_STICKY(fw, 0);
-    fw->Desk = Scr.CurrentDesk;
-    GNOME_SetDeskCount();
-    GNOME_SetDesk(fw);
-  }
-  else
-  {
-    if (fw->Desk != Scr.CurrentDesk)
-      do_move_window_to_desk(fw, Scr.CurrentDesk);
-    SET_STICKY(fw, 1);
-    if (!IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk))
-    {
-      action = "";
-      move_window_doit(F_PASS_ARGS, FALSE, MOVE_PAGE);
-      /* move_window_doit resets the STICKY flag, so we must set it after the
-       * call! */
-      SET_STICKY(fw, 1);
-    }
-  }
-  BroadcastConfig(M_CONFIGURE_WINDOW,fw);
-  border_draw_decorations(
-    fw, PART_TITLE | PART_BUTTONS, (Scr.Hilite==fw), True, CLEAR_ALL, NULL,
-    NULL);
-  if ((sf = get_focus_window()))
-  {
-    focus_grab_buttons(sf, True);
-  }
-  EWMH_SetWMState(fw, False);
-  EWMH_SetWMDesktop(fw);
-  GNOME_SetHints(fw);
+	if (IS_STICKY(fw))
+	{
+		SET_STICKY(fw, 0);
+		fw->Desk = Scr.CurrentDesk;
+		GNOME_SetDeskCount();
+		GNOME_SetDesk(fw);
+	}
+	else
+	{
+		if (fw->Desk != Scr.CurrentDesk)
+		{
+			do_move_window_to_desk(fw, Scr.CurrentDesk);
+		}
+		SET_STICKY(fw, 1);
+		if (!IsRectangleOnThisPage(&fw->frame_g, Scr.CurrentDesk))
+		{
+			action = "";
+			move_window_doit(F_PASS_ARGS, FALSE, MOVE_PAGE);
+			/* move_window_doit resets the STICKY flag, so we must
+			 * set it after the call! */
+			SET_STICKY(fw, 1);
+		}
+	}
+	BroadcastConfig(M_CONFIGURE_WINDOW,fw);
+	border_draw_decorations(
+		fw, PART_TITLE | PART_BUTTONS, (Scr.Hilite==fw), True,
+		CLEAR_ALL, NULL, NULL);
+	if ((sf = get_focus_window()))
+	{
+		focus_grab_buttons(sf, True);
+	}
+	EWMH_SetWMState(fw, False);
+	EWMH_SetWMDesktop(fw);
+	GNOME_SetHints(fw);
+
+	return;
 }
 
 void CMD_Stick(F_CMD_ARGS)
 {
-  int toggle;
+	int toggle;
 
-  if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
-    return;
+	if (DeferExecution(eventp,&w,&fw,&context,CRS_SELECT,ButtonRelease))
+	{
+		return;
+	}
+	toggle = ParseToggleArgument(action, &action, -1, 0);
+	handle_stick(F_PASS_ARGS, toggle);
 
-  toggle = ParseToggleArgument(action, &action, -1, 0);
-
-  handle_stick(F_PASS_ARGS, toggle);
+	return;
 }

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -240,7 +240,7 @@ Bool RemoveMatchingBinding(
   for (t = *pblist, prev = NULL; t; prev = t, t = t->NextBinding)
   {
     if (MatchBindingExactly(t, STROKE_ARG(stroke)
-                            button, keycode, modifiers, contexts, type))
+			    button, keycode, modifiers, contexts, type))
     {
       /* found a matching binding - remove it */
       UnlinkBinding(pblist, t, prev);
@@ -450,15 +450,15 @@ int AddBinding(
 	(*pblist)->Action2 = (action2) ? stripcpy(action2) : NULL;
 	(*pblist)->NextBinding = temp;
 #if 0
-        fprintf(stderr,
+	fprintf(stderr,
    "Bindings: added binding type %c, key %X, key name %s, ctx %X mod %X act1 %s, act2 %s\n",
-                (*pblist)->type,
-                (*pblist)->Button_Key,
-                (*pblist)->key_name ? (*pblist)->key_name : "",
-                (*pblist)->Context,
-                (*pblist)->Modifier,
-                (*pblist)->Action ? (*pblist)->Action : "",
-                (*pblist)->Action2 ? (*pblist)->Action2 : "");
+		(*pblist)->type,
+		(*pblist)->Button_Key,
+		(*pblist)->key_name ? (*pblist)->key_name : "",
+		(*pblist)->Context,
+		(*pblist)->Modifier,
+		(*pblist)->Action ? (*pblist)->Action : "",
+		(*pblist)->Action2 ? (*pblist)->Action2 : "");
 #endif
 	bound_mask |= bind_mask;
 	count++;
@@ -592,15 +592,15 @@ Bool MatchBindingExactly(
   if (b->type == type)
   {
     if (
-        (
-          (type == KEY_BINDING && b->Button_Key == keycode) ||
-          STROKE_CODE(
-            (type == STROKE_BINDING && b->Button_Key == button &&
-             (strcmp(b->Stroke_Seq,stroke) == 0)) ||
-              )
-          (type == MOUSE_BINDING && b->Button_Key == button)) &&
-        (b->Context == Context) &&
-        (b->Modifier == modifier))
+	(
+	  (type == KEY_BINDING && b->Button_Key == keycode) ||
+	  STROKE_CODE(
+	    (type == STROKE_BINDING && b->Button_Key == button &&
+	     (strcmp(b->Stroke_Seq,stroke) == 0)) ||
+	      )
+	  (type == MOUSE_BINDING && b->Button_Key == button)) &&
+	(b->Context == Context) &&
+	(b->Modifier == modifier))
     {
       return True;
     }
@@ -612,21 +612,21 @@ Bool MatchBindingExactly(
 /***********************************************************************
  *
  *  Procedure:
- *	GrabWindowKey        - grab needed keys for the window for one binding
+ *	GrabWindowKey	     - grab needed keys for the window for one binding
  *	GrabAllWindowKeys    - grab needed keys for the window for all bindings
- *                             in blist
+ *			       in blist
  *	GrabWindowButton     - same for mouse buttons
  *	GrabAllWindowButtons - same for mouse buttons
  *	GrabAllWindowKeysAndButtons - both of the above
  *
  *  Inputs:
- *   w              - the window to use (the frame window)
- *   grab           - 1 to grab, 0 to ungrab
- *   binding        - pointer to the bindinge to grab/ungrab
- *   contexts       - all context bits that shall receive bindings
+ *   w		    - the window to use (the frame window)
+ *   grab	    - 1 to grab, 0 to ungrab
+ *   binding	    - pointer to the bindinge to grab/ungrab
+ *   contexts	    - all context bits that shall receive bindings
  *   dead_modifiers - modifiers to ignore for 'AnyModifier'
- *   cursor         - the mouse cursor to use when the pointer is on the
- *                    grabbed area (mouse bindings only)
+ *   cursor	    - the mouse cursor to use when the pointer is on the
+ *		      grabbed area (mouse bindings only)
  *
  ***********************************************************************/
 void GrabWindowKey(Display *dpy, Window w, Binding *binding,

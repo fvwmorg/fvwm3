@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /* ------------------------------- includes -------------------------------- */
@@ -177,7 +177,7 @@ button_info *UberButton=NULL;
 int dpw;
 int dph;
 
-int save_color_limit;                   /* Color limit, if any */
+int save_color_limit;			/* Color limit, if any */
 
 Bool do_allow_bad_access = False;
 Bool was_bad_access = False;
@@ -672,10 +672,10 @@ int main(int argc, char **argv)
   /* We don't have sigaction(), so fall back to less robust methods.  */
 #ifdef USE_BSD_SIGNALS
   fvwmSetSignalMask( sigmask(SIGPIPE) |
-                     sigmask(SIGINT)  |
-                     sigmask(SIGHUP)  |
-                     sigmask(SIGQUIT) |
-                     sigmask(SIGTERM) );
+		     sigmask(SIGINT)  |
+		     sigmask(SIGHUP)  |
+		     sigmask(SIGQUIT) |
+		     sigmask(SIGTERM) );
 #endif
 
   signal(SIGPIPE, TerminateHandler);
@@ -1084,7 +1084,7 @@ void Loop(void)
       case KeyPress:
 	XLookupString(&Event.xkey,buffer,10,&keysym,0);
 	if(keysym!=XK_Return && keysym!=XK_KP_Enter && keysym!=XK_Linefeed)
-	  break;	                /* fall through to ButtonPress */
+	  break;			/* fall through to ButtonPress */
 
       case ButtonPress:
 	if (CurrentButton)
@@ -1098,19 +1098,19 @@ void Loop(void)
 	{
 	  break;
 	}
-        if (Event.xbutton.window == MyWindow)
-        {
-          x = Event.xbutton.x;
-          y = Event.xbutton.y;
-        }
-        else
-        {
-          Window dummy;
+	if (Event.xbutton.window == MyWindow)
+	{
+	  x = Event.xbutton.x;
+	  y = Event.xbutton.y;
+	}
+	else
+	{
+	  Window dummy;
 
-          XTranslateCoordinates(
-            Dpy, Event.xbutton.window, MyWindow, Event.xbutton.x,
-            Event.xbutton.y, &x, &y, &dummy);
-        }
+	  XTranslateCoordinates(
+	    Dpy, Event.xbutton.window, MyWindow, Event.xbutton.x,
+	    Event.xbutton.y, &x, &y, &dummy);
+	}
 	CurrentButton = b =
 	  select_button(UberButton, x, y);
 	is_pointer_in_current_button = True;
@@ -1154,19 +1154,19 @@ void Loop(void)
 	  CurrentButton = NULL;
 	  break;
 	}
-        if (Event.xbutton.window == MyWindow)
-        {
-          x = Event.xbutton.x;
-          y = Event.xbutton.y;
-        }
-        else
-        {
-          Window dummy;
+	if (Event.xbutton.window == MyWindow)
+	{
+	  x = Event.xbutton.x;
+	  y = Event.xbutton.y;
+	}
+	else
+	{
+	  Window dummy;
 
-          XTranslateCoordinates(
-            Dpy, Event.xbutton.window, MyWindow, Event.xbutton.x,
-            Event.xbutton.y, &x, &y, &dummy);
-        }
+	  XTranslateCoordinates(
+	    Dpy, Event.xbutton.window, MyWindow, Event.xbutton.x,
+	    Event.xbutton.y, &x, &y, &dummy);
+	}
 	b = select_button(UberButton, x, y);
 	act = GetButtonAction(b,Event.xbutton.button);
 	if (b && !act && (b->flags & b_Panel))
@@ -1863,7 +1863,7 @@ static void HandlePanelPress(button_info *b)
   CurrentButton = tmp;
   XSync(Dpy, 0);
   /* Give fvwm a chance to update the window.  Otherwise the window may end up
-   * too small.  This doesn't prevent this completely, but makes it much less
+   * too small.	 This doesn't prevent this completely, but makes it much less
    * likely. */
   usleep(250000);
 
@@ -2544,7 +2544,7 @@ void CheckForHangon(unsigned long *body)
       break;
     }
     else if(buttonSwallowCount(b)>=2 && (Window)body[0] == SwallowedWindow(b))
-      break;      /* This window has already been swallowed by someone else! */
+      break;	  /* This window has already been swallowed by someone else! */
   }
 }
 
@@ -2851,21 +2851,21 @@ void swallow(unsigned long *body)
 	  return;
 	}
 	/*error checking*/
-        for (i = 0; !(b->flags & b_ActionIgnoresClientWindow) &&
+	for (i = 0; !(b->flags & b_ActionIgnoresClientWindow) &&
 		     i <= NUMBER_OF_MOUSE_BUTTONS; i++)
-        {
-          if (b->action != NULL && b->action[i] != NULL)
-          {
-            XGrabButton(
-              Dpy, i, 0, b->IconWin, False,
-              ButtonPressMask | ButtonReleaseMask, GrabModeAsync,
-              GrabModeAsync, None, None);
-            if (i == 0)
-            {
-              break;
-            }
-          }
-        }
+	{
+	  if (b->action != NULL && b->action[i] != NULL)
+	  {
+	    XGrabButton(
+	      Dpy, i, 0, b->IconWin, False,
+	      ButtonPressMask | ButtonReleaseMask, GrabModeAsync,
+	      GrabModeAsync, None, None);
+	    if (i == 0)
+	    {
+	      break;
+	    }
+	  }
+	}
 	XReparentWindow(Dpy,swin,MyWindow,-32768,-32768);
 	XSync(Dpy, 0);
 	MyXUngrabServer(Dpy);
@@ -2902,7 +2902,7 @@ void swallow(unsigned long *body)
 		  MX_PROPERTY_CHANGE_SWALLOW, 1, SwallowedWindow(b));
 	  SendText(fd,cmd,0);
 	}
-	if ((b->flags & b_Colorset) &&  !(b->swallow & b_FvwmModule))
+	if ((b->flags & b_Colorset) &&	!(b->swallow & b_FvwmModule))
 	{
 	  /* A short delay to give the application the chance to set the
 	   * background itself, so we can override it. If we don't do this, the

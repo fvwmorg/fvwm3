@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -57,9 +57,9 @@
 #ifdef FANCY_TITLEBARS
 #define TITLE_PADDING 5
 enum tb_pixmap_enum {TBP_MAIN, TBP_LEFT_MAIN, TBP_RIGHT_MAIN, TBP_UNDER_TEXT,
-                     TBP_LEFT_OF_TEXT, TBP_RIGHT_OF_TEXT, TBP_LEFT_END,
-                     TBP_RIGHT_END, TBP_BUTTONS, TBP_LEFT_BUTTONS,
-                     TBP_RIGHT_BUTTONS, NUM_TB_PIXMAPS};
+		     TBP_LEFT_OF_TEXT, TBP_RIGHT_OF_TEXT, TBP_LEFT_END,
+		     TBP_RIGHT_END, TBP_BUTTONS, TBP_LEFT_BUTTONS,
+		     TBP_RIGHT_BUTTONS, NUM_TB_PIXMAPS};
 #endif
 
 typedef struct
@@ -72,16 +72,16 @@ typedef struct
 typedef enum
 {
     /* button types */
-    DefaultVectorButton       ,
-    VectorButton              ,
-    SimpleButton              ,
-    GradientButton            ,
-    PixmapButton              ,
-    TiledPixmapButton         ,
+    DefaultVectorButton	      ,
+    VectorButton	      ,
+    SimpleButton	      ,
+    GradientButton	      ,
+    PixmapButton	      ,
+    TiledPixmapButton	      ,
 #ifdef FANCY_TITLEBARS
-    MultiPixmap               ,
+    MultiPixmap		      ,
 #endif
-    MiniIconButton            ,
+    MiniIconButton	      ,
     SolidButton
 } DecorFaceType;
 
@@ -105,7 +105,7 @@ typedef struct
 #define DFS_BUTTON_IS_UP   0
 #define DFS_BUTTON_IS_FLAT 1
 #define DFS_BUTTON_IS_SUNK 2
-#define DFS_BUTTON_MASK    3
+#define DFS_BUTTON_MASK	   3
     unsigned int button_relief : 2;
     /* not used in border styles */
     unsigned int use_title_style : 1;
@@ -116,15 +116,15 @@ typedef struct
   } flags;
 } DecorFaceStyle;
 
-#define DFS_FACE_TYPE(dfs)          ((dfs).face_type)
-#define DFS_FLAGS(dfs)              ((dfs).flags)
+#define DFS_FACE_TYPE(dfs)	    ((dfs).face_type)
+#define DFS_FLAGS(dfs)		    ((dfs).flags)
 #define DFS_H_JUSTIFICATION(dfs)    ((dfs).flags.h_justification)
 #define DFS_V_JUSTIFICATION(dfs)    ((dfs).flags.v_justification)
-#define DFS_BUTTON_RELIEF(dfs)      ((dfs).flags.button_relief)
+#define DFS_BUTTON_RELIEF(dfs)	    ((dfs).flags.button_relief)
 #define DFS_USE_TITLE_STYLE(dfs)    ((dfs).flags.use_title_style)
 #define DFS_USE_BORDER_STYLE(dfs)   ((dfs).flags.use_border_style)
 #define DFS_HAS_HIDDEN_HANDLES(dfs) ((dfs).flags.has_hidden_handles)
-#define DFS_HAS_NO_INSET(dfs)       ((dfs).flags.has_no_inset)
+#define DFS_HAS_NO_INSET(dfs)	    ((dfs).flags.has_no_inset)
 
 typedef struct DecorFace
 {
@@ -178,16 +178,16 @@ typedef enum
 	/* The first five are used in title buttons.  These can't be
 	 * renumbered without extending the mwm_decor_flags member below and
 	 * adapting the style structure. */
-	MWM_DECOR_MENU     = 0x1,
+	MWM_DECOR_MENU	   = 0x1,
 	MWM_DECOR_MINIMIZE = 0x2,
 	MWM_DECOR_MAXIMIZE = 0x4,
-	MWM_DECOR_SHADE    = 0x8,
-	MWM_DECOR_STICK    = 0x10,
+	MWM_DECOR_SHADE	   = 0x8,
+	MWM_DECOR_STICK	   = 0x10,
 	/* --- */
 	MWM_DECOR_BORDER   = 0x20,
 	MWM_DECOR_RESIZEH  = 0x40,
-	MWM_DECOR_TITLE    = 0x80,
-	MWM_DECOR_ALL      = 0x100,
+	MWM_DECOR_TITLE	   = 0x80,
+	MWM_DECOR_ALL	   = 0x100,
 	MWM_DECOR_EVERYTHING = 0xff
 } mwm_flags;
 
@@ -207,11 +207,11 @@ typedef struct
 	DecorFace state[BS_MaxButtonState];
 } TitleButton;
 
-#define TB_FLAGS(tb)              ((tb).flags)
-#define TB_STATE(tb)              ((tb).state)
-#define TB_JUSTIFICATION(tb)      ((tb).just)
-#define TB_LAYER(tb)              ((tb).layer)
-#define TB_MWM_DECOR_FLAGS(tb)    ((tb).flags.mwm_decor_flags)
+#define TB_FLAGS(tb)		  ((tb).flags)
+#define TB_STATE(tb)		  ((tb).state)
+#define TB_JUSTIFICATION(tb)	  ((tb).just)
+#define TB_LAYER(tb)		  ((tb).layer)
+#define TB_MWM_DECOR_FLAGS(tb)	  ((tb).flags.mwm_decor_flags)
 #define TB_HAS_CHANGED(tb)     \
   (!!((tb).flags.has_changed))
 #define TB_HAS_MWM_DECOR_MENU(tb)     \
@@ -230,7 +230,7 @@ typedef struct FvwmDecor
 #ifdef USEDECOR
   char *tag;			/* general style tag */
 #endif
-  int title_height;           /* explicitly specified title bar height */
+  int title_height;	      /* explicitly specified title bar height */
   /* titlebar buttons */
   TitleButton buttons[NUMBER_OF_BUTTONS];
   TitleButton titlebar;
@@ -275,24 +275,24 @@ typedef struct ScreenInfo
 {
   unsigned long screen;
   Screen *pscreen;
-  int NumberOfScreens;          /* number of screens on display */
+  int NumberOfScreens;		/* number of screens on display */
   int MyDisplayWidth;		/* my copy of DisplayWidth(dpy, screen) */
-  int MyDisplayHeight;	        /* my copy of DisplayHeight(dpy, screen) */
+  int MyDisplayHeight;		/* my copy of DisplayHeight(dpy, screen) */
 
   FvwmWindow FvwmRoot;		/* the head of the fvwm window list */
-  Window Root;		        /* the root window */
+  Window Root;			/* the root window */
   Window SizeWindow;		/* the resize dimensions window */
-  Window NoFocusWin;            /* Window which will own focus when no other
+  Window NoFocusWin;		/* Window which will own focus when no other
 				 * windows have it */
   PanFrame PanFrameTop;
   PanFrame PanFrameLeft;
   PanFrame PanFrameRight;
   PanFrame PanFrameBottom;
 
-  Pixmap gray_bitmap;           /*dark gray pattern for shaded out menu items*/
-  Pixmap gray_pixmap;           /* dark gray pattern for inactive borders */
-  Pixmap light_gray_pixmap;     /* light gray pattern for inactive borders */
-  Pixmap sticky_gray_pixmap;     /* light gray pattern for sticky borders */
+  Pixmap gray_bitmap;		/*dark gray pattern for shaded out menu items*/
+  Pixmap gray_pixmap;		/* dark gray pattern for inactive borders */
+  Pixmap light_gray_pixmap;	/* light gray pattern for inactive borders */
+  Pixmap sticky_gray_pixmap;	 /* light gray pattern for sticky borders */
 
   Binding *AllBindings;
 
@@ -303,8 +303,8 @@ typedef struct ScreenInfo
   FvwmWindow *pushed_window;	/* saved window to install when pushes drops
 				   to zero */
   Cursor *FvwmCursors;
-  int BusyCursor;               /* context where we display the busy cursor */
-  char *DefaultIcon;            /* Icon to use when no other icons are found */
+  int BusyCursor;		/* context where we display the busy cursor */
+  char *DefaultIcon;		/* Icon to use when no other icons are found */
 
   int TopLayer;
   int DefaultLayer;
@@ -312,16 +312,16 @@ typedef struct ScreenInfo
 
   FvwmFunction *functions;
 
-  FlocaleFont *DefaultFont;     	/* font structure */
+  FlocaleFont *DefaultFont;		/* font structure */
 
-  GC TransMaskGC;               /* GC for transparency masks */
+  GC TransMaskGC;		/* GC for transparency masks */
   Pixel StdFore, StdBack, StdHilite, StdShadow; /* don't change the order */
   GC StdGC;
   GC StdReliefGC;
   GC StdShadowGC;
 
-  Pixmap ScratchMonoPixmap;     /* A scratch 1x1x1 pixmap */
-  GC MonoGC;                    /* GC for drawing into depth 1 drawables */
+  Pixmap ScratchMonoPixmap;	/* A scratch 1x1x1 pixmap */
+  GC MonoGC;			/* GC for drawing into depth 1 drawables */
 
   GC XorGC;			/* GC to draw lines for move and resize */
   GC ScratchGC1;
@@ -329,8 +329,8 @@ typedef struct ScreenInfo
   GC ScratchGC3;
   GC ScratchGC4;
   GC TitleGC;
-  GC TileGC;                    /* Used for tiling (clipmask and tile) */
-  int SizeStringWidth;	        /* minimum width of size window */
+  GC TileGC;			/* Used for tiling (clipmask and tile) */
+  int SizeStringWidth;		/* minimum width of size window */
 
   FvwmDecor DefaultDecor;	/* decoration style(s) */
   FvwmDecor *cur_decor;
@@ -341,40 +341,40 @@ typedef struct ScreenInfo
   FvwmWindow *Hilite;		/* the fvwm window that is highlighted
 				 * except for networking delays, this is the
 				 * window which REALLY has the focus */
-  Window UnknownWinFocused;      /* None, if the focus is nowhere or on an fvwm
+  Window UnknownWinFocused;	 /* None, if the focus is nowhere or on an fvwm
 				 * managed window. Set to id of otherwindow
 				 * with focus otherwise */
-  Window StolenFocusWin;        /* The window that the UnknownWinFocused window
+  Window StolenFocusWin;	/* The window that the UnknownWinFocused window
 				 * stole the focus from. */
   FvwmWindow *Ungrabbed;
   FvwmWindow *focus_in_pending_window;
-  int EdgeScrollX;              /* #pixels to scroll on screen edge */
-  int EdgeScrollY;              /* #pixels to scroll on screen edge */
-  unsigned char buttons2grab;   /* buttons to grab in click to focus mode */
+  int EdgeScrollX;		/* #pixels to scroll on screen edge */
+  int EdgeScrollY;		/* #pixels to scroll on screen edge */
+  unsigned char buttons2grab;	/* buttons to grab in click to focus mode */
   int NumBoxes;
-  int cascade_x;                /* values used for CascadePlacement */
+  int cascade_x;		/* values used for CascadePlacement */
   int cascade_y;
   FvwmWindow *cascade_window;
-  int VxMax;                    /* Max location for top left of virt desk*/
+  int VxMax;			/* Max location for top left of virt desk*/
   int VyMax;
-  int Vx;                       /* Current loc for top left of virt desk */
+  int Vx;			/* Current loc for top left of virt desk */
   int Vy;
 
-  int ClickTime;               /*Max button-click delay for Function built-in*/
-  int ScrollResistance;        /* resistance to scrolling in desktop */
-  int MoveResistance;          /* res to moving windows over viewport edge */
-  int XiMoveResistance;        /* the same for edges of xinerama screens */
-  int MoveThreshold;           /* number of pixels of mouse motion to decide
+  int ClickTime;	       /*Max button-click delay for Function built-in*/
+  int ScrollResistance;	       /* resistance to scrolling in desktop */
+  int MoveResistance;	       /* res to moving windows over viewport edge */
+  int XiMoveResistance;	       /* the same for edges of xinerama screens */
+  int MoveThreshold;	       /* number of pixels of mouse motion to decide
 				* it's a move operation */
-  int SnapAttraction;          /* attractiveness of window edges */
-  int SnapMode;                /* mode of snap attraction */
-  int SnapGridX;               /* snap grid X size */
-  int SnapGridY;               /* snap grid Y size */
+  int SnapAttraction;	       /* attractiveness of window edges */
+  int SnapMode;		       /* mode of snap attraction */
+  int SnapGridX;	       /* snap grid X size */
+  int SnapGridY;	       /* snap grid Y size */
   int OpaqueSize;
-  int CurrentDesk;             /* The current desktop number */
-  int ColormapFocus;           /* colormap focus style */
-  int ColorLimit;              /* Limit on colors used in pixmaps */
-  int DefaultColorset;         /* Default Colorset used by feedback window */
+  int CurrentDesk;	       /* The current desktop number */
+  int ColormapFocus;	       /* colormap focus style */
+  int ColorLimit;	       /* Limit on colors used in pixmaps */
+  int DefaultColorset;	       /* Default Colorset used by feedback window */
 
   int use_backing_store;
 
@@ -386,7 +386,7 @@ typedef struct ScreenInfo
   /* Scr.go.ModifyUSP was always 1.  How is it supposed to be set? */
   struct
   {
-    unsigned ModifyUSP : 1;                          /* - RBW - 11/02/1998  */
+    unsigned ModifyUSP : 1;			     /* - RBW - 11/02/1998  */
   } go; /* global options */
 #endif
   struct

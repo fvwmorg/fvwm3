@@ -15,12 +15,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -165,12 +165,12 @@ int main(int argc, char **argv)
       }
       else if(strncasecmp(tline,CatString3(MyName,"Colorset",""),Clength+8)==0)
       {
-        sscanf(&tline[Clength+8], "%d", &colorset);
-        AllocColorset(colorset);
+	sscanf(&tline[Clength+8], "%d", &colorset);
+	AllocColorset(colorset);
       }
       else if(strncasecmp(tline, "Colorset", 8) == 0)
       {
-        LoadColorset(&tline[8]);
+	LoadColorset(&tline[8]);
       }
     }
     GetConfigLine(fd,&tline);

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -32,7 +32,7 @@
  * as long as the copyright is kept intact.
  *
  * Romano Giannetti - Dipartimento di Ingegneria dell'Informazione
- *                    via Diotisalvi, 2  PISA
+ *		      via Diotisalvi, 2	 PISA
  * mailto:romano@iet.unipi.it
  * http://www.iet.unipi.it/~romano
  *
@@ -61,7 +61,7 @@ Colormap Pcmap;
 static Colormap FvwmCmap;
 unsigned int Pdepth;
 static unsigned int FvwmDepth;
-Display *Pdpy;            /* Save area for display pointer */
+Display *Pdpy;		  /* Save area for display pointer */
 
 void PictureInitCMap(Display *dpy) {
 	char *envp;

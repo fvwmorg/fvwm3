@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include <limits.h>
@@ -245,16 +245,16 @@ int check_win_complete (WinData *p)
 
   ConsoleDebug (WINLIST, "Checking completeness:\n");
   ConsoleDebug (WINLIST, "\ttitlename: %s\n",
-                (p->titlename ? p->titlename : "No Title name"));
+		(p->titlename ? p->titlename : "No Title name"));
   ConsoleDebug (WINLIST, "\ticonname: %s\n",
-                (p->iconname ? p->iconname : "No Icon name"));
+		(p->iconname ? p->iconname : "No Icon name"));
   ConsoleDebug (WINLIST, "\tres: %s\n",
-                (p->resname ? p->resname : "No p->resname"));
+		(p->resname ? p->resname : "No p->resname"));
   ConsoleDebug (WINLIST, "\tclass: %s\n",
-                (p->classname ? p->classname : "No p->classname"));
+		(p->classname ? p->classname : "No p->classname"));
   ConsoleDebug (WINLIST, "\tdisplaystring: %s\n",
-                (p->display_string ? p->display_string :
-                 "No p->display_string"));
+		(p->display_string ? p->display_string :
+		 "No p->display_string"));
   ConsoleDebug (WINLIST, "\t(x, y): (%ld, %ld)\n", p->x, p->y);
   ConsoleDebug (WINLIST, "\tapp_id: 0x%lx %d\n", p->app_id, p->app_id_set);
   ConsoleDebug (WINLIST, "\tdesknum: %ld\n", p->desknum);

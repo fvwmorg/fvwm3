@@ -15,7 +15,7 @@ char *CatString3(const char *a, const char *b, const char *c);
 
 /**
  * Copy string into newly-malloced memory, stripping leading and
- * trailing spaces.  The string is terminated by either a NUL or 
+ * trailing spaces.  The string is terminated by either a NUL or
  * a newline character.
  **/
 void CopyString(char **dest, const char *source);
@@ -50,7 +50,7 @@ int StrHasPrefix( const char* string, const char* prefix );
 
 /**
  * Adds single quotes arround the string and escapes single quotes with
- * backslashes.  The result is placed in the given dest, not allocated.
+ * backslashes.	 The result is placed in the given dest, not allocated.
  * The end of destination, i.e. pointer to '\0' is returned.
  * You should allocate dest yourself, at least strlen(source) * 2 + 3.
  **/

@@ -3,7 +3,7 @@
  * http://www.streetmap.co.uk/streetmap.dll?postcode2map?BS24+9TZ
  *
  * No guarantees or warranties or anything are provided or implied in any way
- * whatsoever.  Use this program at your own risk.  Permission to use this
+ * whatsoever.	Use this program at your own risk.  Permission to use this
  * program for any purpose is given, as long as the copyright is kept intact.
  */
 /*
@@ -14,7 +14,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -50,8 +50,8 @@ int main(int argc, char **argv)
   namelen = strlen(name);
 
   fprintf(stderr,
-          "%s is obsolete, see the Colorset section of the fvwm(1) man page\n",
-          name);
+	  "%s is obsolete, see the Colorset section of the fvwm(1) man page\n",
+	  name);
   set_signals();
 
   /* try to make sure it is fvwm that spawned this module */

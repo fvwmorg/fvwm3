@@ -5,7 +5,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -62,7 +62,7 @@ typedef struct _PImageIcon {
 	int width;
 	int height;
 	int depth;
-}        PImageIcon;
+}	 PImageIcon;
 
 /**************************************************************************
  * A few function prototypes
@@ -323,7 +323,7 @@ void GetImageFile(char *file, char *path)
 
   if (full_file)
   {
-    if(PImageLoadPixmapFromFile(dpy, Root, full_file, 0, 
+    if(PImageLoadPixmapFromFile(dpy, Root, full_file, 0,
 				&view.pixmap, &view.mask, None,
 				&view.width, &view.height,
 				&view.depth, 0, NULL,fpf))
@@ -358,18 +358,18 @@ static void parseOptions(int fd[2])
       }
       if (StrEquals(tok, "ImagePath"))
       {
-        CopyString(&imagePath, tline);
-        if (imagePath[0] == 0)
+	CopyString(&imagePath, tline);
+	if (imagePath[0] == 0)
 	{
-          free (imagePath);
-          imagePath = (char *) 0;
-        }
-        continue;
+	  free (imagePath);
+	  imagePath = (char *) 0;
+	}
+	continue;
       }
       if (strncasecmp(tok,MyName,MyNameLen))
       {
 	/* if not for me: ignore it*/
-        continue;
+	continue;
       }
       /* start of interesting part */
       tok += MyNameLen;
@@ -384,17 +384,17 @@ static void parseOptions(int fd[2])
 	    imageName = (char *) 0;
 	  }
 	}
-        continue;
+	continue;
       }
       if (StrEquals(tok, "NoDecor"))
       {
-        no_wm = True;
-        continue;
+	no_wm = True;
+	continue;
       }
       if (StrEquals(tok, "Timeout"))
       {
-        timeout = atoi(tline) * 1000000;
-        continue;
+	timeout = atoi(tline) * 1000000;
+	continue;
       }
     }
   }

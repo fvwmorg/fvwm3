@@ -1,7 +1,7 @@
 /* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
- *                               Mike_Finger@atk.com)
+ *				 Mike_Finger@atk.com)
  *
  * The functions in this source file are the original work of Mike Finger.
  *
@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -130,7 +130,7 @@ int FindItem(List *list, long id)
 }
 
 /******************************************************************************
-  FindItemVisible - Find the item which should be in winlist in the list 
+  FindItemVisible - Find the item which should be in winlist in the list
   matching the id
 ******************************************************************************/
 int FindItemVisible(List *list, long id)
@@ -138,8 +138,8 @@ int FindItemVisible(List *list, long id)
   Item *temp;
   int i=0;
 
-  for(temp=list->head;temp!=NULL && temp->id!=id;temp=temp->next) 
-  { 
+  for(temp=list->head;temp!=NULL && temp->id!=id;temp=temp->next)
+  {
     if (IsItemVisible(temp)) i++;
   }
   if (temp==NULL) return -1;
@@ -191,7 +191,7 @@ int UpdateItemGSFRFlags(List *list, ConfigWinPacket *cfgpacket)
   Item *temp;
   for(temp=list->head;temp!=NULL && cfgpacket->w!=temp->id;temp=temp->next);
   if (temp==NULL) return -1;
-  temp->flags = cfgpacket->flags; 
+  temp->flags = cfgpacket->flags;
   return 0;
 }
 
@@ -383,7 +383,7 @@ void CopyItem(List *dest, List *source, int n)
 ******************************************************************************/
 int IsItemVisible(Item *temp)
 {
-  if ((!ShowCurrentDesk || temp->desk == CurrentDesk || IS_STICKY(temp)) && 
+  if ((!ShowCurrentDesk || temp->desk == CurrentDesk || IS_STICKY(temp)) &&
       (!DO_SKIP_WINDOW_LIST(temp) || !UseSkipList))
     return 1;
   else
@@ -391,7 +391,7 @@ int IsItemVisible(Item *temp)
 }
 
 /******************************************************************************
-  IsItemIndexVisible - Says if the item of index i in the list should be in 
+  IsItemIndexVisible - Says if the item of index i in the list should be in
   winlist
 ******************************************************************************/
 int IsItemIndexVisible(List *list,int n)

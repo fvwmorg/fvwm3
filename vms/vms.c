@@ -4,11 +4,11 @@
     Date      : 5-JAN-1999
     Action    : special functions for running Fvwm with OpenVms. They can be helpfull for other VMS ports.
     Functions :
-        internal functions : AttentionAST() and TimerAST()
-        exported functions : VMS_msg(), VMS_SplitCommand() and VMS_select_pipes()
+	internal functions : AttentionAST() and TimerAST()
+	exported functions : VMS_msg(), VMS_SplitCommand() and VMS_select_pipes()
     Copyright : Fabien Villard, 1999.  No guarantees or warantees are provided or implied in any way whatsoever. Use this program
-                at your own risk.  Permission to use, modify, and redistribute this program is hereby given, provided that this
-                copyright is kept intact.
+		at your own risk.  Permission to use, modify, and redistribute this program is hereby given, provided that this
+		copyright is kept intact.
 ----------------------------------------------------------------------------------------------------------------------------------*/
 #include "config.h"
 
@@ -64,7 +64,7 @@
 
 #define SELECT_ERROR -1
 #define SELECT_TIMEOUT 0
-#define MAX_DEVICE 32                       /* - Maximum FD to check - */
+#define MAX_DEVICE 32			    /* - Maximum FD to check - */
 #define MAX_DEVICENAME 256
 
 #define DEV_UNUSED 0
@@ -74,11 +74,11 @@
 
 /* --- File descriptors information. We allocate statically for it's a very oten used function. --- */
 typedef struct {
-  int eventFlag;                           /* - Event flag pour les attentes passives - */
-  unsigned short vmsChannel;               /* - Canal VMS sur la mailbox - */
-  char deviceName[MAX_DEVICENAME];         /* - Nom du device (la mailbox ou les X events) - */
-  char devType;                            /* - Type de device : DEV_xxx - */
-  char qioPending;                         /* - Une QIO est en attente (1) ou non (0) - */
+  int eventFlag;			   /* - Event flag pour les attentes passives - */
+  unsigned short vmsChannel;		   /* - Canal VMS sur la mailbox - */
+  char deviceName[MAX_DEVICENAME];	   /* - Nom du device (la mailbox ou les X events) - */
+  char devType;				   /* - Type de device : DEV_xxx - */
+  char qioPending;			   /* - Une QIO est en attente (1) ou non (0) - */
 } Pipe_Infos_Type;
 
 typedef struct {
@@ -89,15 +89,15 @@ typedef struct {
 
 /* --- Global variables. I do not like them, but, because of the AST it's the easiest way :-) They have to be volatile because
        they are modified by AST and main function. --- */
-volatile unsigned int SpecialEfn;          /* - One ef for all. This to avoid multi ef clusters problem - */
-volatile char SpecialEfnToClear;           /* - Special ef is set by us - */
+volatile unsigned int SpecialEfn;	   /* - One ef for all. This to avoid multi ef clusters problem - */
+volatile char SpecialEfnToClear;	   /* - Special ef is set by us - */
 
 /*----------------------------------------------------------------------------------------------------------------------------------
     Fonctions : AttentionAST et TimedAST
       Actions : attention AST : activated by the attention QIO (ReadAttention or WriteAttention) on the pipe's mailbox. It gets
-                the ef to set in the AstPrm.
-                Timed AST : activated when time has come.
-                This two functions set also the special ef on which we then waitfr. This is to avoid multi ef clusters problem.
+		the ef to set in the AstPrm.
+		Timed AST : activated when time has come.
+		This two functions set also the special ef on which we then waitfr. This is to avoid multi ef clusters problem.
 ----------------------------------------------------------------------------------------------------------------------------------*/
 void AttentionAST(int efn) {
   unsigned int sysStat, efnState;
@@ -134,7 +134,7 @@ void TimedAST(int filler) {
 /*----------------------------------------------------------------------------------------------------------------------------------
     Fonction : VMS_select_pipes
       Action : replacement for select() for pipes and other devices (such as X communications) with an ef already assigned.
-               Prototype is identical to select().
+	       Prototype is identical to select().
 ----------------------------------------------------------------------------------------------------------------------------------*/
 int VMS_select_pipes(int nbPipes, fd_set *readFds, fd_set *writeFds, fd_set *filler, struct timeval *timeoutVal) {
   int iFd, result, nbPipesReady, sysStat, libStat, timeoutEf;
@@ -168,23 +168,23 @@ int VMS_select_pipes(int nbPipes, fd_set *readFds, fd_set *writeFds, fd_set *fil
       infosPipes[iFd].qioPending = 0;
       infosPipes[iFd].vmsChannel = 0;
       if ( (NULL != readFds && FD_ISSET(iFd, readFds)) || (NULL != writeFds && FD_ISSET(iFd, writeFds)) ) {
-        if (FD_ISSET(iFd, readFds)) infosPipes[iFd].devType = DEV_READPIPE;
-        else if (FD_ISSET(iFd, writeFds)) infosPipes[iFd].devType = DEV_WRITEPIPE;
-        /* --- Get VMS mailbox name. This function is VMS specific. --- */
-        retPtr = getname(iFd, infosPipes[iFd].deviceName);
-        /* --- If we fail, it's probably because the FD is an EF. --- */
-        if (NULL == retPtr) {
-          if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "Special efn trouve : %d", iFd);
-          infosPipes[iFd].devType = DEV_EFN;
-          SpecialEfn = iFd;
-          }
-        else {
-          /* --- Trying to connect to the mailbox --- */
-          deviceNameDesc.dsc$w_length = strlen(infosPipes[iFd].deviceName);
-          deviceNameDesc.dsc$a_pointer = infosPipes[iFd].deviceName;
-          sysStat = sys$assign(&deviceNameDesc, &(infosPipes[iFd].vmsChannel), 0, NULL, 0);
-          VMS_TestStatus(sysStat, "Error : sys$assign returns %d", 1);
-        }
+	if (FD_ISSET(iFd, readFds)) infosPipes[iFd].devType = DEV_READPIPE;
+	else if (FD_ISSET(iFd, writeFds)) infosPipes[iFd].devType = DEV_WRITEPIPE;
+	/* --- Get VMS mailbox name. This function is VMS specific. --- */
+	retPtr = getname(iFd, infosPipes[iFd].deviceName);
+	/* --- If we fail, it's probably because the FD is an EF. --- */
+	if (NULL == retPtr) {
+	  if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "Special efn trouve : %d", iFd);
+	  infosPipes[iFd].devType = DEV_EFN;
+	  SpecialEfn = iFd;
+	  }
+	else {
+	  /* --- Trying to connect to the mailbox --- */
+	  deviceNameDesc.dsc$w_length = strlen(infosPipes[iFd].deviceName);
+	  deviceNameDesc.dsc$a_pointer = infosPipes[iFd].deviceName;
+	  sysStat = sys$assign(&deviceNameDesc, &(infosPipes[iFd].vmsChannel), 0, NULL, 0);
+	  VMS_TestStatus(sysStat, "Error : sys$assign returns %d", 1);
+	}
       }
     }
 
@@ -201,59 +201,59 @@ int VMS_select_pipes(int nbPipes, fd_set *readFds, fd_set *writeFds, fd_set *fil
     /* --- DO the real work on fd --- */
     for (iFd = 0; iFd < nbPipes; iFd++) {
       if (DEV_READPIPE == infosPipes[iFd].devType || DEV_WRITEPIPE == infosPipes[iFd].devType) {
-        /* --- Allocate and initialize an ef --- */
-        libStat = lib$get_ef(&(infosPipes[iFd].eventFlag));
-        VMS_TestStatus(libStat, "No more event flags (Error %d)", 1);
-        sysStat = sys$clref(infosPipes[iFd].eventFlag);
-        VMS_TestStatus(sysStat, "Can't clear ef (err %d)", 1);
-        if (DBG_SEL) {
-          fvwm_msg(DBG, "VMS_select_pipes", "FD %2d  %s  Nom <%s>  Canal %d  Efn %d cleared", iFd,
-                   (DEV_READPIPE == infosPipes[iFd].devType)?"READ":(DEV_WRITEPIPE == infosPipes[iFd].devType)?"WRIT":"UNKN",
-                   infosPipes[iFd].deviceName, infosPipes[iFd].vmsChannel, infosPipes[iFd].eventFlag);
-        }
+	/* --- Allocate and initialize an ef --- */
+	libStat = lib$get_ef(&(infosPipes[iFd].eventFlag));
+	VMS_TestStatus(libStat, "No more event flags (Error %d)", 1);
+	sysStat = sys$clref(infosPipes[iFd].eventFlag);
+	VMS_TestStatus(sysStat, "Can't clear ef (err %d)", 1);
+	if (DBG_SEL) {
+	  fvwm_msg(DBG, "VMS_select_pipes", "FD %2d  %s	 Nom <%s>  Canal %d  Efn %d cleared", iFd,
+		   (DEV_READPIPE == infosPipes[iFd].devType)?"READ":(DEV_WRITEPIPE == infosPipes[iFd].devType)?"WRIT":"UNKN",
+		   infosPipes[iFd].deviceName, infosPipes[iFd].vmsChannel, infosPipes[iFd].eventFlag);
+	}
 
-        /* --- Read pipe, we wait for a writer to... write. --- */
-        if (FD_ISSET(iFd, readFds)) {
-          qioFuncCode = IO$_SETMODE | IO$M_WRTATTN;
-          sysStat = sys$qio(0, infosPipes[iFd].vmsChannel, qioFuncCode, &qioIosb,
-                            NULL, 0, AttentionAST, infosPipes[iFd].eventFlag, 0, 0, 0, 0);
-          VMS_TestStatus(qioIosb.condVal, "Attention QIO failed (Secondary error %d)", 0);
-          VMS_TestStatus(sysStat, "Attention QIO failed (Error %d)", 1);
-          infosPipes[iFd].qioPending = 1;
-          if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "Attention QIO ok. qioIosb.condVal = %d (%x)", qioIosb.condVal, qioIosb.condVal);
-          }
+	/* --- Read pipe, we wait for a writer to... write. --- */
+	if (FD_ISSET(iFd, readFds)) {
+	  qioFuncCode = IO$_SETMODE | IO$M_WRTATTN;
+	  sysStat = sys$qio(0, infosPipes[iFd].vmsChannel, qioFuncCode, &qioIosb,
+			    NULL, 0, AttentionAST, infosPipes[iFd].eventFlag, 0, 0, 0, 0);
+	  VMS_TestStatus(qioIosb.condVal, "Attention QIO failed (Secondary error %d)", 0);
+	  VMS_TestStatus(sysStat, "Attention QIO failed (Error %d)", 1);
+	  infosPipes[iFd].qioPending = 1;
+	  if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "Attention QIO ok. qioIosb.condVal = %d (%x)", qioIosb.condVal, qioIosb.condVal);
+	  }
 
-        /* --- Write pipe. Sometimes we can wait for a reader to post a read request. But when the process is not symetrical
-               we may stay blocked here. So, better consider pipe is always ready. --- */
-        else if (FD_ISSET(iFd, writeFds)) {
-          #ifdef POST_READATTN_AST
-            qioFuncCode = IO$_SETMODE | IO$M_READATTN;
-            sysStat = sys$qio(0, infosPipes[iFd].vmsChannel, qioFuncCode, &qioIosb,
-                              NULL, 0, AttentionAST, infosPipes[iFd].eventFlag, 0, 0, 0, 0);
-            VMS_TestStatus(qioIosb.condVal, "Read attention QIO failed (Secondary error %d)", 0);
-            VMS_TestStatus(sysStat, "Read attention QIO failed (Error %d)", 1);
-            infosPipes[iFd].qioPending = 1;
-            if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "Read attention QIO ok. qioIosb.condVal = %d (%x)", qioIosb.condVal, qioIosb.condVal);
-          #else
-            AttentionAST(infosPipes[iFd].eventFlag);
-            if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "Attention automatique");
-          #endif
-        }
-        }
+	/* --- Write pipe. Sometimes we can wait for a reader to post a read request. But when the process is not symetrical
+	       we may stay blocked here. So, better consider pipe is always ready. --- */
+	else if (FD_ISSET(iFd, writeFds)) {
+	  #ifdef POST_READATTN_AST
+	    qioFuncCode = IO$_SETMODE | IO$M_READATTN;
+	    sysStat = sys$qio(0, infosPipes[iFd].vmsChannel, qioFuncCode, &qioIosb,
+			      NULL, 0, AttentionAST, infosPipes[iFd].eventFlag, 0, 0, 0, 0);
+	    VMS_TestStatus(qioIosb.condVal, "Read attention QIO failed (Secondary error %d)", 0);
+	    VMS_TestStatus(sysStat, "Read attention QIO failed (Error %d)", 1);
+	    infosPipes[iFd].qioPending = 1;
+	    if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "Read attention QIO ok. qioIosb.condVal = %d (%x)", qioIosb.condVal, qioIosb.condVal);
+	  #else
+	    AttentionAST(infosPipes[iFd].eventFlag);
+	    if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "Attention automatique");
+	  #endif
+	}
+	}
 
       /* --- Not a pipe. It's probably an ef already allocated elsewhere, by us for example. --- */
       else if (DEV_EFN == infosPipes[iFd].devType) {
-        infosPipes[iFd].qioPending = 0;
-        strcpy(infosPipes[iFd].deviceName, "Device_non_pipe");
-        infosPipes[iFd].vmsChannel = 0;
-        infosPipes[iFd].eventFlag = iFd;
-        /* --- We clear this special ef only if we own it. In the other case, the owner had coped with that. --- */
-        if (iFd != SpecialEfn) {
-          sysStat = sys$clref(infosPipes[iFd].eventFlag);
-          VMS_TestStatus(sysStat, "Can't clear ef (Error %d)", 1);
-        }
-        if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "FD %2d EFN   Nom <%s>  Canal %d  Efn %d", iFd, infosPipes[iFd].deviceName,
-                            infosPipes[iFd].vmsChannel, infosPipes[iFd].eventFlag);
+	infosPipes[iFd].qioPending = 0;
+	strcpy(infosPipes[iFd].deviceName, "Device_non_pipe");
+	infosPipes[iFd].vmsChannel = 0;
+	infosPipes[iFd].eventFlag = iFd;
+	/* --- We clear this special ef only if we own it. In the other case, the owner had coped with that. --- */
+	if (iFd != SpecialEfn) {
+	  sysStat = sys$clref(infosPipes[iFd].eventFlag);
+	  VMS_TestStatus(sysStat, "Can't clear ef (Error %d)", 1);
+	}
+	if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "FD %2d EFN   Nom <%s>  Canal %d	 Efn %d", iFd, infosPipes[iFd].deviceName,
+			    infosPipes[iFd].vmsChannel, infosPipes[iFd].eventFlag);
       }
     }
   }
@@ -315,12 +315,12 @@ int VMS_select_pipes(int nbPipes, fd_set *readFds, fd_set *writeFds, fd_set *fil
       sysStat = sys$readef(infosPipes[iFd].eventFlag, &efnState);
       VMS_TestStatus(sysStat, "Can't read ef state (Error %d)", 1);
       if (SS$_WASSET == sysStat) {
-        nbPipesReady++;
-        infosPipes[iFd].qioPending = 0;
-        if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "Event flag %d set !", infosPipes[iFd].eventFlag);
-        if (DEV_READPIPE == infosPipes[iFd].devType) FD_SET(iFd, readFds);
-        else if (DEV_WRITEPIPE == infosPipes[iFd].devType) FD_SET(iFd, writeFds);
-        else FD_SET(iFd, readFds);
+	nbPipesReady++;
+	infosPipes[iFd].qioPending = 0;
+	if (DBG_SEL) fvwm_msg(DBG, "VMS_select_pipes", "Event flag %d set !", infosPipes[iFd].eventFlag);
+	if (DEV_READPIPE == infosPipes[iFd].devType) FD_SET(iFd, readFds);
+	else if (DEV_WRITEPIPE == infosPipes[iFd].devType) FD_SET(iFd, writeFds);
+	else FD_SET(iFd, readFds);
       }
     }
   }
@@ -329,7 +329,7 @@ int VMS_select_pipes(int nbPipes, fd_set *readFds, fd_set *writeFds, fd_set *fil
   /*
   if (! specialEfnToFree && SpecialEfnToClear) {
     nbPipesReady--;
-    if (FD_ISSET(SpecialEfn, readFds))  FD_CLR(SpecialEfn, readFds);
+    if (FD_ISSET(SpecialEfn, readFds))	FD_CLR(SpecialEfn, readFds);
     else if (FD_ISSET(SpecialEfn, writeFds)) FD_CLR(SpecialEfn, writeFds);
   }
   */
@@ -342,16 +342,16 @@ End_VMS_select_pipes:;
   for (iFd = 0; iFd < nbPipes; iFd++) {
     if (DEV_UNUSED != infosPipes[iFd].devType) {
       if (1 == infosPipes[iFd].qioPending) {
-        sysStat = sys$cancel(infosPipes[iFd].vmsChannel);
-        VMS_TestStatus(sysStat, "Can't cancel QIO (Error %d)", 0);
+	sysStat = sys$cancel(infosPipes[iFd].vmsChannel);
+	VMS_TestStatus(sysStat, "Can't cancel QIO (Error %d)", 0);
       }
       if (0 != infosPipes[iFd].vmsChannel) {
-        sysStat = sys$dassgn(infosPipes[iFd].vmsChannel);
-        VMS_TestStatus(sysStat, "Can't deallocate channel (Error %d)", 0);
+	sysStat = sys$dassgn(infosPipes[iFd].vmsChannel);
+	VMS_TestStatus(sysStat, "Can't deallocate channel (Error %d)", 0);
       }
       if (DEV_EFN != infosPipes[iFd].devType) {
-        libStat = lib$free_ef(&(infosPipes[iFd].eventFlag));
-        VMS_TestStatus(libStat, "Can't free ef (Error %d)", 0);
+	libStat = lib$free_ef(&(infosPipes[iFd].eventFlag));
+	VMS_TestStatus(libStat, "Can't free ef (Error %d)", 0);
       }
     }
   }
@@ -423,13 +423,13 @@ void VMS_msg(int type,char *id,char *msg,...) {
 /*----------------------------------------------------------------------------------------------------------------------------------
     Function : VMS_SplitCommand
       Action : split command string in an array of string pointers to words of command. Array is passed. Each pointer is
-               freed if necessary. The pointer after the last used argument pointer is set to NULL.
+	       freed if necessary. The pointer after the last used argument pointer is set to NULL.
 ----------------------------------------------------------------------------------------------------------------------------------*/
 void VMS_SplitCommand(
-    char *cmd,                                          /* - Command to split - */
-    char **argums,                                      /* - Array of arguments - */
-    int maxArgums,                                      /* - Size of the array of argumets - */
-    int *nbArgums) {                                    /* - Number of arguments created - */
+    char *cmd,						/* - Command to split - */
+    char **argums,					/* - Array of arguments - */
+    int maxArgums,					/* - Size of the array of argumets - */
+    int *nbArgums) {					/* - Number of arguments created - */
   int iArgum, argumLen;
   char *tmpChar, *tmpArgum;
 
@@ -442,18 +442,18 @@ void VMS_SplitCommand(
     if (' ' == *tmpChar) {
       if (DBG_SPL) fvwm_msg(DBG,"VMS_SplitCommand","End word...");
       if (0 < argumLen) {
-        if (NULL != argums[iArgum]) free(argums[iArgum]);
-        argums[iArgum] = (char *)malloc(argumLen + 1);
-        if (NULL == argums[iArgum]) {
-          VMS_msg(ERR, "VMS_SplitCommand", "Can't allocate memory");
-          exit(0);
-        }
-        strncpy(argums[iArgum], tmpArgum, argumLen);
-        argums[iArgum][argumLen] = 0;
-        if (DBG_SPL) fvwm_msg(DBG,"VMS_SplitCommand","New word <%s>, Len: %d", argums[iArgum], strlen(argums[iArgum]));
-        iArgum++;
-        tmpArgum = tmpChar + 1;
-        argumLen = 0;
+	if (NULL != argums[iArgum]) free(argums[iArgum]);
+	argums[iArgum] = (char *)malloc(argumLen + 1);
+	if (NULL == argums[iArgum]) {
+	  VMS_msg(ERR, "VMS_SplitCommand", "Can't allocate memory");
+	  exit(0);
+	}
+	strncpy(argums[iArgum], tmpArgum, argumLen);
+	argums[iArgum][argumLen] = 0;
+	if (DBG_SPL) fvwm_msg(DBG,"VMS_SplitCommand","New word <%s>, Len: %d", argums[iArgum], strlen(argums[iArgum]));
+	iArgum++;
+	tmpArgum = tmpChar + 1;
+	argumLen = 0;
       }
       }
     else argumLen++;
@@ -481,8 +481,8 @@ void VMS_SplitCommand(
     if ('"' == argums[iArgum][0]) {
       tmpChar = (char *)malloc(strlen(argums[iArgum]));
       if (NULL == tmpChar) {
-        VMS_msg(ERR, "VMS_SplitCommand", "Can't allocate memory");
-        exit(0);
+	VMS_msg(ERR, "VMS_SplitCommand", "Can't allocate memory");
+	exit(0);
       }
       strncpy(tmpChar, argums[iArgum] + 1, strlen(argums[iArgum]) - 1);
       tmpChar[strlen(argums[iArgum]) - 1] = 0;
@@ -497,13 +497,13 @@ void VMS_SplitCommand(
 /*----------------------------------------------------------------------------------------------------------------------------------
     Function : VMS_ExecL
       Action : replacemant for execl. It splits command and calls execv() from the Dec RTL. This function assumes its
-               params are passed a special way. It can't be considered working in all cases. In fact it works only in one :-)
-               The array containing splitted command is statically allocated, so we never free it and allocate it just once.
+	       params are passed a special way. It can't be considered working in all cases. In fact it works only in one :-)
+	       The array containing splitted command is statically allocated, so we never free it and allocate it just once.
 ----------------------------------------------------------------------------------------------------------------------------------*/
 int VMS_ExecL(
-    const char *fileSpec,              /* - Conventionnaly, image to run. With Unix, often a shell - */
-    const char *arg0,                  /* - The same as fileSpec, by convention - */
-    ...) {                             /* - Real unix command, eventually splitted - */
+    const char *fileSpec,	       /* - Conventionnaly, image to run. With Unix, often a shell - */
+    const char *arg0,		       /* - The same as fileSpec, by convention - */
+    ...) {			       /* - Real unix command, eventually splitted - */
 
   int execStat, nbArgums;
   static char **argums = NULL;
@@ -526,7 +526,7 @@ int VMS_ExecL(
   va_start(vaCmd, arg0);
 
   /* --- Assumes the shell command is in the fourth argument, third would be "-c" or something indicating the image to
-         be run by the shell. Well of course, it can be something very different. --- */
+	 be run by the shell. Well of course, it can be something very different. --- */
   cmdPtr = va_arg(vaCmd, char*);
   cmdPtr = va_arg(vaCmd, char*);
 
@@ -539,7 +539,7 @@ int VMS_ExecL(
   if (DBG_EXL) fvwm_msg(DBG,"VMS_ExecL","cmd now broken in %d arguments", nbArgums);
 
   /* --- Calling exec : if it fails, don't return the fact. Thus, the unix code won't remark the problem and continue
-         the parent process. --- */
+	 the parent process. --- */
   execStat = execv(argums[0], argums);
   if (-1 == execStat) fvwm_msg(ERR,"VMS_ExecL","execl failed (%s)", strerror(errno));
 

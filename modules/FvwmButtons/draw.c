@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /* ------------------------------- includes -------------------------------- */
@@ -396,7 +396,7 @@ void RedrawButton(button_info *b,int clean)
 
     /* draw the panel indicator, but not if there is a title */
     if (b->slide_direction != SLIDE_GEOMETRY && b->indicator_size != 0 &&
-        (b->indicator_size & 1) == 0)
+	(b->indicator_size & 1) == 0)
     {
       /* make sure we have an odd number */
       b->indicator_size--;

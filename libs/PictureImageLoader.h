@@ -66,7 +66,7 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(Display *dpy, Window Root, char *path
  * Create a cursor from a file.
  * </description>
  */
-Bool PImageLoadCursorPixmapFromFile(Display *dpy, Window Root, 
+Bool PImageLoadCursorPixmapFromFile(Display *dpy, Window Root,
 				    char *path,
 				    Pixmap *source, Pixmap *mask,
 				    unsigned int *x,

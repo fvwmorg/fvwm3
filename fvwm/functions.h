@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef _FUNCTIONS_
@@ -18,21 +18,21 @@
 
 typedef struct FunctionItem
 {
-	struct FvwmFunction *func;       /* the function this item is in */
-	struct FunctionItem *next_item;  /* next function item */
-	char condition;                  /* the character string displayed on
+	struct FvwmFunction *func;	 /* the function this item is in */
+	struct FunctionItem *next_item;	 /* next function item */
+	char condition;			 /* the character string displayed on
 					  * left*/
-	char *action;                    /* action to be performed */
-	short type;                      /* type of built in function */
+	char *action;			 /* action to be performed */
+	short type;			 /* type of built in function */
 	FUNC_FLAGS_TYPE flags;
 } FunctionItem;
 
 typedef struct FvwmFunction
 {
-	struct FvwmFunction *next_func;  /* next in list of root menus */
-	FunctionItem *first_item;        /* first item in function */
-	FunctionItem *last_item;         /* last item in function */
-	char *name;                      /* function name */
+	struct FvwmFunction *next_func;	 /* next in list of root menus */
+	FunctionItem *first_item;	 /* first item in function */
+	FunctionItem *last_item;	 /* last item in function */
+	char *name;			 /* function name */
 	unsigned int use_depth;
 } FvwmFunction;
 
@@ -52,18 +52,18 @@ typedef struct
 /* Bits for the function flag byte. */
 #define FUNC_NEEDS_WINDOW 0x01
 #define FUNC_DONT_REPEAT  0x02
-#define FUNC_ADD_TO       0x04
-#define FUNC_DECOR        0x08
+#define FUNC_ADD_TO	  0x04
+#define FUNC_DECOR	  0x08
 
 /* Types of events for the FUNCTION builtin */
 typedef enum
 {
-	CF_IMMEDIATE =      'i',
-	CF_MOTION =         'm',
-	CF_HOLD =           'h',
-	CF_CLICK =          'c',
+	CF_IMMEDIATE =	    'i',
+	CF_MOTION =	    'm',
+	CF_HOLD =	    'h',
+	CF_CLICK =	    'c',
 	CF_DOUBLE_CLICK =   'd',
-	CF_TIMEOUT =        '-'
+	CF_TIMEOUT =	    '-'
 } cfunc_action_type;
 
 /* for exec_flags parameter of ExecuteFunction */

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /* Start ;-) button handling */
@@ -32,7 +32,7 @@ extern int ColorLimit;
 
 Button *StartButton;
 int StartButtonWidth, StartButtonHeight;
-char *StartName     = NULL,
+char *StartName	    = NULL,
      *StartCommand  = NULL,
      *StartPopup    = NULL,
      *StartIconName = NULL;
@@ -85,7 +85,7 @@ void StartButtonInit(int height)
   int pw;
 
   /* some defaults */
-  if (StartName  == NULL)
+  if (StartName	 == NULL)
     UpdateString(&StartName, "Start");
   if (StartIconName == NULL)
     UpdateString(&StartIconName, "mini-start.xpm");
@@ -120,5 +120,5 @@ void StartButtonDraw(int force)
 int MouseInStartButton(int x, int y)
 {
   return (x > 0 && x < StartButtonWidth &&
-          y > 0 && y < StartButtonHeight);
+	  y > 0 && y < StartButtonHeight);
 }

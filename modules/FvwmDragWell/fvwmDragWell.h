@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef FVWMDRAGWELL_H
@@ -26,10 +26,10 @@
 		   ButtonMotionMask | StructureNotifyMask)
 
 
-#define MODULE_TO_FVWM       0   /*fd[] entries*/
-#define FVWM_TO_MODULE       1
+#define MODULE_TO_FVWM	     0	 /*fd[] entries*/
+#define FVWM_TO_MODULE	     1
 
-#define FOUND_XEVENT           1 /*return types of myXNextEvent*/
+#define FOUND_XEVENT	       1 /*return types of myXNextEvent*/
 #define FOUND_FVWM_MESSAGE     -1
 #define FOUND_FVWM_NON_MESSAGE 0
 
@@ -37,18 +37,18 @@
 
 /*This is a collection of globals that deal with X*/
 typedef struct XGlobals_struct {
-  Window root;     /* root window of screen*/
-  Window win;      /* the button/drag window*/
-  Display *dpy;    /* Display */
-  int xfd;         /*X file descriptor, used to check for events */
-  int fdWidth;     /*fd_set_size_t fdWidth;*/
+  Window root;	   /* root window of screen*/
+  Window win;	   /* the button/drag window*/
+  Display *dpy;	   /* Display */
+  int xfd;	   /*X file descriptor, used to check for events */
+  int fdWidth;	   /*fd_set_size_t fdWidth;*/
   int animationType; /*how we animate upon receipt of a drag item*/
-  int screen;      /* Screen*/
+  int screen;	   /* Screen*/
   int dpyHeight;   /*height  of screen*/
   int dpyWidth;
-  int dpyDepth;    /* display depth*/
-  int colorset;    /*colorset*/
-  Pixel fore;      /* colors..*/
+  int dpyDepth;	   /* display depth*/
+  int colorset;	   /*colorset*/
+  Pixel fore;	   /* colors..*/
   Pixel back;
   Pixel shadow; /*colors of buttons, relief on menus*/
   Pixel hilite;
@@ -59,7 +59,7 @@ typedef struct XGlobals_struct {
   GC hiliteGC;
   GC shadowGC;
   GC buttonGC;
-  FILE *log;       /* debugging log*/
+  FILE *log;	   /* debugging log*/
   Atom wmAtomDelWin; /*seems to be used for closing the window*/
   char *appName;   /* name of the application */
   int x,y;     /* screen location*/
@@ -77,30 +77,30 @@ typedef struct XGlobals_struct {
  */
 typedef struct DragWellButton_struct DragWellButton;
 struct DragWellButton_struct {
-  Window win;                      /*window the button is on*/
-  int wx,wy;                       /*x,y position on window*/
-  int w,h;                         /*width, height*/
-  int state;                       /*state of button*/
+  Window win;			   /*window the button is on*/
+  int wx,wy;			   /*x,y position on window*/
+  int w,h;			   /*width, height*/
+  int state;			   /*state of button*/
   int (*drawButFace)(DragWellButton *); /*func ptr to draw something on face of button*/
 };
 
 /* The two possible states of the DragWellButton */
 #define DRAGWELL_BUTTON_NOT_PUSHED     0
-#define DRAGWELL_BUTTON_PUSHED         1
+#define DRAGWELL_BUTTON_PUSHED	       1
 
 
 /*Maximum length of qfsPath */
-#define MAX_PATH_LEN             256
+#define MAX_PATH_LEN		 256
 
 /* Menu entry types, used by entryType[] */
-#define DRAGWELLMENUITEM_DIR          1
-#define DRAGWELLMENUITEM_FILE         2
+#define DRAGWELLMENUITEM_DIR	      1
+#define DRAGWELLMENUITEM_FILE	      2
 
 /*Total time it takes to animate a successful selection*/
 #define TOTAL_ANIMATION_TIME 500000
 
-#define DRAG_DATA_TYPE_PATH      0
-#define DRAG_DATA_TYPE_NONPATH   1
+#define DRAG_DATA_TYPE_PATH	 0
+#define DRAG_DATA_TYPE_NONPATH	 1
 /*
  *Global stuff common to all menus
  */
@@ -112,7 +112,7 @@ typedef struct DragWellMenuGlobal_struct {
   char dragTypeStr[MAX_PATH_LEN]; /*the path*/
   int dragDataType;
   int dragState;      /* Do we have an item to drag*/
-  Atom action;        /* the XDND action we will use*/
+  Atom action;	      /* the XDND action we will use*/
   Atom *typelist;     /* the drag types we support, Null terminated */
   Atom textUriAtom;
   /*UNUSED*/

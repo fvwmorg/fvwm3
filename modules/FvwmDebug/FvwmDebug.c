@@ -15,12 +15,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -153,7 +153,7 @@ int main(int argc, char **argv)
 	verbose++;
       else
       {
-        fprintf(stderr,"%s Version %s received two filename args!\n",
+	fprintf(stderr,"%s Version %s received two filename args!\n",
 		MyName,VERSION);
 	exit(1);
       }
@@ -206,7 +206,7 @@ void Loop(const int *fd)
     while (1) {
       FvwmPacket* packet = ReadFvwmPacket(fd[1]);
       if ( packet == NULL )
-        exit(0);
+	exit(0);
       process_message( packet->type, packet->body );
     }
 }
@@ -427,7 +427,7 @@ void list_focus(const unsigned long *body)
  *
  *  Procedure:
  *	list_winid - displays packet contents to for three-field
- *                   window ID-bearing packets
+ *		     window ID-bearing packets
  *
  ***********************************************************************/
 void list_winid(const unsigned long *body)

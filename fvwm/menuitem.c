@@ -62,7 +62,7 @@
 static void draw_separator(
 	Window w, GC TopGC, GC BottomGC, int x1, int y, int x2)
 {
-	XDrawLine(dpy, w, TopGC   , x1,   y,   x2,   y);
+	XDrawLine(dpy, w, TopGC	  , x1,	  y,   x2,   y);
 	XDrawLine(dpy, w, BottomGC, x1-1, y+1, x2+1, y+1);
 
 	return;
@@ -189,7 +189,7 @@ MenuItem *menuitem_clone(MenuItem *mi)
 	return new_mi;
 }
 
-/* Calculate the size of the various parts of the item.  The sizes are returned
+/* Calculate the size of the various parts of the item.	 The sizes are returned
  * through mips. */
 void menuitem_get_size(
 	MenuItem *mi, MenuItemPartSizes *mips, FlocaleFont *font,
@@ -385,7 +385,7 @@ void menuitem_paint(
 				dpy, mpip->w, ST_MENU_ACTIVE_BACK_GC(ms),
 				lit_x_start, y_offset + relief_thickness,
 				lit_x_end - lit_x_start,
-                                y_height - relief_thickness);
+				y_height - relief_thickness);
 		}
 	}
 	else if (xft_redraw ||
@@ -626,7 +626,7 @@ void menuitem_paint(
 		{
 			FlocaleDrawUnderline(
 				dpy, ST_PSTDFONT(ms),fws,
-                                MI_HOTKEY_COFFSET(mi));
+				MI_HOTKEY_COFFSET(mi));
 		}
 	}
 

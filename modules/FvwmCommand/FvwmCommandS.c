@@ -15,7 +15,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -27,7 +27,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
 
-#define MYNAME   "FvwmCommandS"
+#define MYNAME	 "FvwmCommandS"
 #define MAXHOSTNAME 32
 
 static int Fd[2]; /* pipes to fvwm */
@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
 #else
 #ifdef USE_BSD_SIGNALS
   fvwmSetSignalMask(sigmask(SIGINT) | sigmask(SIGHUP) | sigmask(SIGQUIT)
-                    | sigmask(SIGTERM) | sigmask(SIGPIPE));
+		    | sigmask(SIGTERM) | sigmask(SIGPIPE));
 #endif
   signal(SIGPIPE, sig_handler);
   signal(SIGINT, sig_handler);
@@ -182,7 +182,7 @@ void server (char *name)
     if (!dpy_name[0] || ':' == dpy_name[0])
     {
       gethostname(hostname, MAXHOSTNAME);
-      strcat(f_stem, hostname);  /* Put hostname before dpy if not there */
+      strcat(f_stem, hostname);	 /* Put hostname before dpy if not there */
     }
     strcat(f_stem, dpy_name);
   }
@@ -225,25 +225,25 @@ void server (char *name)
 #ifdef PARANOMIA
       /* do nothing if there are no messages (should never happen) */
       if (!Qstart) {
-        queueing = False;
-        continue;
+	queueing = False;
+	continue;
       }
 #endif
       q1 = Qstart->next;
 
       /* if the first message has been partially sent don't remove it */
       if (!Qstart->sent) {
-        free(Qstart->body);
-        free(Qstart);
-        Qstart = NULL;
+	free(Qstart->body);
+	free(Qstart);
+	Qstart = NULL;
       } else
-        fprintf(stderr, "FvwmCommandS: leaving a partially sent message in the queue\n");
+	fprintf(stderr, "FvwmCommandS: leaving a partially sent message in the queue\n");
 
       /* now remove the rest of the message queue */
       while ((q2 = q1) != NULL) {
-        q1 = q1->next;
-        free(q2->body);
-        free(q2);
+	q1 = q1->next;
+	free(q2->body);
+	free(q2);
       }
 
       /* there is either one message left (partially complete) or none */
@@ -258,7 +258,7 @@ void server (char *name)
 
       if (packet == NULL)
       {
-        break;
+	break;
       }
       process_message(packet->type, packet->body);
     }
@@ -275,37 +275,37 @@ void server (char *name)
       len = read(FfdC, buf, MAX_MODULE_INPUT_TEXT_LEN);
       if (len <= 0)
       {
-        if ((len < 0) && (errno == EAGAIN))
-        {
-          /*
-           * This probably won't happen - the select() has told us that
-           * there's something to read. The only possible thing that could
-           * cause this is if somebody else read the data first ... (who?)
-           */
-          continue;
-        }
+	if ((len < 0) && (errno == EAGAIN))
+	{
+	  /*
+	   * This probably won't happen - the select() has told us that
+	   * there's something to read. The only possible thing that could
+	   * cause this is if somebody else read the data first ... (who?)
+	   */
+	  continue;
+	}
 
-        /*
-         * Any other error, such as an invalid descriptor (?) or someone
-         * closing the remote end of our pipe, and we give up!
-         */
-        err_quit("reading fifo");
+	/*
+	 * Any other error, such as an invalid descriptor (?) or someone
+	 * closing the remote end of our pipe, and we give up!
+	 */
+	err_quit("reading fifo");
       }
 
       /* in case of multiple long lines */
       for (ix = 0; ix < len; ix++)
       {
-        cmd[cix] = buf[ix];
-        if (cmd[cix] == '\n')
-        {
-          cmd[cix] = '\0';
-          cix = 0;
-          if (StrHasPrefix(bugger_off, cmd))
-            /* fvwm will close our pipes when it has processed this */
-            SendQuitNotification(Fd);
-          else
-            SendText(Fd, cmd, 0);
-        }
+	cmd[cix] = buf[ix];
+	if (cmd[cix] == '\n')
+	{
+	  cmd[cix] = '\0';
+	  cix = 0;
+	  if (StrHasPrefix(bugger_off, cmd))
+	    /* fvwm will close our pipes when it has processed this */
+	    SendQuitNotification(Fd);
+	  else
+	    SendText(Fd, cmd, 0);
+	}
 	else if (cix >= MAX_MODULE_INPUT_TEXT_LEN)
 	{
 	  err_msg("command too long");
@@ -327,15 +327,15 @@ void server (char *name)
        * with partial success */
       sent = write(FfdM, q->body + q->sent, q->length - q->sent);
       if (sent == q->length - q->sent) {
-        Qstart = q->next;
-        free(q->body);
-        free(q);
-        if (Qstart == NULL) {
-          Qlast = NULL;
-          queueing = False;
-        }
+	Qstart = q->next;
+	free(q->body);
+	free(q);
+	if (Qstart == NULL) {
+	  Qlast = NULL;
+	  queueing = False;
+	}
       } else if (sent >= 0)
-        q->sent += sent;
+	q->sent += sent;
     }
 
   } /* while */
@@ -565,7 +565,7 @@ void err_quit(const char *msg)
  * from the input pipes. (it will also die a lot faster when fvwm quits)
  */
 void relay_packet(unsigned long type, unsigned long length,
-                  unsigned long *body)
+		  unsigned long *body)
 {
   Q *new;
 

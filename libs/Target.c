@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*
@@ -243,7 +243,7 @@ void fvwmlib_get_target_window(
   while (!finished && !canceled)
   {
     XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-                   KeyPressMask | KeyReleaseMask, &eventp);
+		   KeyPressMask | KeyReleaseMask, &eventp);
     switch (eventp.type)
     {
     case KeyPress:
@@ -255,16 +255,16 @@ void fvwmlib_get_target_window(
       switch (keysym)
       {
       case XK_Escape:
-        canceled = True;
-        break;
+	canceled = True;
+	break;
       case XK_space:
       case XK_Return:
       case XK_KP_Enter:
-        finished = True;
-        break;
+	finished = True;
+	break;
       default:
-        fvwmlib_keyboard_shortcuts(dpy, screen, &eventp, 0, 0, NULL, NULL, 0);
-        break;
+	fvwmlib_keyboard_shortcuts(dpy, screen, &eventp, 0, 0, NULL, NULL, 0);
+	break;
       }
       break;
     case ButtonPress:

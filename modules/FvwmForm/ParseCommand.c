@@ -18,12 +18,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <sys/types.h>
-#include <FvwmForm.h>                   /* common FvwmForm stuff */
+#include <FvwmForm.h>			/* common FvwmForm stuff */
 
 static char *buf;
 static int N = 8;
@@ -54,7 +54,7 @@ char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
   int added_sel;
   Item *item;
 
-  if (buf == 0) {                       /* if no buffer yet */
+  if (buf == 0) {			/* if no buffer yet */
     buf = (char *)malloc(N);
   }
   while (1) {
@@ -62,8 +62,8 @@ char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
     if (c == '\0' || c == end) {  /* end of substitution */
       *dn1 = dn;
       *sp1 = sp;
-      if (end == 0) {                   /* if end of command reached */
-        AddChar('\0');                  /* make sure theres a null */
+      if (end == 0) {			/* if end of command reached */
+	AddChar('\0');			/* make sure theres a null */
       }
       return(buf);
     }
@@ -86,7 +86,7 @@ char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
 	  *(vp++) = x;
       }
       for (item = root_item_ptr; item != 0;
-           item = item->header.next) {/* all items */
+	   item = item->header.next) {/* all items */
 	if (strcmp(var, item->header.name) == 0) {
 	  switch (item->type) {
 	  case I_INPUT:
@@ -115,17 +115,17 @@ char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
 	  case I_SELECT:
 	    if (x != ')')
 	      ParseCommand(dn, sp, ')', &dn2, &sp);
-            added_sel=0;
+	    added_sel=0;
 	    for (j = 0; j < item->selection.n; j++) {
 	      if (item->selection.choices[j]->choice.on) {
-                if (added_sel) {        /* if not first sel added */
-                  AddChar(' ');         /* insert space before next value */
-                }
-                added_sel=1;
-                for (cp = item->selection.choices[j]->choice.value;
+		if (added_sel) {	/* if not first sel added */
+		  AddChar(' ');		/* insert space before next value */
+		}
+		added_sel=1;
+		for (cp = item->selection.choices[j]->choice.value;
 		     *cp != '\0'; cp++) {
 		  AddChar(*cp);
-                }
+		}
 	      }
 	    }
 	    break;
@@ -137,7 +137,7 @@ char * ParseCommand (int dn, char *sp, char end, int *dn1, char **sp1)
     } /* end char is $, not followed by ( */
     /* if char is \, followed by ), want to pass thru the paren literally */
     if (c == '\\' && *sp == ')') {
-      c = *(sp++);                      /* skip to the paren */
+      c = *(sp++);			/* skip to the paren */
     }
   normal_char:
     AddChar(c);

@@ -8,38 +8,38 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef F_PICTURE_GRAPHICS_H
 #define F_PICTURE_GRAPHICS_H
 
-/* 
+/*
  * <pubfunc>PGraphicsCopyPixmaps
  * <description>
  * PGraphicsCopyPixmaps copies a rectangle constituted by a pixmap with its
  * mask and alpha channel to a drawable at a given position.
  * </description>
  * <arg>
- * dpy:           Specifies the connection to the X server.
- * pixmap:        Source pixmap.
- * mask:          Source mask (can be None).
- * alpha:         Source alpha chanel (can be None).
- * depth:         depth of the pixmap (1 or Pdepth).
- * d:             Destination drawable which should be of depth Pdepth.
- * GC gc:         Specifies the GC.
- * src_x,src_y:   Specify the x and y coordinates, which are relative to the
- *                origin of the source pixmap, mask and alpha of the rectangle
- *                which is copied.
- * src_w,src_h:   Width and height of the source rectangle relatively to the
- *                src_x and src_y.
+ * dpy:		  Specifies the connection to the X server.
+ * pixmap:	  Source pixmap.
+ * mask:	  Source mask (can be None).
+ * alpha:	  Source alpha chanel (can be None).
+ * depth:	  depth of the pixmap (1 or Pdepth).
+ * d:		  Destination drawable which should be of depth Pdepth.
+ * GC gc:	  Specifies the GC.
+ * src_x,src_y:	  Specify the x and y coordinates, which are relative to the
+ *		  origin of the source pixmap, mask and alpha of the rectangle
+ *		  which is copied.
+ * src_w,src_h:	  Width and height of the source rectangle relatively to the
+ *		  src_x and src_y.
  * dest_x,dest_y: Specify the x and y coordinates of the destination rectangle,
- *                which are relative to the origin of the drawable d.
+ *		  which are relative to the origin of the drawable d.
  * </arg>
  * <note>
  * The clip_mask, clip_x_origin and clip_y_origin value of the gc are
@@ -55,7 +55,7 @@ void PGraphicsCopyPixmaps(Display *dpy, Pixmap pixmap, Pixmap mask, Pixmap alpha
 			  int src_x, int src_y, int src_w, int src_h,
 			  int dest_x, int dest_y);
 
-/* 
+/*
  * <pubfunc>PGraphicsCopyFvwmPicture
  * <description>
  * PGraphicsCopyFvwmPicture copies a rectangle constituted by an FvwmPicture
@@ -69,7 +69,7 @@ void PGraphicsCopyFvwmPicture(Display *dpy, FvwmPicture *p, Drawable d, GC gc,
 			      int src_x, int src_y, int src_w, int src_h,
 			      int dest_x, int dest_y);
 
-/* 
+/*
  * <pubfunc>PGraphicsTileRectangle
  * <description>
  * This function is similar to PGraphicsCopyPixmaps. It tiles the rectangle of
@@ -84,22 +84,22 @@ void PGraphicsTileRectangle(Display *dpy, Window win,
 			    Drawable d, GC gc, GC mono_gc,
 			    int dest_x, int dest_y, int dest_w, int dest_h);
 
-/* 
+/*
  * <pubfunc>PGraphicsTintDrawable
  * <description>
  * PGraphicsTintDrawable tint a rectangle of a dawable. It needs the
  * Xrender extension.
  * </description>
  * <arg>
- * dpy:            Specifies the connection to the X server.
- * win:            A Window, says the Root window.
+ * dpy:		   Specifies the connection to the X server.
+ * win:		   A Window, says the Root window.
  * tint_percent:   Rate in percent for the tinting, a value of 0 will do
-                   nothing while a value of 100 will totally tint.
- * tint:           Colour with which the tint is performed.
- * mask:           Mask for the tint.
- * d:              Destination drawable.
+		   nothing while a value of 100 will totally tint.
+ * tint:	   Colour with which the tint is performed.
+ * mask:	   Mask for the tint.
+ * d:		   Destination drawable.
  * dest_x, dest_y: Specify the x and y coordinates of the destination rectangle,
- *                 which are relative to the origin of the drawable. 
+ *		   which are relative to the origin of the drawable.
  * dest_w, dest_h: Specify the height and the width of the destination rectangle.
  * </arg>
  */

@@ -10,7 +10,7 @@
 /* define if extended WM hints are enabled */
 #undef HAVE_EWMH
 
-/* Where to search for images.  */
+/* Where to search for images.	*/
 #undef FVWM_IMAGEPATH
 
 /* Define if Xpm library is used.  */
@@ -20,7 +20,7 @@
 #undef HAVE_PNG
 
 /* Define if your processor stores words with the most significant
-   byte first (like Motorola and SPARC, unlike Intel and VAX).  */
+   byte first (like Motorola and SPARC, unlike Intel and VAX).	*/
 #undef WORDS_BIGENDIAN
 
 /* Define if rplay library is used.  */
@@ -91,7 +91,7 @@
  * don't normally use a shaped window, you have to decide for yourself.
  *
  * Note: if it is compiled in, run time detection is used to make sure that
- * the currently running X server supports it.  */
+ * the currently running X server supports it.	*/
 #undef SHAPE
 
 /* Define if fribidi library is used.  */
@@ -100,7 +100,7 @@
 /* Enables the "MiniIcon" Style option to specify a small pixmap which
  * can be used as one of the title-bar buttons, shown in window list,
  * utilized by modules, etc.  Requires PIXMAP_BUTTONS to be defined
- * (see below).  */
+ * (see below).	 */
 /* #undef MINI_ICONS */
 /* NOTE: hard coded to 1 */
 #if 1
@@ -195,7 +195,7 @@
 /* Define if the X11 ConnectionNumber is actually a file descriptor. */
 #define HAVE_X11_FD 1
 
-/* Define if fork() has unix semantics.  On VMS, no child process is created
+/* Define if fork() has unix semantics.	 On VMS, no child process is created
    until after a successful exec(). */
 #define FORK_CREATES_CHILD 1
 
@@ -225,7 +225,7 @@
        #pragma alloca
 #  else
 #    ifndef alloca /* predefined by HP cc +Olibcalls */
-         char *alloca ();
+	 char *alloca ();
 #    endif
 #  endif
 #endif

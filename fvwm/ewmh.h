@@ -7,12 +7,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef _EWMH_
@@ -26,9 +26,9 @@ Bool EWMH_CMD_Style(char *token, window_style *ptmpstyle);
 
 /* for maximize and placement ewmh style */
 #define EWMH_IGNORE_WORKING_AREA      0
-#define EWMH_USE_WORKING_AREA         1
+#define EWMH_USE_WORKING_AREA	      1
 #define EWMH_USE_DYNAMIC_WORKING_AREA 2
-#define EWMH_WORKING_AREA_MASK        3
+#define EWMH_WORKING_AREA_MASK	      3
 
 #ifdef HAVE_EWMH
 /* Extended window manager hints support */
@@ -128,7 +128,7 @@ void EWMH_SetDesktopNames(void);
 
 /* ewmh_name.c */
 #define EWMH_SetVisibleName(x,y)
-#define EWMH_WMName(x,y,z,t)     0
+#define EWMH_WMName(x,y,z,t)	 0
 #define EWMH_WMIconName(x,y,z,t) 0
 #define EWMH_SetDesktopNames()
 #endif

@@ -268,7 +268,7 @@ void CMD_DestroyMenuStyle(F_CMD_ARGS)
 	{
 		fvwm_msg(ERR,"DestroyMenuStyle",
 			 "cannot destroy default menu style. "
-			 "To reset the default menu style use\n  %s",
+			 "To reset the default menu style use\n	 %s",
 			 DEFAULT_MENU_STYLE);
 		return;
 	}

@@ -24,12 +24,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -164,10 +164,10 @@ main(int argc, char **argv)
   /* We don't have sigaction(), so fall back to less robust methods.  */
 #ifdef USE_BSD_SIGNALS
   fvwmSetSignalMask( sigmask(SIGPIPE) |
-                     sigmask(SIGINT)  |
-                     sigmask(SIGHUP)  |
-                     sigmask(SIGQUIT) |
-                     sigmask(SIGTERM) );
+		     sigmask(SIGINT)  |
+		     sigmask(SIGHUP)  |
+		     sigmask(SIGQUIT) |
+		     sigmask(SIGTERM) );
 #endif
 
   signal(SIGPIPE, TerminateHandler);
@@ -226,7 +226,7 @@ main(int argc, char **argv)
     {
       token = PeekToken(enter_fn, NULL);
       if (!StrEquals(token, "Silent"))
-        enter_fn = safestrdup(CatString2("Silent ", enter_fn));
+	enter_fn = safestrdup(CatString2("Silent ", enter_fn));
     }
     /*** leave command ***/
     if (argv[n] && *argv[n] && !StrEquals(argv[n],"NOP"))
@@ -239,7 +239,7 @@ main(int argc, char **argv)
     {
       token = PeekToken(leave_fn, NULL);
       if (!StrEquals(token, "Silent"))
-        leave_fn = safestrdup(CatString2("Silent ", leave_fn));
+	leave_fn = safestrdup(CatString2("Silent ", leave_fn));
     }
   }
 
@@ -293,7 +293,7 @@ main(int argc, char **argv)
     FD_SET(fd[1], &in_fdset);
 
     myfprintf((stderr, "\nstart %d (ri = %d, hnw = %d, usec = %d)\n",
-               count++, raise_immediately, have_new_window, usec));
+	       count++, raise_immediately, have_new_window, usec));
     if (!raise_immediately)
     {
       /* fill in struct - modified by select() */
@@ -307,11 +307,11 @@ main(int argc, char **argv)
 #ifdef DEBUG
     sprintf(big_int_area, "%d usecs", (int)delay->tv_usec);
     myfprintf((stderr, "select: delay = %s\n",
-               (have_new_window) ? big_int_area : "infinite" ));
+	       (have_new_window) ? big_int_area : "infinite" ));
 #endif
     if (fvwmSelect(fd_width,
-                   &in_fdset, NULL, NULL,
-                   (have_new_window) ? delay : NULL) == -1)
+		   &in_fdset, NULL, NULL,
+		   (have_new_window) ? delay : NULL) == -1)
     {
       myfprintf((stderr, "select: error! (%s)\n", strerror(errno)));
       break;
@@ -323,8 +323,8 @@ main(int argc, char **argv)
       FvwmPacket *packet = ReadFvwmPacket(fd[1]);
       if ( packet == NULL )
       {
-        myfprintf((stderr, "Leaving because of null packet\n"));
-        break;
+	myfprintf((stderr, "Leaving because of null packet\n"));
+	break;
       }
 
       myfprintf((stderr, "pw = 0x%x, fw=0x%x, rw = 0x%x, lw=0x%x\n",
@@ -334,40 +334,40 @@ main(int argc, char **argv)
       switch (packet->type)
       {
       case M_FOCUS_CHANGE:
-        /* it's a focus package */
-        focus_win = packet->body[0];
-        myfprintf((stderr, "focus change\n"));
+	/* it's a focus package */
+	focus_win = packet->body[0];
+	myfprintf((stderr, "focus change\n"));
 
-        if (focus_win != raised_win)
-        {
-          myfprintf((stderr, "its a new window\n"));
-          have_new_window = 1;
-          raise_window_now = raise_immediately;
-        }
+	if (focus_win != raised_win)
+	{
+	  myfprintf((stderr, "its a new window\n"));
+	  have_new_window = 1;
+	  raise_window_now = raise_immediately;
+	}
 #ifdef DEBUG
-        else fprintf(stderr, "no new window\n");
+	else fprintf(stderr, "no new window\n");
 #endif
-        break;
+	break;
 
       case M_RAISE_WINDOW:
-        myfprintf((stderr, "raise packet 0x%x\n", (int)packet->body[0]));
-        raised_win = packet->body[0];
-        if (have_new_window && focus_win == raised_win)
-        {
-          myfprintf((stderr, "its the old window: don't raise\n"));
-          have_new_window = 0;
-        }
-        break;
+	myfprintf((stderr, "raise packet 0x%x\n", (int)packet->body[0]));
+	raised_win = packet->body[0];
+	if (have_new_window && focus_win == raised_win)
+	{
+	  myfprintf((stderr, "its the old window: don't raise\n"));
+	  have_new_window = 0;
+	}
+	break;
 
       case M_LOWER_WINDOW:
-        myfprintf((stderr, "lower packet 0x%x\n", (int)packet->body[0]));
-        if (have_new_window && focus_win == packet->body[0])
-        {
-          myfprintf((stderr,
-                     "window was explicitly lowered, don't raise it again\n"));
-          have_new_window = 0;
-        }
-        break;
+	myfprintf((stderr, "lower packet 0x%x\n", (int)packet->body[0]));
+	if (have_new_window && focus_win == packet->body[0])
+	{
+	  myfprintf((stderr,
+		     "window was explicitly lowered, don't raise it again\n"));
+	  have_new_window = 0;
+	}
+	break;
       } /* switch */
       SendUnlockNotification(fd);
     }
@@ -375,8 +375,8 @@ main(int argc, char **argv)
     {
       if (have_new_window)
       {
-        myfprintf((stderr, "must raise now\n"));
-        raise_window_now = 1;
+	myfprintf((stderr, "must raise now\n"));
+	raise_window_now = 1;
       }
     }
 
@@ -386,7 +386,7 @@ main(int argc, char **argv)
 
       if (last_win && leave_fn)
       {
-        /* if focus_win isn't the root */
+	/* if focus_win isn't the root */
 	if (do_pass_id)
 	{
 	  sprintf(buf, "%s 0x%x\n", leave_fn, (int)last_win);
@@ -395,12 +395,12 @@ main(int argc, char **argv)
 	{
 	  sprintf(buf, "%s\n", leave_fn);
 	}
-        SendInfo(fd, buf, last_win);
+	SendInfo(fd, buf, last_win);
       }
 
       if (focus_win && enter_fn)
       {
-        /* if focus_win isn't the root */
+	/* if focus_win isn't the root */
 	if (do_pass_id)
 	{
 	  sprintf(buf, "%s 0x%x\n", enter_fn, (int)focus_win);
@@ -409,8 +409,8 @@ main(int argc, char **argv)
 	{
 	  sprintf(buf, "%s\n", enter_fn);
 	}
-        SendInfo(fd, buf, focus_win);
-        raised_win = focus_win;
+	SendInfo(fd, buf, focus_win);
+	raised_win = focus_win;
       }
 
       /* switch to wait mode again */

@@ -4,9 +4,9 @@
  * Copyright (c) 1996 by Alfredo Kojima
  */
 /*
- * Todo: 
+ * Todo:
  * realtime audio mixing
- * replace the Audio module 
+ * replace the Audio module
  */
 #include <stdlib.h>
 #include <stdio.h>
@@ -47,7 +47,7 @@ int InPipe;
 void *ckmalloc(size_t size)
 {
     void *tmp;
-    
+
     tmp=malloc(size);
     if (tmp==NULL) {
 	fprintf(stderr,"%s: virtual memory exhausted.",ProgName);
@@ -58,7 +58,7 @@ void *ckmalloc(size_t size)
 
 /*
  * Register --
- * 	makes a new sound entry
+ *	makes a new sound entry
  */
 void Register(char *sound_file, int code)
 {
@@ -66,10 +66,10 @@ void Register(char *sound_file, int code)
     struct stat stat_buf;
 
     if (sound_file[0]=='.' && sound_file[1]==0) {
-	SoundTable[code]=ckmalloc(sizeof(SoundEntry));	
+	SoundTable[code]=ckmalloc(sizeof(SoundEntry));
 	SoundTable[code]->size = -1;
 	return; /* dummy sound */
-    }    
+    }
     if (stat(sound_file, &stat_buf)<0) {
 	fprintf(stderr,"%s: sound file %s not found\n",ProgName,
 		sound_file);
@@ -97,7 +97,7 @@ void Register(char *sound_file, int code)
 	       sound_file);
 	free(SoundTable[code]->data);
 	free(SoundTable[code]);
-	close(file);	
+	close(file);
 	SoundTable[code]=NULL;
 	return;
     }
@@ -106,7 +106,7 @@ void Register(char *sound_file, int code)
 
 /*
  * PlaySound --
- * 	plays a sound
+ *	plays a sound
  */
 
 void PlaySound(int sid)
@@ -121,21 +121,21 @@ void PlaySound(int sid)
     if (SoundPlayer!=NULL) {
 	static char cmd[1024];
 	pid_t child;
-	
+
 	child = fork();
 	if (child<0) return;
 	else if (child==0) {
 	    execlp(SoundPlayer,SoundPlayer,SoundTable[sid]->data,NULL);
 	} else {
 	    while (wait(NULL)<0);
-	}	
+	}
 	/*
 	sprintf(cmd,"%s %s",SoundPlayer,SoundTable[sid]->data);
 	system(cmd);
 	 */
 	return;
     }
-#if 0    
+#if 0
     audio = open(AUDIO_DEVICE,O_WRONLY|O_NONBLOCK);
     if ((audio<0) && errno==EAGAIN) {
 	sleep(1);
@@ -145,21 +145,21 @@ void PlaySound(int sid)
     write(audio, SoundTable[sid]->data,SoundTable[sid]->size);
     close(audio);
     audio=-1;
-#endif    
+#endif
 }
 
-void DoNothing(int foo) 
+void DoNothing(int foo)
 {
-    signal(SIGUSR1, DoNothing);    
+    signal(SIGUSR1, DoNothing);
 }
 
 /*
  * HandleRequest --
- * 	 play requested sound
+ *	 play requested sound
  * sound -1 is a quit command
- * 
+ *
  * Note:
- * 	Something not good will happed if a new play request 
+ *	Something not good will happed if a new play request
  * arrives before exiting the handler
  */
 void HandleRequest(int foo)
@@ -167,11 +167,11 @@ void HandleRequest(int foo)
     int sound, timestamp;
     char *buffer;
     LList *tmp;
-/*    
+/*
     signal(SIGUSR1, DoNothing);
  */
     read(InPipe,&sound,sizeof(sound));
-    read(InPipe,&timestamp,sizeof(timestamp));    
+    read(InPipe,&timestamp,sizeof(timestamp));
     if (sound<0) {
 	printf("exitting ASSound..\n");
 	exit(0);
@@ -185,24 +185,24 @@ void HandleRequest(int foo)
     tmp->next = PlayQueue;
     if (PlayQueue==NULL) {
 	OldestQueued = tmp;
-	tmp->prev = NULL;	
+	tmp->prev = NULL;
     } else {
-	PlayQueue->prev = tmp;	
-    }    
+	PlayQueue->prev = tmp;
+    }
     PlayQueue = tmp;
     signal(SIGUSR1, HandleRequest);
-#endif    
+#endif
 }
 
 /*
  * Program startup.
  * Arguments:
- * argv[1] - pipe for reading data 
- * argv[2] - the name of the sound player to be used. ``-'' indicates 
- * 	internal player.
+ * argv[1] - pipe for reading data
+ * argv[2] - the name of the sound player to be used. ``-'' indicates
+ *	internal player.
  * argv[3]... - filenames of sound files with code n-3
  */
-int main(int argc, char **argv) 
+int main(int argc, char **argv)
 {
     int i;
 
@@ -225,7 +225,7 @@ int main(int argc, char **argv)
     LastSound=i-3;
     InPipe = atoi(argv[1]);
     while(1) {
-#if 0	
+#if 0
 	LList *tmp;
 	while (OldestQueued!=NULL) {
 	    if ((clock()-OldestQueued->timestamp) < PLAY_TIMEOUT)
@@ -235,8 +235,8 @@ int main(int argc, char **argv)
 	    OldestQueued=tmp;
 	}
 	pause();
-#endif	
+#endif
 	HandleRequest(0);
-    }    
+    }
 }
 

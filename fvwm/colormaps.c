@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -206,7 +206,7 @@ void InstallWindowColormaps(FvwmWindow *fw)
 
 			/*
 			 * On Sun X servers, don't install 24 bit TrueColor
-			 * colourmaps.  Despite what the server says, these
+			 * colourmaps.	Despite what the server says, these
 			 * colourmaps are always installed. */
 			if (last_cmap != attributes.colormap
 #if defined(sun) && defined(TRUECOLOR_ALWAYS_INSTALLED)
@@ -349,8 +349,8 @@ void FetchWmColormapWindows (FvwmWindow *fw)
 {
 	XWindowAttributes      getattribs;
 	XSetWindowAttributes   setattribs;
-	long int               i;
-	unsigned long          valuemask;
+	long int	       i;
+	unsigned long	       valuemask;
 
 	if (fw->cmap_windows != (Window *)NULL)
 	{
@@ -393,8 +393,8 @@ void FetchWmColormapWindows (FvwmWindow *fw)
  ****************************************************************************/
 void EnterSubWindowColormap(Window win)
 {
-	FvwmWindow         *t;
-	long int            i;
+	FvwmWindow	   *t;
+	long int	    i;
 	XWindowAttributes   attribs;
 
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)

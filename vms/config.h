@@ -3,11 +3,11 @@
     Author   : Fabien Villard (Villard_F@Decus.Fr)
     Date     : 20-JAN-1999
     Descrip  : adapted for VMS from the config.h.in generated automatically from configure.in by autoheader.
-               Compatibility stuff for Fvwm.
-               Tested with Dec 5.7 on Alpha.
+	       Compatibility stuff for Fvwm.
+	       Tested with Dec 5.7 on Alpha.
     Note     : this file can be edited to change some options.
     Modifs   :
-      25-JAN-1999  Fab    Version 2.1.10 de Fvwm. Autoconfig gives args types for select().
+      25-JAN-1999  Fab	  Version 2.1.10 de Fvwm. Autoconfig gives args types for select().
       11-MAR-1999  Steve  Add new symbols for systems that can't use autoconf.
 ----------------------------------------------------------------------------------------------------------------------------------*/
 /* --- Those defines were intialy in makefiles and command lines --- */
@@ -25,17 +25,17 @@
 #define select VMS_select_pipes
 
 #define CoerceEnterNotifyOnCurrentWindow \
-        CoerceEnterNotifyOnCurrentWind          /* - Nname too long, exceeds 31 characters. - */
+	CoerceEnterNotifyOnCurrentWind		/* - Nname too long, exceeds 31 characters. - */
 
 #define __attribute__(toto)
 
-#undef DEBUG_EVENTS                             /* --- Define to trace My_XNextEvent and DispatchEvent in events.c --- */
-#define DEBUG_MODULES                           /* --- Define to trace modules launching --- */
+#undef DEBUG_EVENTS				/* --- Define to trace My_XNextEvent and DispatchEvent in events.c --- */
+#define DEBUG_MODULES				/* --- Define to trace modules launching --- */
 
 #define PACKAGE "VMS port (25-JAN-1999)"
 #define VERSION "2.3.0"
 
-/* Where to search for the fvwm icons.  */
+/* Where to search for the fvwm icons.	*/
 #define FVWM_IMAGEPATH "Sys$Login:"
 
 /* Define if Xpm library is used.  */
@@ -56,7 +56,7 @@
  * minimal in this case (The shaped window shared libs will be loaded anyway). If you don't normally use a shaped window, you have
  * to decide for yourself.
  *
- * Note: if it is compiled in, run time detection is used to make sure that the currently running X server supports it.  */
+ * Note: if it is compiled in, run time detection is used to make sure that the currently running X server supports it.	 */
 #undef SHAPE
 
 /* Enables the "MiniIcon" Style option to specify a small pixmap which can be used as one of the title-bar buttons, shown in
@@ -104,7 +104,7 @@
 /* Define if the X11 ConnectionNumber is actually a file descriptor. */
 #undef HAVE_X11_FD
 
-/* Define if fork() has unix semantics.  On VMS, no child process is created
+/* Define if fork() has unix semantics.	 On VMS, no child process is created
    until after a successful exec(). */
 #undef FORK_CREATES_CHILD
 
@@ -122,7 +122,7 @@
 /* Define if you have the strftime function.  */
 #define HAVE_STRFTIME 1
 
-/* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
+/* Define if you have <sys/wait.h> that is POSIX.1 compatible.	*/
 #define HAVE_SYS_WAIT_H 1
 
 /* ### Define as __inline if that's what the C compiler calls it.  */
@@ -131,7 +131,7 @@
 */
 #define inline
 
-/* Define if on MINIX.  */
+/* Define if on MINIX.	*/
 #undef _MINIX
 
 /* Define to `long' if <sys/types.h> doesn't define.  */
@@ -140,13 +140,13 @@
 /* Define to `int' if <sys/types.h> doesn't define.  */
 #undef pid_t
 
-/* ### Define if the system does not provide POSIX.1 features except with this defined.  */
+/* ### Define if the system does not provide POSIX.1 features except with this defined.	 */
 #undef _POSIX_1_SOURCE
 
 /* ### Define if you need to in order for stat and other things to work.  */
 #undef _POSIX_SOURCE
 
-/* Define as the return type of signal handlers (int or void).  */
+/* Define as the return type of signal handlers (int or void).	*/
 #define RETSIGTYPE void
 
 /* Define to the type of arg1 for select(). */
@@ -165,22 +165,22 @@
 /* Define to `unsigned' if <sys/types.h> doesn't define.  */
 #undef size_t
 
-/* Define if you have the ANSI C header files.  */
+/* Define if you have the ANSI C header files.	*/
 #define STDC_HEADERS
 
-/* Define if the X Window System is missing or not being used.  */
+/* Define if the X Window System is missing or not being used.	*/
 #undef X_DISPLAY_MISSING
 
-/* Define if lex declares yytext as a char * by default, not a char[].  */
+/* Define if lex declares yytext as a char * by default, not a char[].	*/
 #undef YYTEXT_POINTER
 
 /* Define if you have the atexit function.  */
 #undef HAVE_ATEXIT
 
-/* Define if you have the div function.  */
+/* Define if you have the div function.	 */
 #define HAVE_DIV 1
 
-/* Define if you have the gethostname function.  */
+/* Define if you have the gethostname function.	 */
 #define HAVE_GETHOSTNAME 1
 
 /* Define if you have the gettimeofday function.  */
@@ -220,7 +220,7 @@
 /* Define if you have the socket function.  */
 #define HAVE_SOCKET 1
 
-/* Define if you have the strcasecmp function.  */
+/* Define if you have the strcasecmp function.	*/
 #define HAVE_STRCASECMP 1
 
 /* Define if you have the strchr function.  */
@@ -232,7 +232,7 @@
 /* Define if you have the strerror function.  */
 #define HAVE_STRERROR 1
 
-/* Define if you have the strncasecmp function.  */
+/* Define if you have the strncasecmp function.	 */
 #define HAVE_STRNCASECMP 1
 
 /* Define if you have the strstr function.  */

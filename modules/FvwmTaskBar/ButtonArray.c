@@ -1,7 +1,7 @@
 /* FvwmTaskBar Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
- *                               Mike_Finger@atk.com)
+ *				 Mike_Finger@atk.com)
  *  Copyright 1995,  Pekka Pietik{inen (pp@netppl.fi)
  *
  * The functions in this source file that are the original work of Mike Finger.
@@ -21,12 +21,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -49,7 +49,7 @@ extern FlocaleFont *FButtonFont, *FSelButtonFont;
 extern Display *dpy;
 extern Window win;
 extern GC shadow, hilite, graph, whitegc, blackgc, checkered, icongraph,
-          iconhilite, iconshadow, focusgraph, focushilite, focusshadow;
+	  iconhilite, iconshadow, focusgraph, focushilite, focusshadow;
 extern GC iconbackgraph;
 extern GC focusbackgraph;
 extern FlocaleWinString *FwinString;
@@ -62,23 +62,23 @@ extern int ThreeDfvwm;
 extern char *FocusBackColor;
 extern Button *StartButton;
 
-int w3p;         /* width of the string "..." in pixels */
+int w3p;	 /* width of the string "..." in pixels */
 
 extern int NRows, RowHeight;
 
 #define MIN_BUTTON_SIZE 32 /*....*/
 
 /*************************************************************************
- *                                                                       *
- *  Button handling functions and procedures                             *
- *                                                                       *
+ *									 *
+ *  Button handling functions and procedures				 *
+ *									 *
  *************************************************************************/
 
 /* Draws a 3D rectangle */
 void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
 		Bool iconified)
 {
-  colorset_struct *cset = &Colorset[0];  /* initialize to avoid warning */
+  colorset_struct *cset = &Colorset[0];	 /* initialize to avoid warning */
   int d = 1;
 
   if (ThreeDfvwm)
@@ -123,8 +123,8 @@ void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
       XDrawLine (dpy, wn, hilite, x, y+1, x+w-2, y+1);
       XDrawLine (dpy, wn, hilite, x+1, y, x+1, y+h-2);
     }
-    XDrawLine (dpy, wn, shadow,  x+1, y+h-2, x+w-2, y+h-2);
-    XDrawLine (dpy, wn, shadow,  x+w-2, y+h-2, x+w-2, y+1);
+    XDrawLine (dpy, wn, shadow,	 x+1, y+h-2, x+w-2, y+h-2);
+    XDrawLine (dpy, wn, shadow,	 x+w-2, y+h-2, x+w-2, y+1);
     XDrawLine (dpy, wn, blackgc, x, y+h-1, x+w-1, y+h-1);
     XDrawLine (dpy, wn, blackgc, x+w-1, y+h-1, x+w-1, y);
     break;
@@ -152,8 +152,8 @@ void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
     XDrawLine (dpy, wn, focusshadow, x+1, y, x+1, y+h-2);
     if (ThreeDfvwm)
     {
-      XDrawLine (dpy, wn, focushilite,  x+1, y+h-2, x+w-2, y+h-2);
-      XDrawLine (dpy, wn, focushilite,  x+w-2, y+h-2, x+w-2, y+1);
+      XDrawLine (dpy, wn, focushilite,	x+1, y+h-2, x+w-2, y+h-2);
+      XDrawLine (dpy, wn, focushilite,	x+w-2, y+h-2, x+w-2, y+1);
     }
     XDrawLine (dpy, wn, focushilite, x, y+h-1, x+w-1, y+h-1);
     XDrawLine (dpy, wn, focushilite, x+w-1, y+h-1, x+w-1, y);
@@ -190,7 +190,7 @@ Button *ButtonNew(const char *title, FvwmPicture *p, int state, int count)
   strcpy(new->title, title);
   if (p != NULL) {
     new->p.picture = p->picture;
-    new->p.mask    = p->mask;
+    new->p.mask	   = p->mask;
     new->p.alpha   = p->alpha;
     new->p.width   = p->width;
     new->p.height  = p->height;
@@ -328,7 +328,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
 		button->truncate = True;
 	}
 
-	/* Only print as much of the title as will fit.  */
+	/* Only print as much of the title as will fit.	 */
 	if (search_len)
 	{
 		FwinString->str = button->title;
@@ -384,9 +384,9 @@ char *ButtonName(Button *button)
 
 
 /*************************************************************************
- *                                                                       *
- *  ButtonArray handling functions and procedures                        *
- *                                                                       *
+ *									 *
+ *  ButtonArray handling functions and procedures			 *
+ *									 *
  *************************************************************************/
 
 /* -------------------------------------------------------------------------
@@ -428,7 +428,7 @@ void UpdateArray(ButtonArray *array,int x,int y,int w, int h, int tw)
    AddButton - Allocate space for and add the button to the list
    ------------------------------------------------------------------------- */
 void AddButton(ButtonArray *array, const char *title, FvwmPicture *p, int state,
-               int count, int iconified)
+	       int count, int iconified)
 {
   Button *new, *temp;
 
@@ -452,7 +452,7 @@ void AddButton(ButtonArray *array, const char *title, FvwmPicture *p, int state,
 
 /* -------------------------------------------------------------------------
    ArrangeButtonArray - Rearrange the button size (called from AddButton,
-                          RemoveButton, AdjustWindow)
+			  RemoveButton, AdjustWindow)
    ------------------------------------------------------------------------- */
 
 void ArrangeButtonArray (ButtonArray *array)
@@ -631,7 +631,7 @@ void RadioButton(ButtonArray *array, int butnum, int state)
    ------------------------------------------------------------------------- */
 int WhichButton(ButtonArray *array, int xp, int yp)
 {
-  int   junkx, junky, junkz;
+  int	junkx, junky, junkz;
   char *junkt;
 
   return LocateButton(array, xp, yp, &junkx, &junky, &junkt, &junkz);
@@ -652,7 +652,7 @@ int LocateButton(ButtonArray *array, int xp,  int yp, int *xb, int *yb,
     if((x + array->tw > array->w) && (n < NRows))
       { x = 0; y += RowHeight+2; ++n; }
     if( xp >= x+array->x && xp <= x+array->x+array->tw-3 &&
-        yp >= y && yp <= y+array->h) break;
+	yp >= y && yp <= y+array->h) break;
     x += array->tw;
   }
 

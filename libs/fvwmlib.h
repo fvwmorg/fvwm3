@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef FVWMLIB_H
@@ -21,7 +21,7 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xresource.h>
-#include <X11/Intrinsic.h>              /* needed for xpm.h and Pixel defn */
+#include <X11/Intrinsic.h>		/* needed for xpm.h and Pixel defn */
 #include <ctype.h>
 
 #include "fvwmrect.h"
@@ -31,14 +31,14 @@
  ***********************************************************************/
 
 #ifdef NDEBUG
-/* Make everything evaluates to empty.  */
+/* Make everything evaluates to empty.	*/
 # define DB_IS_LEVEL(_l) 0
 # define DBL(_l,_x)
 # define DB(_x)
 #else
 /* Define it all!  */
-# define FVWM_DB_FILE   "FVWM_DB_FILE"
-# define FVWM_DB_LEVEL  "FVWM_DB_LEVEL"
+# define FVWM_DB_FILE	"FVWM_DB_FILE"
+# define FVWM_DB_LEVEL	"FVWM_DB_LEVEL"
 
 # ifndef __FILE__
 #  define __FILE__ 0
@@ -55,12 +55,12 @@
 
 # define DB_IS_LEVEL(_l)    ((_l)<=f_db_level)
 # define DBL(_l,_x) do if (DB_IS_LEVEL(_l)) { \
-                      f_db_info.filenm=__FILE__;\
-                      f_db_info.funcnm=__PRETTY_FUNCTION__;\
-                      f_db_info.module=DB_MODULE;\
-                      f_db_info.lineno=__LINE__;\
-                      f_db_print _x; }while(0)
-# define DB(_x)     DBL(2,_x)
+		      f_db_info.filenm=__FILE__;\
+		      f_db_info.funcnm=__PRETTY_FUNCTION__;\
+		      f_db_info.module=DB_MODULE;\
+		      f_db_info.lineno=__LINE__;\
+		      f_db_print _x; }while(0)
+# define DB(_x)	    DBL(2,_x)
 
 struct f_db_info
 {
@@ -74,7 +74,7 @@ extern struct f_db_info f_db_info;
 extern int f_db_level;
 
 extern void f_db_print(const char *fmt, ...)
-                       __attribute__ ((__format__ (__printf__, 1, 2)));
+		       __attribute__ ((__format__ (__printf__, 1, 2)));
 #endif
 
 
@@ -137,13 +137,13 @@ int getostype(char *buf, int max);
  * Expand '+' to be the value of the previous path.
  *
  * Parameters:
- * p_path          pointer to the path variable
- * newpath         new value for *p_path
+ * p_path	   pointer to the path variable
+ * newpath	   new value for *p_path
  * free_old_path   set true if we should free the memory pointed to
- *                 by p_path on entry
+ *		   by p_path on entry
  *
  * The value of newpath is copied into a newly-allocated place, to which
- * '*p_path' will point to upon return.  The memory region pointed to by
+ * '*p_path' will point to upon return.	 The memory region pointed to by
  * '*p_path' upon entry will be freed if 'free_old_path' is true.
  *
  **/
@@ -153,10 +153,10 @@ void setPath( char** p_path, const char* newpath, int free_old_path );
  * Search along colon-separated path for filename, with optional suffix.
  *
  * Parameters:
- * path          colon-separated path of directory names
- * filename      basename of file to search for
- * suffix        if non-NULL, filename may have this suffix
- * type          mode sought for file
+ * path		 colon-separated path of directory names
+ * filename	 basename of file to search for
+ * suffix	 if non-NULL, filename may have this suffix
+ * type		 mode sought for file
  *
  * For each DIR in the path, search for DIR/filename then
  * DIR/<filename><suffix> (if suffix is non-NULL).  Return the full path of
@@ -168,7 +168,7 @@ void setPath( char** p_path, const char* newpath, int free_old_path );
  * checking for the existence of the file.
  *
  * Returns: full pathname of sought-after file, or NULL.  The return value
- *          points to allocated memory that the caller must free.
+ *	    points to allocated memory that the caller must free.
  *
  **/
 char* searchPath( const char* path, const char* filename,
@@ -198,7 +198,7 @@ Pixel GetForeShadow(Pixel foreground, Pixel background);
  * address 'output'.  It is either in rgb format ("rgb:rrrr/gggg/bbbb") if
  * use_hash is False or in hash notation ("#rrrrggggbbbb") if use_hash is true.
  * The return value is the number of characters used by the string.  The
- * rgb values of the output are undefined if the colorcell is invalid.  The
+ * rgb values of the output are undefined if the colorcell is invalid.	The
  * memory area pointed at by 'output' must be at least 64 bytes (in case of
  * future extensions and multibyte characters).*/
 int pixel_to_color_string(
@@ -270,11 +270,11 @@ void do_relieve_rectangle(
 	GC ReliefGC, GC ShadowGC, int line_width, Bool use_alternate_shading);
 
 #define RelieveRectangle(dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width) \
-        do_relieve_rectangle( \
-                dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, False)
+	do_relieve_rectangle( \
+		dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, False)
 #define RelieveRectangle2(dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width) \
-        do_relieve_rectangle( \
-                dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, True)
+	do_relieve_rectangle( \
+		dpy, d, x, y, w, h, ReliefGC, ShadowGC, line_width, True)
 
 Pixmap CreateStretchXPixmap(Display *dpy, Pixmap src, int src_width,
 			    int src_height, int src_depth,
@@ -373,56 +373,56 @@ int GetEqualSizeChildren(
 #define C_TITLE		    0x02
 #define C_ICON		    0x04
 #define C_ROOT		    0x08
-/*                          0x10*/
-/*                          0x20*/
-#define C_L1                0x40
-#define C_R1                0x80
-#define C_L2               0x100
-#define C_R2               0x200
-#define C_L3               0x400
-#define C_R3               0x800
-#define C_L4              0x1000
-#define C_R4              0x2000
-#define C_L5              0x4000
-#define C_R5              0x8000
-#define C_UNMANAGED      0x10000
-#define C_EWMH_DESKTOP   0x20000
-#define C_F_TOPLEFT     0x100000
-#define C_F_TOPRIGHT    0x200000
-#define C_F_BOTTOMLEFT  0x400000
+/*			    0x10*/
+/*			    0x20*/
+#define C_L1		    0x40
+#define C_R1		    0x80
+#define C_L2		   0x100
+#define C_R2		   0x200
+#define C_L3		   0x400
+#define C_R3		   0x800
+#define C_L4		  0x1000
+#define C_R4		  0x2000
+#define C_L5		  0x4000
+#define C_R5		  0x8000
+#define C_UNMANAGED	 0x10000
+#define C_EWMH_DESKTOP	 0x20000
+#define C_F_TOPLEFT	0x100000
+#define C_F_TOPRIGHT	0x200000
+#define C_F_BOTTOMLEFT	0x400000
 #define C_F_BOTTOMRIGHT 0x800000
 #define C_SB_LEFT      0x1000000
 #define C_SB_RIGHT     0x2000000
 #define C_SB_TOP       0x4000000
 #define C_SB_BOTTOM    0x8000000
-#define C_FRAME       (C_F_TOPLEFT|C_F_TOPRIGHT|C_F_BOTTOMLEFT|C_F_BOTTOMRIGHT)
+#define C_FRAME	      (C_F_TOPLEFT|C_F_TOPRIGHT|C_F_BOTTOMLEFT|C_F_BOTTOMRIGHT)
 #define C_SIDEBAR     (C_SB_LEFT|C_SB_RIGHT|C_SB_TOP|C_SB_BOTTOM)
-#define C_RALL        (C_R1|C_R2|C_R3|C_R4|C_R5)
-#define C_LALL        (C_L1|C_L2|C_L3|C_L4|C_L5)
-#define C_ALL         (C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|\
-                       C_LALL|C_RALL|C_EWMH_DESKTOP)
+#define C_RALL	      (C_R1|C_R2|C_R3|C_R4|C_R5)
+#define C_LALL	      (C_L1|C_L2|C_L3|C_L4|C_L5)
+#define C_ALL	      (C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|\
+		       C_LALL|C_RALL|C_EWMH_DESKTOP)
 
 #define ALL_MODIFIERS (ShiftMask|LockMask|ControlMask|Mod1Mask|Mod2Mask|\
-                       Mod3Mask|Mod4Mask|Mod5Mask)
+		       Mod3Mask|Mod4Mask|Mod5Mask)
 
 /* Possible binding types */
-#define BindingType     char
-#define MOUSE_BINDING   0
-#define KEY_BINDING     1
+#define BindingType	char
+#define MOUSE_BINDING	0
+#define KEY_BINDING	1
 #ifdef HAVE_STROKE
-#define STROKE_BINDING  2
+#define STROKE_BINDING	2
 #endif /* HAVE_STROKE */
 
 typedef struct Binding
 {
-  BindingType type;       /* Is it a mouse, key, or stroke binding */
+  BindingType type;	  /* Is it a mouse, key, or stroke binding */
   STROKE_CODE(void *Stroke_Seq;) /* stroke sequence */
-  int Button_Key;         /* Mouse Button number of Keycode */
-  char *key_name;         /* In case of keycode, give the key_name too */
-  int Context;            /* Contex is Fvwm context, ie titlebar, frame, etc */
-  int Modifier;           /* Modifiers for keyboard state */
-  void *Action;           /* What to do? */
-  void *Action2;          /* This one can be used too */
+  int Button_Key;	  /* Mouse Button number of Keycode */
+  char *key_name;	  /* In case of keycode, give the key_name too */
+  int Context;		  /* Contex is Fvwm context, ie titlebar, frame, etc */
+  int Modifier;		  /* Modifiers for keyboard state */
+  void *Action;		  /* What to do? */
+  void *Action2;	  /* This one can be used too */
   struct Binding *NextBinding;
 } Binding;
 
@@ -466,8 +466,8 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
 		      unsigned int contexts, unsigned int dead_modifiers,
 		      Cursor cursor, Bool fGrab);
 void GrabAllWindowButtons(Display *dpy, Window w, Binding *blist,
-                          unsigned int contexts, unsigned int dead_modifiers,
-                          Cursor cursor, Bool fGrab);
+			  unsigned int contexts, unsigned int dead_modifiers,
+			  Cursor cursor, Bool fGrab);
 void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
 				 unsigned int contexts,
 				 unsigned int dead_modifiers,

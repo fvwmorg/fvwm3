@@ -11,12 +11,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "types.h"
@@ -58,7 +58,7 @@ char *ScriptName;	/* Nom du fichier contenat le script decrivant le GUI */
 char *ScriptBaseName;
 char *ScriptPath = "";
 char *ModuleName;
-int fd[2]; 			/* pipe pair */
+int fd[2];			/* pipe pair */
 int fd_err;
 int x_fd;			/* fd for X */
 Window ref;
@@ -69,7 +69,7 @@ extern void (*TabCom[25]) (int NbArg,long *TabArg);
 
 Display *dpy;
 int screen;
-Window  Root;
+Window	Root;
 X11base *x11base;		/* Pour le serveur X */
 TypeBuffSend BuffSend;		/* Pour les communication entre script */
 int grab_server = 0;
@@ -78,7 +78,7 @@ char *Scrapt;
 Atom propriete,type;
 static Atom wm_del_win;
 char *imagePath = NULL;
-int save_color_limit = 0;                   /* color limit from config */
+int save_color_limit = 0;		    /* color limit from config */
 static Bool is_dead_pipe = False;
 KeySym shift_tab_ks;  /* shift-Tab keysym */
 char *LastString = NULL;  /* last string send by a SendString ot Key cmd */
@@ -140,7 +140,7 @@ ShutdownX(void)
   XFlush(dpy);
 
   /* Attente de deux secondes afin d'etre sur que tous */
-  /* les messages soient arrives a destination         */
+  /* les messages soient arrives a destination	       */
   /* On quitte proprement le serveur X */
   for (i=0; i<nbobj; i++)
     tabxobj[i]->DestroyObj(tabxobj[i]);
@@ -177,8 +177,8 @@ void ReadConfig (char *ScriptName)
      Not very pretty, dje 12/26/99 */
   sprintf(s,"%s%s%s",ScriptPath,(!*ScriptPath ? "" : "/"),ScriptName);
   yyin = fopen(s,"r");
-  if (yyin == NULL) {                   /* file not found yet, */
-    TryToFind(ScriptName);                   /* look in some other places */
+  if (yyin == NULL) {			/* file not found yet, */
+    TryToFind(ScriptName);		     /* look in some other places */
   }
   if (yyin == NULL)
   {
@@ -206,7 +206,7 @@ static void TryToFind(char *filename) {
   extern FILE *yyin;
   char path[FILENAME_MAX];
 
-  if (filename[0] == '/') {             /* if absolute path */
+  if (filename[0] == '/') {		/* if absolute path */
     yyin = fopen(filename,"r");
     return;
   }
@@ -247,22 +247,22 @@ void ParseOptions(void)
       else if (strncasecmp(tline,"*FvwmScriptDefaultBack",22) == 0)
       {
 	x11base->colorset = -1;
-        CopyString(&x11base->backcolor,&tline[22]);
+	CopyString(&x11base->backcolor,&tline[22]);
       }
       else if (strncasecmp(tline,"*FvwmScriptDefaultFore",22) == 0)
       {
 	x11base->colorset = -1;
-        CopyString(&x11base->forecolor,&tline[22]);
+	CopyString(&x11base->forecolor,&tline[22]);
       }
       else if (strncasecmp(tline,"*FvwmScriptDefaultHilight",25) == 0)
       {
 	x11base->colorset = -1;
-        CopyString(&x11base->hilicolor,&tline[25]);
+	CopyString(&x11base->hilicolor,&tline[25]);
       }
       else if (strncasecmp(tline,"*FvwmScriptDefaultShadow",24) == 0)
       {
 	x11base->colorset = -1;
-        CopyString(&x11base->shadcolor,&tline[24]);
+	CopyString(&x11base->shadcolor,&tline[24]);
       }
       else if (strncasecmp(tline,"*FvwmScriptDefaultFont",22) == 0)
 	CopyStringWithQuotes(&x11base->font,&tline[22]);
@@ -376,7 +376,7 @@ void LoadIcon(struct XObj *xobj)
 		XFreePixmap(dpy, xobj->icon_alphaPixmap);
 		xobj->icon_alphaPixmap = None;
 	}
-	
+
 	if ((xobj->icon) == NULL)
 		return;
 	if ((path = PictureFindImageFile(xobj->icon,imagePath,R_OK)) == NULL)
@@ -639,7 +639,7 @@ void BuildGUI(int IsFather)
     tabxobj[i]->iconPixmap = None;
     tabxobj[i]->icon_maskPixmap = None;
 
-    LoadIcon(tabxobj[i]);	           /* Chargement de l'icone du widget */
+    LoadIcon(tabxobj[i]);		   /* Chargement de l'icone du widget */
 
     tabxobj[i]->InitObj(tabxobj[i]);
   }
@@ -811,7 +811,7 @@ void ReadXServer (void)
   int isTab = 0;
   char *octet;
   KeySym ks;
-  static unsigned char buf[10];         /* unsigned for international */
+  static unsigned char buf[10];		/* unsigned for international */
   Bool find = False;
   char *action;
 
@@ -1212,7 +1212,7 @@ int main (int argc, char **argv)
   fd[0] = atoi(argv[1]);
   fd[1] = atoi(argv[2]);
   SetMessageMask(fd, M_NEW_DESK | M_END_WINDOWLIST| M_STRING |
-		 M_MAP|  M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
+		 M_MAP|	 M_RES_NAME| M_RES_CLASS| M_CONFIG_INFO|
 		 M_END_CONFIG_INFO| M_WINDOW_NAME | M_SENDCONFIG);
   SetMessageMask(fd, MX_PROPERTY_CHANGE);
   /* Enregistrement des arguments du script */
@@ -1266,10 +1266,10 @@ int main (int argc, char **argv)
 #else
 #ifdef USE_BSD_SIGNALS
   fvwmSetSignalMask( sigmask(SIGPIPE) |
-                     sigmask(SIGINT) |
-                     sigmask(SIGHUP) |
-                     sigmask(SIGTERM) |
-                     sigmask(SIGQUIT) );
+		     sigmask(SIGINT) |
+		     sigmask(SIGHUP) |
+		     sigmask(SIGTERM) |
+		     sigmask(SIGQUIT) );
 #endif
   signal (SIGPIPE, TerminateHandler);
   signal (SIGINT, TerminateHandler);  /* cleanup on other ways of closing too */
@@ -1278,8 +1278,8 @@ int main (int argc, char **argv)
   signal (SIGTERM, TerminateHandler);
 #ifdef HAVE_SIGINTERRUPT
   siginterrupt(SIGPIPE, 1);
-  siginterrupt(SIGINT,  1);
-  siginterrupt(SIGHUP,  1);
+  siginterrupt(SIGINT,	1);
+  siginterrupt(SIGHUP,	1);
   siginterrupt(SIGQUIT, 1);
   siginterrupt(SIGTERM, 1);
 #endif

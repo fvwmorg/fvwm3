@@ -30,9 +30,9 @@
 #endif
 
 #ifdef USE_BSD_SIGNALS
-#  define BSD_BLOCK_SIGNALS      int old_mask = sigblock( fvwmGetSignalMask() )
-#  define BSB_BLOCK_ALL_SIGNALS  int old_mask = sigblock( ~0 )
-#  define BSD_UNBLOCK_SIGNALS    sigsetmask( old_mask )
+#  define BSD_BLOCK_SIGNALS	 int old_mask = sigblock( fvwmGetSignalMask() )
+#  define BSB_BLOCK_ALL_SIGNALS	 int old_mask = sigblock( ~0 )
+#  define BSD_UNBLOCK_SIGNALS	 sigsetmask( old_mask )
 #else
 #  define BSD_BLOCK_SIGNALS
 #  define BSD_BLOCK_ALL_SIGNALS
@@ -64,10 +64,10 @@ extern void fvwmSetSignalMask(int);
 extern int fvwmGetSignalMask(void);
 #endif
 
-#ifdef 	HAVE_SELECT
+#ifdef	HAVE_SELECT
 extern int fvwmSelect(fd_set_size_t nfds,
-                      fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-                      struct timeval *timeout);
+		      fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+		      struct timeval *timeout);
 #endif
 
 #endif /* FVWMSIGNAL_H */

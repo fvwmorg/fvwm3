@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "../types.h"
@@ -48,7 +48,7 @@ void MyDrawString(Display *dpy, struct XObj *xobj, Window win, int x, int y,
 		  char *str, unsigned long ForeC,unsigned long HiC,
 		  unsigned long BackC, int WithRelief);
 
-int GetXTextPosition(struct XObj *xobj, int obj_width, int str_len, 
+int GetXTextPosition(struct XObj *xobj, int obj_width, int str_len,
 		     int left_offset, int center_offset, int right_offset);
 
 char* GetMenuTitle(char *str,int id);

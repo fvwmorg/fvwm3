@@ -16,12 +16,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -175,10 +175,10 @@ int main(int argc, char **argv)
   /* We don't have sigaction(), so fall back to less robust methods.  */
 #ifdef USE_BSD_SIGNALS
   fvwmSetSignalMask( sigmask(SIGPIPE) |
-                     sigmask(SIGTERM) |
-                     sigmask(SIGQUIT) |
-                     sigmask(SIGINT) |
-                     sigmask(SIGHUP) );
+		     sigmask(SIGTERM) |
+		     sigmask(SIGQUIT) |
+		     sigmask(SIGINT) |
+		     sigmask(SIGHUP) );
 #endif
   signal(SIGPIPE, TerminateHandler);
   signal(SIGTERM, TerminateHandler);
@@ -219,8 +219,8 @@ int main(int argc, char **argv)
   FShapeInit(dpy);
 
   SetMessageMask(fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
-                 | M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST | M_CONFIG_INFO
-                 | M_END_CONFIG_INFO | M_SENDCONFIG);
+		 | M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST | M_CONFIG_INFO
+		 | M_END_CONFIG_INFO | M_SENDCONFIG);
   SetMessageMask(fd, MX_PROPERTY_CHANGE);
   /* scan config file for set-up parameters */
   /* Colors and fonts */
@@ -239,41 +239,41 @@ int main(int argc, char **argv)
       tline += Clength;
       if (strncasecmp(tline, "Font", 4) == 0)
       {
-        CopyStringWithQuotes(&font_string, &tline[4]);
+	CopyStringWithQuotes(&font_string, &tline[4]);
       }
       else if (strncasecmp(tline, "Fore", 4) == 0)
       {
-        CopyString(&ForeColor, &tline[4]);
-        colorset = -1;
+	CopyString(&ForeColor, &tline[4]);
+	colorset = -1;
       }
       else if (strncasecmp(tline, "Back", 4) == 0)
       {
-        CopyString(&BackColor, &tline[4]);
-        colorset = -1;
+	CopyString(&BackColor, &tline[4]);
+	colorset = -1;
       }
       else if (strncasecmp(tline, "Colorset", 8) == 0)
       {
-        sscanf(&tline[8], "%d", &colorset);
-        AllocColorset(colorset);
+	sscanf(&tline[8], "%d", &colorset);
+	AllocColorset(colorset);
       }
       else if (strncasecmp(tline, "MinimalLayer", 12) == 0)
       {
-        char *layer_str = PeekToken(&tline[12], NULL);
-        if (layer_str == NULL)
-        {
-          minimal_layer = default_layer;
-        }
-        else if (sscanf(layer_str, "%d", &minimal_layer) != 1)
-        {
-          if (strncasecmp(layer_str, "none", 4) == 0)
-          {
-            minimal_layer = -1;
-          }
-          else
-          {
-            minimal_layer = default_layer;
-          }
-        }
+	char *layer_str = PeekToken(&tline[12], NULL);
+	if (layer_str == NULL)
+	{
+	  minimal_layer = default_layer;
+	}
+	else if (sscanf(layer_str, "%d", &minimal_layer) != 1)
+	{
+	  if (strncasecmp(layer_str, "none", 4) == 0)
+	  {
+	    minimal_layer = -1;
+	  }
+	  else
+	  {
+	    minimal_layer = default_layer;
+	  }
+	}
       }
     }
     else if (strncasecmp(tline, "Colorset", 8) == 0)
@@ -284,7 +284,7 @@ int main(int argc, char **argv)
       tline, XINERAMA_CONFIG_STRING, sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
     {
       FScreenConfigureModule(
-        tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
+	tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
     }
     GetConfigLine(fd, &tline);
   }
@@ -413,7 +413,7 @@ void list_configure(unsigned long *body)
 
       my_layer = (int)target.layer;
       if (my_layer < minimal_layer)
-        my_layer = minimal_layer;
+	my_layer = minimal_layer;
     }
 }
 
@@ -616,7 +616,7 @@ void list_end(void)
     gcv.font = Ffont->font->fid;
   }
   gc = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
-  if (UsePixmapDrawing) 
+  if (UsePixmapDrawing)
     PixmapDrawWindow(main_width, main_height);
   else if (colorset >= 0)
     SetWindowBackground(dpy, main_win, main_width, main_height,
@@ -640,24 +640,24 @@ void list_end(void)
     while (XPending(dpy)) {
       XNextEvent(dpy,&Event);
       switch(Event.type) {
-        case Expose:
-          while (XCheckTypedEvent(dpy, Expose, &Event));
+	case Expose:
+	  while (XCheckTypedEvent(dpy, Expose, &Event));
 	  if (FftSupport && Ffont->fftf.fftfont != NULL)
 		  XClearWindow(dpy, main_win);
 	  DrawItems(main_win);
 	  break;
-        case KeyPress:
+	case KeyPress:
 	  is_key_pressed = 1;
 	  break;
-        case ButtonPress:
+	case ButtonPress:
 	  is_button_pressed = Event.xbutton.button;
 	  break;
-        case KeyRelease:
+	case KeyRelease:
 	  if (is_key_pressed)
 	    exit(0);
 	  else
 	    break;
-        case ButtonRelease:
+	case ButtonRelease:
 	  if (is_button_pressed)
 	  {
 	    if (is_button_pressed == 2 && Event.xbutton.button == 2)
@@ -680,7 +680,7 @@ void list_end(void)
 	    }
 	  }
 	  break;
-        case ClientMessage:
+	case ClientMessage:
 	  if (Event.xclient.format==32 && Event.xclient.data.l[0]==wm_del_win)
 	    exit(0);
 	  break;
@@ -701,9 +701,9 @@ void list_end(void)
 	  {
 	    if (!event.xconfigure.send_event)
 	      continue;
-            Event.xconfigure.x = event.xconfigure.x;
-            Event.xconfigure.y = event.xconfigure.y;
-            Event.xconfigure.send_event = True;
+	    Event.xconfigure.x = event.xconfigure.x;
+	    Event.xconfigure.y = event.xconfigure.y;
+	    Event.xconfigure.send_event = True;
 	  }
 	  /* only refresh if moved */
 	  if (x != Event.xconfigure.x || y != Event.xconfigure.y)
@@ -781,7 +781,7 @@ void DrawItems(Drawable d)
 	fontheight = Ffont->height;
 	FwinString->win = d;
 	FwinString->gc = gc;
-	
+
 	if (colorset >= 0)
 	{
 		FwinString->colorset = &Colorset[colorset];
@@ -924,8 +924,8 @@ void MakeList(void)
   int bw,width,height,x1,y1,x2,y2;
   char loc[20];
   static char xstr[6],ystr[6];
-  /* GSFR - quick hack because the new macros depend on a prt reference  */
-  struct target_struct  *targ  =  &target;
+  /* GSFR - quick hack because the new macros depend on a prt reference	 */
+  struct target_struct	*targ  =  &target;
 
   ListSize = 0;
 
@@ -935,28 +935,28 @@ void MakeList(void)
 
   sprintf(desktop, "%ld",  target.desktop);
   sprintf(layer,   "%ld",  target.layer);
-  sprintf(id,      "0x%x", (unsigned int)target.id);
+  sprintf(id,	   "0x%x", (unsigned int)target.id);
   sprintf(swidth,  "%d",   width);
   sprintf(sheight, "%d",   height);
   sprintf(borderw, "%ld",  target.border_w);
-  sprintf(xstr,    "%ld",  target.frame_x);
-  sprintf(ystr,    "%ld",  target.frame_y);
+  sprintf(xstr,	   "%ld",  target.frame_x);
+  sprintf(ystr,	   "%ld",  target.frame_y);
 
-  AddToList("Name:",          target.name);
+  AddToList("Name:",	      target.name);
   AddToList("Icon Name:",     target.icon_name);
-  AddToList("Class:",         target.class);
+  AddToList("Class:",	      target.class);
   AddToList("Resource:",      target.res);
   AddToList("Window ID:",     id);
-  AddToList("Desk:",          desktop);
-  AddToList("Layer:",         layer);
-  AddToList("Width:",         swidth);
-  AddToList("Height:",        sheight);
+  AddToList("Desk:",	      desktop);
+  AddToList("Layer:",	      layer);
+  AddToList("Width:",	      swidth);
+  AddToList("Height:",	      sheight);
   AddToList("X (current page):",   xstr);
   AddToList("Y (current page):",   ystr);
   AddToList("Boundary Width:", borderw);
 
-  AddToList("Sticky:",        (IS_STICKY(targ)    ? yes : no));
-  AddToList("NoTitle:",       (HAS_TITLE(targ)    ? no : yes));
+  AddToList("Sticky:",	      (IS_STICKY(targ)	  ? yes : no));
+  AddToList("NoTitle:",	      (HAS_TITLE(targ)	  ? no : yes));
   AddToList("Iconified:",     (IS_ICONIFIED(targ) ? yes : no));
   AddToList("Transient:",     (IS_TRANSIENT(targ) ? yes : no));
 
@@ -1008,7 +1008,7 @@ void MakeList(void)
   y1 = target.frame_y;
   if(y1 < 0)
     y1 = 0;
-  y2 = DisplayHeight(dpy,screen) - y1 -  target.frame_h;
+  y2 = DisplayHeight(dpy,screen) - y1 -	 target.frame_h;
     if(y2 < 0)
     y2 = 0;
   width = (width - target.base_w)/target.width_inc;
@@ -1054,8 +1054,8 @@ void MakeList(void)
     {
       for (i = 0, ap = protocols; i < n; i++, ap++)
       {
-        if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
-          HasTakeFocus = True;
+	if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
+	  HasTakeFocus = True;
       }
       tfstr=HasTakeFocus?"Present":"Absent";
       XFree(protocols);
@@ -1068,44 +1068,44 @@ void MakeList(void)
     {
       if (InputField)
       {
-        focus_policy = "Locally Active";
+	focus_policy = "Locally Active";
       }
       else
       {
-        focus_policy = "Globally Active";
+	focus_policy = "Globally Active";
       }
     }
     else
     {
       if (InputField)
       {
-        focus_policy = "Passive";
+	focus_policy = "Passive";
       }
       else
       {
-        focus_policy = "No Input";
+	focus_policy = "No Input";
       }
     }
     AddToList("Focus Policy:",focus_policy);
-    AddToList("  - Input Field:",ifstr);
-    AddToList("  - WM_TAKE_FOCUS:",tfstr);
+    AddToList("	 - Input Field:",ifstr);
+    AddToList("	 - WM_TAKE_FOCUS:",tfstr);
     {
-      long supplied_return;             /* flags, hints that were supplied */
+      long supplied_return;		/* flags, hints that were supplied */
       int getrc;
       XSizeHints *size_hints = XAllocSizeHints(); /* the size hints */
       if ((getrc = XGetWMSizeHints(dpy,target.id, /* get size hints */
-                          size_hints,    /* Hints */
-                          &supplied_return,
-                          XA_WM_ZOOM_HINTS))) {
-        if (supplied_return & PAspect) { /* if window has a aspect ratio */
-          sprintf(mymin_aspect, "%d/%d", size_hints->min_aspect.x,
-                  size_hints->min_aspect.y);
-          AddToList("Minimum aspect ratio:",mymin_aspect);
-          sprintf(max_aspect, "%d/%d", size_hints->max_aspect.x,
-                  size_hints->max_aspect.y);
-          AddToList("Maximum aspect ratio:",max_aspect);
-        } /* end aspect ratio */
-        XFree(size_hints);
+			  size_hints,	 /* Hints */
+			  &supplied_return,
+			  XA_WM_ZOOM_HINTS))) {
+	if (supplied_return & PAspect) { /* if window has a aspect ratio */
+	  sprintf(mymin_aspect, "%d/%d", size_hints->min_aspect.x,
+		  size_hints->min_aspect.y);
+	  AddToList("Minimum aspect ratio:",mymin_aspect);
+	  sprintf(max_aspect, "%d/%d", size_hints->max_aspect.x,
+		  size_hints->max_aspect.y);
+	  AddToList("Maximum aspect ratio:",max_aspect);
+	} /* end aspect ratio */
+	XFree(size_hints);
       } /* end getsizehints worked */
     }
   }

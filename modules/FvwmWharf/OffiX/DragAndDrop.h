@@ -39,7 +39,7 @@ void DndAddShell(Widget widget);
 
 void DndSetData(int Type,unsigned char *Data,unsigned long Size);
 void DndGetData(unsigned char **Data,unsigned long *Size);
-		
+
 int		DndIsIcon(Widget widget);
 int		DndDataType(XEvent *event);
 unsigned int	DndDragButtons(XEvent *event);

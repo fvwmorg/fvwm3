@@ -6,12 +6,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -1272,7 +1272,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 		}
 #endif
 		else if (FMiniIconsSupported &&
-                         strncasecmp (style, "MiniIcon", 8) == 0)
+			 strncasecmp (style, "MiniIcon", 8) == 0)
 		{
 			memset(&df->style, 0, sizeof(df->style));
 			DFS_FACE_TYPE(df->style) = MiniIconButton;
@@ -3036,12 +3036,12 @@ void CMD_Emulate(F_CMD_ARGS)
 /*
  * The ColorLimit command is  ignored if the  user has no reason to limit
  * color.  This is so the   same configuration will work on  colorlimited
- * and   non-colorlimited  displays  without    resorting   to using    a
+ * and	 non-colorlimited  displays  without	resorting   to using	a
  * preprocessor.
  *
- * Lets assume  the display is  no more  than  2000x1000 pixels. Ie.  the
- * display can display no more than 2,000,000 million  pixels at once.  A
- * display depth of 21 will display 2  million colors at once.  Hence the
+ * Lets assume	the display is	no more	 than  2000x1000 pixels. Ie.  the
+ * display can display no more than 2,000,000 million  pixels at once.	A
+ * display depth of 21 will display 2  million colors at once.	Hence the
  * logic below.
  *
  * dje 03/22/99
@@ -3056,8 +3056,8 @@ void CMD_ColorLimit(F_CMD_ARGS)
 	 * dynamically changeable ones are odd numbered */
 	if (!(Pvisual->class & 1))
 		return;
-	if (Pdepth > 20) {               /* if more than 20 bit color */
-		return;                             /* ignore the limit */
+	if (Pdepth > 20) {		 /* if more than 20 bit color */
+		return;				    /* ignore the limit */
 	}
 	if (GetIntegerArguments(action, NULL, &val, 1) != 1)
 	{

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*
@@ -82,7 +82,7 @@ void FShapeInit(Display *dpy);
 typedef struct
 {
   int	type;		    /* of event */
-  unsigned long serial;   /* # of last request processed by server */
+  unsigned long serial;	  /* # of last request processed by server */
   Bool send_event;	    /* true if this came frome a SendEvent request */
   Display *display;	    /* Display the event was read from */
   Window window;	    /* window of event */
@@ -107,12 +107,12 @@ typedef struct
 #define FShapeInputSelected(dpy, w) ((unsinged long)0)
 #define FShapeGetRectangles(dpy, w, kind, count, ordering) ((XRectangle *)0)
 /* define empty dummies */
-#define FShapeEventBase          0
-#define FShapeErrorBase          0
+#define FShapeEventBase		 0
+#define FShapeErrorBase		 0
 /* Shapes supported by server? */
-#define FShapesSupported         0
+#define FShapesSupported	 0
 /* Shapes compiled in? */
-#define FHaveShapeExtension      0
+#define FHaveShapeExtension	 0
 #define FShapeInit(dpy)
 #endif
 

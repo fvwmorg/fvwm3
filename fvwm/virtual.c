@@ -165,7 +165,7 @@ static int GetDeskNumber(char *action)
 		}
 		else
 		{
-			/*  min > max is nonsense, so swap 'em.  */
+			/*  min > max is nonsense, so swap 'em.	 */
 			min = val[m+1];
 			max = val[m];
 		}
@@ -826,10 +826,10 @@ void checkPanFrames(void)
 
 	/* correct the unmap variables if pan frame commands are set */
 	if ( edge_thickness != 0 ) {
-		if ( Scr.PanFrameLeft.command   != NULL ) do_unmap_l = False ;
-		if ( Scr.PanFrameRight.command  != NULL ) do_unmap_r = False ;
+		if ( Scr.PanFrameLeft.command	!= NULL ) do_unmap_l = False ;
+		if ( Scr.PanFrameRight.command	!= NULL ) do_unmap_r = False ;
 		if ( Scr.PanFrameBottom.command != NULL ) do_unmap_b = False ;
-		if ( Scr.PanFrameTop.command    != NULL ) do_unmap_t = False ;
+		if ( Scr.PanFrameTop.command	!= NULL ) do_unmap_t = False ;
 	}
 
 	/*
@@ -1058,10 +1058,10 @@ void MoveViewport(int newx, int newy, Bool grab)
 	  Identify the bounding rectangle that will be moved into
 	  the viewport.
 	*/
-	PageBottom    =  Scr.MyDisplayHeight - deltay - 1;
-	PageRight     =  Scr.MyDisplayWidth  - deltax - 1;
-	PageTop       =  0 - deltay;
-	PageLeft      =  0 - deltax;
+	PageBottom    =	 Scr.MyDisplayHeight - deltay - 1;
+	PageRight     =	 Scr.MyDisplayWidth  - deltax - 1;
+	PageTop	      =	 0 - deltay;
+	PageLeft      =	 0 - deltax;
 	if (deltax || deltay)
 	{
 		prev_page_x = Scr.Vx;
@@ -1111,7 +1111,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 				t->normal_g.y -= deltay;
 				t->max_g.x -= deltax;
 				t->max_g.y -= deltay;
-				/*  Block double move.  */
+				/*  Block double move.	*/
 				SET_VIEWPORT_MOVED(t, 1);
 			}
 			if ((txr >= PageLeft && txl <= PageRight
@@ -1119,7 +1119,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 			    && !IS_VIEWPORT_MOVED(t)
 			    && !IS_WINDOW_BEING_MOVED_OPAQUE(t))
 			{
-				/*  Block double move.  */
+				/*  Block double move.	*/
 				SET_VIEWPORT_MOVED(t, 1);
 				/* If the window is iconified, and sticky
 				 * Icons is set, then the window should
@@ -1248,7 +1248,7 @@ void goto_desk(int desk)
 		 * window for each desk.  If the active desk changes, the
 		 * pager destroys sticky mini windows and creates new ones in
 		 * the other desktop 'root'.  But the pager can't know where to
-		 * stack them.  So we have to tell it ecplicitly where they
+		 * stack them.	So we have to tell it ecplicitly where they
 		 * go :-( This should be fixed in the pager, but right now the
 		 * pager doesn't maintain the stacking order. */
 		BroadcastRestackAllWindows();
@@ -1446,7 +1446,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 	if ( direction == DIR_N ||
 	     direction == DIR_S ||
 	     direction == DIR_E ||
-	     direction == DIR_W  )  {
+	     direction == DIR_W	 )  {
 
 		/* check if the command does contain at least one token */
 		command = safestrdup( action );
@@ -1487,7 +1487,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 		} else {
 			/* this should never happen */
 			fvwm_msg(ERR, "EdgeCommand",
-                                 "Internal error in CMD_EdgeCommand");
+				 "Internal error in CMD_EdgeCommand");
 		}
 
 	} else {
@@ -1514,7 +1514,7 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 		} else {
 			/* not a proper direction */
 			fvwm_msg(ERR, "EdgeCommand",
-                                 "EdgeCommand [direction [function]]");
+				 "EdgeCommand [direction [function]]");
 		}
 	}
 
@@ -1803,7 +1803,7 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 		 * window for each desk.  If the active desk changes, the
 		 * pager destroys sticky mini windows and creates new ones in
 		 * the other desktop 'root'.  But the pager can't know where to
-		 * stack them.  So we have to tell it ecplicitly where they
+		 * stack them.	So we have to tell it ecplicitly where they
 		 * go :-( This should be fixed in the pager, but right now the
 		 * pager doesn't the stacking order. */
 		BroadcastRestackAllWindows();
@@ -1849,10 +1849,6 @@ void CMD_MoveToDesk(F_CMD_ARGS)
 		return;
 	}
 	desk = GetDeskNumber(action);
-	if (IS_STICKY(fw))
-	{
-		handle_stick(F_PASS_ARGS, 0);
-	}
 	if (desk == fw->Desk)
 	{
 		return;
@@ -2039,4 +2035,3 @@ void CMD_DesktopName(F_CMD_ARGS)
 
 	return;
 }
-

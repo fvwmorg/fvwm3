@@ -59,7 +59,7 @@ int main(int argc, char **argv)
 	}
 	screen = DefaultScreen(dpy);
 	root = RootWindow(dpy, screen);
-  
+
 	for (i = 1; i < argc - 1; i++)
 	{
 		if (strcasecmp(argv[i], "-fe") == 0)

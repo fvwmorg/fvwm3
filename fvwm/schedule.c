@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -270,19 +270,19 @@ void CMD_Schedule(F_CMD_ARGS)
 			 "Requires time to schedule as argument");
 		return;
 	}
-        if (ms < 0)
-        {
-                ms = 0;
-        }
+	if (ms < 0)
+	{
+		ms = 0;
+	}
 #if 0
 	/* eats up way too much cpu if schedule is used excessively */
-        current_time = get_server_time();
+	current_time = get_server_time();
 #else
 	/* with this version, scheduled commands may be executed later than
 	 * intended. */
-        current_time = lastTimestamp;
+	current_time = lastTimestamp;
 #endif
-        time = current_time + (Time)ms;
+	time = current_time + (Time)ms;
 	/* get the job group id to schedule */
 	n = GetIntegerArguments(action, &taction, &id, 1);
 	if (n >= 1)

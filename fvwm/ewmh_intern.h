@@ -7,12 +7,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef _EWMH_INTERN_
@@ -62,7 +62,7 @@ typedef enum
 typedef struct
 {
   ewmh_atom_list_name name;
-  ewmh_atom      *list;
+  ewmh_atom	 *list;
   int size;
 } ewmh_atom_list;
 
@@ -70,10 +70,10 @@ typedef struct
 #define NET_WM_STATE_REMOVE    0
 #define NET_WM_STATE_TOGGLE    2
 
-#define EWMH_MAXIMIZE_HORIZ      0x1
-#define EWMH_MAXIMIZE_VERT       0x2
-#define EWMH_MAXIMIZE_FULL       0x3
-#define EWMH_MAXIMIZE_REMOVE     0x4
+#define EWMH_MAXIMIZE_HORIZ	 0x1
+#define EWMH_MAXIMIZE_VERT	 0x2
+#define EWMH_MAXIMIZE_FULL	 0x3
+#define EWMH_MAXIMIZE_REMOVE	 0x4
 #define EWMH_MAXIMIZE_FULLSCREEN 0x8
 typedef enum
 {
@@ -103,7 +103,7 @@ extern ewmhInfo ewmhc;
 ewmh_atom *ewmh_GetEwmhAtomByAtom(Atom atom, ewmh_atom_list_name list_name);
 void ewmh_ChangeProperty(Window w,
 			 const char *atom_name,
-			 ewmh_atom_list_name list, 
+			 ewmh_atom_list_name list,
 			 unsigned char *data,
 			 unsigned int length);
 void ewmh_DeleteProperty(Window w,

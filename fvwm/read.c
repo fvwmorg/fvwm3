@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*
@@ -149,7 +149,7 @@ void run_command_stream( FILE* f, XEvent *eventp, FvwmWindow *fw,
 
 /**
  * Parse the action string.  We expect a filename, and optionally,
- * the keyword "Quiet".  The parameter `cmdname' is used for diagnostic
+ * the keyword "Quiet".	 The parameter `cmdname' is used for diagnostic
  * messages only.
  *
  * Returns true if the parse succeeded.
@@ -195,12 +195,12 @@ int run_command_file( char* filename, XEvent *eventp, FvwmWindow *fw,
   FILE* f;
 
   if (filename[0] == '/')
-  {             /* if absolute path */
+  {		/* if absolute path */
     f = fopen(filename,"r");
     full_filename = filename;
   }
   else
-  {             /* else its a relative path */
+  {		/* else its a relative path */
     full_filename = CatString3( fvwm_userdir, "/", filename );
     f = fopen( full_filename, "r" );
     if ( f == NULL )
@@ -273,11 +273,11 @@ void CMD_Read(F_CMD_ARGS)
     if (filename[0] == '/')
     {
       fvwm_msg( ERR, "Read",
-                "file '%s' not found",filename);
+		"file '%s' not found",filename);
     } else {
       fvwm_msg( ERR, "Read",
-                "file '%s' not found in %s or "FVWM_DATADIR,
-                filename, fvwm_userdir );
+		"file '%s' not found in %s or "FVWM_DATADIR,
+		filename, fvwm_userdir );
     }
   }
   free( filename );

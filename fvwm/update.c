@@ -83,12 +83,12 @@ static void apply_window_updates(
 	FvwmWindow old_t;
 	short buttons;
 	Bool is_style_initialised = False;
-        rectangle frame_g;
+	rectangle frame_g;
 
-        frame_g.x = t->frame_g.x;
-        frame_g.y = t->frame_g.y;
-        frame_g.width = t->frame_g.width;
-        frame_g.height = t->frame_g.height;
+	frame_g.x = t->frame_g.x;
+	frame_g.y = t->frame_g.y;
+	frame_g.width = t->frame_g.width;
+	frame_g.height = t->frame_g.height;
 	if (flags->do_update_gnome_styles)
 	{
 		if (!SDO_IGNORE_GNOME_HINTS(pstyle->flags))
@@ -290,15 +290,15 @@ static void apply_window_updates(
 		{
 			get_relative_geometry(&frame_g, new_g);
 		}
- 		flags->do_setup_frame = True;
+		flags->do_setup_frame = True;
 		flags->do_redraw_decoration = True;
 	}
 	if (flags->do_update_title_text_dir)
 	{
 		if (!flags->do_update_title_dir)
-                {
+		{
 			setup_title_geometry(t, pstyle);
-                }
+		}
 		flags->do_redraw_decoration = True;
 	}
 	if (0 && flags->do_update_title_dir)
@@ -379,7 +379,7 @@ static void apply_window_updates(
 		set_focus_window(focus_w);
 		frame_force_setup_window(
 			t, frame_g.x, frame_g.y, frame_g.width, frame_g.height,
-                        True);
+			True);
 		set_focus_window(NULL);
 		GNOME_SetWinArea(t);
 		EWMH_SetFrameStrut(t);

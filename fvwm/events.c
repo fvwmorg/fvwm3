@@ -379,19 +379,19 @@ void HandleButtonPress(void)
 		SetFocusWindow(Fw, True, True);
 	}
 	/* click to focus stuff goes here */
-	if ((Fw)&&(HAS_CLICK_FOCUS(Fw))&&(Fw != Scr.Ungrabbed))
+	if (Fw && HAS_CLICK_FOCUS(Fw) && Fw != Scr.Ungrabbed)
 	{
-                unsigned was_already_focused;
+		unsigned was_already_focused;
 
 		if (Fw != get_focus_window())
 		{
 			SetFocusWindow(Fw, True, True);
-                        was_already_focused = 0;
-                }
-                else
-                {
-                        was_already_focused = 1;
-                }
+			was_already_focused = 0;
+		}
+		else
+		{
+			was_already_focused = 1;
+		}
 		/* RBW - 12/09/.1999- I'm not sure we need to check both cases,
 		 * but I'll leave this as is for now.  */
 		if (!DO_NOT_RAISE_CLICK_FOCUS_CLICK(Fw)
@@ -415,7 +415,7 @@ void HandleButtonPress(void)
 			 * modify the stacking order will reset this flag. */
 			SET_SCHEDULED_FOR_RAISE(Fw, 1);
 		}
-                do_regrab_buttons = True;
+		do_regrab_buttons = True;
 
 		Context = GetContext(Fw, &Event, &PressedW);
 		if (!IS_ICONIFIED(Fw) && Context == C_WINDOW)
@@ -425,7 +425,7 @@ void HandleButtonPress(void)
 				RaiseWindow(Fw);
 				SET_SCHEDULED_FOR_RAISE(Fw, 0);
 			}
-                        focus_grab_buttons(Fw, (Fw == get_focus_window()));
+			focus_grab_buttons(Fw, (Fw == get_focus_window()));
 			XFlush(dpy);
 			/* Pass click event to just clicked to focus window? Do
 			 * not swallow the click if the window didn't accept
@@ -1791,7 +1791,7 @@ void HandleKeyPress(void)
 	 * the cases to one keycode. */
 	Event.xkey.keycode =
 		XKeysymToKeycode(
-			dpy,XKeycodeToKeysym(dpy,Event.xkey.keycode,0));
+			dpy, XKeycodeToKeysym(dpy, Event.xkey.keycode, 0));
 
 	/* Check if there is something bound to the key */
 	action = CheckBinding(
@@ -3449,7 +3449,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 		Fw = t;
 	}
 	if ((e->type == ButtonPress || e->type == KeyPress) && t &&
-            e->xkey.window == FW_W_FRAME(t) && e->xkey.subwindow != None)
+	    e->xkey.window == FW_W_FRAME(t) && e->xkey.subwindow != None)
 	{
 		/* Translate frame coordinates into subwindow coordinates. */
 		e->xkey.window = e->xkey.subwindow;
@@ -3476,16 +3476,16 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 		return C_ROOT;
 	}
 	if (e->xkey.subwindow != None)
-        {
-                if (e->xkey.window == FW_W_PARENT(t))
-                {
-                        *w = e->xkey.subwindow;
-                }
-                else
-                {
-                        e->xkey.subwindow = None;
-                }
-        }
+	{
+		if (e->xkey.window == FW_W_PARENT(t))
+		{
+			*w = e->xkey.subwindow;
+		}
+		else
+		{
+			e->xkey.subwindow = None;
+		}
+	}
 	if (*w == Scr.Root)
 	{
 		return C_ROOT;
@@ -3609,7 +3609,10 @@ Bool StashEventTime (XEvent *ev)
 	 * old one (in which case the system clock may have changed) */
 	if (NewTimestamp > lastTimestamp ||
 	    lastTimestamp - NewTimestamp > CLOCK_SKEW_MS)
+	{
 		lastTimestamp = NewTimestamp;
+	}
+
 	return True;
 }
 
@@ -3622,25 +3625,48 @@ Bool StashEventTime (XEvent *ev)
  * that behaviour is correct and desirable. --11/08/97 gjb */
 void CoerceEnterNotifyOnCurrentWindow(void)
 {
-	extern FvwmWindow *Fw; /* from events.c */
-	Window child, root;
-	int root_x, root_y;
-	int win_x, win_y;
-	Bool f = XQueryPointer(dpy, Scr.Root, &root,
-			       &child, &root_x, &root_y, &win_x, &win_y,
-			       &JunkMask);
+	Window child;
+	Window root;
+	Bool f;
 
+	f = XQueryPointer(
+		dpy, Scr.Root, &root, &child, &Event.xcrossing.x_root,
+		&Event.xcrossing.y_root, &Event.xcrossing.x, &Event.xcrossing.y,
+		&JunkMask);
 	if (f && child != None)
 	{
-		Event.xany.window = child;
+		Event.xcrossing.type = EnterNotify;
+		Event.xcrossing.window = child;
+		Event.xcrossing.subwindow = None;
+		Event.xcrossing.mode = NotifyNormal;
+		Event.xcrossing.detail = NotifyAncestor;
+		Event.xcrossing.same_screen = True;
+		Event.xcrossing.focus =
+			(Fw == get_focus_window()) ? True : False;
 		if (XFindContext(dpy, child, FvwmContext, (caddr_t *) &Fw) ==
 		    XCNOENT)
 		{
 			Fw = NULL;
 		}
+		else
+		{
+			XTranslateCoordinates(
+				dpy, Scr.Root, child, Event.xcrossing.x_root,
+				Event.xcrossing.y_root, &JunkX, &JunkY, &child);
+			if (child == FW_W_PARENT(Fw))
+			{
+				child = FW_W(Fw);
+			}
+			if (child != None)
+			{
+				Event.xany.window = child;
+			}
+		}
 		HandleEnterNotify();
 		Fw = None;
 	}
+
+	return;
 }
 
 /* This function discards all queued up ButtonPress, ButtonRelease and

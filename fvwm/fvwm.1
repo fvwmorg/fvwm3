@@ -3947,7 +3947,7 @@ There are a number of
 options which influence the appearance and behavior of icons (e.g.
 .IR StickyIcon ", " NoIcon ).
 
-For backwards compatibility, the optional argument may also be a
+For backward compatibility, the optional argument may also be a
 positive number instead of "True", or a negative number instead of
 "False".  Note that this syntax is obsolete, and will be removed
 in the future.
@@ -4146,10 +4146,7 @@ achieved by adding a trailing
 after any or both numerical arguments.  To move a window to the
 previous page use
 .I prev
-as the single argument.  Using MoveToPage on a sticky window makes
-the window non-sticky (see
-.B Stick
-command).
+as the single argument.
 
 Examples:
 .EX
@@ -4610,7 +4607,7 @@ There are a number of
 options which influence the appearance and behavior of icons (e.g.
 .IR StickyIcon ", " NoIcon ).
 
-For backwards compatibility, the optional argument may also be a
+For backward compatibility, the optional argument may also be a
 positive number instead of "True", or a negative number instead of
 "False".  Note that this syntax is obsolete, and will be removed
 in the future.
@@ -4776,7 +4773,17 @@ Mouse 1 S ] WindowShade E
 Mouse 1 S _ WindowShade S
 .EE
 
-For backwards compatibility, the optional argument may also be 1
+Note: When a window that has been shaded with a
+.I direction
+argument changes the direction of the window title (see
+.I TitleAtTop
+.B Style
+option), the shading direction does not change.  This may look
+very strange.  Windows that were shaded without a
+.I direction
+argument stay shaded in the direction of the title bar.
+
+For backward compatibility, the optional argument may also be 1
 to signify "on", and 2 to signify "off". Note that this syntax is
 obsolete, and will be removed in the future.
 
@@ -5485,8 +5492,11 @@ style restores the default placement.  Even if the window has the
 .I NoTitle
 style set, this affects the
 .I WindowShade
-command.  Titles on the left or right side of the windows are be
-augmented by the following styles:
+command.  Please check the
+.B WindowShade
+command for interactions between that command and these styles.
+Titles on the left or right side of the windows are augmented by
+the following styles:
 
 Normally, the text in titles on the left side of a window is
 rotated counterclockwise by 90 degrees from the normal upright
@@ -7472,7 +7482,7 @@ Otherwise you can omit
 
 .TP
 .BI "UpdateDecor [" decor "]"
-This command is kept mainly for backwards compatibility.  Since
+This command is kept mainly for backward compatibility.  Since
 all elements of a decor are updated immediately when they are
 changed, this command is mostly useless.
 
@@ -8469,7 +8479,7 @@ placed manually or by using the user or program position hint.
 
 Note that earlier versions of fvwm required the conditions to be
 enclosed in brackets instead of parentheses (this is still
-supported for backwards compatibility).
+supported for backward compatibility).
 
 .TP
 .BI "Direction " direction " [(" conditions ")] " command

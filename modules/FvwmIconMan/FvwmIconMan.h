@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -41,7 +41,7 @@
 #endif
 
 #define RECTANGLES_INTERSECT(x1,y1,w1,h1,x2,y2,w2,h2) \
-          (((x1) + (w1) > (x2) && (x1) < (x2) + (w2)) && \
+	  (((x1) + (w1) > (x2) && (x1) < (x2) + (w2)) && \
 	   ((y1) + (h1) > (y2) && (y1) < (y2) + (h2)))
 
 #define MAX_ARGS 3
@@ -80,9 +80,9 @@ typedef enum {
   SHOW_DESKTOP,
   SHOW_PAGE,
   SHOW_SCREEN,
-  NO_SHOW_DESKTOP,      /* "!desk" Show windows not on the current desk */
-  NO_SHOW_PAGE,         /* "!page" Show windows not on the current page */
-  NO_SHOW_SCREEN        /* "!screen" Show windows not on the current screen */
+  NO_SHOW_DESKTOP,	/* "!desk" Show windows not on the current desk */
+  NO_SHOW_PAGE,		/* "!page" Show windows not on the current page */
+  NO_SHOW_SCREEN	/* "!screen" Show windows not on the current screen */
 } Resolution;
 
 typedef enum {
@@ -120,12 +120,12 @@ typedef enum {
 } Contexts;
 
 typedef enum {
-  NO_NAME       = 0,
-  TITLE_NAME    = 1,
-  ICON_NAME     = 2,
+  NO_NAME	= 0,
+  TITLE_NAME	= 1,
+  ICON_NAME	= 2,
   RESOURCE_NAME = 4,
-  CLASS_NAME    = 8,
-  ALL_NAME      = 15
+  CLASS_NAME	= 8,
+  ALL_NAME	= 15
 } NameType;
 
 typedef struct win_list {
@@ -218,7 +218,7 @@ typedef struct win_data {
 } WinData;
 
 typedef struct button {
-  int index;      /* index into button array */
+  int index;	  /* index into button array */
   int x, y, w, h; /* current coords of button */
   struct {
     int dirty_flags;
@@ -263,11 +263,11 @@ typedef struct {
 } ShapeState;
 
 typedef enum {
-  SortNone,          /* no sorting */
-  SortId,            /* sort by window id */
-  SortName,          /* case insensitive name sorting */
-  SortNameCase,      /* case sensitive name sorting */
-  SortWeighted       /* custom sort order */
+  SortNone,	     /* no sorting */
+  SortId,	     /* sort by window id */
+  SortName,	     /* case insensitive name sorting */
+  SortNameCase,	     /* case sensitive name sorting */
+  SortWeighted	     /* custom sort order */
 } SortType;
 
 typedef struct {
@@ -313,7 +313,7 @@ typedef struct win_manager {
   int weighted_sorts_len, weighted_sorts_size;
   char *AnimCommand;
   Uchar showonlyiconic;
-  rectangle managed_g;    /* dimensions of managed screen portion */
+  rectangle managed_g;	  /* dimensions of managed screen portion */
 
   /* X11 state */
   Window theWindow, theFrame;
@@ -343,8 +343,8 @@ typedef struct win_manager {
 
 typedef struct {
   Ulong desknum;
-  Ulong x, y;             /* of the view window */
-  rectangle screen_g;     /* screen dimensions */
+  Ulong x, y;		  /* of the view window */
+  rectangle screen_g;	  /* screen dimensions */
   WinManager *managers;
   int num_managers;
   int transient;

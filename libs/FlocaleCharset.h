@@ -34,7 +34,7 @@
 
 /* ---------------------------- interface functions ------------------------- */
 
-/* 
+/*
  *
  */
 void FlocaleCharsetInit(Display *dpy, const char *module);

@@ -8,7 +8,7 @@
 
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
    GNU General Public License for more details.
 
    You should have received a copy of the GNU General Public License
@@ -25,7 +25,7 @@
 
 /* Put up to LEN chars of the host name into NAME.
    Null terminate it if the name is shorter than LEN.
-   Return 0 if ok, -1 if error.  */
+   Return 0 if ok, -1 if error.	 */
 
 int
 gethostname (name, len)
@@ -39,7 +39,7 @@ gethostname (name, len)
     return -1;
   if (len > sizeof (uts.nodename))
     {
-      /* More space than we need is available.  */
+      /* More space than we need is available.	*/
       name[sizeof (uts.nodename)] = '\0';
       len = sizeof (uts.nodename);
     }

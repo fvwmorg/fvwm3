@@ -281,29 +281,29 @@ static void menustyle_parse_old_style(F_CMD_ARGS)
 	}
 
 	if (fore)
-        {
+	{
 		free(fore);
-        }
+	}
 	if (back)
-        {
+	{
 		free(back);
-        }
+	}
 	if (stipple)
-        {
+	{
 		free(stipple);
-        }
+	}
 	if (font)
-        {
+	{
 		free(font);
-        }
+	}
 	if (style)
-        {
+	{
 		free(style);
-        }
+	}
 	if (animated)
-        {
+	{
 		free(animated);
-        }
+	}
 
 	return;
 }

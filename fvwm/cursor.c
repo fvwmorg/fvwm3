@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -33,30 +33,30 @@ static Cursor cursors[CRS_MAX];
 static const unsigned int default_cursors[CRS_MAX] =
 {
 	None,
-	XC_top_left_corner,      /* CRS_POSITION */
-	XC_top_left_arrow,       /* CRS_TITLE */
-	XC_top_left_arrow,       /* CRS_DEFAULT */
-	XC_hand2,                /* CRS_SYS */
-	XC_fleur,                /* CRS_MOVE */
-	XC_sizing,               /* CRS_RESIZE */
-	XC_watch,                /* CRS_WAIT */
-	XC_top_left_arrow,       /* CRS_MENU */
-	XC_crosshair,            /* CRS_SELECT */
-	XC_pirate,               /* CRS_DESTROY */
-	XC_top_side,             /* CRS_TOP */
-	XC_right_side,           /* CRS_RIGHT */
-	XC_bottom_side,          /* CRS_BOTTOM */
-	XC_left_side,            /* CRS_LEFT */
-	XC_top_left_corner,      /* CRS_TOP_LEFT */
-	XC_top_right_corner,     /* CRS_TOP_RIGHT */
-	XC_bottom_left_corner,   /* CRS_BOTTOM_LEFT */
-	XC_bottom_right_corner,  /* CRS_BOTTOM_RIGHT */
-	XC_top_side,             /* CRS_TOP_EDGE */
-	XC_right_side,           /* CRS_RIGHT_EDGE */
-	XC_bottom_side,          /* CRS_BOTTOM_EDGE */
-	XC_left_side,            /* CRS_LEFT_EDGE */
-	XC_left_ptr,             /* CRS_ROOT */
-	XC_plus                  /* CRS_STROKE */
+	XC_top_left_corner,	 /* CRS_POSITION */
+	XC_top_left_arrow,	 /* CRS_TITLE */
+	XC_top_left_arrow,	 /* CRS_DEFAULT */
+	XC_hand2,		 /* CRS_SYS */
+	XC_fleur,		 /* CRS_MOVE */
+	XC_sizing,		 /* CRS_RESIZE */
+	XC_watch,		 /* CRS_WAIT */
+	XC_top_left_arrow,	 /* CRS_MENU */
+	XC_crosshair,		 /* CRS_SELECT */
+	XC_pirate,		 /* CRS_DESTROY */
+	XC_top_side,		 /* CRS_TOP */
+	XC_right_side,		 /* CRS_RIGHT */
+	XC_bottom_side,		 /* CRS_BOTTOM */
+	XC_left_side,		 /* CRS_LEFT */
+	XC_top_left_corner,	 /* CRS_TOP_LEFT */
+	XC_top_right_corner,	 /* CRS_TOP_RIGHT */
+	XC_bottom_left_corner,	 /* CRS_BOTTOM_LEFT */
+	XC_bottom_right_corner,	 /* CRS_BOTTOM_RIGHT */
+	XC_top_side,		 /* CRS_TOP_EDGE */
+	XC_right_side,		 /* CRS_RIGHT_EDGE */
+	XC_bottom_side,		 /* CRS_BOTTOM_EDGE */
+	XC_left_side,		 /* CRS_LEFT_EDGE */
+	XC_left_ptr,		 /* CRS_ROOT */
+	XC_plus			 /* CRS_STROKE */
 };
 
 /***********************************************************************
@@ -297,7 +297,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 				free(newcursor);
 				return;
 			}
-			
+
 			if (!PImageLoadCursorPixmapFromFile(dpy, Scr.Root,
 							    path, &source,
 							    &mask, &x, &y))
@@ -310,7 +310,7 @@ void CMD_CursorStyle(F_CMD_ARGS)
 			{
 				XFreeCursor (dpy, Scr.FvwmCursors[index]);
 			}
-			
+
 			colors[0].pixel = GetColor(DEFAULT_CURSOR_FORE_COLOR);
 			colors[1].pixel = GetColor(DEFAULT_CURSOR_BACK_COLOR);
 			XQueryColors (dpy, Pcmap, colors, 2);

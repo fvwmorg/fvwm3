@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef Picture_Base_H
@@ -40,7 +40,7 @@ extern Bool Pdefault;
 extern Visual *Pvisual;
 extern Colormap Pcmap;
 extern unsigned int Pdepth;
-extern Display *Pdpy;     /* Save area for display pointer */
+extern Display *Pdpy;	  /* Save area for display pointer */
 
 
 /* This routine called during fvwm and some modules initialization */
@@ -56,14 +56,14 @@ void PictureSaveFvwmVisual(void);
 char* PictureGetImagePath( void );
 
 
-/** Sets image path to newpath.  Environment variables are expanded, and '+'
-    is expanded to previous value of imagepath.  The new path is in
-    newly-allocated memory, so newpath may be freed or re-used.  **/
+/** Sets image path to newpath.	 Environment variables are expanded, and '+'
+    is expanded to previous value of imagepath.	 The new path is in
+    newly-allocated memory, so newpath may be freed or re-used.	 **/
 void PictureSetImagePath( const char* newpath );
 
 
 /** Search for file along pathlist.  If pathlist is NULL, will use the current
-    imagepath setting.  If filename is not found, but filename.gz is found,
+    imagepath setting.	If filename is not found, but filename.gz is found,
     will return the latter.  Mode is typically R_OK.  See searchPath() for
     more details.  **/
 char* PictureFindImageFile(const char* filename, const char* pathlist, int mode);

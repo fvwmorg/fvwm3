@@ -15,12 +15,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -66,15 +66,15 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
 #define MAXHOSTNAME 255
 #define EXTRA 56
 
-int  m4_enable;                 /* use m4? */
-int  m4_prefix;                 /* Do GNU m4 prefixing (-P) */
+int  m4_enable;			/* use m4? */
+int  m4_prefix;			/* Do GNU m4 prefixing (-P) */
 int  m4_prefix_defines;		/* Add "m4_" to the names of the defines */
-char m4_options[BUFSIZ];        /* Command line options to m4 */
-char m4_outfile[BUFSIZ] = "";   /* The output filename for m4 */
-char *m4_prog = "m4";           /* Name of the m4 program */
-int  m4_default_quotes;         /* Use default m4 quotes */
-char *m4_startquote = "`";         /* Left quote characters for m4 */
-char *m4_endquote = "'";           /* Right quote characters for m4 */
+char m4_options[BUFSIZ];	/* Command line options to m4 */
+char m4_outfile[BUFSIZ] = "";	/* The output filename for m4 */
+char *m4_prog = "m4";		/* Name of the m4 program */
+int  m4_default_quotes;		/* Use default m4 quotes */
+char *m4_startquote = "`";	   /* Left quote characters for m4 */
+char *m4_endquote = "'";	   /* Right quote characters for m4 */
 
 
 /***********************************************************************
@@ -168,7 +168,7 @@ int main(int argc, char **argv)
       else if(strcasecmp(argv[i],"-m4opt") == 0)
 	{
 	  /* leaving this in just in case-- any option starting with '-'
- 	     will get passed on to m4 anyway */
+	     will get passed on to m4 anyway */
 	  strcat(m4_options, argv[++i]);
 	  strcat(m4_options, " ");
 	}
@@ -207,7 +207,7 @@ int main(int argc, char **argv)
 	  /* pass on any other arguments starting with '-' to m4 */
 	  strcat(m4_options, argv[i]);
 	  strcat(m4_options, " ");
-        }
+	}
       else
 	filename = argv[i];
     }
@@ -491,10 +491,10 @@ static char *m4_defs(
    */
 
   fprintf(tmpf, "%sinclude(%s%s%s)\n",
-          (m4_prefix) ? "m4_": "",
-          m4_startquote,
-          config_file,
-          m4_endquote);
+	  (m4_prefix) ? "m4_": "",
+	  m4_startquote,
+	  config_file,
+	  m4_endquote);
 
   pclose(tmpf);
   return(tmp_name);

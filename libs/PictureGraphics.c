@@ -8,12 +8,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /* ---------------------------- included header files ----------------------- */
@@ -60,7 +60,7 @@ void PCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, int depth,
 
 	if (gc == None)
 	{
-		my_gc = fvwmlib_XCreateGC(dpy, d, 0, NULL); 
+		my_gc = fvwmlib_XCreateGC(dpy, d, 0, NULL);
 	}
 	gcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
 	gcv.clip_x_origin = dest_x;
@@ -110,7 +110,7 @@ void PCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, int depth,
 		gcm = GCClipMask;
 		gcv.clip_mask = None;
 		XChangeGC(dpy, gc, gcm, &gcv);
-	}	
+	}
 }
 
 static
@@ -128,7 +128,7 @@ void PTileRectangle(Display *dpy, Window win, Pixmap pixmap, Pixmap mask,
 
 	if (gc == None)
 	{
-		my_gc = fvwmlib_XCreateGC(dpy, d, 0, NULL); 
+		my_gc = fvwmlib_XCreateGC(dpy, d, 0, NULL);
 	}
 	if (mono_gc == None && (mask != None || Pdepth != depth))
 	{
@@ -245,7 +245,7 @@ void PGraphicsCopyPixmaps(Display *dpy,
 
 	if (!XRenderSupport || alpha == None || !FRenderGetExtensionSupported())
 	{
-		PCopyArea(dpy, pixmap, mask, depth, 
+		PCopyArea(dpy, pixmap, mask, depth,
 			  d, gc, src_x, src_y, src_w,src_h,
 			  dest_x, dest_y);
 		return;
@@ -266,7 +266,7 @@ void PGraphicsCopyFvwmPicture(Display *dpy, FvwmPicture *p, Drawable d, GC gc,
 	if (!XRenderSupport || p->alpha == None ||
 	    !FRenderGetExtensionSupported())
 	{
-		PCopyArea(dpy, p->picture, p->mask, p->depth, 
+		PCopyArea(dpy, p->picture, p->mask, p->depth,
 			  d, gc, src_x, src_y, src_w,src_h,
 			  dest_x, dest_y);
 		return;

@@ -8,12 +8,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /* FlocaleRotateDrawString is strongly inspired by some part of xvertext
@@ -27,7 +27,7 @@
  * copyright notice and this permission notice appear in supporting
  * documentation.  All work developed as a consequence of the use of
  * this program should duly acknowledge such use. No representations are
- * made about the suitability of this software for any purpose.  It is
+ * made about the suitability of this software for any purpose.	 It is
  * provided "as is" without express or implied warranty.
  *
  * Minor modifications by Chris Cannam for wm2/wmx
@@ -119,7 +119,7 @@ void FlocaleParseShadow(char *str, int *shadow_size, int *shadow_offset,
 			*shadow_offset = 0;
 			fprintf(stderr,"[%s][FlocaleGetFont]: WARNING -- bad "
 				"shadow offset in font name:\n\t'%s'\n",
-				(module)? module: "FVWM", fontname);	
+				(module)? module: "FVWM", fontname);
 		}
 		PeekToken(dir_str, &dir_str);
 	}
@@ -159,7 +159,7 @@ XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
 		if (str[i] <= 0x7f)
 		{
 			str2b[j].byte2 = str[i];
-			str2b[j].byte1 = 0;	
+			str2b[j].byte1 = 0;
 		}
 		else if (str[i] <= 0xdf && i+1 < len)
 		{
@@ -184,7 +184,7 @@ XChar2b *FlocaleUtf8ToUnicodeStr2b(unsigned char *str, int len, int *nl)
 
 /* Note: this function is not expected to work perfectly; good mb rendering
  * should be (and is) done using Xmb functions and not XDrawString16.
- * This function is used when the locale does not correspond to the font */ 
+ * This function is used when the locale does not correspond to the font */
 static
 XChar2b *FlocaleStringToString2b(unsigned char *str, int len, int *nl)
 {
@@ -903,7 +903,7 @@ FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
 			}
 		}
 	}
-	
+
 	if (flf != NULL)
 	{
 		if (shadow_size > 0)
@@ -1036,7 +1036,7 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 	{
 		/* finished; return the position for the no shadow drawing */
 		switch(fws->flags.text_rotation)
-		{		
+		{
 		case TEXT_ROTATED_270: /* CCW */
 #define TR_CCW_ORIG_X  orig_x + FLF_SHADOW_UPPER_SIZE(flf)
 #define TR_CCW_ORIG_Y  orig_y + FLF_SHADOW_RIGHT_SIZE(flf)
@@ -1044,8 +1044,8 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 			*y = TR_CCW_ORIG_Y;
 			break;
 		case TEXT_ROTATED_180:
-#define REVERSE_ORIG_X  orig_x + FLF_SHADOW_RIGHT_SIZE(flf)
-#define REVERSE_ORIG_Y  orig_y
+#define REVERSE_ORIG_X	orig_x + FLF_SHADOW_RIGHT_SIZE(flf)
+#define REVERSE_ORIG_Y	orig_y
 			*x = REVERSE_ORIG_X;
 			*y = REVERSE_ORIG_Y;
 			break;
@@ -1330,7 +1330,7 @@ void FlocaleDrawString(
 	{
 		len = strlen(fws->str);
 	}
-	
+
 	/* check whether we should apply Bidi filter to text */
 	bidi_charset = FlocaleGetBidiCharset(dpy, flf);
 	if (bidi_charset)

@@ -7,12 +7,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -863,7 +863,7 @@ int ewmh_WMStateSticky(EWMH_CMD_ARGS)
 
 /* ************************************************************************* *
  * Property Notify (_NET_WM_ICON is in ewmh_icon.c, _NET_WM_*NAME are in
- * ewmh_name)                        *
+ * ewmh_name)			     *
  * ************************************************************************* */
 int ewmh_WMIconGeometry(EWMH_CMD_ARGS)
 {
@@ -932,7 +932,7 @@ int ewmh_WMStrut(EWMH_CMD_ARGS)
   if ((val[0] > 0 || val[1] > 0 || val[2] > 0 || val[3] > 0)
       &&
       (val[0] !=  fwin->strut.left || val[1] != fwin->strut.right ||
-       val[2] != fwin->strut.top   || val[3] !=  fwin->strut.bottom))
+       val[2] != fwin->strut.top   || val[3] !=	 fwin->strut.bottom))
   {
     fwin->strut.left   = val[0];
     fwin->strut.right  = val[1];
@@ -940,12 +940,12 @@ int ewmh_WMStrut(EWMH_CMD_ARGS)
     fwin->strut.bottom = val[3];
     ewmh_ComputeAndSetWorkArea();
   }
- if (val[0] !=  fwin->dyn_strut.left || val[1] != fwin->dyn_strut.right ||
+ if (val[0] !=	fwin->dyn_strut.left || val[1] != fwin->dyn_strut.right ||
      val[2] != fwin->dyn_strut.top   || val[3] !=  fwin->dyn_strut.bottom)
  {
-   fwin->dyn_strut.left   = val[0];
+   fwin->dyn_strut.left	  = val[0];
    fwin->dyn_strut.right  = val[1];
-   fwin->dyn_strut.top    = val[2];
+   fwin->dyn_strut.top	  = val[2];
    fwin->dyn_strut.bottom = val[3];
    ewmh_HandleDynamicWorkArea();
  }

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -84,8 +84,8 @@ void CMD_TearMenuOff(F_CMD_ARGS)
  * be sure to keep this list properly ordered for bsearch routine!
  */
 
-#define PRE_REPEAT       "repeat"
-#define PRE_SILENT       "silent"
+#define PRE_REPEAT	 "repeat"
+#define PRE_SILENT	 "silent"
 
 /* The function names in the first field *must* be in lowercase or else the
  * function cannot be called.  The func parameter of the macro is also used
@@ -783,7 +783,7 @@ static int expand_extended_var(
 			is_x = True;
 		}
 		if (XQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
-		          &JunkX, &JunkY, &x, &y, &JunkMask) == False)
+			  &JunkX, &JunkY, &x, &y, &JunkMask) == False)
 		{
 			/* pointer is on a different screen, don't expand */
 			return 0;
@@ -1184,12 +1184,12 @@ static cfunc_action_type CheckActionType(
 	return CF_CLICK;
       case MotionNotify:
 	if ((d->xmotion.state & DEFAULT_ALL_BUTTONS_MASK) ||
-            !is_button_pressed)
+	    !is_button_pressed)
 	{
 	  xcurrent = d->xmotion.x_root;
 	  ycurrent = d->xmotion.y_root;
 	}
-        else
+	else
 	{
 	  return CF_CLICK;
 	}
@@ -1501,14 +1501,14 @@ void old_execute_function(
  *	    next button press if the context is C_ROOT
  *
  *  Inputs:
- *      eventp  - pointer to XEvent to patch up
- *      w       - pointer to Window to patch up
- *      fw - pointer to FvwmWindow Structure to patch up
+ *	eventp	- pointer to XEvent to patch up
+ *	w	- pointer to Window to patch up
+ *	fw - pointer to FvwmWindow Structure to patch up
  *	context	- the context in which the mouse button was pressed
  *	func	- the function to defer
  *	cursor	- the cursor to display while waiting
- *      finishEvent - ButtonRelease or ButtonPress; tells what kind of event to
- *                    terminate on.
+ *	finishEvent - ButtonRelease or ButtonPress; tells what kind of event to
+ *		      terminate on.
  *
  ***********************************************************************/
 int DeferExecution(
@@ -1526,7 +1526,7 @@ int DeferExecution(
      && *context != C_EWMH_DESKTOP)
   {
     if((FinishEvent == ButtonPress)||((FinishEvent == ButtonRelease) &&
-                                      (eventp->type != ButtonPress)))
+				      (eventp->type != ButtonPress)))
     {
       return FALSE;
     }
@@ -1553,8 +1553,8 @@ int DeferExecution(
     done = 0;
     /* block until there is an event */
     XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-               ExposureMask | KeyPressMask | VisibilityChangeMask |
-               ButtonMotionMask | PointerMotionMask
+	       ExposureMask | KeyPressMask | VisibilityChangeMask |
+	       ButtonMotionMask | PointerMotionMask
 	       /* | EnterWindowMask | LeaveWindowMask*/, eventp);
     StashEventTime(eventp);
 
@@ -1697,8 +1697,8 @@ void find_func_type(char *action, short *func_type, unsigned char *flags)
  *	AddToFunction - add an item to a FvwmFunction
  *
  *  Inputs:
- *	func      - pointer to the FvwmFunction to add the item
- *	action    - the definition string from the config line
+ *	func	  - pointer to the FvwmFunction to add the item
+ *	action	  - the definition string from the config line
  *
  ***********************************************************************/
 void AddToFunction(FvwmFunction *func, char *action)
@@ -1855,7 +1855,7 @@ FvwmFunction *FindFunction(const char *function_name)
     if(func->name != NULL)
       if(strcasecmp(function_name, func->name) == 0)
       {
-        return func;
+	return func;
       }
     func = func->next_func;
   }
@@ -1955,8 +1955,8 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
       NeedsTarget = True;
       if (fi->condition == CF_IMMEDIATE)
       {
-        ImmediateNeedsTarget = True;
-        break;
+	ImmediateNeedsTarget = True;
+	break;
       }
     }
   }

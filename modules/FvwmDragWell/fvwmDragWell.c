@@ -5,16 +5,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -83,17 +83,17 @@ void parseOptions(void);
 void parseFvwmMessage(char *msg);
 int myXNextEvent(XEvent *event, char *fvwmMessage);
 Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action,
-                   Atom * typelist);
+		   Atom * typelist);
 void dragSrcInit(DragSource *ds,Display *dpy,Window root,Window client);
 static RETSIGTYPE TerminateHandler(int);
 
-int fd[2];      /*used for reading .fvwm2rc options*/
-               /*fd[0] module2fvwm*/
-               /*fd[1] fvwm2module*/
-XGlobals xg;    /*X related globals*/
+int fd[2];	/*used for reading .fvwm2rc options*/
+	       /*fd[0] module2fvwm*/
+	       /*fd[1] fvwm2module*/
+XGlobals xg;	/*X related globals*/
 DragWellMenuGlobals mg; /*menu related globals */
 DragWellButton dragBut; /*not really used as a button but rather a drag well*/
-char dropData[MAX_PATH_LEN];    /*data used for the drop*/
+char dropData[MAX_PATH_LEN];	/*data used for the drop*/
 Bool Swallowed = False;
 
 /* Don't know what this does yet...*/
@@ -134,7 +134,7 @@ int main(int argc, char **argv)
 
   sscanf (argv[4], "%x", (unsigned int *)&app_win);
 
-  /*dsg.mfsErr  = fopen("/tmp/mfsErr","w");*/
+  /*dsg.mfsErr	= fopen("/tmp/mfsErr","w");*/
 
   XStartup(argv[0]); /*initializes variables*/
   veryLongLoop(); /*event loop*/
@@ -154,7 +154,7 @@ int main(int argc, char **argv)
  *   drawFunc - a function pointer for drawing something on the button
  */
 void initDragWellButton(DragWellButton *but,Window win, int x, int y, int w,
-                        int h, int (*drawFunc)(DragWellButton *))
+			int h, int (*drawFunc)(DragWellButton *))
 {
   but->win = win;
   but->wx = x;
@@ -219,10 +219,10 @@ void dragwellAnimate() {
     sleepTime = TOTAL_ANIMATION_TIME/(xg.dbh-3);
     for (i=xg.dby+xg.dbh-2;i>xg.dby;i--) {
       if (dragBut.state == DRAGWELL_BUTTON_PUSHED)
-        XFillRectangle(
+	XFillRectangle(
 	  xg.dpy,xg.win,xg.buttonGC,xg.dbx+2,i,xg.dbw-3,xg.dby+xg.dbh-1-i);
       else
-        XClearArea(xg.dpy,xg.win,xg.dbx+2,i,xg.dbw-3,xg.dby+xg.dbh-1-i,False);
+	XClearArea(xg.dpy,xg.win,xg.dbx+2,i,xg.dbw-3,xg.dby+xg.dbh-1-i,False);
       XFlush(xg.dpy);
       usleep(sleepTime);
     }
@@ -320,11 +320,11 @@ void parseFvwmMessage(char *msg)
     switch(GetTokenIndex(option, dragopts, 0, NULL))
     {
       case 0:
-        CopyString(&dragtype, args);
-        break;
+	CopyString(&dragtype, args);
+	break;
       case 1:
-        CopyString(&dragData, args);
-        break;
+	CopyString(&dragData, args);
+	break;
     }
     if (option) {
       free(option);
@@ -735,7 +735,7 @@ static void change_colorset(int colorset)
 /***************************************************************************
  *
  * myXNextEvent - waits for the next event, which is either an XEvent,
- *                  or an fvwm event.
+ *		    or an fvwm event.
  * Arguements:
  *   event - the XEvent that is possibly found.
  *   fvwmMessage - the FvwmMessage that is possibly found.
@@ -768,9 +768,9 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
     {
       if(XPending(xg.dpy))
       {
-        XNextEvent(xg.dpy,event); /*get an X event*/
-        miss_counter = 0;
-        return FOUND_XEVENT;
+	XNextEvent(xg.dpy,event); /*get an X event*/
+	miss_counter = 0;
+	return FOUND_XEVENT;
       }
       miss_counter++;
 #ifdef WORRY_ABOUT_MISSED_XEVENTS
@@ -786,45 +786,45 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
 	FvwmPacket* packet = ReadFvwmPacket(fd[1]);
 	/*packet format defined in libs/Module.h*/
 	if ( packet == NULL )
-        {
+	{
 	  exit(0);
 	}
-        else
-        {
+	else
+	{
 	  if (packet->type==M_CONFIG_INFO)
-          {
+	  {
 	    tline = (char*)&(packet->body[3]);
 	    token = PeekToken(tline, &tline);
 	    if (StrEquals(token, "Colorset"))
-            {
+	    {
 	      /*colorset packet*/
 	      colorset = LoadColorset(tline);
-              change_colorset(colorset);
-            }
+	      change_colorset(colorset);
+	    }
 	    else if (StrEquals(token, XINERAMA_CONFIG_STRING))
 	    {
 	      FScreenConfigureModule(tline);
 	    }
 	    return FOUND_FVWM_NON_MESSAGE;
 	  }
-          else if (packet->type==M_STRING)
-          {
+	  else if (packet->type==M_STRING)
+	  {
 	    if (packet->size>3)
-            {
+	    {
 	      /* Note that "SendToModule" calls
-               * SendStrToModule(fvwm/module_interface.c)
+	       * SendStrToModule(fvwm/module_interface.c)
 	       * which seems to insert three pieces of data at the start of
-               * the body */
+	       * the body */
 	      /* The quoting seems to be wrong in SendToModule */
-	      /* Sending "SendToModule "FvwmDragWell"   dragitem "stuff"
+	      /* Sending "SendToModule "FvwmDragWell"	dragitem "stuff"
 	       * yields ["  dragitem "stuff"]*/
 	      lptr = packet->body;
 	      msg = (char *) &(lptr[3]);
 	      strcpy(fvwmMessage,msg);
 	      return FOUND_FVWM_MESSAGE;
 	    }
-            else
-            {
+	    else
+	    {
 	      return FOUND_FVWM_NON_MESSAGE;
 	    }
 	  }
@@ -833,7 +833,7 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
 	    if (packet->body[0] == MX_PROPERTY_CHANGE_BACKGROUND &&
 		xg.colorset >= 0 &&
 		Colorset[xg.colorset].pixmap == ParentRelative &&
-		((!Swallowed && packet->body[2] == 0) || 
+		((!Swallowed && packet->body[2] == 0) ||
 		 (Swallowed && packet->body[2] == xg.win)))
 	    {
 	      XClearArea(xg.dpy, xg.win, 0,0,0,0, True);
@@ -845,9 +845,9 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
 	    }
 	    return FOUND_FVWM_NON_MESSAGE;
 	  }
-	  
-          else
-          {
+
+	  else
+	  {
 	    return FOUND_FVWM_NON_MESSAGE;
 	  }
 	}
@@ -865,7 +865,7 @@ int dummy(DragWellButton *but)
 {
   if (but->state==DRAGWELL_BUTTON_PUSHED)
     XFillRectangle(xg.dpy,xg.win,xg.buttonGC,xg.dbx+2,xg.dby+2,xg.dbw-4,
-                   xg.dbh-4);
+		   xg.dbh-4);
   return 0;
 }
 

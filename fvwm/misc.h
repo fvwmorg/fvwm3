@@ -21,17 +21,17 @@
 
 /* ---------------------------- global definitions -------------------------- */
 
-#define GRAB_ALL      0       /* sum of all grabs */
-#define GRAB_STARTUP  1       /* Startup busy cursor */
-#define GRAB_NORMAL   2       /* DeferExecution, Move, Resize, ... */
-#define GRAB_MENU     3       /* a menus.c grabing */
-#define GRAB_BUSY     4       /* BusyCursor stuff */
-#define GRAB_BUSYMENU 5       /* Allows menus.c to regrab the cursor */
-#define GRAB_PASSIVE  6       /* Override of passive grab, only prevents grab
+#define GRAB_ALL      0	      /* sum of all grabs */
+#define GRAB_STARTUP  1	      /* Startup busy cursor */
+#define GRAB_NORMAL   2	      /* DeferExecution, Move, Resize, ... */
+#define GRAB_MENU     3	      /* a menus.c grabing */
+#define GRAB_BUSY     4	      /* BusyCursor stuff */
+#define GRAB_BUSYMENU 5	      /* Allows menus.c to regrab the cursor */
+#define GRAB_PASSIVE  6	      /* Override of passive grab, only prevents grab
 			       * to be released too early */
 #define GRAB_FREEZE_CURSOR 7  /* Freeze the cursor shape if a window is
 			       * pressed. */
-#define GRAB_MAXVAL   8       /* last GRAB macro + 1 */
+#define GRAB_MAXVAL   8	      /* last GRAB macro + 1 */
 
 /* ---------------------------- global macros ------------------------------- */
 
@@ -90,7 +90,7 @@ Bool IsRectangleOnThisPage(
 FvwmWindow *get_pointer_fvwm_window(void);
 Time get_server_time(void);
 void fvwm_msg(fvwm_msg_type type, char *id, char *msg, ...)
-        __attribute__ ((format (printf, 3, 4)));
+	__attribute__ ((format (printf, 3, 4)));
 void set_last_added_item(last_added_item_type type, void *item);
 void print_g(char *text, rectangle *g);
 

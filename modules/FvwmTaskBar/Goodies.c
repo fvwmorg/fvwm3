@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -88,7 +88,7 @@ void cool_get_inboxstatus();
 #define gray_height 8
 extern unsigned char gray_bits[];
 
-/*                x  y  w  h  tw th open type *text   win */
+/*		  x  y	w  h  tw th open type *text   win */
 TipStruct Tip = { 0, 0, 0, 0,  0, 0,   0,   0, NULL, None };
 
 
@@ -344,14 +344,14 @@ void DrawGoodies(void)
 	      ((RowHeight - minimail_height) >> 1));
   else if (!IgnoreOldMail /*&& !mailcleared*/ && anymail)
     XCopyArea(dpy, mailpix, win, statusgc, 0, 0,
-              minimail_width, minimail_height,
-              win_width - stwin_width + clock_width + 3,
-              ((RowHeight - minimail_height) >> 1));
+	      minimail_width, minimail_height,
+	      win_width - stwin_width + clock_width + 3,
+	      ((RowHeight - minimail_height) >> 1));
 
   if (Tip.open) {
     if (Tip.type == DATE_TIP)
       if (tms->tm_mday != last_date) /* reflect date change */
-        CreateDateWindow(); /* This automatically deletes any old window */
+	CreateDateWindow(); /* This automatically deletes any old window */
     last_date = tms->tm_mday;
     RedrawTipWindow();
   }
@@ -485,7 +485,7 @@ void CreateTipWindow(int x, int y, int w, int h)
 {
   unsigned long gcmask;
   unsigned long winattrmask = CWBackPixel | CWBorderPixel | CWEventMask |
-                              CWColormap |CWSaveUnder | CWOverrideRedirect;
+			      CWColormap |CWSaveUnder | CWOverrideRedirect;
   XSetWindowAttributes winattr;
   GC cgc = None;
   GC gc0 = None;
@@ -535,7 +535,7 @@ void CreateTipWindow(int x, int y, int w, int h)
   pclip = XCreatePixmap(dpy, Tip.win, w+4, h+4, 1);
 
   gcmask = GCForeground | GCBackground | GCFillStyle | GCStipple |
-           GCGraphicsExposures;
+	   GCGraphicsExposures;
   gcval.foreground = 1;
   gcval.background = 0;
   gcval.fill_style = FillStippled;
@@ -573,7 +573,7 @@ void CreateTipWindow(int x, int y, int w, int h)
   if (FShapesSupported)
   {
     FShapeCombineMask(dpy, Tip.win, FShapeBounding, 0, 0, pmask, FShapeSet);
-    FShapeCombineMask(dpy, Tip.win, FShapeClip,     0, 0, pclip, FShapeSet);
+    FShapeCombineMask(dpy, Tip.win, FShapeClip,	    0, 0, pclip, FShapeSet);
   }
   if (tipscolorset >= 0 && (cset->pixmap || cset->shape_mask))
   {
@@ -600,7 +600,7 @@ void DestroyTipWindow()
 }
 
 /*-----------------------------------------------------*/
-/* Get file modification time                          */
+/* Get file modification time			       */
 /* (based on the code of 'coolmail' By Byron C. Darrah */
 /*-----------------------------------------------------*/
 
@@ -614,8 +614,8 @@ void cool_get_inboxstatus()
    fd = open (mailpath, O_RDONLY, 0);
    if (fd < 0)
    {
-      anymail    = 0;
-      newmail    = 0;
+      anymail	 = 0;
+      newmail	 = 0;
       unreadmail = 0;
       newsize = 0;
    }
@@ -626,21 +626,21 @@ void cool_get_inboxstatus()
       newsize = st.st_size;
 
       if (newsize > 0)
-         anymail = 1;
+	 anymail = 1;
       else
-         anymail = 0;
+	 anymail = 0;
 
       if (st.st_mtime >= st.st_atime && newsize > 0)
-         unreadmail = 1;
+	 unreadmail = 1;
       else
-         unreadmail = 0;
+	 unreadmail = 0;
 
       if (newsize > oldsize && unreadmail) {
-         newmail = 1;
-         mailcleared = 0;
+	 newmail = 1;
+	 mailcleared = 0;
       }
       else
-         newmail = 0;
+	 newmail = 0;
    }
 
    oldsize = newsize;

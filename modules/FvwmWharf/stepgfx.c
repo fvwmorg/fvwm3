@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*
@@ -76,7 +76,7 @@ int MakeColors(Display *dpy, Drawable d, int from[3], int to[3], int maxcols,
 	    color.blue = blue;
 	    if (XAllocColor(dpy, DefaultColormap(dpy, DefaultScreen(dpy)),
 			&color)==0) {
-	        return 0;
+		return 0;
 	    }
 	}
 	colors[i] = color.pixel;
@@ -113,7 +113,7 @@ int MakeColors(Display *dpy, Drawable d, int from[3], int to[3], int maxcols,
 	    gv = avg + (float)(to[1]/2);
 	    bv = avg + (float)(to[2]/2);
 	} else {
-            float avg;
+	    float avg;
 	    avg = (float)(from[0]+from[1]+from[2])/3;
 	    rv = avg + (float)(from[0]/2);
 	    gv = avg + (float)(from[1]/2);
@@ -159,7 +159,7 @@ int DrawDegradeRelief(Display *dpy, Drawable d, int x, int y, int w, int h,
     XGCValues	gcv;
     int		px, py, pd;
     unsigned long lightcolor, darkcolor;
-    int 	alloc_relief;
+    int		alloc_relief;
     unsigned long  *colors;
     float	c1,s1;
 
@@ -272,10 +272,10 @@ int DrawHGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
     GC		gc, gc2;
     int		dr,dg,db;
     float	s,c;
-    int 	dmax;
+    int		dmax;
     unsigned long  *colors, lightcolor, darkcolor;
-    int 	py,pd;
-    int 	alloc_relief;
+    int		py,pd;
+    int		alloc_relief;
 
     if (w <= 1 || h <= 1)
       return 0;
@@ -396,10 +396,10 @@ int DrawVGradient(Display *dpy, Drawable d, int x, int y, int w, int h,
     GC		gc, gc2;
     int		dr,dg,db;
     float	s,c;
-    int 	dmax;
+    int		dmax;
     unsigned long  *colors, lightcolor, darkcolor;
-    int 	px,pd;
-    int 	alloc_relief;
+    int		px,pd;
+    int		alloc_relief;
 
     if (w <= 1 || h <= 1)
       return 0;
@@ -586,7 +586,7 @@ int MakeShadowColors(Display *dpy, int from[3], int to[3],
 	    gv = avg + (float)(to[1]/2);
 	    bv = avg + (float)(to[2]/2);
 	} else {
-        float avg;
+	float avg;
 	    avg = (float)(from[0]+from[1]+from[2])/3;
 	    rv = avg + (float)(from[0]/2);
 	    gv = avg + (float)(from[1]/2);

@@ -1,13 +1,13 @@
 /*********************************************************/
-/* GNOME WM Compliance adapted for FVWM                  */
+/* GNOME WM Compliance adapted for FVWM			 */
 /* Properties set on the root window (or desktop window) */
-/*                                                       */
+/*							 */
 /* Even though the rest of fvwm is GPL consider this file*/
-/* Public Domain - use it however you see fit to make    */
-/* your WM GNOME compiant                                */
-/*                                                       */
-/* written by Raster                                     */
-/* adapted for FVWM by Jay Painter <jpaint@gnu.org>      */
+/* Public Domain - use it however you see fit to make	 */
+/* your WM GNOME compiant				 */
+/*							 */
+/* written by Raster					 */
+/* adapted for FVWM by Jay Painter <jpaint@gnu.org>	 */
 /*********************************************************/
 
 #ifndef GNOME_H
@@ -24,7 +24,7 @@ int  GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev);
 
 /* hook into .fvwm2rc functions */
 void GNOME_ButtonFunc(
-         XEvent *eventp,
+	 XEvent *eventp,
 	 Window w,
 	 FvwmWindow *fwin,
 	 unsigned long context,
@@ -34,7 +34,7 @@ void GNOME_ButtonFunc(
 void GNOME_ProxyButtonEvent(XEvent *ev);
 
 void GNOME_ShowDesks(
-         XEvent *eventp,
+	 XEvent *eventp,
 	 Window w,
 	 FvwmWindow *fwin,
 	 unsigned long context,

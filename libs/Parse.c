@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*
@@ -77,7 +77,7 @@ char *EscapeString(char *s, const char *qchars, char echar)
  *
  * qlong   - string of long quoted (defaults to "'` )
  * qstart  - string of pair quote start characters (defaults to empty string)
- * qend    - string of pair quote end characters (defaults to empty string)
+ * qend	   - string of pair quote end characters (defaults to empty string)
  *
  * The defaults are used if NULL is passed for the corresponding string.
  */
@@ -238,10 +238,10 @@ static char *CopyToken(char *src, char *dest, char *spaces, int snum,
 /*
 ** PeekToken:
 ** DoPeekToken: returns next token from string, leaving string intact
-**              (you must not free returned string)
+**		(you must not free returned string)
 **
 ** WARNING: The returned pointer points to a static array that will be
-**           overwritten all functions in this file!
+**	     overwritten all functions in this file!
 **
 ** For a description of the parameters see DoGetNextToken below. DoPeekToken
 ** is a bit faster.
@@ -314,7 +314,7 @@ int CheckNTokens(char *indata, unsigned int n)
 
 /*
 ** MatchToken: does case-insensitive compare on next token in string, leaving
-**             string intact (returns true if matches, false otherwise)
+**	       string intact (returns true if matches, false otherwise)
 */
 int MatchToken(char *pstr,char *tok)
 {
@@ -330,10 +330,10 @@ int MatchToken(char *pstr,char *tok)
 /* unused at the moment */
 /*
    function:		XCmpToken
-   description:	        compare 1st word of s to 1st word of t
+   description:		compare 1st word of s to 1st word of t
    returns:		< 0  if s < t
-                        = 0  if s = t
-                        > 0  if s > t
+			= 0  if s = t
+			> 0  if s > t
 */
 
 
@@ -477,9 +477,9 @@ int GetSuffixedIntegerArguments(
   char *token;
   int suffixes;
 
-  suffixes = 0;                         /* initialize */
-  if (suffixlist != 0) {                /* if passed a suffixlist */
-    suffixes = strlen(suffixlist);      /* save its length */
+  suffixes = 0;				/* initialize */
+  if (suffixlist != 0) {		/* if passed a suffixlist */
+    suffixes = strlen(suffixlist);	/* save its length */
   }
 
   for (i = 0; i < num && action; i++)

@@ -17,7 +17,7 @@
  */
 
 #ifndef FXPM_H
-#define FXPM_H 
+#define FXPM_H
 
 #include "PictureBase.h"
 
@@ -160,11 +160,11 @@ typedef struct {
 
 #define FxpmReadFileToXpmImage(a,b,c) XpmReadFileToXpmImage(a,b,c)
 #define FxpmCreatePixmapFromXpmImage(a,b,c,d,e,f) \
-            XpmCreatePixmapFromXpmImage(a,b,c,d,e,f)
+	    XpmCreatePixmapFromXpmImage(a,b,c,d,e,f)
 #define FxpmFreeXpmImage(a) XpmFreeXpmImage(a)
 #define FxpmReadFileToPixmap(a,b,c,d,e,f) XpmReadFileToPixmap(a,b,c,d,e,f)
 #define FxpmCreatePixmapFromData(a,b,c,d,e,f) \
-            XpmCreatePixmapFromData(a,b,c,d,e,f)
+	    XpmCreatePixmapFromData(a,b,c,d,e,f)
 
 #else /* !XpmSupport */
 #define FxpmReturnPixels 0
@@ -194,22 +194,22 @@ typedef struct {
 
 #define FxpmUndefPixel 0
 
-#define FxpmColorError    1
-#define FxpmSuccess       0
-#define FxpmOpenFailed   -1
-#define FxpmFileInvalid  -2
-#define FxpmNoMemory     -3
-#define FxpmColorFailed  -4
+#define FxpmColorError	  1
+#define FxpmSuccess	  0
+#define FxpmOpenFailed	 -1
+#define FxpmFileInvalid	 -2
+#define FxpmNoMemory	 -3
+#define FxpmColorFailed	 -4
 
 #define FXPM_MONO	2
 #define FXPM_GREY4	3
 #define FXPM_GRAY4	3
-#define FXPM_GREY 	4
-#define FXPM_GRAY 	4
+#define FXPM_GREY	4
+#define FXPM_GRAY	4
 #define FXPM_COLOR	5
 
 #define FxpmReadFileToXpmImage(a,b,c) 0
-#define FxpmCreatePixmapFromXpmImage(a,b,c,d,e,f) 0 
+#define FxpmCreatePixmapFromXpmImage(a,b,c,d,e,f) 0
 #define FxpmFreeXpmImage(a)
 #define FxpmReadFileToPixmap(a,b,c,d,e,f) 0
 #define FxpmCreatePixmapFromData(a,b,c,d,e,f) 0

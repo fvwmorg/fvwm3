@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -30,7 +30,7 @@
  *
  * Created 09/23/98 by Dan Espen:
  *
- * - Some  of  this Logic   used to reside  in  "read.c",  preceeded by a
+ * - Some  of  this Logic   used to reside  in	"read.c",  preceeded by a
  * comment about whether it belonged there.  Time tells.
  *
  * - Added  logic to  execute module config  commands by  passing to  the
@@ -80,7 +80,7 @@ static void SendConfigToModule(
  * thru "sendconfig".
  *
  * Some modules request that module config commands be sent to them
- * as the commands are entered.  Send to modules that want it.
+ * as the commands are entered.	 Send to modules that want it.
  */
 void ModuleConfig(char *action)
 {
@@ -90,7 +90,7 @@ void ModuleConfig(char *action)
   end = strlen(action) - 1;
   if (action[end] == '\n')
     action[end] = '\0';
-  new_entry = AddToModList(action);              /* save for config request */
+  new_entry = AddToModList(action);		 /* save for config request */
   for (module = 0; module < npipes; module++) /* look at all possible pipes */
   {
     if (IS_MESSAGE_SELECTED(module, M_SENDCONFIG)) /* does module want config
@@ -150,12 +150,12 @@ static struct moduleInfoList *AddToModList(char *tline)
 }
 
 /**************************************************************/
-/* delete from module configuration                           */
+/* delete from module configuration			      */
 /**************************************************************/
 void CMD_DestroyModuleConfig(F_CMD_ARGS)
 {
   struct moduleInfoList *current, *next, *prev;
-  char *info;   /* info to be deleted - may contain wildcards */
+  char *info;	/* info to be deleted - may contain wildcards */
   char *mi;
   char *alias_end;
   int alias_len = 0;
@@ -174,7 +174,7 @@ void CMD_DestroyModuleConfig(F_CMD_ARGS)
       return;
     info = stripcpy(CatString2(action, conf_start));
     *alias_end = MODULE_CONFIG_DELIM;
-    alias_len = alias_end - action + 1;  /* +1 for a leading '*' */
+    alias_len = alias_end - action + 1;	 /* +1 for a leading '*' */
     free(conf_start);
   }
   else
@@ -192,17 +192,17 @@ void CMD_DestroyModuleConfig(F_CMD_ARGS)
     GetNextToken(current->data, &mi);
     next = current->next;
     if ((!alias_len || !current->alias_len || alias_len == current->alias_len)
-        && matchWildcards(info, mi+1))
+	&& matchWildcards(info, mi+1))
     {
       free(current->data);
       free(current);
       if( prev )
       {
-        prev->next = next;
+	prev->next = next;
       }
       else
       {
-        modlistroot = next;
+	modlistroot = next;
       }
     }
     else
@@ -324,8 +324,8 @@ void send_ignore_modifiers(int modnum)
 void CMD_Send_ConfigInfo(F_CMD_ARGS)
 {
   struct moduleInfoList *t;
-  char *match;                          /* matching criteria for module cmds */
-  int match_len = 0;                    /* get length once for efficiency */
+  char *match;				/* matching criteria for module cmds */
+  int match_len = 0;			/* get length once for efficiency */
 
   send_desktop_geometry(*Module);
   /* send ImagePath and ColorLimit first */

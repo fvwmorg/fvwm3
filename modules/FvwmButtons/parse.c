@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -511,7 +511,7 @@ static void ParsePanel(char **ss, unsigned int *flags, unsigned int *mask,
 	case 4: /* left */
 	  *position = SLIDE_POSITION_LEFT_TOP;
 	  break;
-	case 5: /* top  */
+	case 5: /* top	*/
 	  *position = SLIDE_POSITION_LEFT_TOP;
 	  break;
 	case 6: /* right */
@@ -599,7 +599,7 @@ static void ParseContainer(char **ss,button_info *b)
       break;
     case 2: /* Font */
       if (b->c->font_string)
-        free(b->c->font_string);
+	free(b->c->font_string);
       b->c->font_string = my_get_font(&s);
       if(b->c->font_string)
       {
@@ -876,7 +876,7 @@ static void ParseButton(button_info **uberb,char *s)
       case 2: /* Font */
 	if(b->flags&b_Font && b->font_string)
 	  free(b->font_string);
-        b->font_string = my_get_font(&s);
+	b->font_string = my_get_font(&s);
 	if(b->font_string)
 	{
 	  b->flags|=b_Font;
@@ -1175,27 +1175,27 @@ static void ParseButton(button_info **uberb,char *s)
 	  while(*s && *s!=')')
 	    s++;
 	  if(*s==')')
-            s++;
+	    s++;
 	}
-        {
-          char *r;
-          char *u = s;
+	{
+	  char *r;
+	  char *u = s;
 
-          s = GetQuotedString(s, &t, ",)", NULL, "(", ")");
-          r = s;
-          if (t && r > u + 1)
-          {
-            /* remove unquoted trailing spaces */
-            r -= 2;
-            while (r >= u && isspace(*r))
-              r--;
-            r++;
-            if (isspace(*r))
-            {
-              t[strlen(t) - (s - r - 1)] = 0;
-            }
-          }
-        }
+	  s = GetQuotedString(s, &t, ",)", NULL, "(", ")");
+	  r = s;
+	  if (t && r > u + 1)
+	  {
+	    /* remove unquoted trailing spaces */
+	    r -= 2;
+	    while (r >= u && isspace(*r))
+	      r--;
+	    r++;
+	    if (isspace(*r))
+	    {
+	      t[strlen(t) - (s - r - 1)] = 0;
+	    }
+	  }
+	}
 	if(t)
 	{
 	  AddButtonAction(b,i,t);
@@ -1529,7 +1529,7 @@ void parse_window_geometry(char *geom)
 /**
 *** ParseOptions()
 **/
-extern int save_color_limit;            /* global for xpm color limiting */
+extern int save_color_limit;		/* global for xpm color limiting */
 void ParseConfiguration(button_info *ub)
 {
   char *s;
@@ -1546,7 +1546,7 @@ void ParseConfiguration(button_info *ub)
   items[0]=mymalloc(strlen(MyName)+2);
   sprintf(items[0],"*%s",MyName);
 
-  InitGetConfigLine(fd,items[0]);       /* send config lines with MyName */
+  InitGetConfigLine(fd,items[0]);	/* send config lines with MyName */
   GetConfigLine(fd,&s);
   while(s && s[0])
   {
@@ -1564,7 +1564,7 @@ void ParseConfiguration(button_info *ub)
 	free(imagePath);
       CopyString(&imagePath,rest);
       break;
-    case 2:                         /* colorlimit */
+    case 2:			    /* colorlimit */
       sscanf(rest, "%d", &save_color_limit);
       break;
     case 3:

@@ -32,16 +32,16 @@ typedef enum
 	FRAME_MR_OPAQUE,
 	FRAME_MR_SHRINK,
 	FRAME_MR_SCROLL,
-        /* used internally only, do not set these in any calls */
+	/* used internally only, do not set these in any calls */
 	FRAME_MR_FORCE_SETUP,
 	FRAME_MR_FORCE_SETUP_NO_W
 } frame_move_resize_mode;
 
 typedef struct
 {
-        rectangle titlebar_g;
-        rectangle title_g;
-        rectangle button_g[NUMBER_OF_BUTTONS];
+	rectangle titlebar_g;
+	rectangle title_g;
+	rectangle button_g[NUMBER_OF_BUTTONS];
 } frame_title_layout_type;
 
 /* details are hidden in frame.c */
@@ -65,7 +65,7 @@ void frame_free_move_resize_args(
 	FvwmWindow *fw, frame_move_resize_args mr_args);
 void frame_get_titlebar_dimensions(
 	FvwmWindow *fw, rectangle *frame_g, rectangle *diff_g,
-        frame_title_layout_type *title_layout);
+	frame_title_layout_type *title_layout);
 void frame_get_sidebar_geometry(
 	FvwmWindow *fw, DecorFaceStyle *borderstyle, rectangle *frame_g,
 	rectangle *ret_g, Bool *ret_has_x_marks, Bool *ret_has_y_marks);

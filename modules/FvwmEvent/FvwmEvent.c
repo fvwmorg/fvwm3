@@ -1,7 +1,7 @@
 /* #define DEBUG */
 /*
  * Copyright (C) 1994 Mark Boyns (boyns@sdsu.edu) and
- *                    Mark Scott (mscott@mcd.mot.com)
+ *		      Mark Scott (mscott@mcd.mot.com)
  *		 1996-1998 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
  *
  * FvwmEvent version 1.0
@@ -13,7 +13,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -27,7 +27,7 @@
 
  * renamed & cleaned up so that FvwmEvent (TaDa !!) is a general event
    handler module.
-               -- 21.04.98 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
+	       -- 21.04.98 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
 
  * changed parsing to use new library functions
 
@@ -39,7 +39,7 @@
 
    mark boyns ok-ed this patch, I reviewed it and put out those ugly
    #defines for RESYNC and READ_BODY by reordering the control structures
-               -- Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
+	       -- Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
 
  * made FvwmAudio insensitive to its name -> can be symlinked.
    corrected some error message deficiencies, code for quoted 'sound'
@@ -49,7 +49,7 @@
    *FvwmAudioPlayCmd say
    *FvwmAudio add_window	   "add window"
    *FvwmAudio raise_window	   'raise window'
-               -- 08/07/96 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
+	       -- 08/07/96 Albrecht Kadlec (albrecht@auto.tuwien.ac.at)
 
  * Fixed FvwmAudio to reflect the changes made to the module protocol.
 
@@ -124,9 +124,9 @@ int	MyNameLen;
 int	fd[2];
 char   *cmd_line = NULL;
 time_t	audio_delay = 0,		/* seconds */
-        last_time = 0,
-        now,
-        start_audio_delay = 0;
+	last_time = 0,
+	now,
+	start_audio_delay = 0;
 Bool	PassID = False;	/* don't tag on the windowID by default */
 Bool	audio_compat = False;
 char   *audio_play_dir = NULL;
@@ -136,7 +136,7 @@ int	rplay_fd = -1;
 #endif
 
 /* prototypes */
-void    execute_event(short, unsigned long*);
+void	execute_event(short, unsigned long*);
 void	config(void);
 void	DeadPipe(int) __attribute__((__noreturn__));
 
@@ -252,7 +252,7 @@ int main(int argc, char **argv)
 
 #ifdef HAVE_SIGACTION
   {
-    struct sigaction    sigact;
+    struct sigaction	sigact;
 
     sigemptyset(&sigact.sa_mask);
 # ifdef SA_INTERRUPT
@@ -262,11 +262,11 @@ int main(int argc, char **argv)
 # endif
     sigact.sa_handler = TerminateHandler;
 
-    sigaction(SIGPIPE,&sigact,NULL);    /* Dead pipe == Fvwm died */
-    sigaction(SIGTERM,&sigact,NULL);    /* "polite" termination signal */
+    sigaction(SIGPIPE,&sigact,NULL);	/* Dead pipe == Fvwm died */
+    sigaction(SIGTERM,&sigact,NULL);	/* "polite" termination signal */
   }
 #else
-    /* We don't have sigaction(), so fall back to less robust methods.  */
+    /* We don't have sigaction(), so fall back to less robust methods.	*/
     signal(SIGPIPE, TerminateHandler);
     signal(SIGTERM, TerminateHandler);
 #endif
@@ -302,7 +302,7 @@ int main(int argc, char **argv)
       /* if this read is interrrupted EINTR, the wrong event is triggered! */
 
       if( header[0] != START_FLAG )
-	goto CONTINUE;  /* should find something better for resyncing */
+	goto CONTINUE;	/* should find something better for resyncing */
 
       /* Ignore events that occur during the delay period. */
       now = time(0);
@@ -322,7 +322,7 @@ int main(int argc, char **argv)
       }
 
       if (now < last_time + audio_delay + start_audio_delay)
-	goto CONTINUE;  /* quash event */
+	goto CONTINUE;	/* quash event */
       else
 	start_audio_delay = 0;
 
@@ -352,7 +352,7 @@ int main(int argc, char **argv)
 
 CONTINUE:
       if (header[1] == M_DESTROY_WINDOW)
-        SendUnlockNotification(fd);
+	SendUnlockNotification(fd);
     } /* while */
 
     execute_event(BUILTIN_SHUTDOWN, NULL);
@@ -381,7 +381,7 @@ void execute_event(short event, unsigned long *body)
 	    rplay_perror("rplay");
 	}
     }
-  else 	/* avoid invalid second execute */
+  else	/* avoid invalid second execute */
 #endif
     if (action_table[event])
       {
@@ -474,7 +474,7 @@ void config(void)
 #endif
   }
 
-  InitGetConfigLine(fd,MyName);         /* get config lines with my name */
+  InitGetConfigLine(fd,MyName);		/* get config lines with my name */
   while (GetConfigLine(fd,&buf), buf != NULL)
   {
     if (buf[strlen(buf)-1] == '\n')
@@ -589,7 +589,7 @@ void config(void)
 	p = GetNextSimpleOption( p, &action );
 
 	INFO(event);
-	INFO("  ");
+	INFO("	");
 	INFO(action);
 	INFO("\n");
 	if (!event || !*event || !action || !*action)

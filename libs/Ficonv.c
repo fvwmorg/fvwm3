@@ -64,8 +64,8 @@
 /* ---------------------------- local variables ----------------------------- */
 
 static Bool FiconvInitialized = False;
-static FlocaleCharset *FLCUtf8Charset = NULL;       /* UTF-8 charset */
-static FlocaleCharset *FLCDefaultIconvCharset = NULL; 
+static FlocaleCharset *FLCUtf8Charset = NULL;	    /* UTF-8 charset */
+static FlocaleCharset *FLCDefaultIconvCharset = NULL;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
@@ -217,19 +217,19 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
       switch (errno)
       {
       case EINVAL:
-        /* Incomplete text, do not report an error */
-        break;
+	/* Incomplete text, do not report an error */
+	break;
       case E2BIG:
       {
-        size_t used = outp - dest;
+	size_t used = outp - dest;
 
-        outbuf_size *= 2;
-        dest = realloc (dest, outbuf_size);
+	outbuf_size *= 2;
+	dest = realloc (dest, outbuf_size);
 
-        outp = dest + used;
-        outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
+	outp = dest + used;
+	outbytes_remaining = outbuf_size - used - 1; /* -1 for nul */
 	is_finished = 0;
-        break;
+	break;
       }
       case EILSEQ:
 	    /* Something went wrong.  */
@@ -240,7 +240,7 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 		  "Invalid byte sequence during conversion from %s to %s\n",
 		  in_charset,out_charset);
 	}
-        have_error = 1;
+	have_error = 1;
 	break;
       default:
 	if (error_count <= FICONV_CONVERSION_MAX_NUMBER_OF_WARNING)
@@ -249,8 +249,8 @@ char *convert_charsets(const char *in_charset, const char *out_charset,
 	  fprintf(stderr, "Error during conversion from %s to %s\n",
 		  in_charset,out_charset);
 	}
-        have_error = 1;
-        break;
+	have_error = 1;
+	break;
       }
     }
   }
@@ -336,7 +336,7 @@ void FiconvInit(Display *dpy, const char *module)
 #if FLOCALE_DEBUG_CHARSET
 	fprintf(stderr,"[Ficonv] locale charset: x:%s, bidi:%s\n",
 		FLC_DEBUG_GET_X_CHARSET(FLCDefaultIconvCharset),
-		FLC_DEBUG_GET_BIDI_CHARSET (FLCDefaultIconvCharset));      
+		FLC_DEBUG_GET_BIDI_CHARSET (FLCDefaultIconvCharset));
 #endif
 
 	/* never null */
@@ -402,7 +402,7 @@ FlocaleCharset *FiconvSetupConversion(Display *dpy, FlocaleFont *flf)
 	{
 		set_iconv_charset_index(fc);
 #if FLOCALE_DEBUG_CHARSET
-		fprintf(stderr, "[Flocale] set up iconv charset: " 
+		fprintf(stderr, "[Flocale] set up iconv charset: "
 			"x: %s, iconv: %s\n",
 			FLC_DEBUG_GET_X_CHARSET(fc),
 			FLC_DEBUG_GET_ICONV_CHARSET(fc));

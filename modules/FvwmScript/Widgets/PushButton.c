@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "Tools.h"
@@ -20,7 +20,7 @@
 
 /***********************************************/
 /***********************************************/
-/* Fonction pour PushButton                    */
+/* Fonction pour PushButton		       */
 /***********************************************/
 /***********************************************/
 void InitPushButton(struct XObj *xobj)
@@ -42,7 +42,7 @@ void InitPushButton(struct XObj *xobj)
     xobj->TabColor[hili] = GetColor(xobj->hilicolor);
     xobj->TabColor[shad] = GetColor(xobj->shadcolor);
   }
-  
+
   mask = 0;
   Attr.cursor = XCreateFontCursor(dpy, XC_hand2);
   mask |= CWCursor;
@@ -235,11 +235,11 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
       {
 	y = y-hMenu-xobj->height;
       }
-      
+
       mask = 0;
       Attr.background_pixel = xobj->TabColor[back];
       mask |= CWBackPixel;
-      Attr.border_pixel  =  0;
+      Attr.border_pixel	 =  0;
       mask |= CWBorderPixel;
       Attr.colormap = Pcmap;
       mask |= CWColormap;

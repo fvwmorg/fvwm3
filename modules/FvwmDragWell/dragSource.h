@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef _DRAG_SOURCE_H
@@ -27,14 +27,14 @@
 typedef struct DragSource_Struct {
   FILE *mfsErr;
   Display *display;
-  Window rootWindow;        /*root window of screen*/
-  Window dropTargWin;       /*the drop target window*/
-  Window dragSrcWin;        /*the drag source window*/
+  Window rootWindow;	    /*root window of screen*/
+  Window dropTargWin;	    /*the drop target window*/
+  Window dragSrcWin;	    /*the drag source window*/
   int version;
-  XdndAtoms *atomSel;       /*Atoms used for xdnd*/
+  XdndAtoms *atomSel;	    /*Atoms used for xdnd*/
   float dragHalo; /*# of pixels the mouse has to move before a drag starts*/
   XdndCursor *cursors;
-  unsigned int state;       /*holds state of the drag*/
+  unsigned int state;	    /*holds state of the drag*/
   unsigned short cachexRoot, cacheyRoot;
   unsigned short rx,ry,w,h; /*position of window in root*/
   Atom dropTargProperty;    /*holds the drop target property*/
@@ -68,7 +68,7 @@ typedef struct DragSource_Struct {
 #define XDND_ALWAYS_SEND 0x1UL
 
 #define XDND_STATUS_RECVD_CNT 0x4UL  /*keeps track of the number of status*/
-#define XDND_GOT_ZERO 0X0UL          /*messages received*/
+#define XDND_GOT_ZERO 0X0UL	     /*messages received*/
 #define XDND_GOTONE_OR_MORE 0x1UL
 
 #define XDND_DROPPABLE 0x5UL /*can we drop over the current widget?*/

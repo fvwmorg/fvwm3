@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*
@@ -176,7 +176,7 @@ int StrHasPrefix( const char* string, const char* prefix )
 /****************************************************************************
  *
  * Adds single quotes arround the string and escapes single quotes with
- * backslashes.  The result is placed in the given dest, not allocated.
+ * backslashes.	 The result is placed in the given dest, not allocated.
  * The end of destination, i.e. pointer to '\0' is returned.
  * You should allocate dest yourself, at least strlen(source) * 2 + 3.
  *

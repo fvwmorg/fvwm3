@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include <unistd.h>
@@ -69,7 +69,7 @@ void DumpButtons(button_info *b)
   if(b->flags&b_Icon)
     fprintf(stderr,"Panelw(%i) ",(int)b->PanelWin);
   if(b->flags&b_Action)
-    fprintf(stderr,"\n  Action(%s,%s,%s,%s) ",
+    fprintf(stderr,"\n	Action(%s,%s,%s,%s) ",
 	    b->action[0]?b->action[0]:"",
 	    b->action[1]?b->action[1]:"",
 	    b->action[2]?b->action[2]:"",
@@ -97,7 +97,7 @@ void DumpButtons(button_info *b)
 	    b->c->allocated_buttons,
 	    b->c->width,b->c->height,b->c->xpos,b->c->ypos);
     /*
-      fprintf(stderr,"  font(%s,%i) framew(%i) pad(%i,%i) { ",
+      fprintf(stderr,"	font(%s,%i) framew(%i) pad(%i,%i) { ",
       b->c->font_string,(int)b->c->Ffont,b->c->framew,b->c->xpad,
       b->c->ypad);
     */

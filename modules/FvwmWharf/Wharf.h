@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -53,7 +53,7 @@ void swallow(unsigned long *body);
 void ConstrainSize (XSizeHints *hints, int *widthp, int *height);
 void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row, int col);
 void CloseFolder(int folder);
-void OpenFolder(int folder,int x, int y, int w, int h,  int direction);
+void OpenFolder(int folder,int x, int y, int w, int h,	int direction);
 void RedrawPushed(Window *win, int i, int j);
 void RedrawUnpushed(Window *win, int i, int j);
 void RedrawUnpushedOutline(Window *win, int i,int j);
@@ -113,12 +113,12 @@ struct button_info
 
 struct folder_info
 {
-  Window win;         /* Window of the Folder */
+  Window win;	      /* Window of the Folder */
   int firstbutton;    /* index to Buttons, starting at end */
-  int count;          /* count folded buttons */
-  int mapped;         /* is the window visible or not ?? */
-  int cols;           /* either 1 or me.count */
-  int rows;           /* either me.count or 1 */
+  int count;	      /* count folded buttons */
+  int mapped;	      /* is the window visible or not ?? */
+  int cols;	      /* either 1 or me.count */
+  int rows;	      /* either me.count or 1 */
   int direction;      /* direction of the folder */
 };
 

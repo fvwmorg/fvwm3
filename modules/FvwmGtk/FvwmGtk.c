@@ -10,7 +10,7 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
@@ -105,9 +105,9 @@ destroy (int argc, char **argv)
   if (w != NULL)
     {
       if (gtk_widget_get_toplevel (current) == w)
-        {
-          current = NULL;
-        }
+	{
+	  current = NULL;
+	}
 
       g_hash_table_remove (widgets, argv[0]);
       gtk_object_unref (GTK_OBJECT (w));
@@ -325,7 +325,7 @@ parse_options (void)
 {
   char *buf;
 
-  InitGetConfigLine(fvwm_fd,my_name);   /* only my config lines needed */
+  InitGetConfigLine(fvwm_fd,my_name);	/* only my config lines needed */
   while (GetConfigLine (fvwm_fd, &buf), buf != NULL)
     {
       parse_config_line (buf);
@@ -353,14 +353,14 @@ process_message (unsigned long type,
       widget = g_hash_table_lookup (widgets, name);
       if (!widget)
 	{
-          widget_not_found (name);
+	  widget_not_found (name);
 	}
       else if (GTK_IS_MENU (widget))
 	{
-          opts = (window_list_options *)
+	  opts = (window_list_options *)
 	    gtk_object_get_data (GTK_OBJECT (widget), "window_list");
-          if (opts)
-            {
+	  if (opts)
+	    {
 	      char *argv[1];
 
 	      argv[0] = name;
@@ -369,11 +369,11 @@ process_message (unsigned long type,
 	      widget = current;
 	      gtk_object_set_data (GTK_OBJECT (current), "window_list", opts);
 	      construct_window_list ();
-            }
+	    }
 
 	  gtk_menu_popup (GTK_MENU (widget), NULL, NULL, NULL, NULL,
 			  button, timestamp);
-        }
+	}
       else if (GTK_IS_WINDOW (widget))
 	{
 	  gtk_widget_show (GTK_WIDGET (widget));
@@ -432,11 +432,11 @@ process_message (unsigned long type,
 	wle->mini_icon = safestrdup (mip->name);
 */
 
-        window_list_entry *wle = lookup_window_list_entry (body[0]);
+	window_list_entry *wle = lookup_window_list_entry (body[0]);
 
-        if (wle->mini_icon)
-          free(wle->mini_icon);
-        wle->mini_icon = safestrdup ((char*) (&body[8]));
+	if (wle->mini_icon)
+	  free(wle->mini_icon);
+	wle->mini_icon = safestrdup ((char*) (&body[8]));
       }
       break;
     }

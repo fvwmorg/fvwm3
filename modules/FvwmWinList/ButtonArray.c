@@ -1,7 +1,7 @@
 /* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
- *                               Mike_Finger@atk.com)
+ *				 Mike_Finger@atk.com)
  *
  * The functions in this source file that are the original work of Mike Finger.
  *
@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /* This program is free software; you can redistribute it and/or modify
@@ -34,12 +34,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -72,9 +72,9 @@ extern int ShowCurrentDesk;
 extern int UseSkipList;
 
 /*************************************************************************
- *                                                                       *
- *  Button handling functions and procedures                             *
- *                                                                       *
+ *									 *
+ *  Button handling functions and procedures				 *
+ *									 *
  *************************************************************************/
 
 /* -------------------------------------------------------------------------
@@ -380,7 +380,7 @@ Button *temp,*temp2;
 }
 
 /******************************************************************************
-  DoButton - Draw the specified button.  (Used internally)
+  DoButton - Draw the specified button.	 (Used internally)
 ******************************************************************************/
 void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 {
@@ -440,11 +440,11 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
        newx = INNER_MARGIN;
       if (!button->is_iconified)
       {
-        static int icon_offset = -1;
+	static int icon_offset = -1;
 
-        if (icon_offset == -1)
-          icon_offset = FlocaleTextWidth(FButtonFont, "(", 1);
-        newx += icon_offset;
+	if (icon_offset == -1)
+	  icon_offset = FlocaleTextWidth(FButtonFont, "(", 1);
+	newx += icon_offset;
       }
     }
     else
@@ -510,7 +510,7 @@ void DrawButtonArray(ButtonArray *barray, Bool all, Bool clear_bg)
     if (IsButtonVisible(btn))
     {
       if (all || btn->needsupdate)
-        DoButton(btn, barray->x, barray->y + (i * (barray->h + 1)),
+	DoButton(btn, barray->x, barray->y + (i * (barray->h + 1)),
 		 barray->w, barray->h, clear_bg);
       i++;
     }
@@ -580,34 +580,34 @@ void RadioButton(ButtonArray *array, int butnum, int butnumpressed)
     {
       if (ShowFocus && temp->up)
       {
-        temp->up = 0;
-        temp->needsupdate=1;
+	temp->up = 0;
+	temp->needsupdate=1;
       }
       if (!(temp->set & 2))
       {
-        temp->set |= 2;
-        temp->needsupdate=1;
+	temp->set |= 2;
+	temp->needsupdate=1;
       }
     }
     else if (i == butnumpressed)
     {
       if (temp->set & 2)
       {
-        temp->set &= 1;
-        temp->needsupdate = 1;
+	temp->set &= 1;
+	temp->needsupdate = 1;
       }
     }
     else
     {
       if (ShowFocus && !temp->up)
       {
-        temp->up = 1;
-        temp->needsupdate = 1;
+	temp->up = 1;
+	temp->needsupdate = 1;
       }
       if (temp->set & 2)
       {
-        temp->set &= 1;
-        temp->needsupdate = 1;
+	temp->set &= 1;
+	temp->needsupdate = 1;
       }
     }
   }

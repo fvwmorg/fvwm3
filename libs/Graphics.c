@@ -306,11 +306,11 @@ Pixel *AllocLinearGradient(
 	c.flags = DoRed | DoGreen | DoBlue;
 	for (i = (skip_first_color) ? 1 : 0; i < npixels && div > 0; ++i)
 	{
-		c.red   = (unsigned short)
+		c.red	= (unsigned short)
 			((int)(r + dr / (float)div * (float)i + 0.5));
 		c.green = (unsigned short)
 			((int)(g + dg / (float)div * (float)i + 0.5));
-		c.blue  = (unsigned short)
+		c.blue	= (unsigned short)
 			((int)(b + db / (float)div * (float)i + 0.5));
 		if (!XAllocColor(Pdpy, Pcmap, &c))
 		{
@@ -463,7 +463,7 @@ Pixel *AllocAllGradientColors(
 
 /* groks a gradient string and creates arrays of colors and percentages
  * returns the number of colors asked for (No. allocated may be less due
- * to the ColorLimit command).  A return of 0 indicates an error
+ * to the ColorLimit command).	A return of 0 indicates an error
  */
 unsigned int ParseGradient(
 	char *gradient, char **rest, char ***colors_return, int **perc_return,

@@ -12,12 +12,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  *
  * Combined FvwmTile and FvwmCascade to FvwmRearrange module.
  * 9-Nov-1998 Dominik Vogt
@@ -265,7 +265,7 @@ void move_resize_raise_window(
 			sprintf(msg, "%s %up %up", function, x, y);
 		SendText(fd, msg, wi->frame);
 	}
-  
+
 	if (raise_window)
 		SendText(fd, "Raise", wi->frame);
 
@@ -290,7 +290,7 @@ void tile_windows(void)
     }
     wdiv = (maxx - ofsx + 1) / count;
 
-    for (i = 0; w && (i < count); ++i)  {
+    for (i = 0; w && (i < count); ++i)	{
       for (j = 0; w && (j < maxnum); ++j) {
 	int nw = wdiv - w->bw * 2;
 	int nh = hdiv - w->bw * 2 - w->th;
@@ -324,7 +324,7 @@ void tile_windows(void)
     }
     hdiv = (maxy - ofsy + 1) / count;
 
-    for (i = 0; w && (i < count); ++i)  {
+    for (i = 0; w && (i < count); ++i)	{
       for (j = 0; w && (j < maxnum); ++j) {
 	int nw = wdiv - w->bw * 2;
 	int nh = hdiv - w->bw * 2 - w->th;
@@ -568,7 +568,7 @@ int main(int argc, char *argv[])
 		 M_CONFIGURE_WINDOW |
 		 M_END_WINDOWLIST);
   SetMessageMask(fd,
-                 M_EXTENDED_MSG);
+		 M_EXTENDED_MSG);
 
   if (FvwmTile) {
     if (maxx == dx)

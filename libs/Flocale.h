@@ -8,12 +8,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef FLOCALE_H
@@ -43,10 +43,10 @@
 	(x == TEXT_ROTATED_90 || x == TEXT_ROTATED_270)
 
 
-#define FLC_INDEX_ICONV_CHARSET_NOT_FOUND         -1
-#define FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED   -2
+#define FLC_INDEX_ICONV_CHARSET_NOT_FOUND	  -1
+#define FLC_INDEX_ICONV_CHARSET_NOT_INITIALIZED	  -2
 
-#define FLC_GET_X_CHARSET(fc)         (fc != NULL)? fc->x:NULL
+#define FLC_GET_X_CHARSET(fc)	      (fc != NULL)? fc->x:NULL
 #define FLC_SET_ICONV_INDEX(fc, i)    fc->iconv_index = i
 #define FLC_GET_LOCALE_CHARSET(fc, i) fc->locale[i]
 #define FLC_GET_ICONV_CHARSET(fc) \
@@ -57,64 +57,64 @@
 #define FLC_GET_BIDI_CHARSET(fc) (fc != NULL)? fc->bidi : NULL
 
 #define FLC_DEBUG_GET_X_CHARSET(fc)  \
-         (fc == NULL || fc->x == NULL)? "None":fc->x
+	 (fc == NULL || fc->x == NULL)? "None":fc->x
 #define FLC_DEBUG_GET_ICONV_CHARSET(fc) \
-         (fc != NULL && fc->iconv_index >= 0)? fc->locale[fc->iconv_index]:"None"
+	 (fc != NULL && fc->iconv_index >= 0)? fc->locale[fc->iconv_index]:"None"
 #define FLC_DEBUG_GET_BIDI_CHARSET(fc) \
 	 (fc == NULL || fc->bidi == NULL)? "None":fc->bidi
 
 #define FLOCALE_FALLBACK_XCHARSET "ISO8859-1"
-#define FLOCALE_UTF8_XCHARSET     "ISO10646-1"
+#define FLOCALE_UTF8_XCHARSET	  "ISO10646-1"
 #define FLOCALE_ICONV_CONVERSION_MAX_NUMBER_OF_WARNING 10
 
 #define FLOCALE_DEBUG_SETLOCALE 0
-#define FLOCALE_DEBUG_CHARSET   0
-#define FLOCALE_DEBUG_ICONV     0
+#define FLOCALE_DEBUG_CHARSET	0
+#define FLOCALE_DEBUG_ICONV	0
 
 #define FLF_MULTIDIR_HAS_UPPER(flf) \
-              ((flf->flags.shadow_dir & MULTI_DIR_NW) || \
-               (flf->flags.shadow_dir & MULTI_DIR_N) || \
-               (flf->flags.shadow_dir & MULTI_DIR_NE))
+	      ((flf->flags.shadow_dir & MULTI_DIR_NW) || \
+	       (flf->flags.shadow_dir & MULTI_DIR_N) || \
+	       (flf->flags.shadow_dir & MULTI_DIR_NE))
 #define FLF_MULTIDIR_HAS_BOTTOM(flf) \
-              ((flf->flags.shadow_dir & MULTI_DIR_SW) || \
-               (flf->flags.shadow_dir & MULTI_DIR_S) || \
-               (flf->flags.shadow_dir & MULTI_DIR_SE))
+	      ((flf->flags.shadow_dir & MULTI_DIR_SW) || \
+	       (flf->flags.shadow_dir & MULTI_DIR_S) || \
+	       (flf->flags.shadow_dir & MULTI_DIR_SE))
 #define FLF_MULTIDIR_HAS_LEFT(flf) \
-              ((flf->flags.shadow_dir & MULTI_DIR_SW) || \
-               (flf->flags.shadow_dir & MULTI_DIR_W) || \
-               (flf->flags.shadow_dir & MULTI_DIR_NW))
+	      ((flf->flags.shadow_dir & MULTI_DIR_SW) || \
+	       (flf->flags.shadow_dir & MULTI_DIR_W) || \
+	       (flf->flags.shadow_dir & MULTI_DIR_NW))
 #define FLF_MULTIDIR_HAS_RIGHT(x) \
-              ((flf->flags.shadow_dir & MULTI_DIR_SE) || \
-               (flf->flags.shadow_dir & MULTI_DIR_E) || \
-               (flf->flags.shadow_dir & MULTI_DIR_NE))
+	      ((flf->flags.shadow_dir & MULTI_DIR_SE) || \
+	       (flf->flags.shadow_dir & MULTI_DIR_E) || \
+	       (flf->flags.shadow_dir & MULTI_DIR_NE))
 
 #define FLF_SHADOW_FULL_SIZE(flf) (flf->shadow_size + flf->shadow_offset)
 #define FLF_SHADOW_HEIGHT(flf) \
  (FLF_SHADOW_FULL_SIZE(flf) * \
-           (FLF_MULTIDIR_HAS_UPPER(flf)+FLF_MULTIDIR_HAS_BOTTOM(flf)))
+	   (FLF_MULTIDIR_HAS_UPPER(flf)+FLF_MULTIDIR_HAS_BOTTOM(flf)))
 #define FLF_SHADOW_WIDTH(flf) \
  (FLF_SHADOW_FULL_SIZE(flf) * \
-            (FLF_MULTIDIR_HAS_LEFT(flf)+FLF_MULTIDIR_HAS_RIGHT(flf)))
+	    (FLF_MULTIDIR_HAS_LEFT(flf)+FLF_MULTIDIR_HAS_RIGHT(flf)))
 #define FLF_SHADOW_ASCENT(flf) \
-         (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_UPPER(flf))
+	 (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_UPPER(flf))
 #define FLF_SHADOW_DESCENT(flf) \
-         (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_BOTTOM(flf))
+	 (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_BOTTOM(flf))
 
 #define FLF_SHADOW_LEFT_SIZE(flf) \
-            (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_LEFT(flf))
+	    (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_LEFT(flf))
 #define FLF_SHADOW_RIGHT_SIZE(flf) \
-            (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_RIGHT(flf))
+	    (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_RIGHT(flf))
 #define FLF_SHADOW_UPPER_SIZE(flf) \
-            (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_UPPER(flf))
+	    (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_UPPER(flf))
 #define FLF_SHADOW_BOTTOM_SIZE(flf) \
-            (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_BOTTOM(flf))
+	    (FLF_SHADOW_FULL_SIZE(flf) * FLF_MULTIDIR_HAS_BOTTOM(flf))
 
 /* ---------------------------- type definitions ---------------------------- */
 
 typedef enum
 {
-	TEXT_ROTATED_0    = 0,
-	TEXT_ROTATED_90   = 1,
+	TEXT_ROTATED_0	  = 0,
+	TEXT_ROTATED_90	  = 1,
 	TEXT_ROTATED_180  = 2,
 	TEXT_ROTATED_270  = 3,
 	TEXT_ROTATED_MASK = 3,
@@ -122,10 +122,10 @@ typedef enum
 
 typedef struct FlocaleCharset
 {
-	char *x;          /* X font charset */
-	char **locale;    /* list of possible charset names */
+	char *x;	  /* X font charset */
+	char **locale;	  /* list of possible charset names */
 	int iconv_index;  /* defines the iconv charset name */
-	char *bidi;       /* if not null a fribidi charset */
+	char *bidi;	  /* if not null a fribidi charset */
 } FlocaleCharset;
 
 typedef struct _FlocaleFont
@@ -151,7 +151,7 @@ typedef struct _FlocaleFont
 		 * fftf as its own value in the FftFontType and for XFontSet
 		 * everything is done in the good way automatically and these
 		 * parameters are not needed */
-		unsigned is_mb      : 1; /* if true the font is an iso10646-1
+		unsigned is_mb	    : 1; /* if true the font is an iso10646-1
 					  * and utf8 encoding is assumed */
 		unsigned is_utf8    : 1; /* if true the font is a 2 bytes font */
 	} flags;
@@ -206,7 +206,7 @@ void FlocaleInit(
 /*
  * load a FlocaleFont (create it or load it from a cache)
  * fontname: a ";" sperated list of "," separated list of XFLD font names or
- * either "xft:" followed by a  Xft font name. Examples:
+ * either "xft:" followed by a	Xft font name. Examples:
  * "xft:Verdana:Bold:pixelsize=14:rgba=rgb"
  * "xft:Verdana:size=12;-adobe-courier-medium-r-normal--14-*,fixed"
  * module: name of the fvwm module for errors msg
@@ -216,12 +216,12 @@ void FlocaleInit(
  * 1) We try to load each element "fn" of the ";" seprated list until success
  *    as follows:
  *    a - if fn begin with "xft:", then if FftSupport fn is loaded as an xft
- *        font; if !FftSupport fn is skipped (ignored)
+ *	  font; if !FftSupport fn is skipped (ignored)
  *    b - If the locale is supported fn is loaded using XCreateFontSet. If this
- *        fail fallback into 1-c)
+ *	  fail fallback into 1-c)
  *    c - If the locale is not supported or 1-b fail fn is loaded using
- *        XLoadQueryFont (the first loadable font in the fn "," separated list
- *        is load)
+ *	  XLoadQueryFont (the first loadable font in the fn "," separated list
+ *	  is load)
  * 2) If 0) and 1) fail:
  *    - try to load MB_FALLBACK_FONT with XCreateFontSet
  *    - If this fail try to load FALLBACK_FONT with XLoadQueryFont
@@ -291,7 +291,7 @@ void FlocaleAllocateWinString(FlocaleWinString **pfws);
  * func: XGetWMName or XGetWMIconName
  * dpy: the display
  * w: the window for which we want the (icon) name
- * ret_name_list: for 
+ * ret_name_list: for
  * ret_name: the icon or the window name of the window
  */
 void FlocaleGetNameProperty(

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "Tools.h"
@@ -19,7 +19,7 @@
 #define SbWidth 15		/* ScrollBar width */
 
 /*************************************************/
-/* Fonction pour Liste / Functions for the List  */
+/* Fonction pour Liste / Functions for the List	 */
 /*************************************************/
 void InitList(struct XObj *xobj)
 {
@@ -27,7 +27,7 @@ void InitList(struct XObj *xobj)
   XSetWindowAttributes Attr;
   int minw,minh,resize=0;
   int NbVisCell,NbCell;
-  
+
   /* Enregistrement des couleurs et de la police / fonts and colors */
   if (xobj->colorset >= 0) {
     xobj->TabColor[fore] = Colorset[xobj->colorset].fg;
@@ -40,7 +40,7 @@ void InitList(struct XObj *xobj)
     xobj->TabColor[hili] = GetColor(xobj->hilicolor);
     xobj->TabColor[shad] = GetColor(xobj->shadcolor);
   }
-  
+
   mask = 0;
   Attr.background_pixel = xobj->TabColor[back];
   mask |= CWBackPixel;
@@ -112,7 +112,7 @@ void DrawVSbList(struct XObj *xobj, int NbCell, int NbVisCell, int press)
   r.height = xobj->height - r.y - 2*BdWidth;
   r.width = SbWidth + 4;
   DrawReliefRect(r.x, r.y, r.width, r.height, xobj, shad, hili);
-  
+
   /* Calcul du rectangle pour les fleches *
    * Compute the rectangle for the arrows */
   r.x = r.x + 2;
@@ -159,14 +159,14 @@ void DrawCellule(struct XObj *xobj, int NbCell, int NbVisCell, int HeightCell,
     Title = (char*)GetMenuTitle(xobj->title, i);
     if (strlen(Title)!=0)
     {
-      int x = GetXTextPosition(xobj, r.width, 
+      int x = GetXTextPosition(xobj, r.width,
 			       FlocaleTextWidth(xobj->Ffont,Title,strlen(Title)),
 			       5 + r.x, 0, 0);
       if (xobj->value == i)
       {
 	/* hili is better than shad.*/
 	XSetForeground(dpy, xobj->gc, xobj->TabColor[hili]);
-	XFillRectangle(dpy, xobj->win, xobj->gc, r.x+2,  
+	XFillRectangle(dpy, xobj->win, xobj->gc, r.x+2,
 		       r.y +(i - xobj->value2)*HeightCell + 2,
 		       r.width, HeightCell-2);
 	MyDrawString(dpy, xobj, xobj->win, x,
@@ -205,7 +205,7 @@ void DrawList(struct XObj *xobj)
   int NbVisCell,NbCell;
   int HeightCell;
   XRectangle r;
-  
+
   /* Dessin du contour / */
   DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
 
@@ -250,7 +250,7 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
   static XEvent event;
   int NbVisCell,NbCell,HeightCell,NPosCell,PosMouse;
   fd_set in_fdset;
- 
+
   pt.x = EvtButton->x-xobj->x;
   pt.y = EvtButton->y-xobj->y;
 
@@ -471,7 +471,7 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
 }
 
 void EvtKeyList(struct XObj *xobj, XKeyEvent *EvtKey)
-{ 
+{
   KeySym ks;
   unsigned char buf[10];
   int NbVisCell,NbCell,HeightCell,NPosCell;
@@ -547,7 +547,7 @@ void EvtKeyList(struct XObj *xobj, XKeyEvent *EvtKey)
       if(PtInRect(pt,rect))
       {
 	/* Determination de la cellule */
-	pt.y =  pt.y - rect.y;
+	pt.y =	pt.y - rect.y;
 	NPosCell =  xobj->value2 + (pt.y/(xobj->Ffont->height + 3));
 	if (NPosCell > CountOption(xobj->title))
 	  NPosCell = 0;

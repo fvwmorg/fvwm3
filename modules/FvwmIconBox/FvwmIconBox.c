@@ -17,12 +17,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #define NONE 0
@@ -179,7 +179,7 @@ int sortby = UNSORT;
 
 char* AnimCommand = NULL;
 
-int save_color_limit = 0;                   /* color limit from config */
+int save_color_limit = 0;		    /* color limit from config */
 static Bool have_double_click = False;
 static Bool is_dead_pipe = False;
 
@@ -194,7 +194,7 @@ Bool was_bad_access = False;
 /************************************************************************
   Main
   Based on main() from GoodStuff:
-  	Copyright 1993, Robert Nation.
+	Copyright 1993, Robert Nation.
 ************************************************************************/
 int main(int argc, char **argv)
 {
@@ -299,7 +299,7 @@ int main(int argc, char **argv)
   SetMessageMask(fd, mx_mask);
 
   if ((local_flags & SETWMICONSIZE) && (size = XAllocIconSize()) != NULL){
-    size->max_width  = size->min_width  = max_icon_width + icon_relief;
+    size->max_width  = size->min_width	= max_icon_width + icon_relief;
     /* max_height should be >0 */
     size->max_height = size->min_height = max(1, max_icon_height) + icon_relief;
     size->width_inc  = size->height_inc = 0;
@@ -675,7 +675,7 @@ void RedrawWindow(void)
   while (XCheckTypedWindowEvent (dpy, main_win, Expose, &dummy));
 
   RelieveRectangle(dpy, main_win, margin1, margin1, Width + 3,
-                   Height + 3, ShadowGC, ReliefGC, 2);
+		   Height + 3, ShadowGC, ReliefGC, 2);
   if (!(local_flags & HIDE_H))
     RelieveRectangle(dpy, main_win, margin1, margin1 + 4 + Height + margin2,
 		     Width + 3, bar_width + 3, ShadowGC, ReliefGC, 2);
@@ -773,7 +773,7 @@ void RedrawIcon(struct icon_info *item, int f)
 						     NormalGC,
 						     0, 0,
 						     item->icon_w, item->icon_h,
-						     hr, hr);  
+						     hr, hr);
 			}
 			else if (Pdefault)
 			{
@@ -795,7 +795,7 @@ void RedrawIcon(struct icon_info *item, int f)
 
 		if (!(IS_ICON_SHAPED(item))
 		    && (Pdefault || (item->icon_depth == 1) ||
-			IS_PIXMAP_OURS(item))) 
+			IS_PIXMAP_OURS(item)))
 		{
 			if (item->icon_w > 0 && item->icon_h > 0)
 				RelieveRectangle(dpy, item->icon_pixmap_w,
@@ -808,7 +808,7 @@ void RedrawIcon(struct icon_info *item, int f)
 				RelieveRectangle(dpy, item->icon_pixmap_w,
 						 0, 0, max_icon_width
 						 + icon_relief - 1,
-						 max_icon_height + 
+						 max_icon_height +
 						 icon_relief - 1,
 						 IconReliefGC,
 						 IconShadowGC, 2);
@@ -894,7 +894,7 @@ void RedrawIcon(struct icon_info *item, int f)
 		XSetForeground(dpy, IconReliefGC, icon_hilite_pix);
 		XSetForeground(dpy, IconShadowGC, icon_shadow_pix);
 
-		if (max_icon_height != 0 && (IS_ICON_OURS(item)) && 
+		if (max_icon_height != 0 && (IS_ICON_OURS(item)) &&
 		    item->icon_alphaPixmap == None)
 		{
 			XSetWindowBackground(dpy, item->icon_pixmap_w,
@@ -924,14 +924,14 @@ void animate(struct icon_info *item, unsigned long *body)
     if (IS_ICONIFIED(item))
     {
       sprintf(string, "%s %d %d %d %d %d %d %d %d",
-              AnimCommand,
-              (int)body[7], (int)body[8], (int)body[9], (int)body[10],
-              abs_x, abs_y, item->icon_w, item->icon_h);
+	      AnimCommand,
+	      (int)body[7], (int)body[8], (int)body[9], (int)body[10],
+	      abs_x, abs_y, item->icon_w, item->icon_h);
     } else {
       sprintf(string, "%s %d %d %d %d %d %d %d %d",
-              AnimCommand,
-              abs_x, abs_y, item->icon_w, item->icon_h,
-              (int)body[7], (int)body[8], (int)body[9], (int)body[10]);
+	      AnimCommand,
+	      abs_x, abs_y, item->icon_w, item->icon_h,
+	      (int)body[7], (int)body[8], (int)body[9], (int)body[10]);
     }
     SendText(fd, string, 0);
   }
@@ -939,8 +939,8 @@ void animate(struct icon_info *item, unsigned long *body)
 
 /***********************************************************************
  * RedrawHScrollbar
- * 	Based on part of Loop() of GrabWindow.c in FvwmScroll:
- *  		Copyright 1994, Robert Nation.
+ *	Based on part of Loop() of GrabWindow.c in FvwmScroll:
+ *		Copyright 1994, Robert Nation.
  ***********************************************************************/
 void RedrawHScrollbar(void)
 {
@@ -950,13 +950,13 @@ void RedrawHScrollbar(void)
   width = (Width - bar_width*2) * Width / icon_win_width;
   XClearArea(dpy, h_scroll_bar, 0, 0, Width, bar_width,False);
   RelieveRectangle(dpy, h_scroll_bar, x, 0, width - 1, bar_width - 1,
-                   ReliefGC, ShadowGC, 2);
+		   ReliefGC, ShadowGC, 2);
 }
 
 /***********************************************************************
  * RedrawVScrollbar
- * 	Based on part of Loop() of GrabWindow.c in FvwmScroll:
- *  		Copyright 1994, Robert Nation.
+ *	Based on part of Loop() of GrabWindow.c in FvwmScroll:
+ *		Copyright 1994, Robert Nation.
  ***********************************************************************/
 void RedrawVScrollbar(void)
 {
@@ -966,7 +966,7 @@ void RedrawVScrollbar(void)
   height = (Height - bar_width*2)*  Height / icon_win_height;
   XClearArea(dpy, v_scroll_bar, 0, 0, bar_width, Height,False);
   RelieveRectangle(dpy, v_scroll_bar, 0, y, bar_width - 1, height - 1,
-                   ReliefGC, ShadowGC, 2);
+		   ReliefGC, ShadowGC, 2);
 }
 
 void RedrawLeftButton(GC rgc, GC sgc)
@@ -1080,7 +1080,7 @@ void RedrawBottomButton(GC rgc, GC sgc)
 
 /************************************************************************
  * CreateWindow --Sizes and creates the window
- * 	Based on CreateWindow() from GoodStuff:
+ *	Based on CreateWindow() from GoodStuff:
  *		Copyright 1993, Robert Nation.
  ***********************************************************************/
 void CreateWindow(void)
@@ -1223,7 +1223,7 @@ void CreateWindow(void)
 				   margin1+2,
 				   mysizehints.width,
 				   mysizehints.height,
-                                   0,fore_pix,back_pix);
+				   0,fore_pix,back_pix);
 
   icon_win = XCreateSimpleWindow(dpy,holder_win,-icon_win_x,-icon_win_y,
 				 icon_win_width,
@@ -1262,17 +1262,17 @@ void CreateWindow(void)
   /* icon_win's background */
   if (colorset >= 0) {
     SetWindowBackground(dpy, icon_win, icon_win_width, icon_win_height,
-                        &Colorset[(colorset)], Pdepth, NormalGC,
+			&Colorset[(colorset)], Pdepth, NormalGC,
 			True);
     SetWindowBackground(dpy, holder_win, mysizehints.width, mysizehints.height,
-                        &Colorset[(colorset)], Pdepth, NormalGC,
+			&Colorset[(colorset)], Pdepth, NormalGC,
 			True);
     SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
-                        &Colorset[(colorset)], Pdepth, NormalGC,
+			&Colorset[(colorset)], Pdepth, NormalGC,
 			True);
   } else if (GetBackPixmap() == True){
     XSetWindowBackgroundPixmap(dpy, icon_win, IconwinPixmap);
-    /*  special thanks to Dave Goldberg <dsg@mitre.org>
+    /*	special thanks to Dave Goldberg <dsg@mitre.org>
 	for his helpful information */
     XFreePixmap(dpy, IconwinPixmap);
   }
@@ -1414,7 +1414,7 @@ static void change_colorset(int color)
     while(tmp != NULL)
     {
       if (max_icon_height != 0 && (IS_ICON_OURS(tmp)))
-        XSetWindowBackground(dpy, tmp->icon_pixmap_w, icon_back_pix);
+	XSetWindowBackground(dpy, tmp->icon_pixmap_w, icon_back_pix);
       XSetWindowBackground(dpy, tmp->IconWin, icon_back_pix);
       XClearArea(dpy, tmp->icon_pixmap_w, 0, 0, 0, 0, True);
       XClearArea(dpy, tmp->IconWin, 0, 0, 0, 0, True);
@@ -1627,7 +1627,7 @@ TerminateHandler(int sig)
 
 /************************************************************************
  * DeadPipe --Dead pipe handler
- * 	Based on DeadPipe() from GoodStuff:
+ *	Based on DeadPipe() from GoodStuff:
  *		Copyright 1993, Robert Nation.
  ***********************************************************************/
 void
@@ -1657,7 +1657,7 @@ CleanUp(void)
 		}
 	}
 	/* DV: my, what is all this stuff good for? All memory gets freed
-	 * automatically! 
+	 * automatically!
 	 * OC: Yes but the icon window must be reparented to the root window */
 	tmpi = Head;
 	while(tmpi != NULL)
@@ -1715,7 +1715,7 @@ CleanUp(void)
 
 /************************************************************************
  * ParseOptions
- * 	Based on ParseConfig() from FvwmWinList:
+ *	Based on ParseConfig() from FvwmWinList:
  *		Copyright 1994, Mike Finger.
  ***********************************************************************/
 void ParseOptions(void)
@@ -2123,10 +2123,10 @@ void parsemouse(char *tline)
 
 /***********************************************************************
   parsekey
- 	Based on part of AddFunckey() of configure.c in Fvwm.
-       	Copyright 1988, Evans and Sutherland Computer Corporation,
-       	Copyright 1989, Massachusetts Institute of Technology,
-       	Copyright 1993, Robert Nation.
+	Based on part of AddFunckey() of configure.c in Fvwm.
+	Copyright 1988, Evans and Sutherland Computer Corporation,
+	Copyright 1989, Massachusetts Institute of Technology,
+	Copyright 1993, Robert Nation.
  ***********************************************************************/
 void parsekey(char *tline)
 {
@@ -2181,7 +2181,7 @@ void parsekey(char *tline)
 	k = (struct keyfunc *)safemalloc(sizeof(struct keyfunc));
 	memset(k, 0, sizeof(struct keyfunc));
 	k->name = nptr;
-        k->keycode = i;
+	k->keycode = i;
 	k->action = aptr;
 	k->next = KeyActions;
 	KeyActions = k;
@@ -2190,7 +2190,7 @@ void parsekey(char *tline)
 
 /***********************************************************************
  * change_window_name
- * 	Original work from GoodStuff:
+ *	Original work from GoodStuff:
  *		Copyright 1993, Robert Nation.
  ***********************************************************************/
 void change_window_name(char *str)
@@ -2209,7 +2209,7 @@ void change_window_name(char *str)
 
 /***********************************************************************
  * My_XNextEvent
- * 	Original work from GoodStuff:
+ *	Original work from GoodStuff:
  *		Copyright 1993, Robert Nation.
  ***********************************************************************/
 int My_XNextEvent(Display *dpy, XEvent *event)
@@ -2258,7 +2258,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
 /**************************************************************************
  * process_message
- * 	Based on ProcessMassage() from FvwmWinList:
+ *	Based on ProcessMassage() from FvwmWinList:
  *		Copyright 1994, Mike Finger.
  *************************************************************************/
 int diffx, diffy;
@@ -2278,7 +2278,7 @@ void process_message(unsigned long type, unsigned long *body)
       while(tmp != NULL)
       {
 	if (tmp->id == cfgpacket->w)
-        {
+	{
 	  int remove=0,add=0;
 
 	  if (IS_ICON_SUPPRESSED(cfgpacket) != IS_ICON_SUPPRESSED(tmp))
@@ -2300,11 +2300,11 @@ void process_message(unsigned long type, unsigned long *body)
 	  }
 	  if ((local_flags & CURRENT_ONLY) &&
 	      tmp->desk != cfgpacket->desk && !IS_STICKY(tmp))
-          {
+	  {
 	    olddesk = tmp->desk;
 	    tmp->desk = cfgpacket->desk;
 	    if (olddesk == CurrentDesk || tmp->desk == CurrentDesk)
-            {
+	    {
 	      if (tmp->desk == CurrentDesk && sortby != UNSORT)
 		SortItem(NULL);
 	      if (tmp->desk == CurrentDesk)
@@ -2313,9 +2313,9 @@ void process_message(unsigned long type, unsigned long *body)
 		remove = 1;
 	    }
 	  }else if ((IS_STICKY(cfgpacket)) && !(IS_STICKY(tmp))) /* stick */
-            SET_STICKY(tmp, True);
+	    SET_STICKY(tmp, True);
 	  else if (!(IS_STICKY(cfgpacket)) && (IS_STICKY(tmp))){ /* unstick */
-            SET_STICKY(tmp, False);
+	    SET_STICKY(tmp, False);
 	    tmp->desk = cfgpacket->desk;
 	  }
 	  if ((add && window_cond(tmp)) || remove) {
@@ -2478,7 +2478,7 @@ void process_message(unsigned long type, unsigned long *body)
       CurrentDesk = body[0];
       if (body[0] != 10000 && ready)
       {
-        /* 10000 is a "magic" number used in FvwmPager */
+	/* 10000 is a "magic" number used in FvwmPager */
 	if (sortby != UNSORT)
 	SortItem(NULL);
 	num_icons = AdjustIconWindows();
@@ -2570,9 +2570,9 @@ struct icon_info *SetFlag(unsigned long id, int t)
   while(tmp != NULL){
     if (tmp->id == id){
       if (t == M_ICONIFY)
-        SET_ICONIFIED(tmp, True);
+	SET_ICONIFIED(tmp, True);
        else
-        SET_ICONIFIED(tmp, False);
+	SET_ICONIFIED(tmp, False);
       return tmp;
     }
     tmp = tmp->next;
@@ -2883,9 +2883,9 @@ int itemcmp(struct icon_info *item1, struct icon_info *item2)
   case RESCLASS:
     if ((item1->extra_flags & NOCLASS)){
       if ((item2->extra_flags & NOCLASS))
-        ret1 = 0;
+	ret1 = 0;
       else if (!(item2->extra_flags & NOCLASS))
-        ret1 = -1;
+	ret1 = -1;
     }else if ((item2->extra_flags & NOCLASS))
       ret1 = 1;
     else
@@ -2894,9 +2894,9 @@ int itemcmp(struct icon_info *item1, struct icon_info *item2)
   case RESNAME:
     if ((item1->extra_flags & NOCLASS)){
       if ((item2->extra_flags & NOCLASS))
-        ret1 = 0;
+	ret1 = 0;
       else if (!(item2->extra_flags & NOCLASS))
-        ret1 = -1;
+	ret1 = -1;
     }else if ((item2->extra_flags & NOCLASS))
       ret1 = 1;
     else
@@ -3026,12 +3026,12 @@ static int CheckActionType(
 	return CLICK;
       case MotionNotify:
 	if ((d->xmotion.state & DEFAULT_ALL_BUTTONS_MASK) ||
-            !is_button_pressed)
+	    !is_button_pressed)
 	{
 	  xcurrent = d->xmotion.x_root;
 	  ycurrent = d->xmotion.y_root;
 	}
-        else
+	else
 	{
 	  return CLICK;
 	}
@@ -3053,10 +3053,10 @@ static int CheckActionType(
 
 /************************************************************************
  * ExecuteAction
-* 	Based on part of ComplexFunction() of functions.c from fvwm:
+*	Based on part of ComplexFunction() of functions.c from fvwm:
 	Copyright 1988, Evans and Sutherland Computer Corporation,
-       	Copyright 1989, Massachusetts Institute of Technology,
-       	Copyright 1993, Robert Nation.
+	Copyright 1989, Massachusetts Institute of Technology,
+	Copyright 1993, Robert Nation.
  ***********************************************************************/
 void ExecuteAction(int x, int y, struct icon_info *item)
 {
@@ -3128,8 +3128,8 @@ void ExecuteKey(XEvent event)
  LookInList
 	Based on part of LookInList() of add_window.c from fvwm:
 	Copyright 1988, Evans and Sutherland Computer Corporation,
-       	Copyright 1989, Massachusetts Institute of Technology,
-       	Copyright 1993, Robert Nation.
+	Copyright 1989, Massachusetts Institute of Technology,
+	Copyright 1993, Robert Nation.
  ***********************************************************************/
 int LookInList(struct icon_info *item)
 {
@@ -3209,8 +3209,8 @@ int LookInList(struct icon_info *item)
  strcpy
 	Based on stripcpy2() of configure.c from Fvwm:
 	Copyright 1988, Evans and Sutherland Computer Corporation,
-       	Copyright 1989, Massachusetts Institute of Technology,
-       	Copyright 1993, Robert Nation.
+	Copyright 1989, Massachusetts Institute of Technology,
+	Copyright 1993, Robert Nation.
  ***********************************************************************/
 char *stripcpy2(char *source)
 {

@@ -34,7 +34,7 @@ static int term_sigs;
  * trying to access the same static data at the same time.
  *
  * NOTE: We don't need this if we have POSIX.1 since we can install
- *       a signal mask automatically using sigaction()
+ *	 a signal mask automatically using sigaction()
  */
 void
 fvwmSetSignalMask(int sigmask)
@@ -47,7 +47,7 @@ fvwmSetSignalMask(int sigmask)
  * fvwmGetSignalMask - get the set of signals that will terminate FVWM
  *
  * NOTE: We don't need this if we have POSIX.1 since we can install
- *       a signal mask automatically using sigaction()
+ *	 a signal mask automatically using sigaction()
  */
 int
 fvwmGetSignalMask(void)
@@ -87,7 +87,7 @@ fvwmSetTerminate(int sig)
      * "canJump" variable is true.
      *
      * NOTE: No need to restore the signal mask, since siglongjmp
-     *       is designed to do that for us.
+     *	     is designed to do that for us.
      */
     siglongjmp(deadJump, SIG_DONE);
   }
@@ -105,8 +105,8 @@ fvwmSetTerminate(int sig)
  */
 int
 fvwmSelect(fd_set_size_t nfds,
-           fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
-           struct timeval *timeout)
+	   fd_set *readfds, fd_set *writefds, fd_set *exceptfds,
+	   struct timeval *timeout)
 {
   volatile int iRet = -1;  /* This variable MUST NOT be in a register */
 
@@ -118,8 +118,8 @@ fvwmSelect(fd_set_size_t nfds,
    * us to preserve errno then that's their bug.
    *
    * NOTE: We mustn't call any function that might trash errno
-   *       ourselves, except select() itself of course. I believe
-   *       that sigsetjmp() does NOT trash errno.
+   *	   ourselves, except select() itself of course. I believe
+   *	   that sigsetjmp() does NOT trash errno.
    */
   errno = EINTR;
 
@@ -152,10 +152,10 @@ fvwmSelect(fd_set_size_t nfds,
        * that IS the whole point, after all :-)
        */
       iRet = select(nfds,
-                    SELECT_FD_SET_CAST readfds,
-                    SELECT_FD_SET_CAST writefds,
-                    SELECT_FD_SET_CAST exceptfds,
-                    timeout);
+		    SELECT_FD_SET_CAST readfds,
+		    SELECT_FD_SET_CAST writefds,
+		    SELECT_FD_SET_CAST exceptfds,
+		    timeout);
     }
 
     /*
@@ -170,5 +170,5 @@ fvwmSelect(fd_set_size_t nfds,
   return iRet;
 }
 
-#endif  /* HAVE_SELECT */
+#endif	/* HAVE_SELECT */
 

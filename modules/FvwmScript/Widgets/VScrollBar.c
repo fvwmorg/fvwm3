@@ -5,19 +5,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "Tools.h"
 
 
 /***********************************************/
-/* Fonction pour VScrollBar                    */
+/* Fonction pour VScrollBar		       */
 /***********************************************/
 void DrawThumbV(struct XObj *xobj)
 {
@@ -27,7 +27,7 @@ void DrawThumbV(struct XObj *xobj)
 
   x = xobj->width/2 - 10;
   y = 2 +
-    (xobj->height - 36)*(xobj->value - xobj->value3) / 
+    (xobj->height - 36)*(xobj->value - xobj->value3) /
     (xobj->value2 - xobj->value3);
   w = 20;
   h = 32;
@@ -45,7 +45,7 @@ void DrawThumbV(struct XObj *xobj)
   XSetForeground(dpy, xobj->gc, xobj->TabColor[hili]);
   XDrawSegments(dpy, xobj->win, xobj->gc, &segm, 1);
   XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
-  
+
   sprintf(str, "%d", xobj->value);
   x = x-FlocaleTextWidth(xobj->Ffont, str, strlen(str))-6;
   y = y + 13 + xobj->Ffont->ascent/2;
@@ -57,7 +57,7 @@ void HideThumbV(struct XObj *xobj)
 {
   int x,y;
   char str[20];
-  
+
   x = xobj->width/2 - 10;
   y = 2 +
     (xobj->height - 36) * (xobj->value - xobj->value3) /
@@ -103,7 +103,7 @@ void InitVScrollBar(struct XObj *xobj)
   xobj->gc = fvwmlib_XCreateGC(dpy, xobj->win, 0, NULL);
   XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
-  
+
   if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) == NULL)
   {
     fprintf(stderr, "%s: Couldn't load font. Exiting!\n", ScriptName);
@@ -218,7 +218,7 @@ void EvtKeyVScrollBar(struct XObj *xobj, XKeyEvent *EvtKey)
 {
   KeySym ks;
   unsigned char buf[10];
-  
+
   XLookupString(EvtKey, (char *)buf, sizeof(buf), &ks, NULL);
   if (ks == XK_Down && xobj->value > 0) {
     HideThumbV(xobj);

@@ -40,6 +40,8 @@ Changes in alpha release 2.5.2 (not released yet)
 
 * New command XineramaSlsScreens.
 
+* MoveToPage and MoveToDesk no longer unstick windows.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.1 (26-Apr-2002)

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -117,32 +117,32 @@ int ParseBinding(
       n1 = 1;
       i = 0;
       if (token[0] == 'N' && token[1] != '\0')
-        num = 1;
+	num = 1;
       j=i+num;
       while(n1 && token[j] != '\0' && i < STROKE_MAX_SEQUENCE)
       {
-        if (!isdigit(token[j]))
-          n1 = 0;
-        if (num)
-        {
-          /* Numeric pad to Telephone  */
-          if ('7' <= token[j] && token[j] <= '9')
-            token[j] -= 6;
-          else if ('1' <= token[j] && token[j] <= '3')
-            token[j] += 6;
-        }
-        stroke[i] = token[j];
-        i++;
-        j=i+num;
+	if (!isdigit(token[j]))
+	  n1 = 0;
+	if (num)
+	{
+	  /* Numeric pad to Telephone  */
+	  if ('7' <= token[j] && token[j] <= '9')
+	    token[j] -= 6;
+	  else if ('1' <= token[j] && token[j] <= '3')
+	    token[j] += 6;
+	}
+	stroke[i] = token[j];
+	i++;
+	j=i+num;
       }
       stroke[i] = '\0';
       if (strlen(token) > STROKE_MAX_SEQUENCE + num)
       {
-        if (!is_silent)
-          fvwm_msg(WARN, "ParseBinding",
-            "Too long stroke sequence in line %s"
-            "Only %i elements will be taken into account.\n",
-            tline, STROKE_MAX_SEQUENCE);
+	if (!is_silent)
+	  fvwm_msg(WARN, "ParseBinding",
+	    "Too long stroke sequence in line %s"
+	    "Only %i elements will be taken into account.\n",
+	    tline, STROKE_MAX_SEQUENCE);
       }
     }
 #endif /* HAVE_STROKE */
@@ -162,7 +162,7 @@ int ParseBinding(
 	if (!is_silent)
 	  fvwm_msg(WARN, "ParseBinding",
 	    "Got mouse button %d when the maximum is %d.\n  You can't bind "
-	     "complex function to this button.  To suppress the warning, use:"
+	     "complex function to this button.	To suppress the warning, use:"
 	     "\n  Silent Mouse %s", button, NUMBER_OF_MOUSE_BUTTONS, tline);
       }
     }
@@ -218,7 +218,7 @@ int ParseBinding(
     if (keysym == 0)
     {
       if (!is_silent)
-        fvwm_msg(ERR, "ParseBinding", "No such key: %s", key_string);
+	fvwm_msg(ERR, "ParseBinding", "No such key: %s", key_string);
       return 0;
     }
   }
@@ -373,7 +373,7 @@ static void activate_binding(
     {
       if (FW_W_ICON_TITLE(t) != None)
       {
-        GrabWindowKeyOrButton(
+	GrabWindowKeyOrButton(
 	  dpy, FW_W_ICON_TITLE(t), binding, C_ICON, GetUnusedModifiers(), None,
 	  do_grab);
       }

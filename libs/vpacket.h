@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef _VPACKET_
@@ -36,9 +36,9 @@
 /*  RBW- typedef struct config_win_packet  */
 typedef struct ConfigWinPacket
 {
-Window             w;
-Window             frame;
-FvwmWindow         *fvwmwin;
+Window		   w;
+Window		   frame;
+FvwmWindow	   *fvwmwin;
 unsigned long int  frame_x;
 unsigned long int  frame_y;
 unsigned long int  frame_width;
@@ -62,25 +62,25 @@ unsigned long int  hints_min_width;
 unsigned long int  hints_min_height;
 unsigned long int  hints_max_width;
 unsigned long int  hints_max_height;
-Window             icon_w;
-Window             icon_pixmap_w;
+Window		   icon_w;
+Window		   icon_pixmap_w;
 unsigned long int  hints_win_gravity;
 unsigned long int  TextPixel;
 unsigned long int  BackPixel;
 
-/*  Everything below this is post-GSFR  */
+/*  Everything below this is post-GSFR	*/
 unsigned long int  ewmh_hint_layer;
 unsigned long int  ewmh_hint_desktop;
 unsigned long int  ewmh_window_type;
-window_flags       flags;
+window_flags	   flags;
 
 } ConfigWinPacket;
 
 typedef struct MiniIconPacket
 {
-	Window             w;
-	Window             frame;
-	FvwmWindow         *fvwmwin;
+	Window		   w;
+	Window		   frame;
+	FvwmWindow	   *fvwmwin;
 	unsigned long int  width;
 	unsigned long int  height;
 	unsigned long int  depth;

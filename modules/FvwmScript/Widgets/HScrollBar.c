@@ -5,19 +5,19 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "Tools.h"
 
 
 /***********************************************/
-/* Fonction pour HScrollBar                    */
+/* Fonction pour HScrollBar		       */
 /***********************************************/
 void DrawThumbH(struct XObj *xobj)
 {
@@ -177,7 +177,7 @@ void EvtMouseHScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
   y = xobj->height/2 - 11;
   w = 34;
   h = 22;
-  
+
   do
   {
     /* On suit les mouvements de la souris */
@@ -191,7 +191,7 @@ void EvtMouseHScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
     {
       oldx = x2;
       /* calcule de xobj->value */
-      newvalue = (x2-15)*xobj->width / (xobj->width - 36) * 
+      newvalue = (x2-15)*xobj->width / (xobj->width - 36) *
 	(xobj->value3 - xobj->value2) / (xobj->width) + xobj->value2;
       if (newvalue!=oldvalue)
       {
@@ -213,7 +213,7 @@ void EvtKeyHScrollBar(struct XObj *xobj, XKeyEvent *EvtKey)
 {
   KeySym ks;
   unsigned char buf[10];
-  
+
   XLookupString(EvtKey, (char *)buf, sizeof(buf), &ks, NULL);
   if (ks == XK_Left && xobj->value > 0) {
     HideThumbH(xobj);

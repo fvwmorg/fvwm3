@@ -17,7 +17,7 @@
  */
 
 #ifndef FPNG_H
-#define FPNH_H 
+#define FPNH_H
 
 /* ---------------------------- included header files ----------------------- */
 
@@ -39,7 +39,7 @@
 typedef unsigned char  FzByte;
 typedef unsigned int   FzuInt;
 typedef unsigned long  FzuLong;
-typedef FzByte  FzBytef;
+typedef FzByte	FzBytef;
 #ifdef __STDC__
    typedef void *Fzvoidpf;
    typedef void *Fzvoidp;
@@ -52,35 +52,35 @@ typedef Fzvoidpf (*Fzalloc_func) (
 Fzvoidpf opaque, FzuInt items, FzuInt size
 #endif
 );
-typedef Fzvoidp (*Fzfree_func)  (
+typedef Fzvoidp (*Fzfree_func)	(
 #ifdef __STDC__
 Fzvoidpf opaque, Fzvoidpf address
 #endif
 );
 typedef struct Fz_stream_s {
-	FzBytef    *next_in;
-	FzuInt     avail_in;
-	FzuLong    total_in;
-	FzBytef    *next_out;
-	FzuInt     avail_out;
-	FzuLong    total_out;
-	char     *msg;
+	FzBytef	   *next_in;
+	FzuInt	   avail_in;
+	FzuLong	   total_in;
+	FzBytef	   *next_out;
+	FzuInt	   avail_out;
+	FzuLong	   total_out;
+	char	 *msg;
 	struct internal_state *state;
 	Fzalloc_func zalloc;
 	Fzfree_func  zfree;
 	Fzvoidpf     opaque;
-	int     data_type;
-	FzuLong   adler;
-	FzuLong   reserved;
+	int	data_type;
+	FzuLong	  adler;
+	FzuLong	  reserved;
 } Fz_stream;
 typedef Fz_stream *Fz_streamp;
 #else /* _ZLIB_H */
 #ifdef Z_PREFIX
-typedef z_Byte   FzByte;
-typedef z_uInt   FzuInt;
-typedef z_uLong  FzuLong;
-typedef z_Bytef  FzBytef;
-typedef z_voidp  Fzvoidp;
+typedef z_Byte	 FzByte;
+typedef z_uInt	 FzuInt;
+typedef z_uLong	 FzuLong;
+typedef z_Bytef	 FzBytef;
+typedef z_voidp	 Fzvoidp;
 typedef z_voidpf Fzvoidpf;
 typedef z_stream Fz_stream;
 #else
@@ -115,24 +115,24 @@ typedef unsigned short Fpng_uint_16;
 typedef short Fpng_int_16;
 typedef unsigned char Fpng_byte;
 typedef size_t Fpng_size_t;
-typedef void             *Fpng_voidp;
-typedef Fpng_byte        *Fpng_bytep;
-typedef Fpng_uint_32     *Fpng_uint_32p;
-typedef Fpng_int_32      *Fpng_int_32p;
-typedef Fpng_uint_16     *Fpng_uint_16p;
-typedef Fpng_int_16      *Fpng_int_16p;
-typedef const char       *Fpng_const_charp;
-typedef char             *Fpng_charp;
-typedef double           *Fpng_doublep;
-typedef Fpng_byte         **Fpng_bytepp;
-typedef Fpng_uint_32      **Fpng_uint_32pp;
-typedef Fpng_int_32       **Fpng_int_32pp;
-typedef Fpng_uint_16      **Fpng_uint_16pp;
-typedef Fpng_int_16       **Fpng_int_16pp;
+typedef void		 *Fpng_voidp;
+typedef Fpng_byte	 *Fpng_bytep;
+typedef Fpng_uint_32	 *Fpng_uint_32p;
+typedef Fpng_int_32	 *Fpng_int_32p;
+typedef Fpng_uint_16	 *Fpng_uint_16p;
+typedef Fpng_int_16	 *Fpng_int_16p;
+typedef const char	 *Fpng_const_charp;
+typedef char		 *Fpng_charp;
+typedef double		 *Fpng_doublep;
+typedef Fpng_byte	  **Fpng_bytepp;
+typedef Fpng_uint_32	  **Fpng_uint_32pp;
+typedef Fpng_int_32	  **Fpng_int_32pp;
+typedef Fpng_uint_16	  **Fpng_uint_16pp;
+typedef Fpng_int_16	  **Fpng_int_16pp;
 typedef const char   **Fpng_const_charpp;
-typedef char             **Fpng_charpp;
-typedef double           **Fpng_doublepp;
-typedef char             ** *Fpng_charppp;
+typedef char		 **Fpng_charpp;
+typedef double		 **Fpng_doublepp;
+typedef char		 ** *Fpng_charppp;
 typedef struct Fpng_color_struct
 {
    Fpng_byte red;
@@ -470,7 +470,7 @@ typedef Fpng_struct  **Fpng_structpp;
 
 #define FPNG_LIBPNG_VER_STRING ""
 #define FPNG_COLOR_TYPE_PALETTE 0
-#define FPNG_COLOR_TYPE_RGB_ALPHA 1 
+#define FPNG_COLOR_TYPE_RGB_ALPHA 1
 #define FPNG_COLOR_TYPE_GRAY_ALPHA 2
 #define FPNG_COLOR_TYPE_GRAY 3
 #define FPNG_FILLER_BEFORE 6

@@ -1,5 +1,5 @@
-typedef union {  char *str;
-          int number;
+typedef union {	 char *str;
+	  int number;
        } YYSTYPE;
 #define	STR	257
 #define	GSTR	258

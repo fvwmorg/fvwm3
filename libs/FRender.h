@@ -8,16 +8,16 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef FRENDER_H
-#define FRENDER_H 
+#define FRENDER_H
 
 /* ---------------------------- included header files ----------------------- */
 
@@ -48,16 +48,16 @@ typedef XRenderPictureAttributes FRenderPictureAttributes;
 typedef XRenderColor FRenderColor;
 typedef XGlyphInfo FGlyphInfo;
 
-#define FRenderPictFormatID        PictFormatID
-#define FRenderPictFormatType      PictFormatType
-#define FRenderPictFormatDepth     PictFormatDepth
-#define FRenderPictFormatRed       PictFormatRed
+#define FRenderPictFormatID	   PictFormatID
+#define FRenderPictFormatType	   PictFormatType
+#define FRenderPictFormatDepth	   PictFormatDepth
+#define FRenderPictFormatRed	   PictFormatRed
 #define FRenderPictFormatRedMask   PictFormatRedMask
-#define FRenderPictFormatGreen     PictFormatGreen
+#define FRenderPictFormatGreen	   PictFormatGreen
 #define FRenderPictFormatGreenMask PictFormatGreenMask
-#define FRenderPictFormatBlue      PictFormatBlue
+#define FRenderPictFormatBlue	   PictFormatBlue
 #define FRenderPictFormatBlueMask  PictFormatBlueMask
-#define FRenderPictFormatAlpha     PictFormatAlpha
+#define FRenderPictFormatAlpha	   PictFormatAlpha
 #define FRenderPictFormatAlphaMask PictFormatAlphaMask
 #define FRenderPictFormatColormap  PictFormatColormap
 
@@ -91,35 +91,35 @@ typedef XGlyphInfo FGlyphInfo;
  * Operators only available in version 0.2
  */
 #if 0
-#define FRenderPictOpDisjointMinimum     PictOpDisjointMinimum
-#define FRenderPictOpDisjointClear       PictOpDisjointClear
-#define FRenderPictOpDisjointSrc         PictOpDisjointSrc
-#define FRenderPictOpDisjointDst         PictOpDisjointDst
-#define FRenderPictOpDisjointOver        PictOpDisjointOver
+#define FRenderPictOpDisjointMinimum	 PictOpDisjointMinimum
+#define FRenderPictOpDisjointClear	 PictOpDisjointClear
+#define FRenderPictOpDisjointSrc	 PictOpDisjointSrc
+#define FRenderPictOpDisjointDst	 PictOpDisjointDst
+#define FRenderPictOpDisjointOver	 PictOpDisjointOver
 #define FRenderPictOpDisjointOverReverse PictOpDisjointOverReverse
-#define FRenderPictOpDisjointIn          PictOpDisjointIn
-#define FRenderPictOpDisjointInReverse   PictOpDisjointInReverse
-#define FRenderPictOpDisjointOut         PictOpDisjointOut
-#define FRenderPictOpDisjointOutReverse  PictOpDisjointOutReverse
-#define FRenderPictOpDisjointAtop        PictOpDisjointAtop
+#define FRenderPictOpDisjointIn		 PictOpDisjointIn
+#define FRenderPictOpDisjointInReverse	 PictOpDisjointInReverse
+#define FRenderPictOpDisjointOut	 PictOpDisjointOut
+#define FRenderPictOpDisjointOutReverse	 PictOpDisjointOutReverse
+#define FRenderPictOpDisjointAtop	 PictOpDisjointAtop
 #define FRenderPictOpDisjointAtopReverse PictOpDisjointAtopReverse
-#define FRenderPictOpDisjointXor         PictOpDisjointXor
-#define FRenderPictOpDisjointMaximum     PictOpDisjointMaximum
+#define FRenderPictOpDisjointXor	 PictOpDisjointXor
+#define FRenderPictOpDisjointMaximum	 PictOpDisjointMaximum
 
-#define FRenderPictOpConjointMinimum     PictOpConjointMinimum
-#define FRenderPictOpConjointClear       PictOpConjointClear
-#define FRenderPictOpConjointSrc         PictOpConjointSrc
-#define FRenderPictOpConjointDst         PictOpConjointDst
-#define FRenderPictOpConjointOver        PictOpConjointOver
+#define FRenderPictOpConjointMinimum	 PictOpConjointMinimum
+#define FRenderPictOpConjointClear	 PictOpConjointClear
+#define FRenderPictOpConjointSrc	 PictOpConjointSrc
+#define FRenderPictOpConjointDst	 PictOpConjointDst
+#define FRenderPictOpConjointOver	 PictOpConjointOver
 #define FRenderPictOpConjointOverReverse PictOpConjointOverReverse
-#define FRenderPictOpConjointIn          PictOpConjointIn
-#define FRenderPictOpConjointInReverse   PictOpConjointInReverse
-#define FRenderPictOpConjointOut         PictOpConjointOut
-#define FRenderPictOpConjointOutReverse  PictOpConjointOutReverse
-#define FRenderPictOpConjointAtop        PictOpConjointAtop
+#define FRenderPictOpConjointIn		 PictOpConjointIn
+#define FRenderPictOpConjointInReverse	 PictOpConjointInReverse
+#define FRenderPictOpConjointOut	 PictOpConjointOut
+#define FRenderPictOpConjointOutReverse	 PictOpConjointOutReverse
+#define FRenderPictOpConjointAtop	 PictOpConjointAtop
 #define FRenderPictOpConjointAtopReverse PictOpConjointAtopReverse
-#define FRenderPictOpConjointXor         PictOpConjointXor
-#define FRenderPictOpConjointMaximum     PictOpConjointMaximum
+#define FRenderPictOpConjointXor	 PictOpConjointXor
+#define FRenderPictOpConjointMaximum	 PictOpConjointMaximum
 #endif /* 0 */
 
 #define FRenderPolyEdgeSharp  PolyEdgeSharp
@@ -128,20 +128,20 @@ typedef XGlyphInfo FGlyphInfo;
 #define FRenderPolyModePrecise
 #define FRenderPolyModeImprecise
 
-#define FRenderCPRepeat            CPRepeat
-#define FRenderCPAlphaMap          CPAlphaMap
-#define FRenderCPAlphaXOrigin      CPAlphaXOrigin
-#define FRenderCPAlphaYOrigin      CPAlphaYOrigin
-#define FRenderCPClipXOrigin       CPClipXOrigin
-#define FRenderCPClipYOrigin       CPClipYOrigin
-#define FRenderCPClipMask          CPClipMask
+#define FRenderCPRepeat		   CPRepeat
+#define FRenderCPAlphaMap	   CPAlphaMap
+#define FRenderCPAlphaXOrigin	   CPAlphaXOrigin
+#define FRenderCPAlphaYOrigin	   CPAlphaYOrigin
+#define FRenderCPClipXOrigin	   CPClipXOrigin
+#define FRenderCPClipYOrigin	   CPClipYOrigin
+#define FRenderCPClipMask	   CPClipMask
 #define FRenderCPGraphicsExposure  CPGraphicsExposure
-#define FRenderCPSubwindowMode     CPSubwindowMode
-#define FRenderCPPolyEdge          CPPolyEdge
-#define FRenderCPPolyMode          CPPolyMode
-#define FRenderCPDither            CPDither
-#define FRenderCPComponentAlpha    CPComponentAlpha
-#define FRenderCPLastBit           CPLastBit
+#define FRenderCPSubwindowMode	   CPSubwindowMode
+#define FRenderCPPolyEdge	   CPPolyEdge
+#define FRenderCPPolyMode	   CPPolyMode
+#define FRenderCPDither		   CPDither
+#define FRenderCPComponentAlpha	   CPComponentAlpha
+#define FRenderCPLastBit	   CPLastBit
 
 #define FRenderQueryExtension(a,b,c) XRenderQueryExtension(a,b,c)
 #define FRenderQueryVersion(a,b,c) XRenderQueryVersion(a,b,c)
@@ -151,13 +151,13 @@ typedef XGlyphInfo FGlyphInfo;
 #define FRenderCreatePicture(a,b,c,d,e) XRenderCreatePicture(a,b,c,d,e)
 #define FRenderChangePicture(a,b,c,d) XRenderChangePicture(a,b,c,d)
 #define FRenderSetPictureClipRectangles(a,b,c,d,e,f) \
-            XRenderSetPictureClipRectangles(a,b,c,d,e,f)
+	    XRenderSetPictureClipRectangles(a,b,c,d,e,f)
 #define FRenderSetPictureClipRegion(a,b,c) XRenderSetPictureClipRegion(a,b,c)
 #define FRenderFreePicture(a,b) XRenderFreePicture(a,b)
 #define FRenderComposite(a,b,c,d,e,f,g,h,i,j,k,l,m) \
-            XRenderComposite(a,b,c,d,e,f,g,h,i,j,k,l,m)
+	    XRenderComposite(a,b,c,d,e,f,g,h,i,j,k,l,m)
 #define FRenderFillRectangle(a,b,c,d,e,f,g,h) \
-            XRenderFillRectangle(a,b,c,d,e,f,g,h)
+	    XRenderFillRectangle(a,b,c,d,e,f,g,h)
 #define FRenderFillRectangles(a,b,c,d,e,f) XRenderFillRectangles(a,b,c,d,e,f)
 
 #else /* !XRenderSupport */
@@ -348,4 +348,4 @@ typedef struct _FGlyphInfo {
 #define FRenderFillRectangles(a,b,c,d,e,f)
 #endif
 
-#endif /* FRENDER_H */ 
+#endif /* FRENDER_H */

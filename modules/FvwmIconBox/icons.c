@@ -1,6 +1,6 @@
 /***********************************************************************
  * icons.c
- * 	Based on icons.c of GoodStuff:
+ *	Based on icons.c of GoodStuff:
  *		Copyright 1993, Robert Nation.
  ***********************************************************************/
 
@@ -16,12 +16,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /***********************************************************************
@@ -125,7 +125,7 @@ void CreateIconWindow(struct icon_info *item)
 	/* create the window to hold the pixmap */
 	/* if using a non default visual client pixmaps must have a default
 	 * visual window to be drawn into */
-	if (IS_ICON_OURS(item)) 
+	if (IS_ICON_OURS(item))
 	{
 		if (Pdefault | (item->icon_depth == 1) | IS_PIXMAP_OURS(item))
 		{
@@ -254,7 +254,7 @@ void GetIconFromFile(struct icon_info *item)
 				      &item->icon_depth,
 				      0, NULL, fpf))
 	{
-		fprintf(stderr, "[FvwmIconBox] cannot load pixmap from " 
+		fprintf(stderr, "[FvwmIconBox] cannot load pixmap from "
 			"file '%s'\n",path);
 		item->icon_w = 0;
 		item->icon_h = 0;
@@ -285,7 +285,7 @@ void GetIconWindow(struct icon_info *item)
 			 &bw, (unsigned int *)&item->icon_depth))
 	{
 #if 0
-		fprintf(stderr, "[%s][GetIconWindow] WARN -- '%s' has an " 
+		fprintf(stderr, "[%s][GetIconWindow] WARN -- '%s' has an "
 			"invalid icon window hint\n", MyName, item->name);
 #endif
 		/* disable the icon window hint */

@@ -7,12 +7,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*
@@ -48,8 +48,8 @@
 
       /* our private options */
       const XrmOptionDescRec my_opts[] = {
-        { "-iconic",   ".Iconic", XrmoptionNoArg,  "any_string" },
-        { "-foo",      "*bar",    XrmoptionSepArg, NULL }
+	{ "-iconic",   ".Iconic", XrmoptionNoArg,  "any_string" },
+	{ "-foo",      "*bar",	  XrmoptionSepArg, NULL }
       };
       int opt_argc = argc - 6; /* options start at 6th argument for modules */
       char **opt_argv = argv + 6;
@@ -63,15 +63,15 @@
        * resources (this may not be what you want). */
       for (GetConfigLine(fd, &line); line != NULL; GetConfigLine(fd, &line))
       {
-        if (!MergeConfigLineResource(&db, line, MyName, '*'))
-        {
-          /* Parse other lines here (e.g. "ImagePath") */
-        }
-        else
-        {
-          /* You may still have to parse the line here yourself (e.g.
-           * FvwmButtons may have multiple lines for the same resource). */
-        }
+	if (!MergeConfigLineResource(&db, line, MyName, '*'))
+	{
+	  /* Parse other lines here (e.g. "ImagePath") */
+	}
+	else
+	{
+	  /* You may still have to parse the line here yourself (e.g.
+	   * FvwmButtons may have multiple lines for the same resource). */
+	}
       }
 
       /* command line takes precedence over all */
@@ -82,11 +82,11 @@
       if (GetResourceString(db, "iconic", MyName, &rm_value))
       {
 	/* Just see if there is *any* string and don't mind it's value. */
-        /* flags |= ICONIC */
+	/* flags |= ICONIC */
       }
       if (GetResourceString(db, "bar", MyName, &rm_value))
       {
-        /* ... */
+	/* ... */
       }
 
       /* ... */
@@ -102,11 +102,11 @@
 /* Default option table */
 static XrmOptionDescRec default_opts[] =
 {
-  { "-fg",       "*Foreground", XrmoptionSepArg, NULL },
-  { "-bg",       "*Background", XrmoptionSepArg, NULL },
-  { "-fn",       "*Font",       XrmoptionSepArg, NULL },
-  { "-geometry", "*Geometry",   XrmoptionSepArg, NULL },
-  { "-title",    "*Title",      XrmoptionSepArg, NULL }
+  { "-fg",	 "*Foreground", XrmoptionSepArg, NULL },
+  { "-bg",	 "*Background", XrmoptionSepArg, NULL },
+  { "-fn",	 "*Font",	XrmoptionSepArg, NULL },
+  { "-geometry", "*Geometry",	XrmoptionSepArg, NULL },
+  { "-title",	 "*Title",	XrmoptionSepArg, NULL }
   /* Remember to update NUM_DEFAULT_OPTIONS if you change this list! */
 };
 #define NUM_DEFAULT_OPTS 5
@@ -186,11 +186,11 @@ void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
  *
  * Example: If prefix = "MyModule" and bindstr = "*", the line
  *
- *   *MyModuleGeometry   80x25+0+0
+ *   *MyModuleGeometry	 80x25+0+0
  *
  * will be put into the database as if you had this line in your .Xdefaults:
  *
- *   MyModule*Geometry:  80x25+0+0
+ *   MyModule*Geometry:	 80x25+0+0
  *
  * Please remember to destroy the database with XrmDestroyDatabase(*pdb)
  * if you do not need it amymore.

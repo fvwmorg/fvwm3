@@ -10,18 +10,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*
  *
  * The png loader and PImageRGBtoPixel are from imlib2. The code is from raster
- * (Carsten Haitzler) <raster@rasterman.com> <raster@valinux.com> 
+ * (Carsten Haitzler) <raster@rasterman.com> <raster@valinux.com>
  *
  */
 
@@ -45,11 +45,11 @@
 
 /* ---------------------------- local definitions --------------------------- */
 #define FIMAGE_CMD_ARGS Display *dpy, Window Root, char *path, \
-                  int color_limit, \
+		  int color_limit, \
 		  Pixmap *pixmap, Pixmap *mask, Pixmap *alpha, \
 		  int *width, int *height, int *depth, \
 		  int *nalloc_pixels, Pixel **alloc_pixels, \
-                  FvwmPictureFlags fpf
+		  FvwmPictureFlags fpf
 
 typedef struct PImageLoader
 {
@@ -76,12 +76,12 @@ typedef struct PImageLoader
 /* ---------------------------- local types --------------------------------- */
 
 /* This structure is used to quickly access the RGB values of the colors */
-/* without repeatedly having to transform them.   */
+/* without repeatedly having to transform them.	  */
 typedef struct
 {
-	char * c_color;	          /* Pointer to the name of the color */
-	XColor rgb_space;         /* rgb color info */
-	Bool allocated;           /* True if the pixel of the rgb_space 
+	char * c_color;		  /* Pointer to the name of the color */
+	XColor rgb_space;	  /* rgb color info */
+	Bool allocated;		  /* True if the pixel of the rgb_space
 				   * is allocated */
 } Color_Info;
 
@@ -153,26 +153,26 @@ static Color_Info base_array[] =
 	{"PeachPuff"},
 	{"maroon"},
 	{"lavender"},
-	{"salmon"},           /* for peachpuff, orange gap */
-	{"blue4"},            /* for navyblue/mediumblue gap */
-	{"PaleGreen4"},       /* for forestgreen, yellowgreen gap */
-	{"#AA7700"},          /* brick, no close named color */
-	{"#11EE88"},          /* light green, no close named color */
-	{"#884466"},          /* dark brown, no close named color */
-	{"#CC8888"},          /* light brick, no close named color */
-	{"#EECC44"},          /* gold, no close named color */
-	{"#AAAA44"},          /* dull green, no close named color */
-	{"#FF1188"},          /* pinkish red */
-	{"#992299"},          /* purple */
-	{"#CCFFAA"},          /* light green */
-	{"#664400"},          /* dark brown*/
-	{"#AADD99"},          /* light green */
-	{"#66CCFF"},          /* light blue */
-	{"#CC2299"},          /* dark red */
-	{"#FF11CC"},          /* bright pink */
-	{"#11CC99"},          /* grey/green */
-	{"#AA77AA"},          /* purple/red */
-	{"#EEBB77"}           /* orange/yellow */
+	{"salmon"},	      /* for peachpuff, orange gap */
+	{"blue4"},	      /* for navyblue/mediumblue gap */
+	{"PaleGreen4"},	      /* for forestgreen, yellowgreen gap */
+	{"#AA7700"},	      /* brick, no close named color */
+	{"#11EE88"},	      /* light green, no close named color */
+	{"#884466"},	      /* dark brown, no close named color */
+	{"#CC8888"},	      /* light brick, no close named color */
+	{"#EECC44"},	      /* gold, no close named color */
+	{"#AAAA44"},	      /* dull green, no close named color */
+	{"#FF1188"},	      /* pinkish red */
+	{"#992299"},	      /* purple */
+	{"#CCFFAA"},	      /* light green */
+	{"#664400"},	      /* dark brown*/
+	{"#AADD99"},	      /* light green */
+	{"#66CCFF"},	      /* light blue */
+	{"#CC2299"},	      /* dark red */
+	{"#FF11CC"},	      /* bright pink */
+	{"#11CC99"},	      /* grey/green */
+	{"#AA77AA"},	      /* purple/red */
+	{"#EEBB77"}	      /* orange/yellow */
 };
 
 #define NColors (sizeof(base_array) / sizeof(Color_Info))
@@ -209,7 +209,7 @@ double c400_distance(XColor *target_ptr, XColor *base_ptr)
 {
 	register double dst;
 
-	dst = SQUARE((double)(base_ptr->red   - target_ptr->red  )/655.35)
+	dst = SQUARE((double)(base_ptr->red   - target_ptr->red	 )/655.35)
 		+   SQUARE((double)(base_ptr->green - target_ptr->green)/655.35)
 		+   SQUARE((double)(base_ptr->blue  - target_ptr->blue )/655.35);
 	return dst;
@@ -240,9 +240,9 @@ void c200_substitute_color(char **my_color, int color_limit)
 	int i, limit, minind;
 	double mindst=1e20;
 	double dst;
-	XColor rgb;          /* place to calc rgb for each color in xpm */
+	XColor rgb;	     /* place to calc rgb for each color in xpm */
 
-	
+
 	if (!XpmSupport)
 		return;
 
@@ -253,26 +253,26 @@ void c200_substitute_color(char **my_color, int color_limit)
 	c300_color_to_rgb(*my_color, &rgb); /* get rgb for a color in xpm */
 	/* Loop over all base_array colors; find out which one is closest
 	   to my_color */
-	minind = 0;                         /* Its going to find something... */
-	limit = NColors;                    /* init to max */
-	if (color_limit < NColors) {        /* can't do more than I have */
-		limit = color_limit;        /* Do reduction using subset */
-	}                                   /* end reducing limit */
-	for(i=0; i < limit; i++) {          /* loop over base array */
+	minind = 0;			    /* Its going to find something... */
+	limit = NColors;		    /* init to max */
+	if (color_limit < NColors) {	    /* can't do more than I have */
+		limit = color_limit;	    /* Do reduction using subset */
+	}				    /* end reducing limit */
+	for(i=0; i < limit; i++) {	    /* loop over base array */
 		dst = c400_distance (&rgb, &base_array[i].rgb_space);
 		/* distance */
-		if (dst < mindst ) {        /* less than min and better than
+		if (dst < mindst ) {	    /* less than min and better than
 					     * last */
-			mindst=dst;         /* new minimum */
-			minind=i;           /* save loc of new winner */
+			mindst=dst;	    /* new minimum */
+			minind=i;	    /* save loc of new winner */
 			if (dst <= 100) {   /* if close enough */
-				break;      /* done */
-			}                   /* end close enough */
-		}                           /* end new low distance */
-	}                                   /* end all base colors */
+				break;	    /* done */
+			}		    /* end close enough */
+		}			    /* end new low distance */
+	}				    /* end all base colors */
 	/* Finally: replace the color string by the newly determined color
 	 * string */
-	free(*my_color);                    /* free old color */
+	free(*my_color);		    /* free old color */
 	/* area for new color */
 	*my_color = safemalloc(strlen(base_array[minind].c_color) + 1);
 	strcpy(*my_color,base_array[minind].c_color); /* put it there */
@@ -291,13 +291,13 @@ void color_reduce_pixmap(FxpmImage *image,int color_limit)
 	if (!XpmSupport)
 		return;
 
-	if (color_limit > 0) {             /* If colors to be limited */
+	if (color_limit > 0) {		   /* If colors to be limited */
 		if (color_limit_base_table_init == 'n') {
 			/* if base table not created yet */
-			c100_init_base_table();  /* init the base table */
+			c100_init_base_table();	 /* init the base table */
 			/* remember that its set now. */
 			color_limit_base_table_init = 'y';
-		}                          /* end base table init */
+		}			   /* end base table init */
 		color_table_ptr = image->colorTable; /* start of xpm color
 						      * table */
 		for(i=0; i<image->ncolors; i++) {/* all colors in the xpm */
@@ -311,13 +311,13 @@ void color_reduce_pixmap(FxpmImage *image,int color_limit)
 				visual_color = &color_table_ptr->g_color;
 			} else if (color_table_ptr->g4_color) {
 				visual_color = &color_table_ptr->g4_color;
-			} else {              /* its got to be one of these */
+			} else {	      /* its got to be one of these */
 				visual_color = &color_table_ptr->m_color;
 			}
 			c200_substitute_color(visual_color,color_limit);
 			color_table_ptr +=1;  /* counter for loop */
-		}                             /* end all colors in xpm */
-	}                                     /* end colors limited */
+		}			      /* end all colors in xpm */
+	}				      /* end colors limited */
 
 	return;
 }
@@ -327,7 +327,7 @@ static void PImageReduceRGBColor(XColor *c, int color_limit)
 	int i, limit, minind;
 	double mindst=1e20;
 	double dst;
-	
+
 	if (color_limit <= 0)
 	{
 		XAllocColor(Pdpy, Pcmap, c);
@@ -389,7 +389,7 @@ static CARD32 PImageRGBtoPixel(int r, int g, int b)
 	{
 		return (((r << 16) & 0xff0000) |
 			((g << 8 ) & 0x00ff00) |
-			((b      ) & 0x0000ff));
+			((b	 ) & 0x0000ff));
 	}
 	if ((rm == 0x7c00) && (gm == 0x3e0) && (bm == 0x1f)) /* 555 */
 	{
@@ -529,7 +529,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	if (hasa)
 		Fpng_set_expand(Fpng_ptr);
 	/* we want ARGB */
-	/* note form raster:      
+	/* note form raster:
 	* thanks to mustapha for helping debug this on PPC Linux remotely by
 	* sending across screenshots all the tiem and me figuring out form them
 	* what the hell was up with the colors
@@ -567,7 +567,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	Fpng_read_end(Fpng_ptr, Finfo_ptr);
 	Fpng_destroy_read_struct(&Fpng_ptr, &Finfo_ptr, (png_infopp) NULL);
 	fclose(f);
-	
+
 	*depth = Pdepth;
 	*pixmap = XCreatePixmap(dpy, Root, w, h, Pdepth);
 	*mask = XCreatePixmap(dpy, Root, w, h, 1);
@@ -775,7 +775,7 @@ Bool PImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
 			g = data[k++];
 			r = data[k++];
 			a = data[k++];
-		       
+
 			if ((a > FIMAGE_ALPHA_LIMIT) &&
 			    color_limit <= 0 &&
 			    (Pvisual->class == DirectColor ||
@@ -912,7 +912,7 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(Display *dpy, Window Root, char *path
 	{
 		return NULL;
 	}
- 
+
 	p = (FvwmPicture*)safemalloc(sizeof(FvwmPicture));
 	memset(p, 0, sizeof(FvwmPicture));
 	p->count = 1;
@@ -936,7 +936,7 @@ Bool PImageLoadCursorPixmapFromFile(Display *dpy, Window Root,
 				    unsigned int *x,
 				    unsigned int *y)
 {
-	
+
 	FxpmAttributes xpm_attributes;
 
 	if (!XpmSupport)
@@ -980,7 +980,7 @@ Bool PImageLoadPixmapFromXpmData(Display *dpy, Window Root, int color_limit,
 	xpm_attributes.visual = Pvisual;
 	xpm_attributes.colormap = Pcmap;
 	xpm_attributes.depth = Pdepth;
-	if(FxpmCreatePixmapFromData(dpy, Root, data, pixmap, mask, 
+	if(FxpmCreatePixmapFromData(dpy, Root, data, pixmap, mask,
 				   &xpm_attributes)!=FxpmSuccess)
 	{
 		return False;

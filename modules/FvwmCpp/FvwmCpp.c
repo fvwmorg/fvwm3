@@ -15,12 +15,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -66,7 +66,7 @@ static char *cpp_defs(Display *display, const char *host, char *m4_options, char
 #define MAXHOSTNAME 255
 #define EXTRA 20
 
-char *cpp_prog = FVWM_CPP;          /* Name of the cpp program */
+char *cpp_prog = FVWM_CPP;	    /* Name of the cpp program */
 
 char cpp_options[BUFSIZ];
 char cpp_outfile[BUFSIZ]="";
@@ -129,7 +129,7 @@ int main(int argc, char **argv)
   for(i=6;i<argc;i++)
     {
       /* leaving this in just in case-- any option starting with '-'
-         will get passed on to cpp anyway */
+	 will get passed on to cpp anyway */
       if(strcasecmp(argv[i],"-cppopt") == 0)
 	{
 	  strcat(cpp_options, argv[++i]);
@@ -141,7 +141,7 @@ int main(int argc, char **argv)
 	}
       else if(strcasecmp(argv[i], "-outfile") == 0)
       {
-        strcpy(cpp_outfile,argv[++i]);
+	strcpy(cpp_outfile,argv[++i]);
       }
       else if(strcasecmp(argv[i], "-debug") == 0)
 	{
@@ -157,9 +157,9 @@ int main(int argc, char **argv)
 	}
       else if (strncasecmp(argv[i],"-",1) == 0)
       {
-        /* pass on any other arguments starting with '-' to cpp */
-        strcat(cpp_options, argv[i]);
-        strcat(cpp_options, " ");
+	/* pass on any other arguments starting with '-' to cpp */
+	strcat(cpp_options, argv[i]);
+	strcat(cpp_options, " ");
       }
       else
 	filename = argv[i];
@@ -429,7 +429,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 #endif
 
   /*
-   * At this point, we've sent the definitions to cpp.  Just include
+   * At this point, we've sent the definitions to cpp.	Just include
    * the fvwmrc file now.
    */
 

@@ -384,20 +384,20 @@ static void frame_setup_window_internal(
 	/* setup the window */
 	if (is_resized || do_force)
 	{
-                frame_move_resize_mode mode;
+		frame_move_resize_mode mode;
 
-                if (is_application_request)
-                {
-                        mode = FRAME_MR_SETUP_BY_APP;
-                }
-                else if (do_force)
-                {
-                        mode = FRAME_MR_FORCE_SETUP;
-                }
-                else
-                {
-                        mode = FRAME_MR_SETUP;
-                }
+		if (is_application_request)
+		{
+			mode = FRAME_MR_SETUP_BY_APP;
+		}
+		else if (do_force)
+		{
+			mode = FRAME_MR_FORCE_SETUP;
+		}
+		else
+		{
+			mode = FRAME_MR_SETUP;
+		}
 		mr_args = frame_create_move_resize_args(
 			fw, mode, NULL, &new_g, 0, DIR_NONE);
 		frame_move_resize(fw, mr_args);
@@ -548,17 +548,17 @@ static void frame_set_decor_gravities(
 		XWindowAttributes xwa;
 
 		if (!fw->attr_backup.is_bit_gravity_stored &&
-                    XGetWindowAttributes(dpy, FW_W(fw), &xwa))
+		    XGetWindowAttributes(dpy, FW_W(fw), &xwa))
 		{
 			fw->attr_backup.bit_gravity = xwa.bit_gravity;
 		}
-                fw->attr_backup.is_bit_gravity_stored = 1;
+		fw->attr_backup.is_bit_gravity_stored = 1;
 		valuemask |= CWBitGravity;
 		xcwa.bit_gravity = grav->client_grav;
 	}
 	else if (do_set1_restore2_bit_gravity == 2)
 	{
-                fw->attr_backup.is_bit_gravity_stored = 0;
+		fw->attr_backup.is_bit_gravity_stored = 0;
 		valuemask |= CWBitGravity;
 		xcwa.bit_gravity = fw->attr_backup.bit_gravity;
 	}
@@ -1594,15 +1594,15 @@ frame_move_resize_args frame_create_move_resize_args(
 	/* set some variables */
 	mra = (mr_args_internal *)safecalloc(1, sizeof(mr_args_internal));
 	memset(mra, 0, sizeof(*mra));
-        if (mr_mode == FRAME_MR_SETUP_BY_APP)
-        {
-                mr_mode = FRAME_MR_SETUP;
+	if (mr_mode == FRAME_MR_SETUP_BY_APP)
+	{
+		mr_mode = FRAME_MR_SETUP;
 		mra->flags.do_set_bit_gravity = 0;
-        }
-        else
-        {
+	}
+	else
+	{
 		mra->flags.do_set_bit_gravity = 1;
-        }
+	}
 	if (mr_mode == FRAME_MR_FORCE_SETUP_NO_W)
 	{
 		mr_mode = FRAME_MR_FORCE_SETUP;
@@ -1701,15 +1701,15 @@ frame_move_resize_args frame_create_move_resize_args(
 		grav.parent_grav = StaticGravity;
 		grav.client_grav = StaticGravity;
 		frame_set_decor_gravities(
-                        fw, &grav, (mra->flags.do_set_bit_gravity) ? 1 : 0);
+			fw, &grav, (mra->flags.do_set_bit_gravity) ? 1 : 0);
 		mra->flags.do_restore_gravity = 1;
 		mra->flags.do_force = 1;
 	}
 	else
 	{
 		frame_set_decor_gravities(
-                        fw, &mra->grav,
-                        (mra->flags.do_set_bit_gravity) ? 1 : 0);
+			fw, &mra->grav,
+			(mra->flags.do_set_bit_gravity) ? 1 : 0);
 	}
 	frame_reparent_hide_windows(FW_W_FRAME(fw));
 
@@ -1775,8 +1775,8 @@ void frame_free_move_resize_args(
 	if (mra->flags.do_restore_gravity)
 	{
 		frame_set_decor_gravities(
-                        fw, &mra->grav,
-                        (mra->flags.do_set_bit_gravity) ? 2 : 0);
+			fw, &mra->grav,
+			(mra->flags.do_set_bit_gravity) ? 2 : 0);
 	}
 	/* In case the window geometry now overlaps the focused window. */
 	sf = get_focus_window();

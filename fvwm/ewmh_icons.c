@@ -7,12 +7,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -87,18 +87,18 @@ int ewmh_WMIcon(EWMH_CMD_ARGS)
       /* No net icon or we have set the net icon */
       if (DO_EWMH_DONATE_MINI_ICON(fwin) &&
 	(dummy = ewmh_SetWmIconFromPixmap(fwin,
-                                          (new_list != NULL)? new_list : list,
-                                          &size, True)) != NULL)
+					  (new_list != NULL)? new_list : list,
+					  &size, True)) != NULL)
       {
-        SET_HAS_EWMH_WM_ICON_HINT(fwin, EWMH_FVWM_ICON);
-        free(dummy);
+	SET_HAS_EWMH_WM_ICON_HINT(fwin, EWMH_FVWM_ICON);
+	free(dummy);
       }
     }
     else
     {
       /* the application has a true ewmh icon */
       if (EWMH_SetIconFromWMIcon(fwin, list, size, True))
-        SET_HAS_EWMH_MINI_ICON(fwin, True);
+	SET_HAS_EWMH_MINI_ICON(fwin, True);
     }
   }
 
@@ -378,7 +378,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 			}
 		}
 		break;
-		
+
 	}
 	default: /* depth = Pdepth */
 	{
@@ -407,7 +407,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 					{
 						cm[m++] = 255;
 					}
-					colors[k++].pixel = 
+					colors[k++].pixel =
 						XGetPixel(image, i, j);
 				}
 			}
@@ -571,7 +571,7 @@ void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
   {
     /*SET_HAS_EWMH_WM_ICON_HINT(fwin, EWMH_NO_ICON);*/
     ewmh_DeleteProperty(FW_W(fwin), "_NET_WM_ICON",
-                        EWMH_ATOM_LIST_PROPERTY_NOTIFY);
+			EWMH_ATOM_LIST_PROPERTY_NOTIFY);
   }
 
   if (mini_icon)
@@ -612,7 +612,7 @@ void extract_wm_icon(CARD32 *list, unsigned int size, int wanted_w, int wanted_h
       if (i + 1 + list[i]*list[i+1] < size)
       {
 	if (*best_w == 0 && *best_h == 0)
-        {
+	{
 	  *start_best = i+2;
 	  *best_w = list[i];
 	  *best_h = list[i+1];
@@ -638,7 +638,7 @@ void extract_wm_icon(CARD32 *list, unsigned int size, int wanted_w, int wanted_h
   return;
 }
 
-#define MINI_ICON_WANTED_WIDTH  16
+#define MINI_ICON_WANTED_WIDTH	16
 #define MINI_ICON_WANTED_HEIGHT 16
 #define MINI_ICON_MAX_WIDTH 22
 #define MINI_ICON_MAX_HEIGHT 22
@@ -725,7 +725,7 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 	if (width > max_w || height > max_h)
 	{
 		Pixmap np = None,nm =None, na = None;
-	    
+
 		if (pixmap)
 		{
 			np = CreateStretchPixmap(dpy, pixmap, width, height,

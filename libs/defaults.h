@@ -31,8 +31,8 @@
 
 
 /*** grabbing the pointer ***/
-#define NUMBER_OF_GRAB_ATTEMPTS          100
-#define TIME_BETWEEN_GRAB_ATTEMPTS        10 /* ms */
+#define NUMBER_OF_GRAB_ATTEMPTS		 100
+#define TIME_BETWEEN_GRAB_ATTEMPTS	  10 /* ms */
 
 /*** bindings and mouse buttons ***/
 /* Fvwm needs at least 3 buttons. X currently supports up to 5 buttons, so you
@@ -50,7 +50,7 @@
  (Button3MotionMask * (NUMBER_OF_MOUSE_BUTTONS >= 3)) | \
  (Button4MotionMask * (NUMBER_OF_MOUSE_BUTTONS >= 4)) | \
  (Button5MotionMask * (NUMBER_OF_MOUSE_BUTTONS >= 5)))
-#define DEFAULT_MODS_UNUSED                LockMask
+#define DEFAULT_MODS_UNUSED		   LockMask
 
 
 /***************************************************************
@@ -58,7 +58,7 @@
  ***************************************************************/
 /* The first option of the default menu style must be fvwm/win/mwm/....
  * fvwm may crash if not. */
-#define DEFAULT_MENU_STYLE               \
+#define DEFAULT_MENU_STYLE		 \
  "MenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey, " \
  "MenuColorset, ActiveColorset, GreyedColorset"
 #define DEFAULT_CLICKTIME		 150 /* ms */
@@ -91,10 +91,10 @@
 #define MENU_SEPARATOR_TOTAL_HEIGHT    \
 	  (MENU_SEPARATOR_HEIGHT + MENU_SEPARATOR_Y_OFFSET)
 /*   menu tear off bar parameters */
-#define MENU_TEAR_OFF_BAR_X_OFFSET         1 /* pixels */
-#define MENU_TEAR_OFF_BAR_Y_OFFSET         1 /* pixels */
-#define MENU_TEAR_OFF_BAR_HEIGHT           4 /* pixels */
-#define MENU_TEAR_OFF_BAR_DASH_WIDTH       5 /* pixels */
+#define MENU_TEAR_OFF_BAR_X_OFFSET	   1 /* pixels */
+#define MENU_TEAR_OFF_BAR_Y_OFFSET	   1 /* pixels */
+#define MENU_TEAR_OFF_BAR_HEIGHT	   4 /* pixels */
+#define MENU_TEAR_OFF_BAR_DASH_WIDTH	   5 /* pixels */
 /*   gap above item text */
 #define DEFAULT_MENU_ITEM_TEXT_Y_OFFSET	   1 /* pixels */
 /*   gap below item text */
@@ -103,11 +103,11 @@
 #define DEFAULT_MENU_TITLE_TEXT_Y_OFFSET   (DEFAULT_MENU_ITEM_TEXT_Y_OFFSET)
 #define DEFAULT_MENU_TITLE_TEXT_Y_OFFSET2  (DEFAULT_MENU_ITEM_TEXT_Y_OFFSET2)
 /* minimum for above value */
-#define MIN_VERTICAL_SPACING            -100 /* pixels */
+#define MIN_VERTICAL_SPACING		-100 /* pixels */
 /* maximum for above value */
-#define MAX_VERTICAL_SPACING             100 /* pixels */
+#define MAX_VERTICAL_SPACING		 100 /* pixels */
 /* width of a tab in the item format of a menu */
-#define MENU_TAB_WIDTH                     8 /* spaces */
+#define MENU_TAB_WIDTH			   8 /* spaces */
 /* This is the tile width or height for V and H gradients. I guess this should
  * better be a power of two. A value of 5 definitely causes XFree 3.3.3.1 to
  * screw up the V_GRADIENT on an 8 bit display, but 4, 6, 7 etc. work well. */
@@ -115,12 +115,12 @@
 
 
 /*** colours ***/
-#define DEFAULT_FORE_COLOR                "black"
-#define DEFAULT_BACK_COLOR                "gray"
-#define DEFAULT_HILIGHT_COLOR             "white"
-#define DEFAULT_SHADOW_COLOR              "black"
-#define DEFAULT_CURSOR_FORE_COLOR         "black"
-#define DEFAULT_CURSOR_BACK_COLOR         "white"
+#define DEFAULT_FORE_COLOR		  "black"
+#define DEFAULT_BACK_COLOR		  "gray"
+#define DEFAULT_HILIGHT_COLOR		  "white"
+#define DEFAULT_SHADOW_COLOR		  "black"
+#define DEFAULT_CURSOR_FORE_COLOR	  "black"
+#define DEFAULT_CURSOR_BACK_COLOR	  "white"
 
 /*** pager ***/
 #define DEFAULT_MOVE_THRESHOLD		   3 /* pixels */
@@ -153,20 +153,20 @@
 #define DEFAULT_MAX_MAX_WINDOW_WIDTH   32767 /* pixels */
 #define DEFAULT_MAX_MAX_WINDOW_HEIGHT  32767 /* pixels */
 /* this value is used in a bugfix */
-#define WINDOW_FREAKED_OUT_SIZE        65500 /* pixels */
+#define WINDOW_FREAKED_OUT_SIZE	       65500 /* pixels */
 
 /* geometry window */
-#define GEOMETRY_WINDOW_BW                 2 /* pixels */
-#define GEOMETRY_WINDOW_STRING             " +8888 x +8888 "
-#define GEOMETRY_WINDOW_POS_STRING         " %+-4d %+-4d "
-#define GEOMETRY_WINDOW_SIZE_STRING        " %4d x %-4d "
+#define GEOMETRY_WINDOW_BW		   2 /* pixels */
+#define GEOMETRY_WINDOW_STRING		   " +8888 x +8888 "
+#define GEOMETRY_WINDOW_POS_STRING	   " %+-4d %+-4d "
+#define GEOMETRY_WINDOW_SIZE_STRING	   " %4d x %-4d "
 
 /*
  * window title layout
  */
 /* the title buttons are shrunk if the title would become smaller than this
  * number of pixels */
-#define MIN_WINDOW_TITLE_LENGTH      10 /* pixels */
+#define MIN_WINDOW_TITLE_LENGTH	     10 /* pixels */
 /* title bar buttons that get smaller than this size are hidden */
 #define MIN_WINDOW_TITLEBUTTON_LENGTH 2 /* pixels */
 /* height of stick lines */
@@ -200,35 +200,35 @@
 #define PLACEMENT_AVOID_BELOW		   0.05
 #define PLACEMENT_AVOID_STICKY		   1.0
 #define PLACEMENT_AVOID_ONTOP		   5
-#define PLACEMENT_AVOID_ICON              10
-#define PLACEMENT_AVOID_EWMH_STRUT        50
+#define PLACEMENT_AVOID_ICON		  10
+#define PLACEMENT_AVOID_EWMH_STRUT	  50
 /* used in MinOverlap*Placement to forbid complete covering (99%, 95%
    85% and 75%) of windows */
-#define PLACEMENT_AVOID_COVER_99          12
-#define PLACEMENT_AVOID_COVER_95           6
-#define PLACEMENT_AVOID_COVER_85           4
-#define PLACEMENT_AVOID_COVER_75           1
+#define PLACEMENT_AVOID_COVER_99	  12
+#define PLACEMENT_AVOID_COVER_95	   6
+#define PLACEMENT_AVOID_COVER_85	   4
+#define PLACEMENT_AVOID_COVER_75	   1
 
 
 /*** icon layout ***/
 /* width of the relief around the icon and icon title */
-#define ICON_RELIEF_WIDTH                  2 /* pixels */
+#define ICON_RELIEF_WIDTH		   2 /* pixels */
 /* height of stick lines */
-#define ICON_TITLE_STICK_HEIGHT            WINDOW_TITLE_STICK_HEIGHT
+#define ICON_TITLE_STICK_HEIGHT		   WINDOW_TITLE_STICK_HEIGHT
 /* vertical distance between stick lines */
-#define ICON_TITLE_STICK_VERT_DIST         WINDOW_TITLE_STICK_VERT_DIST
+#define ICON_TITLE_STICK_VERT_DIST	   WINDOW_TITLE_STICK_VERT_DIST
 /* vertical offset for icon title */
-#define ICON_TITLE_VERT_TEXT_OFFSET       -3 /* pixels */
+#define ICON_TITLE_VERT_TEXT_OFFSET	  -3 /* pixels */
 /* minimum width of stick lines */
-#define ICON_TITLE_STICK_MIN_WIDTH         3 /* pixels */
+#define ICON_TITLE_STICK_MIN_WIDTH	   3 /* pixels */
 /* number of blank pixels before and after a collapsed title */
-#define ICON_TITLE_TEXT_GAP_COLLAPSED      1 /* pixels */
+#define ICON_TITLE_TEXT_GAP_COLLAPSED	   1 /* pixels */
 /* number of blank pixels before and after an expanded title */
-#define ICON_TITLE_TEXT_GAP_EXPANDED       4 /* pixels */
+#define ICON_TITLE_TEXT_GAP_EXPANDED	   4 /* pixels */
 /* extra blank pixels if the icon is sticky */
-#define ICON_TITLE_TO_STICK_EXTRA_GAP      1 /* pixels */
+#define ICON_TITLE_TO_STICK_EXTRA_GAP	   1 /* pixels */
 /* minimum distance of icons in icon box */
-#define MIN_ICON_BOX_DIST                  3 /* pixels */
+#define MIN_ICON_BOX_DIST		   3 /* pixels */
 
 
 /*** general keyboard shortcuts used in move, resize, ... ***/
@@ -263,7 +263,7 @@
 
 
 /*** decorations ***/
-/* The number of left and right buttons must be equal.  A maximum of 32 buttons
+/* The number of left and right buttons must be equal.	A maximum of 32 buttons
  * can be handled (16 left and 16 right). */
 #define NR_LEFT_BUTTONS			   5
 #define NR_RIGHT_BUTTONS		   NR_LEFT_BUTTONS
@@ -293,22 +293,22 @@
 #define MAX_GRADIENT_COLORS	       10000
 
 /*** Xinerama ***/
-#define DEFAULT_XINERAMA_ENABLED        True /* Xinerama on by default */
-#define XINERAMA_CONFIG_STRING             "XineramaConfig"
+#define DEFAULT_XINERAMA_ENABLED	True /* Xinerama on by default */
+#define XINERAMA_CONFIG_STRING		   "XineramaConfig"
 /* Replace with -1 to switch off "primary screen" concept by default */
-#define DEFAULT_PRIMARY_SCREEN             0
+#define DEFAULT_PRIMARY_SCREEN		   0
 
 /*** Very long window names (600000 characters or more) seem to hang the X
  *** server. ***/
 #define MAX_WINDOW_NAME_LEN		 200 /* characters */
 #define MAX_ICON_NAME_LEN		 200 /* characters */
 /* not tested if this hangs the server too */
-#define MAX_RESOURCE_LEN   		 200 /* characters */
-#define MAX_CLASS_LEN    		 200 /* characters */
+#define MAX_RESOURCE_LEN		 200 /* characters */
+#define MAX_CLASS_LEN			 200 /* characters */
 
 /*** numbered window names ***/
-#define MAX_WINDOW_NAME_NUMBER           999
-#define MAX_WINDOW_NAME_NUMBER_DIGITS      3 /* number/digits of above number */
+#define MAX_WINDOW_NAME_NUMBER		 999
+#define MAX_WINDOW_NAME_NUMBER_DIGITS	   3 /* number/digits of above number */
 
 
 #endif /* _DEFAULTS_ */

@@ -19,12 +19,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /***********************************************************************
@@ -74,7 +74,7 @@ Bool LoadIconFile(int button, int ico)
 	fpf.alpha = 1;
 	path = PictureFindImageFile(Buttons[button].icons[ico].file, imagePath,
 				    R_OK);
- 	if (path == NULL)
+	if (path == NULL)
 	{
 		return False;
 	}
@@ -87,7 +87,7 @@ Bool LoadIconFile(int button, int ico)
 				      &Buttons[button].icons[ico].depth,
 				      0, NULL,fpf))
 	{
-		fprintf(stderr, "[FvwmWharf] cannot load pixmap from " 
+		fprintf(stderr, "[FvwmWharf] cannot load pixmap from "
 			"file '%s'\n",path);
 		free(path);
 		Buttons[button].icons[ico].w = 0;
@@ -181,7 +181,7 @@ void ConfigureIconWindow(int button,int row, int column)
 	{
 		return;
 	}
-	if(Buttons[button].swallow != 0) 
+	if(Buttons[button].swallow != 0)
 	{
 		return;
 	}
@@ -245,7 +245,7 @@ int GetXPMGradient(int button, int from[3], int to[3], int maxcols,
     switch (type) {
      case TEXTURE_GRADIENT:
 	if (!DrawDegradeRelief(dpy, Buttons[button].icons[0].icon, 0,0,64,64,
-			 	from, to, 0, maxcols)) {
+				from, to, 0, maxcols)) {
 	    XFreePixmap(dpy, Buttons[button].icons[0].icon);
 	    return 0;
 	}

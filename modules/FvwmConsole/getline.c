@@ -5,22 +5,22 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "FvwmConsole.h"
 
 #ifndef HAVE_READLINE
-static   char cmd[MAX_COMMAND_SIZE];
+static	 char cmd[MAX_COMMAND_SIZE];
 
 /* no readline - starts here */
 char *getline() {
-  if( fgets(cmd,MAX_COMMAND_SIZE,stdin) == NULL  ) {
+  if( fgets(cmd,MAX_COMMAND_SIZE,stdin) == NULL	 ) {
 	return(NULL);
   }
   return(cmd);
@@ -47,10 +47,10 @@ char *getline()
 	int  fdh;
 
     /* If initialization hasn't been done, do it now:
-     *  - We don't want TAB completion
+     *	- We don't want TAB completion
      */
     if (!done_init) {
-        rl_bind_key('\t', rl_insert);
+	rl_bind_key('\t', rl_insert);
 
 		/* get history from file */
 		home = getenv("FVWM_USERDIR");
@@ -75,38 +75,38 @@ char *getline()
     prompt = PS1;
 
     while (1) {
-        int linelen = 0;
+	int linelen = 0;
 
-        /* If the buffer has already been allocated, free the memory. */
-        if (line != (char *)NULL)
-            free(line);
+	/* If the buffer has already been allocated, free the memory. */
+	if (line != (char *)NULL)
+	    free(line);
 
   /* Get a line from the user. */
-        line  = readline(prompt);
-        if (line == NULL)
-            return (NULL);
+	line  = readline(prompt);
+	if (line == NULL)
+	    return (NULL);
 
-        /* Make sure we have enough space for the new line */
-        linelen = strlen(line);
-        if (len + linelen > MAX_COMMAND_SIZE-2 ) {
+	/* Make sure we have enough space for the new line */
+	linelen = strlen(line);
+	if (len + linelen > MAX_COMMAND_SIZE-2 ) {
 		  fprintf( stderr, "line too long %d chars max %d \a\n",
 				   len+linelen, MAX_COMMAND_SIZE-2 );
 		  strncat(cmd, line, MAX_COMMAND_SIZE-len-2);
 		  add_history(cmd);
 		  break;
-        }
+	}
 
-        /* Copy the new line onto the end of the current line */
-        strcat(cmd, line);
+	/* Copy the new line onto the end of the current line */
+	strcat(cmd, line);
 
-        /* If the current line doesn't end with a backslash, we're done */
-        len = strlen(cmd);
-        if (cmd[len-1] != '\\')
-            break;
+	/* If the current line doesn't end with a backslash, we're done */
+	len = strlen(cmd);
+	if (cmd[len-1] != '\\')
+	    break;
 
-        /* Otherwise, remove it and wait for more (add a space if needed) */
-        prompt = PS2;
-        cmd[len-1] = (cmd[len-2]==' ' || cmd[len-2]=='\t') ? '\0' : ' ';
+	/* Otherwise, remove it and wait for more (add a space if needed) */
+	prompt = PS2;
+	cmd[len-1] = (cmd[len-2]==' ' || cmd[len-2]=='\t') ? '\0' : ' ';
   }
 
     /* If the command has any text in it, save it on the history. */

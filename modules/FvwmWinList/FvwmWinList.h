@@ -1,7 +1,7 @@
 /* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
- *                               Mike_Finger@atk.com)
+ *				 Mike_Finger@atk.com)
  *
  * The author makes not guarantees or warantees, either express or
  * implied.  Feel free to use any contained here for any purpose, as long
@@ -25,12 +25,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef FVWMWINLIST_H
@@ -50,44 +50,44 @@
 /* Motif  window hints */
 typedef struct
 {
-    CARD32      flags;
-    CARD32      functions;
-    CARD32      decorations;
-    INT32       inputMode;
+    CARD32	flags;
+    CARD32	functions;
+    CARD32	decorations;
+    INT32	inputMode;
 } PropMotifWmHints;
 
-typedef PropMotifWmHints        PropMwmHints;
+typedef PropMotifWmHints	PropMwmHints;
 
 /* Motif window hints */
-#define MWM_HINTS_FUNCTIONS     (1L << 0)
-#define MWM_HINTS_DECORATIONS   (1L << 1)
-#define MWM_HINTS_INPUT_MODE    (1L << 2)
+#define MWM_HINTS_FUNCTIONS	(1L << 0)
+#define MWM_HINTS_DECORATIONS	(1L << 1)
+#define MWM_HINTS_INPUT_MODE	(1L << 2)
 
 /* bit definitions for MwmHints.functions */
-#define MWM_FUNC_ALL            (1L << 0)
-#define MWM_FUNC_RESIZE         (1L << 1)
-#define MWM_FUNC_MOVE           (1L << 2)
-#define MWM_FUNC_MINIMIZE       (1L << 3)
-#define MWM_FUNC_MAXIMIZE       (1L << 4)
-#define MWM_FUNC_CLOSE          (1L << 5)
+#define MWM_FUNC_ALL		(1L << 0)
+#define MWM_FUNC_RESIZE		(1L << 1)
+#define MWM_FUNC_MOVE		(1L << 2)
+#define MWM_FUNC_MINIMIZE	(1L << 3)
+#define MWM_FUNC_MAXIMIZE	(1L << 4)
+#define MWM_FUNC_CLOSE		(1L << 5)
 
 /* values for MwmHints.input_mode */
-#define MWM_INPUT_MODELESS                      0
-#define MWM_INPUT_PRIMARY_APPLICATION_MODAL     1
-#define MWM_INPUT_SYSTEM_MODAL                  2
-#define MWM_INPUT_FULL_APPLICATION_MODAL        3
+#define MWM_INPUT_MODELESS			0
+#define MWM_INPUT_PRIMARY_APPLICATION_MODAL	1
+#define MWM_INPUT_SYSTEM_MODAL			2
+#define MWM_INPUT_FULL_APPLICATION_MODAL	3
 
 /* bit definitions for MwmHints.decorations */
-#define MWM_DECOR_ALL                 (1L << 0)
-#define MWM_DECOR_BORDER              (1L << 1)
-#define MWM_DECOR_RESIZEH             (1L << 2)
-#define MWM_DECOR_TITLE               (1L << 3)
-#define MWM_DECOR_MENU                (1L << 4)
-#define MWM_DECOR_MINIMIZE            (1L << 5)
-#define MWM_DECOR_MAXIMIZE            (1L << 6)
+#define MWM_DECOR_ALL		      (1L << 0)
+#define MWM_DECOR_BORDER	      (1L << 1)
+#define MWM_DECOR_RESIZEH	      (1L << 2)
+#define MWM_DECOR_TITLE		      (1L << 3)
+#define MWM_DECOR_MENU		      (1L << 4)
+#define MWM_DECOR_MINIMIZE	      (1L << 5)
+#define MWM_DECOR_MAXIMIZE	      (1L << 6)
 
 #define PROP_MOTIF_WM_HINTS_ELEMENTS  4
-#define PROP_MWM_HINTS_ELEMENTS       PROP_MOTIF_WM_HINTS_ELEMENTS
+#define PROP_MWM_HINTS_ELEMENTS	      PROP_MOTIF_WM_HINTS_ELEMENTS
 
 /* default values for configuration parameters */
 #define DEFMAXWIDTH 10000

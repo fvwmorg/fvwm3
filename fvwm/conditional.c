@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -43,7 +43,7 @@
 
 /**********************************************************************
  * Parses the flag string and returns the text between [ ] or ( )
- * characters.  The start of the rest of the line is put in restptr.
+ * characters.	The start of the rest of the line is put in restptr.
  * Note that the returned string is allocated here and it must be
  * freed when it is not needed anymore.
  * NOTE - exported via .h
@@ -894,7 +894,7 @@ void CMD_Direction(F_CMD_ARGS)
 	best_score = -1;
 	for (window = Scr.FvwmRoot.next; window; window = window->next)
 	{
-		/* Skip every window that does not match conditionals.  Also
+		/* Skip every window that does not match conditionals.	Also
 		 * skip the currently focused window.  That would be too
 		 * close. :) */
 		if (window == fw || !MatchesConditionMask(window, &mask))
@@ -914,7 +914,7 @@ void CMD_Direction(F_CMD_ARGS)
 			int tx;
 			/* Rotate the diagonals 45 degrees counterclockwise. To
 			 * do this, multiply the matrix /+h +h\ with the vector
-			 * (x y).                       \-h +h/
+			 * (x y).			\-h +h/
 			 * h = sqrt(0.5). We can set h := 1 since absolute
 			 * distance doesn't * matter here. */
 			tx = his_cx + his_cy;
@@ -1105,7 +1105,7 @@ void CMD_WindowId(F_CMD_ARGS)
 				efa.win = win;
 				efa.eventp = eventp;
 				efa.action = action;
-  				efa.context = C_UNMANAGED;
+				efa.context = C_UNMANAGED;
 				efa.module = *Module;
 				efa.flags.is_window_unmanaged = 1;
 				execute_function(&efa);
@@ -1185,7 +1185,7 @@ void CMD_CondCase(F_CMD_ARGS)
 	fvwm_cond_func_rc tmp_rc;
 
 	/* same as Cond, but does not modify the return code */
-        tmp_rc = (cond_rc != NULL) ? *cond_rc : COND_RC_OK;
+	tmp_rc = (cond_rc != NULL) ? *cond_rc : COND_RC_OK;
 	CMD_Cond(&tmp_rc, eventp, w, fw, context, action, Module);
 
 	return;

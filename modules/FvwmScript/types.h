@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -43,13 +43,13 @@
 #define HAS_NO_RELIEF_STRING(x) (x->flags[1])
 #define HAS_NO_FOCUS(x) (x->flags[2])
 #define TEXT_POS_DEFAULT 0
-#define TEXT_POS_CENTER  1
-#define TEXT_POS_LEFT    2
-#define TEXT_POS_RIGHT   3
+#define TEXT_POS_CENTER	 1
+#define TEXT_POS_LEFT	 2
+#define TEXT_POS_RIGHT	 3
 #define IS_TEXT_POS_DEFAULT(x) (x->flags[3] == TEXT_POS_DEFAULT)
 #define GET_TEXT_POS(x) (x->flags[3])
 #define IS_TEXT_CENTER(x) (x->flags[3] == TEXT_POS_CENTER)
-#define IS_TEXT_LEFT(x)   (x->flags[3] == TEXT_POS_LEFT)
+#define IS_TEXT_LEFT(x)	  (x->flags[3] == TEXT_POS_LEFT)
 #define IS_TEXT_RIGHT(x)  (x->flags[3] == TEXT_POS_RIGHT)
 
 #include <X11/keysymdef.h>
@@ -61,7 +61,7 @@
 #include <X11/Xatom.h>
 
 /* Prototype for yylex().  There must be a way to get this automatically from
-   yacc/bison.  */
+   yacc/bison.	*/
 extern int yylex(void);
 
 
@@ -120,7 +120,7 @@ typedef struct			/* Type pour la gestion X */
   char *icon;			/* Icone pour l'application iconisee */
   Bloc *periodictasks;		/* Tableau de taches periodiques */
   Bloc *initbloc;		/* Bloc d'initalisation */
-  Bloc *quitfunc;               /* Bloc executed at exit */
+  Bloc *quitfunc;		/* Bloc executed at exit */
 } ScriptProp;
 
 

@@ -7,12 +7,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -143,12 +143,12 @@ void CMD_EwmhBaseStrut(F_CMD_ARGS)
     return;
   }
 
-  if (ewmhc.BaseStrut.left != val[0] ||  ewmhc.BaseStrut.right != val[1] ||
-      ewmhc.BaseStrut.top != val[2] ||  ewmhc.BaseStrut.bottom != val[3])
+  if (ewmhc.BaseStrut.left != val[0] ||	 ewmhc.BaseStrut.right != val[1] ||
+      ewmhc.BaseStrut.top != val[2] ||	ewmhc.BaseStrut.bottom != val[3])
   {
     ewmhc.BaseStrut.left   = val[0];
     ewmhc.BaseStrut.right  = val[1];
-    ewmhc.BaseStrut.top    = val[2];
+    ewmhc.BaseStrut.top	   = val[2];
     ewmhc.BaseStrut.bottom = val[3];
     ewmh_ComputeAndSetWorkArea();
     ewmh_HandleDynamicWorkArea();

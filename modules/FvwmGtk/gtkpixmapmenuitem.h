@@ -20,12 +20,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef __GTK_MENU_PIXMAP_ITEM_H__
@@ -48,8 +48,8 @@ extern "C" {
 #define GTK_IS_PIXMAP_MENU_ITEM_CLASS(klass) (GTK_CHECK_CLASS_TYPE ((klass), GTK_TYPE_PIXMAP_MENU_ITEM))
 
 
-typedef struct _GtkPixmapMenuItem       GtkPixmapMenuItem;
-typedef struct _GtkPixmapMenuItemClass  GtkPixmapMenuItemClass;
+typedef struct _GtkPixmapMenuItem	GtkPixmapMenuItem;
+typedef struct _GtkPixmapMenuItemClass	GtkPixmapMenuItemClass;
 
 struct _GtkPixmapMenuItem
 {
@@ -66,7 +66,7 @@ struct _GtkPixmapMenuItemClass
 
 GtkType	   gtk_pixmap_menu_item_get_type      (void);
 GtkWidget* gtk_pixmap_menu_item_new	      (void);
-void       gtk_pixmap_menu_item_set_pixmap    (GtkPixmapMenuItem *menu_item,
+void	   gtk_pixmap_menu_item_set_pixmap    (GtkPixmapMenuItem *menu_item,
 					       GtkWidget *pixmap);
 
 #ifdef __cplusplus

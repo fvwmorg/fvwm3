@@ -5,18 +5,18 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "Tools.h"
 
 /***********************************************/
-/* Fonction for TextField                      */
+/* Fonction for TextField		       */
 /***********************************************/
 void InitTextField(struct XObj *xobj)
 {
@@ -50,7 +50,7 @@ void InitTextField(struct XObj *xobj)
 		mask,&Attr);
  xobj->gc=fvwmlib_XCreateGC(dpy,xobj->win,0,NULL);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
- 
+
  if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) == NULL)
  {
    fprintf(stderr, "%s: Couldn't load font. Exiting!\n", ScriptName);
@@ -77,8 +77,8 @@ void InitTextField(struct XObj *xobj)
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
  if (xobj->colorset >= 0)
    SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
-                       &Colorset[xobj->colorset], Pdepth,
-                       xobj->gc, True);
+		       &Colorset[xobj->colorset], Pdepth,
+		       xobj->gc, True);
  XSelectInput(dpy, xobj->win, ExposureMask);
 }
 
@@ -97,7 +97,7 @@ void DrawPointTxt(struct XObj *xobj,unsigned int pixel)
  int x,y;
  XSegment segm[2];
 
- x = FlocaleTextWidth(xobj->Ffont, xobj->title + xobj->value3, 
+ x = FlocaleTextWidth(xobj->Ffont, xobj->title + xobj->value3,
 	      xobj->value - xobj->value3)+5;
  y = xobj->Ffont->ascent + 5;
 
@@ -141,7 +141,7 @@ void DrawTextField(struct XObj *xobj)
  else if (xobj->value3>xobj->value) { xobj->value3--; }
  /* calcul de la longueur du titre visible */
  /* computation of the length of the visible title */
- while ( l-xobj->value3-right >= 1 && 
+ while ( l-xobj->value3-right >= 1 &&
 	 FlocaleTextWidth(xobj->Ffont,xobj->title + xobj->value3,
 			  l - xobj->value3 - right) > (xobj->width-10))
  { right++; }
@@ -228,33 +228,33 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
        x2=x2-xobj->x;
        PosCurs=0;
        while ((PosCurs<strlen(xobj->title+xobj->value3))&&
-	      (x2 > 
+	      (x2 >
 	       FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,PosCurs)+8))
-     	PosCurs++;
+	PosCurs++;
        /* Limitation de la zone de dessin */
        /* limitation of the drawing zone */
        if (PosCurs>xobj->value2)
        {
-        rect.x=
+	rect.x=
 	  FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,xobj->value2);
-        rect.y=0;
-        rect.width=
+	rect.y=0;
+	rect.width=
 	  FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,PosCurs+1)
 	  -rect.x+1;
-        rect.height=xobj->height;
-        xobj->value2=PosCurs+xobj->value3;
-        DrawTextField(xobj);
+	rect.height=xobj->height;
+	xobj->value2=PosCurs+xobj->value3;
+	DrawTextField(xobj);
        }
        else
        if (PosCurs<xobj->value2)
        {
-        rect.x=FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,PosCurs)-1;
-        rect.y=0;
-        rect.width=FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,
+	rect.x=FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,PosCurs)-1;
+	rect.y=0;
+	rect.width=FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,
 			      xobj->value2+1) - rect.x+2;
-        rect.height=xobj->height;
-        xobj->value2=PosCurs+xobj->value3;
-        DrawTextField(xobj);
+	rect.height=xobj->height;
+	xobj->value2=PosCurs+xobj->value3;
+	DrawTextField(xobj);
        }
 
       break;
@@ -289,7 +289,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
       /* Demande de la selection */
       /* ask for the selection */
      XConvertSelection(dpy,XA_PRIMARY,XA_STRING,propriete,*xobj->ParentWin,
-    			EvtButton->time);
+			EvtButton->time);
      while (!(XCheckTypedEvent(dpy,SelectionNotify,&event)))
       ;
      if (event.xselection.property!=None)
@@ -301,11 +301,11 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 			  &longueur,&octets_restant,&donnees);
        if (longueur>0)
        {
-        Scrapt=(char*)realloc((void*)Scrapt,(longueur+1)*sizeof(char));
-        Scrapt=strcpy(Scrapt,(char *)donnees);
-        XDeleteProperty(dpy,event.xselection.requestor,
+	Scrapt=(char*)realloc((void*)Scrapt,(longueur+1)*sizeof(char));
+	Scrapt=strcpy(Scrapt,(char *)donnees);
+	XDeleteProperty(dpy,event.xselection.requestor,
 			event.xselection.property);
-        XFree(donnees);
+	XFree(donnees);
        }
       }
      }
@@ -347,29 +347,29 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
        while ((PosCurs<strlen(xobj->title))&&
 	      (x2 >
 	       FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,PosCurs)+8))
-     	PosCurs++;
+	PosCurs++;
        if (PosCurs>xobj->value2)
        {
-        rect.x=
+	rect.x=
 	  FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,xobj->value2);
-        rect.y=0;
-        rect.width=
+	rect.y=0;
+	rect.width=
 	  FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,PosCurs+1)
 	  -rect.x+1;
-        rect.height=xobj->height;
-        xobj->value2=PosCurs;
-        DrawTextField(xobj);
+	rect.height=xobj->height;
+	xobj->value2=PosCurs;
+	DrawTextField(xobj);
        }
        else
        if (PosCurs<xobj->value2)
        {
-        rect.x=FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,PosCurs)-1;
-        rect.y=0;
-        rect.width=FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,
+	rect.x=FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,PosCurs)-1;
+	rect.y=0;
+	rect.width=FlocaleTextWidth(xobj->Ffont,xobj->title+xobj->value3,
 			      xobj->value2+1)-rect.x+2;
-        rect.height=xobj->height;
-        xobj->value2=PosCurs+xobj->value3;
-        DrawTextField(xobj);
+	rect.height=xobj->height;
+	xobj->value2=PosCurs+xobj->value3;
+	DrawTextField(xobj);
        }
        PosCurs=0;
       break;

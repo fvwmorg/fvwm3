@@ -658,7 +658,7 @@ void simplify_style_list(void)
 		has_modified = False;
 		/* Step 1:
 		 *   Remove styles that are completely overridden by later
-		 *   style definitions.  At the same time...
+		 *   style definitions.	 At the same time...
 		 * Step 2:
 		 *   Merge styles with the same name if there are no
 		 *   conflicting styles with other names set in between. */

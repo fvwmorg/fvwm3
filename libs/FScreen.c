@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*********************************************************************
@@ -32,12 +32,12 @@
  *   because Xinerama extension is missing on display).
  *
  *   If Xinerama is available, this module maintains a list of screens,
- *   from [1] to [num_screens].  screens[0] is always the "global" screen,
+ *   from [1] to [num_screens].	 screens[0] is always the "global" screen,
  *   so if Xinerama is unavailable or disabled, the module performs
  *   all checks on screens[0] instead of screens[1..num_screens].
  *
  *   The client should first call the FScreenInit(), passing
- *   it the opened display descriptor.  During this call the list of
+ *   it the opened display descriptor.	During this call the list of
  *   Xinerama screens is retrieved and 'dpy' is saved for future
  *   reference.
  *
@@ -109,39 +109,39 @@ enum {GRAV_POS = 0, GRAV_NONE = 1, GRAV_NEG = 2};
 static int grav_matrix[3][3] =
 {
 	{ NorthWestGravity, NorthGravity,  NorthEastGravity },
-	{ WestGravity,      CenterGravity, EastGravity },
+	{ WestGravity,	    CenterGravity, EastGravity },
 	{ SouthWestGravity, SouthGravity,  SouthEastGravity }
 };
 #define DEFAULT_GRAVITY NorthWestGravity
 
 
-static Display            *disp              = NULL;
-static Bool                is_xinerama_enabled = DEFAULT_XINERAMA_ENABLED;
-static Bool                is_sls_enabled    = False;
-static Bool                have_sls_screen_list = False;
+static Display		  *disp		     = NULL;
+static Bool		   is_xinerama_enabled = DEFAULT_XINERAMA_ENABLED;
+static Bool		   is_sls_enabled    = False;
+static Bool		   have_sls_screen_list = False;
 static XineramaScreenInfo *screens;
 static XineramaScreenInfo *screens_xi;
-static XineramaScreenInfo *screens_sls       = NULL;
+static XineramaScreenInfo *screens_sls	     = NULL;
 /* # of Xinerama screens, *not* counting the global, 0 if disabled */
-static int                 num_screens       = 0;
+static int		   num_screens	     = 0;
 /* # of Xinerama screens, *not* counting the global */
-static int                 total_screens     = 0;
-static int                 total_screens_xi  = 0;
-static int                 total_screens_sls = 1;
-static int                 total_sls_width   = 1;
-static int                 total_sls_height  = 1;
-static int                 first_to_check    = 0;
-static int                 last_to_check     = 0;
-static int                 default_geometry_scr = FSCREEN_PRIMARY;
+static int		   total_screens     = 0;
+static int		   total_screens_xi  = 0;
+static int		   total_screens_sls = 1;
+static int		   total_sls_width   = 1;
+static int		   total_sls_height  = 1;
+static int		   first_to_check    = 0;
+static int		   last_to_check     = 0;
+static int		   default_geometry_scr = FSCREEN_PRIMARY;
 /* only to be accessed vie the set/get functions! */
-static int                 primary_scr       = DEFAULT_PRIMARY_SCREEN;
+static int		   primary_scr	     = DEFAULT_PRIMARY_SCREEN;
 
 #if 0
 #ifdef HAVE_RANDR
-static Bool                randr_disabled    = 0;
-static Bool                randr_active      = 0;
-static int                 randr_event_base  = -1;
-static int                 randr_error_base  = -1;
+static Bool		   randr_disabled    = 0;
+static Bool		   randr_active	     = 0;
+static int		   randr_event_base  = -1;
+static int		   randr_error_base  = -1;
 #endif
 #endif
 
@@ -265,19 +265,19 @@ void FScreenInit(Display *dpy)
 		 *
 		 * actual screen
 		 * +---------------------+--------------+
-		 * |                     |              |
-		 * |                     |              |
-		 * |                     |              |
-		 * |                     |  simulated   |
-		 * |                     |  screen 2    |
-		 * |  simulated screen 1 |              |
-		 * |                     |              |
-		 * |                     |              |
-		 * |                     |              |
-		 * |                     |              |
-		 * +---------------------+              |
-		 * |   blank area        |              |
-		 * |                     |              |
+		 * |			 |		|
+		 * |			 |		|
+		 * |			 |		|
+		 * |			 |  simulated	|
+		 * |			 |  screen 2	|
+		 * |  simulated screen 1 |		|
+		 * |			 |		|
+		 * |			 |		|
+		 * |			 |		|
+		 * |			 |		|
+		 * +---------------------+		|
+		 * |   blank area	 |		|
+		 * |			 |		|
 		 * +---------------------+--------------+
 		 */
 		count = 2;
@@ -289,15 +289,15 @@ void FScreenInit(Display *dpy)
 		ws = 3 * w / 5;
 		h = DisplayHeight(disp, scr);
 		screens_xi[1].screen_number = 0;
-		screens_xi[1].x_org         = 0;
-		screens_xi[1].y_org         = h / 16;
-		screens_xi[1].width         = ws;
-		screens_xi[1].height        = 7 * h / 8;
+		screens_xi[1].x_org	    = 0;
+		screens_xi[1].y_org	    = h / 16;
+		screens_xi[1].width	    = ws;
+		screens_xi[1].height	    = 7 * h / 8;
 		screens_xi[2].screen_number = 1;
-		screens_xi[2].x_org         = ws;
-		screens_xi[2].y_org         = 0;
-		screens_xi[2].width         = w - ws;
-		screens_xi[2].height        = 7 * h / 8;
+		screens_xi[2].x_org	    = ws;
+		screens_xi[2].y_org	    = 0;
+		screens_xi[2].width	    = w - ws;
+		screens_xi[2].height	    = 7 * h / 8;
 		/* add delimiter */
 		attributes.background_pixel = WhitePixel(disp, scr);
 		attributes.override_redirect = True;
@@ -350,10 +350,10 @@ void FScreenInit(Display *dpy)
 
 	/* Now, fill screens[0] with global screen parameters */
 	screens_xi[0].screen_number = -1;
-	screens_xi[0].x_org         = 0;
-	screens_xi[0].y_org         = 0;
-	screens_xi[0].width         = DisplayWidth (disp, DefaultScreen(disp));
-	screens_xi[0].height        = DisplayHeight(disp, DefaultScreen(disp));
+	screens_xi[0].x_org	    = 0;
+	screens_xi[0].y_org	    = 0;
+	screens_xi[0].width	    = DisplayWidth (disp, DefaultScreen(disp));
+	screens_xi[0].height	    = DisplayHeight(disp, DefaultScreen(disp));
 
 	/* Fill in the screen range */
 	FScreenSetState(is_xinerama_enabled);
@@ -442,10 +442,10 @@ Bool FScreenConfigureSLSSize(int width, int height)
 			for (col = 0; col < total_sls_width; col++, sn++)
 			{
 				screens_sls[sn].screen_number = sn - 1;
-				screens_sls[sn].x_org         = col * ws;
-				screens_sls[sn].y_org         = row * hs;
-				screens_sls[sn].width         = ws;
-				screens_sls[sn].height        = hs;
+				screens_sls[sn].x_org	      = col * ws;
+				screens_sls[sn].y_org	      = row * hs;
+				screens_sls[sn].width	      = ws;
+				screens_sls[sn].height	      = hs;
 			}
 		}
 	}
@@ -1015,7 +1015,7 @@ int FScreenParseGeometryWithScreen(
 	int   scr;
 
 	/* Safety net */
-	if (parsestring == NULL  ||  *parsestring == '\0')
+	if (parsestring == NULL	 ||  *parsestring == '\0')
 		return 0;
 
 	/* Make a local copy devoid of "@scr" */
@@ -1037,12 +1037,12 @@ int FScreenParseGeometryWithScreen(
 		copy, (scr_p)?scr_p:"(null)", *x_return, *y_return,
 		*width_return,
 		*height_return,
-		ret&XValue?      " XValue":"",
-		ret&YValue?      " YValue":"",
-		ret&WidthValue?  " WidthValue":"",
+		ret&XValue?	 " XValue":"",
+		ret&YValue?	 " YValue":"",
+		ret&WidthValue?	 " WidthValue":"",
 		ret&HeightValue? " HeightValue":"",
-		ret&XNegative?   " XNegative":"",
-		ret&YNegative?   " YNegative":"");
+		ret&XNegative?	 " XNegative":"",
+		ret&YNegative?	 " YNegative":"");
 #endif
 
 	/* Parse the "@scr", if any */
@@ -1124,12 +1124,12 @@ int FScreenParseGeometry(
 #if DEBUG_PRINTS
 	fprintf(stderr, "*** xpg: x=%d, y=%d, w=%d, h=%d, flags:%s%s%s%s%s%s\n",
 		*x_return, *y_return, *width_return, *height_return,
-		rc&XValue?      " XValue":"",
-		rc&YValue?      " YValue":"",
-		rc&WidthValue?  " WidthValue":"",
+		rc&XValue?	" XValue":"",
+		rc&YValue?	" YValue":"",
+		rc&WidthValue?	" WidthValue":"",
 		rc&HeightValue? " HeightValue":"",
-		rc&XNegative?   " XNegative":"",
-		rc&YNegative?   " YNegative":"");
+		rc&XNegative?	" XNegative":"",
+		rc&YNegative?	" YNegative":"");
 #endif
 
 	return rc;
@@ -1137,38 +1137,38 @@ int FScreenParseGeometry(
 
 
 /*  FScreenGetGeometry
- *      Parses the geometry in a form: XGeometry[@screen], i.e.
- *          [=][<width>{xX}<height>][{+-}<xoffset>{+-}<yoffset>][@<screen>]
- *          where <screen> is either a number or "G" (global) "C" (current)
- *          or "P" (primary)
+ *	Parses the geometry in a form: XGeometry[@screen], i.e.
+ *	    [=][<width>{xX}<height>][{+-}<xoffset>{+-}<yoffset>][@<screen>]
+ *	    where <screen> is either a number or "G" (global) "C" (current)
+ *	    or "P" (primary)
  *
  *  Args:
- *      parsestring, x_r, y_r, w_r, h_r  the same as in XParseGeometry
- *      hints  window hints structure, may be NULL
- *      flags  bitmask of allowed flags (XValue, WidthValue, XNegative...)
+ *	parsestring, x_r, y_r, w_r, h_r	 the same as in XParseGeometry
+ *	hints  window hints structure, may be NULL
+ *	flags  bitmask of allowed flags (XValue, WidthValue, XNegative...)
  *
  *  Note1:
- *      hints->width and hints->height will be used to calc negative geometry
- *      if width/height isn't specified in the geometry itself.
+ *	hints->width and hints->height will be used to calc negative geometry
+ *	if width/height isn't specified in the geometry itself.
  *
  *  Note2:
- *      This function's behaviour is crafted to sutisfy/emulate the
- *      FvwmWinList::MakeMeWindow()'s behaviour.
+ *	This function's behaviour is crafted to sutisfy/emulate the
+ *	FvwmWinList::MakeMeWindow()'s behaviour.
  *
  *  Note3:
- *      A special value of `flags' when [XY]Value are there but [XY]Negative
- *      aren't, means that in case of negative geometry specification
- *      x_r/y_r values will be promoted to the screen border, but w/h
- *      wouldn't be subtracted, so that the program can do x-=w later
- *      ([XY]Negative *will* be returned, albeit absent in `flags').
- *          This option is supposed for proggies like FvwmButtons, which
- *      receive geometry specification long before they are able to actually
- *      use it (and which calculate w/h themselves).
- *          (The same effect can't be obtained with omitting {Width,Height}Value
- *      in the flags, since the app may wish to get the dimensions but apply
- *      some constraints later (as FvwmButtons do, BTW...).)
- *          This option can be also useful in cases where dimensions are
- *      specified not in pixels but in some other units (e.g., charcells).
+ *	A special value of `flags' when [XY]Value are there but [XY]Negative
+ *	aren't, means that in case of negative geometry specification
+ *	x_r/y_r values will be promoted to the screen border, but w/h
+ *	wouldn't be subtracted, so that the program can do x-=w later
+ *	([XY]Negative *will* be returned, albeit absent in `flags').
+ *	    This option is supposed for proggies like FvwmButtons, which
+ *	receive geometry specification long before they are able to actually
+ *	use it (and which calculate w/h themselves).
+ *	    (The same effect can't be obtained with omitting {Width,Height}Value
+ *	in the flags, since the app may wish to get the dimensions but apply
+ *	some constraints later (as FvwmButtons do, BTW...).)
+ *	    This option can be also useful in cases where dimensions are
+ *	specified not in pixels but in some other units (e.g., charcells).
  */
 int FScreenGetGeometry(
 	char *parsestring, int *x_return, int *y_return,
@@ -1219,7 +1219,7 @@ int FScreenGetGeometry(
 	 * Unreliable... */
 	if (hints != NULL  &&  hints->flags & PSize)
 	{
-		if ((ret & WidthValue)  == 0)
+		if ((ret & WidthValue)	== 0)
 		{
 			w = hints->width;
 		}
@@ -1232,7 +1232,7 @@ int FScreenGetGeometry(
 	{
 		/* This branch is required for case when size *is* specified,
 		 * but masked off */
-		if ((ret & WidthValue)  == 0)
+		if ((ret & WidthValue)	== 0)
 		{
 			w = 0;
 		}
@@ -1245,12 +1245,12 @@ int FScreenGetGeometry(
 #if DEBUG_PRINTS
 	fprintf(stderr, "PRE: x=%d, y=%d, w=%d, h=%d, flags:%s%s%s%s%s%s\n",
 		x, y, w, h,
-		ret&XValue?      " XValue":"",
-		ret&YValue?      " YValue":"",
-		ret&WidthValue?  " WidthValue":"",
+		ret&XValue?	 " XValue":"",
+		ret&YValue?	 " YValue":"",
+		ret&WidthValue?	 " WidthValue":"",
 		ret&HeightValue? " HeightValue":"",
-		ret&XNegative?   " XNegative":"",
-		ret&YNegative?   " YNegative":"");
+		ret&XNegative?	 " XNegative":"",
+		ret&YNegative?	 " YNegative":"");
 #endif
 
 	/* Advance coords to the screen... */
@@ -1316,25 +1316,25 @@ int FScreenGetGeometry(
 			hints->height = h;
 		}
 	}
-	if (1 /*flags & GravityValue*/  &&  grav != DEFAULT_GRAVITY)
+	if (1 /*flags & GravityValue*/	&&  grav != DEFAULT_GRAVITY)
 	{
 		if (hints != NULL  &&  hints->flags & PWinGravity)
 		{
 			hints->win_gravity = grav;
 		}
 	}
-	if (hints != NULL  &&  ret & XValue  &&  ret & YValue)
+	if (hints != NULL  &&  ret & XValue  &&	 ret & YValue)
 		hints->flags |= USPosition;
 
 #if DEBUG_PRINTS
 	fprintf(stderr, "x=%d, y=%d, w=%d, h=%d, flags:%s%s%s%s%s%s\n",
 		x, y, w, h,
-		ret&XValue?      " XValue":"",
-		ret&YValue?      " YValue":"",
-		ret&WidthValue?  " WidthValue":"",
+		ret&XValue?	 " XValue":"",
+		ret&YValue?	 " YValue":"",
+		ret&WidthValue?	 " WidthValue":"",
 		ret&HeightValue? " HeightValue":"",
-		ret&XNegative?   " XNegative":"",
-		ret&YNegative?   " YNegative":"");
+		ret&XNegative?	 " XNegative":"",
+		ret&YNegative?	 " YNegative":"");
 #endif
 
 	return ret;
@@ -1372,11 +1372,11 @@ Bool FScreenHandleRandrEvent(
 
 	/*
 	 * Note1: this check is not very good, since the right way is to
-	 *        obtain a list of possible rotations and ...
+	 *	  obtain a list of possible rotations and ...
 	 *
 	 * Note2: as to WM's point of view, I'm unsure if rotation should be
-	 *        treated exactly as resizing (i.e. that it should reposition
-	 *        windows in the same fashion).
+	 *	  treated exactly as resizing (i.e. that it should reposition
+	 *	  windows in the same fashion).
 	 */
 	if (ev->rotation & (1<<1 | 1<<3))
 	{

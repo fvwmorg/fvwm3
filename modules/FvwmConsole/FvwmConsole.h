@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -40,12 +40,12 @@
 #include <libs/fvwmlib.h>
 #include <libs/Module.h>
 
-#define S_NAME  "/.FvwmConsole-Socket"
+#define S_NAME	"/.FvwmConsole-Socket"
 /* Prompts for readline support */
-#define PS1     ""
-#define PS2     ">"
+#define PS1	""
+#define PS2	">"
 
-#define HISTSIZE 100    /* readline history file size */
+#define HISTSIZE 100	/* readline history file size */
 #define HISTFILE "/.FvwmConsole-History"
 
 /* #define M_PASS M_ERROR */
@@ -57,8 +57,8 @@
 #define XTERM "xterm"
 
 /* message to client */
-#define C_BEG   "_C_Config_Line_Begin_\n"
-#define C_END   "_C_Config_Line_End_\n"
+#define C_BEG	"_C_Config_Line_Begin_\n"
+#define C_END	"_C_Config_Line_End_\n"
 #define C_CLOSE "_C_Socket_Close_\n"
 
 #define MAX_COMMAND_SIZE 1000

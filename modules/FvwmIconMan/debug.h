@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef IN_DEBUG_H
@@ -29,9 +29,9 @@
 
 extern int OpenConsole(const char *filenm);
 extern void ConsoleMessage(const char *fmt, ...)
-                           __attribute__ ((__format__ (__printf__, 1, 2)));
+			   __attribute__ ((__format__ (__printf__, 1, 2)));
 extern void ConsoleDebug(int flag, const char *fmt, ...)
-                         __attribute__ ((__format__ (__printf__, 2, 3)));
+			 __attribute__ ((__format__ (__printf__, 2, 3)));
 
 extern int CORE, FUNCTIONS, X11, FVWM, CONFIG, WINLIST, MEM;
 

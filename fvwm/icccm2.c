@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -40,7 +40,7 @@ Atom _XA_WM_COLORMAP_NOTIFY;
 #define _XA_MULTIPLE  conversion_targets[1]
 #define _XA_TIMESTAMP conversion_targets[2]
 #define _XA_VERSION   conversion_targets[3]
-#define MAX_TARGETS                      4
+#define MAX_TARGETS			 4
 
 Atom conversion_targets[MAX_TARGETS];
 
@@ -56,13 +56,13 @@ SetupICCCM2 (Bool replace_wm)
   char wm_sx[20];
 
   sprintf (wm_sx, "WM_S%lu", Scr.screen);
-  _XA_WM_SX =     XInternAtom (dpy, wm_sx, False);
-  _XA_MANAGER =   XInternAtom (dpy, "MANAGER", False);
+  _XA_WM_SX =	  XInternAtom (dpy, wm_sx, False);
+  _XA_MANAGER =	  XInternAtom (dpy, "MANAGER", False);
   _XA_ATOM_PAIR = XInternAtom (dpy, "ATOM_PAIR", False);
-  _XA_TARGETS =   XInternAtom (dpy, "TARGETS", False);
+  _XA_TARGETS =	  XInternAtom (dpy, "TARGETS", False);
   _XA_MULTIPLE =  XInternAtom (dpy, "MULTIPLE", False);
   _XA_TIMESTAMP = XInternAtom (dpy, "TIMESTAMP", False);
-  _XA_VERSION =   XInternAtom (dpy, "VERSION", False);
+  _XA_VERSION =	  XInternAtom (dpy, "VERSION", False);
   _XA_WM_COLORMAP_NOTIFY = XInternAtom (dpy, "WM_COLORMAP_NOTIFY", False);
 
   /* Check for a running ICCCM 2.0 compliant WM */

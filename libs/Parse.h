@@ -33,20 +33,20 @@
 #define IsBlockEnd(c,cs) (((c) == ']' && (cs) == '[') || ((c) == '}' && (cs) == '{') || ((c) == ')' && (cs) == '('))
 
 /*
- *  function:            FindToken
- *  description:         find the entry of type 'struct_entry'
- *                       holding 'key' in 'table'
- *  returns:             pointer to the matching entry
- *                       NULL if not found
+ *  function:		 FindToken
+ *  description:	 find the entry of type 'struct_entry'
+ *			 holding 'key' in 'table'
+ *  returns:		 pointer to the matching entry
+ *			 NULL if not found
  *
  *  table must be sorted in ascending order for FindToken.
  */
-#define FindToken(key,table,struct_entry)                               \
-        (struct_entry *) bsearch(key,                                   \
-                                 (char *)(table),                       \
-                                 sizeof(table) / sizeof(struct_entry),  \
-                                 sizeof(struct_entry),                  \
-                                 (int(*)(const void*, const void*))XCmpToken)
+#define FindToken(key,table,struct_entry)				\
+	(struct_entry *) bsearch(key,					\
+				 (char *)(table),			\
+				 sizeof(table) / sizeof(struct_entry),	\
+				 sizeof(struct_entry),			\
+				 (int(*)(const void*, const void*))XCmpToken)
 
 /* ---------------------------- type definitions ---------------------------- */
 

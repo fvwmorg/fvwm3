@@ -39,12 +39,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #define DOUBLECLICKTIME 1
@@ -251,8 +251,8 @@ int main(int argc, char **argv)
     }
     Buttons[i].IconWin = None;
     Buttons[i].completeIcon = None;
-    Buttons[i].up = 1;                        /* Buttons start up */
-    Buttons[i].hangon = NULL;                 /* don't wait on anything yet*/
+    Buttons[i].up = 1;			      /* Buttons start up */
+    Buttons[i].hangon = NULL;		      /* don't wait on anything yet*/
     Buttons[i].folder = -1;
   }
   signal (SIGPIPE, DeadPipe);
@@ -515,7 +515,7 @@ void Loop(void)
 	if (Event.xbutton.button != Button1) {
 	  if (Event.xbutton.button == Button2) {
 	    static int LastX, LastY;
-            static int scr_x, scr_y, scr_w, scr_h;
+	    static int scr_x, scr_y, scr_w, scr_h;
 
 	    if (LastMapped != -1) {
 	      CloseFolder(LastMapped);
@@ -548,12 +548,12 @@ void Loop(void)
 	      }
 	      XTranslateCoordinates(
 		dpy,main_win,Root,LastX,LastY,&LastX,&LastY,&junk);
-              /*!!! Note: maybe it will be better to use (LastX+W/2,LastY+H/2)
-                in ScrRect query? That could help in pathological cases when
-                Wharf is not completely on a single screen. */
-    	      fscr.xypos.x = LastX;
+	      /*!!! Note: maybe it will be better to use (LastX+W/2,LastY+H/2)
+		in ScrRect query? That could help in pathological cases when
+		Wharf is not completely on a single screen. */
+	      fscr.xypos.x = LastX;
 	      fscr.xypos.y = LastY;
-              FScreenGetScrRect(
+	      FScreenGetScrRect(
 		&fscr, FSCREEN_XYPOS, &scr_x, &scr_y, &scr_w, &scr_h);
 	      if (num_rows<num_columns) { /* horizontal */
 		if (LastY > scr_y + scr_h / 2) {
@@ -698,7 +698,7 @@ void Loop(void)
 	}
 #ifdef ENABLE_DND
 	else if (Event.xclient.message_type==DndProtocol) {
-	  unsigned long  dummy_r,size;
+	  unsigned long	 dummy_r,size;
 	  Atom dummy_a;
 	  int dummy_f;
 	  unsigned char *data, *Command;
@@ -868,7 +868,7 @@ void Loop(void)
   }
 }
 
-void OpenFolder(int folder,int x, int y, int w, int h,  int direction)
+void OpenFolder(int folder,int x, int y, int w, int h,	int direction)
 {
   int winc, hinc;
   int cx, cy, cw, ch;
@@ -1126,7 +1126,7 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row,
     else
     {
       if ((base_y % display_height) < scr_y + scr_h / 2) {
-	foldery  =base_y+(row+1)*BUTTONHEIGHT;
+	foldery	 =base_y+(row+1)*BUTTONHEIGHT;
 	dir = DIR_TODOWN;
       }
       else {
@@ -2302,7 +2302,7 @@ void process_message(unsigned long type,unsigned long *body)
 {
   switch(type)
   {
-    /*    case M_TOGGLE_PAGING:
+    /*	  case M_TOGGLE_PAGING:
 	  pageing_enabled = body[0];
 	  RedrawWindow(&main_win,0, -1, num_rows, num_columns);
 	  break;
@@ -2475,8 +2475,8 @@ void FindLockMods(void)
     {
       for (i = 0; i < mm->max_keypermod; i++)
       {
-      	if ((kc = *kp++) &&
-      	    ((ks = XKeycodeToKeysym(dpy, kc, 0)) != NoSymbol))
+	if ((kc = *kp++) &&
+	    ((ks = XKeycodeToKeysym(dpy, kc, 0)) != NoSymbol))
 	{
 	  kn = XKeysymToString(ks);
 	  knl = strlen(kn);
@@ -2502,11 +2502,11 @@ void FindLockMods(void)
 /***********************************************************************
  *
  *  Procedure:
- *      ConstrainSize - adjust the given width and height to account for the
- *              constraints imposed by size hints
+ *	ConstrainSize - adjust the given width and height to account for the
+ *		constraints imposed by size hints
  *
- *      The general algorithm, especially the aspect ratio stuff, is
- *      borrowed from uwm's CheckConsistency routine.
+ *	The general algorithm, especially the aspect ratio stuff, is
+ *	borrowed from uwm's CheckConsistency routine.
  *
  ***********************************************************************/
 void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
@@ -2597,9 +2597,9 @@ void ConstrainSize (XSizeHints *hints, int *widthp, int *heightp)
   /*
    * The math looks like this:
    *
-   * minAspectX    dwidth     maxAspectX
+   * minAspectX	   dwidth     maxAspectX
    * ---------- <= ------- <= ----------
-   * minAspectY    dheight    maxAspectY
+   * minAspectY	   dheight    maxAspectY
    *
    * If that is multiplied out, then the width and height are
    * invalid in the following situations:

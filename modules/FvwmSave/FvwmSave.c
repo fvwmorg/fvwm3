@@ -15,12 +15,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -205,8 +205,8 @@ void add_window(unsigned long new_win, unsigned long *body)
   t->frame_width = cfgpacket->frame_width;
   t->base_width = cfgpacket->hints_base_width;
   t->base_height = cfgpacket->hints_base_height;
-  t->width_inc  = cfgpacket->hints_width_inc;
-  t->height_inc  = cfgpacket->hints_height_inc;
+  t->width_inc	= cfgpacket->hints_width_inc;
+  t->height_inc	 = cfgpacket->hints_height_inc;
   t->frame_x  = cfgpacket->frame_x;
   t->frame_y  = cfgpacket->frame_y;
   t->title_height  = cfgpacket->title_height;
@@ -245,7 +245,7 @@ void DeadPipe(int nonsense)
  *
  *  Procedure:
  *	writes a command line argument to file "out"
- *      checks for qoutes and stuff
+ *	checks for qoutes and stuff
  *
  ***********************************************************************/
 void write_string(FILE *out, char *line)
@@ -287,7 +287,7 @@ void write_string(FILE *out, char *line)
  *
  *  Procedure:
  *	checks to see if we are supposed to take some action now,
- *      finds time for next action to be performed.
+ *	finds time for next action to be performed.
  *
  ***********************************************************************/
 void do_save(void)

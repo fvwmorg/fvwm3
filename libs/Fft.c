@@ -400,7 +400,7 @@ void FftDrawString(
 				       (unsigned char *)fws->str, len);
 			}
 		}
-		FftDrawString8(fftdraw, &fft_fg, uf, xt, yt, 
+		FftDrawString8(fftdraw, &fft_fg, uf, xt, yt,
 			       (unsigned char *)fws->str, len);
 	}
 	FftDrawDestroy (fftdraw);

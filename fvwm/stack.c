@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -64,7 +64,7 @@ static void dump_stack_ring(void)
   fprintf(stderr,"dumping stack ring:\n");
   for (t1 = Scr.FvwmRoot.stack_next; t1 != &Scr.FvwmRoot; t1 = t1->stack_next)
   {
-    fprintf(stderr,"    l=%d fw=0x%08x f=0x%08x '%s'\n", t1->layer,
+    fprintf(stderr,"	l=%d fw=0x%08x f=0x%08x '%s'\n", t1->layer,
 	    (int)t1, (int)FW_W_FRAME(t1), t1->name.name);
   }
 
@@ -197,7 +197,7 @@ void add_window_to_stack_ring_after(FvwmWindow *t, FvwmWindow *add_after_win)
     /* tried to add the window before or after itself */
     fvwm_msg(ERR, "add_window_to_stack_ring_after",
 	     "BUG: tried to add window '%s' %s itself in stack ring\n",
-             t->name.name, (t == add_after_win) ? "after" : "before");
+	     t->name.name, (t == add_after_win) ? "after" : "before");
     return;
   }
   t->stack_next = add_after_win->stack_next;
@@ -352,12 +352,12 @@ static void raise_over_unmanaged(FvwmWindow *t)
 	  if (FW_W_ICON_TITLE(t2) != None)
 	  {
 	    wins[i++] = FW_W_ICON_TITLE(t2);
-          }
+	  }
 	  if (FW_W_ICON_PIXMAP(t2) != None)
 	  {
 	    wins[i++] = FW_W_ICON_PIXMAP(t2);
-          }
-        }
+	  }
+	}
 	if (t2 == t)
 	{
 	  break;
@@ -418,11 +418,11 @@ static Bool must_move_transients(
 	/* found a transient */
 	*found_transient = True;
 
-        /* transients are not allowed below main in the same layer */
-        if ( !scanning_above_window )
-        {
-          return True;
-        }
+	/* transients are not allowed below main in the same layer */
+	if ( !scanning_above_window )
+	{
+	  return True;
+	}
       }
       else if ((scanning_above_window && !do_lower) ||
 	       (*found_transient && do_lower))
@@ -524,7 +524,7 @@ static void RaiseOrLowerWindow(
   SET_SCHEDULED_FOR_RAISE(t, 0);
 
   /* New windows are simply raised/lowered without touching the transientfor
-   * at first.  Then, further down in the code, RaiseOrLowerWindow() is called
+   * at first.	Then, further down in the code, RaiseOrLowerWindow() is called
    * again to raise/lower the transientfor if necessary.  We can not do the
    * recursion stuff for new windows because the must_move_transients() call
    * needs a properly ordered stack ring - but the new window is still at the
@@ -547,19 +547,19 @@ static void RaiseOrLowerWindow(
       for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot;
 	   t2 = t2->stack_next)
       {
-        if (FW_W(t2) == FW_W_TRANSIENTFOR(t))
-        {
+	if (FW_W(t2) == FW_W_TRANSIENTFOR(t))
+	{
 	  if (IS_ICONIFIED(t2))
 	  {
 	    break;
 	  }
-          if ((!do_lower && DO_RAISE_TRANSIENT(t2)) ||
-              (do_lower && DO_LOWER_TRANSIENT(t2))  )
-          {
+	  if ((!do_lower && DO_RAISE_TRANSIENT(t2)) ||
+	      (do_lower && DO_LOWER_TRANSIENT(t2))  )
+	  {
 	    RaiseOrLowerWindow(t2,do_lower,False,False);
 	    return;
-          }
-        }
+	  }
+	}
       }
     }
   }
@@ -685,9 +685,9 @@ static void RaiseOrLowerWindow(
     if (Scr.bo.RaiseHackNeeded)
     {
       /*
-          RBW - 09/20/1999. I find that trying to raise unmanaged windows
-          causes problems with some apps. If this seems to work well for
-          everyone, I'll remove the #if 0.
+	  RBW - 09/20/1999. I find that trying to raise unmanaged windows
+	  causes problems with some apps. If this seems to work well for
+	  everyone, I'll remove the #if 0.
       */
 #if 0
       /* get *all* toplevels (even including override_redirects) */
@@ -696,21 +696,21 @@ static void RaiseOrLowerWindow(
       /* raise from fw upwards to get them above NT windows */
       for (i = 0; i < num; i++)
       {
-        if (tops[i] == FW_W_FRAME(t))
+	if (tops[i] == FW_W_FRAME(t))
 	  found = True;
-        if (found)
+	if (found)
 	  XRaiseWindow (dpy, tops[i]);
       }
       XFree (tops);
 #endif
       for (t2 = t; t2 != &Scr.FvwmRoot; t2 = t2->stack_prev)
       {
-        XRaiseWindow (dpy, FW_W_FRAME(t2));
+	XRaiseWindow (dpy, FW_W_FRAME(t2));
       }
     }
 
 
-    /*  This needs to be done after all the raise hacks.  */
+    /*	This needs to be done after all the raise hacks.  */
     raisePanFrames();
   }
   /* If the window has been raised, make sure the decorations are updated
@@ -753,10 +753,10 @@ void LowerWindow(FvwmWindow *t)
 
 static Bool
 intersect (int x0, int y0, int w0, int h0,
-           int x1, int y1, int w1, int h1)
+	   int x1, int y1, int w1, int h1)
 {
   return !((x0 >= x1 + w1) || (x0 + w0 <= x1) ||
-           (y0 >= y1 + h1) || (y0 + h0 <= y1));
+	   (y0 >= y1 + h1) || (y0 + h0 <= y1));
 }
 
 static Bool
@@ -790,7 +790,7 @@ overlap(FvwmWindow *r, FvwmWindow *s)
 /* return true if stacking order changed */
 Bool
 HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
-                                                 FvwmWindow *s, Window sw)
+						 FvwmWindow *s, Window sw)
 {
   Bool restack = 0;
   FvwmWindow *t;
@@ -830,7 +830,7 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
     break;
    case Opposite:
     restack = (HandleUnusualStackmodes (TopIf, r, rw, s, sw) ||
-               HandleUnusualStackmodes (BottomIf, r, rw, s, sw));
+	       HandleUnusualStackmodes (BottomIf, r, rw, s, sw));
     break;
   }
 /*  DBUG("HandleUnusualStackmodes", "\t---> %d\n", restack);*/
@@ -844,7 +844,7 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
 
 
 /*
-    RBW - 01/07/1998  -  this is here temporarily - I mean to move it to
+    RBW - 01/07/1998  -	 this is here temporarily - I mean to move it to
     libfvwm eventually, along with some other chain manipulation functions.
 */
 
@@ -1271,7 +1271,7 @@ void init_stack_and_layers(void)
 {
   Scr.BottomLayer  = DEFAULT_BOTTOM_LAYER;
   Scr.DefaultLayer = DEFAULT_DEFAULT_LAYER;
-  Scr.TopLayer     = DEFAULT_TOP_LAYER;
+  Scr.TopLayer	   = DEFAULT_TOP_LAYER;
   Scr.FvwmRoot.stack_next = &Scr.FvwmRoot;
   Scr.FvwmRoot.stack_prev = &Scr.FvwmRoot;
   set_layer(&Scr.FvwmRoot, DEFAULT_ROOT_WINDOW_LAYER);

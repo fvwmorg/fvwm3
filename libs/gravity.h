@@ -43,20 +43,20 @@ typedef enum
 typedef enum
 {
 	MULTI_DIR_NONE = 0,
-	MULTI_DIR_N =    (1 << DIR_N),
-	MULTI_DIR_E =    (1 << DIR_E),
-	MULTI_DIR_S =    (1 << DIR_S),
-	MULTI_DIR_W =    (1 << DIR_W),
-	MULTI_DIR_NE =   (1 << DIR_NE),
-	MULTI_DIR_SE =   (1 << DIR_SE),
-	MULTI_DIR_SW =   (1 << DIR_SW),
-	MULTI_DIR_NW =   (1 << DIR_NW),
-	MULTI_DIR_ALL =  MULTI_DIR_N | MULTI_DIR_E | MULTI_DIR_S | MULTI_DIR_W |
-	          MULTI_DIR_NE | MULTI_DIR_SE | MULTI_DIR_SW | MULTI_DIR_NW,
+	MULTI_DIR_N =	 (1 << DIR_N),
+	MULTI_DIR_E =	 (1 << DIR_E),
+	MULTI_DIR_S =	 (1 << DIR_S),
+	MULTI_DIR_W =	 (1 << DIR_W),
+	MULTI_DIR_NE =	 (1 << DIR_NE),
+	MULTI_DIR_SE =	 (1 << DIR_SE),
+	MULTI_DIR_SW =	 (1 << DIR_SW),
+	MULTI_DIR_NW =	 (1 << DIR_NW),
+	MULTI_DIR_ALL =	 MULTI_DIR_N | MULTI_DIR_E | MULTI_DIR_S | MULTI_DIR_W |
+		  MULTI_DIR_NE | MULTI_DIR_SE | MULTI_DIR_SW | MULTI_DIR_NW,
 } multi_direction_type;
 
 #define FIRST_MULTI_DIR MULTI_DIR_N
-#define LAST_MULTI_DIR  MULTI_DIR_NW
+#define LAST_MULTI_DIR	MULTI_DIR_NW
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- interface functions ------------------------- */

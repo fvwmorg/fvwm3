@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include <unistd.h>
@@ -146,15 +146,15 @@ main_loop (void)
     readset = saveset;
     if (fvwmSelect(fd_width, &readset, NULL, NULL, NULL) < 0) {
       ConsoleMessage("Internal error with select: errno=%s\n",
-                     strerror(errno));
+		     strerror(errno));
     }
     else {
 
       if (FD_ISSET(x_fd, &readset) || XPending(theDisplay)) {
-        xevent_loop();
+	xevent_loop();
       }
       if (FD_ISSET(Fvwm_fd[1], &readset)) {
-        ReadFvwmPipe();
+	ReadFvwmPipe();
       }
 
     }
@@ -261,10 +261,10 @@ main(int argc, char **argv)
   /* We don't have sigaction(), so fall back to less robust methods.  */
 #ifdef USE_BSD_SIGNALS
   fvwmSetSignalMask( sigmask(SIGPIPE) |
-                     sigmask(SIGINT) |
-                     sigmask(SIGHUP) |
-                     sigmask(SIGTERM) |
-                     sigmask(SIGQUIT) );
+		     sigmask(SIGINT) |
+		     sigmask(SIGHUP) |
+		     sigmask(SIGTERM) |
+		     sigmask(SIGQUIT) );
 #endif
   signal(SIGPIPE, TerminateHandler);
   signal(SIGINT,  TerminateHandler);
@@ -290,10 +290,10 @@ main(int argc, char **argv)
   assert(globals.managers);
 
   SetMessageMask(Fvwm_fd, M_CONFIGURE_WINDOW | M_RES_CLASS | M_RES_NAME |
-                 M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME |
-                 M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST |
-                 M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_WINDOW_NAME |
-                 M_CONFIG_INFO | M_SENDCONFIG | M_VISIBLE_NAME |
+		 M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME |
+		 M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST |
+		 M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_WINDOW_NAME |
+		 M_CONFIG_INFO | M_SENDCONFIG | M_VISIBLE_NAME |
 		 M_MINI_ICON |
 		 M_STRING);
   /* extended messages */

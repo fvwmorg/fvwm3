@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /* alloca.c -- allocate automatically reclaimed memory
@@ -29,7 +29,7 @@
    The general concept of this implementation is to keep
    track of all alloca-allocated blocks, and reclaim any
    that are found to be deeper in the stack than the current
-   invocation.  This heuristic does not reclaim storage as
+   invocation.	This heuristic does not reclaim storage as
    soon as it becomes invalid, but it will do so eventually.
 
    As a special case, alloca(0) reclaims storage without
@@ -71,7 +71,7 @@ lose
 #endif /* emacs */
 
 /* If your stack is a linked list of frames, you have to
-   provide an "address metric" ADDRESS_FUNCTION macro.  */
+   provide an "address metric" ADDRESS_FUNCTION macro.	*/
 
 #if defined (CRAY) && defined (CRAY_STACKSEG_END)
 long i00afunc ();
@@ -92,7 +92,7 @@ typedef char *pointer;
 
 /* Different portions of Emacs need to call different versions of
    malloc.  The Emacs executable needs alloca to call xmalloc, because
-   ordinary malloc isn't protected from input signals.  On the other
+   ordinary malloc isn't protected from input signals.	On the other
    hand, the utilities in lib-src need alloca to call malloc; some of
    them are very simple, and don't have an xmalloc routine.
 
@@ -123,7 +123,7 @@ extern pointer malloc ();
 
 #else /* STACK_DIRECTION == 0; need run-time code.  */
 
-static int stack_dir;		/* 1 or -1 once known.  */
+static int stack_dir;		/* 1 or -1 once known.	*/
 #define	STACK_DIR	stack_dir
 
 static void
@@ -140,11 +140,11 @@ find_stack_direction ()
     }
   else
     {
-      /* Second entry.  */
+      /* Second entry.	*/
       if (ADDRESS_FUNCTION (dummy) > addr)
 	stack_dir = 1;		/* Stack grew upward.  */
       else
-	stack_dir = -1;		/* Stack grew downward.  */
+	stack_dir = -1;		/* Stack grew downward.	 */
     }
 }
 
@@ -213,7 +213,7 @@ alloca (size)
 	  hp = np;		/* -> next header.  */
 	}
       else
-	break;			/* Rest are not deeper.  */
+	break;			/* Rest are not deeper.	 */
 
     last_alloca_header = hp;	/* -> last valid storage.  */
 
@@ -258,21 +258,21 @@ alloca (size)
 struct stack_control_header
   {
     long shgrow:32;		/* Number of times stack has grown.  */
-    long shaseg:32;		/* Size of increments to stack.  */
+    long shaseg:32;		/* Size of increments to stack.	 */
     long shhwm:32;		/* High water mark of stack.  */
     long shsize:32;		/* Current size of stack (all segments).  */
   };
 
 /* The stack segment linkage control information occurs at
    the high-address end of a stack segment.  (The stack
-   grows from low addresses to high addresses.)  The initial
+   grows from low addresses to high addresses.)	 The initial
    part of the stack segment linkage control information is
-   0200 (octal) words.  This provides for register storage
+   0200 (octal) words.	This provides for register storage
    for the routine which overflows the stack.  */
 
 struct stack_segment_linkage
   {
-    long ss[0200];		/* 0200 overflow words.  */
+    long ss[0200];		/* 0200 overflow words.	 */
     long sssize:32;		/* Number of words in this segment.  */
     long ssbase:32;		/* Offset to stack base.  */
     long:32;
@@ -286,7 +286,7 @@ struct stack_segment_linkage
     long ssusr2;		/* Reserved for user.  */
     long sstpid;		/* Process ID for pid based multi-tasking.  */
     long ssgvup;		/* Pointer to multitasking thread giveup.  */
-    long sscray[7];		/* Reserved for Cray Research.  */
+    long sscray[7];		/* Reserved for Cray Research.	*/
     long ssa0;
     long ssa1;
     long ssa2;
@@ -317,25 +317,25 @@ struct stk_stat
     long high_water;		/* Stack high-water mark.  */
     long overflows;		/* Number of stack overflow ($STKOFEN) calls.  */
     long hits;			/* Number of internal buffer hits.  */
-    long extends;		/* Number of block extensions.  */
+    long extends;		/* Number of block extensions.	*/
     long stko_mallocs;		/* Block allocations by $STKOFEN.  */
-    long underflows;		/* Number of stack underflow calls ($STKRETN).  */
-    long stko_free;		/* Number of deallocations by $STKRETN.  */
-    long stkm_free;		/* Number of deallocations by $STKMRET.  */
+    long underflows;		/* Number of stack underflow calls ($STKRETN).	*/
+    long stko_free;		/* Number of deallocations by $STKRETN.	 */
+    long stkm_free;		/* Number of deallocations by $STKMRET.	 */
     long segments;		/* Current number of stack segments.  */
     long maxs;			/* Maximum number of stack segments so far.  */
     long pad_size;		/* Stack pad size.  */
     long current_address;	/* Current stack segment address.  */
-    long current_size;		/* Current stack segment size.  This
+    long current_size;		/* Current stack segment size.	This
 				   number is actually corrupted by STKSTAT to
 				   include the fifteen word trailer area.  */
-    long initial_address;	/* Address of initial segment.  */
+    long initial_address;	/* Address of initial segment.	*/
     long initial_size;		/* Size of initial segment.  */
   };
 
 /* The following structure describes the data structure which trails
    any stack segment.  I think that the description in 'asdef' is
-   out of date.  I only describe the parts that I am sure about.  */
+   out of date.	 I only describe the parts that I am sure about.  */
 
 struct stk_trailer
   {
@@ -374,7 +374,7 @@ i00afunc (long *address)
   long result = 0;
 
   /* We want to iterate through all of the segments.  The first
-     step is to get the stack status structure.  We could do this
+     step is to get the stack status structure.	 We could do this
      more quickly and more directly, perhaps, by referencing the
      $LM00 common block, but I know that this works.  */
 
@@ -386,13 +386,13 @@ i00afunc (long *address)
 				    + status.current_size
 				    - 15);
 
-  /* There must be at least one stack segment.  Therefore it is
+  /* There must be at least one stack segment.	Therefore it is
      a fatal error if "trailer" is null.  */
 
   if (trailer == 0)
     abort ();
 
-  /* Discard segments that do not contain our argument address.  */
+  /* Discard segments that do not contain our argument address.	 */
 
   while (trailer != 0)
     {
@@ -427,7 +427,7 @@ i00afunc (long *address)
   /* We are done.  Note that if you present a bogus address (one
      not in any segment), you will get a different number back, formed
      from subtracting the address of the first block.  This is probably
-     not what you want.  */
+     not what you want.	 */
 
   return (result);
 }
@@ -437,7 +437,7 @@ i00afunc (long *address)
    Determine the number of the cell within the stack,
    given the address of the cell.  The purpose of this
    routine is to linearize, in some sense, stack addresses
-   for alloca.  */
+   for alloca.	*/
 
 static long
 i00afunc (long address)
@@ -472,7 +472,7 @@ i00afunc (long address)
   this_segment = stkl - size;
 
   /* It is possible that calling this routine itself caused
-     a stack overflow.  Discard stack segments which do not
+     a stack overflow.	Discard stack segments which do not
      contain the target address.  */
 
   while (!(this_segment <= address && address <= stkl))
@@ -494,7 +494,7 @@ i00afunc (long address)
   /* If you subtract pseg from the current end of the stack,
      you get the address of the previous stack segment's end.
      This seems a little convoluted to me, but I'll bet you save
-     a cycle somewhere.  */
+     a cycle somewhere.	 */
 
   while (pseg != 0)
     {

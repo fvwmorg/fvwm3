@@ -36,13 +36,13 @@
 #if FiconvSupport
 
 #define Ficonv_open(a,b)    iconv_open(a,b)
-#define Ficonv_close(a)     iconv_close(a)
+#define Ficonv_close(a)	    iconv_close(a)
 #define Ficonv(a,b,c,d,e)   iconv(a,b,c,d,e)
 
 #else
 
 #define Ficonv_open(a,b)    (Ficonv_t)-1
-#define Ficonv_close(a)     -1
+#define Ficonv_close(a)	    -1
 #define Ficonv(a,b,c,d,e)   -1
 
 #endif

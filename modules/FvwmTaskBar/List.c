@@ -1,7 +1,7 @@
 /* FvwmTaskBar Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
- *                               Mike_Finger@atk.com)
+ *				 Mike_Finger@atk.com)
  *
  * The functions in this source file are the original work of Mike Finger.
  *
@@ -18,12 +18,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #include "config.h"
@@ -52,7 +52,7 @@ void InitList(List *list)
   AddItem - Allocates spaces for and appends an item to the list
 ******************************************************************************/
 void AddItem(List *list, long id, ConfigWinPacket *cfgpacket,
-             long Desk, int count)
+	     long Desk, int count)
 {
   Item *new;
   new=(Item *)safemalloc(sizeof(Item));
@@ -213,7 +213,7 @@ int i;
   } else {
      for(temp=list->head,temp2=temp->next; temp2; temp2=temp2->next) {
       if (temp2->id == id)
-        break;
+	break;
       temp = temp2;
     }
     if (temp2 == NULL) return -1;

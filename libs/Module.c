@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /*
@@ -177,9 +177,9 @@ void SendFvwmPipe(int *fd, const char *message, unsigned long window)
    * storage because we don't need to modify it ...
    *
    * NOTE: this makes this second call to SendText()
-   *       distinct from the first call. Two calls is
-   *       cleaner than hacking the loop to make only
-   *       one call.
+   *	   distinct from the first call. Two calls is
+   *	   cleaner than hacking the loop to make only
+   *	   one call.
    */
   SendText(fd, hold, window);
 }
@@ -219,7 +219,7 @@ static int first_pass = 1;
 void InitGetConfigLine(int *fd,char *match)
 {
   char *buffer = (char *)alloca(strlen(match) + 32);
-  first_pass = 0;                       /* make sure get wont do this */
+  first_pass = 0;			/* make sure get wont do this */
   sprintf(buffer,"Send_ConfigInfo %s",match);
   SendText(fd,buffer,0);
 }
@@ -232,7 +232,7 @@ void InitGetConfigLine(int *fd,char *match)
  * Changed 10/19/98 by Dan Espen:
  *
  * - The "isspace"  call was referring to  memory  beyond the end of  the
- * input area.  This could have led to the creation of a core file. Added
+ * input area.	This could have led to the creation of a core file. Added
  * "body_size" to keep it in bounds.
  **************************************************************************/
 void GetConfigLine(int *fd, char **tline)
@@ -260,8 +260,8 @@ void GetConfigLine(int *fd, char **tline)
     body_count = FvwmPacketBodySize(*packet) * sizeof(unsigned long);
 
     while ( body_count > 0 && isspace((unsigned char)**tline) ) {
-        (*tline)++;
-        --body_count;
+	(*tline)++;
+	--body_count;
     }
 }
 

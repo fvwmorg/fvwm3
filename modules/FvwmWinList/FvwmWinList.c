@@ -1,7 +1,7 @@
 /* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
- *                               Mike_Finger@atk.com)
+ *				 Mike_Finger@atk.com)
  *
  * The author makes not guarantees or warantees, either express or
  * implied.  Feel free to use any contained here for any purpose, as long
@@ -29,12 +29,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 #ifndef NO_CONSOLE
@@ -91,7 +91,7 @@ int x_fd;
 /* X related things */
 Display *dpy;
 Window Root;
-Window  win;
+Window	win;
 int screen;
 XSizeHints g_hints;
 int g_hints_rc;
@@ -257,8 +257,8 @@ int main(int argc, char **argv)
 #else
 #ifdef USE_BSD_SIGNALS
   fvwmSetSignalMask( sigmask(SIGPIPE) |
-                     sigmask(SIGINT)  |
-                     sigmask(SIGTERM) );
+		     sigmask(SIGINT)  |
+		     sigmask(SIGTERM) );
 #endif
   signal(SIGPIPE, TerminateHandler);
   signal(SIGTERM, TerminateHandler);
@@ -405,27 +405,27 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	if(UpdateItemDesk(&windows, cfgpacket) > 0 ||
 	   IS_STICKY(cfgpacket) != IS_STICKY(flagitem) ||
 	   DO_SKIP_WINDOW_LIST(cfgpacket) != DO_SKIP_WINDOW_LIST(flagitem))
-        {
+	{
 	  UpdateItemGSFRFlags(&windows, cfgpacket);
-          UpdateButtonDeskFlags(&buttons, i, cfgpacket->desk,
+	  UpdateButtonDeskFlags(&buttons, i, cfgpacket->desk,
 				IS_STICKY(cfgpacket),
 				DO_SKIP_WINDOW_LIST(cfgpacket));
-          AdjustWindow(False);
-          RedrawWindow(True, True);
-        }
+	  AdjustWindow(False);
+	  RedrawWindow(True, True);
+	}
 	else
 	  UpdateItemGSFRFlags(&windows, cfgpacket);
 	break;
       }
       else
-        AddItem(&windows, cfgpacket);
+	AddItem(&windows, cfgpacket);
       break;
     case M_DESTROY_WINDOW:
       cfgpacket = (void *) body;
       if ((i=DeleteItem(&windows,cfgpacket->w))==-1) break;
       RemoveButton(&buttons,i);
       if (WindowState)
-        AdjustWindow(False);
+	AdjustWindow(False);
       redraw=1;
       break;
 
@@ -436,11 +436,11 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     {
       MiniIconPacket *mip = (MiniIconPacket *) body;
       p.picture = mip->picture;
-      p.mask    = mip->mask;
-      p.alpha   = mip->alpha;
-      p.width   = mip->width;
-      p.height  = mip->height;
-      p.depth   = mip->depth;
+      p.mask	= mip->mask;
+      p.alpha	= mip->alpha;
+      p.width	= mip->width;
+      p.height	= mip->height;
+      p.depth	= mip->depth;
 
       UpdateButtonPicture(&buttons, i, &p);
 
@@ -462,7 +462,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       {
 	AddButton(&buttons, name, NULL, 1);
 	UpdateButtonSet(&buttons, i, (IS_ICONIFIED(flagitem)?1:0));
-        UpdateButtonDeskFlags(&buttons,i,ItemDesk(&windows, body[0]),
+	UpdateButtonDeskFlags(&buttons,i,ItemDesk(&windows, body[0]),
 			      IS_STICKY(flagitem),
 			      DO_SKIP_WINDOW_LIST(flagitem));
       }
@@ -504,7 +504,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  SET_ICONIFIED(flagitem, !IS_ICONIFIED(flagitem));
 	  string = ItemName(&windows, i);
 	  name = makename(string, IS_ICONIFIED(flagitem));
-          UpdateButtonIconified(&buttons, i, IS_ICONIFIED(flagitem));
+	  UpdateButtonIconified(&buttons, i, IS_ICONIFIED(flagitem));
 	  if (UpdateButton(&buttons, i, name, -1) != -1) redraw = 1;
 	  if (i != current_focus || (IS_ICONIFIED(flagitem)))
 	    if (UpdateButtonSet(&buttons, i, (IS_ICONIFIED(flagitem)) ? 1 : 0)
@@ -519,14 +519,14 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       redraw = 1;
       if ((i=FindItem(&windows,body[0]))!=-1)
       {
-        RadioButton(&buttons,i,ButPressed);
-        if (Follow && i) { /* rearrange order */
-          ReorderList(&windows,i,body[2]);
-          if (WindowState) ReorderButtons(&buttons,i,body[2]);
-        }
+	RadioButton(&buttons,i,ButPressed);
+	if (Follow && i) { /* rearrange order */
+	  ReorderList(&windows,i,body[2]);
+	  if (WindowState) ReorderButtons(&buttons,i,body[2]);
+	}
       }
       else
-        RadioButton(&buttons,-1,ButPressed);
+	RadioButton(&buttons,-1,ButPressed);
       break;
     case M_END_WINDOWLIST:
       if (!WindowState)
@@ -537,13 +537,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       CurrentDesk = body[0];
       if(ShowCurrentDesk)
       {
-        AdjustWindow(False);
-        RedrawWindow(True, True);
+	AdjustWindow(False);
+	RedrawWindow(True, True);
       }
       break;
   case MX_PROPERTY_CHANGE:
     if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND && body[2] == 0 &&
-	WindowState &&  win_bg == ParentRelative)
+	WindowState &&	win_bg == ParentRelative)
     {
       RedrawWindow(True, True);
     }
@@ -816,43 +816,43 @@ void LoopOnEvents(void)
     switch(Event.type)
     {
       case ButtonRelease:
-        if (Pressed)
-        {
-          num=WhichButton(&buttons,Event.xbutton.x,Event.xbutton.y);
-          if (num!=-1 && Event.xbutton.button >= 1 &&
+	if (Pressed)
+	{
+	  num=WhichButton(&buttons,Event.xbutton.x,Event.xbutton.y);
+	  if (num!=-1 && Event.xbutton.button >= 1 &&
 	      Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
 	  {
-            SendFvwmPipe(Fvwm_fd,
+	    SendFvwmPipe(Fvwm_fd,
 			 ClickAction[(Transient) ? 0:Event.xbutton.button-1],
 			 ItemID(&windows,num));
-            SwitchButton(&buttons,num);
-          }
-        }
-        if (Transient)
+	    SwitchButton(&buttons,num);
+	  }
+	}
+	if (Transient)
 	{
 	  exit(0);
 	}
-        Pressed=0;
-        ButPressed=-1;
-        break;
+	Pressed=0;
+	ButPressed=-1;
+	break;
       case ButtonPress:
-        num=WhichButton(&buttons,Event.xbutton.x,Event.xbutton.y);
-        if (num != -1)
-        {
-          SwitchButton(&buttons,num);
-          ButPressed=num;
-        } else ButPressed=-1;
-        Pressed=1;
-        break;
+	num=WhichButton(&buttons,Event.xbutton.x,Event.xbutton.y);
+	if (num != -1)
+	{
+	  SwitchButton(&buttons,num);
+	  ButPressed=num;
+	} else ButPressed=-1;
+	Pressed=1;
+	break;
       case Expose:
 	/* have to clear each button with its background,
 	 * let the server compute the intersections */
 	do
 	  ExposeAllButtons(&buttons, &Event);
 	while (XCheckTypedWindowEvent(dpy, win, Expose, &Event));
-        /* No more expose events in the queue draw all icons,
-         * text and shadows, but not the background */
-        RedrawWindow(True, False);
+	/* No more expose events in the queue draw all icons,
+	 * text and shadows, but not the background */
+	RedrawWindow(True, False);
 	break;
       case ConfigureNotify:
 	{
@@ -873,54 +873,54 @@ void LoopOnEvents(void)
 	    Event.xconfigure.send_event = True;
 	  }
 	}
-        if (Event.xconfigure.send_event && (win_x != Event.xconfigure.x
-            || win_y != Event.xconfigure.y || win_bg == ParentRelative)) {
+	if (Event.xconfigure.send_event && (win_x != Event.xconfigure.x
+	    || win_y != Event.xconfigure.y || win_bg == ParentRelative)) {
 	  win_x = Event.xconfigure.x;
 	  win_y = Event.xconfigure.y;
 	  if (win_bg == ParentRelative)
 	    RedrawWindow(True, True);
 	}
-        break;
+	break;
       case KeyPress:
-        num=XLookupString(&Event.xkey,buffer,10,NULL,0);
-        if (num==1)
-        {
-          if (buffer[0]=='q' || buffer[0]=='Q') exit(0);
-          else if (buffer[0]=='i' || buffer[0]=='I') PrintList(&windows);
-          else if (buffer[0]=='b' || buffer[0]=='B') PrintButtons(&buttons);
-        }
-        break;
+	num=XLookupString(&Event.xkey,buffer,10,NULL,0);
+	if (num==1)
+	{
+	  if (buffer[0]=='q' || buffer[0]=='Q') exit(0);
+	  else if (buffer[0]=='i' || buffer[0]=='I') PrintList(&windows);
+	  else if (buffer[0]=='b' || buffer[0]=='B') PrintButtons(&buttons);
+	}
+	break;
       case ClientMessage:
-        if ((Event.xclient.format==32) && (Event.xclient.data.l[0]==wm_del_win))
-          exit(0);
+	if ((Event.xclient.format==32) && (Event.xclient.data.l[0]==wm_del_win))
+	  exit(0);
       case EnterNotify:
-        if (!SomeButtonDown(Event.xcrossing.state)) break;
-        num=WhichButton(&buttons,Event.xcrossing.x,Event.xcrossing.y);
-        if (num!=-1)
-        {
-          SwitchButton(&buttons,num);
-          ButPressed=num;
-        } else ButPressed=-1;
-        Pressed=1;
-        break;
+	if (!SomeButtonDown(Event.xcrossing.state)) break;
+	num=WhichButton(&buttons,Event.xcrossing.x,Event.xcrossing.y);
+	if (num!=-1)
+	{
+	  SwitchButton(&buttons,num);
+	  ButPressed=num;
+	} else ButPressed=-1;
+	Pressed=1;
+	break;
       case LeaveNotify:
-        if (!SomeButtonDown(Event.xcrossing.state)) break;
-        if (ButPressed!=-1) SwitchButton(&buttons,ButPressed);
-        Pressed=0;
-        break;
+	if (!SomeButtonDown(Event.xcrossing.state)) break;
+	if (ButPressed!=-1) SwitchButton(&buttons,ButPressed);
+	Pressed=0;
+	break;
       case MotionNotify:
-        if (!Pressed) break;
-        num=WhichButton(&buttons,Event.xmotion.x,Event.xmotion.y);
-        if (num==ButPressed) break;
-        if (ButPressed!=-1) SwitchButton(&buttons,ButPressed);
-        if (num!=-1)
-        {
-          SwitchButton(&buttons,num);
-          ButPressed=num;
-        }
-        else ButPressed=-1;
+	if (!Pressed) break;
+	num=WhichButton(&buttons,Event.xmotion.x,Event.xmotion.y);
+	if (num==ButPressed) break;
+	if (ButPressed!=-1) SwitchButton(&buttons,ButPressed);
+	if (num!=-1)
+	{
+	  SwitchButton(&buttons,num);
+	  ButPressed=num;
+	}
+	else ButPressed=-1;
 
-        break;
+	break;
     }
   }
 }
@@ -952,11 +952,11 @@ void AdjustWindow(Bool force)
     for(i=0; i<all; i++)
     {
       if (IsButtonIndexVisible(&buttons,i) &&
-          ButtonPicture(&buttons,i)->picture != None)
+	  ButtonPicture(&buttons,i)->picture != None)
       {
-        if (ButtonPicture(&buttons,i)->width > base_miw)
-          base_miw = ButtonPicture(&buttons,i)->width;
-        break;
+	if (ButtonPicture(&buttons,i)->width > base_miw)
+	  base_miw = ButtonPicture(&buttons,i)->width;
+	break;
       }
     }
     base_miw += 2;
@@ -968,10 +968,10 @@ void AdjustWindow(Bool force)
     {
 	tw = 8 + FlocaleTextWidth(FButtonFont,temp,strlen(temp));
 	tw += FlocaleTextWidth(FButtonFont,"()",2);
-        if (FMiniIconsSupported)
-        {
-          tw += base_miw;
-        }
+	if (FMiniIconsSupported)
+	{
+	  tw += base_miw;
+	}
 	new_width=max(new_width,tw);
     }
   }
@@ -1272,7 +1272,7 @@ void MakeMeWindow(void)
       exit(1);
     }
     XSetWMProperties(dpy,win,&nametext,&nametext,
-                    NULL,0,&hints,NULL,&classhints);
+		    NULL,0,&hints,NULL,&classhints);
     XFree(nametext.value);
   }
 
@@ -1330,7 +1330,7 @@ void MakeMeWindow(void)
     background[i]=fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
     if ((colorset[i] >= 0) && Colorset[colorset[i]].pixmap
-        && Colorset[colorset[i]].pixmap != ParentRelative) {
+	&& Colorset[colorset[i]].pixmap != ParentRelative) {
       pixmap[i] = CreateBackgroundPixmap(dpy, win, win_width, buttonheight,
 					 &Colorset[colorset[i]], Pdepth,
 					 background[i], False);

@@ -5,12 +5,12 @@
  *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
  */
 
 /****************************************************************************
@@ -51,19 +51,19 @@
 extern FvwmWindow *Fw;
 extern FvwmWindow *ButtonWindow;
 
-#define SHOW_GEOMETRY           (1<<0)
-#define SHOW_ALLDESKS           (1<<1)
-#define SHOW_NORMAL             (1<<2)
-#define SHOW_ICONIC             (1<<3)
-#define SHOW_STICKY             (1<<4)
-#define NO_DESK_SORT            (1<<6)
-#define SHOW_ICONNAME           (1<<7)
-#define SHOW_ALPHABETIC         (1<<8)
-#define SHOW_INFONOTGEO         (1<<9)
-#define NO_DESK_NUM             (1<<10)
-#define NO_CURRENT_DESK_TITLE   (1<<11)
-#define TITLE_FOR_ALL_DESKS     (1<<12)
-#define NO_NUM_IN_DESK_TITLE    (1<<13)
+#define SHOW_GEOMETRY		(1<<0)
+#define SHOW_ALLDESKS		(1<<1)
+#define SHOW_NORMAL		(1<<2)
+#define SHOW_ICONIC		(1<<3)
+#define SHOW_STICKY		(1<<4)
+#define NO_DESK_SORT		(1<<6)
+#define SHOW_ICONNAME		(1<<7)
+#define SHOW_ALPHABETIC		(1<<8)
+#define SHOW_INFONOTGEO		(1<<9)
+#define NO_DESK_NUM		(1<<10)
+#define NO_CURRENT_DESK_TITLE	(1<<11)
+#define TITLE_FOR_ALL_DESKS	(1<<12)
+#define NO_NUM_IN_DESK_TITLE	(1<<13)
 #define SHOW_EVERYTHING (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | SHOW_ICONIC | SHOW_STICKY)
 
 /* Function to compare window title names
@@ -109,7 +109,7 @@ static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
 
 /*
  * Change by PRB (pete@tecc.co.uk), 31/10/93.  Prepend a hot key
- * specifier to each item in the list.  This means allocating the
+ * specifier to each item in the list.	This means allocating the
  * memory for each item (& freeing it) rather than just using the window
  * title directly. */
 void CMD_WindowList(F_CMD_ARGS)
@@ -201,12 +201,12 @@ void CMD_WindowList(F_CMD_ARGS)
       }
       else if (StrEquals(tok,"Function"))
       {
-        opts = GetNextSimpleOption(opts, &func);
+	opts = GetNextSimpleOption(opts, &func);
       }
       else if (StrEquals(tok,"Desk"))
       {
 	free(tok);
-        opts = GetNextSimpleOption(opts, &tok);
+	opts = GetNextSimpleOption(opts, &tok);
 	if (tok)
 	{
 	  desk = atoi(tok);
@@ -215,56 +215,56 @@ void CMD_WindowList(F_CMD_ARGS)
       }
       else if (StrEquals(tok,"CurrentDesk"))
       {
-        desk = Scr.CurrentDesk;
-        flags &= ~SHOW_ALLDESKS;
+	desk = Scr.CurrentDesk;
+	flags &= ~SHOW_ALLDESKS;
       }
       else if (StrEquals(tok,"NotAlphabetic"))
-        flags &= ~SHOW_ALPHABETIC;
+	flags &= ~SHOW_ALPHABETIC;
       else if (StrEquals(tok,"Alphabetic"))
-        flags |= SHOW_ALPHABETIC;
+	flags |= SHOW_ALPHABETIC;
       else if (StrEquals(tok,"ReverseOrder"))
-        do_reverse_sort_order = True;
+	do_reverse_sort_order = True;
       else if (StrEquals(tok,"CurrentAtEnd"))
-        current_at_end = True;
+	current_at_end = True;
       else if (StrEquals(tok,"IconifiedAtEnd"))
-        iconified_at_end = True;
+	iconified_at_end = True;
       else if (StrEquals(tok,"NoDeskSort"))
-        flags |= NO_DESK_SORT;
+	flags |= NO_DESK_SORT;
       else if (StrEquals(tok,"UseIconName"))
-        flags |= SHOW_ICONNAME;
+	flags |= SHOW_ICONNAME;
       else if (StrEquals(tok,"NoGeometry"))
       {
-        flags &= ~SHOW_GEOMETRY;
-        flags &= ~SHOW_INFONOTGEO;
+	flags &= ~SHOW_GEOMETRY;
+	flags &= ~SHOW_INFONOTGEO;
       }
       else if (StrEquals(tok,"NoGeometryWithInfo"))
       {
-        flags &= ~SHOW_GEOMETRY;
-        flags |= SHOW_INFONOTGEO;
+	flags &= ~SHOW_GEOMETRY;
+	flags |= SHOW_INFONOTGEO;
       }
       else if (StrEquals(tok,"Geometry"))
       {
-        flags |= SHOW_GEOMETRY;
-        flags &= ~SHOW_INFONOTGEO;
+	flags |= SHOW_GEOMETRY;
+	flags &= ~SHOW_INFONOTGEO;
       }
       else if (StrEquals(tok,"NoIcons"))
-        flags &= ~SHOW_ICONIC;
+	flags &= ~SHOW_ICONIC;
       else if (StrEquals(tok,"Icons"))
-        flags |= SHOW_ICONIC;
+	flags |= SHOW_ICONIC;
       else if (StrEquals(tok,"OnlyIcons"))
-        flags = SHOW_ICONIC;
+	flags = SHOW_ICONIC;
       else if (StrEquals(tok,"NoNormal"))
-        flags &= ~SHOW_NORMAL;
+	flags &= ~SHOW_NORMAL;
       else if (StrEquals(tok,"Normal"))
-        flags |= SHOW_NORMAL;
+	flags |= SHOW_NORMAL;
       else if (StrEquals(tok,"OnlyNormal"))
-        flags = SHOW_NORMAL;
+	flags = SHOW_NORMAL;
       else if (StrEquals(tok,"NoSticky"))
-        flags &= ~SHOW_STICKY;
+	flags &= ~SHOW_STICKY;
       else if (StrEquals(tok,"Sticky"))
-        flags |= SHOW_STICKY;
+	flags |= SHOW_STICKY;
       else if (StrEquals(tok,"OnlySticky"))
-        flags = SHOW_STICKY;
+	flags = SHOW_STICKY;
       else if (StrEquals(tok,"UseListSkip"))
 	show_listskip = 1;
       else if (StrEquals(tok,"OnlyListSkip"))
@@ -277,11 +277,11 @@ void CMD_WindowList(F_CMD_ARGS)
 	flags |= TITLE_FOR_ALL_DESKS;
       else if (StrEquals(tok,"NoNumInDeskTitle"))
 	flags |= NO_NUM_IN_DESK_TITLE;
-          /*
-             these are a bit dubious, but we
-             should keep the OnTop options
-             for compatibility
-           */
+	  /*
+	     these are a bit dubious, but we
+	     should keep the OnTop options
+	     for compatibility
+	   */
       else if (StrEquals(tok, "NoOnTop"))
       {
 	if (high_layer >= Scr.TopLayer)
@@ -313,33 +313,33 @@ void CMD_WindowList(F_CMD_ARGS)
       else if (StrEquals(tok, "Layer"))
       {
 	free(tok);
-        opts = GetNextSimpleOption(opts, &tok);
+	opts = GetNextSimpleOption(opts, &tok);
 	if (tok)
-        {
-          low_layer = high_layer = atoi(tok);
+	{
+	  low_layer = high_layer = atoi(tok);
 	  free(tok);
-          opts = GetNextSimpleOption(opts, &tok);
+	  opts = GetNextSimpleOption(opts, &tok);
 	  if (tok)
-          {
-            high_layer = atoi(tok);
-          }
-        }
+	  {
+	    high_layer = atoi(tok);
+	  }
+	}
       }
       else if (StrEquals(tok, "SelectOnRelease"))
       {
 	if (sor_keyname != sor_default_keyname)
 	  free(sor_keyname);
 	sor_keyname = NULL;
-        opts = GetNextSimpleOption(opts, &sor_keyname);
+	opts = GetNextSimpleOption(opts, &sor_keyname);
       }
       else if (!opts || !*opts)
 	default_action = safestrdup(tok);
       else
       {
-        fvwm_msg(ERR,"WindowList","Unknown option '%s'",tok);
+	fvwm_msg(ERR,"WindowList","Unknown option '%s'",tok);
       }
       if (tok)
-        free(tok);
+	free(tok);
     }
   }
   if (was_get_menu_opts_called == False)
@@ -434,18 +434,18 @@ void CMD_WindowList(F_CMD_ARGS)
       next_desk = INT_MAX;
       for (ii = 0; ii < numWindows; ii++)
       {
-        t = windowList[ii];
-        if((t->Desk >last_desk_done)&&(t->Desk < next_desk))
-          next_desk = t->Desk;
+	t = windowList[ii];
+	if((t->Desk >last_desk_done)&&(t->Desk < next_desk))
+	  next_desk = t->Desk;
       }
     }
     if(!(flags & SHOW_ALLDESKS))
     {
       /* if only doing one desk and it hasn't been done */
-      if(last_desk_done  == INT_MIN)
-        next_desk = desk; /* select the desk */
+      if(last_desk_done	 == INT_MIN)
+	next_desk = desk; /* select the desk */
       else
-        next_desk = INT_MAX; /* flag completion */
+	next_desk = INT_MAX; /* flag completion */
     }
     if(flags & NO_DESK_SORT)
       next_desk = INT_MAX; /* only go through loop once */
@@ -457,28 +457,28 @@ void CMD_WindowList(F_CMD_ARGS)
       if(((t->Desk == next_desk) || (flags & NO_DESK_SORT)))
       {
 	if (!show_listskip && DO_SKIP_WINDOW_LIST(t))
-          continue; /* don't want listskip windows - skip */
+	  continue; /* don't want listskip windows - skip */
 	if (show_listskip == 2 && !DO_SKIP_WINDOW_LIST(t))
 	  continue; /* don't want no listskip one - skip */
 	if (use_condition && !MatchesConditionMask(t, &mask))
 	  continue; /* doesn't match specified condition */
-        if (!(flags & SHOW_ICONIC) && (IS_ICONIFIED(t)))
-          continue; /* don't want icons - skip */
-        if (!(flags & SHOW_STICKY) && (IS_STICKY(t)))
-          continue; /* don't want sticky ones - skip */
-        if (!(flags & SHOW_NORMAL) &&
-            !((IS_ICONIFIED(t)) || (IS_STICKY(t))))
-          continue; /* don't want "normal" ones - skip */
-        if ((get_layer(t) < low_layer) || (get_layer(t) > high_layer))
-          continue;  /* don't want this layer */
+	if (!(flags & SHOW_ICONIC) && (IS_ICONIFIED(t)))
+	  continue; /* don't want icons - skip */
+	if (!(flags & SHOW_STICKY) && (IS_STICKY(t)))
+	  continue; /* don't want sticky ones - skip */
+	if (!(flags & SHOW_NORMAL) &&
+	    !((IS_ICONIFIED(t)) || (IS_STICKY(t))))
+	  continue; /* don't want "normal" ones - skip */
+	if ((get_layer(t) < low_layer) || (get_layer(t) > high_layer))
+	  continue;  /* don't want this layer */
 
 	empty_menu = False;
-        /* add separator between desks when geometry shown but not at the top*/
-        if (t->Desk != last_desk_displayed)
-        {
-          if (last_desk_displayed != INT_MIN)
+	/* add separator between desks when geometry shown but not at the top*/
+	if (t->Desk != last_desk_displayed)
+	{
+	  if (last_desk_displayed != INT_MIN)
 	  {
-            if (((flags & SHOW_GEOMETRY) || (flags & SHOW_INFONOTGEO)) &&
+	    if (((flags & SHOW_GEOMETRY) || (flags & SHOW_INFONOTGEO)) &&
 		!(flags & TITLE_FOR_ALL_DESKS))
 	      AddToMenu(mr, NULL, NULL, False, False, False);
 	    if (flags & TITLE_FOR_ALL_DESKS)
@@ -488,8 +488,8 @@ void CMD_WindowList(F_CMD_ARGS)
 	      free(tlabel);
 	    }
 	  }
-          last_desk_displayed = t->Desk;
-        }
+	  last_desk_displayed = t->Desk;
+	}
 	if (first_desk && flags & TITLE_FOR_ALL_DESKS)
 	{
 	  tlabel = get_desk_title(t->Desk, flags, False);
@@ -498,21 +498,21 @@ void CMD_WindowList(F_CMD_ARGS)
 	}
 	first_desk = False;
 
-        if(flags & SHOW_ICONNAME)
-          name = t->visible_icon_name;
-        else
-          name = t->visible_name;
+	if(flags & SHOW_ICONNAME)
+	  name = t->visible_icon_name;
+	else
+	  name = t->visible_name;
 
-        if (!name)
-          name = "NULL_NAME";
+	if (!name)
+	  name = "NULL_NAME";
 
-        t_hot = safemalloc(strlen(name) + 48);
+	t_hot = safemalloc(strlen(name) + 48);
 	if (use_hotkey)
-          sprintf(t_hot, "&%c. ", scut);         /* Generate label */
+	  sprintf(t_hot, "&%c. ", scut);	 /* Generate label */
 	else
 	  *t_hot = 0;
-        if(!(flags & SHOW_INFONOTGEO))
-          strcat(t_hot, name);
+	if(!(flags & SHOW_INFONOTGEO))
+	  strcat(t_hot, name);
 
 	if (*t_hot == 0)
 	  strcpy(t_hot, " ");
@@ -525,88 +525,88 @@ void CMD_WindowList(F_CMD_ARGS)
 	else
 	  scut++;
 
-        if (flags & SHOW_INFONOTGEO)
-        {
-          tname[0]=0;
-          if(!IS_ICONIFIED(t) && !(flags & NO_DESK_NUM))
-          {
-            sprintf(loc,"%d:", t->Desk);
-            strcat(tname,loc);
-          }
-          if(IS_ICONIFIED(t))
-            strcat(tname, "(");
-          strcat(t_hot,"\t");
-          strcat(t_hot,tname);
+	if (flags & SHOW_INFONOTGEO)
+	{
+	  tname[0]=0;
+	  if(!IS_ICONIFIED(t) && !(flags & NO_DESK_NUM))
+	  {
+	    sprintf(loc,"%d:", t->Desk);
+	    strcat(tname,loc);
+	  }
+	  if(IS_ICONIFIED(t))
+	    strcat(tname, "(");
+	  strcat(t_hot,"\t");
+	  strcat(t_hot,tname);
 	  strcat(t_hot, name);
 	  if(IS_ICONIFIED(t))
 	    strcat(t_hot, ")");
-        }
+	}
 	else if (flags & SHOW_GEOMETRY)
-        {
+	{
 	  size_borders b;
 
-          tname[0]=0;
-          if(IS_ICONIFIED(t))
-            strcpy(tname, "(");
+	  tname[0]=0;
+	  if(IS_ICONIFIED(t))
+	    strcpy(tname, "(");
 	  if (flags & NO_DESK_NUM)
 	    sprintf(loc,"(%d):",get_layer(t));
 	  else
 	    sprintf(loc,"%d(%d):",t->Desk, get_layer(t));
-          strcat(tname,loc);
+	  strcat(tname,loc);
 
 	  get_window_borders(t, &b);
-          dheight = t->frame_g.height - b.total_size.height;
-          dwidth = t->frame_g.width - b.total_size.width;
-          dwidth -= t->hints.base_width;
-          dheight -= t->hints.base_height;
-          dwidth /= t->hints.width_inc;
-          dheight /= t->hints.height_inc;
+	  dheight = t->frame_g.height - b.total_size.height;
+	  dwidth = t->frame_g.width - b.total_size.width;
+	  dwidth -= t->hints.base_width;
+	  dheight -= t->hints.base_height;
+	  dwidth /= t->hints.width_inc;
+	  dheight /= t->hints.height_inc;
 
-          sprintf(loc,"%d",dwidth);
-          strcat(tname, loc);
-          sprintf(loc,"x%d",dheight);
-          strcat(tname, loc);
-          if(t->frame_g.x >=0)
-            sprintf(loc,"+%d",t->frame_g.x);
-          else
-            sprintf(loc,"%d",t->frame_g.x);
-          strcat(tname, loc);
-          if(t->frame_g.y >=0)
-            sprintf(loc,"+%d",t->frame_g.y);
-          else
-            sprintf(loc,"%d",t->frame_g.y);
-          strcat(tname, loc);
+	  sprintf(loc,"%d",dwidth);
+	  strcat(tname, loc);
+	  sprintf(loc,"x%d",dheight);
+	  strcat(tname, loc);
+	  if(t->frame_g.x >=0)
+	    sprintf(loc,"+%d",t->frame_g.x);
+	  else
+	    sprintf(loc,"%d",t->frame_g.x);
+	  strcat(tname, loc);
+	  if(t->frame_g.y >=0)
+	    sprintf(loc,"+%d",t->frame_g.y);
+	  else
+	    sprintf(loc,"%d",t->frame_g.y);
+	  strcat(tname, loc);
 
-          if (IS_STICKY(t))
-            strcat(tname, " S");
-          if (IS_ICONIFIED(t))
-            strcat(tname, ")");
-          strcat(t_hot,"\t");
-          strcat(t_hot,tname);
-        }
-        if (!func)
-        {
-          tfunc = safemalloc(40);
-          sprintf(tfunc,"WindowListFunc %lu", FW_W(t));
-        }
-        else
-	{
-          tfunc = safemalloc(strlen(func) + 32);
-          sprintf(tfunc,"%s %lu", func, FW_W(t));
+	  if (IS_STICKY(t))
+	    strcat(tname, " S");
+	  if (IS_ICONIFIED(t))
+	    strcat(tname, ")");
+	  strcat(t_hot,"\t");
+	  strcat(t_hot,tname);
 	}
-        AddToMenu(mr, t_hot, tfunc, False, False, False);
-        free(tfunc);
-        /* Add the title pixmap */
-        if (FMiniIconsSupported && t->mini_icon)
-        {
-          MI_MINI_ICON(MR_LAST_ITEM(mr))[0] = t->mini_icon;
-          t->mini_icon->count++; /* increase the cache count!!
-                                    otherwise the pixmap will be
-                                    eventually removed from the
-                                    cache by DestroyMenu */
-        }
-        if (t_hot)
-          free(t_hot);
+	if (!func)
+	{
+	  tfunc = safemalloc(40);
+	  sprintf(tfunc,"WindowListFunc %lu", FW_W(t));
+	}
+	else
+	{
+	  tfunc = safemalloc(strlen(func) + 32);
+	  sprintf(tfunc,"%s %lu", func, FW_W(t));
+	}
+	AddToMenu(mr, t_hot, tfunc, False, False, False);
+	free(tfunc);
+	/* Add the title pixmap */
+	if (FMiniIconsSupported && t->mini_icon)
+	{
+	  MI_MINI_ICON(MR_LAST_ITEM(mr))[0] = t->mini_icon;
+	  t->mini_icon->count++; /* increase the cache count!!
+				    otherwise the pixmap will be
+				    eventually removed from the
+				    cache by DestroyMenu */
+	}
+	if (t_hot)
+	  free(t_hot);
       }
     }
   }
