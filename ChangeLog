@@ -1,3 +1,23 @@
+2003-05-20  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.c (FlocaleGetFontOrFontSet):
+	Allowed empty xft font name
+
+	* libs/Makefile.am:
+	* libs/flist.c (new file):
+	* libs/flist.h (new file):
+	Added a flist structure and some basic function for handling such
+	stucture
+
+	* libs/FGettext.c (*):
+	Use the new flist struct and functions interface
+
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/update.c (destroy_scheduled_windows):
+	* fvwm/add_window.c (destroy_window):
+	Added a list for the windows which are scheduled for destroy
+	Remove a fw at once from the fw list when we destroy_window
+
 2003-05-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (CMD_DestroyStyle):

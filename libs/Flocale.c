@@ -983,7 +983,7 @@ FlocaleFont *FlocaleGetFontOrFontSet(
 {
 	FlocaleFont *flf = NULL;
 
-	if (fontname && strlen(fontname) > 4 &&
+	if (fontname && strlen(fontname) > 3 &&
 	    strncasecmp("xft:", fontname, 4) == 0)
 	{
 		if (FftSupport)

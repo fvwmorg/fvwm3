@@ -24,6 +24,7 @@
 #include "Strings.h"
 #include "Parse.h"
 #include "envvar.h"
+#include "flist.h"
 
 #include "FGettext.h"
 #include "locale.h"
@@ -32,15 +33,17 @@
 
 /* ---------------------------- local macros -------------------------------- */
 
+#define FGP_DOMAIN(l) ((FGettextPath *)l->object)->domain
+#define FGP_DIR(l)    ((FGettextPath *)l->object)->dir
+
 /* ---------------------------- imports ------------------------------------- */
 
 /* ---------------------------- included code files ------------------------- */
 
 /* ---------------------------- local types --------------------------------- */
 
-typedef struct _FGettextPath
+typedef struct
 {
-	struct _FGettextPath *next;
 	char *domain;
 	char *dir;
 } FGettextPath;
@@ -54,7 +57,7 @@ static char *FGDefaultDir = NULL;
 static char *FGDefaultDomain = NULL;
 static const char *FGModuleName = NULL;
 
-static FGettextPath *FGPath = NULL;
+static flist *FGPathList = NULL;
 static FGettextPath *FGLastPath = NULL;
 
 /* ---------------------------- interface functions ------------------------- */
@@ -63,8 +66,7 @@ static
 void fgettext_add_one_path(char *path, int position)
 {
 	char *dir,*domain;
-	FGettextPath *fgpath, *tmp, *prevpath;
-	int count = 1;
+	FGettextPath *tmp;
 
 	if (!HaveNLSSupport)
 	{
@@ -87,70 +89,38 @@ void fgettext_add_one_path(char *path, int position)
 
 	tmp = (FGettextPath *)safemalloc(sizeof(FGettextPath));
 	tmp->dir = dir;
-	tmp->next = NULL;
 	CopyString(&tmp->domain, domain);
-
-	if (FGPath == NULL)
-	{
-		FGPath = tmp;
-		return;
-	}
-	fgpath = FGPath;
-	prevpath = FGPath;
-	while(fgpath->next != NULL && count != position)
-	{
-		count++;
-		prevpath = fgpath;
-		fgpath = fgpath->next;
-	}
-	if ((fgpath->next != NULL) ||
-	    (count == position && fgpath->next == NULL))
-	{
-		tmp->next = fgpath;
-		if (fgpath == FGPath)
-		{
-			/* first */
-			FGPath = tmp;
-		}
-		else
-		{
-			/* middle */
-			prevpath->next = tmp;
-		}
-	}
-	else
-	{
-		/* end */
-		fgpath->next = tmp;
-	}
+	
+	FGPathList = flist_insert_obj(FGPathList, tmp, position);
 }
 
-static
-void fgettext_free_path(void)
+void fgettext_free_fgpath_list(void)
 {
-	FGettextPath *fgpath = FGPath;
-	FGettextPath *tmp;
+	flist *l = FGPathList;
 
 	if (!HaveNLSSupport)
 	{
 		return;
 	}
 
-	while(fgpath != NULL)
+	while(l != NULL)
 	{
-		if (fgpath->domain)
+		if (l->object)
 		{
-			free(fgpath->domain);
+			if (FGP_DOMAIN(l))
+			{
+				free(FGP_DOMAIN(l));
+			}
+			if (FGP_DIR(l))
+			{
+				free(FGP_DIR(l));
+			}
+			free(l->object);
 		}
-		if (fgpath->dir)
-		{
-			free(fgpath->dir);
-		}
-		tmp = fgpath;
-		fgpath = fgpath->next;
-		free(tmp);
+		l = l->next;
 	}
-	FGPath = NULL;
+	FGLastPath = NULL;
+	FGPathList = flist_free_list(FGPathList);
 }
 
 /* ---------------------------- interface functions ------------------------- */
@@ -178,47 +148,47 @@ void FGettextInit(const char *domain, const char *dir, const char *module)
 	FGModuleName = module;
 	CopyString(&FGDefaultDir, btd);
 	CopyString(&FGDefaultDomain, td);
-	FGPath = (FGettextPath *)safemalloc(sizeof(FGettextPath));
-	CopyString(&FGPath->domain, td);
-	CopyString(&FGPath->dir, btd);
-	FGPath->next = NULL;
-	FGLastPath = FGPath;
+	FGLastPath = (FGettextPath *)safemalloc(sizeof(FGettextPath));
+	CopyString(&FGLastPath->domain, td);
+	CopyString(&FGLastPath->dir, btd);
+	FGPathList = flist_append_obj(FGPathList, FGLastPath);
 	FGettextInitOk = 1;
 }
 
 const char *FGettext(char *str)
 {
-	FGettextPath *fgpath = FGPath;
+	flist *l = FGPathList;
 	const char *s, *dummy;
 
-	if (!HaveNLSSupport || !FGettextInitOk || FGPath == NULL || str == NULL)
+	if (!HaveNLSSupport || !FGettextInitOk || FGPathList == NULL ||
+	    str == NULL)
 	{
 		return str;
 	}
 
-	if (FGPath != FGLastPath)
+	if (FGLastPath != l->object)
 	{
-		dummy = bindtextdomain (FGPath->domain, FGPath->dir);
-		dummy = textdomain (FGPath->domain);
-		FGLastPath = FGPath;
+		dummy = bindtextdomain (FGP_DOMAIN(l), FGP_DIR(l));
+		dummy = textdomain (FGP_DOMAIN(l));
+		FGLastPath = l->object;
 	}
 	s = gettext(str);
 	if (s != str)
 	{
 		return s;
 	}
-	fgpath = fgpath->next;
-	while(fgpath != NULL)
+	l = l->next;
+	while(l != NULL)
 	{
-		dummy = bindtextdomain (fgpath->domain, fgpath->dir);
-		dummy = textdomain (fgpath->domain);
-		FGLastPath = fgpath;
+		dummy = bindtextdomain (FGP_DOMAIN(l), FGP_DIR(l));
+		dummy = textdomain (FGP_DOMAIN(l));
+		FGLastPath = l->object;
 		s = gettext(str);
 		if (s != str)
 		{
 			return s;
 		}
-		fgpath = fgpath->next;
+		l = l->next;
 	}
 	return str;
 }
@@ -252,11 +222,11 @@ void FGettextSetLocalePath(const char *path)
 
 	if (path == NULL || path[0] == '\0')
 	{
-		fgettext_free_path();
-		FGPath = (FGettextPath *)safemalloc(sizeof(FGettextPath));
-		CopyString(&FGPath->domain, FGDefaultDomain);
-		CopyString(&FGPath->dir, FGDefaultDir);
-		FGPath->next = NULL;
+		fgettext_free_fgpath_list();
+		FGLastPath = (FGettextPath *)safemalloc(sizeof(FGettextPath));
+		CopyString(&FGLastPath->domain, FGDefaultDomain);
+		CopyString(&FGLastPath->dir, FGDefaultDir);
+		FGPathList = flist_append_obj(FGPathList, FGLastPath);
 		FGLastPath = NULL;
 		return;
 	}
@@ -265,10 +235,10 @@ void FGettextSetLocalePath(const char *path)
 
 	if (StrEquals(exp_path,"None"))
 	{
-		fgettext_free_path();
+		fgettext_free_fgpath_list();
 		goto bail;
 	}
-	
+
 	after = GetQuotedString(exp_path, &before, "+", NULL, NULL, NULL);
 	if ((after && strchr(after, '+')) || (before && strchr(before, '+')))
 	{
@@ -280,21 +250,21 @@ void FGettextSetLocalePath(const char *path)
 	}
 	if (!strchr(exp_path, '+'))
 	{
-	    fgettext_free_path();
+	    fgettext_free_fgpath_list();
 	}
 	while(after && *after)
 	{
 		after = GetQuotedString(after, &p, ":", NULL, NULL, NULL);
 		if (p && *p)
 		{
-			fgettext_add_one_path(p,0);
+			fgettext_add_one_path(p,-1);
 		}
 		if (p)
 		{
 			free(p);
 		}
 	}
-	count = 1;
+	count = 0;
 	str = before;
 	while (str && *str)
 	{
@@ -323,7 +293,7 @@ void FGettextSetLocalePath(const char *path)
 
 void FGettextPrintLocalePath(int verbose)
 {
-	FGettextPath *fgpath = FGPath;
+	flist *l = FGPathList;
 
 	if (!HaveNLSSupport || !FGettextInitOk)
 	{
@@ -331,11 +301,11 @@ void FGettextPrintLocalePath(int verbose)
 	}
 
 	fprintf(stderr,"FVWM NLS gettext path:\n");
-	while(fgpath != NULL)
+	while(l != NULL)
 	{
 		fprintf(
 			stderr,"  dir: %s, domain: %s\n",
-			fgpath->dir, fgpath->domain);
-		fgpath = fgpath->next;
+			FGP_DIR(l), FGP_DOMAIN(l));
+		l = l->next;
 	}
 }

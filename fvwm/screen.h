@@ -47,6 +47,8 @@
 #ifndef _SCREEN_
 #define _SCREEN_
 
+#include "libs/flist.h"
+
 #define SIZE_HINDENT 5
 #define SIZE_VINDENT 3
 
@@ -349,6 +351,8 @@ typedef struct ScreenInfo
   Window SizeWindow;            /* the resize dimensions window */
   Window NoFocusWin;            /* Window which will own focus when no other
 				 * windows have it */
+  flist *FWScheduledForDestroy;
+
   PanFrame PanFrameTop;
   PanFrame PanFrameLeft;
   PanFrame PanFrameRight;

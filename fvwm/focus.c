@@ -543,12 +543,16 @@ static Bool focus_query_grab_buttons(FvwmWindow *fw, Bool client_entered)
 	if (is_focused)
 	{
 		flag = FP_DO_RAISE_FOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
+#if 0
 fprintf(stderr,"fqgb: 0x%08x f %d '%s'\n", (int)fw, flag, fw->visible_name);
+#endif
 	}
 	else
 	{
 		flag = FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
+#if 0
 fprintf(stderr,"fqgb: 0x%08x u %d '%s'\n", (int)fw, flag, fw->visible_name);
+#endif
 	}
 
 	return (flag) ? True : False;

@@ -2997,6 +2997,31 @@ void destroy_window(FvwmWindow *fw)
 		return;
 	}
 
+	/****** remove from window list ******/
+	/* if the window is sheduled fro destroy the window has been already
+	 * removed from list */
+	if (!IS_SCHEDULED_FOR_DESTROY(fw))
+	{
+		/* first, remove the window from the list of all windows! */
+		if (fw->prev != NULL)
+		{
+			fw->prev->next = fw->next;
+		}
+		if (fw->next != NULL)
+		{
+			fw->next->prev = fw->prev;
+		}
+
+		/****** also remove it from the stack ring ******/
+
+		/*
+		 * RBW - 11/13/1998 - new: have to unhook the stacking order
+		 chain also. There's always a prev and next, since this is a
+		 ring anchored on Scr.FvwmRoot
+		*/
+		remove_window_from_stack_ring(fw);
+	}
+
 	/****** check if we have to delay window destruction ******/
 
 	if ((Scr.flags.is_executing_complex_function ||
@@ -3033,29 +3058,10 @@ void destroy_window(FvwmWindow *fw)
 			(unsigned long)fw);
 		EWMH_DestroyWindow(fw);
 		focus_grab_buttons_on_layer(fw->layer);
+		Scr.FWScheduledForDestroy = flist_append_obj(
+			Scr.FWScheduledForDestroy, fw);
 		return;
 	}
-
-	/****** remove from window list ******/
-
-	/* first of all, remove the window from the list of all windows! */
-	if (fw->prev != NULL)
-	{
-		fw->prev->next = fw->next;
-	}
-	if (fw->next != NULL)
-	{
-		fw->next->prev = fw->prev;
-	}
-
-	/****** also remove it from the stack ring ******/
-
-	/*
-	 * RBW - 11/13/1998 - new: have to unhook the stacking order chain also.
-	 * There's always a prev and next, since this is a ring anchored on
-	 * Scr.FvwmRoot
-	 */
-	remove_window_from_stack_ring(fw);
 
 	/****** unmap the frame ******/
 
