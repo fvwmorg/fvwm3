@@ -3,6 +3,8 @@
 	* fvwm/events.c (HandlePropertyNotify): Fixed the fix
 	* for TransientFor Bug
 
+	* extras/fvwmperl/*: Added correct copyright notices.
+
 1998-11-03  /users/domivogt  <dominik_vogt@hp.com>
 
 	* fvwm/misc.c (GetPositionArguments): Added MkLinux fix
