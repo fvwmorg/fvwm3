@@ -16,7 +16,7 @@
 #ifndef _MOVE_RESIZE_
 #define _MOVE_RESIZE_
 
-void MoveOutline(Window root, int x, int  y, int  width, int height);
+void MoveOutline(int x, int  y, int  width, int height);
 void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX,
 			  int endY,Bool fWarpPointerToo,
 			  int cusDelay, float *ppctMovement);

@@ -1,3 +1,10 @@
+1999-09-01  Hippo
+
+	* libs/Picture.{c,h}:
+	* fvwm/{fvwm,colormaps,menus,move_resize,virtual}.c
+	* fvwm/{colormaps,screen,move_resize}.h: Fixed XorPixmap with
+	fvwm -visual option.
+
 1999-09-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1:

@@ -150,7 +150,7 @@ void InstallWindowColormaps (FvwmWindow *tmp)
   Bool ThisWinInstalled = False;
 
 
-  /* If no window, then install root colormap */
+  /* If no window, then install fvwm colormap */
   if(!tmp)
     tmp = &Scr.FvwmRoot;
 
@@ -217,7 +217,7 @@ void InstallWindowColormaps (FvwmWindow *tmp)
  *
  *	   These matching routines provide a mechanism to insure that
  *	   the root colormap(s) is installed during operations like
- *	   rubber banding or menu display that require colors from
+ *	   rubber banding that require colors from
  *	   that colormap.  Calls may be nested arbitrarily deeply,
  *	   as long as there is one UninstallRootColormap call per
  *	   InstallRootColormap call.
@@ -233,7 +233,7 @@ void InstallRootColormap(void)
   if (Scr.root_pushes == 0)
     {
       tmp = Scr.pushed_window;
-      InstallWindowColormaps(&Scr.FvwmRoot);
+      XInstallColormap(dpy, DefaultColormap(dpy, Scr.screen));
       Scr.pushed_window = tmp;
     }
   Scr.root_pushes++;
@@ -243,7 +243,7 @@ void InstallRootColormap(void)
 /***************************************************************************
  *
  * Unstacks one layer of root colormap pushing
- * If we peel off the last layer, re-install th e application colormap
+ * If we peel off the last layer, re-install the application colormap
  *
  ***************************************************************************/
 void UninstallRootColormap(void)
@@ -252,6 +252,40 @@ void UninstallRootColormap(void)
     Scr.root_pushes--;
 
   if (!Scr.root_pushes)
+    {
+      InstallWindowColormaps(Scr.pushed_window);
+    }
+
+  return;
+}
+
+/***********************************************************************
+ *
+ *  Procedures:
+ *	<Uni/I>nstallFvwmColormap - Force (un)loads fvwm colormap(s)
+ *	This is used to ensure the fvwm colormap is installed during
+ *	menu operations
+ *
+ ***********************************************************************/
+void InstallFvwmColormap(void)
+{
+  FvwmWindow *tmp;
+  if (Scr.fvwm_pushes == 0)
+    {
+      tmp = Scr.pushed_window;
+      InstallWindowColormaps(&Scr.FvwmRoot);
+      Scr.pushed_window = tmp;
+    }
+  Scr.fvwm_pushes++;
+  return;
+}
+
+void UninstallFvwmColormap(void)
+{
+  if (Scr.fvwm_pushes)
+    Scr.fvwm_pushes--;
+
+  if (!Scr.fvwm_pushes)
     {
       InstallWindowColormaps(Scr.pushed_window);
     }

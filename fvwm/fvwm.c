@@ -501,6 +501,9 @@ int main(int argc, char **argv)
     Pdefault = True;
   }
 
+  /* make a copy of the visual stuff so that XorPixmap can swap with root */
+  SaveFvwmVisual();
+
 #ifdef SHAPE
   ShapesSupported = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
 #endif /* SHAPE */
@@ -1555,6 +1558,7 @@ static void InitVariables(void)
 
   XGetWindowAttributes(dpy,Scr.Root,&(Scr.FvwmRoot.attr));
   Scr.root_pushes = 0;
+  Scr.fvwm_pushes = 0;
   Scr.pushed_window = &Scr.FvwmRoot;
   Scr.FvwmRoot.number_cmap_windows = 0;
 

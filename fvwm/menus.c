@@ -2038,7 +2038,7 @@ static Bool pop_menu_up(
   MR_IS_UP(mr) = 0;
   MR_IS_DOWN(mr) = 0;
   MR_XANIMATION(mr) = 0;
-  InstallRootColormap();
+  InstallFvwmColormap();
 
   /***************************************************************
    * Handle popups from button clicks on buttons in the title bar,
@@ -2462,7 +2462,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
   MR_MAPPED_COPIES(*pmr)--;
   MST_USAGE_COUNT(*pmr)--;
 
-  UninstallRootColormap();
+  UninstallFvwmColormap();
   XFlush(dpy);
   if (*(pmp->pcontext) & (C_WINDOW | C_FRAME | C_TITLE | C_SIDEBAR))
     pmp->flags.is_menu_from_frame_or_window_or_titlebar = True;

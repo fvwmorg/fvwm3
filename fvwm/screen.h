@@ -238,6 +238,8 @@ typedef struct ScreenInfo
 
   int root_pushes;		/* current push level to install root
 				   colormap windows */
+  int fvwm_pushes;		/* current push level to install fvwm
+				   colormap windows */
   FvwmWindow *pushed_window;	/* saved window to install when pushes drops
 				   to zero */
   Cursor *FvwmCursors;

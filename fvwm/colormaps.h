@@ -70,7 +70,7 @@ void InstallWindowColormaps (FvwmWindow *tmp);
  *
  *	   These matching routines provide a mechanism to insure that
  *	   the root colormap(s) is installed during operations like
- *	   rubber banding or menu display that require colors from
+ *	   rubber banding that require colors from
  *	   that colormap.  Calls may be nested arbitrarily deeply,
  *	   as long as there is one UninstallRootColormap call per
  *	   InstallRootColormap call.
@@ -86,11 +86,21 @@ void InstallRootColormap(void);
 /***************************************************************************
  *
  * Unstacks one layer of root colormap pushing
- * If we peel off the last layer, re-install th e application colormap
+ * If we peel off the last layer, re-install the application colormap
  *
  ***************************************************************************/
 void UninstallRootColormap(void);
 
+/***********************************************************************
+ *
+ *  Procedures:
+ *	<Uni/I>nstallFvwmColormap - Force (un)loads fvwm colormap(s)
+ *	This is used to ensure the fvwm colormap is installed during
+ *	menu operations
+ *
+ ***********************************************************************/
+void InstallFvwmColormap(void);
+void UninstallFvwmColormap(void);
 
 /*****************************************************************************
  *

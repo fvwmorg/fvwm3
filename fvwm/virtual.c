@@ -514,7 +514,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   if(Grab)
     MyXGrabServer(dpy);
   /* Turn off the rubberband if its on */
-  MoveOutline(Scr.Root,0,0,0,0);
+  MoveOutline(0, 0, 0, 0);
   XWarpPointer(dpy,None,Scr.Root,0,0,0,0,*xl,*yt);
   MoveViewport(Scr.Vx + *delta_x,Scr.Vy + *delta_y,False);
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,

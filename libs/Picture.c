@@ -77,8 +77,6 @@ Colormap Pcmap;
 static Colormap FvwmCmap;
 unsigned int Pdepth;
 static unsigned int FvwmDepth;
-static int PvisualType;
-static int FvwmVisualType;
 Display *Pdpy;            /* Save area for display pointer */
 
 void InitPictureCMap(Display *dpy) {
@@ -109,21 +107,6 @@ void InitPictureCMap(Display *dpy) {
   FvwmVisual = Pvisual;
   FvwmDepth = Pdepth;
   FvwmCmap = Pcmap;
-  /* from the xpm library */
-  switch (FvwmVisual->class) {
-  case StaticGray:
-  case GrayScale:
-    switch (FvwmVisual->map_entries) {
-    case 2:
-      FvwmVisualType = PvisualType = XPM_MONO;
-    case 4:
-      FvwmVisualType = PvisualType = XPM_GRAY4;
-    default:
-      FvwmVisualType = PvisualType = XPM_GRAY;
-    }
-  default:
-    FvwmVisualType = PvisualType = XPM_COLOR;
-  }
 }
 
 void UseDefaultVisual(void)
@@ -133,20 +116,6 @@ void UseDefaultVisual(void)
   Pvisual = DefaultVisual(Pdpy, screen);
   Pdepth = DefaultDepth(Pdpy, screen);
   Pcmap = DefaultColormap(Pdpy, screen);  
-  switch (Pvisual->class) {
-  case StaticGray:
-  case GrayScale:
-    switch (Pvisual->map_entries) {
-    case 2:
-      PvisualType = XPM_MONO;
-    case 4:
-      PvisualType = XPM_GRAY4;
-    default:
-      PvisualType = XPM_GRAY;
-    }
-  default:
-    PvisualType = XPM_COLOR;
-  }
 }
 
 void UseFvwmVisual(void)
@@ -154,7 +123,13 @@ void UseFvwmVisual(void)
   Pvisual = FvwmVisual;
   Pdepth = FvwmDepth;
   Pcmap = FvwmCmap;
-  PvisualType = FvwmVisualType;
+}
+
+void SaveFvwmVisual(void)
+{
+  FvwmVisual = Pvisual;
+  FvwmDepth = Pdepth;
+  FvwmCmap = Pcmap;
 }
 
 static char* imagePath = FVWM_IMAGEPATH;
@@ -210,9 +185,8 @@ Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
   xpm_attributes.colormap = Pcmap;
   xpm_attributes.depth = Pdepth;
   xpm_attributes.closeness=40000; /* Allow for "similar" colors */
-  xpm_attributes.color_key = PvisualType;
   xpm_attributes.valuemask = XpmSize | XpmReturnAllocPixels | XpmCloseness
-			     | XpmVisual | XpmColormap | XpmDepth | XpmColorKey;
+			     | XpmVisual | XpmColormap | XpmDepth;
 
   rc = XpmReadFileToXpmImage(path, &my_image, NULL);
   if (rc == XpmSuccess) {

@@ -45,6 +45,7 @@ void InitPictureCMap(Display *dpy);
 /* do NOT use with CachePicture */
 void UseDefaultVisual(void);
 void UseFvwmVisual(void);
+void SaveFvwmVisual(void);
 
 /** Returns current setting of the image path **/
 char* GetImagePath( void );

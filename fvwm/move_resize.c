@@ -775,7 +775,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   yt += YOffset;
 
   if(((!opaque_move)&&(!Scr.gs.EmulateMWM))||(AddWindow))
-    MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
+    MoveOutline(xl, yt, Width - 1, Height - 1);
 
   DisplayPosition(tmp_win,xl,yt,True);
 
@@ -842,7 +842,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       if (XLookupKeysym(&(Event.xkey),0) == XK_Escape)
       {
 	if(!opaque_move)
-	  MoveOutline(Scr.Root, 0, 0, 0, 0);
+	  MoveOutline(0, 0, 0, 0);
 	if (!IS_ICONIFIED(tmp_win))
 	{
 	  *FinalX = tmp_win->frame_g.x;
@@ -886,7 +886,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	if (button_mask || (Event.xbutton.button != 1))
 	{
 	  if(!opaque_move)
-	    MoveOutline(Scr.Root, 0, 0, 0, 0);
+	    MoveOutline(0, 0, 0, 0);
 	  if (!IS_ICONIFIED(tmp_win))
 	  {
 	    *FinalX = tmp_win->frame_g.x;
@@ -904,7 +904,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       }
     case ButtonRelease:
       if(!opaque_move)
-	MoveOutline(Scr.Root, 0, 0, 0, 0);
+	MoveOutline(0, 0, 0, 0);
       xl2 = Event.xbutton.x_root + XOffset;
       yt2 = Event.xbutton.y_root + YOffset;
       /* ignore the position of the button release if it was on a
@@ -962,7 +962,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       while(paged<=1)
       {
 	if(!opaque_move)
-	  MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
+	  MoveOutline(xl, yt, Width - 1, Height - 1);
 	else
 	{
 	  if (IS_ICONIFIED(tmp_win))
@@ -1011,7 +1011,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     {
       DispatchEvent(False);
       if(!opaque_move)
-	MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
+	MoveOutline(xl, yt, Width - 1, Height - 1);
     }
 #ifndef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
     if (opaque_move && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
@@ -1284,11 +1284,6 @@ void SetXORPixmap(F_CMD_ARGS)
   XGCValues gcv;
   unsigned long gcm;
 
-  if (!Pdefault) {
-    fvwm_msg(ERR, "SetXORPixmap", "doesn't work with the -visual option");
-    return;
-  }
-
   action = GetNextToken(action, &PixmapName);
   if(PixmapName == NULL)
   {
@@ -1296,7 +1291,6 @@ void SetXORPixmap(F_CMD_ARGS)
     SetXOR(eventp, w, tmp_win, context, "0", Module);
     return;
   }
-
   /* get the picture in the root visual, colorlimit is ignored because the
    * pixels will be freed */
   UseDefaultVisual();
@@ -1308,7 +1302,6 @@ void SetXORPixmap(F_CMD_ARGS)
     return;
   }
   free(PixmapName);
-
   /* free up old pixmap */
   if (XorPixmap != None)
     XFreePixmap(dpy, XorPixmap);
@@ -1317,7 +1310,6 @@ void SetXORPixmap(F_CMD_ARGS)
   XorPixmap = XCreatePixmap(dpy, Scr.Root, xp->width, xp->height, Pdepth);
   XCopyArea(dpy, xp->picture, XorPixmap, DefaultGC(dpy, Scr.screen), 0, 0,
 	    xp->width, xp->height, 0, 0);
-
   /* destroy picture and free colors */
   DestroyPicture(dpy, xp);
   UseFvwmVisual();
@@ -1326,7 +1318,8 @@ void SetXORPixmap(F_CMD_ARGS)
   gcm = GCFunction|GCLineWidth|GCTile|GCFillStyle|GCSubwindowMode;
   gcv.subwindow_mode = IncludeInferiors;
   gcv.function = GXxor;
-  gcv.line_width = 0;
+  /* line width of 1 is necessary for Exceed servers */
+  gcv.line_width = 1;
   gcv.tile = XorPixmap;
   gcv.fill_style = FillTiled;
   gcv.subwindow_mode = IncludeInferiors;
@@ -1644,7 +1637,7 @@ void resize_window(F_CMD_ARGS)
    * starting a resize. */
 
   /* draw the rubber-band window */
-  MoveOutline(Scr.Root, drag->x, drag->y, drag->width - 1, drag->height - 1);
+  MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
   /* kick off resizing without requiring any motion if invoked with a key
    * press */
   if (eventp->type == KeyPress)
@@ -1761,14 +1754,12 @@ void resize_window(F_CMD_ARGS)
     if(!done)
     {
       DispatchEvent(False);
-      MoveOutline(Scr.Root, drag->x, drag->y,
-		  drag->width - 1,
-		  drag->height - 1);
+      MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
     }
   }
 
   /* erase the rubber-band */
-  MoveOutline(Scr.Root, 0, 0, 0, 0);
+  MoveOutline(0, 0, 0, 0);
 
   /* pop down the size window */
   XUnmapWindow(dpy, Scr.SizeWindow);
@@ -1869,9 +1860,7 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
     if (*ymotionp == 1)
       drag->y = orig->y + orig->height - drag->height;
 
-    MoveOutline(Scr.Root, drag->x, drag->y,
-		drag->width - 1,
-		drag->height - 1);
+    MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
   }
   DisplaySize(tmp_win, drag->width, drag->height,False,False);
 }
@@ -2174,7 +2163,7 @@ void ConstrainSize(
  *	height	    - the height of the rectangle
  *
  ***********************************************************************/
-void MoveOutline(Window root, int x, int  y, int  width, int height)
+void MoveOutline(int x, int  y, int  width, int height)
 {
   static int lastx = 0;
   static int lasty = 0;
@@ -2234,7 +2223,7 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
     rects[4 * interleave + offset].height = (lastHeight-6);
   }
 
-  XDrawRectangles(dpy,Scr.Root,Scr.DrawGC,rects,interleave * 5);
+  XDrawRectangles(dpy, Scr.Root, Scr.DrawGC, rects, interleave * 5);
 
   lastx = x;
   lasty = y;
