@@ -2,6 +2,16 @@
 
 	* FvwmGtk/FvwmGtk.c (menu_item_new_with_pixmap_and_label): 
 	dont use accel labels, since accelerators won't work anyway.
+	(convert_label_with_ampersand): 
+	(create_label_pattern): functions from gtkcauldron.c in the
+	gnome-libs package for dealing with underlined accelerators.
+	(get_menu_accel_group): function from gnome-app-helper.c in
+	the gnome-libs package.  
+	(menu_item_new_with_pixmap_and_label): use the "stolen" functions
+	above to implement keyboard navigation like in fvwms native menus.
+
+	* FvwmGtk/FvwmGtk.1: document document underlined accelerators.
+
 
 Fri Apr 23 13:22:14 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 

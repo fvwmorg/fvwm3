@@ -74,14 +74,18 @@ to it. It is also possible to redefine a menu from scratch, see
 .IP "*FvwmGtkTitle \fBlabel\fP [ \fBicon\fP ]"
 Appends a title to the currently open menu. If the optional argument
 is given, it should be the name of an xpm file in the ImagePath. The 
-icon will appear to the left of the text.
+icon will appear to the left of the text. The label can contain an ampersand
+to mark the following character as an accelerator to be underlined. Underlined
+accelerators work in the same way as they do in fvwm native menus.
 
 .IP "*FvwmGtkItem \fBlabel\fP \fBaction\fP [ \fBicon\fP ]"
 Appends an item to the currently open menu. The first argument is the
 text that will appear in the item, the second argument will be sent to
 fvwm when the item is activated. If the optional argument is given, it 
 should be the name of an xpm file in the ImagePath. The icon will appear 
-to the left of the text.
+to the left of the text. The label can contain an ampersand
+to mark the following character as an accelerator to be underlined. 
+Underlined accelerators work in the same way as they do in fvwm native menus.
 
 .IP "*FvwmGtkSubmenu \fBlabel\fP \fBname\fP [ \fBicon\fP ]"
 Appends an item to the currently open menu. The first argument is the
@@ -89,7 +93,9 @@ text that will appear in the item, the second argument is the name of
 the submenu that will be opened when the item is selected. If the submenu 
 doesn't exist yet, it will be created. If the optional argument is given, 
 it should be the name of an xpm file in the ImagePath. The icon will 
-appear to the left of the text.
+appear to the left of the text. The label can contain an ampersand
+to mark the following character as an accelerator to be underlined. 
+Underlined accelerators work in the same way as they do in fvwm native menus.
 
 .IP "*FvwmGtkTearoff"
 Appends a special tear-off item. Activating it turns the menu into 

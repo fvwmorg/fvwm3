@@ -927,6 +927,7 @@ find_or_create_menu (char *name)
   if (menu == NULL) 
     {
       menu = gtk_menu_new ();
+      
       gtk_widget_set_name (menu, name);
       name_copy = gtk_widget_get_name (menu);
       gtk_object_ref (GTK_OBJECT (menu));
@@ -956,6 +957,63 @@ open_menu (int argc, char **argv)
   current = find_or_create_menu (argv[0]);
 }
 
+
+/* from gtkcauldron.c */
+/* result must be g_free'd */
+gchar *
+convert_label_with_ampersand (const gchar * _label, gint * accelerator_key, gint * underbar_pos)
+{
+    gchar *p;
+    gchar *label = g_strdup (_label);
+    for (p = label;; p++) {
+	if (!*p)
+	    break;
+	if (!p[1])
+	    break;
+	if (*p == '&') {
+	    memcpy (p, p + 1, strlen (p));
+	    if (*p == '&')	/* use && for an actual & */
+		continue;
+	    *underbar_pos = (unsigned long) p - (unsigned long) label;
+	    *accelerator_key = *p;
+	    return label;
+	}
+    }
+    return label;
+}
+
+/* from gtkcauldron.c */
+gchar *
+create_label_pattern (gchar * label, gint underbar_pos)
+{
+    gchar *pattern;
+    pattern = g_strdup (label);
+    memset (pattern, ' ', strlen (label));
+    if (underbar_pos < strlen (pattern) && underbar_pos >= 0)
+	pattern[underbar_pos] = '_';
+    return pattern;
+}
+
+/* from gnome-app-helper.c */
+GtkAccelGroup *
+get_menu_accel_group (GtkMenuShell *menu_shell)
+{
+	GtkAccelGroup *ag;
+
+	ag = gtk_object_get_data (GTK_OBJECT (menu_shell), 
+			"gnome_menu_accel_group");
+
+	if (!ag) {
+		ag = gtk_accel_group_new ();
+		gtk_accel_group_attach (ag, GTK_OBJECT (menu_shell));
+		gtk_object_set_data (GTK_OBJECT (menu_shell), 
+				"gnome_menu_accel_group", ag);
+	}
+
+	return ag;
+}
+
+
 GtkWidget *
 menu_item_new_with_pixmap_and_label (char *file, char *_label)
 {
@@ -965,6 +1023,8 @@ menu_item_new_with_pixmap_and_label (char *file, char *_label)
   GdkPixmap *pixmap;
   GdkBitmap *mask;
   char *path;
+  gint accelerator_key = 0, underbar_pos = -1;
+  gchar *pattern, *converted_label;
 
   path = findImageFile (file, image_path, R_OK);
 
@@ -983,7 +1043,23 @@ menu_item_new_with_pixmap_and_label (char *file, char *_label)
       free (path);
     }
 
-  label = gtk_label_new (_label);
+  converted_label = convert_label_with_ampersand (_label, &accelerator_key,
+						  &underbar_pos);
+  pattern = create_label_pattern (converted_label, underbar_pos);
+  label = gtk_label_new (converted_label);
+  if (underbar_pos != -1)
+    {
+      GtkAccelGroup *accel_group = 
+	get_menu_accel_group (GTK_MENU_SHELL (current));
+      
+      gtk_label_set_pattern (GTK_LABEL (label), pattern);
+	
+      gtk_widget_add_accelerator (item, "activate_item", 
+				  accel_group, accelerator_key, 0, 0);
+
+    }
+  g_free (converted_label);
+
   gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
   gtk_container_add (GTK_CONTAINER (item), label);
   gtk_widget_show (label);
