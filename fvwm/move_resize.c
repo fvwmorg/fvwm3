@@ -53,6 +53,7 @@
 #include "virtual.h"
 #include "decorations.h"
 #include "events.h"
+#include "menus.h"
 #include <X11/keysym.h>
 
 /* ----- move globals ----- */
@@ -863,7 +864,7 @@ static void InteractiveMove(
  * entry */
 static void AnimatedMoveAnyWindow(
   FvwmWindow *tmp_win, Window w, int startX, int startY, int endX, int endY,
-  Bool fWarpPointerToo, int cmsDelay, float *ppctMovement)
+  Bool fWarpPointerToo, int cmsDelay, float *ppctMovement, Bool ParentalMenu)
 {
   int pointerX, pointerY;
   int currentX, currentY;
@@ -912,6 +913,10 @@ static void AnimatedMoveAnyWindow(
       /* don't waste time in the same spot */
       continue;
     XMoveWindow(dpy,w,currentX,currentY);
+    if (ParentalMenu)
+    {
+      ParentalMenuRePaint();
+    }
     if (fWarpPointerToo == True)
     {
       if (XQueryPointer(
@@ -963,6 +968,10 @@ static void AnimatedMoveAnyWindow(
       StashEventTime(&Event);
       /* finish the move immediately */
       XMoveWindow(dpy,w,endX,endY);
+      if (ParentalMenu)
+      {
+	ParentalMenuRePaint();
+      }
       break;
     }
     lastX = currentX;
@@ -979,11 +988,12 @@ static void AnimatedMoveAnyWindow(
 
 /* used for moving menus, not a client window */
 void AnimatedMoveOfWindow(Window w, int startX, int startY,
-                             int endX, int endY, Bool fWarpPointerToo,
-                             int cmsDelay, float *ppctMovement)
+			  int endX, int endY, Bool fWarpPointerToo,
+			  int cmsDelay, float *ppctMovement,
+			  Bool ParentalMenu)
 {
   AnimatedMoveAnyWindow(NULL, w, startX, startY, endX, endY, fWarpPointerToo,
-                        cmsDelay, ppctMovement);
+                        cmsDelay, ppctMovement, ParentalMenu);
 }
 
 /* used for moving client windows */
@@ -993,7 +1003,7 @@ void AnimatedMoveFvwmWindow(FvwmWindow *tmp_win, Window w, int startX,
 			    float *ppctMovement)
 {
   AnimatedMoveAnyWindow(tmp_win, w, startX, startY, endX, endY,
-			fWarpPointerToo, cmsDelay, ppctMovement);
+			fWarpPointerToo, cmsDelay, ppctMovement, False);
 }
 
 
@@ -1153,7 +1163,8 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
     if (do_animate)
     {
       AnimatedMoveOfWindow(tmp_win->icon_w,-1,-1,tmp_win->icon_xl_loc,
-			   FinalY+tmp_win->icon_p_height, fWarp,-1,NULL);
+			   FinalY+tmp_win->icon_p_height, fWarp,-1,
+			   NULL, False);
     }
     else
     {
@@ -1168,7 +1179,8 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
       if (do_animate)
       {
 	AnimatedMoveOfWindow(tmp_win->icon_pixmap_w, -1,-1,
-			     tmp_win->icon_g.x,FinalY,fWarp,-1,NULL);
+			     tmp_win->icon_g.x,FinalY,fWarp,-1,
+			     NULL, False);
       }
       else
       {

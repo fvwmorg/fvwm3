@@ -692,9 +692,6 @@ extern MenuInfo Menus;
 
 
 MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
-void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
-			  Bool fWarpPointerToo, int cusDelay,
-			  float *ppctMovement );
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
 void do_menu(MenuParameters *pmp, MenuReturn *pret);
@@ -707,5 +704,6 @@ void change_mr_menu_style(MenuRoot *mr, char *stylename);
 void UpdateAllMenuStyles(void);
 void UpdateMenuColorset(int cset);
 void SetMenuCursor(Cursor cursor);
+void ParentalMenuRePaint(void);
 
 #endif /* _MENUS_ */

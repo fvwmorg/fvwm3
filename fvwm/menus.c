@@ -45,6 +45,7 @@
 #include "repeat.h"
 #include "borders.h"
 #include "misc.h"
+#include "move_resize.h"
 #include "screen.h"
 #include "colors.h"
 #include "colormaps.h"
@@ -94,6 +95,10 @@ static saved_pos_hints last_saved_pos_hints =
   { False, False },
   { 0, 0, 0.0, 0.0, 0, 0, False, False, False }
 };
+
+/* These globals are here for simplicity */
+MenuRoot *parental_mr = NULL;
+FvwmWindow *parental_fw = NULL;
 
 /***************************************************************
  * externals
@@ -310,10 +315,12 @@ static MenuItem *warp_pointer_to_item(MenuRoot *mr, MenuItem *mi,
  ***************************************************************/
 
 /* Undo the animation of a menu */
-static void animated_move_back(MenuRoot *mr, Bool do_warp_pointer)
+static void animated_move_back(
+  MenuRoot *mr, Bool do_warp_pointer, FvwmWindow *fw)
 {
   int act_x;
   int act_y;
+  Bool Parental = False;
 
   if (MR_XANIMATION(mr) == 0)
     return;
@@ -321,9 +328,16 @@ static void animated_move_back(MenuRoot *mr, Bool do_warp_pointer)
 		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
   {
     /* move it back */
+    if (ST_HAS_MENU_CSET(MR_STYLE(mr)) && 
+	Colorset[ST_CSET_MENU(MR_STYLE(mr))].pixmap == ParentRelative)
+    {
+      Parental = True;
+      parental_mr = mr;
+      parental_fw = fw;
+    }
     AnimatedMoveOfWindow(
       MR_WINDOW(mr) ,act_x, act_y, act_x - MR_XANIMATION(mr), act_y,
-      do_warp_pointer, -1, NULL);
+      do_warp_pointer, -1, NULL, Parental);
     MR_XANIMATION(mr) = 0;
   }
 
@@ -2316,7 +2330,7 @@ static void MenuInteraction(
 	  (tmi = find_entry(NULL, &tmrMi, None, -1, -1))  &&
 	  (tmi == MR_SELECTED_ITEM(pmp->menu) || tmrMi != pmp->menu))
       {
-	animated_move_back(mrPopup, False);
+	animated_move_back(mrPopup, False, (*pmp->pTmp_win));
       }
       /* now check whether we should animate the current real menu
 	 over to the right to unobscure the prior menu; only a very
@@ -2327,7 +2341,7 @@ static void MenuInteraction(
 	  pointer_in_passive_item_area(x_offset, mrMi))
       {
 	/* we have to see if we need menu to be moved */
-	animated_move_back(pmp->menu, True);
+	animated_move_back(pmp->menu, True, (*pmp->pTmp_win));
 	  if (mrPopdown)
 	  {
 	    if (mrPopdown != mrPopup)
@@ -2887,6 +2901,7 @@ static int pop_menu_up(
 	int a_left_x;
 	int a_right_x;
 	int end_x;
+	Bool Parental = False;
 
 	if (use_left_submenus)
 	{
@@ -2935,8 +2950,16 @@ static int pop_menu_up(
 	  MR_HAS_POPPED_UP_RIGHT(mr) = 0;
 	}
 	MR_XANIMATION(parent_menu) += end_x - prev_x;
+	if (ST_HAS_MENU_CSET(MR_STYLE(parent_menu)) && 
+	    Colorset[ST_CSET_MENU(MR_STYLE(parent_menu))].pixmap == 
+	    ParentRelative)
+	{
+	  Parental = True;
+	  parental_mr = parent_menu;
+	  parental_fw = fw;
+	}
 	AnimatedMoveOfWindow(MR_WINDOW(parent_menu),prev_x,prev_y,end_x,prev_y,
-			     True, -1, NULL);
+			     True, -1, NULL, Parental);
       } /* if (MST_IS_ANIMATED(mr)) */
 
       /*
@@ -4129,6 +4152,85 @@ static void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
   return;
 }
 
+/***********************************************************************
+ *
+ *  Procedure:
+ *	ParentalMenuRePaint - repaint the menu background if it is tranparent
+ *        (ParentRelative) during an animated move.
+ *        Called in move_resize.c (AnimatedMoveAnyWindow)
+ *      Performance improvement Welcome!!
+ *
+ ***********************************************************************/
+void ParentalMenuRePaint(void)
+{
+  MenuItem *mi;
+  int h = 0, s_h = 0, e_h = 0;
+
+  /* redraw the background of non active item */
+  for (mi = MR_FIRST_ITEM(parental_mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
+  { 
+    if (mi == MR_SELECTED_ITEM(parental_mr))
+    {
+      int left;
+
+      left = MR_HILIGHT_X_OFFSET(parental_mr) - MR_ITEM_X_OFFSET(parental_mr);
+      if (left > 0)
+      {
+	XClearArea(dpy, MR_WINDOW(parental_mr),
+		   MR_ITEM_X_OFFSET(parental_mr),
+		   MI_Y_OFFSET(mi),
+		   left,
+		   MI_HEIGHT(mi) + MST_RELIEF_THICKNESS(parental_mr), 0);
+      }
+      h = MI_HEIGHT(mi);
+      continue;
+    }
+    if (h == 0)
+      s_h += MI_HEIGHT(mi);
+    else
+      e_h += MI_HEIGHT(mi);
+  }
+  XClearArea(dpy, MR_WINDOW(parental_mr),
+	     MR_ITEM_X_OFFSET(parental_mr),
+	     MST_BORDER_WIDTH(parental_mr),
+	     MR_ITEM_WIDTH(parental_mr),
+	     s_h, 0);
+  if (e_h != 0)
+  {
+    XClearArea(dpy, MR_WINDOW(parental_mr),
+      MR_ITEM_X_OFFSET(parental_mr),
+      s_h + h + MST_RELIEF_THICKNESS(parental_mr) + 
+	       MST_BORDER_WIDTH(parental_mr),
+      MR_ITEM_WIDTH(parental_mr), e_h, 0);
+  }
+
+  /* now redraw the item */
+  for (mi = MR_FIRST_ITEM(parental_mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
+  {
+    if (mi == MR_SELECTED_ITEM(parental_mr))
+      continue;
+    paint_item(parental_mr, mi, parental_fw, True);
+  }
+
+  /* if we have a side pic and no side colors we shound repaint the side pic */
+  if ((MR_SIDEPIC(parental_mr) || MST_SIDEPIC(parental_mr)) &&
+      !MR_HAS_SIDECOLOR(parental_mr) && !MST_HAS_SIDE_COLOR(parental_mr))
+  {
+    Picture *sidePic;
+    if (MR_SIDEPIC(parental_mr))
+      sidePic = MR_SIDEPIC(parental_mr);
+    else if (MST_SIDEPIC(parental_mr))
+      sidePic = MST_SIDEPIC(parental_mr);
+    else
+    return;
+    XClearArea(dpy, MR_WINDOW(parental_mr), MR_SIDEPIC_X_OFFSET(parental_mr),
+	       MST_BORDER_WIDTH(parental_mr),
+	       sidePic->width,
+	       MR_HEIGHT(parental_mr) - 2 * MST_BORDER_WIDTH(parental_mr),
+	       0);
+    paint_side_pic(parental_mr, NULL);
+  }
+}
 
 static void FreeMenuItem(MenuItem *mi)
 {

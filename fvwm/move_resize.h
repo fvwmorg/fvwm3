@@ -22,7 +22,7 @@ Bool is_maximize_allowed(FvwmWindow *tmp_win, Bool is_user_request);
 void switch_move_resize_grid(Bool state);
 void AnimatedMoveOfWindow(
   Window w,int startX,int startY,int endX, int endY,Bool fWarpPointerToo,
-  int cusDelay, float *ppctMovement);
+  int cusDelay, float *ppctMovement, Bool ParentalMenu);
 void AnimatedMoveFvwmWindow(
   FvwmWindow *tmp_win, Window w, int startX, int startY, int endX, int endY,
   Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);

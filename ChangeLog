@@ -1,3 +1,14 @@
+2002-01-04  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
+	(AnimatedMoveOfWindow):
+	(AnimatedMoveFvwmWindow):
+	(move_window_doit):
+	* fvwm/menus.c (ParentalMenuRePaint):
+	(animated_move_back):
+	(pop_menu_up):
+	Fixed transparent animated menu
+
 2002-01-03  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/move_resize.c (is_resize_allowed): 
