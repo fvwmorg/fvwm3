@@ -2098,6 +2098,12 @@ void HandleMapNotify(const evh_args_t *ea)
 		}
 		return;
 	}
+	if (te->xmap.window == FW_W_FRAME(fw))
+	{
+		/* Now that we know the frame is mapped after capturing the
+		 * window we do not need StructureNotifyMask events anymore. */
+		XSelectInput(dpy, FW_W_FRAME(fw), XEVMASK_FRAMEW);
+	}
 	/* Except for identifying over-ride redirect window mappings, we
 	 * don't need or want windows associated with the
 	 * SubstructureNotifyMask */

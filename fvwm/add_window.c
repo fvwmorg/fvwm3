@@ -728,7 +728,7 @@ static void setup_frame_window(
 	attributes.backing_store = NotUseful;
 	attributes.background_pixmap = None;
 	attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
-	attributes.event_mask = XEVMASK_FRAMEW;
+	attributes.event_mask = XEVMASK_FRAMEW_CAPTURE;
 	attributes.save_under = False;
 	/* create the frame window, child of root, grandparent of client */
 	FW_W_FRAME(fw) = XCreateWindow(

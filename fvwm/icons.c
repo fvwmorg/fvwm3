@@ -72,6 +72,11 @@ static void GetIconBitmap(FvwmWindow *fw);
 /* erase all traces of the last used icon in the window structure */
 void clear_icon(FvwmWindow *fw)
 {
+	int px;
+	int py;
+	int tx;
+	int ty;
+
 	FW_W_ICON_PIXMAP(fw) = None;
 	fw->iconPixmap = None;
 	fw->icon_maskPixmap = None;
@@ -79,7 +84,22 @@ void clear_icon(FvwmWindow *fw)
 	fw->icon_nalloc_pixels = 0;
 	fw->icon_alloc_pixels = NULL;
 	fw->icon_no_limit = 0;
-	memset(&fw->icon_g, 0, sizeof(fw->icon_g));
+	if (IS_ICON_MOVED(fw))
+	{
+		px = fw->icon_g.picture_w_g.x;
+		py = fw->icon_g.picture_w_g.y;
+		tx = fw->icon_g.title_w_g.x;
+		ty = fw->icon_g.title_w_g.y;
+		memset(&fw->icon_g, 0, sizeof(fw->icon_g));
+		fw->icon_g.picture_w_g.x = px;
+		fw->icon_g.picture_w_g.y = py;
+		fw->icon_g.title_w_g.x = tx;
+		fw->icon_g.title_w_g.y = ty;
+	}
+	else
+	{
+		memset(&fw->icon_g, 0, sizeof(fw->icon_g));
+	}
 
 	return;
 }

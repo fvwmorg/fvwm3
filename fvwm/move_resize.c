@@ -1259,25 +1259,24 @@ void __move_icon(
 	{
 		AnimatedMoveOfWindow(
 			tw, -1, -1, tx, ty, do_warp_pointer, -1, NULL, NULL);
+		do_warp_pointer = 0;
 	}
-	else
+	if (has_icon_title)
 	{
-		XMoveWindow(dpy, FW_W_ICON_TITLE(fw), tx, ty);
-		if (do_warp_pointer)
-		{
-			FWarpPointer(
-				dpy, None, None, 0, 0, 0, 0, x - old_x,
-				y - old_y);
-		}
+		XMoveWindow(dpy, FW_W_ICON_TITLE(fw), gt.x, gt.y);
 	}
 	if (has_icon_picture)
 	{
+		XMoveWindow(dpy, FW_W_ICON_PIXMAP(fw), gp.x, gp.y);
+		XMapWindow(dpy, FW_W_ICON_PIXMAP(fw));
 		if (has_icon_title)
 		{
-			XMoveWindow(dpy, FW_W_ICON_TITLE(fw), gt.x, gt.y);
 			XMapWindow(dpy, FW_W_ICON_TITLE(fw));
 		}
-		XMapWindow(dpy, tw);
+	}
+	if (do_warp_pointer)
+	{
+		FWarpPointer(dpy, None, None, 0, 0, 0, 0, x - old_x, y - old_y);
 	}
 
 	return;

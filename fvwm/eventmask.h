@@ -22,6 +22,7 @@
 #define XEVMASK_FRAMEW \
 	(SubstructureRedirectMask | VisibilityChangeMask | \
 	EnterWindowMask | LeaveWindowMask)
+#define XEVMASK_FRAMEW_CAPTURE (XEVMASK_FRAMEW | StructureNotifyMask)
 #define XEVMASK_TITLEW \
 	(ButtonPressMask | ButtonReleaseMask | \
 	OwnerGrabButtonMask | /*ButtonMotionMask | PointerMotionMask | */\

@@ -1033,6 +1033,7 @@ Bool get_visible_icon_geometry(
 Bool get_icon_geometry(
 	FvwmWindow *fw, rectangle *ret_g)
 {
+	/* valid geometry? */
 	if (fw->icon_g.picture_w_g.width > 0)
 	{
 		*ret_g = fw->icon_g.picture_w_g;
@@ -1041,7 +1042,16 @@ Bool get_icon_geometry(
 			ret_g->height += fw->icon_g.title_w_g.height;
 		}
 	}
-	else if (!HAS_NO_ICON_TITLE(fw))
+	else if (fw->icon_g.title_w_g.width > 0)
+	{
+		*ret_g = fw->icon_g.title_w_g;
+	}
+	/* valid position? */
+	else if (fw->icon_g.picture_w_g.x != 0 || fw->icon_g.picture_w_g.y != 0)
+	{
+		*ret_g = fw->icon_g.picture_w_g;
+	}
+	else if (fw->icon_g.title_w_g.x != 0 || fw->icon_g.title_w_g.y != 0)
 	{
 		*ret_g = fw->icon_g.title_w_g;
 	}

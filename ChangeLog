@@ -1,3 +1,18 @@
+2002-11-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (setup_frame_window):
+	* fvwm/events.c (HandleMapNotify):
+	* fvwm/eventmask.h (XEVMASK_FRAMEW_RECAPTURE):
+	fixed empty decorations after recapture
+
+	* fvwm/geometry.c (get_icon_geometry):
+	* fvwm/icons.c (clear_icon):
+	fixed icon jumping to 0 0 when the icon layout changes after the icon
+	has been moved manually
+
+	* fvwm/move_resize.c (__move_icon):
+	fixed MoveToPage with icons
+
 2002-11-09  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Fft.c (FftGetRotatedFont):

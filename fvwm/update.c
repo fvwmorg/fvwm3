@@ -479,10 +479,12 @@ static void apply_window_updates(
 	if (flags->do_update_icon_title)
 	{
 		RedoIconName(t);
+#if 0
 		if (IS_ICONIFIED(t))
 		{
 			DrawIconWindow(t, True, True, False, NULL);
 		}
+#endif
 	}
 	if (flags->do_update_icon_placement)
 	{

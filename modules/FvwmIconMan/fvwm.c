@@ -146,9 +146,21 @@ int win_in_viewport (WinData *win)
   WinManager *manager = win->manager;
   int flag = 0;
   int reverse = 0;
+  rectangle g;
 
   assert (manager);
 
+  if (IS_ICONIFIED(win))
+  {
+	  g = win->icon_g;
+  }
+  else
+  {
+	  g.x = win->x;
+	  g.y = win->y;
+	  g.width = win->width;
+	  g.height = win->height;
+  }
   switch (manager->res) {
   case SHOW_GLOBAL:
     flag = 1;
@@ -171,7 +183,7 @@ int win_in_viewport (WinData *win)
     } else if (win->desknum == globals.desknum) {
       /* win and screen intersect if they are not disjoint in x and y */
       flag = RECTANGLES_INTERSECT(
-	win->x, win->y, win->width, win->height,
+	g.x, g.y, g.width, g.height,
 	manager->managed_g.x, manager->managed_g.y,
 	manager->managed_g.width, manager->managed_g.height);
     }
@@ -184,7 +196,7 @@ int win_in_viewport (WinData *win)
     if (win->desknum == globals.desknum) {
       /* win and screen intersect if they are not disjoint in x and y */
       flag = RECTANGLES_INTERSECT(
-	win->x, win->y, win->width, win->height,
+	g.x, g.y, g.width, g.height,
 	manager->managed_g.x, manager->managed_g.y,
 	manager->managed_g.width, manager->managed_g.height);
     }
@@ -491,17 +503,33 @@ static void mini_icon (FvwmPacketBody *body)
 		win->pic.width, win->pic.height, win->pic.depth);
 }
 
-static void iconify (FvwmPacketBody *body, int dir)
+static void icon_location(FvwmPacketBody *body)
 {
-  Ulong app_id = body->minimal_data.app_id;
-  WinData *win;
+	Ulong app_id = body->minimal_data.app_id;
+	WinData *win;
 
-  win = id_to_win (app_id);
+	win = id_to_win(app_id);
+	if (win == NULL)
+	{
+		return;
+	}
+	win->icon_g.x = body->icon_data.xpos;
+	win->icon_g.y = body->icon_data.ypos;
+	win->icon_g.width = body->icon_data.icon_width;
+	win->icon_g.height = body->icon_data.icon_height;
+	check_in_window (win);
+}
 
-  set_win_iconified (win, dir);
+static void iconify(FvwmPacketBody *body, int dir)
+{
+	Ulong app_id = body->minimal_data.app_id;
+	WinData *win;
 
-  check_win_complete (win);
-  check_in_window (win);
+	win = id_to_win(app_id);
+	set_win_iconified(win, dir);
+	icon_location(body);
+	check_win_complete(win);
+	check_in_window (win);
 }
 
 /* only used by remanage_winlist */
@@ -656,6 +684,10 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
     ConsoleDebug (FVWM, "DEBUG::M_ICONIFY\n");
     iconify (body, 1);
     SendUnlockNotification(Fvwm_fd);
+    break;
+
+  case M_ICON_LOCATION:
+    icon_location(body);
     break;
 
   case M_END_WINDOWLIST:

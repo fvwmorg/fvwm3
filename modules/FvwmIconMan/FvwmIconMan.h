@@ -199,6 +199,7 @@ typedef struct win_data {
 
   Ulong desknum;
   long x, y, width, height;
+  rectangle icon_g;
   Ulong app_id;
 /*  Ulong fvwm_flags; */
   window_flags flags;
