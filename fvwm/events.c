@@ -2096,9 +2096,16 @@ void HandleMapRequest(void)
 	{
 		/* Just map the damn thing, decorations are added later
 		 * in CaptureAllWindows. */
-		XMapWindow (dpy, Event.xmaprequest.window);
+		XMapWindow(dpy, Event.xmaprequest.window);
 		return;
 	}
+if (XGetGeometry(
+	    dpy, Event.xmaprequest.window, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
+	    &JunkHeight, &JunkBW,  &JunkDepth) == 0)
+{
+fprintf(stderr,"x");
+return;
+}
 	HandleMapRequestKeepRaised(None, NULL, NULL);
 
 	return;

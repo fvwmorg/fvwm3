@@ -192,10 +192,16 @@ static void CaptureOneWindow(
 		win_opts.flags.is_menu =
 			(is_recapture && fw != NULL && IS_TEAR_OFF_MENU(fw));
 		HandleMapRequestKeepRaised(keep_on_top_win, fw, &win_opts);
-		if (!fFvwmInStartup)
+		/* HandleMapRequestKeepRaised may have destroyed the fw if the
+		 * window vanished while in AddWindow(), so don't access fw
+		 * anymore before checking if it is a valid window. */
+		if (check_if_fvwm_window_exists(fw))
 		{
-			SET_MAP_PENDING(fw, 0);
-			SET_MAPPED(fw, is_mapped);
+			if (!fFvwmInStartup)
+			{
+				SET_MAP_PENDING(fw, 0);
+				SET_MAPPED(fw, is_mapped);
+			}
 		}
 	}
 	MyXUngrabServer(dpy);
@@ -1997,24 +2003,15 @@ FvwmWindow *AddWindow(
 	}
 	fw = tmpfw;
 
-	/****** safety check, window might disappear before we get to it ******/
-	if (!win_opts->flags.is_recapture &&
-	    XGetGeometry(dpy, FW_W(fw), &JunkRoot, &JunkX, &JunkY,
-			 &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
-	{
-		free((char *)fw);
-		return NULL;
-	}
-
 	/****** Make sure the client window still exists.  We don't want to
 	 * leave an orphan frame window if it doesn't.  Since we now have the
 	 * server grabbed, the window can't disappear later without having been
 	 * reparented, so we'll get a DestroyNotify for it.  We won't have
 	 * gotten one for anything up to here, however. ******/
 	MyXGrabServer(dpy);
-	if (XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY,
-			 &JunkWidth, &JunkHeight,
-			 &JunkBW,  &JunkDepth) == 0)
+	if (XGetGeometry(
+		    dpy, w, &JunkRoot, &JunkX, &JunkY, &JunkWidth, &JunkHeight,
+		    &JunkBW,  &JunkDepth) == 0)
 	{
 		free((char *)fw);
 		MyXUngrabServer(dpy);
