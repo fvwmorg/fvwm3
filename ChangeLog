@@ -1,3 +1,47 @@
+1998-11-24  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/virtual.c (checkPanFrames): made sure appropriate pan frames
+	are visible (Tim Phipps)
+
+	* fvwm/fvwm.h: cleaned up some pan frame stuff (Tim Phipps)
+
+	* fvwm/add_window.c (AddWindow):
+	applied border width patch by Tim Phipps
+
+	* fvwm/builtins.c (SetDeskSize):
+	replaced GetTwoArguments with GetIntegerArguments and
+	GetRectangleArguments, some cleanup
+	(movecursor): rewrote function to get consistent behaviour.
+
+	* fvwm/builtins.c (SetEdgeResistance):
+	* fvwm/virtual.c (goto_page_func):
+	* fvwm/move.c (move_window_doit):
+	replaced GetTwoArguments with GetIntegerArguments
+
+	* fvwm/misc.c:
+	* fvwm/misc.h:
+	* libs/Parse.c:
+	* libs/fvwmlib.h:
+	moved GetOneArgument and GetTwoArguments to libs/Parse.c and renamed
+	them to Get...PercentArgument(s). GetTwoArguments remains as a wrapper
+	to GetTwoPercentArguments. Added GetRectangleArguments function.
+
+1998-11-23  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/misc.c (GetOneArgument): rewrote function to do something
+	useful
+
+	* fvwm/builtins.c (DirectionFunc): applied patch for better scoring
+	funtion.
+
+	* fvwm/builtins.c (iconify_function):
+	(SetClick):
+	(SetColorLimit):
+	(SetSnapAttraction):
+	(SetOpaque):
+	* fvwm/module.c (set_mask_function):
+	replaced GetOneArgument with GetIntegerArguments
+
 1998-11-22  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/builtins.c: Fixed broken string (contained a newline)
@@ -50,9 +94,9 @@
 
 1998-11-20  Bob Woodside  <proteus@pcnet.com>
 
-	* add_window.c 
-	* placement.c 
-	* style.c 
+	* add_window.c
+	* placement.c
+	* style.c
 	Fixed StartsOnDesk/StartsOnPage bug that prevented a desk or page
 	specification of -1 from working.
 

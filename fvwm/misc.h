@@ -411,8 +411,9 @@ int GetMoveArguments(char *action, int x, int y, int w, int h,
                      int *pfinalX, int *pfinalY, Bool *fWarp);
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 		     MenuItem *mi, MenuOptions *pops);
-int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit, int *val2_unit);
-int GetOneArgument(char *action, int *val1, int *val1_unit);
+int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
+		    int *val2_unit);
+
 void goto_page_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		    unsigned long context, char *action, int *Module);
 

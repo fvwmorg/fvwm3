@@ -65,6 +65,11 @@ char *GetModuleResource(char *indata, char **resource, char *module_name);
 int GetIntegerArguments(char *action, char**ret_action, int retvals[],int num);
 int GetTokenIndex(char *token, char *list[], int len, char **next);
 char *GetNextTokenIndex(char *action, char *list[], int len, int *index);
+int GetRectangleArguments(char *action, int *width, int *height);
+int GetOnePercentArgument(char *action, int *value, int *unit_io);
+int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
+			   int *val2_unit);
+
 
 /***********************************************************************
  * Various system related utils

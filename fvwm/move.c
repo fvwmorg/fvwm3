@@ -117,8 +117,7 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int n;
   int x,y;
   int width, height;
-  int page_x, page_y;
-  int unit_x, unit_y;
+  int page[2];
   Bool fWarp = FALSE;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE,ButtonPress))
@@ -144,24 +143,19 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       fAnimated = FALSE;
       FinalX = x % Scr.MyDisplayWidth;
       FinalY = y % Scr.MyDisplayHeight;
-      if (GetTwoArguments(action, &page_x, &page_y, &unit_x, &unit_y) == 2)
+      if (GetIntegerArguments(action, NULL, page, 2) == 2)
 	{
-	  if (unit_x != Scr.MyDisplayWidth || unit_y != Scr.MyDisplayHeight)
+	  if (page[0] < 0 || page[1] < 0 ||
+	      page[0]*Scr.MyDisplayWidth > Scr.VxMax ||
+	      page[1]*Scr.MyDisplayHeight > Scr.VyMax)
 	    {
-	      fvwm_msg(ERR,"move_window_doit",
-		       "MoveToPage arguments should be unitless");
-	    }
-	  if (page_x < 0 || page_y < 0 ||
-	      page_x*Scr.MyDisplayWidth > Scr.VxMax ||
-	      page_y*Scr.MyDisplayHeight > Scr.VyMax)
-	    {
-	      fvwm_msg(ERR,"move_window_doit",
+	      fvwm_msg(ERR, "move_window_doit",
 		       "MoveToPage: invalid page number");
 	      return;
 	    }
 	  tmp_win->flags &= ~STICKY;
-	  FinalX += page_x*Scr.MyDisplayWidth - Scr.Vx;
-	  FinalY += page_y*Scr.MyDisplayHeight - Scr.Vy;
+	  FinalX += page[0]*Scr.MyDisplayWidth - Scr.Vx;
+	  FinalY += page[1]*Scr.MyDisplayHeight - Scr.Vy;
 	}
     }
   else
@@ -262,7 +256,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   Bool done;
   int xl,yt,delta_x,delta_y,paged;
   unsigned int button_mask = 0;
-  
+
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
 		&JunkX, &JunkY, &button_mask);
   button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
@@ -353,7 +347,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    MoveOutline(Scr.Root, 0, 0, 0, 0);
 	  xl = Event.xmotion.x_root + XOffset;
 	  yt = Event.xmotion.y_root + YOffset;
-	  
+
 	  /* resist based on window edges */
 	  tmp = Scr.FvwmRoot.next;
 	  closestTop = Scr.SnapAttraction;
@@ -437,7 +431,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    }
 	  xl = nxl;
 	  yt = nyt;
-	  
+
 	  /* Resist moving windows over the edge of the screen! */
 	  if(((xl + Width) >= Scr.MyDisplayWidth)&&
 	     ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
@@ -545,7 +539,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	 }
          xl = nxl;
          yt = nyt;
-	 
+
 	 /* Resist moving windows over the edge of the screen! */
 	 if(((xl + Width) >= Scr.MyDisplayWidth)&&
 	    ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
@@ -557,7 +551,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	   yt = Scr.MyDisplayHeight - Height - tmp_win->bw;
 	 if((yt <= 0)&&(yt > -Scr.MoveResistance))
 	   yt = 0;
-	 
+
 	 /* check Paging request once and only once after outline redrawn */
 	 /* redraw after paging if needed - mab */
 	 paged=0;
@@ -579,13 +573,13 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	       else if (tmp_win->icon_w != None)
 		 XMoveWindow(dpy, tmp_win->icon_w,tmp_win->icon_xl_loc,
 			     yt+tmp_win->icon_p_height);
-	       
+
 	     }
 	     else
 	       XMoveWindow(dpy,tmp_win->frame,xl,yt);
 	   }
 	   DisplayPosition(tmp_win,xl+Scr.Vx,yt+Scr.Vy,False);
-	   
+
 	   /* prevent window from lagging behind mouse when paging - mab */
 	   if(paged==0)
 	   {
@@ -606,10 +600,10 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	   }
 	   paged++;
 	 }  /* end while paged */
-	 
+
 	 done = TRUE;
 	 break;
-	 
+
 	default:
 	  break;
 	}

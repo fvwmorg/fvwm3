@@ -158,6 +158,7 @@ void HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   else
     *yt = y - *delta_y;
 
+  /* make sure the pointer isn't warped into the panframes */
   if(*xl <= SCROLL_REGION) *xl = SCROLL_REGION+1;
   if(*yt <= SCROLL_REGION) *yt = SCROLL_REGION+1;
   if(*xl >= Scr.MyDisplayWidth - SCROLL_REGION)
@@ -231,7 +232,7 @@ void checkPanFrames(void)
       XUnmapWindow(dpy,Scr.PanFrameLeft.win);
       Scr.PanFrameLeft.isMapped=False;
     }
-  else if (Scr.Vx > 0 && Scr.PanFrameLeft.isMapped==False)
+  else if ((Scr.Vx > 0 || wrapX) && Scr.PanFrameLeft.isMapped==False)
     {
       XMapRaised(dpy,Scr.PanFrameLeft.win);
       Scr.PanFrameLeft.isMapped=True;
@@ -242,7 +243,7 @@ void checkPanFrames(void)
       XUnmapWindow (dpy,Scr.PanFrameRight.win);
       Scr.PanFrameRight.isMapped=False;
     }
-  else if (Scr.Vx < Scr.VxMax && Scr.PanFrameRight.isMapped==False)
+  else if ((Scr.Vx < Scr.VxMax || wrapX) && Scr.PanFrameRight.isMapped==False)
     {
       XMapRaised(dpy,Scr.PanFrameRight.win);
       Scr.PanFrameRight.isMapped=True;
@@ -253,7 +254,7 @@ void checkPanFrames(void)
       XUnmapWindow(dpy,Scr.PanFrameTop.win);
       Scr.PanFrameTop.isMapped=False;
     }
-  else if (Scr.Vy > 0 && Scr.PanFrameTop.isMapped==False)
+  else if ((Scr.Vy > 0 || wrapY) && Scr.PanFrameTop.isMapped==False)
     {
       XMapRaised(dpy,Scr.PanFrameTop.win);
       Scr.PanFrameTop.isMapped=True;
@@ -264,7 +265,7 @@ void checkPanFrames(void)
       XUnmapWindow (dpy,Scr.PanFrameBottom.win);
       Scr.PanFrameBottom.isMapped=False;
     }
-  else if (Scr.Vy < Scr.VyMax && Scr.PanFrameBottom.isMapped==False)
+  else if ((Scr.Vy < Scr.VyMax || wrapY) && Scr.PanFrameBottom.isMapped==False)
     {
       XMapRaised(dpy,Scr.PanFrameBottom.win);
       Scr.PanFrameBottom.isMapped=True;
@@ -388,7 +389,7 @@ void MoveViewport(int newx, int newy, Bool grab)
   if((deltax!=0)||(deltay!=0))
     {
 
-/*  
+/*
     RBW - 11/13/1998  - new:  chase the chain bidirectionally, all at once!
     The idea is to move the windows that are moving out of the viewport from
     the bottom of the stacking order up, to minimize the expose-redraw overhead.
@@ -621,7 +622,7 @@ void changeDesks(int desk)
    * unmapping windows on the old Desk */
   MyXGrabServer(dpy);
 
-/*  
+/*
     RBW - 11/13/1998  - new:  chase the chain bidirectionally, unmapping
     windows bottom-up and mapping them top-down, to minimize expose-redraw
     overhead. Use the new  stacking-order chain, rather than the old
@@ -636,10 +637,10 @@ void changeDesks(int desk)
               if(!((t->flags & ICONIFIED)&&(t->flags & StickyIcon)) &&
   	        (!(t->flags & STICKY))&&(!(t->flags & ICON_UNMAPPED)))
                  {
-	          if(t->Desk == Scr.CurrentDesk) 
+	          if(t->Desk == Scr.CurrentDesk)
 	           {
 	            MapIt(t);
-	            if (t->FocusDesk == Scr.CurrentDesk) 
+	            if (t->FocusDesk == Scr.CurrentDesk)
 	             {
 		      FocusWin = t;
 		     }
@@ -652,7 +653,7 @@ void changeDesks(int desk)
 	        {
 	         /* Window is sticky */
 	         t->Desk = Scr.CurrentDesk;
-	         if (Scr.Focus == t) 
+	         if (Scr.Focus == t)
 	          {
 	           t->FocusDesk =oldDesk;
 	           StickyWin = t;
@@ -666,14 +667,14 @@ void changeDesks(int desk)
              if(!((t1->flags & ICONIFIED)&&(t1->flags & StickyIcon)) &&
 	        (!(t1->flags & STICKY))&&(!(t1->flags & ICON_UNMAPPED)))
 	      {
-	       if(t1->Desk == oldDesk) 
+	       if(t1->Desk == oldDesk)
 	        {
 	         if (Scr.Focus == t1)
 		   t1->FocusDesk = oldDesk;
 	         else
 		   t1->FocusDesk = -1;
 	         UnmapIt(t1);
-	        } 
+	        }
 	      }
           t1 = t1->stack_prev;
         }
@@ -808,23 +809,17 @@ void scroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
 void goto_page_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		    unsigned long context,char *action, int *Module)
 {
-  int val1, val2, val1_unit,val2_unit,n,x,y;
+  int val[2], n, x, y;
 
-  n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
+  n = GetIntegerArguments(action, NULL, val, 2);
   if(n != 2)
     {
       fvwm_msg(ERR,"goto_page_func","GotoPage requires two arguments");
       return;
     }
 
-  if((val1_unit != Scr.MyDisplayWidth)||
-     (val2_unit != Scr.MyDisplayHeight))
-    {
-      fvwm_msg(ERR,"goto_page_func","GotoPage arguments should be unitless");
-    }
-
-  x=val1*Scr.MyDisplayWidth;
-  y=val2*Scr.MyDisplayHeight;
+  x = val[0] * Scr.MyDisplayWidth;
+  y = val[1] * Scr.MyDisplayHeight;
   MoveViewport(x,y,True);
 }
 

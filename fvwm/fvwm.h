@@ -47,7 +47,7 @@
 
 /* use PanFrames! this replaces the 3 pixel margin with PanFrame windows
 it should not be an option, once it works right. HEDU 2/2/94 */
-#define PAN_FRAME_THICKNESS 2	/* or just 1 ? */
+#define PAN_FRAME_THICKNESS 1
 
 /* the maximum number of mouse buttons fvwm knows about */
 /* don't think that upping this to 5 will make everything
@@ -70,7 +70,7 @@ it should not be an option, once it works right. HEDU 2/2/94 */
 # define HEIGHT_EXTRA_TITLE 4	/* Extra height for underlining title */
 # define HEIGHT_SEPARATOR 4	/* Height of separator lines */
 
-#define SCROLL_REGION 2         /* region around screen edge that */
+#define SCROLL_REGION PAN_FRAME_THICKNESS /* region around screen edge that */
                                 /* triggers scrolling */
 
 #ifndef TRUE                    
@@ -338,11 +338,6 @@ extern Boolean ShapesSupported;
 extern Window JunkRoot, JunkChild;
 extern int JunkX, JunkY;
 extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
-
-#ifdef PAN_FRAMES
-extern void checkPanFrames();
-extern void raisePanFrames();
-#endif
 
 extern Atom _XA_MIT_PRIORITY_COLORS;
 extern Atom _XA_WM_CHANGE_STATE;

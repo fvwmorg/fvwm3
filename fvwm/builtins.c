@@ -592,75 +592,90 @@ void add_item_to_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
-void Nop_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
-              char *action, int *Module)
+void Nop_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
+	      unsigned long context, char *action, int *Module)
 {
 
 }
 
 
-
-void movecursor(XEvent *eventp,Window w,FvwmWindow *tmp_win,unsigned long context,
-		char *action, int *Module)
+void movecursor(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		unsigned long context, char *action, int *Module)
 {
-  int x,y,delta_x,delta_y,warp_x,warp_y;
-  int val1, val2, val1_unit,val2_unit,n;
+  int x = 0, y = 0;
+  int val1, val2, val1_unit, val2_unit;
+#ifndef NON_VIRTUAL
+  int virtual_x, virtual_y;
+  int pan_x, pan_y;
+  int x_pages, y_pages;
+#endif
 
-  n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
-  if (n != 2)
+  if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
   {
     fvwm_msg(ERR, "movecursor", "CursorMove needs 2 arguments");
     return;
   }
 
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-                 &x,&y,&JunkX, &JunkY, &JunkMask);
-  delta_x = 0;
-  delta_y = 0;
-  warp_x = 0;
-  warp_y = 0;
+                 &x, &y, &JunkX, &JunkY, &JunkMask);
+
+  x = x + val1 * val1_unit / 100;
+  y = y + val2 * val2_unit / 100;
+
 #ifndef NON_VIRTUAL
-  if(x >= Scr.MyDisplayWidth -2 && val1 > 0)
+  virtual_x = Scr.Vx;
+  virtual_y = Scr.Vy;
+  if (x >= 0)
+    x_pages = x / Scr.MyDisplayWidth;
+  else
+    x_pages = ((x + 1) / Scr.MyDisplayWidth) - 1;
+  virtual_x += x_pages * Scr.MyDisplayWidth;
+  x -= x_pages * Scr.MyDisplayWidth;
+  if (virtual_x < 0)
   {
-    delta_x = Scr.EdgeScrollX;
-    warp_x = Scr.EdgeScrollX - 4;
+    x += virtual_x;
+    virtual_x = 0;
   }
-  if(y>= Scr.MyDisplayHeight -2 && val2 > 0)
+  else if (virtual_x > Scr.VxMax)
   {
-    delta_y = Scr.EdgeScrollY;
-    warp_y = Scr.EdgeScrollY - 4;
+    x += virtual_x - Scr.VxMax;
+    virtual_x = Scr.VxMax;
   }
-  if(x < 2 && val1 < 0)
+
+  if (y >= 0)
+    y_pages = y / Scr.MyDisplayHeight;
+  else
+    y_pages = ((y + 1) / Scr.MyDisplayHeight) - 1;
+  virtual_y += y_pages * Scr.MyDisplayHeight;
+  y -= y_pages * Scr.MyDisplayHeight;
+  if (virtual_y < 0)
   {
-    delta_x = -Scr.EdgeScrollX;
-    warp_x =  -Scr.EdgeScrollX + 4;
+    y += virtual_y;
+    virtual_y = 0;
   }
-  if(y < 2 && val2 < 0)
+  else if (virtual_y > Scr.VyMax)
   {
-    delta_y = -Scr.EdgeScrollY;
-    warp_y =  -Scr.EdgeScrollY + 4;
+    y += virtual_y - Scr.VyMax;
+    virtual_y = Scr.VyMax;
   }
-  if(Scr.Vx + delta_x < 0)
-    delta_x = -Scr.Vx;
-  if(Scr.Vy + delta_y < 0)
-    delta_y = -Scr.Vy;
-  if(Scr.Vx + delta_x > Scr.VxMax)
-    delta_x = Scr.VxMax - Scr.Vx;
-  if(Scr.Vy + delta_y > Scr.VyMax)
-    delta_y = Scr.VyMax - Scr.Vy;
-  if((delta_x!=0)||(delta_y!=0))
-  {
-    MoveViewport(Scr.Vx + delta_x,Scr.Vy+delta_y,True);
-    XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
-                 Scr.MyDisplayHeight,
-                 x - warp_x,
-                 y - warp_y);
-    return;
-  }
+  if (virtual_x != Scr.Vx || virtual_y != Scr.Vy)
+    MoveViewport(virtual_x, virtual_y, True);
+  pan_x = (Scr.EdgeScrollX != 0) ? 2 : 0;
+  pan_y = (Scr.EdgeScrollY != 0) ? 2 : 0;
+  /* prevent paging if EdgeScroll is active */
+  if (x >= Scr.MyDisplayWidth - pan_x)
+    x = Scr.MyDisplayWidth - pan_x -1;
+  else if (x < pan_x)
+    x = pan_x;
+  if (y >= Scr.MyDisplayHeight - pan_y)
+    y = Scr.MyDisplayHeight - pan_y - 1;
+  else if (y < pan_y)
+    y = pan_y;
 #endif
+
   XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
-	       Scr.MyDisplayHeight, x + val1*val1_unit/100-warp_x,
-	       y+val2*val2_unit/100 - warp_y);
+	       Scr.MyDisplayHeight, x, y);
+  return;
 }
 
 
@@ -668,18 +683,16 @@ void iconify_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      unsigned long context,char *action, int *Module)
 
 {
-  int val1;
-  int val1_unit,n;
+  int val = 0;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,
-		     ButtonRelease))
+  if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT, ButtonRelease))
     return;
 
-  n = GetOneArgument(action, &val1, &val1_unit);
+  GetIntegerArguments(action, NULL, &val, 1);
 
   if (tmp_win->flags & ICONIFIED)
   {
-    if(val1 <=0)
+    if(val <=0)
       DeIconify(tmp_win);
   }
   else
@@ -689,7 +702,7 @@ void iconify_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       XBell(dpy, 0);
       return;
     }
-    if(val1 >=0)
+    if(val >=0)
       Iconify(tmp_win,eventp->xbutton.x_root-5,eventp->xbutton.y_root-5);
   }
 }
@@ -1212,17 +1225,16 @@ void SetEdgeScroll(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void SetEdgeResistance(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                        unsigned long context, char *action,int* Module)
 {
-  int val1, val2, val1_unit,val2_unit,n;
+  int val[2], n;
 
-  n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
-  if(n != 2)
+  if (GetIntegerArguments(action, NULL, val, 2) != 2)
   {
     fvwm_msg(ERR,"SetEdgeResistance","EdgeResistance requires two arguments");
     return;
   }
 
-  Scr.ScrollResistance = val1;
-  Scr.MoveResistance = val2;
+  Scr.ScrollResistance = val[0];
+  Scr.MoveResistance = val[1];
 }
 
 void SetColormapFocus(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -1247,48 +1259,39 @@ void SetColormapFocus(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void SetClick(XEvent *eventp,Window w,FvwmWindow *tmp_win,
               unsigned long context, char *action,int* Module)
 {
-  int val1;
-  int val1_unit,n;
+  int val;
 
-  n = GetOneArgument(action, &val1, &val1_unit);
-  if(n != 1)
+  if(GetIntegerArguments(action, NULL, &val, 1) != 1)
   {
     fvwm_msg(ERR,"SetClick","ClickTime requires 1 argument");
     return;
   }
 
-  if (val1 < 0)
-    Scr.ClickTime = 0;
-  else
-    Scr.ClickTime = val1;
+  Scr.ClickTime = (val < 0)? 0 : val;
 }
 
 void SetSnapAttraction(XEvent *eventp,Window w,FvwmWindow *tmp_win,
               unsigned long context, char *action,int* Module)
 {
-  int val1;
-  int val1_unit,n;
+  int val;
 
-  n = GetOneArgument(action, &val1, &val1_unit);
-  if(n != 1)
+  if(GetIntegerArguments(action, NULL, &val, 1) != 1)
   {
     fvwm_msg(ERR,"SetSnapAttraction","SnapAttraction requires 1 argument");
     return;
   }
 
-  Scr.SnapAttraction = val1;
+  Scr.SnapAttraction = val;
 }
 
 void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
             unsigned long context, char *action,int* Module)
 {
-  int val1;
-  int val1_unit,n;
+  int val;
   XGCValues gcv;
   unsigned long gcm;
 
-  n = GetOneArgument(action, &val1, &val1_unit);
-  if(n != 1)
+  if(GetIntegerArguments(action, NULL, &val, 1) != 1)
   {
     fvwm_msg(ERR,"SetXOR","XORValue requires 1 argument");
     return;
@@ -1299,10 +1302,12 @@ void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   gcv.line_width = 0;
   /* use passed in value, or try to calculate appropriate value if 0 */
   /* ctwm method: */
-  /* gcv.foreground = (val1)?(val1):((((unsigned long) 1) << Scr.d_depth) - 1); */
+  /*
+    gcv.foreground = (val1)?(val1):((((unsigned long) 1) << Scr.d_depth) - 1);
+  */
   /* Xlib programming manual suggestion: */
-  gcv.foreground = (val1)?
-    (val1):(BlackPixel(dpy,Scr.screen) ^ WhitePixel(dpy,Scr.screen));
+  gcv.foreground = (val)?
+    (val):(BlackPixel(dpy,Scr.screen) ^ WhitePixel(dpy,Scr.screen));
   gcv.subwindow_mode = IncludeInferiors;
   if (Scr.DrawGC)
     XFreeGC(dpy, Scr.DrawGC);
@@ -1312,43 +1317,32 @@ void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void SetOpaque(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	       unsigned long context, char *action,int* Module)
 {
-  int val1;
-  int val1_unit,n;
+  int val;
 
-  n = GetOneArgument(action, &val1, &val1_unit);
-  if(n != 1)
+  if(GetIntegerArguments(action, NULL, &val, 1) != 1)
   {
     fvwm_msg(ERR,"SetOpaque","OpaqueMoveSize requires 1 argument");
     return;
   }
 
-  Scr.OpaqueSize = val1;
+  Scr.OpaqueSize = val;
 }
 
 
 void SetDeskSize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                  unsigned long context, char *action,int* Module)
 {
-  int val1, val2, val1_unit,val2_unit,n;
+  int val[2], n;
 
-  n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
-  if(n != 2)
+  if (GetIntegerArguments(action, NULL, val, 2) != 2 &&
+      GetRectangleArguments(action, &val[0], &val[1]) != 2)
   {
     fvwm_msg(ERR,"SetDeskSize","DesktopSize requires two arguments");
     return;
   }
-  if((val1_unit != Scr.MyDisplayWidth)||
-     (val2_unit != Scr.MyDisplayHeight))
-  {
-    fvwm_msg(ERR,"SetDeskSize","DeskTopSize arguments should be unitless");
-  }
 
-  Scr.VxMax = val1*Scr.MyDisplayWidth - Scr.MyDisplayWidth;
-  Scr.VyMax = val2*Scr.MyDisplayHeight - Scr.MyDisplayHeight;
-  if(Scr.VxMax <0)
-    Scr.VxMax = 0;
-  if(Scr.VyMax <0)
-    Scr.VyMax = 0;
+  Scr.VxMax = (val[0] <= 0)? 0: val[0]*Scr.MyDisplayWidth-Scr.MyDisplayWidth;
+  Scr.VyMax = (val[1] <= 0)? 0: val[1]*Scr.MyDisplayHeight-Scr.MyDisplayHeight;
   BroadcastPacket(M_NEW_PAGE, 5,
                   Scr.Vx, Scr.Vy, Scr.CurrentDesk, Scr.VxMax, Scr.VyMax);
 
@@ -3897,7 +3891,7 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   else if (StrEquals("West", tmp))
     dir = 3;
   else {
-    fvwm_msg(ERR, "Direction","No such direction %s", tmp);
+    fvwm_msg(ERR, "Direction","Invalid direction %s", tmp);
     free(tmp);
     return;
   }
@@ -3968,7 +3962,7 @@ void DirectionFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     if (distance <= 0) continue;
 
     /* Calculate score for this window.  The smaller the better. */
-    score = 1000 * offset / distance + distance;
+    score = 1024 * offset / distance + 2 * distance + 2 * offset;
     if (best_score == -1 || score < best_score) {
       best_window = window;
       best_score = score;
@@ -4137,16 +4131,15 @@ void SetGlobalOptions(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 void SetColorLimit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                    unsigned long context, char *action,int* Module)
 {
-  int val1;
-  int val1_unit,n;
+  int val;
 
-  n = GetOneArgument(action, &val1, &val1_unit);
-  if(n != 1) {
-    fvwm_msg(ERR,"SetColorLimit","ColorLimit requires 1 argument, found %d",n);
+  if (GetIntegerArguments(action, NULL, &val, 1))
+  {
+    fvwm_msg(ERR,"SetColorLimit","ColorLimit requires one argument");
     return;
   }
 
-  Scr.ColorLimit = (long)val1;
+  Scr.ColorLimit = (long)val;
 }
 
 

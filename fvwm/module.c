@@ -619,7 +619,7 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 {
   char *module,*str;
   int i;
-  
+
   if (!action)
     return;
   GetNextToken(action,&module);
@@ -832,10 +832,10 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
     }
 }
 void set_mask_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		     unsigned long context, char *action,int* Module)
+		       unsigned long context, char *action,int* Module)
 {
-  int n, val1_unit;
-  int val1;
-  n = GetOneArgument(action, &val1, &val1_unit);
-  PipeMask[*Module] = (unsigned long)val1;
+  int val = 0;
+
+  GetIntegerArguments(action, NULL, &val, 1);
+  PipeMask[*Module] = (unsigned long)val;
 }

@@ -377,44 +377,6 @@ Bool StashEventTime (XEvent *ev)
 }
 
 
-
-
-
-int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit, int *val2_unit)
-{
-  char c1, c2;
-  int n;
-
-  *val1 = 0;
-  *val2 = 0;
-  *val1_unit = Scr.MyDisplayWidth;
-  *val2_unit = Scr.MyDisplayHeight;
-
-  n = sscanf(action,"%d %d", val1, val2);
-  if(n == 2)
-    return 2;
-
-  c1 = 's';
-  c2 = 's';
-  n = sscanf(action,"%d%c %d%c", val1, &c1, val2, &c2);
-  if(n == 4)
-  {
-    if((c1 == 'p')||(c1 == 'P'))
-      *val1_unit = 100;
-    if((c2 == 'p')||(c2 == 'P'))
-      *val2_unit = 100;
-    return 2;
-  }
-
-  /* now try MxN style number, specifically for DeskTopSize: */
-  n = sscanf(action,"%d%*c%d", val1, val2);
-  if (n == 2)
-    return 2;
-
-  return 0;
-}
-
-
 void ComputeActualPosition(int x,int y,int x_unit,int y_unit,
 			   int width,int height,int *pfinalX, int *pfinalY)
 {
@@ -426,9 +388,18 @@ void ComputeActualPosition(int x,int y,int x_unit,int y_unit,
     *pfinalY += Scr.MyDisplayHeight - height;
 }
 
+int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
+		    int *val2_unit)
+{
+  *val1_unit = Scr.MyDisplayWidth;
+  *val2_unit = Scr.MyDisplayHeight;
+  return GetTwoPercentArguments(action, val1, val2, val1_unit, val2_unit);
+}
+
 /* The vars are named for the x-direction, but this is used for both x and y */
 static
-int GetOnePositionArgument(char *s1,int x,int w,int *pFinalX,float factor,int max)
+int GetOnePositionArgument(char *s1,int x,int w,int *pFinalX,float factor,
+			   int max)
 {
   int val;
   int cch = strlen(s1);
@@ -722,31 +693,6 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 
   return action;
 }
-
-int GetOneArgument(char *action, int *val1, int *val1_unit)
-{
-  char c1;
-  int n;
-
-  *val1 = 0;
-  *val1_unit = Scr.MyDisplayWidth;
-
-  n = sscanf(action,"%d", val1);
-  if(n == 1)
-    return 1;
-
-  c1 = '%';
-  n = sscanf(action,"%d%c", val1, &c1);
-
-  if(n != 2)
-    return 0;
-
-  if((c1 == 'p')||(c1 == 'P'))
-    *val1_unit = 100;
-
-  return 1;
-}
-
 
 /***************************************************************************
  *

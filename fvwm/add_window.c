@@ -91,8 +91,8 @@ FvwmWindow *AddWindow(Window w)
   unsigned long valuemask;		/* mask for create windows */
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   Pixmap TexturePixmap = None, TexturePixmapSave = None;
-  unsigned long valuemask_save = 0;
 #endif
+  unsigned long valuemask_save = 0;
   XSetWindowAttributes attributes;	/* attributes for create windows */
   name_list styles;                     /* area for merged styles */
   int i,width,height;
@@ -216,6 +216,11 @@ FvwmWindow *AddWindow(Window w)
   GetOlHints(tmp_win);
 
   SelectDecor(tmp_win,styles.on_flags,styles.border_width,styles.resize_width);
+
+#ifdef SHAPE
+  /* set boundary width to zero for shaped windows */
+  if (tmp_win->wShaped) tmp_win->boundary_width = 0;
+#endif /* SHAPE */
 
   tmp_win->flags |= styles.on_flags & ALL_COMMON_FLAGS;
   /* find a suitable icon pixmap */
@@ -457,6 +462,11 @@ FvwmWindow *AddWindow(Window w)
 
   /* Thats not all, we'll double-reparent the window ! */
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
+
+  /* make sure this does not have a BackPixel or BackPixmap so that
+     that when the window dies there is no flash of BackPixel/BackPixmap */
+  valuemask_save = valuemask;
+  valuemask = valuemask & ~CWBackPixel & ~CWBackPixmap;
   tmp_win->Parent =
     XCreateWindow (dpy, tmp_win->frame,
 		   tmp_win->boundary_width,
@@ -465,6 +475,7 @@ FvwmWindow *AddWindow(Window w)
 		   (tmp_win->frame_height - 2*tmp_win->boundary_width -
 		    tmp_win->title_height),tmp_win->bw, CopyFromParent,
 		   InputOutput,CopyFromParent, valuemask,&attributes);
+  valuemask = valuemask_save;
 
   attributes.event_mask = (ButtonPressMask|ButtonReleaseMask|ExposureMask|
 			   EnterWindowMask|LeaveWindowMask);

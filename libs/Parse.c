@@ -322,15 +322,15 @@ int GetIntegerArguments(char *action, char **ret_action, int retvals[],int num)
   char *token;
 
   for (i = 0; i < num && action; i++)
-    {
-      action = GetNextToken(action, &token);
-      if (token == NULL)
-	break;
-      if (sscanf(token, "%d", &(retvals[i])) != 1)
-	break;
-      free(token);
-      token = NULL;
-    }
+  {
+    action = GetNextToken(action, &token);
+    if (token == NULL)
+      break;
+    if (sscanf(token, "%d", &(retvals[i])) != 1)
+      break;
+    free(token);
+    token = NULL;
+  }
   if (token)
     free(token);
   if (ret_action != NULL)
@@ -406,4 +406,77 @@ char *GetNextTokenIndex(char *action, char *list[], int len, int *index)
   free(token);
 
   return (*index == -1) ? action : next;
+}
+
+
+int GetRectangleArguments(char *action, int *width, int *height)
+{
+  char *token;
+  int n;
+
+  GetNextToken(action, &token);
+  if (!token)
+    return 0;
+  /* now try MxN style number, specifically for DeskTopSize: */
+  n = sscanf(token, "%d%*c%d", width, height);
+  free(token);
+
+  return (n == 2) ? 2 : 0;
+}
+
+/* unit_io is input as well as output. If action has a postfix 'p' or 'P',
+ * *unit_io is set to 100, otherwise it is left untouched. */
+int GetOnePercentArgument(char *action, int *value, int *unit_io)
+{
+  unsigned int len;
+  char *token;
+  int n;
+
+  *value = 0;
+  if (!action)
+    return 0;
+  GetNextToken(action, &token);
+  if (!token)
+    return 0;
+
+  len = strlen(token);
+  /* token never contains an empty string, so this is ok */
+  if (token[len - 1] == 'p' || token[len - 1] == 'P')
+  {
+    *unit_io = 100;
+    token[len - 1] = '\0';
+  }
+  n = sscanf(token, "%d", value);
+
+  return n;
+}
+
+
+int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
+		    int *val2_unit)
+{
+  char *tok1, *tok2;
+  int n = 0;
+
+  *val1 = 0;
+  *val2 = 0;
+
+  action = GetNextToken(action, &tok1);
+  if (!tok1)
+    return 0;
+  GetNextToken(action, &tok2);
+  if (GetOnePercentArgument(tok2, val2, val2_unit) == 1 &&
+      GetOnePercentArgument(tok1, val1, val1_unit) == 1)
+  {
+    free(tok1);
+    free(tok2);
+    return 2;
+  }
+
+  /* now try MxN style number, specifically for DeskTopSize: */
+  n = GetRectangleArguments(tok1, val1, val2);
+  free(tok1);
+  if (tok2)
+    free(tok2);
+  return n;
 }
