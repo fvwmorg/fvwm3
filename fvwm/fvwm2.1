@@ -5407,7 +5407,7 @@ overlapping area in pixels of other windows is minimized.
 By default this placement policy tries to avoid
 overlapping icons and windows on higher layers.
 This can be configured with the
-.IR PlacementOverlapPenalities
+.IR PlacementOverlapPenalties
 style.
 
 .I MinOverlapPercentPlacement
@@ -5418,10 +5418,10 @@ instead of the overlapped area in pixels.  This placement policy
 tries to avoid covering other windows completely and tries even
 harder not to cover small windows.
 This can be configured with the
-.IR PlacementOverlapPenalities " and " PlacementOverlapPercentPenalities
+.IR PlacementOverlapPenalties " and " PlacementOverlapPercentPenalties
 styles.
 
-.I PlacementOverlapPenalities
+.I PlacementOverlapPenalties
 takes at most 6 positive or null decimal arguments:
 .EX
 .I norm ontop icon sticky below strut
@@ -5468,7 +5468,7 @@ style the
 .I strut
 factor affects the placed window.
 
-.I PlacementOverlapPercentPenalities
+.I PlacementOverlapPercentPenalties
 takes at most 4 positive or null integer arguments:
 .EX
 .I cover_100 cover_95 cover_85 cover_75
@@ -5481,14 +5481,14 @@ which are:
 This style affects the
 .I MinOverlapPercentPlacement
 placement policy and is similar to the
-.I PlacementOverlapPenalities
+.I PlacementOverlapPenalties
 style. The
 .I cover_xx
 factor is used when the window being placed covers at least
 .I xx
 percent of the window. This factor is added to the factor determined
 by the
-.IR PlacementOverlapPenalities
+.IR PlacementOverlapPenalties
 style.
 
 .I ManualPlacement

@@ -1,4 +1,4 @@
-2002-01-21  Olivier Chapuis  <olivier@snoopy.parislyon>
+2002-01-21  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmBacker/FvwmBacker.c (SetDeskPageBackground):
 	(SetXsetRoot):
