@@ -17,22 +17,12 @@
 #define FVWM_MODULE_INTERFACE_H
 
 #include "Module.h"
-
-
-struct queue_buff_struct
-{
-  struct queue_buff_struct *next;
-  unsigned long *data;
-  int size;
-  int done;
-};
+#include "libs/queue.h"
 
 extern int npipes;
 extern int *readPipes;
 extern int *writePipes;
-extern struct queue_buff_struct **pipeQueue;
-
-
+extern fqueue **pipeQueue;
 
 /*
  * MAX_MASK is used to initialize the pipeMask array.  In a few places

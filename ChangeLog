@@ -1,3 +1,21 @@
+2002-01-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/module_interface.c (AddToMessageQueue):
+	(initModules):
+	(DeleteMessageQueueBuff):
+	(FlushMessageQueue):
+	* fvwm/events.c (My_XNextEvent):
+	* fvwm/module_interface.c (AddToCommandQueue):
+	(ExecuteCommandQueue):
+	use code from queue.c
+
+	* fvwm/schedule.c:
+	* fvwm/queue.c:
+	* fvwm/queue.h:
+	* fvwm/events.c (My_XNextEvent):
+	"Schedule 0" commands are executed before event handling
+	moved some of the chedule code into a new queue library
+
 2002-01-30  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Flocale.c (FInitLocale): Fixed a miss print in an error msg
@@ -13,14 +31,14 @@
 	function to get the charset (from ewmh_name.c) and which setlocale if
 	this has not been done with the above function. This function is also
 	call at fvwm2 init
-	
-	* fvwm/ewmh_names.c (charset_to_utf8): 
-	(utf8_to_charset): 
+
+	* fvwm/ewmh_names.c (charset_to_utf8):
+	(utf8_to_charset):
 	Use the Fcharset variable and remove get_charset
 
 	* fvwm/ewmh_names.c (EWMH_SetVisibleName):
 	A minor fix
-	
+
 	* libs/GetFont.c (GetFontSetOrFixed):
 	Free the missing charset list as suggested by Alexander Kotelnikov.
 	Report problems with missing charset only 5 times. Remove the

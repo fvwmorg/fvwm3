@@ -2819,8 +2819,20 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
     /* The timeouts become undefined whenever the select returns, and so
      * we have to reinitialise them */
-    ms = get_next_schedule_queue_ms();
+    ms = squeue_get_next_ms();
     if (ms == 0)
+    {
+      /* run scheduled commands */
+      squeue_execute();
+      ms = squeue_get_next_ms();
+      /* should not happen anyway. get_next_schedule_queue_ms() can't return 0
+       * after a call to execute_schedule_queue(). */
+      if (ms == 0)
+      {
+	ms = 1;
+      }
+    }
+    if (ms < 0)
     {
       timeout.tv_sec = 42;
       timeout.tv_usec = 0;
@@ -2846,7 +2858,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     for(i=0; i<npipes; i++) {
       if(readPipes[i]>=0)
         FD_SET(readPipes[i], &in_fdset);
-      if(pipeQueue[i]!= NULL)
+      if (!fqueue_is_empty(pipeQueue[i]))
         FD_SET(writePipes[i], &out_fdset);
     }
 
@@ -2902,7 +2914,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       Scr.flags.do_need_window_update = 0;
     }
     /* run scheduled commands if necessary */
-    execute_schedule_queue();
+    squeue_execute();
   }
 
   /* check for X events again, rather than return 0 and get called again */

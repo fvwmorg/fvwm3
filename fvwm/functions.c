@@ -669,12 +669,12 @@ static int expand_extended_var(
   case 34:
     /* schedule.last */
     is_numeric = True;
-    val = get_last_schedule_id();
+    val = squeue_get_last_id();
     break;
   case 35:
     /* schedule.next */
     is_numeric = True;
-    val = get_next_schedule_id();
+    val = squeue_get_next_id();
     break;
   default:
     /* unknown variable - try to find it in the environment */

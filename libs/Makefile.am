@@ -12,7 +12,7 @@ libfvwm_a_SOURCES = ClientMsg.h Colorset.h Grab.h Module.h Parse.h Picture.h \
 	FScreen.c Flocale.c \
 	XError.c fvwmsignal.c GetFont.c Strings.c wild.c safemalloc.c \
 	Pointer.c debug.c Grab.c ClientMsg.c fvwmrect.c Cursor.c \
-	setpgrp.c setpgrp.h
+	setpgrp.c setpgrp.h queue.c queue.h
 
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 

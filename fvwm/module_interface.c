@@ -41,6 +41,7 @@
 #include "libs/Colorset.h"
 #include "libs/FScreen.h"
 #include "libs/Module.h"
+#include "libs/queue.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -76,10 +77,17 @@ typedef struct
 	unsigned long m2;
 } msg_masks_type;
 
+typedef struct
+{
+  unsigned long *data;
+  int size;
+  int done;
+} mqueue_object_type;
+
 static msg_masks_type *PipeMask;
 static msg_masks_type *SyncMask;
 static msg_masks_type *NoGrabMask;
-struct queue_buff_struct **pipeQueue;
+fqueue **pipeQueue;
 
 extern fd_set init_fdset;
 
@@ -148,10 +156,9 @@ void initModules(void)
   NoGrabMask = (msg_masks_type *)safemalloc(sizeof(msg_masks_type)*npipes);
   pipeName = (char **)safemalloc(sizeof(char *)*npipes);
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
-  pipeAlias= (char **)safemalloc(sizeof(char *)*npipes);
+  pipeAlias = (char **)safemalloc(sizeof(char *)*npipes);
 #endif
-  pipeQueue=(struct queue_buff_struct **)
-    safemalloc(sizeof(struct queue_buff_struct *)*npipes);
+  pipeQueue = (fqueue **)safemalloc(sizeof(fqueue)*npipes);
 
   for (i=0; i < npipes; i++)
   {
@@ -164,7 +171,7 @@ void initModules(void)
     SyncMask[i].m2 = 0;
     NoGrabMask[i].m1 = 0;
     NoGrabMask[i].m2 = 0;
-    pipeQueue[i] = (struct queue_buff_struct *)NULL;
+    fqueue_init(pipeQueue[i]);
     pipeName[i] = NULL;
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
     pipeAlias[i] = NULL;
@@ -1530,80 +1537,85 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
 }
 
 
-static void AddToMessageQueue(int module, unsigned long *ptr, int size, int done)
+static void AddToMessageQueue(
+	int module, unsigned long *ptr, int size, int done)
 {
-  struct queue_buff_struct *c,*e;
-  unsigned long *d;
+	mqueue_object_type *c;
+	unsigned long *d;
 
-  c = (struct queue_buff_struct *)safemalloc(sizeof(struct queue_buff_struct));
-  c->next = NULL;
-  c->size = size;
-  c->done = done;
-  d = (unsigned long *)safemalloc(size);
-  c->data = d;
-  memcpy((void*)d,(const void*)ptr,size);
+	c = (mqueue_object_type *)safemalloc(sizeof(mqueue_object_type));
+	c->size = size;
+	c->done = done;
+	d = (unsigned long *)safemalloc(size);
+	c->data = d;
+	memcpy((void*)d, (const void*)ptr, size);
 
-  e = pipeQueue[module];
-  if(e == NULL)
-    {
-      pipeQueue[module] = c;
-      return;
-    }
-  while(e->next != NULL)
-    e = e->next;
-  e->next = c;
+	fqueue_add_at_end(pipeQueue[module], c);
+
+	return;
 }
 
 static void DeleteMessageQueueBuff(int module)
 {
-  struct queue_buff_struct *a;
+	mqueue_object_type *obj;
 
-  if(pipeQueue[module] == NULL)
-     return;
-  a = pipeQueue[module];
-  pipeQueue[module] = a->next;
-  if (a->data != NULL)
-    free(a->data);
-  free(a);
-  return;
+	if (fqueue_get_first(pipeQueue[module], (void **)&obj) == 1)
+	{
+		/* remove from queue */
+		fqueue_remove_or_operate_from_front(
+			pipeQueue[module], NULL, NULL);
+		if (obj->data != NULL)
+		{
+			free(obj->data);
+		}
+		free(obj);
+	}
+
+	return;
 }
 
 void FlushMessageQueue(int module)
 {
-  char *dptr;
-  struct queue_buff_struct *d;
-  int a;
-  extern int errno;
+	mqueue_object_type *obj;
+	char *dptr;
+	int a;
+	extern int errno;
 
-  if((pipeOn[module] <= 0)||(pipeQueue[module] == NULL))
-    return;
-
-  while(pipeQueue[module] != NULL)
-    {
-      d = pipeQueue[module];
-      dptr = (char *)d->data;
-      while(d->done < d->size)
+	if (pipeOn[module] <= 0)
 	{
-	  a = write(writePipes[module],&dptr[d->done], d->size - d->done);
-	  if(a >=0)
-	    d->done += a;
-	  /* the write returns EWOULDBLOCK or EAGAIN if the pipe is full.
-	   * (This is non-blocking I/O). SunOS returns EWOULDBLOCK, OSF/1
-	   * returns EAGAIN under these conditions. Hopefully other OSes
-	   * return one of these values too. Solaris 2 doesn't seem to have
-	   * a man page for write(2) (!) */
-	  else if ((errno == EWOULDBLOCK)||(errno == EAGAIN)||(errno==EINTR))
-	    {
-	      return;
-	    }
-	  else
-	    {
-	      KillModule(module);
-	      return;
-	    }
+		return;
 	}
-      DeleteMessageQueueBuff(module);
-    }
+
+	while (fqueue_get_first(pipeQueue[module], (void **)&obj) == 1)
+	{
+		dptr = (char *)obj->data;
+		while (obj->done < obj->size)
+		{
+			a = write(writePipes[module], &dptr[obj->done],
+				  obj->size - obj->done);
+			if (a >=0)
+			{
+				obj->done += a;
+			}
+			/* the write returns EWOULDBLOCK or EAGAIN if the pipe
+			 * is full. (This is non-blocking I/O). SunOS returns
+			 * EWOULDBLOCK, OSF/1 returns EAGAIN under these
+			 * conditions. Hopefully other OSes return one of these
+			 * values too. Solaris 2 doesn't seem to have a man
+			 * page for write(2) (!) */
+			else if ((errno == EWOULDBLOCK) || (errno == EAGAIN) ||
+				 (errno==EINTR))
+			{
+				return;
+			}
+			else
+			{
+				KillModule(module);
+				return;
+			}
+		}
+		DeleteMessageQueueBuff(module);
+	}
 }
 
 void FlushAllMessageQueues(void)
@@ -1618,16 +1630,14 @@ void FlushAllMessageQueues(void)
 }
 
 /* A queue of commands from the modules */
-typedef struct CommandQueue
+typedef struct
 {
-  struct CommandQueue *next;
   Window window;
   int module;
   char *command;
-} CommandQueue;
+} cqueue_object_type;
 
-static CommandQueue *CQstart = NULL;
-static CommandQueue *CQlast = NULL;
+static fqueue cqueue = FQUEUE_INIT;
 
 /***********************************************************************
  *
@@ -1638,57 +1648,49 @@ static CommandQueue *CQlast = NULL;
 
 static void AddToCommandQueue(Window window, int module, char *command)
 {
-  CommandQueue *new;
+	cqueue_object_type *new;
 
-  if (!command)
-    return;
+	if (!command)
+		return;
 
-  new = (CommandQueue *)safemalloc(sizeof(CommandQueue));
+	new = (cqueue_object_type *)safemalloc(sizeof(cqueue_object_type));
+	new->window = window;
+	new->module = module;
+	new->command = safestrdup(command);
+	DBUG("AddToCommandQueue", command);
+	fqueue_add_at_end(&cqueue, new);
 
-  new->window = window;
-  new->module = module;
-  new->command = safestrdup(command);
-  new->next = NULL;
-
-  DBUG("AddToCommandQueue", command);
-
-  if (CQlast)
-    CQlast->next = new;
-  CQlast = new;
-  if (!CQstart)
-    CQstart = CQlast;
+	return;
 }
 
 /***********************************************************************
  *
  *  Procedure:
- *	EmptyCommandQueue - runs command from the module command queue
+ *	ExecuteCommandQueue - runs command from the module command queue
  *	This may be called recursively if a module command runs a function
  *	that does a Wait, so it must be re-entrant
  *
  ************************************************************************/
 void ExecuteCommandQueue(void)
 {
-  CommandQueue *temp;
+	cqueue_object_type *obj;
 
-  while (CQstart)
-  {
-    /* remember the first command */
-    temp = CQstart;
-    /* remove it from the queue */
-    CQstart = CQstart->next;
-    /* fix the end pointer if the queue is now empty */
-    if (CQstart == NULL)
-      CQlast = NULL;
-    /* run the first command (this may add stuff to the queue) */
-    if (temp->command)
-    {
-      DBUG("EmptyCommandQueue", temp->command);
-      ExecuteModuleCommand(temp->window, temp->module, temp->command);
-      free(temp->command);
-    }
-    free(temp);
-  }
+	while (fqueue_get_first(&cqueue, (void **)&obj) == 1)
+	{
+		/* remove from queue */
+		fqueue_remove_or_operate_from_front(&cqueue, NULL, NULL);
+		/* execute and destroy */
+		if (obj->command)
+		{
+			DBUG("EmptyCommandQueue", temp->command);
+			ExecuteModuleCommand(
+				obj->window, obj->module, obj->command);
+			free(obj->command);
+		}
+		free(obj);
+	}
+
+	return;
 }
 
 void CMD_Send_WindowList(F_CMD_ARGS)
@@ -1842,4 +1844,3 @@ char *skipModuleAliasToken(const char *string)
   }
   return NULL;
 }
-

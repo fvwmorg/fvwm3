@@ -18,6 +18,7 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/queue.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "libs/Colorset.h"
@@ -28,45 +29,75 @@
 #include "commands.h"
 #include "screen.h"
 
-typedef struct schedule_queue_type
+typedef struct
 {
-  struct schedule_queue_type *next;
-  Window window;
   int id;
-  char *command;
   Time time_to_execute;
-} schedule_queue_type;
+  Window window;
+  char *command;
+} sq_object_type;
 
 static int last_schedule_id = 0;
 static int next_schedule_id = -1;
+static fqueue sq = FQUEUE_INIT;
 
-static schedule_queue_type *sq_start = NULL;
-
-static int is_not_earlier(Time t1, Time t2)
+static int cmp_times(Time t1, Time t2)
 {
 	unsigned long ul1 = (unsigned long)t1;
 	unsigned long ul2 = (unsigned long)t2;
 	unsigned long diff;
 	signed long udiff;
 
-	diff = ul2 - ul1;
+	diff = ul1 - ul2;
 	udiff = *(signed long *)&diff;
-
-	return (udiff <= 0);
+	if (udiff > 0)
+	{
+		return 1;
+	}
+	else if (udiff < 0)
+	{
+		return -1;
+	}
+	else
+	{
+		return 0;
+	}
 }
 
-static void remove_ids_from_schedule_queue(
-	int *pid)
+static int cmp_object_time(void *object1, void *object2, void *args)
 {
-	schedule_queue_type *temp;
-	schedule_queue_type *next;
-	schedule_queue_type *prev;
+	sq_object_type *so1 = (sq_object_type *)object1;
+	sq_object_type *so2 = (sq_object_type *)object2;
+
+	return cmp_times(so1->time_to_execute, so2->time_to_execute);
+}
+
+static int deschedule_obj_func(void *object, void *args)
+{
+	sq_object_type *obj = object;
+
+	if (obj->id == *(int *)args)
+	{
+		if (obj->command != NULL)
+		{
+			free(obj->command);
+		}
+		free(obj);
+		return 1;
+	}
+
+	return 0;
+}
+
+static void deschedule(int *pid)
+{
 	int id;
 
-	if (sq_start == NULL)
+	if (fqueue_is_empty(&sq))
 	{
 		return;
 	}
+	/* get the job group id to deschedule */
 	if (pid != NULL)
 	{
 		id = *pid;
@@ -77,60 +108,34 @@ static void remove_ids_from_schedule_queue(
 	}
 
 
-	for (temp = sq_start, prev = NULL; temp != NULL; temp = next)
-	{
-		if (temp->id != id)
-		{
-			prev = temp;
-			next = temp->next;
-		}
-		else
-		{
-			if (temp->command)
-			{
-				free(temp->command);
-			}
-			if (prev == NULL)
-			{
-				sq_start = temp->next;
-			}
-			else
-			{
-				prev->next = temp->next;
-			}
-			next = temp->next;
-			free(temp);
-		}
-	}
+	/* deschedule matching jobs */
+	fqueue_remove_or_operate_all(&sq, deschedule_obj_func, (void *)&id);
 
 	return;
 }
 
-static void add_to_schedule_queue(
+static void schedule(
 	Window window, char *command, Time time_to_execute, int *pid)
 {
-	schedule_queue_type *new_item;
-	schedule_queue_type *prev;
-	schedule_queue_type *temp;
+	sq_object_type *new_obj;
 
 	if (command == NULL || *command == 0)
 	{
 		return;
 	}
-
-	new_item = (schedule_queue_type *)safemalloc(
-		sizeof(schedule_queue_type));
-	new_item->window = window;
-	new_item->command = safestrdup(command);
-	new_item->time_to_execute = time_to_execute;
-	new_item->next = NULL;
+	/* create the new object */
+	new_obj = (sq_object_type *)safemalloc(sizeof(sq_object_type));
+	new_obj->window = window;
+	new_obj->command = safestrdup(command);
+	new_obj->time_to_execute = time_to_execute;
+	/* set the job group id */
 	if (pid != NULL)
 	{
-		new_item->id = *pid;
+		new_obj->id = *pid;
 	}
 	else
 	{
-		new_item->id = next_schedule_id;
+		new_obj->id = next_schedule_id;
 		next_schedule_id--;
 		if (next_schedule_id >= 0)
 		{
@@ -138,61 +143,23 @@ static void add_to_schedule_queue(
 			next_schedule_id = -1;
 		}
 	}
-	last_schedule_id = new_item->id;
-	if (sq_start == NULL)
-	{
-		sq_start = new_item;
-		return;
-	}
-	for (temp = sq_start, prev = NULL; temp != NULL;
-	     prev = temp, temp = temp->next)
-	{
-		if (is_not_earlier(time_to_execute, temp->time_to_execute))
-		{
-			break;
-		}
-	}
-	if (prev == NULL)
-	{
-		/* insert at start */
-		new_item->next = sq_start;
-		sq_start = new_item;
-	}
-	else
-	{
-		/* insert in the middle of the queue or at the end */
-		new_item->next = prev->next;
-		prev->next = new_item;
-	}
+	last_schedule_id = new_obj->id;
+	/* insert into schedule queue */
+	fqueue_add_inside(&sq, new_obj, cmp_object_time, NULL);
 
 	return;
 }
 
-/* executes all scheduled commands that are due for execution */
-void execute_schedule_queue(void)
+static int execute_obj_func(void *object, void *args)
 {
-	schedule_queue_type *temp;
-	schedule_queue_type *last;
-	Time current_time;
+	sq_object_type *obj = object;
+	Time *ptime = (Time *)args;
 
-	if (sq_start == NULL)
+	if (cmp_times(*ptime, obj->time_to_execute) >= 0)
 	{
-		return;
-	}
-	current_time = get_server_time();
-	for (temp = sq_start, last = NULL; temp != NULL; )
-	{
-		int do_free_temp = 0;
-		int do_execute_command = 0;
-
-		if (temp->time_to_execute == CurrentTime ||
-		    (is_not_earlier(current_time, temp->time_to_execute)))
+		if (obj->command != NULL)
 		{
-			do_execute_command = (temp->command != NULL);
-			do_free_temp = 1;
-		}
-		if (do_execute_command)
-		{
+			/* execute the command */
 			exec_func_args_type efa;
 			XEvent ev;
 			FvwmWindow *fw;
@@ -201,9 +168,9 @@ void execute_schedule_queue(void)
 			memset(&ev, 0, sizeof(ev));
 			efa.eventp = &ev;
 			efa.tmp_win = NULL;
-			efa.action = temp->command;
+			efa.action = obj->command;
 			efa.args = NULL;
-			if (XFindContext(dpy, temp->window, FvwmContext,
+			if (XFindContext(dpy, obj->window, FvwmContext,
 					 (caddr_t *)&fw) == XCNOENT)
 			{
 				fw = NULL;
@@ -216,59 +183,62 @@ void execute_schedule_queue(void)
 			efa.module = -1;
 			efa.flags.exec = 0;
 			execute_function(&efa);
-			free(temp->command);
+			free(obj->command);
 		}
-		if (do_free_temp)
-		{
-			schedule_queue_type *prev;
-
-			if (last == NULL)
-			{
-				sq_start = temp->next;
-			}
-			else
-			{
-				last->next = temp->next;
-			}
-			prev = temp;
-			temp = temp->next;
-			free(prev);
-		}
-		else
-		{
-			last = temp;
-			temp = temp->next;
-		}
+		free(obj);
+		XSync(dpy, 0);
+		return 1;
 	}
+
+	return 0;
+}
+
+/* executes all scheduled commands that are due for execution */
+void squeue_execute(void)
+{
+	Time current_time;
+
+	if (fqueue_is_empty(&sq))
+	{
+		return;
+	}
+	current_time = get_server_time();
+	fqueue_remove_or_operate_all(&sq, execute_obj_func, &current_time);
 
 	return;
 }
 
 /* returns the time in milliseconds to wait before next queue command must be
- * executed or 0 if none is queued */
-int get_next_schedule_queue_ms(void)
+ * executed or -1 if none is queued */
+int squeue_get_next_ms(void)
 {
 	int ms;
+	sq_object_type *obj;
 
-	if (sq_start == NULL)
+	if (fqueue_get_first(&sq, (void **)&obj) == 0)
 	{
-		return 0;
+		return -1;
 	}
-	ms = sq_start->time_to_execute - lastTimestamp;
-	if (ms <= 0)
+	if (cmp_times(lastTimestamp, obj->time_to_execute) >= 0)
 	{
-		ms = 1;
+		/* jobs pending to be executed immediately */
+		ms = 0;
+	}
+	else
+	{
+		/* execute jobs later */
+		ms =  obj->time_to_execute - lastTimestamp;
 	}
 
 	return ms;
 }
 
-int get_next_schedule_id(void)
+int squeue_get_next_id(void)
 {
 	return next_schedule_id;
 }
 
-int get_last_schedule_id(void)
+int squeue_get_last_id(void)
 {
 	return last_schedule_id;
 }
@@ -284,6 +254,7 @@ void CMD_Schedule(F_CMD_ARGS)
 	int *pid;
 	int n;
 
+	/* get the time to execute */
 	n = GetIntegerArguments(action, &action, &ms, 1);
 	if (n <= 0)
 	{
@@ -291,6 +262,13 @@ void CMD_Schedule(F_CMD_ARGS)
 			 "Requires time to schedule as argument");
 		return;
 	}
+        if (ms < 0)
+        {
+                ms = 0;
+        }
+        current_time = get_server_time();
+        time = current_time + (Time)ms;
+	/* get the job group id to schedule */
 	n = GetIntegerArguments(action, &taction, &id, 1);
 	if (n >= 1)
 	{
@@ -301,13 +279,6 @@ void CMD_Schedule(F_CMD_ARGS)
 	{
 		pid = NULL;
 	}
-	/* get the time to execute */
-        if (ms < 0)
-        {
-                ms = 0;
-        }
-        current_time = get_server_time();
-        time = current_time + (Time)ms;
 	/* get the window to operate on */
 	if (tmp_win != NULL)
 	{
@@ -317,7 +288,8 @@ void CMD_Schedule(F_CMD_ARGS)
 	{
 		xw = None;
 	}
-	add_to_schedule_queue(xw, action, time, pid);
+	/* schedule the job */
+	schedule(xw, action, time, pid);
 
 	return;
 }
@@ -328,16 +300,19 @@ void CMD_Deschedule(F_CMD_ARGS)
 	int *pid;
 	int n;
 
+	/* get the job group id to deschedule */
 	n = GetIntegerArguments(action, &action, &id, 1);
 	if (n <= 0)
 	{
+		/* none, use default */
 		pid = NULL;
 	}
 	else
 	{
 		pid = &id;
 	}
-	remove_ids_from_schedule_queue(pid);
+	/* deschedule matching jobs */
+	deschedule(pid);
 
 	return;
 
