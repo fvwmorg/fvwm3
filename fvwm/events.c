@@ -2794,6 +2794,7 @@ void HandleMapRequestKeepRaised(
 		SET_MAP_PENDING(fw, 0);
 	}
 	EWMH_SetClientList();
+	EWMH_SetClientListStacking();
 	GNOME_SetClientList();
 
 	return;
