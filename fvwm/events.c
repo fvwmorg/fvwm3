@@ -2253,11 +2253,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   static struct timeval timeout;
   static struct timeval *timeoutP = &timeout;
 
-  /* The timeouts become undefined whenever the select returns, and so
-   * we have to reinitialise them */
-  timeout.tv_sec = 42;
-  timeout.tv_usec = 0;
-
   DBUG("My_XNextEvent","Routine Entered");
 
 /* include this next bit if HandleModuleInput() gets called anywhere else
@@ -2307,21 +2302,41 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     }
   }
 
-  FD_ZERO(&in_fdset);
-  FD_ZERO(&out_fdset);
-  FD_SET(x_fd,&in_fdset);
-  /* nothing is done here if fvwm was compiled without session support */
-  if (sm_fd >= 0)
-    FD_SET(sm_fd, &in_fdset);
-  for(i=0; i<npipes; i++) {
-    if(readPipes[i]>=0)
-      FD_SET(readPipes[i], &in_fdset);
-    if(pipeQueue[i]!= NULL)
-      FD_SET(writePipes[i], &out_fdset);
-  }
+  /* Some signals can interrupt us while we wait for any action
+   * on our descriptors. While some of these signals may be asking
+   * fvwm to die, some might be harmless. Harmless interruptions
+   * mean we have to start waiting all over again ... */
+  do
+  {
+    /* The timeouts become undefined whenever the select returns, and so
+     * we have to reinitialise them */
+    timeout.tv_sec = 42;
+    timeout.tv_usec = 0;
 
-  DBUG("My_XNextEvent","waiting for module input/output");
-  num_fd = fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, timeoutP);
+    FD_ZERO(&in_fdset);
+    FD_ZERO(&out_fdset);
+    FD_SET(x_fd, &in_fdset);
+
+    /* nothing is done here if fvwm was compiled without session support */
+    if (sm_fd >= 0)
+      FD_SET(sm_fd, &in_fdset);
+
+    for(i=0; i<npipes; i++) {
+      if(readPipes[i]>=0)
+        FD_SET(readPipes[i], &in_fdset);
+      if(pipeQueue[i]!= NULL)
+        FD_SET(writePipes[i], &out_fdset);
+    }
+
+    DBUG("My_XNextEvent","waiting for module input/output");
+    num_fd = fvwmSelect(fd_width, &in_fdset, &out_fdset, 0, timeoutP);
+
+    /* It's a bit gross doing this Grand Exit here, but there is
+     * no nice express route out of this function from here */
+    if ( isTerminated ) exit(0);
+  }
+  while (num_fd < 0);
+
   if (num_fd > 0) {
 
     /* Check for module input. */
@@ -2331,7 +2346,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
           DBUG("My_XNextEvent","calling HandleModuleInput");
           /* Add one module message to the queue */
           HandleModuleInput(targetWindow, i, NULL, True);
-	} else {
+        } else {
           DBUG("My_XNextEvent","calling KillModule");
           KillModule(i);
         }
@@ -2350,7 +2365,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     if ((sm_fd >= 0) && (FD_ISSET(sm_fd, &in_fdset)))
       ProcessICEMsgs();
 
-  } else if (num_fd == 0) {
+  } else {
     /* select has timed out, things must have calmed down so let's decorate */
     if (fFvwmInStartup) {
       fvwm_msg(ERR, "My_XNextEvent",
@@ -2361,11 +2376,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       reset_style_changes();
       Scr.flags.do_need_window_update = 0;
     }
-  }
-  else
-  {
-    fvwm_msg(ERR, "My_XNextEvent",
-                  "Failed to wait on descriptor: %s", strerror(errno));
   }
 
   /* check for X events again, rather than return 0 and get called again */

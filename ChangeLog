@@ -1,5 +1,11 @@
 2000-11-26  Chris Rankin  <rankinc@zipworld.com.au>
 
+	* fvwm/events.c (My_XNextEvent)
+	Restart the call to fvwmSelect if (and only if) it was
+	interrupted by a harmless signal like SIGCHLD or SIGPIPE.
+
+2000-11-26  Chris Rankin  <rankinc@zipworld.com.au>
+
 	* lib/fvwmsignal.h (New macro BSD_BLOCK_ALL_SIGNALS)
 	* fvwm/fvwm.c (InstallSignals)
 	Extra comments
