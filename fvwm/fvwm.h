@@ -175,8 +175,12 @@ typedef struct
     unsigned do_ignore_restack : 1;
     unsigned do_lower_transient : 1;
     unsigned do_not_show_on_map : 1;
+    unsigned do_pass_click_focus_click : 1;
+    unsigned do_raise_click_focus_click : 1;
+    unsigned do_raise_mouse_focus_click : 1;
     unsigned do_raise_transient : 1;
     unsigned do_resize_opaque : 1;
+    unsigned do_scroll_windowshade : 1;
     unsigned do_stack_transient_parent : 1;
     unsigned do_start_iconic : 1;
     unsigned do_window_list_skip : 1;
@@ -193,6 +197,7 @@ typedef struct
     unsigned has_mwm_override : 1;
     unsigned has_no_icon_title : 1;
     unsigned has_override_size : 1;
+    unsigned has_stipled_title : 1;
     unsigned is_fixed : 1;
     unsigned is_icon_sticky : 1;
     unsigned is_icon_suppressed : 1;
@@ -232,6 +237,7 @@ typedef struct
 				 * why we need this information. */
   unsigned is_partially_visible : 1; /* is the window partially visible */
   unsigned is_pixmap_ours : 1; /* is the icon pixmap ours to free? */
+  unsigned is_size_inc_set : 1;
   unsigned is_transient : 1; /* is it a transient window? */
   unsigned is_window_drawn_once : 1;
   unsigned is_viewport_moved : 1; /* To prevent double move in MoveViewport.*/
@@ -265,8 +271,13 @@ typedef struct
 {
   common_flags_type common;
   unsigned do_decorate_transient : 1;
-  unsigned do_place_random : 1;
-  unsigned do_place_smart : 1;
+#define PLACE_DUMB            0x0
+#define PLACE_SMART           0x1
+#define PLACE_CLEVER          0x2
+#define PLACE_CLEVERNESS_MASK 0x3
+#define PLACE_RANDOM          0x4
+#define PLACE_MASK            0x7
+  unsigned placement_mode : 3;
   unsigned do_save_under : 1;
   unsigned do_start_lowered : 1;
   unsigned has_border_width : 1;

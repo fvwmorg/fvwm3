@@ -534,6 +534,7 @@ void HandlePropertyNotify(void)
 {
   XTextProperty text_prop;
   Bool OnThisPage = False;
+  Bool was_size_inc_set;
   int old_wmhints_flags;
   int old_width_inc;
   int old_height_inc;
@@ -826,6 +827,7 @@ void HandlePropertyNotify(void)
 	}
       break;
     case XA_WM_NORMAL_HINTS:
+      was_size_inc_set = IS_SIZE_INC_SET(Tmp_win);
       old_width_inc = Tmp_win->hints.width_inc;
       old_height_inc = Tmp_win->hints.height_inc;
       old_base_width = Tmp_win->hints.base_width;
@@ -839,39 +841,50 @@ void HandlePropertyNotify(void)
 	int wdiff;
 	int hdiff;
 
-	/* we have to resize the unmaximized window to keep the size in resize
-	 * increments constant */
-	units_w = Tmp_win->normal_g.width - 2 * Tmp_win->boundary_width -
-	  old_base_width;
-        units_h = Tmp_win->normal_g.height - Tmp_win->title_g.height -
-	  2 * Tmp_win->boundary_width - old_base_height;
-	units_w /= old_width_inc;
-	units_h /= old_height_inc;
+fprintf(stderr,"ohi=%d hi=%d imp=%d\n", old_height_inc, Tmp_win->hints.height_inc, IS_MAP_PENDING(Tmp_win));
+        if (!was_size_inc_set && old_width_inc == 1 && old_height_inc == 1)
+        {
+          /* This is a hack for xvile.  It sets the _inc hints after it
+           * requested that the window is mapped but before it's really
+           * visible. */
+          /* do nothing */
+        }
+        else
+        {
+          /* we have to resize the unmaximized window to keep the size in
+           * resize increments constant */
+          units_w = Tmp_win->normal_g.width - 2 * Tmp_win->boundary_width -
+            old_base_width;
+          units_h = Tmp_win->normal_g.height - Tmp_win->title_g.height -
+            2 * Tmp_win->boundary_width - old_base_height;
+          units_w /= old_width_inc;
+          units_h /= old_height_inc;
 
-	/* update the 'invisible' geometry */
-	wdiff = units_w * (Tmp_win->hints.width_inc - old_width_inc) +
-	  (Tmp_win->hints.base_width - old_base_width);
-	hdiff = units_h * (Tmp_win->hints.height_inc - old_height_inc) +
-	  (Tmp_win->hints.base_height - old_base_height);
-	gravity_resize(
-	  Tmp_win->hints.win_gravity, &Tmp_win->normal_g, wdiff, hdiff);
-	gravity_constrain_size(
-	  Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->normal_g);
-	if (!IS_MAXIMIZED(Tmp_win))
-	{
-	  rectangle new_g;
+          /* update the 'invisible' geometry */
+          wdiff = units_w * (Tmp_win->hints.width_inc - old_width_inc) +
+            (Tmp_win->hints.base_width - old_base_width);
+          hdiff = units_h * (Tmp_win->hints.height_inc - old_height_inc) +
+            (Tmp_win->hints.base_height - old_base_height);
+          gravity_resize(
+            Tmp_win->hints.win_gravity, &Tmp_win->normal_g, wdiff, hdiff);
+        }
+        gravity_constrain_size(
+          Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->normal_g);
+        if (!IS_MAXIMIZED(Tmp_win))
+        {
+          rectangle new_g;
 
-	  get_relative_geometry(&new_g, &Tmp_win->normal_g);
-	  if (IS_SHADED(Tmp_win))
-	    get_shaded_geometry(Tmp_win, &new_g, &new_g);
-	  ForceSetupFrame(
-	    Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
-	}
-	else
-	{
-	  maximize_adjust_offset(Tmp_win);
-	}
-	GNOME_SetWinArea(Tmp_win);
+          get_relative_geometry(&new_g, &Tmp_win->normal_g);
+          if (IS_SHADED(Tmp_win))
+            get_shaded_geometry(Tmp_win, &new_g, &new_g);
+          ForceSetupFrame(
+            Tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
+        }
+        else
+        {
+          maximize_adjust_offset(Tmp_win);
+        }
+        GNOME_SetWinArea(Tmp_win);
       }
       BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
       break;

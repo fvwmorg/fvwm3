@@ -16,6 +16,7 @@
 #ifndef _WINDOW_FLAGS_
 #define _WINDOW_FLAGS_
 
+
 /* access to the common flags of a window */
 #define FW_COMMON_FLAGS(fw)         ((fw)->flags.common)
 #define FW_COMMON_STATIC_FLAGS(fw)  ((fw)->flags.common.s)
@@ -28,8 +29,32 @@
 #define DO_LOWER_TRANSIENT(fw) ((fw)->flags.common.s.do_lower_transient)
 #define DO_NOT_SHOW_ON_MAP(fw)  \
           ((fw)->flags.common.s.do_not_show_on_map)
+#define DO_PASS_CLICK_FOCUS_CLICK(fw)  \
+          ((fw)->flags.common.s.do_pass_click_focus_click)
+#define SET_DO_PASS_CLICK_FOCUS_CLICK(fw,x) \
+          (fw)->flags.common.s.do_pass_click_focus_click = !!(x)
+#define SETM_DO_PASS_CLICK_FOCUS_CLICK(fw,x) \
+          (fw)->flag_mask.common.s.do_pass_click_focus_click = !!(x)
+#define DO_RAISE_CLICK_FOCUS_CLICK(fw)  \
+          ((fw)->flags.common.s.do_raise_click_focus_click)
+#define SET_DO_RAISE_CLICK_FOCUS_CLICK(fw,x) \
+          (fw)->flags.common.s.do_raise_click_focus_click = !!(x)
+#define SETM_DO_RAISE_CLICK_FOCUS_CLICK(fw,x) \
+          (fw)->flag_mask.common.s.do_raise_click_focus_click = !!(x)
+#define DO_RAISE_CLICK_MOUSE_CLICK(fw)  \
+          ((fw)->flags.common.s.do_raise_click_mouse_click)
+#define SET_DO_RAISE_CLICK_MOUSE_CLICK(fw,x) \
+          (fw)->flags.common.s.do_raise_click_mouse_click = !!(x)
+#define SETM_DO_RAISE_CLICK_MOUSE_CLICK(fw,x) \
+          (fw)->flag_mask.common.s.do_raise_click_mouse_click = !!(x)
 #define DO_RAISE_TRANSIENT(fw) ((fw)->flags.common.s.do_raise_transient)
 #define DO_RESIZE_OPAQUE(fw)   ((fw)->flags.common.s.do_resize_opaque)
+#define DO_SCROLL_WINDOWSHADE(fw)  \
+          ((fw)->flags.common.s.do_scroll_windowshade)
+#define SET_DO_SCROLL_WINDOWSHADE(fw,x) \
+          (fw)->flags.common.s.do_scroll_windowshade = !!(x)
+#define SETM_DO_SCROLL_WINDOWSHADE(fw,x) \
+          (fw)->flag_mask.common.s.do_scroll_windowshade = !!(x)
 #define DO_SKIP_CIRCULATE(fw)  \
           ((fw)->flags.common.s.do_circulate_skip)
 #define SET_DO_SKIP_CIRCULATE(fw,x) \
@@ -67,6 +92,12 @@
           (fw)->flags.common.s.has_bottom_title = !!(x)
 #define SETM_HAS_BOTTOM_TITLE(fw,x) \
           (fw)->flag_mask.common.s.has_bottom_title = !!(x)
+#define HAS_STIPLED_TITLE(fw)  \
+          ((fw)->flags.common.s.has_stipled_title)
+#define SET_HAS_STIPLED_TITLE(fw,x) \
+          (fw)->flags.common.s.has_stipled_title = !!(x)
+#define SETM_HAS_STIPLED_TITLE(fw,x) \
+          (fw)->flag_mask.common.s.has_stipled_title = !!(x)
 #define IS_ICON_STICKY(fw)     ((fw)->flags.common.s.is_icon_sticky)
 #define SET_ICON_STICKY(fw,x)  (fw)->flags.common.s.is_icon_sticky = !!(x)
 #define SETM_ICON_STICKY(fw,x) \
@@ -197,6 +228,9 @@
 #define SET_ICONIFY_AFTER_MAP(fw,x)  (fw)->flags.do_iconify_after_map = !!(x)
 #define SETM_ICONIFY_AFTER_MAP(fw,x) \
           (fw)->flag_mask.do_iconify_after_map = !!(x)
+#define IS_SIZE_INC_SET(fw)     ((fw)->flags.is_size_inc_set)
+#define SET_SIZE_INC_SET(fw,x)  (fw)->flags.is_size_inc_set = !!(x)
+#define SETM_SIZE_INC_SET(fw,x) (fw)->flag_mask.is_size_inc_set = !!(x)
 #define IS_VIEWPORT_MOVED(fw)  ((fw)->flags.is_viewport_moved)
 #define SET_VIEWPORT_MOVED(fw,x) \
           (fw)->flags.is_viewport_moved = !!(x)

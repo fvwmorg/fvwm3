@@ -516,7 +516,7 @@ Bool PlaceWindow(
      */
     if (!PPosOverride &&
 	(DO_NOT_SHOW_ON_MAP(tmp_win) &&
-	 !SDO_PLACE_RANDOM(sflags) &&
+	 !(SPLACEMENT_MODE(sflags) & PLACE_RANDOM) &&
 	 (!Scr.go.ActivePlacementHonorsStartsOnPage &&
 	  !SACTIVE_PLACEMENT_HONORS_STARTS_ON_PAGE(sflags))))
     {
@@ -649,9 +649,9 @@ Bool PlaceWindow(
 	 || (HonorStartsOnPage)) ) )
   {
     /* Get user's window placement, unless RandomPlacement is specified */
-    if (SDO_PLACE_RANDOM(sflags))
+    if (SPLACEMENT_MODE(sflags) & PLACE_RANDOM)
     {
-      if (SDO_PLACE_SMART(sflags))
+      if (SPLACEMENT_MODE(sflags) & (PLACE_SMART | PLACE_CLEVER))
       {
         is_smartly_placed =
 	  SmartPlacement(tmp_win, tmp_win->frame_g.width,
@@ -702,7 +702,7 @@ Bool PlaceWindow(
       /*  Must be ActivePlacement  */
       xl = -1;
       yt = -1;
-      if (SDO_PLACE_SMART(sflags))
+      if (SPLACEMENT_MODE(sflags) & (PLACE_SMART | PLACE_CLEVER))
       {
         is_smartly_placed =
 	  SmartPlacement(tmp_win, tmp_win->frame_g.width,

@@ -663,9 +663,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "ACTIVEPLACEMENT"))
         {
 	  found = True;
-          ptmpstyle->flags.do_place_random = 0;
-          ptmpstyle->flag_mask.do_place_random = 1;
-          ptmpstyle->change_mask.do_place_random = 1;
+          ptmpstyle->flags.placement_mode &= (~PLACE_RANDOM);
+          ptmpstyle->flag_mask.placement_mode |= PLACE_RANDOM;
+          ptmpstyle->change_mask.placement_mode |= PLACE_RANDOM;
         }
 	else if(StrEquals(token, "ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
 	{
@@ -747,7 +747,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'c':
-	if(StrEquals(token, "CAPTUREHONORSSTARTSONPAGE"))
+        if(StrEquals(token, "CLEVERPLACEMENT"))
+        {
+	  found = True;
+          ptmpstyle->flags.placement_mode |= PLACE_CLEVER;
+          ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
+          ptmpstyle->change_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
+        }
+	else if(StrEquals(token, "CAPTUREHONORSSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.capture_honors_starts_on_page = 1;
@@ -876,6 +883,34 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  SMSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
 	  SCSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
         }
+        else if(StrEquals(token, "ClickToFocusPassesClick"))
+        {
+	  found = True;
+	  SFSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SMSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SCSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+        }
+        else if(StrEquals(token, "ClickToFocusPassesClickOff"))
+        {
+	  found = True;
+	  SFSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 0);
+	  SMSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SCSET_DO_PASS_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+        }
+        else if(StrEquals(token, "ClickToFocusClickRaises"))
+        {
+	  found = True;
+	  SFSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SMSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SCSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+        }
+        else if(StrEquals(token, "ClickToFocusClickRaisesOff"))
+        {
+	  found = True;
+	  SFSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 0);
+	  SMSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+	  SCSET_DO_RAISE_CLICK_FOCUS_CLICK(*ptmpstyle, 1);
+        }
         else if(StrEquals(token, "CirculateSkip"))
         {
 	  found = True;
@@ -910,9 +945,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         else if(StrEquals(token, "DUMBPLACEMENT"))
         {
 	  found = True;
-          ptmpstyle->flags.do_place_smart = 0;
-          ptmpstyle->flag_mask.do_place_smart = 1;
-          ptmpstyle->change_mask.do_place_smart = 1;
+          ptmpstyle->flags.placement_mode &= (~PLACE_CLEVERNESS_MASK);
+          ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
+          ptmpstyle->change_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
         }
         else if(StrEquals(token, "DontFlipTransient"))
         {
@@ -1457,6 +1492,20 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  SMSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
 	  SCSET_DO_GRAB_FOCUS_WHEN_CREATED(*ptmpstyle, 1);
         }
+        else if(StrEquals(token, "MouseFocusClickRaises"))
+        {
+	  found = True;
+	  SFSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
+	  SMSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
+	  SCSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
+        }
+        else if(StrEquals(token, "MouseFocusClickRaisesOff"))
+        {
+	  found = True;
+	  SFSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 0);
+	  SMSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
+	  SCSET_DO_RAISE_MOUSE_FOCUS_CLICK(*ptmpstyle, 1);
+        }
         else if(StrEquals(token, "MAXWINDOWSIZE"))
 	{
 	  int val1;
@@ -1645,9 +1694,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         else if(StrEquals(token, "RANDOMPLACEMENT"))
         {
 	  found = True;
-          ptmpstyle->flags.do_place_random = 1;
-          ptmpstyle->flag_mask.do_place_random = 1;
-          ptmpstyle->change_mask.do_place_random = 1;
+          ptmpstyle->flags.placement_mode |= PLACE_RANDOM;
+          ptmpstyle->flag_mask.placement_mode |= PLACE_RANDOM;
+          ptmpstyle->change_mask.placement_mode |= PLACE_RANDOM;
         }
 	else if(StrEquals(token, "RECAPTUREHONORSSTARTSONPAGE"))
 	{
@@ -1690,9 +1739,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(StrEquals(token, "SMARTPLACEMENT"))
         {
 	  found = True;
-          ptmpstyle->flags.do_place_smart = 1;
-          ptmpstyle->flag_mask.do_place_smart = 1;
-          ptmpstyle->change_mask.do_place_smart = 1;
+          ptmpstyle->flags.placement_mode |= PLACE_SMART;
+          ptmpstyle->flag_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
+          ptmpstyle->change_mask.placement_mode |= PLACE_CLEVERNESS_MASK;
         }
         else if(StrEquals(token, "SkipMapping"))
         {
@@ -1907,6 +1956,20 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  ptmpstyle->flag_mask.do_save_under = 1;
 	  ptmpstyle->change_mask.do_save_under = 1;
         }
+	else if(StrEquals(token, "StipledTitle"))
+	{
+	  found = True;
+	  SFSET_HAS_STIPLED_TITLE(*ptmpstyle, 1);
+	  SMSET_HAS_STIPLED_TITLE(*ptmpstyle, 1);
+	  SCSET_HAS_STIPLED_TITLE(*ptmpstyle, 1);
+	}
+	else if(StrEquals(token, "StipledTitleOff"))
+	{
+	  found = True;
+	  SFSET_HAS_STIPLED_TITLE(*ptmpstyle, 0);
+	  SMSET_HAS_STIPLED_TITLE(*ptmpstyle, 1);
+	  SCSET_HAS_STIPLED_TITLE(*ptmpstyle, 1);
+	}
         break;
 
       case 't':
@@ -2006,6 +2069,20 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  SMSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 1);
 	  SCSET_DO_WINDOW_LIST_SKIP(*ptmpstyle, 1);
         }
+	else if(StrEquals(token, "WindowShadeScrolls"))
+	{
+	  found = True;
+	  SFSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 1);
+	  SMSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 1);
+	  SCSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 1);
+	}
+	else if(StrEquals(token, "WindowScadeShrinks"))
+	{
+	  found = True;
+	  SFSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 0);
+	  SMSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 1);
+	  SCSET_DO_SCROLL_WINDOWSHADE(*ptmpstyle, 1);
+	}
         break;
 
       case 'x':
@@ -2099,8 +2176,10 @@ void check_window_style_change(
 
   /*
    * focus
+   * do_pass_click_focus_click
    */
-  if (SCFOCUS_MODE(*ret_style))
+  if (SCFOCUS_MODE(*ret_style) ||
+      SCDO_PASS_CLICK_FOCUS_CLICK(*ret_style))
   {
     flags->do_setup_focus_policy = True;
   }
@@ -2137,6 +2216,14 @@ void check_window_style_change(
   if (SCHAS_WINDOW_FONT(*ret_style))
   {
     flags->do_update_window_font = True;
+  }
+
+  /*
+   *has_stipled_title
+   */
+  if (SCHAS_STIPLED_TITLE(*ret_style))
+  {
+    flags->do_redraw_decoration = True;
   }
 
   /*
