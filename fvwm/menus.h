@@ -586,6 +586,7 @@ typedef struct
   int *pcontext;
   XEvent *eventp;
   char **ret_paction;
+  XEvent *event_propagate_to_submenu;
   MenuOptions *pops;
   struct
   {

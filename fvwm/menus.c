@@ -1392,6 +1392,7 @@ static void MenuInteraction(
     unsigned do_popup : 1;
     unsigned do_menu : 1;
     unsigned do_recycle_event : 1;
+    unsigned do_propagate_event_into_submenu : 1;
     unsigned has_mouse_moved : 1;
     unsigned is_off_menu_allowed : 1;
     unsigned is_key_press : 1;
@@ -1419,8 +1420,15 @@ static void MenuInteraction(
     flags.do_popup_and_warp = False;
     flags.do_popup_now = False;
     flags.do_popdown_now = False;
+    flags.do_propagate_event_into_submenu = False;
     flags.is_key_press = False;
-    if (flags.do_recycle_event)
+    if (pmp->event_propagate_to_submenu)
+    {
+      /* handle an event that was passed in from the parent menu */
+      memmove(&Event, pmp->event_propagate_to_submenu, sizeof(XEvent));
+      pmp->event_propagate_to_submenu = NULL;
+    }
+    else if (flags.do_recycle_event)
     {
       flags.is_popped_up_by_timeout = False;
       flags.do_recycle_event = 0;
@@ -1432,12 +1440,12 @@ static void MenuInteraction(
       }
       if (Event.type == KeyPress)
       {
-        /* since the pointer has been warped since the key was pressed, fake a
-         * different key press position */
+	/* since the pointer has been warped since the key was pressed, fake a
+	 * different key press position */
 	XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		      &Event.xkey.x_root, &Event.xkey.y_root,
-                      &JunkX, &JunkY, &JunkMask);
-        mi = MR_SELECTED_ITEM(pmp->menu);
+		      &JunkX, &JunkY, &JunkMask);
+	mi = MR_SELECTED_ITEM(pmp->menu);
       }
     } /* flags.do_recycle_event */
     else
@@ -1548,16 +1556,24 @@ static void MenuInteraction(
       }
       if (pmret->flags.is_menu_posted && mrMi != NULL)
       {
-        if (pmret->menu != mrMi)
-        {
-          pmret->flags.is_menu_posted = 0;
-        }
-	if (pmp->menu != mrMi)
+	if (mrPopup && mrMi == mrPopup)
 	{
-	  /* unpost the menu and propagate the event to the correct menu */
-	  pmret->rc = MENU_PROPAGATE_EVENT;
-	  pmret->menu = mrMi;
-	  goto DO_RETURN;
+	  flags.do_propagate_event_into_submenu = True;
+	  break;
+	}
+	else
+	{
+	  if (pmret->menu != mrMi)
+	  {
+	    pmret->flags.is_menu_posted = 0;
+	  }
+	  if (pmp->menu != mrMi)
+	  {
+	    /* unpost the menu and propagate the event to the correct menu */
+	    pmret->rc = MENU_PROPAGATE_EVENT;
+	    pmret->menu = mrMi;
+	    goto DO_RETURN;
+	  }
 	}
       }
       if (is_double_click(t0, mi, pmp, pmret, pdkp, flags.has_mouse_moved))
@@ -1606,25 +1622,25 @@ static void MenuInteraction(
        * menu or possibly ignore the mouse position */
       if (pmret->flags.is_menu_posted)
       {
-        MenuItem *l_mi;
-        MenuRoot *l_mrMi;
-        int l_x_offset;
+	MenuItem *l_mi;
+	MenuRoot *l_mrMi;
+	int l_x_offset;
 
-        pmret->flags.is_menu_posted = 0;
-        l_mi = find_entry(&l_x_offset, &l_mrMi);
-        if (l_mrMi != NULL)
-        {
-          if (pmp->menu != l_mrMi)
-          {
-            /* unpost the menu and propagate the event to the correct menu */
-            pmret->rc = MENU_PROPAGATE_EVENT;
-            pmret->menu = l_mrMi;
-            goto DO_RETURN;
-          }
-        }
-        mi = MR_SELECTED_ITEM(pmp->menu);
-        Event.xkey.x_root = x_offset;
-        Event.xkey.y_root = item_middle_y_offset(pmp->menu, mi);
+	pmret->flags.is_menu_posted = 0;
+	l_mi = find_entry(&l_x_offset, &l_mrMi);
+	if (l_mrMi != NULL)
+	{
+	  if (pmp->menu != l_mrMi)
+	  {
+	    /* unpost the menu and propagate the event to the correct menu */
+	    pmret->rc = MENU_PROPAGATE_EVENT;
+	    pmret->menu = l_mrMi;
+	    goto DO_RETURN;
+	  }
+	}
+	mi = MR_SELECTED_ITEM(pmp->menu);
+	Event.xkey.x_root = x_offset;
+	Event.xkey.y_root = item_middle_y_offset(pmp->menu, mi);
       }
 
       /* now handle the actual key press */
@@ -1767,7 +1783,7 @@ static void MenuInteraction(
 	  /* We have to pop down the menu before unselecting the item in case
 	   * we are using gradient menus. The recalled image would paint over
 	   * the submenu. */
-	  if (mrPopup)
+	  if (mrPopup && mrPopup != mrPopdown)
 	  {
 	    mrPopdown = mrPopup;
 	    popdown_delay_10ms = 0;
@@ -1922,10 +1938,12 @@ static void MenuInteraction(
 	    select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
 	    miSelect = NULL;
 	  }
+	  if (mrPopup == mrPopdown)
+	    mrPopup = NULL;
 	  mrPopdown = NULL;
 	}
 	flags.do_popdown = False;
-      }
+      } /* if (flags.do_popdown && !flags.do_popup) */
       if (flags.do_popup)
       {
 	DBUG("MenuInteraction","Popping up");
@@ -1953,10 +1971,10 @@ static void MenuInteraction(
 	  f = *pdo_warp_to_title;
 	  t = lastTimestamp;
 	  menu_name = PeekToken(SkipNTokens(MI_ACTION(mi), 1), NULL);
-          if (!menu_name)
-          {
-            menu_name = "";
-          }
+	  if (!menu_name)
+	  {
+	    menu_name = "";
+	  }
 	  is_complex_function =
 	    (FindFunction(MR_MISSING_SUBMENU_FUNC(pmp->menu)) != NULL);
 	  if (is_complex_function)
@@ -2042,8 +2060,11 @@ static void MenuInteraction(
 	  {
 	    if (mrPopdown)
 	    {
-	      pop_menu_down_and_repaint_parent(
-		&mrPopdown, &does_popdown_submenu_overlap, pmp);
+	      if (mrPopdown != mrPopup)
+	      {
+		pop_menu_down_and_repaint_parent(
+		  &mrPopdown, &does_popdown_submenu_overlap, pmp);
+	      }
 	      if (miUnselect)
 	      {
 		select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
@@ -2105,10 +2126,13 @@ static void MenuInteraction(
 	mp.eventp = (flags.do_popup_and_warp) ? (XEvent *)1 : NULL;
 	mp.pops = &mops;
 	mp.ret_paction = pmp->ret_paction;
+	mp.event_propagate_to_submenu =
+	  (flags.do_propagate_event_into_submenu) ? &Event : NULL;
 
 	/* recursively do the new menu we've moved into */
 	do_menu(&mp, pmret);
 
+	flags.do_propagate_event_into_submenu = False;
 	if (pmret->rc == MENU_PROPAGATE_EVENT)
 	{
 	  flags.do_recycle_event = 1;
@@ -2125,6 +2149,8 @@ static void MenuInteraction(
 	{
 	  pop_menu_down_and_repaint_parent(
 	    &mrPopup, &does_submenu_overlap, pmp);
+	  if (mrPopup == mrPopdown)
+	    mrPopdown = NULL;
 	  mrPopup = NULL;
 	}
 	if (pmret->rc == MENU_POPDOWN)
@@ -2135,7 +2161,7 @@ static void MenuInteraction(
       } /* if (flags.do_menu) */
 
       /* Now check whether we can animate the current popup menu back to the
-       * original place to unobscure the current menu;  this happens only when
+       * original place to unobscure the current menu;	this happens only when
        * using animation */
       tmi = find_entry(NULL, &tmrMi);
       if (mrPopup && MR_XANIMATION(mrPopup) && tmi &&
@@ -2181,11 +2207,13 @@ static void MenuInteraction(
 	      pmp->menu, MR_SELECTED_ITEM(pmp->menu), False, (*pmp->pTmp_win));
 	    pop_menu_down_and_repaint_parent(
 	      &mrPopup, &does_submenu_overlap, pmp);
+	    if (mrPopup == mrPopdown)
+	      mrPopdown = NULL;
 	    mrPopup = NULL;
 	  }
 	  else if (x < mx || x >= mx + mw || y < my || y >= my + mh)
 	  {
-	    /* pointer is outside the menu but do not pop down  */
+	    /* pointer is outside the menu but do not pop down	*/
 	    flags.is_off_menu_allowed = True;
 	  }
 	  else
@@ -3243,9 +3271,9 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
       /* The relief reaches down into the next item, hence the value for the
        * second y coordinate: MI_HEIGHT(mi) + 1 */
       RelieveRectangle(
-        dpy, MR_WINDOW(mr),  MR_HILIGHT_X_OFFSET(mr), y_offset,
-        MR_HILIGHT_WIDTH(mr) - 1, MI_HEIGHT(mi) - 1 + relief_thickness,
-        rgc, sgc, relief_thickness);
+	dpy, MR_WINDOW(mr),  MR_HILIGHT_X_OFFSET(mr), y_offset,
+	MR_HILIGHT_WIDTH(mr) - 1, MI_HEIGHT(mi) - 1 + relief_thickness,
+	rgc, sgc, relief_thickness);
     }
   }
 
@@ -3287,7 +3315,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
       text_y += MENU_SEPARATOR_HEIGHT + relief_thickness;
       y = y_offset + relief_thickness;
       if (sx1 < sx2)
-        draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);
+	draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);
     }
     /* Underline the title. */
     switch (MST_TITLE_UNDERLINES(mr))
@@ -5107,13 +5135,13 @@ void AddToMenu(MenuRoot *mr, char *item, char *action, Bool fPixmapsOk,
 	/* pete@tecc.co.uk */
 	scanForHotkeys(tmp, i);
 
-        if (!MI_HAS_HOTKEY(tmp) && *MI_LABEL(tmp)[i] != 0)
-        {
-          MI_HOTKEY_COFFSET(tmp) = 0;
-          MI_HOTKEY_COLUMN(tmp) = i;
-          MI_HAS_HOTKEY(tmp) = 1;
-          MI_IS_HOTKEY_AUTOMATIC(tmp) = 1;
-        }
+	if (!MI_HAS_HOTKEY(tmp) && *MI_LABEL(tmp)[i] != 0)
+	{
+	  MI_HOTKEY_COFFSET(tmp) = 0;
+	  MI_HOTKEY_COLUMN(tmp) = i;
+	  MI_HAS_HOTKEY(tmp) = 1;
+	  MI_IS_HOTKEY_AUTOMATIC(tmp) = 1;
+	}
       }
       if (*(MI_LABEL(tmp)[i]))
       {
@@ -5311,6 +5339,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   mp.eventp = teventp;
   mp.pops = &mops;
   mp.ret_paction = &ret_action;
+  mp.event_propagate_to_submenu = NULL;
 
   do_menu(&mp, &mret);
   if (mret.rc == MENU_DOUBLE_CLICKED && action)
@@ -6259,15 +6288,15 @@ static void NewMenuStyle(F_CMD_ARGS)
     case 40: /* Hilight3DThickness */
       if (GetIntegerArguments(args, NULL, val, 1) > 0)
       {
-        if (*val < 0)
-        {
-          *val = -*val;
-          ST_IS_ITEM_RELIEF_REVERSED(tmpms) = 1;
-        }
-        else
-        {
-          ST_IS_ITEM_RELIEF_REVERSED(tmpms) = 0;
-        }
+	if (*val < 0)
+	{
+	  *val = -*val;
+	  ST_IS_ITEM_RELIEF_REVERSED(tmpms) = 1;
+	}
+	else
+	{
+	  ST_IS_ITEM_RELIEF_REVERSED(tmpms) = 0;
+	}
 	if (*val > MAX_MENU_ITEM_RELIEF_THICKNESS)
 	  *val = MAX_MENU_ITEM_RELIEF_THICKNESS;
 	ST_RELIEF_THICKNESS(tmpms) = *val;
