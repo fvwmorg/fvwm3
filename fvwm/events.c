@@ -1393,7 +1393,6 @@ void HandleButtonPress(void)
 #endif /* HAVE_STROKE */
   if (action != NULL)
   {
-fprintf(stderr,"hbp: executing %s\n", action);
     ExecuteFunction(action, Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
   }
 
