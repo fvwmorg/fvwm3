@@ -1,0 +1,410 @@
+#!@PERL@ -w
+
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+# Filter this script to pod2man to get a man page:
+#   pod2man -c "FVWM Module" FvwmWindowLister | nroff -man | less -e
+
+use 5.004;
+use strict;
+
+BEGIN {
+	use vars qw($prefix $datadir);
+	$prefix = "@prefix@";
+	$datadir = "@datadir@";
+}
+
+use lib "@FVWM_PERLLIBDIR@";
+use FVWM::Module;
+use General::FileSystem "-quiet";
+use General::Parse;
+use Getopt::Long;
+
+# default user options
+my $opt = {
+	onlyiconic   => 0,      # only list iconified windows
+	alldesks     => 0,      # list windows on all desks
+	allpages     => 0,      # list windows on all pages
+	drawminiicon => 1,      # 0=never, 1=always, 2=iconified windows only
+	drawposition => 1,      # draw window position
+	maxlen       => 32,     # max chars for window name in menu
+	menuname     => "MenuFvwmWindowLister",  # name of fvwm menu to create
+	menustyle    => undef,  # name of fvwm menu style to use
+};
+
+# get size of your screen
+my $screen;
+
+# I would like a better way of getting screen dimensions!
+open(XWININFO, "xwininfo -root|") || die "can't run xwininfo";
+while (<XWININFO>) {
+	$screen->{w} = $1 if /Width:\s*(\d+)/;
+	$screen->{h} = $1 if /Height:\s*(\d+)/;
+}
+close(XWININFO);
+
+
+# some global vars
+my %window;
+my $desk = 0;
+my $page_nx = 0;
+my $page_ny = 0;
+
+# show = window matches to display in order, each entry defines a section
+# dontshow = window matches to ignore, none of these will show up in the menu
+my (@show, @dontshow);
+
+# init the module
+# set Debug = -1 for no messages at all
+# set Debug = 0 to see my messages about window decisions
+# set Debug = 1 to see also perllib messages about communication
+my $module = new FVWM::Module(
+	Name => "FvwmWindowLister",
+	Mask => M_WINDOW_NAME | M_STRING |
+		M_NEW_PAGE | M_NEW_DESK |
+		M_ADD_WINDOW | M_CONFIGURE_WINDOW |
+		M_DESTROY_WINDOW | M_END_WINDOWLIST |
+		M_ICONIFY | M_DEICONIFY | M_MINI_ICON |
+		M_CONFIG_INFO | M_SENDCONFIG,
+	Debug => -1,
+);
+
+$module->debug("starting " . $module->name);
+
+## process module options
+$module->addHandler(M_CONFIG_INFO, sub {
+	my ($module, $event) = @_;
+
+	my $modname = $module->name;
+	return unless $event->_text =~ /^\*$modname(.*)$/;
+	$_ = $1;
+
+	# get show array
+	if ( /^show\s+(.*)$/i ) {
+		push(@show, $1);
+	}
+
+	# get dontshow array
+	elsif ( /^dontshow\s+(.*)$/i ) {
+		push(@dontshow, $1);
+	}
+
+	# get drawminiicon option
+	elsif ( /^drawminiicon\s*(.*)/i ) {
+		$opt->{drawminiicon} = 0 + !!$1;
+	}
+
+	# get all other options, arg of 'off' sets opt to 0
+	elsif ( $1 =~ /^(\w+)\s*(\w+)/i ) {
+		(my $arg1 = $1) =~ tr/A-Z/a-z/;
+		$opt->{$arg1} = ($2 =~ /^off$/i) ? 0 : $2;
+	}
+
+	# should probably do more error checking
+});
+
+
+# handler to get page and desk info
+$module->addHandler(M_NEW_PAGE, sub {
+	my ($module, $event) = @_;
+
+	$desk = $event->_desk;
+
+	my $width  = $event->_vp_width;
+	my $height = $event->_vp_height;
+
+	if (!$width || !$height) {
+		# this may happen when doing DeskTopSize 1x1 on page 2 2;
+		# at least avoid division by zero
+		$width = 1;
+		$height = 1;
+	}
+
+	$page_nx = int($event->_vp_x / $width);
+	$page_ny = int($event->_vp_y / $height);
+});
+
+
+$module->addHandler(M_NEW_DESK, sub {
+	my ($module, $event) = @_;
+	$desk = $event->_desk;
+});
+
+
+$module->addHandler(M_STRING, sub{
+	my ($module, $event) = @_;
+	my ($action, $args) = getToken($event->_text);
+	return unless $action;
+	if ($action =~ /^Menu|Popup$/i) {
+		&PopupMenu($action, $args);
+	} else {
+		$module->debug("Unknown action $action", -1);
+	}
+});
+
+
+$module->addHandler(M_ADD_WINDOW|M_CONFIGURE_WINDOW, sub {
+	my ($module, $event) = @_;
+
+	$window{$event->_win_id}->{desk} = $event->_desk;
+	$window{$event->_win_id}->{x} = $event->_frame_x;
+	$window{$event->_win_id}->{y} = $event->_frame_y;
+});
+
+
+$module->addHandler(M_DESTROY_WINDOW, sub {
+	my ($module, $event) = @_;
+	delete $window{$event->_win_id};
+});
+
+
+$module->addHandler(M_WINDOW_NAME, sub {
+	my ($module, $event) = @_;
+	$window{$event->_win_id}->{name} = $event->_name;
+});
+
+
+$module->addHandler(M_ICONIFY, sub {
+	my ($module, $event) = @_;
+	$window{$event->_win_id}->{iconic} = 1;
+});
+
+
+$module->addHandler(M_DEICONIFY, sub {
+	my ($module, $event) = @_;
+	$window{$event->_win_id}->{iconic} = 0;
+});
+
+
+$module->addHandler(M_MINI_ICON, sub {
+	my ($module, $event) = @_;
+	$window{$event->_win_id}->{mini_icon} = $event->_name;
+});
+
+
+
+## does all the work and pops up the menu
+sub PopupMenu {
+	my ($command, $args) = @_;
+
+	my @section;
+
+	# loop on list of windows
+	foreach my $id ( keys %window ) {
+
+		$module->debug("\t$id - " . $window{$id}->{name});
+
+		# skip windows in the dontshow array
+		my $dont_show_me;
+		foreach ( @dontshow ) {
+			$dont_show_me = 1, last if $window{$id}->{name} =~ /$_/;
+		}
+
+		$module->debug("\t\tin dontshow list"), next
+			if $dont_show_me;
+
+		# skip windows not on this desk if alldesks not set
+		$module->debug("\t\tnot on this desk"), next
+			unless $opt->{alldesks} || $window{$id}->{desk} == $desk;
+
+		# show only iconic windows if onlyiconic set
+		$module->debug("\t\tskipping because not iconified"), next
+			if $opt->{onlyiconic} && ! $window{$id}->{iconic};
+
+		# skip window if its top left is not on this page
+		$module->debug("\t\tnot on this page"), next
+			if ! $opt->{allpages} && (
+				$window{$id}->{x} < 0 ||
+				$window{$id}->{x} >= $screen->{w} ||
+				$window{$id}->{y} < 0 ||
+				$window{$id}->{y} >= $screen->{h});
+
+		# loop on sections and choose which one to file in
+		my $sectctr = 0;
+		foreach ( @show ) {
+			last if $window{$id}->{name} =~ /$_/ ;
+			++$sectctr;
+		}
+
+		# if we got here add the window to the last section
+		# which is 'none of the above'
+		$module->debug("\t\tadding to section $sectctr");
+		&AddToSection(\$section[$sectctr], $id);
+	}
+
+
+	# tell fvwm to start the menu
+	$module->send("DestroyMenu $opt->{menuname}");
+	$module->send("AddToMenu $opt->{menuname} 'Desk $desk, "
+		. "Page $page_nx $page_ny' Title");
+
+	# now loop on sections sending menu entries to fvwm
+	while ( @section ) {
+		my $s = shift @section;
+
+		if ($s) {
+			$module->send($s);
+
+			# add separator after section unless it is the last
+			$module->send("+ \"\" Nop") if @section;
+		}
+	}
+
+	# set a menustyle if one given
+	$module->send("ChangeMenuStyle $opt->{menustyle} $opt->{menuname}")
+		if $opt->{menustyle};
+
+	# popup the menu with args we were sent
+	$module->send("$command $opt->{menuname} $args");
+}
+
+
+# build a line containing the fvwm menu entry for a window
+# then add it to the appropriate member of the global array @section
+# args: pointer to section, window id
+sub AddToSection {
+	my ($s, $id) = @_;
+
+	# shorten menu entry
+	my $entry = substr($window{$id}->{name}, 0, $opt->{maxlen});
+
+	# add ellipses if we shortened entry
+	$entry .= "..." if length($window{$id}->{name}) > $opt->{maxlen};
+
+	# add window position
+	$entry .= "\t\t(+$window{$id}->{x}+$window{$id}->{y})"
+		if $opt->{drawposition};
+
+	# add desk number if we are in multi-desk mode
+	$entry .= "\t($window{$id}->{desk})"
+		if $opt->{alldesks};
+
+	# add mini_icon always (opt=1) or only to iconified windows (opt=2)
+	my $mi = "";
+	if ( $opt->{drawminiicon} == 1 ||
+		$opt->{drawminiicon} == 2 && $window{$id}->{iconic} )
+	{
+		$mi = "%" . $window{$id}->{mini_icon} . "%";
+	}
+
+	# add the entry to the section
+	$$s .= qq(+ "$entry$mi" WindowListFunc $id\n);
+}
+
+
+# main loop
+$module->send("Send_ConfigInfo");
+$module->send("Send_WindowList");
+$module->eventLoop;
+
+1;
+
+__END__
+
+# ----------------------------------------------------------------------------
+
+=head1 DESCRIPTION
+
+A substitute for I<fvwm> builtin B<WindowList>, but written in Perl
+and easy to customize. Unlike B<FvwmIconMan> or B<FvwmWinList> the
+module does not draw its own window, but instead creates an
+I<fvwm> menu and asks I<fvwm> to pop it up.
+
+By defining a set of regular expressions in @show, windows may
+be sorted into sections based on the regexp matching their
+title.
+
+Similarly, matches in @dontshow will be excluded from the list.
+
+Any windows not matching an element of @show or @dontshow will
+be placed in the last section of the menu.
+
+=head1 USAGE
+
+Place this in e.g. your StartFunction in I<.fvwm2rc>:
+    
+    Module FvwmWindowLister
+
+Invoke the menu from .fvwmrc like this, for example:
+    
+    Key Menu A N SendToModule FvwmWindowLister Menu Root c c
+
+The arguments are any valid B<Menu> command arguments without a menu name.
+You may also send B<Popup> action.
+
+Set module options, e.g.:
+
+    *FvwmWindowLister: Show ^Galeon|^Netscape
+    *FvwmWindowLister: Show ^emacs
+
+will define two sections containing respectively browsers, and emacs.
+Number of sections is unlimited. The strings are perl regular
+expressions that will be evaluated in m// context. See perlre(1).
+
+Similarly:
+
+    *FvwmWindowLister: DontShow ^Fvwm
+    *FvwmWindowLister: DontShow ^gkrellm
+
+will cause the menu to ignore windows with title beginning with Fvwm or
+gkrellm.
+
+Other options:
+
+=over 4
+
+=item *FvwmWindowLister: I<OnlyIconic> {on|off}
+
+show only iconified windows
+
+=item *FvwmWindowLister: I<AllDesks> {on|off}
+
+show windows from all desks
+
+=item *FvwmWindowLister: I<AllPages> {on|off}
+
+show windows from all pages
+
+=item *FvwmWindowLister: I<DrawMiniIcon> {0|1|2}
+
+draw mini icon: 0=never, 1=always, 2=iconified windows only
+
+=item *FvwmWindowLister: I<DrawPosition> {on|off}
+
+draw window position in parentheses
+
+=item *FvwmWindowLister: I<Maxlen> 32
+
+max length in chars of entry
+
+=item *FvwmWindowLister: I<MenuName> foobar
+
+name of menu to popup
+
+=item *FvwmWindowLister: I<MenuStyle> foobarstyle
+
+name of MenuStyle to apply
+
+=item *FvwmWindowLister: I<Debug> {-1,0,1,...}
+
+level of debug info output, -1 means no debug
+
+=back
+
+=head1 AUTHOR
+
+Ric Lister <http://cns.georgetown.edu/~ric/>
+
+=cut

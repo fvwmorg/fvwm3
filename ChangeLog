@@ -1,3 +1,8 @@
+2002-11-09  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	autogenerate FvwmWindowLister files
+
 2002-11-08  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureUtils.c (alloc_color_proportion):

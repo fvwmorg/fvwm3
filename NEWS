@@ -21,6 +21,8 @@ Changes in developement release 2.5.5 (not released yet)
 
 * The MoveToPage command does nothing with sticky windows.
 
+* New module FvwmWindowLister, a WindowList subtitute.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.4 (20-Oct-2002)

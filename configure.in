@@ -1024,6 +1024,8 @@ dnl
 	modules/FvwmTheme/Makefile
 	modules/FvwmWharf/Makefile
 	modules/FvwmWinList/Makefile
+	modules/FvwmWindowLister/Makefile
+	modules/FvwmWindowLister/FvwmWindowLister
 	modules/FvwmGtk/Makefile
 )
 
