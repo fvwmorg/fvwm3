@@ -395,12 +395,12 @@ void DrawIconWindow(FvwmWindow *tmp_win)
         /* it's a client pixmap and fvwm is not using the root visual
          * The icon window has no 3d border so copy to (0,0)
          * install the root colormap temporarily to help the Exceed server */
-        if (Scr.exceed_hack)
+        if (Scr.bo.InstallRootCmap)
           InstallRootColormap();
 	XCopyArea(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
 		  DefaultGC(dpy, Scr.screen), 0, 0, tmp_win->icon_p_width,
 		  tmp_win->icon_p_height, 0, 0);
-	if (Scr.exceed_hack)
+	if (Scr.bo.InstallRootCmap)
 	  UninstallRootColormap();
       }
     }

@@ -1,6 +1,11 @@
 1999-09-06  Hippo
 
-	* libs/module_interface.c: Fixed dealock with recapture and lockonsend
+	* fvwm/builtins.c:
+	* fvwm/fvwm.c:
+	* fvwm/icons.c:
+	* fvwm/move_resize.c
+	* fvwm/screen.h: New BugOpts option: MixedVisualWorkAround
+	* libs/module_interface.c: Fixed deadlock with recapture and lockonsend
 	modules by ignoring lockonsend flag when server is grabbed.
 
 1999-09-06  Dominik Vogt  <dominik.vogt@gmx.de>

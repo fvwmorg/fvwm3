@@ -242,7 +242,6 @@ typedef struct ScreenInfo
 				   colormap windows */
   FvwmWindow *pushed_window;	/* saved window to install when pushes drops
 				   to zero */
-  Bool exceed_hack;
   Cursor *FvwmCursors;
 
   char *DefaultIcon;            /* Icon to use when no other icons are found */
@@ -336,6 +335,7 @@ typedef struct ScreenInfo
     unsigned ModalityIsEvil : 1;
     unsigned RaiseHackNeeded : 1;
     unsigned DisableConfigureNotify : 1;
+    unsigned InstallRootCmap : 1;
   } bo; /* bug workaround control options */
   struct
   {

@@ -1498,6 +1498,12 @@ If some windows flicker annoyingly while being moved, this option
 may help you.  Note that if this problem occurs its not a fvwm bug,
 its the fault of the application.
 
+\fIMixedVisualWorkaround\fP makes fvwm install the root colormap before
+it does some operations using the root window visuals. This is only
+useful when the -visual option is used to start fvwm and then only with
+some configurations of some servers (e.g. Exceed 6.0 with an 8 bit
+Pseudocolor root and fvwm using a 24 bit Truecolor visual).
+
 .TP
 .B "ClickTime" "[\fIdelay\fP]"
 Specifies the maximum delay (in milliseconds) between a button press

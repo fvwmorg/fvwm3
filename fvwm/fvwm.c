@@ -504,13 +504,6 @@ int main(int argc, char **argv)
   /* make a copy of the visual stuff so that XorPixmap can swap with root */
   SaveFvwmVisual();
 
-  /* the following is a workaround for my Exceed server which has problems
-   * drawing client supplied icon pixmaps when the display is 16bit, the root
-   * is 8 bit Pseudo and fvwm is run with the -visual option (24 bit) */
-  /* it might give others a headache in which case the test should be more
-   * restrictive i.e. based on the display vendor string */
-  Scr.exceed_hack = (Pdepth != DefaultDepth(dpy, Scr.screen));
-
 #ifdef SHAPE
   ShapesSupported = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
 #endif /* SHAPE */
@@ -1665,6 +1658,8 @@ static void InitVariables(void)
 #else
   Scr.bo.DisableConfigureNotify = 0;
 #endif
+
+  Scr.bo.InstallRootCmap = 0;
 
   Scr.gs.EmulateMWM = DEFAULT_EMULATE_MWM;
   Scr.gs.EmulateWIN = DEFAULT_EMULATE_WIN;

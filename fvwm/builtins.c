@@ -2587,6 +2587,22 @@ void SetBugOptions(F_CMD_ARGS)
 	break;
       }
     }
+    else if (StrEquals(opt, "MixedVisualWorkaround"))
+    {
+      switch (toggle)
+      {
+      case -1:
+	Scr.bo.InstallRootCmap ^= 1;
+	break;
+      case 0:
+      case 1:
+	Scr.bo.InstallRootCmap = toggle;
+	break;
+      default:
+	Scr.bo.InstallRootCmap = 0;
+	break;
+      }
+    }
     else
     {
       fvwm_msg(ERR,"SetButOptions","Unknown Bug Option '%s'",opt);

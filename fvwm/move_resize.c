@@ -168,7 +168,10 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
 
   w = *win;
 
-  InstallRootColormap();
+  if (Scr.bo.InstallRootCmap)
+    InstallRootColormap();
+  else
+    InstallFvwmColormap();
   /* warp the pointer to the cursor position from before menu appeared*/
   /* domivogt (17-May-1999): an XFlush should not hurt anyway, so do it
    * unconditionally to remove the external */
@@ -204,7 +207,10 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
 	   opaque_move,False);
 
   XUnmapWindow(dpy,Scr.SizeWindow);
-  UninstallRootColormap();
+  if (Scr.bo.InstallRootCmap)
+    UninstallRootColormap();
+  else
+    UninstallFvwmColormap();
 
   if(!opaque_move)
     MyXUngrabServer(dpy);
@@ -1435,7 +1441,10 @@ void resize_window(F_CMD_ARGS)
     return;
   }
 
-  InstallRootColormap();
+  if (Scr.bo.InstallRootCmap)
+    InstallRootColormap();
+  else
+    InstallFvwmColormap();
 
   if(!GrabEm(CRS_RESIZE))
   {
@@ -1775,7 +1784,10 @@ void resize_window(F_CMD_ARGS)
       SetupFrame(tmp_win, drag->x, drag->y, drag->width, drag->height,
 		 FALSE, False);
   }
-  UninstallRootColormap();
+  if (Scr.bo.InstallRootCmap)
+    UninstallRootColormap();
+  else
+    UninstallFvwmColormap();
   ResizeWindow = None;
   MyXUngrabServer(dpy);
   UngrabEm();
