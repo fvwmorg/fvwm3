@@ -16,20 +16,34 @@
 #ifndef STACK_H
 #define STACK_H
 
+void remove_window_from_stack_ring(FvwmWindow *t);
+void add_window_to_stack_ring_after(FvwmWindow *t, FvwmWindow *add_after_win);
+FvwmWindow *get_next_window_in_stack_ring(FvwmWindow *t);
+FvwmWindow *get_prev_window_in_stack_ring(FvwmWindow *t);
+Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower);
 void RaiseWindow(FvwmWindow *t);
 void LowerWindow(FvwmWindow *t);
-void new_layer(FvwmWindow *t, int layer);
-Bool HandleUnusualStackmodes(unsigned int stack_mode, 
+Bool HandleUnusualStackmodes(unsigned int stack_mode,
 			     FvwmWindow *r, Window rw,
 			     FvwmWindow *sib, Window sibw);
 void ResyncFvwmStackRing(void);
 void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2);
+void BroadcastRestackThisWindow(FvwmWindow *t);
 Bool CanBeRaised (FvwmWindow *t);
 
+int compare_window_layers(FvwmWindow *t, FvwmWindow *s);
+void set_default_layer(FvwmWindow *t, int layer);
+void set_layer(FvwmWindow *t, int layer);
+int get_layer(FvwmWindow *t);
+void new_layer(FvwmWindow *t, int layer);
+
+void init_stack_and_layers(void);
+
+void raiselower_func(F_CMD_ARGS);
+void raise_function(F_CMD_ARGS);
+void lower_function(F_CMD_ARGS);
+void change_layer(F_CMD_ARGS);
+void SetDefaultLayers(F_CMD_ARGS);
+
+
 #endif /* STACK_H */
-
-
-
-
-
-

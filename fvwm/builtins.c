@@ -614,22 +614,6 @@ void movecursor(F_CMD_ARGS)
 }
 
 
-void raise_function(F_CMD_ARGS)
-{
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
-    return;
-
-  RaiseWindow(tmp_win);
-}
-
-void lower_function(F_CMD_ARGS)
-{
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT, ButtonRelease))
-    return;
-
-  LowerWindow(tmp_win);
-}
-
 void destroy_function(F_CMD_ARGS)
 {
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_DESTROY, ButtonRelease))
@@ -917,21 +901,6 @@ void echo_func(F_CMD_ARGS)
   fvwm_msg(INFO,"Echo",action);
 }
 
-void raiselower_func(F_CMD_ARGS)
-{
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
-    return;
-
-  if (IS_VISIBLE(tmp_win) || !CanBeRaised(tmp_win))
-    {
-      LowerWindow(tmp_win);
-    }
-  else
-    {
-      RaiseWindow(tmp_win);
-    }
-}
-
 void SetEdgeScroll(F_CMD_ARGS)
 {
   int val1, val2, val1_unit,val2_unit,n;
@@ -1040,11 +1009,15 @@ void SetSnapAttraction(F_CMD_ARGS)
 
   if(GetIntegerArguments(action, &action, &val, 1) != 1)
   {
-    fvwm_msg(ERR,"SetSnapAttraction",
-	     "SnapAttraction requires at least 1 argument");
+    Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
+    Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
     return;
   }
   Scr.SnapAttraction = val;
+  if (val < 0)
+  {
+    Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
+  }
 
   action = GetNextToken(action, &token);
   if(token == NULL)
@@ -1081,7 +1054,7 @@ void SetSnapAttraction(F_CMD_ARGS)
   }
   else
   {
-    Scr.SnapMode = 0;
+    Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
   }
 
   if(StrEquals(token,"Screen"))
@@ -1102,16 +1075,21 @@ void SetSnapGrid(F_CMD_ARGS)
 
   if(GetIntegerArguments(action, NULL, &val[0], 2) != 2)
   {
-    fvwm_msg(ERR,"SetSnapGrid","SetSnapGrid requires 2 arguments");
+    Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
+    Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
     return;
   }
 
   Scr.SnapGridX = val[0];
   if(Scr.SnapGridX < 1)
-    { Scr.SnapGridX = 1;}
+  {
+    Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
+  }
   Scr.SnapGridY = val[1];
   if(Scr.SnapGridY < 1)
-    { Scr.SnapGridY = 1;}
+  {
+    Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
+  }
 }
 
 
@@ -4118,103 +4096,6 @@ void setShadeAnim(F_CMD_ARGS)
   Scr.shade_anim_steps = (unit != 0) ? -val : val;
 
   return;
-}
-
-void change_layer(F_CMD_ARGS)
-{
-  int n, layer, val[2];
-  char *token;
-
-  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
-    return;
-
-  if(tmp_win == NULL)
-    return;
-
-  token = PeekToken(action, NULL);
-  if (StrEquals("default", token))
-    {
-      layer = tmp_win->default_layer;
-    }
-  else
-    {
-      n = GetIntegerArguments(action, NULL, val, 2);
-
-      layer = tmp_win->layer;
-      if ((n == 1) ||
-	  ((n == 2) && (val[0] != 0)))
-	{
-	  layer += val[0];
-	}
-      else if ((n == 2) && (val[1] >= 0))
-	{
-	  layer = val[1];
-	}
-      else
-	{
-	  layer = tmp_win->default_layer;
-	}
-    }
-
-  if (layer < 0)
-    {
-      layer = 0;
-    }
-
-  new_layer (tmp_win, layer);
-}
-
-void SetDefaultLayers(F_CMD_ARGS)
-{
-  char *bot = NULL;
-  char *def = NULL;
-  char *top = NULL;
-  int i;
-
-  action = GetNextToken(action, &bot);
-  if (bot)
-    {
-       i = atoi (bot);
-       if (i < 0)
-         {
-           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
-         }
-       else
-         {
-           Scr.BottomLayer = i;
-         }
-       free (bot);
-    }
-
-  action = GetNextToken(action, &def);
-  if (def)
-    {
-       i = atoi (def);
-       if (i < 0)
-         {
-           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
-         }
-       else
-         {
-           Scr.DefaultLayer = i;
-         }
-       free (def);
-    }
-
-  action = GetNextToken(action, &top);
-  if (top)
-    {
-       i = atoi (top);
-       if (i < 0)
-         {
-           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
-         }
-       else
-         {
-           Scr.TopLayer = i;
-         }
-       free (top);
-    }
 }
 
 void SetMaxWindowSize(F_CMD_ARGS)

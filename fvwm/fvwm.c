@@ -50,6 +50,7 @@
 #include "read.h"
 #include "session.h"
 #include "virtual.h"
+#include "stack.h"
 
 
 #include <X11/Xproto.h>
@@ -1545,10 +1546,6 @@ static void InitVariables(void)
   /* zero all flags */
   memset(&Scr.flags, 0, sizeof(Scr.flags));
 
-  Scr.BottomLayer  = 2;
-  Scr.DefaultLayer = 4;
-  Scr.TopLayer     = 6;
-
   /* create graphics contexts */
   CreateGCs();
 
@@ -1559,10 +1556,7 @@ static void InitVariables(void)
   Scr.FvwmRoot.w = Scr.Root;
   Scr.FvwmRoot.next = 0;
 
-  /*  RBW - 11/13/1998 - 2 new fields to init - stacking order chain.  */
-  Scr.FvwmRoot.stack_next  =  &Scr.FvwmRoot;
-  Scr.FvwmRoot.stack_prev  =  &Scr.FvwmRoot;
-  Scr.FvwmRoot.layer = -1;
+  init_stack_and_layers();
 
   XGetWindowAttributes(dpy,Scr.Root,&(Scr.FvwmRoot.attr));
   Scr.root_pushes = 0;
@@ -1601,10 +1595,10 @@ static void InitVariables(void)
 
   Scr.EdgeScrollX = Scr.EdgeScrollY = 100;
   Scr.ScrollResistance = Scr.MoveResistance = 0;
-  Scr.SnapAttraction = -1;
-  Scr.SnapMode = 0;
-  Scr.SnapGridX = 1;
-  Scr.SnapGridY = 1;
+  Scr.SnapAttraction = DEFAULT_SNAP_ATTRACTION;
+  Scr.SnapMode = DEFAULT_SNAP_ATTRACTION_MODE;
+  Scr.SnapGridX = DEFAULT_SNAP_GRID_X;
+  Scr.SnapGridY = DEFAULT_SNAP_GRID_Y;
   Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
   Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
   /* ClickTime is set to the positive value upon entering the event loop. */
@@ -1648,8 +1642,10 @@ static void InitVariables(void)
   Scr.go.RaiseHackNeeded =
     (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0) ||
     (strcmp (ServerVendor (dpy), "Network Computing Devices Inc.") == 0);
-  Scr.gs.EmulateMWM = False;
-  Scr.gs.EmulateWIN = False;
+  Scr.gs.EmulateMWM = DEFAULT_EMULATE_MWM;
+  Scr.gs.EmulateWIN = DEFAULT_EMULATE_WIN;
+  Scr.gs.use_active_down_buttons = DEFAULT_USE_ACTIVE_DOWN_BUTTONS;
+  Scr.gs.use_inactive_buttons = DEFAULT_USE_INACTIVE_BUTTONS;
   /* Not the right place for this, should only be called once somewhere .. */
   InitPictureCMap(dpy,Scr.NoFocusWin);
 

@@ -1,5 +1,55 @@
 1999-06-26  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/builtins.c (SetSnapAttraction):
+	(SetSnapGrid): Snap... called without arguments returns to default
+	behaviour.
+
+	* fvwm/defaults.h:
+	* fvwm/fvwm.c (InitVariables): more definitions taken from defaults.h
+
+	* acconfig.h:
+	* configure.in (FVWM_CONFIGDIR): removed the following configure
+	options (i.e. they are always on):
+	borderstyle, extended-titlestyle, gradient-buttons, mini-icons,
+	multistyle, pixmap-buttons, usedecor, vector-buttons, inactive-button,
+	activedown-button
+
+	* fvwm/Makefile.am (fvwm2_SOURCES): added gnome.h
+
+	* fvwm/stack.c (SetDefaultLayers): Don't malloc, PeekToken is enough
+
+	* fvwm/windowlist.c:
+	* fvwm/placement.c:
+	* fvwm/gnome.c:
+	* fvwm/gnome.h:
+	* fvwm/defaults.h:
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/builtins.c (SetDefaultLayers):
+	(change_layer):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/events.c (HandleConfigureRequest):
+	Moved all layer code to stack.c. Always use this module to manipulate
+ 	window layers.
+	Moved gnome prototypes to gnome.h (new file).
+	Moved default layer definitions to defaults.h
+
+	* fvwm/gnome.c (GNOME_SetDeskCount):
+	* fvwm/events.c (HandleConfigureRequest):
+	* fvwm/misc.h:
+	* fvwm/builtins.c (raise_function):
+	(lower_function):
+	(raiselower_func):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/stack.c (remove_window_from_stack_ring):
+	(add_window_to_stack_ring_after):
+	(RaiseWindow):
+	(LowerWindow):
+	(ResyncFvwmStackRing):
+	Moved all stacking order related code to stack.[ch]. The stacking ring
+	shouldn't be modified outside this module.
+
+	* fvwm/fvwm2.1: documented new cursors
+
 	* fvwm/functions.c (DeferExecution): Don't use the select cursor when
 	only waiting for a button release
 	(execute_complex_function): improved double click handling (my X server

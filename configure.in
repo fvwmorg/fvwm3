@@ -14,19 +14,21 @@ AC_SUBST(FVWM_CONFIGDIR)
 
 dnl Various configure-time options
 dnl
-smr_SWITCH(activedown-button, ActiveDown button state, on, ACTIVEDOWN_BTNS)
-smr_SWITCH(borderstyle, BorderStyle command, on, BORDERSTYLE)
+dnl NOTE: the disabled options will be removed in the near future for better
+dnl maintainability of the code.
+dnl smr_SWITCH(activedown-button, ActiveDown button state, on, ACTIVEDOWN_BTNS)
+dnl smr_SWITCH(borderstyle, BorderStyle command, on, BORDERSTYLE)
 smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
-smr_SWITCH(extended-titlestyle, styled title-bars, on, EXTENDED_TITLESTYLE)
-smr_SWITCH(gradient-buttons, gradient button style, on, GRADIENT_BUTTONS)
-smr_SWITCH(inactive-button, Inactive button state, on, INACTIVE_BTNS)
-smr_SWITCH(mini-icons, MiniIcon style option, on, MINI_ICONS)
+dnl smr_SWITCH(extended-titlestyle, styled title-bars, on, EXTENDED_TITLESTYLE)
+dnl smr_SWITCH(gradient-buttons, gradient button style, on, GRADIENT_BUTTONS)
+dnl smr_SWITCH(inactive-button, Inactive button state, on, INACTIVE_BTNS)
+dnl smr_SWITCH(mini-icons, MiniIcon style option, on, MINI_ICONS)
 smr_SWITCH(modality, modal dialogs for applications, on, , MODALITY_IS_EVIL)
-smr_SWITCH(multistyle, stacked button styles, on, MULTISTYLE)
-smr_SWITCH(pixmap-buttons, pixmap button style, on, PIXMAP_BUTTONS)
+dnl smr_SWITCH(multistyle, stacked button styles, on, MULTISTYLE)
+dnl smr_SWITCH(pixmap-buttons, pixmap button style, on, PIXMAP_BUTTONS)
 smr_SWITCH(shape, shape extensions, on, SHAPE)
-smr_SWITCH(usedecor, UseDecor style option, on, USEDECOR)
-smr_SWITCH(vector-buttons, vector button style, on, VECTOR_BUTTONS)
+dnl smr_SWITCH(usedecor, UseDecor style option, on, USEDECOR)
+dnl smr_SWITCH(vector-buttons, vector button style, on, VECTOR_BUTTONS)
 smr_SWITCH(gnome, GNOME Window Manager Hints, off, GNOME)
 
 dnl FIXME: default value should be derived from computed path to X

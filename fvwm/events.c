@@ -1679,7 +1679,7 @@ void HandleConfigureRequest(void)
                                                  otherwin, cre->above);
 	}
       /* only allow clients to restack windows within their layer */
-      else if (!otherwin || (otherwin->layer != Tmp_win->layer))
+      else if (!otherwin || compare_window_layers(otherwin, Tmp_win) != 0)
 	{
 	  switch (cre->detail)
 	    {
@@ -1732,28 +1732,21 @@ void HandleConfigureRequest(void)
 	  /* Maintain the stacking order ring */
 	  if (cre->detail == Above)
 	    {
-	      Tmp_win->stack_prev->stack_next = Tmp_win->stack_next;  /* Pluck from chain.   */
-	      Tmp_win->stack_next->stack_prev = Tmp_win->stack_prev;
-	      Tmp_win->stack_next = otherwin;                          /* Set new pointers.   */
-	      Tmp_win->stack_prev = otherwin->stack_prev;
-	      otherwin->stack_prev->stack_next = Tmp_win;              /* Re-insert above sibling. */
-	      otherwin->stack_prev = Tmp_win;
+	      remove_window_from_stack_ring(Tmp_win);
+	      add_window_to_stack_ring_after(
+		Tmp_win, get_prev_window_in_stack_ring(otherwin));
 	    }
 	  else /* cre->detail == Below */
 	    {
-	      Tmp_win->stack_prev->stack_next = Tmp_win->stack_next;  /* Pluck from chain.   */
-	      Tmp_win->stack_next->stack_prev = Tmp_win->stack_prev;
-	      Tmp_win->stack_prev = otherwin;                          /* Set new pointers.   */
-	      Tmp_win->stack_next = otherwin->stack_next;
-	      otherwin->stack_next->stack_prev = Tmp_win;              /* Re-insert above sibling. */
-	      otherwin->stack_next = Tmp_win;
+	      remove_window_from_stack_ring(Tmp_win);
+	      add_window_to_stack_ring_after(Tmp_win, otherwin);
 	    }
 
 	  /*
 	    Let the modules know that Tmp_win changed its place
 	    in the stacking order
 	  */
-	  BroadcastRestack (Tmp_win->stack_prev, Tmp_win->stack_next);
+	  BroadcastRestackThisWindow(Tmp_win);
 	}
     }
 

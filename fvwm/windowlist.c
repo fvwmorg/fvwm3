@@ -40,6 +40,7 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
+#include "stack.h"
 
 extern FvwmWindow *Tmp_win;
 extern FvwmWindow *ButtonWindow;
@@ -288,7 +289,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         if (!(flags & SHOW_NORMAL) &&
             !((IS_ICONIFIED(t)) || (IS_STICKY(t))))
           continue; /* don't want "normal" ones - skip */
-        if ((t->layer < low_layer) || (t->layer > high_layer))
+        if ((get_layer(t) < low_layer) || (get_layer(t) > high_layer))
           continue;  /* don't want this layer */
 
         /* add separator between desks when geometry shown but not at the top*/
@@ -313,7 +314,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           tname[0]=0;
           if(IS_ICONIFIED(t))
             strcpy(tname, "(");
-          sprintf(loc,"%d(%d):",t->Desk, t->layer);
+          sprintf(loc,"%d(%d):",t->Desk, get_layer(t));
           strcat(tname,loc);
 
           dheight = t->frame_g.height - t->title_g.height -2*t->boundary_width;

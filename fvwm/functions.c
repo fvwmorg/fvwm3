@@ -50,6 +50,7 @@
 #include "Module.h"
 #include "move_resize.h"
 #include "virtual.h"
+#include "stack.h"
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;

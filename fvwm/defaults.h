@@ -23,15 +23,38 @@
  *       23 Dec 1998 - Dominik Vogt <dominik_vogt@hp.com>
  */
 
+#ifndef _DEFAULTS_
+#define _DEFAULTS_
+
 #define DEFAULT_CLICKTIME               150           /* ms */
 #define DEFAULT_POPUP_DELAY              15           /* ms*10 */
 #define DEFAULT_MENU_CLICKTIME           (3*DEFAULT_CLICKTIME)
 #define DEFAULT_MOVE_THRESHOLD            3
+
 #define DEFAULT_MAX_WINDOW_WIDTH      32767
 #define DEFAULT_MAX_WINDOW_HEIGHT     32767
 #define DEFAULT_MIN_MAX_WINDOW_WIDTH    100
 #define DEFAULT_MIN_MAX_WINDOW_HEIGHT   100
+
 #define DEFAULT_OPAQUE_MOVE_SIZE          5
+
+#define DEFAULT_BOTTOM_LAYER              2
+#define DEFAULT_DEFAULT_LAYER             4
+#define DEFAULT_TOP_LAYER                 6
+#define DEFAULT_ROOT_WINDOW_LAYER        -1
+
+#define DEFAULT_EMULATE_MWM               False
+#define DEFAULT_EMULATE_WIN               False
+
+#define DEFAULT_USE_ACTIVE_DOWN_BUTTONS   True
+#define DEFAULT_USE_INACTIVE_BUTTONS      True
+
+#define DEFAULT_SNAP_ATTRACTION           -1
+#define DEFAULT_SNAP_ATTRACTION_MODE      0
+#define DEFAULT_SNAP_GRID_X               1
+#define DEFAULT_SNAP_GRID_Y               1
 
 /* Tunable parameters. */
 #define MAX_GRADIENT_SEGMENTS          1000
+
+#endif /* _DEFAULTS_ */

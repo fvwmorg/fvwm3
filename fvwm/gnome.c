@@ -2,8 +2,8 @@
 /* GNOME WM Compliance adapted for FVWM                  */
 /* Properties set on the root window (or desktop window) */
 /*                                                       */
-/* Even though the rest of E is GPL consider this file   */
-/* Public Domain - use it howvere you see fit to make    */
+/* Even though the rest of fvwm is GPL consider this file*/
+/* Public Domain - use it however you see fit to make    */
 /* your WM GNOME compiant                                */
 /*                                                       */
 /* written by Raster                                     */
@@ -100,7 +100,7 @@
 /*      6 = Dock (always on top - for panel) */
 /* The app sets this alone, not the WM. If this property changes the WM */
 /* should comply and change the appearance/behavior of the Client window */
-/* if this hint does nto exist the WM Will create it ont he Client window */
+/* if this hint does not exist the WM Will create it on the Client window */
 #define WIN_LAYER_DESKTOP                0
 #define WIN_LAYER_BELOW                  2
 #define WIN_LAYER_NORMAL                 4
@@ -246,7 +246,7 @@
 static Window __button_proxy = 0;
 
 
-void *
+static void *
 AtomGet(Window win, Atom to_get, Atom type, int *size)
 {
   unsigned char      *retval;
@@ -317,7 +317,7 @@ GNOME_GetHintLayer(FvwmWindow *fwin)
    retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
    if (retval)
      {
-	fwin->layer = *retval;
+	set_layer(fwin, *retval);
 	free(retval);
      }
 }
@@ -569,7 +569,7 @@ GNOME_SetLayer(FvwmWindow *fwin)
   int val;
 
   atom_set = XInternAtom(dpy, XA_WIN_LAYER, False);
-  val = fwin->layer;
+  val = get_layer(fwin);
   XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,
 		  PropModeReplace, (unsigned char *)&val, 1);
 }
@@ -623,7 +623,9 @@ GNOME_SetDeskCount(void)
 
   atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
   val = Scr.CurrentDesk;
-  for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot; t = t->stack_next)
+  for (t = get_next_window_in_stack_ring(&Scr.FvwmRoot);
+       t != &Scr.FvwmRoot;
+       t = get_next_window_in_stack_ring(t))
     {
       if (t->Desk > val)
 	{

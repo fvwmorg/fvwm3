@@ -96,7 +96,6 @@ void SetTimer(int);
 int flush_expose(Window w);
 
 void do_windowList(F_CMD_ARGS);
-void RaiseThisWindow(int);
 void SetShape(FvwmWindow *, int);
 void executeModule(F_CMD_ARGS);
 void initModules(void);
@@ -181,8 +180,6 @@ void Bell(F_CMD_ARGS);
 void movecursor(F_CMD_ARGS);
 void PlaceAgain_func(F_CMD_ARGS);
 void iconify_function(F_CMD_ARGS);
-void raise_function(F_CMD_ARGS);
-void lower_function(F_CMD_ARGS);
 void destroy_function(F_CMD_ARGS);
 void delete_function(F_CMD_ARGS);
 void close_function(F_CMD_ARGS);
@@ -209,7 +206,6 @@ void staysup_func(F_CMD_ARGS);
 void quit_func(F_CMD_ARGS);
 void quit_screen_func(F_CMD_ARGS);
 void echo_func(F_CMD_ARGS);
-void raiselower_func(F_CMD_ARGS);
 void Nop_func(F_CMD_ARGS);
 void SetGlobalOptions(F_CMD_ARGS);
 void Emulate(F_CMD_ARGS);
@@ -279,9 +275,6 @@ void SetEnv(F_CMD_ARGS);
 
 void CoerceEnterNotifyOnCurrentWindow(void);
 
-void change_layer(F_CMD_ARGS);
-void SetDefaultLayers(F_CMD_ARGS);
-
 /*
 ** message levels for fvwm_msg:
 */
@@ -290,44 +283,6 @@ void SetDefaultLayers(F_CMD_ARGS);
 #define WARN 1
 #define ERR  2
 void fvwm_msg(int type,char *id,char *msg,...);
-
-#ifdef GNOME
-/* GNOME window manager hints support */
-
-/* initalization */
-void GNOME_Init(void);
-
-/* client messages; setting hints on a window comes through this mechanism */
-int  GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev);
-
-/* hook into .fvwm2rc functions */
-void GNOME_ButtonFunc(
-         XEvent *eventp,
-	 Window w,
-	 FvwmWindow *fwin,
-	 unsigned long context,
-	 char *action,
-	 int *Module);
-
-/* get hints on a window; sets parameters in a FvwmWindow */
-void GNOME_GetHints(FvwmWindow *fwin);
-/* get hints on a window, set parameters in style */
-void GNOME_GetStyle(FvwmWindow *fwin, window_style *style);
-
-/* set hints on a window from parameters in FvwmWindow */
-void GNOME_SetHints(FvwmWindow *fwin);
-
-void GNOME_SetLayer(FvwmWindow *fwin);
-void GNOME_SetDesk(FvwmWindow *fwin);
-
-/* update public window manager information */
-void GNOME_SetAreaCount(void);
-void GNOME_SetDeskCount(void);
-void GNOME_SetCurrentArea(void);
-void GNOME_SetCurrentDesk(void);
-void GNOME_SetClientList(void);
-
-#endif /* GNOME */
 
 
 /* needed in misc.h */

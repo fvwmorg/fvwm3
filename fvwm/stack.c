@@ -29,7 +29,58 @@
 #include "module_interface.h"
 #include "stack.h"
 #include "virtual.h"
+#include "defaults.h"
 
+
+/* ----------------------------- stack ring code --------------------------- */
+
+/* Remove a window from the stack ring */
+void remove_window_from_stack_ring(FvwmWindow *t)
+{
+  t->stack_prev->stack_next = t->stack_next;
+  t->stack_next->stack_prev = t->stack_prev;
+  return;
+}
+
+/* Add window t to the stack ring after window t2 */
+void add_window_to_stack_ring_after(FvwmWindow *t, FvwmWindow *add_after_win)
+{
+  t->stack_next = add_after_win->stack_next;
+  add_after_win->stack_next->stack_prev = t;
+  t->stack_prev = add_after_win;
+  add_after_win->stack_next = t;
+  return;
+}
+
+FvwmWindow *get_next_window_in_stack_ring(FvwmWindow *t)
+{
+  return t->stack_next;
+}
+
+FvwmWindow *get_prev_window_in_stack_ring(FvwmWindow *t)
+{
+  return t->stack_prev;
+}
+
+/* Takes a window from the top of the stack ring and puts it at the appropriate
+ * place. Called when new windows are created. */
+Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
+{
+  if (t->stack_prev != &Scr.FvwmRoot)
+    /* Not at top of stack ring, so it is already in place. add_window.c relies
+     * on this. */
+    return False;
+  /* RaiseWindow/LowerWindow will put the window in its layer */
+  if (do_lower)
+  {
+    LowerWindow(t);
+  }
+  else
+  {
+    RaiseWindow(t);
+  }
+  return True;
+}
 
 /*
    Raise t and its transients to the top of its layer.
@@ -46,8 +97,7 @@ void RaiseWindow(FvwmWindow *t)
   Window *wins;
 
   /* detach t early, so it doesn't make trouble in the loops */
-  t->stack_prev->stack_next = t->stack_next;
-  t->stack_next->stack_prev = t->stack_prev;
+  remove_window_from_stack_ring(t);
 
   count = 1;
   if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
@@ -73,8 +123,7 @@ void RaiseWindow(FvwmWindow *t)
             }
 
           /* unplug it */
-          t2->stack_next->stack_prev = t2->stack_prev;
-          t2->stack_prev->stack_next = t2->stack_next;
+	  remove_window_from_stack_ring(t2);
 
           /* put it above tmp_s */
           t2->stack_next = &tmp_s;
@@ -104,10 +153,7 @@ void RaiseWindow(FvwmWindow *t)
 #endif /* DONT_RAISE_TRANSIENTS */
 
   /* don't forget t itself */
-  t->stack_next = s;
-  t->stack_prev = s->stack_prev;
-  t->stack_prev->stack_next = t;
-  t->stack_next->stack_prev = t;
+  add_window_to_stack_ring_after(t, s->stack_prev);
 
   wins = (Window*) safemalloc (count * sizeof (Window));
 
@@ -194,14 +240,8 @@ void LowerWindow(FvwmWindow *t)
       return;
     }
 
-
-  t->stack_prev->stack_next = t->stack_next;
-  t->stack_next->stack_prev = t->stack_prev;
-
-  t->stack_next = s;
-  t->stack_prev = s->stack_prev;
-  t->stack_prev->stack_next = t;
-  t->stack_next->stack_prev = t;
+  remove_window_from_stack_ring(t);
+  add_window_to_stack_ring_after(t, s->stack_prev);
 
   changes.sibling = s->frame;
   if (changes.sibling != None)
@@ -232,43 +272,6 @@ void LowerWindow(FvwmWindow *t)
 }
 
 
-void
-new_layer (FvwmWindow *tmp_win, int layer)
-{
-  FvwmWindow *t2, *next;
-
-  if (layer < tmp_win->layer)
-    {
-      tmp_win->layer = layer;
-      RaiseWindow(tmp_win);
-    }
-  else if (layer > tmp_win->layer)
-    {
-#ifndef DONT_RAISE_TRANSIENTS
-      /* this could be done much more efficiently */
-      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
-	{
-	  next = t2->stack_next;
-	  if ((IS_TRANSIENT(t2)) &&
-	      (t2->transientfor == tmp_win->w) &&
-	      (t2 != tmp_win) &&
-	      (t2->layer >= tmp_win->layer) &&
-              (t2->layer < layer))
-	    {
-	      t2->layer = layer;
-	      LowerWindow(t2);
-	    }
-	}
-#endif
-      tmp_win->layer = layer;
-      LowerWindow(tmp_win);
-    }
-
-#ifdef GNOME
-  GNOME_SetLayer (tmp_win);
-#endif
-}
-
 static Bool
 intersect (int x0, int y0, int w0, int h0,
            int x1, int y1, int w1, int h1)
@@ -284,10 +287,11 @@ overlap_box (FvwmWindow *r, int x, int y, int w, int h)
   {
     return ((r->icon_pixmap_w) &&
              intersect (x, y, w, h, r->icon_x_loc, r->icon_y_loc,
-                             r->icon_p_width, r->icon_p_height)) ||
+			r->icon_p_width, r->icon_p_height)) ||
            ((r->icon_w) &&
-             intersect (x, y, w, h, r->icon_xl_loc, r->icon_y_loc + r->icon_p_height,
-                             r->icon_w_width, r->icon_w_height));
+             intersect (x, y, w, h, r->icon_xl_loc,
+			r->icon_y_loc + r->icon_p_height,
+			r->icon_w_width, r->icon_w_height));
   }
   else
   {
@@ -428,15 +432,10 @@ void  ResyncFvwmStackRing (void)
               Move the window to its new position, working from the bottom up
               (that's the way XQueryTree presents the list).
           */
-          t1->stack_prev->stack_next = t1->stack_next;  /* Pluck from chain. */
-          t1->stack_next->stack_prev = t1->stack_prev;
-          t1->stack_next = t2;                          /* Set new pointers. */
-          t1->stack_prev = t2->stack_prev;
-          t2->stack_prev->stack_next = t1;              /* Insert in new
-							 * position. */
-          t2->stack_prev = t1;
+	  /* Pluck from chain. */
+	  remove_window_from_stack_ring(t1);
+	  add_window_to_stack_ring_after(t1, t2->stack_prev);
           t2 = t1;
-
 	}
     }
 
@@ -494,6 +493,13 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
    free (body);
 }
 
+/* send RESTACK packets for t, t->stack_prev and t->stack_next */
+void BroadcastRestackThisWindow(FvwmWindow *t)
+{
+  BroadcastRestack(t->stack_prev, t->stack_next);
+  return;
+}
+
 /* return false if the only windows above tmp_win in the same
    layer are its own transients
 */
@@ -504,8 +510,215 @@ CanBeRaised (FvwmWindow *tmp_win)
 
   for (t = tmp_win->stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
     {
-      if (t->layer > tmp_win->layer) return False;
-      if (!IS_TRANSIENT(t) || (t->transientfor != tmp_win->w)) return True;
+      if (t->layer > tmp_win->layer)
+	return False;
+      if (!IS_TRANSIENT(t) || (t->transientfor != tmp_win->w))
+	return True;
     }
   return False;
+}
+
+/* ----------------------------- layer code -------------------------------- */
+
+/* returns 0 if s and t are on the same layer, <1 if t is on a lower layer and
+ * >1 if t is on a higher layer. */
+int compare_window_layers(FvwmWindow *t, FvwmWindow *s)
+{
+  return t->layer - s->layer;
+}
+
+void set_default_layer(FvwmWindow *t, int layer)
+{
+  t->default_layer = layer;
+  return;
+}
+
+void set_layer(FvwmWindow *t, int layer)
+{
+  t->layer = layer;
+  return;
+}
+
+int get_layer(FvwmWindow *t)
+{
+  return t->layer;
+}
+
+void
+new_layer (FvwmWindow *tmp_win, int layer)
+{
+  FvwmWindow *t2, *next;
+
+  if (layer < tmp_win->layer)
+    {
+      tmp_win->layer = layer;
+      RaiseWindow(tmp_win);
+    }
+  else if (layer > tmp_win->layer)
+    {
+#ifndef DONT_RAISE_TRANSIENTS
+      /* this could be done much more efficiently */
+      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
+	{
+	  next = t2->stack_next;
+	  if ((IS_TRANSIENT(t2)) &&
+	      (t2->transientfor == tmp_win->w) &&
+	      (t2 != tmp_win) &&
+	      (t2->layer >= tmp_win->layer) &&
+              (t2->layer < layer))
+	    {
+	      t2->layer = layer;
+	      LowerWindow(t2);
+	    }
+	}
+#endif
+      tmp_win->layer = layer;
+      LowerWindow(tmp_win);
+    }
+
+#ifdef GNOME
+  GNOME_SetLayer (tmp_win);
+#endif
+}
+
+/* ----------------------------- common functions -------------------------- */
+
+
+  /*  RBW - 11/13/1998 - 2 new fields to init - stacking order chain.  */
+void init_stack_and_layers(void)
+{
+  Scr.BottomLayer  = DEFAULT_BOTTOM_LAYER;
+  Scr.DefaultLayer = DEFAULT_DEFAULT_LAYER;
+  Scr.TopLayer     = DEFAULT_TOP_LAYER;
+  Scr.FvwmRoot.stack_next = &Scr.FvwmRoot;
+  Scr.FvwmRoot.stack_prev = &Scr.FvwmRoot;
+  set_layer(&Scr.FvwmRoot, DEFAULT_ROOT_WINDOW_LAYER);
+  return;
+}
+
+/* ----------------------------- built in functions ------------------------ */
+
+void raise_function(F_CMD_ARGS)
+{
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+    return;
+
+  RaiseWindow(tmp_win);
+}
+
+void lower_function(F_CMD_ARGS)
+{
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT, ButtonRelease))
+    return;
+
+  LowerWindow(tmp_win);
+}
+
+void raiselower_func(F_CMD_ARGS)
+{
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+    return;
+
+  if (IS_VISIBLE(tmp_win) || !CanBeRaised(tmp_win))
+    {
+      LowerWindow(tmp_win);
+    }
+  else
+    {
+      RaiseWindow(tmp_win);
+    }
+}
+
+void change_layer(F_CMD_ARGS)
+{
+  int n, layer, val[2];
+  char *token;
+
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
+    return;
+
+  if(tmp_win == NULL)
+    return;
+
+  token = PeekToken(action, NULL);
+  if (StrEquals("default", token))
+    {
+      layer = tmp_win->default_layer;
+    }
+  else
+    {
+      n = GetIntegerArguments(action, NULL, val, 2);
+
+      layer = tmp_win->layer;
+      if ((n == 1) ||
+	  ((n == 2) && (val[0] != 0)))
+	{
+	  layer += val[0];
+	}
+      else if ((n == 2) && (val[1] >= 0))
+	{
+	  layer = val[1];
+	}
+      else
+	{
+	  layer = tmp_win->default_layer;
+	}
+    }
+
+  if (layer < 0)
+    {
+      layer = 0;
+    }
+
+  new_layer (tmp_win, layer);
+}
+
+void SetDefaultLayers(F_CMD_ARGS)
+{
+  char *bot = NULL;
+  char *def = NULL;
+  char *top = NULL;
+  int i;
+
+  bot = PeekToken(action, &action);
+  if (bot)
+    {
+       i = atoi (bot);
+       if (i < 0)
+         {
+           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+         }
+       else
+         {
+           Scr.BottomLayer = i;
+         }
+    }
+
+  def = PeekToken(action, &action);
+  if (def)
+    {
+       i = atoi (def);
+       if (i < 0)
+         {
+           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+         }
+       else
+         {
+           Scr.DefaultLayer = i;
+         }
+    }
+
+  top = PeekToken(action, &action);
+  if (top)
+    {
+       i = atoi (top);
+       if (i < 0)
+         {
+           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+         }
+       else
+         {
+           Scr.TopLayer = i;
+         }
+    }
 }

@@ -49,44 +49,62 @@
  * refers to this button state as "ActiveDown."  If not defined, the
  * "ActiveUp" state is used instead.  Disabling this reduces memory
  * usage.  */
-#undef ACTIVEDOWN_BTNS
+/* NOTE: this option will be removed in the near future and replaced with a
+ * configuration command */
+/* #undef ACTIVEDOWN_BTNS */
+#define ACTIVEDOWN_BTNS 1
 
 /* Enables the Inactive button state.  This allows different button
  * styles for inactive windows (also for the title-bar if
  * EXTENDED_TITLESTYLE is enabled below).  The man page refers to this
  * button state as "Inactive."  If not defined, the "ActiveUp" state
  * is used instead.  Disabling this reduces memory usage.  */
-#undef INACTIVE_BTNS
+/* NOTE: this option will be removed in the near future and replaced with a
+ * configuration command */
+/* #undef INACTIVE_BTNS */
+#define INACTIVE_BTNS 1
 
 /* Enables the "MiniIcon" Style option to specify a small pixmap which
  * can be used as one of the title-bar buttons, shown in window list,
  * utilized by modules, etc.  Requires PIXMAP_BUTTONS to be defined
  * (see below).  */
-#undef MINI_ICONS
+/* #undef MINI_ICONS */
+/* NOTE: this option will be removed in the near future (i.e. hardcoded on). */
+#define MINI_ICONS 1
 
 /* Enables the vector button style.  This button type is considered
  * "standard," so it is recommended that you leave it in.  */
-#undef VECTOR_BUTTONS
+/* #undef VECTOR_BUTTONS */
+/* NOTE: this option will be removed in the near future (i.e. hardcoded on). */
+#define VECTOR_BUTTONS 1
 
 /* Enables the pixmap button style.  You must have Xpm support to use
  * color pixmaps.  See the man page button style entries for "Pixmap"
  * and "TiledPixmap" for usage information.  */
-#undef PIXMAP_BUTTONS
+/* #undef PIXMAP_BUTTONS */
+/* NOTE: this option will be removed in the near future (i.e. hardcoded on). */
+#define PIXMAP_BUTTONS 1
 
 /* Enables the gradient button style.  See the man page button style
  * entries for "HGradient" and "VGradient" for usage information.  */
-#undef GRADIENT_BUTTONS
+/* #undef GRADIENT_BUTTONS */
+/* NOTE: this option will be removed in the near future (i.e. hardcoded on). */
+#define GRADIENT_BUTTONS 1
 
 /* Enables stacked button styles (also for the title-bar if
  * EXTENDED_TITLESTYLE is enabled below).  There is a slight memory
  * penalty for each additional style. See the man page entries for
  * AddButtonStyle and AddTitleStyle for usage information.  */
-#undef MULTISTYLE
+/* #undef MULTISTYLE */
+/* NOTE: this option will be removed in the near future (i.e. hardcoded on). */
+#define MULTISTYLE 1
 
 /* Enables styled title-bars (specified with the TitleStyle command in
  * a similar fashion to the ButtonStyle command).  It also compiles in
  * support to change the title-bar height.  */
-#undef EXTENDED_TITLESTYLE
+/* #undef EXTENDED_TITLESTYLE */
+/* NOTE: this option will be removed in the near future (i.e. hardcoded on). */
+#define EXTENDED_TITLESTYLE 1
 
 /* Enables the BorderStyle command.  Not all button styles are
  * available.  See the man page entry for BorderStyle for usage
@@ -94,14 +112,18 @@
  * texture your borders with tiled pixmaps.  The BorderStyle command
  * has Active and Inactive states, regardless of the -DACTIVEDOWN_BTNS
  * and -DINACTIVE_BTNS defines.  */
-#undef BORDERSTYLE
+/* #undef BORDERSTYLE */
+/* NOTE: this option will be removed in the near future (i.e. hardcoded on). */
+#define BORDERSTYLE 1
 
 /* Enables tagged general decoration styles which can be assigned to
  * windows using the UseDecor Style option, or dynamically updated
  * with ChangeDecor.  To create and destroy "decor" definitions, see
  * the man page entries for AddToDecor and DestroyDecor.  There is a
  * slight memory penalty for each additionally defined decor.  */
-#undef USEDECOR
+/* #undef USEDECOR */
+/* NOTE: this option will be removed in the near future (i.e. hardcoded on). */
+#define USEDECOR 1
 
 /* Enables session management functionality. */
 #undef SESSION

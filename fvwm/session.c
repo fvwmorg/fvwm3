@@ -31,6 +31,7 @@
 #include "screen.h"
 #include "misc.h"
 #include "virtual.h"
+#include "stack.h"
 
 extern int master_pid;
 
@@ -342,7 +343,7 @@ SaveWindowStates(FILE *f)
 	      ewin->icon_x_loc + Scr.Vx,
 	      ewin->icon_y_loc + Scr.Vy);
       fprintf(f, "  [DESK] %i\n", ewin->Desk);
-      fprintf(f, "  [LAYER] %i\n", ewin->layer);
+      fprintf(f, "  [LAYER] %i\n", get_layer(ewin));
       fprintf(f, "  [FLAGS] ");
       for (i = 0; i < sizeof(window_flags); i++)
 	fprintf(f, "%02x ", (int)(((unsigned char *)&(ewin->flags))[i]));
@@ -650,7 +651,7 @@ MatchWinToSM(FvwmWindow *ewin,
 	    ewin->Desk = matches[i].desktop;
 	  }
 
-	  ewin->layer = matches[i].layer;
+	  set_layer(ewin, matches[i].layer);
 
 	  ewin->attr.width = matches[i].w;
 	  ewin->attr.height = matches[i].h;

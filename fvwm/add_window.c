@@ -249,8 +249,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* on and off buttons combined. */
   tmp_win->buttons = SGET_BUTTONS(style);
   /* FIXME: shouldn't transients inherit the layer ? */
-  tmp_win->default_layer = SGET_LAYER(style);
-  tmp_win->layer = SGET_LAYER(style);
+  set_default_layer(tmp_win, SGET_LAYER(style));
+  set_layer(tmp_win, SGET_LAYER(style));
 
 #ifdef USEDECOR
   /* search for a UseDecor tag in the Style */
@@ -477,13 +477,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       This chain is anchored at both ends on Scr.FvwmRoot, there are
       no null pointers.
   */
-  tmp_win->stack_next = Scr.FvwmRoot.stack_next;
-  Scr.FvwmRoot.stack_next->stack_prev = tmp_win;
-  tmp_win->stack_prev = &Scr.FvwmRoot;
-  Scr.FvwmRoot.stack_next = tmp_win;
+  add_window_to_stack_ring_after(tmp_win, &Scr.FvwmRoot);
 
   /*
-      MatchWinToSM changes tmp_win->attr and tmp_win->stack_{prev,next}.
+      MatchWinToSM changes tmp_win->attr and the stacking order.
       Thus it is important have this call *after* PlaceWindow and the
       stacking order initialization.
   */
@@ -701,7 +698,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /*
    * Reparenting generates an UnmapNotify event, followed by a MapNotify.
    * Set the map state to FALSE to prevent a transition back to
-   * WithdrawnState in HandleUnmapNotify.  Map state gets set correctly
+   * WithdrawnState in HandleUnmapNotify.  Map state gets set corrected
    * again in HandleMapNotify.
    */
   SET_MAPPED(tmp_win, 0);
@@ -761,19 +758,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 	  XSaveContext(dpy,tmp_win->corners[i],FvwmContext, (caddr_t) tmp_win);
 	}
     }
-  if (tmp_win->stack_prev == &Scr.FvwmRoot) {
-    /* RaiseWindow/LowerWindow will put the window in its layer */
-    if (SDO_START_LOWERED(sflags))
-      {
-	LowerWindow(tmp_win);
-      }
-    else
-      {
-	RaiseWindow(tmp_win);
-      }
-  } else {
+  if (!position_new_window_in_stack_ring(tmp_win, SDO_START_LOWERED(sflags))) {
     XWindowChanges xwc;
-    xwc.sibling = tmp_win->stack_next->frame;
+    xwc.sibling = get_next_window_in_stack_ring(tmp_win)->frame;
     xwc.stack_mode = Above;
     XConfigureWindow(dpy, tmp_win->frame, CWSibling|CWStackMode, &xwc);
   }

@@ -1213,6 +1213,11 @@ MOVE (XC_fleur)
 used when moving or resizing windows
 .in -.3i
 
+RESIZE (XC_sizing)
+.in +.3i
+used when moving or resizing windows
+.in -.3i
+
 WAIT (XC_watch)
 .in +.3i
 used during an EXEC builtin command
@@ -1223,9 +1228,9 @@ MENU (XC_top_left_arrow)
 used in menus
 .in -.3i
 
-SELECT (XC_dot)
+SELECT (XC_crosshair)
 .in +.3i
-used for various builtin commands such as iconify
+used when the user ir required to select a window
 .in -.3i
 
 DESTROY (XC_pirate)
@@ -2885,12 +2890,13 @@ Silent Move 0 0
 Silent User_defined_function
 .EE
 
-.IP "SnapAttraction \fIproximity\fP [ \fIbehavior\fP ] [ \fIScreen\fP ]"
+.IP "SnapAttraction [ \fIproximity\fP [ \fIbehavior\fP ] [ \fIScreen\fP ] ]"
 If during an interactive move the window (or icon) comes within \fIproximity\fP
 pixels of another the window (or icon) will be moved to make the borders
 adjoin. The default of -1 means that no snapping will happen.  A setting of
 0 does indeed snap when the distance is zero pixels.  This is relevant when
-the \fISnapGrid\fP command is used.
+the \fISnapGrid\fP command is used. Calling this command without arguments
+reinstates the default settings.
 
 The \fIbehavior\fP argument is optional and may be set to one of the four
 following values:
@@ -2912,7 +2918,7 @@ to the screen edges too.
 
 The default SnapAttraction setting for behavior is "All".
 
-.IP "SnapGrid \fIx-grid-size y-grid-size\fP"
+.IP "SnapGrid [ \fIx-grid-size y-grid-size\fP ]"
 During an interactive move a window (or icon) will be positioned such that
 its location (top left corner) will be coincindent with the nearest grid point.
 The default \fIx-grid-size\fP and \fIy-grid-size\fP setting are both 1, which
@@ -2923,6 +2929,7 @@ position.  In other words, the window will move the shortest distance possible
 to satisfy both \fISnapGrid\fP and \fISnapAttraction\fP.  Note that the X and
 Y coordinates are not coupled.  For example, a window may snap to another
 window on the X axis while snapping to a grid point on the Y axis.
+Calling this command without arguments reinstates the default settings.
 
 .IP "Stick [ \fImode\fP ]"
 If the \fImode\fP argument is empty or 'toggle', the Stick command makes

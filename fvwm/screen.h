@@ -344,6 +344,8 @@ typedef struct ScreenInfo
   {
     Bool EmulateMWM : 1;
     Bool EmulateWIN : 1;
+    Bool use_active_down_buttons : 1;
+    Bool use_inactive_buttons : 1;
   } gs; /* global style structure */
   struct
   {

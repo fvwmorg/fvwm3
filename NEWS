@@ -1,3 +1,10 @@
+Changes in beta release 2.3.5 (July 1999)
+
+* Most of the configure options have been removed.
+
+* The cursors used for resizing and selecting windows and handling menus have
+  changed.
+
 Changes in beta release 2.3.4 (June 1999)
 
 * Fvwm2 is GNOME compliant.

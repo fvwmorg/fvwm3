@@ -78,6 +78,7 @@ static void change_window_color(Window w, unsigned long valuemask,
 /* rules to get button state */
 static enum ButtonState get_button_state(Bool onoroff, Bool toggled, Window w)
 {
+#if 0
 #if defined(ACTIVEDOWN_BTNS) && defined(INACTIVE_BTNS)
   if (!onoroff)
     return toggled ? ToggledInactive : Inactive;
@@ -91,13 +92,34 @@ static enum ButtonState get_button_state(Bool onoroff, Bool toggled, Window w)
       : (toggled ? ToggledActiveUp : ActiveUp);
 #elif !defined(ACTIVEDOWN_BTNS) && defined(INACTIVE_BTNS)
   return (onoroff) ?
-      : (toggled ? ToggledActiveUp : ActiveUp);
+      : (toggled ? ToggledActiveUp : ActiveUp)
       ? (toggled ? ToggledInactive : Inactive)
 #elif !defined(ACTIVEDOWN_BTNS) && !defined(INACTIVE_BTNS)
   return toggled ? ToggledActiveUp : ActiveUp;
 #endif
 
-
+#else
+  if (Scr.gs.use_active_down_buttons)
+  {
+    if (Scr.gs.use_inactive_buttons && !onoroff)
+      return (toggled) ? ToggledInactive : Inactive;
+    else
+      return (PressedW == w)
+	? (toggled ? ToggledActiveDown : ActiveDown)
+	: (toggled ? ToggledActiveUp : ActiveUp);
+  }
+  else
+  {
+    if (Scr.gs.use_inactive_buttons && !onoroff)
+    {
+      return (toggled) ? ToggledInactive : Inactive;
+    }
+    else
+    {
+      return (toggled) ? ToggledActiveUp : ActiveUp;
+    }
+  }
+#endif
 }
 
 /****************************************************************************

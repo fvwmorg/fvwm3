@@ -37,6 +37,7 @@
 #include "screen.h"
 #include "move_resize.h"
 #include "virtual.h"
+#include "stack.h"
 
 #ifndef MIN
 #define MIN(A,B) ((A)<(B)? (A):(B))
@@ -414,7 +415,7 @@ int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
       anew = (xr - xl) * (yb - yt);
       if(IS_ICONIFIED(testw))
         avoidance_factor = AVOIDICON;
-      else if(testw->layer > t->layer)
+      else if(compare_window_layers(testw, t) > 0)
         avoidance_factor = AVOIDONTOP;
       else if(IS_STICKY(testw))
         avoidance_factor = AVOIDSTICKY;
