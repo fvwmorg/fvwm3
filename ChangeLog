@@ -1,3 +1,12 @@
+2003-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functable.c (func_table):
+	trigger on ButtonPress for many of the functions
+
+	* fvwm/functions.c (__execute_function):
+	(__execute_function):
+	fixed conditional commands a la "Current" triggered on root window
+
 2003-03-01  Dan Espen  <dane@mk.telcordia.com>
 
 	* todo-2.6: Closed B.2, C.21.
@@ -5,10 +14,10 @@
 2003-02-28  olicha  <olivier.chapuis@free.fr>
 
 	* libs/defaults.h:
-	* fvwm/events.c (HandleConfigureRequest): 
+	* fvwm/events.c (HandleConfigureRequest):
 	Added a workaround for application with broken max/min size hints
 	vs a size configure request. This "fixes" floating java JToolBar.
-	
+
 	* fvwm/add_window.c (GetWindowSizeHints):
 	Check that the max size hint is not broken relatively to the the base
 	size hint

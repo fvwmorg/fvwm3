@@ -117,7 +117,7 @@ const func_type func_table[] =
 
 #ifdef USEDECOR
 	CMD_ENT("changedecor", CMD_ChangeDecor, F_CHANGE_DECOR,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Attach decor to a window (will be obsolete) */
 
 #endif /* USEDECOR */
@@ -132,7 +132,7 @@ const func_type func_table[] =
 	/* - Set a time in milliseconds for click and double click */
 
 	CMD_ENT("close", CMD_Close, F_CLOSE,
-		FUNC_NEEDS_WINDOW, CRS_DESTROY, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_DESTROY, ButtonPress),
 	/* - Try to Delete a window, if this fails, Destroy it */
 
 	CMD_ENT("colorlimit", CMD_ColorLimit, F_COLOR_LIMIT, 0, 0, 0),
@@ -179,7 +179,7 @@ const func_type func_table[] =
 	/* - Set StaysOnBottom, StaysPut, StaysOnTop layer numbers */
 
 	CMD_ENT("delete", CMD_Delete, F_DELETE,
-		FUNC_NEEDS_WINDOW, CRS_DESTROY, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_DESTROY, ButtonPress),
 	/* - Try to delete a window using the X delete protocol */
 
 	CMD_ENT("deschedule", CMD_Deschedule, F_DESCHEDULE, 0, 0, 0),
@@ -195,7 +195,7 @@ const func_type func_table[] =
 	/* - Set virtual desktop size in units of physical pages */
 
 	CMD_ENT("destroy", CMD_Destroy, F_DESTROY,
-		FUNC_NEEDS_WINDOW, CRS_DESTROY, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_DESTROY, ButtonPress),
 	/* - Kill a window without any warning to an application */
 
 #ifdef USEDECOR
@@ -262,11 +262,11 @@ const func_type func_table[] =
 	/* - Generate a mouse click */
 
 	CMD_ENT("flipfocus", CMD_FlipFocus, F_FLIP_FOCUS,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Focus a window without rotating windowlist order */
 
 	CMD_ENT("focus", CMD_Focus, F_FOCUS,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Give focus to a window */
 
 	CMD_ENT("focusstyle", CMD_FocusStyle, F_FOCUSSTYLE, 0, 0, 0),
@@ -307,7 +307,7 @@ const func_type func_table[] =
 	/* - (obsolete, use Style * IconFont) */
 
 	CMD_ENT("iconify", CMD_Iconify, F_ICONIFY,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Change iconification status of a window (minimize) */
 
 	CMD_ENT("iconpath", CMD_IconPath, F_ICON_PATH, 0, 0, 0),
@@ -327,18 +327,18 @@ const func_type func_table[] =
 	/* - Stops an fvwm module */
 
 	CMD_ENT("layer", CMD_Layer, F_LAYER,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Change the layer of a window */
 
 	CMD_ENT("localepath", CMD_LocalePath, F_LOCALE_PATH, 0, 0, 0),
 	/* - Directories/domains to search for locale data */
 
 	CMD_ENT("lower", CMD_Lower, F_LOWER,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Lower a window within a layer */
 
 	CMD_ENT("maximize", CMD_Maximize, F_MAXIMIZE,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Toggle maximal-size status of a window */
 
 	CMD_ENT("menu", CMD_Menu, F_STAYSUP, 0, 0, 0),
@@ -371,7 +371,7 @@ const func_type func_table[] =
 	/* - Set number of pixels in a click and a hold vs. a drag */
 
 	CMD_ENT("movetodesk", CMD_MoveToDesk, F_MOVE_TO_DESK,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Move a window to another desk same page */
 
 	CMD_ENT("movetopage", CMD_MoveToPage, F_MOVE_TO_PAGE,
@@ -401,7 +401,7 @@ const func_type func_table[] =
 	/* - Set maximum size window fvwm should move opaquely */
 
 	CMD_ENT("pick", CMD_Pick, F_PICK, FUNC_NEEDS_WINDOW, CRS_SELECT,
-		ButtonRelease),
+		ButtonPress),
 	/* - Prefix to force a window context, prompted if needed */
 
 	CMD_ENT("piperead", CMD_PipeRead, F_READ, 0, 0, 0),
@@ -411,7 +411,7 @@ const func_type func_table[] =
 	/* - (obsolete, use ImagePath instead) */
 
 	CMD_ENT("placeagain", CMD_PlaceAgain, F_PLACEAGAIN,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Replace a window using initial window placement logic */
 
 	CMD_ENT("pointerkey", CMD_PointerKey, F_POINTERKEY, 0, 0, 0),
@@ -442,11 +442,11 @@ const func_type func_table[] =
 	/* - Ask session manager to shut down itself and fvwm */
 
 	CMD_ENT("raise", CMD_Raise, F_RAISE,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Raise a window in a layer */
 
 	CMD_ENT("raiselower", CMD_RaiseLower, F_RAISELOWER,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Alternately raise or lower a window in a layer */
 
 	CMD_ENT("read", CMD_Read, F_READ, 0, 0, 0),
@@ -459,14 +459,14 @@ const func_type func_table[] =
 	/* - Reapply styles to all windows (will be obsolete) */
 
 	CMD_ENT("recapturewindow", CMD_RecaptureWindow, F_RECAPTURE_WINDOW,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Reapply styles to one window (will be obsolete) */
 
 	CMD_ENT("refresh", CMD_Refresh, F_REFRESH, 0, 0, 0),
 	/* - Cause all windows to redraw themselves */
 
 	CMD_ENT("refreshwindow", CMD_RefreshWindow, F_REFRESH,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Cause one window to redraw itself */
 
 	CMD_ENT(PRE_REPEAT, CMD_Repeat, F_REPEAT, FUNC_DONT_REPEAT, 0, 0),
@@ -490,7 +490,7 @@ const func_type func_table[] =
 	/* - Resize and move in one operation and mark maximized */
 
 	CMD_ENT("restacktransients", CMD_RestackTransients, F_RESTACKTRANSIENTS,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Regroup the window transients in the stack */
 
 	CMD_ENT("restart", CMD_Restart, F_RESTART, 0, 0, 0),
@@ -551,19 +551,19 @@ const func_type func_table[] =
 	/* - Control grid used with SnapAttraction */
 
 	CMD_ENT("state", CMD_State, F_STATE,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Control user defined window states */
 
 	CMD_ENT("stick", CMD_Stick, F_STICK,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Change window stickyness */
 
 	CMD_ENT("stickacrossdesks", CMD_StickAcrossDesks, F_STICKACROSSDESKS,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Change window stickyness on a desk basis */
 
 	CMD_ENT("stickacrosspages", CMD_StickAcrossPages, F_STICKACROSSPAGES,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Change window stickyness on a page basis */
 
 #ifdef HAVE_STROKE
@@ -603,7 +603,7 @@ const func_type func_table[] =
 
 	CMD_ENT("warptowindow", CMD_WarpToWindow, F_WARP,
 		FUNC_NEEDS_WINDOW | FUNC_ALLOW_UNMANAGED,
-		CRS_SELECT, ButtonRelease),
+		CRS_SELECT, ButtonPress),
 	/* - Warp the pointer to a window */
 
 	CMD_ENT("windowfont", CMD_WindowFont, F_WINDOWFONT, 0, 0, 0),
@@ -616,7 +616,7 @@ const func_type func_table[] =
 	/* - Display the window list as a menu to select a window */
 
 	CMD_ENT("windowshade", CMD_WindowShade, F_WINDOW_SHADE,
-		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonPress),
 	/* - Shade/unshade a window */
 
 	CMD_ENT("windowshadeanimate", CMD_WindowShadeAnimate, F_SHADE_ANIMATE,

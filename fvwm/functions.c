@@ -420,12 +420,24 @@ static void __execute_function(
 	}
 	else
 	{
+		FvwmWindow *tw;
+
 		w = GetSubwindowFromEvent(dpy, exc->x.elast);
 		if (w == None)
 		{
 			w = exc->x.elast->xany.window;
 		}
-		if (w == None)
+		tw = NULL;
+		if (w != None)
+		{
+			if (XFindContext(
+				 dpy, w, FvwmContext, (caddr_t *)&tw) ==
+			    XCNOENT)
+			{
+				tw = NULL;
+			}
+		}
+		if (w == None || tw != exc->w.fw)
 		{
 			w = FW_W(exc->w.fw);
 		}
@@ -572,7 +584,8 @@ static void __execute_function(
 			Bool rc = False;
 
 			runaction = SkipNTokens(expaction, 1);
-			if ((bif->flags & FUNC_NEEDS_WINDOW) &&
+			if (ecc.w.fw == NULL &&
+			    (bif->flags & FUNC_NEEDS_WINDOW) &&
 			    !(exec_flags & FUNC_DONT_DEFER))
 			{
 				rc = DeferExecution(
