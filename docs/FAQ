@@ -240,6 +240,7 @@ A: See questions 3.23, 3.24, 3.25, 3.26 that deal with transparency.
    themes use transparent menus, modules and/or decorations.  F.e.:
 
         http://fvwm-themes.sf.net/screenshots/full/transparent.png
+        http://fvwm-themes.sf.net/screenshots/full/transparent.jpg
 
 
 ======================================================================
@@ -1458,9 +1459,14 @@ A: First, it may help to read about colorsets in fvwm and FvwmTheme
    We speak about transparency, not translucency here.  This means
    the background of the parent window (for example the root window)
    will be used for our "transparent" areas, this is not always the
-   window under our "transparent" window.  However, some X servers
-   support real transparency (i.e. translucency) and it is reported
-   that fvwm supports this (I don't have such X server myself).
+   window under our "transparent" window.  However, it is possible
+   to get a real transparency (i.e. translucency) by applying one
+   patch and using new Colorset Translucent option the patch adds.
+   We do not discuss this here, however you may get this patch with
+   README.patch included from:
+
+     http://fvwm-themes.sf.net/patch/
+
 
    To define a transparent colorset, use something like:
 
@@ -1474,24 +1480,29 @@ A: First, it may help to read about colorsets in fvwm and FvwmTheme
    like "fvwm-root -r" or "Esetroot" or "wmsetbg", otherwise
    RootTransparent will not work:
 
-     Colorset 23 RootTransparent, fg navy, bg average
+     Colorset 23 RootTransparent, fg rgb:ff/ff/c4, bg darkcyan
 
-   The good thing about RootTransparent is that it is possible to tint
-   the visible part of the root image using something like:
+   The good thing about RootTransparent is that it is possible to
+   automatically claculate the average background color (used for
+   highlighting/shading) and efficiently tint the visible part of the
+   root image using something like:
 
-     Colorset 23 RootTransparent, fg navy, bg average, \
+     Colorset 23 RootTransparent, fg rgb:ff/ff/c4, bg average, \
        Tint black 20, bgTint black 20
 
    If you have enough memory, you may use "RootTransparent buffer"
    to speed up transparent menus, modules or decorations.
 
    If you are not sure whether you use "fvwm-root -r" or similar
-   utility to set the root background, do not use the RootTransparent
-   option, use Transparent option without tinting.
+   utility to set the root background, do not use RootTransparent
+   option, use Transparent option without tinting, and set the bg
+   color explicitely.
 
    Once a transparent colorset is defined, use it in menus:
 
      MenuStyle * MenuColorset 23
+
+   See the man pages for a more complete explanation of colorsets.
 
 ----------------------------------------------------------------------
 

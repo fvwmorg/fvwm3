@@ -1,3 +1,8 @@
+2004-01-01  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-directory.in:
+	security fix for file names with eoln
+
 2003-12-16  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm-menu-desktop.in:

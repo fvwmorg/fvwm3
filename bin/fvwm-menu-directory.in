@@ -259,6 +259,7 @@ sub escapeItemName ($) {
 	$name =~ s/%/%%/g;
 	$name =~ s/&/&&/g;
 	$name =~ s/\*/**/g;
+	$name =~ s/\n/ /g;
 	$name;
 }
 
@@ -267,6 +268,7 @@ sub escapeFileName ($) {
 	$name =~ s/\\/\\\\/g;
 	$name =~ s/"/\\"/g;
 	$name =~ s/\$/\\\$\$/g;
+	$name =~ s/\n/\\\n/g;
 	$name;
 }
 
