@@ -1,0 +1,121 @@
+<html>
+<head>
+<title>The Official FVWM Homepage - Module-to-Fvwm Communication</title>
+</head>
+  <body BACKGROUND="black-stone1.jpg"
+    bgcolor="#000000" text="#ffffff"
+    link="#FFFF88" vlink="#EEDDDD" alink="#ff0000">
+<center>
+<h1><font color="pink">The Official FVWM Homepage - Module-to-Fvwm Communication</font></h1>
+</center>
+<H2> <font color="turquoise">Module Writing</font></h2>
+Before you write a module, you will want to look at a few different
+fvwm modules.  The techniques used have evolved over time, and no
+one module contains all the best techniques.  Some of them may be on
+this page, but undoubtedly some of them are buried in the source code.
+
+<H2> <font color="turquoise">Module communications protocol</font></h2>
+Modules communicate with fvwm via a simple protocol. In essence, a
+textual command line, similar to a command line which could be bound
+to a mouse, or key-stroke in the .fvwm2rc, is transmitted to fvwm.
+<P>
+First, the module should send the ID of the window which should be
+manipulated. A window ID of ``None'' may be used, in which case Fvwm
+will prompt the user to select  a window if needed. Next, length of
+the the command line is send as an integer. After that, the command
+line itself is sent. Finally, an integer 1 is sent if the module plans
+to continue operating, or 0 if the module is finished. The following
+subroutine is provided as an example of a suitable method of sending
+messages to fvwm:
+<FONT COLOR="YELLOW"><PRE>
+void SendText(int *fd, char *message, unsigned long window) {
+  int w;
+  if (message != NULL) {	
+      write(fd[0],&amp;win,sizeof(Window));
+      w=strlen(message);                /* calc the length of the message */
+      write(fd[0],&amp;w,sizeof(int));  /* send the message length */
+      write(fd[0],message,w);           /* send the message itself */
+      /* send a 1, indicating that this module will keep going */
+      /* a 0 would mean that this module is done */
+      w=1;
+      write(fd[0],&amp;w,sizeof(int));
+  }
+}
+</PRE></font>
+This routine is available as a library function in libfvwm.
+For compatibility with older code, there is a macro "SendInfo"
+which can be used instead of the function name SentText.
+
+<H2> <font color="turquoise">Module information requests</font></h2>
+There are special built-in functions, Send_WindowList and
+Send_ConfigInfo.
+Send_WindowList causes fvwm to transmit everything that it is
+currently thinking about to the module which requests the information.
+This information contains the paging status (enabled/disabled),
+current desktop number, position on the desktop, current focus and,
+for each window, the window configuration, window, icon, and class
+names, and, if the window is iconified, the icon location and size.
+For example, some modules during start up want to know the state of
+all current windows.  The would ask fvwm for this information like this:
+<font color="yellow"><pre>
+SendText(Channel,"Send_WindowList",0);
+</font></pre>
+Send_ConfigInfo causes fvwm to send the module a list of all
+commands it has received which start with a ``*'', as well as the
+PixmapPath, IconPath, ColorLimit, and ClickTime commands that fvwm is
+currently using.
+This is implemented in fvwm/modconf.c.
+Note that "SendConfigInfo" is sort of a memory dump type request,
+and the number of commands a module might get from this request
+may change over time.  The module should be prepared to ignore commands
+it is not interested in without generating a warning or error. 
+This request is normally made during module startup for a module
+to read its current configuration and some general information.
+Fvwm provides some subroutines to make this process fairly painless.
+Here is an example from FvwmAnimate.c:
+<font color="yellow"><pre>
+static void ParseOptions() {
+  char *buf;
+  while (GetConfigLine(Channel,&buf), buf != NULL) {
+    ParseConfigLine(buf);
+  } /* end config lines */
+} /* end function */
+</font></pre>
+
+<H2>   <font  color="turquoise">Controlling   information  sent     to
+modules</font></h2>
+fvwm lets    each  module  control  exactly  what
+information is passed to the module. A module can send the
+command Set_Mask, followed by
+a number which is  the bitwise OR of  the packet-types the
+module wishes  to receive. If  the module   never  sends the  Set_Mask
+command,  then all message  types in the  default mask  are sent.  The
+default  mask   is  defined  in fvwm/module.h   as  "MAX_MASK".   This
+currently (October 1998) includes all messages except M_LOCKONSEND and
+M_SENDCONFIG.  A  library function, SetMessageMask,  makes it
+easy to set  this mask. Here  is an  example from FvwmBacker.c:  <font
+color="yellow"><pre>
+SetMessageMask(Fvwm_fd,M_NEW_DESK|M_CONFIG_INFO|M_END_CONFIG_INFO);
+</font></pre> This mask is used to reduce  the amount of communication
+between fvwm and its modules so that a module only gets the messages it
+needs.
+
+<H2> <font color="turquoise">Synchronous vs. Asynchronous Operation</font></h2>
+A module normally runs asynchrously with fvwm2.  For example FvwmPager
+may be updating its display to show a window being iconified while fvwm2
+may have already iconfied and de-iconified the window.  This is usually
+desirable.
+Other modules might need to synchronize their processing with fvwm.
+If this is the case, a module will include in its message mask
+"M_LOCKONSEND".  When this mask bit is on, every message sent to the
+module from fvwm must be answered with an "UNLOCK" message.
+FvwmAnimate is (was?) the first module to implement this and should be
+used as a reference implementation.  Note that FvwmAnimate sends the command
+"UNLOCK 1".  The "1" is currently ignored but may be used in the future.
+This whole facility comes from Afterstep, and we are just tracking what they
+have done.  The Afterstep documentation doesn't seem to say, but most
+likely this is the time in seconds that fvwm should wait for the module
+to respond with "UNLOCK" before it proceeds without the module's response.
+    <hr>
+  </body>
+</html>

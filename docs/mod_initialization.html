@@ -1,0 +1,124 @@
+<html>
+<head>
+<title>The Official FVWM Homepage - Interface and Initialization Mechanism</title>
+</head>
+  <body BACKGROUND="black-stone1.jpg"
+    bgcolor="#000000" text="#ffffff"
+    link="#FFFF88" vlink="#EEDDDD" alink="#ff0000">
+<center>
+<h1><font color="pink">The Official FVWM Homepage - Interface and Initialization Mechanism</font></h1>
+</center>
+<H2> <font color="turquoise">Module Invocation</font></h2>
+Modules MUST be launched by Fvwm. Fvwm will first open a pair of pipes
+for communication with the module. One pipe is for messages to Fvwm
+from the module, and the other is for messages to the module from
+Fvwm. Each module has its own pair of pipes. After the pipes are open,
+Fvwm will fork and spawn the module. Modules must be located in the
+ModulePath, as specified in the user's .fvwm2rc file. Modules can be
+initiated as fvwm starts up, or can be launched part way through an X
+session.
+<H2> <font color="turquoise">Module Arguments</font></h2>
+<h3>Args 0</h3>
+Like any UNIX program, arg 0 is the full pathname of the module.
+Most modules acquire this for use in error message, parsing their
+own configuration commands, some other possible uses.
+Arg 0 is related to the optional arg 6 described under "Module Aliases".
+<h3>Args 1 and 2</h3>
+The pipes are open when the module starts execution. The
+integer file descriptors are passed to the module as the first and
+second command line arguments.
+<h3>Arg 3</h3>
+The third command line argument is a character pointer pointing to the
+full path name of the last configuration file that fvwm read in.
+If there was no configuration file this arg points as to a string
+containing "none".
+In fvwm2, there is little reason for a module to use this argument.
+<h3>Arg 4</h3>
+The next command line argument is the application
+window in whose context the module was launched. This is 0 if the
+module is launched without an application window context.
+<h3>Arg 5</h3>
+The next
+argument is the context of the window decoration in which the module
+was launched. Contexts are listed below:
+<FONT COLOR="YELLOW"><PRE>#define C_NO_CONTEXT 	 0 - launched during initialization
+#define C_WINDOW	 1 - launched from an application window
+#define C_TITLE		 2 - launched from a title bar
+#define C_ICON		 4 - launched from an icon window
+#define C_ROOT		 8 - launched from the root window
+#define C_FRAME		16 - launched from a corner piece
+#define C_SIDEBAR       32 - launched from a side-bar
+#define C_L1            64 - launched from left button #1
+#define C_L2           128 - launched from left button #2
+#define C_L3           256 - launched from left button #3
+#define C_L4           512 - launched from left button #4
+#define C_L5          1024 - launched from left button #5
+#define C_R1          2048 - launched from right button #1
+#define C_R2          4096 - launched from right button #2
+#define C_R3          8192 - launched from right button #3
+#define C_R4         16384 - launched from right button #4
+#define C_R5         32768 - launched from right button #5</FONT></PRE>
+<h3>Arg 6 and above</h3>
+A number of user specified command line arguments may be present
+(optional). Up to 35 arguments may be passed. For example, in:
+<FONT COLOR="YELLOW"><PRE>
+	Module	&quot;FvwmIdentify&quot;	FvwmIdentify Hello rob! ``-fg purple''
+</FONT></PRE>
+we would get argv[6] = ``Hello'', argv[7] = ``rob!'', argv[8] = ``-fg purple''.
+<P>
+<H2> <font color="turquoise">Module Aliases</font></h2>
+In the original fvwm, if you wanted to run 2 copies of a module, you
+where advised to copy or soft-link the module executable to another name.
+For example, you might have had to copies of FvwmButtons running.
+Some of the modules now accept arg 6 as an Alias of the module name.
+<p>
+This alias is used in module generated messages, in recognizing configuration
+commands, and possibly other uses.  FvwmAnimate makes full use of this
+and might provide a good model to follow.
+
+<H2> <font color="turquoise">Acquiring the read/write pipes</font></h2>
+The following mechanism is recommended to acquire the pipe
+descriptors:
+<FONT COLOR="YELLOW"><PRE>
+int fd[2];
+void main(int argc, char **argv) {
+  if((argc &lt; 6)) {	
+    fprintf(stderr,
+      &quot;%s: Should only be executed by fvwm!\n&quot;, argv[0]);
+    exit(1);
+  }
+  fd[0] = atoi(argv[1]);
+  fd[1] = atoi(argv[2]);</FONT></PRE>
+<P>
+The descriptor fd[0] is available for the module to send messages to
+fvwm, while the descriptor fd[1] is available to read messages from
+fvwm.
+Since "int fd[2]" is an array, you will often see modules send commands
+to fvwm with the construct "SendText(fd,"Command",0);".
+Of course, they really mean "SendText(&amp;fd[0],"Command",0);".
+<H2> <font color="turquoise">Pipe Status</font></h2>
+Special attention is paid to the status of the pipe. If Fvwm gets a
+read error on a module-to-fvwm  pipe, then it assumes that the module 
+is terminating,
+and all communication with the module is terminated. Similarly, if a
+module gets a read error on an fvwm-to-module pipe, then it should
+assume that fvwm is terminating, and it should gracefully shut down.
+All modules should also allow themselves to be shut down via the
+Delete Window protocol for X-11.
+
+<H2> <font color="turquoise">Reading initial configuration information
+</font></h2>
+In previous implementations, the modules were expected to read and
+parse the .fvwmrc file by themselves. This caused some difficulty if a
+pre-processor was used on the .fvwmrc file. In fvwm-2.0 and later,
+fvwm retains the module command lines (those which start with a
+``*''), and passes them to any module on request. Modules can
+request the command list by sending a ``Send_ConfigInfo'' command to
+fvwm.  Modules can request configuration commands interactively,
+see M_SENDCONFIG in
+<A href="mod_f2m_communication.html">Fvwm-to-Module Communication</a>
+and
+<A href="mod_m2f_communication.html">Module-to-Fvwm Communication</a>.
+    <hr>
+  </body>
+</html>
