@@ -1586,32 +1586,43 @@ static void MenuInteraction(
       flags.was_item_unposted = 0;
       if (pmret->flags.is_menu_posted && mrMi != NULL)
       {
-	if (mi == MR_SUBMENU_ITEM(pmp->menu))
+	if (pmret->flags.do_unpost_submenu)
 	{
+	  pmret->flags.do_unpost_submenu = 0;
+	  /* just ignore the event */
+	  continue;
+	}
+	else if (MI_IS_POPUP(mi) && mrMi == pmp->menu)
+	{
+	  /*!!!post - done below*/
+	}
+	else if (MR_PARENT_ITEM(pmp->menu) && mi == MR_PARENT_ITEM(pmp->menu))
+	{
+	  /* propagate back to parent menu and unpost current menu */
+	  pmret->flags.do_unpost_submenu = 1;
+	  pmret->rc = MENU_PROPAGATE_EVENT;
+	  pmret->menu = mrMi;
+	  goto DO_RETURN;
+	}
+	else if (mrMi != pmp->menu && mrMi != mrPopup)
+	{
+	  /* unpost and propagate back to ancestor */
 	  pmret->flags.is_menu_posted = 0;
-	  flags.was_item_unposted = 1;
+	  pmret->rc = MENU_PROPAGATE_EVENT;
+	  pmret->menu = mrMi;
+	  goto DO_RETURN;
 	}
 	else if (mrPopup && mrMi == mrPopup)
 	{
+	  /* unpost and propagate into submenu */
+	  flags.was_item_unposted = 1;
 	  flags.do_propagate_event_into_submenu = True;
 	  break;
 	}
 	else
 	{
-	  if (pmret->menu != mrMi)
-	  {
-	    if (mi != MR_PARENT_ITEM(pmp->menu))
-	    {
-	      pmret->flags.is_menu_posted = 0;
-	    }
-	  }
-	  if (pmp->menu != mrMi)
-	  {
-	    /* unpost the menu and propagate the event to the correct menu */
-	    pmret->rc = MENU_PROPAGATE_EVENT;
-	    pmret->menu = mrMi;
-	    goto DO_RETURN;
-	  }
+	  /* simply unpost the menu */
+	  pmret->flags.is_menu_posted = 0;
 	}
       }
       if (is_double_click(t0, mi, pmp, pmret, pdkp, flags.has_mouse_moved))
@@ -1798,6 +1809,7 @@ static void MenuInteraction(
      * motion event.
      ************************************************************************/
 
+    pmret->flags.do_unpost_submenu = 0;
     if (mi)
     {
       /* we're on a menu item */
@@ -1869,6 +1881,16 @@ static void MenuInteraction(
       if (mrMi == mrPopup)
       {
 	/* must make current popup menu a real menu */
+	flags.do_menu = True;
+	flags.is_submenu_mapped = True;
+      }
+      else if (pmret->rc == MENU_POST)
+      {
+	/* must create a real menu and warp into it */
+	if (mrPopup == NULL || mrPopup != mrMiPopup)
+	{
+	  flags.do_popup = True;
+	}
 	flags.do_menu = True;
 	flags.is_submenu_mapped = True;
       }

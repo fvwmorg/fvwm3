@@ -654,6 +654,7 @@ typedef struct
   MenuRoot *parent_menu;
   struct
   {
+    unsigned do_unpost_submenu : 1;
     unsigned is_first_item_selected : 1;
     unsigned is_key_press : 1;
     unsigned is_menu_posted : 1;
