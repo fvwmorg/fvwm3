@@ -1861,6 +1861,18 @@ void HandleEnterNotify(void)
      * frame; otherwise the window list may be screwed up. */
     return;
   }
+  if (Tmp_win)
+  {
+    if (ewp->window != Tmp_win->frame && ewp->window != Tmp_win->Parent &&
+        ewp->window != Tmp_win->w && ewp->window != Tmp_win->decor_w)
+    {
+      /* Ignore EnterNotify that received by any of the sub windows
+       * that don't handle this event.  unclutter triggers these
+       * events sometimes, re focusing an unfocused window under
+       * the pointer */
+      return;
+    }
+  }
   if (ewp->mode == NotifyGrab)
   {
     return;
