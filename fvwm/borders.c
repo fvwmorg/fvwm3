@@ -282,15 +282,15 @@ static void DrawButton(
     if (is_lowest && !p->mask && pbutton_background_pixmap)
     {
       if (type == TiledPixmapButton ||
-	  (p->width >= width && p->height >= height))
+	  (p && p->width >= width && p->height >= height))
       {
 	/* better performance: set a background pixmap if possible, i.e. if the
 	 * decoration is the lowest one in the button and it has no transparent
 	 * parts and it is tiled or bigger than the button */
-	if (*pbutton_background_pixmap != df->u.p->picture)
+	if (*pbutton_background_pixmap != p->picture)
 	{
-	  *pbutton_background_pixmap = df->u.p->picture;
-	  XSetWindowBackgroundPixmap(dpy, win, df->u.p->picture);
+	  *pbutton_background_pixmap = p->picture;
+	  XSetWindowBackgroundPixmap(dpy, win, p->picture);
 	  ClipClear(win, rclip, True);
 	}
 	else
