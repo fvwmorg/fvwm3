@@ -1,3 +1,4 @@
+/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -13,12 +14,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#ifndef _FOCUS_
-#define _FOCUS_
+#ifndef FOCUS_H
+#define FOCUS_H
 
-#define FOCUS_SET(w) XSetInputFocus(dpy, w, RevertToParent, CurrentTime);
+/* ---------------------------- included header files ----------------------- */
+
+/* ---------------------------- global definitions -------------------------- */
+
+/* ---------------------------- global macros ------------------------------- */
+
+#define FOCUS_SET(w) XSetInputFocus(dpy, w, RevertToParent, CurrentTime)
 #define FOCUS_RESET() \
-	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime);
+	XSetInputFocus(dpy, PointerRoot, RevertToPointerRoot, CurrentTime)
+
+/* ---------------------------- type definitions ---------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- interface functions ------------------------- */
 
 /********************************************************************
  *
@@ -32,14 +47,6 @@ void DeleteFocus(Bool FocusByMouse, Bool do_allow_force_broadcast);
 void ForceDeleteFocus(Bool FocusByMouse);
 void restore_focus_after_unmap(
 	FvwmWindow *fw, Bool do_skip_marked_transients);
-
-
-/**************************************************************************
- *
- * Moves focus to specified window
- *
- *************************************************************************/
-void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action);
 
 /**
  * These need documentation
@@ -63,4 +70,4 @@ void update_last_screen_focus_window(FvwmWindow *fw);
 void set_focus_model(FvwmWindow *fw);
 void refresh_focus(FvwmWindow *fw);
 
-#endif /* _FOCUS_ */
+#endif /* FOCUS_H */

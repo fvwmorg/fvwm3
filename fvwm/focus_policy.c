@@ -55,6 +55,7 @@ void fpol_init_default_fp(focus_policy_t *fp)
 	FPS_FOCUS_CLICK_DECOR(*fp, DEF_FP_FOCUS_CLICK_DECOR);
 	FPS_FOCUS_BY_PROGRAM(*fp, DEF_FP_FOCUS_BY_PROGRAM);
 	FPS_FOCUS_BY_FUNCTION(*fp, DEF_FP_FOCUS_BY_FUNCTION);
+	FPS_WARP_POINTER_ON_FOCUS_FUNC(*fp, DEF_FP_WARP_POINTER_ON_FOCUS_FUNC);
 	FPS_LENIENT(*fp, DEF_FP_LENIENT);
 	FPS_RAISE_FOCUSED_CLIENT_CLICK(*fp, DEF_FP_RAISE_FOCUSED_CLIENT_CLICK);
 	FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
@@ -82,6 +83,30 @@ void fpol_init_default_fp(focus_policy_t *fp)
 	return;
 }
 
+int fpol_query_allow_set_focus(
+	focus_policy_t *fpol, fpol_set_focus_by_t set_by_mode)
+{
+	switch (set_by_mode)
+	{
+	case FOCUS_SET_BY_CLICK_CLIENT:
+		return FP_DO_FOCUS_ENTER(*fpol);
+	case FOCUS_SET_BY_CLICK_DECOR:
+		return FP_DO_FOCUS_CLICK_CLIENT(*fpol);
+	case FOCUS_SET_BY_ENTER:
+		return FP_DO_FOCUS_CLICK_DECOR(*fpol);
+	case FOCUS_SET_BY_PROGRAM:
+		return FP_DO_FOCUS_BY_PROGRAM(*fpol);
+	case FOCUS_SET_BY_FUNCTION:
+		return FP_DO_FOCUS_BY_FUNCTION(*fpol);
+	default:
+		/* bug!!! */
+		abort();
+		exit(87);
+	}
+
+	return 0;
+}
+
 #if 0
 /*** to do: ***/
 
@@ -91,6 +116,7 @@ void fpol_init_default_fp(focus_policy_t *fp)
 /*!!!*/unsigned do_focus_click_decor : 1;
 /*!!!*/unsigned do_focus_by_program : 1;
 /*!!!*/unsigned do_focus_by_function : 1;
+unsigned do_warp_pointer_on_focus_func : 1;
 unsigned is_lenient : 1;
 unsigned do_raise_focused_client_click : 1;
 unsigned do_raise_unfocused_client_click : 1;

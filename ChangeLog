@@ -1,8 +1,26 @@
 2002-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/stack.c:
+	re-indented
+	(mark_transient_subtree):
+	(__mark_group_member):
+	cleaned up and split into two functions
+
+	* fvwm/focus.c (CMD_Focus):
+	(CMD_FlipFocus):
+	* fvwm/icons.c (DeIconify):
+	clean up
+	(FocusOn)
+	(__activate_window_by_command):
+	renamed function
+
+	* fvwm/focus_policy.c (fpol_query_allow_set_focus):
+	* fvwm/focus_policy.h: (fpol_set_focus_by_t):
 	* fvwm/style.c (parse_and_set_window_style):
+	(parse_and_set_window_style):
+	began implementing new focus control styles
+
 	* fvwm/focus.c (DoSetFocus):
-	(focus_get_transientfor_fwin):
 	(__restore_focus_after_unmap):
 	(MoveFocus):
 	(refresh_focus):

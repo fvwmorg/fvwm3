@@ -1769,11 +1769,7 @@ void DeIconify(FvwmWindow *fw)
 	}
 	else if (HAS_CLICK_FOCUS(fw))
 	{
-#if 0
-		FocusOn(fw, TRUE, "");
-#else
 		SetFocusWindow(fw, True, True);
-#endif
 	}
 	GNOME_SetWinArea(fw);
 

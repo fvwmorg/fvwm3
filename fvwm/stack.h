@@ -28,9 +28,9 @@ FvwmWindow *get_transientfor_fvwmwindow(FvwmWindow *t);
 Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower);
 void RaiseWindow(FvwmWindow *t);
 void LowerWindow(FvwmWindow *t);
-Bool HandleUnusualStackmodes(unsigned int stack_mode,
-			     FvwmWindow *r, Window rw,
-			     FvwmWindow *sib, Window sibw);
+Bool HandleUnusualStackmodes(
+	unsigned int stack_mode, FvwmWindow *r, Window rw, FvwmWindow *sib,
+	Window sibw);
 void BroadcastRestackAllWindows(void);
 void BroadcastRestackThisWindow(FvwmWindow *t);
 
@@ -52,8 +52,8 @@ Bool is_on_top_of_layer(FvwmWindow *t);
 #define MARK_ALL   2
 #define MARK_ALL_LAYERS -1
 void mark_transient_subtree(
-  FvwmWindow *t, int layer, int mark_mode, Bool do_ignore_icons,
-  Bool use_window_group_hint);
+	FvwmWindow *t, int layer, int mark_mode, Bool do_ignore_icons,
+	Bool use_window_group_hint);
 
 
 #endif /* _STACK_H */

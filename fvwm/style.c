@@ -1293,6 +1293,27 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_RELEASE_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_RELEASE_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_RELEASE_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_ENTER(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_ENTER(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_ENTER(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_UNFOCUS_LEAVE(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_UNFOCUS_LEAVE(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_UNFOCUS_LEAVE(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_CLIENT(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_CLIENT(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_CLIENT(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_DECOR(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_DECOR(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_FUNCTION(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_FUNCTION(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_FUNCTION(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "ClickToFocusPassesClick"))
 	{
@@ -2195,6 +2216,27 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_RELEASE_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_RELEASE_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_RELEASE_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_ENTER(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_ENTER(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_ENTER(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_UNFOCUS_LEAVE(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_UNFOCUS_LEAVE(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_UNFOCUS_LEAVE(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_CLIENT(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_CLICK_CLIENT(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_CLIENT(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_CLICK_DECOR(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_DECOR(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_FUNCTION(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_FUNCTION(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_FUNCTION(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "MouseFocusClickRaises"))
 	{
@@ -2430,6 +2472,27 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_RELEASE_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_RELEASE_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_RELEASE_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_ENTER(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_ENTER(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_ENTER(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_UNFOCUS_LEAVE(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_UNFOCUS_LEAVE(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_UNFOCUS_LEAVE(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_CLIENT(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_CLICK_CLIENT(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_CLIENT(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_CLICK_DECOR(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_DECOR(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_FUNCTION(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_BY_FUNCTION(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_FUNCTION(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "NoBorder"))
 	{
@@ -2669,6 +2732,27 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_RELEASE_FOCUS(SF_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_RELEASE_FOCUS(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_RELEASE_FOCUS(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_ENTER(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_ENTER(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_ENTER(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_UNFOCUS_LEAVE(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_UNFOCUS_LEAVE(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_UNFOCUS_LEAVE(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_CLIENT(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_CLICK_CLIENT(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_CLIENT(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_CLICK_DECOR(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_DECOR(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_PROGRAM(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_FUNCTION(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_FUNCTION(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_BY_FUNCTION(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_WARP_POINTER_ON_FOCUS_FUNC(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "StartIconic"))
 	{

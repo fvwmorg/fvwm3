@@ -51,6 +51,10 @@
 	((fp).do_focus_by_function)
 #define FPS_FOCUS_BY_FUNCTION(fp,x) \
 	((fp).do_focus_by_function = !!(x))
+#define FP_DO_WARP_POINTER_ON_FOCUS_FUNC(fp) \
+	((fp).do_warp_pointer_on_focus_func)
+#define FPS_WARP_POINTER_ON_FOCUS_FUNC(fp,x) \
+	((fp).do_warp_pointer_on_focus_func = !!(x))
 #define FP_IS_LENIENT(fp) \
 	((fp).is_lenient)
 #define FPS_LENIENT(fp,x) \
@@ -140,6 +144,15 @@ typedef enum
 	FPOL_SORT_WL_BY_OPEN = 1
 } fpol_sort_windowlist_t;
 
+typedef enum
+{
+	FOCUS_SET_BY_CLICK_CLIENT,
+	FOCUS_SET_BY_CLICK_DECOR,
+	FOCUS_SET_BY_ENTER,
+	FOCUS_SET_BY_PROGRAM,
+	FOCUS_SET_BY_FUNCTION
+} fpol_set_focus_by_t;
+
 typedef struct
 {
 	/* focus transition */
@@ -149,6 +162,7 @@ typedef struct
 	unsigned do_focus_click_decor : 1;
 	unsigned do_focus_by_program : 1;
 	unsigned do_focus_by_function : 1;
+	unsigned do_warp_pointer_on_focus_func : 1;
 	/* application focus model */
 	unsigned is_lenient : 1;
 	/* raising the window */
@@ -183,5 +197,7 @@ typedef struct
 /* ---------------------------- interface functions ------------------------- */
 
 void fpol_init_default_fp(focus_policy_t *fp);
+int fpol_query_allow_set_focus(
+	focus_policy_t *fpol, fpol_set_focus_by_t set_by_mode);
 
 #endif /* FOCUS_POLICY_H */
