@@ -39,7 +39,7 @@
                          KeyPressMask | KeyReleaseMask)
 #define XEVMASK_TEAR_OFF_MENU \
   (ExposureMask | KeyPressMask | KeyReleaseMask | \
-   EnterWindowMask | LeaveWindowMask | StructureNotifyMask)
+   EnterWindowMask | LeaveWindowMask | StructureNotifyMask | FocusChangeMask)
 #define XEVMASK_PANFW   (ButtonPressMask | ButtonReleaseMask | \
  		         KeyReleaseMask | KeyPressMask | \
                          EnterWindowMask | LeaveWindowMask | \

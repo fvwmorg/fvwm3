@@ -684,9 +684,13 @@ void menu_tear_off(MenuRoot *mr)
 	XSizeHints menusizehints;
 	XClassHint menuclasshints;
 	XTextProperty menunametext;
+	XWMHints menuwmhints;
 	char *list[] ={ NULL, NULL };
 	char *t;
 
+	/* focus policy */
+	menuwmhints.flags = InputHint;
+	menuwmhints.input = True;
 	/* size hints */
 	menusizehints.flags =
 		PBaseSize | PMinSize | PMaxSize | USPosition;
@@ -696,7 +700,6 @@ void menu_tear_off(MenuRoot *mr)
 	menusizehints.min_height = MR_HEIGHT(mr);
 	menusizehints.max_width = MR_WIDTH(mr);
 	menusizehints.max_height = MR_HEIGHT(mr);
-
 	/* class, resource and names */
 	menuclasshints.res_name = safestrdup(MR_NAME(mr));
 	menuclasshints.res_class = safestrdup("fvwm_menu");
@@ -711,12 +714,11 @@ void menu_tear_off(MenuRoot *mr)
 	list[0] = menuclasshints.res_name;
 	menunametext.value = NULL;
 	XStringListToTextProperty(list, 1, &menunametext);
-
-	/* set all properties */
+	/* set all properties and hints */
 	XSetWMProperties(
-		dpy,MR_WINDOW(mr), &menunametext, &menunametext, NULL, 0,
+		dpy, MR_WINDOW(mr), &menunametext, &menunametext, NULL, 0,
 		&menusizehints, NULL, &menuclasshints);
-
+	XSetWMHints(dpy, MR_WINDOW(mr), &menuwmhints);
 	/* free memory */
 	if (menunametext.value != NULL)
 	{
@@ -724,7 +726,6 @@ void menu_tear_off(MenuRoot *mr)
 	}
 	free(menuclasshints.res_class);
 	free(menuclasshints.res_name);
-
 	/* manage the window */
 	ev.type = MapRequest;
 	ev.xmaprequest.send_event = True;
