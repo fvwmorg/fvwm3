@@ -10404,12 +10404,12 @@ Examples:
 This goes to the next web browser window, no matter which of the three
 named web browsers is being used.
 .EX
- Next ("Mozilla*" "Bookmark*") WarpToWindow 99 90
+ Next ("Mozilla*", "Bookmark*") WarpToWindow 99 90
 .EE
 This goes to Mozilla's bookmark manager window, ignoring other Mozilla
 windows and other browsers' bookmark windows.
 .EX
- All ("XTerm|rxvt" !console) Iconify
+ All ("XTerm|rxvt", !console) Iconify
 .EE
 This iconifies all the xterm and rxvt windows on the current page,
 except that the one named "console" (with the -name option to xterm)

@@ -1,3 +1,8 @@
+2004-07-12  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm.1.in:
+	use commas between conditions
+
 2004-07-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (CMD_Wait):
@@ -74,6 +79,7 @@
 	rewrote iconf configure test to save an ifdef
 
 2004-07-07  Scott Smedley  <scottie7@tpg.com.au>
+
 	* fvwm/fvwm.1.in:
 	* libs/Bindings.h:
 	* libs/Bindings.c:
