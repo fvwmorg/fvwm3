@@ -1,7 +1,8 @@
 1999-04-19  Hippo
 
-	* FvwmIdent now uses the Default_graphics config command to inherit the
+	* FvwmIdent/* now uses the Default_graphics config command to inherit the
 	visuals of fvwm.
+	* FvwmScroll/* ditto
 
 Fri Apr 16 16:32:54 1999  DanEspen  <dje@blue>
 

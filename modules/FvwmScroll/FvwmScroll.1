@@ -15,7 +15,7 @@ total desktop space consumed by the window.
 
 
 FvwmScroll reads the same .fvwmrc file as fvwm reads when it starts up,
-and looks for lines similar to "*FvwmScrollFore green".
+and looks for lines similar to "*FvwmScrollBack green".
 
 FvwmScroll should not be used with windows which move or resize
 themselves, nor should it be used with windows which set the
@@ -57,10 +57,6 @@ FvwmScroll at start-up time, you probably don't want to.
 .SH CONFIGURATION OPTIONS
 FvwmScroll reads the same .fvwmrc file as fvwm reads when it starts up,
 and looks for lines as listed below:
-
-.IP "*FvwmScrollFore \fIcolor\fP"
-Tells the module to use \fIcolor\fP instead of grey for scroll bars 
-themselves.
 
 .IP "*FvwmScrollBack \fIcolor\fP"
 Tells the module to use \fIcolor\fP instead of black for the window

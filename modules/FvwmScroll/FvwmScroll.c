@@ -43,10 +43,16 @@ Display *dpy;			/* which display are we talking to */
 Window Root;
 int screen;
 int x_fd;
-int d_depth;
+Visual *viz;
+Colormap cmap;
+int depth;
+extern Pixel back_pix;
+extern GC ReliefGC, ShadowGC;
+extern GContext rgcontext, sgcontext;
 int ScreenWidth, ScreenHeight;
 
 char *BackColor = "black";
+Bool UseFvwmLook = True;
 
 Window app_win;
 
@@ -115,7 +121,7 @@ int main(int argc, char **argv)
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
-  d_depth = DefaultDepth(dpy, screen);
+  depth = DefaultDepth(dpy, screen);
 
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
@@ -128,10 +134,15 @@ int main(int argc, char **argv)
     {
       if(strlen(tline)>1)
 	{
+	  if(strncasecmp(tline, "Default_graphics ", 17)==0)
+	    {
+	      if (UseFvwmLook) get_graphics(tline + 17);
+	    }
 	  if(strncasecmp(tline,CatString3(MyName, "Back",""),
 			   Clength+4)==0)
 	    {
 	      CopyString(&BackColor,&tline[Clength+4]);
+	      UseFvwmLook = False;
 	    }
 	}
       GetConfigLine(fd,&tline);
@@ -154,6 +165,30 @@ int main(int argc, char **argv)
 }
 
 
+
+/*************************************************************************
+ *
+ * Default_graphics config line received, change builtin defaults
+ *
+ ************************************************************************/
+void get_graphics(char *line) {
+XVisualInfo vizinfo, *xvi;
+int count;
+long junk;
+
+  if (10 != sscanf(line, "%lx %lx %x %lx %lx %lx %lx %lx %lx %lx\n",
+                   &vizinfo.visualid, &cmap, &depth, &junk, &junk,
+                   &back_pix, &junk, &rgcontext, &sgcontext, &junk)) {
+    fprintf(stderr, "badly formed Default_graphics line\n");
+    exit(1);
+  }
+
+  /* fvwm passes the VisualID over, have to get a Visual pointer from this */
+  if ((xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &count)) == NULL)
+    return;
+  viz = xvi->visual;
+  XFree(xvi);
+}
 
 /***********************************************************************
  *
@@ -217,7 +252,7 @@ void GetTargetWindow(Window *app_win)
 
 void nocolor(char *a, char *b)
 {
- fprintf(stderr,"FvwmInitBanner: can't %s %s\n", a,b);
+ fprintf(stderr,"FvwmScroll: can't %s %s\n", a,b);
 }
 
 

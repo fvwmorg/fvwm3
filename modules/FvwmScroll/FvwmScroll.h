@@ -4,7 +4,10 @@ extern char* MyName;
 extern Display* dpy;
 extern Window Root;
 extern int screen;
-extern int d_depth;
+extern Visual *viz;
+extern Colormap cmap;
+extern int depth;
+extern Bool UseFvwmLook;
 
 extern int fd_width;
 extern int x_fd;
@@ -18,6 +21,7 @@ char *CatString2(char *a, char *b);
 void nocolor(char *a, char *b);
 char *CatString3(char *a, char *b, char *c);
 Window ClientWindow(Window input);
+void get_graphics(char *line);
 
 void CreateWindow(int x, int y,int w, int h);
 Pixel GetShadow(Pixel background);

@@ -11,6 +11,7 @@
 #define FALSE 0
 #define MAX_ICON_NAME_LEN 255
 
+#define XLIB_ILLEGAL_ACCESS
 #include "config.h"
 
 #ifdef HAVE_SYS_BSDTYPES_H
@@ -51,8 +52,9 @@ int Reduction_V = 2;
 #define PAD_WIDTH3 5
 
 Window main_win,holder_win;
-Pixel back_pix, fore_pix, hilite_pix,shadow_pix;
+Pixel back_pix, hilite_pix,shadow_pix;
 GC ReliefGC, ShadowGC;
+GContext rgcontext, sgcontext;
 extern char *BackColor;
 
 #define MW_EVENTS   (ExposureMask | StructureNotifyMask| ButtonReleaseMask |\
@@ -72,7 +74,7 @@ void CreateWindow(int x,int y, int w, int h)
 {
   XGCValues gcv;
   unsigned long gcm;
-
+  XSetWindowAttributes attributes;
 
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   _XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
@@ -98,44 +100,41 @@ void CreateWindow(int x,int y, int w, int h)
 
   mysizehints.win_gravity = NorthWestGravity;	
 
-  if(d_depth < 2)
-    {
-      back_pix = GetColor("black");
-      fore_pix = GetColor("white");
-      hilite_pix = fore_pix;
-      shadow_pix = back_pix;
-    }
-  else
-    {
-      back_pix = GetColor(BackColor);
-      hilite_pix = GetHilite(back_pix);
-      shadow_pix = GetShadow(back_pix);
+  if (!UseFvwmLook) {
+    back_pix = GetColor(BackColor);
+    hilite_pix = GetHilite(back_pix);
+    shadow_pix = GetShadow(back_pix);
+  }
 
-    }
-
-  main_win = XCreateSimpleWindow(dpy,Root,mysizehints.x,mysizehints.y,
-				 mysizehints.width,mysizehints.height,
-				 0,fore_pix,back_pix);
+  attributes.colormap = cmap;
+  attributes.background_pixel = back_pix;
+  main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
+			   mysizehints.width, mysizehints.height, 0, depth,
+			   InputOutput, viz, CWColormap | CWBackPixel,
+			   &attributes);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
   XSetWMNormalHints(dpy,main_win,&mysizehints);
   XSelectInput(dpy,main_win,MW_EVENTS);
   change_window_name(MyName);
 
-  holder_win = XCreateSimpleWindow(dpy,main_win,PAD_WIDTH3,PAD_WIDTH3,
-				   mysizehints.width-BAR_WIDTH -PAD_WIDTH3,
-				   mysizehints.height-BAR_WIDTH-PAD_WIDTH3,
-				   0,fore_pix,back_pix);
+  holder_win = XCreateWindow(dpy, main_win, PAD_WIDTH3, PAD_WIDTH3,
+			     mysizehints.width - BAR_WIDTH - PAD_WIDTH3,
+			     mysizehints.height - BAR_WIDTH - PAD_WIDTH3,
+			     0, depth, InputOutput, viz,
+			     CWColormap | CWBackPixel, &attributes);
   XMapWindow(dpy,holder_win);
-  gcm = GCForeground|GCBackground;
+  gcm = GCForeground;
   gcv.foreground = hilite_pix;
-  gcv.background = hilite_pix;
   ReliefGC = XCreateGC(dpy, Root, gcm, &gcv);  
 
-  gcm = GCForeground|GCBackground;
   gcv.foreground = shadow_pix;
-  gcv.background = shadow_pix;
   ShadowGC = XCreateGC(dpy, Root, gcm, &gcv);  
+  
+  if (UseFvwmLook) {
+    ReliefGC->gid = rgcontext;
+    ShadowGC->gid = sgcontext;
+  }
 
   _XA_WM_COLORMAP_WINDOWS = XInternAtom (dpy, "WM_COLORMAP_WINDOWS", False);
  }
