@@ -1,8 +1,8 @@
 # Required line:
 # DecorHook DecorMwm "&M. Decor Mwm"
-# -- Start of MWM Decor --
-DestroyDecor	Mwm
-AddToDecor	Mwm
+
+# For decor changing to work, add to DecorBase
+AddToDecor DecorBase
 +	TitleStyle	Centered
 +	TitleStyle	ActiveUp (Solid cyan4 -- Raised) \
 			ActiveDown (Solid cyan4 -- flat) \
@@ -20,10 +20,9 @@ Mouse 0	1 N	Menu Window-Ops Close
 Mouse 0	2 N	Maximize
 Mouse 0	4 N	Iconify
 Mouse 3	4 N	Replace
-Style *		UseDecor Mwm, ForeColor Black
+Style *		UseDecor DecorBase, ForeColor Black
 Style *		Font -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
 Style *		HilightFore white, HilightBack cyan4
-#Exec		xsetroot -solid grey
 
 # Undo things specific to this decor:
 DestroyFunc DecorRemoveHook

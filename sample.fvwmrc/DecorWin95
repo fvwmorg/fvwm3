@@ -1,8 +1,8 @@
 # Required line:
 # DecorHook DecorWin95   "&W. Decor Windows"
 # -- Start of Win 95 decor -- (If you like this sort of thing)
-DestroyDecor    Win95
-AddToDecor      Win95
+# For decor changing to work, add to DecorBase
+AddToDecor      DecorBase
 + TitleStyle      LeftJustified ActiveUp (Solid Navy -- flat) \
                   ActiveDown (Solid Navy -- flat) \
                   Inactive (Solid grey51 -- flat)
@@ -22,7 +22,7 @@ Mouse 0 2 N     Close
 Mouse 0 4 A     Maximize
 Mouse 0 6 N     Iconify
 Mouse 3 6 N     Replace
-Style "*"       UseDecor Win95, Color Black/grey75
+Style "*"       UseDecor DecorBase, Color Black/grey75
 Style "*" HilightFore white, HilightBack grey60
 Style "*" Font -adobe-helvetica-bold-r-*-120-*
 MenuStyle "*" WIN, PopupDelayed, PopupDelay 150
