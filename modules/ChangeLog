@@ -1,3 +1,13 @@
+2002-01-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/draw.c (MakeButton):
+	Fixed pixmap background in FvwmButtons of normal buttons without a
+	picture
+
+	* FvwmButtons/button.c (MakeContainer):
+	fixed internal flags of containers; were reset if the parent button
+	had a pixmap or colour set background
+
 2002-01-08  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmDragWell/fvwmDragWell.c (veryLongLoop):

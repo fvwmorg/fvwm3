@@ -467,9 +467,9 @@ void MakeContainer(button_info *b)
   if(b->parent != NULL)
   {
     if (b->parent->c->flags & b_IconBack || b->parent->c->flags & b_IconParent)
-      b->c->flags = b_IconParent;
+      b->c->flags |= b_IconParent;
     if (b->parent->c->flags & b_Colorset)
-      b->c->flags = b_ColorsetParent;
+      b->c->flags |= b_ColorsetParent;
   }
   else /* This applies to the UberButton */
   {

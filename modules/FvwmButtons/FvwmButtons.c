@@ -1072,7 +1072,8 @@ void Loop(void)
 	  XClearWindow(Dpy, MyWindow);
 	  RedrawWindow(NULL);
 	}
-	if (Event.xconfigure.window == MyWindow && Event.xconfigure.send_event &&
+	if (Event.xconfigure.window == MyWindow &&
+	    Event.xconfigure.send_event &&
 	    (Event.xconfigure.x != UberButton->x ||
 	     Event.xconfigure.y != UberButton->y))
 	{
@@ -1089,7 +1090,7 @@ void Loop(void)
 	    {
 	      if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
 		  ((b->flags & b_Colorset) || (b->flags & b_ColorsetParent)) &&
-		  Colorset[buttonColorset(b)].pixmap == ParentRelative) 
+		  Colorset[buttonColorset(b)].pixmap == ParentRelative)
 	      {
 		int bx,by,bpx,bpy,bf;
 
@@ -1104,7 +1105,7 @@ void Loop(void)
 		  buttonInfo(b,&bx,&by,&bpx,&bpy,&bf);
 		  Event.xconfigure.x = UberButton->x + bx;
 		  Event.xconfigure.y = UberButton->y + by;
-		  Event.xconfigure.window = SwallowedWindow(b);  
+		  Event.xconfigure.window = SwallowedWindow(b);
 		  XSendEvent(
 		    Dpy, SwallowedWindow(b), False, NoEventMask, &Event);
 		}
