@@ -52,19 +52,11 @@ from the man pages in directory '"$sourcedir"'.
 # Init the current section to 0.
 curr_section="0"
 
-/bin/rm -rf /tmp/man
-mkdir -p /tmp/man/man1
-
 # There is some logic in here for man pages in other than section 1,
 # right now we don't need it.  Also it doesn't work because this isn't ksh...
-MANPATH=/tmp/man
-export MANPATH
 for i in `/bin/find $sourcedir -name '*.[1]'` ; do
-  cp $i /tmp/man/man1
-  file=`basename $i`
-# "ksh only"  page=${file%%.[1]}
-# "ksh only"  section=${file##$page.}
-  page=`echo $file | /bin/cut -d. -f1`
+  file=`basename $i | /bin/cut -d. -f1`
+  page=$file
   section=1
 
   # If this was ksh, this would be the "header" function.
@@ -76,7 +68,7 @@ for i in `/bin/find $sourcedir -name '*.[1]'` ; do
     bgcolor=\"#000000\" text=\"#ffffff\"
     link=\"#FFFF88\" vlink=\"#EEDDDD\" alink=\"#ff0000\">
 <center>
-<h1><font color=\"pink\">FVWM Manpage - $page</font></h1>
+<h1><font color=\"pink\">FVWM Manpage - $file</font></h1>
 </center>
 <pre>
 " > $outdir/$file.html
@@ -86,8 +78,8 @@ for i in `/bin/find $sourcedir -name '*.[1]'` ; do
   # would be shown in cyan.  Unfortunately bold stuff in man pages
   # is lost.  Maybe in the man command, maybe in man2html.
   # Output looks pretty good anyway (to my eyes).
-  printf "Doing $page:  "
-  man $page | man2html -bare \
+  echo "Doing $page."
+  nroff -man $i | man2html -bare \
    -belem 'font color="cyan"'\
    -uelem 'font color="yellow"'\
   | sed -e 's/color="yellow"</color="yellow"></'\
@@ -117,7 +109,6 @@ on `date` -->
 
   echo '<li><a href="'$outdir/$file'.html">'$page'('$section')</a>'>>$outdir/$index.html
 done
-/bin/rm -rf /tmp/man
 
 # Finish the index page:
 page="Index"

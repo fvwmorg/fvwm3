@@ -1,5 +1,9 @@
 1999-04-30  Dan Espen  <dane@mk.bellcore.com>
 
+	* run_man2html.sh (curr_section): Use nroff -man instead of the previous
+	kludge.  Invoke cut and find without the full path.  Get the ".1" out of
+	the file name.
+
 	* man-pages.html: This file is now obsolete, and removed.
 
 	* README: New instructions for using run_man2html.sh.
