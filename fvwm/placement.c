@@ -695,6 +695,7 @@ Bool PlaceWindow(
 #endif
   }
 
+
   if (use_wm_placement)
   {
     unsigned int placement_mode = SPLACEMENT_MODE(sflags);

@@ -184,6 +184,7 @@ Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
 #endif
 
   p = (Picture*)safemalloc(sizeof(Picture));
+  memset(p, 0, sizeof(Picture));
   p->count = 1;
   p->name = path;
   p->next = NULL;
@@ -233,12 +234,12 @@ Picture *LoadPicture(Display *dpy, Window Root, char *path, int color_limit)
   /* If no XPM support, or XPM loading failed, try bitmap */
   if(XReadBitmapFile(dpy,Root,path,&p->width,&p->height,&p->picture,&l,&l)
      == BitmapSuccess)
-    {
-      p->depth = 0;
-      p->mask = None;
-      p->nalloc_pixels = 0;
-      return p;
-    }
+  {
+    p->depth = 0;
+    p->mask = None;
+    p->nalloc_pixels = 0;
+    return p;
+  }
 
   free(p);
   return NULL;
