@@ -12,6 +12,9 @@ a global server grab to make this module truly effective.  Sigh.
 Requires Python 1.4 and Fvwm 2.x.
 
 Copyright 1996 Barry A. Warsaw <bwarsaw@python.org>
+Permission is granted to distribute this software freely
+for any purpose as long as the copyright and this
+copyright notice remain intact.
 
 """
 __version__ = '1.0'

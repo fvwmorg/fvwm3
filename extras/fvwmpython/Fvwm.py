@@ -2,6 +2,10 @@
 
 """
 Copyright 1996, Barry A. Warsaw <bwarsaw@python.org>
+Permission is granted to distribute this software freely
+for any purpose as long as the copyright and this
+copyright notice remain intact.
+
 
 FVWM version 2 module interface framework for Python.
 Requires Python 1.4 <http://www.python.org/>

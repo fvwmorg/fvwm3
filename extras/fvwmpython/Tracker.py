@@ -4,6 +4,11 @@ You keep this class up-to-date by feeding it useful packets, such as
 M_NEW_PAGE and M_CONFIGURE_WINDOW, etc.  It collates this information
 and makes it available via its public methods.
 
+Copyright 1996 Barry A. Warsaw <bwarsaw@python.org>
+Permission is granted to distribute this software freely
+for any purpose as long as the copyright and this
+copyright notice remain intact.
+
 """
 __version__ = '1.0'
 

@@ -2,6 +2,11 @@
 
 """A replacement for FvwmIdentify.
 
+Copyright 1996 Barry A. Warsaw <bwarsaw@python.org>
+Permission is granted to distribute this software freely
+for any purpose as long as the copyright and this
+copyright notice remain intact.
+
 Written in Python using Fvwm.py.  There are two ways to use this
 module: if you run it as a script, it will prompt the user to select a
 window to identify by changing the cursor to a crosshatch.  Once a
