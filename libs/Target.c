@@ -144,14 +144,15 @@ void fvwmlib_get_target_window(
   Bool finished = False;
   Bool canceled = False;
   Window Root = RootWindow(dpy, screen);
-  int is_key_pressed = 0, is_button_pressed = 0;
+  int is_key_pressed = 0;
+  int is_button_pressed = 0;
   KeySym keysym;
 
   trials = 0;
   while((trials <100)&&(val != GrabSuccess))
     {
       val=XGrabPointer(dpy, Root, True,
-		       ButtonPressMask | ButtonReleaseMask,
+                       ButtonPressMask | ButtonReleaseMask,
 		       GrabModeAsync, GrabModeAsync, Root,
 		       XCreateFontCursor(dpy,XC_crosshair),
 		       CurrentTime);

@@ -1805,7 +1805,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     fvwm_msg(WARN, "GetWindowSizeHints",
 	     "%s window %#lx has broken (%s) size hints\n"
 	     "Please report this to fvwm-workers@fvwm.org\n"
-	     "flags = %ld\n"
+	     "flags = %lx\n"
 	     "min_width = %d, min_height = %d, "
 	     "max_width = %d, max_height = %d\n"
 	     "width_inc = %d, height_inc = %d\n"

@@ -33,6 +33,7 @@
 #include "move_resize.h"
 #include "borders.h"
 #include "icons.h"
+#include "stack.h"
 
 static void UnmapDesk(int desk, Bool grab);
 static void MapDesk(int desk, Bool grab);
@@ -946,6 +947,7 @@ void changeDesks_func(F_CMD_ARGS)
 
 void changeDesks(int desk)
 {
+  FvwmWindow *t;
 
 /*
   RBW - the unmapping operations are now removed to their own functions so
@@ -958,6 +960,21 @@ void changeDesks(int desk)
     Scr.CurrentDesk = desk;
     MapDesk(desk, True);
     BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
+    for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+    {
+      if (IS_STICKY(t) || (IS_ICONIFIED(t) && IS_ICON_STICKY(t)))
+      {
+	/* FIXME: domivogt (22-Apr-2000): Fake a 'restack' for sticky window
+	 * upon desk change.  This is a workaround for a problem in FvwmPager:
+	 * The pager has a separate 'root' window for each desk.  If the active
+	 * desk changes, the pager destroys sticky mini windows and creates new
+	 * ones in the other desktop 'root'.  But the pager can't know where to
+	 * stack them.  So we have to tell it ecplicitly where they go :-(
+	 * This should be fixed in the pager, but right now the pager doesn't
+	 * maintain the stacking order. */
+	BroadcastRestackThisWindow(t);
+      }
+    }
     GNOME_SetCurrentDesk();
     GNOME_SetDeskCount();
   }

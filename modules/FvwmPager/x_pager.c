@@ -1913,9 +1913,6 @@ void MoveStickyWindows(void)
 	    }
 	  else
 	    {
-
-
-
 	      MoveResizePagerView(t);
 	    }
 	}
@@ -2868,7 +2865,7 @@ void change_colorset(int colorset)
 	  SetWindowBackground(dpy, Desks[i].title_w, 0, 0,
 			      &Colorset[colorset], Pdepth,
 			      Scr.NormalGC, True);
-	} 
+	}
         SetWindowBackground(dpy, Desks[i].CPagerWin, 0, 0,
 			    &Colorset[colorset], Pdepth,
 			    Scr.NormalGC, True);
