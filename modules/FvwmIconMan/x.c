@@ -833,6 +833,7 @@ void init_display (void)
   }
   XSetErrorHandler (handle_error);
   G = CreateGraphics(theDisplay);
+  SavePictureCMap (theDisplay, G->viz, G->cmap, G->depth);
   x_fd = XConnectionNumber (theDisplay);
   theScreen = DefaultScreen (theDisplay);
   theRoot = RootWindow (theDisplay, theScreen);
