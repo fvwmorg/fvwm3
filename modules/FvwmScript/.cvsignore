@@ -2,6 +2,3 @@ Makefile
 Makefile.in
 FvwmScript
 .deps
-script.c
-script.h
-scanner.c
