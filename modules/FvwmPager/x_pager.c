@@ -140,33 +140,44 @@ static Pixmap default_pixmap = None;
  *
  *  Procedure:
  *	CalcGeom - calculates the size and position of a mini-window
- *	given the real window size
+ *	given the real window size.
+ *	You can always tell bad code by the size of the comments.
  ***********************************************************************/
 static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 		     int *x_ret, int *y_ret, int *w_ret, int *h_ret)
 {
-  int virt, edge, size;
-  int max, pos;
+  int virt, edge, size, page, over;
 
   /* coordinate of left hand edge on virtual desktop */
   virt = Scr.Vx + t->x;
   /* position of left hand edge of mini-window on pager window */
   edge = virt * win_w / Scr.VWidth;
   /* absolute coordinate of right hand edge on virtual desktop */
-  virt += t->width;
+  virt += t->width - 1;
   /* width of mini window is right hand edge - left hand edge */
   size = virt * win_w / Scr.VWidth - edge;
   /* Make size big enough to be visible */
-  if (size < MinSize)
-  {
-    /* maximum amount to adjust left edge of (a right justified) mini window */
-    max = MinSize - size;
-    /* position of centre of window on virtual page */
-    pos = (virt - t->width / 2) % Scr.MyDisplayWidth;
-    /* move the window left proportional to how far right on the page it is */
-    edge -= max * pos / Scr.MyDisplayWidth;
-    /* change the mini-window size */
+  if (size < MinSize) {
     size = MinSize;
+    /* this mini-window has to be grown to be visible
+     * which way it grows depends on some magic:
+     * normally it will grow right but if the window is on the right hand
+     * edge of a page it should be grown left so that the pager looks better */
+
+    /* work out the page that the right hand edge is on */
+    page = virt / Scr.MyDisplayWidth;
+    /* if the left edge is on the same page then possibly move it left */
+    if (page == ((virt - t->width + 1) / Scr.MyDisplayWidth)) {
+      /* calculate how far the mini-window right edge overlaps the page line */
+      /* beware that the "over" is actually one greater than on screen, but
+      /* this discrepancy is catered for in the next two lines */
+      over = edge + size - (page + 1) * win_w * Scr.MyDisplayWidth / Scr.VWidth;
+      /* if the mini-window right edge is beyond the mini-window pager grid */
+      if (over > 0) {
+        /* move it left by the amount of pager grid overlap (!== the growth) */
+        edge -= over;
+      }
+    }
   }
   /* fill in return values */
   *x_ret = edge;
@@ -175,14 +186,17 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   /* same code for y axis */
   virt = Scr.Vy + t->y;
   edge = virt * win_h / Scr.VHeight;
-  virt += t->height;
+  virt += t->height - 1;
   size = virt * win_h / Scr.VHeight - edge;
   if (size < MinSize)
   {
-    max = MinSize - size;
-    pos = (virt - t->height / 2) % Scr.MyDisplayHeight;
-    edge -= max * pos / Scr.MyDisplayHeight;
     size = MinSize;
+    page = virt / Scr.MyDisplayHeight;
+    if (page == ((virt - t->height + 1) / Scr.MyDisplayHeight)) {
+      over = edge + size - (page + 1) * win_h * Scr.MyDisplayHeight / Scr.VHeight;
+      if (over > 0)
+        edge -= over;
+    }
   }
   *y_ret = edge;
   *h_ret = size;
@@ -395,8 +409,8 @@ void initialize_pager(void)
   }
 
 
-  n = Scr.VxMax/Scr.MyDisplayWidth;
-  m = Scr.VyMax/Scr.MyDisplayHeight;
+  n = Scr.VxMax / Scr.MyDisplayWidth;
+  m = Scr.VyMax / Scr.MyDisplayHeight;
 
   /* Size the window */
   if(Rows < 0)
@@ -432,24 +446,18 @@ void initialize_pager(void)
   }
   if(window_w > 0)
   {
-    window_w = ((window_w - n)/(n+1))*(n+1)+n;
-    Scr.VScale = Columns*(Scr.VxMax + Scr.MyDisplayWidth)/
-      (window_w-Columns+1-Columns*n);
+    window_w = ((window_w - n) / (n + 1)) * (n + 1) + n;
+    Scr.VScale = Columns * Scr.VWidth / (window_w - Columns + 1 - Columns * n);
   }
   if(window_h > 0)
   {
-    window_h = ((window_h - m)/(m+1))*(m+1)+m;
-    Scr.VScale = Rows*(Scr.VyMax + Scr.MyDisplayHeight)/
-      (window_h+2-Rows*(label_h -m-1));
+    window_h = ((window_h - m) / (m + 1)) * (m + 1) + m;
+    Scr.VScale = Rows * Scr.VHeight /(window_h + 2 - Rows * (label_h - m - 1));
   }
   if(window_w <= 0)
-    window_w = Columns*((Scr.VxMax + Scr.MyDisplayWidth)/Scr.VScale + n) +
-      Columns-1;
+    window_w = Columns * (Scr.VWidth / Scr.VScale + n) + Columns - 1;
   if(window_h <= 0)
-  {
-    window_h = Rows*((Scr.VyMax + Scr.MyDisplayHeight)/Scr.VScale
-		     + m + label_h + 1)-2;
-  }
+    window_h = Rows * (Scr.VHeight / Scr.VScale + m + label_h + 1) - 2;
 
   if (is_transient)
   {
@@ -1193,10 +1201,10 @@ void ReConfigure(void)
 	       (unsigned *)&window_w,(unsigned *)&window_h,
 	       &border_width,&depth);
 
-  n1 = Scr.Vx/Scr.MyDisplayWidth;
-  m1 = Scr.Vy/Scr.MyDisplayHeight;
-  n = (Scr.VxMax)/Scr.MyDisplayWidth;
-  m = (Scr.VyMax)/Scr.MyDisplayHeight;
+  n1 = Scr.Vx / Scr.MyDisplayWidth;
+  m1 = Scr.Vy / Scr.MyDisplayHeight;
+  n = Scr.VxMax / Scr.MyDisplayWidth;
+  m = Scr.VyMax / Scr.MyDisplayHeight;
   if (window_w > 0)
     window_w = ((window_w - n)/(n+1))*(n+1)+n;
   if (window_h > 0)
@@ -1215,8 +1223,8 @@ void ReConfigure(void)
 
   XSetWMNormalHints(dpy,Scr.Pager_w,&sizehints);
 
-  x = (desk_w-n)* Scr.Vx/(Scr.VxMax+Scr.MyDisplayWidth) +n1;
-  y = (desk_h-m)*Scr.Vy/(Scr.VyMax+Scr.MyDisplayHeight) +m1;
+  x = (desk_w - n) * Scr.Vx / Scr.VWidth + n1;
+  y = (desk_h - m) * Scr.Vy / Scr.VHeight + m1;
 
   for(k=0;k<Rows;k++)
   {
@@ -1278,11 +1286,11 @@ void MovePage(void)
   Wait = 0;
   n1 = Scr.Vx/Scr.MyDisplayWidth;
   m1 = Scr.Vy/Scr.MyDisplayHeight;
-  n = (Scr.VxMax)/Scr.MyDisplayWidth;
-  m = (Scr.VyMax)/Scr.MyDisplayHeight;
+  n = Scr.VxMax / Scr.MyDisplayWidth;
+  m = Scr.VyMax / Scr.MyDisplayHeight;
 
-  x = (desk_w-n)* Scr.Vx/(Scr.VxMax+Scr.MyDisplayWidth) +n1;
-  y = (desk_h-m)*Scr.Vy/(Scr.VyMax+Scr.MyDisplayHeight) +m1;
+  x = (desk_w - n) * Scr.Vx / Scr.VWidth + n1;
+  y = (desk_h - m) * Scr.Vy / Scr.VHeight + m1;
   for(i=0;i<ndesks;i++)
   {
     if (HilightDesks)
@@ -1372,21 +1380,17 @@ void ReConfigureIcons(void)
 void DrawGrid(int i, int erase)
 {
   int y, y1, y2, x, x1, x2,d,hor_off,ver_off,w;
-  int MaxW,MaxH;
   char str[15], *ptr;
 
   if((i < 0 ) || (i >= ndesks))
     return;
 
-  MaxW = (Scr.VxMax + Scr.MyDisplayWidth);
-  MaxH = Scr.VyMax + Scr.MyDisplayHeight;
-
   x = Scr.MyDisplayWidth;
   y1 = 0;
   y2 = desk_h;
-  while(x < MaxW)
+  while(x < Scr.VWidth)
   {
-    x1 = x*desk_w/MaxW;
+    x1 = x * desk_w / Scr.VWidth;
     if (!use_no_separators)
       XDrawLine(dpy,Desks[i].w,Desks[i].DashedGC,x1,y1,x1,y2);
     x += Scr.MyDisplayWidth;
@@ -1395,9 +1399,9 @@ void DrawGrid(int i, int erase)
   y = Scr.MyDisplayHeight;
   x1 = 0;
   x2 = desk_w;
-  while(y < MaxH)
+  while(y < Scr.VHeight)
   {
-    y1 = y*(desk_h)/MaxH;
+    y1 = y * desk_h / Scr.VHeight;
     if (!use_no_separators)
       XDrawLine(dpy,Desks[i].w,Desks[i].DashedGC,x1,y1,x2,y1);
     y += Scr.MyDisplayHeight;
@@ -1454,11 +1458,7 @@ void DrawGrid(int i, int erase)
 void DrawIconGrid(int erase)
 {
   int y, y1, y2, x, x1, x2,w,h,n,m,n1,m1;
-  int MaxW,MaxH;
   int i;
-
-  MaxW = (Scr.VxMax + Scr.MyDisplayWidth);
-  MaxH = Scr.VyMax + Scr.MyDisplayHeight;
 
   if(erase)
   {
@@ -1490,9 +1490,9 @@ void DrawIconGrid(int erase)
   x = Scr.MyDisplayWidth;
   y1 = 0;
   y2 = icon_h;
-  while(x < MaxW)
+  while(x < Scr.VWidth)
   {
-    x1 = x*icon_w/MaxW;
+    x1 = x * icon_w / Scr.VWidth;
     if (!use_no_separators)
       for(i=0;i<ndesks;i++)
         XDrawLine(dpy,icon_win,Desks[i].DashedGC,x1,y1,x1,y2);
@@ -1502,23 +1502,23 @@ void DrawIconGrid(int erase)
   y = Scr.MyDisplayHeight;
   x1 = 0;
   x2 = icon_w;
-  while(y < MaxH)
+  while(y < Scr.VHeight)
   {
-    y1 = y*(icon_h)/MaxH;
+    y1 = y * icon_h / Scr.VHeight;
     if (!use_no_separators)
       for(i=0;i<ndesks;i++)
         XDrawLine(dpy,icon_win,Desks[i].DashedGC,x1,y1,x2,y1);
     y += Scr.MyDisplayHeight;
   }
-  n1 = Scr.Vx/Scr.MyDisplayWidth;
-  m1 = Scr.Vy/Scr.MyDisplayHeight;
-  n = (Scr.VxMax)/Scr.MyDisplayWidth;
-  m = (Scr.VyMax)/Scr.MyDisplayHeight;
-  w = (icon_w - n)/(n+1);
-  h = (icon_h - m)/(m+1);
+  n1 = Scr.Vx / Scr.MyDisplayWidth;
+  m1 = Scr.Vy / Scr.MyDisplayHeight;
+  n = Scr.VxMax / Scr.MyDisplayWidth;
+  m = Scr.VyMax / Scr.MyDisplayHeight;
+  w = (icon_w - n) / (n + 1);
+  h = (icon_h - m) / (m + 1);
 
-  x = (icon_w-n)* Scr.Vx/(Scr.VxMax+Scr.MyDisplayWidth) +n1;
-  y = (icon_h-m)*Scr.Vy/(Scr.VyMax+Scr.MyDisplayHeight) +m1;
+  x = (icon_w - n) * Scr.Vx / Scr.VWidth + n1;
+  y = (icon_h - m) * Scr.Vy / Scr.VHeight + m1;
 
   if (HilightDesks)
   {
@@ -1550,26 +1550,22 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
 {
   char command[256];
 
-  if (Scr.CurrentDesk != (Desk+desk1))
+  if (Scr.CurrentDesk != (Desk + desk1))
   {
     int vx, vy;
     /* patch to let mouse button 3 change desks and do not cling to a page */
-    vx = Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
-      (desk_w*Scr.MyDisplayWidth);
-    vy = Event->xbutton.y*(Scr.VyMax+Scr.MyDisplayHeight)/
-      (desk_h*Scr.MyDisplayHeight);
+    vx = Event->xbutton.x * Scr.VWidth / (desk_w * Scr.MyDisplayWidth);
+    vy = Event->xbutton.y * Scr.VHeight / (desk_h * Scr.MyDisplayHeight);
     Scr.Vx = vx * Scr.MyDisplayWidth;
     Scr.Vy = vy * Scr.MyDisplayHeight;
-    sprintf(command,"GoToDeskAndPage %d %d %d\n", Desk+desk1, vx, vy);
-    SendInfo(fd,command,0);
+    sprintf(command, "GoToDeskAndPage %d %d %d\n", Desk + desk1, vx, vy);
+    SendInfo(fd, command, 0);
 
   }
   else
   {
-    int x = Event->xbutton.x * (Scr.VxMax+Scr.MyDisplayWidth) /
-      (desk_w * Scr.MyDisplayWidth);
-    int y = Event->xbutton.y * (Scr.VyMax+Scr.MyDisplayHeight) /
-      (desk_h * Scr.MyDisplayHeight);
+    int x = Event->xbutton.x * Scr.VWidth / (desk_w * Scr.MyDisplayWidth);
+    int y = Event->xbutton.y * Scr.VHeight / (desk_h * Scr.MyDisplayHeight);
 
     /* Fix for buggy XFree86 servers that report button release events
      * incorrectly when moving fast. Not perfect, but should at least prevent
@@ -1582,8 +1578,8 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
       x = Scr.VxMax / Scr.MyDisplayWidth;
     if (y * Scr.MyDisplayHeight > Scr.VyMax)
       y = Scr.VyMax / Scr.MyDisplayHeight;
-    sprintf(command,"GotoPage %d %d\n", x, y);
-    SendInfo(fd,command,0);
+    sprintf(command, "GotoPage %d %d\n", x, y);
+    SendInfo(fd, command, 0);
   }
   Wait = 1;
 }
@@ -1593,11 +1589,9 @@ void IconSwitchPage(XEvent *Event)
   char command[34];
 
   sprintf(command,"GotoPage %d %d\n",
-	  Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
-	  (icon_w*Scr.MyDisplayWidth),
-	  Event->xbutton.y*(Scr.VyMax+Scr.MyDisplayHeight)/
-	  (icon_h*Scr.MyDisplayHeight));
-  SendInfo(fd,command,0);
+	  Event->xbutton.x * Scr.VWidth / (icon_w * Scr.MyDisplayWidth),
+	  Event->xbutton.y * Scr.VHeight / (icon_h * Scr.MyDisplayHeight));
+  SendInfo(fd, command, 0);
   Wait = 1;
 }
 
@@ -1939,14 +1933,12 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk)
       sx = 0;
       sy = 0;
       if(window_w != 0)
-	sx = (100*(x*(Scr.VxMax+Scr.MyDisplayWidth)/window_w- Scr.Vx)) /
-	  Scr.MyDisplayWidth;
+	sx = 100 * (x * Scr.VWidth / window_w - Scr.Vx) / Scr.MyDisplayWidth;
       if(window_h != 0)
-	sy = (100*(y*(Scr.VyMax+Scr.MyDisplayHeight)/window_h - Scr.Vy)) /
-	  Scr.MyDisplayHeight;
+	sy = 100 * (y * Scr.VHeight / window_h - Scr.Vy) / Scr.MyDisplayHeight;
 #ifdef DEBUG
       fprintf(stderr,"[scroll]: %d %d %d %d %d %d\n", window_w, window_h, x,
-	      y, sx,sy);
+	      y, sx, sy);
 #endif
       /* Make sure weExecuteCommandQueue(); don't get stuck a few pixels fromt the top/left border.
        * Since sx/sy are ints, values between 0 and 1 are rounded down. */
@@ -2002,8 +1994,8 @@ void MoveWindow(XEvent *Event)
   m = Scr.VyMax / Scr.MyDisplayHeight;
   n1 = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
   m1 = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
-  wx = (Scr.Vx + t->x) * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
-  wy = (Scr.Vy + t->y) * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
+  wx = (Scr.Vx + t->x) * (desk_w - n) / Scr.VWidth + n1;
+  wy = (Scr.Vy + t->y) * (desk_h - m) / Scr.VHeight + m1;
   wx1 = wx + (desk_w + 1) * (NewDesk % Columns);
   wy1 = wy + label_h + (desk_h + label_h + 1) * (NewDesk / Columns);
 
@@ -2061,13 +2053,11 @@ void MoveWindow(XEvent *Event)
     NewDesk = Scr.CurrentDesk;
     if(NewDesk != t->desk)
     {
-      XMoveWindow(dpy,
-		  IS_ICONIFIED(t) ? t->icon_w : t->w,
-		  Scr.MyDisplayWidth+Scr.VxMax,
-		  Scr.MyDisplayHeight+Scr.VyMax);
-      XSync(dpy,0);
-      sprintf(command,"Silent MoveToDesk 0 %d", NewDesk);
-      SendInfo(fd,command,t->w);
+      XMoveWindow(dpy, IS_ICONIFIED(t) ? t->icon_w : t->w,
+		  Scr.VWidth, Scr.VHeight);
+      XSync(dpy, False);
+      sprintf(command, "Silent MoveToDesk 0 %d", NewDesk);
+      SendInfo(fd, command, t->w);
       t->desk = NewDesk;
     }
     if((NewDesk>=desk1)&&(NewDesk<=desk2))
@@ -2115,31 +2105,29 @@ void MoveWindow(XEvent *Event)
     XTranslateCoordinates(dpy, Scr.Pager_w,Desks[NewDesk].w,
 			  x-x1, y-y1, &x2,&y2,&dumwin);
 
-    n1 = x2*(Scr.VxMax + Scr.MyDisplayWidth)/(desk_w * Scr.MyDisplayWidth);
-    m1 = y2*(Scr.VyMax + Scr.MyDisplayHeight)/(desk_h * Scr.MyDisplayHeight);
-    x = (x2-n1)*
-      (Scr.VxMax + Scr.MyDisplayWidth)/(desk_w-n) - Scr.Vx;
-    y = (y2-m1)*
-      (Scr.VyMax + Scr.MyDisplayHeight)/(desk_h-m) - Scr.Vy;
+    n1 = x2 * Scr.VWidth / (desk_w * Scr.MyDisplayWidth);
+    m1 = y2* Scr.VHeight / (desk_h * Scr.MyDisplayHeight);
+    x = (x2 - n1) * Scr.VWidth / (desk_w - n) - Scr.Vx;
+    y = (y2 - m1) * Scr.VHeight / (desk_h - m) - Scr.Vy;
     /* force onto desk */
-    if(x + t->frame_width + Scr.Vx < 0 )
+    if (x + t->frame_width + Scr.Vx < 0 )
       x = - Scr.Vx - t->frame_width;
-    if(y + t->frame_height + Scr.Vy< 0)
+    if (y + t->frame_height + Scr.Vy < 0)
       y = - Scr.Vy - t->frame_height;
-    if(x + Scr.Vx >= Scr.MyDisplayWidth + Scr.VxMax)
-      x = Scr.MyDisplayWidth + Scr.VxMax - Scr.Vx - 1;
-    if(y + Scr.Vy >= Scr.MyDisplayHeight + Scr.VyMax)
-      y = Scr.MyDisplayHeight+ Scr.VyMax - Scr.Vy - 1;
+    if (x + Scr.Vx >= Scr.VWidth)
+      x = Scr.VWidth - Scr.Vx - 1;
+    if (y + Scr.Vy >= Scr.VHeight)
+      y = Scr.VHeight - Scr.Vy - 1;
     if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||(IS_STICKY(t)))
     {
       NewDesk = Scr.CurrentDesk - desk1;
-      if(x > Scr.MyDisplayWidth -16)
+      if (x > Scr.MyDisplayWidth - 16)
 	x = Scr.MyDisplayWidth - 16;
-      if(y > Scr.MyDisplayHeight-16)
+      if (y > Scr.MyDisplayHeight - 16)
 	y = Scr.MyDisplayHeight - 16;
-      if(x + t->width < 16)
+      if (x + t->width < 16)
 	x = 16 - t->width;
-      if(y + t->height < 16)
+      if (y + t->height < 16)
 	y = 16 - t->height;
     }
     if(NewDesk + desk1 != t->desk)
@@ -2419,12 +2407,12 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
   if(t==NULL)
     return;
 
-  n = (Scr.VxMax)/Scr.MyDisplayWidth;
-  m = (Scr.VyMax)/Scr.MyDisplayHeight;
-  n1 = (Scr.Vx + t->x)/Scr.MyDisplayWidth;
-  m1 = (Scr.Vy + t->y)/Scr.MyDisplayHeight;
-  wx = (Scr.Vx + t->x)*(icon_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
-  wy = (Scr.Vy + t->y)*(icon_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
+  n = Scr.VxMax / Scr.MyDisplayWidth;
+  m = Scr.VyMax / Scr.MyDisplayHeight;
+  n1 = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
+  m1 = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
+  wx = (Scr.Vx + t->x) * (icon_w - n) / Scr.VWidth + n1;
+  wy = (Scr.Vy + t->y) * (icon_h - m) / Scr.VHeight + m1;
 
   XRaiseWindow(dpy,t->IconView);
 
@@ -2490,30 +2478,28 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
     {
       x = x - x1;
       y = y - y1;
-      n1 = x*(Scr.VxMax + Scr.MyDisplayWidth)/(icon_w * Scr.MyDisplayWidth);
-      m1 = y*(Scr.VyMax + Scr.MyDisplayHeight)/(icon_h * Scr.MyDisplayHeight);
-      x = (x-n1)*
-	(Scr.VxMax + Scr.MyDisplayWidth)/(icon_w-n) - Scr.Vx;
-      y = (y-m1)*
-	(Scr.VyMax + Scr.MyDisplayHeight)/(icon_h-m) - Scr.Vy;
+      n1 = x * Scr.VWidth / (icon_w * Scr.MyDisplayWidth);
+      m1 = y * Scr.VHeight / (icon_h * Scr.MyDisplayHeight);
+      x = (x - n1) * Scr.VWidth / (icon_w - n) - Scr.Vx;
+      y = (y - m1) * Scr.VHeight / (icon_h - m) - Scr.Vy;
       /* force onto desk */
-      if(x + t->icon_width + Scr.Vx < 0 )
+      if (x + t->icon_width + Scr.Vx < 0 )
 	x = - Scr.Vx - t->icon_width;
-      if(y + t->icon_height + Scr.Vy< 0)
+      if (y + t->icon_height + Scr.Vy < 0)
 	y = - Scr.Vy - t->icon_height;
-      if(x + Scr.Vx >= Scr.MyDisplayWidth + Scr.VxMax)
-	x = Scr.MyDisplayWidth + Scr.VxMax - Scr.Vx - 1;
-      if(y + Scr.Vy >= Scr.MyDisplayHeight + Scr.VyMax)
-	y = Scr.MyDisplayHeight + Scr.VyMax - Scr.Vy - 1;
+      if (x + Scr.Vx >= Scr.VWidth)
+	x = Scr.VWidth - Scr.Vx - 1;
+      if (y + Scr.Vy >= Scr.VHeight)
+	y = Scr.VHeight - Scr.Vy - 1;
       if(((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t)))||(IS_STICKY(t)))
 	{
-	  if(x > Scr.MyDisplayWidth - 16)
+	  if (x > Scr.MyDisplayWidth - 16)
 	    x = Scr.MyDisplayWidth - 16;
-	  if(y > Scr.MyDisplayHeight - 16)
+	  if (y > Scr.MyDisplayHeight - 16)
 	    y = Scr.MyDisplayHeight - 16;
-	  if(x + t->width < 16)
+	  if (x + t->width < 16)
 	    x = 16 - t->width;
-	  if(y + t->height < 16)
+	  if (y + t->height < 16)
 	    y = 16 - t->height;
 	}
       if(moved)
