@@ -256,7 +256,7 @@ void SetDeskPageBackground(const Command *c)
 /*
  * migo (23-11-1999): Maybe execute only first (or last?) matching command?
  */
-int ExecuteMatchingCommands(int colorset)
+void ExecuteMatchingCommands(int colorset)
 {
   const Command *command;
   for (command = commands->first; command; command = command->next)
@@ -375,7 +375,6 @@ void AddCommand(char *line)
 {
   char *token;
   Command *this;
-  int num = 0;
 
   this = (Command*)safemalloc(sizeof(Command));
   this->desk = 0;

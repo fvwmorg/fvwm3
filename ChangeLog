@@ -1,3 +1,20 @@
+1999-11-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1:
+	fixed name of man page(?)
+
+	* fvwm/builtins.c (HandleColorset):
+	* fvwm/builtins.c (ApplyHilightColors):
+	* fvwm/fvwm.c (InitFvwmDecor):
+	* fvwm/functions.h (enum):
+	* fvwm/functions.c (func_config):
+	* fvwm/builtins.c (SetHiColorset):
+	* fvwm/screen.h (FvwmDecor):
+	new command HilightColorset
+
+	* fvwm/builtins.c (SetDefaultColorset):
+	fixed memory leak
+
 1999-11-24  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1: Once again changed the "NAME" part of the man page

@@ -109,10 +109,12 @@ void CreateIconWindow(struct icon_info *item)
   }
   /* next come program specified icon windows and pixmaps*/
   if((item->icon_h == 0) && (item->icon_w == 0) && item->wmhints)
+  {
     if (item->wmhints->flags & IconWindowHint)
       GetIconWindow(item);
     else if (item->wmhints->flags & IconPixmapHint)
       GetIconBitmap(item);
+  }
 
   /* if that all fails get the default */
   if ((item->icon_file != NULL) && (item->icon_h == 0) && (item->icon_w == 0)) {

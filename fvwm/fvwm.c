@@ -1481,24 +1481,25 @@ void DestroyFvwmDecor(FvwmDecor *fl)
  *  InitFvwmDecor -- initializes an FvwmDecor structure to defaults
  *
  ************************************************************************/
-void InitFvwmDecor(FvwmDecor *fl)
+void InitFvwmDecor(FvwmDecor *decor)
 {
     int i;
     DecorFace tmpdf;
 
-    fl->HiReliefGC = NULL;
-    fl->HiShadowGC = NULL;
-    fl->TitleHeight = 0;
-    fl->WindowFont.font = NULL;
+    decor->HiReliefGC = NULL;
+    decor->HiShadowGC = NULL;
+    decor->TitleHeight = 0;
+    decor->WindowFont.font = NULL;
+    decor->HiColorset = -1;
 
 #ifdef USEDECOR
-    fl->tag = NULL;
-    fl->next = NULL;
+    decor->tag = NULL;
+    decor->next = NULL;
 
-    if (fl != &Scr.DefaultDecor) {
+    if (decor != &Scr.DefaultDecor) {
 	extern void AddToDecor(FvwmDecor *, char *);
-	AddToDecor(fl, "HilightColor black grey");
-	AddToDecor(fl, "WindowFont fixed");
+	AddToDecor(decor, "HilightColor black grey");
+	AddToDecor(decor, "WindowFont fixed");
     }
 #endif
 
@@ -1513,37 +1514,37 @@ void InitFvwmDecor(FvwmDecor *fl)
       int j = 0;
       for (; j < MaxButtonState; ++j)
       {
-	TB_STATE(fl->left_buttons[i])[j] =
-	  TB_STATE(fl->right_buttons[i])[j] =  tmpdf;
+	TB_STATE(decor->left_buttons[i])[j] =
+	  TB_STATE(decor->right_buttons[i])[j] =  tmpdf;
       }
     }
 
     /* reset to default button set */
-    ResetAllButtons(fl);
+    ResetAllButtons(decor);
 
     /* initialize title-bar styles */
-    memset(&TB_FLAGS(fl->titlebar), 0, sizeof(TB_FLAGS(fl->titlebar)));
+    memset(&TB_FLAGS(decor->titlebar), 0, sizeof(TB_FLAGS(decor->titlebar)));
 
     for (i = 0; i < MaxButtonState; ++i)
     {
-      memset(&TB_STATE(fl->titlebar)[i].style, 0,
-	     sizeof(TB_STATE(fl->titlebar)[i].style));
-      DFS_FACE_TYPE(TB_STATE(fl->titlebar)[i].style) = SimpleButton;
+      memset(&TB_STATE(decor->titlebar)[i].style, 0,
+	     sizeof(TB_STATE(decor->titlebar)[i].style));
+      DFS_FACE_TYPE(TB_STATE(decor->titlebar)[i].style) = SimpleButton;
 #ifdef MULTISTYLE
-      TB_STATE(fl->titlebar)[i].next = NULL;
+      TB_STATE(decor->titlebar)[i].next = NULL;
 #endif
     }
 
     /* initialize border texture styles */
-    memset(&fl->BorderStyle.active.style, 0,
-	   sizeof(fl->BorderStyle.active.style));
-    DFS_FACE_TYPE(fl->BorderStyle.active.style) = SimpleButton;
-    memset(&fl->BorderStyle.inactive.style, 0,
-	   sizeof(fl->BorderStyle.inactive.style));
-    DFS_FACE_TYPE(fl->BorderStyle.inactive.style) = SimpleButton;
+    memset(&decor->BorderStyle.active.style, 0,
+	   sizeof(decor->BorderStyle.active.style));
+    DFS_FACE_TYPE(decor->BorderStyle.active.style) = SimpleButton;
+    memset(&decor->BorderStyle.inactive.style, 0,
+	   sizeof(decor->BorderStyle.inactive.style));
+    DFS_FACE_TYPE(decor->BorderStyle.inactive.style) = SimpleButton;
 #ifdef MULTISTYLE
-    fl->BorderStyle.active.next = NULL;
-    fl->BorderStyle.inactive.next = NULL;
+    decor->BorderStyle.active.next = NULL;
+    decor->BorderStyle.inactive.next = NULL;
 #endif
 }
 

@@ -58,7 +58,15 @@
 
 static void ApplyIconFont(void);
 static void ApplyWindowFont(FvwmDecor *decor);
+static char *ReadTitleButton(
+    char *s, TitleButton *tb, Boolean append, int button);
 
+extern float rgpctMovementDefault[32];
+extern int cpctMovementDefault;
+extern int cmsDelayDefault;
+
+char *ModulePath = FVWM_MODULEDIR;
+FvwmDecor *cur_decor = NULL;
 static char *exec_shell_name="/bin/sh";
 /* button state strings must match the enumerated states */
 static char  *button_states[MaxButtonState] =
@@ -70,6 +78,9 @@ static char  *button_states[MaxButtonState] =
   "ToggledActiveDown",
   "ToggledInactive",
 };
+
+
+
 
 
 /***********************************************************************
@@ -844,8 +855,6 @@ void pixmapPath_function(F_CMD_ARGS)
 }
 
 
-char *ModulePath = FVWM_MODULEDIR;
-
 void setModulePath(F_CMD_ARGS)
 {
     static int need_to_free = 0;
@@ -853,13 +862,58 @@ void setModulePath(F_CMD_ARGS)
     need_to_free = 1;
 }
 
-FvwmDecor *cur_decor = NULL;
-void SetHiColor(F_CMD_ARGS)
+static void ApplyHilightColors(FvwmDecor *decor)
 {
   XGCValues gcv;
   unsigned long gcm;
-  char *hifore=NULL, *hiback=NULL;
   FvwmWindow *hilight;
+
+  gcm = GCFunction | GCLineWidth | GCForeground | GCBackground;
+  if (decor->HiColorset >= 0)
+  {
+    gcv.foreground = Colorset[decor->HiColorset].fg;
+    gcv.background = Colorset[decor->HiColorset].bg;
+  }
+  else
+  {
+    gcv.foreground = decor->HiRelief.fore;
+    gcv.background = decor->HiRelief.back;
+  }
+  gcv.function = GXcopy;
+  gcv.line_width = 0;
+
+  if (decor->HiReliefGC)
+    XChangeGC(dpy, decor->HiReliefGC, gcm, &gcv);
+  else
+    decor->HiReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+
+  if (decor->HiColorset >= 0)
+  {
+    gcv.foreground = Colorset[decor->HiColorset].shadow;
+    gcv.background = Colorset[decor->HiColorset].hilite;
+  }
+  else
+  {
+    gcv.foreground = decor->HiRelief.back;
+    gcv.background = decor->HiRelief.fore;
+  }
+  if(decor->HiShadowGC)
+    XChangeGC(dpy, decor->HiShadowGC, gcm, &gcv);
+  else
+    decor->HiShadowGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+
+  if(Scr.flags.windows_captured && Scr.Hilite)
+  {
+    hilight = Scr.Hilite;
+    DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
+    DrawDecorations(hilight, DRAW_ALL, True, True, None);
+  }
+}
+
+void SetHiColor(F_CMD_ARGS)
+{
+  char *hifore = NULL;
+  char  *hiback = NULL;
 #ifdef USEDECOR
   FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
 #else
@@ -867,7 +921,7 @@ void SetHiColor(F_CMD_ARGS)
 #endif
 
   action = GetNextToken(action,&hifore);
-  GetNextToken(action,&hiback);
+  GetNextToken(action, &hiback);
   if(Pdepth > 2)
   {
     if(hifore)
@@ -888,35 +942,36 @@ void SetHiColor(F_CMD_ARGS)
     decor->HiRelief.back  = GetColor("black");
     decor->HiRelief.fore  = GetColor("white");
   }
-  if (hifore) free(hifore);
-  if (hiback) free(hiback);
-  gcm = GCFunction|GCLineWidth|GCForeground|GCBackground;
-  gcv.foreground = decor->HiRelief.fore;
-  gcv.background = decor->HiRelief.back;
-  gcv.function = GXcopy;
-  gcv.line_width = 0;
-  if(decor->HiReliefGC)
-    XChangeGC(dpy, decor->HiReliefGC, gcm, &gcv);
-  else
-    decor->HiReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
+  if (hifore)
+      free(hifore);
+  if (hiback)
+      free(hiback);
 
-  gcv.foreground = decor->HiRelief.back;
-  gcv.background = decor->HiRelief.fore;
-  if(decor->HiShadowGC)
-    XChangeGC(dpy, decor->HiShadowGC, gcm, &gcv);
-  else
-    decor->HiShadowGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
-
-  if(Scr.flags.windows_captured && Scr.Hilite)
-  {
-    hilight = Scr.Hilite;
-    DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
-    DrawDecorations(hilight, DRAW_ALL, True, True, None);
-  }
+  decor->HiColorset = -1;
+  ApplyHilightColors(decor);
 }
 
 
-char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button);
+void SetHiColorset(F_CMD_ARGS)
+{
+  int cset;
+#ifdef USEDECOR
+  FvwmDecor *decor = cur_decor ? cur_decor : &Scr.DefaultDecor;
+#else
+  FvwmDecor *decor = &Scr.DefaultDecor;
+#endif
+
+fprintf(stderr,"shcs\n");
+  if (GetIntegerArguments(action, NULL, &cset, 1) != 1)
+    return;
+fprintf(stderr,"got hcs=%d\n", cset);
+  decor->HiColorset = cset;
+  if (decor->HiColorset < 0)
+    decor->HiColorset = -1;
+  AllocColorset(cset);
+  ApplyHilightColors(decor);
+}
+
 
 #if defined(MULTISTYLE)
 /*****************************************************************************
@@ -1141,6 +1196,7 @@ void HandleColorset(F_CMD_ARGS)
 {
   int n = -1, ret;
   char *token;
+  FvwmDecor *decor;
 
   token = PeekToken(action, NULL);
   if (token == NULL)
@@ -1157,6 +1213,16 @@ void HandleColorset(F_CMD_ARGS)
   {
     ApplyDefaultFontAndColors();
   }
+
+  /* Update decors if necessary */
+  for (decor = &Scr.DefaultDecor; decor != NULL; decor = decor->next)
+  {
+      if (decor->HiColorset == n)
+      {
+          ApplyHilightColors(decor);
+      }
+  }
+
   UpdateMenuColorset(n);
   update_style_colorset(n);
 }
@@ -1171,13 +1237,12 @@ void SetDefaultIcon(F_CMD_ARGS)
 
 void SetDefaultColorset(F_CMD_ARGS)
 {
-  char *cset = NULL;
+  int cset;
 
-  action = GetNextToken(action, &cset);
-  if (!cset)
+  if (GetIntegerArguments(action, NULL, &cset, 1) != 1)
     return;
 
-  Scr.DefaultColorset = atoi(cset);
+  Scr.DefaultColorset = cset;
   if (Scr.DefaultColorset < 0)
     Scr.DefaultColorset = -1;
   AllocColorset(Scr.DefaultColorset);
@@ -1844,7 +1909,8 @@ Boolean ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
  * Reads a title button description (veliaa@rpi.edu)
  *
  ****************************************************************************/
-char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
+static char *ReadTitleButton(
+    char *s, TitleButton *tb, Boolean append, int button)
 {
   char *end = NULL, *spec;
   DecorFace tmpdf;
@@ -1962,7 +2028,7 @@ void AddToDecor(FvwmDecor *decor, char *s)
 {
   if (!s)
     return;
-  while (*s&&isspace((unsigned char)*s))
+  while (*s && isspace((unsigned char)*s))
     ++s;
   if (!*s)
     return;
@@ -2905,11 +2971,6 @@ void SetColorLimit(F_CMD_ARGS)
 
   Scr.ColorLimit = (long)val;
 }
-
-
-extern float rgpctMovementDefault[32];
-extern int cpctMovementDefault;
-extern int cmsDelayDefault;
 
 
 /* set animation parameters */

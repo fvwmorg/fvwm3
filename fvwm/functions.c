@@ -172,6 +172,7 @@ static const struct functions func_config[] =
   {"gotopage",     goto_page_func,   F_GOTO_PAGE,           0},
   {"hidegeometrywindow",HideGeometryWindow,F_HIDEGEOMWINDOW,0},
   {"hilightcolor", SetHiColor,       F_HICOLOR,             0},
+  {"hilightcolorset",SetHiColorset,  F_HICOLORSET,          0},
   {"iconfont",     LoadIconFont,     F_ICONFONT,            0},
   {"iconify",      iconify_function, F_ICONIFY,             FUNC_NEEDS_WINDOW},
   {"iconpath",     iconPath_function,F_ICON_PATH,           0},

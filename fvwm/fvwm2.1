@@ -2058,6 +2058,15 @@ window which currently has the keyboard focus.
 
 
 .TP
+.B "HilightColorset" "[\fInum\fP]"
+\fIHilightColorset\fP sets the colorset used by the focused window.
+It is similar to the \fIHilightColor\fP command above but uses the
+colors from the given colorset.  To revert back to the HilightColors
+colors use "HilightColorset -1" or any variant of the HilightColor
+command.
+
+
+.TP
 .B "IconFont" "[\fIfontname\fP]"
 Makes fvwm use font \fIfontname\fP for icon labels. To reset
 this font to the default font (see \fIDefaultFont\fP) you may omit
@@ -2980,9 +2989,9 @@ existing decor will affect windows which are currently assigned to it.
 
 AddToDecor is similar in usage to the AddToMenu and AddToFunc
 commands, except that menus and functions are replaced by ButtonStyle,
-AddButtonStyle, TitleStyle, AddTitleStyle, BorderStyle, HilightColor
-and WindowFont commands.  Decors created with AddToDecor can be
-manipulated with ChangeDecor, DestroyDecor, UpdateDecor, and the
+AddButtonStyle, TitleStyle, AddTitleStyle, BorderStyle, HilightColor,
+HilightColorset and WindowFont commands.  Decors created with AddToDecor
+can be manipulated with ChangeDecor, DestroyDecor, UpdateDecor, and the
 UseDecor Style option.
 
 The following example creates a decor 'FlatDecor' and style

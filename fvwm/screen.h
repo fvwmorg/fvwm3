@@ -213,6 +213,7 @@ typedef struct FvwmDecor
   char *tag;			/* general style tag */
 #endif
   ColorPair HiColors;		/* standard fore/back colors */
+  int HiColorset;		/* standard fore/back colorset */
   ColorPair HiRelief;
   GC HiReliefGC;		/* GC for highlighted window relief */
   GC HiShadowGC;		/* GC for highlighted window shadow */
