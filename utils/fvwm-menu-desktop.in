@@ -42,9 +42,7 @@
 #    1. Prevent "inconsistent" conjunctions of options (perhaps we can do
 #       GetOptions with hands (in my machine I think I will win 0.15 sec).
 #    2. Better default ?
-#    3. Add other desktops ?? CDE ???? (need to be at work to see
-#       if we can do that).
-#    4. Make a general clean up II.
+#    3. Make a general clean up II.
 #
 #----------------------------------------------------------------------------
 # The script: Main
@@ -130,7 +128,7 @@ foreach $i (keys(%DI)) {
 	$spic{$i}   = $list[3];	# sidepic icon
 	$scolor{$i} = $list[4];	# color for sidepic
 	$DI{$i} = '';
-}
+}	
 
 my $MINI_ICONS = 0;             # mini-icon disabled  (enable =1)
 my $TRAN       = 0;             # mini-icon translation disabled (enable =1)
@@ -462,8 +460,8 @@ while( $Rec_Dir_List[0] ne '+') {
 
 			while(<ORDER>) {
 				if ( /^SortOrder=(.*)$/ ) {
-					$order = $1;
-					@list = split(/\s*,\s*/, $order);
+					$order = "$1";
+					@list = split(/\s*,\s*/, "$order");
 					foreach $name (@list) { push(@Main_List, "$dir/$name") }
 				}
 			}
@@ -474,14 +472,17 @@ while( $Rec_Dir_List[0] ne '+') {
 		# 2. Add to @Main_List the items not in the order.
 		# AND WE UPDATE @Rec_Dir_List HERE
 		@list = @Main_List;
-		foreach $name (<$dir/*>) {
+		opendir(DIR,"$dir");
+		foreach $name (readdir(DIR)) {
+			next if $name =~ /^\./;
 			$add=1;
-			if ( -d $name ) { push(@Rec_Dir_List, "$name") }
+			if ( -d "$dir/$name" ) { push(@Rec_Dir_List, "$dir/$name") }
 			foreach $j  (@list) {
-				$add=0 if ($name eq $j);
+				$add=0 if ("$dir/$name" eq "$j");
 			}
-			push(@Main_List, "$name") if ( $add );
+			push(@Main_List, "$dir/$name") if ( $add );
 		}
+		close(DIR);
 
 		# ---------
 		# Build the menu of $dir
@@ -593,7 +594,7 @@ sub build_a_level {
 		$tmp_name = substr($item,rindex ($item,'/')+1);
 
 		# If it is a dir --> a pop up (folder)
-		if ( -d $item ) {
+		if ( -d "$item" ) {
 			$name = "$SUBMENUS_PREFIX$tmp_name-$nlevel";
 			($label, $mini_icon) = get_info("$item/.directory", 'folder')
 				if (-f "$item/.directory");

@@ -1,3 +1,8 @@
+2000-09-24  olicha  <olivier.chapuis@free.fr>
+
+	* utils/fvwm-menu-desktop.in:
+	fixed a problem with directory with a space in its name
+	
 2000-09-24  Mikhael Goikhman  <migo@homemail.com>
 
 	* rpm/Makefile.am:
