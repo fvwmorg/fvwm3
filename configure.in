@@ -260,7 +260,7 @@ AC_SUBST(readline_CFLAGS)
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 extras/Makefile utils/Makefile docs/Makefile
-icons/Makefile sample.fvwmrc/Makefile
+icons/Makefile sample.fvwmrc/Makefile tests/Makefile
 dnl
 modules/FvwmAnimate/Makefile
 modules/FvwmAudio/Makefile

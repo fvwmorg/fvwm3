@@ -4,8 +4,8 @@
 AUTOMAKE_OPTIONS = 1.3b
 
 SUBDIRS = libs fvwm modules @EXTRA_MODULES@ utils \
-	docs icons sample.fvwmrc
+	docs icons sample.fvwmrc tests
 EXTRA_SUBDIRS = extras
 
-EXTRA_DIST = BUGS DEVELOPERS FAQ INSTALL.fvwm
+EXTRA_DIST = INSTALL.fvwm
 
