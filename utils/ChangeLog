@@ -1,3 +1,12 @@
+1999-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm-menu-directory.in:
+	* fvwm-menu-desktop.in:
+	* fvwmrc_convert.1:
+	* fvwm-menu-directory.1:
+	* fvwm-menu-desktop.1:
+	ispell session
+
 1999-11-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm_make_browse_menu.sh:

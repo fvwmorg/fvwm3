@@ -37,7 +37,7 @@ No command line invocation is possible.
 \fBFvwmGtk\fP must be invoked by the
 \fBfvwm\fP window manager.
 When invoked with the optional \fIname\fP argument, \fIname\fP
-is used to find configuration commands and configuraton files
+is used to find configuration commands and configuration files
 instead of "FvwmGtk".
 
 .SH CONFIGURATION OPTIONS
@@ -95,7 +95,7 @@ If r_label is given, it will be right-justified.
 .IP "*FvwmGtkSubmenu \fBlabel\fP \fBname\fP [ \fBicon\fP ]"
 Appends an item to the currently open menu. The first argument is the
 text that will appear in the item, the second argument is the name of
-the submenu that will be opened when the item is selected. If the submenu
+the sub menu that will be opened when the item is selected. If the sub menu
 doesn't exist yet, it will be created. If the optional argument is given,
 it should be the name of an xpm file in the ImagePath. The icon will
 appear to the left of the text. The label can contain an ampersand
@@ -172,7 +172,7 @@ widgets (for information about their meaning, see the GTK documentation).
 
 .IP "*FvwmGtkFrame \fBlabel\fP [ \fBborder\fP ]"
 .IP "*FvwmGtkEndFrame"
-Start and end a composite widget which draws a frame labelled by the given
+Start and end a composite widget which draws a frame labeled by the given
 label around a single child widget. The optional argument determines
 the separation between the frame and the child.
 
@@ -181,7 +181,7 @@ Adds a label widget.
 
 .IP "*FvwmGtkEntry \fBname\fP [ \fBinitial-value\fP ]"
 Adds a widget which allows the user to enter a string. If given, the
-\fBinitial-value\fP is displayed initially. The acutal string can
+\fBinitial-value\fP is displayed initially. The actual string can
 be referred to by \fBname\fP.
 
 .IP "*FvwmGtkButton \fBlabel\fP \fBcmd\fP ..."
@@ -257,7 +257,7 @@ Destroys the specified menu or dialog.
 Note that this command should be issued before defining any menus
 or dialog. Hint for GNOME users: If you add instances of this command for the
 standard GNOME rc files, switching themes via the control-center will
-apply to FvwmGtk widets as well, giving a very integrated appearance
+apply to FvwmGtk widgets as well, giving a very integrated appearance
 of the desktop.
 
 .IP "*FvwmGtkIconSize [ \fBwidth\fP \fBheight\fP ]"

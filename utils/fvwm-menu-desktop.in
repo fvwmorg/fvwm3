@@ -1,5 +1,5 @@
 #!@PERL@
-# 
+#
 # ---------------------------------------------------------------------------
 #  fvwm-menu-desktop
 #  See the man page fvwm-menu-desktop.1 for instructions.
@@ -31,10 +31,10 @@
 #
 #----------------------------------------------------------------------------
 # TODO MUST:
-#    1. Correct the english of the man page (partially done).
+#    1. Correct the English of the man page (partially done).
 #
 # TODO:
-#    1. Prevent "inconsistent" conjonctions of options (perhaps we can do
+#    1. Prevent "inconsistent" conjunctions of options (perhaps we can do
 #       GetOptions with hands (in my machine I think I will win 0.15 sec).
 #    2. Better default ?
 #    3. Add other desktops ?? CDE ???? (need to be at work to see
@@ -59,7 +59,7 @@ my $version = "@VERSION@";
 # paths
 
 my $GNOME_PREFIX = '/usr';		# gnome install-dir
-# Default is "gnome" since fvwm is gnome compilant and not kde compilant.
+# Default is "gnome" since fvwm is gnome compliant and not kde compliant.
 my $APPS_DIR = "$GNOME_PREFIX/share/gnome/apps";
 my $GNOME_APPS = $APPS_DIR;
 my $KDE_PREFIX = $ENV{KDEDIR};
@@ -68,7 +68,7 @@ my $KDE_MINI_ICONS = "$KDE_PREFIX/share/icons/mini/";
 my $KDE_ICONS = "$KDE_PREFIX/share/icons/";
 my $OPT_INSTALL_PREFIX = '';
 
-# Default for the mini-icons is mini/ (relativelly to the ImagePath)
+# Default for the mini-icons is mini/ (relatively to the ImagePath)
 my $MINI_ICONS_DIR = 'mini/';
 # Then the default for icon is ImagePath (consistent with kde, fvwm2gnome
 # and almost consistent with wm-icons)
@@ -99,9 +99,9 @@ my $fvwmGtkName = "FvwmGtk";    # FvwmGtk module name
 # default icons for fvwm menus and gnome icons for gtk menus
 my %DI;
 
-$DI{fvwm_app}      = 'mini-x.xpm:dh:%::'; # micon:law:placement:unused 
+$DI{fvwm_app}      = 'mini-x.xpm:dh:%::'; # micon:law:placement:unused
 $DI{fvwm_folder}   = 'folder.xpm:dh:%::'; # idem
-$DI{fvwm_title}    = 'folder.xpm:dh:%::'; # micon:law:place:spic:color 
+$DI{fvwm_title}    = 'folder.xpm:dh:%::'; # micon:law:place:spic:color
 $DI{fvwm_toptitle} = 'mini-k.xpm:no:%::'; # idem
 $DI{gtk_app}       = 'gnome-default.png:dh:::';	# idem
 $DI{gtk_folder}    = 'gnome-folder.png:dh:::';  # micon:law:unused
@@ -123,7 +123,7 @@ foreach $i (keys(%DI)) {
 	$law{$i}    = $list[1];	# default law
 	$place{$i}  = $list[2];	# default position
 	$spic{$i}   = $list[3];	# sidepic icon
-	$scolor{$i} = $list[4];	# color for sidpic
+	$scolor{$i} = $list[4];	# color for sidepic
 	$DI{$i} = '';
 }
 
@@ -145,7 +145,7 @@ my $STYLEOUTPUT = '';		# The styles are in this variable
 my $ICON_STYLE  = '';
 
 
-# default term for runing applications in a terminal
+# default term for runnig applications in a terminal
 my $TERM_CMD = "xterm -e";
 
 
@@ -160,16 +160,16 @@ my $SUBMENUS_PREFIX = '';
 my $IKWID = 0;
 
 my $name = "";
-my $l = ""; 
-my $j = ""; 
-my $tmp_icon =""; 
-my $level = 0; 
-my $nlevel = 0; 
+my $l = "";
+my $j = "";
+my $tmp_icon ="";
+my $level = 0;
+my $nlevel = 0;
 my $top_level = 0;
-my $cdir = ""; 
-my $dir = ""; 
-my @Rec_Dir_List = (); 
-my @Main_List = (); 
+my $cdir = "";
+my $dir = "";
+my @Rec_Dir_List = ();
+my @Main_List = ();
 my $flag = "";
 my $order ="";
 my $add = 1;
@@ -182,7 +182,7 @@ GetOptions(
 	"version" => \&showVersion,
 	"install-prefix:s" => $OPT_INSTALL_PREFIX,
 	"desktop:s" => \$MENU_NAME,
-	"type:s" => \$MENU_TYPE, 
+	"type:s" => \$MENU_TYPE,
 	"fvwm-gtk-name=s" => \$fvwmGtkName,
 	"title:s" => \$OPT_MENU_TITLE,
 	"name:s" => \$OPT_MENU_NAME,
@@ -211,7 +211,7 @@ GetOptions(
 wrongUsage() if @ARGV;
 
 #--------------------------------
-# Initialisation of the variables
+# INITIALISATION of the variables
 
 # for limiting runing time to $timelimit
 my $startime = time;
@@ -233,7 +233,7 @@ if ( $MENU_TYPE eq 'gtk' ) {
 	$MENU_DESTROY = 'no'  if ( ! $MENU_DESTROY =~ /^y/ );
 } else {
 	$flag ='fvwm_';
-	$MENU_DESTROY = 'yes' if ( !($MENU_DESTROY =~ /^n/ 
+	$MENU_DESTROY = 'yes' if ( !($MENU_DESTROY =~ /^n/
 		|| $MENU_DESTROY =~ /^d/) );
 }
 
@@ -269,14 +269,14 @@ if ( $DESC_DIR ne '') {
 	$name       = substr($DESC_DIR,rindex($DESC_DIR,'/')+1);
 	$DESKTOP    = 'Kde' if ( $DESC_DIR =~ /kde/ && $DESKTOP eq '');
 	$DESKTOP    = 'Gnome' if ( $DESC_DIR =~ /gnome/ && $DESKTOP eq '');
-	$MENU_NAME  = $MENU_TITLE = "$name"; 
+	$MENU_NAME  = $MENU_TITLE = "$name";
 	if ( $DESKTOP ne '' ) {
 		$MENU_NAME  = "$DESKTOP-$MENU_NAME";
 		$MENU_TITLE = "$DESKTOP $name";
 	}
 }
 
-# Menu Title is recomputed later if $opt_menu_name is undef
+# Menu Title is recomputed later if $opt_menu_name is undefined
 # (try to use Desktop hints).
 $MENU_NAME  = $OPT_MENU_NAME  if ( $OPT_MENU_NAME ne '' );
 $MENU_TITLE = $OPT_MENU_TITLE if ( $OPT_MENU_TITLE ne '' );
@@ -305,8 +305,8 @@ if ( $MINI_ICONS_DIR ne 'mini/' || $ICONS_DIR ne '') {
 if ( $TRAN_MINI_ICONS ne 'mini/' || $TRAN_ICONS ne '' ) {
 	if ($TRAN_MINI_ICONS ne '' ) { $TRAN_MINI_ICONS =~ s/\/*$/\// };
 	if ( $TRAN_ICONS eq '' ) {
-		$TRAN_ICONS = up_directory($TRAN_MINI_ICONS) 
-	} else { 
+		$TRAN_ICONS = up_directory($TRAN_MINI_ICONS)
+	} else {
 		if ( $TRAN_ICONS eq 'inpath' ) { $TRAN_ICONS = '' }
 		else { $TRAN_ICONS =~ s/\/*$/\// if ($TRAN_ICONS ne '' ) }
 	}
@@ -326,7 +326,7 @@ if ( $flag eq 'gtk_') {
 		@list       = split(':',$DI{$i});
 		$l = @list;
 		while ( $l <= 2 ) { push(@list,''); ++$l }
-		$law{$i} = $list[1] if  ($list[1] eq 'no'  || $list[1] eq 'ow' 
+		$law{$i} = $list[1] if  ($list[1] eq 'no'  || $list[1] eq 'ow'
 		    ||  $list[1] eq 're' || $list[1] eq 'dh' );
 		$dmicon{$i} = "$PNG_ICONS$list[0]" if ( $list[0] ne '' );
 		$dmicon{$i} = '' if ( $law{$i} eq 'no' || !$MINI_ICONS );
@@ -347,14 +347,14 @@ if ( $flag eq 'gtk_') {
 		@list = split(':',$DI{$i});
 		$l = @list;
 		while ( $l <= 5 ) { push(@list,''); ++$l }
-		$law{$i}     = $list[1] if ($list[1] eq 'no'  || $list[1] eq 'ow' 
+		$law{$i}     = $list[1] if ($list[1] eq 'no'  || $list[1] eq 'ow'
 			|| $list[1] eq 're' || $list[1] eq 'dh' );
 		$dmicon{$i}  = "$MINI_ICONS_DIR$list[0]" if ( $list[0] ne '' );
 		$place{$i}   = '*' if ($list[2] eq 'up');
 		$dmicon{$i}  = "$place{$i}$dmicon{$i}$place{$i}";
 		$dmicon{$i}  = '' if ($law{$i} eq 'no' || $MINI_ICONS == 0);
 		if ( $list[3] ne '' ) { $spic{$i}   = "\@$list[3]\@" }
-		else { $spic{$i}   = '' } 
+		else { $spic{$i}   = '' }
 		if ( $list[4] ne '' && $list[3] ne '' ) { $scolor{$i} = "\^$list[4]\^" }
 		else {$scolor{$i} = ''};
 	}
@@ -363,25 +363,25 @@ if ( $flag eq 'gtk_') {
 # style init
 if ( $TRAN_STYLE ) { $STYLE = 1 }
 
-if ( $STYLE ) { 
-	
+if ( $STYLE ) {
+
 	@list= split(':',$ICON_STYLE);
 	$l = @list;
 	while ( $l <= 4 ) { push(@list,''); ++$l }
-	
+
 	if ( $TRAN_STYLE || $TRAN ) {
 		if ( $list[0] ne '' ) { $dstyle{mini_icon} = $TRAN_MINI_ICONS . $list[0] }
 		else { $dstyle{mini_icon} = $TRAN_MINI_ICONS . $dstyle{gnome_mini_icon} }
-		if ( $list[1] ne '' ) { $dstyle{icon} = $TRAN_ICONS . $list[1] } 
+		if ( $list[1] ne '' ) { $dstyle{icon} = $TRAN_ICONS . $list[1] }
 		else { $dstyle{icon} = $TRAN_ICONS . $dstyle{gnome_icon} }
 	} else {
-		if ( $list[0] ne '' ) { $dstyle{mini_icon} = $MINI_ICONS_DIR . $list[0] } 
+		if ( $list[0] ne '' ) { $dstyle{mini_icon} = $MINI_ICONS_DIR . $list[0] }
 		else { $dstyle{mini_icon} = $MINI_ICONS_DIR . $dstyle{mini_icon} }
-		if ( $list[1] ne '' ) { $dstyle{icon} = $ICONS_DIR . $list[1] } 
+		if ( $list[1] ne '' ) { $dstyle{icon} = $ICONS_DIR . $list[1] }
 		else { $dstyle{icon} = $ICONS_DIR . $dstyle{icon} }
 	}
-	
-	$style_law = $list[2] if ( $list[2] eq 'dh' ||   $list[2] eq 'ow' 
+
+	$style_law = $list[2] if ( $list[2] eq 'dh' ||   $list[2] eq 'ow'
 		|| $list[2] eq 're' );
 	$addstyle = $list[3] if ( $list[3] ne '' );
 
@@ -390,7 +390,7 @@ if ( $STYLE ) {
 #----------------
 # "Main" variable: contains the directories to look at.
 # + is the "level" separator, the menu is builded level by level
-# with a double loop 
+# with a double loop
 @Rec_Dir_List = ("$APPS_DIR", "+");
 
 # init level
@@ -408,23 +408,23 @@ $nlevel = $level +1;		# next level
 #---------------------------------
 # Main loop (double loop)
 while( $Rec_Dir_List[0] ne '+') {
-	
+
 	# construct a level (may add some .fvwm2rc comment here)
 	while( $Rec_Dir_List[0] ne '+') {
-	
+
 		$dir = $Rec_Dir_List[0]; # current working directory
 		@Main_List=();	# will contain the list of the file and dir
 		#               # of $dir (in good order)
-	
+
 		#--------
 		# Construct the Main_List:
 		# 1. look at an "order" hint and begin the list
-		# 2. complet the list
-	
+		# 2. complete the list
+
 		# 1. Look to the desktop order hint
 		# For gnome there is an .order file. For kde the order is in the
-		# .directory file.  
-	
+		# .directory file.
+
 		# for gnome
 		if ( -f "$dir/.order" ) {
 			open(ORDER, "$dir/.order") || print STDERR
@@ -435,16 +435,16 @@ while( $Rec_Dir_List[0] ne '+') {
 				chomp($name);
 				push(@Main_List, "$dir/$name");
 			}
-		
+
 			close(ORDER);
-		} 
-	
+		}
+
 		# for kde
 		if ( -f "$dir/.directory" ) {
 			open(ORDER, "$dir/.directory") || print STDERR
 			"fvwm-menu-desktop: Can't open $dir/.directory (not a fatal error but"
 			. "this is curious, is your administrator paranoid ?): $!\n";
-		
+
 			while(<ORDER>) {
 				if ( /^SortOrder=(.*)$/ ) {
 					$order = $1;
@@ -452,10 +452,10 @@ while( $Rec_Dir_List[0] ne '+') {
 					foreach $name (@list) { push(@Main_List, "$dir/$name") }
 				}
 			}
-		
+
 			close(ORDER);
 		}
-	
+
 		# 2. Add to @Main_List the items not in the order.
 		# AND WE UPDATE @Rec_Dir_List HERE
 		@list = @Main_List;
@@ -467,15 +467,15 @@ while( $Rec_Dir_List[0] ne '+') {
 			}
 			push(@Main_List, "$name") if ( $add );
 		}
-	
+
 		# ---------
 		# Build the menu of $dir
 		build_a_level();
-	
+
 		shift(@Rec_Dir_List);
 	}
-	
-	# next level  
+
+	# next level
 	$level = $nlevel;
 	++$nlevel;
 	shift @Rec_Dir_List;	# push out the "+"
@@ -501,7 +501,7 @@ print "$STYLEOUTPUT" if ( $STYLE );
 # Compute cd ..
 sub up_directory {
 	my($dir) = @_;
-	
+
 	if ( $dir eq '' ) { return '../' }
 	chop($dir);
 	if ( ! ($dir =~ /\//) ) { return '' }
@@ -514,26 +514,26 @@ sub up_directory {
 sub build_a_level {
 	my ($label, $exec, $mini_icon) = ('', '', '');
 	my ($style_mini_icon,$style_icon) = ('', '');
-	my $titletype; 
-	my $tmp_name; 
-	my $name; 
+	my $titletype;
+	my $tmp_name;
+	my $name;
 	my $item;
-	
-	
+
+
 	# Head of the menu
-	
+
 	if ( $level == $top_level ) {
-	
+
 		$mini_icon = $dmicon{$flag .'toptitle'};
 		$name = $MENU_NAME;
 		($label, $mini_icon) = get_info("$APPS_DIR/.directory", 'toptitle')
 			if ( -f "$dir/.directory" );
-		if ( $label eq '' || $OPT_MENU_TITLE ne '') { $label = $MENU_TITLE } 
+		if ( $label eq '' || $OPT_MENU_TITLE ne '') { $label = $MENU_TITLE }
 		else { $label = "$DESKTOP $label" }
 		$titletype = 'toptitle';
 
 	} else {
-	
+
 		$tmp_name = substr($dir,rindex ($dir,'/')+1);
 		$name = "$SUBMENUS_PREFIX$tmp_name-$level";
 		if ( -f "$dir/.directory" ) {
@@ -545,53 +545,53 @@ sub build_a_level {
 		$label = $tmp_name if ( $label eq '');
 		$titletype = 'title';
 	}
-	
+
 	# Now we can print the Head of the (sub)menu
 	if ( $flag eq 'gtk_' ) {
-	
+
 		print "*${fvwmGtkName}Destroy \"$name\"\n" if ( $level == $top_level
 			&& $MENU_DESTROY =~ /^y/ );
 		print "*${fvwmGtkName}Menu \"$name\"\n" .
 			"*${fvwmGtkName}Title \"$label\" $mini_icon\n" .
 			"*${fvwmGtkName}Separator\n";
-	
+
 	} else {
-	
-		if ( $level != $top_level || $MENU_DESTROY =~ /^y/ ) { 
+
+		if ( $level != $top_level || $MENU_DESTROY =~ /^y/ ) {
 			print "DestroyMenu \"$name\"\n";
 		} elsif ( $MENU_DESTROY =~ /^d/ ) {
 			print "DestroyMenu recreate \"$name\"\n";
 		}
 		print "AddToMenu \"$name$spic{\"$flag$titletype\"}" .
 			"$scolor{\"$flag$titletype\"}\" \"$label$mini_icon\" Title\n";
-	
+
 	}
-	
+
 	# Items of the menu
 	for $item (@Main_List) {
-	
+
 		#PB (good place ??)
 		if ( ((time - $startime) >= $timelimit) && $IKWID != 1 ) {
-			die "fvwm-menu-desktop decides to die because it thinks that it\n" 
+			die "fvwm-menu-desktop decides to die because it thinks that it\n"
 			. "run to much time (see the man page)"
 		}
-	
+
 		$tmp_name = substr($item,rindex ($item,'/')+1);
-	
-		# If it is a dir --> a popup (folder)
+
+		# If it is a dir --> a pop up (folder)
 		if ( -d $item ) {
 			$name = "$SUBMENUS_PREFIX$tmp_name-$nlevel";
-			($label, $mini_icon) = get_info("$item/.directory", 'folder') 
+			($label, $mini_icon) = get_info("$item/.directory", 'folder')
 				if (-f "$item/.directory");
 			$label= $tmp_name if ( $label eq "");
 			if ( $flag eq 'gtk_' ) {
 				print "*${fvwmGtkName}Destroy $name\n";
 				print "*${fvwmGtkName}SubMenu \"$label\" \"$name\" $mini_icon\n";
-			} else { 
+			} else {
 				print "+ \"$label$mini_icon\" Popup \"$name\"\n";
 			}
 		}
-	
+
 		# a file --> application
 		if (-f $item ) {
 			($name, $mini_icon, $exec) = get_info($item, 'app');
@@ -604,7 +604,7 @@ sub build_a_level {
 				}
 			}
 		}
-	
+
 		# for kde
 		if ( $item eq "$dir/SEPARATOR") {
 			if  ( $flag  eq 'gtk_' ) {
@@ -613,7 +613,7 @@ sub build_a_level {
 				print "+ \"\" Nop\n";
 			}
 		}
-	
+
 	}
 }
 
@@ -629,83 +629,83 @@ sub get_info {
 	my($deflabel, $onelabel) = ('', '');
 	my $exec_exec = '';
 	my($style_icon, $style_mini_icon) = ('', '');
-	
+
 	open(DESC,$file) || die "fvwm-menu-desktop: can't open $file: $!";
 	while(<DESC>) {
-		
+
 		if ( /^Name\[$LANG\]=(.*)$/ ) { $label = $1 }
-		
+
 		if (/^Name=(.*)$/) { $deflabel = $1 }
-		
-		# we need one label, may be usefull for freind user menu with 
+
+		# we need one label, may be useful for freind user menu with
 		# other lang
 		if (/^Name.*=(.*)$/) { $onelabel = $1 }
-		
+
 		if ( /^Exec=((\S*).*$)/ ) {
 			$exec = $1;
 			$exec_exec = $2;
 		}
-		
+
 		$term = 1 if (/^Terminal=1/);
-		
+
 		if ( /^Icon=(.*)$/ ) { $icon = substr($1,rindex($1,'/')+1) }
-			 
+
 		# kde gives sometimes a mini-icon hint
 		if ( /^MiniIcon=(.*)$/ ) { $mini_icon = substr($1,rindex($1,'/')+1) }
-			 
+
 	}
 
 	close(DESC);
-		
+
 	#----------------------
 	# See which info we get
-	
+
 	$label = $deflabel if ( $label eq '');
 	$label = $onelabel if ( $label eq '');
-	
+
 	if ( $which eq 'app' ) {
 		# kde introduce some %foo things after the executable for options
 		# "%c" is for the name (caption option)
-		# other things seems unusefull for us !
+		# other things seems useless for us !
 		# (%i is for icon, %m is for mini-icon, %u is for ??user?? and
 		# %f is for file I presume, but what file ???)
-		# we use caption 
+		# we use caption
 		$exec =~ s/\"\%c\"/\"$label\"/;
 		$exec =~ s/\%.//g;
-		
-		# check the existance of the app
+
+		# check the existence of the app
 		return('', '', '') if $CHECK && !check_app($exec_exec);
-		
+
 		# term
 		$exec = "$TERM_CMD $exec" if $term;
-		
+
 		#sometimes kde workers forget the icons and the mini-icons:
 		if ( $mini_icon eq '' && $APPS_DIR eq  $KDE_APPS) {
-			$mini_icon = "$exec_exec.xpm" 
+			$mini_icon = "$exec_exec.xpm"
 				if ( -f "$KDE_MINI_ICONS$exec_exec.xpm" );
-			$icon = "$exec_exec.xpm" 
+			$icon = "$exec_exec.xpm"
 				if ( -f "$KDE_ICONS$exec_exec.xpm" );
 		}
-		
+
 	}
-	
+
 	#----------------------------
 	# if no icons or ow and no style we can return now
-	return($label, $dmicon{$flag . $which}, $exec) 
+	return($label, $dmicon{$flag . $which}, $exec)
 		if ( ($law{"$flag$which"} eq 'ow'
 			|| $law{"$flag$which"} eq 'no'
 			|| !$MINI_ICONS) && !$STYLE );
-	
+
 	#--------------
 	# now the icons
-	
+
 	$mini_icon = $icon if ( $mini_icon eq '');
 	$icon = $mini_icon if  ( $icon eq '');
-	
-	
+
+
 	# Translation
-	# for mini-icons-tran && style(-tran) (we translate only the mini-icon 
-	# since gnome do not specify minicon ...).
+	# for mini-icons-tran && style(-tran) (we translate only the mini-icon
+	# since gnome do not specify mini icon ...).
 	if ( ($TRAN && $flag eq 'fvwm_') || ($TRAN_STYLE) ) {
 		$tmp_icon = $mini_icon;
 		if ( $tmp_icon =~ /\.png$/ ) {
@@ -716,56 +716,56 @@ sub get_info {
 				|| !($TRAN_ICONS =~ /^\//) );
 		}
 	}
-	
-	
+
+
 	# no .png icons with fvwm menu
 	$mini_icon = '' if ( $flag eq 'fvwm_' && $mini_icon =~ /\.png$/ );
-	
+
 	# Ok the icons are computed except the path.
-	
+
 	# Style
 	if ( $STYLE && $which eq 'app' ) {
-		if ( $tran_mini_icon ne '' )  { 
-			$style_mini_icon = $tran_mini_icon; 
-		} else { 
+		if ( $tran_mini_icon ne '' )  {
+			$style_mini_icon = $tran_mini_icon;
+		} else {
 			$style_mini_icon = $mini_icon;
-			$style_mini_icon = '' if ( $mini_icon =~ /\.png$/ ); 
+			$style_mini_icon = '' if ( $mini_icon =~ /\.png$/ );
 		}
-		if ( $tran_icon ne '' ) { 
-			$style_icon = $tran_icon 
+		if ( $tran_icon ne '' ) {
+			$style_icon = $tran_icon
 		}
 		else {
 			$style_icon = $icon;
-			$style_icon = '' if ( $icon =~ /\.png$/ );  
+			$style_icon = '' if ( $icon =~ /\.png$/ );
 		}
-		update_style($style_mini_icon, $style_icon, $exec_exec) 
+		update_style($style_mini_icon, $style_icon, $exec_exec)
 	}
-	
+
 	# Add the path
-	if ( $TRAN && $tran_mini_icon ne '' ) { 
+	if ( $TRAN && $tran_mini_icon ne '' ) {
 		$mini_icon = "$TRAN_MINI_ICONS$tran_mini_icon";
 	} elsif ( $mini_icon ne '' ) {
 		if ( $mini_icon =~ /\.png$/ ) { $mini_icon =  "$PNG_ICONS$mini_icon" }
 		else { $mini_icon =  "$MINI_ICONS_DIR$mini_icon" }
 	}
-	
-	
+
+
 	#return the info with icon
-	
-	return($label, $dmicon{$flag . $which}, $exec) 
+
+	return($label, $dmicon{$flag . $which}, $exec)
 		if ( $law{"$flag$which"} eq 'ow'
 			|| $law{"$flag$which"} eq 'no'
 			|| $MINI_ICONS == 0
 			|| ($mini_icon eq '' && $law{"$flag$which"} eq 're') );
-	
-	return($label, $mini_icon, $exec) 
+
+	return($label, $mini_icon, $exec)
 		if ($flag eq 'gtk_');
-	
+
 	return($label,
-		"$place{\"$flag$which\"}$mini_icon$place{\"$flag$which\"}", 
+		"$place{\"$flag$which\"}$mini_icon$place{\"$flag$which\"}",
 		$exec)
 		if ( $mini_icon ne '' );
-	
+
 	return($label, '', $exec);
 }
 
@@ -775,52 +775,52 @@ sub get_info {
 
 sub update_style {
 	my($style_mini_icon, $style_icon, $exec_exec) = @_;
-	
-	# Gnome exeption for $exec_exec, I probably forget some ...
+
+	# Gnome exception for $exec_exec, I probably forget some ...
 	# seems that there is a rule ...
 	$exec_exec = 'GnomeTerminal' if ( $exec_exec eq 'gnome-terminal' );
 	$exec_exec = 'Imlib Config Editor' if ( $exec_exec eq 'imlib_config' );
 	$exec_exec = 'GnomeHelpBrowser' if ( $exec_exec eq 'gnome-help-browser' );
 	$exec_exec = 'GQview' if ( $exec_exec eq 'gqview' );
-	
-	# kde exeptions. Some families of apps have the same name, class, ressource
+
+	# kde exceptions. Some families of apps have the same name, class, resource
 	# for windows manager, but kwm; (I try the caption and icon option with
-	# kcminfo but do not succed ...)
+	# kcminfo but do not succeed ...)
 	# Anyway some of the concerned applications are kwm specifics.
-	
+
 	if ( $exec_exec eq 'kfmclient' ) {
 		$style_icon = $style_mini_icon = 'kfm.xpm'; #kfm_home.xpm better ???
 		$exec_exec = 'kfm';
 	}
-	
-	$style_icon = $style_mini_icon = 'information_settings.xpm' 
+
+	$style_icon = $style_mini_icon = 'information_settings.xpm'
 		if ( $exec_exec =~ /^kcminfo/ );
-	$style_icon = $style_mini_icon = 'kcmkwm.xpm' 
+	$style_icon = $style_mini_icon = 'kcmkwm.xpm'
 		if ( $exec_exec =~ /^kcmdisplay/ );
-	$style_icon = $style_mini_icon = 'input_device_settings.xpm' 
+	$style_icon = $style_mini_icon = 'input_device_settings.xpm'
 		if ( $exec_exec =~ /^kcminput/ );
 	$style_icon = $style_mini_icon =  'kwm.xpm'
 		if ( $exec_exec =~ /^kcmkwm/ );
-	
+
 	# Now we add the good path
 	if ( $TRAN_STYLE || $TRAN ) {
 		$style_mini_icon = "$TRAN_MINI_ICONS$style_mini_icon"
 			if ( $style_mini_icon ne '');
 		$style_icon = "$TRAN_ICONS$style_icon" if ( $style_icon ne '');
 	} else {
-		$style_mini_icon =  "$MINI_ICONS_DIR$style_mini_icon" 
+		$style_mini_icon =  "$MINI_ICONS_DIR$style_mini_icon"
 			if ( $style_mini_icon ne '' );
 		$style_icon =  "$ICONS_DIR$style_icon"  if ( $style_icon ne '' );
 	}
-	
+
 	if (($style_mini_icon eq '' && $style_law eq 're') || ($style_law eq 'ow')) {
 		$style_mini_icon = $dstyle{mini_icon};
 	}
-	
+
 	if (($style_icon eq '' && $style_law eq 're') || ($style_law eq 'ow')) {
 		$style_icon = $dstyle{icon};
 	}
-	
+
 	# Update $STYLEOUTPUT
 	if ( $style_mini_icon ne '' || $style_icon ne '' || $addstyle ne '' ) {
 		$STYLEOUTPUT .= "Style \"$exec_exec\" MiniIcon " . "$style_mini_icon\n"
@@ -875,7 +875,7 @@ Options:
 	--tran-mini-icons-path DIR      path of menus icons for translation
 	--icon-toptitle micon:law:place:sidepic:color  mini-icon for the top
 		 title and sidepic for the top menu
-	--icon-title micon:law:place:sidepic:color     as above for submenus
+	--icon-title micon:law:place:sidepic:color     as above for sub menus
 	--icon-folder micon:law:place   mini-icons for folder item
 	--icon-app micon:law:place      mini-icon for applications item
 	--enable-style            build icons and mini-icons style

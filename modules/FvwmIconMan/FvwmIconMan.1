@@ -72,7 +72,7 @@ manager window.
 
 .SH CONFIGURATION OPTIONS REFERENCE CHART
 FvwmIconMan has acquired quite a few options. I assume others share my dislike
-of paging though a long manpage, so here is a terse reference chart describing
+of paging though a long man page, so here is a terse reference chart describing
 the available options. They are described in more detail in the next section.
 
 .ft C                   \" Courier
@@ -86,7 +86,7 @@ background      default background         gray
 buttongeometry  size of button in pixels   100x17
 colorset        default colorset
 dontshow        list of windows to ignore
-drawicons       use miniicons              false
+drawicons       use mini icons             false
 focusandselectbutton                       flat grey black
 focusandselectcolorset
 focusbutton     style for focused buttons  up grey black
@@ -155,10 +155,10 @@ size. X and Y coordinates are ignored.
 The default colorset used. Overrides background and foreground. See FvwmTheme.
 
 .IP "*FvwmIconMan*[id*]drawicons \fIvalue\fP"
-If your version of fvwm is capable of using MiniIcons, then this option
-determines if FvwmIconMan displays the MiniIcons. Otherwise, it generates
-an error message.  "true" means that MiniIcons are shown for iconified
-windows, "false" that MiniIcons are never shown, and "always" that MiniIcons
+If your version of fvwm is capable of using mini icons, then this option
+determines if FvwmIconMan displays the mini icons. Otherwise, it generates
+an error message.  "true" means that mini icons are shown for iconified
+windows, "false" that mini icons are never shown, and "always" that mini icons
 are shown for all windows.
 
 .IP "*FvwmIconMan*[id*]focusandselectbutton \fIstyle\fP [\fIforecolor\fP \fIbackcolor\fP]"
@@ -211,7 +211,7 @@ manager will grow upwards. Otherwise, it will grow downwards.
 
 .IP "*FvwmIconMan*[id*]noiconaction  \fIaction\fP"
 Tells FvwmIconMan to do \fIaction\fP when a NoIcon style window is
-iconified or deiconified. Relevant coordinates are appended to \fIaction\fP so
+iconified or de-iconified. Relevant coordinates are appended to \fIaction\fP so
 that the icon can be traced to an FvwmIconMan button. An example action
 is "*FvwwmIconMan*NoIconAction SendToModule FvwmAnimate animate". A blank or null
 action turns this feature off.
@@ -267,7 +267,7 @@ Default is \fIname\fP.
 .IP "*FvwmIconMan*[id*]title \fItitlestring\fP"
 Specifies the window title string for that manager window. \fITitlestring\fP
 may either be a single word, or a string enclosed in quotes. The default is
-"FvwmIconMan". This will be drawn in the titlebar of the manager window, if
+"FvwmIconMan". This will be drawn in the title bar of the manager window, if
 any, and in the title button, which is the button drawn when the manager is
 empty.
 
@@ -305,7 +305,7 @@ If a window matches one of the patterns in the list, then it may not be
 handled by this manager.
 
 .SH ACTIONS
-Actions are commands which may be bound to an event of the type: a keypress, a
+Actions are commands which may be bound to an event of the type: a key press, a
 mouse click, or the mouse entering a window manager button - denoted by the
 action types \fIKey\fP, \fIMouse\fP, and \fISelect\fP.
 

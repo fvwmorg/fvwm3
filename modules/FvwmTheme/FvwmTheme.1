@@ -18,7 +18,7 @@ copyright is kept intact.
 .SH DESCRIPTION
 FvwmTheme creates appearance resources that may be shared by FVWM and other
 modules.  It reads an initial configuration and also reacts to configuration
-commands and mesages sent from FVWM so that the resources can be dynamically
+commands and messages sent from FVWM so that the resources can be dynamically
 changed.
 
 .SH INVOCATION
@@ -48,7 +48,7 @@ optional pixmap and an optional shape mask.  The four colors are used by
 modules as the foreground, background, highlight and shadow colors.  When
 a colorset is created it defaults to a foreground of black and background of
 gray.  The background and foreground are marked as "average" and "contrast"
-(see later) so that just specifiying a pixmap or gradient gives sensible
+(see later) so that just specifying a pixmap or gradient gives sensible
 results.
 
 Warning: The highest colorset number used determines memory consumption.
@@ -61,7 +61,7 @@ Shade, Shadow, Pixmap, TiledPixmap, AspectPixmap, Shape, TiledShape,
 AspectShape and ?Gradient.
 
 \fIfg\fP, \fIFore\fP and \fIForeground\fP take a color name as an argument and
-set the foreground color.  The special name \fIConstrast\fP may be used to
+set the foreground color.  The special name \fIContrast\fP may be used to
 select a color that contrasts well with the background color.  To reset
 the foreground color to the default value you can simply omit the color
 name.
@@ -76,12 +76,12 @@ the default value if the color name is omitted.
 \fIhi\fP, \fIHilite\fP and \fIHilight\fP take a color name as as argument and
 set the highlight color.  If the hilight color is not explicitly set,
 the default is to calculate it from the background color.  To switch back
-to the default behaviour the color name can be omitted.
+to the default behavior the color name can be omitted.
 
 \fIsh\fP, \fIShade\fP and \fIShadow\fP take a color name as as argument and
 set the shadow color.  If the shadow color is not explicitly set,
 the default is to calculate it from the background color.  To switch back
-to the default behaviour the color name can be omitted.
+to the default behavior the color name can be omitted.
 
 \fIPixmap\fP, \fITiledPixmap\fP and \fIAspectPixmap\fP take a file name as
 an argument, search the \fIImagePath\fP and use it as the background pixmap.
@@ -298,7 +298,7 @@ other modules are configured and started is important.
 
 .SH BUGS
 
-Initialisation of fvwm, FvwmTheme and the other modules is tricky.
+Initialization of fvwm, FvwmTheme and the other modules is tricky.
 Please pay close attention to the text in the \fIINVOCATION\fP
 section.  The example above demonstrates the proper way to get a
 FvwmTheme setup running.

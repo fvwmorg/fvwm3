@@ -58,11 +58,11 @@ Causes the temporary file create by Cpp to
 be retained. This file is usually called "/tmp/fvwmrcXXXXXX"
 
 .IP -lock
-If you want to use this option you need to start FvwmCpp with 
+If you want to use this option you need to start FvwmCpp with
 ModuleSynchronous. This option causes fvwm to wait that the pre-process
-finish and that FvwmCpp asks fvwm to Read the pre-processed file before 
-continuing. This may be useful at startup if you use a session manager 
-as Gnome. Also, this is useful if you want to process and run a Form in 
+finish and that FvwmCpp asks fvwm to Read the pre-processed file before
+continuing. This may be useful at startup if you use a session manager
+as Gnome. Also, this is useful if you want to process and run a Form in
 a fvwm function.
 
 .IP -noread
@@ -79,7 +79,7 @@ The name of the machine running the X Server.
 .IP CLIENTHOST
 The name of the machine running fvwm.
 .IP HOSTNAME
-The hostname of the machine running fvwm. Generally the same as CLIENTHOST.
+The host name of the machine running fvwm. Generally the same as CLIENTHOST.
 .IP OSTYPE
 The operating system for CLIENTHOST.
 .IP USER
@@ -171,8 +171,8 @@ The sequence /* is interpreted as the start of a C comment what
 is probably not what you want in a filename. You might want to try
 /?* (for filenames only) or /\\* or "/*" instead. Depending on
 your preprocessor you may have the same problem with "//".
-Macros are not replaced within single (') or double quotes ("). Use
-backquotes (`) to circumvent this. Fvwm accepts backquotes for
+Macros are not replaced within single (') or double quotes (\"). Use
+back quotes (`) to circumvent this. Fvwm accepts back quotes for
 quoting and at least FvwmButtons does too.
 The preprocessor may place a space after a macro substitution, so
 with

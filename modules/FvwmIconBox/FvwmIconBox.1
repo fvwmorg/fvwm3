@@ -3,13 +3,13 @@
 .TH FvwmIconBox 1 "7 May 1999"
 .UC
 .SH NAME
-FvwmIconBox \- the FVWM iconbox module
+FvwmIconBox \- the FVWM icon box module
 .SH SYNOPSIS
 FvwmIconBox is spawned by fvwm, so no command line invocation will work.
 
 .SH DESCRIPTION
 The FvwmIconBox module provides an icon manager. The user can do
-operations, like iconify and deiconify, for each icon shown in the
+operations, like iconify and de-iconify, for each icon shown in the
 module via mouse and keyboard.
 
 FvwmIconBox reads the same .fvwm2rc file as fvwm reads when it starts up,
@@ -29,7 +29,7 @@ During initialization, \fIFvwmIconBox\fP will eventually search a
 configuration file. The configuration file is the same file that fvwm
 used during initialization.
 
-If the FvwmIconBox executable is linked to another name, ie ln -s
+If the FvwmIconBox executable is linked to another name, i.e. ln -s
 FvwmIconBox MoreIconBox, then another module called MoreIconBox can be
 started, with a completely different configuration than FvwmIconBox,
 simply by changing the keyword  FvwmIconBox to MoreIconBox. This way
@@ -55,15 +55,15 @@ background_bitmap specified in *FvwmIconBoxPixmap option described
 below.
 
 .IP "*FvwmIconBoxColorset \fIcolorset\fP"
-Tells the module to use colorset (See FvwmTheme) in place of Fore and 
+Tells the module to use colorset (See FvwmTheme) in place of Fore and
 Back.
 
 .IP "*FvwmIconBoxIconColorset \fIcolorset\fP"
-Tells the module to use colorset (See FvwmTheme) in place of IconFore 
+Tells the module to use colorset (See FvwmTheme) in place of IconFore
 and IconBack.
 
 .IP "*FvwmIconBoxIconHiColorset \fIcolorset\fP"
-Tells the module to use colorset (See FvwmTheme) in place of IconHiFore 
+Tells the module to use colorset (See FvwmTheme) in place of IconHiFore
 and IconHiBack.
 
 .IP "*FvwmIconBoxBack \fIcolor\fP"
@@ -93,7 +93,7 @@ Tells the module to use \fIpixmap\fP for the window background_pixmap.
 Tells the module to use \fIfontname\fP instead of fixed for text.
 
 .IP "*FvwmIconBoxSortIcons \fIoption\fP"
-Tells the module to sort all icons in iconbox in alphabetical order.
+Tells the module to sort all icons in the icon box in alphabetical order.
 \fIoption\fP can be \fIWindowName\fP, \fIIconName\fP, \fIResClass\fP,
 and \fIResName\fP. For example, specifying \fIResClass\fP means that
 icons are sorted by using their resource-class strings. If
@@ -150,7 +150,7 @@ rows. For example, seven icons are placed in a row if
 The default value is 6.
 
 .IP "*FvwmIconBoxHideSC \fIdirection\fP"
-Specifies the undisplayed scroll bar . \fIDirection\fP can be
+Specifies the un-displayed scroll bar . \fIDirection\fP can be
 either \fIHorizontal\fP or \fIVertical\fP.
 
 .IP "*FvwmIconBoxGeometry \fI<width>x<height>{+-}<X>{+-}<Y>\fP"
@@ -166,21 +166,21 @@ only icon labels are drawn.
 
 .IP "*FvwmIconBoxMouse \fIButton\fP \fIAction\fP \fIResponse[, Response]\fP"
 Tells the module to do \fIResponse\fP when \fIAction\fP is done on
-button \fIButton\fP. Available \fIResponse\fPes are built-in commands
+button \fIButton\fP. Available \fIResponse\fPs are built-in commands
 in Fvwm (e.g. Iconify, Delete, Focus) and available \fIAction\fPs
 are Click and DoubleClick.
 
 .IP "*FvwmIconBoxKey \fIKey\fP \fIResponse[, Response]\fP"
 Tells the module to do \fIResponse\fP when \fIKey\fP is pressed.
-Available \fIResponse\fPes are, besides Fvwm built-in commands, the
+Available \fIResponse\fPs are, besides Fvwm built-in commands, the
 following six FvwmIconBox built-in commands: \fINext\fP, \fIPrev\fP,
 \fILeft\fP, \fIRight\fP, \fIUp\fP, and \fIDown\fP.
 
 .B "\fINext\fP:"
-Change the hilited-icon to the next.
+Change the hilighted icon to the next.
 
 .B "\fIPrev\fP:"
-Change the hilited-icon to the previous.
+Change the hilighted icon to the previous.
 
 .B "\fILeft\fP:"
 Move the slider of the horizontal scrollbar to left. Icons move
@@ -199,14 +199,14 @@ Move the slider of the vertical scrollbar to down. Icons move to
 up accordingly.
 
 .IP "*FvwmIconBox \fIwindowname\fP \fIbitmap-file\fP"
-Specifies the bitmap to be displayed in iconbox for \fIwindowname\fP.
+Specifies the bitmap to be displayed in the icon box for \fIwindowname\fP.
 This option "overrides" bitmap files specified in Style command.
 \fIWindowname\fP can be window name, class name, or resource name.
 \fIWindowname\fP  can contain "*" and "?" like Fvwm configuration
 file. The \fIbitmap-file\fP is either  the full  path name to a bitmap
 file, or a file in the ImagePath. If \fIbitmap-file\fP is
 specified to be "-", the icon for a window corresponding to
-\fIwindowname\fP is not shown in the iconbox.
+\fIwindowname\fP is not shown in the icon box.
 
 .IP "*FvwmIconBoxSetWMIconSize"
 Tells the module to set XA_WM_ICON_SIZE property of the root window

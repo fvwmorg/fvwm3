@@ -1,3 +1,8 @@
+1999-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1:
+	ispell session
+
 1999-11-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/session.c (LoadWindowStates):

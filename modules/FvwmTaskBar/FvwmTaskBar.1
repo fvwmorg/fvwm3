@@ -10,16 +10,16 @@ FvwmTaskBar is spawned by FVWM, so no command line invocation will work.
 .SH DESCRIPTION
 The FvwmTaskBar module provides a taskbar made up of buttons arranged by
 rows, each corresponding to a window that FVWM is managing.
-Clicking on first button gives focus to the corresponding toplevel window;
-clicking on the middle button will hide a toplevel window; third mouse button
+Clicking on first button gives focus to the corresponding top level window;
+clicking on the middle button will hide a top level window; third mouse button
 is reserved for a future extension (context menu).
 Like the other modules, FvwmTaskBar only works when fvwm is used as the
 window manager.
 
 When started, the taskbar shows up as a single row of buttons filling the
-full width of the screen, but during the work can be resized to accomodate
-up to 8 rows. In adition, if the AutoStick option is used, the taskbar
-will autoposition itself at the top or bottom of the screen, and can be
+full width of the screen, but during the work can be resized to accommodate
+up to 8 rows. In addition, if the AutoStick option is used, the taskbar
+will auto position itself at the top or bottom of the screen, and can be
 dragged from one position to another with a normal move operation.
 
 The first button of the taskbar, labelled "Start" sends a "Popup
@@ -30,7 +30,7 @@ The FvwmTaskBar also displays at the right side a window showing the
 current time and the built-in incoming mail indicator.
 
 .SH COPYRIGHTS
-The FvwmTaskBar module is derivated from Mike Finger's FvwmWinList.
+The FvwmTaskBar module is derived from Mike Finger's FvwmWinList.
 
 Copyright 1994, Mike Finger. The author makes no guarantees or warranties of
 any kind about the use of this module.  Use this modules at your own risk.
@@ -55,7 +55,7 @@ The following options can be placed in the .fvwm2rc file
 .IP "*FvwmTaskBarGeometry \fI{+-}<X>x{+-}<Y>\fP"
 Specifies the location and gravity of the FvwmTaskBar window.  At the
 current version, size is not supported and the taskbar will resize itself
-to fill the full witdh of the screen. If the AutoStick option is also
+to fill the full width of the screen. If the AutoStick option is also
 specified, the module will automatically "stick" to the top or the bottom
 of the screen, whichever is closest to the geometry specification.
 
@@ -113,7 +113,7 @@ useful).
 .IP "*FvwmTaskBarAutoStick"
 This option causes the taskbar to "stick" either to the top or bottom
 of the screen, whichever is closest to the initial window placement. Any
-further move operation is also subject to that behaviour.
+further move operation is also subject to that behavior.
 
 .IP "*FvwmTaskBarAutoFocus"
 This option causes the taskbar to raise a window if the cursor stays on a
@@ -151,7 +151,7 @@ the AddToFunc command of fvwm).
 
 .IP "*FvwmTaskBarButtonWidth \fIwidth\fP"
 Indicates the maximum width that window buttons should reach.
-(the minimum is hardcoded at 32).
+(the minimum is hard coded at 32).
 
 .IP "*FvwmTaskBarHighlightFocus"
 If the mouse pointer is over the taskbar, the window under the current
@@ -164,7 +164,7 @@ Enables the tips windows (by default disabled).
 
 .IP "*FvwmTaskBarNoIconAction \fIaction\fP"
 Tells FvwmTaskBar to do \fIaction\fP is when a NoIcon style window is
-iconified or deiconified. Relevant coordinates are appended to \fIaction\fP so
+iconified or de-iconified. Relevant coordinates are appended to \fIaction\fP so
 that the icon can be traced to an FvwmTaskBar button. An example action
 is "*FvwmTaskBarNoIconAction SendToModule FvwmAnimate animate". A blank or null
 action turns this feature off.
@@ -172,7 +172,7 @@ action turns this feature off.
 .SH ""
 
 The following options deal more specifically with the status indicators
-displayed at the rigth of the taskbar.
+displayed at the right of the taskbar.
 
 .IP "*FvwmTaskBarClockFormat \fIformat-string\fP"
 This option specifies the time format for the digital clock.
@@ -189,7 +189,7 @@ It is a value between 0 (no bell) and 100 (maximum volume).
 By default it is set to 20.
 
 .IP "*FvwmTaskBarMailBox \fIpath\fP"
-This option intructs the module to look for mail at the specified place
+This option instructs the module to look for mail at the specified place
 It is a full pathname to the user's mailbox.
 By default it is \fI/var/spool/mail/$USER_LOGIN\fP.
 A value of 'None' instructs the module not to have a mail indicator.
@@ -213,9 +213,9 @@ This option specifies the string displayed in the Start button.
 ('Start' by default).
 
 .IP "*FvwmTaskBarStartMenu \fIstring\fP"
-This option specifies the popup to invoke when the start button is pressed.
-('StartMenu' by default). The module send a 'Popup StartMenu' command to
-the fvwm window manager.
+This option specifies the pop up menu to invoke when the start button is
+pressed. ('StartMenu' by default). The module send a 'Popup StartMenu'
+command to the fvwm window manager.
 
 .IP "*FvwmTaskBarStartIcon \fIicon-name\fP"
 This option specifies the name of the icon to display at the left of the Start
@@ -234,7 +234,7 @@ initialization commands:
 AddToFunc "StartFunction" "I" Module FvwmTaskBar
 
 #
-# For Click 1 action 
+# For Click 1 action
 #
 
 AddToFunc DeiconifyRaiseAndFocus
@@ -285,7 +285,7 @@ StaysOnTop,WindowSkipList,CirculateSkip
 
 .SH BUGS
 There is a bug report that FvwmTaskBar doesn't work well with
-Autohide turned on.
+auto hide turned on.
 
 .SH AUTHOR
 .IP "\fIDavid Barth\fP <barth@di.epfl.ch>"

@@ -138,7 +138,7 @@ command except that they start with "*FvwmFormDefault".
 FvwmForm only reads the file ".FvwmForm" the first time it is started
 or after the file is changed by "FormFvwmForm".  It does so
 by sending the command "*FvwmFormDefaultRead x". With "x" set to "y" or
-"n".  "n" makes FvwmForm send a "read .FvwmForm quiet" comamnd to fvwm.
+"n".  "n" makes FvwmForm send a "read .FvwmForm quiet" command to fvwm.
 
 .SH CONFIGURATION
 The following commands can be set in the .fvwm2rc file or thru
@@ -210,12 +210,12 @@ This feature is useful for things like logout verification.
 .TP 4
 .B *FvwmFormWarpPointer
 This option makes FvwmForm warp the mouse pointer into its window on startup.
-It saves the user some mouse-travelling.
+It saves the user some mouse-traveling.
 .TP 4
 .B *FvwmFormPosition \fIx\fP \fIy\fP
 Puts the FvwmForm window at location (\fIx\fP, \fIy\fP) on the screen.
-By convention, a negative \fIx\fP (resp. \fIy\fP) value measures
-distance from the right (resp. bottom) of the screen.
+By convention, a negative \fIx\fP (\fIy\fP) value measures
+distance from the right (bottom) of the screen.
 
 If this option is omitted, FvwmForm starts at the center of the screen.
 .TP 4
@@ -240,7 +240,7 @@ Tells the module to use colorset \fIn\fP for items. See FvwmTheme.
 .B *FvwmFormItemBack \fIcolor\fP
 Specifies the background color for the text input windows, and
 the buttons.
-Buttons are displayed as 3D depressable buttons.
+Buttons are displayed as 3D depressible buttons.
 Inputs are displayed as 3D indented fields.
 Medium shade background colors work best.
 Switches off the ItemColorset option.
@@ -283,7 +283,7 @@ Items are placed in the center of the window.
 .TP 16
 .B \fIexpand\fP
 If there is only one item in the line, the item is centered in the window.
-If two or more items are present, they are spreaded to fill the whole
+If two or more items are present, they are spread to fill the whole
 width of the window.
 .TP 4
 .B *FvwmFormMessage
@@ -318,11 +318,11 @@ Blanks may be used to provide extra padding between items.
 Displays \fIstring\fP as the window's title.  The string
 must be enclosed in double quotes.  Using this command with anything
 other than a string enclosed in quotes creates a blank title.
-If this command is not used, the window title is the form alias.  
+If this command is not used, the window title is the form alias.
 .TP 4
 .B *FvwmFormInput \fIname\fP \fIsize\fP "\fIinit_string\fP"
 Specifies a text input item with name \fIname\fP.
-A subwindow of \fIsize\fP characters in width is used for editting.
+A sub window of \fIsize\fP characters in width is used for editing.
 If \fIinit_string\fP is present, it is the initial string when
 FvwmForm starts or resets itself.
 The default initial string is "".
@@ -381,7 +381,7 @@ FvwmForm  assures only one is selected.
 .B *FvwmFormButton \fItype\fP "\fIstring\fP" [\fIkey\fP]
 This option specifies an action button.
 The button has \fIstring\fP as a label,
-and excutes a set of Fvwm \fIcommand\fP when it is activated.
+and executes a set of Fvwm \fIcommand\fP when it is activated.
 The commands are the following *FvwmFormCommands.
 
 The optional \fIkey\fP specifies a keyboard shortcut that activates
@@ -486,7 +486,7 @@ DestroyModuleConfig            FormFvwmQuitVerify.*
 *FormFvwmQuitVerify.Command     Nop
 .EE
 .SH EXAMPLE 2 - Remote Login
-This example lets the user type in a hostname,
+This example lets the user type in a host name,
 an optional user name,
 and opens an xterm window from the remote host.
 .EX
@@ -619,7 +619,7 @@ Report bugs to the fvwm-workers list.
 FvwmForm is original work of Thomas Zuwei Feng
 (ztfeng@math.princeton.edu).
 
-Copyright Feb 1995, Thomas Zuwei Feng.  No guarantees or warantees are
+Copyright Feb 1995, Thomas Zuwei Feng.  No guarantees or warrantees are
 provided or implied in any way whatsoever.  Use this program at your own
 risk.  Permission to use, modify, and redistribute this program is hereby
 given, provided that this copyright is kept intact.
@@ -627,7 +627,7 @@ given, provided that this copyright is kept intact.
 .SH CHANGES
 During the fall of 1998, Dan Espen removed all form size limits,
 added unlimited font and color changing, form spacing control,
-config file reading, global control of appearance,
+configuration file reading, global control of appearance,
 synchronous command execution, Error message display,
 and lots of other damage.
 No additional copyright is imposed.

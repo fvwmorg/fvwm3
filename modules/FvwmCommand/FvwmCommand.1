@@ -50,7 +50,7 @@ AddToFunc StartFunction "I" Module FvwmCommandS
 Then, in script file or from shell:
 
 .EX
-FvwmCommand  'popup "Utilities"'
+FvwmCommand  'popup Utilities'
 .EE
 
 .SH OPTIONS
@@ -213,7 +213,7 @@ dynamically.
 .EX
 FvwmCommand -mi3 | grep 'iconify'
 .EE
-It will report when windows are iconified or deiconified.
+It will report when windows are iconified or de-iconified.
 .sp
 Note: FvwmCommand does not block buffer its output but many utilities such as
 grep or sed use block buffer. The output of the next example will not show up
@@ -239,7 +239,7 @@ The option -r overrides this time limit and wait for at least one message
 back.
 After the initial message, it will wait for another message for the time
 limit.
-This option is useful when the system is too loaded to make any predition
+This option is useful when the system is too loaded to make any prediction
 when the system is responding AND the command causes some
 message to be sent back.
 

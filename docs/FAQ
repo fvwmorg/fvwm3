@@ -2,7 +2,7 @@
                    FVWM Frequently Asked Questions
 ======================================================================
 
-Last updated 18 Feb 1999 for release 2.2.0.
+Last updated 14 Nov 1999 for release 2.4.0.
 
 Contents
 
@@ -44,7 +44,7 @@ Contents
           I edit my .fvwm2rc nothing seems to happen.  What's going on ?
      3.2  Is it possible to raise a window when I click into the
           window itself, not just the border?
-     3.3  How do I get Alt-Tab behaviour like another GUI?
+     3.3  How do I get Alt-Tab behavior like another GUI?
      3.4  What's the difference between the Focus and FlipFocus commands?
      3.5  You can bind mouse movements to keystrokes, how about mouse
           presses?
@@ -63,7 +63,7 @@ Contents
 	  disappeared!  How do I get them back?
     3.14  Some applications (e.g. Eterm) don't use the icon I defined for them.
           Why?
-    3.15  I don't like tha gaps in my icon box when I de-iconify an
+    3.15  I don't like the gaps in my icon box when I de-iconify an
           application. Is there some kind of auto arrange function?
     3.16  How do I set up a fvwm menu item that shuts down my Linux machine?
 
@@ -81,6 +81,9 @@ Contents
      4.4  I heard about this FvwmFileMgr module.  Where can I find it?
      4.5  I used to use GoodStuff in FVWM 1.xx, but it's not in the 2.xx
           distribution.  What do I use now?
+     4.6  I want to have the sub panels in FvwmButtons not at their default
+          position near the button but somewhere else on the screen. Is this
+          possible?
 
 5. Development, Known Problems & Bug Reports
 
@@ -96,7 +99,7 @@ Contents
           ClickToFocus and/or my mouse bindings?
      5.6  Menus with gradient backgrounds flicker or are very slow.
      5.7  Why won't the StartIconic style work with {Netscape, etc.}?
-     5.8  How do I capture the output (eg errors) of fvwm?
+     5.8  How do I capture the output (e.g. errors) of fvwm?
      5.9  I try to run some program under FVWM, but it dies with an
           X11 error like BadAccess.  The same program works just fine
           under MWM or OLWM.  What's going on?
@@ -135,6 +138,7 @@ Contents
      7.9  Moving the mouse/focus/page with the keyboard.
     7.10  The cat safe desktop :-)
     7.11  Lowering and moving windows.
+    7.12  Toggling windows on and off.
 
 
 ======================================================================
@@ -145,7 +149,7 @@ Contents
 
 A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
    Virtual Window Manager".  Rob Nation (the original Author of FVWM)
-   doesn't really remember what the F stood for origninaly, so we
+   doesn't really remember what the F stood for originally, so we
    have several potential answers:
 
      Feeble, Fabulous, Famous, Fast, Foobar, Fantastic, Flexible,
@@ -233,7 +237,7 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
    This list is for discussion relating to the FVWM window manager,
    which is intended to have a small memory footprint and a rich
    feature set, be extremely customizable and extendable and have a
-   high degree of Motif mwm compatibility.  All relevant discussion is
+   high degree of Motif MWM compatibility.  All relevant discussion is
    encouraged.  Posting of binaries or irrelevant discussion is
    strongly frowned upon.  Posting of short patches (less than 200
    lines) is acceptable, but all patches should also be sent to the
@@ -262,7 +266,7 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
    This list is for announcements relating to the FVWM window manager,
    which is intended to have a small memory footprint and a rich
    feature set, be extremely customizable and extendable and have a
-   high degree of Motif mwm compatibility.
+   high degree of Motif MWM compatibility.
 
    Replies to messages from this list are set by default to go the
    FVWM discussion list, fvwm@fvwm.org.
@@ -276,7 +280,7 @@ A: If your local FVWM maintainer can't help you, then the newsgroup
 1.5  What are the differences between FVWM 1.xx and 2.xx?
 
 A: A lot.  To name a few general ones:
-        - Bugfixes.  1.xx is not worked on at all any more.
+        - Bug fixes.  1.xx is not worked on at all any more.
         - Better rc file format.  No longer order dependent.
         - More flexible and powerful.  For example, many previously
           global options now operate on a per window group level
@@ -316,7 +320,7 @@ A: Some people find this annoying, but let me say that I did that for
 
         - so both 1.xx and 2.xx can be installed for use, in case some
           people at the same site would rather stay at 1.xx
-        - fvwm2 coredumps usually if it tries to read in a 1.xx rc
+        - fvwm2 core dumps usually if it tries to read in a 1.xx rc
           file because the syntax is pretty different and completely
           incompatible
         - when people ask questions, if they explicitly mention their
@@ -359,11 +363,11 @@ A: Very easily, using the '--prefix' flag at configure time.
 A: Sure - here's one from Graeme McCaffery:
 
    -----
-     Finally I have found out how to run fvwm properly from cde 8-))
+     Finally I have found out how to run fvwm properly from CDE 8-))
      (thanks to Lars Sodergren).
 
      First set your home session in Dtwm.  That usually is an empty
-     session, though you could have the cde session manager remember
+     session, though you could have the CDE session manager remember
      what your desktop was like instead of FvwmSaveDesk etc..
 
      Then you have to set two resources in .Xdefaults:
@@ -374,13 +378,13 @@ A: Sure - here's one from Graeme McCaffery:
      In this case I run fvwm from a shell script so that library
      variables etc are set properly for everyone.  The waitWmTimeout
      tells the session manager how long to wait until it starts the
-     window manager.  I've set it to 1 second.  By default it's 60 secs.
+     window manager.  I've set it to 1 second.  By default it's 60 seconds.
 
      Finally you have to quit with
 
        /usr/dt/bin/dtaction ExitSession (or whatever your path is for dtaction)
 
-     Now you can happily use cde programs and fvwm.
+     Now you can happily use CDE programs and fvwm.
    -----
 
 ----------------------------------------------------------------------
@@ -498,7 +502,7 @@ A: Any version later than 2.0.46 (i.e. 2.1.0 or later) has this
 
 ----------------------------------------------------------------------
 
-3.3  How do I get Alt-Tab behaviour like another GUI?
+3.3  How do I get Alt-Tab behavior like another GUI?
 
 A: The built in command WindowList provides a very close approximation
    to the Alt-Tab feature found in another GUI.  It doesn't look the
@@ -507,12 +511,12 @@ A: The built in command WindowList provides a very close approximation
 
       Key Tab A M WindowList Root c c NoDeskSort
 
-   Starting with release 2.3.2, the above keybinding is built-in.
+   Starting with release 2.3.2, the above key binding is built-in.
 
    Hitting Alt-Tab will pop up the WindowList menu.  Unlike another GUI
    you should not keep the Alt key held down, the menu will stay up
-   until you hit Return/Enter or Escape.  You can change focus to a
-   window on the menu by using the up and down arrow keys to move the
+   until you hit Return/Enter/Space or Escape.  You can change focus to
+   a window on the menu by using the up and down arrow keys to move the
    menu selection and then hitting Return or Enter.  Hitting Escape will
    close the menu without doing anything.  The WindowList menu has hot
    keys assigned for the first 26 windows and you can use the hot key to
@@ -531,7 +535,7 @@ A: The built in command WindowList provides a very close approximation
    This will just list the windows on the current desk (titles only).
 
    The other GUI has the feature of selecting the previous window if
-   Alt-TAB is hit and released quickly.  This behaviour cannot be exactly
+   Alt-TAB is hit and released quickly.  This behavior cannot be exactly
    duplicated but similar functionality can be assigned to hitting
    Alt-TAB twice in quick succession (like a double click for keys):
 
@@ -545,7 +549,7 @@ A: The built in command WindowList provides a very close approximation
    windows are listed in which order and it may not be possible to set
    conditions for the Prev command to reliably select the second item
    when double keying.  The WindowList command has no parallel for
-   CurrentPage, Transient, Visible, Maximised, Raised, and pattern
+   CurrentPage, Transient, Visible, Maximized, Raised, and pattern
    matching.  The Prev conditions have no parallel for OnTop, Alphabetic
    and desk sorting.  The WindowList menu respects the WindowListSkip
    style attribute whereas Prev respects the CirculateSkip and
@@ -562,7 +566,7 @@ A: Both of these commands change the keyboard focus to the target
    with new windows being added to the end.  The FlipFocus command plucks
    the target window from the list and inserts it at the beginning, The
    Focus command rotates the list around until the target window is at
-   the beginning.  The behaviour of FlipFocus is also used when changing
+   the beginning.  The behavior of FlipFocus is also used when changing
    focus with the mouse and the automatic focus changing when using
    ClickToFocus style.
 
@@ -595,7 +599,7 @@ A: Both of these commands change the keyboard focus to the target
 
 A: Although fvwm has commands for binding movements to keystrokes,
    controlling the pointer with the keyboard should really be handled by
-   the X server. The following is an excerpt of the X faq on this topic:
+   the X server. The following is an excerpt of the X FAQ on this topic:
 
 
       If you have the X Keyboard (XKB) Extension, you can enable mouse keys,
@@ -649,7 +653,7 @@ A: You can't directly with fvwm, but there may be a solution that is
    ftp://ftp.x.org/contrib/utilities/ or from your favorite mirror.  It
    could probably be used to get the desired effect or close to it.
    This is most useful for running programs and passing the selection to
-   them (eg - invoke your favorite browser with the current selection as
+   them (e.g. - invoke your favorite browser with the current selection as
    the URL).  To get a semi-generic paste facility to work, you'll
    probably need to use 'xse' (see Q3.5).  If anyone comes up with a
    good example of this, please send it to the fvwm mailing list for
@@ -718,7 +722,7 @@ A: From Jon Mountjoy, one of FVWM's users:
      Key Help   AWF   N       Iconify ""
 
    A more general solution is to use xev (usually distributed w/ X11)
-   or xkeykaps (an X11 interface to xmodmap written by Jamie Zawinski,
+   or xkeycaps (an X11 interface to xmodmap written by Jamie Zawinski,
    available from ftp.x.org) to find out what the keysym for whatever
    key you want REALLY is, and use that for binding fvwm commands.
 
@@ -738,7 +742,7 @@ A: Start with a new one or convert your old one.  This can be done by
    Note that there have been some changes in 2.1.x and up that are
    not reflected in the conversion script yet.
 
-   ** Fvwm-1.xx commands **                   ** Fvwm-2.0.x equiv **
+   ** Fvwm-1.xx commands **                   ** Fvwm-2.0.x equivalent **
 
    AppsBackingStore                           (obsoleted)
    AutoRaise delay                            (obsoleted, use FvwmAuto)
@@ -918,7 +922,7 @@ A: Eterm provides its own icon and fvwm does not know if it is a plain
 
 ----------------------------------------------------------------------
 
-3.15  I don't like tha gaps in my icon box when I de-iconify an
+3.15  I don't like the gaps in my icon box when I de-iconify an
       application. Is there some kind of auto arrange function?
 
 A: Assuming you are using the IconBox option of the Style command this
@@ -1020,7 +1024,7 @@ A: You can do this, but it's not obvious how.  The button presses
    mail program.
 
    Sometime in the future I'll probably try and fix it so that you can
-   actually assign a button press over the app itself...
+   actually assign a button press over the application itself...
 
 ----------------------------------------------------------------------
 
@@ -1078,6 +1082,14 @@ A: The FvwmFileMgr module disappeared because a file manager doesn't
 A: GoodStuff was renamed to FvwmButtons.  Same module, new name (that
    fits in with the other modules naming convention).
 
+----------------------------------------------------------------------
+
+4.6  I want to have the sub panels in FvwmButtons not at their default
+     position near the button but somewhere else on the screen. Is this
+     possible?
+
+A: Yes, but not with the current implementation of the panels.  Please
+   read question 7.12 for instructions.
 
 ======================================================================
             5 - Development, Known Problems & Bug Reports
@@ -1252,7 +1264,7 @@ A: Because they are treated as modifiers. You can use the
 5.6  Menus with gradient backgrounds flicker or are very slow.
 
 A: The flickering is caused by fvwm constantly redrawing the menus
-   when a submenu pops up or down.  One way to help this is to use
+   when a sub menu pops up or down.  One way to help this is to use
    a X server with backing storage (XFree86 has backing storage
    support, I don't know about other servers but I guess that any
    decent X server has it).  If your Xserver is started with the
@@ -1265,7 +1277,7 @@ A: The flickering is caused by fvwm constantly redrawing the menus
 
    If that doesn't help, either because your X server does not have
    backing storage or because system resources are limited, make
-   sure submenus do not overlap the parent menu:
+   sure sub menus do not overlap the parent menu:
 
      MenuStyle <stylename> PopupOffset 1 100
 
@@ -1278,7 +1290,7 @@ A: The flickering is caused by fvwm constantly redrawing the menus
    .fvwm2rc after the menu styles have been defined:
 
      MenuStyle <stylename> Hilight3DOff, HilightBackOff
-     MenuStyle <Stylename> ActiveFore <prefered color>
+     MenuStyle <Stylename> ActiveFore <preferred color>
 
 ----------------------------------------------------------------------
 
@@ -1294,7 +1306,7 @@ A: The application won't allow it.  This has only been observed with
 
 ----------------------------------------------------------------------
 
-5.8  How do I capture the output (eg errors) of fvwm?
+5.8  How do I capture the output (e.g. errors) of fvwm?
 
 A: Errors are reported to the standard error file.  You can redirect
    standard error to a file when fvwm is started: "fvwm2 2>
@@ -1335,9 +1347,9 @@ A: The error message usually looks something like this:
 A: Many OSes swap the program from memory via the image on the disk,
    and if you overwrite it, and then the current one tries to swap
    something back into memory before you restart, it'll core dump.  To
-   avoid this, rename your old execs or move them to some other
+   avoid this, rename your old executables or move them to some other
    directory.  The 'mv' command preserves the inode so it won't
-   coredump, but then when you restart fvwm it'll pick up the new
+   core dump, but then when you restart fvwm it'll pick up the new
    copy.
 
 ----------------------------------------------------------------------
@@ -1357,10 +1369,10 @@ A: Some applications use so called 'override redirect' windows that
    managed by fvwm below them.
 
    However, since fvwm version 2.3.8 there is a command that will
-   help you, altghough it might cause trouble with other applications
+   help you, although it might cause trouble with other applications
    using 'override redirect' windows.  We can't make any promises
-   since KFM is violating the conventions and othe applications may
-   viaolate them in different ways.
+   since KFM is violating the conventions and the applications may
+   violate them in different ways.
 
    Now the command. Put this anywhere in your .fvwm2rc file:
 
@@ -1403,7 +1415,7 @@ A: Our naming convention is sometimes a source of confusion, and when
    Desktops are numbered consecutively, beginning with 0. The user is
    not responsible for creating new desktops, those details are
    handled inside fvwm.  To display the different desktops, the user
-   can configure keybindings that determine which desktop is
+   can configure key bindings that determine which desktop is
    displayed.  For example, to have the combinations Meta-1 to Meta-4
    display desktop numbers 0 to 3, one would add this to .fvwm2rc:
 
@@ -1464,10 +1476,9 @@ A: Turn off the Linux Virtual Screen stuff in your XF86Config file if
      happened to to rxvt and rclock which Rob Nation used to support?
      Where can I find them now?
 
-A: This has come up a few times, so I thought I'd put it here too.
-   I believe that the new official home for rxvt is:
+A: The official home for rxvt is:
 
-     http://babayaga.math.fu-berlin.de/~rxvt/
+     http://www.rxvt.org/
 
    and rclock can be found in that rxvt distribution as well.
 
@@ -1598,7 +1609,7 @@ A: This has come up a few times, so I thought I'd put it here too.
 7.5  A more efficient MWM menu style.
 
    Perhaps you have noticed that with the MWM menu style your sub
-   menus are shown as soon as the pointer enters their menu itemi, even
+   menus are shown as soon as the pointer enters their menu items, even
    if you just want to scroll down the list.  You can prevent this with
    the 'PopupDelay' and 'PopupDelayed' options of the MenuStyle
    command:
@@ -1686,74 +1697,116 @@ A: This has come up a few times, so I thought I'd put it here too.
 
 7.9  Moving the mouse/focus/page with the keyboard.
 
-    Try these key bindings for mouse movement:
+   Try these key bindings for mouse movement:
 
-      # shift-<direction> to move a few pixels
-      Key   Left   A   S   CursorMove -1 0
-      Key   Right  A   S   CursorMove +1 +0
-      Key   Up     A   S   CursorMove +0 -1
-      Key   Down   A   S   CursorMove +0 +1
+     # shift-<direction> to move a few pixels
+     Key   Left   A   S   CursorMove -1 0
+     Key   Right  A   S   CursorMove +1 +0
+     Key   Up     A   S   CursorMove +0 -1
+     Key   Down   A   S   CursorMove +0 +1
 
-      # shift-meta-<direction> to move 1/4 page
-      Key   Left   A   SM  Scroll -25 +0
-      Key   Right  A   SM  Scroll +25 +0
-      Key   Up     A   SM  Scroll +0  -25
-      Key   Down   A   SM  Scroll +0  +25
+     # shift-meta-<direction> to move 1/4 page
+     Key   Left   A   SM  Scroll -25 +0
+     Key   Right  A   SM  Scroll +25 +0
+     Key   Up     A   SM  Scroll +0  -25
+     Key   Down   A   SM  Scroll +0  +25
 
-    or these to flip pages
+   or these to flip pages
 
-      # shift-control-<direction> to move a full page
-      Key   Left   A   SC  CursorMove -10 +0
-      Key   Right  A   SC  CursorMove +10 +0
-      Key   Up     A   SC  CursorMove +0  -10
-      Key   Down   A   SC  CursorMove +0  +10
+     # shift-control-<direction> to move a full page
+     Key   Left   A   SC  CursorMove -10 +0
+     Key   Right  A   SC  CursorMove +10 +0
+     Key   Up     A   SC  CursorMove +0  -10
+     Key   Down   A   SC  CursorMove +0  +10
 
-      # Alt-Fn to go to a specific page (like on the Linux console)
-      Key F1 A M GotoPage 0 0
-      Key F2 A M GotoPage 1 0
-      Key F3 A M GotoPage 0 1
-      Key F4 A M GotoPage 1 1
+     # Alt-Fn to go to a specific page (like on the Linux console)
+     Key F1 A M GotoPage 0 0
+     Key F2 A M GotoPage 1 0
+     Key F3 A M GotoPage 0 1
+     Key F4 A M GotoPage 1 1
 
-    or to change the focus to a window in a specific direction:
+   or to change the focus to a window in a specific direction:
 
-      # number keys on keypad to move the focus
-      Key KP_1 A C Direction SouthWest Focus
-      Key KP_2 A C Direction South Focus
-      Key KP_3 A C Direction SouthEast Focus
-      Key KP_4 A C Direction West Focus
-      Key KP_6 A C Direction East Focus
-      Key KP_7 A C Direction NorthWest Focus
-      Key KP_8 A C Direction North Focus
-      Key KP_9 A C Direction NorthEast Focus
+     # number keys on keypad to move the focus
+     Key KP_1 A C Direction SouthWest Focus
+     Key KP_2 A C Direction South Focus
+     Key KP_3 A C Direction SouthEast Focus
+     Key KP_4 A C Direction West Focus
+     Key KP_6 A C Direction East Focus
+     Key KP_7 A C Direction NorthWest Focus
+     Key KP_8 A C Direction North Focus
+     Key KP_9 A C Direction NorthEast Focus
 
 ----------------------------------------------------------------------
 
 7.10  The cat safe desktop ^_^
 
-    If your cats keep stepping on your keyboard while you are brewing
-    another cup of coffee on of these hints may help:
+   If your cats keep stepping on your keyboard while you are brewing
+   another cup of coffee on of these hints may help:
 
-      Use 'Style * MouseFocus' and move the mouse pointer over the
-      background when you go away.
+     Use 'Style * MouseFocus' and move the mouse pointer over the
+     background when you go away.
 
-      If you can't do without your 'SloppyFocus' you can move the
-      mouse pointer into a window that takes no keyboard input and
-      give it the focus (e.g. FvwmButtons or a console message
-      window).  A true fanatic creates a separate window with a picture
-      of his cat for this :-)
+     If you can't do without your 'SloppyFocus' you can move the
+     mouse pointer into a window that takes no keyboard input and
+     give it the focus (e.g. FvwmButtons or a console message
+     window).  A true fanatic creates a separate window with a picture
+     of his cat for this :-)
 
 ----------------------------------------------------------------------
 
 7.11  Lowering and moving windows.
 
-    In some configurations moving a window with the middle mouse
-    button lowers the window after moving it.  Lowering it before
-    moving gives you a nice visual effect:
+   In some configurations moving a window with the middle mouse
+   button lowers the window after moving it.  Lowering it before
+   moving gives you a nice visual effect:
 
-      Mouse  2 T A  Function MoveOrLower
+     Mouse  2 T A  Function MoveOrLower
 
-      AddToFunc MoveOrLower
-       + "Click"         Lower
-       + "Motion"        Lower
-       + "Motion"        Move
-       + "DoubleClick"   Lower
+     AddToFunc MoveOrLower
+      + "Click"         Lower
+      + "Motion"        Lower
+      + "Motion"        Move
+      + "DoubleClick"   Lower
+
+----------------------------------------------------------------------
+
+7.12  Toggling windows on and off.
+
+   It is often desirable to have a menu item of perhaps a button in
+   FvwmButtons or FvwmWharf that launches an application when used
+   the first time and closes it if used a second time.  Although it
+   is not obvious how to do this, it is possible.  Let's assume you
+   need a menu item that toggles a FvwmConsole window on and off.
+   Then put the following lines in your .fvwm2rc:
+
+     AddToFunc ToggleFvwmConsole
+     + I None (FvwmConsole) Module FvwmConsole
+     + I Next (FvwmConsole) Close
+
+     AddToMenu <some menu>
+     + "toggle FvwmConsole" Function ToggleFvwmConsole
+
+   Or if you prefer a button in the button bar:
+
+     *FvwmButtons(Action ToggleFvwmConsole)
+
+   If you want to toggle one specific window, e.g. an xterm, but
+   still want to have other xterms that are not toggled, you must
+   give the window an unique name:
+
+     AddToFunc ToggleXMessages
+     + I None (XMessages) Exec ( TERM -T XMessages -n XMessages \
+         -e exec tail -f /var/adm/?* ~/.X.err )
+     + I Next (XMessages) Close
+
+   Or for a toggling Netscape button:
+
+     AddToFunc ToggleNetscape
+     + I None (Navigator) Exec exec netscape
+     + I All (Navigator) Close
+
+   Keep in mind that these functions simply check if a window with
+   the specified name exists.  They will happily close manually
+   opened windows or launch an application multiple times if the
+   application is slow to start (e.g. like netscape).

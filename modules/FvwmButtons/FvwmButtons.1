@@ -9,12 +9,12 @@ FvwmButtons \- the FVWM buttonbox module
 FvwmButtons is spawned by fvwm, so no command line invocation will work.
 
 With the \fI-g\fP option you can specify the geometry of the main window.
-The command line option takes precedence over any other gemotry settings
+The command line option takes precedence over any other geometry settings
 in the configuration file.
 
 The \fI-transient\fP option tells FvwmButtons to terminate itself
 after the first key or button press has been received (presses to open
-a sub panel do not count) or a sub panel has been closed or respawned.
+a sub panel do not count) or a sub panel has been closed or re-spawned.
 This is especially useful for sub panels where you want to select
 a single button and have it closed automatically.  It could be used
 too to create two-dimensional graphical menus.  Since \fI-transient\fP
@@ -74,11 +74,11 @@ Specifies the background color for the buttons. A relief and a shadow color
 will also be calculated from this.
 
 .IP "*FvwmButtonsBoxSize \fIalgorithm\fP"
-This option specifies how serious FvwmButtons takes the Rows and Colums
+This option specifies how serious FvwmButtons takes the Rows and Columns
 options (see below). It can be one of \fIdumb\fP, \fIfixed\fP or \fIsmart\fP.
 If fixed is given and both Rows and Columns are specified and non-zero,
 FvwmButtons will use exactly this numbers of rows and columns of button. If
-the box is too small to accomodate all buttons the module will fail. Using
+the box is too small to accommodate all buttons the module will fail. Using
 the smart option FvwmButtons is intelligent enough to enlarge the box so
 all buttons have a chance to fit. The number of columns is increased to at
 least the width of the widest button and new rows are added until all buttons
@@ -96,7 +96,7 @@ the number of columns will be set to the number of buttons requested,
 divided by the number of rows. If both the rows and columns are
 specified, but do not specify as many buttons as are defined, then the
 users columns specification will be ignored unless the value \fIfixed\fP
-was gived to the \fIBoxSize\fP option (see there).
+was given to the \fIBoxSize\fP option (see there).
 
 .IP "*FvwmButtonsFile \fIfilename\fP"
 Specifies that the configuration for this button is found in the file
@@ -157,8 +157,8 @@ and \fIheight\fP times the normal button height. If values for \fIx\fP and
 (top) of the container if x (y) is positive and x (y) units from the right
 (bottom) if x (y) is negative. The geometry is a standard X11 window geometry
 specification. Buttons with position arguments (x and y) are placed before
-thos without them. If two or more buttons are forced to overlap by this,
-FvwmButton exits with an error message.
+those without them. If two or more buttons are forced to overlap by this,
+FvwmButtons exits with an error message.
 
 .IP "  Action [(\fIoptions\fP)] \fIcommand\fP"
 Specifies an fvwm command to be executed when the button is activated
@@ -173,7 +173,7 @@ right edge of the screen instead (for a button that is 5 pixels away
 from the right screen border, $-right will be 5). \fI$width\fP
 and \fI$height\fP are replaced by the width or height of the button.
 The variables \fI$fg\fP and \fI$bg\fP are replaced with the name
-of the foreground or background colour set with the \fIBack\fP
+of the foreground or background color set with the \fIBack\fP
 or \fIFore\fP option (see below). All this is done regardless of
 any quoting characters. To get a literal '$' use the string '$$'.
 Example:
@@ -213,7 +213,7 @@ since it involves fiddling with other applications' windows there is
 no guarantee for anything.  I have tested three applications:
 xosview works nicely with a colorset background, xload works only
 with a VGradient or solid background and an analog xclock leaves a
-trail painted in the background colour after its hands.
+trail painted in the background color after its hands.
 Please refer to the man page of the FvwmTheme module for details
 about colorsets.
 
@@ -275,7 +275,7 @@ center the contents on the button.
 
 .IP "  NoSize"
 This option specifies that this button will not be considered at all when
-making the initial calculations of buttonsizes. Useful for the odd button
+making the initial calculations of button sizes. Useful for the odd button
 that gets just a couple of pixels to large to keep in line, and therefor
 blows up your whole buttonbox. "NoSize" is equivalent to "Size 0 0".
 
@@ -292,7 +292,7 @@ Panels can be swallowed exactly like windows are swallowed by
 buttons with the \fISwallow\fP command below, but they are not displayed
 within the button.  Instead they are hidden until the user presses
 the panel's button.  Then the panel (i.e. the window of the swallowed
-appication) opens with a sliding animation.  The \fIoptions\fP can
+application) opens with a sliding animation.  The \fIoptions\fP can
 be any of the \fIflags\fP described for the Swallow command.  In addition
 a direction 'left', 'right', 'up' or 'down' can be used to specify the
 direction where from the button the panel shall be posted.
@@ -355,7 +355,7 @@ center the contents on the button.
 .IP "  Size \fIwidth height\fP"
 Specifies that the contents of this button will require \fIwidth\fP by
 \fIheight\fP pixels, regardless of what size FvwmButtons calculates from
-the icon and the title. A buttonbar with only swallowed windows will
+the icon and the title. A button bar with only swallowed windows will
 not get very large without this option specified, as FvwmButtons does not
 consider sizes for swallowing buttons. Note that this option gives the
 minimum space assured; other buttons might require the buttonbox to use
@@ -365,7 +365,7 @@ larger sizes.
 Causes FvwmButtons to execute \fIcommand\fP, and when a window matching the
 name \fIhangon\fP appears, it is captured and swallowed into this button.
 Swallow replaces the variables \fI$fg\fP and \fI$bg\fP as described
-above for the \fIAction\fP option (but if you use the Useold and NoClose
+above for the \fIAction\fP option (but if you use the UseOld and NoClose
 options the application will not be restarted when FvwmButtons is restarted
 and thus will not get the new colors - if you changed them).
 An example:
@@ -385,9 +385,9 @@ the module instead of 'Exec whatever', like:
 The flags that can be given to swallow are:
 
 NoClose / Close -
-Specifies whether the swallowed program in this button will be unswallowed
+Specifies whether the swallowed program in this button will be un-swallowed
 or closed when FvwmButtons exit cleanly. "NoClose" can be combined with
-"UseOld" to have windows survive restart of windowmanager. The default
+"UseOld" to have windows survive restart of window manager. The default
 setting is "Close".
 
 NoHints / Hints -
@@ -402,8 +402,8 @@ doesn't accept window manager protocol. The default value is "NoKill".
 This has no effect if "NoClose" is specified.
 
 NoRespawn / Respawn -
-Specifies whether the swallowed program is to be respawn if it dies.
-If "Respawn" is specified, the program will be respawned using the original
+Specifies whether the swallowed program is to be re-spawn if it dies.
+If "Respawn" is specified, the program will be re-spawned using the original
 \fIcommand\fP. Use this option with care, the program might have a very
 legitimate reason to die.
 
@@ -412,7 +412,7 @@ Specifies whether the button will try to swallow an existing window matching
 the \fIhangon\fP name before spawning one itself with \fIcommand\fP.
 The default value is "NoOld".
 "UseOld" can be combined with "NoKill" to have windows survive restart of
-windowmanager. If you want FvwmButtons to swallow an old window, and not
+window manager. If you want FvwmButtons to swallow an old window, and not
 spawn one itself if failing, let the \fIcommand\fP be "Nop":
 .nf
 .sp
@@ -471,9 +471,9 @@ its syntax is here:
 .fi
 When FvwmButtons finds such an Exec command, the button will remain
 pushed in until a window whose name or class matches the
-qouted portion of the command is encountered. This is intended to
+quoted portion of the command is encountered. This is intended to
 provide visual feedback to the user that the action he has requested
-will be performed. If the qouted portion
+will be performed. If the quoted portion
 contains no characters, then the button will pop out immediately.
 Note that users can continue pressing the button, and re-executing the
 command, even when it looks "pressed in."
@@ -492,11 +492,11 @@ double quote:
 
   "It's another `quote'",
 
-and backquote:
+and back quote:
 
   `This is a strange quote`.
 
-The backquoting is purposeful
+The back quoting is purposeful
 if you use a preprocessor like FvwmCpp and want it to get into your
 commands, like this:
 .nf
@@ -557,7 +557,7 @@ from another instance of FvwmButtons you can do so, but you must
 give it a different name ('my_first_panel' in above example).
 If you run FvwmButtons under the same name new panels will be
 created recursively until your system runs out of resources and
-FvwmButtons crashes! To counfigure a second button bar with a
+FvwmButtons crashes! To configure a second button bar with a
 different name, simply replace put '*new_name' in place of
 '*FvwmButtons' in your configuration file.  If you are not
 familiar with the \fISwallow\fP option or if you want to learn
@@ -727,11 +727,11 @@ If neither is given, it assumes you want two rows, and finds the number of
 columns from that.
 If the BoxSize option is set to \fIsmart\fP at least the height/width of
 the tallest/widest button is used while the \fIfixed\fP value prevents the
-box from getting resized if both \fIrows\fP and \fIcolums\fP have been set
+box from getting resized if both \fIrows\fP and \fIcolumns\fP have been set
 to non-zero.
 .IP "Shuffling buttons"
 Now it has a large enough area to place the buttons in, all that is left is
-to place them right. There are two kinds ob buttons: fixed and floating
+to place them right. There are two kinds of buttons: fixed and floating
 buttons. A fixed button is forced to a specific slot in the button box by
 a x/y geometry argument. All other buttons are considered floating. Fixed
 buttons are placed first. Should a fixed button overlap another one or shall
@@ -775,7 +775,7 @@ When FvwmButtons has read the icons and fonts that are required by its
 configuration, it can find out which size is needed for every non-swallowing
 button. The unit button size of a container is set to be large enough to
 hold the largest button in it without squeezing it. Swallowed windows
-are simply expected to be comfortable with the buttonsize they get
+are simply expected to be comfortable with the button size they get
 from this scheme. If a particular configuration requires more space
 for a swallowed window, it can be set in that button's configuration line
 using the option "Size \fIwidth height\fP". This will tell FvwmButtons
@@ -856,7 +856,7 @@ is used, the Pager will be as big as possible within the button's relief.
 The final line is even more magic. Note the combination of \fIUseOld\fP
 and \fINoKill\fP, which will try to swallow an existing window with the
 name "xload15" when starting up (if failing: starting one with the
-specified command), which is unswallowed when ending FvwmButtons.
+specified command), which is un-swallowed when ending FvwmButtons.
 
 The other panels are specified after the root panel:
 

@@ -20,16 +20,16 @@ AddToMenu   Module-Popup "Fvwm Animate Icons" Module FvwmAnimate OptionalName
 .fi
 
 .SH DESCRIPTION
-The \fBFvwmAnimate\fP module animates iconification and deiconification
+The \fBFvwmAnimate\fP module animates iconification and de-iconification
 or on command.
-There are currenly 6 different animation effects.
+There are currently 6 different animation effects.
 
 .SH INVOCATION
 No command line invocation is possible.
 \fBFvwmAnimate\fP must be invoked by the
 \fBfvwm\fP window manager.
 When invoked with the \fIOptionalName\fP argument, the \fIOptionalName\fP
-is used to find configuration commands, configuraton files,
+is used to find configuration commands, configuration files,
 and name the internally generated menus and forms instead of "FvwmAnimate".
 During startup, FvwmAnimate defines menus and forms for configuring and
 controlling FvwmAnimate.  The default menu name is "MenuFvwmAnimate"
@@ -47,7 +47,7 @@ AddToMenu "Module-Popup" "Control Animation" Popup MenuFvwmAnimate
 .fi
 
 .SH CONFIGURATION OPTIONS
-Since the popup menu "MenuFvwmAnimate" allows complete control of
+Since the pop up menu "MenuFvwmAnimate" allows complete control of
 the \fBFvwmAnimate\fP module, you don't really have to know what any
 of the configuration commands are.  This section describes them anyway.
 
@@ -130,7 +130,7 @@ The word "animate" must be in lower case.
 The next 8 fields must be numbers.  The first 4 are for the source
 (or starting) location of the animation.  The last 4 are for the
 destination of the animation.
-The 2 pairs of 4 numbers, represent rectangles. 
+The 2 pairs of 4 numbers, represent rectangles.
 The first 2 numbers are the x and y location of the upper
 right corner.  The next 2 numbers are the width and height.
 One or more spaces can separate the fields in the command.
