@@ -112,9 +112,9 @@ my @type1 = ("Sock", "Link", "File", "Blck", "Dir ", "Char", "Pipe");
 my @type2 = ("S", "L", "F", "B", "D", "C", "P");
 
 if ($wmIcons) {
-	$iconT ||= "menu/shell.xpm";
+	$iconT ||= "menu/folder-open.xpm";
 	$iconD ||= "menu/folder.xpm";
-	$iconF ||= "menu/editor.xpm";
+	$iconF ||= "menu/file.xpm";
 	$iconA ||= "menu/utility.xpm";
 }
 
@@ -430,8 +430,8 @@ B<--icon-file=XPM>  - menu file  icon, default is no
 B<--icon-app=XPM>   - menu application icon, default is no
 
 B<--wm-icons> - define icon names suitable for use with wm-icons package.
-Currently this is equivalent to: --icon-title menu/shell.xpm --icon-item
-menu/editor.xpm --icon-dir menu/folder.xpm --icon-app menu/utility.xpm.
+Currently this is equivalent to: --icon-title menu/folder-open.xpm --icon-item
+menu/file.xpm --icon-dir menu/folder.xpm --icon-app menu/utility.xpm.
 
 B<--dir=NAME> - starting dir, default is ${HOME-.}
 
@@ -534,7 +534,7 @@ Put this into your fvwm configuration file to invoke the script:
 More complex example (the + line is a one long line):
 
   # AddToFunc FuncFvwmMenuDirectory
-  # + I PipeRead "fvwm-menu-directory -d $0 -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --wm-icons
+  # + I PipeRead "fvwm-menu-directory -d $0 -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --wm-icons"
 
 And put this in the menu from which you want to pop-up the directory menus:
 

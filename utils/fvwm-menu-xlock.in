@@ -29,7 +29,7 @@ GetOptions(
 
 if ($wmIcons) {
 	$iconT ||= "";
-	$iconI ||= "menu/wm-lock.xpm";
+	$iconI ||= "menu/lock.xpm";
 }
 
 my $iconTStr = $iconT? "%$iconT%": "";
@@ -184,7 +184,7 @@ accordingly given in the following argument. Default is no menu icons
 
 B<--wm-icons> - define icon names suitable for use with wm-icons package.
 Currently this is equivalent to: --icon-title '' --icon-item
-menu/wm-lock.xpm.
+menu/lock.xpm.
 
 B<--special-first> - instructs to include special modes (usually black,
 bomb and random) first.

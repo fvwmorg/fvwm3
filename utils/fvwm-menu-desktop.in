@@ -287,8 +287,8 @@ else { $SUBMENUS_PREFIX = "$MENU_NAME-" }
 if ($wmIcons) {
 	$MINI_ICONS = 1;
 	$MINI_ICONS_DIR = "";
-	$DI{"fvwm_toptitle"} = "menu/folders.xpm:ow";
-	$DI{"fvwm_title"}    = "menu/folders.xpm:ow";
+	$DI{"fvwm_toptitle"} = "menu/folder-open.xpm:ow";
+	$DI{"fvwm_title"}    = "menu/folder-open.xpm:ow";
 	$DI{"fvwm_folder"}   = "menu/folder.xpm:ow";
 	$DI{"fvwm_app"}      = "menu/utility.xpm:ow";
 }

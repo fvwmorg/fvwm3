@@ -30,6 +30,7 @@ Options:
 	[-I]	[--default-imagepath]
 	[-U]	[--default-userdir]
 
+	[-e]	[--fvwm-exe]     print fvwm executable name (in bindir)
 	[-s]	[--supports]     list supported features, one per line
 	[--supports-<feature>]   return: 0 (yes), 100 (no), 200 (unknown)
 EOF
@@ -52,6 +53,7 @@ fvwm_moduledir="@FVWM_MODULEDIR@"
 fvwm_datadir="@FVWM_DATADIR@"
 fvwm_imagepath="@FVWM_IMAGEPATH@"
 fvwm_userdir='$HOME/.fvwm'
+fvwm_exe='fvwm2'
 
 with_readline=@with_readline@
 with_rplay=@with_rplay@
@@ -103,6 +105,9 @@ while test $# -gt 0; do
 
 		--default-userdir|-default-userdir|-U)
 			echo "$fvwm_userdir" ;;
+
+		--fvwm-exe|-fvwm-exe|-e)
+			echo "$fvwm_exe" ;;
 
 		--supports|-supports|-s)
 			test "$with_readline"  = "yes" && echo "readline"
