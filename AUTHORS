@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Francis Litterio:
+Fixed building FvwmScript under cygwin.
+
 David Fries:
 Fixed the GNOME1 patch. WindowList class name sorting.
 

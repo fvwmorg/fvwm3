@@ -19,7 +19,7 @@ EXTRA_DIST = $(man_MANS) scanner.l script.y TODO
 LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs -lfvwm $(Xft_LIBS) \
 	$(X_LIBS) $(xpm_LIBS) $(Xinerama_LIBS) $(X_PRE_LIBS) -lXext -lX11 \
 	$(X_EXTRA_LIBS) -lm $(Xrender_LIBS) $(iconv_LIBS) $(Bidi_LIBS) \
-	$(png_LIBS)
+	$(png_LIBS) $(intl_LIBS)
 
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(Xft_CFLAGS) $(X_CFLAGS) \
 	$(Xrender_CFLAGS) $(iconv_CFLAGS) $(Bidi_CFLAGS) $(png_CFLAGS)
@@ -45,5 +45,9 @@ syntax:
 
 	@# don't touch unmodified header to reduce rebuilds
 	if test -f y.tab.h -o -f script.tab.h; then \
-	if cmp -s *.tab.h script.h; then rm -f y.tab.h; else mv *.tab.h script.h; fi; \
+		if cmp -s *.tab.h script.h; then \
+			rm -f y.tab.h; \
+		else \
+			mv *.tab.h script.h; \
+		fi; \
 	else :; fi

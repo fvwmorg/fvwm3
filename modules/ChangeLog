@@ -1,3 +1,8 @@
+2003-06-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScript/Makefile.am (LDADD):
+	Fixed building FvwmScript under cygwin; patch by Francis Litterio
+
 2003-05-28  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.1:
@@ -6,7 +11,7 @@
 	New option NoDefaultStartButton
 
 	* FvwmTaskBar/Goodies.c (CreateOrUpdateGoodyGC):
-	(GoodiesParseConfig): 
+	(GoodiesParseConfig):
 	(InitGoodies):
 	(DrawGoodies):
 	If both clock format and date format are 0 do not draw any clock space
@@ -33,9 +38,9 @@
 
 2003-04-28  olicha  <olivier.chapuis@free.fr>
 
-	* FvwmIdent/FvwmIdent.c (MakeList): 
+	* FvwmIdent/FvwmIdent.c (MakeList):
 	Fixed report of EWMH state hints
-	(ErrorHandler): 
+	(ErrorHandler):
 
 2003-04-26  Mikhael Goikhman  <migo@homemail.com>
 
