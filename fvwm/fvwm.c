@@ -202,8 +202,12 @@ int main(int argc, char **argv)
   int visualId = -1;
   int x, y;
 
-  g_argv = argv;
+  /* for use on restart */
+  g_argv = (char **)safemalloc((argc + 4) * sizeof(char *));
   g_argc = argc;
+  for (i = 0; i < argc; i++)
+    g_argv[i] = argv[i];
+  g_argv[g_argc] = NULL;
 
   DBUG("main","Entered, about to parse args");
 
@@ -356,7 +360,7 @@ int main(int argc, char **argv)
     }
     else
     {
-      fvwm_msg(ERR,"main","Unknown option:  `%s'\n", argv[i]);
+      fvwm_msg(ERR,"main","Unknown option: `%s'", argv[i]);
       option_error = TRUE;
     }
   }
@@ -414,6 +418,13 @@ int main(int argc, char **argv)
         break;
       }
     }
+
+    g_argv[argc++] = "-s";
+/*
+    g_argv[argc++] = "-d";
+    g_argv[argc++] = strdup(XDisplayString(dpy));
+*/
+    g_argv[argc] = NULL;
   }
 
   x_fd = XConnectionNumber(dpy);
@@ -2059,8 +2070,8 @@ int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 
 static void usage(void)
 {
-  fprintf(stderr,"FVWM version %s Usage:\n\n",VERSION);
-  fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n\n",g_argv[0]);
+  fprintf(stderr,"\nFVWM version %s Usage:\n\n",VERSION);
+  fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_file] [-cmd config_cmd] [-s] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n\n",g_argv[0]);
   exit(1);
 }
 
