@@ -152,7 +152,7 @@ menu_item_new_with_pixmap_and_label (char *file, char *l_label, char *r_label)
   int w, h;
 #endif
 
-  path = findImageFile (file, image_path, R_OK);
+  path = findImageFile (file ? file : "", image_path, R_OK);
 
   if (path == NULL) 
     {
@@ -236,7 +236,7 @@ menu_item_new_with_pixmap_and_label (char *file, char *l_label, char *r_label)
 void
 open_menu (int argc, char **argv)
 {
-  g_return_if_fail (argc >= 1);
+  g_return_if_fail (argc > 0);
 
   current = find_or_create_menu (argv[0]);
 }
@@ -246,20 +246,11 @@ void
 menu_title (int argc, char **argv)
 {
   GtkWidget *item;
-  char *file;
 
-  g_return_if_fail (argc >= 1);
+  g_return_if_fail (argc > 0);
 
-  if (argc >= 2)
-    {
-      file = argv[1];
-    }
-  else
-    {
-      file = "";
-    }
-
-  item = menu_item_new_with_pixmap_and_label (file, argv[0], NULL);
+  item = menu_item_new_with_pixmap_and_label 
+    (argc > 1 ? argv[1] : NULL, argv[0], argc > 2 ? argv[2] : NULL);
   gtk_menu_append (GTK_MENU (current), item);
   gtk_widget_show (item);
   /* 
@@ -288,30 +279,11 @@ void
 menu_item (int argc, char **argv)
 {
   GtkWidget *item;
-  char *file;
-  char *r_label;
   
-  g_return_if_fail (argc >= 2);
+  g_return_if_fail (argc > 1);
 
-  if (argc >= 3)
-    {
-      file = argv[2];
-    }
-  else 
-    {
-      file = "";
-    }
-
-  if (argc >= 4)
-    {
-      r_label = argv[3];
-    }
-  else
-    {
-      r_label = NULL;
-    }
-
-  item = menu_item_new_with_pixmap_and_label (file, argv[0], r_label);
+  item = menu_item_new_with_pixmap_and_label 
+    (argc > 2 ? argv[2] : NULL, argv[0], argc > 3 ? argv[3] : NULL);
   gtk_menu_append (GTK_MENU (current), item);
   gtk_widget_show (item);
   gtk_signal_connect 
@@ -338,16 +310,8 @@ menu_submenu (int argc, char **argv)
   GtkWidget *item, *submenu;
   char *file;
 
-  if (argc >= 3)
-    {
-      file = argv[2];
-    }
-  else 
-    {
-      file = "";
-    }
-
-  item = menu_item_new_with_pixmap_and_label (file, argv[0], NULL);
+  item = menu_item_new_with_pixmap_and_label 
+    (argc > 2 ? argv[2] : NULL, argv[0], NULL);
   gtk_menu_append (GTK_MENU (current), item);
   gtk_widget_show (item);
   submenu = find_or_create_menu (argv[1]);

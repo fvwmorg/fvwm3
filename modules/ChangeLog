@@ -1,3 +1,7 @@
+1999-05-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmGtk/*: implement "Function <func>" and titles for window lists. 
+
 1999-05-17  Hippo
 
 	* FvwmBanner/FvwmBanner.{c,1}: New config option NoDecor makes

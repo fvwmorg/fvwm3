@@ -73,16 +73,16 @@ by the argument. Note that you can "reopen" a menu and continue to append
 to it. It is also possible to redefine a menu from scratch, see 
 "*FvwmGtkDestroy".
 
-.IP "*FvwmGtkTitle \fBlabel\fP [ \fBicon\fP ]"
+.IP "*FvwmGtkTitle \fBlabel\fP [ \fBicon\fP [ \fBr_label\fP ] ]"
 Appends a title to the currently open menu. If the optional argument
 is given, it should be the name of an xpm file in the ImagePath. The 
 icon will appear to the left of the text. If FvwmGtk has been compiled
 with imlib support, icon can of any image format imlib can read. The label 
 can contain an ampersand to mark the following character as an accelerator to
 be underlined. Underlined accelerators work in the same way as they do in fvwm
-native menus. 
+native menus. If r_label is given, it will be right-justified.
 
-.IP "*FvwmGtkItem \fBlabel\fP \fBaction\fP [ \fBicon\fP ]"
+.IP "*FvwmGtkItem \fBlabel\fP \fBaction\fP [ \fBicon\fP [ \fBr_label\fP ] ]"
 Appends an item to the currently open menu. The first argument is the
 text that will appear in the item, the second argument will be sent to
 fvwm when the item is activated. If the optional argument is given, it 
@@ -90,6 +90,7 @@ should be the name of an xpm file in the ImagePath. The icon will appear
 to the left of the text. The label can contain an ampersand
 to mark the following character as an accelerator to be underlined. 
 Underlined accelerators work in the same way as they do in fvwm native menus.
+If r_label is given, it will be right-justified.
 
 .IP "*FvwmGtkSubmenu \fBlabel\fP \fBname\fP [ \fBicon\fP ]"
 Appends an item to the currently open menu. The first argument is the
@@ -105,22 +106,24 @@ Underlined accelerators work in the same way as they do in fvwm native menus.
 Appends a special tear-off item. Activating it turns the menu into 
 a permanent window; activating it once more makes the menu disappear again. 
 
-.SH WINDOW-LISTS
+.SH WINDOW LISTS
 
-Window-lists are special dynamically created menus. They offer a list of 
+Window lists are special dynamically created menus. They offer a list of 
 all windows managed by fvwm and send "WindowListFunc window-id" back to 
 fvwm, where window-id is the ID of the selected window in hexadecimal 
 notation as expected by fvwm. WindowListFunc is the same function that is 
-also used by fvwm for its builtin window-list.
+also used by fvwm for its builtin window list.
 
 .IP "*FvwmGtkWindowList \fBname\fP [ \fBoption\fP... ]"
 Creates a window-list bound to \fBname\fP. The window-list will be 
 formatted according to the given options. Currently supported are
 the following options which have the same meaning as for the fvwm's 
 builtin window list:
-"NoGeometry", "NoMiniIcon", "UseIconName", "Desk n", "CurrentDesk", 
+"NoGeometry", "NoMiniIcon", "UseIconName", "Desk <desk>", "CurrentDesk", 
 "Icons/NoIcons/OnlyIcons", "Sticky/NoSticky/OnlySticky", 
-"Normal/NoNormal/OnlyNormal", "NoDeskSort", "Alphabetic".
+"Normal/NoNormal/OnlyNormal", "NoDeskSort", "Alphabetic", 
+"Function <func>".
+The following options are new: "Title <label> <icon> <r_label>".
 Additionally, you can specify a name pattern to match the name or
 icon name of the listed windows.
 

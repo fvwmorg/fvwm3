@@ -16,6 +16,10 @@ typedef struct {
 #define SORT_ALPHABETIC 2
   char *pattern;
   int desk;
+  char *function;
+  char *title;
+  char *right_title;
+  char *title_icon;
 } window_list_options;
 
 

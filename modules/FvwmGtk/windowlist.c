@@ -22,15 +22,18 @@ static void
 window_list_item (window_list_entry *wle, window_list_options *opts)
 {
   char *argv[4];
-  char cmd[200], geo[200];
+  char desk[10], cmd[200], geo[200];
 
-  g_snprintf (cmd, sizeof (cmd), "WindowListFunc %#lx", wle->w);
-  g_snprintf (geo, sizeof (geo), "  %s%d:%dx%d%s%d%s%d%s%s",
+  g_snprintf (cmd, sizeof (cmd), "%s %#lx", 
+	      opts->function ? opts->function : "WindowListFunc",
+	      wle->w);
+  g_snprintf(desk, sizeof (desk), "%d", wle->desk);
+  g_snprintf (geo, sizeof (geo), "  %s%s:%dx%d%s%d%s%d%s",
 	      wle->iconified ? "(" : "",
-	      wle->desk, wle->width, wle->height, 
+	      wle->sticky ? "*" : desk,
+	      wle->width, wle->height, 
 	      (wle->x >= 0) ? "+" : "", wle->x, 
 	      (wle->y >= 0) ? "+" : "", wle->y, 
-	      wle->sticky ? " S" : "",
 	      wle->iconified ? ")" : "");
 
   argv[0] = (opts->use_icon_name ? wle->icon_name : wle->name); 
@@ -40,7 +43,6 @@ window_list_item (window_list_entry *wle, window_list_options *opts)
   
   menu_item (4, argv);
 }
-
 
 void
 window_list (int argc, char **argv)
@@ -57,7 +59,60 @@ window_list (int argc, char **argv)
 
   for (i = 1; i < argc; i++) 
     {
-      if (strcasecmp (argv[i], "NoDeskSort") == 0)
+      if (strcasecmp (argv[i], "Title") == 0)
+	{
+	  if (i+1 < argc)
+	    {
+	      if (opts->title)
+		{
+		  free (opts->title);
+		  opts->title = NULL;
+		}
+	      i++;
+	      if (strcmp (argv[i], "") != 0)
+		{
+		  opts->title = strdup (argv[i]);
+		}
+	    }
+	  if (i+1 < argc)
+	    {
+	      if (opts->title_icon)
+		{
+		  free (opts->title_icon);
+		  opts->title_icon = NULL;
+		}
+	      i++;
+	      if (strcmp (argv[i], "") != 0)
+		{
+		  opts->title_icon = strdup (argv[i]);
+		}
+	    }
+	  if (i+1 < argc)
+	    {
+	      if (opts->right_title)
+		{
+		  free (opts->right_title);
+ 		  opts->right_title = NULL;
+		}
+	      i++;
+	      if (strcmp (argv[i], "") != 0)
+		{
+		  opts->right_title = strdup (argv[i]);
+		}
+	    }
+	}
+      else if (strcasecmp (argv[i], "Function") == 0)
+	{
+	  if (i+1 < argc)
+	    {
+	      if (opts->function)
+		{
+		  free (opts->function);
+		}
+	      opts->function = strdup (argv[++i]);
+	    }
+	}
+      else if (strcasecmp (argv[i], "NoDeskSort") == 0)
 	{
 	  opts->sorting |= NO_DESK_SORT;
 	}
@@ -258,7 +313,17 @@ construct_window_list (void)
 	     sizeof(window_list_entry*), 
 	     (int(*)(const void*,const void*))compare_desk);      
     }
-  
+
+  if (opts->title || opts->right_title)
+    {
+      char *argv[3];
+      argv[0] = opts->title;
+      argv[1] = opts->title_icon;
+      argv[2] = opts->right_title;
+      menu_title (3, argv);
+      menu_separator (0, NULL);
+    }
+
   for (i = 0; i < unsorted_window_list_entries; i++)
     {
       if (!(opts->sorting & NO_DESK_SORT) &&
