@@ -7988,8 +7988,6 @@ void __menu_loop_new(
 
 int menu_binding(int button,KeySym keysym,int modifier,char *action)
 {
-	fprintf(stderr,"Entered menu_binding, button %d, keysym %X,"
-		" modifier %X, action %s\n",button,(int)keysym,modifier,action);
 	if (keysym != 0)
 	{
 		/* fixme */

@@ -1,5 +1,6 @@
 2003-11-02  Dan Espen  <dane@mk.telcordia.com>
 
+	* fvwm/menus.c (menu_binding): Remove debug code.
 	* fvwm/bindings.c (ParseBinding): Hand off menu bindings to menu code.
 	* fvwm/menus.h: Add menu_binding function.
 	* fvwm/fvwm.1.in: Document the menu context in the mouse command for
