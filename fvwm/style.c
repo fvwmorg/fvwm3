@@ -1518,6 +1518,7 @@ void CMD_Style(F_CMD_ARGS)
         else if (StrEquals(token, "IconBox"))
         {
           icon_boxes *IconBoxes = NULL;
+	  Bool is_screen_given = False;
 
 	  found = True;
 	  token = PeekToken(rest, NULL);
@@ -1557,6 +1558,16 @@ void CMD_Style(F_CMD_ARGS)
 	  /* init grid y */
           IconBoxes->IconGrid[1] = 3;
 
+	  /* check for screen (for 4 numbers) */
+	  if (StrEquals(token, "screen"))
+	  {
+	    is_screen_given = True;
+	    token = PeekToken(rest, &rest); /* skip screen */
+	    token = PeekToken(rest, &rest); /* get the screen spec */
+	    IconBoxes->IconScreen =
+	      FScreenGetScreenArgument(token, FSCREEN_SPEC_PRIMARY);
+	  }
+
           /* try for 4 numbers x y x y */
 	  num = GetIntegerArguments(rest, NULL, val, 4);
 
@@ -1576,6 +1587,15 @@ void CMD_Style(F_CMD_ARGS)
               } /* end leading minus sign */
             }
             /* Note: here there is no test for valid co-ords, use geom */
+	  } else if  (is_screen_given) {
+	    /* screen-spec is given but not 4 numbers */
+	    fvwm_msg(ERR,"CMD_Style",
+	      "IconBox requires 4 numbers if screen is given! Invalid: <%s>.",
+	      token);
+		/* Drop the box */
+                free(IconBoxes);
+		/* forget about it */
+                IconBoxes = 0;
           } else {
 	    /* Not 4 numeric args dje */
 	    /* bigger than =32767x32767+32767+32767 */

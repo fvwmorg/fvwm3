@@ -4843,10 +4843,11 @@ Style FvwmPager Icon
 .EE
 
 .I IconBox
-takes no argument, four numeric arguments, an X11 geometry string
+takes no argument, four numeric arguments (plus optionally a screen
+specification), an X11 geometry string
 or the string "none":
 .EX
-.RI "IconBox " "l t r b"
+.RI "IconBox [screen " "scr-spec" "] " "l t r b"
 .EE
 or
 .EX
@@ -4861,8 +4862,16 @@ is the top,
 is right and
 .I b
 is bottom.  Negative coordinates indicate distance from the right
-or bottom of the screen.  Perhaps easier to use is an X11 Geometry
-string:
+or bottom of the screen.  
+If the first argument is the word
+.IR screen ,
+the
+.I scr-spec
+argument specifies the Xinerama screen on which the IconBox is defined.
+It can be the usual screen Xinerama specification, 'p', 'c', 'g', a screen
+number or the additional 'w' for the screen where the window center is
+located.  This is only useful with multiple Xinerama screens.
+Perhaps easier to use is an X11 Geometry string:
 .EX
 IconBox -80x200-1-1
 .EE
@@ -4886,7 +4895,7 @@ the previous example is required.
 Note: The geometry for the icon box command takes the additional
 screen specifier "@w" in case a Xinerama setup is used.  This
 designates the screen where the window center is located.  The
-addininal screen specifier is not allowed anywhere else.
+additional screen specifier is not allowed anywhere else.
 
 If you never define an icon box, or you fill all the icon boxes,
 fvwm has a default icon box that covers the screen, it fills top
@@ -6646,7 +6655,7 @@ X-Server with the right screen as the primary screen, use:
 .EX
 XineramaSlsSize 2x1
 XineramaSlsOn
-XineramPrimaryScreen 1
+XineramaPrimaryScreen 1
 XineramaOn
 .EE
 
