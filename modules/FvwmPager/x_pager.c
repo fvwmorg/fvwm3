@@ -708,7 +708,7 @@ void DispatchEvent(XEvent *Event)
 	    }
 	}
       else if((Event->xbutton.button == 1)||
-	 (Event->xbutton.button == 2))
+	      (Event->xbutton.button == 2))
 	{
 	  for(i=0;i<ndesks;i++)
 	    {
@@ -1778,6 +1778,13 @@ void MoveWindow(XEvent *Event)
             }
 	}
     }
+  if (is_transient)
+    {
+      XUngrabPointer(dpy,CurrentTime);
+      MyXUngrabServer(dpy);
+      XSync(dpy,0);
+      exit(0);
+    }
 }
 
 
@@ -2135,7 +2142,13 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 #endif
         }
     }
-
+  if (is_transient)
+    {
+      XUngrabPointer(dpy,CurrentTime);
+      MyXUngrabServer(dpy);
+      XSync(dpy,0);
+      exit(0);
+    }
 }
 
 

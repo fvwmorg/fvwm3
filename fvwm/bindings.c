@@ -333,24 +333,24 @@ void find_context(char *string, int *output, struct charstring *table,
 
 /* Check if something is bount to a key or button press and execute the
  * function if necessary. */
-void CheckBinding(int keycode, unsigned int modifier, FvwmWindow *Tmp_win,
+Bool CheckBinding(int keycode, unsigned int modifier, FvwmWindow *Tmp_win,
 		  int Context, int IsMouse)
 {
   Binding *key;
 
-  modifier &= ~mods_unused;
+  modifier = MaskUsedModifiers(modifier);
   for (key = Scr.AllBindings; key != NULL; key = key->NextBinding)
     {
       if ((key->Button_Key == keycode || (IsMouse && key->Button_Key == 0)) &&
-	  ((key->Modifier == MaskUsedModifiers(modifier))||
-	   (key->Modifier == AnyModifier)) &&
-	  (key->Context & Context)&&
+	  ((key->Modifier == modifier) || (key->Modifier == AnyModifier)) &&
+	  (key->Context & Context) &&
 	  (key->IsMouse == IsMouse))
 	{
 	  ExecuteFunction(key->Action,Tmp_win, &Event,Context,-1);
-	  break;
+	  return True;
 	}
     }
+  return False;
 }
 
 /* Removes all unused modifiers from in_modifiers */

@@ -405,7 +405,8 @@ void HandleKeyPress()
     XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,Event.xkey.keycode,0));
 
   /* Check if there is something bound to the key */
-  CheckBinding(Event.xkey.keycode, Event.xkey.state, Tmp_win, Context, 0);
+  if (CheckBinding(Event.xkey.keycode, Event.xkey.state, Tmp_win, Context, 0))
+    return;
 
   /* if we get here, no function key was bound to the key.  Send it
    * to the client if it was in a window we know about.
@@ -1195,8 +1196,7 @@ void HandleButtonPress()
 
   /* we have to execute a function or pop up a menu */
   /* need to search for an appropriate mouse binding */
-  CheckBinding(Event.xbutton.button, Event.xkey.state, Tmp_win, Context, 1);
-
+  CheckBinding(Event.xbutton.button, Event.xkey.state, Tmp_win, Context,1);
   PressedW = None;
   if(LocalContext!=C_TITLE)
     SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,

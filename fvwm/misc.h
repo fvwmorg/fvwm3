@@ -296,7 +296,7 @@ void ReInstallActiveColormap(void);
 void ParsePopupEntry(char *,FILE *, char **, int *);
 void ParseMouseEntry(F_CMD_ARGS);
 void ParseKeyEntry(F_CMD_ARGS);
-void CheckBinding(int keycode, unsigned int modifier, FvwmWindow *Tmp_win,
+Bool CheckBinding(int keycode, unsigned int modifier, FvwmWindow *Tmp_win,
 		  int Context, int IsMouse);
 unsigned int MaskUsedModifiers(unsigned int in_modifiers);
 unsigned int GetUnusedModifiers(void);

@@ -544,10 +544,10 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
   }
 
   taction = action;
+  pops->flags.allflags = 0;
   while (action != NULL) {
     /* ^ just to be able to jump to end of loop without 'goto' */
     gflags = NoValue;
-    pops->flags.allflags = 0;
     pops->pos_hints.fRelative = FALSE;
     /* parse context argument (if present) */
     naction = GetNextToken(taction, &tok);
@@ -674,6 +674,8 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
   }
 
   action = naction;
+  /* to keep Purify silent */
+  pops->flags.f.select_in_place = 0;
   /* parse additional options */
   while (naction && *naction) {
     naction = GetNextToken(action, &tok);

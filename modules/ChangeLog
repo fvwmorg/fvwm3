@@ -1,3 +1,10 @@
+1999-03-22  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (IconMoveWindow):
+	(MoveWindow): fixed mb2 with transient pager
+
+1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
 1999-02-22  Hippo
 
 	* FvwmWinList/* Applied patch from Jesper James: new option

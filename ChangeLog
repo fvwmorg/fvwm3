@@ -1,3 +1,13 @@
+1999-03-22  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/bindings.c (CheckBinding): return True if a binding was executed
+	* fvwm/events.c (HandleKeyPress): fixed bindings (key/mouse events not
+	eaten up when a binding matches)
+
+1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/misc.c (GetMenuOptions): tried to fix UMR in GetMenuOptions
+
 1999-03-22  Dan Espen  <dane@mk.bellcore.com>
 
 	* fvwm/fvwm2.1 (Example): Colorlimit cutoff point now 21 bits.
