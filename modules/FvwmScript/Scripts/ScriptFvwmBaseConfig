@@ -54,21 +54,21 @@ Init
 
    Set $pos=(Add $pos 1)
    Set $MOUSERAISES=(GetOutput $CAT $pos -1)
-   If $MOUSERAISES=={GlobalOpts MouseFocusClickRaises} Then
+   If $MOUSERAISES=={Style * MouseFocusClickRaises} Then
     ChangeValue 12 1
    Else
      ChangeValue 12 0
 
    Set $pos=(Add $pos 1)
    Set $CLICKRAISES=(GetOutput $CAT $pos -1)
-   If $CLICKRAISES=={GlobalOpts ClickToFocusRaises} Then
+   If $CLICKRAISES=={Style * ClickToFocusRaises} Then
     ChangeValue 13 1
    Else
     ChangeValue 13 0
 
    Set $pos=(Add $pos 1)
    Set $PASSASCLICK=(GetOutput $CAT $pos -1)
-   If $PASSASCLICK=={GlobalOpts ClickToFocusPassesClick} Then
+   If $PASSASCLICK=={Style * ClickToFocusPassesClick} Then
     ChangeValue 14 1
    Else
     ChangeValue 14 1
@@ -145,7 +145,7 @@ Init
   
    Set $pos=(Add $pos 1)
    Set $REALLYSMART=(GetOutput $CAT $pos -1)
-   If $REALLYSMART=={GlobalOpts SmartPlacementIsReallySmart} Then
+   If $REALLYSMART=={Style * CleverPlacement} Then
     ChangeValue 28 1
    Else
     ChangeValue 28 0
@@ -279,7 +279,7 @@ Init
     End
 
    Set $pos=(Add $pos 1)
-   Set $SHADESTEPS=(GetOutput $CAT $pos 2)
+   Set $SHADESTEPS=(GetOutput $CAT $pos 4)
    ChangeTitle 64 $SHADESTEPS
 
   End
@@ -293,11 +293,11 @@ Init
    Set $FOCUS={Style * SloppyFocus}
    ChangeValue 11 1
 
-   Set $MOUSERAISES={GlobalOpts MouseFocusClickRaises}
+   Set $MOUSERAISES={Style * MouseFocusClickRaises}
    ChangeValue 12 1   
-   Set $CLICKRAISES={GlobalOpts ClickToFocusRaises}
+   Set $CLICKRAISES={Style * ClickToFocusRaises}
    ChangeValue 13 1
-   Set $PASSASCLICK={GlobalOpts ClickToFocusPassesClick}
+   Set $PASSASCLICK={Style * ClickToFocusPassesClick}
    ChangeValue 14 1
 
    Set $HORPAGE={0}
@@ -315,7 +315,7 @@ Init
    ChangeValue 26 1
    Set $INTERPLACE={Style * RandomPlacement}
    ChangeValue 27 1
-   Set $REALLYSMART={GlobalOpts SmartPlacementIsNormal}
+   Set $REALLYSMART={Style * CleverPlacementOff}
    ChangeValue 28 1
 
    Set $GRABFOCUS={Style * GrabFocusOff}
@@ -430,8 +430,8 @@ Main
    Do $EMULATE
    WriteToFile $FILE $EMULATE
 
-   Do {WindowShadeAnimate } (GetTitle 64)
-   WriteToFile $FILE {WindowShadeAnimate } (GetTitle 64)
+   Do {Style * WindowShadeSteps } (GetTitle 64)
+   WriteToFile $FILE {Style * WindowShadeSteps } (GetTitle 64)
    
    Do BaseConfigOkFunc
    Quit
@@ -466,7 +466,7 @@ Main
    Do $HIDEGEO
    Do {SnapAttraction } (GetTitle 56) { }  $SNAPTYPE
    Do $EMULATE
-   Do {WindowShadeAnimate } (GetTitle 64)
+   Do {Style * WindowShadeSteps } (GetTitle 64)
    Do BaseConfigApplyFunc
   End
 End
@@ -499,11 +499,11 @@ Main
    Set $FOCUS={Style * SloppyFocus}
    ChangeValue 11 1
 
-   Set $MOUSERAISES={GlobalOpts MouseFocusClickRaises}
+   Set $MOUSERAISES={Style * MouseFocusClickRaises}
    ChangeValue 12 1   
-   Set $CLICKRAISES={GlobalOpts ClickToFocusRaises}
+   Set $CLICKRAISES={Style * ClickToFocusRaises}
    ChangeValue 13 1
-   Set $PASSASCLICK={GlobalOpts ClickToFocusPassesClick}
+   Set $PASSASCLICK={Style * ClickToFocusPassesClick}
    ChangeValue 14 1
 
    Set $HORPAGE={0}
@@ -521,7 +521,7 @@ Main
    ChangeValue 26 1
    Set $INTERPLACE={Style * RandomPlacement}
    ChangeValue 27 1
-   Set $REALLYSMART={GlobalOpts SmartPlacementIsNormal}
+   Set $REALLYSMART={Style * CleverPlacementOff}
    ChangeValue 28 1
 
    Set $GRABFOCUS={Style * GrabFocusOff}
@@ -645,9 +645,9 @@ Main
   SingleClic :
   Begin
    If (GetValue 12) == 1 Then
-    Set $MOUSERAISES={GlobalOpts MouseFocusClickRaises}
+    Set $MOUSERAISES={Style * MouseFocusClickRaises}
    Else
-    Set $MOUSERAISES={GlobalOpts MouseFocusClickDoesntRaise}
+    Set $MOUSERAISES={Style * MouseFocusClickDoesntRaise}
   End
 End
 
@@ -661,9 +661,9 @@ Main
   SingleClic :
   Begin
    If (GetValue 13) == 1 Then
-   Set $CLICKRAISES={GlobalOpts ClickToFocusRaises}
+   Set $CLICKRAISES={Style * ClickToFocusRaises}
    Else
-   Set $CLICKRAISES={GlobalOpts ClickToFocusDoesntRaise}
+   Set $CLICKRAISES={Style * ClickToFocusRaisesOff}
   End
 End
 
@@ -677,9 +677,9 @@ Main
   SingleClic :
   Begin
    If (GetValue 14) == 1 Then
-    Set $PASSASCLICK={GlobalOpts ClickToFocusPassesClick}
+    Set $PASSASCLICK={Style * ClickToFocusPassesClick}
    Else
-    Set $PASSASCLICK={GlobalOpts ClickToFocusDoesntPassClick}
+    Set $PASSASCLICK={Style * ClickToFocusDoesntPassClick}
   End
 End
 
@@ -893,15 +893,15 @@ Widget 28
 Property
  Position 40 285
  Type CheckBox
- Title {Smart Placement is Really Smart}
+ Title {Smart Placement is Clever}
 Main
  Case message of
   SingleClic :
   Begin
    If (GetValue 28) == 1 Then
-    Set $REALLYSMART={GlobalOpts SmartPlacementIsReallySmart}
+    Set $REALLYSMART={Style * CleverPlacement}
    Else
-    Set $REALLYSMART={GlobalOpts SmartPlacementIsNormal}
+    Set $REALLYSMART={Style * CleverPlacementOff}
   End
 End
 
