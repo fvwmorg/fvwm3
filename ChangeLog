@@ -1,3 +1,7 @@
+1999-01-16  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* BUGS: updated for 2.2
+
 1999-01-14  Paul D. Smith  <psmith@gnu.org>
 
 	* configure.in: If readline doesn't work with termcap, see if it

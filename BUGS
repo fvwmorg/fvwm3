@@ -2,22 +2,19 @@ Herein lies the (partial?) list of Known Bugs.  Further bug reports
 (or even better, solutions) can be sent to the FVWM mailing list (see
 the FAQ for address and how to PROPERLY report bugs).
 
-See 'Bugfixes' section of the TO-DO list for additional known bugs.
-There are a number of them there as well.
+See 'Bugfixes' section of the TO-DO list for additional known bugs and
+be sure to have a look at the bug tracking system that can be reached
+from our home page.
 
 ======================================================================
 ======================================================================
-
-Known bugs section for the beta tests: (will be removed in 2.2)
-===============================================================
-
-Known bugs and problems as of fvwm-2.1.3:
 
  - No geometry can be specified for FvwmButtons panels.
  - Running fvwm2 on an XNest X server does not work well.
  - FvwmSave and FvwmSaveDesk are not up to date.
+ - The fvwm_convert script is not up to date.
  - xscreensaver may not be able to allocate a private colormap
- - FvwmButtons (and possibly other modules) may survive shutdown of the X
+ - FvwmButtons and possibly other modules may survive shutdown of the X
    server.
  - AutoHide in FvwmTaskBar does not work well. See 'EdgeThickness' command in
    the manpage.
@@ -28,8 +25,7 @@ Known bugs and problems as of fvwm-2.1.3:
  - A piperead command may hang if used in .fvwm2rc (if the pipe is never
    closed).
  - fvwm2 may coredump if the Xpm library 4.7 is used. No problem with 4.11.
-   If you have this problem. Please send a notification to
-   fvwm-workers@hpc.uh.edu.
+   This seems to be a bug of the Xpm library.
  - StartsOnPage does not work as expected? Please read the manpage carefully.
 
 
@@ -73,19 +69,6 @@ this and find a way to consistently reproduce it.
 Actually, I've recently discovered that this is often from not having
 a .fvwm2rc file, so check that first...  But this is fixed in the
 later versions.
-
-----------------------------------------------------------------------
-
-The FvwmConfig module doesn't get built by default.  You have to build
-it by hand (see INSTALL file).  It now has an Imakefile, but can only
-be used under X11R6.
-
-----------------------------------------------------------------------
-
-Preprocessing your .fvwm2rc with FvwmCpp or FvwmM4 may not work
-correctly.  Common problems seem to be windows not getting rc settings
-until a recapture, or the InitFunction not being run properly.  I know
-about this problem and am working on a solution.
 
 ----------------------------------------------------------------------
 
