@@ -8,13 +8,16 @@ fvwm-root \- Sets the root window of the current X display to image
 
 .SH SYNOPSIS
 .B fvwm-root
-.RB [ \-d ]
-.RB [ \-fe ]
-.RB [ \-dither ]
-.RB [ \-no-dither ]
-.RB [ \-color-limit
-.RI [ ncolors "] ]"
-.RB [ \-no-color-limit ]
+.RB [ "--retain-pixmap" | "-r" ]
+.RB [ "--no-retain-pixmap" ]
+.RB [ "--dummy" | "-d" ]
+.RB [ "--no-dummy" ]
+.RB [ "--dither" ]
+.RB [ "--no-dither" ]
+.RB [ "--color-limit"
+.RI       [ ncolors "] ]"
+.RB [ "--no-color-limit" ]
+.RB [ "--help" | "-h" ]
 .I image_file
 
 .SH DESCRIPTION
@@ -27,32 +30,62 @@ if appropriated libraries are compiled in.
 .SH OPTIONS
 These command line options are recognized by fvwm-root:
 .TP
-.BI "-d"
-Causes fvwm-root NOT to set the background, but to free a memory
-associated with the _XSETROOT_ID property (if any).
-In any case the _XSETROOT_ID property is set to None and some programs,
-like FVWM modules, may use this to update their background if the background
-is transparent.
+.BR "--retain-pixmap" " | " "-r"
+Causes fvwm-root to retain and publish the Pixmap with which the background
+has been set (the ESETROOT_PMAP_ID and _XROOTPMAP_ID properties are used).
+This is useful for applications which want to use the root
+Pixmap on the background to simulate transparency (for example,
+Eterm and Aterm use this method). This option should also be used for the
+RootTransparent colorset option, refer to the COLORSETS section of fvwm(1).
+If this option is not used, fvwm-root sets the _XSETROOT_ID property to
+None, and some programs, like FVWM modules, may use this to update their
+background if the background is transparent (Transparent colorset).
+
+Note, a well behaved program, like fvwm, should listen to both _XSETROOT_ID
+and _XROOTPMAP_ID property changes and update itself correspondingly.
+However some programs listen only to one of them, so you should either use
+this option or not depending on what part is implemented by these programs.
+You should also use this option to get fast root-transparent menus in fvwm.
 .TP
-.BI "-fe"
-Causes fvwm-root to free the memory associated with the ESETROOT_PMAP_ID
-property. This is useful if you  alternately use fvwm-root and an
-Esetroot compatible program.
+.BI "--no-retain-pixmap"
+This is a default. May be useful to explicitely force the default even
+if "--retain-pixmap" is specified earlier.
 .TP
-.BI "-dither"
+.BR "--dummy" " | " "-d"
+Causes fvwm-root NOT to set the background, but to only free a memory
+associated with the ESETROOT_PMAP_ID property (if any).
+In any case the _XSETROOT_ID property is set to None.
+.TP
+.BI "--no-dummy"
+This is a default. May be useful to explicitely force the default even
+if "--dummy" is specified earlier.
+.TP
+.BI "--dither"
 Causes fvwm-root to dither images for "smoother" rendition on displays
-with color depth of 16 or lower.
+with color depth of 16 or lower. This the defaut with color depth  less
+or equal to 8.
 .TP
-.BI "-no-dither"
-Causes fvwm-root NOT to dither images.
+.BI "--no-dither"
+Causes fvwm-root NOT to dither images. This is the default with color depth
+greater than 8.
 .TP
-.BI "-color-limit " ncolors
+.BI "--color-limit " ncolors
 Causes fvwm-root to limit its color use to
 .I ncolors
-(if specified).
+(if specified). This option is taken in account only with color depth  less
+or equal to 8 (and a TrueColor or GrayScale visual). The default is
+to use the same color limit than fvwm. So in normal situation this option
+is not useful. However, if fvwm use a private colors map, as fvwm-root
+always use the default colors map you should use this option for
+limiting colors correctly. If
+.I ncolors
+is not specified a default is used.
 .TP
-.BI "-no-color-limit"
+.BI "--no-color-limit"
 Causes fvwm-root NOT to limit its color use.
+.TP
+.BR "--help" " | " "-h"
+Shows a short usage.
 
 .SH COMPATIBILITY
 In the past this utility was called
@@ -66,4 +99,4 @@ your color table pretty darn fast.
 .SH AUTHOR
 Rob Nation
 
-Enhanced by fvwm-workers.
+Rewritten and enhanced by fvwm-workers.

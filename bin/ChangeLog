@@ -1,3 +1,16 @@
+2002-10-27  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-root.c:
+	* fvwm-root.1:
+	switch to --option names in documentation, -option works too;
+	added --no-retain-pixmap and --no-dummy for completeness
+
+2002-10-27  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-root.c:
+	* fvwm-root.1:
+	added --retain-pixmap; added documentation
+
 2002-10-18  olicha  <olivier.chapuis@free.fr>
 
 	* Makefile.am (bin_SCRIPTS):

@@ -28,7 +28,7 @@ Bool NoColorLimit = False;
 char *opt_color_limit = NULL;
 Bool use_our_color_limit = False;
 
-void usage(void)
+void usage(int verbose)
 {
 	fprintf(
 		stderr, "fvwm-root version %s with support for: XBM"
@@ -39,22 +39,41 @@ void usage(void)
 		", PNG"
 #endif
 		"\n", VERSION);
-	fprintf(stderr, "Usage: fvwm-root [-fe -np -d] file\n");
+	fprintf(stderr,
+		"Usage: fvwm-root [ options ] file\n");
+	if (verbose)
+	{
+		fprintf(stderr,
+			"Options:\n"
+			"\t--dither\n"
+			"\t--no-dither\n"
+			"\t--retain-pixmap\n"
+			"\t--no-retain-pixmap\n"
+			"\t--color-limit l\n"
+			"\t--no-color-limit\n"
+			"\t--dummy\n"
+			"\t--no-dummy\n"
+			"\t--help\n");
+	}
 }
 
 int main(int argc, char **argv)
 {
-	Atom prop, type, e_prop;
+	Atom prop = None;
+	Atom e_prop = None;
+	Atom m_prop = None;
+	Atom type;
 	int format;
 	unsigned long length, after;
 	unsigned char *data;
 	int i = 1;
-	Bool FreeEsetroot = False;
+	Bool e_killed = False;
 	Bool Dummy = False;
+	Bool RetainPixmap = False;
 
 	if (argc < 2)
 	{
-		usage();
+		usage(0);
 		fprintf(stderr, "Nothing to do, try again.\n");
 		exit(1);
 	}
@@ -71,27 +90,47 @@ int main(int argc, char **argv)
 
 	for (i = 1; i < argc - 1; i++)
 	{
-		if (strcasecmp(argv[i], "-fe") == 0)
+		if (
+			strcasecmp(argv[i], "-r") == 0 ||
+			strcasecmp(argv[i], "--retain-pixmap") == 0 ||
+			strcasecmp(argv[i], "-retain-pixmap") == 0)
 		{
-			FreeEsetroot = True;
+			RetainPixmap = True;
 		}
-		else if (strcasecmp(argv[i], "-d") == 0)
+		else if (
+			strcasecmp(argv[i], "--no-retain-pixmap") == 0 ||
+			strcasecmp(argv[i], "-no-retain-pixmap") == 0)
+		{
+			RetainPixmap = False;
+		}
+		else if (
+			strcasecmp(argv[i], "-d") == 0 ||
+			strcasecmp(argv[i], "--dummy") == 0 ||
+			strcasecmp(argv[i], "-dummy") == 0)
 		{
 			Dummy = True;
 		}
-		else if (strcasecmp(argv[i], "-dither") == 0)
+		else if (
+			strcasecmp(argv[i], "--no-dummy") == 0 ||
+			strcasecmp(argv[i], "-no-dummy") == 0)
+		{
+			Dummy = False;
+		}
+		else if (
+			strcasecmp(argv[i], "--dither") == 0 ||
+			strcasecmp(argv[i], "-dither") == 0)
 		{
 			Dither = True;
 		}
-		else if (strcasecmp(argv[i], "-no-dither") == 0)
+		else if (
+			strcasecmp(argv[i], "--no-dither") == 0 ||
+			strcasecmp(argv[i], "-no-dither") == 0)
 		{
 			NoDither = True;
 		}
-		else if (strcasecmp(argv[i], "-no-color-limit") == 0)
-		{
-			NoColorLimit = True;
-		}
-		else if (strcasecmp(argv[i], "-color-limit") == 0)
+		else if (
+			strcasecmp(argv[i], "--color-limit") == 0 ||
+			strcasecmp(argv[i], "-color-limit") == 0)
 		{
 			use_our_color_limit = True;
 			if (i+1 < argc)
@@ -99,6 +138,20 @@ int main(int argc, char **argv)
 				i++;
 				CopyString(&opt_color_limit,argv[i]);
 			}
+		}
+		else if (
+			strcasecmp(argv[i], "--no-color-limit") == 0 ||
+			strcasecmp(argv[i], "-no-color-limit") == 0)
+		{
+			NoColorLimit = True;
+		}
+		else if (
+			strcasecmp(argv[i], "-h") == 0 ||
+			strcasecmp(argv[i], "--help") == 0 ||
+			strcasecmp(argv[i], "-help") == 0)
+		{
+			usage(1);
+			exit(0);
 		}
 		else
 		{
@@ -108,9 +161,20 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (Dummy || strcasecmp(argv[argc-1], "-d") == 0)
+	if (Dummy ||
+		strcasecmp(argv[argc-1], "-d") == 0 ||
+		strcasecmp(argv[argc-1], "--dummy") == 0 ||
+		strcasecmp(argv[argc-1], "-dummy") == 0)
 	{
 		Dummy = True;
+	}
+	else if (
+		strcasecmp(argv[argc-1], "-h") == 0 ||
+		strcasecmp(argv[argc-1], "--help") == 0 ||
+		strcasecmp(argv[argc-1], "-help") == 0)
+	{
+		usage(1);
+		exit(0);
 	}
 	else
 	{
@@ -121,36 +185,56 @@ int main(int argc, char **argv)
 	(void)XGetWindowProperty(
 		dpy, root, prop, 0L, 1L, True, AnyPropertyType,
 		&type, &format, &length, &after, &data);
-	if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0)
+	if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
+	    *((Pixmap *)data) != None)
 	{
 		XKillClient(dpy, *((Pixmap *)data));
 	}
 
-	if (FreeEsetroot)
+	if (data != NULL)
+		XFree(data);
+	e_prop = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
+	(void)XGetWindowProperty(
+		dpy, root, e_prop, 0L, 1L, True, AnyPropertyType,
+		&type, &format, &length, &after, &data);
+	if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
+	    *((Pixmap *)data) != None)
 	{
-		if (data != NULL)
-			XFree(data);
-		e_prop = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
-		(void)XGetWindowProperty(
-			dpy, root, e_prop, 0L, 1L, True, AnyPropertyType,
-			&type, &format, &length, &after, &data);
-		if (type == XA_PIXMAP && format == 32 &&
-			length == 1 && after == 0)
-		{
-			XKillClient(dpy, *((Pixmap *)data));
-		}
-		XDeleteProperty(dpy, root, e_prop);
+		e_killed = True;
+		XKillClient(dpy, *((Pixmap *)data));
+	}
+	if (e_killed && !Dummy)
+	{
+		m_prop = XInternAtom(dpy, "_XROOTPMAP_ID", False);
+		XDeleteProperty(dpy, root, m_prop);
 	}
 
-	if (!Dummy)
+	if (RetainPixmap && !Dummy)
 	{
 		if (data != NULL)
 			XFree(data);
 		XSetCloseDownMode(dpy, RetainPermanent);
+		if (e_prop == None)
+			e_prop = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
+		if (m_prop == None)
+			m_prop = XInternAtom(dpy, "_XROOTPMAP_ID", False);
+		XChangeProperty(
+			dpy, root, e_prop, XA_PIXMAP, 32, PropModeReplace,
+			(unsigned char *) &rootImage, 1);
+		XChangeProperty(
+			dpy, root, m_prop, XA_PIXMAP, 32, PropModeReplace,
+			(unsigned char *) &rootImage, 1);
 	}
-	XChangeProperty(
-		dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,
-		(unsigned char *) &rootImage, 1);
+	else
+	{
+		Pixmap dp = None;
+
+		if (prop == None)
+			prop = XInternAtom(dpy, "_XSETROOT_ID", False);
+		XChangeProperty(
+			dpy, root, prop, XA_PIXMAP, 32, PropModeReplace,
+			(unsigned char *)  &dp, 1);
+	}
 	XCloseDisplay(dpy);
 	return 0;
 }
