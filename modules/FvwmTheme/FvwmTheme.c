@@ -40,6 +40,7 @@
 #include "libs/Module.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
+#include "libs/fvwmsignal.h"
 
 /* Globals */
 static Display *dpy;
@@ -63,6 +64,20 @@ static void parse_config_line(char *line);
 static void parse_message_line(char *line);
 static void main_loop(void) __attribute__((__noreturn__));
 static void parse_colorset(char *line);
+static void add_to_junk(Pixmap pixmap);
+static void feng_shui();
+
+/* When FvemTheme destroys pixmaps it puts them on a list and only destoys them
+ * after some period of inactivity. This is necessary because changing colorset
+ * options rapidly may result in a module redrawing itself due to the first
+ * change whie the second change is happening. If the module renders something
+ * with the colorset affected by the second change there is a chance it may
+ * reference pixmaps that FvwmTheme has destroyed */
+struct junklist {
+  struct junklist *prev;
+  Pixmap pixmap;
+};
+static struct junklist *junk = NULL;
 
 int main(int argc, char **argv)
 {
@@ -137,12 +152,33 @@ int main(int argc, char **argv)
 static void main_loop(void)
 {
   FvwmPacket *packet;
+  fd_set_size_t fd_width;
+  fd_set in_fdset;
+  struct timeval delay;
+
+  fd_width = fd[1] + 1;
+  FD_ZERO(&in_fdset);
+  delay.tv_sec = 5;
+  delay.tv_usec = 0;
 
   while (True) {
     /* garbage collect */
     alloca(0);
 
-    /* wait for an instruction from fvwm */
+    FD_SET(fd[1], &in_fdset);
+    /* wait for an instruction from fvwm or a timeout */
+    if (fvwmSelect(fd_width, &in_fdset, NULL, NULL, junk ? &delay : NULL) < 0)
+    {
+      fprintf(stderr, "%s: select error!\n", name);
+      exit(-1);
+    }
+
+    if (!FD_ISSET(fd[1], &in_fdset))
+    { /* have a timeout, tidy up */
+      feng_shui();
+      continue;
+    }
+
     packet = ReadFvwmPacket(fd[1]);
     if (!packet)
       exit(0);
@@ -231,23 +267,44 @@ static char *get_simple_color(
   return rest;
 }
 
+static void SafeDestroyPicture(Display *dpy, Picture *picture)
+{
+    /* have to subvert destroy picture so that it doesn't free pixmaps
+     * these are added to the junk list to be cleaned up after a timeout */
+    if (picture->count < 2)
+    {
+      if (picture->picture)
+      {
+        add_to_junk(picture->picture);
+        picture->picture = None;
+      }
+      if (picture->mask)
+      {
+        add_to_junk(picture->mask);
+        picture->mask = None;
+      }
+    }
+    /* all that this will now do is free the colors and the name */
+    DestroyPicture(dpy, picture);
+}
+
 static void free_colorset_background(colorset_struct *cs)
 {
   if (cs->picture) {
     if (cs->picture->picture != cs->pixmap)
-      fprintf(stderr, "FvwmTheme wrning2: cs->picture != cs->pixmap\n");
-    DestroyPicture(dpy, cs->picture);
+      fprintf(stderr, "FvwmTheme warning: cs->picture != cs->pixmap\n");
+    SafeDestroyPicture(dpy, cs->picture);
     cs->picture = None;
     cs->pixmap = None;
   }
   if (cs->pixmap && cs->pixmap != ParentRelative)
   {
-    XFreePixmap(dpy, cs->pixmap);
+    add_to_junk(cs->pixmap);
   }
   cs->pixmap = None;
   if (cs->mask)
   {
-    XFreePixmap(dpy, cs->mask);
+    add_to_junk(cs->mask);
     cs->mask = None;
   }
   if (cs->pixels && cs->nalloc_pixels)
@@ -455,7 +512,7 @@ static void parse_colorset(char *line)
       if (cs->picture->depth != Pdepth)
       {
 	fprintf(stderr, "%s: bitmaps not supported\n", name);
-	DestroyPicture(dpy, cs->picture);
+	SafeDestroyPicture(dpy, cs->picture);
 	cs->picture = None;
 	break;
       }
@@ -499,7 +556,7 @@ static void parse_colorset(char *line)
       has_shape_changed = True;
       if (cs->shape_mask)
       {
-	XFreePixmap(dpy, cs->shape_mask);
+	add_to_junk(cs->shape_mask);
 	cs->shape_mask = None;
       }
       if (do_remove_shape == True)
@@ -524,7 +581,7 @@ static void parse_colorset(char *line)
 	else if (picture->depth != 1 && picture->mask == None)
 	{
 	  fprintf(stderr, "%s: shape pixmap must be of depth 1\n", name);
-	  DestroyPicture(dpy, picture);
+	  SafeDestroyPicture(dpy, picture);
 	}
 	else
 	{
@@ -559,7 +616,7 @@ static void parse_colorset(char *line)
 	}
 	if (picture)
 	{
-	  DestroyPicture(dpy, picture);
+	  SafeDestroyPicture(dpy, picture);
 	  picture = None;
 	}
       }
@@ -575,7 +632,7 @@ static void parse_colorset(char *line)
       has_shape_changed = True;
       if (cs->shape_mask)
       {
-	XFreePixmap(dpy, cs->shape_mask);
+	add_to_junk(cs->shape_mask);
 	cs->shape_mask = None;
       }
       break;
@@ -1028,4 +1085,27 @@ static void set_signals(void) {
 static RETSIGTYPE signal_handler(int signal) {
   fprintf(stderr, "%s quiting on signal %d\n", name, signal);
   exit(signal);
+}
+
+static void add_to_junk(Pixmap pixmap)
+{
+  struct junklist *oldjunk = junk;
+
+  junk = (struct junklist *)safemalloc(sizeof(struct junklist));
+  junk->prev = oldjunk;
+  junk->pixmap = pixmap;
+}
+
+static void feng_shui()
+{
+  struct junklist *oldjunk = junk;
+
+  while (junk)
+  {
+    XFreePixmap(dpy, junk->pixmap);
+    oldjunk = junk;
+    junk = junk->prev;
+    free(oldjunk);
+  }
+  XFlush(dpy);
 }

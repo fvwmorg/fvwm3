@@ -1,3 +1,8 @@
+2000-03-09  Hippo
+
+	* FvwmTheme/FvwmTheme.c: freed pixmaps hang around for a while to
+	prevent modules quiting when lots of colorsets are changed quickly
+
 2000-03-09  olicha	<olivier.chapuis@free.fr>
 
 	* FvwmButtons/draw.c (RedrawButton):
