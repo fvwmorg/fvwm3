@@ -103,3 +103,7 @@ void color_reduce_pixmap(XpmImage* image, int colourLimit);
 Pixel GetSimpleColor(char *name);
 /* handles colorset color names too */
 Pixel GetColor(char *name);
+
+/* duplicate an already allocated color/picture */
+Pixel fvwmlib_clone_color(Pixel p);
+Picture *fvwmlib_clone_picture(Picture *pic);

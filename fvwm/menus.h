@@ -47,350 +47,14 @@
 #ifndef _MENUS_
 #define _MENUS_
 
+#include "menudim.h"
+#include "menustyle.h"
+#include "menuitem.h"
+
 #define MENU_IS_LEFT  0x01
 #define MENU_IS_RIGHT 0x02
 #define MENU_IS_UP    0x04
 #define MENU_IS_DOWN  0x08
-
-/*************************
- * MENU STYLE STRUCTURES *
- *************************/
-
-
-typedef enum
-{
-  /* menu types */
-  SimpleMenu = 0,
-  GradientMenu,
-  PixmapMenu,
-  TiledPixmapMenu,
-  SolidMenu
-  /* max button is 8 (0x8) */
-} MenuFaceType;
-
-typedef struct MenuFeel
-{
-  struct
-  {
-    unsigned is_animated : 1;
-    unsigned do_popdown_immediately : 1;
-    unsigned do_popup_immediately : 1;
-    unsigned do_warp_to_title : 1;
-    unsigned do_popup_as_root_menu : 1;
-    unsigned do_unmap_submenu_on_popdown : 1;
-    unsigned use_left_submenus : 1;
-    unsigned use_automatic_hotkeys : 1;
-  } flags;
-  int PopdownDelay10ms;
-  int PopupOffsetPercent;
-  int ActiveAreaPercent;
-  int PopupOffsetAdd;
-  int PopupDelay10ms;
-  int DoubleClickTime;
-  char *item_format;
-  KeyCode select_on_release_key;
-} MenuFeel;
-
-typedef struct MenuFace
-{
-  union
-  {
-    Picture *p;
-    Pixel back;
-    struct
-    {
-      int npixels;
-      Pixel *pixels;
-    } grad;
-  } u;
-  MenuFaceType type;
-  char gradient_type;
-} MenuFace;
-
-typedef struct MenuLook
-{
-  MenuFace face;
-  struct
-  {
-    unsigned do_hilight : 1;
-    unsigned has_active_fore : 1;
-    unsigned has_active_back : 1;
-    unsigned has_stipple_fore : 1;
-    unsigned has_long_separators : 1;
-    unsigned has_triangle_relief : 1;
-    unsigned has_side_color : 1;
-    unsigned has_menu_cset : 1;
-    unsigned has_active_cset : 1;
-    unsigned has_greyed_cset : 1;
-    unsigned is_item_relief_reversed : 1;
-    unsigned using_default_font : 1;
-  } flags;
-  unsigned char ReliefThickness;
-  unsigned char TitleUnderlines;
-  unsigned char BorderWidth;
-  struct
-  {
-    signed char item_above;
-    signed char item_below;
-    signed char title_above;
-    signed char title_below;
-    signed char separator_above;
-    signed char separator_below;
-  } vertical_spacing;
-  struct
-  {
-    int menu;
-    int active;
-    int greyed;
-  } cset;
-  Picture *side_picture;
-  Pixel side_color;
-  GC MenuGC;
-  GC MenuActiveGC;
-  GC MenuActiveBackGC;
-  GC MenuStippleGC;
-  GC MenuReliefGC;
-  GC MenuShadowGC;
-  GC MenuActiveReliefGC;
-  GC MenuActiveShadowGC;
-  ColorPair MenuColors;
-  ColorPair MenuActiveColors;
-  ColorPair MenuStippleColors;
-  ColorPair MenuReliefColors;
-  FlocaleFont *pStdFont;
-  int FontHeight;              /* menu font height */
-} MenuLook;
-
-typedef struct MenuStyle
-{
-  char *name;
-  struct MenuStyle *next_style;
-  unsigned int usage_count;
-  MenuLook look;
-  MenuFeel feel;
-  struct
-  {
-    unsigned is_updated : 1;
-  } flags;
-} MenuStyle;
-
-#define ST_NAME(s)                    ((s)->name)
-#define MST_NAME(m)                   ((m)->s->ms->name)
-#define ST_NEXT_STYLE(s)              ((s)->next_style)
-#define MST_NEXT_STYLE(m)             ((m)->s->ms->next_style)
-#define ST_USAGE_COUNT(s)             ((s)->usage_count)
-#define MST_USAGE_COUNT(m)            ((m)->s->ms->usage_count)
-/* flags */
-#define ST_IS_UPDATED(s)              ((s)->flags.is_updated)
-#define MST_IS_UPDATED(m)             ((m)->s->ms->flags.is_updated)
-/* look */
-#define ST_FACE(s)                    ((s)->look.face)
-#define MST_FACE(m)                   ((m)->s->ms->look.face)
-#define ST_DO_HILIGHT(s)              ((s)->look.flags.do_hilight)
-#define MST_DO_HILIGHT(m)             ((m)->s->ms->look.flags.do_hilight)
-#define ST_HAS_ACTIVE_FORE(s)         ((s)->look.flags.has_active_fore)
-#define MST_HAS_ACTIVE_FORE(m)        ((m)->s->ms->look.flags.has_active_fore)
-#define ST_HAS_ACTIVE_BACK(s)         ((s)->look.flags.has_active_back)
-#define MST_HAS_ACTIVE_BACK(m)        ((m)->s->ms->look.flags.has_active_back)
-#define ST_HAS_STIPPLE_FORE(s)        ((s)->look.flags.has_stipple_fore)
-#define MST_HAS_STIPPLE_FORE(m)       ((m)->s->ms->look.flags.has_stipple_fore)
-#define ST_HAS_LONG_SEPARATORS(s)     ((s)->look.flags.has_long_separators)
-#define MST_HAS_LONG_SEPARATORS(m)    ((m)->s->ms->look.flags.has_long_separators)
-#define ST_HAS_TRIANGLE_RELIEF(s)     ((s)->look.flags.has_triangle_relief)
-#define MST_HAS_TRIANGLE_RELIEF(m)    ((m)->s->ms->look.flags.has_triangle_relief)
-#define ST_HAS_SIDE_COLOR(s)          ((s)->look.flags.has_side_color)
-#define MST_HAS_SIDE_COLOR(m)         ((m)->s->ms->look.flags.has_side_color)
-#define ST_HAS_MENU_CSET(s)           ((s)->look.flags.has_menu_cset)
-#define MST_HAS_MENU_CSET(m)          ((m)->s->ms->look.flags.has_menu_cset)
-#define ST_HAS_ACTIVE_CSET(s)         ((s)->look.flags.has_active_cset)
-#define MST_HAS_ACTIVE_CSET(m)        ((m)->s->ms->look.flags.has_active_cset)
-#define ST_HAS_GREYED_CSET(s)         ((s)->look.flags.has_greyed_cset)
-#define MST_HAS_GREYED_CSET(m)        ((m)->s->ms->look.flags.has_greyed_cset)
-#define ST_IS_ITEM_RELIEF_REVERSED(s) ((s)->look.flags.is_item_relief_reversed)
-#define MST_IS_ITEM_RELIEF_REVERSED(m) \
-        ((m)->s->ms->look.flags.is_item_relief_reversed)
-#define ST_USING_DEFAULT_FONT(s)      ((s)->look.flags.using_default_font)
-#define MST_USING_DEFAULT_FONT(m)     ((m)->s->ms->look.flags.using_default_font)
-#define ST_RELIEF_THICKNESS(s)        ((s)->look.ReliefThickness)
-#define MST_RELIEF_THICKNESS(m)       ((m)->s->ms->look.ReliefThickness)
-#define ST_TITLE_UNDERLINES(s)        ((s)->look.TitleUnderlines)
-#define MST_TITLE_UNDERLINES(m)       ((m)->s->ms->look.TitleUnderlines)
-#define ST_BORDER_WIDTH(s)            ((s)->look.BorderWidth)
-#define MST_BORDER_WIDTH(m)           ((m)->s->ms->look.BorderWidth)
-#define ST_ITEM_GAP_ABOVE(s)          ((s)->look.vertical_spacing.item_above)
-#define MST_ITEM_GAP_ABOVE(m)         ((m)->s->ms->look.vertical_spacing.item_above)
-#define ST_ITEM_GAP_BELOW(s)          ((s)->look.vertical_spacing.item_below)
-#define MST_ITEM_GAP_BELOW(m)         ((m)->s->ms->look.vertical_spacing.item_below)
-#define ST_TITLE_GAP_ABOVE(s)         ((s)->look.vertical_spacing.title_above)
-#define MST_TITLE_GAP_ABOVE(m)        ((m)->s->ms->look.vertical_spacing.title_above)
-#define ST_TITLE_GAP_BELOW(s)         ((s)->look.vertical_spacing.title_below)
-#define MST_TITLE_GAP_BELOW(m)        ((m)->s->ms->look.vertical_spacing.title_below)
-#define ST_SEPARATOR_GAP_ABOVE(s)     ((s)->look.vertical_spacing.separator_above)
-#define MST_SEPARATOR_GAP_ABOVE(m)    ((m)->s->ms->look.vertical_spacing.separator_above)
-#define ST_SEPARATOR_GAP_BELOW(s)     ((s)->look.vertical_spacing.separator_below)
-#define MST_SEPARATOR_GAP_BELOW(m)    ((m)->s->ms->look.vertical_spacing.separator_below)
-#define ST_CSET_MENU(s)               ((s)->look.cset.menu)
-#define MST_CSET_MENU(m)              ((m)->s->ms->look.cset.menu)
-#define ST_CSET_ACTIVE(s)             ((s)->look.cset.active)
-#define MST_CSET_ACTIVE(m)            ((m)->s->ms->look.cset.active)
-#define ST_CSET_GREYED(s)             ((s)->look.cset.greyed)
-#define MST_CSET_GREYED(m)            ((m)->s->ms->look.cset.greyed)
-#define ST_SIDEPIC(s)                 ((s)->look.side_picture)
-#define MST_SIDEPIC(m)                ((m)->s->ms->look.side_picture)
-#define ST_SIDE_COLOR(s)              ((s)->look.side_color)
-#define MST_SIDE_COLOR(m)             ((m)->s->ms->look.side_color)
-#define ST_MENU_GC(s)                 ((s)->look.MenuGC)
-#define MST_MENU_GC(m)                ((m)->s->ms->look.MenuGC)
-#define ST_MENU_ACTIVE_GC(s)          ((s)->look.MenuActiveGC)
-#define MST_MENU_ACTIVE_GC(m)         ((m)->s->ms->look.MenuActiveGC)
-#define ST_MENU_ACTIVE_BACK_GC(s)     ((s)->look.MenuActiveBackGC)
-#define MST_MENU_ACTIVE_BACK_GC(m)    ((m)->s->ms->look.MenuActiveBackGC)
-#define ST_MENU_ACTIVE_RELIEF_GC(s)   ((s)->look.MenuActiveReliefGC)
-#define MST_MENU_ACTIVE_RELIEF_GC(m)  ((m)->s->ms->look.MenuActiveReliefGC)
-#define ST_MENU_ACTIVE_SHADOW_GC(s)   ((s)->look.MenuActiveShadowGC)
-#define MST_MENU_ACTIVE_SHADOW_GC(m)  ((m)->s->ms->look.MenuActiveShadowGC)
-#define ST_MENU_STIPPLE_GC(s)         ((s)->look.MenuStippleGC)
-#define MST_MENU_STIPPLE_GC(m)        ((m)->s->ms->look.MenuStippleGC)
-#define ST_MENU_RELIEF_GC(s)          ((s)->look.MenuReliefGC)
-#define MST_MENU_RELIEF_GC(m)         ((m)->s->ms->look.MenuReliefGC)
-#define ST_MENU_SHADOW_GC(s)          ((s)->look.MenuShadowGC)
-#define MST_MENU_SHADOW_GC(m)         ((m)->s->ms->look.MenuShadowGC)
-#define ST_MENU_COLORS(s)             ((s)->look.MenuColors)
-#define MST_MENU_COLORS(m)            ((m)->s->ms->look.MenuColors)
-#define ST_MENU_ACTIVE_COLORS(s)      ((s)->look.MenuActiveColors)
-#define MST_MENU_ACTIVE_COLORS(m)     ((m)->s->ms->look.MenuActiveColors)
-#define ST_MENU_STIPPLE_COLORS(s)     ((s)->look.MenuStippleColors)
-#define MST_MENU_STIPPLE_COLORS(m)    ((m)->s->ms->look.MenuStippleColors)
-#define ST_MENU_RELIEF_COLORS(s)      ((s)->look.MenuReliefColors)
-#define MST_MENU_RELIEF_COLORS(m)     ((m)->s->ms->look.MenuReliefColors)
-#define ST_PSTDFONT(s)                ((s)->look.pStdFont)
-#define MST_PSTDFONT(m)               ((m)->s->ms->look.pStdFont)
-#define ST_FONT_HEIGHT(s)             ((s)->look.FontHeight)
-#define MST_FONT_HEIGHT(m)            ((m)->s->ms->look.FontHeight)
-/* feel */
-#define ST_IS_ANIMATED(s)             ((s)->feel.flags.is_animated)
-#define MST_IS_ANIMATED(m)            ((m)->s->ms->feel.flags.is_animated)
-#define ST_DO_POPUP_IMMEDIATELY(s)    ((s)->feel.flags.do_popup_immediately)
-#define MST_DO_POPUP_IMMEDIATELY(m) \
-        ((m)->s->ms->feel.flags.do_popup_immediately)
-#define ST_DO_POPDOWN_IMMEDIATELY(s)    ((s)->feel.flags.do_popdown_immediately)
-#define MST_DO_POPDOWN_IMMEDIATELY(m) \
-        ((m)->s->ms->feel.flags.do_popdown_immediately)
-#define ST_DO_WARP_TO_TITLE(s)        ((s)->feel.flags.do_warp_to_title)
-#define MST_DO_WARP_TO_TITLE(m)       ((m)->s->ms->feel.flags.do_warp_to_title)
-#define ST_DO_POPUP_AS_ROOT_MENU(s)   ((s)->feel.flags.do_popup_as_root_menu)
-#define MST_DO_POPUP_AS_ROOT_MENU(m) \
-        ((m)->s->ms->feel.flags.do_popup_as_root_menu)
-#define ST_DO_UNMAP_SUBMENU_ON_POPDOWN(s) \
-        ((s)->feel.flags.do_unmap_submenu_on_popdown)
-#define MST_DO_UNMAP_SUBMENU_ON_POPDOWN(m) \
-        ((m)->s->ms->feel.flags.do_unmap_submenu_on_popdown)
-#define ST_USE_LEFT_SUBMENUS(s)       ((s)->feel.flags.use_left_submenus)
-#define MST_USE_LEFT_SUBMENUS(m) \
-        ((m)->s->ms->feel.flags.use_left_submenus)
-#define ST_USE_AUTOMATIC_HOTKEYS(s)   ((s)->feel.flags.use_automatic_hotkeys)
-#define MST_USE_AUTOMATIC_HOTKEYS(m) \
-        ((m)->s->ms->feel.flags.use_automatic_hotkeys)
-#define ST_FLAGS(s)                   ((s)->feel.flags)
-#define MST_FLAGS(m)                  ((m)->s->ms->feel.flags)
-#define ST_POPUP_OFFSET_PERCENT(s)    ((s)->feel.PopupOffsetPercent)
-#define MST_POPUP_OFFSET_PERCENT(m)   ((m)->s->ms->feel.PopupOffsetPercent)
-#define ST_POPUP_OFFSET_ADD(s)        ((s)->feel.PopupOffsetAdd)
-#define MST_POPUP_OFFSET_ADD(m)       ((m)->s->ms->feel.PopupOffsetAdd)
-#define ST_ACTIVE_AREA_PERCENT(s)  \
-        ((s)->feel.ActiveAreaPercent)
-#define MST_ACTIVE_AREA_PERCENT(m) \
-       ((m)->s->ms->feel.ActiveAreaPercent)
-#define ST_POPDOWN_DELAY(s)           ((s)->feel.PopdownDelay10ms)
-#define MST_POPDOWN_DELAY(m)          ((m)->s->ms->feel.PopdownDelay10ms)
-#define ST_POPUP_DELAY(s)             ((s)->feel.PopupDelay10ms)
-#define MST_POPUP_DELAY(m)            ((m)->s->ms->feel.PopupDelay10ms)
-#define ST_DOUBLE_CLICK_TIME(s)       ((s)->feel.DoubleClickTime)
-#define MST_DOUBLE_CLICK_TIME(m)      ((m)->s->ms->feel.DoubleClickTime)
-#define ST_ITEM_FORMAT(s)             ((s)->feel.item_format)
-#define MST_ITEM_FORMAT(m)            ((m)->s->ms->feel.item_format)
-#define ST_SELECT_ON_RELEASE_KEY(s)   ((s)->feel.select_on_release_key)
-#define MST_SELECT_ON_RELEASE_KEY(m)  ((m)->s->ms->feel.select_on_release_key)
-
-
-
-/************************
- * MENU ITEM STRUCTURES *
- ************************/
-
-
-struct MenuRoot; /* forward declaration */
-
-/* IMPORTANT NOTE: Don't put members into this struct that can change while the
- * menu is visible! This will wreak havoc on recursive menus when they finally
- * get implemented. */
-typedef struct MenuItem
-{
-  struct MenuItem *next;	/* next menu item */
-  struct MenuItem *prev;	/* prev menu item */
-
-  char *label[MAX_MENU_ITEM_LABELS]; /* the strings displayed in the item */
-  unsigned short label_offset[MAX_MENU_ITEM_LABELS]; /* witdh of label[i] */
-  unsigned short label_strlen[MAX_MENU_ITEM_LABELS]; /* strlen(label[i]) */
-
-  Picture *picture;           /* Pixmap to show above label*/
-  /* Pics to show left/right of label */
-  Picture *lpicture[MAX_MENU_ITEM_MINI_ICONS];
-
-  short y_offset;		/* y offset for item */
-  short height;		/* y height for item */
-
-  char *action;		/* action to be performed */
-  short func_type;		/* type of built in function */
-  short hotkey_coffset;	/* Hot key offset (pete@tecc.co.uk). */
-  char hotkey_column;         /* The column number the hotkey is defined in*/
-  struct
-  {
-    unsigned is_separator : 1;
-    unsigned is_tear_off_bar : 1;
-    unsigned is_title : 1;
-    unsigned is_title_centered : 1;
-    unsigned is_popup : 1;
-    unsigned is_menu : 1;
-    unsigned has_text : 1;
-    unsigned has_picture : 1;
-    unsigned has_hotkey : 1;
-    unsigned is_hotkey_automatic : 1;
-    unsigned is_selectable : 1;
-    /* temporary flags */
-    unsigned was_deselected : 1;
-  } flags;
-} MenuItem;
-
-#define MI_NEXT_ITEM(i)         ((i)->next)
-#define MI_PREV_ITEM(i)         ((i)->prev)
-#define MI_LABEL(i)             ((i)->label)
-#define MI_LABEL_OFFSET(i)      ((i)->label_offset)
-#define MI_LABEL_STRLEN(i)      ((i)->label_strlen)
-#define MI_PICTURE(i)           ((i)->picture)
-#define MI_MINI_ICON(i)         ((i)->lpicture)
-#define MI_Y_OFFSET(i)          ((i)->y_offset)
-#define MI_HEIGHT(i)            ((i)->height)
-#define MI_ACTION(i)            ((i)->action)
-#define MI_FUNC_TYPE(i)         ((i)->func_type)
-#define MI_HOTKEY_COFFSET(i)    ((i)->hotkey_coffset)
-#define MI_HOTKEY_COLUMN(i)     ((i)->hotkey_column)
-/* flags */
-#define MI_IS_SEPARATOR(i)      ((i)->flags.is_separator)
-#define MI_IS_TEAR_OFF_BAR(i)   ((i)->flags.is_tear_off_bar)
-#define MI_IS_TITLE(i)          ((i)->flags.is_title)
-#define MI_IS_TITLE_CENTERED(i) ((i)->flags.is_title_centered)
-#define MI_IS_POPUP(i)          ((i)->flags.is_popup)
-#define MI_IS_MENU(i)           ((i)->flags.is_menu)
-#define MI_HAS_TEXT(i)          ((i)->flags.has_text)
-#define MI_HAS_PICTURE(i)       ((i)->flags.has_picture)
-#define MI_HAS_HOTKEY(i)        ((i)->flags.has_hotkey)
-#define MI_IS_HOTKEY_AUTOMATIC(i) ((i)->flags.is_hotkey_automatic)
-#define MI_IS_SELECTABLE(i)     ((i)->flags.is_selectable)
-/* temporary flags */
-#define MI_WAS_DESELECTED(i)    ((i)->flags.was_deselected)
-
-
 
 /************************
  * MENU ROOT STRUCTURES *
@@ -400,44 +64,36 @@ typedef struct MenuItem
  * copies of the menu */
 typedef struct MenuRootStatic
 {
-  MenuItem *first;            /* first item in menu */
-  MenuItem *last;             /* last item in menu */
+	/* first item in menu */
+	MenuItem *first;
+	/* last item in menu */
+	MenuItem *last;
 
-  int copies;                 /* # of copies, 0 if none except this one */
-  int usage_count;            /* # of mapped instances */
-  char *name;                 /* name of root */
-  unsigned short width;       /* width of the menu */
-  unsigned short height;      /* height of the menu */
-  unsigned short item_width;          /* width of the actual menu item */
-  unsigned short sidepic_x_offset;    /* offset of the sidepic */
-  unsigned short icon_x_offset[MAX_MENU_ITEM_MINI_ICONS];
-                              /* offsets of the mini icons */
-  unsigned short triangle_x_offset;   /* offset of the submenu triangle col */
-  unsigned short item_text_x_offset;  /* offset of the actual menu item */
-  unsigned short item_text_y_offset;  /* y offset for item text. */
-  unsigned short hilight_x_offset;    /* start of the area to be hilighted */
-  unsigned short hilight_width;       /* width of the area to be hilighted */
-  unsigned short y_offset;            /* y coordinate for item */
-  unsigned short items;               /* number of items in the menu */
-  unsigned short screen_width;        /* width and height of the last screen */
-  unsigned short screen_height;       /*   the menu was mapped on */
-  Picture *sidePic;
-  Pixel sideColor;
-  /* Menu Face    */
-  MenuStyle *ms;
-  /* permanent flags */
-  struct
-  {
-    unsigned has_side_color : 1;
-    unsigned is_left_triangle : 1;
-    unsigned is_updated : 1;
-  } flags;
-  struct
-  {
-    char *popup_action;
-    char *popdown_action;
-    char *missing_submenu_func;
-  } dynamic;
+	/* # of copies, 0 if none except this one */
+	int copies;
+	/* # of mapped instances */
+	int usage_count;
+	/* name of root */
+	char *name;
+	MenuDimensions dim;
+	unsigned short items;
+	Picture *sidePic;
+	Pixel sideColor;
+	/* Menu Face */
+	MenuStyle *ms;
+	/* permanent flags */
+	struct
+	{
+		unsigned has_side_color : 1;
+		unsigned is_left_triangle : 1;
+		unsigned is_updated : 1;
+	} flags;
+	struct
+	{
+		char *popup_action;
+		char *popdown_action;
+		char *missing_submenu_func;
+	} dynamic;
 } MenuRootStatic;
 
 /* access macros to static menu members */
@@ -446,19 +102,20 @@ typedef struct MenuRootStatic
 #define MR_COPIES(m)             ((m)->s->copies)
 #define MR_MAPPED_COPIES(m)      ((m)->s->usage_count)
 #define MR_NAME(m)               ((m)->s->name)
-#define MR_WIDTH(m)              ((m)->s->width)
-#define MR_HEIGHT(m)             ((m)->s->height)
-#define MR_ITEM_WIDTH(m)         ((m)->s->item_width)
-#define MR_SIDEPIC_X_OFFSET(m)   ((m)->s->sidepic_x_offset)
-#define MR_ICON_X_OFFSET(m)      ((m)->s->icon_x_offset)
-#define MR_TRIANGLE_X_OFFSET(m)  ((m)->s->triangle_x_offset)
-#define MR_ITEM_X_OFFSET(m)      ((m)->s->item_text_x_offset)
-#define MR_ITEM_TEXT_Y_OFFSET(m) ((m)->s->item_text_y_offset)
-#define MR_HILIGHT_X_OFFSET(m)   ((m)->s->hilight_x_offset)
-#define MR_HILIGHT_WIDTH(m)      ((m)->s->hilight_width)
+#define MR_DIM(m)                ((m)->s->dim)
+#define MR_WIDTH(m)              MDIM_WIDTH((m)->s->dim)
+#define MR_HEIGHT(m)             MDIM_HEIGHT((m)->s->dim)
+#define MR_ITEM_WIDTH(m)         MDIM_ITEM_WIDTH((m)->s->dim)
+#define MR_SIDEPIC_X_OFFSET(m)   MDIM_SIDEPIC_X_OFFSET((m)->s->dim)
+#define MR_ICON_X_OFFSET(m)      MDIM_ICON_X_OFFSET((m)->s->dim)
+#define MR_TRIANGLE_X_OFFSET(m)  MDIM_TRIANGLE_X_OFFSET((m)->s->dim)
+#define MR_ITEM_X_OFFSET(m)      MDIM_ITEM_X_OFFSET((m)->s->dim)
+#define MR_ITEM_TEXT_Y_OFFSET(m) MDIM_ITEM_TEXT_Y_OFFSET((m)->s->dim)
+#define MR_HILIGHT_X_OFFSET(m)   MDIM_HILIGHT_X_OFFSET((m)->s->dim)
+#define MR_HILIGHT_WIDTH(m)      MDIM_HILIGHT_WIDTH((m)->s->dim)
+#define MR_SCREEN_WIDTH(m)       MDIM_SCREEN_WIDTH((m)->s->dim)
+#define MR_SCREEN_HEIGHT(m)      MDIM_SCREEN_HEIGHT((m)->s->dim)
 #define MR_ITEMS(m)              ((m)->s->items)
-#define MR_SCREEN_WIDTH(m)       ((m)->s->screen_width)
-#define MR_SCREEN_HEIGHT(m)      ((m)->s->screen_height)
 #define MR_SIDEPIC(m)            ((m)->s->sidePic)
 #define MR_SIDECOLOR(m)          ((m)->s->sideColor)
 #define MR_STYLE(m)              ((m)->s->ms)
@@ -471,48 +128,57 @@ typedef struct MenuRootStatic
 #define MR_IS_LEFT_TRIANGLE(m)   ((m)->s->flags.is_left_triangle)
 #define MR_IS_UPDATED(m)         ((m)->s->flags.is_updated)
 
-
 /* This struct contains the parts of a root menu that differ in all copies of
  * the menu */
 typedef struct MenuRootDynamic
 {
-  struct MenuRoot *original_menu;     /* the first copy of the current menu */
-  struct MenuRoot *next_menu;         /* next in list of root menus */
-  struct MenuRoot *continuation_menu; /* continuation of this menu
-				       * (too tall for screen) */
-  /* can get the menu that this popped up through selected->mr when
-   * selected is a popup menu item */
-  struct MenuRoot *parent_menu; /* the menu that popped this up, if any */
-  struct MenuItem *parent_item; /* the menu item that popped this up, if any */
-  Display *create_dpy;          /* the display used to create the menu.  Can't
-				 * use the normal display because 'xkill' would
-				 * kill the window manager if used on a tear off
-				 * menu. */
-  Window window;                /* the window of the menu */
-  MenuItem *selected_item;      /* the selected item in menu */
-  MenuItem *submenu_item;       /* item that has it's submenu mapped */
-  int xanimation;               /* x distance window was moved by animation */
-  /* dynamic temp flags */
-  struct
-  {
-    unsigned is_background_set : 1; /* is win background set? */
-    unsigned is_destroyed : 1;
-    unsigned is_left : 1;           /* menu direction relative to parent menu */
-    unsigned is_right : 1;
-    unsigned is_up : 1;
-    unsigned is_down : 1;
-    unsigned is_painted : 1;
-    unsigned is_tear_off_menu : 1;
-    unsigned has_popped_up_left : 1;
-    unsigned has_popped_up_right : 1;
-  } dflags;
-  struct
-  {
-    Pixmap stored;
-    int width;
-    int height;
-    int y;
-  } stored_item;
+	/* the first copy of the current menu */
+	struct MenuRoot *original_menu;
+	/* next in list of root menus */
+	struct MenuRoot *next_menu;
+	/* continuation of this menu (too tall for screen) */
+	struct MenuRoot *continuation_menu;
+	/* can get the menu that this popped up through selected_item->mr when
+	 * selected is a popup menu item */
+	/* the menu that popped this up, if any */
+	struct MenuRoot *parent_menu;
+	/* the menu item that popped this up, if any */
+	struct MenuItem *parent_item;
+	/* the display used to create the menu.  Can't use the normal display
+	 * because 'xkill' would kill the window manager if used on a tear off
+	 * menu. */
+	Display *create_dpy;
+	/* the window of the menu */
+	Window window;
+	/* the selected item in menu */
+	MenuItem *selected_item;
+	/* item that has it's submenu mapped */
+	MenuItem *submenu_item;
+	/* x distance window was moved by animation */
+	int xanimation;
+	/* dynamic temp flags */
+	struct
+	{
+		/* is win background set? */
+		unsigned is_background_set : 1;
+		unsigned is_destroyed : 1;
+		/* menu direction relative to parent menu */
+		unsigned is_left : 1;
+		unsigned is_right : 1;
+		unsigned is_up : 1;
+		unsigned is_down : 1;
+		unsigned is_painted : 1;
+		unsigned is_tear_off_menu : 1;
+		unsigned has_popped_up_left : 1;
+		unsigned has_popped_up_right : 1;
+	} dflags;
+	struct
+	{
+		Pixmap stored;
+		int width;
+		int height;
+		int y;
+	} stored_item;
 } MenuRootDynamic;
 
 /* access macros to static menu members */
@@ -542,53 +208,54 @@ typedef struct MenuRootDynamic
 
 typedef struct MenuRoot
 {
-  MenuRootStatic *s;
-  MenuRootDynamic *d;
+	MenuRootStatic *s;
+	MenuRootDynamic *d;
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
-
-
 
 /***********************************
  * MENU OPTIONS AND POSITION HINTS *
  ***********************************/
 
-
 typedef struct
 {
-  int x;                  /* suggested x position */
-  int y;                  /* suggested y position */
-  int x_offset;           /* additional offset to x */
-  int menu_width;         /* width of the parent menu or item */
-  float x_factor;         /* to take menu width into account (0, -1 or -0.5) */
-  float context_x_factor; /* additional offset factor to x */
-  float y_factor;         /* same with height */
-  int screen_origin_x;
-  int screen_origin_y;
-  Bool is_relative;       /* FALSE if referring to absolute screen position */
-  Bool is_menu_relative;  /* TRUE if referring to a part of a menu */
-  Bool has_screen_origin;
+	/* suggested x/y position */
+	int x;
+	int y;
+	/* additional offset to x */
+	int x_offset;
+	/* width of the parent menu or item */
+	int menu_width;
+	/* to take menu width into account (0, -1 or -0.5) */
+	float x_factor;
+	/* additional offset factor to x */
+	float context_x_factor;
+	/* same with height */
+	float y_factor;
+	int screen_origin_x;
+	int screen_origin_y;
+	/* False if referring to absolute screen position */
+	Bool is_relative;
+	/* True if referring to a part of a menu */
+	Bool is_menu_relative;
+	Bool has_screen_origin;
 } MenuPosHints;
 
 typedef struct
 {
-  MenuPosHints pos_hints;
-  /* A position on the Xinerama screen on which the menu should be started. */
-  struct
-  {
-    unsigned do_not_warp : 1;
-    unsigned do_warp_on_select : 1;
-    unsigned do_warp_title : 1;
-    unsigned do_select_in_place : 1;
-    unsigned has_poshints : 1;
-    unsigned is_fixed : 1;
-  } flags;
+	MenuPosHints pos_hints;
+	/* A position on the Xinerama screen on which the menu should be
+	 * started. */
+	struct
+	{
+		unsigned do_not_warp : 1;
+		unsigned do_warp_on_select : 1;
+		unsigned do_warp_title : 1;
+		unsigned do_select_in_place : 1;
+		unsigned has_poshints : 1;
+		unsigned is_fixed : 1;
+	} flags;
 } MenuOptions;
-
-extern MenuPosHints lastMenuPosHints;
-extern Bool fLastMenuPosHintsValid;
-
-
 
 /****************************
  * MISCELLANEOUS MENU STUFF *
@@ -596,30 +263,31 @@ extern Bool fLastMenuPosHintsValid;
 
 typedef struct
 {
-  MenuRoot *menu;
-  MenuRoot *parent_menu;
-  MenuItem *parent_item;
-  FvwmWindow **pTmp_win;
-  FvwmWindow *button_window;
-  FvwmWindow *tear_off_root_menu_window;
-  int *pcontext;
-  XEvent *eventp;
-  char **ret_paction;
-  XEvent *event_propagate_to_submenu;
-  MenuOptions *pops;
-  /* A position on the Xinerama screen on which the menu should be started. */
-  int screen_origin_x;
-  int screen_origin_y;
-  struct
-  {
-    unsigned has_default_action : 1;
-    unsigned is_already_mapped : 1;
-    unsigned is_first_root_menu : 1;
-    unsigned is_invoked_by_key_press : 1;
-    unsigned is_menu_from_frame_or_window_or_titlebar : 1;
-    unsigned is_sticky : 1;
-    unsigned is_submenu : 1;
-  } flags;
+	MenuRoot *menu;
+	MenuRoot *parent_menu;
+	MenuItem *parent_item;
+	FvwmWindow **pTmp_win;
+	FvwmWindow *button_window;
+	FvwmWindow *tear_off_root_menu_window;
+	int *pcontext;
+	XEvent *eventp;
+	char **ret_paction;
+	XEvent *event_propagate_to_submenu;
+	MenuOptions *pops;
+	/* A position on the Xinerama screen on which the menu should be
+	 * started. */
+	int screen_origin_x;
+	int screen_origin_y;
+	struct
+	{
+		unsigned has_default_action : 1;
+		unsigned is_already_mapped : 1;
+		unsigned is_first_root_menu : 1;
+		unsigned is_invoked_by_key_press : 1;
+		unsigned is_menu_from_frame_or_window_or_titlebar : 1;
+		unsigned is_sticky : 1;
+		unsigned is_submenu : 1;
+	} flags;
 } MenuParameters;
 
 /* Return values for UpdateMenu, do_menu, menuShortcuts.  This is a lame
@@ -627,37 +295,37 @@ typedef struct
  * return-- the macros below help deal with the ugliness. */
 typedef enum
 {
-  MENU_ERROR = -1,
-  MENU_NOP = 0,
-  MENU_DONE,
-  MENU_ABORTED,
-  MENU_SUBMENU_DONE,
-  MENU_DOUBLE_CLICKED,
-  MENU_POPUP,
-  MENU_POPDOWN,
-  MENU_SELECTED,
-  MENU_NEWITEM,
-  MENU_POST,
-  MENU_UNPOST,
-  MENU_TEAR_OFF,
-  MENU_SUBMENU_TORN_OFF,
-  MENU_KILL_TEAR_OFF_MENU,
-  /* propagate the event to a different menu */
-  MENU_PROPAGATE_EVENT
+	MENU_ERROR = -1,
+	MENU_NOP = 0,
+	MENU_DONE,
+	MENU_ABORTED,
+	MENU_SUBMENU_DONE,
+	MENU_DOUBLE_CLICKED,
+	MENU_POPUP,
+	MENU_POPDOWN,
+	MENU_SELECTED,
+	MENU_NEWITEM,
+	MENU_POST,
+	MENU_UNPOST,
+	MENU_TEAR_OFF,
+	MENU_SUBMENU_TORN_OFF,
+	MENU_KILL_TEAR_OFF_MENU,
+	/* propagate the event to a different menu */
+	MENU_PROPAGATE_EVENT
 } MenuRC;
 
 typedef struct
 {
-  MenuRC rc;
-  MenuRoot *menu;
-  MenuRoot *parent_menu;
-  struct
-  {
-    unsigned do_unpost_submenu : 1;
-    unsigned is_first_item_selected : 1;
-    unsigned is_key_press : 1;
-    unsigned is_menu_posted : 1;
-  } flags;
+	MenuRC rc;
+	MenuRoot *menu;
+	MenuRoot *parent_menu;
+	struct
+	{
+		unsigned do_unpost_submenu : 1;
+		unsigned is_first_item_selected : 1;
+		unsigned is_key_press : 1;
+		unsigned is_menu_posted : 1;
+	} flags;
 } MenuReturn;
 
 #define IS_MENU_RETURN(x) \
@@ -669,6 +337,8 @@ typedef struct
  **********************/
 
 void menus_init(void);
+MenuRoot *menus_find_menu(char *name);
+void menus_remove_style_from_menus(MenuStyle *ms);
 MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
@@ -676,8 +346,8 @@ void menu_enter_tear_off_menu(FvwmWindow *tmp_win);
 void menu_close_tear_off_menu(FvwmWindow *tmp_win);
 void do_menu(MenuParameters *pmp, MenuReturn *pret);
 char *get_menu_options(
-  char *action, Window w, FvwmWindow *tmp_win, XEvent *e, MenuRoot *mr,
-  MenuItem *mi, MenuOptions *pops);
+	char *action, Window w, FvwmWindow *tmp_win, XEvent *e, MenuRoot *mr,
+	MenuItem *mi, MenuOptions *pops);
 Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request);
 void add_another_menu_item(char *action);
 void change_mr_menu_style(MenuRoot *mr, char *stylename);

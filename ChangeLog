@@ -1,3 +1,32 @@
+2002-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.h:
+	* fvwm/menus.c:
+	* fvwm/menudim.h:
+	* fvwm/menudim.c:
+	* fvwm/menustyle.h:
+	* fvwm/menustyle.c:
+	* fvwm/menucmd.c:
+	* fvwm/menuitem.c:
+	* fvwm/menuitem.h:
+	moved some of the menu code into separate files
+	more work on tear off menus; windowlist can now be torn off without a
+	memory leak
+
+	* fvwm/template.c:
+	* fvwm/template.h:
+	added templates for new source files
+
+	* libs/Picture.c (fvwmlib_clone_color):
+	new function
+
+	* fvwm/menus.c (make_menu):
+	(update_menu):
+	removed unused parameter from make_menu()
+
+	* fvwm/fvwm2.1 (Example):
+	corrected statement about CaptureHonorsStartsOnPage being the default
+
 2002-03-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* INSTALL.fvwm:
@@ -54,7 +83,6 @@
 	* fvwm/add_window.c (CMD_Recapture):
 	fixed focus loss w/ SloppyFocus and MouseFocus after RecaptureWindow
 
-	* aclocal.m4 (smr_CHECK_LIB):
 	* acinclude.m4 (smr_CHECK_LIB):
 	disabled a destructing gnome_prefix logic again
 
@@ -99,9 +127,8 @@
 
 2002-02-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
-	* aclocal.m4 (smr_CHECK_LIB):
-	fixed a bug with variable expansion and autoconf cache values w/
-	autoconf-2.52
+	* acinclude.m4 (smr_CHECK_LIB):
+	fixed a bug with variable expansion and autoconf cache values
 
 2002-02-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
@@ -1479,7 +1506,7 @@
 2001-11-27  olicha  <olivier.chapuis@free.fr>
 
 	* configure.in:
-	* aclocal.m4:
+	* acinclude.m4:
 	* acconfig.h:
 	* fvwm/ewmh_name.c
 	Check for the second argument of iconv

@@ -1,0 +1,732 @@
+/* -*-c-*- */
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ */
+
+/* ---------------------------- included header files ----------------------- */
+
+#include "config.h"
+
+#include <stdio.h>
+#include <string.h>
+#include <X11/Intrinsic.h>
+#include <libs/Picture.h>
+
+#include "libs/fvwmlib.h"
+#include "libs/safemalloc.h"
+#include "libs/Flocale.h"
+#include "externs.h"
+#include "fvwm.h"
+#include "cursor.h"
+#include "functions.h"
+#include "misc.h"
+#include "screen.h"
+#include "menustyle.h"
+#include "menuitem.h"
+#include "decorations.h"
+
+/* ---------------------------- local definitions --------------------------- */
+
+/* ---------------------------- local macros -------------------------------- */
+
+/* ---------------------------- imports ------------------------------------- */
+
+/* ---------------------------- included code files ------------------------- */
+
+/* ---------------------------- local types --------------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- local variables ----------------------------- */
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- local functions ----------------------------- */
+
+/****************************************************************************
+ * Procedure:
+ *	draw_underline() - Underline a character in a string (pete@tecc.co.uk)
+ *
+ * Calculate the pixel offsets to the start of the character position we
+ * want to underline and to the next character in the string.  Shrink by
+ * one pixel from each end and the draw a line that long two pixels below
+ * the character...
+ *
+ ****************************************************************************/
+static void draw_underline(
+	FlocaleFont *font, Window w, GC gc, int x, int y, char *txt,
+	int coffset)
+{
+	int off1 = FlocaleTextWidth(font, txt, coffset);
+	int off2 = FlocaleTextWidth(font, txt + coffset, 1) - 1 + off1;
+	XDrawLine(dpy, w, gc, x + off1, y + 2, x + off2, y + 2);
+
+	return;
+}
+
+/****************************************************************************
+ *
+ *  Draws two horizontal lines to form a separator
+ *
+ ****************************************************************************/
+static void draw_separator(
+	Window w, GC TopGC, GC BottomGC, int x1, int y, int x2)
+{
+	XDrawLine(dpy, w, TopGC   , x1,   y,   x2,   y);
+	XDrawLine(dpy, w, BottomGC, x1-1, y+1, x2+1, y+1);
+
+	return;
+}
+
+/****************************************************************************
+ *
+ *  Draws a tear off bar.  Similar to a separator, but with a dashed line.
+ *
+ ****************************************************************************/
+static void draw_tear_off_bar(
+	Window w, GC TopGC, GC BottomGC, int x1, int y, int x2)
+{
+	XGCValues xgcv;
+	int width;
+	int offset;
+
+	xgcv.line_style = LineOnOffDash;
+	xgcv.dashes = MENU_TEAR_OFF_BAR_DASH_WIDTH;
+	XChangeGC(dpy, TopGC, GCLineStyle | GCDashList, &xgcv);
+	XChangeGC(dpy, BottomGC, GCLineStyle | GCDashList, &xgcv);
+	width = (x2 - x1 + 1);
+	offset = (width / MENU_TEAR_OFF_BAR_DASH_WIDTH) *
+		MENU_TEAR_OFF_BAR_DASH_WIDTH;
+	offset = (width - offset) / 2;
+	x1 += offset;
+	x2 += offset;
+	XDrawLine(dpy, w, TopGC,    x1, y,     x2, y);
+	XDrawLine(dpy, w, BottomGC, x1, y + 1, x2, y + 1);
+	xgcv.line_style = LineSolid;
+	XChangeGC(dpy, TopGC, GCLineStyle, &xgcv);
+	XChangeGC(dpy, BottomGC, GCLineStyle, &xgcv);
+
+	return;
+}
+
+/* ---------------------------- interface functions ------------------------- */
+
+/* Allocates a new, empty menu item */
+MenuItem *menuitem_create(void)
+{
+	MenuItem *mi;
+
+	mi = (MenuItem *)safemalloc(sizeof(MenuItem));
+	memset(mi, 0, sizeof(MenuItem));
+
+	return mi;
+}
+
+/* Frees a menu item and all of its allocated resources. */
+void menuitem_free(MenuItem *mi)
+{
+	short i;
+
+	if (!mi)
+	{
+		return;
+	}
+	for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
+	{
+		if (MI_LABEL(mi)[i] != NULL)
+		{
+			free(MI_LABEL(mi)[i]);
+		}
+	}
+	if (MI_ACTION(mi) != NULL)
+	{
+		free(MI_ACTION(mi));
+	}
+	if (MI_PICTURE(mi))
+	{
+		DestroyPicture(dpy,MI_PICTURE(mi));
+	}
+	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
+	{
+		if (MI_MINI_ICON(mi)[i])
+		{
+			DestroyPicture(dpy, MI_MINI_ICON(mi)[i]);
+		}
+	}
+	free(mi);
+
+	return;
+}
+
+/* Duplicate a menu item into newly allocated memory.  The new item is
+ * completely independent of the old one. */
+MenuItem *menuitem_clone(MenuItem *mi)
+{
+	MenuItem *new_mi;
+	int i;
+
+	/* copy everything */
+	new_mi = (MenuItem *)safemalloc(sizeof(MenuItem));
+	memcpy(new_mi, mi, sizeof(MenuItem));
+	/* special treatment for a few parts */
+	MI_NEXT_ITEM(new_mi) = NULL;
+	MI_PREV_ITEM(new_mi) = NULL;
+	MI_WAS_DESELECTED(new_mi) = 0;
+	if (MI_ACTION(mi) != NULL)
+	{
+		MI_ACTION(new_mi) = safestrdup(MI_ACTION(mi));
+	}
+	for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
+	{
+		if (MI_LABEL(mi)[i] != NULL)
+		{
+			MI_LABEL(new_mi)[i] = strdup(MI_LABEL(mi)[i]);
+		}
+	}
+	if (MI_PICTURE(mi) != NULL)
+	{
+		MI_PICTURE(new_mi) = fvwmlib_clone_picture(MI_PICTURE(mi));
+	}
+	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
+	{
+		if (MI_MINI_ICON(mi)[i] != NULL)
+		{
+			MI_MINI_ICON(new_mi)[i] =
+				fvwmlib_clone_picture(MI_MINI_ICON(mi)[i]);
+		}
+	}
+
+	return new_mi;
+}
+
+/* Calculate the size of the various parts of the item.  The sizes are returned
+ * through mips. */
+void menuitem_get_size(
+	MenuItem *mi, MenuItemPartSizes *mips, FlocaleFont *font,
+	Bool do_reverse_icon_order)
+{
+	int i;
+	int j;
+	unsigned short w;
+
+	memset(mips, 0, sizeof(MenuItemPartSizes));
+	if (MI_IS_POPUP(mi))
+	{
+		mips->triangle_width = MENU_TRIANGLE_WIDTH;
+	}
+	else if (MI_IS_TITLE(mi) && !MI_HAS_PICTURE(mi))
+	{
+		Bool is_formatted = False;
+
+		/* titles stretch over the whole menu width, so count the
+		 * maximum separately if the title is unformatted. */
+		for (j = 1; j < MAX_MENU_ITEM_LABELS; j++)
+		{
+			if (MI_LABEL(mi)[j] != NULL)
+			{
+				is_formatted = True;
+				break;
+			}
+			else
+			{
+				MI_LABEL_OFFSET(mi)[j] = 0;
+			}
+		}
+		if (!is_formatted && MI_LABEL(mi)[0] != NULL)
+		{
+			MI_LABEL_STRLEN(mi)[0] =
+				strlen(MI_LABEL(mi)[0]);
+			w = FlocaleTextWidth(
+				font, MI_LABEL(mi)[0], MI_LABEL_STRLEN(mi)[0]);
+			MI_LABEL_OFFSET(mi)[0] = w;
+			MI_IS_TITLE_CENTERED(mi) = True;
+			if (mips->title_width < w)
+			{
+				mips->title_width = w;
+			}
+			return;
+		}
+	}
+	/* regular item or formatted title */
+	for (i = 0; i < MAX_MENU_ITEM_LABELS; i++)
+	{
+		if (MI_LABEL(mi)[i])
+		{
+			MI_LABEL_STRLEN(mi)[i] = strlen(MI_LABEL(mi)[i]);
+			w = FlocaleTextWidth(
+				font, MI_LABEL(mi)[i], MI_LABEL_STRLEN(mi)[i]);
+			MI_LABEL_OFFSET(mi)[i] = w;
+			if (mips->label_width[i] < w)
+			{
+				mips->label_width[i] = w;
+			}
+		}
+	}
+	if (MI_PICTURE(mi) && mips->picture_width < MI_PICTURE(mi)->width)
+	{
+		mips->picture_width = MI_PICTURE(mi)->width;
+	}
+	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
+	{
+		if (MI_MINI_ICON(mi)[i])
+		{
+			int k;
+
+			/* Reverse mini icon order for left submenu style. */
+			k = (do_reverse_icon_order == True) ?
+				MAX_MENU_ITEM_MINI_ICONS - 1 - i : i;
+			mips->icon_width[k] = MI_MINI_ICON(mi)[i]->width;
+		}
+	}
+
+	return;
+}
+
+/***********************************************************************
+ *
+ *  Procedure:
+ *	menuitem_paint - draws a single entry in a popped up menu
+ *
+ *	mr - the menu instance that holds the menu item
+ *	mi - the menu item to redraw
+ *	fw - the FvwmWindow structure to check against allowed functions
+ *
+ ***********************************************************************/
+void menuitem_paint(
+	MenuItem *mi, MenuPaintItemParameters *mpip)
+	/*FvwmWindow *fw, Bool do_redraw_menu_border)*/
+{
+	MenuStyle *ms = mpip->ms;
+	MenuDimensions *dim = mpip->dim;
+
+	static FlocaleWinString *fws = NULL;
+	int y_offset;
+	int text_y;
+	int y_height;
+	int x;
+	int y;
+	GC ShadowGC, ReliefGC, currentGC;
+	short relief_thickness = ST_RELIEF_THICKNESS(ms);
+	Bool is_item_selected;
+	Bool xft_redraw = False;
+	int i;
+	int sx1;
+	int sx2;
+
+	if (!mi)
+	{
+		return;
+	}
+	is_item_selected = (mi == mpip->selected_item);
+
+	y_offset = MI_Y_OFFSET(mi);
+	y_height = MI_HEIGHT(mi);
+	if (MI_IS_SELECTABLE(mi))
+	{
+		text_y = y_offset + MDIM_ITEM_TEXT_Y_OFFSET(*dim);
+	}
+	else
+	{
+		text_y = y_offset + ST_PSTDFONT(ms)->ascent +
+			ST_TITLE_GAP_ABOVE(ms);
+	}
+	/* center text vertically if the pixmap is taller */
+	if (MI_PICTURE(mi))
+	{
+		text_y += MI_PICTURE(mi)->height;
+	}
+	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
+	{
+		y = 0;
+		if (MI_MINI_ICON(mi)[i])
+		{
+			if (MI_MINI_ICON(mi)[i]->height > y)
+			{
+				y = MI_MINI_ICON(mi)[i]->height;
+			}
+		}
+		y -= ST_PSTDFONT(ms)->height;
+		if (y > 1)
+		{
+			text_y += y / 2;
+		}
+	}
+
+	ShadowGC = ST_MENU_SHADOW_GC(ms);
+	if (Pdepth<2)
+	{
+		ReliefGC = ST_MENU_SHADOW_GC(ms);
+	}
+	else
+	{
+		ReliefGC = ST_MENU_RELIEF_GC(ms);
+	}
+
+	/***************************************************************
+	 * Hilight the item.
+	 ***************************************************************/
+#ifdef HAVE_XFT
+	if (ST_PSTDFONT(ms)->xftfont != NULL)
+	{
+		xft_redraw = True;
+	}
+#endif
+
+	/* Hilight or clear the background. */
+	if (is_item_selected && ST_DO_HILIGHT(ms))
+	{
+		/* Hilight the background. */
+		if (MDIM_HILIGHT_WIDTH(*dim) - 2 * relief_thickness > 0)
+		{
+			XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
+			XFillRectangle(
+				dpy, mpip->w, ST_MENU_ACTIVE_BACK_GC(ms),
+				MDIM_HILIGHT_X_OFFSET(*dim) + relief_thickness,
+				y_offset + relief_thickness,
+				MDIM_HILIGHT_WIDTH(*dim) - 2 * relief_thickness,
+				y_height - relief_thickness);
+		}
+	}
+	else if (xft_redraw ||
+		 (MI_WAS_DESELECTED(mi) &&
+		  (relief_thickness > 0 || ST_DO_HILIGHT(ms)) &&
+		  (ST_FACE(ms).type != GradientMenu || ST_HAS_MENU_CSET(ms))))
+	{
+		int d = 0;
+		if (MI_PREV_ITEM(mi) &&
+		    mpip->selected_item == MI_PREV_ITEM(mi))
+		{
+			/* Don't paint over the hilight relief. */
+			d = relief_thickness;
+		}
+		/* Undo the hilighting. */
+		XClearArea(
+			dpy, mpip->w, MDIM_ITEM_X_OFFSET(*dim), y_offset + d,
+			MDIM_ITEM_WIDTH(*dim), y_height + relief_thickness - d, 0);
+	}
+
+	MI_WAS_DESELECTED(mi) = False;
+	/* Hilight 3D */
+	if (is_item_selected && relief_thickness > 0)
+	{
+		GC rgc = ReliefGC;
+		GC sgc = ShadowGC;
+		if (ST_HAS_ACTIVE_CSET(ms))
+		{
+			rgc = ST_MENU_ACTIVE_RELIEF_GC(ms);
+			sgc = ST_MENU_ACTIVE_SHADOW_GC(ms);
+		}
+		if (ST_IS_ITEM_RELIEF_REVERSED(ms))
+		{
+			GC tgc = rgc;
+
+			/* swap gcs for reversed relief */
+			rgc = sgc;
+			sgc = tgc;
+		}
+		if (MDIM_HILIGHT_WIDTH(*dim) - 2 * relief_thickness > 0)
+		{
+			/* The relief reaches down into the next item, hence
+			 * the value for the second y coordinate:
+			 * MI_HEIGHT(mi) + 1 */
+			RelieveRectangle(
+				dpy, mpip->w,  MDIM_HILIGHT_X_OFFSET(*dim),
+				y_offset, MDIM_HILIGHT_WIDTH(*dim) - 1,
+				MI_HEIGHT(mi) - 1 + relief_thickness, rgc, sgc,
+				relief_thickness);
+		}
+	}
+
+
+	/***************************************************************
+	 * Draw the item itself.
+	 ***************************************************************/
+
+	/* Calculate the separator offsets. */
+	if (ST_HAS_LONG_SEPARATORS(ms))
+	{
+		sx1 = MDIM_ITEM_X_OFFSET(*dim) + relief_thickness;
+		sx2 = MDIM_ITEM_X_OFFSET(*dim) + MDIM_ITEM_WIDTH(*dim) - 1 -
+			relief_thickness;
+	}
+	else
+	{
+		sx1 = MDIM_ITEM_X_OFFSET(*dim) + relief_thickness +
+			MENU_SEPARATOR_SHORT_X_OFFSET;
+		sx2 = MDIM_ITEM_X_OFFSET(*dim) + MDIM_ITEM_WIDTH(*dim) - 1 -
+			relief_thickness - MENU_SEPARATOR_SHORT_X_OFFSET;
+	}
+	if (MI_IS_SEPARATOR(mi))
+	{
+		if (sx1 < sx2)
+		{
+			/* It's a separator. */
+			draw_separator(
+				mpip->w, ShadowGC, ReliefGC, sx1,
+				y_offset + y_height - MENU_SEPARATOR_HEIGHT,
+				sx2);
+			/* Nothing else to do. */
+		}
+		return;
+	}
+	else if (MI_IS_TEAR_OFF_BAR(mi))
+	{
+		int tx1;
+		int tx2;
+
+		tx1 = MDIM_ITEM_X_OFFSET(*dim) + relief_thickness +
+			MENU_TEAR_OFF_BAR_X_OFFSET;
+		tx2 = MDIM_ITEM_X_OFFSET(*dim) + MDIM_ITEM_WIDTH(*dim) - 1 -
+			relief_thickness -
+			MENU_TEAR_OFF_BAR_X_OFFSET;
+		if (tx1 < tx2)
+		{
+
+			/* It's a tear off bar. */
+			draw_tear_off_bar(
+				mpip->w, ShadowGC, ReliefGC, tx1,
+				y_offset + relief_thickness +
+				MENU_TEAR_OFF_BAR_Y_OFFSET, tx2);
+		}
+		/* Nothing else to do. */
+		return;
+	}
+	else if (MI_IS_TITLE(mi))
+	{
+		/* Separate the title. */
+		if (ST_TITLE_UNDERLINES(ms) > 0 && !mpip->flags.is_first_item)
+		{
+			int add = (MI_IS_SELECTABLE(MI_PREV_ITEM(mi))) ?
+				relief_thickness : 0;
+
+			text_y += MENU_SEPARATOR_HEIGHT + add;
+			y = y_offset + add;
+			if (sx1 < sx2)
+			{
+				draw_separator(
+					mpip->w, ShadowGC, ReliefGC, sx1,
+					y, sx2);
+			}
+		}
+		/* Underline the title. */
+		switch (ST_TITLE_UNDERLINES(ms))
+		{
+		case 0:
+			break;
+		case 1:
+			if (MI_NEXT_ITEM(mi) != NULL)
+			{
+				y = y_offset + y_height - MENU_SEPARATOR_HEIGHT;
+				draw_separator(
+					mpip->w, ShadowGC, ReliefGC, sx1,
+					y, sx2);
+			}
+			break;
+		default:
+			for (i = ST_TITLE_UNDERLINES(ms); i-- > 0; )
+			{
+				y = y_offset + y_height - 1 -
+					i * MENU_UNDERLINE_HEIGHT;
+				XDrawLine(
+					dpy, mpip->w, ShadowGC, sx1, y,
+					sx2, y);
+			}
+			break;
+		}
+	}
+
+	/* Note: it's ok to pass a NULL label to is_function_allowed. */
+	if (is_function_allowed(
+		    MI_FUNC_TYPE(mi), MI_LABEL(mi)[0], mpip->fw, True, False))
+	{
+		currentGC = (is_item_selected) ?
+			ST_MENU_ACTIVE_GC(ms) : ST_MENU_GC(ms);
+		if (ST_DO_HILIGHT(ms) &&
+		    !ST_HAS_ACTIVE_FORE(ms) &&
+		    !ST_HAS_ACTIVE_CSET(ms) &&
+		    is_item_selected)
+		{
+			/* Use a lighter color for highlighted windows menu
+			 * items if the background is hilighted */
+			currentGC = ST_MENU_RELIEF_GC(ms);
+		}
+	}
+	else
+	{
+		/* should be a shaded out word, not just re-colored. */
+		currentGC = ST_MENU_STIPPLE_GC(ms);
+	}
+
+
+	/***************************************************************
+	 * Draw the labels.
+	 ***************************************************************/
+	if (fws == NULL)
+	{
+		FlocaleAllocateWinString(&fws);
+	}
+	fws->win = mpip->w;
+	fws->gc = currentGC;
+	fws->y = text_y;
+	for (i = MAX_MENU_ITEM_LABELS; i-- > 0; )
+	{
+		if (MI_LABEL(mi)[i] && *(MI_LABEL(mi)[i]))
+		{
+			fws->str = MI_LABEL(mi)[i];
+			fws->x = MI_LABEL_OFFSET(mi)[i];
+			FlocaleDrawString(dpy, ST_PSTDFONT(ms), fws, 0);
+		}
+		if (MI_HAS_HOTKEY(mi) && !MI_IS_TITLE(mi) &&
+		    (!MI_IS_HOTKEY_AUTOMATIC(mi) ||
+		     ST_USE_AUTOMATIC_HOTKEYS(ms)) &&
+		    MI_HOTKEY_COLUMN(mi) == i)
+		{
+			draw_underline(
+				ST_PSTDFONT(ms), mpip->w, currentGC,
+				MI_LABEL_OFFSET(mi)[i], text_y,
+				MI_LABEL(mi)[i], MI_HOTKEY_COFFSET(mi));
+		}
+	}
+
+
+	/***************************************************************
+	 * Draw the submenu triangle.
+	 ***************************************************************/
+
+	if (MI_IS_POPUP(mi))
+	{
+		y = y_offset + (y_height - MENU_TRIANGLE_HEIGHT +
+				relief_thickness) / 2;
+		DrawTrianglePattern(
+			dpy, mpip->w,
+			ReliefGC, ShadowGC, (is_item_selected) ?
+			ReliefGC : ST_MENU_GC(ms), MDIM_TRIANGLE_X_OFFSET(*dim),
+			y, MENU_TRIANGLE_WIDTH, MENU_TRIANGLE_HEIGHT, 0,
+			(mpip->flags.is_left_triangle) ? 'l' : 'r',
+			ST_HAS_TRIANGLE_RELIEF(ms),
+			!ST_HAS_TRIANGLE_RELIEF(ms), is_item_selected);
+	}
+
+	/***************************************************************
+	 * Draw the item picture.
+	 ***************************************************************/
+
+	if (MI_PICTURE(mi))
+	{
+		x = menudim_middle_x_offset(mpip->dim) -
+			MI_PICTURE(mi)->width / 2;
+		y = y_offset + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0);
+
+		if (MI_PICTURE(mi)->depth == Pdepth) /* pixmap */
+		{
+			Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
+			Globalgcv.clip_mask = MI_PICTURE(mi)->mask;
+			Globalgcv.clip_x_origin = x;
+			Globalgcv.clip_y_origin = y;
+			XChangeGC(dpy, ReliefGC, Globalgcm, &Globalgcv);
+			XCopyArea(
+				dpy, MI_PICTURE(mi)->picture, mpip->w,
+				ReliefGC, 0, 0, MI_PICTURE(mi)->width,
+				MI_PICTURE(mi)->height, x, y);
+			Globalgcm = GCClipMask;
+			Globalgcv.clip_mask = None;
+			XChangeGC(dpy, ReliefGC, Globalgcm, &Globalgcv);
+		}
+		else
+		{
+			XCopyPlane(
+				dpy, MI_PICTURE(mi)->picture, mpip->w,
+				currentGC, 0, 0, MI_PICTURE(mi)->width,
+				MI_PICTURE(mi)->height, x, y, 1);
+		}
+	}
+
+	/***************************************************************
+	 * Draw the mini icons.
+	 ***************************************************************/
+
+	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
+	{
+		int k;
+
+		/* We need to reverse the mini icon order for left submenu
+		 * style. */
+		k = (ST_USE_LEFT_SUBMENUS(ms)) ?
+			MAX_MENU_ITEM_MINI_ICONS - 1 - i : i;
+
+		if (MI_MINI_ICON(mi)[i])
+		{
+			if (MI_PICTURE(mi))
+			{
+				y = y_offset + MI_HEIGHT(mi) -
+					MI_MINI_ICON(mi)[i]->height;
+			}
+			else
+			{
+				y = y_offset +
+					(MI_HEIGHT(mi) +
+					 ((MI_IS_SELECTABLE(mi)) ?
+					  relief_thickness : 0) -
+					 MI_MINI_ICON(mi)[i]->height) / 2;
+			}
+			Globalgcm = GCClipMask | GCClipXOrigin | GCClipYOrigin;
+			Globalgcv.clip_x_origin = MDIM_ICON_X_OFFSET(*dim)[k];
+			Globalgcv.clip_y_origin = y;
+			if (MI_MINI_ICON(mi)[i]->depth == Pdepth)
+			{
+				/* pixmap */
+				Globalgcv.clip_mask = MI_MINI_ICON(mi)[i]->mask;
+				XChangeGC(dpy,currentGC,Globalgcm,&Globalgcv);
+				XCopyArea(
+					dpy, MI_MINI_ICON(mi)[i]->picture,
+					mpip->w, currentGC, 0, 0,
+					MI_MINI_ICON(mi)[i]->width,
+					MI_MINI_ICON(mi)[i]->height,
+					MDIM_ICON_X_OFFSET(*dim)[k], y);
+			}
+			else
+			{
+				/* monochrome bitmap */
+				Globalgcv.clip_mask =
+					MI_MINI_ICON(mi)[i]->picture;
+				XChangeGC(dpy,currentGC,Globalgcm,&Globalgcv);
+				XCopyPlane(
+					dpy, MI_MINI_ICON(mi)[i]->picture,
+					mpip->w, currentGC, 0, 0,
+					MI_MINI_ICON(mi)[i]->width,
+					MI_MINI_ICON(mi)[i]->height,
+					MDIM_ICON_X_OFFSET(*dim)[k], y, 1);
+			}
+			Globalgcm = GCClipMask;
+			Globalgcv.clip_mask = None;
+			XChangeGC(dpy, currentGC, Globalgcm, &Globalgcv);
+		}
+	}
+
+	return;
+}
+
+/* returns the center y coordinate of the menu item */
+int menuitem_middle_y_offset(MenuItem *mi, MenuStyle *ms)
+{
+	int r;
+
+	if (!mi)
+	{
+		return ST_BORDER_WIDTH(ms);
+	}
+	r = (MI_IS_SELECTABLE(mi)) ? ST_RELIEF_THICKNESS(ms) : 0;
+
+	return MI_Y_OFFSET(mi) + (MI_HEIGHT(mi) + r) / 2;
+}

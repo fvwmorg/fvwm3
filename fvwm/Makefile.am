@@ -13,9 +13,10 @@ fvwm2_SOURCES = add_window.h bindings.h borders.h builtins.h colormaps.h \
 		colors.h commands.h conditional.h cursor.h decorations.h \
 		events.h ewmh.h ewmh_intern.h \
 		externs.h focus.h functions.h fvwm.h fvwmdebug.h geometry.h \
-		gnome.h icccm2.h icons.h menus.h misc.h modconf.h \
-		module_interface.h move_resize.h placement.h read.h \
-		repeat.h  schedule.h screen.h session.h stack.h style.h \
+		gnome.h icccm2.h icons.h menuitem.h menus.h menustyle.h \
+		menudim.h \
+		misc.h modconf.h module_interface.h move_resize.h placement.h \
+		read.h repeat.h  schedule.h screen.h session.h stack.h style.h \
 		update.h virtual.h window_flags.h windowlist.h \
 		menus.c style.c borders.c move_resize.c builtins.c events.c \
 		add_window.c module_interface.c icons.c stack.c functions.c \
@@ -23,7 +24,8 @@ fvwm2_SOURCES = add_window.h bindings.h borders.h builtins.h colormaps.h \
 		misc.c fvwmdebug.c conditional.c colormaps.c \
 		repeat.c decorations.c bindings.c colors.c cursor.c update.c \
 		windowlist.c modconf.c gnome.c geometry.c icccm2.c ewmh.c \
-		ewmh_events.c ewmh_icons.c ewmh_names.c ewmh_conf.c schedule.c
+		ewmh_events.c ewmh_icons.c ewmh_names.c ewmh_conf.c schedule.c \
+		menuitem.c menustyle.c menudim.c menucmd.c
 
 fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
