@@ -1990,6 +1990,12 @@ static void ApplyDefaultFontAndColors(void)
 
 }
 
+void SetDefaultIcon(F_CMD_ARGS)
+{
+  GetNextToken(action, &Scr.DefaultIcon);
+}
+
+
 void SetDefaultColors(F_CMD_ARGS)
 {
   char *fore = NULL;

@@ -1185,6 +1185,12 @@ context, use the \fIWindowFont\fP, \fIIconFont\fP or \fIMenuStyle\fP
 commands.
 
 
+.IP "DefaultIcon \fIfilename\fP"
+sets the default icon which is used if a window has neither an
+client-supplied icon nor an icon supplied via the Icon option
+of the Style command. 
+
+
 .IP "DefaultLayers \fIontop\fP \fIput\fP"
 changes the layers that are used for the StaysOnTop/StaysPut style
 options. Initially, the layers 6 and 4 are used.
@@ -2662,7 +2668,8 @@ buttons to the sides and the client window of an undecorated window
 ('S' and 'W' contexts in bindings, see \fIMouse\fP and \fIKey\fP commands).
 
 \fIIcon\fP takes an (optional) unquoted string argument which is the icon
-bitmap or pixmap to use.
+bitmap or pixmap to use. Icons specified this way override icons
+provided by the client in the WM_HINTS property. 
 
 \fIIconBox\fP takes four numeric arguments or an X11 geometry string:
 .EX

@@ -116,6 +116,7 @@ static struct functions func_config[] =
   {"CURSORSTYLE",  CursorStyle,      F_CURSOR_STYLE,        FUNC_NO_WINDOW},
   {"DEFAULTCOLORS",SetDefaultColors, F_DFLT_COLORS,         FUNC_NO_WINDOW},
   {"DEFAULTFONT",  LoadDefaultFont,  F_DFLT_FONT,           FUNC_NO_WINDOW},
+  {"DEFAULTICON",  SetDefaultIcon,   F_DFLT_ICON,           FUNC_NO_WINDOW},
   {"DEFAULTLAYERS",SetDefaultLayers, F_DFLT_LAYERS,         FUNC_NO_WINDOW},
   {"DELETE",       delete_function,  F_DELETE,              FUNC_NEEDS_WINDOW},
   {"DESK",         changeDesks_func, F_DESK,                FUNC_NO_WINDOW},

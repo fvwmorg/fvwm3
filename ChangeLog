@@ -1,3 +1,19 @@
+1999-04-14  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/misc.h: 
+	* fvwm/parse.h: 
+	* fvwm/builtins.c (SetDefaultIcon): 
+	* fvwm/functions.c (func_config): Add DefaultIcon command.
+
+	* fvwm/style.c (ProcessNewStyle): Change Icon style option
+	to reset icon_name, if used without argument. Remove hack
+	for  Style * Icon foo; issue a warning about this.
+
+1999-04-13  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/events.c (HandlePropertyNotify): Make sure disabling
+	an active icon restores the default icon. 
+
 Tue Apr 13 23:13:24 1999  DanEspen  <dje@blue>
 
 	* fvwm/fvwm.c (main): Read command just $HOME or $FVWM_USERHOME.
