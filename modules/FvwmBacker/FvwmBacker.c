@@ -56,7 +56,6 @@
 #include "libs/Module.h"
 #include "libs/Colorset.h"
 #include "FvwmBacker.h"
-#include "Mallocs.h"
 
 unsigned long BackerGetColor(char *color);
 
