@@ -1,5 +1,9 @@
 2001-02-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/stack.c (get_transientfor_fvwmwindow):
+	* fvwm/add_window.c (setup_layer):
+	workaround for windows that are their own transients %-\
+
 	* fvwm/events.c (HandleConfigureRequest):
 	shaded applications cannot move their windows anymore. this helps with
 	jumping xv windows

@@ -220,7 +220,7 @@ FvwmWindow *get_transientfor_fvwmwindow(FvwmWindow *t)
   {
     if (s->w == t->transientfor)
     {
-      return s;
+      return (s == t) ? NULL : s;
     }
   }
 
