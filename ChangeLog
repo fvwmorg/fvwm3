@@ -1,5 +1,8 @@
 2002-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/frame.c (frame_get_sidebar_geometry):
+	fixed layout of windows with a small height
+
 	* fvwm/borders.c:
 	* fvwm/frame.c:
 	made good progress with frame layout rewrite. I think it is already

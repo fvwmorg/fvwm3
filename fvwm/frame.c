@@ -619,7 +619,7 @@ void frame_get_sidebar_geometry(
 	{
 		ret_g->width = 1;
 	}
-	ret_g->height = frame_g->height - 2 * ret_g->x;
+	ret_g->height = frame_g->height - 2 * ret_g->y;
 	if (ret_g->height < 1)
 	{
 		ret_g->height = 1;
@@ -894,7 +894,7 @@ frame_move_resize_args frame_create_move_resize_args(
 		whdiff = max(abs(mra->delta_g.width), abs(mra->delta_g.height));
 		if (whdiff == 0)
 		{
-			anim_steps = 0;
+			mra->anim_steps = 0;
 		}
 		else if (mra->anim_steps < 0)
 		{
@@ -908,7 +908,7 @@ frame_move_resize_args frame_create_move_resize_args(
 	case FRAME_MR_SETUP:
 	case FRAME_MR_OPAQUE:
 	default:
-		anim_steps = 0;
+		mra->anim_steps = 0;
 		break;
 	}
 	mra->anim_steps++;
