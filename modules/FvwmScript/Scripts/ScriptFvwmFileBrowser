@@ -23,7 +23,6 @@ Init
   Set $PWD=(StrCopy $PWD 1 $POS)
   Set $CMD2={cd;cd } $PWD {; pwd}
   Set $PWD=(GetOutput $CMD2 0 0)
-  Do {Exec echo } $PWD
   Set $OPT={ }
   Set $CMD={cd } $PWD {; ls} $OPT {-1 -F}
   Set $LS=(GetOutput $CMD 1 -1)
@@ -209,7 +208,7 @@ Main
   Begin
    Set $CMD3={cd } $PWD {; ls} $OPT {-1}
    Set $PWD2=$PWD {/} (GetOutput $CMD3 (GetValue 7) -1)
-   Set $CMD2={cd } $PWD {;cd } $PWD2 {; pwd}
+   Set $CMD2={cd } $PWD {;cd } $PWD2 { 2>/dev/null; pwd}
    Set $PWD2=(GetOutput $CMD2 0 0)
    If $PWD2 <> $PWD Then
    Begin

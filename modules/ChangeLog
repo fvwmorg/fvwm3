@@ -1,3 +1,11 @@
+2000-06-06  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/Goodies.c (CreateTipWindow):
+	Applied Gregory A. Shimansky TaskBar tips patch
+
+	* FvwmScripts/Scripts/ScriptFvwmFileBrowser
+	Reduced stderr out put
+	
 2000-05-31  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmPager/x_pager.c: set resource class to module name (FvwmPager).

@@ -482,7 +482,7 @@ void CreateTipWindow(int x, int y, int w, int h)
   GC gc0 = None;
   GC gc1 = None;
   XGCValues gcval;
-  static Pixmap pchk = None;
+  Pixmap pchk = None;
   Pixel tip_fore;
   Pixel tip_back;
   colorset_struct *cset = NULL;
@@ -523,8 +523,8 @@ void CreateTipWindow(int x, int y, int w, int h)
 
   gcmask = GCForeground | GCBackground | GCFillStyle | GCStipple |
            GCGraphicsExposures;
-  gcval.foreground = WhitePixel(dpy, screen);
-  gcval.background = BlackPixel(dpy, screen);
+  gcval.foreground = 1;
+  gcval.background = 0;
   gcval.fill_style = FillStippled;
   if (pchk == None)
     pchk = XCreatePixmapFromBitmapData(dpy, Tip.win, (char *)gray_bits,
@@ -538,15 +538,15 @@ void CreateTipWindow(int x, int y, int w, int h)
   gcmask = GCForeground | GCBackground | GCGraphicsExposures | GCFillStyle;
   gcval.graphics_exposures = False;
   gcval.fill_style = FillSolid;
-  gcval.foreground = BlackPixel(dpy, screen);
-  gcval.background = BlackPixel(dpy, screen);
+  gcval.foreground = 0;
+  gcval.background = 0;
   if (gc0)
     XChangeGC(dpy, gc0, gcmask, &gcval);
   else
     gc0 = XCreateGC(dpy, pmask, gcmask, &gcval);
 
-  gcval.foreground = WhitePixel(dpy, screen);
-  gcval.background = WhitePixel(dpy, screen);
+  gcval.foreground = 1;
+  gcval.background = 1;
   if (gc1)
     XChangeGC(dpy, gc1, gcmask, &gcval);
   else
@@ -566,6 +566,10 @@ void CreateTipWindow(int x, int y, int w, int h)
      SetWindowBackground(
        dpy, Tip.win, w + 4, h + 4, cset, Pdepth, tipsgc, False);
   }
+  XFreeGC(dpy, gc0);
+  XFreeGC(dpy, gc1);
+  XFreeGC(dpy, cgc);
+  XFreePixmap(dpy, pchk);
 }
 
 void DestroyTipWindow()
