@@ -1,6 +1,10 @@
+1999-04-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (Scroll): fixed typo in previous patch
+
 1999-04-07  Dominik Vogt  <dominik_vogt@gmx.de>
 
-	* FvwmPager/x_pager.c (Scroll): fixed coredumt with transient pager
+	* FvwmPager/x_pager.c (Scroll): fixed coredump with transient pager
 	(patch by Brad Giaccio)
 
 1999-04-06  Tomas Ogren  <stric@ing.umu.se>

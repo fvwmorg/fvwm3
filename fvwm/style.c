@@ -132,7 +132,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(ITIS("ACTIVEPLACEMENT"))
         {
           SKIP("ACTIVEPLACEMENT");
-          tname.on_flags |= RANDOM_PLACE_FLAG;
+          tname.off_flags |= RANDOM_PLACE_FLAG;
         }
         break;
       case 'b':
@@ -145,7 +145,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             tname.BackColor = safemalloc(len+1);
             strncpy(tname.BackColor,restofline,len);
             tname.BackColor[len] = 0;
-            tname.off_flags |= BACK_COLOR_FLAG;
+            tname.on_flags |= BACK_COLOR_FLAG;
           }
           restofline = tmp;
         }
@@ -159,12 +159,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           SKIPSPACE;
           if (butt == 0) butt = 10;
           if (butt > 0 && butt <= 10)
-            tname.on_buttons |= (1<<(butt-1));
+            tname.off_buttons |= (1<<(butt-1));
         }
         else if(ITIS("BorderWidth"))
         {
           SKIP("BorderWidth");
-          tname.off_flags |= BW_FLAG;
+          tname.on_flags |= BW_FLAG;
           sscanf(restofline,"%d",&tname.border_width);
           GETWORD;
           restofline = tmp;
@@ -189,7 +189,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             tname.ForeColor = safemalloc(len+1);
             strncpy(tname.ForeColor,restofline,len);
             tname.ForeColor[len] = 0;
-            tname.off_flags |= FORE_COLOR_FLAG;
+            tname.on_flags |= FORE_COLOR_FLAG;
           }
 
           while(isspace(*tmp))tmp++;
@@ -210,7 +210,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
               tname.BackColor = safemalloc(len+1);
               strncpy(tname.BackColor,restofline,len);
               tname.BackColor[len] = 0;
-              tname.off_flags |= BACK_COLOR_FLAG;
+              tname.on_flags |= BACK_COLOR_FLAG;
             }
           }
           restofline = tmp;
@@ -218,41 +218,41 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         else if(ITIS("CirculateSkipIcon"))
         {
           SKIP("CirculateSkipIcon");
-          tname.off_flags |= CIRCULATE_SKIP_ICON_FLAG;
+          tname.on_flags |= CIRCULATE_SKIP_ICON_FLAG;
         }
         else if(ITIS("CirculateHitIcon"))
         {
           SKIP("CirculateHitIcon");
-          tname.on_flags |= CIRCULATE_SKIP_ICON_FLAG;
+          tname.off_flags |= CIRCULATE_SKIP_ICON_FLAG;
         }
         else if(ITIS("CLICKTOFOCUS"))
         {
           SKIP("CLICKTOFOCUS");
-          tname.off_flags |= CLICK_FOCUS_FLAG;
-          tname.on_flags |= SLOPPY_FOCUS_FLAG;
-          tname.off_flags |= GRAB_FOCUS;
+          tname.on_flags |= CLICK_FOCUS_FLAG;
+          tname.off_flags |= SLOPPY_FOCUS_FLAG;
+          tname.on_flags |= GRAB_FOCUS;
         }
         else if(ITIS("CirculateSkip"))
         {
           SKIP("CirculateSkip");
-          tname.off_flags |= CIRCULATESKIP_FLAG;
+          tname.on_flags |= CIRCULATESKIP_FLAG;
         }
         else if(ITIS("CirculateHit"))
         {
           SKIP("CirculateHit");
-          tname.on_flags |= CIRCULATESKIP_FLAG;
+          tname.off_flags |= CIRCULATESKIP_FLAG;
         }
         break;
       case 'd':
         if(ITIS("DecorateTransient"))
         {
           SKIP("DecorateTransient");
-          tname.off_flags |= DECORATE_TRANSIENT_FLAG;
+          tname.on_flags |= DECORATE_TRANSIENT_FLAG;
         }
         else if(ITIS("DUMBPLACEMENT"))
         {
           SKIP("DUMBPLACEMENT");
-          tname.on_flags |= SMART_PLACE_FLAG;
+          tname.off_flags |= SMART_PLACE_FLAG;
         }
         break;
       case 'e':
@@ -267,54 +267,54 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             tname.ForeColor = safemalloc(len+1);
             strncpy(tname.ForeColor,restofline,len);
             tname.ForeColor[len] = 0;
-            tname.off_flags |= FORE_COLOR_FLAG;
+            tname.on_flags |= FORE_COLOR_FLAG;
           }
           restofline = tmp;
         }
         else if(ITIS("FVWMBUTTONS"))
         {
           SKIP("FVWMBUTTONS");
-          tname.on_flags |= MWM_BUTTON_FLAG;
+          tname.off_flags |= MWM_BUTTON_FLAG;
         }
         else if(ITIS("FVWMBORDER"))
         {
           SKIP("FVWMBORDER");
-          tname.on_flags |= MWM_BORDER_FLAG;
+          tname.off_flags |= MWM_BORDER_FLAG;
         }
         else if(ITIS("FocusFollowsMouse"))
         {
           SKIP("FocusFollowsMouse");
-          tname.on_flags |= CLICK_FOCUS_FLAG;
-          tname.on_flags |= SLOPPY_FOCUS_FLAG;
+          tname.off_flags |= CLICK_FOCUS_FLAG;
+          tname.off_flags |= SLOPPY_FOCUS_FLAG;
         }
         break;
       case 'g':
         if(ITIS("GrabFocusOff"))
         {
           SKIP("GRABFOCUSOFF");
-          tname.on_flags |= GRAB_FOCUS;
+          tname.off_flags |= GRAB_FOCUS;
         }
         else if(ITIS("GrabFocus"))
         {
           SKIP("GRABFOCUS");
-          tname.off_flags |= GRAB_FOCUS;
+          tname.on_flags |= GRAB_FOCUS;
         }
         break;
       case 'h':
         if(ITIS("HINTOVERRIDE"))
         {
           SKIP("HINTOVERRIDE");
-          tname.off_flags |= MWM_OVERRIDE_FLAG;
+          tname.on_flags |= MWM_OVERRIDE_FLAG;
         }
         else if(ITIS("HANDLES"))
         {
           SKIP("HANDLES");
-          tname.on_flags |= NOBORDER_FLAG;
+          tname.off_flags |= NOBORDER_FLAG;
         }
         else if(ITIS("HandleWidth"))
         {
           SKIP("HandleWidth");
-          tname.off_flags |= NOBW_FLAG;
+          tname.on_flags |= NOBW_FLAG;
           sscanf(restofline,"%d",&tname.resize_width);
           GETWORD;
           restofline = tmp;
@@ -325,7 +325,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(ITIS("IconTitle"))
         {
           SKIP("IconTitle");
-          tname.on_flags |= NOICON_TITLE_FLAG;
+          tname.off_flags |= NOICON_TITLE_FLAG;
         }
         else if(ITIS("IconBox"))
         {
@@ -479,11 +479,11 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             tname.value = safemalloc(len+1);
             strncpy(tname.value,restofline,len);
             tname.value[len] = 0;
-            tname.off_flags |= ICON_FLAG;
-            tname.on_flags |= SUPPRESSICON_FLAG;
+            tname.on_flags |= ICON_FLAG;
+            tname.off_flags |= SUPPRESSICON_FLAG;
           }
           else
-            tname.on_flags |= SUPPRESSICON_FLAG;
+            tname.off_flags |= SUPPRESSICON_FLAG;
           restofline = tmp;
         }
         break;
@@ -495,7 +495,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(ITIS("LENIENCE"))
         {
           SKIP("LENIENCE");
-          tname.off_flags |= LENIENCE_FLAG;
+          tname.on_flags |= LENIENCE_FLAG;
         }
 	else if (ITIS("LAYER"))
 	  {
@@ -513,7 +513,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(ITIS("MWMBUTTONS"))
         {
           SKIP("MWMBUTTONS");
-          tname.off_flags |= MWM_BUTTON_FLAG;
+          tname.on_flags |= MWM_BUTTON_FLAG;
         }
 #ifdef MINI_ICONS
 	else if (ITIS("MINIICON"))
@@ -525,7 +525,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             tname.mini_value = safemalloc(len+1);
             strncpy(tname.mini_value,restofline,len);
             tname.mini_value[len] = 0;
-            tname.off_flags |= MINIICON_FLAG;
+            tname.on_flags |= MINIICON_FLAG;
           }
           restofline = tmp;
 	}
@@ -533,76 +533,76 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         else if(ITIS("MWMBORDER"))
         {
           SKIP("MWMBORDER");
-          tname.off_flags |= MWM_BORDER_FLAG;
+          tname.on_flags |= MWM_BORDER_FLAG;
         }
         else if(ITIS("MWMDECOR"))
         {
           SKIP("MWMDECOR");
-          tname.off_flags |= MWM_DECOR_FLAG;
+          tname.on_flags |= MWM_DECOR_FLAG;
         }
         else if(ITIS("MWMFUNCTIONS"))
         {
           SKIP("MWMFUNCTIONS");
-          tname.off_flags |= MWM_FUNCTIONS_FLAG;
+          tname.on_flags |= MWM_FUNCTIONS_FLAG;
         }
         else if(ITIS("MOUSEFOCUS"))
         {
           SKIP("MOUSEFOCUS");
-          tname.on_flags |= CLICK_FOCUS_FLAG;
-          tname.on_flags |= SLOPPY_FOCUS_FLAG;
-          tname.on_flags |= GRAB_FOCUS;
+          tname.off_flags |= CLICK_FOCUS_FLAG;
+          tname.off_flags |= SLOPPY_FOCUS_FLAG;
+          tname.off_flags |= GRAB_FOCUS;
         }
         break;
       case 'n':
         if(ITIS("NoIconTitle"))
         {
           SKIP("NoIconTitle");
-          tname.off_flags |= NOICON_TITLE_FLAG;
+          tname.on_flags |= NOICON_TITLE_FLAG;
         }
         else if(ITIS("NOICON"))
         {
           SKIP("NOICON");
-          tname.off_flags |= SUPPRESSICON_FLAG;
+          tname.on_flags |= SUPPRESSICON_FLAG;
         }
         else if(ITIS("NOTITLE"))
         {
           SKIP("NOTITLE");
-          tname.off_flags |= NOTITLE_FLAG;
+          tname.on_flags |= NOTITLE_FLAG;
         }
         else if(ITIS("NoPPosition"))
         {
           SKIP("NoPPosition");
-          tname.off_flags |= NO_PPOSITION_FLAG;
+          tname.on_flags |= NO_PPOSITION_FLAG;
         }
         else if(ITIS("NakedTransient"))
         {
           SKIP("NakedTransient");
-          tname.on_flags |= DECORATE_TRANSIENT_FLAG;
+          tname.off_flags |= DECORATE_TRANSIENT_FLAG;
         }
         else if(ITIS("NODECORHINT"))
         {
           SKIP("NODECORHINT");
-          tname.on_flags |= MWM_DECOR_FLAG;
+          tname.off_flags |= MWM_DECOR_FLAG;
         }
         else if(ITIS("NOFUNCHINT"))
         {
           SKIP("NOFUNCHINT");
-          tname.on_flags |= MWM_FUNCTIONS_FLAG;
+          tname.off_flags |= MWM_FUNCTIONS_FLAG;
         }
         else if(ITIS("NOOVERRIDE"))
         {
           SKIP("NOOVERRIDE");
-          tname.on_flags |= MWM_OVERRIDE_FLAG;
+          tname.off_flags |= MWM_OVERRIDE_FLAG;
         }
         else if(ITIS("NOHANDLES"))
         {
           SKIP("NOHANDLES");
-          tname.off_flags |= NOBORDER_FLAG;
+          tname.on_flags |= NOBORDER_FLAG;
         }
         else if(ITIS("NOLENIENCE"))
         {
           SKIP("NOLENIENCE");
-          tname.on_flags |= LENIENCE_FLAG;
+          tname.off_flags |= LENIENCE_FLAG;
         }
         else if (ITIS("NOBUTTON"))
         {
@@ -615,20 +615,20 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 
           if (butt == 0) butt = 10;
           if (butt > 0 && butt <= 10)
-            tname.off_buttons |= (1<<(butt-1));
+            tname.on_buttons |= (1<<(butt-1));
           restofline = tmp;
         }
         else if(ITIS("NOOLDECOR"))
         {
           SKIP("NOOLDECOR");
-          tname.on_flags |= OL_DECOR_FLAG;
+          tname.off_flags |= OL_DECOR_FLAG;
         }
         break;
       case 'o':
         if(ITIS("OLDECOR"))
         {
           SKIP("OLDECOR");
-          tname.off_flags |= OL_DECOR_FLAG;
+          tname.on_flags |= OL_DECOR_FLAG;
         }
         break;
       case 'p':
@@ -639,51 +639,51 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(ITIS("RANDOMPLACEMENT"))
         {
           SKIP("RANDOMPLACEMENT");
-          tname.off_flags |= RANDOM_PLACE_FLAG;
+          tname.on_flags |= RANDOM_PLACE_FLAG;
         }
         break;
       case 's':
         if(ITIS("SMARTPLACEMENT"))
         {
           SKIP("SMARTPLACEMENT");
-          tname.off_flags |= SMART_PLACE_FLAG;
+          tname.on_flags |= SMART_PLACE_FLAG;
         }
         else if(ITIS("SkipMapping"))
         {
           SKIP("SkipMapping");
-          tname.off_flags |= SHOW_MAPPING;
+          tname.on_flags |= SHOW_MAPPING;
         }
         else if(ITIS("ShowMapping"))
         {
           SKIP("ShowMapping");
-          tname.on_flags |= SHOW_MAPPING;
+          tname.off_flags |= SHOW_MAPPING;
         }
         else if(ITIS("StickyIcon"))
         {
           SKIP("StickyIcon");
-          tname.off_flags |= STICKY_ICON_FLAG;
+          tname.on_flags |= STICKY_ICON_FLAG;
         }
         else if(ITIS("SlipperyIcon"))
         {
           SKIP("SlipperyIcon");
-          tname.on_flags |= STICKY_ICON_FLAG;
+          tname.off_flags |= STICKY_ICON_FLAG;
         }
         else if(ITIS("SLOPPYFOCUS"))
         {
           SKIP("SLOPPYFOCUS");
-          tname.on_flags |= CLICK_FOCUS_FLAG;
-          tname.off_flags |= SLOPPY_FOCUS_FLAG;
-          tname.on_flags |= GRAB_FOCUS;
+          tname.off_flags |= CLICK_FOCUS_FLAG;
+          tname.on_flags |= SLOPPY_FOCUS_FLAG;
+          tname.off_flags |= GRAB_FOCUS;
         }
         else if(ITIS("StartIconic"))
         {
           SKIP("StartIconic");
-          tname.off_flags |= START_ICONIC_FLAG;
+          tname.on_flags |= START_ICONIC_FLAG;
         }
         else if(ITIS("StartNormal"))
         {
           SKIP("StartNormal");
-          tname.on_flags |= START_ICONIC_FLAG;
+          tname.off_flags |= START_ICONIC_FLAG;
         }
         else if(ITIS("StaysOnTop"))
         {
@@ -697,18 +697,18 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         }
         else if(ITIS("Sticky"))
         {
-          tname.off_flags |= STICKY_FLAG;
+          tname.on_flags |= STICKY_FLAG;
           SKIP("Sticky");
         }
         else if(ITIS("Slippery"))
         {
-          tname.on_flags |= STICKY_FLAG;
+          tname.off_flags |= STICKY_FLAG;
           SKIP("Slippery");
         }
         else if(ITIS("STARTSONDESK"))
         {
           SKIP("STARTSONDESK");
-          tname.off_flags |= STARTSONDESK_FLAG;
+          tname.on_flags |= STARTSONDESK_FLAG;
           /*  RBW - 11/02/1998  */
           spargs = sscanf(restofline,"%d",&tmpno1);
           if (spargs == 1)
@@ -718,7 +718,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             }
           else
 	    {
-              tname.off_flags &= ~STARTSONDESK_FLAG;
+              tname.on_flags &= ~STARTSONDESK_FLAG;
               fvwm_msg(ERR,"ProcessNewStyle",
                        "bad StartsOnDesk arg: %s", restofline);
 	    }
@@ -733,7 +733,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
        else if(ITIS("STARTSONPAGE"))
          {
            SKIP("STARTSONPAGE");
-           tname.off_flags |= STARTSONDESK_FLAG;
+           tname.on_flags |= STARTSONDESK_FLAG;
            spargs = sscanf(restofline,"%d %d %d", &tmpno1, &tmpno2, &tmpno3);
 
           if (spargs == 1 || spargs == 3)
@@ -771,7 +771,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             }
           if (spargs < 1 || spargs > 3)
             {
-              tname.off_flags &= ~STARTSONDESK_FLAG;
+              tname.on_flags &= ~STARTSONDESK_FLAG;
               fvwm_msg(ERR,"ProcessNewStyle",
                        "bad StartsOnPage args: %s", restofline);
             }
@@ -781,7 +781,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         else if(ITIS("STARTSANYWHERE"))
         {
           SKIP("STARTSANYWHERE");
-          tname.on_flags |= STARTSONDESK_FLAG;
+          tname.off_flags |= STARTSONDESK_FLAG;
         }
         else if (ITIS("STARTSLOWERED"))
 	{
@@ -800,14 +800,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(ITIS("TITLE"))
         {
           SKIP("TITLE");
-          tname.on_flags |= NOTITLE_FLAG;
+          tname.off_flags |= NOTITLE_FLAG;
         }
         break;
       case 'u':
         if(ITIS("UsePPosition"))
         {
           SKIP("UsePPosition");
-          tname.on_flags |= NO_PPOSITION_FLAG;
+          tname.off_flags |= NO_PPOSITION_FLAG;
         }
 #ifdef USEDECOR
         if(ITIS("UseDecor"))
@@ -840,10 +840,10 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 		  tname.name = save_name; /* and the name */
                   hit = 1;              /* set not first match */
                 } else {                /* subsequent match */
-                  tname.off_flags     |= nptr->off_flags;
-                  tname.on_flags      &= ~(nptr->on_flags);
-                  tname.off_buttons   |= nptr->off_buttons;
-                  tname.on_buttons    &= ~(nptr->on_buttons);
+                  tname.on_flags     |= nptr->on_flags;
+                  tname.off_flags      &= ~(nptr->off_flags);
+                  tname.on_buttons   |= nptr->on_buttons;
+                  tname.off_buttons    &= ~(nptr->off_buttons);
                   if(nptr->value) tname.value = nptr->value;
 #ifdef MINI_ICONS
                   if(nptr->mini_value) tname.mini_value = nptr->mini_value;
@@ -851,7 +851,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 #ifdef USEDECOR
                   if(nptr->Decor) tname.Decor = nptr->Decor;
 #endif
-                  if(nptr->off_flags & STARTSONDESK_FLAG)
+                  if(nptr->on_flags & STARTSONDESK_FLAG)
 		    /*  RBW - 11/02/1998  */
 		    {
                       tname.Desk = nptr->Desk;
@@ -859,13 +859,13 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
                       tname.PageY = nptr->PageY;
 		    }
 		    /**/
-                  if(nptr->off_flags & BW_FLAG)
+                  if(nptr->on_flags & BW_FLAG)
                     tname.border_width = nptr->border_width;
-                  if(nptr->off_flags & NOBW_FLAG)
+                  if(nptr->on_flags & NOBW_FLAG)
                     tname.resize_width = nptr->resize_width;
-                  if(nptr->off_flags & FORE_COLOR_FLAG)
+                  if(nptr->on_flags & FORE_COLOR_FLAG)
                     tname.ForeColor = nptr->ForeColor;
-                  if(nptr->off_flags & BACK_COLOR_FLAG)
+                  if(nptr->on_flags & BACK_COLOR_FLAG)
                     tname.BackColor = nptr->BackColor;
                   tname.IconBoxes = nptr->IconBoxes; /* use same chain */
                 } /* end hit/not hit */
@@ -890,12 +890,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         if(ITIS("WindowListSkip"))
         {
           SKIP("WindowListSkip");
-          tname.off_flags |= LISTSKIP_FLAG;
+          tname.on_flags |= LISTSKIP_FLAG;
         }
         else if(ITIS("WindowListHit"))
         {
           SKIP("WindowListHit");
-          tname.on_flags |= LISTSKIP_FLAG;
+          tname.off_flags |= LISTSKIP_FLAG;
         }
         break;
       case 'x':
@@ -924,9 +924,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
   /* capture default icons */
   if(strcmp(tname.name,"*") == 0)
   {
-    if(tname.off_flags & ICON_FLAG)
+    if(tname.on_flags & ICON_FLAG)
       Scr.DefaultIcon = tname.value;
-    tname.off_flags &= ~ICON_FLAG;
+    tname.on_flags &= ~ICON_FLAG;
     tname.value = NULL;
   }
   AddToList(&tname);                /* add temp name list to list */
@@ -975,25 +975,25 @@ void merge_styles(name_list *styles, name_list *nptr)
 #ifdef USEDECOR
   if (nptr->Decor != NULL) styles->Decor = nptr->Decor;
 #endif
-  if(nptr->off_flags & STARTSONDESK_FLAG)
+  if(nptr->on_flags & STARTSONDESK_FLAG)
     /*  RBW - 11/02/1998  */
     {
       styles->Desk = nptr->Desk;
       styles->PageX = nptr->PageX;
       styles->PageY = nptr->PageY;
     }
-  if(nptr->off_flags & BW_FLAG)
+  if(nptr->on_flags & BW_FLAG)
     styles->border_width = nptr->border_width;
-  if(nptr->off_flags & FORE_COLOR_FLAG)
+  if(nptr->on_flags & FORE_COLOR_FLAG)
     styles->ForeColor = nptr->ForeColor;
-  if(nptr->off_flags & BACK_COLOR_FLAG)
+  if(nptr->on_flags & BACK_COLOR_FLAG)
     styles->BackColor = nptr->BackColor;
-  if(nptr->off_flags & NOBW_FLAG)
+  if(nptr->on_flags & NOBW_FLAG)
     styles->resize_width = nptr->resize_width;
-  styles->on_flags |= nptr->off_flags;  /* combine on and off flags */
-  styles->on_flags &= ~(nptr->on_flags);
-  styles->on_buttons |= nptr->off_buttons; /* combine buttons */
-  styles->on_buttons &= ~(nptr->on_buttons);
+  styles->on_flags |= nptr->on_flags;  /* combine on and off flags */
+  styles->on_flags &= ~(nptr->off_flags);
+  styles->on_buttons |= nptr->on_buttons; /* combine buttons */
+  styles->on_buttons &= ~(nptr->off_buttons);
   /* Note, only one style cmd can define a windows iconboxes,
      the last one encountered. */
   if(nptr->IconBoxes != NULL) {         /* If style has iconboxes */

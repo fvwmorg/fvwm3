@@ -1,38 +1,9 @@
-Permission is granted to distribute all software within this
-distribution freely as long as the individual copyrights,
-copyright notices and associated disclaimers remain intact
-in the sources and the supporting documentation.
-
-The name of the Copyright Holders may not be used to endorse or
-promote products derived from this software without specific prior
-written permission.
-
-THIS PACKAGE IS PROVIDED "AS IS" AND WITHOUT ANY EXPRESS OR
-IMPLIED WARRANTIES, INCLUDING, WITHOUT LIMITATION, THE IMPLIED
-WARRANTIES OF MERCHANTIBILITY AND FITNESS FOR A PARTICULAR PURPOSE.
+The entire fvwm distribution is subject to the GNU GENERAL PUBLIC
+LICENSE (see below).
 
 ----------------------------------------------------------------------
 
-In addition - with the exception of the following directories
-and all files within: 
-
-  modules/FvwmRearrange
-  modules/FvwmAnimate
-  modules/FvwmAudio
-  modules/FvwmEvents
-
-- permission is granted to use this software for any purpose, as
-long as the individual copyrights, copyright notices and
-associated disclaimers remain intact in the sources and the
-supporting documentation. The following pieces of software are
-exempt from this statement.
-
-The modules modules/FvwmAnimate, modules/FvwmAudio and modules/FvwmEvents
-are subject to the GNU public license (see below).
-
-----------------------------------------------------------------------
-
-The copyrights of the fvwm main module are:
+Additional copyrights of the fvwm main module:
 
 fvwm is copyright 1988 by Evans and Sutherland Computer
 Corporation, Salt Lake City, Utah, and 1989 by the Massachusetts
@@ -367,4 +338,3 @@ the "copyright" line and a pointer to where the full notice is found.
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-

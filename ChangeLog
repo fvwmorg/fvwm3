@@ -1,3 +1,19 @@
+1999-04-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/style.c: reversed weird logic of off_flags meaning 'flag has
+	been turned on'
+
+	* fvwm/repeat.h:
+	* fvwm/repeat.c:
+	* fvwm/gsfr.h:
+	* libs/XResource.c:
+	* libs/Bindings.c:
+	* fvwm/functions.h:
+	* fvwm/bindings.h:
+	* fvwm/style.h:
+	* fvwm/bindings.c:
+	* COPYING: changed to GPL
+
 1999-04-08  Hippo
 
 	* fvwm/fvwm.c: sticky_grey_pixmap initialised for mono screens

@@ -1,3 +1,20 @@
+/* Copyright (C) 1999  Dominik Vogt
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 /*
 ** XResource.c:
 ** These routines provide modules with an interface to parse all kinds of
@@ -37,7 +54,7 @@
       int opt_argc = argc - 6; /* options start at 6th argument for modules */
       char **opt_argv = argv + 6;
 
-      /* ... (open config file, etc.) */ 
+      /* ... (open config file, etc.) */
 
       /* Get global X resources */
       MergeXResources(NULL, &db, False);
