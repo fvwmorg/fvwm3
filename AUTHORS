@@ -248,6 +248,7 @@ improvements, and general code gadfly a la Paul Smith.
 
 Chris Ross:
 Addition of ReliefThickness feature to FvwmIconMan.
+Solaris Xinerama support.
 
 Paul D. Smith:
 Purify support (heap rot, array overwrites, memory stompage of all

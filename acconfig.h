@@ -32,6 +32,14 @@
 /* Define if Xinerama library is used. */
 #undef HAVE_XINERAMA
 
+/* Define if Solaris' Xinerama calls are being used. */
+/* (Solaris 7 11/99 and later) */
+#undef HAVE_SOLARIS_XINERAMA
+
+/* Define if Solaris' X11/extensions/xinerama.h header is provided. */
+/* (Solaris 9 and later) */
+#undef HAVE_SOLARIS_XINERAMA_H
+
 /* Define if Xrender library is used. */
 #undef HAVE_XRENDER
 

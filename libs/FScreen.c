@@ -69,8 +69,63 @@
 #include "PictureBase.h"
 
 #ifdef HAVE_XINERAMA
-#define FScreenHaveXinerama 1
-#include <X11/extensions/Xinerama.h>
+# define FScreenHaveXinerama 1
+# ifdef HAVE_SOLARIS_XINERAMA
+#  ifdef HAVE_SOLARIS_XINERAMA_H
+#   include <X11/extensions/xinerama.h>
+#  else
+/* Copied from Solaris 9's X11/extensions/xinerama.h */
+#define	MAXFRAMEBUFFERS		16
+Bool XineramaGetState(Display*, int);
+Status XineramaGetInfo(Display*, int, XRectangle*, unsigned char*, int*);
+Status XineramaGetCenterHint(Display*, int, int*, int*);
+#  endif /* HAVE_SOLARIS_XINERAMA_H */
+typedef struct
+{
+	int   screen_number;
+	short x_org;
+	short y_org;
+	short width;
+	short height;
+} XineramaScreenInfo;
+#  define XineramaIsActive(d)		XineramaGetState((d),0)
+#  define XineramaQueryScreens(d,b)	solaris_XineramaQueryScreens((d),(b))
+#  define XineramaQueryExtension(d,b,c)	1	/* Lie, for now */
+static XineramaScreenInfo *
+solaris_XineramaQueryScreens(Display *d, int *xin_nscreens)
+{
+	XineramaScreenInfo *screens = NULL;
+	XRectangle monitors[MAXFRAMEBUFFERS];
+	unsigned char hints[16];
+
+	int result = XineramaGetInfo(d, DefaultScreen(d), monitors, hints,
+				     xin_nscreens);
+	if (result)
+	{
+		int m;
+
+                /* Note, malloced area later freed by XFree() */
+		screens = (XineramaScreenInfo *)malloc(sizeof(XineramaScreenInfo) * (*xin_nscreens));
+		for (m = 0; m < *xin_nscreens; ++m)
+		{
+			screens[m].screen_number = m;
+			screens[m].x_org = monitors[m].x;
+			screens[m].y_org = monitors[m].y;
+			screens[m].width = monitors[m].width;
+			screens[m].height = monitors[m].height;
+		}
+	}
+	else
+	{
+	    fprintf(stderr, "Error getting Xinerama information\n");
+	    *xin_nscreens = 0;
+	}
+
+	return (screens);
+}
+# else	/* Must be XFree86 Xinerama */
+#  include <X11/extensions/Xinerama.h>
+# endif
 #else
 #define FScreenHaveXinerama 0
 typedef struct

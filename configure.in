@@ -298,8 +298,18 @@ if test x"$with_xinerama" != xno; then
   $UNSET ac_cv_lib_Xinerama_XineramaIsActive
   AC_CHECK_LIB(Xinerama, XineramaIsActive,
     with_xinerama=yes; Xinerama_LIBS=-lXinerama; AC_DEFINE(HAVE_XINERAMA),
+    AC_CHECK_LIB(Xext, XineramaGetState,
+      [ AC_DEFINE(HAVE_XINERAMA) AC_DEFINE(HAVE_SOLARIS_XINERAMA)
+      with_xinerama=yes; Xinerama_LIBS=-lXext
+      my_CPPFLAGS="$CPPFLAGS"; CPPFLAGS="$X_CPPFLAGS $CPPFLAGS"
+      my_hdr="X11/extensions/xinerama.h"
+      AC_CHECK_HEADER($my_hdr, AC_DEFINE(HAVE_SOLARIS_XINERAMA_H)
+	problem_xinerama=" (Using Solaris Xinerama calls)",
+	problem_xinerama=" (Using Solaris 9 prototypes for missing header)")
+      CPPFLAGS="$my_CPPFLAGS"],
     with_xinerama=no; Xinerama_LIBS=
     problem_xinerama=": Failed to detect libXinerama",
+    [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS]),
     [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
 fi
 AC_SUBST(Xinerama_LIBS)
