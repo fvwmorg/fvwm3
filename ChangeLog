@@ -1,3 +1,11 @@
+2000-11-09  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	* fvwm/fvwm.c:
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	use new script alias names FvwmScript-Flavor;
+	updated fvwm man pages menu in config, some more
+
 2000-11-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* docs/FAQ:

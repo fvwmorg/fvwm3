@@ -963,8 +963,8 @@ void SetRCDefaults(void)
     "Style * HilightFore black, HilightBack grey",
     "AddToMenu MenuFvwmRoot \"Builtin Menu\" Title",
     "+ \"&1. XTerm\" Exec xterm",
-    "+ \"&2. Setup Form\" Module FvwmForm FormFvwmSetup.",
-    "+ \"&3. Setup 95 Script\" Module FvwmScript ScriptFvwmSetup95",
+    "+ \"&2. Setup Form\" Module FvwmForm FvwmForm-Setup",
+    "+ \"&3. Setup 95 Script\" Module FvwmScript FvwmScript-Setup95",
     "+ \"&4. Issue FVWM commands\" Module FvwmConsole",
     "+ \"&R. Restart FVWM\" Restart",
     "+ \"&X. Exit FVWM\" Quit",
@@ -1848,7 +1848,7 @@ int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 
 static void usage(void)
 {
-  fprintf(stderr,"\nFvwm Version %s Usage:\n\n",VERSION);
+  fprintf(stderr,"FVWM version %s Usage:\n\n",VERSION);
   fprintf(stderr,"  %s [-d dpy] [-debug] [-f config_cmd] [-s] [-blackout] [-version] [-h] [-replace] [-clientId id] [-restore file] [-visualId id] [-visual class]\n\n",g_argv[0]);
   exit(1);
 }

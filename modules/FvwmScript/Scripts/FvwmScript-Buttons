@@ -198,7 +198,7 @@ Main
  Case message of
   SingleClic :
   Begin
-   Do {Module FvwmScript Quit}
+   Do {Module FvwmScript FvwmScript-Quit}
   End
 End
 
@@ -214,17 +214,17 @@ Main
   SingleClic :
   Begin
    If (GetValue 12)==1 Then
-    Do {Module FvwmScript ScreenSetup}
+    Do {Module FvwmScript FvwmScript-ScreenSetup}
    If (GetValue 12)==2 Then
-    Do {Module FvwmScript BellSetup}
+    Do {Module FvwmScript FvwmScript-BellSetup}
    If (GetValue 12)==3 Then
-    Do {Module FvwmScript KeyboardSetup}
+    Do {Module FvwmScript FvwmScript-KeyboardSetup}
    If (GetValue 12)==4 Then
-    Do {Module FvwmScript PointerSetup}
+    Do {Module FvwmScript FvwmScript-PointerSetup}
    If (GetValue 12)==5 Then
-    Do {Module FvwmScript Date}
+    Do {Module FvwmScript FvwmScript-Date}
    If (GetValue 12)==6 Then
-    Do {Module FvwmScript DeskSetup}
+    Do {Module FvwmScript FvwmScript-DeskSetup}
   End
 End
 

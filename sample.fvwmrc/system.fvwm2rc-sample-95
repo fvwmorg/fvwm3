@@ -90,7 +90,7 @@
 #!D For the fvwm-workers. These lines will not appear if the Setup95 Script
 #!D is used to install this file. I hope that the above lines give enough
 #!D information for editing this file at a devel level. Be sure to take a 
-#!D look to the perl script script-fvwm-setup95.pl and to ScriptFvwmSetup95. 
+#!D look to the perl script script-fvwm-setup95.pl and to FvwmScript-Setup95. 
 #!D More information is given here.
 #!D If you add entries to the menus which contains Exec and exec then
 #!D script-fvwm-setup95.pl will check if the application run is in 
@@ -650,21 +650,21 @@ Style xlogo		MiniIcon mini.x2.xpm
 
 # Modules, Form and script
 Style Fvwm*			MiniIcon -
-Style ScriptFvwm*		MiniIcon mini.fvwm.xpm
+Style FvwmScript*		MiniIcon mini.fvwm.xpm
 Style FvwmForm*			MiniIcon mini.fvwm.xpm
 Style FvwmIdent			MiniIcon mini.question.xpm, Icon question.xpm
 Style FvwmConsole		MiniIcon mini.xterm.xpm, Icon wterm.xpm
-Style ScriptFvwmBellSetup	MiniIcon mini.audiovol.xpm, Icon bell.xpm
-Style ScriptFvwmKeyboardSetup	MiniIcon mini.keyboard.xpm,Icon keyboard.xpm
-Style ScriptFvwmScreenSetup	MiniIcon mini.monitor.xpm, Icon screen.xpm
-Style ScriptFvwmPointerSetup	MiniIcon mini.mouse.xpm, Icon pointer.xpm
-Style ScriptFvwmBaseConfig	MiniIcon mini.fvwm.xpm, Icon settings.xpm
-Style ScriptFvwmFind		MiniIcon mini.zoom.xpm, Icon find1.xpm
-Style ScriptFvwmQuit		MiniIcon mini.question.xpm
-Style ScriptFvwmColorset        MiniIcon mini.colors.xpm, Icon settings.xpm
-Style ScriptFvwmScreenDump	MiniIcon mini.camera.xpm, Icon resize.xpm
-Style ScriptFvwmSetup95		MiniIcon mini.fvwm.xpm, Icon settings.xpm
-Style ScriptFvwmDate		MiniIcon mini.clock.xpm, Icon date.xpm
+Style FvwmScript-BellSetup	MiniIcon mini.audiovol.xpm, Icon bell.xpm
+Style FvwmScript-KeyboardSetup	MiniIcon mini.keyboard.xpm,Icon keyboard.xpm
+Style FvwmScript-ScreenSetup	MiniIcon mini.monitor.xpm, Icon screen.xpm
+Style FvwmScript-PointerSetup	MiniIcon mini.mouse.xpm, Icon pointer.xpm
+Style FvwmScript-BaseConfig	MiniIcon mini.fvwm.xpm, Icon settings.xpm
+Style FvwmScript-Find		MiniIcon mini.zoom.xpm, Icon find1.xpm
+Style FvwmScript-Quit		MiniIcon mini.question.xpm
+Style FvwmScript-Colorset	MiniIcon mini.colors.xpm, Icon settings.xpm
+Style FvwmScript-ScreenDump	MiniIcon mini.camera.xpm, Icon resize.xpm
+Style FvwmScript-Setup95	MiniIcon mini.fvwm.xpm, Icon settings.xpm
+Style FvwmScript-Date		MiniIcon mini.clock.xpm, Icon date.xpm
 Style FvwmForm-QuitVerify	MiniIcon mini.question.xpm
 Style FvwmForm-Rlogin		MiniIcon mini.connect.xpm, Icon Mosaic.xpm
 Style FvwmForm-Capture		MiniIcon mini.camera.xpm, Icon resize.xpm
@@ -910,7 +910,7 @@ AddToFunc  MyPanelButtons
 + I None (CirculateHit $0) FvwmButtons -g +$1+$2 $0
 
 #------------------------------------------------------------------------------
-# Functions for ScriptFvwmBaseConfig
+# Functions for FvwmScript-BaseConfig
 #------------------------------------------------------------------------------
 
 DestroyFunc BaseConfigOkFunc
@@ -1424,12 +1424,12 @@ AddToMenu   StartMenu@side.fvwm2.xpm@^black^
 + "&Programs%programs.xpm%"		Popup Programs
 + "&Documents%documents.xpm%"		Popup Documents
 + "&Settings%settings.xpm%"		Popup Settings
-+ "&Find%find1.xpm%"			FvwmScript ScriptFvwmFind
++ "&Find%find1.xpm%"			FvwmScript FvwmScript-Find
 + "&Help%help.xpm%"			Exec exec  xman
 #PREF 1
 + "&Run...%run.xpm%"			Exec exec  xterm
 + ""					Nop
-+ "Shut &Down%shutdown.xpm%"		Module FvwmScript ScriptFvwmQuit
++ "Shut &Down%shutdown.xpm%"		Module FvwmScript FvwmScript-Quit
 
 #------------------------------------------------------------------------------
 # Root Menu: This menu will fire up some very common utilities
@@ -1577,7 +1577,7 @@ AddToMenu   Accessories
 + "&View colormap%mini.colors.xpm%"	Exec exec xcolormap
 + "&Color viewer%mini.colors.xpm%"	Exec exec xcolorsel
 + "&Capture Form%mini.camera.xpm%"	FvwmForm FvwmForm-Capture
-+ "&Sreen Dump Script%mini.camera.xpm%"	FvwmScript ScriptFvwmScreenDump
++ "&Screen Dump Script%mini.camera.xpm%" FvwmScript FvwmScript-ScreenDump
 + "X&grab%mini.camera.xpm%"		Exec exec xgrab
 + "&Ddd%mini.bug2.xpm%"		        Exec exec ddd
 + "Xx&gdb%mini.bug2.xpm%"		Exec exec xxgdb
@@ -1625,7 +1625,7 @@ AddToMenu   System
 + "&Memory usage%mini.perf.xpm%"	Exec exec xmem
 + "&XSysStats%mini.run.xpm%"		Exec exec XSysStats
 + "&xconsole%mini.term.xpm%"            Exec exec xconsole 
-+ "Set &Date Script%mini.clock.xpm%"	FvwmScript ScriptFvwmDate
++ "Set &Date Script%mini.clock.xpm%"	FvwmScript FvwmScript-Date
 + "" Nop
 + "&Midnight-Commander%mini.filemgr.xpm%" Exec exec xterm -g 80x40 -n Midnight-Commander -T Midnight-Commander -e mc -x
 + "X&fm%mini.filemgr.xpm%"		Exec exec xfm
@@ -1821,10 +1821,10 @@ AddToMenu   Settings
 
 DestroyMenu FvwmConfig
 AddToMenu   FvwmConfig
-+ "&Base Configuration%mini.fvwm.xpm%"		FvwmScript ScriptFvwmBaseConfig
++ "&Base Configuration%mini.fvwm.xpm%"		FvwmScript FvwmScript-BaseConfig
 + "&Form Configuration%mini.fvwm.xpm"		FvwmForm FvwmForm-Form
 + ""		Nop
-+ "&Rebuild Sample 95%mini.fvwm.xpm%"		FvwmScript ScriptFvwmSetup95
++ "&Rebuild Sample 95%mini.fvwm.xpm%"		FvwmScript FvwmScript-Setup95
 + "&Load Default Sample%mini.fvwm.xpm%"		FvwmForm FvwmForm-Setup
 
 
@@ -2040,10 +2040,10 @@ AddToMenu   Layers-Settings
 
 DestroyMenu XsetupScripts
 AddToMenu   XsetupScripts
-+ "&Bell%mini.audiovol.xpm%"		FvwmScript ScriptFvwmBellSetup
-+ "&KeyBoard%mini.keyboard.xpm%"	FvwmScript ScriptFvwmKeyboardSetup
-+ "&Screen%mini.monitor.xpm%"		FvwmScript ScriptFvwmScreenSetup
-+ "&Mouse%mini.mouse.xpm%"		FvwmScript ScriptFvwmPointerSetup
++ "&Bell%mini.audiovol.xpm%"		FvwmScript FvwmScript-BellSetup
++ "&KeyBoard%mini.keyboard.xpm%"	FvwmScript FvwmScript-KeyboardSetup
++ "&Screen%mini.monitor.xpm%"		FvwmScript FvwmScript-ScreenSetup
++ "&Mouse%mini.mouse.xpm%"		FvwmScript FvwmScript-PointerSetup
 
 #------------------------------------------------------------------------------
 #--------- Edit config
@@ -2219,45 +2219,51 @@ AddToFunc FuncFvwmMenuDirectory I PipeRead 'fvwm-menu-directory -d "$0" --exec-f
 
 #------------- FvwmManPage
 
-DestroyMenu FvwmManPage
-AddToMenu   FvwmManPage
-+ "&fvwm2%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man fvwm2
-+ "Fvwm&Animate%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man FvwmAnimate
-+ "FvwmA&udio%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmAudio
-+ "FvwmAu&to%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmAuto
-+ "Fvwm&Backer%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmBacker
-+ "FvwmBa&nner%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmBanner
-+ "FvwmB&uttons%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man FvwmButtons
-+ "Fvwm&Command%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man FvwmCommand
-+ "FvwmC&onsole%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man  FvwmConsole
-+ "FvwmCo&nsoleC.pl%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man FvwmConsoleC.pl
-+ "FvwmC&pp%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmCpp
-+ "Fvwm&Debug%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmDebug
-+ "FvwmDrag&Well%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man FvwmDragWell
-+ "Fvwm&Event%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmEvent
-+ "Fvwm&Form%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmForm
-+ "Fvwm&Gtk%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmGtk
-+ "Fvwm&IconBox%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man FvwmIconBox
-+ "FvwmIcon&Man%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man FvwmIconMan
-+ "Fvwm&Ident%mini.book1.xpm%"   Exec exec xterm -g 80x40 -e man FvwmIdent
-+ "Fvwm&M4%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmM4
-+ "Fvwm&Pager%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmPager
-+ "FvwmRearrange%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man FvwmRearrange
-+ "Fvwm&Save%mini.book1.xpm%"	 Exec exec xterm -g 80x40 -e man FvwmSave
-+ "Fvwm&SaveDesk%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man  FvwmSaveDesk 
-+ "Fvwm&Script%mini.book1.xpm%"	  Exec exec xterm -g 80x40 -e man FvwmScript
-+ "Fvwm&Scroll%mini.book1.xpm%"	  Exec exec xterm -g 80x40 -e man FvwmScroll
-+ "Fvwm&Talk%mini.book1.xpm%"	  Exec exec xterm -g 80x40 -e man FvwmTalk
-+ "Fvwm&TaskBar%mini.book1.xpm%"  Exec exec xterm -g 80x40 -e man FvwmTaskBar
-+ "Fvwm&Theme%mini.book1.xpm%"	  Exec exec xterm -g 80x40 -e man FvwmTheme
-+ "Fvwm&Wharf%mini.book1.xpm%"    Exec exec xterm -g 80x40 -e man   FvwmWharf
-+ "Fvwm&WinList%mini.book1.xpm%"  Exec exec xterm -g 80x40 -e man FvwmWinList
-+ "fvwm-menu-&desktop%mini.book1.xpm%"	Exec exec xterm -g 80x40 -e man fvwm-menu-desktop
-+ "fvwm-menu-&directory%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man fvwm-menu-directory
-+ "fvwm-menu-&headlines%mini.book1.xpm%"	Exec exec xterm -g 80x40 -e man fvwm-menu-headlines
-+ "fvwm-menu-&xlock%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man fvwm-menu-xlock
-+ "xpmroot%mini.book1.xpm%" Exec exec xterm -g 80x40 -e man xpmroot
+DestroyFunc ViewManPage
+AddToFunc   ViewManPage
++ I Exec exec xterm -g 80x40 -e man $0
 
+DestroyMenu FvwmManPage
+AddToMenu   FvwmManPage "FVWM Man Pages" Title
++ "%mini.book1.xpm%fvwm2"               ViewManPage fvwm2
++ "%mini.book1.xpm%FvwmAnimate"         ViewManPage FvwmAnimate
++ "%mini.book1.xpm%FvwmAuto"            ViewManPage FvwmAuto   
++ "%mini.book1.xpm%FvwmBacker"          ViewManPage FvwmBacker 
++ "%mini.book1.xpm%FvwmBanner"          ViewManPage FvwmBanner 
++ "%mini.book1.xpm%FvwmButtons"         ViewManPage FvwmButtons
++ "%mini.book1.xpm%FvwmCommand"         ViewManPage FvwmCommand
++ "%mini.book1.xpm%FvwmConsole"         ViewManPage FvwmConsole
++ "%mini.book1.xpm%FvwmConsoleC.pl"     ViewManPage FvwmConsoleC.pl
++ "%mini.book1.xpm%FvwmCpp"             ViewManPage FvwmCpp     
++ "%mini.book1.xpm%FvwmDebug"           ViewManPage FvwmDebug   
++ "%mini.book1.xpm%FvwmDragWell"        ViewManPage FvwmDragWell
++ "%mini.book1.xpm%FvwmEvent"           ViewManPage FvwmEvent
++ "%mini.book1.xpm%FvwmForm"            ViewManPage FvwmForm
++ "%mini.book1.xpm%FvwmGtk"             ViewManPage FvwmGtk
++ "%mini.book1.xpm%FvwmIconBox"         ViewManPage FvwmIconBox
++ "%mini.book1.xpm%FvwmIconMan"         ViewManPage FvwmIconMan
++ "%mini.book1.xpm%FvwmIdent"           ViewManPage FvwmIdent
++ "%mini.book1.xpm%FvwmM4"              ViewManPage FvwmM4   
++ "%mini.book1.xpm%FvwmPager"           ViewManPage FvwmPager
++ "%mini.book1.xpm%FvwmRearrange"       ViewManPage FvwmRearrange
++ "%mini.book1.xpm%FvwmSave"            ViewManPage FvwmSave
++ "%mini.book1.xpm%FvwmSaveDesk"        ViewManPage FvwmSaveDesk
++ "%mini.book1.xpm%FvwmScript"          ViewManPage FvwmScript 
++ "%mini.book1.xpm%FvwmScroll"          ViewManPage FvwmScroll 
++ "%mini.book1.xpm%FvwmTaskBar"         ViewManPage FvwmTaskBar
++ "%mini.book1.xpm%FvwmTheme"           ViewManPage FvwmTheme  
++ "%mini.book1.xpm%FvwmWharf"           ViewManPage FvwmWharf  
++ "%mini.book1.xpm%FvwmWinList"         ViewManPage FvwmWinList
++ "" Nop
++ "%mini.book1.xpm%fvwmbug"             ViewManPage fvwmbug
++ "%mini.book1.xpm%fvwmrc_convert"      ViewManPage fvwmrc_convert
++ "%mini.book1.xpm%fvwm24_convert"      ViewManPage fvwm24_convert
++ "%mini.book1.xpm%xpmroot"             ViewManPage xpmroot
++ "" Nop
++ "%mini.book1.xpm%fvwm-menu-desktop"   ViewManPage fvwm-menu-desktop  
++ "%mini.book1.xpm%fvwm-menu-directory" ViewManPage fvwm-menu-directory
++ "%mini.book1.xpm%fvwm-menu-headlines" ViewManPage fvwm-menu-headlines
++ "%mini.book1.xpm%fvwm-menu-xlock"     ViewManPage fvwm-menu-xlock
 
 #------------------------------------------------------------------------------
 #--------- ScreenSaver

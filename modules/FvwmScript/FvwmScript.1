@@ -537,15 +537,15 @@ End
 .SH EXAMPLES
 You will find examples of scripts in the fvwm configuration directory.
 
-ScriptFvwmBellSetup, ScriptFvwmKeyboardSetup, ScriptFvwmPointerSetup and
-ScriptFvwmScreenSetup are a set of scripts that modify X settings.
+FvwmScript-BellSetup, FvwmScript-KeyboardSetup, FvwmScript-PointerSetup and
+FvwmScript-ScreenSetup are a set of scripts that modify X settings.
 These scripts save preferences into a file named ~/.xinit-fvwmrc (If you want 
 to use another file name, give it as the first argument of the script). 
 If you want to load these preferences at every startup, you have to include 
 the line  ".xinit-fvwmrc" in your .xinitrc (or .xsession) file before 
 starting fvwm.
 
-ScriptFvwmBaseConfig modifies fvwm
+FvwmScript-BaseConfig modifies fvwm
 focus and paging mouse policy, window placement, opacity and
 other features of the move and resize commands, snap attraction and 
 shading animation.
@@ -561,15 +561,15 @@ This allows for reloading specific application styles
 that the script has destroyed
 (e.g., AddToFunc  BaseConfigOkFunc I Read MyAppStyle).
 
-ScriptFvwmButtons is a buttons panel which can replace FvwmButtons (this 
+FvwmScript-Buttons is a buttons panel which can replace FvwmButtons (this 
 script supports popup menus and requires xload, xclock, FvwmPager, TkDesk).
-ScriptFvwmColorset allows you to edit your colorset (see FvwmTheme).
-ScriptFvwmDate allows you to set date and time.
-ScriptFvwmFileBrowser is a file browser used by the other scripts.
-ScriptFvwmFind is an elementary front-end to find.
-ScriptFvwmQuit allows to quit fvwm, restart fvwm or some other window 
+FvwmScript-Colorset allows you to edit your colorset (see FvwmTheme).
+FvwmScript-Date allows you to set date and time.
+FvwmScript-FileBrowser is a file browser used by the other scripts.
+FvwmScript-Find is an elementary front-end to find.
+FvwmScript-Quit allows to quit fvwm, restart fvwm or some other window 
 manager, or shut down and reboot the computer.
-ScriptFvwmScreenDump is a screen dumper. ScriptFvwmWidgetDemo is a pure
+FvwmScript-ScreenDump is a screen dumper. FvwmScript-WidgetDemo is a pure
 example script.
 
 .SH AUTHOR

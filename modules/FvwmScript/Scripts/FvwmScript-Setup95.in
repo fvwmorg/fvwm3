@@ -322,7 +322,7 @@ Main
    Set $TMP = (GetTitle 24)
    If $TMP=={No} Then
 	Set $TMP = $FDIR
-   Set $ARG={ScriptFvwmFileBrowser } $TMP { I}
+   Set $ARG={FvwmScript-FileBrowser } $TMP { I}
    Set $IBROWSER=(LaunchScript $ARG )
   End
 End
@@ -389,7 +389,7 @@ Main
  Case message of
   SingleClic :
   Begin
-   Set $ARG={ScriptFvwmFileBrowser } (GetTitle 29) { S}
+   Set $ARG={FvwmScript-FileBrowser } (GetTitle 29) { S}
    Set $SBROWSER=(LaunchScript $ARG )
   End
 End

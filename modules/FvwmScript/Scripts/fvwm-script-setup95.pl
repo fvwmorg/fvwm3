@@ -1,4 +1,4 @@
-# This script must be run by ScriptFvwmSetup95 only!
+# This script must be run by FvwmScript-Setup95 only!
 
 use Getopt::Long;
 
@@ -242,7 +242,8 @@ sub checkApp {
 	}
 	return 0;
 }
+
 sub wrongUsage {
-	print STDERR "This script must be run by ScriptFvwmSetup95 only!\n";
+	print STDERR "This script must be run by FvwmScript-Setup95 only!\n";
 	exit -1;
 }

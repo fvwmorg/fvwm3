@@ -1,23 +1,33 @@
+2000-11-09  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmScript/FvwmScript.1:
+	* FvwmScript/Scripts/Makefile.am:
+	* FvwmScript/Scripts/fvwm-script-setup95.pl:
+	* FvwmScript/Scripts/FvwmScript-*:
+	* FvwmScript/Scripts/.cvsignore:
+	use script alias names FvwmScript-Flavor instead of ScriptFvwmFlavor;
+	added missing FvwmScript-WidgetDemo to the distribution
+
 2000-11-08  Mikhael Goikhman  <migo@homemail.com>
 
-	* modules/FvwmForm/FormFvwm*:
-	* modules/FvwmForm/FvwmForm.1:
-	* modules/FvwmForm/FvwmForm.c:
-	* modules/FvwmForm/Makefile.am:
-	* modules/FvwmForm/README:
-	* modules/FvwmForm/.cvsignore:
+	* FvwmForm/FormFvwm-*:
+	* FvwmForm/FvwmForm.1:
+	* FvwmForm/FvwmForm.c:
+	* FvwmForm/Makefile.am:
+	* FvwmForm/README:
+	* FvwmForm/.cvsignore:
 	use form alias names FvwmForm-Flavor instead of FormFvwmFlavor.;
 	issue a warning and auto-converting of old names
 
-	* modules/FvwmBacker/ConfigFvwmBacker:
-	* modules/FvwmButtons/ConfigFvwmButtons:
-	* modules/FvwmIconBox/ConfigFvwmIconBox:
-	* modules/FvwmIconMan/ConfigFvwmIconMan:
-	* modules/FvwmIdent/ConfigFvwmIdent:
-	* modules/FvwmPager/ConfigFvwmPager:
-	* modules/FvwmScroll/ConfigFvwmScroll:
-	* modules/FvwmTaskBar/ConfigFvwmTaskBar:
-	* modules/FvwmWinList/ConfigFvwmWinList:
+	* FvwmBacker/ConfigFvwmBacker:
+	* FvwmButtons/ConfigFvwmButtons:
+	* FvwmIconBox/ConfigFvwmIconBox:
+	* FvwmIconMan/ConfigFvwmIconMan:
+	* FvwmIdent/ConfigFvwmIdent:
+	* FvwmPager/ConfigFvwmPager:
+	* FvwmScroll/ConfigFvwmScroll:
+	* FvwmTaskBar/ConfigFvwmTaskBar:
+	* FvwmWinList/ConfigFvwmWinList:
 	use a new module config syntax (using colon/space as a separator)
 
 2000-10-24  Dominik Vogt  <dominik.vogt@gmx.de>

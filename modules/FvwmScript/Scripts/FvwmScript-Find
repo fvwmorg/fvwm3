@@ -183,7 +183,7 @@ Main
  Case message of
   SingleClic :
   Begin
-   Set $ARG={ScriptFvwmFileBrowser } (GetTitle 5) {/}
+   Set $ARG={FvwmScript-FileBrowser } (GetTitle 5) {/}
    Set $BROWSER=(LaunchScript $ARG )
   End
 End
