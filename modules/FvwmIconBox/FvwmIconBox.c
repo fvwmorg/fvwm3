@@ -2828,10 +2828,12 @@ char *stripcpy2(char *source)
 static int
 myErrorHandler(Display *dpy, XErrorEvent *event)
 {
+  /* some errors are ignored, mostly due to colorsets changing too fast */
   if (event->error_code == BadWindow)
     return 0;
-  
   if (event->error_code == BadDrawable)
+    return 0;
+  if (event->error_code == BadPixmap)
     return 0;
 
   PrintXErrorAndCoredump(dpy, event, MyName);

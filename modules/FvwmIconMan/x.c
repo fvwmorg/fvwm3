@@ -933,6 +933,13 @@ void create_manager_window (int man_id)
 static int handle_error (Display *d, XErrorEvent *ev)
 {
   extern char *MyName;
+
+  /* BadDrawable is allowed, it happens when colrosets change too fast */
+  if (ev->error_code == BadDrawable)
+    return 0;
+  if (ev->error_code == BadPixmap)
+    return 0;
+
   /* does not return */
   PrintXErrorAndCoredump(d, ev, MyName);
   return 0;

@@ -1460,8 +1460,6 @@ void draw_manager (WinManager *man)
 #ifdef SHAPE
 
   if (man->shaped && (redraw_all || (man->dirty_flags & SHAPE_CHANGED) )){
-    /* This little piggie waits until past resize requests get processed */
-    XSync (theDisplay, False);
     XShapeCombineRectangles (theDisplay, man->theWindow, ShapeBounding,
 			     0, 0, man->shape.rects, man->shape.num_rects,
 			     ShapeSet, Unsorted);
@@ -1470,9 +1468,6 @@ void draw_manager (WinManager *man)
 			     ShapeSet, Unsorted);
     shape_changed = 1;
     update_geometry = 1;
-    /* And this little piggie waits for shape to get processed before
-       drawing buttons */
-    XSync (theDisplay, False);
   }
 #endif
   if (redraw_all || (man->dirty_flags & GEOMETRY_CHANGED)) {

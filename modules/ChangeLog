@@ -19,7 +19,9 @@
 
 1999-11-24  Hippo
 
-	* FvwmIconBox/*.c: fixed HilightFocusWin, fixed colorset stretching
+	* FvwmIconBox/*.c: fixed HilightFocusWin, fixed colorset stretching,
+	allowed some XErrors to not dump core
+	*FvwmIconMan/*.c: removed some XSync()s, allowed some XErrors.
 
 1999-11-23  Mikhael Goikhman  <migo@hoomemail.com>
 
