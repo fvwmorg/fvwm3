@@ -1,3 +1,11 @@
+2000-05-01  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/module_interface.c (make_new_vpacket, CONFIGARGSNEW):
+	fixed misaligned fields in M_CONFIGURE_WINDOW packet on systems where
+	an int and a long have different lengths.
+	* libs.vpacket.h:
+	Added layer in the old dummy slot where the pre-GSFR flags used to go.
+
 2000-04-30  Michael Han  <mikehan@best.com>
 
     * fvwm/bindings.c (ParseBinding):

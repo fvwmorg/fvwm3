@@ -703,6 +703,12 @@ make_vpacket(unsigned long *body, unsigned long event_type,
 /* ===========================================================
     RBW - 04/16/1999 - new packet builder for GSFR --
     Arguments are pairs of lengths and argument data pointers.
+    RBW - 05/01/2000 -
+    A length of zero means that an int is being passed which
+    must be stored in the packet as an unsigned long. This is
+    a special hack to accommodate the old CONFIGARGSNEW
+    technique of sending the args for the M_CONFIGURE_WINDOW
+    packet.
    =========================================================== */
 static unsigned long
 make_new_vpacket(unsigned char *body, unsigned long event_type,
@@ -714,6 +720,8 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
   unsigned long *bp = (unsigned long *)body;
   unsigned long *bp1 = bp;
   unsigned long plen = 0;
+  int *tmpint;
+  Bool expandint;
 
   *(bp++) = START_FLAG;
   *(bp++) = event_type;
@@ -723,12 +731,24 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 
   for (; num > 0; --num)  {
       arglen = va_arg(ap, unsigned long);
+      if (arglen != 0)  {
+        expandint = False;
+        }  else  {
+        expandint = True;
+	arglen = sizeof(unsigned long);
+        }
       bodylen += arglen;
       if (bodylen < FvwmPacketMaxSize_byte) {
-	register char *tmp = (char *)bp;
-        memcpy(tmp, va_arg(ap, char *), arglen);
-        tmp += arglen;
-	bp = (unsigned long *)tmp;
+        if (! expandint)  {
+	  register char *tmp = (char *)bp;
+          memcpy(tmp, va_arg(ap, char *), arglen);
+          tmp += arglen;
+	  bp = (unsigned long *)tmp;
+          }  else  {
+          tmpint = va_arg(ap, int *);
+          *bp = (unsigned long) *tmpint;
+          bp++;
+          }
       }
     }
 
@@ -918,43 +938,43 @@ static void BroadcastNewPacket(unsigned long event_type,
             &(*(_t))->frame,\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(_t),\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->frame_g.x,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->frame_g.y,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->frame_g.width,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->frame_g.height,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->Desk,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->layer,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->title_g.height,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->boundary_width,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
 	    &(*(_t))->hints.base_width,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
 	    &(*(_t))->hints.base_height,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
 	    &(*(_t))->hints.width_inc,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
 	    &(*(_t))->hints.height_inc,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->hints.min_width,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->hints.min_height,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->hints.max_width,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->hints.max_height,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->icon_w,\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->icon_pixmap_w,\
-	    (unsigned long)(sizeof(unsigned long)),\
+	    (unsigned long)(0),\
             &(*(_t))->hints.win_gravity,\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->colors.fore,\

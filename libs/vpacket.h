@@ -47,8 +47,10 @@ unsigned long int  desk;
 /*
   Temp word for alignment - old flags used to be here.
   - remove before next release.
-*/
+  RBW - 05/01/2000 - layer has usurped this slot.
 unsigned long int  dummy;
+*/
+unsigned long int  layer;
 
 unsigned long int  title_height;
 unsigned long int  border_width;
