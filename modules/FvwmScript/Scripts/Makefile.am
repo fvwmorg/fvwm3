@@ -3,12 +3,12 @@
 configdir = @FVWM_CONFIGDIR@
 
 EXTRA_DIST = ScriptFvwmBellSetup ScriptFvwmButtons ScriptFvwmColorset	\
-	ScriptFvwmDate ScriptFvwmDefaultStyle ScriptFvwmFileBrowser	\
+	ScriptFvwmDate ScriptFvwmBaseConfig ScriptFvwmFileBrowser	\
 	ScriptFvwmFind ScriptFvwmKeyboardSetup ScriptFvwmPointerSetup	\
 	ScriptFvwmQuit ScriptFvwmScreenDump ScriptFvwmScreenSetup	\
 	TerminalSettings.fss UpdateFvwm2TermMenu system.fvwmrc
 
 config_DATA = ScriptFvwmBellSetup ScriptFvwmButtons ScriptFvwmColorset	\
-	ScriptFvwmDate ScriptFvwmDefaultStyle ScriptFvwmFileBrowser	\
+	ScriptFvwmDate ScriptFvwmBaseConfig ScriptFvwmFileBrowser	\
 	ScriptFvwmFind ScriptFvwmKeyboardSetup ScriptFvwmPointerSetup	\
 	ScriptFvwmQuit ScriptFvwmScreenDump ScriptFvwmScreenSetup
