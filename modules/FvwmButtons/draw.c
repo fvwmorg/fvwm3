@@ -280,7 +280,7 @@ void DrawTitle(button_info *b,Window win,GC gc)
     return;
 
   /* If a title is to be shown, truncate it until it fits */
-  if(justify&b_Horizontal)
+  if(justify&b_Horizontal && !(b->flags & b_Right))
     {
       if(b->flags&b_Icon)
 	{
@@ -311,7 +311,7 @@ void DrawTitle(button_info *b,Window win,GC gc)
 	    i=XTextWidth(font,s,--l);
 	}
     }
-  if(just==0) /* Left */
+  if(just==0 || ((justify&b_Horizontal) && (b->flags&b_Right))) /* Left */
     xpos=ix;
   else if(just==2) /* Right */
     xpos=max(ix,ix+iw-i);

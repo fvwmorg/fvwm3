@@ -1,3 +1,9 @@
+1999-03-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/draw.c (DrawTitle):
+	* FvwmButtons/icons.c (ConfigureIconWindow): Implemented missing 'Left'
+	and 'right' options.
+
 1999-03-08  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (main): do not quit if a subpanel is empty,

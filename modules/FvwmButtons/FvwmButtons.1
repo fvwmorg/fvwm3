@@ -283,8 +283,8 @@ Right - The title will be justified to the right side.
 
 Side - This will cause the title to appear on the right hand side of
 any icon or swallowed window, instead of below it which is the default.
-If you use small icons, and combine this with the "Left" option, you can
-get a look similar to fvwm's menus.
+If you use small icons, and combine this with the "Left" or "Right" option,
+you can get a look similar to fvwm's menus.
 .IP "Legacy fields [\fItitle icon command\fP]"
 These fields are kept for compatibility with previous versions of
 FvwmButtons, and their use is discouraged.
@@ -559,7 +559,7 @@ Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 *FvwmButtons(6x5, Swallow "FvwmXclock" `Exec xclock   \\
   -name FvwmXclock -geometry 40x40+0-0 -padding 1     \\
   -analog -chime -bg rgb:90/80/90`)
-*FvwmButtons(13x5, Left, Swallow (NoClose)            \\
+*FvwmButtons(13x5, Swallow (NoClose)                  \\
 "FvwmIconMan" 'Module FvwmIconMan')
 *FvwmButtons(20x5, Padding 0, Swallow "xosview"       \\
   `Exec /usr/X11R6/bin/xosview -cpu -int -page -net   \\
