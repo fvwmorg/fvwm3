@@ -772,31 +772,39 @@ void
 GNOME_SetClientList(void)
 {
 	Atom atom_set;
-	Window wl[256];
+	Window *wl=NULL;
+	int displayed=0;
 	int i = 0;
 	FvwmWindow *t;
 
-	atom_set = XInternAtom(dpy, XA_WIN_CLIENT_LIST, False);
-	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+	/* Find out how many window pointers we need to store, allocate
+	 * the space and go through the list again to actually store them.
+	 */
+	for (t = Scr.FvwmRoot.next; t; t = t->next)
 	{
 		if (!DO_SKIP_WINDOW_LIST(t))
 		{
-			wl[i++] = FW_W(t);
+			displayed++;
 		}
 	}
-
-	if (i > 0)
+	if(displayed)
 	{
-		XChangeProperty(
-			dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *)wl, i);
+		wl=(Window*)malloc(sizeof(Window*)*displayed);
+		for (t = Scr.FvwmRoot.next; t; t = t->next)
+		{
+			if (!DO_SKIP_WINDOW_LIST(t))
+			{
+				wl[i++] = FW_W(t);
+			}
+		}
 	}
-	else
-	{
-		XChangeProperty(
-			dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
-			PropModeReplace, (unsigned char *)NULL, 0);
-	}
+	/* Update X */
+	atom_set = XInternAtom(dpy, XA_WIN_CLIENT_LIST, False);
+	XChangeProperty(
+		dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
+		PropModeReplace, (unsigned char *)wl, i);
+	if(wl)
+		free(wl);
 
 	return;
 }
