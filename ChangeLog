@@ -1,9 +1,10 @@
 2001-01-13  olicha  <olivier.chapuis@free.fr>
 
+	* configure.in:
+	Removed test for lex and yacc
+
 	* fvwm/placement.c (PlaceAgain_func):
 	Fixed geometry state if PlaceAgain is used without anim
-	
-2001-01-13  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/menus.c (CopyMenuStle):
 	finished a -Wall fix

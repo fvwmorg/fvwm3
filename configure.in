@@ -329,8 +329,9 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
-AM_PROG_LEX
-AC_PROG_YACC
+dnl only needed by FvwmScript Developers
+dnl AM_PROG_LEX
+dnl AC_PROG_YACC
 AC_PATH_PROG(PERL, perl)
 
 dnl We need at least perl 5.002 for FvwmConsoleC.pl and fvwm-menu-headlines.
