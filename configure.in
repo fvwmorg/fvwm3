@@ -32,7 +32,6 @@ smr_SWITCH(modality, modal dialogs for applications, on, MODALITY_IS_EVIL)
 dnl smr_SWITCH(multistyle, stacked button styles, on, MULTISTYLE)
 smr_SWITCH(shape, shape extensions, on, SHAPE)
 dnl smr_SWITCH(usedecor, UseDecor style option, on, USEDECOR)
-smr_SWITCH(gnome, GNOME window manager hints, off, GNOME)
 
 dnl FIXME: default value should be derived from computed path to X
 dnl includes.  Actually, this should probably not appear in configure
@@ -42,7 +41,7 @@ dnl
 AC_MSG_CHECKING(imagepath)
 val="/usr/include/X11/bitmaps:/usr/include/X11/pixmaps"
 AC_ARG_WITH(imagepath,
-[  --with-imagepath=PATH    colon-delimited search path for images],
+[  --with-imagepath=PATH   colon-delimited search path for images],
 [ case "$withval" in
   no)
     AC_MSG_ERROR(Can not disable image path.)
@@ -58,14 +57,6 @@ FVWM_IMAGEPATH="$val"
 AC_SUBST(FVWM_IMAGEPATH)
 AC_MSG_RESULT($val)
 
-dnl GNOME WM Hints
-AM_CONDITIONAL(GNOME, test "x$enable_gnome" = "xyes")
-if test "x$enable_gnome" = xyes; then
-  with_gnome=yes
-else
-  with_gnome=no
-fi
-
 dnl Minimal checks for programs: enough to enable checking for
 dnl optional libraries.
 AC_PROG_CC
@@ -77,6 +68,46 @@ AC_MINIX
 
 dnl Need to know where X is, for finding some libraries (e.g. xpm)
 AC_PATH_XTRA
+
+
+dnl GNOME WM Hints
+dnl Note, no gnome headers or libs are needed for FVWM to be GNOME compliant.
+smr_SWITCH(gnome, GNOME window manager hints, on, GNOME)
+dnl AM_CONDITIONAL(GNOME, test "x$enable_gnome" != "xno")
+
+
+dnl Check the availability of SM
+dnl We don't have to add any extra libraries, since
+dnl -lSM -lICE are in X_PRE_LIBS when they exist.
+dnl [old check] AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), ,
+dnl [old check]            [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+
+AC_ARG_ENABLE(sm,
+  [  --disable-sm            disable session management support],
+  [ if test "$enableval" = yes; then
+    with_sm="yes, check"
+  else
+    with_sm="no"
+  fi ],
+  [ with_sm="not specified, check" ]
+)
+
+if test "$with_sm" != "no"; then
+  dnl Uncomment the following and comment out AC_CHECK_LIB to get --with-sm-*
+  dnl unset ac_cv_lib_SM_SmcOpenConnection
+  dnl unset ac_cv_header_X11_SM_SMlib_h
+  dnl smr_CHECK_LIB(sm, SM, adds session management support, SmcOpenConnection,
+  dnl   X11/SM/SMlib.h,
+  dnl   [$X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS], $X_CFLAGS)
+  dnl test "$sm_LIBS" && AC_DEFINE(SESSION)
+
+  unset ac_cv_lib_SM_SmcOpenConnection
+  AC_CHECK_LIB(SM, SmcOpenConnection, with_sm=yes; AC_DEFINE(SESSION),
+    with_sm=no, [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+fi
+dnl AC_SUBST(sm_LIBS)
+dnl AC_SUBST(sm_CFLAGS)
+
 
 dnl Checking for optional libraries
 dnl Default is to use them if found; can be disable using --without
@@ -152,7 +183,7 @@ unset ac_cv_header_stroke_h
 unset ac_cv_lib_stroke_stroke_init
 dnl Add in X_LIBS for MOUSE_DROPPINGS?
 dnl As of 23/Mar/2000 the only libstroke RPM has /usr/X11R6/include/stroke.h
-smr_CHECK_LIB(stroke, , adds mouse strokes recognition, stroke_init, stroke.h,
+smr_CHECK_LIB(stroke, , mouse strokes recognition, stroke_init, stroke.h,
           $X_LIBS, $X_CFLAGS -I/usr/X11R6/include)
 test "$stroke_LIBS" && AC_DEFINE(HAVE_STROKE)
 AC_SUBST(stroke_LIBS)
@@ -332,38 +363,6 @@ if test $ac_cv_func_atexit = no; then
   AC_CHECK_FUNCS(on_exit)
 fi
 
-dnl Check the availability of SM
-dnl We don't have to add any extra libraries, since
-dnl -lSM -lICE are in X_PRE_LIBS when they exist.
-dnl [old check] AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), ,
-dnl [old check]            [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
-
-AC_ARG_ENABLE(sm,
-  [  --disable-sm     disable session management support],
-  [ if test "$enableval" = yes; then
-    with_sm="yes, check"
-  else
-    with_sm="no"
-  fi ],
-  [ with_sm="not specified, check" ]
-)
-
-if test "$with_sm" != "no"; then
-  dnl Uncomment the following and comment out AC_CHECK_LIB to get --with-sm-*
-  dnl unset ac_cv_lib_SM_SmcOpenConnection
-  dnl unset ac_cv_header_X11_SM_SMlib_h
-  dnl smr_CHECK_LIB(sm, SM, adds session management support, SmcOpenConnection,
-  dnl   X11/SM/SMlib.h,
-  dnl   [$X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS], $X_CFLAGS)
-  dnl test "$sm_LIBS" && AC_DEFINE(SESSION)
-
-  unset ac_cv_lib_SM_SmcOpenConnection
-  AC_CHECK_LIB(SM, SmcOpenConnection, with_sm=yes; AC_DEFINE(SESSION),
-    with_sm=no, [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
-fi
-dnl AC_SUBST(sm_LIBS)
-dnl AC_SUBST(sm_CFLAGS)
-
 
 dnl Check the availability of Gtk
 AM_PATH_GTK(1.1.0,[FVWMGTK=FvwmGtk AC_SUBST(FVWMGTK)],)
@@ -377,6 +376,15 @@ dnl Check the availability of gdk-imlib
 AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(IMLIB),)
 
 GNOME_INIT_HOOK
+
+dnl Unfortunately we have 2 gnome supports: WM hints and gnome libs.
+dnl The $with_gnome below refers to the first, not GNOME_INIT_HOOK.
+if test "x$enable_gnome" != "xno"; then
+  with_gnome=yes
+else
+  with_gnome=no
+fi
+
 
 dnl Allow building with dmalloc.  Do this last to avoid screwing up any
 dnl other checks above.
@@ -462,6 +470,7 @@ Configuration:
   Have GTK support?                  $with_gtk
   Have GNOME Window Manager support? $with_gnome
   Have Session Management support?   $with_sm
+  Have GNOME support in FvwmGtk?     $want_gnome
 "
 
 case "$ac_cv_dmalloc" in

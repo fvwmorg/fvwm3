@@ -145,7 +145,7 @@ while test $# -gt 0; do
 			echo "	stroke: $with_stroke"
 			echo "	xpm: $with_xpm"
 			echo "	gtk: $with_gtk"
-			echo "	gnome: $with_gnome"
+			echo "	gnome (gnome wm hints): $with_gnome"
 			echo "	sm (session management): $with_sm"
 			;;
 

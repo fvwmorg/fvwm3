@@ -257,10 +257,18 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
       args[nargs] = 0;
       action = GetNextToken(action,&args[nargs]);
 #ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+      #define is_valid_first_alias_char(ch) (isalpha(ch))
+      #define is_valid_alias_char(ch) (is_valid_first_alias_char(ch) \
+        || isalnum(ch) || (ch) == '-' || (ch) == '.')
       if (pipeAlias[i] == NULL && args[nargs])
       {
         const char *ptr = args[nargs];
-        while (*ptr && isalpha(*ptr)) ptr++;
+        if (is_valid_first_alias_char(*ptr))
+        {
+          ptr++;
+          while (*ptr && is_valid_alias_char(*ptr))
+            ptr++;
+        }
         if (*ptr == '\0')
           pipeAlias[i] = stripcpy(args[nargs]);
       }

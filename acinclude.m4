@@ -128,8 +128,8 @@ AC_DEFUN(smr_SWITCH, [
     AC_ARG_ENABLE(
         $1,
         ifelse($3, on,
-            [  --disable-[$1]    disable [$2]],
-            [  --enable-[$1]     enable [$2]]),
+            [  --disable-[$1]         disable [$2]],
+            [  --enable-[$1]          enable [$2]]),
         [ if test "$enableval" = yes; then
             AC_MSG_RESULT(yes)
             ifelse($4, , , AC_DEFINE($4))
@@ -139,7 +139,7 @@ AC_DEFUN(smr_SWITCH, [
         fi ],
         ifelse($3, on,
            [ AC_MSG_RESULT(yes)
-             ifelse($4, , , AC_DEFINE($4)) ],
+            ifelse($4, , , AC_DEFINE($4)) ],
            [ AC_MSG_RESULT(no)
             ifelse($5, , , AC_DEFINE($5))]))])
 
@@ -174,8 +174,8 @@ ifelse($2, , smr_lib=[$1], smr_lib=[$2])
 
 AC_ARG_WITH([$1]-library,
 ifelse($3, ,
-[  --with-$1-library[=PATH]   use $1 library],
-[  --with-$1-library[=PATH]   use $1 library ($3)]),
+[  --with-$1-library[=PATH]  use $1 library],
+[  --with-$1-library[=PATH]  use $1 library ($3)]),
 [
     if test "$withval" = yes; then
         with_[$1]=yes
@@ -295,11 +295,11 @@ AC_DEFUN(AM_PATH_GTK,
 [dnl 
 dnl Get the cflags and libraries from the gtk-config script
 dnl
-AC_ARG_WITH(gtk-prefix,[  --with-gtk-prefix=PFX   Prefix where GTK is installed (optional)],
+AC_ARG_WITH(gtk-prefix,[  --with-gtk-prefix=PFX   prefix for GTK files (optional)],
             gtk_config_prefix="$withval", gtk_config_prefix="")
-AC_ARG_WITH(gtk-exec-prefix,[  --with-gtk-exec-prefix=PFX Exec prefix where GTK is installed (optional)],
+AC_ARG_WITH(gtk-exec-prefix,[  --with-gtk-exec-prefix=PFX  exec prefix for GTK files (optional)],
             gtk_config_exec_prefix="$withval", gtk_config_exec_prefix="")
-AC_ARG_ENABLE(gtktest, [  --disable-gtktest       Do not try to compile and run a test GTK program],
+AC_ARG_ENABLE(gtktest, [  --disable-gtktest       do not try to compile and run a test GTK program],
 		    , enable_gtktest=yes)
 
   if test x$gtk_config_exec_prefix != x ; then
@@ -486,11 +486,11 @@ AC_DEFUN(AM_PATH_IMLIB,
 [dnl 
 dnl Get the cflags and libraries from the imlib-config script
 dnl
-AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX   Prefix where IMLIB is installed (optional)],
+AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX prefix for IMLIB files (optional)],
             imlib_prefix="$withval", imlib_prefix="")
-AC_ARG_WITH(imlib-exec-prefix,[  --with-imlib-exec-prefix=PFX Exec prefix where IMLIB is installed (optional)],
+AC_ARG_WITH(imlib-exec-prefix,[  --with-imlib-exec-prefix=PFX  exec prefix for IMLIB files (optional)],
             imlib_exec_prefix="$withval", imlib_exec_prefix="")
-#AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest       Do not try to compile and run a test IMLIB program],
+#AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest       do not try to compile and run a test IMLIB program],
 #		    , enable_imlibtest=yes)
 
   if test x$imlib_exec_prefix != x ; then
@@ -625,11 +625,11 @@ AC_DEFUN(AM_PATH_GDK_IMLIB,
 [dnl 
 dnl Get the cflags and libraries from the imlib-config script
 dnl
-AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX   Prefix where IMLIB is installed (optional)],
+AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX prefix for IMLIB files (optional)],
             imlib_prefix="$withval", imlib_prefix="")
-AC_ARG_WITH(imlib-exec-prefix,[  --with-imlib-exec-prefix=PFX Exec prefix where IMLIB is installed (optional)],
+AC_ARG_WITH(imlib-exec-prefix,[  --with-imlib-exec-prefix=PFX  exec prefix for IMLIB files (optional)],
             imlib_exec_prefix="$withval", imlib_exec_prefix="")
-#AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest       Do not try to compile and run a test IMLIB program],
+#AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest       do not try to compile and run a test IMLIB program],
 #		    , enable_imlibtest=yes)
 
   if test x$imlib_exec_prefix != x ; then
@@ -761,6 +761,8 @@ int main ()
   rm -f conf.gdkimlibtest
 ])
 
+dnl from gnome.m4, modified by migo
+
 dnl
 dnl GNOME_INIT_HOOK (script-if-gnome-enabled, [failflag])
 dnl
@@ -775,18 +777,18 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 	AC_SUBST(GNOME_INCLUDEDIR)
 
 	AC_ARG_WITH(gnome-includes,
-	[  --with-gnome-includes   Specify location of GNOME headers],[
+	[  --with-gnome-includes   location of GNOME headers],[
 	CFLAGS="$CFLAGS -I$withval"
 	])
 	
 	AC_ARG_WITH(gnome-libs,
-	[  --with-gnome-libs       Specify location of GNOME libs],[
+	[  --with-gnome-libs       location of GNOME libs],[
 	LDFLAGS="$LDFLAGS -L$withval"
 	gnome_prefix=$withval
 	])
 
 	AC_ARG_WITH(gnome,
-	[  --with-gnome            Specify prefix for GNOME files],
+	[  --with-gnome            prefix for GNOME files (not needed for GNOME WM hints)],
 		if test x$withval = xyes; then
 	    		want_gnome=yes
 	    		dnl Note that an empty true branch is not
@@ -802,7 +804,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 	    			gnome_prefix=$withval/lib
 	    		fi
   		fi,
-		want_gnome=no)
+		want_gnome=yes)
 
 	if test "x$want_gnome" = xyes; then
 
@@ -810,7 +812,7 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 	    if test "$GNOME_CONFIG" = "no"; then
 	      no_gnome_config="yes"
 	    else
-	      AC_MSG_CHECKING(if $GNOME_CONFIG works)
+	      AC_MSG_CHECKING(whether $GNOME_CONFIG works)
 	      if $GNOME_CONFIG --libs-only-l gnome >/dev/null 2>&1; then
 	        AC_MSG_RESULT(yes)
 	        GNOME_LIBS="`$GNOME_CONFIG --libs-only-l gnome`"
@@ -844,10 +846,40 @@ AC_DEFUN([GNOME_INIT_HOOK],[
 	        $1
 	      else
 	        AC_MSG_RESULT(not found)
- 	        if test x$2 = xfail; then
+	        if test x$2 = xfail; then
 	          AC_MSG_ERROR(Could not find the gnomeConf.sh file that is generated by gnome-libs install)
- 	        fi
+	        fi
+                want_gnome=no
 	      fi
             fi
+	fi
+
+	# test whether gnome can be compiled
+	if test "x$want_gnome" = xyes; then
+		AC_MSG_CHECKING(whether trivial gnome compilation passes)
+		my_CPPFLAGS="$CPPFLAGS"
+		my_LIBS="$LIBS"
+		CPPFLAGS="$CPPFLAGS $GNOME_INCLUDEDIR"
+		LIBS="$LIBS $GNOME_LIBDIR $GNOMEUI_LIBS"
+		AC_TRY_RUN([#include <gnome.h>
+			int main(int c, char **v) {
+				gnome_init("test-app", "0.0", c, v);
+				return 0;
+			}],
+			[want_gnome=yes],
+			[want_gnome=no]
+		)
+		AC_MSG_RESULT($want_gnome)
+		CPPFLAGS="$my_CPPFLAGS" 
+		LIBS="$my_LIBS"
+	else
+		want_gnome=no
+	fi
+
+	if test "x$want_gnome" = xno; then
+	        GNOME_LIBS=
+	        GNOMEUI_LIBS=
+	        GNOME_LIBDIR=
+	        GNOME_INCLUDEDIR=
 	fi
 ])
