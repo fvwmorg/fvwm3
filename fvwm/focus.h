@@ -26,6 +26,7 @@
  *
  **********************************************************************/
 void SetFocusWindow(FvwmWindow *Fw, Bool FocusByMouse);
+void ReturnFocusWindow(FvwmWindow *Fw, Bool FocusByMouse);
 void DeleteFocus(Bool FocusByMouse);
 void ForceDeleteFocus(Bool FocusByMouse);
 void restore_focus_after_unmap(FvwmWindow *tmp_win);

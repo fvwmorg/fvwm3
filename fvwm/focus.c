@@ -266,6 +266,11 @@ void SetFocusWindow(FvwmWindow *Fw, Bool FocusByMouse)
   MoveFocus(Fw->w, Fw, FocusByMouse, False, False);
 }
 
+void ReturnFocusWindow(FvwmWindow *Fw, Bool FocusByMouse)
+{
+  MoveFocus(Fw->w, Fw, FocusByMouse, True, False);
+}
+
 void DeleteFocus(Bool FocusByMouse)
 {
   MoveFocus(Scr.NoFocusWin, NULL, FocusByMouse, False, False);

@@ -50,6 +50,7 @@
 #include "focus.h"
 
 static unsigned int grab_count[GRAB_MAXVAL] = { 1, 1, 0, 0, 0, 0, 0 };
+static unsigned int focus_prev_level = 0;
 #define GRAB_EVMASK (ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask | EnterWindowMask | LeaveWindowMask)
 
 
@@ -154,6 +155,7 @@ Bool GrabEm(int cursor, int grab_context)
       if(Scr.PreviousFocus == NULL)
 	Scr.PreviousFocus = Scr.Focus;
       DeleteFocus(0);
+      focus_prev_level = grab_count[GRAB_ALL];
     }
     grab_win = Scr.Root;
     rep = 500;
@@ -273,11 +275,16 @@ print_grab_stats("-restore");
 print_grab_stats("-ungrab");
 #endif
     XUngrabPointer(dpy, CurrentTime);
+  }
+  if (grab_count[GRAB_ALL] == 0 || grab_count[GRAB_ALL] == focus_prev_level)
+  {
     if (Scr.PreviousFocus && ungrab_context != GRAB_BUSY)
     {
       /* if the window still exists, focus on it */
       if (Scr.PreviousFocus->w)
-	SetFocusWindow(Scr.PreviousFocus, 0);
+      {
+	ReturnFocusWindow(Scr.PreviousFocus, 0);
+      }
       Scr.PreviousFocus = NULL;
     }
   }

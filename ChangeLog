@@ -1,5 +1,11 @@
 2001-03-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/focus.c (ReturnFocusWindow):
+	new function
+
+	* fvwm/misc.c (UngrabEm):
+	fixed pointer grabbing/focus after a menu closes
+
 	* fvwm/move_resize.c (CMD_Resize):
 	fixed resizing shaded windows w/ titleatbottom
 
