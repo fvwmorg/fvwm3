@@ -40,6 +40,7 @@ fvwm.
 changes the PixmapPath and IconPath commands
 to ImagePath commands and removes any directories that are compiled
 into fvwm.
+Paths starting with a dollar sign are also removed.
 .TP 4
 .B ModulePath
 In fvwm 2.4x, the ModulePath is compiled into fvwm.
@@ -91,6 +92,12 @@ this command is run against are converted.  If your
 .I ~/.fvwm2rc
 reads other configuration files,
 you may want to run this command against them also.
+
+.I WindowFont
+and
+.I HilightColor
+commands not starting in column 1  are not changed.
+If you have either of these commands in macros, they are not detected.
 
 Known bugs can be found in the fvwm bug tracking system (accessible
 from the fvwm home page).

@@ -103,6 +103,10 @@ function add_to_path(path) {
 
 /[Hh]ilight[Cc]olor/ {
   split($2,colors,"/");
+  if ( colors[2] == "" ) {
+    colors[1] = $2;
+    colors[2] = $3;
+  }
   print "Style \"*\" Hilightfore " colors[1] ", HilightBack " colors[2];
   next;
 }
@@ -113,6 +117,7 @@ function add_to_path(path) {
 }
 
 /[Cc]olor[Ll]imit/ {
+  print "# Removed by fvwm24_convert: " $0;
   next;
 }
 
@@ -120,8 +125,10 @@ function add_to_path(path) {
   # Deletes continuation lines too, although if there are
   # continuation lines, there might be some part of the path we want to
   # Delete them anyway.
+  print "# Removed by fvwm24_convert: " $0;
   while (substr($0,length($0),1) == "\\") {
     getline $0;
+    print "# Removed by fvwm24_convert: " $0;
   }
   next;
 }

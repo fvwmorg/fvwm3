@@ -1,3 +1,9 @@
+2000-09-28  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm24_convert.in: Handle space in HighlightColor.  Leave commented
+	out ModulePath and ColorLimit commands.
+	* fvwm24_convert.1: document more limitations/features.
+
 2000-09-26  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm24_convert.1: new man page.
