@@ -1034,7 +1034,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   Bool used_sm = False;
   Bool do_resize_too = False;
 
-  fvwm_msg(WARN,"AddWindow","Entering");
   /****** init window structure ******/
   if (!setup_window_structure(&tmptmp_win, w, ReuseWin)) {
     fvwm_msg(ERR,"AddWindow","Bad return code from setup_window_structure");
@@ -1054,7 +1053,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   /****** window name ******/
   setup_window_name(tmp_win);
-  fvwm_msg(WARN,"AddWindow","Window name is %s",tmp_win->name);
   setup_class_and_resource(tmp_win);
   setup_wm_hints(tmp_win);
 
@@ -1325,7 +1323,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       tmp_win->frame_g.width, tmp_win->frame_g.height, False);
     SET_SHADED(tmp_win ,1);
   }
-  fvwm_msg(WARN,"AddWindow","Window added");
 
   return tmp_win;
 }

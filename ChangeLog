@@ -1,3 +1,15 @@
+1999-12-04  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/fvwm2.1 (vectorbuttonsytles): Point the reader to the web
+	pages instead of the samples for examples.
+
+	* sample.fvwmrc/system.fvwm2rc-sample-1,2: remove buttonstyle comments,
+	the samples are now on a web page.
+
+	* fvwm/add_window.c (AddWindow): Since I committed some debugging
+	by accident, I'm backing that out, but adding some error messages
+	when AddWindow encounters error conditions.
+
 1999-12-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (DrawDecorations):

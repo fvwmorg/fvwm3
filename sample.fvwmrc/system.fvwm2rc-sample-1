@@ -11,34 +11,6 @@ ButtonStyle 2 4 50x35@1 65x65@0 35x65@0 50x35@1
 # small down triangle
 ButtonStyle 4 4 50x65@1 35x35@1 65x35@1 50x65@0
 
-# some other ButtonStyles:
-# large up triangle
-#ButtonStyle 2 4 50x25@1 75x75@0 25x75@0 50x25@1
-# large down triangle
-#ButtonStyle 4 4 50x75@1 25x25@1 75x25@1 50x75@0
-# big box
-#ButtonStyle 2 5 25x25@1 25x75@1 75x75@0 75x25@0 25x25@1
-# little box
-#ButtonStyle 8 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
-# tall box
-#ButtonStyle 6 5 40x25@1 60x25@1 60x75@0 40x75@0 40x25@1
-# dot
-#ButtonStyle 4 5 45x45@1 55x45@1 55x55@0 45x55@0 45x45@1
-# an up arrow:
-#ButtonStyle 2 8 40x80@1 40x50@1 20x50@1 50x20@1 80x50@0 60x50@0 60x80@0 40x80@0
-# an X
-#ButtonStyle 3 13 26x29@1 34x21@1 50x35@1 70x21@1 79x29@1 63x48@0 79x65@1 70x75@0 50x61@0 34x75@0 26x65@0 44x48@1 26x29@0
-#
-#big box crossed by an arrow to a little box, good for iconify
-#ButtonStyle 4 14 20x20@1 20x70@1 70x70@0 70x20@0 20x20@1 60x60@0 60x50@0 60x60@0 50x60@0 60x60@0 60x80@0 80x80@0 80x60@0 60x60@0
-#
-# like twm's nested squares:
-#ButtonStyle 2 14 0x0@1 0x20@1 20x20@0 20x0@0 0x0@1 0x25@1 25x25@1 25x0@1 55x0@1 55x55@0 0x55@0 0x60@1 60x60@1 60x0@1
-#
-# 3 horiz lines, like sticky indicator
-#ButtonStyle 8 12 10x23@0 90x23@0 90x28@0 10x28@1 10x47@1 90x47@0 90x52@0 10x52@1 10x70@2 90x70@0 90x76@0 10x76@1
-
-
 EdgeResistance 250 10
 WindowFont		-adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
 IconFont		-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
