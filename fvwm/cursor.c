@@ -572,9 +572,9 @@ void setBusyCursor(F_CMD_ARGS)
       break;
 
     args = GetNextToken(optstring, &option);
+    free(optstring);
     if (!option)
     {
-      free(optstring);
       break;
     }
 

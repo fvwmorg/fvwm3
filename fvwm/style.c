@@ -905,6 +905,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  GetNextToken(rest, &token);
           if (token)
           {
+            SAFEFREE(SGET_BACK_COLOR_NAME(*ptmpstyle));
             SSET_BACK_COLOR_NAME(*ptmpstyle, token);
             ptmpstyle->flags.has_color_back = 1;
             ptmpstyle->flag_mask.has_color_back = 1;
@@ -1044,6 +1045,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    next = DoGetNextToken(rest, &token, NULL, ",/", &c);
 	  }
 	  rest = next;
+          SAFEFREE(SGET_FORE_COLOR_NAME(*ptmpstyle));
 	  SSET_FORE_COLOR_NAME(*ptmpstyle, token);
 	  ptmpstyle->flags.has_color_fore = 1;
 	  ptmpstyle->flag_mask.has_color_fore = 1;
@@ -1065,6 +1067,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  GetNextToken(rest, &token);
 	  if (!token)
 	    break;
+          SAFEFREE(SGET_BACK_COLOR_NAME(*ptmpstyle));
 	  SSET_BACK_COLOR_NAME(*ptmpstyle, token);
 	  ptmpstyle->flags.has_color_back = 1;
 	  ptmpstyle->flag_mask.has_color_back = 1;
@@ -1219,6 +1222,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  GetNextToken(rest, &token);
           if (token)
           {
+            SAFEFREE(SGET_FORE_COLOR_NAME(*ptmpstyle));
 	    SSET_FORE_COLOR_NAME(*ptmpstyle, token);
             ptmpstyle->flags.has_color_fore = 1;
             ptmpstyle->flag_mask.has_color_fore = 1;
@@ -1345,6 +1349,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  GetNextToken(rest, &token);
           if (token)
           {
+            SAFEFREE(SGET_FORE_COLOR_NAME_HI(*ptmpstyle));
 	    SSET_FORE_COLOR_NAME_HI(*ptmpstyle, token);
             ptmpstyle->flags.has_color_fore_hi = 1;
             ptmpstyle->flag_mask.has_color_fore_hi = 1;
@@ -1360,6 +1365,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  GetNextToken(rest, &token);
           if (token)
           {
+            SAFEFREE(SGET_BACK_COLOR_NAME_HI(*ptmpstyle));
             SSET_BACK_COLOR_NAME_HI(*ptmpstyle, token);
             ptmpstyle->flags.has_color_back_hi = 1;
             ptmpstyle->flag_mask.has_color_back_hi = 1;
@@ -1399,6 +1405,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  found = True;
 	  GetNextToken(rest, &token);
 
+          SAFEFREE(SGET_ICON_NAME(*ptmpstyle));
           SSET_ICON_NAME(*ptmpstyle,token);
           ptmpstyle->flags.has_icon = (token != NULL);
           ptmpstyle->flag_mask.has_icon = 1;
@@ -1691,6 +1698,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  GetNextToken(rest, &token);
 	  if (token)
           {
+            SAFEFREE(SGET_MINI_ICON_NAME(*ptmpstyle));
             SSET_MINI_ICON_NAME(*ptmpstyle, token);
             ptmpstyle->flags.has_mini_icon = 1;
             ptmpstyle->flag_mask.has_mini_icon = 1;
@@ -2403,6 +2411,7 @@ void ProcessNewStyle(F_CMD_ARGS)
   {
     /* merge with previous style */
     merge_styles(last_style_in_list, ptmpstyle, True);
+    free(SGET_NAME(*ptmpstyle));
     free(ptmpstyle);
   }
   else

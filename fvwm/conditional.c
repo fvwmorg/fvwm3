@@ -86,7 +86,8 @@ char *CreateFlagString(char *string, char **restptr)
 
     *restptr = c + 1;
   }
-  else {
+  else
+  {
     retval = NULL;
     *restptr = c;
   }
@@ -358,7 +359,8 @@ static FvwmWindow *Circulate(char *action, int Direction, char **restofline)
   /* Create window mask */
   flags = CreateFlagString(action, restofline);
   DefaultConditionMask(&mask);
-  if (Direction == 0) { /* override for Current [] */
+  if (Direction == 0)
+  { /* override for Current [] */
     mask.my_flags.use_circulate_hit = 1;
     mask.my_flags.use_circulate_hit_icon = 1;
   }
@@ -489,34 +491,38 @@ void AllFunc(F_CMD_ARGS)
   flags = CreateFlagString(action, &restofline);
   DefaultConditionMask(&mask);
   CreateConditionMask(flags, &mask);
+  if (flags)
+    free(flags);
   mask.my_flags.use_circulate_hit = 1;
   mask.my_flags.use_circulate_hit_icon = 1;
 
   num = 0;
   for (t = Scr.FvwmRoot.next; t; t = t->next)
-    {
-       num++;
-    }
+  {
+    num++;
+  }
 
   g = (FvwmWindow **) safemalloc (num * sizeof(FvwmWindow *));
 
   num = 0;
   for (t = Scr.FvwmRoot.next; t; t = t->next)
+  {
+    if (MatchesConditionMask(t, &mask))
     {
-      if (MatchesConditionMask(t, &mask))
-	{
-          g[num++] = t;
-        }
+      g[num++] = t;
     }
+  }
 
   for (i = 0; i < num; i++)
-    {
-       ExecuteFunction(
-	 restofline, g[i], eventp, C_WINDOW, *Module, 0, NULL);
-    }
+  {
+    ExecuteFunction(
+      restofline, g[i], eventp, C_WINDOW, *Module, 0, NULL);
+  }
 
-  free (g);
+  free(g);
   FreeConditionMask(&mask);
+
+  return;
 }
 
 static void GetDirectionReference(FvwmWindow *w, rectangle *r)
@@ -703,6 +709,8 @@ void PickFunc(F_CMD_ARGS)
   flags = CreateFlagString(action, &restofline);
   DefaultConditionMask(&mask);
   CreateConditionMask(flags, &mask);
+  if (flags)
+    free(flags);
   if (MatchesConditionMask(tmp_win, &mask) && restofline)
   {
     ExecuteFunction(
@@ -733,7 +741,7 @@ void WindowIdFunc(F_CMD_ARGS)
   /* Look for condition - CreateFlagString returns NULL if no '(' or '[' */
   flags = CreateFlagString(action, &restofline);
   if (flags)
-    {
+  {
     /* Create window mask */
     use_condition = True;
     DefaultConditionMask(&mask);
@@ -747,7 +755,7 @@ void WindowIdFunc(F_CMD_ARGS)
 
     /* Relocate action */
     action = restofline;
-    }
+  }
 
   /* Search windows */
   for (t = Scr.FvwmRoot.next; t; t = t->next)
