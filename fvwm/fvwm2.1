@@ -1220,7 +1220,8 @@ ExecUseShell /usr/local/bin/tcsh
 Executes a \fIFocus\fP command as if the user had used the pointer to select
 the window.  This command alters the order of the windowlist in the same way
 as clicking in a window to focus, i.e. the target window is removed from the
-windowlist and placed at the start.
+windowlist and placed at the start. This command is recommended for use with the
+\fIDirection\fP command and in the function invoked from \fIWindowList\fP.
 
 
 .IP "Focus"
@@ -2380,7 +2381,7 @@ this:
 .EX
 AddToFunc WindowListFunc
  + "I" WindowId $0 Iconify -1
- + "I" WindowId $0 Focus
+ + "I" WindowId $0 FlipFocus
  + "I" WindowId $0 Raise
  + "I" WindowId $0 WarpToWindow 5p 5p
 .EE
