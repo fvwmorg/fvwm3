@@ -140,25 +140,25 @@ struct icon_info
 
 struct iconfile
 {
-  char *name;
-  char *iconfile;
-  struct iconfile *next;
+	char *name;
+	char *iconfile;
+	struct iconfile *next;
 };
 
 struct mousefunc
 {
-  int mouse;
-  int type;
-  char *action;
-  struct mousefunc *next;
+	int mouse;
+	int type;
+	char *action;
+	struct mousefunc *next;
 };
 
 struct keyfunc
 {
-  char *name;
-  KeyCode keycode;
-  char *action;
-  struct keyfunc *next;
+	char *name;
+	KeyCode keycode;
+	char *action;
+	struct keyfunc *next;
 };
 
 extern struct icon_info *Head;

@@ -1,3 +1,12 @@
+2003-04-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/XError.c:
+	reformatted
+
+	* fvwm.1.in:
+	* fvwm.c:
+	replaced "Mouse 0 R N Menu MenuFvwmRoot" binding with "Mouse 1 R A"
+
 2003-04-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (do_menu):

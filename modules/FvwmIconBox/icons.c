@@ -179,57 +179,75 @@ void CreateIconWindow(struct icon_info *item)
  ****************************************************************************/
 void AdjustIconWindow(struct icon_info *item, int n)
 {
-  int x=0,y=0,w,h,h2,h3,w3;
+	int x=0, y=0, w, h, h2, h3, w3;
 
-  w3 = w = max_icon_width + icon_relief;
-  /* the height of the picture window */
-  h3 = h2 = max_icon_height + icon_relief;
-  h = h2 + 2 + 2 * max(normal_title_relief,iconified_title_relief) + Ffont->height;
+	w3 = w = max_icon_width + icon_relief;
+	/* the height of the picture window */
+	h3 = h2 = max_icon_height + icon_relief;
+	h = h2 + 2 + 2 * max(normal_title_relief, iconified_title_relief) +
+		Ffont->height;
 
-  switch (primary){
-  case LEFT:
-  case RIGHT:
-    if (secondary == BOTTOM)
-      y = icon_win_height  - (n / Lines + 1)*(h + interval);
-    else if (secondary == TOP)
-      y = (n / Lines)*(h + interval) + interval;
+	switch (primary) {
+	case LEFT:
+	case RIGHT:
+		if (secondary == BOTTOM)
+		{
+			y = icon_win_height  - (n / Lines + 1)*(h + interval);
+		}
+		else if (secondary == TOP)
+		{
+			y = (n / Lines)*(h + interval) + interval;
+		}
 
-    if (primary == LEFT)
-      x = (n % Lines)*(w + interval) + interval;
-    else
-      x = icon_win_width - (n % Lines + 1)*(w + interval);
-    break;
-  case TOP:
-  case BOTTOM:
-    if (secondary == RIGHT)
-      x = icon_win_width - (n / Lines + 1)*(w + interval);
-    else if (secondary == LEFT)
-      x = (n / Lines)*(w + interval) + interval;
+		if (primary == LEFT)
+		{
+			x = (n % Lines)*(w + interval) + interval;
+		}
+		else
+		{
+			x = icon_win_width - (n % Lines + 1)*(w + interval);
+		}
+		break;
+	case TOP:
+	case BOTTOM:
+		if (secondary == RIGHT)
+		{
+			x = icon_win_width - (n / Lines + 1)*(w + interval);
+		}
+		else if (secondary == LEFT)
+		{
+			x = (n / Lines)*(w + interval) + interval;
+		}
 
-    if (primary == TOP)
-      y = (n % Lines)*(h + interval) + interval;
-    else
-      y = icon_win_height - (n % Lines + 1)*(h + interval);
-    break;
-  default:
-    break;
-  }
+		if (primary == TOP)
+		{
+			y = (n % Lines)*(h + interval) + interval;
+		}
+		else
+		{
+			y = icon_win_height - (n % Lines + 1)*(h + interval);
+		}
+		break;
+	default:
+		break;
+	}
 
-  item->x = x;
-  item->y = y;
+	item->x = x;
+	item->y = y;
 
-  if (item->icon_w > 0 && item->icon_h > 0){
-    w3 = min(max_icon_width, item->icon_w) + icon_relief;
-    h3 = min(max_icon_height, item->icon_h) + icon_relief;
-  }
-  if (max_icon_height != 0) {
-    /* fudge factor for foreign visual icon pixmaps */
-    int r = (Pdefault | (item->icon_depth == 1) | IS_PIXMAP_OURS(item))
-	    ? 0 : icon_relief;
-    XMoveResizeWindow(dpy, item->icon_pixmap_w, x + (w - w3)/2 + r/2,
-		    y + (h2 - h3)/2 + r/2,w3-r,h3-r);
-  }
-  XMoveResizeWindow(dpy, item->IconWin, x,y + h2,w,h - h2);
+	if (item->icon_w > 0 && item->icon_h > 0) {
+		w3 = min(max_icon_width, item->icon_w) + icon_relief;
+		h3 = min(max_icon_height, item->icon_h) + icon_relief;
+	}
+	if (max_icon_height != 0) {
+		/* fudge factor for foreign visual icon pixmaps */
+		int r = (Pdefault | (item->icon_depth == 1) |
+			IS_PIXMAP_OURS(item)) ? 0 : icon_relief;
+		XMoveResizeWindow(dpy, item->icon_pixmap_w,
+			x + (w - w3) / 2 + r / 2, y + (h2 - h3) / 2 + r / 2,
+			w3 - r, h3 - r);
+	}
+	XMoveResizeWindow(dpy, item->IconWin, x,y + h2,w,h - h2);
 }
 
 /****************************************************************************
@@ -287,10 +305,10 @@ void GetIconWindow(struct icon_info *item)
 	unsigned int bw;
 	Window Junkroot;
 
-	if(!XGetGeometry(dpy, item->wmhints->icon_window, &Junkroot,
-			 &x, &y, (unsigned int *)&item->icon_w,
-			 (unsigned int *)&item->icon_h,
-			 &bw, (unsigned int *)&item->icon_depth))
+	if (!XGetGeometry(
+		dpy, item->wmhints->icon_window, &Junkroot, &x, &y,
+		(unsigned int *)&item->icon_w, (unsigned int *)&item->icon_h,
+		&bw, (unsigned int *)&item->icon_depth))
 	{
 #if 0
 		fprintf(stderr, "[%s][GetIconWindow] WARN -- '%s' has an "
@@ -367,9 +385,10 @@ void GetIconBitmap(struct icon_info *item)
 	item->iconPixmap = None;
 	item->icon_w = 0;
 	item->icon_h = 0;
-	if (!XGetGeometry(dpy, item->wmhints->icon_pixmap, &Junkroot, &x, &y,
-			  (unsigned int *)&item->icon_w,
-			  (unsigned int *)&item->icon_h, &bw, &depth))
+	if (!XGetGeometry(
+		dpy, item->wmhints->icon_pixmap, &Junkroot, &x, &y,
+		(unsigned int *)&item->icon_w, (unsigned int *)&item->icon_h,
+		&bw, &depth))
 	{
 		/* disable icon pixmap hint */
 		item->icon_w = 0;

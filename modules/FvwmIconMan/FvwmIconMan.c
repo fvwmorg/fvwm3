@@ -34,63 +34,72 @@ static RETSIGTYPE TerminateHandler(int);
 
 char *copy_string(char **target, const char *src)
 {
-  int len;
-  if (src == NULL)
-  {
-    len = 0;
-    if (*target)
-      Free(*target);
-    return *target = NULL;
-  }
+	int len;
+	if (src == NULL)
+	{
+		len = 0;
+		if (*target)
+		{
+			Free(*target);
+		}
+		return *target = NULL;
+	}
 
-  len = strlen(src);
-  ConsoleDebug(CORE, "copy_string: 1: 0x%lx\n", (unsigned long)*target);
+	len = strlen(src);
+	ConsoleDebug(CORE, "copy_string: 1: 0x%lx\n", (unsigned long)*target);
 
-  if (*target)
-    Free(*target);
+	if (*target)
+	{
+		Free(*target);
+	}
 
-  ConsoleDebug(CORE, "copy_string: 2\n");
-  *target = (char *)safemalloc((len + 1) * sizeof(char));
-  strcpy(*target, src);
-  ConsoleDebug(CORE, "copy_string: 3\n");
-  return *target;
+	ConsoleDebug(CORE, "copy_string: 2\n");
+	*target = (char *)safemalloc((len + 1) * sizeof(char));
+	strcpy(*target, src);
+	ConsoleDebug(CORE, "copy_string: 3\n");
+	return *target;
 }
 
 #ifdef TRACE_MEMUSE
 
 long MemUsed = 0;
 
-void Free (void *p)
+void Free(void *p)
 {
-  struct malloc_header *head = (struct malloc_header *)p;
+	struct malloc_header *head = (struct malloc_header *)p;
 
-  if (p != NULL) {
-    head--;
-    if (head->magic != MALLOC_MAGIC) {
-      fprintf(stderr, "Corrupted memory found in Free\n");
-      abort();
-      return;
-    }
-    if (head->len > MemUsed) {
-      fprintf(stderr, "Free block too big\n");
-      return;
-    }
-    MemUsed -= head->len;
-    Free(head);
-  }
+	if (p != NULL)
+	{
+		head--;
+		if (head->magic != MALLOC_MAGIC)
+		{
+			fprintf(stderr, "Corrupted memory found in Free\n");
+			abort();
+			return;
+		}
+		if (head->len > MemUsed)
+		{
+			fprintf(stderr, "Free block too big\n");
+			return;
+		}
+		MemUsed -= head->len;
+		Free(head);
+	}
 }
 
 void PrintMemuse(void)
 {
-  ConsoleDebug(CORE, "Memory used: %d\n", MemUsed);
+	ConsoleDebug(CORE, "Memory used: %d\n", MemUsed);
 }
 
 #else
 
 void Free(void *p)
 {
-  if (p != NULL)
-    free(p);
+	if (p != NULL)
+	{
+		free(p);
+	}
 }
 
 void PrintMemuse(void)
@@ -103,208 +112,228 @@ void PrintMemuse(void)
 static RETSIGTYPE
 TerminateHandler(int sig)
 {
-  fvwmSetTerminate(sig);
+	fvwmSetTerminate(sig);
 }
 
 
 void
 ShutMeDown(int flag)
 {
-  ConsoleDebug(CORE, "Bye Bye\n");
-  exit(flag);
+	ConsoleDebug(CORE, "Bye Bye\n");
+	exit(flag);
 }
 
 void
 DeadPipe(int nothing)
 {
-  (void)nothing;
-  ShutMeDown(0);
+	(void)nothing;
+	ShutMeDown(0);
 }
 
 static void
-main_loop (void)
+main_loop(void)
 {
-  fd_set readset, saveset;
-  fd_set_size_t fd_width = x_fd;
+	fd_set readset, saveset;
+	fd_set_size_t fd_width = x_fd;
 
-  /*
-   * Calculate which is descriptor is numerically higher:
-   * this determines how wide the descriptor set needs to be ...
-   */
-  if (fd_width < Fvwm_fd[1]) fd_width = Fvwm_fd[1];
-  ++fd_width;
+	/*
+	 * Calculate which is descriptor is numerically higher:
+	 * this determines how wide the descriptor set needs to be ...
+	 */
+	if (fd_width < fvwm_fd[1])
+	{
+		fd_width = fvwm_fd[1];
+	}
+	++fd_width;
 
-  FD_ZERO(&saveset);
-  FD_SET(Fvwm_fd[1], &saveset);
-  FD_SET(x_fd, &saveset);
+	FD_ZERO(&saveset);
+	FD_SET(fvwm_fd[1], &saveset);
+	FD_SET(x_fd, &saveset);
 
-  while( !isTerminated ) {
-    /* Check the pipes for anything to read, and block if
-     * there is nothing there yet ...
-     */
-    readset = saveset;
-    if (fvwmSelect(fd_width, &readset, NULL, NULL, NULL) < 0) {
-      ConsoleMessage("Internal error with select: errno=%s\n",
-		     strerror(errno));
-    }
-    else {
+	while (!isTerminated)
+	{
+		/* Check the pipes for anything to read, and block if
+		 * there is nothing there yet ...
+		 */
+		readset = saveset;
+		if (fvwmSelect(fd_width, &readset, NULL, NULL, NULL) < 0)
+		{
+			ConsoleMessage(
+				"Internal error with select: errno=%s\n",
+				strerror(errno));
+		}
+		else
+		{
 
-      if (FD_ISSET(x_fd, &readset) || FPending(theDisplay)) {
-	xevent_loop();
-      }
-      if (FD_ISSET(Fvwm_fd[1], &readset)) {
-	ReadFvwmPipe();
-      }
+			if (FD_ISSET(x_fd, &readset) || FPending(theDisplay))
+			{
+				xevent_loop();
+			}
+			if (FD_ISSET(fvwm_fd[1], &readset))
+			{
+				ReadFvwmPipe();
+			}
 
-    }
-  } /* while */
+		}
+	} /* while */
 }
 
 int
 main(int argc, char **argv)
 {
-  char *s;
-  int i;
+	char *s;
+	int i;
 
 #ifdef ELECTRIC_FENCE
-  extern int EF_PROTECT_BELOW, EF_PROTECT_FREE;
+	extern int EF_PROTECT_BELOW, EF_PROTECT_FREE;
 
-  EF_PROTECT_BELOW = 1;
-  EF_PROTECT_FREE = 1;
+	EF_PROTECT_BELOW = 1;
+	EF_PROTECT_FREE = 1;
 #endif
 
 #ifdef DEBUG_ATTACH
-  {
-    char buf[256];
-    sprintf(buf, "%d", getpid());
-    if (fork() == 0) {
-      chdir("/home/bradym/src/FvwmIconMan");
-      execl("/usr/local/bin/ddd", "/usr/local/bin/ddd", "FvwmIconMan",
-	     buf, NULL);
-    }
-    else {
-      int i, done = 0;
-      for (i = 0; i < (1 << 27) && !done; i++) ;
-    }
-  }
+	{
+		char buf[256];
+		sprintf(buf, "%d", getpid());
+		if (fork() == 0)
+		{
+			chdir("/home/bradym/src/FvwmIconMan");
+			execl(
+				"/usr/local/bin/ddd", "/usr/local/bin/ddd",
+				"FvwmIconMan", buf, NULL);
+		}
+		else
+		{
+			int i, done = 0;
+			for (i = 0; i < (1 << 27) && !done; i++) ;
+		}
+	}
 #endif
 
-  FlocaleInit(LC_CTYPE, "", "", "FvwmIconMan");
+	FlocaleInit(LC_CTYPE, "", "", "FvwmIconMan");
 
-  OpenConsole(OUTPUT_FILE);
+	OpenConsole(OUTPUT_FILE);
 
 #if 0
-  ConsoleMessage("PID = %d\n", getpid());
-  ConsoleMessage("Waiting for GDB to attach\n");
-  sleep(10);
+	ConsoleMessage("PID = %d\n", getpid());
+	ConsoleMessage("Waiting for GDB to attach\n");
+	sleep(10);
 #endif
 
-  init_globals();
-  init_winlists();
+	init_globals();
+	init_winlists();
 
-  MyName = argv[0];
-  s = strrchr(argv[0], '/');
-  if (s != NULL)
-    MyName = s + 1;
+	MyName = argv[0];
+	s = strrchr(argv[0], '/');
+	if (s != NULL)
+	{
+		MyName = s + 1;
+	}
 
-  if (argc == 7)
-  {
-    if (strcasecmp (argv[6], "Transient")==0 ||
-	strcasecmp (argv[6], "-Transient")==0)
-      globals.transient = 1;
-    else
-    {
-      MyName = argv[6];
-    }
-  }
-  ModuleLen = strlen(MyName) + 1;
-  Module = safemalloc(ModuleLen+1);
-  *Module = '*';
-  strcpy (Module+1, MyName);
+	if (argc == 7)
+	{
+		if (strcasecmp(argv[6], "Transient")==0 ||
+			strcasecmp(argv[6], "-Transient") == 0)
+		{
+			globals.transient = 1;
+		}
+		else
+		{
+			MyName = argv[6];
+		}
+	}
+	ModuleLen = strlen(MyName) + 1;
+	Module = safemalloc(ModuleLen+1);
+	*Module = '*';
+	strcpy(Module+1, MyName);
 
-  if(argc < 6)
-  {
-    fprintf(stderr, "%s version %s should only be executed by fvwm!\n",
-      Module, VERSION);
-    ShutMeDown(1);
-  }
-  Fvwm_fd[0] = atoi(argv[1]);
-  Fvwm_fd[1] = atoi(argv[2]);
-  init_display();
-  init_boxes();
+	if (argc < 6)
+	{
+		fprintf(stderr,
+			"%s version %s should only be executed by fvwm!\n",
+			Module, VERSION);
+		ShutMeDown(1);
+	}
+	fvwm_fd[0] = atoi(argv[1]);
+	fvwm_fd[1] = atoi(argv[2]);
+	init_display();
+	init_boxes();
 
 #ifdef HAVE_SIGACTION
-  {
-    struct sigaction  sigact;
+	{
+		struct sigaction  sigact;
 
-    sigemptyset(&sigact.sa_mask);
-    sigaddset(&sigact.sa_mask, SIGPIPE);
-    sigaddset(&sigact.sa_mask, SIGINT);
-    sigaddset(&sigact.sa_mask, SIGHUP);
-    sigaddset(&sigact.sa_mask, SIGTERM);
-    sigaddset(&sigact.sa_mask, SIGQUIT);
+		sigemptyset(&sigact.sa_mask);
+		sigaddset(&sigact.sa_mask, SIGPIPE);
+		sigaddset(&sigact.sa_mask, SIGINT);
+		sigaddset(&sigact.sa_mask, SIGHUP);
+		sigaddset(&sigact.sa_mask, SIGTERM);
+		sigaddset(&sigact.sa_mask, SIGQUIT);
 # ifdef SA_RESTART
-    sigact.sa_flags = SA_RESTART;
+		sigact.sa_flags = SA_RESTART;
 # else
-    sigact.sa_flags = 0;
+		sigact.sa_flags = 0;
 # endif
-    sigact.sa_handler = TerminateHandler;
+		sigact.sa_handler = TerminateHandler;
 
-    sigaction(SIGPIPE, &sigact, NULL);
-    sigaction(SIGINT,  &sigact, NULL);
-    sigaction(SIGHUP,  &sigact, NULL);
-    sigaction(SIGTERM, &sigact, NULL);
-    sigaction(SIGQUIT, &sigact, NULL);
-  }
+		sigaction(SIGPIPE, &sigact, NULL);
+		sigaction(SIGINT,  &sigact, NULL);
+		sigaction(SIGHUP,  &sigact, NULL);
+		sigaction(SIGTERM, &sigact, NULL);
+		sigaction(SIGQUIT, &sigact, NULL);
+	}
 #else
-  /* We don't have sigaction(), so fall back to less robust methods.  */
+	/* We don't have sigaction(), so fall back to less robust methods. */
 #ifdef USE_BSD_SIGNALS
-  fvwmSetSignalMask( sigmask(SIGPIPE) |
-		     sigmask(SIGINT) |
-		     sigmask(SIGHUP) |
-		     sigmask(SIGTERM) |
-		     sigmask(SIGQUIT) );
+	fvwmSetSignalMask(
+		sigmask(SIGPIPE) |
+		sigmask(SIGINT) |
+		sigmask(SIGHUP) |
+		sigmask(SIGTERM) |
+		sigmask(SIGQUIT));
 #endif
-  signal(SIGPIPE, TerminateHandler);
-  signal(SIGINT,  TerminateHandler);
-  signal(SIGHUP,  TerminateHandler);
-  signal(SIGTERM, TerminateHandler);
-  signal(SIGQUIT, TerminateHandler);
+	signal(SIGPIPE, TerminateHandler);
+	signal(SIGINT,  TerminateHandler);
+	signal(SIGHUP,  TerminateHandler);
+	signal(SIGTERM, TerminateHandler);
+	signal(SIGQUIT, TerminateHandler);
 #ifdef HAVE_SIGINTERRUPT
-  siginterrupt(SIGPIPE, 0);
-  siginterrupt(SIGINT, 0);
-  siginterrupt(SIGHUP, 0);
-  siginterrupt(SIGTERM, 0);
-  siginterrupt(SIGQUIT, 0);
+	siginterrupt(SIGPIPE, 0);
+	siginterrupt(SIGINT, 0);
+	siginterrupt(SIGHUP, 0);
+	siginterrupt(SIGTERM, 0);
+	siginterrupt(SIGQUIT, 0);
 #endif
 #endif
 
-  read_in_resources(argv[3]);
-  FlocaleAllocateWinString(&FwinString);
+	read_in_resources();
+	FlocaleAllocateWinString(&FwinString);
 
-  for (i = 0; i < globals.num_managers; i++) {
-    X_init_manager(i);
-  }
+	for (i = 0; i < globals.num_managers; i++)
+	{
+		X_init_manager(i);
+	}
 
-  assert(globals.managers);
+	assert(globals.managers);
 
-  SetMessageMask(Fvwm_fd, M_CONFIGURE_WINDOW | M_RES_CLASS | M_RES_NAME |
-		 M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME |
-		 M_DEICONIFY | M_ICONIFY | M_ICON_LOCATION | M_END_WINDOWLIST |
-		 M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_WINDOW_NAME |
-		 M_CONFIG_INFO | M_SENDCONFIG | M_VISIBLE_NAME |
-		 M_MINI_ICON | M_STRING | M_WINDOWSHADE | M_DEWINDOWSHADE);
+	SetMessageMask(
+		fvwm_fd, M_CONFIGURE_WINDOW | M_RES_CLASS | M_RES_NAME |
+		M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME |
+		M_DEICONIFY | M_ICONIFY | M_ICON_LOCATION | M_END_WINDOWLIST |
+		M_NEW_DESK | M_NEW_PAGE | M_FOCUS_CHANGE | M_WINDOW_NAME |
+		M_CONFIG_INFO | M_SENDCONFIG | M_VISIBLE_NAME |
+		M_MINI_ICON | M_STRING | M_WINDOWSHADE | M_DEWINDOWSHADE);
   /* extended messages */
-  SetMessageMask(Fvwm_fd, MX_VISIBLE_ICON_NAME | MX_PROPERTY_CHANGE);
+  SetMessageMask(fvwm_fd, MX_VISIBLE_ICON_NAME | MX_PROPERTY_CHANGE);
 
-  SendInfo(Fvwm_fd, "Send_WindowList", 0);
+  SendInfo(fvwm_fd, "Send_WindowList", 0);
 
   /* tell fvwm we're running */
-  SendFinishedStartupNotification(Fvwm_fd);
+  SendFinishedStartupNotification(fvwm_fd);
 
   /* Lock on send only for iconify and deiconify (for NoIconAction) */
-  SetSyncMask(Fvwm_fd, M_DEICONIFY | M_ICONIFY);
-  SetNoGrabMask(Fvwm_fd, M_DEICONIFY | M_ICONIFY);
+  SetSyncMask(fvwm_fd, M_DEICONIFY | M_ICONIFY);
+  SetNoGrabMask(fvwm_fd, M_DEICONIFY | M_ICONIFY);
 
   main_loop();
 

@@ -56,17 +56,17 @@ typedef struct {
   int text_base;                              /* text baseline */
 } ButtonGeometry;
 
-static void print_button_info (Button *b);
-static void insert_windows_button (WinData *win);
+static void print_button_info(Button *b);
+static void insert_windows_button(WinData *win);
 
 /***************************************************************************/
 /* Utility leaf functions                                                  */
 /***************************************************************************/
 
-static int selected_button_in_man (WinManager *man)
+static int selected_button_in_man(WinManager *man)
 {
-  assert (man);
-  ConsoleDebug (X11, "selected_button_in_man: %p\n",
+  assert(man);
+  ConsoleDebug(X11, "selected_button_in_man: %p\n",
 		globals.select_win);
   if (globals.select_win && globals.select_win->button &&
     globals.select_win->manager == man) {
@@ -76,7 +76,7 @@ static int selected_button_in_man (WinManager *man)
 }
 
 #if 0
-static void ClipRectangle (WinManager *man, int context,
+static void ClipRectangle(WinManager *man, int context,
 			   int x, int y, int w, int h)
 {
   XRectangle r;
@@ -91,7 +91,7 @@ static void ClipRectangle (WinManager *man, int context,
 }
 #endif
 
-static Region GetRegion (int x, int y, int w, int h)
+static Region GetRegion(int x, int y, int w, int h)
 {
   Region region;
   XRectangle rectangle;
@@ -102,7 +102,7 @@ static Region GetRegion (int x, int y, int w, int h)
   rectangle.height = h;
 
   region = XCreateRegion();
-  XUnionRectWithRegion (&rectangle, region, region);
+  XUnionRectWithRegion(&rectangle, region, region);
   return region;
 }
 
@@ -126,12 +126,12 @@ static void GetRectangleIntersection(
 	}
 }
 
-static int num_visible_rows (int n, int cols)
+static int num_visible_rows(int n, int cols)
 {
   return (n - 1) / cols + 1;
 }
 
-static int first_row_len (int n, int cols)
+static int first_row_len(int n, int cols)
 {
   int ret = n % cols;
   if (ret == 0)
@@ -139,7 +139,7 @@ static int first_row_len (int n, int cols)
   return ret;
 }
 
-static int index_to_box (WinManager *man, int index)
+static int index_to_box(WinManager *man, int index)
 {
   int first_len, n, cols;
 
@@ -149,15 +149,15 @@ static int index_to_box (WinManager *man, int index)
   else {
     n = man->buttons.num_windows;
     cols = man->geometry.cols;
-    first_len = first_row_len (n, cols);
+    first_len = first_row_len(n, cols);
     if (index >= first_len)
       index += cols - first_len;
-    index += (man->geometry.rows - num_visible_rows (n, cols)) * cols;
+    index += (man->geometry.rows - num_visible_rows(n, cols)) * cols;
     return index;
   }
 }
 
-static int box_to_index (WinManager *man, int box)
+static int box_to_index(WinManager *man, int box)
 {
   int first_len, n, cols;
 
@@ -167,9 +167,9 @@ static int box_to_index (WinManager *man, int box)
   else {
     n = man->buttons.num_windows;
     cols = man->geometry.cols;
-    first_len = first_row_len (n, cols);
+    first_len = first_row_len(n, cols);
 
-    box -= (man->geometry.rows - num_visible_rows (n, cols)) * cols;
+    box -= (man->geometry.rows - num_visible_rows(n, cols)) * cols;
     if (!((box >= 0 && box < first_len) || box >= cols))
       return -1;
     if (box >= first_len)
@@ -178,41 +178,41 @@ static int box_to_index (WinManager *man, int box)
   }
 }
 
-static int index_to_row (WinManager *man, int index)
+static int index_to_row(WinManager *man, int index)
 {
   int row;
 
-  row = index_to_box (man, index) / man->geometry.cols;
+  row = index_to_box(man, index) / man->geometry.cols;
 
   return row;
 }
 
-static int index_to_col (WinManager *man, int index)
+static int index_to_col(WinManager *man, int index)
 {
   int col;
 
-  col = index_to_box (man, index) % man->geometry.cols;
+  col = index_to_box(man, index) % man->geometry.cols;
 
   return col;
 }
 
-static int rects_equal (XRectangle *x, XRectangle *y)
+static int rects_equal(XRectangle *x, XRectangle *y)
 {
   return (x->x == y->x) && (x->y == y->y) && (x->width == y->width) &&
     (x->height == y->height);
 }
 
-static int top_y_coord (WinManager *man)
+static int top_y_coord(WinManager *man)
 {
   if (man->buttons.num_windows > 0 && (man->geometry.dir & GROW_UP)) {
-    return index_to_row (man, 0) * man->geometry.boxheight;
+    return index_to_row(man, 0) * man->geometry.boxheight;
   }
   else {
     return 0;
   }
 }
 
-static ManGeometry *figure_geometry (WinManager *man)
+static ManGeometry *figure_geometry(WinManager *man)
 {
   /* Given the number of wins in icon_list and width x height, compute
      new geometry. */
@@ -224,7 +224,7 @@ static ManGeometry *figure_geometry (WinManager *man)
 
   ret = *g;
 
-  ConsoleDebug (X11, "figure_geometry: %s: %d, %d %d %d %d\n",
+  ConsoleDebug(X11, "figure_geometry: %s: %d, %d %d %d %d\n",
 		man->titlename, n,
 		ret.width, ret.height, ret.cols, ret.rows);
 
@@ -233,7 +233,7 @@ static ManGeometry *figure_geometry (WinManager *man)
   }
 
   if (man->geometry.dir & GROW_FIXED) {
-    ret.cols = num_visible_rows (n, g->rows);
+    ret.cols = num_visible_rows(n, g->rows);
     ret.boxwidth = ret.width / ret.cols;
     if (ret.boxwidth < 1)
       ret.boxwidth = 1;
@@ -241,10 +241,10 @@ static ManGeometry *figure_geometry (WinManager *man)
   else {
     if (man->geometry.dir & GROW_VERT) {
       if (g->cols) {
-	ret.rows = num_visible_rows (n, g->cols);
+	ret.rows = num_visible_rows(n, g->cols);
       }
       else {
-	ConsoleMessage ("Internal error in figure_geometry\n");
+	ConsoleMessage("Internal error in figure_geometry\n");
 	ret.rows = 1;
       }
       ret.height = ret.rows * g->boxheight;
@@ -253,10 +253,10 @@ static ManGeometry *figure_geometry (WinManager *man)
     else {
       /* need to set resize inc  */
       if (g->rows) {
-	ret.cols = num_visible_rows (n, g->rows);
+	ret.cols = num_visible_rows(n, g->rows);
       }
       else {
-	ConsoleMessage ("Internal error in figure_geometry\n");
+	ConsoleMessage("Internal error in figure_geometry\n");
 	ret.cols = 1;
       }
       ret.height = ret.rows * g->boxheight;
@@ -264,24 +264,24 @@ static ManGeometry *figure_geometry (WinManager *man)
     }
   }
 
-  ConsoleDebug (X11, "figure_geometry: %d %d %d %d %d\n",
+  ConsoleDebug(X11, "figure_geometry: %d %d %d %d %d\n",
 		n, ret.width, ret.height, ret.cols, ret.rows);
 
   return &ret;
 }
 
-static ManGeometry *query_geometry (WinManager *man)
+static ManGeometry *query_geometry(WinManager *man)
 {
   XWindowAttributes frame_attr, win_attr;
   int off_x, off_y;
   static ManGeometry g;
 
-  assert (man->window_mapped);
+  assert(man->window_mapped);
 
   off_x = 0;
   off_y = 0;
-  man->theFrame = find_frame_window (man->theWindow, &off_x, &off_y);
-  if (XGetWindowAttributes (theDisplay, man->theFrame, &frame_attr))
+  man->theFrame = find_frame_window(man->theWindow, &off_x, &off_y);
+  if (XGetWindowAttributes(theDisplay, man->theFrame, &frame_attr))
   {
     g.x = frame_attr.x + off_x + frame_attr.border_width;
     g.y = frame_attr.y + off_y + frame_attr.border_width;
@@ -293,7 +293,7 @@ static ManGeometry *query_geometry (WinManager *man)
     fprintf(stderr, "%s: query_geometry: failed to get frame attributes.\n",
 	    MyName);
   }
-  if (XGetWindowAttributes (theDisplay, man->theWindow, &win_attr))
+  if (XGetWindowAttributes(theDisplay, man->theWindow, &win_attr))
   {
     g.width = win_attr.width;
     g.height = win_attr.height;
@@ -309,7 +309,7 @@ static ManGeometry *query_geometry (WinManager *man)
   return &g;
 }
 
-static void fix_manager_size (WinManager *man, int w, int h)
+static void fix_manager_size(WinManager *man, int w, int h)
 {
   XSizeHints size;
   long mask;
@@ -317,30 +317,30 @@ static void fix_manager_size (WinManager *man, int w, int h)
   if (man->geometry.dir & GROW_FIXED)
     return;
 
-  XGetWMNormalHints (theDisplay, man->theWindow, &size, &mask);
+  XGetWMNormalHints(theDisplay, man->theWindow, &size, &mask);
   size.min_width = w;
   size.max_width = w;
   size.min_height = h;
   size.max_height = h;
-  XSetWMNormalHints (theDisplay, man->theWindow, &size);
+  XSetWMNormalHints(theDisplay, man->theWindow, &size);
 }
 
 /* Like XMoveResizeWindow(), but can move in arbitary directions */
-static void resize_window (WinManager *man)
+static void resize_window(WinManager *man)
 {
   ManGeometry *g;
   int x_changed, y_changed, dir;
 
   dir = man->geometry.dir;
-  fix_manager_size (man, man->geometry.width, man->geometry.height);
+  fix_manager_size(man, man->geometry.width, man->geometry.height);
 
   if ((dir & GROW_DOWN) && (dir & GROW_RIGHT)) {
-    XResizeWindow (theDisplay, man->theWindow, man->geometry.width,
+    XResizeWindow(theDisplay, man->theWindow, man->geometry.width,
 		   man->geometry.height);
   }
   else {
-    MyXGrabServer (theDisplay);
-    g = query_geometry (man);
+    MyXGrabServer(theDisplay);
+    g = query_geometry(man);
     x_changed = y_changed = 0;
     if (dir & GROW_LEFT) {
       man->geometry.x = g->x + g->width - man->geometry.width;
@@ -357,24 +357,24 @@ static void resize_window (WinManager *man)
       man->geometry.y = g->y;
     }
 
-    ConsoleDebug (X11, "queried: y: %d, h: %d, queried: %d\n", g->y,
+    ConsoleDebug(X11, "queried: y: %d, h: %d, queried: %d\n", g->y,
 		  man->geometry.height, g->height);
 
     if (x_changed || y_changed) {
-      XMoveResizeWindow (theDisplay, man->theWindow,
+      XMoveResizeWindow(theDisplay, man->theWindow,
 			 man->geometry.x,
 			 man->geometry.y,
 			 man->geometry.width, man->geometry.height);
     }
     else {
-      XResizeWindow (theDisplay, man->theWindow, man->geometry.width,
+      XResizeWindow(theDisplay, man->theWindow, man->geometry.width,
 		     man->geometry.height);
     }
-    MyXUngrabServer (theDisplay);
+    MyXUngrabServer(theDisplay);
   }
 }
 
-static char *make_display_string (WinData *win, char *format, int len)
+static char *make_display_string(WinData *win, char *format, int len)
 {
 #define MAX_DISPLAY_SIZE 1024
 #define COPY(field)                                       \
@@ -397,19 +397,19 @@ static char *make_display_string (WinData *win, char *format, int len)
     if (*in_p == '%') {
       switch (*(++in_p)) {
       case 'i':
-	COPY (visible_icon_name);
+	COPY(visible_icon_name);
 	break;
 
       case 't':
-	COPY (visible_name);
+	COPY(visible_name);
 	break;
 
       case 'r':
-	COPY (resname);
+	COPY(resname);
 	break;
 
       case 'c':
-	COPY (classname);
+	COPY(classname);
 	break;
 
       default:
@@ -431,13 +431,13 @@ static char *make_display_string (WinData *win, char *format, int len)
 #undef MAX_DISPLAY_SIZE
 }
 
-Button *button_above (WinManager *man, Button *b)
+Button *button_above(WinManager *man, Button *b)
 {
   int n = man->buttons.num_windows, cols = man->geometry.cols;
   int i = -1;
 
   if (b) {
-    i = box_to_index (man, index_to_box (man, b->index) - cols);
+    i = box_to_index(man, index_to_box(man, b->index) - cols);
   }
   if (i < 0 || i >= n)
     return b;
@@ -445,13 +445,13 @@ Button *button_above (WinManager *man, Button *b)
     return man->buttons.buttons[i];
 }
 
-Button *button_below (WinManager *man, Button *b)
+Button *button_below(WinManager *man, Button *b)
 {
   int n = man->buttons.num_windows;
   int i = -1;
 
   if (b) {
-    i = box_to_index (man, index_to_box (man, b->index) + man->geometry.cols);
+    i = box_to_index(man, index_to_box(man, b->index) + man->geometry.cols);
   }
   if (i < 0 || i >= n)
     return b;
@@ -459,12 +459,12 @@ Button *button_below (WinManager *man, Button *b)
     return man->buttons.buttons[i];
 }
 
-Button *button_right (WinManager *man, Button *b)
+Button *button_right(WinManager *man, Button *b)
 {
   int i = -1;
 
-  if (index_to_col (man, b->index) < man->geometry.cols - 1) {
-    i = box_to_index (man, index_to_box (man, b->index) + 1);
+  if (index_to_col(man, b->index) < man->geometry.cols - 1) {
+    i = box_to_index(man, index_to_box(man, b->index) + 1);
   }
 
   if (i < 0 || i >= man->buttons.num_windows)
@@ -473,11 +473,11 @@ Button *button_right (WinManager *man, Button *b)
     return man->buttons.buttons[i];
 }
 
-Button *button_left (WinManager *man, Button *b)
+Button *button_left(WinManager *man, Button *b)
 {
   int i = -1;
-  if (index_to_col (man, b->index) > 0) {
-    i = box_to_index (man, index_to_box (man, b->index) - 1);
+  if (index_to_col(man, b->index) > 0) {
+    i = box_to_index(man, index_to_box(man, b->index) - 1);
   }
 
   if (i < 0 || i >= man->buttons.num_windows)
@@ -486,7 +486,7 @@ Button *button_left (WinManager *man, Button *b)
     return man->buttons.buttons[i];
 }
 
-Button *button_next (WinManager *man, Button *b)
+Button *button_next(WinManager *man, Button *b)
 {
   int i = b->index + 1;
 
@@ -496,7 +496,7 @@ Button *button_next (WinManager *man, Button *b)
     return b;
 }
 
-Button *button_prev (WinManager *man, Button *b)
+Button *button_prev(WinManager *man, Button *b)
 {
   int i = b->index - 1;
 
@@ -506,7 +506,7 @@ Button *button_prev (WinManager *man, Button *b)
     return b;
 }
 
-Button *xy_to_button (WinManager *man, int x, int y)
+Button *xy_to_button(WinManager *man, int x, int y)
 {
   int row = y / man->geometry.boxheight;
   int col = x / man->geometry.boxwidth;
@@ -515,7 +515,7 @@ Button *xy_to_button (WinManager *man, int x, int y)
   if (x >= 0 && x <= man->geometry.width &&
       y >= 0 && y <= man->geometry.height) {
     box = row * man->geometry.cols + col;
-    index = box_to_index (man, box);
+    index = box_to_index(man, box);
     if (index >= 0 && index < man->buttons.num_windows)
       return man->buttons.buttons[index];
   }
@@ -527,29 +527,29 @@ Button *xy_to_button (WinManager *man, int x, int y)
 /* Routines which change dirtyable state                                   */
 /***************************************************************************/
 
-static void set_button_geometry (WinManager *man, Button *box)
+static void set_button_geometry(WinManager *man, Button *box)
 {
-  box->x = index_to_col (man, box->index) * man->geometry.boxwidth;
-  box->y = index_to_row (man, box->index) * man->geometry.boxheight;
+  box->x = index_to_col(man, box->index) * man->geometry.boxwidth;
+  box->y = index_to_row(man, box->index) * man->geometry.boxheight;
   box->w = man->geometry.boxwidth;
   box->h = man->geometry.boxheight;
   box->drawn_state.dirty_flags |= GEOMETRY_CHANGED;
 }
 
-static void clear_button (Button *b)
+static void clear_button(Button *b)
 {
-  assert (b);
+  assert(b);
   b->drawn_state.win = NULL;
   b->drawn_state.dirty_flags = REDRAW_BUTTON;
   b->drawn_state.display_string = NULL;
   b->drawn_state.ew = 0;
 }
 
-static void set_window_button (WinData *win, int index)
+static void set_window_button(WinData *win, int index)
 {
   Button *b;
 
-  assert (win->manager && index < win->manager->buttons.num_buttons);
+  assert(win->manager && index < win->manager->buttons.num_buttons);
 
   b = win->manager->buttons.buttons[index];
 
@@ -567,31 +567,31 @@ static void set_window_button (WinData *win, int index)
   win->button = b;
 }
 
-static void *Realloc (void *ptr, int size)
+static void *Realloc(void *ptr, int size)
 {
   if (ptr == NULL)
-    return safemalloc (size);
+    return safemalloc(size);
   else
-    return realloc (ptr, size);
+    return realloc(ptr, size);
 }
 
-static void set_num_buttons (ButtonArray *buttons, int n)
+static void set_num_buttons(ButtonArray *buttons, int n)
 {
   int i;
 
-  ConsoleDebug (X11, "set_num_buttons: %d %d\n", buttons->num_buttons, n);
+  ConsoleDebug(X11, "set_num_buttons: %d %d\n", buttons->num_buttons, n);
 
   if (n > buttons->num_buttons) {
     buttons->dirty_flags |= NUM_BUTTONS_CHANGED;
-    buttons->buttons = (Button **)Realloc (buttons->buttons,
-					   n * sizeof (Button *));
+    buttons->buttons = (Button **)Realloc(buttons->buttons,
+					   n * sizeof(Button *));
     if (buttons->buttons == NULL) {
-      ConsoleMessage ("Realloc failed! Bailing out\n");
+      ConsoleMessage("Realloc failed! Bailing out\n");
       ShutMeDown(1);
     }
 
     for (i = buttons->num_buttons; i < n; i++) {
-      buttons->buttons[i] = (Button *)safemalloc (sizeof (Button));
+      buttons->buttons[i] = (Button *)safemalloc(sizeof(Button));
       memset(buttons->buttons[i], 0, sizeof(Button));
       buttons->buttons[i]->drawn_state.display_string = NULL;
       buttons->buttons[i]->index = i;
@@ -602,7 +602,7 @@ static void set_num_buttons (ButtonArray *buttons, int n)
   }
 }
 
-static void increase_num_windows (ButtonArray *buttons, int off)
+static void increase_num_windows(ButtonArray *buttons, int off)
 {
   int n;
 
@@ -612,12 +612,12 @@ static void increase_num_windows (ButtonArray *buttons, int off)
 
     if (buttons->num_windows > buttons->num_buttons) {
       n = buttons->num_windows + 10;
-      set_num_buttons (buttons, n);
+      set_num_buttons(buttons, n);
     }
   }
 }
 
-static void set_man_gravity_origin (WinManager *man)
+static void set_man_gravity_origin(WinManager *man)
 {
   if (man->gravity == NorthWestGravity || man->gravity == NorthEastGravity)
     man->geometry.gravity_y = 0;
@@ -629,7 +629,7 @@ static void set_man_gravity_origin (WinManager *man)
     man->geometry.gravity_x = man->geometry.width;
 }
 
-static void set_man_geometry (WinManager *man, ManGeometry *new)
+static void set_man_geometry(WinManager *man, ManGeometry *new)
 {
   int n;
 
@@ -643,16 +643,16 @@ static void set_man_geometry (WinManager *man, ManGeometry *new)
   }
 
   man->geometry = *new;
-  set_man_gravity_origin (man);
+  set_man_gravity_origin(man);
   n = man->geometry.rows * man->geometry.cols;
   if (man->buttons.num_buttons < n)
-    set_num_buttons (&man->buttons, n + 10);
+    set_num_buttons(&man->buttons, n + 10);
 }
 
-void set_manager_width (WinManager *man, int width)
+void set_manager_width(WinManager *man, int width)
 {
   if (width != man->geometry.width) {
-    ConsoleDebug (X11, "set_manager_width: %d -> %d, %d -> %d\n",
+    ConsoleDebug(X11, "set_manager_width: %d -> %d, %d -> %d\n",
 		  man->geometry.width, width, man->geometry.boxwidth,
 		  width / man->geometry.cols);
     man->geometry.width = width;
@@ -663,13 +663,13 @@ void set_manager_width (WinManager *man, int width)
   }
 }
 
-void force_manager_redraw (WinManager *man)
+void force_manager_redraw(WinManager *man)
 {
   man->dirty_flags |= REDRAW_MANAGER;
-  draw_manager (man);
+  draw_manager(man);
 }
 
-void set_win_picture (WinData *win, Pixmap picture, Pixmap mask, Pixmap alpha,
+void set_win_picture(WinData *win, Pixmap picture, Pixmap mask, Pixmap alpha,
 		      unsigned int depth, unsigned int width,
 		      unsigned int height)
 {
@@ -688,7 +688,7 @@ void set_win_picture (WinData *win, Pixmap picture, Pixmap mask, Pixmap alpha,
   win->pic.depth = depth;
 }
 
-void set_win_iconified (WinData *win, int iconified)
+void set_win_iconified(WinData *win, int iconified)
 {
   /* This change has become necessary because with colorsets we don't know
    * the background colour of the button (gradient background). Thus the button
@@ -723,7 +723,7 @@ void set_win_iconified (WinData *win, int iconified)
 		abs_x, abs_y, win->button->w, win->button->h,
 		(int)win->x, (int)win->y, (int)win->width, (int)win->height);
       }
-      SendText(Fvwm_fd, string, 0);
+      SendText(fvwm_fd, string, 0);
 
     }
     win->button->drawn_state.dirty_flags |= ICON_STATE_CHANGED;
@@ -731,16 +731,15 @@ void set_win_iconified (WinData *win, int iconified)
   win->iconified = iconified;
 }
 
-void set_win_state (WinData *win, int state)
+void set_win_state(WinData *win, int state)
 {
 	if (win->button && win->state != state)
 		win->button->drawn_state.dirty_flags |= STATE_CHANGED;
 	win->state = state;
-
 }
 
 /* this is "broken" */
-void add_win_state (WinData *win, int flag)
+void add_win_state(WinData *win, int flag)
 {
 	int old_state = win->state;
 
@@ -777,11 +776,11 @@ void add_win_state (WinData *win, int flag)
 	{
 		win->button->drawn_state.dirty_flags |= STATE_CHANGED;
 	}
-	ConsoleDebug (X11, "add_win_state: %s 0x%x\n", win->titlename, flag);
+	ConsoleDebug(X11, "add_win_state: %s 0x%x\n", win->titlename, flag);
 }
 
 /* this is "broken" */
-void del_win_state (WinData *win, int flag)
+void del_win_state(WinData *win, int flag)
 {
 
 	if (flag == FOCUS_CONTEXT)
@@ -837,10 +836,10 @@ void del_win_state (WinData *win, int flag)
 	{
 		win->button->drawn_state.dirty_flags |= STATE_CHANGED;
 	}
-	ConsoleDebug (X11, "del_win_state: %s 0x%x\n", win->titlename, flag);
+	ConsoleDebug(X11, "del_win_state: %s 0x%x\n", win->titlename, flag);
 }
 
-void set_win_displaystring (WinData *win)
+void set_win_displaystring(WinData *win)
 {
   WinManager *man = win->manager;
   int maxlen;
@@ -853,14 +852,14 @@ void set_win_displaystring (WinData *win)
   }
 
   if (man->window_up) {
-    assert (man->geometry.width && man->fontwidth);
+    assert(man->geometry.width && man->fontwidth);
     maxlen = man->geometry.width / man->fontwidth + 2 /* fudge factor */;
   }
   else {
     maxlen = 0;
   }
   copy_string(
-    &win->display_string, make_display_string (win, man->formatstring, maxlen));
+    &win->display_string, make_display_string(win, man->formatstring, maxlen));
   if (win->button)
     win->button->drawn_state.dirty_flags |= STRING_CHANGED;
 }
@@ -868,7 +867,7 @@ void set_win_displaystring (WinData *win)
 /* This function is here and not with the other static utility functions
    because it basically is the inverse of set_shape() */
 
-static void clear_empty_region (WinManager *man)
+static void clear_empty_region(WinManager *man)
 {
   XRectangle rects[3];
   int num_rects = 0, n = man->buttons.num_windows, cols = man->geometry.cols;
@@ -891,11 +890,11 @@ static void clear_empty_region (WinManager *man)
   }
   else if (man->geometry.dir & GROW_DOWN)
   {
-    assert (cols);
+    assert(cols);
     if (n % cols == 0)
     {
       rects[0].x = 0;
-      rects[0].y = num_visible_rows (n, cols) * man->geometry.boxheight;
+      rects[0].y = num_visible_rows(n, cols) * man->geometry.boxheight;
       rects[0].width = man->geometry.width;
       rects[0].height = man->geometry.height - rects[0].y;
       num_rects = 1;
@@ -903,7 +902,7 @@ static void clear_empty_region (WinManager *man)
     else
     {
       rects[0].x = (n % cols) * man->geometry.boxwidth;
-      rects[0].y = (num_visible_rows (n, cols) - 1) * man->geometry.boxheight;
+      rects[0].y = (num_visible_rows(n, cols) - 1) * man->geometry.boxheight;
       rects[0].width = man->geometry.width - rects[0].x;
       rects[0].height = boxheight;
       rects[1].x = 0;
@@ -915,14 +914,14 @@ static void clear_empty_region (WinManager *man)
   }
   else
   {
-    assert (cols);
+    assert(cols);
     /* for shaped windows, we won't see this part of the window */
     if (n % cols == 0)
     {
       rects[0].x = 0;
       rects[0].y = 0;
       rects[0].width = man->geometry.width;
-      rects[0].height = top_y_coord (man);
+      rects[0].height = top_y_coord(man);
       num_rects = 1;
     }
     else
@@ -930,7 +929,7 @@ static void clear_empty_region (WinManager *man)
       rects[0].x = 0;
       rects[0].y = 0;
       rects[0].width = man->geometry.width;
-      rects[0].height = top_y_coord (man);
+      rects[0].height = top_y_coord(man);
       rects[1].x = (n % cols) * man->geometry.boxwidth;
       rects[1].y = rects[0].height;
       rects[1].width = man->geometry.width - rects[1].x;
@@ -948,7 +947,7 @@ static void clear_empty_region (WinManager *man)
     num_rects++;
   }
 
-  ConsoleDebug (X11, "Clearing: %d: (%d, %d, %d, %d) + (%d, %d, %d, %d)\n",
+  ConsoleDebug(X11, "Clearing: %d: (%d, %d, %d, %d) + (%d, %d, %d, %d)\n",
 		num_rects,
 		rects[0].x, rects[0].y, rects[0].width, rects[0].height,
 		rects[1].x, rects[1].y, rects[1].width, rects[1].height);
@@ -967,12 +966,12 @@ static void clear_empty_region (WinManager *man)
   }
   else
   {
-    XFillRectangles (theDisplay, man->theWindow,
+    XFillRectangles(theDisplay, man->theWindow,
 		     man->backContext[DEFAULT], rects, num_rects);
   }
 }
 
-void set_shape (WinManager *man)
+void set_shape(WinManager *man)
 {
   if (FShapesSupported)
   {
@@ -983,7 +982,7 @@ void set_shape (WinManager *man)
     if (man->shaped == 0)
       return;
 
-    ConsoleDebug (X11, "in set_shape: %s\n", man->titlename);
+    ConsoleDebug(X11, "in set_shape: %s\n", man->titlename);
 
     n = man->buttons.num_windows;
     if (n == 0)
@@ -1002,10 +1001,10 @@ void set_shape (WinManager *man)
 
     if (cols == 0 || n % cols == 0) {
       rects[0].x = 0;
-      rects[0].y = top_y_coord (man);
+      rects[0].y = top_y_coord(man);
       rects[0].width = man->geometry.width;
-      rects[0].height = num_visible_rows (n, cols) * man->geometry.boxheight;
-      if (man->shape.num_rects != 1 || !rects_equal (rects, man->shape.rects)) {
+      rects[0].height = num_visible_rows(n, cols) * man->geometry.boxheight;
+      if (man->shape.num_rects != 1 || !rects_equal(rects, man->shape.rects)) {
 	man->dirty_flags |= SHAPE_CHANGED;
       }
       man->shape.num_rects = 1;
@@ -1017,7 +1016,7 @@ void set_shape (WinManager *man)
 	rects[0].y = 0;
 	rects[0].width = man->geometry.width;
 	rects[0].height =
-	  (num_visible_rows (n, cols) - 1) * man->geometry.boxheight;
+	  (num_visible_rows(n, cols) - 1) * man->geometry.boxheight;
 	rects[1].x = 0;
 	rects[1].y = rects[0].height;
 	rects[1].width = (n % cols) * man->geometry.boxwidth;
@@ -1025,18 +1024,18 @@ void set_shape (WinManager *man)
       }
       else {
 	rects[0].x = 0;
-	rects[0].y = top_y_coord (man);
+	rects[0].y = top_y_coord(man);
 	rects[0].width = (n % cols) * man->geometry.boxwidth;
 	rects[0].height = man->geometry.boxheight;
 	rects[1].x = 0;
 	rects[1].y = rects[0].y + rects[0].height;
 	rects[1].width = man->geometry.width;
-	rects[1].height = (num_visible_rows (n, cols) - 1) *
+	rects[1].height = (num_visible_rows(n, cols) - 1) *
 	  man->geometry.boxheight;
       }
       if (man->shape.num_rects != 2 ||
-	  !rects_equal (rects, man->shape.rects) ||
-	  !rects_equal (rects + 1, man->shape.rects + 1)) {
+	  !rects_equal(rects, man->shape.rects) ||
+	  !rects_equal(rects + 1, man->shape.rects + 1)) {
 	man->dirty_flags |= SHAPE_CHANGED;
       }
       man->shape.num_rects = 2;
@@ -1046,7 +1045,7 @@ void set_shape (WinManager *man)
   }
 }
 
-void set_manager_window_mapping (WinManager *man, int flag)
+void set_manager_window_mapping(WinManager *man, int flag)
 {
   if (flag != man->window_mapped) {
     man->window_mapped = flag;
@@ -1058,11 +1057,11 @@ void set_manager_window_mapping (WinManager *man, int flag)
 /* Major exported functions                                                */
 /***************************************************************************/
 
-void init_boxes (void)
+void init_boxes(void)
 {
 }
 
-void init_button_array (ButtonArray *array)
+void init_button_array(ButtonArray *array)
 {
   memset(array, 0, sizeof(ButtonArray));
 }
@@ -1070,14 +1069,14 @@ void init_button_array (ButtonArray *array)
 /* Pretty much like resize_manager, but used only to figure the
    correct size when creating the window */
 
-void size_manager (WinManager *man)
+void size_manager(WinManager *man)
 {
   ManGeometry *new;
   int oldwidth, oldheight, w, h;
 
-  new = figure_geometry (man);
+  new = figure_geometry(man);
 
-  assert (new->width && new->height);
+  assert(new->width && new->height);
 
   w = new->width;
   h = new->height;
@@ -1085,7 +1084,7 @@ void size_manager (WinManager *man)
   oldwidth = man->geometry.width;
   oldheight = man->geometry.height;
 
-  set_man_geometry (man, new);
+  set_man_geometry(man, new);
 
   if (oldheight != h || oldwidth != w) {
     if (man->geometry.dir & GROW_UP)
@@ -1094,12 +1093,12 @@ void size_manager (WinManager *man)
       man->geometry.x -= w - oldwidth;
   }
 
-  ConsoleDebug (X11, "size_manager %s: %d %d %d %d\n", man->titlename,
+  ConsoleDebug(X11, "size_manager %s: %d %d %d %d\n", man->titlename,
 		man->geometry.x, man->geometry.y, man->geometry.width,
 		man->geometry.height);
 }
 
-static void resize_manager (WinManager *man, int force)
+static void resize_manager(WinManager *man, int force)
 {
   ManGeometry *new;
   int oldwidth, oldheight, oldrows, oldcols, old_boxwidth, old_boxheight;
@@ -1123,21 +1122,21 @@ static void resize_manager (WinManager *man, int force)
   old_boxheight = man->geometry.boxwidth;
 
   if (dir & GROW_FIXED) {
-    new = figure_geometry (man);
-    set_man_geometry (man, new);
-    set_shape (man);
+    new = figure_geometry(man);
+    set_man_geometry(man, new);
+    set_shape(man);
     if (force || oldrows != new->rows || oldcols != new->cols ||
 	oldwidth != new->width || oldheight != new->height) {
       man->dirty_flags |= GEOMETRY_CHANGED;
     }
   }
   else {
-    new = figure_geometry (man);
-    set_man_geometry (man, new);
-    set_shape (man);
+    new = figure_geometry(man);
+    set_man_geometry(man, new);
+    set_shape(man);
     if (force || oldrows != new->rows || oldcols != new->cols ||
 	oldwidth != new->width || oldheight != new->height) {
-      resize_window (man);
+      resize_window(man);
     }
   }
 
@@ -1170,15 +1169,15 @@ static void resize_manager (WinManager *man, int force)
 #endif
 }
 
-static int center_padding (int h1, int h2)
+static int center_padding(int h1, int h2)
 {
   return (h2 - h1) / 2;
 }
 
-static void get_title_geometry (WinManager *man, ButtonGeometry *g)
+static void get_title_geometry(WinManager *man, ButtonGeometry *g)
 {
   int text_pad;
-  assert (man);
+  assert(man);
   g->button_x = 0;
   g->button_y = 0;
   g->button_w = man->geometry.boxwidth;
@@ -1188,19 +1187,19 @@ static void get_title_geometry (WinManager *man, ButtonGeometry *g)
   if (g->text_w <= 0)
     g->text_w = 1;
   g->text_h = man->fontheight;
-  text_pad = center_padding (man->fontheight, g->button_h);
+  text_pad = center_padding(man->fontheight, g->button_h);
 
   g->text_y = g->button_y + text_pad;
   g->text_base = g->text_y + man->FButtonFont->ascent;
 }
 
-static void get_button_geometry (WinManager *man, Button *button,
+static void get_button_geometry(WinManager *man, Button *button,
 				 ButtonGeometry *g)
 {
   int icon_pad, text_pad;
   WinData *win;
 
-  assert (man);
+  assert(man);
 
   win = button->drawn_state.win;
 
@@ -1214,9 +1213,9 @@ static void get_button_geometry (WinManager *man, Button *button,
   if (FMiniIconsSupported && man->draw_icons && win && win->pic.picture) {
     /* If no window, then icon_* aren't used, so doesn't matter what
        they are */
-    g->icon_w = min (win->pic.width, g->button_h);
-    g->icon_h = min (g->button_h - 4, win->pic.height);
-    icon_pad  = center_padding (g->icon_h, g->button_h);
+    g->icon_w = min(win->pic.width, g->button_h);
+    g->icon_h = min(g->button_h - 4, win->pic.height);
+    icon_pad  = center_padding(g->icon_h, g->button_h);
     g->icon_x = g->button_x + 4;
     g->icon_y = g->button_y + icon_pad;
   }
@@ -1224,7 +1223,7 @@ static void get_button_geometry (WinManager *man, Button *button,
     g->icon_h = man->geometry.boxheight - 8;
     g->icon_w = g->icon_h;
 
-    icon_pad = center_padding (g->icon_h, g->button_h);
+    icon_pad = center_padding(g->icon_h, g->button_h);
     g->icon_x = g->button_x + icon_pad;
     g->icon_y = g->button_y + icon_pad;
   }
@@ -1235,7 +1234,7 @@ static void get_button_geometry (WinManager *man, Button *button,
     g->text_w = 1;
   g->text_h = man->fontheight;
 
-  text_pad = center_padding (man->fontheight, g->button_h);
+  text_pad = center_padding(man->fontheight, g->button_h);
 
   g->text_y = g->button_y + text_pad;
   g->text_base = g->text_y + man->FButtonFont->ascent;
@@ -1273,13 +1272,13 @@ static void draw_button_background(
 	}
 }
 
-static void draw_3d_icon (WinManager *man, int box, ButtonGeometry *g,
+static void draw_3d_icon(WinManager *man, int box, ButtonGeometry *g,
 			  int iconified, Contexts contextId)
 {
   if (iconified == 0)
     return;
   else
-    RelieveRectangle (theDisplay, man->theWindow, g->icon_x, g->icon_y,
+    RelieveRectangle(theDisplay, man->theWindow, g->icon_x, g->icon_y,
 		      g->icon_w - 1, g->icon_h - 1,
 		      man->reliefContext[contextId],
 		      man->shadowContext[contextId], 2);
@@ -1287,7 +1286,7 @@ static void draw_3d_icon (WinManager *man, int box, ButtonGeometry *g,
 
 
   /* this routine should only be called from draw_button() */
-static void iconify_box (WinManager *man, WinData *win, int box,
+static void iconify_box(WinManager *man, WinData *win, int box,
 			 ButtonGeometry *g, int iconified, Contexts contextId,
 			 int button_already_cleared, XRectangle bounding)
 {
@@ -1348,7 +1347,7 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 	{
 		if (!PictureUseBWOnly())
 		{
-			draw_3d_icon (man, box, g, iconified, contextId);
+			draw_3d_icon(man, box, g, iconified, contextId);
 		}
 		else
 		{
@@ -1358,7 +1357,7 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 			}
 			else
 			{
-				XFillArc (
+				XFillArc(
 					theDisplay, man->theWindow,
 					man->hiContext[contextId],
 					g->icon_x, g->icon_y, g->icon_w,
@@ -1372,28 +1371,28 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 	}
 }
 
-int change_windows_manager (WinData *win)
+int change_windows_manager(WinData *win)
 {
   WinManager *oldman;
   WinManager *newman;
 
-  ConsoleDebug (X11, "change_windows_manager: %s\n", win->titlename);
+  ConsoleDebug(X11, "change_windows_manager: %s\n", win->titlename);
 
   oldman = win->manager;
-  newman = figure_win_manager (win, ALL_NAME);
+  newman = figure_win_manager(win, ALL_NAME);
   if (oldman && newman != oldman && win->button) {
-    delete_windows_button (win);
+    delete_windows_button(win);
   }
   win->manager = newman;
-  set_win_displaystring (win);
-  check_win_complete (win);
-  check_in_window (win);
-  ConsoleDebug (X11, "change_windows_manager: returning %d\n",
+  set_win_displaystring(win);
+  check_win_complete(win);
+  check_in_window(win);
+  ConsoleDebug(X11, "change_windows_manager: returning %d\n",
 		newman != oldman);
   return (newman != oldman);
 }
 
-void check_in_window (WinData *win)
+void check_in_window(WinData *win)
 {
   int in_viewport;
   int is_state_selected;
@@ -1402,39 +1401,39 @@ void check_in_window (WinData *win)
     WinManager *oldman;
     WinManager *newman;
 
-    ConsoleDebug (X11, "change_windows_manager: %s\n", win->titlename);
+    ConsoleDebug(X11, "change_windows_manager: %s\n", win->titlename);
 
     oldman = win->manager;
-    newman = figure_win_manager (win, ALL_NAME);
+    newman = figure_win_manager(win, ALL_NAME);
     if (oldman && newman != oldman && win->button) {
       oldman->we_are_drawing = 1;
-      delete_windows_button (win);
+      delete_windows_button(win);
     }
     win->manager = newman;
-    set_win_displaystring (win);
+    set_win_displaystring(win);
   }
 
   if (win->manager && win->complete) {
     is_state_selected =
 	    ((!win->manager->showonlyiconic || win->iconified) &&
 	     (win->manager->showtransient || !IS_TRANSIENT(win)));
-    in_viewport = win_in_viewport (win);
+    in_viewport = win_in_viewport(win);
     if (win->manager->usewinlist && DO_SKIP_WINDOW_LIST(win))
       in_viewport = 0;
     if (win->button == NULL && in_viewport && is_state_selected) {
-      insert_windows_button (win);
+      insert_windows_button(win);
       if (win->manager->window_up == 0 && globals.got_window_list)
-	create_manager_window (win->manager->index);
+	create_manager_window(win->manager->index);
     }
     if (win->button && (!in_viewport || !is_state_selected)) {
       if (win->button->drawn_state.display_string)
 	Free(win->button->drawn_state.display_string);
-      delete_windows_button (win);
+      delete_windows_button(win);
     }
   }
 }
 
-static void get_gcs (WinManager *man, int state, int iconified,
+static void get_gcs(WinManager *man, int state, int iconified,
 		     GC *context1, GC *context2)
 {
   GC gc1, gc2;
@@ -1458,7 +1457,7 @@ static void get_gcs (WinManager *man, int state, int iconified,
     break;
 
   default:
-    ConsoleMessage ("Internal error in get_gcs\n");
+    ConsoleMessage("Internal error in get_gcs\n");
     return;
   }
 
@@ -1473,7 +1472,7 @@ static void get_gcs (WinManager *man, int state, int iconified,
   return;
 }
 
-static void draw_relief (WinManager *man, int button_state, ButtonGeometry *g,
+static void draw_relief(WinManager *man, int button_state, ButtonGeometry *g,
 			 GC context1, GC context2)
 {
   int state;
@@ -1482,13 +1481,13 @@ static void draw_relief (WinManager *man, int button_state, ButtonGeometry *g,
   if (state == BUTTON_FLAT)
     return;
   if (state == BUTTON_EDGEUP || state == BUTTON_EDGEDOWN) {
-    RelieveRectangle (theDisplay, man->theWindow, g->button_x, g->button_y,
+    RelieveRectangle(theDisplay, man->theWindow, g->button_x, g->button_y,
 		      g->button_w - 1, g->button_h - 1, context1, context2, 2);
-    RelieveRectangle (theDisplay, man->theWindow, g->button_x+2, g->button_y+2,
+    RelieveRectangle(theDisplay, man->theWindow, g->button_x+2, g->button_y+2,
 		      g->button_w - 5, g->button_h - 5, context2, context1, 2);
   }
   else {
-    RelieveRectangle (theDisplay, man->theWindow, g->button_x, g->button_y,
+    RelieveRectangle(theDisplay, man->theWindow, g->button_x, g->button_y,
 		      g->button_w - 1, g->button_h - 1, context1, context2, 2);
   }
 }
@@ -1504,11 +1503,11 @@ static void draw_button(WinManager *man, int button, int force)
 	int draw_background = 0, draw_icon = 0, draw_string = 0;
 	int clear_old_pic = 0;
 
-	assert (man);
+	assert(man);
 
 	if (!man->window_up)
 	{
-		ConsoleMessage ("draw_button: manager not up yet\n");
+		ConsoleMessage("draw_button: manager not up yet\n");
 		return;
 	}
 
@@ -1518,7 +1517,7 @@ static void draw_button(WinManager *man, int button, int force)
 
 	if (win && win->button != b)
 	{
-		ConsoleMessage ("Internal error in draw_button.\n");
+		ConsoleMessage("Internal error in draw_button.\n");
 		return;
 	}
 
@@ -1529,7 +1528,7 @@ static void draw_button(WinManager *man, int button, int force)
 
 	if (force || (dirty & REDRAW_BUTTON))
 	{
-		ConsoleDebug (X11, "draw_button: %d forced\n", b->index);
+		ConsoleDebug(X11, "draw_button: %d forced\n", b->index);
 		draw_background = 1;
 		draw_icon = 1;
 		draw_string = 1;
@@ -1538,11 +1537,11 @@ static void draw_button(WinManager *man, int button, int force)
 	/* figure out what we have to draw */
 	if (dirty)
 	{
-		ConsoleDebug (X11, "draw_button: %d dirty\n", b->index);
+		ConsoleDebug(X11, "draw_button: %d dirty\n", b->index);
 		/* humm ... this should be optimised one day ! */
 		if (dirty & GEOMETRY_CHANGED)
 		{
-			ConsoleDebug (X11, "\tGeometry changed\n");
+			ConsoleDebug(X11, "\tGeometry changed\n");
 			/* Determine if geometry has changed relative
 			 * to the window gravity */
 			if (b->w != b->drawn_state.w ||
@@ -1561,7 +1560,7 @@ static void draw_button(WinManager *man, int button, int force)
 		}
 		if (dirty & STATE_CHANGED)
 		{
-			ConsoleDebug (X11, "\tState changed\n");
+			ConsoleDebug(X11, "\tState changed\n");
 			b->drawn_state.state = win->state;
 			draw_background = 1;
 			draw_icon = 1;
@@ -1571,10 +1570,10 @@ static void draw_button(WinManager *man, int button, int force)
 		{
 			FvwmPicture tpic;
 
-			ConsoleDebug (X11, "\tPicture changed\n");
+			ConsoleDebug(X11, "\tPicture changed\n");
 			tpic = win->pic;
 			win->pic = win->old_pic;
-			get_button_geometry (man, b, &old_g);
+			get_button_geometry(man, b, &old_g);
 			win->pic = tpic;
 			b->drawn_state.pic = win->pic;
 			draw_icon = 1;
@@ -1584,7 +1583,7 @@ static void draw_button(WinManager *man, int button, int force)
 		if ((dirty & ICON_STATE_CHANGED) &&
 		    b->drawn_state.iconified != win->iconified)
 		{
-			ConsoleDebug (X11, "\tIcon changed\n");
+			ConsoleDebug(X11, "\tIcon changed\n");
 			b->drawn_state.iconified = win->iconified;
 			draw_icon = 1;
 			draw_background = 1;
@@ -1592,13 +1591,13 @@ static void draw_button(WinManager *man, int button, int force)
 		}
 		if (dirty & STRING_CHANGED)
 		{
-			ConsoleDebug (
+			ConsoleDebug(
 				X11, "\tString changed: %s\n",
 				win->display_string);
 			copy_string(
 				&b->drawn_state.display_string,
 				win->display_string);
-			assert (b->drawn_state.display_string);
+			assert(b->drawn_state.display_string);
 			draw_icon = 1;
 			draw_background = 1;
 			draw_string = 1;
@@ -1610,7 +1609,7 @@ static void draw_button(WinManager *man, int button, int force)
 		XRectangle bounding;
 		Region b_region;
 
-		get_button_geometry (man, b, &g);
+		get_button_geometry(man, b, &g);
 		if (b->drawn_state.ew > 0 && b->drawn_state.eh > 0)
 		{
 			/* we redraw from an expose event */
@@ -1628,7 +1627,7 @@ static void draw_button(WinManager *man, int button, int force)
 		}
 		b_region = GetRegion(
 			bounding.x, bounding.y, bounding.width, bounding.height);
-		ConsoleDebug (
+		ConsoleDebug(
 			X11, "\tgeometry: %d %d %d %d\n", g.button_x, g.button_y,
 			g.button_w, g.button_h);
 		button_state = b->drawn_state.state;
@@ -1638,13 +1637,13 @@ static void draw_button(WinManager *man, int button, int force)
 		}
 		if (draw_background)
 		{
-			ConsoleDebug (X11, "\tDrawing background\n");
+			ConsoleDebug(X11, "\tDrawing background\n");
 			draw_button_background(man, bounding, button_state);
 			cleared_button = 1;
 		}
 		if (clear_old_pic)
 		{
-			ConsoleDebug (X11, "\tClearing old picture\n");
+			ConsoleDebug(X11, "\tClearing old picture\n");
 			if (!cleared_button)
 			{
 				XRectangle r;
@@ -1663,7 +1662,7 @@ static void draw_button(WinManager *man, int button, int force)
 		}
 		if (draw_icon)
 		{
-			ConsoleDebug (X11, "\tDrawing icon\n");
+			ConsoleDebug(X11, "\tDrawing icon\n");
 			iconify_box(
 				man, win, button, &g, win->iconified,
 				button_state, cleared_button, bounding);
@@ -1672,7 +1671,7 @@ static void draw_button(WinManager *man, int button, int force)
 		   part of it. */
 		if (draw_background)
 		{
-			ConsoleDebug (X11, "\tDrawing reliefs\n");
+			ConsoleDebug(X11, "\tDrawing reliefs\n");
 			if (!PictureUseBWOnly())
 			{
 				get_gcs(
@@ -1684,7 +1683,7 @@ static void draw_button(WinManager *man, int button, int force)
 			}
 			else if (button_state & SELECT_CONTEXT)
 			{
-				XDrawRectangle (
+				XDrawRectangle(
 					theDisplay, man->theWindow,
 					man->hiContext[button_state],
 					g.button_x + 2, g.button_y + 1,
@@ -1748,27 +1747,27 @@ static void draw_button(WinManager *man, int button, int force)
 	b->drawn_state.h = b->h;
 	b->drawn_state.ew = 0;
 	b->drawn_state.eh = 0;
-	XFlush (theDisplay);
+	XFlush(theDisplay);
 }
 
-void draw_managers (void)
+void draw_managers(void)
 {
   int i;
   for (i = 0; i < globals.num_managers; i++)
-    draw_manager (&globals.managers[i]);
+    draw_manager(&globals.managers[i]);
 }
 
-static void draw_empty_manager (WinManager *man)
+static void draw_empty_manager(WinManager *man)
 {
 	GC context1, context2;
 	int state = TITLE_CONTEXT;
 	ButtonGeometry g;
-	int len = strlen (man->titlename);
+	int len = strlen(man->titlename);
 	Region region;
 
-	ConsoleDebug (X11, "draw_empty_manager\n");
-	clear_empty_region (man);
-	get_title_geometry (man, &g);
+	ConsoleDebug(X11, "draw_empty_manager\n");
+	clear_empty_region(man);
+	get_title_geometry(man, &g);
 
 	/* FIXME: should bound when exposed */
 	if (len > 0)
@@ -1783,8 +1782,8 @@ static void draw_empty_manager (WinManager *man)
 	}
 	if (!PictureUseBWOnly())
 	{
-		get_gcs (man, state, 0, &context1, &context2);
-		draw_relief (man, state, &g, context1, context2);
+		get_gcs(man, state, 0, &context1, &context2);
+		draw_relief(man, state, &g, context1, context2);
 	}
 	region = GetRegion(g.text_x, g.text_y, g.text_w, g.text_h);
 	XSetRegion(theDisplay, man->hiContext[state], region);
@@ -1804,37 +1803,37 @@ static void draw_empty_manager (WinManager *man)
 	FwinString->clip_region = region;
 	FwinString->x = g.text_x;
 	FwinString->y = g.text_base;
-	FlocaleDrawString (theDisplay, man->FButtonFont, FwinString, 0);
-	XSetClipMask (theDisplay, man->hiContext[state], None);
+	FlocaleDrawString(theDisplay, man->FButtonFont, FwinString, 0);
+	XSetClipMask(theDisplay, man->hiContext[state], None);
 }
 
-void draw_manager (WinManager *man)
+void draw_manager(WinManager *man)
 {
   int i, force_draw = 0, update_geometry = 0, redraw_all = 0;
   int shape_changed = 0;
 
-  assert (man->buttons.num_buttons >= 0 && man->buttons.num_windows >= 0);
+  assert(man->buttons.num_buttons >= 0 && man->buttons.num_windows >= 0);
 
   if (!man->window_up)
     return;
-  ConsoleDebug (X11, "Drawing Manager: %s\n", man->titlename);
+  ConsoleDebug(X11, "Drawing Manager: %s\n", man->titlename);
   redraw_all = man->dirty_flags & REDRAW_MANAGER;
 
   if (!man->flags.is_shaded && man->flags.needs_resize_after_unshade) {
-    ConsoleDebug (X11, "\tresizing manager\n");
-    resize_manager (man, 1);
+    ConsoleDebug(X11, "\tresizing manager\n");
+    resize_manager(man, 1);
     update_geometry = 1;
     force_draw = 1;
   } else if (redraw_all || (man->buttons.dirty_flags & NUM_WINDOWS_CHANGED)) {
-    ConsoleDebug (X11, "\tresizing manager\n");
-    resize_manager (man, redraw_all);
+    ConsoleDebug(X11, "\tresizing manager\n");
+    resize_manager(man, redraw_all);
     update_geometry = 1;
     force_draw = 1;
   }
 
   if (redraw_all || (man->dirty_flags & MAPPING_CHANGED)) {
     force_draw = 1;
-    ConsoleDebug (X11, "manager %s: mapping changed\n", man->titlename);
+    ConsoleDebug(X11, "manager %s: mapping changed\n", man->titlename);
   }
 
   if (FShapesSupported && man->shaped)
@@ -1852,18 +1851,18 @@ void draw_manager (WinManager *man)
   }
 
   if (redraw_all || (man->dirty_flags & GEOMETRY_CHANGED)) {
-    ConsoleDebug (X11, "\tredrawing all buttons\n");
+    ConsoleDebug(X11, "\tredrawing all buttons\n");
     update_geometry = 1;
   }
 
   if (update_geometry) {
     for (i = 0; i < man->buttons.num_windows; i++)
-      set_button_geometry (man, man->buttons.buttons[i]);
+      set_button_geometry(man, man->buttons.buttons[i]);
   }
 
   if (force_draw || update_geometry || (man->dirty_flags & REDRAW_BG)) {
-    ConsoleDebug (X11, "\tredrawing background\n");
-    clear_empty_region (man);
+    ConsoleDebug(X11, "\tredrawing background\n");
+    clear_empty_region(man);
   }
   if (force_draw || update_geometry)
   {
@@ -1879,7 +1878,7 @@ void draw_manager (WinManager *man)
 
   if (man->buttons.num_windows == 0) {
     if (force_draw)
-      draw_empty_manager (man);
+      draw_empty_manager(man);
   }
   else {
     /* I was having the problem where when the shape changed the manager
@@ -1889,12 +1888,12 @@ void draw_manager (WinManager *man)
     if (1 || shape_changed) {
       /* if shape changed, we'll catch it on the expose */
       for (i = 0; i < man->buttons.num_buttons; i++) {
-	draw_button (man, i, force_draw);
+	draw_button(man, i, force_draw);
       }
     }
   }
   man->drawn_geometry = man->geometry;
-  XFlush (theDisplay);
+  XFlush(theDisplay);
 }
 
 Bool draw_transparent_buttons(
@@ -1994,13 +1993,13 @@ static int compare_windows(SortType type, WinData *a, WinData *b)
 	}
 	else if (type == SortName)
 	{
-		return strcasecmp (
+		return strcasecmp(
 			(a->display_string)? a->display_string:"",
 			(b->display_string)? b->display_string:"");
 	}
 	else if (type == SortNameCase)
 	{
-		return strcmp ((a->display_string)? a->display_string:"",
+		return strcmp((a->display_string)? a->display_string:"",
 			       (b->display_string)? b->display_string:"");
 	}
 	else if (type == SortWeighted)
@@ -2016,7 +2015,7 @@ static int compare_windows(SortType type, WinData *a, WinData *b)
 	}
 	else
 	{
-		ConsoleMessage ("Internal error in compare_windows\n");
+		ConsoleMessage("Internal error in compare_windows\n");
 		return 0;
 	}
 }
@@ -2027,7 +2026,7 @@ static int compare_windows(SortType type, WinData *a, WinData *b)
  *                    if it were.
  */
 
-static int find_windows_spot (WinData *win)
+static int find_windows_spot(WinData *win)
 {
   WinManager *man = win->manager;
   int num_windows = man->buttons.num_windows;
@@ -2042,7 +2041,7 @@ static int find_windows_spot (WinData *win)
       cur = win->button->index;
 
       if (cur - 1 >= 0 &&
-	  compare_windows (man->sort,
+	  compare_windows(man->sort,
 			   win, bp[cur - 1]->drawn_state.win) < 0) {
 	start = cur - 1;
 	finish = -1;
@@ -2050,7 +2049,7 @@ static int find_windows_spot (WinData *win)
 	correction = 1;
       }
       else if (cur < num_windows - 1 &&
-	       compare_windows (man->sort,
+	       compare_windows(man->sort,
 				win, bp[cur + 1]->drawn_state.win) > 0) {
 	start = cur + 1;
 	finish = num_windows;
@@ -2068,11 +2067,11 @@ static int find_windows_spot (WinData *win)
       correction = 0;
     }
     for (i = start; i != finish && bp[i]->drawn_state.win && cmp_dir *
-	     compare_windows (man->sort, win, bp[i]->drawn_state.win) > 0;
+	     compare_windows(man->sort, win, bp[i]->drawn_state.win) > 0;
 	 i = i + cmp_dir)
       ;
     i += correction;
-    ConsoleDebug (X11, "find_windows_spot: %s %d\n", win->display_string, i);
+    ConsoleDebug(X11, "find_windows_spot: %s %d\n", win->display_string, i);
     return i;
   }
   else {
@@ -2089,18 +2088,18 @@ static int find_windows_spot (WinData *win)
   return -1;
 }
 
-static void move_window_buttons (WinManager *man, int start, int finish,
+static void move_window_buttons(WinManager *man, int start, int finish,
 				 int offset)
 {
   int n = man->buttons.num_buttons, i;
   Button **bp;
 
-  ConsoleDebug (X11, "move_window_buttons: %s(%d): (%d, %d) + %d\n",
+  ConsoleDebug(X11, "move_window_buttons: %s(%d): (%d, %d) + %d\n",
 		man->titlename, n, start, finish, offset);
 
   if (finish >= n || finish + offset >= n || start < 0 || start + offset < 0) {
-    ConsoleMessage ("Internal error in move_window_buttons\n");
-    ConsoleMessage ("\tn = %d, start = %d, finish = %d, offset = %d\n",
+    ConsoleMessage("Internal error in move_window_buttons\n");
+    ConsoleMessage("\tn = %d, start = %d, finish = %d, offset = %d\n",
 		    n, start, finish, offset);
     return;
   }
@@ -2131,132 +2130,132 @@ static void move_window_buttons (WinManager *man, int start, int finish,
   }
 }
 
-static void insert_windows_button (WinData *win)
+static void insert_windows_button(WinData *win)
 {
   int spot;
   int selected_index = -1;
   WinManager *man = win->manager;
   ButtonArray *buttons;
 
-  ConsoleDebug (X11, "insert_windows_button: %s\n", win->titlename);
+  ConsoleDebug(X11, "insert_windows_button: %s\n", win->titlename);
 
-  assert (man);
-  selected_index = selected_button_in_man (man);
+  assert(man);
+  selected_index = selected_button_in_man(man);
 
   if (win->button) {
-    ConsoleDebug (X11, "insert_windows_button: POSSIBLE BUG: "
+    ConsoleDebug(X11, "insert_windows_button: POSSIBLE BUG: "
 		  "already have a button\n");
     return;
   }
 
   if (!win || !win->complete || !man) {
-    ConsoleMessage ("Internal error in insert_windows_button\n");
-    ShutMeDown (1);
+    ConsoleMessage("Internal error in insert_windows_button\n");
+    ShutMeDown(1);
   }
 
   buttons = &man->buttons;
 
-  spot = find_windows_spot (win);
+  spot = find_windows_spot(win);
 
-  increase_num_windows (buttons, 1);
-  move_window_buttons (man, spot, buttons->num_windows - 2, 1);
+  increase_num_windows(buttons, 1);
+  move_window_buttons(man, spot, buttons->num_windows - 2, 1);
 
-  set_window_button (win, spot);
+  set_window_button(win, spot);
   if (selected_index >= 0) {
-    ConsoleDebug (X11, "insert_windows_button: selected_index = %d, moving\n",
+    ConsoleDebug(X11, "insert_windows_button: selected_index = %d, moving\n",
 		  selected_index);
-    move_highlight (man, man->buttons.buttons[selected_index]);
+    move_highlight(man, man->buttons.buttons[selected_index]);
   }
 }
 
-void delete_windows_button (WinData *win)
+void delete_windows_button(WinData *win)
 {
   int spot;
   int selected_index = -1;
   WinManager *man = (win->manager);
   ButtonArray *buttons;
 
-  ConsoleDebug (X11, "delete_windows_button: %s\n", win->titlename);
+  ConsoleDebug(X11, "delete_windows_button: %s\n", win->titlename);
 
-  assert (man);
+  assert(man);
 
   buttons = &win->manager->buttons;
 
-  assert (win->button);
-  assert (buttons->buttons);
+  assert(win->button);
+  assert(buttons->buttons);
 
-  selected_index = selected_button_in_man (man);
-  ConsoleDebug (X11, "delete_windows_button: selected_index = %d\n",
+  selected_index = selected_button_in_man(man);
+  ConsoleDebug(X11, "delete_windows_button: selected_index = %d\n",
 		selected_index);
 
   spot = win->button->index;
 
-  move_window_buttons (win->manager, spot + 1, buttons->num_windows - 1, -1);
-  increase_num_windows (buttons, -1);
+  move_window_buttons(win->manager, spot + 1, buttons->num_windows - 1, -1);
+  increase_num_windows(buttons, -1);
   win->button = NULL;
   if (globals.focus_win == win) {
     globals.focus_win = NULL;
   }
   if (selected_index >= 0) {
-    ConsoleDebug (X11, "delete_windows_button: selected_index = %d, moving\n",
+    ConsoleDebug(X11, "delete_windows_button: selected_index = %d, moving\n",
 		  selected_index);
-    move_highlight (man, man->buttons.buttons[selected_index]);
+    move_highlight(man, man->buttons.buttons[selected_index]);
   }
   win->state = PLAIN_CONTEXT;
 }
 
-void resort_windows_button (WinData *win)
+void resort_windows_button(WinData *win)
 {
   int new_spot, cur_spot;
   int selected_index = -1;
   WinManager *man = win->manager;
 
-  assert (win->button && man);
+  assert(win->button && man);
 
-  ConsoleDebug (X11, "In resort_windows_button: %s\n", win->resname);
+  ConsoleDebug(X11, "In resort_windows_button: %s\n", win->resname);
 
-  selected_index = selected_button_in_man (man);
+  selected_index = selected_button_in_man(man);
 
-  new_spot = find_windows_spot (win);
+  new_spot = find_windows_spot(win);
   cur_spot = win->button->index;
 
-  print_button_info (win->button);
+  print_button_info(win->button);
 
   if (new_spot != cur_spot) {
-    ConsoleDebug (X11, "resort_windows_button: win moves from %d to %d\n",
+    ConsoleDebug(X11, "resort_windows_button: win moves from %d to %d\n",
 		    cur_spot, new_spot);
     if (new_spot < cur_spot) {
-      move_window_buttons (man, new_spot, cur_spot - 1, +1);
+      move_window_buttons(man, new_spot, cur_spot - 1, +1);
     }
     else {
-      move_window_buttons (man, cur_spot + 1, new_spot, -1);
+      move_window_buttons(man, cur_spot + 1, new_spot, -1);
     }
-    set_window_button (win, new_spot);
+    set_window_button(win, new_spot);
 
     if (selected_index >= 0) {
-      move_highlight (man, man->buttons.buttons[selected_index]);
+      move_highlight(man, man->buttons.buttons[selected_index]);
     }
   }
 }
 
-void move_highlight (WinManager *man, Button *b)
+void move_highlight(WinManager *man, Button *b)
 {
   WinData *old;
 
-  assert (man);
+  assert(man);
 
-  ConsoleDebug (X11, "move_highlight\n");
+  ConsoleDebug(X11, "move_highlight\n");
 
   old = globals.select_win;
 
   if (old && old->button) {
-    del_win_state (old, SELECT_CONTEXT);
+    del_win_state(old, SELECT_CONTEXT);
     old->manager->select_button = NULL;
-    draw_button (old->manager, old->button->index, 0);
+    draw_button(old->manager, old->button->index, 0);
   }
   if (b && b->drawn_state.win) {
-    add_win_state (b->drawn_state.win, SELECT_CONTEXT);
-    draw_button (man, b->index, 0);
+    add_win_state(b->drawn_state.win, SELECT_CONTEXT);
+    draw_button(man, b->index, 0);
     globals.select_win = b->drawn_state.win;
   }
   else {
@@ -2266,14 +2265,14 @@ void move_highlight (WinManager *man, Button *b)
   man->select_button = b;
 }
 
-void man_exposed (WinManager *man, XEvent *theEvent)
+void man_exposed(WinManager *man, XEvent *theEvent)
 {
 	int x1, y1, w1, h1;
 	int x2, y2, w2, h2;
 	int i;
 	Button **bp;
 
-	ConsoleDebug (X11, "manager: %s, got expose\n", man->titlename);
+	ConsoleDebug(X11, "manager: %s, got expose\n", man->titlename);
 
 	x1 = theEvent->xexpose.x;
 	y1 = theEvent->xexpose.y;
@@ -2307,7 +2306,7 @@ void man_exposed (WinManager *man, XEvent *theEvent)
 		}
 		else
 		{
-			draw_empty_manager (man);
+			draw_empty_manager(man);
 		}
 
 		return;
@@ -2321,8 +2320,8 @@ void man_exposed (WinManager *man, XEvent *theEvent)
 	{
 		for (i = 0; i < man->buttons.num_windows; i++)
 		{
-			x2 = index_to_col (man, i) * w2;
-			y2 = index_to_row (man, i) * h2;
+			x2 = index_to_col(man, i) * w2;
+			y2 = index_to_row(man, i) * h2;
 			if (RECTANGLES_INTERSECT(
 				x1, y1, w1, h1, x2, y2, w2, h2))
 			{
@@ -2338,7 +2337,7 @@ void man_exposed (WinManager *man, XEvent *theEvent)
 	}
 	else
 	{
-		draw_empty_manager (man);
+		draw_empty_manager(man);
 	}
 }
 
@@ -2346,7 +2345,7 @@ void man_exposed (WinManager *man, XEvent *theEvent)
 /* Debugging routines                                                      */
 /***************************************************************************/
 
-void check_managers_consistency (void)
+void check_managers_consistency(void)
 {
 #ifdef PRINT_DEBUG
   int i, j;
@@ -2356,48 +2355,48 @@ void check_managers_consistency (void)
     for (j = 0, b = globals.managers[i].buttons.buttons;
 	 j < globals.managers[i].buttons.num_buttons; j++, b++) {
       if ((*b)->drawn_state.win && (*b)->drawn_state.win->button != *b) {
-	ConsoleMessage ("manager %d, button %d is confused\n", i, j);
-	abort ();
+	ConsoleMessage("manager %d, button %d is confused\n", i, j);
+	abort();
       }
       else if ((*b)->drawn_state.win &&
 	       j >= globals.managers[i].buttons.num_windows) {
-	ConsoleMessage ("manager %d: button %d has window and shouldn't\n",
+	ConsoleMessage("manager %d: button %d has window and shouldn't\n",
 			i, j);
-	abort ();
+	abort();
       }
     }
   }
 #endif
 }
 
-static void print_button_info (Button *b)
+static void print_button_info(Button *b)
 {
 #ifdef PRINT_DEBUG
-  ConsoleMessage ("button: %d\n", b->index);
-  ConsoleMessage ("win: 0x%x\n", b->drawn_state.win);
-  ConsoleMessage ("dirty: 0x%x\n", b->drawn_state.dirty_flags);
+  ConsoleMessage("button: %d\n", b->index);
+  ConsoleMessage("win: 0x%x\n", b->drawn_state.win);
+  ConsoleMessage("dirty: 0x%x\n", b->drawn_state.dirty_flags);
   if (b->drawn_state.win) {
-    ConsoleMessage ("name: %s\n", b->drawn_state.display_string);
-    ConsoleMessage ("iconified: %d state %d\n", b->drawn_state.iconified,
+    ConsoleMessage("name: %s\n", b->drawn_state.display_string);
+    ConsoleMessage("iconified: %d state %d\n", b->drawn_state.iconified,
 		    b->drawn_state.state);
-    ConsoleMessage ("win->button: 0x%x\n", b->drawn_state.win->button);
+    ConsoleMessage("win->button: 0x%x\n", b->drawn_state.win->button);
   }
 #endif
 }
 
 #ifdef PRINT_DEBUG
-static void print_buttons (WinManager *man)
+static void print_buttons(WinManager *man)
 {
   int i;
   Button *b;
 
-  ConsoleMessage ("Buttons for manager: %s\n", man->titlename);
+  ConsoleMessage("Buttons for manager: %s\n", man->titlename);
 
   for (i = 0; i < man->buttons.num_buttons; i++) {
     b = man->buttons.buttons[i];
-    ConsoleMessage ("Button: %d, index = %d\n", i, b->index);
-    ConsoleMessage ("\tdirty flags: 0x%x\n", b->drawn_state.dirty_flags);
-    ConsoleMessage ("\twin: 0x%x\n", b->drawn_state.win);
+    ConsoleMessage("Button: %d, index = %d\n", i, b->index);
+    ConsoleMessage("\tdirty flags: 0x%x\n", b->drawn_state.dirty_flags);
+    ConsoleMessage("\twin: 0x%x\n", b->drawn_state.win);
   }
 }
 #endif

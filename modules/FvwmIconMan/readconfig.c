@@ -31,78 +31,78 @@
  *
  ************************************************************************/
 
-extern int builtin_quit (int numargs, BuiltinArg *args);
-extern int builtin_printdebug (int numargs, BuiltinArg *args);
-extern int builtin_gotobutton (int numargs, BuiltinArg *args);
-extern int builtin_gotomanager (int numargs, BuiltinArg *args);
-extern int builtin_refresh (int numargs, BuiltinArg *args);
-extern int builtin_select (int numargs, BuiltinArg *args);
-extern int builtin_sendcommand (int numargs, BuiltinArg *args);
-extern int builtin_bif (int numargs, BuiltinArg *args);
-extern int builtin_bifn (int numargs, BuiltinArg *args);
-extern int builtin_print (int numargs, BuiltinArg *args);
-extern int builtin_jmp (int numargs, BuiltinArg *args);
-extern int builtin_ret (int numargs, BuiltinArg *args);
-extern int builtin_searchforward (int numargs, BuiltinArg *args);
-extern int builtin_searchback (int numargs, BuiltinArg *args);
-extern int builtin_warp (int numargs, BuiltinArg *args);
+extern int builtin_quit(int numargs, BuiltinArg *args);
+extern int builtin_printdebug(int numargs, BuiltinArg *args);
+extern int builtin_gotobutton(int numargs, BuiltinArg *args);
+extern int builtin_gotomanager(int numargs, BuiltinArg *args);
+extern int builtin_refresh(int numargs, BuiltinArg *args);
+extern int builtin_select(int numargs, BuiltinArg *args);
+extern int builtin_sendcommand(int numargs, BuiltinArg *args);
+extern int builtin_bif(int numargs, BuiltinArg *args);
+extern int builtin_bifn(int numargs, BuiltinArg *args);
+extern int builtin_print(int numargs, BuiltinArg *args);
+extern int builtin_jmp(int numargs, BuiltinArg *args);
+extern int builtin_ret(int numargs, BuiltinArg *args);
+extern int builtin_searchforward(int numargs, BuiltinArg *args);
+extern int builtin_searchback(int numargs, BuiltinArg *args);
+extern int builtin_warp(int numargs, BuiltinArg *args);
 
 /* compiler pseudo-functions */
-static int builtin_label (int numargs, BuiltinArg *args);
+static int builtin_label(int numargs, BuiltinArg *args);
 
 typedef struct {
-  char *name;
-  int (*func)(int numargs, BuiltinArg *args);
-  int numargs;
-  BuiltinArgType args[MAX_ARGS];
+	char *name;
+	int (*func)(int numargs, BuiltinArg *args);
+	int numargs;
+	BuiltinArgType args[MAX_ARGS];
 } FunctionType;
 
 /*
  * these are now sorted so we can use bsearch on them.
  */
 FunctionType builtin_functions[] = {
-  { "bif",         builtin_bif,         2, { ButtonArg, JmpArg } },
-  { "bifn",        builtin_bifn,        2, { ButtonArg, JmpArg } },
-  { "gotobutton",  builtin_gotobutton,  1, { ButtonArg } },
-  { "gotomanager", builtin_gotomanager, 1, { ManagerArg } },
-  { "jmp",         builtin_jmp,         1, { JmpArg } },
-  { "label",       builtin_label,       1, { StringArg } },
-  { "print",       builtin_print,       1, { StringArg } },
-  { "printdebug",  builtin_printdebug,  0, {0} },
-  { "quit",        builtin_quit,        0, {0} },
-  { "refresh",     builtin_refresh,     0, {0} },
-  { "ret",         builtin_ret,         0, {0} },
-  { "searchback",  builtin_searchback,  1, { StringArg } },
-  { "searchforward", builtin_searchforward, 1, { StringArg } },
-  { "select",      builtin_select,      0, {0} },
-  { "sendcommand", builtin_sendcommand, 1, { StringArg } },
-  { "warp",        builtin_warp,        0, {0} }
+	{ "bif",         builtin_bif,         2, { ButtonArg, JmpArg } },
+	{ "bifn",        builtin_bifn,        2, { ButtonArg, JmpArg } },
+	{ "gotobutton",  builtin_gotobutton,  1, { ButtonArg } },
+	{ "gotomanager", builtin_gotomanager, 1, { ManagerArg } },
+	{ "jmp",         builtin_jmp,         1, { JmpArg } },
+	{ "label",       builtin_label,       1, { StringArg } },
+	{ "print",       builtin_print,       1, { StringArg } },
+	{ "printdebug",  builtin_printdebug,  0, {0} },
+	{ "quit",        builtin_quit,        0, {0} },
+	{ "refresh",     builtin_refresh,     0, {0} },
+	{ "ret",         builtin_ret,         0, {0} },
+	{ "searchback",  builtin_searchback,  1, { StringArg } },
+	{ "searchforward", builtin_searchforward, 1, { StringArg } },
+	{ "select",      builtin_select,      0, {0} },
+	{ "sendcommand", builtin_sendcommand, 1, { StringArg } },
+	{ "warp",        builtin_warp,        0, {0} }
 };
 
-static int num_builtins = sizeof (builtin_functions) / sizeof (FunctionType);
+static int num_builtins = sizeof(builtin_functions) / sizeof(FunctionType);
 
 /************************************************************************/
 
 
 struct charstring
 {
-  char key;
-  int  value;
+	char key;
+	int  value;
 };
 
 struct charstring key_modifiers[]=
 {
-  {'s',ShiftMask},
-  {'c',ControlMask},
-  {'m',Mod1Mask},
-  {'1',Mod1Mask},
-  {'2',Mod2Mask},
-  {'3',Mod3Mask},
-  {'4',Mod4Mask},
-  {'5',Mod5Mask},
-  {'a',AnyModifier},
-  {'n',0},
-  {0,0}
+	{ 's', ShiftMask },
+	{ 'c', ControlMask },
+	{ 'm', Mod1Mask },
+	{ '1', Mod1Mask },
+	{ '2', Mod2Mask },
+	{ '3', Mod3Mask },
+	{ '4', Mod4Mask },
+	{ '5', Mod5Mask },
+	{ 'a', AnyModifier },
+	{ 'n', 0 },
+	{ 0, 0 }
 };
 
 #if FVWM_VERSION == 1
@@ -116,186 +116,221 @@ static FILE *config_fp = NULL;
 #define PRINT_LINE_LENGTH 80
 static char current_line[PRINT_LINE_LENGTH];
 
-static void save_current_line (char *s)
+static void save_current_line(char *s)
 {
-  char *p = current_line;
+	char *p = current_line;
 
-  while (*s && p < current_line + PRINT_LINE_LENGTH - 1) {
-    if (*s == '\n') {
-      *p = '\0';
-      return;
-    }
-    else {
-      *p++ = *s++;
-    }
-  }
-  *p = '\0';
+	while (*s && p < current_line + PRINT_LINE_LENGTH - 1) {
+		if (*s == '\n')
+		{
+			*p = '\0';
+			return;
+		}
+		else
+		{
+			*p++ = *s++;
+		}
+	}
+	*p = '\0';
 }
 
-void print_args (int numargs, BuiltinArg *args)
+void print_args(int numargs, BuiltinArg *args)
 {
 #ifdef PRINT_DEBUG
-  int i;
+	int i;
 
-  for (i = 0; i < numargs; i++) {
-    switch (args[i].type) {
-    case NoArg:
-      ConsoleDebug (CONFIG, "NoArg ");
-      break;
+	for (i = 0; i < numargs; i++) {
+		switch (args[i].type) {
+		case NoArg:
+			ConsoleDebug(CONFIG, "NoArg ");
+			break;
 
-    case IntArg:
-      ConsoleDebug (CONFIG, "Int: %d ", args[i].value.int_value);
-      break;
+		case IntArg:
+			ConsoleDebug(
+				CONFIG, "Int: %d ", args[i].value.int_value);
+			break;
 
-    case StringArg:
-      ConsoleDebug (CONFIG, "String: %s ", args[i].value.string_value);
-      break;
+		case StringArg:
+			ConsoleDebug(
+				CONFIG, "String: %s ",
+				args[i].value.string_value);
+			break;
 
-    case ButtonArg:
-      ConsoleDebug (CONFIG, "Button: %d %d ",
-		    args[i].value.button_value.offset,
-		    args[i].value.button_value.base);
-      break;
+		case ButtonArg:
+			ConsoleDebug(
+				CONFIG, "Button: %d %d ",
+				args[i].value.button_value.offset,
+				args[i].value.button_value.base);
+			break;
 
-    case WindowArg:
-      ConsoleDebug (CONFIG, "Window: %d %d ",
-		    args[i].value.button_value.offset,
-		    args[i].value.button_value.base);
-      break;
+		case WindowArg:
+			ConsoleDebug(
+				CONFIG, "Window: %d %d ",
+				args[i].value.button_value.offset,
+				args[i].value.button_value.base);
+			break;
 
-    case ManagerArg:
-      ConsoleDebug (CONFIG, "Manager: %d %d ",
-		    args[i].value.button_value.offset,
-		    args[i].value.button_value.base);
-      break;
+		case ManagerArg:
+			ConsoleDebug(
+				CONFIG, "Manager: %d %d ",
+				args[i].value.button_value.offset,
+				args[i].value.button_value.base);
+			break;
 
-    case JmpArg:
-      ConsoleDebug (CONFIG, "Unprocessed Label Jump: %s ",
-		    args[i].value.string_value);
-      break;
+		case JmpArg:
+			ConsoleDebug(
+				CONFIG, "Unprocessed Label Jump: %s ",
+				args[i].value.string_value);
+			break;
 
-    default:
-      ConsoleDebug (CONFIG, "bad ");
-      break;
-    }
-  }
-  ConsoleDebug (CONFIG, "\n");
+		default:
+			ConsoleDebug(CONFIG, "bad ");
+			break;
+		}
+	}
+	ConsoleDebug(CONFIG, "\n");
 #endif
 }
 
 #ifdef PRINT_DEBUG
-static void print_binding (Binding *binding)
+static void print_binding(Binding *binding)
 {
-  int i;
-  Function *func;
+	int i;
+	Function *func;
 
-  if (binding->type == MOUSE_BINDING) {
-    ConsoleDebug (CONFIG, "\tMouse: %d\n", binding->Button_Key);
-  }
-  else {
-    ConsoleDebug (CONFIG, "\tKey or action: %d %s\n", binding->Button_Key,
-		  binding->key_name);
-  }
+	if (binding->type == MOUSE_BINDING)
+	{
+		ConsoleDebug(CONFIG, "\tMouse: %d\n", binding->Button_Key);
+	}
+	else
+	{
+		ConsoleDebug(
+			CONFIG, "\tKey or action: %d %s\n",
+			binding->Button_Key, binding->key_name);
+	}
 
-  ConsoleDebug (CONFIG, "\tModifiers: %d\n", binding->Modifier);
-  ConsoleDebug (CONFIG, "\tAction: %s\n", binding->Action);
-  ConsoleDebug (CONFIG, "\tFunction struct: 0x%x\n", binding->Action2);
-  func = (Function *)(binding->Action2);
-  while (func) {
-    for (i = 0; i < num_builtins; i++) {
-      if (func->func == builtin_functions[i].func) {
-	ConsoleDebug (CONFIG, "\tFunction: %s 0x%x ",
-		      builtin_functions[i].name, func->func);
-	break;
-      }
-    }
-    if (i > num_builtins) {
-      ConsoleDebug (CONFIG, "\tFunction: not found 0x%x ", func->func);
-    }
-    print_args (func->numargs, func->args);
-    func = func->next;
-  }
+	ConsoleDebug(CONFIG, "\tModifiers: %d\n", binding->Modifier);
+	ConsoleDebug(CONFIG, "\tAction: %s\n", binding->Action);
+	ConsoleDebug(CONFIG, "\tFunction struct: 0x%x\n", binding->Action2);
+	func = (Function *)(binding->Action2);
+	while (func)
+	{
+		for (i = 0; i < num_builtins; i++)
+		{
+			if (func->func == builtin_functions[i].func)
+			{
+				ConsoleDebug(
+					CONFIG, "\tFunction: %s 0x%x ",
+					builtin_functions[i].name, func->func);
+				break;
+			}
+		}
+		if (i > num_builtins)
+		{
+			ConsoleDebug(
+				CONFIG, "\tFunction: not found 0x%x ",
+				func->func);
+		}
+		print_args(func->numargs, func->args);
+		func = func->next;
+	}
 }
 
-void print_bindings (Binding *list)
+void print_bindings(Binding *list)
 {
-  ConsoleDebug (CONFIG, "binding list:\n");
-  while (list != NULL) {
-    print_binding (list);
-    ConsoleDebug (CONFIG, "\n");
-    list = list->NextBinding;
-  }
+	ConsoleDebug(CONFIG, "binding list:\n");
+	while (list != NULL)
+	{
+		print_binding(list);
+		ConsoleDebug(CONFIG, "\n");
+		list = list->NextBinding;
+	}
 }
 #else
-void print_bindings (Binding *list)
+void print_bindings(Binding *list)
 {
 }
 #endif
 
-static int iswhite (char c)
+static int iswhite(char c)
 {
-  if (c == ' ' || c == '\t' || c == '\0')
-    return 1;
-  return 0;
+	if (c == ' ' || c == '\t' || c == '\0')
+	{
+		return 1;
+	}
+	return 0;
 }
 
-static void trim (char *p)
+static void trim(char *p)
 {
-  int length = strlen (p) -1;
-  int index;
-  for(index = length; index > 0; index --)
-  {
-    if (p[index] == ' ' || p[index] == '\t')
-      p[index] = '\0';
-    else return;
-  }
+	int length = strlen(p) -1;
+	int index;
+	for (index = length; index > 0; index --)
+	{
+		if (p[index] == ' ' || p[index] == '\t')
+		{
+			p[index] = '\0';
+		}
+		else
+		{
+			return;
+		}
+	}
 }
 
-static void skip_space (char **p)
+static void skip_space(char **p)
 {
-  while (**p == ' ' || **p == '\t')
-    (*p)++;
+	while (**p == ' ' || **p == '\t')
+	{
+		(*p)++;
+	}
 }
 
-static void add_to_binding (Binding **list, Binding *binding)
+static void add_to_binding(Binding **list, Binding *binding)
 {
-  ConsoleDebug (CONFIG, "In add_to_binding:\n");
+	ConsoleDebug(CONFIG, "In add_to_binding:\n");
 
-  binding->NextBinding = *list;
-  *list = binding;
-  return;
+	binding->NextBinding = *list;
+	*list = binding;
+	return;
 }
 
-static int extract_int (char *p, int *n)
+static int extract_int(char *p, int *n)
 {
-  char *s;
-  int sign = 1;
+	char *s;
+	int sign = 1;
 
-  while (isspace ((unsigned char)*p) && *p)
-    p++;
+	while (isspace((unsigned char)*p) && *p)
+	{
+		p++;
+	}
 
-  if (*p == '-') {
-    sign = -1;
-    p++;
-  }
-  else if (*p == '+') {
-    sign = 1;
-    p++;
-  }
+	if (*p == '-')
+	{
+		sign = -1;
+		p++;
+	}
+	else if (*p == '+') {
+		sign = 1;
+		p++;
+	}
 
-  if (*p == '\0') {
-    return 0;
-  }
+	if (*p == '\0')
+	{
+		return 0;
+	}
 
-  for (s = p; *s; s++) {
-    if (*s < '0' || *s > '9') {
-      return 0;
-    }
-  }
+	for (s = p; *s; s++)
+	{
+		if (*s < '0' || *s > '9')
+		{
+			return 0;
+		}
+	}
 
-  *n = atoi (p) * sign;
+	*n = atoi(p) * sign;
 
-  return 1;
+	return 1;
 }
 
 /****************************************************************************
@@ -309,74 +344,55 @@ static int extract_int (char *p, int *n)
  *
  **************************************************************************/
 
-static void find_context(char *string, int *output, struct charstring *table,
-			 char *tline)
+static void find_context(
+	char *string, int *output, struct charstring *table, char *tline)
 {
-  int i=0,j=0;
-  Bool matched;
-  char tmp1;
+	int i=0, j=0;
+	Bool matched;
+	char tmp1;
 
-  *output=0;
-  i=0;
-  while(i<strlen(string))
-    {
-      j=0;
-      matched = FALSE;
-      while((!matched)&&(table[j].key != 0))
+	*output=0;
+	i=0;
+	while (i < strlen(string))
 	{
-	  /* in some BSD implementations, tolower(c) is not defined
-	   * unless isupper(c) is true */
-	  tmp1=string[i];
-	  if(isupper(tmp1))
-	    tmp1=tolower(tmp1);
-	  /* end of ugly BSD patch */
+		j = 0;
+		matched = FALSE;
+		while (!matched && table[j].key != 0)
+		{
+			/* in some BSD implementations, tolower(c) is not
+			 * defined unless isupper(c) is true */
+			tmp1 = string[i];
+			if (isupper(tmp1))
+			{
+				tmp1 = tolower(tmp1);
+			}
+			/* end of ugly BSD patch */
 
-	  if(tmp1 == table[j].key)
-	    {
-	      *output |= table[j].value;
-	      matched = TRUE;
-	    }
-	  j++;
+			if (tmp1 == table[j].key)
+			{
+				*output |= table[j].value;
+				matched = TRUE;
+			}
+			j++;
+		}
+		if (!matched)
+		{
+			ConsoleMessage("Bad line: %s\n", current_line);
+			ConsoleMessage("Bad context: %s\n", string);
+		}
+		i++;
 	}
-      if(!matched)
-	{
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("Bad context: %s\n", string);
-	}
-      i++;
-    }
-  return;
+	return;
 }
 
-static int init_config_file (char *file)
-{
-#if FVWM_VERSION == 1
-  if ((config_fp = fopen (file, "r")) == NULL)  {
-    ConsoleMessage ("Couldn't open file: %s\n", file);
-    return 0;
-  }
-#else
-  InitGetConfigLine(Fvwm_fd,Module);         /* speed up */
-#endif
-  return 1;
-}
-
-static void close_config_file (void)
-{
-#if FVWM_VERSION == 1
-  if (config_fp)
-    fclose (config_fp);
-#endif
-}
-
-static char *parse_button (char *string, BuiltinArg *arg, int *flag,
+static char *parse_button(char *string, BuiltinArg *arg, int *flag,
 			   char *pstop_char)
 {
   char *rest, *token;
   ButtonValue *bv;
   int n;
 
-  ConsoleDebug (CONFIG, "parse_term: %s\n", string);
+  ConsoleDebug(CONFIG, "parse_term: %s\n", string);
 
   *flag = 1;
 
@@ -385,112 +401,131 @@ static char *parse_button (char *string, BuiltinArg *arg, int *flag,
   bv->offset = 0;
   bv->base = AbsoluteButton;
 
-  rest = DoGetNextToken (string, &token, NULL, ",", pstop_char);
-  if (token == NULL) {
+  rest = DoGetNextToken(string, &token, NULL, ",", pstop_char);
+  if (token == NULL)
+  {
     bv->base = NoButton;
     *flag = 0;
     Free(token);
     return NULL;
   }
-  if (!strcasecmp (token, "focus")) {
+  if (!strcasecmp(token, "focus"))
+  {
     bv->base = FocusButton;
   }
-  else if (!strcasecmp (token, "select")) {
+  else if (!strcasecmp(token, "select"))
+  {
     bv->base = SelectButton;
   }
-  else if (!strcasecmp (token, "up")) {
+  else if (!strcasecmp(token, "up"))
+  {
     bv->base = UpButton;
   }
-  else if (!strcasecmp (token, "down")) {
+  else if (!strcasecmp(token, "down"))
+  {
     bv->base = DownButton;
   }
-  else if (!strcasecmp (token, "left")) {
+  else if (!strcasecmp(token, "left"))
+  {
     bv->base = LeftButton;
   }
-  else if (!strcasecmp (token, "right")) {
+  else if (!strcasecmp(token, "right"))
+  {
     bv->base = RightButton;
   }
-  else if (!strcasecmp (token, "next")) {
+  else if (!strcasecmp(token, "next"))
+  {
     bv->base = NextButton;
   }
-  else if (!strcasecmp (token, "prev")) {
+  else if (!strcasecmp(token, "prev"))
+  {
     bv->base = PrevButton;
   }
-  else if (extract_int (token, &n)) {
+  else if (extract_int(token, &n))
+  {
     bv->base = AbsoluteButton;
     bv->offset = n;
   }
-  else {
-    ConsoleMessage ("Bad button: %s\n", token);
+  else
+  {
+    ConsoleMessage("Bad button: %s\n", token);
     bv->base = NoButton;
-    Free (token);
+    Free(token);
     *flag = 0;
     return NULL;
   }
 
-  Free (token);
+  Free(token);
   return rest;
 }
 
-static void free_function_list (Function *func)
+static void free_function_list(Function *func)
 {
-  int i;
-  Function *fp = func;
+	int i;
+	Function *fp = func;
 
-  while (fp) {
-    for (i = 0; i < fp->numargs; i++) {
-      if (fp->args[i].type == StringArg)
-	Free (fp->args[i].value.string_value);
-    }
-    func = fp;
-    fp = fp->next;
-    Free (func);
-  }
+	while (fp)
+	{
+		for (i = 0; i < fp->numargs; i++)
+		{
+			if (fp->args[i].type == StringArg)
+			{
+				Free(fp->args[i].value.string_value);
+			}
+		}
+		func = fp;
+		fp = fp->next;
+		Free(func);
+	}
 }
 
-static int funccasecmp(const void *key /* actually char* */,
-			       const void *member /* actually FunctionType* */)
+static int funccasecmp(
+	const void *key /* actually char* */,
+	const void *member /* actually FunctionType* */)
 {
-  return strcasecmp((char *)key, ((FunctionType *)member)->name);
+	return strcasecmp((char *)key, ((FunctionType *)member)->name);
 }
 
 /*
  * The label function. Should never be called, but we need a pointer to it,
  * and it's useful for debugging purposes to have it defined.
  */
-static int builtin_label (int numargs, BuiltinArg *args) {
-  int j;
-  /* we should _never_ be called */
-  ConsoleMessage ( "label" );
-  for (j=0; j<numargs; ++j) {
-    switch (args[j].type) {
-    case StringArg:
-      ConsoleMessage ( " %s",args[j].value.string_value );
-      break;
+static int builtin_label(int numargs, BuiltinArg *args)
+{
+	int j;
+	/* we should _never_ be called */
+	ConsoleMessage( "label" );
+	for (j=0; j<numargs; ++j)
+	{
+		switch (args[j].type)
+		{
+		case StringArg:
+			ConsoleMessage(" %s", args[j].value.string_value);
+			break;
 
-    default:
-      ConsoleMessage ( " [unknown arg #: %d]", args[j].type );
-    }
-  }
-  ConsoleMessage( " was called. This should not happen.\n" );
-  return 0;
+		default:
+			ConsoleMessage(" [unknown arg #: %d]", args[j].type);
+		}
+	}
+	ConsoleMessage(" was called. This should not happen.\n");
+	return 0;
 }
 
 /* the number of JmpArg arguments that have been created, but not yet
    resolved into IntArgs. */
-static int JmpArgs=0;
+static int JmpArgs = 0;
 /* icky, I know, but it'll save unnecessary error-checking. */
 
-static Function *parse_function (char **line, char *pstop_char)
+static Function *parse_function(char **line, char *pstop_char)
 {
-  Function *ftype = (Function *)safemalloc (sizeof (Function));
+  Function *ftype = (Function *)safemalloc(sizeof(Function));
   char *ptr, *name, *tok;
   int j, flag;
   FunctionType *builtin_functions_i;
 
-  ConsoleDebug (CONFIG, "in parse_function\n");
+  ConsoleDebug(CONFIG, "in parse_function\n");
 
-  ptr = DoGetNextToken (*line, &name, NULL, ",", pstop_char);
+  ptr = DoGetNextToken(*line, &name, NULL, ",", pstop_char);
   if (name == NULL) {
     Free(ftype);
     *line = NULL;
@@ -501,7 +536,7 @@ static Function *parse_function (char **line, char *pstop_char)
 			      num_builtins, sizeof(FunctionType),
 			      funccasecmp);
   if (builtin_functions_i) {
-    Free (name);
+    Free(name);
     ftype->func = builtin_functions_i->func;
     ftype->numargs = builtin_functions_i->numargs;
     ftype->next = NULL;
@@ -510,30 +545,30 @@ static Function *parse_function (char **line, char *pstop_char)
       ftype->args[j].type = builtin_functions_i->args[j];
       switch (builtin_functions_i->args[j]) {
       case IntArg:
-	ptr = DoGetNextToken (ptr, &tok, NULL, ",", pstop_char);
+	ptr = DoGetNextToken(ptr, &tok, NULL, ",", pstop_char);
 	if (!tok) {
-	  ConsoleMessage ("%s: too few arguments\n",
+	  ConsoleMessage("%s: too few arguments\n",
 			  builtin_functions_i->name);
 	  Free(ftype);
 	  *line = NULL;
 	  return NULL;
 	}
-	if (extract_int (tok, &ftype->args[j].value.int_value) == 0) {
-	  ConsoleMessage ("%s: expect integer argument: %s\n",
+	if (extract_int(tok, &ftype->args[j].value.int_value) == 0) {
+	  ConsoleMessage("%s: expect integer argument: %s\n",
 			  builtin_functions_i->name, tok);
-	  Free (tok);
+	  Free(tok);
 	  Free(ftype);
 	  *line = NULL;
 	  return NULL;
 	}
-	Free (tok);
+	Free(tok);
 	break;
 
       case StringArg:
-	ptr = DoGetNextToken (ptr, &ftype->args[j].value.string_value,NULL,
+	ptr = DoGetNextToken(ptr, &ftype->args[j].value.string_value,NULL,
 			      ",", pstop_char);
 	if (!ftype->args[j].value.string_value) {
-	  ConsoleMessage ("%s: too few arguments\n",
+	  ConsoleMessage("%s: too few arguments\n",
 			  builtin_functions_i->name);
 	  *line = NULL;
 	  Free(ftype->args[j].value.string_value);
@@ -546,9 +581,9 @@ static Function *parse_function (char **line, char *pstop_char)
       case ButtonArg:
       case WindowArg:
       case ManagerArg:
-	ptr = parse_button (ptr, &ftype->args[j], &flag, pstop_char);
+	ptr = parse_button(ptr, &ftype->args[j], &flag, pstop_char);
 	if (!flag) {
-	  ConsoleMessage ("%s: too few arguments\n",
+	  ConsoleMessage("%s: too few arguments\n",
 			  builtin_functions_i->name);
 	  Free(ftype);
 	  *line = NULL;
@@ -566,9 +601,9 @@ static Function *parse_function (char **line, char *pstop_char)
 	 * jump offsets at compile time.
 	 */
       case JmpArg:
-	ptr = DoGetNextToken (ptr, &tok, NULL, ",", pstop_char);
+	ptr = DoGetNextToken(ptr, &tok, NULL, ",", pstop_char);
 	if (!tok) {
-	  ConsoleMessage ("%s: too few arguments\n",
+	  ConsoleMessage("%s: too few arguments\n",
 			  builtin_functions_i->name);
 	  Free(tok);
 	  Free(ftype);
@@ -586,7 +621,7 @@ static Function *parse_function (char **line, char *pstop_char)
 	break;
 
       default:
-	ConsoleMessage ("internal error in parse_function\n");
+	ConsoleMessage("internal error in parse_function\n");
 	Free(ftype);
 	*line = NULL;
 	return NULL;
@@ -594,7 +629,7 @@ static Function *parse_function (char **line, char *pstop_char)
     }
 
     if (j != builtin_functions_i->numargs) {
-      ConsoleMessage ("%s: too few arguments\n", builtin_functions_i->name);
+      ConsoleMessage("%s: too few arguments\n", builtin_functions_i->name);
       Free(ftype);
       *line = NULL;
       return NULL;
@@ -604,8 +639,8 @@ static Function *parse_function (char **line, char *pstop_char)
     return ftype;
   }
 
-  ConsoleMessage ("Unknown function: %s\n", name);
-  Free (name);
+  ConsoleMessage("Unknown function: %s\n", name);
+  Free(name);
 
   *line = NULL;
   return NULL;
@@ -615,7 +650,7 @@ static Function *parse_function (char **line, char *pstop_char)
 /* This is O(N^2) where N = number of instructions. Seems we could do better.
    We'll see how this addition settles before monkeying with it */
 
-static Function *parse_function_list (char *line)
+static Function *parse_function_list(char *line)
 {
   Function *ret = NULL, *tail = NULL, *f, *i;
   char *token;
@@ -625,7 +660,7 @@ static Function *parse_function_list (char *line)
 
   JmpArgs=0;
   while (line && (f = parse_function(&line, &stop_char))) {
-    ConsoleDebug (CONFIG, "parse_function: 0x%lx\n", (unsigned long)f->func);
+    ConsoleDebug(CONFIG, "parse_function: 0x%lx\n", (unsigned long)f->func);
     /* extra code to check for and remove a 'label' pseudo-function */
     if (f->func==builtin_label) {
       /* scan backwards to fix up references */
@@ -655,10 +690,10 @@ static Function *parse_function_list (char *line)
       f->prev=tail;
       tail = f;
     }
-    DoGetNextToken (line, &token, NULL, ",", &c);
+    DoGetNextToken(line, &token, NULL, ",", &c);
     if (token && stop_char != ',') {
-      ConsoleMessage ("Bad function list, comma expected\n");
-      Free (token);
+      ConsoleMessage("Bad function list, comma expected\n");
+      Free(token);
       return NULL;
     }
     stop_char = c;
@@ -672,7 +707,7 @@ static Function *parse_function_list (char *line)
     for (f=tail; f; f=f->prev) {
       for (j=0; j<(f->numargs); ++j) {
 	if (f->args[j].type==JmpArg) {
-	  ConsoleMessage ("Attempt to jump to non-existant label %s; "
+	  ConsoleMessage("Attempt to jump to non-existant label %s; "
 			  "aborting function list.\n",
 			  f->args[j].value.string_value);
 	  --JmpArgs;
@@ -680,7 +715,7 @@ static Function *parse_function_list (char *line)
       }
     }
     if (JmpArgs!=0)
-      ConsoleMessage ( "Internal Error: JmpArgs %d not accounted for!\n",
+      ConsoleMessage( "Internal Error: JmpArgs %d not accounted for!\n",
 		       JmpArgs );
     tail=NULL;
     f=NULL;
@@ -689,12 +724,12 @@ static Function *parse_function_list (char *line)
     return NULL;
   }
   if (ret == NULL)
-    ConsoleMessage ("No function defined\n");
+    ConsoleMessage("No function defined\n");
   return ret;
 }
 
 
-Binding *ParseMouseEntry (char *tline)
+Binding *ParseMouseEntry(char *tline)
 {
   char modifiers[20],*action,*token;
   Binding *new;
@@ -720,11 +755,11 @@ Binding *ParseMouseEntry (char *tline)
     Free(token);
   }
   if((n1 != 1)||(n2 != 1))
-    ConsoleMessage ("Mouse binding: Syntax error");
+    ConsoleMessage("Mouse binding: Syntax error");
 
   find_context(modifiers,&mods,key_modifiers,tline);
   if((mods & AnyModifier)&&(mods&(~AnyModifier))) {
-    ConsoleMessage ("Binding specified AnyModifier and other modifers too. "
+    ConsoleMessage("Binding specified AnyModifier and other modifers too. "
 		    "Excess modifiers will be ignored.");
   }
 
@@ -734,22 +769,22 @@ Binding *ParseMouseEntry (char *tline)
   new->Button_Key = button;
   new->Modifier = mods;
   new->Action = stripcpy(action);
-  new->Action2 = parse_function_list (action);
+  new->Action2 = parse_function_list(action);
 
   if (!new->Action2) {
-    ConsoleMessage ("Bad action: %s\n", action);
-    Free (new->Action);
-    Free (new);
+    ConsoleMessage("Bad action: %s\n", action);
+    Free(new->Action);
+    Free(new);
     return NULL;
   }
 
-  ConsoleDebug (CONFIG, "Mouse: %d %d %s\n", new->Button_Key,
+  ConsoleDebug(CONFIG, "Mouse: %d %d %s\n", new->Button_Key,
 		new->Modifier, (char*)new->Action);
 
   return new;
 }
 
-static Binding *ParseKeyEntry (char *tline)
+static Binding *ParseKeyEntry(char *tline)
 {
   char *action,modifiers[20],key[20],*ptr, *token, *actionstring, *keystring;
   Binding *new = NULL, *temp, *last = NULL;
@@ -775,11 +810,11 @@ static Binding *ParseKeyEntry (char *tline)
   }
 
   if((n1 != 1)||(n2 != 1))
-    ConsoleMessage ("Syntax error in line %s",tline);
+    ConsoleMessage("Syntax error in line %s",tline);
 
   find_context(modifiers,&mods,key_modifiers,tline);
   if((mods & AnyModifier)&&(mods&(~AnyModifier))) {
-    ConsoleMessage ("Binding specified AnyModifier and other modifers too. Excess modifiers will be ignored.");
+    ConsoleMessage("Binding specified AnyModifier and other modifers too. Excess modifiers will be ignored.");
   }
 
   /*
@@ -788,7 +823,7 @@ static Binding *ParseKeyEntry (char *tline)
    */
   if ((keysym = XStringToKeysym(key)) == NoSymbol ||
       XKeysymToKeycode(theDisplay, keysym) == 0) {
-    ConsoleMessage ("Can't find keysym: %s\n", key);
+    ConsoleMessage("Can't find keysym: %s\n", key);
     return NULL;
   }
 
@@ -797,9 +832,9 @@ static Binding *ParseKeyEntry (char *tline)
   for (i=min; i<=max; i++) {
     if (XKeycodeToKeysym(theDisplay, i, 0) == keysym) {
       if (!func) {
-	func = parse_function_list (action);
+	func = parse_function_list(action);
 	if (!func) {
-	  ConsoleMessage ("Bad action: %s\n", action);
+	  ConsoleMessage("Bad action: %s\n", action);
 	  return NULL;
 	}
 	actionstring = stripcpy(action);
@@ -821,345 +856,417 @@ static Binding *ParseKeyEntry (char *tline)
 	last = new;
       }
 
-      ConsoleDebug (CONFIG, "Key: %d %s %d %s\n", i, new->key_name,
+      ConsoleDebug(CONFIG, "Key: %d %s %d %s\n", i, new->key_name,
 		    mods, (char*)new->Action);
     }
   }
   return new;
 }
 
-static Binding *ParseSimpleEntry (char *tline)
+static Binding *ParseSimpleEntry(char *tline)
 {
-  Binding *new;
-  Function *func;
+	Binding *new;
+	Function *func;
 
-  func = parse_function_list (tline);
-  if (func == NULL)
-    return NULL;
+	func = parse_function_list(tline);
+	if (func == NULL)
+	{
+		return NULL;
+	}
 
-  new = (Binding *)safemalloc (sizeof (Binding));
-  memset(new, 0, sizeof(Binding));
-  new->type = BIND_KEYPRESS;
-  new->key_name = "select";
-  new->Action = stripcpy (tline);
-  new->Action2 = func;
+	new = (Binding *)safemalloc(sizeof(Binding));
+	memset(new, 0, sizeof(Binding));
+	new->type = BIND_KEYPRESS;
+	new->key_name = "select";
+	new->Action = stripcpy(tline);
+	new->Action2 = func;
 
-  return new;
+	return new;
 }
 
-void run_binding (WinManager *man, Action action)
+void run_binding(WinManager *man, Action action)
 {
-  Binding *binding = man->bindings[action];
-  ConsoleDebug (CONFIG, "run_binding:\n");
-  print_bindings (binding);
+	Binding *binding = man->bindings[action];
+	ConsoleDebug(CONFIG, "run_binding:\n");
+	print_bindings(binding);
 
-  if (binding && binding->Action2 && ((Function *)(binding->Action2))->func) {
-    run_function_list (binding->Action2);
-  }
+	if (binding && binding->Action2 &&
+		((Function *)(binding->Action2))->func)
+	{
+		run_function_list(binding->Action2);
+	}
 }
 
-void execute_function (char *string)
+void execute_function(char *string)
 {
-  Function *func = parse_function_list (string);
-  if (func == NULL) {
-    return;
-  }
-  else {
-    run_function_list (func);
-    free_function_list (func);
-  }
-}
-
-static int GetConfigLineWrapper (int *fd, char **tline)
-{
-#if FVWM_VERSION == 1
-
-  static char buffer[1024];
-  char *temp;
-
-  if (fgets (buffer, 1024, config_fp)) {
-    *tline = buffer;
-    temp = strchr (*tline, '\n');
-    if (temp) {
-      *temp = '\0';
-    }
-    else {
-      ConsoleMessage ("line too long\n");
-      exit (1);
-    }
-    return 1;
-  }
-
-#else
-
-  char *temp;
-
-  GetConfigLine (fd, tline);
-  if (*tline) {
-    if (strncasecmp(*tline, "Colorset", 8) == 0)
-    {
-      LoadColorset(&(*tline)[8]);
-    }
-    else if (strncasecmp(*tline, XINERAMA_CONFIG_STRING,
-			 sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
-    {
-      FScreenConfigureModule(
-	(*tline) + sizeof(XINERAMA_CONFIG_STRING) - 1);
-    }
-    else if (strncasecmp(*tline, "IgnoreModifiers", 15) == 0)
-    {
-      sscanf((*tline) + 16, "%d", &mods_unused);
-    }
-    temp = strchr (*tline, '\n');
-    if (temp) {
-      *temp = '\0';
-    }
-    /* grok the global config lines */
-/*    if (strncasecmp(*tline, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
-      ParseGraphics(theDisplay, *tline, G);
-      SavePictureCMap (theDisplay, G->viz, G->cmap, G->depth);
-    }
-*/    /* add colorlimit in here */
-    return 1;
-  }
-
-#endif
-
-  return 0;
-}
-
-static char *read_next_cmd (ReadOption flag)
-{
-  static ReadOption status;
-  static char *buffer;
-  static char *retstring, *cur_pos;
-  char *end_pos;
-
-  retstring = NULL;
-  if (flag != READ_LINE && !(flag & status))
-    return NULL;
-
-  switch (flag) {
-  case READ_LINE:
-    while (GetConfigLineWrapper (Fvwm_fd, &buffer)) {
-      cur_pos = buffer;
-      skip_space (&cur_pos);
-      if (!strncasecmp (Module, cur_pos, ModuleLen)) {
-	retstring = cur_pos;
-	cur_pos += ModuleLen;
-
-	if (*cur_pos == '*')
-	  cur_pos++;
-	skip_space(&cur_pos);
-
-	if (isalnum(*cur_pos))
-	  status = READ_OPTION;
+	Function *func = parse_function_list(string);
+	if (func == NULL)
+	{
+		return;
+	}
 	else
-	  status = READ_LINE;
-	break;
-      }
-    }
-    break;
-
-  case READ_OPTION:
-    retstring = cur_pos;
-    while (*cur_pos != '*' && !iswhite (*cur_pos))
-      cur_pos++;
-    end_pos = cur_pos;
-
-    if (*cur_pos == '*')
-      cur_pos++;
-    skip_space(&cur_pos);
-
-    if (!*cur_pos)
-      status = READ_LINE;
-    else if (isdigit(*retstring) || !strncmp(retstring, "transient", 9))
-      status = READ_OPTION;
-    else if (*cur_pos)
-      status = READ_ARG;
-
-    *end_pos = '\0';
-    break;
-
-  case READ_ARG:
-    retstring = cur_pos;
-    while (!iswhite (*cur_pos))
-      cur_pos++;
-    end_pos = cur_pos;
-
-    skip_space(&cur_pos);
-
-    if (*cur_pos)
-      status = READ_ARG;
-    else
-      status = READ_LINE;
-
-    *end_pos = '\0';
-    break;
-
-  case READ_REST_OF_LINE:
-    status = READ_LINE;
-    retstring = cur_pos;
-    break;
-  }
-
-  if (retstring && retstring[0] == '\0')
-    retstring = NULL;
-
-  return retstring;
+	{
+		run_function_list(func);
+		free_function_list(func);
+	}
 }
 
-static char *conditional_copy_string (char **s1, char *s2)
+static int GetConfigLineWrapper(int *fd, char **tline)
 {
-  if (*s1)
-    return *s1;
-  else
-    return copy_string (s1, s2);
+	char *temp;
+
+	GetConfigLine(fd, tline);
+	if (*tline)
+	{
+		if (strncasecmp(*tline, "Colorset", 8) == 0)
+		{
+			LoadColorset(&(*tline)[8]);
+		}
+		else if (strncasecmp(
+			*tline, XINERAMA_CONFIG_STRING,
+			sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
+		{
+			FScreenConfigureModule(
+			(*tline) + sizeof(XINERAMA_CONFIG_STRING) - 1);
+		}
+		else if (strncasecmp(*tline, "IgnoreModifiers", 15) == 0)
+		{
+			sscanf((*tline) + 16, "%d", &mods_unused);
+		}
+		temp = strchr(*tline, '\n');
+		if (temp)
+		{
+			*temp = '\0';
+		}
+		/* grok the global config lines */
+/*
+		if (strncasecmp(*tline, DEFGRAPHSTR, DEFGRAPHLEN) == 0)
+		{
+			ParseGraphics(theDisplay, *tline, G);
+			SavePictureCMap(theDisplay, G->viz, G->cmap, G->depth);
+		}
+*/
+		/* add colorlimit in here */
+		return 1;
+	}
+
+	return 0;
 }
 
-static NameType parse_format_dependencies (char *format)
+static char *read_next_cmd(ReadOption flag)
 {
-  NameType flags = NO_NAME;
+	static ReadOption status;
+	static char *buffer;
+	static char *retstring, *cur_pos;
+	char *end_pos;
 
-  ConsoleDebug (CONFIG, "Parsing format: %s\n", format);
+	retstring = NULL;
+	if (flag != READ_LINE && !(flag & status))
+	{
+		return NULL;
+	}
 
-  while (*format) {
-    if (*format != '%') {
-      format++;
-    }
-    else {
-      format++;
-      if (*format == 'i')
-	flags |= ICON_NAME;
-      else if (*format == 't')
-	flags |= TITLE_NAME;
-      else if (*format == 'c')
-	flags |= CLASS_NAME;
-      else if (*format == 'r')
-	flags |= RESOURCE_NAME;
-      else if (*format != '%')
-	ConsoleMessage ("Bad format string: %s\n", format);
-    }
-  }
+	switch (flag)
+	{
+	case READ_LINE:
+		while (GetConfigLineWrapper(fvwm_fd, &buffer))
+		{
+			cur_pos = buffer;
+			skip_space(&cur_pos);
+			if (!strncasecmp(Module, cur_pos, ModuleLen))
+			{
+				retstring = cur_pos;
+				cur_pos += ModuleLen;
+
+				if (*cur_pos == '*')
+				{
+					cur_pos++;
+				}
+				skip_space(&cur_pos);
+
+				if (isalnum(*cur_pos))
+				{
+					status = READ_OPTION;
+				}
+				else
+				{
+					status = READ_LINE;
+				}
+				break;
+			}
+		}
+		break;
+
+	case READ_OPTION:
+		retstring = cur_pos;
+		while (*cur_pos != '*' && !iswhite(*cur_pos))
+		{
+			cur_pos++;
+		}
+		end_pos = cur_pos;
+
+		if (*cur_pos == '*')
+		{
+			cur_pos++;
+		}
+		skip_space(&cur_pos);
+
+		if (!*cur_pos)
+		{
+			status = READ_LINE;
+		}
+		else if (isdigit(*retstring) || !strncmp(
+			retstring, "transient", 9))
+		{
+			status = READ_OPTION;
+		}
+		else if (*cur_pos)
+		{
+			status = READ_ARG;
+		}
+
+		*end_pos = '\0';
+		break;
+
+	case READ_ARG:
+		retstring = cur_pos;
+		while (!iswhite(*cur_pos))
+		{
+			cur_pos++;
+		}
+		end_pos = cur_pos;
+
+		skip_space(&cur_pos);
+
+		if (*cur_pos)
+		{
+			status = READ_ARG;
+		}
+		else
+		{
+			status = READ_LINE;
+		}
+
+		*end_pos = '\0';
+		break;
+
+	case READ_REST_OF_LINE:
+		status = READ_LINE;
+		retstring = cur_pos;
+		break;
+	}
+
+	if (retstring && retstring[0] == '\0')
+	{
+		retstring = NULL;
+	}
+
+	return retstring;
+}
+
+static char *conditional_copy_string(char **s1, char *s2)
+{
+	if (*s1)
+	{
+		return *s1;
+	}
+	else
+	{
+		return copy_string(s1, s2);
+	}
+}
+
+static NameType parse_format_dependencies(char *format)
+{
+	NameType flags = NO_NAME;
+
+	ConsoleDebug(CONFIG, "Parsing format: %s\n", format);
+
+	while (*format)
+	{
+		if (*format != '%')
+		{
+			format++;
+		}
+		else {
+			format++;
+			if (*format == 'i')
+			{
+				flags |= ICON_NAME;
+			}
+			else if (*format == 't')
+			{
+				flags |= TITLE_NAME;
+			}
+			else if (*format == 'c')
+			{
+				flags |= CLASS_NAME;
+			}
+			else if (*format == 'r')
+			{
+				flags |= RESOURCE_NAME;
+			}
+			else if (*format != '%')
+			{
+				ConsoleMessage(
+					"Bad format string: %s\n", format);
+			}
+		}
+	}
 #ifdef PRINT_DEBUG
-  ConsoleDebug (CONFIG, "Format depends on: ");
-  if (flags & ICON_NAME)
-    ConsoleDebug (CONFIG, "Icon ");
-  if (flags & TITLE_NAME)
-    ConsoleDebug (CONFIG, "Title ");
-  if (flags & CLASS_NAME)
-    ConsoleDebug (CONFIG, "Class ");
-  if (flags & RESOURCE_NAME)
-    ConsoleDebug (CONFIG, "Resource ");
-  ConsoleDebug (CONFIG, "\n");
+	ConsoleDebug(CONFIG, "Format depends on: ");
+	if (flags & ICON_NAME)
+	{
+		ConsoleDebug(CONFIG, "Icon ");
+	}
+	if (flags & TITLE_NAME)
+	{
+		ConsoleDebug(CONFIG, "Title ");
+	}
+	if (flags & CLASS_NAME)
+	{
+		ConsoleDebug(CONFIG, "Class ");
+	}
+	if (flags & RESOURCE_NAME)
+	{
+		ConsoleDebug(CONFIG, "Resource ");
+	}
+	ConsoleDebug(CONFIG, "\n");
 #endif
 
-  return flags;
+	return flags;
 }
 
-#define SET_MANAGER(manager,field,value)                           \
-   do {                                                            \
-     int id = manager;                                             \
-     if (id == -1) {                                               \
-       for (id = 0; id < globals.num_managers; id++) {             \
-	 globals.managers[id]. field = value;                      \
-       }                                                           \
-     }                                                             \
-     else if (id < globals.num_managers) {                         \
-       globals.managers[id]. field = value;                        \
-     }                                                             \
-     else {                                                        \
-       ConsoleMessage ("Internal error in SET_MANAGER: %d\n", id); \
-     }                                                             \
-   } while (0)
+#define SET_MANAGER(manager,field,value)                                     \
+	do                                                                   \
+	{                                                                    \
+		int id = manager;                                            \
+		if (id == -1)                                                \
+		{                                                            \
+			for (id = 0; id < globals.num_managers; id++)        \
+			{                                                    \
+				globals.managers[id]. field = value;         \
+			}                                                    \
+		}                                                            \
+		else if (id < globals.num_managers)                          \
+		{                                                            \
+			globals.managers[id]. field = value;                 \
+		}                                                            \
+		else                                                         \
+		{                                                            \
+			ConsoleMessage(                                      \
+				"Internal error in SET_MANAGER: %d\n", id);  \
+		}                                                            \
+	} while (0)
 
-static void handle_button_config (int manager, int context, char *option)
+static void handle_button_config(int manager, int context, char *option)
 {
-  char *p;
-  ButtonState state;
+	char *p;
+	ButtonState state;
 
-  p = read_next_cmd (READ_ARG);
-  if (!p) {
-    ConsoleMessage ("Bad line: %s\n", current_line);
-    ConsoleMessage ("Need argument to %s\n", option);
-    return;
-  }
-  else if (!strcasecmp (p, "flat")) {
-    state = BUTTON_FLAT;
-  }
-  else if (!strcasecmp (p, "up")) {
-    state = BUTTON_UP;
-  }
-  else if (!strcasecmp (p, "down")) {
-    state = BUTTON_DOWN;
-  }
-  else if (!strcasecmp (p, "raisededge")) {
-    state = BUTTON_EDGEUP;
-  }
-  else if (!strcasecmp (p, "sunkedge")) {
-    state = BUTTON_EDGEDOWN;
-  }
-  else {
-    ConsoleMessage ("Bad line: %s\n", current_line);
-    ConsoleMessage ("This isn't a valid button state: %s\n", p);
-    return;
-  }
-  ConsoleDebug (CONFIG, "Setting buttonState[%s] to %s\n",
+	p = read_next_cmd(READ_ARG);
+	if (!p)
+	{
+		ConsoleMessage("Bad line: %s\n", current_line);
+		ConsoleMessage("Need argument to %s\n", option);
+		return;
+	}
+	else if (!strcasecmp(p, "flat"))
+	{
+		state = BUTTON_FLAT;
+	}
+	else if (!strcasecmp(p, "up"))
+	{
+		state = BUTTON_UP;
+	}
+	else if (!strcasecmp(p, "down"))
+	{
+		state = BUTTON_DOWN;
+	}
+	else if (!strcasecmp(p, "raisededge"))
+	{
+		state = BUTTON_EDGEUP;
+	}
+	else if (!strcasecmp(p, "sunkedge"))
+	{
+		state = BUTTON_EDGEDOWN;
+	}
+	else
+	{
+		ConsoleMessage("Bad line: %s\n", current_line);
+		ConsoleMessage("This isn't a valid button state: %s\n", p);
+		return;
+	}
+	ConsoleDebug(
+		CONFIG, "Setting buttonState[%s] to %s\n",
 		contextDefaults[context].name, p);
-  SET_MANAGER (manager, buttonState[context], state);
+	SET_MANAGER(manager, buttonState[context], state);
 
-  /* check for optional fore color */
-  p = read_next_cmd (READ_ARG);
-  if ( !p )
-    return;
+	/* check for optional fore color */
+	p = read_next_cmd(READ_ARG);
+	if (!p)
+	{
+		return;
+	}
 
-  SET_MANAGER (manager, foreColorName[context],
-	       copy_string (&globals.managers[id].foreColorName[context], p));
+	SET_MANAGER(
+		manager, foreColorName[context],
+		copy_string(&globals.managers[id]. foreColorName[context], p));
 
-  /* check for optional back color */
-  p = read_next_cmd (READ_ARG);
-  if ( !p )
-    return;
+	/* check for optional back color */
+	p = read_next_cmd(READ_ARG);
+	if (!p)
+	{
+		return;
+	}
 
-  ConsoleDebug (CONFIG, "Setting backColorName[%s] to %s\n",
+	ConsoleDebug(
+		CONFIG, "Setting backColorName[%s] to %s\n",
 		contextDefaults[context].name, p);
-  SET_MANAGER (manager, backColorName[context],
-	       copy_string (&globals.managers[id].backColorName[context], p));
+	SET_MANAGER(
+		manager, backColorName[context],
+		copy_string(&globals.managers[id].backColorName[context], p));
 }
 
-static void add_weighted_sort(WinManager *man, WeightedSort *weighted_sort) {
-  WeightedSort *p;
-  int i;
+static void add_weighted_sort(WinManager *man, WeightedSort *weighted_sort)
+{
+	WeightedSort *p;
+	int i;
 
-  if (man->weighted_sorts_len == man->weighted_sorts_size) {
-    i = man->weighted_sorts_size;
-    man->weighted_sorts_size += 16;
-    man->weighted_sorts =
-      (WeightedSort *)saferealloc ((char *)man->weighted_sorts,
-			 man->weighted_sorts_size * sizeof (WeightedSort));
-  }
-  p = &man->weighted_sorts[man->weighted_sorts_len];
-  p->resname = NULL;
-  p->classname = NULL;
-  p->titlename = NULL;
-  p->iconname = NULL;
-  if (weighted_sort->resname) {
-    copy_string(&p->resname, weighted_sort->resname);
-  }
-  if (weighted_sort->classname) {
-    copy_string(&p->classname, weighted_sort->classname);
-  }
-  if (weighted_sort->titlename) {
-    copy_string(&p->titlename, weighted_sort->titlename);
-  }
-  if (weighted_sort->iconname) {
-    copy_string(&p->iconname, weighted_sort->iconname);
-  }
-  p->weight = weighted_sort->weight;
-  ++man->weighted_sorts_len;
+	if (man->weighted_sorts_len == man->weighted_sorts_size)
+	{
+		i = man->weighted_sorts_size;
+		man->weighted_sorts_size += 16;
+		man->weighted_sorts = (WeightedSort *)saferealloc(
+			(char *)man->weighted_sorts,
+			man->weighted_sorts_size * sizeof(WeightedSort));
+	}
+	p = &man->weighted_sorts[man->weighted_sorts_len];
+	p->resname = NULL;
+	p->classname = NULL;
+	p->titlename = NULL;
+	p->iconname = NULL;
+	if (weighted_sort->resname)
+	{
+		copy_string(&p->resname, weighted_sort->resname);
+	}
+	if (weighted_sort->classname)
+	{
+		copy_string(&p->classname, weighted_sort->classname);
+	}
+	if (weighted_sort->titlename)
+	{
+		copy_string(&p->titlename, weighted_sort->titlename);
+	}
+	if (weighted_sort->iconname)
+	{
+		copy_string(&p->iconname, weighted_sort->iconname);
+	}
+	p->weight = weighted_sort->weight;
+	++man->weighted_sorts_len;
 }
 
-void read_in_resources (char *file)
+void read_in_resources()
 {
   char *p, *q;
   int i, n, manager;
@@ -1168,40 +1275,39 @@ void read_in_resources (char *file)
   Resolution r;
   Reverse rv;
 
-  if (!init_config_file (file))
-    return;
+  InitGetConfigLine(fvwm_fd, Module);
 
-  while ((p = read_next_cmd (READ_LINE))) {
-    ConsoleDebug (CONFIG, "line: %s\n", p);
-    save_current_line (p);
+  while ((p = read_next_cmd(READ_LINE))) {
+    ConsoleDebug(CONFIG, "line: %s\n", p);
+    save_current_line(p);
 
-    option1 = read_next_cmd (READ_OPTION);
+    option1 = read_next_cmd(READ_OPTION);
     if (option1 == NULL)
       continue;
 
-    ConsoleDebug (CONFIG, "option1: %s\n", option1);
-    if (!strcasecmp (option1, "nummanagers")) {
+    ConsoleDebug(CONFIG, "option1: %s\n", option1);
+    if (!strcasecmp(option1, "nummanagers")) {
       /* If in transient mode, just use the default of 1 manager */
       if (!globals.transient) {
-	p = read_next_cmd (READ_ARG);
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	if (extract_int (p, &n) == 0) {
-	  ConsoleMessage ("This is not a number: %s\n", p);
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	if (n > 0) {
-	  allocate_managers (n);
-	  ConsoleDebug (CONFIG, "num managers: %d\n", n);
+	  allocate_managers(n);
+	  ConsoleDebug(CONFIG, "num managers: %d\n", n);
 	}
 	else {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("You can't have zero managers. "
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("You can't have zero managers. "
 			  "I'll give you one.\n");
-	  allocate_managers (1);
+	  allocate_managers(1);
 	}
       }
     }
@@ -1209,121 +1315,121 @@ void read_in_resources (char *file)
       /* these all can specify a specific manager */
 
       if (globals.managers == NULL) {
-	ConsoleDebug (CONFIG, "I'm assuming you only want one manager\n");
-	allocate_managers (1);
+	ConsoleDebug(CONFIG, "I'm assuming you only want one manager\n");
+	allocate_managers(1);
       }
 
       manager = 0;
 
       if (option1[0] >= '0' && option1[0] <= '9') {
 	if (globals.transient) {
-	  ConsoleDebug (CONFIG, "In transient mode. Ignoring this line\n");
+	  ConsoleDebug(CONFIG, "In transient mode. Ignoring this line\n");
 	  continue;
 	}
-	if (extract_int (option1, &manager) == 0 ||
+	if (extract_int(option1, &manager) == 0 ||
 	    manager <= 0 || manager > globals.num_managers) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("This is not a valid manager: %s.\n", option1);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("This is not a valid manager: %s.\n", option1);
 	  manager = 0;
 	}
-	option1 = read_next_cmd (READ_OPTION);
+	option1 = read_next_cmd(READ_OPTION);
 	if (!option1) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
       }
-      else if (!strcasecmp (option1, "transient")) {
+      else if (!strcasecmp(option1, "transient")) {
 	if (globals.transient) {
-	  ConsoleDebug (CONFIG, "Transient manager config line\n");
+	  ConsoleDebug(CONFIG, "Transient manager config line\n");
 	  manager = 1;
-	  option1 = read_next_cmd (READ_OPTION);
+	  option1 = read_next_cmd(READ_OPTION);
 	  if (!option1) {
-	    ConsoleMessage ("Bad line: %s\n", current_line);
+	    ConsoleMessage("Bad line: %s\n", current_line);
 	    continue;
 	  }
 	}
 	else {
-	  ConsoleDebug (CONFIG, "Not in transient mode. Ignoring this line\n");
+	  ConsoleDebug(CONFIG, "Not in transient mode. Ignoring this line\n");
 	  continue;
 	}
       }
 
       manager--; /* -1 means global */
 
-      ConsoleDebug (CONFIG, "Applying %s to manager %d\n", option1, manager);
+      ConsoleDebug(CONFIG, "Applying %s to manager %d\n", option1, manager);
 
-      if (!strcasecmp (option1, "action")) {
-	p = read_next_cmd (READ_ARG);
+      if (!strcasecmp(option1, "action")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 
-	if (!strcasecmp (p, "mouse")) {
+	if (!strcasecmp(p, "mouse")) {
 	  i = MOUSE;
 	}
-	else if (!strcasecmp (p, "key")) {
+	else if (!strcasecmp(p, "key")) {
 	  i = KEYPRESS;
 	}
-	else if (!strcasecmp (p, "select")) {
+	else if (!strcasecmp(p, "select")) {
 	  i = SELECT;
 	}
 	else {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("This isn't a valid action name: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("This isn't a valid action name: %s\n", p);
 	  continue;
 	}
 
-	q = read_next_cmd (READ_REST_OF_LINE);
+	q = read_next_cmd(READ_REST_OF_LINE);
 	if (!q) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("Need an action\n");
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("Need an action\n");
 	  continue;
 	}
 
 	switch (i) {
 	case MOUSE:
-	  binding = ParseMouseEntry (q);
+	  binding = ParseMouseEntry(q);
 	  break;
 
 	case KEYPRESS:
-	  binding = ParseKeyEntry (q);
+	  binding = ParseKeyEntry(q);
 	  break;
 
 	case SELECT:
-	  binding = ParseSimpleEntry (q);
+	  binding = ParseSimpleEntry(q);
 	  break;
 	}
 
 	if (binding == NULL) {
-	  ConsoleMessage ("Offending line: %s\n", current_line);
-	  ConsoleMessage ("Bad action\n");
+	  ConsoleMessage("Offending line: %s\n", current_line);
+	  ConsoleMessage("Bad action\n");
 	  continue;
 	}
 
 	if (manager == -1) {
 	  int j;
 	  for (j = 0; j < globals.num_managers; j++) {
-	    add_to_binding (&globals.managers[j].bindings[i], binding);
+	    add_to_binding(&globals.managers[j].bindings[i], binding);
 	  }
 	}
 	else if (manager < globals.num_managers) {
-	  add_to_binding (&globals.managers[manager].bindings[i], binding);
+	  add_to_binding(&globals.managers[manager].bindings[i], binding);
 	}
 	else {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("There's no manager %d\n", manager);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("There's no manager %d\n", manager);
 	}
       }
-      else if (!strcasecmp (option1, "colorset")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "colorset")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	if (extract_int (p, &n) == 0) {
-	  ConsoleMessage ("This is not a number: %s\n", p);
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	for ( i = 0; i < NUM_CONTEXTS; i++ ) {
@@ -1334,389 +1440,389 @@ void read_in_resources (char *file)
 	}
 	AllocColorset(n);
       }
-      else if (!strcasecmp (option1, "background")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "background")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	ConsoleDebug (CONFIG, "default background: %s\n", p);
+	ConsoleDebug(CONFIG, "default background: %s\n", p);
 
 	for ( i = 0; i < NUM_CONTEXTS; i++ )
-	  SET_MANAGER (manager, backColorName[i],
-	    conditional_copy_string (&globals.managers[id].backColorName[i],
+	  SET_MANAGER(manager, backColorName[i],
+	    conditional_copy_string(&globals.managers[id].backColorName[i],
 				     p));
       }
-      else if (!strcasecmp (option1, "buttongeometry")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "buttongeometry")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 
-	SET_MANAGER (manager, button_geometry_str,
-		     copy_string (&globals.managers[id].button_geometry_str, p));
+	SET_MANAGER(manager, button_geometry_str,
+		     copy_string(&globals.managers[id].button_geometry_str, p));
       }
-      else if (!strcasecmp (option1, "dontshow")) {
+      else if (!strcasecmp(option1, "dontshow")) {
 	char *token = NULL;
-	p = read_next_cmd (READ_REST_OF_LINE);
+	p = read_next_cmd(READ_REST_OF_LINE);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	p = DoGetNextToken (p, &token, NULL, ",", NULL);
+	p = DoGetNextToken(p, &token, NULL, ",", NULL);
 	if (!token) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	do {
-	  ConsoleDebug (CONFIG, "dont show: %s\n", token);
+	  ConsoleDebug(CONFIG, "dont show: %s\n", token);
 	  if (manager == -1) {
 	    int i;
 	    for (i = 0; i < globals.num_managers; i++)
-	      add_to_stringlist (&globals.managers[i].dontshow, token);
+	      add_to_stringlist(&globals.managers[i].dontshow, token);
 	  }
 	  else {
-	    add_to_stringlist (&globals.managers[manager].dontshow, token);
+	    add_to_stringlist(&globals.managers[manager].dontshow, token);
 	  }
-	  Free (token);
-	  p = DoGetNextToken (p, &token, NULL, ",", NULL);
+	  Free(token);
+	  p = DoGetNextToken(p, &token, NULL, ",", NULL);
 	} while (token);
 	if (token)
 	  Free(token);
       }
-      else if (!strcasecmp (option1, "drawicons")) {
+      else if (!strcasecmp(option1, "drawicons")) {
 	if (!FMiniIconsSupported)
 	{
-	  ConsoleMessage ("DrawIcons support not compiled in\n");
+	  ConsoleMessage("DrawIcons support not compiled in\n");
 	}
 	else
 	{
-	  p = read_next_cmd (READ_ARG);
+	  p = read_next_cmd(READ_ARG);
 	  if (!p) {
-	    ConsoleMessage ("Bad line: %s\n", current_line);
-	    ConsoleMessage ("Need argument to drawicons\n");
+	    ConsoleMessage("Bad line: %s\n", current_line);
+	    ConsoleMessage("Need argument to drawicons\n");
 	    continue;
 	  }
-	  if (!strcasecmp (p, "true")) {
+	  if (!strcasecmp(p, "true")) {
 	    i = 1;
 	  }
 	  /* [NFM 3 Dec 97] added support for drawicons "always" */
-	  else if (!strcasecmp (p, "always")) {
+	  else if (!strcasecmp(p, "always")) {
 	    i = 2;
 	  }
-	  else if (!strcasecmp (p, "false")) {
+	  else if (!strcasecmp(p, "false")) {
 	    i = 0;
 	  }
 	  else {
-	    ConsoleMessage ("Bad line: %s\n", current_line);
-	    ConsoleMessage ("What is this: %s?\n", p);
+	    ConsoleMessage("Bad line: %s\n", current_line);
+	    ConsoleMessage("What is this: %s?\n", p);
 	    continue;
 	  }
-	  ConsoleDebug (CONFIG, "Setting drawicons to: %d\n", i);
-	  SET_MANAGER (manager, draw_icons, i);
+	  ConsoleDebug(CONFIG, "Setting drawicons to: %d\n", i);
+	  SET_MANAGER(manager, draw_icons, i);
 	}
       }
-      else if (!strcasecmp (option1, "followfocus")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "followfocus")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("Need argument to followfocus\n");
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("Need argument to followfocus\n");
 	  continue;
 	}
-	if (!strcasecmp (p, "true")) {
+	if (!strcasecmp(p, "true")) {
 	  i = 1;
 	}
-	else if (!strcasecmp (p, "false")) {
+	else if (!strcasecmp(p, "false")) {
 	  i = 0;
 	}
 	else {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("What is this: %s?\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("What is this: %s?\n", p);
 	  continue;
 	}
-	ConsoleDebug (CONFIG, "Setting followfocus to: %d\n", i);
-	SET_MANAGER (manager, followFocus, i);
+	ConsoleDebug(CONFIG, "Setting followfocus to: %d\n", i);
+	SET_MANAGER(manager, followFocus, i);
       }
-      else if (!strcasecmp (option1, "showtransient")) {
-       p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "showtransient")) {
+       p = read_next_cmd(READ_ARG);
        if (!p) {
-	 ConsoleMessage ("Bad line: %s\n", current_line);
-	 ConsoleMessage ("Need argument to showtransient\n");
+	 ConsoleMessage("Bad line: %s\n", current_line);
+	 ConsoleMessage("Need argument to showtransient\n");
 	 continue;
        }
-       if (!strcasecmp (p, "true")) {
+       if (!strcasecmp(p, "true")) {
 	 i = 1;
        }
-       else if (!strcasecmp (p, "false")) {
+       else if (!strcasecmp(p, "false")) {
 	 i = 0;
        }
        else {
-	 ConsoleMessage ("Bad line: %s\n", current_line);
-	 ConsoleMessage ("What is this: %s?\n", p);
+	 ConsoleMessage("Bad line: %s\n", current_line);
+	 ConsoleMessage("What is this: %s?\n", p);
 	 continue;
        }
-       ConsoleDebug (CONFIG, "Setting showtransient to: %d\n", i);
-       SET_MANAGER (manager, showtransient, i);
+       ConsoleDebug(CONFIG, "Setting showtransient to: %d\n", i);
+       SET_MANAGER(manager, showtransient, i);
       }
-      else if (!strcasecmp (option1, "showonlyicons")) {
-       p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "showonlyicons")) {
+       p = read_next_cmd(READ_ARG);
        if (!p) {
-	 ConsoleMessage ("Bad line: %s\n", current_line);
-	 ConsoleMessage ("Need argument to showonlyicons\n");
+	 ConsoleMessage("Bad line: %s\n", current_line);
+	 ConsoleMessage("Need argument to showonlyicons\n");
 	 continue;
        }
-       if (!strcasecmp (p, "true")) {
+       if (!strcasecmp(p, "true")) {
 	 i = 1;
        }
-       else if (!strcasecmp (p, "false")) {
+       else if (!strcasecmp(p, "false")) {
 	 i = 0;
        }
        else {
-	 ConsoleMessage ("Bad line: %s\n", current_line);
-	 ConsoleMessage ("What is this: %s?\n", p);
+	 ConsoleMessage("Bad line: %s\n", current_line);
+	 ConsoleMessage("What is this: %s?\n", p);
 	 continue;
        }
-       ConsoleDebug (CONFIG, "Setting showonlyiconx to: %d\n", i);
-       SET_MANAGER (manager, showonlyiconic, i);
+       ConsoleDebug(CONFIG, "Setting showonlyiconx to: %d\n", i);
+       SET_MANAGER(manager, showonlyiconic, i);
       }
-      else if (!strcasecmp (option1, "font")) {
+      else if (!strcasecmp(option1, "font")) {
 	char *f;
-	p = read_next_cmd (READ_REST_OF_LINE);
+	p = read_next_cmd(READ_REST_OF_LINE);
 	trim(p);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	CopyStringWithQuotes(&f, p);
-	ConsoleDebug (CONFIG, "font: %s\n", f);
+	ConsoleDebug(CONFIG, "font: %s\n", f);
 
-	SET_MANAGER (manager, fontname,
-		     copy_string (&globals.managers[id].fontname, f));
+	SET_MANAGER(manager, fontname,
+		     copy_string(&globals.managers[id].fontname, f));
 	free(f);
       }
-      else if (!strcasecmp (option1, "foreground")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "foreground")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	ConsoleDebug (CONFIG, "default foreground: %s\n", p);
+	ConsoleDebug(CONFIG, "default foreground: %s\n", p);
 
 	for ( i = 0; i < NUM_CONTEXTS; i++ )
-	SET_MANAGER (manager, foreColorName[i],
-	   conditional_copy_string (&globals.managers[id].foreColorName[i],
+	SET_MANAGER(manager, foreColorName[i],
+	   conditional_copy_string(&globals.managers[id].foreColorName[i],
 				    p));
       }
-      else if (!strcasecmp (option1, "format")) {
+      else if (!strcasecmp(option1, "format")) {
 	char *token;
 	NameType flags;
 
-	p = read_next_cmd (READ_REST_OF_LINE);
+	p = read_next_cmd(READ_REST_OF_LINE);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	DoGetNextToken (p, &token, NULL, ",", NULL);
+	DoGetNextToken(p, &token, NULL, ",", NULL);
 	if (!token)
 	  {
 	    token = (char *)safemalloc(1);
 	    *token = 0;
 	  }
 
-	SET_MANAGER (manager, formatstring,
+	SET_MANAGER(manager, formatstring,
 		     copy_string (&globals.managers[id].formatstring, token));
-	flags = parse_format_dependencies (token);
-	SET_MANAGER (manager, format_depend, flags);
-	Free (token);
+	flags = parse_format_dependencies(token);
+	SET_MANAGER(manager, format_depend, flags);
+	Free(token);
       }
-      else if (!strcasecmp (option1, "geometry")) {
-	ConsoleMessage ("Geometry option no longer supported.\n");
-	ConsoleMessage ("Use ManagerGeometry and ButtonGeometry.\n");
+      else if (!strcasecmp(option1, "geometry")) {
+	ConsoleMessage("Geometry option no longer supported.\n");
+	ConsoleMessage("Use ManagerGeometry and ButtonGeometry.\n");
       }
-      else if (!strcasecmp (option1, "iconname")) {
+      else if (!strcasecmp(option1, "iconname")) {
 	char *token;
-	p = read_next_cmd (READ_REST_OF_LINE);
+	p = read_next_cmd(READ_REST_OF_LINE);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	DoGetNextToken (p, &token, NULL, ",", NULL);
+	DoGetNextToken(p, &token, NULL, ",", NULL);
 	if (!token)
 	  {
 	    token = (char *)safemalloc(1);
 	    *token = 0;
 	  }
 
-	SET_MANAGER (manager, iconname,
-		     copy_string (&globals.managers[id].iconname, token));
-	Free (token);
+	SET_MANAGER(manager, iconname,
+		     copy_string(&globals.managers[id].iconname, token));
+	Free(token);
       }
-      else if (!strcasecmp (option1, "managergeometry")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "managergeometry")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 
-	SET_MANAGER (manager, geometry_str,
-		     copy_string (&globals.managers[id].geometry_str, p));
+	SET_MANAGER(manager, geometry_str,
+		     copy_string(&globals.managers[id].geometry_str, p));
       }
-      else if (!strcasecmp (option1, "resolution")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "resolution")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	ConsoleDebug (CONFIG, "resolution: %s\n", p);
-	if (!strcasecmp (p, "global"))
+	ConsoleDebug(CONFIG, "resolution: %s\n", p);
+	if (!strcasecmp(p, "global"))
 	  r = SHOW_GLOBAL;
-	else if (!strcasecmp (p, "desk"))
+	else if (!strcasecmp(p, "desk"))
 	  r = SHOW_DESKTOP;
-	else if (!strcasecmp (p, "page"))
+	else if (!strcasecmp(p, "page"))
 	  r = SHOW_PAGE;
-	else if (!strcasecmp (p, "screen"))
+	else if (!strcasecmp(p, "screen"))
 	  r = SHOW_SCREEN;
-	else if (!strcasecmp (p, "!desk"))
+	else if (!strcasecmp(p, "!desk"))
 	  r = NO_SHOW_DESKTOP;
-	else if (!strcasecmp (p, "!page"))
+	else if (!strcasecmp(p, "!page"))
 	  r = NO_SHOW_PAGE;
-	else if (!strcasecmp (p, "!screen"))
+	else if (!strcasecmp(p, "!screen"))
 	  r = NO_SHOW_SCREEN;
 	else {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("What kind of resolution is this?\n");
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("What kind of resolution is this?\n");
 	  continue;
 	}
 
-	SET_MANAGER (manager, res, r);
+	SET_MANAGER(manager, res, r);
       }
-      else if (!strcasecmp (option1, "reverse")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "reverse")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	ConsoleDebug (CONFIG, "reverse: %s\n", p);
-	if (!strcasecmp (p, "none"))
+	ConsoleDebug(CONFIG, "reverse: %s\n", p);
+	if (!strcasecmp(p, "none"))
 	  rv = REVERSE_NONE;
-	else if (!strcasecmp (p, "icon"))
+	else if (!strcasecmp(p, "icon"))
 	  rv = REVERSE_ICON;
-	else if (!strcasecmp (p, "normal"))
+	else if (!strcasecmp(p, "normal"))
 	  rv = REVERSE_NORMAL;
 	else {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("What kind of reverse is this?\n");
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("What kind of reverse is this?\n");
 	  continue;
 	}
 
-	SET_MANAGER (manager, rev, rv);
+	SET_MANAGER(manager, rev, rv);
       }
-      else if (!strcasecmp (option1, "shape")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "shape")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("Need argument to followfocus\n");
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("Need argument to followfocus\n");
 	  continue;
 	}
-	if (!strcasecmp (p, "true")) {
+	if (!strcasecmp(p, "true")) {
 	  i = 1;
 	}
-	else if (!strcasecmp (p, "false")) {
+	else if (!strcasecmp(p, "false")) {
 	  i = 0;
 	}
 	else {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("What is this: %s?\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("What is this: %s?\n", p);
 	  continue;
 	}
 	if (!FHaveShapeExtension && i) {
-	  ConsoleMessage ("Shape support not compiled in\n");
+	  ConsoleMessage("Shape support not compiled in\n");
 	  continue;
 	}
-	ConsoleDebug (CONFIG, "Setting shape to: %d\n", i);
-	SET_MANAGER (manager, shaped, i);
+	ConsoleDebug(CONFIG, "Setting shape to: %d\n", i);
+	SET_MANAGER(manager, shaped, i);
       }
-      else if (!strcasecmp (option1, "show")) {
+      else if (!strcasecmp(option1, "show")) {
 	char *token = NULL;
-	p = read_next_cmd (READ_REST_OF_LINE);
+	p = read_next_cmd(READ_REST_OF_LINE);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	p = DoGetNextToken (p, &token, NULL, ",", NULL);
+	p = DoGetNextToken(p, &token, NULL, ",", NULL);
 	if (!token) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	do {
-	  ConsoleDebug (CONFIG, "show: %s\n", token);
+	  ConsoleDebug(CONFIG, "show: %s\n", token);
 	  if (manager == -1) {
 	    int i;
 	    for (i = 0; i < globals.num_managers; i++)
-	      add_to_stringlist (&globals.managers[i].show, token);
+	      add_to_stringlist(&globals.managers[i].show, token);
 	  }
 	  else {
-	    add_to_stringlist (&globals.managers[manager].show, token);
+	    add_to_stringlist(&globals.managers[manager].show, token);
 	  }
-	  Free (token);
-	  p = DoGetNextToken (p, &token, NULL, ",", NULL);
+	  Free(token);
+	  p = DoGetNextToken(p, &token, NULL, ",", NULL);
 	} while (token);
 	if (token)
 	  Free(token);
       }
-      else if (!strcasecmp (option1, "showtitle")) {
-	ConsoleMessage ("Bad line: %s\n", current_line);
-	ConsoleMessage ("showtitle is no longer an option. Use format\n");
+      else if (!strcasecmp(option1, "showtitle")) {
+	ConsoleMessage("Bad line: %s\n", current_line);
+	ConsoleMessage("showtitle is no longer an option. Use format\n");
 	continue;
       }
-      else if (!strcasecmp (option1, "sort")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "sort")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("Need argument to sort\n");
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("Need argument to sort\n");
 	  continue;
 	}
-	if (!strcasecmp (p, "name")) {
+	if (!strcasecmp(p, "name")) {
 	  i = SortName;
 	}
-	else if (!strcasecmp (p, "namewithcase")) {
+	else if (!strcasecmp(p, "namewithcase")) {
 	  i = SortNameCase;
 	}
-	else if (!strcasecmp (p, "id")) {
+	else if (!strcasecmp(p, "id")) {
 	  i = SortId;
 	}
-	else if (!strcasecmp (p, "none")) {
+	else if (!strcasecmp(p, "none")) {
 	  i = SortNone;
 	}
-	else if (!strcasecmp (p, "weighted")) {
+	else if (!strcasecmp(p, "weighted")) {
 	  i = SortWeighted;
 	}
-	else if (!strcasecmp (p, "false") || !strcasecmp (p, "true")) {
+	else if (!strcasecmp(p, "false") || !strcasecmp(p, "true")) {
 	  /* Old options */
-	  ConsoleMessage ("FvwmIconMan: sort option no longer takes "
+	  ConsoleMessage("FvwmIconMan: sort option no longer takes "
 			  "true or false value\n"
 			  "Please read the latest manpage\n");
 	  continue;
 	}
 	else {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("What is this: %s?\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("What is this: %s?\n", p);
 	  continue;
 	}
-	ConsoleDebug (CONFIG, "Setting sort to: %d\n", i);
-	SET_MANAGER (manager, sort, i);
+	ConsoleDebug(CONFIG, "Setting sort to: %d\n", i);
+	SET_MANAGER(manager, sort, i);
       }
-      else if (!strcasecmp (option1, "sortweight")) {
+      else if (!strcasecmp(option1, "sortweight")) {
 	WeightedSort weighted_sort;
-	p = read_next_cmd (READ_ARG);
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	if (extract_int (p, &n) == 0) {
-	  ConsoleMessage ("This is not a number: %s\n", p);
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	weighted_sort.resname = NULL;
@@ -1724,7 +1830,7 @@ void read_in_resources (char *file)
 	weighted_sort.titlename = NULL;
 	weighted_sort.iconname = NULL;
 	weighted_sort.weight = n;
-	p = read_next_cmd (READ_ARG);
+	p = read_next_cmd(READ_ARG);
 	while (p) {
 	  if (!strncasecmp(p, "resource=", 9)) {
 	    copy_string(&weighted_sort.resname, p + 9);
@@ -1735,18 +1841,18 @@ void read_in_resources (char *file)
 	  } else if (!strncasecmp(p, "icon=", 5)) {
 	    copy_string(&weighted_sort.iconname, p + 5);
 	  } else {
-	    ConsoleMessage ("Unknown sortweight field: %s\n", p);
-	    ConsoleMessage ("Bad line: %s\n", current_line);
+	    ConsoleMessage("Unknown sortweight field: %s\n", p);
+	    ConsoleMessage("Bad line: %s\n", current_line);
 	  }
-	  p = read_next_cmd (READ_ARG);
+	  p = read_next_cmd(READ_ARG);
 	}
 	if (manager == -1) {
 	  for (i = 0; i < globals.num_managers; i++) {
-	    add_weighted_sort (&globals.managers[i], &weighted_sort);
+	    add_weighted_sort(&globals.managers[i], &weighted_sort);
 	  }
 	}
 	else {
-	  add_weighted_sort (&globals.managers[manager], &weighted_sort);
+	  add_weighted_sort(&globals.managers[manager], &weighted_sort);
 	}
 	if (weighted_sort.resname) {
 	  Free(weighted_sort.resname);
@@ -1761,178 +1867,177 @@ void read_in_resources (char *file)
 	  Free(weighted_sort.iconname);
 	}
       }
-      else if (!strcasecmp (option1, "NoIconAction")) {
+      else if (!strcasecmp(option1, "NoIconAction")) {
 	char *token;
-	p = read_next_cmd (READ_REST_OF_LINE);
+	p = read_next_cmd(READ_REST_OF_LINE);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	DoGetNextToken (p, &token, NULL, ",", NULL);
+	DoGetNextToken(p, &token, NULL, ",", NULL);
 	if (!token)
 	  {
 	    token = (char *)safemalloc(1);
 	    *token = 0;
 	  }
 
-	SET_MANAGER (manager, AnimCommand,
-		     copy_string (&globals.managers[id].AnimCommand, token));
-	Free (token);
+	SET_MANAGER(manager, AnimCommand,
+		     copy_string(&globals.managers[id].AnimCommand, token));
+	Free(token);
       }
-      else if (!strcasecmp (option1, "title")) {
+      else if (!strcasecmp(option1, "title")) {
 	char *token;
-	p = read_next_cmd (READ_REST_OF_LINE);
+	p = read_next_cmd(READ_REST_OF_LINE);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	DoGetNextToken (p, &token, NULL, ",", NULL);
+	DoGetNextToken(p, &token, NULL, ",", NULL);
 	if (!token)
 	  {
 	    token = (char *)safemalloc(1);
 	    *token = 0;
 	  }
 
-	SET_MANAGER (manager, titlename,
-		     copy_string (&globals.managers[id].titlename, token));
-	Free (token);
+	SET_MANAGER(manager, titlename,
+		     copy_string(&globals.managers[id].titlename, token));
+	Free(token);
       }
-      else if (!strcasecmp (option1, "iconButton")) {
-	handle_button_config (manager, ICON_CONTEXT, option1);
+      else if (!strcasecmp(option1, "iconButton")) {
+	handle_button_config(manager, ICON_CONTEXT, option1);
       }
-      else if (!strcasecmp (option1, "plainButton")) {
-	handle_button_config (manager, PLAIN_CONTEXT, option1);
+      else if (!strcasecmp(option1, "plainButton")) {
+	handle_button_config(manager, PLAIN_CONTEXT, option1);
       }
-      else if (!strcasecmp (option1, "selectButton")) {
-	handle_button_config (manager, SELECT_CONTEXT, option1);
+      else if (!strcasecmp(option1, "selectButton")) {
+	handle_button_config(manager, SELECT_CONTEXT, option1);
       }
-      else if (!strcasecmp (option1, "focusButton")) {
-	handle_button_config (manager, FOCUS_CONTEXT, option1);
+      else if (!strcasecmp(option1, "focusButton")) {
+	handle_button_config(manager, FOCUS_CONTEXT, option1);
       }
-      else if (!strcasecmp (option1, "focusandselectButton")) {
-	handle_button_config (manager, FOCUS_SELECT_CONTEXT, option1);
+      else if (!strcasecmp(option1, "focusandselectButton")) {
+	handle_button_config(manager, FOCUS_SELECT_CONTEXT, option1);
       }
-      else if (!strcasecmp (option1, "titlebutton")) {
-	handle_button_config (manager, TITLE_CONTEXT, option1);
+      else if (!strcasecmp(option1, "titlebutton")) {
+	handle_button_config(manager, TITLE_CONTEXT, option1);
       }
-      else if (!strcasecmp (option1, "titlecolorset")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "titlecolorset")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	if (extract_int (p, &n) == 0) {
-	  ConsoleMessage ("This is not a number: %s\n", p);
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[TITLE_CONTEXT], n);
 	AllocColorset(n);
       }
-      else if (!strcasecmp (option1, "focusandselectcolorset")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "focusandselectcolorset")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	if (extract_int (p, &n) == 0) {
-	  ConsoleMessage ("This is not a number: %s\n", p);
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[FOCUS_SELECT_CONTEXT], n);
 	AllocColorset(n);
       }
-      else if (!strcasecmp (option1, "focuscolorset")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "focuscolorset")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	if (extract_int (p, &n) == 0) {
-	  ConsoleMessage ("This is not a number: %s\n", p);
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[FOCUS_CONTEXT], n);
 	AllocColorset(n);
       }
-      else if (!strcasecmp (option1, "selectcolorset")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "selectcolorset")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	if (extract_int (p, &n) == 0) {
-	  ConsoleMessage ("This is not a number: %s\n", p);
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[SELECT_CONTEXT], n);
 	AllocColorset(n);
       }
-      else if (!strcasecmp (option1, "plaincolorset")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "plaincolorset")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	if (extract_int (p, &n) == 0) {
-	  ConsoleMessage ("This is not a number: %s\n", p);
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[PLAIN_CONTEXT], n);
 	AllocColorset(n);
       }
-      else if (!strcasecmp (option1, "iconcolorset")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "iconcolorset")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
-	if (extract_int (p, &n) == 0) {
-	  ConsoleMessage ("This is not a number: %s\n", p);
-	  ConsoleMessage ("Bad line: %s\n", current_line);
+	if (extract_int(p, &n) == 0) {
+	  ConsoleMessage("This is not a number: %s\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
 	  continue;
 	}
 	SET_MANAGER(manager, colorsets[ICON_CONTEXT], n);
 	AllocColorset(n);
       }
-      else if (!strcasecmp (option1, "usewinlist")) {
-	p = read_next_cmd (READ_ARG);
+      else if (!strcasecmp(option1, "usewinlist")) {
+	p = read_next_cmd(READ_ARG);
 	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("Need argument to usewinlist\n");
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("Need argument to usewinlist\n");
 	  continue;
 	}
-	if (!strcasecmp (p, "true")) {
+	if (!strcasecmp(p, "true")) {
 	  i = 1;
 	}
-	else if (!strcasecmp (p, "false")) {
+	else if (!strcasecmp(p, "false")) {
 	  i = 0;
 	}
 	else {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("What is this: %s?\n", p);
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("What is this: %s?\n", p);
 	  continue;
 	}
-	ConsoleDebug (CONFIG, "Setting usewinlist to: %d\n", i);
-	SET_MANAGER (manager, usewinlist, i);
+	ConsoleDebug(CONFIG, "Setting usewinlist to: %d\n", i);
+	SET_MANAGER(manager, usewinlist, i);
       }
       else {
-	ConsoleMessage ("Bad line: %s\n", current_line);
-	ConsoleMessage ("Unknown option: %s\n", p);
+	ConsoleMessage("Bad line: %s\n", current_line);
+	ConsoleMessage("Unknown option: %s\n", p);
       }
     }
   }
 
   if (globals.managers == NULL) {
-    ConsoleDebug (CONFIG, "I'm assuming you only want one manager\n");
-    allocate_managers (1);
+    ConsoleDebug(CONFIG, "I'm assuming you only want one manager\n");
+    allocate_managers(1);
   }
   print_managers();
-  close_config_file();
 }
 
 void process_dynamic_config_line(char *line)
