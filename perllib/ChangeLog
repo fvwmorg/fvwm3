@@ -1,5 +1,11 @@
 2002-02-10  Mikhael Goikhman  <migo@homemail.com>
 
+	* FVWM/Module.pm.in:
+	several fixes, s/sendInfo/sendText/,
+	added support for alias and options
+
+2002-02-10  Mikhael Goikhman  <migo@homemail.com>
+
         * ChangeLog:
 	* Makefile.am:
 	* FVWM/Makefile.am:

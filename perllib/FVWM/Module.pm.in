@@ -19,10 +19,12 @@ use strict;
 use IO::File;
 
 BEGIN {
-	my $prefix = "@prefix@";
-	my $datadir = "@datadir@";
-	use lib "@FVWM_PERLLIBDIR@";
+	use vars qw($prefix $datadir);
+	$prefix = "@prefix@";
+	$datadir = "@datadir@";
 }
+
+use lib "@FVWM_PERLLIBDIR@";
 use vars qw($VERSION @ISA @EXPORT $AUTOLOAD);
 @ISA = qw(Exporter);
 use FVWM::Constants;
@@ -64,9 +66,9 @@ my $PACKET_TYPE_ARGS = {
 	&M_CONFIGURE_WINDOW     => "l25",
 #	&M_EXTENDED_MSG         => "",
 	&MX_VISIBLE_ICON_NAME   => "l3a*",
-	&MX_ENTER_WINDOW        => "",  # ???
-	&MX_LEAVE_WINDOW        => "",  # ???
-	&MX_PROPERTY_CHANGE     => "",  # ???
+	&MX_ENTER_WINDOW        => "l",
+	&MX_LEAVE_WINDOW        => "l",
+	&MX_PROPERTY_CHANGE     => "l3a*",
 };
 
 my $TEXTBASED_PACKET_MASK = (
@@ -107,13 +109,24 @@ sub new ($@) {
 	my $self = {};
 
 	(my $name = $0) =~ s|.*/||;
-	$name = $params{'NAME'} || $name;
-	my $mask = $params{'MASK'} || 0;
+	$name = $params{'Name'} || $name;
+	my $mask = $params{'Mask'} || 0;
+	my $xmask = $params{'XMask'}? $params{'XMask'} | M_EXTENDED_MSG: 0;
 
 	# initialize module from argv
+	@ARGV >= 5 or die "$name should only be run from fvwm.\n";
+	my ($outFd, $inFd, $rcFile, $winId, $context) = splice(@ARGV, 0, 5);
+
+	if (@ARGV && ref($params{'EnableOptions'}) eq 'HASH') {
+		# save time by lazy loading Getopt::Long only if needed
+		eval "use Getopt::Long;"; die $@ if $@;
+		GetOptions($params{'EnableOptions'})
+			or die "$name: Incorrect options given.\n";
+	}
+	if (@ARGV && $params{'EnableAlias'} && $ARGV[0] =~ /^\w[\w\d\.\/-]*/) {
+		$name = shift @ARGV;
+	}
 	my @argv = @ARGV;
-	@argv >= 5 or die "$name should only be run from fvwm.\n";
-	my ($outFd, $inFd, $rcFile, $winId, $context) = splice(@argv, 0, 5);
 
 	$self->{rcFile} = $rcFile;
 	$self->{winId} = hex $winId;
@@ -134,14 +147,15 @@ sub new ($@) {
 	bless $self, $class;
 	$self->name($name);
 	$self->mask($mask);
+	$self->mask($xmask) if $xmask;
 	$self->resetHandlers;
-	$self->getConfigInfo unless $params{'NO_CONFIG_INFO'};
+	$self->getConfigInfo unless $params{'NoConfigInfo'};
 	return $self;
 }
 
 sub DESTROY ($) {
 	my $self = shift;
-	$self->sendInfo(0, "Nop", 0);
+	$self->sendText(0, "Nop", 0);
 	close $self->{istream};
 	close $self->{ostream};
 }
@@ -157,7 +171,7 @@ sub mask ($;$) {
 	my $self = shift;
 	my $mask = shift;
 	if (defined $mask) {
-		$self->sendInfo(0, "Set_Mask $mask");
+		$self->sendText(0, "Set_Mask $mask");
 		my $oldMask = $self->{mask};
 		$self->{mask} = $mask;
 		return $oldMask;
@@ -187,17 +201,17 @@ sub resetHandlers ($) {
 sub getHandlerCategory ($$) {
 	my $self = shift;
 	my $type = shift;
-	return "special" if $type =~ /^=/;
+	return "special" if $type =~ /e/i;
 	return "extended" if $self->isExtended($type);
 	return "regular";
 }
 
 # params: winId, data
-sub sendInfo ($$$) {
+sub sendText ($$$) {
 	my $self = shift;
 	my ($winId, $data) = @_;
 
-	die "sendInfo requires 2 params: winId and data\n"
+	die "sendText requires 2 params: winId and data\n"
 		unless defined $winId && defined $data;
 
 	my @parts = split(/,/, $data);
@@ -321,7 +335,7 @@ sub deleteHandler ($$) {
 	my $id = shift;
 
 	my ($type, $index) = split(/ /, $id);
-	my $category = $self->getHandlerCategory;
+	my $category = $self->getHandlerCategory($type);
 	return 0 unless defined $self->{handlers}->{$category}->{$type}->[$index];
 
 	$self->{handlers}->{$category}->{$type}->[$index] = undef;
