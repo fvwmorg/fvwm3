@@ -7,8 +7,8 @@ moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmTaskBar
 
 FvwmTaskBar_SOURCES =  FvwmTaskBar.c List.c ButtonArray.c Mallocs.c \
-	Colors.c Goodies.c Start.c FvwmTaskBar.h ButtonArray.h List.h \
-	Colors.h Mallocs.h Goodies.h Start.h
+	Colors.c Start.c FvwmTaskBar.h ButtonArray.h List.h \
+	Colors.h Mallocs.h Start.h
 
 man_MANS = FvwmTaskBar.1
 EXTRA_DIST = $(man_MANS) fvwm2.README minimail.xbm

@@ -67,6 +67,7 @@ FVWMSCRIPT = @FVWMSCRIPT@
 FVWM_CONFIGDIR = @FVWM_CONFIGDIR@
 FVWM_CPP = @FVWM_CPP@
 FVWM_MODULEDIR = @FVWM_MODULEDIR@
+LIBOBJS = @LIBOBJS@
 LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
 PACKAGE = @PACKAGE@
@@ -86,8 +87,8 @@ moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmTaskBar
 
 FvwmTaskBar_SOURCES =  FvwmTaskBar.c List.c ButtonArray.c Mallocs.c \
-	Colors.c Goodies.c Start.c FvwmTaskBar.h ButtonArray.h List.h \
-	Colors.h Mallocs.h Goodies.h Start.h
+	Colors.c Start.c FvwmTaskBar.h ButtonArray.h List.h \
+	Colors.h Mallocs.h Start.h
 
 man_MANS = FvwmTaskBar.1
 EXTRA_DIST = $(man_MANS) fvwm2.README minimail.xbm
@@ -111,7 +112,7 @@ X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
 FvwmTaskBar_OBJECTS =  FvwmTaskBar.o List.o ButtonArray.o Mallocs.o \
-Colors.o Goodies.o Start.o
+Colors.o Start.o
 FvwmTaskBar_LDADD = $(LDADD)
 FvwmTaskBar_DEPENDENCIES = 
 FvwmTaskBar_LDFLAGS = 
@@ -130,7 +131,7 @@ DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 TAR = tar
 GZIP = --best
 DEP_FILES =  .deps/ButtonArray.P .deps/Colors.P .deps/FvwmTaskBar.P \
-.deps/Goodies.P .deps/List.P .deps/Mallocs.P .deps/Start.P
+.deps/List.P .deps/Mallocs.P .deps/Start.P
 SOURCES = $(FvwmTaskBar_SOURCES)
 OBJECTS = $(FvwmTaskBar_OBJECTS)
 

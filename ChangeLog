@@ -1,3 +1,13 @@
+Sun Nov  1 09:26:15 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* extras/FvwmTaskBar/Makefile.am (FvwmTaskBar_SOURCES): removed
+	Goodies.[ch], since those functions appear to be moved into
+	FvwmTaskBar.c.
+
+Sun Nov  1 09:19:08 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* configure.in: Set VERSION to 2.1.0.
+
 Sat Oct 31 06:44:50 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* Basic autoconfiguration support added.
