@@ -1,4 +1,4 @@
-These are 5 small FVWM modules written in Perl:
+These are a number of small FVWM modules written in Perl:
 
 * module-example:
 	Beeps, auto-raises, auto-iconifies and auto-exits in one minute.
@@ -21,8 +21,11 @@ These are 5 small FVWM modules written in Perl:
 	A simple version of pager, does not show mini-windows or pages;
 	shows only buttons, one per desk. Using Perl/Tk.
 
+* module-trackertest:
+	Creates all possible trackers and dumps their data.
+
 You may just run these modules in FvwmConsole using their full path.
-The last 2 modules require extra Perl packages from CPAN to be installed.
+Several modules require extra Perl packages from CPAN to be installed.
 
 ----------------------------------------------------------------------------
 

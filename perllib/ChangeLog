@@ -1,3 +1,26 @@
+2003-05-22  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Event.pm:
+	* FVWM/EventNames.pm:
+	support event arg name aliases (like 'desk' => 'desk_n')
+
+	* FVWM/Module.pm.in:
+	added showDebug, track and postponeSend methods
+
+	* FVWM/Module/*.pm:
+	support showDebug
+
+	* FVWM/Makefile.am:
+	* FVWM/Tracker.pm:
+	* FVWM/Tracker/Colorsets.pm
+	* FVWM/Tracker/GlobalConfig.pm:
+	* FVWM/Tracker/Makefile.am:
+	* FVWM/Tracker/ModuleConfig.pm:
+	* FVWM/Tracker/PageInfo.pm:
+	* FVWM/Tracker/Scheduler.pm:
+	* FVWM/Tracker/WindowList.pm:
+	initially implemented the tracker high-level API and 6 trackers
+
 2003-03-15  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/create-commands:
@@ -13,7 +36,7 @@
 
 2003-01-03  Mikhael Goikhman  <migo@homemail.com>
 
-	* perllib/FVWM/EventNames.pm:
+	* FVWM/EventNames.pm:
 	M_NEW_PAGE now has 7 arguments
 
 2002-12-30  Mikhael Goikhman  <migo@homemail.com>
@@ -82,14 +105,14 @@
 
 2002-09-18  Mikhael Goikhman  <migo@homemail.com>
 
-	* perllib/FVWM/Module.pm.in:
+	* FVWM/Module.pm.in:
 	more documentation improvements
 
 2002-09-17  Mikhael Goikhman  <migo@homemail.com>
 
-	* perllib/FVWM/Constants.pm:
-	* perllib/FVWM/Module.pm.in:
-	* perllib/FVWM/create-constants:
+	* FVWM/Constants.pm:
+	* FVWM/Module.pm.in:
+	* FVWM/create-constants:
 	minor documentation changes
 
 2002-09-14  Mikhael Goikhman  <migo@homemail.com>

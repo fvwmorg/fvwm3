@@ -50,6 +50,7 @@ sub eventLoop ($) {
 		}
 	);
 	MainLoop;
+	$self->debug("exited Tk event loop", 3);
 }
 
 sub showError ($$;$) {

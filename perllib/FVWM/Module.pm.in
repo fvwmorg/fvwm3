@@ -62,14 +62,21 @@ sub showMessage ($$) {
 	print STDERR "[" . $self->name . "]: $msg\n";
 }
 
+sub showDebug ($$) {
+	my $self = shift;
+	my $msg = shift;
+	print STDERR "[" . $self->name . "]: $msg\n";
+}
+
 sub debug ($$;$) {
 	my $self = shift;
 	my $msg = shift;
 	my $level = shift;
 	$level = 1 unless defined $level;
+	$level = $ENV{FVWM_MODULE_DEBUG} if exists $ENV{FVWM_MODULE_DEBUG};
 	return if $self->{debug} < $level;
 	$msg =~ s/\n$//s;
-	$self->showMessage($msg);
+	$self->showDebug($msg);
 }
 
 sub isEventExtended ($$) {
@@ -140,6 +147,10 @@ sub new ($@) {
 	$self->{handlers} = {};
 	$self->{shouldSendUnlock} = 0;
 	$self->{shouldSendReady} = 1;
+
+	$self->{heldCommandArgs} = [];
+	$self->{usedTrackerClasses} = {};
+	$self->{trackers} = {};
 
 	# bless here, so die above does not run DESTROY
 	bless $self, $class;
@@ -291,6 +302,11 @@ sub getHandlerCategory ($$) {
 	return "regular";
 }
 
+sub postponeSend ($@) {
+	my $self = shift;
+	push @{$self->{heldCommandArgs}}, [ @_ ];
+}
+
 # params: text, [winId], [continue=0/1]
 sub send ($$;$$) {
 	my $self = shift;
@@ -316,10 +332,10 @@ sub send ($$;$$) {
 		next if $line =~ /^\s*$/;
 
 		unless ($self->{ostream}->opened) {
-			$self->debug("Can't send [$line]\n", 0);
+			$self->debug("Can't send [$line]\n", 1);
 			next;
 		}
-		$self->debug("sent [$line]" . (!$continue && " FINISH"), 1);
+		$self->debug("sent [$line]" . (!$continue && " FINISH"), 2);
 		my $len = length $line;
 		$self->{ostream}->print(
 			pack("lla${len}l", $winId, $len, $line, $continue)
@@ -364,7 +380,7 @@ sub readPacket ($) {
 
 	if ($got != (INTSIZE * HEADER_SIZE)) {
 		# module killed or other read error
-		$self->debug($got? "read packet error": "connection closed", 2);
+		$self->debug($got? "read packet error": "connection closed", 3);
 		return undef;
 	}
 
@@ -435,7 +451,7 @@ sub processPacket ($;$$) {
 		my $msg = "got " . $event->name;
 		$msg .= " [" . $event->argValues->[-1] . "]"
 			if @{$event->argTypes} && $event->argTypes->[-1] == FVWM::EventNames::string();
-		$self->debug($msg, 1);
+		$self->debug($msg, 2);
 	}
 
 	$self->{shouldSendUnlock} = 1 if $self->isInSyncMask($type);
@@ -446,19 +462,62 @@ sub processPacket ($;$$) {
 	return $continue;
 }
 
-sub eventLoop ($) {
+sub eventLoop ($;$) {
 	my $self = shift;
-	my $continue = 1;
+	my $tracking = shift()? 1: 0;
 
-	$self->sendReady;
+	$self->sendReady unless $tracking;
 
+	# update module masks to handle trackers if needed
+	my $addMask  = 0;
+	my $addXMask = 0;
+	foreach (values %{$self->{trackers}}) {
+		my ($mask0, $xmask0) = $_->masks;
+		$addMask  |= $mask0;
+		$addXMask |= $xmask0;
+	}
+	my $oldMask  = $self->mask ($self->mask  | $addMask)  if $addMask;
+	my $oldXMask = $self->xmask($self->xmask | $addXMask) if $addXMask;
+
+	$self->debug("entered event loop", 3 + $tracking);
 	while (1) {
+		# first execute postponed commands if any
+		$self->send(@{shift @{$self->{heldCommandArgs}}})
+			while @{$self->{heldCommandArgs}};
+
 		# catch exceptions during read, for example from alarm() handler,
 		# but don't catch errors (or die) in event handlers
 		$self->processPacket(eval { $self->readPacket }) || last;
 	}
-	$self->debug("exited event loop", 2);
-	$self->disconnect;
+	$self->debug("exited event loop", 3 + $tracking);
+	$self->disconnect unless $tracking;
+
+	# restore module masks if needed
+	$self->mask ($oldMask)  if $tracking && $addMask;
+	$self->xmask($oldXMask) if $tracking && $addXMask;
+}
+
+sub track ($$;$@) {
+	my $self = shift;
+	my $params = ref($_[0]) eq 'HASH'? shift(): {};
+	my $trackerType = shift;
+
+	my $trackerClass = $trackerType =~ /::/?
+		$trackerType: "FVWM::Tracker::$trackerType";
+	# load a tracker class if not yet
+	unless (defined $self->{usedTrackerClasses}->{$trackerType}) {
+		eval "use $trackerClass;"; die $@ if $@;
+		$self->{usedTrackerClasses}->{$trackerType} = 1;
+	}
+
+	my $tracker = $params->{NoReuse} && $self->{trackers}->{$trackerType}
+		|| $trackerClass->new($self, @_);
+	unless ($params->{NoReuse}) {
+		$trackerType .= "+" while exists $self->{trackers}->{$trackerType};
+	}
+	$self->{trackers}->{$trackerType} = $tracker;
+	$tracker->start unless $params->{NoStart};
+	return $tracker;
 }
 
 sub addHandler ($$$) {
@@ -561,10 +620,12 @@ B<version>,
 B<versionInfo>,
 B<argv>,
 B<send>,
+B<track>,
+B<eventLoop>,
 B<sendReady>,
 B<sendUnlock>,
+B<postponeSend>,
 B<terminate>,
-B<eventLoop>,
 B<resetHandlers>,
 B<addHandler>,
 B<deleteHandler>,
@@ -572,6 +633,7 @@ B<addDefaultErrorHandler>,
 B<debug>
 B<showError>
 B<showMessage>
+B<showDebug>
 B<isDummy>
 
 The following methods are called from other methods above, but may be useful
@@ -619,7 +681,7 @@ The following parameters may be given in the constractor:
     SyncXMask     - the same for extended events
     EnableAlias   - a module accepts an alias in command line
     EnableOptions - a module accepts options in command line
-    Debug         - 0 is disable debug, 1 - user, 2+ - perllib
+    Debug         - 0 is disable debug, 1 - user, 2,3,4 - perllib
 
 Example:
 
@@ -651,10 +713,26 @@ Arguments that are used for I<fvwm>-to-module communication are not included.
 Arguments that are automatically parsed using I<EnableAlias> and/or
 I<EnableOptions> specified in the constructor are not included.
 
-=item B<send> I<command> [I<window-id>]
+=item B<send> I<command> [I<window-id>] [I<continue-flag>]
 
 Sends I<command> back for execution. If the I<window-id> is specified this
-command will be executed in this window context.
+command will be executed in this window context. I<continue-flag> of 0
+signals that this is the last sent command from the module, the default
+for this flag is 1.
+
+=item B<track> [I<mode-hash>] [I<name>] [I<param-hash>]
+
+Creates a module tracker object (see L<FVWM::Tracker>) specified
+by a I<name>.
+
+I<mode-hash> may include parameters:
+
+    NoStart - value of 1 means the created tracker is not auto-started
+    NoReuse - value of 1 means not to reuse any existing named tracker
+
+I<param-hash> is specific to the tracker named I<name>. Every tracker class
+(a subclass of B<FVWM::Tracker>) has its own manual page, contact it for
+the tracker details and usage.
 
 =item B<eventLoop>
 
@@ -690,6 +768,11 @@ When an event was configured to be sent to a module synchronously using
 I<SyncMask> and I<SyncXMask>, I<fvwm> gets locked until the module sends
 the "unlock" notification. This is automatically sent (if needed) when a
 handler is finished, but sometimes a handler should release I<fvwm> earlier.
+
+=item B<postponeSend> I<command> [I<window-id>] [I<continue-flag>]
+
+The same like B<send>, but the actual command sending is postponed
+until before the module enters the reading-from-fvwm phase in B<eventLoop>.
 
 =item B<terminate> [I<continue>]
 
@@ -769,12 +852,20 @@ messages in separate windows or in the common error window.
 
 =item B<showMessage> I<msg>
 
+Writes I<msg> to the message stream (stderr). It is supposed that the argument
+has no traling end of line. May be used to show a named output.
+
+Subclasses may overwrite this method and, for example, show all
+messages in separate windows or in the common message window.
+
+=item B<showDebug> I<msg>
+
 Unconditionally writes I<msg> to the debug stream (stderr). It is supposed
 that the argument has no traling end of line. Used in B<debug> to actually
 show the message when the level is matched.
 
 Subclasses may overwrite this method and, for example, show all debugging
-messages in separate windows or in the common message window.
+messages in separate windows or in the common debug window.
 
 =item B<isDummy>
 

@@ -1,10 +1,11 @@
 ## Process this file with automake to create Makefile.in
 
-SUBDIRS = Module
+SUBDIRS = Module Tracker
 
 configdir = @FVWM_PERLLIBDIR@/FVWM
 
-config_DATA = Module.pm Commands.pm Constants.pm EventNames.pm Event.pm
+config_DATA = \
+	Module.pm Commands.pm Constants.pm EventNames.pm Event.pm Tracker.pm
 
 EXTRA_DIST = \
 	create-commands Commands.pm \

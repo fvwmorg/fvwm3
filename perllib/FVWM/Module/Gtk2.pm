@@ -34,7 +34,7 @@ sub eventLoop ($) {
 		}
 	);
 	Gtk2->main;
-	$self->debug("exited gtk2 event loop", 2);
+	$self->debug("exited Gtk2 event loop", 3);
 	$self->disconnect;
 }
 

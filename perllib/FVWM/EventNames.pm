@@ -36,19 +36,25 @@ $EVENTS_INFO = {
 		fields => [
 			vp_x         => number,
 			vp_y         => number,
-			desk         => number,
+			desk_n       => number,
 			vp_width     => number,
 			vp_height    => number,
 			desk_pages_x => number,
 			desk_pages_y => number,
 		],
+		aliases => {
+			desk => 'desk_n',
+		},
 	},
 
 	&M_NEW_DESK             => {
 		format => "l",
 		fields => [
-			desk         => number,
+			desk_n       => number,
 		],
+		aliases => {
+			desk => 'desk_n',
+		},
 	},
 
 #	&M_OLD_ADD_WINDOW       => {
@@ -440,7 +446,7 @@ use vars qw(@EXPORT @ISA $EVENT_TYPES $EVENT_NAMES $EVENT_TYPE_NAMES);
 @EXPORT = (
 	@FVWM::Constants::EXPORT,
 	qw(eventName eventArgNames eventArgTypes eventArgValues eventArgs),
-	qw(allEventNames allEventTypes)
+	qw(eventArgAliases allEventNames allEventTypes)
 );
 @ISA = qw(Exporter);
 
@@ -464,14 +470,14 @@ sub allEventTypeNames () {
 	return $EVENT_TYPE_NAMES;
 }
 
-sub allEventTypes () {
-	allEventTypeNames();
-	return $EVENT_TYPES;
-}
-
 sub allEventNames () {
 	allEventTypeNames();
-	return $EVENT_NAMES;
+	return wantarray? @$EVENT_NAMES: $EVENT_NAMES;
+}
+
+sub allEventTypes () {
+	allEventTypeNames();
+	return wantarray? @$EVENT_TYPES: $EVENT_TYPES;
 }
 
 sub eventName ($) {
@@ -560,6 +566,12 @@ sub eventArgs ($$) {
 	return \%args;
 }
 
+sub eventArgAliases ($) {
+	my $type = shift;
+
+	return eventInfo($type)->{aliases} || {};
+}
+
 # ----------------------------------------------------------------------------
 
 =head1 NAME
@@ -639,13 +651,22 @@ The returned array has the same number of elements.
 Constructs hash ref of the named arguments for the event I<type>
 from the I<argValues> array ref (as returned by B<eventArgValues>).
 
+=item B<eventArgAliases> I<type>
+
+This method is provided for backward compatibility when argument names
+are changed. For example, in the past the argument name of I<M_NEW_DESK>
+was B<desk>, but now it is B<desk_n>. Using this method it is possible
+to make both names supported. Returns hash ref (old-name => new-name).
+
 =item B<allEventNames>
 
 Returns array ref of all known event names (strings).
+In the list context returns list of these names.
 
 =item B<allEventTypes>
 
 Returns array ref of all known event types (numbers).
+In the list context returns list of these types.
 
 =item B<allEventTypeNames>
 

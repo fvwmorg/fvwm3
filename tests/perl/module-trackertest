@@ -1,0 +1,39 @@
+#!/usr/bin/perl -w
+
+use strict;
+use lib `fvwm-perllib dir`;
+use FVWM::Module;
+#use FVWM::Module::Gtk; init Gtk;
+
+my $module = new FVWM::Module(Debug => 2);
+
+my @trackerNames = qw(
+	Colorsets GlobalConfig ModuleConfig PageInfo Scheduler WindowList
+);
+
+foreach my $name (@trackerNames) {
+	my $params = $name eq "ModuleConfig"? { ModuleName => "FvwmIdent" }:
+		$name eq "Scheduler"? { ModuleName => $0 }: undef;
+
+	my $tracker = $module->track($name, $params);
+	if ($name eq "Scheduler") {
+		$tracker->schedule(30, sub {
+			my $oldTimeout = $_[0]->{seconds};
+			my $newTimeout = $oldTimeout - 10;
+			$module->terminate if $newTimeout <= 0;
+			$tracker->reschedule($newTimeout);
+		});
+	}
+	$module->debug(
+		"$name: initialized\n" . $tracker->dump . ("-" x 74)
+	);
+	$tracker->observe("main", sub {
+		my ($module, $tracker, $info, @params) = @_;
+		my $headline = "$name: " . $tracker->observables->[0];
+		$module->debug(
+			"$headline\n" . $tracker->dump(@params) . ("-" x 74)
+		);
+	});
+}
+
+$module->eventLoop();

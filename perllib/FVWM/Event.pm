@@ -101,6 +101,11 @@ sub AUTOLOAD ($;@) {
 	if ($method =~ s/^_//) {
 		my $argValue = $self->args->{$method};
 		return $argValue if defined $argValue;
+
+		my $alias = eventArgAliases($self->type)->{$method} || '*none*';
+		$argValue = $self->args->{$alias};
+		return $argValue if defined $argValue;
+
 		die "Unknown argument $method for event " . $self->name . "\n";
 	}
 
@@ -212,7 +217,7 @@ this event propagation.
 
 =item B<_>I<name>
 
-This is a shortcut for $event->args->{'name'}. Returns the named event
+This is a shortcut for $event->args->{'I<name>'}. Returns the named event
 argument. See L<FVWM::EventNames> for names of all event argument names.
 
 =back

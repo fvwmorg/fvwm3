@@ -1063,6 +1063,7 @@ dnl
 	perllib/General/Makefile
 	perllib/FVWM/Makefile
 	perllib/FVWM/Module/Makefile
+	perllib/FVWM/Tracker/Makefile
 	perllib/FVWM/Module.pm
 	rpm/Makefile
 	rpm/fvwm.spec

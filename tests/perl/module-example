@@ -22,6 +22,7 @@ my $module = new FVWM::Module(
 );
 
 # do some funny harm
+$module->showMessage("started");
 $module->send("Beep");
 $module->send("All (FvwmConsole) Iconify true");
 
@@ -46,4 +47,4 @@ $module->addHandler(ON_EXIT, $onExit);
 $module->eventLoop();
 
 # this is only reached when the mutual connection with fvwm is lost
-$module->debug("finished");
+$module->showMessage("finished");

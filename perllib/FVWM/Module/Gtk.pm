@@ -34,20 +34,20 @@ sub eventLoop ($) {
 		}
 	);
 	Gtk->main;
-	$self->debug("exited gtk event loop", 2);
+	$self->debug("exited Gtk event loop", 3);
 	$self->disconnect;
 }
 
 sub showError ($$;$) {
 	my $self = shift;
-	my $error = shift;
+	my $msg = shift;
 	my $title = shift || ($self->name . " Error");
 
 	my $dialog = new Gtk::Dialog;
 	$dialog->set_title($title);
 	$dialog->set_border_width(4);
 
-	my $label = new Gtk::Label $error;
+	my $label = new Gtk::Label $msg;
 	$dialog->vbox->pack_start($label, 0, 1, 10);
 
 	my $button = new Gtk::Button "Close";
@@ -68,14 +68,14 @@ sub showError ($$;$) {
 
 sub showMessage ($$;$) {
 	my $self = shift;
-	my $message = shift;
+	my $msg = shift;
 	my $title = shift || ($self->name . " Message");
 
 	my $dialog = new Gtk::Dialog;
 	$dialog->set_title($title);
 	$dialog->set_border_width(4);
 
-	my $label = new Gtk::Label $message;
+	my $label = new Gtk::Label $msg;
 	$dialog->vbox->pack_start($label, 0, 1, 10);
 
 	my $button = new Gtk::Button "Close";
@@ -83,6 +83,51 @@ sub showMessage ($$;$) {
 	$button->signal_connect("clicked", sub { $dialog->destroy; });
 
 	$dialog->show_all;
+}
+
+sub showDebug ($$;$) {
+	my $self = shift;
+	my $msg = shift;
+	my $title = shift || ($self->name . " Debug");
+
+	my $dialog = $self->{gtkDebugDialog};
+
+	if (!$dialog) {
+		$dialog = new Gtk::Dialog;
+		$dialog->set_title($title);
+		$dialog->set_border_width(4);
+
+		my $text = $self->{gtkDebugText} || new Gtk::Text(undef, undef);
+		$text->set_editable(0);
+		$self->{gtkDebugString} ||= "";
+		$text->insert(undef, undef, undef, $self->{gtkDebugString});
+		$dialog->vbox->pack_start($text, 0, 1, 10);
+
+		my $button = new Gtk::Button "Close";
+		$dialog->action_area->pack_start($button, 1, 1, 0);
+		$button->signal_connect("clicked", sub { $dialog->destroy; });
+
+		$button = new Gtk::Button "Clear";
+		$dialog->action_area->pack_start($button, 1, 1, 0);
+		$button->signal_connect("clicked", sub {
+			$text->backward_delete($text->get_length);
+			$self->{gtkDebugString} = "";
+		});
+
+		$dialog->signal_connect('destroy', sub {
+			$self->{gtkDebugDialog} = undef;
+			$self->{gtkDebugText} = undef;
+		});
+		$dialog->show_all;
+
+		$self->{gtkDebugDialog} = $dialog;
+		$self->{gtkDebugText} = $text;
+	}
+
+	my $text = $self->{gtkDebugText};
+	#$text->set_point($text->get_length);
+	$text->insert(undef, undef, undef, "$msg\n");
+	$self->{gtkDebugString} .= "$msg\n";
 }
 
 1;
@@ -147,6 +192,14 @@ Good for diagnostics of a GTK+ based module.
 =item B<showMessage> I<msg> [I<title>]
 
 Creates a message window with one "Close" button.
+
+Good for debugging a GTK+ based module.
+
+=item B<showDebug> I<msg> [I<title>]
+
+Creates a persistent debug window with one "Close" button.
+All new debug messages are added to this window (i.e. the existing
+debug window is reused if found).
 
 Good for debugging a GTK+ based module.
 

@@ -78,18 +78,26 @@ sub import ($@) {
 
 sub showError ($$;$) {
 	my $self = shift;
-	my $error = shift;
+	my $msg = shift;
 	my $title = shift || ($self->name . " Error");
 
-	print STDERR "[$title]: $error\n";
+	print STDERR "[$title]: $msg\n";
 }
 
 sub showMessage ($$;$) {
 	my $self = shift;
-	my $message = shift;
+	my $msg = shift;
 	my $title = shift || ($self->name . " Message");
 
-	print STDERR "[$title]: $message\n";
+	print STDERR "[$title]: $msg\n";
+}
+
+sub showDebug ($$;$) {
+	my $self = shift;
+	my $msg = shift;
+	my $title = shift || ($self->name . " Debug");
+
+	print STDERR "[$title]: $msg\n";
 }
 
 sub addDefaultErrorHandler ($) {
@@ -177,6 +185,15 @@ to STDERR.
 May be good for module diagnostics or any other purpose.
 
 =item B<showMessage> I<msg> [I<title>]
+
+This method is intended to be overridden in subclasses to create a dialog box
+using the corresponding widgets. The default fall back implementation is
+to print a message (with a title that is the module name by default)
+to STDERR.
+
+May be good for module debugging or any other purpose.
+
+=item B<showDebug> I<msg> [I<title>]
 
 This method is intended to be overridden in subclasses to create a dialog box
 using the corresponding widgets. The default fall back implementation is
