@@ -1001,6 +1001,7 @@ void DeIconify(FvwmWindow *tmp_win)
 	  SetMapStateProp(t, NormalState);
 	  SET_ICONIFIED(t, 0);
 	  SET_ICON_UNMAPPED(t, 0);
+	  SET_ICON_ENTERED(t, 0);
 	  /* Need to make sure the border is colored correctly,
 	   * in case it was stuck or unstuck while iconified. */
 	  tmp = Scr.Hilite;

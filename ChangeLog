@@ -1,3 +1,11 @@
+1999-08-10  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
+
+	* fvwm/events.c (HandleConfigureRequest): a XEmacs 20.4 patch:
+	when moving a shaded XEmacs, unshading it makes it *very* tall
+	(> 65000 pixels).
+
+	* fvwm/icons.c (DeIconify): applied icon bugfix by Heber J. Grant
+
 1999-08-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/session.c: added missing #ifdef SESSION

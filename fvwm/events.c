@@ -1704,9 +1704,9 @@ void HandleConfigureRequest(void)
       height = Tmp_win->orig_g.height;
     }
     else
-      {
-	height = Tmp_win->frame_g.height;
-      }
+    {
+      height = Tmp_win->frame_g.height;
+    }
 
     /* for restoring */
     if (cre->value_mask & CWBorderWidth)
@@ -1721,7 +1721,10 @@ void HandleConfigureRequest(void)
       y = cre->y - Tmp_win->boundary_width - Tmp_win->title_g.height;
     if (cre->value_mask & CWWidth)
       width = cre->width + 2*Tmp_win->boundary_width;
-    if (cre->value_mask & CWHeight)
+    if (cre->value_mask & CWHeight &&
+	/* patch to ignore height changes to astronomically large windows
+	 * (needed for XEmacs 20.4) */
+	cre->height < WINDOW_FREAKED_OUT_HEIGHT)
       height = cre->height+Tmp_win->title_g.height+2*Tmp_win->boundary_width;
 
     /*
