@@ -9475,7 +9475,7 @@ The
 .B PipeRead
 command executes synchronously.  If you want to
 .B Exec
-something, but need the command to run sunchronously,
+something, but need the command to run synchronously,
 you might do something like:
 .EX
 PipeRead 'command 1>&2'
