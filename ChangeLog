@@ -1,4 +1,23 @@
-2002-11-28  olicha  <olivier.chapuis@free.fr>
+2002-11-29  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/commands.h (enum):
+	* fvwm/functable.c (func_table):
+	* fvwm/builtins.c (CMD_LocalePath):
+	* libs/FGettext.c (FGettextSetLocalePath):
+	* libs/FGettext.h:
+	Preparation for LocalePath command
+
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/fvwm.c (CreateGCs):
+	Rename Scr.TileGC to Scr.BordersGC
+
+	* acinclude.m4:
+	A libintl autoconf fix
+
+	* libs/Colorset.c (CreateBackgroundPixmap):
+	Do not grab the server when we dump the E setroot pixmap
+
+2002-11-29  olicha  <olivier.chapuis@free.fr>
 
 	* acconfig.h:
 	* fvwm/Makefile.am:

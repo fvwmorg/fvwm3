@@ -359,7 +359,7 @@ typedef struct ScreenInfo
   GC ScratchGC3;
   GC ScratchGC4;
   GC TitleGC;
-  GC TileGC;                    /* Used for tiling (clipmask and tile) */
+  GC BordersGC;
   int SizeStringWidth;          /* minimum width of size window */
 
   FvwmDecor DefaultDecor;       /* decoration style(s) */

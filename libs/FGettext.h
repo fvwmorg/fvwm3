@@ -80,5 +80,6 @@
 
 void FGettextInit(const char *domain, const char *dir, const char *module);
 const char *FGettext(char *str);
+void FGettextSetLocalePath(char *path);
 
 #endif /* _LIBGETTEXT_H */

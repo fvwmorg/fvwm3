@@ -163,6 +163,7 @@ const func_type func_table[] =
 	CMD_ENT("killmodule", CMD_KillModule, F_KILL_MODULE, 0, 0, 0),
 	CMD_ENT("layer", CMD_Layer, F_LAYER,
 		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
+	CMD_ENT("localepath", CMD_LocalePath, F_LOCALE_PATH, 0, 0, 0),
 	CMD_ENT("lower", CMD_Lower, F_LOWER,
 		FUNC_NEEDS_WINDOW, CRS_SELECT, ButtonRelease),
 	CMD_ENT("maximize", CMD_Maximize, F_MAXIMIZE,

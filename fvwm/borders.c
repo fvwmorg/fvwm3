@@ -1494,9 +1494,9 @@ static void border_fill_pixmap_background(
 		xgcv.clip_mask = None;
 		valuemask |= GCForeground | GCClipMask | GCClipXOrigin |
 			GCClipYOrigin;
-		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
+		XChangeGC(dpy, Scr.BordersGC, valuemask, &xgcv);
 		XFillRectangle(
-			dpy, dest_pix, Scr.TileGC, 0, 0, pixmap_g->width,
+			dpy, dest_pix, Scr.BordersGC, 0, 0, pixmap_g->width,
 			pixmap_g->height);
 	}
 	else if (do_tile == False)
@@ -1505,11 +1505,11 @@ static void border_fill_pixmap_background(
 		xgcv.foreground = cd->fore_color;
 		xgcv.background = cd->back_color;
 		valuemask |= GCForeground|GCBackground;
-		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
+		XChangeGC(dpy, Scr.BordersGC, valuemask, &xgcv);
 		PGraphicsRenderPixmaps(
 			dpy, Scr.NoFocusWin, bg->pixmap.p, bg->pixmap.shape,
 			bg->pixmap.alpha, bg->pixmap.depth, &(bg->pixmap.fra),
-			dest_pix, Scr.TileGC, Scr.MonoGC, None,
+			dest_pix, Scr.BordersGC, Scr.MonoGC, None,
 			bg->pixmap.g.x, bg->pixmap.g.y,
 			bg->pixmap.g.width, bg->pixmap.g.height,
 			pixmap_g->x, pixmap_g->y, pixmap_g->width - pixmap_g->x,
@@ -1521,11 +1521,11 @@ static void border_fill_pixmap_background(
 		xgcv.foreground = cd->fore_color;
 		xgcv.background = cd->back_color;
 		valuemask |= GCForeground|GCBackground;
-		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
+		XChangeGC(dpy, Scr.BordersGC, valuemask, &xgcv);
 		PGraphicsRenderPixmaps(
 			dpy, Scr.NoFocusWin, bg->pixmap.p, bg->pixmap.shape,
 			bg->pixmap.alpha, bg->pixmap.depth, &(bg->pixmap.fra),
-			dest_pix, Scr.TileGC, Scr.MonoGC, None,
+			dest_pix, Scr.BordersGC, Scr.MonoGC, None,
 			bg->pixmap.g.x, bg->pixmap.g.y,
 			bg->pixmap.g.width, bg->pixmap.g.height,
 			pixmap_g->x, pixmap_g->y,
@@ -1556,7 +1556,7 @@ static void border_get_frame_pixmap(
 	{
 		dcd->frame_pixmap= CreateBackgroundPixmap(
 			dpy, Scr.NoFocusWin, frame_g->width, frame_g->height,
-			&Colorset[cd->bg_border_cs], Pdepth, Scr.TileGC, False);
+			&Colorset[cd->bg_border_cs], Pdepth, Scr.BordersGC, False);
 	}
 	return;
 }
@@ -1587,7 +1587,7 @@ static void border_get_border_background(
 		{
 			bg->pixmap.p = CreateBackgroundPixmap(
 				dpy, w, part_g->width, part_g->height, cs_t,
-				Pdepth, Scr.TileGC, False);
+				Pdepth, Scr.BordersGC, False);
 		}
 		else
 		{
@@ -1603,14 +1603,14 @@ static void border_get_border_background(
 			xgcv.ts_x_origin = - relative_g->x;
 			xgcv.ts_y_origin = - relative_g->y;
 			XChangeGC(
-				dpy, Scr.TileGC, GCTile | GCTileStipXOrigin |
+				dpy, Scr.BordersGC, GCTile | GCTileStipXOrigin |
 				GCTileStipYOrigin | GCFillStyle, &xgcv);
 			XFillRectangle(
-				dpy, bg->pixmap.p, Scr.TileGC, 0, 0,
+				dpy, bg->pixmap.p, Scr.BordersGC, 0, 0,
 				part_g->width, part_g->height);
 			xgcv.fill_style = FillSolid;
 			xgcv.tile = None;
-			XChangeGC(dpy, Scr.TileGC, GCTile|GCFillStyle, &xgcv);
+			XChangeGC(dpy, Scr.BordersGC, GCTile|GCFillStyle, &xgcv);
 		}
 		bg->flags.use_pixmap = 1;
 		bg->pixmap.shape = None;
@@ -1874,7 +1874,7 @@ static Pixmap border_get_bar_pixmaps(
 	{
 		dcd->bar_pixmaps[bs].bps[i].p = CreateBackgroundPixmap(
 			dpy, Scr.NoFocusWin, bar_g->width, bar_g->height,
-			&Colorset[cset], Pdepth, Scr.TileGC, False);
+			&Colorset[cset], Pdepth, Scr.BordersGC, False);
 		dcd->bar_pixmaps[bs].bps[i].created = True;
 	}
 	return dcd->bar_pixmaps[bs].bps[i].p;
@@ -2136,14 +2136,14 @@ static void border_draw_decor_to_pixmap(
 			xgcv.ts_x_origin = - pixmap_g->x + td->bar_g.x;
 			xgcv.ts_y_origin = -pixmap_g->y + td->bar_g.y;
 			XChangeGC(
-				dpy, Scr.TileGC, GCTile | GCTileStipXOrigin |
+				dpy, Scr.BordersGC, GCTile | GCTileStipXOrigin |
 				GCTileStipYOrigin | GCFillStyle, &xgcv);
 			XFillRectangle(
-				dpy, tmp, Scr.TileGC, 0, 0,
+				dpy, tmp, Scr.BordersGC, 0, 0,
 				pixmap_g->width, pixmap_g->height);
 			xgcv.fill_style = FillSolid;
 			xgcv.tile = None;
-			XChangeGC(dpy, Scr.TileGC, GCTile|GCFillStyle, &xgcv);
+			XChangeGC(dpy, Scr.BordersGC, GCTile|GCFillStyle, &xgcv);
 			bg.pixmap.p = tmp;
 			bg.pixmap.g.width = pixmap_g->width;
 			bg.pixmap.g.height = pixmap_g->height;
@@ -2155,7 +2155,7 @@ static void border_draw_decor_to_pixmap(
 		{
 			tmp = CreateBackgroundPixmap(
 				dpy, w, pixmap_g->width, pixmap_g->height,
-				cs_t, Pdepth, Scr.TileGC, False);
+				cs_t, Pdepth, Scr.BordersGC, False);
 			bg.pixmap.p = tmp;
 			GetWindowBackgroundPixmapSize(
 				cs_t, pixmap_g->width, pixmap_g->height,

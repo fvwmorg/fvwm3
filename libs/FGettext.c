@@ -37,6 +37,7 @@
 int FGettextInitOk = 0;
 char *FGDefaultDir = NULL;
 char *FGDefaultDomain = NULL;
+char *FGPath = NULL;
 
 /* ---------------------------- interface functions ------------------------- */
 
@@ -60,4 +61,10 @@ const char *FGettext(char *str)
 		return str;
 	}
 	return gettext(str);
+}
+
+
+void FGettextSetLocalePath(char *path)
+{
+
 }

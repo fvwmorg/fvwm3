@@ -35,6 +35,7 @@
 #include "libs/setpgrp.h"
 #include "libs/Picture.h"
 #include "libs/PictureUtils.h"
+#include "libs/FGettext.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "colorset.h"
@@ -2571,6 +2572,13 @@ void CMD_PixmapPath(F_CMD_ARGS)
 	return;
 }
 
+void CMD_LocalePath(F_CMD_ARGS)
+{
+	FGettextSetLocalePath( action );
+
+	return;
+}
+
 void CMD_ModulePath(F_CMD_ARGS)
 {
 	static int need_to_free = 0;
@@ -2580,6 +2588,7 @@ void CMD_ModulePath(F_CMD_ARGS)
 
 	return;
 }
+
 
 void CMD_ModuleTimeout(F_CMD_ARGS)
 {

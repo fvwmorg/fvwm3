@@ -91,6 +91,7 @@ enum
 	F_KEY,
 	F_KILL_MODULE,
 	F_LAYER,
+	F_LOCALE_PATH,
 	F_MENUSTYLE,
 	F_MODULE,
 	F_MODULE_PATH,
@@ -294,6 +295,7 @@ void CMD_ImagePath(F_CMD_ARGS);
 void CMD_Key(F_CMD_ARGS);
 void CMD_KillModule(F_CMD_ARGS);
 void CMD_Layer(F_CMD_ARGS);
+void CMD_LocalePath(F_CMD_ARGS);
 void CMD_Lower(F_CMD_ARGS);
 void CMD_Maximize(F_CMD_ARGS);
 void CMD_Menu(F_CMD_ARGS);

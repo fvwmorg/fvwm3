@@ -1453,14 +1453,14 @@ AC_DEFUN([AM_GNU_FGETTEXT],
     if test x"$intl_LIBS" != x; then
       no_textdomain=no
       no_dgettext=no
+      ac_save_CFLAGS="$CFLAGS"
+      ac_save_LIBS="$LIBS"
       AC_CHECK_LIB(intl, textdomain,, no_textdomain=yes,
         [$intl_LIBS $iconv_LIBS])
       if test "$no_textdomain" != "yes"; then
         AC_CHECK_LIB(intl, dgettext,, no_dgettext=yes, [$intl_LIBS $iconv_LIBS])
         if test "$no_dgettext" != "yes"; then
-          ac_save_CFLAGS="$CFLAGS"
-          ac_save_LIBS="$LIBS"
-          CFLAGS="$CFLAGS $intl_CFLAGS $iconv_CFLAGS"
+          CFLAGS="$CFLAGS $intl_LIBS $iconv_LIBS"
           LIBS="$LIBS $intl_LIBS $iconv_LIBS"
           AC_MSG_CHECKING(if a simple gettext program link)
           AC_TRY_LINK([
@@ -1469,10 +1469,10 @@ AC_DEFUN([AM_GNU_FGETTEXT],
           [const char *c; c = gettext("foo");], 
           found_gettext=yes;problem_gettext=" (intl library)", found_gettext=no)
           AC_MSG_RESULT($found_gettext)
-          CFLAGS="$ac_save_CFLAGS"
-          LIBS="$ac_save_LIBS"
         fi
       fi
+      CFLAGS="$ac_save_CFLAGS"
+      LIBS="$ac_save_LIBS"
     fi
   fi
 
