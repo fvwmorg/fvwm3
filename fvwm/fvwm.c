@@ -414,6 +414,12 @@ int main(int argc, char **argv)
     exit(1);
   }
 
+  {
+    Cursor cursor = XCreateFontCursor(dpy, XC_watch);
+    XGrabPointer(dpy, Scr.Root, 0, 0, GrabModeSync, GrabModeSync, 
+               None, cursor, CurrentTime); 
+  } 
+
   /* create the Scr.bg structure (required for the following visual stuff) */
   Scr.bg = (Background *)safemalloc(sizeof(Background));
 
@@ -662,7 +668,7 @@ int main(int argc, char **argv)
 #ifdef GNOME
   GNOME_Init();
 #endif
-
+  
   DBUG("main","Entering HandleEvents loop...");
 
   HandleEvents();
@@ -730,6 +736,7 @@ void StartupStuff(void)
   if (Restarting) {
     LoadGlobalState(restore_filename);
 
+
     /*
     ** migo - 19/Jun/1999 - Remove restore-file after usage.
     ** Currently renamed for easier debugging.
@@ -737,6 +744,8 @@ void StartupStuff(void)
     /* unlink(restore_filename); */
     rename(restore_filename, CatString2(restore_filename, ".last"));
   }
+
+  XUngrabPointer(dpy, CurrentTime);
 
 } /* StartupStuff */
 
@@ -1730,6 +1739,7 @@ RETSIGTYPE SigDone(int sig)
 void Done(int restart, char *command)
 {
   FvwmFunction *func;
+  int i;
 
   if (!restart)
     {
@@ -1961,6 +1971,7 @@ void UnBlackoutScreen(void)
     XSync(dpy,0);
     BlackoutWin = None;
   }
+
 } /* UnBlackoutScreen */
 
 

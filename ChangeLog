@@ -1,3 +1,8 @@
+1999-06-19  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/fvwm.c (main): 
+	(StartupStuff): Grab the pointer during startup with cursor XC_watch.
+
 1999-06-19  Mikhael Goikhman  <migo@homemail.com>
 	* fvwm/fvwm.c (getBasename): removed
 	(Done): Improved Restart logic - three forms (no special cases)
