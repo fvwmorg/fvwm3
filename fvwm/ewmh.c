@@ -37,7 +37,6 @@
  *
  * _NET_WM_USER_TIME  can be used to decide if we give the focus to a newly
  *                    mapped window
- *                    
  *
  * The kill huge process protocol: _NET_WM_PID and _NET_WM_PING
  *
@@ -1097,7 +1096,7 @@ void EWMH_SetFrameStrut(FvwmWindow *fwin)
 	/* top */
 	val[2] = b.top_left.height;
 	/* bottom */
-	val[3] = b.top_left.height;
+	val[3] = b.bottom_right.height;
 
 	ewmh_ChangeProperty(
 		FW_W(fwin), "_KDE_NET_WM_FRAME_STRUT", EWMH_ATOM_LIST_FVWM_WIN,

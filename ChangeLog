@@ -1,3 +1,8 @@
+2004-05-18  Olivier Chapuis  <olivier.chapuis@free.fr>
+
+	* fvwm/ewmh.c (EWMH_SetFrameStrut):
+	Fixed a miss-print
+
 2004-05-09  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/conditional.c:
