@@ -1,3 +1,8 @@
+2002-12-08  Mikhael Goikhman  <migo@homemail.com>
+
+	* Makefile.am:
+	s/rpm/rpmbuild/, enable changelog section, updated doc files
+
 2002-04-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm.spec.in:

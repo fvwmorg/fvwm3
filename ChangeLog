@@ -1,3 +1,9 @@
+2002-12-08  Mikhael Goikhman  <migo@homemail.com>
+
+	* AUTHORS:
+	* NEWS:
+	document bidi entry undocumented in 2.5.5
+
 2002-12-06  olicha  <olivier.chapuis@free.fr>
 
 	* acinclude.m4:

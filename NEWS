@@ -5,6 +5,9 @@ _+_A HREF="#2.4.14"_-_2.4.14_+_/A_-_.
 
 Changes in developement release 2.5.6 (not released yet)
 
+* Not documented in 2.5.5: added support for joining and shaping in
+  bi-directional languages that need this.
+
 -------------------------------------------------------------------
 
 Changes in developement release 2.5.5 (2-Dec-2002)

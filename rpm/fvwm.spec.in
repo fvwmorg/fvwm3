@@ -86,18 +86,16 @@ rm -rf $RPM_BUILD_ROOT
 %defattr(-, root, root)
 
 %doc AUTHORS COPYING INSTALL INSTALL.fvwm NEWS README
-%doc docs/ANNOUNCE docs/BUGS docs/DEVELOPERS docs/FAQ docs/TODO
-%doc docs/color_combos docs/error_codes docs/fvwm.lsm docs/m4_hacks
+%doc docs/ANNOUNCE docs/BUGS docs/COMMANDS docs/DEVELOPERS docs/FAQ docs/TODO
+%doc docs/error_codes docs/fvwm.lsm
 %{prefix}/bin/*
 %{prefix}/libexec/*
 %{prefix}/man/*/*
 %{prefix}/share/*
 
-## TODO: how to specify the current date in .spec? Or how to run a `command`?
-#%changelog
-#
-#* Wed 12 May 2000 20:00:00 IDT  FVWM Workers  <fvwm-workers@fvwm.org>
-#- Auto building %{PACKAGE_VERSION}
-#
-#* Wed 12 May 2000 20:00:00 IDT  Mikhael Goikhman  <migo@homemail.com>
-#- First try at making the package
+%define date%(echo `LC_ALL="C" date +"%a %b %d %Y"`)
+%changelog
+* %{date} FVWM Workers <fvwm-workers@fvwm.org>
+  - Auto building %{version}-%{release}
+* Sun May 12 2000 Mikhael Goikhman <migo@homemail.com>
+  - First try at making the package
