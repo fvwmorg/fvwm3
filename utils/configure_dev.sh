@@ -2,9 +2,11 @@
 
 # reconfigure CVS source code
 # must be called from main fvwm directory
+echo autolocal
+autolocal || exit 1
 echo automake
-automake --add-missing || exit 1
+automake --add-missing || exit 2
 echo autoreconf
-autoreconf || exit 2
+autoreconf || exit 3
 echo ./configure
-./configure || exit 3
+./configure || exit 4

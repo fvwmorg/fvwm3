@@ -213,6 +213,15 @@ fi
 AC_SUBST(Xinerama_LIBS)
 AC_SUBST(Xinerama_CFLAGS)
 
+dnl ********* xinerama-emulation
+smr_SWITCH(xinerama-emulation, Xinerama emulation on one screen, off,
+           USE_XINERAMA_EMULATION)
+if test "$enable_xinerama_emulation" = yes; then
+  with_xinerama_emulation=yes
+else
+  with_xinerama_emulation=no
+fi
+
 dnl ********* xft
 problem_xft=" (totally experimental)"
 
