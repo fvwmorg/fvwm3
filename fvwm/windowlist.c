@@ -203,6 +203,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	char tname[128];
 	char loc[64];
 	char *name=NULL;
+	Bool free_name = False;
 	int dwidth;
 	int dheight;
 	char *tlabel;
@@ -832,6 +833,7 @@ void CMD_WindowList(F_CMD_ARGS)
 					name = t->visible_name;
 				}
 
+				free_name = False;
 				if (!name)
 				{
 					name = "NULL_NAME";
@@ -841,6 +843,7 @@ void CMD_WindowList(F_CMD_ARGS)
 				{
 					name = strdup(name);
 					name[max_label_width] = '\0';
+					free_name = True;
 				}
 
 				t_hot = safemalloc(strlen(name) + 80);
@@ -1018,6 +1021,10 @@ void CMD_WindowList(F_CMD_ARGS)
 				if (t_hot)
 				{
 					free(t_hot);
+				}
+				if (free_name)
+				{
+					free(name);
 				}
 			}
 		}
