@@ -1318,6 +1318,9 @@ static void setVersionInfo(void)
 #endif
 	if (FHaveShapeExtension)
 		strcat(support_str, " Shape,");
+#ifdef HAVE_XSHM
+	strcat(support_str, " XShm,");
+#endif
 #ifdef SESSION
 	strcat(support_str, " SM,");
 #endif
@@ -1327,8 +1330,14 @@ static void setVersionInfo(void)
 #ifdef HAVE_XINERAMA
 	strcat(support_str, " Xinerama,");
 #endif
+#ifdef HAVE_XRENDER
+	strcat(support_str, " XRender,");
+#endif
 #ifdef HAVE_XFT
 	strcat(support_str, " XFT,");
+#endif
+#ifdef HAVE_NLS
+	strcat(support_str, " NLS,");
 #endif
 
 	support_len = strlen(support_str);

@@ -77,6 +77,7 @@ with_png=@with_png@
 with_readline=@with_readline@
 with_rplay=@with_rplay@
 with_shape=@with_shape@
+with_shm=@with_shm@
 with_sm=@with_sm@
 with_stroke=@with_stroke@
 with_xinerama=@with_xinerama@
@@ -150,6 +151,7 @@ while test $# -gt 0; do
 			test "$with_readline"   = "yes" && echo "readline"
 			test "$with_rplay"      = "yes" && echo "rplay"
 			test "$with_shape"      = "yes" && echo "shape"
+			test "$with_shm"        = "yes" && echo "shm"
 			test "$with_sm"         = "yes" && echo "sm"
 			test "$with_stroke"     = "yes" && echo "stroke"
 			test "$with_xinerama"   = "yes" && echo "xinerama"
@@ -202,6 +204,7 @@ while test $# -gt 0; do
 			echo "	readline: $with_readline"
 			echo "	rplay: $with_rplay"
 			echo "	shape (shaped windows): $with_shape"
+			echo "  shm (shared memory): $with_shm"
 			echo "	sm (session management): $with_sm"
 			echo "	stroke (mouse gestures): $with_stroke"
 			echo "	xinerama (multi-head): $with_xinerama"

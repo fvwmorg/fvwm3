@@ -83,6 +83,8 @@ typedef struct
 		int depth;
 		FvwmRenderAttributes fra;
 		rectangle g;
+		int stretch_w;
+		int stretch_h;
 		struct
 		{
 			unsigned is_tiled : 1;
@@ -1274,8 +1276,7 @@ static void border_fill_pixmap_background(
 				dpy, bg->pixmap.p,
 				bg->pixmap.g.width, bg->pixmap.g.height,
 				bg->pixmap.depth,
-				dest_g->width - dest_g->x,
-				dest_g->height - dest_g->y,
+				bg->pixmap.stretch_w, bg->pixmap.stretch_h,
 				Scr.BordersGC);
 		}
 		if (bg->pixmap.shape)
@@ -1283,8 +1284,7 @@ static void border_fill_pixmap_background(
 			shape = CreateStretchPixmap(
 				dpy, bg->pixmap.shape,
 				bg->pixmap.g.width, bg->pixmap.g.height, 1,
-				dest_g->width - dest_g->x,
-				dest_g->height - dest_g->y,
+				bg->pixmap.stretch_w, bg->pixmap.stretch_h,
 				Scr.MonoGC);
 		}
 		if (bg->pixmap.alpha)
@@ -1293,12 +1293,11 @@ static void border_fill_pixmap_background(
 				dpy, bg->pixmap.alpha,
 				bg->pixmap.g.width, bg->pixmap.g.height,
 				FRenderGetAlphaDepth(),
-				dest_g->width - dest_g->x,
-				dest_g->height - dest_g->y,
+				bg->pixmap.stretch_w, bg->pixmap.stretch_h,
 				Scr.AlphaGC);
 		}
-		src_width = dest_g->width - dest_g->x;
-		src_height = dest_g->height - dest_g->y;
+		src_width = bg->pixmap.stretch_w;
+		src_height = bg->pixmap.stretch_h;
 	}
 	else
 	{
@@ -2555,6 +2554,7 @@ static void border_draw_decor_to_pixmap(
 	pixmap_background_type bg;
 	rectangle dest_g;
 	FvwmPicture *p;
+	int width,height;
 	int border;
 	common_decorations_type *cd;
 
@@ -2596,6 +2596,11 @@ static void border_draw_decor_to_pixmap(
 		break;
 	case MiniIconButton:
 	case PixmapButton:
+	case ShrunkPixmapButton:
+		if (w_g->width - 2*border <= 0 || w_g->height - 2*border <= 0)
+		{
+			break;
+		}
 		if (FMiniIconsSupported && type == MiniIconButton)
 		{
 			if (!fw->mini_icon)
@@ -2613,18 +2618,42 @@ static void border_draw_decor_to_pixmap(
 		{
 			p = df->u.p;
 		}
+		width = p->width;
+		height = p->height;
+		if ((type == ShrunkPixmapButton || type == MiniIconButton) &&
+		    (p->width > w_g->width - 2*border ||
+		     p->height > w_g->height - 2*border))
+		{
+			/* do so that the picture fit into the destination */
+			bg.pixmap.stretch_w = width =
+				min(w_g->width - 2*border, p->width);
+			bg.pixmap.stretch_h = height =
+				min(w_g->height - 2*border, p->height);
+			bg.pixmap.flags.is_stretched = 1;
+		}
+		else if (type == StretchedPixmapButton &&
+			 (p->width < w_g->width - 2*border ||
+			  p->height < w_g->height - 2*border))
+		{
+			/* do so that the picture fit into the destination */
+			bg.pixmap.stretch_w = width =
+				max(w_g->width - 2*border, p->width);
+			bg.pixmap.stretch_h = height =
+				max(w_g->height - 2*border, p->height);
+			bg.pixmap.flags.is_stretched = 1;
+		}
 		switch (DFS_H_JUSTIFICATION(df->style))
 		{
 		case JUST_LEFT:
 			dest_g.x = border;
 			break;
 		case JUST_RIGHT:
-			dest_g.x = (int)(w_g->width - p->width - border);
+			dest_g.x = (int)(w_g->width - width - border);
 			break;
 		case JUST_CENTER:
 		default:
 			/* round down */
-			dest_g.x = (int)(w_g->width - p->width) / 2;
+			dest_g.x = (int)(w_g->width - width) / 2;
 			break;
 		}
 		switch (DFS_V_JUSTIFICATION(df->style))
@@ -2633,12 +2662,12 @@ static void border_draw_decor_to_pixmap(
 			dest_g.y = border;
 			break;
 		case JUST_BOTTOM:
-			dest_g.y = (int)(w_g->height - p->height - border);
+			dest_g.y = (int)(w_g->height - height - border);
 			break;
 		case JUST_CENTER:
 		default:
 			/* round down */
-			dest_g.y = (int)(w_g->height - p->height) / 2;
+			dest_g.y = (int)(w_g->height - height) / 2;
 			break;
 		}
 		if (dest_g.x < border)
@@ -2659,15 +2688,20 @@ static void border_draw_decor_to_pixmap(
 		border_fill_pixmap_background(dest_pix, &dest_g, &bg, cd);
 		break;
 	case TiledPixmapButton:
-	case StretchedPixmapButton:
+	case AdjustedPixmapButton:
+		if (w_g->width - 2*border <= 0 || w_g->height - 2*border <= 0)
+		{
+			break;
+		}
+		p = df->u.p;
 		if (type == TiledPixmapButton)
 		{
-			p = df->u.p;
 			bg.pixmap.flags.is_tiled = 1;
 		}
 		else
 		{
-			p = df->u.p;
+			bg.pixmap.stretch_w = width = w_g->width - 2*dest_g.x;
+			bg.pixmap.stretch_h = height = w_g->height - 2*dest_g.y;
 			bg.pixmap.flags.is_stretched = 1;
 		}
 		bg.flags.use_pixmap = 1;

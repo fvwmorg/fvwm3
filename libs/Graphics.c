@@ -29,6 +29,8 @@
 #include "libs/PictureBase.h"
 #include "libs/PictureUtils.h"
 #include "libs/PictureGraphics.h"
+#include "libs/gravity.h"
+#include "libs/FImage.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -247,6 +249,117 @@ Pixmap CreateTiledPixmap(
 	xgcv.fill_style = FillSolid;
 	XChangeGC(dpy, gc, GCFillStyle, &xgcv);
 
+	return pixmap;
+}
+
+Pixmap CreateRotatedPixmap(
+	Display *dpy, Pixmap src, int src_width, int src_height, int depth,
+	GC gc, int rotation)
+{
+	GC my_gc = None;
+	Pixmap pixmap = None;
+	int dest_width, dest_height, i, j;
+	Bool error = False;
+	FImage *fim = NULL;
+	FImage *src_fim = NULL;
+
+	if (src_width <= 0 || src_height <= 0)
+	{
+		return None;
+	}
+	switch(rotation)
+	{
+	case ROTATION_90:
+	case ROTATION_270:
+		dest_width = src_height;
+		dest_height = src_width;
+		break;
+	case ROTATION_0:
+	case ROTATION_180:
+		dest_width = src_width;
+		dest_height = src_height;
+		break;
+	default:
+		return None;
+		break;
+	}
+	pixmap = XCreatePixmap(dpy, src, dest_width, dest_height, depth);
+	if (pixmap == None)
+	{
+		return None;
+	}
+	if (gc == None)
+	{
+		my_gc = fvwmlib_XCreateGC(dpy, src, 0, 0);
+	}
+	if (rotation == ROTATION_0)
+	{
+		XCopyArea(
+			dpy, src, pixmap, (gc == None)? my_gc:gc,
+			0, 0, src_width, src_height, 0, 0);
+		goto bail;
+	}
+
+	if (!(src_fim = FGetFImage(
+		dpy, src, Pvisual, depth, 0, 0, src_width, src_height,
+		AllPlanes, ZPixmap)))
+	{
+		error = True;
+		goto bail;
+	}
+	if (!(fim = FCreateFImage(
+		dpy, Pvisual, depth, ZPixmap, dest_width, dest_height)))
+	{
+		error = True;
+		goto bail;
+	}
+
+	for (j = 0; j < src_height; j++)
+	{
+		for (i = 0; i < src_width; i++)
+		{
+			switch(rotation)
+			{
+			case ROTATION_90:
+				XPutPixel(
+					fim->im, j, src_width - i - 1,
+					XGetPixel(src_fim->im, i, j));
+				break;
+			case ROTATION_270:
+				XPutPixel(
+					fim->im, src_height - j - 1, i,
+					XGetPixel(src_fim->im, i, j));
+				break;
+			case ROTATION_180:
+				XPutPixel(
+					fim->im,
+					src_width - i - 1, src_height - j - 1,
+					XGetPixel(src_fim->im, i, j));
+				break;
+			default:
+				break;
+			}
+		}
+	}
+	FPutFImage(dpy, pixmap, gc, fim, 0, 0, 0, 0, dest_width, dest_height);
+ bail:
+	if (error && pixmap)
+	{
+		XFreePixmap(dpy,pixmap);
+		pixmap = None;
+	}
+	if (fim)
+	{
+		FDestroyFImage(dpy, fim);
+	}
+	if (src_fim)
+	{
+		FDestroyFImage(dpy, src_fim);
+	}
+	if (my_gc)
+	{
+		XFreeGC(dpy, my_gc);
+	}
 	return pixmap;
 }
 
@@ -731,7 +844,7 @@ Drawable CreateGradientPixmap(
 	Pixmap pixmap = None;
 	PictureImageColorAllocator *pica = NULL;
 	XColor c;
-	XImage *image;
+	FImage *fim;
 	register int i, j;
 	XGCValues xgcv;
 	Drawable target;
@@ -779,19 +892,15 @@ Drawable CreateGradientPixmap(
 		t_height = d_height;
 	}
 
-	/* create an XImage structure */
-	image = XCreateImage(
-		dpy, Pvisual, Pdepth, ZPixmap, 0, 0, t_width, t_height,
-		Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
-	if (!image)
+	fim = FCreateFImage(
+		dpy, Pvisual, Pdepth, ZPixmap, t_width, t_height);
+	if (!fim)
 	{
 		fprintf(stderr, "%cGradient couldn't get image\n", type);
 		if (pixmap != None)
 			XFreePixmap(dpy, pixmap);
 		return None;
 	}
-	/* create space for drawing the image locally */
-	image->data = safemalloc(image->bytes_per_line * t_height);
 	if (dither)
 	{
 		pica = PictureOpenImageColorAllocator(
@@ -816,7 +925,7 @@ Drawable CreateGradientPixmap(
 					PictureAllocColorImage(
 						dpy, pica, &c, i, j);
 				}
-				XPutPixel(image, i, j, c.pixel);
+				XPutPixel(fim->im, i, j, c.pixel);
 			}
 		}
 	}
@@ -835,7 +944,7 @@ Drawable CreateGradientPixmap(
 					PictureAllocColorImage(
 						dpy, pica, &c, i, j);
 				}
-				XPutPixel(image, i, j, c.pixel);
+				XPutPixel(fim->im, i, j, c.pixel);
 			}
 		}
 		break;
@@ -853,7 +962,7 @@ Drawable CreateGradientPixmap(
 					PictureAllocColorImage(
 						dpy, pica, &c, i, j);
 				}
-				XPutPixel(image, i, j, c.pixel);
+				XPutPixel(fim->im, i, j, c.pixel);
 			}
 		}
 		break;
@@ -872,7 +981,7 @@ Drawable CreateGradientPixmap(
 					PictureAllocColorImage(
 						dpy, pica, &c, i, j);
 				}
-				XPutPixel(image, i, j, c.pixel);
+				XPutPixel(fim->im, i, j, c.pixel);
 			}
 		}
 		break;
@@ -893,7 +1002,7 @@ Drawable CreateGradientPixmap(
 					PictureAllocColorImage(
 						dpy, pica, &c, i, j);
 				}
-				XPutPixel(image, i, j, c.pixel);
+				XPutPixel(fim->im, i, j, c.pixel);
 			}
 		}
 	}
@@ -919,7 +1028,7 @@ Drawable CreateGradientPixmap(
 					PictureAllocColorImage(
 						dpy, pica, &c, i, j);
 				}
-				XPutPixel(image, i, j, c.pixel);
+				XPutPixel(fim->im, i, j, c.pixel);
 			}
 		}
 		break;
@@ -955,7 +1064,7 @@ Drawable CreateGradientPixmap(
 					PictureAllocColorImage(
 						dpy, pica, &c, i, j);
 				}
-				XPutPixel(image, i, j, c.pixel);
+				XPutPixel(fim->im, i, j, c.pixel);
 			}
 		}
 	}
@@ -1004,7 +1113,7 @@ Drawable CreateGradientPixmap(
 					PictureAllocColorImage(
 						dpy, pica, &c, i, j);
 				}
-				XPutPixel(image, i, j, c.pixel);
+				XPutPixel(fim->im, i, j, c.pixel);
 			}
 		}
 	}
@@ -1012,8 +1121,8 @@ Drawable CreateGradientPixmap(
 	default:
 		/* placeholder function, just fills the pixmap with the first
 		 * color */
-		memset(image->data, 0, image->bytes_per_line * t_height);
-		XAddPixel(image, xcs[0].pixel);
+		memset(fim->im->data, 0, fim->im->bytes_per_line * t_height);
+		XAddPixel(fim->im, xcs[0].pixel);
 		break;
 	}
 
@@ -1042,12 +1151,12 @@ Drawable CreateGradientPixmap(
 		XSetClipRectangles(dpy, gc, 0, 0, rclip, 1, Unsorted);
 	}
 	/* copy the image to the server */
-	XPutImage(dpy, target, gc, image, 0, 0, t_x, t_y, t_width, t_height);
+	FPutFImage(dpy, target, gc, fim, 0, 0, t_x, t_y, t_width, t_height);
 	if (rclip)
 	{
 		XSetClipMask(dpy, gc, None);
 	}
-	XDestroyImage(image);
+	FDestroyFImage(dpy, fim);
 	return target;
 }
 

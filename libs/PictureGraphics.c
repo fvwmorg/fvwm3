@@ -31,6 +31,7 @@
 #include "FRenderInterface.h"
 #include "PictureGraphics.h"
 #include "PictureUtils.h"
+#include "FImage.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -266,14 +267,14 @@ void PGrabImageErrorHandler(void)
 }
 
 static
-XImage *PGrabXImage(
+FImage *PGrabXImage(
 	Display *dpy, Drawable d, int x, int y, int w, int h, Bool d_is_a_window)
 {
 
 	Bool try_to_grab = True;
 	XWindowAttributes   xwa;
 	XErrorHandler saved_eh = NULL;
-	XImage *xim = NULL;
+	FImage *fim = NULL;
 
 	PGrabImageError = 0;
 	if (d_is_a_window)
@@ -305,13 +306,14 @@ XImage *PGrabXImage(
 	}
 	if (try_to_grab)
 	{
-		xim = XGetImage(dpy, d, x, y, w, h, AllPlanes, ZPixmap);
+		fim = FGetFImage(dpy, d, Pvisual, Pdepth, x, y, w, h, AllPlanes,
+				 ZPixmap);
 		if (PGrabImageError)
 		{
 #if 0
 			fprintf(stderr, "XGetImage error during the grab\n");
 #endif
-			xim = NULL;
+			fim = NULL;
 		}
 		if (d_is_a_window)
 		{
@@ -323,7 +325,7 @@ XImage *PGrabXImage(
 	{
 		XUngrabServer(dpy);
 	}
-	return xim;
+	return fim;
 }
 
 static
@@ -336,12 +338,12 @@ Pixmap PCreateRenderPixmap(
 	int *new_w, int *new_h, Bool *new_do_repeat,
 	Pixmap *new_mask)
 {
-	XImage *pixmap_im = NULL;
-	XImage *mask_im = NULL;
-	XImage *alpha_im = NULL;
-	XImage *dest_im = NULL;
-	XImage *new_mask_im = NULL;
-	XImage *out_im = NULL;
+	FImage *pixmap_fim = NULL;
+	FImage *mask_fim = NULL;
+	FImage *alpha_fim = NULL;
+	FImage *dest_fim = NULL;
+	FImage *new_mask_fim = NULL;
+	FImage *out_fim = NULL;
 	Pixmap pixmap_copy = None;
 	Pixmap src_pix = None;
 	Pixmap out_pix = None;
@@ -382,42 +384,42 @@ Pixmap PCreateRenderPixmap(
 
 	if (src_pix == ParentRelative)
 	{
-		pixmap_im = PGrabXImage(
+		pixmap_fim = PGrabXImage(
 			dpy, d, dest_x, dest_y, dest_w, dest_h, d_is_a_window);
 	}
 	else
 	{
-		pixmap_im = XGetImage(
-			dpy, src_pix, src_x, src_y, src_w, src_h,
-			AllPlanes, ZPixmap);
+		pixmap_fim = FGetFImage(
+			dpy, src_pix, Pvisual, Pdepth, src_x, src_y, src_w,
+			src_h, AllPlanes, ZPixmap);
 	}
-	if (!pixmap_im)
+	if (!pixmap_fim)
 	{
 		error = True;
 		goto bail;
 	}
 	if (mask != None)
 	{
-		mask_im = XGetImage(
-			dpy, mask, src_x, src_y, src_w, src_h, AllPlanes,
-			ZPixmap);
+		mask_fim = FGetFImage(
+			dpy, mask, Pvisual, 1, src_x, src_y, src_w, src_h,
+			AllPlanes, ZPixmap);
 		if (src_x != 0 || src_y != 0)
 			make_new_mask = True;
 	}
 	if (alpha != None)
 	{
-		alpha_im = XGetImage(
-			dpy, alpha, src_x, src_y, src_w, src_h, AllPlanes,
-			ZPixmap);
+		alpha_fim = FGetFImage(
+			dpy, alpha, Pvisual, FRenderGetAlphaDepth(), src_x,
+			src_y, src_w, src_h, AllPlanes, ZPixmap);
 	}
 
 	if (alpha != None || added_alpha_percent < 100)
 	{
-		dest_im = PGrabXImage(
+		dest_fim = PGrabXImage(
 			dpy, d, dest_x, dest_y, dest_w, dest_h, d_is_a_window);
 	}
 
-	if (dest_im && do_repeat && (dest_w > src_w || dest_h > src_h))
+	if (dest_fim && do_repeat && (dest_w > src_w || dest_h > src_h))
 	{
 		*new_do_repeat = False;
 		if (mask)
@@ -438,29 +440,27 @@ Pixmap PCreateRenderPixmap(
 	*new_h = h;
 
 	out_pix = XCreatePixmap(dpy, win, w, h, Pdepth);
-	out_im = XCreateImage(
-		dpy, Pvisual, Pdepth, ZPixmap, 0, 0, w, h,
-		Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
+	out_fim = FCreateFImage(
+		dpy, Pvisual, Pdepth, ZPixmap, w, h);
 	if (gc == None)
 	{
 		gc = PictureDefaultGC(dpy, win);
 	}
 
-	if (!out_pix || !out_im || !gc)
+	if (!out_pix || !out_fim || !gc)
 	{
 		error = True;
 		goto bail;
 	}
 
 	colors = (XColor *)safemalloc(n_src_w * n_src_h * sizeof(XColor));
-	if (dest_im)
+	if (dest_fim)
 	{
 		dest_colors =
 			(XColor *)safemalloc(w * h * sizeof(XColor));
 	}
 	am = (unsigned short *)safemalloc(
 		n_src_w * n_src_h * sizeof(unsigned short));
-	out_im->data = safemalloc(out_im->bytes_per_line * h);
 
 	if (tint_percent > 0)
 	{
@@ -472,14 +472,15 @@ Pixmap PCreateRenderPixmap(
 	{
 		for (i = 0; i < n_src_w; i++, m++)
 		{
-			if (mask_im != None && (XGetPixel(mask_im, i, j) == 0))
+			if (mask_fim != NULL &&
+			    (XGetPixel(mask_fim->im, i, j) == 0))
 			{
 				am[m] = 0;
 			}
-			else if (alpha_im != None)
+			else if (alpha_fim != NULL)
 			{
-				am[m] = XGetPixel(alpha_im, i, j);
-				if (am[m] == 0 && !dest_im)
+				am[m] = XGetPixel(alpha_fim->im, i, j);
+				if (am[m] == 0 && !dest_fim)
 				{
 					make_new_mask = True;
 				}
@@ -495,7 +496,7 @@ Pixmap PCreateRenderPixmap(
 			}
 			if (am[m] > 0)
 			{
-				if (!dest_im)
+				if (!dest_fim)
 				{
 					if (am[m] < 130)
 					{
@@ -510,12 +511,12 @@ Pixmap PCreateRenderPixmap(
 				else if (am[m] < 255)
 				{
 					dest_colors[l++].pixel =
-						XGetPixel(dest_im, i, j);
+						XGetPixel(dest_fim->im, i, j);
 				}
 				if (am[m] > 0)
 				{
 					colors[k++].pixel =
-						XGetPixel(pixmap_im, i, j);
+						XGetPixel(pixmap_fim->im, i, j);
 				}
 			}
 		}
@@ -524,7 +525,7 @@ Pixmap PCreateRenderPixmap(
 	for (i = 0; i < k; i += 256)
 		XQueryColors(dpy, Pcmap, &colors[i], min(k - i, 256));
 
-	if (do_repeat && dest_im && (n_src_h < h || n_src_w < w))
+	if (do_repeat && dest_fim && (n_src_h < h || n_src_w < w))
 	{
 		for (j1 = 0; j1 < h+n_src_h; j1 +=n_src_h)
 		{
@@ -541,7 +542,8 @@ Pixmap PCreateRenderPixmap(
 						{
 							dest_colors[l++].pixel =
 								XGetPixel(
-									dest_im,
+									dest_fim
+									->im,
 									i1+i,
 									j1+j);
 						}
@@ -559,17 +561,14 @@ Pixmap PCreateRenderPixmap(
 		 *new_mask = XCreatePixmap(dpy, win, w, h, 1);
 		 if (*new_mask)
 		 {
-			 new_mask_im = XCreateImage(
-				 dpy, Pvisual, 1, ZPixmap, 0, 0, w, h,
-				 Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
+			 new_mask_fim = FCreateFImage(
+				 dpy, Pvisual, 1, ZPixmap, w, h);
 			 if (mono_gc == None)
 			 {
 				 mono_gc = fvwmlib_XCreateGC(
 					 dpy, *new_mask, 0, NULL);
 				 do_free_mono_gc = True;
 			 }
-			 new_mask_im->data = safemalloc(
-				 new_mask_im->bytes_per_line * h);
 		 }
 	}
 
@@ -583,7 +582,7 @@ Pixmap PCreateRenderPixmap(
 			{
 				if (*new_mask)
 				{
-					XPutPixel(new_mask_im, i, j, 1);
+					XPutPixel(new_mask_fim->im, i, j, 1);
 				}
 				if (tint_percent > 0)
 				{
@@ -609,7 +608,7 @@ Pixmap PCreateRenderPixmap(
 				c.blue = colors[k].blue;
 				c.green = colors[k].green;
 				c.red = colors[k].red;
-				if (am[m] < 255 && dest_im)
+				if (am[m] < 255 && dest_fim)
 				{
 					c.blue = (unsigned short)
 						(((255 - am[m])*
@@ -634,25 +633,26 @@ Pixmap PCreateRenderPixmap(
 			}
 			else
 			{
-				if (dest_im)
+				if (dest_fim)
 				{
-					c.pixel = XGetPixel(dest_im, i, j);
+					c.pixel = XGetPixel(dest_fim->im, i, j);
 				}
 				else
 				{
-					c.pixel = XGetPixel(pixmap_im, i, j);
+					c.pixel = XGetPixel(
+						pixmap_fim->im, i, j);
 				}
 				if (*new_mask)
 				{
-					XPutPixel(new_mask_im, i, j, 0);
+					XPutPixel(new_mask_fim->im, i, j, 0);
 				}
 			}
-			XPutPixel(out_im, i, j, c.pixel);
+			XPutPixel(out_fim->im, i, j, c.pixel);
 		}
 	}
 
 	/* tile: editor ligne width limit  107 !!*/
-	if (do_repeat && dest_im && (n_src_h < h || n_src_w < w))
+	if (do_repeat && dest_fim && (n_src_h < h || n_src_w < w))
 	{
 		for (j1 = 0; j1 < h+n_src_h; j1 +=n_src_h)
 		{
@@ -679,7 +679,8 @@ Pixmap PCreateRenderPixmap(
 								if (*new_mask)
 								{
 									XPutPixel(
-										new_mask_im, i+i1, j+j1, 1);
+										new_mask_fim->im, i+i1,
+										j+j1, 1);
 								}
 								c.blue = colors[k].blue;
 								c.green = colors[k].green;
@@ -710,14 +711,16 @@ Pixmap PCreateRenderPixmap(
 							}
 							else
 							{
-								c.pixel = XGetPixel(dest_im, i+i1, j+j1);
+								c.pixel = XGetPixel(
+									dest_fim->im, i+i1, j+j1);
 								if (*new_mask)
 								{
 									XPutPixel(
-										new_mask_im, i+i1, j+j1, 0);
+										new_mask_fim->im, i+i1,
+										j+j1, 0);
 								}
 							}
-							XPutPixel(out_im, i+i1, j+j1, c.pixel);
+							XPutPixel(out_fim->im, i+i1, j+j1, c.pixel);
 						}
 					}
 				}
@@ -725,11 +728,12 @@ Pixmap PCreateRenderPixmap(
 		}
 	}
 
-	XPutImage(dpy, out_pix, gc, out_im, 0, 0, 0, 0, w, h);
+	FPutFImage(dpy, out_pix, gc, out_fim, 0, 0, 0, 0, w, h);
 	if (*new_mask && mono_gc)
 	{
-		XPutImage(dpy, *new_mask, mono_gc, new_mask_im,
-			  0, 0, 0, 0, w, h);
+		FPutFImage(
+			dpy, *new_mask, mono_gc, new_mask_fim,
+			0, 0, 0, 0, w, h);
 	}
 
  bail:
@@ -749,33 +753,33 @@ Pixmap PCreateRenderPixmap(
 	{
 		XFreePixmap(dpy, pixmap_copy);
 	}
-	if (pixmap_im)
+	if (pixmap_fim)
 	{
-		XDestroyImage(pixmap_im);
+		FDestroyFImage(dpy, pixmap_fim);
 	}
-	if (mask_im)
+	if (mask_fim)
 	{
-		XDestroyImage(mask_im);
+		FDestroyFImage(dpy, mask_fim);
 	}
-	if (alpha_im)
+	if (alpha_fim)
 	{
-		XDestroyImage(alpha_im);
+		FDestroyFImage(dpy, alpha_fim);
 	}
-	if (dest_im)
+	if (dest_fim)
 	{
-		XDestroyImage(dest_im);
+		FDestroyFImage(dpy, dest_fim);
 	}
-	if (new_mask_im)
+	if (new_mask_fim)
 	{
-		XDestroyImage(new_mask_im);
+		FDestroyFImage(dpy, new_mask_fim);
 	}
 	if (do_free_mono_gc && mono_gc)
 	{
 		XFreeGC(dpy, mono_gc);
 	}
-	if (out_im)
+	if (out_fim)
 	{
-		XDestroyImage(out_im);
+		FDestroyFImage(dpy, out_fim);
 	}
 	if (error)
 	{
@@ -800,9 +804,9 @@ Pixmap PCreateDitherPixmap(
 	Display *dpy, Window win, Drawable src, Pixmap mask, int depth, GC gc,
 	int in_width, int in_height, int out_width, int out_height)
 {
-	XImage *src_im;
-	XImage *mask_im = NULL;
-	XImage *out_im;
+	FImage *src_fim;
+	FImage *mask_fim = NULL;
+	FImage *out_fim;
 	Pixmap out_pix = None;
 	unsigned char *cm;
 	XColor *colors;
@@ -812,48 +816,47 @@ Pixmap PCreateDitherPixmap(
 	if (depth != Pdepth)
 		return None;
 
-	if (!(src_im =
-	      XGetImage(dpy, src, 0, 0,
-			in_width, in_height, AllPlanes, ZPixmap)))
+	if (!(src_fim =
+	      FGetFImage(
+		      dpy, src, Pvisual, depth, 0, 0, in_width, in_height,
+		      AllPlanes, ZPixmap)))
 	{
 		return None;
 	}
 	if (mask != None)
 	{
-		mask_im = XGetImage(
-			dpy, mask, 0, 0, in_width, in_height, AllPlanes,
-			ZPixmap);
+		mask_fim = FGetFImage(
+			dpy, mask, Pvisual, 1, 0, 0, in_width, in_height,
+			AllPlanes, ZPixmap);
 	}
 	out_pix = XCreatePixmap(dpy, win, out_width, out_height, Pdepth);
-	out_im = XCreateImage(
-		dpy, Pvisual, Pdepth, ZPixmap, 0, 0, out_width, out_height,
-		Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
+	out_fim = FCreateFImage(
+		dpy, Pvisual, Pdepth, ZPixmap, out_width, out_height);
 	if (gc == None)
 	{
 		gc = PictureDefaultGC(dpy, win);
 	}
 
-	if (!out_pix || !out_im || !gc)
+	if (!out_pix || !out_fim || !gc)
 	{
-		XDestroyImage(src_im);
-		if (mask_im)
+		FDestroyFImage(dpy, src_fim);
+		if (mask_fim)
 		{
-			XDestroyImage(mask_im);
+			FDestroyFImage(dpy, mask_fim);
 		}
 		if (out_pix)
 		{
 			XFreePixmap(dpy, out_pix);
 		}
-		if (out_im)
+		if (out_fim)
 		{
-			XDestroyImage(out_im);
+			FDestroyFImage(dpy, out_fim);
 		}
 		return None;
 	}
 
 	colors = (XColor *)safemalloc(out_width * out_height * sizeof(XColor));
 	cm = (unsigned char *)safemalloc(out_width * out_height * sizeof(char));
-	out_im->data = safemalloc(out_im->bytes_per_line * out_height);
 
 	x = y = 0;
 	for (j = 0; j < out_height; j++,y++)
@@ -864,15 +867,15 @@ Pixmap PCreateDitherPixmap(
 		{
 			if (x == in_width)
 				x = 0;
-			if (mask_im != NULL &&
-			    (XGetPixel(mask_im, x, y) == 0))
+			if (mask_fim != NULL &&
+			    (XGetPixel(mask_fim->im, x, y) == 0))
 			{
 				cm[m++] = 0;
 			}
 			else
 			{
 				cm[m++] = 255;
-				colors[k++].pixel = XGetPixel(src_im, x, y);
+				colors[k++].pixel = XGetPixel(src_fim->im, x, y);
 			}
 		}
 	}
@@ -895,22 +898,22 @@ Pixmap PCreateDitherPixmap(
 			}
 			else
 			{
-				c.pixel = XGetPixel(src_im, i, j);
+				c.pixel = XGetPixel(src_fim->im, i, j);
 			}
-			XPutPixel(out_im, i, j, c.pixel);
+			XPutPixel(out_fim->im, i, j, c.pixel);
 			m++;
 		}
 	}
 	free(colors);
 	free(cm);
-	XDestroyImage(src_im);
-	if (mask_im)
+	FDestroyFImage(dpy, src_fim);
+	if (mask_fim)
 	{
-		XDestroyImage(mask_im);
+		FDestroyFImage(dpy, mask_fim);
 	}
-	XPutImage(
-		dpy, out_pix, gc, out_im, 0, 0, 0, 0, out_width, out_height);
-	XDestroyImage(out_im);
+	FPutFImage(
+		dpy, out_pix, gc, out_fim, 0, 0, 0, 0, out_width, out_height);
+	FDestroyFImage(dpy, out_fim);
 
 	return out_pix;
 }

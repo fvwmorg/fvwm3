@@ -101,6 +101,9 @@
  * the currently running X server supports it. */
 #undef SHAPE
 
+/* Define if  MIT Shared Memory extension is used. */
+#undef HAVE_XSHM
+
 /* Define if fribidi library is used. */
 #undef HAVE_BIDI
 

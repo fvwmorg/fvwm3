@@ -1449,6 +1449,8 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
 	case PixmapButton:
 	case TiledPixmapButton:
 	case StretchedPixmapButton:
+	case AdjustedPixmapButton:
+	case ShrunkPixmapButton:
 		if (df->u.p)
 		{
 			PDestroyFvwmPicture(dpy, df->u.p);
@@ -1772,7 +1774,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 		}
 		else if (strncasecmp(style,"Pixmap",6)==0
 			 || strncasecmp(style,"TiledPixmap",11)==0
-			 || strncasecmp(style,"StretchedPixmap",15)==0)
+			 || strncasecmp(style,"StretchedPixmap",15)==0
+			 || strncasecmp(style,"AdjustedPixmap",14)==0
+			 || strncasecmp(style,"ShrunkPixmap",12)==0)
 		{
 			FvwmPictureAttributes fpa;
 
@@ -1810,6 +1814,16 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			{
 				DFS_FACE_TYPE(df->style) =
 					StretchedPixmapButton;
+			}
+			else if (strncasecmp(style,"Adjusted",8)==0)
+			{
+				DFS_FACE_TYPE(df->style) =
+					AdjustedPixmapButton;
+			}
+			else if (strncasecmp(style,"Shrunk",6)==0)
+			{
+				DFS_FACE_TYPE(df->style) =
+					ShrunkPixmapButton;
 			}
 			else
 			{

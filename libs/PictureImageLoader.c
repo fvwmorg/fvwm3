@@ -43,6 +43,7 @@
 #include "Fxpm.h"
 #include "Fpng.h"
 #include "FRenderInit.h"
+#include "FImage.h"
 
 /* ---------------------------- local definitions --------------------------- */
 #define FIMAGE_CMD_ARGS Display *dpy, Window win, char *path, \
@@ -262,7 +263,7 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 	FxpmColor *xpm_color;
 	char *visual_color;
 	int rc;
-	XImage *im, *im_mask = NULL;
+	FImage *fim, *fim_mask = NULL;
 	XColor *colors;
 	XColor tc;
 	int i,j,w,h;
@@ -312,10 +313,9 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 
 	w = xpm_im.width;
 	h = xpm_im.height;
-	im = XCreateImage(
-		dpy, Pvisual, Pdepth, ZPixmap, 0, 0, w, h,
-		Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
-	if (!im)
+	fim = FCreateFImage(
+		dpy, Pvisual, Pdepth, ZPixmap, w, h);
+	if (!fim)
 	{
 		FxpmFreeXpmImage(&xpm_im);
 		return False;
@@ -369,16 +369,10 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 		}
 	}
 
-	im->data = safemalloc(im->bytes_per_line * h);
 	if (have_mask)
 	{
-		im_mask = XCreateImage(
-			dpy, Pvisual, 1, ZPixmap, 0, 0, w, h,
-			Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
-		if (im_mask)
-		{
-			im_mask->data = safemalloc(im_mask->bytes_per_line * h);
-		}
+		fim_mask = FCreateFImage(
+			dpy, Pvisual, 1, ZPixmap, w, h);
 	}
 
 	m=0;
@@ -389,9 +383,9 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 			tc = colors[xpm_im.data[m]];
 			point_mask = color_mask[xpm_im.data[m]];
 			m++;
-			if (point_mask && im_mask)
+			if (point_mask && fim_mask)
 			{
-				XPutPixel(im_mask, i,j, 0);
+				XPutPixel(fim_mask->im, i,j, 0);
 			}
 			else
 			{
@@ -400,20 +394,20 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 					PictureAllocColorImage(
 						dpy, pica, &tc, i, j);
 				}
-				if (im_mask)
+				if (fim_mask)
 				{
-					XPutPixel(im_mask, i,j, 1);
+					XPutPixel(fim_mask->im, i,j, 1);
 				}
 			}
-			XPutPixel(im, i,j, tc.pixel);
+			XPutPixel(fim->im, i,j, tc.pixel);
 		}
 	}
 
 	*pixmap = XCreatePixmap(dpy, win, w, h, Pdepth);
-	XPutImage(
-		dpy, *pixmap, PictureDefaultGC(dpy, win), im,
+	FPutFImage(
+		dpy, *pixmap, PictureDefaultGC(dpy, win), fim,
 		0, 0, 0, 0, w, h);
-	if (im_mask)
+	if (fim_mask)
 	{
 		GC mono_gc = None;
 		XGCValues xgcv;
@@ -423,12 +417,12 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 		xgcv.background = 1;
 		mono_gc = fvwmlib_XCreateGC(
 			dpy, *mask, GCForeground | GCBackground, &xgcv);
-		XPutImage(dpy, *mask, mono_gc, im_mask, 0, 0, 0, 0, w, h);
+		FPutFImage(dpy, *mask, mono_gc, fim_mask, 0, 0, 0, 0, w, h);
 		XFreeGC(dpy, mono_gc);
-		XDestroyImage(im_mask);
+		FDestroyFImage(dpy, fim_mask);
 	}
 
-	XDestroyImage(im);
+	FDestroyFImage(dpy, fim);
 	*width = w;
 	*height = h;
 	*depth = Pdepth;
@@ -478,8 +472,8 @@ Bool PImageCreatePixmapFromArgbData(
 	GC a_gc = None;
 	XGCValues xgcv;
 	register int i,j,k;
-	XImage *image, *m_image = NULL;
-	XImage *a_image = NULL;
+	FImage *fim, *m_fim = NULL;
+	FImage *a_fim = NULL;
 	XColor c;
 	int a;
 	Bool use_alpha_pix = (alpha != None && !(fpa.mask & FPAM_NO_ALPHA)
@@ -500,11 +494,9 @@ Bool PImageCreatePixmapFromArgbData(
 					    GCForeground | GCBackground, &xgcv);
 	}
 
-	/* create an XImage structure */
-	image = XCreateImage(
-		dpy, Pvisual, Pdepth, ZPixmap, 0, 0, width, height,
-		Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
-	if (!image)
+	fim = FCreateFImage(
+		dpy, Pvisual, Pdepth, ZPixmap, width, height);
+	if (!fim)
 	{
 		if (mono_gc != None)
 			XFreeGC(dpy, mono_gc);
@@ -516,23 +508,14 @@ Bool PImageCreatePixmapFromArgbData(
 	}
 	if (mask)
 	{
-		m_image = XCreateImage(
-			dpy, Pvisual, 1, ZPixmap, 0, 0, width, height,
-			Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
-	}
-	/* create space for drawing the image locally */
-	image->data = safemalloc(image->bytes_per_line * height);
-	if (m_image)
-	{
-		m_image->data = safemalloc(m_image->bytes_per_line * height);
+		m_fim = FCreateFImage(
+			dpy, Pvisual, 1, ZPixmap, width, height);
 	}
 	if (use_alpha_pix)
 	{
-		a_image = XCreateImage(
+		a_fim = FCreateFImage(
 			dpy, Pvisual, FRenderGetAlphaDepth(), ZPixmap,
-			0, 0, width, height,
-			Pdepth > 16 ? 32 : (Pdepth > 8 ? 16 : 8), 0);
-		a_image->data = safemalloc(a_image->bytes_per_line * height);
+			width, height);
 	}
 
 	pica = PictureOpenImageColorAllocator(
@@ -566,38 +549,42 @@ Bool PImageCreatePixmapFromArgbData(
 			{
 				c.pixel = 0;
 			}
-			XPutPixel(image, i, j, c.pixel);
-			if (m_image)
+			XPutPixel(fim->im, i, j, c.pixel);
+			if (m_fim)
 			{
 				XPutPixel(
-					m_image, i, j,
+					m_fim->im, i, j,
 					(a > alpha_limit)? 1:0);
 			}
-			if (use_alpha_pix && a_image)
+			if (use_alpha_pix && a_fim)
 			{
-				XPutPixel(a_image, i, j, a);
+				XPutPixel(a_fim->im, i, j, a);
 				*have_alpha |= (a < 255 && a > 0);
 			}
 		}
 	}
 	/* copy the image to the server */
-	XPutImage(
-		dpy, pixmap, PictureDefaultGC(dpy, win), image,
+	FPutFImage(
+		dpy, pixmap, PictureDefaultGC(dpy, win), fim,
 		0, 0, 0, 0, width, height);
-	if (m_image)
+	if (m_fim)
 	{
-		XPutImage(
-			dpy, mask, mono_gc, m_image, 0, 0, 0, 0, width, height);
+		FPutFImage(
+			dpy, mask, mono_gc, m_fim, 0, 0, 0, 0, width, height);
 	}
 	if (*have_alpha)
 	{
-		XPutImage(dpy, alpha, a_gc, a_image, 0, 0, 0, 0, width, height);
+		FPutFImage(dpy, alpha, a_gc, a_fim, 0, 0, 0, 0, width, height);
 	}
-	XDestroyImage(image);
-	if (m_image)
-		XDestroyImage(m_image);
-	if (use_alpha_pix && a_image)
-		XDestroyImage(a_image);
+	FDestroyFImage(dpy, fim);
+	if (m_fim)
+	{
+		FDestroyFImage(dpy, m_fim);
+	}
+	if (use_alpha_pix && a_fim)
+	{
+		FDestroyFImage(dpy, a_fim);
+	}
 	if (mono_gc != None)
 		XFreeGC(dpy, mono_gc);
 	if (a_gc != None)

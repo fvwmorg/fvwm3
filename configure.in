@@ -272,6 +272,26 @@ if test x"$with_shape" != xno; then
                [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
 fi
 
+dnl ********* MIT Shared Memory Extension
+AC_ARG_ENABLE(shm,
+  [  --disable-shm           disable MIT Shared Memory Extension],
+  [ if test x"$enableval" = xyes; then
+    with_shm="yes, check"
+  else
+    with_shm="no"
+    problem_shm=": Explicitly disabled"
+  fi ],
+  [ with_shm="not specified, check" ]
+)
+
+if test x"$with_shm" != xno; then
+  $UNSET ac_cv_lib_Xext_XShmQueryExtension
+  AC_CHECK_LIB(Xext, XShmQueryExtension,
+               with_shm=yes; AC_DEFINE(HAVE_XSHM),
+               with_shm=no;
+               problem_shm=": Failed to detect  MIT Shared Memory extension",
+               [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+fi
 
 dnl ********* xinerama
 problem_xinerama=""
@@ -1004,6 +1024,7 @@ AC_SUBST(with_png)
 AC_SUBST(with_readline)
 AC_SUBST(with_rplay)
 AC_SUBST(with_shape)
+AC_SUBST(with_shm)
 AC_SUBST(with_sm)
 AC_SUBST(with_stroke)
 AC_SUBST(with_xft)
@@ -1145,6 +1166,7 @@ FVWM Configuration:
   With ReadLine sup. in FvwmConsole?  $with_readline$problem_readline
   With RPlay support in FvwmEvent?    $with_rplay$problem_rplay
   With Shaped window support?         $with_shape$problem_shape
+  With Shared memory for XImage?      $with_shm$problem_shm
   With Session Management support?    $with_sm$problem_sm
   With Mouse strokes (gestures)?      $with_stroke$problem_stroke
   With Xinerama multi-head support?   $with_xinerama$problem_xinerama

@@ -106,6 +106,8 @@ typedef enum
     PixmapButton              ,
     TiledPixmapButton         ,
     StretchedPixmapButton     ,
+    AdjustedPixmapButton      ,
+    ShrunkPixmapButton        ,
     MultiPixmap               ,
     MiniIconButton            ,
     SolidButton               ,

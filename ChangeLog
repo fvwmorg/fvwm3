@@ -1,3 +1,34 @@
+2002-12-19  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Graphics.c (CreateRotatedPixmap):
+	* libs/fvwmlib.h:
+	New interface function CreateRotatedPixmap
+
+	* libs/PictureImageLoader.c (PImageCreatePixmapFromArgbData):
+	(PImageLoadXpm):
+	* libs/PictureGraphics.c (PCreateRenderPixmap):
+	(PCreateDitherPixmap):
+	* libs/Graphics.c (CreateGradientPixmap):
+	(CreateRotatedPixmap):
+	* acconfig.h:
+	* configure.in:
+	* libs/FShm.h (new file):
+	* libs/FImage.h (new file):
+	* libs/FImage.c (new file):
+	* libs/Makefile.am:
+	* fvwm/fvwm.c (setVersionInfo): 
+	Added MIT Shared Memory Extension for XImage
+	
+	* NEWS:
+	Some news
+
+	* fvwm/screen.h:
+	* fvwm/builtins.c (ReadDecorFace):
+	(FreeDecorFace):
+	* fvwm/borders.c (border_draw_decor_to_pixmap):
+	(border_fill_pixmap_background):
+	AdjustedPixmap, StretchedPixmap and ShrunkPixmap
+
 2002-12-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/FBidiJoin.c:
