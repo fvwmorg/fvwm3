@@ -1,3 +1,18 @@
+1999-03-10  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (MenuInteraction): fixed PopupAsSubmenu option;
+	definitely should test my code before committing
+
+	* fvwm/fvwm2.1: updated manpage for below options
+
+	* fvwm/builtins.c (NewMenuStyle): added 'PopupAsRoot' and
+	'PopupAsSubmenu' options to MenuStyle
+
+	* fvwm/menus.h: added MenuStyle flag PostPopupAsRoot
+
+	* fvwm/functions.c (ComplexFunction2): fixed positional parameters in
+	functions.
+
 1999-03-10 Hippo
 
 	* fvwm/events.c (DispatchEvent) clears the rubber band outline

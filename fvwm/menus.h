@@ -73,6 +73,7 @@ typedef struct MenuFeel {
       unsigned char Animated : 1;
       unsigned char PopupImmediately : 1;
       unsigned char TitleWarp : 1;
+      unsigned char PopupAsRootmenu : 1;
     } f;
     int PopupOffsetPercent;
     int PopupOffsetAdd;

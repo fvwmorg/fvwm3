@@ -1707,7 +1707,8 @@ Where do you want a submenu to appear when you click on it's menu item?
 The default is to place the title under the cursor, but if you want it
 where the position arguments say, use the \fISelectInPlace\fP option.
 If you want the pointer on the title of the menu, use \fISelectWarp\fP
-too.
+too. Note that these options apply only if the PopupAsRootmenu \fIMenuStyle\fP
+option is used.
 
 The pointer is warped to the title of a submenu whenever the pointer
 would be on an item when the submenu is popped up ("fvwm" menu style) or
@@ -1748,7 +1749,9 @@ TrianglesSolid/TrianglesRelief,
 PopupImmediately/PopupDelayed,
 DoubleClickTime,
 SidePic,
-SideColor.
+SideColor,
+PopupAsRootmenu,
+PopupAsSubmenu.
 
 In the above list some options are listed as option pairs or triples
 with a / in between. These options exclude each other.
@@ -1769,17 +1772,18 @@ MWM and WIN style menus never overlap the parent menu.
 
 \fIFVWM\fP style is equivalent to HilightBackOff, Hilight3DThin,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67, TitleWarp,
-TitleUnderlines1, SeparatorsShort, TrianglesRelief, PopupDelayed.
+TitleUnderlines1, SeparatorsShort, TrianglesRelief, PopupDelayed,
+PopupAsSubmenu.
 
 \fIMWM\fP style is equivalent to HilightBackOff, Hilight3DThick,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -3 100,
 TitleWarpOff, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
-PopupImmediately.
+PopupImmediately, PopupAsSubmenu.
 
 \fIWIN\fP style is equivalent to HilightBack, Hilight3DOff,
 ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -5 100,
 TitleWarpOff, TitleUnderlines1, SeparatorsShort, TrianglesSolid,
-PopupImmediately.
+PopupImmediately, PopupAsSubmenu.
 
 \fIForeground\fP and \fIBackground\fP may have a color name as an
 argument. This color is used for menu text or the menu's background.
@@ -1917,6 +1921,12 @@ color is used to colorize the column containing the side picture
 (see above). The SideColor option can be overridden by a menu
 specific side color (see \fIAddToMenu\fP). If the color name is
 omitted the side color option is switched off.
+
+\fIPopupAsRootmenu\fP and \fIPopupAsSubmenu\fI change the behavior when
+you click on a menu item that opens a sub menu. With \fIPopupAsRootmenu\fP
+the original menu is closed before the sub menu appears, with
+\fIPopupAsSubmenu\fI it is not, so you can navigate back into the
+parent menu. Note that \fIPopupAsSubmenu\fI is the default.
 
 Examples:
 

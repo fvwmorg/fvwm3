@@ -22,26 +22,12 @@
    Animated animated menus (along with animated move)
    */
 
-/* Dominik Vogt, Sep 1998
-   dominik_vogt@hp.com
-
-   Implemented position hints for menus and fixed a lot of bugs
-   (some cosmetic bugs and two or three coredumps). Rewrote large parts
-   of MenuInteraction and FPopupMenus.
-   */
-
 /* German Gomez Garcia, Nov 1998
    german@pinon.ccu.uniovi.es
 
    Implemented new menu style definition, allowing multiple definitios and
    gradients and pixmaps 'ala' ButtonStyle. See doc/README.styles for more
    info.  */
-
-/* Dominik Vogt, Dec 1998
-   dominik_vogt@hp.com
-
-   Rewrite of the MenuStyle code for cleaner parsing and better
-   configurability. */
 
 
 /***********************************************************************
@@ -666,6 +652,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 			       &Event))&&(Event.type != ButtonRelease));
       }
 
+      retval = 0;
       switch(Event.type)
 	{
 	case ButtonRelease:
@@ -679,6 +666,13 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    /* break; */
 	  }
 	  retval = mi?MENU_SELECTED:MENU_ABORTED;
+	  if (retval == MENU_SELECTED && IS_POPUP_MENU_ITEM(mi) &&
+	      !menu->ms->feel.f.PopupAsRootmenu)
+	    {
+	      retval = MENU_POPUP;
+	      fDoPopupNow = TRUE;
+	      break;
+	    }
 	  dkp_timestamp = 0;
 	  goto DO_RETURN;
 
@@ -696,6 +690,9 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  fKeyPress = TRUE;
 	  x_offset = 0;
 	  retval = menuShortcuts(menu,&Event,&mi);
+	  if (retval == MENU_SELECTED && IS_POPUP_MENU_ITEM(mi) &&
+	      !menu->ms->feel.f.PopupAsRootmenu)
+	    retval = MENU_POPUP;
 	  if (retval == MENU_POPDOWN ||
 	      retval == MENU_ABORTED ||
 	      retval == MENU_SELECTED)

@@ -1766,6 +1766,7 @@ static int GetMenuStyleIndex(char *option)
     "PopupImmediately", "PopupDelayed",
     "DoubleClickTime",
     "SidePic", "SideColor",
+    "PopupAsRootmenu", "PopupAsSubmenu",
     NULL
   };
   return GetTokenIndex(option, optlist, 0, NULL);
@@ -1825,6 +1826,7 @@ static void NewMenuStyle(F_CMD_ARGS)
 	  tmpms->look.face.type = SimpleMenu;
 	  tmpms->look.f.hasActiveFore = 0;
 	  tmpms->look.f.hasActiveBack = 0;
+	  tmpms->feel.f.PopupAsRootmenu = 0;
 	  gc_changed = True;
 	  option = "fvwm";
 	}
@@ -2153,8 +2155,16 @@ static void NewMenuStyle(F_CMD_ARGS)
 	}
 	break;
 
+      case 33: /* PopupAsRootmenu */
+	tmpms->feel.f.PopupAsRootmenu = 1;
+	break;
+
+      case 34: /* PopupAsSubmenu */
+	tmpms->feel.f.PopupAsRootmenu = 0;
+	break;
+
 #if 0
-      case 33: /* PositionHints */
+      case 35: /* PositionHints */
 	break;
 #endif
 

@@ -726,7 +726,7 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 
   /* FindFunction expects a token, not just a quoted string */
   taction = GetNextToken(action,&func_name);
-  if (func_name == NULL)
+  if (!action || !func_name)
     return;
   func = FindFunction(func_name);
   free(func_name);
