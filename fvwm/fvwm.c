@@ -1497,10 +1497,14 @@ static void InitVariables(void)
 
      "Network Computing Devices Inc."
         is the ServerVendor string of the PCXware X server under Windows.
+
+     "WRQ, Inc."
+        is the ServerVendor string of the Reflection X server under Windows.
   */
   Scr.bo.RaiseHackNeeded =
     (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0) ||
-    (strcmp (ServerVendor (dpy), "Network Computing Devices Inc.") == 0);
+    (strcmp (ServerVendor (dpy), "Network Computing Devices Inc.") == 0) ||
+    (strcmp (ServerVendor (dpy), "WRQ, Inc.") == 0);
 
   Scr.bo.ModalityIsEvil = 0;
   Scr.bo.DisableConfigureNotify = 0;

@@ -4667,6 +4667,10 @@ command.  For example:
 Style * IconBox -80x200-1-1, \\
         IconBox 1000x70-1-1
 .EE
+A Style command with the IconBox option replaces any icon box
+previously defined for the same style.  Thats why the backslash
+in the previous example is required.
+
 If you never define an icon box, or you fill all the icon boxes, fvwm
 has a default icon box that covers the screen, it fills top to bottom,
 then left to right, and has an 80x80 pixel grid.  To disable all but
