@@ -498,7 +498,7 @@ Modules can be swallowed by specifying
 the module instead of 'Exec whatever', like:
 .nf
 .sp
-  *FvwmButtons(Swallow "FvwmPager" "FvwmPager 0 0")
+  *FvwmButtons: (Swallow "FvwmPager" "FvwmPager 0 0")
 .sp
 .fi
 The flags that can be given to swallow are:
@@ -603,7 +603,7 @@ its syntax is:
 Example:
 .nf
 .sp
-  *FvwmButtons(Action Exec "xload" xload)
+  *FvwmButtons: (Action Exec "xload" xload)
 .sp
 .fi
 The hangon string must be enclosed in double quotes.
@@ -645,7 +645,7 @@ commands, like this:
 .sp
 .fi
 Any single character can be quoted with a preceding
-backslash '\'.
+backslash '\\'.
 .RE
 .\" End relative indent
 .SH CREATING PANELS
@@ -737,6 +737,9 @@ for example the speed and smoothness of the sliding animation. Please
 refer to the description of the \fIPanel\fP option for further details.
 
 .SS CONVERTING OLD PANEL CONFIGURATIONS
+
+This section describes how to convert a pretty old syntax used in
+2.2.x versions.  You may skip it if your syntax is more recent.
 
 With the old panel feature you first had one or more lines
 defining panels in your main FvwmButtons configuration:

@@ -61,7 +61,7 @@ supplied for backwards compatibility only.
 
 Command-line arguments passed to FvwmRearrange are described here.
 .IP \-a
-Causes \fIall\fP window styles to be affected, even ones with the
+Causes \fIall\fP window types to be affected, even ones with the
 WindowListSkip style.
 .IP \-animate
 Attempt to do an animated move, this is ignored if \fI-resize\fP
@@ -88,7 +88,7 @@ windows.  \fIarg\fP is a percentage of screen height, or pixel value
 if a \fIp\fP is suffixed.  Default is zero. Used only for cascading.
 
 .IP \-m
-Causes maximized windows to also be affected (implied by \-all).
+Causes maximized windows to also be affected (implied by \-a).
 .IP \-maximize
 When moving/resizing a window, put it also into maximized state.
 .IP "\-mn \fIarg\fP"
@@ -116,13 +116,13 @@ Reverses the window sequence.
 Forces all windows to resize to the constrained width and height (if
 given). This is the default when tiling windows.
 .IP \-s
-Causes sticky windows to also be affected (implied by \-all).
+Causes sticky windows to also be affected (implied by \-a).
 .IP \-t
-Causes transient windows to also be affected (implied by \-all).
+Causes transient windows to also be affected (implied by \-a).
 .IP \-tile
 Tile windows. This argument must be the first on the command line.
 .IP \-u
-Causes untitled windows to also be affected (implied by \-all).
+Causes untitled windows to also be affected (implied by \-a).
 
 Up to four numbers can be placed on the command line that are not
 switches.  The first pair specify an x and y offset to start the first

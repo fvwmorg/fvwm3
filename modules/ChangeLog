@@ -1,3 +1,12 @@
+2002-05-25  Mikhael Goikhman  <migo@homemail.com>
+
+        * FvwmIconMan/FvwmIconMan.c (copy_string):
+	fixed crash when accessing NULL string
+
+	* FvwmRearrange/FvwmRearrange.1:
+	* FvwmButtons/FvwmButtons.1:
+	some corrections
+
 2002-05-24  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmWinList/ButtonArray.c (DoButton):

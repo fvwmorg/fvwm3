@@ -35,7 +35,16 @@ static RETSIGTYPE TerminateHandler(int);
 
 char *copy_string(char **target, const char *src)
 {
-  int len = strlen(src);
+  int len;
+  if (src == NULL)
+  {
+    len = 0;
+    if (*target)
+      Free(*target);
+    return *target = NULL;
+  }
+
+  len = strlen(src);
   ConsoleDebug(CORE, "copy_string: 1: 0x%lx\n", (unsigned long)*target);
 
   if (*target)

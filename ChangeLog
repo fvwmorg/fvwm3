@@ -29,7 +29,7 @@
 	(size_menu_vertically):
 	fixed additional "More..." items in sub menus of torn off menus
 
-2002-05-12  Mikhael Goikhman  <migo@homemail.com>
+2002-05-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/colorset.h:
 	fixed #endif warning
