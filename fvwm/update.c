@@ -162,7 +162,18 @@ static void apply_window_updates(
   }
   if (flags->do_resize_window)
   {
+    rectangle old_g;
+
     setup_frame_size_limits(t, pstyle);
+    gravity_constrain_size(t->hints.win_gravity, t, &(t->frame_g));
+    old_g = t->frame_g;
+    t->frame_g = t->normal_g;
+    if (IS_MAXIMIZED(t))
+    {
+      t->frame_g = t->max_g;
+      gravity_constrain_size(t->hints.win_gravity, t, &(t->max_g));
+    }
+    t->frame_g = old_g;
     flags->do_setup_frame = True;
     flags->do_redraw_decoration = True;
   }

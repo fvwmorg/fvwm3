@@ -490,8 +490,6 @@ void setup_frame_size_limits(FvwmWindow *tmp_win, window_style *pstyle)
     tmp_win->max_window_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
     tmp_win->max_window_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
   }
-  constrain_size(
-    tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height, 0, 0, False);
 }
 
 Bool setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
@@ -1311,6 +1309,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
     /****** calculate frame size ******/
     setup_frame_size_limits(tmp_win, &style);
+    constrain_size(
+      tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height, 0, 0, False);
 
     /****** maximize ******/
     if (do_maximize)

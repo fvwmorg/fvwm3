@@ -476,17 +476,24 @@ void constrain_size(
 
 /* This function does roughly the same as constrain_size, but takes into account
  * that the window shifts according to gravity if constrain_size actually
- * changes the width or height. */
+ * changes the width or height. The frame_g of the window is not changed. The
+ * target geometry is expected to be in *rect and will be retured through rect.
+ */
 void gravity_constrain_size(
   int gravity, FvwmWindow *t, rectangle *rect)
 {
-  int old_width = rect->width;
-  int old_height = rect->height;
+  rectangle old_g = t->frame_g;
+  rectangle new_g = *rect;
+  int new_width = new_g.width;
+  int new_height = new_g.height;
 
-  constrain_size(t, &(rect->width), &(rect->height), 0, 0, False);
-  if (old_width != rect->width || old_height != rect->height)
+  t->frame_g = *rect;
+  constrain_size(t, &(new_width), &(new_height), 0, 0, False);
+  if (new_g.width != new_width || new_g.height != new_height)
   {
     gravity_resize(
-      gravity, rect, rect->width - old_width, rect->height - old_height);
+      gravity, &new_g, new_width - new_g.width, new_height - new_g.height);
   }
+  t->frame_g = old_g;
+  *rect = new_g;
 }
