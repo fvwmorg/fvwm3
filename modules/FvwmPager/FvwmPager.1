@@ -341,11 +341,13 @@ See FvwmTheme.
 Uses colorsets in the same way as *FvwmPagerWindowColors.
 See FvwmTheme.
 .IP "*FvwmPagerWindowBorderWidth \fIn\fP"
-Specifies the width of the border drawn around the mini windows.  If positive
-the border is drawn in the same color as the window name and looks flat. If
-negative and *FvwmPagerWindowColorsets has been specified it looks 3D.
+Specifies the width of the border drawn around the mini windows. This also sets
+the minimum size of the mini windows to (2 * \fIn\fP + 1).
 The default is 1;
-
+.IP "*FvwmPagerWindow3dBorders"
+Specifies that the mini windows should have a 3d borders based on the
+mini window background. This option only works if *FvwmPagerWindowColorsets
+is specified.
 
 .SH AUTHOR
 Robert Nation

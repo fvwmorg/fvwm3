@@ -93,7 +93,9 @@ char *WindowHiBack = NULL;
 char *WindowHiFore = NULL;
 char *WindowLabelFormat = NULL;
 
-int WindowBorderWidth = 1;
+unsigned int WindowBorderWidth = 1;
+unsigned int MinSize = 3;
+Bool WindowBorders3d = False;
 
 Picture *PixmapBack = NULL;
 
@@ -1838,6 +1840,11 @@ void ParseOptions(void)
       else if (StrEquals(resource, "WindowBorderWidth"))
 	{
 	  sscanf(arg1, "%d", &WindowBorderWidth);
+	  MinSize = 2 * WindowBorderWidth + 1;
+	}
+      else if (StrEquals(resource, "Window3dBorders"))
+	{
+	  WindowBorders3d = True;
 	}
       else if (StrEquals(resource,"WindowColorsets"))
 	{

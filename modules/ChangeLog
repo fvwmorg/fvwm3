@@ -1,3 +1,10 @@
+1999-08-16  Hippo
+
+	* FvwmPager/*: new option *FvwmPagerWindow3dBorders set the pager
+	mini windows to 3d if *FvwmPagerWindowColorsets is specified.
+	*FvwmPagerWindowBorderWidth sets the minimum mini window size, the
+	default of 1 gives the original size of 3x3.
+
 1999-08-16  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
 	* FvwmButtons/parse.c (expand_action): moved to parse.c

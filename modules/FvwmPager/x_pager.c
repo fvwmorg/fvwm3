@@ -69,7 +69,9 @@ extern char *BalloonFormatString;
 extern char *WindowLabelFormat;
 extern char *PagerFore, *PagerBack, *HilightC;
 extern char *BalloonFore, *BalloonBack, *BalloonBorderColor;
-extern int WindowBorderWidth;
+extern unsigned int WindowBorderWidth;
+extern unsigned int MinSize;
+extern Bool WindowBorders3d;
 extern Picture *PixmapBack;
 extern Picture *HilightPixmap;
 extern int HilightDesks;
@@ -1272,10 +1274,10 @@ void ReConfigureIcons(void)
       h = (Scr.Vy + t->y + t->height+2)*(icon_h-m)/
 	(Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
 
-      if (w < 1)
-	w = 1;
-      if (h < 1)
-	h = 1;
+      if (w < MinSize)
+	w = MinSize;
+      if (h < MinSize)
+	h = MinSize;
 
       t->icon_view_width      = w;
       t->icon_view_height     = h;
@@ -1529,10 +1531,10 @@ void AddNewWindow(PagerWindow *t)
   h = (Scr.Vy + t->y + t->height) * (desk_h - m)
       / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
 
-  if (w < 1)
-    w = 1;
-  if (h < 1)
-    h = 1;
+  if (w < MinSize)
+    w = MinSize;
+  if (h < MinSize)
+    h = MinSize;
 
   t->pager_view_width = w;
   t->pager_view_height = h;
@@ -1567,10 +1569,10 @@ void AddNewWindow(PagerWindow *t)
   h = (Scr.Vy + t->y + t->height) * (icon_h - m)
       / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
 
-  if (w < 1)
-    w = 1;
-  if (h < 1)
-    h = 1;
+  if (w < MinSize)
+    w = MinSize;
+  if (h < MinSize)
+    h = MinSize;
 
   t->icon_view_width = w;
   t->icon_view_height = h;
@@ -1630,10 +1632,10 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
       / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
   h = (Scr.Vy + t->y + t->height) * (desk_h - m)
       / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
-  if (w < 1)
-    w = 1;
-  if (h < 1)
-    h = 1;
+  if (w < MinSize)
+    w = MinSize;
+  if (h < MinSize)
+    h = MinSize;
   if ((t->pager_view_width != w) || (t->pager_view_height != h)) {
     t->pager_view_width = w;
     t->pager_view_height = h;
@@ -1671,10 +1673,10 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
       / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
   h = (Scr.Vy + t->y + t->height) * (icon_h - m)
       / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
-  if (w < 1)
-    w = 1;
-  if (h < 1)
-    h = 1;
+  if (w < MinSize)
+    w = MinSize;
+  if (h < MinSize)
+    h = MinSize;
   if ((t->icon_view_width != w) || (t->icon_view_height != h)) {
     t->icon_view_width = w;
     t->icon_view_height = h;
@@ -1716,10 +1718,10 @@ void MoveResizePagerView(PagerWindow *t)
       / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
   h = (Scr.Vy + t->y + t->height) * (desk_h - m)
       / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
-  if (w < 1)
-    w = 1;
-  if (h < 1)
-    h = 1;
+  if (w < MinSize)
+    w = MinSize;
+  if (h < MinSize)
+    h = MinSize;
 
   if (t->pager_view_width != w || t->pager_view_height != h) {
     t->pager_view_width = w;
@@ -1754,10 +1756,10 @@ void MoveResizePagerView(PagerWindow *t)
       / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
   h = (Scr.Vy + t->y + t->height) * (icon_h - m)
       / (Scr.VyMax + Scr.MyDisplayHeight) - y +m1;
-  if (w < 1)
-    w = 1;
-  if (h < 1)
-    h = 1;
+  if (w < MinSize)
+    w = MinSize;
+  if (h < MinSize)
+    h = MinSize;
 
   if (t->icon_view_width != w || t->icon_view_height != h) {
     t->icon_view_width = w;
@@ -2212,36 +2214,36 @@ XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 void BorderWindow(PagerWindow *t)
 {
   if (t->PagerView != None) {
-    if ((WindowBorderWidth > 0) || (windowcolorset < 0) || (activecolorset < 0))
+    if ((!WindowBorders3d) || (windowcolorset < 0) || (activecolorset < 0))
       RelieveRectangle(dpy, t->PagerView, 0, 0, t->pager_view_width - 1,
         	       t->pager_view_height - 1, Scr.NormalGC, Scr.NormalGC,
-        	       abs(WindowBorderWidth));
+        	       WindowBorderWidth);
     else if (t == FocusWin)
       RelieveRectangle(dpy, t->PagerView, 0, 0, t->pager_view_width - 1,
 		       t->pager_view_height - 1, Scr.ahGC, Scr.asGC,
-		       -WindowBorderWidth);
+		       WindowBorderWidth);
     else
       RelieveRectangle(dpy, t->PagerView, 0, 0, t->pager_view_width - 1,
 		       t->pager_view_height - 1, Scr.whGC, Scr.wsGC,
-		       -WindowBorderWidth);
+		       WindowBorderWidth);
   }
 }
 
 void BorderIconWindow(PagerWindow *t)
 {
   if (t->IconView != None) {
-    if ((WindowBorderWidth > 0) || (windowcolorset < 0) || (activecolorset < 0))
+    if ((!WindowBorders3d) || (windowcolorset < 0) || (activecolorset < 0))
       RelieveRectangle(dpy, t->IconView, 0, 0, t->icon_view_width - 1,
         	       t->icon_view_height - 1, Scr.NormalGC, Scr.NormalGC,
-        	       abs(WindowBorderWidth));
+        	       WindowBorderWidth);
     else if (t == FocusWin)
       RelieveRectangle(dpy, t->IconView, 0, 0, t->icon_view_width - 1,
 		       t->icon_view_height - 1, Scr.ahGC, Scr.asGC,
-		       -WindowBorderWidth);
+		       WindowBorderWidth);
     else
       RelieveRectangle(dpy, t->IconView, 0, 0, t->icon_view_width - 1,
 		       t->icon_view_height - 1, Scr.whGC, Scr.wsGC,
-		       -WindowBorderWidth);
+		       WindowBorderWidth);
   }
 }
 
