@@ -129,6 +129,7 @@ static void FShmSafeCreateImage(
 		/* get an X error: we are a remote client */
 		if (FShmDetach(dpy, fim->shminfo))
 		{
+			XSync(dpy, False);
 		}
 		error = True;
 	}

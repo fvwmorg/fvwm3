@@ -1,3 +1,8 @@
+2004-05-29  Norbert Buchmuller  <norbi@nix.hu>
+
+       * libs/FImage.c (FShmSafeCreateImage):
+       Yet another fix to SHM remote client problem
+
 2004-05-26  Francis Litterio  <franl@world.std.com>
 
 	* fvwm/fvwm.1.in
