@@ -3,6 +3,10 @@ _+_A HREF="#2.4.4"_-_2.4.4_+_/A_-_.
 
 Changes in beta release 2.5.0 (not released yet)
 
+* New styles FixedPPosition, FixedUSPosition, FixedSize, FixedUSSize,
+  FixedPSize, VariablePPosition, VariableUSPosition, VariableSize,
+  VariableUSSize, and VariablePSize.
+
 * Actions can be bound to windows swallowed in FvwmButtons.
 
 * Fvwm respect the extended window manager hints specification.

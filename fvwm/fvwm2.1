@@ -6,7 +6,7 @@
 .\"
 .\" For further details, please refer to the Linux Man-Page how-to.
 .\"
-.\"  context                                typeface       example
+.\"  context                            typeface        example
 .\"  ---------------------------------- --------------  -----------------
 .\"  filenames:                         italics (.I)    .I .fvwm2rc
 .\"  command line options of fvwm2 cmd: bold (.B)       .B \-cmd
@@ -27,7 +27,8 @@
 .\"
 .\"
 .\" The name fvwm is written in lower case throughout this man
-.\" page.
+.\" page.  Fvwm is written without a version number, i.e. fvwm,
+.\" not fvwm2.  The latter is used only in file names.
 .\"
 .\" Note that the word "will" is rarely correct in a man page or
 .\" any document. Describe what fvwm does, not what it will do,
@@ -750,7 +751,7 @@ style can be used.
 
 .SH EXTENDED WINDOW MANAGER HINTS
 
-Fvwm attempts to respect the extended window manager hints 
+Fvwm attempts to respect the extended window manager hints
 (ewmh or EWMH for short) specification:
 .BR http://www.freedesktop.org/standards/wm-spec.html
 and some extensions of this specification.
@@ -772,7 +773,7 @@ These styles and commands have
 .SM EWMH
 as the prefix (so you can find them easily in this man page).
 
-There is a new Context 'D' for the 
+There is a new Context 'D' for the
 .BR Key ", " PointerKey ", " Mouse " and " Stroke
 commands. This context is for desktop
 applications (such as kdesktop and Nautilus desktop).
@@ -805,7 +806,7 @@ hidden by clicking on a button the Working Area does not change (as
 you can unhide the panel at any time), but the Dynamic Working Area
 is updated: the space reserved by the panel is removed (and added
 again if you pop up the panel). The Dynamic Working Area may be used
-when fvwm places or maximizes a window.  
+when fvwm places or maximizes a window.
 To know if an application reserves space you can type
 "xprop | grep _NET_WM_STRUT" in a terminal and select the application.
 If four numbers appear then these numbers define the reserved space
@@ -815,7 +816,7 @@ command.
 
 This support can be disabled at compile time
 (use the --disable-ewmh option to configure).
-.\" This support is a compile time option which is off by default 
+.\" This support is a compile time option which is off by default
 .\" (use the --enable-ewmh option to configure to enable it).
 
 .SH MWM COMPATIBILITY
@@ -4636,7 +4637,7 @@ default or to set the window manager default styles.
 can be a window's name, class, or resource string.  It may contain
 the wildcards '*' and '?', which are matched in the usual Unix
 filename manner.  They are searched in the reverse order
-stated. When two conflicting styles apply to the same window, the
+stated.  When two conflicting styles apply to the same window, the
 style that was changed last wins.
 
 Note: windows that have no name (WM_NAME) are given a name of
@@ -4713,6 +4714,11 @@ is a comma separated list containing one or more of the keywords
 .IR GrabFocusTransient " / " GrabFocusTransientOff ,
 .IR IgnoreRestack " / " AllowRestack ,
 .IR FixedPosition " / " VariablePosition ,
+.IR FixedUSPosition " / " VariableUSPosition ,
+.IR FixedPPosition " / " VariablePPosition ,
+.IR FixedSize " / " VariableSize ,
+.IR FixedUSSize " / " VariableUSSize ,
+.IR FixedPSize " / " VariablePSize ,
 .IR IconOverride " / " NoIconOverride " / " NoActiveIconOverride ,
 .IR DepressableBorder " / " FirmBorder ,
 .IR MaxWindowSize ,
@@ -5201,11 +5207,31 @@ windows.  By default, the opposite style,
 .I AllowRestack
 is active.
 
-.I FixedPosition
-makes fvwm ignore attempts of the user to move the window.  To
-allow user movement of windows, use the
-.I VariablePosition
+.IR FixedPosition and FixedUSPosition
+make fvwm ignore attempts of the user to move the window.  It is
+still possible to move the window by resizing is.  To allow the
+user to move windows, use the
+.IR VariablePosition or VariableUSPosition
 style.
+
+.IR FixedSize and FixedUSSize
+make fvwm ignore attempts of the user to resize the window.  To
+allow the user user to resize windows, use the
+.IR VariableSize or VariableUSSize
+style.
+
+.IR FixedPPosition and FixedPSize
+make fvwm ignore attempts of the program to move or resize its
+windows.  To allow this kind of actions, use the
+.IR VariablePPosition or VariablePSize
+style.  These styles may sometimes affect the initial placement
+and dimensions of new windows (depending on the application).  If
+windows are created at strange places, try eihter the
+.IR VariablePPosition or NoPPosition
+styles.  The
+.I FixedPSize
+style may screw up window dimensions for some applications.  Don't
+use this style in this case.
 
 .I ResizeHintOverride
 instructs fvwm to ignore the program supplied minimum and maximum
@@ -6732,7 +6758,7 @@ where it override the
 configuration option. Moreover, if consecutive names starting from
 desktop 0 are defined, then these names can be used by any EWMH compliant
 application (as a pager).
-  
+
 .TP
 .BI "DeskTopSize " Horizontal x Vertical
 Defines the virtual desktop size in units of the physical screen
@@ -6950,7 +6976,7 @@ It is at least
 but it can be d if there is a window on desktop d-1 (or if
 the current desktop is desktop d-1) and d is less or equal to
 .I max
-or 
+or
 .I max
 is null.
 Moreover, a compliant pager can ask to change
@@ -6962,7 +6988,7 @@ less than or equal to
 or if
 .I max
 is null.
-Note that negative desktops are not supported by the ewmh specification. 
+Note that negative desktops are not supported by the ewmh specification.
 The default is 4 0.
 
 .TP
@@ -8185,5 +8211,5 @@ The official fvwm homepage is
 .BR http://www.fvwm.org/ .
 
 \" LocalWords:  XTerm xterm rc fvwm Linux ICCCM CDE XView XINERAMA Xinerama
-\"  LocalWords:  EdgeResistance fvwm's IconBox MoveToScreen FvwmConsole
-\"  LocalWords:  FvwmCommand
+\" LocalWords:  EdgeResistance fvwm's IconBox MoveToScreen FvwmConsole
+\" LocalWords:  FvwmCommand

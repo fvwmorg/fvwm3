@@ -1013,7 +1013,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 
   if (Tmp_win == NULL && EWMH_IsKdeSysTrayWindow(Event.xany.window))
   {
-    /* This means that the window is swallowed by kicker and that 
+    /* This means that the window is swallowed by kicker and that
      * kicker restart or exit. As we should assume that kicker restart
      * we should return here, if not we go into trouble ... */
     return;
@@ -2231,12 +2231,12 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     dw = 0;
     dh = 0;
 
-    if (IS_SHADED(Tmp_win))
+    if (IS_SHADED(Tmp_win) || !is_move_allowed(Tmp_win, False))
     {
       /* forbid shaded applications to move their windows */
       cre->value_mask &= ~(CWX | CWY);
     }
-    if (IS_MAXIMIZED(Tmp_win))
+    if (IS_MAXIMIZED(Tmp_win) || !is_resize_allowed(Tmp_win, False))
     {
       /* dont allow clients to resize maximized windows */
       cre->value_mask &= ~(CWWidth | CWHeight);

@@ -39,6 +39,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "update.h"
+#include "move_resize.h"
 #include "stack.h"
 #include "style.h"
 #include "externs.h"
@@ -274,7 +275,7 @@ ewmh_atom *ewmh_GetEwmhAtomByAtom(Atom atom, ewmh_atom_list_name list_name)
 
 void ewmh_ChangeProperty(Window w,
 			 const char *atom_name,
-			 ewmh_atom_list_name list, 
+			 ewmh_atom_list_name list,
 			 unsigned char *data,
 			 unsigned int length)
 {
@@ -427,7 +428,7 @@ void EWMH_SetActiveWindow(Window w)
 void EWMH_SetWMDesktop(FvwmWindow *fwin)
 {
   CARD32 desk = fwin->Desk;
-  
+
   if (IS_STICKY(fwin))
   {
     desk = 0xFFFFFFFE;
@@ -705,7 +706,7 @@ void ewmh_ComputeAndSetWorkArea(void)
   y = top;
   width = Scr.MyDisplayWidth - (left + right);
   height = Scr.MyDisplayHeight - (top + bottom);
-  
+
   if (Scr.Desktops->ewmh_working_area.x != x         ||
       Scr.Desktops->ewmh_working_area.y != y         ||
       Scr.Desktops->ewmh_working_area.width != width ||
@@ -713,7 +714,7 @@ void ewmh_ComputeAndSetWorkArea(void)
   {
     Scr.Desktops->ewmh_working_area.x = x;
     Scr.Desktops->ewmh_working_area.y = y;
-    Scr.Desktops->ewmh_working_area.width = width; 
+    Scr.Desktops->ewmh_working_area.width = width;
     Scr.Desktops->ewmh_working_area.height = height;
     ewmh_SetWorkArea();
   }
@@ -743,7 +744,7 @@ void ewmh_HandleDynamicWorkArea(void)
   y = dyn_top;
   width = Scr.MyDisplayWidth - (dyn_left + dyn_right);
   height = Scr.MyDisplayHeight - (dyn_top + dyn_bottom);
-  
+
   if (Scr.Desktops->ewmh_dyn_working_area.x != x         ||
       Scr.Desktops->ewmh_dyn_working_area.y != y         ||
       Scr.Desktops->ewmh_dyn_working_area.width != width ||
@@ -751,7 +752,7 @@ void ewmh_HandleDynamicWorkArea(void)
   {
     Scr.Desktops->ewmh_dyn_working_area.x = x;
     Scr.Desktops->ewmh_dyn_working_area.y = y;
-    Scr.Desktops->ewmh_dyn_working_area.width = width; 
+    Scr.Desktops->ewmh_dyn_working_area.width = width;
     Scr.Desktops->ewmh_dyn_working_area.height = height;
     /* here we may update the maximized window ...etc */
   }
@@ -822,7 +823,7 @@ float get_intersection(int x11, int y11, int x12, int y12,
     yb = min(y12, y22);
     ret = (xr - xl) * (yb - yt);
   }
-  if (use_percent && 
+  if (use_percent &&
       (x22 - x21) * (y22 - y21) != 0 && (x12 - x11) * (y12 - y11) != 0)
   {
     ret = 100 * max(ret / ((x22 - x21) * (y22 - y21)),
@@ -842,7 +843,7 @@ float EWMH_GetStrutIntersection(
   y21 = 0;
   x22 = Scr.Desktops->ewmh_working_area.x;
   y22 = Scr.MyDisplayHeight;
-  ret += get_intersection(x11, y11, x12, y12, x21, y21, x22, y22, use_percent); 
+  ret += get_intersection(x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
   /* right */
   x21 = Scr.Desktops->ewmh_working_area.x
     + Scr.Desktops->ewmh_working_area.width;
@@ -880,7 +881,7 @@ void EWMH_SetFrameStrut(FvwmWindow *fwin)
   /* right */
   val[1] = border_width;
   /* top */
-  val[2] = border_width + 
+  val[2] = border_width +
     ((HAS_TITLE(fwin) && !HAS_BOTTOM_TITLE(fwin))? fwin->title_g.height : 0);
   /* bottom */
   val[3] = border_width +
@@ -893,17 +894,9 @@ void EWMH_SetFrameStrut(FvwmWindow *fwin)
 /* **T*********************************************************************** *
  * allowed actions
  * ************************************************************************* */
-static
-Bool is_win_resizable(FvwmWindow *fwin)
-{
-  return (HAS_OVERRIDE_SIZE_HINTS(fwin) ||
-	  fwin->hints.min_width != fwin->hints.min_width ||
-	  fwin->hints.min_height != fwin->hints.max_height);
-}
-
 Bool ewmh_AllowsYes(EWMH_CMD_ARGS)
 {
-  return True; 
+  return True;
 }
 
 Bool ewmh_AllowsClose(EWMH_CMD_ARGS)
@@ -913,32 +906,17 @@ Bool ewmh_AllowsClose(EWMH_CMD_ARGS)
 
 Bool ewmh_AllowsMaximize(EWMH_CMD_ARGS)
 {
-  Bool r = check_if_function_allowed(F_MAXIMIZE, fwin, False, NULL);
-
-  /* should we do that ?? */
-#if 0
-  if (!is_win_resizable(fwin) && IS_FIXED(fwin))
-    r = False;
-#endif
-  return r;
+  return is_maximize_allowed(fwin, False);
 }
 
 Bool ewmh_AllowsMove(EWMH_CMD_ARGS)
 {
-  Bool r = check_if_function_allowed(F_MOVE, fwin, False, NULL);
-
-  if (IS_FIXED(fwin))
-    r = False;
-  return r;
+  return is_move_allowed(fwin, False);
 }
 
 Bool ewmh_AllowsResize(EWMH_CMD_ARGS)
 {
-  Bool r = check_if_function_allowed(F_RESIZE, fwin, False, NULL); 
-
-  if (!is_win_resizable(fwin))
-    r = False;
-  return r;
+  return is_resize_allowed(fwin, False);
 }
 
 void EWMH_SetAllowedActions(FvwmWindow *fwin)
@@ -1077,7 +1055,7 @@ int ewmh_HandleMenu(EWMH_CMD_ARGS)
   style->flags.has_no_title = 1;
   style->flag_mask.has_no_title = 1;
   style->change_mask.has_no_title = 1;
-  
+
   SSET_BORDER_WIDTH(*style, 0);
   style->flags.has_border_width = 1;
   style->flag_mask.has_border_width = 1;
@@ -1111,7 +1089,7 @@ int ewmh_HandleToolBar(EWMH_CMD_ARGS)
   SCSET_DO_CIRCULATE_SKIP(*style, 1);
 
   /* no title ? MWM hints should be used by the app but ... */
-  
+
   return 1;
 }
 
@@ -1161,7 +1139,7 @@ int ksmserver_workarround(FvwmWindow *fwin)
       layer = Scr.TopLayer + 2;
     else
       layer = Scr.TopLayer + 1;
-    
+
     new_layer(fwin, layer);
     return 1;
   }
@@ -1218,7 +1196,7 @@ void EWMH_WindowDestroyed(void)
 }
 
 /* ************************************************************************* *
- * Init Stuff 
+ * Init Stuff
  * ************************************************************************* */
 static
 int set_all_atom_in_list(ewmh_atom *list)
@@ -1318,7 +1296,7 @@ void EWMH_Init(void)
 }
 
 /* ************************************************************************* *
- * Exit Stuff 
+ * Exit Stuff
  * ************************************************************************* */
 void EWMH_ExitStuff(void)
 {

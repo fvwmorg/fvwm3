@@ -1114,8 +1114,8 @@ A: Excerpt from the man page:
    or module input is pending.  Specifically, new Style options that
    are set in a function are not applied until after the function has
    completed.  This can sometimes lead to unwanted effects.  To force
-   that all pending changes are applied immediately, use the UpdateStyles,
-   Refresh or RefreshWindow commands.
+   that all pending changes are applied immediately, use the
+   UpdateStyles, Refresh or RefreshWindow commands.
 
 ----------------------------------------------------------------------
 
@@ -1123,9 +1123,9 @@ A: Excerpt from the man page:
       get focus/be moved/be resized/be closed/be shaded...  How?
 
 A: The following discusses a general solution, you should substitute
-   application names used in examples as well as fvwm commands (Move,
-   Iconify, Close) with the ones you need.  To get resource names of
-   an application you want to catch, use FvwmIdent module.
+   the application names used in the examples as well as fvwm commands
+   (Move, Iconify, Close) with the ones you need.  To get resource
+   names of an application you want to catch, use FvwmIdent module.
 
    The first possible approach to achieve what you want is to have a
    separate function to start your application, like:
@@ -1139,10 +1139,10 @@ A: The following discusses a general solution, you should substitute
    This approach has 3 problems:
      1) You need to use StartKedit function to start your application,
         this will not work if you start it from the command line.
-     2) If for some reason the application is not started, FVWM will
-        wait for it in Wait, you will need to press Ctrl-Alt-Esc.
+     2) If for some reason the application is not started, FVWM waits
+        for it in Wait, you will need to press Ctrl-Alt-Esc.
      3) If you have more than one kedit window, it is not guaranteed
-        that the right one will be used.
+        that the right one is resized.
 
    But this approach has one plus - it also enables any fvwm commands
    that you may want to issue before executing your command.  For example,
@@ -1159,7 +1159,7 @@ A: The following discusses a general solution, you should substitute
 
 
    The second approach is to use FvwmEvent, this solves the first two
-   problems (in 2.2) or all three problems (in 2.3 and 2.4).
+   problems (in fvwm 2.2) or all three problems (in fvwm 2.3 and later).
 
    The sample to use with fvwm 2.2.3+ versions (this resizes the newly
    created window "My Window", supposing you have only one such window):

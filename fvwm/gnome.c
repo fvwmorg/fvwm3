@@ -29,6 +29,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "gnome.h"
+#include "move_resize.h"
 #include "stack.h"
 #include "update.h"
 #include "style.h"
@@ -468,7 +469,7 @@ GNOME_SetHints(FvwmWindow *fwin)
     val |= WIN_STATE_STICKY;
   if (IS_SHADED(fwin))
     val |= WIN_STATE_SHADED;
-  if (IS_FIXED(fwin))
+  if (is_move_allowed(fwin, False))
     val |= WIN_STATE_FIXED_POSITION;
 
   XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,

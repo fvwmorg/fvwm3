@@ -1323,12 +1323,35 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  SMSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 1);
 	  SCSET_HAS_DEPRESSABLE_BORDER(*ptmpstyle, 1);
 	}
-        else if (StrEquals(token, "FixedPosition"))
+        else if (StrEquals(token, "FixedPosition") ||
+		 StrEquals(token, "FixedUSPosition"))
 	{
 	  found = True;
 	  SFSET_IS_FIXED(*ptmpstyle, 1);
 	  SMSET_IS_FIXED(*ptmpstyle, 1);
 	  SCSET_IS_FIXED(*ptmpstyle, 1);
+	}
+        else if (StrEquals(token, "FixedPPosition"))
+	{
+	  found = True;
+	  SFSET_IS_FIXED_PPOS(*ptmpstyle, 1);
+	  SMSET_IS_FIXED_PPOS(*ptmpstyle, 1);
+	  SCSET_IS_FIXED_PPOS(*ptmpstyle, 1);
+	}
+        else if (StrEquals(token, "FixedSize") ||
+		 StrEquals(token, "FixedUSSize"))
+	{
+	  found = True;
+	  SFSET_IS_SIZE_FIXED(*ptmpstyle, 1);
+	  SMSET_IS_SIZE_FIXED(*ptmpstyle, 1);
+	  SCSET_IS_SIZE_FIXED(*ptmpstyle, 1);
+	}
+        else if (StrEquals(token, "FixedPSize"))
+	{
+	  found = True;
+	  SFSET_IS_PSIZE_FIXED(*ptmpstyle, 1);
+	  SMSET_IS_PSIZE_FIXED(*ptmpstyle, 1);
+	  SCSET_IS_PSIZE_FIXED(*ptmpstyle, 1);
 	}
         break;
 
@@ -2683,13 +2706,36 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
         break;
 
       case 'v':
-        if (StrEquals(token, "VariablePosition"))
-	  {
-	    found = True;
-	    SFSET_IS_FIXED(*ptmpstyle, 0);
-	    SMSET_IS_FIXED(*ptmpstyle, 1);
-	    SCSET_IS_FIXED(*ptmpstyle, 1);
-	  }
+        if (StrEquals(token, "VariablePosition") ||
+	    StrEquals(token, "VariableUSPosition"))
+	{
+	  found = True;
+	  SFSET_IS_FIXED(*ptmpstyle, 0);
+	  SMSET_IS_FIXED(*ptmpstyle, 1);
+	  SCSET_IS_FIXED(*ptmpstyle, 1);
+	}
+        else if (StrEquals(token, "VariablePPosition"))
+	{
+	  found = True;
+	  SFSET_IS_FIXED_PPOS(*ptmpstyle, 0);
+	  SMSET_IS_FIXED_PPOS(*ptmpstyle, 1);
+	  SCSET_IS_FIXED_PPOS(*ptmpstyle, 1);
+	}
+        else if (StrEquals(token, "VariableSize") ||
+		 StrEquals(token, "VariableUSSize"))
+	{
+	  found = True;
+	  SFSET_IS_SIZE_FIXED(*ptmpstyle, 0);
+	  SMSET_IS_SIZE_FIXED(*ptmpstyle, 1);
+	  SCSET_IS_SIZE_FIXED(*ptmpstyle, 1);
+	}
+        else if (StrEquals(token, "VariablePSize"))
+	{
+	  found = True;
+	  SFSET_IS_PSIZE_FIXED(*ptmpstyle, 0);
+	  SMSET_IS_PSIZE_FIXED(*ptmpstyle, 1);
+	  SCSET_IS_PSIZE_FIXED(*ptmpstyle, 1);
+	}
         break;
 
       case 'w':
@@ -3222,7 +3268,11 @@ void check_window_style_change(
   /*
    *  is_fixed
    */
-  if (SCIS_FIXED(*ret_style) || SCHAS_OVERRIDE_SIZE(*ret_style))
+  if (SCIS_FIXED(*ret_style) ||
+      SCIS_FIXED_PPOS(*ret_style) ||
+      SCIS_SIZE_FIXED(*ret_style) ||
+      SCIS_PSIZE_FIXED(*ret_style) ||
+      SCHAS_OVERRIDE_SIZE(*ret_style))
   {
     flags->do_update_ewmh_allowed_actions = True;
   }

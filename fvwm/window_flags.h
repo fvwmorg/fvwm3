@@ -227,6 +227,17 @@
 #define IS_FIXED(fw)           ((fw)->flags.common.s.is_fixed)
 #define SET_FIXED(fw,x)        (fw)->flags.common.s.is_fixed = !!(x)
 #define SETM_FIXED(fw,x)       (fw)->flag_mask.common.s.is_fixed = !!(x)
+#define IS_FIXED_PPOS(fw)      ((fw)->flags.common.s.is_fixed_ppos)
+#define SET_FIXED_PPOS(fw,x)   (fw)->flags.common.s.is_fixed_ppos = !!(x)
+#define SETM_FIXED_PPOS(fw,x)  (fw)->flag_mask.common.s.is_fixed_ppos = !!(x)
+#define IS_SIZE_FIXED(fw)      ((fw)->flags.common.s.is_size_fixed)
+#define SET_SIZE_FIXED(fw,x)   (fw)->flags.common.s.is_size_fixed = !!(x)
+#define SETM_SIZE_FIXED(fw,x)  (fw)->flag_mask.common.s.is_size_fixed = !!(x)
+#define IS_PSIZE_FIXED(fw) ((fw)->flags.common.s.is_psize_fixed)
+#define SET_PSIZE_FIXED(fw,x) \
+                               (fw)->flags.common.s.is_psize_fixed = !!(x)
+#define SETM_PSIZE_FIXED(fw,x) \
+                            (fw)->flag_mask.common.s.is_psize_fixed = !!(x)
 #define HAS_DEPRESSABLE_BORDER(fw) ((fw)->flags.common.s.has_depressable_border)
 
 

@@ -1,3 +1,27 @@
+2001-12-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.h (struct):
+	* fvwm/window_flags.h (IS_FIXED_PPOS):
+	* fvwm/style.h (SCSET_IS_FIXED_PPOS):
+	* fvwm/style.c (parse_and_set_window_style):
+	(check_window_style_change):
+	implemented new styles FixedPPosition, FixedUSPosition, FixedSize,
+	FixedUSSize, FixedPSize and Variable PPosition, ...
+
+	* fvwm/events.c (HandleConfigureRequest):
+	* fvwm/ewmh.c (ewmh_AllowsResize):
+	(is_resize_allowed):
+	(ewmh_AllowsMove):
+	(ewmh_AllowsMove):
+	* fvwm/gnome.c (GNOME_SetHints):
+	(AnimatedMoveAnyWindow):
+	(CMD_ResizeMove):
+	use new functions
+	* fvwm/move_resize.c (is_move_allowed):
+	(is_resize_allowed):
+	(is_maximize_allowed):
+	new functions to clean up some code
+
 2001-12-15  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm2.1: Doc fixups.

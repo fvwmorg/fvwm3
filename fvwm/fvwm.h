@@ -228,9 +228,12 @@ typedef struct
 #define NO_ICON_OVERRIDE        2
 #define ICON_OVERRIDE_MASK      3
     unsigned is_fixed : 1;
+    unsigned is_fixed_ppos : 1;
     unsigned is_icon_sticky : 1;
     unsigned is_icon_suppressed : 1;
     unsigned is_lenient : 1;
+    unsigned is_size_fixed : 1;
+    unsigned is_psize_fixed : 1;
     unsigned use_icon_position_hint : 1;
     unsigned use_indexed_window_name : 1;
     unsigned use_indexed_icon_name : 1;
@@ -318,7 +321,7 @@ typedef struct
   unsigned has_ewmh_mini_icon : 1; /* says if the app have an ewmh icon of
 				    * acceptable size for a mini icon in its
 				    * list of icons */
-  unsigned use_ewmh_icon : 1; /* the ewmh icon is used as icon pixmap */     
+  unsigned use_ewmh_icon : 1; /* the ewmh icon is used as icon pixmap */
 } window_flags;
 
 /* Window mask for Circulate and Direction functions */

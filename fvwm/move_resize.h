@@ -16,6 +16,9 @@
 #ifndef _MOVE_RESIZE_
 #define _MOVE_RESIZE_
 
+Bool is_move_allowed(FvwmWindow *tmp_win, Bool is_user_request);
+Bool is_resize_allowed(FvwmWindow *tmp_win, Bool is_user_request);
+Bool is_maximize_allowed(FvwmWindow *tmp_win, Bool is_user_request);
 void switch_move_resize_grid(Bool state);
 void AnimatedMoveOfWindow(
   Window w,int startX,int startY,int endX, int endY,Bool fWarpPointerToo,
