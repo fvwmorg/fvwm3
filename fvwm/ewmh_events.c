@@ -43,7 +43,7 @@
 
 extern ewmh_atom ewmh_atom_wm_state[];
 
-#define DEBUG_EWMH_INIT_STATE 1
+#define DEBUG_EWMH_INIT_STATE 0
 /* ************************************************************************* *
  * root
  * ************************************************************************* */
