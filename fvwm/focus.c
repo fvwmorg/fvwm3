@@ -250,12 +250,15 @@ static void MoveFocus(
 {
   FvwmWindow *ffw_old = get_focus_window();
   Bool accepts_input_focus = do_accept_input_focus(Fw);
+#if 0
   FvwmWindow *ffw_new;
+#endif
 
   if (!do_force && Fw == ffw_old)
   {
     if (ffw_old)
     {
+#if 0
       /*
           RBW - 2001/08/17 - For a MouseFocusClickRaises win, we must not drop
           the grab, since the (potential) click hasn't happened yet.
@@ -265,6 +268,9 @@ static void MoveFocus(
       {
         focus_grab_buttons(ffw_old, True);
       }
+#else
+      focus_grab_buttons(ffw_old, True);
+#endif
     }
     return;
   }
@@ -273,6 +279,7 @@ static void MoveFocus(
   {
     if (accepts_input_focus)
     {
+#if 0
       /*  RBW - Ibid.  */
       ffw_new = get_focus_window();
       if (ffw_new)
@@ -283,6 +290,9 @@ static void MoveFocus(
 	  focus_grab_buttons(ffw_new, True);
 	}
       }
+#else
+      focus_grab_buttons(get_focus_window(), True);
+#endif
     }
     focus_grab_buttons(ffw_old, False);
   }
@@ -645,6 +655,7 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
     Scr.Ungrabbed = (do_grab_window) ? NULL : tmp_win;
     for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
     {
+#if 0
       /*  RBW - Set flag for grab or ungrab according to how we were called. */
       if (!is_focused||1)
       {
@@ -654,6 +665,11 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
       {
         do_grab = !(grab_buttons & (1 << i));
       }
+#else
+      if ((grab_buttons & (1 << i)) == (tmp_win->grabbed_buttons & (1 << i)))
+	continue;
+      do_grab = !!(grab_buttons & (1 << i));
+#endif
 
       {
 	register unsigned int mods;
