@@ -3,6 +3,8 @@
 .\" - Do not use \f... formatting instructions.
 .\" - Avoid single and double quotes wherever possible.
 .\"
+.\" For further details, please refer to the Linux Man-Page howto.
+.\"
 .\"  context                                typeface       example
 .\"  -------------------------------------- -------------  -----------------
 .\"  filenames:                             italics (.I)   .I .fvwm2rc
@@ -10,7 +12,7 @@
 .\"  arguments of command line options:     italics (.I)   .BI \-cmd command
 .\"  built in commands:                     bold (.B)      .B Move
 .\"  references to built in commands:       bold (.B)      .RB See Move
-.\"  references to man page section:        bold (.B)      .RB See SYNOPSIS
+.\"  references to man page sections:       bold (.B)      .RB See SYNOPSIS
 .\"  built in command options:              italics (.I)   .BI "Move " "0 0"
 .\"  environment variables:                 italics (.I)   .I $DISPLAY
 .\"  key names:                             small (.SM)    .SM Tab
@@ -20,7 +22,7 @@
 .\"  links to web pages:                    bold (.B)      .B http://fvwm.org
 .\"  acronyms:                              small (.SM)    .SM ICCCM
 .\"
-.\" t
+.\"
 .\" @(#)fvwm2.3 8/14/1999
 .de EX		\"Begin example
 .ne 5
@@ -44,20 +46,17 @@ fvwm2 \- F(?) Virtual Window Manager (version 2) for X11
 .BI "fvwm2 [\-blackout] [\-clientId " id "] [\-cmd " config_command "] [\-d " displayname "] [\-debug] [\-f " config_file "] [\-h] [\-replace] [\-restore] [\-s] [\-version] [\-visual " "visual class" "] [\-visualId " id "]"
 
 .SH DESCRIPTION
-Fvwm is a window manager for X11.  It is a derivative of
-twm, redesigned to
+Fvwm is a window manager for X11.  It is designed to
 .IR "minimize memory consumption" ,
 provide a
 .I 3-D look
-to window frames, and provide a simple
+to window frames, and a simple
 .IR "virtual desktop" .
-Version 2 uses only slightly more memory than 1.xx, mostly due to some
-global options being able to be window specific now.
 
-Note that there are several window managers around that have 'fvwm'
-in their name.  In the past, versions 2.x of fvwm was commonly called fvwm2
-to distinguish it from the former version 1.x (fvwm or even fvwm1).
-Since version 1.x has been replaced by version 2.x
+Note that there are several window managers around that have "fvwm"
+in their name.  In the past, version 2.x of fvwm was commonly
+called fvwm2 to distinguish it from the former version 1.x (fvwm
+or even fvwm1).  Since version 1.x has been replaced by version 2.x
 a long time ago we will simply call version 2.x and all versions
 to come fvwm throughout this document, although the executable
 program is named fvwm2.  There is a fvwm offspring called fvwm95.
@@ -71,7 +70,9 @@ fvwm95 for several years now.  Unfortunately Red Hat (a popular
 Linux distributor) has a pre-configured fvwm package based on
 fvwm version 2.x that is called fvwm95 too.
 
-Fvwm provides both a large virtual desktop and
+Fvwm provides both a large
+.I virtual desktop
+and
 .I multiple disjoint desktops
 which can be used separately or together.  The virtual desktop
 allows you to pretend that your video screen is really quite large,
@@ -81,9 +82,9 @@ work at, but each screen is completely unrelated to the others.
 
 Fvwm provides
 .I keyboard accelerators
-which allow you to perform most
-window-manager functions, including moving and resizing windows, and
-operating the window-manager's menus, using keyboard shortcuts.
+which allow you to perform most window-manager functions, including
+moving and resizing windows, and operating the menus, using
+keyboard shortcuts.
 
 Fvwm has also blurred the distinction between configuration commands
 and built-in commands that most window-managers make.  Configuration
@@ -92,18 +93,18 @@ function bindings, while built-in commands typically do things like
 raise and lower windows.  Fvwm makes no such distinction, and allows,
 to the extent that is practical, anything to be changed at any time.
 
-Other noteworthy differences between Fvwm and other X11 window managers
-are the introduction of the
-.B SloppyFocus
+Other noteworthy differences between Fvwm and other X11 window
+managers are the introduction of the
+.I SloppyFocus
 and per-window focus methods.
-SloppyFocus is focus-follows-mouse, but focus is not removed from
-windows when the mouse leaves a window and enters the root window.
-When sloppy focus is used as the default focus style, it is nice to
+.I SloppyFocus is focus-follows-mouse, but focus is not removed
+from windows when the mouse leaves a window and enters the root
+window.  When
+.I SloppyFocus is used as the default focus style, it is nice to
 make windows in which you do not typically type into (xmag, xman,
 xgraph, xclock, xbiff, etc)
-.BR "NeverFocus" ,
-so that your terminal
-window doesn't lose focus unnecessarily.
+.IR NeverFocus ,
+so that your terminal window doesn't lose focus unnecessarily.
 
 .SH OPTIONS
 These are the command line options that are recognized by fvwm:
@@ -113,7 +114,8 @@ This option is provided for backward compatibility only.  Blacking out
 the screen during startup is not necessary anymore.
 .TP
 .BI "-clientId " id
-This options is used when fvwm is restarted by means of the 'Restart'
+This options is used when fvwm is restarted by means of the
+.B Restart
 command or by the session manager.  This option is ignored if fvwm
 was compiled without session management.
 .TP
@@ -123,8 +125,7 @@ Causes fvwm to use
 instead of
 .RB """"Read
 .IR .fvwm2rc """ \""
-as its initialization command.
-(Note that up to 10
+as its initialization command.  (Note that up to 10
 .BR \-f " and " \-cmd
 parameters can be given, and they are executed in the order specified.)
 .TP
@@ -153,26 +154,28 @@ as its initialization file.  This is equivalent to
 A short usage description is printed.
 .TP
 .BI "-replace"
-Try to take over from a previously running wm. This will not work
+Try to take over from a previously running wm.  This will not work
 unless the other wm is
 .SM ICCCM
 2.0 compliant.
 .TP
 .BI "-restore"
-This option is used when fvwm is restarted by means of the 'Restart'
+This option is used when fvwm is restarted by means of the
+.B Restart
 command or by the session manager.
 .TP
 .BI "-s"
-On a multi-screen display, run fvwm only on the screen named in
-the
+On a multi-screen display, run fvwm only on the screen named in the
 .I $DISPLAY
-environment variable or provided through the -d
+environment variable or provided through the
+.B -d
 option. Normally, fvwm will attempt to start up on all screens
 of a multi-screen display.
 .TP
 .BI "-version"
-Prints the version of fvwm to stderr. Also prints an information about the
-compiled in support for readline, rplay, stroke, xpm, imlib, gnome and
+Prints the version of fvwm to
+.IR stderr . Also prints an information about the compiled in
+support for readline, rplay, stroke, xpm, imlib, gnome and
 session management.
 .TP
 .BI "-visual " visual_class
@@ -180,17 +183,16 @@ Causes fvwm to use
 .I visual_class
 for the window borders and menus.
 .I visual_class
-can be StaticGray, GrayScale, StaticColor, PseudoColor,
-TrueColor or DirectColor.
+can be "StaticGray", "GrayScale", "StaticColor", "PseudoColor",
+"TrueColor" or "DirectColor".
 .TP
 .BI "-visualId " id
 Causes fvwm to use
 .I id
-as the visualID for the window borders
-and menus.
+as the visualId for the window borders and menus.
 .I id
-can be specified as N for decimal or 0xN for
-hexadecimal.  See xdpyinfo for a list of supported visuals.
+can be specified as N for decimal or 0xN for hexadecimal.
+See man page of xdpyinfo for a list of supported visuals.
 
 .SH ANATOMY OF A WINDOW
 Fvwm puts a decorative border around most windows.  This border
@@ -221,36 +223,45 @@ command below.
 Fvwm provides multiple virtual desktops for users who wish to
 use them.  The screen is a viewport onto a
 .I desktop
-which may be larger
-than the screen.  Several distinct desktops can be accessed (concept:
-one desktop for each project, or one desktop for each application,
-when view applications are distinct).  Since each desktop can be
-larger than the physical screen, divided into m by n
+which may be larger than the screen.  Several distinct desktops
+can be accessed (concept: one desktop for each project, or one
+desktop for each application, when view applications are
+distinct).  Since each desktop can be larger than the physical
+screen, divided into m by n
 .I pages
-which are
-each the size of the physical screen, windows which are larger than
-the screen or large groups of related windows can easily be viewed.
+which are each the size of the physical screen, windows which
+are larger than the screen or large groups of related windows
+can easily be viewed.
 
 The (m by n) size (i.e. number of pages) of the virtual desktops can be
-changed any time, by using the DeskTopSize built-in command.  All
-virtual desktops must be (are) the same size.  The total number of
-distinct desktops does not need to be specified, but is limited to
-approximately 4 billion total.  All windows on a range of desktops can
-be viewed in the Pager, a miniature view of the desktops.  The pager
-is an accessory program, called a module, which is not essential for
-the window manager to operate.  Windows may also be listed, along with
-their geometries, in a window list, accessible as a pop-up menu, or as
-a separate window, called the FvwmWinList (another module).
+changed any time, by using the
+.B DeskTopSize
+built-in command.  All virtual desktops must be (are) the same
+size.  The total number of distinct desktops does not need to be
+specified, but is limited to approximately 4 billion total.
+All windows on a range of desktops can be viewed in the
+.BR FvwmPager ,
+a miniature view of the desktops.  The pager is an accessory
+program, called a module, which is not essential for the window
+manager to operate.  Windows may also be listed, along with their
+geometries, in a window list, accessible as a pop-up menu, or as
+a separate window, called the
+.B FvwmWinList
+(another module).
 
 Fvwm keeps the windows on the desktop in a layered stacking order;
 a window in a lower layer will never obscure a window in a higher layer.
 The layer of a window can be changed by using the
 .B Layer
-command.
-The concept of layers is a generalization of the StaysOnTop flag of older
-fvwm versions. The StaysOnTop and StaysPut style options are now implemented
-by putting the windows in suitable layers and the previously missing
-StaysOnBottom style option has been added.
+command.  The concept of layers is a generalization of the
+.I StaysOnTop
+flag of older fvwm versions. The
+.IR StaysOnTop " and " StaysPut
+.B Style
+options are now implemented by putting the windows in suitable
+layers and the previously missing
+.IB StaysOnBottom Style
+option has been added.
 
 .B Sticky
 windows are windows which transcend the virtual desktop by
@@ -281,8 +292,8 @@ specified as something like:
 xterm -geometry -5-5
 .EE
 will generally place the window's lower right hand corner 5 pixels from the
-lower right corner of the visible portion of the screen. Not all
-applications support window geometries with negative offsets. Some will
+lower right corner of the visible portion of the screen.  Not all
+applications support window geometries with negative offsets.  Some will
 place the window's upper right hand corner 5 pixels above and to the left
 of the upper left hand corner of the screen; others may do just plain
 bizarre things.
@@ -297,14 +308,12 @@ you always invoke the application from the same page.
 A better way to place windows on a different page or desk from the
 currently mapped viewport is to use the
 .B StartsOnPage
-style specification
-(the successor to the older
+style specification (the successor to the older
 .I StartsOnDesk
 style) in the
 .I .fvwm2rc
-configuration file. The placement is
-consistent: it does not depend on your current location on the
-virtual desktop.
+configuration file.  The placement is consistent: it does not
+depend on your current location on the virtual desktop.
 
 Some applications that understand standard Xt command line arguments
 and X resources, like xterm and xfontsel, allow the user to specify
@@ -317,7 +326,7 @@ will start an xterm on desk number 1;
 xterm -xrm "*Page:3 2 1"
 .EE
 will start an xterm two pages to the right and one down from the upper
-left hand page of desk number 3. Not all applications understand the use
+left hand page of desk number 3.  Not all applications understand the use
 of these options, however.  You could achieve the same results with
 the following lines in your
 .I .Xdefaults
@@ -332,9 +341,9 @@ XTerm*Page: 3 2 1
 
 .SH INITIALIZATION
 During initialization, fvwm will search for a configuration file
-which describes key and button bindings, and a few other things.  The
-format of these files will be described later.
-Fvwm first searches for configurations files using the command
+which describes key and button bindings, and a few other things.
+The format of these files will be described later.  Fvwm first
+searches for configurations files using the command
 .RB """"Read
 .IR .fvwm2rc """. \""
 This will look for
@@ -351,8 +360,7 @@ create a starting configuration file.
 Fvwm will set two environment variables which will be inherited
 by its children.  These are
 .I $DISPLAY
-which describes the display on
-which fvwm is running.
+which describes the display on which fvwm is running.
 .I $DISPLAY
 may be
 .I unix:0.0
@@ -368,7 +376,15 @@ should be used for local connections, as it may use Unix-domain sockets,
 which are faster.
 
 If you want to start some applications or modules with fvwm,
-you can simply put 'Exec app' or 'Module FvwmXxx' into your
+you can simply put
+.EX
+Exec app
+.EE
+or
+.EX
+Module FvwmXxx
+.EE
+into your
 .IR .fvwm2rc ,
 but it is not recommended; do this only if you know what you are doing.
 It is usually critical to start applications or modules after
@@ -377,33 +393,36 @@ is read, because it contains styles or module configurations which can affect
 window appearance and functionality.
 
 The standard way to start applications or modules on fvwm's start up is to
-add them to an initialization function (usually StartFunction or
-InitFunction). This way they are only started after fvwm reads
+add them to an initialization function (usually "StartFunction" or
+"InitFunction").  This way they are only started after fvwm reads
 the entire
 .IR .fvwm2rc .
 
 Fvwm has three special functions for initialization:
-StartFunction, which is executed on startups and restarts; InitFunction
-and RestartFunction, which are executed during Initialization and Restarts
-(respectively) just after StartFunction.  These may be customized
+"StartFunction", which is executed on startups and restarts; "InitFunction"
+and "RestartFunction", which are executed during initialization and restarts
+(respectively) just after "StartFunction".  These may be customized
 in a user's
 .I .fvwm2rc
-file via the AddToFunc facility (described later) to start up
-modules, xterms, or whatever you'd like to have started by fvwm.
+file via the
+.B AddToFunc
+facility (described later) to start up modules, xterms, or whatever
+you'd like to have started by fvwm.
 
-Fvwm has also a special exit function: ExitFunction, executed
-when exiting or restarting before actually quitting.
+Fvwm has also a special exit function:
+.BR ExitFunction ,
+executed when exiting or restarting before actually quitting.
 It could be used to explicitly kill modules, etc.
 
-If fvwm is run under a session manager, functions SessionInitFunction
-and SessionRestartFunction are executed instead of InitFunction and
-RestartFunction. This helps to define a user's
+If fvwm is run under a session manager, functions "SessionInitFunction"
+and "SessionRestartFunction" are executed instead of "InitFunction" and
+"RestartFunction". This helps to define a user's
 .I .fvwm2rc
-file to be good for both
-running under a session manager and without it. Generally it is a bad idea to
-start xterms or other applications in Session* functions. Also someone can
-decide to start different modules while running under a session manager or not.
-For the similar purposes SessionExitFunction is used instead of ExitFunction.
+file to be good for both running under a session manager and without
+it.  Generally it is a bad idea to start xterms or other applications
+in "Session*" functions.  Also someone can decide to start different
+modules while running under a session manager or not.  For the similar
+purposes §SessionExitFunction§ is used instead of "ExitFunction".
 
 .EX
 DestroyFunc StartFunction
@@ -436,25 +455,26 @@ AddToFunc SessionRestartFunction
 You don't need to define all special functions if some are empty.
 
 .SH COMPILATION OPTIONS
-Fvwm has a number of compile-time options to reduce memory usage
-by limiting the use of certain features.  If you
-have trouble using a certain command or feature, check to see if
-support for it was included at compile time.  Optional features are
-described in the
+Fvwm has a number of compile-time options.  If you have trouble
+using a certain command or feature, check to see if support for
+it was included at compile time.  Optional features are described
+in the
 .I config.h
-file.
+file that is generated during compilation.
 
 .SH ICONS
-The basic Fvwm configuration uses monochrome bitmap icons,
-similar to twm.  If XPM extensions are compiled in, then color
-icons similar to ctwm, MS-Windows, or the Macintosh icons can be used.
+The basic fvwm configuration uses monochrome bitmap icons.  If
+.B XPM
+extensions are compiled in, then color icons can be used.
 In order to use these options you will need the XPM package, as
 described in the
 .I INSTALL.fvwm
 file.
 
-If both the SHAPE and XPM options are compiled in you will get shaped
-color icons, which are very spiffy.
+If both the
+.BR SHAPE " and " XPM
+options are compiled in you will get shaped color icons, which
+are very spiffy.
 
 .SH MODULES
 A module is a separate program which runs as a separate Unix process
@@ -462,20 +482,22 @@ but transmits commands to fvwm to execute.  Users can write
 their own modules to do any weird or bizarre manipulations without
 bloating or affecting the integrity of fvwm itself.
 
-Modules MUST be spawned by fvwm so that it can set up two pipes for
+Modules must be spawned by fvwm so that it can set up two pipes for
 fvwm and the module to communicate with.  The pipes will already be
 open for the module when it starts and the file descriptors for the
 pipes are provided as command line arguments.
 
 Modules can be spawned during fvwm at any time during the X
-session by use of the Module built-in command.  Modules can exist for
-the duration of the X session, or can perform a single task and exit.
-If the module is still active when fvwm is told to quit, then
-fvwm will close the communication pipes and wait to receive a
-SIGCHLD from the module, indicating that it has detected the pipe
-closure and has exited.  If modules fail to detect the pipe closure
-fvwm will exit after approximately 30 seconds anyway.  The
-number of simultaneously executing modules is limited by the operating
+session by use of the
+.B Module
+built-in command.  Modules can exist for the duration of the X
+session, or can perform a single task and exit.  If the module
+is still active when fvwm is told to quit, then fvwm will close
+the communication pipes and wait to receive a SIGCHLD from the
+module, indicating that it has detected the pipe closure and has
+exited.  If modules fail to detect the pipe closure fvwm will
+exit after approximately 30 seconds anyway.  The number of
+simultaneously executing modules is limited by the operating
 system's maximum number of simultaneously open files, usually between
 60 and 256.
 
@@ -483,21 +505,24 @@ Modules simply transmit text commands to the fvwm built-in
 command engine.  Text commands are formatted just as in the case of a
 mouse binding in the
 .I .fvwm2rc
-setup file.  Certain auxiliary
-information is also transmitted, as in the sample module FvwmButtons.
-The FvwmButtons module is documented in its own man page.
+setup file.  Certain auxiliary information is also transmitted,
+as in the sample module
+.BR FvwmButtons .
+The
+.B FvwmButtons
+module is documented in its own man page.
 
 .SH ICCCM COMPLIANCE
 Fvwm attempts to be
 .SM ICCCM
 2.0 compliant.  In addition,
 .SM ICCCM
-states that it should be possible for applications to receive ANY
+states that it should be possible for applications to receive any
 keystroke, which is not consistent with the keyboard shortcut approach
-used in fvwm and most other window managers. In particular you
+used in fvwm and most other window managers.  In particular you
 cannot have the same keyboard shortcuts working with your fvwm and
-another fvwm running within Xnest (a nested X server). The same problem
-exists with mouse bindings.
+another fvwm running within Xnest (a nested X server running in a
+window).  The same problem exists with mouse bindings.
 
 The
 .SM ICCCM
@@ -508,9 +533,9 @@ WM_HINTS(WM_HINTS):
 .EE
 should not be given the keyboard input focus by the window manager.
 These windows can take the input focus by themselves, however.  A
-number of applications (e.g. Contool) set this property, and yet
-expect the window-manager to give them the keyboard focus anyway,
-so fvwm provides a window-style,
+number of applications set this property, and yet expect the
+window-manager to give them the keyboard focus anyway, so fvwm
+provides a window-style,
 .IR Lenience ", "
 which will allow fvwm to overlook this
 .SM ICCCM
@@ -520,24 +545,25 @@ The differences between
 .SM ICCCM
 1.1 and 2.0 include the ability to take over from a running
 .SM ICCCM
- 2.0 compliant window manager; thus
+2.0 compliant window manager; thus
 .EX
 fvwm2; vi .fvwm2rc; fvwm2 -replace
 .EE
-will resemble the Restart command. It is not exactly the same as the
-Restart command, since killing the previously running wm may terminate
-your X session, if the wm was started as the last client in your
+will resemble the
+.B Restart
+command.  It is not exactly the same, since killing the previously
+running wm may terminate your X session, if the wm was started as
+the last client in your
 .IR .Xclients " or " .Xsession
 file.
 
 Further additions are support for client-side colormap installation (see the
 .SM ICCCM
-for details) and the urgency hint. Clients can set this hint in
+for details) and the urgency hint.  Clients can set this hint in
 the WM_HINTS property of their window and expect the window manager
-to attract the users attention to the window. Fvwm has two re-definable
-functions for this purpose, UrgencyFunc and UrgencyDoneFunc, which
-are executed when the flag is set/cleared.
-Their default definitions are:
+to attract the users attention to the window.  Fvwm has two re-definable
+functions for this purpose, "UrgencyFunc" and "UrgencyDoneFunc", which
+are executed when the flag is set/cleared.  Their default definitions are:
 .EX
 AddToFunc UrgencyFunc
  + I Iconify off
@@ -560,9 +586,14 @@ support is a compile time option.
 .SH M4 PREPROCESSING
 .PP
 M4 pre-processing is handled by a module in fvwm.  To get more
-details, try man FvwmM4.  In short, if you want fvwm to parse your
-files with m4, then replace the word "Read" with "FvwmM4" in
-your
+details, try man
+.BR FvwmM4 .
+In short, if you want fvwm to parse your files with m4, then
+replace the command
+.B Read
+with
+.B FvwmM4
+in your
 .I .fvwm2rc
 file (if it appears at all), and start fvwm with the command
 .EX
@@ -579,7 +610,8 @@ the M4 section above, but replace "m4" with "cpp".
 .PP
 Windows can be automatically raised when it receives focus, or some
 number of milliseconds after it receives focus, by using the
-auto-raise module, FvwmAuto.
+auto-raise module,
+.BR FvwmAuto .
 
 .SH CONFIGURATION FILES
 The configuration file is used to describe mouse and button bindings,
@@ -594,34 +626,119 @@ Lines beginning with '#' will be ignored by fvwm.  Lines
 starting with '*' are expected to contain module configuration
 commands (rather than configuration commands for fvwm itself).
 Like in shell scripts embedded newlines in a configuration file line
-can be quoted by preceding them with a backslash. All lines linked
-in this fashion are treated as a single line. The newline itself is
+can be quoted by preceding them with a backslash.  All lines linked
+in this fashion are treated as a single line.  The newline itself is
 ignored.
 
 Fvwm makes no distinction between configuration commands and built-in
-commands, so anything mentioned in the built-in commands section  can
+commands, so anything mentioned in the built-in commands section can
 be placed on a line by itself for fvwm to execute as it reads the
 configuration file, or it can be placed as an executable command in a
 menu or bound to a mouse button or a keyboard key.  It is left as an
 exercise for the user to decide which function make sense for
 initialization and which ones make sense for run-time.
 
-.SH INTERNATIONALIZATION
-Internationalized fvwm enables to display not only LATIN-1 characters
-but also multi byte characters such as Japanese, Korean, etc. You should
-set up your environment variable
-.IR LC_TYPE " or " LANG ,
-to enable this feature.  Also, you should specify proper
-.I FONTSET
-instead of
-.IR FONT .
-Note that no catalog-file or input-methods are implemented.
+.SH SUPPLIED CONFIGURATION
+A sample configuration file,
+.IR .fvwm2rc ,
+is supplied with the fvwm distribution.  It is well commented and can
+be used as a source of examples for fvwm configuration.
+
+
+.\" .SH INTERNATIONALIZATION
+.\" Internationalized fvwm enables to display not only LATIN-1 characters
+.\" but also multi byte characters such as Japanese, Korean, etc.
+.\" You should set up your environment variable
+.\" .IR LC_TYPE " or " LANG ,
+.\" to enable this feature.  Also, you should specify proper
+.\" .I FONTSET
+.\" instead of
+.\" .IR FONT .
+.\" Note that no catalog-file or input-methods are implemented.
+
+.SH KEYBOARD SHORTCUTS
+Almost all window manager operations can be performed from the
+keyboard so mouse-less operation should be possible.  In addition to
+scrolling around the virtual desktop by binding the
+.B Scroll
+built-in to appropriate keys,
+.BR Popup ", " Move ", " Resize ", "
+and most other built-ins can be bound to keys.  Once a built in
+function is started the pointer is moved by using the up, down,
+left, and right arrows, and the action is terminated by pressing
+return.  Holding down the
+.SM Shift
+key will cause the pointer movement to go in larger steps and
+holding down the
+.SM control
+key will cause the cursor movement to go in smaller steps.
+Standard emacs and vi cursor movement controls (
+.SM Ctrl-n,
+.SM Ctrl-p,
+.SM Ctrl-f,
+.SM Ctrl-b,
+and
+.SM Ctrl-j,
+.SM Ctrl-k,
+.SM Ctrl-h,
+.SM Ctrl-l
+) can be used instead of the arrow keys.
+
+
+.SH USE ON MULTI-SCREEN DISPLAYS
+If the
+.B -s
+command line argument is not given, fvwm will automatically
+start up on every screen on the specified display.  After fvwm
+starts each screen is treated independently.  Restarts of fvwm
+need to be performed separately on each screen.  The use of
+.EX
+ EdgeScroll 0 0
+.EE
+is strongly recommended for multi-screen displays.  You may need
+to quit on each screen to quit from the X session completely.
+
+.SH SESSION MANAGEMENT
+Fvwm supports session management according to the X Session Management
+Protocol.  It saves and restores window position, size, stacking order,
+desk, stickiness, shadedness, maximizedness, iconifiedness for all windows.
+Furthermore, some global state is saved.
+
+Fvwm doesn't save any information regarding styles, decors,
+functions or menus.  If you change any on these resources during
+a session (e.g. by issuing
+.B Style
+commands or by using various modules), these changes will be lost
+after saving and restarting the session.  To become permanent, such
+changes have to be added to the configuration file.
+
+Note further that the current implementation has the following
+anomaly when used on a multi-screen display: Starting fvwm
+for the first time, it will manage all screens by forking a copy
+of itself for each screen.  Every copy knows its parent and issuing a
+.B Quit
+command to any instance of fvwm will kill the master and
+thus all copies of fvwm.  When you save and restart the session,
+the session manager brings up a copy of fvwm on each screen, but
+this time they are started as individual instances managing one
+screen only.  Thus a
+.B Quit
+will now kill only the copy it was sent to.  This is probably not
+a very serious problem, since with session management, you are
+supposed to quit a session through the session manager anyway. If
+it is really needed,
+.EX
+Exec exec killall fvwm2
+.EE
+will still kill all copies of fvwm.  Your system must have the
+.B killall
+command though.
 
 .SH BOOLEAN ARGUMENTS
-A number of commands take one or several boolean arguments. These
-take a few equivalent inputs: 'yes', 'on', 'true', 't' and 'y' all
-evaluate to True while 'no', 'off', 'false', 'f' and 'n' evaluate
-to False. Some commands allow 'toggle' too which means that the
+A number of commands take one or several boolean arguments.  These
+take a few equivalent inputs: "yes", "on", "true", "t" and "y" all
+evaluate to true while "no", "off", "false", "f" and "n" evaluate
+to false.  Some commands allow "toggle" too which means that the
 feature is disabled if it is currently enabled and vice versa.
 
 .SH BUILT IN KEY AND MOUSE BINDINGS
@@ -638,13 +755,22 @@ AddToFunc FuncFvwmRaiseLowerX I Raise
 + D Lower
 .EE
 
-The "Help" and "F1" keys invoke a built-in menu that fvwm creates.
-This is primarily for new users that haven't created their own configuration
-file.  Either key on the root (background) window will pop up an menu
+The
+.SM Help
+and
+.SM F1
+keys invoke a built-in menu that fvwm creates.  This is primarily
+for new users that haven't created their own configuration file.
+Either key on the root (background) window will pop up an menu
 which should help you get started.
 
-The tab key pressed anywhere with the "meta" key held down will pop-up
-a window list.
+The
+.SM Tab
+key pressed anywhere with the
+.M Meta
+key (same as the
+.SM Alt
+key on PC keyboards) held down will pop-up a window list.
 
 Mouse button 1 on the title-bar or side frame can move, raise or lower
 a window.
@@ -658,21 +784,30 @@ Key Tab A M -
 .EE
 
 .SH BUILT IN COMMANDS
-
 Fvwm supports a set of built-in functions which can be bound to
 keyboard or mouse buttons.  If fvwm expects to find a built-in function
 in a command, but fails, it will check to see if the specified command
-should have been "Function (rest of command)" or "Module (rest of
-command)".  This allows complex functions or modules to be invoked in a
+should have been
+.EX
+Function (rest of command)
+.EE
+or
+.EX
+Module (rest of command)
+.EE
+This allows complex functions or modules to be invoked in a
 manner which is fairly transparent to the configuration file.
 
 Example: the
 .I .fvwm2rc
-file contains the line "HelpMe".  Fvwm will look
-for a built-in command called "HelpMe", and will fail. Next it will
-look for a user-defined complex function called "HelpMe".  If no such
-user defined function exists, Fvwm will try to execute a module called
-"HelpMe".
+file contains the line
+.EX
+HelpMe
+.EE
+Fvwm will look for a built-in command called "HelpMe", and
+will fail.  Next it will look for a user-defined complex
+function called "HelpMe".  If no such user defined function
+exists, Fvwm will try to execute a module called "HelpMe".
 
 .SS QUOTING
 
@@ -680,9 +815,16 @@ Quotes are required only when needed to make fvwm consider two or more
 words to be a single argument.  Unnecessary quoting is allowed.  If you
 want a quote character in your text, you must escape it by using the
 backslash character.  For example, if you have a pop-up menu called
-Window-Ops, then you don't need quotes: Popup Window-Ops, but if you
-replace the dash with a space, then you need quotes: Popup "Window
-Ops".  The supported quoting characters are double quotes, single
+"Window-Ops", then you don't need quotes:
+.EX
+Popup Window-Ops
+.EE
+but if you replace the dash with a space, then you need
+quotes:
+.EX
+Popup "Window Ops"
+.EE
+The supported quoting characters are double quotes, single
 quotes and reverse single quotes.  All three kinds of quotes are
 treated in the same way.  Single characters can be quoted with a
 preceding backslash.  Quoting single characters works even inside
@@ -692,7 +834,7 @@ other kinds of quotes.
 
 Whenever a fvwm command line is executed, fvwm performs parameter
 expansion.  A parameter is a '$' followed by a single letter or
-a word enclosed in braces.  If fvwm encounters an unquoted
+a word enclosed in braces (${...}).  If fvwm encounters an unquoted
 parameter on the command line it expands it to a string indicated
 by the parameter name.  Unknown parameters are left untouched.
 Parameter expansion is performed before quoting.  To quote a
@@ -710,7 +852,7 @@ A literal '$'.
 .in +.5i
 $c
 .in +.3i
-The window's resource class name or '$c' if no window is
+The window's resource class name or "$c" if no window is
 associated with the command.
 .in -.3i
 .in -.5i
@@ -725,7 +867,7 @@ The current desk number.
 .in +.5i
 $n
 .in +.3i
-The window's name or '$n' if no window is
+The window's name or "$n" if no window is
 associated with the command.
 .in -.3i
 .in -.5i
@@ -733,7 +875,7 @@ associated with the command.
 .in +.5i
 $r
 .in +.3i
-The window's resource name or '$r' if no window is
+The window's resource name or "$r" if no window is
 associated with the command.
 .in -.3i
 .in -.5i
@@ -749,7 +891,7 @@ The first line printed by the -version command line option.
 $w
 .in +.3i
 The window-id (expressed in hex, e.g. 0x10023c) of the
-window the command was called for or '$w' if no window is
+window the command was called for or "$w" if no window is
 associated with the command.
 .in -.3i
 .in -.5i
@@ -774,9 +916,9 @@ $0 to $9
 The positional parameters given to a complex function
 (a function that has been defined with the
 .B AddToFunc
-command).  $0 is replaced with the first parameter, $1 with the
+command).  "$0" is replaced with the first parameter, "$1" with the
 second parameter and so on.  If the corresponding parameter
-is undefined, the '$#' is deleted from the command line.
+is undefined, the "$..." is deleted from the command line.
 .in -.3i
 .in -.5i
 
@@ -795,21 +937,22 @@ $[shadow.cs<n>]
 These class of parameters is replaced with the name of
 the foreground (fg), background (bg), hilight (hilight) or
 shadow (shadow) color that is defined in colorset <n> (replace
-<n> with zero or a positive integer).  For example $[fg.cs3]
+<n> with zero or a positive integer).  For example "$[fg.cs3]"
 is expanded to the name of the foreground color of colorset 3
 (in rgb:rrrr/gggg/bbbb form).  Please refer to the man page
 of the
 .B FvwmTheme
-module for details about colorsets.
-Note that although other parameters cannot be used in module
-configuration lines, is is possible to use this class of
-parameters.  They can be used wherever a module expects a
-color name.  Since the
+module for details about colorsets.  Note that although other
+parameters cannot be used in module configuration lines, is
+is possible to use this class of parameters.  They can be
+used wherever a module expects a color name.  Since the
 .B FvwmTheme
-module is not running when
-fvwm first passes through its configuration file, you may not
-get the desired results if you use this in commands
-like 'Style * HilightFore $[fg.cs0], HilightBack $[bg.cs0]'.
+module is not running when fvwm first passes through its
+configuration file, you may not get the desired results if
+you use this in commands like
+.EX
+Style * HilightFore $[fg.cs0], HilightBack $[bg.cs0]
+.EE
 .in -.3i
 .in -.5i
 
@@ -844,8 +987,8 @@ order of usefulness to the newcomer.
 
 .TP
 .BI "AddToMenu " menu-name " [" menu-label " " action "]"
-Begins or adds to a menu definition.  Typically a menu definition looks
-like this:
+Begins or adds to a menu definition.  Typically a menu definition
+looks like this:
 .EX
 AddToMenu Utilities Utilities Title
  + Xterm           Exec  exec xterm -e tcsh
@@ -875,21 +1018,22 @@ Mouse 1 R A Popup Utilities
 There is no end-of-menu symbol.  Menus do not have to be defined in a
 contiguous region of the
 .I .fvwm2rc
-file.  The quoted portion in the
-above examples is the menu-label, which will appear in the menu when
-the user pops it up.  The remaining portion is a built-in command
-which should be executed if the user selects that menu item.  An empty
-menu-label ("") and the Nop function can be used to insert a separator
-into the menu.
+file.  The quoted portion in the above examples is the
+menu label, which will appear in the menu when the user pops
+it up.  The remaining portion is a built-in command which
+should be executed if the user selects that menu item.  An empty
+menu-label ("") and the
+.B Nop
+function can be used to insert a separator into the menu.
 
 The keywords
 .IR DynamicPopUpAction " and " DynamicPopDownAction
-have a special meaning when used as the name of a menu item. The action
+have a special meaning when used as the name of a menu item.  The action
 following the keyword is executed whenever the menu is popped up or
-down. This way you can implement dynamic menus. It is even possible for
+down.  This way you can implement dynamic menus.  It is even possible for
 the menu to destroy itself with
 .B DestroyMenu
-and the rebuild from scratch. When the menu has been destroyed
+and the rebuild from scratch.  When the menu has been destroyed
 (unless you used the
 .I recreate
 option when destroying the menu), do not forget to add the dynamic
@@ -899,6 +1043,11 @@ Note: Do not trigger actions that require user interaction. They will
 probably fail and may screw up your menus. See
 .B Silent
 command.
+
+Warning: Do not issue
+.B MenuStyle
+commands as dynamic menu actions.  Chances are good that this will
+crash fvwm.
 
 Example (File browser):
 
@@ -940,7 +1089,7 @@ Function <function-name> <menu-name>
 .EE
 
 I.e. the name is passed to the function as its first argument and can
-be referred to with $0.
+be referred to with "$0".
 
 Example:
 
@@ -962,7 +1111,7 @@ AddToMenu SomeMenu
 This is another implementation of the file browser that uses sub-menus
 for subdirectories.
 
-Titles can be used within the menu. If you add the option
+Titles can be used within the menu . If you add the option
 .I top
 behind the keyword
 .IR Title ,
@@ -973,30 +1122,34 @@ already, it is overwritten.
 AddToMenu Utilities Tools Title top
 .EE
 
-All text up to the first Tab in the menu label is aligned to the
-left side of the menu, all text right of the first Tab is aligned
-to the left in a second column and all text thereafter is placed
-right aligned in the third column. All other Tabs are replaced by spaces.
-Note that you can change this format with the
+All text up to the first
+.SM Tab
+in the menu label is aligned to the left side of the menu, all
+text right of the first
+.SM Tab
+is aligned to the left in a second column and all text thereafter
+is placed right aligned in the third column.  All other
+.SM Tabs
+are replaced by spaces.  Note that you can change this format with the
+.I ItemFormat
+option of the
 .B MenuStyle
-command
-.RI ( ItemFormat )
-option.
+command.
 
 If the menu-label contains an ampersand ('&'), the next character
-is taken as a hot-key for the menu item. Hot-keys are underlined in
-the label. To get a literal '&', insert '&&'.  Pressing the hot-key
-move through the list of menu items with this hot-key or selects
+is taken as a hot-key for the menu item.  Hot-keys are underlined in
+the label.  To get a literal '&', insert "&&".  Pressing the hot-key
+moves through the list of menu items with this hot-key or selects
 an item that is the only one with this hot-key.
 
 If the menu-label contains a sub-string which is set off by stars,
 then the text between the stars is expected to be the name of an
 xpm-icon or bitmap-file to insert in the menu.  To get a literal '*',
-insert '**'.For example
+insert "**".  For example
 .EX
  + Calculator*xcalc.xpm* Exec exec xcalc
 .EE
-inserts a menu item labeled "calculator" with a picture of a
+inserts a menu item labeled "Calculator" with a picture of a
 calculator above it.  The following:
 .EX
  + *xcalc.xpm*           Exec exec xcalc
@@ -1005,14 +1158,14 @@ Omits the "Calculator" label, but leaves the picture.
 
 If the menu-label contains a sub-string which is set off by percent signs,
 then the text between the percent signs is expected to be the name of an
-xpm-icon or bitmap-file (a so called 'mini icon' to insert to the left
-of the menu label. A second mini icon that is drawn at the right side of
-the menu can be given in the same way. To get a literal '%', insert '%%'.
+xpm-icon or bitmap-file (a so called mini icon to insert to the left
+of the menu label.  A second mini icon that is drawn at the right side of
+the menu can be given in the same way.  To get a literal '%', insert "%%".
 For example
 .EX
  + Calculator%xcalc.xpm% Exec exec xcalc
 .EE
-inserts a menu item labeled "calculator" with a picture of a
+inserts a menu item labeled "Calculator" with a picture of a
 calculator to the left.  The following:
 .EX
  + %xcalc.xpm%           Exec exec xcalc
@@ -1021,12 +1174,13 @@ Omits the "Calculator" label, but leaves the picture.  The pictures
 used with this feature should be small (perhaps 16x16).
 
 If the menu-name (not the label) contains a sub-string which is set
-off by at signs ("@"), then the text between them is expected to be
+off by at signs ('@'), then the text between them is expected to be
 the name of an xpm or bitmap file to draw along the left side of the
-menu (a "side pixmap"). You will probably want to use the SidePic
+menu (a side pixmap).  You may want to use the
+.I SidePic
 option of the
 .B MenuStyle
-command instead.  To get a literal '@', insert '@@'.  For example
+command instead.  To get a literal '@', insert "@@".  For example
 .EX
 AddToMenu StartMenu@linux-menu.xpm@
 .EE
@@ -1035,10 +1189,11 @@ creates a menu with a picture in its bottom left corner.
 If the menu-name contains also a sub-string set of by '^'s, then the
 text between '^'s is expected to be the name a of X11 color and the
 column containing the side picture will be colorized with that
-color. You can set this color for a menu style using the SideColor
+color.  You can set this color for a menu style using the
+.I SideColor
 option of the
 .B MenuStyle
-command.  To get a literal '^', insert '^^'.  Example:
+command.  To get a literal '^', insert "^^".  Example:
 .EX
 AddToMenu StartMenu@linux-menu.xpm@^blue^
 .EE
@@ -1063,8 +1218,9 @@ ChangeMenuStyle pixmap1 \\
 .BI "DestroyMenu [" recreate "] " menu
 Deletes a menu, so that subsequent references to it are no longer
 valid.  You can use this to change the contents of a menu during an
-fvwm session.  The menu can be rebuilt using AddToMenu.  The optional
-parameter
+fvwm session.  The menu can be rebuilt using
+.BR AddToMenu .
+The optional parameter
 .I recreate
 tells fvwm not to throw away the menu completely
 but to throw away all the menu items (including the title).
@@ -1100,23 +1256,64 @@ Several other commands affect menu operation.  See
 .BR MenuStyle " and " SetAnimation .
 When in a menu, keyboard shortcuts work as expected.  Cursor
 keystrokes are also allowed.
-Specifically, Tab, Meta-Tab, Cursor-Down, Ctrl-N, or Ctrl-J move
-to the next item;
-Shift-Tab, Shift-Meta-Tab, Cursor-Up, Ctrl-P, or Ctrl-K move to
-the prior item;
-Cursor-Left or Ctrl-B returns to the prior menu;
-Cursor-Right or Ctrl-F pop up the next menu;
-Ctrl-Cursor-Up, Shift-Ctrl-Meta-Tab and Page-Up move up five items;
-Ctrl-Cursor-Down, Ctrl-Meta-Tab and Page-Down move down five items,
-respectively;
-Home, Shift-Cursor-Up or End, Shift-Cursor-Down move to the first or last item,
-respectively;
-Meta-Cursor-Up or Meta-Cursor-Down move just behind the next or
-previous separator;
-Shift-Crtl-Tab or Ctrl-Tab work exactly the same;
-Enter, Return, or Space executes the current item;
-Insert opens the 'More...' sub-menu is any;
-Escape and Delete exit the current sequence of menus.
+Specifically,
+.SM Tab,
+.SM Meta-Tab,
+.SM Cursor-Down,
+.SM Ctrl-N,
+or
+.SM Ctrl-J
+move to the next item;
+.SM Shift-Tab,
+.SM Shift-Meta-Tab,
+.SM Cursor-Up,
+.SM Ctrl-P,
+or
+.SM Ctrl-K
+move to the prior item;
+.SM Cursor-Left
+or
+.SM Ctrl-B
+returns to the prior menu;
+.SM Cursor-Right
+or
+.SM Ctrl-F
+pop up the next menu;
+.SM Ctrl-Cursor-Up,
+.SM Shift-Ctrl-Meta-Tab
+and
+.SM Page-Up
+move up five items;
+.SM Ctrl-Cursor-Down,
+.SM Ctrl-Meta-Tab
+and
+.SM Page-Down
+move down five items, respectively;
+.SM Home,
+.SM Shift-Cursor-Up
+or
+.SM End,
+.SM Shift-Cursor-Down
+move to the first or last item, respectively;
+.SM Meta-Cursor-Up
+or
+.SM Meta-Cursor-Down
+move just behind the next or previous separator;
+.SM Shift-Crtl-Tab
+or
+.SM Ctrl-Tab
+work exactly the same;
+.SM Enter,
+.SM Return,
+or
+.SM Space
+executes the current item;
+.SM Insert
+opens the "More..." sub-menu is any;
+.SM Escape
+and
+.SM Delete
+exit the current sequence of menus.
 
 The pointer will be warped to where it was when the menu was invoked if
 it was both invoked and terminated with a keystroke.
@@ -1192,37 +1389,41 @@ in X geometry format.  Width and height default to 1 if omitted.
 .in -.5i
 
 If the context-rectangle is omitted or illegal (e.g. "item" on a window),
-"Mouse" is the default. Note that not all of these make sense under all
+"Mouse" is the default.  Note that not all of these make sense under all
 circumstances (e.g. "Icon" if the pointer is on a menu).
 
 The offset values
 .I x
 and
 .I y
-specify how far the menu is
-moved from it's default position. By default, the numeric value given
-is interpreted as a percentage of the context rectangle's width (height),
-but with a trailing 'm' the menu's width (height) is used instead.
-Furthermore a trailing
+specify how far the menu is moved from it's default position.  By
+default, the numeric value given is interpreted as a percentage of
+the context rectangle's width (height), but with a trailing
+.RI ' m '
+the menu's width (height) is used instead.  Furthermore a trailing
 .RI ' p '
-changes the interpretation to mean "pixels".
+changes the interpretation to mean pixels.
 
-Instead of a single value you can use a list of values. All additional
+Instead of a single value you can use a list of values.  All additional
 numbers after the first one are separated from their predecessor by
-their sign. Do not use any other separators.
+their sign.  Do not use any other separators.
 
-If x or y are prefixed with 'o<number>' where <number> is an integer, the
+If
+.IR x " or " y
+are prefixed with "o<number>" where <number> is an integer, the
 menu and the rectangle will be moved to overlap at the specified position
-before any other offsets are applied. The menu and the rectangle will be
+before any other offsets are applied.  The menu and the rectangle will be
 placed so that the pixel at <number> percent of the rectangle's width/height
 is right over the pixel at <number> percent of the menu's width/height.
-So 'o0' means that the top/left borders of the menu and the rectangle
-overlap, with 'o100' it's the bottom/right borders and if you use 'o50'
+So "o0" means that the top/left borders of the menu and the rectangle
+overlap, with "o100" it's the bottom/right borders and if you use "o50"
 they are centered upon each other (try it and you will see it is much
-simpler than this description). The default is 'o0'. The prefix
-'o<number>' is an abbreviation for '+<number>-<number>m'.
+simpler than this description).  The default is "o0".  The prefix
+"o<number>" is an abbreviation for "+<number>-<number>m".
 
-A prefix of 'c' is equivalent of 'o50'.  Examples:
+A prefix of
+.RI ' c '
+is equivalent to "o50".  Examples:
 
 .EX
 # window list in the middle of the screen
@@ -1250,7 +1451,7 @@ AddToMenu foobar-menu
                 +0 -100m
 .EE
 Note that you can put a sub-menu far off the current menu so you could
-not reach it with the mouse without leaving the menu. If the pointer
+not reach it with the mouse without leaving the menu.  If the pointer
 leaves the current menu in the general direction of the sub-menu the
 menu will stay up.
 
@@ -1263,7 +1464,7 @@ The
 menu styles may move a menu somewhere else on the screen.  If you do
 not want this you can add
 .I Fixed
-as an option. This might happen for example if you want the menu always
+as an option.  This might happen for example if you want the menu always
 in the top right corner of the screen.
 
 Where do you want a sub-menu to appear when you click on it's menu item?
@@ -1273,8 +1474,7 @@ where the position arguments say, use the
 option.  If you want the pointer on the title of the menu, use
 .I SelectWarp
 too. Note that these options apply only if the
-.I PopupAsRootMenu
-.B MenuStyle
+.I PopupAsRootMenu MenuStyle
 option is used.
 
 The pointer is warped to the title of a sub-menu whenever the pointer
@@ -1293,11 +1493,10 @@ do work with a normal menu that has no other position arguments.
 
 .TP
 .BI "MenuStyle " "stylename options"
-Sets a new menu style or changes a previously defined style.
-The
+Sets a new menu style or changes a previously defined style.  The
 .I stylename
-is the style name; if it contains spaces or tabs it
-has to be quoted. The name "*" is reserved for the default menu style.
+is the style name; if it contains spaces or tabs it has to be
+quoted.  The name "*" is reserved for the default menu style.
 The default menu style is used for every menu-like object (e.g. the
 window created by the
 .B WindowList
@@ -1344,14 +1543,13 @@ VerticalTitleSpacing,
 AutomaticHotkeys / AutomaticHotkeysOff.
 
 In the above list some options are listed as option pairs or triples
-with a / in between. These options exclude each other.
+with a '/' in between.  These options exclude each other.
 
 .IR Fvwm ", " Mwm ", " Win
-reset all options to the style with
-the same name in former versions of fvwm.  The default for new menu
-styles is
+reset all options to the style with the same name in former versions
+of fvwm.  The default for new menu styles is
 .I Fvwm
-style. These options override all others except
+style.  These options override all others except
 .IR Foreground ", " Background ", " Greyed ", " HilightBack ", "
 .IR HilightFore " and " PopupDelay ,
 so they should be used only as the first option specified for a
@@ -1361,8 +1559,7 @@ effect can be created by setting all the other options one by one.
 .IR Mwm " and " Win
 style menus popup sub-menus automatically.
 .I Win
-menus indicate the current menu item by changing the
-background to dark.
+menus indicate the current menu item by changing the background to dark.
 .I Fvwm
 sub-menus overlap the parent menu,
 .IR Mwm " and " Win
@@ -1390,8 +1587,8 @@ PopupImmediately, PopupAsSubmenu, RemoveSubmenus, SubmenusRight,
 BorderWidth 2, AutomaticHotkeysOff.
 
 .I BorderWidth
-takes the thickness of the border around the menus
-in pixels. It may be zero to 50 pixels. The default is 2. Using an
+takes the thickness of the border around the menus in pixels.
+It may be zero to 50 pixels.  The default is 2.  Using an
 illegal value reverts the border width to the default.
 
 .IR Foreground " and " Background
@@ -1400,7 +1597,7 @@ menu text or the menu's background.  You can omit the color name
 to reset these colors to the built in default.
 
 .I Greyed
-may have a color name as an argument. This color is the
+may have a color name as an argument.  This color is the
 one used to draw a menu-selection which is prohibited (or not
 recommended) by the mwm-hints which an application has specified.
 If the color is omitted the color of greyed menu entries is based
@@ -1408,7 +1605,7 @@ on the background color of the menu.
 
 .IR HilightBack " and " HilightBackOff
 switch hilighting the background of the selected menu item on
-and off. A specific background color may be used by providing
+and off.  A specific background color may be used by providing
 the color name as an argument to
 .IR HilightBack .
 If you use this option without an argument the color is based on
@@ -1416,7 +1613,7 @@ the menu's background color.
 
 .I ActiveFore " and " ActiveForeOff
 switch hilighting the foreground of the selected menu item on
-and off. A specific foreground color may be used by providing
+and off.  A specific foreground color may be used by providing
 the color name as an argument to
 .IR ActiveFore .
 Omitting the color name has the same effect as using
@@ -1433,7 +1630,8 @@ number is omitted, the colorset is switched off and the regular
 menu styles are used again.  The foreground and background
 colors of the menu items are replaced by the colors from the
 colorset.  If the colorset has a pixmap defined, this pixmap is
-used as the background of the menu.  Note that the MenuFace
+used as the background of the menu.  Note that the
+.I MenuFace
 menu style has been optimized for memory consumption and may use
 less memory than the background from a colorset.  The shape mask
 from the colorset is used to shape the menu.  Please refer to the
@@ -1508,43 +1706,37 @@ Note: The gradient styles H, V, B and D are optimized for high
 speed and low memory consumption in menus.  This is not the case
 for all the other gradient styles.  They may be slow and consume
 huge amounts of memory, so if you encounter performance problems
-with them you may be better off by not using them. To improve
+with them you may be better off by not using them.  To improve
 performance you can try one or all of the following:
 
-Turn Hilighting of the active menu item other than foreground color
+Turn hilighting of the active menu item other than foreground color
 off:
-
 .EX
 MenuStyle <style> Hilight3DOff, HilightBackOff
 MenuStyle <style> ActiveFore <preferred color>
 .EE
-
 Make sure sub-menus do not overlap the parent menu. This can prevent
 menus being redrawn every time a sub-menu pops up or down.
-
 .EX
 MenuStyle <style> PopupOffset 1 100
 .EE
-
-Run you X server with backing storage. If your Xserver is started
-with the -bs option, turn it off. If not try the -wm option.
-
+Run you X server with backing storage.  If your Xserver is started
+with the -bs option, turn it off.  If not try the -wm option.
 .EX
 startx -- -wm
 .EE
-
 You may have to adapt this example to your system (e.g. if you
 use xinit to start X).
 
 .I PopupDelay
-requires one numeric argument. This value is the
-delay in milliseconds before a sub-menu is popped up when the
-pointer moves over a menu item that has a sub-menu. If the value
-is zero no automatic pop up is done. If the argument is omitted
+requires one numeric argument.  This value is the delay in
+milliseconds before a sub-menu is popped up when the pointer
+moves over a menu item that has a sub-menu.  If the value is
+zero no automatic pop up is done.  If the argument is omitted
 the built in default is used. Note that the popup delay has no
 effect if the
 .I PopupImmediately
-option is used since sub-menus pop up immediately then. The
+option is used since sub-menus pop up immediately then.  The
 .I PopupDelay
 option should only be applied to the default style ("*") since
 it is a global setting and affects all menus.
@@ -1561,9 +1753,9 @@ option if or when this automatic popup happens.
 
 .I PopupOffset
 requires two integer arguments.  Both values affect
-where sub-menus are placed relative to the parent menu. If both
+where sub-menus are placed relative to the parent menu.  If both
 values are zero, the left edge of the sub-menu overlaps the left edge
-of the parent menu. If the first value is non-zero the sub-menu is
+of the parent menu.  If the first value is non-zero the sub-menu is
 shifted that many pixels to the right (or left if negative).  If the
 second value is non-zero the menu is moved by that many percent of
 the parent menu's width to the right or left.
@@ -1579,21 +1771,21 @@ specify how many lines are drawn below a menu title.
 
 .IR SeparatorsLong " and " SeparatorsShort
 set the length of menu separators.  Long separators run from
-the left edge all the way to the right edge. Short separators
+the left edge all the way to the right edge.  Short separators
 leave a few pixels to the edges of the menu.
 
 .IR TrianglesSolid " and " TrianglesRelief
-affect how the small triangles for sub-menus is drawn. Solid
+affect how the small triangles for sub-menus is drawn.  Solid
 triangles are filled with a color while relief triangles are hollow.
 
 .I DoubleClickTime
-requires one numeric argument.  This value is the
-time in milliseconds between two mouse clicks in a menu to be
-considered as a double click.  The default is 450 milliseconds.
-If the argument is omitted the double click time is reset to this
+requires one numeric argument.  This value is the time in
+milliseconds between two mouse clicks in a menu to be considered
+as a double click.  The default is 450 milliseconds.  If the
+argument is omitted the double click time is reset to this
 default.  The
 .I DoubleClickTime
-option should only be applied to the default style ('*') since it
+option should only be applied to the default style ("*") since it
 is a global setting and affects all menus.
 
 .I SidePic
@@ -1606,8 +1798,8 @@ If the file name is omitted an existing side pixmap is remove
 from the menu style.
 
 .I SideColor
-takes the name of an X11 color as an argument. This
-color is used to colorize the column containing the side picture
+takes the name of an X11 color as an argument. This color
+is used to colorize the column containing the side picture
 (see above). The SideColor option can be overridden by a menu
 specific side color (see
 .BR AddToMenu ).
@@ -1622,16 +1814,16 @@ the original menu is closed before the sub-menu appears, with
 it is not, so you can navigate back into the
 parent menu.  Furthermore, with
 .I PopupAsSubmenu
-the sub-menu is held open ("posted") regardless of where you move
+the sub-menu is held open (posted) regardless of where you move
 the mouse.  Depending on your menu style this may simplify
-navigating through the menu. Any keystroke while a menu is posted
+navigating through the menu.  Any keystroke while a menu is posted
 reverts the menu back to the normal behavior.
 .I PopupAsSubmenu
 is the default.
 
 .I RemoveSubmenus
 instructs fvwm to remove submenus when you move back
-into the parent menu. With
+into the parent menu.  With
 .I HoldSubmenus
 the sub-menu remains visible.  You will probably want to use
 .I HoldSubmenus
@@ -1645,8 +1837,7 @@ release in a menu using this style, the current menu item is
 selected.  This is intended for
 .SM Alt-Tab
 .B WindowList
-navigation.
-The key name is a standard X11 key name as defined in
+navigation.  The key name is a standard X11 key name as defined in
 .IR /usr/include/X11/keysymdef.h ,
 with the leading "XK_" omitted.  To disable this behaviour, omit the
 key name.
@@ -1703,10 +1894,12 @@ the whole item (not counting the side picture).
 .in +.3i
 Places the side picture either at the beginning or the end of the menu.
 This directive may be used only once and only as the first or last
-in the format string. If the '%s' is not at the beginning of the
+in the format string. If the
+.B %s
+is not at the beginning of the
 string, all characters to the right of it are silently ignored.
 .in -.3i
-.BR space " and " tab
+.BR Space " and " Tab
 .in +.3i
 Add a gap as large as a space or tab is with the font you use in the
 menu items.  Don't forget to put the whole string in double quotes if
@@ -1714,7 +1907,10 @@ you use spaces or tabs.
 .in -.3i
 .B %p
 .in +.3i
-Like space and tab
+Like
+.SM Space
+and
+.SM Tab
 .B %p
 inserts an empty area into the item, but with better control of
 its size (see below).
@@ -1728,7 +1924,8 @@ like this:
 .EE
 
 This means: if the object is defined in the menu (e.g. if its
-.B %s and you use a side picture or
+.B %s
+and you use a side picture or
 .B %l
 for the third column and there are items defined that actually
 have a third column), then add
@@ -1784,9 +1981,9 @@ given arguments are invalid, the built in defaults are used: one pixel
 above the item or title and two below.
 
 .I SubmenusLeft
-mirrors the menu layout and behavior. sub-menus pop up
-to the left, the sub-menu triangle is drawn left and the mini icon and
-side picture are drawn at the right side of the menu. The default is
+mirrors the menu layout and behavior.  Sub-menus pop up to the
+left, the sub-menu triangle is drawn left and the mini icon and
+side picture are drawn at the right side of the menu.  The default is
 .IR SubmenusRight .
 The position hints of a menu are also affected by this setting, i.e.
 position hints using
@@ -1829,15 +2026,14 @@ style name.
 .BI "MenuStyle " "forecolor backcolor shadecolor font style" " [" anim "]"
 This is the old syntax of the
 .B MenuStyle
-command. It is obsolete and may be removed in the future.  Please
+command.  It is obsolete and may be removed in the future.  Please
 use the new syntax as described above.
 
-Sets the menu style.  When using monochrome the colors are ignored.
-The
+Sets the menu style.  When using monochrome the colors are ignored.  The
 .I shadecolor
-is the one used to draw a menu-selection which is
-prohibited (or not recommended) by the mwm-hints which an application
-has specified.  The style option is either
+is the one used to draw a menu-selection which is prohibited (or
+not recommended) by the mwm-hints which an application has
+specified.  The style option is either
 .IR Fvwm ", " Mwm " or " Win ,
 which changes the appearance and operation of the menus.
 
@@ -1852,8 +2048,8 @@ style menus never overlap the parent menu.
 
 When the
 .I anim
-option is given, sub-menus that don't fit on the screen cause
-the parent menu to be shifted to the left so the sub-menu can be seen.
+option is given, sub-menus that don't fit on the screen cause the
+parent menu to be shifted to the left so the sub-menu can be seen.
 See also
 .B SetAnimation
 command.
@@ -1864,8 +2060,7 @@ This built-in has two purposes: to bind a menu to a key or mouse
 button, and to bind a sub-menu into a menu.  The formats for the two
 purposes differ slightly.  The
 .I position
-arguments are the same
-as for
+arguments are the same as for
 .BR Menu .
 The command
 .I default-action
@@ -1942,9 +2137,9 @@ AddToMenu RootMenu "Root Menu" Title
 differs from
 .B Menu
 in that pop-ups do not stay up if the user simply clicks.  These
-are twm style popup-menus, which are a little hard on the wrist.
-Menu provides Motif or Microsoft-Windows style menus which will
-stay up on a click action.  See
+are popup-menus, which are a little hard on the wrist.
+.B Menu
+menus which will stay up on a click action.  See
 .B Menu
 command for an explanation of the interactive behavior of menus.
 Note that a menu can be open only once, so a menu may not use
@@ -1953,79 +2148,6 @@ itself or any of its predecessors as a sub-menu.
 .TP
 .B "Title"
 Does nothing.  This is used to insert a title line in a popup or menu.
-
-
-.SH KEYBOARD SHORTCUTS
-Almost all window manager operations can be performed from the
-keyboard so mouse-less operation should be possible.  In addition to
-scrolling around the virtual desktop by binding the
-.B Scroll
-built-in to appropriate keys,
-.BR Popup ", " Move ", " Resize ", "
-and most other built-ins can be bound to keys.  Once a built in
-function is started the pointer is moved by using the up, down,
-left, and right arrows, and the action is terminated by pressing
-return.  Holding down the
-.SM shift
-key will cause the pointer movement to go in larger steps and
-holding down the
-.SM control
-key will cause the cursor movement to go in smaller steps.
-Standard emacs and vi cursor movement controls (^n, ^p, ^f, ^b, and
-^j, ^k, ^h, ^l) can be used instead of the arrow keys.
-
-
-.SH SUPPLIED CONFIGURATION
-A sample configuration file,
-.IR .fvwm2rc ,
-is supplied with the fvwm distribution.  It is well commented and can
-be used as a source of examples for fvwm configuration.
-
-
-.SH USE ON MULTI-SCREEN DISPLAYS
-If the
-.B -s
-command line argument is not given, fvwm will automatically
-start up on every screen on the specified display.  After fvwm
-starts each screen is treated independently.  Restarts of fvwm
-need to be performed separately on each screen.  The use of
-.B "EdgeScroll 0 0"
-is strongly recommended for multi-screen displays.  You may need
-to quit on each screen to quit from the X session completely.
-
-.SH SESSION MANAGEMENT
-Fvwm supports session management according to the X Session Management
-Protocol.  It saves and restores window position, size, stacking order,
-desk, stickiness, shadedness, maximizedness, iconifiedness for all windows.
-Furthermore, some global state is saved.
-
-Fvwm doesn't save any information regarding styles, decors,
-functions or menus.  If you change any on these resources during
-a session (e.g. by issuing
-.B Style
-commands or by using various modules), these changes will be lost
-after saving and restarting the session.  To become permanent, such
-changes have to be added to the configuration file.
-
-Note further that the current implementation has the following
-anomaly when used on a multi-screen display: Starting fvwm
-for the first time, it will manage all screens by forking a copy
-of itself for each screen.  Every copy knows its parent and issuing a
-.B Quit
-command to any instance of fvwm will kill the master and
-thus all copies of fvwm.  When you save and restart the session,
-the session manager brings up a copy of fvwm on each screen, but
-this time they are started as individual instances managing one
-screen only.  Thus a
-.B Quit
-will now kill only the copy it was sent to.  This is probably not
-a very serious problem, since with session management, you are
-supposed to quit a session through the session manager anyway. If
-it is really needed,
-.B "Exec exec killall fvwm2"
-will still kill all copies of fvwm.  Your system must have the
-.B killall
-command though.
 
 
 .SS MISCELLANEOUS COMMANDS
@@ -2044,7 +2166,7 @@ switch is back and forth.  If
 is omitted, the default setting is restored.
 
 .I FlickeringMoveWorkaround
-disables so called "ConfigurNotify" events that are usually sent
+disables so called ConfigurNotify events that are usually sent
 to an application while it is moved.  If some windows flicker
 annoyingly while being moved, this option may help you.  Note
 that if this problem occurs its not a fvwm bug, it is the fault
@@ -2074,9 +2196,10 @@ accordingly.  This is the same option as the one listed under the
 .B GlobalOpts
 command.
 
-.I RaiseOverUnmanaged makes fvwm try to raise the windows it manages
-over override_redirect windows.  This is used to cope with ill-mannered
-applications that use long-lived windows of this sort, contrary to
+.I RaiseOverUnmanaged
+makes fvwm try to raise the windows it manages over override_redirect
+windows.  This is used to cope with ill-mannered applications that
+use long-lived windows of this sort, contrary to
 .SM ICCCM
 conventions.
 
@@ -2097,8 +2220,11 @@ displays the cursor of the
 context of the
 .B CursorStyle
 command.  "False" forces to not display the cursor.  The default is:
-DynamicMenu False, ModuleSynchronous False, Read False,
-Recapture True, Wait False.
+.EX
+BusyCursor DynamicMenu False, \\
+  ModuleSynchronous False, Read False, \\
+  Recapture True, Wait False
+.EE
 
 The option
 .I *
@@ -2185,8 +2311,9 @@ default value, and not include this command in your
 .BI "ColormapFocus " FollowsMouse | FollowsFocus
 By default, fvwm installs the colormap of the window that the cursor
 is in.  If you use
-.B ColormapFocus
-.IR FollowsFocus ,
+.EX
+ColormapFocus FollowsFocus
+.EE
 then the installed colormap will be the one for the window that
 currently has the keyboard focus.
 
@@ -2228,7 +2355,9 @@ used when moving or resizing windows
 
 .BR WAIT (watch)
 .in +.3i
-used during certain fvwm commands (see BusyCursor for details).
+used during certain fvwm commands (see
+.B BusyCursor
+for details).
 .in -.3i
 
 .BR MENU (top_left_arrow)
@@ -2327,7 +2456,10 @@ the include file
 or its name (without the XC_ prefix) or the name of an xpm file
 containing a pixmap of depth 1 with a mask and an optional hot-spot
 (if no hot-spot is defined, the hot-spot is placed in the center of
-the image).  Furthermore the name can be "None" (no cursor) or "Tiny"
+the image).  Furthermore the name can be
+.I None
+(no cursor) or
+.I Tiny
 (a single pixel as the cursor).  For example:
 .EX
 # make the kill cursor be XC_gumby (both forms work):
@@ -2346,9 +2478,9 @@ cursor, defaulting to black and white.
 .TP
 .BI "DefaultColors [" "foreground background" "]"
 .B DefaultColors
-sets the default foreground and background
-colors used in miscellaneous windows created by fvwm, for example
-in the geometry feedback windows during a move or resize operation.
+sets the default foreground and background colors used in
+miscellaneous windows created by fvwm, for example in the
+geometry feedback windows during a move or resize operation.
 If you don't want to change one color or the other, use - as its
 color name.  To revert to the builtin default colors omit both
 color names.  Note that the default colors are not used in menus,
@@ -2358,10 +2490,13 @@ window titles or icon titles.
 .BI "DefaultColorset [" num "]"
 .B DefaultColorset
 sets the colorset used by the windows controlled by the
-.B DefaultColors command.  To revert back to the
-.B DefaultColors colors use
+.B DefaultColors
+command.  To revert back to the
+.B DefaultColors
+colors use
 .EX
-.EE DefaultColorset -1
+DefaultColorset -1
+.EE
 or any variant of the
 .B DefaultColors
 command.
@@ -2377,7 +2512,8 @@ the argument.  The default font is used for menus, window titles,
 icon titles as well as the geometry feedback windows during a move
 or resize operation.  To override the default font in a specific
 context, use the
-.BR "Style * Font" ", " "Style * IconFont" ", or " MenuStyle commands.
+.BR "Style * Font" ", " "Style * IconFont" ", or " MenuStyle
+commands.
 
 .TP
 .BI "DefaultIcon " filename
@@ -6173,7 +6309,7 @@ Causes fvwm to stop managing the screen on which the command was issued.
 .BI "QuitSession"
 Causes a session manager (if any) to shutdown the session.  This
 command does not work for xsm, it seems that xsm does not implement
-this functionality.  Use  unix signals to manage xsm remotely.
+this functionality.  Use Unix signals to manage xsm remotely.
 
 .TP
 .BI "Restart [" WindowManagerName " [" params "]]"
@@ -6234,13 +6370,13 @@ in the user's home directory.
 .BI "SaveSession"
 Causes a session manager (if any) to save the session.  This command
 does not work for xsm, it seems that xsm does not implement this
-functionality.  Use unix signals to manage xsm remotely.
+functionality.  Use Unix signals to manage xsm remotely.
 
 .TP
 .BI "SaveQuitSession"
 Causes a session manager (if any) to save and then shutdown the session.
 This command does not work for xsm, it seems that xsm does not implement
-this functionality.  Use unix signals to manage xsm remotely.
+this functionality.  Use Unix signals to manage xsm remotely.
 
 
 .SS COLOR GRADIENTS
