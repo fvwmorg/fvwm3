@@ -92,7 +92,7 @@ static void DrawLinePattern(Window win, GC ReliefGC, GC ShadowGC,
  ****************************************************************************/
 static void DrawButton(FvwmWindow *t, Window win, int w, int h,
 		       ButtonFace *bf, GC ReliefGC, GC ShadowGC,
-		       Boolean inverted, int stateflags)
+		       Boolean inverted, int stateflags, int left1right0)
 {
   register int type = bf->style & ButtonFaceTypeMask;
 #ifdef PIXMAP_BUTTONS
@@ -150,14 +150,16 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
 	if (bf->style&HRight)
 	  x += (int)(width - p->width);
       } else
-	x += (int)(width - p->width) / 2;
+        /* round up for left buttons, down for right buttons */
+	x += (int)(width - p->width + left1right0) / 2;
 
       y = border;
       if (bf->style&VOffCenter) {
 	if (bf->style&VBottom)
 	  y += (int)(height - p->height);
       } else
-	y += (int)(height - p->height) / 2;
+        /* round up */
+	y += (int)(height - p->height + 1) / 2;
 
       if (x < border)
 	x = border;
@@ -477,20 +479,17 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #ifdef MULTISTYLE
 	    for (; tsbf; tsbf = tsbf->next)
 #endif
-	      DrawButton(t, t->left_w[i],
-			 t->title_g.height, t->title_g.height,
-			 tsbf, ReliefGC, ShadowGC,
-			 inverted,
-			 GetDecor(t,left_buttons[i].flags));
+	      DrawButton(t, t->left_w[i], t->title_g.height, t->title_g.height,
+			 tsbf, ReliefGC, ShadowGC, inverted,
+			 GetDecor(t,left_buttons[i].flags), 1);
 	  }
 #endif /* EXTENDED_TITLESTYLE */
 #ifdef MULTISTYLE
 	  for (; bf; bf = bf->next)
 #endif
-	    DrawButton(t, t->left_w[i],
-		       t->title_g.height, t->title_g.height,
-		       bf, ReliefGC, ShadowGC,
-		       inverted, GetDecor(t,left_buttons[i].flags));
+	    DrawButton(t, t->left_w[i], t->title_g.height, t->title_g.height,
+		       bf, ReliefGC, ShadowGC, inverted,
+		       GetDecor(t,left_buttons[i].flags), 1);
 
 	  if (!(GetDecor(t,left_buttons[i].state[bs].style) &
 		FlatButton)) {
@@ -553,20 +552,17 @@ void RedrawBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #ifdef MULTISTYLE
 	    for (; tsbf; tsbf = tsbf->next)
 #endif
-	      DrawButton(t, t->right_w[i],
-			 t->title_g.height, t->title_g.height,
-			 tsbf, ReliefGC, ShadowGC,
-			 inverted,
-			 GetDecor(t,right_buttons[i].flags));
+	      DrawButton(t, t->right_w[i], t->title_g.height, t->title_g.height,
+			 tsbf, ReliefGC, ShadowGC, inverted,
+			 GetDecor(t,right_buttons[i].flags), 0);
 	  }
 #endif /* EXTENDED_TITLESTYLE */
 #ifdef MULTISTYLE
 	  for (; bf; bf = bf->next)
 #endif
-	    DrawButton(t, t->right_w[i],
-		       t->title_g.height, t->title_g.height,
-		       bf, ReliefGC, ShadowGC,
-		       inverted, GetDecor(t,right_buttons[i].flags));
+	    DrawButton(t, t->right_w[i], t->title_g.height, t->title_g.height,
+		       bf, ReliefGC, ShadowGC, inverted,
+		       GetDecor(t,right_buttons[i].flags), 0);
 
 	  if (!(GetDecor(t,right_buttons[i].state[bs].style) &
 		FlatButton)) {
@@ -1017,13 +1013,13 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 	  for (; bf; bf = bf->next)
 #endif
 	      DrawButton(t, t->title_w, t->title_g.width, t->title_g.height,
-			 bf, ShadowGC, ReliefGC, True, 0);
+			 bf, ShadowGC, ReliefGC, True, 0, 1);
       } else {
 #ifdef MULTISTYLE
 	  for (; bf; bf = bf->next)
 #endif
 	      DrawButton(t, t->title_w, t->title_g.width, t->title_g.height,
-			 bf, ReliefGC, ShadowGC, False, 0);
+			 bf, ReliefGC, ShadowGC, False, 0, 1);
       }
 #endif /* EXTENDED_TITLESTYLE */
 
