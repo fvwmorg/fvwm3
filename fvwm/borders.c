@@ -219,10 +219,6 @@ static void border_render_into_pixmap(
 	{
 		PDestroyFvwmPicture(dpy, pm);
 	}
-#if 0
-	XCopyArea(dpy, pm, dest, gc, 0, 0, width, height, x_start, y_start);
-	XFreePixmap(dpy, pm);
-#endif
 
 	return;
 }

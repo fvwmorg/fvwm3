@@ -58,6 +58,8 @@
 #include "libs/ftime.h"
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include "libs/PictureBase.h"
+#include "libs/Colorset.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -89,6 +91,7 @@
 #include "schedule.h"
 #include "menus.h"
 #include "colormaps.h"
+#include "colorset.h"
 #ifdef HAVE_STROKE
 #include "stroke.h"
 #endif /* HAVE_STROKE */
@@ -2479,6 +2482,7 @@ void HandlePropertyNotify(const evh_args_t *ea)
 				DrawIconWindow(t);
 			}
 		}
+		update_root_transparent_colorset(te->xproperty.atom);
 		BroadcastPropertyChange(
 			MX_PROPERTY_CHANGE_BACKGROUND, 0, 0, "");
 		return;

@@ -24,6 +24,8 @@
 
 extern void draw_managers (void);
 extern void draw_manager (WinManager *man);
+extern Bool draw_transparent_buttons(
+	WinManager *man, Bool only_moved, Bool clear_only);
 
 extern int which_box (WinManager *man, int x, int y);
 extern Button *xy_to_button (WinManager *man, int x, int y);

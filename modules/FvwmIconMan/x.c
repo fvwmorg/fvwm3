@@ -199,6 +199,7 @@ void xevent_loop (void)
   static int flag = 0;
   WinManager *man;
   Bool force_redraw = False;
+  static int ex=10000, ey=10000, ex2=0, ey2=0;
 
   if (flag == 0) {
     flag = 1;
@@ -257,12 +258,51 @@ void xevent_loop (void)
 
     case Expose:
       ConsoleDebug (X11, "XEVENT: Expose\n");
-      if (theEvent.xexpose.count == 0) {
-	man_exposed (man, &theEvent);
-	draw_manager (man);
-	if (globals.transient) {
-	  grab_pointer (man);
-	}
+#if 0
+      fprintf (stderr, "Expose: %i,%i,%i,%i %i\n",
+	       theEvent.xexpose.x, theEvent.xexpose.y, theEvent.xexpose.width,
+	       theEvent.xexpose.height, theEvent.xexpose.count);
+#endif
+      ex = min(ex, theEvent.xexpose.x);
+      ey = min(ey, theEvent.xexpose.y);
+      ex2 = max(ex2, theEvent.xexpose.x + theEvent.xexpose.width);
+      ey2=max(ey2 , theEvent.xexpose.y + theEvent.xexpose.height);
+
+      /* we use "clip redrawing": but this speedup redrawing without
+       * adding to much flickering */
+      while (FCheckTypedWindowEvent(
+	      theDisplay, theEvent.xany.window, Expose, &theEvent))
+      {
+#if 0
+	      fprintf (stderr, "\t\tExpose Purge: %i,%i,%i,%i %i\n",
+		       theEvent.xexpose.x, theEvent.xexpose.y,
+		       theEvent.xexpose.width, theEvent.xexpose.height,
+		       theEvent.xexpose.count);
+#endif
+	      ex = min(ex, theEvent.xexpose.x);
+	      ey = min(ey, theEvent.xexpose.y);
+	      ex2 = max(ex2, theEvent.xexpose.x + theEvent.xexpose.width);
+	      ey2= max(ey2 , theEvent.xexpose.y + theEvent.xexpose.height);
+      }
+#if 0
+      fprintf (
+	      stderr, "\tExpose Done: %i,%i,%i,%i %i\n",
+	      ex, ey, ex2-ex, ey2-ey, theEvent.xexpose.count);
+#endif
+      if (theEvent.xexpose.count == 0)
+      {
+	      theEvent.xexpose.x = ex;
+	      theEvent.xexpose.y = ey;
+	      theEvent.xexpose.width = ex2 - ex;
+	      theEvent.xexpose.height = ey2 -ey;
+	      man_exposed (man, &theEvent);
+	      draw_manager (man);
+	      if (globals.transient) {
+		      grab_pointer (man);
+	      }
+	      
+	      ex = ey = 10000;
+	      ex2 = ey2 = 0;
       }
       break;
 
@@ -300,6 +340,7 @@ void xevent_loop (void)
        * windows must be refreshed since the server won't do this,
        * we must not miss ones of these */
       Bool moved = theEvent.xconfigure.send_event;
+      Bool recreate_bg = False;
 
       ConsoleDebug (X11, "\tcurrent geometry: %d %d %d %d\n",
 		    man->geometry.x, man->geometry.y,
@@ -320,60 +361,94 @@ void xevent_loop (void)
       }
       theEvent = saveEvent;
 
-      if (man->geometry.dir & GROW_FIXED)
+#if 0
+      fprintf (stderr, "Configure: %i,%i,%i,%i %i\n",
+	       theEvent.xconfigure.x, theEvent.xconfigure.y,
+	       theEvent.xconfigure.width, theEvent.xconfigure.height,
+	       moved);
+#endif
+       if ((man->geometry.width != theEvent.xconfigure.width ||
+	   man->geometry.height != theEvent.xconfigure.height ||
+	   (moved && CSET_IS_TRANSPARENT(man->colorsets[DEFAULT]))) &&
+	  !CSET_IS_TRANSPARENT_PR_PURE(man->colorsets[DEFAULT]))
       {
-	man->geometry.rows =
-	  theEvent.xconfigure.height / man->geometry.boxheight;
-	if (man->geometry.rows < 1)
-	  man->geometry.rows = 1;
-	man->geometry.cols =
-	  (man->buttons.num_windows - 1) / man->geometry.rows + 1;
-	force_redraw = 1;
+	      recreate_bg = True;
+	      if (moved)
+	      {
+		      man->geometry.x = theEvent.xconfigure.x;
+		      man->geometry.y = theEvent.xconfigure.y;
+	      }
       }
-      if ( man->geometry.width != theEvent.xconfigure.width ||
-	   man->geometry.height != theEvent.xconfigure.height) {
-	man->geometry.width = theEvent.xconfigure.width;
-	man->geometry.height = theEvent.xconfigure.height;
-      ConsoleDebug (X11, "\tcurrent geometry: %d %d %d %d\n",
-		    man->geometry.x, man->geometry.y,
-		    man->geometry.width, man->geometry.height);
-	if (man->colorsets[DEFAULT] >= 0) {
-	  if (man->pixmap[DEFAULT] && man->pixmap[DEFAULT] != ParentRelative)
-	    XFreePixmap(theDisplay, man->pixmap[DEFAULT]);
-	  if (Colorset[man->colorsets[DEFAULT]].pixmap) {
-	    man->pixmap[DEFAULT] =
-	      CreateBackgroundPixmap(
-		theDisplay, man->theWindow, man->geometry.width,
-		man->geometry.height,
-		&Colorset[man->colorsets[DEFAULT]],
-		Pdepth, man->backContext[DEFAULT], False);
-	    XSetTile(theDisplay, man->backContext[DEFAULT],
-		     man->pixmap[DEFAULT]);
-	    XSetFillStyle(theDisplay, man->backContext[DEFAULT], FillTiled);
-	  } else {
-	    man->pixmap[DEFAULT] = None;
-	    XSetFillStyle(theDisplay, man->backContext[DEFAULT], FillSolid);
-	  }
-	}
-	force_redraw = 1;
-      }
-      /* must refresh transparent windows when moved */
-      if (moved && man->pixmap[DEFAULT] == ParentRelative)
+
+      if (man->geometry.width != theEvent.xconfigure.width ||
+	  man->geometry.height != theEvent.xconfigure.height)
       {
-	man->geometry.x = theEvent.xconfigure.x;
-	man->geometry.y = theEvent.xconfigure.y;
-	XClearArea(theDisplay, man->theWindow, 0, 0, 0, 0, True);
+	      if (man->geometry.dir & GROW_FIXED)
+	      {
+		      man->geometry.rows =
+			      theEvent.xconfigure.height / 
+			      man->geometry.boxheight;
+		      if (man->geometry.rows < 1)
+		      {
+			      man->geometry.rows = 1;
+		      }
+		      man->geometry.cols =
+			      (man->buttons.num_windows - 1) /
+			      man->geometry.rows+1;
+	      }
+	      man->geometry.width = theEvent.xconfigure.width;
+	      man->geometry.height = theEvent.xconfigure.height;
+	      ConsoleDebug (X11, "\tcurrent geometry: %d %d %d %d\n",
+			    man->geometry.x, man->geometry.y,
+			    man->geometry.width, man->geometry.height);
+	      force_redraw = 1;
+      }
+
+      if (recreate_bg)
+      {
+	      if (man->colorsets[DEFAULT] >= 0)
+	      {
+		      recreate_background(man, DEFAULT);
+	      }
+	      else
+	      {
+		      recreate_bg = False; 
+	      }
+      }
+
+      /* must refresh transparent buttons when:
+       * - moved and buttons is root transparent
+       * - bg change and  butons is parental relative */
+      if (moved || recreate_bg)
+      {
+	      Bool r = False;
+
+	      man->geometry.x = theEvent.xconfigure.x;
+	      man->geometry.y = theEvent.xconfigure.y;
+	      recreate_transparent_bgs(man);
+	      if (!force_redraw)
+	      {
+		      r = draw_transparent_buttons(
+			      man, (moved && !recreate_bg), False);
+		      if (r)
+		      {
+			      XSync(theDisplay, False);
+		      }
+		      break;
+	      }
       }
 
       set_manager_width (man, theEvent.xconfigure.width);
       ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
       if (force_redraw)
       {
-	force_manager_redraw(man);
-	force_redraw = 0;
+	      force_manager_redraw(man);
+	      force_redraw = 0;
       }
       else
-	draw_manager (man);
+      {
+	      /* draw_manager (man);*/
+      }
 
       break;
     }
@@ -872,23 +947,19 @@ void create_manager_window (int man_id)
       man->shadowContext[i] = fvwmlib_XCreateGC (theDisplay, man->theWindow,
 						     gcmask, &gcval);
     }
-    if (man->pixmap[i] && man->pixmap[i] != ParentRelative)
-      XFreePixmap(theDisplay, man->pixmap[i]);
-    if (man->colorsets[i] >= 0 && Colorset[man->colorsets[i]].pixmap) {
-      man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
-		       man->geometry.width, man->geometry.height,
-		       &Colorset[man->colorsets[i]],
-		       Pdepth, man->backContext[i], False);
-      XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
-      XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
-      if (i == DEFAULT)
-      {
-	XSetWindowBackgroundPixmap(theDisplay, man->theWindow,
-				   man->pixmap[i]);
-      }
-    } else {
+    if (man->colorsets[i] >= 0)
+    {
+	    recreate_background(man, i);
+    }
+    else
+    {
       man->pixmap[i] = None;
       XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
+      if (i == DEFAULT)
+      {
+	      XSetWindowBackground (
+		      theDisplay, man->theWindow, man->backcolor[i]);
+      }
     }
   }
 
@@ -945,63 +1016,135 @@ void init_display (void)
   ConsoleDebug (X11, "screen height: %d\n", globals.screen_g.height);
 }
 
-void change_colorset(int color)
+void recreate_background(WinManager *man, Contexts i)
 {
-  WinManager *man;
-  int i,j;
+	int cset = man->colorsets[i];
 
-  for (j = 0; j < globals.num_managers; j++) {
-    man = &globals.managers[j];
-    for ( i = 0; i < NUM_CONTEXTS; i++ ) {
-      if(man->colorsets[i] == color) {
-	man->backcolor[i] = Colorset[color].bg;
-	man->forecolor[i] = Colorset[color].fg;
-	man->shadowcolor[i] = Colorset[color].shadow;
-	man->hicolor[i] = Colorset[color].hilite;
-
-	if (!man->backContext[i] || !man->hiContext[i] ||
-	    !man->flatContext[i] || !man->reliefContext[i] ||
-	    !man->shadowContext[i])
+	if (cset < 0)
 	{
-	  /* colorset not properly defined yet, just skip it */
-	  continue;
-	}
-	XSetForeground (theDisplay, man->backContext[i], man->backcolor[i]);
-	XSetForeground (theDisplay, man->hiContext[i], man->forecolor[i]);
-	XSetBackground (theDisplay, man->flatContext[i], man->forecolor[i]);
-	XSetForeground (theDisplay, man->flatContext[i], man->backcolor[i]);
-	if (Pdepth > 2) {
-	  XSetBackground (
-	    theDisplay, man->reliefContext[i], man->backcolor[i]);
-	  XSetForeground (
-	    theDisplay, man->reliefContext[i], man->hicolor[i]);
-	  XSetBackground (
-	    theDisplay, man->shadowContext[i], man->backcolor[i]);
-	  XSetForeground (
-	    theDisplay, man->shadowContext[i], man->shadowcolor[i]);
+		return;
 	}
 
 	if (man->pixmap[i] && man->pixmap[i] != ParentRelative)
-	  XFreePixmap(theDisplay, man->pixmap[i]);
-	if (Colorset[color].pixmap) {
-	  man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
-			     man->geometry.width, man->geometry.height,
-			     &Colorset[color], Pdepth, man->backContext[i],
-			     False);
-	  XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
-	  XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
-	  if (i == DEFAULT)
-	  {
-	    XSetWindowBackgroundPixmap(theDisplay, man->theWindow,
-				       man->pixmap[i]);
-	  }
-	} else {
-	  man->pixmap[i] = None;
-	  XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
+	{
+		XFreePixmap(theDisplay, man->pixmap[i]);
 	}
+	man->pixmap[i]= None;
+	if ((i == DEFAULT && Colorset[cset].pixmap) ||
+	    (CSET_IS_TRANSPARENT(cset) && !CSET_IS_TRANSPARENT_PR_TINT(cset)))
+	{
+		man->pixmap[i] =
+			CreateBackgroundPixmap(
+				theDisplay, man->theWindow,
+				man->geometry.width, man->geometry.height,
+				&Colorset[cset],
+				Pdepth, man->backContext[i], False);
+		XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
+		XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
+		if (i == DEFAULT)
+		{
+			XSetWindowBackgroundPixmap(
+				theDisplay, man->theWindow, man->pixmap[i]);
+		}
+	}
+	else if (Colorset[cset].pixmap && !CSET_IS_TRANSPARENT_PR_TINT(cset))
+	{
+		man->pixmap[i] =
+			CreateBackgroundPixmap(
+				theDisplay, man->theWindow,
+				man->geometry.boxwidth, man->geometry.boxheight,
+				&Colorset[cset],
+				Pdepth, man->backContext[i], False);
+		XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
+		XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
+	}
+	else
+	{
+		XSetTile(theDisplay, man->backContext[i], None);
+		XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
+		if (i == DEFAULT)
+		{
+			XSetWindowBackground (
+				theDisplay, man->theWindow, man->backcolor[i]);
+		}
+	}
+}
 
-	force_manager_redraw (man);
-      }
-    }
-  }
+void change_colorset(int color)
+{
+	WinManager *man;
+	int i,j;
+
+	for (j = 0; j < globals.num_managers; j++)
+	{
+		man = &globals.managers[j];
+		for (i = 0; i < NUM_CONTEXTS; i++)
+		{
+			if(man->colorsets[i] != color)
+			{
+				continue;
+			}
+			man->backcolor[i] = Colorset[color].bg;
+			man->forecolor[i] = Colorset[color].fg;
+			man->shadowcolor[i] = Colorset[color].shadow;
+			man->hicolor[i] = Colorset[color].hilite;
+			if (!man->backContext[i] || !man->hiContext[i] ||
+			    !man->flatContext[i] || !man->reliefContext[i] ||
+			    !man->shadowContext[i])
+			{
+				/* colorset not properly defined yet, skip it */
+				continue;
+			}
+			XSetForeground(
+				theDisplay, man->backContext[i],
+				man->backcolor[i]);
+			XSetForeground(
+				theDisplay, man->hiContext[i],
+				man->forecolor[i]);
+			XSetBackground (
+				theDisplay, man->flatContext[i],
+				man->forecolor[i]);
+			XSetForeground (
+				theDisplay, man->flatContext[i],
+				man->backcolor[i]);
+			if (Pdepth > 2) {
+				XSetBackground (
+					theDisplay, man->reliefContext[i],
+					man->backcolor[i]);
+				XSetForeground (
+					theDisplay, man->reliefContext[i],
+					man->hicolor[i]);
+				XSetBackground (
+					theDisplay, man->shadowContext[i],
+					man->backcolor[i]);
+				XSetForeground (
+					theDisplay, man->shadowContext[i],
+					man->shadowcolor[i]);
+			}
+			recreate_background(man, i);
+		}
+		force_manager_redraw (man);
+	}
+}
+
+
+void recreate_transparent_bgs(WinManager *man)
+{
+	int i, color;
+
+	for (i = 0; i < NUM_CONTEXTS; i++ )
+	{
+		color = man->colorsets[i];
+		if (i == DEFAULT || !CSET_IS_TRANSPARENT(color) ||
+		    CSET_IS_TRANSPARENT_PR(color))
+		{
+			continue;
+		}
+		if (!man->backContext[i])
+		{
+			/* colorset not properly defined yet, just skip it */
+			continue;
+		}
+		recreate_background(man, i);
+	}
 }

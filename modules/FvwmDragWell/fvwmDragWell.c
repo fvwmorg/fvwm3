@@ -53,7 +53,7 @@
 #include "libs/PictureBase.h"
 #include "libs/fvwmsignal.h"
 #include "libs/FScreen.h"
-
+#include "libs/FRenderInit.h"
 
 #include "fvwmDragWell.h"
 #include "dragSource.h"
@@ -444,6 +444,7 @@ void XStartup(char *appName)
   FScreenInit(xg.dpy);
   AllocColorset(0);
   FShapeInit(xg.dpy);
+  FRenderInit(xg.dpy);
 
   /*get X stuff*/
   xg.xfd = XConnectionNumber(xg.dpy);

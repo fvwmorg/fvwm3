@@ -121,7 +121,12 @@ FvwmPicture *PGraphicsCreateStretchPicture(
 
 Pixmap PGraphicsCreateTransprency(
 	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
-	int x, int y, int width, int height);
+	int x, int y, int width, int height, Bool parent_relative);
+
+void PGraphicsTintRectangle(
+	Display *dpy, Window win, Pixel tint, int tint_percent,
+	Drawable dest, Bool dest_is_a_window, GC gc, GC mono_gc, GC alpha_gc,
+	int dest_x, int dest_y, int dest_w, int dest_h);
 
 /* never used ! */
 Pixmap PGraphicsCreateDitherPixmap(

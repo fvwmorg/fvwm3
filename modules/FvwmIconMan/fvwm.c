@@ -215,6 +215,8 @@ static void set_win_configuration (WinData *win, FvwmPacketBody *body)
   win->y = body->add_config_data.frame_y;
   win->width = body->add_config_data.frame_width;
   win->height = body->add_config_data.frame_height;
+  win->iconified =  IS_ICONIFIED(&(body->add_config_data));
+  win->state = PLAIN_CONTEXT;
   win->geometry_set = 1;
   memcpy(&(win->flags), &(body->add_config_data.flags), sizeof(win->flags));
 }
@@ -269,7 +271,7 @@ static void focus_change (FvwmPacketBody *body)
   ConsoleDebug (FVWM, "Focus Change\n");
   ConsoleDebug (FVWM, "\tID: %ld\n", app_id);
 
-  if (fvwm_focus_win)
+  if (fvwm_focus_win && win != fvwm_focus_win)
   {
     del_win_state (fvwm_focus_win, FOCUS_CONTEXT);
     if (fvwm_focus_win->manager && fvwm_focus_win->manager->focus_button)
@@ -283,8 +285,8 @@ static void focus_change (FvwmPacketBody *body)
       win->manager->window_up  &&
       win->manager->followFocus) {
     win->manager->focus_button = win->button;
-    add_win_state (win, FOCUS_CONTEXT);
   }
+  add_win_state (win, FOCUS_CONTEXT);
 
   globals.focus_win = win;
   fvwm_focus_win = win;
@@ -540,34 +542,42 @@ static void sendtomodule (FvwmPacketBody *body)
 
 static void property_change (FvwmPacketBody *body)
 {
-  WinManager *man = NULL;
-  int j;
+	WinManager *man = NULL;
+	int j;
 
-  if (body->property_data.id != 0)
-  {
-    if (!(man = find_windows_manager(body->property_data.id)))
-      return;
-  }
+	if (body->property_data.id != 0)
+	{
+		if (!(man = find_windows_manager(body->property_data.id)))
+			return;
+	}
 
-  if (body->property_data.arg == MX_PROPERTY_CHANGE_BACKGROUND)
-  {
-    if (man != NULL && man->pixmap[DEFAULT] == ParentRelative)
-    {
-      XClearArea(theDisplay, man->theWindow, 0, 0, 0, 0, True);
-    }
-    if (man != NULL)
-      return;
-    for (j = 0; j < globals.num_managers; j++)
-    {
-      man = &globals.managers[j];
-      if (man->pixmap[DEFAULT] == ParentRelative)
-	XClearArea(theDisplay, man->theWindow, 0, 0, 0, 0, True);
-    }
-  }
-  else if  (body->property_data.arg == MX_PROPERTY_CHANGE_SWALLOW && man != NULL)
-  {
-    man->swallowed = body->property_data.toggle;
-  }
+	if (body->property_data.arg == MX_PROPERTY_CHANGE_BACKGROUND)
+	{
+		if (man != NULL &&
+		    CSET_IS_TRANSPARENT_PR(man->colorsets[DEFAULT]))
+		{
+			recreate_background(man, DEFAULT);
+			force_manager_redraw(man);
+		}
+		if (man != NULL)
+		{
+			return;
+		}
+		for (j = 0; j < globals.num_managers; j++)
+		{
+			man = &globals.managers[j];
+			if (CSET_IS_TRANSPARENT_PR(man->colorsets[DEFAULT]))
+			{
+				recreate_background(man, DEFAULT);
+				force_manager_redraw(man);
+			}
+		}
+	}
+	else if  (body->property_data.arg == MX_PROPERTY_CHANGE_SWALLOW &&
+		  man != NULL)
+	{
+		man->swallowed = body->property_data.toggle;
+	}
 }
 
 static void ProcessMessage (Ulong type, FvwmPacketBody *body)

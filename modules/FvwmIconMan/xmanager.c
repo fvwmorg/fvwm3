@@ -74,6 +74,7 @@ static int selected_button_in_man (WinManager *man)
   return -1;
 }
 
+#if 0
 static void ClipRectangle (WinManager *man, int context,
 			   int x, int y, int w, int h)
 {
@@ -86,6 +87,42 @@ static void ClipRectangle (WinManager *man, int context,
 
   XSetClipRectangles(theDisplay, man->hiContext[context], 0, 0, &r, 1,
 		     YXBanded);
+}
+#endif
+
+static Region GetRegion (int x, int y, int w, int h)
+{
+  Region region;
+  XRectangle rectangle;
+
+  rectangle.x = x;
+  rectangle.y = y;
+  rectangle.width = w;
+  rectangle.height = h;
+
+  region = XCreateRegion();
+  XUnionRectWithRegion (&rectangle, region, region);
+  return region;
+}
+
+static void GetRectangleIntersection(
+	int x1, int y1, int w1, int h1, int x2, int y2, int w2, int h2,
+	XRectangle *r)
+{
+	if (RECTANGLES_INTERSECT(x1,y1,w1,h1,x2,y2,w2,h2))
+	{
+		r->x = max(x1,x2);
+		r->y = max(y1,y2);
+		r->width = min(x1+w1,x2+w2) - max(x1,x2);
+		r->height =min(y1+h1,y2+h2) - max(y1,y2);
+	}
+	else
+	{
+		r->x = 0;
+		r->y = 0;
+		r->width  = 0;
+		r->height = 0;
+	}
 }
 
 static int num_visible_rows (int n, int cols)
@@ -504,6 +541,7 @@ static void clear_button (Button *b)
   b->drawn_state.win = NULL;
   b->drawn_state.dirty_flags = REDRAW_BUTTON;
   b->drawn_state.display_string = NULL;
+  b->drawn_state.ew = 0;
 }
 
 static void set_window_button (WinData *win, int index)
@@ -554,7 +592,7 @@ static void set_num_buttons (ButtonArray *buttons, int n)
     for (i = buttons->num_buttons; i < n; i++) {
       buttons->buttons[i] = (Button *)safemalloc (sizeof (Button));
       memset(buttons->buttons[i], 0, sizeof(Button));
-buttons->buttons[i]->drawn_state.display_string = NULL;
+      buttons->buttons[i]->drawn_state.display_string = NULL;
       buttons->buttons[i]->index = i;
     }
 
@@ -694,25 +732,111 @@ void set_win_iconified (WinData *win, int iconified)
 
 void set_win_state (WinData *win, int state)
 {
-  if (win->button && win->state != state)
-    win->button->drawn_state.dirty_flags |= STATE_CHANGED;
-  win->state = state;
+	if (win->button && win->state != state)
+		win->button->drawn_state.dirty_flags |= STATE_CHANGED;
+	win->state = state;
+
 }
 
+/* this is "broken" */
 void add_win_state (WinData *win, int flag)
 {
-  if (win->button && (win->state & flag) == 0)
-    win->button->drawn_state.dirty_flags |= STATE_CHANGED;
-  win->state |= flag;
-  ConsoleDebug (X11, "add_win_state: %s 0x%x\n", win->titlename, flag);
+	int old_state = win->state;
+
+	if (flag == FOCUS_CONTEXT)
+	{
+		if (win->state == SELECT_CONTEXT ||
+		    win->state == FOCUS_SELECT_CONTEXT)
+		{
+			win->state = FOCUS_SELECT_CONTEXT;
+		}
+		else
+		{
+			win->state = FOCUS_CONTEXT;
+		}
+	}
+	else if (flag == SELECT_CONTEXT)
+	{
+		if (win->state == FOCUS_CONTEXT ||
+		    win->state == FOCUS_SELECT_CONTEXT)
+		{
+			win->state = FOCUS_SELECT_CONTEXT;
+		}
+		else
+		{
+			win->state = SELECT_CONTEXT;
+		}
+	}
+	else
+	{
+		/* add_win_state should not be called  */
+		win->state = flag;
+	}
+	if (win->button && (old_state != win->state))
+	{
+		win->button->drawn_state.dirty_flags |= STATE_CHANGED;
+	}
+	ConsoleDebug (X11, "add_win_state: %s 0x%x\n", win->titlename, flag);
 }
 
+/* this is "broken" */
 void del_win_state (WinData *win, int flag)
 {
-  if (win->button && (win->state & flag))
-    win->button->drawn_state.dirty_flags |= STATE_CHANGED;
-  win->state &= ~flag;
-  ConsoleDebug (X11, "del_win_state: %s 0x%x\n", win->titlename, flag);
+
+	if (flag == FOCUS_CONTEXT)
+	{
+		if (win->state == FOCUS_SELECT_CONTEXT)
+		{
+			win->state = SELECT_CONTEXT;
+		}
+		else if (win->state == FOCUS_CONTEXT)
+		{
+			if (win->iconified)
+			{
+				win->state = ICON_CONTEXT;
+			}
+			else
+			{
+				win->state = PLAIN_CONTEXT;
+			}
+		}
+		else
+		{
+			/* nothing */
+		}
+	}
+	else if (flag == SELECT_CONTEXT)
+	{
+		if (win->state == FOCUS_SELECT_CONTEXT)
+		{
+			win->state = FOCUS_CONTEXT;
+		}
+		else if (win->state == SELECT_CONTEXT)
+		{
+			if (win->iconified)
+			{
+				win->state = ICON_CONTEXT;
+			}
+			else
+			{
+				win->state = PLAIN_CONTEXT;
+			}
+		}
+		else
+		{
+			/* */
+		}
+	}
+	else
+	{
+		/* del_win_state should not be called  */
+		/*win->state = PLAIN_CONTEXT;*/
+	}
+	if (win->button)
+	{
+		win->button->drawn_state.dirty_flags |= STATE_CHANGED;
+	}
+	ConsoleDebug (X11, "del_win_state: %s 0x%x\n", win->titlename, flag);
 }
 
 void set_win_displaystring (WinData *win)
@@ -828,14 +952,16 @@ static void clear_empty_region (WinManager *man)
 		rects[0].x, rects[0].y, rects[0].width, rects[0].height,
 		rects[1].x, rects[1].y, rects[1].width, rects[1].height);
 
-  if (man->colorsets[DEFAULT] >= 0 &&
-      Colorset[man->colorsets[DEFAULT]].pixmap == ParentRelative)
+  if (CSET_IS_TRANSPARENT_PR_PURE(man->colorsets[DEFAULT]))
   {
     for(n=0; n < num_rects; n++)
     {
-      XClearArea(
-	theDisplay, man->theWindow, rects[n].x, rects[n].y, rects[n].width,
-	rects[n].height, False);
+	    if (rects[n].width > 0 && rects[n].height > 0)
+	    {
+		    XClearArea(
+			    theDisplay, man->theWindow, rects[n].x, rects[n].y,
+			    rects[n].width, rects[n].height, False);
+	    }
     }
   }
   else
@@ -975,7 +1101,7 @@ void size_manager (WinManager *man)
 static void resize_manager (WinManager *man, int force)
 {
   ManGeometry *new;
-  int oldwidth, oldheight, oldrows, oldcols;
+  int oldwidth, oldheight, oldrows, oldcols, old_boxwidth, old_boxheight;
   int dir;
   int i;
 
@@ -987,6 +1113,8 @@ static void resize_manager (WinManager *man, int force)
   oldrows = man->geometry.rows;
   oldcols = man->geometry.cols;
   dir = man->geometry.dir;
+  old_boxwidth = man->geometry.boxheight;
+  old_boxheight = man->geometry.boxwidth;
 
   if (dir & GROW_FIXED) {
     new = figure_geometry (man);
@@ -1007,28 +1135,33 @@ static void resize_manager (WinManager *man, int force)
     }
   }
 
-  if (oldwidth != new->width || oldheight != new->height) {
-    for (i = 0; i < NUM_CONTEXTS; i++) {
-      if (man->pixmap[i])
-	XFreePixmap(theDisplay, man->pixmap[i]);
-      if ((man->colorsets[i] >= 0) && Colorset[man->colorsets[i]].pixmap) {
-	man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
-		       man->geometry.width, man->geometry.height,
-		       &Colorset[man->colorsets[i]],
-		       Pdepth, man->backContext[i], False);
-	XSetTile(theDisplay, man->backContext[i], man->pixmap[i]);
-	XSetFillStyle(theDisplay, man->backContext[i], FillTiled);
-	if (i == DEFAULT)
-	{
-	  XSetWindowBackgroundPixmap(theDisplay, man->theWindow,
-				     man->pixmap[i]);
-	}
-      } else {
-	man->pixmap[i] = None;
-	XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
-      }
+#if 1 /* not sure that this is needed */
+  if (oldwidth != new->width || oldheight != new->height)
+  {
+    for (i = 0; i < NUM_CONTEXTS; i++)
+    {
+	    if (man->colorsets[i] >=0 &&
+		(i == DEFAULT || CSET_IS_TRANSPARENT(man->colorsets[i])) &&
+		Colorset[man->colorsets[i]].pixmap)
+	    {
+		    recreate_background(man, i);
+	    }
     }
   }
+
+  if (old_boxwidth != new->boxwidth || old_boxheight != new->boxheight)
+  {
+    for (i = 0; i < NUM_CONTEXTS; i++)
+    {
+	    if (man->colorsets[i] >= 0 && i != DEFAULT &&
+		!CSET_IS_TRANSPARENT(man->colorsets[i]) &&
+		Colorset[man->colorsets[i]].pixmap)
+	    {
+		    recreate_background(man, i);
+	    }
+    }
+  }
+#endif
 }
 
 static int center_padding (int h1, int h2)
@@ -1118,32 +1251,35 @@ static void draw_3d_icon (WinManager *man, int box, ButtonGeometry *g,
   /* this routine should only be called from draw_button() */
 static void iconify_box (WinManager *man, WinData *win, int box,
 			 ButtonGeometry *g, int iconified, Contexts contextId,
-			 int button_already_cleared)
+			 int button_already_cleared, XRectangle bounding)
 {
+	XRectangle inter;
 
 	if (!man->window_up)
 	{
 		return;
 	}
+	GetRectangleIntersection(
+		bounding.x, bounding.y, bounding.width, bounding.height,
+		g->icon_x, g->icon_y, g->icon_w, g->icon_h,
+		&inter);
 
         /* [BV 16-Apr-97] Mini Icons work on black-and-white too */
 	if (FMiniIconsSupported && man->draw_icons && win->pic.picture)
 	{
 		if (iconified == 0 && man->draw_icons != 2)
 		{
-			if (!button_already_cleared)
-			{
 				XFillRectangle (
 					theDisplay, man->theWindow,
 					man->backContext[contextId],
-					g->icon_x, g->icon_y,
-					g->icon_w, g->icon_h);
-			}
+					g->icon_x, g->icon_y, g->icon_w,
+					g->icon_h);
 		}
 		else
 		{
 			FvwmRenderAttributes fra;
 			int cs = man->colorsets[contextId];
+			int p_x = 0, p_y = 0;
 
 			fra.mask = FRAM_DEST_IS_A_WINDOW;
 			if (cs >= 0)
@@ -1151,11 +1287,25 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 				fra.mask |= FRAM_HAVE_ICON_CSET;
 				fra.colorset = &Colorset[cs];
 			}
+			if (inter.width <= 0 || inter.height <= 0)
+			{
+				return;
+			}
+			if (inter.x > g->icon_x)
+			{
+				p_x = inter.x - g->icon_x;
+			}
+			if (inter.y > g->icon_y)
+			{
+				p_y = inter.y - g->icon_y;
+			}
 			PGraphicsRenderPicture(
 				theDisplay, man->theWindow, &win->pic, &fra,
 				man->theWindow, man->hiContext[contextId],
-				None, None, 0, 0, g->icon_w, g->icon_h,
-				g->icon_x, g->icon_y, 0, 0, False);
+				None, None,
+				p_x, p_y, inter.width, inter.height,
+				inter.x, inter.y, inter.width, inter.height,
+				False);
 		}
 	}
 	else
@@ -1289,198 +1439,289 @@ static void draw_relief (WinManager *man, int button_state, ButtonGeometry *g,
   }
 }
 
-static void draw_button (WinManager *man, int button, int force)
+static void draw_button_background(
+	WinManager *man, XRectangle bounding, ButtonGeometry g,
+	Contexts button_state)
 {
-  Button *b;
-  WinData *win;
-  ButtonGeometry g, old_g;
-  GC context1, context2;
-  Contexts button_state;
-  int cleared_button = 0, dirty;
-  int draw_background = 0, draw_icon = 0, draw_string = 0, clear_old_pic = 0;
+	int cset = man->colorsets[button_state];
 
-  assert (man);
-
-  if (!man->window_up) {
-    ConsoleMessage ("draw_button: manager not up yet\n");
-    return;
-  }
-
-  b = man->buttons.buttons[button];
-  win = b->drawn_state.win;
-  dirty = b->drawn_state.dirty_flags;
-
-  if (win && win->button != b) {
-    ConsoleMessage ("Internal error in draw_button.\n");
-    return;
-  }
-
-  if (!win) {
-    return;
-  }
-
-  if (force || (dirty & REDRAW_BUTTON)) {
-    ConsoleDebug (X11, "draw_button: %d forced\n", b->index);
-    draw_background = 1;
-    draw_icon = 1;
-    draw_string = 1;
-  }
-  /* figure out what we have to draw */
-  if (dirty) {
-    ConsoleDebug (X11, "draw_button: %d dirty\n", b->index);
-    if (win) {
-      if (GEOMETRY_CHANGED) {
-	ConsoleDebug (X11, "\tGeometry changed\n");
-	/* Determine if geometry has changed relative to the
-	   window gravity */
-	if (b->w != b->drawn_state.w || b->h != b->drawn_state.h ||
-	    b->x - man->geometry.gravity_x !=
-	      b->drawn_state.x - man->drawn_geometry.gravity_x ||
-	    b->y - man->geometry.gravity_y !=
-	      b->drawn_state.y - man->drawn_geometry.gravity_y) {
-	  draw_background = 1;
-	  draw_icon = 1;
-	  draw_string = 1;
-	}
-      }
-      if (STATE_CHANGED) {
-	ConsoleDebug (X11, "\tState changed\n");
-	b->drawn_state.state = win->state;
-	draw_background = 1;
-	draw_icon = 1;
-	draw_string = 1;
-      }
-      if (FMiniIconsSupported && PICTURE_CHANGED) {
-	FvwmPicture tpic;
-
-	ConsoleDebug (X11, "\tPicture changed\n");
-	tpic = win->pic;
-	win->pic = win->old_pic;
-	get_button_geometry (man, b, &old_g);
-	win->pic = tpic;
-	b->drawn_state.pic = win->pic;
-	draw_icon = 1;
-	draw_string = 1;
-	clear_old_pic = 1;
-      }
-      if (ICON_STATE_CHANGED && b->drawn_state.iconified != win->iconified) {
-	ConsoleDebug (X11, "\tIcon changed\n");
-	b->drawn_state.iconified = win->iconified;
-	draw_icon = 1;
-	draw_background = 1;
-	draw_string = 1;
-      }
-      if (STRING_CHANGED) {
-	ConsoleDebug (X11, "\tString changed: %s\n", win->display_string);
-	copy_string(&b->drawn_state.display_string, win->display_string);
-	assert (b->drawn_state.display_string);
-	draw_icon = 1;
-	draw_background = 1;
-	draw_string = 1;
-      }
-    }
-  }
-
-  if (win && (draw_background || draw_icon || draw_string)) {
-    get_button_geometry (man, b, &g);
-    ConsoleDebug (X11, "\tgeometry: %d %d %d %d\n", g.button_x, g.button_y,
-		  g.button_w, g.button_h);
-    button_state = b->drawn_state.state;
-    if (b->drawn_state.iconified && button_state == PLAIN_CONTEXT) {
-      button_state = ICON_CONTEXT;
-    }
-    if (draw_background) {
-      ConsoleDebug (X11, "\tDrawing background\n");
-      if (man->colorsets[button_state] >= 0 &&
-	  Colorset[man->colorsets[button_state]].pixmap == ParentRelative)
-      {
-	XClearArea(theDisplay, man->theWindow, g.button_x, g.button_y,
-		   g.button_w, g.button_h, False);
-      }
-      else
-      {
-	XFillRectangle(theDisplay, man->theWindow,
-		       man->backContext[button_state], g.button_x,
-		       g.button_y, g.button_w, g.button_h);
-      }
-      cleared_button = 1;
-
-      if (Pdepth > 2) {
-	get_gcs (man, button_state, win->iconified, &context1, &context2);
-	draw_relief (man, button_state, &g, context1, context2);
-      }
-      else if (button_state & SELECT_CONTEXT) {
-	XDrawRectangle (theDisplay, man->theWindow,
-			man->hiContext[button_state],
-			g.button_x + 2, g.button_y + 1,
-			g.button_w - 4, g.button_h - 2);
-      }
-    }
-    if (clear_old_pic) {
-      ConsoleDebug (X11, "\tClearing old picture\n");
-      if (!cleared_button) {
-	XFillRectangle (theDisplay, man->theWindow,
-			man->backContext[PLAIN_CONTEXT],
-			old_g.icon_x, old_g.icon_y,
-			old_g.icon_w + 2, old_g.icon_h);
-      }
-    }
-    if (draw_icon) {
-      ConsoleDebug (X11, "\tDrawing icon\n");
-      iconify_box (man, win, button, &g, win->iconified, button_state,
-		   cleared_button);
-    }
-    if (draw_string) {
-      ConsoleDebug (X11, "\tDrawing text: %s\n",
-		    b->drawn_state.display_string);
-      ClipRectangle (man, button_state, g.text_x, g.text_y, g.text_w,
-		     g.text_h);
-      if (!cleared_button) {
-	XFillRectangle (theDisplay, man->theWindow,
-			man->backContext[button_state],
-			g.text_x, g.text_y, g.text_w, g.text_h);
-      }
-      FwinString->str =  b->drawn_state.display_string;
-      FwinString->win = man->theWindow;
-      FwinString->gc = man->hiContext[button_state];
-      if (man->colorsets[button_state] >= 0)
-      {
-	      FwinString->colorset = &Colorset[man->colorsets[button_state]];
-	      FwinString->flags.has_colorset = True;
-      }
-      else
-      {
-	      FwinString->flags.has_colorset = False;
-      }
-      FwinString->x = g.text_x;
-      FwinString->y = g.text_base;
-      FwinString->len = strlen(b->drawn_state.display_string);
-      if (FftSupport)
-      {
-	if (man->FButtonFont->fftf.fftfont != NULL)
+	if (CSET_IS_TRANSPARENT_PR_PURE(cset))
 	{
-	  while(
-	    FwinString->len >= 0 &&
-	    FlocaleTextWidth(man->FButtonFont, FwinString->str,
-			     FwinString->len)
-	    > g.text_w)
-	  {
-	    FwinString->len--;
-	  }
+		XClearArea(
+			theDisplay, man->theWindow,
+			bounding.x, bounding.y,
+			bounding.width, bounding.height,
+			False);
 	}
-      }
-      FlocaleDrawString(
-	theDisplay, man->FButtonFont, FwinString, FWS_HAVE_LENGTH);
-      XSetClipMask (theDisplay, man->hiContext[button_state], None);
-    }
-  }
+	else if (CSET_IS_TRANSPARENT_PR_TINT(cset))
+	{
+		SetRectangleBackground(
+			theDisplay, man->theWindow,
+			bounding.x, bounding.y,
+			bounding.width, bounding.height,
+			&Colorset[cset], Pdepth, man->backContext[button_state]);
+	}
+	else
+	{
+		XFillRectangle(
+			theDisplay, man->theWindow,
+			man->backContext[button_state],
+			bounding.x, bounding.y,
+			bounding.width, bounding.height);
+	}
+}
 
-  b->drawn_state.dirty_flags = 0;
-  b->drawn_state.x = b->x;
-  b->drawn_state.y = b->y;
-  b->drawn_state.w = b->w;
-  b->drawn_state.h = b->h;
-  XFlush (theDisplay);
+static void draw_button(WinManager *man, int button, int force)
+{
+	Button *b;
+	WinData *win;
+	ButtonGeometry g, old_g;
+	GC context1, context2;
+	Contexts button_state;
+	int cleared_button = 0, dirty;
+	int draw_background = 0, draw_icon = 0, draw_string = 0;
+	int clear_old_pic = 0;
+
+	assert (man);
+
+	if (!man->window_up)
+	{
+		ConsoleMessage ("draw_button: manager not up yet\n");
+		return;
+	}
+
+	b = man->buttons.buttons[button];
+	win = b->drawn_state.win;
+	dirty = b->drawn_state.dirty_flags;
+
+	if (win && win->button != b)
+	{
+		ConsoleMessage ("Internal error in draw_button.\n");
+		return;
+	}
+
+	if (!win)
+	{
+		return;
+	}
+
+	if (force || (dirty & REDRAW_BUTTON))
+	{
+		ConsoleDebug (X11, "draw_button: %d forced\n", b->index);
+		draw_background = 1;
+		draw_icon = 1;
+		draw_string = 1;
+	}
+
+	/* figure out what we have to draw */
+	if (dirty)
+	{
+		ConsoleDebug (X11, "draw_button: %d dirty\n", b->index);
+		/* humm ... this should be optimised one day ! */
+		if (dirty & GEOMETRY_CHANGED)
+		{
+			ConsoleDebug (X11, "\tGeometry changed\n");
+			/* Determine if geometry has changed relative 
+			 * to the window gravity */
+			if (b->w != b->drawn_state.w ||
+			    b->h != b->drawn_state.h ||
+			    b->x - man->geometry.gravity_x !=
+			    b->drawn_state.x -
+			    man->drawn_geometry.gravity_x ||
+			    b->y - man->geometry.gravity_y !=
+			    b->drawn_state.y -
+			    man->drawn_geometry.gravity_y)
+			{
+				draw_background = 1;
+				draw_icon = 1;
+				draw_string = 1;
+			}
+		}
+		if (dirty & STATE_CHANGED)
+		{
+			ConsoleDebug (X11, "\tState changed\n");
+			b->drawn_state.state = win->state;
+			draw_background = 1;
+			draw_icon = 1;
+			draw_string = 1;
+		}
+		if (FMiniIconsSupported && (dirty & PICTURE_CHANGED))
+		{
+			FvwmPicture tpic;
+
+			ConsoleDebug (X11, "\tPicture changed\n");
+			tpic = win->pic;
+			win->pic = win->old_pic;
+			get_button_geometry (man, b, &old_g);
+			win->pic = tpic;
+			b->drawn_state.pic = win->pic;
+			draw_icon = 1;
+			draw_string = 1;
+			draw_background = 1;
+		}
+		if ((dirty & ICON_STATE_CHANGED) &&
+		    b->drawn_state.iconified != win->iconified)
+		{
+			ConsoleDebug (X11, "\tIcon changed\n");
+			b->drawn_state.iconified = win->iconified;
+			draw_icon = 1;
+			draw_background = 1;
+			draw_string = 1;
+		}
+		if (dirty & STRING_CHANGED)
+		{
+			ConsoleDebug (
+				X11, "\tString changed: %s\n",
+				win->display_string);
+			copy_string(
+				&b->drawn_state.display_string,
+				win->display_string);
+			assert (b->drawn_state.display_string);
+			draw_icon = 1;
+			draw_background = 1;
+			draw_string = 1;
+		}
+	}
+
+	if (draw_background || draw_icon || draw_string)
+	{
+		XRectangle bounding;
+		Region b_region;
+
+		get_button_geometry (man, b, &g);
+		if (b->drawn_state.ew > 0 && b->drawn_state.eh > 0)
+		{
+			/* we redraw from an expose event */
+			bounding.x =  b->drawn_state.ex;
+			bounding.y =  b->drawn_state.ey;
+			bounding.width =  b->drawn_state.ew;
+			bounding.height =  b->drawn_state.eh;
+		}
+		else
+		{
+			bounding.x = g.button_x;
+			bounding.y = g.button_y;
+			bounding.width = g.button_w;
+			bounding.height = g.button_h;
+		}
+		b_region = GetRegion(
+			bounding.x, bounding.y, bounding.width, bounding.height);
+		ConsoleDebug (
+			X11, "\tgeometry: %d %d %d %d\n", g.button_x, g.button_y,
+			g.button_w, g.button_h);
+		button_state = b->drawn_state.state;
+		if (b->drawn_state.iconified && button_state == PLAIN_CONTEXT)
+		{
+			button_state = ICON_CONTEXT;
+		}
+		if (draw_background)
+		{
+			ConsoleDebug (X11, "\tDrawing background\n");
+			draw_button_background(man, bounding, g, button_state);
+			cleared_button = 1
+;
+			if (Pdepth > 2)
+			{
+				get_gcs(
+					man, button_state, win->iconified,
+					&context1, &context2);
+				draw_relief(
+					man, button_state, &g, context1,
+					context2);
+			}
+			else if (button_state & SELECT_CONTEXT)
+			{
+				XDrawRectangle (
+					theDisplay, man->theWindow,
+					man->hiContext[button_state],
+					g.button_x + 2, g.button_y + 1,
+					g.button_w - 4, g.button_h - 2);
+			}
+		}
+		if (clear_old_pic)
+		{
+			ConsoleDebug (X11, "\tClearing old picture\n");
+			if (!cleared_button)
+			{
+				XRectangle r;
+
+				GetRectangleIntersection(
+					bounding.x, bounding.y,
+					bounding.width, bounding.height,
+					g.icon_x, g.icon_y, g.icon_w, g.icon_h,
+					&r);
+				if (r.width > 0)
+				{
+					draw_button_background(
+						man, r, g, button_state);
+				}
+			}
+		}
+		if (draw_icon)
+		{
+			ConsoleDebug (X11, "\tDrawing icon\n");
+			iconify_box(
+				man, win, button, &g, win->iconified,
+				button_state, cleared_button, bounding);
+		}
+		if (draw_string)
+		{
+			Region tr;
+
+			ConsoleDebug(
+				X11, "\tDrawing text: %s\n",
+				b->drawn_state.display_string);
+			
+			tr = GetRegion(
+				g.text_x, g.text_y, g.text_w, g.text_h);
+			XIntersectRegion(tr, b_region, tr);
+			XSetRegion(
+				theDisplay, man->hiContext[button_state], tr);
+			if (!cleared_button)
+			{
+				XRectangle r;
+				
+				GetRectangleIntersection(
+					bounding.x, bounding.y,
+					bounding.width, bounding.height,
+					g.text_x, g.text_y, g.text_w, g.text_h,
+					&r);
+				draw_button_background(man, r, g, button_state);
+			}
+			FwinString->str =  b->drawn_state.display_string;
+			FwinString->win = man->theWindow;
+			FwinString->gc = man->hiContext[button_state];
+			if (man->colorsets[button_state] >= 0)
+			{
+				FwinString->colorset =
+					&Colorset[man->colorsets[button_state]];
+				FwinString->flags.has_colorset = True;
+			}
+			else
+			{
+				FwinString->flags.has_colorset = False;
+			}
+			FwinString->flags.has_clip_region = True;
+			FwinString->clip_region = tr;
+			FwinString->x = g.text_x;
+			FwinString->y = g.text_base;
+			FlocaleDrawString(
+				theDisplay, man->FButtonFont, FwinString, 0);
+			XDestroyRegion(tr);
+			XSetClipMask(
+				theDisplay, man->hiContext[button_state], None);
+		}
+		XDestroyRegion(b_region);
+	}
+
+	b->drawn_state.dirty_flags = 0;
+	b->drawn_state.x = b->x;
+	b->drawn_state.y = b->y;
+	b->drawn_state.w = b->w;
+	b->drawn_state.h = b->h;
+	b->drawn_state.ew = 0;
+	b->drawn_state.eh = 0;
+	XFlush (theDisplay);
 }
 
 void draw_managers (void)
@@ -1492,46 +1733,52 @@ void draw_managers (void)
 
 static void draw_empty_manager (WinManager *man)
 {
-  GC context1, context2;
-  int state = TITLE_CONTEXT;
-  ButtonGeometry g;
-  int len = strlen (man->titlename);
+	GC context1, context2;
+	int state = TITLE_CONTEXT;
+	ButtonGeometry g;
+	int len = strlen (man->titlename);
+	Region region;
 
-  ConsoleDebug (X11, "draw_empty_manager\n");
-  clear_empty_region (man);
-  get_title_geometry (man, &g);
+	ConsoleDebug (X11, "draw_empty_manager\n");
+	clear_empty_region (man);
+	get_title_geometry (man, &g);
 
-  if (len > 0) {
-    if (man->colorsets[state] >= 0
-	&& Colorset[man->colorsets[state]].pixmap == ParentRelative) {
-      XClearArea (theDisplay, man->theWindow, g.button_x, g.button_y,
-		  g.button_w, g.button_h, False);
-    } else {
-      XFillRectangle (theDisplay, man->theWindow, man->backContext[state],
-		      g.button_x, g.button_y, g.button_w, g.button_h);
-    }
-  }
-  if (Pdepth > 2) {
-    get_gcs (man, state, 0, &context1, &context2);
-    draw_relief (man, state, &g, context1, context2);
-  }
-  ClipRectangle (man, state, g.text_x, g.text_y, g.text_w, g.text_h);
-  FwinString->str = man->titlename;
-  FwinString->win = man->theWindow;
-  FwinString->gc = man->hiContext[state];
-  if (man->colorsets[state] >= 0)
-  {
-	  FwinString->colorset = &Colorset[man->colorsets[state]];
-	  FwinString->flags.has_colorset = True;
-  }
-  else
-  {
-	  FwinString->flags.has_colorset = False;
-  }
-  FwinString->x = g.text_x;
-  FwinString->y = g.text_base;
-  FlocaleDrawString (theDisplay, man->FButtonFont, FwinString, 0);
-  XSetClipMask (theDisplay, man->hiContext[state], None);
+	/* FIXME: should bound when exposed */
+	if (len > 0)
+	{
+		XRectangle r;
+
+		r.x = g.button_x;
+		r.y = g.button_y;
+		r.width = g.button_w;
+		r.height = g.button_h;
+		draw_button_background(man, r, g, state);
+	}
+	if (Pdepth > 2)
+	{
+		get_gcs (man, state, 0, &context1, &context2);
+		draw_relief (man, state, &g, context1, context2);
+	}
+	region = GetRegion(g.text_x, g.text_y, g.text_w, g.text_h);
+	XSetRegion(theDisplay, man->hiContext[state], region);
+	FwinString->str = man->titlename;
+	FwinString->win = man->theWindow;
+	FwinString->gc = man->hiContext[state];
+	if (man->colorsets[state] >= 0)
+	{
+		FwinString->colorset = &Colorset[man->colorsets[state]];
+		FwinString->flags.has_colorset = True;
+	}
+	else
+	{
+		FwinString->flags.has_colorset = False;
+	}
+	FwinString->flags.has_clip_region = True;
+	FwinString->clip_region = region;
+	FwinString->x = g.text_x;
+	FwinString->y = g.text_base;
+	FlocaleDrawString (theDisplay, man->FButtonFont, FwinString, 0);
+	XSetClipMask (theDisplay, man->hiContext[state], None);
 }
 
 void draw_manager (WinManager *man)
@@ -1589,9 +1836,8 @@ void draw_manager (WinManager *man)
   }
   if (force_draw || update_geometry)
   {
-    /* maybe not usefull but safe */
-    if (man->colorsets[DEFAULT] >= 0 &&
-	 Colorset[man->colorsets[DEFAULT]].pixmap == ParentRelative)
+    /* FIXME: maybe not usefull but safe */
+    if (CSET_IS_TRANSPARENT_PR_PURE(man->colorsets[DEFAULT]))
       force_draw = True;
   }
 
@@ -1609,7 +1855,7 @@ void draw_manager (WinManager *man)
        wouldn't get redrawn. It appears we weren't getting the expose.
        How can I tell when I am going to reliably get an expose event? */
 
-    if (1 || !shape_changed) {
+    if (1 || shape_changed) {
       /* if shape changed, we'll catch it on the expose */
       for (i = 0; i < man->buttons.num_buttons; i++) {
 	draw_button (man, i, force_draw);
@@ -1620,6 +1866,66 @@ void draw_manager (WinManager *man)
   XFlush (theDisplay);
 }
 
+Bool draw_transparent_buttons(
+	WinManager *man, Bool only_moved, Bool clear_only)
+{
+	Button **bp;
+	Contexts button_state;
+	int i,cset;
+	Bool r = False;
+	Bool man_bg_transparent = False;
+
+	if (CSET_IS_TRANSPARENT(man->colorsets[DEFAULT]))
+	{
+		clear_empty_region(man);
+		man_bg_transparent = True;
+	}
+
+	if (!man->buttons.num_windows)
+	{
+		if (CSET_IS_TRANSPARENT(man->colorsets[TITLE_CONTEXT]) ||
+		    CSET_IS_TRANSPARENT_PR_TINT(man->colorsets[DEFAULT]))
+		{
+			draw_empty_manager(man);
+		}
+		return 0;
+	}
+
+	bp = man->buttons.buttons;
+	for (i = 0; i < man->buttons.num_windows; i++)
+	{
+		button_state = bp[i]->drawn_state.state;
+		if (bp[i]->drawn_state.iconified &&
+		    button_state == PLAIN_CONTEXT)
+		{
+			button_state = ICON_CONTEXT;
+		}
+		cset = man->colorsets[button_state];
+
+		if ((!CSET_IS_TRANSPARENT(cset) &&
+		     !CSET_IS_TRANSPARENT_PR_TINT(man->colorsets[DEFAULT]))
+		    ||
+		    (only_moved && !man_bg_transparent &&
+		     !CSET_IS_TRANSPARENT_ROOT(cset)))
+		{
+			continue;
+		}
+		if (clear_only)
+		{
+			XClearArea(
+				theDisplay, man->theWindow,
+				bp[i]->x, bp[i]->y, bp[i]->w, bp[i]->h,
+				True);
+			r = True;
+		}
+		else
+		{
+			bp[i]->drawn_state.dirty_flags |= REDRAW_BUTTON;
+			draw_button(man, i, 0);
+		}
+	}
+	return r;
+}
 
 static int compute_weight(WinData *win)
 {
@@ -1855,7 +2161,7 @@ void delete_windows_button (WinData *win)
 		  selected_index);
     move_highlight (man, man->buttons.buttons[selected_index]);
   }
-  win->state = 0;
+  win->state = PLAIN_CONTEXT;
 }
 
 void resort_windows_button (WinData *win)
@@ -1921,58 +2227,78 @@ void move_highlight (WinManager *man, Button *b)
 
 void man_exposed (WinManager *man, XEvent *theEvent)
 {
-  int x1, y1, w1, h1;
-  int x2, y2, w2, h2;
-  int i;
-  Button **bp;
+	int x1, y1, w1, h1;
+	int x2, y2, w2, h2;
+	int i;
+	Button **bp;
 
-  ConsoleDebug (X11, "manager: %s, got expose\n", man->titlename);
+	ConsoleDebug (X11, "manager: %s, got expose\n", man->titlename);
 
-  x1 = theEvent->xexpose.x;
-  y1 = theEvent->xexpose.y;
-  w1 = theEvent->xexpose.width;
-  h1 = theEvent->xexpose.height;
+	x1 = theEvent->xexpose.x;
+	y1 = theEvent->xexpose.y;
+	w1 = theEvent->xexpose.width;
+	h1 = theEvent->xexpose.height;
 
-  w2 = man->geometry.boxwidth;
-  h2 = man->geometry.boxheight;
+	w2 = man->geometry.boxwidth;
+	h2 = man->geometry.boxheight;
 
-  bp = man->buttons.buttons;
+	bp = man->buttons.buttons;
 
-  /* Background must be redrawn */
-  man->dirty_flags |= REDRAW_BG;
+	/* Background must be redrawn. */
+	/* olicha: I do not think so */
+	/*man->dirty_flags |= REDRAW_BG;*/
 
-  if (FHaveShapeExtension)
-  {
-    /* There's some weird problem where if we change window shapes, we can't
-       draw into buttons in the area NewShape intersect (not OldShape) until
-       we get our Expose event. So, for now, just redraw everything when we
-       get Expose events. This has the disadvantage of drawing buttons twice,
-       but avoids having to match which expose event results from which shape
-       change */
-    if (man->buttons.num_windows) {
-      for (i = 0; i < man->buttons.num_windows; i++) {
-	bp[i]->drawn_state.dirty_flags |= REDRAW_BUTTON;
-      }
-    }
-    else {
-      draw_empty_manager (man);
-    }
+	if (0 && FHaveShapeExtension && man->shaped)
+	{
+		/* There's some weird problem where if we change window shapes, 
+		 * we can't draw into buttons in the area NewShape intersect 
+		 * (not OldShape) until we get our Expose event. So, for now, 
+		 * just redraw everything when we get Expose events. This has
+		 * the disadvantage of drawing buttons twice, but avoids having
+		 * to match which expose event results from which shape change.*/
+		/* seems fixed ? olicha */
+		if (man->buttons.num_windows)
+		{
+			for (i = 0; i < man->buttons.num_windows; i++)
+			{
+				bp[i]->drawn_state.dirty_flags |= REDRAW_BUTTON;
+			}
+		}
+		else
+		{
+			draw_empty_manager (man);
+		}
 
-    return;
-  }
+		return;
+	}
 
-  if (man->buttons.num_windows) {
-    for (i = 0; i < man->buttons.num_windows; i++) {
-      x2 = index_to_col (man, i) * w2;
-      y2 = index_to_row (man, i) * h2;
-      if (RECTANGLES_INTERSECT (x1, y1, w1, h1, x2, y2, w2, h2)) {
-	bp[i]->drawn_state.dirty_flags |= REDRAW_BUTTON;
-      }
-    }
-  }
-  else {
-    draw_empty_manager (man);
-  }
+	if (CSET_IS_TRANSPARENT_PR(man->colorsets[DEFAULT]))
+	{
+		clear_empty_region(man);
+	}
+	if (man->buttons.num_windows)
+	{
+		for (i = 0; i < man->buttons.num_windows; i++)
+		{
+			x2 = index_to_col (man, i) * w2;
+			y2 = index_to_row (man, i) * h2;
+			if (RECTANGLES_INTERSECT(
+				x1, y1, w1, h1, x2, y2, w2, h2))
+			{
+				bp[i]->drawn_state.ex = max(x1,x2);
+				bp[i]->drawn_state.ey = max(y1,y2);
+				bp[i]->drawn_state.ew =
+					min(x1+w1,x2+w2) - max(x1,x2);
+				bp[i]->drawn_state.eh =
+					min(y1+h1,y2+h2) - max(y1,y2);
+				bp[i]->drawn_state.dirty_flags |= REDRAW_BUTTON;
+			}
+		}
+	}
+	else
+	{
+		draw_empty_manager (man);
+	}
 }
 
 /***************************************************************************/

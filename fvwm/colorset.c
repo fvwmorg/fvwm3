@@ -26,6 +26,8 @@
 
 #include "config.h"
 
+#include <stdio.h>
+
 #include "libs/fvwmlib.h"
 #include "libs/PictureBase.h"
 #include "libs/FShape.h"
@@ -69,6 +71,14 @@ struct junklist
 	Pixmap pixmap;
 };
 
+struct root_pic
+{
+	Pixmap pixmap;
+	Pixmap old_pixmap;
+	int width;
+	int height;
+};
+
 /* ---------------------------- forward declarations ------------------------ */
 
 /* ---------------------------- local variables ----------------------------- */
@@ -79,6 +89,7 @@ static char *gray = "gray";
 
 static struct junklist *junk = NULL;
 static Bool cleanup_scheduled = False;
+static struct root_pic root_pic = {None, 0, 0};
 
 static char *csetopts[] =
 {
@@ -119,6 +130,7 @@ static char *csetopts[] =
 
 	/* Make the background transparent, copies the root window background */
 	"Transparent",
+	"RootTransparent",
 
 	/* tint for the Pixmap or the gradient */
 	"Tint",
@@ -152,6 +164,80 @@ static char *csetopts[] =
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- local functions ----------------------------- */
+static
+Pixmap get_root_pixmap(Atom prop)
+{
+	Atom type;
+	int format;
+	unsigned long length, after;
+	unsigned char *data;
+	int ret;
+
+	ret = XGetWindowProperty(dpy, Scr.Root, prop, 0L, 1L, False, XA_PIXMAP,
+			   &type, &format, &length, &after, &data);
+	if (ret == Success && type == XA_PIXMAP && format == 32 && length == 1 &&
+	    after == 0)
+	{
+		return *((Pixmap *)data);
+	}
+	return None;
+}
+
+void update_root_pixmap(Atom prop)
+{
+	static Atom a_eset = None;
+	static Atom a_x = None;
+	unsigned int w = 0, h = 0;
+	XID dummy;
+	Pixmap pix;
+
+	if (a_eset == None)
+	{
+		a_eset = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
+	}
+	if (a_x == None)
+	{
+		a_x = XInternAtom(dpy, "_XSETROOT_ID", False);
+	}
+	XSync(dpy, False);
+	if (prop != 0)
+	{
+		pix = get_root_pixmap(prop);
+		if (pix && !XGetGeometry(
+			dpy, pix, &dummy, (int *)&dummy, (int *)&dummy,
+			&w, &h, (unsigned int *)&dummy, (unsigned int *)&dummy))
+		{
+			pix = None;
+		}
+	}
+	else
+	{
+		pix = get_root_pixmap(a_x);
+		if (pix && !XGetGeometry(
+			dpy, pix, &dummy, (int *)&dummy, (int *)&dummy,
+			&w, &h, (unsigned int *)&dummy, (unsigned int *)&dummy))
+		{
+			pix = None;
+		}
+	}
+	if (prop == 0 && pix == None)
+	{
+		pix = get_root_pixmap(a_eset);
+		if (pix && !XGetGeometry(
+			dpy, pix, &dummy, (int *)&dummy, (int *)&dummy,
+			&w, &h, (unsigned int *)&dummy, (unsigned int *)&dummy))
+		{
+			pix = None;
+		}
+	}
+	root_pic.pixmap = pix;
+	root_pic.width = w;
+	root_pic.height = h;
+#if 0
+	fprintf(stderr,"Get New Root Pixmap: 0x%lx %i,%i\n",
+		root_pic.pixmap, w, h);
+#endif
+}
 
 static void add_to_junk(Pixmap pixmap)
 {
@@ -249,7 +335,8 @@ static void free_colorset_background(colorset_struct *cs, Bool do_free_args)
 		cs->pixmap = None;
 		cs->alpha_pixmap = None; /* alaways equal to picture->alpha */
 	}
-	if (cs->pixmap && cs->pixmap != ParentRelative)
+	if (cs->pixmap && cs->pixmap != ParentRelative &&
+	    cs->pixmap != root_pic.pixmap && cs->pixmap != root_pic.old_pixmap)
 	{
 		add_to_junk(cs->pixmap);
 	}
@@ -284,6 +371,8 @@ static void free_colorset_background(colorset_struct *cs, Bool do_free_args)
 			free(cs->gradient_args);
 			cs->gradient_args = NULL;
 		}
+		cs->is_maybe_root_transparent = False;
+		cs->pixmap_type = 0;
 	}
 }
 
@@ -463,57 +552,30 @@ static void parse_shape(Window win, colorset_struct *cs, int i, char *args,
 	return;
 }
 
-static void parse_pixmap_tint(
-	Window win, GC gc, colorset_struct *cs, int i, char *args,
-	char **tint, int *has_tint_changed, int *has_pixmap_changed)
-{
-	char *rest;
-	static char *name = "parse_colorset(tint)";
-	int tint_percent;
-
-	rest = get_simple_color(args, tint, cs, TINT_SUPPLIED, 0, NULL);
-	if (!GetIntegerArguments(rest, NULL, &tint_percent, 1))
-	{
-		fvwm_msg(WARN, name,
-			 "Tint must have two arguments a color and an integer");
-		tint_percent = 0;
-		return;
-	}
-	*has_tint_changed = True;
-	if (!*has_pixmap_changed && cs->picture != NULL && cs->picture->picture)
-	{
-		XSetClipMask(dpy, gc, cs->picture->mask);
-		XCopyArea(dpy, cs->picture->picture, cs->pixmap, gc,
-			  0, 0, cs->width, cs->height, 0, 0);
-		XSetClipMask(dpy, gc, None);
-		*has_pixmap_changed = True;
-	}
-	cs->tint_percent = (tint_percent > 100)? 100:tint_percent;
-}
-
 static void parse_simple_tint(
 	colorset_struct *cs, char *args, char **tint, int supplied_color,
-	int *has_tint_changed, int *percent)
+	int *changed, int *percent, char *cmd)
 {
 	char *rest;
 	static char *name = "parse_colorset (tint)";
 
+	*changed = False;
 	rest = get_simple_color(args, tint, cs, supplied_color, 0, NULL);
 	if (!(cs->color_flags & supplied_color))
 	{
 		/* restore to default */
 		*percent = 0;
-		*has_tint_changed = True;
+		*changed = True;
 		cs->color_flags &= ~(supplied_color);
-		return;
 	}
-	if (!GetIntegerArguments(rest, NULL, percent, 1))
+	else if (!GetIntegerArguments(rest, NULL, percent, 1))
 	{
 		fvwm_msg(WARN, name,
-			 "Tint must have two arguments a color and an integer");
+			 "%s must have two arguments a color and an integer",
+			 cmd);
 		return;
 	}
-	*has_tint_changed = True;
+	*changed = True;
 	if (*percent > 100)
 	{
 		*percent = 100;
@@ -696,7 +758,6 @@ void parse_colorset(int n, char *line)
 			break;
 		case 21: /* Plain */
 			has_pixmap_changed = True;
-			pixmap_is_a_bitmap = False;
 			free_colorset_background(cs, True);
 			break;
 		case 22: /* NoShape */
@@ -726,59 +787,83 @@ void parse_colorset(int n, char *line)
 			cs->pixmap = ParentRelative;
 			cs->pixmap_type = PIXMAP_STRETCH;
 			break;
-		case 24: /* Tint */
-		case 25: /* PixmapTint */
-		case 26: /* ImageTint */
-		case 27: /* TintMask */
-			parse_pixmap_tint(
-				win, gc, cs, i, args, &tint,
-				&has_tint_changed, &has_pixmap_changed);
-			break;
-		case 28: /* NoTint */
+		case 24: /* RootTransparent */
+			free_colorset_background(cs, True);
 			has_pixmap_changed = True;
-			/* restore the pixmap */
-			if (cs->picture != NULL && cs->pixmap)
+			cs->pixmap_type = PIXMAP_ROOT_PIXMAP_PURE;
+			do_reload_pixmap = True;
+			tmp_str = PeekToken(args, &args);
+			if (StrEquals(tmp_str, "buffer"))
 			{
-				XSetClipMask(dpy, gc, cs->picture->mask);
-				reset_cs_pixmap(cs, gc);
-				XSetClipMask(dpy, gc, None);
+				cs->allows_buffered_transparency = True;
 			}
+			else
+			{
+				cs->allows_buffered_transparency = False;
+			}
+			cs->is_maybe_root_transparent = True;
+			break;
+		case 25: /* Tint */
+		case 26: /* PixmapTint */
+		case 27: /* ImageTint */
+		case 28: /* TintMask */
+			parse_simple_tint(
+				cs, args, &tint, TINT_SUPPLIED,
+				&has_tint_changed, &percent, "tint");
+			if (has_tint_changed)
+			{
+				cs->tint_percent = percent;
+			}
+			break;
+		case 29: /* NoTint */
+			has_tint_changed = True;
 			cs->tint_percent = 0;
 			cs->color_flags &= ~TINT_SUPPLIED;
 			break;
-		case 29: /* fgTint */
+		case 30: /* fgTint */
 			parse_simple_tint(
 				cs, args, &fg_tint, FG_TINT_SUPPLIED,
-				&has_fg_tint_changed, &percent);
-			cs->fg_tint_percent = percent;
+				&has_fg_tint_changed, &percent, "fgTint");
+			if (has_fg_tint_changed)
+			{
+				cs->fg_tint_percent = percent;
+			}
 			break;
-		case 30: /* bgTint */
+		case 31: /* bgTint */
 			parse_simple_tint(
 				cs, args, &bg_tint, BG_TINT_SUPPLIED,
+#ifndef MERGED_CODE
+				&has_bg_tint_changed, &percent, "bgTint");
+			if (has_bg_tint_changed)
+			{
+				cs->bg_tint_percent = percent;
+			}
+			break;	
+		case 32: /* dither */
+#else
 				&has_bg_tint_changed, &percent);
 			cs->bg_tint_percent = percent;
 			break;
 		case 31: /* dither */
+#endif
 			if (cs->pixmap_args || cs->gradient_args)
 			{
 				has_pixmap_changed = True;
 				do_reload_pixmap = True;
-				free_colorset_background(cs, False);
 			}
 			cs->dither = True;
 			break;
-		case 32: /* nodither */
+		case 33: /* nodither */
 			if (cs->pixmap_args || cs->gradient_args)
 			{
 				has_pixmap_changed = True;
 				do_reload_pixmap = True;
-				free_colorset_background(cs, False);
 			}
 			cs->dither = False;
 			break;
-		case 33: /* Alpha */
-		case 34: /* PixmapAlpha */
-		case 35: /* ImageAlpha */
+		case 34: /* Alpha */
+		case 35: /* PixmapAlpha */
+		case 36: /* ImageAlpha */
 			if (GetIntegerArguments(args, NULL, &tmp, 1))
 			{
 				if (tmp > 100)
@@ -798,24 +883,29 @@ void parse_colorset(int n, char *line)
 			break;
                 /* dither icon is not dynamic (yet) maybe a bad opt: default
 		 * to False ? */
-		case 36: /* ditherIcon */
+		case 37: /* ditherIcon */
 			cs->do_dither_icon = True;
 			break;
-		case 37: /* DoNotDitherIcon */
+		case 38: /* DoNotDitherIcon */
 			cs->do_dither_icon = False;
 			break;
-		case 38: /* IconTint */
+		case 39: /* IconTint */
 			parse_simple_tint(
 				cs, args, &icon_tint, ICON_TINT_SUPPLIED,
+#ifndef MERGE_CODE
+				&has_icon_tint_changed, &percent, "IconTint");
+			if (has_icon_tint_changed)
+#else
 				&has_icon_tint_changed, &percent);
 			if (has_icon_tint_changed &&
 			    percent != cs->icon_tint_percent)
+#endif
 			{
 				cs->icon_tint_percent = percent;
 				has_icon_pixels_changed = True;
 			}
 			break;
-		case 39: /* NoIconTint */
+		case 40: /* NoIconTint */
 			has_icon_tint_changed = True;
 			if (cs->icon_tint_percent != 0)
 			{
@@ -823,7 +913,7 @@ void parse_colorset(int n, char *line)
 			}
 			cs->icon_tint_percent = 0;
 			break;
-		case 40: /* IconAlpha */
+		case 41: /* IconAlpha */
 			if (GetIntegerArguments(args, NULL, &tmp, 1))
 			{
 				if (tmp > 100)
@@ -921,11 +1011,48 @@ void parse_colorset(int n, char *line)
 	}
 
 	/*
-	 * build the pixmap or the gradient
+	 * reset the pixmap if the tint or the alpha has changed 
+	 */
+	if (!do_reload_pixmap && (has_tint_changed || has_image_alpha_changed))
+	{
+		if (cs->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE ||
+		    cs->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN)
+		{
+			do_reload_pixmap = True;
+		}
+		else if (cs->picture != NULL && cs->pixmap)
+		{
+			XSetClipMask(dpy, gc, cs->picture->mask);
+			reset_cs_pixmap(cs, gc);
+			XSetClipMask(dpy, gc, None);
+			has_pixmap_changed = True;
+		}
+	}
+
+	/*
+	 * (re)build the pixmap or the gradient
 	 */
 	if (do_reload_pixmap)
 	{
-		if (cs->pixmap_args)
+		free_colorset_background(cs, False);
+		has_pixmap_changed = True;
+		if (cs->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE ||
+		    cs->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN)
+		{
+			cs->pixmap_type = 0;
+			if (root_pic.pixmap)
+			{
+				cs->pixmap = root_pic.pixmap;
+				cs->width = root_pic.width;
+				cs->height = root_pic.height;
+				cs->pixmap_type = PIXMAP_ROOT_PIXMAP_PURE;
+#if 0
+				fprintf(stderr,"Cset %i LoadRoot 0x%lx\n",
+					n, cs->pixmap);
+#endif
+			}
+		}
+		else if (cs->pixmap_args)
 		{
 			parse_pixmap(win, gc, cs, &pixmap_is_a_bitmap);
 		}
@@ -1360,6 +1487,7 @@ void parse_colorset(int n, char *line)
 	 * ------- change the masked out parts of the background pixmap -------
 	 */
 	if (cs->pixmap != None && cs->pixmap != ParentRelative &&
+	    (!CSETS_IS_TRANSPARENT_ROOT(cs)||cs->allows_buffered_transparency) &&
 	    (cs->mask != None || cs->alpha_pixmap != None ||
 	     cs->image_alpha_percent < 100 || cs->tint_percent > 0) &&
 	    (has_pixmap_changed || has_bg_changed || has_image_alpha_changed
@@ -1394,9 +1522,16 @@ void parse_colorset(int n, char *line)
 			temp, gc, Scr.MonoGC, None,
 			0, 0, cs->width, cs->height,
 			0, 0, cs->width, cs->height, False);
-		add_to_junk(cs->pixmap);
+		if (cs->pixmap != root_pic.pixmap)
+		{
+			add_to_junk(cs->pixmap);
+		}
 		cs->pixmap = temp;
 		has_pixmap_changed = True;
+		if (CSETS_IS_TRANSPARENT_ROOT(cs))
+		{
+			cs->pixmap_type = PIXMAP_ROOT_PIXMAP_TRAN;
+		}
 	} /* has_pixmap_changed */
 
 
@@ -1503,6 +1638,10 @@ void alloc_colorset(int n)
 			&Colorset[nColorsets], 0,
 			(n + 1 - nColorsets) * sizeof(colorset_struct));
 	}
+	if (n == 0)
+	{
+		update_root_pixmap(0);
+	}
 
 	/* initialize new colorsets to black on gray */
 	while (nColorsets <= n)
@@ -1554,6 +1693,34 @@ void alloc_colorset(int n)
 		ncs->fg_tint_percent = ncs->bg_tint_percent = 0;
 		ncs->dither = (Pdepth <= 8)? True:False;
 		nColorsets++;
+	}
+}
+
+void update_root_transparent_colorset(Atom prop)
+{
+	int i;
+	colorset_struct *cs;
+
+	root_pic.old_pixmap = root_pic.pixmap;
+	update_root_pixmap(prop);
+#if 0
+	if (!root_pic.pixmap)
+	{
+		return;
+	}
+#endif
+	for (i=0; i < nColorsets; i++)
+	{
+		cs = &Colorset[i];
+		if (cs->is_maybe_root_transparent &&
+		    cs->allows_buffered_transparency)
+		{
+			parse_colorset(i, "RootTransparent buffer");
+		}
+		else if (cs->is_maybe_root_transparent)
+		{
+			parse_colorset(i, "RootTransparent");
+		}
 	}
 }
 

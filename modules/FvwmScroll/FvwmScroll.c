@@ -36,6 +36,7 @@
 #include "libs/FShape.h"
 #include "libs/Colorset.h"
 #include "libs/PictureBase.h"
+#include "libs/FRenderInit.h"
 #include "FvwmScroll.h"
 
 char *MyName;
@@ -147,6 +148,7 @@ int main(int argc, char **argv)
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
   FShapeInit(dpy);
+  FRenderInit(dpy);
 
   /* scan config file for set-up parameters */
   /* Colors and fonts */

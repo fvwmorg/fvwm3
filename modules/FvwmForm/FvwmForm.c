@@ -45,6 +45,7 @@
 #include "libs/Colorset.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/FRenderInit.h"
 
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
 
@@ -2487,6 +2488,7 @@ int main (int argc, char **argv)
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
   FShapeInit(dpy);
+  FRenderInit(dpy);
 
   fd_x = XConnectionNumber(dpy);
 

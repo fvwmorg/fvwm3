@@ -1,3 +1,31 @@
+2002-09-13  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Colorset.c (CreateBackgroundPixmap):
+	(UpdateBackgroundTransparency):
+	(SetRectangleBackground):
+	* libs/Colorset.h:
+	* fvwm/colorset.c (*):
+	* fvwm/colorset.h:
+	* fvwm/events.c (HandlePropertyNotify):
+	Starting implementation of RootTransparent colorset. Worked on
+	tinted Transparent colorset. Various colorset parsing fixes.
+
+	* libs/Fft.c (FftDrawString):
+	* libs/Flocale.h:
+	Added the possibility to draw with a clipping region.
+
+	* libs/FRender.c (FRenderRender):
+	* libs/PictureGraphics.c (PGraphicsRenderPixmaps):
+	(PCreateRenderPixmap):
+	(PGraphicsCreateTransprency):
+	(PGraphicsTintRectangle):
+	Improve current rendering functions to be able to tint the
+	ParentalRelative pixmap or the background of a window.
+	Re-enabled XRender rendering.
+
+	* fvwm/borders.c:
+	remove a #if 0 debug "render" code
+
 2002-09-13  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/builtins.c (ReadTitleButton):

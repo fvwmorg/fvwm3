@@ -259,11 +259,11 @@ void UpdateBackgroundTransparency(
 	Display *dpy, Window win, int width, int height,
 	colorset_struct *colorset, unsigned int depth, GC gc, Bool clear_area)
 {
-	if (colorset->pixmap != ParentRelative)
+	if (!CSETS_IS_TRANSPARENT(colorset))
 	{
 		return;
 	}
-	else if (colorset->tint_percent > 0)
+	else if (!CSETS_IS_TRANSPARENT_PR_PURE(colorset))
 	{
 		SetWindowBackgroundWithOffset(
 			dpy, win, 0, 0, width, height, colorset, depth, gc,
@@ -312,10 +312,10 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 	  fra.mask = FRAM_DEST_IS_A_WINDOW | FRAM_HAVE_TINT;
 	  fra.tint = colorset->tint;
 	  fra.tint_percent = colorset->tint_percent;
-	  XGrabServer(dpy);
+	  /*XGrabServer(dpy);*/
 	  pixmap = PGraphicsCreateTransprency(
-		  dpy, win, &fra, gc, 0, 0, width, height);
-	  XUngrabServer(dpy);
+		  dpy, win, &fra, gc, 0, 0, width, height, True);
+	  /*XUngrabServer(dpy);*/
 	  if (pixmap == None)
 	  {
 		  return ParentRelative;
@@ -326,107 +326,217 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   {
 	  return ParentRelative;
   }
+  else if (CSETS_IS_TRANSPARENT_ROOT(colorset) && colorset->pixmap
+	   && !is_shape_mask)
+  {
+	  int sx,sy,start_y;
+	  int x = 0, y = 0;
+	  int h,w;
+	  XID dummy;
+	  
+	  cs_pixmap = colorset->pixmap;
+	  cs_width = colorset->width;
+	  cs_height = colorset->height;
+	  if (CSETS_IS_TRANSPARENT_ROOT_PURE(colorset))
+	  {
+		  /* check if it is still here */
+		  XID dummy;
+		  
+		  if (!XGetGeometry(
+			  dpy, colorset->pixmap, &dummy, (int *)&dummy,
+			  (int *)&dummy,
+			  (unsigned int *)&w, (unsigned int *)&h,
+			  (unsigned int *)&dummy, (unsigned int *)&dummy))
+		  {
+			  return None;
+		  }
+		  if (w != cs_width || h != cs_height)
+		  {
+			  return None;
+		  }
+	  }
+	  XTranslateCoordinates(
+		dpy, win, DefaultRootWindow(dpy), 0, 0, &sx, &sy, &dummy);
+	  pixmap = XCreatePixmap(dpy, win, width, height, Pdepth);
+	  if (!pixmap)
+	  {
+		  return None;
+	  }
+	  /* make sx and sy positif */
+	  while(sx < 0)
+	  {
+		  sx = sx + cs_width;
+	  }
+	  while(sy < 0)
+	  {
+		  sy = sy + cs_height;
+	  }
+	  /* make sx and sy in (0,0,cs_width,cs_height) */
+	  while(sx >= cs_width)
+	  {
+		  sx = sx - cs_width;
+	  }
+	  while(sy >= cs_height)
+	  {
+		  sy = sy - cs_height;
+	  }
+	  start_y = sy;
+	  while(x < width)
+	  {
+		  w = cs_width - sx;
+		  w = (w > width - x)? width - x: w;
+		  while(y < height)
+		  {
+			  h = cs_height - sy;
+			  h = (h > height - y)? height-y:h;
+			  XCopyArea(
+				  dpy, cs_pixmap, pixmap, gc,
+				  sx, sy, w, h, x, y);
+			  y = y + h;
+			  sy = 0;
+		  }
+		  x = x + w;
+		  sx = 0;
+		  y = 0;
+		  sy = start_y;
+	  }
+	  if (CSETS_IS_TRANSPARENT_ROOT_PURE(colorset) &&
+	      colorset->tint_percent > 0)
+	  {
+		  FvwmRenderAttributes fra;
+
+		  fra.mask = FRAM_HAVE_TINT;
+		  fra.tint = colorset->tint;
+		  fra.tint_percent = colorset->tint_percent;
+		  PGraphicsRenderPixmaps(
+			  dpy, win, pixmap, None, None,
+			  Pdepth, &fra, pixmap,
+			  gc, None, None,
+			  0, 0, width, height,
+			  0, 0, width, height, False);
+	  }
+	  return pixmap;
+  }
   if (!is_shape_mask)
   {
-    cs_pixmap = colorset->pixmap;
-    cs_width = colorset->width;
-    cs_height = colorset->height;
-    cs_keep_aspect = (colorset->pixmap_type == PIXMAP_STRETCH_ASPECT);
-    cs_stretch_x = (colorset->pixmap_type == PIXMAP_STRETCH_X)
-		   || (colorset->pixmap_type == PIXMAP_STRETCH);
-    cs_stretch_y = (colorset->pixmap_type == PIXMAP_STRETCH_Y)
-		   || (colorset->pixmap_type == PIXMAP_STRETCH);
+	  cs_pixmap = colorset->pixmap;
+	  cs_width = colorset->width;
+	  cs_height = colorset->height;
+	  cs_keep_aspect = (colorset->pixmap_type == PIXMAP_STRETCH_ASPECT);
+	  cs_stretch_x = (colorset->pixmap_type == PIXMAP_STRETCH_X)
+		  || (colorset->pixmap_type == PIXMAP_STRETCH);
+	  cs_stretch_y = (colorset->pixmap_type == PIXMAP_STRETCH_Y)
+		  || (colorset->pixmap_type == PIXMAP_STRETCH);
   }
   else
   {
-    /* In spite of the name, win contains the pixmap */
-    cs_pixmap = colorset->shape_mask;
-    win = colorset->shape_mask;
-    if (shape_gc == None)
-    {
-      xgcv.foreground = 1;
-      xgcv.background = 0;
-      /* create a gc for 1 bit depth */
-      shape_gc = fvwmlib_XCreateGC(dpy, win, GCForeground|GCBackground, &xgcv);
-    }
-    gc = shape_gc;
-    cs_width = colorset->shape_width;
-    cs_height = colorset->shape_height;
-    cs_keep_aspect = (colorset->shape_type == SHAPE_STRETCH_ASPECT);
-    cs_stretch_x = !(colorset->shape_type == SHAPE_TILED);
-    cs_stretch_y = !(colorset->shape_type == SHAPE_TILED);
+	  /* In spite of the name, win contains the pixmap */
+	  cs_pixmap = colorset->shape_mask;
+	  win = colorset->shape_mask;
+	  if (shape_gc == None)
+	  {
+		  xgcv.foreground = 1;
+		  xgcv.background = 0;
+		  /* create a gc for 1 bit depth */
+		  shape_gc = fvwmlib_XCreateGC(
+			  dpy, win, GCForeground|GCBackground, &xgcv);
+	  }
+	  gc = shape_gc;
+	  cs_width = colorset->shape_width;
+	  cs_height = colorset->shape_height;
+	  cs_keep_aspect = (colorset->shape_type == SHAPE_STRETCH_ASPECT);
+	  cs_stretch_x = !(colorset->shape_type == SHAPE_TILED);
+	  cs_stretch_y = !(colorset->shape_type == SHAPE_TILED);
   }
 
   if (cs_pixmap == None)
   {
-    xgcv.foreground = colorset->bg;
-    if (solid_gc == None)
-    {
-      /* create a gc for solid drawing */
-      solid_gc = fvwmlib_XCreateGC(dpy, win, GCForeground, &xgcv);
-    }
-    else
-    {
-      XChangeGC(dpy, solid_gc, GCForeground, &xgcv);
-    }
-    /* create a solid pixmap - not very useful most of the time */
-    pixmap = XCreatePixmap(dpy, win, width, height, depth);
-    XFillRectangle(dpy, pixmap, solid_gc, 0, 0, width, height);
+	  xgcv.foreground = colorset->bg;
+	  if (solid_gc == None)
+	  {
+		  /* create a gc for solid drawing */
+		  solid_gc = fvwmlib_XCreateGC(dpy, win, GCForeground, &xgcv);
+	  }
+	  else
+	  {
+		  XChangeGC(dpy, solid_gc, GCForeground, &xgcv);
+	  }
+	  /* create a solid pixmap - not very useful most of the time */
+	  pixmap = XCreatePixmap(dpy, win, width, height, depth);
+	  XFillRectangle(dpy, pixmap, solid_gc, 0, 0, width, height);
   }
-  else if (cs_keep_aspect) {
-    Bool trim_side;
-    int big_width, big_height;
-    Pixmap big_pixmap;
-    int x, y;
+  else if (cs_keep_aspect)
+  {
+	  Bool trim_side;
+	  int big_width, big_height;
+	  Pixmap big_pixmap;
+	  int x, y;
 
-    /* do sides need triming or top/bottom? */
-    trim_side = (cs_width * height > cs_height * width);
+	  /* do sides need triming or top/bottom? */
+	  trim_side = (cs_width * height > cs_height * width);
 
-    /* make a pixmap big enough to cover the destination but with the aspect
-     * ratio of the cs_pixmap */
-    big_width = trim_side ? height * cs_width / cs_height : width;
-    big_height = trim_side ? height : width * cs_width / cs_width;
-    big_pixmap = CreateStretchPixmap(
-      dpy, cs_pixmap, cs_width, cs_height, depth, big_width, big_height, gc);
+	  /* make a pixmap big enough to cover the destination but with the
+	   * aspect ratio of the cs_pixmap */
+	  big_width = trim_side ? height * cs_width / cs_height : width;
+	  big_height = trim_side ? height : width * cs_width / cs_width;
+	  big_pixmap = CreateStretchPixmap(
+		  dpy, cs_pixmap, cs_width, cs_height, depth, big_width,
+		  big_height, gc);
 
-    /* work out where to trim */
-    x = trim_side ? (big_width - width) / 2 : 0;
-    y = trim_side ? 0 : (big_height - height) / 2;
+	  /* work out where to trim */
+	  x = trim_side ? (big_width - width) / 2 : 0;
+	  y = trim_side ? 0 : (big_height - height) / 2;
 
-    pixmap = XCreatePixmap(dpy, cs_pixmap, width, height, depth);
-    if (pixmap && big_pixmap)
-      XCopyArea(dpy, big_pixmap, pixmap, gc, x, y, width, height, 0, 0);
-    if (big_pixmap)
-      XFreePixmap(dpy, big_pixmap);
-  } else if (!cs_stretch_x && !cs_stretch_y) {
-    /* it's a tiled pixmap, create an unstretched one */
-    if (!is_shape_mask)
-    {
-      pixmap = XCreatePixmap(dpy, cs_pixmap, cs_width, cs_height, depth);
-      if (pixmap)
-      {
-	XCopyArea(dpy, cs_pixmap, pixmap, gc, 0, 0, cs_width,
-		  cs_height, 0, 0);
-      }
-    }
-    else
-    {
-      /* can't tile masks, create a tiled version of the mask */
-      pixmap = CreateTiledPixmap(
-	dpy, cs_pixmap, cs_width, cs_height, width, height, 1, gc);
-    }
-  } else if (!cs_stretch_x) {
-    /* it's an HGradient */
-    pixmap = CreateStretchYPixmap(dpy, cs_pixmap, cs_width,
-				  cs_height, depth, height, gc);
-  } else if (!cs_stretch_y) {
-    /* it's a VGradient */
-    pixmap = CreateStretchXPixmap(dpy, cs_pixmap, cs_width,
-				  cs_height, depth, width, gc);
-  } else {
-    /* It's a full window pixmap */
-    pixmap = CreateStretchPixmap(dpy, cs_pixmap, cs_width,
-				 cs_height, depth, width, height, gc);
+	  pixmap = XCreatePixmap(dpy, cs_pixmap, width, height, depth);
+	  if (pixmap && big_pixmap)
+	  {
+		  XCopyArea(
+			  dpy, big_pixmap, pixmap, gc, x, y, width, height,
+			  0, 0);
+	  }
+	  if (big_pixmap)
+	  {
+		  XFreePixmap(dpy, big_pixmap);
+	  }
+  }
+  else if (!cs_stretch_x && !cs_stretch_y) 
+  {
+	  /* it's a tiled pixmap, create an unstretched one */
+	  if (!is_shape_mask)
+	  {
+		  pixmap = XCreatePixmap(
+			  dpy, cs_pixmap, cs_width, cs_height, depth);
+		  if (pixmap)
+		  {
+			  XCopyArea(dpy, cs_pixmap, pixmap, gc, 0, 0, cs_width,
+				    cs_height, 0, 0);
+		  }
+	  }
+	  else
+	  {
+		  /* can't tile masks, create a tiled version of the mask */
+		  pixmap = CreateTiledPixmap(
+			  dpy, cs_pixmap, cs_width, cs_height, width, height,
+			  1, gc);
+	  }
+  }
+  else if (!cs_stretch_x)
+  {
+	  /* it's an HGradient */
+	  pixmap = CreateStretchYPixmap(
+		  dpy, cs_pixmap, cs_width, cs_height, depth, height, gc);
+  }
+  else if (!cs_stretch_y)
+  {
+	  /* it's a VGradient */
+	  pixmap = CreateStretchXPixmap(
+		  dpy, cs_pixmap, cs_width, cs_height, depth, width, gc);
+  }
+  else
+  {
+	  /* It's a full window pixmap */
+	  pixmap = CreateStretchPixmap(
+		  dpy, cs_pixmap, cs_width, cs_height, depth, width, height, gc);
   }
 
   return pixmap;
@@ -453,6 +563,15 @@ void SetRectangleBackground(
   Bool stretch_y = (colorset->pixmap_type == PIXMAP_STRETCH_Y)
 		   || (colorset->pixmap_type == PIXMAP_STRETCH);
 
+  if (colorset->pixmap == ParentRelative && colorset->tint_percent > 0)
+  {
+	  XClearArea(dpy, win, x, y, width, height, False);
+	  PGraphicsTintRectangle(
+		  dpy, win, colorset->tint, colorset->tint_percent,
+		  win, True, gc, None, None,
+		  x, y, width, height);
+	  return;
+  }
   if (colorset->pixmap == ParentRelative)
   {
     XClearArea(dpy, win, x, y, width, height, False);

@@ -207,7 +207,7 @@ int FRenderRender(
 	}
 
 	/* it is a bitmap ? */
-	if (Pdepth != depth)
+	if (Pdepth != depth && pixmap)
 	{
 		pixmap_copy = XCreatePixmap(dpy, win, src_w, src_h, Pdepth);
 		if (gc == None)
@@ -230,7 +230,8 @@ int FRenderRender(
 		src_x = src_y = 0;
 	}
 
-	pam = FRenderCPRepeat;
+	pam = FRenderCPRepeat|FRenderCPGraphicsExposure;
+	pa.graphics_exposures = True;
 	if (do_repeat)
 	{
 		pa.repeat = True;
@@ -240,7 +241,8 @@ int FRenderRender(
 		pa.repeat = False;
 	}
 
-	if (tint_percent <= 0)
+	if (tint_percent <= 0 && (pixmap_copy || pixmap) &&
+	    pixmap != ParentRelative)
 	{
 		src_picture = FRenderCreatePicture(
 			dpy,
@@ -258,7 +260,8 @@ int FRenderRender(
 			e_pa.repeat = True;
 			if (!tint_pixmap)
 			{
-				tint_pixmap = XCreatePixmap(dpy, win, 1, 1, 32);
+				tint_pixmap = XCreatePixmap(
+					dpy, win, 100, 100, 32);
 			}
 			if (tint_pixmap)
 			{
@@ -285,14 +288,15 @@ int FRenderRender(
 			frc.alpha = 0xffff * alpha_factor;
 			FRenderFillRectangle(
 				dpy, FRenderPictOpSrc, tint_picture, &frc,
-				0, 0, 1, 1);
+				0, 0, 100, 100);
 			saved_tint = tint;
 		}
 		if (win == None)
 		{
 			win = RootWindow(dpy, DefaultScreen(dpy));
 		}
-		if (pixmap_copy == None)
+		
+		if (pixmap_copy == None && pixmap)
 		{
 			if (gc == None)
 			{
@@ -304,7 +308,9 @@ int FRenderRender(
 			if (pixmap_copy && gc)
 			{
 				XCopyArea(
-					dpy, pixmap, pixmap_copy, gc,
+					dpy,
+					(pixmap == ParentRelative)? win:pixmap,
+					pixmap_copy, gc,
 					src_x, src_y, src_w, src_h, 0, 0);
 			}
 		}
@@ -314,13 +320,21 @@ int FRenderRender(
 				dpy, pixmap_copy, PFrenderVisualFormat,
 				pam, &pa);
 		}
-		if (tint_picture && src_picture)
+		else if (!pixmap)
+		{
+			src_picture = tint_picture;
+		}
+		if (pixmap != ParentRelative)
+		{
+			src_x = src_y = 0;
+		}
+		if (tint_picture && src_picture && pixmap)
 		{
 			FRenderComposite(
 				dpy, FRenderPictOpOver, tint_picture, None,
-				src_picture, 0, 0, 0, 0, 0, 0, src_w, src_h);
+				src_picture, 0, 0, 0, 0,
+				src_x, src_y, src_w, src_h);
 		}
-		src_x = src_y = 0;
 	}
 
 	if (free_gc && gc)
@@ -330,11 +344,7 @@ int FRenderRender(
 
 	if (!src_picture)
 	{
-		if (pixmap_copy)
-		{
-			XFreePixmap(dpy, pixmap_copy);
-		}
-		return 0;
+		goto bail;
 	}
 
 	if (added_alpha_percent >= 100)
@@ -377,6 +387,7 @@ int FRenderRender(
 			{
 				XFreeGC(dpy, alpha_gc);
 			}
+			alpha_x = alpha_y = 0;
 		}
 		else if (mask != None)
 		{
@@ -396,6 +407,7 @@ int FRenderRender(
 			}
 			mask_picture = FRenderCreatePicture(
 				dpy, mask, PFrenderMaskFormat, pam, &pa);
+			alpha_x = alpha_y = 0;
 		}
 
 		if (!shade_pixmap || !shade_picture)
@@ -436,7 +448,7 @@ int FRenderRender(
 			FRenderComposite(
 				dpy, PictOpAtopReverse, shade_picture,
 				alpha_picture, alpha_picture,
-				0, 0, 0, 0, 0, 0, src_w, src_h);
+				0, 0, alpha_x, alpha_y, 0, 0, src_w, src_h);
 			alpha_x = alpha_y = 0;
 		}
 		else if (mask != None && alpha_picture && shade_picture)
@@ -444,7 +456,7 @@ int FRenderRender(
 			FRenderComposite(
 				dpy, PictOpAtopReverse, shade_picture,
 				mask_picture, alpha_picture,
-				0, 0, 0, 0, 0, 0, src_w, src_h);
+				0, 0, src_x, src_y, 0, 0, src_w, src_h);
 			alpha_x = alpha_y = 0;
 		}
 		else
@@ -453,7 +465,8 @@ int FRenderRender(
 		}
 	}
 
-	dest_picture = FRenderCreatePicture(dpy, d, PFrenderVisualFormat, 0, 0);
+	dest_picture = FRenderCreatePicture(
+		dpy, d, PFrenderVisualFormat, FRenderCPGraphicsExposure, &pa);
 
 	if (dest_picture)
 	{
@@ -467,11 +480,12 @@ int FRenderRender(
 				 dest_x, dest_y, dest_w, dest_h);
 	}
 
+ bail:
 	if (dest_picture)
 	{
 		FRenderFreePicture(dpy, dest_picture);
 	}
-	if (src_picture)
+	if (src_picture && src_picture != tint_picture)
 	{
 		FRenderFreePicture(dpy, src_picture);
 	}

@@ -51,6 +51,23 @@ static Bool PGrabImageError = True;
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- local functions ----------------------------- */
+static
+int FSetBackingStore(Display *dpy, Window win, int backing_store)
+{
+	XWindowAttributes attributes;
+	XSetWindowAttributes set_attributes;
+	int old_bs;
+
+	XGetWindowAttributes(dpy, win, &attributes);
+	if (attributes.backing_store == backing_store)
+	{
+		return -1;
+	}
+	old_bs = attributes.backing_store;
+	set_attributes.backing_store = backing_store;
+	XChangeWindowAttributes(dpy, win, CWBackingStore, &set_attributes);
+	return old_bs;
+}
 
 static
 void PCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, int depth,
@@ -173,15 +190,16 @@ void PTileRectangle(Display *dpy, Window win, Pixmap pixmap, Pixmap mask,
 			XChangeGC(dpy, mono_gc, gcm, &gcv);
 		}
 	}
-	gcv.clip_mask = tile_mask;
-	gcv.fill_style = FillTiled;
+
 	gcv.tile = pixmap;
 	gcv.ts_x_origin = dest_x;
 	gcv.ts_y_origin = dest_y;
+	gcv.fill_style = FillTiled;
+	gcm = GCFillStyle | GCTile | GCTileStipXOrigin | GCTileStipYOrigin;
+	gcv.clip_mask = tile_mask;
 	gcv.clip_x_origin = dest_x;
 	gcv.clip_y_origin = dest_y;;
-	gcm = GCFillStyle | GCClipMask | GCTile | GCTileStipXOrigin |
-		GCTileStipYOrigin | GCClipXOrigin | GCClipYOrigin;
+	gcm |= GCClipMask | GCClipXOrigin | GCClipYOrigin;
 	if (depth != Pdepth)
 	{
 		Pixmap my_pixmap = None;
@@ -971,14 +989,21 @@ void PGraphicsRenderPixmaps(
 	{
 		dest_w = src_w; dest_h = src_h;
 	}
-	/* TMP: disabling Xrender rendering for testing */
-	if (0 && FRenderRender(
-		dpy, win, pixmap, mask, alpha, depth,
-		t_fra.added_alpha_percent, t_fra.tint, t_fra.tint_percent,
-		d, gc, alpha_gc, src_x, src_y, dest_w, dest_h,
-		dest_x, dest_y, dest_w, dest_h, do_repeat))
+
+	/* use XRender only when "needed" (backing store pbs) */
+	if (t_fra.tint_percent > 0 || t_fra.added_alpha_percent < 100
+	    || alpha != None)
 	{
-		return;
+		/* for testing XRender simulation add && 0 */
+		if (FRenderRender(
+			dpy, win, pixmap, mask, alpha, depth,
+			t_fra.added_alpha_percent, t_fra.tint,
+			t_fra.tint_percent,
+			d, gc, alpha_gc, src_x, src_y, src_w, src_h,
+			dest_x, dest_y, dest_w, dest_h, do_repeat))
+		{
+			return;
+		}
 	}
 
 	/* no render extension or something strange happen */
@@ -1127,39 +1152,38 @@ FvwmPicture *PGraphicsCreateStretchPicture(
 
 Pixmap PGraphicsCreateTransprency(
 	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
-	int x, int y, int width, int height)
+	int x, int y, int width, int height, Bool parent_relative)
 {
-	Pixmap r, dp;
+	Pixmap r = None, dp = None;
 	XID junk;
 	XID root;
 	int dummy, sx, sy, sw, sh;
 	int gx = x, gy = y, gh = height, gw = width;
+	int old_backing_store;
 
-	XSetWindowBackgroundPixmap(dpy, win, ParentRelative);
-	XClearArea(dpy, win, x, y, width, height, False);
-	XSync(dpy, False);
-#if 1
+	old_backing_store = FSetBackingStore(dpy, win, Always);
+	if (parent_relative)
+	{
+		XSetWindowBackgroundPixmap(dpy, win, ParentRelative);
+		XClearArea(dpy, win, x, y, width, height, False);
+		XSync(dpy, False);
+	}
 	if (!XGetGeometry(
 		dpy, win, &root, (int *)&junk, (int *)&junk,
 		(unsigned int *)&sw, (unsigned int *)&sh,
 		(unsigned int *)&junk, (unsigned int *)&junk))
 	{
-		return None;
+		goto bail;
 	}
-#endif
 	XTranslateCoordinates(
-		dpy, win, root, x, y, &sx, &sy, &junk);
-#if 0
-	
-	fprintf(stderr,"O: %i,%i\n", sx,sy);
-#endif
+		dpy, win, DefaultRootWindow(dpy), x, y, &sx, &sy, &junk);
 	if (sx >= DisplayWidth(dpy, DefaultScreen(dpy)))
 	{
-		return None;
+		goto bail;
 	}
 	if (sy >= DisplayHeight(dpy, DefaultScreen(dpy)))
 	{
-		return None;
+		goto bail;
 	}
 	if (sx < 0)
 	{
@@ -1168,7 +1192,7 @@ Pixmap PGraphicsCreateTransprency(
 		sx = 0;
 		if (gw <= 0)
 		{
-			return None;
+			goto bail;
 		}
 	}
 	if (sy < 0)
@@ -1178,7 +1202,7 @@ Pixmap PGraphicsCreateTransprency(
 		sy = 0;
 		if (gw <= 0)
 		{
-			return None;
+			goto bail;
 		}
 	}
 	if (sx + gw > DisplayWidth(dpy, DefaultScreen(dpy)))
@@ -1190,18 +1214,71 @@ Pixmap PGraphicsCreateTransprency(
 		gh = DisplayHeight(dpy, DefaultScreen(dpy)) - sy;
 	}
 #if 0
-	fprintf(stderr,"%i,%i,%i,%i / %i,%i / %i,%i / %lu\n",
-		gx,gy,gw,gh,sx,sy,x,y,root);
+	fprintf(
+		stderr,"Geo: %i,%i,%i,%i / %i,%i,%i,%i / %i,%i,%i,%i\n",
+		gx,gy,gw,gh, x,y,width,height, sx,sy,sw,sh);
 #endif
+	if (XRenderSupport && FRenderGetExtensionSupported())
+	{
+		r = XCreatePixmap(dpy, win, gw, gh, Pdepth);
+		if (FRenderRender(
+			dpy, win, ParentRelative, None, None, Pdepth, 100,
+			fra->tint, fra->tint_percent, r, gc, None,
+			gx, gy, gw, gh, 0, 0, gw, gh, False))
+		{
+			goto bail;
+		}
+		XFreePixmap(dpy, r);
+	}
 	r = PCreateRenderPixmap(
 		dpy, win, ParentRelative, None, None, Pdepth, 100, fra->tint,
 		fra->tint_percent,
 		True, win,
 		gc, None, None, gx, gy, gw, gh, gx, gy, gw, gh,
 		False, &dummy, &dummy, &dummy, &dp);
+
+ bail:
+	if (old_backing_store >= 0)
+	{
+		FSetBackingStore(dpy, win, old_backing_store);
+	}
 	return r;
 }
 
+void PGraphicsTintRectangle(
+	Display *dpy, Window win, Pixel tint, int tint_percent,
+	Drawable dest, Bool dest_is_a_window, GC gc, GC mono_gc, GC alpha_gc,
+	int dest_x, int dest_y, int dest_w, int dest_h)
+{
+	Pixmap p;
+	FvwmRenderAttributes fra;
+
+	if (FRenderRender(
+		dpy, win, None, None, None, Pdepth, 100, tint, tint_percent,
+		dest, gc, alpha_gc, 0, 0, 1, 1,
+		dest_x, dest_y, dest_w, dest_h, True))
+	{
+		return;
+	}
+
+	if (dest_is_a_window)
+	{
+		fra.tint = tint;
+		fra.tint_percent = tint_percent;
+		fra.mask = FRAM_DEST_IS_A_WINDOW | FRAM_HAVE_TINT;
+		p = PGraphicsCreateTransprency(
+			dpy, dest, &fra, gc, dest_x, dest_y, dest_w, dest_h,
+			False);
+		if (p)
+		{
+			XCopyArea(
+				dpy, p, dest, gc, 0, 0, dest_w, dest_h,
+				dest_x, dest_y);
+			XFreePixmap(dpy, p);
+		}
+	}
+}
+	
 /* never tested and used ! */
 Pixmap PGraphicsCreateDitherPixmap(
 	Display *dpy, Window win, Drawable src, Pixmap mask, int depth, GC gc,

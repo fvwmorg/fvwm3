@@ -55,6 +55,8 @@
 #include "libs/fvwmsignal.h"
 #include "libs/Flocale.h"
 #include "libs/Parse.h"
+#include "libs/FRenderInit.h"
+
 #include "FvwmIdent.h"
 
 static RETSIGTYPE TerminateHandler(int);
@@ -94,7 +96,7 @@ static int main_width;
 static int main_height;
 
 static EventMask mw_events = ButtonPressMask | KeyPressMask |
-  ButtonReleaseMask | KeyReleaseMask | MapNotify;
+  ButtonReleaseMask | KeyReleaseMask;
 
 static Atom wm_del_win;
 
@@ -219,6 +221,7 @@ int main(int argc, char **argv)
 	AllocColorset(0);
 	FlocaleAllocateWinString(&FwinString);
 	FShapeInit(dpy);
+	FRenderInit(dpy);
 
 	SetMessageMask(fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
 		       | M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST |
@@ -486,7 +489,7 @@ void list_res_name(unsigned long *body)
 void list_property_change(unsigned long *body)
 {
 	if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND && body[2] == 0 &&
-	    CSET_IS_TRANSPARENT(colorset))
+	    CSET_IS_TRANSPARENT_PR(colorset))
 	{
 		if (UsePixmapDrawing)
 		{
@@ -572,6 +575,7 @@ void ProcessXEvent(int x, int y)
 	static int is_key_pressed = 0;
 	static int is_button_pressed = 0;
 	char buf[32];
+	static int ex=10000, ey=10000, ex2=0, ey2=0;
 
 	while (FPending(dpy))
 	{
@@ -579,30 +583,31 @@ void ProcessXEvent(int x, int y)
 		switch(Event.type)
 		{
 		case Expose:
-			while (FCheckTypedEvent(dpy, Expose, &Event));
+			ex = min(ex, Event.xexpose.x);
+			ey = min(ey, Event.xexpose.y);
+			ex2 = max(ex2, Event.xexpose.x + Event.xexpose.width);
+			ey2=max(ey2 , Event.xexpose.y + Event.xexpose.height);
+			while (FCheckTypedEvent(dpy, Expose, &Event))
+			{
+				ex = min(ex, Event.xexpose.x);
+				ey = min(ey, Event.xexpose.y);
+				ex2 = max(
+					ex2,
+					Event.xexpose.x + Event.xexpose.width);
+				ey2=max(ey2,
+					Event.xexpose.y + Event.xexpose.height);
+			}
+			if (Event.xexpose.count != 0)
+				break;
 			if (FftSupport && Ffont->fftf.fftfont != NULL)
 			{
-				XClearWindow(dpy, main_win);
+				XClearArea(
+					dpy, main_win,
+					ex, ey, ex2-ex, ey2-ey, False);
 			}
-			DrawItems(main_win);
-			break;
-		case MapNotify:
-			if (CSET_IS_TRANSPARENT_PR_TINT(colorset))
-			{
-				if (UsePixmapDrawing)
-				{
-					PixmapDrawWindow(
-						main_width, main_height);
-				}
-				else
-				{
-					UpdateBackgroundTransparency(
-						dpy, main_win, main_width,
-						main_height,
-						&Colorset[(colorset)], Pdepth,
-						gc, True);
-				}
-			}
+			DrawItems(main_win, ex, ey, ex2-ex, ey2-ey);
+			ex = ey = 10000;
+			ex2 = ey2 = 0;
 			break;
 		case KeyPress:
 			is_key_pressed = 1;
@@ -704,6 +709,7 @@ void ProcessXEvent(int x, int y)
 			break;
 		}
 	}
+	XFlush (dpy);
 }
 
 /*************************************************************************
@@ -902,21 +908,38 @@ void list_end(void)
  * Draw the items
  *
  ***********************************************************************/
-void DrawItems(Drawable d)
+void DrawItems(Drawable d, int x, int y, int w, int h)
 {
 	int fontheight,i=0;
 	struct Item *cur = itemlistRoot;
+	Region region = 0;
 
 	fontheight = Ffont->height;
 	FwinString->win = d;
 	FwinString->gc = gc;
+	FwinString->flags.has_clip_region = False;
+	if (w > 0)
+	{
+		XRectangle r;
+
+		r.x = x;
+		r.y = y;
+		r.width = w;
+		r.height = h;
+
+		region = XCreateRegion();
+		XUnionRectWithRegion(&r, region, region);
+		XSetRegion(dpy, gc, region);
+		FwinString->flags.has_clip_region = True;
+		FwinString->clip_region = region;
+	}
 
 	if (colorset >= 0)
 	{
 		FwinString->colorset = &Colorset[colorset];
 		FwinString->flags.has_colorset = True;
 	}
-	while(cur != NULL)
+	while(cur != NULL) /* may be optimised */
 	{
 		/* first column */
 		FwinString->str = cur->col1;
@@ -932,6 +955,12 @@ void DrawItems(Drawable d)
 		++i;
 		cur = cur->next;
 	}
+	if (FwinString->flags.has_clip_region)
+	{
+		XDestroyRegion(region);
+		XSetClipMask(dpy, gc, None);
+	}
+	XFlush (dpy);
 }
 
 void PixmapDrawWindow(int w, int h)
@@ -969,7 +998,7 @@ void PixmapDrawWindow(int w, int h)
 
 	if (pix != ParentRelative)
 	{
-		DrawItems(pix);
+		DrawItems(pix, 0, 0, 0, 0);
 		XSetWindowBackgroundPixmap(dpy, main_win, pix);
 		XClearWindow(dpy, main_win);
 		XFreePixmap(dpy, pix);
@@ -978,7 +1007,7 @@ void PixmapDrawWindow(int w, int h)
 	{
 		XSetWindowBackgroundPixmap(dpy, main_win, pix);
 		XClearWindow(dpy, main_win);
-		DrawItems(main_win);
+		DrawItems(main_win, 0, 0, 0, 0);
 	}
 }
 

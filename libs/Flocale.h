@@ -174,10 +174,12 @@ typedef struct
 	int x;
 	int y;
 	int len;
+	Region	clip_region;
 	struct
 	{
 		unsigned text_rotation : 2;
 		unsigned has_colorset : 1;
+		unsigned has_clip_region : 1;
 	} flags;
 } FlocaleWinString;
 

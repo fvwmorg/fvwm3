@@ -442,6 +442,10 @@ void FftDrawString(
 	}
 	xt = gstp_args.orig_x;
 	yt = gstp_args.orig_y;
+	if (fws->flags.has_clip_region)
+	{
+		FftDrawSetClip(fftdraw, fws->clip_region);
+	}
 	DrawStringFunc(fftdraw, &fft_fg, uf, xt, yt, str, len);
 
 	if (free_str && str != NULL)

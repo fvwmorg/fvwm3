@@ -108,14 +108,15 @@ typedef enum {
   NUM_ACTIONS
 } Action;
 
+
 typedef enum {
-  PLAIN_CONTEXT = 0,
+  DEFAULT = 0,
   FOCUS_CONTEXT = 1,
   SELECT_CONTEXT = 2,
   FOCUS_SELECT_CONTEXT = 3, /* had better be FOCUS_CONTEXT | SELECT_CONTEXT */
-  TITLE_CONTEXT = 4,
-  ICON_CONTEXT = 5,
-  DEFAULT = 6,
+  PLAIN_CONTEXT = 4,
+  TITLE_CONTEXT = 5,
+  ICON_CONTEXT = 6,
   NUM_CONTEXTS
 } Contexts;
 
@@ -221,12 +222,13 @@ typedef struct button {
   int index;      /* index into button array */
   int x, y, w, h; /* current coords of button */
   struct {
-    int dirty_flags;
-    FvwmPicture pic;
-    WinData *win;
-    char *display_string;
-    int x, y, w, h;
-    Uchar iconified, state;
+	  int dirty_flags;
+	  FvwmPicture pic;
+	  WinData *win;
+	  char *display_string;
+	  int x, y, w, h;
+	  Uchar iconified, state;
+	  int ex, ey, ew, eh; /* expose damage relatively the main win */
   } drawn_state;
 } Button;
 

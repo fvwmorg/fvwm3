@@ -60,7 +60,7 @@ void Loop(int *fd);
 void DeadPipe(int nonsense) __attribute__((noreturn));
 void process_message(unsigned long type, unsigned long *body);
 void PixmapDrawWindow(int h, int w);
-void DrawItems(Drawable d);
+void DrawItems(Drawable d, int x, int y, int w, int h);
 void change_window_name(char *str);
 Pixel GetColor(char *name);
 void nocolor(char *a, char *b);

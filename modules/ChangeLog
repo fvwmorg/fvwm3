@@ -1,3 +1,50 @@
+2002-09-13  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmIconMan/xmanager.c (GetRegion):
+	(GetRectangleIntersection):
+	(clear_button): 
+	(add_win_state):
+	(del_win_state): 
+	(clear_empty_region):
+	(resize_manager):
+	(iconify_box): 
+	(draw_button_background):
+	(draw_button):
+	(draw_empty_manager):
+	(draw_transparent_buttons):
+	(man_exposed):
+	* FvwmIconMan/x.c (xevent_loop):
+	(create_manager_window): 
+	(recreate_background): 
+	(change_colorset): 
+	(recreate_transparent_bgs):
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/fvwm.c (focus_change):
+	Implemented clipping redrawing, IconMan should not flicker any more
+	with xft fonts and icons with alpha. Implemented new transparent stuff.
+	Some clean up and numerous fixes. Colorset should work as expected now.
+
+	* FvwmIdent/FvwmIdent.c (ProcessXEvent):
+	(DrawItems):
+	Implemented clipping redrawing
+
+	* FvwmBacker/FvwmBacker.c (*):
+	Added retain permanent support. I finally understand that X forking
+	should be released by opening a new display. Some Cleanup. This still
+	need some checking (client leaks??). Some clean up.
+
+	* FvwmScroll/Makefile.am:
+	* FvwmScroll/FvwmScroll.c (main):
+	* FvwmForm/FvwmForm.c (main):
+	* FvwmForm/Makefile.am:
+	* FvwmDragWell/fvwmDragWell.c (XStartup):
+	* FvwmDragWell/Makefile.am:
+	* FvwmIdent/Makefile.am:
+	* FvwmIdent/FvwmIdent.c (main): 
+	* FvwmForm/Makefile.am:
+	* FvwmDragWell/Makefile.am:
+	Colorset may use XRrender, so link and init xrender
+
 2002-09-08  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmTheme/FvwmTheme.1: Lang check.

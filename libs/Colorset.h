@@ -61,6 +61,8 @@ typedef struct {
 	int bg_tint_percent;
 	short image_alpha_percent;
 	Bool dither;
+	Bool allows_buffered_transparency;
+	Bool is_maybe_root_transparent;
 #endif
 } colorset_struct;
 
@@ -69,6 +71,8 @@ typedef struct {
 #define PIXMAP_STRETCH_Y 2
 #define PIXMAP_STRETCH 3
 #define PIXMAP_STRETCH_ASPECT 4
+#define PIXMAP_ROOT_PIXMAP_PURE 5
+#define PIXMAP_ROOT_PIXMAP_TRAN 6
 
 #define SHAPE_TILED 0
 #define SHAPE_STRETCH 1
@@ -94,13 +98,52 @@ extern colorset_struct *Colorset;
 
 /* some macro for transparency */
 #define CSET_IS_TRANSPARENT(cset) \
+    (cset >= 0 && (Colorset[cset].pixmap == ParentRelative ||                \
+		   (Colorset[cset].pixmap != None &&                         \
+		    (Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN ||\
+		     Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))))
+#define CSET_IS_TRANSPARENT_PR(cset) \
     (cset >= 0 && Colorset[cset].pixmap == ParentRelative)
+#define CSET_IS_TRANSPARENT_ROOT(cset) \
+    (cset >= 0 && Colorset[cset].pixmap != None &&                         \
+     (Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN ||\
+      Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))
 #define CSET_IS_TRANSPARENT_PR_PURE(cset) \
     (cset >= 0 && Colorset[cset].pixmap == ParentRelative && \
      Colorset[cset].tint_percent == 0)
+#define CSET_IS_TRANSPARENT_ROOT_PURE(cset) \
+    (cset >= 0 && Colorset[cset].pixmap != None &&                         \
+     Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_PURE)
+#define CSET_IS_TRANSPARENT_ROOT_TRAN(cset) \
+    (cset >= 0 && Colorset[cset].pixmap != None &&                         \
+     Colorset[cset].pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN)
 #define CSET_IS_TRANSPARENT_PR_TINT(cset) \
     (cset >= 0 && Colorset[cset].pixmap == ParentRelative && \
      Colorset[cset].tint_percent > 0)
+
+
+/* some macro for transparency */
+#define CSETS_IS_TRANSPARENT(cset) \
+    (cset >= 0 && (cset->pixmap == ParentRelative ||                \
+		   (cset->pixmap != None &&                         \
+		    (cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN ||\
+		     cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))))
+#define CSETS_IS_TRANSPARENT_ROOT(cset) \
+    (cset >= 0 && cset->pixmap != None &&                         \
+     (cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN ||\
+      cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE))
+#define CSETS_IS_TRANSPARENT_PR_PURE(cset) \
+    (cset >= 0 && cset->pixmap == ParentRelative && \
+     cset->tint_percent == 0)
+#define CSETS_IS_TRANSPARENT_ROOT_PURE(cset) \
+    (cset >= 0 && cset->pixmap != None &&                         \
+     cset->pixmap_type == PIXMAP_ROOT_PIXMAP_PURE)
+#define CSETS_IS_TRANSPARENT_ROOT_TRAN(cset) \
+    (cset >= 0 && cset->pixmap != None &&                         \
+     cset->pixmap_type == PIXMAP_ROOT_PIXMAP_TRAN)
+#define CSETS_IS_TRANSPARENT_PR_TINT(cset) \
+    (cset >= 0 && cset->pixmap == ParentRelative && \
+     cset->tint_percent > 0)
 
 #ifndef FVWM_COLORSET_PRIVATE
 /* Create n new colorsets, fvwm/colorset.c does its own thing (different size)

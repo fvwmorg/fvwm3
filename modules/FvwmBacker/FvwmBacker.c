@@ -58,6 +58,8 @@
 #include "libs/Module.h"
 #include "libs/Colorset.h"
 #include "libs/Parse.h"
+#include "libs/PictureBase.h"
+#include "libs/FRenderInit.h"
 #include "FvwmBacker.h"
 
 /* migo (22-Nov-1999): Temporarily until fvwm_msg is moved to libs */
@@ -72,34 +74,34 @@ unsigned long BackerGetColor(char *color);
 
 struct Command
 {
-  int desk;
-  struct
-  {
-    unsigned do_ignore_desk : 1;
-    unsigned do_ignore_page : 1;
-    unsigned do_match_any_desk : 1;
-  } flags;
-  int x;        /* Page X coordinate; -1 for glob */
-  int y;        /* Page Y coordinate; -1 for glob */
-  /* The command type:
-   * -1 = no command
-   *  0 = command to be spawned
-   *  1 = use a solid color background
-   *  2 = use a colorset background
-   */
-  int type;
-  char* cmdStr; /* The command string (Type 0)   */
-  unsigned long solidColor; /* A solid color after X parsing (Type 1) */
-  int colorset; /* The colorset to be used (Type 2) */
-  struct Command *next;
+	int desk;
+	struct
+	{
+		unsigned do_ignore_desk : 1;
+		unsigned do_ignore_page : 1;
+		unsigned do_match_any_desk : 1;
+	} flags;
+	int x;        /* Page X coordinate; -1 for glob */
+	int y;        /* Page Y coordinate; -1 for glob */
+	/* The command type:
+	 * -1 = no command
+	 *  0 = command to be spawned
+	 *  1 = use a solid color background
+	 *  2 = use a colorset background
+	 */
+	int type;
+	char* cmdStr; /* The command string (Type 0)   */
+	unsigned long solidColor; /* A solid color after X parsing (Type 1) */
+	int colorset; /* The colorset to be used (Type 2) */
+	struct Command *next;
 };
 
 typedef struct Command Command;
 
 typedef struct
 {
-  Command *first;
-  Command *last;
+	Command *first;
+	Command *last;
 } CommandChain;
 
 CommandChain *commands;
@@ -123,77 +125,104 @@ Window          root;
 int                     screen;
 int MyDisplayHeight;
 int MyDisplayWidth;
-Atom XA_XSETROOT_ID;
+char* displayName = NULL;
+
+Bool RetainPixmapEsetroot = False;
+Bool RetainPixmapXsetroot = False;
+Atom XA_XSETROOT_ID = None;
+Atom XA_ESETROOT_PMAP_ID = None;
+Atom XA_XROOTPMAP_ID = None;
+
 unsigned char *XsetrootData = NULL;
+
+int
+ErrorHandler(Display *d, XErrorEvent *event)
+{
+	/* some errors are OK=ish */
+	if (0 && event->error_code == BadValue)
+		return 0;
+ 
+	PrintXErrorAndCoredump(d, event, Module);
+	return 0;
+}
 
 int main(int argc, char **argv)
 {
-  char *temp, *s;
-  char* displayName = NULL;
+	char *temp, *s;
 
-  commands = (CommandChain*)safemalloc(sizeof(CommandChain));
-  commands->first = commands->last = NULL;
+	commands = (CommandChain*)safemalloc(sizeof(CommandChain));
+	commands->first = commands->last = NULL;
 
-  /* Save the program name for error messages and config parsing */
-  temp = argv[0];
-  s = strrchr(argv[0], '/');
-  if (s != NULL)
-    temp = s + 1;
+	/* Save the program name for error messages and config parsing */
+	temp = argv[0];
+	s = strrchr(argv[0], '/');
+	if (s != NULL)
+	{
+		temp = s + 1;
+	}
 
-  Module = temp;
-  configPrefix = CatString2("*", Module);
+	Module = temp;
+	configPrefix = CatString2("*", Module);
 
-  if ((argc != 6) && (argc != 7))
-  {
-    fprintf(stderr, "%s Version %s should only be executed by fvwm!\n", Module,
-	    VERSION);
-    exit(1);
-  }
+	if ((argc != 6) && (argc != 7))
+	{
+		fprintf(stderr,
+			"%s Version %s should only be executed by fvwm!\n",
+			Module, VERSION);
+		exit(1);
+	}
 
-  Fvwm_fd[0] = atoi(argv[1]);
-  Fvwm_fd[1] = atoi(argv[2]);
+	Fvwm_fd[0] = atoi(argv[1]);
+	Fvwm_fd[1] = atoi(argv[2]);
 
-  /* Grab the X display information now. */
+	/* Grab the X display information now. */
 
-  dpy = XOpenDisplay(displayName);
-  if (!dpy)
-  {
-    fprintf(stderr, "%s:  unable to open display '%s'\n",
-	    Module, XDisplayName (displayName));
-    exit (2);
-  }
-  screen = DefaultScreen(dpy);
-  root = RootWindow(dpy, screen);
-  MyDisplayHeight = DisplayHeight(dpy, screen);
-  MyDisplayWidth = DisplayWidth(dpy, screen);
-  XA_XSETROOT_ID = XInternAtom(dpy, "_XSETROOT_ID", False);
-  /* allocate default colorset */
-  AllocColorset(0);
-  FShapeInit(dpy);
+	dpy = XOpenDisplay(displayName);
+	if (!dpy)
+	{
+		fprintf(stderr, "%s:  unable to open display '%s'\n",
+			Module, XDisplayName (displayName));
+		exit (2);
+	}
+	screen = DefaultScreen(dpy);
+	root = RootWindow(dpy, screen);
+	MyDisplayHeight = DisplayHeight(dpy, screen);
+	MyDisplayWidth = DisplayWidth(dpy, screen);
+	XSetErrorHandler(ErrorHandler);
+	/* allocate default colorset */
+	AllocColorset(0);
+	FShapeInit(dpy);
+	PictureInitCMap(dpy);
+	FRenderInit(dpy);
 
-  signal (SIGPIPE, DeadPipe);
+	XA_XSETROOT_ID = XInternAtom(dpy, "_XSETROOT_ID", False);
+	XA_ESETROOT_PMAP_ID = XInternAtom(dpy, "ESETROOT_PMAP_ID", False);
+	XA_XROOTPMAP_ID = XInternAtom(dpy, "_XROOTPMAP_ID", False);
 
-  /* Parse the config file */
-  ParseConfig();
+	signal (SIGPIPE, DeadPipe);
 
-  fd_width = GetFdWidth();
+	/* Parse the config file */
+	ParseConfig();
 
-  SetMessageMask(Fvwm_fd,
-    M_NEW_PAGE | M_NEW_DESK | M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
+	fd_width = GetFdWidth();
 
-  /*
-  ** we really only want the current desk/page, and window list sends it
-  */
-  SendInfo(Fvwm_fd, "Send_WindowList", 0);
+	SetMessageMask(Fvwm_fd,
+		       M_NEW_PAGE | M_NEW_DESK | M_CONFIG_INFO |
+		       M_END_CONFIG_INFO | M_SENDCONFIG);
 
-  /* tell fvwm we're running */
-  SendFinishedStartupNotification(Fvwm_fd);
+	/*
+	** we really only want the current desk/page, and window list sends it
+	*/
+	SendInfo(Fvwm_fd, "Send_WindowList", 0);
 
-  /* Recieve all messages from Fvwm */
-  EndLessLoop();
+	/* tell fvwm we're running */
+	SendFinishedStartupNotification(Fvwm_fd);
 
-  /* Should never get here! */
-  return 1;
+	/* Recieve all messages from Fvwm */
+	EndLessLoop();
+
+	/* Should never get here! */
+	return 1;
 }
 
 /******************************************************************************
@@ -201,10 +230,10 @@ int main(int argc, char **argv)
 ******************************************************************************/
 void EndLessLoop()
 {
-  while(1)
-  {
-    ReadFvwmPipe();
-  }
+	while(1)
+	{
+		ReadFvwmPipe();
+	}
 }
 
 /******************************************************************************
@@ -212,146 +241,184 @@ void EndLessLoop()
 ******************************************************************************/
 void ReadFvwmPipe()
 {
-  FvwmPacket* packet = ReadFvwmPacket(Fvwm_fd[1]);
-  if ( packet == NULL )
-    exit(0);
-  else
-    ProcessMessage( packet->type, packet->body );
+	FvwmPacket* packet = ReadFvwmPacket(Fvwm_fd[1]);
+	if ( packet == NULL )
+	{
+		exit(0);
+	}
+	else
+	{
+		ProcessMessage( packet->type, packet->body );
+	}
 }
 
-/* If one can explain why the "if 0" code causes a memory leak I will be
- * happy (olicha 2001-01-17) */
-void *atom_get(Window win, Atom to_get, Atom type, unsigned int *size)
+void DeleteRootAtoms(Display *dpy2, Window root2)
 {
-  unsigned char *retval;
-  Atom  type_ret;
-  unsigned long  bytes_after, num_ret;
-  long length;
-  int  format_ret;
-  void *data;
-  int ok;
+	Atom type;
+	int format;
+	unsigned long length, after;
+	unsigned char *data;
+	Bool e_deleted = False;
 
-  retval = NULL;
-  length = 0x7fffffff;
-  ok = XGetWindowProperty(dpy, win, to_get, 0,
-			  length,
-			  True, type,
-			  &type_ret,
-			  &format_ret,
-			  &num_ret,
-			  &bytes_after,
-			  &retval);
+	XA_XSETROOT_ID = XInternAtom(dpy2, "_XSETROOT_ID", False);
+	XA_ESETROOT_PMAP_ID = XInternAtom(dpy2, "ESETROOT_PMAP_ID", False);
+	XA_XROOTPMAP_ID = XInternAtom(dpy2, "_XROOTPMAP_ID", False);
 
-  if ((ok == Success) && (retval) && (num_ret > 0) && (format_ret > 0))
-  {
-    data = safemalloc(num_ret * (format_ret >> 3));
-    if (data)
-      memcpy(data, retval, num_ret * (format_ret >> 3));
-    XFree(retval);
-    *size = num_ret * (format_ret >> 3);
-    return data;
-  }
-  if (retval)
-    XFree(retval);
-  return NULL;
+	if (XGetWindowProperty(
+		dpy2, root2, XA_XSETROOT_ID, 0L, 1L, True,
+		XA_PIXMAP, &type, &format, &length, &after, &data) == Success &&
+	    type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
+	    *((Pixmap *)data) != None)
+	{
+#if 0
+		fprintf(stderr,"FB: XKillClient: 0x%lx\n", *((Pixmap *)data));
+#endif
+		XKillClient(dpy2, *((Pixmap *)data));
+	}
+	if (XGetWindowProperty(
+		dpy2, root2, XA_ESETROOT_PMAP_ID, 0L, 1L, True,
+		XA_PIXMAP, &type, &format, &length, &after, &data) == Success &&
+	    type == XA_PIXMAP && format == 32 && length == 1 && after == 0 &&
+	    *((Pixmap *)data) != None)
+	{
+#if 0
+		fprintf(stderr,"FB: XKillClient: 0x%lx\n", *((Pixmap *)data));
+#endif
+		e_deleted = True;
+		XKillClient(dpy2, *((Pixmap *)data));
+	}
+	if (e_deleted)
+	{
+		XDeleteProperty(dpy2, root2, XA_XROOTPMAP_ID);
+	}
 }
 
-void SetXsetRoot(Pixmap RootPix)
+void SetRootAtoms(Display *dpy2, Window root2, Pixmap RootPix)
 {
-  Atom type;
-  int format;
-  unsigned long length, after;
-  unsigned char *data;
-
-  (void)XGetWindowProperty(dpy, root, XA_XSETROOT_ID, 0L, 1L, True,
-			   AnyPropertyType,
-			   &type, &format, &length, &after, &data);
-  if (type == XA_PIXMAP && format == 32 && length == 1 && after == 0
-      && *((Pixmap *)data) != None)
-  {
-    XKillClient(dpy, *((Pixmap *)data));
-  }
-  XChangeProperty(dpy, root, XA_XSETROOT_ID, XA_PIXMAP, 32, PropModeReplace,
-		  (unsigned char *) &RootPix, 1);
+#if 0
+	fprintf(stderr,"FB: SetAtom: 0x%lx\n", RootPix);
+#endif
+	if (RetainPixmapEsetroot && RootPix != None)
+	{
+		XChangeProperty(
+			dpy2, root2, XA_ESETROOT_PMAP_ID, XA_PIXMAP, 32,
+			PropModeReplace,
+			(unsigned char *) &RootPix, 1);
+		XChangeProperty(
+			dpy2, root2, XA_XROOTPMAP_ID, XA_PIXMAP, 32,
+			PropModeReplace,
+			(unsigned char *) &RootPix, 1);
+	}
+	else
+	{
+		XChangeProperty(
+			dpy2, root2, XA_XSETROOT_ID, XA_PIXMAP, 32,
+			PropModeReplace, (unsigned char *) &RootPix, 1);
+	}
 }
 
 void SetDeskPageBackground(const Command *c)
 {
-  int status = 0;
-  pid_t pid;
-  current_colorset = -1;
+	Display *dpy2 = NULL;
+	Window root2 = None;
+	int screen2;
+	Pixmap pix = None;
+	Bool Retain = (RetainPixmapEsetroot || RetainPixmapXsetroot);
 
-  switch (c->type)
-  {
-  case 1:
-    /* Process a solid color request */
-    pid = fork ();
-    if (pid == 0)
-    {
-      /* This is the child process */
-      XSetWindowBackground(dpy, root, c->solidColor);
-      XClearWindow(dpy, root);
-      SetXsetRoot(None);
-      XFlush(dpy);
-      exit(0);
-    }
-    else if (pid < 0)
-    {
-      /* The fork failed.  Report failure */
-      status = -1;
-    }
-    else
-    {
-      /* This is the parent process.  Wait for the child to complete.  */
-      if (waitpid (pid, &status, 0) != pid)
-	status = -1;
-    }
-    if (status == -1)
-    {
-      fprintf(stderr,"%s: fork fail for -solid color\n", Module);
-    }
-    break;
+	current_colorset = -1;
 
-  case 2:
-    current_colorset = c->colorset;
-    /* Process a solid color request */
-    pid = fork ();
-    if (pid == 0)
-    {
-      /* This is the child process */
-      SetWindowBackground(
-	dpy, root, MyDisplayWidth, MyDisplayHeight, &Colorset[c->colorset],
-	DefaultDepth(dpy, screen), DefaultGC(dpy, screen), True);
-      SetXsetRoot(None);
-      XFlush(dpy);
-      exit(0);
-    }
-    else if (pid < 0)
-    {
-      /* The fork failed.  Report failure.  */
-      status = -1;
-    }
-    else
-    {
-      /* This is the parent process.  Wait for the child to complete.  */
-      if (waitpid (pid, &status, 0) != pid)
-	status = -1;
-    }
-    if (status == -1)
-    {
-      fprintf(stderr,"%s: fork fail for Colorset\n", Module);
-    }
-    break;
-
-  case 0:
-  case -1:
-  default:
-    if(c->cmdStr != NULL)
-    {
-      SendFvwmPipe(Fvwm_fd, c->cmdStr, (unsigned long)0);
-    }
-    break;
-  }
+	/* FvwmBacker bg preperation */
+	switch (c->type)
+	{
+	case 1: /* solid colors */
+	case 2: /* colorset */
+			dpy2 =  XOpenDisplay(displayName);
+			if (!dpy2)
+			{
+				fvwm_msg(ERR, "FvwmBacker",
+					 "Fail to create a forking dpy, Exit!");
+				exit(2);
+			}
+			screen2 = DefaultScreen(dpy2);
+			root2 = RootWindow(dpy2, screen2);
+			if (Retain)
+			{
+				XSetCloseDownMode(dpy2, RetainPermanent);
+			}
+			XGrabServer(dpy2);
+			DeleteRootAtoms(dpy2, root2);
+			switch (c->type)
+			{
+			case 2:
+				current_colorset = c->colorset;
+				/* Process a colorset */
+				if (CSET_IS_TRANSPARENT(c->colorset))
+				{
+					fvwm_msg(ERR,"FvwmBacker", "You cannot "
+						 "use a transparent colorset as "
+						 "background!");
+					XUngrabServer(dpy2);
+					XCloseDisplay(dpy2);
+					return;
+				}
+				else if (Retain)
+				{
+					pix = CreateBackgroundPixmap(
+						dpy2, root2, MyDisplayWidth,
+						MyDisplayHeight,
+						&Colorset[c->colorset],
+						DefaultDepth(dpy2, screen2),
+						DefaultGC(dpy2, screen2), False);
+					if (pix != None)
+					{
+						XSetWindowBackgroundPixmap(
+							dpy2, root2, pix);
+						XClearWindow(dpy2, root2);
+					}
+				}
+				else
+				{
+					SetWindowBackground(
+						dpy2, root2, MyDisplayWidth,
+						MyDisplayHeight,
+						&Colorset[c->colorset],
+						DefaultDepth(dpy2, screen2),
+						DefaultGC(dpy2, screen2), True);
+				}
+				break;
+			case 1: /* Process a solid color request */
+				if (Retain)
+				{
+					GC gc;
+					XGCValues xgcv;
+					
+					xgcv.foreground = c->solidColor;
+					gc = fvwmlib_XCreateGC(
+						dpy2, root2, GCForeground,
+						&xgcv);
+					pix = XCreatePixmap(
+						dpy2, root2, 1, 1,
+						DefaultDepth(dpy2, screen2));
+					XFillRectangle(
+						dpy2, pix, gc, 0, 0, 1, 1);
+				}
+				XSetWindowBackground(dpy2, root2, c->solidColor);
+				XClearWindow(dpy2, root2);
+				break;
+			}
+			SetRootAtoms(dpy2, root2, pix);
+			XUngrabServer(dpy2);
+			XCloseDisplay(dpy2); /* this XSync, Ungrab, ...etc */
+			break;
+	case -1:
+	case 0:
+	default:
+		if(c->cmdStr != NULL)
+		{
+			SendFvwmPipe(Fvwm_fd, c->cmdStr, (unsigned long)0);
+		}
+		break;
+	}
 }
 
 /*
@@ -360,30 +427,37 @@ void SetDeskPageBackground(const Command *c)
  */
 void ExecuteMatchingCommands(int colorset, int changed)
 {
-  const Command *matching_command = NULL;
-  const Command *command;
+	const Command *matching_command = NULL;
+	const Command *command;
 
-  if (!changed)
-    return;
-  for (command = commands->first; command; command = command->next)
-  {
-    if (!(changed & EXEC_ALWAYS) &&
-	(command->flags.do_ignore_desk || !(changed & EXEC_CHANGED_DESK)) &&
-	(command->flags.do_ignore_page || !(changed & EXEC_CHANGED_PAGE)))
-    {
-      continue;
-    }
-    if ((command->flags.do_match_any_desk || command->desk == current_desk) &&
-	(command->x < 0 || command->x == current_x) &&
-	(command->y < 0 || command->y == current_y) &&
-	(colorset < 0 || (colorset == current_colorset &&
-			  colorset == command->colorset)))
-    {
-      matching_command = command;
-    }
-  }
-  if (matching_command)
-    SetDeskPageBackground(matching_command);
+	if (!changed)
+	{
+		return;
+	}
+	for (command = commands->first; command; command = command->next)
+	{
+		if (!(changed & EXEC_ALWAYS) &&
+		    (command->flags.do_ignore_desk ||
+		     !(changed & EXEC_CHANGED_DESK)) &&
+		    (command->flags.do_ignore_page ||
+		     !(changed & EXEC_CHANGED_PAGE)))
+		{
+			continue;
+		}
+		if ((command->flags.do_match_any_desk ||
+		     command->desk == current_desk) &&
+		    (command->x < 0 || command->x == current_x) &&
+		    (command->y < 0 || command->y == current_y) &&
+		    (colorset < 0 || (colorset == current_colorset &&
+				      colorset == command->colorset)))
+		{
+			matching_command = command;
+		}
+	}
+	if (matching_command)
+	{
+		SetDeskPageBackground(matching_command);
+	}
 }
 
 /******************************************************************************
@@ -391,53 +465,53 @@ void ExecuteMatchingCommands(int colorset, int changed)
 ******************************************************************************/
 void ProcessMessage(unsigned long type, unsigned long *body)
 {
-  char *tline;
-  int change = 0;
-  static Bool is_initial = True;
+	char *tline;
+	int change = 0;
+	static Bool is_initial = True;
 
-  switch (type)
-  {
-  case M_CONFIG_INFO:
-    tline = (char*)&(body[3]);
-    ExecuteMatchingCommands(ParseConfigLine(tline), EXEC_ALWAYS);
-    break;
+	switch (type)
+	{
+	case M_CONFIG_INFO:
+		tline = (char*)&(body[3]);
+		ExecuteMatchingCommands(ParseConfigLine(tline), EXEC_ALWAYS);
+		break;
 
-  case M_NEW_DESK:
-    if (is_initial)
-    {
-      change = EXEC_ALWAYS;
-      is_initial = False;
-    }
-    else if (current_desk != body[0])
-    {
-      current_desk = body[0];
-      change |= EXEC_CHANGED_DESK;
-    }
-    ExecuteMatchingCommands(-1, change);
-    break;
+	case M_NEW_DESK:
+		if (is_initial)
+		{
+			change = EXEC_ALWAYS;
+			is_initial = False;
+		}
+		else if (current_desk != body[0])
+		{
+			current_desk = body[0];
+			change |= EXEC_CHANGED_DESK;
+		}
+		ExecuteMatchingCommands(-1, change);
+		break;
 
-  case M_NEW_PAGE:
-    if (is_initial)
-    {
-      change = EXEC_ALWAYS;
-      is_initial = False;
-    }
-    if (current_desk != body[2])
-    {
-      current_desk = body[2];
-      change |= EXEC_CHANGED_DESK;
-    }
-    if (current_x != body[0] / MyDisplayWidth ||
-	current_y != body[1] / MyDisplayHeight)
-    {
-      current_x = body[0] / MyDisplayWidth;
-      current_y = body[1] / MyDisplayHeight;
-      change |= EXEC_CHANGED_PAGE;
-    }
-    ExecuteMatchingCommands(-1, change);
-    break;
+	case M_NEW_PAGE:
+		if (is_initial)
+		{
+			change = EXEC_ALWAYS;
+			is_initial = False;
+		}
+		if (current_desk != body[2])
+		{
+			current_desk = body[2];
+			change |= EXEC_CHANGED_DESK;
+		}
+		if (current_x != body[0] / MyDisplayWidth ||
+		    current_y != body[1] / MyDisplayHeight)
+		{
+			current_x = body[0] / MyDisplayWidth;
+			current_y = body[1] / MyDisplayHeight;
+			change |= EXEC_CHANGED_PAGE;
+		}
+		ExecuteMatchingCommands(-1, change);
+		break;
 
-  }
+	}
 }
 
 /******************************************************************************
@@ -445,7 +519,7 @@ void ProcessMessage(unsigned long type, unsigned long *body)
 ******************************************************************************/
 void DeadPipe(int nonsense)
 {
-  exit(1);
+	exit(1);
 }
 
 /******************************************************************************
@@ -453,14 +527,34 @@ void DeadPipe(int nonsense)
 ******************************************************************************/
 int ParseConfigLine(char *line)
 {
-  if (strlen(line) > 1)
-  {
-    if (strncasecmp(line, configPrefix, strlen(configPrefix)) == 0)
-      AddCommand(line + strlen(configPrefix));
-    else if (strncasecmp(line, "colorset", 8) == 0)
-      return LoadColorset(line + 8);
-  }
-  return -1;
+	int cpl = strlen(configPrefix);
+
+	if (strlen(line) > 1)
+	{
+		if (strncasecmp(line, configPrefix, cpl) == 0)
+		{
+			if (strncasecmp(
+				line+cpl, "RetainPixmapEsetroot", 20) == 0)
+			{
+				RetainPixmapEsetroot = True;
+				RetainPixmapXsetroot = False;
+			}
+			else if (strncasecmp(line+cpl, "RetainPixmap", 12) == 0)
+			{
+				RetainPixmapXsetroot = True;
+				RetainPixmapEsetroot = False;
+			}
+			else
+			{
+				AddCommand(line + cpl);
+			}
+		}
+		else if (strncasecmp(line, "colorset", 8) == 0)
+		{
+			return LoadColorset(line + 8);
+		}
+	}
+	return -1;
 }
 
 /******************************************************************************
@@ -468,22 +562,91 @@ int ParseConfigLine(char *line)
 ******************************************************************************/
 void ParseConfig()
 {
-  char *line_start;
-  char *tline;
+	char *line_start;
+	char *tline;
 
-  line_start = safemalloc(strlen(Module) + 2);
-  strcpy(line_start, "*");
-  strcat(line_start, Module);
+	line_start = safemalloc(strlen(Module) + 2);
+	strcpy(line_start, "*");
+	strcat(line_start, Module);
 
-  InitGetConfigLine(Fvwm_fd, line_start);
-  GetConfigLine(Fvwm_fd, &tline);
+	InitGetConfigLine(Fvwm_fd, line_start);
+	GetConfigLine(Fvwm_fd, &tline);
 
-  while(tline != (char *)0)
-  {
-    ParseConfigLine(tline);
-    GetConfigLine(Fvwm_fd, &tline);
-  }
-  free(line_start);
+	while(tline != (char *)0)
+	{
+		ParseConfigLine(tline);
+		GetConfigLine(Fvwm_fd, &tline);
+	}
+	free(line_start);
+}
+
+Bool ParseNewCommand(
+	char *parens, Command *this, int *do_ignore_desk, int *do_ignore_page)
+{
+	char *option;
+	char *parens_run;
+
+	parens_run = parens;
+
+	while (*parens_run &&
+	       (parens_run = GetNextFullOption( parens_run, &option)) != NULL)
+	{
+		char *name, *value;
+		char *option_val;
+
+		if (!*option)
+		{
+			free(option);
+			break;
+		}
+		option_val = GetNextToken(option, &name);
+
+		if (StrEquals(name, "Desk"))
+		{
+			if (GetNextToken(option_val, &value) == NULL)
+			{
+				fvwm_msg(ERR, "FvwmBacker",
+					 "Desk option requires a value");
+				return 1;
+			}
+			if (!StrEquals(value, "*"))
+			{
+				this->flags.do_match_any_desk = 0;
+				this->desk = atoi(value);
+			}
+			*do_ignore_desk = False;
+			free(value);
+		}
+		else if (StrEquals(name, "Page"))
+		{
+			if ((option_val = GetNextToken(
+				option_val,&value)) == NULL)
+			{
+				fvwm_msg(
+					ERR, "FvwmBacker",
+					"Page option requires 2 values");
+				return 1;
+			}
+			if (!StrEquals(value, "*"))
+				this->x = atoi(value);
+			free(value);
+			if (GetNextToken(option_val, &value) == NULL)
+			{
+				fvwm_msg(
+					ERR, "FvwmBacker",
+					"Desk option requires 2 values");
+				return 1;
+			}
+			if (!StrEquals(value, "*"))
+				this->y = atoi(value);
+			*do_ignore_page = False;
+			free(value);
+		}
+		free(name);
+		free(option);
+	}
+	free(parens);
+	return 0;
 }
 
 /******************************************************************************
@@ -491,157 +654,124 @@ void ParseConfig()
 ******************************************************************************/
 void AddCommand(char *line)
 {
-  char *token;
-  Command *this;
-  Bool do_ignore_desk = True;
-  Bool do_ignore_page = True;
+	char *token;
+	Command *this;
+	Bool do_ignore_desk = True;
+	Bool do_ignore_page = True;
 
-  this = (Command*)safemalloc(sizeof(Command));
-  this->desk = 0;
-  memset(&(this->flags), 0, sizeof(this->flags));
-  this->flags.do_match_any_desk = 1;
-  this->x = -1;
-  this->y = -1;
-  this->type = -1;
-  this->cmdStr = NULL;
-  this->next = NULL;
+	this = (Command*)safemalloc(sizeof(Command));
+	this->desk = 0;
+	memset(&(this->flags), 0, sizeof(this->flags));
+	this->flags.do_match_any_desk = 1;
+	this->x = -1;
+	this->y = -1;
+	this->type = -1;
+	this->cmdStr = NULL;
+	this->next = NULL;
 
-  if (strncasecmp(line, "Desk", 4) == 0)
-  {
-    /* Old command style */
-
-    line += 4;
-    line = GetNextToken(line, &token);
-    if (strcasecmp(token, "*") != 0)
-    {
-      this->flags.do_match_any_desk = 0;
-      this->desk = atoi(token);
-    }
-    do_ignore_desk = False;
-    free(token);
-  }
-  else if (strncasecmp(line, "Command", 7) == 0)
-  {
-    /* New command style */
-
-    line += 7;
-    while (*line && isspace(*line)) line++;
-    if (*line == '(')
-    {
-      char *parens, *option;
-      char *parens_run;
-      line++;
-      line = GetQuotedString(line, &parens, ")", NULL, NULL, NULL);
-      if (line == NULL)
-      {
-	fvwm_msg(ERR, "FvwmBacker", "Syntax error: no closing brace");
-	return;
-      }
-      parens_run = parens;
-
-      while (*parens_run &&
-	(parens_run = GetNextFullOption(parens_run, &option)) != NULL)
-      {
-	char *name, *value;
-	char *option_val;
-
-	if (!*option)
+	if (strncasecmp(line, "Desk", 4) == 0)
 	{
-	  free(option);
-	  break;
-	}
-	option_val = GetNextToken(option, &name);
+		/* Old command style */
 
-	if (StrEquals(name, "Desk")) {
-	  if (GetNextToken(option_val, &value) == NULL)
-	  {
-	    fvwm_msg(ERR, "FvwmBacker", "Desk option requires a value");
-	    return;
-	  }
-	  if (!StrEquals(value, "*"))
-	  {
-	    this->flags.do_match_any_desk = 0;
-	    this->desk = atoi(value);
-	  }
-	  do_ignore_desk = False;
-	  free(value);
+		line += 4;
+		line = GetNextToken(line, &token);
+		if (strcasecmp(token, "*") != 0)
+		{
+			this->flags.do_match_any_desk = 0;
+			this->desk = atoi(token);
+		}
+		do_ignore_desk = False;
+		free(token);
+	}
+	else if (strncasecmp(line, "Command", 7) == 0)
+	{
+		/* New command style */
+		line += 7;
+		while (*line && isspace(*line))
+		{
+			line++;
+		}
+		if (*line == '(')
+		{
+			int error;
+			char *parens;
+
+			line++;
+			line = GetQuotedString(
+				line, &parens, ")", NULL, NULL, NULL);
+			if (line == NULL)
+			{
+				fvwm_msg(
+					ERR, "FvwmBacker",
+					"Syntax error: no closing brace");
+				free(this);
+				return;
+			}
+			error = ParseNewCommand(
+				parens, this, &do_ignore_desk, &do_ignore_page);
+			if (error)
+			{
+				free(this);
+				return;
+			}
+			line++;
+		}
 	}
 	else
+	{
+		fvwm_msg(
+			ERR, "FvwmBacker",
+			CatString2("Unknown directive: ", line));
+		return;
+	}
+	this->flags.do_ignore_desk = do_ignore_desk;
+	this->flags.do_ignore_page = do_ignore_page;
 
-	if (StrEquals(name, "Page")) {
-	  if ((option_val = GetNextToken(option_val, &value)) == NULL)
-	  {
-	    fvwm_msg(ERR, "FvwmBacker", "Page option requires 2 values");
-	    return;
-	  }
-	  if (!StrEquals(value, "*"))
-	    this->x = atoi(value);
-	  free(value);
+	/* Now check the type of command... */
 
-	  if (GetNextToken(option_val, &value) == NULL)
-	  {
-	    fvwm_msg(ERR, "FvwmBacker", "Desk option requires 2 values");
-	    return;
-	  }
-	  if (!StrEquals(value, "*"))
-	    this->y = atoi(value);
-	  do_ignore_page = False;
-	  free(value);
+	while (*line && isspace(*line))
+	{
+		line++;
+	}
+	if (strncasecmp(line, "-solid", 6) == 0)
+	{
+		/* Solid color command */
+
+		line += 6;
+		line = GetNextToken(line, &token);
+		this->type = 1;
+		this->solidColor = (!token || !*token) ?
+			BlackPixel(dpy, screen) :
+			GetColor(token);
+		free(token);
+	}
+	else if (strncasecmp(line, "colorset", 8) == 0)
+	{
+		/* Colorset command */
+
+		if (sscanf(line + 8, "%d", &this->colorset) < 1)
+		{
+			this->colorset = 0;
+		}
+		AllocColorset(this->colorset);
+		this->type = 2;
+	}
+	else
+	{
+		/* Plain fvwm command */
+
+		this->type = 0;
+		this->cmdStr = (char *)safemalloc(strlen(line) + 1);
+		strcpy(this->cmdStr, line);
 	}
 
-	free(name);
-	free(option);
-      }
-      free(parens);
-      line++;
-    }
-  }
-  else
-  {
-    fvwm_msg(ERR, "FvwmBacker", CatString2("Unknown directive: ", line));
-    return;
-  }
-  this->flags.do_ignore_desk = do_ignore_desk;
-  this->flags.do_ignore_page = do_ignore_page;
-
-  /* Now check the type of command... */
-
-  while (*line && isspace(*line)) line++;
-  if (strncasecmp(line, "-solid", 6) == 0)
-  {
-    /* Solid color command */
-
-    line += 6;
-    line = GetNextToken(line, &token);
-    this->type = 1;
-    this->solidColor = (!token || !*token) ?
-      BlackPixel(dpy, screen) :
-      BackerGetColor(token);
-    free(token);
-  }
-  else if (strncasecmp(line, "colorset", 8) == 0)
-  {
-    /* Colorset command */
-
-    if (sscanf(line + 8, "%d", &this->colorset) < 1)
-    {
-      this->colorset = 0;
-    }
-    AllocColorset(this->colorset);
-    this->type = 2;
-  }
-  else
-  {
-    /* Plain fvwm command */
-
-    this->type = 0;
-    this->cmdStr = (char *)safemalloc(strlen(line) + 1);
-    strcpy(this->cmdStr, line);
-  }
-
-  if (commands->first == NULL)
-    commands->first = this;
-  if (commands->last != NULL)
-    commands->last->next = this;
-  commands->last = this;
+	if (commands->first == NULL)
+	{
+		commands->first = this;
+	}
+	if (commands->last != NULL)
+	{
+		commands->last->next = this;
+	}
+	commands->last = this;
 }

@@ -14,7 +14,7 @@ FvwmBacker_SOURCES = FvwmBacker.c FvwmBacker.h root_bits.c
 FvwmBacker_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm \
-	$(X_PRE_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS)
+	$(X_PRE_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) $(Xrender_LIBS)
 
-INCLUDES = -I$(top_srcdir) $(X_CFLAGS)
+INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(Xrender_CFLAGS)
 
