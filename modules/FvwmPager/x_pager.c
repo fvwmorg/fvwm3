@@ -326,6 +326,7 @@ void draw_desk_background(int i, int page_w, int page_h)
 			}
 		}
 	}
+	XClearArea(dpy,Desks[i].w, 0, 0, 0, 0,True);
 	if (Desks[i].highcolorset > -1)
 	{
 		XSetForeground(
@@ -341,7 +342,6 @@ void draw_desk_background(int i, int page_w, int page_h)
 				Scr.NormalGC, True);
 		}
 	}
-	XClearArea(dpy,Desks[i].w, 0, 0, 0, 0,True);
 	if (uselabel)
 	{
 		XClearArea(dpy,Desks[i].title_w, 0, 0, 0, 0,True);
@@ -1331,9 +1331,64 @@ void ReConfigure(void)
 
 /****************************************************************************
  *
- * Respond to a background change
+ * Respond to a "background" change: update the Parental Relative cset
  *
  ****************************************************************************/
+
+/* layout:
+ * Root -> pager window (pr) -> title window -> desk window -> window view
+ *  |                                                |-> hilight desk
+ *  |-> icon_window -> icon view
+ *  |-> ballon window
+ */
+
+/* update the hilight desk and the windows: desk color change */
+static
+void update_pr_transparent_subwindows(int i)
+{
+	int cset;
+	int n,m,w,h;
+	PagerWindow *t;
+
+	n = Scr.VxMax / Scr.MyDisplayWidth;
+	m = Scr.VyMax / Scr.MyDisplayHeight;
+	w = (desk_w - n)/(n+1);
+	h = (desk_h - m)/(m+1);
+
+	if (CSET_IS_TRANSPARENT_PR(Desks[i].highcolorset) && HilightDesks)
+	{
+		SetWindowBackground(
+			dpy, Desks[i].CPagerWin, w, h,
+			&Colorset[Desks[i].highcolorset],
+			Pdepth, Scr.NormalGC, True);
+	}
+
+	t = Start;
+	for(t = Start; t != NULL; t = t->next)
+	{
+		cset = (t != FocusWin) ? windowcolorset : activecolorset;
+		if (t->desk != i && !CSET_IS_TRANSPARENT_PR(cset))
+		{
+			continue;
+		}
+		if (t->PagerView != None)
+		{
+			SetWindowBackground(
+				dpy, t->PagerView, t->pager_view_width,
+				t->pager_view_height,
+				&Colorset[cset], Pdepth, Scr.NormalGC, True);
+		}
+		if (t->IconView)
+		{
+			SetWindowBackground(
+				dpy, t->IconView, t->icon_view_width,
+				t->icon_view_height,
+				&Colorset[cset], Pdepth, Scr.NormalGC, True);
+		}
+	}
+}
+
+/* update all the parental relative windows: pr background change */
 void update_pr_transparent_windows(void)
 {
 	int i,j,k,cset;
@@ -1356,15 +1411,27 @@ void update_pr_transparent_windows(void)
 				{
 					draw_desk_background(i, w, h);
 				}
+				else if (CSET_IS_TRANSPARENT_PR(
+					Desks[i].highcolorset) && HilightDesks)
+				{
+					SetWindowBackground(
+						dpy, Desks[i].CPagerWin, w, h,
+						&Colorset[Desks[i].highcolorset],
+						Pdepth, Scr.NormalGC, True);	
+				}
 			}
 		}
 	}
-	/* subordinate windows */
+	/* subordinate windows with a pr parent desk */
 	t = Start;
 	for(t = Start; t != NULL; t = t->next)
 	{
 		cset = (t != FocusWin) ? windowcolorset : activecolorset;
-		if (!CSET_IS_TRANSPARENT_PR(cset))
+		if (!CSET_IS_TRANSPARENT_PR(cset) ||
+		    (fAlwaysCurrentDesk &&
+		     !CSET_IS_TRANSPARENT_PR(Desks[0].colorset)) ||
+		    (!fAlwaysCurrentDesk &&
+		     !CSET_IS_TRANSPARENT_PR(Desks[t->desk].colorset)))
 		{
 			continue;
 		}
@@ -1375,7 +1442,7 @@ void update_pr_transparent_windows(void)
 				t->pager_view_height,
 				&Colorset[cset], Pdepth, Scr.NormalGC, True);
 		}
-		if (Scr.CurrentDesk == t->desk && t->IconView)
+		if (t->desk && t->IconView)
 		{
 			SetWindowBackground(
 				dpy, t->IconView, t->icon_view_width,
@@ -3088,7 +3155,7 @@ void change_colorset(int colorset)
 	  dpy, Desks[i].w, desk_w, desk_h + label_h,
 	  &Colorset[Desks[i].colorset], Pdepth, Scr.NormalGC, True);
       }
-
+      update_pr_transparent_subwindows(i);
     }
     else if (Desks[i].highcolorset == colorset && uselabel)
     {
