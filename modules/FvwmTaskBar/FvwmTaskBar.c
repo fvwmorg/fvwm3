@@ -176,7 +176,7 @@ char *ClickAction[NUMBER_OF_MOUSE_BUTTONS] =
      *IconForeColor  = "black",
      *FocusBackColor = NULL,
      *FocusForeColor = NULL,
-     *geometry       = NULL,
+     *geometry       = "+0-0",
      *font_string    = "fixed",
      *selfont_string = NULL;
 
