@@ -1,5 +1,6 @@
 2001-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmButtons/draw.c (MakeButton):
 	* FvwmButtons/FvwmButtons.c (swallow):
 	removed debug code and added another XSync; try to fix race condition
 	this way.

@@ -161,25 +161,21 @@ void MakeButton(button_info *b)
 
     if (iw>0 && ih>0)
     {
-fprintf(stderr,"+++ geom before constrain: %dx%d\n", b->icon_w, b->icon_h);
       if (!(buttonSwallow(b)&b_NoHints))
       {
 	if(!XGetWMNormalHints(Dpy,b->IconWin,b->hints,&supplied))
 	  b->hints->flags=0;
 	ConstrainSize(b->hints, &b->icon_w, &b->icon_h);
       }
-fprintf(stderr,"+++ geom after constrain: %dx%d\n", b->icon_w, b->icon_h);
       if (b->flags & b_Right)
 	ix += iw-b->icon_w;
       else if (!(b->flags & b_Left))
 	ix += (iw-b->icon_w)/2;
-fprintf(stderr,"+++ sizing window: %d %d %dx%d\n", ix,iy+(ih-b->icon_h)/2,b->icon_w,b->icon_h);
       XMoveResizeWindow(Dpy,b->IconWin,ix,iy+(ih-b->icon_h)/2,
 			b->icon_w,b->icon_h);
     }
     else
     {
-fprintf(stderr,"+++ hiding window\n");
       XMoveWindow(Dpy,b->IconWin, -32768, -32768);
     }
   }
