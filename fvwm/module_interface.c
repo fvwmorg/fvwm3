@@ -1326,9 +1326,16 @@ void PositiveWrite(int module, unsigned long *ptr, int size)
       {
         /* Doh! Something has gone wrong - get rid of the offender!! */
         fvwm_msg(ERR, "PositiveWrite",
-                 "Failed to read descriptor:\n"
+                 "Failed to read descriptor from '%s':\n"
                  "- data available=%c\n"
                  "- terminate signal=%c\n",
+#ifndef WITHOUT_KILLMODULE_ALIAS_SUPPORT
+                 pipeAlias[module]
+                   ? CatString3(pipeName[module], " ", pipeAlias[module])
+                   : pipeName[module],
+#else
+                 pipeName[module],
+#endif
                  (FD_ISSET(channel, &readSet) ? 'Y' : 'N'),
                  isTerminated ? 'Y' : 'N');
         KillModule(module);

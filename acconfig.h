@@ -140,9 +140,12 @@
 
 @TOP@
 
+#if 0
+/* migo: Commented; this is not removed with autoconf-2.50 anymore. */
 #error The stuff above TOP goes to the top of config.h.in
 #error What appears below BOTTOM goes to the bottom
 #error This text should not appear anywhere!
+#endif
 
 @BOTTOM@
 
