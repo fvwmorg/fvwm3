@@ -2,6 +2,7 @@
 
 	* FvwmIdent/FvwmIdent.c: uses new functions in ModGraph.c, can do
 	dynamic color changing with the fvwm DefaultColors command.
+	* FvwmAnimate/FvwmAnimate.C: ditto
 
 Mon Apr 26 12:20:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 

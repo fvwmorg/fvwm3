@@ -56,15 +56,15 @@
 #include <limits.h>                     /* For time() */
 #include "fvwm/module.h"
 #include "libs/fvwmlib.h"
+#include "libs/ModGraph.c"
 #include "FvwmAnimate.h"
 
 #define AS_PI 3.14159265358979323846
 
-static Bool UseFvwmLook = True;
 static Display *dpy;
 static int scr;
 static Window root;
-static GC DrawGC;
+Graphics *G;
 static char *MyName;
 static int MyNameLen;
 static int Channel[2];
@@ -197,10 +197,10 @@ static void AnimateResizeTwist(int x, int y, int w, int h,
         points[4].x = cx+cos(angle-a)*d;
         points[4].y = cy+sin(angle-a)*d;
 	XGrabServer(dpy);
-	XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
+	XDrawLines(dpy, root, G->drawGC, points, 5, CoordModeOrigin);
 	XFlush(dpy);
 	usleep(Animate.delay*1000);
-	XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
+	XDrawLines(dpy, root, G->drawGC, points, 5, CoordModeOrigin);
 	XUngrabServer(dpy);
 	cx+=xstep;
 	cy+=ystep;
@@ -265,10 +265,10 @@ void AnimateResizeFlip(int x, int y, int w, int h, int fx, int fy, int fw, int f
     points[4].y = points[0].y;
 
     XGrabServer(dpy);
-    XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
+    XDrawLines(dpy, root, G->drawGC, points, 5, CoordModeOrigin);
     XFlush(dpy);
     usleep(Animate.delay * 1000);
-    XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
+    XDrawLines(dpy, root, G->drawGC, points, 5, CoordModeOrigin);
     XUngrabServer(dpy);
     cx += xstep;
     cy += ystep;
@@ -327,10 +327,10 @@ void AnimateResizeTurn(int x, int y, int w, int h, int fx, int fy, int fw, int f
 	points[4].y = points[0].y;
 
 	XGrabServer(dpy);
-	XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
+	XDrawLines(dpy, root, G->drawGC, points, 5, CoordModeOrigin);
 	XFlush(dpy);
 	usleep(Animate.delay * 1000);
-	XDrawLines(dpy, root, DrawGC, points, 5, CoordModeOrigin);
+	XDrawLines(dpy, root, G->drawGC, points, 5, CoordModeOrigin);
 	XUngrabServer(dpy);
 	cx += xstep;
 	cy += ystep;
@@ -365,10 +365,10 @@ static void AnimateResizeZoom(int x, int y, int w, int h,
     ch = (float)h;
     for (i=0; i<Animate.iterations; i++) {
 	XGrabServer(dpy);
-	XDrawRectangle(dpy, root, DrawGC, (int)cx, (int)cy, (int)cw, (int)ch);
+	XDrawRectangle(dpy, root, G->drawGC, (int)cx, (int)cy, (int)cw, (int)ch);
 	XFlush(dpy);
 	usleep(Animate.delay*1000);
-	XDrawRectangle(dpy, root, DrawGC, (int)cx, (int)cy, (int)cw, (int)ch);
+	XDrawRectangle(dpy, root, G->drawGC, (int)cx, (int)cy, (int)cw, (int)ch);
 	XUngrabServer(dpy);
 	cx+=xstep;
 	cy+=ystep;
@@ -409,29 +409,29 @@ void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int
     {
 	for (i = 0; i < Animate.iterations; i++) {
 	    XGrabServer(dpy);
-	    XDrawRectangle(dpy, root, DrawGC, (int) cx, (int) cy, (int) cw,
+	    XDrawRectangle(dpy, root, G->drawGC, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
-	    XDrawRectangle(dpy, root, DrawGC, (int) fx, (int) fy, (int) fw,
+	    XDrawRectangle(dpy, root, G->drawGC, (int) fx, (int) fy, (int) fw,
 			   (int) fh);
-	    XDrawLine(dpy, root, DrawGC, (int) cx, (int) cy, fx, fy);
-	    XDrawLine(dpy, root, DrawGC, ((int) cx + (int) cw), (int) cy,
+	    XDrawLine(dpy, root, G->drawGC, (int) cx, (int) cy, fx, fy);
+	    XDrawLine(dpy, root, G->drawGC, ((int) cx + (int) cw), (int) cy,
 			    (fx + fw), fy);
-	    XDrawLine(dpy, root, DrawGC, ((int) cx + (int) cw),
+	    XDrawLine(dpy, root, G->drawGC, ((int) cx + (int) cw),
 			    ((int) cy + (int) ch), (fx + fw), (fy + fh));
-	    XDrawLine(dpy, root, DrawGC, (int) cx, ((int) cy + (int) ch), fx,
+	    XDrawLine(dpy, root, G->drawGC, (int) cx, ((int) cy + (int) ch), fx,
 			    (fy + fh));
 	    XFlush(dpy);
 	    usleep(Animate.delay);
-	    XDrawRectangle(dpy, root, DrawGC, (int) cx, (int) cy, (int) cw,
+	    XDrawRectangle(dpy, root, G->drawGC, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
-	    XDrawRectangle(dpy, root, DrawGC, (int) fx, (int) fy, (int) fw,
+	    XDrawRectangle(dpy, root, G->drawGC, (int) fx, (int) fy, (int) fw,
 			   (int) fh);
-	    XDrawLine(dpy, root, DrawGC, (int) cx, (int) cy, fx, fy);
-	    XDrawLine(dpy, root, DrawGC, ((int) cx + (int) cw), (int) cy,
+	    XDrawLine(dpy, root, G->drawGC, (int) cx, (int) cy, fx, fy);
+	    XDrawLine(dpy, root, G->drawGC, ((int) cx + (int) cw), (int) cy,
 			    (fx + fw), fy);
-	    XDrawLine(dpy, root, DrawGC, ((int) cx + (int) cw),
+	    XDrawLine(dpy, root, G->drawGC, ((int) cx + (int) cw),
 			    ((int) cy + (int) ch), (fx + fw), (fy + fh));
-	    XDrawLine(dpy, root, DrawGC, (int) cx, ((int) cy + (int) ch), fx,
+	    XDrawLine(dpy, root, G->drawGC, (int) cx, ((int) cy + (int) ch), fx,
 			    (fy + fh));
 	    XUngrabServer(dpy);
 	    cx += xstep;
@@ -444,27 +444,27 @@ void AnimateResizeZoom3D(int x, int y, int w, int h, int fx, int fy, int fw, int
 /* We are going from an Icon to a Window */
 	for (i = 0; i < Animate.iterations; i++) {
 	    XGrabServer(dpy);
-	    XDrawRectangle(dpy, root, DrawGC, (int) cx, (int) cy, (int) cw,
+	    XDrawRectangle(dpy, root, G->drawGC, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
-	    XDrawRectangle(dpy, root, DrawGC, x, y, w, h);
-	    XDrawLine(dpy, root, DrawGC, (int) cx, (int) cy, x, y);
-	    XDrawLine(dpy, root, DrawGC, ((int) cx + (int) cw), (int) cy,
+	    XDrawRectangle(dpy, root, G->drawGC, x, y, w, h);
+	    XDrawLine(dpy, root, G->drawGC, (int) cx, (int) cy, x, y);
+	    XDrawLine(dpy, root, G->drawGC, ((int) cx + (int) cw), (int) cy,
 			    (x + w), y);
-	    XDrawLine(dpy, root, DrawGC, ((int) cx + (int) cw), ((int) cy +
+	    XDrawLine(dpy, root, G->drawGC, ((int) cx + (int) cw), ((int) cy +
 					    (int) ch), (x + w), (y + h));
-	    XDrawLine(dpy, root, DrawGC, (int) cx, ((int) cy + (int) ch), x,
+	    XDrawLine(dpy, root, G->drawGC, (int) cx, ((int) cy + (int) ch), x,
 			    (y + h));
 	    XFlush(dpy);
 	    usleep(Animate.delay);
-	    XDrawRectangle(dpy, root, DrawGC, (int) cx, (int) cy, (int) cw,
+	    XDrawRectangle(dpy, root, G->drawGC, (int) cx, (int) cy, (int) cw,
 			   (int) ch);
-	    XDrawRectangle(dpy, root, DrawGC, x, y, w, h);
-	    XDrawLine(dpy, root, DrawGC, (int) cx, (int) cy, x, y);
-	    XDrawLine(dpy, root, DrawGC, ((int) cx + (int) cw), (int) cy,
+	    XDrawRectangle(dpy, root, G->drawGC, x, y, w, h);
+	    XDrawLine(dpy, root, G->drawGC, (int) cx, (int) cy, x, y);
+	    XDrawLine(dpy, root, G->drawGC, ((int) cx + (int) cw), (int) cy,
 			    (x + w), y);
-	    XDrawLine(dpy, root, DrawGC, ((int) cx + (int) cw),
+	    XDrawLine(dpy, root, G->drawGC, ((int) cx + (int) cw),
 			    ((int) cy + (int) ch), (x + w), (y + h));
-	    XDrawLine(dpy, root, DrawGC, (int) cx, ((int) cy + (int) ch), x,
+	    XDrawLine(dpy, root, G->drawGC, (int) cx, ((int) cy + (int) ch), x,
 			    (y + h));
 	    XUngrabServer(dpy);
 	    cx += xstep;
@@ -580,13 +580,13 @@ ant_ctr %d\n",
       if (ants==0) {
         XGrabServer(dpy);
       }
-      XDrawSegments(dpy, root, DrawGC, BEG.seg, 4);
+      XDrawSegments(dpy, root, G->drawGC, BEG.seg, 4);
       XFlush(dpy);
       if (ant_ctr == 0) {               /* only pause on draw cycle */
         usleep(Animate.delay*1000);
       }
       if (ants==0) {
-        XDrawSegments(dpy, root, DrawGC, BEG.seg, 4);
+        XDrawSegments(dpy, root, G->drawGC, BEG.seg, 4);
         XUngrabServer(dpy);
       }
       for (j=0;j<4;j++) {                 /* all 4 lines segs */
@@ -632,10 +632,10 @@ static void AnimateClose(int x, int y, int w, int h)
 	    step = 2;
 	}
 	for (i=h; i>=2; i-=step) {
-	    XDrawRectangle(dpy, root, DrawGC, x, y, w, i);
+	    XDrawRectangle(dpy, root, G->drawGC, x, y, w, i);
 	    XFlush(dpy);
 	    usleep(ANIM_DELAY2*600);
-	    XDrawRectangle(dpy, root, DrawGC, x, y, w, i);
+	    XDrawRectangle(dpy, root, G->drawGC, x, y, w, i);
 	    y+=step/2;
 	}
     }
@@ -645,10 +645,10 @@ static void AnimateClose(int x, int y, int w, int h)
 	step = 2;
     }
     for (i=w; i>=0; i-=step) {
-	XDrawRectangle(dpy, root, DrawGC, x, y, i, 2);
+	XDrawRectangle(dpy, root, G->drawGC, x, y, i, 2);
 	XFlush(dpy);
 	usleep(ANIM_DELAY2*1000);
-	XDrawRectangle(dpy, root, DrawGC, x, y, i, 2);
+	XDrawRectangle(dpy, root, G->drawGC, x, y, i, 2);
 	x+=step/2;
     }
     usleep(100000);
@@ -699,6 +699,11 @@ int main(int argc, char **argv) {
   root = DefaultRootWindow(dpy);
   scr = DefaultScreen(dpy);
 
+  G = (Graphics *)safemalloc(sizeof(Graphics));
+  memset(G, 0, sizeof(Graphics));
+  G->create_drawGC = True;
+  InitGraphics(dpy, G);
+
   sprintf(cmd,"read .%s Quiet",MyName+1); /* read quiet modules config */
   SendText(Channel,cmd,0);
   ParseOptions();                       /* get cmds fvwm2 has parsed */
@@ -707,7 +712,7 @@ int main(int argc, char **argv) {
           (M_ICONIFY|M_DEICONIFY
            |M_LOCKONSEND|M_SENDCONFIG|M_CONFIG_INFO));
   SendInfo(Channel, mask_mesg, 0);      /* tell fvwm about our mask */
-  if (!DrawGC) CreateDrawGC();		/* create initial GC if necc. */
+  if (!G->drawGC) CreateDrawGC();	/* create initial GC if necc. */
   SendText(Channel,"Nop",0);
   DefineMe();
   running = 'y';                        /* out of initialization phase */
@@ -893,22 +898,10 @@ void ParseConfigLine(char *buf) {
     buf[strlen(buf)-1] = '\0';	/* strip off \n */
   }
   /* look for fvwm graphics to use */
-  if (UseFvwmLook && (strncasecmp(buf, "default_graphics ", 17) == 0)) {
-    long junk;
-    GContext gcontext;
-    if (10 != sscanf(buf + 17, "%lx %lx %lx %lx %lx %lx %lx %lx %lx %lx\n",
-                     &junk, &junk, &junk, &gcontext, &junk,
-                     &junk, &junk, &junk, &junk, &junk)) {
-      fprintf(stderr, "badly formed DefaultGraphics line\n");
-      exit(1);
-    }
-    if (!DrawGC)
-      CreateDrawGC();
-    DrawGC->gid = gcontext;
-    return;
-  }
+  if (strncasecmp(buf, DEFGRAPHSTR, DEFGRAPHLEN) == 0)
+    ParseGraphics(dpy, buf, G);
   /* Search for MyName (normally *FvwmAnimate) */
-  if (strncasecmp(buf, MyName, MyNameLen) == 0) {/* If its for me */
+  else if (strncasecmp(buf, MyName, MyNameLen) == 0) {/* If its for me */
     myfprintf((stderr,"Found line for me: %s\n", buf));
     p = buf+MyNameLen;              /* starting point */
     q = NULL;
@@ -949,9 +942,9 @@ void ParseConfigLine(char *buf) {
             && (strcasecmp(q,"White^Black") != 0)) {
           Animate.color = (char *)strdup(q); /* make copy of name */
         }
-        if (UseFvwmLook) {
-          UseFvwmLook = False;
-          DrawGC = NULL;
+        if (G->useFvwmLook) {
+          G->useFvwmLook = False;
+          G->drawGC = NULL;
         }
         CreateDrawGC();                 /* update GC */
         break;
@@ -989,9 +982,9 @@ void ParseConfigLine(char *buf) {
         break;
       case Width_arg:                 /* Width */
         Animate.width = atoi(q);
-        if (UseFvwmLook) {
-          UseFvwmLook = False;
-          DrawGC = NULL;
+        if (G->useFvwmLook) {
+          G->useFvwmLook = False;
+          G->drawGC = NULL;
         }
         CreateDrawGC();                 /* update GC */
         break;
@@ -1013,8 +1006,8 @@ void ParseConfigLine(char *buf) {
 static void CreateDrawGC() {
 
   myfprintf((stderr,"Creating GC\n"));
-  if (DrawGC != NULL) {
-    XFreeGC(dpy,DrawGC);                /* free old GC */
+  if (G->drawGC != NULL) {
+    XFreeGC(dpy,G->drawGC);                /* free old GC */
   }
   if (prior_color == 'y') {             /* if there was a previous color */
     /*
@@ -1050,8 +1043,8 @@ static void CreateDrawGC() {
   gcv.background = color;
   myfprintf((stderr,"Color is %ld\n",gcv.foreground));
   gcv.subwindow_mode = IncludeInferiors;
-  DrawGC=XCreateGC(dpy, root, GCFunction|GCForeground|GCLineWidth|GCBackground
-                   |GCSubwindowMode, &gcv);
+  G->drawGC=XCreateGC(dpy, root, GCFunction | GCForeground | GCLineWidth
+		      |GCBackground | GCSubwindowMode, &gcv);
 }
 
 /*
