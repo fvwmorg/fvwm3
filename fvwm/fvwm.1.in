@@ -22,7 +22,7 @@
 .\"  filenames:                         italics (.I)    .I .fvwm2rc
 .\"  command line options of fvwm cmd:  bold (.B)       .B \-cmd
 .\"  arguments of command line options: italics (.I)    .BI "\-cmd " command
-.\"  Fvwm commands:                     bold (.B)       .B Move
+.\"  fvwm commands:                     bold (.B)       .B Move
 .\"  references to commands:            bold (.B)       .RB "See " Move
 .\"  references to man page sections:   bold (.B)       .RB "See " SYNOPSIS
 .\"  references to style options:       italics (.I)    .RI "See " Lenience
@@ -146,7 +146,7 @@ do things like raise and lower windows.  Fvwm makes no such
 distinction, and allows, to the extent that is practical, anything
 to be changed at any time.
 
-Other noteworthy differences between Fvwm and other X11 window
+Other noteworthy differences between fvwm and other X11 window
 managers are the introduction of the
 .IR SloppyFocus " and " NeverFocus
 focus methods.  Focus policy can be specified for individual
@@ -938,7 +938,7 @@ this fashion are treated as a single line.  The newline itself is
 ignored.
 
 Fvwm makes no distinction between configuration commands and
-action commands, so anything mentioned in the Fvwm commands
+action commands, so anything mentioned in the fvwm commands
 section can be placed on a line by itself for fvwm to execute as
 it reads the configuration file, or it can be placed as an
 executable command in a menu or bound to a mouse button or a
@@ -1380,7 +1380,7 @@ Key Tab A M -
 
 .SH MODULE AND FUNCTION COMMANDS
 
-If Fvwm encounters a command that it doesn't recognize,
+If fvwm encounters a command that it doesn't recognize,
 it checks to see if the
 specified command should have been
 .EX
@@ -1399,9 +1399,9 @@ file contains the line
 .EX
 HelpMe
 .EE
-Fvwm looks for an Fvwm command called "HelpMe", and fails.
+Fvwm looks for an fvwm command called "HelpMe", and fails.
 Next it looks for a user-defined complex function called "HelpMe".
-If no such function exists, Fvwm tries to execute a
+If no such function exists, fvwm tries to execute a
 module called "HelpMe".
 
 .SH DELAYED EXECUTION OF COMMANDS
@@ -1859,7 +1859,7 @@ in a contiguous region of the
 file.  The quoted (or first word)
 portion in the above examples is the menu label,
 which appears in the menu when the user pops it up.  The remaining
-portion is an Fvwm command which is executed if the user
+portion is an fvwm command which is executed if the user
 selects that menu item.  An empty menu-label ("") and the
 .B Nop
 function are used to insert a separator into the menu.
@@ -9145,6 +9145,15 @@ command, or for selective processing of
 calls (as in the last example).  Returns -1 if no window with the
 given id exists.
 
+.TP
+.BI NoWindow " command"
+Performs
+.IR command ,
+but removes the window context if any.
+This is not really a conditional command, but a prefix that may be
+useful in menu items that should operate without a window even if
+such menu is bound to window decorations.
+
 
 .SS MODULE COMMANDS
 
@@ -9306,7 +9315,7 @@ possible.  See the introductory section on modules.  The keyword
 .B Module
 may be omitted if
 .I modulename
-is distinct from all Fvwm commands.
+is distinct from all fvwm commands.
 
 .TP
 .BI "ModulePath " path

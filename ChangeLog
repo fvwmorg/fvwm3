@@ -3,6 +3,15 @@
 	* configure.in:
 	s/FvwmNewDebug/FvwmDebug/
 
+	* fvwm/commands.h:
+	* fvwm/conditional.c (CMD_NoWindow):
+	* fvwm/functable.c:
+	* NEWS:
+	new command NoWindow to remove window context
+
+	* fvwm/fvwm.1.in:
+	use "fvwm" spelling, at least in the middle of sentences
+
 2002-10-06  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1.in: Dont refer to fvwm commands as

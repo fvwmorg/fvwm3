@@ -829,7 +829,7 @@ void CMD_All(F_CMD_ARGS)
 	{
 		num++;
 	}
-	g = (FvwmWindow **) safemalloc (num * sizeof(FvwmWindow *));
+	g = (FvwmWindow **)safemalloc(num * sizeof(FvwmWindow *));
 	num = 0;
 	for (t = Scr.FvwmRoot.next; t; t = t->next)
 	{
@@ -1276,4 +1276,9 @@ void CMD_Break(F_CMD_ARGS)
 	}
 
 	return;
+}
+
+void CMD_NoWindow(F_CMD_ARGS)
+{
+	execute_function_override_window(NULL, exc, action, 0, NULL);
 }

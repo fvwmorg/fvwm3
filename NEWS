@@ -52,6 +52,10 @@ Changes in *experimental* release 2.5.4 (not released yet)
   /some/directory have.  This file extension replace the original
   image extension (if any) or it is added if an image has no one.
 
+* New graphical debuggere module FvwmGtkDebug.
+
+* New command NoWindow for removing the window context.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.3 (25-Aug-2002)
