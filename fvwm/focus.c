@@ -253,6 +253,10 @@ static void MoveFocus(
 
   if (!do_force && Fw == ffw_old)
   {
+    if (ffw_old)
+    {
+      focus_grab_buttons(ffw_old, True);
+    }
     return;
   }
   DoSetFocus(w, Fw, FocusByMouse, NoWarp);
@@ -642,6 +646,30 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
     tmp_win->grabbed_buttons = grab_buttons;
     MyXUngrabServer (dpy);
   }
+
+  return;
+}
+
+/* same as above, but forces to regrab buttons on the window under the pointer
+ * if necessary */
+void focus_grab_buttons_on_pointer_window(void)
+{
+  Window w;
+  FvwmWindow *tmp_win;
+
+  if (!XQueryPointer(
+	dpy, Scr.Root, &JunkRoot, &w, &JunkX, &JunkY, &JunkX, &JunkY,
+	&JunkMask))
+  {
+    /* pointer is not on this screen */
+    return;
+  }
+  if (XFindContext(dpy, w, FvwmContext, (caddr_t *) &tmp_win) == XCNOENT)
+  {
+    /* pointer is not over a window */
+    return;
+  }
+  focus_grab_buttons(tmp_win, (tmp_win == get_focus_window()));
 
   return;
 }

@@ -45,6 +45,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action);
  **/
 Bool IsLastFocusSetByMouse(void);
 void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused);
+void focus_grab_buttons_on_pointer_window(void);
 Bool do_accept_input_focus(FvwmWindow *tmp_win);
 
 FvwmWindow *get_focus_window(void);

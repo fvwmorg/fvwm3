@@ -30,6 +30,7 @@
 #include "screen.h"
 #include "defaults.h"
 #include "module_interface.h"
+#include "focus.h"
 #include "stack.h"
 #include "events.h"
 #include "borders.h"
@@ -474,7 +475,7 @@ static void restack_windows(
   {
     if (i >= count)
     {
-      fvwm_msg (ERR, "RaiseOrLowerWindow", "more transients than expected");
+      fvwm_msg (ERR, "restack_windows", "more transients than expected");
       break;
     }
     wins[i++] = t->frame;
@@ -743,7 +744,9 @@ static void RaiseOrLowerWindow(
 */
 void RaiseWindow(FvwmWindow *t)
 {
+  BroadcastPacket(M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
   RaiseOrLowerWindow(t, False, True, False);
+  focus_grab_buttons_on_pointer_window();
 #ifdef DEBUG_STACK_RING
   verify_stack_ring_consistency();
 #endif
@@ -752,7 +755,9 @@ void RaiseWindow(FvwmWindow *t)
 
 void LowerWindow(FvwmWindow *t)
 {
+  BroadcastPacket(M_LOWER_WINDOW, 3, t->w, t->frame, (unsigned long)t);
   RaiseOrLowerWindow(t, True, True, False);
+  focus_grab_buttons_on_pointer_window();
 #ifdef DEBUG_STACK_RING
   verify_stack_ring_consistency();
 #endif
@@ -977,7 +982,7 @@ static void ResyncXStackingOrder(void)
 
 
 /* send RESTACK packets for all windows between s1 and s2 */
-static void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
+static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 {
   FvwmWindow *t, *t2;
   int num, i;
@@ -996,7 +1001,6 @@ static void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
     if (t == &Scr.FvwmRoot)
       return;
     /* t has been moved to the top of stack */
-
     BroadcastPacket (M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
     if (t->stack_next == s2)
     {
