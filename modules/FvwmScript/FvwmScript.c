@@ -26,6 +26,8 @@
 #include "libs/fvwmsignal.h"
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
+#include "libs/FRender.h"
+#include "libs/FRenderInterface.h"
 
 #ifdef MEMDEBUG			/* For debugging */
 #include <unchecked.h>
@@ -283,7 +285,8 @@ static int myErrorHandler(Display *dpy, XErrorEvent *event)
   /* some errors are acceptable, mostly they're caused by
    * trying to use a deleted pixmap */
   if((event->error_code == BadDrawable) || (event->error_code == BadPixmap) ||
-     (event->error_code == BadWindow))
+     (event->error_code == BadWindow) ||
+     (event->error_code == FRenderGetErrorCodeBase() + FRenderBadPicture))
     return 0;
 
   PrintXErrorAndCoredump(dpy, event, x11base->title);

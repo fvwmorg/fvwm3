@@ -450,7 +450,7 @@ static void parse_tint(Window win, GC gc, colorset_struct *cs, int i, char *args
 	static char *name = "parse_colorset(tint)";
 	int tint_percent;
 
-	if (!XRenderSupport)
+	if (!XRenderSupport || !FRenderGetExtensionSupported(dpy))
         {
 		return;
         }
@@ -1021,7 +1021,8 @@ void parse_colorset(int n, char *line)
 		/* Now that we know the background colour we can update the
 		 * pixmap background. */
 		XSetForeground(dpy, gc, cs->bg);
-		if (XRenderSupport && cs->alpha_pixmap != None)
+		if (XRenderSupport && cs->alpha_pixmap != None &&
+		    FRenderGetExtensionSupported(dpy))
 		{
 			Pixmap temp = XCreatePixmap(
 				dpy, win, cs->width, cs->height, Pdepth);
@@ -1062,7 +1063,8 @@ void parse_colorset(int n, char *line)
 	/*
 	 * ---------- change the tint colour ----------
 	 */
-	if (XRenderSupport && has_tint_changed)
+	if (XRenderSupport && has_tint_changed &&
+	    FRenderGetExtensionSupported(dpy))
 	{
 		/* user specified colour */
 		if (tint != NULL)
@@ -1112,7 +1114,8 @@ void parse_colorset(int n, char *line)
 	 */
 	/* FIXME: recompute the bg/fg if BG_AVERAGE/FG_CONTRASTE ? */
 	if (XRenderSupport && cs->picture != NULL && cs->tint_percent > 0 &&
-	    (has_pixmap_changed || has_bg_changed || has_tint_changed))
+	    (has_pixmap_changed || has_bg_changed || has_tint_changed) &&
+	    FRenderGetExtensionSupported(dpy))
 	{
 		PGraphicsTintRectangle(
 			dpy, win, cs->tint_percent, cs->tint,

@@ -59,6 +59,9 @@
 #include "libs/fvwmsignal.h"
 #include "libs/Colorset.h"
 #include "libs/vpacket.h"
+#include "libs/FRender.h"
+#include "libs/FRenderInterface.h"
+
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "parse.h" /* ParseConfiguration(), parse_window_geometry() */
@@ -614,7 +617,8 @@ int myErrorHandler(Display *dpy, XErrorEvent *event)
   if((event->error_code == BadWindow) || (event->error_code == BadDrawable)
      || (event->error_code == BadMatch) || (event->request_code==X_GrabButton)
      || (event->request_code == X_GetGeometry)
-     || (event->error_code == BadPixmap))
+     || (event->error_code == BadPixmap)
+     || (event->error_code == FRenderGetErrorCodeBase() + FRenderBadPicture))
     return 0;
 
   PrintXErrorAndCoredump(dpy, event, MyName);

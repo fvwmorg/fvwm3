@@ -21,6 +21,8 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/FRender.h"
+#include "libs/FRenderInterface.h"
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
 
@@ -902,6 +904,9 @@ static int handle_error (Display *d, XErrorEvent *ev)
   default:
     break;
   }
+
+  if (FRenderGetErrorCodeBase() + FRenderBadPicture == ev->error_code)
+	  return 0;
 
   /* does not return */
   PrintXErrorAndCoredump(d, ev, MyName);

@@ -1,3 +1,13 @@
+2002-05-09  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/FvwmScript.c (myErrorHandler):
+	* FvwmIconBox/FvwmIconBox.c (myErrorHandler):
+	* FvwmButtons/FvwmButtons.c (myErrorHandler):
+	* FvwmWinList/FvwmWinList.c (ErrorHandler):
+	* FvwmTaskBar/FvwmTaskBar.c (ErrorHandler):
+	* FvwmIconMan/x.c (handle_error):
+	Allows BadPicture XRender errors
+
 2002-05-05  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIdent/FvwmIdent.c (MakeList):

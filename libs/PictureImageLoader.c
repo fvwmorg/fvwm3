@@ -41,6 +41,8 @@
 #include "Picture.h"
 #include "Fxpm.h"
 #include "Fpng.h"
+#include "FRender.h"
+#include "FRenderInterface.h"
 
 /* ---------------------------- local definitions --------------------------- */
 #define FIMAGE_CMD_ARGS Display *dpy, Window Root, char *path, \
@@ -570,7 +572,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	*depth = Pdepth;
 	*pixmap = XCreatePixmap(dpy, Root, w, h, Pdepth);
 	*mask = XCreatePixmap(dpy, Root, w, h, 1);
-	if (XRenderSupport && fpf.alpha)
+	if (XRenderSupport && fpf.alpha && FRenderGetExtensionSupported(dpy))
 	{
 		*alpha = XCreatePixmap(dpy, Root, w, h, 8);
 	}
@@ -716,7 +718,8 @@ Bool PImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
 	Pixel back = WhitePixel(dpy, DefaultScreen(dpy));
 	Pixel fore = BlackPixel(dpy, DefaultScreen(dpy));
 	int a,r,g,b;
-	Bool use_alpha_pix = (XRenderSupport && alpha != None);
+	Bool use_alpha_pix = (XRenderSupport && alpha != None &&
+			      FRenderGetExtensionSupported(dpy));
 
 	*have_alpha = False;
 	if (my_gc == None)

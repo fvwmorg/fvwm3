@@ -47,6 +47,8 @@
 #include <stdlib.h>
 #include "libs/Module.h"
 #include "libs/fvwmsignal.h"
+#include "libs/FRender.h"
+#include "libs/FRenderInterface.h"
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -3228,6 +3230,8 @@ myErrorHandler(Display *dpy, XErrorEvent *event)
 	if (event->error_code == BadDrawable)
 		return 0;
 	if (event->error_code == BadPixmap)
+		return 0;
+	if (event->error_code == FRenderGetErrorCodeBase() + FRenderBadPicture)
 		return 0;
 
 	PrintXErrorAndCoredump(dpy, event, MyName);

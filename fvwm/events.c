@@ -62,6 +62,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include <libs/gravity.h>
+#include "libs/FRenderInterface.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -2311,7 +2312,7 @@ void HandlePropertyNotify(void)
 		 * Esetroot compatible program we get the message _before_ the
 		 * background change. This is fixed with Esetroot 9.2 (not yet
 		 * released, 2002-01-14) */
-		if (XRenderSupport)
+		if (XRenderSupport && FRenderGetExtensionSupported(dpy))
 		{
 			/* update icon window with some alpha */
 			FvwmWindow *t;

@@ -55,6 +55,13 @@ typedef XRenderPicture FRenderPicture;
 #define FRenderPictFormatAlphaMask PictFormatAlphaMask
 #define FRenderPictFormatColormap  PictFormatColormap
 
+#define FRenderBadPictFormat		    0
+#define FRenderBadPicture		    1
+#define FRenderBadPictOp		    2
+#define FRenderBadGlyphSet		    3
+#define FRenderBadGlyph			    4
+#define FRenderRenderNumberErrors	    (FRenderBadGlyph+1)
+
 #define FRenderPictTypeIndexed PictTypeIndexed
 #define FRenderPictTypeDirect  PictTypeDirect
 
@@ -186,6 +193,13 @@ typedef struct {
 #define FRenderPictFormatAlpha 0
 #define FRenderPictFormatAlphaMask 0
 #define FRenderPictFormatColormap 0
+
+#define FRenderBadPictFormat		    0
+#define FRenderBadPicture		    1
+#define FRenderBadPictOp		    2
+#define FRenderBadGlyphSet		    3
+#define FRenderBadGlyph			    4
+#define FRenderRenderNumberErrors	    (FRenderBadGlyph+1)
 
 #define FRenderPictTypeIndexed 0
 #define FRenderPictTypeDirect 0

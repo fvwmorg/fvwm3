@@ -25,43 +25,62 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <X11/Xlib.h>
+#include <fvwmlib.h>
+#include "FRenderInterface.h"
 
+#define USE_GET_ERROR_TEXT 1
+#ifndef USE_GET_ERROR_TEXT
 static char *error_name(unsigned char code);
+#endif
 static char *request_name(unsigned char code);
 static char unknown[32];
 
-#define USE_GET_ERROT_TEXT 1
+#define USE_GET_ERROR_TEXT 1
 void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 {
+	char msg[256];
+	Bool suc = False;
+
+	msg[255] = 0;
 #ifdef USE_GET_ERROR_TEXT
-  char msg[256];
-
-  msg[255] = 0;
-  /* can't call this from within an error handler! */
-  /* DV (21-Nov-2000): Well, actually we *can* call it in an error handler
-   * since it does not trigger a protocol request. */
-  XGetErrorText(dpy, error->error_code, msg, sizeof(msg));
-  fprintf(stderr,"%s: Cause of next X Error.\n", MyName);
-  fprintf(stderr, "   Error: %d (%s)\n", error->error_code, msg);
+	/* can't call this from within an error handler! */
+	/* DV (21-Nov-2000): Well, actually we *can* call it in an error handler
+	 * since it does not trigger a protocol request. */
+	if (error->error_code >= FirstExtensionError)
+	{
+		suc = FRenderGetErrorText(error->error_code, msg);
+	}
+	if (!suc)
+		XGetErrorText(dpy, error->error_code, msg, sizeof(msg));
+	fprintf(stderr,"%s: Cause of next X Error.\n", MyName);
+	fprintf(stderr, "   Error: %d (%s)\n", error->error_code, msg);
 #else
-  fprintf(stderr,"%s: Cause of next X Error.\n", MyName);
-  fprintf(stderr, "   Error: %d (%s)\n",
-	  error->error_code, error_name(error->error_code));
+	fprintf(stderr,"%s: Cause of next X Error.\n", MyName);
+	if (error->error_code >= FirstExtensionError)
+	{
+		suc = FRenderGetErrorText(error->error_code, msg);
+	}
+	if (suc)
+		fprintf(stderr, "   Error: %d (%s)\n",
+			error->error_code, msg);
+	else
+		fprintf(stderr, "   Error: %d (%s)\n",
+			error->error_code, error_name(error->error_code));
 #endif
-  fprintf(stderr, "   Major opcode of failed request:  %d (%s)\n",
-	  error->request_code, request_name(error->request_code));
-  fprintf(stderr, "   Minor opcode of failed request:  %d \n",
-	  error->minor_code);
-  /* error->resourceid may be uninitialised. This is no proble since we are
-   * dumping core anyway. */
-  fprintf(stderr, "   Resource id of failed request:  0x%lx \n",
-	  error->resourceid);
+	fprintf(stderr, "   Major opcode of failed request:  %d (%s)\n",
+		error->request_code, request_name(error->request_code));
+	fprintf(stderr, "   Minor opcode of failed request:  %d \n",
+		error->minor_code);
+	/* error->resourceid may be uninitialised. This is no proble since we are
+	 * dumping core anyway. */
+	fprintf(stderr, "   Resource id of failed request:  0x%lx \n",
+		error->resourceid);
 
-  /* leave a coredump */
-  fprintf(stderr, " Leaving a core dump now\n");
-  abort();
-  /* exit if this fails */
-  exit(99);
+	/* leave a coredump */
+	fprintf(stderr, " Leaving a core dump now\n");
+	abort();
+	/* exit if this fails */
+	exit(99);
 }
 
 #ifndef USE_GET_ERROR_TEXT
@@ -224,10 +243,17 @@ static char *code_names[] = {
 
 static char *request_name(unsigned char code)
 {
-  if (code == 0 || code > (sizeof(code_names) / sizeof(char *)))
-  {
-    sprintf(unknown, "Unknown: %d", (int)code);
-    return unknown;
+	if (code == 0 || code > (sizeof(code_names) / sizeof(char *)))
+	{
+		if (code == FRenderGetMajorOpCode())
+		{
+			sprintf(unknown, "XRender");
+		}
+		else
+		{
+			sprintf(unknown, "Unknown: %d", (int)code);
+		}
+		return unknown;
   }
   return code_names[code - 1];
 }

@@ -48,6 +48,9 @@ static FRenderPictFormat *PFrenderVisualFormat = NULL;
 static FRenderPictFormat *PFrenderAlphaFormat = NULL;
 static FRenderPictFormat *PFrenderDirectFormat = NULL;
 Bool FRenderInitialized = False;
+Bool FRenderExtensionSupported = False;
+int PFrenderErrorBase = -10000;
+int PRenderMajorOpCode = -10000;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
@@ -57,9 +60,20 @@ static
 void FRenderInit(Display *dpy)
 {
 	FRenderPictFormat pf;
+	int event_basep;
 
 	if (!XRenderSupport)
 		return;
+
+	if (!(FRenderExtensionSupported = XQueryExtension(dpy, "RENDER",
+							  &PRenderMajorOpCode,
+							  &event_basep,
+							  &PFrenderErrorBase)))
+	{
+		PFrenderErrorBase = -10000;
+		PRenderMajorOpCode = -10000;
+		return;
+	}
 
 	PFrenderVisualFormat = FRenderFindVisualFormat (dpy, Pvisual);
 	if (!PFrenderVisualFormat)
@@ -110,6 +124,54 @@ void FRenderInit(Display *dpy)
 
 /* ---------------------------- interface functions ------------------------- */
 
+int FRenderGetErrorCodeBase(void)
+{
+	return PFrenderErrorBase;
+}
+
+int FRenderGetMajorOpCode(void)
+{
+	return PRenderMajorOpCode;
+}
+
+Bool FRenderGetExtensionSupported(Display *dpy)
+{
+	if (!XRenderSupport)
+		return False;
+
+	if (!FRenderInitialized)
+	{
+		FRenderInitialized = True;
+		FRenderInit(dpy);
+	}
+	return FRenderExtensionSupported;
+}
+
+Bool FRenderGetErrorText(int code, char *msg)
+{
+
+	if (XRenderSupport)
+	{
+		static char *error_names[] = {
+			"BadPictFormat",
+			"BadPicture",
+			"BadPictOp",
+			"BadGlyphSet",
+			"BadGlyph"
+		};
+
+		if (code >= PFrenderErrorBase &&
+		    code <= PFrenderErrorBase +
+		    (sizeof(error_names) / sizeof(char *)) -1)
+		{
+			sprintf(msg, error_names[code - PFrenderErrorBase]);
+			return 1;
+		}
+	}
+	return 0;
+}
+
+
 void FRenderCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, Pixmap alpha,
 		     Drawable d,
 		     int src_x, int src_y,
@@ -122,14 +184,9 @@ void FRenderCopyArea(Display *dpy, Pixmap pixmap, Pixmap mask, Pixmap alpha,
 	FRenderPictureAttributes  pa;
 	unsigned long pam;
 
-	if (!XRenderSupport)
+	if (!XRenderSupport || !FRenderGetExtensionSupported(dpy))
 		return; 
 
-	if (!FRenderInitialized)
-	{
-		FRenderInitialized = True;
-		FRenderInit(dpy);
-	}
 	if (!PFrenderVisualFormat || !PFrenderAlphaFormat)
 		return;
 
@@ -187,14 +244,9 @@ FRenderTintRectangle(Display *dpy, Window win, int shade_percent, Pixel tint,
 	Bool force_update = False;
 	FRenderPictureAttributes  pa;
 
-	if (!XRenderSupport)
+	if (!XRenderSupport || !FRenderGetExtensionSupported(dpy))
 		return;
 
-	if (!FRenderInitialized)
-	{
-		FRenderInitialized = True;
-		FRenderInit(dpy);
-	}
 	if (!PFrenderDirectFormat || !PFrenderAlphaFormat ||
 	    !PFrenderVisualFormat)
 	{

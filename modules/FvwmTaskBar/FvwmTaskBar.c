@@ -74,6 +74,8 @@
 #include "libs/Colorset.h"
 #include "libs/Flocale.h"
 #include "libs/gravity.h"
+#include "libs/FRender.h"
+#include "libs/FRenderInterface.h"
 
 #include "FvwmTaskBar.h"
 #include "ButtonArray.h"
@@ -2311,6 +2313,8 @@ ErrorHandler(Display *d, XErrorEvent *event)
   if (event->error_code == BadPixmap)
     return 0;
   if (event->error_code == BadDrawable)
+    return 0;
+  if (FRenderGetErrorCodeBase() + FRenderBadPicture == event->error_code)
     return 0;
 
   PrintXErrorAndCoredump(d, event, Module);

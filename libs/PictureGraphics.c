@@ -242,7 +242,8 @@ void PGraphicsCopyPixmaps(Display *dpy,
 			  int dest_x, int dest_y)
 {
 
-	if (!XRenderSupport || alpha == None)
+	if (!XRenderSupport || alpha == None ||
+	    !FRenderGetExtensionSupported(dpy))
 	{
 		PCopyArea(dpy, pixmap, mask, depth, 
 			  d, gc, src_x, src_y, src_w,src_h,
@@ -262,7 +263,8 @@ void PGraphicsCopyFvwmPicture(Display *dpy, FvwmPicture *p, Drawable d, GC gc,
 			      int dest_x, int dest_y)
 {
 
-	if (!XRenderSupport || p->alpha == None)
+	if (!XRenderSupport || p->alpha == None ||
+	    !FRenderGetExtensionSupported(dpy))
 	{
 		PCopyArea(dpy, p->picture, p->mask, p->depth, 
 			  d, gc, src_x, src_y, src_w,src_h,
@@ -284,7 +286,8 @@ void PGraphicsTileRectangle(Display *dpy, Window win,
 			    Drawable d, GC gc, GC mono_gc,
 			    int dest_x, int dest_y, int dest_w, int dest_h)
 {
-	if (!XRenderSupport || alpha == None)
+	if (!XRenderSupport || alpha == None ||
+	    !FRenderGetExtensionSupported(dpy))
 	{
 		PTileRectangle(dpy, win, pixmap, mask, depth,
 			       src_x, src_y,
@@ -304,7 +307,7 @@ PGraphicsTintRectangle(Display *dpy, Window win, int tint_percent, Pixel tint,
 		       Pixmap mask, Drawable d,
 		       int dest_x, int dest_y, int dest_w, int dest_h)
 {
-	if (!XRenderSupport)
+	if (!XRenderSupport || !FRenderGetExtensionSupported(dpy))
 		return;
 
 	FRenderTintRectangle(dpy, win, tint_percent, tint, mask, d,
