@@ -1337,10 +1337,6 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
     tmp_win->orig_wd = w;
     tmp_win->orig_ht = h;
   }
-  if (x >= Scr.MyDisplayWidth + Scr.VxMax - Scr.Vx-16)
-    x = Scr.MyDisplayWidth + Scr.VxMax -Scr.Vx - 16;
-  if (y >= Scr.MyDisplayHeight+Scr.VyMax - Scr.Vy -16)
-    y = Scr.MyDisplayHeight + Scr.VyMax - Scr.Vy - 16;
 
   if((w != tmp_win->frame_width) || (h != tmp_win->frame_height))
     Resized = True;
