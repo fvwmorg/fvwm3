@@ -573,13 +573,13 @@ void ProcessXEvent(int x, int y)
 	static int is_button_pressed = 0;
 	char buf[32];
 
-	while (XPending(dpy))
+	while (FPending(dpy))
 	{
-		XNextEvent(dpy,&Event);
+		FNextEvent(dpy,&Event);
 		switch(Event.type)
 		{
 		case Expose:
-			while (XCheckTypedEvent(dpy, Expose, &Event));
+			while (FCheckTypedEvent(dpy, Expose, &Event));
 			if (FftSupport && Ffont->fftf.fftfont != NULL)
 			{
 				XClearWindow(dpy, main_win);
@@ -668,7 +668,7 @@ void ProcessXEvent(int x, int y)
                        /* this only happens with transparent windows,
 			* slurp up as many events as possible before
 			* redrawing to reduce flickering */
-			while (XCheckTypedEvent(
+			while (FCheckTypedEvent(
 				dpy, ConfigureNotify, &event))
 			{
 				if (!event.xconfigure.send_event)
@@ -686,7 +686,7 @@ void ProcessXEvent(int x, int y)
 				x = Event.xconfigure.x;
 				y = Event.xconfigure.y;
 				/* flush any expose events */
-				while (XCheckTypedEvent(dpy, Expose, &Event));
+				while (FCheckTypedEvent(dpy, Expose, &Event));
 				if (UsePixmapDrawing)
 				{
 					PixmapDrawWindow(
@@ -771,7 +771,7 @@ void list_end(void)
 		unsigned int JunkM;
 		fscreen_scr_arg fscr;
 
-		if (!XQueryPointer(
+		if (!FQueryPointer(
 			dpy, Root, &JunkW, &JunkW, &x, &y, &JunkC, &JunkC,
 			&JunkM))
 		{

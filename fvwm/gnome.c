@@ -1014,12 +1014,12 @@ GNOME_ProxyButtonEvent(const XEvent *ev)
   {
   case ButtonPress:
     XUngrabPointer(dpy, CurrentTime);
-    XSendEvent(
+    FSendEvent(
       dpy, __button_proxy, False, SubstructureNotifyMask, (XEvent *)ev);
     break;
 
   case ButtonRelease:
-    XSendEvent(
+    FSendEvent(
       dpy, __button_proxy, False, SubstructureNotifyMask, (XEvent *)ev);
     break;
   }

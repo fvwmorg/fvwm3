@@ -293,7 +293,7 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
     DrawVSbList(xobj, NbCell, NbVisCell, 1);
     do
     {
-      XQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
+      FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
 		    &x1, &y1, &x2, &y2, &modif);
       pt.y = y2- xobj->y;
       pt.x = x2- xobj->x;
@@ -336,7 +336,7 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
       FD_SET(x_fd, &in_fdset);
       select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
     }
-    while (!XCheckTypedEvent(dpy, ButtonRelease, &event));
+    while (!FCheckTypedEvent(dpy, ButtonRelease, &event));
     DrawVSbList(xobj, NbCell, NbVisCell, 0);
     return;
   }
@@ -348,7 +348,7 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
     DrawVSbList(xobj, NbCell, NbVisCell, 2);
     do
     {
-      XQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
+      FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
 		    &x1, &y1, &x2, &y2, &modif);
       pt.y = y2 - xobj->y;
       pt.x = x2 - xobj->x;
@@ -389,7 +389,7 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
       FD_SET(x_fd, &in_fdset);
       select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
     }
-    while (!XCheckTypedEvent(dpy, ButtonRelease, &event));
+    while (!FCheckTypedEvent(dpy, ButtonRelease, &event));
     DrawVSbList(xobj, NbCell, NbVisCell, 0);
     return;
   }
@@ -412,7 +412,7 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
       PosMouse = pt.y - rectT.y - HeightCell / 2 + 2;
       do
       {
-	XQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
+	FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
 		      &x1, &y1, &x2, &y2, &modif);
 	/* Calcul de l'id de la premiere cellule */
 	pt.y = y2-xobj->y - PosMouse;
@@ -436,7 +436,7 @@ void EvtMouseList(struct XObj *xobj, XButtonEvent *EvtButton)
 	FD_SET(x_fd, &in_fdset);
 	select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
       }
-      while (!XCheckTypedEvent(dpy, ButtonRelease, &event));
+      while (!FCheckTypedEvent(dpy, ButtonRelease, &event));
     }
     else if (pt.y < rectT.y)
     {
@@ -484,7 +484,7 @@ void EvtKeyList(struct XObj *xobj, XKeyEvent *EvtKey)
   HeightCell = xobj->Ffont->height + 3;
   NbVisCell = (xobj->height - 6 - BdWidth) / HeightCell;
   NbCell = CountOption(xobj->title);
-  XQueryPointer(dpy, xobj->win, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
+  FQueryPointer(dpy, xobj->win, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
   pt.x = x2;
   pt.y = y2;
   rect.x = 4 + BdWidth;
@@ -529,7 +529,7 @@ void EvtKeyList(struct XObj *xobj, XKeyEvent *EvtKey)
 	  NPosCell = 0;
 	if (NPosCell > 1)
 	{
-	  XWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, -HeightCell);
+	  FWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, -HeightCell);
 	}
       }
     }
@@ -553,7 +553,7 @@ void EvtKeyList(struct XObj *xobj, XKeyEvent *EvtKey)
 	  NPosCell = 0;
 	if (NPosCell < NbCell && NPosCell > 0)
 	{
-	  XWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, HeightCell);
+	  FWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, HeightCell);
 	}
       }
     }

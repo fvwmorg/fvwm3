@@ -56,4 +56,4 @@ install-exec-local:
 install-data-local:
 	@rm -f $(DESTDIR)$(mandir)/man1/fvwm2.1
 	@$(LN_S) fvwm.1 $(DESTDIR)$(mandir)/man1/fvwm2.1 || \
-		echo "Minor warning: $(mandir)/man1/fvwm2.1 symlink was not created"
+	echo "Minor warning: $(mandir)/man1/fvwm2.1 symlink was not created"

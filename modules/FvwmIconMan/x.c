@@ -204,8 +204,8 @@ void xevent_loop (void)
     flag = 1;
     ConsoleDebug (X11, "A virgin event loop\n");
   }
-  while (XPending (theDisplay)) {
-    XNextEvent (theDisplay, &theEvent);
+  while (FPending(theDisplay)) {
+    FNextEvent(theDisplay, &theEvent);
     if (theEvent.type == MappingNotify) {
       ConsoleDebug (X11, "XEVENT: MappingNotify\n");
       continue;
@@ -310,8 +310,8 @@ void xevent_loop (void)
 
       saveEvent = theEvent;
       /* eat up all but last ConfigureNotify events */
-      while (XPending(theDisplay) &&
-	     XCheckTypedEvent(theDisplay, ConfigureNotify, &theEvent))
+      while (FPending(theDisplay) &&
+	     FCheckTypedEvent(theDisplay, ConfigureNotify, &theEvent))
       {
 	saveEvent = theEvent;
 	/* check for movement on all events */
@@ -678,7 +678,7 @@ void X_init_manager (int man_id)
     unsigned int ujunk;
     fscreen_scr_arg fscr;
 
-    if (XQueryPointer(
+    if (FQueryPointer(
 	  theDisplay, theRoot, &dummyroot, &dummychild, &man->geometry.x,
 	  &man->geometry.y, &junk, &junk, &ujunk) == False)
     {

@@ -110,7 +110,7 @@ void HandleColormapNotify(void)
 		ReInstall = True;
 	}
 
-	while (XCheckTypedEvent(dpy,ColormapNotify,&Event))
+	while (FCheckTypedEvent(dpy,ColormapNotify,&Event))
 	{
 		if (XFindContext(
 			    dpy, cevent->window, FvwmContext,

@@ -206,7 +206,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
  switch (EvtButton->button)
  {
   case Button1:
-    XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
+    FQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
     x2=x2-xobj->x;
     PosCurs=0;
     while ((PosCurs<strlen(xobj->title+xobj->value3))&&
@@ -220,11 +220,11 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 
     while (ButPress)
     {
-     XNextEvent(dpy, &event);
+     FNextEvent(dpy, &event);
      switch (event.type)
      {
       case MotionNotify:
-       XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
+       FQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
        x2=x2-xobj->x;
        PosCurs=0;
        while ((PosCurs<strlen(xobj->title+xobj->value3))&&
@@ -290,7 +290,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
       /* ask for the selection */
      XConvertSelection(dpy,XA_PRIMARY,XA_STRING,propriete,*xobj->ParentWin,
 			EvtButton->time);
-     while (!(XCheckTypedEvent(dpy,SelectionNotify,&event)))
+     while (!(FCheckTypedEvent(dpy,SelectionNotify,&event)))
       ;
      if (event.xselection.property!=None)
       if (event.xselection.selection==XA_PRIMARY)
@@ -323,7 +323,7 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
     break;
 
    case Button3:                /* Appuie sur le troisieme bouton */
-    XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
+    FQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
     x2=x2-xobj->x;
     PosCurs=0;
     while ((PosCurs<strlen(xobj->title))&&
@@ -338,11 +338,11 @@ void EvtMouseTextField(struct XObj *xobj,XButtonEvent *EvtButton)
 
     while (ButPress)
     {
-     XNextEvent(dpy, &event);
+     FNextEvent(dpy, &event);
      switch (event.type)
      {
       case MotionNotify:
-       XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
+       FQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
        x2=x2-xobj->x;
        while ((PosCurs<strlen(xobj->title))&&
 	      (x2 >

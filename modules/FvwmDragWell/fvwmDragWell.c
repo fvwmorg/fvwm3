@@ -752,9 +752,9 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
   char *msg, *tline, *token;
   unsigned long *lptr;
   int colorset;
-  if(XPending(xg.dpy)) /*look for an X event first*/
+  if(FPending(xg.dpy)) /*look for an X event first*/
   {
-    XNextEvent(xg.dpy,event); /*got an X event*/
+    FNextEvent(xg.dpy,event); /*got an X event*/
     return FOUND_XEVENT;
   }
 
@@ -765,9 +765,9 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
   {
     if(FD_ISSET(xg.xfd, &in_fdset))
     {
-      if(XPending(xg.dpy))
+      if(FPending(xg.dpy))
       {
-	XNextEvent(xg.dpy,event); /*get an X event*/
+	FNextEvent(xg.dpy,event); /*get an X event*/
 	miss_counter = 0;
 	return FOUND_XEVENT;
       }

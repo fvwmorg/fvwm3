@@ -336,7 +336,7 @@ void MainEventLoop(void)
     XFlush(dpy);
     if (fvwmSelect(fd_width, &readset, NULL, NULL, NULL) > 0) {
 
-      if (FD_ISSET(x_fd,&readset) || XPending(dpy)) LoopOnEvents();
+      if (FD_ISSET(x_fd,&readset) || FPending(dpy)) LoopOnEvents();
       if (FD_ISSET(Fvwm_fd[1],&readset)) ReadFvwmPipe();
 
     }
@@ -564,7 +564,7 @@ void RedrawWindow(Bool force, Bool clear_bg)
 {
   DrawButtonArray(&buttons, force, clear_bg);
   XFlush(dpy); /** Put here for VMS; ifdef if causes performance problem **/
-  if (XQLength(dpy) && !force) LoopOnEvents();
+  if (FQLength(dpy) && !force) LoopOnEvents();
 }
 
 /******************************************************************************
@@ -787,7 +787,7 @@ void LoopOnEvents(void)
   {
     if (Pressed)
     {
-      if (XQueryPointer(
+      if (FQueryPointer(
 	    dpy, win, &dummyroot, &dummychild, &xdummy, &ydummy, &x, &y,
 	    &dummy1) == False)
       {
@@ -809,9 +809,9 @@ void LoopOnEvents(void)
   }
 #endif
 
-  while(XPending(dpy))
+  while(FPending(dpy))
   {
-    XNextEvent(dpy,&Event);
+    FNextEvent(dpy,&Event);
 
     switch(Event.type)
     {
@@ -849,7 +849,7 @@ void LoopOnEvents(void)
 	 * let the server compute the intersections */
 	do
 	  ExposeAllButtons(&buttons, &Event);
-	while (XCheckTypedWindowEvent(dpy, win, Expose, &Event));
+	while (FCheckTypedWindowEvent(dpy, win, Expose, &Event));
 	/* No more expose events in the queue draw all icons,
 	 * text and shadows, but not the background */
 	RedrawWindow(True, False);
@@ -861,7 +861,7 @@ void LoopOnEvents(void)
 	/* Opaque moves cause lots of these to be sent which causes flickering
 	 * It's better to miss out on intermediate steps than to do them all
 	 * and take too long. Look down the event queue and do the last one */
-	  while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &event))
+	  while (FCheckTypedWindowEvent(dpy, win, ConfigureNotify, &event))
 	  {
 	    /* if send_event is true it means the user has moved the window or
 	     * winlist has mapped itself, take note of the new position.
@@ -1135,7 +1135,7 @@ void MakeMeWindow(void)
   {
     fscreen_scr_arg fscr;
 
-    if (XQueryPointer(
+    if (FQueryPointer(
 	  dpy, Root, &dummyroot, &dummychild, &hints.x, &hints.y, &x, &y,
 	  &dummy1) == False)
     {
@@ -1370,7 +1370,7 @@ void MakeMeWindow(void)
       fprintf(stderr,"failed to grab pointer\n");
       exit(1);
     }
-    if (XQueryPointer(
+    if (FQueryPointer(
 	  dpy, Root, &dummyroot, &dummychild, &hints.x, &hints.y, &x, &y,
 	  &dummy1) == False)
     {

@@ -93,7 +93,7 @@ void xdndSrcSendEnter(DragSource *ds, Window dstWin, Window srcWin, Atom * typel
     xevent.xclient.data.l[i+2] = typelist[i];
   for (i = nTypes; i < 3 ; i++)
     xevent.xclient.data.l[i+2] = None;
-  XSendEvent (ds->display, dstWin, 0, 0, &xevent);
+  FSendEvent(ds->display, dstWin, 0, 0, &xevent);
 }
 
 
@@ -120,7 +120,7 @@ void xdndSrcSendPosition(DragSource *ds, Window dstWin, Window srcWin, short x,
   xevent.xclient.data.l[2] = (x<<16) | y;
   xevent.xclient.data.l[3] = time;
   xevent.xclient.data.l[4] = action;
-  XSendEvent(ds->display, dstWin, 0, 0, &xevent);
+  FSendEvent(ds->display, dstWin, 0, 0, &xevent);
 }
 
 
@@ -214,7 +214,7 @@ void xdndSrcSendLeave(DragSource *ds, Window dstWin, Window srcWin) {
   /* data.l[0] : XID of source window
      data.l[1] : Reserved for future use. */
   xevent.xclient.data.l[0] = srcWin;
-  XSendEvent(ds->display, dstWin, 0, 0, &xevent);
+  FSendEvent(ds->display, dstWin, 0, 0, &xevent);
 }
 
 
@@ -237,7 +237,7 @@ void xdndSrcSendDrop(DragSource *ds, Window dstWin, Window srcWin, unsigned long
 
   XSetSelectionOwner(xg.dpy,ds->atomSel->xdndSelection,
 		     srcWin,CurrentTime);
-  XSendEvent(ds->display, dstWin, 0, 0, &xevent);
+  FSendEvent(ds->display, dstWin, 0, 0, &xevent);
 }
 
 
@@ -280,9 +280,9 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 
   /* User releases the mouse button without any motion->do nothing*/
   do {
-    XNextEvent(ds->display,&xev);
+    FNextEvent(ds->display,&xev);
     if (xev.type == ButtonRelease) {
-      XSendEvent (ds->display, xev.xany.window, 0, ButtonReleaseMask, &xev);
+      FSendEvent(ds->display, xev.xany.window, 0, ButtonReleaseMask, &xev);
       return None;
     }
   } while (xev.type != MotionNotify);
@@ -293,7 +293,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
   if (!ds->dragHalo)
     ds->dragHalo = 4.0;
   for (;;) {
-    XNextEvent(ds->display, &xev);
+    FNextEvent(ds->display, &xev);
     if (xev.type == MotionNotify) {
       radiusSqr = SQR(x_mouse - xev.xmotion.x_root) +  \
 	SQR(y_mouse - xev.xmotion.y_root);
@@ -301,7 +301,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 	break;
       if (xev.type == ButtonRelease) {
 	/*Button release: radius less than halo->do nothing*/
-	XSendEvent (ds->display, xev.xany.window, 0, ButtonReleaseMask, &xev);
+	FSendEvent(ds->display, xev.xany.window, 0, ButtonReleaseMask, &xev);
 	return 0;/*What does this mean?*/
       }
     }
@@ -319,7 +319,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
   /*Main Drag loop.  trackWindow is the current window the pointer is over. Note
     that the actual client window of the top level widget of the application is
     *not* trackWindow, but is actually one of the children of trackWindow. */
-  if (XQueryPointer(
+  if (FQueryPointer(
 	ds->display, XDefaultRootWindow(ds->display), &root_return,
 	&child_return, &xev.xmotion.x_root, &xev.xmotion.y_root,
 	&xev.xmotion.x, &xev.xmotion.y, &mask_return) == False)
@@ -329,14 +329,15 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
   trackWindow = child_return;
 
   while (!doneDrag) {
-    XAllowEvents (ds->display, SyncPointer, CurrentTime);
-    XNextEvent (ds->display, &xev);
+    XAllowEvents(ds->display, SyncPointer, CurrentTime);
+    FNextEvent(ds->display, &xev);
     switch (xev.type) {
     case MotionNotify:
-      retBool = XQueryPointer (ds->display,  XDefaultRootWindow(ds->display),
-			       &root_return, &child_return, &xev.xmotion.x_root,
-			       &xev.xmotion.y_root, &xev.xmotion.x,
-			       &xev.xmotion.y, &mask_return);
+      retBool = FQueryPointer(
+	      ds->display,  XDefaultRootWindow(ds->display),
+	      &root_return, &child_return, &xev.xmotion.x_root,
+	      &xev.xmotion.y_root, &xev.xmotion.x,
+	      &xev.xmotion.y, &mask_return);
 
       if (trackWindow != child_return) {
 	/*Cancel old drag if initiated.*/
@@ -431,8 +432,9 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 	if (xev.xselectionrequest.requestor == ds->dropTargWin) {
 	  target = xev.xselectionrequest.target;
 	  ds->dropTargProperty = xev.xselectionrequest.property;
-	  XChangeProperty(ds->display,ds->dragSrcWin,ds->dropTargProperty,target,8,
-			  PropModeReplace,dropData,strlen(dropData)+1);
+	  XChangeProperty(
+		  ds->display,ds->dragSrcWin,ds->dropTargProperty,target,8,
+		  PropModeReplace,dropData,strlen(dropData)+1);
 	  memset(&xev, 0, sizeof (XEvent));
 
 	  xev.xany.type = SelectionNotify;
@@ -441,7 +443,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 	  xev.xselection.selection = ds->atomSel->xdndSelection;
 	  xev.xselection.property = ds->dropTargProperty;
 	  xev.xselection.target = target;
-	  XSendEvent (ds->display, ds->dropTargWin, 0, 0, &xev);
+	  FSendEvent(ds->display, ds->dropTargWin, 0, 0, &xev);
 	}
       }
       break;

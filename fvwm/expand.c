@@ -531,7 +531,7 @@ static int expand_vars_extended(
 		case VAR_POINTER_CX:
 			is_x = True;
 		}
-		if (XQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
+		if (FQueryPointer(dpy, context_w, &JunkRoot, &JunkChild,
 				  &JunkX, &JunkY, &x, &y, &JunkMask) == False)
 		{
 			/* pointer is on a different screen, don't expand */

@@ -548,7 +548,7 @@ int builtin_warp (int numargs, BuiltinArg *args)
     man = get_current_man();
     x = cur->x + cur->w / 2;
     y = cur->y + cur->h / 2;
-    XWarpPointer (theDisplay, None, man->theWindow, 0, 0, 0, 0, x, y);
+    FWarpPointer(theDisplay, None, man->theWindow, 0, 0, 0, 0, x, y);
   }
 
   return 0;

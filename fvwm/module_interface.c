@@ -41,7 +41,7 @@
 #include "libs/FScreen.h"
 #include "libs/Module.h"
 #include "libs/queue.h"
-#include <libs/gravity.h>
+#include "libs/gravity.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -616,8 +616,8 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 		}
 
 		/* Check for "escape function" */
-		if (XPending(dpy) &&
-		    XCheckMaskEvent(dpy, KeyPressMask, &tmpevent))
+		if (FPending(dpy) &&
+		    FCheckMaskEvent(dpy, KeyPressMask, &tmpevent))
 		{
 			escape = CheckBinding(
 				Scr.AllBindings, STROKE_ARG(0)
@@ -742,7 +742,7 @@ void ExecuteModuleCommand(Window w, int module, char *text)
 	 * This is OK now that the Pager uses "Move pointer"
 	 * A real fix would be for the modules to pass the button press coords
 	 */
-	if (XQueryPointer(
+	if (FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
 		    &Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask) ==
 	    False)

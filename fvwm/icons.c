@@ -28,6 +28,7 @@
 
 #include "config.h"
 
+#include <stdio.h>
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
@@ -40,8 +41,7 @@
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
 #include "libs/PictureImageLoader.h"
-#include <libs/gravity.h>
-#include <stdio.h>
+#include "libs/gravity.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

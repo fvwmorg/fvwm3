@@ -355,7 +355,7 @@ int main(int argc, char **argv)
   ParseOptions();
   if (is_transient)
   {
-    if (XQueryPointer(
+    if (FQueryPointer(
 	  dpy, Scr.Root, &JunkRoot, &JunkChild, &window_x, &window_y, &JunkX,
 	  &JunkY, &JunkMask) == False)
     {
@@ -1430,9 +1430,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   fd_set in_fdset;
   static int miss_counter = 0;
 
-  if(XPending(dpy))
+  if(FPending(dpy))
   {
-    XNextEvent(dpy,event);
+    FNextEvent(dpy,event);
     return 1;
   }
 
@@ -1444,9 +1444,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   {
   if(FD_ISSET(x_fd, &in_fdset))
     {
-      if(XPending(dpy))
+      if(FPending(dpy))
 	{
-	  XNextEvent(dpy,event);
+	  FNextEvent(dpy,event);
 	  miss_counter = 0;
 	  return 1;
 	}
@@ -1591,7 +1591,7 @@ void ParseOptions(void)
 
   Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
-  
+
   fpa.mask = 0;
   if (Pdepth <= 8)
   {

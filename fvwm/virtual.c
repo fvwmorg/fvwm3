@@ -22,7 +22,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
-#include <libs/gravity.h>
+#include "libs/gravity.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -532,15 +532,15 @@ int HandlePaging(
 
 	do
 	{
-		if (XPending(dpy) > 0 &&
-		    (XCheckWindowEvent(
+		if (FPending(dpy) > 0 &&
+		    (FCheckWindowEvent(
 			    dpy, Scr.PanFrameTop.win, LeaveWindowMask, pev) ||
-		     XCheckWindowEvent(
+		     FCheckWindowEvent(
 			     dpy, Scr.PanFrameBottom.win, LeaveWindowMask,
 			     pev) ||
-		     XCheckWindowEvent(
+		     FCheckWindowEvent(
 			     dpy, Scr.PanFrameLeft.win, LeaveWindowMask, pev) ||
-		     XCheckWindowEvent(
+		     FCheckWindowEvent(
 			     dpy, Scr.PanFrameRight.win, LeaveWindowMask, pev)))
 		{
 			StashEventTime(pev);
@@ -548,10 +548,10 @@ int HandlePaging(
 			add_time = 0;
 			return 0;
 		}
-		else if (XCheckMaskEvent(
+		else if (FCheckMaskEvent(
 				 dpy, ButtonPressMask | ButtonReleaseMask, &e))
 		{
-			XPutBackEvent(dpy, &e);
+			FPutBackEvent(dpy, &e);
 			is_timestamp_valid = False;
 			add_time = 0;
 			return 0;
@@ -739,9 +739,9 @@ int HandlePaging(
 	}
 	/* Turn off the rubberband if its on */
 	switch_move_resize_grid(False);
-	XWarpPointer(dpy,None,Scr.Root,0,0,0,0,*xl,*yt);
+	FWarpPointer(dpy,None,Scr.Root,0,0,0,0,*xl,*yt);
 	MoveViewport(Scr.Vx + *delta_x,Scr.Vy + *delta_y,False);
-	if (XQueryPointer(
+	if (FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, xl, yt, &JunkX,
 		    &JunkY, &JunkMask) == False)
 	{
@@ -1231,7 +1231,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	focus_grab_buttons_all();
 
 	/* do this with PanFrames too ??? HEDU */
-	while (XCheckTypedEvent(dpy, MotionNotify, &e))
+	while (FCheckTypedEvent(dpy, MotionNotify, &e))
 	{
 		StashEventTime(&e);
 	}

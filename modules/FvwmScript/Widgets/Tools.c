@@ -623,5 +623,5 @@ int IsItDoubleClic(struct XObj *xobj)
   XEvent Event;
   XFlush(dpy);
   Wait(12);
-  return (XCheckTypedEvent(dpy, ButtonPress, &Event));
+  return (FCheckTypedEvent(dpy, ButtonPress, &Event));
 }

@@ -149,7 +149,7 @@ main_loop (void)
     }
     else {
 
-      if (FD_ISSET(x_fd, &readset) || XPending(theDisplay)) {
+      if (FD_ISSET(x_fd, &readset) || FPending(theDisplay)) {
 	xevent_loop();
       }
       if (FD_ISSET(Fvwm_fd[1], &readset)) {

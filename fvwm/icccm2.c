@@ -99,14 +99,14 @@ SetupICCCM2 (Bool replace_wm)
   ev.format = 32;
   ev.data.l[0] = managing_since;
   ev.data.l[1] = _XA_WM_SX;
-  XSendEvent (dpy, Scr.Root, False, StructureNotifyMask, (XEvent*)&ev);
+  FSendEvent(dpy, Scr.Root, False, StructureNotifyMask, (XEvent*)&ev);
 
   if (running_wm_win != None) {
     /* Wait for the old wm to finish. */
     /* FIXME: need a timeout here. */
     DBUG("SetupICCCM2", "waiting for WM to give up");
     do {
-      XWindowEvent (dpy, running_wm_win, StructureNotifyMask, &xev);
+      FWindowEvent(dpy, running_wm_win, StructureNotifyMask, &xev);
     } while (xev.type != DestroyNotify);
   }
 
@@ -194,7 +194,7 @@ HandleSelectionRequest (void)
       reply.property = ev.property;
   }
 
-  XSendEvent (dpy, ev.requestor, False, 0L, (XEvent*)&reply);
+  FSendEvent(dpy, ev.requestor, False, 0L, (XEvent*)&reply);
   XFlush(dpy);
 
   return;

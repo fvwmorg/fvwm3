@@ -56,11 +56,11 @@
 #include <errno.h>
 #include <sys/types.h>
 #include <unistd.h>
-#include "ftime.h"
 
+#include "libs/ftime.h"
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
-#include <libs/gravity.h>
+#include "libs/gravity.h"
 #include "libs/FRenderInit.h"
 #include "fvwm.h"
 #include "externs.h"
@@ -192,7 +192,7 @@ static void fake_map_unmap_notify(FvwmWindow *fw, int event_type)
 		/* not possible if called correctly */
 		break;
 	}
-	XSendEvent(
+	FSendEvent(
 		dpy, FW_W(fw), False, StructureNotifyMask, &client_event);
 	XSelectInput(dpy, FW_W(fw), winattrs.your_event_mask);
 
@@ -295,7 +295,7 @@ void SendConfigureNotify(
 	client_event.xconfigure.border_width = bw;
 	client_event.xconfigure.above = FW_W_FRAME(fw);
 	client_event.xconfigure.override_redirect = False;
-	XSendEvent(
+	FSendEvent(
 		dpy, FW_W(fw), False, StructureNotifyMask, &client_event);
 	if (send_for_frame_too)
 	{
@@ -305,7 +305,7 @@ void SendConfigureNotify(
 		 * frame, but tk doesn't look at that data anyway. */
 		client_event.xconfigure.event = FW_W_FRAME(fw);
 		client_event.xconfigure.window = FW_W_FRAME(fw);
-		XSendEvent(
+		FSendEvent(
 			dpy, FW_W_FRAME(fw), False, StructureNotifyMask,
 			&client_event);
 	}
@@ -322,7 +322,7 @@ static Bool __test_for_motion(int x0, int y0)
 
 	/* Query the pointer to do this. We can't check for events here since
 	 * the events are still needed if the pointer moves. */
-	for (x = x0, y = y0; XQueryPointer(
+	for (x = x0, y = y0; FQueryPointer(
 		     dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
 		     &x, &y, &mask) == True; usleep(20000))
 	{
@@ -807,7 +807,7 @@ void HandleClientMessage(void)
 	    (Fw)&&(Event.xclient.data.l[0]==IconicState)&&
 	    !IS_ICONIFIED(Fw))
 	{
-		if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 				  &(button.xmotion.x_root),
 				  &(button.xmotion.y_root),
 				  &JunkX, &JunkY, &JunkMask) == False)
@@ -845,7 +845,7 @@ void HandleClientMessage(void)
 		if (Event.xclient.window != FW_W(Fw))
 		{
 			Event.xclient.window = FW_W(Fw);
-			XSendEvent(dpy, FW_W(Fw), False, NoEventMask, &Event);
+			FSendEvent(dpy, FW_W(Fw), False, NoEventMask, &Event);
 		}
 	}
 }
@@ -1127,7 +1127,7 @@ void HandleConfigureRequest(void)
 			unsigned long old_mask;
 			XEvent old_e;
 
-			XCheckIfEvent(
+			FCheckIfEvent(
 				dpy, &e, test_resizing_event, (char *)&args);
 			if (args.ret_does_match == False)
 			{
@@ -1156,7 +1156,7 @@ void HandleConfigureRequest(void)
 			{
 				/* can't merge events since location of window
 				 * might get screwed up. */
-				XPutBackEvent(dpy, &e);
+				FPutBackEvent(dpy, &e);
 				break;
 			}
 			/* partially handle the event */
@@ -1593,7 +1593,7 @@ ENTER_DBG((stderr, "en: exit: NU: not frame window\n"));
 	is_tear_off_menu =
 		(Fw && IS_TEAR_OFF_MENU(Fw) && ewp->window == FW_W(Fw));
 	if (!fFvwmInStartup && !is_tear_off_menu &&
-	    XCheckTypedWindowEvent(dpy, ewp->window, LeaveNotify, &d))
+	    FCheckTypedWindowEvent(dpy, ewp->window, LeaveNotify, &d))
 	{
 		StashEventTime(&d);
 		if (d.xcrossing.mode == NotifyNormal &&
@@ -1844,7 +1844,7 @@ void HandleFocusIn(void)
 		/**/
 		w = Event.xany.window;
 	}
-	while (XCheckTypedEvent(dpy, FocusIn, &d))
+	while (FCheckTypedEvent(dpy, FocusIn, &d))
 	{
 		/* dito */
 		if (d.xfocus.detail != NotifyPointer)
@@ -2017,12 +2017,12 @@ void HandleKeyPress(void)
 	if (sf && Event.xkey.window != FW_W(sf))
 	{
 		Event.xkey.window = FW_W(sf);
-		XSendEvent(dpy, FW_W(sf), False, KeyPressMask, &Event);
+		FSendEvent(dpy, FW_W(sf), False, KeyPressMask, &Event);
 	}
 	else if (Fw && Event.xkey.window != FW_W(Fw))
 	{
 		Event.xkey.window = FW_W(Fw);
-		XSendEvent(dpy, FW_W(Fw), False, KeyPressMask, &Event);
+		FSendEvent(dpy, FW_W(Fw), False, KeyPressMask, &Event);
 	}
 
 	return;
@@ -2830,7 +2830,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 		cie_args.cr_value_mask = 0;
 		cie_args.ret_does_match = False;
 		cie_args.ret_type = 0;
-		XCheckIfEvent(dpy, &e, test_resizing_event, (char *)&cie_args);
+		FCheckIfEvent(dpy, &e, test_resizing_event, (char *)&cie_args);
 #if 0
 		/* dv (7 May 2002): Must handle this immediately since xterm
 		 * relies on that behaviour. */
@@ -3158,10 +3158,10 @@ void HandleUnmapNotify(void)
 		args.w = win;
 		args.do_return_true = False;
 		args.do_return_true_cr = False;
-		/* Using XCheckTypedWindowEvent() does not work here.  I don't
-		 * have the slightest idea why, but using XCheckIfEvent() with
+		/* Using FCheckTypedWindowEvent() does not work here.  I don't
+		 * have the slightest idea why, but using FCheckIfEvent() with
 		 * the appropriate predicate procedure works fine. */
-		XCheckIfEvent(dpy, &dummy, test_map_request, (char *)&win);
+		FCheckIfEvent(dpy, &dummy, test_map_request, (char *)&win);
 		/* Unfortunately, there is no procedure in X that simply tests
 		 * if an event of a certain type in on the queue without
 		 * waiting and without removing it from the queue.
@@ -3194,7 +3194,7 @@ void HandleUnmapNotify(void)
 	 * won't cause it to get mapped) and then throw away all state (pretend
 	 * that we've received a DestroyNotify).
 	 */
-	if (!XCheckTypedWindowEvent(
+	if (!FCheckTypedWindowEvent(
 		    dpy, Event.xunmap.window, DestroyNotify, &dummy) &&
 	    XTranslateCoordinates(
 		    dpy, Event.xunmap.window, Scr.Root, 0, 0, &dstx, &dsty,
@@ -3205,7 +3205,7 @@ void HandleUnmapNotify(void)
 		MyXGrabServer(dpy);
 		SetMapStateProp (Fw, WithdrawnState);
 		EWMH_RestoreInitialStates(Fw, Event.type);
-		if (XCheckTypedWindowEvent(
+		if (FCheckTypedWindowEvent(
 			    dpy, Event.xunmap.window, ReparentNotify, &ev))
 		{
 			if (Fw->attr_backup.border_width)
@@ -3227,8 +3227,8 @@ void HandleUnmapNotify(void)
 		}
 		if (!IS_TEAR_OFF_MENU(Fw))
 		{
-			XRemoveFromSaveSet (dpy, Event.xunmap.window);
-			XSelectInput (dpy, Event.xunmap.window, NoEventMask);
+			XRemoveFromSaveSet(dpy, Event.xunmap.window);
+			XSelectInput(dpy, Event.xunmap.window, NoEventMask);
 		}
 		XSync(dpy, 0);
 		MyXUngrabServer(dpy);
@@ -3459,11 +3459,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	 * Make sure nothing between here and the select causes further
 	 * X requests to be sent or the select may block even though
 	 * there are events in the queue */
-	if (XPending(dpy))
+	if (FPending(dpy))
 	{
 		DBUG("My_XNextEvent","taking care of queued up events"
 		     " & returning (1)");
-		XNextEvent(dpy,event);
+		FNextEvent(dpy,event);
 		StashEventTime(event);
 		return 1;
 	}
@@ -3648,11 +3648,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
 	/* check for X events again, rather than return 0 and get called again
 	 */
-	if (XPending(dpy))
+	if (FPending(dpy))
 	{
 		DBUG("My_XNextEvent",
 		     "taking care of queued up events & returning (2)");
-		XNextEvent(dpy,event);
+		FNextEvent(dpy,event);
 		StashEventTime(event);
 		return 1;
 	}
@@ -3741,7 +3741,7 @@ int flush_expose(Window w)
 	XEvent dummy;
 	int i=0;
 
-	while (XCheckTypedWindowEvent(dpy, w, Expose, &dummy))
+	while (FCheckTypedWindowEvent(dpy, w, Expose, &dummy))
 	{
 		i++;
 	}
@@ -3759,7 +3759,7 @@ int flush_accumulate_expose(Window w, XEvent *e)
 	int x2 = x1 + e->xexpose.width;
 	int y2 = y1 + e->xexpose.height;
 
-	while (XCheckTypedWindowEvent(dpy, w, Expose, &dummy))
+	while (FCheckTypedWindowEvent(dpy, w, Expose, &dummy))
 	{
 		x1 = min(x1, dummy.xexpose.x);
 		y1 = min(y1, dummy.xexpose.y);
@@ -3786,8 +3786,8 @@ void handle_all_expose(void)
 	XEvent old_event;
 
 	memcpy(&old_event, &Event, sizeof(XEvent));
-	XPending(dpy);
-	while (XCheckMaskEvent(dpy, ExposureMask, &Event))
+	FPending(dpy);
+	while (FCheckMaskEvent(dpy, ExposureMask, &Event))
 	{
 		/* note: handling Expose events will never modify the global
 		 * Fw */
@@ -3864,7 +3864,7 @@ void CoerceEnterNotifyOnCurrentWindow(void)
 	Window root;
 	Bool f;
 
-	f = XQueryPointer(
+	f = FQueryPointer(
 		dpy, Scr.Root, &root, &child, &Event.xcrossing.x_root,
 		&Event.xcrossing.y_root, &Event.xcrossing.x, &Event.xcrossing.y,
 		&JunkMask);
@@ -3912,7 +3912,7 @@ int discard_events(long event_mask)
 	int count;
 
 	XSync(dpy, 0);
-	for (count = 0; XCheckMaskEvent(dpy, event_mask, &e); count++)
+	for (count = 0; FCheckMaskEvent(dpy, event_mask, &e); count++)
 	{
 		StashEventTime(&e);
 	}
@@ -3928,7 +3928,7 @@ int discard_window_events(Window w, long event_mask)
 	int count;
 
 	XSync(dpy, 0);
-	for (count = 0; XCheckWindowEvent(dpy, w, event_mask, &e); count++)
+	for (count = 0; FCheckWindowEvent(dpy, w, event_mask, &e); count++)
 	{
 		StashEventTime(&e);
 	}
@@ -3943,12 +3943,12 @@ int flush_property_notify(Atom atom, Window w)
 	int count;
 
 	XSync(dpy, 0);
-	for (count = 0; XCheckTypedWindowEvent(dpy, w, PropertyNotify, &e);
+	for (count = 0; FCheckTypedWindowEvent(dpy, w, PropertyNotify, &e);
 	     count++)
 	{
 		if (e.xproperty.atom != atom)
 		{
-			XPutBackEvent(dpy, &e);
+			FPutBackEvent(dpy, &e);
 			break;
 		}
 	}
@@ -3973,7 +3973,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	unsigned int count;
 	int use_wait_cursor;
 
-	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
+	if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
 			  &JunkX, &JunkY, &mask) == False)
 	{
 		/* pointer is on a different screen - that's okay here */
@@ -3992,7 +3992,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
 	{
 		/* handle expose events */
 		XAllowEvents(dpy, SyncPointer, CurrentTime);
-		if (XCheckMaskEvent(dpy, evmask, &Event))
+		if (FCheckMaskEvent(dpy, evmask, &Event))
 		{
 			switch (Event.type)
 			{
@@ -4012,7 +4012,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
 		}
 		else
 		{
-			if (XQueryPointer(
+			if (FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild,
 				    &JunkX, &JunkY, &JunkX, &JunkY, &mask) ==
 			    False)
@@ -4072,7 +4072,7 @@ Bool is_resizing_event_pending(
 	args.cr_value_mask = 0;
 	args.ret_does_match = False;
 	args.ret_type = 0;
-	XCheckIfEvent(dpy, &e, test_resizing_event, (char *)&args);
+	FCheckIfEvent(dpy, &e, test_resizing_event, (char *)&args);
 
 	return args.ret_does_match;
 }
@@ -4173,7 +4173,7 @@ int findcurrentkbwininlist(Window start_win, Window *winlist, int n)
 	Window new_child;
 
 /*fprintf(stderr,"find sw = 0x%08x\n", (int)start_win);*/
-	if (XQueryPointer(
+	if (FQueryPointer(
 		    dpy, start_win, &JunkRoot, &child, &JunkX, &JunkY, &x, &y,
 		    &JunkMask) == False)
 	{

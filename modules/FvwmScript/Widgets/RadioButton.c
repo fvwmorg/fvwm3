@@ -118,11 +118,11 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 
  while (End)
  {
-  XNextEvent(dpy, &event);
+  FNextEvent(dpy, &event);
   switch (event.type)
     {
       case EnterNotify:
-	   XQueryPointer(dpy,*xobj->ParentWin,
+	   FQueryPointer(dpy,*xobj->ParentWin,
 		&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
 	   if (WinBut==0)
 	   {
@@ -151,7 +151,7 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
 	   }
 	  break;
       case LeaveNotify:
-	   XQueryPointer(dpy,*xobj->ParentWin,
+	   FQueryPointer(dpy,*xobj->ParentWin,
 		&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
 	   if (Win2==WinBut)
 	   {

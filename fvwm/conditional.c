@@ -929,7 +929,7 @@ void CMD_Direction(F_CMD_ARGS)
 	}
 	else
 	{
-		if (XQueryPointer(
+		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &my_g.x,
 			    &my_g.y, &JunkX, &JunkY, &JunkMask) == False)
 		{

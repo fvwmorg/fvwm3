@@ -416,7 +416,7 @@ void EndLessLoop(void)
     if ( fvwmSelect(fd_width, &readset, NULL, NULL, &tv) > 0 )
     {
 
-      if (FD_ISSET(x_fd, &readset) || XPending(dpy))
+      if (FD_ISSET(x_fd, &readset) || FPending(dpy))
         LoopOnEvents();
 
       if (FD_ISSET(Fvwm_fd[1], &readset))
@@ -933,7 +933,7 @@ void WaitForExpose(void)
   XEvent Event;
 
   while(1) {
-    XNextEvent(dpy, &Event);
+    FNextEvent(dpy, &Event);
     if (Event.type == Expose) {
       if (Event.xexpose.count == 0) break;
     }
@@ -964,7 +964,7 @@ void RedrawWindow(int force)
   }
   DrawButtonArray(&buttons, force);
   StartButtonDraw(force);
-  if (XQLength(dpy) && !force)
+  if (FQLength(dpy) && !force)
     LoopOnEvents();
 }
 
@@ -1247,7 +1247,7 @@ DoAlarmAction(void)
       /* We are now "sure" that the TaskBar is not hidden for the
 	 Event loop. We send a motion notify for activating tips */
       WindowState = 1;
-      if (XQueryPointer(dpy, win, &dummy_rt,&dummy_c, &abs_x, &abs_y,
+      if (FQueryPointer(dpy, win, &dummy_rt,&dummy_c, &abs_x, &abs_y,
 			&pos_x, &pos_y, &dummy) == False)
       {
 	/* pointer is on a different screen */
@@ -1258,7 +1258,7 @@ DoAlarmAction(void)
       sevent.xmotion.y = pos_y;
       sevent.xany.type = MotionNotify;
       sevent.xmotion.state = 0;
-      XSendEvent(dpy, win, False, EnterWindowMask, &sevent);
+      FSendEvent(dpy, win, False, EnterWindowMask, &sevent);
       Tip.type = NO_TIP;
     }
     else
@@ -1321,14 +1321,14 @@ void LoopOnEvents(void)
   static unsigned long lasttime = 0L;
   Time NewTimestamp = lasttime;
 
-  while(XPending(dpy))
+  while(FPending(dpy))
   {
     redraw = -1;
-    XNextEvent(dpy, &Event);
+    FNextEvent(dpy, &Event);
     if (Event.xany.type == ConfigureNotify)
     {
       /* Purge all but the last configure events */
-      while (XCheckTypedEvent(dpy, ConfigureNotify, &Event))
+      while (FCheckTypedEvent(dpy, ConfigureNotify, &Event))
 	;
     }
 
@@ -1447,7 +1447,7 @@ void LoopOnEvents(void)
     case Expose:
       memcpy(&Event2, &Event, sizeof(Event));
       /* eat up excess Expose events. */
-      while (XCheckTypedWindowEvent(dpy, win, Expose, &Event2))
+      while (FCheckTypedWindowEvent(dpy, win, Expose, &Event2))
       {
 	memcpy(&Event, &Event2, sizeof(Event));
       }
@@ -1550,7 +1550,7 @@ void LoopOnEvents(void)
     case ConfigureNotify:
       memcpy(&Event2, &Event, sizeof(Event));
       /* eat up excess ConfigureNotify events. */
-      while (XCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event2))
+      while (FCheckTypedWindowEvent(dpy, win, ConfigureNotify, &Event2))
       {
 	memcpy(&Event, &Event2, sizeof(Event));
       }
@@ -2234,7 +2234,7 @@ void HideTaskBar()
 
   if (FocusInWin)
   {
-    if (XQueryPointer(
+    if (FQueryPointer(
 		dpy, win, &d_rt,&d_ch, &d_x, &d_y, &wx, &wy, &mask) == False)
     {
       /* pointer is on a different screen - that's okay here */

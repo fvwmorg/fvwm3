@@ -217,7 +217,7 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
 
   while (End)
   {
-    XQueryPointer(dpy, Root, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
+    FQueryPointer(dpy, Root, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
     /* Determiner l'option courante */
     y2 = y2 - y;
     x2 = x2 - x;
@@ -235,7 +235,7 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
       oldvalue = newvalue;
     }
 
-    XNextEvent(dpy, &event);
+    FNextEvent(dpy, &event);
     switch (event.type)
     {
     case KeyPress:
@@ -248,10 +248,10 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
 	End = 0;
       }
       else if (ks == XK_Up && y2 >= 0) {
-	XWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, -hOpt);
+	FWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, -hOpt);
       }
       else if (ks == XK_Down && y2 + hOpt <= hMenu) {
-	XWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, hOpt);
+	FWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, hOpt);
       }
       break;
     case ButtonPress:

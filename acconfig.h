@@ -281,3 +281,8 @@
 #endif
 
 #include "libs/defaults.h"
+
+#ifndef FEVENT_C
+#include <X11/Xlib.h>
+#include "libs/FEvent.h"
+#endif

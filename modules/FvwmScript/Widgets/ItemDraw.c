@@ -135,7 +135,7 @@ void EvtMouseItemDraw(struct XObj *xobj,XButtonEvent *EvtButton)
   int x1,x2,y1,y2;
   Window Win1,Win2;
 
-  XQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
+  FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
   xobj->value2 = x2-xobj->x;
   xobj->value3 = y2-xobj->y;
   SendMsg(xobj,SingleClic);
@@ -149,21 +149,21 @@ void EvtKeyItemDraw(struct XObj *xobj, XKeyEvent *EvtKey)
   int x1,x2,y1,y2;
   Window Win1,Win2;
 
-  XQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
+  FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
   xobj->value2 = x2-xobj->x;
   xobj->value3 = y2-xobj->y;
   XLookupString(EvtKey, (char *)buf, sizeof(buf), &ks, NULL);
   if (ks == XK_Left && xobj->value2 > 0) {
-    XWarpPointer(dpy, None, None, 0, 0, 0, 0, -1, 0);
+    FWarpPointer(dpy, None, None, 0, 0, 0, 0, -1, 0);
   }
   else if (ks == XK_Right && xobj->value2 < xobj->width - 1) {
-    XWarpPointer(dpy, None, None, 0, 0, 0, 0, 1, 0);
+    FWarpPointer(dpy, None, None, 0, 0, 0, 0, 1, 0);
   }
   else if (ks == XK_Up && xobj->value3 > 0) {
-    XWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, -1);
+    FWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, -1);
   }
   else if (ks == XK_Down && xobj->value3 < xobj->height - 1) {
-    XWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, 1);
+    FWarpPointer(dpy, None, None, 0, 0, 0, 0, 0, 1);
   }
   else if (ks == XK_Return) {
     EvtMouseItemDraw(xobj, NULL);

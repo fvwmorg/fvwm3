@@ -241,7 +241,7 @@ int main(int argc, char **argv)
     FD_ZERO(&in_fdset);
     FD_SET(x_fd,&in_fdset);
 
-    if(!XPending(dpy))
+    if(!FPending(dpy))
 
       retval=select(fd_width,SELECT_FD_SET_CAST &in_fdset, 0, 0, &value);
 
@@ -255,7 +255,7 @@ int main(int argc, char **argv)
     if (FD_ISSET(x_fd, &in_fdset))
     {
       /* read a packet */
-      XNextEvent(dpy,&Event);
+      FNextEvent(dpy,&Event);
       switch(Event.type)
       {
       case ButtonRelease:

@@ -130,7 +130,7 @@ ShutdownX(void)
     {
       if (FD_ISSET(x_fd, &in_fdset))
       {
-	if (XCheckTypedEvent(dpy, SelectionRequest, &event))
+	if (FCheckTypedEvent(dpy, SelectionRequest, &event))
 	  SendMsgToScript(event);
 	else
 	  NbEssai++;
@@ -787,7 +787,7 @@ void SendMsgToScript(XEvent event)
       /* Cas ou le recepteur demande un message et qu'il n'y en a pas */
       evnt_sel.xselection.property = None;
     }
-    XSendEvent(dpy,evnt_sel.xselection.requestor, False, 0, &evnt_sel);
+    FSendEvent(dpy,evnt_sel.xselection.requestor, False, 0, &evnt_sel);
   }
 }
 
@@ -825,9 +825,9 @@ void ReadXServer (void)
   Bool find = False;
   char *action;
 
-  while (XEventsQueued(dpy, QueuedAfterReading))
+  while (FEventsQueued(dpy, QueuedAfterReading))
   {
-    XNextEvent(dpy, &event);
+    FNextEvent(dpy, &event);
     switch (event.type)
     {
     case Expose:
@@ -858,7 +858,7 @@ void ReadXServer (void)
       Bool moved = False;
 
       moved = event.xconfigure.send_event;
-      while (XCheckTypedEvent(dpy, ConfigureNotify, &event))
+      while (FCheckTypedEvent(dpy, ConfigureNotify, &event))
       {
 	/* check for movement */
 	if (event.xconfigure.send_event)
@@ -933,7 +933,7 @@ void ReadXServer (void)
 	    find = True;
 	}
 	if (find)
-	  XWarpPointer(dpy, x11base->win, tabxobj[i]->win, 0, 0, 0, 0,
+	  FWarpPointer(dpy, x11base->win, tabxobj[i]->win, 0, 0, 0, 0,
 		       tabxobj[i]->width/2, 10);
       }
       break;
@@ -980,7 +980,7 @@ void ReadXServer (void)
 	  break;
 	default:evnt_sel.xselection.property = None;
 	}
-	XSendEvent(dpy,evnt_sel.xselection.requestor,
+	FSendEvent(dpy,evnt_sel.xselection.requestor,
 		   False,0,&evnt_sel);
       }
       else
@@ -1044,7 +1044,7 @@ void MainLoop (void)
 
   while ( !isTerminated )
   {
-    while (XPending(dpy))
+    while (FPending(dpy))
       ReadXServer();
 
     FD_ZERO(&in_fdset);

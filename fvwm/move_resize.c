@@ -34,7 +34,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/Flocale.h"
-#include <libs/gravity.h>
+#include "libs/gravity.h"
 #include "libs/Picture.h"
 #include "fvwm.h"
 #include "externs.h"
@@ -168,7 +168,7 @@ static int GetOnePositionArgument(
 		int x = 0;
 		int y = 0;
 
-		if (XQueryPointer(
+		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,
 			    &JunkY, &x, &y, &JunkMask) == False)
 		{
@@ -725,7 +725,7 @@ static Bool resize_move_window(F_CMD_ARGS)
 	}
 	if (fWarp)
 	{
-		XWarpPointer(
+		FWarpPointer(
 			dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
 	}
 	if (IS_MAXIMIZED(fw))
@@ -780,7 +780,7 @@ static void InteractiveMove(
 
 	if (do_start_at_pointer)
 	{
-		if (XQueryPointer(
+		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX,
 			    &DragY, &JunkX, &JunkY, &JunkMask) == False)
 		{
@@ -956,7 +956,7 @@ static void AnimatedMoveAnyWindow(
 		}
 		if (fWarpPointerToo == True)
 		{
-			if (XQueryPointer(
+			if (FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild,
 				    &JunkX, &JunkY, &pointerX, &pointerY,
 				    &JunkMask) == False)
@@ -970,7 +970,7 @@ static void AnimatedMoveAnyWindow(
 				pointerX += currentX - lastX;
 				pointerY += currentY - lastY;
 			}
-			XWarpPointer(
+			FWarpPointer(
 				dpy, None, Scr.Root, 0, 0, 0, 0, pointerX,
 				pointerY);
 		}
@@ -1008,7 +1008,7 @@ static void AnimatedMoveAnyWindow(
 		 * domivogt (28-apr-1999): That is because the keyboard was not
 		 * grabbed. works nicely now.
 		 */
-		if (XCheckMaskEvent(
+		if (FCheckMaskEvent(
 			    dpy, ButtonPressMask|ButtonReleaseMask|KeyPressMask,
 			    &Event))
 		{
@@ -1106,7 +1106,7 @@ void __move_icon(
 		XMoveWindow(dpy, FW_W_ICON_TITLE(fw), tx, ty);
 		if (do_warp_pointer)
 		{
-			XWarpPointer(
+			FWarpPointer(
 				dpy, None, None, 0, 0, 0, 0, x - old_x,
 				y - old_y);
 		}
@@ -1250,7 +1250,7 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 			fw->frame_g.height, True);
 		if (fWarp & !do_animate)
 		{
-			XWarpPointer(
+			FWarpPointer(
 				dpy, None, None, 0, 0, 0, 0, FinalX - x,
 				FinalY - y);
 		}
@@ -1777,7 +1777,7 @@ Bool moveLoop(
 
 		xl_bak = xl;
 		yt_bak = yt;
-		if (XQueryPointer(
+		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &xl, &yt,
 			    &JunkX, &JunkY, &button_mask) == False)
 		{
@@ -1809,8 +1809,8 @@ Bool moveLoop(
 		int rc = 0;
 
 		/* wait until there is an interesting event */
-		while (rc != -1 && (!XPending(dpy) ||
-				    !XCheckMaskEvent(
+		while (rc != -1 && (!FPending(dpy) ||
+				    !FCheckMaskEvent(
 					    dpy, ButtonPressMask |
 					    ButtonReleaseMask | KeyPressMask |
 					    PointerMotionMask |
@@ -1856,7 +1856,7 @@ Bool moveLoop(
 		if (rc == -1)
 		{
 			/* block until an event arrives */
-			XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+			FMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
 				   KeyPressMask | PointerMotionMask |
 				   ButtonMotionMask | ExposureMask, &Event);
 		}
@@ -1868,8 +1868,8 @@ Bool moveLoop(
 			XEvent new_event;
 
 			/*** logic borrowed from icewm ***/
-			while (XPending(dpy) > 0 &&
-			       XCheckMaskEvent(
+			while (FPending(dpy) > 0 &&
+			       FCheckMaskEvent(
 				       dpy, ButtonMotionMask |
 				       PointerMotionMask | ButtonPressMask |
 				       ButtonRelease | KeyPressMask,
@@ -1877,7 +1877,7 @@ Bool moveLoop(
 			{
 				if (Event.type != new_event.type)
 				{
-					XPutBackEvent(dpy, &new_event);
+					FPutBackEvent(dpy, &new_event);
 					break;
 				}
 				else
@@ -2549,7 +2549,7 @@ static Bool resize_window(F_CMD_ARGS)
 
 	bad_window = False;
 	ResizeWindow = FW_W_FRAME(fw);
-	if (XQueryPointer(
+	if (FQueryPointer(
 		    dpy, ResizeWindow, &JunkRoot, &JunkChild, &JunkX, &JunkY,
 		    &px, &py, &button_mask) == False)
 	{
@@ -2851,7 +2851,7 @@ static Bool resize_window(F_CMD_ARGS)
 		if (wx != -1)
 		{
 			/* now warp the pointer to the border */
-			XWarpPointer(
+			FWarpPointer(
 				dpy, None, ResizeWindow, 0, 0, 1, 1, wx, wy);
 			XFlush(dpy);
 		}
@@ -2869,7 +2869,7 @@ static Bool resize_window(F_CMD_ARGS)
 	 * press */
 	if (eventp->type == KeyPress)
 	{
-		if (XQueryPointer(
+		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &stashed_x,
 			    &stashed_y, &JunkX, &JunkY, &JunkMask) == False)
 		{
@@ -2893,7 +2893,7 @@ static Bool resize_window(F_CMD_ARGS)
 
 		/* block until there is an interesting event */
 		while (rc != -1 &&
-		       (!XCheckMaskEvent(dpy, evmask, &Event)))
+		       (!FCheckMaskEvent(dpy, evmask, &Event)))
 		{
 			rc = HandlePaging(
 				&Event, Scr.EdgeScrollX, Scr.EdgeScrollY, &x,
@@ -2909,14 +2909,14 @@ static Bool resize_window(F_CMD_ARGS)
 		}
 		if (rc == -1)
 		{
-			XMaskEvent(dpy, evmask, &Event);
+			FMaskEvent(dpy, evmask, &Event);
 		}
 		StashEventTime(&Event);
 
 		if (Event.type == MotionNotify)
 		{
 			/* discard any extra motion events before a release */
-			while (XCheckMaskEvent(
+			while (FCheckMaskEvent(
 				       dpy, ButtonMotionMask |
 				       PointerMotionMask | ButtonReleaseMask |
 				       ButtonPressMask, &Event))
@@ -2970,7 +2970,7 @@ static Bool resize_window(F_CMD_ARGS)
 				 * with key */
 				if (stashed_x >= 0)
 				{
-					XWarpPointer(
+					FWarpPointer(
 						dpy, None, Scr.Root, 0, 0, 0,
 						0, stashed_x, stashed_y);
 				}

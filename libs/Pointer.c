@@ -61,7 +61,7 @@ Bool GetLocationFromEventOrQuery(
 		}
 		return True;
 	default:
-		rc = XQueryPointer(
+		rc = FQueryPointer(
 			dpy, w, &JunkW, &JunkW, ret_x, ret_y, &JunkC, &JunkC,
 			&JunkM);
 		if (rc == False)

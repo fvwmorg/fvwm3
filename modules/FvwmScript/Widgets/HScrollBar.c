@@ -181,7 +181,7 @@ void EvtMouseHScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
   do
   {
     /* On suit les mouvements de la souris */
-    XQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
+    FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
     x2 = x2 - xobj->x;
     if (x2 < 15)
       x2 = 15;
@@ -206,7 +206,7 @@ void EvtMouseHScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
     FD_SET(x_fd, &in_fdset);
     select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
   }
-  while (!XCheckTypedEvent(dpy, ButtonRelease, &event) && EvtButton != NULL);
+  while (!FCheckTypedEvent(dpy, ButtonRelease, &event) && EvtButton != NULL);
 }
 
 void EvtKeyHScrollBar(struct XObj *xobj, XKeyEvent *EvtKey)

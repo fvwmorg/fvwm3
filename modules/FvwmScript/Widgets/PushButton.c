@@ -144,11 +144,11 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 
     while (End)
     {
-      XNextEvent(dpy, &event);
+      FNextEvent(dpy, &event);
       switch (event.type)
       {
       case EnterNotify:
-	XQueryPointer(dpy, *xobj->ParentWin,
+	FQueryPointer(dpy, *xobj->ParentWin,
 		      &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
 	if (WinBut == 0)
 	{
@@ -174,7 +174,7 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 	}
 	break;
       case LeaveNotify:
-	XQueryPointer(dpy, *xobj->ParentWin,
+	FQueryPointer(dpy, *xobj->ParentWin,
 		      &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
 	if (Win2 == WinBut)
 	{
@@ -259,7 +259,7 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
       DrawPMenu(xobj, WinPop, hOpt, 1);
       do
       {
-	XQueryPointer(dpy, Root, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
+	FQueryPointer(dpy, Root, &Win1, &Win2, &x1, &y1, &x2, &y2, &modif);
 	/* Determiner l'option courante / Current option */
 	y2 = y2 - y;
 	x2 = x2 - x;
@@ -279,7 +279,7 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 	  }
 	}
       }
-      while (!XCheckTypedEvent(dpy, ButtonRelease, &event));
+      while (!FCheckTypedEvent(dpy, ButtonRelease, &event));
       XDestroyWindow(dpy, WinPop);
       if (newvalue != 0)
       {

@@ -108,7 +108,7 @@ void EvtMouseMiniScroll(struct XObj *xobj, XButtonEvent *EvtButton)
       count++;
       continue;
     }
-    XQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
+    FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
 		  &x1, &y1, &x2, &y2, &modif);
     /* Determiner l'option courante */
     y2 = y2 - xobj->y;
@@ -167,7 +167,7 @@ void EvtMouseMiniScroll(struct XObj *xobj, XButtonEvent *EvtButton)
     }
     count++;
   }
-  while (!XCheckTypedEvent(dpy, ButtonRelease, &event) && EvtButton != NULL);
+  while (!FCheckTypedEvent(dpy, ButtonRelease, &event) && EvtButton != NULL);
   DrawArrowN(xobj, 3, 3, 0);
   DrawArrowS(xobj, 3, 18, 0);
 }

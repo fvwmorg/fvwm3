@@ -1190,7 +1190,7 @@ static void InitVariables(void)
 	Scr.PanFrameBottom.command = NULL;
 	Scr.PanFrameRight.command  = NULL;
 	Scr.PanFrameLeft.command   = NULL;
-	Scr.flags.is_pointer_on_this_screen = !!XQueryPointer(
+	Scr.flags.is_pointer_on_this_screen = !!FQueryPointer(
 		dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &JunkX,
 		&JunkY, &JunkMask);
 

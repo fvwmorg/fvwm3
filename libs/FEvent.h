@@ -92,7 +92,6 @@ int FWindowEvent(
 
 /* FEVENT_C must only be defined in XEvent.c! */
 #ifndef FEVENT_C
-#define XEvent use_XEvent
 #define XGetMotionEvents(a, b, c, d, e) use_FGetMotionEvents
 #define XCheckIfEvent(a, b, c, d) use_FCheckIfEvent
 #define XCheckMaskEvent(a, b, c) use_FCheckMaskEvent
@@ -109,7 +108,6 @@ int FWindowEvent(
 #define XPutBackEvent(a, b) use_FPutBackEvent
 #define XQueryPointer(a, b, c, d, e, f, g, h, i) use_FQueryPointer
 #define XQLength(a) use_FQLength
-#define XSelectInput(a, b, c) use_FSelectInput
 #define XSendEvent(a, b, c, d, e) use_FSendEvent
 #define XWarpPointer(a, b, c, d, e, f, g, h, i) use_FWarpPointer
 #define XWindowEvent(a, b, c, d) use_FWindowEvent

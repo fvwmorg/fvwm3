@@ -39,7 +39,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Parse.h"
-#include <libs/gravity.h>
+#include "libs/gravity.h"
 #include "fvwm.h"
 #include "commands.h"
 #include "externs.h"
@@ -178,7 +178,7 @@ if (FinishEvent == 0) { fprintf(stderr, "bug: DeferExecturion called without fin
 	{
 		done = 0;
 		/* block until there is an event */
-		XMaskEvent(
+		FMaskEvent(
 			dpy, ButtonPressMask | ButtonReleaseMask |
 			ExposureMask | KeyPressMask | VisibilityChangeMask |
 			ButtonMotionMask | PointerMotionMask
@@ -413,7 +413,7 @@ static cfunc_action_type CheckActionType(
 			do_sleep = 1;
 		}
 		total += 20;
-		if (XCheckMaskEvent(
+		if (FCheckMaskEvent(
 			    dpy, ButtonReleaseMask|ButtonMotionMask|
 			    PointerMotionMask|ButtonPressMask|ExposureMask, d))
 		{
@@ -671,10 +671,10 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 		y = ev.xbutton.y_root;
 		/* Take the click which started this fuction off the
 		 * Event queue.  -DDN- Dan D Niles dniles@iname.com */
-		XCheckMaskEvent(dpy, ButtonPressMask, &d);
+		FCheckMaskEvent(dpy, ButtonPressMask, &d);
 		break;
 	default:
-		if (XQueryPointer(
+		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &x, &y,
 			    &JunkX, &JunkY, &JunkMask) == False)
 		{

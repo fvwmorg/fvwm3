@@ -720,7 +720,7 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
 
   /* Recuperation du message */
   XConvertSelection(dpy,ASend,AReceiv,propriete,x11base->win,CurrentTime);
-  while ((!XCheckTypedEvent(dpy,SelectionNotify,&event)) && (NbEssai < 10))
+  while ((!FCheckTypedEvent(dpy,SelectionNotify,&event)) && (NbEssai < 10))
   {
     usleep(1);
     NbEssai++;
@@ -1438,7 +1438,7 @@ static void MyWarpPointer(int NbArg,long *TabArg)
   arg=CalcArg(TabArg,&i);
   IdItem= TabIdObj[atoi(arg)];
   /* Deplacement du pointeur sur l'objet */
-  XWarpPointer(dpy, None, tabxobj[IdItem]->win, 0, 0, 0, 0,
+  FWarpPointer(dpy, None, tabxobj[IdItem]->win, 0, 0, 0, 0,
 	       tabxobj[IdItem]->width / 2, tabxobj[IdItem]->height + 10);
   free(arg);
 }

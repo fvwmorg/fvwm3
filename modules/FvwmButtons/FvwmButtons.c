@@ -97,7 +97,7 @@ void Loop(void);
 void RedrawWindow(button_info*);
 void RecursiveLoadData(button_info*,int*,int*);
 void CreateUberButtonWindow(button_info*,int,int);
-int My_XNextEvent(Display *dpy, XEvent *event);
+int My_FNextEvent(Display *dpy, XEvent *event);
 void process_message(unsigned long type,unsigned long *body);
 extern void send_clientmessage (Display *disp, Window w, Atom a,
 				Time timestamp);
@@ -208,7 +208,7 @@ static Window SwallowedWindow(button_info *b)
 int IsThereADestroyEvent(button_info *b)
 {
   XEvent event;
-  return XCheckIfEvent(Dpy,&event,DestroyedWindow,
+  return FCheckIfEvent(Dpy,&event,DestroyedWindow,
 		       (char*)SwallowedWindow(b));
 }
 
@@ -930,7 +930,7 @@ void Loop(void)
   tmp.name_list = NULL;
   while( !isTerminated )
   {
-    if(My_XNextEvent(Dpy,&Event))
+    if(My_FNextEvent(Dpy,&Event))
     {
       if (FShapesSupported)
       {
@@ -1021,7 +1021,7 @@ void Loop(void)
 	unsigned int depth,tw,th,border_width;
 	Window root;
 
-	while (XCheckTypedWindowEvent(Dpy, MyWindow, ConfigureNotify, &event))
+	while (FCheckTypedWindowEvent(Dpy, MyWindow, ConfigureNotify, &event))
 	{
 	  if (!event.xconfigure.send_event &&
 	      Event.xconfigure.window != MyWindow)
@@ -1438,7 +1438,7 @@ void RedrawWindow(button_info *b)
     return;
 
   /* Flush expose events */
-  while (XCheckTypedWindowEvent (Dpy, MyWindow, Expose, &dummy))
+  while (FCheckTypedWindowEvent(Dpy, MyWindow, Expose, &dummy))
     ;
 
   if(b)
@@ -1502,7 +1502,7 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   fprintf(stderr,"%s: Loading: Button 0x%06x: colors",MyName,(ushort)b);
 #endif
 
-  
+
   /* initialise button colours and background */
   if (b->flags & b_Colorset)
   {
@@ -2107,17 +2107,17 @@ void DebugEvents(XEvent *event)
 #endif
 
 /**
-*** My_XNextEvent()
+*** My_FNextEvent()
 *** Waits for next X event, or for an auto-raise timeout.
 **/
-int My_XNextEvent(Display *Dpy, XEvent *event)
+int My_FNextEvent(Display *Dpy, XEvent *event)
 {
   fd_set in_fdset;
   static int miss_counter = 0;
 
-  if(XPending(Dpy))
+  if(FPending(Dpy))
   {
-    XNextEvent(Dpy,event);
+    FNextEvent(Dpy,event);
 #ifdef DEBUG_EVENTS
     DebugEvents(event);
 #endif
@@ -2133,9 +2133,9 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
 
     if(FD_ISSET(x_fd, &in_fdset))
     {
-      if(XPending(Dpy))
+      if(FPending(Dpy))
       {
-	XNextEvent(Dpy,event);
+	FNextEvent(Dpy,event);
 	miss_counter = 0;
 #ifdef DEBUG_EVENTS
 	DebugEvents(event);
@@ -2233,7 +2233,7 @@ static void send_bg_change_to_module(button_info *b, XEvent *Event)
     Event->xconfigure.width = b->icon_w;
     Event->xconfigure.height = b->icon_h;
     Event->xconfigure.window = SwallowedWindow(b);
-    XSendEvent(Dpy, SwallowedWindow(b), False, NoEventMask, Event);
+    FSendEvent(Dpy, SwallowedWindow(b), False, NoEventMask, Event);
   }
   else
     {

@@ -185,7 +185,7 @@ void EvtMouseVScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
   do
   {
     /* On suit les mouvements de la souris */
-    XQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
+    FQueryPointer(dpy, *xobj->ParentWin, &Win1, &Win2,
 		  &x1, &y1, &x2, &y2, &modif);
     y2 = y2 - xobj->y;
     if (y2 < 15)
@@ -211,7 +211,7 @@ void EvtMouseVScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)
     FD_SET(x_fd, &in_fdset);
     select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
   }
-  while (!XCheckTypedEvent(dpy, ButtonRelease, &event) && EvtButton != NULL);
+  while (!FCheckTypedEvent(dpy, ButtonRelease, &event) && EvtButton != NULL);
 }
 
 void EvtKeyVScrollBar(struct XObj *xobj, XKeyEvent *EvtKey)

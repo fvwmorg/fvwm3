@@ -2128,7 +2128,7 @@ static void OpenWindows ()
     XMapRaised(dpy, CF.frame);
     XMapSubwindows(dpy, CF.frame);
     if (CF.warp_pointer) {
-      XWarpPointer(dpy, None, CF.frame, 0, 0, 0, 0,
+      FWarpPointer(dpy, None, CF.frame, 0, 0, 0, 0,
 		   CF.max_width / 2, CF.total_height - 1);
     }
   }
@@ -2284,7 +2284,7 @@ static void am_Map(char *cp)
   XMapRaised(dpy, CF.frame);
   XMapSubwindows(dpy, CF.frame);
   if (CF.warp_pointer) {
-    XWarpPointer(dpy, None, CF.frame, 0, 0, 0, 0,
+    FWarpPointer(dpy, None, CF.frame, 0, 0, 0, 0,
 		 CF.max_width / 2, CF.total_height - 1);
   }
   myfprintf((stderr, "Map: got it\n"));

@@ -518,7 +518,7 @@ FvwmWindow *get_pointer_fvwm_window(void)
 	Window ancestor;
 	FvwmWindow *t;
 
-	if (XQueryPointer(
+	if (FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &win, &JunkX, &JunkY,
 		    &x, &y, &JunkMask) == False)
 	{
@@ -567,7 +567,7 @@ Time get_server_time(void)
 	XChangeProperty(
 		dpy, Scr.NoFocusWin, XA_WM_CLASS, XA_STRING, 8, PropModeAppend,
 		NULL, 0);
-	XWindowEvent(dpy, Scr.NoFocusWin, PropertyChangeMask, &xev);
+	FWindowEvent(dpy, Scr.NoFocusWin, PropertyChangeMask, &xev);
 	attr.event_mask = XEVMASK_NOFOCUSW;
 	XChangeWindowAttributes(dpy, Scr.NoFocusWin, CWEventMask, &attr);
 	StashEventTime(&xev);

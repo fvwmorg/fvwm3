@@ -121,7 +121,7 @@ void fvwmlib_keyboard_shortcuts(
     int x_def_new = 0;
     int y_def_new = 0;
 
-    if (XQueryPointer(
+    if (FQueryPointer(
 	  dpy, RootWindow(dpy, screen), &JunkRoot, &Event->xany.window,
 	  &x_root, &y_root, &x, &y, &JunkMask) == False)
     {
@@ -182,7 +182,7 @@ void fvwmlib_keyboard_shortcuts(
     }
     if (x_move || y_move)
     {
-      XWarpPointer(dpy, None, RootWindow(dpy, screen), 0, 0, 0, 0,
+      FWarpPointer(dpy, None, RootWindow(dpy, screen), 0, 0, 0, 0,
 		   x_root + x_move, y_root + y_move);
     }
     /* beat up the event */
@@ -241,7 +241,7 @@ void fvwmlib_get_target_window(
 
   while (!finished && !canceled)
   {
-    XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+    FMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
 		   KeyPressMask | KeyReleaseMask, &eventp);
     switch (eventp.type)
     {

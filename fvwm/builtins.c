@@ -36,9 +36,9 @@
 #include "libs/setpgrp.h"
 #include "libs/FShape.h"
 #include "libs/Flocale.h"
-#include <libs/gravity.h>
-#include <libs/Picture.h>
-#include <libs/PictureUtils.h>
+#include "libs/gravity.h"
+#include "libs/Picture.h"
+#include "libs/PictureUtils.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "colorset.h"
@@ -1715,7 +1715,7 @@ void CMD_CursorMove(F_CMD_ARGS)
 		fvwm_msg(ERR, "movecursor", "CursorMove needs 2 arguments");
 		return;
 	}
-	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+	if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 			  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
 	{
 		/* pointer is on a different screen */
@@ -1788,7 +1788,7 @@ void CMD_CursorMove(F_CMD_ARGS)
 		y = pan_y;
 	}
 
-	XWarpPointer(dpy, None, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+	FWarpPointer(dpy, None, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 		     Scr.MyDisplayHeight, x, y);
 	return;
 }
@@ -3215,7 +3215,7 @@ void CMD_FakeClick(F_CMD_ARGS)
 	int maxdepth = 0;
 
 	/* get the mask of pressed/released buttons */
-	if (XQueryPointer(
+	if (FQueryPointer(
 		    dpy, Scr.Root, &root, &JunkRoot, &JunkX, &JunkY, &JunkX,
 		    &JunkY, &mask) == False)
 	{
@@ -3263,7 +3263,7 @@ void CMD_FakeClick(F_CMD_ARGS)
 				     depth++)
 				{
 					w = child_w;
-					if (XQueryPointer(
+					if (FQueryPointer(
 						    dpy, w, &root, &child_w,
 						    &rx, &ry, &x, &y,
 						    &JunkMask) == False)
@@ -3295,7 +3295,7 @@ void CMD_FakeClick(F_CMD_ARGS)
 				e.xbutton.button = val;
 				e.xbutton.state = mask;
 				e.xbutton.same_screen = (Scr.Root == root);
-				XSendEvent(
+				FSendEvent(
 					dpy, PointerWindow, True,
 					SubstructureNotifyMask | add_mask, &e);
 				XFlush(dpy);
@@ -3320,7 +3320,7 @@ void CMD_FakeClick(F_CMD_ARGS)
 			if (val > 0 && val <= 1000000)
 			{
 				usleep(1000 * val);
-				if (XQueryPointer(
+				if (FQueryPointer(
 					    dpy, Scr.Root, &root, &JunkRoot,
 					    &JunkX, &JunkY, &JunkX, &JunkY,
 					    &mask) == False)
@@ -3523,7 +3523,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	if (draw_motion)
 	{
 		MyXGrabServer(dpy);
-		if (XQueryPointer(
+		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &x[0], &y[0],
 			    &JunkX, &JunkY, &JunkMask) == False)
 		{
@@ -3538,7 +3538,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	while (!finished && !abort)
 	{
 		/* block until there is an event */
-		XMaskEvent(
+		FMaskEvent(
 			dpy,  ButtonPressMask | ButtonReleaseMask |
 			KeyPressMask | KeyReleaseMask | ButtonMotionMask |
 			PointerMotionMask, &e);
@@ -3554,7 +3554,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 			}
 			if (e.xany.window != Scr.Root)
 			{
-				if (XQueryPointer(
+				if (FQueryPointer(
 					    dpy, Scr.Root, &JunkRoot,
 					    &JunkChild, &tmpx, &tmpy, &JunkX,
 					    &JunkY, &JunkMask) == False)

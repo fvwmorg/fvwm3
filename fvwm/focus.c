@@ -512,7 +512,7 @@ static void warp_to_fvwm_window(
 				(t->frame_g.height - 1) * (100 + warp_y) / 100;
 		}
 	}
-	XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
+	FWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, x, y);
 	RaiseWindow(t);
 
 	/* If the window is still not visible, make it visible! */
@@ -523,7 +523,7 @@ static void warp_to_fvwm_window(
 	{
 		frame_setup_window(
 			t, 0, 0, t->frame_g.width, t->frame_g.height, False);
-		XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2, 2);
+		FWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2, 2);
 	}
 
 	return;
@@ -678,7 +678,7 @@ static void __activate_window_by_command(
 			if (FP_DO_WARP_POINTER_ON_FOCUS_FUNC(
 				    FW_FOCUS_POLICY(fw)))
 			{
-				XWarpPointer(
+				FWarpPointer(
 					dpy, None, Scr.Root, 0, 0, 0, 0, 2, 2);
 			}
 		}
@@ -1053,7 +1053,7 @@ void focus_grab_buttons_on_pointer_window(void)
 	Window w;
 	FvwmWindow *fw;
 
-	if (!XQueryPointer(
+	if (!FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &w, &JunkX, &JunkY, &JunkX,
 		    &JunkY, &JunkMask))
 	{
@@ -1265,7 +1265,7 @@ void CMD_WarpToWindow(F_CMD_ARGS)
 				y += wh;
 			}
 		}
-		XWarpPointer(dpy, None, w, 0, 0, 0, 0, x, y);
+		FWarpPointer(dpy, None, w, 0, 0, 0, 0, x, y);
 	}
 
 	return;

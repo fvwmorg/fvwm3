@@ -74,8 +74,8 @@ void ReadXServer ()
   static unsigned char buf[10];         /* unsigned for international */
   static int n;
 
-  while (XEventsQueued(dpy, QueuedAfterReading)) {
-    XNextEvent(dpy, &event);
+  while (FEventsQueued(dpy, QueuedAfterReading)) {
+    FNextEvent(dpy, &event);
     if (event.xany.window == CF.frame) {
       switch (event.type) {
       case ConfigureNotify:             /* has window be reconfigured */
@@ -102,7 +102,7 @@ void ReadXServer ()
 	break;
 #endif
       case Expose:
-	while (XCheckTypedWindowEvent(dpy, CF.frame, Expose, &event));
+	while (FCheckTypedWindowEvent(dpy, CF.frame, Expose, &event));
 	if (event.xexpose.count != 0)
 	  break;
 	RedrawFrame();
@@ -705,7 +705,7 @@ static void ResizeFrame (void) {
   int x, y;
   unsigned int border, depth, width, height;
   /* get anything queued */
-  while (XCheckTypedWindowEvent(dpy, CF.frame, ConfigureNotify, &dummy))
+  while (FCheckTypedWindowEvent(dpy, CF.frame, ConfigureNotify, &dummy))
     ;
   XGetGeometry(dpy, CF.frame, &root, &x, &y, &width, &height, &border, &depth);
   if (width != CF.max_width) {

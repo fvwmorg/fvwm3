@@ -100,7 +100,7 @@ Xloop(void)
     XWindowAttributes xatt;
 
     /* Sit and wait for an event to happen */
-    XNextEvent(dpy,&ev);
+    FNextEvent(dpy,&ev);
     switch(ev.type)
     {
     case ConfigureNotify:

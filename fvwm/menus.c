@@ -34,7 +34,13 @@
 #include <assert.h>
 #include <X11/keysym.h>
 
-#include <libs/fvwmlib.h>
+#include "libs/fvwmlib.h"
+#include "libs/FScreen.h"
+#include "libs/Flocale.h"
+#include "libs/gravity.h"
+#include "libs/Picture.h"
+#include "libs/PictureUtils.h"
+#include "libs/PictureGraphics.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "events.h"
@@ -51,12 +57,6 @@
 #include "decorations.h"
 #include "colorset.h"
 #include "defaults.h"
-#include "libs/FScreen.h"
-#include "libs/Flocale.h"
-#include <libs/gravity.h>
-#include "libs/Picture.h"
-#include "libs/PictureUtils.h"
-#include "libs/PictureGraphics.h"
 #include "geometry.h"
 #include "borders.h"
 #include "frame.h"
@@ -316,7 +316,7 @@ static Bool pointer_in_passive_item_area(int x_offset, MenuRoot *mr)
 
 static void warp_pointer_to_title(MenuRoot *mr)
 {
-	XWarpPointer(
+	FWarpPointer(
 		dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
 		menudim_middle_x_offset(&MR_DIM(mr)),
 		menuitem_middle_y_offset(MR_FIRST_ITEM(mr), MR_STYLE(mr)));
@@ -343,7 +343,7 @@ static MenuItem *warp_pointer_to_item(
 	{
 		return mi;
 	}
-	XWarpPointer(
+	FWarpPointer(
 		dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
 		menudim_middle_x_offset(&MR_DIM(mr)),
 		menuitem_middle_y_offset(mi, MR_STYLE(mr)));
@@ -473,7 +473,7 @@ static MenuItem *find_entry(
 	MenuParameters *pmp,
 	int *px_offset /*NULL means don't return this value */,
 	MenuRoot **pmr /*NULL means don't return this value */,
-	/* values passed in from caller it XQueryPointer was already called
+	/* values passed in from caller it FQueryPointer was already called
 	 * there */
 	Window p_child, int p_rx, int p_ry)
 {
@@ -497,7 +497,7 @@ static MenuItem *find_entry(
 	/* get the pointer position */
 	if (p_rx < 0)
 	{
-		if (!XQueryPointer(dpy, Scr.Root, &JunkRoot, &Child,
+		if (!FQueryPointer(dpy, Scr.Root, &JunkRoot, &Child,
 				   &root_x, &root_y, &JunkX, &JunkY, &JunkMask))
 		{
 			/* pointer is on a different screen */
@@ -1029,7 +1029,7 @@ static void menuShortcuts(
 			    &menu_height,
 			    &JunkBW, &JunkDepth))
 		{
-			if (XQueryPointer(
+			if (FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild,
 				    &mx, &my, &JunkX, &JunkY, &JunkMask) ==
 			    False)
@@ -1190,7 +1190,7 @@ static void menuShortcuts(
 
 	case SA_WARPBACK:
 		/* Warp the pointer back into the menu. */
-		XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
+		FWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
 			     menudim_middle_x_offset(&MR_DIM(mr)), my - menu_y);
 		*pmiCurrent = find_entry(pmp, NULL, NULL, None, -1, -1);
 		pmret->rc = MENU_NEWITEM;
@@ -3313,7 +3313,7 @@ static void select_menu_item(
 				XSetGraphicsExposures(
 					dpy, MST_MENU_GC(mr), True);
 				XSync(dpy, 0);
-				while (XCheckTypedEvent(dpy, NoExpose, &e))
+				while (FCheckTypedEvent(dpy, NoExpose, &e))
 				{
 					/* nothing to do here */
 				}
@@ -3323,7 +3323,7 @@ static void select_menu_item(
 					MST_MENU_GC(mr), MST_BORDER_WIDTH(mr),
 					iy, mw, ih, 0, 0);
 				XSync(dpy, 0);
-				if (XCheckTypedEvent(dpy, NoExpose, &e))
+				if (FCheckTypedEvent(dpy, NoExpose, &e))
 				{
 					MR_STORED_ITEM(mr).y = iy;
 					MR_STORED_ITEM(mr).width = mw;
@@ -3789,7 +3789,7 @@ static int pop_menu_up(
 			{
 				/* use current cx/cy */
 			}
-			else if (XQueryPointer(
+			else if (FQueryPointer(
 					 dpy, Scr.Root, &JunkRoot, &JunkChild,
 					 &cx, &cy, &JunkX, &JunkY, &JunkMask))
 			{
@@ -4395,7 +4395,7 @@ static void __mloop_init(
 	pmret->rc = MENU_NOP;
 	memset(pops, 0, sizeof(*pops));
 	/* remember where the pointer was so we can tell if it has moved */
-	if (XQueryPointer(
+	if (FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, &(msi->x_init),
 		    &(msi->y_init), &JunkX, &JunkY, &JunkMask) == False)
 	{
@@ -4414,7 +4414,7 @@ static void __mloop_get_event_timeout_loop(
 	MenuParameters *pmp,
 	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
 {
-	while (!XPending(dpy) || !XCheckMaskEvent(dpy, msi->event_mask, &Event))
+	while (!FPending(dpy) || !FCheckMaskEvent(dpy, msi->event_mask, &Event))
 	{
 		Bool is_popup_timed_out =
 			(MST_POPUP_DELAY(pmp->menu) > 0 &&
@@ -4537,7 +4537,7 @@ static mloop_ret_code_t __mloop_get_event(
 		{
 			/* since the pointer has been warped since the key was
 			 * pressed, fake a different key press position */
-			if (XQueryPointer(
+			if (FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &JunkChild,
 				    &Event.xkey.x_root, &Event.xkey.y_root,
 				    &JunkX, &JunkY, &JunkMask) == False)
@@ -4550,7 +4550,7 @@ static mloop_ret_code_t __mloop_get_event(
 		}
 	} /* in->mif.do_recycle_event */
 	else if (pmp->tear_off_root_menu_window != NULL &&
-		 XCheckTypedWindowEvent(
+		 FCheckTypedWindowEvent(
 			 dpy, FW_W_PARENT(pmp->tear_off_root_menu_window),
 			 ClientMessage, &Event))
 	{
@@ -4566,7 +4566,7 @@ static mloop_ret_code_t __mloop_get_event(
 			in->mif.do_force_reposition = False;
 			in->mif.is_popped_up_by_timeout = False;
 		}
-		else if (!XCheckMaskEvent(dpy,ExposureMask,&Event))
+		else if (!FCheckMaskEvent(dpy,ExposureMask,&Event))
 		{
 			Bool is_popdown_timer_active = False;
 			Bool is_popup_timer_active = False;
@@ -4594,7 +4594,7 @@ static mloop_ret_code_t __mloop_get_event(
 			else
 			{
 				/* block until there is an event */
-				XMaskEvent(dpy, msi->event_mask, &Event);
+				FMaskEvent(dpy, msi->event_mask, &Event);
 				in->mif.is_popped_up_by_timeout = False;
 			}
 		}
@@ -4609,7 +4609,7 @@ static mloop_ret_code_t __mloop_get_event(
 	if (Event.type == MotionNotify)
 	{
 		/* discard any extra motion events before a release */
-		while ((XCheckMaskEvent(
+		while ((FCheckMaskEvent(
 				dpy,ButtonMotionMask | ButtonReleaseMask,
 				&Event)) &&
 		       (Event.type != ButtonRelease))
@@ -4839,7 +4839,7 @@ static mloop_ret_code_t __mloop_handle_event(
 
 		if (in->mif.has_mouse_moved == False)
 		{
-			if (XQueryPointer(
+			if (FQueryPointer(
 				    dpy, Scr.Root, &JunkRoot, &p_child, &p_rx,
 				    &p_ry, &JunkX, &JunkY, &JunkMask) == False)
 			{
@@ -4923,7 +4923,7 @@ static mloop_ret_code_t __mloop_handle_event(
 			pmret->rc = MENU_KILL_TEAR_OFF_MENU;
 			/* extra safety: pass event back to main event loop to
 			 * make sure the is destroyed */
-			XPutBackEvent(dpy, in->e);
+			FPutBackEvent(dpy, in->e);
 			return MENU_MLOOP_RET_END;
 		}
 		break;
@@ -5564,7 +5564,7 @@ static mloop_ret_code_t __mloop_handle_action_without_mi(
 		int x, y, mx, my;
 		unsigned int mw, mh;
 
-		if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 				  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
 		{
 			/* pointer is on a different screen */
@@ -6144,7 +6144,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	pmret->rc = MENU_NOP;
 	if (pmp->flags.is_sticky && !pmp->flags.is_submenu)
 	{
-		XCheckTypedEvent(dpy, ButtonPressMask, &tmpevent);
+		FCheckTypedEvent(dpy, ButtonPressMask, &tmpevent);
 	}
 	if (pmp->menu == NULL)
 	{
@@ -6156,7 +6156,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 
 	/* Try to pick a root-relative optimal x,y to
 	 * put the mouse right on the title w/o warping */
-	if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+	if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 			  &x, &y, &JunkX, &JunkY, &JunkMask) == False)
 	{
 		/* pointer is on a different screen */
@@ -6375,7 +6375,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 			 * brought up with a keypress and we're returning from
 			 * a top level menu, and a button release event didn't
 			 * end it */
-			XWarpPointer(dpy, 0, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+			FWarpPointer(dpy, 0, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 				     Scr.MyDisplayHeight, x_start, y_start);
 			if (Event.type == KeyPress)
 			{
@@ -7449,7 +7449,7 @@ char *get_menu_options(
 				  &JunkChild)))
 		{
 			/* no window or could not get geometry */
-			if (XQueryPointer(
+			if (FQueryPointer(
 				    dpy,Scr.Root, &JunkRoot, &JunkChild, &x,
 				    &y, &JunkX, &JunkY, &JunkMask) == False)
 			{

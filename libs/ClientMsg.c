@@ -21,16 +21,16 @@ Atom _XA_WM_PROTOCOLS = None;
 
 void send_clientmessage (Display *disp, Window w, Atom a, Time timestamp)
 {
-  XClientMessageEvent ev;
+	XClientMessageEvent ev;
 
-  if (_XA_WM_PROTOCOLS == None)
-    _XA_WM_PROTOCOLS = XInternAtom(disp, "WM_PROTOCOLS", False);
+	if (_XA_WM_PROTOCOLS == None)
+		_XA_WM_PROTOCOLS = XInternAtom(disp, "WM_PROTOCOLS", False);
 
-  ev.type = ClientMessage;
-  ev.window = w;
-  ev.message_type = _XA_WM_PROTOCOLS;
-  ev.format = 32;
-  ev.data.l[0] = a;
-  ev.data.l[1] = timestamp;
-  XSendEvent (disp, w, False, 0L, (XEvent *) &ev);
+	ev.type = ClientMessage;
+	ev.window = w;
+	ev.message_type = _XA_WM_PROTOCOLS;
+	ev.format = 32;
+	ev.data.l[0] = a;
+	ev.data.l[1] = timestamp;
+	FSendEvent(disp, w, False, 0L, (XEvent *) &ev);
 }

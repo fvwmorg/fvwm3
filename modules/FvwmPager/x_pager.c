@@ -131,7 +131,7 @@ static void discard_events(long event_type, Window w, XEvent *last_ev)
   XEvent e;
 
   XSync(dpy, 0);
-  while (XCheckTypedWindowEvent(dpy, w, event_type, &e))
+  while (FCheckTypedWindowEvent(dpy, w, event_type, &e))
   {
     /* do nothing */
     if (last_ev)
@@ -1006,7 +1006,7 @@ void DispatchEvent(XEvent *Event)
       {
 	if(Event->xany.window == Desks[i].w)
 	{
-	  if (XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
+	  if (FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask) == False)
 	  {
 	    /* pointer is on a different screen - that's okay here */
@@ -1016,7 +1016,7 @@ void DispatchEvent(XEvent *Event)
       }
       if(Event->xany.window == icon_win)
       {
-	if (XQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
+	if (FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			  &JunkX, &JunkY,&x, &y, &JunkMask) == False)
 	{
 	  /* pointer is on a different screen - that's okay here */
@@ -1062,7 +1062,7 @@ void DispatchEvent(XEvent *Event)
       {
 	if(Event->xany.window == Desks[i].w)
 	{
-	  if (XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
+	  if (FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask) == False)
 	  {
 	    /* pointer is on a different screen - that's okay here */
@@ -1078,7 +1078,7 @@ void DispatchEvent(XEvent *Event)
       }
       if(Event->xany.window == icon_win)
       {
-	if (XQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
+	if (FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			  &JunkX, &JunkY,&x, &y, &JunkMask) == False)
 	{
 	  /* pointer is on a different screen - that's okay here */
@@ -1089,7 +1089,7 @@ void DispatchEvent(XEvent *Event)
     break;
   case MotionNotify:
     do_ignore_next_button_release = False;
-    while(XCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask,Event))
+    while(FCheckMaskEvent(dpy, PointerMotionMask | ButtonMotionMask,Event))
       ;
 
     if(Event->xmotion.state & Button3MotionMask)
@@ -1098,7 +1098,7 @@ void DispatchEvent(XEvent *Event)
       {
 	if(Event->xany.window == Desks[i].w)
 	{
-	  if (XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
+	  if (FQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 			    &JunkX, &JunkY,&x, &y, &JunkMask) == False)
 	  {
 	    /* pointer is on a different screen - that's okay here */
@@ -1108,7 +1108,7 @@ void DispatchEvent(XEvent *Event)
       }
       if(Event->xany.window == icon_win)
       {
-	if (XQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
+	if (FQueryPointer(dpy, icon_win, &JunkRoot, &JunkChild,
 			  &JunkX, &JunkY,&x, &y, &JunkMask) == False)
 	{
 	  /* pointer is on a different screen - that's okay here */
@@ -2081,7 +2081,7 @@ void MoveWindow(XEvent *Event)
   yi = y1;
   while(!finished)
   {
-    XMaskEvent(dpy,ButtonReleaseMask | ButtonMotionMask|ExposureMask,Event);
+    FMaskEvent(dpy,ButtonReleaseMask | ButtonMotionMask|ExposureMask,Event);
 
     if(Event->type == MotionNotify)
     {
@@ -2137,7 +2137,7 @@ void MoveWindow(XEvent *Event)
       XDestroyWindow(dpy,t->PagerView);
       t->PagerView = None;
     }
-    if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+    if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		      &x, &y, &JunkX, &JunkY, &JunkMask) == False)
     {
       /* pointer is on a different screen */
@@ -2521,7 +2521,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 			Event->xbutton.x, Event->xbutton.y, &x1, &y1, &dumwin);
   while(!finished)
   {
-    XMaskEvent(dpy,ButtonReleaseMask | ButtonMotionMask|ExposureMask,Event);
+    FMaskEvent(dpy,ButtonReleaseMask | ButtonMotionMask|ExposureMask,Event);
 
     if(Event->type == MotionNotify)
     {
@@ -2566,7 +2566,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
   {
     char command[48];
 
-    if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+    if (FQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		      &x, &y, &JunkX, &JunkY, &JunkMask) == False)
     {
       /* pointer is on a different screen */

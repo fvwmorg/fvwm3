@@ -53,7 +53,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
 #include "libs/FScreen.h"
-#include <libs/gravity.h>
+#include "libs/gravity.h"
 #include "libs/Picture.h"
 #include "fvwm.h"
 #include "externs.h"
@@ -2285,7 +2285,7 @@ FvwmWindow *AddWindow(
 	/****** resize window ******/
 	if (do_resize_too)
 	{
-		XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
+		FWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 			     Scr.MyDisplayHeight,
 			     fw->frame_g.x + (fw->frame_g.width>>1),
 			     fw->frame_g.y + (fw->frame_g.height>>1));

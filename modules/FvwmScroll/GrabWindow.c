@@ -215,8 +215,8 @@ void Loop(Window target)
     FD_SET(x_fd, &fdset);
 
     /* process all X events first */
-    while (XPending(dpy)) {
-      XNextEvent(dpy,&Event);
+    while (FPending(dpy)) {
+      FNextEvent(dpy,&Event);
       switch(Event.type)
       {
       case Expose:
@@ -590,7 +590,7 @@ void RedrawWindow(Window target)
   int x,y,w,h;
   XEvent dummy;
 
-  while (XCheckTypedWindowEvent (dpy, main_win, Expose, &dummy))
+  while (FCheckTypedWindowEvent(dpy, main_win, Expose, &dummy))
     exposed |= 1;
 
   XSetWindowBorderWidth(dpy,target,0);

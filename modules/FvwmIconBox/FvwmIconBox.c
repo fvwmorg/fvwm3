@@ -671,7 +671,7 @@ void RedrawWindow(void)
 {
   XEvent dummy;
 
-  while (XCheckTypedWindowEvent (dpy, main_win, Expose, &dummy));
+  while (FCheckTypedWindowEvent(dpy, main_win, Expose, &dummy));
 
   RelieveRectangle(dpy, main_win, margin1, margin1, Width + 3,
 		   Height + 3, ShadowGC, ReliefGC, 2);
@@ -681,8 +681,9 @@ void RedrawWindow(void)
   if (!(local_flags & HIDE_V))
     RelieveRectangle(dpy, main_win, margin1 + 4 + Width + margin2, margin1,
 		     bar_width + 3, Height + 3, ShadowGC, ReliefGC, 2);
-  RelieveRectangle(dpy, main_win, 0, 0, Width -1 + h_margin, Height -1 + v_margin,
-		   ReliefGC, ShadowGC, 2);
+  RelieveRectangle(
+	  dpy, main_win, 0, 0, Width -1 + h_margin, Height -1 + v_margin,
+	  ReliefGC, ShadowGC, 2);
 
   /* scroll bar */
   if (!(local_flags & HIDE_H))
@@ -2226,9 +2227,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   fd_set in_fdset;
   static int miss_counter = 0;
 
-  if(XPending(dpy))
+  if(FPending(dpy))
     {
-      XNextEvent(dpy,event);
+      FNextEvent(dpy,event);
       return 1;
     }
 
@@ -2241,9 +2242,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
     if(FD_ISSET(x_fd, &in_fdset))
     {
-      if(XPending(dpy))
+      if(FPending(dpy))
 	{
-	  XNextEvent(dpy,event);
+	  FNextEvent(dpy,event);
 	  miss_counter = 0;
 	  return 1;
 	}
@@ -3025,7 +3026,7 @@ static int CheckActionType(
       do_sleep = 1;
     }
     total += 20;
-    if (XCheckMaskEvent(dpy, ButtonReleaseMask|ButtonMotionMask|
+    if (FCheckMaskEvent(dpy, ButtonReleaseMask|ButtonMotionMask|
 			PointerMotionMask|ButtonPressMask|ExposureMask, d))
     {
       do_sleep = 0;

@@ -711,7 +711,7 @@ void Loop(void)
 			    )
 			    break; */
 
-	  if (XQueryPointer(
+	  if (FQueryPointer(
 		dpy, main_win, &dummy_rt, &dummy_c, &dummy_x, &dummy_y,
 		&pos_x, &pos_y, &dummy) == False)
 	  {
@@ -1312,7 +1312,7 @@ void RedrawWindow(Window *win, int firstbutton, int newbutton,
   if(ready < 1)
     return;
 
-  while (XCheckTypedWindowEvent (dpy, *win, Expose, &dummy));
+  while (FCheckTypedWindowEvent(dpy, *win, Expose, &dummy));
 
   for(i=0;i<num_rows;i++)
     for(j=0;j<num_columns; j++)
@@ -2131,9 +2131,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   fd_set in_fdset;
   static int miss_counter = 0;
 
-  if(XPending(dpy))
+  if(FPending(dpy))
   {
-    XNextEvent(dpy,event);
+    FNextEvent(dpy,event);
     return 1;
   }
 
@@ -2146,9 +2146,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   if(FD_ISSET(x_fd, &in_fdset))
   {
-    if(XPending(dpy))
+    if(FPending(dpy))
     {
-      XNextEvent(dpy,event);
+      FNextEvent(dpy,event);
       miss_counter = 0;
       return 1;
     }
@@ -2353,7 +2353,7 @@ void my_send_clientmessage (Window w, Atom a, Time timestamp)
   ev.format = 32;
   ev.data.l[0] = a;
   ev.data.l[1] = timestamp;
-  XSendEvent (dpy, w, False, 0L, (XEvent *) &ev);
+  FSendEvent(dpy, w, False, 0L, (XEvent *) &ev);
 }
 
 
