@@ -1108,7 +1108,7 @@ static void MapDesk(int desk, Bool grab)
     /*  Otherwise, handle remembering the last-focused clicky window.  */
     if (FocusWin && (HAS_CLICK_FOCUS(FocusWin) || HAS_SLOPPY_FOCUS(FocusWin)))
     {
-      SetFocusWindow(FocusWin, 1);
+      ReturnFocusWindow(FocusWin, 1);
     }
     else if (FocusWin && !HAS_NEVER_FOCUS(FocusWin))
     {
@@ -1138,7 +1138,6 @@ void CMD_Desk(F_CMD_ARGS)
 
 void goto_desk(int desk)
 {
-
   /*
     RBW - the unmapping operations are now removed to their own functions so
     they can also be used by the new GoToDeskAndPage command.

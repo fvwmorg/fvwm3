@@ -2120,19 +2120,22 @@ static void MenuInteraction(
 	    }
 	    MR_SUBMENU_ITEM(pmp->menu) = mi;
 	  }
-	  if (flags.do_popdown)
+	} /* else (mrPopup) */
+	if (flags.do_popdown)
+	{
+	  if (mrPopdown)
 	  {
-	    if (mrPopdown)
+	    if (mrPopdown != mrPopup)
 	    {
-	      if (mrPopdown != mrPopup)
-	      {
-		pop_menu_down_and_repaint_parent(
-		  &mrPopdown, &does_popdown_submenu_overlap, pmp);
-	      }
-	      mrPopdown = NULL;
+	      pop_menu_down_and_repaint_parent(
+		&mrPopdown, &does_popdown_submenu_overlap, pmp);
 	    }
-	    flags.do_popdown = False;
+	    mrPopdown = NULL;
 	  }
+	  flags.do_popdown = False;
+	}
+	if (mrPopup)
+	{
 	  if (MR_PARENT_MENU(mrPopup) == pmp->menu)
 	  {
 	    mi = find_entry(NULL, &mrMi);
@@ -2151,7 +2154,7 @@ static void MenuInteraction(
 	    flags.do_popdown = False;
 	    mrPopup = NULL;
 	  }
-	} /* if (!mrPopup) */
+	} /* if (mrPopup) */
       } /* if (flags.do_popup) */
       /* remember the 'posted' menu */
       if (pmret->flags.is_menu_posted && mrPopup != NULL &&
@@ -2242,6 +2245,16 @@ static void MenuInteraction(
       {
 	/* we have to see if we need menu to be moved */
 	animated_move_back(pmp->menu, True);
+	  if (mrPopdown)
+	  {
+	    if (mrPopdown != mrPopup)
+	    {
+	      pop_menu_down_and_repaint_parent(
+		&mrPopdown, &does_popdown_submenu_overlap, pmp);
+	    }
+	    mrPopdown = NULL;
+	  }
+	  flags.do_popdown = False;
       }
 
     } /* if (mi) */

@@ -1,5 +1,12 @@
 2001-03-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (MenuInteraction):
+	fixed PopdownDelay when entering a menu item with a non existent sub
+	menu
+
+	* fvwm/virtual.c (MapDesk):
+	return focus to window on other desk when switching desks
+
 	* fvwm/borders.c (DrawButton):
 	fixed core dump
 
