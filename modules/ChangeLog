@@ -1,3 +1,14 @@
+2001-03-06  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmAnimate/FvwmAnimate.c:
+	use a new module syntax
+
+	* FvwmCommand/findcmd:
+	protect "exec" and "echo" functions
+
+	* FvwmScript/Scripts/Makefile.am:
+	clean up FvwmScript-Setup95 on "make clean"
+
 2001-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (Loop):

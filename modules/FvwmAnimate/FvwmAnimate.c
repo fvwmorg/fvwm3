@@ -1349,16 +1349,16 @@ Save not done! Error\n",
   fprintf(config_file,"# This file created by %s\n\n",MyName+1);
   for (i=0; i < NUM_EFFECTS; i++) {
     if (effects[i].function == Animate.resize) {
-      fprintf(config_file,"*%sEffect %s\n",MyName+1,effects[i].name);
+      fprintf(config_file,"*%s: Effect %s\n",MyName+1,effects[i].name);
       break;
     } /* found match */
   } /* all possible effects */
-  fprintf(config_file,"*%sIterations %d\n",MyName+1,Animate.iterations);
-  fprintf(config_file,"*%sWidth %d\n",MyName+1,Animate.width);
-  fprintf(config_file,"*%sTwist %f\n",MyName+1,Animate.twist);
-  fprintf(config_file,"*%sDelay %d\n",MyName+1,Animate.delay);
+  fprintf(config_file,"*%s: Iterations %d\n",MyName+1,Animate.iterations);
+  fprintf(config_file,"*%s: Width %d\n",MyName+1,Animate.width);
+  fprintf(config_file,"*%s: Twist %f\n",MyName+1,Animate.twist);
+  fprintf(config_file,"*%s: Delay %d\n",MyName+1,Animate.delay);
   if (Animate.color) {
-    fprintf(config_file,"*%sColor %s\n",MyName+1,Animate.color);
+    fprintf(config_file,"*%s: Color %s\n",MyName+1,Animate.color);
   }
   /* Note, add "time" if that ever works. dje. 10/14/98 */
   fclose(config_file);

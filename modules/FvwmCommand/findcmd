@@ -30,9 +30,12 @@ awk 'BEGIN { OFS=""; }
     /func_type.*\[\]/,/""/ {
         if ( $0 ~ /\{ *"[a-zA-Z_]/ ) {
 	  split ( $0, a, "\"" );
-	  if ( a[2] == "function" ) { a[2] = "_function"; }
-	  if ( a[2] == "wait" )     { a[2] = "_wait"; }
-	  print  a[2]," () {"
+	  cmd = a[2];
+	  if ( cmd == "function" ) { cmd = "_function"; }
+	  if ( cmd == "wait" )     { cmd = "_wait"; }
+	  if ( cmd == "exec" )     { cmd = "_exec"; }
+	  if ( cmd == "echo" )     { cmd = "_echo"; }
+	  print  cmd, " () {"
 	  print  "	FvwmCommand \"", a[2], " $*\""
 	  print  "}" ;
         }
