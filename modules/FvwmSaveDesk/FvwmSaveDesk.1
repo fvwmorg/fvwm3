@@ -40,7 +40,7 @@ option to prefix all builtins with 'm4_'. FvwmM4 can be called with
 option -m4-prefix and then will provide the option -P to M4.
 I personally use the FvwmM4 module this way.
 
-fvwm2 -f "FvwmM4 -m4-prefix -m4opt -I$HOME $HOME/.fvwm2rc"
+fvwm2 -cmd "FvwmM4 -m4-prefix -m4opt -I$HOME $HOME/.fvwm2rc"
 
 Simply add the following line to the end of .fvwm2rc:
 
@@ -51,7 +51,7 @@ With the FVWMCPP you may have the problem that the preprocessor
 directives starts with the comment charakter '#' and will
 complain about unknown directives, if you have comments in your .fvwm2rc.
 
-fvwm2 -f "FvwmCpp -C-I$HOME $HOME/.fvwm2rc"
+fvwm2 -cmd "FvwmCpp -C-I$HOME $HOME/.fvwm2rc"
 
 Simply add the following line to the end of .fvwm2rc:
 

@@ -23,4 +23,4 @@ if [ -f $usermodmap ]; then
     xmodmap $usermodmap
 fi
 
-fvwm2 -f "FvwmM4 -m4-prefix -m4opt -I$HOME $HOME/.fvwm2rc"
+fvwm2 -cmd "FvwmM4 -m4-prefix -m4opt -I$HOME $HOME/.fvwm2rc"

@@ -1,3 +1,11 @@
+Sat Mar 13 10:05:52 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmM4/FvwmM4.c: fix bad interaction between -m4-prefix and
+	-m4-[e|s]quotes. 
+	* modules/FvwmSaveDesk/FvwmSaveDesk.1:
+	* modules/FvwmSaveDesk/example/xinitrc: fvwm2 -f "FvwmM4 ..."
+	should be fvwm2 -cmd "FvwmM4 ..."
+
 1999-03-12  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (main): fixed coredump
