@@ -1,3 +1,9 @@
+1999-12-22  Mikhael Goikhman  <migo@homemail.com>
+
+	fvwm/menus.c (menuShortcuts): added XK_ISO_Left_Tab (like XK_Tab),
+	{Ctrl,Alt}-{Up,Down} bindings synchronized with [Shift-]{Ctrl,Alt}-Tab,
+	some regrouping of 'case' sections
+
 1999-12-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/ColorUtils.c (GetShadowColor):

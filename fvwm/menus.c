@@ -933,6 +933,7 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
   /* to understand the following, pay attention to the fall thrus in the
      switch statement, and how "items_to_move" affects the flow. */
   items_to_move = 0;
+
   switch(keysym)		/* Other special keyboard handling	*/
   {
   case XK_Escape:		/* Escape key pressed. Abort		*/
@@ -945,28 +946,6 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
   case XK_Return:
   case XK_KP_Enter:
     pmret->rc = MENU_SELECTED;
-    return;
-
-  case XK_Left:
-  case XK_KP_4:
-    if (MST_USE_LEFT_SUBMENUS(mr))
-    {
-      if (miCurrent && MI_IS_POPUP(miCurrent))
-      {
-	pmret->rc = MENU_POPUP;
-	return;
-      }
-    }
-    else
-    {
-      pmret->rc = MENU_POPDOWN;
-      return;
-    }
-    break;
-
-  case XK_b: /* back */
-  case XK_h: /* vi left */
-    pmret->rc = MENU_POPDOWN;
     return;
 
   case XK_Insert:
@@ -995,7 +974,29 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
     pmret->rc = MENU_NOP;
     return;
 
-  case XK_Right:
+  case XK_Left: /* back or forward */
+  case XK_KP_4:
+    if (MST_USE_LEFT_SUBMENUS(mr))
+    {
+      if (miCurrent && MI_IS_POPUP(miCurrent))
+      {
+	pmret->rc = MENU_POPUP;
+	return;
+      }
+    }
+    else
+    {
+      pmret->rc = MENU_POPDOWN;
+      return;
+    }
+    break;
+
+  case XK_b: /* back */
+  case XK_h: /* vi left */
+    pmret->rc = MENU_POPDOWN;
+    return;
+
+  case XK_Right: /* forward or back */
   case XK_KP_6:
     if (!MST_USE_LEFT_SUBMENUS(mr))
     {
@@ -1025,21 +1026,30 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
   case XK_KP_9:
     items_to_move = -5;
     /* fall through */
+
+  case XK_Page_Down:
+  case XK_KP_3:
+    if (items_to_move == 0)
+    {
+      items_to_move = 5;
+    }
+    /* fall through */
+
   case XK_Up:
   case XK_KP_8:
   case XK_k: /* vi up */
   case XK_p: /* prior */
     if (items_to_move == 0)
     {
-      if (fControlKey)
-      {
-	items_to_move = -5;
-      }
-      else if (fShiftedKey)
+      if (fShiftedKey && !fControlKey && !fMetaKey)
       {
 	items_to_move = 0x80000000;
       }
-      else if (fMetaKey)
+      else if (fControlKey && fMetaKey)
+      {
+	items_to_move = -5;
+      }
+      else if (fControlKey)
       {
 	items_to_move = -1;
 	fSkipSection = True;
@@ -1050,14 +1060,37 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
       }
     }
     /* fall through */
-  case XK_Page_Down:
-  case XK_KP_3:
+
+  case XK_Down:
+  case XK_KP_2:
+  case XK_j: /* vi down */
+  case XK_n: /* next */
     if (items_to_move == 0)
     {
-      items_to_move = 5;
+      if (fShiftedKey && !fControlKey && !fMetaKey)
+      {
+	items_to_move = 0x7fffffff;
+      }
+      else if (fControlKey && fMetaKey)
+      {
+	items_to_move = 5;
+      }
+      else if (fControlKey)
+      {
+	items_to_move = 1;
+	fSkipSection = True;
+      }
+      else
+      {
+	items_to_move = 1;
+      }
     }
     /* fall through */
+
   case XK_Tab:
+  #ifdef XK_XKB_KEYS
+  case XK_ISO_Left_Tab:
+  #endif
     /* Tab added mostly for Winlist */
     if (items_to_move == 0)
     {
@@ -1065,7 +1098,7 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
       {
       case 1:
       case 3:
-	/* shift-meta-tab, shift-tab */
+	/* shift-tab, shift-meta-tab */
 	items_to_move = -1;
 	break;
       case 4:
@@ -1095,30 +1128,7 @@ static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
       }
     }
     /* fall through */
-  case XK_Down:
-  case XK_KP_2:
-  case XK_j: /* vi down */
-  case XK_n: /* next */
-    if (items_to_move == 0)
-    {
-      if (fControlKey)
-      {
-	items_to_move = 5;
-      }
-      else if (fShiftedKey)
-      {
-	items_to_move = 0x7fffffff;
-      }
-      else if (fMetaKey)
-      {
-	items_to_move = 1;
-	fSkipSection = True;
-      }
-      else
-      {
-	items_to_move = 1;
-      }
-    }
+
     if (!miCurrent)
     {
       XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
