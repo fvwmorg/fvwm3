@@ -1109,7 +1109,7 @@ void HandleConfigureRequest(void)
 		 * freak out. */
 		usleep(1);
 #endif
-		for (cn_count = 0; 1; cn_count++)
+		for (cn_count = 0; 1; )
 		{
 			unsigned long vma;
 			unsigned long vmo;
@@ -1182,6 +1182,7 @@ void HandleConfigureRequest(void)
 				cre->value_mask |= CWBorderWidth;
 				cre->border_width = ecre->border_width;
 			}
+			cn_count++;
 		}
 fprintf(stderr, "cn_count = %d\n", cn_count);
 #endif
