@@ -12,7 +12,7 @@
 
 */
 
-void RelieveWindow(Window,int,int,int,int,int,Pixel,Pixel,int);
+void RelieveButton(Window,int,int,int,int,int,Pixel,Pixel,int);
 void MakeButton(button_info*);
 void RedrawButton(button_info*,int);
 void DrawTitle(button_info*,Window,GC);

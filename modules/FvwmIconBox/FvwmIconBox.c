@@ -549,16 +549,16 @@ void RedrawWindow(void)
 
   while (XCheckTypedWindowEvent (dpy, main_win, Expose, &dummy));
 
-  RelieveWindow(main_win, margin1, margin1, Width + 4,
-		Height + 4, ShadowGC,ReliefGC);
+  RelieveRectangle(dpy, main_win, margin1, margin1, Width + 3,
+                   Height + 3, ShadowGC, ReliefGC, 2);
   if (!(local_flags & HIDE_H))
-    RelieveWindow(main_win, margin1, margin1 + 4 + Height + margin2,
-		  Width + 4, bar_width+4, ShadowGC,ReliefGC);
+    RelieveRectangle(dpy, main_win, margin1, margin1 + 4 + Height + margin2,
+		     Width + 3, bar_width + 3, ShadowGC, ReliefGC, 2);
   if (!(local_flags & HIDE_V))
-    RelieveWindow(main_win, margin1 + 4 + Width + margin2, margin1,
-		  bar_width+4, Height + 4, ShadowGC,ReliefGC);
-  RelieveWindow(main_win, 0, 0, Width + h_margin, Height + v_margin,
-		ReliefGC, ShadowGC);
+    RelieveRectangle(dpy, main_win, margin1 + 4 + Width + margin2, margin1,
+		     bar_width + 3, Height + 3, ShadowGC, ReliefGC, 2);
+  RelieveRectangle(dpy, main_win, 0, 0, Width -1 + h_margin, Height -1 + v_margin,
+		   ReliefGC, ShadowGC, 2);
 
   /* scroll bar */
   if (!(local_flags & HIDE_H))
@@ -625,15 +625,15 @@ void RedrawIcon(struct icon_info *item, int f)
       }
     if (!(item->flags & SHAPED_ICON)){
       if (item->icon_w > 0 && item->icon_h > 0)
-	RelieveWindow(item->icon_pixmap_w, 0, 0, item->icon_w
-		      +icon_relief,
-		      item->icon_h + icon_relief, IconReliefGC,
-		      IconShadowGC);
+	RelieveRectangle(dpy, item->icon_pixmap_w, 0, 0, item->icon_w
+		         +icon_relief - 1,
+		         item->icon_h + icon_relief - 1, IconReliefGC,
+		         IconShadowGC, 2);
       else
-	RelieveWindow(item->icon_pixmap_w, 0, 0, max_icon_width
-		    +icon_relief,
-		    max_icon_height + icon_relief, IconReliefGC,
-		    IconShadowGC);
+	RelieveRectangle(dpy, item->icon_pixmap_w, 0, 0, max_icon_width
+		         + icon_relief - 1,
+		         max_icon_height + icon_relief - 1, IconReliefGC,
+		         IconShadowGC, 2);
     }
   }
 
@@ -663,18 +663,18 @@ void RedrawIcon(struct icon_info *item, int f)
       XClearWindow(dpy, item->IconWin);
       XDrawString(dpy, item->IconWin, NormalGC, lm, 3 + font->ascent,
 		  label, len);
-      RelieveWindow(item->IconWin, 0, 0,
-		    max(tw + 8, w), 6 + font->ascent +
-		    font->descent, IconReliefGC, IconShadowGC);
+      RelieveRectangle(dpy, item->IconWin, 0, 0,
+		       max(tw + 8, w) - 1, 6 + font->ascent +
+		       font->descent - 1, IconReliefGC, IconShadowGC, 2);
     }else{
       XMoveResizeWindow(dpy, item->IconWin, item->x, item->y + h,
 			w, 6 + font->ascent + font->descent);
       XClearWindow(dpy, item->IconWin);
       XDrawString(dpy, item->IconWin, NormalGC, lm, 3 + font->ascent,
 		  label, len);
-      RelieveWindow(item->IconWin, 0, 0,
-		    w, 6 + font->ascent + font->descent,
-		    IconReliefGC, IconShadowGC);
+      RelieveRectangle(dpy, item->IconWin, 0, 0,
+		       w - 1, 5 + font->ascent + font->descent,
+		       IconReliefGC, IconShadowGC, 2);
     }
   }
 
@@ -702,7 +702,8 @@ void RedrawHScrollbar(void)
   x = (Width - bar_width*2) * icon_win_x / icon_win_width;
   width = (Width - bar_width*2) * Width / icon_win_width;
   XClearArea(dpy, h_scroll_bar, 0, 0, Width, bar_width,False);
-  RelieveWindow(h_scroll_bar, x, 0, width, bar_width, ReliefGC, ShadowGC);
+  RelieveRectangle(dpy, h_scroll_bar, x, 0, width - 1, bar_width - 1,
+                   ReliefGC, ShadowGC, 2);
 }
 
 /***********************************************************************
@@ -717,7 +718,8 @@ void RedrawVScrollbar(void)
   y = (Height - bar_width*2) * icon_win_y / icon_win_height;
   height = (Height - bar_width*2)*  Height / icon_win_height;
   XClearArea(dpy, v_scroll_bar, 0, 0, bar_width, Height,False);
-  RelieveWindow(v_scroll_bar, 0, y, bar_width, height, ReliefGC, ShadowGC);
+  RelieveRectangle(dpy, v_scroll_bar, 0, y, bar_width - 1, height - 1,
+                   ReliefGC, ShadowGC, 2);
 }
 
 void RedrawLeftButton(GC rgc, GC sgc)
@@ -827,51 +829,6 @@ void RedrawBottomButton(GC rgc, GC sgc)
   seg[i].x1 = bar_width - 1;	seg[i].y1 = 0;
   seg[i].x2 = bar_width/2;	seg[i++].y2 = bar_width - 1;
   XDrawSegments(dpy, b_button, sgc, seg, i);
-}
-
-/************************************************************************
-  RelieveWindow
-    Original work from GoodStuff:
-      Copyright 1993, Robert Nation.
-************************************************************************/
-void RelieveWindow(Window win,int x,int y,int w,int h, GC rgc,GC sgc)
-{
-  XSegment seg[4];
-  int i;
-
-  i=0;
-  seg[i].x1 = x;        seg[i].y1   = y;
-  seg[i].x2 = w+x-1;    seg[i++].y2 = y;
-
-  seg[i].x1 = x;        seg[i].y1   = y;
-  seg[i].x2 = x;        seg[i++].y2 = h+y-1;
-
-  seg[i].x1 = x+1;      seg[i].y1   = y+1;
-  seg[i].x2 = x+w-2;    seg[i++].y2 = y+1;
-
-  seg[i].x1 = x+1;      seg[i].y1   = y+1;
-  seg[i].x2 = x+1;      seg[i++].y2 = y+h-2;
-  XDrawSegments(dpy, win, rgc, seg, i);
-
-  i=0;
-  seg[i].x1 = x;        seg[i].y1   = y+h-1;
-  seg[i].x2 = w+x-1;    seg[i++].y2 = y+h-1;
-
-  seg[i].x1 = x+w-1;    seg[i].y1   = y;
-  seg[i].x2 = x+w-1;    seg[i++].y2 = y+h-1;
-  if(d_depth<2)
-    XDrawSegments(dpy, win, ShadowGC, seg, i);
-  else
-    XDrawSegments(dpy, win, sgc, seg, i);
-
-  i=0;
-  seg[i].x1 = x+1;      seg[i].y1   = y+h-2;
-  seg[i].x2 = x+w-2;    seg[i++].y2 = y+h-2;
-
-  seg[i].x1 = x+w-2;    seg[i].y1   = y+1;
-  seg[i].x2 = x+w-2;    seg[i++].y2 = y+h-2;
-
-  XDrawSegments(dpy, win, sgc, seg, i);
 }
 
 /************************************************************************

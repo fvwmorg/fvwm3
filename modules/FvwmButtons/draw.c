@@ -40,10 +40,10 @@
 /* ---------------- Functions that design and draw buttons ----------------- */
 
 /**
-*** RelieveWindow()
+*** RelieveButton()
 *** Draws the relief pattern around a window.
 **/
-void RelieveWindow(Window wn,int width,int x,int y,int w,int h,Pixel relief,
+void RelieveButton(Window wn,int width,int x,int y,int w,int h,Pixel relief,
 		   Pixel shadow,int rev)
 {
   XSegment seg[4];
@@ -71,10 +71,10 @@ void RelieveWindow(Window wn,int width,int x,int y,int w,int h,Pixel relief,
   for(j=0;j<width && w>1 && h>1 ;j++,w-=2,h-=2,x+=1,y+=1)
     {
       i=0;
-      seg[i].x1 = x;        seg[i].y1   = y;
-      seg[i].x2 = x+w-1;    seg[i++].y2 = y;
-      seg[i].x1 = x;        seg[i].y1   = y;
-      seg[i].x2 = x;        seg[i++].y2 = y+h-1;
+      seg[i].x1 = x;      seg[i].y1   = y;
+      seg[i].x2 = x+w;    seg[i++].y2 = y;
+      seg[i].x1 = x;      seg[i].y1   = y;
+      seg[i].x2 = x;      seg[i++].y2 = y+h;
       XDrawSegments(Dpy,wn,NormalGC,seg,i);
     }
 
@@ -87,10 +87,10 @@ void RelieveWindow(Window wn,int width,int x,int y,int w,int h,Pixel relief,
   for(j=0;j<width && w>1 && h>1 ;j++,w-=2,h-=2,x+=1,y+=1)
     {
       i=0;
-      seg[i].x1 = x+1;      seg[i].y1   = y+h-1;
-      seg[i].x2 = x+w-1;    seg[i++].y2 = y+h-1;
-      seg[i].x1 = x+w-1;    seg[i].y1   = y+1;
-      seg[i].x2 = x+w-1;    seg[i++].y2 = y+h-1;
+      seg[i].x1 = x+1;    seg[i].y1   = y+h-1;
+      seg[i].x2 = x+w;    seg[i++].y2 = y+h-1;
+      seg[i].x1 = x+w-1;  seg[i].y1   = y+1;
+      seg[i].x2 = x+w-1;  seg[i++].y2 = y+h;
       XDrawSegments(Dpy,wn,NormalGC,seg,i);
     }
 }
@@ -176,7 +176,7 @@ void MakeButton(button_info *b)
 /**
 *** RedrawButton()
 *** Writes out title, if any, and displays the bevel right, by calling
-*** RelieveWindow. If clean is nonzero, also clears background.
+*** RelieveButton. If clean is nonzero, also clears background.
 **/
 void RedrawButton(button_info *b,int clean)
 {
@@ -214,7 +214,7 @@ void RedrawButton(button_info *b,int clean)
 	    rev=1;
 	}
     }
-  RelieveWindow(MyWindow,f,x,y,BW,BH,buttonHilite(b),buttonShadow(b),rev);
+  RelieveButton(MyWindow,f,x,y,BW,BH,buttonHilite(b),buttonShadow(b),rev);
 
   /* ----------------------------------------------------------------------- */
 

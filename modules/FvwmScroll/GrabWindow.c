@@ -62,52 +62,6 @@ Atom wm_del_win;
 Atom _XA_WM_PROTOCOLS;
 Atom _XA_WM_COLORMAP_WINDOWS;
 
-/****************************************************************************
- *
- *  Draws the relief pattern around a window
- *
- ****************************************************************************/
-void RelieveWindow(Window win,int x,int y,int w,int h,
-		   GC rgc,GC sgc)
-{
-  XSegment seg[4];
-  int i;
-
-  i=0;
-  seg[i].x1 = x;        seg[i].y1   = y;
-  seg[i].x2 = w+x-1;    seg[i++].y2 = y;
-
-  seg[i].x1 = x;        seg[i].y1   = y;
-  seg[i].x2 = x;        seg[i++].y2 = h+y-1;
-
-  seg[i].x1 = x+1;      seg[i].y1   = y+1;
-  seg[i].x2 = x+w-2;    seg[i++].y2 = y+1;
-
-  seg[i].x1 = x+1;      seg[i].y1   = y+1;
-  seg[i].x2 = x+1;      seg[i++].y2 = y+h-2;
-  XDrawSegments(dpy, win, rgc, seg, i);
-
-  i=0;
-  seg[i].x1 = x;        seg[i].y1   = y+h-1;
-  seg[i].x2 = w+x-1;    seg[i++].y2 = y+h-1;
-
-  seg[i].x1 = x+w-1;    seg[i].y1   = y;
-  seg[i].x2 = x+w-1;    seg[i++].y2 = y+h-1;
-  if(d_depth<2)
-    XDrawSegments(dpy, win, ShadowGC, seg, i);
-  else
-    XDrawSegments(dpy, win, sgc, seg, i);
-
-  i=0;
-  seg[i].x1 = x+1;      seg[i].y1   = y+h-2;
-  seg[i].x2 = x+w-2;    seg[i++].y2 = y+h-2;
-
-  seg[i].x1 = x+w-2;    seg[i].y1   = y+1;
-  seg[i].x2 = x+w-2;    seg[i++].y2 = y+h-2;
-
-  XDrawSegments(dpy, win, sgc, seg, i);
-}
-
 /************************************************************************
  *
  * Sizes and creates the window 
@@ -572,9 +526,9 @@ void RedrawWindow(Window target)
   
   XSetWindowBorderWidth(dpy,target,0);
 
-  RelieveWindow(main_win,PAD_WIDTH3-2,PAD_WIDTH3-2,
-		Width-BAR_WIDTH-PAD_WIDTH3+4,
-		Height-BAR_WIDTH-PAD_WIDTH3+4,ShadowGC,ReliefGC);
+  RelieveRectangle(dpy,main_win,PAD_WIDTH3-2,PAD_WIDTH3-2,
+		   Width-BAR_WIDTH-PAD_WIDTH3+3,
+		   Height-BAR_WIDTH-PAD_WIDTH3+3,ShadowGC,ReliefGC,2);
 
   y = (Height-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH)*
     target_y_offset/target_height
@@ -593,11 +547,11 @@ void RedrawWindow(Window target)
       XClearArea(dpy,main_win,x,PAD_WIDTH3+SCROLL_BAR_WIDTH,
 		 w,Height-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH,False);
 
-      RelieveWindow(main_win,x,y,w,h,ReliefGC,ShadowGC);
+      RelieveRectangle(dpy,main_win,x,y,w-1,h-1,ReliefGC,ShadowGC,2);
     }
   if(exposed & 1)
-      RelieveWindow(main_win,x-2,PAD_WIDTH2,
-		    w+4,Height-BAR_WIDTH-PAD_WIDTH2+2,ShadowGC,ReliefGC);
+      RelieveRectangle(dpy,main_win,x-2,PAD_WIDTH2,
+		       w+3,Height-BAR_WIDTH-PAD_WIDTH2+1,ShadowGC,ReliefGC,2);
   if(exposed)
     {
       if(motion == TOP)
@@ -626,12 +580,12 @@ void RedrawWindow(Window target)
       hh = h;
       XClearArea(dpy,main_win,PAD_WIDTH3+SCROLL_BAR_WIDTH,y,
 		 Width-BAR_WIDTH-PAD_WIDTH3-2*SCROLL_BAR_WIDTH,h,False);
-      RelieveWindow(main_win,x,y,w,h,ReliefGC,ShadowGC);
+      RelieveRectangle(dpy,main_win,x,y,w-1,h-1,ReliefGC,ShadowGC,2);
     }
   if(exposed& 1)
     {
-      RelieveWindow(main_win,PAD_WIDTH2,y-2,Width-BAR_WIDTH-PAD_WIDTH2+2,h+4,
-		    ShadowGC,ReliefGC);
+      RelieveRectangle(dpy,main_win,PAD_WIDTH2,y-2,Width-BAR_WIDTH-PAD_WIDTH2+1,h+2,
+		       ShadowGC,ReliefGC,2);
     }
   if(exposed)
     {
@@ -652,15 +606,15 @@ void RedrawWindow(Window target)
       XClearArea(dpy,main_win,Width-BAR_WIDTH+2,
 		     Height-BAR_WIDTH+2,BAR_WIDTH-3,BAR_WIDTH-3,False);
       if(motion == QUIT)
-      RelieveWindow(main_win,Width-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
-		    Height-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
-		    SCROLL_BAR_WIDTH+4,SCROLL_BAR_WIDTH+4,
-		    ShadowGC,ReliefGC);
+      RelieveRectangle(dpy,main_win,Width-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
+		       Height-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
+		       SCROLL_BAR_WIDTH+3,SCROLL_BAR_WIDTH+3,
+		       ShadowGC,ReliefGC,2);
       else
-	RelieveWindow(main_win,Width-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
-		      Height-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
-		      SCROLL_BAR_WIDTH+4,SCROLL_BAR_WIDTH+4,
-		      ReliefGC,ShadowGC);
+	RelieveRectangle(dpy,main_win,Width-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
+		         Height-SCROLL_BAR_WIDTH-PAD_WIDTH2-4,
+		         SCROLL_BAR_WIDTH+3,SCROLL_BAR_WIDTH+3,
+		         ReliefGC,ShadowGC,2);
     }
   exposed = 0;
 }

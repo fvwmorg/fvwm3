@@ -19,7 +19,6 @@ void nocolor(char *a, char *b);
 char *CatString3(char *a, char *b, char *c);
 Window ClientWindow(Window input);
 
-void RelieveWindow(Window win,int x,int y,int w,int h, GC rgc,GC sgc);
 void CreateWindow(int x, int y,int w, int h);
 Pixel GetShadow(Pixel background);
 Pixel GetHilite(Pixel background);
