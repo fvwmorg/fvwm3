@@ -287,7 +287,7 @@ SaveWindowStates(FILE *f)
 	      ewin->icon_y_loc + Scr.Vy);
       fprintf(f, "  [DESK] %i\n", ewin->Desk);
       fprintf(f, "  [LAYER] %i\n", ewin->layer);
-      fprintf(f, "  [FLAGS] ", ewin->gsfr_flags);
+      fprintf(f, "  [FLAGS] ");
       for (i = 0; i < sizeof(window_flags); i++)
 	fprintf(f, "%02x", ((char *)&(ewin->gsfr_flags))[i]);
       fprintf(f, "\n");
@@ -369,9 +369,10 @@ LoadWindowStates(char *filename)
 		ts++;
 	      for (i = 0; i < sizeof(window_flags); i++)
 		{
-		  sscanf(ts, "%02x",
-			 &(((char *)&(matches[num_match - 1]))[i]));
-		  ts += 2;
+		    unsigned int f;
+		    sscanf(ts, "%02x", &f );
+		    ((char *)&(matches[num_match - 1]))[i] = f;
+		    ts += 2;
 		}
 	    }
 	  else if (!strcmp(s1, "[CLIENT_ID]"))

@@ -1271,7 +1271,7 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
  *      flags1 - first byte array of flags to compare
  *      flags2 - second byte array of flags to compare
  *      mask   - byte array of flags to be considered for the comparison
- *      lan    - number of bytes to compare
+ *      len    - number of bytes to compare
  *
  ***********************************************************************/
 int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len)
@@ -1280,8 +1280,8 @@ int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len)
 
   for (i = 0; i < len; i++)
     {
-      if (((char *)flags1)[i] & ((char *)mask)[i] !=
-	  ((char *)flags2)[i] & ((char *)mask)[i])
+      if ( (((char *)flags1)[i] & ((char *)mask)[i]) !=
+	   (((char *)flags2)[i] & ((char *)mask)[i]) )
 	/* flags are not the same, return 1 */
 	return 1;
     }

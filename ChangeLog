@@ -1,4 +1,17 @@
-1999-04-09  Dominik Vogt  <dominik_vogt@gmx.de>
+Thu Apr  8 23:45:05 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/Makefile.am (fvwm2_SOURCES): include gnome.c
+	unconditionally, otherwise it doesn't make it to the distribution;
+	it is suitably ifdef'd for compiling without GNOME enabled.
+
+	* fvwm/session.c (LoadWindowStates): fixed a scanf reading
+	unsigned int into a char*.
+
+	* fvwm/session.c (SaveWindowStates): removed unused parameter to
+	fprintf().
+
+	* fvwm/style.c (cmp_masked_flags): add parentheses around
+	comparison in operand of &
 
 1999-04-08  Dominik Vogt  <dominik_vogt@gmx.de>
 
