@@ -1,3 +1,21 @@
+2001-01-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandlePropertyNotify):
+	* fvwm/icons.c (CreateIconWindow):
+	reinstated old active icon logic
+
+2001-01-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (check_window_style_change):
+	(ProcessNewStyle):
+	* fvwm/style.h (SUSE_BORDER_COLORSET):
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/builtins.c (SetGlobalOptions):
+	* fvwm/placement.c (PlaceWindow):
+	some cleanup in placement code
+	fixed handling of old Clever+Dumb+Random Placement
+	Replaced ActivePlacementHonors... with ManualPlacementHonors...
+
 2001-01-13  olicha  <olivier.chapuis@free.fr>
 
 	* configure.in:
@@ -16,10 +34,10 @@
 	* fvwm/styles.c (ProcessNewStyle):
 	* fvwm/fvwm2.1:
 	* fvwm/ConfigFvwmDefaults:
-	* libs/default.h: 
+	* libs/default.h:
 	* tests/purify/purify.fvwm2rc
-	Replace Dump/SmartPlacement, Active/RandomPlacement, 
-	SmartPlacement(Off) style by ManualPlacement / CascadePlacement / 
+	Replace Dump/SmartPlacement, Active/RandomPlacement,
+	SmartPlacement(Off) style by ManualPlacement / CascadePlacement /
 	MinOverlapPlacement / MinOverlapPercentPlacement / TileManualPlacement
 	/TileCascadePlacement (The old style are still supported)
 	We have two "clever" placement algorithm: MinOverlapPlacement /

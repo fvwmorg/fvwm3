@@ -32,9 +32,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#define TRUE 1
-#define FALSE
-
 #include "config.h"
 
 #if HAVE_SYS_BSDTYPES_H
@@ -60,7 +57,6 @@
 #ifdef DEBUGTOFILE
 #define DEBUG
 #endif
-#define DEBUG
 #ifdef DEBUG
 #define myfprintf(X) \
   fprintf X;\
