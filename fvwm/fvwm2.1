@@ -6411,14 +6411,20 @@ module name and the rest of the line, this is recommended to avoid conflicts.
 .EE
 
 .TP
-.BI "DestroyModuleConfig " module
+.BI "DestroyModuleConfig " module_config
 Deletes module configuration entries, so that new configuration lines
-may be entered instead.  You can use this to change the the way a
+may be entered instead.  This also sometimes the only way to turn back
+some module settings, previously defined.  This changes the the way a
 module runs during a fvwm session without restarting.  Wildcards can
 be used for portions of the name as well.
+
+A new non-conflicting syntax allows a delimiter, a colon and optional spaces,
+between the module name and the rest of the line, in this case a module name
+(or alias) can't have wildcards.
 .EX
-DestroyModuleConfig FvwmFormFore
 DestroyModuleConfig FvwmButtons*
+DestroyModuleConfig FvwmForm: Fore
+DestroyModuleConfig FvwmIconBox: Max*
 .EE
 
 .TP

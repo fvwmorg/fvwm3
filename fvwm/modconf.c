@@ -69,7 +69,7 @@ struct moduleInfoList
 
 struct moduleInfoList *modlistroot = NULL;
 
-static void AddToModList(char *tline);         /* prototypes */
+static char *AddToModList(char *tline);         /* prototypes */
 
 
 /*
@@ -87,7 +87,7 @@ void  ModuleConfig(char *action) {
   end = strlen(action) - 1;
   if (action[end] == '\n')
     action[end] = '\0';
-  AddToModList(action);                 /* save for config request */
+  action = AddToModList(action);            /* save for config request */
   for (module=0;module<npipes;module++) {/* look at all possible pipes */
     if (PipeMask[module] & M_SENDCONFIG) { /* does module want config cmds */
       SendName(module,M_CONFIG_INFO,0,0,0,action); /* send cmd to module */
@@ -95,7 +95,7 @@ void  ModuleConfig(char *action) {
   }
 }
 
-static void AddToModList(char *tline)
+static char *AddToModList(char *tline)
 {
   struct moduleInfoList *t, *prev, *this;
   char *rline = tline;
@@ -135,6 +135,8 @@ static void AddToModList(char *tline)
   }
   else
     prev->next = this;
+
+  return rline;
 }
 
 /**************************************************************/
@@ -146,11 +148,28 @@ void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   struct moduleInfoList *current, *next, *prev;
   char *info;   /* info to be deleted - may contain wildcards */
   char *mi;
+  char *alias_end = skipModuleAliasToken(action);
+  int alias_len = 0;
 
-  GetNextToken(action, &info);
-  if( info == NULL )
+  if (alias_end && alias_end[0] == MODULE_CONFIG_DELIM)
   {
-    return;
+    /* migo: construct an old-style config line */
+    char *conf_start = alias_end + 1;
+    while (isspace(*conf_start)) conf_start++;
+    *alias_end = '\0';
+    GetNextToken(conf_start, &conf_start);
+    if (conf_start == NULL)
+      return;
+    info = stripcpy(CatString2(action, conf_start));
+    *alias_end = MODULE_CONFIG_DELIM;
+    alias_len = alias_end - action + 1;  /* +1 for a leading '*' */
+    free(conf_start);
+  }
+  else
+  {
+    GetNextToken(action, &info);
+    if (info == NULL)
+      return;
   }
 
   current = modlistroot;
@@ -160,7 +179,8 @@ void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   {
     GetNextToken( current->data, &mi);
     next = current->next;
-    if( matchWildcards(info, mi+1) )
+    if ((!alias_len || !current->alias_len || alias_len == current->alias_len)
+        && matchWildcards(info, mi+1))
     {
       free(current->data);
       free(current);

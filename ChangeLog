@@ -1,3 +1,11 @@
+2000-09-08  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/modconf.c (AddToModList, ModuleConfig, DestroyModConfig):
+	* fvwm/fvwm2.1:
+	Fixed synchronous sending of new syntax config commands.
+	DestroyModuleConfig now supports a non conflicting syntax too,
+	no globing in alias is allowed. DestroyModuleConfig FvwmPager: Geomet*
+
 2000-09-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/stack.c (raise_over_unmanaged):
@@ -109,7 +117,7 @@
 	* fvwm/module_interface.c (SendStrToModule):
 	-Wall fixes
 
-2000-09-02  Mikhael Goikhman  migo@homemail.com
+2000-09-02  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/functions.c (AddToFunc):
 	allow only a strict syntax, i.e. I|C|D|M|H as the first parameter
@@ -145,7 +153,7 @@
 	* fvwm/add_window.c (setup_window_name): Add debugging to window
 	creation.
 
-2000-08-19  Mikhael Goikhman  migo@homemail.com
+2000-08-19  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/module_interface.c:
 	SendToModule now can accept an alias too.
@@ -164,7 +172,7 @@
 	* AUTHORS
 	Applied J. Zellner <johannes@zellner.org> StrokeWidth patch
 
-2000-07-21  Mikhael Goikhman  migo@homemail.com
+2000-07-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* acinclude.m4:
 	* configure.in:
