@@ -226,7 +226,7 @@ A: XMMS wants to do evrything by itself and overrides many
         http://xmms.org/
 
    *Please* do not ask XMMS questions on the fvwm mailing lists
-   and so not report XMMS related bugs before you tried the XMMS
+   and do not report XMMS related bugs before you tried the XMMS
    mailing lists.  No offence meant, but we really have more
    important things to do than providing user support for third
    party software.
@@ -238,7 +238,7 @@ A: XMMS wants to do evrything by itself and overrides many
 A: See questions 3.23, 3.24, 3.25, 3.26 that deal with transparency.
 
    Also see configurations supplied in fvwm-themes package, some
-   themes use transparent menus, modules and/or decorations.  F.e.:
+   themes use transparent menus, modules and/or decorations.  E.g.:
 
         http://fvwm-themes.sf.net/screenshots/full/transparent.png
         http://fvwm-themes.sf.net/screenshots/full/transparent.jpg
@@ -1589,9 +1589,9 @@ A: This is not really an FVWM related question, you should find X
 
      aterm -ls -sh 70 -bg black -fg white -tr +sb -fn 7x14 -fb 7x14bold
 
-   Some applications have transparent theme, f.e. gkrellm and xmms.
+   Some applications have transparent theme, e.g. gkrellm and xmms.
 
-   Some applications may show text on the root image, f.e. root-tail.
+   Some applications may show text on the root image, e.g. root-tail.
 
    There are a lot of other applications supporting transparency not
    listed here, search in FreshMeat, http://freshmeat.net/.
@@ -1614,7 +1614,7 @@ A: In emacs, keys can be set up as prefix keys, so that once
    This second technique lets you use any key for the second key but
    only works with 2.5.x or later.
    This approach invokes a function on the first key that defines the
-   action of the second key for a short time and then removes it: 
+   action of the second key for a short time and then removes it:
 
    DestroyFunc Ctrl-Alt-F-Action
    AddToFunc   Ctrl-Alt-F-Action
