@@ -620,8 +620,8 @@ static void ct_Message(char *cp)
 /* allocate colors and fonts needed */
 static void CheckAlloc(Item *this_item,DrawTable *dt)
 {
-  static XGCValues xgcv;
-  static int xgcv_mask = GCBackground | GCForeground | GCFont;
+  XGCValues xgcv;
+  int xgcv_mask = GCForeground;
 
   if (dt->dt_used == 2) {               /* fonts colors shadows */
     return;
@@ -636,7 +636,12 @@ static void CheckAlloc(Item *this_item,DrawTable *dt)
 
     xgcv.foreground = dt->dt_colors[c_fg];
     xgcv.background = dt->dt_colors[c_bg];
-    xgcv.font = dt->dt_Ffont->font->fid;
+    if (dt->dt_Ffont->font != NULL)
+    {
+      xgcv_mask |= GCFont;
+      xgcv.font = dt->dt_Ffont->font->fid;
+    }
+    xgcv_mask |= GCBackground;
     dt->dt_GC = fvwmlib_XCreateGC(dpy, CF.frame, xgcv_mask, &xgcv);
 
     dt->dt_used = 1;                    /* fore/back font allocated */
@@ -652,8 +657,13 @@ static void CheckAlloc(Item *this_item,DrawTable *dt)
     : Colorset[itemcolorset].bg;
   xgcv.foreground = dt->dt_colors[c_item_fg];
   xgcv.background = dt->dt_colors[c_item_bg];
-  xgcv.font = dt->dt_Ffont->font->fid;
-  dt->dt_item_GC = fvwmlib_XCreateGC(dpy, CF.frame, GCForeground | GCFont, &xgcv);
+  xgcv_mask = GCForeground;
+  if (dt->dt_Ffont->font != NULL)
+  {
+    xgcv_mask |= GCFont;
+    xgcv.font = dt->dt_Ffont->font->fid;
+  }
+  dt->dt_item_GC = fvwmlib_XCreateGC(dpy, CF.frame, xgcv_mask, &xgcv);
   if (Pdepth < 2) {
     dt->dt_colors[c_itemlo] = BlackPixel(dpy, screen);
     dt->dt_colors[c_itemhi] = WhitePixel(dpy, screen);

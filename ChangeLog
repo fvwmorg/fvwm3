@@ -1,3 +1,11 @@
+2002-02-11  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.h:
+	Added more documentation and change the MB_FALLBACK_FONT to
+	"-*-fixed-medium-r-semicondensed-*-13-*,-*-fixed-medium-r-normal-*-14-*,
+	-*-medium-r-normal-*-16-*" (with XFree) this should gives something
+	more consistent with the none multibyte case.
+
 2002-02-10  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh.c (EWMH_RestoreInitialStates):
