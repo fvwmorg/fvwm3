@@ -5869,6 +5869,25 @@ The special context 'M' for menus can only be used to control
 which mouse button is used to tear off menus.  See the section
 "Tear Off Menus" for details.
 
+By default, the binding applies to all windows. You can specify that
+a binding only applies to specific windows by specifying the
+window name in brackets. The window name is a wildcard pattern specifying
+the class, resource or name of the window you want the binding to apply to.
+
+The following example shows how the same key-binding can be used to
+perform different functions depending on the window that is focussed:
+.EX
+Key (rxvt) V A C Echo ctrl-V-in-RXVT
+Key (*term) V A C Echo ctrl-V-in-Term
+Key V A C Echo ctrl-V-elsewhere
+.EE
+
+This example shows how to display the WindowList when Button 3 is
+pressed on an rxvt window:
+.EX
+Mouse (rxvt) 3 A A WindowList
+.EE
+
 .I Modifiers
 is any combination of 'N' for no modifiers, 'C' for control, 'S'
 for shift, 'M' for Meta, 'L' for Caps-Lock or 'A' for any

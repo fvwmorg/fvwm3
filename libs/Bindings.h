@@ -1,5 +1,7 @@
 /* -*-c-*- */
 
+#include <X11/Xutil.h>	/* XClassHint */
+
 #ifndef FVWMLIB_BINDINGS_H_H
 #define FVWMLIB_BINDINGS_H_H
 
@@ -32,12 +34,14 @@ typedef struct Binding
 {
 	binding_t_t type;       /* Is it a mouse, key, or stroke binding */
 	STROKE_CODE(void *Stroke_Seq;) /* stroke sequence */
-		int Button_Key;         /* Mouse Button number or Keycode */
+	int Button_Key;         /* Mouse Button number or Keycode */
 	char *key_name;         /* In case of keycode, give the key_name too */
 	int Context;            /* Fvwm context, ie titlebar, frame, etc */
 	int Modifier;           /* Modifiers for keyboard state */
 	void *Action;           /* What to do? */
 	void *Action2;          /* This one can be used too */
+	char *windowName;		/* Name of window (regex pattern) this binding
+							   applies to. NULL means all windows. */
 	struct Binding *NextBinding;
 } Binding;
 
@@ -46,11 +50,11 @@ typedef struct Binding
 void CollectBindingList(
 	Display *dpy, Binding **pblist_src, Binding **pblist_dest,
 	binding_t type, STROKE_ARG(void *stroke) int button, KeySym keysym,
-	int modifiers, int contexts);
+	int modifiers, int contexts, char *windowName);
 int AddBinding(
 	Display *dpy, Binding **pblist, binding_t type,
 	STROKE_ARG(void *stroke) int button, KeySym keysym, char *key_name,
-	int modifiers, int contexts, void *action, void *action2);
+	int modifiers, int contexts, void *action, void *action2, char *windowName);
 void FreeBindingStruct(Binding *b);
 void FreeBindingList(Binding *b);
 void RemoveBinding(Binding **pblist, Binding *b, Binding *prev);
@@ -61,14 +65,13 @@ Bool RemoveMatchingBinding(
 void *CheckBinding(
 	Binding *blist, STROKE_ARG(char *stroke) int button_keycode,
 	unsigned int modifier, unsigned int dead_modifiers, int Context,
-	binding_t type);
+	binding_t type, const XClassHint *winClass, const char *winName);
 void *CheckTwoBindings(
 	Bool *ret_is_second_binding, Binding *blist, STROKE_ARG(char *stroke)
 	int button_keycode, unsigned int modifier,unsigned int dead_modifiers,
-	int Context, binding_t type, int Context2, binding_t type2);
-Bool MatchBindingExactly(
-	Binding *b, STROKE_ARG(void *stroke) int button, KeyCode keycode,
-	unsigned int modifier, int Context, binding_t type);
+	int Context, binding_t type, const XClassHint *winClass,
+	const char *winName, int Context2, binding_t type2,
+	const XClassHint *winClass2, const char *winName2);
 void GrabWindowKey(
 	Display *dpy, Window w, Binding *binding, unsigned int contexts,
 	unsigned int dead_modifiers, Bool fGrab);
@@ -88,5 +91,8 @@ void GrabWindowKeyOrButton(
 	Display *dpy, Window w, Binding *binding, unsigned int contexts,
 	unsigned int dead_modifiers, Cursor cursor, Bool fGrab);
 KeySym FvwmStringToKeysym(Display *dpy, char *key);
+Bool bindingAppliesToWindow(Binding *binding, const XClassHint *winClass,
+	const char *winName);
+
 
 #endif /* FVWMLIB_BINDINGS_H_H */

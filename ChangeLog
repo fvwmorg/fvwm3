@@ -1,3 +1,22 @@
+2004-06-07  Scott Smedley  <scottie7@tpg.com.au>
+
+	* fvwm/bindings.c:
+	* fvwm/builtins.c:
+	* fvwm/events.c:
+	* fvwm/fvwm.1.in:
+	* fvwm/module_interface.c:
+	* libs/Bindings.c:
+	* libs/Bindings.h:
+	* modules/FvwmScript/FvwmScript.c:
+	* modules/FvwmScript/Instructions.c:
+	Implemented window-specific key/mouse bindings.
+
+	* modules/FvwmIconBox/FvwmIconBox.h:
+	* libs/fvwmlib.h:
+	* libs/wild.c:
+	* libs/wild.h:
+	Make args to matchWildcards() const.
+
 2004-06-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/ewmh_events.c (ewmh_WMStateFullScreen):

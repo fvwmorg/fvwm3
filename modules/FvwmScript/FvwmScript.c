@@ -857,6 +857,7 @@ void ReadXServer (void)
   Bool find = False;
   char *action;
   int ex, ey, ex2, ey2;
+  XClassHint tmp;
 
   while (FEventsQueued(dpy, QueuedAfterReading))
   {
@@ -936,14 +937,17 @@ void ReadXServer (void)
 	XKeysymToKeycode(dpy,XKeycodeToKeysym(dpy,event.xkey.keycode,0));
 
       /* check for bindings defined by the Key instruction */
+	  tmp.res_class = tmp.res_name = "root";
       if ((action = CheckBinding(
 		   BindingsList, STROKE_ARG(0) event.xkey.keycode,
-		   event.xkey.state, LockMask, C_WINDOW, BIND_KEYPRESS)) !=
+		   event.xkey.state, LockMask, C_WINDOW, BIND_KEYPRESS,
+		   &tmp, tmp.res_class)) !=
 	  NULL)
       {
 	SendMsgAndString(action, "CheckBinding");
 	break;
       }
+
       if (ks == XK_Tab) {
 	isTab = 1;
 	if (event.xkey.state & ShiftMask) {

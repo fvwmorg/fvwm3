@@ -619,7 +619,7 @@ void CMD_ModuleSynchronous(F_CMD_ARGS)
 				GetContext(
 					NULL, exc->w.fw, &tmpevent,
 					&targetWindow),
-				BIND_KEYPRESS);
+				BIND_KEYPRESS, &exc->w.fw->class, exc->w.fw->name.name);
 			if (escape != NULL)
 			{
 				if (!strcasecmp(escape,"escapefunc"))

@@ -5,6 +5,9 @@ Note, the changes for the last STABLE release start with release
 
 Changes in alpha release 2.5.11 (not released yet)
 
+* Window-specific key/mouse bindings. (Bindings no longer have to
+  be global.)
+
 * The default fvwm configuration files are now: ~/.fvwm/config and
   $FVWM_DATADIR/config. Five previously used config file locations
   are still searched as usual for backward compatibility.

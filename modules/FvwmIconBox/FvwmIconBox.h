@@ -63,7 +63,7 @@ extern void parseicon(char *tline);
 extern Bool SortItem(struct icon_info *item);
 extern struct icon_info *MinItem(struct icon_info *head);
 extern void ExecuteKey(XEvent event);
-extern int matchWildcards(char *pattern, char *string);
+extern int matchWildcards(const char *pattern, const char *string);
 extern Bool GetBackPixmap(void);
 extern int LookInList(struct icon_info *item);
 extern char *stripcpy2(char *source);

@@ -52,6 +52,10 @@ void FreeBindingStruct(Binding *b)
 	{
 		free(b->Action2);
 	}
+	if (b->windowName)
+	{
+		free(b->windowName);
+	}
 	free(b);
 
 	return;
@@ -128,7 +132,7 @@ int AddBinding(
 	Display *dpy, Binding **pblist, binding_t type,
 	STROKE_ARG(void *stroke)
 	int button, KeySym keysym, char *key_name, int modifiers, int contexts,
-	void *action, void *action2)
+	void *action, void *action2, char *windowName)
 {
 	int i;
 	int min;
@@ -250,6 +254,8 @@ int AddBinding(
 					(action) ? stripcpy(action) : NULL;
 				(*pblist)->Action2 =
 					(action2) ? stripcpy(action2) : NULL;
+				(*pblist)->windowName =
+					windowName ? stripcpy(windowName) : NULL;
 				(*pblist)->NextBinding = temp;
 				bound_mask |= bind_mask;
 				count++;
@@ -259,7 +265,11 @@ int AddBinding(
 	return count;
 }
 
-static Bool AreBindingsEqual(Binding *b1, Binding *b2)
+/*
+ * replacesBinding() - does the new binding, b1, replace a current
+ * binding, b2?
+ */
+static Bool replacesBinding(Binding *b1, Binding *b2)
 {
 	if (b1->type != b2->type)
 	{
@@ -277,6 +287,24 @@ static Bool AreBindingsEqual(Binding *b1, Binding *b2)
 	{
 		return False;
 	}
+
+	/* definition: "global binding" => b->windowName == NULL
+	 * definition: "window-specific binding" => b->windowName != NULL
+	 */
+	if (b1->windowName && b2->windowName)
+	{
+		/* Both bindings are window-specific. The existing binding, b2,
+		 * is only replaced (by b1) if it applies to the same window */
+		if (strcmp(b1->windowName, b2->windowName) != 0)
+			return False;
+	}
+	else if (b1->windowName || b2->windowName)
+	{
+		/* 1 binding is window-specific, the other is global - no need to
+		 * replace this binding. */
+		return False;
+	}
+
 	if (BIND_IS_KEY_BINDING(b1->type) || BIND_IS_MOUSE_BINDING(b1->type))
 	{
 		return True;
@@ -301,7 +329,7 @@ static Bool AreBindingsEqual(Binding *b1, Binding *b2)
 void CollectBindingList(
 	Display *dpy, Binding **pblist_src, Binding **pblist_dest,
 	binding_t type, STROKE_ARG(void *stroke)
-	int button, KeySym keysym, int modifiers, int contexts)
+	int button, KeySym keysym, int modifiers, int contexts, char *windowName)
 {
 	Binding *tmplist = NULL;
 	Binding *btmp;
@@ -312,7 +340,7 @@ void CollectBindingList(
 	/* generate a private list of bindings to be removed */
 	AddBinding(
 		dpy, &tmplist, type, STROKE_ARG(stroke)
-		button, keysym, NULL, modifiers, contexts, NULL, NULL);
+		button, keysym, NULL, modifiers, contexts, NULL, NULL, windowName);
 	/* now find equivalent bindings in the given binding list and move
 	 * them to the new clist */
 	for (bold = *pblist_src, oldprev = NULL; bold != NULL;
@@ -321,7 +349,7 @@ void CollectBindingList(
 		for (btmp = tmplist, tmpprev = NULL; btmp != NULL;
 		     tmpprev = btmp, btmp = btmp->NextBinding)
 		{
-			if (AreBindingsEqual(btmp, bold))
+			if (replacesBinding(btmp, bold))
 			{
 				/* move matched binding from src list to dest
 				 * list */
@@ -342,10 +370,37 @@ void CollectBindingList(
 	return;
 }
 
+/*
+ * bindingAppliesToWindow()
+ *
+ * The Key/Mouse/PointerKey syntax (optionally) allows a window name
+ * (or class or resource) to be specified with the binding, denoting
+ * which windows the binding can be invoked in. This function determines
+ * if the binding actually applies to a window based on its
+ * name/class/resource.
+ */
+Bool bindingAppliesToWindow(Binding *binding, const XClassHint *winClass,
+	const char *winName)
+{
+	/* If no window name is specified with the binding then that means
+	 * the binding applies to ALL windows. */
+	if (binding->windowName == NULL)
+		return True;
+
+	if (matchWildcards(binding->windowName, winName) == TRUE ||
+		matchWildcards(binding->windowName, winClass->res_name) == TRUE ||
+		matchWildcards(binding->windowName, winClass->res_class) == TRUE)
+	{
+		return True;
+	}
+	return False;
+}
+
 Bool __compare_binding(
 	Binding *b, STROKE_ARG(char *stroke)
 	int button_keycode, unsigned int modifier, unsigned int used_modifiers,
-	int Context, binding_t type)
+	int Context, binding_t type, const XClassHint *winClass,
+    const char *winName)
 {
 	if (b->type != type || !(b->Context & Context))
 	{
@@ -356,24 +411,30 @@ Bool __compare_binding(
 	{
 		return False;
 	}
-	if (BIND_IS_MOUSE_BINDING(type) &&
-	    (b->Button_Key == button_keycode || b->Button_Key == 0))
-	{
-		return True;
-	}
-	if (BIND_IS_KEY_BINDING(type) &&
-	    b->Button_Key == button_keycode)
-	{
-		return True;
-	}
-	if (0 STROKE_CODE(|| ((BIND_IS_STROKE_BINDING(type) &&
-			       (strcmp(b->Stroke_Seq,stroke) == 0) &&
-			       b->Button_Key == button_keycode))))
-	{
-		return True;
-	}
 
-	return False;
+	if (BIND_IS_MOUSE_BINDING(type) &&
+	    (b->Button_Key != button_keycode && b->Button_Key != 0))
+	{
+		return False;
+	}
+	else if (BIND_IS_KEY_BINDING(type) && b->Button_Key != button_keycode)
+	{
+		return False;
+	}
+#ifdef HAVE_STROKE
+	else if (BIND_IS_STROKE_BINDING(type) &&
+		(strcmp(b->Stroke_Seq, stroke) != 0) &&
+		 b->Button_Key != button_keycode)
+	{
+		return False;
+	}
+#endif
+
+	if (!bindingAppliesToWindow(b, winClass, winName))
+	{
+		return False;
+	}
+	return True;
 }
 
 /* Check if something is bound to a key or button press and return the action
@@ -381,84 +442,68 @@ Bool __compare_binding(
 void *CheckBinding(
 	Binding *blist, STROKE_ARG(char *stroke)
 	int button_keycode, unsigned int modifier,unsigned int dead_modifiers,
-	int Context, binding_t type)
+	int Context, binding_t type, const XClassHint *winClass,
+	const char *winName)
 {
 	Binding *b;
 	unsigned int used_modifiers = ~dead_modifiers;
+	void *action = NULL;
 
 	modifier &= (used_modifiers & ALL_MODIFIERS);
 	for (b = blist; b != NULL; b = b->NextBinding)
 	{
 		if (__compare_binding(
-			    b, STROKE_ARG(stroke) button_keycode, modifier,
-			    used_modifiers, Context, type) == True)
+				b, STROKE_ARG(stroke) button_keycode, modifier,
+			    used_modifiers, Context, type, winClass, winName) == True)
 		{
-			return b->Action;
+			action = b->Action;
+			/* If this is a global binding, keep searching <blist> in the
+			 * hope of finding a window-specific binding. */
+			if (b->windowName)
+				break;
 		}
 	}
 
-	return NULL;
+	return action;
 }
 
 void *CheckTwoBindings(
 	Bool *ret_is_second_binding, Binding *blist, STROKE_ARG(char *stroke)
 	int button_keycode, unsigned int modifier,unsigned int dead_modifiers,
-	int Context, binding_t type, int Context2, binding_t type2)
+	int Context, binding_t type, const XClassHint *winClass,
+	const char *winName, int Context2, binding_t type2,
+	const XClassHint *winClass2, const char *winName2)
 {
 	Binding *b;
 	unsigned int used_modifiers = ~dead_modifiers;
+	void *action = NULL;
 
 	modifier &= (used_modifiers & ALL_MODIFIERS);
 	for (b = blist; b != NULL; b = b->NextBinding)
 	{
 		if (__compare_binding(
 			    b, STROKE_ARG(stroke) button_keycode, modifier,
-			    used_modifiers, Context, type) == True)
+			    used_modifiers, Context, type, winClass, winName) == True)
 		{
 			*ret_is_second_binding = False;
-			return b->Action;
+			action = b->Action;
+			if (b->windowName)
+				break;
 		}
 		if (__compare_binding(
 			    b, STROKE_ARG(stroke) button_keycode, modifier,
-			    used_modifiers, Context2, type2) == True)
+			    used_modifiers, Context2, type2, winClass2, winName2) == True)
 		{
+			if (action && !b->windowName)
+				continue;
 			*ret_is_second_binding = True;
-			return b->Action;
+			action = b->Action;
+			if (b->windowName)
+				break;
 		}
 	}
-	*ret_is_second_binding = False;
 
-	return NULL;
-}
-
-/* same as above, but only returns exactly matching bindings, i.e. wildcards for
- * mouse buttons and modifiers must match exactly. */
-Bool MatchBindingExactly(
-	Binding *b, STROKE_ARG(void *stroke)
-	int button, KeyCode keycode, unsigned int modifier, int Context,
-	binding_t type)
-{
-	modifier &= ALL_MODIFIERS;
-	if (b->type != type || b->Context != Context || b->Modifier != modifier)
-	{
-		return False;
-	}
-	if (BIND_IS_KEY_BINDING(type) && b->Button_Key != keycode)
-	{
-		return False;
-	}
-	if (BIND_IS_MOUSE_BINDING(type) && b->Button_Key != button)
-	{
-		return False;
-	}
-	if (0 STROKE_CODE(|| ((BIND_IS_STROKE_BINDING(type) &&
-			       (b->Button_Key != button ||
-				(strcmp(b->Stroke_Seq,stroke) != 0))))))
-	{
-		return False;
-	}
-
-	return True;
+	return action;
 }
 
 /*
@@ -658,8 +703,8 @@ void GrabAllWindowButtons(
 	is_grabbing_everything = True;
 	for ( ; blist != NULL; blist = blist->NextBinding)
 	{
-		GrabWindowButton(
-			dpy, w, blist, contexts, dead_modifiers, cursor, fGrab);
+		GrabWindowButton(dpy, w, blist, contexts, dead_modifiers,
+			cursor, fGrab);
 	}
 	is_grabbing_everything = False;
 	MyXUngrabServer(dpy);

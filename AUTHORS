@@ -21,8 +21,8 @@ David Lazar:
 Use font for selected buttons in Start button.
 
 Scott Smedley:
-Wrote FvwmTabs and improved Perl/Tk module support. FakeKeyPress
-command.
+Wrote FvwmTabs. Improved Perl/Tk module support. FakeKeyPress
+command. Window-specific key/mouse bindings.
 
 Francis Litterio:
 Fixed building FvwmScript under cygwin.  Added CenterPlacement style.

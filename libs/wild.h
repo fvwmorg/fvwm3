@@ -9,4 +9,4 @@
  *      It is public domain, no strings attached. No guarantees either.
  *
  */
-int matchWildcards(char *pattern, char *string);
+int matchWildcards(const char *pattern, const char *string);

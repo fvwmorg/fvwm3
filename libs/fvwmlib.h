@@ -109,7 +109,7 @@ int usleep( unsigned long usec );
 #include "envvar.h"
 #include "safemalloc.h"
 
-int matchWildcards(char *pattern, char *string);
+extern int matchWildcards(const char *pattern, const char *string);
 
 #define MAX_MODULE_INPUT_TEXT_LEN 1000
 

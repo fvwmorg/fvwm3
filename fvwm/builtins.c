@@ -2553,12 +2553,13 @@ void CMD_Wait(F_CMD_ARGS)
 			}
 			else if (e.type == KeyPress)
 			{
+				/* TODO: should I be using <t> or <exc->w.fw>? */
+				int context = GetContext(&t, t, &e, &nonewin);
 				escape = CheckBinding(
 					Scr.AllBindings, STROKE_ARG(0)
 					e.xkey.keycode, e.xkey.state,
-					GetUnusedModifiers(),
-					GetContext(&t, t, &e, &nonewin),
-					BIND_KEYPRESS);
+					GetUnusedModifiers(), context,
+					BIND_KEYPRESS, &t->class, t->name.name);
 				if (escape != NULL)
 				{
 					if (!strcasecmp(escape,"escapefunc"))
@@ -4344,7 +4345,8 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 	/* check for a binding */
 	stroke_action = CheckBinding(
 		Scr.AllBindings, sequence, 0, modifiers, GetUnusedModifiers(),
-		exc->w.wcontext, BIND_STROKE);
+		exc->w.wcontext, BIND_STROKE, &exc->w.fw->class,
+		exc->w.fw->name.name);
 
 	/* execute the action */
 	if (stroke_action != NULL)

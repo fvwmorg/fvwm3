@@ -1461,14 +1461,18 @@ static Bool __handle_bpress_action(
 static void __handle_bpress_on_root(const exec_context_t *exc)
 {
 	char *action;
+	XClassHint tmp;
 
 	PressedW = None;
 	__handle_bpress_stroke();
 	/* search for an appropriate mouse binding */
+	/* exc->w.fw is always NULL, hence why we use "root". */
+	tmp.res_class = tmp.res_name = "root";
 	action = CheckBinding(
 		Scr.AllBindings, STROKE_ARG(0) exc->x.etrigger->xbutton.button,
 		exc->x.etrigger->xbutton.state, GetUnusedModifiers(), C_ROOT,
-		BIND_BUTTONPRESS);
+		BIND_BUTTONPRESS, &tmp, tmp.res_class);
+
 	if (action && *action)
 	{
 		const exec_context_t *exc2;
@@ -1541,7 +1545,7 @@ static void __handle_bpress_on_managed(const exec_context_t *exc)
 		action = CheckBinding(
 			Scr.AllBindings, STROKE_ARG(0) e->xbutton.button,
 			e->xbutton.state, GetUnusedModifiers(),
-			exc->w.wcontext, BIND_BUTTONPRESS);
+			exc->w.wcontext, BIND_BUTTONPRESS, &fw->class, fw->name.name);
 		if (__handle_bpress_action(exc, action))
 		{
 			f.do_swallow_click = 1;
@@ -1616,7 +1620,9 @@ void HandleButtonRelease(const evh_args_t *ea)
 	/* need to search for an appropriate stroke binding */
 	action = CheckBinding(
 		Scr.AllBindings, sequence, te->xbutton.button, real_modifier,
-		GetUnusedModifiers(), ea->exc->w.wcontext, BIND_STROKE);
+		GetUnusedModifiers(), ea->exc->w.wcontext, BIND_STROKE,
+		&ea->exc->w.fw->class, ea->exc->w.fw->name.name);
+
 	/* got a match, now process it */
 	if (action != NULL && (action[0] != 0))
 	{
@@ -2285,45 +2291,60 @@ void HandleKeyPress(const evh_args_t *ea)
 	const XEvent *te = ea->exc->x.etrigger;
 	const FvwmWindow * const fw = ea->exc->w.fw;
 	Bool is_second_binding;
+	const XClassHint *winClass1, *winClass2;
+	XClassHint tmp;
+	char *name1, *name2;
+	const exec_context_t *exc;
+	exec_context_changes_t ecc;
 
 	PressedW = None;
 
 	/* Here's a real hack - some systems have two keys with the
 	 * same keysym and different keycodes. This converts all
 	 * the cases to one keycode. */
-	kc = XKeysymToKeycode(
-		dpy, XKeycodeToKeysym(dpy, te->xkey.keycode, 0));
+	kc = XKeysymToKeycode(dpy, XKeycodeToKeysym(dpy, te->xkey.keycode, 0));
 
 	/* Check if there is something bound to the key */
 	sf = get_focus_window();
 	if (sf == NULL)
 	{
+		tmp.res_name = tmp.res_class = name1 = "root";
+		winClass1 = &tmp;
 		kcontext = C_ROOT;
-	}
-	else if (sf == ea->exc->w.fw)
-	{
-		kcontext = ea->exc->w.wcontext;
 	}
 	else
 	{
-		kcontext = C_WINDOW;
+		winClass1 = &sf->class;
+		name1 = sf->name.name;
+		kcontext = (sf == fw ? ea->exc->w.wcontext : C_WINDOW);
 	}
-	action = CheckTwoBindings(
-		&is_second_binding, Scr.AllBindings, STROKE_ARG(0) kc,
-		te->xkey.state, GetUnusedModifiers(), kcontext, BIND_KEYPRESS,
-		ea->exc->w.wcontext, BIND_PKEYPRESS);
+
+	if (fw == NULL)
+	{
+		tmp.res_name = tmp.res_class = name2 = "root";
+		winClass2 = &tmp;
+	}
+	else
+	{
+		winClass2 = &fw->class;
+		name2 = fw->name.name;
+	}
+	/* Searching the binding list with a different 'type' value
+	 * (ie. BIND_KEYPRESS vs BIND_PKEYPRESS) doesn't make a difference.
+	 * The different context value does though. */
+	action = CheckTwoBindings(&is_second_binding, Scr.AllBindings,
+		STROKE_ARG(0) kc, te->xkey.state, GetUnusedModifiers(), kcontext,
+		BIND_KEYPRESS, winClass1, name1, ea->exc->w.wcontext,
+		BIND_PKEYPRESS, winClass2, name2);
+
 	if (action != NULL)
 	{
-		const exec_context_t *exc;
-		exec_context_changes_t ecc;
-
 		exc = ea->exc;
 		if (is_second_binding == False)
 		{
 			ecc.w.fw = sf;
 			ecc.w.wcontext = kcontext;
-			exc = exc_clone_context(
-				ea->exc, &ecc, ECC_FW | ECC_WCONTEXT);
+			exc = exc_clone_context(ea->exc, &ecc, ECC_FW | ECC_WCONTEXT);
 		}
 		execute_function(NULL, exc, action, 0);
 		if (is_second_binding == False)

@@ -238,7 +238,7 @@ static int ParseBinding(
 	unsigned short *buttons_grabbed, Bool is_silent)
 {
 	char *action, context_string[20], modifier_string[20], *ptr, *token;
-	char key_string[201] = "";
+	char key_string[201] = "", buffer[80], *windowName = NULL, *p;
 	int button = 0;
 	int n1=0,n2=0,n3=0;
 	KeySym keysym = NoSymbol;
@@ -254,7 +254,36 @@ static int ParseBinding(
 	STROKE_CODE(int i);
 
 	/* tline points after the key word "Mouse" or "Key" */
-	token = PeekToken(tline, &ptr);
+	token = p = PeekToken(tline, &ptr);
+	/* check to see if a window name has been specified. */
+	if (*p == '(')
+	{
+		/* A window name has been specified for the binding. */
+		strcpy(buffer, p+1);
+		p = buffer;
+		while (*p != ')')
+		{
+			if (*p == '\0')
+			{
+				if (!is_silent)
+					fvwm_msg(ERR, "ParseBinding",
+						"Syntax error in line %s - missing ')'", tline);
+				return 0;
+			}
+			++p;
+		}
+		*p++ = '\0';
+		windowName = buffer;
+		if (*p != '\0')
+		{
+			if (!is_silent)
+				fvwm_msg(ERR, "ParseBinding",
+					"Syntax error in line %s - trailing text after specified window", tline);
+			return 0;
+		}
+		token = PeekToken(ptr, &ptr);
+	}
+
 	if (token != NULL)
 	{
 		if (BIND_IS_KEY_BINDING(type))
@@ -437,7 +466,7 @@ static int ParseBinding(
 	/* BEGIN remove */
 	CollectBindingList(
 		dpy, pblist, &rmlist, type, STROKE_ARG((void *)stroke)
-		button, keysym, modifier, context);
+		button, keysym, modifier, context, windowName);
 	if (rmlist != NULL)
 	{
 		is_binding_removed = True;
@@ -502,7 +531,7 @@ static int ParseBinding(
 	rc = AddBinding(
 		dpy, pblist, type, STROKE_ARG((void *)stroke)
 		button, keysym, key_string, modifier, context, (void *)action,
-		NULL);
+		NULL, windowName);
 
 	return rc;
 }
