@@ -593,7 +593,6 @@ void FlocaleRotateDrawString(
 
 	/* free pixmap and GC */
 	XFreePixmap(dpy, canvas_pix);
-	XFreeGC(dpy, font_gc);
 
 	/* x and y corrections: we fill a rectangle! */
 	switch (fws->flags.text_rotation)
@@ -642,7 +641,6 @@ void FlocaleRotateDrawString(
 	XSetTSOrigin(dpy, my_gc, xpsh, ypsh);
 	XFillRectangle(dpy, fws->win, my_gc, xpsh, ypsh, rotated_w, rotated_h);
 	XFreePixmap(dpy, rotated_pix);
-	XFreeGC(dpy, my_gc);
 
 	return;
 }
