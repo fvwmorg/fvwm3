@@ -1,3 +1,21 @@
+2002-05-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menucmd.c (CMD_AddToMenu):
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/menus.h:
+	* fvwm/menus.c
+	changed signature of AddToMenu
+
+	* fvwm/menus.c (clone_menu_root_static):
+	fixed problem w/ menu style usage count and tear off menus
+	fixed core dump w/ not copying the missing sub menu function in tear
+	off menus
+	(clone_menu_item_list):
+	(AddToMenu):
+	(add_another_menu_item):
+	(size_menu_vertically):
+	fixed additional "More..." items in sub menus of torn off menus
+
 2002-05-12  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/colorset.h:

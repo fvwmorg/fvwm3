@@ -353,7 +353,7 @@ void CMD_WindowList(F_CMD_ARGS)
   mr = NewMenuRoot(tlabel);
   if (!(flags & NO_CURRENT_DESK_TITLE))
   {
-    AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
+    AddToMenu(mr, tlabel, "TITLE", False, False, False);
     empty_menu = False;
   }
   free(tlabel);
@@ -480,11 +480,11 @@ void CMD_WindowList(F_CMD_ARGS)
 	  {
             if (((flags & SHOW_GEOMETRY) || (flags & SHOW_INFONOTGEO)) &&
 		!(flags & TITLE_FOR_ALL_DESKS))
-	      AddToMenu(mr, NULL, NULL, FALSE, FALSE);
+	      AddToMenu(mr, NULL, NULL, False, False, False);
 	    if (flags & TITLE_FOR_ALL_DESKS)
 	    {
 	      tlabel = get_desk_title(t->Desk, flags, False);
-	      AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
+	      AddToMenu(mr, tlabel, "TITLE", False, False, False);
 	      free(tlabel);
 	    }
 	  }
@@ -493,7 +493,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	if (first_desk && flags & TITLE_FOR_ALL_DESKS)
 	{
 	  tlabel = get_desk_title(t->Desk, flags, False);
-	  AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
+	  AddToMenu(mr, tlabel, "TITLE", False, False, False);
 	  free(tlabel);
 	}
 	first_desk = False;
@@ -594,7 +594,7 @@ void CMD_WindowList(F_CMD_ARGS)
           tfunc = safemalloc(strlen(func) + 32);
           sprintf(tfunc,"%s %lu", func, FW_W(t));
 	}
-        AddToMenu(mr, t_hot, tfunc, FALSE, FALSE);
+        AddToMenu(mr, t_hot, tfunc, False, False, False);
         free(tfunc);
         /* Add the title pixmap */
         if (FMiniIconsSupported && t->mini_icon)
@@ -615,7 +615,7 @@ void CMD_WindowList(F_CMD_ARGS)
   {
     /* force current desk title */
     tlabel = get_desk_title(desk, flags, True);
-    AddToMenu(mr, tlabel, "TITLE", FALSE, FALSE);
+    AddToMenu(mr, tlabel, "TITLE", False, False, False);
     free(tlabel);
   }
 

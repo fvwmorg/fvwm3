@@ -625,7 +625,8 @@ void menuitem_paint(
 		    MI_HOTKEY_COLUMN(mi) == i)
 		{
 			FlocaleDrawUnderline(
-				dpy, ST_PSTDFONT(ms),fws, MI_HOTKEY_COFFSET(mi));
+				dpy, ST_PSTDFONT(ms),fws,
+                                MI_HOTKEY_COFFSET(mi));
 		}
 	}
 

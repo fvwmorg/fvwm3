@@ -200,7 +200,7 @@ void CMD_AddToMenu(F_CMD_ARGS)
 	set_last_added_item(ADDED_MENU, mr);
 
 	rest = GetNextToken(rest, &item);
-	AddToMenu(mr, item, rest, True /* pixmap scan */, True);
+	AddToMenu(mr, item, rest, True /* pixmap scan */, True, False);
 	if (item)
 	{
 		free(item);

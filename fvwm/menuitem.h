@@ -45,6 +45,7 @@
 #define MI_IS_TITLE_CENTERED(i) ((i)->flags.is_title_centered)
 #define MI_IS_POPUP(i)          ((i)->flags.is_popup)
 #define MI_IS_MENU(i)           ((i)->flags.is_menu)
+#define MI_IS_CONTINUATION(i)   ((i)->flags.is_continuation)
 #define MI_HAS_TEXT(i)          ((i)->flags.has_text)
 #define MI_HAS_PICTURE(i)       ((i)->flags.has_picture)
 #define MI_HAS_HOTKEY(i)        ((i)->flags.has_hotkey)
@@ -89,6 +90,7 @@ typedef struct MenuItem
 	char hotkey_column;
 	struct
 	{
+		unsigned is_continuation : 1;
 		unsigned is_separator : 1;
 		unsigned is_tear_off_bar : 1;
 		unsigned is_title : 1;

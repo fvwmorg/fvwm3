@@ -4885,7 +4885,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 			/* And add the entry pointing to the new menu */
 			AddToMenu(
 				msp->menu, "More&...", tempname,
-				False /* no pixmap scan */, False);
+				False /* no pixmap scan */, False, True);
 			free(tempname);
 			has_continuation_menu = True;
 		}
@@ -5354,6 +5354,11 @@ static void clone_menu_item_list(
 		/* duplicate all items in the current menu */
 		for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 		{
+                        if (MI_IS_CONTINUATION(mi))
+                        {
+                                /* skip this item */
+                                continue;
+                        }
 			cloned_mi = menuitem_clone(mi);
 			append_item_to_menu(dest_mr, cloned_mi, False);
 		}
@@ -5375,8 +5380,14 @@ static void clone_menu_root_static(
 	}
 	MR_COPIES(dest_mr) = 0;
 	MR_MAPPED_COPIES(dest_mr) = 0;
+	MST_USAGE_COUNT(src_mr)++;
 	MR_POPUP_ACTION(dest_mr) = NULL;
 	MR_POPDOWN_ACTION(dest_mr) = NULL;
+        if (MR_MISSING_SUBMENU_FUNC(src_mr))
+        {
+                MR_MISSING_SUBMENU_FUNC(dest_mr) =
+                        safestrdup(MR_MISSING_SUBMENU_FUNC(src_mr));
+        }
 	if (MR_HAS_SIDECOLOR(src_mr))
 	{
 		MR_SIDECOLOR(dest_mr) =
@@ -6463,7 +6474,8 @@ MenuRoot *FollowMenuContinuations(MenuRoot *mr, MenuRoot **pmrPrior )
  *
  ***********************************************************************/
 void AddToMenu(
-	MenuRoot *mr, char *item, char *action, Bool fPixmapsOk, Bool fNoPlus)
+	MenuRoot *mr, char *item, char *action, Bool fPixmapsOk, Bool fNoPlus,
+        Bool is_continuation_item)
 {
 	MenuItem *tmp;
 	char *start;
@@ -6684,6 +6696,10 @@ void AddToMenu(
 	 * Set the type flags
 	 ***************************************************************/
 
+        if (is_continuation_item)
+        {
+                MI_IS_CONTINUATION(tmp) = True;
+        }
 	find_func_type(MI_ACTION(tmp), &(MI_FUNC_TYPE(tmp)), NULL);
 	switch (MI_FUNC_TYPE(tmp))
 	{
@@ -6856,7 +6872,7 @@ void add_another_menu_item(char *action)
 		return;
 	}
 	rest = GetNextToken(action,&item);
-	AddToMenu(mr, item, rest, True /* pixmap scan */, False);
+	AddToMenu(mr, item, rest, True /* pixmap scan */, False, False);
 	if (item)
 	{
 		free(item);

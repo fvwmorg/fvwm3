@@ -341,7 +341,7 @@ MenuRoot *menus_find_menu(char *name);
 void menus_remove_style_from_menus(MenuStyle *ms);
 MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
 MenuRoot *NewMenuRoot(char *name);
-void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
+void AddToMenu(MenuRoot *, char *, char *, Bool, Bool, Bool);
 void menu_enter_tear_off_menu(FvwmWindow *fw);
 void menu_close_tear_off_menu(FvwmWindow *fw);
 void do_menu(MenuParameters *pmp, MenuReturn *pret);
