@@ -1339,11 +1339,10 @@ ChangeMenuStyle pixmap1 \\
 .TP
 .BI "CopyMenuStyle " "orig-menustyle dest-menustyle"
 Copy
-.IR orig-menustyle " to " dest-menustyle ,
+.IR orig-menustyle to dest-menustyle ,
 where
 .IR orig-menustyle
-is an existing menu style different from the default menu style "*".
-If the menu style
+is an existing menu style.  If the menu style
 .IR dest_menustyle
 does not exist, then it is created.
 
@@ -2008,7 +2007,9 @@ of the menu items.  Think of the format string as if it were a
 menu item.  All you have to do is tell fvwm where to place the different
 parts of the menu item (i.e. the labels, the triangle denoting a sub
 menu, the mini icons and the side pic) in the blank area.  The string
-consists of spaces, tabs and formatting directives beginning with '%'.
+consists of spaces,
+.SM Tab
+characters and formatting directives beginning with '%'.
 Any illegal characters and formatting directives are silently ignored:
 
 .in +.5i
@@ -2057,8 +2058,8 @@ string, all characters to the right of it are silently ignored.
 .in -.3i
 .BR Space " and " Tab
 .in +.3i
-Add a gap as large as a space or tab is with the font you use in the
-menu items.  Don't forget to put the whole string in double quotes if
+Add a gap as large as one respectively eight spaces are with the font you use
+in the menu items.  Don't forget to put the whole string in double quotes if
 you use spaces or tabs.
 .in -.3i
 .B %p
@@ -4733,10 +4734,10 @@ automatically place new windows in a cascading fashion.
 .I TileCascadePlacement
 automatically places new windows in a smart
 location - a location in which they do not overlap any other
-windows on the screen.  If no such position can be found 
+windows on the screen.  If no such position can be found
 .IR CascadePlacement
 is used as a fall-back method.
- 
+
 .I TileManualPlacement
 This is the same as
 .IR TileCascadePlacement ,

@@ -4290,7 +4290,6 @@ static void size_menu_horizontally(MenuRoot *mr)
 	MI_LABEL_STRLEN(mi)[0] = strlen(MI_LABEL(mi)[0]);
 	w = XTextWidth(MST_PSTDFONT(mr)->font, MI_LABEL(mi)[0],
 		       MI_LABEL_STRLEN(mi)[0]);
-	/* Negative value is used to indicate a title for now. */
 	MI_LABEL_OFFSET(mi)[0] = w;
 	MI_IS_TITLE_CENTERED(mi) = True;
 	if (max.title_width < w)
@@ -4312,7 +4311,7 @@ static void size_menu_horizontally(MenuRoot *mr)
 	  max.label_width[i] = w;
       }
     }
-    if(MI_PICTURE(mi) && max.picture_width < MI_PICTURE(mi)->width)
+    if (MI_PICTURE(mi) && max.picture_width < MI_PICTURE(mi)->width)
     {
       max.picture_width = MI_PICTURE(mi)->width;
     }
@@ -4324,14 +4323,14 @@ static void size_menu_horizontally(MenuRoot *mr)
       k = (MST_USE_LEFT_SUBMENUS(mr)) ?
 	MAX_MENU_ITEM_MINI_ICONS - 1 - i : i;
 
-      if(MI_MINI_ICON(mi)[i] && max.icon_width[k] < MI_MINI_ICON(mi)[i]->width)
+      if (MI_MINI_ICON(mi)[i] && max.icon_width[k] < MI_MINI_ICON(mi)[i]->width)
       {
 	max.icon_width[k] = MI_MINI_ICON(mi)[i]->width;
       }
     }
-  }
+  } /* for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi)) */
 
-  if(MR_SIDEPIC(mr))
+  if (MR_SIDEPIC(mr))
   {
     max.sidepic_width = MR_SIDEPIC(mr)->width;
   }
@@ -4532,8 +4531,10 @@ static void size_menu_horizontally(MenuRoot *mr)
 	  break;
 	} /* switch (*format) */
 	break;
-      case ' ':
       case '\t':
+	x += MENU_TAB_WIDTH * XTextWidth(MST_PSTDFONT(mr)->font, " ", 1);
+	break;
+      case ' ':
 	/* Advance the x position. */
 	x += XTextWidth(MST_PSTDFONT(mr)->font, format, 1);
 	break;
@@ -4544,6 +4545,12 @@ static void size_menu_horizontally(MenuRoot *mr)
       format++;
       first = False;
     } /* while (*format) */
+#if 1
+    /* stored for vertical sizing */
+    MR_ITEM_LABELS_USED(mr) = columns_placed;
+    MR_MINI_ICONS_USED(mr) = icons_placed;
+fprintf(stderr,"using %d labels and %d icons\n", columns_placed, icons_placed);
+#endif
 
     /* Hide unplaced parts of the menu. */
     if (!sidepic_placed)
@@ -4564,8 +4571,8 @@ static void size_menu_horizontally(MenuRoot *mr)
 	 max(max.title_width, max.picture_width)) - total_width;
     if (d > 0)
     {
-      /* The title is larger than all menu items. Stretch the items to match
-       * the title width. */
+      /* The title is larger than all menu items. Stretch the gaps between the
+       * items up to the total width of the title. */
       for (i = 0; i < used_objects; i++)
       {
 	if (i >= left_objects)
@@ -4587,7 +4594,7 @@ static void size_menu_horizontally(MenuRoot *mr)
       {
 	MR_SIDEPIC_X_OFFSET(mr) += d;
       }
-    }
+    } /* if (d > 0) */
     MR_WIDTH(mr) = total_width + 2 * MST_BORDER_WIDTH(mr);
     MR_ITEM_WIDTH(mr) = total_width - sidepic_space;
     MR_ITEM_X_OFFSET(mr) = MST_BORDER_WIDTH(mr);
@@ -4675,10 +4682,32 @@ static void size_menu_vertically(MenuRoot *mr)
       MENU_SEPARATOR_HEIGHT + relief_thickness : MENU_SEPARATOR_TOTAL_HEIGHT;
 
     MI_Y_OFFSET(mi) = y;
-    if(MI_IS_TITLE(mi))
+    if (MI_IS_TITLE(mi) && MI_IS_TITLE_CENTERED(mi))
     {
       MI_HEIGHT(mi) = MST_PSTDFONT(mr)->height +
 	MST_TITLE_GAP_ABOVE(mr) + MST_TITLE_GAP_BELOW(mr);
+    }
+    else if (MI_IS_SEPARATOR(mi))
+    {
+      /* Separator */
+      MI_HEIGHT(mi) = separator_height;
+    }
+    else
+    {
+      /* Normal text entry */
+      if (MI_HAS_TEXT(mi) && MR_ITEM_LABELS_USED(mr))
+      {
+	MI_HEIGHT(mi) = simple_entry_height + relief_thickness;
+      }
+      else
+      {
+	MI_HEIGHT(mi) = MST_ITEM_GAP_ABOVE(mr) + MST_ITEM_GAP_BELOW(mr) +
+	  relief_thickness;
+      }
+    }
+    if (MI_IS_TITLE(mi))
+    {
+      /* add space for the underlines */
       switch (MST_TITLE_UNDERLINES(mr))
       {
       case 0:
@@ -4705,37 +4734,21 @@ static void size_menu_vertically(MenuRoot *mr)
 	break;
       }
     }
-    else if (MI_IS_SEPARATOR(mi))
-    {
-      /* Separator */
-      MI_HEIGHT(mi) = separator_height;
-    }
-    else
-    {
-      /* Normal text entry */
-      if (MI_HAS_TEXT(mi))
-      {
-	MI_HEIGHT(mi) = simple_entry_height + relief_thickness;
-      }
-      else
-      {
-	MI_HEIGHT(mi) = MST_ITEM_GAP_ABOVE(mr) + MST_ITEM_GAP_BELOW(mr) +
-	  relief_thickness;
-      }
-    }
-    for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
+    for (i = 0; i < /*MAX_MENU_ITEM_MINI_ICONS*/MR_MINI_ICONS_USED(mr); i++)
     {
       if (MI_MINI_ICON(mi)[i])
+      {
 	has_mini_icon = True;
-      if(MI_MINI_ICON(mi)[i] &&
-	 MI_HEIGHT(mi) < MI_MINI_ICON(mi)[i]->height + relief_thickness)
+      }
+      if (MI_MINI_ICON(mi)[i] &&
+	  MI_HEIGHT(mi) < MI_MINI_ICON(mi)[i]->height + relief_thickness)
       {
 	MI_HEIGHT(mi) = MI_MINI_ICON(mi)[i]->height + relief_thickness;
       }
     }
     if (MI_PICTURE(mi))
     {
-      if (MI_HAS_TEXT(mi) || has_mini_icon)
+      if ((MI_HAS_TEXT(mi) && MR_ITEM_LABELS_USED(mr)) || has_mini_icon)
 	MI_HEIGHT(mi) += MI_PICTURE(mi)->height;
       else
 	MI_HEIGHT(mi) = MI_PICTURE(mi)->height + relief_thickness;
@@ -4872,8 +4885,10 @@ static void make_menu(MenuRoot *mr)
     return;
 
   merge_continuation_menus(mr);
-  size_menu_vertically(mr);
+  /* size_menu_horizontally must be called first because it evaluates the
+   * item format and stores some values used by size_menu_vertically */
   size_menu_horizontally(mr);
+  size_menu_vertically(mr);
 
   MR_XANIMATION(mr) = 0;
   memset(&(MR_DYNAMIC_FLAGS(mr)), 0, sizeof(MR_DYNAMIC_FLAGS(mr)));
@@ -4999,7 +5014,6 @@ static Bool scanForPixmap(char *instring, Picture **p, char identifier)
   {
     return False;
   }
-
   name = (char *)safemalloc(strlen(instring)+1);
 
   /* Scan whole string	*/
@@ -5040,7 +5054,8 @@ static Bool scanForPixmap(char *instring, Picture **p, char identifier)
       if (pp)
 	*p = pp;
       else
-	fvwm_msg(WARN, "scanForPixmap", "Couldn't find pixmap %s", name);
+	fvwm_msg(WARN, "scanForPixmap",
+		 "Couldn't load image from mini-news.xpm %s", name);
       break;
     }
   }

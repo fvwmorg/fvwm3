@@ -81,7 +81,7 @@ extern char fAlwaysCurrentDesk;
 
 extern int MoveThreshold;
 
-extern int icon_w, icon_h, icon_x, icon_y;
+extern int icon_w, icon_h, icon_x, icon_y, icon_xneg, icon_yneg;
 XFontStruct *font, *windowFont;
 #ifdef I18N_MB
 XFontSet fontset, windowFontset;
@@ -604,17 +604,21 @@ void initialize_pager(void)
   else
     wmhints.initial_state = IconicState;
   wmhints.flags = 0;
-  if(icon_x > -10000)
+  if (icon_x != -10000)
   {
-    if(icon_x < 0)
+    if (icon_xneg)
       icon_x = Scr.MyDisplayWidth + icon_x - icon_w;
-    if(icon_y > -10000)
+    if (icon_y != -10000)
     {
-      if(icon_y < 0)
+      if (icon_yneg)
 	icon_y = Scr.MyDisplayHeight + icon_y - icon_h;
     }
     else
+    {
       icon_y = 0;
+    }
+    icon_xneg = 0;
+    icon_yneg = 0;
     wmhints.icon_x = icon_x;
     wmhints.icon_y = icon_y;
     wmhints.flags = IconPositionHint;

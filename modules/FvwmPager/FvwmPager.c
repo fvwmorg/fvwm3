@@ -121,6 +121,7 @@ int window_w=0, window_h=0, window_x=0, window_y=0;
 int icon_x=-10000, icon_y=-10000, icon_w=0, icon_h=0;
 int usposition = 0,uselabel = 1;
 int xneg = 0, yneg = 0;
+int icon_xneg = 0, icon_yneg = 0;
 extern DeskInfo *Desks;
 int StartIconic = 0;
 int MiniIcons = 0;
@@ -1546,6 +1547,13 @@ void ParseOptions(void)
     }
     else if (StrEquals(resource, "Geometry"))
     {
+      window_w = 0;
+      window_h = 0;
+      window_x = 0;
+      window_y = 0;
+      xneg = 0;
+      yneg = 0;
+      usposition = 0;
       flags = XParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue)
       {
@@ -1576,6 +1584,12 @@ void ParseOptions(void)
     }
     else if (StrEquals(resource, "IconGeometry"))
     {
+      icon_w = 0;
+      icon_h = 0;
+      icon_x = -10000;
+      icon_y = -10000;
+      icon_xneg = 0;
+      icon_yneg = 0;
       flags = XParseGeometry(arg1,&g_x,&g_y,&width,&height);
       if (flags & WidthValue)
 	icon_w = width;
@@ -1584,10 +1598,18 @@ void ParseOptions(void)
       if (flags & XValue)
       {
 	icon_x = g_x;
+        if (flags & XNegative)
+        {
+          icon_xneg = 1;
+        }
       }
       if (flags & YValue)
       {
 	icon_y = g_y;
+        if (flags & YNegative)
+        {
+          icon_yneg = 1;
+        }
       }
     }
     else if (StrEquals(resource, "Label"))

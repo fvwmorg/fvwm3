@@ -1,23 +1,40 @@
+2001-01-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (scanForPixmap):
+	changed error message when menu pixmap can not be loaded
+	(size_menu_horizontally):
+	cleaned up a bit
+	(size_menu_horizontally):
+	fixed width of a tab in the item format
+	(size_menu_horizontally):
+	(size_menu_vertically):
+	(make_menu):
+	fixed vertical sizing of items with suppressed, tall mini icons
+	(size_menu_vertically):
+	fixed vertical sizing of items without text or icons
+	(size_menu_vertically):
+	fixed vertical sizing of titles
+
 2001-01-18  Chris Rankin <rankinc@zipworld.com.au>
 
-    * lib/fvwmsignal.c (fvwmSelect):
-    Always return -1 on failure; returning 0 means "timeout". Make
-    sure that errno is always set correctly on failure instead.
+	* lib/fvwmsignal.c (fvwmSelect):
+	Always return -1 on failure; returning 0 means "timeout". Make
+	sure that errno is always set correctly on failure instead.
 
-    * fvwm.module_interface.c (PositiveWrite):
-    Don't retry the select() if we received a "terminate" signal,
-    because this is the reason we have fvwmSelect().
+	* fvwm.module_interface.c (PositiveWrite):
+	Don't retry the select() if we received a "terminate" signal,
+	because this is the reason we have fvwmSelect().
 
 2001-01-17  Dan Espen  <dane@mk.telcordia.com>
 
-	* fvwm/add_window.c (increase_icon_hint_count): 
-	* fvwm/icons.c (CreateIconWindow): 
-	* fvwm/misc.h: 
+	* fvwm/add_window.c (increase_icon_hint_count):
+	* fvwm/icons.c (CreateIconWindow):
+	* fvwm/misc.h:
 	* fvwm/events.c (HandlePropertyNotify): Made icon debugging a compile
 	time option.
 	* tests/purify/purify.fvwm2rc: More tests.
 	* fvwm/fvwm2.1: A little rewording in CopyMenuStyle and Placement.
-	
+
 2001-01-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (HandlePropertyNotify):

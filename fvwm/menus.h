@@ -421,6 +421,9 @@ typedef struct MenuRootStatic
   unsigned short hilight_width;       /* width of the area to be hilighted */
   unsigned short y_offset;            /* y coordinate for item */
   unsigned short items;               /* number of items in the menu */
+  unsigned item_labels_used : 4;      /* number of item labels present in the
+				       * item format */
+  unsigned mini_icons_used : 4;       /* same for mini icons */
   Picture *sidePic;
   Pixel sideColor;
   /* Menu Face    */
@@ -457,6 +460,8 @@ typedef struct MenuRootStatic
 #define MR_HILIGHT_X_OFFSET(m)   ((m)->s->hilight_x_offset)
 #define MR_HILIGHT_WIDTH(m)      ((m)->s->hilight_width)
 #define MR_ITEMS(m)              ((m)->s->items)
+#define MR_ITEM_LABELS_USED(m)   ((m)->s->item_labels_used)
+#define MR_MINI_ICONS_USED(m)    ((m)->s->mini_icons_used)
 #define MR_SIDEPIC(m)            ((m)->s->sidePic)
 #define MR_SIDECOLOR(m)          ((m)->s->sideColor)
 #define MR_STYLE(m)              ((m)->s->ms)

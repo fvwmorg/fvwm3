@@ -56,9 +56,9 @@
 #define DEFAULT_POPDOWN_DELAY		  15 /* ms*10 */
 #define DEFAULT_MENU_CLICKTIME		   (3*DEFAULT_CLICKTIME)
 #define DEFAULT_MOVE_THRESHOLD		   3 /* pixels */
-#define MAX_MENU_COPIES			  10
-#define MAX_MENU_ITEM_LABELS		   3
-#define MAX_MENU_ITEM_MINI_ICONS	   2
+#define MAX_MENU_COPIES			  10 /* menu copies */
+#define MAX_MENU_ITEM_LABELS		   3 /* labels (max. 15) */
+#define MAX_MENU_ITEM_MINI_ICONS	   2 /* mini icons (max. 15) */
 #define DEFAULT_MENU_BORDER_WIDTH	   2 /* pixels */
 #define MAX_MENU_BORDER_WIDTH		  50 /* pixels */
 #define MAX_MENU_ITEM_RELIEF_THICKNESS	  50 /* pixels */
@@ -87,6 +87,8 @@
 /*   same for titles */
 #define DEFAULT_MENU_TITLE_TEXT_Y_OFFSET   (DEFAULT_MENU_ITEM_TEXT_Y_OFFSET)
 #define DEFAULT_MENU_TITLE_TEXT_Y_OFFSET2  (DEFAULT_MENU_ITEM_TEXT_Y_OFFSET2)
+/* width of a tab in the item format of a menu */
+#define MENU_TAB_WIDTH                     8 /* spaces */
 
 
 /*** pager ***/
