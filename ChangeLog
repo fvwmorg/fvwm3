@@ -1,3 +1,10 @@
+1999-10-20  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/session.c (matchWin): removed '#if 0 if (Restarting)' code
+	(MatchWinToSM): commented the code, which, instead of restoring the
+	original window stacking order when the state was saved, breaks it,
+	until figuring what to do with this code
+
 1999-10-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.h (SMSET_FOCUS_MODE):
@@ -15,7 +22,7 @@
 	* fvwm/module_interface.c (executeModuleSync):
 	made a small performance enhancement
 
-1999-10-18 Olivier Chapuis <olivier.chapuis@free.fr>
+1999-10-18  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* module_interface.c (executeModuleSync):  New logic in the
 	executeModuleSynch loop. Ctl-Alt-Escape allows to exit from a
@@ -264,7 +271,7 @@
 	WhitePixel for the stipples instead of calculations based on default
 	colours
 
-1999-10-11 Olivier Chapuis <olivier.chapuis@free.fr>
+1999-10-11  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* fvwm/windowlist.c (do_windowList):
 	* fvwm/fvwm2.1:
@@ -290,7 +297,7 @@
 	move/movetopage
 	(move_window_doit): fixed movetopage if window had negative coordinates
 
-1999-10-04 Olivier Chapuis <olivier.chapuis@free.fr>
+1999-10-04  Olivier Chapuis  <olivier.chapuis@free.fr>
 	* FvwmCpp/FvwmCpp.c (main):
 	* FvwmCpp/FvwmCpp.1:
 	* FvwmM4/FvwmM4.c (main):
@@ -448,7 +455,7 @@
 	* libs/Colorset.{h,c}, modules/FvwmTheme/FvwmTheme.c: simplified
 	the colorset structure to allow for expansion.
 
-1999-09-27 Olivier Chapuis <olivier.chapuis@free.fr>
+1999-09-27  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* FvwmM4/FvwmM4.c (m4_defs):
 	* FvwmM4/FvwmM4.1:
@@ -514,7 +521,7 @@
 	applied '$v' patch by Mark Rainford
 
 
-1999-09-24  Olivier Chapuis <olivier.chapuis@free.fr>
+1999-09-24  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* fvwm/fvwm.c: -vesrion option print compile-time informations.
 	* fvwm/fvwm2.1:
@@ -1719,7 +1726,7 @@ Sun Jul 11 11:16:15 1999  DanEspen  <dje@blue>
 	(MatchWinToSM): When evaluating x and y coordinates for sticky windows
 	add old_bw before evaluating my_module and then substract it.
 
-1999-06-27 Olivier Chapuis <olivier.chapuis@free.fr>
+1999-06-27  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* fvwm/fvwm2.1: Corrected misprints
 

@@ -550,16 +550,6 @@ static Bool matchWin(FvwmWindow *w, Match *m)
   int wm_command_count = 0, i;
   int found;
 
-#if 0
-  /* No! When restarting fvwm kills/spawns modules. This does mix up the
-   * positions of the module windows. */
-  if (Restarting)
-    {
-       /* simply match by window id */
-       return (w->w == m->win);
-    }
-#endif
-
   found = 0;
   client_id = GetClientID(w->w);
 
@@ -728,6 +718,7 @@ MatchWinToSM(FvwmWindow *ewin,
 	    ewin->icon_y_loc -= Scr.Vy;
 	  }
 
+#if 0
 	  /* Find the window to stack this one below. */
 	  for (j = i-1; j >= 0; j--) {
 
@@ -736,7 +727,7 @@ MatchWinToSM(FvwmWindow *ewin,
 
 	      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) {
 #ifdef FVWM_DEBUG_DEVEL
-  if (!Restarting) fprintf(stderr, "[N]");
+		fprintf(stderr, "[S]");
 #endif
 		if (matchWin(t, &matches[j])) {
 		  ewin->stack_next->stack_prev = ewin->stack_prev;
@@ -751,6 +742,7 @@ MatchWinToSM(FvwmWindow *ewin,
 	      }
 	    }
 	  }
+#endif
 	  return;
 	}
     }
