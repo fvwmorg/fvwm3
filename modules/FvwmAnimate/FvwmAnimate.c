@@ -896,9 +896,9 @@ void ParseConfigLine(char *buf) {
     p = buf+MyNameLen;              /* starting point */
     q = NULL;
     if ((e = FindToken(p,table,char *))) { /* config option ? */
-      if ((strncasecmp(*e,"Stop",4) != 0)
-          && (strncasecmp(*e,"Custom",6) != 0)
-          && (strncasecmp(*e,"Save",4) != 0)) { /* no arg commands */
+      if ((strcasecmp(*e,"Stop") != 0)
+          && (strcasecmp(*e,"Custom") != 0)
+          && (strcasecmp(*e,"Save") != 0)) { /* no arg commands */
         p+=strlen(*e);		/* skip matched token */
         q=GetArgument(&p);
         if (!q) {                       /* If arg not found */
@@ -927,9 +927,9 @@ void ParseConfigLine(char *buf) {
           free(Animate.color);          /* release storage holding color name */
           Animate.color = 0;            /* show its gone */
         }
-        if ((strncasecmp(q,"None",4) != 0) /* If not color "none"  */
-            && (strncasecmp(q,"Black^White",11) != 0) 
-            && (strncasecmp(q,"White^Black",11) != 0)) {
+        if ((strcasecmp(q,"None") != 0) /* If not color "none"  */
+            && (strcasecmp(q,"Black^White") != 0) 
+            && (strcasecmp(q,"White^Black") != 0)) {
           Animate.color = (char *)strdup(q); /* make copy of name */
         }
         CreateDrawGC();                 /* update GC */
@@ -943,10 +943,9 @@ void ParseConfigLine(char *buf) {
       case Effect_arg:                /* Effect */
       case Resize_arg:                /* -or - Resize */
         for (i=0; i < NUM_EFFECTS; i++) {
-          if (strncasecmp(q, effects[i].name, strlen(effects[i].name))==0
+          if (strcasecmp(q, effects[i].name)==0
               || (effects[i].alias
-                  && strncasecmp(q, effects[i].alias,
-                                   strlen(effects[i].alias))==0)) {
+                  && strcasecmp(q, effects[i].alias)==0)) {
             Animate.resize = effects[i].function;
             break;
           } /* end match */

@@ -1,3 +1,8 @@
+1998-11-11  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmAnimate.c:  Fix bug that stopped  zoom3d from  being picked.
+  	In general, strcasecmp is now being used instead of strncasecmp.
+
 Tue Nov 10 22:17:50 1998  DanEspen  <dje@blue>
 
 	* FvwmAnimate.c: Handle missing arg on first entry in cmd table.
