@@ -14,7 +14,7 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 
-require 5.003;
+require 5.004;
 use strict;
 
 BEGIN {
@@ -25,19 +25,36 @@ BEGIN {
 
 use lib "@FVWM_PERLLIBDIR@";
 use FVWM::Module;
+use General::FileSystem "-quiet";
 
 # ----------------------------------------------------------------------------
-# main
+# variables
+
+my $lineToEval = undef;
+my $fileToLoad = undef;
+# whether continue running after --eval, --load or --preprocess, default is no
+my $continue = 0;
 
 my $options = {
-	# not yet
+	"eval=s"      => \$lineToEval,
+	"load=s"      => \$fileToLoad,
+	"preprocess"  => sub { die "preprocess will be implemented soon"; },
+	"continue!"   => \$continue,
 };
+
 my $module = new FVWM::Module(
-	Name => "FvwmPerl",
-	Mask => M_STRING,
+	Name          => "FvwmPerl",
+	Mask          => M_STRING,
 	EnableOptions => $options,
-	EnableAlias => 1,
+	EnableAlias   => 1,
 );
+
+sub printActionError ($$) {
+	my $action = shift;
+	my $errMsg = shift;
+	$errMsg =~ s/\s+$//s;
+	print STDERR "[", $module->name, "][$action]: $errMsg\n";
+}
 
 # ----------------------------------------------------------------------------
 # prepare the environment that may be used in the sent perl commands
@@ -53,8 +70,25 @@ sub command ($) {
 	$module->sendText($command);
 }
 
+sub load ($) {
+	my $filename = shift;
+	my $contents = loadFile($filename);
+	if (!defined $contents) {
+		printActionError("load", "Can't find and read $filename: $!");
+		return;
+	}
+	eval $$contents;
+	printActionError("load", "$@") if $@;
+}
+
+sub doEval ($) {
+	my $string = shift;
+	eval $string;
+	printActionError("eval", "$@") if $@;
+}
+
 # ----------------------------------------------------------------------------
-# handlers
+# event handlers
 
 sub processString ($$$$$$) {
 	my $self = $_[0];
@@ -66,19 +100,238 @@ sub processString ($$$$$$) {
 
 	if ($action eq "eval") {
 		return unless defined $rest;
-		eval $rest;
-		if ($@) {
-			print STDERR "[", $self->name, "][eval]: $@";
-		}
+		doEval($rest);
 	}
+
 	elsif ($action eq "load") {
-		# not yet
+		return unless defined $rest;
+		load($rest);
 	}
+
 	elsif ($action eq "stop") {
+		# send a signal to the event loop to terminate the module
 		die "quit";
+	}
+
+	elsif ($action eq "dump") {
+		# will dump non-void variables in the future
 	}
 }
 
 $module->addHandler(M_STRING, \&processString);
 
+# ----------------------------------------------------------------------------
+# execution
+
+if (defined $lineToEval) {
+	doEval($lineToEval);
+	exit(0) unless $continue;
+}
+
+if (defined $fileToLoad) {
+	load($fileToLoad);
+	exit(0) unless $continue;
+}
+
 $module->eventLoop;
+
+__END__
+
+# ----------------------------------------------------------------------------
+# man page
+
+=head1 NAME
+
+FvwmPerl - the FVWM perl manipulator
+
+=head1 SYNOPSIS
+
+FvwmPerl is spawned by fvwm(1), so no command line invocation will work.
+
+=head1 DESCRIPTION
+
+This module is intended to extend fvwm commands with the perl scripting
+power.  It enables to embed perl expressions in the fvwmrc files and
+construct fvwm commands.
+
+=head1 INVOCATION
+
+FvwmPerl may be invoked from a fvwmrc file.  If you want to invoke
+the unique and persistent instanse of FvwmPerl, it is suggested to
+do this from the I<StartFunction>.  Calling it from the top is also
+possible, but has several issues.
+
+    AddToFunc StartFunction I Module FvwmPerl
+
+There are several command line switches:
+
+B<FvwmPerl>
+[ B<--eval> line ]
+[ B<--load> file ]
+[ B<--preprocess> file ]
+[ B<--continue> ]
+[ alias ]
+
+Long switches may be abbreviated to short one-letter switches.
+
+B<--eval> line - evaluate the given perl code
+
+B<--load> file - evaluate perl code in the given file
+
+B<--preprocess> file - preprocess the given fvwmrc file
+
+B<--continue> - continues an execution after B<--eval>, B<--load> or
+B<--process> are processed.  By default, the module is not persistent
+in this case, i.e. B<--nocontinue> is assumed.
+
+=head1 ACTIONS
+
+There are several actions that FvwmPerl may perform:
+
+=over 4
+
+=item B<eval> perl-code
+
+Evaluate a line of perl code.
+
+A special function B<command(>"command"B<)> may be used in perl code to send
+back commands to fvwm.
+
+If perl code contains an error, it is printed to the standard error stream
+and prepended with the I<[FvwmPerl][eval]:> header.
+
+=item B<load> file-name
+
+Load a file of perl code.
+If the file is not fully qualified, it is searched in the user
+directory $FVWM_USERDIR (usually ~/.fvwm) and the system wide
+data directory $FVWM_DATADIR.
+
+A special function B<command(>"command"B<)> may be used in perl code to send
+back commands to fvwm.
+
+If perl code contains an error, it is printed to the standard error stream
+and prepended with the I<[FvwmPerl][load]:> header.
+
+=item B<preprocess> [params] file-name
+
+Preprocess fvwmrc file that may contain specially preformatted perl code.
+Lines started with B<%%> are perl code.  Text enclosed in B<%{> ... B<}%>
+delimeters, that may start anywhere on the line and end anywhere on the same
+or an other line, is perl code.
+
+The perl code is replaced with the output of its running.  The output
+may be generated only using a special function B<command(>"output"B<)>.
+
+If any embedded perl code contains an error, it is printed to the standard
+error stream and prepended with the I<[FvwmPerl][preprocess]:> header.
+
+=back
+
+These actions may be requested by one of 3 ways: 1) in the command line when
+FvwmPerl is invoked (in this case FvwmPerl is short-lived unless B<--continue>
+is also given), 2) by sending the corresponding message in fvwmrc using
+SendToModule, 3) by calling the corresponding perl function in perl code.
+
+=head1 FUNCTIONS
+
+There are several functions that perl code may call:
+
+=over 4
+
+=item B<command(>I<$fvwmCommand>B<)>
+
+In case of B<eval> or B<load> - send back to fvwm a string I<$fvwmCommand>.
+In case of B<preprocess> - append a string I<$fvwmCommand> to the output of
+the embedded perl code.
+
+=item B<doEval(>I<$perlCode>B<)>
+
+This function is equivalent to the B<eval> functionality
+on the string I<$perlCode>, described above.
+
+=item B<load(>$fileNameB<)>
+
+This function is equivalent to the B<load> functionality
+on the file $fileName, described above.
+
+=item B<preprocess(>I<@params, $fileName>B<)>
+
+This function is equivalent to the B<preprocess> functionality
+with the given parameters and the file $fileName described above.
+
+=back
+
+=head1 VARIABLES
+
+There are several global variable that may be used in perl code:
+
+    $a, $b, ... $h
+    @a, @b, ... @h
+    %a, %b, ... %h
+
+They all are initialized to the empty value and may be used to store a state
+between different calls to FvwmPerl actions.
+
+If you need more readable variable names, either write "no strict vars" at the
+start of every perl code or use a hash for this, like:
+
+    $h{id} = $h{firstName} . " " . $h{secondName}
+
+There will be a configuration option to turn strictness on and off.
+
+=head1 MESSAGES
+
+FvwmPerl may receive messages using the fvwm command SendToModule.
+The names, meanings and parameters of the messages are the same as the
+corresponding actions, described above.
+
+Additionally, a message B<stop> causes a module to quit.
+A message B<dump> dumps the contents of the changed variables.
+
+=head1 EXAMPLES
+
+A simple test:
+
+    SendToModule FvwmPerl eval $h{dir} = $ENV{HOME}
+    SendToModule FvwmPerl eval load($h{dir} . "/test.pl")
+    SendToModule FvwmPerl load $[HOME]/test.pl
+    SendToModule FvwmPerl preprocess $[FVWM_USERDIR]/fvwmrc.ppp
+    SendToModule FvwmPerl dump %h @a
+    SendToModule FvwmPerl stop
+
+The following example handles root backgrounds in fvwmrc.
+All these commands may be added to StartFunction.
+
+    Module FvwmPerl
+
+    # find all background pixmaps for a later use
+    SendToModule FvwmPerl eval $a = $ENV{HOME} . "/bg"; \
+      opendir DIR, $a; @b = grep { /xpm$/ } readdir(DIR); closedir DIR
+
+    # build a menu of background pixmaps
+    AddToMenu MyBackgrounds "My Backgrounds" Title
+    SendToModule FvwmPerl eval foreach $b (@b) \
+      { command("AddToMenu MyBackgrounds '$b' Exec fvwm-root $a/$b") }
+
+    # choose a random background to load on start-up
+    SendToModule FvwmPerl eval command("AddToFunc \
+      InitFunction + I Exec exec fvwm-root $a/" . $b[int(random(@b))])
+
+=head1 ESCAPING
+
+B<SendToModule> just like any other fvwm commands expands several dollar
+prefixed variables.  This may clash with the dollars perl uses.
+You may avoid this by prefixing SendToModule with a leading dash.
+The following 2 lines are equivalent:
+
+    SendToModule FvwmPerl eval $$d = "$[DISPLAY]"
+    -SendToModule FvwmPerl eval $d = "$ENV{DISPLAY}"
+
+    SendToModule FvwmPerl eval command("Echo desk=$d, display='$$d'")
+
+=head1 AUTHOR
+
+Mikhael Goikhman <migo@homemail.com>.
+
+=cut

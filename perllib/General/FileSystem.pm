@@ -24,7 +24,7 @@ require Exporter;
 @EXPORT = qw(
 	loadFile saveFile appendFile removeFile copyFile moveFile
 	makeDir makePath cleanDir removeDir copyDir moveDir
-	listFileNames findExecutable
+	listFileNames findFile findExecutable
 	defaultDirPerm preserveStat parsePath getCwd
 );
 
@@ -41,7 +41,7 @@ BEGIN {
 	$PRESERVED_STAT     = 0;
 
 	# allow these constants to be set directly from outside
-	$ERROR_HANDLER      ||= "warn";   # may be "die", "none", "warn" or CODE
+	$ERROR_HANDLER      ||= "warn";   # may be "die", "warn", "quiet" or CODE
 	$DEBUG_ENABLED      ||= 0;
 	$LOAD_FILE_DIRS     ||= [ "." ];  # for non fully qualified files only
 	$SAVE_FILE_DIR      ||= ".";      # for non fully qualified files only
@@ -86,10 +86,16 @@ or just:
 
 =head1 DESCRIPTION
 
-This package contains common file operation functions.
+This package contains common file operation functions:
 
-On fatal errors all functions call the error handler (see C<$ERROR_HANDLER>),
-that may throw exeption (die) or issue a warning or quietly return undef.
+  loadFile saveFile appendFile removeFile copyFile moveFile
+  makeDir makePath cleanDir removeDir copyDir moveDir
+  listFileNames findFile findExecutable
+  defaultDirPerm preserveStat parsePath getCwd
+
+On fatal file system errors all functions call the error handler
+(see C<$ERROR_HANDLER>), that may throw exeption (die), issue a warning
+or quietly return undef.
 
 =head1 REQUIREMENTS
 
@@ -110,7 +116,7 @@ sub import ($;$) {
 	my $package = shift;
 	while (@_ && $_[0] =~ /^-/) {
 		local $_ = shift;
-		$ERROR_HANDLER = $1 if /^-(die|warn|none)$/i;
+		$ERROR_HANDLER = $1 if /^-(die|warn|quiet)$/i;
 		$DEBUG_ENABLED = $1 if /^-(debug)$/i;
 	}
 	$package->export_to_level(1, @_);
@@ -122,7 +128,7 @@ sub callErrorHandler ($) {
 	my $msg = shift;
 	die  "$msg: [$!]\n" if $ERROR_HANDLER eq "die";
 	warn "$msg: [$!]\n" if $ERROR_HANDLER eq "warn";
-	return undef if $ERROR_HANDLER eq "none";
+	return undef if $ERROR_HANDLER eq "quiet";
 	&$ERROR_HANDLER($msg) if ref($ERROR_HANDLER) eq "CODE";
 	return undef;
 }
@@ -174,6 +180,10 @@ BEGIN {
 
 sub loadFile ($) {
  	my $fileName = shift;
+
+	foreach (@$LOAD_FILE_DIRS) {
+		if (-f "$_/$fileName") { $fileName = "$_/$fileName"; last; }
+	}
 	printLog("Loading file $fileName") if $DEBUG_ENABLED;
 
 	if ($ENABLE_CACHE) {
@@ -230,6 +240,10 @@ C<1> on success, otherwise throws exception.
 
 sub saveFile ($$;$) {
 	my ($fileName, $fileContentRef, $createDirs) = @_;
+
+	if ($fileName !~ m=^[/\\]|\w:\\=) {
+		$fileName .= $SAVE_FILE_DIR;
+	}
 	printLog("Saving  file $fileName") if $DEBUG_ENABLED;
 	die("saveFile: No SCALAR ref parameter\n")
 		unless ref($fileContentRef) eq 'SCALAR';

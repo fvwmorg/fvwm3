@@ -1,3 +1,9 @@
+2002-04-20  Mikhael Goikhman  <migo@homemail.com>
+
+	* perllib/FVWM/Module.pm.in:
+	* perllib/General/FileSystem.pm:
+	search a non fully qualified file in $FVWM_USERDIR and $FVWM_DATADIR
+
 2002-03-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* General/*:

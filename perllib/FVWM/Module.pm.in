@@ -81,6 +81,10 @@ my $TEXTBASED_PACKET_XMASK = (
 	MX_VISIBLE_ICON_NAME
 );
 
+# Set the FVWM search directories (used for non fully qualified file names)
+$General::FileSystem::SAVE_FILE_DIR = __PACKAGE__->userDataDir();
+$General::FileSystem::LOAD_FILE_DIRS = [ __PACKAGE__->searchDirs() ];
+
 sub isExtended ($$) {
 	my $self = shift;
 	my $type = shift;
@@ -157,7 +161,7 @@ sub new ($@) {
 	$self->mask($mask);
 	$self->mask($xmask) if $xmask;
 	$self->resetHandlers;
-	$self->getConfigInfo unless $params{'NoConfigInfo'};
+	$self->readConfigInfo unless $params{'NoConfigInfo'};
 	return $self;
 }
 
@@ -378,8 +382,23 @@ sub addDefaultErrorHandler ($) {
 	});
 }
 
-sub getConfigInfo ($@) {
+sub readConfigInfo ($@) {
 	my $self = shift;
 
 	# not implemented yet
 }
+
+sub userDataDir ($) {
+	return $ENV{FVWM_USERDIR} || (($ENV{HOME} || "") . "/.fvwm");
+}
+
+sub siteDataDir ($) {
+	return "@FVWM_DATADIR@";
+}
+
+sub searchDirs ($) {
+	my $this = shift;
+	return ($this->userDataDir, $this->siteDataDir);
+}
+
+1;

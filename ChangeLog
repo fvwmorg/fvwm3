@@ -2,7 +2,8 @@
 
 	* fvwm/colorset.c:
 	* libs/Colorset.c:
-	fixed running out of colors on 8bpp with ReadWriteColors
+	fixed running out of colors on 8bpp with ReadWriteColors;
+	simulate colorsets on monochrome displays using three 1-bit pixmaps
 
 2002-04-19  Mikhael Goikhman  <migo@homemail.com>
 
