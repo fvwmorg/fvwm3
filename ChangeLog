@@ -1,3 +1,8 @@
+1999-04-01  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/move.c (moveLoop): Fixed typo: window_being_moved ->
+	window_being_moved_opaque
+
 1999-04-01  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/events.c (HandleButtonPress): any modifier works with
