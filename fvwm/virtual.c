@@ -404,8 +404,8 @@ void CMD_XineramaSlsSize(F_CMD_ARGS)
   if (GetIntegerArguments(action, NULL, val, 2) != 2 &&
       GetRectangleArguments(action, &val[0], &val[1]) != 2)
   {
+    val[0] = 1;
     val[1] = 1;
-    val[2] = 1;
   }
   if (FScreenConfigureSLS(val[0], val[1]))
   {
