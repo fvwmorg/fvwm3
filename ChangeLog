@@ -1,3 +1,28 @@
+2003-06-30  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/menus.c (do_menu): 
+	(DestroyMenu):
+	(do_menu_close_tear_off_menu):
+	(menu_close_tear_off_menu):
+	Allowed to destroy tear off menu!
+
+	* fvwm/menus.c (menu_tear_off): 
+	(menu_close_tear_off_menu):
+	(do_menu_close_tear_off_menu):
+	(clone_menu_root_static):
+	(pop_menu_up):
+	(menu_tear_off):
+	(make_menu_window):
+	(make_menu):
+	(update_menu):
+	Fixed client leaks (only create new client for menu if it is a tear off
+	menu). Created a dedicated menu style for each tear off menu.
+
+	* fvwm/menustyle.c (CMD_CopyMenuStyle):
+	(copy_menu_style):
+	* fvwm/menustyle.h:
+	Split CMD_CopyMenuStyle into CMD_CopyMenuStyle and copy_menu_style
+
 2003-06-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/virtual.c (do_move_window_to_desk):

@@ -2361,7 +2361,7 @@ static void merge_continuation_menus(MenuRoot *mr)
  * Creates the window for the menu.
  *
  */
-static void make_menu_window(MenuRoot *mr)
+static void make_menu_window(MenuRoot *mr, Bool is_tear_off)
 {
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
@@ -2409,10 +2409,17 @@ static void make_menu_window(MenuRoot *mr)
 		 * deleted right now because that would either destroy the new
 		 * window or leave it as an orphan if fvwm dies or is
 		 * restarted. */
-		MR_CREATE_DPY(mr) = XOpenDisplay(display_name);
-		if (MR_CREATE_DPY(mr) == NULL)
+		if (is_tear_off)
 		{
-			/* Doh.  Use the standard display instead. */
+			MR_CREATE_DPY(mr) = XOpenDisplay(display_name);
+			if (MR_CREATE_DPY(mr) == NULL)
+			{
+				/* Doh.  Use the standard display instead. */
+				MR_CREATE_DPY(mr) = dpy;
+			}
+		}
+		else
+		{
 			MR_CREATE_DPY(mr) = dpy;
 		}
 		MR_WINDOW(mr) = XCreateWindow(
@@ -2443,7 +2450,7 @@ static void make_menu_window(MenuRoot *mr)
  * Generates the window for a menu
  *
  */
-static void make_menu(MenuRoot *mr)
+static void make_menu(MenuRoot *mr, Bool is_tear_off)
 {
 	MenuSizingParameters msp;
 	Bool has_continuation_menu = False;
@@ -2469,7 +2476,7 @@ static void make_menu(MenuRoot *mr)
 	memset(&(MR_DYNAMIC_FLAGS(mr)), 0, sizeof(MR_DYNAMIC_FLAGS(mr)));
 
 	/* create a new window for the menu */
-	make_menu_window(mr);
+	make_menu_window(mr, is_tear_off);
 	MR_IS_UPDATED(mr) = 0;
 
 	return;
@@ -2513,7 +2520,7 @@ static void update_menu(MenuRoot *mr, MenuParameters *pmp)
 	{
 		/* The menu or the screen dimensions have changed. We have to
 		 * re-make it. */
-		make_menu(mr);
+		make_menu(mr, False);
 	}
 
 	return;
@@ -2579,9 +2586,8 @@ static void clone_menu_root_static(
 	{
 		MR_NAME(dest_mr) = safestrdup(MR_NAME(src_mr));
 	}
-	MR_COPIES(dest_mr) = 0;
+	MR_COPIES(dest_mr) = 1;
 	MR_MAPPED_COPIES(dest_mr) = 0;
-	MST_USAGE_COUNT(src_mr)++;
 	MR_POPUP_ACTION(dest_mr) = NULL;
 	MR_POPDOWN_ACTION(dest_mr) = NULL;
 	if (MR_MISSING_SUBMENU_FUNC(src_mr))
@@ -3709,7 +3715,7 @@ static int pop_menu_up(
 		{
 			return False;
 		}
-		make_menu_window(*pmenu);
+		make_menu_window(*pmenu, False);
 		mr = *pmenu;
 	}
 
@@ -5955,6 +5961,7 @@ static char *menu_strip_tear_off_title(MenuRoot *mr)
 static void menu_tear_off(MenuRoot *mr_to_copy)
 {
 	MenuRoot *mr;
+	MenuStyle *ms;
 	XEvent ev;
 	XSizeHints menusizehints;
 	XClassHint menuclasshints;
@@ -5970,13 +5977,36 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	initial_window_options_t win_opts;
 	evh_args_t ea;
 	exec_context_changes_t ecc;
+	char *buffer,*action;
+	cond_rc_t *cond_rc = NULL;
+	const exec_context_t *exc = NULL;
 
 	/* keep the menu open */
 	discard_window_events(MR_WINDOW(mr_to_copy), SubstructureNotifyMask);
 	mr = clone_menu(mr_to_copy);
+	/* also dump the menu style */
+	buffer = (char *)safemalloc(23);
+	sprintf(buffer,"%lu",(unsigned long)mr);
+	action = buffer;
+	menustyle_parse_style(F_PASS_ARGS);
+	ms = menustyle_find(buffer);
+	if (!ms)
+	{
+		/* this must never happen */
+		fvwm_msg(ERR, "menu_tear_off",
+			 "impossible to create %s menu style",
+			 buffer);
+		free(buffer);
+		DestroyMenu(mr, False, False);
+		return;
+	}
+	free(buffer);
+	copy_menu_style(MR_STYLE(mr_to_copy),ms);
+	MR_STYLE(mr) = ms;
+	MST_USAGE_COUNT(mr) = 0;
 	name = menu_strip_tear_off_title(mr);
 	/* create the menu window and size the menu */
-	make_menu(mr);
+	make_menu(mr, True);
 	/* set position */
 	if (menu_get_geometry(
 		    mr_to_copy, &JunkRoot, &x, &y, &JunkWidth, &JunkHeight,
@@ -6091,6 +6121,13 @@ void menu_enter_tear_off_menu(const exec_context_t *exc)
 	return;
 }
 
+static void do_menu_close_tear_off_menu(MenuRoot *mr, MenuParameters mp)
+{
+	pop_menu_down(&mr, &mp);
+	menustyle_free(MR_STYLE(mr));
+	DestroyMenu(mr, False, False);
+}
+
 void menu_close_tear_off_menu(FvwmWindow *fw)
 {
 	MenuRoot *mr;
@@ -6110,9 +6147,8 @@ void menu_close_tear_off_menu(FvwmWindow *fw)
 	ecc.w.wcontext = C_ROOT;
 	exc = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
 	mp.pexc = &exc;
-	pop_menu_down(&mr, &mp);
+	do_menu_close_tear_off_menu(mr, mp);
 	exc_destroy_context(exc);
-	DestroyMenu(mr, False, False);
 
 	return;
 }
@@ -6358,7 +6394,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 			if (MR_IS_TEAR_OFF_MENU(pmp->menu))
 			{
 				/* kill the menu */
-				pop_menu_down(&pmp->menu, pmp);
+				do_menu_close_tear_off_menu(pmp->menu, *pmp);
 				pmret->rc = MENU_ABORTED;
 				discard_window_events(
 					MR_WINDOW(pmp->menu), EnterWindowMask);
@@ -6604,6 +6640,7 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 {
 	MenuItem *mi,*tmp2;
 	MenuRoot *tmp, *prev;
+	Bool in_list = True;
 
 	if (mr == NULL)
 	{
@@ -6621,7 +6658,7 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 	if (tmp != mr)
 	{
 		/* no such menu */
-		return False;
+		in_list = False;
 	}
 
 	if (MR_MAPPED_COPIES(mr) > 0 &&
@@ -6632,7 +6669,7 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 		return False;
 	}
 
-	if (MR_COPIES(mr) > 1 && MR_ORIGINAL_MENU(mr) == mr)
+	if (in_list && MR_COPIES(mr) > 1 && MR_ORIGINAL_MENU(mr) == mr)
 	{
 		MenuRoot *m;
 		MenuRoot *new_orig;
@@ -6690,13 +6727,16 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 	}
 
 	/* unlink menu from list */
-	if (prev == NULL)
+	if (in_list)
 	{
-		Menus.all = MR_NEXT_MENU(mr);
-	}
-	else
-	{
-		MR_NEXT_MENU(prev) = MR_NEXT_MENU(mr);
+		if (prev == NULL)
+		{
+			Menus.all = MR_NEXT_MENU(mr);
+		}
+		else
+		{
+			MR_NEXT_MENU(prev) = MR_NEXT_MENU(mr);
+		}
 	}
 	/* destroy the window and the display */
 	if (MR_WINDOW(mr) != None)
@@ -6713,7 +6753,7 @@ Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request)
 		MR_CREATE_DPY(mr) = NULL;
 	}
 
-	if (MR_COPIES(mr) == 0)
+	if (MR_COPIES(mr) <= 0)
 	{
 		if (MR_POPUP_ACTION(mr))
 		{

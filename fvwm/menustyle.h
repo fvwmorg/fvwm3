@@ -275,5 +275,6 @@ MenuStyle *menustyle_find(char *name);
 void menustyle_update(MenuStyle *ms);
 void menustyle_parse_style(F_CMD_ARGS);
 MenuStyle *menustyle_get_default_style(void);
+void copy_menu_style(MenuStyle *origms, MenuStyle *destms);
 
 #endif /* MENUSTYLE_H */

@@ -1334,85 +1334,9 @@ void menustyle_parse_style(F_CMD_ARGS)
 	return;
 }
 
-/* ---------------------------- builtin commands --------------------------- */
-
-void CMD_CopyMenuStyle(F_CMD_ARGS)
+void copy_menu_style(MenuStyle *origms, MenuStyle *destms)
 {
-	char *origname = NULL;
-	char *destname = NULL;
-	char *buffer;
-	MenuStyle *origms;
-	MenuStyle *destms;
 	FvwmPictureAttributes fpa;
-
-	origname = PeekToken(action, &action);
-	if (origname == NULL)
-	{
-		fvwm_msg(ERR,"CopyMenuStyle", "need two arguments");
-		return;
-	}
-
-	origms = menustyle_find(origname);
-	if (!origms)
-	{
-		fvwm_msg(ERR, "CopyMenuStyle", "%s: no such menu style",
-			 origname);
-		return;
-	}
-
-	destname = PeekToken(action, &action);
-	if (destname == NULL)
-	{
-		fvwm_msg(ERR,"CopyMenuStyle", "need two arguments");
-		return;
-	}
-
-	if (action && *action)
-	{
-		fvwm_msg(ERR,"CopyMenuStyle", "too many arguments");
-		return;
-	}
-
-	destms = menustyle_find(destname);
-	if (!destms)
-	{
-		/* create destms menu style */
-		buffer = (char *)safemalloc(strlen(destname) + 3);
-		sprintf(buffer,"\"%s\"",destname);
-		action = buffer;
-		menustyle_parse_style(F_PASS_ARGS);
-		free(buffer);
-		destms = menustyle_find(destname);
-		if (!destms)
-		{
-			/* this must never happen */
-			fvwm_msg(ERR, "CopyMenuStyle",
-				 "impossible to create %s menu style",
-				 destname);
-			return;
-		}
-	}
-
-	if (strcasecmp("*",destname) == 0)
-	{
-		fvwm_msg(ERR, "CopyMenuStyle",
-			 "You cannot copy on the default menu style");
-		return;
-	}
-	if (strcasecmp(ST_NAME(origms),destname) == 0)
-	{
-		fvwm_msg(ERR, "CopyMenuStyle",
-			 "%s and %s identify the same menu style",
-			 ST_NAME(origms),destname);
-		return;
-	}
-
-	if (ST_USAGE_COUNT(destms) != 0)
-	{
-		fvwm_msg(ERR, "CopyMenuStyle", "menu style %s is in use",
-			 destname);
-		return;
-	}
 
 	/* Copy origms to destms, be award of all pointers in the MenuStyle
 	   strcture. Use  the same order as in menustyle_parse_style */
@@ -1609,6 +1533,90 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 	ST_POPDOWN_DELAY(destms) = ST_POPDOWN_DELAY(destms);
 
 	menustyle_update(destms);
+
+	return;
+}
+
+/* ---------------------------- builtin commands --------------------------- */
+
+void CMD_CopyMenuStyle(F_CMD_ARGS)
+{
+	char *origname = NULL;
+	char *destname = NULL;
+	char *buffer;
+	MenuStyle *origms;
+	MenuStyle *destms;
+
+	origname = PeekToken(action, &action);
+	if (origname == NULL)
+	{
+		fvwm_msg(ERR,"CopyMenuStyle", "need two arguments");
+		return;
+	}
+
+	origms = menustyle_find(origname);
+	if (!origms)
+	{
+		fvwm_msg(ERR, "CopyMenuStyle", "%s: no such menu style",
+			 origname);
+		return;
+	}
+
+	destname = PeekToken(action, &action);
+	if (destname == NULL)
+	{
+		fvwm_msg(ERR,"CopyMenuStyle", "need two arguments");
+		return;
+	}
+
+	if (action && *action)
+	{
+		fvwm_msg(ERR,"CopyMenuStyle", "too many arguments");
+		return;
+	}
+
+	destms = menustyle_find(destname);
+	if (!destms)
+	{
+		/* create destms menu style */
+		buffer = (char *)safemalloc(strlen(destname) + 3);
+		sprintf(buffer,"\"%s\"",destname);
+		action = buffer;
+		menustyle_parse_style(F_PASS_ARGS);
+		free(buffer);
+		destms = menustyle_find(destname);
+		if (!destms)
+		{
+			/* this must never happen */
+			fvwm_msg(ERR, "CopyMenuStyle",
+				 "impossible to create %s menu style",
+				 destname);
+			return;
+		}
+	}
+
+	if (strcasecmp("*",destname) == 0)
+	{
+		fvwm_msg(ERR, "CopyMenuStyle",
+			 "You cannot copy on the default menu style");
+		return;
+	}
+	if (strcasecmp(ST_NAME(origms),destname) == 0)
+	{
+		fvwm_msg(ERR, "CopyMenuStyle",
+			 "%s and %s identify the same menu style",
+			 ST_NAME(origms),destname);
+		return;
+	}
+
+	if (ST_USAGE_COUNT(destms) != 0)
+	{
+		fvwm_msg(ERR, "CopyMenuStyle", "menu style %s is in use",
+			 destname);
+		return;
+	}
+	
+	copy_menu_style(origms, destms);
 
 	return;
 }
