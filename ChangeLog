@@ -1,3 +1,8 @@
+2002-05-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menuitem.c (menuitem_paint):
+	fixed item hilighting problems
+
 2002-05-07  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/colorset.c (parse_colorset):
@@ -255,8 +260,8 @@
 	Implemented tinting of a Pixmap background colorset
 
 	* fvwm/colorset.c (parse_colorset):
-	Use the Scr.NoFocusWin as main window in the place of the Scr.SizeWindow,
-	this fix a lot of X errors in my machine.
+	Use the Scr.NoFocusWin as main window in the place of the
+	Scr.SizeWindow, this fix a lot of X errors in my machine.
 
 	* fvwm/ewmh_icons.c (ewmh_SetWmIconFromPixmap):
 	Donated our alpha channel
@@ -537,10 +542,10 @@
 	Images are loaded in FImageLoader. PNG image can be loaded, the loader
 	come from Imlib2 and the argb loader from fvwm/ewmh_icons.c.
 	ColorLimit stuff is applied to PNG image.
-	Split Picture.{c,h} into InitPicture.{c,h} and Picture.{c,h}. InitPicture
-	contains the Picture structure, initialize the visual, depth and color
-	map and contains image path stuff as Picture contains Picture
-	manipulations.
+	Split Picture.{c,h} into InitPicture.{c,h} and Picture.{c,h}.
+	InitPicture contains the Picture structure, initialize the visual,
+	depth and color map and contains image path stuff as Picture contains
+	Picture manipulations.
 
 	* libs/ColorUtils.c:
 	* libs/Picture.h:

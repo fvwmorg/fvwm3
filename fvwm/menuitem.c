@@ -316,7 +316,12 @@ void menuitem_paint(
 	int y_height;
 	int x;
 	int y;
-	GC ShadowGC, ReliefGC, currentGC;
+	int lit_x_start;
+	int lit_x_end;
+	GC ShadowGC;
+	GC ReliefGC;
+	GC on_gc;
+	GC off_gc;
 	short relief_thickness = ST_RELIEF_THICKNESS(ms);
 	Bool is_item_selected;
 	Bool xft_redraw = False;
@@ -383,18 +388,22 @@ void menuitem_paint(
 	}
 
 	/* Hilight or clear the background. */
+	lit_x_start = -1;
+	lit_x_end = -1;
 	if (is_item_selected && ST_DO_HILIGHT(ms))
 	{
 		/* Hilight the background. */
 		if (MDIM_HILIGHT_WIDTH(*dim) - 2 * relief_thickness > 0)
 		{
+			lit_x_start = MDIM_HILIGHT_X_OFFSET(*dim) +
+				relief_thickness;
+			lit_x_end = lit_x_start + MDIM_HILIGHT_WIDTH(*dim) -
+				2 * relief_thickness;
 			XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
 			XFillRectangle(
 				dpy, mpip->w, ST_MENU_ACTIVE_BACK_GC(ms),
-				MDIM_HILIGHT_X_OFFSET(*dim) + relief_thickness,
-				y_offset + relief_thickness,
-				MDIM_HILIGHT_WIDTH(*dim) - 2 * relief_thickness,
-				y_height - relief_thickness);
+				lit_x_start, y_offset + relief_thickness,
+				lit_x_end, y_height - relief_thickness);
 		}
 	}
 	else if (xft_redraw ||
@@ -412,9 +421,11 @@ void menuitem_paint(
 		/* Undo the hilighting. */
 		XClearArea(
 			dpy, mpip->w, MDIM_ITEM_X_OFFSET(*dim), y_offset + d,
-			MDIM_ITEM_WIDTH(*dim), y_height + relief_thickness - d, 0);
+			MDIM_ITEM_WIDTH(*dim), y_height + relief_thickness - d,
+			0);
 	}
-	else {
+	else
+	{
 		alpha_redraw = True;
 	}
 
@@ -552,22 +563,24 @@ void menuitem_paint(
 	if (is_function_allowed(
 		    MI_FUNC_TYPE(mi), MI_LABEL(mi)[0], mpip->fw, True, False))
 	{
-		currentGC = (is_item_selected) ?
-			ST_MENU_ACTIVE_GC(ms) : ST_MENU_GC(ms);
-		if (ST_DO_HILIGHT(ms) &&
-		    !ST_HAS_ACTIVE_FORE(ms) &&
-		    !ST_HAS_ACTIVE_CSET(ms) &&
-		    is_item_selected)
+		on_gc = ST_MENU_ACTIVE_GC(ms);
+		if (ST_DO_HILIGHT(ms) && !ST_HAS_ACTIVE_FORE(ms) &&
+		    !ST_HAS_ACTIVE_CSET(ms) && is_item_selected)
 		{
 			/* Use a lighter color for highlighted windows menu
 			 * items if the background is hilighted */
-			currentGC = ST_MENU_RELIEF_GC(ms);
+			on_gc = ST_MENU_RELIEF_GC(ms);
 		}
 	}
 	else
 	{
 		/* should be a shaded out word, not just re-colored. */
-		currentGC = ST_MENU_STIPPLE_GC(ms);
+		on_gc = ST_MENU_STIPPLE_GC(ms);
+	}
+	off_gc = ST_MENU_GC(ms);
+	if (!is_item_selected)
+	{
+		on_gc = off_gc;
 	}
 
 
@@ -579,12 +592,22 @@ void menuitem_paint(
 		FlocaleAllocateWinString(&fws);
 	}
 	fws->win = mpip->w;
-	fws->gc = currentGC;
 	fws->y = text_y;
 	for (i = MAX_MENU_ITEM_LABELS; i-- > 0; )
 	{
 		if (MI_LABEL(mi)[i] && *(MI_LABEL(mi)[i]))
 		{
+			if (MI_LABEL_OFFSET(mi)[i] >= lit_x_start &&
+			    MI_LABEL_OFFSET(mi)[i] < lit_x_end)
+			{
+				/* label is in hilighted area */
+				fws->gc = on_gc;
+			}
+			else
+			{
+				/* label is in unhilighted area */
+				fws->gc = off_gc;
+			}
 			fws->str = MI_LABEL(mi)[i];
 			fws->x = MI_LABEL_OFFSET(mi)[i];
 			FlocaleDrawString(dpy, ST_PSTDFONT(ms), fws, 0);
@@ -595,7 +618,7 @@ void menuitem_paint(
 		    MI_HOTKEY_COLUMN(mi) == i)
 		{
 			draw_underline(
-				ST_PSTDFONT(ms), mpip->w, currentGC,
+				ST_PSTDFONT(ms), mpip->w, fws->gc,
 				MI_LABEL_OFFSET(mi)[i], text_y,
 				MI_LABEL(mi)[i], MI_HOTKEY_COFFSET(mi));
 		}
@@ -608,13 +631,26 @@ void menuitem_paint(
 
 	if (MI_IS_POPUP(mi))
 	{
+		GC tmp_gc;
+
+		if (MDIM_TRIANGLE_X_OFFSET(*dim) >= lit_x_start &&
+		    MDIM_TRIANGLE_X_OFFSET(*dim) < lit_x_end &&
+		    is_item_selected)
+		{
+			/* triangle is in hilighted area */
+			tmp_gc = ReliefGC;
+		}
+		else
+		{
+			/* triangle is in unhilighted area */
+			tmp_gc = ST_MENU_GC(ms);
+		}
 		y = y_offset + (y_height - MENU_TRIANGLE_HEIGHT +
 				relief_thickness) / 2;
 		DrawTrianglePattern(
-			dpy, mpip->w,
-			ReliefGC, ShadowGC, (is_item_selected) ?
-			ReliefGC : ST_MENU_GC(ms), MDIM_TRIANGLE_X_OFFSET(*dim),
-			y, MENU_TRIANGLE_WIDTH, MENU_TRIANGLE_HEIGHT, 0,
+			dpy, mpip->w, ReliefGC, ShadowGC, tmp_gc,
+			MDIM_TRIANGLE_X_OFFSET(*dim), y, MENU_TRIANGLE_WIDTH,
+			MENU_TRIANGLE_HEIGHT, 0,
 			(mpip->flags.is_left_triangle) ? 'l' : 'r',
 			ST_HAS_TRIANGLE_RELIEF(ms),
 			!ST_HAS_TRIANGLE_RELIEF(ms), is_item_selected);
@@ -629,16 +665,14 @@ void menuitem_paint(
 		x = menudim_middle_x_offset(mpip->dim) -
 			MI_PICTURE(mi)->width / 2;
 		y = y_offset + ((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0);
-		if(alpha_redraw && MI_PICTURE(mi)->alpha != None)
+		if (alpha_redraw && MI_PICTURE(mi)->alpha != None)
 		{
 			XClearArea(dpy, mpip->w, x, y, MI_PICTURE(mi)->width,
 				   MI_PICTURE(mi)->height, False);
 		}
-		PGraphicsCopyFvwmPicture(dpy, MI_PICTURE(mi), mpip->w, ReliefGC,
-					 0, 0,
-					 MI_PICTURE(mi)->width,
-					 MI_PICTURE(mi)->height,
-					 x, y);
+		PGraphicsCopyFvwmPicture(
+			dpy, MI_PICTURE(mi), mpip->w, ReliefGC, 0, 0,
+			MI_PICTURE(mi)->width, MI_PICTURE(mi)->height, x, y);
 	}
 
 	/***************************************************************
@@ -656,6 +690,8 @@ void menuitem_paint(
 
 		if (MI_MINI_ICON(mi)[i])
 		{
+			GC tmp_gc;
+
 			if (MI_PICTURE(mi))
 			{
 				y = y_offset + MI_HEIGHT(mi) -
@@ -669,21 +705,30 @@ void menuitem_paint(
 					  relief_thickness : 0) -
 					 MI_MINI_ICON(mi)[i]->height) / 2;
 			}
-			if(alpha_redraw && MI_MINI_ICON(mi)[i]->alpha != None)
+			if (alpha_redraw && MI_MINI_ICON(mi)[i]->alpha != None)
 			{
-				XClearArea(dpy, mpip->w,
-					   MDIM_ICON_X_OFFSET(*dim)[k], y,
-					   MI_MINI_ICON(mi)[i]->width,
-					   MI_MINI_ICON(mi)[i]->height,
-					   False);
+				XClearArea(
+					dpy, mpip->w,
+					MDIM_ICON_X_OFFSET(*dim)[k], y,
+					MI_MINI_ICON(mi)[i]->width,
+					MI_MINI_ICON(mi)[i]->height, False);
 			}
-			PGraphicsCopyFvwmPicture(dpy, MI_MINI_ICON(mi)[i],
-						 mpip->w,
-						 currentGC,
-						 0, 0,
-						 MI_MINI_ICON(mi)[i]->width,
-						 MI_MINI_ICON(mi)[i]->height,
-						 MDIM_ICON_X_OFFSET(*dim)[k], y);
+			if (MDIM_ICON_X_OFFSET(*dim)[k] >= lit_x_start &&
+			    MDIM_ICON_X_OFFSET(*dim)[k] < lit_x_end)
+			{
+				/* icon is in hilighted area */
+				tmp_gc = on_gc;
+			}
+			else
+			{
+				/* icon is in unhilighted area */
+				tmp_gc = off_gc;
+			}
+			PGraphicsCopyFvwmPicture(
+				dpy, MI_MINI_ICON(mi)[i], mpip->w, tmp_gc,
+				0, 0, MI_MINI_ICON(mi)[i]->width,
+				MI_MINI_ICON(mi)[i]->height,
+				MDIM_ICON_X_OFFSET(*dim)[k], y);
 		}
 	}
 
