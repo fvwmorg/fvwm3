@@ -239,8 +239,8 @@ Bool FRenderTintPicture(
 	static Pixel saved_tint = 0;
 	static int saved_tint_percent = 0;
 	static Pixmap tint_pixmap = None;
-	static FRenderPicture shade_picture = None;
 	static FRenderPicture tint_picture = None;
+	FRenderPicture shade_picture = None;
 	FRenderColor frc_tint;
 	Bool force_update = False;
 	FRenderPictureAttributes  pa;
@@ -603,7 +603,7 @@ int FRenderRender(
 		if (alpha != None && alpha_picture && shade_picture)
 		{
 			if (!FRenderCompositeAndCheck(
-				dpy, PictOpAtopReverse, shade_picture,
+				dpy, FRenderPictOpAtopReverse, shade_picture,
 				alpha_picture, alpha_picture,
 				0, 0, alpha_x, alpha_y, 0, 0, src_w, src_h))
 			{

@@ -1,5 +1,19 @@
 2002-09-24  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/geometry.c (move_icon_to_position):
+	* fvwm/events.c (HandleEnterNotify):
+	(HandleExpose):
+	(HandleLeaveNotify):
+	(HandlePropertyNotify):
+	* fvwm/add_window.c (setup_icon_font):
+	* fvwm/icons.c (DrawIconWindow):
+	(DrawIconTitleWindow):
+	(DrawIconPixmapWindow):
+	(ChangeIconPixmap):
+	(RedoIconName):
+	Fixed icon drawing. Split icon window drawing.
+
 	* libs/FRender.c (*):
 	Fixed compilation and small clean up
 

@@ -1713,7 +1713,7 @@ void setup_icon_font(
 		resize_icon_title_height(fw, height - fw->icon_font->height);
 		/* this repositions the icon even if the window is not
 		 * iconified */
-		DrawIconWindow(fw, NULL);
+		DrawIconWindow(fw, True, True, NULL);
 	}
 
 	return;
