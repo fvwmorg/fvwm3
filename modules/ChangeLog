@@ -1,3 +1,10 @@
+1999-09-23  Paul D. Smith  <psmith@gnu.org>
+
+	* Fvwm*/Makefile.am (LDADD): Move the $(X_LIBS) reference earlier
+	in all LDADD variables, before (for example) the $(xpm_LIBS)
+	reference; sometimes the latter doesn't contain its own -L
+	options, and uses X's.
+
 1999-09-23  Hippo
 
 	* FvwmTheme/FvwmTheme.c: Fixed memory corruption.

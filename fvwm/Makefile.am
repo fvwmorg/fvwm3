@@ -24,8 +24,8 @@ fvwm2_SOURCES = bindings.h focus.h menus.h screen.h borders.h functions.h \
 
 fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
-LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) $(stroke_LIBS)\
-	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
+LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) $(stroke_LIBS)\
+	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libs $(xpm_CFLAGS) $(stroke_CFLAGS)\
 	   $(X_CFLAGS)

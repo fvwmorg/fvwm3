@@ -15,8 +15,8 @@ man_MANS = xpmroot.1 fvwmbug.1 fvwmrc_convert.1 \
 EXTRA_DIST = fvwmrc_convert quantize_pixmaps $(man_MANS) \
 	fvwm-menu-xlock fvwm-menu-directory fvwm-menu-desktop
 
-LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
-	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
+LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) \
+	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 
 
@@ -46,5 +46,4 @@ fvwmbug: fvwmbug.sh FORCE
 	    -e 's,xlibexecdirx,$(libexecdir),' -e "s,xBUILDERx,$$BUILDER," \
 	    fvwmbug.sh > $@
 
-FORCE:
-	
+FORCE: ;

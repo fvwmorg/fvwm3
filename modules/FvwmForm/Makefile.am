@@ -17,7 +17,7 @@ FvwmTalk: FORCE
 FORCE:
 
 ## NB: Neither _MANS nor _DATA are included by default in
-## distributions! 
+## distributions!
 EXTRA_DIST = $(man_MANS) Changes \
  FormFvwmSetup.in    \
  FormFvwmForm.       \
@@ -45,8 +45,8 @@ config_DATA =        \
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm
 ## so we might as well link against libXpm, if present.
-LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS)  \
-    $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
+LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS)  \
+	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
 
 INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
 
