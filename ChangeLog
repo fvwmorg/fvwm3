@@ -1,6 +1,11 @@
+2002-04-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1:
+	changed description of focus models
+
 2002-04-09  olicha  <olivier.chapuis@free.fr>
 
-	* configure.in: 
+	* configure.in:
 	Check for libpng libpng 1.0.4a or better
 
 2002-04-08  Mikhael Goikhman  <migo@homemail.com>
@@ -51,13 +56,13 @@
 	* libs/FImageLoader.c (c100_init_base_table):
 	Allows init even if !XPM
 
-	* libs/Makefile.am: 
+	* libs/Makefile.am:
 	Remove a F
 
-	* configure.in: 
+	* configure.in:
 	Fixed png detection
 
-	* libs/FImageLoader.c (FImageCreatePixmapFromArgbData): 
+	* libs/FImageLoader.c (FImageCreatePixmapFromArgbData):
 	Fixed a GC memory leaks.
 
 	* fvwm/fvwm.c (setVersionInfo):
@@ -117,7 +122,7 @@
 	(GetIconFromFile):
 	Replace GetXPMFile and GetBitmapFile by GetIconFromFile which use
 	the libs image loader
-	
+
 	* fvwm/cursor.c (CMD_CursorStyle):
 	Use FImageLoadCursorPixmapFromFile (no PNG support here)
 

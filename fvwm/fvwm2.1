@@ -141,17 +141,19 @@ to be changed at any time.
 
 Other noteworthy differences between Fvwm and other X11 window
 managers are the introduction of the
+.I SloppyFocus " and " NeverFocus
+focus methods.  Focus policy can be specified for individual
+windows.  Windows using
 .I SloppyFocus
-and per-window focus methods.
-.I SloppyFocus
-is focus-follows-mouse, but focus is not removed from windows when
-the mouse leaves a window and enters the root window.  When
-.I SloppyFocus
-is used as the default focus style, it is nice to make windows in
-which you do not typically type into (xmag, xman, xgraph, xclock,
-xbiff, etc.).
-.IR NeverFocus ,
-so that your terminal window doesn't lose focus unnecessarily.
+acquire focus when the pointer moves into them and retain focus
+until some other window acquires it.  Such windows do not lose
+focus when the pointer moves into the root window.  The
+.I NeverFocus
+policy is provided for use with windows into which one never types
+(e.g. xclock, oclock, xbiff, xeyes, tuxeyes) - for example, if a
+SloppyFocus terminal window has focus, moving the cursor over a
+.I NeverFocus
+decoration window won't deprive the terminal of focus.
 
 .SH OPTIONS
 
@@ -5530,7 +5532,7 @@ Then resize and place the xv window where you want the iconbox.
 Then use FvwmIdent to read the windows geometry.
 The icon box is a region of the screen
 where fvwm attempts to put icons for any matching window, as long
-as they do not overlap other icons. 
+as they do not overlap other icons.
 Multiple icon boxes can be
 defined as overflow areas.  When the first icon box is full, the
 second one is filled.  All the icon boxes for one style must be
