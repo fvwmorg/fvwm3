@@ -2382,6 +2382,19 @@ static void ParseActiveMessage(char *buf)
 					}
 				}
 			}
+			CheckAlloc(
+				root_item_ptr,
+				root_item_ptr->header.dt_ptr);
+			if (colorset >= 0)
+			{
+				SetWindowBackground(
+					dpy, CF.frame, CF.max_width,
+					CF.total_height,
+					&Colorset[(colorset)], Pdepth,
+					root_item_ptr->header.dt_ptr->dt_GC,
+					False);
+				RedrawFrame(NULL);
+			}
 			for (item = root_item_ptr->header.next; item != 0;
 			     item = item->header.next)
 			{
@@ -2404,16 +2417,6 @@ static void ParseActiveMessage(char *buf)
 				} /* end item has a drawtable */
 				RedrawItem(item, 0, NULL);
 			} /* end all items */
-			if (colorset >= 0)
-			{
-				SetWindowBackground(
-					dpy, CF.frame, CF.max_width,
-					CF.total_height,
-					&Colorset[(colorset)], Pdepth,
-					root_item_ptr->header.dt_ptr->dt_GC,
-					False);
-				RedrawFrame(NULL);
-			}
 		}
 		return;
 	} /* end colorset command */

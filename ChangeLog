@@ -1,3 +1,11 @@
+2002-11-15  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/builtins.c (update_fvwm_colorset):
+	(CMD_Colorset):
+	* fvwm/builtins.h:
+	* fvwm/colorset.c (update_root_transparent_colorset):
+	Fixed update of the RootTransparent colorset in fvwm
+
 2002-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Bindings.c (__compare_binding):

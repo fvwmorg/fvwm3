@@ -22,5 +22,6 @@ void InitFvwmDecor(FvwmDecor *decor);
 void reset_decor_changes(void);
 Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose);
 void FreeDecorFace(Display *dpy, DecorFace *df);
+void update_fvwm_colorset(int cset);
 
 #endif /* BUILTINS_H */

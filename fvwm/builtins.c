@@ -1869,6 +1869,19 @@ void reset_decor_changes(void)
 	return;
 }
 
+void update_fvwm_colorset(int cset)
+{
+	if (cset == Scr.DefaultColorset)
+	{
+		Scr.flags.do_need_window_update = 1;
+		Scr.flags.has_default_color_changed = 1;
+	}
+	UpdateMenuColorset(cset);
+	update_style_colorset(cset);
+
+	return;
+}
+
 /* ---------------------------- builtin commands ---------------------------- */
 
 void CMD_Beep(F_CMD_ARGS)
@@ -2568,13 +2581,7 @@ void CMD_Colorset(F_CMD_ARGS)
 		return;
 	}
 	parse_colorset(n, token);
-	if (n == Scr.DefaultColorset)
-	{
-		Scr.flags.do_need_window_update = 1;
-		Scr.flags.has_default_color_changed = 1;
-	}
-	UpdateMenuColorset(n);
-	update_style_colorset(n);
+	update_fvwm_colorset(n);
 
 	return;
 }

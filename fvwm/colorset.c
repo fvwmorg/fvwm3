@@ -46,6 +46,7 @@
 #include "screen.h"
 #include "module_interface.h"
 #include "execcontext.h"
+#include "builtins.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -1690,15 +1691,22 @@ void update_root_transparent_colorset(Atom prop)
 #endif
 	for (i=0; i < nColorsets; i++)
 	{
+		Bool root_trans = False;
 		cs = &Colorset[i];
 		if (cs->is_maybe_root_transparent &&
 		    cs->allows_buffered_transparency)
 		{
 			parse_colorset(i, "RootTransparent buffer");
+			root_trans = True;
 		}
 		else if (cs->is_maybe_root_transparent)
 		{
 			parse_colorset(i, "RootTransparent");
+			root_trans = True;
+		}
+		if (root_trans)
+		{
+			update_fvwm_colorset(i);
 		}
 	}
 }
