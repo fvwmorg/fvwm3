@@ -1,3 +1,9 @@
+2002-02-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* aclocal.m4 (smr_CHECK_LIB):
+	fixed a bug with variable expansion and autoconf cache values w/
+	autoconf-2.52
+
 2002-02-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (seek_submenu_instance):
