@@ -1,27 +1,32 @@
+2000-04-22  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmWharf/FvwmWharf.c (swallow): removed sleep(60)
+	* FvwmWharf/FvwmWharf.1: improved Swallow/MaxSwallow description
+
 2000-04-22  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmWinList/FvwmWinList.c: Another I18N patch.
 
 2000-04-20  olicha <olivier.chapuis@free.fr>
 
-	* modules/FvwmScript/Instruction.c (*LaunchScript, Exec):
+	* FvwmScript/Instruction.c (*LaunchScript, Exec):
 	Replace some int by unsigned long for OSF1 V4.O alpha and al.
 	
 2000-04-20  olicha <olivier.chapuis@free.fr>
 
-	* modules/FvwmScript/Scripts/ScriptFvwmSetup95.in:
-	* modules/FvwmScript/Scripts/script-fvwm-sample95.pl:
+	* FvwmScript/Scripts/ScriptFvwmSetup95.in:
+	* FvwmScript/Scripts/script-fvwm-sample95.pl:
 	Added a CDE support and a new FAST/SLOW X server option for 
 	the Sample-95 installation
 
-	* modules/FvwmScript/Scripts/ScriptFvwmBrowser
+	* FvwmScript/Scripts/ScriptFvwmBrowser
 	Some fixes, need more work.
 	
 2000-04-19  Hippo
 
 	* FvwmIconMan/xmanager.c: fixed disappearing title button (todo 109)
 
-1999-04-18  Mikhael Goikhman  <migo@homemail.com>
+2000-04-18  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmM4/FvwmM4.c (main):
 	* FvwmCpp/FvwmCpp.c (main):
@@ -39,12 +44,12 @@
 
 2000-04-17  olicha <olivier.chapuis@free.fr>
 
-	* modules/FvwmScript/Scripts/Widget/PopupMenu.c (EvtMousePopupMenu)
+	* FvwmScript/Scripts/Widget/PopupMenu.c (EvtMousePopupMenu)
 	Fixed ChangeTitle for PopupMenu
 
 2000-04-16  olicha <olivier.chapuis@free.fr>
 
-	* modules/FvwmScript/Scripts/ScriptFvwmSetup95.in:
+	* FvwmScript/Scripts/ScriptFvwmSetup95.in:
 	replaced /usr/bin/dt/dtfile by /usr/dt/bin/dtfile
 
 2000-04-16  Dan Espen  <dane@mk.telcordia.com>
@@ -53,27 +58,27 @@
 
 2000-04-16  olicha <olivier.chapuis@free.fr>
 
-	* modules/FvwmScript/Scripts/ScriptFvwmSetup95.in:
-	* modules/FvwmScript/Scripts/script-fvwm-sample95.pl:
+	* FvwmScript/Scripts/ScriptFvwmSetup95.in:
+	* FvwmScript/Scripts/script-fvwm-sample95.pl:
 	ScriptFvwmSetup95 (and script-fvwm-sample95.pl) build a multi-files
 	config and parse the menus (and the (Mini)Icon styles).
 
 2000-04-15  olicha <olivier.chapuis@free.fr>
 
-	* modules/FvwmForm/FvwmFormQuitVerify.
+	* FvwmForm/FvwmFormQuitVerify.
 	Added restart
 
 2000-04-13  olicha <olivier.chapuis@free.fr>
 
-	* modules/FvwmScript/Scripts/ScriptFvwmSetup95.in:
-	* modules/FvwmScript/Scripts/script-fvwm-sample95.pl:
-	* modules//FvwmScript/Scripts/Makefile.am
+	* FvwmScript/Scripts/ScriptFvwmSetup95.in:
+	* FvwmScript/Scripts/script-fvwm-sample95.pl:
+	* /FvwmScript/Scripts/Makefile.am
 	Fixed sample-95 building.
 
 2000-04-11  olicha  <olivier.chapuis@free.fr>
 
-	* modules/FvwmScript/Scripts/ScriptFvwmSetup95.in:
-	* modules/FvwmScript/Scripts/Makefile.am
+	* FvwmScript/Scripts/ScriptFvwmSetup95.in:
+	* FvwmScript/Scripts/Makefile.am
 	A new FvwmScript script for installing system.fvwm2rc-sample-95
 
 2000-04-07  Dominik Vogt  <dominik.vogt@gmx.de>
@@ -1033,8 +1038,8 @@
 
 1999-10-30  Olivier Chapuis  olivier.chapuis@free.fr
 
-	* modules/FvwmForm/FvwmRootCursor.:
-	* modules/FvwmForm/FvwmRootCursor.pl:
+	* FvwmForm/FvwmRootCursor.:
+	* FvwmForm/FvwmRootCursor.pl:
 	Replace xsetroot by CursorStyle ROOT.
 
 1999-10-26  Brad Giaccio

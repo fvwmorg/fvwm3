@@ -162,12 +162,18 @@ Modules can be swallowed by specifying the word Module:
 NOTE: if you use xclock for this application, you will want
 to specify xclock -padding 0.
 
-For certain applications that overrun the 48 pixel by 48 pixel boundary
-of FvwmWharf icons and Swallowed programs there is a special option called
-.I MaxSwallow.
+.I Swallow
+option tries to force an application to be 48 by 48 pixels.
+A special option
 .I MaxSwallow
-will allow the application to draw itself larger than the 48x48 boundary.
-It is invoked the same way Swallow is.
+can be used to leave an application at its own size (but less then 64x64).
+MaxSwallow is invoked the same way Swallow is. If you want an application
+to fill all the button place, you should start it with a proper geometry flag,
+like "xload -g 64x64" or, if you want to leave a 3d-look: "xload -g 60x60".
+
+Note, not all applications are good for swallowing, some can't be
+resized at all, some can't be resized exactly to 48x48 or 64x64,
+you are responsoble for choosing suitable applications to be swallowed.
 
 To create folder "slide-outs" in
 .B FvwmWharf
