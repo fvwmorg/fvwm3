@@ -380,6 +380,7 @@ static void add_to_envlist(char *var, char *env)
 {
 	static env_list_item *env_list = NULL;
 	static unsigned int env_len = 0;
+	static unsigned int env_len_allocated = 0;
 	unsigned int i;
 
 	/* find string in list */
@@ -387,39 +388,54 @@ static void add_to_envlist(char *var, char *env)
 	{
 		for (i = 0; i < env_len; i++)
 		{
-			if (strcmp(var, env_list[i].var) == 0)
+			if (strcmp(var, env_list[i].var) != 0)
 			{
-				/* found it - replace old string */
-				free(env_list[i].var);
-				free(env_list[i].env);
-				if (env != NULL)
-				{
-					env_list[i].var = var;
-					env_list[i].env = env;
-				}
-				return;
+				continue;
 			}
-		}
-		/* not found, add to list */
-		if (env_len % ENV_LIST_INC == 0 && env != NULL)
-		{
-			/* need more memory */
-			env_list = (env_list_item *)saferealloc(
-				(void *)env_list, (env_len + ENV_LIST_INC) *
-				sizeof(env_list_item));
+			/* found it - replace old string */
+			free(env_list[i].var);
+			free(env_list[i].env);
+			if (env == NULL)
+			{
+				/* delete */
+				env_len--;
+				env_list[i].var =
+					env_list[env_len].var;
+				env_list[i].env =
+					env_list[env_len].env;
+			}
+			else
+			{
+				/* replace */
+				env_list[i].var = var;
+				env_list[i].env = env;
+			}
+
+			return;
 		}
 	}
-	else if (env_list == NULL && env != NULL)
+	if (env == NULL)
+	{
+		return;
+	}
+	/* not found */
+	if (env_list == NULL)
 	{
 		/* list is still empty */
+		env_len_allocated = ENV_LIST_INC;
 		env_list = (env_list_item *)safecalloc(
-			sizeof(env_list_item), ENV_LIST_INC);
+			sizeof(env_list_item), env_len_allocated);
 	}
-	if (env != NULL)
+	else if (env_len >= env_len_allocated && env != NULL)
 	{
-		env_list[env_len].var = var;
-		env_list[env_len].env = env;
+		/* need more memory */
+		env_len_allocated = env_len + ENV_LIST_INC;
+		env_list = (env_list_item *)saferealloc(
+			(void *)env_list, (env_len_allocated) *
+			sizeof(env_list_item));
 	}
+	env_list[env_len].var = var;
+	env_list[env_len].env = env;
 	env_len++;
 
 	return;

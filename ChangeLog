@@ -1,3 +1,8 @@
+2004-10-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/envvar.c (add_to_envlist):
+	fixed crash
+
 2004-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (CMD_UnsetEnv):
@@ -39,7 +44,7 @@
 
 	* NEWS:
 	* configure.in:
-	updated for 2.5.10 release
+	updated for 2.5.11 release
 
 2004-09-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
