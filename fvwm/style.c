@@ -526,11 +526,11 @@ static void merge_styles(
 		merge_flags[i] |=
 			(add_flags[i] & ~add_mask[i] & ~merge_mask[i]);
 		merge_flags[i] &=
-			(add_flags[i] | ~add_mask[i] | ~merge_mask[i]);
+			(add_flags[i] | add_mask[i] | merge_mask[i]);
 
 	}
-
 	merged_style->has_style_changed |= add_style->has_style_changed;
+
 	return;
 }
 

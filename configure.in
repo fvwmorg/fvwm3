@@ -49,8 +49,8 @@ FVWM_DATASUBDIR=/${PACKAGE}
 
 AC_ARG_ENABLE(package-subdirs,
   [  --disable-package-subdirs  do not create subdirs for modules and data],
-  [if test $enableval = no; then FVWM_MODULESUBDIR=""; FVWM_DATASUBDIR=""; fi],
-  [])
+  [if test x"$enableval" = xno; then FVWM_MODULESUBDIR=""; FVWM_DATASUBDIR="";
+  fi], [])
 
 FVWM_MODULEDIR='${libexecdir}'"$FVWM_MODULESUBDIR"
 FVWM_DATADIR='${datadir}'"$FVWM_DATASUBDIR"
@@ -122,7 +122,7 @@ AC_MINIX
 dnl Need to know where X is, for finding some libraries (e.g. xpm)
 no_x=""
 AC_PATH_XTRA
-if test "$no_x" = "yes"; then
+if test x"$no_x" = x"yes"; then
   echo
   echo "X11 libraries or header files could not be found.  Please make"
   echo "sure the X11 development package is installed on your system."
@@ -160,7 +160,7 @@ dnl AM_CONDITIONAL(GNOME, test "x$enable_gnome_hints" != "xno")
 dnl ******** ewmh
 smr_SWITCH(ewmh, Extended WM Hints Support, on, HAVE_EWMH)
 
-if test "x$enable_ewmh" != "xno"; then
+if test x"$enable_ewmh" != no; then
   with_ewmh=yes
   problem_ewmh=""
 else
@@ -179,7 +179,7 @@ problem_sm=""
 
 AC_ARG_ENABLE(sm,
   [  --disable-sm            disable session management support],
-  [ if test "$enableval" = yes; then
+  [ if test x"$enableval" = xyes; then
     with_sm="yes, check"
   else
     with_sm="no"
@@ -188,7 +188,7 @@ AC_ARG_ENABLE(sm,
   [ with_sm="not specified, check" ]
 )
 
-if test "$with_sm" != "no"; then
+if test x"$with_sm" != xno; then
   dnl Uncomment the following and comment out AC_CHECK_LIB to get --with-sm-*
   dnl $UNSET ac_cv_lib_SM_SmcOpenConnection
   dnl $UNSET ac_cv_header_X11_SM_SMlib_h
@@ -216,7 +216,7 @@ dnl ********* shape extension
 dnl smr_SWITCH(shape, shape extensions, on, SHAPE)
 AC_ARG_ENABLE(shape,
   [  --disable-shape         disable shaped window support],
-  [ if test "$enableval" = yes; then
+  [ if test x"$enableval" = xyes; then
     with_shape="yes, check"
   else
     with_shape="no"
@@ -225,7 +225,7 @@ AC_ARG_ENABLE(shape,
   [ with_shape="not specified, check" ]
 )
 
-if test "$with_shape" != "no"; then
+if test x"$with_shape" != xno; then
   $UNSET ac_cv_lib_Xext_XShapeQueryExtension
   AC_CHECK_LIB(Xext, XShapeQueryExtension,
                with_shape=yes; AC_DEFINE(SHAPE),
@@ -240,7 +240,7 @@ problem_xinerama=""
 
 AC_ARG_ENABLE(xinerama,
   [  --disable-xinerama      disable Xinerama multi screen support],
-  [ if test "$enableval" = yes; then
+  [ if test x"$enableval" = xyes; then
     with_xinerama="yes, check"
   else
     with_xinerama="no"
@@ -249,7 +249,7 @@ AC_ARG_ENABLE(xinerama,
   [ with_xinerama="not specified, check" ]
 )
 
-if test "$with_xinerama" != "no"; then
+if test x"$with_xinerama" != xno; then
   $UNSET ac_cv_lib_Xinerama_XineramaIsActive
   AC_CHECK_LIB(Xinerama, XineramaIsActive,
     with_xinerama=yes; Xinerama_LIBS=-lXinerama; AC_DEFINE(HAVE_XINERAMA),
@@ -263,7 +263,7 @@ AC_SUBST(Xinerama_CFLAGS)
 dnl ********* xinerama-emulation
 smr_SWITCH(xinerama-emulation, Xinerama emulation on one screen (useful only for developers), off,
            USE_XINERAMA_EMULATION)
-if test "$enable_xinerama_emulation" = yes; then
+if test x"$enable_xinerama_emulation" = xyes; then
   with_xinerama_emulation=yes
 else
   with_xinerama_emulation=no
@@ -273,7 +273,7 @@ dnl ********* xrender
 problem_xrender=""
 AC_ARG_ENABLE(xrender,
   [  --disable-xrender      disable Xrender alpha-blend rendering ],
-  [ if test "$enableval" = yes; then
+  [ if test x"$enableval" = xyes; then
     with_xrender="yes, check"
   else
     with_xrender="no"
@@ -282,7 +282,7 @@ AC_ARG_ENABLE(xrender,
   [ with_xrender="not specified, check" ]
 )
 
-if test "$with_xrender" != "no"; then
+if test x"$with_xrender" != xno; then
   $UNSET ac_cv_lib_Xrender_XRenderComposite
   AC_CHECK_LIB(Xrender, XRenderComposite,
     with_xrender=yes; Xrender_LIBS=-lXrender; AC_DEFINE(HAVE_XRENDER),
@@ -298,7 +298,7 @@ problem_xft=""
 
 AC_ARG_ENABLE(xft,
   [  --disable-xft            disable Xft anti-aliased font rendering],
-  [ if test "$enableval" = yes; then
+  [ if test x"$enableval" = xyes; then
     with_xft="yes, check"
   else
     with_xft="no"
@@ -309,12 +309,12 @@ AC_ARG_ENABLE(xft,
   ]
 )
 
-if test "$with_xft" != "no"; then
+if test x"$with_xft" != xno; then
 
   dnl first check for freetype2
   have_freetype=no
   AM_CHECK_FT2(6.1.0)
-  if test "x$no_ft" = x; then
+  if test x"$no_ft" = x; then
     have_freetype=yes
   else
     have_freetype=no
@@ -323,9 +323,9 @@ if test "$with_xft" != "no"; then
 
   dnl check for fontconfig for Xft 2
   have_fontconfig=no
-  if test "x$have_freetype" != "xno" ; then
+  if test x"$have_freetype" != xno ; then
     AM_CHECK_FC(1.0.1)
-    if test "x$no_fc" = x ; then
+    if test x"$no_fc" = x ; then
       have_fontconfig=yes
     else
       have_fontconfig=no
@@ -335,10 +335,10 @@ if test "$with_xft" != "no"; then
 
   dnl now check for Xft 2
   with_xft=no
-  if test "x$have_fontconfig" != "xno" ; then
+  if test x"$have_fontconfig" != xno ; then
     # Xft 2
     AM_CHECK_XFT(2.0.0)
-    if test "x$no_xft" = x; then
+    if test x"$no_xft" = x; then
       with_xft=yes
       problem_xft=" (version 2)"
       AC_DEFINE(HAVE_XFT2)
@@ -352,7 +352,7 @@ if test "$with_xft" != "no"; then
   fi
 
   dnl if Xft2 not detected check for Xft1
-  if test "x$have_freetype" != "xno" -a "x$with_xft" != "xyes"; then
+  if test x"$have_freetype" != xno -a x"$with_xft" != xyes; then
     #Xft 1
     $UNSET ac_cv_lib_XftConfigSubstitute
     $UNSET ac_cv_lib_Xft_XftFontOpen
@@ -360,10 +360,10 @@ if test "$with_xft" != "no"; then
     AC_CHECK_LIB(Xft, XftFontOpen,
       with_xft=yes, with_xft=no,
       [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
-    if test "x$with_xft" = "xyes" ; then
+    if test x"$with_xft" = xyes ; then
       AC_CHECK_LIB(Xft, XftConfigSubstitute, is_xft1=yes, is_xft1=no,
                    [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
-      if test "x$is_xft1" = "xyes"; then
+      if test x"$is_xft1" = xyes; then
         Xft_LIBS="-lXft $FT2_LIBS"
 	Xft_CFLAGS="$Xft_CFLAGS $FT2_CFLAGS"
         problem_xft=" (version 1)"
@@ -375,7 +375,7 @@ if test "$with_xft" != "no"; then
     else
       problem_xft=": Failed to detect Xft 1 or Xft 2 and fontconfig"
     fi
-    if test "x$with_xft" = "xyes"; then
+    if test x"$with_xft" = xyes; then
       AC_CHECK_LIB(Xft, XftDrawStringUtf8, AC_DEFINE(HAVE_XFT_UTF8),,
                    [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS $FT2_LIBS])
     fi
@@ -394,7 +394,7 @@ smr_CHECK_LIB(xpm, Xpm, for coloured or shaped icons,
     XpmReadFileToXpmImage, X11/xpm.h,
     [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS], $X_CFLAGS)
 
-if test "$xpm_LIBS"; then
+if test x"$xpm_LIBS" != x; then
   dnl Check for proper version of Xpm -- from XEmacs 21.x configure.in
   AC_MSG_CHECKING([for Xpm 3.4g or better])
   my_CPPFLAGS="$CPPFLAGS"
@@ -407,14 +407,14 @@ if test "$xpm_LIBS"; then
      XpmIncludeVersion != XpmLibraryVersion() ? 1 :
      XpmIncludeVersion < 30407 ? 2 : 0 ;}],
     [./conftest dummy_arg; xpm_status=$?;
-     if test "$xpm_status" = "0"; then
+     if test x"$xpm_status" = x0; then
        with_xpm=yes
        problem_xpm=""
      else
        with_xpm=no;
-       if test "$xpm_status" = "1"; then
+       if test x"$xpm_status" = x1; then
 	 problem_xpm=": Xpm library and header versions don't match"
-       elif test "$xpm_status" = "2"; then
+       elif test x"$xpm_status" = x2x; then
 	 problem_xpm=": Xpm library version is too old"
        else
 	 problem_xpm=": Internal xpm detection logic error"
@@ -425,7 +425,7 @@ if test "$xpm_LIBS"; then
   CPPFLAGS="$my_CPPFLAGS"
   LIBS="$my_LIBS"
 
-  if test "$with_xpm" = yes; then
+  if test x"$with_xpm" = xyes; then
     AC_DEFINE(XPM)
     # FVWMBANNER=FvwmBanner AC_SUBST(FVWMBANNER)
     # XPMROOT=xpmroot AC_SUBST(XPMROOT)
@@ -446,7 +446,7 @@ $UNSET ac_cv_lib_png_png_read_info
 smr_CHECK_LIB(png, png, for coloured or shaped icons,
     png_read_info, png.h, -lz -lm,)
 
-if test "$png_LIBS"; then
+if test x"$png_LIBS" != x; then
   dnl Check for proper version of png
   AC_MSG_CHECKING([for libpng 1.0.4a or better])
   my_CPPFLAGS="$CPPFLAGS"
@@ -457,11 +457,11 @@ if test "$png_LIBS"; then
    int main(int c, char **v) {
    return c == 1 ? 0 : (PNG_LIBPNG_VER < 10005) ? 2 : 0 ;}],
     [./conftest dummy_arg; png_status=$?;
-     if test "$png_status" = "0"; then
+     if test x"$png_status" = x0; then
        with_png=yes;
      else
        with_png=no;
-       if test "$png_status" = "2"; then
+       if test x"$png_status" = x2; then
 	 problem_png=": png library version is too old"
        else
 	 problem_png=": Internal png detection logic error"
@@ -473,7 +473,7 @@ if test "$png_LIBS"; then
   LIBS="$my_LIBS"
 fi
 
-if test "$with_png" = "yes"; then
+if test x"$with_png" = xyes; then
   AC_DEFINE(HAVE_PNG)
   png_LIBS="-lpng -lz"
   problem_png=""
@@ -492,7 +492,7 @@ $UNSET ac_cv_lib_rplay_rplay_create
 dnl Add in X_EXTRA_LIBS here to get things like connect().
 smr_CHECK_LIB(rplay, , adds audio capability, rplay_create, rplay.h,
 	      $X_EXTRA_LIBS)
-test "$rplay_LIBS" && AC_DEFINE(HAVE_RPLAY)
+test x"$rplay_LIBS" != x && AC_DEFINE(HAVE_RPLAY)
 AC_SUBST(rplay_LIBS)
 AC_SUBST(rplay_CFLAGS)
 
@@ -505,7 +505,7 @@ dnl As of 23/Mar/2000 the only libstroke RPM has /usr/X11R6/include/stroke.h
 smr_CHECK_LIB(stroke, , mouse strokes recognition,
 	stroke_init, stroke.h,
 	[$X_LIBS -lX11], $X_CFLAGS -I/usr/X11R6/include)
-test "$stroke_LIBS" && AC_DEFINE(HAVE_STROKE)
+test x"$stroke_LIBS" != x && AC_DEFINE(HAVE_STROKE)
 AC_SUBST(stroke_LIBS)
 AC_SUBST(stroke_CFLAGS)
 
@@ -515,21 +515,21 @@ with_readline=no
 problem_readline=": Both termcap and ncurses disabled"
 
 smr_ARG_WITHLIB(termcap, , to accomplish readline)
-if test "$with_termcap" != "no"; then
+if test x"$with_termcap" != xno; then
   dnl Forget cached values, so user can re-run configure
   $UNSET ac_cv_header_readline_history_h
   $UNSET ac_cv_lib_readline_readline
   AC_MSG_CHECKING([with termcap])
   smr_CHECK_LIB(readline, , line editing/history, readline, readline/history.h,
     $termcap_LIBS)
-  if test "$readline_LIBS"; then
+  if test x"$readline_LIBS" != x; then
     with_readline=yes
     readline_LIBS="$readline_LIBS $termcap_LIBS"
     AC_DEFINE(HAVE_READLINE)
   fi
 fi
 smr_ARG_WITHLIB(ncurses, , to accomplish readline)
-if test "$with_ncurses" != "no" -a ! "$readline_LIBS"; then
+if test x"$with_ncurses" != xno -a ! "$readline_LIBS"; then
   # We couldn't use readline with termcap; try with ncurses?
   dnl Doesn't this seem a hacky way to do this??
   dnl unset cached values from last check...
@@ -540,9 +540,9 @@ if test "$with_ncurses" != "no" -a ! "$readline_LIBS"; then
   dnl old_LIBS=$LIBS
   dnl AC_CHECK_LIB(readline, readline, , , $ncurses_LIBS)
   dnl LIBS=$old_LIBS
-  dnl if test "$ac_cv_lib_readline_readline" = yes; then
+  dnl if test x"$ac_cv_lib_readline_readline" = xyes; then
   dnl   AC_CHECK_HEADERS(readline/history.h)
-  dnl   if test "$ac_cv_header_readline_history_h" = yes; then
+  dnl   if test x"$ac_cv_header_readline_history_h" = xyes; then
   dnl     with_readline=yes
   dnl     readline_LIBS="$readline_LIBS $ncurses_LIBS"
   dnl     AC_DEFINE(HAVE_READLINE)
@@ -550,7 +550,7 @@ if test "$with_ncurses" != "no" -a ! "$readline_LIBS"; then
   dnl fi
   smr_CHECK_LIB(readline, , line editing/history, readline, readline/history.h,
     $ncurses_LIBS)
-  if test "$readline_LIBS"; then
+  if test x"$readline_LIBS" != x; then
     with_readline=yes
     readline_LIBS="$readline_LIBS $ncurses_LIBS"
     AC_DEFINE(HAVE_READLINE)
@@ -576,7 +576,7 @@ $UNSET ac_cv_header_libiconv_h
 $UNSET ac_cv_lib_libiconv_libiconv_open
 smr_CHECK_LIB(iconv, ,if not found sys iconv is used,
               libiconv_open, iconv.h)
-if test "x$iconv_LIBS" != "x"; then
+if test x"$iconv_LIBS" != x; then
    AC_DEFINE(USE_LIBICONV)
    found_lib_iconv=yes
 fi
@@ -586,28 +586,28 @@ AC_SUBST(iconv_CFLAGS)
 dnl * check for system iconv
 AC_CHECK_FUNC(iconv_open, found_sys_iconv=yes)
 
-if test "x$found_lib_iconv" = "xyes" -a "x$found_sys_iconv" = "xyes"; then
+if test x"$found_lib_iconv" = xyes -a x"$found_sys_iconv" = xyes; then
    AC_MSG_WARN([***  Both system iconv and libiconv found: use libiconv])
    AC_MSG_WARN([***  Use --with-iconv-library=no to use the system iconv])
 fi
 
 dnl * libiconv found check for libcharset to get the good iconv charset
-if test "x$found_lib_iconv" = "xyes"; then
+if test x"$found_lib_iconv" = xyes; then
    CHECK_LIBCHARSET
 fi
 
-if test "x$found_lib_iconv" = "xyes" -o "x$found_sys_iconv" = "xyes"; then
+if test x"$found_lib_iconv" = xyes -o x"$found_sys_iconv" = xyes; then
    found_iconv=yes
 fi
 
-if test "x$found_iconv" = "xno"; then
+if test x"$found_iconv" = xno; then
    AC_MSG_WARN([*** ])
    AC_MSG_WARN([*** No iconv() implementation found in C library or libiconv])
    AC_MSG_WARN([*** Please install libiconv ftp://ftp.gnu.org/pub/gnu/libiconv/])
    AC_MSG_WARN([*** ])
 fi
 
-if test "x$found_iconv" = "xyes"; then
+if test x"$found_iconv" = xyes; then
    AC_DEFINE(HAVE_ICONV)
    ICONV_SECOND_ARG
 fi
@@ -627,7 +627,7 @@ AC_MSG_RESULT($have_codeset)
 dnl ********* fribidi
 AC_ARG_ENABLE(bidi,
 	[  --disable-bidi          disable bi-directional text support],
-	[ if test "$enableval" = yes; then
+	[ if test x"$enableval" = xyes; then
 		with_bidi="yes, check"
 	else
 		with_bidi="no"
@@ -636,13 +636,13 @@ AC_ARG_ENABLE(bidi,
 	[ with_bidi="not specified, check" ]
 )
 
-if test "$with_bidi" != "no"; then
+if test x"$with_bidi" != xno; then
 	AC_ARG_WITH(fribidi-bindir,
 		[  --with-fribidi-bindir=DIR  directory of fribidi-config if not in PATH],
 		FRIBIDI_BINDIR="$withval", FRIBIDI_BINDIR=".")
 	AC_PATH_PROG(FRIBIDI_CONFIG, fribidi-config,, [$FRIBIDI_BINDIR:$PATH])
 
-	if test -z "$FRIBIDI_CONFIG"; then
+	if test x"$FRIBIDI_CONFIG" = x; then
 		with_bidi=no
 		problem_bidi=": No fribidi-config found in PATH"
 	else
@@ -655,7 +655,7 @@ if test "$with_bidi" != "no"; then
 	fi
 fi
 
-if test "$with_bidi" != "no"; then
+if test x"$with_bidi" != xno; then
 	ac_save_CFLAGS="$CFLAGS"
 	ac_save_LIBS="$LIBS"
 	CFLAGS="$CFLAGS $Bidi_CFLAGS"
@@ -676,11 +676,11 @@ int main()
 	LIBS="$ac_save_LIBS"
 fi
 
-if test "$with_bidi" = "no"; then
+if test x"$with_bidi" = xno; then
 	Bidi_CFLAGS=
 	Bidi_LIBS=
 fi
-test "$Bidi_LIBS" && AC_DEFINE(HAVE_BIDI)
+test x"$Bidi_LIBS" != x && AC_DEFINE(HAVE_BIDI)
 AC_SUBST(Bidi_LIBS)
 AC_SUBST(Bidi_CFLAGS)
 
@@ -691,7 +691,7 @@ problem_perllib=""
 FVWM_PERLLIB=perllib
 AC_ARG_ENABLE(perllib,
 	[  --disable-perllib       disable installing FVWM perl library],
-	[ if test "$enableval" = no; then
+	[ if test x"$enableval" = xno; then
 		with_perllib="no"
 		problem_perllib=": Explicitly disabled"
 		FVWM_PERLLIB=""
@@ -705,7 +705,7 @@ dnl further.
 dnl The module interface uses variadic functions for message passing.
 AC_CHECK_HEADERS(stdarg.h)
 AC_CHECK_FUNCS(vfprintf)
-if test $ac_cv_header_stdarg_h = no -o \
+if test x$ac_cv_header_stdarg_h = xno -o \
         $ac_cv_func_vfprintf = no; then
      AC_MSG_ERROR([stdarg.h and vfprintf required])
 fi
@@ -713,9 +713,9 @@ fi
 dnl For reaping children, fvwm needs either waitpid() or wait3()
 dnl Some extra modules may need wait4() too
 AC_CHECK_FUNCS(waitpid)
-if test $ac_cv_func_waitpid = no; then
+if test x$ac_cv_func_waitpid = xno; then
     AC_CHECK_FUNCS(wait3 wait4)
-    if test $ac_cv_func_wait3 = no; then
+    if test x$ac_cv_func_wait3 = xno; then
         AC_MSG_ERROR([Either waitpid or wait3 function is required])
     fi
 fi
@@ -731,18 +731,18 @@ dnl will handle it better :-/
 dnl AC_ARG_WITH(cxx,
 dnl [  --without-cxx           disable probing for C++ compiler])
 dnl
-dnl if test "$with_cxx" != no; then
-dnl     if test "$with_cxx" -a "$with_cxx" != yes; then
+dnl if test x"$with_cxx" != xno; then
+dnl     if test x"$with_cxx" != x -a x"$with_cxx" != xyes; then
 dnl         CCC=$with_cxx
 dnl # disable the cached value before probing
 dnl         $UNSET ac_cv_prog_CXX
 dnl         AC_CHECK_PROGS(CXX, $CCC)
-dnl         test "$CXX" ||
+dnl         test x"$CXX" != x ||
 dnl             AC_MSG_ERROR([C++ compiler given by --with-cxx not found])
 dnl     else
 dnl         AC_CHECK_PROGS(CXX, $CCC c++ g++ gcc CC cxx cc++)
 dnl     fi
-dnl     if test "$CXX"; then
+dnl     if test x"$CXX" != x; then
 dnl         AC_MSG_RESULT(Using $CXX to compile C++ programs)
 dnl         with_cxx=yes
 dnl         AC_PROG_CXX
@@ -751,7 +751,7 @@ dnl fi
 
 dnl Look harder for a C preprocessor for FvwmCpp
 AC_PATH_PROG(FVWM_CPP, cpp, no, $PATH:/lib:/usr/lib:/usr/ccs/lib)
-if test "$FVWM_CPP" = no; then
+if test x"$FVWM_CPP" = xno; then
   FVWM_CPP=
   AC_MSG_WARN([cannot locate a C preprocessor: run FvwmCpp with -cppprog])
 fi
@@ -766,11 +766,11 @@ dnl lex+yacc now only needed for FvwmScript developers when syntax is changed
 dnl AM_PROG_LEX
 dnl AC_PROG_YACC
 
-if test -z "$PERL"; then
+if test x"$PERL" = x; then
 	AC_PATH_PROG(PERL, perl)
 fi
 dnl We need at least perl 5.002 for FvwmConsoleC.pl and fvwm-menu-headlines.
-if test ! -z "$PERL"; then
+if test x"$PERL" != x; then
 	AC_MSG_CHECKING([for perl 5.002 or better])
 	if ("$PERL" -e "require 5.002;") 2>/dev/null; then
 		AC_MSG_RESULT(yes)
@@ -814,12 +814,12 @@ AC_CHECK_FUNCS(setpgrp setpgid)
 
 pds_CHECK_TYPE(sig_atomic_t, int, [#include <signal.h>])
 
-if test $ac_cv_func_setvbuf = yes; then
+if test x$ac_cv_func_setvbuf = xyes; then
   AC_FUNC_SETVBUF_REVERSED
 fi
 
 AC_FUNC_SELECT
-if test $ac_cv_func_select != yes; then
+if test x$ac_cv_func_select != xyes; then
   AC_MSG_ERROR([select required])
 fi
 
@@ -828,7 +828,7 @@ AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strdup strerror usleep atexi
 AC_SUBST(LIBOBJS)
 
 dnl If we do not have atexit(), then check for on_exit()
-if test $ac_cv_func_atexit = no; then
+if test x$ac_cv_func_atexit = xno; then
   AC_CHECK_FUNCS(on_exit)
 fi
 
@@ -836,7 +836,7 @@ fi
 dnl ********* GTK, IMLIB, GNOME
 dnl Check the availability of gtk
 AM_PATH_GTK(1.1.0,[FVWMGTK=FvwmGtk AC_SUBST(FVWMGTK)],)
-if test "x$no_gtk" = x; then
+if test x"$no_gtk" = x; then
   with_gtk=yes
   problem_gtk=""
 else
@@ -846,7 +846,7 @@ fi
 
 dnl Check the availability of gdk-imlib
 AM_PATH_GDK_IMLIB(1.8.0, AC_DEFINE(GDK_IMLIB),)
-if test "x$no_imlib" = x; then
+if test x"$no_imlib" = x; then
   with_gdkimlib=yes
   problem_gdkimlib=""
 else
@@ -858,7 +858,7 @@ GNOME_INIT_HOOK
 
 dnl Unfortunately we have 2 gnome supports: WM hints and gnome libs.
 dnl The $with_gnomehints below refers to the first, not GNOME_INIT_HOOK.
-if test "x$enable_gnome_hints" != "xno"; then
+if test x"$enable_gnome_hints" != xno; then
   with_gnomehints=yes
   problem_gnomehints=""
 else
@@ -871,7 +871,7 @@ mg_DEFINE_IF_NOT([#include <X11/keysym.h>],
   [defined XK_Page_Up && defined XK_Page_Down],
   [COMPAT_OLD_KEYSYMDEF], [$X_CFLAGS])
 
-if test "$with_stroke" = yes; then
+if test x"$with_stroke" = xyes; then
   mg_DEFINE_IF_NOT([#include <stroke.h>],
     [defined STROKE_MAX_SEQUENCE],
     [COMPAT_OLD_LIBSTROKE], [$stroke_CFLAGS])
@@ -987,7 +987,7 @@ dnl
 
 # ---------------------------------------------------------------------------
 # Original config.status is patched to make generated scripts executable.
-sed 's/> $ac_file/> $ac_file; test "`head -1 $ac_file | cut -c1-2`" = "#!" \&\& chmod a+rx $ac_file/' <config.status >config.status-t && \
+sed 's/> $ac_file/> $ac_file; test x"`head -1 $ac_file | cut -c1-2`" = x"#!" \&\& chmod a+rx $ac_file/' <config.status >config.status-t && \
 mv config.status-t config.status
 chmod +x config.status
 # ---------------------------------------------------------------------------
@@ -1011,7 +1011,7 @@ eval my_mandir="`eval echo ${mandir}`"
 eval my_moddir="`eval echo ${FVWM_MODULEDIR}`"; eval my_moddir="$my_moddir"
 eval my_datdir="`eval echo ${FVWM_DATADIR}`"
 eval my_plldir="`eval echo ${FVWM_PERLLIBDIR}`"
-test -z "$FVWM_PERLLIB" && my_plldir="(Not installed) $my_plldir"
+test x"$FVWM_PERLLIB" = x && my_plldir="(Not installed) $my_plldir"
 
 case "$with_gtk" in
   yes) fvwmgtk_msg="

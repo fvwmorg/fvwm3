@@ -1,3 +1,13 @@
+2002-08-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (merge_styles):
+	fixed style defaults getting stuck to on once set
+
+	* configure.in:
+	fixed a number of non portable uses of the "test" command and unified
+	the used syntax of all calls to reduce chance of copy-and-paste
+	problems
+
 2002-08-17  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
