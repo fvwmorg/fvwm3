@@ -125,7 +125,7 @@ ShutdownX(void)
  /* les messages soient arrives a destination         */
  /* On quitte proprement le serveur X */
  for (i=0;i<nbobj;i++)
-  tabxobj[i]->DestroyObj(tabxobj[i]);
+   tabxobj[i]->DestroyObj(tabxobj[i]);
  XFlush(dpy);
  sleep(2);
  XCloseDisplay(dpy);
@@ -309,7 +309,6 @@ void Xinit(int IsFather)
   x11base->TabScriptId[1]=name;
   x11base->TabScriptId[0]=NULL;
  }
-
  x11base->NbChild=0;
  x11base->root = RootWindow(dpy,screen);
  x_fd = XConnectionNumber(dpy);
@@ -480,10 +479,8 @@ void BuildGUI(int IsFather)
  x11base->title=scriptprop->titlewin;
 
  /* Initialisation du serveur X et de la fenetre */
-
  Xinit(IsFather);
  OpenWindow();
-
 
  /* Parcour de tous les objets graphiques */
  nbobj++;
@@ -733,10 +730,8 @@ void ReadXServer (void)
              break;
              default:evnt_sel.xselection.property=None;
             }
-	    fprintf(stderr,"before\n");
             XSendEvent(dpy,evnt_sel.xselection.requestor,
 		       False,0,&evnt_sel);
-	    fprintf(stderr,"after\n");
            }
 	   else
 	    SendMsgToScript(event);

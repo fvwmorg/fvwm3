@@ -150,7 +150,7 @@ void DrawCellule(struct XObj *xobj,int NbCell,int NbVisCell,int HeightCell,int a
     XSetClipRectangles(dpy,xobj->gc,0,0,&r,1,Unsorted);
     for (i=xobj->value2;i<xobj->value2+NbVisCell;i++)
     {
-	Title=GetMenuTitle(xobj->title,i);
+	Title=(char*)GetMenuTitle(xobj->title,i);
 	if (strlen(Title)!=0)
 	{
 	    if (xobj->value==i)
@@ -178,6 +178,8 @@ void DrawCellule(struct XObj *xobj,int NbCell,int NbVisCell,int HeightCell,int a
 	    XClearArea(dpy,xobj->win,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
 		       xobj->width-16-SbWidth-BdWidth,HeightCell-2,False);
 	}
+	if (Title != NULL)
+	  free(Title);
     }
     XSetClipMask(dpy,xobj->gc,None);
 }

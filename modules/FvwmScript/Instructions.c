@@ -928,6 +928,8 @@ static void ChangeTitle (int NbArg,long *TabArg)
  arg[1]=CalcArg(TabArg,&i);
  IdItem= TabIdObj[atoi(arg[0])];
 
+ if (tabxobj[IdItem]->title)
+   free(tabxobj[IdItem]->title);
  tabxobj[IdItem]->title=strdup(arg[1]);
  if (tabxobj[IdItem]->TypeWidget != SwallowExec)
    XClearWindow(dpy, tabxobj[IdItem]->win);
