@@ -30,7 +30,7 @@ typedef struct
   int x,y,w,h;
 } ButtonArray;
 
-#define MAX_COLOUR_SETS 3
+#define MAX_COLOUR_SETS 4
 
 /* Function Prototypes */
 Button *ButtonNew(char *title, Picture *p, int up);

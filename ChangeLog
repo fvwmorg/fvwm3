@@ -1,3 +1,9 @@
+1998-12-11  Tim Phipps  <tim@quadrics.com>
+
+	* modules/FvwmWinList/*: Without mini-icons text is centred by default.
+	Fixed Focus colouring.  Added DontDepressFocus config variable.
+	Fixed relief drawing.
+
 1998-12-11  Bob Woodside <proteus@pcnet.com>
 
 	* fvwm/events.c:  Fixed "window under mouse at startup doesn't

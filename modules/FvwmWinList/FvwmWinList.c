@@ -110,7 +110,7 @@ char *ClickAction[3]={"Iconify -1,Raise","Iconify","Lower"},*EnterAction,
       *ForeColor[MAX_COLOUR_SETS] = { "black" },
       *geometry="";
 char *font_string = "fixed";
-int UseSkipList=0,Anchor=1,UseIconNames=0,LeftJustify=0,TruncateLeft=1,ShowFocus=1;
+int UseSkipList=0,Anchor=1,UseIconNames=0,LeftJustify=0,TruncateLeft=0,ShowFocus=1;
 
 long CurrentDesk = 0;
 int ShowCurrentDesk = 0;
@@ -357,16 +357,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       free(name);
       break;
     case M_FOCUS_CHANGE:
-
-/* Code copied Straight from TaskBar */
-
     if ((i=FindItem(&windows,body[0]))!=-1)
     {
-	    flags=ItemFlags(&windows,body[0]);
- 	    UpdateItemFlags(&windows,body[0],flags);
+      flags=ItemFlags(&windows,body[0]);
+      UpdateItemFlags(&windows,body[0],flags);
+      RadioButton(&buttons,i);
+      redraw = 1;
     }
-    if (ShowFocus) RadioButton(&buttons,i);
-    redraw = 1;
     break;
 
       break;
@@ -520,7 +517,10 @@ void ParseConfig()
 	  else if(strncasecmp(tline,CatString3(Module,"IconFore",""), Clength+8)==0)
 	    CopyString(&ForeColor[1],&tline[Clength+8]);
 	  else if(strncasecmp(tline,CatString3(Module,"FocusFore",""), Clength+9)==0)
-	    CopyString(&ForeColor[2],&tline[Clength+9]);
+	    {
+	      CopyString(&ForeColor[2],&tline[Clength+9]);
+	      CopyString(&ForeColor[3],&tline[Clength+9]);
+	    }
 	  else if(strncasecmp(tline,CatString3(Module, "Geometry",""), Clength+8)==0)
 	    CopyString(&geometry,&tline[Clength+8]);
 	  else if(strncasecmp(tline,CatString3(Module, "Back",""), Clength+4)==0)
@@ -528,7 +528,10 @@ void ParseConfig()
 	  else if(strncasecmp(tline,CatString3(Module,"IconBack",""), Clength+8)==0)
 	    CopyString(&BackColor[1],&tline[Clength+8]);
 	  else if(strncasecmp(tline,CatString3(Module,"FocusBack",""), Clength+9)==0)
-	    CopyString(&BackColor[2],&tline[Clength+9]);
+	    {
+	      CopyString(&BackColor[2],&tline[Clength+9]);
+	      CopyString(&BackColor[3],&tline[Clength+9]);
+	    }
 	  else if(strncasecmp(tline,CatString3(Module, "NoAnchor",""),
 				Clength+8)==0) Anchor=0;
 	  else if(strncasecmp(tline,CatString3(Module, "Action",""), Clength+6)==0)
@@ -543,8 +546,6 @@ void ParseConfig()
 				Clength+11)==0) LeftJustify=1;
 	  else if(strncasecmp(tline,CatString3(Module, "TruncateLeft",""),
 				Clength+12)==0) TruncateLeft=1;
-	  else if(strncasecmp(tline,CatString3(Module, "TruncateRight",""),
-				Clength+13)==0) TruncateLeft=0;
           else if(strncasecmp(tline,CatString3(Module, "MinWidth",""),
                                 Clength+8)==0) MinWidth=atoi(&tline[Clength+8]);
           else if(strncasecmp(tline,CatString3(Module, "MaxWidth",""),

@@ -33,8 +33,7 @@ extern Display *dpy;
 extern Window win;
 extern GC shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
 extern GC graph[MAX_COLOUR_SETS],background[MAX_COLOUR_SETS];
-extern int LeftJustify;
-extern int TruncateLeft;
+extern int LeftJustify, TruncateLeft, ShowFocus;
 
 extern long CurrentDesk;
 extern int ShowCurrentDesk;
@@ -178,7 +177,7 @@ int UpdateButtonPicture(ButtonArray *array, int butnum, Picture *p)
 }
 
 /******************************************************************************
-  UpdateButtonSet - Change colour set of a button
+  UpdateButtonSet - Change colour set of a button between odd and even
 ******************************************************************************/
 int UpdateButtonSet(ButtonArray *array, int butnum, int set)
 {
@@ -187,9 +186,9 @@ int UpdateButtonSet(ButtonArray *array, int butnum, int set)
   btn=find_n(array, butnum);
   if (btn != NULL)
   {
-    if (btn->set != set)
+    if ((btn->set & 1) != set)
     {
-      btn->set = set;
+      btn->set = (btn->set & 2) | set;
       btn->needsupdate = 1;
     }
   } else return -1;
@@ -305,27 +304,14 @@ void DoButton(Button *button, int x, int y, int w, int h)
   Fontheight=ButtonFont->ascent+ButtonFont->descent;
 
  /*? XClearArea(dpy,win,x,y,w,h,False);*/
-  XFillRectangle(dpy,win,background[set],x,y,w,h);
-  XDrawLine(dpy,win,topgc,x,y,x+w-1,y);
-  XDrawLine(dpy,win,topgc,x,y+1,x+w-2,y+1);
-
-  XDrawLine(dpy,win,topgc,x,y,x,y+h-1);
-  XDrawLine(dpy,win,topgc,x+1,y,x+1,y+h-2);
-  
-  XDrawLine(dpy,win,bottomgc,x,y+h,x+w,y+h);
-  XDrawLine(dpy,win,bottomgc,x+1,y+h-1,x+w,y+h-1);
-
-  XDrawLine(dpy,win,bottomgc,x+w,y+h,x+w,y);
-  XDrawLine(dpy,win,bottomgc,x+w-1,y+h,x+w-1,y+1);
-
-  newx = 2;
+  XFillRectangle(dpy,win,background[set],x,y,w,h+1);
 
   if ((button->p.picture != 0)/* &&
       (w + button->p.width + w3p + 3 > MIN_BUTTON_SIZE)*/) {
 
     gcm = GCClipMask|GCClipXOrigin|GCClipYOrigin;
     gcv.clip_mask = button->p.mask;
-    gcv.clip_x_origin = x + 3;
+    gcv.clip_x_origin = x + 4;
     gcv.clip_y_origin = y + ((h-button->p.height) >> 1);
     XChangeGC(dpy, hilite[set], gcm, &gcv);
     XCopyArea(dpy, button->p.picture, win, hilite[set], 0, 0,
@@ -335,20 +321,19 @@ void DoButton(Button *button, int x, int y, int w, int h)
     gcv.clip_mask = None;
     XChangeGC(dpy, hilite[set], gcm, &gcv);
 
-    newx += button->p.width+4;
-    }
-	else
-	{
-		newx = 4;
-	}
+    newx = button->p.width+6;
+  }
+  else
+  {
+    if (LeftJustify)
+      newx=4;
+    else
+      newx=max((w-button->tw)/2,4);
+  }
 
   string=button->title;
-  if (LeftJustify) {
-/* newx set by pixmap    newx=4;
-*/
-  } else {
-/* set by pixmap    newx=max((w-button->tw)/2,4);
-*/
+
+  if (!LeftJustify) {
     if (TruncateLeft && (w-button->tw)/2 < 4) {
       if (button->truncatewidth == w)
 	string=button->truncate_title;
@@ -363,6 +348,17 @@ void DoButton(Button *button, int x, int y, int w, int h)
   }
   XDrawString(dpy,win,graph[set],x+newx,y+3+ButtonFont->ascent,string,strlen(string));
   button->needsupdate=0;
+  
+  /* Draw relief last, don't forget that XDrawLine doesn't do the last pixel */
+  XDrawLine(dpy,win,topgc,x,y,x+w-1,y);
+  XDrawLine(dpy,win,topgc,x+1,y+1,x+w-2,y+1);
+  XDrawLine(dpy,win,topgc,x,y+1,x,y+h+1);
+  XDrawLine(dpy,win,topgc,x+1,y+2,x+1,y+h);
+  XDrawLine(dpy,win,bottomgc,x+1,y+h,x+w,y+h);
+  XDrawLine(dpy,win,bottomgc,x+2,y+h-1,x+w-1,y+h-1);
+  XDrawLine(dpy,win,bottomgc,x+w-1,y,x+w-1,y+h);
+  XDrawLine(dpy,win,bottomgc,x+w-2,y+1,x+w-2,y+h-1);
+
 }
 
 /******************************************************************************
@@ -416,14 +412,27 @@ void RadioButton(ButtonArray *array, int butnum)
   {
     if (i == butnum)
     {
-      temp->up = 0;
-      temp->needsupdate=1;
+      if (ShowFocus && temp->up)
+      {
+        temp->up = 0;
+        temp->needsupdate=1;
+      }
+      if (!(temp->set & 2))
+      {
+        temp->set |= 2;
+        temp->needsupdate=1;
+      }
     }
     else
     {
-      if (temp->up == 0)
+      if (ShowFocus && !temp->up)
       {
         temp->up = 1;
+        temp->needsupdate = 1;
+      }
+      if (temp->set & 2)
+      {
+        temp->set &= 1;
         temp->needsupdate = 1;
       }
     }
