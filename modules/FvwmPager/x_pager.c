@@ -142,11 +142,13 @@ static Pixmap default_pixmap = None;
  *	CalcGeom - calculates the size and position of a mini-window
  *	given the real window size.
  *	You can always tell bad code by the size of the comments.
+ *
+ *      dv: Some people say that good code does not nee lengthy comments. :-)
  ***********************************************************************/
 static void CalcGeom(PagerWindow *t, int win_w, int win_h,
                      int *x_ret, int *y_ret, int *w_ret, int *h_ret)
 {
-  int virt, edge, size, page, over;
+  int virt, virt2, edge, edge2, size, page, over;
 
   /* coordinate of left hand edge on virtual desktop */
   virt = Scr.Vx + t->x;
@@ -157,12 +159,20 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   /* absolute coordinate of right hand edge on virtual desktop */
   virt += t->width - 1;
 
+  /* to calculate the right edge, mirror the window and use the same
+   * calculations as for the loeft edge for consistency. */
+  virt2 = Scr.VWidth - 1 - virt;
+  edge2 = (virt2 * win_w) / Scr.VWidth;
+
+  /* then mirror if back to get the real coordinate */
+  edge2 = win_w - 1 - edge2;
+
   /* Calculate the mini-window's width by subtracting its LHS
    * from its RHS. This theoretically means that the width will
    * vary slightly as the window travels around the screen, but
    * this way ensures that the mini-windows in the pager match
    * the actual screen layout. */
-  size = ((virt * win_w) / Scr.VWidth) - edge;
+  size = edge2 - edge + 1;
 
   /* Make size big enough to be visible */
   if (size < MinSize) {
@@ -180,7 +190,8 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
       /* calculate how far the mini-window right edge overlaps the page line */
       /* beware that the "over" is actually one greater than on screen, but
          this discrepancy is catered for in the next two lines */
-      over = edge + size - ((page + 1) * win_w * Scr.MyDisplayWidth) / Scr.VWidth;
+      over = edge + size - ((page + 1) * win_w * Scr.MyDisplayWidth) /
+	Scr.VWidth;
 
       /* if the mini-window right edge is beyond the mini-window pager grid */
       if (over > 0) {
@@ -197,13 +208,17 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   virt = Scr.Vy + t->y;
   edge = (virt * win_h) / Scr.VHeight;
   virt += t->height - 1;
-  size = ((virt * win_h) / Scr.VHeight) - edge;
+  virt2 = Scr.VHeight - 1 - virt;
+  edge2 = (virt2 * win_h) / Scr.VHeight;
+  edge2 = win_h - 1 - edge2;
+  size = edge2 - edge + 1;
   if (size < MinSize)
   {
     size = MinSize;
     page = virt / Scr.MyDisplayHeight;
     if (page == ((virt - t->height + 1) / Scr.MyDisplayHeight)) {
-      over = edge + size - ((page + 1) * win_h * Scr.MyDisplayHeight) / Scr.VHeight;
+      over = edge + size - ((page + 1) * win_h * Scr.MyDisplayHeight) /
+	Scr.VHeight;
       if (over > 0)
         edge -= over;
     }
@@ -1786,12 +1801,13 @@ void MoveResizePagerView(PagerWindow *t)
 			  &Colorset[activecolorset],
 			  Pdepth, Scr.NormalGC, True);
     }
-  } else if((t->desk >= desk1)&&(t->desk <= desk2))
-    {
-      XDestroyWindow(dpy,t->IconView);
-      AddNewWindow(t);
-      return;
-    }
+  }
+  else if((t->desk >= desk1)&&(t->desk <= desk2))
+  {
+    XDestroyWindow(dpy,t->IconView);
+    AddNewWindow(t);
+    return;
+  }
 
   CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
   if (t->icon_view_width != w || t->icon_view_height != h) {

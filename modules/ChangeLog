@@ -1,5 +1,12 @@
 2000-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmPager/x_pager.c (CalcGeom):
+	improved calculation of lower nad right edges of the mini window so that
+	the whole mini desktop is used
+
+	* FvwmPager/FvwmPager.c:
+	new macro DEFAULT_PAGER_MOVE_THRESHOLD in defaults.h
+
 	* FvwmForm/FvwmForm.c (DoCommand):
 	* FvwmTheme/FvwmTheme.c (MyXParseColor):
 	(parse_colorset):

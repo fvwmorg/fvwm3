@@ -3831,6 +3831,12 @@ the focused window instead.  The
 command can for example be used to bind keys to the root window
 if you are using
 .IR SloppyFocus " or " ClickToFocus .
+However, some applications (xterm is one example) are unable to
+handle this key anymore, even if the pointer is over the xterm
+window.  It is recommended to use the
+.B PointerKey
+command only for key combinations that are not needed in any
+application window.
 
 Example:
 .EX

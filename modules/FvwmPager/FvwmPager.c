@@ -92,16 +92,16 @@ char *WindowHiBack = NULL;
 char *WindowHiFore = NULL;
 char *WindowLabelFormat = NULL;
 
-unsigned int WindowBorderWidth = 1;
-unsigned int MinSize = 3;
+unsigned int WindowBorderWidth = DEFAULT_PAGER_WINDOW_BORDER_WIDTH;
+unsigned int MinSize = 2 * DEFAULT_PAGER_WINDOW_BORDER_WIDTH + 1;
 Bool WindowBorders3d = False;
 
 Picture *PixmapBack = NULL;
 
 char *ImagePath = NULL;
 
-#define DEFAULT_MOVE_THRESHOLD 3
-int MoveThreshold = DEFAULT_MOVE_THRESHOLD;
+#define DEFAULT_PAGER_MOVE_THRESHOLD 3
+int MoveThreshold = DEFAULT_PAGER_MOVE_THRESHOLD;
 
 int ShowBalloons = 0, ShowPagerBalloons = 0, ShowIconBalloons = 0;
 Bool do_focus_on_enter = False;
@@ -630,14 +630,14 @@ void list_configure(unsigned long *body)
   target_w = cfgpacket->w;
   t = Start;
   while((t!= NULL)&&(t->w != target_w))
-    {
-      t = t->next;
-    }
+  {
+    t = t->next;
+  }
   if(t== NULL)
-    {
-      list_add(body);
-      return;
-    }
+  {
+    list_add(body);
+    return;
+  }
 
   t->t = (char *) cfgpacket->fvwmwin;
   t->frame = cfgpacket->frame;
@@ -1497,7 +1497,7 @@ void ParseOptions(void)
 	  if (val >= 0)
 	    MoveThreshold = val;
 	  else
-	    MoveThreshold = DEFAULT_MOVE_THRESHOLD;
+	    MoveThreshold = DEFAULT_PAGER_MOVE_THRESHOLD;
 	}
       }
       continue;

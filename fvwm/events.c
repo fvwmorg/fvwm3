@@ -291,13 +291,11 @@ void HandleKeyPress(void)
    */
   if (Scr.Focus && Event.xkey.window != Scr.Focus->w)
   {
-
     Event.xkey.window = Scr.Focus->w;
     XSendEvent(dpy, Scr.Focus->w, False, KeyPressMask, &Event);
   }
   else if (Tmp_win && Event.xkey.window != Tmp_win->w)
   {
-
     Event.xkey.window = Tmp_win->w;
     XSendEvent(dpy, Tmp_win->w, False, KeyPressMask, &Event);
   }

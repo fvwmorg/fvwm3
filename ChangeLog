@@ -1,8 +1,14 @@
 2000-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm2.1:
+	added a warning about the PointerKey command
+
 	* libs/Bindings.c (AddBinding):
+	simplified function
+
 	* fvwm/bindings.c (ParseBinding):
 	fixed core dump
+
 2000-10-08  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* libs/XResource.c

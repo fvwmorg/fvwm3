@@ -53,6 +53,10 @@
 #define DEFAULT_MENU_CLICKTIME             (3*DEFAULT_CLICKTIME)
 #define DEFAULT_MOVE_THRESHOLD             3 /* pixels */
 
+/* pager */
+#define DEFAULT_MOVE_THRESHOLD             3 /* pixels */
+#define DEFAULT_PAGER_WINDOW_BORDER_WIDTH  1 /* pixels */
+
 /* fonts */
 #define EXTRA_TITLE_FONT_HEIGHT            3
 #define MIN_FONT_HEIGHT                    (EXTRA_TITLE_FONT_HEIGHT + 2)
