@@ -645,129 +645,115 @@ static void free_style_mask(window_style *style, style_flags *mask)
 	return;
 }
 
-void simplify_style_list(void)
+static Bool __simplify_style_list(void)
 {
 	window_style *cur;
-	window_style *cmp;
-	/* incremental flags set in styles with the same name */
-	style_flags sumflags;
-	/* incremental flags set in styles with other names */
-	style_flags interflags;
-	style_flags dummyflags;
-	Bool has_modified = True;
+	Bool has_modified;
 	Bool is_merge_allowed;
 
-	Scr.flags.do_need_style_list_update = 0;
-	/* repeat until nothing has been done for a complete pass */
-	while (has_modified)
+	/* Step 1:
+	 *   Remove styles that are completely overridden by later
+	 *   style definitions.  At the same time...
+	 * Step 2:
+	 *   Merge styles with the same name if there are no
+	 *   conflicting styles with other names set in between. */
+	for (cur = last_style_in_list, has_modified = False,
+		     is_merge_allowed = True; cur; cur = SGET_PREV_STYLE(*cur))
 	{
-		is_merge_allowed = True;
-		has_modified = False;
-		/* Step 1:
-		 *   Remove styles that are completely overridden by later
-		 *   style definitions.  At the same time...
-		 * Step 2:
-		 *   Merge styles with the same name if there are no
-		 *   conflicting styles with other names set in between. */
-		for (cur = last_style_in_list; cur; cur = SGET_PREV_STYLE(*cur))
+		style_flags dummyflags;
+		/* incremental flags set in styles with the same name */
+		style_flags sumflags;
+		/* incremental flags set in styles with other names */
+		style_flags interflags;
+		window_style *cmp;
+
+		memset(&interflags, 0, sizeof(style_flags));
+		memcpy(&sumflags, &cur->flag_mask, sizeof(style_flags));
+		cmp = SGET_PREV_STYLE(*cur);
+		while (cmp)
 		{
-			memset(&interflags, 0, sizeof(style_flags));
-			memcpy(&sumflags, &cur->flag_mask, sizeof(style_flags));
-			cmp = SGET_PREV_STYLE(*cur);
-			while (cmp)
+			if (strcmp(SGET_NAME(*cur), SGET_NAME(*cmp)) != 0)
 			{
-				if (strcmp(SGET_NAME(*cur),
-					   SGET_NAME(*cmp)) == 0)
+				blockor((char *)&interflags,
+					(char *)&interflags,
+					(char *)&cmp->flag_mask,
+					sizeof(style_flags));
+				cmp = SGET_PREV_STYLE(*cmp);
+				continue;
+			}
+			if (blockissubset(
+				    (char *)&cmp->flag_mask,
+				    (char *)&sumflags,
+				    sizeof(style_flags)))
+			{
+				/* The style is a subset of
+				 * later style definitions;
+				 * nuke it */
+				window_style *tmp = SGET_PREV_STYLE(*cmp);
+				remove_style_from_list(cmp, True);
+				cmp = tmp;
+				has_modified = True;
+			}
+			else
+			{
+				/* remove all styles that are overridden later
+				 * from the style */
+				free_style_mask(cmp, &sumflags);
+
+				/* Add the style to the set */
+				blockor((char *)&sumflags,
+					(char *)&sumflags,
+					(char *)&cmp->flag_mask,
+					sizeof(style_flags));
+				if (is_merge_allowed &&
+				    !blockand(
+					    (char *)&dummyflags,
+					    (char *)&sumflags,
+					    (char *)&interflags,
+					    sizeof(style_flags)))
 				{
-					if (blockissubset(
-						    (char *)&cmp->flag_mask,
-						    (char *)&sumflags,
-						    sizeof(style_flags)))
-					{
-						/* The style is a subset of
-						 * later style definitions;
-						 * nuke it */
-						window_style *tmp =
-							SGET_PREV_STYLE(*cmp);
-						remove_style_from_list(
-							cmp, True);
-						cmp = tmp;
-						has_modified = True;
-					}
-					else
-					{
-						/* remove all styles that are
-						 * overridden later from the
-						 * style */
-						free_style_mask(cmp, &sumflags);
+					window_style *tmp =
+						SGET_PREV_STYLE(*cmp);
+					window_style *prev =
+						SGET_PREV_STYLE(*cur);
+					window_style *next =
+						SGET_NEXT_STYLE(*cur);
 
-						/* Add the style to the set */
-						blockor((char *)&sumflags,
-							(char *)&sumflags,
-							(char *)&cmp->flag_mask,
-							sizeof(style_flags));
-						if (is_merge_allowed &&
-						    !blockand(
-							    (char *)&dummyflags,
-							    (char *)&sumflags,
-							    (char *)&interflags,
-							    sizeof(style_flags)
-							    ))
-						{
-							window_style *tmp =
-								SGET_PREV_STYLE(
-									*cmp);
-							window_style *prev =
-								SGET_PREV_STYLE(
-									*cur);
-							window_style *next =
-								SGET_NEXT_STYLE(
-									*cur);
-
-							/* merge cmp into cur
-							 * and delete it
-							 * afterwards */
-							merge_styles(
-								cmp, cur, True);
-							memcpy(cur, cmp,
-							  sizeof(window_style));
-							/* restore fields
-							 * overwritten by
-							 * memcpy */
-							SSET_PREV_STYLE(
-								*cur, prev);
-							SSET_NEXT_STYLE(
-								*cur, next);
-							/* remove the style
-							 * without freeing the
-							 * memory */
-							remove_style_from_list(
-								cmp, False);
-							/* release the style
-							 * structure */
-							free(cmp);
-							cmp = tmp;
-							has_modified = True;
-						}
-						else
-						{
-							is_merge_allowed =
-								False;
-							cmp = SGET_PREV_STYLE(
-								*cmp);
-						}
-					}
+					/* merge cmp into cur and
+					 * delete it afterwards */
+					merge_styles(cmp, cur, True);
+					memcpy(cur, cmp, sizeof(window_style));
+					/* restore fields overwritten
+					 * by memcpy */
+					SSET_PREV_STYLE(*cur, prev);
+					SSET_NEXT_STYLE(*cur, next);
+					/* remove the style without
+					 * freeing the memory */
+					remove_style_from_list(cmp, False);
+					/* release the style structure
+					 */
+					free(cmp);
+					cmp = tmp;
+					has_modified = True;
 				}
 				else
 				{
-					blockor((char *)&interflags,
-						(char *)&interflags,
-						(char *)&cmp->flag_mask,
-						sizeof(style_flags));
+					is_merge_allowed = False;
 					cmp = SGET_PREV_STYLE(*cmp);
 				}
 			}
 		}
+	}
+
+	return has_modified;
+}
+
+void simplify_style_list(void)
+{
+	Scr.flags.do_need_style_list_update = 0;
+	while (__simplify_style_list())
+	{
+		/* repeat until nothing has been done for a complete pass */
 	}
 
 	return;
@@ -2063,9 +2049,9 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "Lenience"))
 	{
 	  found = True;
-	  SFSET_IS_LENIENT(*ptmpstyle, 1);
-	  SMSET_IS_LENIENT(*ptmpstyle, 1);
-	  SCSET_IS_LENIENT(*ptmpstyle, 1);
+	  FPS_LENIENT(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_LENIENT(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_LENIENT(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "Layer"))
 	{
@@ -2384,9 +2370,9 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "NOLENIENCE"))
 	{
 	  found = True;
-	  SFSET_IS_LENIENT(*ptmpstyle, 0);
-	  SMSET_IS_LENIENT(*ptmpstyle, 1);
-	  SCSET_IS_LENIENT(*ptmpstyle, 1);
+	  FPS_LENIENT(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_LENIENT(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_LENIENT(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "NoButton"))
 	{
@@ -3162,6 +3148,8 @@ void CMD_Style(F_CMD_ARGS)
   ptmpstyle = (window_style *)safemalloc(sizeof(window_style));
   /* init temp window_style area */
   memset(ptmpstyle, 0, sizeof(window_style));
+  /* init default focus policy */
+  fpol_init_default_fp(&SF_FOCUS_POLICY(*ptmpstyle));
   /* mark style as changed */
   ptmpstyle->has_style_changed = 1;
   /* set global flag */

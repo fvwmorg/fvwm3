@@ -1100,7 +1100,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 	old_flags |= DO_SKIP_WINDOW_LIST(t)           ? i : 0; i<<=1; \
 	old_flags |= IS_ICON_SUPPRESSED(t)            ? i : 0; i<<=1; \
 	old_flags |= HAS_NO_ICON_TITLE(t)             ? i : 0; i<<=1; \
-	old_flags |= IS_LENIENT(t)                    ? i : 0; i<<=1; \
+	old_flags |= FP_IS_LENIENT(FW_FOCUS_POLICY(t)) ? i : 0; i<<=1; \
 	old_flags |= IS_ICON_STICKY(t)                ? i : 0; i<<=1; \
 	old_flags |= DO_SKIP_ICON_CIRCULATE(t)        ? i : 0; i<<=1; \
 	old_flags |= DO_SKIP_CIRCULATE(t)             ? i : 0; i<<=1; \

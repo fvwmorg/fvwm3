@@ -692,20 +692,6 @@
 	((st).flag_mask.common.s.is_left_title_rotated_cw = !!(x))
 #define SCSET_IS_LEFT_TITLE_ROTATED_CW(st,x) \
 	((st).change_mask.common.s.is_left_title_rotated_cw = !!(x))
-#define SIS_LENIENT(sf) \
-	((sf).common.s.is_lenient)
-#define SFIS_LENIENT(st) \
-	((st).flags.common.s.is_lenient)
-#define SMIS_LENIENT(st) \
-	((st).flag_mask.common.s.is_lenient)
-#define SCIS_LENIENT(st) \
-	((st).change_mask.common.s.is_lenient)
-#define SFSET_IS_LENIENT(st,x) \
-	((st).flags.common.s.is_lenient = !!(x))
-#define SMSET_IS_LENIENT(st,x) \
-	((st).flag_mask.common.s.is_lenient = !!(x))
-#define SCSET_IS_LENIENT(st,x) \
-	((st).change_mask.common.s.is_lenient = !!(x))
 #define SIS_SIZE_FIXED(sf) \
 	((sf).common.s.is_size_fixed)
 #define SFIS_SIZE_FIXED(st) \

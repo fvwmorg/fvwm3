@@ -813,7 +813,9 @@ MatchWinToSM(
 	  ewin, DO_SKIP_WINDOW_LIST(&(matches[i])));
 	SET_ICON_SUPPRESSED(ewin, IS_ICON_SUPPRESSED(&(matches[i])));
 	SET_HAS_NO_ICON_TITLE(ewin, HAS_NO_ICON_TITLE(&(matches[i])));
-	SET_LENIENT(ewin, IS_LENIENT(&(matches[i])));
+	FPS_LENIENT(
+		FW_FOCUS_POLICY(ewin),
+		FP_IS_LENIENT(FW_FOCUS_POLICY(&(matches[i]))));
 	SET_ICON_STICKY(ewin, IS_ICON_STICKY(&(matches[i])));
 	SET_DO_SKIP_ICON_CIRCULATE(
 	  ewin, DO_SKIP_ICON_CIRCULATE(&(matches[i])));

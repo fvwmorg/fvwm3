@@ -94,7 +94,7 @@ static void DoSetFocus(
 		}
 		return;
 	}
-	if (fw && !IS_LENIENT(fw) &&
+	if (fw && !FP_IS_LENIENT(FW_FOCUS_POLICY(fw)) &&
 	    fw->wmhints && (fw->wmhints->flags & InputHint) &&
 	    !fw->wmhints->input &&
 	    (sf = get_focus_window()) && sf->Desk == Scr.CurrentDesk)
@@ -235,7 +235,7 @@ static void DoSetFocus(
 		}
 	}
 
-	if (fw && IS_LENIENT(fw))
+	if (fw && FP_IS_LENIENT(FW_FOCUS_POLICY(fw)))
 	{
 		FOCUS_SET(w);
 		set_focus_window(fw);

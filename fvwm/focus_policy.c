@@ -19,6 +19,8 @@
 #include <config.h>
 #include <stdio.h>
 
+#include "focus_policy.h"
+
 /* ---------------------------- local definitions --------------------------- */
 
 /* ---------------------------- local macros -------------------------------- */
@@ -39,5 +41,67 @@
 
 /* ---------------------------- interface functions ------------------------- */
 
-/* ---------------------------- builtin commands ---------------------------- */
+/* Initialise focus policy to the system defaults */
+void fpol_init_default_fp(focus_policy_t *fp)
+{
+	memset(fp, 0, sizeof(focus_policy_t));
+	FPS_FOCUS_ENTER(*fp, DEF_FP_FOCUS_ENTER);
+	FPS_UNFOCUS_LEAVE(*fp, DEF_FP_UNFOCUS_LEAVE);
+	FPS_FOCUS_CLICK_CLIENT(*fp, DEF_FP_FOCUS_CLICK_CLIENT);
+	FPS_FOCUS_CLICK_DECOR(*fp, DEF_FP_FOCUS_CLICK_DECOR);
+	FPS_FOCUS_BY_PROGRAM(*fp, DEF_FP_FOCUS_BY_PROGRAM);
+	FPS_FOCUS_BY_FUNCTION(*fp, DEF_FP_FOCUS_BY_FUNCTION);
+	FPS_LENIENT(*fp, DEF_FP_LENIENT);
+	FPS_RAISE_FOCUSED_CLIENT_CLICK(*fp, DEF_FP_RAISE_FOCUSED_CLIENT_CLICK);
+	FPS_RAISE_UNFOCUSED_CLIENT_CLICK(
+		*fp, DEF_FP_RAISE_UNFOCUSED_CLIENT_CLICK);
+	FPS_RAISE_FOCUSED_DECOR_CLICK(
+		*fp, DEF_FP_RAISE_FOCUSED_DECOR_CLICK);
+	FPS_RAISE_UNFOCUSED_DECOR_CLICK(
+		*fp, DEF_FP_RAISE_UNFOCUSED_DECOR_CLICK);
+	FPS_MOUSE_BUTTONS(*fp, DEF_FP_MOUSE_BUTTONS);
+	FPS_MODIFIERS(*fp, DEF_FP_MODIFIERS);
+	FPS_PASS_FOCUS_CLICK(*fp, DEF_FP_PASS_FOCUS_CLICK);
+	FPS_PASS_RAISE_CLICK(*fp, DEF_FP_PASS_RAISE_CLICK);
+	FPS_IGNORE_FOCUS_CLICK_MOTION(*fp, DEF_FP_IGNORE_FOCUS_CLICK_MOTION);
+	FPS_IGNORE_RAISE_CLICK_MOTION(*fp, DEF_FP_IGNORE_RAISE_CLICK_MOTION);
+	FPS_ALLOW_FUNC_FOCUS_CLICK(*fp, DEF_FP_ALLOW_FUNC_FOCUS_CLICK);
+	FPS_ALLOW_FUNC_RAISE_CLICK(*fp, DEF_FP_ALLOW_FUNC_RAISE_CLICK);
+	FPS_GRAB_FOCUS_WHEN_CREATED(*fp, DEF_FP_GRAB_FOCUS_WHEN_CREATED);
+	FPS_GRAB_FOCUS_WHEN_TRANSIENT_CREATED(
+		*fp, DEF_FP_GRAB_FOCUS_WHEN_TRANSIENT_CREATED);
 
+	return;
+}
+
+#if 0
+/*** to do: ***/
+
+/* focus transition */
+/*!!!*/unsigned do_focus_enter : 1;
+/*!!!*/unsigned do_unfocus_leave : 1;
+/*!!!*/unsigned do_focus_click_client : 1;
+/*!!!*/unsigned do_focus_click_decor : 1;
+/*!!!*/unsigned do_focus_by_program : 1;
+/*!!!*/unsigned do_focus_by_function : 1;
+/* application focus model */
+unsigned is_lenient : 1;
+/*!!!*//* raising the window */
+/*!!!*/unsigned do_raise_focused_client_click : 1;
+/*!!!*/unsigned do_raise_unfocused_client_click : 1;
+/*!!!*/unsigned do_raise_focused_decor_click : 1;
+/*!!!*/unsigned do_raise_unfocused_decor_click : 1;
+/* click configuration */
+/*!!!*/unsigned use_mouse_buttons : NUMBER_OF_MOUSE_BUTTONS;
+/*!!!*/unsigned use_modifiers : 8;
+/* recycling of focus and raise clicks */
+/*!!!*/unsigned do_pass_focus_click : 1;
+/*!!!*/unsigned do_pass_raise_click : 1;
+/*!!!*/unsigned do_ignore_focus_click_motion : 1;
+/*!!!*/unsigned do_ignore_raise_click_motion : 1;
+/*!!!*/unsigned do_allow_func_focus_click : 1;
+/*!!!*/unsigned do_allow_func_raise_click : 1;
+/* initial focus */
+/*!!!*/unsigned do_grab_focus_when_created : 1;
+/*!!!*/unsigned do_grab_focus_when_transient_created : 1;
+#endif

@@ -1,5 +1,16 @@
 2002-07-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/conditional.c (MatchesConditionMask):
+	* fvwm/focus.c (DoSetFocus):
+	* fvwm/session.c (MatchWinToSM):
+	* fvwm/module_interface.c (SETOLDFLAGS):
+	removed old is_lenient flag
+
+	* fvwm/bindings.c:
+	* fvwm/style.c (__simplify_style_list):
+	(simplify_style_list):
+	reformatted
+
 	* fvwm/window_flags.h:
 	* fvwm/style.h:
 	access macros for focus policy flags structures

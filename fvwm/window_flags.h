@@ -196,12 +196,6 @@
 	(fw)->flags.common.s.is_icon_suppressed = !!(x)
 #define SETM_ICON_SUPPRESSED(fw,x) \
 	(fw)->flag_mask.common.s.is_icon_suppressed = !!(x)
-#define IS_LENIENT(fw) \
-	((fw)->flags.common.s.is_lenient)
-#define SET_LENIENT(fw,x) \
-	(fw)->flags.common.s.is_lenient = !!(x)
-#define SETM_LENIENT(fw,x) \
-	(fw)->flag_mask.common.s.is_lenient = !!(x)
 #define IS_STICKY(fw) \
 	((fw)->flags.common.is_sticky)
 #define SET_STICKY(fw,x) \

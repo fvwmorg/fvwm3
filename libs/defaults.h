@@ -29,7 +29,6 @@
 /*** event handling ***/
 #define CLOCK_SKEW_MS                  30000 /* ms */
 
-
 /*** grabbing the pointer ***/
 #define NUMBER_OF_GRAB_ATTEMPTS          100
 #define TIME_BETWEEN_GRAB_ATTEMPTS        10 /* ms */
@@ -112,7 +111,6 @@
  * better be a power of two. A value of 5 definitely causes XFree 3.3.3.1 to
  * screw up the V_GRADIENT on an 8 bit display, but 4, 6, 7 etc. work well. */
 #define DEFAULT_MENU_GRADIENT_PIXMAP_THICKNESS 4
-
 
 /*** colours ***/
 #define DEFAULT_FORE_COLOR                "black"
@@ -215,7 +213,6 @@
 #define PLACEMENT_AVOID_COVER_85           4
 #define PLACEMENT_AVOID_COVER_75           1
 
-
 /*** icon layout ***/
 /* width of the relief around the icon and icon title */
 #define ICON_RELIEF_WIDTH                  2 /* pixels */
@@ -236,12 +233,10 @@
 /* minimum distance of icons in icon box */
 #define MIN_ICON_BOX_DIST                  3 /* pixels */
 
-
 /*** general keyboard shortcuts used in move, resize, ... ***/
 #define DEFAULT_KDB_SHORTCUT_MOVE_DISTANCE 5 /* pixels */
 #define KDB_SHORTCUT_MOVE_DISTANCE_SMALL   1 /* pixels */
 #define KDB_SHORTCUT_MOVE_DISTANCE_BIG   100 /* pixels */
-
 
 /*** movement ***/
 #define DEFAULT_OPAQUE_MOVE_SIZE           5 /* percent of window area */
@@ -249,7 +244,6 @@
 #define DEFAULT_SNAP_ATTRACTION_MODE     0x3
 #define DEFAULT_SNAP_GRID_X                1 /* pixels */
 #define DEFAULT_SNAP_GRID_Y                1 /* pixels */
-
 
 /*** paging ***/
 #define DEFAULT_EDGE_SCROLL              100 /* % of screen width/height */
@@ -260,13 +254,11 @@
 #define DEFAULT_XIMOVE_RESISTANCE          0 /* pixels */
 #define DEFAULT_SCROLL_RESISTANCE          0 /* ms */
 
-
 /*** layers ***/
 #define DEFAULT_BOTTOM_LAYER               2
 #define DEFAULT_DEFAULT_LAYER              4
 #define DEFAULT_TOP_LAYER                  6
 #define DEFAULT_ROOT_WINDOW_LAYER         -1
-
 
 /*** decorations ***/
 /* The number of left and right buttons must be equal.  A maximum of 32 buttons
@@ -275,17 +267,14 @@
 #define NR_RIGHT_BUTTONS                   NR_LEFT_BUTTONS
 #define NUMBER_OF_BUTTONS                  (NR_LEFT_BUTTONS + NR_RIGHT_BUTTONS)
 
-
 /*** window borders ***/
 #define DEFAULT_BORDER_WIDTH               1 /* pixels */
 #define DEFAULT_HANDLE_WIDTH               7 /* pixels */
 #define MAX_BORDER_WIDTH                 500 /* pixels */
 #define MAX_HANDLE_WIDTH                   (MAX_BORDER_WIDTH)
 
-
 /*** module configuration ***/
 #define DEFAULT_MODULE_TIMEOUT            30 /* seconds */
-
 
 /*** misc ***/
 #define DEFAULT_EMULATE_MWM            False
@@ -316,5 +305,27 @@
 #define MAX_WINDOW_NAME_NUMBER           999
 #define MAX_WINDOW_NAME_NUMBER_DIGITS      3 /* number/digits of above number */
 
+/* focus policy defaults */
+#define DEF_FP_FOCUS_ENTER                       1
+#define DEF_FP_UNFOCUS_LEAVE                     1
+#define DEF_FP_FOCUS_CLICK_CLIENT                0
+#define DEF_FP_FOCUS_CLICK_DECOR                 0
+#define DEF_FP_FOCUS_BY_PROGRAM                  1
+#define DEF_FP_FOCUS_BY_FUNCTION                 1
+#define DEF_FP_LENIENT                           0
+#define DEF_FP_RAISE_FOCUSED_CLIENT_CLICK        0
+#define DEF_FP_RAISE_UNFOCUSED_CLIENT_CLICK      0
+#define DEF_FP_RAISE_FOCUSED_DECOR_CLICK         0
+#define DEF_FP_RAISE_UNFOCUSED_DECOR_CLICK       0
+#define DEF_FP_MOUSE_BUTTONS                     0
+#define DEF_FP_MODIFIERS                         0
+#define DEF_FP_PASS_FOCUS_CLICK                  1
+#define DEF_FP_PASS_RAISE_CLICK                  1
+#define DEF_FP_IGNORE_FOCUS_CLICK_MOTION         0
+#define DEF_FP_IGNORE_RAISE_CLICK_MOTION         0
+#define DEF_FP_ALLOW_FUNC_FOCUS_CLICK            1
+#define DEF_FP_ALLOW_FUNC_RAISE_CLICK            1
+#define DEF_FP_GRAB_FOCUS_WHEN_CREATED           0
+#define DEF_FP_GRAB_FOCUS_WHEN_TRANSIENT_CREATED 1
 
 #endif /* _DEFAULTS_ */

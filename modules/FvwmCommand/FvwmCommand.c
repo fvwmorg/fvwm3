@@ -760,7 +760,7 @@ void list_configure(unsigned long *body)
     printf( "is_icon_suppressed: %d\n",
 	    IS_ICON_SUPPRESSED( cfgpacket ) );
     printf( "is_lenient: %d\n",
-	    IS_LENIENT( cfgpacket ) );
+	    FP_IS_LENIENT( FW_FOCUS_POLICY(cfgpacket) ) );
     printf( "does_wm_delete_window: %d\n",
 	    WM_DELETES_WINDOW( cfgpacket ) );
     printf( "does_wm_take_focus: %d\n",

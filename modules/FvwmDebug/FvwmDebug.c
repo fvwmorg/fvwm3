@@ -601,7 +601,8 @@ void list_configure(const unsigned long *body)
     fprintf(output,"\t\tis_fixed: %d\n", IS_FIXED(p));
     fprintf(output,"\t\tis_sticky_icon: %d\n", IS_ICON_STICKY(p));
     fprintf(output,"\t\tis_icon_suppressed: %d\n", IS_ICON_SUPPRESSED(p));
-    fprintf(output,"\t\tis_lenient: %d\n", IS_LENIENT(p));
+    fprintf(output,"\t\tis_lenient: %d\n",
+	    FP_IS_LENIENT( FW_FOCUS_POLICY(p) ));
     fprintf(output,"\t\tdoes_wm_delete_window: %d\n", WM_DELETES_WINDOW(p));
     fprintf(output,"\t\tdoes_wm_take_focus: %d\n", WM_TAKES_FOCUS(p));
     fprintf(output,"\t\tdo_iconify_after_map: %d\n", DO_ICONIFY_AFTER_MAP(p));

@@ -469,11 +469,11 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 		f = do_accept_input_focus(fw);
 		if (fw && HAS_NEVER_FOCUS(fw))
 		{
-			f = 0;
+			f = False;
 		}
-		else if (fw && IS_LENIENT(fw))
+		else if (fw && FP_IS_LENIENT(FW_FOCUS_POLICY(fw)))
 		{
-			f = 1;
+			f = True;
 		}
 		if (!f != !mask->my_flags.do_accept_focus)
 		{
