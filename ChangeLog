@@ -1,3 +1,9 @@
+2004-02-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
+	(__move_loop):
+	fixed the FlickeringMoveWorkaround option which did nothing before
+
 2004-02-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (style_parse_one_style_option):

@@ -1159,7 +1159,7 @@ static void AnimatedMoveAnyWindow(
 				dpy, None, Scr.Root, 0, 0, 0, 0, pointerX,
 				pointerY);
 		}
-		if (fw && !IS_SHADED(fw))
+		if (fw && !IS_SHADED(fw) && !Scr.bo.DisableConfigureNotify)
 		{
 			/* send configure notify event for windows that care
 			 * about their location */
@@ -2340,7 +2340,7 @@ Bool __move_loop(
 		xl += x_virtual_offset;
 		yt += y_virtual_offset;
 		if (do_move_opaque && !IS_ICONIFIED(fw) &&
-		    !IS_SHADED(fw))
+		    !IS_SHADED(fw) && !Scr.bo.DisableConfigureNotify)
 		{
 			/* send configure notify event for windows that care
 			 * about their location; don't send anything if
