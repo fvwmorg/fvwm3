@@ -161,9 +161,10 @@ Building an official distribution
 ---------------------------------
 
 By this, I mean the files "fvwm-x.y.z.tar.gz" and
-"fvwm-x.y.z.tar.bz2".
+"fvwm-x.y.z.tar.bz2".  It is important to do all steps is the
+given order!
 
-Preparation:
+Preparations:
 
   - Make sure you have all optional libraries installed.
   - When building a release, update the CVS sources first. For a
@@ -174,7 +175,7 @@ Preparation:
     fvwm/fvwm2.1, update docs/ANNOUNCE and fill in the release
     date in NEWS.  Commit these changes.
 
-Test the configuration:
+Configuration tests:
 
   Note that you need to have actually build everything before
   packing the distribution, hence steps 3 to 5.  Among other
@@ -184,10 +185,13 @@ Test the configuration:
   - Run
       automake --add-missing; autoreconf
     If you checked out fresh sources in step 1, run the same line
-    again:
+    again (automake generated a file that autoreconf needs and
+    autoreconf generates a file that automake needs.  If you fail
+    to do so, the tarball may be screwed.)
       automake --add-missing; autoreconf
-  - If building a stable release, remove the config.cache file if
-    there is one.
+  - If you are building a stable release, remove the config.cache
+    file if there is one.  Of course doing this for a development
+    release won't hurt either.
   - Run
       ./configure
   - Make sure configure detects all optional libraries except the
@@ -195,7 +199,7 @@ Test the configuration:
     step until configure finds everything.  Building a release
     without all optional libraries should be a rare exception.
 
-Test compiling fvwm:
+Compile tests:
 
   - Run
       make clean
@@ -205,7 +209,7 @@ Test compiling fvwm:
   - Fix all warnings and problems, commit the changes and repeat
     the previous step.
 
-Build and test the tarballs:
+Build and test the release tarballs:
 
   The next step will create the tar file, then unpack it and
   attempt a build & install (to a scratch directory, not
@@ -224,6 +228,25 @@ Build and test the tarballs:
 
 Update the release dates and numbers:
 
+* Important note: Before you proceed, please ask yourself if the
+  code is ready to be released:
+
+  - Have you committed patches only hours or even minutes ago?
+  - Have there been any big changes in the last few days?
+  - Are there any important parts that are not well tested?
+  - Are you tired from work or have you been hacking fvwm for many
+    hours in a row?
+
+  Should your answer to any of these questions be 'yes', please do
+  take a break now and reconsider, especially if this going to be
+  a stable release.
+
+  The steps above are not critical and can not screw up anything
+  bad.  This is not true for what follows.  If you do something
+  wrong now, you will have a hard time cleaning up the mess.
+  Should something go wrong and you are not sure about the correct
+  fixes, please ask on the fvwm-workers list for help.
+
   Be sure to do the next two steps in that order, so you get the
   label on the right version of configure.in.
 
@@ -234,11 +257,14 @@ Update the release dates and numbers:
   - Create an entry in the ChangeLog file indicating the release.
     Commit this change.
 
-Update fvwm-web and the development branch:
+Update the development branch:
 
   - For a stable release, copy the NEWS from the stable branch to
     the development branch and update the link in the same
     document.
+
+Update fvwm-web:
+
   - Update the release numbers in fvwm-web/index.html and
     fvwm-web/download.html.  Commit this change.
   - Use fvwm-web generated/txt2html.sh to update the NEWS, FAQ and
