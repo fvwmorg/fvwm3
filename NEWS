@@ -3,6 +3,8 @@ _+_A HREF="#2.4.0"_-_2.4.0_+_/A_-_.
 
 Changes in beta 2.5.0 (not released yet)
 
+* New OpaqueMoveSize argument "unlimited".
+
 Changes in stable 2.4.3 (8-Oct-2001)
 
 * Fixed activation of shape extension.

@@ -729,7 +729,7 @@ static void InteractiveMove(
     areapct *= ((float)DragHeight / (float)Scr.MyDisplayHeight);
     /* round up */
     areapct += 0.1;
-    if ((float)areapct <= (float)Scr.OpaqueSize)
+    if (Scr.OpaqueSize < 0 || (float)areapct <= (float)Scr.OpaqueSize)
     {
       do_move_opaque = True;
     }
@@ -1871,8 +1871,13 @@ void CMD_OpaqueMoveSize(F_CMD_ARGS)
 {
   int val;
 
-  if(GetIntegerArguments(action, NULL, &val, 1) < 1 || val < 0)
-    Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
+  if (GetIntegerArguments(action, NULL, &val, 1) < 1)
+  {
+    if (strncasecmp(action, "unlimited", 9) == 0)
+      Scr.OpaqueSize = -1;
+    else
+      Scr.OpaqueSize = DEFAULT_OPAQUE_MOVE_SIZE;
+  }
   else
     Scr.OpaqueSize = val;
 }

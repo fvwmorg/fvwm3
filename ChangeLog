@@ -1,3 +1,9 @@
+2001-10-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* move_resize.c:
+	* fvwm/fvwm2.1:
+	OpaqueMoveSize now accepts "unlimited" or negative argument.
+
 2001-10-09  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm2.1:

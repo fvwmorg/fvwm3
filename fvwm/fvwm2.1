@@ -3574,13 +3574,16 @@ or the screen number itself (counting from zero).
 .BI "OpaqueMoveSize [" percentage "]"
 Tells fvwm the maximum size window with which opaque window
 movement should be used.  The percentage is percent of the total
-screen area.  With
-.EX OpaqueMoveSize 0
+screen area (may be greater than 100).  With
+.EX
+OpaqueMoveSize 0
+.EE
 all windows are moved using the traditional rubber-band
 outline. With
 .EX
-OpaqueMoveSize 100
+OpaqueMoveSize unlimited
 .EE
+or if a negative percentage is given
 all windows are moved as solid windows.  The default is
 .EX
 OpaqueMoveSize 5
