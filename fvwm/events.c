@@ -207,8 +207,6 @@ void DispatchEvent(Bool preserve_Tmp_win)
 
   if (EventHandlerJumpTable[Event.type])
   {
-    /* clear the rubber band outline, this is NOP if it doesn't exist */
-    MoveOutline(Scr.Root, 0, 0, 0, 0);
     (*EventHandlerJumpTable[Event.type])();
   }
 

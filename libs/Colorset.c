@@ -365,39 +365,34 @@ void SetRectangleBackground(
   {
     pixmap = CreateBackgroundPixmap(
       dpy, win, width, height, colorset, depth, gc, False);
-    if (colorset->stretch_x != colorset->stretch_y)
+    if (colorset->keep_aspect)
     {
-      if (colorset->stretch_x)
-      {
-	if (colorset->height != height)
-	{
-	  pixmap2 = CreateStretchYPixmap(
-	    dpy, pixmap, colorset->width, colorset->height, depth, height, gc);
-	  XFreePixmap(dpy, pixmap);
-	  pixmap = pixmap2;
-	}
-      }
-      else
-      {
-	if (colorset->width != width)
-	{
-	  pixmap2 = CreateStretchXPixmap(
-	    dpy, pixmap, colorset->width, colorset->height, depth, width, gc);
-	  XFreePixmap(dpy, pixmap);
-	  pixmap = pixmap2;
-	}
-      }
+      /* nothing to do */
     }
-    else if (!colorset->keep_aspect)
+    if (colorset->stretch_x || colorset->stretch_y)
     {
-      if (colorset->width != width || colorset->height != height)
+      if (!colorset->stretch_x && colorset->width != width)
       {
-	pixmap2 = CreateStretchPixmap(
-	  dpy, pixmap, colorset->width, colorset->height, depth, width, height,
-	  gc);
+	pixmap2 = CreateStretchXPixmap(
+	  dpy, pixmap, colorset->width, height, depth, width, gc);
 	XFreePixmap(dpy, pixmap);
 	pixmap = pixmap2;
       }
+      if (!colorset->stretch_y && colorset->height != height)
+      {
+	pixmap2 = CreateStretchYPixmap(
+	  dpy, pixmap, width, colorset->height, depth, width, gc);
+	XFreePixmap(dpy, pixmap);
+	pixmap = pixmap2;
+      }
+    }
+    else
+    {
+      pixmap2 = CreateTiledPixmap(
+	dpy, pixmap, colorset->width, colorset->height, width, height, depth,
+	gc);
+      XFreePixmap(dpy, pixmap);
+      pixmap = pixmap2;
     }
 
     if (pixmap)

@@ -1,3 +1,12 @@
+1999-08-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Colorset.c (SetRectangleBackground): fixed stretching/tiling
+
+	* libs/Graphics.c (CreateTiledPixmap): use depth argument instead of 1
+
+	* fvwm/events.c (DispatchEvent): MoveOutline is no longer called from
+	events.c; fixed multiple drawing/undrawing of xorpixmap.
+
 1999-08-30  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/Colorset.c (SetRectangleBackground): new function that allows to

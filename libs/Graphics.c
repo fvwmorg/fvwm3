@@ -154,7 +154,7 @@ Pixmap CreateTiledPixmap(Display *dpy, Pixmap src, int src_width,
   if (src_width < 0 || src_height < 0 || dest_width < 0 || dest_height < 0)
   	return None;
 
-  pixmap = XCreatePixmap(dpy, src, dest_width, dest_height, 1);
+  pixmap = XCreatePixmap(dpy, src, dest_width, dest_height, depth);
 
   if (pixmap)
   {
