@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Anton Kazennikov:
+Menu navigation patch.
+
 Johan Svedberg:
 Swedish translations.
 
