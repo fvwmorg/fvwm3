@@ -1003,13 +1003,27 @@ commands for details.
 
 .SH OPEN LOOK and XVIEW COMPATIBILITY
 Fvwm supports all the Open Look decoration hints (except
-pushpins). Most (perhaps all) Open Look applications have a
-strange notion of keyboard focus handling.  Although a lot of work
-went into fvwm to work well with these, you may still encounter
-problems. Should you use any such application, please add the
+pushpins).  Should you use any such application, please add the
 following line to your .fvwm2rc:
 .EX
 Style * OLDecor
+.EE
+Most (perhaps all) Open Look applications have a strange notion of
+keyboard focus handling.  Although a lot of work went into fvwm to
+work well with these, you may still encounter problems.  It is
+recommended to use the NeverFocus focus policy and the NoLenience
+style for all such applications (the windows will still get the
+focus):
+.EX
+Style <application name> NeverFocus, NoLenience
+.EE
+But in case you can not live with that focus policy, you can try
+using one of the other focus policies in combination with the
+Lenience style:
+.EX
+Style <application name> MouseFocus, Lenience
+Style <application name> SloppyFocus, Lenience
+Style <application name> ClickToFocus, Lenience
 .EE
 
 .SH M4 PREPROCESSING
