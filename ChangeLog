@@ -1,3 +1,11 @@
+1998-11-22  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* extras/FvwmCommand/FvwmCommand.c: fixed >= comparison on pointer
+
+	* modules/FvwmButtons/FvwmButtons.c: fixed pager breakage bug
+
+	* fvwm/bindings.c (Parse...Entry): fixed compile error (void returned)
+
 1998-11-23  Dan Espen  <dane@mk.bellcore.com>
 
 	* NEWS: Moved stuff from end of old ChangeLog into the NEWS file.
