@@ -2,6 +2,7 @@
 # Menu layout testing script
 #
 
+ImagePath /tmp:+
 
 # Tested menu styles and parameters
 #
