@@ -1,9 +1,22 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
+#include<stdio.h>
 #define XLIB_ILLEGAL_ACCESS
 #include "config.h"
-#include <X11/Intrinsic.h> /* needed for Pixel definition */
-#include <stdio.h>
-
+#include "libs/fvwmlib.h"
 #include "libs/ModGraph.h"
 
 /***************************************************************************
@@ -19,7 +32,7 @@ void InitGraphics(Display *dpy, Graphics *G) {
   G->viz = DefaultVisual(dpy, screen);
   G->cmap = DefaultColormap(dpy, screen);
   G->depth = DefaultDepth(dpy, screen);
-  G->back_bits = 0; /* will be a packed struct */
+  G->bgtype.word = 0; /* it's a pixel */
   G->bg.pixel = BlackPixel(dpy, screen);
 
   /* create a gc for rubber band lines */
@@ -50,8 +63,8 @@ void InitGraphics(Display *dpy, Graphics *G) {
 /***************************************************************************
  * Initialises graphics stuff from a graphics config line sent by fvwm
  **************************************************************************/
-void ParseGraphics(Display *dpy, char *line, Graphics *G) {
-  long backbits, bg;
+Bool ParseGraphics(Display *dpy, char *line, Graphics *G) {
+  long bg, bgtype;
   int viscount;
   XVisualInfo vizinfo, *xvi;
   VisualID vid;
@@ -61,18 +74,18 @@ void ParseGraphics(Display *dpy, char *line, Graphics *G) {
 
   /* ignore it if not using fvwm's graphics */
   if (!G->useFvwmLook)
-    return;
+    return False;
     
   /* bail out on short lines */
   if (DEFGRAPHLEN + 1 >= strlen(line)) {
     G->useFvwmLook = False;
-    return;
+    return False;
   }
 
   if (sscanf(line + DEFGRAPHLEN, "%lx %lx %lx %lx %lx %lx %lx %lx %lx\n",
-            &vid, &cmap, &drawGContext, &backbits, &bg, &foreGContext,
+            &vid, &cmap, &drawGContext, &bgtype, &bg, &foreGContext,
             &relGContext, &shadGContext, &fid) != DEFGRAPHNUM)
-    return;
+    return False;
     
   /* if this is the first one grab a visual to use */
   if (!G->initialised) {
@@ -80,7 +93,7 @@ void ParseGraphics(Display *dpy, char *line, Graphics *G) {
     xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &viscount);
     if (viscount != 1) {
       G->useFvwmLook = False;
-      return;
+      return False;
     }
     G->initialised = True;
     G->viz = xvi->visual;
@@ -90,7 +103,7 @@ void ParseGraphics(Display *dpy, char *line, Graphics *G) {
   }
 
   /* update the changeable entries */
-  G->back_bits = backbits;
+  G->bgtype.word = bgtype;
   G->bg.pixel = bg; /* one day may be a pixmap */
   
   /* copy the rest into place, I know this is horrible but GC's must be alloc'd
@@ -109,4 +122,16 @@ void ParseGraphics(Display *dpy, char *line, Graphics *G) {
   if (G->font)
     XFreeFontInfo(NULL, G->font, 1);
   G->font = XQueryFont(dpy, fid);
+
+  return True;
+}
+
+/***************************************************************************
+ * sets a window background according to the back_bits flags
+ **************************************************************************/
+void SetWindowBackground(Display *dpy, Window win, BG *bg, BGtype *bgtype)
+{
+  /* only does pixel type backgrounds as yet */
+  XSetWindowBackground(dpy, win, bg->pixel);
+  XClearArea(dpy, win, 0, 0, 0, 0, True);
 }
