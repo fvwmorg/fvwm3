@@ -102,56 +102,63 @@ static int SmartPlacement(
 	{
 		test_x = PageLeft;
 		while (test_x + temp_w < PageRight && !loc_ok)
-    {
-	    loc_ok = True;
-	    test_fw = Scr.FvwmRoot.next;
-	    for ( ; test_fw != NULL && loc_ok; test_fw = test_fw->next)
-	    {
-		    if (t == test_fw || IS_EWMH_DESKTOP(FW_W(test_fw)))
-			    continue;
+		{
+			loc_ok = True;
+			test_fw = Scr.FvwmRoot.next;
+			for ( ; test_fw != NULL && loc_ok;
+			      test_fw = test_fw->next)
+			{
+				if (t == test_fw ||
+				    IS_EWMH_DESKTOP(FW_W(test_fw)))
+					continue;
 
-		    /*  RBW - account for sticky windows...  */
-		    if (test_fw->Desk == t->Desk ||
-			IS_STICKY_ACROSS_DESKS(test_fw))
-		    {
-			    if (IS_STICKY_ACROSS_PAGES(test_fw))
-			    {
-				    stickyx = pdeltax;
-				    stickyy = pdeltay;
-			    }
-			    else
-			    {
-				    stickyx = 0;
-				    stickyy = 0;
-			    }
-			    rc = get_visible_window_or_icon_geometry(
-				    test_fw, &g);
-			    if (rc == True &&
-				(PLACEMENT_AVOID_ICON == 0 ||
-				 !IS_ICONIFIED(test_fw)))
-			    {
-				    tx = g.x - stickyx;
-				    ty = g.y - stickyy;
-				    tw = g.width;
-				    th = g.height;
-				    if (tx < test_x + width  &&
-					test_x < tx + tw &&
-					ty < test_y + height &&
-					test_y < ty + th)
-				    {
-					    /* window overlaps, look for a
-					     * different place */
-					    loc_ok = False;
-					    test_x = tx + tw - 1;
-				    }
-			    }
-		    }
-	    } /* for */
-	    if (!loc_ok)
-		    test_x +=1;
-    } /* while */
+				/*  RBW - account for sticky windows...  */
+				if (test_fw->Desk == t->Desk ||
+				    IS_STICKY_ACROSS_DESKS(test_fw))
+				{
+					if (IS_STICKY_ACROSS_PAGES(test_fw))
+					{
+						stickyx = pdeltax;
+						stickyy = pdeltay;
+					}
+					else
+					{
+						stickyx = 0;
+						stickyy = 0;
+					}
+					rc = get_visible_window_or_icon_geometry(
+						test_fw, &g);
+					if (rc == True &&
+					    (PLACEMENT_AVOID_ICON == 0 ||
+					     !IS_ICONIFIED(test_fw)))
+					{
+						tx = g.x - stickyx;
+						ty = g.y - stickyy;
+						tw = g.width;
+						th = g.height;
+						if (tx < test_x + width  &&
+						    test_x < tx + tw &&
+						    ty < test_y + height &&
+						    test_y < ty + th)
+						{
+							/* window overlaps,
+							 * look for a
+							 * different place */
+							loc_ok = False;
+							test_x = tx + tw - 1;
+						}
+					}
+				}
+			} /* for */
+			if (!loc_ok)
+			{
+				test_x +=1;
+			}
+		} /* while */
 		if (!loc_ok)
+		{
 			test_y +=1;
+		}
 	} /* while */
 	if (loc_ok == False)
 	{
@@ -566,7 +573,8 @@ static float test_fit(
 			if (use_percent)
 			{
 				cover_factor = 0;
-				if ((x22 - x21) * (y22 - y21) != 0 && (x12 - x11) * (y12 - y11) != 0)
+				if ((x22 - x21) * (y22 - y21) != 0 &&
+				    (x12 - x11) * (y12 - y11) != 0)
 				{
 					anew = 100 * MAX(
 						anew / ((x22 - x21) *
@@ -1180,7 +1188,7 @@ Bool PlaceWindow(
 			 * the StartsOnScreen style.
 			 * However, some applications try to remember their
 			 * position.  This would break if these were
-			 *translated to screen coordinates.  There is no
+			 * translated to screen coordinates.  There is no
 			 * reliable way to do it.  Currently, if the desired
 			 * place does not intersect the target screen, we
 			 * assume the window position must be adjusted to the
@@ -1222,23 +1230,27 @@ Bool PlaceWindow(
 
 		/* If SkipMapping, and other legalities are observed, adjust
 		 * for StartsOnPage. */
-		if ( ( DO_NOT_SHOW_ON_MAP(fw) &&
-		       flags.do_honor_starts_on_page )  &&
-
-		     ( (!(IS_TRANSIENT(fw)) ||
-			SUSE_START_ON_PAGE_FOR_TRANSIENT(sflags)) &&
-
-		       ((SUSE_NO_PPOSITION(sflags)) ||
-			!(fw->hints.flags & PPosition)) &&
-
-		       /*  RBW - allow StartsOnPage to go through, even if
-			* iconic.  */
-		       ( ((!((fw->wmhints)&&
-			     (fw->wmhints->flags & StateHint)&&
-			     (fw->wmhints->initial_state == IconicState)))
-			  || (flags.do_honor_starts_on_page)) )
-
-			     ) )
+		if (DO_NOT_SHOW_ON_MAP(fw) &&
+		    flags.do_honor_starts_on_page &&
+		    (!IS_TRANSIENT(fw) ||
+		     SUSE_START_ON_PAGE_FOR_TRANSIENT(sflags))
+#if 0
+		    /* dv 08-Jul-2003:  Do not use this.  Instead, force the
+		     * window on the requested page even if the application
+		     * requested a different position. */
+		    && (SUSE_NO_PPOSITION(sflags) ||
+			!(fw->hints.flags & PPosition))
+		    /* dv 08-Jul-2003:  This condition is always true because
+		     * we already checked for flags.do_honor_starts_on_page
+		     * above. */
+		    /*  RBW - allow StartsOnPage to go through, even if
+		     * iconic.  */
+		    && ((!(fw->wmhints &&
+			   (fw->wmhints->flags & StateHint) &&
+			   fw->wmhints->initial_state == IconicState))
+			|| flags.do_honor_starts_on_page)
+#endif
+			)
 		{
 			/* We're placing a SkipMapping window - either
 			 * capturing one that's previously been mapped, or
@@ -1251,13 +1263,10 @@ Bool PlaceWindow(
 			 * current page. */
 			if (attr_g->x < 0)
 			{
-				attr_g->x = ((Scr.MyDisplayWidth + attr_g->x) %
-					     Scr.MyDisplayWidth);
+				attr_g->x += Scr.MyDisplayWidth;
 			}
-			else
-			{
-				attr_g->x = attr_g->x % Scr.MyDisplayWidth;
-			}
+			attr_g->x %= Scr.MyDisplayWidth;
+			attr_g->x -= pdeltax;
 			/* Noticed a quirk here. With some apps (e.g., xman),
 			 * we find the placement has moved 1 pixel away from
 			 * where we originally put it when we come through
@@ -1266,15 +1275,9 @@ Bool PlaceWindow(
 			 * -borderwidth 100 */
 			if (attr_g->y < 0)
 			{
-				attr_g->y =
-					((Scr.MyDisplayHeight + attr_g->y) %
-					 Scr.MyDisplayHeight);
+				attr_g->y += Scr.MyDisplayHeight;
 			}
-			else
-			{
-				attr_g->y = attr_g->y % Scr.MyDisplayHeight;
-			}
-			attr_g->x -= pdeltax;
+			attr_g->y %= Scr.MyDisplayHeight;
 			attr_g->y -= pdeltay;
 		}
 

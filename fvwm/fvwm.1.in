@@ -1953,7 +1953,7 @@ The command descriptions below are grouped together in the
 following sections.  The sections are hopefully sorted in order of
 usefulness to the newcomer.
 .EX
-- Commands for menus
+- Menu commands
 - Miscellaneous commands
 - Commands affecting window movement and placement
 - Commands for focus and mouse movement
@@ -1969,7 +1969,8 @@ usefulness to the newcomer.
 - Color gradients
 .EE
 
-.SS COMMANDS FOR MENUS
+.SS MENUS
+.\"Menus come in three flavours
 
 .TP
 .BI "AddToMenu " menu-name " [" menu-label " " action "]"

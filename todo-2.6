@@ -1,11 +1,11 @@
 ----- Summary ------------------------------------------------------------------
 
 Issues opened recently: 0
-Issues closed recently: 1 (E.10)
+Issues closed recently: 3 (C.18, C.24, E.10)
                              open / closed
 A. Release stopping bugs:       0 / 1
 B. Normal bugs:                 3 / 5
-C. To be verified:             14 / 12
+C. To be verified:             12 / 14
 D. To be discussed:             1 / 0
 E. To do:                      10 / 7
 F. Distribution issues:         3 / 1
@@ -71,9 +71,6 @@ C. To be verified
   C.17 Double scroll with mouse wheel [#782,2.4,2001-09-18].
        {Olivier: Cannot reproduce this with my touchpad wheel}
 
-  C.18 Persistent Windows in Pager [#773,2.4,2001-09-18].
-       {Olivier: Should be removed I think}
-
   C.19 fvwm 2.4.0 on HP-UX breaks xterm etc. [#767,2.4,2001-08-23]
        [dv: I can't imagine how fvwm would be involved, but do not have an
        HP-UX machine to test this]
@@ -84,9 +81,6 @@ C. To be verified
        Fixed?
        [dv: Definitely not fixed.  Nobody did anything about it.]
 
-  C.24 window appear/disappear in the Pager [#731,2.4,2001-07-04]. Fixed?
-       [dv: no idea what has happened.  Maybe the pager running did not match
-       the executable?  Delete this report.]
 
 
 D. To be discussed
@@ -95,12 +89,15 @@ D. To be discussed
   D.1 Make the distinction between FVWM (project) and fvwm (core executable)?
       [dv: Against it.  I've never seen myself as being part of an 'FVWM
       project'.  I think this will only confuse people.  For me, fvwm is simply
-      a name]
+      a name.]
       [migo: Ok, so everyone does what he feels is good. For me it is confusing
       to use the same word to mean different things. Say, I'm an FVWM developer
       that means much more than a coder of the window manager executable fvwm,
       it also includes working on modules, documentation, perllib, web site,
       configs, rpms and much more that makes the whole thing - FVWM.]
+      [dv: I don't care if it's confusing for you or for me.  I care about the
+      users who will eventually bring their confusion to the mailing list and
+      thus complicate maintenance.]
 
   D.2 Leave or remove the current change to triggering bindings on button press
       or release?  Seems to irritate a lot of users, but fixes a root window
@@ -146,8 +143,8 @@ E. To do
         files being renamed or moved constantly.]
        [migo: all old config file names are supported until 3.0, the new name
         is designed to be final, so we will not need .fvwm2_6rc or .fvwm3rc]
-       [Then, what is the point in making the change now?  It can as well wait
-        until we start writing 3.0.]
+       [dv: Then, what is the point in making the change now?  It can as well
+        wait until we start writing 3.0.]
        [It is the same reason as renaming fvwm2 to fvwm everywhere now.
         The executable file is fvwm in either 2.6, 3.0 or 4.5.
         The configuration file is ~/.fvwm/main in either 2.6, 3.0 or 4.5.]
@@ -158,6 +155,8 @@ E. To do
   E.16 Rename all "Pixmap" in the syntax to "Image" while supporting both.
        Probably rename MultiPixmap to Multi, since it accepts Solid + Colorset.
        [Mikhael]
+       [dv: I wouldn't do that anymore.  That syntax will be removed soon after
+       the 2.6 release, so the clean up work is in vain.]
 
   E.17 Finally document the Repeat command.  Forgot that for years :-)
        [dv: added on 30-Apr-2003]
@@ -192,22 +191,11 @@ G. Testing
 
 ---- Closed recently ----------------------------------------------------------
 
-  E.10 Rename the "cond", "condcase", etc. commands
-       [dv: added on 02-Mar-2003]
-       [dv: done on 29-Jun-2003]
-
-  B.4 Fvwm doesn't seem to render what Unicode terms as "combining" or
-      "composing" characters/marks/ligatures (eg. U+0308 or U+064E) correctly.
-      Ref.: 2003-02-12  "Nadim Shaikli" Composing characters within fvwm
-      [malu: done on 01-Jul-2003]
-
-
 ---- Postponed until after 2.6 ------------------------------------------------
 
   F.4 Translate our documentation into "xml/docbook" format
       [Olivier: do not have the time now, but if someone wants to do it,
        (s)he is welcome]
-
 
 ---- Closed -------------------------------------------------------------------
 
@@ -229,6 +217,11 @@ G. Testing
       [Olivier]
       [dv: fixed on 02-Mar-2003, 2.5.7; Note:  it is still utterly broken when
       the window becomes too small]
+
+  B.4 Fvwm doesn't seem to render what Unicode terms as "combining" or
+      "composing" characters/marks/ligatures (eg. U+0308 or U+064E) correctly.
+      Ref.: 2003-02-12  "Nadim Shaikli" Composing characters within fvwm
+      [malu: done on 01-Jul-2003]
 
   B.6 Edge scrolling breaks on non-rectangular Xinerama display
       [#987,2003-02-11]
@@ -263,12 +256,19 @@ G. Testing
        Fixed?
        [dv: should be fixed in 2.5.x]
 
+  C.18 Persistent Windows in Pager [#773,2.4,2001-09-18].
+       {Olivier: Should be removed I think}
+
   C.21 Pager drawing problem [#762,2.4,2001-08-14].
        [Dan same as B.2 2003-03-01]
 
   C.22 Strange bug with the menus [#759,2.4,2001-08-12]. Similar to
        C.7? Fixed?
        [dv: 28-Mar-2003: unreproducible, may have been the same as C.7]
+
+  C.24 window appear/disappear in the Pager [#731,2.4,2001-07-04]. Fixed?
+       [dv: no idea what has happened.  Maybe the pager running did not match
+       the executable?  Delete this report.]
 
   C.25 Taskbar crashes when being resized, reported on 15-Feb-2003 by Gert
        Brinkmann (fvwm mailing list)
@@ -292,6 +292,10 @@ G. Testing
   E.9 Either document or disable tear off menus
       [dv: added on 02-Mar-2003]
       [duplicate of E.5]
+
+  E.10 Rename the "cond", "condcase", etc. commands
+       [dv: added on 02-Mar-2003]
+       [dv: done on 29-Jun-2003]
 
   E.14 Rework WindowListFunc so it works under window content and does not
        need any window id parameter (optionally pass id for compatibility).
