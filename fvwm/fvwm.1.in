@@ -4989,7 +4989,7 @@ beyond the border of the desktop. For example, with
 when the window moves past the right edge of the desktop, it
 reappears on the left edge.  The options
 .IR nodesklimitx " and " nodesklimit
-allow movind windows beyond the desk boundaries in x and y
+allow moving windows beyond the desk boundaries in x and y
 direction (disabling the
 .IR wrapx " and " wrapy
 options).
@@ -9388,7 +9388,8 @@ and the new page is
 
 .TP
 .B "GotoPage \fIprev\fP \
-| \fIx\fP \
+| [\fIoptions\fP] \
+\fIx\fP \
 [\fIp\fP\
 ] \fIy\fP \
 [\fIp\fP\
@@ -9404,8 +9405,16 @@ the
 command.  To switch to a page relative to the current one add a
 trailing
 .RI ' p '
-after any or both numerical arguments.  To go to last visited page
-use
+after any or both numerical arguments.
+
+Possible
+.I options
+are
+.IR wrapx " and " wrapy
+to wrap around the x or y coordinate when the viewport is moved
+beyond the border of the desktop.
+
+To go to the last visited page use
 .I prev
 as the first argument.  The
 .B GotoPage
