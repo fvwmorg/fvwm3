@@ -2316,18 +2316,18 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
    Then put the following lines in your .fvwm2rc:
 
      AddToFunc ToggleFvwmConsole
-     + I None (FvwmConsole) Module FvwmConsole
-     + I Next (CurrentPage Visible FvwmConsole) Close
-     + I Next (FvwmConsole) MoveToDesk
-     + I Next (FvwmConsole) MoveToPage
-     + I Next (FvwmConsole) Raise
+     + I None (FvwmConsole, CirculateHit) Module FvwmConsole
+     + I Next (FvwmConsole, CirculateHit, CurrentPage, Visible) Close
+     + I Next (FvwmConsole, CirculateHit) MoveToDesk
+     + I Next (FvwmConsole, CirculateHit) MoveToPage
+     + I Next (FvwmConsole, CirculateHit) Raise
 
      AddToMenu <some menu>
      + "toggle FvwmConsole" Function ToggleFvwmConsole
 
    Or if you prefer a button in the button bar:
 
-     *FvwmButtons(Action ToggleFvwmConsole)
+     *FvwmButtons: (Action ToggleFvwmConsole)
 
    The lines with MoveToDesk, MoveToPage and Raise will bring the
    window to the top of the current page if it is not visible
@@ -2338,10 +2338,11 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
    give the window an unique name:
 
      AddToFunc ToggleXMessages
-     + I None (XMessages) Exec ( TERM -T XMessages -n XMessages \
-         -e exec tail -f /var/adm/?* ~/.X.err )
-     + I Next (XMessages) Close
+     + I None (XMessages, CirculateHit) Exec exec \
+        xterm -T XMessages -n XMessages -e tail -f /var/adm/?* ~/.X.err
+     + I Next (XMessages, CirculateHit) Close
 
+   (CirculateHit is needed for windows with Style CirculateSkip.)
    Or for a toggling Netscape button:
 
      AddToFunc ToggleNetscape
