@@ -1955,7 +1955,7 @@ void MapBalloonWindow (XEvent *event)
                         &window_changes.x, &window_changes.y,
                         &dummy);
 
-  /* make sure balloon doesn't go off screen horizontally
+  /* make sure balloon doesn't go off screen
      (actually 2 pixels from edge rather than 0 just to be pretty :-) */
   if ( window_changes.x < 2 )
     window_changes.x = 2;
@@ -1963,7 +1963,9 @@ void MapBalloonWindow (XEvent *event)
             Scr.MyDisplayWidth - (2 * balloon.border) - 2 )
     window_changes.x = Scr.MyDisplayWidth - window_changes.width -
       (2 * balloon.border) - 2;
-
+  if ( window_changes.y + window_changes.height >
+       Scr.MyDisplayHeight - (2 * balloon.border) - 2 )
+  window_changes.y = Scr.MyDisplayHeight - balloon.height - 2*balloon.border;
 
   XConfigureWindow(dpy, balloon.w,
                    CWX | CWY | CWWidth,

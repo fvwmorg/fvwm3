@@ -2,6 +2,10 @@
 
 	* FvwmPager/x_pager.c (SwitchToDeskAndPage):
 	(DispatchEvent): patch to make desk changing via button 3 work.
+	(MapBalloonWindow): fixed bug #49 (balloon window off-screen)
+	I'm a bit concerned because of a possible loop that is mentioned in
+	the code when the y offset of the ballon window is zero. This might
+	happen now again.
 
 1998-12-08  Dominik Vogt  <dominik_vogt@hp.com>
 
