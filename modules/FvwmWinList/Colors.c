@@ -35,10 +35,10 @@
 #include <stdio.h>
 #include <X11/Xlib.h>
 #include "Colors.h"
-
+#include "libs/fvwmlib.h"
 
 extern Display *dpy;
-extern Window Root;
+extern Graphics *G;
 
 /****************************************************************************
   Loads a single color
@@ -46,13 +46,11 @@ extern Window Root;
 Pixel GetColor(char *name)
 {
   XColor color;
-  XWindowAttributes attributes;
 
-  XGetWindowAttributes(dpy,Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color))
+   if (!XParseColor (dpy, G->cmap, name, &color))
      nocolor("parse",name);
-   else if(!XAllocColor (dpy, attributes.colormap, &color))
+   else if(!XAllocColor (dpy, G->cmap, &color))
        nocolor("alloc",name);
   return color.pixel;
 }

@@ -43,9 +43,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-#define TRUE  1
-#define FALSE 0
-
 #ifndef NO_CONSOLE
 #define NO_CONSOLE
 #endif
@@ -97,8 +94,9 @@ int x_fd;
 
 /* X related things */
 Display *dpy;
+Graphics *G;
 Window Root, win;
-int screen,d_depth,ScreenWidth,ScreenHeight;
+int screen,ScreenWidth,ScreenHeight;
 Pixel back[MAX_COLOUR_SETS], fore[MAX_COLOUR_SETS];
 GC  graph[MAX_COLOUR_SETS],shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
 GC  background[MAX_COLOUR_SETS];
@@ -234,8 +232,6 @@ int main(int argc, char **argv)
   /* Setup the XConnection */
   StartMeUp();
   XSetErrorHandler(ErrorHandler);
-
-  InitPictureCMap(dpy, Root);
 
   InitArray(&buttons,0,0,win_width, fontheight+2, ReliefWidth);
   InitList(&windows);
@@ -881,6 +877,7 @@ void MakeMeWindow(void)
   int x, y, ret, count;
   Window dummyroot, dummychild;
   int i;
+  XSetWindowAttributes attr;
 
 
   if ((count = ItemCountD(&windows))==0 && Transient) exit(0);
@@ -934,7 +931,7 @@ void MakeMeWindow(void)
 
 
   for (i = 0; i != MAX_COLOUR_SETS; i++)
-  if(d_depth < 2)
+  if(G->depth < 2)
   {
     back[i] = GetColor("white");
     fore[i] = GetColor("black");
@@ -945,8 +942,12 @@ void MakeMeWindow(void)
     fore[i] = GetColor(ForeColor[i] == NULL ? ForeColor[0] : ForeColor[i]);
   }
 
-  win=XCreateSimpleWindow(dpy,Root,hints.x,hints.y,hints.width,hints.height,0,
-    fore[0],back[0]);
+  attr.background_pixel = back[0];
+  attr.border_pixel = 0;
+  attr.colormap = G->cmap;
+  win=XCreateWindow(dpy, Root, hints.x, hints.y, hints.width, hints.height, 0,
+		    G->depth, InputOutput, G->viz,
+		    CWBackPixel | CWBorderPixel | CWColormap, &attr);
 
   wm_del_win=XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);
@@ -977,24 +978,24 @@ void MakeMeWindow(void)
     gcval.background=back[i];
     gcval.font=ButtonFont->fid;
     gcmask=GCForeground|GCBackground|GCFont;
-    graph[i]=XCreateGC(dpy,Root,gcmask,&gcval);
+    graph[i]=XCreateGC(dpy,win,gcmask,&gcval);
 
-    if(d_depth < 2)
+    if(G->depth < 2)
       gcval.foreground=GetShadow(fore[i]);
     else
       gcval.foreground=GetShadow(back[i]);
     gcval.background=back[i];
     gcmask=GCForeground|GCBackground;
-    shadow[i]=XCreateGC(dpy,Root,gcmask,&gcval);
+    shadow[i]=XCreateGC(dpy,win,gcmask,&gcval);
 
     gcval.foreground=GetHilite(back[i]);
     gcval.background=back[i];
     gcmask=GCForeground|GCBackground;
-    hilite[i]=XCreateGC(dpy,Root,gcmask,&gcval);
+    hilite[i]=XCreateGC(dpy,win,gcmask,&gcval);
 
     gcval.foreground=back[i];
     gcmask=GCForeground;
-    background[i]=XCreateGC(dpy,Root,gcmask,&gcval);
+    background[i]=XCreateGC(dpy,win,gcmask,&gcval);
   }
 
   XSelectInput(dpy,win,(ExposureMask | KeyPressMask));
@@ -1036,10 +1037,11 @@ void StartMeUp(void)
       XDisplayName(""));
     exit (1);
   }
+  G = CreateGraphics(dpy);
+  SavePictureCMap(dpy, G->viz, G->cmap, G->depth);
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
-  d_depth = DefaultDepth(dpy, screen);
 
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
