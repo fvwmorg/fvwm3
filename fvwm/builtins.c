@@ -516,28 +516,14 @@ void add_another_item(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *rest,*item;
 
   if (last_menu != NULL) {
-<<<<<<< builtins.c
     mr = FollowMenuContinuations(last_menu,&mrPrior);
     if(mr == NULL)
       return;
     rest = GetNextToken(action,&item);
     AddToMenu(mr, item,rest,TRUE /* pixmap scan */, FALSE);
     if (item)
-=======
-      mr = FollowMenuContinuations(last_menu,&mrPrior);
-      if(mr == NULL)
-	  return;
-      rest = GetNextToken(action,&item);
-
-      AddToMenu(mr, item,rest,TRUE /* pixmap scan */, FALSE);
->>>>>>> 1.12
       free(item);
-<<<<<<< builtins.c
     MakeMenu(mr);
-=======
-
-      MakeMenu(mr);
->>>>>>> 1.12
   }
 #ifdef USEDECOR
   else if (last_decor != NULL) {
@@ -591,14 +577,9 @@ void add_item_to_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     free(token);
   rest = GetNextToken(rest,&item);
   AddToMenu(mr, item,rest,FALSE,FALSE);
-<<<<<<< builtins.c
   if (item)
     free(item);
-  
-=======
-  free(item);
 
->>>>>>> 1.12
   return;
 }
 
@@ -2188,15 +2169,9 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		bf->u.back = GetColor(file);
 		free(file);
 	    } else {
-<<<<<<< builtins.c
 		if(verbose)
 		  fvwm_msg(ERR,"ReadButtonFace",
 			   "no color given for Solid face type: %s", action);
-=======
-		if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-				    "no color given for Solid face type: %s",
-				    action);
->>>>>>> 1.12
 		return False;
 	    }
 	}
@@ -2246,16 +2221,10 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 			if (item)
 			  {
 			    perc[i] = atoi(item);
-<<<<<<< builtins.c
 			    free(item);
 			  }
 			else 
 			  perc[i] = 0;
-=======
-			else
-			    perc[i] = 0;
-			free(item);
->>>>>>> 1.12
 		    }
 		}
 	    }
@@ -2321,16 +2290,9 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	    if (file)
 	      {
 		free(file);
-<<<<<<< builtins.c
 		file = NULL;
 	      }
 	
-=======
-		return False;
-	    }
-	    free(file); file = NULL;
-
->>>>>>> 1.12
 	    if (strncasecmp(style,"Tiled",5)==0)
 		bf->style = TiledPixmapButton;
 	    else
@@ -2377,13 +2339,8 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style &= ~HRight;
 		} else
 		    bf->style |= HOffCenter | HRight;
-<<<<<<< builtins.c
 	    } 
 	    else if (StrEquals(tok,"Right"))
-=======
-	    }
-	    else if (strncasecmp(tok,"Right",5)==0)
->>>>>>> 1.12
 	    {
 		if (set)
 		    bf->style |= HOffCenter | HRight;
@@ -2391,13 +2348,8 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style |= HOffCenter;
 		    bf->style &= ~HRight;
 		}
-<<<<<<< builtins.c
 	    } 
 	    else if (StrEquals(tok,"Centered")) {
-=======
-	    }
-	    else if (strncasecmp(tok,"Centered",8)==0) {
->>>>>>> 1.12
 		bf->style &= ~HOffCenter;
 		bf->style &= ~VOffCenter;
 	    }
@@ -2408,14 +2360,9 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style &= ~VBottom;
 		} else
 		    bf->style |= VOffCenter | VBottom;
-<<<<<<< builtins.c
 		  
 	    } 
 	    else if (StrEquals(tok,"Bottom"))
-=======
-	    }
-	    else if (strncasecmp(tok,"Bottom",6)==0)
->>>>>>> 1.12
 	    {
 		if (set)
 		    bf->style |= VOffCenter | VBottom;
@@ -2431,26 +2378,16 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style |= FlatButton;
 		} else
 		    bf->style &= ~FlatButton;
-<<<<<<< builtins.c
 	    } 
 	    else if (StrEquals(tok,"Sunk"))
-=======
-	    }
-	    else if (strncasecmp(tok,"Sunk",4)==0)
->>>>>>> 1.12
 	    {
 		if (set) {
 		    bf->style &= ~FlatButton;
 		    bf->style |= SunkButton;
 		} else
 		    bf->style &= ~SunkButton;
-<<<<<<< builtins.c
 	    } 
 	    else if (StrEquals(tok,"Raised"))
-=======
-	    }
-	    else if (strncasecmp(tok,"Raised",6)==0)
->>>>>>> 1.12
 	    {
 		if (set) {
 		    bf->style &= ~FlatButton;
@@ -2479,13 +2416,8 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		    bf->style |= HiddenHandles;
 		else
 		    bf->style &= ~HiddenHandles;
-<<<<<<< builtins.c
 	    } 
 	    else if (StrEquals(tok,"NoInset"))
-=======
-	    }
-	    else if (strncasecmp(tok,"NoInset",7)==0)
->>>>>>> 1.12
 	    {
 		if (set)
 		    bf->style |= NoInset;
@@ -2706,12 +2638,8 @@ void DestroyDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 	    }
 	prev = fl;
     }
-<<<<<<< builtins.c
     free(item);
     
-=======
-
->>>>>>> 1.12
     if (found && (found != &Scr.DefaultDecor)) {
 	FvwmWindow *fw = Scr.FvwmRoot.next;
 	while(fw != NULL)
@@ -3576,13 +3504,8 @@ void set_menudelay(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   int delay = 0;
   if (sscanf(action,"%d",&delay) == 1 && delay >= 0)
-<<<<<<< builtins.c
     /* user enters in ms, we store in 10 ms */
     c10msDelaysBeforePopup = delay/10;
   else 
-=======
-    c10msDelaysBeforePopup = delay/10; /* user enters in ms, we store in 10 ms */
-  else
->>>>>>> 1.12
     fvwm_msg(ERR,"SetMenuDelay","Improper ms delay count as argument.");
 }
