@@ -250,6 +250,7 @@ typedef struct
   unsigned do_reuse_destroyed : 1;   /* Reuse this struct, don't free it,
 				      * when destroying/recapturing window. */
   unsigned has_border : 1; /* Is this decorated with border*/
+  unsigned has_icon_changed : 1; /* Icon change is pending */
   unsigned has_title : 1; /* Is this decorated with title */
   unsigned is_decor_changed : 1; /* ChangeDecor was used for window */
   unsigned is_deiconify_pending : 1; /* Sent an XUnmapWindow for deiconifying,

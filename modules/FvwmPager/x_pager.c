@@ -2937,6 +2937,9 @@ void change_colorset(int colorset)
 
     XSetForeground(dpy, Scr.whGC, wcsetp->hilite);
     XSetForeground(dpy, Scr.wsGC, wcsetp->shadow);
+    win_back_pix = wcsetp->bg;
+    win_fore_pix = wcsetp->fg;
+    win_pix_set = True;
     for (t = Start; t != NULL; t = t->next)
     {
       t->text = Colorset[colorset].fg;
@@ -2961,6 +2964,7 @@ void change_colorset(int colorset)
     XSetForeground(dpy, Scr.asGC, acsetp->shadow);
     win_hi_back_pix = acsetp->bg;
     win_hi_fore_pix = acsetp->fg;
+    win_hi_pix_set = True;
     t = FocusWin;
     if (t)
     {
@@ -2975,4 +2979,6 @@ void change_colorset(int colorset)
 			  True);
     }
   }
+
+  return;
 }

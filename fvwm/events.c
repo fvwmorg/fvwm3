@@ -623,7 +623,13 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
 	Tmp_win->iconPixmap = (Window)NULL;
       }
 
-      if (IS_ICONIFIED(Tmp_win) && has_icon_changed)
+      if (!IS_ICONIFIED(Tmp_win) && has_icon_changed)
+      {
+ICON_DBG((stderr,"hpn: postpone icon change '%s'\n", Tmp_win->name));
+	/* update the icon later when application is iconified */
+	SET_HAS_ICON_CHANGED(Tmp_win, 1);
+      }
+      else if (IS_ICONIFIED(Tmp_win) && has_icon_changed)
       {
 ICON_DBG((stderr,"hpn: applying new icon '%s'\n", Tmp_win->name));
 	SET_ICONIFIED(Tmp_win, 0);

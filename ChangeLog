@@ -1,5 +1,11 @@
 2001-05-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandlePropertyNotify):
+	* fvwm/icons.c (Iconify):
+	* fvwm/window_flags.h (HAS_ICON_CHANGED):
+	* fvwm/fvwm.h (struct):
+	Fixed active icon change when window was not iconified.
+
 	* fvwm/focus.c (DoSetFocus):
 	Fixed "Globally Active" input model
 

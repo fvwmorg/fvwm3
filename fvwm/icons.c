@@ -1440,12 +1440,13 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   if (IS_ICONIFIED_BY_PARENT(tmp_win))
     return;
 
-  if (tmp_win->icon_w == None)
+  if (tmp_win->icon_w == None || HAS_ICON_CHANGED(tmp_win))
   {
     if(IS_ICON_MOVED(tmp_win))
       CreateIconWindow(tmp_win,tmp_win->icon_g.x,tmp_win->icon_g.y);
     else
       CreateIconWindow(tmp_win, def_x, def_y);
+    SET_HAS_ICON_CHANGED(tmp_win, 0);
   }
 
   /* if no pixmap we want icon width to change to text width every iconify */
