@@ -4,5 +4,5 @@ SUBDIRS = FvwmAnimate FvwmAuto FvwmBacker FvwmBanner FvwmButtons FvwmCommand \
 	  FvwmConsole FvwmCpp FvwmDebug FvwmDragWell FvwmEvent FvwmForm \
 	  FvwmGtk FvwmIconBox FvwmIconMan FvwmIdent FvwmM4 FvwmPager \
 	  FvwmRearrange FvwmSave FvwmSaveDesk FvwmScript FvwmScroll \
-	  FvwmTaskBar FvwmTheme FvwmWharf FvwmWinList
+	  FvwmTaskBar FvwmTheme FvwmWharf FvwmWinList GFvwmDebug
 
