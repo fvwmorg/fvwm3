@@ -734,6 +734,8 @@ static void AssignDrawTable(Item *adt_item)
   new_dt->dt_color_names[c_item_bg] = safestrdup(match_item_back);
   new_dt->dt_used = 0;                  /* show nothing allocated */
   new_dt->dt_Ffont = FlocaleLoadFont(dpy, new_dt->dt_font_name, MyName+1);
+  FlocaleAllocateWinString(&new_dt->dt_Fstr);
+
   myfprintf((stderr,"Created drawtable with %s %s %s %s %s\n",
              new_dt->dt_color_names[c_fg], new_dt->dt_color_names[c_bg],
              new_dt->dt_color_names[c_item_fg],
@@ -1339,7 +1341,6 @@ static void Restart ()
 /* redraw the frame */
 void RedrawFrame ()
 {
-  int x, y;
   Item *item;
 
   for (item = root_item_ptr; item != 0;
@@ -1349,12 +1350,17 @@ void RedrawFrame ()
       RedrawText(item);
       break;
     case I_CHOICE:
-      x = item->header.pos_x + TEXT_SPC + item->header.size_y;
-      y = item->header.pos_y + TEXT_SPC +
-        item->header.dt_ptr->dt_Ffont->ascent;
-      XDrawString(dpy, CF.frame, item->header.dt_ptr->dt_GC,
-                       x, y, item->choice.text,
-                       item->choice.n);
+      item->header.dt_ptr->dt_Fstr->win = CF.frame;
+      item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_GC;
+      item->header.dt_ptr->dt_Fstr->str = item->choice.text;
+      item->header.dt_ptr->dt_Fstr->x   = item->header.pos_x
+        + TEXT_SPC + item->header.size_y;
+      item->header.dt_ptr->dt_Fstr->y   = item->header.pos_y + TEXT_SPC
+        + item->header.dt_ptr->dt_Ffont->ascent;
+      item->header.dt_ptr->dt_Fstr->len = item->choice.n;
+      FlocaleDrawString(dpy,
+                        item->header.dt_ptr->dt_Ffont,
+                        item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
       break;
     }
   }
@@ -1362,20 +1368,22 @@ void RedrawFrame ()
 
 void RedrawText(Item *item)
 {
-  int x, y;
-  int len;
   char *p;
 
   CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
-  x = item->header.pos_x + TEXT_SPC;
-  y = item->header.pos_y + ( CF.padVText / 2 ) +
+  item->header.dt_ptr->dt_Fstr->len = item->text.n;
+  if ((p = memchr(item->text.value, '\0', item->header.dt_ptr->dt_Fstr->len))
+      != NULL)
+    item->header.dt_ptr->dt_Fstr->len = p - item->text.value;
+  item->header.dt_ptr->dt_Fstr->win = CF.frame;
+  item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_GC;
+  item->header.dt_ptr->dt_Fstr->str = item->text.value;
+  item->header.dt_ptr->dt_Fstr->x   = item->header.pos_x + TEXT_SPC;
+  item->header.dt_ptr->dt_Fstr->y   = item->header.pos_y + ( CF.padVText / 2 ) +
     item->header.dt_ptr->dt_Ffont->ascent;
-  len = item->text.n;
-  if ((p = memchr(item->text.value, '\0', len)) != NULL)
-    len = p - item->text.value;
-  XDrawString(dpy, CF.frame, item->header.dt_ptr->dt_GC,
-	      x, y, item->text.value, len);
-
+  FlocaleDrawString(dpy,
+                    item->header.dt_ptr->dt_Ffont,
+                    item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
   return;
 }
 
@@ -1443,18 +1451,28 @@ void RedrawItem (Item *item, int click)
     if (len > item->input.size)
       len = item->input.size;
     else
-      XDrawString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
-                  BOX_SPC + TEXT_SPC
+      item->header.dt_ptr->dt_Fstr->win = item->header.win;
+      item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_item_GC;
+      item->header.dt_ptr->dt_Fstr->str = item->input.blanks;
+      item->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC
                   + FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,"W",1)
-                  * len,
-                  BOX_SPC + TEXT_SPC
-                  + item->header.dt_ptr->dt_Ffont->ascent,
-                  item->input.blanks, item->input.size - len);
-    XDrawString(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
-                BOX_SPC + TEXT_SPC,
-                BOX_SPC + TEXT_SPC +
-                item->header.dt_ptr->dt_Ffont->ascent,
-                item->input.value + item->input.left, len);
+                  * len;
+      item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
+                  + item->header.dt_ptr->dt_Ffont->ascent;
+      item->header.dt_ptr->dt_Fstr->len = item->input.size - len;
+      FlocaleDrawString(dpy,
+                        item->header.dt_ptr->dt_Ffont,
+                        item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
+    item->header.dt_ptr->dt_Fstr->win = item->header.win;
+    item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_item_GC;
+    item->header.dt_ptr->dt_Fstr->str = item->input.value;
+    item->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC;
+    item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
+      + item->header.dt_ptr->dt_Ffont->ascent;
+    item->header.dt_ptr->dt_Fstr->len = len;
+    FlocaleDrawString(dpy,
+                      item->header.dt_ptr->dt_Ffont,
+                      item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
     if (item == CF.cur_input && !click) {
       x = BOX_SPC + TEXT_SPC +
         FlocaleTextWidth(item->header.dt_ptr->dt_Ffont,"W",1)
@@ -1554,12 +1572,16 @@ void RedrawItem (Item *item, int click)
                   xsegs, 4);
     XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
                    item->header.dt_ptr->dt_colors[c_item_fg]);
-    XDrawString(
-      dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
-      BOX_SPC + TEXT_SPC,
-      BOX_SPC + TEXT_SPC +
-      item->header.dt_ptr->dt_Ffont->ascent,
-      item->button.text, item->button.len);
+    item->header.dt_ptr->dt_Fstr->win = item->header.win;
+    item->header.dt_ptr->dt_Fstr->gc  = item->header.dt_ptr->dt_item_GC;
+    item->header.dt_ptr->dt_Fstr->str = item->button.text;
+    item->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC;
+    item->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
+      + item->header.dt_ptr->dt_Ffont->ascent;
+    item->header.dt_ptr->dt_Fstr->len = item->button.len;
+    FlocaleDrawString(dpy,
+                      item->header.dt_ptr->dt_Ffont,
+                      item->header.dt_ptr->dt_Fstr, FWS_HAVE_LENGTH);
     myfprintf((stderr,"Just put %s into a button\n",
                item->button.text));
     break;

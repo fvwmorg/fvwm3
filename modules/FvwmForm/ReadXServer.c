@@ -327,7 +327,7 @@ void ReadXServer ()
 	{
 	  XSetForeground(dpy, CF.cur_input->header.dt_ptr->dt_item_GC,
                          CF.cur_input->header.dt_ptr->dt_colors[c_item_bg]);
-          /* Since XDrawString is being used, I changed this to clear the
+          /* Since DrawString is being used, I changed this to clear the
              entire input field.  dje 10/24/99. */
 	  XClearArea(dpy, CF.cur_input->header.win,
                      BOX_SPC + TEXT_SPC - 1, BOX_SPC,
@@ -344,13 +344,18 @@ void ReadXServer ()
                          CF.cur_input->header.dt_ptr->dt_colors[c_item_fg]);
 	  if (len > CF.cur_input->input.size)
 	    len = CF.cur_input->input.size;
-	  XDrawString(dpy, CF.cur_input->header.win,
-                      CF.cur_input->header.dt_ptr->dt_item_GC,
-                      BOX_SPC + TEXT_SPC,
-                      BOX_SPC + TEXT_SPC +
-                      CF.cur_input->header.dt_ptr->dt_Ffont->ascent,
-                      CF.cur_input->input.value +
-                      CF.cur_input->input.left, len);
+          CF.cur_input->header.dt_ptr->dt_Fstr->win = CF.cur_input->header.win;
+          CF.cur_input->header.dt_ptr->dt_Fstr->gc  =
+            CF.cur_input->header.dt_ptr->dt_item_GC;
+          CF.cur_input->header.dt_ptr->dt_Fstr->str = CF.cur_input->input.value;
+          CF.cur_input->header.dt_ptr->dt_Fstr->x   = BOX_SPC + TEXT_SPC;
+          CF.cur_input->header.dt_ptr->dt_Fstr->y   = BOX_SPC + TEXT_SPC
+            + CF.cur_input->header.dt_ptr->dt_Ffont->ascent;
+          CF.cur_input->header.dt_ptr->dt_Fstr->len = len;
+          FlocaleDrawString(dpy,
+                            CF.cur_input->header.dt_ptr->dt_Ffont,
+                            CF.cur_input->header.dt_ptr->dt_Fstr,
+                            FWS_HAVE_LENGTH);
 	  x = BOX_SPC + TEXT_SPC +
             FlocaleTextWidth(CF.cur_input->header.dt_ptr->dt_Ffont,"W",1)
             * CF.abs_cursor - 1;

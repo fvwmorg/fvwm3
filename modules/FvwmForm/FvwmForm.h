@@ -72,6 +72,7 @@ typedef struct _drawtable {
   GC dt_GC;                             /* graphic ctx used for text */
   GC dt_item_GC;                        /* graphic ctx used for graphics */
   FlocaleFont *dt_Ffont;                /* Fvwm font structure */
+  FlocaleWinString *dt_Fstr;            /* Fvwm string (handles multibyte) */
 } DrawTable;
 
 /* An "item" is something in a form. Part of the structure is common
