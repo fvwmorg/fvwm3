@@ -18,21 +18,21 @@
 #include <fvwm/window_flags.h>
 
 /*
-    =====================================================================
+    *********************************************************************
     All new-style module packets (i.e., those that are not simply arrays
     of long ints, as used by the older modules) should have a structure
     definition in this file.
-    =====================================================================
+    *********************************************************************
 */
 
 
 
 
-/*  ============================================================
+/*  ************************************************************
     The M_CONFIGURE_WINDOW packet.
     This is the same packet as the M_ADD_WINDOW packet, the
     only difference being the type.
-    ============================================================  */
+    ************************************************************  */
 /*  RBW- typedef struct config_win_packet  */
 typedef struct ConfigWinPacket
 {

@@ -1,31 +1,31 @@
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
-# Sample-95: .fvwm2rc example configuration file for a more or less Windows95 
+# Sample-95: .fvwm2rc example configuration file for a more or less Windows95
 #            look and feel
 #
 # The suggested way to install this configuration file is to (re)move
 # any .fvwm2rc file you have in ~/.fvwm or ~ and run fvwm without any
 # startup file.
 #
-# Then, run the "Setup 95 Script" from the root menu. This creates 
-# and installs the following configuration files: .fvwm2rc, bindings, 
+# Then, run the "Setup 95 Script" from the root menu. This creates
+# and installs the following configuration files: .fvwm2rc, bindings,
 # decorations, desktop, functions, menus, modules, startup, styles,
-# iconstyles. 
-# If perl is not installed on your machine (my god), only one file is 
-# installed: .fvwm2rc (and this configuration should work). Some instructions 
-# are given below for a first editing of this file. Maybe the first thing 
+# iconstyles.
+# If perl is not installed on your machine (my god), only one file is
+# installed: .fvwm2rc (and this configuration should work). Some instructions
+# are given below for a first editing of this file. Maybe the first thing
 # to do in this case is to segment this file. For that, you can move the
 # parts of this file between the marks "#SEG foo" and "#SEG xyz" into a
-# file foo and add "Read foo" to this file (until the "#SEG END" mark). 
+# file foo and add "Read foo" to this file (until the "#SEG END" mark).
 #
 # You do need the fvwm_icons distribution installed in the FVWM image path.
-# If they are installed in another directory use the ImagePath command 
+# If they are installed in another directory use the ImagePath command
 # below or set this directory via the Setup95 Script.
 #
-# For the sound effects to work you need the fvwm_sounds distribution 
-# installed and an .au player. The Setup95 Script allows you to set the 
-# installation directory of this distribution as your sound player (if not, 
-# manually edit the *FvwmEvent commands). Note that if you use rplay, the 
+# For the sound effects to work you need the fvwm_sounds distribution
+# installed and an .au player. The Setup95 Script allows you to set the
+# installation directory of this distribution as your sound player (if not,
+# manually edit the *FvwmEvent commands). Note that if you use rplay, the
 # rplayd daemon must be run.
 #
 # The Setup95 Script asks you to choose between two looks, one is close
@@ -37,15 +37,15 @@
 # There is an option for machines with a "low X server (comment #FAST and
 # uncomment #SLOW). You may have to use some intermediate values (Base
 # Configuration can help and if you "rebuild Sample-95" .FvwmBaseConfig
-# may over write the effect of this option). See also the BackingStore and 
+# may over write the effect of this option). See also the BackingStore and
 # SaveUnder style.
-# 
+#
 # I've tried to use very common apps (like Gimp or Netscape) so that this
-# configuration file is as universal as possible. For menus, the Setup 95 
+# configuration file is as universal as possible. For menus, the Setup 95
 # Script starts with a big menu.  Comment the menu entries that correspond
-# to applications not in your path. Moreover, the Setup95 Script asks you 
-# to set your preferred terminal, editor and file manager (#PREF). However, 
-# you surely need to edit the menu definitions and the BarButtons 
+# to applications not in your path. Moreover, the Setup95 Script asks you
+# to set your preferred terminal, editor and file manager (#PREF). However,
+# you surely need to edit the menu definitions and the BarButtons
 # configuration to get your preferred applications.
 #
 # I have a laptop so I have added one laptop option. If you answer yes
@@ -56,56 +56,56 @@
 # GNOME and KDE menus: FVWM has a perl script that can build GNOME and
 # KDE menus: fvwm-menu-desktop (man fvwm-menu-desktop for details). If GNOME
 # and/or KDE are installed in your machine, Setup95 will ask you which menus
-# you want to add to your Programs sub menus (G_SM_G/F means FvwmGtk/fvwm 
+# you want to add to your Programs sub menus (G_SM_G/F means FvwmGtk/fvwm
 # gnome system menu, G_SM_G/F means FvwmGtk/fvwm2 gnome user menu, G_RHM_G/F
 # means gnome redhat menu, G_M_G means that we need to start FvwmGtk, K_SM
 # means kde system menu and K_UM means kde user menu. You may have to edit
 # the line G_*M_* to set your GNOME install directory (Setup95 try to
-# find it)). KDE (mini-)Icon Styles and KDE ImagePath (#K_M) are provided 
+# find it)). KDE (mini-)Icon Styles and KDE ImagePath (#K_M) are provided
 # if you select one of the KDE menus. For GNOME, (mini-)Icon Styles are
 # provided if you have the panel installed (#G_ST) and the image path is
 # set if you ask for FvwmGtk menus (#G_M_G).
-# 
+#
 # GNOME session: This configuration can be used under gnome-session. In
-# this case almost no modules are started (for a first installation). 
-# However, you may use more modules: this depends on your gnome panel 
-# configuration. If Setup95 builds a configuration to be used 
-# under gnome-session, the lines which follow #G_SESSION will be uncommented. 
-# The panel stays put option  (the line which follow #G_PANEL) try to put 
+# this case almost no modules are started (for a first installation).
+# However, you may use more modules: this depends on your gnome panel
+# configuration. If Setup95 builds a configuration to be used
+# under gnome-session, the lines which follow #G_SESSION will be uncommented.
+# The panel stays put option  (the line which follow #G_PANEL) try to put
 # the panel in the same layers as the other windows.
 # Note that it safe to "Build a config for gnome-session" for using with
 # a normal FVWM session.
 #
 # CDE: There is an elementary support for CDE (lines which follow #CDE).
-# 
+#
 # Note: for saving its state (the changes you do via settings-->* up to the
-# first separator) Sample-95 uses some files $FVWM_USERDIR/.start-* (see 
-# section 5), $FVWM_USERDIR/.fvwm-layers (see section 6) and the usual FVWM 
+# first separator) Sample-95 uses some files $FVWM_USERDIR/.start-* (see
+# section 5), $FVWM_USERDIR/.fvwm-layers (see section 6) and the usual FVWM
 # config files: .FvwmAnimate, .FvwmForm, ~/.xinitrc-fvwm, .FvwmBaseConfig
-# 
-# There are many comments, but a good reading of the FVWM FAQ, of the man 
+#
+# There are many comments, but a good reading of the FVWM FAQ, of the man
 # pages of FVWM and its modules is recommended. Also, you can read the
 # sample-95 MINI-FAQ that you can find at the end of this file.
 #
 #!D For the fvwm-workers. These lines will not appear if the Setup95 Script
 #!D is used to install this file. I hope that the above lines give enough
-#!D information for editing this file at a devel level. Be sure to take a 
-#!D look to the perl script fvwm-script-setup95.pl and to FvwmScript-Setup95. 
+#!D information for editing this file at a devel level. Be sure to take a
+#!D look to the perl script fvwm-script-setup95.pl and to FvwmScript-Setup95.
 #!D More information is given here.
 #!D If you add entries to the menus which contains Exec and exec then
-#!D fvwm-script-setup95.pl will check if the application run is in 
+#!D fvwm-script-setup95.pl will check if the application run is in
 #!D the path. Supported format is
 #!D Exec exec app [options]
 #!D Exec cd path; /.app [options] (to run path/app in path)
 #!D Exec exec killall app
 #!D Exec xterm [options] -e app [option]
-#!D Moreover, you can use #!E app1:app2:... in the end of a line for 
+#!D Moreover, you can use #!E app1:app2:... in the end of a line for
 #!D commenting this line unless app1 or app2 or ... is in the path.
 #!D This is currently used in icons styles definitions and for line
-#!D separator in menu definitions. These ends of line will not appear in the 
-#!D builded file. 
+#!D separator in menu definitions. These ends of line will not appear in the
+#!D builded file.
 #
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # Summary:
 #
@@ -122,15 +122,15 @@
 # 11. Definitions used by the modules. (In modules)
 # 12. MINI-FAQ. (In this file)
 #
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 
 
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # 1. Module paths and Image paths
 # These paths are colon-separated lists, just like regular unix PATH
 #
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 
 # ModulePath is builtin, you may add some directories here
 #ModulePath $HOME/mymodules:+
@@ -148,21 +148,21 @@
 # Warning: you may have to replace /usr by gnomeinstallpath in the previous
 # line. gnomeinstallpath may be /usr/local, /opt/gnome, ...
 
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # Start the Show
 #
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 
 #SEG decorations
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # 2. Root cursor, Windows Decoration and Menu Styles:
 #   Default fonts, colors, Border, Title, Button Styles, Menu Styles
 #   window button bindings.
 #   (this section may be the theme part of the config, but you need to use
 #    FvwmTheme to define and propagate the colors)
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------
 # Set the root cursor
@@ -186,10 +186,10 @@ Style * Font		-*-times-medium-r-*-*-16-*-*-*-*-*-*-*
 Style * IconFont	fixed
 
 #------------------------------------------------------------------------------
-# Set the default window colors. 
+# Set the default window colors.
 #------------------------------------------------------------------------------
 
-# Text and background color for the title bar (overridden in the WIN case), 
+# Text and background color for the title bar (overridden in the WIN case),
 # and the border of the inactive window (also used by icon title,
 # and "hilight" and "shadow" colors).
 #WIN 1
@@ -197,7 +197,7 @@ Style * ForeColor #c3c3c3, BackColor #c3c3c3
 #FVWM 1
 #Style * ForeColor #c3c3c3, BackColor grey51
 
-# Text and background color for the title bar (overriden in the WIN case), 
+# Text and background color for the title bar (overriden in the WIN case),
 # and the border of the active (selected) window (also used by icon title,
 # and "hilight" and "shadow" colors).
 #WIN 1
@@ -240,7 +240,7 @@ AddButtonStyle	6	Pixmap mini.winXX-minimize.xpm
 
 #------------------------------------------------------------------------------
 # The MenuStyle command allows almost full control over menu look and feel.
-# We use the preconfigured 'Win' or 'Fvwm' default. This resets most other 
+# We use the preconfigured 'Win' or 'Fvwm' default. This resets most other
 # options and must be set first. We also define a menu called winops for
 # the windows operations menus and very long one. The menus which use this
 # style are (and must) be defined in the end of the menus.
@@ -249,12 +249,12 @@ AddButtonStyle	6	Pixmap mini.winXX-minimize.xpm
 #WIN 4
 MenuStyle * win
 MenuStyle * font -*-times-medium-r-*-*-16-*-*-*-*-*-*-*
-MenuStyle * Foreground black, Background grey80 
+MenuStyle * Foreground black, Background grey80
 MenuStyle * ActiveFore white, HilightBack Blue4
 #FVWM 5
 #MenuStyle * fvwm
 #MenuStyle * font -*-times-bold-r-*-*-14-*-*-*-*-*-*-*
-#MenuStyle * Foreground black, Background grey80 
+#MenuStyle * Foreground black, Background grey80
 #MenuStyle * ActiveFore black, HilightBack grey85
 #MenuStyle * Hilight3DThick
 
@@ -263,23 +263,23 @@ MenuStyle * VerticalItemSpacing 2 4, VerticalTitleSpacing 2 4
 #WIN 4
 MenuStyle winops win
 MenuStyle winops font -*-times-medium-r-*-*-14-*-*-*-*-*-*-*
-MenuStyle winops Foreground black, Background grey80 
+MenuStyle winops Foreground black, Background grey80
 MenuStyle winops ActiveFore white, HilightBack Blue4
 #FVWM 6
 #MenuStyle winops fvwm
 #MenuStyle winops font -*-times-bold-r-*-*-12-*-*-*-*-*-*-*
-#MenuStyle winops Foreground black, Background grey80 
+#MenuStyle winops Foreground black, Background grey80
 #MenuStyle winops ActiveFore black, HilightBack grey85
 #MenuStyle winops TitleWarpOff
 
 MenuStyle winops VerticalItemSpacing 1 2, VerticalTitleSpacing 1 2
 
 #SEG desktop
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # 3. Set up the major operating modes
 #
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 
 # WARNING!!!!!
 # If you use Settings-->FVWM Config-->Base Config to configure your
@@ -288,7 +288,7 @@ MenuStyle winops VerticalItemSpacing 1 2, VerticalTitleSpacing 1 2
 # last line of this section or you can remove all the lines of this
 # section but the last one.
 # If you use Base Config and application dependent styles that are set in
-# this section use the styles file to define these applications dependent 
+# this section use the styles file to define these applications dependent
 # styles. This way Base Config will not destroy your application specific
 # styles when you use it.
 
@@ -313,7 +313,7 @@ Style * WindowShadeSteps 20
 #Style * ResizeOutline
 #Style * WindowShadeSteps 0
 
- 
+
 EdgeScroll 0 0
 EdgeResistance 500 0
 EdgeThickness 1
@@ -328,7 +328,7 @@ Style * MouseFocusClickRaises
 #
 # RandomPlacement prevents user interaction while placing windows
 # SmartPlacement attempts to place windows 'intelligently'
-# Using both can be interesting. The CleverPlacement style option 
+# Using both can be interesting. The CleverPlacement style option
 # tells FVWM to be  extra smart :-)
 #
 Style * RandomPlacement, SmartPlacement
@@ -343,16 +343,16 @@ Style * NoPPosition
 
 Style * GrabFocusOff
 
-# If you have use Base Config, then the next line overrides this section 
+# If you have use Base Config, then the next line overrides this section
 # with the setting you define! In this case you can replace the next line
 # by "Read .FvwmBaseConfig" and remove all the other lines of this section.
 PipeRead '[ ! -f $FVWM_USERDIR/.FvwmBaseConfig ] || echo Read .FvwmBaseConfig'
 
-#============================================================================#
+#----------------------------------------------------------------------------#
 #
 # 4. Miscellaneous Major operating mode
 #
-#============================================================================#
+#----------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------
 # Set the desk top size in units of physical screen size
@@ -380,36 +380,36 @@ BusyCursor DynamicMenu True, Read True
 #
 # If you want to decorate transient windows:
 #Style * DecorateTransient
-# In *general* it is not a good idea to be able to lower transient window 
+# In *general* it is not a good idea to be able to lower transient window
 # under its main window, but why not...
 #Style * DontRaiseTransient
 # In my HO the defaults (which are "Motif" compliant) are good.
- 
+
 #------------------------------------------------------------------------------
-# bogus hack 
+# bogus hack
 #------------------------------------------------------------------------------
 
 #
-# FVWM has a command for bogus applications. Here an example with 
+# FVWM has a command for bogus applications. Here an example with
 # KFM
 #
 
 #KFM_ICONS 1 uncomment the next line if you use the KFM "icons"
-#BugOpts RaiseOverUnmanaged 
+#BugOpts RaiseOverUnmanaged
 
 #PANEL_PUT 1 you may try this for a "stays put" gnome panel
 #DefaultLayers 6 8 10
 
 #SEG startup
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # 5. Stuff to do at start-up and on restart
 #
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 
 # Defines the background
 Read .start-Background
-# This file defines which applications manager we start: TaskBarGlobal, 
+# This file defines which applications manager we start: TaskBarGlobal,
 # TaskBarDesk, IconBoxGlobal, IconBoxDesk, ...etc.
 Read .start-apps-man
 # This one decides which big buttons we start BarButtons, Wharf or None
@@ -431,7 +431,7 @@ Read .start-FvwmEvent
 
 # The StartFunction is used at start and restart with or without a Session
 # Manager. The above file .start-* defines this function. If
-# we want Gtk menus and dialog (defined in the modules section) we start 
+# we want Gtk menus and dialog (defined in the modules section) we start
 # FvwmGtk.
 
 AddToFunc StartFunction
@@ -451,7 +451,7 @@ AddToFunc RestartFunction
 #+ I Module FvwmButtons MyButtons
 
 #
-# When used with a session manager FVWM uses SessionInitFunction and 
+# When used with a session manager FVWM uses SessionInitFunction and
 # SessionRestartFunction in the place of  InitFunction and RestartFunction
 #
 
@@ -465,7 +465,7 @@ AddToFunc SessionRestartFunction
 #+ I Module FvwmButtons MyButtons
 
 #SEG styles
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # 6. Set application dependent styles
 #
@@ -474,7 +474,7 @@ AddToFunc SessionRestartFunction
 # commands, then the styles are ORed together. If conflicting styles
 # are set, the last one specified is used.
 #
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 
 Style *lock        NoTitle, NoHandles, Sticky, WindowListSkip
 Style xeyes        NoTitle, Sticky
@@ -495,7 +495,7 @@ Style FvwmForm-QuitVerify NoButton 1, NoButton 2, NoButton 4, NoButton 6, \
 				StaysOnTop, NoHandles, WindowListSkip
 
 # Some version of Netscape need the following if you want that the
-# page source (and others horrible banner) to be decorated (but you may 
+# page source (and others horrible banner) to be decorated (but you may
 # lost some MWM decor hints)
 #Style Netscape NoDecorHint
 
@@ -510,11 +510,11 @@ Style FvwmForm-QuitVerify NoButton 1, NoButton 2, NoButton 4, NoButton 6, \
 Read .fvwm-layers
 
 #SEG iconstyles
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # 7. Set applications Mini Icons and Icons
 #
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 
 # Note: Most applications provide an icon.
 
@@ -539,7 +539,7 @@ Style xgrab		MiniIcon mini.camera.xpm
 Style *clock*		MiniIcon mini.clock.xpm
 Style ddd		MiniIcon mini.bug2.xpm #!E ddd
 Style xgdb		MiniIcon mini.bug2.xpm #!E xgdb
-Style XClipboard   	MiniIcon mini.clipboard.xpm, Icon toolbox.xpm 
+Style XClipboard   	MiniIcon mini.clipboard.xpm, Icon toolbox.xpm
 Style *color*		MiniIcon mini.colors.xpm, Icon resize
 
 # Applications
@@ -608,7 +608,7 @@ Style "X-Chat*"		MiniIcon mini.doc1.xpm, Icon page.xpm #!E xchat
 Style Irc		MiniIcon mini.doc1.xpm #!E irc
 Style tkirc		MiniIcon mini.doc1.xpm #!E tkirc
 Style Licq		MiniIcon mini.doc1.xpm #!E licq
-Style 
+Style
 Style zircon        	MiniIcon mini.zircon.xpm #! zircon
 Style xgopher		MiniIcon mini.gopher.xpm #!E xgopher
 
@@ -625,7 +625,7 @@ Style fatbits 	        MiniIcon mini.palette.xpm
 Style filebrowser	MiniIcon mini.ofolder.xpm
 #
 Style XbmBrowser   	MiniIcon mini.directory.xpm #!E xbmbrowser
-Style ee		MiniIcon mini.palette.xpm #!E ee 
+Style ee		MiniIcon mini.palette.xpm #!E ee
 
 # Multimedia
 Style *mixer		MiniIcon mini.audiovol.xpm
@@ -763,11 +763,11 @@ Style xvidtune		MiniIcon mini.x2.xpm
 #Style "Trash Can"      MiniIcon mini.paper.xpm
 
 #SEG functions
-#============================================================================#
+#----------------------------------------------------------------------------#
 #
 # 8. Now define some handy complex functions
 #
-#============================================================================#
+#----------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------
 # This one moves and then raises the window if you drag the mouse,
@@ -863,7 +863,7 @@ AddToFunc DeiconifyFocusAndWarp I Iconify off
 DestroyFunc DeiconifyFocusAndRaise
 AddToFunc DeiconifyFocusAndRaise I Iconify off
 +                               I Focus
-+				I Raise 
++				I Raise
 
 #------------------------------------------------------------------------------
 # This one is used to modify some style for a window (almost obsolet)
@@ -999,8 +999,8 @@ AddToFunc ModulesAutoRaise
 # Functions which start and save a background
 #------------------------------------------------------------------------------
 
-DestroyFunc SetBackground 
-AddToFunc   SetBackground 
+DestroyFunc SetBackground
+AddToFunc   SetBackground
 + I killModule FvwmBacker
 + I $0
 + I Exec echo "AddToFunc StartFunction I $0" > $FVWM_USERDIR/.start-Background
@@ -1047,40 +1047,40 @@ AddToFunc  UseIcons
 DestroyFunc WinListDesk
 AddToFunc WinListDesk
 + I Style * NoIcon
-+ I *FvwmWinListShowCurrentDesk 
++ I *FvwmWinListShowCurrentDesk
 + I Module FvwmWinList
 
 DestroyFunc WinListGlobal
 AddToFunc WinListGlobal
 + I Style * NoIcon
-+ I DestroyModuleConfig *FvwmWinListShowCurrent* 
++ I DestroyModuleConfig *FvwmWinListShowCurrent*
 + I Module FvwmWinList
 
 DestroyFunc TaskBarDesk
 AddToFunc TaskBarDesk
 + I Style * NoIcon
 + I DestroyModuleConfig *FvwmTaskBarAutoHid*
-+ I *FvwmTaskBarDeskOnly 
++ I *FvwmTaskBarDeskOnly
 + I Module FvwmTaskBar
 
 DestroyFunc TaskBarGlobal
 AddToFunc TaskBarGlobal
 + I Style * NoIcon
 + I DestroyModuleConfig *FvwmTaskBarAutoHid*
-+ I DestroyModuleConfig *FvwmTaskBarDesk* 
++ I DestroyModuleConfig *FvwmTaskBarDesk*
 + I Module FvwmTaskBar
 
 DestroyFunc TaskBarDeskAutoHide
 AddToFunc TaskBarDeskAutoHide
 + I Style * NoIcon
-+ I *FvwmTaskBarDeskOnly 
++ I *FvwmTaskBarDeskOnly
 + I *FvwmTaskBarAutoHide
 + I Module FvwmTaskBar
 
 DestroyFunc TaskBarGlobalAutoHide
 AddToFunc TaskBarGlobalAutoHide
 + I Style * NoIcon
-+ I DestroyModuleConfig *FvwmTaskBarDesk* 
++ I DestroyModuleConfig *FvwmTaskBarDesk*
 + I *FvwmTaskBarAutoHide
 + I Module FvwmTaskBar
 
@@ -1105,21 +1105,21 @@ AddToFunc IconManPage
 DestroyFunc IconBoxDesk
 AddToFunc IconBoxDesk
 + I Style * NoIcon
-+ I *FvwmIconBoxResolutionDesk 
++ I *FvwmIconBoxResolutionDesk
 + I Module FvwmIconBox
 
 DestroyFunc IconBoxGlobal
 AddToFunc IconBoxGlobal
 + I Style * NoIcon
-+ I DestroyModuleConfig *FvwmIconBoxReso* 
++ I DestroyModuleConfig *FvwmIconBoxReso*
 + I Module FvwmIconBox
 
 #------------------------------------------------------------------------------
 # Functions for Layers
 #------------------------------------------------------------------------------
 
-DestroyFunc SetLayers 
-AddToFunc SetLayers 
+DestroyFunc SetLayers
+AddToFunc SetLayers
 + I StyleAndRecapture $n $0
 + I Exec F=$FVWM_USERDIR; Z=$F/.fvwm-layers; T=$F/.tmp-layers; if grep -qe "$n" $Z; then sed -e "s/\ $n\ .*/\ $n\ $0/" $Z>$T; cat $T>$Z; else echo "Style $n $0" >>$Z; fi
 
@@ -1177,11 +1177,11 @@ DestroyFunc ShowLayers
 AddToFunc ShowLayers I Exec F=$FVWM_USERDIR; T=$F/.tmp-layers; echo -e "A StaysOnTop window is a window which is above \nthe normal (i.e., StaysPut) windows, a StaysOnBottom\nwindow is below the normal windows. Here the list\nof StaysOnTop and StaysOnBottom windows:\n"> $T; u=$F/.fvwm-layers; for j in 0 1 2 3 4; do if [ "$j" -eq "0" ];then z=$u; t="Current Setting:"; l="---------------"; else z="$u-$j"; t="Setting-$j:"; l="----------"; fi; echo $t >>$T; echo $l >>$T; [ ! -f $z ] || cat $z>>$T; echo "" >> $T; done; xmessage -file $T
 
 #SEG bindings
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # 9. Mouse, frame buttons and keyboard bindings
 #
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 
 
 #------------------------------------------------------------------------------
@@ -1229,7 +1229,7 @@ Mouse 1		FS	C	Function "Move-or-Raise-or-Shade"
 # Button 1 in an icons gives move for a drag, de-iconify for a double-click,
 # raiselower for a single click
 Mouse 1		I	A	Function "Move-or-Iconify-or-Raise"
-# Alt Button 1 on an icons raise all icons 
+# Alt Button 1 on an icons raise all icons
 Mouse 1		I	M	All (CurrentPage Iconic) Raise
 
 # Button 2 in an icon, w/ any modifiers, gives de-iconify
@@ -1343,9 +1343,9 @@ Key F3		A	MS	WindowList mouse -1p -1p
 
 
 #------------------------------------------------------------------------------
-# The famous Alt-tab binding 
+# The famous Alt-tab binding
 #------------------------------------------------------------------------------
- 
+
 DestroyFunc my_dbltab2
 AddToFunc my_dbltab2 I WindowListFunc $w
 DestroyFunc my_dbltab_prev
@@ -1383,7 +1383,7 @@ Key Tab	A CM	WindowList Root c c NoGeometry OnlyListSkip
 #Stroke	N258		0	W	M	Exec exec emacs
 
 #STROKE 2 A / from the bottom to the top
-#Stroke	N159		0	R	N	Exec exec xfm 
+#Stroke	N159		0	R	N	Exec exec xfm
 #Stroke	N159		0	W	M	Exec exec xfm
 
 #STROKE 2 A C from the top
@@ -1410,11 +1410,11 @@ Key Tab	A CM	WindowList Root c c NoGeometry OnlyListSkip
 #Stroke	N789632147	0	W	M	FvwmForm FvwmForm-QuitVerify
 
 #SEG menus
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # 10. Now define the menus
 #
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------
 #--------- Taskbar's start menu
@@ -1454,7 +1454,7 @@ AddToMenu    Utilities "FVWM Root Menu" Title
 + "&Modules%mini.modules.xpm%"		Popup Module-Popup
 + "&Settings%mini.desktop.xpm%"		Popup Settings
 + "&Documents%mini.books.xpm%"		Popup Documents
-+ "&Screen Saver%mini.display.xpm%"	Popup Screen      
++ "&Screen Saver%mini.display.xpm%"	Popup Screen
 + ""					Nop
 + "&Restart%mini.turn.xpm%"		Popup Restart
 + "&Exit FVWM%mini.stop.xpm%"		FvwmForm FvwmForm-QuitVerify
@@ -1465,14 +1465,14 @@ AddToMenu    Utilities "FVWM Root Menu" Title
 #------------------------------------------------------------------------------
 DestroyMenu Shells
 AddToMenu   Shells
-+ "&Xterm	standard%mini.term.xpm%" Exec exec xterm 
++ "&Xterm	standard%mini.term.xpm%" Exec exec xterm
 + "Xterm/&root	standard%mini.term.xpm%" Exec exec xterm -fg red -bg black -e su -l
 + "&NXterm	standard%mini.term.xpm%" Exec exec nxterm
 + "&Rxvt	standard%mini.term.xpm%" Exec exec rxvt
 + "&Eterm	standard%mini.term.xpm%" Exec exec Eterm
 + "X&iterm	standard%mini.term.xpm%" Exec exec xiterm
 + "&Aterm	standard%mini.term.xpm%" Exec exec aterm
-+ "&Gnome Terminal	standard%mini.term.xpm%" Exec exec gnome-terminal 
++ "&Gnome Terminal	standard%mini.term.xpm%" Exec exec gnome-terminal
 + "&Konsole	standard%mini.term.xpm%" Exec exec konsole
 + "&Kvt	standard%mini.term.xpm%" Exec exec kvt
 + "&Dtterm	standard%mini.term.xpm%" Exec exec /usr/bin/dtterm
@@ -1492,7 +1492,7 @@ AddToMenu   Shells
 #------------------------------------------------------------------------------
 
 DestroyMenu Programs
-AddToMenu   Programs 
+AddToMenu   Programs
 #G_SM_G 2
 # AddToMenu Programs "&Gnome menu%mini.gnome.xpm%"	SendToModule FvwmGtk gnome-sys
 #+ ""	Nop
@@ -1629,7 +1629,7 @@ AddToMenu   System
 + "&Xosview%mini.run.xpm%"		Exec exec xosview
 + "&Memory usage%mini.perf.xpm%"	Exec exec xmem
 + "&XSysStats%mini.run.xpm%"		Exec exec XSysStats
-+ "&xconsole%mini.term.xpm%"            Exec exec xconsole 
++ "&xconsole%mini.term.xpm%"            Exec exec xconsole
 + "Set &Date Script%mini.clock.xpm%"	FvwmScript FvwmScript-Date
 + "" Nop
 + "&Midnight-Commander%mini.filemgr.xpm%" Exec exec xterm -g 80x40 -n Midnight-Commander -T Midnight-Commander -e mc -x
@@ -1642,18 +1642,18 @@ AddToMenu   System
 #--------- Editors
 
 DestroyMenu Editors
-AddToMenu   Editors 
+AddToMenu   Editors
 + "&Emacs%mini.edit.xpm%"		Exec exec emacs
 + "&XEmacs%mini.edit.xpm%"		Exec exec xemacs
 + "&Gvim%mini.edit.xpm%"		Exec exec gvim
-+ "&Nedit%mini.edit.xpm%"		Exec exec nedit 
++ "&Nedit%mini.edit.xpm%"		Exec exec nedit
 + "&Xedit%mini.edit.xpm%" 		Exec exec xedit
 
 #------------------------------------------------------------------------------
 #--------- Network
 
 DestroyMenu Network
-AddToMenu   Network 
+AddToMenu   Network
 + "&Rlogin%mini.connect.xpm%"		Module FvwmForm FvwmForm-Rlogin
 + "&Vppp%mini.connect.xpm%"		Exec exec vppp
 + "&Ezppp%mini.connect.xpm%"		Exec exec ezppp
@@ -1663,14 +1663,14 @@ AddToMenu   Network
 #--------- Internet
 
 DestroyMenu Internet
-AddToMenu   Internet 
+AddToMenu   Internet
 + "&Netscape%mini.nscape.xpm%"	Exec exec netscape
 + "&Amaya%mini.nscape.xpm%"	Exec exec amaya
 + "&Mozilla%mini.nscape.xpm%"	Exec exec mozilla
 + "&Lynx%mini.cat.xpm%"	 Exec exec xterm -g 80x30 -n lynx -T lynx -e lynx
 + ""	Nop #!E mail:pine:mutt:elm
 + "Xfmail%mini.mail.xpm%" Exec exec xfmail
-+ "&Xmh%mini.mail.xpm%"  Exec exec xmh 
++ "&Xmh%mini.mail.xpm%"  Exec exec xmh
 + "&Mail%mini.mail.xpm%" Exec exec xterm -g 80x30 -n Mail -T Mail -e mail
 + "&Pine%mini.mail.xpm%" Exec exec xterm -g 80x30 -n Pine -T Pine -e pine
 + "&Mutt%mini.mail.xpm%" Exec exec xterm -g 80x30 -n Mutt -T Mutt -e mutt
@@ -1679,7 +1679,7 @@ AddToMenu   Internet
 + "Nc&FTP%mini.ftp.xpm%" Exec exec xterm -g 80x30 -n NcFtp -T FTP -e ncftp
 + "&Xftp%mini.ftp.xpm%"		Exec exec xftp
 + "X-&Chat%mini.doc1.xpm%"	Exec exec xchat
-+ "Irc%mini.doc1.xpm%"		Exec exec xterm -g 80x30 -n Irc -T Trc -e irc 
++ "Irc%mini.doc1.xpm%"		Exec exec xterm -g 80x30 -n Irc -T Trc -e irc
 + "Tkirc%mini.doc1.xpm%"	Exec exec tkirc
 + "Lirc%mini.doc1.xpm%"		Exec exec licq
 + "&Zircon%mini.zircon.xpm%"	Exec exec zircon
@@ -1690,7 +1690,7 @@ AddToMenu   Internet
 #--------- Graphics
 
 DestroyMenu Graphics
-AddToMenu   Graphics 
+AddToMenu   Graphics
 + "The &Gimp%mini.gimp.xpm%"		Exec exec gimp
 + "&XPaint%mini.palette.xpm%"	  	Exec exec xpaint
 + "X&fig%mini.xfig.xpm%"		Exec exec xfig
@@ -1704,7 +1704,7 @@ AddToMenu   Graphics
 #--------- Multimedia
 
 DestroyMenu Multimedia
-AddToMenu   Multimedia 
+AddToMenu   Multimedia
 + "&CD player%mini.cdlabel.xpm%"	Exec exec xplaycd
 + "X&mixer%mini.audiovol.xpm%"		Exec exec xmixer
 + "X&ltwav%mini.sound.xpm%"		Exec exec xltwavplay
@@ -1715,7 +1715,7 @@ AddToMenu   Multimedia
 #--------- Games and amusements
 
 DestroyMenu Games
-AddToMenu   Games 
+AddToMenu   Games
 + "&Maze%mini.maze.xpm%"		Exec exec maze
 + "&Spider%mini.espada.xpm%"		Exec exec spider
 + "&Chess%mini.slon.xpm%"		Exec exec xboard
@@ -1992,7 +1992,7 @@ AddToMenu   Banner-Settings
 
 DestroyMenu Buttons-Settings
 AddToMenu   Buttons-Settings
-+ "&Buttons Bar%mini.pencil.xpm%" ChangeButtonsOn 'FvwmButtons BarButtons'  
++ "&Buttons Bar%mini.pencil.xpm%" ChangeButtonsOn 'FvwmButtons BarButtons'
 + "&Wharf%mini.pencil.xpm%"	 ChangeButtonsOn  FvwmWharf
 + "&None%mini.cross.xpm%"	 ChangeButtonsOff
 
@@ -2232,15 +2232,15 @@ DestroyMenu FvwmManPage
 AddToMenu   FvwmManPage "FVWM Man Pages" Title
 + "%mini.book1.xpm%fvwm2"               ViewManPage fvwm2
 + "%mini.book1.xpm%FvwmAnimate"         ViewManPage FvwmAnimate
-+ "%mini.book1.xpm%FvwmAuto"            ViewManPage FvwmAuto   
-+ "%mini.book1.xpm%FvwmBacker"          ViewManPage FvwmBacker 
-+ "%mini.book1.xpm%FvwmBanner"          ViewManPage FvwmBanner 
++ "%mini.book1.xpm%FvwmAuto"            ViewManPage FvwmAuto
++ "%mini.book1.xpm%FvwmBacker"          ViewManPage FvwmBacker
++ "%mini.book1.xpm%FvwmBanner"          ViewManPage FvwmBanner
 + "%mini.book1.xpm%FvwmButtons"         ViewManPage FvwmButtons
 + "%mini.book1.xpm%FvwmCommand"         ViewManPage FvwmCommand
 + "%mini.book1.xpm%FvwmConsole"         ViewManPage FvwmConsole
 + "%mini.book1.xpm%FvwmConsoleC.pl"     ViewManPage FvwmConsoleC.pl
-+ "%mini.book1.xpm%FvwmCpp"             ViewManPage FvwmCpp     
-+ "%mini.book1.xpm%FvwmDebug"           ViewManPage FvwmDebug   
++ "%mini.book1.xpm%FvwmCpp"             ViewManPage FvwmCpp
++ "%mini.book1.xpm%FvwmDebug"           ViewManPage FvwmDebug
 + "%mini.book1.xpm%FvwmDragWell"        ViewManPage FvwmDragWell
 + "%mini.book1.xpm%FvwmEvent"           ViewManPage FvwmEvent
 + "%mini.book1.xpm%FvwmForm"            ViewManPage FvwmForm
@@ -2248,16 +2248,16 @@ AddToMenu   FvwmManPage "FVWM Man Pages" Title
 + "%mini.book1.xpm%FvwmIconBox"         ViewManPage FvwmIconBox
 + "%mini.book1.xpm%FvwmIconMan"         ViewManPage FvwmIconMan
 + "%mini.book1.xpm%FvwmIdent"           ViewManPage FvwmIdent
-+ "%mini.book1.xpm%FvwmM4"              ViewManPage FvwmM4   
++ "%mini.book1.xpm%FvwmM4"              ViewManPage FvwmM4
 + "%mini.book1.xpm%FvwmPager"           ViewManPage FvwmPager
 + "%mini.book1.xpm%FvwmRearrange"       ViewManPage FvwmRearrange
 + "%mini.book1.xpm%FvwmSave"            ViewManPage FvwmSave
 + "%mini.book1.xpm%FvwmSaveDesk"        ViewManPage FvwmSaveDesk
-+ "%mini.book1.xpm%FvwmScript"          ViewManPage FvwmScript 
-+ "%mini.book1.xpm%FvwmScroll"          ViewManPage FvwmScroll 
++ "%mini.book1.xpm%FvwmScript"          ViewManPage FvwmScript
++ "%mini.book1.xpm%FvwmScroll"          ViewManPage FvwmScroll
 + "%mini.book1.xpm%FvwmTaskBar"         ViewManPage FvwmTaskBar
-+ "%mini.book1.xpm%FvwmTheme"           ViewManPage FvwmTheme  
-+ "%mini.book1.xpm%FvwmWharf"           ViewManPage FvwmWharf  
++ "%mini.book1.xpm%FvwmTheme"           ViewManPage FvwmTheme
++ "%mini.book1.xpm%FvwmWharf"           ViewManPage FvwmWharf
 + "%mini.book1.xpm%FvwmWinList"         ViewManPage FvwmWinList
 + "" Nop
 + "%mini.book1.xpm%fvwmbug"             ViewManPage fvwmbug
@@ -2265,7 +2265,7 @@ AddToMenu   FvwmManPage "FVWM Man Pages" Title
 + "%mini.book1.xpm%fvwm24_convert"      ViewManPage fvwm24_convert
 + "%mini.book1.xpm%xpmroot"             ViewManPage xpmroot
 + "" Nop
-+ "%mini.book1.xpm%fvwm-menu-desktop"   ViewManPage fvwm-menu-desktop  
++ "%mini.book1.xpm%fvwm-menu-desktop"   ViewManPage fvwm-menu-desktop
 + "%mini.book1.xpm%fvwm-menu-directory" ViewManPage fvwm-menu-directory
 + "%mini.book1.xpm%fvwm-menu-headlines" ViewManPage fvwm-menu-headlines
 + "%mini.book1.xpm%fvwm-menu-xlock"     ViewManPage fvwm-menu-xlock
@@ -2305,7 +2305,7 @@ AddToMenu   Restart
 + "Start &Afterstep%mini.olwm.xpm%"	Restart afterstep
 + "Start &Enlightenment%mini.paint.xpm%" Restart enlightenment
 + "Start &twm%mini.twm.xpm%"		Restart twm
-+ "Start &mwm%mini.mwm.xpm%"		Restart mwm 
++ "Start &mwm%mini.mwm.xpm%"		Restart mwm
 # A bit dangerous in a menu
 #+ ""					Nop
 #+ "Halt%mini.stop.xpm%"	  	Exec exec shutdown -h now
@@ -2365,11 +2365,11 @@ AddToMenu "Window-Ops2"
 + "&Kill%mini.bomb.xpm%"			Destroy
 + ""			Nop
 # The menu position is broken in fvwm2 or I am missing somthing ...
-+ "&Window Style%mini.window.xpm%"		Menu WindowStyle Menu  
++ "&Window Style%mini.window.xpm%"		Menu WindowStyle Menu
 + "&Group Ops%mini.windows.xpm%"		Menu WindowGroupOps Menu
 
 #------------------------------------------------------------------------------
-# A trimmed down version of "Window Ops", good for binding to TaskBar, 
+# A trimmed down version of "Window Ops", good for binding to TaskBar,
 # WinList ... buttons
 
 DestroyMenu "Window-Ops3"
@@ -2474,11 +2474,11 @@ AddToMenu   WinRearrange
 ChangeMenuStyle winops Window Window-Ops2 Window-Ops3 Move-Window WindowGroupOps WindowStyle WinRearrange Back-Solid Back-Gradient FvwmManPage MenuSSaver MenuSLock
 
 #SEG modules
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # 11. Definitions used by the modules
 #     (Alphabetic order is used, but the Form are at the end)
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 
 #------------------------------------------------------------------------------
 #------------------ FvwmBacker
@@ -2605,12 +2605,12 @@ DestroyModuleConfig WinMakerAppButtons*
 #-------------------------------------
 # Buttons:
 # We use "hands panel", the advantage is that we use the applet
-# in the panel only when we need it: Button 3 kill the panel 
+# in the panel only when we need it: Button 3 kill the panel
 
 *WinMakerAppButtonsGeometry +0+120
 *WinMakerAppButtonsColumns 1
 *WinMakerAppButtonsBack #c0c0c0
-*WinMakerAppButtonsFore black 
+*WinMakerAppButtonsFore black
 *WinMakerAppButtons(Frame 1, Size 64 64, \
 	Swallow  "wmjmail" 'Exec exec wmjmail', Action(Mouse 1) \
 	'MyPanelButtons "WinMakerAppPanelMail" $right $top', \
@@ -2640,7 +2640,7 @@ DestroyModuleConfig WinMakerAppButtons*
 # The PPP Panel
 *WinMakerAppPanelPPPRows 1
 *WinMakerAppPanelPPPBack #c0c0c0
-*WinMakerAppPanelPPPFore black 
+*WinMakerAppPanelPPPFore black
 *WinMakerAppPanelPPP(Frame 1, Size 64 64, \
     Swallow  "wminet" 'Exec exec  wminet')
 *WinMakerAppPanelPPP(Frame 1, Size 64 64, \
@@ -2650,7 +2650,7 @@ DestroyModuleConfig WinMakerAppButtons*
 # The Cd Panel
 *WinMakerAppPanelCdRows 1
 *WinMakerAppPanelCdBack #c0c0c0
-*WinMakerAppPanelCdFore black 
+*WinMakerAppPanelCdFore black
 *WinMakerAppPanelCd(Frame 1, Size 64 64, \
     Swallow  "wmmixer" 'Exec exec  wmmixer -s')
 *WinMakerAppPanelCd(Frame 1, Size 64 64, \
@@ -2709,39 +2709,39 @@ DestroyModuleConfig FvwmIconBox*
 #*FvwmIconBoxIconHiBack SlateBlue
 *FvwmIconBoxIconHiFore  white
 *FvwmIconBoxGeometry +0-0
-*FvwmIconBoxMaxIconSize 48x48 
-*FvwmIconBoxFont -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-* 
-*FvwmIconBoxSortIcons    IconName 
-#*FvwmIconBoxSortIcons    ResClass 
+*FvwmIconBoxMaxIconSize 48x48
+*FvwmIconBoxFont -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+*FvwmIconBoxSortIcons    IconName
+#*FvwmIconBoxSortIcons    ResClass
 *FvwmIconBoxPadding 10
-*FvwmIconBoxFrameWidth 0 0 
+*FvwmIconBoxFrameWidth 0 0
 *FvwmIconBoxLines 6
-*FvwmIconBoxSBWidth 11 
-*FvwmIconBoxPlacement Left Top  
+*FvwmIconBoxSBWidth 11
+*FvwmIconBoxPlacement Left Top
 *FvwmIconBoxHideSC Horizontal
 *FvwmIconBoxSetWMIconSize
-*FvwmIconBoxHilightFocusWin 
-*FvwmIconBoxResolution  Desk 
+*FvwmIconBoxHilightFocusWin
+*FvwmIconBoxResolution  Desk
 *FvwmIconBoxUseSkipList
-# mouse bindings 
+# mouse bindings
 *FvwmIconBoxMouse 1 Click  DeiconifyFocusAndRaise
 *FvwmIconBoxMouse 1 DoubleClick  DeiconifyFocusAndWarp
 *FvwmIconBoxMouse 2 Click Iconify
 *FvwmIconBoxMouse 3 DoubleClick Iconify off
-*FvwmIconBoxMouse 3 Click Menu Window-Ops3 c+0 -101m 
+*FvwmIconBoxMouse 3 Click Menu Window-Ops3 c+0 -101m
 *FvwmIconBoxMouse 3 DoubleClick FvwmIdent
-# Key bindings 
-*FvwmIconBoxKey r RaiseLower 
-*FvwmIconBoxKey space Iconify 
-*FvwmIconBoxKey d Close 
-# FvwmIconBox built-in functions 
-*FvwmIconBoxKey n Next 
-*FvwmIconBoxKey p Prev 
-*FvwmIconBoxKey h Left 
-*FvwmIconBoxKey j Down 
-*FvwmIconBoxKey k Up 
+# Key bindings
+*FvwmIconBoxKey r RaiseLower
+*FvwmIconBoxKey space Iconify
+*FvwmIconBoxKey d Close
+# FvwmIconBox built-in functions
+*FvwmIconBoxKey n Next
+*FvwmIconBoxKey p Prev
+*FvwmIconBoxKey h Left
+*FvwmIconBoxKey j Down
+*FvwmIconBoxKey k Up
 *FvwmIconBoxKey l Right
-# animation 
+# animation
 *FvwmIconBoxNoIconAction SendToModule FvwmAnimate animate
 
 #------------------------------------------------------------------------------
@@ -2752,7 +2752,7 @@ Style "FvwmIconMan"   NoTitle, NoHandles, Sticky, WindowListSkip, CirculateSkip
 DestroyModuleConfig FvwmIconMan*
 
 # nbr de manager
-*FvwmIconMan*nummanagers 2 
+*FvwmIconMan*nummanagers 2
 #global, desk, or page
 #*FvwmIconMan*Resolution page
 *FvwmIconMan*Resolution global
@@ -2787,10 +2787,10 @@ DestroyModuleConfig FvwmIconMan*
 *FvwmIconMan*action    Mouse    1 N sendcommand DeiconifyFocusAndRaise
 *FvwmIconMan*action    Mouse    2 N sendcommand Iconify
 *FvwmIconMan*action    Mouse    3 N sendcommand "Menu Window-Ops3 c+0 -101m "
-*FvwmIconMan*action    Key    Left N gotobutton Left, select 
-*FvwmIconMan*action    Key    Right N gotobutton Right, select 
-*FvwmIconMan*action    Key    Up N gotobutton Up, select 
-*FvwmIconMan*action    Key    Down N gotobutton Down, select 
+*FvwmIconMan*action    Key    Left N gotobutton Left, select
+*FvwmIconMan*action    Key    Right N gotobutton Right, select
+*FvwmIconMan*action    Key    Up N gotobutton Up, select
+*FvwmIconMan*action    Key    Down N gotobutton Down, select
 *FvwmIconMan*action    Key    q A quit
 *FvwmIconMan*action    Key    i A sendcommand Iconify
 *FvwmIconMan*action    Key    g A sendcommand IconManGlobal
@@ -2885,7 +2885,7 @@ Style "FvwmTaskBar" NoTitle,Sticky,WindowListSkip,CirculateSkip,NoHandles, \
 *FvwmTaskBarStatusFont fixed
 *FvwmTaskBarAction Click1 DeiconifyFocusAndRaise
 *FvwmTaskBarAction Click2 Iconify
-*FvwmTaskBarAction Click3 Menu Window-Ops3 c+0 -101m 
+*FvwmTaskBarAction Click3 Menu Window-Ops3 c+0 -101m
 *FvwmTaskBarUseSkipList
 *FvwmTaskBarAutoStick
 *FvwmTaskBarStartName Start
@@ -2958,7 +2958,7 @@ DestroyModuleConfig FvwmWinList*
 *FvwmWinListFont -adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
 *FvwmWinListAction Click1 DeiconifyFocusAndRaise
 *FvwmWinListAction Click2 Iconify
-*FvwmWinListAction Click3 Menu Window-Ops3 c+0 -101m 
+*FvwmWinListAction Click3 Menu Window-Ops3 c+0 -101m
 *FvwmWinListUseSkipList
 *FvwmWinListShowCurrentDesk
 *FvwmWinListMinWidth 180
@@ -2967,11 +2967,11 @@ DestroyModuleConfig FvwmWinList*
 *FvwmWinListNoIconAction SendToModule FvwmAnimate animate
 
 #SEG END
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 # THAT'S ALL FOLKS!!
 #
-#=============================================================================#
+#-----------------------------------------------------------------------------#
 #
 #                         -- Sample-95 MINI-FAQ --
 #
@@ -2989,13 +2989,13 @@ DestroyModuleConfig FvwmWinList*
 #
 # * Why doesn't this FAQ contain my question?
 #
-# Maybe because the answer is in the beginning of the configuration file 
+# Maybe because the answer is in the beginning of the configuration file
 # (i.e., this file!), in the FVWM FAQ or in the FVWM man pages.
-# 
+#
 #                  ----------------------------------------
 #
 # * What are the default bindings?
-# 
+#
 # Mouse bindings:
 # --------------
 #
@@ -3018,7 +3018,7 @@ DestroyModuleConfig FvwmWinList*
 # Mouse 2 on the title or the borders: window operations menu
 # Mouse 2 on an icon: deiconify
 # Mouse 3 on the title/borders: Raise or Lower
-# Mouse 3 on an icon: The "modules/icons" window operations menu 
+# Mouse 3 on an icon: The "modules/icons" window operations menu
 #
 # Window Buttons:
 # --------------
@@ -3033,7 +3033,7 @@ DestroyModuleConfig FvwmWinList*
 # Mouse 3: Destroy
 # - Maximize button (2nd right button)
 # Mouse 1: Full Maximize
-# Mouse 2: Maximize Horizontally 
+# Mouse 2: Maximize Horizontally
 # Mouse 3: Maximize Vertically
 # - Iconify button (3rd right button)
 # Mouse 1: Iconify
@@ -3042,13 +3042,13 @@ DestroyModuleConfig FvwmWinList*
 #
 # Key bindings (anywhere):
 # ------------
-# 
+#
 # Shift-Left/Right/Up/Down: scroll Left/Right/Up/Down by 1 page
 # Alt-Left/Right/Up/Down: scroll Left/Right/Up/Down by 1/10 page
 #
 # Shift-Ctrl-Left/Right/Up/Down: move the pointer by 1O% of a page
 # Alt-Ctrl-Left/Right/Up/Down: move the pointer by 1% of a page
-# 
+#
 # Alt-Ctrl-PageUp/PageDown: scroll by one desktop page
 #
 # Shift-Alt-F1: Main menu
@@ -3067,13 +3067,13 @@ DestroyModuleConfig FvwmWinList*
 # Alt-Tab released at once: previous (normal) window
 # Alt-Tab: WindowList of (normal) window and warp to the selected window
 #	   when released
-# 
+#
 # Ctrl-Alt-Tab: WindowList of the skiped window
 #
 # Stroke bindings:
 # ---------------
 #
-# You need to have FVWM compiled with stroke support (these bindings 
+# You need to have FVWM compiled with stroke support (these bindings
 # are defined only in this case) and libstroke installed.
 # Mouse button 3 is used (this button must be pressed during the stroke),
 # no modifiers are needed when you start your mouse motion on the root
@@ -3096,7 +3096,7 @@ DestroyModuleConfig FvwmWinList*
 #
 # If you have no mini(-icons) then either your ImagePath does not contain
 # the directory of the fvwm_icons or you are using a RedHat/Mandrake/... rpm
-# version of fvwm-icons which uses mini- in the place of mini. for 
+# version of fvwm-icons which uses mini- in the place of mini. for
 # mini-icons name. If only some mini(-icons) are missing, then you are using
 # a too old version of fvwm_icons.
 #
@@ -3104,17 +3104,17 @@ DestroyModuleConfig FvwmWinList*
 #
 # * Does Sample-95 support themes?
 #
-# No. But, it is possible to hack the configuration to have an "elementary" 
-# themes engine. The basic idea is to use FvwmTheme to propagate the colors 
-# and to replace "Read decorations" by "Read theme" in .fvwm2rc where theme 
-# is a symbolic link to a theme. A theme will be a file which look like 
-# decorations plus the FvwmTheme configuration commands. Other technical 
-# functions are needed as a function for switching between themes. This is 
-# left to your own pleasure! Doing elaborated FVWM configurations is one of 
+# No. But, it is possible to hack the configuration to have an "elementary"
+# themes engine. The basic idea is to use FvwmTheme to propagate the colors
+# and to replace "Read decorations" by "Read theme" in .fvwm2rc where theme
+# is a symbolic link to a theme. A theme will be a file which look like
+# decorations plus the FvwmTheme configuration commands. Other technical
+# functions are needed as a function for switching between themes. This is
+# left to your own pleasure! Doing elaborated FVWM configurations is one of
 # the better games under UNIX.
 #
 # If you want a powerful themes engine do not use Sample-95, it is not the
-# aim of this configuration. There are a powerful themes engine which is 
+# aim of this configuration. There are a powerful themes engine which is
 # under fast development: fvwm-themes (http://fvwm-themes.sourceforge.net/).
 #
 #
@@ -3124,21 +3124,21 @@ DestroyModuleConfig FvwmWinList*
 #
 # Yes. You "need" FVWM compiled with GNOME support and it is preferable to
 # run FVWM under gnome-session. Also, do not forget that you have to set
-# FVWM_USERDIR, so start the gnome-session as 
+# FVWM_USERDIR, so start the gnome-session as
 #	env FVWM_USERDIR="your FVWM_USERDIR" gnome-session
 # Of course, it is preferable to set the "build a file for gnome-session"
 # option of the Setup95 script. You may use the option "Try a Stays Put panel"
 # to put the panel in the same layer than the normal windows, but you may
 # have to leave GNOME/FVWM and start again X to avoid problems.
-# Note that under session, Sample-95 does not load your "X settings" by 
-# default (GNOME has its own method). Moreover, read the next question for 
-# using a different setting when you use GNOME (you may also use the 
+# Note that under session, Sample-95 does not load your "X settings" by
+# default (GNOME has its own method). Moreover, read the next question for
+# using a different setting when you use GNOME (you may also use the
 # Session(Init/Restart)Function functionality, see the startup file).
 # One thing that you can add to your configuration file is:
 #	GnomeShowDesk x
 # where x is the number of desks you want to see in the GNOME pager at
 # start (if not the GNOME pager is dynamic).
-# Also, for leaving GNOME you must use GNOME or you must "QuitSession" for 
+# Also, for leaving GNOME you must use GNOME or you must "QuitSession" for
 # just exiting or "Exec exec save-session --kill" for saving and exiting.
 #
 #                  ----------------------------------------
@@ -3147,10 +3147,10 @@ DestroyModuleConfig FvwmWinList*
 #
 # Say, you want to use setting 1 under a normal FVWM session, setting 2
 # under a gnome-session and setting 3 under a normal FVWM session but the
-# shell test FOO is true. Then, your .xinitrc/.xsession file can look 
-# as follows (where $1 is the "first" argument given by startx, or by kdm or 
+# shell test FOO is true. Then, your .xinitrc/.xsession file can look
+# as follows (where $1 is the "first" argument given by startx, or by kdm or
 # gdm ...).
-# 
+#
 # ...
 # case $1 in
 #   fvwm)
@@ -3162,7 +3162,7 @@ DestroyModuleConfig FvwmWinList*
 #	$F/.start-MiniButtons $F/.start-WinMakerAppButtons \
 #	$F/.start-FvwmAnimate $F/.start-FvwmAuto $F/.start-FvwmBanner \
 #	$F/.start-FvwmEvent; \
-#	 	do /bin/cp $i-$X $i; 
+#	 	do /bin/cp $i-$X $i;
 #	done;
 #	fvwm2
 #   ;;
@@ -3174,7 +3174,7 @@ DestroyModuleConfig FvwmWinList*
 #	$F/.start-MiniButtons $F/.start-WinMakerAppButtons \
 #	$F/.start-FvwmAnimate $F/.start-FvwmAuto $F/.start-FvwmBanner \
 #	$F/.start-FvwmEvent; \
-#		do /bin/cp $i-2 $i;	
+#		do /bin/cp $i-2 $i;
 #	done;
 #	env FVWM_USERDIR="your FVWM_USERDIR" gnome-session
 #    ;;
@@ -3185,7 +3185,7 @@ DestroyModuleConfig FvwmWinList*
 #
 # * Can I use WindowMaker and AfterStep applets with FVWM?
 #
-# Yes most WM and AS applets are FVWM compliant. Moreover, sample-95 provides 
+# Yes most WM and AS applets are FVWM compliant. Moreover, sample-95 provides
 # a FvwmButtons for you called WinMakerAppButtons. Of course, you have to
 # edit the configuration of this buttons to put your preferred applets. Note
 # that you have an applets panel under the 3 first applets. These panels are

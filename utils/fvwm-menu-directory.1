@@ -2,7 +2,7 @@
 .\" Sun Jan 21 00:06:24 2001
 .\"
 .\" Standard preamble:
-.\" ======================================================================
+.\" **********************************************************************
 .de Sh \" Subsection heading
 .br
 .if t .Sp
@@ -135,7 +135,7 @@
 .    ds Ae AE
 .\}
 .rm #[ #] #H #V #F C
-.\" ======================================================================
+.\" **********************************************************************
 .\"
 .IX Title "FVWM-MENU-DIRECTORY 1"
 .TH FVWM-MENU-DIRECTORY 1 "perl v5.6.0" "2001-01-21" "Fvwm Utility"
@@ -328,7 +328,7 @@ More complex example (the + line is a one long line):
 .PP
 .Vb 2
 \&  # AddToFunc FuncFvwmMenuDirectory
-\&  # + I PipeRead "fvwm-menu-directory -d $0 -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --wm-icons
+\&  # + I PipeRead "fvwm-menu-directory -d $0 -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --wm-icons"
 .Ve
 And put this in the menu from which you want to pop-up the directory menus:
 .PP

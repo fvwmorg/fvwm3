@@ -514,7 +514,7 @@ B<--[no]memory-for-speed> - use speed optimization, default is
 --nomemory-for-speed
 
     Warning: speed optimization takes up a lot of memory
-    that is never free'd again while fvwm is running.
+    that is never free d again while fvwm is running.
 
 B<--menu-style=NAME> - assign MenuStyle NAME to the menus
 
@@ -578,4 +578,4 @@ Report bugs to fvwm-bug@fvwm.org.
 
 =cut
 
-# ===========================================================================
+# ***************************************************************************

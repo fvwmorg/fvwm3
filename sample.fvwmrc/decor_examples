@@ -9,14 +9,14 @@
 
 ##########################################################################
 # FVWM Look and Feel Code (Mostly Decors)
-#========================================================================#
+#------------------------------------------------------------------------#
 #
 
 ##########################################################################
 # Function:	Disable ALL buttons
 #		(This needs to be called when resetting between Win95's
 #		4-button title bar to MWM's 3-button title bar)
-#========================================================================#
+#------------------------------------------------------------------------#
 
 DestroyFunc	"RemoveAllButtons"
 AddToFunc	"RemoveAllButtons"
@@ -29,7 +29,7 @@ AddToFunc	"RemoveAllButtons"
 #		(You will need this function if you haven't made the
 #		patch to add the "Replace" builtin into fvwm-2.0.44 --
 #		Simply uncomment the three lines below)
-#========================================================================#
+#------------------------------------------------------------------------#
 
 #DestroyFunc	"Replace"
 #AddToFunc	"Replace"	Nop
@@ -37,7 +37,7 @@ AddToFunc	"RemoveAllButtons"
 
 ##########################################################################
 # Win95 Look and Feel
-#========================================================================#
+#------------------------------------------------------------------------#
 
 DestroyDecor	Win95
 AddToDecor	Win95
@@ -69,9 +69,9 @@ AddToFunc	DecorWin95
 + I	Exec		xsetroot -solid cyan4
 + I	Recapture
 
-#=========
+#---------
 # mwm
-#=========
+#---------
 
 DestroyDecor	Mwm
 AddToDecor	Mwm

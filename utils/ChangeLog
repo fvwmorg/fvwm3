@@ -1,3 +1,12 @@
+2001-03-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm-menu-headlines.1:
+	* fvwm-menu-directory.1:
+	* fvwm-menu-xlock.in:
+	* fvwm-menu-headlines.in:
+	* fvwm-menu-directory.in:
+	changed some comments so that they don't look like cvs conflict markers
+
 2001-02-26  Dan Espen  <dane@mk.telcordia.com>
 
 	* make_fvwmdist.sh (VER): Add instructions for NEWS update on stable

@@ -33,7 +33,7 @@ $_ = join('', <DATA>);
 s/\@INCLUDE_STANDARD_CURSOR_FONTS@\n/$include/s;
 print $_;
 
-# ============================================================================
+# ****************************************************************************
 # Here is the actual FvwmForm-RootCursor template goes
 __DATA__
 # This form changes the root cursor font and color.

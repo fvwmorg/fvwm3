@@ -6,23 +6,21 @@ See 'Bugfixes' section of the TODO list for additional known bugs and
 be sure to have a look at the bug tracking system that can be reached
 from our home page.
 
-======================================================================
-======================================================================
+**********************************************************************
+**********************************************************************
 
  - No geometry can be specified for FvwmButtons panels.
  - FvwmSave and FvwmSaveDesk are not up to date.
  - xscreensaver may not be able to allocate a private colormap
- - FvwmButtons and possibly other modules may survive shutdown of the X
-   server.
- - AutoHide in FvwmTaskBar does not work well. See 'EdgeThickness' command in
-   the manpage.
- - A piperead command may hang if used in .fvwm2rc (if the pipe is never
-   closed).
- - StartsOnPage does not work as expected? Please read the manpage carefully.
+ - AutoHide in FvwmTaskBar does not work well. See 'EdgeThickness'
+   command in the man page.
+ - A piperead command may hang if used in .fvwm2rc (if the pipe is
+   never closed).
+ - StartsOnPage does not work as expected? Please read the manpage
+   carefully.
 
-
-======================================================================
-======================================================================
+**********************************************************************
+**********************************************************************
 
 Configure remembers too many things, particularly with respect to the
 optional libraries.  If you ever need to re-run configure, using
@@ -55,10 +53,6 @@ setups.
 Some users have been getting odd startup problems, like total lockups.
 I cannot reproduce this, and have no idea why.  Let me know if you see
 this and find a way to consistently reproduce it.
-
-Actually, I've recently discovered that this is often from not having
-a .fvwm2rc file, so check that first...  But this is fixed in the
-later versions.
 
 ----------------------------------------------------------------------
 

@@ -1,6 +1,6 @@
-======================================================================
+**********************************************************************
                        TO-DO list for fvwm 2.xx
-======================================================================
+**********************************************************************
 
 Please note that not everything on this list will be done, in
 particular the ones that end in '?' which are really just meant to be
@@ -24,11 +24,6 @@ Cleanups:
 
 Bugfixes:
 
-  - Change Motion vs Click vs DoubleClick to be calculated via a
-    MotionThreshold and ClickTime:
-        MotionThreshold exceeded -> Motion
-        MotionThreshold not exceeded & ClickTime exceeded -> Click
-        MotionThreshold not exceeded & ClickTime not exceeded -> DoubleClick
   - Make transient FvwmWinList reposition itself & pointer if popped up
     off the screen (like built in menus)
   - Colormaps and xlock -install -mode blank (& swirl) interaction still
@@ -53,9 +48,6 @@ New stuff:
     StartsOnDesk and work with the Sticky attribute, I'm not sure...
     Either way, multiple values need to be allowed
 
-  - Function to simulate button presses, to go with CursorMove?  Might
-    not be possible since many apps ignore SYNTHETIC events...
-
   - Easy module name changes from .fvwm2rc (either using changes in
     module exec code & rc parser, or in modules themselves)
 
@@ -63,8 +55,6 @@ New stuff:
   - A module that just has buttons for the active desktops, like desktop
     switcher in dtwm (COSE).  Could be munged into FvwmPager.
   - See if it's possible to drop windows onto the pager ala olvwm?
-    (domivogt (4-Apr-1999): there has been a patch for 2.0.46, hopefully
-    I can convince the author to update it.)
   - Add option to not show sticky windows in pager.  Perhaps also add
     ability to filter out windows based on name/class/resource?
 

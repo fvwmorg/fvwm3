@@ -983,14 +983,14 @@ void MoveViewport(int newx, int newy, Bool grab)
   GNOME_SetCurrentArea();
 }
 
-/*=========================================================================
+/************************************************************************
  *
  * Unmap all windows on a desk -
  *   - Part 1 of a desktop switch
  *   - must eventually be followed by a call to MapDesk
  *   - unmaps from the bottom of the stack up
  *
- *=======================================================================*/
+ *************************************************************************/
 static void UnmapDesk(int desk, Bool grab)
 {
   FvwmWindow  *t;
@@ -1034,14 +1034,14 @@ static void UnmapDesk(int desk, Bool grab)
 }
 
 
-/*========================================================================
+/************************************************************************
  *
  * Map all windows on a desk -
  *   - Part 2 of a desktop switch
  *   - only use if UnmapDesk has previously been called
  *   - maps from the top of the stack down
  *
- *=======================================================================*/
+ ************************************************************************/
 static void MapDesk(int desk, Bool grab)
 {
   FvwmWindow *t;
@@ -1160,7 +1160,7 @@ void goto_desk(int desk)
 
 
 
-/*=========================================================================
+/*************************************************************************
  *
  * Move to a new desktop and page at the same time.
  *   This function is designed for use by the Pager, and replaces the old
@@ -1168,7 +1168,7 @@ void goto_desk(int desk)
  *   - unmap all windows on the current desk so they don't flash when the
  *     viewport is moved, then switch the viewport, then the desk.
  *
- *=======================================================================*/
+ *************************************************************************/
 void gotoDeskAndPage_func(F_CMD_ARGS)
 {
   int val[3];

@@ -746,7 +746,7 @@ make_vpacket(unsigned long *body, unsigned long event_type,
 
 
 
-/* ===========================================================
+/*************************************************************
     RBW - 04/16/1999 - new packet builder for GSFR --
     Arguments are pairs of lengths and argument data pointers.
     RBW - 05/01/2000 -
@@ -755,7 +755,7 @@ make_vpacket(unsigned long *body, unsigned long event_type,
     a special hack to accommodate the old CONFIGARGSNEW
     technique of sending the args for the M_CONFIGURE_WINDOW
     packet.
-   =========================================================== */
+**************************************************************/
 static unsigned long
 make_new_vpacket(unsigned char *body, unsigned long event_type,
 		 unsigned long num, va_list ap)
@@ -840,9 +840,9 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
 }
 
 
-/* ============================================================
+/* ************************************************************
     RBW - 04/16/1999 - new style packet senders for GSFR --
-   ============================================================ */
+   ************************************************************ */
 static void SendNewPacket(int module, unsigned long event_type,
 			  unsigned long num_datum, ...)
 {
@@ -967,7 +967,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 
 
 
-/* ===============================================================
+/****************************************************************
     RBW - 04/16/1999 - new version for GSFR --
         - args are now pairs:
           - length of arg data
@@ -976,7 +976,7 @@ static void BroadcastNewPacket(unsigned long event_type,
         - the 9th field, where flags used to be, is temporarily left
         as a dummy to preserve alignment of the other fields in the
         old packet: we should drop this before the next release.
-   =============================================================== */
+*****************************************************************/
 #define CONFIGARGSNEW(_t) 25,\
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->w,\

@@ -1,5 +1,5 @@
 Basic Installation
-==================
+------------------
 
    These are generic installation instructions.
 
@@ -52,7 +52,7 @@ The simplest way to compile this package is:
      with the distribution.
 
 Compilers and Options
-=====================
+---------------------
 
    Some systems require unusual options for compilation or linking that
 the `configure' script does not know about.  You can give `configure'
@@ -65,7 +65,7 @@ Or on systems that have the `env' program, you can do it like this:
      env CPPFLAGS=-I/usr/local/include LDFLAGS=-s ./configure
 
 Compiling For Multiple Architectures
-====================================
+------------------------------------
 
    You can compile the package for more than one kind of computer at the
 same time, by placing the object files for each architecture in their
@@ -82,7 +82,7 @@ one architecture, use `make distclean' before reconfiguring for another
 architecture.
 
 Installation Names
-==================
+------------------
 
    By default, `make install' will install the package's files in
 `/usr/local/bin', `/usr/local/man', etc.  You can specify an
@@ -105,7 +105,7 @@ with an extra prefix or suffix on their names by giving `configure' the
 option `--program-prefix=PREFIX' or `--program-suffix=SUFFIX'.
 
 Optional Features
-=================
+-----------------
 
    Some packages pay attention to `--enable-FEATURE' options to
 `configure', where FEATURE indicates an optional part of the package.
@@ -120,7 +120,7 @@ you can use the `configure' options `--x-includes=DIR' and
 `--x-libraries=DIR' to specify their locations.
 
 Specifying the System Type
-==========================
+--------------------------
 
    There may be some features `configure' can not figure out
 automatically, but needs to determine by the type of host the package
@@ -140,7 +140,7 @@ produce code for and the `--build=TYPE' option to select the type of
 system on which you are compiling the package.
 
 Sharing Defaults
-================
+----------------
 
    If you want to set default values for `configure' scripts to share,
 you can create a site shell script called `config.site' that gives
@@ -151,7 +151,7 @@ default values for variables like `CC', `cache_file', and `prefix'.
 A warning: not all `configure' scripts look for a site script.
 
 Operation Controls
-==================
+------------------
 
    `configure' recognizes the following options to control how it
 operates.
