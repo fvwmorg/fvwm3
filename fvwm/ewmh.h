@@ -41,7 +41,8 @@ int EWMH_GetIconGeometry(FvwmWindow *fwin, rectangle *icon_rect);
 
 void EWMH_GetStyle(FvwmWindow *fwin, window_style *style);
 void EWMH_WindowInit(FvwmWindow *fwin);
-void EWMH_WindowDestroyed(FvwmWindow *fwin);
+void EWMH_DestroyWindow(FvwmWindow *fwin);
+void EWMH_WindowDestroyed(void);
 
 void EWMH_Init(void);
 

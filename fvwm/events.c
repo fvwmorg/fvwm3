@@ -915,6 +915,7 @@ void HandleDestroyNotify(void)
   DBUG("HandleDestroyNotify","Routine Entered");
 
   destroy_window(Tmp_win);
+  EWMH_WindowDestroyed();
   GNOME_SetClientList();
 }
 
@@ -1408,6 +1409,7 @@ void HandleUnmapNotify(void)
   {
     CoerceEnterNotifyOnCurrentWindow();
   }
+  EWMH_WindowDestroyed();
   GNOME_SetClientList();
 }
 
@@ -1436,6 +1438,7 @@ void HandleReparentNotify(void)
     XSelectInput (dpy, Event.xreparent.window, NoEventMask);
     discard_events(XEVMASK_FRAMEW);
     destroy_window(Tmp_win);
+    EWMH_WindowDestroyed(); /* olicha: is this needed? */
   }
 
   return;

@@ -1,5 +1,15 @@
 2001-11-15  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/ewmh.{c,h} (EWMH_DestroyWindow):
+	(EWMH_WindowDestroyed):
+	* fvwm/events.c (HandleReparentNotify):
+	(HandleDestroyNotify):
+	(HandleUnmapNotify):
+	* fvwm/add_window.c ():
+	Fixed the ewmh windows lists
+
+2001-11-15  olicha  <olivier.chapuis@free.fr>
+
 	* fvwm/Makefile.am:
 	* fvwm/ewmh.{c,h}:
 	* fvwm/ewmh_intern.h:

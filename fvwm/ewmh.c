@@ -39,6 +39,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "update.h"
+#include "stack.h"
 #include "style.h"
 #include "externs.h"
 #include "ewmh.h"
@@ -936,11 +937,17 @@ void EWMH_WindowInit(FvwmWindow *fwin)
   /* EWMH_DLOG("window 0x%lx initialised",fwin->w);*/
 }
 
-/* a window has been destroyed */
-void EWMH_WindowDestroyed(FvwmWindow *fwin)
+/* a window are going to be destroyed */
+
+void EWMH_DestroyWindow(FvwmWindow *fwin)
 {
   if (IS_EWMH_DESKTOP(fwin->w))
     Scr.EwmhDesktop = NULL;
+}
+
+/* a window has been destroyed */
+void EWMH_WindowDestroyed(void)
+{
   EWMH_SetClientList();
   ewmh_ComputeAndSetWorkArea();
   ewmh_HandleDynamicWorkArea();

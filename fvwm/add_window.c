@@ -2044,7 +2044,7 @@ void destroy_window(FvwmWindow *tmp_win)
     adjust_fvwm_internal_windows(tmp_win);
     BroadcastPacket(M_DESTROY_WINDOW, 3,
 		    tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
-    EWMH_WindowDestroyed(tmp_win);
+    EWMH_DestroyWindow(tmp_win);
     return;
   }
 
@@ -2066,7 +2066,7 @@ void destroy_window(FvwmWindow *tmp_win)
 
     BroadcastPacket(M_DESTROY_WINDOW, 3,
 		    tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
-    EWMH_WindowDestroyed(tmp_win);
+    EWMH_DestroyWindow(tmp_win);
   }
 
   /****** adjust fvwm internal windows II ******/
