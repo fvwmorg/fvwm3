@@ -8,7 +8,8 @@ EdgeScroll 100 100
 ClickTime 750
 
 DeskTopSize 2x2
-MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-* fvwm
+Menustyle fvwm, Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
+MenuStyle Foreground maroon, Background grey60, Greyed grey40
 
 ColormapFocus FollowsMouse
 
@@ -491,4 +492,3 @@ AddToFunc ChangeDefaultFocus I Style * $0
 # to change banner pixmap
 #*FvwmBannerPixmap fvwm3.xpm
 #*FvwmBannerTimeout 2
-

@@ -12,18 +12,19 @@ DeskTopSize 4 2
 #end
 
 #MenuSetup,1
-MenuStyle #000000 #d0d0d0 Black -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-* mwm
+Menustyle mwm, Font -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-*
+MenuStyle Foreground Black, Background #d0d0d0, Greyed Black
 #end
 
 #WinSetup,1
-WindowFont		-adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
-IconFont		-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-HilightColor Yellow #5c54c0
-Style "*"           BorderWidth 10, HandleWidth 10,IconBox 580x400-0-0
-Style "*"           Icon unknown1.xpm, Color #AAFF00/RoyalBlue
-Style "*"           ActivePlacement, SmartPlacement,SkipMapping
-Style "*"           MWMFunctions,HintOverride,MWMBorder
-Style "*"           DecorateTransient
+Style "*" Font -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
+Style "*" IconFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+Style "*" Hilightfore Yellow, HilightBack #5c54c0
+Style "*" BorderWidth 10, HandleWidth 10,IconBox 580x400-0-0
+Style "*" Icon unknown1.xpm, Color #AAFF00/RoyalBlue
+Style "*" ActivePlacement, SmartPlacement,SkipMapping
+Style "*" MWMFunctions,HintOverride,MWMBorder
+Style "*" DecorateTransient
 #end
 
 
@@ -137,7 +138,7 @@ Mouse 3	TSIF	A	RaiseLower
 
 ########################Initialization Functions ############################
 AddToFunc StartFunction	  "I" Module FvwmScript Buttons
-#+			  "I" Module FvwmButtons 
+#+			  "I" Module FvwmButtons
 #+			  "I" Module FvwmBacker
 #+			  "I" Module FvwmAudio
 
@@ -264,36 +265,36 @@ AddToMenu "Demos" "Demos" Nop
 
 
 
-AddToMenu Window-Ops	"Window Ops"	Title		
+AddToMenu Window-Ops	"Window Ops"	Title
 +			"Move%mini.move.xpm%"		Move-or-Raise2
 +			"Resize%mini.resize.xpm%"	Resize-or-Raise2
 +			"Raise%mini.raise.xpm%"		Raise
-+			"Lower%mini.lower.xpm%"		Lower 
++			"Lower%mini.lower.xpm%"		Lower
 +		 	"(De)Iconify"	Iconify
-+			"(Un)Stick"	Stick		
++			"(Un)Stick"	Stick
 +			"(Un)Maximize"	maximize_func
-+			""		Nop  
-+			"Delete%mini.destroy.xpm%"	Delete	 
-+			"Close%mini.destroy.xpm%"		Close	 
++			""		Nop
++			"Delete%mini.destroy.xpm%"	Delete
++			"Close%mini.destroy.xpm%"		Close
 +			"Destroy%mini.destroy.xpm%"	Destroy
-+			""		Nop		
-+			"Refresh Screen" Refresh		
++			""		Nop
++			"Refresh Screen" Refresh
 AddToMenu Window-Ops2	"Move%mini.move.xpm%"		Move-or-Raise2
 +			"Resize%mini.resize.xpm%"	Resize-or-Raise2
 +			"Raise%mini.raise.xpm%"		Raise
-+			"Lower%mini.lower.xpm%"		Lower 
++			"Lower%mini.lower.xpm%"		Lower
 +		 	"(De)Iconify"	Iconify
-+			"(Un)Stick"	Stick		
++			"(Un)Stick"	Stick
 +			"(Un)Maximize"	maximize_func
-+			""		Nop  
-+			"Delete%mini.destroy.xpm%"	Delete	 
-+			"Close%mini.destroy.xpm%"		Close	 
++			""		Nop
++			"Delete%mini.destroy.xpm%"	Delete
++			"Close%mini.destroy.xpm%"		Close
 +			"Destroy%mini.destroy.xpm%"	Destroy
-+			""		Nop 		
-+			"ScrollBar" 	Module FvwmScroll 2 2	
++			""		Nop
++			"ScrollBar" 	Module FvwmScroll 2 2
 +			"Print"         PrintFunction
 
-AddToMenu Module-Popup	"Modules"	Title	
+AddToMenu Module-Popup	"Modules"	Title
 +			"Button-Bar"	Module	FvwmButtons
 +			"Clean-Up"	Module	FvwmClean
 +			"Identify"	Module	FvwmIdent
@@ -359,14 +360,14 @@ AddToFunc Raise-or-Delete    	"D" Close
 *FvwmPagerLabel 0 FvwmPager
 *FvwmPagerSmallFont 5x8
 
-                                      
+
 
 *FvwmBackerDesk 0 xpmroot /usr/X11/include/X11/pixmaps/Xlogo.xpm
 *FvwmBackerDesk 1 xpmroot /usr/X11/include/X11/pixmaps/fond1.xpm
 
-*FvwmScrollBack grey40 
+*FvwmScrollBack grey40
 *FvwmScrollFore green
-	
+
 ############################################################
 ############################################################
 # Note that icons are shown in the module
@@ -374,10 +375,6 @@ AddToFunc Raise-or-Delete    	"D" Close
 #Style     "*"  NoIcon
 
 ############################################################
-
-
-
-
 
 #*FvwmAudioPlayCmd playsnd
 #*FvwmAudioDir /usr/lib/sounds
@@ -388,7 +385,6 @@ AddToFunc Raise-or-Delete    	"D" Close
 #*FvwmAudio deiconify deicon.raw
 #*FvwmAudio unknown defaut.raw
 #*FvwmAudio destroy_window close.raw
-
 
 
 *FvwmWinListBack DarkOliveGreen

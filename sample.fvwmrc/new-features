@@ -28,9 +28,9 @@ SnapAttraction 20 SameType
 
 # Font configuration
 #
-# Window font		Sets the font to be used in window title-bars
+# WindowFont style	Sets the font to be used in window title-bars
 #
-# IconFont		Sets the font that will be used for icon labels.
+# IconFont style 	Sets the font that will be used for icon labels.
 #
 Style * Font		-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
 Style * IconFont	-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*

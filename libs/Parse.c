@@ -719,6 +719,7 @@ int ParseToggleArgument(char *action, char **ret_action, int default_ret,
     "on", "off",
     "t", "f",
     "y", "n",
+    "1", "0",
     NULL
   };
 

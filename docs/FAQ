@@ -1,8 +1,8 @@
-*********************************************************************
+======================================================================
                    FVWM Frequently Asked Questions
-*********************************************************************
+======================================================================
 
-Last updated 9 Oct 2000 for release 2.3.22
+Last updated 9 Oct 2000 for release 2.3.30
 
 Contents
 
@@ -162,9 +162,9 @@ Contents
     7.13  How do I start applications by clicking on an icon.
 
 
-**********************************************************************
+======================================================================
                 0 - The most frequently asked question
-**********************************************************************
+======================================================================
 
 0.1  A few minutes after fvwm is started my keyboard and mouse
      bindings stop working. What can I do?
@@ -177,9 +177,9 @@ Trivia: In all my years as an fvwm developer this has been by far the
    that this question is never asked will me mentioned in big letters
    on the fvwm home page :-)
 
-**********************************************************************
+======================================================================
                             1 - About Fvwm
-**********************************************************************
+======================================================================
 
 1.1  What does FVWM stand for?
 
@@ -375,9 +375,9 @@ A: This is always a difficult question to answer.  We work on fvwm on
    Joining the fvwm-workers mailing list might prove instructive.
 
 
-**********************************************************************
+======================================================================
                            2 - Installation
-**********************************************************************
+======================================================================
 
 2.1  I want to use FVWM, but I don't have root access on my machine.
      Can I still install and run it?
@@ -552,9 +552,9 @@ A: Since the latest fvwm versions are mostly GNOME compliant, you may
      root clicks to a gnome application (i.e. to gmc in this case).
 
 
-**********************************************************************
+======================================================================
           3 - Features, Configuration, Functions & Commands
-**********************************************************************
+======================================================================
 
 3.1  I use FVWM on a RedHat Linux system and can't figure out how to
      change my FVWM configuration.  I've read the FVWM man page but when
@@ -766,8 +766,14 @@ A: Doubtful, although I'd like to see it too.  I believe that it'd be
      sticky windows.  Can I get those on other windows as well?
 
 A: Yes.  For release 2.3.14 and after,
-   put the line "Style * StippledTitle" in your .fvwm2rc.
-   For releases before then, use "GlobalOpts StipledTitles".
+   put the line
+
+     Style * StippledTitle
+
+   in your .fvwm2rc.  For earlier releases use
+
+     GlobalOpts StipledTitles
+
    (Yes the spelling was inconsistent.)
 
 ----------------------------------------------------------------------
@@ -1234,9 +1240,9 @@ A: FVWM spawns itself into all found screens unless -s command line
    If you wish, .fvwm2rc-* files may all include line "Read .fvwm2rc-common".
 
 
-**********************************************************************
+======================================================================
                              4 - Modules
-**********************************************************************
+======================================================================
 
 4.1  I'm using FvwmButtons (or GoodStuff in 1.xx), and sometimes the
      buttons stay depressed, and other times they don't.  Why is that?
@@ -1352,9 +1358,9 @@ A: GoodStuff was renamed to FvwmButtons.  Same module, new name (that
 A: Yes, but not with the current implementation of the panels.  Please
    read question 7.12 for instructions.
 
-**********************************************************************
+======================================================================
             5 - Development, Known Problems & Bug Reports
-**********************************************************************
+======================================================================
 
 5.1  I'd really like to see neat feature XYZ in FVWM.  Wouldn't
      that be cool?  I even have a patch.  When can it be added?
@@ -1762,9 +1768,9 @@ A: Make sure you have
    using may not match the fvwm executable.  Recompile and reinstall
    everything and the problem should go away.
 
-**********************************************************************
+======================================================================
                           6 - Miscellaneous
-**********************************************************************
+======================================================================
 
 6.1  What exactly is the difference between a DESK, a PAGE, and the
      SCREEN?
@@ -1899,9 +1905,9 @@ A: Setting the background image is not really part of the window
    The fvwm module FvwmBacker can be used to change the background
    depending on the desk you are currently on.
 
-**********************************************************************
+======================================================================
               7 - Hints and Examples from the Developers
-**********************************************************************
+======================================================================
 
 7.1  An easy way to test new configurations.
 

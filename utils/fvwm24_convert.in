@@ -63,12 +63,12 @@ line: while ( <IN> ) {
     print $_;
     next line;
   }
-  
+
   if (/^[ \t]*$/) {		# Empty line, pass it thru
     print $_;
     next line;
   }
-  
+
   # Adds "path" to "newpath":
   if (/^[ \t]*ICONPATH|^[ \t]*PIXMAPPATH/i) { # Fix up IconPath/PixmapPath:
     $newpath = '';
@@ -89,7 +89,7 @@ line: while ( <IN> ) {
     }
     next line;
   }
-  
+
   # Change GlobOpts to "Style * xxx, ..." commands
   if (/^[ \t]*globalopts/i) { # Fix up GlobalOpts:
     $newopts = '';
@@ -109,7 +109,7 @@ line: while ( <IN> ) {
     }
     next line;
   }
-  
+
   if (/^[ \t]*HILIGHTCOLOR/i) {
     @colors = split("/", $Fld[2], 9999);
     if ($colors[2] eq '') {
@@ -120,17 +120,22 @@ line: while ( <IN> ) {
       $colors[2];
     next line;
   }
-  
+
   if (/^[ \t]*WINDOWFONT/i) {
     print "Style \"*\" Font " . $Fld[2];
     next line;
   }
-  
+
+  if (/^[ \t]*ICONFONT/i) {
+    print "Style \"*\" IconFont " . $Fld[2];
+    next line;
+  }
+
   if (/^[ \t]*COLORLIMIT/i) {
     print '# Removed by fvwm24_convert: ' . $_;
     next line;
   }
-  
+
   if (/^[ \t]*MODULEPATH/i) {
     # Deletes continuation lines too, although if there are
     # continuation lines, there might be some part of the path we want to
@@ -168,7 +173,7 @@ sub add_to_path {
     if (substr($parray[$i], 1, 1) eq "\$") {
       next;
     }
-    
+
     if ($newpath eq '') {
       $newpath = $parray[$i];
     }

@@ -151,13 +151,14 @@ typedef struct DecorFace
 
 enum ButtonState
 {
-  ActiveUp,
-  ActiveDown,
-  Inactive,
-  ToggledActiveUp,
-  ToggledActiveDown,
-  ToggledInactive,
-  MaxButtonState
+  BS_All = -1,
+  BS_ActiveUp,
+  BS_ActiveDown,
+  BS_Inactive,
+  BS_ToggledActiveUp,
+  BS_ToggledActiveDown,
+  BS_ToggledInactive,
+  BS_MaxButtonState
 };
 
 typedef enum
@@ -186,7 +187,7 @@ typedef struct
     unsigned has_changed : 1;
     mwm_flags mwm_decor_flags : 9;
   } flags;
-  DecorFace state[MaxButtonState];
+  DecorFace state[BS_MaxButtonState];
 } TitleButton;
 
 #define TB_FLAGS(tb)              ((tb).flags)

@@ -69,7 +69,7 @@ char *ModulePath = FVWM_MODULEDIR;
 int moduleTimeout = DEFAULT_MODULE_TIMEOUT;
 static char *exec_shell_name="/bin/sh";
 /* button state strings must match the enumerated states */
-static char  *button_states[MaxButtonState] =
+static char *button_states[BS_MaxButtonState] =
 {
   "ActiveUp",
   "ActiveDown",
@@ -1358,7 +1358,9 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
   if (sscanf(s, "%256s%n", style, &offset) < 1)
   {
     if (verbose)
+    {
       fvwm_msg(ERR, "ReadDecorFace", "error in face `%s'", s);
+    }
     return False;
   }
   style[255] = 0;
@@ -1383,8 +1385,10 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
       {
 	if (button == -1)
 	{
-	  if(verbose)
+	  if (verbose)
+	  {
 	    fvwm_msg(ERR,"ReadDecorFace", "need default button number to load");
+	  }
 	  return False;
 	}
 	b = button;
@@ -1398,8 +1402,10 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 	LoadDefaultButton(df, b);
       else
       {
-	if(verbose)
+	if (verbose)
+	{
 	  fvwm_msg(ERR,"ReadDecorFace", "button number out of range: %d", b);
+	}
 	return False;
       }
     }
@@ -1420,8 +1426,11 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 
       if((num != 1)||(num_coords>32)||(num_coords<2))
       {
-	if(verbose)fvwm_msg(ERR,"ReadDecorFace",
-			    "Bad button style (2) in line: %s",action);
+	if (verbose)
+	{
+	  fvwm_msg(
+	    ERR,"ReadDecorFace", "Bad button style (2) in line: %s",action);
+	}
 	return False;
       }
 
@@ -1438,9 +1447,11 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 		     &line_style, &offset);
 	if(num != 3)
 	{
-	  if(verbose)fvwm_msg(ERR,"ReadDecorFace",
-			      "Bad button style (3) in line %s",
-			      action);
+	  if (verbose)
+	  {
+	    fvwm_msg(
+	      ERR, "ReadDecorFace", "Bad button style (3) in line %s", action);
+	  }
 	  free(vc->x);
 	  free(vc->y);
 	  vc->x = NULL;
@@ -1468,9 +1479,12 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
       }
       else
       {
-	if(verbose)
-	  fvwm_msg(ERR,"ReadDecorFace",
-		   "no color given for Solid face type: %s", action);
+	if (verbose)
+	{
+	  fvwm_msg(
+	    ERR, "ReadDecorFace", "no color given for Solid face type: %s",
+	    action);
+	}
 	return False;
       }
     }
@@ -1510,8 +1524,10 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
       {
 	if (file)
 	{
-	  if(verbose)fvwm_msg(ERR,"ReadDecorFace",
-			      "couldn't load pixmap %s", file);
+	  if (verbose)
+	  {
+	    fvwm_msg(ERR,"ReadDecorFace", "couldn't load pixmap %s", file);
+	  }
 	  free(file);
 	}
 	return False;
@@ -1545,8 +1561,10 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 #endif
     else
     {
-      if(verbose)
+      if (verbose)
+      {
 	fvwm_msg(ERR,"ReadDecorFace", "unknown style %s: %s", style, action);
+      }
       return False;
     }
   }
@@ -1658,10 +1676,12 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 	  DFS_USE_BORDER_STYLE(df->style) = 0;
       }
       else
-	if(verbose)
-	  fvwm_msg(ERR,"ReadDecorFace",
-		   "unknown button face flag '%s' -- line: %s",
-		   tok, action);
+	if (verbose)
+	{
+	  fvwm_msg(
+	    ERR, "ReadDecorFace", "unknown button face flag '%s' -- line: %s",
+	    tok, action);
+	}
       if (set)
 	free(tok);
       else
@@ -1683,50 +1703,47 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 static char *ReadTitleButton(
     char *s, TitleButton *tb, Boolean append, int button)
 {
-  char *end = NULL, *spec;
-  DecorFace tmpdf;
-  enum ButtonState bs;
+  char *end = NULL;
+  char *spec;
+  char *t;
   int i;
-  int all = 0;
+  int bs;
   int pstyle = 0;
+  DecorFace tmpdf;
+  Bool do_set_all = False;
 
-  while(isspace((unsigned char)*s))
-    s++;
-  for (i = 0, bs = MaxButtonState; i < MaxButtonState; ++i)
+  s = SkipSpaces(s, NULL, 0);
+  t = GetNextTokenIndex(s, button_states, 0, &bs);
+  if (bs != BS_All)
   {
-    if (strncasecmp(button_states[i], s, strlen(button_states[i]))==0)
-    {
-      bs = i;
-      break;
-    }
+    s = SkipSpaces(t, NULL, 0);
   }
-  if (bs != MaxButtonState)
-    s += strlen(button_states[bs]);
   else
-    all = 1;
-  while(isspace((unsigned char)*s))
-    s++;
+  {
+    do_set_all = True;
+  }
+
   if (*s == '(')
   {
     int len;
     pstyle = 1;
     if (!(end = strchr(++s, ')')))
     {
-      fvwm_msg(ERR,"ReadTitleButton",
-	       "missing parenthesis: %s", s);
+      fvwm_msg(ERR, "ReadTitleButton", "missing parenthesis: %s", s);
       return NULL;
     }
-    while (isspace((unsigned char)*s)) ++s;
+    s = SkipSpaces(s, NULL, 0);
     len = end - s + 1;
     spec = safemalloc(len);
     strncpy(spec, s, len - 1);
     spec[len - 1] = 0;
   }
   else
+  {
     spec = s;
+  }
 
-  while(isspace((unsigned char)*spec))
-    spec++;
+  spec = SkipSpaces(spec, NULL, 0);
   /* setup temporary in case button read fails */
   memset(&tmpdf, 0, sizeof(DecorFace));
   DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
@@ -1734,16 +1751,21 @@ static char *ReadTitleButton(
   if (strncmp(spec, "--",2)==0)
   {
     /* only change flags */
-    if (ReadDecorFace(spec, &TB_STATE(*tb)[(all) ? 0 : bs], button, True)
-	&& all)
+    if (do_set_all)
     {
-      for (i = 0; i < MaxButtonState; ++i)
-	ReadDecorFace(spec, &TB_STATE(*tb)[i],-1,False);
+      for (i = 0; i < BS_MaxButtonState; ++i)
+      {
+	ReadDecorFace(spec, &TB_STATE(*tb)[i], BS_All, !i);
+      }
+    }
+    else
+    {
+      ReadDecorFace(spec, &TB_STATE(*tb)[bs], button, True);
     }
   }
   else if (ReadDecorFace(spec, &tmpdf, button, True))
   {
-    int b = all ? 0 : bs;
+    int b = (do_set_all) ? 0 : bs;
 #ifdef MULTISTYLE
     if (append)
     {
@@ -1769,13 +1791,15 @@ static char *ReadTitleButton(
 	memcpy(head, next, sizeof(DecorFace));
 	free(next);
       }
-      if (all)
+      if (do_set_all)
       {
-	for (i = 1; i < MaxButtonState; ++i)
+	for (i = 1; i < BS_MaxButtonState; ++i)
 	{
 	  if (i == b)
+	  {
 	    /* already done above */
 	    continue;
+	  }
 	  head = &TB_STATE(*tb)[i];
 	  tail = head;
 	  while (tail->next)
@@ -1808,10 +1832,12 @@ static char *ReadTitleButton(
     {
       FreeDecorFace(dpy, &TB_STATE(*tb)[b]);
       memcpy(&(TB_STATE(*tb)[b]), &tmpdf, sizeof(DecorFace));
-      if (all)
+      if (do_set_all)
       {
-	for (i = 1; i < MaxButtonState; ++i)
+	for (i = 1; i < BS_MaxButtonState; ++i)
+	{
 	  ReadDecorFace(spec, &TB_STATE(*tb)[i], button, False);
+	}
       }
     }
   }
@@ -1819,9 +1845,9 @@ static char *ReadTitleButton(
   {
     free(spec);
     end++;
-    while(isspace((unsigned char)*end))
-      end++;
+    end = SkipSpaces(end, NULL, 0);
   }
+
   return end;
 }
 
@@ -1966,7 +1992,7 @@ void InitFvwmDecor(FvwmDecor *decor)
     for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
     {
       int j = 0;
-      for (; j < MaxButtonState; ++j)
+      for (; j < BS_MaxButtonState; ++j)
       {
 	TB_STATE(decor->buttons[i])[j] = tmpdf;
       }
@@ -1974,7 +2000,7 @@ void InitFvwmDecor(FvwmDecor *decor)
     /* reset to default button set */
     ResetAllButtons(decor);
     /* initialize title-bar styles */
-    for (i = 0; i < MaxButtonState; ++i)
+    for (i = 0; i < BS_MaxButtonState; ++i)
     {
       DFS_FACE_TYPE(TB_STATE(decor->titlebar)[i].style) = SimpleButton;
     }
@@ -1997,10 +2023,10 @@ void DestroyFvwmDecor(FvwmDecor *decor)
   int i;
   /* reset to default button set (frees allocated mem) */
   DestroyAllButtons(decor);
-  for (i = 0; i < MaxButtonState; ++i)
+  for (i = 0; i < BS_MaxButtonState; ++i)
   {
     int j = 0;
-    for (; j < MaxButtonState; ++j)
+    for (; j < BS_MaxButtonState; ++j)
       FreeDecorFace(dpy, &TB_STATE(decor->titlebar)[i]);
   }
   FreeDecorFace(dpy, &decor->BorderStyle.active);
@@ -2021,52 +2047,53 @@ void DestroyFvwmDecor(FvwmDecor *decor)
  ****************************************************************************/
 void add_item_to_decor(F_CMD_ARGS)
 {
-    FvwmDecor *decor, *found = NULL;
-    char *item = NULL, *s = action;
+  FvwmDecor *decor, *found = NULL;
+  char *item = NULL, *s = action;
 
-    s = GetNextToken(s, &item);
+  s = GetNextToken(s, &item);
 
-    if (!item)
-      return;
-    if (!s)
+  if (!item)
+    return;
+  if (!s)
+  {
+    free(item);
+    return;
+  }
+  /* search for tag */
+  for (decor = &Scr.DefaultDecor; decor; decor = decor->next)
+  {
+    if (decor->tag)
     {
-      free(item);
-      return;
-    }
-    /* search for tag */
-    for (decor = &Scr.DefaultDecor; decor; decor = decor->next)
-    {
-      if (decor->tag)
+      if (StrEquals(item, decor->tag))
       {
-	if (StrEquals(item, decor->tag))
-	{
-	  found = decor;
-	  break;
-	}
+	found = decor;
+	break;
       }
     }
-    if (!found)
-    { /* then make a new one */
-      found = (FvwmDecor *)safemalloc(sizeof( FvwmDecor ));
-      InitFvwmDecor(found);
-      found->tag = item; /* tag it */
-      /* add it to list */
-      for (decor = &Scr.DefaultDecor; decor->next; decor = decor->next)
-	;
-      decor->next = found;
-    }
-    else
+  }
+  if (!found)
+  { /* then make a new one */
+    found = (FvwmDecor *)safemalloc(sizeof( FvwmDecor ));
+    InitFvwmDecor(found);
+    found->tag = item; /* tag it */
+    /* add it to list */
+    for (decor = &Scr.DefaultDecor; decor->next; decor = decor->next)
     {
-      free(item);
+      /* nop */
     }
+    decor->next = found;
+  }
+  else
+  {
+    free(item);
+  }
 
-    if (found)
-    {
-	AddToDecor(found, s);
-
-	/* Set + state to last decor */
-	set_last_added_item(ADDED_DECOR, found);
-    }
+  if (found)
+  {
+    AddToDecor(found, s);
+    /* Set + state to last decor */
+    set_last_added_item(ADDED_DECOR, found);
+  }
 }
 #endif /* USEDECOR */
 
@@ -2078,7 +2105,7 @@ void add_item_to_decor(F_CMD_ARGS)
  ****************************************************************************/
 void UpdateDecor(F_CMD_ARGS)
 {
-  FvwmWindow *fw = Scr.FvwmRoot.next;
+  FvwmWindow *fw;
 #ifdef USEDECOR
   FvwmDecor *decor, *found = NULL;
   FvwmWindow *hilight = Scr.Hilite;
@@ -2088,17 +2115,21 @@ void UpdateDecor(F_CMD_ARGS)
   {
     /* search for tag */
     for (decor = &Scr.DefaultDecor; decor; decor = decor->next)
+    {
       if (decor->tag)
+      {
 	if (strcasecmp(item, decor->tag)==0)
 	{
 	  found = decor;
 	  break;
 	}
+      }
+    }
     free(item);
   }
 #endif
 
-  for (; fw; fw = fw->next)
+  for (fw = Scr.FvwmRoot.next; fw; fw = fw->next)
   {
 #ifdef USEDECOR
     /* update specific decor, or all */
@@ -2236,9 +2267,10 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
   {
     for (i = 0; i < NUMBER_OF_BUTTONS; ++i)
     {
-      if (((multi & 1) && !(i & 1)) ||
-	  ((multi & 2) && (i & 1)))
+      if (((multi & 1) && !(i & 1)) || ((multi & 2) && (i & 1)))
+      {
 	TB_FLAGS(decor->buttons[i]).has_changed = 1;
+      }
     }
   }
 
@@ -2488,110 +2520,80 @@ void SetGlobalOptions(F_CMD_ARGS)
 {
   char *opt;
   char *replace;
+  char buf[64];
+  int i;
   Bool is_bugopt;
+  char *optlist[] = {
+    "WindowShadeShrinks",
+    "WindowShadeScrolls",
+    "SmartPlacementIsReallySmart",
+    "SmartPlacementIsNormal",
+    "ClickToFocusDoesntPassClick",
+    "ClickToFocusPassesClick",
+    "ClickToFocusDoesntRaise",
+    "ClickToFocusRaises",
+    "MouseFocusClickDoesntRaise",
+    "MouseFocusClickRaises",
+    "NoStipledTitles",
+    "StipledTitles",
+    "CaptureHonorsStartsOnPage",
+    "CaptureIgnoresStartsOnPage",
+    "RecaptureHonorsStartsOnPage",
+    "RecaptureIgnoresStartsOnPage",
+    "ActivePlacementHonorsStartsOnPage",
+    "ActivePlacementIgnoresStartsOnPage",
+    "RaiseOverNativeWindows",
+    "IgnoreNativeWindows",
+    NULL
+  };
+  char *replacelist[] = {
+    /* These options are mapped to the Style * command */
+    NULL, /* NULL means to use "Style * <optionname>" */
+    NULL,
+    "* MinOverlapPlacement",
+    "* TileCascadePlacement",
+    "* ClickToFocusPassesClickOff",
+    "* ClickToFocusPassesClick",
+    "* ClickToFocusRaisesOff",
+    "* ClickToFocusRaises",
+    "* MouseFocusClickRaisesOff",
+    "* MouseFocusClickRaises",
+    "* StippledTitleOff",
+    "* StippledTitle",
+    NULL,
+    NULL,
+    NULL,
+    NULL,
+    "* ManualPlacementHonorsStartsOnPage",
+    "* ManualPlacementIgnoresStartsOnPage",
+    /* These options are mapped to the BugOpts command */
+    "RaiseOverNativeWindows on",
+    "RaiseOverNativeWindows off"
+  };
 
   fvwm_msg(ERR, "SetGlobalOptions", "The GlobalOpts command is obsolete.");
-
-  /* fvwm_msg(DBG,"SetGlobalOptions","init action == '%s'\n",action); */
   for (action = GetNextSimpleOption(action, &opt); opt;
        action = GetNextSimpleOption(action, &opt))
   {
-    /* fvwm_msg(DBG,"SetGlobalOptions"," opt == '%s'\n",opt); */
-    /* fvwm_msg(DBG,"SetGlobalOptions"," remaining == '%s'\n",
-       action?action:"(NULL)"); */
     replace = NULL;
     is_bugopt = False;
-    if (StrEquals(opt,"WINDOWSHADESHRINKS"))
-    {
-      replace = "* WindowShadeShrinks";
-    }
-    else if (StrEquals(opt,"WINDOWSHADESCROLLS"))
-    {
-      replace = "* WindowShadeScrolls";
-    }
-    else if (StrEquals(opt,"SMARTPLACEMENTISREALLYSMART"))
-    {
-      replace = "* MinOverlapPlacement";
-    }
-    else if (StrEquals(opt,"SMARTPLACEMENTISNORMAL"))
-    {
-      replace = "* TileCascadePlacement";
-    }
-    else if (StrEquals(opt,"CLICKTOFOCUSDOESNTPASSCLICK"))
-    {
-      replace = "* ClickToFocusPassesClickOff";
-    }
-    else if (StrEquals(opt,"CLICKTOFOCUSPASSESCLICK"))
-    {
-      replace = "* ClickToFocusPassesClick";
-    }
-    else if (StrEquals(opt,"clicktofocusdoesntraise"))
-    {
-      replace = "* ClickToFocusRaisesOff";
-    }
-    else if (StrEquals(opt,"CLICKTOFOCUSRAISES"))
-    {
-      replace = "* ClickToFocusRaises";
-    }
-    else if (StrEquals(opt,"MOUSEFOCUSCLICKDOESNTRAISE"))
-    {
-      replace = "* MouseFocusClickRaisesOff";
-    }
-    else if (StrEquals(opt,"MOUSEFOCUSCLICKRAISES"))
-    {
-      replace = "* MouseFocusClickRaises";
-    }
-    else if (StrEquals(opt,"NOSTIPLEDTITLES"))
-    {
-      replace = "* StippledTitleOff";
-    }
-    else if (StrEquals(opt,"STIPLEDTITLES"))
-    {
-      replace = "* StippledTitle";
-    }
-    else if (StrEquals(opt,"CAPTUREHONORSSTARTSONPAGE"))
-    {
-      replace = "* CaptureHonorsStartsOnPage";
-    }
-    else if (StrEquals(opt,"CAPTUREIGNORESSTARTSONPAGE"))
-    {
-      replace = "* CaptureIgnoresStartsOnPage";
-    }
-    else if (StrEquals(opt,"RECAPTUREHONORSSTARTSONPAGE"))
-    {
-      replace = "* RecaptureHonorsStartsOnPage";
-    }
-    else if (StrEquals(opt,"RECAPTUREIGNORESSTARTSONPAGE"))
-    {
-      replace = "* RecaptureIgnoresStartsOnPage";
-    }
-    else if (StrEquals(opt,"ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
-    {
-      replace = "* ManualPlacementHonorsStartsOnPage";
-    }
-    else if (StrEquals(opt,"ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
-    {
-      replace = "* ManualPlacementIgnoresStartsOnPage";
-    }
-    else if (StrEquals(opt,"RAISEOVERNATIVEWINDOWS"))
-    {
-      is_bugopt = True;
-      replace = "RaiseOverNativeWindows on";
-    }
-    else if (StrEquals(opt,"IGNORENATIVEWINDOWS"))
-    {
-      is_bugopt = True;
-      replace = "RaiseOverNativeWindows off";
-    }
-    else
-    {
-      fvwm_msg(ERR,"SetGlobalOptions","Unknown Global Option '%s'",opt);
-    }
-    if (replace)
+
+    i = GetTokenIndex(opt, optlist, 0, NULL);
+    if (i > -1)
     {
       char *cmd;
       char *tmp;
 
+      replace = replacelist[i];
+      if (replace == NULL)
+      {
+	replace = &(buf[0]);
+	sprintf(buf, "* %s", opt);
+      }
+      else if (*replace != '*')
+      {
+	is_bugopt = True;
+      }
       tmp = action;
       action = replace;
       if (!is_bugopt)
@@ -2608,6 +2610,10 @@ void SetGlobalOptions(F_CMD_ARGS)
       fvwm_msg(
         ERR, "SetGlobalOptions",
         "Please replace 'GlobalOpts %s' with '%s %s'.", opt, cmd, replace);
+    }
+    else
+    {
+      fvwm_msg(ERR, "SetGlobalOptions", "Unknown Global Option '%s'", opt);
     }
     /* should never be null, but checking anyways... */
     if (opt)

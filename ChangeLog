@@ -1,5 +1,28 @@
 2001-03-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/builtins.c (ReadTitleButton):
+	* fvwm/fvwm.c (DestroyAllButtons):
+	(ResetAllButtons):
+	* fvwm/borders.c (get_button_state):
+	renamed button states
+
+	* sample.fvwmrc/system.fvwm2rc-sample-2:
+	* sample.fvwmrc/system.fvwm2rc-sample-1:
+	* sample.fvwmrc/system.fvwm2rc:
+	* sample.fvwmrc/decor_examples:
+	* sample.fvwmrc/new-features:
+	converted to new config file format
+
+	* fvwm/builtins.c (SetGlobalOptions):
+	cleaned up parsing, save some bytes
+
+	* libs/Parse.c (ParseToggleArgument):
+	allow '1' and '0' as toggling arguments
+
+	* fvwm/builtins.c (ReadTitleButton):
+	cleaned up parsing
+	prevent unnecessary multiple parsing
+
 	* fvwm/menus.c (MenuInteraction):
 	fixed menus no longer popping up or down under certain circumstances
 	(MenuInteraction):

@@ -391,17 +391,18 @@ static enum ButtonState get_button_state(
   {
     if (Scr.gs.use_inactive_buttons && !has_focus)
     {
-      return (toggled) ? ToggledInactive : Inactive;
+      return (toggled) ? BS_ToggledInactive : BS_Inactive;
     }
     else
     {
       if (PressedW == w)
       {
-	return (toggled) ? ToggledActiveDown : ActiveDown;
+fprintf(stderr,"/// active down usedpw = 0x%08x, w = 0x%08x, has_focus = %d, toggled = %d\n", (int)PressedW, (int)w, has_focus, toggled);
+	return (toggled) ? BS_ToggledActiveDown : BS_ActiveDown;
       }
       else
       {
-	return (toggled) ? ToggledActiveUp : ActiveUp;
+	return (toggled) ? BS_ToggledActiveUp : BS_ActiveUp;
       }
     }
   }
@@ -409,11 +410,11 @@ static enum ButtonState get_button_state(
   {
     if (Scr.gs.use_inactive_buttons && !has_focus)
     {
-      return (toggled) ? ToggledInactive : Inactive;
+      return (toggled) ? BS_ToggledInactive : BS_Inactive;
     }
     else
     {
-      return (toggled) ? ToggledActiveUp : ActiveUp;
+      return (toggled) ? BS_ToggledActiveUp : BS_ActiveUp;
     }
   }
 }
