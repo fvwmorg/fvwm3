@@ -240,6 +240,7 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
     if (XCheckMaskEvent(dpy,
 			ButtonPressMask|ButtonReleaseMask|KeyPressMask,
 			&Event)) {
+      StashEventTime(&Event);
       /* finish the move immediately */
       XMoveWindow(dpy,w,endX,endY);
       break;
@@ -672,7 +673,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 			      KeyPressMask | PointerMotionMask |
 			      ButtonMotionMask | ExposureMask, &Event))
 	{
-	  if (HandlePaging(dx, dy, &xl,&yt, &delta_x,&delta_y,False,False))
+	  if (HandlePaging(dx, dy, &xl,&yt, &delta_x,&delta_y, False, False,
+			   True))
 	    {
 	      /* Fake an event to force window reposition */
 	      xl += XOffset;
@@ -860,7 +862,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 		  xl = Event.xmotion.x_root;
 		  yt = Event.xmotion.y_root;
   		  HandlePaging(dx, dy, &xl, &yt, &delta_x, &delta_y, False,
-			       False);
+			       False, False);
 		  xl += XOffset;
 		  yt += YOffset;
 		  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
@@ -1252,8 +1254,8 @@ void resize_window(F_CMD_ARGS)
 			      KeyPressMask | PointerMotionMask |
 			      ButtonMotionMask | ExposureMask, &Event))
 	{
-	  if (HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,&x,&y,
-			   &delta_x,&delta_y,False,False))
+	  if (HandlePaging(Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
+			   &delta_x, &delta_y, False, False, True))
 	    {
 	      /* Fake an event to force window reposition */
 	      Event.type = MotionNotify;
@@ -1328,8 +1330,8 @@ void resize_window(F_CMD_ARGS)
 	       * mouse - mab */
 	      DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion);
 	      /* need to move the viewport */
-	      HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,&x,&y,
-			   &delta_x,&delta_y,False,False);
+	      HandlePaging(Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
+			   &delta_x, &delta_y, False, False, False);
 	    }
 	  /* redraw outline if we paged - mab */
 	  if ( (delta_x != 0) || (delta_y != 0) )

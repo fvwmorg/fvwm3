@@ -18,7 +18,7 @@ fvwm2_SOURCES = add_window.c bindings.h bindings.c borders.c \
 	move_resize.c move_resize.h \
 	parse.h placement.c read.c read.h repeat.h repeat.c screen.h \
 	session.c session.h stack.c stack.h \
-	style.c	style.h virtual.c window_flags.h windowlist.c
+	style.c	style.h virtual.c virtual.h window_flags.h windowlist.c
 
 fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 

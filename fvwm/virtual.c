@@ -27,6 +27,7 @@
 #include "Module.h"
 #include "focus.h"
 #include "move_resize.h"
+#include "virtual.h"
 
 static void UnmapDesk(int desk, Bool grab);
 static void MapDesk(int desk, Bool grab);
@@ -173,19 +174,31 @@ void setEdgeThickness(F_CMD_ARGS)
  * if needed
  ***************************************************************************/
 Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
-		  int *delta_x, int *delta_y,Bool Grab, Bool fLoop)
+		  int *delta_x, int *delta_y, Bool Grab, Bool fLoop,
+		  Bool do_continue_previous)
 {
   static unsigned int add_time = 0;
   int x,y;
   static Time my_timestamp = 0;
+  static Time my_last_timestamp = 0;
+  static Bool is_timestamp_valid = False;
 
   *delta_x = 0;
   *delta_y = 0;
 
+  /* Only continue to count the time, but do not start counting from
+   * scratch. */
+  if (!is_timestamp_valid && do_continue_previous)
+  {
+    /* Free some CPU */
+    usleep(10000);
+    return False;
+  }
+
   if((Scr.ScrollResistance >= 10000)||
      ((HorWarpSize ==0)&&(VertWarpSize==0)))
     {
-      my_timestamp = 0;
+      is_timestamp_valid = False;
       add_time = 0;
       return False;
     }
@@ -193,16 +206,22 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   /* need to move the viewport */
   if(Scr.VxMax == 0 && Scr.VyMax == 0)
     {
-      my_timestamp = 0;
+      is_timestamp_valid = False;
       add_time = 0;
       return False;
     }
 
-  if (my_timestamp == 0)
+  if (!is_timestamp_valid)
     {
+      is_timestamp_valid = True;
       my_timestamp = lastTimestamp;
       add_time = 0;
     }
+  else if (my_last_timestamp != lastTimestamp)
+    {
+      add_time = 0;
+    }
+  my_last_timestamp = lastTimestamp;
 
   do
     {
@@ -212,7 +231,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 	 XCheckWindowEvent(dpy,Scr.PanFrameRight.win, LeaveWindowMask,&Event))
 	{
 	  StashEventTime(&Event);
-	  my_timestamp = 0;
+	  is_timestamp_valid = False;
 	  add_time = 0;
 	  return False;
 	}
@@ -223,7 +242,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
       if(( x >= edge_thickness )&&( x < Scr.MyDisplayWidth-edge_thickness )&&
 	 ( y >= edge_thickness )&&( y < Scr.MyDisplayHeight-edge_thickness ))
 	{
-	  my_timestamp = 0;
+	  is_timestamp_valid = False;
 	  add_time = 0;
 	  return False;
 	}
@@ -321,10 +340,10 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   if(*yt >= Scr.MyDisplayHeight - edge_thickness)
     *yt = Scr.MyDisplayHeight - edge_thickness -1;
 
+  is_timestamp_valid = False;
+  add_time = 0;
   if ((*delta_x == 0)&&(*delta_y == 0))
     {
-      my_timestamp = 0;
-      add_time = 0;
       return False;
     }
 
@@ -339,8 +358,6 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
   if(Grab)
     MyXUngrabServer(dpy);
 
-  my_timestamp = 0;
-  add_time = 0;
   return True;
 }
 
@@ -752,7 +769,7 @@ void changeDesks(int desk)
   RBW - the unmapping operations are now removed to their own functions so
   they can also be used by the new GoToDeskAndPage command.
 */
-if (Scr.CurrentDesk != desk)
+  if (Scr.CurrentDesk != desk)
   {
     UnmapDesk(Scr.CurrentDesk, True);
     Scr.CurrentDesk = desk;
@@ -779,13 +796,13 @@ return;
  *=======================================================================*/
 void UnmapDesk(int desk, Bool grab)
 {
-FvwmWindow  *t;
+  FvwmWindow  *t;
 
-
-if (grab) {
-  MyXGrabServer(dpy);
+  if (grab)
+  {
+    MyXGrabServer(dpy);
   }
-for (t = Scr.FvwmRoot.stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
+  for (t = Scr.FvwmRoot.stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
   {
   /* Only change mapping for non-sticky windows */
     if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
@@ -813,8 +830,9 @@ for (t = Scr.FvwmRoot.stack_prev; t != &Scr.FvwmRoot; t = t->stack_prev)
           }
       }
   }
-if (grab) {
-  MyXUngrabServer(dpy);
+  if (grab)
+  {
+    MyXUngrabServer(dpy);
   }
 
 
@@ -832,15 +850,15 @@ return;
  *=======================================================================*/
 void MapDesk(int desk, Bool grab)
 {
-FvwmWindow    *t;
-FvwmWindow    *FocusWin = NULL;
-FvwmWindow    *StickyWin = NULL;
+  FvwmWindow    *t;
+  FvwmWindow    *FocusWin = NULL;
+  FvwmWindow    *StickyWin = NULL;
 
-
-if (grab) {
-  MyXGrabServer(dpy);
+  if (grab)
+  {
+    MyXGrabServer(dpy);
   }
-for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot; t = t->stack_next)
+  for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot; t = t->stack_next)
   {
   /* Only change mapping for non-sticky windows */
     if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
@@ -862,12 +880,13 @@ for (t = Scr.FvwmRoot.stack_next; t != &Scr.FvwmRoot; t = t->stack_next)
           }
       }
   }
-if (grab) {
-  MyXUngrabServer(dpy);
+  if (grab)
+  {
+    MyXUngrabServer(dpy);
   }
 
 
-for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
     /*
        Autoplace any sticky icons, so that sticky icons from the old
@@ -887,7 +906,7 @@ for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   }
 
 /*  If a sticky window has focus, don't disturb it.  */
-if (! StickyWin)
+  if (! StickyWin)
  {
   /*  Otherwise, handle remembering the last-focused clicky window.  */
   if((FocusWin)&&(HAS_CLICK_FOCUS(FocusWin)))
@@ -918,31 +937,32 @@ return;
  *=======================================================================*/
 void gotoDeskAndPage_func(F_CMD_ARGS)
 {
-int val[3];
+  int val[3];
 
-if (GetIntegerArguments(action, NULL, val, 3) != 3)
-  return;
+  if (GetIntegerArguments(action, NULL, val, 3) != 3)
+    return;
 
 /* MyXGrabServer(dpy); */
-if (Scr.CurrentDesk != val [0])
+  if (Scr.CurrentDesk != val [0])
   {
     UnmapDesk(Scr.CurrentDesk, True);
   }
-MoveViewport((val[1] * Scr.MyDisplayWidth), (val[2] * Scr.MyDisplayHeight), True);
-if (Scr.CurrentDesk != val [0])
+  MoveViewport((val[1] * Scr.MyDisplayWidth), (val[2] * Scr.MyDisplayHeight),
+	       True);
+  if (Scr.CurrentDesk != val [0])
   {
     Scr.CurrentDesk = val[0];
     MapDesk(val[0], True);
   }
-/* MyXUngrabServer(dpy); */
-BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
+  /* MyXUngrabServer(dpy); */
+  BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
 
 #ifdef GNOME
-GNOME_SetCurrentDesk();
-GNOME_SetDeskCount();
+  GNOME_SetCurrentDesk();
+  GNOME_SetDeskCount();
 #endif
 
-return;
+  return;
 }
 
 

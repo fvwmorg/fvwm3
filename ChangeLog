@@ -1,3 +1,25 @@
+1999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/virtual.c:
+	* fvwm/functions.c: include virtual.h
+
+	* fvwm/Makefile.am:
+	* fvwm/virtual.h:
+	* fvwm/misc.h: moved declarations for virtual.c into new file
+
+	* fvwm/virtual.c (HandlePaging):
+	* fvwm/move_resize.c (resize_window):
+	(moveLoop):
+	* fvwm/events.c (HandleEnterNotify): fixed a bug in HandlePaging that
+	caused pages to flip too fast
+
+	* fvwm/move_resize.c (AnimatedMoveAnyWindow): added forgotten
+	call to StashEventTime
+
+	* fvwm/virtual.c (HandlePaging): fixed internal logic bug (paging done
+	too fast).
+	(HandlePaging): fixed bug when event time is zero
+
 11999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm.c (Done): fixed -Wall warnings
@@ -5,7 +27,7 @@
 
 1999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
-	* fvwm/placement.c (PlaceWindow): added warning when Skipmapping,
+	* fvwm/placement.c (PlaceWindow): added warning when SkipMapping,
 	ActivePlacement and StartsOn... are used together
 
 	* fvwm/virtual.c (MoveViewport):

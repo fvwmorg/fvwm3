@@ -1390,7 +1390,7 @@ void HandleEnterNotify(void)
     /* this was in the HandleMotionNotify before, HEDU */
     HandlePaging(Scr.EdgeScrollX,Scr.EdgeScrollY,
                  &ewp->x_root,&ewp->y_root,
-                 &delta_x,&delta_y,True,True);
+                 &delta_x,&delta_y,True,True,False);
     return;
   }
 

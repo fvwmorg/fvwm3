@@ -49,6 +49,7 @@
 #include "repeat.h"
 #include "Module.h"
 #include "move_resize.h"
+#include "virtual.h"
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;

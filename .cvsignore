@@ -13,3 +13,4 @@ config.log
 config.cache
 config.status
 stamp-h
+bb.out

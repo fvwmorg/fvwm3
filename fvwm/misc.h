@@ -193,23 +193,6 @@ void refresh_function(F_CMD_ARGS);
 void refresh_win_function(F_CMD_ARGS);
 void stick_function(F_CMD_ARGS);
 
-/* --- virtual.c --- */
-void setEdgeThickness(F_CMD_ARGS);
-Bool HandlePaging(int, int, int *, int *, int *, int *,Bool,Bool);
-void checkPanFrames(void);
-void raisePanFrames(void);
-void initPanFrames(void);
-void MoveViewport(int newx, int newy,Bool);
-void changeDesks_func(F_CMD_ARGS);
-void changeDesks(int desk);
-void do_move_window_to_desk(FvwmWindow *tmp_win, int desk);
-void move_window_to_desk(F_CMD_ARGS);
-void scroll(F_CMD_ARGS);
-Bool get_page_arguments(char *action, int *page_x, int *page_y);
-void goto_page_func(F_CMD_ARGS);
-void gotoDeskAndPage_func(F_CMD_ARGS);
-/* --- end of virtual.c --- */
-
 int GetMoveArguments(char *action, int x, int y, int w, int h,
                      int *pfinalX, int *pfinalY, Bool *fWarp);
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
