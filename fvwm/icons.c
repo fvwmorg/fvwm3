@@ -433,7 +433,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 
   if(tmp_win->icon_w != None)
   {
-    if (IS_ICON_ENTERED(tmp_win))
+    if (IS_ICON_ENTERED(tmp_win) || get_focus_window() == tmp_win)
     {
       /* resize the icon name window */
       tmp_win->icon_g.width = tmp_win->icon_t_width + 8;

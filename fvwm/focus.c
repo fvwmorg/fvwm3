@@ -153,7 +153,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
     return;
   }
 
-  if (Fw != NULL && !NoWarp)
+  if (Fw && !NoWarp)
   {
     if (IS_ICONIFIED(Fw))
     {

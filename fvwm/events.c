@@ -1949,9 +1949,16 @@ void HandleLeaveNotify(void)
      * functions that transferred the focus to a different window. */
     if (Event.xcrossing.mode == NotifyGrab && Tmp_win &&
 	(Event.xcrossing.window == Tmp_win->decor_w ||
-	 Event.xcrossing.window == Tmp_win->w))
+	 Event.xcrossing.window == Tmp_win->w ||
+	 Event.xcrossing.window == Tmp_win->icon_w ||
+	 Event.xcrossing.window == Tmp_win->icon_pixmap_w))
     {
       xcrossing_last_grab_window = Tmp_win;
+    }
+    if (Tmp_win && IS_ICONIFIED(Tmp_win))
+    {
+      SET_ICON_ENTERED(Tmp_win, 0);
+      DrawIconWindow(Tmp_win);
     }
     return;
   }
