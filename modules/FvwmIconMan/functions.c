@@ -16,6 +16,7 @@
 #include "FvwmIconMan.h"
 #include "readconfig.h"
 #include "xmanager.h"
+#include "x.h"
 #include "libs/Module.h"
 
 static Button *get_select_button (void);
@@ -272,17 +273,44 @@ int builtin_select (int numargs, BuiltinArg *args)
   return 0;
 }
 
-int builtin_sendcommand (int numargs, BuiltinArg *args)
+int builtin_sendcommand(int numargs, BuiltinArg *args)
 {
-  WinData *win = get_current_win();
+	WinData *win = get_current_win();
 
-  if (!win) {
-    return 0;
-  }
+	char *command, *tmp;
+	Button *current_button;
+	rectangle r;
+	Window tmpw;
 
-  SendFvwmPipe (Fvwm_fd, args[0].value.string_value, win->app_id);
+	if (!win)
+	{
+		return 0;
+	}
 
-  return 0;
+	command = args[0].value.string_value;
+	current_button = win->manager->select_button;
+
+	r.x = current_button->x;
+	r.y = current_button->y;
+	r.width = current_button->w;
+	r.height = current_button->h;
+	XTranslateCoordinates(theDisplay, win->manager->theWindow, theRoot,
+		r.x, r.y, &r.x, &r.y, &tmpw);
+
+	tmp = module_expand_action(
+		theDisplay, theScreen, command, &r, NULL, NULL);
+	if (tmp)
+	{
+		command = tmp;
+	}
+
+	SendFvwmPipe(Fvwm_fd, command, win->app_id);
+	if (tmp)
+	{
+		free(tmp);
+	}
+
+	return 0;
 }
 
 int builtin_printdebug (int numargs, BuiltinArg *args)

@@ -1,3 +1,8 @@
+2002-05-24  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmIconMan/functions.c (builtin_sendcommand):
+	support size/position variables in command
+
 2002-05-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/FvwmPager.c (list_new_desk):
