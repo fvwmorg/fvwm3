@@ -1,0 +1,335 @@
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
+package FVWM::Module;
+
+require 5.003;
+use strict;
+use IO::File;
+
+BEGIN {
+	my $prefix = "@prefix@";
+	my $datadir = "@datadir@";
+	use lib "@FVWM_PERLLIBDIR@";
+}
+use vars qw($VERSION @ISA @EXPORT $AUTOLOAD);
+@ISA = qw(Exporter);
+use FVWM::Constants;
+
+# The major version part indicates major API changes
+$VERSION = '1.1';
+
+my $PACKET_TYPE_ARGS = {
+	&M_NEW_PAGE             => "l5",
+	&M_NEW_DESK             => "l",
+#	&M_OLD_ADD_WINDOW       => "l24",
+	&M_RAISE_WINDOW         => "l3",
+	&M_LOWER_WINDOW         => "l3",
+#	&M_OLD_CONFIGURE_WINDOW => "l24",
+	&M_FOCUS_CHANGE         => "l5",
+	&M_DESTROY_WINDOW       => "l3",
+	&M_ICONIFY              => "l7",
+	&M_DEICONIFY            => "l3",
+	&M_WINDOW_NAME          => "l3a*",
+	&M_ICON_NAME            => "l3a*",
+	&M_RES_CLASS            => "l3a*",
+	&M_RES_NAME             => "l3a*",
+	&M_END_WINDOWLIST       => "",
+	&M_ICON_LOCATION        => "l7",
+	&M_MAP                  => "l3",
+	&M_ERROR                => "l3a*",
+	&M_CONFIG_INFO          => "l3a*",
+	&M_END_CONFIG_INFO      => "",
+	&M_ICON_FILE            => "l3a*",
+	&M_DEFAULTICON          => "l3a*",
+	&M_STRING               => "l3a*",
+	&M_MINI_ICON            => "l8a*",
+	&M_WINDOWSHADE          => "l3",
+	&M_DEWINDOWSHADE        => "l3",
+	&M_VISIBLE_NAME         => "l3a*",
+#	&M_SENDCONFIG           => "",
+	&M_RESTACK              => "",  # ???
+	&M_ADD_WINDOW           => "l25",
+	&M_CONFIGURE_WINDOW     => "l25",
+#	&M_EXTENDED_MSG         => "",
+	&MX_VISIBLE_ICON_NAME   => "l3a*",
+	&MX_ENTER_WINDOW        => "",  # ???
+	&MX_LEAVE_WINDOW        => "",  # ???
+	&MX_PROPERTY_CHANGE     => "",  # ???
+};
+
+my $TEXTBASED_PACKET_MASK = (
+	M_ERROR       | M_CONFIG_INFO | M_STRING      | M_WINDOW_NAME |
+	M_ICON_NAME   | M_RES_CLASS   | M_RES_NAME    | M_ICON_FILE   |
+	M_DEFAULTICON | M_MINI_ICON   | M_VISIBLE_NAME
+);
+
+my $TEXTBASED_PACKET_XMASK = (
+	MX_VISIBLE_ICON_NAME
+);
+
+sub isExtended ($$) {
+	my $self = shift;
+	my $type = shift;
+	return $type & M_EXTENDED_MSG? 1: 0;
+}
+
+sub getPacketArgs ($$) {
+	my $self = shift;
+	my $type = shift;
+	my $args = $PACKET_TYPE_ARGS->{$type};
+	die "Unsupported packet type ($type)\n" unless defined $args;
+	return $args;
+}
+
+sub isPacketTextBased ($$) {
+	my $self = shift;
+	my $type = shift;
+	return $self->isExtended($type)?
+		$type & $TEXTBASED_PACKET_XMASK? 1: 0:
+		$type & $TEXTBASED_PACKET_MASK? 1: 0;
+}
+
+sub new ($@) {
+	my $class = shift;
+	my %params = @_;
+	my $self = {};
+
+	(my $name = $0) =~ s|.*/||;
+	$name = $params{'NAME'} || $name;
+	my $mask = $params{'MASK'} || 0;
+
+	# initialize module from argv
+	my @argv = @ARGV;
+	@argv >= 5 or die "$name should only be run from fvwm.\n";
+	my ($outFd, $inFd, $rcFile, $winId, $context) = splice(@argv, 0, 5);
+
+	$self->{rcFile} = $rcFile;
+	$self->{winId} = hex $winId;
+	$self->{context} = $context;
+	$self->{argv} = [@argv];
+
+	$self->{ostream} = new IO::File ">&$outFd"
+		or die "$name: Can't write to file descriptor (&$outFd)\n";
+	$self->{istream} = new IO::File "<&$inFd"
+		or die "$name: Can't read from file descriptor (&$inFd)\n";
+	$self->{ostream}->autoflush(1);
+	$self->{istream}->autoflush(1);
+
+	$self->{lastPacket} = [];
+	$self->{handlers} = {};
+
+	# bless here, so die above does not run DESTROY
+	bless $self, $class;
+	$self->name($name);
+	$self->mask($mask);
+	$self->resetHandlers;
+	$self->getConfigInfo unless $params{'NO_CONFIG_INFO'};
+	return $self;
+}
+
+sub DESTROY ($) {
+	my $self = shift;
+	$self->sendInfo(0, "Nop", 0);
+	close $self->{istream};
+	close $self->{ostream};
+}
+
+sub name ($;$) {
+	my $self = shift;
+	my $name = shift;
+	$self->{name} = $name if defined $name;
+	return $self->{name};
+}
+
+sub mask ($;$) {
+	my $self = shift;
+	my $mask = shift;
+	if (defined $mask) {
+		$self->sendInfo(0, "Set_Mask $mask");
+		my $oldMask = $self->{mask};
+		$self->{mask} = $mask;
+		return $oldMask;
+	}
+	return $self->{mask};
+}
+
+# by default the version of a module is the FVWM version
+sub version ($) {
+	my $self = shift;
+	return "@VERSION@";
+}
+
+sub argv ($) {
+	my $self = shift;
+	return @{$self->{argv}};
+}
+
+sub resetHandlers ($) {
+	my $self = shift;
+
+	$self->{handlers}->{regular} = {};
+	$self->{handlers}->{extended} = {};
+	$self->{handlers}->{special} = {};
+}
+
+sub getHandlerCategory ($$) {
+	my $self = shift;
+	my $type = shift;
+	return "special" if $type =~ /^=/;
+	return "extended" if $self->isExtended($type);
+	return "regular";
+}
+
+# params: winId, data
+sub sendInfo ($$$) {
+	my $self = shift;
+	my ($winId, $data) = @_;
+
+	die "sendInfo requires 2 params: winId and data\n"
+		unless defined $winId && defined $data;
+
+	my @parts = split(/,/, $data);
+
+	my $part;
+	for $part (@parts) {
+		my $len = length $part;
+		$self->{ostream}->print(
+			pack("lla${len}l", $winId, $len, $part, 1)
+		);
+	}
+}
+
+sub readPacket ($) {
+	my $self = shift;
+
+	my $header = "";
+	my $packet = "";
+
+	# header is sizeof(int) * HEADER_SIZE bytes long:
+	my $got = sysread($self->{istream}, $header, INTSIZE * HEADER_SIZE);
+
+	unless (defined $got and $got == (INTSIZE * HEADER_SIZE)) {
+		# module killed or other read error
+		$self->{lastPacket} = [];
+		return undef;
+	}
+
+	my ($magic, $type, $len, $timestamp) =
+		unpack(sprintf("L%d", HEADER_SIZE), $header);
+	die "Bad magic number $magic\n" unless $magic == START_FLAG;
+
+	# $len is number of words in packet, including header;
+	# we need this as number of bytes.
+	$len -= HEADER_SIZE;
+	$len *= INTSIZE;
+
+	if ($len > 0) {
+		my $off = 0;
+		while ($off < $len) {
+			$got = sysread($self->{istream}, $packet, $len, $off);
+			if (!defined $got) {
+				die "$self->{NAME} process ($$) exiting due to read error\n";
+			}
+			$off += $got;
+		}
+		die "Internal error, got packet len $off while expecting $len\n"
+			if $off != $len;
+	}
+
+	$self->{lastPacket} = [$packet, $type];
+	($packet, $type);
+}
+
+sub invokeHandler ($$@) {
+	my $self = shift;
+	my $type = shift;
+	my @args = @_;
+
+	my $category = $self->getHandlerCategory($type);
+	my @types = sort { $a <=> $b } keys %{$self->{handlers}->{$category}};
+	foreach (@types) {
+		if ($type eq $_ || $type & $_) {
+			my $handler;
+			for $handler (@{$self->{handlers}->{$category}->{$_}}) {
+				next unless defined $handler;  # skip deleted ones
+
+				eval { &$handler($self, $type, @args); };
+
+				return 0 if $@ && $@ =~ /^quit/i;
+				die $@ if $@;
+			}
+		}
+	}
+	return 1;
+}
+
+sub processPacket ($;$$) {
+	my $self = shift;
+	my ($packet, $type) = @_;
+
+	($packet, $type) = @{$self->{lastPacket}} unless defined $packet;
+	return undef unless defined $packet;
+
+	$type &= $self->isExtended($type)?
+		(MAX_XMSG_MASK | M_EXTENDED_MSG): MAX_MSG_MASK;
+	my @args = unpack($self->getPacketArgs($type), $packet);
+	# strip everything past the first null (or newline) if needed
+	$args[@args - 1] =~ s/\n*\0.*//s if $self->isPacketTextBased($type);
+
+	$self->invokeHandler($type, @args);
+}
+
+sub eventLoop ($) {
+	my $self = shift;
+
+	while (1) {
+		$self->processPacket($self->readPacket) || last;
+	}
+	$self->invokeHandler(ON_EXIT);
+}
+
+sub addHandler ($$$) {
+	my $self = shift;
+	my $type = shift;
+	my $handler = shift;
+
+	die "addHandler: no handler type\n" unless defined $type;
+	die "addHandler: no handler code\n" unless ref($handler) eq 'CODE';
+
+	my $category = $self->getHandlerCategory($type);
+	$self->{handlers}->{$category}->{$type} = []
+		unless exists $self->{handlers}->{$category}->{$type};
+	push @{$self->{handlers}->{$category}->{$type}}, $handler;
+	my $index = @{$self->{handlers}->{$category}->{$type}} - 1;
+	return "$type $index";
+}
+
+sub deleteHandler ($$) {
+	my $self = shift;
+	my $id = shift;
+
+	my ($type, $index) = split(/ /, $id);
+	my $category = $self->getHandlerCategory;
+	return 0 unless defined $self->{handlers}->{$category}->{$type}->[$index];
+
+	$self->{handlers}->{$category}->{$type}->[$index] = undef;
+	return 1;
+}
+
+sub getConfigInfo ($@) {
+	my $self = shift;
+
+	# not implemented yet
+}

@@ -1,0 +1,36 @@
+#!/usr/bin/perl -w
+
+use strict;
+use lib `fvwm-config --fvwm-perllibdir | tr -d '\n'`;
+use FVWM::Module;
+use IO::File;
+
+my $module = new FVWM::Module(
+	NAME => "FvwmPerlBasedWinList",
+	MASK => M_WINDOW_NAME | M_END_WINDOWLIST,
+);
+my $fh = new IO::File "| xmessage -geometry 240x300 -title 'Window List' -file -";
+#my $fh = \*STDERR;
+
+# Register the event handlers
+$module->addHandler(M_WINDOW_NAME, sub {
+	my ($self, $type, $winid, $frameid, $ptr, $name) = @_;
+	printf $fh " 0x%07lx | %s\n", $winid, $name;
+});
+
+# This one signals that the module should be terminated
+$module->addHandler(M_END_WINDOWLIST, sub {
+	print $fh "-----------+--------------------\n";
+	close $fh;
+	die "quit";
+});
+
+print $fh "-----------+--------------------\n";
+print $fh " Window id | Name\n";
+print $fh "-----------+--------------------\n";
+
+# Ask FVWM to send us its list of windows
+$module->sendInfo(0, "Send_WindowList"); 
+
+# Enter the main loop
+$module->eventLoop;

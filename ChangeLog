@@ -1,3 +1,9 @@
+2002-02-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* Makefile.am:
+	* configure.in:
+	added support for new perllib directory
+
 2002-02-09  olicha  <olivier.chapuis@free.fr>
  
 	* libs/fvwmlib.h:

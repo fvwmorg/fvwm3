@@ -8,6 +8,7 @@ SUBDIRS = libs \
 	fvwm \
 	modules \
 	utils \
+	perllib \
 	docs \
 	rpm \
 	sample.fvwmrc \

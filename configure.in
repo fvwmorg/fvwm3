@@ -15,10 +15,12 @@ AC_ARG_ENABLE(package-subdirs,
 
 FVWM_MODULEDIR='${libexecdir}'$FVWM_MODULESUBDIR
 FVWM_DATADIR='${datadir}'$FVWM_DATASUBDIR
+FVWM_PERLLIBDIR='${datadir}'$FVWM_DATASUBDIR/perllib
 FVWM_CONFDIR='${sysconfdir}'dnl used _only_ to search for system.fvwm2rc
 
 AC_SUBST(FVWM_MODULEDIR)
 AC_SUBST(FVWM_DATADIR)
+AC_SUBST(FVWM_PERLLIBDIR)
 AC_SUBST(FVWM_CONFDIR)
 
 
@@ -636,6 +638,8 @@ utils/Makefile utils/fvwm-config
 utils/fvwm-menu-xlock utils/fvwm-menu-directory
 utils/fvwm-menu-desktop utils/fvwm-menu-headlines
 utils/fvwm24_convert utils/fvwmbug
+perllib/Makefile perllib/FVWM/Makefile
+perllib/FVWM/Module.pm
 rpm/Makefile rpm/fvwm.spec docs/fvwm.lsm
 docs/Makefile sample.fvwmrc/Makefile tests/Makefile
 dnl
@@ -697,6 +701,7 @@ eval my_bindir="`eval echo ${bindir}`"
 eval my_mandir="`eval echo ${mandir}`"
 eval my_moddir="`eval echo ${FVWM_MODULEDIR}`"; eval my_moddir="$my_moddir"
 eval my_datdir="`eval echo ${FVWM_DATADIR}`"
+eval my_plldir="`eval echo ${FVWM_PERLLIBDIR}`"
 
 case "$with_gtk" in
   yes) fvwmgtk_msg="
@@ -714,6 +719,7 @@ FVWM Configuration:
   Man pages:   $my_mandir
   Modules:     $my_moddir
   Data files:  $my_datdir
+  Perl lib:    $my_plldir
 
   With Extended Window Manager hints? $with_ewmh$problem_ewmh
   With GNOME Window Manager hints?    $with_gnomehints$problem_gnomehints

@@ -31,6 +31,7 @@ fvwm-config \- query an existing FVWM installation
 [\fI--mandir\fP]
 [\fI--fvwm-moduledir\fP]
 [\fI--fvwm-datadir\fP]
+[\fI--fvwm-perllibdir\fP]
 [\fI--default-imagepath\fP]
 [\fI--default-userdir\fP]
 [\fI--fvwm-exe\fP]
@@ -81,6 +82,9 @@ prints FVWM_MODULEDIR, where the modules are installed
 .B -d --fvwm-datadir
 prints FVWM_DATADIR, where the system wide configs are installed
 .TP
+.B -p --fvwm-perllibdir
+prints FVWM_PERLLIBDIR, where the perl library is installed
+.TP
 .B -I --default-imagepath
 prints the built-in ImagePath
 .TP
@@ -123,6 +127,12 @@ fvwm-config --bindir --mandir --fvwm-datadir
 A way to find the full path to the fvwm executable:
 .EX
 echo `fvwm-config --bindir`/`fvwm-config --fvwm-exe`
+.EE
+
+A way to start modules in perl:
+.EX
+use lib `fvwm-config -p | tr -d '\n'`;
+use FVWM::Module;
 .EE
 
 For a more human readable output, try:

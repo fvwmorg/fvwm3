@@ -1,3 +1,9 @@
+2002-02-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-config.in:
+	* fvwm-config.1:
+	added --fvwm-perllibdir
+
 2002-02-07  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:

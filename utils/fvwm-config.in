@@ -27,6 +27,7 @@ Options:
 
 	[-m]	[--fvwm-moduledir]
 	[-d]	[--fvwm-datadir]
+	[-p]	[--fvwm-perllibdir]
 	[-I]	[--default-imagepath]
 	[-U]	[--default-userdir]
 
@@ -51,6 +52,7 @@ mandir="@mandir@"
 
 fvwm_moduledir="@FVWM_MODULEDIR@"
 fvwm_datadir="@FVWM_DATADIR@"
+fvwm_perllibdir="@FVWM_PERLLIBDIR@"
 fvwm_imagepath="@FVWM_IMAGEPATH@"
 fvwm_userdir='$HOME/.fvwm'
 fvwm_exe='fvwm2'
@@ -104,6 +106,9 @@ while test $# -gt 0; do
 		--fvwm-datadir|-fvwm-datadir|-d)
 			echo "$fvwm_datadir" ;;
 
+		--fvwm-perllibdir|-fvwm-perllibdir|--perllibdir|-perllibdir|-p)
+			echo "$fvwm_perllibdir" ;;
+
 		--default-imagepath|-default-imagepath|-I)
 			echo "$fvwm_imagepath" ;;
 
@@ -155,6 +160,7 @@ while test $# -gt 0; do
 			echo "Compiled-in paths:"
 			echo "	Module directory: $fvwm_moduledir"
 			echo "	Data directory: $fvwm_datadir"
+			echo "	Perl lib directory: $fvwm_perllibdir"
 			echo "	Default ImagePath: $fvwm_imagepath"
 			echo "	Default UserDir: $fvwm_userdir"
 			echo ""
