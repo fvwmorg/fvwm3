@@ -1107,6 +1107,7 @@ void CMD_WindowId(F_CMD_ARGS)
 
 				memset(&efa, 0, sizeof(efa));
 				efa.cond_rc = NULL;
+				efa.win = win;
 				efa.eventp = eventp;
 				efa.action = action;
   				efa.context = C_UNMANAGED;
