@@ -1,5 +1,12 @@
 2000-03-08  olicha	<olivier.chapuis@free.fr>
 
+	* FvwmButtons/draw.c (RedrawButton):
+	Fixed individual button Colorset
+	* FvwmScript/Scripts/TerminalSettings.fss
+	Now this script works
+	
+2000-03-08  olicha	<olivier.chapuis@free.fr>
+
 	* FvwmPager/x_pager.c (initialize_pager):
 	Fixed hilight desk title drawing GC
 

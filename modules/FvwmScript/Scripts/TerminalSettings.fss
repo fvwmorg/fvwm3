@@ -39,7 +39,7 @@ Property
  BackColor {White}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -62,7 +62,7 @@ Property
  BackColor {RosyBrown2}
 Main
  Case message of
-  UserAction :
+  SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -85,7 +85,7 @@ Property
  BackColor {HotPink}
 Main
  Case message of
-  UserAction :
+  SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -108,7 +108,7 @@ Property
  BackColor {VioletRed}
 Main
  Case message of
-  UserAction :
+  SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -131,7 +131,7 @@ Property
  BackColor {Red}
 Main
  Case message of
-  UserAction :
+  SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -154,7 +154,7 @@ Property
  BackColor {Brown}
 Main
  Case message of
-  UserAction :
+  SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -177,7 +177,7 @@ Property
  BackColor {RosyBrown4}
 Main
  Case message of
-  UserAction :
+  SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -200,7 +200,7 @@ Property
  BackColor {Tan}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -223,7 +223,7 @@ Property
  BackColor {Wheat}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -246,7 +246,7 @@ Property
  BackColor {AntiqueWhite}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -269,7 +269,7 @@ Property
  BackColor {GoldenRod}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -292,7 +292,7 @@ Property
  BackColor {Orange}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -315,7 +315,7 @@ Property
  BackColor {Gold}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -338,7 +338,7 @@ Property
  BackColor {Yellow}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -361,7 +361,7 @@ Property
  BackColor {Green}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -384,7 +384,7 @@ Property
  BackColor {LimeGreen}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -407,7 +407,7 @@ Property
  BackColor {MediumAquaMarine}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -430,7 +430,7 @@ Property
  BackColor {SeaGreen}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -453,7 +453,7 @@ Property
  BackColor {OliveDrab}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -476,7 +476,7 @@ Property
  BackColor {DarkOliveGreen}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -499,7 +499,7 @@ Property
  BackColor {LightCyan4}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -522,7 +522,7 @@ Property
  BackColor {CadetBlue}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -545,7 +545,7 @@ Property
  BackColor {Aquamarine}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -568,7 +568,7 @@ Property
  BackColor {Turquoise}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -591,7 +591,7 @@ Property
  BackColor {Cyan}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -614,7 +614,7 @@ Property
  BackColor {LightCyan2}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -637,7 +637,7 @@ Property
  BackColor {LightSteelBlue1}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -660,7 +660,7 @@ Property
  BackColor {LightSteelBlue2}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -683,7 +683,7 @@ Property
  BackColor {LightSteelBlue4}
 Main
  Case message of
-  UserAction :
+   SingleClic:
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -706,7 +706,7 @@ Property
  BackColor {SteelBlue}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -729,7 +729,7 @@ Property
  BackColor {SkyBlue4}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -752,7 +752,7 @@ Property
  BackColor {SkyBlue3}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -775,7 +775,7 @@ Property
  BackColor {SkyBlue2}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -798,7 +798,7 @@ Property
  BackColor {SkyBlue1}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -821,7 +821,7 @@ Property
  BackColor {Blue}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -844,7 +844,7 @@ Property
  BackColor {Navy}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -867,7 +867,7 @@ Property
  BackColor {Purple}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -890,7 +890,7 @@ Property
  BackColor {Magenta}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -913,7 +913,7 @@ Property
  BackColor {Violet}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -936,7 +936,7 @@ Property
  BackColor {Plum}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -959,7 +959,7 @@ Property
  BackColor {grey90}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -982,7 +982,7 @@ Property
  BackColor {grey83}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -1005,7 +1005,7 @@ Property
  BackColor {grey75}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -1028,7 +1028,7 @@ Property
  BackColor {grey65}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -1051,7 +1051,7 @@ Property
  BackColor {grey50}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -1074,7 +1074,7 @@ Property
  BackColor {grey40}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -1097,7 +1097,7 @@ Property
  BackColor {grey35}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -1120,7 +1120,7 @@ Property
  BackColor {grey25}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -1143,7 +1143,7 @@ Property
  BackColor {Black}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -1167,7 +1167,7 @@ Property
  BackColor {rgb:ae/b2/c3}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    If $ForeSelected == 1 Then
     Begin
@@ -1193,7 +1193,7 @@ Property
  Font lucidasans-10
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $CustColor = {rgb:} (NumToHex (GetValue 53) 2) {/} (NumToHex (GetValue
 55) 2) {/} (NumToHex (GetValue 57) 2)
@@ -1210,7 +1210,7 @@ Property
  Title {Red}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1226,7 +1226,7 @@ Property
  Font lucidasans-10
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $CustColor = {rgb:} (NumToHex (GetValue 53) 2) {/} (NumToHex (GetValue
 55) 2) {/} (NumToHex (GetValue 57) 2)
@@ -1243,7 +1243,7 @@ Property
  Title {Green}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1259,7 +1259,7 @@ Property
  Font lucidasans-10
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $CustColor = {rgb:} (NumToHex (GetValue 53) 2) {/} (NumToHex (GetValue
 55) 2) {/} (NumToHex (GetValue 57) 2)
@@ -1276,7 +1276,7 @@ Property
  Title {Blue}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1295,7 +1295,7 @@ Property
  Title {The quick BROWN fox! O0l1S5}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1310,7 +1310,7 @@ Property
  Value 1
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $ForeSelected = 0
    ChangeValue 62 0
@@ -1327,7 +1327,7 @@ Property
  Value 0
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $ForeSelected = 1
    ChangeValue 61 0
@@ -1344,7 +1344,7 @@ Property
  Value 1
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $Font = {6x13}
    Set $BoldFont = {6x13bold}
@@ -1369,7 +1369,7 @@ Property
  Value 0
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $Font = {7x13}
    Set $BoldFont = {7x13bold}
@@ -1394,7 +1394,7 @@ Property
  Value 0
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $Font = {7x14}
    Set $BoldFont = {7x14bold}
@@ -1419,7 +1419,7 @@ Property
  Value 0
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $Font = {8x13}
    Set $BoldFont = {8x13bold}
@@ -1444,7 +1444,7 @@ Property
  Value 0
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $Font = {9x15}
    Set $BoldFont = {9x15bold}
@@ -1469,7 +1469,7 @@ Property
  Value 0
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $Font = {lucidasanstypewriter-10}
    Set $BoldFont = {lucidasanstypewriter-bold-10}
@@ -1494,7 +1494,7 @@ Property
  Value 0
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $Font = {lucidasanstypewriter-12}
    Set $BoldFont = {lucidasanstypewriter-bold-12}
@@ -1519,7 +1519,7 @@ Property
  Value 0
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $Font = {lucidasanstypewriter-14}
    Set $BoldFont = {lucidasanstypewriter-bold-14}
@@ -1543,7 +1543,7 @@ Property
  Font LucidaSans-Bold-12
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1559,7 +1559,7 @@ Property
  Value 255
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1573,7 +1573,7 @@ Property
  Font LucidaSans-Bold-12
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1589,7 +1589,7 @@ Property
  Value 255
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1603,7 +1603,7 @@ Property
  Font LucidaSans-Bold-12
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1619,7 +1619,7 @@ Property
  Value 255
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1633,7 +1633,7 @@ Property
  Font LucidaSans-Bold-12
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1649,7 +1649,7 @@ Property
  Value 255
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1665,7 +1665,7 @@ Property
  Value 255
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1679,7 +1679,7 @@ Property
  Font LucidaSans-Bold-12
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1695,7 +1695,7 @@ Property
  Value 255
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1709,7 +1709,7 @@ Property
  Font LucidaSans-Bold-12
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1725,7 +1725,7 @@ Property
  Value 255
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1740,7 +1740,7 @@ Property
  Value 0
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1755,7 +1755,7 @@ Property
  Value 0
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1769,7 +1769,7 @@ Property
  Title		{Cancel}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Quit
   End
@@ -1784,7 +1784,7 @@ Property
  Title		{Open}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $options = {}
    If (GetValue 84) == 1 Then
@@ -1839,7 +1839,7 @@ Property
  Title		{Add to menu as:}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
    Set $options = {}
    If (GetValue 84) == 1 Then
@@ -1895,7 +1895,7 @@ Property
  Type Rectangle
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1909,7 +1909,7 @@ Property
  Title {Colors}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1921,7 +1921,7 @@ Property
  Type Rectangle
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1935,7 +1935,7 @@ Property
  Title {Font}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1947,7 +1947,7 @@ Property
  Type Rectangle
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1961,7 +1961,7 @@ Property
  Title {Remote}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1973,7 +1973,7 @@ Property
  Type Rectangle
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1987,7 +1987,7 @@ Property
  Title {Options}
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End
@@ -1999,7 +1999,7 @@ Property
  Type Rectangle
 Main
  Case message of
-  UserAction :
+  SingleClic :
   Begin
   End
 End

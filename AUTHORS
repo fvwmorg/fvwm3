@@ -19,8 +19,20 @@ Add Next/Prev conditions to WindowId and WindowList.
 Attempted fix of OLDecor hints use for decorations. Add DestroyStyle command.
 
 Olivier Chapuis:
-fvwm-menu-desktop script for GNOME and KDE desktop menus. Rewrote -version
-command line option to print out configure options.
+fvwm: Rewrote -version command line option to print out configure options;
+OnlySkipList option to WindowList; BusyCursor command, EscapeFunc command;
+StrokeFunc command and some works on the STROKE patch; some bug fixes. 
+libs: setSyncMask to define the messages on which a module is lock on send 
+(not my idea); put SendFvwmPipe in the library; amelioration of SlideWindow. 
+FvwmButtons: position option for panel; some fixes. FvwmEvent: StartDelay 
+option. FvwmIconBox: UseSkipList options. FvwmM4/Cpp: -lock and -noread 
+options. FvwmPager: Aliases support; some fixes. FvwmScript: The Default 
+configuration options; some fixes; rewrite some scripts examples and new 
+script examples. FvwmPager: Aliases support; some fixes. FvwmScroll: p option 
+for a percentage reduction. FvwmTaskBar: the Focus, Rows, 3DFvwm, NoIconAction
+options, take in account the real border width for geometry computation, 
+AutoHide ameliorations, A number of fixes. FvwmWinList: geometries fixes. 
+utils: fvwm-menu-desktop script for GNOME and KDE desktop menus.
 
 Matthias Clasen:
 Session management, layered stacking order, maximized shaded windows,
