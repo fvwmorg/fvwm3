@@ -5411,13 +5411,12 @@ static mloop_ret_code_t __mloop_do_menu(
 static mloop_ret_code_t __mloop_handle_action_with_mi(
 	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
 	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi,
-	MenuOptions *pops)
+	MenuOptions *pops, Bool *pdoes_submenu_overlap,
+	Bool *pdoes_popdown_submenu_overlap)
 {
 	MenuItem *tmi;
 	MenuRoot *tmrMi;
 	MenuRoot *mrMiPopup = NULL;
-	Bool does_submenu_overlap = False;
-	Bool does_popdown_submenu_overlap = False;
 
 	pmret->flags.do_unpost_submenu = 0;
 	/* we're on a menu item */
@@ -5448,8 +5447,8 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 	{
 		/* new item of the same menu */
 		__mloop_select_item(
-			pmp, in, med, does_submenu_overlap,
-			&does_popdown_submenu_overlap);
+			pmp, in, med, *pdoes_submenu_overlap,
+			pdoes_popdown_submenu_overlap);
 	}
 	else if (med->mi != MR_SELECTED_ITEM(pmp->menu) && med->mrMi &&
 		 med->mrMi == in->mrPopdown)
@@ -5459,14 +5458,14 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 		med->mi = MR_PARENT_ITEM(in->mrPopdown);
 		in->mrPopup = in->mrPopdown;
 		in->mrPopdown = NULL;
-		does_submenu_overlap = does_popdown_submenu_overlap;
+		*pdoes_submenu_overlap = *pdoes_popdown_submenu_overlap;
 		select_menu_item(pmp->menu, med->mi, True, (*pmp->pfw));
 	}
 	mrMiPopup = mr_popup_for_mi(pmp->menu, med->mi);
 	/* check what has to be done with the item */
 	if (__mloop_get_mi_actions(
 		    pmp, pmret, pdkp, in, med, msi, mrMiPopup,
-		    &does_submenu_overlap, &does_popdown_submenu_overlap) ==
+		    pdoes_submenu_overlap, pdoes_popdown_submenu_overlap) ==
 	    MENU_MLOOP_RET_END)
 	{
 		return MENU_MLOOP_RET_END;
@@ -5475,14 +5474,14 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 	if (in->mif.do_popdown && !in->mif.do_popup)
 	{
 		/* popdown previous popup */
-		__mloop_do_popdown(pmp, in, &does_popdown_submenu_overlap);
+		__mloop_do_popdown(pmp, in, pdoes_popdown_submenu_overlap);
 	}
 	if (in->mif.do_popup)
 	{
 		if (__mloop_do_popup(
 			    pmp, pmret, in, med, pops, mrMiPopup,
-			    &does_submenu_overlap,
-			    &does_popdown_submenu_overlap) ==
+			    pdoes_submenu_overlap,
+			    pdoes_popdown_submenu_overlap) ==
 		    MENU_MLOOP_RET_END)
 		{
 			return MENU_MLOOP_RET_END;
@@ -5499,7 +5498,7 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 		mloop_ret_code_t rc;
 
 		rc = __mloop_do_menu(
-			pmp, pmret, pdkp, in, med, pops, &does_submenu_overlap);
+			pmp, pmret, pdkp, in, med, pops, pdoes_submenu_overlap);
 		if (rc != MENU_MLOOP_RET_NORMAL)
 		{
 			return rc;
@@ -5529,7 +5528,7 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 			{
 				pop_menu_down_and_repaint_parent(
 					&in->mrPopdown,
-					&does_popdown_submenu_overlap, pmp);
+					pdoes_popdown_submenu_overlap, pmp);
 				in->mi_with_popup = NULL;
 			}
 			in->mrPopdown = NULL;
@@ -5543,10 +5542,9 @@ static mloop_ret_code_t __mloop_handle_action_with_mi(
 static mloop_ret_code_t __mloop_handle_action_without_mi(
 	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
 	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi,
-	MenuOptions *pops)
+	MenuOptions *pops, Bool *pdoes_submenu_overlap,
+	Bool *pdoes_popdown_submenu_overlap)
 {
-	Bool does_submenu_overlap = False;
-
 	pmret->flags.do_unpost_submenu = 0;
 	/* moved off menu, deselect selected item... */
 	if (!MR_SELECTED_ITEM(pmp->menu) ||
@@ -5579,7 +5577,7 @@ static mloop_ret_code_t __mloop_handle_action_without_mi(
 				pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
 				(*pmp->pfw));
 			pop_menu_down_and_repaint_parent(
-				&in->mrPopup, &does_submenu_overlap, pmp);
+				&in->mrPopup, pdoes_submenu_overlap, pmp);
 			in->mi_with_popup = NULL;
 			MR_SUBMENU_ITEM(pmp->menu) = NULL;
 			if (in->mrPopup == in->mrPopdown)
@@ -5793,6 +5791,8 @@ static void __menu_loop(
 	mloop_static_info_t msi;
 	MenuOptions mops;
 	Bool is_finished;
+	Bool does_submenu_overlap = False;
+	Bool does_popdown_submenu_overlap = False;
 
 	__mloop_init(pmp, pmret, &mei, &med, &msi, &mops);
 	for (is_finished = False; !is_finished; )
@@ -5825,12 +5825,16 @@ static void __menu_loop(
 		if (med.mi != NULL)
 		{
 			mloop_ret = __mloop_handle_action_with_mi(
-				pmp, pmret, pdkp, &mei, &med, &msi, &mops);
+				pmp, pmret, pdkp, &mei, &med, &msi, &mops,
+				&does_submenu_overlap,
+				&does_popdown_submenu_overlap);
 		}
 		else
 		{
 			mloop_ret = __mloop_handle_action_without_mi(
-				pmp, pmret, pdkp, &mei, &med, &msi, &mops);
+				pmp, pmret, pdkp, &mei, &med, &msi, &mops,
+				&does_submenu_overlap,
+				&does_popdown_submenu_overlap);
 		}
 		if (mloop_ret == MENU_MLOOP_RET_END)
 		{
@@ -7733,7 +7737,9 @@ void __menu_loop_new(
 	MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp)
 {
 	mloop_evh_input_t mei;
+#if 0
 	mloop_ret_code_t mloop_ret;
+#endif
 	mloop_evh_data_t med;
 	mloop_static_info_t msi;
 	MenuOptions mops;
@@ -7766,7 +7772,7 @@ void __menu_loop_new(
 
 
 
-
+#if 0
 		mloop_ret = __mloop_handle_event(
 			pmp, pmret, pdkp, &mei, &med, &msi);
 		switch (mloop_ret)
@@ -7796,6 +7802,7 @@ void __menu_loop_new(
 			is_finished = True;
 		}
 		XFlush(dpy);
+#endif
 	}
 	__mloop_exit(pmp, pmret, pdkp, &mei, &med, &msi, &mops);
 

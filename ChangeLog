@@ -1,5 +1,9 @@
 2002-09-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (__menu_loop):
+	(__mloop_handle_action_with_mi):
+	fixed parent menu redrawing
+
 	* fvwm/style.c (check_window_style_change):
 	* fvwm/update.c (apply_window_updates):
 	* fvwm/add_window.c (setup_icon_size_limits):
