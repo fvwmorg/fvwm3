@@ -240,7 +240,7 @@ static void free_colorset_background(colorset_struct *cs)
     cs->picture = None;
     cs->pixmap = None;
   }
-  if (cs->pixmap)
+  if (cs->pixmap && cs->pixmap != ParentRelative)
   {
     XFreePixmap(dpy, cs->pixmap);
     cs->pixmap = None;
@@ -250,7 +250,8 @@ static void free_colorset_background(colorset_struct *cs)
     XFreePixmap(dpy, cs->mask);
     cs->mask = None;
   }
-  if (cs->pixels && cs->nalloc_pixels) {
+  if (cs->pixels && cs->nalloc_pixels)
+  {
     XFreeColors(dpy, Pcmap, cs->pixels, cs->nalloc_pixels, 0);
     free(cs->pixels);
     cs->pixels = NULL;
@@ -290,6 +291,8 @@ static char *csetopts[] =
   "Plain",
   /* switch off shape */
   "NoShape",
+
+  "Transparent",
 
   NULL
 };
@@ -442,12 +445,14 @@ static void parse_colorset(char *line)
 	break;
       /* load the file using the color reduction routines in Picture.c */
       cs->picture = CachePicture(dpy, win, NULL, token, color_limit);
-      if (!cs->picture) {
+      if (!cs->picture)
+      {
 	fprintf(stderr, "%s: can't load picture %s\n", name, token);
 	break;
       }
       /* don't try to be smart with bitmaps */
-      if (cs->picture->depth != Pdepth) {
+      if (cs->picture->depth != Pdepth)
+      {
 	fprintf(stderr, "%s: bitmaps not supported\n", name);
 	DestroyPicture(dpy, cs->picture);
 	cs->picture = None;
@@ -572,6 +577,12 @@ static void parse_colorset(char *line)
 	XFreePixmap(dpy, cs->shape_mask);
 	cs->shape_mask = None;
       }
+      break;
+    case 20: /* Transparent */
+      has_pixmap_changed = True;
+      free_colorset_background(cs);
+      cs->pixmap = ParentRelative;
+      cs->pixmap_type = PIXMAP_STRETCH;
       break;
     default:
       /* test for ?Gradient */

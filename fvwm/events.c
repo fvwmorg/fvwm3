@@ -1882,10 +1882,11 @@ void HandleConfigureRequest(void)
   if (cre->window == Tmp_win->w)
   {
 #if 0
-        cre->x, (cre->value_mask & CWX),
-        cre->y, (cre->value_mask & CWY),
-        cre->width, (cre->value_mask & CWWidth),
-        cre->height, (cre->value_mask & CWHeight));
+fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d)\n",
+        cre->x, (int)(cre->value_mask & CWX),
+        cre->y, (int)(cre->value_mask & CWY),
+        cre->width, (int)(cre->value_mask & CWWidth),
+        cre->height, (int)(cre->value_mask & CWHeight));
 #endif
     /* Don't modify frame_XXX fields before calling SetupWindow! */
     dx = 0;
@@ -1901,9 +1902,10 @@ void HandleConfigureRequest(void)
     /* override even if border change */
 
     if (cre->value_mask & CWX)
-      dx = cre->x - Tmp_win->frame_g.x;
+      dx = cre->x - Tmp_win->frame_g.x - Tmp_win->boundary_width;
     if (cre->value_mask & CWY)
-      dy = cre->y - Tmp_win->frame_g.y;
+      dy = cre->y - Tmp_win->frame_g.y - Tmp_win->boundary_width -
+	Tmp_win->title_g.height;
     if (cre->value_mask & CWWidth)
       dw = cre->width - (Tmp_win->frame_g.width - 2 * Tmp_win->boundary_width);
 

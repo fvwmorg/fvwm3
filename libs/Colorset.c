@@ -146,19 +146,27 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
     }
   }
 #endif
-  if (!colorset->pixmap) {
+  if (!colorset->pixmap)
+  {
     /* use the bg pixel */
     XSetWindowBackground(dpy, win, colorset->bg);
     if (clear_area)
       XClearArea(dpy, win, 0, 0, width, height, True);
-  } else {
-    pixmap = CreateBackgroundPixmap(dpy, win, width, height, colorset, depth,
-				    gc, False);
-    if (pixmap) {
+  }
+  else
+  {
+    if (colorset->pixmap == ParentRelative)
+      pixmap = ParentRelative;
+    else
+      pixmap = CreateBackgroundPixmap(
+	dpy, win, width, height, colorset, depth, gc, False);
+    if (pixmap)
+    {
       XSetWindowBackgroundPixmap(dpy, win, pixmap);
       if (clear_area)
 	XClearArea(dpy, win, 0, 0, width, height, True);
-      XFreePixmap(dpy, pixmap);
+      if (colorset->pixmap != ParentRelative)
+	XFreePixmap(dpy, pixmap);
     }
   }
 }
@@ -179,6 +187,10 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   Bool cs_stretch_x;
   Bool cs_stretch_y;
 
+  if (colorset->pixmap == ParentRelative)
+  {
+    return ParentRelative;
+  }
   if (!is_shape_mask)
   {
     cs_pixmap = colorset->pixmap;
@@ -308,6 +320,11 @@ void SetRectangleBackground(
   Bool stretch_y = (colorset->pixmap_type == PIXMAP_STRETCH_Y)
 		   || (colorset->pixmap_type == PIXMAP_STRETCH);
 
+  if (colorset->pixmap == ParentRelative)
+  {
+    /* don't do anything */
+    return;
+  }
   /* minimize gc creation by remembering the last requested depth */
   if (last_gc != None && depth != last_depth)
   {

@@ -3,6 +3,8 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.13 (not released yet)
 
+* New FvwmTheme option 'Transparent'.
+
 * New style option 'Font' replaces the old WindowFont command.
 
 Changes in beta release 2.3.12 (December 1999)

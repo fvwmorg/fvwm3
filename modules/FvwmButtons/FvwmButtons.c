@@ -1694,7 +1694,7 @@ static void HandlePanelPress(button_info *b)
   if (is_mapped)
   {
     /* don't slide the window if it has been moved or resized */
-    if (b->x != x1 + lb || b->y != y1 + tb || b->w != w1 || b->h != h1)
+    if (b->x != x1 || b->y != y1 || b->w != w1 || b->h != h1)
     {
       steps = 0;
     }
@@ -2544,8 +2544,6 @@ static void GetPanelGeometry(
     }
     break;
   }
-  *y -= tb;
-  *x -= lb;
 
   return;
 }

@@ -58,7 +58,7 @@ be used.  Keep your colorset numbers as small as possible.
 \fIoptions\fP is a coma separated list containing some of the keywords:
 fg, Fore, Foreground, bg, Back, Background, hi, Hilite, Hilight, sh,
 Shade, Shadow, Pixmap, TiledPixmap, AspectPixmap, Shape, TiledShape,
-AspectShape, NoShape, ?Gradient and Plain.
+AspectShape, NoShape, ?Gradient, Plain and Transparent.
 
 \fIfg\fP, \fIFore\fP and \fIForeground\fP take a color name as an argument and
 set the foreground color.  The special name \fIContrast\fP may be used to
@@ -91,6 +91,12 @@ produce repeated copies of the image with no scaling, \fIPixmap\fP will
 cause the image to be stretched to fit whatever object the colorset is applied
 to and \fIAscpectPixmap\fP will stretch to fit but will retain the image
 aspect ratio.  Bitmaps are not supported.
+
+\fITransparent\fP tries to create a transparent background pixmap.
+The pixmap may be used as a window background, but due to the way
+X implements transparency no guarantees can be made that the desired
+effect can be achieved.  The application may even crash.  If you
+experience any problems with this option, do not use it.
 
 \fIShape\fP, \fITiledShape\fP and \fIAspectShape\fP take a file name as
 an argument, search the \fIImagePath\fP and use it as the shape bitmap.
