@@ -212,6 +212,7 @@ struct button_info_struct
 /* -------------------------------- prototypes ----------------------------- */
 void AddButtonAction(button_info*,int,char*);
 void MakeContainer(button_info*);
+void change_swallowed_window_colorset(button_info *b, Bool do_clear);
 #ifdef DEBUG
 char *mymalloc(int);
 #else

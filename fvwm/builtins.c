@@ -990,7 +990,7 @@ static void ApplyDefaultFontAndColors(void)
     wid = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
     hei = Scr.StdFont.height + 2 * SIZE_VINDENT;
     SetWindowBackground(dpy, Scr.SizeWindow, wid, hei, &Colorset[0], Pdepth,
-			Scr.StdGC);
+			Scr.StdGC, True);
     if(Scr.gs.EmulateMWM)
     {
       XMoveResizeWindow(dpy,Scr.SizeWindow,

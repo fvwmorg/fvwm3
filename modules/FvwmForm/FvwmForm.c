@@ -1418,7 +1418,7 @@ static void OpenWindows ()
         SetWindowBackground(dpy, item->header.win,
                             item->header.size_x, item->header.size_y,
                             &Colorset[(itemcolorset % nColorsets)], Pdepth,
-                            item->header.dt_ptr->dt_GC);
+                            item->header.dt_ptr->dt_GC, True);
       }
       break;
     case I_CHOICE:
@@ -1437,7 +1437,7 @@ static void OpenWindows ()
         SetWindowBackground(dpy, item->header.win,
                             item->header.size_x, item->header.size_y,
                             &Colorset[(itemcolorset % nColorsets)], Pdepth,
-                            item->header.dt_ptr->dt_GC);
+                            item->header.dt_ptr->dt_GC, True);
       }
       break;
     case I_BUTTON:
@@ -1458,7 +1458,7 @@ static void OpenWindows ()
         SetWindowBackground(dpy, item->header.win,
                             item->header.size_x, item->header.size_y,
                             &Colorset[(itemcolorset % nColorsets)], Pdepth,
-                            item->header.dt_ptr->dt_GC);
+                            item->header.dt_ptr->dt_GC, True);
       }
       break;
     }
@@ -1468,7 +1468,7 @@ static void OpenWindows ()
   {
     SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
                         &Colorset[(colorset % nColorsets)], Pdepth,
-                        root_item_ptr->header.dt_ptr->dt_GC);
+                        root_item_ptr->header.dt_ptr->dt_GC, True);
   }
   if (preload_yorn == 'n') {            /* if not a preload */
     XMapRaised(dpy, CF.frame);
@@ -1575,12 +1575,12 @@ static void ParseActiveMessage(char *buf) {
           SetWindowBackground(dpy, item->header.win,
                               item->header.size_x, item->header.size_y,
                               &Colorset[(itemcolorset % nColorsets)], Pdepth,
-                              item->header.dt_ptr->dt_GC);
+                              item->header.dt_ptr->dt_GC, True);
         }
       }
       SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
                           &Colorset[(colorset % nColorsets)], Pdepth,
-                          root_item_ptr->header.dt_ptr->dt_GC);
+                          root_item_ptr->header.dt_ptr->dt_GC, True);
     }
     return;
   }

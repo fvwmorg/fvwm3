@@ -271,12 +271,18 @@ void RedrawButton(button_info *b,int clean)
 	if(h2)
 	  XFillRectangle(Dpy,MyWindow,NormalGC,x1,y1+h-h2,w,h2);
       }
+    } /* container */
+    else if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
+	     b->flags & b_Colorset)
+    {
+      change_swallowed_window_colorset(b, False);
     }
     else if (b->flags & b_Colorset)
     {
       SetRectangleBackground(
 	Dpy, MyWindow, ix, iy, iw, ih, &Colorset[b->colorset % nColorsets],
 	Pdepth, NormalGC);
+
     }
     else if (!(b->flags&b_IconBack) && !(b->flags&b_IconParent) &&
 	     !(b->flags&b_Swallow) && !(b->flags&b_ColorsetParent))

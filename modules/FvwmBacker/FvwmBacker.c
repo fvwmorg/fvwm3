@@ -209,7 +209,7 @@ void set_desk_background(int desk)
     SetWindowBackground(
       dpy, root, DisplayWidth(dpy, screen), DisplayHeight(dpy, screen),
       &Colorset[commands[desk].colorset % nColorsets],
-      DefaultDepth(dpy, screen), DefaultGC(dpy, screen));
+      DefaultDepth(dpy, screen), DefaultGC(dpy, screen), True);
     XFlush(dpy);
     break;
   case 0:

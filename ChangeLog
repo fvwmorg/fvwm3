@@ -1,3 +1,13 @@
+1999-09-26  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/WinMagic.c (GetEqualSizeChildren): new function
+
+	* fvwm/menus.c (paint_menu):
+	* fvwm/builtins.c (ApplyDefaultFontAndColors):
+	use new signature of SetWindowBackground()
+
+	* libs/Colorset.c (SetWindowBackground): changed signature
+
 1999-09-25  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/builtins.c (HandleColorset):

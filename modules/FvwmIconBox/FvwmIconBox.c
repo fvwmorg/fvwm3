@@ -701,7 +701,8 @@ void RedrawIcon(struct icon_info *item, int f)
 	  XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w, NormalGC,
 		    0, 0, item->icon_w, item->icon_h, hr, hr);
         } else {
-	  XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w, DefaultGC(dpy, screen),
+	  XCopyArea(dpy, item->iconPixmap, item->icon_pixmap_w,
+		    DefaultGC(dpy, screen),
 		    0, 0, item->icon_w, item->icon_h, 0, 0);
 	}
       }
@@ -1122,9 +1123,11 @@ void CreateWindow(void)
   /* icon_win's background */
   if (colorset >= 0) {
     SetWindowBackground(dpy, icon_win, icon_win_width, icon_win_height,
-                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC);
+                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC,
+			True);
     SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
-                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC);
+                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC,
+			True);
   } else if (GetBackPixmap() == True){
     XSetWindowBackgroundPixmap(dpy, icon_win, IconwinPixmap);
     /*  special thanks to Dave Goldberg <dsg@mitre.org>
@@ -1216,9 +1219,11 @@ void change_colorset(int color) {
     shadow_pix = (colorset < 0) ? GetShadow(back_pix)
       : Colorset[colorset % nColorsets].shadow;
     SetWindowBackground(dpy, main_win, w, h,
-                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC);
+                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC,
+			True);
     SetWindowBackground(dpy, icon_win, icon_win_width, icon_win_height,
-                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC);
+                        &Colorset[(colorset % nColorsets)], Pdepth, NormalGC,
+			True);
     XSetWindowBackground(dpy, holder_win, back_pix);
     XSetWindowBackground(dpy, h_scroll_bar, back_pix);
     XSetWindowBackground(dpy, v_scroll_bar, back_pix);

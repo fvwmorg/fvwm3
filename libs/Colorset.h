@@ -56,7 +56,8 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 			      colorset_struct *colorset, unsigned int depth,
 			      GC gc, Bool is_mask);
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
-			 colorset_struct *colorset, unsigned int depth, GC gc);
+			 colorset_struct *colorset, unsigned int depth, GC gc,
+			 Bool clear_area);
 void SetRectangleBackground(
   Display *dpy, Window win, int x, int y, int width, int height,
   colorset_struct *colorset, unsigned int depth, GC gc);

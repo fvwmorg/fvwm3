@@ -157,7 +157,8 @@ inline int LoadColorsetAndFree(char *line)
  * if width or height are zero the window size is queried
  */
 void SetWindowBackground(Display *dpy, Window win, int width, int height,
-			 colorset_struct *colorset, unsigned int depth, GC gc)
+			 colorset_struct *colorset, unsigned int depth, GC gc,
+			 Bool clear_area)
 {
   Pixmap pixmap = None;
   Pixmap mask = None;
@@ -182,13 +183,15 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
   if (!colorset->pixmap) {
     /* use the bg pixel */
     XSetWindowBackground(dpy, win, colorset->bg);
-    XClearArea(dpy, win, 0, 0, width, height, True);
+    if (clear_area)
+      XClearArea(dpy, win, 0, 0, width, height, True);
   } else {
     pixmap = CreateBackgroundPixmap(dpy, win, width, height, colorset, depth,
 				    gc, False);
     if (pixmap) {
       XSetWindowBackgroundPixmap(dpy, win, pixmap);
-      XClearArea(dpy, win, 0, 0, width, height, True);
+      if (clear_area)
+	XClearArea(dpy, win, 0, 0, width, height, True);
       XFreePixmap(dpy, pixmap);
     }
   }

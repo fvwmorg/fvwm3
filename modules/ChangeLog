@@ -1,3 +1,29 @@
+1999-09-26  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (change_swallowed_window_colorset):
+	* FvwmButtons/draw.c (RedrawButton):
+	* FvwmButtons/FvwmButtons.c (swallow):
+	improved(?) setting backgrounds of swallowed applications
+
+	* FvwmScroll/GrabWindow.c (CreateWindow):
+	(Loop):
+	* FvwmPager/x_pager.c (ChangeDeskForWindow):
+	(initialize_pager):
+	(ReConfigure):
+	(AddNewWindow):
+	(ChangeDeskForWindow):
+	(MoveResizePagerView):
+	(Hilight):
+	(MapBalloonWindow):
+	(change_colorset):
+	* FvwmIdent/FvwmIdent.c (list_end):
+	* FvwmIconBox/FvwmIconBox.c (CreateWindow):
+	* FvwmForm/FvwmForm.c (OpenWindows):
+	* FvwmButtons/FvwmButtons.c (change_colorset):
+	(change_swallowed_window_colorset):
+	* FvwmBacker/FvwmBacker.c (set_desk_background):
+	use new signature of SetWindowBackground()
+
 1999-09-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmM4/FvwmM4:

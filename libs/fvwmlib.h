@@ -286,6 +286,10 @@ void SlideWindow(
 
 Window GetTopAncestorWindow(Display *dpy, Window child);
 
+int GetEqualSizeChildren(
+  Display *dpy, Window parent, int depth, VisualID visualid, Colormap colormap,
+  Window **ret_children);
+
 /***********************************************************************
  * Key and mouse bindings
  ***********************************************************************/

@@ -188,3 +188,64 @@ Window GetTopAncestorWindow(Display *dpy, Window child)
 
   return (last_child == child) ? None : last_child;
 }
+
+/* Given a parent window this function returns a list of children of the
+ * parent window that have the same size, depth, visual and colormap as the
+ * parent window and that have position +0+0 within the parent. If the 'depth'
+ * argument is non-zero it must match the depth of the window. The 'visualid'
+ * and 'colormap' arguments work just the same. The number of matching
+ * children is returned. The list of children is returned in *children. If this
+ * list is non-NULL, it must be free'd with XFree. If an error occurs or the
+ * parent window does not match the required depth, colormap or visualid, the
+ * function returns -1 and NULL in *children. */
+int GetEqualSizeChildren(
+  Display *dpy, Window parent, int depth, VisualID visualid, Colormap colormap,
+  Window **ret_children)
+{
+  XWindowAttributes pxwa;
+  XWindowAttributes cxwa;
+  Window JunkW;
+  Window *children;
+  int nchildren;
+  int i;
+  int j;
+
+  if (!XGetWindowAttributes(dpy, parent, &pxwa))
+    return -1;
+  if (!XQueryTree(dpy, parent, &JunkW, &JunkW, &children, &nchildren))
+    return -1;
+  if (depth && pxwa.depth != depth)
+    return -1;
+  if (visualid && XVisualIDFromVisual(pxwa.visual) != visualid)
+    return -1;
+  if (colormap && pxwa.colormap != colormap)
+    return -1;
+
+  for (i = 0, j = 0; i < nchildren; i++)
+  {
+    if (XGetWindowAttributes(dpy, children[i], &cxwa) &&
+	cxwa.x == 0 &&
+	cxwa.y == 0 &&
+	cxwa.width == pxwa.width &&
+	cxwa.height == pxwa.height &&
+	(!depth || cxwa.depth == depth) &&
+	(!visualid || XVisualIDFromVisual(cxwa.visual) == visualid) &&
+	cxwa.class == InputOutput &&
+	(!colormap || cxwa.colormap == colormap))
+    {
+      children[j++] = children[i];
+    }
+  } /* for */
+
+  if (j == 0)
+  {
+    if (children)
+    {
+      XFree(children);
+      children = NULL;
+    }
+  }
+  *ret_children = children;
+
+  return j;
+}

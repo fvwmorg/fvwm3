@@ -486,7 +486,7 @@ void list_end(void)
 
   if (colorset >= 0)
     SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
-			&Colorset[(colorset % nColorsets)], Pdepth, gc);
+			&Colorset[(colorset % nColorsets)], Pdepth, gc, True);
 
   XMapWindow(dpy,main_win);
 
@@ -538,7 +538,8 @@ void list_end(void)
 	    XSetForeground(dpy, gc, Colorset[colorset % nColorsets].fg);
 	    SetWindowBackground(dpy, main_win, mysizehints.width,
 				mysizehints.height,
-				&Colorset[colorset % nColorsets], Pdepth, gc);
+				&Colorset[colorset % nColorsets], Pdepth, gc,
+				True);
 	  }
 	}
 	free(token);

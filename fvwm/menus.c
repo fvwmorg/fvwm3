@@ -3058,7 +3058,8 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
     {
       SetWindowBackground(
 	dpy, MR_WINDOW(mr), MR_WIDTH(mr), MR_HEIGHT(mr),
-	&Colorset[ST_CSET_MENU(ms) % nColorsets], Pdepth, ST_MENU_GC(ms));
+	&Colorset[ST_CSET_MENU(ms) % nColorsets], Pdepth, ST_MENU_GC(ms),
+	True);
       MR_IS_BACKGROUND_SET(mr) = True;
     }
   }

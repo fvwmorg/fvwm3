@@ -1867,7 +1867,7 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   {
     SetWindowBackground(
       Dpy, MyWindow, mysizehints.width, mysizehints.height,
-      &Colorset[ub->c->colorset % nColorsets], Pdepth, NormalGC);
+      &Colorset[ub->c->colorset % nColorsets], Pdepth, NormalGC, True);
   }
   else if (ub->c->flags&b_IconBack && !(ub->c->flags&b_TransBack))
   {
@@ -2102,14 +2102,26 @@ void SpawnSome(void)
 
 /* This function is a real hack. It forces our nice background upon the
  * windows of the swallowed application! */
-static void change_swallowed_window_colorset(button_info *b)
+void change_swallowed_window_colorset(button_info *b, Bool do_clear)
 {
+  Window w = SwallowedWindow(b);
+  Window *children;
+  int nchildren;
+
+  nchildren = GetEqualSizeChildren(
+    Dpy, w, Pdepth, XVisualIDFromVisual(Pvisual),
+    XDefaultColormap(Dpy, screen), &children);
   SetWindowBackground(
-    Dpy, b->IconWin, buttonWidth(b), buttonHeight(b),
-    &Colorset[b->colorset % nColorsets], Pdepth, NormalGC);
-  SetWindowBackground(
-    Dpy, b->IconWin+1, buttonWidth(b), buttonHeight(b),
-    &Colorset[b->colorset % nColorsets], Pdepth, NormalGC);
+    Dpy, w, buttonWidth(b), buttonHeight(b),
+    &Colorset[b->colorset % nColorsets], Pdepth, NormalGC, do_clear);
+  while (nchildren-- > 0)
+  {
+    SetWindowBackground(
+      Dpy, children[nchildren], buttonWidth(b), buttonHeight(b),
+      &Colorset[b->colorset % nColorsets], Pdepth, NormalGC, do_clear);
+  }
+  if (children)
+    XFree(children);
 
   return;
 }
@@ -2142,7 +2154,7 @@ static void recursive_change_colorset(container_info *c, int colorset)
 	  (colorset == b->colorset))
       {
 	/* re-apply colorset to window background */
-	change_swallowed_window_colorset(b);
+	change_swallowed_window_colorset(b, True);
       }
     }
     else
@@ -2165,7 +2177,7 @@ static void change_colorset(int colorset)
   {
     SetWindowBackground(
       Dpy, MyWindow, UberButton->c->width, UberButton->c->height,
-      &Colorset[colorset % nColorsets], Pdepth, NormalGC);
+      &Colorset[colorset % nColorsets], Pdepth, NormalGC, True);
   }
 
   recursive_change_colorset(UberButton->c, colorset);
@@ -2467,7 +2479,16 @@ void swallow(unsigned long *body)
 	MakeButton(b);
 
 	if (b->flags & b_Colorset)
-	  change_swallowed_window_colorset(b);
+	{
+	  /* A short delay to give the application the chance to set the
+	   * background itself, so we can override it. If we don't do this, the
+	   * application may override out background. On the other hand it may
+	   * still override our background, but our chances are a bit better.
+	   */
+	  usleep(100000);
+	  XSync(Dpy, 0);
+	  change_swallowed_window_colorset(b, True);
+	}
 	RedrawButton(b,1);
       }
       else /* (b->flags & b_Panel) */

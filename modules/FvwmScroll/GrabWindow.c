@@ -148,7 +148,8 @@ void CreateWindow(int x,int y, int w, int h)
 
   if (colorset >= 0)
     SetWindowBackground(dpy, main_win, mysizehints.width, mysizehints.height,
-			&Colorset[(colorset % nColorsets)], Pdepth, shadowGC);
+			&Colorset[(colorset % nColorsets)], Pdepth, shadowGC,
+			True);
 
   _XA_WM_COLORMAP_WINDOWS = XInternAtom (dpy, "WM_COLORMAP_WINDOWS", False);
  }
@@ -206,7 +207,7 @@ void Loop(Window target)
 	    if (colorset >= 0)
 	      SetWindowBackground(dpy, main_win, tw, th,
 				  &Colorset[(colorset % nColorsets)], Pdepth,
-				  shadowGC);
+				  shadowGC, True);
 	    XResizeWindow(dpy, holder_win, tw - BAR_WIDTH - PAD_WIDTH3,
 			  th - BAR_WIDTH - PAD_WIDTH3);
 	    Width = tw;
@@ -535,7 +536,7 @@ void Loop(Window target)
 			   Colorset[colorset % nColorsets].shadow);
 	    SetWindowBackground(dpy, main_win, Width, Height,
 				&Colorset[colorset % nColorsets], Pdepth,
-				shadowGC);
+				shadowGC, True);
 	  }
 	}
 	free(token);
