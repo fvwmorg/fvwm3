@@ -100,7 +100,7 @@ char *ImagePath = NULL;
 int MoveThreshold = DEFAULT_MOVE_THRESHOLD;
 
 int ShowBalloons = 0, ShowPagerBalloons = 0, ShowIconBalloons = 0;
-Bool do_focus_on_enter = 1;
+Bool do_focus_on_enter = False;
 char *BalloonTypeString = NULL;
 char *BalloonBack = NULL;
 char *BalloonFore = NULL;
