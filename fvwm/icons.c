@@ -69,11 +69,11 @@ static void GetXPMFile(FvwmWindow *tmp_win);
  ****************************************************************************/
 void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 {
-  int final_x, final_y;
   /* mask for create windows */
   unsigned long valuemask;
   /* attributes for create windows */
   XSetWindowAttributes attributes;
+  XWindowChanges xwc;
 
   SET_ICON_OURS(tmp_win, 1);
   SET_PIXMAP_OURS(tmp_win, 0);
@@ -133,21 +133,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     tmp_win->icon_p_width = tmp_win->icon_t_width+6;
   tmp_win->icon_w_width = tmp_win->icon_p_width;
 
-  final_x = def_x;
-  final_y = def_y;
-  if(final_x <0)
-    final_x = 0;
-  if(final_y <0)
-    final_y = 0;
-
-  if(final_x + tmp_win->icon_w_width >=Scr.MyDisplayWidth)
-    final_x = Scr.MyDisplayWidth - tmp_win->icon_w_width-1;
-  if(final_y + tmp_win->icon_w_height >=Scr.MyDisplayHeight)
-    final_y = Scr.MyDisplayHeight - tmp_win->icon_w_height-1;
-
-  tmp_win->icon_x_loc = final_x;
-  tmp_win->icon_xl_loc = final_x;
-  tmp_win->icon_y_loc = final_y;
+  tmp_win->icon_x_loc = tmp_win->icon_xl_loc = def_x;
+  tmp_win->icon_y_loc = def_y;
 
   /* clip to fit on screen */
   valuemask = CWColormap | CWBorderPixel
@@ -161,8 +148,8 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 			   | EnterWindowMask | LeaveWindowMask
 			   | FocusChangeMask );
   if (!(HAS_NO_ICON_TITLE(tmp_win)) || (tmp_win->icon_p_height == 0))
-    tmp_win->icon_w = XCreateWindow(dpy, Scr.Root, final_x,
-				    final_y + tmp_win->icon_p_height,
+    tmp_win->icon_w = XCreateWindow(dpy, Scr.Root, def_x,
+				    def_y + tmp_win->icon_p_height,
 				    tmp_win->icon_w_width,
 				    tmp_win->icon_w_height, 0, Scr.depth,
 				    InputOutput, Scr.viz, valuemask,
@@ -172,7 +159,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
      && (tmp_win->icon_p_height > 0)) {
       /* client supplied icon pixmaps use the default visual */
       if (Scr.usingDefaultVisual || IS_PIXMAP_OURS(tmp_win))
-	tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, final_x, final_y,
+	tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, def_x, def_y,
 					       tmp_win->icon_p_width,
 					       tmp_win->icon_p_height, 0,
 					       Scr.depth, InputOutput,
@@ -181,7 +168,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
         /* must use root visuals not fvwm's */
         attributes.background_pixel = BlackPixel(dpy, Scr.screen);
         attributes.colormap = DefaultColormap(dpy, Scr.screen);
-	tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, final_x, final_y,
+	tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, def_x, def_y,
 					       tmp_win->icon_p_width,
 					       tmp_win->icon_p_height, 0,
 					       DefaultDepth(dpy, Scr.screen),
@@ -221,14 +208,9 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 				  C_ICON, GetUnusedModifiers(),
 				  Scr.FvwmCursors[DEFAULT], True);
 
-#ifdef SESSION
-      {
-        XWindowChanges xwc;
-        xwc.sibling = tmp_win->frame;
-        xwc.stack_mode = Below;
-        XConfigureWindow(dpy, tmp_win->icon_w, CWSibling|CWStackMode, &xwc);
-      }
-#endif
+      xwc.sibling = tmp_win->frame;
+      xwc.stack_mode = Below;
+      XConfigureWindow(dpy, tmp_win->icon_w, CWSibling|CWStackMode, &xwc);
     }
   if(tmp_win->icon_pixmap_w != None)
     {
@@ -238,15 +220,9 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 				  C_ICON, GetUnusedModifiers(),
 				  Scr.FvwmCursors[DEFAULT], True);
 
-#ifdef SESSION
-      {
-        XWindowChanges xwc;
-        xwc.sibling = tmp_win->frame;
-        xwc.stack_mode = Below;
-        XConfigureWindow(dpy, tmp_win->icon_pixmap_w, CWSibling|CWStackMode,
-			 &xwc);
-      }
-#endif
+      xwc.sibling = tmp_win->frame;
+      xwc.stack_mode = Below;
+      XConfigureWindow(dpy,tmp_win->icon_pixmap_w,CWSibling|CWStackMode,&xwc);
   }
   return;
 }
@@ -1062,10 +1038,12 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
     tmp_win->icon_w_width = tmp_win->icon_p_width;
   }
 
-#ifdef SESSION
+  /* this condition will be true unless we restore a window to
+     iconified state from a saved session. */
   if (!(DO_START_ICONIC(tmp_win) && IS_ICON_MOVED(tmp_win)))
-#endif
-  AutoPlaceIcon(tmp_win);
+    {
+      AutoPlaceIcon(tmp_win);
+    }
 
   SET_ICONIFIED(tmp_win, 1);
   SET_ICON_UNMAPPED(tmp_win, 0);
@@ -1082,10 +1060,10 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
                   tmp_win->frame_g.height);
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
 
-#ifdef SESSION
   if (!(DO_START_ICONIC(tmp_win) && IS_ICON_MOVED(tmp_win)))
-#endif
-  LowerWindow(tmp_win);
+    {
+      LowerWindow(tmp_win);
+    }
 
   if(tmp_win->Desk == Scr.CurrentDesk)
     {

@@ -501,9 +501,9 @@ void HandlePropertyNotify(void)
       free_window_names (Tmp_win, True, False);
 
       Tmp_win->name = (char *)text_prop.value;
-#ifdef SESSION
+
       SET_NAME_CHANGED(Tmp_win, 1);
-#endif
+
       if (Tmp_win->name == NULL)
         Tmp_win->name = NoName;
       BroadcastName(M_WINDOW_NAME,Tmp_win->w,Tmp_win->frame,
@@ -919,11 +919,9 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
       DeIconify(Tmp_win);
     }
 
-#ifdef SESSION
-  /* just to be on the safe side, we make sure that STARTICONIC
-     can only influence the initial transition from withdrawn state */
+  /* Just to be on the safe side, we make sure that STARTICONIC
+     can only influence the initial transition from withdrawn state. */
   SET_DO_START_ICONIC(Tmp_win, 0);
-#endif
 
 #ifdef GNOME
   GNOME_SetClientList();

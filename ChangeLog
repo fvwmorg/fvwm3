@@ -1,3 +1,20 @@
+1999-05-20  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/icons.c (CreateIconWindow): remove some code which
+	prevented the creation of offscreen icons. This should't be
+	a problem, since AutoPlaceIcon takes care of this later. But
+	it enables Restart to put icons in the proper place.
+
+	* fvwm/icons.c (Iconify): 
+	(CreateIconWindow): 
+	* fvwm/events.c (HandleMapRequestKeepRaised): 
+	(HandlePropertyNotify): 
+	remove some #ifdef SESSION's, since the session stuff is now
+	also used for restarting.
+
+	* fvwm/builtins.c (ReadButtonFace): Initialize vc->line_style to 0
+	before reading a line pattern.
+
 1999-05-20  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (DestroyMenu):

@@ -2211,6 +2211,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	    }
 
 	    vc->num = num_coords;
+	    vc->line_style = 0;
 	    vc->x = (int *) safemalloc (sizeof (int) * num_coords);
 	    vc->y = (int *) safemalloc (sizeof (int) * num_coords);
 
@@ -2227,12 +2228,13 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 					action);
 		    return False;
 		}
-		if (line_style != 0)
+		if (line_style)
 		  {
 		    vc->line_style |= (1 << i);
 		  }
 		s += offset;
 	    }
+fprintf(stderr, "parsed vector style %d\n", vc->line_style);	    
 	    bf->style = VectorButton;
 	}
 #endif
