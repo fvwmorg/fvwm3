@@ -1,5 +1,8 @@
 1999-12-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/borders.c (RedrawBorder):
+	removed debug code that reversed the BorderPriority global option
+
 	* configure.in: changed version to 2.3.12
 
 	* fvwm/icons.c:

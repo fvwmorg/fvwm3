@@ -423,7 +423,7 @@ static void RedrawBorder(
   }
   /* reduce size of relief until at leas one pixel of the original colour is
    * visible. */
-  while (sum + (Scr.go.BorderColorPriority ? 0 : 1) > t->boundary_width)
+  while (sum + (Scr.go.BorderColorPriority ? 1 : 0) > t->boundary_width)
   {
     if (w_hi > 1)
       w_hi--;
