@@ -333,10 +333,9 @@ void Loop(void)
 {
   Window root;
   struct icon_info *tmp, *exhilite;
-  int x,y,border_width,depth;
-  int i, hr = icon_relief/2;
+  int x, y, border_width, depth, i;
   XEvent Event;
-  int tw,th;
+  int tw, th;
   int diffx, diffy;
   int oldw, oldh;
 
@@ -562,10 +561,18 @@ void Loop(void)
 		    XFreePixmap(dpy, tmp->iconPixmap);
 		  GetIconBitmap(tmp);
 #ifdef SHAPE
-		  if (tmp->icon_maskPixmap != None)
+		  if (tmp->icon_maskPixmap != None) {
+		    int hr = (Pdefault | (tmp->icon_depth == 1)
+			      | IS_PIXMAP_OURS(tmp)) ? icon_relief/2 : 0;
+		    /* This XSync is necessary, do not remove */
+		    /* without it the icon window will disappear */
+		    /* server: Exceed, client Sparc/Solaris 2.6 */
+		    /* don't know if this is a server or xlib bug */
+		    XSync(dpy, False);
 		    XShapeCombineMask(dpy, tmp->icon_pixmap_w,
 				      ShapeBounding, hr, hr,
 				      tmp->icon_maskPixmap, ShapeSet);
+		  }
 #endif
 		  AdjustIconWindow(tmp, i);
 		  if (max_icon_height != 0)

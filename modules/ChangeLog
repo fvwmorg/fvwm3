@@ -1,3 +1,7 @@
+1999-12-10  Hippo
+
+	* FvwmIconBox/FvwmIconBox.c: fixed loss of shaped Netscape Mail icon.
+
 1999-12-09  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmButtons/FvwmButtons.c (HandlePanelPress):
