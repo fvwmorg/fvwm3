@@ -1,5 +1,8 @@
 2002-04-05  olicha  <olivier.chapuis@free.fr>
 
+	* Makefile.am:
+	Added -lm to LDADD
+
 	* fvwm-menu-desktop.in (get_info):
 	Allows png icons in fvwm menu
 

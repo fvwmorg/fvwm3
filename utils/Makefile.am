@@ -13,7 +13,7 @@ man_MANS = xpmroot.1 fvwm-config.1 fvwmbug.1 fvwmrc_convert.1 fvwm24_convert.1 \
 EXTRA_DIST = fvwmrc_convert quantize_pixmaps $(man_MANS)
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) \
-	$(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) $(png_LIBS)
+	$(X_PRE_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) $(png_LIBS)
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS) $(png_CFLAGS)
 
 
