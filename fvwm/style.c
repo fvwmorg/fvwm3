@@ -2185,8 +2185,9 @@ void check_window_style_change(
   if (SCHAS_NO_ICON_TITLE(*ret_style) ||
       SCIS_ICON_SUPPRESSED(*ret_style))
   {
-    flags->do_update_icon = True;
+    flags->do_update_icon_font = True;
     flags->do_update_icon_title = True;
+    flags->do_update_icon = True;
   }
 
 
@@ -2268,12 +2269,23 @@ void check_window_style_change(
   }
 
   /*
+   * has_ol_decor
+   */
+  if (ret_style->change_mask.has_ol_decor)
+  {
+    /* old decor overrides 'has_no_icon_title'! */
+    flags->do_update_icon_font = True;
+    flags->do_update_icon_title = True;
+    flags->do_update_icon = True;
+    flags->do_redecorate = True;
+  }
+
+  /*
    * has_border_width
    * has_handle_width
    * has_mwm_decor
    * has_mwm_functions
    * has_no_border
-   * has_ol_decor
    * is_button_disabled
    */
   if (ret_style->change_mask.has_border_width ||
@@ -2281,7 +2293,6 @@ void check_window_style_change(
       ret_style->change_mask.has_mwm_decor ||
       ret_style->change_mask.has_mwm_functions ||
       ret_style->change_mask.has_no_border ||
-      ret_style->change_mask.has_ol_decor ||
       ret_style->change_mask.is_button_disabled)
   {
     flags->do_redecorate = True;

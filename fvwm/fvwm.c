@@ -895,7 +895,7 @@ void CaptureAllWindows(void)
     /*
     ** map all of the non-override, non-icon windows
     */
-    for (i = 0; i < nchildren; i++)
+    for (i=0;i<nchildren;i++)
     {
       if (children[i] && MappedNotOverride(children[i]))
       {
@@ -909,7 +909,7 @@ void CaptureAllWindows(void)
   else /* must be recapture */
   {
     /* reborder all windows */
-    for(i=0; i<nchildren; i++)
+    for (i=0;i<nchildren;i++)
     {
       if(XFindContext(dpy, children[i], FvwmContext, (caddr_t *)&tmp)!=XCNOENT)
       {

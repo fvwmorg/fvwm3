@@ -375,6 +375,9 @@ void setup_icon_font(
 void setup_style_and_decor(
   FvwmWindow *tmp_win, window_style *pstyle, short *buttons)
 {
+  /* first copy the static styles into the window struct */
+  memcpy(&(FW_COMMON_FLAGS(tmp_win)), &(pstyle->flags.common),
+         sizeof(common_flags_type));
 #ifdef SHAPE
   if (ShapesSupported)
   {
@@ -1247,8 +1250,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   SET_TRANSIENT(
     tmp_win, !!XGetTransientForHint(dpy, tmp_win->w, &tmp_win->transientfor));
   setup_style_and_decor(tmp_win, &style, &buttons);
-  memcpy(&(FW_COMMON_FLAGS(tmp_win)), &(sflags->common),
-         sizeof(common_flags_type));
 
   /****** fonts ******/
   setup_window_font(tmp_win, &style, False);
