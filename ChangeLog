@@ -1,3 +1,20 @@
+1999-04-17  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/screen.h (TOP_EDGE): 
+	(RIGHT_EDGE): 
+	(BOTTOM_EDGE): 
+	(LEFT_EDGE): separate cursor types for the pan frames.
+
+	* fvwm/fvwm.c (CreateCursors): initialize the _EDGE cursors
+	to be the same as the non-_EDGE ones.
+
+	* fvwm/virtual.c (initPanFrames): use the _EDGE cursors.
+
+	* fvwm/builtins.c (CursorStyle): allow to change the _EDGE cursors.
+
+	* fvwm/fvwm2.1: 
+	* NEWS: document the new cursors.
+	
 1999-04-16  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm2.1: expanded the introductory remarks on layers,

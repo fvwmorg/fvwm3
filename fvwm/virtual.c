@@ -499,7 +499,7 @@ void initPanFrames(void)
 			    VisibilityChangeMask);
   valuemask=  (CWEventMask | CWCursor );
 
-  attributes.cursor = Scr.FvwmCursors[TOP];
+  attributes.cursor = Scr.FvwmCursors[TOP_EDGE];
   /* I know these overlap, it's useful when at (0,0) and the top one is unmapped */
   Scr.PanFrameTop.win =
     XCreateWindow (dpy, Scr.Root,
@@ -509,7 +509,7 @@ void initPanFrames(void)
 		   CopyFromParent, InputOnly,
 		   CopyFromParent,
 		   valuemask, &attributes);
-  attributes.cursor = Scr.FvwmCursors[LEFT];
+  attributes.cursor = Scr.FvwmCursors[LEFT_EDGE];
   Scr.PanFrameLeft.win =
     XCreateWindow (dpy, Scr.Root,
 		   0, 0,
@@ -517,7 +517,7 @@ void initPanFrames(void)
 		   0,	/* no border */
 		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
-  attributes.cursor = Scr.FvwmCursors[RIGHT];
+  attributes.cursor = Scr.FvwmCursors[RIGHT_EDGE];
   Scr.PanFrameRight.win =
     XCreateWindow (dpy, Scr.Root,
 		   Scr.MyDisplayWidth - edge_thickness, 0,
@@ -525,7 +525,7 @@ void initPanFrames(void)
 		   0,	/* no border */
 		   CopyFromParent, InputOnly, CopyFromParent,
 		   valuemask, &attributes);
-  attributes.cursor = Scr.FvwmCursors[BOTTOM];
+  attributes.cursor = Scr.FvwmCursors[BOTTOM_EDGE];
   Scr.PanFrameBottom.win =
     XCreateWindow (dpy, Scr.Root,
 		   0, Scr.MyDisplayHeight - edge_thickness,

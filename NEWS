@@ -1,5 +1,7 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* The cursors used for the pan frames at the edge of the screen can be changed.
+
 * StaysOnBottom style.
 
 * ResizeHintOverride style: a window with this style can be resized beyond the

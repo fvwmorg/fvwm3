@@ -80,7 +80,11 @@
 #define TOP_RIGHT 14
 #define BOTTOM_LEFT 15
 #define BOTTOM_RIGHT 16
-#define MAX_CURSORS 18
+#define TOP_EDGE 17
+#define RIGHT_EDGE 18
+#define BOTTOM_EDGE 19
+#define LEFT_EDGE 20
+#define MAX_CURSORS 21
 
 /* colormap focus styes */
 #define COLORMAP_FOLLOWS_MOUSE 1 /* default */

@@ -1124,6 +1124,10 @@ void CreateCursors(void)
   Scr.FvwmCursors[TOP_RIGHT] = XCreateFontCursor(dpy,XC_top_right_corner);
   Scr.FvwmCursors[BOTTOM_LEFT] = XCreateFontCursor(dpy,XC_bottom_left_corner);
   Scr.FvwmCursors[BOTTOM_RIGHT] =XCreateFontCursor(dpy,XC_bottom_right_corner);
+  Scr.FvwmCursors[LEFT_EDGE] = XCreateFontCursor(dpy, XC_left_side);
+  Scr.FvwmCursors[RIGHT_EDGE] = XCreateFontCursor(dpy, XC_right_side);
+  Scr.FvwmCursors[TOP_EDGE] = XCreateFontCursor(dpy, XC_top_side);
+  Scr.FvwmCursors[BOTTOM_EDGE] = XCreateFontCursor(dpy, XC_bottom_side);
 }
 
 /***********************************************************************

@@ -1579,6 +1579,10 @@ void CursorStyle(F_CMD_ARGS)
   else if (StrEquals("TOP_RIGHT",cname)) index = TOP_RIGHT;
   else if (StrEquals("BOTTOM_LEFT",cname)) index = BOTTOM_LEFT;
   else if (StrEquals("BOTTOM_RIGHT",cname)) index = BOTTOM_RIGHT;
+  else if (StrEquals("LEFT_EDGE",cname)) index = LEFT_EDGE;
+  else if (StrEquals("RIGHT_EDGE",cname)) index = RIGHT_EDGE;
+  else if (StrEquals("TOP_EDGE",cname)) index = TOP_EDGE;
+  else if (StrEquals("BOTTOM_EDGE",cname)) index = BOTTOM_EDGE;
   else
   {
     fvwm_msg(ERR,"CursorStyle","Unknown cursor name %s",cname);
@@ -1684,6 +1688,11 @@ void CursorStyle(F_CMD_ARGS)
 
   /* Do the menus for good measure */
   SetMenuCursor(Scr.FvwmCursors[MENU]);
+
+  SafeDefineCursor(Scr.PanFrameTop.win, Scr.FvwmCursors[TOP_EDGE]);
+  SafeDefineCursor(Scr.PanFrameBottom.win, Scr.FvwmCursors[BOTTOM_EDGE]);
+  SafeDefineCursor(Scr.PanFrameLeft.win, Scr.FvwmCursors[LEFT_EDGE]);
+  SafeDefineCursor(Scr.PanFrameRight.win, Scr.FvwmCursors[RIGHT_EDGE]);
 }
 
 
