@@ -1,3 +1,13 @@
+Wed Mar 31 20:32:27 1999  Steve ROBBINS  <stever@bottom.bic.mni.mcgill.ca (Steve ROBBINS)>
+
+	* fvwm/menus.c (menuShortcuts): removed C++-style comment.
+
+	* acconfig.h (alloca stuff): moved to @BOTTOM@ section, because it
+	depends on the definition of HAVE_ALLOCA_H.  Also removed the
+	ifndef _GNUC_; nobody knows why we can't include <alloca.h> when
+	compiling with gcc.  On the contrary, this file provides a
+	prototype for alloca() which is a good thing.
+
 1999-04-01  Tomas Ogren  <stric@ing.umu.se>
 
 	* fvwm/move.c (moveLoop): Fixed typo: window_being_moved ->

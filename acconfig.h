@@ -1,22 +1,3 @@
-
-/** alloca() support **/
-
-/* AIX requires this to be the first thing in the file.  */
-#ifndef __GNUC__
-# if HAVE_ALLOCA_H
-#  include <alloca.h>
-# else
-#  ifdef _AIX
- #pragma alloca
-#  else
-#   ifndef alloca /* predefined by HP cc +Olibcalls */
-char *alloca ();
-#   endif
-#  endif
-# endif
-#endif
-
-
 /* Suffix for config filenames */
 #define FVWMRC ".fvwm2rc"
 
@@ -181,6 +162,20 @@ char *alloca ();
 #error This text should not appear anywhere!
 
 @BOTTOM@
+
+
+#if HAVE_ALLOCA_H
+#  include <alloca.h>
+#else
+#  ifdef _AIX
+       #pragma alloca
+#  else
+#    ifndef alloca /* predefined by HP cc +Olibcalls */
+         char *alloca ();
+#    endif
+#  endif
+#endif
+
 
 #ifdef STDC_HEADERS
 #  include <stdlib.h>

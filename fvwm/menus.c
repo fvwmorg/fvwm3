@@ -437,7 +437,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
     MenuItem *mi;
     MenuItem *mi1;
     char key;
-    int countHotkey = 0;      // Added by MMH mikehan@best.com 2/7/99
+    int countHotkey = 0;      /* Added by MMH mikehan@best.com 2/7/99 */
 
     /* if this is a letter set it to lower case */
     if (isupper(keychar))
