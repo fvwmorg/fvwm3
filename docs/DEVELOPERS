@@ -164,7 +164,11 @@ Steps: 1. make sure you have XPM, the strokes library and a X server with
           "fvwm-x.y.z.tar.gz ready for distribution"
 
 The steps 2 to 5 can be done by running the script utils/make_fvwmdist.sh
-from the top level directory of the source tree.
+from the top level directory of the source tree.  You can also call
+this script with the -r option.  In this case the it will also do
+the steps 6 to 9.  The release number will be increase by one after
+the second digit.  The script will ask you for a name and mail address
+to be used in the ChangeLog entry.
 
 Note that you need to have actually built everything before packing
 the distribution, hence step 2.  Among other things, this generates
@@ -192,6 +196,7 @@ following:
       10. upload the file fvwm-x.y.z.tar.gz to
 	  ftp://ftp.fvwm.org/pub/incoming/fvwm
       11. notify fvwm-owner@fvwm.org of the upload
+      12. make sure the web pages in fvwm-web point to the new release
 
 Be sure to do steps 7 and 8 in that order, so you get the label on the
 right version of configure.in.
