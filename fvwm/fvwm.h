@@ -408,6 +408,12 @@ typedef struct window_style
  */
 typedef struct FvwmWindow
 {
+  char *name;                 /* name of the window */
+  char *icon_name;            /* name of the icon */
+#ifdef I18N_MB
+  char **name_list;           /* window name list */
+  char **icon_name_list;      /* icon name list */
+#endif
   struct FvwmWindow *next;    /* next fvwm window */
   struct FvwmWindow *prev;    /* prev fvwm window */
   struct FvwmWindow *stack_next; /* next (lower) fvwm window in stacking
@@ -426,6 +432,7 @@ typedef struct FvwmWindow
   Window title_w;             /* the title bar window */
   Window sides[4];
   Window corners[4];          /* Corner pieces */
+  window_flags flags;
   int nr_left_buttons;
   int nr_right_buttons;
   Window button_w[NUMBER_OF_BUTTONS];
@@ -452,12 +459,6 @@ typedef struct FvwmWindow
   Pixmap iconPixmap;          /* pixmap for the icon */
   int iconDepth;              /* Drawable depth for the icon */
   Pixmap icon_maskPixmap;     /* pixmap for the icon mask */
-  char *name;                 /* name of the window */
-  char *icon_name;            /* name of the icon */
-#ifdef I18N_MB
-  char **name_list;           /* window name list */
-  char **icon_name_list;      /* icon name list */
-#endif
   FvwmFont title_font;
   FvwmFont icon_font;
   XWindowAttributes attr;     /* the child window attributes */
@@ -468,8 +469,6 @@ typedef struct FvwmWindow
   int FocusDesk;              /* Where (if at all) was it focussed */
   int DeIconifyDesk;          /* Desk to deiconify to, for StubbornIcons */
   Window transientfor;
-
-  window_flags flags;
 
 #ifdef MINI_ICONS
   char *mini_pixmap_file;

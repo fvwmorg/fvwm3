@@ -1636,7 +1636,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
       else
 	if(verbose)
 	  fvwm_msg(ERR,"ReadDecorFace",
-		   "unknown button face flag %s -- line: %s",
+		   "unknown button face flag '%s' -- line: %s",
 		   tok, action);
       if (set)
 	free(tok);
@@ -2947,9 +2947,7 @@ void fake_click(F_CMD_ARGS)
 	e.xbutton.button = val;
 	e.xbutton.state = mask;
 	e.xbutton.same_screen = (Scr.Root == root);
-fprintf(stderr,"sending mask 0x%08x to window 0x%08x\n", (int)mask, (int)w);
-	if (!XSendEvent(dpy, PointerWindow, True, SubstructureNotifyMask, &e))
-fprintf(stderr,"...failed\n");
+	XSendEvent(dpy, PointerWindow, True, SubstructureNotifyMask, &e);
 	XSync(dpy, 0);
 	if (do_unset)
 	  mask &= ~(Button1Mask << (val - 1));

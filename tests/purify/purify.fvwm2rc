@@ -11,9 +11,14 @@ AddToFunc CreateFunc
 DestroyFunc Log
 AddToFunc Log I Exec echo "### `date`: $0 ###"
 
+AddToFunc RootTail
++ I Exec xsetroot -solid black
++ I Exec root-tail -g 80x40+300+0 -color red -font lucidasanstypewriter-12 ~/.X.err
+
 # Init TestMenu and all tests function TestFunc:
 DestroyMenu TestMenu
 AddToMenu TestMenu "=== TestMenu ===" Title
+AddToMenu TestMenu "Run root tail" Function RootTail
 AddToMenu TestMenu "Run all tests" function TestFunc
 # Give the TestMenu a distinctive Style:
 DestroyMenuStyle TMS
@@ -54,6 +59,7 @@ AddToFunc ImagePath
 + I ImagePath $HOME/.wm-icons:+
 + I ImagePath +:/usr/share/icons/mini
 + I ImagePath +::::/opt/kde/share/icons:/opt/kde/share/apps/kappfinder/pics:
++ I ImagePath /tmp
 
 # Starting ManPage Order
 AddTest "Test ChangeMenuStyle" ChangeMenuStyle-Func
@@ -61,7 +67,7 @@ AddToFunc ChangeMenuStyle-Func
 # Create new menu using the default style and show it.
 # Add Line to menu and pop it up.
 + I DestroyMenu Menu-ChangeMenuStyle
-+ I MenuStyle * Background lightblue, Foreground black, ActiveFore Maroon, 
++ I MenuStyle * Background lightblue, Foreground black, ActiveFore Maroon,
 + I MenuStyle * Fvwm, Font 6x13bold
 + I AddToMenu Menu-ChangeMenuStyle "ChangeMenuStyle test menu, using default style"
 + I AddToMenu Menu-ChangeMenuStyle "Press Escape to continue" Echo "Tester selected item on menu to proceed"
@@ -313,6 +319,7 @@ AddToFunc CursorStyle-Func
 + I CursorStyle STROKE plus
 + I CursorStyle MENU fleur yellow blue
 + I CursorStyle MENU fleur invalid_color_name another_invalid_name
++ I CursorStyle MENU fleur black white
 
 AddTest "Test DefaultColors" DefaultColors-Func
 AddToFunc DefaultColors-Func
@@ -327,7 +334,8 @@ AddToFunc DefaultColorset-Func
 + I DefaultColorset
 + I DefaultColorset junk
 + I DefaultColorset 0
-+ I DefaultColorset 1236789
+# whoa! fvwm will have to send over a million colour sets to the modules!
+#+ I DefaultColorset 1236789
 + I DefaultColorset -1
 
 AddTest "Test DefaultFont" DefaultFont-Func
@@ -1002,14 +1010,14 @@ AddToFunc GotoPage-Func
 
 AddTest "Test StyleHilightForeBack" StyleHilightForeBack-Func
 AddToFunc StyleHilightForeBack-Func
-+ I Style "*" HilightFore , HilightBack 
-+ I Style "*" HilightFore blue, HilightBack 
-+ I Style "*" HilightFore green, HilightBack 
++ I Style "*" HilightFore , HilightBack
++ I Style "*" HilightFore blue, HilightBack
++ I Style "*" HilightFore green, HilightBack
 + I Style "*" HilightFore black, HilightBack yellow
 + I Style "*" HilightFore black, HilightBack yellow
 + I Style "*" HilightFore gold2, HilightBack SteelBlue
 + I Style "*" HilightFore gold2, HilightBack SteelBlue
-+ I Style "*" HilightFore , HilightBack 
++ I Style "*" HilightFore , HilightBack
 + I Style "*" HilightFore gold2, HilightBack SteelBlue
 
 AddTest "Test Key" Key-Func
@@ -1118,13 +1126,13 @@ AddToFunc Title-Func
 
 AddTest "Test StyleFont" StyleFont-Func
 AddToFunc StyleFont-Func
-+ I Style "*" Font 
++ I Style "*" Font
 + I Style "*" Font 9x15
 + I Style "*" Font 9x15
 + I Style "*" Font /nonexistent/foo/bar
 + I Style "*" Font -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
 + I Style "*" Font -adobe-helvetica-bold-r-*-*-*-140-*-*-*-*-*-*
-+ I Style "*" Font 
++ I Style "*" Font
 
 AddTest "Test XorValue" XorValue-Func
 AddToFunc XorValue-Func
@@ -1532,7 +1540,7 @@ AddToFunc EchoDo
 
 
 AddTest "Test AllFunctionsNoParams" AllFunctionsNoParams-Func
-AddToFunc AllFunctionsNoParams-Func 
+AddToFunc AllFunctionsNoParams-Func
 EchoDo AddButtonStyle
 EchoDo AddTitleStyle
 EchoDo AddToDecor
@@ -1637,10 +1645,17 @@ AddToFunc ModulePath-Func
 
 AddTest "Test Cleanup" Cleanup-Func
 AddToFunc Cleanup-Func
+ + "I" All (window1) destroy
+ + "I" All (window2) destroy
+ + "I" All (window3) destroy
+ + "I" All (window4) destroy
+ + "I" All (window5) destroy
+ + "I" All (window6) destroy
  + "I" beep
  + "I" Echo ------------ ok ------------
  + "I" quit poesfj apäuofw ük-lnlöiooüp. ..a,sjdms.,x-,
 
 Menu TestMenu
+Mouse 1 r a Menu TestMenu
 
 Log "After Menu-Prompt, Done."

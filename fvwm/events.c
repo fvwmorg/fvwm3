@@ -1127,7 +1127,14 @@ void HandleMapNotify(void)
   }
   if((!(HAS_BORDER(Tmp_win)|HAS_TITLE(Tmp_win)))&&(Tmp_win->boundary_width <2))
   {
-    DrawDecorations(Tmp_win, DRAW_ALL, False, True, Tmp_win->decor_w);
+    DrawDecorations(
+      Tmp_win, DRAW_ALL, False, True, Tmp_win->decor_w);
+  }
+  else if (Tmp_win == Scr.Focus && Tmp_win != Scr.Hilite)
+  {
+    /* BUG 679: must redraw decorations here to make sure the window is properly
+     * hilighted after being de-iconified by a key press. */
+    DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
   }
   XSync(dpy,0);
   MyXUngrabServer (dpy);
@@ -1205,8 +1212,9 @@ void HandleUnmapNotify(void)
     XUnmapWindow(dpy, Event.xunmap.window);
 
   if(Tmp_win ==  Scr.Hilite)
+  {
     Scr.Hilite = NULL;
-
+  }
   if(Scr.PreviousFocus == Tmp_win)
     Scr.PreviousFocus = NULL;
 

@@ -344,7 +344,7 @@ void setup_icon_font(
     else
     {
       /* no explicit font or failed to load, use default font instead */
-      tmp_win->title_font = Scr.DefaultFont;
+      tmp_win->icon_font = Scr.DefaultFont;
       SET_USING_DEFAULT_ICON_FONT(tmp_win, 1);
     }
     SET_ICON_FONT_LOADED(tmp_win, 1);
@@ -1857,7 +1857,9 @@ void destroy_window(FvwmWindow *tmp_win)
   /****** adjust fvwm internal windows ******/
 
   if(tmp_win == Scr.Hilite)
+  {
     Scr.Hilite = NULL;
+  }
 
   if(Scr.PreviousFocus == tmp_win)
     Scr.PreviousFocus = NULL;
