@@ -616,7 +616,7 @@ created directory menus without destroying it when closed, default is
 
 assign MenuStyle name to the menus
 
-=cut
+=back
 
 Option parameters can be specified both using '=' and in the next argument.
 Short options are ok if not ambiguous: C<-a>, C<-x>, C<-icon-f>; but be

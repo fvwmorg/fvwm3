@@ -1,3 +1,13 @@
+2003-01-29  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-directory.1:
+	* fvwm-menu-directory.in:
+	* fvwm-menu-headlines.1:
+	* fvwm-menu-headlines.in:
+	* fvwm-menu-xlock.1:
+	* fvwm-menu-xlock.in:
+	fixed one problem with pod caused some man page paragraphs to disappear
+
 2003-01-03  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm-config.in :

@@ -209,7 +209,7 @@ menu/lock.xpm.
 
 instructs to include special modes (usually black, bomb and random) first.
 
-=cut
+=back
 
 Option parameters can be specified both using '=' and in the next argument.
 Short options are ok if not ambiguous: -h, -t; but be careful with

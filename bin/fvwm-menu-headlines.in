@@ -1031,7 +1031,7 @@ saves output to segfault.menu (both files are in WORK_HOME):
 limit a line reading from a socket to this timeout,
 the default timeout is 20 seconds.
 
-=cut
+=back
 
 WORK_HOME of this script is ~/.fvwm/.fvwm-menu-headlines.
 It is created if needed.
