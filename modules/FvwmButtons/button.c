@@ -420,6 +420,7 @@ button_info *alloc_button(button_info *ub,int num)
   b->parent = ub;
   b->n = -1;
   b->IconWin = 0;
+  b->PanelWin = 0;
 
   b->framew = 1;
   b->xpad = 2;

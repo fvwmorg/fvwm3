@@ -157,7 +157,7 @@ typedef struct
   unsigned do_not_show_on_map : 1;
   unsigned do_lower_transient : 1;
   unsigned do_raise_transient : 1;
-  unsigned do_raise_transient_strict : 1;
+  unsigned do_flip_transient : 1;
   unsigned do_stack_transient_parent : 1;
   unsigned do_start_iconic : 1;
   unsigned do_window_list_skip : 1;

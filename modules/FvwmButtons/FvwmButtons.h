@@ -175,6 +175,7 @@ struct button_info_struct
   Picture *icon;           /* b_Icon */
   Picture *backicon;       /* b_Back && b_IconBack */
   Window IconWin;          /* b_Icon || b_Swallow */
+  Window PanelWin;         /* b_Panel */
   Window BackIconWin;      /* b_Back && b_IconBack */
 
   byte swallow;            /* b_Swallow */

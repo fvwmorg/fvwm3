@@ -37,6 +37,7 @@ int get_layer(FvwmWindow *t);
 void new_layer(FvwmWindow *t, int layer);
 
 void init_stack_and_layers(void);
+Bool is_on_top_of_layer(FvwmWindow *t);
 
 void raiselower_func(F_CMD_ARGS);
 void raise_function(F_CMD_ARGS);

@@ -253,10 +253,16 @@ Bool DestroyedWindow(Display *d,XEvent *e,char *a)
   return False;
 }
 
+static Window SwallowedWindow(button_info *b)
+{
+  return (b->flags & b_Panel) ? b->PanelWin : b->IconWin;
+}
+
 int IsThereADestroyEvent(button_info *b)
 {
   XEvent event;
-  return XCheckIfEvent(Dpy,&event,DestroyedWindow,(char*)b->IconWin);
+  return XCheckIfEvent(Dpy,&event,DestroyedWindow,
+		       (char*)SwallowedWindow(b));
 }
 
 /**
@@ -287,6 +293,7 @@ static void DeadPipeCleanup(void)
 {
   button_info *b,*ub=UberButton;
   int button=-1;
+  Window swin;
 
   signal(SIGPIPE, SIG_IGN);/* Xsync may cause SIGPIPE */
 
@@ -294,12 +301,13 @@ static void DeadPipeCleanup(void)
   XGrabServer(Dpy); /* We don't want interference right now */
   while(NextButton(&ub,&b,&button,0))
   {
+    swin = SwallowedWindow(b);
     /* delete swallowed windows */
-    if((buttonSwallowCount(b)==3) && b->IconWin)
+    if((buttonSwallowCount(b)==3) && swin)
     {
 #ifdef DEBUG_HANGON
       fprintf(stderr,"%s: Button 0x%06x window 0x%x (\"%s\") is ",
-	      MyName,(ushort)b,(ushort)b->IconWin,b->hangon);
+	      MyName,(ushort)b,(ushort)swin,b->hangon);
 #endif
       if(!IsThereADestroyEvent(b))
       { /* Has someone destroyed it? */
@@ -307,15 +315,14 @@ static void DeadPipeCleanup(void)
 	{
 	  if(buttonSwallow(b)&b_Kill)
 	  {
-	    XKillClient(Dpy,b->IconWin);
+	    XKillClient(Dpy,swin);
 #ifdef DEBUG_HANGON
 	    fprintf(stderr,"now killed\n");
 #endif
 	  }
 	  else
 	  {
-	    send_clientmessage(Dpy,b->IconWin,_XA_WM_DEL_WIN,
-			       CurrentTime);
+	    send_clientmessage(Dpy,swin,_XA_WM_DEL_WIN,CurrentTime);
 #ifdef DEBUG_HANGON
 	    fprintf(stderr,"now deleted\n");
 #endif
@@ -326,10 +333,10 @@ static void DeadPipeCleanup(void)
 #ifdef DEBUG_HANGON
 	  fprintf(stderr,"now unswallowed\n");
 #endif
-	  XReparentWindow(Dpy,b->IconWin,Root,b->x,b->y);
-	  XMoveWindow(Dpy,b->IconWin,b->x,b->y);
-	  XResizeWindow(Dpy,b->IconWin,b->w,b->h);
-	  XSetWindowBorderWidth(Dpy,b->IconWin,b->bw);
+	  XReparentWindow(Dpy,swin,Root,b->x,b->y);
+	  XMoveWindow(Dpy,swin,b->x,b->y);
+	  XResizeWindow(Dpy,swin,b->w,b->h);
+	  XSetWindowBorderWidth(Dpy,swin,b->bw);
 	}
       }
 #ifdef DEBUG_HANGON
@@ -1074,7 +1081,10 @@ void Loop(void)
 	  break;
 	ub=UberButton;button=-1;
 	while(NextButton(&ub,&b,&button,0))
-	  if((buttonSwallowCount(b)==3) && Event.xany.window==b->IconWin)
+	{
+	  Window swin = SwallowedWindow(b);
+
+	  if((buttonSwallowCount(b)==3) && Event.xany.window == swin)
 	  {
 	    if(Event.xproperty.atom==XA_WM_NAME &&
 	       buttonSwallow(b)&b_UseTitle)
@@ -1082,7 +1092,7 @@ void Loop(void)
 	      if(b->flags&b_Title)
 		free(b->title);
 	      b->flags|=b_Title;
-	      XFetchName(Dpy,b->IconWin,&tmp);
+	      XFetchName(Dpy,swin,&tmp);
 	      CopyString(&b->title,tmp);
 	      XFree(tmp);
 	      MakeButton(b);
@@ -1091,12 +1101,13 @@ void Loop(void)
 		    (!(buttonSwallow(b)&b_NoHints)))
 	    {
 	      long supp;
-	      if(!XGetWMNormalHints(Dpy,b->IconWin,b->hints,&supp))
+	      if(!XGetWMNormalHints(Dpy,swin,b->hints,&supp))
 		b->hints->flags = 0;
 	      MakeButton(b);
 	    }
 	    RedrawButton(b,1);
 	  }
+	}
 	break;
 
 	/* Not really sure if this is abandon all hope.. */
@@ -1104,15 +1115,21 @@ void Loop(void)
       case DestroyNotify:
 	ub=UberButton;button=-1;
 	while(NextButton(&ub,&b,&button,0))
-	  if((buttonSwallowCount(b)==3) && Event.xany.window==b->IconWin)
+	{
+	  Window swin = SwallowedWindow(b);
+
+	  if((buttonSwallowCount(b)==3) && Event.xany.window == swin)
 	  {
 #ifdef DEBUG_HANGON
 	    fprintf(stderr,
 		    "%s: Button 0x%06x lost its window 0x%x (\"%s\")",
-		    MyName,(ushort)b,(ushort)b->IconWin,b->hangon);
+		    MyName,(ushort)b,(ushort)swin,b->hangon);
 #endif
 	    b->swallow&=~b_Count;
-	    b->IconWin=None;
+	    if (b->flags & b_Panel)
+	      b->PanelWin=None;
+	    else
+	      b->IconWin=None;
 	    if(buttonSwallow(b)&b_Respawn && b->hangon && b->spawn)
 	    {
 	      char *p;
@@ -1151,6 +1168,7 @@ void Loop(void)
 	    }
 	    break;
 	  }
+	}
 	break;
 
       default:
@@ -1519,22 +1537,22 @@ static void HandlePanelPress(button_info *b)
   XWindowAttributes xwa;
   char cmd[64];
 
-  XGetWindowAttributes(Dpy, b->IconWin, &xwa);
+  XGetWindowAttributes(Dpy, b->PanelWin, &xwa);
   is_mapped = (xwa.map_state == IsViewable);
 
   if (is_mapped)
   {
     /* get the current geometry */
-    XGetGeometry(Dpy, b->IconWin, &JunkW, &b->x, &b->y, &b->w,
+    XGetGeometry(Dpy, b->PanelWin, &JunkW, &b->x, &b->y, &b->w,
 		 &b->h, &b->bw, &d);
     XTranslateCoordinates(
-      Dpy, b->IconWin, Root, b->x, b->y, &b->x, &b->y, &JunkW);
+      Dpy, b->PanelWin, Root, b->x, b->y, &b->x, &b->y, &JunkW);
   }
   else
   {
     /* Make sure the icon is unmapped first. Needed to work properly with
      * shaded and iconified windows. */
-    XWithdrawWindow(Dpy, b->IconWin, screen);
+    XWithdrawWindow(Dpy, b->PanelWin, screen);
   }
   GetPanelGeometry(is_mapped, b, &x1, &y1, &w1, &h1);
   GetPanelGeometry(!is_mapped, b, &x2, &y2, &w2, &h2);
@@ -1542,13 +1560,13 @@ static void HandlePanelPress(button_info *b)
   /* to force fvwm to map the window where we want */
   if (!is_mapped)
   {
-    XGetWMNormalHints(Dpy, b->IconWin, &mysizehints, &supplied);
+    XGetWMNormalHints(Dpy, b->PanelWin, &mysizehints, &supplied);
     mysizehints.flags |= USSize | USPosition;
     mysizehints.x = x1;
     mysizehints.y = y1;
     mysizehints.width  = (w1) ? w1 : 1;
     mysizehints.height = (h1) ? h1 : 1;
-    XSetWMNormalHints(Dpy, b->IconWin, &mysizehints);
+    XSetWMNormalHints(Dpy, b->PanelWin, &mysizehints);
   }
   else
   {
@@ -1561,20 +1579,20 @@ static void HandlePanelPress(button_info *b)
 
   if (w1 != 0 && h1 != 0)
   {
-    XMoveResizeWindow(Dpy, b->IconWin, x1, y1, w1, h1);
-    XMapWindow(Dpy, b->IconWin);
+    XMoveResizeWindow(Dpy, b->PanelWin, x1, y1, w1, h1);
+    XMapWindow(Dpy, b->PanelWin);
   }
   /* make sure the window maps on the current desk */
-  sprintf(cmd, "Silent WindowId 0x%08x MoveToDesk 0", (int)b->IconWin);
-  SendInfo(fd, cmd, b->IconWin);
-  SlideWindow(Dpy, b->IconWin,
+  sprintf(cmd, "Silent WindowId 0x%08x MoveToDesk 0", (int)b->PanelWin);
+  SendInfo(fd, cmd, b->PanelWin);
+  SlideWindow(Dpy, b->PanelWin,
 	      x1, y1, w1, h1,
 	      x2, y2, w2, h2,
 	      steps, b->slide_delay_ms, NULL, b->slide_flags.smooth);
 
   if (is_mapped)
   {
-    XUnmapWindow(Dpy, b->IconWin);
+    XUnmapWindow(Dpy, b->PanelWin);
   }
   b->newflags.panel_mapped = ! is_mapped;
   RedrawButton(b, 1);
@@ -2117,6 +2135,7 @@ void CheckForHangon(unsigned long *body)
   cbody = (char *)&body[3];
 
   while(NextButton(&ub,&b,&button,0))
+  {
     if(b->flags&b_Hangon && strcmp(cbody,b->hangon)==0)
     {
       /* Is this a swallowing button in state 1? */
@@ -2124,12 +2143,15 @@ void CheckForHangon(unsigned long *body)
       {
 	b->swallow&=~b_Count;
 	b->swallow|=2;
-	b->IconWin=(Window)body[0];
+	if (b->flags & b_Panel)
+	  b->PanelWin=(Window)body[0];
+	else
+	  b->IconWin=(Window)body[0];
 	b->flags&=~b_Hangon;
 
 	/* We get the parent of the window to compare with later... */
 	b->IconWinParent=
-	  GetRealGeometry(Dpy, b->IconWin, &b->x, &b->y,
+	  GetRealGeometry(Dpy, SwallowedWindow(b), &b->x, &b->y,
 			  &b->w, &b->h, &b->bw, &d);
 
 #ifdef DEBUG_HANGON
@@ -2152,12 +2174,12 @@ void CheckForHangon(unsigned long *body)
 	free(b->hangon);
 	b->hangon=NULL;
 	RedrawButton(b,0);
-
       }
       break;
     }
-    else if(buttonSwallowCount(b)>=2 && (Window)body[0]==b->IconWin)
+    else if(buttonSwallowCount(b)>=2 && (Window)body[0] == SwallowedWindow(b))
       break;      /* This window has already been swallowed by someone else! */
+  }
 }
 
 /**
@@ -2274,10 +2296,12 @@ void swallow(unsigned long *body)
 
   while(NextButton(&ub,&b,&button,0))
   {
-    if((b->IconWin==(Window)body[0]) && (buttonSwallowCount(b)==2))
+    Window swin = SwallowedWindow(b);
+
+    if((swin == (Window)body[0]) && (buttonSwallowCount(b)==2))
     {
       /* Store the geometry in case we need to unswallow. Get parent */
-      p = GetRealGeometry(Dpy,b->IconWin,&b->x,&b->y,&b->w,&b->h,&b->bw,&d);
+      p = GetRealGeometry(Dpy,swin,&b->x,&b->y,&b->w,&b->h,&b->bw,&d);
 #ifdef DEBUG_HANGON
       fprintf(stderr,"%s: Button 0x%06x %s 0x%lx, with parent 0x%lx\n",
 	      MyName,(ushort)b,"trying to swallow window",body[0],p);
@@ -2286,7 +2310,7 @@ void swallow(unsigned long *body)
       if(p==None) /* This means the window is no more */ /* NO! wrong */
       {
 	fprintf(stderr,"%s: Window 0x%lx (\"%s\") disappeared %s\n",
-		MyName,b->IconWin,b->hangon,"before swallow complete");
+		MyName,swin,b->hangon,"before swallow complete");
 	/* Now what? Nothing? For now: give up that button */
 	b->flags&=~(b_Hangon|b_Swallow|b_Panel);
 	return;
@@ -2295,7 +2319,7 @@ void swallow(unsigned long *body)
       if(p!=b->IconWinParent) /* The window has been reparented */
       {
 	fprintf(stderr,"%s: Window 0x%lx (\"%s\") was %s (window 0x%lx)\n",
-		MyName,b->IconWin,b->hangon,"grabbed by someone else",p);
+		MyName,swin,b->hangon,"grabbed by someone else",p);
 
 	/* Request a new windowlist, we might have ignored another
 	   matching window.. */
@@ -2320,18 +2344,18 @@ void swallow(unsigned long *body)
       {
 	/* "Swallow" the window! Place it in the void so we don't see it
 	 * until it's MoveResize'd */
-	XReparentWindow(Dpy,b->IconWin,MyWindow,-32768,-32768);
-	XSelectInput(Dpy,b->IconWin,SW_EVENTS);
+	XReparentWindow(Dpy,swin,MyWindow,-32768,-32768);
+	XSelectInput(Dpy,swin,SW_EVENTS);
 	if(buttonSwallow(b)&b_UseTitle)
 	{
 	  if(b->flags&b_Title)
 	    free(b->title);
 	  b->flags|=b_Title;
-	  XFetchName(Dpy,b->IconWin,&temp);
+	  XFetchName(Dpy,swin,&temp);
 	  CopyString(&b->title,temp);
 	  XFree(temp);
 	}
-	XMapWindow(Dpy,b->IconWin);
+	XMapWindow(Dpy,swin);
 	MakeButton(b);
 
 	if (b->flags & b_Colorset)
@@ -2340,8 +2364,8 @@ void swallow(unsigned long *body)
       }
       else /* (b->flags & b_Panel) */
       {
-	XSelectInput(Dpy, b->IconWin, PA_EVENTS);
-	XWithdrawWindow(Dpy, b->IconWin, screen);
+	XSelectInput(Dpy, swin, PA_EVENTS);
+	XWithdrawWindow(Dpy, swin, screen);
 	b->newflags.panel_mapped = 0;
       }
       break;

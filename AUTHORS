@@ -2,6 +2,10 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Mark Rainford:
+Handling of transient windows in Raise/Lower: reasonable emulation of
+Motif group behaviour is now possible.
+
 Olivier Chapuis:
 fvwm-menu-desktop script for GNOME and KDE desktop menus.
 

@@ -642,7 +642,7 @@ make_vpacket(unsigned long *body, unsigned long event_type,
    =========================================================== */
 static unsigned long
 make_new_vpacket(unsigned char *body, unsigned long event_type,
-             unsigned long num, va_list ap)
+		 unsigned long num, va_list ap)
 {
   extern Time lastTimestamp;
   unsigned long arglen;
@@ -1129,7 +1129,7 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
       && (ptr[1] & M_ICONIFY)) {        /* and its an iconify event */
     return -1;                          /* don't send it */
   }
-  
+
   AddToQueue(module,ptr,size,0);
 
   /* dje, from afterstep, for FvwmAnimate, allows modules to sync with fvwm. */

@@ -1,5 +1,10 @@
 Changes in beta release 2.3.8 (September? 1999)
 
+* RaiseTransient no longer flips main above/below already raised transients.
+  New style FlipTransient turns flipping back on, and additionally does a
+  similar job for LowerTransient at the bottom of the layer.
+  New style StackTransientParent augments Raise/LowerTransient.
+
 * Icons have been removed from the fvwm package and are available at
   the fvwm web site.  (Temporarily only at "xxx.fvwm.org" instead of
   "www.fvwm.org".)

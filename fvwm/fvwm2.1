@@ -3026,6 +3026,8 @@ RandomPlacement / ActivePlacement,
 DecorateTransient / NakedTransient,
 RaiseTransient / DontRaiseTransient,
 LowerTransient / DontLowerTransient,
+FlipTransient / DontFlipTransient,
+StackTransientParent / DontStackTransientParent,
 SkipMapping / ShowMapping,
 UseDecor,
 UseStyle,
@@ -3056,8 +3058,7 @@ buttons to the sides and the client window of an undecorated window
 ('S' and 'W' contexts in bindings, see \fIMouse\fP and \fIKey\fP commands).
 
 A window with the \fIRaiseTransient\fP style that has transient windows
-will raise all its transients when it is raised.  If it is already
-raised but still below some transients it will be raised above them.
+will raise all its transients when it is raised.
 The \fIDontRaiseTransient\fP style disables this behaviour.  All windows
 are then treated as if they had no transients.
 
@@ -3065,6 +3066,35 @@ A window with the \fILowerTransient\fP style that has transient windows
 will lower all its transients when it is lowered.  The
 \fIDontLowerTransient\fP style disables this behaviour.  All windows
 are then treated as if they had no transients.
+
+The \fIFlipTransient\fP style augments \fIRaiseTransient\fP and
+\fILowerTransient\fP styles so that repeated raising or repeated lowering
+of the main window makes the transients flip above and below the main.
+The \fIDontFlipTransient\fP style disables this behaviour so that the
+main window is always below its transients.
+\fI(Dont)FlipTransient\fP has no effect if \fIRaiseTransient\fP and
+\fILowerTransient\fP are not used.
+
+The \fIStackTransientParent\fP style augments \fIRaiseTransient\fP and
+\fILowerTransient\fP styles.
+Raising a window with \fIStackTransientParent\fP style transfers the raise
+action to the main window if the window being raised is a transient
+and its main window has \fIRaiseTransient\fP style;
+this effect makes raise on a transient act just like raise on its main -
+the whole group is raised.
+Similar behaviour holds for lowering a whole group of transients when the
+main has \fILowerTransient\fP style.
+\fIDontStackTransientParent\fP turns this behaviour off.
+\fI(Dont)StackTransientParent\fP has no effect if \fIRaiseTransient\fP and
+\fILowerTransient\fP are not used.
+
+A reasonable emulation of Motif raise/lower on transients is possible like this
+.EX
+Style * RaiseTransient
+Style * LowerTransient
+Style * StackTransientParent
+Style * DontFlipTransient
+.EE
 
 \fIIcon\fP takes an (optional) unquoted string argument which is the icon
 bitmap or pixmap to use. Icons specified this way override pixmap icons, but

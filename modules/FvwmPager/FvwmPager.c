@@ -676,7 +676,6 @@ void list_configure(unsigned long *body)
   {
     ChangeDeskForWindow(t, cfgpacket->desk);
   }
-
   else
     MoveResizePagerView(t);
 }

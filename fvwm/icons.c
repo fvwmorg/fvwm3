@@ -1122,8 +1122,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
       {
 	SET_DEICONIFY_PENDING(t, 1);
       }
-      else
-      if(t != tmp_win)
+      else if(t != tmp_win)
       {
 	SET_ICONIFIED(t, 1);
 	SET_ICON_UNMAPPED(t, 1);

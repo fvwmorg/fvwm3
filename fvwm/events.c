@@ -721,7 +721,15 @@ void HandlePropertyNotify(void)
 			      (unsigned long)Tmp_win,
 			      Tmp_win->icon_x_loc, Tmp_win->icon_y_loc,
 			      Tmp_win->icon_w_width, Tmp_win->icon_w_height);
+	      /* domivogt (15-Sep-1999): BroadcastConfig informs modules of the
+	       * configuration change including the iconified flag. So this
+	       * flag must be set here. I'm not sure if the two calls of the
+	       * SET_ICONIFIED macro after BroadcastConfig are necessary, but
+	       * since it's only minimal overhead I prefer to be on the safe
+	       * side. */
+	      SET_ICONIFIED(Tmp_win, 1);
 	      BroadcastConfig(M_CONFIGURE_WINDOW, Tmp_win);
+	      SET_ICONIFIED(Tmp_win, 0);
 
 	      if (!IS_ICON_SUPPRESSED(Tmp_win))
 		{
@@ -730,7 +738,7 @@ void HandlePropertyNotify(void)
 		  if(Tmp_win->Desk == Scr.CurrentDesk)
 		    {
 		      if(Tmp_win->icon_w)
-			 XMapWindow(dpy, Tmp_win->icon_w);
+			XMapWindow(dpy, Tmp_win->icon_w);
 		      if(Tmp_win->icon_pixmap_w != None)
 			XMapWindow(dpy, Tmp_win->icon_pixmap_w);
 		    }
@@ -1352,7 +1360,8 @@ void HandleButtonPress(void)
            (Event.xbutton.window == Tmp_win->frame) &&
 	   Scr.go.MouseFocusClickRaises)
   {
-    if (!IS_FULLY_VISIBLE(Tmp_win) &&
+    if (((DO_RAISE_TRANSIENT(Tmp_win) && DO_FLIP_TRANSIENT(Tmp_win)) ||
+	 !is_on_top_of_layer(Tmp_win))&&
         MaskUsedModifiers(Event.xbutton.state) == 0 &&
         GetContext(Tmp_win,&Event, &PressedW) == C_WINDOW)
     {

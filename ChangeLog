@@ -1,3 +1,33 @@
+1999-09-16  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/events.c (HandleButtonPress): improved RaiseTransient style
+	with MouseFocusClickRaises and FlipTransient
+
+	* fvwm/stack.c (raiselower_func):
+	(is_on_top_of_layer):
+	(inner_RaiseOrLowerWindow): fixed several small bugs in new transient
+	handling
+
+	* fvwm/events.c (HandleButtonPress):
+	use new function is_on_top_of_layer
+
+1999-09-15  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/events.c (HandlePropertyNotify): fixed pager getting out of sync
+	with icons starting iconified (with apps that provide their own icon).
+
+1999-09-15  Mark Rainford  <mr@jet.uk>
+
+	* fvwm/fvwm.h:
+	* fvwm/stack.c:
+	* fvwm/style.c:
+	* fvwm/style.h:
+	* fvwm/window_flags.h:
+	improvements to earlier transient handling patches:
+	mods.to Raise/LowerTransient, StackTransientParent; introduce
+ 	FlipTransient style.  Man page, NEWS, AUTHOR + ChangeLog included this
+	time.
+
 Wed Sep 15 20:44:57 1999  DanEspen  <dje@blue>
 
 	* fvwm/functions.c (execute_complex_function): remove unused

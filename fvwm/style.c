@@ -545,6 +545,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flags.do_place_smart = 0;
           tmpstyle.flag_mask.do_place_smart = 1;
         }
+        else if(StrEquals(token, "DontFlipTransient"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_flip_transient = 0;
+          tmpstyle.flag_mask.common.do_flip_transient = 1;
+        }
         else if(StrEquals(token, "DONTRAISETRANSIENT"))
         {
 	  found = True;
@@ -581,6 +587,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             tmpstyle.flags.common.is_fixed = 1;
             tmpstyle.flag_mask.common.is_fixed = 1;
 	  }
+        else if(StrEquals(token, "FlipTransient"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_flip_transient = 1;
+          tmpstyle.flag_mask.common.do_flip_transient = 1;
+        }
         else if(StrEquals(token, "FORECOLOR"))
         {
 	  found = True;
@@ -1141,14 +1153,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           tmpstyle.flags.common.do_raise_transient = 1;
           tmpstyle.flag_mask.common.do_raise_transient = 1;
-        }
-        else if(StrEquals(token, "RaiseTransientStrict"))
-        {
-	  found = True;
-          tmpstyle.flags.common.do_raise_transient = 1;
-          tmpstyle.flags.common.do_raise_transient_strict = 1;
-          tmpstyle.flag_mask.common.do_raise_transient = 1;
-          tmpstyle.flag_mask.common.do_raise_transient_strict = 1;
         }
         break;
 

@@ -66,6 +66,8 @@ void DumpButtons(button_info *b)
     fprintf(stderr,"Title(%s) ",b->title);
   if(b->flags&b_Icon)
     fprintf(stderr,"Icon(%s,%i) ",b->icon_file,(int)b->IconWin);
+  if(b->flags&b_Icon)
+    fprintf(stderr,"Panelw(%i) ",(int)b->PanelWin);
   if(b->flags&b_Action)
     fprintf(stderr,"\n  Action(%s,%s,%s,%s) ",
 	    b->action[0]?b->action[0]:"",
