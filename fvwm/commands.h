@@ -315,6 +315,7 @@ void CMD_Next(F_CMD_ARGS);
 void CMD_None(F_CMD_ARGS);
 void CMD_Nop(F_CMD_ARGS);
 void CMD_NoWindow(F_CMD_ARGS);
+void CMD_On(F_CMD_ARGS);
 void CMD_OpaqueMoveSize(F_CMD_ARGS);
 void CMD_Pick(F_CMD_ARGS);
 void CMD_PipeRead(F_CMD_ARGS);

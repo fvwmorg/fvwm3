@@ -36,7 +36,9 @@ typedef enum
 {
 	EXCT_NULL = '-',
 	EXCT_INIT = 'I',
-	EXCT_EXIT = 'X',
+	EXCT_RESTART = 'R',
+	EXCT_QUIT = 'Q',
+	EXCT_TORESTART = 'r',
 	EXCT_EVENT ='E',
 	EXCT_MODULE ='M',
 	EXCT_MENULOOP ='m',

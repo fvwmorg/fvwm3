@@ -1,3 +1,16 @@
+2002-01-02  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	* fvwm/commands.h:
+	* fvwm/conditional.c (CMD_On):
+	* fvwm/functable.c:
+	* fvwm/fvwm.1.in:
+	new conditional command On for non-window related conditions
+
+	* fvwm/execcontext.h:
+	* fvwm/fvwm.c (Done, SetRCDefaults, StartupStuff):
+	two new exec contexts for restarting
+
 2003-01-02  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/builtins.c (ReadMultiPixmapDecor):

@@ -518,7 +518,7 @@ void Done(int restart, char *command)
 
 		char *action = safestrdup(
 			CatString2("Function ", exitFuncName));
-		ecc.type = EXCT_EXIT;
+		ecc.type = restart ? EXCT_TORESTART : EXCT_QUIT;
 		ecc.w.wcontext = C_ROOT;
 		exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
 		execute_function(NULL, exc, action, 0);
@@ -1410,7 +1410,7 @@ static void SetRCDefaults(void)
 		const exec_context_t *exc;
 		exec_context_changes_t ecc;
 
-		ecc.type = EXCT_INIT;
+		ecc.type = Restarting ? EXCT_RESTART : EXCT_INIT;
 		ecc.w.wcontext = C_ROOT;
 		exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
 		execute_function(
@@ -1487,7 +1487,7 @@ void StartupStuff(void)
 	const exec_context_t *exc;
 	exec_context_changes_t ecc;
 
-	ecc.type = EXCT_INIT;
+	ecc.type = Restarting ? EXCT_RESTART : EXCT_INIT;
 	ecc.w.wcontext = C_ROOT;
 	exc = exc_create_context(&ecc, ECC_TYPE | ECC_W);
 	CaptureAllWindows(exc, False);
@@ -2357,7 +2357,7 @@ int main(int argc, char **argv)
 	simplify_style_list();
 
 	DBUG("main", "Running config_commands...");
-	ecc.type = EXCT_INIT;
+	ecc.type = Restarting ? EXCT_RESTART : EXCT_INIT;
 	ecc.w.wcontext = C_ROOT;
 	exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
 	if (num_config_commands > 0)

@@ -1429,3 +1429,103 @@ void CMD_NoWindow(F_CMD_ARGS)
 {
 	execute_function_override_window(NULL, exc, action, 0, NULL);
 }
+
+void CMD_On(F_CMD_ARGS)
+{
+	char *restofline;
+	char *flags;
+	char *condition;
+	char *tmp;
+	Bool match, error;
+
+	flags = CreateFlagString(action, &restofline);
+
+	/* Next parse the flags in the string. */
+	tmp = flags;
+	tmp = GetNextSimpleOption(tmp, &condition);
+
+	match = True;
+	error = False;
+	while (condition)
+	{
+		char *cond;
+		Bool on;
+
+		cond = condition;
+		on = 1;
+		if (*cond == '!')
+		{
+			on = 0;
+			cond++;
+		}
+		if (StrEquals(cond, "True"))
+		{
+			match = True;
+		}
+		else if (StrEquals(cond, "Version"))
+		{
+			char *pattern;
+			tmp = GetNextSimpleOption(tmp, &pattern);
+			if (pattern)
+			{
+				match = matchWildcards(pattern, VERSION);
+				free(pattern);
+			}
+			else
+			{
+				error = True;
+			}
+		}
+		else if (StrEquals(cond, "Start"))
+		{
+			match = exc->type == EXCT_INIT ||
+				exc->type == EXCT_RESTART;
+		}
+		else if (StrEquals(cond, "Init"))
+		{
+			match = exc->type == EXCT_INIT;
+		}
+		else if (StrEquals(cond, "Restart"))
+		{
+			match = exc->type == EXCT_RESTART;
+		}
+		else if (StrEquals(cond, "Exit"))
+		{
+			match = exc->type == EXCT_QUIT ||
+				exc->type == EXCT_TORESTART;
+		}
+		else if (StrEquals(cond, "Quit"))
+		{
+			match = exc->type == EXCT_QUIT;
+		}
+		else if (StrEquals(cond, "ToRestart"))
+		{
+			match = exc->type == EXCT_TORESTART;
+		}
+
+		if (!on)
+		{
+			match = !match;
+		}
+		if (error || !match)
+		{
+			break;
+		}
+		free(condition);
+		tmp = GetNextSimpleOption(tmp, &condition);
+	}
+	if (flags != NULL)
+	{
+		free(flags);
+	}
+	if (!error && match)
+	{
+		execute_function(cond_rc, exc, restofline, 0);
+	}
+	if (cond_rc != NULL)
+	{
+		*cond_rc =
+			error ? COND_RC_ERROR :
+			match ? COND_RC_OK : COND_RC_NO_MATCH;
+	}
+}

@@ -9215,13 +9215,17 @@ command.
 .SS CONDITIONAL COMMANDS
 
 There are several commands that are only executed if certain
-conditions are met.  The syntax of the conditions is described
-below.  All commands (unless the specifically stated for the
-command) in this section also have a return code that can be 1
-(if a window matching all conditions was found) or 0 (if no such
-window was found)the condition was not met).  A few commands
-deviate slightly from this scheme or can even return -1 which
-means that an error occurred and the return code is useless.
+conditions are met.  Most of the conditional commands described
+in this section work on windows, like
+.BR Next ", " ThisWindow " or " All .
+There is one conditional command
+.B On
+that works on global topics unrelated to windows.
+The syntax of the conditions is described below.  All commands
+in this section (unless specifically stated for the command)
+also have a return code that can be 1 (if the condition was met)
+or 0 (if the condition was not met).  Some commands may return -1
+which means that an error occurred and the return code is useless.
 The return code is used by the commands
 .B Cond
 and
@@ -9307,7 +9311,7 @@ the
 .IR command.
 
 .TP
-.BI "Current [(" "condition ..." ")] " command
+.BI "Current [(" conditions ")] " command
 Performs
 .I command
 on the currently focused window if it satisfies all
@@ -9573,8 +9577,7 @@ attribute for iconified windows and "CirculateHitShaded" which
 does the same for shaded windows.
 
 .TP
-.BI "ScanForWindow [" FromPointer "] " direction direction2 " [(" conditions ")] "
-command
+.BI "ScanForWindow [" FromPointer "] " "direction direction2" " [(" conditions ")] " command
 Performs
 .I command
 (typically
@@ -9590,8 +9593,8 @@ starting point.  Lacking such a window, or when the
 option is given, the current position of the pointer is taken as
 the starting point.  The
 .I direction
-may be one of "North", "Northeast", "East", "Southeast", "South",
-"Southwest", "West", and "Northwest".  Which window
+may be one of "North", "NorthEast", "East", "SouthEast", "South",
+"SouthWest", "West", and "NorthWest".  Which window
 .B ScanForWindow
 selects depends first on the position along the primary axis given by
 .IR direction .
@@ -9684,6 +9687,38 @@ This is not really a conditional command, but a prefix that may be
 useful in menu items that should operate without a window even if
 such menu is bound to window decorations.
 
+.TP
+.BI "On [(" condition ")] " command
+Performs
+.I command
+if the all 
+.I conditions
+are satisfied.
+The
+.I conditions
+are a list of keywords with possible arguments from the list below
+and are separated by commas or whitespace.  Conditions include
+"Version pattern",
+"Start", "Init", "Restart",
+"Exit", "Quit", ToRestart".
+A condition prefixed with "!" is reverted.
+
+The "Start" condition is the same as either "Init" or "Restart",
+it is only valid on startup or restart prior and during
+.B StartFunction
+function execution.
+The "Exit" condition is the same as either "Quit" or "ToRestart",
+it is only valid on shutdown during
+.B ExitFunction
+function execution.
+.EX
+AddToFunc StartFunction I On (Init) Exec exec xterm
+
+AddToFunc VerifyVersion
++ I On (Version 2.5.*) Echo 2.5.x detected
++ I Cond (NoMatch) On (!Version 2.6.*) Echo Future version
++ I Cond (NoMatch) Echo 2.6.x is detected
+.EE
 
 .SS MODULE COMMANDS
 

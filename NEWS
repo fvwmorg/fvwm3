@@ -37,6 +37,8 @@ Changes in developement release 2.5.6 (not released yet)
 * New shortcuts for button states: AllActiveUp, AllActiveDown,
   AllInactiveUp, AllInactiveDown.
 
+* New conditional command On for non-window related conditions.
+
 -------------------------------------------------------------------
 
 Changes in developement release 2.5.5 (2-Dec-2002)
