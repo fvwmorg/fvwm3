@@ -1449,6 +1449,12 @@ void HandleReparentNotify(void)
 {
   if (!Tmp_win)
     return;
+  if (Event.xreparent.parent == Scr.Root)
+  {
+    /* Ignore reparenting to the root window.  In some cases these events are
+     * selected although the window is no longer managed. */
+    return;
+  }
   if (Event.xreparent.parent != Tmp_win->frame)
   {
     /* window was reparented by someone else, destroy the frame */

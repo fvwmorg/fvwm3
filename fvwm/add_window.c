@@ -2375,10 +2375,13 @@ static void hide_screen(
   }
   else
   {
-    XDestroyWindow(dpy, hide_win);
-    XDestroyWindow(dpy, parent_win);
+    if (hide_win != None)
+      XDestroyWindow(dpy, hide_win);
+    if (parent_win != None)
+      XDestroyWindow(dpy, parent_win);
     XSync(dpy,0);
     hide_win = None;
+    parent_win = None;
   }
   if (ret_hide_win)
     *ret_hide_win = hide_win;

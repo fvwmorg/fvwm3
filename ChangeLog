@@ -1,3 +1,11 @@
+2001-09-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleReparentNotify):
+	fixed vanishing windows in rapid map/unmap cycles; bug #770
+
+	* fvwm/add_window.c (hide_screen):
+	fixed possible BadWindow error
+
 2001-09-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/virtual.c (MoveViewport):
