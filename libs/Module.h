@@ -22,21 +22,22 @@
 #include <X11/X.h>
 #include "libs/fvwmlib.h"
 
-
 /**
  * FVWM sends packets of this type to modules.
  **/
 
-
-typedef struct {
-    unsigned long start_pattern;       /* always holds START_FLAG value */
-    unsigned long type;                /* one of the M_xxx values, below */
-    unsigned long size;                /* number of unsigned longs in
-					  entire packet, *including* header */
-    unsigned long timestamp;           /* last time stamp received from the
-					  X server, in milliseconds */
-    unsigned long body[1];             /* variable size -- use
-					  FvwmPacketBodySize to get size */
+typedef struct
+{
+	/* always holds START_FLAG value */
+	unsigned long start_pattern;
+	/* one of the M_xxx values, below */
+	unsigned long type;
+	/* number of unsigned longs in entire packet, *including* header */
+	unsigned long size;
+	/* last time stamp received from the X server, in milliseconds */
+	unsigned long timestamp;
+	/* variable size -- use FvwmPacketBodySize to get size */
+	unsigned long body[1];
 } FvwmPacket;
 
 typedef struct
@@ -59,10 +60,14 @@ typedef struct
 
 /** There seems to be some movement afoot to measure packet sizes in bytes.
     See fvwm/module_interface.c **/
-#define FvwmPacketHeaderSize_byte  (FvwmPacketHeaderSize * sizeof(unsigned long))
-#define FvwmPacketBodySize_byte(p) (FvwmPacketBodySize(p) * sizeof(unsigned long))
-#define FvwmPacketMaxSize_byte     (FvwmPacketMaxSize * sizeof(unsigned long))
-#define FvwmPacketBodyMaxSize_byte (FvwmPacketBodyMaxSize * sizeof(unsigned long))
+#define FvwmPacketHeaderSize_byte  \
+	(FvwmPacketHeaderSize * sizeof(unsigned long))
+#define FvwmPacketBodySize_byte(p) \
+	(FvwmPacketBodySize(p) * sizeof(unsigned long))
+#define FvwmPacketMaxSize_byte \
+	(FvwmPacketMaxSize * sizeof(unsigned long))
+#define FvwmPacketBodyMaxSize_byte \
+	(FvwmPacketBodyMaxSize * sizeof(unsigned long))
 
 
 /* Value of start_pattern */
@@ -227,13 +232,11 @@ void SetNoGrabMask(int *fd, unsigned long mask);
  */
 void InitGetConfigLine(int *fd, char *match);
 
-
 /**
  * Gets a module configuration line from fvwm. Returns NULL if there are
  * no more lines to be had. "line" is a pointer to a char *.
  **/
 void GetConfigLine(int *fd, char **line);
-
 
 /* expands certain variables in a command to be sent by a module */
 char *module_expand_action(
@@ -249,18 +252,24 @@ char *module_expand_action(
  * is not kosher.  The returned memory is a static buffer.
  **/
 
-typedef struct {
-    char* name;                /* module name */
-    int to_fvwm;               /* file descriptor to send info back to FVWM */
-    int from_fvwm;             /* file descriptor to read packets from FVWM */
-    Window window;             /* window context of module */
-    unsigned long decoration;  /* decoration context of module */
-    int user_argc;             /* number of user-specified arguments */
-    char** user_argv;          /* vector of user-specified arguments */
+typedef struct
+{
+	/* module name */
+	char* name;
+	/* file descriptor to send info back to FVWM */
+	int to_fvwm;
+	/* file descriptor to read packets from FVWM */
+	int from_fvwm;
+	/* window context of module */
+	Window window;
+	/* decoration context of module */
+	unsigned long decoration;
+	/* number of user-specified arguments */
+	int user_argc;
+	/* vector of user-specified arguments */
+	char** user_argv;
 } ModuleArgs;
 
-
 ModuleArgs* ParseModuleArgs( int argc, char* argv[], int use_arg6_as_alias );
-
 
 #endif

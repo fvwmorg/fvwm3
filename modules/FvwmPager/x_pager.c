@@ -1912,79 +1912,95 @@ void IconSwitchPage(XEvent *Event)
 
 void AddNewWindow(PagerWindow *t)
 {
-  unsigned long valuemask;
-  XSetWindowAttributes attributes;
-  int i, x, y, w, h;
+	unsigned long valuemask;
+	XSetWindowAttributes attributes;
+	int i, x, y, w, h;
 
-  i = t->desk - desk1;
-  CalcGeom(t, desk_w, desk_h, &x, &y, &w, &h);
-  t->pager_view_x = x;
-  t->pager_view_y = y;
-  t->pager_view_width = w;
-  t->pager_view_height = h;
-  valuemask = CWBackPixel | CWEventMask;
-  attributes.background_pixel = t->back;
-  attributes.event_mask = ExposureMask;
+	i = t->desk - desk1;
+	CalcGeom(t, desk_w, desk_h, &x, &y, &w, &h);
+	t->pager_view_x = x;
+	t->pager_view_y = y;
+	t->pager_view_width = w;
+	t->pager_view_height = h;
+	valuemask = CWBackPixel | CWEventMask;
+	attributes.background_pixel = t->back;
+	attributes.event_mask = ExposureMask;
 
-  /* ric@giccs.georgetown.edu -- added Enter and Leave events for
-     popping up balloon window */
-  attributes.event_mask = ExposureMask | EnterWindowMask | LeaveWindowMask;
+	/* ric@giccs.georgetown.edu -- added Enter and Leave events for
+	   popping up balloon window */
+	attributes.event_mask =
+		ExposureMask | EnterWindowMask | LeaveWindowMask;
 
-  if ((i >= 0) && (i < ndesks))
-  {
-    t->PagerView = XCreateWindow(dpy,Desks[i].w, x, y, w, h, 0,
-				 CopyFromParent, InputOutput, CopyFromParent,
-				 valuemask, &attributes);
-    if (windowcolorset > -1)
-    {
-      SetWindowBackground(
-	dpy, t->PagerView, w, h, &Colorset[windowcolorset], Pdepth,
-	Scr.NormalGC, True);
-    }
-    if (!UseSkipList || !DO_SKIP_WINDOW_LIST(t))
-    {
-      XMapRaised(dpy, t->PagerView);
-    }
-  }
-  else
-  {
-    t->PagerView = None;
-  }
+	if ((i >= 0) && (i < ndesks))
+	{
+		t->PagerView = XCreateWindow(
+			dpy,Desks[i].w, x, y, w, h, 0, CopyFromParent,
+			InputOutput, CopyFromParent, valuemask, &attributes);
+		if (windowcolorset > -1)
+		{
+			SetWindowBackground(
+				dpy, t->PagerView, w, h,
+				&Colorset[windowcolorset], Pdepth,
+				Scr.NormalGC, True);
+		}
+		if (!UseSkipList || !DO_SKIP_WINDOW_LIST(t))
+		{
+			if (IS_ICONIFIED(t))
+			{
+				XMoveResizeWindow(
+					dpy, t->PagerView, -32768, -32768, 1,
+					1);
+			}
+			XMapRaised(dpy, t->PagerView);
+		}
+	}
+	else
+	{
+		t->PagerView = None;
+	}
 
-  CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
-  t->icon_view_width = w;
-  t->icon_view_height = h;
-  if(Scr.CurrentDesk != t->desk)
-  {
-    x = -32768;
-    y = -32768;
-  }
-  t->IconView = XCreateWindow(
-    dpy,icon_win, x, y, w, h, 0, CopyFromParent, InputOutput,
-    CopyFromParent, valuemask, &attributes);
-  if (windowcolorset > -1)
-  {
-    SetWindowBackground(
-      dpy, t->IconView, w, h, &Colorset[windowcolorset], Pdepth,
-      Scr.NormalGC, True);
-  }
-  if(Scr.CurrentDesk == t->desk)
-  {
-    XGrabButton(
-      dpy, 2, AnyModifier, t->IconView, True,
-      ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
-      GrabModeAsync, GrabModeAsync, None, None);
-  }
-  if (!UseSkipList || !DO_SKIP_WINDOW_LIST(t))
-  {
-    XMapRaised(dpy,t->IconView);
-    t->myflags.is_mapped = 1;
-  }
-  else
-  {
-    t->myflags.is_mapped = 0;
-  }
-  Hilight(t,False);
+	CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
+	t->icon_view_width = w;
+	t->icon_view_height = h;
+	if(Scr.CurrentDesk != t->desk)
+	{
+		x = -32768;
+		y = -32768;
+	}
+	t->IconView = XCreateWindow(
+		dpy,icon_win, x, y, w, h, 0, CopyFromParent, InputOutput,
+		CopyFromParent, valuemask, &attributes);
+	if (windowcolorset > -1)
+	{
+		SetWindowBackground(
+			dpy, t->IconView, w, h, &Colorset[windowcolorset],
+			Pdepth, Scr.NormalGC, True);
+	}
+	if(Scr.CurrentDesk == t->desk)
+	{
+		XGrabButton(
+			dpy, 2, AnyModifier, t->IconView, True,
+			ButtonPressMask | ButtonReleaseMask|ButtonMotionMask,
+			GrabModeAsync, GrabModeAsync, None, None);
+	}
+	if (!UseSkipList || !DO_SKIP_WINDOW_LIST(t))
+	{
+		if (IS_ICONIFIED(t))
+		{
+			XMoveResizeWindow(
+				dpy, t->IconView, -32768, -32768, 1,
+				1);
+		}
+		XMapRaised(dpy, t->IconView);
+		t->myflags.is_mapped = 1;
+	}
+	else
+	{
+		t->myflags.is_mapped = 0;
+	}
+	Hilight(t,False);
+
+	return;
 }
 
 

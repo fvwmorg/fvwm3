@@ -311,7 +311,6 @@ int main(int argc, char **argv)
       exit (1);
     }
 
-XSynchronize(dpy, 1);
   x_fd = XConnectionNumber(dpy);
   PictureInitCMap(dpy);
   FScreenInit(dpy);
@@ -597,51 +596,61 @@ void DeadPipe(int nonsense)
  ***********************************************************************/
 void list_add(unsigned long *body)
 {
-  PagerWindow *t,**prev;
-  int i=0;
-  struct ConfigWinPacket  *cfgpacket = (void *) body;
+	PagerWindow *t,**prev;
+	int i=0;
+	struct ConfigWinPacket  *cfgpacket = (void *) body;
 
-  t = Start;
-  prev = &Start;
+	t = Start;
+	prev = &Start;
 
-  while(t!= NULL)
-    {
-      if (t->w == cfgpacket->w)
-      {
-	/* it's already there, do nothing */
+	while(t!= NULL)
+	{
+		if (t->w == cfgpacket->w)
+		{
+			/* it's already there, do nothing */
+			return;
+		}
+		prev = &(t->next);
+		t = t->next;
+		i++;
+	}
+	*prev = (PagerWindow *)safemalloc(sizeof(PagerWindow));
+	memset(*prev, 0, sizeof(PagerWindow));
+	(*prev)->w = cfgpacket->w;
+	(*prev)->frame = cfgpacket->frame;
+	(*prev)->t = (char *) cfgpacket->fvwmwin;
+	(*prev)->x = cfgpacket->frame_x;
+	(*prev)->y = cfgpacket->frame_y;
+	(*prev)->width = cfgpacket->frame_width;
+	(*prev)->height = cfgpacket->frame_height;
+	(*prev)->desk = cfgpacket->desk;
+	memcpy(
+		&((*prev)->flags), &(cfgpacket->flags),
+		sizeof(cfgpacket->flags));
+	(*prev)->title_height = cfgpacket->title_height;
+	(*prev)->border_width = cfgpacket->border_width;
+	(*prev)->icon_w = cfgpacket->icon_w;
+	(*prev)->icon_pixmap_w = cfgpacket->icon_pixmap_w;
+	if (IS_ICONIFIED(*prev))
+	{
+		(*prev)->icon_x = 0;
+		(*prev)->icon_y = 0;
+		(*prev)->icon_width = 0;
+		(*prev)->icon_height = 0;
+	}
+	if (win_pix_set)
+	{
+		(*prev)->text = win_fore_pix;
+		(*prev)->back = win_back_pix;
+	}
+	else
+	{
+		(*prev)->text = cfgpacket->TextPixel;
+		(*prev)->back = cfgpacket->BackPixel;
+	}
+	AddNewWindow(*prev);
+
 	return;
-      }
-      prev = &(t->next);
-      t = t->next;
-      i++;
-    }
-  *prev = (PagerWindow *)safemalloc(sizeof(PagerWindow));
-  memset(*prev, 0, sizeof(PagerWindow));
-  (*prev)->w = cfgpacket->w;
-  (*prev)->frame = cfgpacket->frame;
-  (*prev)->t = (char *) cfgpacket->fvwmwin;
-  (*prev)->x = cfgpacket->frame_x;
-  (*prev)->y = cfgpacket->frame_y;
-  (*prev)->width = cfgpacket->frame_width;
-  (*prev)->height = cfgpacket->frame_height;
-  (*prev)->desk = cfgpacket->desk;
-  memcpy(&((*prev)->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags));
-  (*prev)->title_height = cfgpacket->title_height;
-  (*prev)->border_width = cfgpacket->border_width;
-  (*prev)->icon_w = cfgpacket->icon_w;
-  (*prev)->icon_pixmap_w = cfgpacket->icon_pixmap_w;
-
-  if (win_pix_set)
-  {
-    (*prev)->text = win_fore_pix;
-    (*prev)->back = win_back_pix;
-  }
-  else
-  {
-    (*prev)->text = cfgpacket->TextPixel;
-    (*prev)->back = cfgpacket->BackPixel;
-  }
-  AddNewWindow(*prev);
 }
 
 /***********************************************************************
@@ -696,10 +705,10 @@ void list_configure(unsigned long *body)
     t->y = t->icon_y;
     t->width = t->icon_width;
     t->height = t->icon_height;
-    if(IS_ICON_SUPPRESSED(t))
+    if(IS_ICON_SUPPRESSED(t) || t->width == 0 || t->height == 0)
     {
-      t->x = -10000;
-      t->y = -10000;
+      t->x = -32768;
+      t->y = -32768;
     }
   }
   else
@@ -1063,47 +1072,46 @@ void list_lower(unsigned long *body)
  ***********************************************************************/
 void list_iconify(unsigned long *body)
 {
-  PagerWindow *t;
-  Window target_w;
+	PagerWindow *t;
+	Window target_w;
 
-  target_w = body[0];
-  t = Start;
-  while((t!= NULL)&&(t->w != target_w))
-    {
-      t = t->next;
-    }
-  if(t== NULL)
-    {
-      return;
-    }
-  else
-    {
-      t->t = (char *)body[2];
-      t->frame = body[1];
-      t->icon_x = body[3];
-      t->icon_y = body[4];
-      t->icon_width = body[5];
-      t->icon_height = body[6];
-      SET_ICONIFIED(t, True);
-      if(IS_ICON_SUPPRESSED(t))
-      {
-	t->x = -32768;
-	t->y = -32768;
-      }
-      else
-      {
-	t->x = t->icon_x;
-	t->y = t->icon_y;
-      }
-      t->width = t->icon_width;
-      t->height = t->icon_height;
+	target_w = body[0];
+	t = Start;
+	while (t != NULL && t->w != target_w)
+	{
+		t = t->next;
+	}
+	if (t != NULL)
+	{
+		t->t = (char *)body[2];
+		t->frame = body[1];
+		t->icon_x = body[3];
+		t->icon_y = body[4];
+		t->icon_width = body[5];
+		t->icon_height = body[6];
+		SET_ICONIFIED(t, True);
+		if (IS_ICON_SUPPRESSED(t) || t->icon_width == 0 ||
+		    t->icon_height == 0)
+		{
+			t->x = -32768;
+			t->y = -32768;
+		}
+		else
+		{
+			t->x = t->icon_x;
+			t->y = t->icon_y;
+		}
+		t->width = t->icon_width;
+		t->height = t->icon_height;
+		/* if iconifying main pager window turn balloons on or off */
+		if ( t->w == Scr.Pager_w )
+		{
+			ShowBalloons = ShowIconBalloons;
+		}
+		MoveResizePagerView(t, True);
+	}
 
-      /* if iconifying main pager window turn balloons on or off */
-      if ( t->w == Scr.Pager_w )
-	ShowBalloons = ShowIconBalloons;
-
-      MoveResizePagerView(t, True);
-    }
+	return;
 }
 
 

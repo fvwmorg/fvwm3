@@ -1,3 +1,17 @@
+2003-04-19  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (AddNewWindow):
+	* FvwmPager/FvwmPager.c (list_configure):
+	(list_iconify):
+	(list_add):
+	fixed iconified windows without an icon showing up after a restart in
+	the pager; also fixes iconified windows flashing for a moment when they
+	first show up in the pager (e.g. Style * StartIconic).
+
+	* FvwmPager/FvwmPager.c (list_configure):
+	(list_iconify):
+	do not display an icon if a window has none on the desktop
+
 2003-04-16  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmEvent/FvwmEvent.c:
@@ -40,15 +54,15 @@
 
 2003-04-06  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmForm/ReadXServer.c (ReadXServer): 
-	* FvwmForm/FvwmForm.c (Restart): 
+	* FvwmForm/ReadXServer.c (ReadXServer):
+	* FvwmForm/FvwmForm.c (Restart):
 	* FvwmForm/FvwmForm.h: Fix core dump.  When tabbing field to field,
 	always position cursor at front of input field.
 
 2003-04-05  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmForm/FvwmForm.c (RedrawItem): Fixed input fields not getting cleared
-	on multiline paste.
+	* FvwmForm/FvwmForm.c (RedrawItem): Fixed input fields not getting
+	cleared on multiline paste.
 
 2003-04-04  Dominik Vogt  <dominik.vogt@gmx.de>
 

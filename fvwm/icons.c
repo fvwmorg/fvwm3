@@ -2505,6 +2505,7 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 				SET_ICON_UNMAPPED(t, 1);
 				SET_ICONIFIED_BY_PARENT(t, 1);
 				get_icon_geometry(t, &g);
+fprintf(stderr,"MI1: %d %d %dx%d\n", -32768, -32768, g.width, g.height);
 				BroadcastPacket(
 					M_ICONIFY, 7, FW_W(t), FW_W_FRAME(t),
 					(unsigned long)t, -32768, -32768,
@@ -2568,6 +2569,7 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 	get_icon_geometry(fw, &icon_rect);
 	/* if this fails it does not overwrite icon_rect */
 	EWMH_GetIconGeometry(fw, &icon_rect);
+fprintf(stderr,"MI2: %d %d %dx%d, %d %d %dx%d\n", icon_rect.x, icon_rect.y, icon_rect.width, icon_rect.height, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width, fw->frame_g.height);
 	BroadcastPacket(
 		M_ICONIFY, 11, FW_W(fw), FW_W_FRAME(fw), (unsigned long)fw,
 		icon_rect.x, icon_rect.y, icon_rect.width, icon_rect.height,
