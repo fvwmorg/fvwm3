@@ -31,7 +31,6 @@ Tue May 18 12:44:11 1999  Steve ROBBINS  <stever@bic.mni.mcgill.ca>
 	bugfix from Lars Hecking.
 
 1999-05-18  Dominik Vogt  <dominik_vogt@gmx.de>
->>>>>>> 1.419
 
 	* fvwm/menus.c: menus.c should be reentrant now; the MenuRoot struct
 	itself still needs some work, but not today
