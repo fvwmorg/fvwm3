@@ -1,5 +1,7 @@
 1999-07-04  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* configure.in: changed version to 2.3.6
+
 	* fvwm/functions.c (execute_complex_function): -Wall fix
 
 	* fvwm/misc.c (Destroy):
