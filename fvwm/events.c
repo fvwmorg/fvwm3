@@ -1065,8 +1065,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
       if(DO_START_ICONIC(Tmp_win))
 	state = IconicState;
 
-      if(isIconicState == IconicState)
-	state = IconicState;
+      if(isIconicState != DontCareState)
+	state = isIconicState;
 
       MyXGrabServer(dpy);
       switch (state)
