@@ -1,4 +1,14 @@
-1998-11-07  Dominik  <dominik_vogt@hp.com>
+1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/parse.c (seekright): switched to new syntax of
+	DoGetNextToken.
+
+1998-11-09  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmIconMan/readconfig.c: Fixed bug that prevented function lists
+	from working if they contained a comma. Fixed a memory leak too.
+
+1998-11-07  Dominik Vogt <dominik_vogt@hp.com>
 
 	* FvwmIconMan/readconfig.c: Removed internal_GetNextToken and
 	replaced it with libs/Parse.c(DoGetNextToken);

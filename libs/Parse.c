@@ -140,7 +140,8 @@ void NukeToken(char **pstr)
  * token is the extracted word, which is copied into a malloced
  * space, and must be freed after use. DoGetNextToken *never* returns an
  * empty string. If the token consists only of whitespace or delimiters,
- * the returned token is NULL instead.
+ * the returned token is NULL instead. If out_delim is given, the character
+ * ending the string is returned therein.
  *
  * spaces = string of characters to treat as spaces
  * delims = string of characters delimiting token
@@ -149,7 +150,8 @@ void NukeToken(char **pstr)
  * characters (spaces are skipped before a token, delimiters are not).
  *
  **************************************************************************/
-char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims)
+char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims,
+		     char *out_delim)
 { 
   char *t,*start, *end, *text;
   int snum;
@@ -194,6 +196,8 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims)
 	}
     }
   end = t;
+  if (out_delim)
+    *out_delim = *end;
 
   text = safemalloc(end-start+1);
   *token = text;
@@ -238,12 +242,12 @@ char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims)
 
 char *GetNextToken(char *indata,char **token)
 {
-  return DoGetNextToken(indata, token, NULL, NULL);
+  return DoGetNextToken(indata, token, NULL, NULL, NULL);
 }
 
 char *GetNextOption(char *indata,char **token)
 {
-  return DoGetNextToken(indata, token, ",", NULL);
+  return DoGetNextToken(indata, token, ",", NULL, NULL);
 }
 
 char *SkipNTokens(char *indata, unsigned int n)

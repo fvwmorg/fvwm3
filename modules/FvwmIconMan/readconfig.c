@@ -336,7 +336,8 @@ static void close_config_file (void)
 #endif
 }
 
-static char *parse_button (char *string, BuiltinArg *arg, int *flag)
+static char *parse_button (char *string, BuiltinArg *arg, int *flag,
+			   char *pstop_char)
 {
   char *rest, *token;
   ButtonValue *bv;
@@ -351,12 +352,11 @@ static char *parse_button (char *string, BuiltinArg *arg, int *flag)
   bv->offset = 0;
   bv->base = AbsoluteButton;
 
-  rest = DoGetNextToken (string, &token, NULL, ",");
-  if (token == NULL || !strcmp (token, ",")) {
+  rest = DoGetNextToken (string, &token, NULL, ",", pstop_char);
+  if (token == NULL) {
     bv->base = NoButton;
     *flag = 0;
-    if (token)
-      free(token);
+    Free(token);
     return NULL;
   }
   if (!strcasecmp (token, "focus")) {
@@ -448,7 +448,7 @@ static int builtin_label (int numargs, BuiltinArg *args) {
 static int JmpArgs=0;
 /* icky, I know, but it'll save unnecessary error-checking. */
 
-static Function *parse_function (char **line)
+static Function *parse_function (char **line, char *pstop_char)
 {
   Function *ftype = (Function *)safemalloc (sizeof (Function));
   char *ptr, *name, *tok;
@@ -457,8 +457,9 @@ static Function *parse_function (char **line)
 
   ConsoleDebug (CONFIG, "in parse_function\n");
 
-  ptr = DoGetNextToken (*line, &name, NULL, ",");
+  ptr = DoGetNextToken (*line, &name, NULL, ",", pstop_char);
   if (name == NULL) {
+    Free(ftype);
     *line = NULL;
     return NULL;
   }
@@ -472,14 +473,15 @@ static Function *parse_function (char **line)
     ftype->numargs = builtin_functions_i->numargs;
     ftype->next = NULL;
     
-    for (j = 0; j < builtin_functions_i->numargs; j++) {
+    for (j = 0; j < builtin_functions_i->numargs && *pstop_char != ','; j++) {
       ftype->args[j].type = builtin_functions_i->args[j];
       switch (builtin_functions_i->args[j]) {
       case IntArg:
-	ptr = DoGetNextToken (ptr, &tok, NULL, ",");
+	ptr = DoGetNextToken (ptr, &tok, NULL, ",", pstop_char);
 	if (!tok) {
 	  ConsoleMessage ("%s: too few arguments\n",
 			  builtin_functions_i->name);
+	  Free(ftype);
 	  *line = NULL;
 	  return NULL;
 	}
@@ -487,6 +489,7 @@ static Function *parse_function (char **line)
 	  ConsoleMessage ("%s: expect integer argument: %s\n", 
 			  builtin_functions_i->name, tok);
 	  Free (tok);
+	  Free(ftype);
 	  *line = NULL;
 	  return NULL;
 	}
@@ -494,14 +497,14 @@ static Function *parse_function (char **line)
 	break;
 	
       case StringArg:
-	ptr = DoGetNextToken (ptr, &ftype->args[j].value.string_value,NULL, ",");
-	if (!ftype->args[j].value.string_value || 
-	    !strcmp (ftype->args[j].value.string_value, ",")) {
+	ptr = DoGetNextToken (ptr, &ftype->args[j].value.string_value,NULL,
+			      ",", pstop_char);
+	if (!ftype->args[j].value.string_value) {
 	  ConsoleMessage ("%s: too few arguments\n",
 			  builtin_functions_i->name);
 	  *line = NULL;
-	  if (ftype->args[j].value.string_value)
-	    free(ftype->args[j].value.string_value);
+	  Free(ftype->args[j].value.string_value);
+	  Free(ftype);
 	  return NULL;
 	}
 	ftype->args[j].type = builtin_functions_i->args[j];
@@ -510,10 +513,11 @@ static Function *parse_function (char **line)
       case ButtonArg:
       case WindowArg:
       case ManagerArg:
-	ptr = parse_button (ptr, &ftype->args[j], &flag);
+	ptr = parse_button (ptr, &ftype->args[j], &flag, pstop_char);
 	if (!flag) {
 	  ConsoleMessage ("%s: too few arguments\n",
 			  builtin_functions_i->name);
+	  Free(ftype);
 	  *line = NULL;
 	  return NULL;
 	}
@@ -529,19 +533,21 @@ static Function *parse_function (char **line)
 	 * jump offsets at compile time.
 	 */
       case JmpArg:
-	ptr = DoGetNextToken (ptr, &tok, NULL, ",");
-	if (!tok) {
+	ptr = DoGetNextToken (ptr, &tok, NULL, ",", pstop_char);
+	if (!tok || *pstop_char == ',') {
 	  ConsoleMessage ("%s: too few arguments\n",
 			  builtin_functions_i->name);
+	  Free(ftype);
 	  *line=NULL;
 	  return NULL;
 	}
 	if (extract_int(tok, &ftype->args[j].value.int_value) == 0) {
-	  if (!tok || !strcmp(tok, ",")) {
+	  if (!tok) {
 	    ConsoleMessage ("%s: too few arguments\n",
 			    builtin_functions_i->name);
-	    *line=NULL;
 	    Free(tok);
+	    Free(ftype);
+	    *line=NULL;
 	    return NULL;
 	  }
 	  ftype->args[j].value.string_value=tok;
@@ -555,6 +561,7 @@ static Function *parse_function (char **line)
 	
       default:
 	ConsoleMessage ("internal error in parse_function\n");
+	Free(ftype);
 	*line = NULL;
 	return NULL;
       }
@@ -562,6 +569,7 @@ static Function *parse_function (char **line)
     
     if (j != builtin_functions_i->numargs) {
       ConsoleMessage ("%s: too few arguments\n", builtin_functions_i->name);
+      Free(ftype);
       *line = NULL;
       return NULL;
     }
@@ -586,9 +594,11 @@ static Function *parse_function_list (char *line)
   Function *ret = NULL, *tail = NULL, *f, *i;
   char *token, *p;
   int jump_count, j;
+  char stop_char;
+  char c;
 
   JmpArgs=0;
-  while (line && (f = parse_function (&line))) {
+  while (line && (f = parse_function(&line, &stop_char))) {
     ConsoleDebug (CONFIG, "parse_function: 0x%x\n", f->func);
     /* extra code to check for and remove a 'label' pseudo-function */
     if (f->func==builtin_label) {
@@ -599,7 +609,8 @@ static Function *parse_function_list (char *line)
 	for (j=0; j<(i->numargs); ++j) {
 	  if (i->args[j].type==JmpArg) {
 	    /* we have a winner! */
-	    if (!strcasecmp(f->args[0].value.string_value,i->args[j].value.string_value)) {
+	    if (!strcasecmp(f->args[0].value.string_value,
+			    i->args[j].value.string_value)) {
 	      /* the label matches it, so replace with the jump_count */
 	      i->args[j].type = IntArg;
 	      i->args[j].value.int_value = jump_count;
@@ -618,15 +629,14 @@ static Function *parse_function_list (char *line)
       f->prev=tail;
       tail = f;
     }
-    p = DoGetNextToken (line, &token, NULL, ",");
-    if (token && strcmp (token, ",") != 0) {
+    DoGetNextToken (line, &token, NULL, ",", &c);
+    if (token && stop_char != ',') {
       ConsoleMessage ("Bad function list, comma expected\n");
       Free (token);
       return NULL;
     }
-    if (token)
-      free(token);
-    line = p;
+    stop_char = c;
+    Free(token);
   }
 
   if (JmpArgs!=0) {
@@ -660,21 +670,20 @@ static Function *parse_function_list (char *line)
 
 Binding *ParseMouseEntry (char *tline)
 {
-  char modifiers[20],*ptr,*action,*token;
+  char modifiers[20],*action,*token;
   Binding *new;
   int button;
   int n1=0,n2=0;
   int mods;
 
   /* tline points after the key word "key" */
-  ptr = tline;
-  ptr = DoGetNextToken(ptr,&token, NULL, ",");  
+  action = DoGetNextToken(tline,&token, NULL, ",", NULL);  
   if(token != NULL) {
     n1 = sscanf(token,"%d",&button);
     Free(token);
   }
 
-  action = DoGetNextToken(ptr,&token, NULL, ","); 
+  action = DoGetNextToken(action,&token, NULL, ",", NULL); 
   if(token != NULL) {
     n2 = sscanf(token,"%19s",modifiers);
     Free(token);
@@ -723,13 +732,13 @@ static Binding *ParseKeyEntry (char *tline)
   /* tline points after the key word "key" */
   ptr = tline;
 
-  ptr = DoGetNextToken(ptr,&token, NULL, ",");  
+  ptr = DoGetNextToken(ptr,&token, NULL, ",", NULL);  
   if(token != NULL) {
     n1 = sscanf(token,"%19s",key);
     Free(token);
   }
   
-  action = DoGetNextToken(ptr,&token, NULL, ",");  
+  action = DoGetNextToken(ptr,&token, NULL, ",", NULL);  
   if(token != NULL) {
     n2 = sscanf(token,"%19s",modifiers);
     Free(token);
@@ -1252,7 +1261,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-	p = DoGetNextToken (p, &token, NULL, ",");
+	p = DoGetNextToken (p, &token, NULL, ",", NULL);
 	if (!token) {
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
@@ -1268,7 +1277,7 @@ void read_in_resources (char *file)
 	    add_to_stringlist (&globals.managers[manager].dontshow, token);
 	  }
 	  Free (token);
-	  p = DoGetNextToken (p, &token, NULL, ",");
+	  p = DoGetNextToken (p, &token, NULL, ",", NULL);
 	} while (token);
 	if (token)
 	  Free(token);
@@ -1356,7 +1365,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-	DoGetNextToken (p, &token, NULL, ",");
+	DoGetNextToken (p, &token, NULL, ",", NULL);
 	if (!token)
 	  {
 	    token = (char *)safemalloc(1);
@@ -1380,7 +1389,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-	DoGetNextToken (p, &token, NULL, ",");
+	DoGetNextToken (p, &token, NULL, ",", NULL);
 	if (!token)
 	  {
 	    token = (char *)safemalloc(1);
@@ -1454,7 +1463,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-	p = DoGetNextToken (p, &token, NULL, ",");
+	p = DoGetNextToken (p, &token, NULL, ",", NULL);
 	if (!token) {
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
@@ -1470,7 +1479,7 @@ void read_in_resources (char *file)
 	    add_to_stringlist (&globals.managers[manager].show, token);
 	  }
 	  Free (token);
-	  p = DoGetNextToken (p, &token, NULL, ",");
+	  p = DoGetNextToken (p, &token, NULL, ",", NULL);
 	} while (token);
 	if (token)
 	  Free(token);
@@ -1521,7 +1530,7 @@ void read_in_resources (char *file)
 	  ConsoleMessage ("Bad line: %s\n", current_line);
 	  continue;
 	}
-	DoGetNextToken (p, &token, NULL, ",");
+	DoGetNextToken (p, &token, NULL, ",", NULL);
 	if (!token)
 	  {
 	    token = (char *)safemalloc(1);

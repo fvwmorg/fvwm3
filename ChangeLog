@@ -1,3 +1,29 @@
+1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/builtins.c (SetMenuStyle): fixed memory leak.
+	(SetXOR): fixed memory leak
+	(ReadButtonFace): fixed memory leak.
+
+	* fvwm/menus.c (MakeMenu): fixed memory leak.
+
+	* fvwm/add_window.c (AddWindow): fixed XGetCommand memory leak.
+
+	* fvwm/add_window.c (AddWindow): I think I fixed the XGetWMName
+	memory leak. The manpage doesn't say that the name storage must be
+	free'd, but it does not coredump and is hinted at by other manpages(?)
+
+
+1998-11-09  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/parse.c (seekright): switched to new syntax of
+	DoGetNextToken.
+
+	* modules/FvwmIconMan/readconfig.c: Fixed bug that prevented function
+	lists from working if they contained a comma. Fixed a memory leak too.
+
+	* libs/Parse.c (DoGetNextToken): Added parameter to return the
+	character that ended the string.
+	
 1998-11-09  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/move.c: Applied the bugfix for the move-lagging-behind

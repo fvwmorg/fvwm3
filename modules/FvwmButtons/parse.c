@@ -47,7 +47,7 @@ char *seekright(char **s)
   char *token = NULL;
   char *line = *s;
 
-  line = DoGetNextToken(line, &token, NULL, "),");
+  line = DoGetNextToken(line, &token, NULL, "),", NULL);
   if (*s != NULL && line == NULL)
     line = strchr(*s, '\0');
   *s = line;

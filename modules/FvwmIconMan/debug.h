@@ -1,7 +1,7 @@
 #ifndef IN_DEBUG_H
 #define IN_DEBUG_H
 
-#if 0
+#if 1
 #define PRINT_DEBUG      
 #endif
 

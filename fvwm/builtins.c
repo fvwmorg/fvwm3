@@ -496,6 +496,8 @@ void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   AddToMenu(mr, item,rest,TRUE /* pixmap scan */, TRUE);
   if (item)
     free(item);
+  /* These lines are correct! We must not release token if the string is empty.
+   * It cannot be NULL! GetNextToken never returns an empty string! */
   if (*token)
     free(token);
   
@@ -1255,8 +1257,11 @@ void SetXOR(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   /* ctwm method: */
   /* gcv.foreground = (val1)?(val1):((((unsigned long) 1) << Scr.d_depth) - 1); */
   /* Xlib programming manual suggestion: */
-  gcv.foreground = (val1)?(val1):(BlackPixel(dpy,Scr.screen) ^ WhitePixel(dpy,Scr.screen));
+  gcv.foreground = (val1)?
+    (val1):(BlackPixel(dpy,Scr.screen) ^ WhitePixel(dpy,Scr.screen));
   gcv.subwindow_mode = IncludeInferiors;
+  if (Scr.DrawGC)
+    XFreeGC(dpy, Scr.DrawGC);
   Scr.DrawGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
 }
 
@@ -1657,6 +1662,10 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     XFreeGC(dpy,Scr.MenuGC);
   }
   Scr.MenuGC = XCreateGC(dpy, Scr.Root, gcm, &gcv);
+  if(Scr.MenuStippleGC != NULL)
+  {
+    XFreeGC(dpy,Scr.MenuStippleGC);
+  }
   if(Scr.d_depth < 2)
   {
     gcv.fill_style = FillStippled;
@@ -2151,12 +2160,13 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 	    for(i = 0; i < vc->num; ++i)
 	    {
 		/* X x Y @ line_style */
-		num = sscanf(s,"%dx%d@%d%n",&vc->x[i],&vc->y[i],&vc->line_style[i],
-			     &offset);
+		num = sscanf(s,"%dx%d@%d%n",&vc->x[i],&vc->y[i],
+			     &vc->line_style[i], &offset);
 		if(num != 3)
 		{
 		    if(verbose)fvwm_msg(ERR,"ReadButtonFace",
-					"Bad button style (3) in line %s",action);
+					"Bad button style (3) in line %s",
+					action);
 		    return False;
 		}
 		s += offset;
@@ -2241,6 +2251,7 @@ Boolean ReadButtonFace(char *s, ButtonFace *bf, int button, int verbose)
 		for (i = 0; i <= nsegs; ++i)
 		    free(s_colors[i]);
 		free(s_colors);
+		free(perc);
 		return False;
 	    }
 

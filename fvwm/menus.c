@@ -577,7 +577,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
   MenuRoot *mrPopup = NULL;
   MenuRoot *mrNeedsPainting = NULL;
   Bool fDoPopupNow = FALSE; /* used for delay popups, to just popup the menu */
-  Bool fPopupAndWarp = FALSE; /* used for keystrokes, to popup and move to that menu */
+  Bool fPopupAndWarp = FALSE; /* used for keystrokes, to popup and move to
+			       * that menu */
   Bool fKeyPress = FALSE;
   Bool fForceReposition = TRUE;
   int x_init = 0, y_init = 0;
@@ -1372,10 +1373,10 @@ void PaintEntry(MenuItem *mi)
 	(((*mi->item)!=0) || mi->picture || mi->lpicture))
       {
 	/* thicker shadow border for selected button for motif */
-	RelieveRectangle(mr->w, mr->xoffset+3, y_offset, mr->width-5, mi->y_height,
-			 ReliefGC,ShadowGC);
-	RelieveRectangle(mr->w, mr->xoffset+2, y_offset-1, mr->width-3, mi->y_height+2,
-			 ReliefGC,ShadowGC);
+	RelieveRectangle(mr->w, mr->xoffset+3, y_offset, mr->width-5,
+			 mi->y_height, ReliefGC,ShadowGC);
+	RelieveRectangle(mr->w, mr->xoffset+2, y_offset-1, mr->width-3,
+			 mi->y_height+2, ReliefGC,ShadowGC);
       }
     RelieveHalfRectangle(mr->w, 0, y_offset-1, mr->width,
 			 y_height+2, ReliefGC, ShadowGC);
@@ -1386,7 +1387,8 @@ void PaintEntry(MenuItem *mi)
       XFillRectangle(dpy, mr->w, Scr.MenuShadowGC, mr->xoffset+3, y_offset,
 		     mr->width - mr->xoffset-6, y_height);
     } else {
-      XClearArea(dpy,mr->w,mr->xoffset+3,y_offset,mr->width -mr->xoffset-6,y_height,0);
+      XClearArea(dpy,mr->w,mr->xoffset+3,y_offset,mr->width -mr->xoffset-6,
+		 y_height,0);
     }
     RelieveHalfRectangle(mr->w, 0, y_offset-1, mr->width,
 			 y_height+3, ReliefGC, ShadowGC);
@@ -1394,8 +1396,8 @@ void PaintEntry(MenuItem *mi)
     XClearArea(dpy, mr->w, mr->xoffset,y_offset,mr->width,y_height,0);
     if ((mi->state)&&(!mi->fIsSeparator)&&
 	(((*mi->item)!=0)|| mi->picture || mi->lpicture ))
-      RelieveRectangle(mr->w, mr->xoffset+2, y_offset, mr->width-4, mi->y_height,
-		       ReliefGC,ShadowGC);
+      RelieveRectangle(mr->w, mr->xoffset+2, y_offset, mr->width-4,
+		       mi->y_height, ReliefGC,ShadowGC);
     RelieveHalfRectangle(mr->w, 0, y_offset, mr->width,
 			 y_height, ReliefGC, ShadowGC);
   }
@@ -1427,7 +1429,8 @@ void PaintEntry(MenuItem *mi)
 	{
 	  if(mi->next != NULL)
 	    {
-	      DrawSeparator(mr->w,ShadowGC,ReliefGC,mr->xoffset+5, y_offset+y_height-3,
+	      DrawSeparator(mr->w,ShadowGC,ReliefGC,mr->xoffset+5,
+			    y_offset+y_height-3,
 			    mr->width-6, y_offset+y_height-3,1);
 	    }
 	  if(mi != mr->first)
@@ -1444,10 +1447,12 @@ void PaintEntry(MenuItem *mi)
   if(mi->fIsSeparator && !IS_TITLE_MENU_ITEM(mi) && !IS_LABEL_MENU_ITEM(mi))
     {
       if(USING_MWM_MENUS)
-	DrawSeparator(mr->w,ShadowGC,ReliefGC,mr->xoffset+2,y_offset-1+HEIGHT_SEPARATOR/2,
+	DrawSeparator(mr->w,ShadowGC,ReliefGC,mr->xoffset+2,
+		      y_offset-1+HEIGHT_SEPARATOR/2,
 		      mr->width-3,y_offset-1+HEIGHT_SEPARATOR/2,0);
       else /* Fvwm and Win */
-	DrawSeparator(mr->w,ShadowGC,ReliefGC,mr->xoffset+5,y_offset-1+HEIGHT_SEPARATOR/2,
+	DrawSeparator(mr->w,ShadowGC,ReliefGC,mr->xoffset+5,
+		      y_offset-1+HEIGHT_SEPARATOR/2,
 		      mr->width-6,y_offset-1+HEIGHT_SEPARATOR/2,1);
     }
   if(mi->next == NULL)
@@ -1468,15 +1473,19 @@ void PaintEntry(MenuItem *mi)
     currentGC = ReliefGC;
 
   if(*mi->item)
-    XDrawString(dpy, mr->w,currentGC,mi->x+mr->xoffset,text_y, mi->item, mi->strlen);
+    XDrawString(dpy, mr->w,currentGC,mi->x+mr->xoffset,text_y, mi->item,
+		mi->strlen);
   if(mi->strlen2>0)
-    XDrawString(dpy, mr->w,currentGC,mi->x2+mr->xoffset,text_y, mi->item2,mi->strlen2);
+    XDrawString(dpy, mr->w,currentGC,mi->x2+mr->xoffset,text_y, mi->item2,
+		mi->strlen2);
 
   /* pete@tecc.co.uk: If the item has a hot key, underline it */
   if (mi->hotkey > 0)
-    DrawUnderline(mr->w, currentGC,mr->xoffset+mi->x,text_y,mi->item,mi->hotkey - 1);
+    DrawUnderline(mr->w, currentGC,mr->xoffset+mi->x,text_y,mi->item,
+		  mi->hotkey - 1);
   if (mi->hotkey < 0)
-   DrawUnderline(mr->w, currentGC,mr->xoffset+mi->x2,text_y,mi->item2, -1 - mi->hotkey);
+   DrawUnderline(mr->w, currentGC,mr->xoffset+mi->x2,text_y,mi->item2,
+		 -1 - mi->hotkey);
 
   d=(Scr.EntryHeight-7)/2;
   if(mi->func_type == F_POPUP)
@@ -1502,7 +1511,7 @@ void PaintEntry(MenuItem *mi)
 	  Globalgcv.clip_x_origin= x;
 	  Globalgcv.clip_y_origin = y_offset+1;
 	  XChangeGC(dpy,ReliefGC,Globalgcm,&Globalgcv);
-	  XCopyArea(dpy,mi->picture->picture,mr->w,ReliefGC,	0,0,
+	  XCopyArea(dpy,mi->picture->picture,mr->w,ReliefGC, 0, 0,
 		    mi->picture->width, mi->picture->height,
 		    x,y_offset+1);
 	  Globalgcm = GCClipMask;
@@ -1636,7 +1645,8 @@ void DrawSeparator(Window w, GC TopGC, GC BottomGC,int x1,int y1,int x2,int y2,
  *
  ****************************************************************************/
 static
-void DrawTrianglePattern(Window w,GC GC1,GC GC2,GC GC3,GC gc,int l,int u,int r,int b)
+void DrawTrianglePattern(Window w,GC GC1,GC GC2,GC GC3,GC gc,int l,int u,
+			 int r,int b)
 {
   int m;
 
@@ -1769,10 +1779,9 @@ void MakeMenu(MenuRoot *mr)
   int y,width;
   int cItems;
 
-  if((mr->func != F_POPUP)||(!Scr.flags & WindowsCaptured))
+  if((mr->func != F_POPUP)||(!(Scr.flags & WindowsCaptured)))
     return;
 
-  /* allow two pixels for top border */
   mr->width = 0;
   mr->width2 = 0;
   mr->width0 = 0;
@@ -1821,7 +1830,7 @@ void MakeMenu(MenuRoot *mr)
 	  if(cur->strlen2  == 0)
 	    cur->x = (mr->width+mr->width2+mr->width0
 		      - XTextWidth(Scr.StdFont.font, cur->item,
-					     cur->strlen))/2;
+				   cur->strlen))/2;
 
 	  if((cur->strlen > 0)||(cur->strlen2>0))
 	    {
@@ -1844,7 +1853,9 @@ void MakeMenu(MenuRoot *mr)
 	  cur->fIsSeparator = TRUE;
 	}
       else if((cur->strlen==0)&&(cur->strlen2 == 0)&&
-              StrEquals(cur->action,"nop")) { /* added check for NOP to distinguish from items with no text, only pixmap */
+	      /* added check for NOP to distinguish from items with no text,
+	       * only pixmap */
+              StrEquals(cur->action,"nop")) {
 	/* Separator */
 	cur->y_height = HEIGHT_SEPARATOR;
 	cur->fIsSeparator = TRUE;
@@ -1875,46 +1886,50 @@ void MakeMenu(MenuRoot *mr)
       if (y+Scr.EntryHeight > Scr.MyDisplayHeight &&
 	  cur->next != NULL)
 	{
-	char *szMenuContinuationActionAndName =
-	  (char *) safemalloc((8+strlen(mr->name))*sizeof(char));
-	MenuRoot *menuContinuation;
-	if (mr->continuation != NULL) {
-	  fvwm_msg(ERR,"MakeMenu","Confused-- expected continuation to be null");
-	  break;
+	  char *szMenuContinuationActionAndName;
+	  MenuRoot *menuContinuation;
+
+	  if (mr->continuation != NULL) {
+	    fvwm_msg(ERR, "MakeMenu",
+		     "Confused-- expected continuation to be null");
+	    break;
+	  }
+	  szMenuContinuationActionAndName =
+	    (char *) safemalloc((8+strlen(mr->name))*sizeof(char));
+	  strcpy(szMenuContinuationActionAndName,"Popup ");
+	  strcat(szMenuContinuationActionAndName, mr->name);
+	  strcat(szMenuContinuationActionAndName,"$");
+	  /* NewMenuRoot inserts at the head of the list of menus
+	     but, we need it at the end */
+	  /* (Give it just the name, which is 6 chars past the action
+	     since strlen("Popup ")==6 ) */
+	  menuContinuation = NewMenuRoot(szMenuContinuationActionAndName+6,0);
+	  mr->continuation = menuContinuation;
+	  
+	  /* Now move this item and the remaining items into the new menu */
+	  cItems--;
+	  menuContinuation->first = cur;
+	  menuContinuation->last = mr->last;
+	  menuContinuation->items = mr->items - cItems;
+	  
+	  /* cur_prev is now the last item in the current menu */
+	  mr->last = cur_prev;
+	  mr->items = cItems;
+	  cur_prev->next = NULL;
+	  
+	  /* Go back one, so that this loop will process the new item */
+	  y -= cur->y_height;
+	  cur = cur_prev;
+	  
+	  /* And add the entry pointing to the new menu */
+	  AddToMenu(mr,"More&...",szMenuContinuationActionAndName,
+		    FALSE /* no pixmap scan */, FALSE);
+	  MakeMenu(menuContinuation);
+	  free(szMenuContinuationActionAndName);
 	}
-	strcpy(szMenuContinuationActionAndName,"Popup ");
-	strcat(szMenuContinuationActionAndName, mr->name);
-	strcat(szMenuContinuationActionAndName,"$");
-	/* NewMenuRoot inserts at the head of the list of menus
-	   but, we need it at the end */
-	/* (Give it just the name, with is 6 chars passed the action
-	   since strlen("Popup ")==6 ) */
-	menuContinuation = NewMenuRoot(szMenuContinuationActionAndName+6,0);
-	mr->continuation = menuContinuation;
-
-	/* Now move this item and the remaining items into the new menu */
-	cItems--;
-	menuContinuation->first = cur;
-	menuContinuation->last = mr->last;
-	menuContinuation->items = mr->items - cItems;
-
-	/* cur_prev is now the last item in the current menu */
-	mr->last = cur_prev;
-	mr->items = cItems;
-	cur_prev->next = NULL;
-
-	/* Go back one, so that this loop will process the new item */
-	y -= cur->y_height;
-	cur = cur_prev;
-
-	/* And add the entry pointing to the new menu */
-	AddToMenu(mr,"More&...",szMenuContinuationActionAndName,
-		  FALSE /* no pixmap scan */, FALSE);
-	MakeMenu(menuContinuation);
-
-	}
-    }
+    } /* for */
   mr->in_use = 0;
+  /* allow two pixels for top border */
   mr->height = y+2;
   mr->flags = 0;
   mr->xanimation = 0;
@@ -2121,7 +2136,8 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 
 	  /* Next, check for a color pixmap */
 #ifdef XPM
-	  pp=CachePicture(dpy,Scr.Root,IconPath,PixmapPath,name,Scr.ColorLimit);
+	  pp=CachePicture(dpy,Scr.Root,IconPath,PixmapPath,name,
+			  Scr.ColorLimit);
 #else
 	  pp=CachePicture(dpy,Scr.Root,IconPath,IconPath,name,Scr.ColorLimit);
 #endif
@@ -2189,23 +2205,20 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 {
   MenuItem *tmp;
   char *start,*end;
-  char *taction = NULL;
-  char *taction2 = NULL;
+  char *token = NULL;
+  char *token2 = NULL;
   char *option = NULL;
-  char *naction;
+  char *next_action;
 
-  /* Just returning will probably cause a coredump somewhere else, so I think
-     we should continue with a default! */
   if ((item == NULL || *item == 0) && fNoPlus)
     return;
   /* empty items screw up our menu when painted, so we replace them with a
-     separator */
+   * separator */
   if (item == NULL || *item == 0)
     item = "";
   if (action == NULL || *action == 0)
     action = "Nop";
-  naction = GetNextToken(action, &taction);
-  GetNextToken(naction, &option);
+  GetNextToken(GetNextToken(action, &token), &option);
 
   tmp = (MenuItem *)safemalloc(sizeof(MenuItem));
   tmp->chHotkey = '\0';
@@ -2217,13 +2230,13 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
       menu->first = tmp;
       tmp->prev = NULL;
     }
-  else if (StrEquals(taction, "title") && option && StrEquals(option, "top"))
+  else if (StrEquals(token, "title") && option && StrEquals(option, "top"))
     {
       if (menu->first->action)
 	{
-	  GetNextToken(menu->first->action, &taction2);
+	  GetNextToken(menu->first->action, &token2);
 	}
-      if (StrEquals(taction2, "title"))
+      if (StrEquals(token2, "title"))
 	{
 	  tmp->next = menu->first->next;
 	  free(menu->first);
@@ -2232,6 +2245,8 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 	{
 	  tmp->next = menu->first;
 	}
+      if (token2)
+	free(token2);
       tmp->prev = NULL;
       menu->first = tmp;
     }
@@ -2240,10 +2255,8 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
       menu->last->next = tmp;
       tmp->prev = menu->last;
     }
-  if (taction)
-    free(taction);
-  if (taction2)
-    free(taction2);
+  if (token)
+    free(token);
   if (option)
     free(option);
   menu->last = tmp;
@@ -2288,13 +2301,14 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 	{
 	if (FHotKeyUsedBefore(menu,ch))
 	  {
-	  fvwm_msg(WARN,"AddToMenu","Hotkey %c is reused in menu %s; second binding ignored.",ch,
-		   menu->name);
-	  tmp->hotkey = 0;
+	    fvwm_msg(WARN, "AddToMenu",
+		     "Hotkey %c is reused in menu %s; second binding ignored.",
+		     ch, menu->name);
+	    tmp->hotkey = 0;
 	  }
 	else
 	  {
-	  tmp->chHotkey = ch;
+	    tmp->chHotkey = ch;
 	  }
 	}
       tmp->strlen = strlen(tmp->item);
@@ -2348,7 +2362,7 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
  *
  *  Inputs:
  *	name	- the name of the menu root
- *      fFunction - non-zero if we shoot set func to F_FUNCTION,
+ *      fFunction - non-zero if we should set func to F_FUNCTION,
  *                  F_POPUP otherwise
  *
  ***********************************************************************/

@@ -55,7 +55,8 @@ int MatchToken(const char *pstr,char *tok);
 void NukeToken(char **pstr);
 
 /* old style parse routine: */
-char *DoGetNextToken(char *indata,char **token, char *spaces, char *delims);
+char *DoGetNextToken(char *indata,char **token, char *spaces, char *delims,
+		     char *out_delim);
 char *GetNextToken(char *indata,char **token);
 char *GetNextOption(char *indata,char **token);
 char *SkipNTokens(char *indata, unsigned int n);

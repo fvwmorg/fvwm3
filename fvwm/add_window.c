@@ -133,7 +133,10 @@ FvwmWindow *AddWindow(Window w)
 	return(NULL);
       }
   if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 ) 
-    tmp_win->name = (char *)text_prop.value ;
+    {
+      tmp_win->name = stripcpy((char *)text_prop.value);
+      free(text_prop.value);
+    }
   else
     tmp_win->name = NoName;
 
@@ -257,6 +260,7 @@ FvwmWindow *AddWindow(Window w)
   /* Find out if the client requested a specific desk on the command line. */
   if (XGetCommand (dpy, tmp_win->w, &client_argv, &client_argc)) {
       XrmParseCommand (&db, table, 4, "fvwm", &client_argc, client_argv);
+      XFreeStringList(client_argv);
       status = XrmGetResource (db, "fvwm.desk", "Fvwm.Desk",
                                &str_type, &rm_value);
       if ((status == True) && (rm_value.size != 0)) {
@@ -268,9 +272,11 @@ FvwmWindow *AddWindow(Window w)
       }
 /*  RBW - 11/02/1998  */
       /*  Handle the X Resource equivalent of StartsOnPage.  */
-      status = XrmGetResource (db, "fvwm.page", "Fvwm.Page", &str_type, &rm_value);
+      status = XrmGetResource (db, "fvwm.page", "Fvwm.Page", &str_type,
+			       &rm_value);
       if ((status == True) && (rm_value.size != 0)) {
-          spargs = sscanf (rm_value.addr, "%d %d %d", &tmpno1, &tmpno2, &tmpno3);
+          spargs = sscanf (rm_value.addr, "%d %d %d", &tmpno1, &tmpno2,
+			   &tmpno3);
           switch (spargs)
             {
             case 1:
@@ -327,8 +333,11 @@ FvwmWindow *AddWindow(Window w)
     }
 
   XSetWindowBorderWidth (dpy, tmp_win->w,0);
-  XGetWMIconName (dpy, tmp_win->w, &text_prop);
-  tmp_win->icon_name = (char *) text_prop.value;
+  if (XGetWMIconName (dpy, tmp_win->w, &text_prop))
+    {
+      tmp_win->icon_name = stripcpy((char *) text_prop.value);
+      free(text_prop.value);
+    }
   if(tmp_win->icon_name==(char *)NULL)
     tmp_win->icon_name = tmp_win->name;
 
@@ -618,8 +627,11 @@ FvwmWindow *AddWindow(Window w)
   attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask;
 
   XChangeWindowAttributes (dpy, tmp_win->w, valuemask, &attributes);
-  if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 ) 
-    tmp_win->name = (char *)text_prop.value ;
+  if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
+    { 
+      tmp_win->name = stripcpy((char *)text_prop.value);
+      free(text_prop.value);
+    }
   else
     tmp_win->name = NoName;
   
