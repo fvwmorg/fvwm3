@@ -1,3 +1,8 @@
+2001-03-05  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmForm/FvwmForm.c (ParseActiveMessage): Fix applying colorsets
+	to items that don't have color.
+
 2001-03-06  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmAnimate/FvwmAnimate.c:

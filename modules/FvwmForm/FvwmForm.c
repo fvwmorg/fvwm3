@@ -1645,33 +1645,35 @@ static void ParseActiveMessage(char *buf)
     if(n == colorset || n == itemcolorset) {
       for (item = root_item_ptr; item != 0;
            item = item->header.next) {
-        item->header.dt_ptr->dt_used = 0;
-        if(item->header.dt_ptr->dt_GC) {
-          XFreeGC(dpy,item->header.dt_ptr->dt_GC);
-          item->header.dt_ptr->dt_GC = NULL;
-        }
-        if(item->header.dt_ptr->dt_item_GC) {
-          XFreeGC(dpy,item->header.dt_ptr->dt_item_GC);
-          item->header.dt_ptr->dt_item_GC = NULL;
-        }
-        CheckAlloc(item,item->header.dt_ptr); /* alloc colors and fonts needed */
-        RedrawItem(item, 0);
-        if (itemcolorset >= 0 && item->header.win != 0) {
-          SetWindowBackground(dpy, item->header.win,
-                              item->header.size_x, item->header.size_y,
-                              &Colorset[(itemcolorset)], Pdepth,
-                              item->header.dt_ptr->dt_GC, True);
-        }
-      }
-      if (colorset >= 0)
-      {
-	SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
-			    &Colorset[(colorset)], Pdepth,
-			    root_item_ptr->header.dt_ptr->dt_GC, True);
-      }
+        if (item->header.dt_ptr) {      /* if item has a drawtable */
+          item->header.dt_ptr->dt_used = 0;
+          if(item->header.dt_ptr->dt_GC) {
+            XFreeGC(dpy,item->header.dt_ptr->dt_GC);
+            item->header.dt_ptr->dt_GC = NULL;
+          }
+          if(item->header.dt_ptr->dt_item_GC) {
+            XFreeGC(dpy,item->header.dt_ptr->dt_item_GC);
+            item->header.dt_ptr->dt_item_GC = NULL;
+          }
+          CheckAlloc(item,item->header.dt_ptr); /* alloc colors/fonts needed */
+          RedrawItem(item, 0);
+          if (itemcolorset >= 0 && item->header.win != 0) {
+            SetWindowBackground(dpy, item->header.win,
+                                item->header.size_x, item->header.size_y,
+                                &Colorset[(itemcolorset)], Pdepth,
+                                item->header.dt_ptr->dt_GC, True);
+          }
+        } /* end item has a drawtable */
+        if (colorset >= 0)
+          {
+            SetWindowBackground(dpy, CF.frame, CF.max_width, CF.total_height,
+                                &Colorset[(colorset)], Pdepth,
+                                root_item_ptr->header.dt_ptr->dt_GC, True);
+          }
+      } /* end all items */
     }
     return;
-  }
+  } /* end colorset command */
   if (strncasecmp(buf, MyName, MyNameLen) != 0) {/* If its not for me */
     return;
   } /* Now I know its for me. */
