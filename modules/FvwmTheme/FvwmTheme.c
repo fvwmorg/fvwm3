@@ -187,9 +187,11 @@ static void main_loop(void)
     switch (packet->type) {
     case M_CONFIG_INFO:
       parse_config_line((char *)&packet->body[3]);
+      SendUnlockNotification(fd);
       break;
     case M_STRING:
       parse_message_line((char *)&packet->body[3]);
+      SendUnlockNotification(fd);
       break;
     }
   }
@@ -987,7 +989,7 @@ static void parse_colorset(char *line)
     sharedCells = True;
 }
 
-/* SendToMessage options */
+/* SendToModule options */
 static char *message_options[] = {"Colorset", NULL};
 
 static void parse_message_line(char *line)
@@ -1018,8 +1020,9 @@ static void parse_config(void)
   free(line);
 
   /* tell fvwm what we want to receive */
-  SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO
-		 | M_SENDCONFIG | M_STRING);
+  SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG
+		 | M_STRING);
+  SetSyncMask(fd, M_CONFIG_INFO | M_STRING);
 
   /* loop on config lines, a bit strange looking because GetConfigLine
    * is a void(), have to test $line */
@@ -1033,7 +1036,7 @@ static int error_handler(Display *d, XErrorEvent *e)
    * will try to free a color that it hasn't XAlloc()'d. Allow this error */
   if (e->error_code == BadAccess && e->request_code == X_FreeColors)
   {
-    fprintf(stderr, "%s: couldn't free a pixel, probably ran out of colors\n",
+    fprintf(stderr, "%s: couldn't free a pixel, may have run out of colors\n",
 	    name);
     return 0;
   }
