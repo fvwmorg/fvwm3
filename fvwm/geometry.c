@@ -372,7 +372,7 @@ void get_shaded_geometry(
 		if (small_g->width == 0)
 		{
 			small_g->width = 1;
-			small_g->y -= d;
+			small_g->x -= d;
 		}
 		break;
 	default:
