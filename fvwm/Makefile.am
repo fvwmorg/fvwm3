@@ -30,7 +30,7 @@ fvwm_SOURCES = \
 fvwm_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = \
-	-L$(top_builddir)/libs $(Xft_LIBS) $(X_LIBS) -lfvwm $(xpm_LIBS) \
+	-L$(top_builddir)/libs -lfvwm $(Xft_LIBS) $(X_LIBS) $(xpm_LIBS) \
 	$(stroke_LIBS) $(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 \
 	$(X_EXTRA_LIBS) -lm $(iconv_LIBS) $(Xrender_LIBS) $(Bidi_LIBS) \
 	$(png_LIBS)

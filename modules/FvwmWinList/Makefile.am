@@ -18,7 +18,7 @@ FvwmWinList_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm
 ## so we might as well link against libXpm, if present.
-LDADD = -L$(top_builddir)/libs $(Xft_LIBS) $(X_LIBS) -lfvwm \
+LDADD = -L$(top_builddir)/libs -lfvwm $(Xft_LIBS) $(X_LIBS) \
 	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 -lm $(X_EXTRA_LIBS) \
 	$(Xrender_LIBS) $(iconv_LIBS) $(Bidi_LIBS)
 

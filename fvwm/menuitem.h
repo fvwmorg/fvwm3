@@ -124,7 +124,7 @@ typedef struct
 	MenuDimensions *dim;
 	FvwmWindow *fw;
 	struct MenuRoot *cb_mr;
-	void (*cb_reset_bg)(struct MenuRoot *mr, XEvent *pevent);
+	Bool (*cb_reset_bg)(struct MenuRoot *mr, XEvent *pevent);
 	struct
 	{
 		unsigned is_first_item : 1;

@@ -835,10 +835,10 @@ void CMD_WindowList(F_CMD_ARGS)
 
 						fscr.xypos.x =
 							Scr.Vx + t->frame_g.x +
-							t->frame_g.width / 2;;
+							t->frame_g.width / 2;
 						fscr.xypos.y =
 							Scr.Vy + t->frame_g.y +
-							t->frame_g.height / 2;;
+							t->frame_g.height / 2;
 						scr = FScreenGetScrId(
 							&fscr, FSCREEN_XYPOS);
 						sprintf(loc, "@%d", scr);
@@ -846,13 +846,17 @@ void CMD_WindowList(F_CMD_ARGS)
 					}
 					if (flags & SHOW_PAGE_X)
 					{
-						sprintf(loc, "+%d", Scr.Vx /
+						sprintf(loc, "+%d",
+							(Scr.Vx + t->frame_g.x +
+							 t->frame_g.width / 2) /
 							Scr.MyDisplayWidth);
 						strcat(tname, loc);
 					}
 					if (flags & SHOW_PAGE_Y)
 					{
-						sprintf(loc, "+%d", Scr.Vy /
+						sprintf(loc, "+%d",
+							(Scr.Vy + t->frame_g.y +
+							 t->frame_g.height/2) /
 							Scr.MyDisplayHeight);
 						strcat(tname, loc);
 					}

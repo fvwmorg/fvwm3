@@ -16,8 +16,8 @@ YFLAGS = -d
 man_MANS = FvwmScript.1
 EXTRA_DIST = $(man_MANS) scanner.l script.y TODO
 
-LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs $(Xft_LIBS) $(X_LIBS) \
-	-lfvwm $(xpm_LIBS) $(Xinerama_LIBS) $(X_PRE_LIBS) -lXext -lX11 \
+LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs -lfvwm $(Xft_LIBS) \
+	$(X_LIBS) $(xpm_LIBS) $(Xinerama_LIBS) $(X_PRE_LIBS) -lXext -lX11 \
 	$(X_EXTRA_LIBS) -lm $(Xrender_LIBS) $(iconv_LIBS) $(Bidi_LIBS) \
 	$(png_LIBS)
 
