@@ -1,3 +1,8 @@
+2002-01-24  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmPager/x_pager.c (FALLBACK_FONT): Use fixed as the fallback
+	font when not I18N.
+
 2002-01-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmRearrange/FvwmRearrange.c (main):

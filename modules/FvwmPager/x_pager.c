@@ -334,10 +334,14 @@ void initialize_pager(void)
      in place, its still better than I found it.
   */
   if (!uselabel) {
+#ifdef I18N_MB
 #ifdef STRICTLY_FIXED
 #define FALLBACK_FONT "fixed"
 #else
 #define FALLBACK_FONT "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*"
+#endif
+#else
+#define FALLBACK_FONT "fixed"
 #endif
     font_string = safestrdup(FALLBACK_FONT);
   }    
