@@ -1076,11 +1076,7 @@ void RedrawWindow(button_info *b)
   /* Clean out the entire window first */
   if (initial_redraw == False)
   {
-    gcm = GCBackground;
-    gcv.foreground = fore_pix;
-    gcv.background = back_pix;
-    XChangeGC(Dpy,NormalGC,gcm,&gcv);
-    XFillRectangle(Dpy,MyWindow,NormalGC,0,0,Width,Height);
+    XClearWindow(Dpy,MyWindow);
     clear_buttons = False;
   }
   else
