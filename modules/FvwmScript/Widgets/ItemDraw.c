@@ -42,7 +42,7 @@ void InitItemDraw(struct XObj *xobj)
 
  Attr.background_pixel=xobj->TabColor[back];
  mask=CWBackPixel;
- 
+
  xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
 		xobj->x,xobj->y,xobj->width,xobj->height,0,
 		CopyFromParent,InputOutput,CopyFromParent,
@@ -63,7 +63,7 @@ void InitItemDraw(struct XObj *xobj)
    asc = 0;
    desc = 0;
  }
-   
+
  if (xobj->icon==NULL)
  {
   if (strlen(xobj->title)!=0)
@@ -121,7 +121,7 @@ void DestroyItemDraw(struct XObj *xobj)
 }
 
 void DrawItemDraw(struct XObj *xobj)
-{ 
+{
   XClearArea(dpy,xobj->win,0,0,xobj->width,xobj->height,False);
   XClearWindow(dpy,xobj->win);
   DrawIconStr(0,xobj,False);
@@ -137,10 +137,9 @@ void EvtMouseItemDraw(struct XObj *xobj,XButtonEvent *EvtButton)
  Window Win1,Win2;
  Window WinBut=0;
  int In = 0;
- XSegment segm[2];
  int asc,desc,dir;
  XCharStruct struc;
- 
+
  while (End)
  {
   XNextEvent(dpy, &event);
@@ -189,10 +188,10 @@ void EvtMouseItemDraw(struct XObj *xobj,XButtonEvent *EvtButton)
 	   /* Mouse not on button */
 	   if (In)
 	   {
-	    /* Envoie d'un message vide de type SingleClic pour un 
+	    /* Envoie d'un message vide de type SingleClic pour un
 	     *  clique souris */
 	    XQueryPointer(dpy,*xobj->ParentWin,
-		&Win1,&Win2,&x1,&y1,&x2,&y2,&modif); 
+		&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
 	    xobj->value2=x2-xobj->x;
 	    xobj->value3=y2-xobj->y;
 	    SendMsg(xobj,SingleClic);
