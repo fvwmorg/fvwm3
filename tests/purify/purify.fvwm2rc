@@ -638,6 +638,84 @@ AddToFunc Stick-Func
  + I Next [window2] Stick öäpqewikrpü8.,.-kl-.294
  + I Next [window2] Stick öäpqewikrpü8.,.-kl-.294
 
+AddTest "Test WindowShade" WindowShade-Func
+AddToFunc WindowShade-Func
+# This is/was exactly the same as the Iconify test, consider a common macro:
+ + I Next [window1] WindowShade
+ + I Next [window2] WindowShade   0 üpikü
+ + I Next [window3] WindowShade		0
+ + I Next [window4] WindowShade -1
+ + I Next [window5] WindowShade 1
+ + I Next [window6] WindowShade on
+ + I Next [window6] WindowShade -102973
+ + I Next [window4] WindowShade off
+ + I Next [window6] WindowShade False
+ + I Next [window1] WindowShade "False"
+ + I Next [window2] WindowShade  0 "True" üpikü
+ + I Next [window3] WindowShade
+ + I Next [window5] WindowShade
+ + I Next [window6] WindowShade toggle
+ + I Next [window6] WindowShade toggle
+
+AddTest "Test IgnoreModifiers" IgnoreModifiers-Func
+AddToFunc IgnoreModifiers-Func
+ + I IgnoreModifers L25
+ + I IgnoreModifers
+
+AddTest "Test Key" Key-Func
+AddToFunc Key-Func
+ + I Key
+ + I Key f12
+ + I Key f12 t
+ + I key f12 t cs
+ + I key		f12		t		cs
+ + I Key		f12		a		a		Nop
+ + I Key  f12     a  a     function nonexistent
+ + I Key f12 a a function nonexistent
+ + I Key f12 t a function nonexistent
+ + I Key f12 t a -
+ + I Key f12 t a -
+ + I Key f12 a a -
+
+AddTest "Test Mouse" Mouse-Func
+AddToFunc Mouse-Func
+ + I Mouse
+ + I Mouse 2
+ + I Mouse 2 t
+ + I Mouse 2 t cs
+ + I Mouse		2		t		cs
+ + I Mouse		2		a		a		Nop
+ + I Mouse  2     a  a     function nonexistent
+ + I Mouse 2 a a function nonexistent
+ + I Mouse 2 t a function nonexistent
+ + I Mouse 2 t a -
+ + I Mouse 2 t a -
+ + I Mouse 2 a a -
+
+AddTest "Test PointerKey" PointerKey-Func
+AddToFunc PointerKey-Func
+ + I PointerKey
+ + I PointerKey f12
+ + I PointerKey f12 t
+ + I pointerKey f12 t cs
+ + I pointerKey		f12		t		cs
+ + I PointerKey		f12		a		a		Nop
+ + I PointerKey  f12     a  a     function nonexistent
+ + I PointerKey f12 a a function nonexistent
+ + I PointerKey f12 t a function nonexistent
+ + I PointerKey f12 t a -
+ + I PointerKey f12 t a -
+ + I PointerKey f12 a a -
+
+# Need Stroke test written by someone with stroke support.
+
+# Need StrokeFunc test written by someone with stroke support.
+
+AddTest "Test UpdateStyles" UpdateStyles-Func
+AddToFunc UpdateStyles-Func
+ + I UpdateStyles
+ + I UpdateStyles ÖLq- ö.qljüpßi+123
+
 # Ending ManPage Order
 
 
@@ -929,19 +1007,6 @@ AddToFunc StyleHilightForeBack-Func
  + I Style "*" HilightFore , HilightBack
  + I Style "*" HilightFore gold2, HilightBack SteelBlue
 
-AddTest "Test Key" Key-Func
-AddToFunc Key-Func
- + I Key
- + I Key f12
- + I Key f12 t
- + I key f12 t cs
- + I key		f12		t		cs
- + I Key		f12		a		a		Nop
- + I Key  f12     a  a     function nonexistent
- + I Key f12 a a function nonexistent
- + I Key f12 t a function nonexistent
- + I Key f12 t a -
- + I Key f12 t a -
 
 AddTest "Test MenuStyle" MenuStyle-Func
 AddToFunc MenuStyle-Func
@@ -955,20 +1020,6 @@ AddToFunc MenuStyle-Func
  + I MenuStyle red yellow green 6x10 fvwm
  + I MenuStyle red yellow green 6x10 fvwm anim
  + I MenuStyle yellow black pink 8x13bold fvwm anim
-
-AddTest "Test Mouse" Mouse-Func
-AddToFunc Mouse-Func
- + I Mouse
- + I Mouse 2
- + I Mouse 2 t
- + I Mouse 2 t cs
- + I Mouse		2		t		cs
- + I Mouse		2		a		a		Nop
- + I Mouse  2     a  a     function nonexistent
- + I Mouse 2 a a function nonexistent
- + I Mouse 2 t a function nonexistent
- + I Mouse 2 t a -
- + I Mouse 2 t a -
 
 AddTest "Test Nop" Nop-Func
 AddToFunc Nop-Func
@@ -1675,18 +1726,6 @@ AddToFunc DecorCommands-Func
  + I Style "testw" UseDecor foo, Color white/grey40,HandleWidth 4
  + I ChangeDecor
  + I ChangeDecor foo
- + I Refresh
-
-AddTest "Test WindowShade" WindowShade-Func
-AddToFunc WindowShade-Func
- + I WindowShade
- + I WindowShade 1
- + I WindowShade 1
- + I WindowShade 2
- + I WindowShade 2
- + I WindowShade
- + I WindowShade
- + I WindowShade 1
  + I Refresh
 
 AddTest "Test Next_Prev_Current_None" Next_Prev_Current_None-Func

@@ -20,67 +20,6 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/* Changed 12/20/98 Dan Espen:
-
- - Removed form limitations including:
-   number of lines in a form.
-   number of items in a form.
-   number of items in a line.
-   number of selections in a choice.
-   number of commands on a button.
-   Colors can be changed anywhere in a form.
-   Fonts can be changed anywhere in a form.
-
- - Changed the general organization of the module to match FvwmAnimate.
-   See comments in FvwmAnimate to see what it mimicks.
-   Some parts of this module have comments containing "FvwmAnimate"
-   are common module/macro candidates.
-   Changed debugging technique to match FvwmAnimate with the
-   additional ability to Debug to File.
-
- - Configurability updates:
-   Form appearance can be configured globaly:
-   Form defaults are read from .FvwmForm.
-   There is a built in Default setting/saving dialogue.
-   Forms can be read in directly from a file.
-   The file is the alias with a leading dot.
-   The file is in $HOME or the system configuration directory.
-   Comes with forms installed in the system configuration directory.
-   Variable substitution throught the form input from invocation command line.
-
- - Operability:
-   You can tab to previous input field with ^P, Up arrow, shift tab.
-
- - This module now has a configuration proceedure:
-   AddToMenu "Module-Popup" "FvwmForm Defaults" FvwmForm FvwmForm-Form
-
- - Use FvwmAnimate command parsing.
-   The part of the command after the module name is no longer case sensitive.
-   Use command tables instead of huge "else if".
-
- - Misc:
-   Avoid core when choice not preceeded by a selection.
-   Rename union member "select" so it doesn't conflict with the function.
-   You can now control vertical spacing on text.  By default text is spaced
-   vertically the way you would want it for buttons.
-   This is for compatibility.  Now you can change the spacing to zero as
-   you might want for a help panel.
-   A button can execute a synchronous shell command.  The first use I
-   put this is a form that writes its new definition to a file and
-   reinvokes itself.
-   Use SendText instead of writes to pipe.
-   Changed button press-in effect from 1 sec to .1 sec.  Didn't seem to
-   do anything on a slow machine...
-   Added preload arg, and Map, Stop and UnMap commands for fast forms.
-   (FvwmForm is now parsing commands during form display.)
-   Add "Message" command, display "Error" and "String" messages from fvwm.
-   Removed CopyNString, strdup replaces it.
-
-   Moved ParseCommand, ReadXServer to separate file.
-   Add UseData.
-   Remove DefineMe.
-
- */
 #include "config.h"
 
 #include <stdio.h>
@@ -108,11 +47,14 @@
 #include <libs/Picture.h>               /* for InitPictureCMap */
 #include "libs/Colorset.h"               /* for InitPictureCMap */
 
-#define IamTheMain 1                    /* in FvwmForm.h, chg extern to "" */
 #include "FvwmForm.h"                   /* common FvwmForm stuff */
-#undef IamTheMain
 
-/* globals that are exported */
+/* globals that are exported, keep in sync with externs in FvwmForm.h */
+Form cur_form;                   /* current form */
+Cursor xc_ibeam, xc_hand;
+
+/* Link list roots */
+Item *root_item_ptr;             /* pointer to root of item list */
 Line root_line = {&root_line,    /* ->next */
                   0,             /* number of items */
                   L_CENTER,0,0,  /* justify, size x/y */
@@ -120,12 +62,23 @@ Line root_line = {&root_line,    /* ->next */
                   0};            /* items ptr */
 Line *cur_line = &root_line;            /* curr line in parse rtns */
 char preload_yorn='n';           /* init to non-preload */
+Item *item;                             /* current during parse */
+Item *cur_sel, *cur_button;             /* current during parse */
+Display *dpy;
+int fd_x;                  /* fd for X connection */
+Window root, ref;
+int screen;
+char *color_names[4];
 char bg_state = 'd';                    /* in default state */
   /* d = default state */
   /* s = set by command (must be in "d" state for first "back" cmd to set it) */
   /* u = used (color allocated, too late to accept "back") */
 char endDefaultsRead = 'n';
-
+char *font_names[3];
+char *screen_background_color;
+char *MyName;
+int MyNameLen;
+int Channel[2];
 
 /* Font/color stuff
    The colors are:
