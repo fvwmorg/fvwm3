@@ -118,14 +118,26 @@ static void FShmSafeCreateImage(
 	if (!FShmAttach(dpy, fim->shminfo))
 	{
 		error = True;
-		goto bail;
 	}
-	XSync(dpy, False);
+	else
+	{
+		XSync(dpy, False);
+	}
+
+	if (!error && !FShmImagesSupported)
+	{
+		/* get an X error: we are a remote client */
+		if (FShmDetach(dpy, fim->shminfo))
+		{
+		}
+		error = True;
+	}
 	XSetErrorHandler(save_handler);
 
  bail:
 	if (error)
 	{
+		
 		if (fim->im)
 		{
 			XDestroyImage (fim->im);
@@ -164,7 +176,7 @@ FImage *FCreateFImage (
 			dpy, fim, visual, depth, format, width, height);
 	}
 
-	if(!fim->im)
+	if(!fim->im )
 	{
 		if ((fim->im = XCreateImage(
 			dpy, visual, depth, ZPixmap, 0, 0, width, height,
