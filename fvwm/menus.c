@@ -7034,13 +7034,6 @@ char *get_menu_options(
 					pops->pos_hints.menu_width =
 						MR_WIDTH(mr);
 				}
-				else if (dummy_mr)
-				{
-					/* the menu that was just closed */
-					pops->pos_hints.is_menu_relative = True;
-					pops->pos_hints.menu_width =
-						MR_WIDTH(dummy_mr);
-				}
 			}
 		}
 		else
