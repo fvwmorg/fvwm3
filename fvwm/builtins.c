@@ -22,7 +22,6 @@
 #include "screen.h"
 #include "module.h"
 
-
 #ifdef WINDOWSHADE
 static int shade_anim_steps=0;
 #endif
@@ -105,7 +104,7 @@ void FocusOn(FvwmWindow *t,Bool FocusByMouse)
   if(((t->frame_x + t->frame_height)< 0)||(t->frame_y + t->frame_width < 0)||
      (t->frame_x >Scr.MyDisplayWidth)||(t->frame_y>Scr.MyDisplayHeight))
   {
-    SetupFrame(t,0,0,t->frame_width, t->frame_height,False);
+    SetupFrame(t,0,0,t->frame_width, t->frame_height,False,False);
     if(!(t->flags & ClickToFocus))
       XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
   }
@@ -179,7 +178,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
   if(((t->frame_x + t->frame_height)< 0)||(t->frame_y + t->frame_width < 0)||
      (t->frame_x >Scr.MyDisplayWidth)||(t->frame_y>Scr.MyDisplayHeight))
   {
-    SetupFrame(t,0,0,t->frame_width, t->frame_height,False);
+    SetupFrame(t,0,0,t->frame_width, t->frame_height,False,False);
     XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
   }
   UngrabEm();
@@ -240,7 +239,7 @@ void Maximize(F_CMD_ARGS)
     else
 #endif
 	new_height = tmp_win->orig_ht;
-    SetupFrame(tmp_win, new_x, new_y, new_width, new_height, TRUE);
+    SetupFrame(tmp_win, new_x, new_y, new_width, new_height, TRUE,False);
     SetBorder(tmp_win,True,True,True,None);
   }
   else
@@ -278,7 +277,7 @@ void Maximize(F_CMD_ARGS)
     if (tmp_win->buttons & WSHADE)
       new_height = tmp_win->frame_height;
 #endif
-    SetupFrame(tmp_win,new_x,new_y,new_width,new_height,TRUE);
+    SetupFrame(tmp_win,new_x,new_y,new_width,new_height,TRUE,False);
     /*   SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);*/
   }
 }
@@ -349,6 +348,14 @@ void WindowShade(F_CMD_ARGS)
 	else
 	    new_height = tmp_win->orig_ht;
 
+	SetupFrame(tmp_win,
+		new_x,
+		new_y,
+		new_width,
+		new_height,
+		True,
+		True);
+
 	if (shade_anim_steps > 0) {
 	    h = tmp_win->title_height+tmp_win->boundary_width;
 	    XMoveWindow(dpy, tmp_win->w, 0, - (new_height-h));
@@ -372,7 +379,8 @@ void WindowShade(F_CMD_ARGS)
 		   new_y,
 		   new_width,
 		   new_height,
-		   True);
+		   True,
+		   False);
 	BroadcastPacket(M_DEWINDOWSHADE, 3,
 			tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
     }
@@ -403,6 +411,7 @@ void WindowShade(F_CMD_ARGS)
 		   tmp_win->frame_y,
 		   tmp_win->frame_width,
 		   tmp_win->title_height+tmp_win->boundary_width,
+		   False,
 		   False);
 	BroadcastPacket(M_WINDOWSHADE,3,
 			tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
@@ -655,7 +664,7 @@ void PlaceAgain_func(F_CMD_ARGS)
   if(token!=NULL && StrEquals("ANIM", token))
     AnimatedMoveOfWindow(tmp_win->frame, -1, -1, x, y, FALSE, -1, NULL);
 
-  SetupFrame(tmp_win,x,y,tmp_win->frame_width, tmp_win->frame_height, FALSE);
+  SetupFrame(tmp_win,x,y,tmp_win->frame_width, tmp_win->frame_height, FALSE, False);
                  
   return;
 }
@@ -2533,7 +2542,7 @@ void SetTitleStyle(F_CMD_ARGS)
 		tmp->frame_y = 0;
 		tmp->frame_height = 0;
 		tmp->frame_width = 0;
-		SetupFrame(tmp,x,y,w,h,True);
+		SetupFrame(tmp,x,y,w,h,True,False);
 		SetTitleBar(tmp,True,True);
 		SetTitleBar(tmp,False,True);
 		tmp = tmp->next;
@@ -2795,7 +2804,7 @@ static void ApplyWindowFont(FvwmDecor *fl)
     tmp->frame_y = 0;
     tmp->frame_height = 0;
     tmp->frame_width = 0;
-    SetupFrame(tmp,x,y,w,h,True);
+    SetupFrame(tmp,x,y,w,h,True,False);
     SetTitleBar(tmp,True,True);
     SetTitleBar(tmp,False,True);
     tmp = tmp->next;
@@ -3672,7 +3681,7 @@ void ChangeDecor(F_CMD_ARGS)
     tmp_win->frame_y = 0;
     tmp_win->frame_height = 0;
     tmp_win->frame_width = 0;
-    SetupFrame(tmp_win,x,y,width,height,True);
+    SetupFrame(tmp_win,x,y,width,height,True,False);
     SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);
 }
 

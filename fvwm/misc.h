@@ -150,7 +150,7 @@ extern void       AnimatedMoveOfWindow(Window w,int startX,int startY,int endX,
 				       int cusDelay, float *ppctMovement);
 extern void       DisplaySize(FvwmWindow *, int, int, Bool, Bool);
 extern void       DisplayPosition(FvwmWindow *, int, int,Bool);
-extern void       SetupFrame(FvwmWindow *,int,int,int,int,Bool);
+extern void       SetupFrame(FvwmWindow *,int,int,int,int,Bool,Bool);
 extern void       CreateGCs(void);
 extern void       InstallWindowColormaps(FvwmWindow *);
 extern void       InstallRootColormap(void);

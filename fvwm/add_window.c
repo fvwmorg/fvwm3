@@ -646,7 +646,8 @@ FvwmWindow *AddWindow(Window w)
   height = tmp_win->frame_height;
   tmp_win->frame_height = 0;
 
-  SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,width,height, True);
+  SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,width,height,
+          True, False);
 
 #ifdef SESSION
   if (do_maximize) {
@@ -654,7 +655,7 @@ FvwmWindow *AddWindow(Window w)
     tmp_win->flags |= MAXIMIZED;
     ConstrainSize (tmp_win, &w_max, &h_max, False, 0, 0);
     tmp_win->maximized_ht = h_max;
-    SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE);
+    SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE, False);
     SetBorder(tmp_win, Scr.Hilite == tmp_win, True, True, None);
     /* fix orig values to not change page on unmaximize  */
     if (tmp_win->orig_x >= Scr.MyDisplayWidth)

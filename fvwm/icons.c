@@ -402,7 +402,7 @@ void AutoPlace(FvwmWindow *t)
       if(new_x < 0)new_x += Scr.MyDisplayWidth;
       if(new_y < 0)new_y += Scr.MyDisplayHeight;
       SetupFrame(t,new_x,new_y,
-		 t->frame_width,t->frame_height,False);
+		 t->frame_width,t->frame_height,False,False);
       t->Desk = Scr.CurrentDesk;
     }
   else

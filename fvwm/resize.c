@@ -104,12 +104,12 @@ void resize_window(F_CMD_ARGS)
 	  tmp_win->orig_wd = drag->width;
 	  tmp_win->orig_ht = drag->height;
  	  SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,
-		      drag->width, tmp_win->frame_height,FALSE);
+		      drag->width, tmp_win->frame_height,FALSE,False);
 	}
       else
 #endif
       SetupFrame (tmp_win, tmp_win->frame_x,
-		  tmp_win->frame_y ,drag->width, drag->height,FALSE);
+		  tmp_win->frame_y ,drag->width, drag->height,FALSE,False);
       SetBorder(tmp_win,True,True,True,None);
 
       ResizeWindow = None;
@@ -319,12 +319,12 @@ void resize_window(F_CMD_ARGS)
          tmp_win->orig_wd = drag->width;
          tmp_win->orig_ht = drag->height;
          SetupFrame (tmp_win, tmp_win->orig_x, tmp_win->orig_y,
-                     drag->width, tmp_win->frame_height, FALSE);
+                     drag->width, tmp_win->frame_height, FALSE, False);
        }
       else
 #endif
       SetupFrame (tmp_win, drag->x,
-		  drag->y, drag->width, drag->height,FALSE);
+		  drag->y, drag->width, drag->height,FALSE, False);
     }
   UninstallRootColormap();
   ResizeWindow = None;

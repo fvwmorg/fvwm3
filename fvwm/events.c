@@ -631,7 +631,7 @@ void HandlePropertyNotify()
 	if((new_width != Tmp_win->frame_width)||
 	   (new_height != Tmp_win->frame_height))
 	  SetupFrame(Tmp_win,Tmp_win->frame_x, Tmp_win->frame_y,
-		     new_width,new_height,False);
+		     new_width,new_height,False,False);
       }
 #endif /* 0 */
       BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
@@ -1541,14 +1541,14 @@ void HandleConfigureRequest()
       Tmp_win->orig_y = y;
       Tmp_win->orig_wd = width;
       Tmp_win->orig_ht = height;
-      SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_height,sendEvent);
+      SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_height,sendEvent, False);
     }
   else
 #endif
   if (!(Tmp_win->flags & MAXIMIZED))
     {
       /* dont allow clients to resize maximized windows */
-      SetupFrame (Tmp_win, x, y, width, height,sendEvent);
+      SetupFrame (Tmp_win, x, y, width, height,sendEvent, False);
     }
 }
 

@@ -1,3 +1,10 @@
+1999-03-17  Tomas Ogren  <stric@ing.umu.se>
+
+	* fvwm/add_window.c fvwm/borders.c fvwm/builtins.c fvwm/events.c
+	fvwm/icons.c fvwm/misc.h fvwm/move.c fvwm/resize.c fvwm/virtual.c:
+	Added one argument to SetupFrame, which is only used when shading to
+	avoid windows with size -2 etc..
+
 Wed Mar 17 06:42:10 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* INSTALL.fvwm: add a note about include directories for optional

@@ -530,7 +530,7 @@ void MoveViewport(int newx, int newy, Bool grab)
                         }
 		     }
 	           SetupFrame (t, t->frame_x+ deltax, t->frame_y + deltay,
-		          t->frame_width, t->frame_height,FALSE);
+		          t->frame_width, t->frame_height,FALSE, False);
 	         }
 	      }
             /*  Bump to next win...    */
@@ -580,7 +580,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 		            }
 	                  SetupFrame (t1, t1->frame_x+ deltax,
 				      t1->frame_y + deltay,
-		               t1->frame_width, t1->frame_height,FALSE);
+		               t1->frame_width, t1->frame_height,FALSE, False);
 	                }
 	            }
             /*  Bump to next win...    */

@@ -1002,7 +1002,7 @@ void DrawLinePattern(Window win,
  *
  ************************************************************************/
 
-void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
+void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,Bool curr_shading)
 {
   XEvent client_event;
   XWindowChanges frame_wc, xwc;
@@ -1203,20 +1203,28 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent)
   cx = tmp_win->boundary_width;
   cy = tmp_win->title_height + tmp_win->boundary_width;
 
-  XResizeWindow(dpy, tmp_win->w, tmp_win->attr.width,
-                tmp_win->attr.height);
-  XMoveResizeWindow(dpy, tmp_win->Parent, cx,cy,
-                    tmp_win->attr.width, tmp_win->attr.height);
+#ifdef WINDOWSHADE
+  if (!shaded) {
+#endif
+      XResizeWindow(dpy, tmp_win->w, tmp_win->attr.width,
+		    tmp_win->attr.height);
+      XMoveResizeWindow(dpy, tmp_win->Parent, cx,cy,
+                        tmp_win->attr.width, tmp_win->attr.height);
+#ifdef WINDOWSHADE
+  }
+#endif
 
   /*
    * fix up frame and assign size/location values in tmp_win
    */
-  frame_wc.x = tmp_win->frame_x = x;
-  frame_wc.y = tmp_win->frame_y = y;
-  frame_wc.width = tmp_win->frame_width = w;
-  frame_wc.height = tmp_win->frame_height = h;
-  frame_mask = (CWX | CWY | CWWidth | CWHeight);
-  XConfigureWindow (dpy, tmp_win->frame, frame_mask, &frame_wc);
+  if (!curr_shading) {
+      frame_wc.x = tmp_win->frame_x = x;
+      frame_wc.y = tmp_win->frame_y = y;
+      frame_wc.width = tmp_win->frame_width = w;
+      frame_wc.height = tmp_win->frame_height = h;
+      frame_mask = (CWX | CWY | CWWidth | CWHeight);
+      XConfigureWindow (dpy, tmp_win->frame, frame_mask, &frame_wc);
+  }
 #ifdef FVWM_DEBUG_MSGS
   fvwm_msg(DBG,"SetupFrame",
            "New frame dimensions (x == %d, y == %d, w == %d, h == %d)",
