@@ -660,7 +660,7 @@ int main(int argc, char **argv)
   /* create the move/resize feedback window */
   Scr.SizeStringWidth = XTextWidth (Scr.StdFont.font,
                                     " +8888 x +8888 ", 15);
-  attributes.background_pixel = Colorset[0].bg;
+  attributes.background_pixel = Colorset[Scr.DefaultColorset].bg;
   attributes.colormap = Pcmap;
   attributes.border_pixel = 0;
   valuemask = CWBackPixel | CWColormap | CWBorderPixel;
@@ -1571,7 +1571,8 @@ static void InitVariables(void)
 
   Scr.DefaultIcon = NULL;
 
-  AllocColorset(0);
+  Scr.DefaultColorset = 0;
+  AllocColorset(Scr.DefaultColorset);
   Scr.StdGC = 0;
   Scr.StdReliefGC = 0;
   Scr.StdShadowGC = 0;

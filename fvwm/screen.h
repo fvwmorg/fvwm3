@@ -360,6 +360,7 @@ typedef struct ScreenInfo
   int CurrentDesk;             /* The current desktop number */
   int ColormapFocus;           /* colormap focus style */
   int ColorLimit;              /* Limit on colors used in pixmaps */
+  int DefaultColorset;         /* Default Colorset used by feedback window */
 
   /*
   ** some additional global options which will probably become window

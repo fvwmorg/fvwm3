@@ -151,7 +151,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   valuemask = CWColormap | CWBorderPixel
     | CWBackPixel | CWCursor | CWEventMask;
   attributes.colormap = Pcmap;
-  attributes.background_pixel = Colorset[0].bg;
+  attributes.background_pixel = Colorset[Scr.DefaultColorset].bg;
   attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
   attributes.border_pixel = 0;
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask

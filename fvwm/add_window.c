@@ -495,10 +495,10 @@ fprintf(stderr,"2 new layers: %d\n", Scr.DefaultLayer);
   SET_ICON_UNMAPPED(tmp_win, 0);
   SET_MAXIMIZED(tmp_win, 0);
 
-  tmp_win->TextPixel = Colorset[0].fg;
-  tmp_win->ReliefPixel = Colorset[0].hilite;
-  tmp_win->ShadowPixel = Colorset[0].shadow;
-  tmp_win->BackPixel = Colorset[0].bg;
+  tmp_win->TextPixel = Colorset[Scr.DefaultColorset].fg;
+  tmp_win->ReliefPixel = Colorset[Scr.DefaultColorset].hilite;
+  tmp_win->ShadowPixel = Colorset[Scr.DefaultColorset].shadow;
+  tmp_win->BackPixel = Colorset[Scr.DefaultColorset].bg;
 
   if(SGET_FORE_COLOR_NAME(style) != NULL) {
     tmp_win->TextPixel = GetColor(SGET_FORE_COLOR_NAME(style));

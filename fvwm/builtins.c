@@ -972,21 +972,21 @@ static void ApplyDefaultFontAndColors(void)
   gcv.function = GXcopy;
   gcv.font = Scr.StdFont.font->fid;
   gcv.line_width = 0;
-  gcv.foreground = Colorset[0].fg;
-  gcv.background = Colorset[0].bg;
+  gcv.foreground = Colorset[Scr.DefaultColorset].fg;
+  gcv.background = Colorset[Scr.DefaultColorset].bg;
   if(Scr.StdGC)
     XChangeGC(dpy, Scr.StdGC, gcm, &gcv);
   else
     Scr.StdGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
   gcm = GCFunction|GCLineWidth|GCForeground;
-  gcv.foreground = Colorset[0].hilite;
+  gcv.foreground = Colorset[Scr.DefaultColorset].hilite;
   if(Scr.StdReliefGC)
     XChangeGC(dpy, Scr.StdReliefGC, gcm, &gcv);
   else
     Scr.StdReliefGC = XCreateGC(dpy, Scr.NoFocusWin, gcm, &gcv);
 
-  gcv.foreground = Colorset[0].shadow;
+  gcv.foreground = Colorset[Scr.DefaultColorset].shadow;
   if(Scr.StdShadowGC)
     XChangeGC(dpy, Scr.StdShadowGC, gcm, &gcv);
   else
@@ -998,7 +998,7 @@ static void ApplyDefaultFontAndColors(void)
     Scr.SizeStringWidth = XTextWidth(Scr.StdFont.font, " +8888 x +8888 ", 15);
     wid = Scr.SizeStringWidth + 2 * SIZE_HINDENT;
     hei = Scr.StdFont.height + 2 * SIZE_VINDENT;
-    SetWindowBackground(dpy, Scr.SizeWindow, wid, hei, &Colorset[0], Pdepth,
+    SetWindowBackground(dpy, Scr.SizeWindow, wid, hei, &Colorset[Scr.DefaultColorset], Pdepth,
 			Scr.StdGC, True);
     if(Scr.gs.EmulateMWM)
     {
@@ -1035,7 +1035,7 @@ static void ApplyDefaultFontAndColors(void)
   UpdateAllMenuStyles();
 
   /* inform modules of colorset change */
-  BroadcastColorset(0);
+  BroadcastColorset(Scr.DefaultColorset);
 }
 
 void HandleColorset(F_CMD_ARGS)
@@ -1053,16 +1053,18 @@ void HandleColorset(F_CMD_ARGS)
 
   if (n)
   {
-    LoadColorset(action);
-    BroadcastColorset(n);
-    UpdateMenuColorset(n);
+    LoadColorsetAndFree(action);
+    if (n != Scr.DefaultColorset) BroadcastColorset(n);
   }
   else
   {
     LoadColorsetAndFree(action);
-    /* This broadcasts Colorset 0 */
+  }
+  if (n == Scr.DefaultColorset)
+  {
     ApplyDefaultFontAndColors();
   }
+  UpdateMenuColorset(n);
 }
 
 
@@ -1085,24 +1087,35 @@ void SetDefaultColors(F_CMD_ARGS)
   if (!fore)
     fore = strdup("black");
 
+  if (StrEquals(fore, "Colorset"))
+    {
+      Scr.DefaultColorset = atoi(back);
+	  AllocColorset(Scr.DefaultColorset);
+    }
+  else 
+    {
   if (!StrEquals(fore, "-"))
     {
-      FreeColors(&Colorset[0].fg, 1);
-      Colorset[0].fg = GetColor(fore);
+        FreeColors(&Colorset[Scr.DefaultColorset].fg, 1);
+        Colorset[Scr.DefaultColorset].fg = GetColor(fore);
     }
   if (!StrEquals(back, "-"))
     {
-      FreeColors(&Colorset[0].bg, 1);
-      FreeColors(&Colorset[0].hilite, 1);
-      FreeColors(&Colorset[0].shadow, 1);
-      Colorset[0].bg = GetColor(back);
-      Colorset[0].hilite = GetHilite(Colorset[0].bg);
-      Colorset[0].shadow = GetShadow(Colorset[0].bg);
+        FreeColors(&Colorset[Scr.DefaultColorset].bg, 1);
+        FreeColors(&Colorset[Scr.DefaultColorset].hilite, 1);
+        FreeColors(&Colorset[Scr.DefaultColorset].shadow, 1);
+        Colorset[Scr.DefaultColorset].bg = GetColor(back);
+        Colorset[Scr.DefaultColorset].hilite = GetHilite(Colorset[Scr.DefaultColorset].bg);
+        Colorset[Scr.DefaultColorset].shadow = GetShadow(Colorset[Scr.DefaultColorset].bg);
+    }
     }
   free(fore);
   free(back);
 
+  if(Scr.DefaultColorset < nColorsets) 
+  {
   ApplyDefaultFontAndColors();
+  }
 }
 
 void LoadDefaultFont(F_CMD_ARGS)

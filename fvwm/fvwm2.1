@@ -1847,14 +1847,15 @@ The optional \fIfg\fP and \fIbg\fP arguments specify the foreground
 and background colors for the cursor, defaulting to black and white.
 
 .TP
-.B "DefaultColors" "[\fI foreground background\fP]"
+.B "DefaultColors" "[\fI foreground background\fP] | [\fI Colorset num\fP]"
 \fIDefaultColors\fP sets the default forground and background
 colors used in miscellaneous windows created by fvwm, for example
 in the geometry feedback windows during a move or resize operation.
 If you don't want to change one color or the other, use - as its
 color name.  To revert to the builtin default colors omit both
 color names.  Note that the default colors are not used in menus,
-window titles or icon titles.
+window titles or icon titles. You can also use a colorset for these
+windows DefaultColors Colorset <num>, see FvwmTheme.
 
 
 .TP

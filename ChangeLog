@@ -1,3 +1,16 @@
+1999-10-14  Brad Giaccio  <bgiaccio@psrw.com>
+
+	* fvwm/builtins.c (HandleColorset):
+	(SetDefaultColors):
+	(ApplyDefaultFontAndColors):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/fvwm.c (main):
+	(InitVariables):
+	* fvwm/icons.c (CreateIconWindow):
+	* fvwm/screen.h:
+	* fvwm/fvmw2.1:
+	added DefaultColors Colorset <n> command
+
 1999-10-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c (handle_window_style_change): handle 'StickyIcon' and
