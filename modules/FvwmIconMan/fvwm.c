@@ -532,6 +532,38 @@ static void iconify(FvwmPacketBody *body, int dir)
 	check_in_window (win);
 }
 
+static void window_shade(FvwmPacketBody *body, int do_shade)
+{
+	Window w;
+	WinManager *man;
+
+	w = (Window)(body->minimal_data.app_id);
+	man = find_windows_manager(w);
+	if (man == NULL)
+	{
+		return;
+	}
+	if (do_shade)
+	{
+fprintf(stderr,"manager shaded\n");
+		man->flags.needs_resize_after_unshade = 0;
+		man->flags.is_shaded = 1;
+	}
+	else
+	{
+fprintf(stderr,"manager unshaded\n");
+		man->flags.is_shaded = 0;
+		if (man->flags.needs_resize_after_unshade)
+		{
+fprintf(stderr,"redrawing\n");
+			draw_manager(man);
+			man->flags.needs_resize_after_unshade = 0;
+		}
+	}
+
+	return;
+}
+
 /* only used by remanage_winlist */
 
 static void update_win_in_hashtab(void *arg)
@@ -738,6 +770,14 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
   case MX_PROPERTY_CHANGE:
     ConsoleDebug (FVWM, "DEBUG::MX_PROPERTY_CHANGE\n");
     property_change(body);
+    break;
+
+  case M_WINDOWSHADE:
+    window_shade(body, 1);
+    break;
+
+  case M_DEWINDOWSHADE:
+    window_shade(body, 0);
     break;
 
   default:

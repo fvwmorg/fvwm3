@@ -1106,6 +1106,11 @@ static void resize_manager (WinManager *man, int force)
   int dir;
   int i;
 
+  if (man->flags.is_shaded)
+  {
+    man->flags.needs_resize_after_unshade = 1;
+    return;
+  }
   if (man->can_draw == 0)
     return;
 
@@ -1798,7 +1803,12 @@ void draw_manager (WinManager *man)
   ConsoleDebug (X11, "Drawing Manager: %s\n", man->titlename);
   redraw_all = man->dirty_flags & REDRAW_MANAGER;
 
-  if (redraw_all || (man->buttons.dirty_flags & NUM_WINDOWS_CHANGED)) {
+  if (!man->flags.is_shaded && man->flags.needs_resize_after_unshade) {
+    ConsoleDebug (X11, "\tresizing manager\n");
+    resize_manager (man, 1);
+    update_geometry = 1;
+    force_draw = 1;
+  } else if (redraw_all || (man->buttons.dirty_flags & NUM_WINDOWS_CHANGED)) {
     ConsoleDebug (X11, "\tresizing manager\n");
     resize_manager (man, redraw_all);
     update_geometry = 1;
@@ -1971,7 +1981,7 @@ static int compare_windows(SortType type, WinData *a, WinData *b)
 			(a->display_string)? a->display_string:"",
 			(b->display_string)? b->display_string:"");
 	}
-	else if (type == SortNameCase) 
+	else if (type == SortNameCase)
 	{
 		return strcmp ((a->display_string)? a->display_string:"",
 			       (b->display_string)? b->display_string:"");

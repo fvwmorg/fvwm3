@@ -341,6 +341,11 @@ typedef struct win_manager {
   /* Fvwm state */
   int we_are_drawing, configures_expected;
   Bool swallowed;
+  struct
+  {
+    unsigned is_shaded : 1;
+    unsigned needs_resize_after_unshade : 1;
+  } flags;
 } WinManager;
 
 #define MANAGER_EMPTY(man) ((man)->buttons.num_windows == 0)
