@@ -2483,11 +2483,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
    ***************************************************************/
 
   /* Hilight or clear the background. */
-  if (is_item_selected && MR_STYLE(mr)->look.flags.do_hilight
-#ifdef GRADIENT_BUTTONS
-      && !is_gradient_menu
-#endif
-    )
+  if (is_item_selected && MR_STYLE(mr)->look.flags.do_hilight)
   {
     /* Hilight the background. */
     if (MR_HILIGHT_WIDTH(mr) - 2 * relief_thickness > 0)
@@ -2501,11 +2497,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     }
   }
   else if (MI_WAS_DESELECTED(mi) &&
-	   (relief_thickness > 0 || MR_STYLE(mr)->look.flags.do_hilight)
-#ifdef GRADIENT_BUTTONS
-      && !is_gradient_menu
-#endif
-    )
+	   (relief_thickness > 0 || MR_STYLE(mr)->look.flags.do_hilight))
   {
     int d = 0;
     if (MI_PREV_ITEM(mi) && MR_SELECTED_ITEM(mr) == MI_PREV_ITEM(mi))

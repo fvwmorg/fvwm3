@@ -1,3 +1,8 @@
+1999-06-06  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (paint_item):
+	gradient menus may have a hilit background too
+
 1999-06-06  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.c (Done, parseCommandArgs):
