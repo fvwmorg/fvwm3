@@ -821,51 +821,68 @@ LOCAL_BUGADDR=${FVWM_BUGADDR-${USER-${LOGNAME-`whoami`}}}
 AC_SUBST(LOCAL_BUGADDR)
 
 
-AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
-utils/Makefile utils/fvwm-config
-utils/fvwm-menu-xlock utils/fvwm-menu-directory
-utils/fvwm-menu-desktop utils/fvwm-menu-headlines
-utils/fvwm24_convert utils/fvwmbug
-perllib/Makefile
-perllib/General/Makefile
-perllib/FVWM/Makefile
-perllib/FVWM/Module/Makefile perllib/FVWM/Module.pm
-rpm/Makefile rpm/fvwm.spec docs/fvwm.lsm
-docs/Makefile sample.fvwmrc/Makefile tests/Makefile
+AC_OUTPUT(
+	Makefile
+	libs/Makefile
+	fvwm/Makefile
+	modules/Makefile
 dnl
-modules/FvwmAnimate/Makefile
-modules/FvwmAuto/Makefile
-modules/FvwmBacker/Makefile
-modules/FvwmBanner/Makefile
-modules/FvwmButtons/Makefile
-modules/FvwmCommand/Makefile
-modules/FvwmCommand/scripts/Makefile
-modules/FvwmConsole/Makefile
-modules/FvwmConsole/FvwmConsoleC.pl
-modules/FvwmCpp/Makefile
-modules/FvwmDebug/Makefile
-modules/FvwmDragWell/Makefile
-modules/FvwmEvent/Makefile
-modules/FvwmForm/Makefile
-modules/FvwmIconBox/Makefile
-modules/FvwmIconMan/Makefile
-modules/FvwmIdent/Makefile
-modules/FvwmM4/Makefile
-modules/FvwmPager/Makefile
-modules/FvwmPerl/Makefile
-modules/FvwmPerl/FvwmPerl
-modules/FvwmRearrange/Makefile
-modules/FvwmSave/Makefile
-modules/FvwmSaveDesk/Makefile
-modules/FvwmScript/Makefile
-modules/FvwmScript/Scripts/Makefile
-modules/FvwmScript/Widgets/Makefile
-modules/FvwmScroll/Makefile
-modules/FvwmTaskBar/Makefile
-modules/FvwmTheme/Makefile
-modules/FvwmWharf/Makefile
-modules/FvwmWinList/Makefile
-modules/FvwmGtk/Makefile
+	bin/Makefile
+	bin/fvwm-config
+	bin/fvwm-bug
+	bin/fvwm-menu-xlock
+	bin/fvwm-menu-directory
+	bin/fvwm-menu-desktop
+	bin/fvwm-menu-headlines
+	bin/fvwm-convert-2.4
+	bin/fvwm-convert-2.6
+dnl
+	utils/Makefile
+	perllib/Makefile
+	perllib/General/Makefile
+	perllib/FVWM/Makefile
+	perllib/FVWM/Module/Makefile
+	perllib/FVWM/Module.pm
+	rpm/Makefile
+	rpm/fvwm.spec
+	docs/fvwm.lsm
+	docs/Makefile
+	sample.fvwmrc/Makefile
+	tests/Makefile
+dnl
+	modules/FvwmAnimate/Makefile
+	modules/FvwmAuto/Makefile
+	modules/FvwmBacker/Makefile
+	modules/FvwmBanner/Makefile
+	modules/FvwmButtons/Makefile
+	modules/FvwmCommand/Makefile
+	modules/FvwmCommand/scripts/Makefile
+	modules/FvwmConsole/Makefile
+	modules/FvwmConsole/FvwmConsoleC.pl
+	modules/FvwmCpp/Makefile
+	modules/FvwmDebug/Makefile
+	modules/FvwmDragWell/Makefile
+	modules/FvwmEvent/Makefile
+	modules/FvwmForm/Makefile
+	modules/FvwmIconBox/Makefile
+	modules/FvwmIconMan/Makefile
+	modules/FvwmIdent/Makefile
+	modules/FvwmM4/Makefile
+	modules/FvwmPager/Makefile
+	modules/FvwmPerl/Makefile
+	modules/FvwmPerl/FvwmPerl
+	modules/FvwmRearrange/Makefile
+	modules/FvwmSave/Makefile
+	modules/FvwmSaveDesk/Makefile
+	modules/FvwmScript/Makefile
+	modules/FvwmScript/Scripts/Makefile
+	modules/FvwmScript/Widgets/Makefile
+	modules/FvwmScroll/Makefile
+	modules/FvwmTaskBar/Makefile
+	modules/FvwmTheme/Makefile
+	modules/FvwmWharf/Makefile
+	modules/FvwmWinList/Makefile
+	modules/FvwmGtk/Makefile
 )
 
 # ---------------------------------------------------------------------------

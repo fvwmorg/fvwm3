@@ -2283,7 +2283,7 @@ void HandlePropertyNotify(void)
 	     Event.xproperty.atom == _XA_XROOTPMAP_ID))
 	{
 		/* background change */
-		/* _XA_XSETROOT_ID is used by xpmroot, xli and others (xv send
+		/* _XA_XSETROOT_ID is used by fvwm-root, xli and more (xv sends
 		 * no property  notify?).  _XA_XROOTPMAP_ID is used by Esetroot
 		 * compatible program: the problem here is that with some
 		 * Esetroot compatible program we get the message _before_ the

@@ -1,0 +1,4 @@
+#!@PERL@
+# -*-perl-*-
+
+# Convert .fvwm2rc from 2.4.x format to 2.6.x format.

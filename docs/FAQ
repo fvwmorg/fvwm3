@@ -842,7 +842,7 @@ A: From Jon Mountjoy, one of FVWM's users:
 3.10  My .fvwmrc from version 1.xx no longer works.  What do I do?
 
 A: Start with a new one or convert your old one.  This can be done by
-   hand or with a little help from the 'fvwmrc_convert' in the
+   hand or with a little help from the 'fvwm-convert-2.2' in the
    utils directory.
 
    And here is a list of rc file command changes compiled by Makoto
@@ -1940,10 +1940,10 @@ A: Setting the background image is not really part of the window
    most likely, some part of the distribution is setting the background
    for you.
 
-   There is a program that comes with fvwm (xpmroot) which you can use
-   to set the background to a pixmap.  Other programs like "xv", "xli",
-   "xloadimage", and "display" are more robust, they can put most common
-   image types on the root display.
+   There is a program shipped with fvwm (fvwm-root, previously known as
+   xpmroot) that you can use to set the background to XPM or PNG image.
+   Other programs like "xv", "xli", "xloadimage", and "display" may be
+   used too, they support some image formats that fvwm-root does not.
 
    If you just want a static image on your background, you might invoke
    one of these programs from your .xsession or .xinitrc file.  You can

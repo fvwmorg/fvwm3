@@ -1,21 +1,23 @@
-.TH FVWM24_CONVERT 1 "3 July 2001"
+.TH FVWM-CONVERT-2.4 1 "3 July 2001"
 .SH NAME
 
-fvwm24_convert \- convert FVWM 2.2.x configuration file to FVWM 2.4 syntax
+fvwm-convert-2.4 \- convert FVWM 2.2.x configuration file to FVWM 2.4 syntax
 .SH SYNOPSIS
 
-.BI fvwm24_convert " source dest"
+.B fvwm-convert-2.4
+.RI [ source ]
+.RI [ dest ]
 .SH DESCRIPTION
 
-.B fvwm24_convert
+.B fvwm-convert-2.4
 converts an FVWM 2.2.x configuration file into an FVWM 2.4
 compatible syntax.  It is not suitable to convert older 1.x
 configuration files.  Please use
-.B fvmmrc_convert
+.B fvwm-convert-2.2
 to convert these to the 2.2.x format first.
 .PP
 By default,
-.B fvwm24_convert
+.B fvwm-convert-2.4
 converts
 .I ~/.fvwm2rc,
 saving the results in
@@ -32,14 +34,14 @@ WHile the program runs it will generate a temporary file with
 the same name as the destination file with the suffix ".pass1"
 added.
 .PP
-.B fvwm24_convert
+.B fvwm-convert-2.4
 makes the following changes:
 .TP 4
 .B PixmapPath/IconPath
 In fvwm 2.4, the PixmapPath and IconPath commands are replaced by
 the ImagePath command.  In addition, the ImagePath can be compiled into
 fvwm.
-.B fvwm24_convert
+.B fvwm-convert-2.4
 changes the PixmapPath and IconPath commands
 to ImagePath commands and removes any directories that are compiled
 into fvwm.
@@ -47,41 +49,41 @@ Paths starting with a dollar sign are also removed.
 .TP 4
 .B ModulePath
 In fvwm 2.4, the ModulePath is compiled into fvwm.
-.B fvwm24_convert
+.B fvwm-convert-2.4
 removes any ModulePath commands it finds.
 If you are using your own modules, (not the ones that come with fvwm),
 you will have to fix your configuration file after using
-.B fvwm24_convert.
+.BR fvwm-convert-2.4 .
 .TP 4
 .B HilightColor
 In fvwm 2.4, the HighlightColor command is replaced by a Style command
 using the HilightFore and HilightBack arguments.
-.B fvwm24_convert
+.B fvwm-convert-2.4
 makes these changes.
 .TP 4
 .B HilightColorset
 In fvwm 2.4, the HighlightColorset command that was present in some of the
 2.3.x beta releases is replaced by a Style command
 using the HilightColorset style.
-.B fvwm24_convert
+.B fvwm-convert-2.4
 makes these changes.
 .TP 4
 .B WindowShadeAnimate
 In fvwm 2.4, the WindowShadeAnimate command is replaced by the
 WindowShadeSteps Style option.
-.B fvwm24_convert
+.B fvwm-convert-2.4
 makes this change.
 .TP 4
 .B WindowFont
 In fvwm 2.4, the WindowFont command is replaced by a Style command
 using the Font argument.
-.B fvwm24_convert
+.B fvwm-convert-2.4
 makes this change.
 .TP 4
 .B ColorLimit
 In fvwm 2.4, the ColorLimit command is automatic.  If you have a limited
 colormap, color limiting is the default.
-.B fvwm24_convert
+.B fvwm-convert-2.4
 removes any ColorLimit command that it finds.
 .TP 4
 .B GlobalOpts
@@ -98,19 +100,19 @@ being read may need to be converted also.
 .B Placement Styles
 Any of the old placement Styles found in the file can not be
 converted automatically.  Instead,
-.B fvwm24_convert
+.B fvwm-convert-2.4
 prints a warning.  For details about the conversion, please refer to
 the "Window manager placement" section of the fvwm man page.
 .TP 4
 .B FvwmConfig and FvwmPipe
 These modules are no longer a part of the fvwm distribution.
-.B fvwm24_convert
+.B fvwm-convert-2.4
 prints a warning if these modules are found in the file.
 .TP 4
 .B FvwmButtons panels
 The syntax of panels in FvwmButtons has changed.  The conversion
 can not be done automatically.
-.B fvwm24_convert
+.B fvwm-convert-2.4
 prints a message when it encounters a potential panel definition.
 For details about the conversion, please refer to the
 "CONVERTING OLD PANEL CONFIGURATIONS" section of the FvwmButtons

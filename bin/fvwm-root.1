@@ -1,0 +1,49 @@
+'\" t
+.\" @(#)fvwm-root.1	12/Apr/2002
+.TH FVWM-ROOT 1 "12 April 2002"
+.UC
+
+.SH NAME
+fvwm-root \- Sets the root window of the current X display to image
+
+.SH SYNOPSIS
+.B fvwm-root
+.RB [ \-d ]
+.RB [ \-fe ]
+.I image_file
+
+.SH DESCRIPTION
+.I fvwm-root
+reads the image file specified in the command line and displays it in the
+root window.  The supported image formats are
+.IR XBM ", " XPM " and " PNG
+if appropriated libraries are compiled in.
+
+.SH OPTIONS
+These command line options are recognized by fvwm-root:
+.TP
+.BI "-d"
+Causes fvwm-root NOT to set the background, but to free a memory
+associated with the _XSETROOT_ID property (if any).
+In any case the _XSETROOT_ID property is set to None and some programs,
+like FVWM modules, may use this to update their background if the background
+is transparent.
+.TP
+.BI "-fe"
+Causes fvwm-root to free the memory associated with the ESETROOT_PMAP_ID
+property. This is useful if you  alternately use fvwm-root and an
+Esetroot compatible program.
+
+.SH COMPATIBILITY
+In the past this utility was called
+.IR xpmroot .
+This name is still supported as a symlink.
+
+.SH BUGS
+Repeated use of fvwm-root with different xpm pixmaps will use up slots in
+your color table pretty darn fast.
+
+.SH AUTHOR
+Rob Nation
+
+Enhanced by fvwm-workers.

@@ -4,9 +4,11 @@
 ## Make sure we have a current version of automake
 AUTOMAKE_OPTIONS = 1.4
 
-SUBDIRS = libs \
+SUBDIRS = \
+	libs \
 	fvwm \
 	modules \
+	bin \
 	utils \
 	$(FVWM_PERLLIB) \
 	docs \
@@ -14,7 +16,8 @@ SUBDIRS = libs \
 	sample.fvwmrc \
 	tests
 
-EXTRA_DIST = INSTALL.fvwm \
+EXTRA_DIST = \
+	INSTALL.fvwm \
 	vms/README \
 	vms/config.h \
 	vms/fvwmrc.dat \

@@ -2,6 +2,7 @@ Makefile
 Makefile.in
 .deps
 fvwm2
+fvwm
 .gdb_history
 bb.out
 outfile

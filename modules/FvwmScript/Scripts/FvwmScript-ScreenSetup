@@ -88,7 +88,7 @@ Init
   ChangeIcon 8 /usr/include/X11/pixmaps/fvwm2.xpm
   Set $pos=(Add $pos 1)
   Set $test=(GetOutput  $CAT $pos 1)
-  If $test=={xpmroot} Then
+  If $test=={fvwm-root} Then
   Begin
    ChangeTitle 7 (GetOutput  $CAT $pos 2)
    ChangeIcon 8 (GetTitle 7)
@@ -139,7 +139,7 @@ Main
   Begin
    # Background
    If (GetValue 5) == 1 Then
-    Do {Exec xpmroot } (GetTitle 7)
+    Do {Exec fvwm-root } (GetTitle 7)
    If (GetValue 4) == 1 Then
     Do {Exec xsetroot -solid "} $BColor {"}
    # screen-saver
@@ -180,8 +180,8 @@ Main
    # Background
    If (GetValue 5)==1 Then
    Begin
-    Do {Exec xpmroot } (GetTitle 7)
-    WriteToFile $FILE {xpmroot } (GetTitle 7)
+    Do {Exec fvwm-root } (GetTitle 7)
+    WriteToFile $FILE {fvwm-root } (GetTitle 7)
    End
    If (GetValue 4)==1 Then
    Begin

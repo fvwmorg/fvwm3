@@ -1168,7 +1168,7 @@ AddToFunc ShowFvwmSettings I Exec F=$FVWM_USERDIR;f=$F/.tmp-modules-setting; ech
 
 DestroyFunc ShowXSettings
 AddToFunc ShowXSettings \
-I Exec T=$FVWM_USERDIR/.tmp-x-set;u=~/.xinitrc-fvwm;echo "">$T;for j in 0 1 2 3 4;do if [ "$j" -eq "0" ];then z=$u;t="Current Setting:";else z="$u-$j";t="Setting-$j:";fi;echo $t >>$T;if grep -qe Bell $z;then grep -e "xset b" $z|sed -e s/xset\.b/Bell:/>>$T;fi;if grep -qe Screen $z;then echo -n "Background: ">>$T;if grep -qe \#xsetroot $z;then echo "disabled">>$T;elif grep -qe xpmroot $z;then grep -e xpmroot $z|sed -e s/xpmroot\.//>>$T;else grep -e xsetroot $z|sed -e s/xsetroot\.//>>$T;fi;grep -e "xset s" $z|sed -e s/xset\.s/xsaver:/>>$T;echo -n "DPMS: ">>$T;grep -e xset\.*dpms $z|sed -e s/xset\.-dpms/Off/ -e s/xset\.dpms/On/>>$T;echo -n "xscreensaver: ">>$T;if grep -qe \#xscreen $z;then echo "Off">>$T;else echo "On">>$T;fi;fi;if grep -qe Keyboard $z;then echo -n "Keyboard: ">>$T;grep -e "xset r" $z|sed -e s/xset\.r/auto\ repeat/ -e s/c/Vol/>>$T;fi;if grep -qe Pointer $z;then echo -n "Mouse: ">>$T;grep -e "xset m" $z|sed -e s/xset\.m//>>$T;fi;echo "">>$T;done;xmessage -file $T
+I Exec T=$FVWM_USERDIR/.tmp-x-set;u=~/.xinitrc-fvwm;echo "">$T;for j in 0 1 2 3 4;do if [ "$j" -eq "0" ];then z=$u;t="Current Setting:";else z="$u-$j";t="Setting-$j:";fi;echo $t >>$T;if grep -qe Bell $z;then grep -e "xset b" $z|sed -e s/xset\.b/Bell:/>>$T;fi;if grep -qe Screen $z;then echo -n "Background: ">>$T;if grep -qe \#xsetroot $z;then echo "disabled">>$T;elif grep -qe fvwm-root $z;then grep -e fvwm-root $z|sed -e s/xpmroot\.//>>$T;else grep -e xsetroot $z|sed -e s/xsetroot\.//>>$T;fi;grep -e "xset s" $z|sed -e s/xset\.s/xsaver:/>>$T;echo -n "DPMS: ">>$T;grep -e xset\.*dpms $z|sed -e s/xset\.-dpms/Off/ -e s/xset\.dpms/On/>>$T;echo -n "xscreensaver: ">>$T;if grep -qe \#xscreen $z;then echo "Off">>$T;else echo "On">>$T;fi;fi;if grep -qe Keyboard $z;then echo -n "Keyboard: ">>$T;grep -e "xset r" $z|sed -e s/xset\.r/auto\ repeat/ -e s/c/Vol/>>$T;fi;if grep -qe Pointer $z;then echo -n "Mouse: ">>$T;grep -e "xset m" $z|sed -e s/xset\.m//>>$T;fi;echo "">>$T;done;xmessage -file $T
 
 
 DestroyFunc ShowLayers
@@ -2264,10 +2264,11 @@ AddToMenu   FvwmManPage "FVWM Man Pages" Title
 + "%mini.book1.xpm%FvwmWinList"         ViewManPage FvwmWinList
 + "" Nop
 + "%mini.book1.xpm%fvwm-config"         ViewManPage fvwm-config
-+ "%mini.book1.xpm%fvwmbug"             ViewManPage fvwmbug
-+ "%mini.book1.xpm%fvwmrc_convert"      ViewManPage fvwmrc_convert
-+ "%mini.book1.xpm%fvwm24_convert"      ViewManPage fvwm24_convert
-+ "%mini.book1.xpm%xpmroot"             ViewManPage xpmroot
++ "%mini.book1.xpm%fvwm-bug"            ViewManPage fvwm-bug
++ "%mini.book1.xpm%fvwm-convert-2.2"    ViewManPage fvwm-convert-2.2
++ "%mini.book1.xpm%fvwm-convert-2.4"    ViewManPage fvwm-convert-2.4
++ "%mini.book1.xpm%fvwm-convert-2.6"    ViewManPage fvwm-convert-2.6
++ "%mini.book1.xpm%fvwm-root"           ViewManPage fvwm-root
 + "" Nop
 + "%mini.book1.xpm%fvwm-menu-desktop"   ViewManPage fvwm-menu-desktop
 + "%mini.book1.xpm%fvwm-menu-directory" ViewManPage fvwm-menu-directory

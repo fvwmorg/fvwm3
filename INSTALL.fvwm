@@ -94,7 +94,7 @@ See the fvwm man page under "INITIALIZATION".
 Bug Reports
 ===========
 
-One of the installed scripts is fvwmbug that allows users to send bug
+One of the installed scripts is fvwm-bug that allows users to send bug
 reports to either the local address or the developer address or both.
 The local email address defaults to the installer login, probably root.
 To override this default, set $FVWM_BUGADDR before running ./configure.

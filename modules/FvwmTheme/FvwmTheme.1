@@ -97,13 +97,13 @@ It may be necessary to reapply this option whenever the background
 of one of the affected application changes.
 The pixmap may be used as a window background to achieve root transparency.
 The root background change may be detected or not, this depends on the program
-used to set the background. If you use xpmroot, xsetbg (xli),
+used to set the background. If you use fvwm-root, xsetbg (xli),
 FvwmBacker with a solid or a colorset colors or a recent version of Esetroot
 (>= 9.2) a background change should be detected. If background changes are not
 detected (e.g., if you use xv or xsetroot) you can force detection by using
-the -d option of xpmroot:
+the -d option of fvwm-root:
 .in +.3i
-xv -root -quit mybg.png; xpmroot -d
+xv -root -quit mybg.png; fvwm-root -d
 .in -.3i
 Due to the way X implements transparency no guarantees can be made
 that the desired effect can be achieved.  The application may even crash.

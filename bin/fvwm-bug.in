@@ -1,7 +1,7 @@
 #!/bin/sh -
 #
-# fvwmbug - create a bug report and mail it to the bug address
-#         - adapted from equivalent `bashbug' script
+# fvwm-bug - create a bug report and mail it to the bug address
+#          - adapted from equivalent `bashbug' script
 #
 # The bug address could depend on the release status of FVWM.  Currently
 # it doesn't.
@@ -12,7 +12,7 @@ export PATH
 
 : ${EDITOR=emacs}
 
-TEMP=/tmp/fvwmbug.$$
+TEMP=/tmp/fvwm-bug.$$
 
 # Figure out how to echo a string without a trailing newline
 N=`echo 'hi there\c'`
@@ -47,7 +47,7 @@ elif test $# -eq 0 ; then
 	esac
     fi
 else
-    echo >&2 "usage: fvwmbug [address]"
+    echo >&2 "usage: fvwm-bug [address]"
     exit 1
 fi
 
@@ -133,8 +133,8 @@ case "$ans" in
 esac
 
 ${RMAIL} $BUGADDR < $TEMP || {
-	cat $TEMP >> $HOME/dead.fvwmbug
-	echo "$0: mail failed: report saved in $HOME/dead.fvwmbug" >&2
+	cat $TEMP >> $HOME/dead.fvwm-bug
+	echo "$0: mail failed: report saved in $HOME/dead.fvwm-bug" >&2
 }
 
 exit 0

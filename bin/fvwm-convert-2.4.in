@@ -138,10 +138,10 @@ sub parse_pass {
       # Deletes continuation lines too, although if there are
       # continuation lines, there might be some part of the path we want to
       # Delete them anyway.
-      print '# Removed by fvwm24_convert: ' . $_;
+      print '# Removed by fvwm-convert-2.4: ' . $_;
       while (substr($_, length($_), 1) eq "\\") {
 	$_ = &Getline1();
-	print '# Removed by fvwm24_convert: ' . $_;
+	print '# Removed by fvwm-convert-2.4: ' . $_;
       }
       next line;
     }
@@ -191,7 +191,7 @@ sub parse_pass {
     }
 
     if (/^\s*COLORLIMIT/i) {
-      print '# Removed by fvwm24_convert: ' . $_;
+      print '# Removed by fvwm-convert-2.4: ' . $_;
       next line;
     }
 
@@ -225,7 +225,7 @@ sub parse_pass {
 	print STDERR "  $_";
 	if (/^\s*[*]?\s*FvwmConfig/i) {
 	  print STDERR "  Line commented out.";
-	  print '# Removed by fvwm24_convert: ' . $_;
+	  print '# Removed by fvwm-convert-2.4: ' . $_;
 	  next line;
 	}
 	else {
@@ -239,7 +239,7 @@ sub parse_pass {
 	print STDERR "  $_";
 	if (/^\s*[*]?\s*FvwmPipe/i) {
 	  print STDERR "  Line commented out.";
-	  print '# Removed by fvwm24_convert: ' . $_;
+	  print '# Removed by fvwm-convert-2.4: ' . $_;
 	}
 	else {
 	  print $_;
