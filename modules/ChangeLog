@@ -1,3 +1,8 @@
+2003-03-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmCommand/FvwmCommand.c (main):
+	add a screen number to the DISPLAY if necessary
+
 2003-03-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmScroll/Makefile.am:

@@ -83,6 +83,7 @@ int main ( int argc, char *argv[])
   char cmd[MAX_MODULE_INPUT_TEXT_LEN + 1];
   char *f_stem, *fc_name, *fm_name;
   char *sf_stem;
+  char *c;
   int  i;
   int  opt;
   int  ncnt;
@@ -206,10 +207,10 @@ int main ( int argc, char *argv[])
     /* default name */
     dpy_name = getenv("DISPLAY");
     if (!dpy_name)
-      dpy_name = ":0";
+      dpy_name = ":0.0";
     if (strncmp(dpy_name, "unix:", 5) == 0)
       dpy_name += 4;
-    f_stem = safemalloc(11 + strlen(F_NAME) + MAXHOSTNAME + strlen(dpy_name));
+    f_stem = safemalloc(13 + strlen(F_NAME) + MAXHOSTNAME + strlen(dpy_name));
 
     if ((stat("/var/tmp", &stat_buf) == 0) && (stat_buf.st_mode & S_IFDIR))
       strcpy (f_stem, "/var/tmp/");
@@ -224,6 +225,19 @@ int main ( int argc, char *argv[])
       strcat(f_stem, hostname);  /* Put hostname before dpy if not there */
     }
     strcat(f_stem, dpy_name);
+    c = strrchr(f_stem, '.');
+    if (c != NULL)
+    {
+      for (c++; isdigit(*c); c++)
+      {
+	/* nothing */
+      }
+    }
+    if (c == NULL || *c != 0)
+    {
+      /* append screen number */
+      strcat(f_stem, ".0");
+    }
   }
 
   /* create 2 fifos */
