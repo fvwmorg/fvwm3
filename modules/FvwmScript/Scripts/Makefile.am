@@ -7,15 +7,15 @@ EXTRA_DIST = ScriptFvwmBellSetup ScriptFvwmButtons ScriptFvwmColorset	\
 	ScriptFvwmFind ScriptFvwmKeyboardSetup ScriptFvwmPointerSetup	\
 	ScriptFvwmQuit ScriptFvwmScreenDump ScriptFvwmScreenSetup	\
 	ScriptFvwmSetup95.in TerminalSettings.fss UpdateFvwm2TermMenu	\
-	system.fvwmrc
+	system.fvwmrc script-fvwm-setup95.pl
 
 config_DATA = ScriptFvwmBellSetup ScriptFvwmButtons ScriptFvwmColorset	\
 	ScriptFvwmDate ScriptFvwmBaseConfig ScriptFvwmFileBrowser	\
 	ScriptFvwmFind ScriptFvwmKeyboardSetup ScriptFvwmPointerSetup	\
 	ScriptFvwmQuit ScriptFvwmScreenDump ScriptFvwmScreenSetup	\
-	ScriptFvwmSetup95
+	ScriptFvwmSetup95 script-fvwm-setup95.pl
 
 ScriptFvwmSetup95: ScriptFvwmSetup95.in
 	rm -f $@
-	sed -e 's,xFVWM_CONFIGDIRx,$(FVWM_CONFIGDIR),' -e 's,xPERLx,$(PERL),' $(top_srcdir)/modules/FvwmScript/Scripts/ScriptFvwmSetup95.in > $@-t
+	sed -e 's,xFVWM_CONFIGDIRx,$(FVWM_CONFIGDIR),' -e 's,xPERLx,$(PERL),' -e 's,xFVWM_IMAGEPATHx,$(FVWM_IMAGEPATH),' $(top_srcdir)/modules/FvwmScript/Scripts/ScriptFvwmSetup95.in > $@-t
 	mv $@-t $@
