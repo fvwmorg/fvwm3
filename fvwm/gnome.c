@@ -929,7 +929,6 @@ void GNOME_HandlePropRequest(unsigned int propm,
     if (fwin->w == win)
       break;
   }
-
 /*-----------------------------------------------------------------------
     First change the props on the window so the gnome app knows we did
     somthing.
@@ -985,13 +984,13 @@ void GNOME_HandlePropRequest(unsigned int propm,
     {
       /* shade up */
       old_execute_function(
-	"WindowShade 1", fwin, ev, C_WINDOW, -1, 0, NULL);
+	"WindowShade On", fwin, ev, C_WINDOW, -1, 0, NULL);
     }
     else
     {
       /* shade down */
       old_execute_function(
-	"WindowShade 0", fwin, ev, C_WINDOW, -1, 0, NULL);
+	"WindowShade Off", fwin, ev, C_WINDOW, -1, 0, NULL);
 
     }
   }
