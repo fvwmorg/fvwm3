@@ -908,6 +908,15 @@ A literal '$'.
 .in -.5i
 
 .in +.5i
+$.
+.in +.3i
+The absolute directory of the currently Read file.  Intended for creating
+relative and relocatable configuration trees.  If used outside of
+any read file, the returned value is '.'.
+.in -.3i
+.in -.5i
+
+.in +.5i
 $c
 .in +.3i
 The window's resource class name or "$c" if no window is
@@ -1002,6 +1011,15 @@ $[desk.height]
 .in +.3i
 The width or height of the whole desktop, i.e. the width or height
 multiplied by the number of pages in x or y direction.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$[page.nx]
+$[page.ny]
+.in +.3i
+The current page numbers, by X and Y axes, starting from 0.
+.IR page " is equivalent to " area " in the GNOME terminology."
 .in -.3i
 .in -.5i
 

@@ -121,10 +121,11 @@ environment variable before invoking configure:
 Optional libraries used by FVWM
 ===============================
 
-FVWM can optionally be compiled to use the following libraries: Xpm,
-rplay, readline and LibStroke.  By default, these are probed for,
-and used if found.  If you want to use any of them, install the library
-before configuring FVWM.
+FVWM can optionally be compiled to use the following libraries: Xpm, rplay,
+readline, LibStroke.  By default, these are probed for, and used if found. 
+If you want to use any of them, install the library before configuring FVWM. 
+It is possible to explicitly tell configure to skip autoprobing of a given
+library and disable it.
 
 Xpm allows the use of coloured icons.  See the Xpm web page at
 http://www.inria.fr/koala/lehors/xpm.html for all the latest info and
@@ -140,6 +141,13 @@ http://rplay.doit.org/dist/.
 Readline is used in one module (FvwmConsole) to allow fancy
 command-line editing, a history buffer, etc.  It is GNU software, and
 should be found on any GNU site, such as ftp://ftp.gnu.org/gnu/readline/.
+
+To have readline support, one of termcap or ncurses libraries should be
+found.  Use --with-termcap-library or --with-ncurses-library to specify
+the path (directory or library file) to termcap or ncurses.  The first
+valid library found is used.  It is possible to disable termcap or ncurses
+autoprobing using --without-termcap-library or --without-ncurses-library.
+Disabling both disables readline support, like --without-readline-library.
 
 LibStroke allows interpretation by fvwm of mouse strokes (i.e., motions
 of the mouse). For more informations see the  LibStroke web page at
@@ -164,8 +172,20 @@ may be found:
 
 Only one version of the --with-foo-library flag may be specified.
 
-FvwmGtk module requires GTK and optionally IMLIB and GNOME libraries,
-run './configure --help' for more information.
+Optional libraries used by FvwmGtk
+==================================
+
+FvwmGtk module requires GTK and optionally Imlib and GNOME libraries.
+
+Note, FVWM itself has an ability to support GNOME Window Manager hints
+(which is enabled by default), this has nothing to do with GNOME library
+support compiled into FvwmGtk (which is autoprobed and used if passed).
+
+To disable autoprobing of GTK and GNOME libraries, use:
+
+  --disable-gtktest --without-gnome
+
+Run './configure --help' for more information about configure options.
 
 
 Shared Libraries in Non-standard Places
@@ -185,14 +205,13 @@ runs to contain the -R option.  For example:
       --with-xpm-library=/opt/xpm/lib \
       --with-xpm-includes=/opt/xpm/include
 
-In the future, hopefully, FVWM's configuration will perform this step
-automatically.
+In the future, FVWM's configuration may perform this step automatically.
 
 
 Compile-time Options
 ====================
 
-FVWM has a multitude of options selectable only at compile time.
+FVWM has several options selectable only at compile time.
 These are intended to keep FVWM's memory footprint small, by compiling
 in the code only if requested.
 
@@ -208,78 +227,26 @@ the version of the switch that you are likely to use is the one
 listed.
 
 
-  --disable-activedown-button	disable ActiveDown button state
-
-Disables the ActiveDown button state.  This state allows different
-button styles for pressed down buttons on active windows, and also for
-the title-bar if extended-titlestyle is enabled (see below).  The man
-page refers to this button state as "ActiveDown."  If not defined, the
-"ActiveUp" state is used instead.  Disabling this reduces memory
-usage.
-
-  --disable-borderstyle		disable BorderStyle command
-
-Disables the BorderStyle command.  Not all button styles are
-available.  See the man page entry for BorderStyle for usage
-information.  If you are also using pixmap-buttons, you can also
-texture your borders with tiled pixmaps.  The BorderStyle command has
-Active and Inactive states, regardless of the activedown-button and
-inactive-button flags.
-
   --enable-debug-msgs		enable debugging messages
 
 If you would like to see lots of debug messages from FVWM, for
 debugging purposes, enable this option.
 
-  --disable-extended-titlestyle	 disable styled title-bars
+  --enable-kanji                multibyte character support (does not work yet)
 
-Disables styled title-bars.  These are specified with the TitleStyle
-command in a similar fashion to the ButtonStyle command.  This flag
-this also controls whether support to change the title-bar height is
-compiled in.
+FVWM has limited support for multibyte charsets.  It is fully experimental
+and does not work in all places.  If you have access to a multibyte system
+and want to extend this support, contact the fvwm-workers@fvwm.org list.
 
-  --disable-gradient-buttons    disable gradient button style
+  --enable-move-bug-workaround  workaround for flickering windows during move
 
-Disables the gradient button style.  See the man page button style
-entries for "HGradient" and "VGradient" for usage information.
-
-  --disable-inactive-button	disable Inactive button state
-
-Disables the Inactive button state.  This state allows different
-button styles for inactive windows, and also for the title-bar if
-extended-titlestyle is enabled (see below).  The man page refers to
-this button state as "Inactive."  If not defined, the "ActiveUp" state
-is used instead.  Disabling this reduces memory usage.
-
-  --disable-mini-icons		disable MiniIcon style option
-
-Disables the "MiniIcon" Style option to specify a small pixmap which
-can be used as one of the title-bar buttons, shown in window list,
-utilized by modules, etc.  Requires pixmap-buttons to be defined (see
-below).
+Try this option only if you have problems during window move.
+Most of users should not enable this.
 
   --disable-modality		disable modal dialogs for applications
 
 Totally disables motif applications ability to have modal dialogs.
 Use with care.
-
-  --disable-multistyle		disable stacked button styles
-
-Disables stacked button styles (also for the title-bar if
-extended-titlestyle is enabled).  There is a slight memory penalty for
-each additional style. See the man page entries for AddButtonStyle and
-AddTitleStyle for usage information.
-
-  --disable-pixmap-buttons	disable pixmap button style
-
-Disables the pixmap button style.  You must have Xpm support to use
-color pixmaps.  See the man page button style entries for "Pixmap" and
-"TiledPixmap" for usage information.
-
-  --disable-gradient-buttons    disable gradient button style
-
-Disables the gradient button style.  See the man page button style
-entries for "HGradient" and "VGradient" for usage information.
 
   --disable-shape		disable shape extensions
 
@@ -300,6 +267,23 @@ yourself.
 Note: if it is compiled in, run time detection is used to make sure
 that the currently running X server supports it.
 
+
+The following configure options are either removed or will be removed soon:
+
+  --disable-mini-icons		disable MiniIcon style option
+
+Disables the "MiniIcon" Style option to specify a small pixmap which
+can be used as one of the title-bar buttons, shown in window list,
+utilized by modules, etc.  Requires pixmap-buttons to be defined (see
+below).
+
+  --disable-multistyle		disable stacked button styles
+
+Disables stacked button styles (also for the title-bar if
+extended-titlestyle is enabled).  There is a slight memory penalty for
+each additional style. See the man page entries for AddButtonStyle and
+AddTitleStyle for usage information.
+
   --disable-usedecor		disable UseDecor style option
 
 Disables tagged general decoration styles which can be assigned to
@@ -307,8 +291,3 @@ windows using the UseDecor Style option, or dynamically updated with
 ChangeDecor.  To create and destroy "decor" definitions, see the man
 page entries for AddToDecor and DestroyDecor.  There is a slight
 memory penalty for each additionally defined decor.
-
-  --disable-vector-buttons	disable vector button style
-
-Disables the vector button style.  This button type is considered
-"standard," so it is recommended that you leave it in.

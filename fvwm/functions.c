@@ -309,6 +309,8 @@ static char *function_vars[] =
   "vp.y",
   "vp.width",
   "vp.height",
+  "page.nx",
+  "page.ny",
   "w.x",
   "w.y",
   "w.width",
@@ -407,9 +409,20 @@ static int expand_extended_var(
     val = Scr.MyDisplayHeight;
     break;
   case 10:
+    /* page.nx */
+    is_numeric = True;
+    val = (int)(Scr.Vx / Scr.MyDisplayWidth);
+    break;
   case 11:
+    /* page.ny */
+    is_numeric = True;
+    val = (int)(Scr.Vy / Scr.MyDisplayHeight);
+    break;
+
   case 12:
   case 13:
+  case 14:
+  case 15:
     if (!tmp_win || IS_ICONIFIED(tmp_win))
       return 0;
     else
@@ -417,19 +430,19 @@ static int expand_extended_var(
       is_numeric = True;
       switch (i)
       {
-      case 10:
+      case 12:
 	/* w.x */
 	val = tmp_win->frame_g.x;
 	break;
-      case 11:
+      case 13:
 	/* w.y */
 	val = tmp_win->frame_g.y;
 	break;
-      case 12:
+      case 14:
 	/* w.width */
 	val = tmp_win->frame_g.width;
 	break;
-      case 13:
+      case 15:
 	/* w.height */
 	val = tmp_win->frame_g.height;
 	break;
@@ -438,7 +451,7 @@ static int expand_extended_var(
       }
     }
     break;
-  case 14:
+  case 16:
     /* screen */
     is_numeric = True;
     val = Scr.screen;
@@ -475,7 +488,7 @@ static char *expand(
   int xlen;
   char *out;
   char *var;
-  char *string = NULL;
+  const char *string = NULL;
   Bool is_string = False;
 
   l = strlen(input);
@@ -539,6 +552,9 @@ static char *expand(
 	  l2 += strlen(arguments[n])-2;
 	  i++;
 	}
+	break;
+      case '.':
+	string = get_current_read_dir();
 	break;
       case 'w':
       case 'd':
@@ -666,6 +682,10 @@ static char *expand(
 	    i++; /*eliminates extra white space*/
 #endif
 	}
+	break;
+      case '.':
+	string = get_current_read_dir();
+	is_string = True;
 	break;
       case 'w':
 	if(tmp_win)

@@ -5,7 +5,8 @@
 /**
  * Full pathname of file read in progress, or NULL.
  **/
-extern char* fvwm_file;
+extern const char *get_current_read_file(void);
+extern const char *get_current_read_dir(void);
 
 
 /**

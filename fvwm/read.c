@@ -46,7 +46,65 @@
 #include "screen.h"
 #include "read.h"
 
-char *fvwm_file = NULL;
+#define MAX_READ_DEPTH 40
+static char *curr_read_file = NULL;
+static char *curr_read_dir = NULL;
+static unsigned int curr_read_depth = 0;
+static char *prev_read_files[MAX_READ_DEPTH];
+
+static int push_read_file(const char *file)
+{
+  if (curr_read_depth >= MAX_READ_DEPTH)
+  {
+    fvwm_msg(ERR, "Read", "Nested Read limit %d is reached", MAX_READ_DEPTH);
+    return FALSE;
+  }
+  prev_read_files[curr_read_depth++] = curr_read_file;
+  /* we need a library function safestrdup(); stripcpy() is bad for this */
+  curr_read_file = strdup(file);
+
+  if (curr_read_dir)
+    free(curr_read_dir);
+  curr_read_dir = NULL;
+
+  return TRUE;
+}
+
+static void pop_read_file(void)
+{
+  if (curr_read_depth == 0)
+    return;
+  if (curr_read_file)
+    free(curr_read_file);
+  curr_read_file = prev_read_files[--curr_read_depth];
+
+  if (curr_read_dir)
+    free(curr_read_dir);
+  curr_read_dir = NULL;
+}
+
+const char *get_current_read_file(void)
+{
+  return curr_read_file;
+}
+
+const char *get_current_read_dir(void)
+{
+  if (!curr_read_dir)
+  {
+    char *dir_end;
+    if (!curr_read_file)
+      return ".";
+    /* it should be a library function parse_file_dir() */
+    dir_end = strrchr(curr_read_file, '/');
+    if (!dir_end)
+      dir_end = curr_read_file;
+    curr_read_dir = safemalloc(dir_end - curr_read_file + 1);
+    strncpy(curr_read_dir, curr_read_file, dir_end - curr_read_file);
+    curr_read_dir[dir_end - curr_read_file] = '\0';
+  }
+  return curr_read_dir;
+}
 
 
 /**
@@ -127,36 +185,36 @@ static int parse_filename(
 int run_command_file( char* filename, XEvent *eventp, FvwmWindow *tmp_win,
 		      unsigned long context, int Module )
 {
-    FILE* f;
+  char *full_filename;
+  FILE* f;
 
-    /* Save filename for passing as argument to modules */
-    if (fvwm_file != NULL)
-	free(fvwm_file);
-    fvwm_file = NULL;
-
-    if (filename[0] == '/') {             /* if absolute path */
-	f = fopen(filename,"r");
-	fvwm_file = strdup( filename );
-    } else {                              /* else its a relative path */
-	char* path = CatString3( fvwm_userdir, "/", filename );
-	f = fopen( path, "r" );
-	if ( f == NULL ) {
-	    path = CatString3( FVWM_DATADIR, "/", filename );
-	    f = fopen( path, "r" );
-	}
-	fvwm_file = strdup( path );
+  if (filename[0] == '/')
+  {             /* if absolute path */
+    f = fopen(filename,"r");
+    full_filename = filename;
+  }
+  else
+  {             /* else its a relative path */
+    full_filename = CatString3( fvwm_userdir, "/", filename );
+    f = fopen( full_filename, "r" );
+    if ( f == NULL )
+    {
+      full_filename = CatString3( FVWM_DATADIR, "/", filename );
+      f = fopen( full_filename, "r" );
     }
+  }
+  if (f == NULL)
+    return FALSE;
 
-    if (f == NULL)
-	return 0;
+  if (push_read_file(full_filename) == FALSE)
+    return FALSE;
 
-    run_command_stream( f, eventp, tmp_win, context, Module );
-    fclose( f );
+  run_command_stream( f, eventp, tmp_win, context, Module );
+  fclose( f );
 
-    if (fvwm_file)
-      free( fvwm_file );
-    fvwm_file = NULL;
-    return 1;
+  pop_read_file();
+
+  return TRUE;
 }
 
 /**
@@ -223,11 +281,6 @@ void PipeRead(F_CMD_ARGS)
   FILE* f;
 
   DoingCommandLine = False;
-
-  /* Save filename for passing as argument to modules */
-  if (fvwm_file != NULL)
-    free(fvwm_file);
-  fvwm_file = NULL;
 
   if (debugging)
     fvwm_msg(DBG,"PipeRead","about to attempt '%s'", action);

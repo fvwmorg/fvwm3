@@ -3,6 +3,10 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.22 (not released yet)
 
+* New expanding variables: $., $[page.nx], $[page.ny].
+
+* New command UnsetEnv accomplishes SetEnv.
+
 * Pressing mouse button 2 in an FvwmIdent window restart FvwmIdent
   and asks for a new window.
 

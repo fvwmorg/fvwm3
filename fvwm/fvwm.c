@@ -168,7 +168,7 @@ char *display_name = NULL;
 char *fvwm_userdir;
 static char *home_dir;
 char const *Fvwm_VersionInfo;
-char const *Fvwm_ConfigInfo;
+char const *Fvwm_SupportInfo;
 
 typedef enum { FVWM_RUNNING=0, FVWM_DONE, FVWM_RESTART } FVWM_STATE;
 
@@ -346,9 +346,7 @@ int main(int argc, char **argv)
     }
     else if (strncasecmp(argv[i], "-version", 8) == 0)
     {
-      fvwm_msg(INFO,"main",(char *)Fvwm_VersionInfo);
-      if (Fvwm_ConfigInfo != NULL) fvwm_msg(INFO,"main",
-					    (char *)Fvwm_ConfigInfo);
+      printf("%s\n%s\n", Fvwm_VersionInfo, Fvwm_SupportInfo);
       exit(0);
     }
     else
@@ -2037,39 +2035,46 @@ const char *getInitFunctionName(int n)
 
 static void setVersionInfo(void)
 {
-  char buf[1024];
-  int emptylen;
+  char version_str[256];
+  char support_str[512] = "";
+  int support_len;
 
   /* Set version information string */
-  sprintf(buf,"Fvwm Version %s compiled on %s at %s",
-          VERSION,__DATE__,__TIME__);
-  Fvwm_VersionInfo = strdup(buf);
-
-  /* Set configuration info string (may end up empty) */
-  strcpy(buf,"with support for: ");
-  emptylen = strlen(buf);
+  sprintf(version_str, "FVWM version %s compiled on %s at %s",
+          VERSION, __DATE__, __TIME__);
+  Fvwm_VersionInfo = strdup(version_str);
 
 #ifdef HAVE_READLINE
-  strcat(buf ," ReadLine");
+  strcat(support_str, " ReadLine,");
 #endif
 #ifdef HAVE_RPLAY
-  strcat(buf ," RPlay");
+  strcat(support_str, " RPlay,");
 #endif
 #ifdef HAVE_STROKE
-  strcat(buf ," Stroke");
+  strcat(support_str, " Stroke,");
 #endif
 #ifdef XPM
-  strcat(buf, " XPM");
+  strcat(support_str, " XPM,");
 #endif
+/* no sence to report Imlib and not report GTK; both are used in FvwmGtk only
 #ifdef IMLIB
-  strcat(buf, " IMLIB");
+  strcat(support_str, " Imlib,");
 #endif
+*/
 #ifdef GNOME
-  strcat(buf, " Gnome");
+  strcat(support_str, " GNOME WM hints,");
 #endif
 #ifdef SESSION
-  strcat(buf, " Session");
+  strcat(support_str, " SM,");
 #endif
 
-  Fvwm_ConfigInfo = (strlen(buf) == emptylen) ? '\0' : strdup(buf);
+  support_len = strlen(support_str);
+  if (support_len)
+  {
+    /* strip last comma */
+    support_str[support_len - 1] = '\0';
+    Fvwm_SupportInfo = strdup(CatString2("with support for:", support_str));
+  }
+  else
+    Fvwm_SupportInfo = "with no optional feature support";
 }

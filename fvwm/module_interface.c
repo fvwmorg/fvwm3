@@ -45,6 +45,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "module_interface.h"
+#include "read.h"
 #include "events.h"
 #include "fvwmsignal.h"
 #include "libs/Colorset.h"
@@ -156,7 +157,6 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   char arg6[20];
   char *token;
   extern char *ModulePath;
-  extern char *fvwm_file;
   Window win;
 
   args = (char **)safemalloc(7 * sizeof(char *));
@@ -245,15 +245,14 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
   sprintf(arg3,"%d",fvwm_to_app[0]);
   sprintf(arg5,"%lx",(unsigned long)win);
   sprintf(arg6,"%lx",(unsigned long)context);
-  args[0]=arg1;
-  args[1]=arg2;
-  args[2]=arg3;
-  if(fvwm_file != NULL)
-    args[3]=fvwm_file;
-  else
-    args[3]="none";
-  args[4]=arg5;
-  args[5]=arg6;
+  args[0] = arg1;
+  args[1] = arg2;
+  args[2] = arg3;
+  args[3] = (char *)get_current_read_file();
+  if (!args[3])
+    args[3] = "none";
+  args[4] = arg5;
+  args[5] = arg6;
   for (nargs = 6; action = GetNextToken(action, &token), token; nargs++)
   {
     args = (char **)saferealloc((void *)args, (nargs + 2) * sizeof(char *));
