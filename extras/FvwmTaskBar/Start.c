@@ -37,7 +37,10 @@ void StartButtonInit(int height)
   if (StartPopup == NULL) UpdateString(&StartPopup, "StartMenu");
   if (StartIconName == NULL) UpdateString(&StartIconName, "mini-start.xpm");
 
-  p = GetPicture(dpy, Root, IconPath, PixmapPath, StartIconName);
+  /** FIXME: what should the colour limit be? 
+      I put in -1, which apparently imposes NO limit. 
+  **/
+  p = GetPicture(dpy, Root, IconPath, PixmapPath, StartIconName, -1);
 
   StartButton = (Button *)ButtonNew(StartName, p, BUTTON_UP);
   if (p != NULL) pw = p->width+3; else pw = 0;

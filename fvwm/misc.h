@@ -8,11 +8,15 @@
 /************************************************************************
  * ReapChildren - wait() for all dead child processes
  ************************************************************************/
+#include <sys/types.h>
 #include <sys/wait.h>
-#ifdef HAVE_WAITPID
+
+#if HAVE_WAITPID
 #define ReapChildren()  while ((waitpid(-1, NULL, WNOHANG)) > 0);
-#else
+#elif HAVE_WAIT3
 #define ReapChildren()  while ((wait3(NULL, WNOHANG, NULL)) > 0);
+#else
+#error One of waitpid or wait3 is needed.
 #endif
 
 typedef struct name_list_struct

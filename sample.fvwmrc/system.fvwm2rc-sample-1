@@ -44,10 +44,6 @@ WindowFont		-adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
 IconFont		-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 EdgeScroll 100 100
 
-ModulePath /usr/lib/X11/fvwm2
-PixmapPath /usr/include/X11/pixmaps/
-IconPath   /usr/include/X11/bitmaps/
-
 HilightColor black palevioletred
 DeskTopSize 2x2
 MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-* fvwm

@@ -35,7 +35,7 @@
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 
-#if defined (sparc) && defined (SVR4)
+#if HAVE_SYS_SYSTEMINFO_H
 /* Solaris has sysinfo instead of gethostname.  */
 #include <sys/systeminfo.h>
 #endif
@@ -54,11 +54,9 @@ Display *dpy;			/* which display are we talking to */
 
 Window BlackoutWin=None;        /* window to hide window captures */
 
-#ifdef FVWMRC
+
 char *default_config_command = "Read "FVWMRC;
-#else
-char *default_config_command = "Read .fvwm2rc";
-#endif
+
 #define MAX_CFG_CMDS 10
 static char *config_commands[MAX_CFG_CMDS];
 static int num_config_commands=0;
@@ -778,7 +776,7 @@ void newhandler(int sig)
 /*************************************************************************
  * Restart on a signal
  ************************************************************************/
-void Restart(int nonsense)
+RETSIGTYPE Restart(int nonsense)
 {
   Done(1, *g_argv);
   SIGNAL_RETURN;
@@ -1284,7 +1282,7 @@ void Reborder(void)
  *
  ***********************************************************************
  */
-void SigDone(int nonsense)
+RETSIGTYPE SigDone(int nonsense)
 {
   Done(0, NULL);
   SIGNAL_RETURN;

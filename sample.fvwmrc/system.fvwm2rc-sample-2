@@ -6,10 +6,17 @@
 ##########################################################################
 # PATH Setup 
 #
+# Not normally needed; use configure to set defaults at compile time.  
+#
+# IMPORTANT: if you decide to set a ModulePath, please note that modules
+#            are normally installed into a version-dependent
+#	     directory.  Be sure to update this file after installing
+#	     a new version.
+#
 # Colon seperated unix directory paths for Modules, xpm files, and bitmaps
-ModulePath /usr/local/lib/X11/fvwm2
-PixmapPath /usr/include/X11/pixmaps:/usr/local/include/X11/pixmaps
-IconPath   /usr/include/X11/bitmaps
+#ModulePath /usr/local/libexec/fvwm/2.x.y
+#PixmapPath /usr/include/X11/pixmaps:/usr/local/include/X11/pixmaps
+#IconPath   /usr/include/X11/bitmaps
 
 ############################################################################
 # COLORS and FONTS

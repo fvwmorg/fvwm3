@@ -1,8 +1,26 @@
-Sun Nov  1 09:26:15 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+Sun Nov  1 12:52:59 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* extras/FvwmTaskBar/Makefile.am (FvwmTaskBar_SOURCES): removed
-	Goodies.[ch], since those functions appear to be moved into
-	FvwmTaskBar.c.
+	* sample.fvwmrc/system.fvwm2rc*: Removed the lines setting
+	ModulePath, IconPath, and PixmapPath, since the compiled-in
+	defaults can be set using configure.
+
+Sun Nov  1 12:26:01 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* modules/FvwmM4/FvwmM4.c (m4_defs): 
+	* modules/FvwmCpp/FvwmCpp.c (cpp_defs): Split FVWMDIR definition
+	into FVWM_MODULEDIR and FVWM_CONFIGDIR.
+
+Sun Nov  1 09:54:14 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* extras/FvwmTaskBar/Goodies.c: Restored Goodies.c from -r 1.1 of
+	the repository.
+
+	* libs/Picture.c (GetPicture): Removed the #ifdef NotUsed from
+	around this function.  Appended "int color_limit" to the list of
+	parameters.  Restored GetPicture() declaration to fvwmlib.h.
+
+	* extras/FvwmTaskBar/Start.c: Fixed call to GetPicture function,
+	using "-1" as the color_limit (i.e., no color limit).
 
 Sun Nov  1 09:19:08 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 

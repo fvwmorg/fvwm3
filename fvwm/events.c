@@ -48,9 +48,8 @@
 #include <sys/time.h>
 #include <unistd.h>
 #include <signal.h>
-/* Some people say that AIX and AIXV3 need 3 preceding underscores, other say
- * no. I'll do both */
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 

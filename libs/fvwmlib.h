@@ -80,9 +80,8 @@ typedef struct PictureThing
 } Picture;
 
 void InitPictureCMap(Display*,Window);
-#ifdef NotUsed
-Picture *GetPicture(Display*,Window,char *iconpath,char *pixmappath,char*);
-#endif
+Picture *GetPicture(Display* dpy, Window Root, char* IconPath, 
+		    char* PixmapPath, char* name, int color_limit);
 Picture *CachePicture(Display*,Window,char *iconpath,
                       char *pixmappath,char*,int);
 void DestroyPicture(Display*,Picture*);

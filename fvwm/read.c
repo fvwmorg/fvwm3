@@ -35,11 +35,8 @@ int numfilesread = 0;
 
 static int last_read_failed=0;
 
-#ifdef FVWMRC /* FVWMRC should be .fvwm2rc or .fvwmrc */
 static const char *read_system_rc_cmd="Read system"FVWMRC;
-#else
-static const char *read_system_rc_cmd="Read system.fvwm2rc";
-#endif
+
 
 extern void StartupStuff(void);
 

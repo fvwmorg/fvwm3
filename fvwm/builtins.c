@@ -1344,25 +1344,21 @@ void setIconPath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   free(tmp);
 }
 
-#ifdef FVWM_MODULEDIR
 char *ModulePath = FVWM_MODULEDIR;
-#else
-char *ModulePath = FVWMDIR;
-#endif
+
 void setModulePath(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                    unsigned long context, char *action,int* Module)
 {
-  static char *ptemp = NULL;
-  char *tmp;
+    static int need_to_free = 0;
+    char *tmp;
 
-  if(ptemp == NULL)
-    ptemp = ModulePath;
+    if ( need_to_free && ModulePath != NULL )
+	free(ModulePath);
 
-  if((ModulePath != ptemp)&&(ModulePath != NULL))
-    free(ModulePath);
-  tmp = stripcpy(action);
-  ModulePath = envDupExpand(tmp, 0);
-  free(tmp);
+    tmp = stripcpy(action);
+    ModulePath = envDupExpand(tmp, 0);
+    need_to_free = 1;
+    free(tmp);
 }
 
 

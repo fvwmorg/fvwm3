@@ -50,11 +50,9 @@
 #define DEFAULT 2		/* cursor for apps to inherit */
 #define SYS 3        		/* sys-menu and iconify boxes cursor */
 #define MOVE 4                  /* resize cursor */
-#if defined(__alpha)
 #ifdef WAIT
 #undef WAIT
 #endif /*WAIT */
-#endif /*alpha */
 #define WAIT 5   		/* wait a while cursor */
 #define MENU 6  		/* menu cursor */
 #define SELECT 7	        /* dot cursor for f.move, etc. from menus */

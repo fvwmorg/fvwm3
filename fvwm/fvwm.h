@@ -56,11 +56,9 @@ it should not be an option, once it works right. HEDU 2/2/94 */
 
 #include <X11/Intrinsic.h>
 
-#ifdef SIGNALRETURNSINT
-#define SIGNAL_T int
+#if RETSIGTYPE != void
 #define SIGNAL_RETURN return 0
 #else
-#define SIGNAL_T void
 #define SIGNAL_RETURN return
 #endif
 

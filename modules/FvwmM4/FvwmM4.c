@@ -365,6 +365,7 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   fputs(MkDef("OPTIONS", options), tmpf);
 
   fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);
+  fputs(MkDef("FVWM_CONFIGDIR", FVWM_CONFIGDIR), tmpf);
     
   /*
    * At this point, we've sent the definitions to m4.  Just include

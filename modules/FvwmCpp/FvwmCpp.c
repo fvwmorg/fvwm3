@@ -336,6 +336,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
     fputs(MkDef("OPTIONS", options), tmpf);
 
     fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);
+    fputs(MkDef("FVWM_CONFIGDIR", FVWM_CONFIGDIR), tmpf);
     
     /*
      * At this point, we've sent the definitions to cpp.  Just include

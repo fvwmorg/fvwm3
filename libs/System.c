@@ -2,24 +2,8 @@
 ** System.c: code for dealing with various OS system call variants
 */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <string.h>
-
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
-#include <sys/select.h>
-#endif
-
 #include "config.h"
-
-#if HAVE_UNAME
-#include <sys/utsname.h>
-#endif
-
-#ifndef min
-#define min(a,b) ((a)<(b)?(a):(b))
-#endif
+#include "System.h"
 
 /*
 ** just in case...
@@ -30,7 +14,7 @@
 
 int GetFdWidth(void)
 {
-#ifdef HAVE_SYSCONF
+#if HAVE_SYSCONF
   return min(sysconf(_SC_OPEN_MAX),FD_SETSIZE);
 #else
   return min(getdtablesize(),FD_SETSIZE);

@@ -3,11 +3,6 @@
 # for hints, as well as pointers from the various links on the official
 # fvwm web page (see the FAQ).
 
-# be sure to customize these paths for your installation:
-ModulePath /usr/lib/X11/fvwm2
-PixmapPath /usr/include/X11/pixmaps
-IconPath   /usr/include/X11/bitmaps
-
 EdgeResistance 250 10
 EdgeScroll 100 100
 ClickTime 750

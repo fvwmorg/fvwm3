@@ -123,9 +123,8 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
   return NULL;
 }
 
-#ifdef NotUsed
 Picture *GetPicture(Display *dpy,Window Root,char *IconPath,char *PixmapPath,
-		    char *name)
+		    char *name, int color_limit)
 {
   char *path;
   if(!(path=findIconFile(name,PixmapPath,R_OK)))
@@ -133,7 +132,6 @@ Picture *GetPicture(Display *dpy,Window Root,char *IconPath,char *PixmapPath,
       return NULL;
   return LoadPicture(dpy,Root,path, color_limit);
 }
-#endif
 
 Picture *CachePicture(Display *dpy,Window Root,char *IconPath,char *PixmapPath,
 		    char *name, int color_limit)
