@@ -142,8 +142,6 @@ void server ( void ) {
   char *tline;
   char ver[40];
   fd_set fdset;
-  unsigned long *body;
-  unsigned long header[HEADER_SIZE];
   char *home;
   int s;
   int msglen;
@@ -205,32 +203,37 @@ void server ( void ) {
   send(Ns, ver, strlen(ver), 0 );
 
   while (1){
-	FD_ZERO(&fdset);
-	FD_SET(Ns, &fdset);
-	FD_SET(Fd[1], &fdset);
+      FD_ZERO(&fdset);
+      FD_SET(Ns, &fdset);
+      FD_SET(Fd[1], &fdset);
 
-    select(FD_SETSIZE, SELECT_FD_SET_CAST &fdset, 0, 0, NULL);
-    if (FD_ISSET(Fd[1], &fdset)){
-	  if( ReadFvwmPacket(Fd[1],header,&body) > 0)	 {
-		if(header[1] == M_PASS) { 
-		  msglen = strlen((char *)&body[3]);
-		  if( msglen > MAX_MESSAGE_SIZE-2 ) {
-			msglen = MAX_MESSAGE_SIZE-2;
+      select(FD_SETSIZE, SELECT_FD_SET_CAST &fdset, 0, 0, NULL);
+
+      if (FD_ISSET(Fd[1], &fdset)){
+	  FvwmPacket* packet = ReadFvwmPacket(Fd[1]);
+	  if ( packet == NULL ) {
+	      CloseSocket();
+	      exit(0);
+	  } else {
+	      if (packet->type == M_PASS) { 
+		  msglen = strlen((char *)&(packet->body[3]));
+		  if ( msglen > MAX_MESSAGE_SIZE-2 ) {
+		      msglen = MAX_MESSAGE_SIZE-2;
 		  }
-		  send( Ns, (char *)&body[3], msglen, 0 ); 
-		} 
-		free(body);
+		  send( Ns, (char *)&(packet->body[3]), msglen, 0 ); 
+	      } 
 	  }
-	}
-	if (FD_ISSET(Ns, &fdset)){
+      }
+
+      if (FD_ISSET(Ns, &fdset)){
 	  if( recv( Ns, buf, MAX_COMMAND_SIZE,0 ) == 0 ) {
-		/* client is terminated */
-		break;
+	      /* client is terminated */
+	      break;
 	  }
 
 	  /* process the own unique commands */
 	  SendText(Fd,buf,0); /* send command */
-	}
+      }
   }
   CloseSocket();
   exit(0);

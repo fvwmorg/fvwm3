@@ -87,8 +87,6 @@ void server ( char *name ) {
   char *f_stem;
   int  len;
   fd_set fdset;
-  unsigned long *body;
-  unsigned long header[HEADER_SIZE];
   char buf[MAX_COMMAND_SIZE];  /* command receiving buffer */
   char cmd[MAX_COMMAND_SIZE];
   int  ix,cix;
@@ -125,12 +123,12 @@ void server ( char *name ) {
     }
 
     if (FD_ISSET(Fd[1], &fdset)){
-      if( ReadFvwmPacket(Fd[1],header,&body) > 0)	 {
-	if (Connect) {
-	  process_message(header[1], body);
-	}
-	free(body);
-      }
+      FvwmPacket* packet = ReadFvwmPacket(Fd[1]);
+      if ( packet == NULL ) {
+	  close_pipes();
+	  exit( 0 );
+      } else 
+	  process_message( packet->type, packet->body );
     }
 
     if (FD_ISSET(Ffdr, &fdset)){

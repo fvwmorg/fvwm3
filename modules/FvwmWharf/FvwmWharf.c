@@ -2021,10 +2021,7 @@ void change_window_name(char *str)
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
-  unsigned long header[HEADER_SIZE];
-  int count;
   static int miss_counter = 0;
-  unsigned long *body;
 
   if(XPending(dpy))
     {
@@ -2055,11 +2052,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   if(FD_ISSET(fd[1], &in_fdset))
     {
-      if((count = ReadFvwmPacket(fd[1], header, &body)) > 0)
-	{
-	  process_message(header[1],body);
-	  free(body);
-	}
+      FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+      if ( packet == NULL )
+	  DeadPipe(0);
+      else
+	  process_message( packet->type, packet->body );
     }
   return 0;
 }

@@ -1,3 +1,23 @@
+Sat May 29 13:54:21 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/Module.h: replaced HEADER_SIZE and the like with two macro
+	sets FvwmPacket*Size and FvwmPacket*Size_byte.
+
+	* libs/Module.c:
+	* fvwm/stack.c:
+	* fvwm/module_interface.c: rewrite with new packet size macros.
+
+Sat May 29 13:35:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/Module.c (GetConfigLine): rewrote to use new ReadFvwmPacket
+ 	function.
+
+	* libs/Module.c (ReadFvwmPacket): rewrite function to eliminate
+	callback to DeadPipe() upon end-of-file or error.  The caller must
+	now check the return value.  Returns an FvwmPacket pointer.
+
+	* libs/Module.h: changed fvwm_packet_t to FvwmPacket.
+
 1999-05-28  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/virtual.c (changeDesks): Removed testing code.

@@ -473,7 +473,7 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
   for (t2 = t, num = 1 ; t2 != s2; t2 = t2->stack_next, num++)
     ;
 
-  length = HEADER_SIZE + 3*num;
+  length = FvwmPacketHeaderSize + 3*num;
   body = (unsigned long *) safemalloc (length*sizeof(unsigned long));
 
   bp = body;

@@ -20,23 +20,38 @@
 */
 
 /**
- * Module packet header.
+ * FVWM sends packets of this type to modules.
  **/
 
 typedef struct {
-    /* always holds START_FLAG value */
-    unsigned long start_pattern;
-    /* one of the M_xxx values, below */
-    unsigned long type;
-    /* number of unsigned longs entire packet, *including* header */
-    unsigned long size;
-    /* last time stamp received from the X server, in milliseconds */
-    unsigned long timestamp;
-} fvwm_packet_t;
+    unsigned long start_pattern;       /* always holds START_FLAG value */
+    unsigned long type;                /* one of the M_xxx values, below */
+    unsigned long size;                /* number of unsigned longs in
+					  entire packet, *including* header */
+    unsigned long timestamp;           /* last time stamp received from the 
+					  X server, in milliseconds */
+    unsigned long body[1];             /* variable size -- use 
+					  FvwmPacketBodySize to get size */
+} FvwmPacket;
+
+
+/** All size values in units of "unsigned long" **/
+#define FvwmPacketHeaderSize        4
+#define FvwmPacketBodySize(p)       ((p).size - FvwmPacketHeaderSize)
+#define FvwmPacketMaxSize           256
+#define FvwmPacketBodyMaxSize       (FvwmPacketMaxSize - FvwmPacketHeaderSize)
+
+/** There seems to be some movement afoot to measure packet sizes in bytes.
+    See fvwm/module_interface.c **/
+#define FvwmPacketHeaderSize_byte  (FvwmPacketHeaderSize * sizeof(unsigned long))
+#define FvwmPacketBodySize_byte(p) (FvwmPacketBodySize(p) * sizeof(unsigned long))
+#define FvwmPacketMaxSize_byte     (FvwmPacketMaxSize * sizeof(unsigned long))
+#define FvwmPacketBodyMaxSize_byte (FvwmPacketBodyMaxSize * sizeof(unsigned long))
 
 
 /* Value of start_pattern */
 #define START_FLAG 0xffffffff
+
 
 /* Possible values of type */
 #define M_NEW_PAGE               (1)
@@ -80,41 +95,15 @@ typedef struct {
 #define M_CONFIGURE_WINDOW   (1<<30)
 #define MAX_MESSAGES         31
 
-/*  RBW - 04/16/1999 - GSFR changes.  */
-#define HEADER_SIZE         4
-/* #define MAX_BODY_SIZE      (24) */
-#define MAX_BODY_SIZE      (256 - HEADER_SIZE)
-#define MAX_PACKET_SIZE    (HEADER_SIZE+MAX_BODY_SIZE)
 
-#define MAX_NEW_BODY_SIZE      (MAX_BODY_SIZE * sizeof(unsigned long))
-#define MAX_NEW_PACKET_SIZE    ((HEADER_SIZE * sizeof(unsigned long)) + MAX_NEW_BODY_SIZE)
+/**
+ * Reads a single packet of info from FVWM.
+ * The packet is stored into static memory that is reused during
+ * the next call to ReadFvwmPacket.  Callers, therefore, must copy
+ * needed data before the next call to ReadFvwmPacket.
+ **/
+FvwmPacket* ReadFvwmPacket( int fd );
 
-
-
-
-/************************************************************************
- *
- * Reads a single packet of info from fvwm.
- * unsigned long header[HEADER_SIZE];
- * unsigned long *body;
- * int fd[2];
- *
- * ReadFvwmPacket(fd[1],header, &body);
- *
- * Returns:
- *   > 0 everything is OK.
- *   = 0 invalid packet.
- *   < 0 pipe is dead. (Should never occur)
- *   body is a malloc'ed space which needs to be freed
- *
- **************************************************************************/
-int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body);
-
-
-/*
-** Called if the pipe is no longer open
-*/
-extern void DeadPipe(int nonsense);
 
 /************************************************************************
  *
@@ -122,6 +111,7 @@ extern void DeadPipe(int nonsense);
  *
  ***********************************************************************/
 void SendText(int *fd,char *message,unsigned long window);
+
 
 /** Compatibility **/
 #define SendInfo SendText
@@ -134,11 +124,14 @@ void SendText(int *fd,char *message,unsigned long window);
  **************************************************************************/
 void SetMessageMask(int *fd, unsigned long mask);
 
+
 /*
  * Used to ask for subset of module configuration lines.
  * Allows modules to get configuration lines more than once.
  */
 void InitGetConfigLine(int *fd, char *match);
+
+
 /**
  * Gets a module configuration line from fvwm. Returns NULL if there are
  * no more lines to be had. "line" is a pointer to a char *.

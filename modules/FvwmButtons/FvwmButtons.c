@@ -1071,8 +1071,6 @@ void RedrawWindow(button_info *b)
   int button;
   XEvent dummy;
   button_info *ub;
-  XGCValues gcv;
-  unsigned long gcm=0;
   static Bool initial_redraw = True;
   Bool clear_buttons;
 
@@ -1628,10 +1626,7 @@ void DebugFvwmEvents(unsigned long type)
 int My_XNextEvent(Display *Dpy, XEvent *event)
 {
   fd_set in_fdset;
-  unsigned long header[HEADER_SIZE];
-  int count;
   static int miss_counter = 0;
-  unsigned long *body;
 
   if(XPending(Dpy))
     {
@@ -1668,11 +1663,11 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
 
   if(FD_ISSET(fd[1], &in_fdset))
     {
-      if((count = ReadFvwmPacket(fd[1], header, &body)) > 0)
-	{
-	  process_message(header[1],body);
-	  free(body);
-	}
+      FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+      if ( packet == NULL )
+	  DeadPipe(0);
+      else
+	  process_message( packet->type, packet->body );
     }
 
   }

@@ -85,6 +85,10 @@ int maxnum = 0;
 char FvwmTile;
 char FvwmCascade;
 
+
+void DeadPipe(int sig) { exit(0); }
+
+
 void insert_window_list(window_list *wl, window_item *i)
 {
 	if (*wl) {
@@ -152,18 +156,22 @@ int is_suitable_window(unsigned long *body)
 
 int get_window(void)
 {
-	unsigned long header[HEADER_SIZE], *body;
+        FvwmPacket* packet;
         struct ConfigWinPacket  *cfgpacket;
-	int count, last = 0;
+	int last = 0;
 	fd_set infds;
+
 	FD_ZERO(&infds);
 	FD_SET(fd[1], &infds);
 	select(fd_width, SELECT_FD_SET_CAST &infds, 0, 0, NULL);
-	if ((count = ReadFvwmPacket(fd[1],header,&body)) > 0) {
-                cfgpacket = (void *) body;
-		switch (header[1]) {
+
+	if ( (packet = ReadFvwmPacket(fd[1])) == NULL )
+	    DeadPipe(0);
+	else {
+                cfgpacket = (struct ConfigWinPacket*) packet->body;
+		switch (packet->type) {
 		case M_CONFIGURE_WINDOW:
-			if (is_suitable_window(body)) {
+			if (is_suitable_window(packet->body)) {
 				window_item *wi =
 					(window_item*)safemalloc(sizeof( window_item ));
 				wi->frame = cfgpacket->frame;
@@ -187,7 +195,6 @@ int get_window(void)
 				argv0);
 			break;
 		}
-		free(body);
 	}
 	return last;
 }
@@ -195,19 +202,21 @@ int get_window(void)
 void wait_configure(window_item *wi)
 {
 	int found = 0;
-	unsigned long header[HEADER_SIZE], *body;
-	int count;
+
+	/** Uh, what's the point of the select() here?? **/
 	fd_set infds;
 	FD_ZERO(&infds);
 	FD_SET(fd[1], &infds);
 	select(fd_width, SELECT_FD_SET_CAST &infds, 0, 0, NULL);
-	while (!found)
-		if ((count = ReadFvwmPacket(fd[1],header,&body)) > 0) {
-			if  ((header[1] == M_CONFIGURE_WINDOW)
-			     && (Window)body[1] == wi->frame)
-				found = 1;
-			free(body);
-		}
+
+	while (!found) {
+	    FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+	    if ( packet == NULL )
+		DeadPipe(0);
+	    if ( packet->type == M_CONFIGURE_WINDOW
+		 && (Window)(packet->body[1]) == wi->frame )
+		found = 1;
+	}
 }
 
 int atopixel(char *s, unsigned long f)
@@ -494,7 +503,7 @@ char *GetConfigLine(char *filename, char *match)
 #endif /* FVWM1 */
 #endif /* USERC */
 
-void DeadPipe(int sig) { exit(0); }
+
 
 int main(int argc, char *argv[])
 {

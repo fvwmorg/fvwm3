@@ -204,7 +204,7 @@ static volatile sig_atomic_t isTerminated = False;
 int main(int argc, char **argv)
 {
   char *s;
-  unsigned long	header[HEADER_SIZE], body[MAX_BODY_SIZE];
+  unsigned long	header[FvwmPacketHeaderSize], body[FvwmPacketBodyMaxSize];
   int			total, remaining, count, event;
 
   INFO("--- started ----\n");
@@ -278,8 +278,7 @@ int main(int argc, char **argv)
     INFO("--- waiting\n");
     while ( !isTerminated )
     {
-      if ((count = read(fd[1],header,
-			HEADER_SIZE*sizeof(unsigned long))) <= 0)
+      if ((count = read(fd[1],header, FvwmPacketHeaderSize_byte)) <= 0)
 	exit(0);
       /* if this read is interrrupted  EINTR, the wrong event is triggered !!! */
 
@@ -291,7 +290,7 @@ int main(int argc, char **argv)
 
       /* junk the event body */
       total=0;
-      remaining = (header[2] - HEADER_SIZE) * sizeof(unsigned long);
+      remaining = (header[2] - FvwmPacketHeaderSize) * sizeof(unsigned long);
       while (remaining)
       {
 	if((count=read(fd[1],&body[total],remaining)) < 0)

@@ -17,71 +17,61 @@
 ** Module.c: code for modules to communicate with fvwm
 */
 #include "config.h"
-
 #include <stdio.h>
-#include <stdlib.h>
 #include <ctype.h>
-
-#include <errno.h>
-
-#include "fvwmlib.h"
 #include "Module.h"
 
 
-/************************************************************************
- *
- * Reads a single packet of info from fvwm. Prototype is:
- * unsigned long header[HEADER_SIZE];
- * unsigned long *body;
- * int fd[2];
- * void DeadPipe(int nonsense);  * Called if the pipe is no longer open  *
- *
- * ReadFvwmPacket(fd[1],header, &body);
- *
- * Returns:
- *   > 0 everything is OK.
- *   = 0 invalid packet.
- *   < 0 pipe is dead. (Should never occur)
- *   body is a malloc'ed space which needs to be freed
- *
- **************************************************************************/
-int ReadFvwmPacket(int fd, unsigned long *header, unsigned long **body)
+/*
+ * Loop until count bytes are read, unless an error or end-of-file
+ * condition occurs.
+ */
+inline static int positive_read( int fd, void* buf, int count )
 {
-  int count,total,count2,body_length;
-  char *cbody;
-
-  errno = 0;
-  if((count = read(fd,header,HEADER_SIZE*sizeof(unsigned long))) >0)
-  {
-    if(header[0] == START_FLAG)
-    {
-      body_length = header[2]-HEADER_SIZE;
-      *body = (unsigned long *)
-        safemalloc(body_length * sizeof(unsigned long));
-      cbody = (char *)(*body);
-      total = 0;
-      while(total < body_length*sizeof(unsigned long))
-      {
-        errno = 0;
-        if((count2=
-            read(fd,&cbody[total],
-                 body_length*sizeof(unsigned long)-total)) >0)
-        {
-          total += count2;
-        }
-        else if(count2 < 0)
-        {
-          DeadPipe(errno);
-        }
-      }
+    while ( count > 0 ) {
+	int n_read = read( fd, buf, count );
+	if ( n_read <= 0 )
+	    return -1;
+	buf += n_read;
+	count -= n_read;
     }
-    else
-      count = 0;
-  }
-  if(count <= 0)
-    DeadPipe(errno);
-  return count;
+    return 0;
 }
+
+
+/**
+ * Reads a single packet of info from FVWM.
+ * The packet is stored in static memory that is reused during
+ * the next call. 
+ **/
+
+FvwmPacket* ReadFvwmPacket( int fd ) 
+{
+    static unsigned long buffer[FvwmPacketMaxSize];
+    FvwmPacket* packet = (FvwmPacket*)buffer;
+
+    /* The `start flag' value supposedly exists to synchronize the
+       FVWM -> module communication.  However, the communication goes
+       through a pipe.  I don't see how any data could ever get lost, so
+       how would FVWM & the module become unsynchronized?
+    */
+    do {
+	if ( positive_read( fd, buffer, sizeof(unsigned long) ) < 0 )
+	    return NULL;
+    } while (packet->start_pattern != START_FLAG);
+
+    /* Now read the rest of the header */
+    if ( positive_read( fd, &buffer[1], 3 * sizeof(unsigned long) ) < 0 )
+	return NULL;
+
+    /* Finally, read the body, and we're done */
+    if ( positive_read( fd, &buffer[4], 
+			FvwmPacketBodySize(*packet)*sizeof(unsigned long)) < 0)
+	return NULL;
+
+    return packet;
+}
+
 
 /************************************************************************
  *
@@ -128,6 +118,7 @@ void SetMessageMask(int *fd, unsigned long mask)
   SendText(fd,set_mask_mesg,0);
 }
 
+
 /*
  * Optional routine that sets the matching criteria for config lines
  * that should be sent to a module by way of the GetConfigLine function.
@@ -135,12 +126,16 @@ void SetMessageMask(int *fd, unsigned long mask)
  * If this routine is not called, all module config lines are sent.
  */
 static int first_pass = 1;
-void InitGetConfigLine(int *fd,char *match) {
-  char buffer[200];
-  first_pass = 0;                       /* make sure get wont do this */
-  sprintf(buffer,"Send_ConfigInfo %s",match);
-  SendInfo(fd,buffer,0);
+
+void InitGetConfigLine(int *fd,char *match) 
+{
+    char buffer[200];
+    first_pass = 0;                       /* make sure get wont do this */
+    sprintf(buffer,"Send_ConfigInfo %s",match);
+    SendText(fd,buffer,0);
 }
+
+
 /***************************************************************************
  * Gets a module configuration line from fvwm. Returns NULL if there are
  * no more lines to be had. "line" is a pointer to a char *.
@@ -153,47 +148,31 @@ void InitGetConfigLine(int *fd,char *match) {
  **************************************************************************/
 void GetConfigLine(int *fd, char **tline)
 {
-  int count,done = 0;
-  int body_size;
-  static char *line = NULL;
-  unsigned long header[HEADER_SIZE];
+    FvwmPacket* packet;
+    int body_count;
 
-  if(line != NULL)
-    free(line);
+    if (first_pass) {
+	SendText(fd,"Send_ConfigInfo",0);
+	first_pass = 0;
+    }
 
-  if(first_pass)
-  {
-    SendInfo(fd,"Send_ConfigInfo",0);
-    first_pass = 0;
-  }
+    do {
+	packet = ReadFvwmPacket( fd[1] );
+	if ( packet == NULL || packet->type == M_END_CONFIG_INFO ) {
+	    *tline = NULL;
+	    return;
+	}
+    } while ( packet->type != M_CONFIG_INFO );
 
-  while(!done)
-  {
-    count = ReadFvwmPacket(fd[1],header,(unsigned long **)&line);
-    /* DB(("Packet count is %d", count)); */
-    if (count <= 0)
-      *tline = NULL;
-    else {
-      *tline = &line[3*sizeof(long)];
-      body_size = header[2]-HEADER_SIZE;
-      /* DB(("Config line (%d): `%s'", body_size, body_size ? *tline : "")); */
-      while((body_size > 0)
-            && isspace(**tline)) {
+    /* For whatever reason CONFIG_INFO packets start with three 
+       (unsigned long) zeros.  Skip the zeros and any whitespace that
+       follows */
+    *tline = (char*)&(packet->body[3]);
+    body_count = FvwmPacketBodySize(*packet) * sizeof(unsigned long);
+
+    while ( body_count > 0 && isspace(**tline) ) {
         (*tline)++;
-        --body_size;
-      }
+        --body_count;
     }
-
-/*   fprintf(stderr,"%x %x\n",header[1],M_END_CONFIG_INFO);*/
-    if(header[1] == M_CONFIG_INFO)
-      done = 1;
-    else if(header[1] == M_END_CONFIG_INFO)
-    {
-      done = 1;
-      if(line != NULL)
-        free(line);
-      line = NULL;
-      *tline = NULL;
-    }
-  }
 }
+

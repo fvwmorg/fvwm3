@@ -619,9 +619,7 @@ void ReadXServer ()
 void MainLoop ()
 {
  fd_set in_fdset;
- unsigned long header[HEADER_SIZE];
- unsigned long *body;
- int count,i;
+ int i;
  struct timeval tv;
  int res;
 
@@ -648,12 +646,11 @@ void MainLoop ()
 
    if(FD_ISSET(fd[1], &in_fdset))
    {
-    if((count = ReadFvwmPacket(fd[1], header, &body)) > 0)
-    {
-     for (i=0;i<nbobj;i++)
-      tabxobj[i]->ProcessMsg(tabxobj[i],header[1],body);
-     free(body);
-    }
+       FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+       if ( packet == NULL )
+	   DeadPipe(0);
+       for (i=0; i<nbobj; i++)
+	   tabxobj[i]->ProcessMsg(tabxobj[i], packet->type, packet->body);
    }
   }
   if (x11base->periodictasks!=NULL)		/* Execution des taches periodics */

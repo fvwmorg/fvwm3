@@ -460,7 +460,7 @@ make_vpacket(unsigned long *body, unsigned long event_type,
 
   *(bp++) = START_FLAG;
   *(bp++) = event_type;
-  *(bp++) = num+HEADER_SIZE;
+  *(bp++) = num+FvwmPacketHeaderSize;
   *(bp++) = lastTimestamp;
 
   for (; num > 0; --num)
@@ -495,7 +495,7 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
   for (; num > 0; --num)  {
       arglen = va_arg(ap, unsigned long);
       bodylen += arglen;
-      if (bodylen < MAX_NEW_PACKET_SIZE) {
+      if (bodylen < FvwmPacketMaxSize_byte) {
         memcpy((char *) bp, va_arg(ap, char *), arglen);
         (char *) bp += arglen;
         }
@@ -517,20 +517,20 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 void
 SendPacket(int module, unsigned long event_type, unsigned long num_datum, ...)
 {
-  unsigned long body[MAX_BODY_SIZE+HEADER_SIZE];
+  unsigned long body[FvwmPacketMaxSize];
   va_list ap;
 
   va_start(ap, num_datum);
   make_vpacket(body, event_type, num_datum, ap);
   va_end(ap);
 
-  PositiveWrite(module, body, (num_datum+HEADER_SIZE)*sizeof(body[0]));
+  PositiveWrite(module, body, (num_datum+FvwmPacketHeaderSize)*sizeof(body[0]));
 }
 
 void
 BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
 {
-  unsigned long body[MAX_BODY_SIZE+HEADER_SIZE];
+  unsigned long body[FvwmPacketMaxSize];
   va_list ap;
   int i;
 
@@ -539,7 +539,7 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
   va_end(ap);
 
   for (i=0; i<npipes; i++)
-    PositiveWrite(i, body, (num_datum+HEADER_SIZE)*sizeof(body[0]));
+    PositiveWrite(i, body, (num_datum+FvwmPacketHeaderSize)*sizeof(body[0]));
 }
 
 
@@ -549,7 +549,7 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
 static void SendNewPacket(int module, unsigned long event_type, 
 			  unsigned long num_datum, ...)
 {
-  char body[MAX_NEW_PACKET_SIZE];
+  char body[FvwmPacketMaxSize_byte];
   va_list ap;
   unsigned long plen;
 
@@ -563,7 +563,7 @@ static void SendNewPacket(int module, unsigned long event_type,
 static void BroadcastNewPacket(unsigned long event_type, 
 			       unsigned long num_datum, ...)
 {
-  char body[MAX_NEW_PACKET_SIZE];
+  char body[FvwmPacketMaxSize_byte];
   va_list ap;
   int i;
   unsigned long plen;
@@ -785,7 +785,7 @@ make_named_packet(int *len, unsigned long event_type, const char *name,
 
   /* Packet is the header plus the items plus enough items to hold the name
      string.  */
-  *len = HEADER_SIZE + num + (strlen(name) / sizeof(unsigned long)) + 1;
+  *len = FvwmPacketHeaderSize + num + (strlen(name) / sizeof(unsigned long)) + 1;
 
   body = (unsigned long *)safemalloc(*len * sizeof(unsigned long));
   body[*len-1] = 0; /* Zero out end of memory to avoid uninit memory access. */
@@ -794,11 +794,11 @@ make_named_packet(int *len, unsigned long event_type, const char *name,
   make_vpacket(body, event_type, num, ap);
   va_end(ap);
 
-  strcpy((char *)&body[HEADER_SIZE+num], name);
+  strcpy((char *)&body[FvwmPacketHeaderSize+num], name);
   body[2] = *len;
 
   /* DB(("Packet (%lu): %lu %lu %lu `%s'", *len,
-       body[HEADER_SIZE], body[HEADER_SIZE+1], body[HEADER_SIZE+2], name)); */
+       body[FvwmPacketHeaderSize], body[FvwmPacketHeaderSize+1], body[FvwmPacketHeaderSize+2], name)); */
 
   return (body);
 }

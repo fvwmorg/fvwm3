@@ -405,11 +405,13 @@ void Loop(int *fd)
  *	Process message - examines packet types, and takes appropriate action
  *
  ***********************************************************************/
-void process_message(unsigned long *header,unsigned long *body)
+void process_message( FvwmPacket* packet )
 {
-  unsigned long type = header[1];
-  unsigned long length = header[2];
-  switch(type)
+  unsigned long type = packet->type;
+  unsigned long length = packet->size;
+  unsigned long* body = packet->body;
+
+  switch (type)
     {
     case M_ADD_WINDOW:
       list_configure(body);
@@ -1164,9 +1166,7 @@ void list_end(void)
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
   fd_set in_fdset;
-  unsigned long header[HEADER_SIZE];
   static int miss_counter = 0;
-  unsigned long *body;
 
   if(XPending(dpy))
     {
@@ -1197,11 +1197,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   if(FD_ISSET(fd[1], &in_fdset))
     {
-      if(ReadFvwmPacket(fd[1],header,&body) > 0)
-	{
-	   process_message(header,body);
-	   free(body);
-	 }
+      FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+      if ( packet == NULL )
+	  exit(0);
+      else
+	  process_message( packet );
     }
   }
   return 0;

@@ -109,13 +109,13 @@ static char custom_recvd = 'n';         /* got custom command */
   sprintf(cmd,TEXT,MyName+1,MyName+1);\
   SendText(Channel,cmd,0);
 
-static void Loop();
-static void ParseOptions();
+static void Loop(void);
+static void ParseOptions(void);
 static void ParseConfigLine(char *);
-static void CreateDrawGC();
-static void DefineMe();
-static void SaveConfig();
-static void StopCmd();
+static void CreateDrawGC(void);
+static void DefineMe(void);
+static void SaveConfig(void);
+static void StopCmd(void);
 static void AnimateResizeZoom(int, int, int, int, int, int, int, int);
 static void AnimateResizeLines(int, int, int, int, int, int, int, int);
 static void AnimateResizeFlip(int, int, int, int, int, int, int, int);
@@ -124,7 +124,7 @@ static void AnimateResizeRandom(int, int, int, int, int, int, int, int);
 static void AnimateResizeZoom3D(int, int, int, int, int, int, int, int);
 static void AnimateResizeNone(int, int, int, int, int, int, int, int);
 static void AnimateResizeTwist(int, int, int, int, int, int, int, int);
-static void DefineForm();
+static void DefineForm(void);
 
 struct ASAnimate Animate = { NULL, ANIM_ITERATIONS, ANIM_DELAY,
                              ANIM_TWIST, ANIM_WIDTH,
@@ -721,8 +721,7 @@ int main(int argc, char **argv) {
  * Wait for some event like iconify, deiconify and stuff.
  */
 static void Loop() {
-  unsigned long header[HEADER_SIZE], *body;
-  int c;                              /* size of message body */
+  FvwmPacket* packet;
   clock_t time_start;                     /* for time() */
   clock_t time_end;                     /* for time() */
   clock_t time_accum;
@@ -731,40 +730,40 @@ static void Loop() {
 
   myfprintf((stderr,"Starting event loop\n"));
   while (1) {
-    c=ReadFvwmPacket(Channel[1], header, &body);
-    myfprintf((stderr,"Header[2] is %d, read %d\n", (int)header[2],c));
-    if (c>0) {                          /* if message has body */
-      switch (header[1]) {            /* check message type */
+    if ( (packet = ReadFvwmPacket(Channel[1])) == NULL )
+	exit( 0 );                    /* FVWM is gone */
+
+      switch (packet->type) {
       case M_DEICONIFY:
-        if (header[2] < 15            /* If not all info needed, */
-            || (int)body[5] == 0) {   /* or a "noicon" icon */
+        if (packet->size < 15            /* If not all info needed, */
+            || packet->body[5] == 0) {   /* or a "noicon" icon */
           break;                      /* don't animate it */
         }
         if (Animate.time != 0) {
           time_start = times(&time_buffer);
         }
-        Animate.resize((int)body[3],     /* t->icon_x_loc */
-                       (int)body[4],     /* t->icon_y_loc */
-                       (int)body[5],     /* t->icon_p_width */
-                       (int)body[6],     /* t->icon_p_height */
-                       (int)body[7],     /* t->frame_x */
-                       (int)body[8],     /* t->frame_y */
-                       (int)body[9],     /* t->frame_width */
-                       (int)body[10]);   /* t->frame_height */
+        Animate.resize((int)packet->body[3],     /* t->icon_x_loc */
+                       (int)packet->body[4],     /* t->icon_y_loc */
+                       (int)packet->body[5],     /* t->icon_p_width */
+                       (int)packet->body[6],     /* t->icon_p_height */
+                       (int)packet->body[7],     /* t->frame_x */
+                       (int)packet->body[8],     /* t->frame_y */
+                       (int)packet->body[9],     /* t->frame_width */
+                       (int)packet->body[10]);   /* t->frame_height */
         if (Animate.time != 0) {
           time_end = times(&time_buffer);
           time_accum = time_end - time_start;
         }
         myaprintf((stderr,
                    "DE_Iconify, args %d+%d+%dx%d %d+%d+%dx%d. took %dx%d\n",
-                   (int)body[3],     /* t->icon_x_loc */
-                   (int)body[4],     /* t->icon_y_loc */
-                   (int)body[5],     /* t->icon_p_width */
-                   (int)body[6],     /* t->icon_p_height */
-                   (int)body[7],     /* t->frame_x */
-                   (int)body[8],     /* t->frame_y */
-                   (int)body[9],     /* t->frame_width */
-                   (int)body[10],      /* t->frame_height */
+                   (int)packet->body[3],     /* t->icon_x_loc */
+                   (int)packet->body[4],     /* t->icon_y_loc */
+                   (int)packet->body[5],     /* t->icon_p_width */
+                   (int)packet->body[6],     /* t->icon_p_height */
+                   (int)packet->body[7],     /* t->frame_x */
+                   (int)packet->body[8],     /* t->frame_y */
+                   (int)packet->body[9],     /* t->frame_width */
+                   (int)packet->body[10],      /* t->frame_height */
                    (int)time_accum,1));
 #if 0
         /* So far, clk_tck seems to be non-portable...dje */
@@ -776,45 +775,44 @@ static void Loop() {
              before animating.  To this time, I don't know why.
              (One is sent right after the other.)
           */
-        if (header[2] < 15            /* if not enough info */
-            || (int)body[3] == -10000    /* or a transient window */
-            || (int)body[5] == 0) {   /* or a "noicon" icon */
+        if (packet->size < 15            /* if not enough info */
+            || (int)packet->body[3] == -10000    /* or a transient window */
+            || (int)packet->body[5] == 0) {   /* or a "noicon" icon */
           break;                    /* don't animate it */
         }
         if (Animate.time != 0) {
           time_start = times(&time_buffer);
         }
-        Animate.resize((int)body[7],     /* t->frame_x */
-                       (int)body[8],     /* t->frame_y */
-                       (int)body[9],     /* t->frame_width */
-                       (int)body[10],    /* t->frame_height */
-                       (int)body[3],     /* t->icon_x_loc */
-                       (int)body[4],     /* t->icon_y_loc */
-                       (int)body[5],     /* t->icon_p_width */
-                       (int)body[6]);    /* t->icon_p_height */
+        Animate.resize((int)packet->body[7],     /* t->frame_x */
+                       (int)packet->body[8],     /* t->frame_y */
+                       (int)packet->body[9],     /* t->frame_width */
+                       (int)packet->body[10],    /* t->frame_height */
+                       (int)packet->body[3],     /* t->icon_x_loc */
+                       (int)packet->body[4],     /* t->icon_y_loc */
+                       (int)packet->body[5],     /* t->icon_p_width */
+                       (int)packet->body[6]);    /* t->icon_p_height */
         if (Animate.time != 0) {
           time_end = times(&time_buffer);
           time_accum = time_end - time_start;
         }
         myaprintf((stderr,
                    "Iconify, args %d+%d+%dx%d %d+%d+%dx%d. Took %d\n",
-                   (int)body[7],     /* t->frame_x */
-                   (int)body[8],     /* t->frame_y */
-                   (int)body[9],     /* t->frame_width */
-                   (int)body[10],    /* t->frame_height */
-                   (int)body[3],     /* t->icon_x_loc */
-                   (int)body[4],     /* t->icon_y_loc */
-                   (int)body[5],     /* t->icon_p_width */
-                   (int)body[6],
+                   (int)packet->body[7],     /* t->frame_x */
+                   (int)packet->body[8],     /* t->frame_y */
+                   (int)packet->body[9],     /* t->frame_width */
+                   (int)packet->body[10],    /* t->frame_height */
+                   (int)packet->body[3],     /* t->icon_x_loc */
+                   (int)packet->body[4],     /* t->icon_y_loc */
+                   (int)packet->body[5],     /* t->icon_p_width */
+                   (int)packet->body[6],
                    (int)time_accum));
         break;
       case M_CONFIG_INFO:
-        myfprintf((stderr,"Got command: %s\n", (char *)&body[3]));
-        ParseConfigLine((char *)&body[3]);
+        myfprintf((stderr,"Got command: %s\n", (char *)&packet->body[3]));
+        ParseConfigLine((char *)&packet->body[3]);
         break;
       } /* end switch header */
-      free(body);                 /* get rid of message body */
-    } /* end message had a body */
+
     myfprintf((stderr,"Sending unlock\n"));
     SendInfo(Channel, "UNLOCK 1\n", 0); /* fvwm can continue now! */
     if ((Animate.resize == AnimateResizeNone  /* If no animation desired */

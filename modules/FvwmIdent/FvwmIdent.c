@@ -181,15 +181,12 @@ int main(int argc, char **argv)
  *************************************************************************/
 void Loop(int *fd)
 {
-  unsigned long header[4], *body;
-
-  while(1)
-    {
-      if(ReadFvwmPacket(fd[1],header,&body) > 0)
-	{
-	  process_message(header[1],body);
-	  free(body);
-	}
+    while (1) {
+	FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+	if ( packet == NULL )
+	    exit(0);
+	else
+	    process_message( packet->type, packet->body );
     }
 }
 

@@ -119,7 +119,7 @@ void Loop(int *fd);
 void SendInfo(int *fd,char *message,unsigned long window);
 char *safemalloc(int length);
 void DeadPipe(int nonsense);
-void process_message(unsigned long *header,unsigned long *body);
+void process_message(FvwmPacket*);
 void ParseOptions(void);
 
 void list_add(unsigned long *body);

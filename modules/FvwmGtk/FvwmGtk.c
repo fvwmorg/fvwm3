@@ -430,13 +430,11 @@ process_message (unsigned long type,
 void
 read_fvwm_pipe (gpointer data, int source, GdkInputCondition cond)
 {
-  unsigned long header[HEADER_SIZE], *body;
-
-  if (ReadFvwmPacket (source, header, &body) > 0)
-    {
-      process_message (header[1], header[3], body);
-      free (body);
-    }
+    FvwmPacket* packet = ReadFvwmPacket( source );
+    if ( packet == NULL )
+	exit(0);
+    else
+	process_message( packet->type, packet->timestamp, packet->body );
 }
 
 

@@ -295,13 +295,11 @@ void EndLessLoop()
 ******************************************************************************/
 void ReadFvwmPipe()
 {
-  unsigned long header[HEADER_SIZE],*body;
-
-  if(ReadFvwmPacket(Fvwm_fd[1],header,&body) > 0)
-    {
-      ProcessMessage(header[1],body);
-      free(body);
-    }
+    FvwmPacket* packet = ReadFvwmPacket(Fvwm_fd[1]);
+    if ( packet == NULL )
+	DeadPipe(0);
+    else 
+	ProcessMessage( packet->type, packet->body );
 }
 
 /******************************************************************************

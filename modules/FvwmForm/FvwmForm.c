@@ -1327,21 +1327,18 @@ static void OpenWindows ()
   DoCommand(&CF.def_button);
 }
 
-static void process_message(unsigned long *, unsigned long *); /* proto */
+static void process_message(unsigned long, unsigned long *); /* proto */
 static void ParseActiveMessage(char *); /* proto */
 
 /* read something from Fvwm */
 static void ReadFvwm () {
 
 #if 1
-  unsigned long header[HEADER_SIZE], *body;
-  /* Using this instead of plain read
-     assembles input into a whole message
-     calls deadpipe with the errno when there is no input.
-     */
-  ReadFvwmPacket(Channel[1], header, &body);
-  process_message(&header[0], &body[0]);
-  free(body);
+    FvwmPacket* packet = ReadFvwmPacket(Channel[1]);
+    if ( packet == NULL )
+	exit(0);
+    else
+	process_message( packet->type, packet->body );
 #else
   int n;
   static char buffer[32];
@@ -1353,8 +1350,8 @@ static void ReadFvwm () {
   }
 #endif
 }
-static void process_message(unsigned long *header, unsigned long *body) {
-  switch (header[1]) {            /* check message type */
+static void process_message(unsigned long type, unsigned long *body) {
+  switch (type) {
   case M_CONFIG_INFO:                   /* any module config command */
     myfprintf((stderr,"process_message: Got command: %s\n", (char *)&body[3]));
     ParseActiveMessage((char *)&body[3]);

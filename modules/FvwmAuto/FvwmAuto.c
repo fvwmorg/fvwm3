@@ -68,9 +68,7 @@ int main(int argc, char **argv)
     char      	   *enter_fn="Raise",	/* default */
                    *leave_fn=NULL,
                    mask_mesg[80];
-    unsigned long  header[HEADER_SIZE],
-                   *body,
-                   last_win = 0,	/* last window handled */
+    unsigned long  last_win = 0,	/* last window handled */
                    focus_win = 0;	/* current focus */
     fd_set_size_t  fd_width;
     int            fd[2],
@@ -136,15 +134,19 @@ int main(int argc, char **argv)
 	    fprintf(stderr,"[FvwmAuto]: after select:  delay: 0x%08lx, delay struct: %d.%06d sec\n",delay,delay->tv_sec,delay->tv_usec);
 #endif
 
-	if (FD_ISSET(fd[1], &in_fdset) &&
-	    ReadFvwmPacket(fd[1],header, &body) > 0)
-	{
-	    focus_win = body[0];
-	    free(body);
+	if ( FD_ISSET(fd[1], &in_fdset) ) {
+	    FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+	    if ( packet == NULL )
+		exit(0);
+	    else {
+		focus_win = packet->body[0];
 #ifdef DEBUG
-	    fprintf(stderr,"[FvwmAuto]: M_FOCUS_CHANGE to 0x%08lx\n",focus_win);
+		fprintf( stderr, "[FvwmAuto]: M_FOCUS_CHANGE to 0x%08lx\n",
+			 focus_win);
 #endif
+	    }
 	}
+
 	if (((FD_ISSET(fd[1], &in_fdset)==0) == (delay!=NULL)) &&
 					/* new message and timeout==0  or */
 					/* no message and timeout>0 */
