@@ -1351,33 +1351,36 @@ void read_in_resources (char *file)
 	  Free(token);
       }
       else if (!strcasecmp (option1, "drawicons")) {
-#ifdef MINI_ICONS
-	p = read_next_cmd (READ_ARG);
-	if (!p) {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("Need argument to drawicons\n");
-	  continue;
-	}
-	if (!strcasecmp (p, "true")) {
-	  i = 1;
-	}
-    /* [NFM 3 Dec 97] added support for FvwmIconMan*drawicons "always" */
-	else if (!strcasecmp (p, "always")) {
-	  i = 2;
-	}
-	else if (!strcasecmp (p, "false")) {
-	  i = 0;
-	}
-	else {
-	  ConsoleMessage ("Bad line: %s\n", current_line);
-	  ConsoleMessage ("What is this: %s?\n", p);
-	  continue;
-	}
-	ConsoleDebug (CONFIG, "Setting drawicons to: %d\n", i);
-	SET_MANAGER (manager, draw_icons, i);
-#else
-	ConsoleMessage ("DrawIcons support not compiled in\n");
-#endif
+        if (!FMiniIconsSupported)
+        {
+          ConsoleMessage ("DrawIcons support not compiled in\n");
+        }
+        else
+        {
+	  p = read_next_cmd (READ_ARG);
+	  if (!p) {
+            ConsoleMessage ("Bad line: %s\n", current_line);
+            ConsoleMessage ("Need argument to drawicons\n");
+            continue;
+          }
+          if (!strcasecmp (p, "true")) {
+            i = 1;
+          }
+          /* [NFM 3 Dec 97] added support for FvwmIconMan*drawicons "always" */
+          else if (!strcasecmp (p, "always")) {
+            i = 2;
+          }
+          else if (!strcasecmp (p, "false")) {
+	    i = 0;
+          }
+          else {
+            ConsoleMessage ("Bad line: %s\n", current_line);
+            ConsoleMessage ("What is this: %s?\n", p);
+            continue;
+          }
+          ConsoleDebug (CONFIG, "Setting drawicons to: %d\n", i);
+          SET_MANAGER (manager, draw_icons, i);
+        }
       }
       else if (!strcasecmp (option1, "followfocus")) {
 	p = read_next_cmd (READ_ARG);

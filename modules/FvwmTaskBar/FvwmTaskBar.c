@@ -339,9 +339,7 @@ int main(int argc, char **argv)
 		 M_VISIBLE_NAME | M_RES_NAME |
 		 M_DEICONIFY | M_ICONIFY | M_END_WINDOWLIST | M_FOCUS_CHANGE |
 		 M_CONFIG_INFO | M_END_CONFIG_INFO | M_NEW_DESK | M_SENDCONFIG
-#ifdef MINI_ICONS
 		 | M_MINI_ICON
-#endif
 		);
   /* extended messages */
   SetMessageMask(Fvwm_fd, MX_VISIBLE_ICON_NAME | MX_PROPERTY_CHANGE);
@@ -717,9 +715,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       redraw = 1;
     break;
 
-#ifdef MINI_ICONS
   case M_MINI_ICON:
-    if ((i = FindItem(&windows, body[0])) == -1) break;
+    if (!FMiniIconsSupported || (i = FindItem(&windows, body[0])) == -1)
+      break;
     p.picture = body[6];
     p.mask    = body[7];
     p.width   = body[3];
@@ -731,7 +729,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       redraw = 0;
     }
     break;
-#endif
 
   case M_VISIBLE_NAME:
   case MX_VISIBLE_ICON_NAME:

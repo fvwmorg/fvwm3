@@ -286,8 +286,7 @@ static void merge_styles(
       SSET_ICON_NAME(*merged_style, SGET_ICON_NAME(*add_style));
     }
   }
-#ifdef MINI_ICONS
-  if (add_style->flag_mask.has_mini_icon)
+  if (FMiniIconsSupported && add_style->flag_mask.has_mini_icon)
   {
     if (do_free_src_and_alloc_copy)
     {
@@ -300,7 +299,6 @@ static void merge_styles(
       SSET_MINI_ICON_NAME(*merged_style, SGET_MINI_ICON_NAME(*add_style));
     }
   }
-#endif
 #ifdef USEDECOR
   if (add_style->flag_mask.has_decor)
   {
@@ -1925,10 +1923,13 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  SMSET_HAS_MWM_BUTTONS(*ptmpstyle, 1);
 	  SCSET_HAS_MWM_BUTTONS(*ptmpstyle, 1);
         }
-#ifdef MINI_ICONS
         else if (StrEquals(token, "MINIICON"))
         {
 	  found = True;
+          if (!FMiniIconsSupported)
+          {
+            break;
+          }
 	  GetNextToken(rest, &token);
 	  if (token)
           {
@@ -1944,7 +1945,6 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 		     "MiniIcon Style requires an Argument");
 	  }
         }
-#endif
         else if (StrEquals(token, "MWMBORDER"))
         {
 	  found = True;
@@ -3173,12 +3173,11 @@ void check_window_style_change(
     flags->do_update_ewmh_icon = True;
   }
 
-#if MINI_ICONS
   /*
    * has_mini_icon
    * do_ewmh_mini_icon_override
    */
-  if (ret_style->change_mask.has_mini_icon ||
+  if (FMiniIconsSupported && ret_style->change_mask.has_mini_icon ||
       SCDO_EWMH_MINI_ICON_OVERRIDE(*ret_style))
   {
     flags->do_update_mini_icon = True;
@@ -3189,11 +3188,10 @@ void check_window_style_change(
   /*
    * do_ewmh_donate_mini_icon
    */
-  if (SCDO_EWMH_DONATE_MINI_ICON(*ret_style))
+  if (FMiniIconsSupported && SCDO_EWMH_DONATE_MINI_ICON(*ret_style))
   {
     flags->do_update_ewmh_mini_icon = True;
   }
-#endif
 
   /*
    * has_max_window_size

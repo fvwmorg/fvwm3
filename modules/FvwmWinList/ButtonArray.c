@@ -659,7 +659,6 @@ void PrintButtons(ButtonArray *array)
     ConsoleMessage("   %s is %s\n",temp->title,(temp->up) ? "Up":"Down");
 }
 
-#ifdef MINI_ICONS
 /******************************************************************************
   ButtonPicture - Return the mini icon associated with the button
 ******************************************************************************/
@@ -667,10 +666,13 @@ Picture *ButtonPicture(ButtonArray *array, int butnum)
 {
   Button *temp;
 
+  if (!FMiniIconsSupported)
+  {
+    return NULL;
+  }
   temp=find_n(array,butnum);
   return &(temp->p);
 }
-#endif
 
 /******************************************************************************
   IsButtonVisible - Says if the button should be in winlist

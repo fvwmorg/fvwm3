@@ -192,10 +192,8 @@ typedef struct Function {
 typedef struct win_data {
   struct button *button;
   /* stuff shadowed in the Button structure */
-#ifdef MINI_ICONS
   Picture pic;
   Picture old_pic;
-#endif
   Uchar iconified, state;
 
   Ulong desknum;
@@ -224,9 +222,7 @@ typedef struct button {
   int x, y, w, h; /* current coords of button */
   struct {
     int dirty_flags;
-#ifdef MINI_ICONS
     Picture pic;
-#endif
     WinData *win;
     char *display_string;
     int x, y, w, h;
@@ -286,9 +282,7 @@ typedef struct win_manager {
     reliefContext[NUM_CONTEXTS];
   GC shadowContext[NUM_CONTEXTS], flatContext[NUM_CONTEXTS];
   FlocaleFont *FButtonFont;
-#ifdef MINI_ICONS
   int draw_icons;
-#endif
   int shaped;
   StringList show;
   StringList dontshow;

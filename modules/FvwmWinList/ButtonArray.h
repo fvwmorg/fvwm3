@@ -78,8 +78,6 @@ extern void SwitchButton(ButtonArray *array,int butnum);
 extern int WhichButton(ButtonArray *array,int x, int y);
 extern char *ButtonName(ButtonArray *array, int butnum);
 extern void PrintButtons(ButtonArray *array);
-#ifdef MINI_ICONS
 extern Picture *ButtonPicture(ButtonArray *array, int butnum);
-#endif
 extern int IsButtonVisible(Button *btn);
 extern int IsButtonIndexVisible(ButtonArray *array, int butnum);

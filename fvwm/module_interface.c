@@ -1206,7 +1206,6 @@ BroadcastWindowIconNames(FvwmWindow *t, Bool window, Bool icon)
 	return;
 }
 
-#ifdef MINI_ICONS
 static void
 SendMiniIcon(int module, unsigned long event_type,
              unsigned long data1, unsigned long data2,
@@ -1215,16 +1214,22 @@ SendMiniIcon(int module, unsigned long event_type,
              unsigned long data7, unsigned long data8,
              const char *name)
 {
-  unsigned long *body;
-  int l;
+        unsigned long *body;
+        int l;
 
-  if ((name == NULL) || (event_type != M_MINI_ICON))
-    return;
+        if (!FMiniIconsSupported)
+        {
+                return;
+        }
+        if ((name == NULL) || (event_type != M_MINI_ICON))
+                return;
 
-  body = make_named_packet(&l, event_type, name, 8, data1, data2, data3,
-                           data4, data5, data6, data7, data8);
-  PositiveWrite(module, body, l*sizeof(unsigned long));
-  free(body);
+        body = make_named_packet(&l, event_type, name, 8, data1, data2, data3,
+                                 data4, data5, data6, data7, data8);
+        PositiveWrite(module, body, l*sizeof(unsigned long));
+        free(body);
+
+        return;
 }
 
 void
@@ -1235,18 +1240,21 @@ BroadcastMiniIcon(unsigned long event_type,
                   unsigned long data7, unsigned long data8,
                   const char *name)
 {
-  unsigned long *body;
-  int i, l;
+        unsigned long *body;
+        int i, l;
 
-  body = make_named_packet(&l, event_type, name, 8, data1, data2, data3,
-                           data4, data5, data6, data7, data8);
+        if (!FMiniIconsSupported)
+        {
+                return;
+        }
+        body = make_named_packet(&l, event_type, name, 8, data1, data2, data3,
+                                 data4, data5, data6, data7, data8);
 
-  for (i=0; i < npipes; i++)
-    PositiveWrite(i, body, l*sizeof(unsigned long));
+        for (i=0; i < npipes; i++)
+                PositiveWrite(i, body, l*sizeof(unsigned long));
 
-  free(body);
+        free(body);
 }
-#endif /* MINI_ICONS */
 
 /**********************************************************************
  * Reads a colorset command from a module and broadcasts it back out
@@ -1720,8 +1728,7 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 	    SendPacket(*Module, M_ICONIFY, 7, FW_W(t), FW_W_FRAME(t),
 		       (unsigned long)t,
                        0, 0, 0, 0);
-#ifdef MINI_ICONS
-	  if (t->mini_icon != NULL)
+	  if (FMiniIconsSupported && t->mini_icon != NULL)
             SendMiniIcon(*Module, M_MINI_ICON,
                          FW_W(t), FW_W_FRAME(t), (unsigned long)t,
                          t->mini_icon->width,
@@ -1730,7 +1737,6 @@ void CMD_Send_WindowList(F_CMD_ARGS)
                          t->mini_icon->picture,
                          t->mini_icon->mask,
                          t->mini_pixmap_file);
-#endif
 	}
 
       if(Scr.Hilite == NULL)

@@ -289,9 +289,7 @@ int main(int argc, char **argv)
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
   SetMessageMask(Fvwm_fd,
-#ifdef MINI_ICONS
 		 M_MINI_ICON |
-#endif
 		 M_CONFIGURE_WINDOW | M_ADD_WINDOW | M_DESTROY_WINDOW |
 		 M_VISIBLE_NAME | M_DEICONIFY |
 		 M_ICONIFY | M_END_WINDOWLIST | M_NEW_DESK | M_FOCUS_CHANGE |
@@ -369,10 +367,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   char *name,*string;
   static int current_focus=-1;
   struct ConfigWinPacket  *cfgpacket;
-
-#ifdef MINI_ICONS
   Picture p;
-#endif
 
   switch(type)
   {
@@ -431,10 +426,9 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       redraw=1;
       break;
 
-#ifdef MINI_ICONS
   case M_MINI_ICON:
-    if ((i=FindItem(&windows,body[0]))==-1) break;
-
+    if (!FMiniIconsSupported || (i=FindItem(&windows,body[0]))==-1)
+      break;
     if (UpdateButton(&buttons,i,NULL,-1)!=-1)
     {
       p.width = body[3];
@@ -449,7 +443,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       redraw = 1;
     }
     break;
-#endif
 
     case M_VISIBLE_NAME:
     case MX_VISIBLE_ICON_NAME:
@@ -935,9 +928,7 @@ void AdjustWindow(Bool force)
 {
   int new_width=0,new_height=0,tw,i,total,all;
   char *temp;
-#ifdef MINI_ICONS
   int base_miw = 0;
-#endif
 
   total = ItemCountVisible(&windows);
   all = ItemCount(&windows);
@@ -951,19 +942,20 @@ void AdjustWindow(Bool force)
     return;
   }
 
-#ifdef MINI_ICONS
-  for(i=0; i<all; i++)
+  if (FMiniIconsSupported)
   {
-    if(IsButtonIndexVisible(&buttons,i) &&
-       ButtonPicture(&buttons,i)->picture != None)
+    for(i=0; i<all; i++)
     {
-      if (ButtonPicture(&buttons,i)->width > base_miw)
-	base_miw = ButtonPicture(&buttons,i)->width;
-      break;
+      if (IsButtonIndexVisible(&buttons,i) &&
+          ButtonPicture(&buttons,i)->picture != None)
+      {
+        if (ButtonPicture(&buttons,i)->width > base_miw)
+          base_miw = ButtonPicture(&buttons,i)->width;
+        break;
+      }
     }
+    base_miw += 2;
   }
-  base_miw += 2;
-#endif
   for(i=0;i<all;i++)
   {
     temp=ItemName(&windows,i);
@@ -971,9 +963,10 @@ void AdjustWindow(Bool force)
     {
 	tw = 8 + FlocaleTextWidth(FButtonFont,temp,strlen(temp));
 	tw += FlocaleTextWidth(FButtonFont,"()",2);
-#ifdef MINI_ICONS
-	tw += base_miw;
-#endif
+        if (FMiniIconsSupported)
+        {
+          tw += base_miw;
+        }
 	new_width=max(new_width,tw);
     }
   }

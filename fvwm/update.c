@@ -125,8 +125,7 @@ static void apply_window_updates(
 			NULL, &Event, FW_W_FRAME(t), t, C_FRAME, "", 0,
 			SFIS_STICKY(*pstyle));
 	}
-#ifdef MINI_ICONS
-	if (flags->do_update_mini_icon)
+	if (FMiniIconsSupported && flags->do_update_mini_icon)
 	{
 		if (!HAS_EWMH_MINI_ICON(t) || DO_EWMH_MINI_ICON_OVERRIDE(t))
 		{
@@ -144,7 +143,6 @@ static void apply_window_updates(
 			}
 		}
 	}
-#endif
 	if (flags->do_update_visible_window_name)
 	{
 		setup_visible_name(t, False);

@@ -55,9 +55,7 @@ void setup_frame_geometry(FvwmWindow *fw);
 void setup_frame_size_limits(FvwmWindow *fw, window_style *pstyle);
 void increase_icon_hint_count(FvwmWindow *fw);
 void change_icon(FvwmWindow *fw, window_style *pstyle);
-#ifdef MINI_ICONS
 void change_mini_icon(FvwmWindow *fw, window_style *pstyle);
-#endif
 void change_icon_boxes(FvwmWindow *fw, window_style *pstyle);
 
 void FetchWmProtocols(FvwmWindow *);

@@ -446,10 +446,11 @@ static Bool setup_window_structure(
 	}
 
 	(*pfw)->cmap_windows = (Window *)NULL;
-#ifdef MINI_ICONS
-	(*pfw)->mini_pixmap_file = NULL;
-	(*pfw)->mini_icon = NULL;
-#endif
+        if (FMiniIconsSupported)
+        {
+        	(*pfw)->mini_pixmap_file = NULL;
+                (*pfw)->mini_icon = NULL;
+        }
 
 	return True;
 }
@@ -1784,9 +1785,12 @@ void change_icon(FvwmWindow *fw, window_style *pstyle)
 	return;
 }
 
-#ifdef MINI_ICONS
 void setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
 {
+        if (!FMiniIconsSupported)
+        {
+                return;
+        }
 	if (SHAS_MINI_ICON(&pstyle->flags))
 	{
 		fw->mini_pixmap_file = SGET_MINI_ICON_NAME(*pstyle);
@@ -1846,7 +1850,6 @@ void change_mini_icon(FvwmWindow *fw, window_style *pstyle)
 
 	return;
 }
-#endif
 
 void setup_focus_policy(FvwmWindow *fw)
 {
@@ -2170,9 +2173,10 @@ FvwmWindow *AddWindow(
 	/* migo (20-Jan-2000): the logic is to unset this flag on NULL values */
 	SET_WAS_ICON_NAME_PROVIDED(fw, 1);
 	setup_icon(fw, &style);
-#ifdef MINI_ICONS
-	setup_mini_icon(fw, &style);
-#endif
+        if (FMiniIconsSupported)
+        {
+                setup_mini_icon(fw, &style);
+        }
 
 	BroadcastName(M_RES_CLASS,FW_W(fw),FW_W_FRAME(fw),
 		      (unsigned long)fw,fw->class.res_class);

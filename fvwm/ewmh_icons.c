@@ -76,26 +76,27 @@ int ewmh_WMIcon(EWMH_CMD_ARGS)
     /* client message. the application change its net icon */
     ChangeIconPixmap(fwin);
   }
-#ifdef MINI_ICONS
-  if (list == NULL || HAS_EWMH_WM_ICON_HINT(fwin) != EWMH_TRUE_ICON)
+  if (FMiniIconsSupported)
   {
-    /* No net icon or we have set the net icon */
-    if (DO_EWMH_DONATE_MINI_ICON(fwin) &&
-	(dummy = ewmh_SetWmIconFromPixmap(fwin,
-					 (new_list != NULL)? new_list : list,
-					 &size, True)) != NULL)
+    if (list == NULL || HAS_EWMH_WM_ICON_HINT(fwin) != EWMH_TRUE_ICON)
     {
-      SET_HAS_EWMH_WM_ICON_HINT(fwin, EWMH_FVWM_ICON);
-      free(dummy);
+      /* No net icon or we have set the net icon */
+      if (DO_EWMH_DONATE_MINI_ICON(fwin) &&
+	(dummy = ewmh_SetWmIconFromPixmap(fwin,
+                                          (new_list != NULL)? new_list : list,
+                                          &size, True)) != NULL)
+      {
+        SET_HAS_EWMH_WM_ICON_HINT(fwin, EWMH_FVWM_ICON);
+        free(dummy);
+      }
+    }
+    else
+    {
+      /* the application has a true ewmh icon */
+      if (EWMH_SetIconFromWMIcon(fwin, list, size, True))
+        SET_HAS_EWMH_MINI_ICON(fwin, True);
     }
   }
-  else
-  {
-    /* the application has a true ewmh icon */
-    if (EWMH_SetIconFromWMIcon(fwin, list, size, True))
-      SET_HAS_EWMH_MINI_ICON(fwin, True);
-  }
-#endif
 
   if (list != NULL)
     free(list);
@@ -119,8 +120,7 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
     return;
 
   /* first see if we have to delete */
-#ifdef MINI_ICONS
-  if (mini_icon && !DO_EWMH_DONATE_MINI_ICON(fwin))
+  if (FMiniIconsSupported && mini_icon && !DO_EWMH_DONATE_MINI_ICON(fwin))
   {
     if (icon && !DO_EWMH_DONATE_ICON(fwin))
     {
@@ -128,7 +128,6 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
     }
     EWMH_DeleteWmIcon(fwin, True, icon_too);
   }
-#endif
   if (!icon_too && icon && !DO_EWMH_DONATE_ICON(fwin))
   {
     EWMH_DeleteWmIcon(fwin, False, True);
@@ -155,8 +154,7 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
       SET_HAS_EWMH_WM_ICON_HINT(fwin, EWMH_FVWM_ICON);
     }
   }
-#ifdef MINI_ICONS
-  if (mini_icon && DO_EWMH_DONATE_MINI_ICON(fwin))
+  if (FMiniIconsSupported && mini_icon && DO_EWMH_DONATE_MINI_ICON(fwin))
   {
     if ((dummy = ewmh_SetWmIconFromPixmap(
 		 fwin, (new_list != NULL)? new_list : list, &size, True)) !=
@@ -166,7 +164,6 @@ void EWMH_DoUpdateWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
       free(dummy);
     }
   }
-#endif
   if (list != NULL)
     free(list);
   if (new_list != NULL)
@@ -207,15 +204,13 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 
   if (is_mini_icon)
   {
-#ifdef MINI_ICONS
-    if (fwin->mini_icon != NULL)
+    if (FMiniIconsSupported && fwin->mini_icon != NULL)
     {
       pixmap = fwin->mini_icon->picture;
       mask = fwin->mini_icon->mask;
       width = fwin->mini_icon->width;
       height = fwin->mini_icon->height;
     }
-#endif
   }
   else
   {
@@ -252,8 +247,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
   if (pixmap == None)
     return NULL;
 
-#ifdef MINI_ICONS
-  if (orig_icon != NULL)
+  if (FMiniIconsSupported && orig_icon != NULL)
   {
     int k_width =
       (is_mini_icon)? fwin->ewmh_icon_width : fwin->ewmh_mini_icon_width;
@@ -283,7 +277,6 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 	i = s;
     }
   }
-#endif
 
   image = XGetImage(dpy, pixmap, 0, 0, width, height, AllPlanes, ZPixmap);
   if (image == None)
@@ -484,8 +477,7 @@ void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
     return;
   s = s / sizeof(CARD32);
 
-#ifdef MINI_ICONS
-  if (list != NULL)
+  if (FMiniIconsSupported && list != NULL)
   {
     int k_width =
       (mini_icon)? fwin->ewmh_icon_width : fwin->ewmh_mini_icon_width;
@@ -515,7 +507,6 @@ void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
 	i = s;
     }
   }
-#endif
 
   if (keep_length > 0)
   {
@@ -533,7 +524,8 @@ void EWMH_DeleteWmIcon(FvwmWindow *fwin, Bool mini_icon, Bool icon)
   else
   {
     /*SET_HAS_EWMH_WM_ICON_HINT(fwin, EWMH_NO_ICON);*/
-    ewmh_DeleteProperty(FW_W(fwin), "_NET_WM_ICON", EWMH_ATOM_LIST_PROPERTY_NOTIFY);
+    ewmh_DeleteProperty(FW_W(fwin), "_NET_WM_ICON",
+                        EWMH_ATOM_LIST_PROPERTY_NOTIFY);
   }
 
   if (mini_icon)
@@ -768,9 +760,8 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
     return 0;
   }
 
-  if (is_mini_icon && !DO_EWMH_MINI_ICON_OVERRIDE(fwin))
+  if (FMiniIconsSupported && is_mini_icon && !DO_EWMH_MINI_ICON_OVERRIDE(fwin))
   {
-#ifdef MINI_ICONS
     char *name = NULL;
 
     CopyString(&name,"ewmh_mini_icon");
@@ -795,7 +786,6 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 			fwin->mini_pixmap_file);
       RedrawDecorations(fwin);
     }
-#endif
   }
   if (!is_mini_icon)
   {

@@ -85,6 +85,11 @@
 /* #undef MINI_ICONS */
 /* NOTE: hard coded to 1 */
 #define MINI_ICONS 1
+#ifdef MINI_ICONS
+#define FMiniIconsSupported 1
+#else
+#define FMiniIconsSupported 0
+#endif
 
 /* Enables tagged general decoration styles which can be assigned to
  * windows using the UseDecor Style option, or dynamically updated

@@ -561,16 +561,15 @@ void CMD_WindowList(F_CMD_ARGS)
 	}
         AddToMenu(mr, t_hot, tfunc, FALSE, FALSE);
         free(tfunc);
-#ifdef MINI_ICONS
         /* Add the title pixmap */
-        if (t->mini_icon) {
+        if (FMiniIconsSupported && t->mini_icon)
+        {
           MI_MINI_ICON(MR_LAST_ITEM(mr))[0] = t->mini_icon;
           t->mini_icon->count++; /* increase the cache count!!
                                     otherwise the pixmap will be
                                     eventually removed from the
                                     cache by DestroyMenu */
         }
-#endif
         if (t_hot)
           free(t_hot);
       }

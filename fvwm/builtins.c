@@ -1241,8 +1241,8 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				return False;
 		}
 #endif
-#ifdef MINI_ICONS
-		else if (strncasecmp (style, "MiniIcon", 8) == 0)
+		else if (FMiniIconsSupported &&
+                         strncasecmp (style, "MiniIcon", 8) == 0)
 		{
 			memset(&df->style, 0, sizeof(df->style));
 			DFS_FACE_TYPE(df->style) = MiniIconButton;
@@ -1257,7 +1257,6 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			/* pixmap read in when the window is created */
 			df->u.p = NULL;
 		}
-#endif
 		else
 		{
 			if (verbose)

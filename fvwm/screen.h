@@ -80,9 +80,7 @@ typedef enum
 #ifdef FANCY_TITLEBARS
     MultiPixmap               ,
 #endif
-#ifdef MINI_ICONS
     MiniIconButton            ,
-#endif
     SolidButton
 } DecorFaceType;
 
@@ -98,11 +96,7 @@ typedef enum
 
 typedef struct
 {
-#ifdef FANCY_TITLEBARS
   unsigned face_type : 4;
-#else
-  unsigned face_type : 3; /* was DecorFaceType : 3 */
-#endif
   struct
   {
     unsigned h_justification : 2; /* was JustificationType : 2 */

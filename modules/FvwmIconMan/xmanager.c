@@ -517,11 +517,10 @@ static void set_window_button (WinData *win, int index)
   b = win->manager->buttons.buttons[index];
 
   /* Can optimize here */
-
-#ifdef MINI_ICONS
-  b->drawn_state.pic = win->pic;
-#endif
-
+  if (FMiniIconsSupported)
+  {
+    b->drawn_state.pic = win->pic;
+  }
   b->drawn_state.win = win;
   copy_string(&b->drawn_state.display_string, win->display_string);
   b->drawn_state.iconified = win->iconified;
@@ -633,12 +632,14 @@ void force_manager_redraw (WinManager *man)
   draw_manager (man);
 }
 
-#ifdef MINI_ICONS
-
 void set_win_picture (WinData *win, Pixmap picture, Pixmap mask,
 		      unsigned int depth, unsigned int width,
 		      unsigned int height)
 {
+  if (!FMiniIconsSupported)
+  {
+    return;
+  }
   if (win->button)
     win->button->drawn_state.dirty_flags |= PICTURE_CHANGED;
   win->old_pic = win->pic;
@@ -648,8 +649,6 @@ void set_win_picture (WinData *win, Pixmap picture, Pixmap mask,
   win->pic.height = height;
   win->pic.depth = depth;
 }
-
-#endif
 
 void set_win_iconified (WinData *win, int iconified)
 {
@@ -1074,8 +1073,7 @@ static void get_button_geometry (WinManager *man, Button *button,
   g->button_h = button->h;
 
 /* [BV 16-Apr-97] Mini Icons work on black-and-white too */
-#ifdef MINI_ICONS
-  if (man->draw_icons && win && win->pic.picture) {
+  if (FMiniIconsSupported && man->draw_icons && win && win->pic.picture) {
     /* If no window, then icon_* aren't used, so doesn't matter what
        they are */
     g->icon_w = min (win->pic.width, g->button_h);
@@ -1085,16 +1083,13 @@ static void get_button_geometry (WinManager *man, Button *button,
     g->icon_y = g->button_y + icon_pad;
   }
   else {
-#endif
     g->icon_h = man->geometry.boxheight - 8;
     g->icon_w = g->icon_h;
 
     icon_pad = center_padding (g->icon_h, g->button_h);
     g->icon_x = g->button_x + icon_pad;
     g->icon_y = g->button_y + icon_pad;
-#ifdef MINI_ICONS
   }
-#endif
 
   g->text_x = g->icon_x + g->icon_w + 2;
   g->text_w = g->button_w - 4 - (g->text_x - g->button_x);
@@ -1126,17 +1121,14 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 			 ButtonGeometry *g, int iconified, Contexts contextId,
 			 int button_already_cleared)
 {
-#ifdef MINI_ICONS
   XGCValues gcv;
   unsigned long gcm;
-#endif
 
   if (!man->window_up)
     return;
 
 /* [BV 16-Apr-97] Mini Icons work on black-and-white too */
-#ifdef MINI_ICONS
-  if (man->draw_icons && win->pic.picture) {
+  if (FMiniIconsSupported && man->draw_icons && win->pic.picture) {
     if (iconified == 0 && man->draw_icons != 2) {
       if (!button_already_cleared) {
 	XFillRectangle (theDisplay, man->theWindow,
@@ -1160,7 +1152,6 @@ static void iconify_box (WinManager *man, WinData *win, int box,
     }
   }
   else {
-#endif
     if (Pdepth > 2) {
       draw_3d_icon (man, box, g, iconified, contextId);
     }
@@ -1174,10 +1165,7 @@ static void iconify_box (WinManager *man, WinData *win, int box,
 		  g->icon_x, g->icon_y, g->icon_w, g->icon_h, 0, 360 * 64);
       }
     }
-#ifdef MINI_ICONS
   }
-#endif
-
 }
 
 int change_windows_manager (WinData *win)
@@ -1344,8 +1332,7 @@ static void draw_button (WinManager *man, int button, int force)
 	draw_icon = 1;
 	draw_string = 1;
       }
-#ifdef MINI_ICONS
-      if (PICTURE_CHANGED) {
+      if (FMiniIconsSupported && PICTURE_CHANGED) {
 	Picture tpic;
 
 	ConsoleDebug (X11, "\tPicture changed\n");
@@ -1358,7 +1345,6 @@ static void draw_button (WinManager *man, int button, int force)
 	draw_string = 1;
 	clear_old_pic = 1;
       }
-#endif
       if (ICON_STATE_CHANGED && b->drawn_state.iconified != win->iconified) {
 	ConsoleDebug (X11, "\tIcon changed\n");
 	b->drawn_state.iconified = win->iconified;

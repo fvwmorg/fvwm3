@@ -29,9 +29,7 @@
 #define SHAS_ICON_BOXES(sf)           ((sf)->has_icon_boxes)
 #define SHAS_MAX_WINDOW_SIZE(sf)      ((sf)->has_max_window_size)
 #define SHAS_WINDOW_SHADE_STEPS(sf)   ((sf)->has_window_shade_steps)
-#ifdef MINI_ICONS
 #define SHAS_MINI_ICON(sf)            ((sf)->has_mini_icon)
-#endif
 #define SHAS_MWM_DECOR(sf)            ((sf)->has_mwm_decor)
 #define SHAS_MWM_FUNCTIONS(sf)        ((sf)->has_mwm_functions)
 #define SHAS_NO_HANDLES(sf)           ((sf)->has_no_handles)
@@ -464,10 +462,8 @@
 #define SSET_NAME(s,x)                ((s).name = (x))
 #define SGET_ICON_NAME(s)             ((s).icon_name)
 #define SSET_ICON_NAME(s,x)           ((s).icon_name = (x))
-#ifdef MINI_ICONS
 #define SGET_MINI_ICON_NAME(s)        ((s).mini_icon_name)
 #define SSET_MINI_ICON_NAME(s,x)      ((s).mini_icon_name = (x))
-#endif
 #ifdef USEDECOR
 #define SGET_DECOR_NAME(s)            ((s).decor_name)
 #define SSET_DECOR_NAME(s,x)          ((s).decor_name = (x))

@@ -61,8 +61,6 @@ typedef struct {
   Ulong arg, toggle, id;
 } m_property_data;
 
-#ifdef MINI_ICONS
-
 typedef struct {
   Ulong app_id, frame_id, dbase_entry;
   Ulong width, height, depth, picture, mask;
@@ -72,9 +70,6 @@ typedef struct {
   } name;
 } m_mini_icon_data;
 
-
-#endif
-
 typedef union {
   m_toggle_paging_data toggle_paging_data;
   m_new_desk_data      new_desk_data;
@@ -83,9 +78,7 @@ typedef union {
   m_minimal_data       minimal_data;
   m_icon_data          icon_data;
   m_name_data          name_data;
-#ifdef MINI_ICONS
   m_mini_icon_data     mini_icon_data;
-#endif
   m_property_data      property_data;
 } FvwmPacketBody;
 
@@ -478,12 +471,15 @@ static void destroy_window (FvwmPacketBody *body)
   free_windata (win);
 }
 
-#ifdef MINI_ICONS
 static void mini_icon (FvwmPacketBody *body)
 {
   Ulong app_id = body->mini_icon_data.app_id;
   WinData *win;
 
+  if (!FMiniIconsSupported)
+  {
+    return;
+  }
   win = id_to_win (app_id);
   set_win_picture (win, body->mini_icon_data.picture,
 		   body->mini_icon_data.mask, body->mini_icon_data.depth,
@@ -495,7 +491,6 @@ static void mini_icon (FvwmPacketBody *body)
 		(unsigned long) win->pic.mask,
 		win->pic.width, win->pic.height, win->pic.depth);
 }
-#endif
 
 static void iconify (FvwmPacketBody *body, int dir)
 {
@@ -615,12 +610,10 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
     destroy_window (body);
     break;
 
-#ifdef MINI_ICONS
   case M_MINI_ICON:
     ConsoleDebug (FVWM, "DEBUG::M_MINI_ICON\n");
     mini_icon (body);
     break;
-#endif
 
   case M_WINDOW_NAME:
     ConsoleDebug (FVWM, "DEBUG::M_WINDOW_NAME\n");
@@ -698,7 +691,7 @@ static void ProcessMessage (Ulong type, FvwmPacketBody *body)
     ConsoleDebug (FVWM, "DEBUG::M_STRING\n");
     sendtomodule (body);
     break;
-    
+
   case MX_PROPERTY_CHANGE:
     ConsoleDebug (FVWM, "DEBUG::MX_PROPERTY_CHANGE\n");
     property_change(body);

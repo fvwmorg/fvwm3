@@ -289,19 +289,15 @@ static void DrawButton(
     }
     break;
 
-#ifdef MINI_ICONS
   case MiniIconButton:
   case PixmapButton:
   case TiledPixmapButton:
 #ifdef FANCY_TITLEBARS
   case MultiPixmap:       /* in case of UseTitleStyle */
 #endif
-    if (type == PixmapButton || type == TiledPixmapButton)
-    {
-      p = df->u.p;
-    }
 #ifdef FANCY_TITLEBARS
-    else if (type == MultiPixmap) {
+    if (type == MultiPixmap)
+    {
       if (left1right0 && df->u.multi_pixmaps[TBP_LEFT_BUTTONS])
         p = df->u.multi_pixmaps[TBP_LEFT_BUTTONS];
       else if (!left1right0 && df->u.multi_pixmaps[TBP_RIGHT_BUTTONS])
@@ -316,17 +312,17 @@ static void DrawButton(
         p = df->u.multi_pixmaps[TBP_MAIN];
     }
 #endif
-    else
+    else if (FMiniIconsSupported && type == MiniIconButton)
     {
       if (!t->mini_icon)
 	break;
       p = t->mini_icon;
     }
-#else
-  case PixmapButton:
-  case TiledPixmapButton:
-    p = df->u.p;
-#endif /* MINI_ICONS */
+    else
+    {
+      p = df->u.p;
+    }
+
     if (DFS_BUTTON_RELIEF(df->style) == DFS_BUTTON_IS_FLAT)
       border = 0;
     else
@@ -2386,9 +2382,10 @@ void CMD_BorderStyle(F_CMD_ARGS)
 			memset(&tmpdf.style, 0, sizeof(tmpdf.style));
 			DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
 			tmpdf.next = NULL;
-#ifdef MINI_ICONS
-			tmpdf.u.p = NULL;
-#endif
+                        if (FMiniIconsSupported)
+                        {
+                                tmpdf.u.p = NULL;
+                        }
 			if (StrEquals(parm,"active"))
 			{
 				df = &decor->BorderStyle.active;
@@ -2455,9 +2452,10 @@ void CMD_BorderStyle(F_CMD_ARGS)
 			memset(&tmpdf.style, 0, sizeof(tmpdf.style));
 			DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
 			tmpdf.next = NULL;
-#ifdef MINI_ICONS
-			tmpdf.u.p = NULL;
-#endif
+                        if (FMiniIconsSupported)
+                        {
+                                tmpdf.u.p = NULL;
+                        }
 			if (ReadDecorFace(prev, &tmpdf,-1,True))
 			{
 				FreeDecorFace(dpy,&decor->BorderStyle.active);

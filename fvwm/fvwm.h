@@ -474,9 +474,7 @@ typedef struct
 	unsigned has_icon_boxes : 1;
 	unsigned has_max_window_size : 1;
 	unsigned has_window_shade_steps : 1;
-#ifdef MINI_ICONS
 	unsigned has_mini_icon : 1;
-#endif
 	unsigned has_mwm_decor : 1;
 	unsigned has_mwm_functions : 1;
 	unsigned has_no_handles : 1;
@@ -521,9 +519,7 @@ typedef struct window_style
 	WindowConditionMask *condition_mask;
 #endif
 	char *icon_name;
-#ifdef MINI_ICONS
 	char *mini_icon_name;
-#endif
 #ifdef USEDECOR
 	char *decor_name;
 #endif
@@ -671,10 +667,8 @@ typedef struct FvwmWindow
 	/* Desk to deiconify to, for StubbornIcons */
 	int DeIconifyDesk;
 
-#ifdef MINI_ICONS
 	char *mini_pixmap_file;
 	Picture *mini_icon;
-#endif
 	char *icon_bitmap_file;
 
 	rectangle frame_g;
