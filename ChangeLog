@@ -1,5 +1,10 @@
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
+	* todo-2.6
+	closed B.8
+	
+2003-07-09  Marcus Lundblad  <ml@update.uu.se>
+
 	* libs/Flocale.c (FlocaleEncodeString):
 	(FlocaleEncodeWinString):
 	(FlocaleRotateDrawString):
