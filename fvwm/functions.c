@@ -34,10 +34,12 @@
 static char *repeat_last_function = NULL;
 static char *repeat_last_complex_function = NULL;
 static char *repeat_last_builtin_function = NULL;
-static char *repeat_last_top_function = NULL;
 static char *repeat_last_module = NULL;
+/*
+static char *repeat_last_top_function = NULL;
 static char *repeat_last_menu = NULL;
 static FvwmWindow *repeat_last_fvwm_window = NULL;
+*/
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
