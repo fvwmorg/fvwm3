@@ -23,9 +23,6 @@ TMPDIR security patch.
 Stian Sletner:
 WindowList option IconifiedAtEnd.
 
-Jochen Klenner:
-WindowList option CurrentAtEnd.
-
 Derek B. Noonburg:
 Weighted sorting in FvwmIconMan.
 
@@ -41,7 +38,7 @@ Memory management clean up patches.
 Daniel Henninger:
 Timeout feature in FvwmForm.
 
-Suzanne Britton:
+Suzanne Skinner:
 Multi-pixmap titlebars patch.
 
 Lorenz Minder:

@@ -3,7 +3,7 @@ _+_A HREF="#2.4.10"_-_2.4.10_+_/A_-_.
 
 -------------------------------------------------------------------
 
-Changes in *unstable* development release 2.5.4 (not released yet)
+Changes in *experimental* release 2.5.4 (not released yet)
 
 * FvwmTaskBar may now include mini launchbuttons using the Button
   command.  Also has new options for spacing the buttons:
@@ -466,9 +466,7 @@ Changes in stable release 2.4.9 (11-Aug-2002)
 
 -------------------------------------------------------------------
 
-_+_A NAME="2.4.8"_-_
 Changes in stable release 2.4.8 (11-Jun-2002)
-_+_/A_-_
 
 * A fix for switching between czech and us keyboard layout.
 
