@@ -1,3 +1,17 @@
+1999-08-14  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/move_resize.c:
+	(resize_window):
+	(moveLoop):
+	reindented and commented some code, implemented move-bug-workaround
+	configure option
+	(InteractiveMove): added some comments
+
+	* acconfig.h:
+	* configure.in (FVWM_CONFIGDIR): added configure option
+	move-bug-workaround to workaround buggy applications that do excessive
+	redrawind while being moved
+
 1999-08-12  Hippo
 
 	* fvwm/menus.c: fixed shaped sidepics in menus when menu is shorter
@@ -29,7 +43,7 @@
 
 1999-08-09  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
-	* fvwm/screen.h: 
+	* fvwm/screen.h:
 	* fvwm/borders.c: fixed 'LeftJustified' flag for title style.
 	There seems to be a flag conflict. THe title style flags should really
 	be rewritten in GSFR style to avoid further conflicts.

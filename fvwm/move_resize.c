@@ -109,9 +109,12 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
   else
   {
     fvwm_msg(WARN, "InteractiveMove",
-	     "BUG: move triggered by event type %d", eventp->type);
+	     "BUG: move triggered by event type %d."
+	     " Please report to fvwm-workers@fvwm.org", eventp->type);
+    /* we're getting desparate now... */
     if (XCheckMaskEvent(dpy, PointerMotionMask|ButtonMotionMask, &my_event))
     {
+      /* hope these coordinates are good enough */
       DragX = my_event.xmotion.x_root;
       DragY = my_event.xmotion.y_root;
     }
@@ -124,10 +127,10 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
   }
 
   if(!GrabEm(CRS_MOVE))
-    {
-      XBell(dpy, 0);
-      return;
-    }
+  {
+    XBell(dpy, 0);
+    return;
+  }
 
   XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
 	       (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,
@@ -154,7 +157,6 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
   if(!opaque_move)
     MyXUngrabServer(dpy);
   UngrabEm();
-
 }
 
 
@@ -202,14 +204,16 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
   /* Needed for aborting */
   XGrabKeyboard(dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync,
 		CurrentTime);
-  do {
+  do
+  {
     currentX = startX + deltaX * (*ppctMovement);
     currentY = startY + deltaY * (*ppctMovement);
     if (lastX == currentX && lastY == currentY)
       /* don't waste time in the same spot */
       continue;
     XMoveWindow(dpy,w,currentX,currentY);
-    if (fWarpPointerToo == TRUE) {
+    if (fWarpPointerToo == TRUE)
+    {
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		    &JunkX,&JunkY,&pointerX,&pointerY,&JunkMask);
       pointerX += currentX - lastX;
@@ -217,6 +221,7 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
       XWarpPointer(dpy,None,Scr.Root,0,0,0,0,
 		   pointerX,pointerY);
     }
+#ifndef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
     if (tmp_win && !IS_SHADED(tmp_win))
     {
       /* send configure notify event for windows that care about their
@@ -245,8 +250,10 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
                client_event.xconfigure.width,client_event.xconfigure.height);
 #endif
     }
+#endif
     XFlush(dpy);
-    if (tmp_win) {
+    if (tmp_win)
+    {
       tmp_win->frame_g.x = currentX;
       tmp_win->frame_g.y = currentY;
       BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
@@ -263,7 +270,8 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
      */
     if (XCheckMaskEvent(dpy,
 			ButtonPressMask|ButtonReleaseMask|KeyPressMask,
-			&Event)) {
+			&Event))
+    {
       StashEventTime(&Event);
       /* finish the move immediately */
       XMoveWindow(dpy,w,endX,endY);
@@ -324,86 +332,91 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
   /* gotta have a window */
   w = tmp_win->frame;
   if(IS_ICONIFIED(tmp_win))
+  {
+    if(tmp_win->icon_pixmap_w != None)
     {
-      if(tmp_win->icon_pixmap_w != None)
-	{
-	  XUnmapWindow(dpy,tmp_win->icon_w);
-	  w = tmp_win->icon_pixmap_w;
-	}
-      else
-	w = tmp_win->icon_w;
+      XUnmapWindow(dpy,tmp_win->icon_w);
+      w = tmp_win->icon_pixmap_w;
     }
+    else
+      w = tmp_win->icon_w;
+  }
 
   XGetGeometry(dpy, w, &JunkRoot, &x, &y,
 	       &width, &height, &JunkBW, &JunkDepth);
   if (fMoveToPage)
+  {
+    fAnimated = FALSE;
+    FinalX = x % Scr.MyDisplayWidth;
+    FinalY = y % Scr.MyDisplayHeight;
+    if (get_page_arguments(action, &page_x, &page_y))
     {
-      fAnimated = FALSE;
-      FinalX = x % Scr.MyDisplayWidth;
-      FinalY = y % Scr.MyDisplayHeight;
-      if (get_page_arguments(action, &page_x, &page_y))
-	{
-	  SET_STICKY(tmp_win, 0);
-	  FinalX += page_x - Scr.Vx;
+      SET_STICKY(tmp_win, 0);
+      FinalX += page_x - Scr.Vx;
 	  FinalY += page_y - Scr.Vy;
-	}
     }
+  }
   else
-    {
-      n = GetMoveArguments(action,x,y,width,height,&FinalX,&FinalY,&fWarp);
-      if (n != 2)
-	InteractiveMove(&w,tmp_win,&FinalX,&FinalY,eventp);
-    }
+  {
+    n = GetMoveArguments(action,x,y,width,height,&FinalX,&FinalY,&fWarp);
+    if (n != 2)
+      InteractiveMove(&w,tmp_win,&FinalX,&FinalY,eventp);
+  }
 
   if (w == tmp_win->frame)
   {
-    if (fAnimated) {
+    if (fAnimated)
+    {
       AnimatedMoveFvwmWindow(tmp_win,w,-1,-1,FinalX,FinalY,fWarp,-1,NULL);
     }
-    SetupFrame (tmp_win, FinalX, FinalY,
-		tmp_win->frame_g.width, tmp_win->frame_g.height,True,False);
+    SetupFrame(tmp_win, FinalX, FinalY,
+	       tmp_win->frame_g.width, tmp_win->frame_g.height,True,False);
     if (fWarp & !fAnimated)
       XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
   }
   else /* icon window */
+  {
+    SET_ICON_MOVED(tmp_win, 1);
+    tmp_win->icon_x_loc = FinalX ;
+    tmp_win->icon_xl_loc = FinalX -
+      (tmp_win->icon_w_width - tmp_win->icon_p_width)/2;
+    tmp_win->icon_y_loc = FinalY;
+    BroadcastPacket(M_ICON_LOCATION, 7,
+		    tmp_win->w, tmp_win->frame,
+		    (unsigned long)tmp_win,
+		    tmp_win->icon_x_loc, tmp_win->icon_y_loc,
+		    tmp_win->icon_p_width,
+		    tmp_win->icon_w_height + tmp_win->icon_p_height);
+    if (fAnimated)
     {
-      SET_ICON_MOVED(tmp_win, 1);
-      tmp_win->icon_x_loc = FinalX ;
-      tmp_win->icon_xl_loc = FinalX -
-	    (tmp_win->icon_w_width - tmp_win->icon_p_width)/2;
-      tmp_win->icon_y_loc = FinalY;
-      BroadcastPacket(M_ICON_LOCATION, 7,
-                      tmp_win->w, tmp_win->frame,
-                      (unsigned long)tmp_win,
-                      tmp_win->icon_x_loc, tmp_win->icon_y_loc,
-                      tmp_win->icon_p_width,
-                      tmp_win->icon_w_height + tmp_win->icon_p_height);
-      if (fAnimated) {
-        AnimatedMoveOfWindow(tmp_win->icon_w,-1,-1,tmp_win->icon_xl_loc,
-			     FinalY+tmp_win->icon_p_height, fWarp,-1,NULL);
-      } else {
-        XMoveWindow(dpy,tmp_win->icon_w, tmp_win->icon_xl_loc,
-		    FinalY+tmp_win->icon_p_height);
-        if (fWarp)
+      AnimatedMoveOfWindow(tmp_win->icon_w,-1,-1,tmp_win->icon_xl_loc,
+			   FinalY+tmp_win->icon_p_height, fWarp,-1,NULL);
+    }
+    else
+    {
+      XMoveWindow(dpy,tmp_win->icon_w, tmp_win->icon_xl_loc,
+		  FinalY+tmp_win->icon_p_height);
+      if (fWarp)
+	XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
+    }
+    if(tmp_win->icon_pixmap_w != None)
+    {
+      XMapWindow(dpy,tmp_win->icon_w);
+      if (fAnimated)
+      {
+	AnimatedMoveOfWindow(tmp_win->icon_pixmap_w, -1,-1,
+			     tmp_win->icon_x_loc,FinalY,fWarp,-1,NULL);
+      }
+      else
+      {
+	XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_x_loc, FinalY);
+	if (fWarp)
 	  XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
       }
-      if(tmp_win->icon_pixmap_w != None)
-	{
-	  XMapWindow(dpy,tmp_win->icon_w);
-	  if (fAnimated) {
-   	    AnimatedMoveOfWindow(tmp_win->icon_pixmap_w, -1,-1,
-				 tmp_win->icon_x_loc,FinalY,fWarp,-1,NULL);
-	  } else {
-	    XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_x_loc,
-			FinalY);
-            if (fWarp)
-	      XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x,
-			   FinalY - y);
-	  }
-	  XMapWindow(dpy,w);
-	}
-
+      XMapWindow(dpy,w);
     }
+
+  }
 
   return;
 }
@@ -714,263 +727,264 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   DisplayPosition(tmp_win,xl,yt,True);
 
   while (!finished)
+  {
+    /* block until there is an interesting event */
+    while (!XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+			    KeyPressMask | PointerMotionMask |
+			    ButtonMotionMask | ExposureMask, &Event))
     {
-      /* block until there is an interesting event */
-      while (!XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-			      KeyPressMask | PointerMotionMask |
-			      ButtonMotionMask | ExposureMask, &Event))
-	{
-	  if (HandlePaging(dx, dy, &xl,&yt, &delta_x,&delta_y, False, False,
-			   True))
-	    {
-	      /* Fake an event to force window reposition */
-	      xl += XOffset;
-	      yt += YOffset;
-	      DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-	      Event.type = MotionNotify;
-	      Event.xmotion.time = lastTimestamp;
-	      Event.xmotion.x_root = xl - XOffset;
-	      Event.xmotion.y_root = yt - YOffset;
-	      break;
-	    }
-	}
-      StashEventTime(&Event);
-
-      /* discard any extra motion events before a logical release */
-      if (Event.type == MotionNotify)
-	{
-	  while(XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
-				ButtonPressMask |ButtonRelease, &Event))
-	    {
-	      StashEventTime(&Event);
-	      if(Event.type == ButtonRelease || Event.type == ButtonPress)
-		break;
-	    }
-	}
-
-      done = FALSE;
-      /* Handle a limited number of key press events to allow mouseless
-       * operation */
-      if (Event.type == KeyPress)
-	Keyboard_shortcuts(&Event, tmp_win, ButtonRelease);
-      switch(Event.type)
-	{
-	case KeyPress:
-	  /* simple code to bag out of move - CKH */
-	  if (XLookupKeysym(&(Event.xkey),0) == XK_Escape)
-	    {
-	      if(!opaque_move)
-		MoveOutline(Scr.Root, 0, 0, 0, 0);
-	      if (!IS_ICONIFIED(tmp_win))
-	      {
-		*FinalX = tmp_win->frame_g.x;
-		*FinalY = tmp_win->frame_g.y;
-	      }
-	      else
-	      {
-		*FinalX = tmp_win->icon_x_loc;
-		*FinalY = tmp_win->icon_y_loc;
-	      }
-	      finished = TRUE;
-	    }
-	  done = TRUE;
-	  break;
-	case ButtonPress:
-	  XAllowEvents(dpy,ReplayPointer,CurrentTime);
-	  if (((Event.xbutton.button == 1) && (button_mask & Button1Mask)) ||
-	      ((Event.xbutton.button == 2) && (button_mask & Button2Mask)) ||
-	      ((Event.xbutton.button == 3) && (button_mask & Button3Mask)) ||
-	      ((Event.xbutton.button == 4) && (button_mask & Button4Mask)) ||
-	      ((Event.xbutton.button == 5) && (button_mask & Button5Mask)))
-	    {
-	      /* No new button was pressed, just a delayed event */
-	      done = TRUE;
-	      break;
-	    }
-	  if(((Event.xbutton.button == 2)&&(!Scr.gs.EmulateMWM))||
-	     ((Event.xbutton.button == 1)&&(Scr.gs.EmulateMWM)&&
-	      (Event.xbutton.state & ShiftMask)))
-	    {
-	      NeedToResizeToo = True;
-	      /* Fallthrough to button-release */
-	    }
-	  else
-	    {
-	      /* Abort the move if
-	       *  - the move started with a pressed button and another button
-	       *    was pressed during the operation
-	       *  - no button was started at the beginning and any button
-	       *    except button 1 was pressed. */
-	      if (button_mask || (Event.xbutton.button != 1))
-		{
-		  if(!opaque_move)
-		    MoveOutline(Scr.Root, 0, 0, 0, 0);
-		  if (!IS_ICONIFIED(tmp_win))
-		  {
-		    *FinalX = tmp_win->frame_g.x;
-		    *FinalY = tmp_win->frame_g.y;
-		  }
-		  else
-		  {
-		    *FinalX = tmp_win->icon_x_loc;
-		    *FinalY = tmp_win->icon_y_loc;
-		  }
-		  finished = TRUE;
-		}
-	      done = TRUE;
-	      break;
-	    }
-	case ButtonRelease:
-	  if(!opaque_move)
-	    MoveOutline(Scr.Root, 0, 0, 0, 0);
-	  xl2 = Event.xbutton.x_root + XOffset;
-	  yt2 = Event.xbutton.y_root + YOffset;
-	  /* ignore the position of the button release if it was on a
-	   * different page. */
-	  if (!(((xl <  0 && xl2 >= 0) || (xl >= 0 && xl2 <  0) ||
-		 (yt <  0 && yt2 >= 0) || (yt >= 0 && yt2 <  0)) &&
-		(abs(xl - xl2) > Scr.MyDisplayWidth / 2 ||
-		 abs(yt - yt2) > Scr.MyDisplayHeight / 2)))
-	  {
-	    xl = xl2;
-	    yt = yt2;
-	  }
-	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-
-	  /* Resist moving windows over the edge of the screen! */
-	  if(((xl + Width) >= Scr.MyDisplayWidth)&&
-	     ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
-	    xl = Scr.MyDisplayWidth - Width;
-	  if((xl <= 0)&&(xl > -Scr.MoveResistance))
-	    xl = 0;
-	  if(((yt + Height) >= Scr.MyDisplayHeight)&&
-	     ((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
-	    yt = Scr.MyDisplayHeight - Height;
-	  if((yt <= 0)&&(yt > -Scr.MoveResistance))
-	    yt = 0;
-
-	  *FinalX = xl;
-	  *FinalY = yt;
-
-	  done = TRUE;
-	  finished = TRUE;
-	  break;
-
-	case MotionNotify:
-	  xl = Event.xmotion.x_root + XOffset;
-	  yt = Event.xmotion.y_root + YOffset;
-
-	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-
-	  /* Resist moving windows over the edge of the screen! */
-	  if(((xl + Width) >= Scr.MyDisplayWidth)&&
-	     ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
-	    xl = Scr.MyDisplayWidth - Width;
-	  if((xl <= 0)&&(xl > -Scr.MoveResistance))
-	    xl = 0;
-	  if(((yt + Height) >= Scr.MyDisplayHeight)&&
-	     ((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
-	    yt = Scr.MyDisplayHeight - Height;
-	  if((yt <= 0)&&(yt > -Scr.MoveResistance))
-	    yt = 0;
-
-	  /* check Paging request once and only once after outline redrawn */
-	  /* redraw after paging if needed - mab */
-	  paged=0;
-	  while(paged<=1)
-	    {
-	      if(!opaque_move)
-		MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
-	      else
-		{
-		  if (IS_ICONIFIED(tmp_win))
-		    {
-		      tmp_win->icon_x_loc = xl ;
-		      tmp_win->icon_xl_loc = xl -
-			(tmp_win->icon_w_width - tmp_win->icon_p_width)/2;
-		      tmp_win->icon_y_loc = yt;
-		      if(tmp_win->icon_pixmap_w != None)
-			XMoveWindow (dpy, tmp_win->icon_pixmap_w,
-				     tmp_win->icon_x_loc,yt);
-		      else if (tmp_win->icon_w != None)
-			XMoveWindow(dpy, tmp_win->icon_w,tmp_win->icon_xl_loc,
-				    yt+tmp_win->icon_p_height);
-
-		    }
-		  else
-		    {
-		      XMoveWindow(dpy,tmp_win->frame,xl,yt);
-		    }
-		}
-	      DisplayPosition(tmp_win,xl,yt,False);
-
-	      /* prevent window from lagging behind mouse when paging - mab */
-	      if(paged==0)
-		{
-		  xl = Event.xmotion.x_root;
-		  yt = Event.xmotion.y_root;
-  		  HandlePaging(dx, dy, &xl, &yt, &delta_x, &delta_y, False,
-			       False, False);
-		  xl += XOffset;
-		  yt += YOffset;
-		  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
-		  if ( (delta_x==0) && (delta_y==0))
-		    /* break from while (paged)*/
-		    break;
-		}
-	      paged++;
-	    }  /* end while (paged) */
-
-	  done = TRUE;
-	  break;
-
-	default:
-	  break;
-	} /* switch */
-      if(!done)
-	{
-	  DispatchEvent(False);
-	  if(!opaque_move)
-	    MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
-	}
-      if (opaque_move && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
-        {
-	  /* send configure notify event for windows that care about their
-	   * location */
-          XEvent client_event;
-          client_event.type = ConfigureNotify;
-          client_event.xconfigure.display = dpy;
-          client_event.xconfigure.event = tmp_win->w;
-          client_event.xconfigure.window = tmp_win->w;
-          client_event.xconfigure.x = xl + tmp_win->boundary_width;
-          client_event.xconfigure.y = yt + tmp_win->title_g.height +
-	    tmp_win->boundary_width;
-          client_event.xconfigure.width = Width - 2 * tmp_win->boundary_width;
-          client_event.xconfigure.height = Height -
-	    2 * tmp_win->boundary_width - tmp_win->title_g.height;
-          client_event.xconfigure.border_width = 0;
-          /* Real ConfigureNotify events say we're above title window, so... */
-          /* what if we don't have a title ????? */
-          client_event.xconfigure.above = tmp_win->frame;
-          client_event.xconfigure.override_redirect = False;
-          XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask,
-		     &client_event);
-#ifdef FVWM_DEBUG_MSGS
-          fvwm_msg(DBG,"SetupFrame","Sent ConfigureNotify (w == %d, h == %d)",
-                   client_event.xconfigure.width,
-		   client_event.xconfigure.height);
-#endif
-	}
-      if(opaque_move) { /* no point in doing this if server grabbed */
-	if (!IS_ICONIFIED(tmp_win))
-	{
-	  tmp_win_copy.frame_g.x = xl;
-	  tmp_win_copy.frame_g.y = yt;
-	}
-        BroadcastConfig(M_CONFIGURE_WINDOW, &tmp_win_copy);
-        FlushOutputQueues();
+      if (HandlePaging(dx, dy, &xl,&yt, &delta_x,&delta_y, False, False, True))
+      {
+	/* Fake an event to force window reposition */
+	xl += XOffset;
+	yt += YOffset;
+	DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+	Event.type = MotionNotify;
+	Event.xmotion.time = lastTimestamp;
+	Event.xmotion.x_root = xl - XOffset;
+	Event.xmotion.y_root = yt - YOffset;
+	break;
       }
     }
+    StashEventTime(&Event);
+
+    /* discard any extra motion events before a logical release */
+    if (Event.type == MotionNotify)
+    {
+      while(XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
+			    ButtonPressMask |ButtonRelease, &Event))
+      {
+	StashEventTime(&Event);
+	if(Event.type == ButtonRelease || Event.type == ButtonPress)
+	  break;
+      }
+    }
+
+    done = FALSE;
+    /* Handle a limited number of key press events to allow mouseless
+     * operation */
+    if (Event.type == KeyPress)
+      Keyboard_shortcuts(&Event, tmp_win, ButtonRelease);
+    switch(Event.type)
+    {
+    case KeyPress:
+      /* simple code to bag out of move - CKH */
+      if (XLookupKeysym(&(Event.xkey),0) == XK_Escape)
+      {
+	if(!opaque_move)
+	  MoveOutline(Scr.Root, 0, 0, 0, 0);
+	if (!IS_ICONIFIED(tmp_win))
+	{
+	  *FinalX = tmp_win->frame_g.x;
+	  *FinalY = tmp_win->frame_g.y;
+	}
+	else
+	{
+	  *FinalX = tmp_win->icon_x_loc;
+	  *FinalY = tmp_win->icon_y_loc;
+	}
+	finished = TRUE;
+      }
+      done = TRUE;
+      break;
+    case ButtonPress:
+      XAllowEvents(dpy,ReplayPointer,CurrentTime);
+      if (((Event.xbutton.button == 1) && (button_mask & Button1Mask)) ||
+	  ((Event.xbutton.button == 2) && (button_mask & Button2Mask)) ||
+	  ((Event.xbutton.button == 3) && (button_mask & Button3Mask)) ||
+	  ((Event.xbutton.button == 4) && (button_mask & Button4Mask)) ||
+	  ((Event.xbutton.button == 5) && (button_mask & Button5Mask)))
+      {
+	/* No new button was pressed, just a delayed event */
+	done = TRUE;
+	break;
+      }
+      if(((Event.xbutton.button == 2)&&(!Scr.gs.EmulateMWM))||
+	 ((Event.xbutton.button == 1)&&(Scr.gs.EmulateMWM)&&
+	  (Event.xbutton.state & ShiftMask)))
+      {
+	NeedToResizeToo = True;
+	/* Fallthrough to button-release */
+      }
+      else
+      {
+	/* Abort the move if
+	 *  - the move started with a pressed button and another button
+	 *    was pressed during the operation
+	 *  - no button was started at the beginning and any button
+	 *    except button 1 was pressed. */
+	if (button_mask || (Event.xbutton.button != 1))
+	{
+	  if(!opaque_move)
+	    MoveOutline(Scr.Root, 0, 0, 0, 0);
+	  if (!IS_ICONIFIED(tmp_win))
+	  {
+	    *FinalX = tmp_win->frame_g.x;
+	    *FinalY = tmp_win->frame_g.y;
+	  }
+	  else
+	  {
+	    *FinalX = tmp_win->icon_x_loc;
+	    *FinalY = tmp_win->icon_y_loc;
+	  }
+	  finished = TRUE;
+	}
+	done = TRUE;
+	break;
+      }
+    case ButtonRelease:
+      if(!opaque_move)
+	MoveOutline(Scr.Root, 0, 0, 0, 0);
+      xl2 = Event.xbutton.x_root + XOffset;
+      yt2 = Event.xbutton.y_root + YOffset;
+      /* ignore the position of the button release if it was on a
+       * different page. */
+      if (!(((xl <  0 && xl2 >= 0) || (xl >= 0 && xl2 <  0) ||
+	     (yt <  0 && yt2 >= 0) || (yt >= 0 && yt2 <  0)) &&
+	    (abs(xl - xl2) > Scr.MyDisplayWidth / 2 ||
+	     abs(yt - yt2) > Scr.MyDisplayHeight / 2)))
+      {
+	xl = xl2;
+	yt = yt2;
+      }
+      DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+
+      /* Resist moving windows over the edge of the screen! */
+      if(((xl + Width) >= Scr.MyDisplayWidth)&&
+	 ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
+	xl = Scr.MyDisplayWidth - Width;
+      if((xl <= 0)&&(xl > -Scr.MoveResistance))
+	xl = 0;
+      if(((yt + Height) >= Scr.MyDisplayHeight)&&
+	 ((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
+	yt = Scr.MyDisplayHeight - Height;
+      if((yt <= 0)&&(yt > -Scr.MoveResistance))
+	yt = 0;
+
+      *FinalX = xl;
+      *FinalY = yt;
+
+      done = TRUE;
+      finished = TRUE;
+      break;
+
+    case MotionNotify:
+      xl = Event.xmotion.x_root + XOffset;
+      yt = Event.xmotion.y_root + YOffset;
+
+      DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+
+      /* Resist moving windows over the edge of the screen! */
+      if(((xl + Width) >= Scr.MyDisplayWidth)&&
+	 ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
+	xl = Scr.MyDisplayWidth - Width;
+      if((xl <= 0)&&(xl > -Scr.MoveResistance))
+	xl = 0;
+      if(((yt + Height) >= Scr.MyDisplayHeight)&&
+	 ((yt + Height) < Scr.MyDisplayHeight+Scr.MoveResistance))
+	yt = Scr.MyDisplayHeight - Height;
+      if((yt <= 0)&&(yt > -Scr.MoveResistance))
+	yt = 0;
+
+      /* check Paging request once and only once after outline redrawn */
+      /* redraw after paging if needed - mab */
+      paged=0;
+      while(paged<=1)
+      {
+	if(!opaque_move)
+	  MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
+	else
+	{
+	  if (IS_ICONIFIED(tmp_win))
+	  {
+	    tmp_win->icon_x_loc = xl ;
+	    tmp_win->icon_xl_loc = xl -
+	      (tmp_win->icon_w_width - tmp_win->icon_p_width)/2;
+	    tmp_win->icon_y_loc = yt;
+	    if(tmp_win->icon_pixmap_w != None)
+	      XMoveWindow(dpy, tmp_win->icon_pixmap_w, tmp_win->icon_x_loc,yt);
+	    else if (tmp_win->icon_w != None)
+	      XMoveWindow(dpy, tmp_win->icon_w,tmp_win->icon_xl_loc,
+			  yt+tmp_win->icon_p_height);
+	  }
+	  else
+	  {
+	    XMoveWindow(dpy,tmp_win->frame,xl,yt);
+	  }
+	}
+	DisplayPosition(tmp_win,xl,yt,False);
+
+	/* prevent window from lagging behind mouse when paging - mab */
+	if(paged==0)
+	{
+	  xl = Event.xmotion.x_root;
+	  yt = Event.xmotion.y_root;
+	  HandlePaging(
+	    dx, dy, &xl, &yt, &delta_x, &delta_y, False, False, False);
+	  xl += XOffset;
+	  yt += YOffset;
+	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
+	  if ( (delta_x==0) && (delta_y==0))
+	    /* break from while (paged)*/
+	    break;
+	}
+	paged++;
+      }  /* end while (paged) */
+
+      done = TRUE;
+      break;
+
+    default:
+      break;
+    } /* switch */
+    if(!done)
+    {
+      DispatchEvent(False);
+      if(!opaque_move)
+	MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
+    }
+#ifndef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
+    if (opaque_move && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
+    {
+      /* send configure notify event for windows that care about their
+       * location */
+      XEvent client_event;
+      client_event.type = ConfigureNotify;
+      client_event.xconfigure.display = dpy;
+      client_event.xconfigure.event = tmp_win->w;
+      client_event.xconfigure.window = tmp_win->w;
+      client_event.xconfigure.x = xl + tmp_win->boundary_width;
+      client_event.xconfigure.y = yt + tmp_win->title_g.height +
+	tmp_win->boundary_width;
+      client_event.xconfigure.width = Width - 2 * tmp_win->boundary_width;
+      client_event.xconfigure.height = Height -
+	2 * tmp_win->boundary_width - tmp_win->title_g.height;
+      client_event.xconfigure.border_width = 0;
+      /* Real ConfigureNotify events say we're above title window, so... */
+      /* what if we don't have a title ????? */
+      client_event.xconfigure.above = tmp_win->frame;
+      client_event.xconfigure.override_redirect = False;
+      XSendEvent(dpy, tmp_win->w, False, StructureNotifyMask,
+		 &client_event);
+#ifdef FVWM_DEBUG_MSGS
+      fvwm_msg(DBG,"SetupFrame","Sent ConfigureNotify (w == %d, h == %d)",
+	       client_event.xconfigure.width,
+	       client_event.xconfigure.height);
+#endif
+    }
+#endif
+    if(opaque_move)
+    {
+      /* no point in doing this if server grabbed */
+      if (!IS_ICONIFIED(tmp_win))
+      {
+	tmp_win_copy.frame_g.x = xl;
+	tmp_win_copy.frame_g.y = yt;
+      }
+      BroadcastConfig(M_CONFIGURE_WINDOW, &tmp_win_copy);
+      FlushOutputQueues();
+    }
+  }
   if (!NeedToResizeToo)
     /* Don't wait for buttons to come up when user is placing a new window
      * and wants to resize it. */
@@ -996,15 +1010,16 @@ static void DisplayPosition(FvwmWindow *tmp_win, int x, int y,int Init)
 
   (void) sprintf (str, " %+-4d %+-4d ", x, y);
   if(Init)
-    {
-      XClearWindow(dpy,Scr.SizeWindow);
-    }
+  {
+    XClearWindow(dpy,Scr.SizeWindow);
+  }
   else
-    { /* just clear indside the relief lines to reduce flicker */
-      XClearArea(dpy,Scr.SizeWindow,2,2,
-                 Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
-                 Scr.StdFont.height + SIZE_VINDENT*2 - 3,False);
-    }
+  {
+    /* just clear indside the relief lines to reduce flicker */
+    XClearArea(dpy,Scr.SizeWindow,2,2,
+	       Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
+	       Scr.StdFont.height + SIZE_VINDENT*2 - 3,False);
+  }
 
   if(Pdepth >= 2)
     RelieveRectangle(dpy,Scr.SizeWindow,0,0,
@@ -1074,10 +1089,10 @@ void resize_window(F_CMD_ARGS)
   button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
 
   if(check_if_function_allowed(F_RESIZE,tmp_win,True,NULL) == 0)
-    {
-      XBell(dpy, 0);
-      return;
-    }
+  {
+    XBell(dpy, 0);
+    return;
+  }
 
   was_maximized = IS_MAXIMIZED(tmp_win);
   SET_MAXIMIZED(tmp_win, 0);
@@ -1089,57 +1104,57 @@ void resize_window(F_CMD_ARGS)
   /* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
   n = GetSuffixedIntegerArguments(action, NULL, values, 2, "pc", suffix);
   if(n == 2)
+  {
+    int unit_table[3];
+
+    /* convert the value/suffix pairs to pixels */
+    unit_table[0] = Scr.MyDisplayWidth;
+    unit_table[1] = 100;
+    unit_table[2] = 100 * tmp_win->hints.width_inc;
+    drag->width = SuffixToPercentValue(values[0], suffix[0], unit_table);
+    if (suffix[0] == 2)
     {
-      int unit_table[3];
-
-      /* convert the value/suffix pairs to pixels */
-      unit_table[0] = Scr.MyDisplayWidth;
-      unit_table[1] = 100;
-      unit_table[2] = 100 * tmp_win->hints.width_inc;
-      drag->width = SuffixToPercentValue(values[0], suffix[0], unit_table);
-      if (suffix[0] == 2)
-      {
-	/* account for base width */
-	drag->width += tmp_win->hints.base_width;
-      }
-      unit_table[0] = Scr.MyDisplayHeight;
-      unit_table[2] = 100 * tmp_win->hints.height_inc;
-      drag->height = SuffixToPercentValue(values[1], suffix[1], unit_table);
-      if (suffix[1] == 2)
-      {
-	/* account for base height */
-	drag->height += tmp_win->hints.base_height;
-      }
-
-      drag->width += (2*tmp_win->boundary_width);
-      drag->height += (tmp_win->title_g.height + 2*tmp_win->boundary_width);
-
-      /* size will be less or equal to requested */
-      ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
-		    False);
-      if (IS_SHADED(tmp_win))
-	{
-	  tmp_win->orig_g.width = drag->width;
-	  tmp_win->orig_g.height = drag->height;
- 	  SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		     drag->width, tmp_win->frame_g.height,FALSE,False);
-	}
-      else
-	SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		   drag->width, drag->height,FALSE,False);
-      SetBorder(tmp_win,True,True,True,None);
-
-      ResizeWindow = None;
-      return;
+      /* account for base width */
+      drag->width += tmp_win->hints.base_width;
     }
+    unit_table[0] = Scr.MyDisplayHeight;
+    unit_table[2] = 100 * tmp_win->hints.height_inc;
+    drag->height = SuffixToPercentValue(values[1], suffix[1], unit_table);
+    if (suffix[1] == 2)
+    {
+      /* account for base height */
+      drag->height += tmp_win->hints.base_height;
+    }
+
+    drag->width += (2*tmp_win->boundary_width);
+    drag->height += (tmp_win->title_g.height + 2*tmp_win->boundary_width);
+
+    /* size will be less or equal to requested */
+    ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
+		  False);
+    if (IS_SHADED(tmp_win))
+    {
+      tmp_win->orig_g.width = drag->width;
+      tmp_win->orig_g.height = drag->height;
+      SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+		 drag->width, tmp_win->frame_g.height,FALSE,False);
+    }
+    else
+      SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+		 drag->width, drag->height,FALSE,False);
+    SetBorder(tmp_win,True,True,True,None);
+
+    ResizeWindow = None;
+    return;
+  }
 
   InstallRootColormap();
 
   if(!GrabEm(CRS_RESIZE))
-    {
-      XBell(dpy, 0);
-      return;
-    }
+  {
+    XBell(dpy, 0);
+    return;
+  }
 
   MyXGrabServer(dpy);
 
@@ -1151,15 +1166,15 @@ void resize_window(F_CMD_ARGS)
   Scr.flags.edge_wrap_y = 0;
 
   if (IS_SHADED(tmp_win))
-    {
-      drag->x = tmp_win->frame_g.x;
-      drag->y = tmp_win->frame_g.y;
-      drag->width = tmp_win->frame_g.width;
-      if (was_maximized)
-        drag->height = tmp_win->maximized_ht;
-      else
-        drag->height = tmp_win->orig_g.height;
-    }
+  {
+    drag->x = tmp_win->frame_g.x;
+    drag->y = tmp_win->frame_g.y;
+    drag->width = tmp_win->frame_g.width;
+    if (was_maximized)
+      drag->height = tmp_win->maximized_ht;
+    else
+      drag->height = tmp_win->orig_g.height;
+  }
   else
     XGetGeometry(dpy, (Drawable) ResizeWindow, &JunkRoot,
 		 &drag->x, &drag->y, (unsigned int *)&drag->width,
@@ -1176,278 +1191,272 @@ void resize_window(F_CMD_ARGS)
   DisplaySize(tmp_win, orig->width, orig->height,True,True);
 
   if((PressedW != Scr.Root)&&(PressedW != None))
+  {
+    /* Get the current position to determine which border to resize */
+    if(PressedW == tmp_win->sides[0])   /* top */
+      ymotion = 1;
+    else if(PressedW == tmp_win->sides[1])  /* right */
+      xmotion = -1;
+    else if(PressedW == tmp_win->sides[2])  /* bottom */
+      ymotion = -1;
+    else if(PressedW == tmp_win->sides[3])  /* left */
+      xmotion = 1;
+    else if(PressedW == tmp_win->corners[0])  /* upper-left */
     {
-      /* Get the current position to determine which border to resize */
-      if(PressedW == tmp_win->sides[0])   /* top */
-	ymotion = 1;
-      else if(PressedW == tmp_win->sides[1])  /* right */
-	xmotion = -1;
-      else if(PressedW == tmp_win->sides[2])  /* bottom */
-	ymotion = -1;
-      else if(PressedW == tmp_win->sides[3])  /* left */
-	xmotion = 1;
-      else if(PressedW == tmp_win->corners[0])  /* upper-left */
-	{
-	  ymotion = 1;
-	  xmotion = 1;
-	}
-      else if(PressedW == tmp_win->corners[1])  /* upper-right */
-	{
-	  xmotion = -1;
-	  ymotion = 1;
-	}
-      else if(PressedW == tmp_win->corners[2]) /* lower left */
-	{
-	  ymotion = -1;
-	  xmotion = 1;
-	}
-      else if(PressedW == tmp_win->corners[3])  /* lower right */
-	{
-	  ymotion = -1;
-	  xmotion = -1;
-	}
+      ymotion = 1;
+      xmotion = 1;
     }
-#ifndef NO_EXPERIMENTAL_RESIZE
+    else if(PressedW == tmp_win->corners[1])  /* upper-right */
+    {
+      xmotion = -1;
+      ymotion = 1;
+    }
+    else if(PressedW == tmp_win->corners[2]) /* lower left */
+    {
+      ymotion = -1;
+      xmotion = 1;
+    }
+    else if(PressedW == tmp_win->corners[3])  /* lower right */
+    {
+      ymotion = -1;
+      xmotion = -1;
+    }
+  }
+
+  /* begin of code responsible for warping the pointer to the border when
+   * starting a resize. */
   if (tmp_win->title_w != None && PressedW == tmp_win->title_w)
   {
+    /* title was pressed to thart the resize */
     called_from_title = True;
   }
   else
   {
     for (i = 5; i--; )
     {
+      /* see if the title button was pressed to that the resize */
       if ((tmp_win->left_w[i] != None && PressedW == tmp_win->left_w[i]) ||
 	  (tmp_win->right_w[i] != None && PressedW == tmp_win->right_w[i]))
       {
+	/* yes */
 	called_from_title = True;
       }
     }
   }
+  /* don't warp if the resize was triggered by a press somwhere on the title
+   * bar */
   if(PressedW != Scr.Root && xmotion == 0 && ymotion == 0 &&
      !called_from_title)
-    {
-      int dx = orig->width - px;
-      int dy = orig->height - py;
-      int wx = -1;
-      int wy = -1;
-      int tx;
-      int ty;
+  {
+    int dx = orig->width - px;
+    int dy = orig->height - py;
+    int wx = -1;
+    int wy = -1;
+    int tx;
+    int ty;
 
-#ifdef DONT_USE_RESIZE_SECTORS
-      tx = orig->width / 7 - 1;
-      if (tx < 20)
+    /* Now find the place to warp to. We Simply use the sectors drawn when we
+     * start resizing the window. */
+    tx = orig->width / 3 - 1;
+    ty = orig->height / 3 - 1;
+    if (px >= 0 && dx >= 0 && py >= 0 && dy >= 0)
+    {
+      if (px < tx)
       {
-	tx = orig->width / 4 - 1;
-	if (tx > 20)
-	  tx = 20;
-      }
-      ty = orig->height / 7 - 1;
-      if (ty < 20)
-      {
-	ty = orig->height / 4 - 1;
-	if (ty > 20)
-	  ty = 20;
-      }
-#else
-      tx = orig->width / 3 - 1;
-      ty = orig->height / 3 - 1;
-#endif
-      if (px >= 0 && dx >= 0 && py >= 0 && dy >= 0)
-      {
-	if (px < tx)
+	if (py < ty)
 	{
-	  if (py < ty)
-	  {
-	    xmotion = 1;
-	    ymotion = 1;
-	    wx = 0;
-	    wy = 0;
-	  }
-	  else if (dy < ty)
-	  {
-	    xmotion = 1;
-	    ymotion = -1;
-	    wx = 0;
-	    wy = orig->height -1;
-	  }
-	  else
-	  {
-	    xmotion = 1;
-	    wx = 0;
-	    wy = orig->height/2;
-	  }
+	  xmotion = 1;
+	  ymotion = 1;
+	  wx = 0;
+	  wy = 0;
 	}
-	else if (dx < tx)
+	else if (dy < ty)
 	{
-	  if (py < ty)
-	  {
-	    xmotion = -1;
-	    ymotion = 1;
-	    wx = orig->width - 1;
-	    wy = 0;
-	  }
-	  else if (dy < ty)
-	  {
-	    xmotion = -1;
-	    ymotion = -1;
-	    wx = orig->width - 1;
-	    wy = orig->height -1;
-	  }
-	  else
-	  {
-	    xmotion = -1;
-	    wx = orig->width - 1;
-	    wy = orig->height/2;
-	  }
+	  xmotion = 1;
+	  ymotion = -1;
+	  wx = 0;
+	  wy = orig->height -1;
 	}
 	else
 	{
-	  if (py < ty)
-	  {
-	    ymotion = 1;
-	    wx = orig->width/2;
-	    wy = 0;
-	  }
-	  else if (dy < ty)
-	  {
-	    ymotion = -1;
-	    wx = orig->width/2;
-	    wy = orig->height -1;
-	  }
+	  xmotion = 1;
+	  wx = 0;
+	  wy = orig->height/2;
 	}
       }
-
-      if (wx != -1)
+      else if (dx < tx)
+      {
+	if (py < ty)
 	{
-	  XWarpPointer(dpy, None, ResizeWindow, 0, 0, 1, 1, wx, wy);
-	  XFlush(dpy);
+	  xmotion = -1;
+	  ymotion = 1;
+	  wx = orig->width - 1;
+	  wy = 0;
 	}
+	else if (dy < ty)
+	{
+	  xmotion = -1;
+	  ymotion = -1;
+	  wx = orig->width - 1;
+	  wy = orig->height -1;
+	}
+	else
+	{
+	  xmotion = -1;
+	  wx = orig->width - 1;
+	  wy = orig->height/2;
+	}
+      }
+      else
+      {
+	if (py < ty)
+	{
+	  ymotion = 1;
+	  wx = orig->width/2;
+	  wy = 0;
+	}
+	else if (dy < ty)
+	{
+	  ymotion = -1;
+	  wx = orig->width/2;
+	  wy = orig->height -1;
+	}
+      }
     }
-#endif
+
+    if (wx != -1)
+    {
+      /* now warp the pointer to the border */
+      XWarpPointer(dpy, None, ResizeWindow, 0, 0, 1, 1, wx, wy);
+      XFlush(dpy);
+    }
+  }
+  /* end of code responsible for warping the pointer to the border when
+   * starting a resize. */
 
   /* draw the rubber-band window */
   MoveOutline(Scr.Root, drag->x, drag->y, drag->width - 1, drag->height - 1);
   /* kick off resizing without requiring any motion if invoked with a key
    * press */
   if (eventp->type == KeyPress)
-    {
-      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-                    &stashed_x,&stashed_y,&JunkX, &JunkY, &JunkMask);
-      DoResize(stashed_x, stashed_y, tmp_win, drag, orig, &xmotion, &ymotion);
-    }
+  {
+    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		  &stashed_x,&stashed_y,&JunkX, &JunkY, &JunkMask);
+    DoResize(stashed_x, stashed_y, tmp_win, drag, orig, &xmotion, &ymotion);
+  }
   else
     stashed_x = stashed_y = -1;
 
   /* loop to resize */
   while(!finished)
+  {
+    /* block until there is an interesting event */
+    while (!XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
+			    KeyPressMask | PointerMotionMask |
+			    ButtonMotionMask | ExposureMask, &Event))
     {
-      /* block until there is an interesting event */
-      while (!XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
-			      KeyPressMask | PointerMotionMask |
-			      ButtonMotionMask | ExposureMask, &Event))
-	{
-	  if (HandlePaging(Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
-			   &delta_x, &delta_y, False, False, True))
-	    {
-	      /* Fake an event to force window reposition */
-	      Event.type = MotionNotify;
-	      Event.xmotion.time = lastTimestamp;
-	      fForceRedraw = True;
-	      break;
-	    }
-	}
-      StashEventTime(&Event);
-
-      if (Event.type == MotionNotify)
-	/* discard any extra motion events before a release */
-	while(XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
-			      ButtonReleaseMask | ButtonPressMask, &Event))
-	  {
-	    StashEventTime(&Event);
-	    if (Event.type == ButtonRelease || Event.type == ButtonPress)
-	      break;
-	  }
-
-      done = FALSE;
-      /* Handle a limited number of key press events to allow mouseless
-       * operation */
-      if(Event.type == KeyPress)
-	Keyboard_shortcuts(&Event, tmp_win, ButtonRelease);
-      switch(Event.type)
-	{
-	case ButtonPress:
-	  XAllowEvents(dpy,ReplayPointer,CurrentTime);
-	  done = TRUE;
-	  if (((Event.xbutton.button == 1) && (button_mask & Button1Mask)) ||
-	      ((Event.xbutton.button == 2) && (button_mask & Button2Mask)) ||
-	      ((Event.xbutton.button == 3) && (button_mask & Button3Mask)) ||
-	      ((Event.xbutton.button == 4) && (button_mask & Button4Mask)) ||
-	      ((Event.xbutton.button == 5) && (button_mask & Button5Mask)))
-	    {
-	      /* No new button was pressed, just a delayed event */
-	      break;
-	    }
-	  /* Abort the resize if
-	   *  - the move started with a pressed button and another button
-	   *    was pressed during the operation
-	   *  - no button was started at the beginning and any button
-	   *    except button 1 was pressed. */
-	  if (button_mask || (Event.xbutton.button != 1))
-	    fButtonAbort = TRUE;
-	case KeyPress:
-	  /* simple code to bag out of move - CKH */
-	  if (XLookupKeysym(&(Event.xkey),0) == XK_Escape || fButtonAbort)
-	    {
-	      abort = TRUE;
-	      finished = TRUE;
-	      /* return pointer if aborted resize was invoked with key */
-	      if (stashed_x >= 0)
-	        XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, stashed_x,
-			     stashed_y);
-	    }
-	  done = TRUE;
-	  break;
-
-	case ButtonRelease:
-	  finished = TRUE;
-	  done = TRUE;
-	  break;
-
-	case MotionNotify:
-	  if (!fForceRedraw)
-	    {
-	      x = Event.xmotion.x_root;
-	      y = Event.xmotion.y_root;
-	      /* resize before paging request to prevent resize from lagging
-	       * mouse - mab */
-	      DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion);
-	      /* need to move the viewport */
-	      HandlePaging(Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
-			   &delta_x, &delta_y, False, False, False);
-	    }
-	  /* redraw outline if we paged - mab */
-	  if ( (delta_x != 0) || (delta_y != 0) )
-	  {
-	    orig->x -= delta_x;
-	    orig->y -= delta_y;
-	    drag->x -= delta_x;
-	    drag->y -= delta_y;
-
-	    DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion);
-	  }
-	  fForceRedraw = False;
-	  done = TRUE;
-	default:
-	  break;
-	}
-      if(!done)
-	{
-	  DispatchEvent(False);
-	  MoveOutline(Scr.Root, drag->x, drag->y,
-		      drag->width - 1,
-		      drag->height - 1);
-	}
+      if (HandlePaging(Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
+		       &delta_x, &delta_y, False, False, True))
+      {
+	/* Fake an event to force window reposition */
+	Event.type = MotionNotify;
+	Event.xmotion.time = lastTimestamp;
+	fForceRedraw = True;
+	break;
+      }
     }
+    StashEventTime(&Event);
+
+    if (Event.type == MotionNotify)
+      /* discard any extra motion events before a release */
+      while(XCheckMaskEvent(dpy, ButtonMotionMask | PointerMotionMask |
+			    ButtonReleaseMask | ButtonPressMask, &Event))
+      {
+	StashEventTime(&Event);
+	if (Event.type == ButtonRelease || Event.type == ButtonPress)
+	  break;
+      }
+
+    done = FALSE;
+    /* Handle a limited number of key press events to allow mouseless
+     * operation */
+    if(Event.type == KeyPress)
+      Keyboard_shortcuts(&Event, tmp_win, ButtonRelease);
+    switch(Event.type)
+    {
+    case ButtonPress:
+      XAllowEvents(dpy,ReplayPointer,CurrentTime);
+      done = TRUE;
+      if (((Event.xbutton.button == 1) && (button_mask & Button1Mask)) ||
+	  ((Event.xbutton.button == 2) && (button_mask & Button2Mask)) ||
+	  ((Event.xbutton.button == 3) && (button_mask & Button3Mask)) ||
+	  ((Event.xbutton.button == 4) && (button_mask & Button4Mask)) ||
+	  ((Event.xbutton.button == 5) && (button_mask & Button5Mask)))
+      {
+	/* No new button was pressed, just a delayed event */
+	break;
+      }
+      /* Abort the resize if
+       *  - the move started with a pressed button and another button
+       *    was pressed during the operation
+       *  - no button was started at the beginning and any button
+       *    except button 1 was pressed. */
+      if (button_mask || (Event.xbutton.button != 1))
+	fButtonAbort = TRUE;
+    case KeyPress:
+      /* simple code to bag out of move - CKH */
+      if (XLookupKeysym(&(Event.xkey),0) == XK_Escape || fButtonAbort)
+      {
+	abort = TRUE;
+	finished = TRUE;
+	/* return pointer if aborted resize was invoked with key */
+	if (stashed_x >= 0)
+	  XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, stashed_x,
+		       stashed_y);
+      }
+      done = TRUE;
+      break;
+
+    case ButtonRelease:
+      finished = TRUE;
+      done = TRUE;
+      break;
+
+    case MotionNotify:
+      if (!fForceRedraw)
+      {
+	x = Event.xmotion.x_root;
+	y = Event.xmotion.y_root;
+	/* resize before paging request to prevent resize from lagging
+	 * mouse - mab */
+	DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion);
+	/* need to move the viewport */
+	HandlePaging(Scr.EdgeScrollX, Scr.EdgeScrollY, &x, &y,
+		     &delta_x, &delta_y, False, False, False);
+      }
+      /* redraw outline if we paged - mab */
+      if ( (delta_x != 0) || (delta_y != 0) )
+      {
+	orig->x -= delta_x;
+	orig->y -= delta_y;
+	drag->x -= delta_x;
+	drag->y -= delta_y;
+
+	DoResize(x, y, tmp_win, drag, orig, &xmotion, &ymotion);
+      }
+      fForceRedraw = False;
+      done = TRUE;
+    default:
+      break;
+    }
+    if(!done)
+    {
+      DispatchEvent(False);
+      MoveOutline(Scr.Root, drag->x, drag->y,
+		  drag->width - 1,
+		  drag->height - 1);
+    }
+  }
 
   /* erase the rubber-band */
   MoveOutline(Scr.Root, 0, 0, 0, 0);
@@ -1456,20 +1465,20 @@ void resize_window(F_CMD_ARGS)
   XUnmapWindow(dpy, Scr.SizeWindow);
 
   if(!abort)
+  {
+    /* size will be >= to requested */
+    ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
+		  True);
+    if (IS_SHADED(tmp_win))
     {
-      /* size will be >= to requested */
-      ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
-		    True);
-       if (IS_SHADED(tmp_win))
-       {
-         SetupFrame(tmp_win, drag->x, drag->y,
-		    drag->width, tmp_win->frame_g.height, FALSE, False);
-         tmp_win->orig_g.height = drag->height;
-       }
-      else
-	SetupFrame(tmp_win, drag->x, drag->y, drag->width, drag->height,
-		   FALSE, False);
+      SetupFrame(tmp_win, drag->x, drag->y,
+		 drag->width, tmp_win->frame_g.height, FALSE, False);
+      tmp_win->orig_g.height = drag->height;
     }
+    else
+      SetupFrame(tmp_win, drag->x, drag->y, drag->width, drag->height,
+		 FALSE, False);
+  }
   UninstallRootColormap();
   ResizeWindow = None;
   MyXUngrabServer(dpy);
@@ -1509,52 +1518,52 @@ static void DoResize(int x_root, int y_root, FvwmWindow *tmp_win,
 
   if ((y_root <= orig->y) ||
       ((*ymotionp == 1)&&(y_root < orig->y+orig->height-1)))
-    {
-      drag->y = y_root;
-      drag->height = orig->y + orig->height - y_root;
-      action = 1;
-      *ymotionp = 1;
-    }
+  {
+    drag->y = y_root;
+    drag->height = orig->y + orig->height - y_root;
+    action = 1;
+    *ymotionp = 1;
+  }
   else if ((y_root >= orig->y + orig->height - 1)||
 	   ((*ymotionp == -1)&&(y_root > orig->y)))
-    {
-      drag->y = orig->y;
-      drag->height = 1 + y_root - drag->y;
-      action = 1;
-      *ymotionp = -1;
-    }
+  {
+    drag->y = orig->y;
+    drag->height = 1 + y_root - drag->y;
+    action = 1;
+    *ymotionp = -1;
+  }
 
   if ((x_root <= orig->x)||
       ((*xmotionp == 1)&&(x_root < orig->x + orig->width - 1)))
-    {
-      drag->x = x_root;
-      drag->width = orig->x + orig->width - x_root;
-      action = 1;
-      *xmotionp = 1;
-    }
+  {
+    drag->x = x_root;
+    drag->width = orig->x + orig->width - x_root;
+    action = 1;
+    *xmotionp = 1;
+  }
   if ((x_root >= orig->x + orig->width - 1)||
     ((*xmotionp == -1)&&(x_root > orig->x)))
-    {
-      drag->x = orig->x;
-      drag->width = 1 + x_root - orig->x;
-      action = 1;
-      *xmotionp = -1;
-    }
+  {
+    drag->x = orig->x;
+    drag->width = 1 + x_root - orig->x;
+    action = 1;
+    *xmotionp = -1;
+  }
 
   if (action)
-    {
-      /* round up to nearest OK size to keep pointer inside rubberband */
-      ConstrainSize(tmp_win, &drag->width, &drag->height, *xmotionp, *ymotionp,
-		    True);
-      if (*xmotionp == 1)
-	drag->x = orig->x + orig->width - drag->width;
-      if (*ymotionp == 1)
-	drag->y = orig->y + orig->height - drag->height;
+  {
+    /* round up to nearest OK size to keep pointer inside rubberband */
+    ConstrainSize(tmp_win, &drag->width, &drag->height, *xmotionp, *ymotionp,
+		  True);
+    if (*xmotionp == 1)
+      drag->x = orig->x + orig->width - drag->width;
+    if (*ymotionp == 1)
+      drag->y = orig->y + orig->height - drag->height;
 
-      MoveOutline(Scr.Root, drag->x, drag->y,
-		  drag->width - 1,
-		  drag->height - 1);
-    }
+    MoveOutline(Scr.Root, drag->x, drag->y,
+		drag->width - 1,
+		drag->height - 1);
+  }
   DisplaySize(tmp_win, drag->width, drag->height,False,False);
 }
 
@@ -1600,15 +1609,16 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
 
   (void) sprintf (str, " %4d x %-4d ", dwidth, dheight);
   if(Init)
-    {
-      XClearWindow(dpy,Scr.SizeWindow);
-    }
+  {
+    XClearWindow(dpy,Scr.SizeWindow);
+  }
   else
-    { /* just clear indside the relief lines to reduce flicker */
-      XClearArea(dpy,Scr.SizeWindow,2,2,
-                 Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
-                 Scr.StdFont.height + SIZE_VINDENT*2 - 3,False);
-    }
+  {
+    /* just clear indside the relief lines to reduce flicker */
+    XClearArea(dpy,Scr.SizeWindow,2,2,
+	       Scr.SizeStringWidth + SIZE_HINDENT*2 - 3,
+	       Scr.StdFont.height + SIZE_VINDENT*2 - 3,False);
+  }
 
   if(Pdepth >= 2)
     RelieveRectangle(dpy,Scr.SizeWindow,0,0,
@@ -1643,195 +1653,201 @@ void ConstrainSize(
   int xmotion, int ymotion, Bool roundUp)
 {
 #define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
-    int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
-    int baseWidth, baseHeight;
-    int dwidth = *widthp, dheight = *heightp;
-    int roundUpX, roundUpY;
+  int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
+  int baseWidth, baseHeight;
+  int dwidth = *widthp, dheight = *heightp;
+  int roundUpX, roundUpY;
 
-    dwidth -= 2 *tmp_win->boundary_width;
-    dheight -= (tmp_win->title_g.height + 2 * tmp_win->boundary_width);
+  dwidth -= 2 *tmp_win->boundary_width;
+  dheight -= (tmp_win->title_g.height + 2 * tmp_win->boundary_width);
 
-    minWidth = tmp_win->hints.min_width;
-    minHeight = tmp_win->hints.min_height;
+  minWidth = tmp_win->hints.min_width;
+  minHeight = tmp_win->hints.min_height;
 
-    maxWidth = tmp_win->hints.max_width;
-    maxHeight =  tmp_win->hints.max_height;
+  maxWidth = tmp_win->hints.max_width;
+  maxHeight =  tmp_win->hints.max_height;
 
-    if (maxWidth > tmp_win->max_window_width - 2 * tmp_win->boundary_width)
-    {
-      maxWidth = tmp_win->max_window_width - 2 * tmp_win->boundary_width;
-    }
-    if (maxHeight > tmp_win->max_window_height - 2*tmp_win->boundary_width -
-	tmp_win->title_g.height)
-    {
-      maxHeight =
-	tmp_win->max_window_height - 2*tmp_win->boundary_width -
-	tmp_win->title_g.height;
-    }
+  if (maxWidth > tmp_win->max_window_width - 2 * tmp_win->boundary_width)
+  {
+    maxWidth = tmp_win->max_window_width - 2 * tmp_win->boundary_width;
+  }
+  if (maxHeight > tmp_win->max_window_height - 2*tmp_win->boundary_width -
+      tmp_win->title_g.height)
+  {
+    maxHeight =
+      tmp_win->max_window_height - 2*tmp_win->boundary_width -
+      tmp_win->title_g.height;
+  }
 
-    baseWidth = tmp_win->hints.base_width;
-    baseHeight = tmp_win->hints.base_height;
+  baseWidth = tmp_win->hints.base_width;
+  baseHeight = tmp_win->hints.base_height;
 
-    xinc = tmp_win->hints.width_inc;
-    yinc = tmp_win->hints.height_inc;
+  xinc = tmp_win->hints.width_inc;
+  yinc = tmp_win->hints.height_inc;
 
-    /*
-     * First, clamp to min and max values
-     */
-    if (dwidth < minWidth)
-      dwidth = minWidth;
-    if (dheight < minHeight)
-      dheight = minHeight;
+  /*
+   * First, clamp to min and max values
+   */
+  if (dwidth < minWidth)
+    dwidth = minWidth;
+  if (dheight < minHeight)
+    dheight = minHeight;
 
-    if (dwidth > maxWidth)
-      dwidth = maxWidth;
-    if (dheight > maxHeight)
-      dheight = maxHeight;
+  if (dwidth > maxWidth)
+    dwidth = maxWidth;
+  if (dheight > maxHeight)
+    dheight = maxHeight;
 
 
-    /*
-     * Second, round to base + N * inc (up or down depending on resize type)
-     * if rounding up store amount
-     */
-    if (!roundUp) {
-      dwidth = (((dwidth - baseWidth) / xinc) * xinc) + baseWidth;
-      dheight = (((dheight - baseHeight) / yinc) * yinc) + baseHeight;
-    } else {
-      roundUpX = dwidth;
-      roundUpY = dheight;
-      dwidth = (((dwidth - baseWidth + xinc - 1) / xinc) * xinc) + baseWidth;
-      dheight = (((dheight - baseHeight + yinc - 1) / yinc) * yinc) + baseHeight;
-      roundUpX = dwidth - roundUpX;
-      roundUpY = dheight - roundUpY;
-    }
+  /*
+   * Second, round to base + N * inc (up or down depending on resize type)
+   * if rounding up store amount
+   */
+  if (!roundUp)
+  {
+    dwidth = (((dwidth - baseWidth) / xinc) * xinc) + baseWidth;
+    dheight = (((dheight - baseHeight) / yinc) * yinc) + baseHeight;
+  }
+  else
+  {
+    roundUpX = dwidth;
+    roundUpY = dheight;
+    dwidth = (((dwidth - baseWidth + xinc - 1) / xinc) * xinc) + baseWidth;
+    dheight = (((dheight - baseHeight + yinc - 1) / yinc) * yinc) +
+      baseHeight;
+    roundUpX = dwidth - roundUpX;
+    roundUpY = dheight - roundUpY;
+  }
 
-    /* 
-     * Step 2a: check we didn't move the edge off screen in interactive moves
-     */
-    if (roundUp && Event.type == MotionNotify) {
-      if (xmotion > 0 && Event.xmotion.x_root < roundUpX)
-	dwidth -= xinc;
-      else if (xmotion < 0 && Event.xmotion.x_root >= Scr.MyDisplayWidth - roundUpX)
-	dwidth -= xinc;
-      if (ymotion > 0 && Event.xmotion.y_root < roundUpY)
-	dheight -= yinc;
-      else if (ymotion < 0 && Event.xmotion.y_root >= Scr.MyDisplayHeight - roundUpY)
-	dheight -= yinc;
-    }
-
-    /*
-     * Step 2b: Check that we didn't violate min and max.
-     */
-    if (dwidth < minWidth)
-      dwidth += xinc;
-    if (dheight < minHeight)
-      dheight += yinc;
-    if (dwidth > maxWidth)
+  /*
+   * Step 2a: check we didn't move the edge off screen in interactive moves
+   */
+  if (roundUp && Event.type == MotionNotify)
+  {
+    if (xmotion > 0 && Event.xmotion.x_root < roundUpX)
       dwidth -= xinc;
-    if (dheight > maxHeight)
+    else if (xmotion < 0 &&
+	     Event.xmotion.x_root >= Scr.MyDisplayWidth - roundUpX)
+      dwidth -= xinc;
+    if (ymotion > 0 && Event.xmotion.y_root < roundUpY)
       dheight -= yinc;
+    else if (ymotion < 0 &&
+	     Event.xmotion.y_root >= Scr.MyDisplayHeight - roundUpY)
+      dheight -= yinc;
+  }
 
-    /*
-     * Third, adjust for aspect ratio
-     */
+  /*
+   * Step 2b: Check that we didn't violate min and max.
+   */
+  if (dwidth < minWidth)
+    dwidth += xinc;
+  if (dheight < minHeight)
+    dheight += yinc;
+  if (dwidth > maxWidth)
+    dwidth -= xinc;
+  if (dheight > maxHeight)
+    dheight -= yinc;
+
+  /*
+   * Third, adjust for aspect ratio
+   */
 #define maxAspectX tmp_win->hints.max_aspect.x
 #define maxAspectY tmp_win->hints.max_aspect.y
 #define minAspectX tmp_win->hints.min_aspect.x
 #define minAspectY tmp_win->hints.min_aspect.y
-    /*
-     * The math looks like this:
-     *
-     * minAspectX    dwidth     maxAspectX
-     * ---------- <= ------- <= ----------
-     * minAspectY    dheight    maxAspectY
-     *
-     * If that is multiplied out, then the width and height are
-     * invalid in the following situations:
-     *
-     * minAspectX * dheight > minAspectY * dwidth
-     * maxAspectX * dheight < maxAspectY * dwidth
-     *
-     */
+  /*
+   * The math looks like this:
+   *
+   * minAspectX    dwidth     maxAspectX
+   * ---------- <= ------- <= ----------
+   * minAspectY    dheight    maxAspectY
+   *
+   * If that is multiplied out, then the width and height are
+   * invalid in the following situations:
+   *
+   * minAspectX * dheight > minAspectY * dwidth
+   * maxAspectX * dheight < maxAspectY * dwidth
+   *
+   */
 
-    if (tmp_win->hints.flags & PAspect)
+  if (tmp_win->hints.flags & PAspect)
+  {
+
+    if (tmp_win->hints.flags & PBaseSize)
+    {
+      /*
+	ICCCM 2 demands that aspect ratio should apply
+	to width - base_width. To prevent funny results,
+	we reset PBaseSize in GetWindowSizeHints, if
+	base is not smaller than min.
+      */
+      dwidth -= baseWidth;
+      maxWidth -= baseWidth;
+      minWidth -= baseWidth;
+      dheight -= baseHeight;
+      maxHeight -= baseHeight;
+      minHeight -= baseHeight;
+    }
+
+    if ((minAspectX * dheight > minAspectY * dwidth)&&(xmotion == 0))
+    {
+      /* Change width to match */
+      delta = MAKEMULT(minAspectX * dheight / minAspectY - dwidth,
+		       xinc);
+      if (dwidth + delta <= maxWidth)
+	dwidth += delta;
+    }
+    if (minAspectX * dheight > minAspectY * dwidth)
+    {
+      delta = MAKEMULT(dheight - dwidth*minAspectY/minAspectX,
+		       yinc);
+      if (dheight - delta >= minHeight)
+	dheight -= delta;
+      else
       {
-
-	if (tmp_win->hints.flags & PBaseSize)
-	  {
-	    /*
-               ICCCM 2 demands that aspect ratio should apply
-	       to width - base_width. To prevent funny results,
-	       we reset PBaseSize in GetWindowSizeHints, if
-	       base is not smaller than min.
-	     */
-	    dwidth -= baseWidth;
-	    maxWidth -= baseWidth;
-	    minWidth -= baseWidth;
-	    dheight -= baseHeight;
-	    maxHeight -= baseHeight;
-	    minHeight -= baseHeight;
-	  }
-
-	if ((minAspectX * dheight > minAspectY * dwidth)&&(xmotion == 0))
-	  {
-	    /* Change width to match */
-	    delta = MAKEMULT(minAspectX * dheight / minAspectY - dwidth,
-			     xinc);
-	    if (dwidth + delta <= maxWidth)
-	      dwidth += delta;
-	  }
-	if (minAspectX * dheight > minAspectY * dwidth)
-	  {
-	    delta = MAKEMULT(dheight - dwidth*minAspectY/minAspectX,
-			     yinc);
-	    if (dheight - delta >= minHeight)
-	      dheight -= delta;
-	    else
-	      {
-		delta = MAKEMULT(minAspectX*dheight / minAspectY - dwidth,
-				 xinc);
-		if (dwidth + delta <= maxWidth)
-		  dwidth += delta;
-	      }
-	  }
-
-        if ((maxAspectX * dheight < maxAspectY * dwidth)&&(ymotion == 0))
-	  {
-            delta = MAKEMULT(dwidth * maxAspectY / maxAspectX - dheight,
-                             yinc);
-            if (dheight + delta <= maxHeight)
-	      dheight += delta;
-	  }
-        if ((maxAspectX * dheight < maxAspectY * dwidth))
-	  {
-	    delta = MAKEMULT(dwidth - maxAspectX*dheight/maxAspectY,
-			     xinc);
-	    if (dwidth - delta >= minWidth)
-		dwidth -= delta;
-	    else
-	      {
-		delta = MAKEMULT(dwidth * maxAspectY / maxAspectX - dheight,
-				 yinc);
-		if (dheight + delta <= maxHeight)
-		  dheight += delta;
-	      }
-	  }
-
-	if (tmp_win->hints.flags & PBaseSize)
-	  {
-	    dwidth += baseWidth;
-	    dheight += baseHeight;
-	  }
+	delta = MAKEMULT(minAspectX*dheight / minAspectY - dwidth,
+			 xinc);
+	if (dwidth + delta <= maxWidth)
+	  dwidth += delta;
       }
+    }
+
+    if ((maxAspectX * dheight < maxAspectY * dwidth)&&(ymotion == 0))
+    {
+      delta = MAKEMULT(dwidth * maxAspectY / maxAspectX - dheight,
+		       yinc);
+      if (dheight + delta <= maxHeight)
+	dheight += delta;
+    }
+    if ((maxAspectX * dheight < maxAspectY * dwidth))
+    {
+      delta = MAKEMULT(dwidth - maxAspectX*dheight/maxAspectY,
+		       xinc);
+      if (dwidth - delta >= minWidth)
+	dwidth -= delta;
+      else
+      {
+	delta = MAKEMULT(dwidth * maxAspectY / maxAspectX - dheight, yinc);
+	if (dheight + delta <= maxHeight)
+	  dheight += delta;
+      }
+    }
+
+    if (tmp_win->hints.flags & PBaseSize)
+    {
+      dwidth += baseWidth;
+      dheight += baseHeight;
+    }
+  }
 
 
-    /*
-     * Fourth, account for border width and title height
-     */
-    *widthp = dwidth + 2*tmp_win->boundary_width;
-    *heightp = dheight + tmp_win->title_g.height + 2*tmp_win->boundary_width;
+  /*
+   * Fourth, account for border width and title height
+   */
+  *widthp = dwidth + 2*tmp_win->boundary_width;
+  *heightp = dheight + tmp_win->title_g.height + 2*tmp_win->boundary_width;
 
-    return;
+  return;
 }
 
 
@@ -1891,11 +1907,11 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
   }
 
   /* undraw the old one, if any */
-    if (lastWidth || lastHeight)
+  if (lastWidth || lastHeight)
+  {
+    int i;
+    for (i=0; i < 4; i++)
     {
-      int i;
-      for (i=0; i < 4; i++)
-      {
       rects[i * interleave + offset].x = lastx + i;
       rects[i * interleave + offset].y = lasty + i;
       rects[i * interleave + offset].width = lastWidth - (i << 1);
@@ -1907,7 +1923,7 @@ void MoveOutline(Window root, int x, int  y, int  width, int height)
     rects[4 * interleave + offset].y = lasty+3;
     rects[4 * interleave + offset].width = (lastWidth-6)/3;
     rects[4 * interleave + offset].height = (lastHeight-6);
-    }
+  }
 
   XDrawRectangles(dpy,Scr.Root,Scr.DrawGC,rects,interleave * 5);
 
@@ -1976,21 +1992,25 @@ static void MaximizeHeight(FvwmWindow *win, unsigned int win_width, int win_x,
   new_y1 = truncate_to_multiple(y11, Scr.MyDisplayHeight);
   new_y2 = new_y1 + Scr.MyDisplayHeight;
 
-  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
+  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
+  {
     if (IS_STICKY(cwin) || (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
       is_sticky = True;
     else
       is_sticky = False;
     if (cwin == win || (cwin->Desk != win->Desk && !is_sticky))
       continue;
-    if (IS_ICONIFIED(cwin)) {
+    if (IS_ICONIFIED(cwin))
+    {
       if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
 	continue;
       x21 = cwin->icon_x_loc;
       y21 = cwin->icon_y_loc;
       x22 = x21 + cwin->icon_p_width;
       y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
-    } else {
+    }
+    else
+    {
       x21 = cwin->frame_g.x;
       y21 = cwin->frame_g.y;
       x22 = x21 + cwin->frame_g.width;
@@ -2003,10 +2023,14 @@ static void MaximizeHeight(FvwmWindow *win, unsigned int win_width, int win_x,
     }
 
     /* Are they in the same X space? */
-    if (!((x22 <= x11) || (x21 >= x12))) {
-      if ((y22 <= y11) && (y22 >= new_y1)) {
+    if (!((x22 <= x11) || (x21 >= x12)))
+    {
+      if ((y22 <= y11) && (y22 >= new_y1))
+      {
 	new_y1 = y22;
-      } else if ((y12 <= y21) && (new_y2 >= y21)) {
+      }
+      else if ((y12 <= y21) && (new_y2 >= y21))
+      {
 	new_y2 = y21;
       }
     }
@@ -2031,21 +2055,25 @@ static void MaximizeWidth(FvwmWindow *win, unsigned int *win_width, int *win_x,
   new_x1 = truncate_to_multiple(x11, Scr.MyDisplayWidth);
   new_x2 = new_x1 + Scr.MyDisplayWidth;
 
-  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
+  for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next)
+  {
     if (IS_STICKY(cwin) || (IS_ICONIFIED(cwin) && IS_ICON_STICKY(cwin)))
       is_sticky = True;
     else
       is_sticky = False;
     if (cwin == win || (cwin->Desk != win->Desk && !is_sticky))
       continue;
-    if (IS_ICONIFIED(cwin)) {
+    if (IS_ICONIFIED(cwin))
+    {
       if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
 	continue;
       x21 = cwin->icon_x_loc;
       y21 = cwin->icon_y_loc;
       x22 = x21 + cwin->icon_p_width;
       y22 = y21 + cwin->icon_p_height + cwin->icon_w_height;
-    } else {
+    }
+    else
+    {
       x21 = cwin->frame_g.x;
       y21 = cwin->frame_g.y;
       x22 = x21 + cwin->frame_g.width;
@@ -2058,10 +2086,14 @@ static void MaximizeWidth(FvwmWindow *win, unsigned int *win_width, int *win_x,
     }
 
     /* Are they in the same Y space? */
-    if (!((y22 <= y11) || (y21 >= y12))) {
-      if ((x22 <= x11) && (x22 >= new_x1)) {
+    if (!((y22 <= y11) || (y21 >= y12)))
+    {
+      if ((x22 <= x11) && (x22 >= new_x1))
+      {
 	new_x1 = x22;
-      } else if ((x12 <= x21) && (new_x2 >= x21)) {
+      }
+      else if ((x12 <= x21) && (new_x2 >= x21))
+      {
 	new_x2 = x21;
       }
     }

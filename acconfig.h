@@ -22,6 +22,10 @@
 /* Define if readline is available.  */
 #undef HAVE_READLINE
 
+/* Define to enable a workaround if you have applications that redraw
+ * themselves excessively when they are moved opaque. */
+#undef DISABLE_CONFIGURE_NOTIFY_DURING_MOVE
+
 /* Define to disable motif applications ability to have modal dialogs.
  * Use with care.  */
 #undef MODALITY_IS_EVIL
