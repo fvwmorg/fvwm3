@@ -213,11 +213,7 @@ main(int argc, char **argv)
     {
       token = PeekToken(enter_fn, NULL);
       if (!StrEquals(token, "Silent"))
-      {
-        token = enter_fn;
-        enter_fn = safemalloc(strlen(token + 8));
-        sprintf(enter_fn,"Silent %s\n", token);
-      }
+        enter_fn = strdup(CatString2("Silent ", enter_fn));
     }
     if (argv[8] && *argv[8] && !StrEquals(argv[8],"NOP"))
       /* leave function specified */
@@ -226,11 +222,7 @@ main(int argc, char **argv)
     {
       token = PeekToken(leave_fn, NULL);
       if (!StrEquals(token, "Silent"))
-      {
-        token = leave_fn;
-        leave_fn = safemalloc(strlen(token + 8));
-        sprintf(leave_fn,"Silent %s\n", token);
-      }
+        leave_fn = strdup(CatString2("Silent ", leave_fn));
     }
   }
 

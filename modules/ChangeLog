@@ -1,9 +1,14 @@
+2000-04-27  Mikhael Goikhman  migo@homemail.com
+
+	* FvwmAuto/FvwmAuto.c (main):
+	fixed incorrect allocation when adding Silent prefix
+
 2000-04-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
 	applied fix for uninitialised variable by John Latham
 
-2000-04-26  olicha <olivier.chapuis@free.fr>
+2000-04-26  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.1:
 	Corrected miss print and document TipsColorset
