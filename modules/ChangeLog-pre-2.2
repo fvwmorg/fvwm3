@@ -1,0 +1,1461 @@
+1999-02-22  Hippo
+
+	* FvwmWinList/* Applied patch from Jesper James: new option
+	ButtonFrameWidth to set relief width, 0 is valid. TruncateLeft always
+	works, not just with LeftJustify.
+
+1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (DispatchEvent): Implemented transient pager in
+	a more general way (allows all three buttons to work).
+
+1999-03-21  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (InsertExpand):
+	(GetBalloonLabel): Replaced macro INSERT by function InsertExpand.
+
+	* FvwmPager/x_pager.c (DispatchEvent):
+	(FvwmErrorHandler): added misssing XUngrab... to fix 'transient' option
+	with mouse button 2
+
+1999-03-21  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmGtk/FvwmGtk.c: Implement option menus.
+
+Sat Mar 20 14:55:15 1999  DanEspen  <dje@blue>
+
+	* FvwmTalk: If I did this right, the FvwmTalk directory should
+	disappear.
+
+	* FvwmForm/ReadXServer.c: Paste tab as a space when the input form
+	only has one input field.
+
+	* FvwmForm/FvwmForm.c (main): Remove the builtin customization form,
+	there is now a way to do this with a standalone form definition.
+	Add "UseData" command.
+
+	* FvwmForm/FvwmForm.1: Add FvwmTalk, other cleanups.
+
+	* FvwmForm/FormFvwmTalkHelp.: New naming rule.
+
+	* FvwmForm/FormFvwmTalk.: New naming rule.
+
+	* FvwmForm/FormFvwmRlogin.: New naming rule.
+
+	* FvwmForm/FormFvwmQuitVerify.: New naming rule.
+
+	* FvwmForm/FormFvwmForm.: New naming rule.
+
+	* FvwmForm/FormFvwmCapture.: New naming rule.
+
+	* FvwmForm/Makefile.am (config_DATA): Remove DefineMe.c, rename forms,
+	provide FvwmTalk replacement shell.
+
+1999-03-16  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTaskBar/Start.c:
+	(StartButtonUpdate): new return value (needsupdate)
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents): fixed bug: start button
+	staying depressed
+
+	* FvwmTaskBar/Goodies.c (GoodiesParseConfig): fixed some parsing bugs
+
+	* FvwmTaskBar/FvwmTaskBar.1: describe Mailcheck option
+
+	* FvwmTaskBar/Goodies.c (DrawGoodies):
+	(GoodiesParseConfig): implemented 'Mailcheck' option
+
+Fri Mar 19 19:50:08 1999  Steve ROBBINS
+
+	* FvwmEvent/Makefile.am
+	* FvwmForm/Makefile.am
+	* FvwmTaskBar/Makefile.am: remove repeated include directive from
+	INCLUDES.
+
+1999-03-19  Hippo
+
+	* FvwmWinList/*: new option FollowWindowList: shows the windows in the
+	order that Next/Prev will search (apart from
+	WindowListSkip/CirculateSkip differences). Documented ShowCurrrentDesk
+	option.
+
+1999-03-18  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmCommand/findcmd: Rewrite to use only very basic awk.  This
+	version should work with any awk.
+
+1999-03-17  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmScript/types.h: ifdef XPM the include for xpm.h.
+
+Wed Mar 17 07:16:00 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/Scripts/TerminalSettings.fss:
+	* FvwmScript/Scripts/UpdateFvwm2TermMenu: new files
+
+	* FvwmScript/Scripts/Makefile.am (EXTRA_DIST): distribute new files.
+
+1999-03-16  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmGtk/FvwmGtk.c : Replace sprintf with g_sprintf
+	to avoid problems on Solaris.
+	Fix segfaults when redefining dialogs.
+	Various cleanups.
+	Implement tear-off menus.
+	Implement spin buttons.
+
+Mar 16 1999 Hippo
+
+	* FvwmEvent/FvwmEvent.c: new config option *fvwmEventPassID makes
+	FvwmEvent pass on interesting information to the function/command
+	it calls.
+
+Mon Mar 15 22:43:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* Makefile.am: always recurse into all subdirectories.
+
+	* FvwmBanner/Makefile.am:
+	* FvwmGtk/Makefile.am:
+	* FvwmScript/Makefile.am: change _PROGRAMS to configure variable,
+	put real program name into EXTRA_PROGRAMS.
+
+1999-03-13  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmGtk: New module. It implements menus, dialogs and
+	window-lists using the GTK toolkit.
+
+1999-03-07  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmPager/FvwmPager.c (list_restack): rewritten to
+	change the stacking order separately for the icon window
+	and each desk, since this is how the pager organizes its
+	windows.
+
+Sat Mar 13 15:25:08 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCommand/scripts/Makefile.am: created.  Substitutes the
+	location of PERL into the scripts.
+	* FvwmCommand/Makefile.am: removed scipts/* from EXTRA_DIST,
+	recurse into scripts dir instead.
+
+Sat Mar 13 14:44:19 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/INSTALL: removed obsolete file.
+
+Sat Mar 13 14:29:41 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmConsole/FvwmConsoleC.pl: replaced by FvwmConsoleC.pl.in
+	* FvwmConsole/Makefile.am: generate FvwmConsoleC.pl from
+	corresponding .in file, substituting perl path.
+
+	* FvwmConsole/changepath.sh
+	* FvwmConsole/INSTALL: removed obsolete files.
+
+	* FvwmCommand/findcmd:
+	* FvwmCommand/findcmd.pl: rewritten as filters, so as not to be
+	dependent on finding ../../fvwm/command.c.  The makefile now takes
+	care of supplying the input & output paths.
+
+	* FvwmCommand/Makefile.am: build and install FvwmCommand.sh and
+	FvwmCommand.pm.
+
+Sat Mar 13 11:52:39 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCommand/INSTALL: removed obsolete file.
+	* FvwmCommand/ex-grpmv.pl: moved to scripts directory, replacing
+	slightly different version.  Hopefully this is the up-to-date one.
+
+	* FvwmCommand/ex-auto.pl:
+	* FvwmCommand/ex-cascade.pl:
+	* FvwmCommand/focus-Netscape.pl:
+	* FvwmCommand/push-away.pl:
+	* FvwmCommand/test1.pl:
+	* FvwmCommand/test2.sh: removed.  These are all duplicates of the
+	scripts directory.
+
+Sat Mar 13 10:05:52 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmM4/FvwmM4.c: fix bad interaction between -m4-prefix and
+	-m4-[e|s]quotes.
+	* FvwmSaveDesk/FvwmSaveDesk.1:
+	* FvwmSaveDesk/example/xinitrc: fvwm2 -f "FvwmM4 ..."
+	should be fvwm2 -cmd "FvwmM4 ..."
+
+1999-03-12  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (main): fixed coredump
+
+Fri Mar 12 08:56:41 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmPager/x_pager.c (ShapeLabels): define ShapeLabels to 0 if
+	SHAPE not defined; problem noted by Fabien Villard.
+
+1999-03-12  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmTaskBar/ButtonArray.c (ButtonDraw): If we didn't have enough
+	room to write _any_ of the title on the button (if there are
+	_lots_ of buttons) then we'd get into an infinite loop as
+	search_len is not checked to make sure it stays >0.  Make that
+	check.  Note we don't test to see if the "..." itself will fit; I
+	suspect you could get buttons small enough that the "..." will
+	overwrite some of the button.  Oh well, at least it doesn't freeze up.
+
+1999-03-11  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (DispatchEvent):
+	(initialize_pager):
+	* FvwmPager/FvwmPager.c (main): added '-transient option' that allows
+	to call the pager with a single click, move the viewport and close it
+	again.
+
+	* FvwmPager/FvwmPager.c (main): changed syntax of pager. May now be
+	called with 'FvwmPager *' and 'FvwmPager *' (treated like
+	'FvwmPager * *'
+
+Wed Mar 10 22:55:43 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/ReadXServer.c (ToggleChoice): You can now paste multiple
+ 	lines into a form.  If the form contains buttons activated by
+ 	the Return Key the paste can activate the button.
+
+	* FvwmForm/.FormFvwmTalk.: Changed the built-in form to reset the
+	command field on Return key, necessary for pasting many lines to
+ 	look right.  Not the best for typing a line at a time, there is
+	no feedback.  Pasting lots of config lines at once works well.
+
+1999-03-09  Andrew T. Veliath  <andrewtv@usa.net>
+
+	* FvwmRearrange/FvwmRearrange.c: Add GPL header and reformat some
+	code.
+
+Tue Mar  9 19:48:47 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/ReadXServer.c (process_paste_data): You can now use button
+	2 to paste into a form.  You should be able to paste a return to
+	activate a button, right now, thats not working.
+
+	* FvwmForm/DefineMe.c (DefineMe): Fixed bug in "Fvwmform FormFvwmForm",
+	somewhere along the line, all the newlines in the output save file got
+	lost.
+
+1999-03-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/draw.c (DrawTitle):
+	* FvwmButtons/icons.c (ConfigureIconWindow): Implemented missing 'Left'
+	and 'right' options.
+
+1999-03-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (main): do not quit if a subpanel is empty,
+	instead remove the subpanel from the list
+
+	* FvwmButtons/parse.c (ParseConfigLine): fixed coredump (don't free
+	uninitialised memory); init CurrentPanel with zeros
+
+	* FvwmButtons/FvwmButtons.c (main): init CurrentPanel with zeros
+
+1999-03-07  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (FvwmErrorHandler): switched on X error handler
+	to fix coredump when window dies during a move.
+	(MoveWindow): prefix pager commands with 'silent'
+	(IconMoveWindow): prefix pager commands with 'silent'
+
+1999-03-06  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmForm/FvwmForm.c (ReadDefaults):
+	(ReadConfig):
+	* FvwmWinList/FvwmWinList.c (main):
+	* FvwmSave/FvwmSave.c (main):
+	* FvwmSaveDesk/FvwmSaveDesk.c (main):
+	* FvwmRearrange/FvwmRearrange.c (main):
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmIdent/FvwmIdent.c (main):
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmIconBox/FvwmIconBox.c (main):
+	* FvwmButtons/FvwmButtons.c (main):
+	(swallow):
+	* FvwmBacker/FvwmBacker.c (main):
+	Rerenamed builtin functions
+	  Send_ConfigInfo <- SendConfigInfo
+	  Send_WindowList <- SendWindowList
+	  set_mask        <- SetMask
+
+Sat Mar  6 10:55:06 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/Makefile.am (config_DATA): added new forms.
+
+	* FvwmForm/ReadXServer.c (ReadXServer): Detect frame resize.
+
+	* FvwmForm/FvwmForm.1: Documented "Message" and "PadVText" commands.
+
+	* FvwmForm/.FormFvwmTalkHelp.: Help screen for FormFvwmTalk.
+
+	* FvwmForm/.FormFvwmTalk.: New form to replace FvwmTalk.
+
+	*  FvwmForm/FvwmForm.c: Added logic to allow  the last fvwm error
+ 	message to be shown on a form.
+
+1999-03-05  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmPager/FvwmPager.h (process_message): changed signature
+	to pass complete header.
+	* FvwmPager/FvwmPager.c (process_message): handle M_RESTACK
+	packets by calling list_restack.
+	(list_restack): new function.
+
+1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmForm/FvwmForm.c (ReadDefaults):
+	(ReadConfig):
+	* FvwmWinList/FvwmWinList.c (main):
+	* FvwmSave/FvwmSave.c (main):
+	* FvwmSaveDesk/FvwmSaveDesk.c (main):
+	* FvwmRearrange/FvwmRearrange.c (main):
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmIdent/FvwmIdent.c (main):
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmIconBox/FvwmIconBox.c (main):
+	* FvwmButtons/FvwmButtons.c (main):
+	(swallow):
+	* FvwmBacker/FvwmBacker.c (main):
+	Renamed builtin functions
+	  Send_ConfigInfo -> SendConfigInfo
+	  Send_WindowList -> SendWindowList
+	  set_mask        -> SetMask
+
+Thu Mar  4 19:31:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmPager/FvwmPager.c: replaced IconPath and PixmapPath code
+	with ImagePath.
+
+Thu Mar  4 01:43:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconBox/icons.c:
+	* FvwmBanner/FvwmBanner.c (GetXPMFile): replace findIconFile with
+	findImageFile.
+
+Thu Mar  4 00:39:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmSaveDesk/example/fvwm2rc: removed Pixmap, Icon, and Module
+	paths.
+
+Thu Mar  4 00:39:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconBox/FvwmIconBox.1:
+	* FvwmButtons/FvwmButtons.1:
+	* FvwmBanner/FvwmBanner.c:
+	* FvwmIconBox/icons.c:
+	* FvwmBanner/FvwmBanner.c:
+	* FvwmIconBox/FvwmIconBox.h:
+	* FvwmButtons/FvwmButtons.h:
+	* FvwmIconBox/icons.c (GetBackPixmap):
+	* FvwmIconBox/FvwmIconBox.c (ParseOptions):
+	* FvwmButtons/parse.c (ParseOptions):
+	* FvwmButtons/FvwmButtons.c: replace IconPath by ImagePath.
+
+1999-03-03  Johan Bengtsson  <johanb@DoCS.UU.SE>
+
+	* FvwmPager: Introduced a well defined order between specific desk
+ 	pixmap, specific desk colour, global pixmap and global colour, when
+ 	choosing the background of a desk. They are chosen in the order
+ 	they are mentioned above. In order to do this, the Dcolor and
+	bgPixmap fields in the desk structure are now only used if the
+	desk has been assigned a specific colour or pixmap.
+
+	Introduced an option to disable hilighting of the current desk.
+
+	* FvwmPager/FvwmPager.1
+	Added sections for the new configuration options.
+
+	* FvwmPager/FvwmPager.c:
+	(main): The Dcolor and bgPixmap fields of the desks are now
+	initialised to NULL.
+	Hilighting is turned off if no hilight colour or pixmap is specified.
+	Setting the colour and font variables to default values are now
+	only done if they have not been set by the configuration file.
+	(list_new_desk): Introduced the new ordering of backgrounds, and
+ 	made a small update to how the label colours are treated.
+	(ParseOptions): Added new options and updated the Back and Pixmap
+	options to only update the global background not the desk specific
+	backgrounds.
+
+	* FvwmPager/x_pager.c:
+	(initialize_pager): Introduced the new ordering of backgrounds.
+	(DrawIconGrid): Introduced some machinery to make the feature of
+	having different backgrounds on different desks work in icon mode
+	as well. Introduced machinery for disabling hilight in icon mode.
+
+1999-03-02  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmAnimate/FvwmAnimate.c: Remove fonts and colors from
+	customization form.  These can now be set globally by FvwmForm.
+	Second try, removed another color spec.
+
+1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
+
+	* FvwmEvent/FvwmEvent.c: Finished the removal of Parse.c and
+	Parse.h from FvwmEvent.
+
+	* FvwmWinList/FvwmWinList.c (RedrawWindow): add XFlush() call in
+	RedrawWindow(), for VMS port.  Ifdef this if it causes problems.
+
+	* FvwmPager/FvwmPager.c (My_XNextEvent): allow bypassing the test
+	for too many missed XEvents; needed for VMS port.
+
+1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
+
+	* FvwmPager/x_pager.c (GetBalloonLabel): add empty statement to
+	the default case of switch in order to placate SGI's cc.
+
+	* FvwmForm/DefineMe.c (CMD0V): added line continuation characters,
+	otherwise it appears to be unterminated character string to SGI's cc.
+
+	* FvwmForm/FvwmForm.h: fix the header exclusion ifdef.
+
+1999-03-01  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmForm/Makefile.am (configdir): install the data files into
+	FVWM_CONFIGDIR, which may be different from sysconfdir.  Also,
+	the data files need to be explicitly listed for EXTRA_DIST.
+
+1999-02-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmEvent/Makefile.am (FvwmEvent_SOURCES: Remove Parse.c and
+	Parse.h, use the corresponding functions from libs/ModParse.c.
+
+Sun Feb 28 11:49:24 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/ButtonArray.h:
+	* FvwmPager/FvwmPager.h:
+	* FvwmIconMan/FvwmIconMan.h: include libs/Picture.h to get Picture
+	definitions.
+
+Sun Feb 28 10:24:53 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmButtons/parse.c
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmButtons/FvwmButtons.h: removed all traces of pixmapPath, as
+	it is no longer used.
+
+Sat Feb 27 11:55:27 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/ReadXServer.c: Add logic to allow international
+	characters, bug id 179.
+
+1999-02-26  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmForm/FvwmForm.c:
+ - Removed form limitations including:
+   number of lines in a form.
+   number of items in a form.
+   number of items in a line.
+   number of selections in a choice.
+   number of commands on a button.
+   Colors can be changed anywhere in a form.
+   Fonts can be changed anywhere in a form.
+
+ - Changed the general organization of the module to match FvwmAnimate.
+   See comments in FvwmAnimate to see what it mimicks.
+   Some parts of this module have comments containing "FvwmAnimate"
+   are common module/macro candidates.
+   Changed debugging technique to match FvwmAnimate with the
+   additional ability to Debug to File.
+
+ - Configurability updates:
+   Form appearance can be configured globaly:
+   Form defaults are read from .FvwmForm.
+   There is a built in Default setting/saving dialogue.
+   Forms can be read in directly from a file.
+   The file is the alias with a leading dot.
+   The file is in $HOME or the system configuration directory.
+   Comes with forms installed in the system configuration directory.
+
+ - Operability:
+   You can tab to previous input field with ^P, Up arrow, shift tab.
+
+ - This module now has a configuration proceedure:
+   AddToMenu "Module-Popup" "FvwmForm Defaults" FvwmForm FormFvwmForm
+
+ - Use FvwmAnimate command parsing.
+   The part of the command after the module name is no longer case sensitive.
+   Use command tables instead of huge "else if".
+
+ - Misc:
+   Avoid core when choice not preceeded by a selection.
+   Rename union member "select" so it doesn't conflict with the function.
+   You can now control vertical spacing on text.  By default text is spaced
+   vertically the way you would want it for buttons.
+   This is for compatibility.  Now you can change the spacing to zero as
+   you might want for a help panel.
+   A button can execute a synchronous shell command.  The first use I
+   put this is a form that writes its new definition to a file and
+   reinvokes itself.
+   Use SendText instead of writes to pipe.
+   Changed button press-in effect from 1 sec to .1 sec.  Didn't seem to
+   do anything on a slow machine...
+   Added preload arg, and Map, Stop and UnMap commands for fast forms.
+   (FvwmForm is now parsing commands during form display.)
+   Add "Message" command, display "Error" and "String" messages from fvwm.
+   Removed CopyNString, strdup replaces it.
+
+1999-02-25  Johan Bengtsson  <johanb@DoCS.UU.SE>
+
+	* FvwmPager: Added configuration options; Pixmap,
+	DeskPixmap, HilightPixmap, LabelsBelow, LabelsAbove, ShapeLabels,
+	NoShapeLabels.
+
+	* FvwmPager/FvwmPager.c:
+ 	(main): Added initialisation of picture handling from fvwmlib.
+        (list_new_desk): If a pixmap background is defined for a desk it
+	is installed instead of a background colour. Now the label colour is
+	updated according to the used desk.
+	(ParseOptions): Added code to read IconPath and PixmapPath from
+	the configuration file.
+	  Added code to recognise the new configuration options and
+        NoStartIconic.
+
+	* FvwmPager/FvwmPager.h:
+ 	(desk_info): Added field bgPixmap, to keep track of background
+	pixmap of this specific desk. Removed unused fields x and y.
+	(pager_string_list): Added field bgPixmap to keep track of
+	background pixmap for this specific desk.
+
+	* FvwmPager/x_pager.c:
+	(initialize_pager): Added test that turn off ShapeLabels if the X
+ 	server don't support shape extensions.
+  	  If a pixmap background is defined for a desk it is installed
+        instead of a background colour.
+	  If a hilight pixmap is defined, it is used instead of a hilight
+	colour.
+	(UpdateWindowShape): Added a function adding a shape mask,
+	containing the defined desks and the label of the current desk, to
+	the pager window if ShapeLabels is on.
+	(DrawGrid): Modified to hilighting code to turn off hilighting of
+ 	the label of the current desk if ShapeLabels is on.
+          Modified the label drawing code to draw the desk label below the
+	desk if LabelsBelow is on
+	  Added call to UpdateWindowShape at the end of the function.
+
+	* FvwmPager/FvwmPager.1: Added sections for the new
+	configuration options.
+
+1999-02-24  Hippo
+
+	* FvwmPager: Applied label formatting patch from Andreas Dischinger
+
+1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmIconBox/FvwmIconBox.c (RelieveWindow):
+	* FvwmIconBox/FvwmIconBox.h: removed inline from declaration of
+	RelieveWindow
+
+1999-01-25  Steven Michael ROBBINS  <stever@bongo.cs.mcgill.ca>
+
+	* FvwmAnimate/FvwmAnimate.c: Include config.h first.  Remove
+	include of <strings.h> as not all systems have this.
+
+1999-01-22  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmWinList/Mallocs.c (UpdateString): Increment the length, not
+	the pointer.
+
+1999-01-17  Chris Rankin  <rankinc@bellsouth.net>
+
+	* FvwmWinList/ButtonArray.c (UpdateButton): Use saferealloc().
+	* FvwmWinList/FvwmWinList.c: ShutMeDown turned into an
+	exit-procedure (installed via atexit).
+	SIGPIPE and SIGTERM now set a global flag which breaks the event
+	loop, rather than exiting directly.
+	Event loop restyled after FvwmIconMan, which is neater and simpler.
+	Signals installed with sigaction (if present).
+	If no sigaction, then use signal & siginterrupt (BSD 4.3).
+	If no siginterrupt then just bang a couple of rocks together.
+	Added "const" and function attributes to a select few prototypes.
+	Loose malloc turned into safemalloc.
+	* FvwmWinList/Mallocs.c (saferealloc): saferealloc() fixed.
+	* FvwmWinList/Mallocs.h: Removed duplicate fvwmlib prototype
+	(CopyString).
+	Removed useless prototype (CatString2).
+
+Sat Jan 16 00:31:25 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmSaveDesk/FvwmSaveDesk.1:
+	* FvwmSaveDesk/FvwmSaveDesk.c (do_save): No longer have build-time
+	option for fvwm and config file names.
+
+1999-01-12  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmPager/x_pager.c (IconMoveWindow):
+	(MoveWindow): removed duplicate code
+
+	* FvwmPager/x_pager.c (MoveWindow): applied FvwmPager focus problem
+	patch by Matthias Clasen
+
+Sun Jan 10 23:40:01 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconMan/fvwm.c:
+	* FvwmButtons/output.c:
+	* FvwmIconBox/FvwmIconBox.c (myErrorHandler): Fixed format/arg
+	mismatch in [v][f]printf().
+
+Sun Jan 10 23:12:48 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmForm/FvwmForm.c (AddChar): Inserted parentheses around &&
+	within ||.
+
+Sun Jan 10 23:04:05 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/ButtonArray.c:
+	* FvwmSave/FvwmSave.c:
+	* FvwmIconMan/readconfig.c:
+	* FvwmIconMan/debug.c:
+	* FvwmButtons/parse.c:
+	* FvwmButtons/button.c (ShuffleButtons): Removed unused
+	variables.
+
+Sun Jan 10 22:26:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconBox/FvwmIconBox.c (My_XNextEvent):
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmButtons/FvwmButtons.c (process_message): Inserted
+	parentheses around assignment used as truth value.
+
+Sun Jan 10 21:06:38 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/FvwmWinList.c (main):
+	* FvwmWinList/FvwmWinList.c (ErrorHandler):
+	* FvwmTalk/FvwmTalk.c (main):
+	* FvwmScroll/FvwmScroll.c (main):
+	* FvwmSaveDesk/FvwmSaveDesk.c (main):
+	* FvwmSave/FvwmSave.c (main):
+	* FvwmM4/FvwmM4.c (main):
+	* FvwmIconBox/FvwmIconBox.c (myErrorHandler):
+	* FvwmIconBox/FvwmIconBox.c (main):
+	* FvwmForm/FvwmForm.c (main):
+	* FvwmCpp/FvwmCpp.c (main): Fixed "control reaches end of non-void
+	function" bug.
+
+Sun Jan 10 18:17:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconMan/winlist.c (check_win_complete):
+	* FvwmIconMan/FvwmIconMan.c (copy_string):
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmButtons/icons.c:
+	* FvwmButtons/output.c: Cast pointers to unsigned long --- rather
+	than ints or shorts (!) --- to suppress warnings on 64 bit machines.
+	These were all in debugging fprintf() calls, so it shouldn't upset
+	anyone.
+
+Sun Jan 10 14:45:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIdent/ChangeLog: Removed and merged single entry into this file.
+
+Sun Jan 10 14:43:37 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/FvwmWinList.c (EndLessLoop):
+	* FvwmTalk/FvwmTalk.c (My_XNextEvent):
+	* FvwmPager/FvwmPager.c (My_XNextEvent):
+	* FvwmIconBox/FvwmIconBox.c (My_XNextEvent):
+	* FvwmButtons/FvwmButtons.c (My_XNextEvent):
+	* FvwmBanner/FvwmBanner.c (main):
+	* FvwmBacker/FvwmBacker.c (EndLessLoop): Fixed select() call to
+	use SELECT_TYPE_ARG234; removed alternate code conditional on
+	__hpux symbol.
+
+Sun Jan 10 14:33:29 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmAuto/FvwmAuto.c: Replaced HPUX_CAST with SELECT_TYPE_ARG234.
+
+Sun Jan 10 14:31:32 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmForm/FvwmForm.c:
+	* FvwmTalk/FvwmTalk.c:
+	* FvwmScroll/GrabWindow.c:
+	* FvwmIdent/FvwmIdent.c:
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmButtons/FvwmButtons.c: Replaced messy bunch of symbols with
+	HAVE_SYS_SELECT_H.
+
+Sun Jan 10 14:19:21 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmIconBox/icons.c:
+	* FvwmButtons/icons.c: Replaced NeXT with HAVE_FCNTL_H.
+
+Sat Jan  9 09:19:20 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/FvwmWinList.c:
+	* FvwmTalk/FvwmTalk.c:
+	* FvwmScroll/GrabWindow.c:
+	* FvwmRearrange/FvwmRearrange.c:
+	* FvwmPager/FvwmPager.c:
+	* FvwmIconBox/FvwmIconBox.c:
+	* FvwmButtons/draw.c:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmBanner/FvwmBanner.c: Replaced ISC with HAVE_SYS_BSDTYPES_H.
+
+Sat Jan  9 08:52:19 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWinList/ButtonArray.c:
+	* FvwmWinList/Colors.c:
+	* FvwmWinList/FvwmWinList.c:
+	* FvwmIconBox/FvwmIconBox.h:
+	* FvwmButtons/FvwmButtons.h: Moved min/max/abs macros to acconfig.h.
+
+1999-01-08  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmEvent/FvwmEvent.c (main): Remove USE_POSIX/USE_BSD stuff and
+	rely on HAVE_SIGACTION to choose between new- and old-style signal
+	handling.
+	(TerminateHandler): Use the autoconf'd return type for signal
+	handlers.
+
+	* FvwmPager/FvwmPager.c (main): Remove USE_POSIX/USE_BSD stuff;
+	use HAVE_SIGACTION etc. to choose between new- and old-style
+	signal handling.
+	(TerminateHandler): Use autoconf'ed return type for signal handlers.
+
+	* FvwmButtons/FvwmButtons.c (main): Remove USE_POSIX/USE_BSD
+	stuff; use HAVE_SIGACTION etc. to choose between new- and
+	old-style signal handling.
+	(TerminateHandler): Use autoconf'ed return type for signal handlers.
+
+	* FvwmIconMan/FvwmIconMan.c (main): Remove USE_POSIX/USE_BSD
+	stuff; use HAVE_SIGACTION etc. to choose between new- and
+	old-style signal handling.
+	(TerminateHandler): Use autoconf'ed return type for signal handlers.
+
+1999-01-06  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmCpp/FvwmCpp.c (main): If there's no default cpp and the user
+	didn't specify one, print an error and quit.
+
+1999-01-06  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/**:
+	* FvwmEvent/**:
+	* FvwmIconMan/**:
+	* FvwmPager/**:
+ 	Applied updated signal handler patches by Chris Rankin
+
+	* FvwmWinList/ButtonArray.c (DoButton): removed stray fprintf
+
+1999-01-05  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmCpp/Makefile.am (INCLUDES): FVWM_CPP might contain
+	whitespace now, so use an alternate shell quoting scheme.
+
+1999-01-05  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/parse.c (ParseOptions): fixed memory leak (item[3] not
+	freed).
+
+1999-01-04  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmForm/FvwmForm.c (GetColors): Fix hilight/shadow allocation
+	on non-PsuedoColor visuals.
+
+Sun Jan  3 14:07:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCpp/FvwmCpp.c: Removed #ifdef defaulting FVWM_CPP to
+	"/usr/lib/cpp", if the symbol was not defined.  The symbol ought
+	to be defined at build time, and if not, an error should be
+	emitted, rather than silently taking a wild guess.
+
+1999-01-02  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.c (Loop): Deleting panels doesn't delete
+	FvwmButtons anymore. Destroying a panel still kills it however (and it
+	is the right thing to do).
+
+1998-12-27  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.1:
+	* FvwmButtons/FvwmButtons.c (Slide):
+	* FvwmButtons/parse.c (match_string): fix for panel geometry
+	* FvwmButtons/FvwmButtons.c (AddButtonAction):
+	(match_string): Action needs not to be quoted anymore; multiple
+	quoting bugfix
+
+1998-12-22  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmIconMan/FvwmIconMan.c:
+	* FvwmIconMan/FvwmIconMan.h:
+	* FvwmIconMan/x.c: applied signal handling patch by Chrin Rankin
+
+	* FvwmButtons/FvwmButtons.c: coredump fixed: if an action was defined
+	only for a specific button but another button was pressed a NULL
+	pointer was referenced.
+
+	* FvwmButtons/parse.c (match_string): possible coredumps fixed:
+	accessed t[1] if t[0] == 0 (char *t).
+	(match_string): fixed parsing bug in Icon
+	(match_string): fixed possible coredump with b->title[1],
+	b->icon_file[1]
+
+1998-12-17  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmEvent/Parse.c (PeekArgument): malloc -> safemalloc
+
+	* FvwmPager/FvwmEvent.c:
+	* FvwmPager/FvwmPager.c:
+	* FvwmButtons/FvwmButtons.c: applied signal handler patches by Chris
+	Rankin
+
+	* FvwmIconMan/FvwmIconMan.1: added missing double quote
+
+	* FvwmButtons/FvwmButtons.c: applied panel direction bugfix by
+	J. Joshua Feng
+
+1998-12-16  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmIconMan/functions.c (builtin_refresh): Return a valid value.
+
+	* FvwmButtons/FvwmButtons.c (RecursiveLoadData): Cast fprintf arg.
+
+	* FvwmBacker/FvwmBacker.c (main): Add return to silence warning.
+
+	* FvwmIconMan/FvwmIconMan.h: Remove ConsoleMessage() prototype (in
+	debug.h now).
+
+	* FvwmIconMan/FvwmIconMan.c (main): Pass filename to OpenConsole().
+
+	* FvwmIconMan/debug.c: Rewrite.  New signatures for all
+	functions.
+
+	* FvwmIconMan/debug.h: Disable debugging by default.  Print all
+	messages to stderr by default, rather than /dev/console.  Use the
+	GCC __attribute__ feature for more error checking.
+
+1998-12-15  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmWinList/ButtonArray.c (ButtonArrayMaxWidth): function not used
+	put in #if/#endif
+
+	* FvwmWinList/FvwmWinList.c (ProcessMessage): Applied patch to suppress
+	redrawing by Nadim Saeed
+
+1998-12-13  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/draw.c (RedrawButton): fixed background pixmap for
+	swallowed windows. Is it ok to never draw a background for swallowed
+	applications?
+
+	* FvwmIconMan/fvwm.c (destroy_window): coredump fixed: IconMan died
+	when the window with the focus was deleted and the focus was changed
+
+	* FvwmButtons/parse.c (ParseContainer):
+	(match_string): fixed possible coredump (font_string == NULL but
+	b_Font was still set).
+
+1998-12-12  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmPager/x_pager.c (initialize_pager): fixed bug: balloons were
+	shown on the pager with the 'Icon' option initially. After iconify-
+	deiconify this was right.
+
+	* FvwmPager/FvwmPager.c (ParseOptions): *FvwmPagerBalloons Icon/Pager
+	did not switch off the other type if both were used.
+
+1998-12-10  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/parse.c:
+	* FvwmButtons/output.c:
+	* FvwmButtons/FvwmButtons.c: panel bugfixes by J Joshua Feng
+
+	* FvwmPager/x_pager.c:
+	* FvwmPager/FvwmPager.1: applied ballon window flip patch by Ric Lister
+
+	* FvwmPager/x_pager.c (MapBalloonWindow): fixed possible coredump (t
+	referenced but NULL)
+	(MapBalloonWindow): OK, bug #49 is now really fixed. Although the
+	mentioned Enter/Leave Notify loop is not handled, the balloon window
+	should never overlap the application window in the pager, so there is
+	no real need to do this.
+
+1998-12-09  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmPager/x_pager.c (SwitchToDeskAndPage):
+	(DispatchEvent): patch to make desk changing via button 3 work.
+	(MapBalloonWindow): fixed bug #49 (balloon window off-screen)
+	I'm a bit concerned because of a possible loop that is mentioned in
+	the code when the y offset of the ballon window is zero. This might
+	happen now again.
+
+1998-12-08  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmPager/x_pager.c (Scroll): fixed another mouse-button-3 bug. You
+	can now consistently reach the left/top border of page 0 0.
+	(IconScroll): merged with function Scroll
+	(DispatchEvent): changed Scroll signature
+	(Scroll): Changed signature and removed code limiting movement to 100%
+	of the desktop size. What was this good for?
+
+1998-12-04  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/parse.c (match_string): fixed 'up' panels as
+	default
+
+1998-12-04  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmPager/FvwmPager.1: documented new button 3 behaviour
+
+	* FvwmPager/x_pager.c (SwitchToDeskAndPage): removed unnecessary ifdef
+	(Scroll): fixed mouse-button-3 bug with multiple desktops.
+	(DispatchEvent): pressing mouse button 3 allows to switch desktops now.
+	Moving and releasing the mouse still does not switch desktops.
+
+1998-12-04  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmPager/FvwmPager.c (ParseOptions): Free BalloonFore variable
+	when processing that option, not BalloonBack.  Reported with
+	suggested solution by Robert H. Ford II <rhford2@lucent.com>
+
+1998-11-28  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.c (Slide): fixed panels overlapping button
+	under certain circumstances.
+
+1998-11-25  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmPager/FvwmPager.c: fixed some memory leaks
+
+	* FvwmPager/x_pager.c: reindented some code
+
+1998-11-25  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmCpp/FvwmCpp.1: Don't use multi-word values with .IP.  Use .TP.
+	* FvwmM4/FvwmM4.1: Ditto.
+
+1998-11-24  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmEvent/Parse.h (LFindToken): Remove this macro.  It's not
+	used, and it uses a non-standard function lfind().  Best to not
+	use it at all.
+	(search.h): Removed #include.
+
+1998-11-24  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/TODO: updated
+
+	* FvwmButtons/button.c (alloc_button): uninitialised fields bug fixed
+
+	* FvwmButtons/parse.c (trimleft): replaced macro trimleft by a function
+	trimleft.
+	(seekright): patch mo make panels with direction work.
+	(match_string): fixed broken panels with direction, fixed memory leak.
+	(ParseContainer): fixed parsing bugs in Fore/Back
+	(match_string): fixed parsing bugs in Back/Fore/Font
+	(match_string): fixed memory leak in 'title', 'frame', 'swallow'
+	(match_string): fixed memory leak/coredump in 'swallow module'
+
+1998-11-24  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmForm/FvwmForm.c: Clean up headers that are already included
+	(and better tested) in config.h.
+
+	* FvwmIconMan/FvwmIconMan.h: Ditto.
+
+1998-11-22  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.1: Added BUGS section to point out frequent
+	problems with Swallow (action has to be quoted).
+
+Thu Nov 19 16:23:33 1998  DanEspen  <dje@blue>
+
+	* FvwmIdent/FvwmIdent.c (MakeList): Display min and max aspect
+	ratios if the window has them.
+
+1998-11-19  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmWinList/FvwmWinList.c (ProcessMessage):
+	(AdjustWindow):
+	(MakeMeWindow):
+	* FvwmIdent/FvwmIdent.c (list_end):
+	* FvwmIconMan/x.c (X_init_manager):
+	(create_manager_window):
+	* FvwmIconBox/FvwmIconBox.c (CreateWindow):
+	* FvwmBanner/FvwmBanner.c (main):
+	border size bugfix
+
+Sun Nov 15 11:23:38 1998  DanEspen  <dje@blue>
+
+	* FvwmIconMan/winlist.c (figure_win_manager): various debug fixes.
+  	Got to line 225 and gave up.
+
+	* FvwmIconMan/debuglevels.h: Turned off debug.  Causing core dumps
+ 	galore.
+
+Sat Nov 14 19:08:01 1998  DanEspen  <dje@blue>
+
+	* FvwmScroll/GrabWindow.c (GrabWindow): Call InitPictureCMap with
+	captured windows colormap.
+
+	* FvwmIconMan/x.c (xevent_loop): Removed GetShadow, GetHilite
+	new versions now in library.
+
+	* FvwmWinList/Colors.c: Removed GetShadow, GetHilite
+	new versions now in libraryGetHilite.  All that remains is GetColor
+	which could be in libs if fvwm_msg worked there.
+
+	* FvwmScroll/GrabWindow.c (GetHilite): Removed GetShadow, GetHilite
+	new versions now in library.
+
+	* FvwmWinList/Colors.c (GetHilite): Removed GetShadow, GetHilite
+	new versions now in library.
+
+	* FvwmIconMan/x.c (lookup_shadow_color): removed lookup_hilite_color,
+	lookup_shadow_color, changed to use GetShadow, GetHilite from libs.
+
+	* FvwmIconBox/FvwmIconBox.c (nocolor):  removed GetShadow, GetHilite
+	new versions now in library.
+
+	* FvwmButtons/FvwmButtons.c (GetShadow): removed GetShadow, GetHilite
+	new versions now in library.
+
+Sat Nov 14 00:10:37 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmRearrange/Makefile.am: Install scripts for FvwmCascade and
+	FvwmTile, as making a symbolic link proved painful to achieve.
+
+1998-11-13  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmButtons/parse.c (ParseConfigFile): Make sure line
+	continuation loop doesn't reference memory before the start of the
+	array.
+
+	* FvwmButtons/button.c (alloc_button): Init IconWin field.
+
+	* FvwmButtons/FvwmButtons.c (main): Init font and font_string
+	fields of UberButton.
+	(GetRealGeometry): Only free children if there's something to free.
+
+	* FvwmIconMan/x.c (set_window_properties): Init wmhints structure.
+
+	* FvwmIconMan/xmanager.c (clear_empty_region): Init rects[1] to
+	avoid possible UMR.
+	(set_num_buttons): Init drawn_state.{w,h}.
+
+1998-11-12  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.1:
+	removed AutoHide documentation (no patch)
+
+	* FvwmButtons/FvwmButtons.c (Loop):
+	* FvwmButtons/parse.c (match_string):
+	* FvwmButtons/README: updated panels patch
+
+1998-11-12  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.c (CreateWindow):
+	applied geometry -0-0 patch by Tim Phipps
+
+1998-11-11  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmAnimate/FvwmAnimate.c: Fix bug that stopped zoom3d from
+	being picked.  In general, strcasecmp is now being used instead of
+	strncasecmp.
+
+1998-11-11  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmIconMan/globals.c (print_managers): fixed coredump with fonts
+
+	* FvwmIconMan/readconfig.c (parse_function): fixed parsing bug:
+	JmpArg's did not work if followed by a comma.
+
+Tue Nov 10 22:20:21 1998  DanEspen  <dje@blue>
+
+	* FvwmEvent/FvwmEvent.c (config): Fix logic on test for cmd needs
+	a parameter.  Thes test for "table != e" was incorrect.  Only try
+	to strip off trailing newline when there is a newline on the
+	command.  It was stripping the last character when commands came
+	in from FvwmTalk.
+
+Tue Nov 10 22:17:50 1998  DanEspen  <dje@blue>
+
+	* FvwmAnimate/FvwmAnimate.c: Handle missing arg on first entry in
+	cmd table.
+
+1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/FvwmButtons.1: Updated manpage for AutoHide and Panels
+	patches by Jui-Hsuan Joshua Feng <fengj@percy.engr.wisc.edu>
+
+Tue Nov 10 07:14:40 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmRearrange/Makefile.am: Arranged the makefile to build
+	FvwmRearrange; also makes links with names FvwmCascade and
+	FvwmTile.
+
+Tue Nov 10 07:13:07 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* Makefile.am: Removed FvwmCascade and FvwmTile; both have been
+	replaced by FvwmRearrange.
+
+1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmButtons/parse.c (seekright): switched to new syntax of
+	DoGetNextToken.
+
+1998-11-09  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmIconMan/readconfig.c: Fixed bug that prevented function lists
+	from working if they contained a comma. Fixed a memory leak too.
+
+Sat Nov  7 09:43:59 1998  DanEspen  <dje@blue>
+
+	* FvwmAnimate/FvwmAnimate.c: Make color a fully documented and
+	customizable feature.
+
+1998-11-07  Dominik Vogt <dominik_vogt@hp.com>
+
+	* FvwmIconMan/readconfig.c: Removed internal_GetNextToken and
+	replaced it with libs/Parse.c(DoGetNextToken);
+
+1998-11-06  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmAnimate/Makefile.am (FvwmAnimate_DEPENDENCIES):
+	* FvwmTile/Makefile.am (FvwmTile_DEPENDENCIES):
+	* FvwmTalk/Makefile.am (FvwmTalk_DEPENDENCIES):
+	* FvwmScroll/Makefile.am (FvwmScroll_DEPENDENCIES):
+	* FvwmSaveDesk/Makefile.am (FvwmSaveDesk_DEPENDENCIES):
+	* FvwmSave/Makefile.am (FvwmSave_DEPENDENCIES):
+	* FvwmPager/Makefile.am (FvwmPager_DEPENDENCIES):
+	* FvwmM4/Makefile.am (FvwmM4_DEPENDENCIES):
+	* FvwmIdent/Makefile.am (FvwmIdent_DEPENDENCIES):
+	* FvwmIconMan/Makefile.am (FvwmIconMan_DEPENDENCIES):
+	* FvwmIconBox/Makefile.am (FvwmIconBox_DEPENDENCIES):
+	* FvwmForm/Makefile.am (FvwmForm_DEPENDENCIES):
+	* FvwmEvent/Makefile.am (FvwmEvent_DEPENDENCIES):
+	* FvwmCpp/Makefile.am (FvwmCpp_DEPENDENCIES):
+	* FvwmCascade/Makefile.am (FvwmCascade_DEPENDENCIES):
+	* FvwmButtons/Makefile.am (FvwmButtons_DEPENDENCIES):
+	* FvwmBanner/Makefile.am (FvwmBanner_DEPENDENCIES):
+	* FvwmBacker/Makefile.am (FvwmBacker_DEPENDENCIES):
+	* FvwmAudio/Makefile.am (FvwmAudio_DEPENDENCIES):
+	Added a dependency on libfvwm.a.
+
+1998-11-05  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmPager/FvwmPager.1:
+	* FvwmIdent/FvwmIdent.1: Fixes from Austin Donelly.
+
+	* FvwmIconMan/readconfig.c: Removed stripcpy, since it is
+	identical to the function already available in libfvwm.  Renamed
+	the static GetNextToken() to internal_GetNextToken() to avoid
+	compiler warnings (a non-static version exists in libfvwm).
+
+	* FvwmEvent/Makefile.am (LDADD): Added rplay_LIBS.
+	* FvwmEvent/Makefile.am (INCLUDES): Added rplay_CFLAGS.
+
+	* FvwmAudio/Makefile.am (INCLUDES): Added rplay_CFLAGS.
+
+
+
+Tue Mar  9 21:02:03 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
+
+	* Entries from here on are from the `extras' directory prior to
+	the merge with modules on Tue Mar  9 21:02:03 1999.
+
+
+Mon Mar  8 17:21:09 1999  Steve ROBBINS  <stever@lear.bic.mni.mcgill.ca>
+
+	* FvwmTaskBar/FvwmTaskBar.c:
+	(RedrawWindow): removed C++-style // comments.
+
+1999-03-06  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmWharf/FvwmWharf.c (main):
+	* fvwmperl/fvwmmod.pl (GetConfigInfo):
+	* fvwmperl/FvwmForm.pl (parseline):
+	* fvwmpython/Manual/fvwm_man.html:
+	* fvwmpython/Fvwm.py (FvwmModule.callback):
+	(FvwmModule.callback):
+	(FvwmModule.set_mask):
+	* fvwmperl/MiniPerl.pl:
+	* fvwmperl/FvwmDebug.pl:
+	* FvwmDebug/FvwmDebug.1:
+	* FvwmConfig/FvwmConfig.C (main):
+	* FvwmCommand/scripts/focus-link.pl (init):
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	* FvwmScript/FvwmScript.c (main):
+	* fvwmperl/fvwmmod.doc:
+	* FvwmGoodStuff/FvwmGoodStuff.c (main):
+	* FvwmDebug/FvwmDebug.c (main):
+	(list_end):
+	Rerenamed builtin functions
+	  Send_ConfigInfo <- SendConfigInfo
+	  Send_WindowList <- SendWindowList
+	  set_mask        <- SetMask
+
+1999-03-05  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmWharf/FvwmWharf.c (main):
+	* fvwmperl/fvwmmod.pl (GetConfigInfo):
+	* fvwmperl/FvwmForm.pl (parseline):
+	* fvwmpython/Manual/fvwm_man.html:
+	* fvwmpython/Fvwm.py (FvwmModule.callback):
+	(FvwmModule.callback):
+	(FvwmModule.set_mask):
+	* fvwmperl/MiniPerl.pl:
+	* fvwmperl/FvwmDebug.pl:
+	* FvwmDebug/FvwmDebug.1:
+	* FvwmConfig/FvwmConfig.C (main):
+	* FvwmCommand/scripts/focus-link.pl (init):
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	* FvwmScript/FvwmScript.c (main):
+	* fvwmperl/fvwmmod.doc:
+	* FvwmGoodStuff/FvwmGoodStuff.c (main):
+	* FvwmDebug/FvwmDebug.c (main):
+	(list_end):
+	Renamed builtin functions
+	  Send_ConfigInfo -> SendConfigInfo
+	  Send_WindowList -> SendWindowList
+	  set_mask        -> SetMask
+
+1999-03-04  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmTaskBar/FvwmTaskBar.1:
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine):
+	(RedrawWindow): applied AutoFocus patch
+
+Thu Mar  4 01:41:47 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/icons.c:
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmScript/FvwmScript.c (LoadIcon):
+	* FvwmGoodStuff/icons.c: replace findIconFile with findImageFile.
+
+Thu Mar  4 00:36:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/Scripts/system.fvwmrc: removed Icon, Pixmap, and
+	Module Paths.
+
+Thu Mar  4 00:34:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/Start.c: replaced IconPath by ImagePath.
+
+Wed Mar  3 23:56:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/FvwmScript.c (LoadIcon):
+	* FvwmScript/Widgets/Tools.h:
+	* FvwmWharf/Wharf.h:
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmWharf/FvwmWharf.1:
+	* FvwmWharf/icons.c:
+	* FvwmGoodStuff/icons.c (GetXPMFile):
+	* FvwmGoodStuff/FvwmGoodStuff.1:
+	* FvwmGoodStuff/FvwmGoodStuff.h:
+	* FvwmGoodStuff/FvwmGoodStuff.c: replaced iconPath and pixmapPath
+	by imagePath.
+
+Sun Feb 28 12:10:31 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/ButtonArray.h: include libs/Picture.h for Picture
+	defintion.
+
+Sun Feb 28 11:02:46 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/Start.c:
+	* FvwmTaskBar/FvwmTaskBar.c: removed all traces of PixmapPath; use
+	IconPath only.
+
+1999-02-15  Bob Woodside <proteus@pcnet.com>
+
+	* FvwmConsole/FvwmConsole.h: Switched the order of the includes for
+	un.h and sockets.h, to correct a compile failure under Linux 2.2.1.
+
+1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmGoodStuff/FvwmGoodStuff.c (RelieveWindow):
+	* FvwmGoodStuff/FvwmGoodStuff.h: removed inline from declaration of
+	RelieveWindow
+
+1999-01-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmConfig/WinBase.C: Removed include of strings.h, moved
+	include of config.h to top.
+
+1999-01-13  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmTaskBar/FvwmTaskBar.c (ParseConfigLine): Made argument just
+	"char", since "unsigned char" caused problems on systems with
+	signed chars.
+
+	* FvwmConsole/FvwmConsole.c: Removed non-constant pointer from
+	initializer of xterm_a.
+
+Sun Jan 10 23:13:45 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmGoodStuff/FvwmGoodStuff.c (main): Inserted parentheses
+	around && within ||.
+
+Sun Jan 10 23:06:00 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmDebug/FvwmDebug.c: Removed unused variables.
+
+Sun Jan 10 21:11:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	* FvwmScript/FvwmScript.c (main):
+	* FvwmPipe/FvwmPipe.c (main):
+	* FvwmGoodStuff/FvwmGoodStuff.c (main):
+	* FvwmDebug/FvwmDebug.c (main): Fixed "control reaches end of
+	non-void function" bug.
+
+Sun Jan 10 15:14:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmTaskBar/Colors.c:
+	* FvwmGoodStuff/FvwmGoodStuff.c (GetHilite): Removed min & max
+	macros; they are already in config.h.
+
+Sun Jan 10 15:11:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCommand/FvwmCommand.c:
+	* FvwmCommand/FvwmCommand.h: Replaced select() code conditional on
+	__hpux with code that uses SELECT_TYPE_ARG234.
+
+Sun Jan 10 15:08:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmCommand/FvwmCommand.h: Replaced __linux with HAVE_GETOPT_H.
+
+Sun Jan 10 15:05:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/icons.c:
+	* FvwmGoodStuff/icons.c: Replaced NeXT with HAVE_FNCTL_H.
+
+Sun Jan 10 15:03:26 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmGoodStuff/FvwmGoodStuff.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmWharf/FvwmWharf.c: Replaced messy set of symbols with
+	HAVE_SYS_SELECT_H.
+
+Sun Jan 10 15:01:37 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmGoodStuff/FvwmGoodStuff.c: Replaced symbol ISC with
+	HAVE_SYS_BSDTYPES_H.
+
+1999-01-08  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmTaskBar/**: some general cleanup
+
+	* FvwmTaskBar/FvwmTaskBar.c (ErrorHandler): added missing return value
+
+	* FvwmTaskBar/FvwmTaskBar.c (ReadFvwmPipe):
+	(ProcessMessage):
+	* FvwmTaskBar/ButtonArray.c (ButtonNew):
+	(DrawButtonArray):
+	(LocateButton):
+	removed unused variables
+
+	* FvwmTaskBar/Goodies.c: Applied a RedHat bugfix for "mailbox"
+
+1999-01-06  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmConsole/Makefile.am: Use X_EXTRA_LIBS instead of socket_LIBS.
+
+1998-12-02  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmCommand/Makefile.am: Put FvwmCommand into bindir, not the
+	module directory.  FvwmCommandS still goes in the module dir.
+
+1998-12-02  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmTaskBar/FvwmTaskBar.h: Update prototype for ParseConfig.
+
+	* FvwmTaskBar/FvwmTaskBar.1: Update config file reading note, bugs
+	info, and remove references to fvwm95.
+
+	* FvwmTaskBar/FvwmTaskBar.c: Use GetConfigLine to read the config.
+
+1998-11-24  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmScript/types.h: Remove headers that are duplicated (and
+	better tested for by autoconf) in the config.h file.
+
+	* FvwmConsole/FvwmConsole.h: Move sys/types.h include nearer the
+	top, before sys/select.h.
+
+1998-11-20  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmGoodStuff/FvwmGoodStuff.c (CreateWindow): border size bugfix
+
+Tue Nov 10 10:23:11 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript: Added the yacc & lex output (scanner.c, script.c and
+	script.h) to the CVS tree, so you can build without having these
+	tools.  Removed the old version of the yacc/lex input (the
+	Compilers subdirectory).
+
+Tue Nov 10 10:05:05 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript/Makefile.am (EXTRA_DIST): Added script.h.
+
+Tue Nov 10 08:44:34 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript: Copied the yacc & lex source files from the Compiler
+	subdirectory, and changed the makefile to build the .c and .h
+	files from scanner.l and script.y.
+
+Mon Nov  9 18:56:50 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* Makefile.am (SUBDIRS): Removed fvwmperl, since this version is
+	known to be obsolete.  Removed fvwmpython on suspicion of being
+	obsolete.
+
+1998-11-06  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmWharf/Makefile.am (FvwmWharf_DEPENDENCIES):
+	* FvwmTaskBar/Makefile.am (FvwmTaskBar_DEPENDENCIES):
+	* FvwmScript/Makefile.am (FvwmScript_DEPENDENCIES):
+	* FvwmPipe/Makefile.am (FvwmPipe_DEPENDENCIES):
+	* FvwmGoodStuff/Makefile.am (FvwmGoodStuff_DEPENDENCIES):
+	* FvwmCommand/Makefile.am (FvwmCommand_DEPENDENCIES,FvwmCommandS_DEPENDENCIES):
+	* FvwmConfig/Makefile.am (FvwmConfig_DEPENDENCIES):
+	* FvwmConsole/Makefile.am (FvwmConsole_DEPENDENCIES,FvwmConsoleC_DEPENDENCIES):
+	* FvwmDebug/Makefile.am (FvwmDebug_DEPENDENCIES):
+	Added a dependency on libfvwm.a.
+
+	* FvwmConsole/FvwmConsole.h: Remove reference to internal Linux
+	include files.
+
+1998-11-05  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmScript/FvwmScript.c: Change DEBUG surrounding bounds checker
+	code to MEMDEBUG, so you don't need the special library to enable
+	debugging.
+
+	* FvwmCommand/FvwmCommand.h: Remove reference to internal Linux
+	include files.
+	* FvwmCommand/FvwmCommand.c: Include getopt.h.
+
+	* FvwmScript/Instructions.c (RemainderOfDiv): If the host doesn't
+	have div(), just return an error message.
+
+1998-11-05  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
+
+	* FvwmWharf/Wharf.h: Made icon_info.depth a signed char, because
+	it is sometimes compared with -1.
+
+	* FvwmDebug/FvwmDebug.h (setvbuf): Checks for HAVE_SETVBUF and
+	SETVBUF_REVERSED.
+
+	* FvwmTaskBar/Makefile.am (INCLUDES):
+	* FvwmPipe/Makefile.am (INCLUDES):
+	* FvwmDebug/Makefile.am (INCLUDES):
+	* FvwmConsole/Makefile.am (INCLUDES): Added xpm_CFLAGS, since
+	xpm.h is included by fvwmlib.h.
+
+1998-11-04  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmAnimate/FvwmAnimate.c: Fixed bug where AnimateResizeLine was
+	drawing 5 segments when it only wanted 4.
