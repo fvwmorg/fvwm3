@@ -639,6 +639,12 @@ static float test_fit(
 			EWMH_GetStrutIntersection(
 				x11, y11, x12, y12, use_percent);
 	}
+	else /* EWMH_USE_DYNAMIC_WORKING_AREA, count the base strut */ 
+	{
+		aoi +=  EWMH_STRUT_PLACEMENT_PENALTY(t) *
+			EWMH_GetBaseStrutIntersection(
+				x11, y11, x12, y12, use_percent);
+	}
 	return aoi;
 }
 

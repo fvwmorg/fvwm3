@@ -994,8 +994,11 @@ float get_intersection(
 	return ret;
 }
 
-float EWMH_GetStrutIntersection(
-	int x11, int y11, int x12, int y12, Bool use_percent)
+static
+float ewmh_GetStrutIntersection(
+	int x11, int y11, int x12, int y12,
+	int left, int right, int top, int bottom,
+	Bool use_percent)
 {
 	float ret = 0;
 	int x21, y21, x22, y22;
@@ -1003,13 +1006,12 @@ float EWMH_GetStrutIntersection(
 	/* left */
 	x21 = 0;
 	y21 = 0;
-	x22 = Scr.Desktops->ewmh_working_area.x;
+	x22 = left;
 	y22 = Scr.MyDisplayHeight;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 	/* right */
-	x21 = Scr.Desktops->ewmh_working_area.x
-		+ Scr.Desktops->ewmh_working_area.width;
+	x21 = Scr.MyDisplayWidth - right;
 	y21 = 0;
 	x22 = Scr.MyDisplayWidth;
 	y22 = Scr.MyDisplayHeight;
@@ -1019,19 +1021,43 @@ float EWMH_GetStrutIntersection(
 	x21 = 0;
 	y21 = 0;
 	x22 = Scr.MyDisplayWidth;
-	y22 = Scr.Desktops->ewmh_working_area.y;
+	y22 = top;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 	/* bottom */
 	x21 = 0;
-	y21 = Scr.Desktops->ewmh_working_area.y
-		+ Scr.Desktops->ewmh_working_area.height;
+	y21 = Scr.MyDisplayHeight - bottom;
 	x22 = Scr.MyDisplayWidth;
 	y22 = Scr.MyDisplayHeight;
 	ret += get_intersection(
 		x11, y11, x12, y12, x21, y21, x22, y22, use_percent);
 
 	return ret;
+}
+
+float EWMH_GetBaseStrutIntersection(
+	int x11, int y11, int x12, int y12, Bool use_percent)
+{
+	return ewmh_GetStrutIntersection(
+		x11, y11, x12, y12, ewmhc.BaseStrut.left, ewmhc.BaseStrut.right,
+		ewmhc.BaseStrut.top, ewmhc.BaseStrut.bottom, use_percent);
+}
+
+float EWMH_GetStrutIntersection(
+	int x11, int y11, int x12, int y12, Bool use_percent)
+{
+	int left, right, top, bottom;
+
+	left = Scr.Desktops->ewmh_working_area.x;
+	right = Scr.MyDisplayWidth -
+		(Scr.Desktops->ewmh_working_area.x
+		 + Scr.Desktops->ewmh_working_area.width);
+	top = Scr.Desktops->ewmh_working_area.y;
+	bottom = Scr.MyDisplayHeight -
+		(Scr.Desktops->ewmh_working_area.y
+		 + Scr.Desktops->ewmh_working_area.height);
+	return ewmh_GetStrutIntersection(
+		x11, y11, x12, y12, left, right, top, bottom, use_percent);
 }
 
 /*

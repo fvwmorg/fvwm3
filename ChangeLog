@@ -1,3 +1,12 @@
+2003-12-04  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/placement.c (test_fit):
+	* fvwm/ewmh.h:
+	* fvwm/ewmh.c (ewmh_GetStrutIntersection):
+	(EWMH_GetBaseStrutIntersection):
+	(EWMH_GetStrutIntersection):
+	Fixed placement vs the base struts
+
 2003-11-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
