@@ -70,20 +70,27 @@
 
 typedef enum
 {
-	PR_POS_ALGORITHM
+	PR_POS_NORMAL = 0,
+	PR_POS_IGNORE_PPOS,
+	PR_POS_USE_PPOS,
+	PR_POS_IGNORE_USPOS,
+	PR_POS_USE_USPOS,
+	PR_POS_PLACE_AGAIN,
+	PR_POS_CAPTURE,
+	PR_POS_USPOS_OVERRIDE_SOS
 } preason_pos_t;
 
 typedef enum
 {
-	PR_SCREEN_CURRENT,
+	PR_SCREEN_CURRENT = 0,
 	PR_SCREEN_STYLE,
 	PR_SCREEN_X_RESOURCE_FVWMSCREEN,
-	PR_SCREEN_IGNORE_CAPTURE
+	PR_SCREEN_IGNORE_CAPTURE,
 } preason_screen_t;
 
 typedef enum
 {
-	PR_PAGE_CURRENT,
+	PR_PAGE_CURRENT = 0,
 	PR_PAGE_STYLE,
 	PR_PAGE_X_RESOURCE_PAGE,
 	PR_PAGE_IGNORE_CAPTURE,
@@ -93,7 +100,7 @@ typedef enum
 
 typedef enum
 {
-	PR_DESK_CURRENT,
+	PR_DESK_CURRENT = 0,
 	PR_DESK_STYLE,
 	PR_DESK_X_RESOURCE_DESK,
 	PR_DESK_X_RESOURCE_PAGE,
@@ -112,6 +119,12 @@ typedef struct
 		preason_pos_t reason;
 		int x;
 		int y;
+		int algo;
+		unsigned do_not_manual_icon_placement : 1;
+		unsigned do_adjust_off_screen : 1;
+		unsigned do_adjust_off_page : 1;
+		unsigned has_tile_failed : 1;
+		unsigned has_manual_failed : 1;
 	} pos;
 	struct
 	{
@@ -758,9 +771,9 @@ static float test_fit(
 
 static void __place_get_placement_flags(
 	placement_flags_t *ret_flags, FvwmWindow *fw, style_flags *sflags,
-	initial_window_options_t *win_opts, int mode)
+	initial_window_options_t *win_opts, int mode,
+	placement_reason_t *reason)
 {
-	/*!!!*/
 	Bool override_ppos;
 	Bool override_uspos;
 	Bool has_ppos = False;
@@ -774,7 +787,7 @@ static void __place_get_placement_flags(
 	 * OR
 	 *
 	 *  The program specified a PPosition hint and it is not overridden
-	 *  with *  the No(Transient)PPosition style.
+	 *  with the No(Transient)PPosition style.
 	 *
 	 * Windows without a position hint are placed using wm placement.
 	 */
@@ -788,17 +801,34 @@ static void __place_get_placement_flags(
 		override_ppos = SUSE_NO_PPOSITION(sflags);
 		override_uspos = SUSE_NO_USPOSITION(sflags);
 	}
-	if ((fw->hints.flags & PPosition) && !override_ppos)
+	if (fw->hints.flags & PPosition)
 	{
-		has_ppos = True;
+		if (!override_ppos)
+		{
+			has_ppos = True;
+			reason->pos.reason = PR_POS_USE_PPOS;
+		}
+		else
+		{
+			reason->pos.reason = PR_POS_IGNORE_PPOS;
+		}
 	}
-	if ((fw->hints.flags & USPosition) && !override_uspos)
+	if (fw->hints.flags & USPosition)
 	{
-		has_uspos = True;
+		if (!override_uspos)
+		{
+			has_uspos = True;
+			reason->pos.reason = PR_POS_USE_USPOS;
+		}
+		else if (reason->pos.reason != PR_POS_USE_PPOS)
+		{
+			reason->pos.reason = PR_POS_USE_USPOS;
+		}
 	}
 	if (mode == PLACE_AGAIN)
 	{
 		ret_flags->do_not_use_wm_placement = False;
+		reason->pos.reason = PR_POS_PLACE_AGAIN;
 	}
 	else if (has_ppos || has_uspos)
 	{
@@ -807,12 +837,14 @@ static void __place_get_placement_flags(
 	else if (win_opts->flags.do_override_ppos)
 	{
 		ret_flags->do_not_use_wm_placement = True;
+		reason->pos.reason = PR_POS_CAPTURE;
 	}
 	else if (!ret_flags->do_honor_starts_on_page &&
 		 fw->wmhints && (fw->wmhints->flags & StateHint) &&
 		 fw->wmhints->initial_state == IconicState)
 	{
 		ret_flags->do_forbid_manual_placement = True;
+		reason->pos.do_not_manual_icon_placement = 1;
 	}
 
 	return;
@@ -825,8 +857,6 @@ static Bool __place_get_wm_pos(
 	initial_window_options_t *win_opts, placement_reason_t *reason,
 	int pdeltax, int pdeltay)
 {
-	/*!!!*/
-
 	unsigned int placement_mode = SPLACEMENT_MODE(sflags);
 	FvwmWindow *fw = exc->w.fw;
 	Bool rc;
@@ -865,6 +895,7 @@ static Bool __place_get_wm_pos(
 		}
 	}
 	/* first, try various "smart" placement */
+	reason->pos.algo = placement_mode;
 	switch (placement_mode)
 	{
 	case PLACE_TILEMANUAL:
@@ -875,6 +906,7 @@ static Bool __place_get_wm_pos(
 		{
 			break;
 		}
+		reason->pos.has_tile_failed = 1;
 		/* fall through to manual placement */
 	case PLACE_MANUAL:
 	case PLACE_MANUAL_B:
@@ -937,6 +969,7 @@ static Bool __place_get_wm_pos(
 			XBell(dpy, 0);
 			xl = 0;
 			yt = 0;
+			reason->pos.has_manual_failed = 1;
 		}
 		if (flags.do_honor_starts_on_page)
 		{
@@ -959,6 +992,7 @@ static Bool __place_get_wm_pos(
 		{
 			break;
 		}
+		reason->pos.has_tile_failed = 1;
 		/* fall through to cascade placement */
 	case PLACE_CASCADE:
 	case PLACE_CASCADE_B:
@@ -984,15 +1018,6 @@ static Bool __place_get_wm_pos(
 		}
 		attr_g->x = Scr.cascade_x + PageLeft - pdeltax;
 		attr_g->y = Scr.cascade_y + PageTop - pdeltay;
-
-		/* migo: what should these crazy calculations mean? */
-#if 0
-		fw->frame_g.x = PageLeft + attr_g->x +
-			fw->attr_backup.border_width + 10;
-		fw->frame_g.y = PageTop + attr_g->y +
-			fw->attr_backup.border_width + 10;
-#endif
-
 		/* try to keep the window on the screen */
 		get_window_borders(fw, &b);
 		if (attr_g->x + fw->frame_g.width >= PageRight)
@@ -1028,7 +1053,6 @@ static Bool __place_get_wm_pos(
 		/* can't happen */
 		break;
 	}
-
 	if (flags.is_smartly_placed)
 	{
 		/* "smart" placement succed, we have done ... */
@@ -1046,17 +1070,15 @@ static Bool __place_get_nowm_pos(
 	initial_window_options_t *win_opts, placement_reason_t *reason,
 	int pdeltax, int pdeltay)
 {
-	/*!!!*/
 	FvwmWindow *fw = exc->w.fw;
 	size_borders b;
 
 	if (!win_opts->flags.do_override_ppos)
 	{
-		SET_PLACED_BY_FVWM(fw,False);
+		SET_PLACED_BY_FVWM(fw, False);
 	}
 	/* the USPosition was specified, or the window is a transient, or it
 	 * starts iconic so place it automatically */
-
 	if (SUSE_START_ON_SCREEN(sflags) && flags.do_honor_starts_on_screen)
 	{
 		fscreen_scr_t mangle_screen;
@@ -1084,6 +1106,7 @@ static Bool __place_get_nowm_pos(
 			/* whoever set this hint knew exactly what he was
 			 * doing; so ignore the StartsOnScreen style */
 			flags.do_honor_starts_on_screen = 0;
+			reason->pos.reason = PR_POS_USPOS_OVERRIDE_SOS;
 		}
 		else if (attr_g->x + attr_g->width < screen_g.x ||
 			 attr_g->x >= screen_g.x + screen_g.width ||
@@ -1097,9 +1120,9 @@ static Bool __place_get_nowm_pos(
 			FScreenTranslateCoordinates(
 				NULL, start_style.screen, NULL, FSCREEN_GLOBAL,
 				&attr_g->x, &attr_g->y);
+			reason->pos.do_adjust_off_screen = 1;
 		}
 	}
-
 	/* If SkipMapping, and other legalities are observed, adjust for
 	 * StartsOnPage. */
 	if (DO_NOT_SHOW_ON_MAP(fw) && flags.do_honor_starts_on_page &&
@@ -1118,6 +1141,11 @@ static Bool __place_get_nowm_pos(
 #endif
 		)
 	{
+		int old_x;
+		int old_y;
+
+		old_x = attr_g->x;
+		old_y = attr_g->y;
 		/* We're placing a SkipMapping window - either capturing one
 		 * that's previously been mapped, or overriding USPosition - so
 		 * what we have here is its actual untouched coordinates. In
@@ -1142,6 +1170,10 @@ static Bool __place_get_nowm_pos(
 		}
 		attr_g->y %= Scr.MyDisplayHeight;
 		attr_g->y -= pdeltay;
+		if (attr_g->x != old_x || attr_g->y != old_y)
+		{
+			reason->pos.do_adjust_off_page = 1;
+		}
 	}
 	/* put it where asked, mod title bar */
 	/* if the gravity is towards the top, move it by the title height */
@@ -1447,7 +1479,7 @@ static Bool __place_window(
 	}
 
 	/* pick a location for the window. */
-	__place_get_placement_flags(&flags, fw, sflags, win_opts, mode);
+	__place_get_placement_flags(&flags, fw, sflags, win_opts, mode, reason);
 	if (flags.do_not_use_wm_placement)
 	{
 		rc = __place_get_nowm_pos(
@@ -1460,6 +1492,8 @@ static Bool __place_window(
 			exc, sflags, attr_g, flags, screen_g, start_style,
 			mode, win_opts, reason, pdeltax, pdeltay);
 	}
+	reason->pos.x = attr_g->x;
+	reason->pos.y = attr_g->y;
 
 	return rc;
 }
@@ -1567,26 +1601,12 @@ static void __place_handle_x_resources(
 
 static void __explain_placement(FvwmWindow *fw, placement_reason_t *reason)
 {
-#if 0
-	typedef enum
-		{
-			PR_POS_ALGORITHM
-		} preason_pos_t;
-	typedef struct
-	{
-		struct
-		{
-			preason_pos_t reason;
-			int x;
-			int y;
-		} pos;
-	} placement_reason_t;
-#endif
 	char explanation[2048];
 	char *r;
 	char *s;
 	char t[32];
-	unsigned do_show_page;
+	int do_show_page;
+	int is_placed_by_algo;
 
 	*explanation = 0;
 	s = explanation;
@@ -1709,7 +1729,7 @@ static void __explain_placement(FvwmWindow *fw, placement_reason_t *reason)
 		}
 		FScreenSpecToString(t, 32, reason->screen.screen);
 		sprintf(
-			s, "  %s: %d %d %dx%d (%s)\n",
+			s, "  screen: %s: %d %d %dx%d (%s)\n",
 			t, reason->screen.g.x, reason->screen.g.y,
 			reason->screen.g.width, reason->screen.g.height, r);
 		s += strlen(s);
@@ -1722,8 +1742,108 @@ static void __explain_placement(FvwmWindow *fw, placement_reason_t *reason)
 		}
 	}
 	/* position */
-	sprintf(s, "  position !!! !!!");
-	/*!!!pos*/
+	is_placed_by_algo = 0;
+	switch (reason->pos.reason)
+	{
+	case PR_POS_NORMAL:
+		is_placed_by_algo = 1;
+		r = "normal placement";
+		break;
+	case PR_POS_IGNORE_PPOS:
+		is_placed_by_algo = 1;
+		r = "ignored program specified position";
+		break;
+	case PR_POS_USE_PPOS:
+		r = "used program specified position";
+		break;
+	case PR_POS_IGNORE_USPOS:
+		is_placed_by_algo = 1;
+		r = "ignored user specified position";
+		break;
+	case PR_POS_USE_USPOS:
+		r = "used user specified position";
+		break;
+	case PR_POS_PLACE_AGAIN:
+		is_placed_by_algo = 1;
+		r = "by PlaceAgain command";
+		break;
+	case PR_POS_CAPTURE:
+		r = "window was (re)captured";
+		break;
+	case PR_POS_USPOS_OVERRIDE_SOS:
+		r = "StartsOnPage style overridden by application via USPos";
+		break;
+	default:
+		r = "bug";
+		break;
+	}
+	sprintf(s, "  position %d %d", reason->pos.x, reason->pos.y);
+	s += strlen(s);
+	if (is_placed_by_algo == 1)
+	{
+		char *a;
+
+		switch (reason->pos.algo)
+		{
+		case PLACE_TILEMANUAL:
+			a = "TileManual";
+			break;
+		case PLACE_MANUAL:
+		case PLACE_MANUAL_B:
+			a = "Manual";
+			break;
+		case PLACE_MINOVERLAPPERCENT:
+			a = "MinOverlapPercent";
+			break;
+		case PLACE_TILECASCADE:
+			a = "TileCascade";
+			break;
+		case PLACE_CASCADE:
+		case PLACE_CASCADE_B:
+			a = "Cascade";
+			break;
+		case PLACE_MINOVERLAP:
+			a = "MinOverlap";
+			break;
+		default:
+			a = "bug";
+			break;
+		}
+		sprintf(s, ", placed by fvwm (%s)\n", r);
+		s += strlen(s);
+		sprintf(s, "    placement method: %s\n", a);
+		s += strlen(s);
+		if (reason->pos.do_not_manual_icon_placement == 1)
+		{
+			sprintf(s, "    (icon not placed manually)\n");
+			s += strlen(s);
+		}
+		if (reason->pos.has_tile_failed == 1)
+		{
+			sprintf(s, "    (tile placement failed)\n");
+			s += strlen(s);
+		}
+		if (reason->pos.has_manual_failed == 1)
+		{
+			sprintf(s, "    (manual placement failed)\n");
+			s += strlen(s);
+		}
+	}
+	else
+	{
+		sprintf(s, "  (%s)\n", r);
+		s += strlen(s);
+	}
+	if (reason->pos.do_adjust_off_screen == 1)
+	{
+		sprintf(s, "    (adjusted to force window on screen)\n");
+		s += strlen(s);
+	}
+	if (reason->pos.do_adjust_off_page == 1)
+	{
+		sprintf(s, "    (adjusted to force window on page)\n");
+		s += strlen(s);
+	}
 	fvwm_msg(
 		INFO, "__explain_placement", explanation, (int)FW_W(fw),
 		fw->name.name);
