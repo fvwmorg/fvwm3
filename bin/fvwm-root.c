@@ -191,7 +191,13 @@ int main(int argc, char **argv)
 	}
 	else
 	{
-		SetRootWindow(argv[argc-1]);
+		int rc;
+
+		rc = SetRootWindow(argv[argc-1]);
+		if (rc == -1)
+		{
+			exit(1);
+		}
 	}
 
 	prop = XInternAtom(dpy, "_XSETROOT_ID", False);
@@ -249,11 +255,12 @@ int main(int argc, char **argv)
 			(unsigned char *)  &dp, 1);
 	}
 	XCloseDisplay(dpy);
+
 	return 0;
 }
 
 
-void SetRootWindow(char *tline)
+int SetRootWindow(char *tline)
 {
 	Pixmap shapeMask = None, temp_pix = None, alpha = None;
 	int w, h, depth;
@@ -275,9 +282,9 @@ void SetRootWindow(char *tline)
 		 * getenv("FVWM_VISUALID") is NULL in any case. But this use
 		 * the same color limit than fvwm.
 		 * This is "broken" when fvwm use depth <= 8 and a private
-		 * color map (i.e., fvwm is started with the -visual{ID} option),
-		 * because when fvwm use a private color map the default color
-		 * limit is 244. There is no way to know here if
+		 * color map (i.e., fvwm is started with the -visual{ID}
+		 * option), because when fvwm use a private color map the
+		 * default color limit is 244. There is no way to know here if
 		 * getenv("FVWM_VISUALID") !=NULL.
 		 * So, in this unfortunate case the user should use the
 		 * --color-limit option */
@@ -309,7 +316,7 @@ void SetRootWindow(char *tline)
 		fprintf(
 			stderr, "[fvwm-root] failed to load image file '%s'\n",
 			tline);
-		return;
+		return -1;
 	}
 	if (depth == Pdepth)
 	{
@@ -332,4 +339,6 @@ void SetRootWindow(char *tline)
 	XSetWindowBackgroundPixmap(dpy, root, rootImage);
 	save_colors = 1;
 	XClearWindow(dpy, root);
+
+	return 0;
 }
