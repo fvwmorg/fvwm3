@@ -57,13 +57,14 @@ fvwm_imagepath="@FVWM_IMAGEPATH@"
 fvwm_userdir='$HOME/.fvwm'
 fvwm_exe='fvwm2'
 
+with_bidi=@with_bidi@
 with_ewmh=@with_ewmh@
-with_fribidi=@with_fribidi@
 with_gnomehints=@with_gnomehints@
 with_gtk=@with_gtk@
 with_gdkimlib=@with_gdkimlib@
 with_gnomelibs=@with_gnomelibs@
 with_multibyte=@with_multibyte@
+with_perllib=@with_perllib@
 with_readline=@with_readline@
 with_rplay=@with_rplay@
 with_shape=@with_shape@
@@ -120,13 +121,14 @@ while test $# -gt 0; do
 			echo "$fvwm_exe" ;;
 
 		--supports|-supports|-s)
+			test "$with_bidi"       = "yes" && echo "bidi"
 			test "$with_ewmh"       = "yes" && echo "ewmh"
-			test "$with_fribidi"    = "yes" && echo "fribidi"
 			test "$with_gnomehints" = "yes" && echo "gnome-hints"
 			test "$with_gtk"        = "yes" && echo "gtk"
 			test "$with_gdkimlib"   = "yes" && echo "gdk-imlib"
 			test "$with_gnomelibs"  = "yes" && echo "gnome-libs"
 			test "$with_multibyte"  = "yes" && echo "multibyte"
+			test "$with_perllib"    = "yes" && echo "perllib"
 			test "$with_readline"   = "yes" && echo "readline"
 			test "$with_rplay"      = "yes" && echo "rplay"
 			test "$with_shape"      = "yes" && echo "shape"
@@ -167,13 +169,14 @@ while test $# -gt 0; do
 			echo "	Default UserDir: $fvwm_userdir"
 			echo ""
 			echo "Support for features:"
+			echo "	bidi (bi-directionality): $with_bidi"
 			echo "	ewmh (extended window manager hints): $with_ewmh"
-			echo "	fribidi (bi-directionality): $with_fribidi"
 			echo "	gnome-hints (window manager hints): $with_gnomehints"
 			echo "	gtk (FvwmGtk): $with_gtk"
 			echo "	gdk-imlib (in FvwmGtk): $with_gdkimlib"
 			echo "	gnome-libs (in FvwmGtk): $with_gnomelibs"
 			echo "	multibyte: $with_multibyte"
+			echo "	perllib (perl library installed): $with_perllib"
 			echo "	readline: $with_readline"
 			echo "	rplay: $with_rplay"
 			echo "	shape (shaped windows): $with_shape"

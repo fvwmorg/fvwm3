@@ -38,6 +38,7 @@ What gets installed, and where
 * all manual pages are installed into ${mandir}/man1
 * some configuration files are installed into ${datadir}/fvwm, for example,
   FvwmForm & FvwmScript configurations and others
+* perl library is installed into ${datadir}/fvwm/perllib
 
 where VERSION is the version string of FVWM, typically something like
 "2.4.0".  No other files are installed.  There are sample system.fvwm2rc
@@ -365,6 +366,32 @@ you don't normally use shaped windows, you have to decide for yourself.
 
 Note: if it is compiled in, run time detection is used to make sure
 that the currently running X server supports it.
+
+
+  --disable-bidi                disable bi-directional text support
+  ~~~~~~~~~~~~~~
+
+The bi-directional text support is used to properly handle right-to-left
+languages, like Hebrew and Arabic.  By default, fribidi library is probed
+and this support is enabled if fribidi works.  This option explicitly
+disable the bi-directional text support.
+
+
+  --with-fribidi-bindir         directory of fribidi-config if not in PATH
+  ~~~~~~~~~~~~~~~~~~~~~
+
+The location of fribidi libraries and headers (needed for Bidi support)
+are determined using fribidi-config utility.  This option specifies a
+directory where fribidi-config is installed, it it is not in your $PATH.
+
+
+  --disable-perllib             disable installing FVWM perl library
+  ~~~~~~~~~~~~~~~~~
+
+By default the FVWM perl library is installed together with all other
+data files.  Perl library may be used to write FVWM modules in perl.
+Currently the FvwmPerl module uses it.  This option disables installing
+the FVWM perl library.
 
 
   --with-gnome                  no, yes or prefix for GNOME files (FvwmGtk only)

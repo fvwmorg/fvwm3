@@ -1,3 +1,8 @@
+2002-03-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-config.in:
+	added --supports-bidi (renamed) and --supports-perllib
+
 2002-03-01  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure_dev.sh:
