@@ -513,6 +513,7 @@ void Loop(void)
 	if (Event.xbutton.button != Button1) {
 	  if (Event.xbutton.button == Button2) {
 	    static int LastX, LastY;
+            static int scr_x, scr_y, scr_w, scr_h;
 
 	    if (LastMapped != -1) {
 	      CloseFolder(LastMapped);
@@ -544,17 +545,21 @@ void Loop(void)
 	      }
 	      XTranslateCoordinates(
 		dpy,main_win,Root,LastX,LastY,&LastX,&LastY,&junk);
+              /*!!! Note: maybe it will be better to use (LastX+W/2,LastY+H/2)
+                in ScrRect query? That could help in pathological cases when
+                Wharf is not completely on a single screen. */
+              XineramaSupportGetScrRect(LastX, LastY, &scr_x, &scr_y, &scr_w, &scr_h);
 	      if (num_rows<num_columns) { /* horizontal */
-		if (LastY > display_height/2) {
-		  CornerY = display_height-BUTTONHEIGHT;
+		if (LastY > scr_y + scr_h / 2) {
+		  CornerY = scr_y+scr_h-BUTTONHEIGHT;
 		} else {
-		  CornerY = 0;
+		  CornerY = scr_y;
 		}
 		if (Event.xbutton.x>num_columns*BUTTONWIDTH/2) {
-		  CornerX = display_width - BUTTONWIDTH;
+		  CornerX = scr_x + scr_w - BUTTONWIDTH;
 		  AnimationDir = DIR_TOLEFT;
 		} else {
-		  CornerX = 0;
+		  CornerX = scr_x;
 		  AnimationDir = DIR_TORIGHT;
 		}
 		if (AnimationStyle>0 && AnimateMain) {
@@ -566,16 +571,16 @@ void Loop(void)
 				    BUTTONWIDTH,BUTTONHEIGHT);
 		}
 	      } else {	/* vertical */
-		if (LastX > display_width/2) {
-		  CornerX = display_width - BUTTONWIDTH;
+		if (LastX > scr_x + scr_w/2) {
+		  CornerX = scr_x + scr_w - BUTTONWIDTH;
 		} else {
-		  CornerX = 0;
+		  CornerX = scr_x;
 		}
 		if (Event.xbutton.y>num_rows*BUTTONHEIGHT/2) {
-		  CornerY = display_height-BUTTONHEIGHT;
+		  CornerY = scr_y + scr_h - BUTTONHEIGHT;
 		  AnimationDir = DIR_TOUP;
 		} else {
-		  CornerY = 0;
+		  CornerY = scr_y;
 		  AnimationDir = DIR_TODOWN;
 		}
 		if (AnimationStyle>0 && AnimateMain) {
@@ -1045,6 +1050,10 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row,
   else
   {
     int folderx, foldery, folderw, folderh;
+    int scr_x, scr_y, scr_w, scr_h;
+
+    XineramaSupportGetScrRect(base_x, base_y, &scr_x, &scr_y, &scr_w, &scr_h);
+
     if (*LastMapped != -1)
     {
       CloseFolder(*LastMapped);
@@ -1054,7 +1063,7 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row,
     Folders[folder].mapped = ISMAPPED;
     if(num_columns < num_rows)
     {
-      if((base_x % display_width) > display_width / 2 ) {
+      if((base_x % display_width) > scr_x + scr_w / 2 ) {
 	folderx = base_x+(col-Folders[folder].count)*BUTTONWIDTH-2;
 	dir = DIR_TOLEFT;
       }
@@ -1077,7 +1086,7 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row,
       */
       if (ROWS)
       {
-	if ((base_y % display_height) > display_height / 2) {
+	if ((base_y % display_height) > scr_y + scr_h / 2) {
 	  foldery = base_y-(Folders[folder].count)*BUTTONHEIGHT-2;
 	  dir = DIR_TOUP;
 	}
@@ -1091,7 +1100,7 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row,
       }
       else
       {
-	if((base_x % display_width) > display_width / 2 ) {
+	if((base_x % display_width) > scr_x + scr_w / 2 ) {
 	  folderx = base_x-(Folders[folder].count)*BUTTONWIDTH-2;
 	  dir = DIR_TOLEFT;
 	}
@@ -1106,7 +1115,7 @@ void MapFolder(int folder, int *LastMapped, int base_x, int base_y, int row,
     }
     else
     {
-      if ((base_y % display_height) < display_height / 2) {
+      if ((base_y % display_height) < scr_y + scr_h / 2) {
 	foldery  =base_y+(row+1)*BUTTONHEIGHT;
 	dir = DIR_TODOWN;
       }
