@@ -1894,7 +1894,7 @@ void SetMWM_INFO(Window window)
     motif_wm_info.win = window;
 
     XChangeProperty(dpy,Scr.Root,_XA_MOTIF_WM,_XA_MOTIF_WM,32,
-		    PropModeReplace,(char *)&motif_wm_info,2);
+		    PropModeReplace,(unsigned char *)&motif_wm_info,2);
   }
 }
 

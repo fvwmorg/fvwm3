@@ -131,8 +131,11 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
   XID junk;
 
   if (0 == width || 0 == height)
-    XGetGeometry(dpy, win, &junk, (int *)&junk, (int *)&junk, &width, &height,
-		 (unsigned int *)&junk, (unsigned int *)&junk);
+  {
+    XGetGeometry(
+      dpy, win, &junk, (int *)&junk, (int *)&junk, (unsigned int *)&width,
+      (unsigned int *)&height, (unsigned int *)&junk, (unsigned int *)&junk);
+  }
 
 #ifdef SHAPE
   if (colorset->shape_mask)

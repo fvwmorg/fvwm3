@@ -384,8 +384,8 @@ void resize_move_window(F_CMD_ARGS)
 
   /* gotta have a window */
   w = tmp_win->frame;
-  XGetGeometry(dpy, w, &JunkRoot, &x, &y,
-	       &FinalW, &FinalH, &JunkBW, &JunkDepth);
+  XGetGeometry(dpy, w, &JunkRoot, &x, &y, (unsigned int *)&FinalW,
+	       (unsigned int *)&FinalH, &JunkBW, &JunkDepth);
   FinalX = x;
   FinalY = y;
 
@@ -409,7 +409,8 @@ void resize_move_window(F_CMD_ARGS)
   dx = FinalX - tmp_win->frame_g.x;
   dy = FinalY - tmp_win->frame_g.y;
   /* size will be less or equal to requested */
-  constrain_size(tmp_win, &FinalW, &FinalH, 0, 0, False);
+  constrain_size(tmp_win, (unsigned int *)&FinalW, (unsigned int *)&FinalH,
+		 0, 0, False);
   if (IS_SHADED(tmp_win))
   {
     SetupFrame(tmp_win, FinalX, FinalY, FinalW, tmp_win->frame_g.height, False);
@@ -1875,7 +1876,8 @@ void resize_window(F_CMD_ARGS)
   {
     /* size will be less or equal to requested */
     constrain_size(
-      tmp_win, &drag->width, &drag->height, xmotion, ymotion, False);
+      tmp_win, (unsigned int *)&drag->width, (unsigned int *)&drag->height,
+      xmotion, ymotion, False);
     if (IS_SHADED(tmp_win))
     {
       SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
@@ -2267,7 +2269,8 @@ void resize_window(F_CMD_ARGS)
   {
     /* size will be >= to requested */
     constrain_size(
-      tmp_win, &drag->width, &drag->height, xmotion, ymotion, True);
+      tmp_win, (unsigned int *)&drag->width, (unsigned int *)&drag->height,
+      xmotion, ymotion, True);
     if (IS_SHADED(tmp_win))
     {
       if (HAS_BOTTOM_TITLE(tmp_win))
@@ -2393,7 +2396,8 @@ static void DoResize(
   {
     /* round up to nearest OK size to keep pointer inside rubberband */
     constrain_size(
-      tmp_win, &drag->width, &drag->height, *xmotionp, *ymotionp, True);
+      tmp_win, (unsigned int *)&drag->width, (unsigned int *)&drag->height,
+      *xmotionp, *ymotionp, True);
     if (*xmotionp == 1)
       drag->x = orig->x + orig->width - drag->width;
     if (*ymotionp == 1)
@@ -2910,8 +2914,9 @@ void Maximize(F_CMD_ARGS)
     /* handle command line arguments */
     if (grow_up || grow_down)
     {
-      MaximizeHeight(tmp_win, new_g.width, new_g.x, &new_g.height, &new_g.y,
-		     grow_up, grow_down);
+      MaximizeHeight(
+	  tmp_win, new_g.width, new_g.x, (unsigned int *)&new_g.height,
+	  &new_g.y, grow_up, grow_down);
     }
     else if(val2 > 0)
     {
@@ -2920,8 +2925,9 @@ void Maximize(F_CMD_ARGS)
     }
     if (grow_left || grow_right)
     {
-      MaximizeWidth(tmp_win, &new_g.width, &new_g.x, new_g.height, new_g.y,
-		    grow_left, grow_right);
+      MaximizeWidth(
+	  tmp_win, (unsigned int *)&new_g.width, &new_g.x, new_g.height,
+	  new_g.y, grow_left, grow_right);
     }
     else if(val1 >0)
     {
@@ -2937,7 +2943,8 @@ void Maximize(F_CMD_ARGS)
     }
     /* now maximize it */
     SET_MAXIMIZED(tmp_win, 1);
-    constrain_size(tmp_win, &new_g.width, &new_g.height, 0, 0, False);
+    constrain_size(tmp_win, (unsigned int *)&new_g.width,
+		   (unsigned int *)&new_g.height, 0, 0, False);
     tmp_win->max_g = new_g;
     if (IS_SHADED(tmp_win))
       get_shaded_geometry(tmp_win, &new_g, &tmp_win->max_g);

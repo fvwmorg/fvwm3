@@ -600,7 +600,8 @@ int main(int argc, char **argv)
 {
   int i;
   Window root;
-  int x,y,maxx,maxy,border_width,depth;
+  int x,y,maxx,maxy,border_width;
+  unsigned int depth;
   button_info *b,*ub;
   int geom_option_argc = 0;
 
@@ -810,8 +811,9 @@ int main(int argc, char **argv)
   fprintf(stderr,"OK\n%s: Configuring windows...",MyName);
 #endif
 
-  XGetGeometry(Dpy,MyWindow,&root,&x,&y,&Width,&Height,
-	       &border_width,&depth);
+  XGetGeometry(
+    Dpy, MyWindow, &root, &x, &y, (unsigned int *)&Width,
+    (unsigned int *)&Height, (unsigned int *)&border_width, &depth);
   SetButtonSize(UberButton,Width,Height);
   i=-1;
   ub=UberButton;
@@ -1667,8 +1669,10 @@ static void HandlePanelPress(button_info *b)
     if (ancestor)
     {
       if (
-	XGetGeometry(Dpy, ancestor, &JunkW, &ax, &ay, &aw, &ah, &abw, &d) &&
-	XGetGeometry(Dpy, b->PanelWin, &JunkW, &px, &py, &pw, &ph, &pbw, &d) &&
+	XGetGeometry(Dpy, ancestor, &JunkW, &ax, &ay, (unsigned int *)&aw,
+		     (unsigned int *)&ah, (unsigned int *)&abw, &d) &&
+	XGetGeometry(Dpy, b->PanelWin, &JunkW, &px, &py, (unsigned int *)&pw,
+		     (unsigned int *)&ph, (unsigned int *)&pbw, &d) &&
 	XTranslateCoordinates(
 	  Dpy, b->PanelWin, ancestor, 0, 0, &px, &py, &JunkW))
       {
@@ -2398,7 +2402,9 @@ static void GetPanelGeometry(
     {
       unsigned int dum, dum2;
 
-      XGetGeometry(Dpy, MyWindow, &JunkWin, &bx, &by, &bw, &bh, &dum, &dum2);
+      XGetGeometry(
+	Dpy, MyWindow, &JunkWin, &bx, &by, (unsigned int *)&bw,
+	(unsigned int *)&bh, (unsigned int *)&dum, &dum2);
       XTranslateCoordinates(Dpy, MyWindow, Root, bx, by, &bx, &by, &JunkWin);
     }
     break;

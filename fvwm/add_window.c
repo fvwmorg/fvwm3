@@ -1341,13 +1341,15 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     /****** calculate frame size ******/
     setup_frame_size_limits(tmp_win, &style);
     constrain_size(
-      tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height, 0, 0, False);
+      tmp_win, (unsigned int *)&tmp_win->frame_g.width,
+      (unsigned int *)&tmp_win->frame_g.height, 0, 0, False);
 
     /****** maximize ******/
     if (do_maximize)
     {
       constrain_size(
-	tmp_win, &tmp_win->max_g.width, &tmp_win->max_g.height, 0, 0, False);
+	tmp_win, (unsigned int *)&tmp_win->max_g.width,
+	(unsigned int *)&tmp_win->max_g.height, 0, 0, False);
       get_relative_geometry(&tmp_win->frame_g, &tmp_win->max_g);
       SET_MAXIMIZED(tmp_win, 1);
     }

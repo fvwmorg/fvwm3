@@ -113,7 +113,7 @@ static Bool blockor(char *dest, char *blk1, char *blk2, int length)
 static Bool blockand(char *dest, char *blk1, char *blk2, int length)
 {
   int i;
-  char result = 0xff;
+  char result = (char)0xff;
 
   for (i = 0; i < length; i++)
   {
@@ -127,7 +127,7 @@ static Bool blockand(char *dest, char *blk1, char *blk2, int length)
 static Bool blockunmask(char *dest, char *blk1, char *blk2, int length)
 {
   int i;
-  char result = 0xff;
+  char result = (char)0xff;
 
   for (i = 0; i < length; i++)
   {

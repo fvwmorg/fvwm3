@@ -1606,7 +1606,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
       else
 	w = None;
       ExecuteFunction(
-	fi->action, tmp_win, ev, context, -2, DONT_EXPAND_COMMAND, arguments);
+	fi->action, tmp_win, ev, context, -2, EXPAND_COMMAND, arguments);
     }
     fi = fi->next_item;
   }

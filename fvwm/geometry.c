@@ -502,7 +502,8 @@ void gravity_constrain_size(
   int new_height = new_g.height;
 
   t->frame_g = *rect;
-  constrain_size(t, &(new_width), &(new_height), 0, 0, False);
+  constrain_size(
+    t, (unsigned int *)&new_width, (unsigned int *)&new_height, 0, 0, False);
   if (new_g.width != new_width || new_g.height != new_height)
   {
     gravity_resize(

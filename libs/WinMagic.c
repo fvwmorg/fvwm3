@@ -218,7 +218,7 @@ Window GetTopAncestorWindow(Display *dpy, Window child)
   Window ancestor = child;
   Window last_child = child;
   Window *children;
-  int nchildren;
+  unsigned int nchildren;
 
   if (child == None)
     return None;
@@ -253,7 +253,7 @@ int GetEqualSizeChildren(
   XWindowAttributes cxwa;
   Window JunkW;
   Window *children;
-  int nchildren;
+  unsigned int nchildren;
   int i;
   int j;
 

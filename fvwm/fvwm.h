@@ -130,7 +130,7 @@ typedef struct icon_boxes_struct
   int IconBox[4];                       /* x/y x/y for iconbox */
   short IconGrid[2];                    /* x incr, y incr */
   unsigned is_orphan : 1;
-  unsigned char IconFlags : 3;          /* some bits */
+  unsigned IconFlags : 3;               /* some bits */
   /* IconFill only takes 3 bits.  Defaults are top, left, vert co-ord first */
   /* eg: t l = 0,0,0; l t = 0,0,1; b r = 1,1,0 */
 #define ICONFILLBOT (1<<0)

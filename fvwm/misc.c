@@ -103,6 +103,7 @@ Bool GrabEm(int cursor, int grab_context)
   int i=0,val=0;
   Window grab_win;
   unsigned int mask;
+  int rep;
 
   /* menus.c control itself its busy stuff. No busy stuff at start up.
    * Only one busy grab */
@@ -121,6 +122,7 @@ Bool GrabEm(int cursor, int grab_context)
       Scr.PreviousFocus = Scr.Focus;
     SetFocus(Scr.NoFocusWin,NULL,0);
     grab_win = Scr.Root;
+    rep = 500;
   }
   else
   {
@@ -128,10 +130,12 @@ Bool GrabEm(int cursor, int grab_context)
       grab_win = Scr.Hilite->w;
     else
       grab_win = Scr.Root;
+    /* retry to grab the busy cursor only once */
+    rep = 2;
   }
   mask = ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask
     | EnterWindowMask | LeaveWindowMask;
-  while((i < 500)&&
+  while((i < rep)&&
 	(val = XGrabPointer(
 	  dpy, grab_win, True, mask, GrabModeAsync, GrabModeAsync, Scr.Root,
 	  Scr.FvwmCursors[cursor], CurrentTime) != GrabSuccess))

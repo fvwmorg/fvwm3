@@ -1,3 +1,11 @@
+2000-06-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmConsole/FvwmConsoleC.c:
+	* FvwmButtons/FvwmButtons.c (main):
+	(GetPanelGeometry):
+	(main):
+	-pedantic fixes
+
 2000-06-14  Hippo
 
 	* FvwmTheme/FvwmTheme.c: config lines and messages are synchronous.
@@ -12,17 +20,18 @@
 2000-06-12  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Instruction.c (*FuncGetOutput):
-	Fixed a "writing past the end of allocation" bug in GetOutput 
+	Fixed a "writing past the end of allocation" bug in GetOutput
 	instruction
 
 2000-06-10  Chris Rankin  <rankinc@zipworld.com.au>
 
-	* FvwmCommand/FvwmCommandS.c: allow signals to restart system calls instead
-	  of interrupting them, because this flag does not affect select's
-	  behaviour. Also stopped signals from closing the pipes; the idea is that
-	  the signal calls "last orders", and then allows the module to exit nicely.
-	  It should not take people's glasses away, because everyone should be
-	  allowed to drink up ... :-).
+	* FvwmCommand/FvwmCommandS.c: allow signals to restart system calls
+	instead of interrupting them, because this flag does not affect select'
+	behaviour. Also stopped signals from closing the pipes; the idea is that
+	the signal calls "last orders", and then allows the module to exit
+	nicely.
+	It should not take people's glasses away, because everyone should be
+	allowed to drink up ... :-).
 
 	* FvwmPager/x_pager.c: -Wall fix (comment within comment)
 
@@ -32,7 +41,7 @@
 	to FvwmCommand to use a queue: eliminated partial sending of messages,
 	eliminated delays in handling input from FvwmCommand, now quits when
 	fvwm quits (no more hanging around like a bad smell).
-	
+
 	* FvwmPager/x_pager.c: many replacements of (Scr.Vx + DisplayWidth)
 	with Scr.VWidth, some indentation changes, tiny mini-window display
 	at page edges fixed (possibly).
@@ -42,6 +51,7 @@
 	* FvwmWinList/FvwmWinList.c:
 	fixed typo in #include directive
 
+>>>>>>> 1.553
 2000-06-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/draw.c (RedrawButton):

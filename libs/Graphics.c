@@ -406,7 +406,7 @@ unsigned int ParseGradient(char *gradient, char **rest, char ***colors_return,
   if (rest)
     *rest = gradient;
 
-  if (GetIntegerArguments(gradient, &gradient, &npixels, 1) != 1 ||
+  if (GetIntegerArguments(gradient, &gradient, (int *)&npixels, 1) != 1 ||
       npixels < 2)
   {
     fprintf(stderr, "ParseGradient: illegal number of colors in gradient\n");

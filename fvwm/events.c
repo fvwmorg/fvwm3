@@ -1871,7 +1871,9 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d)\n",
     oldnew_h = new_g.height + dh;
     constr_w = oldnew_w;
     constr_h = oldnew_h;
-    constrain_size(Tmp_win, &constr_w, &constr_h, 0, 0, False);
+    constrain_size(
+      Tmp_win, (unsigned int *)&constr_w, (unsigned int *)&constr_h, 0, 0,
+      False);
     dw += (constr_w - oldnew_w);
     dh += (constr_h - oldnew_h);
     if (dx && dw)

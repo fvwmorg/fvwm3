@@ -30,14 +30,14 @@
 inline
 static int positive_read(int fd, char* buf, int count )
 {
-    while ( count > 0 ) {
-	int n_read = read( fd, buf, count );
-	if ( n_read <= 0 )
-	    return -1;
-	buf += n_read;
-	count -= n_read;
-    }
-    return 0;
+  while ( count > 0 ) {
+    int n_read = read( fd, buf, count );
+    if ( n_read <= 0 )
+      return -1;
+    buf += n_read;
+    count -= n_read;
+  }
+  return 0;
 }
 
 
@@ -49,30 +49,30 @@ static int positive_read(int fd, char* buf, int count )
 
 FvwmPacket* ReadFvwmPacket( int fd )
 {
-    static unsigned long buffer[FvwmPacketMaxSize];
-    FvwmPacket* packet = (FvwmPacket*)buffer;
+  static unsigned long buffer[FvwmPacketMaxSize];
+  FvwmPacket* packet = (FvwmPacket*)buffer;
 
-    /* The `start flag' value supposedly exists to synchronize the
-       FVWM -> module communication.  However, the communication goes
-       through a pipe.  I don't see how any data could ever get lost, so
-       how would FVWM & the module become unsynchronized?
-    */
-    do {
-	if ( positive_read( fd, (char *)buffer, sizeof(unsigned long) ) < 0 )
-	    return NULL;
-    } while (packet->start_pattern != START_FLAG);
+  /* The `start flag' value supposedly exists to synchronize the
+     FVWM -> module communication.  However, the communication goes
+     through a pipe.  I don't see how any data could ever get lost, so
+     how would FVWM & the module become unsynchronized?
+  */
+  do {
+    if ( positive_read( fd, (char *)buffer, sizeof(unsigned long) ) < 0 )
+      return NULL;
+  } while (packet->start_pattern != START_FLAG);
 
-    /* Now read the rest of the header */
-    if ( positive_read( fd, (char *)(&buffer[1]),
-			3 * sizeof(unsigned long) ) < 0 )
-	return NULL;
+  /* Now read the rest of the header */
+  if ( positive_read( fd, (char *)(&buffer[1]),
+		      3 * sizeof(unsigned long) ) < 0 )
+    return NULL;
 
-    /* Finally, read the body, and we're done */
-    if ( positive_read( fd, (char *)(&buffer[4]),
-			FvwmPacketBodySize(*packet)*sizeof(unsigned long)) < 0)
-	return NULL;
+  /* Finally, read the body, and we're done */
+  if ( positive_read( fd, (char *)(&buffer[4]),
+		      FvwmPacketBodySize(*packet)*sizeof(unsigned long)) < 0)
+    return NULL;
 
-    return packet;
+  return packet;
 }
 
 

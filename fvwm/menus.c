@@ -3365,7 +3365,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
   Picture *p;
   int width, height, x, y;
   Pixmap pmap;
-  GC	 pmapgc;
+  GC pmapgc;
   XGCValues gcv;
   unsigned long gcm = 0;
   gcv.line_width=3;
@@ -3448,8 +3448,8 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	{
 	  register int i;
 	  register int dh;
-	  static int best_tile_width = 0;
-	  int junk;
+	  static unsigned int best_tile_width = 0;
+	  unsigned int junk;
 
 	  if (best_tile_width == 0)
 	  {
