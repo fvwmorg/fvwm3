@@ -64,11 +64,6 @@
 /* NOTE: hard coded to 1 */
 #define MINI_ICONS 1
 
-/* Enables stacked button styles.  There is a slight memory
- * penalty for each additional style. See the man page entries for AddButtonStyle and AddTitleStyle for usage information.  */
-/* NOTE: hard coded to 1 */
-#define MULTISTYLE 1
-
 /* Enables tagged general decoration styles which can be assigned to windows using the UseDecor Style option, or dynamically
  * updated with ChangeDecor.  To create and destroy "decor" definitions, see the man page entries for AddToDecor and DestroyDecor.
  * There is a slight memory penalty for each additionally defined decor.  */

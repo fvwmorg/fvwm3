@@ -91,11 +91,9 @@ void CMD_Title(F_CMD_ARGS)
 static const func_type func_config[] =
 {
   CMD_ENTRY("+", CMD_Plus, F_ADDMENU2, 0),
-#ifdef MULTISTYLE
   CMD_ENTRY("addbuttonstyle", CMD_AddButtonStyle, F_ADD_BUTTON_STYLE,
 	    FUNC_DECOR),
   CMD_ENTRY("addtitlestyle", CMD_AddTitleStyle, F_ADD_TITLE_STYLE, FUNC_DECOR),
-#endif /* MULTISTYLE */
 #ifdef USEDECOR
   CMD_ENTRY("addtodecor", CMD_AddToDecor, F_ADD_DECOR, 0),
 #endif /* USEDECOR */
@@ -1337,7 +1335,7 @@ int DeferExecution(
       return TRUE;
     }
   }
-  
+
   if (IS_EWMH_DESKTOP((*tmp_win)->w))
   {
     *context = C_ROOT;

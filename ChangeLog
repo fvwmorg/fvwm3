@@ -1,3 +1,15 @@
+2001-12-10  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* vms/config.h:
+	* fvwm/functions.c:
+	* fvwm/commands.h:
+	* fvwm/builtins.c:
+	* fvwm/borders.c:
+	removed all MULTISTYLE ifdefs
+
+	* fvwm/borders.c (RedrawTitle):
+	fixed title drawing into relief
+
 2001-12-08  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/style.{c,h}:
@@ -15,7 +27,7 @@
 	Split CMD_Style into CMD_Style and parse_and_set_window_style
 
 2001-12-06  olicha  <olivier.chapuis@free.fr>
-	
+
 	* fvwm/add_window.c (setup_window_name_count):
 	(setup_icon_name_count):
 	Better determination of the window and icon names index

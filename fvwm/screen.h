@@ -158,9 +158,7 @@ typedef struct DecorFace
     } vector;
   } u;
 
-#ifdef MULTISTYLE
   struct DecorFace *next;
-#endif
 
   struct
   {

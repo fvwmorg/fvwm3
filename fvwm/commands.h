@@ -18,10 +18,8 @@
 
 /* This file contains all command prototypes. */
 void CMD_Plus(F_CMD_ARGS);
-#ifdef MULTISTYLE
 void CMD_AddButtonStyle(F_CMD_ARGS);
 void CMD_AddTitleStyle(F_CMD_ARGS);
-#endif /* MULTISTYLE */
 #ifdef USEDECOR
 void CMD_AddToDecor(F_CMD_ARGS);
 #endif /* USEDECOR */

@@ -1181,7 +1181,6 @@ void CMD_TitleStyle(F_CMD_ARGS)
   do_title_style(F_PASS_ARGS, False);
 } /* SetTitleStyle */
 
-#if defined(MULTISTYLE)
 /*****************************************************************************
  *
  * Appends a titlestyle (veliaa@rpi.edu)
@@ -1191,7 +1190,6 @@ void CMD_AddTitleStyle(F_CMD_ARGS)
 {
   do_title_style(F_PASS_ARGS, True);
 }
-#endif /* MULTISTYLE */
 
 void ApplyDefaultFontAndColors(void)
 {
@@ -1449,7 +1447,6 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
     /* see below */
     break;
   }
-#ifdef MULTISTYLE
   /* delete any compound styles */
   if (df->next)
   {
@@ -1457,7 +1454,6 @@ void FreeDecorFace(Display *dpy, DecorFace *df)
     free(df->next);
   }
   df->next = NULL;
-#endif
   memset(&df->style, 0, sizeof(df->style));
   memset(&df->u, 0, sizeof(df->u));
   DFS_FACE_TYPE(df->style) = SimpleButton;
@@ -1905,7 +1901,6 @@ static char *ReadTitleButton(
   else if (ReadDecorFace(spec, &tmpdf, button, True))
   {
     int b = (do_set_all) ? 0 : bs;
-#ifdef MULTISTYLE
     if (append)
     {
       DecorFace *head = &TB_STATE(*tb)[b];
@@ -1967,7 +1962,6 @@ static char *ReadTitleButton(
       }
     }
     else
-#endif
     {
       FreeDecorFace(dpy, &TB_STATE(*tb)[b]);
       memcpy(&(TB_STATE(*tb)[b]), &tmpdf, sizeof(DecorFace));
@@ -2614,7 +2608,6 @@ void CMD_ButtonStyle(F_CMD_ARGS)
   do_button_style(F_PASS_ARGS, False);
 }
 
-#ifdef MULTISTYLE
 /*****************************************************************************
  *
  * Appends a button decoration style (veliaa@rpi.edu)
@@ -2624,7 +2617,6 @@ void CMD_AddButtonStyle(F_CMD_ARGS)
 {
   do_button_style(F_PASS_ARGS, True);
 }
-#endif /* MULTISTYLE */
 
 
 /* add_to_env_list

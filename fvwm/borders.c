@@ -1277,9 +1277,7 @@ static void RedrawButtons(
 	  DecorFace *tsdf = &TB_STATE(GetDecor(t, titlebar))[bs];
 
 	  is_lowest = True;
-#ifdef MULTISTYLE
 	  for (; tsdf; tsdf = tsdf->next)
-#endif
 	  {
 	    DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
 		       tsdf, cd->relief_gc, cd->shadow_gc,
@@ -1290,9 +1288,7 @@ static void RedrawButtons(
 	  }
 	}
 	is_lowest = True;
-#ifdef MULTISTYLE
 	for (; df; df = df->next)
-#endif
 	{
 	  DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
 		     df, cd->relief_gc, cd->shadow_gc,
@@ -1434,20 +1430,9 @@ static void RedrawTitle(
 
   if (Pdepth < 2)
   {
-    /* for mono, we clear an area in the title bar where the window
-     * title goes, so that its more legible. For color, no need */
-    RelieveRectangle(
-      dpy, t->title_w, 0, 0, hor_off - 3, t->title_g.height - 1, rgc, sgc,
-      cd->relief_width);
-    RelieveRectangle(
-      dpy, t->title_w, hor_off + w + 2, 0, t->title_g.width - w - hor_off - 3,
-      t->title_g.height - 1, rgc, sgc, cd->relief_width);
     XFillRectangle(
       dpy, t->title_w, ((PressedW == t->title_w) ? sgc : rgc), hor_off - 2, 0,
       w+4,t->title_g.height);
-    XDrawLine(
-      dpy, t->title_w, sgc, hor_off + w + 1, 0, hor_off + w + 1,
-      t->title_g.height);
     if(t->visible_name != (char *)NULL)
 #ifdef I18N_MB
       XmbDrawString(dpy, t->title_w, t->title_font.fontset,
@@ -1458,6 +1443,17 @@ static void RedrawTitle(
       XDrawString(dpy, t->title_w, Scr.TitleGC, hor_off,
                   t->title_font.y + 1, t->visible_name, strlen(t->visible_name));
 #endif
+    /* for mono, we clear an area in the title bar where the window
+     * title goes, so that its more legible. For color, no need */
+    RelieveRectangle(
+      dpy, t->title_w, 0, 0, hor_off - 3, t->title_g.height - 1, rgc, sgc,
+      cd->relief_width);
+    RelieveRectangle(
+      dpy, t->title_w, hor_off + w + 2, 0, t->title_g.width - w - hor_off - 3,
+      t->title_g.height - 1, rgc, sgc, cd->relief_width);
+    XDrawLine(
+      dpy, t->title_w, sgc, hor_off + w + 1, 0, hor_off + w + 1,
+      t->title_g.height);
   }
   else
   {
@@ -1472,9 +1468,7 @@ static void RedrawTitle(
 #endif
     if (PressedW == t->title_w)
     {
-#ifdef MULTISTYLE
       for (; df; df = df->next)
-#endif
       {
 	DrawButton(
 	  t, t->title_w, t->title_g.width, t->title_g.height, df, sgc,
@@ -1485,9 +1479,7 @@ static void RedrawTitle(
     }
     else
     {
-#ifdef MULTISTYLE
       for (; df; df = df->next)
-#endif
       {
 	DrawButton(
 	  t, t->title_w, t->title_g.width, t->title_g.height, df, rgc,
@@ -1495,22 +1487,6 @@ static void RedrawTitle(
           pass_bg_pixmap);
 	is_lowest = False;
       }
-    }
-    /*
-     * draw title relief
-     */
-    switch (DFS_BUTTON_RELIEF(*tb_style))
-    {
-    case DFS_BUTTON_IS_SUNK:
-      reverse = 1;
-    case DFS_BUTTON_IS_UP:
-      RelieveRectangle2(
-	dpy, t->title_w, 0, 0, t->title_g.width - 1, t->title_g.height - 1,
-	(reverse) ? sgc : rgc, (reverse) ? rgc : sgc, cd->relief_width);
-      break;
-    default:
-      /* flat */
-      break;
     }
 
 #ifdef FANCY_TITLEBARS
@@ -1530,8 +1506,25 @@ static void RedrawTitle(
 		  t->title_font.y + 1, t->visible_name, strlen(t->visible_name));
 #endif
     }
+
+    /*
+     * draw title relief
+     */
+    switch (DFS_BUTTON_RELIEF(*tb_style))
+    {
+    case DFS_BUTTON_IS_SUNK:
+      reverse = 1;
+    case DFS_BUTTON_IS_UP:
+      RelieveRectangle2(
+	dpy, t->title_w, 0, 0, t->title_g.width - 1, t->title_g.height - 1,
+	(reverse) ? sgc : rgc, (reverse) ? rgc : sgc, cd->relief_width);
+      break;
+    default:
+      /* flat */
+      break;
+    }
   }
-  
+
   /*
    * draw the 'sticky' lines
    */
@@ -2411,9 +2404,7 @@ void CMD_BorderStyle(F_CMD_ARGS)
       DecorFace tmpdf, *df;
       memset(&tmpdf.style, 0, sizeof(tmpdf.style));
       DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
-#ifdef MULTISTYLE
       tmpdf.next = NULL;
-#endif
 #ifdef MINI_ICONS
       tmpdf.u.p = NULL;
 #endif
@@ -2469,9 +2460,7 @@ void CMD_BorderStyle(F_CMD_ARGS)
       DecorFace tmpdf;
       memset(&tmpdf.style, 0, sizeof(tmpdf.style));
       DFS_FACE_TYPE(tmpdf.style) = SimpleButton;
-#ifdef MULTISTYLE
       tmpdf.next = NULL;
-#endif
 #ifdef MINI_ICONS
       tmpdf.u.p = NULL;
 #endif
