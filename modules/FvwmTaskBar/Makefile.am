@@ -12,7 +12,7 @@ FvwmTaskBar_SOURCES =  FvwmTaskBar.c List.c ButtonArray.c Mallocs.c	\
 FvwmTaskBar_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmTaskBar.1
-EXTRA_DIST = $(man_MANS) fvwm2.README minimail.xbm ConfigFvwmTaskBar
+EXTRA_DIST = $(man_MANS) minimail.xbm ConfigFvwmTaskBar
 
 config_DATA = \
   ConfigFvwmTaskBar

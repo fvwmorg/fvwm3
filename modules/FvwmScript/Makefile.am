@@ -15,7 +15,7 @@ FvwmScript_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a Widgets/libWidgets.a
 YFLAGS = -d
 
 man_MANS = FvwmScript.1
-EXTRA_DIST = $(man_MANS) scanner.l script.y TODO README
+EXTRA_DIST = $(man_MANS) scanner.l script.y TODO
 
 LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs $(X_LIBS) -lfvwm \
 	$(xpm_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm

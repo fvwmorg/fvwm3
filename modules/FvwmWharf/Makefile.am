@@ -10,7 +10,7 @@ FvwmWharf_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 man_MANS = FvwmWharf.1
 EXTRA_DIST = $(man_MANS) sample.style \
-	   ASSound/ASSound.c ASSound/README \
+	   ASSound/ASSound.c \
 	   OffiX/DragAndDrop.h OffiX/DragAndDropTypes.h
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) \
