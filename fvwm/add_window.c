@@ -170,82 +170,6 @@ Bool setup_window_structure(
   return True;
 }
 
-#ifdef I18N_MB
-#define GET_NAME_PROPERTY(a, b, c, d) get_name_property(a, b, c, d)
-static void get_name_property(
-  Status (func)(Display *, Window, XTextProperty *), Window w, char **ret_name,
-  char ***ret_name_list)
-{
-  XTextProperty text_prop;
-  char **list;
-  int num;
-
-  if (func(dpy, w, &text_prop) != 0)
-  {
-    if (text_prop.value)
-    {
-      if (text_prop.encoding == XA_STRING)
-      {
-        /* STRING encoding, use this as it is */
-        *ret_name = (char *)text_prop.value;
-        *ret_name_list = NULL;
-      }
-      else
-      {
-        /* not STRING encoding, try to convert */
-        if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
-            && num > 0 && *list)
-	{
-          /* XXX: does not consider the conversion is REALLY succeeded */
-          XFree(text_prop.value); /* return of XGetWM(Icon)Name() */
-          *ret_name = *list;
-          *ret_name_list = list;
-        }
-	else
-	{
-          if (list)
-            XFreeStringList(list);
-          XFree(text_prop.value); /* return of XGet(Icon)WMName() */
-	  if (func(dpy, w, &text_prop))
-	  {
-	    *ret_name = (char *)text_prop.value;
-	    *ret_name_list = NULL;
-	  }
-	  else
-	  {
-	    *ret_name = NoName;
-	  }
-        }
-      }
-    }
-    else
-    {
-      *ret_name = NoName;
-    }
-  }
-  else
-  {
-    *ret_name = NoName;
-  }
-
-  return;
-}
-#else
-#define GET_NAME_PROPERTY(a, b, c, d) get_name_property(a, b, c)
-static void get_name_property(
-  Status (func)(Display *, Window, XTextProperty *), Window w, char **ret_name)
-{
-  XTextProperty text_prop;
-
-  if (func(dpy, w, &text_prop) != 0)
-    *ret_name = (char *)text_prop.value;
-  else
-    *ret_name = NoName;
-
-  return;
-}
-#endif
-
 void setup_window_name_count(FvwmWindow *tmp_win)
 {
   FvwmWindow *t;
@@ -378,8 +302,11 @@ void setup_window_name(FvwmWindow *tmp_win)
 {
   if (!EWMH_WMName(tmp_win, NULL, NULL, 0))
   {
-      GET_NAME_PROPERTY(XGetWMName, tmp_win->w, &(tmp_win->name),
-			&(tmp_win->name_list));
+    tmp_win->name = NoName;
+    MULTIBYTE_CODE(tmp_win->name_list = NULL);
+    FlocaleGetNameProperty(XGetWMName, dpy, tmp_win->w,
+			   MULTIBYTE_ARG(&(tmp_win->name_list))
+			   &(tmp_win->name));
   }
 
   if (debugging)
@@ -411,9 +338,9 @@ void setup_wm_hints(FvwmWindow *tmp_win)
 static void destroy_window_font(FvwmWindow *tmp_win)
 {
   if (IS_WINDOW_FONT_LOADED(tmp_win) && !USING_DEFAULT_WINDOW_FONT(tmp_win) &&
-      tmp_win->title_font.font != Scr.DefaultFont.font)
+      tmp_win->title_font != Scr.DefaultFont)
   {
-    FreeFvwmFont(dpy, &(tmp_win->title_font));
+    FlocaleUnloadFont(dpy, tmp_win->title_font);
   }
   SET_WINDOW_FONT_LOADED(tmp_win, 0);
   /* Fall back to default font. There are some race conditions when a window
@@ -438,7 +365,8 @@ void setup_window_font(
   if (!IS_WINDOW_FONT_LOADED(tmp_win))
   {
     if (SFHAS_WINDOW_FONT(*pstyle) && SGET_WINDOW_FONT(*pstyle) &&
-	LoadFvwmFont(dpy, SGET_WINDOW_FONT(*pstyle), &(tmp_win->title_font)))
+	(tmp_win->title_font =
+	 FlocaleLoadFont(dpy, SGET_WINDOW_FONT(*pstyle), "FVWM")))
     {
       SET_USING_DEFAULT_WINDOW_FONT(tmp_win, 0);
     }
@@ -455,23 +383,21 @@ void setup_window_font(
   if (tmp_win->decor->title_height)
   {
     height = tmp_win->decor->title_height;
-    tmp_win->title_font.y =
-      tmp_win->title_font.font->ascent +
-      (height - (tmp_win->title_font.height + EXTRA_TITLE_FONT_HEIGHT)) / 2;
-    if (tmp_win->title_font.y < tmp_win->title_font.font->ascent)
-      tmp_win->title_font.y = tmp_win->title_font.font->ascent;
+    tmp_win->title_text_y = tmp_win->title_font->ascent +
+      (height - (tmp_win->title_font->height + EXTRA_TITLE_FONT_HEIGHT)) / 2;
+    if (tmp_win->title_text_y < tmp_win->title_font->ascent)
+      tmp_win->title_text_y = tmp_win->title_font->ascent;
     tmp_win->title_g.height = height;
-    tmp_win->corner_width =
-      height + tmp_win->boundary_width;
+    tmp_win->corner_width = height + tmp_win->boundary_width;
   }
   else
   {
-    height = tmp_win->title_font.height;
-    tmp_win->title_font.y = tmp_win->title_font.font->ascent;
+    height = tmp_win->title_font->height;
+    tmp_win->title_text_y = tmp_win->title_font->ascent;
     tmp_win->corner_width =
       height + EXTRA_TITLE_FONT_HEIGHT + tmp_win->boundary_width;
     tmp_win->title_g.height =
-      tmp_win->title_font.height + EXTRA_TITLE_FONT_HEIGHT;
+      tmp_win->title_font->height + EXTRA_TITLE_FONT_HEIGHT;
   }
   if (!HAS_TITLE(tmp_win))
   {
@@ -486,9 +412,9 @@ void setup_window_font(
 static void destroy_icon_font(FvwmWindow *tmp_win)
 {
   if (IS_ICON_FONT_LOADED(tmp_win) && !USING_DEFAULT_ICON_FONT(tmp_win) &&
-      tmp_win->icon_font.font != Scr.DefaultFont.font)
+      tmp_win->icon_font != Scr.DefaultFont)
   {
-    FreeFvwmFont(dpy, &(tmp_win->icon_font));
+    FlocaleUnloadFont(dpy, tmp_win->icon_font);
   }
   SET_ICON_FONT_LOADED(tmp_win, 0);
   /* Fall back to default font (see comment above). */
@@ -501,7 +427,7 @@ void setup_icon_font(
 {
   int height;
 
-  height = (IS_ICON_FONT_LOADED(tmp_win)) ? tmp_win->icon_font.height : 0;
+  height = (IS_ICON_FONT_LOADED(tmp_win)) ? tmp_win->icon_font->height : 0;
   if (IS_ICON_SUPPRESSED(tmp_win) || HAS_NO_ICON_TITLE(tmp_win))
   {
     if (IS_ICON_FONT_LOADED(tmp_win))
@@ -521,7 +447,8 @@ void setup_icon_font(
   if (!IS_ICON_FONT_LOADED(tmp_win))
   {
     if (SFHAS_ICON_FONT(*pstyle) && SGET_ICON_FONT(*pstyle) &&
-	LoadFvwmFont(dpy, SGET_ICON_FONT(*pstyle), &(tmp_win->icon_font)))
+	(tmp_win->icon_font =
+	 FlocaleLoadFont(dpy, SGET_ICON_FONT(*pstyle), "FVWM")))
     {
       SET_USING_DEFAULT_ICON_FONT(tmp_win, 0);
     }
@@ -536,7 +463,7 @@ void setup_icon_font(
   /* adjust y position of existing icons */
   if (height)
   {
-    resize_icon_title_height(tmp_win, height - tmp_win->icon_font.height);
+    resize_icon_title_height(tmp_win, height - tmp_win->icon_font->height);
     /* this repositions the icon even if the window is not iconified */
     DrawIconWindow(tmp_win);
   }
@@ -1300,8 +1227,13 @@ ICON_DBG((stderr,"si: using default '%s'\n", tmp_win->name));
 
   /* icon name */
   if (!EWMH_WMIconName(tmp_win, NULL, NULL, 0))
-      GET_NAME_PROPERTY(XGetWMIconName, tmp_win->w, &(tmp_win->icon_name),
-			&(tmp_win->icon_name_list));
+  {
+    tmp_win->icon_name = NoName;
+    MULTIBYTE_CODE(tmp_win->icon_name_list = NULL);
+    FlocaleGetNameProperty(XGetWMIconName, dpy, tmp_win->w,
+			   MULTIBYTE_ARG(&(tmp_win->icon_name_list))
+			   &(tmp_win->icon_name));
+  }
   if (tmp_win->icon_name == NoName)
   {
     tmp_win->icon_name = tmp_win->name;
@@ -2132,32 +2064,6 @@ void GetWindowSizeHints(FvwmWindow *tmp)
   }
 }
 
-#ifdef I18N_MB
-#define FREE_TEXT_PROPERTY(a, b) free_text_property(a, b)
-static void free_text_property(char **ptext, char ***ptext_list)
-{
-  if (*ptext_list != NULL)
-  {
-    XFreeStringList(*ptext_list);
-    *ptext_list = NULL;
-  }
-  else
-  {
-    XFree(*ptext);
-  }
-  *ptext = NULL;
-
-  return;
-}
-#else
-#define FREE_TEXT_PROPERTY(a, b) free_text_property(a)
-static void free_text_property(char **ptext)
-{
-  XFree(*ptext);
-  *ptext = NULL;
-}
-#endif
-
 /**************************************************************************
  *
  * Releases dynamically allocated space used to store window/icon names
@@ -2187,7 +2093,7 @@ void free_window_names(FvwmWindow *tmp, Bool nukename, Bool nukeicon)
   {
 #ifdef CODE_WITH_LEAK_I_THINK
     if (tmp->name != tmp->icon_name && tmp->name != NoName)
-      FREE_TEXT_PROPERTY(&(tmp->name), &(tmp->name_list));
+      FlocaleFreeNameProperty(MULTIBYTE_ARG(&(tmp->name_list)) &(tmp->name));
 #else
     if (tmp->icon_name == tmp->name)
       tmp->icon_name = NoName;
@@ -2195,7 +2101,7 @@ void free_window_names(FvwmWindow *tmp, Bool nukename, Bool nukeicon)
       tmp->visible_icon_name = tmp->icon_name;
     if (tmp->name != NoName)
     {
-      FREE_TEXT_PROPERTY(&(tmp->name), &(tmp->name_list));
+      FlocaleFreeNameProperty(MULTIBYTE_ARG(&(tmp->name_list)) &(tmp->name));
       tmp->visible_name = NULL;
     }
 #endif
@@ -2205,13 +2111,15 @@ void free_window_names(FvwmWindow *tmp, Bool nukename, Bool nukeicon)
 #ifdef CODE_WITH_LEAK_I_THINK
     if ((tmp->name != tmp->icon_name || nukename) && tmp->icon_name != NoName)
     {
-      FREE_TEXT_PROPERTY(&(tmp->icon_name), &(tmp->icon_name_list));
+      FlocaleFreeNameProperty(MULTIBYTE_ARG(&(tmp->icon_name_list))
+			      &(tmp->icon_name));
       tmp->visible_icon_name = NULL;
     }
 #else
     if ((tmp->name != tmp->icon_name) && tmp->icon_name != NoName)
     {
-      FREE_TEXT_PROPERTY(&(tmp->icon_name), &(tmp->icon_name_list));
+      FlocaleFreeNameProperty(MULTIBYTE_ARG(&(tmp->icon_name_list))
+			      &(tmp->icon_name));
       tmp->visible_icon_name = NULL;
     }
 #endif

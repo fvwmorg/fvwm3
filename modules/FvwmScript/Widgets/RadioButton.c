@@ -24,12 +24,6 @@ void InitRadioButton(struct XObj *xobj)
 {
  unsigned long mask;
  XSetWindowAttributes Attr;
- int asc,desc,dir;
- XCharStruct struc;
-#ifdef I18N_MB
- char **ml;
- XFontStruct **fs_list;
-#endif
 
  /* Enregistrement des couleurs et de la police */
  if (xobj->colorset >= 0) {
@@ -58,27 +52,19 @@ void InitRadioButton(struct XObj *xobj)
  xobj->gc=fvwmlib_XCreateGC(dpy,xobj->win,0,NULL);
  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
 
-#ifdef I18N_MB
- if ((xobj->xfontset=GetFontSetOrFixed(dpy,xobj->font)) == NULL) {
-     fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
-     exit(1);
- }
- XFontsOfFontSet(xobj->xfontset,&fs_list,&ml);
- xobj->xfont = fs_list[0];
-#else
- if ((xobj->xfont=GetFontOrFixed(dpy,xobj->font))==NULL) {
-   fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
-   exit(1);
- }
-#endif
- XSetFont(dpy,xobj->gc,xobj->xfont->fid);
+   if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) == NULL)
+  {
+    fprintf(stderr, "%s: Couldn't load font. Exiting!\n", ScriptName);
+    exit(1);
+  }
+  if (xobj->Ffont->font != NULL)
+    XSetFont(dpy, xobj->gc, xobj->Ffont->font->fid);
 
  XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
 
  /* Redimensionnement du widget */
- XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
- xobj->height=asc+desc+5;
- xobj->width=XTextWidth(xobj->xfont,xobj->title,strlen(xobj->title))+20;
+ xobj->height= xobj->Ffont->height +5;
+ xobj->width=FlocaleTextWidth(xobj->Ffont,xobj->title,strlen(xobj->title))+20;
  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
  if (xobj->colorset >= 0)
    SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
@@ -90,7 +76,7 @@ void InitRadioButton(struct XObj *xobj)
 
 void DestroyRadioButton(struct XObj *xobj)
 {
- XFreeFont(dpy,xobj->xfont);
+ FlocaleUnloadFont(dpy,xobj->Ffont);
  XFreeGC(dpy,xobj->gc);
  XDestroyWindow(dpy,xobj->win);
 }
@@ -113,8 +99,8 @@ void DrawRadioButton(struct XObj *xobj)
   XFillArc(dpy,xobj->win,xobj->gc,2,j-10,9,9,0*64,360*64);
 
  /* Calcul de la position de la chaine de charactere */
- DrawString(dpy,xobj,xobj->win,i,j,xobj->title,strlen(xobj->title),fore,hili,
-	    back,!xobj->flags[1]);
+ MyDrawString(dpy,xobj,xobj->win,i,j,xobj->title,fore,hili,
+	      back,!xobj->flags[1]);
 }
 
 void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
@@ -128,7 +114,7 @@ void EvtMouseRadioButton(struct XObj *xobj,XButtonEvent *EvtButton)
  int In = 0;
 
  j=xobj->height/2+3;
- i=(xobj->width-XTextWidth(xobj->xfont,xobj->title,strlen(xobj->title)))/2;
+ i=(xobj->width-FlocaleTextWidth(xobj->Ffont,xobj->title,strlen(xobj->title)))/2;
 
  while (End)
  {

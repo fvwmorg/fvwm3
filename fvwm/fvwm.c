@@ -1407,6 +1407,10 @@ static void InitVariables(void)
   /* create graphics contexts */
   CreateGCs();
 
+  FlocaleAllocateWinString(&(Scr.TitleStr));
+  Scr.TitleStr->gc = Scr.TitleGC;
+  FlocaleAllocateWinString(&(Scr.ScratchStr));
+
   if (Pdepth <= 8) {               /* if the color is limited */
     /* a number > than the builtin table! */
     Scr.ColorLimit = 255;
@@ -1435,7 +1439,8 @@ static void InitVariables(void)
    * fvwm. */
   Scr.Ungrabbed = NULL;
 
-  Scr.DefaultFont.font = NULL;
+  
+  Scr.DefaultFont = FlocaleLoadFont(dpy, NULL, "FVWM");
 
   Scr.VxMax = 2*Scr.MyDisplayWidth;
   Scr.VyMax = 2*Scr.MyDisplayHeight;
@@ -1976,7 +1981,7 @@ static void setVersionInfo(void)
 #ifdef SESSION
   strcat(support_str, " SM,");
 #endif
-#ifdef I18N_MB
+#ifdef MULTIBYTE
   strcat(support_str, " Multibyte,");
 #endif
 #ifdef HAVE_XINERAMA

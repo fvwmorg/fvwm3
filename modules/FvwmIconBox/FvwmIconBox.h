@@ -20,6 +20,7 @@
  *************************************************************************/
 #include "libs/fvwmlib.h"
 #include <libs/vpacket.h>
+#include "libs/Flocale.h"
 
 struct icon_info;
 void MySendFvwmPipe(int *fd, char *message, unsigned long window);
@@ -95,8 +96,8 @@ extern int screen;
 extern Pixel fore_pix, back_pix, icon_fore_pix, icon_back_pix;
 extern GC  NormalGC;
 extern GC  ReliefGC;
+extern FlocaleFont *Ffont;
 extern int ButtonWidth,ButtonHeight;
-extern XFontStruct *font;
 extern int num_rows;
 extern int num_columns;
 extern int Lines;

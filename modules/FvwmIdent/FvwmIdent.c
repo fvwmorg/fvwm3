@@ -66,10 +66,9 @@ static int fd[2];
 static Display *dpy;			/* which display are we talking to */
 static Window Root;
 static GC gc;
-static XFontStruct *font;
-#ifdef I18N_MB
-static XFontSet fontset;
-#endif
+
+static FlocaleFont *Ffont;
+static FlocaleWinString *FwinString;
 
 static int screen;
 static int x_fd;
@@ -82,7 +81,7 @@ static int colorset = 0;
 
 static char *BackColor = "white";
 static char *ForeColor = "black";
-static char *font_string = "fixed";
+static char *font_string = NULL;
 
 static Pixel fore_pix;
 static Window main_win;
@@ -204,6 +203,7 @@ int main(int argc, char **argv)
   FScreenInit(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
+  FlocaleAllocateWinString(&FwinString);
   FShapeInit(dpy);
 
   SetMessageMask(fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
@@ -448,12 +448,6 @@ void list_end(void)
   XSetWindowAttributes attributes;
   int is_key_pressed = 0;
   int is_button_pressed = 0;
-#ifdef I18N_MB
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-#endif
 
   if(!found)
     {
@@ -464,23 +458,11 @@ void list_end(void)
   /* tell fvwm to only send config messages */
   SetMessageMask(fd, M_CONFIG_INFO | M_SENDCONFIG);
 
-#ifdef I18N_MB
-  if ((fontset = XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL) {
-#ifdef STRICTLY_FIXED
-      if ((fontset = XCreateFontSet(dpy, "fixed", &ml, &mc, &ds)) == NULL)
-#else
-      if ((fontset = XCreateFontSet(dpy, "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*", &ml, &mc, &ds)) == NULL)
-#endif
-	  exit(1);
+  if ((Ffont = FlocaleLoadFont(dpy, font_string, MyName)) == NULL)
+  {
+    fprintf(stderr,"%s: cannot load font, exiting\n", MyName);
+    exit(1);
   }
-  XFontsOfFontSet(fontset, &fs_list, &ml);
-  font = fs_list[0];
-#else
-  /* load the font */
-  if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
-    if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
-      exit(1);
-#endif
 
   /* make window infomation list */
   MakeList();
@@ -488,7 +470,7 @@ void list_end(void)
   /* size and create the window */
   lmax = max_col1 + max_col2 + 15;
 
-  height = ListSize * (font->ascent + font->descent);
+  height = ListSize * (Ffont->height);
 
   mysizehints.flags=
     USSize|USPosition|PWinGravity|PResizeInc|PBaseSize|PMinSize|PMaxSize;
@@ -572,9 +554,13 @@ void list_end(void)
   XSelectInput(dpy, main_win, mw_events);
   change_window_name(&MyName[1]);
 
-  gcm = GCForeground|GCFont;
+  gcm = GCForeground;
   gcv.foreground = fore_pix;
-  gcv.font = font->fid;
+  if (Ffont->font != NULL)
+  {
+    gcm |= GCFont;
+    gcv.font = Ffont->font->fid;
+  }
   gc = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 
   if (colorset >= 0)
@@ -730,30 +716,23 @@ void RedrawWindow(void)
   int fontheight,i=0;
   struct Item *cur = itemlistRoot;
 
-  fontheight = font->ascent + font->descent;
+  fontheight = Ffont->height;
+  FwinString->win = main_win;
+  FwinString->gc = gc;
 
   while(cur != NULL)
     {
       /* first column */
-#ifdef I18N_MB
-      XmbDrawString(dpy, main_win, fontset, gc, 5,
-		  5 + font->ascent + i * fontheight, cur->col1,
-		  strlen(cur->col1));
-#else
-      XDrawString(dpy, main_win, gc, 5,
-		  5 + font->ascent + i * fontheight, cur->col1,
-		  strlen(cur->col1));
-#endif
+      FwinString->str = cur->col1;
+      FwinString->x = 5;
+      FwinString->y = 5 + Ffont->ascent + i * fontheight;
+      FlocaleDrawString(dpy, Ffont, FwinString, 0);
+
       /* second column */
-#ifdef I18N_MB
-      XmbDrawString(dpy, main_win, fontset, gc, 10 + max_col1,
-		  5 + font->ascent + i * fontheight, cur->col2,
-		  strlen(cur->col2));
-#else
-      XDrawString(dpy, main_win, gc, 10 + max_col1,
-		  5 + font->ascent + i * fontheight, cur->col2,
-		  strlen(cur->col2));
-#endif
+      FwinString->str = cur->col2;
+      FwinString->x = 10 + max_col1;
+      FlocaleDrawString(dpy, Ffont, FwinString, 0);
+
       ++i;
       cur = cur->next;
     }
@@ -804,8 +783,8 @@ void AddToList(char *s1, char* s2)
   int tw1, tw2;
   struct Item* item, *cur = itemlistRoot;
 
-  tw1 = XTextWidth(font, s1, strlen(s1));
-  tw2 = XTextWidth(font, s2, strlen(s2));
+  tw1 = FlocaleTextWidth(Ffont, s1, strlen(s1));
+  tw2 = FlocaleTextWidth(Ffont, s2, strlen(s2));
   max_col1 = max_col1 > tw1 ? max_col1 : tw1;
   max_col2 = max_col2 > tw2 ? max_col2 : tw2;
 

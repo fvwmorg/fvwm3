@@ -60,17 +60,11 @@
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
 #include "libs/Colorset.h"
-#include "libs/Flocale.h"
 #include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
 
 
 char *MyName;
-
-XFontStruct *font;
-#ifdef I18N_MB
-XFontSet fontset;
-#endif
 
 Display *dpy;			/* which display are we talking to */
 int x_fd;
@@ -102,6 +96,8 @@ Pixel act_icon_fore_pix, act_icon_back_pix,
   act_icon_hilite_pix, act_icon_shadow_pix;
 
 GC  NormalGC,ShadowGC,ReliefGC,IconShadowGC,IconReliefGC;
+FlocaleFont *Ffont;
+FlocaleWinString *FwinString;
 Window main_win;
 Window holder_win;
 Window icon_win;
@@ -188,14 +184,6 @@ static RETSIGTYPE TerminateHandler(int);
 static int myErrorHandler(Display *dpy, XErrorEvent *event);
 static void CleanUp(void);
 static void change_colorset(int color);
-
-#ifdef I18N_MB
-#ifdef __STDC__
-#define XTextWidth(x,y,z)       XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z)       XmbTextEscapement(x/**/set,y,z)
-#endif
-#endif
 
 /************************************************************************
   Main
@@ -783,40 +771,35 @@ void RedrawIcon(struct icon_info *item, int f)
       strcpy(label, item->name);
 
     len = strlen(label);
-    tw = XTextWidth(font, label, len);
+    tw = FlocaleTextWidth(Ffont, label, len);
     diff = max_icon_width + icon_relief - tw;
     lm = diff/2;
     lm = lm > 4 ? lm : 4;
+
+    FwinString->str = label;
+    FwinString->win = item->IconWin;
+    FwinString->gc =  NormalGC;
+    FwinString->x = lm;
+    FwinString->y = 3 + Ffont->ascent;
 
     if (Hilite == item){
       XRaiseWindow(dpy, item->IconWin);
       XMoveResizeWindow(dpy, item->IconWin,
 			item->x + min(0, (diff - 8))/2,
 			item->y + h,
-			max(tw + 8, w), 6 + font->ascent +
-			font->descent);
+			max(tw + 8, w), 6 + Ffont->height);
       XClearWindow(dpy, item->IconWin);
-#ifdef I18N_MB
-      XmbDrawString(dpy, item->IconWin, fontset, NormalGC, lm, 3 + font->ascent,
-#else
-      XDrawString(dpy, item->IconWin, NormalGC, lm, 3 + font->ascent,
-#endif
-		  label, len);
+      FlocaleDrawString(dpy, Ffont, FwinString, 0);
       RelieveRectangle(dpy, item->IconWin, 0, 0,
-		       max(tw + 8, w) - 1, 6 + font->ascent +
-		       font->descent - 1, IconReliefGC, IconShadowGC, 2);
+		       max(tw + 8, w) - 1, 6 + Ffont->height - 1,
+		       IconReliefGC, IconShadowGC, 2);
     }else{
       XMoveResizeWindow(dpy, item->IconWin, item->x, item->y + h,
-			w, 6 + font->ascent + font->descent);
+			w, 6 + Ffont->height);
       XClearWindow(dpy, item->IconWin);
-#ifdef I18N_MB
-      XmbDrawString(dpy, item->IconWin, fontset, NormalGC, lm, 3 + font->ascent,
-#else
-      XDrawString(dpy, item->IconWin, NormalGC, lm, 3 + font->ascent,
-#endif
-		  label, len);
+      FlocaleDrawString(dpy, Ffont, FwinString, 0);
       RelieveRectangle(dpy, item->IconWin, 0, 0,
-		       w - 1, 5 + font->ascent + font->descent,
+		       w - 1, 5 + Ffont->height,
 		       IconReliefGC, IconShadowGC, 2);
     }
   }
@@ -1022,12 +1005,6 @@ void CreateWindow(void)
   XSizeHints mysizehints;
   XTextProperty name;
   XClassHint class_hints;
-#ifdef I18N_MB
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-#endif
 
   h_margin = margin1*2 + bar_width + margin2 + 8;
   v_margin = margin1*2 + bar_width + margin2 + 8;
@@ -1036,31 +1013,12 @@ void CreateWindow(void)
   _XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
 
   /* load the font */
-#ifdef I18N_MB
-  if ((fontset = XCreateFontSet(dpy, font_string, &ml, &mc, &ds)) == NULL)
+  Ffont = FlocaleLoadFont(dpy, font_string, MyName);
+  if (Ffont == NULL)
   {
-#ifdef STRICTLY_FIXED
-    if ((fontset = XCreateFontSet(dpy, "fixed", &ml, &mc, &ds)) == NULL)
-#else
-    if ((fontset = XCreateFontSet(dpy, "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*", &ml, &mc, &ds)) == NULL)
-#endif
-    {
-      fprintf(stderr,"%s: No fonts available\n",MyName);
-      exit(1);
-    }
+    fprintf(stderr,"%s: No fonts available, exiting\n",MyName);
+    exit(1);
   }
-  XFontsOfFontSet(fontset, &fs_list, &ml);
-  font = fs_list[0];
-#else
-  if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
-  {
-    if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
-    {
-      fprintf(stderr,"%s: No fonts available\n",MyName);
-      exit(1);
-    }
-  }
-#endif
 
   if ((local_flags & HIDE_H))
     v_margin -= bar_width + margin2 + 4;
@@ -1068,8 +1026,7 @@ void CreateWindow(void)
     h_margin -= bar_width + margin2 + 4;
 
   UWidth = max_icon_width + icon_relief + interval;
-  UHeight = font->ascent + font->descent + max_icon_height +
-    icon_relief + 6 + interval;
+  UHeight = Ffont->height + max_icon_height + icon_relief + 6 + interval;
   Width = UWidth * num_columns + interval -1;
   Height = UHeight * num_rows + interval -1;
 
@@ -1202,11 +1159,17 @@ void CreateWindow(void)
   gcv.foreground = icon_shadow_pix;
   IconShadowGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 
-  gcm = GCForeground|GCBackground|GCFont;
+  gcm = GCForeground|GCBackground;
+  if (Ffont->font != NULL)
+  {
+    gcm |= GCFont;
+    gcv.font = Ffont->font->fid;
+  }
   gcv.foreground = icon_fore_pix;
-  gcv.font =  font->fid;
   NormalGC = fvwmlib_XCreateGC(dpy, main_win, gcm, &gcv);
 
+  /* init our Flocale window string for text drawing */
+  FlocaleAllocateWinString(&FwinString);
 
   /* icon_win's background */
   if (colorset >= 0) {

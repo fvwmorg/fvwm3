@@ -26,12 +26,6 @@ void InitItemDraw(struct XObj *xobj)
   unsigned long mask;
   XSetWindowAttributes Attr;
   int minHeight,minWidth;
-  int asc,desc,dir;
-  XCharStruct struc;
-#ifdef I18N_MB
-  char **ml;
-  XFontStruct **fs_list;
-#endif
 
   /* Enregistrement des couleurs et de la police */
   if (xobj->colorset >= 0) {
@@ -56,38 +50,26 @@ void InitItemDraw(struct XObj *xobj)
   xobj->gc = fvwmlib_XCreateGC(dpy, xobj->win, 0, NULL);
   XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
-#ifdef I18N_MB
-  if ((xobj->xfontset = GetFontSetOrFixed(dpy,xobj->font)) == NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+  if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) == NULL)
+  {
+    fprintf(stderr, "%s: Couldn't load font. Exiting!\n", ScriptName);
     exit(1);
   }
-  XFontsOfFontSet(xobj->xfontset, &fs_list, &ml);
-  xobj->xfont = fs_list[0];
-#else
-  if ((xobj->xfont = GetFontOrFixed(dpy, xobj->font)) == NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
-    exit(1);
-  }
-#endif
-  XSetFont(dpy, xobj->gc, xobj->xfont->fid);
+  if (xobj->Ffont->font != NULL)
+    XSetFont(dpy, xobj->gc, xobj->Ffont->font->fid);
 
   XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
 
   /* Redimensionnement du widget */
-  if (strlen(xobj->title) != 0)
-    XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  else {
-    asc = 0;
-    desc = 0;
-  }
 
   if (xobj->icon == NULL)
   {
     if (strlen(xobj->title) != 0)
     {
       /* title but no icon */
-      minHeight = asc+desc+2;
-      minWidth = XTextWidth(xobj->xfont, xobj->title, strlen(xobj->title))+2;
+      minHeight = xobj->Ffont->height + 2;
+      minWidth = FlocaleTextWidth(xobj->Ffont, xobj->title, strlen(xobj->title))
+	+ 2;
       if (xobj->height < minHeight)
 	xobj->height = minHeight;
       if (xobj->width < minWidth)
@@ -105,7 +87,8 @@ void InitItemDraw(struct XObj *xobj)
   else
   {
     /* title and icon */
-    if (xobj->icon_w>XTextWidth(xobj->xfont, xobj->title, strlen(xobj->title))+2)
+    if (xobj->icon_w >
+	FlocaleTextWidth(xobj->Ffont, xobj->title, strlen(xobj->title))+2)
     {
       /* icon is wider than the title */
       if (xobj->width<xobj->icon_w)
@@ -115,11 +98,11 @@ void InitItemDraw(struct XObj *xobj)
     {
       /* title is wider than icon */
       if (xobj->width < 
-	  XTextWidth(xobj->xfont, xobj->title, strlen(xobj->title)) + 2)
+	  FlocaleTextWidth(xobj->Ffont, xobj->title, strlen(xobj->title)) + 2)
 	xobj->width =
-	  XTextWidth(xobj->xfont, xobj->title, strlen(xobj->title))+2;
+	  FlocaleTextWidth(xobj->Ffont, xobj->title, strlen(xobj->title)) + 2;
     }
-    xobj->height = xobj->icon_h+asc+desc+2;
+    xobj->height = xobj->icon_h+ xobj->Ffont->height + 2;
   }
   XResizeWindow(dpy, xobj->win, xobj->width, xobj->height);
   if (xobj->colorset >= 0)
@@ -134,7 +117,7 @@ void InitItemDraw(struct XObj *xobj)
 
 void DestroyItemDraw(struct XObj *xobj)
 {
-  XFreeFont(dpy,xobj->xfont);
+  FlocaleUnloadFont(dpy,xobj->Ffont);
   XFreeGC(dpy,xobj->gc);
   XDestroyWindow(dpy,xobj->win);
 }

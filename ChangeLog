@@ -1,3 +1,53 @@
+2002-02-09  olicha  <olivier.chapuis@free.fr>
+ 
+	* libs/fvwmlib.h:
+	* libs/Flocale.{c,h}:
+	* acconfig.h:
+	* configure.in:
+	Rename I18N_MB to MULTIBYTE
+	Added --disable-compound-text (COMPOUND_TEXT), so this is on by default
+
+	* libs/Flocale.{c,h} (*):
+	New Font and Text API. A cache is used for fonts information. Font
+	loading is more powerfull as both font or fontset can be loaded.
+	See Flocale.h for details, more comments will be added soon.
+	Fortunately, it seems that there are no more memory problems with
+	--enable-multibyte!
+	If COMPOUND_TEXT, then non XA_STRING text properties are converted
+	with XmbTextPropertyToTextList
+
+	* fvwm/events.c (HandlePropertyNotify): 
+	* fvwm/misc.c (NewFontAndColor):
+	* fvwm/icons.h:
+	* fvwm/misc.h:
+	* fvwm/menus.c (FreeMenuStyle):
+	(NewMenuStyle):
+	(CMD_CopyMenuStyle):
+	(draw_underline):
+	(calculate_item_sizes):
+	(size_menu_horizontally):
+	(paint_item):
+	* fvwm/builtins.c (CMD_DefaultFont):
+	(ApplyDefaultFontAndColors):
+	* fvwm/add_window.c (destroy_icon_font):
+	(setup_icon_font):
+	(destroy_window_font):
+	(setup_window_font):
+	(free_window_names): 
+	(setup_window_name): 
+	(setup_icon): 
+	* fvwm/fvwm.h (FvwmWindow): 
+	* fvwm/move_resize.c (DisplayPosition):
+	(resize_geometry_window):
+	(DisplaySize):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/icons.c (DrawIconWindow): 
+	(setup_icon_title_size):
+	* fvwm/borders.c (RedrawTitle):
+	(DrawMultiPixmapTitlebar):
+	* fvwm/screen.h (ScreenInfo):
+	Use the new Text and Font API
+
 2002-02-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/module_interface.c (PositiveWrite):

@@ -216,8 +216,6 @@ Pixel GetHilite(Pixel);
  * future extensions and multibyte characters).*/
 int pixel_to_color_string(
   Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash);
-
-
 /***********************************************************************
  * Wrappers around various X11 routines
  ***********************************************************************/
@@ -225,7 +223,7 @@ int pixel_to_color_string(
 typedef struct FvwmFont
 {
   XFontStruct *font;		/* font structure */
-#ifdef I18N_MB
+#ifdef MULTIBYTE
   XFontSet fontset;		/* font set */
 #endif
   int height;			/* height of the font */
@@ -233,7 +231,7 @@ typedef struct FvwmFont
 } FvwmFont;
 
 XFontStruct *GetFontOrFixed(Display *disp, char *fontname);
-#ifdef I18N_MB
+#ifdef MULTIBYTE
 XFontSet GetFontSetOrFixed(Display *disp, char *fontname);
 #endif
 Bool LoadFvwmFont(Display *dpy, char *fontname, FvwmFont *ret_font);

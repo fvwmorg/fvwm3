@@ -24,8 +24,6 @@ void DrawThumbH(struct XObj *xobj)
   int x,y,w,h;
   XSegment segm;
   char str[20];
-  int asc,desc,dir;
-  XCharStruct struc;
 
   x = 2 +
     (xobj->width - 36)*(xobj->value - xobj->value2) /
@@ -49,26 +47,23 @@ void DrawThumbH(struct XObj *xobj)
   XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
   sprintf(str, "%d", xobj->value);
-  x = x + 15 - (XTextWidth(xobj->xfont, str, strlen(str)) / 2);
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  y = y-desc-4;
-  DrawString(dpy, xobj, xobj->win, x, y, str, strlen(str), fore, hili, back,
+  x = x + 15 - (FlocaleTextWidth(xobj->Ffont, str, strlen(str)) / 2);
+  y = y - xobj->Ffont->descent - 4;
+  MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
 	     !xobj->flags[1]);
 }
 
 void HideThumbH(struct XObj *xobj)
 {
   int x,y;
-  int asc,desc,dir;
-  XCharStruct struc;
 
   x = 2 +
     (xobj->width - 36) * (xobj->value - xobj->value2) /
     (xobj->value3-xobj->value2);
   y = xobj->height/2 - 11;
   XClearArea(dpy, xobj->win, x, y, 32, 22, False);
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  XClearArea(dpy, xobj->win, x-asc-desc, y-asc-10, 90, asc+desc+5, False);
+  XClearArea(dpy, xobj->win, x- xobj->Ffont->ascent - xobj->Ffont->descent,
+	     y - xobj->Ffont->ascent - 10, 90, xobj->Ffont->height + 5, False);
 }
 
 void InitHScrollBar(struct XObj *xobj)
@@ -76,13 +71,7 @@ void InitHScrollBar(struct XObj *xobj)
   unsigned long mask;
   XSetWindowAttributes Attr;
   int i;
-  int asc,desc,dir;
-  XCharStruct struc;
   char str[20];
-#ifdef I18N_MB
-  char **ml;
-  XFontStruct **fs_list;
-#endif
 
   /* Enregistrement des couleurs et de la police */
   if (xobj->colorset >= 0) {
@@ -111,20 +100,13 @@ void InitHScrollBar(struct XObj *xobj)
   XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
   XSetBackground(dpy, xobj->gc, xobj->TabColor[back]);
 
-#ifdef I18N_MB
-  if ((xobj->xfontset = GetFontSetOrFixed(dpy,xobj->font)) == NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+  if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) == NULL)
+  {
+    fprintf(stderr, "%s: Couldn't load font. Exiting!\n", ScriptName);
     exit(1);
   }
-  XFontsOfFontSet(xobj->xfontset, &fs_list, &ml);
-  xobj->xfont = fs_list[0];
-#else
-  if ((xobj->xfont = GetFontOrFixed(dpy,xobj->font)) == NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
-    exit(1);
-  }
-#endif
-  XSetFont(dpy, xobj->gc, xobj->xfont->fid);
+  if (xobj->Ffont->font != NULL)
+    XSetFont(dpy, xobj->gc, xobj->Ffont->font->fid);
 
   XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
 
@@ -132,12 +114,11 @@ void InitHScrollBar(struct XObj *xobj)
     xobj->value3 = xobj->value2 + 10;
   if (!((xobj->value >= xobj->value2) && (xobj->value <= xobj->value3)))
     xobj->value = xobj->value2;
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  xobj->height = (asc + desc)*2 + 30;
+  xobj->height = xobj->Ffont->height * 2 + 30;
   sprintf(str, "%d", xobj->value2);
-  i = XTextWidth(xobj->xfont, str, strlen(str));
+  i = FlocaleTextWidth(xobj->Ffont, str, strlen(str));
   sprintf(str, "%d", xobj->value3);
-  i = XTextWidth(xobj->xfont, str, strlen(str)) + i + 20;
+  i = FlocaleTextWidth(xobj->Ffont, str, strlen(str)) + i + 20;
   if (xobj->width<i)
     xobj->width = i;
   XResizeWindow(dpy, xobj->win, xobj->width, xobj->height);
@@ -150,7 +131,7 @@ void InitHScrollBar(struct XObj *xobj)
 
 void DestroyHScrollBar(struct XObj *xobj)
 {
-  XFreeFont(dpy,xobj->xfont);
+  FlocaleUnloadFont(dpy,xobj->Ffont);
   XFreeGC(dpy,xobj->gc);
   XDestroyWindow(dpy,xobj->win);
 }
@@ -159,8 +140,6 @@ void DrawHScrollBar(struct XObj *xobj)
 {
   int x,y,w,h;
   char str[20];
-  int asc,desc,dir;
-  XCharStruct struc;
 
   /* Calcul de la taille de l'ascenseur */
   x = 0;
@@ -173,14 +152,13 @@ void DrawHScrollBar(struct XObj *xobj)
   /* Ecriture des valeurs */
   sprintf(str, "%d", xobj->value2);
   x = 4;
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  y = y + asc + h;
-  DrawString(dpy, xobj, xobj->win, x, y, str, strlen(str), fore, hili, back,
-	     !xobj->flags[1]);
+  y = y + xobj->Ffont->ascent + h;
+  MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
+	       !xobj->flags[1]);
   sprintf(str, "%d", xobj->value3);
-  x = w - XTextWidth(xobj->xfont, str, strlen(str)) - 4;
-  DrawString(dpy, xobj, xobj->win, x, y, str, strlen(str), fore, hili, back,
-	     !xobj->flags[1]);
+  x = w - FlocaleTextWidth(xobj->Ffont, str, strlen(str)) - 4;
+  MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
+	       !xobj->flags[1]);
 }
 
 void EvtMouseHScrollBar(struct XObj *xobj, XButtonEvent *EvtButton)

@@ -167,7 +167,7 @@ typedef struct MenuLook
   ColorPair MenuActiveColors;
   ColorPair MenuStippleColors;
   ColorPair MenuReliefColors;
-  FvwmFont *pStdFont;
+  FlocaleFont *pStdFont;
   int FontHeight;              /* menu font height */
 } MenuLook;
 

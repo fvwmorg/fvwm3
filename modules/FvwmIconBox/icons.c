@@ -182,7 +182,7 @@ void AdjustIconWindow(struct icon_info *item, int n)
 
   w3 = w = max_icon_width + icon_relief;
   h3 = h2 = max_icon_height + icon_relief;
-  h = h2 + 6 + font->ascent + font->descent;
+  h = h2 + 6 + Ffont->height;
 
   switch (primary){
   case LEFT:

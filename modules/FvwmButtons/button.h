@@ -35,10 +35,7 @@ void GetInternalSize(button_info*,int*,int*,int*,int*);
 int buttonFrameSigned(button_info*);
 int buttonXPad(button_info*);
 int buttonYPad(button_info*);
-XFontStruct *buttonFont(button_info*);
-#ifdef I18N_MB
-XFontSet buttonFontSet(button_info*);
-#endif
+FlocaleFont *buttonFont(button_info*);
 Pixel buttonFore(button_info*);
 Pixel buttonBack(button_info*);
 Pixel buttonHilite(button_info*);

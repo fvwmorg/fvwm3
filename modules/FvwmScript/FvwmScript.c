@@ -59,6 +59,7 @@ int fd[2]; 			/* pipe pair */
 int fd_err;
 int x_fd;			/* fd for X */
 Window ref;
+FlocaleWinString *FwinString;
 
 extern int yyparse(void);
 extern void (*TabCom[25]) (int NbArg,long *TabArg);
@@ -315,8 +316,9 @@ void Xinit(int IsFather)
   FScreenInit(dpy);
   AllocColorset(0);
   FShapeInit(dpy);
+  FlocaleAllocateWinString(&FwinString);
   XSetErrorHandler(myErrorHandler);
-
+  
 #ifdef MEMDEBUG
   __bounds_debug_no_checking=False;
 #endif
@@ -552,7 +554,7 @@ void BuildGUI(int IsFather)
     else
       tabxobj[i]->title = (*tabobj)[i].title;
 
-    if ((*tabobj)[i].font == NULL)
+    if ((*tabobj)[i].font == NULL && x11base->font != NULL)
       tabxobj[i]->font = (char*)safestrdup(x11base->font);
     else
       tabxobj[i]->font = (*tabobj)[i].font;
@@ -1173,7 +1175,7 @@ int main (int argc, char **argv)
   for (i=8-IsFather; i<argc; i++)
     x11base->TabArg[i-7+IsFather] = argv[i];
   /* Couleurs et fontes par defaut */
-  x11base->font = safestrdup("fixed");
+  x11base->font = NULL;
   x11base->forecolor = safestrdup("black");
   x11base->backcolor = safestrdup("grey85");
   x11base->shadcolor = safestrdup("grey55");

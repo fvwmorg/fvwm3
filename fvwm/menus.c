@@ -52,6 +52,7 @@
 #include "libs/Colorset.h"
 #include "defaults.h"
 #include "libs/FScreen.h"
+#include "libs/Flocale.h"
 
 /* IMPORTANT NOTE: Do *not* use any constant numbers in this file. All values
  * have to be #defined in the section below or defaults.h to ensure full
@@ -980,7 +981,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
         if (!pmp->flags.is_already_mapped)
         {
                 Bool prefer_left_submenus = False;
-
                 /* Make sure we are using the latest style and menu layout. */
                 update_menu(pmp->menu, pmp);
 
@@ -3936,6 +3936,7 @@ static void pop_menu_down_and_repaint_parent(
 static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 		       Bool do_redraw_menu_border)
 {
+  static FlocaleWinString *fws = NULL;
   int y_offset;
   int text_y;
   int y_height;
@@ -3960,7 +3961,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   }
   else
   {
-    text_y = y_offset + MST_PSTDFONT(mr)->y + MST_TITLE_GAP_ABOVE(mr);
+    text_y = y_offset + MST_PSTDFONT(mr)->ascent + MST_TITLE_GAP_ABOVE(mr);
   }
   /* center text vertically if the pixmap is taller */
   if (MI_PICTURE(mi))
@@ -4055,7 +4056,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   /***************************************************************
    * Draw the item itself.
    ***************************************************************/
-
+  
   /* Calculate the separator offsets. */
   if (MST_HAS_LONG_SEPARATORS(mr))
   {
@@ -4140,20 +4141,18 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
   /***************************************************************
    * Draw the labels.
    ***************************************************************/
-
+  if (fws == NULL)
+    FlocaleAllocateWinString(&fws);
+  fws->win = MR_WINDOW(mr);
+  fws->gc = currentGC;
+  fws->y = text_y;
   for (i = MAX_MENU_ITEM_LABELS; i-- > 0; )
   {
     if (MI_LABEL(mi)[i] && *(MI_LABEL(mi)[i]))
     {
-#ifdef I18N_MB
-      XmbDrawString(dpy, MR_WINDOW(mr), MST_PSTDFONT(mr)->fontset,
-		    currentGC, MI_LABEL_OFFSET(mi)[i],
-		    text_y, MI_LABEL(mi)[i], MI_LABEL_STRLEN(mi)[i]);
-#else
-      XDrawString(dpy, MR_WINDOW(mr),
-		  currentGC, MI_LABEL_OFFSET(mi)[i],
-		  text_y, MI_LABEL(mi)[i], MI_LABEL_STRLEN(mi)[i]);
-#endif
+      fws->str = MI_LABEL(mi)[i];
+      fws->x = MI_LABEL_OFFSET(mi)[i];
+      FlocaleDrawString(dpy, MST_PSTDFONT(mr), fws, 0);
     }
     if (MI_HAS_HOTKEY(mi) && !MI_IS_TITLE(mi) &&
 	(!MI_IS_HOTKEY_AUTOMATIC(mi) || MST_USE_AUTOMATIC_HOTKEYS(mr)) &&
@@ -4362,8 +4361,8 @@ static void paint_side_pic(MenuRoot *mr, XEvent *pevent)
 static void draw_underline(MenuRoot *mr, GC gc, int x, int y, char *txt,
 			   int coffset)
 {
-  int off1 = XTextWidth(MST_PSTDFONT(mr)->font, txt, coffset);
-  int off2 = XTextWidth(MST_PSTDFONT(mr)->font, txt + coffset, 1) - 1 + off1;
+  int off1 = FlocaleTextWidth(MST_PSTDFONT(mr), txt, coffset);
+  int off2 = FlocaleTextWidth(MST_PSTDFONT(mr), txt + coffset, 1) - 1 + off1;
   XDrawLine(dpy, MR_WINDOW(mr), gc, x + off1, y + 2, x + off2, y + 2);
 }
 
@@ -5008,7 +5007,7 @@ static void calculate_item_sizes(MenuSizingParameters *msp)
       if (!is_formatted && MI_LABEL(mi)[0] != NULL)
       {
 	MI_LABEL_STRLEN(mi)[0] = strlen(MI_LABEL(mi)[0]);
-	w = XTextWidth(MST_PSTDFONT(msp->menu)->font, MI_LABEL(mi)[0],
+	w = FlocaleTextWidth(MST_PSTDFONT(msp->menu), MI_LABEL(mi)[0],
 		       MI_LABEL_STRLEN(mi)[0]);
 	MI_LABEL_OFFSET(mi)[0] = w;
 	MI_IS_TITLE_CENTERED(mi) = True;
@@ -5023,7 +5022,7 @@ static void calculate_item_sizes(MenuSizingParameters *msp)
       if (MI_LABEL(mi)[i])
       {
 	MI_LABEL_STRLEN(mi)[i] = strlen(MI_LABEL(mi)[i]);
-	w = XTextWidth(MST_PSTDFONT(msp->menu)->font, MI_LABEL(mi)[i],
+	w = FlocaleTextWidth(MST_PSTDFONT(msp->menu), MI_LABEL(mi)[i],
 		       MI_LABEL_STRLEN(mi)[i]);
 	MI_LABEL_OFFSET(mi)[i] = w;
 	if (msp->max.label_width[i] < w)
@@ -5289,11 +5288,11 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	  break;
 	case '\t':
 	  x +=
-	    MENU_TAB_WIDTH * XTextWidth(MST_PSTDFONT(msp->menu)->font, " ", 1);
+	    MENU_TAB_WIDTH * FlocaleTextWidth(MST_PSTDFONT(msp->menu), " ", 1);
 	  break;
 	case ' ':
 	  /* Advance the x position. */
-	  x += XTextWidth(MST_PSTDFONT(msp->menu)->font, format, 1);
+	  x += FlocaleTextWidth(MST_PSTDFONT(msp->menu), format, 1);
 	  break;
 	default:
 	  /* Ignore unknown characters. */
@@ -5301,11 +5300,11 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	} /* switch (*format) */
 	break;
       case '\t':
-	x += MENU_TAB_WIDTH * XTextWidth(MST_PSTDFONT(msp->menu)->font, " ", 1);
+	x += MENU_TAB_WIDTH * FlocaleTextWidth(MST_PSTDFONT(msp->menu), " ", 1);
 	break;
       case ' ':
 	/* Advance the x position. */
-	x += XTextWidth(MST_PSTDFONT(msp->menu)->font, format, 1);
+	x += FlocaleTextWidth(MST_PSTDFONT(msp->menu), format, 1);
 	break;
       default:
 	/* Ignore unknown characters. */
@@ -5451,7 +5450,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
   Bool has_continuation_menu = False;
 
   MR_ITEM_TEXT_Y_OFFSET(msp->menu) =
-    MST_PSTDFONT(msp->menu)->y + relief_thickness +
+    MST_PSTDFONT(msp->menu)->ascent + relief_thickness +
     MST_ITEM_GAP_ABOVE(msp->menu);
   simple_entry_height =	MST_PSTDFONT(msp->menu)->height +
     MST_ITEM_GAP_ABOVE(msp->menu) + MST_ITEM_GAP_BELOW(msp->menu);
@@ -6501,10 +6500,9 @@ static void FreeMenuStyle(MenuStyle *ms)
     DestroyPicture(dpy, ST_SIDEPIC(ms));
   if (ST_HAS_SIDE_COLOR(ms) == 1)
     FreeColors(&ST_SIDE_COLOR(ms), 1);
-  if (ST_PSTDFONT(ms) && ST_PSTDFONT(ms) != &Scr.DefaultFont)
+  if (ST_PSTDFONT(ms) && ST_PSTDFONT(ms) != Scr.DefaultFont)
   {
-    FreeFvwmFont(dpy, ST_PSTDFONT(ms));
-    free(ST_PSTDFONT(ms));
+    FlocaleUnloadFont(dpy, ST_PSTDFONT(ms));
   }
   if (ST_ITEM_FORMAT(ms))
     free(ST_ITEM_FORMAT(ms));
@@ -6644,8 +6642,12 @@ static void UpdateMenuStyle(MenuStyle *ms)
   }
 
   /* make GC's */
-  gcm = GCFunction|GCFont|GCLineWidth|GCForeground|GCBackground;
-  gcv.font = ST_PSTDFONT(ms)->font->fid;
+  gcm = GCFunction|GCLineWidth|GCForeground|GCBackground;
+  if (ST_PSTDFONT(ms)->font)
+  {
+    gcm |= GCFont;
+    gcv.font = ST_PSTDFONT(ms)->font->fid;
+  }
   gcv.function = GXcopy;
   gcv.line_width = 0;
 
@@ -6829,7 +6831,7 @@ static void NewMenuStyle(F_CMD_ARGS)
   Bool is_default_style = False;
   int val[2];
   int n;
-  FvwmFont new_font;
+  FlocaleFont *new_font = NULL;
   int i;
   KeyCode keycode;
 
@@ -6871,7 +6873,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       /* some default configuration goes here for the new menu style */
       ST_MENU_COLORS(tmpms).back = GetColor(DEFAULT_BACK_COLOR);
       ST_MENU_COLORS(tmpms).fore = GetColor(DEFAULT_FORE_COLOR);
-      ST_PSTDFONT(tmpms) = &Scr.DefaultFont;
+      ST_PSTDFONT(tmpms) = Scr.DefaultFont;
       ST_FACE(tmpms).type = SimpleMenu;
       ST_HAS_ACTIVE_FORE(tmpms) = 0;
       ST_HAS_ACTIVE_BACK(tmpms) = 0;
@@ -6956,12 +6958,11 @@ static void NewMenuStyle(F_CMD_ARGS)
       ST_USE_AUTOMATIC_HOTKEYS(tmpms) = 0;
       FreeMenuFace(dpy, &ST_FACE(tmpms));
       ST_FACE(tmpms).type = SimpleMenu;
-      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.DefaultFont)
+      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != Scr.DefaultFont)
       {
-	FreeFvwmFont(dpy, ST_PSTDFONT(tmpms));
-	free(ST_PSTDFONT(tmpms));
+	FlocaleUnloadFont(dpy, ST_PSTDFONT(tmpms));
       }
-      ST_PSTDFONT(tmpms) = &Scr.DefaultFont;
+      ST_PSTDFONT(tmpms) = Scr.DefaultFont;
       has_gc_changed = True;
       if (ST_HAS_SIDE_COLOR(tmpms) == 1)
       {
@@ -7078,26 +7079,24 @@ static void NewMenuStyle(F_CMD_ARGS)
       break;
 
     case 15: /* Font */
-      if (arg1 && !LoadFvwmFont(dpy, arg1, &new_font))
+      if (arg1 != NULL && !(new_font = FlocaleLoadFont(dpy, arg1, "FVWM")))
       {
 	fvwm_msg(ERR, "NewMenuStyle",
-		 "Couldn't load font '%s' or 'fixed'\n", arg1);
+		 "Couldn't load font '%s'\n", arg1);
 	break;
       }
-      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.DefaultFont)
+      if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != Scr.DefaultFont)
       {
-	FreeFvwmFont(dpy, ST_PSTDFONT(tmpms));
-	free(ST_PSTDFONT(tmpms));
+	FlocaleUnloadFont(dpy, ST_PSTDFONT(tmpms));
       }
       if (arg1 == NULL)
       {
 	/* reset to screen font */
-	ST_PSTDFONT(tmpms) = &Scr.DefaultFont;
+	ST_PSTDFONT(tmpms) = Scr.DefaultFont;
       }
       else
       {
-	ST_PSTDFONT(tmpms) = (FvwmFont *)safemalloc(sizeof(FvwmFont));
-	*ST_PSTDFONT(tmpms) = new_font;
+	ST_PSTDFONT(tmpms) = new_font;
       }
       has_gc_changed = True;
       break;
@@ -7532,49 +7531,23 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
   ST_IS_ANIMATED(destms) = ST_IS_ANIMATED(origms);
 
   /* font */
-  if (ST_PSTDFONT(destms) && ST_PSTDFONT(destms) != &Scr.DefaultFont)
+  if (ST_PSTDFONT(destms) && ST_PSTDFONT(destms) != Scr.DefaultFont)
   {
-    FreeFvwmFont(dpy, ST_PSTDFONT(destms));
-    free(ST_PSTDFONT(destms));
+    FlocaleUnloadFont(dpy, ST_PSTDFONT(destms));
   }
-  if (ST_PSTDFONT(origms) && ST_PSTDFONT(origms) != &Scr.DefaultFont)
+  if (ST_PSTDFONT(origms) && ST_PSTDFONT(origms) != Scr.DefaultFont)
   {
-    unsigned long value = 0;
-    char *orig_font_name;
-    FvwmFont new_font;
-    Bool loaded = 0;
-
-    if (XGetFontProperty(ST_PSTDFONT(origms)->font,XA_FONT,&value))
+    if (!(ST_PSTDFONT(destms) =
+	  FlocaleLoadFont(dpy, ST_PSTDFONT(origms)->name, "FVWM")))
     {
-      orig_font_name = XGetAtomName(dpy, value);
-      if (orig_font_name != NULL)
-      {
-	if (!LoadFvwmFont(dpy, orig_font_name, &new_font))
-	{
-	  fvwm_msg(ERR, "CopyMenuStyle",
-		   "Couldn't load font '%s' or 'fixed'\n", orig_font_name);
-	}
-	else
-	{
-	  loaded = 1;
-	}
-	XFree(orig_font_name);
-      }
-    }
-    if (loaded)
-    {
-      ST_PSTDFONT(destms) = (FvwmFont *)safemalloc(sizeof(FvwmFont));
-      *ST_PSTDFONT(destms) = new_font;
-    }
-    else
-    {
-      ST_PSTDFONT(destms) = &Scr.DefaultFont;
+      ST_PSTDFONT(destms) = Scr.DefaultFont;
       fvwm_msg(ERR, "CopyMenuStyle",
-	       "Unable to find origin font name: Using Default Font\n");
+	       "Couldn't load font '%s' use Default Font\n",
+	       ST_PSTDFONT(origms)->name);
     }
   }
   else
-    ST_PSTDFONT(destms) = &Scr.DefaultFont;
+    ST_PSTDFONT(destms) = Scr.DefaultFont;
 
   /* MenuFace */
   FreeMenuFace(dpy, &ST_FACE(destms));

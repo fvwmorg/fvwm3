@@ -29,6 +29,8 @@ extern X11base *x11base;
 extern int nbobj;
 extern struct XObj *tabxobj[1000];
 extern int x_fd;
+extern char *ScriptName;
+extern FlocaleWinString *FwinString;
 
 /* Constante pour les type de message envoie entre objets */
 /* <0 valeur reserve pour les messages internes */
@@ -41,15 +43,10 @@ extern int x_fd;
  * not "menu drag" (use in Menu.c and PopupMenu.c */
 #define MENU_DRAG_TIME 300
 #define GRAB_EVMASK (ButtonPressMask | ButtonReleaseMask | ButtonMotionMask | PointerMotionMask | EnterWindowMask | LeaveWindowMask)
-#ifdef I18N_MB
-void FakeDrawString(XFontSet FONTSET,Display *dpy,struct XObj *xobj,Window win,
-		    int x,int y,char *str,int strl,unsigned long ForeC,
-		    unsigned long HiC,unsigned long BackC,int WithRelief);
-#else
-void DrawString(Display *dpy,struct XObj *xobj,Window win,int x,int y,char *str,
-		int strl,unsigned long ForeC,unsigned long HiC,
-		unsigned long BackC,int WithRelief);
-#endif
+
+void MyDrawString(Display *dpy, struct XObj *xobj, Window win, int x, int y,
+		  char *str, unsigned long ForeC,unsigned long HiC,
+		  unsigned long BackC, int WithRelief);
 
 int GetXTextPosition(struct XObj *xobj, int obj_width, int str_len, 
 		     int left_offset, int center_offset, int right_offset);
@@ -69,8 +66,6 @@ void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
 
 void DrawReliefRect(int x,int y,int width,int height,struct XObj *xobj,
 		unsigned int LiC, unsigned int ShadC);
-
-int GetAscFont(XFontStruct *xfont);
 
 int InsertText(struct XObj *xobj,char *str,int SizeStr);
 

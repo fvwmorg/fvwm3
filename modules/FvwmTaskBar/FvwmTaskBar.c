@@ -130,10 +130,8 @@ GC      checkered = None;
 int     colorset = -1;
 int     iconcolorset = -1;
 int     focuscolorset = -1;
-XFontStruct *ButtonFont, *SelButtonFont;
-#ifdef I18N_MB
-XFontSet ButtonFontset, SelButtonFontset;
-#endif
+FlocaleFont *FButtonFont, *FSelButtonFont;
+FlocaleWinString *FwinString;
 int fontheight;
 static Atom wm_del_win;
 Atom MwmAtom = None;
@@ -184,7 +182,7 @@ char *ClickAction[NUMBER_OF_MOUSE_BUTTONS] =
      *FocusBackColor = NULL,
      *FocusForeColor = NULL,
      *geometry       = NULL,
-     *font_string    = "fixed",
+     *font_string    = NULL,
      *selfont_string = NULL;
 
 static char *AnimCommand = NULL;
@@ -1653,10 +1651,15 @@ static void CreateOrUpdateGCs(void)
 
    /* only the foreground changes for all GCs */
    gcval.background = pback;
-   gcval.font = SelButtonFont->fid;
    gcval.graphics_exposures = False;
 
-   gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
+   gcmask = GCForeground | GCBackground | GCGraphicsExposures;
+
+   if (FSelButtonFont->font != NULL)
+   {
+     gcmask |= GCFont;
+     gcval.font = FSelButtonFont->font->fid;
+   }
    /* Normal */
    gcval.foreground = pfore;
    if (graph)
@@ -1792,12 +1795,6 @@ void StartMeUp(void)
    int ret;
    int i;
    XSetWindowAttributes attr;
-#ifdef I18N_MB
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-#endif
 
    if (!(dpy = XOpenDisplay(""))) {
      fprintf(stderr,"%s: can't open display %s", Module,
@@ -1813,6 +1810,7 @@ void StartMeUp(void)
    }
    AllocColorset(0);
    FShapeInit(dpy);
+   FlocaleAllocateWinString(&FwinString);
    x_fd = XConnectionNumber(dpy);
    screen= DefaultScreen(dpy);
    Root = RootWindow(dpy, screen);
@@ -1835,47 +1833,19 @@ void StartMeUp(void)
    if (selfont_string == NULL)
      selfont_string = font_string;
 
-#ifdef I18N_MB
-   if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {
-#ifdef STRICTLY_FIXED
-     if ((ButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL) {
-#else
-     if ((ButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL) {
-#endif
-       fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n",Module);
-       exit(1);
-     }
+   if ((FButtonFont = FlocaleLoadFont(dpy, font_string, Module)) == NULL)
+   {
+     fprintf(stderr, "%s: Couldn't load font. Exiting!\n",Module);
+     exit(1);
    }
-   XFontsOfFontSet(ButtonFontset,&fs_list,&ml);
-   ButtonFont = fs_list[0];
-   if ((SelButtonFontset = XCreateFontSet(dpy,selfont_string,&ml,&mc,&ds))
-       == NULL) {
-#ifdef STRICTLY_FIXED
-     if ((SelButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL)
-#else
-     if ((SelButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL)
-#endif
-       fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n",Module);
-       exit(1);
+   if ((FSelButtonFont = FlocaleLoadFont(dpy, selfont_string, Module)) == NULL)
+   {
+     fprintf(stderr, "%s: Couldn't load font. Exiting!\n",Module);
+     exit(1);
    }
-   XFontsOfFontSet(SelButtonFontset,&fs_list,&ml);
-   SelButtonFont = fs_list[0];
-#else
-   if ((ButtonFont = XLoadQueryFont(dpy, font_string)) == NULL) {
-     if ((ButtonFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
-       fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n", Module);
-       exit(1);
-     }
-   }
-   if ((SelButtonFont = XLoadQueryFont(dpy, selfont_string)) == NULL) {
-     if ((SelButtonFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
-       fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n", Module);
-       exit(1);
-     }
-   }
-#endif
 
-   fontheight = SelButtonFont->ascent + SelButtonFont->descent;
+   fontheight = (FButtonFont->height > FSelButtonFont->height)?
+     FButtonFont->height : FSelButtonFont->height;
 
    NRows = 1;
    RowHeight = fontheight + 8;

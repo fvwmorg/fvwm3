@@ -32,9 +32,6 @@
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
-#ifdef I18N_MB
-#include <X11/Xlocale.h>
-#endif
 
 #include "libs/fvwmlib.h"
 #include "fvwm.h"

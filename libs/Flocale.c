@@ -18,18 +18,33 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <unistd.h>
+#include <stdlib.h>
+
 #include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <X11/Xatom.h>
+
+#include "Flocale.h"
+
 #ifdef HAVE_CODESET
-#include <locale.h>
 #include <langinfo.h>
 #endif
-#include "Flocale.h"
+
+#include "safemalloc.h"
+#include "Strings.h"
+#include "Parse.h"
 
 char *Flocale = NULL;
 char *Fcharset = NULL;
 char *Fmodifiers = NULL;
 
-#ifdef I18N_MB
+static FlocaleFont *FlocaleFontList = NULL;
+
+/* ***************************************************************************
+ * locale initialisation
+ * ***************************************************************************/
+#ifdef MULTIBYTE
 void FInitLocale(
 		 int category,
 		 const char *locale,
@@ -63,7 +78,7 @@ void FInitLocale(
 #endif
 }
 
-#endif /* I18N_MB */
+#endif /* MULTIBYTE */
 
 void FInitCharset(const char *module)
 {
@@ -73,7 +88,7 @@ void FInitCharset(const char *module)
   {
     if (setlocale(LC_CTYPE, getenv("LC_CTYPE")) == NULL)
       fprintf(stderr,
-	"[%s][%s]: WARNNING -- Cannot set locale\n", module, "FInitCharset");
+				"[%s][%s]: WARNNING -- Cannot set locale\n", module, "FInitCharset");
   }
 #ifdef HAVE_CODESET
   if (!Fcharset)
@@ -107,4 +122,410 @@ void FInitCharset(const char *module)
 #endif
     Fcharset = NULL;
   }
+}
+
+/* ***************************************************************************
+ * fonts loading
+ * ***************************************************************************/
+
+#ifdef MULTIBYTE
+static
+FlocaleFont *get_FlocaleFontSet(Display *dpy, char *fontname, char *module)
+{
+  static int mc_errors = 0;
+  FlocaleFont *flf = NULL;
+  XFontSet fontset = NULL;
+  char **ml;
+  int mc,i;
+  char *ds;
+  XFontSetExtents *fset_extents;
+  XFontStruct **fs_list;
+
+  if (!(fontset = XCreateFontSet(dpy, fontname, &ml, &mc, &ds)))
+    return NULL;
+ 
+  if (mc > 0)
+  {
+    if (mc_errors <= NUMBER_OF_MISSING_CHARSET_ERR_MSG)
+    {
+      mc_errors++;
+      fprintf(stderr, 
+	      "[%s][get_FlocaleFontSet][%s]:"
+	      "The following charsets are missing:\n",
+	      fontname, (module)? module:"FVWM");
+      if (mc_errors == NUMBER_OF_MISSING_CHARSET_ERR_MSG)
+	fprintf(stderr, "\tNo more such error will be reported");
+    }
+    for(i=0; i < mc; i++)
+      fprintf(stderr, " %s", ml[i]);
+    fprintf(stderr, "\n");
+    if (mc_errors == NUMBER_OF_MISSING_CHARSET_ERR_MSG)
+      fprintf(stderr, "\tNo more such error will be reported");
+    XFreeStringList(ml);
+  }
+
+  flf = (FlocaleFont *)safemalloc(sizeof(FlocaleFont));
+  flf->count = 1;
+  flf->fontset = fontset;
+  flf->font = NULL;
+  fset_extents = XExtentsOfFontSet(fontset);
+  flf->height = fset_extents->max_logical_extent.height;
+  /* FIXME MULTIBYTE: how to get the ascent directly (from fset_extents) ? */
+  XFontsOfFontSet(fontset, &fs_list, &ml);
+  flf->ascent = fs_list[0]->ascent;
+  flf->descent = fs_list[0]->descent;
+  return flf;
+}
+#endif
+
+static
+FlocaleFont *get_FlocaleFont(Display *dpy, char *fontname)
+{
+  XFontStruct *font = NULL;
+  FlocaleFont *flf;
+  char *str,*fn;
+
+  str = GetQuotedString(fontname, &fn, ",", NULL, NULL, NULL);
+  while(!font && (fn && *fn))
+  {
+    font = XLoadQueryFont(dpy, fn);
+    if (fn != NULL)
+    {
+      free(fn);
+      fn = NULL;
+    }
+    if (!font)
+      str = GetQuotedString(str, &fn, ",", NULL, NULL, NULL);
+  }
+  if (fn != NULL)
+    free(fn);
+  if (font == NULL)
+    return NULL;
+
+  flf = (FlocaleFont *)safemalloc(sizeof(FlocaleFont));
+  flf->count = 1;
+  MULTIBYTE_CODE(flf->fontset = None);
+  flf->font = font;
+  flf->height = flf->font->ascent + flf->font->descent;
+  flf->ascent = flf->font->ascent;
+  flf->descent = flf->font->descent;
+  return flf;
+}
+
+static
+FlocaleFont *get_FlocaleFontOrFontSet(Display *dpy, char *fontname, char *module)
+{
+  FlocaleFont *flf = NULL;
+
+#ifdef MULTIBYTE
+  if (Flocale != NULL && fontname)
+  {
+    flf = get_FlocaleFontSet(dpy, fontname, module);
+  }
+#endif
+  if (flf == NULL && fontname)
+  {
+    flf = get_FlocaleFont(dpy, fontname);
+  }
+  if (flf && fontname)
+  {
+    if (StrEquals(fontname,MB_FALLBACK_FONT))
+      flf->name = MB_FALLBACK_FONT;
+    else if (StrEquals(fontname,FALLBACK_FONT))
+      flf->name = FALLBACK_FONT;
+    else
+      CopyString(&flf->name, fontname);
+    return flf;
+  }
+  if (fontname)
+  {
+    fprintf(stderr,"[%s][FlocaleGetFont]: "
+	    "WARNING -- can't get font '%s', try to load default font:\n",
+	    (module)? module:"FVWM", fontname);
+  }
+#ifdef MULTIBYTE
+  if (Flocale != NULL)
+  {
+    if (fontname)
+      fprintf(stderr,"\t %s\n", MB_FALLBACK_FONT);
+    if ((flf = get_FlocaleFontSet(dpy, MB_FALLBACK_FONT, module)) != NULL)
+    {
+      flf->name = MB_FALLBACK_FONT;
+      return flf;
+    }
+  }
+#endif
+  if (fontname)
+    fprintf(stderr,"\t %s\n", FALLBACK_FONT);
+  if ((flf = get_FlocaleFont(dpy, FALLBACK_FONT)) != NULL)
+  {
+    flf->name = FALLBACK_FONT;
+    return flf;
+  }
+  fprintf(stderr,"[%s][FlocaleLoadFont]: ERROR -- can't get font\n",
+	  (module)? module:"FVWM");
+
+  return NULL;
+}
+
+FlocaleFont *FlocaleLoadFont(Display *dpy, char *fontname, char *module)
+{
+  FlocaleFont *flf = FlocaleFontList;
+
+  if (fontname == NULL)
+  {
+#ifdef MULTIBYTE
+    fontname = MB_FALLBACK_FONT;
+#else
+    fontname = FALLBACK_FONT;
+#endif
+  }
+
+  while(flf)
+  {
+    char *c1, *c2;
+
+    for (c1 = fontname, c2 = flf->name; *c1 && *c2; ++c1, ++c2)
+      if (*c1 != *c2)
+	break;
+
+    if (!*c1 && !*c2)
+    {
+      flf->count++;
+      return flf;
+    }
+    flf = flf->next;
+  }
+
+  /* not cached load the font */
+  flf = get_FlocaleFontOrFontSet(dpy, fontname, module);
+
+  if (flf != NULL)
+  {
+    flf->next = FlocaleFontList;
+    FlocaleFontList = flf;
+  }
+  return flf;
+}
+
+void FlocaleUnloadFont(Display *dpy, FlocaleFont *flf)
+{
+  FlocaleFont *list = FlocaleFontList;
+
+  if (!flf)
+    return;
+
+  if(--(flf->count)>0) /* Remove a weight, still too heavy? */
+    return;
+
+  
+  if(flf->name != NULL &&
+     !StrEquals(flf->name,MB_FALLBACK_FONT) &&
+     !StrEquals(flf->name,FALLBACK_FONT))
+  {
+    free(flf->name);
+  }
+#ifdef MULTIBYTE
+  if (flf->fontset != NULL)
+  {
+    XFreeFontSet(dpy, flf->fontset);
+  }
+#endif
+  if (flf->font != NULL)
+  {
+    XFreeFont(dpy, flf->font);
+  }
+
+  /* Link it out of the list (it might not be there) */
+  if (flf == list) /* in head? simple */
+    FlocaleFontList = flf->next;
+  else
+  {
+    while(list && list->next != flf) /* fast forward until end or found */
+      list = list->next;
+    if(list) /* not end? means we found it in there, possibly at end */
+      list->next = flf->next; /* link around it */
+  }
+  free(flf);
+}
+
+/* ***************************************************************************
+ * Width and Drawing Text
+ * ***************************************************************************/
+void FlocaleDrawString(Display *dpy, FlocaleFont *flf, FlocaleWinString *fstring,
+		       unsigned long flags)
+{
+  int len;
+
+  if (!fstring || !fstring->str)
+    return;
+
+  if (flags & FWS_HAVE_LENGTH)
+  {
+    len = fstring->len;
+  }
+  else
+  {
+    len = strlen(fstring->str);
+  }
+
+#ifdef MULTIBYTE
+  if (flf->fontset != None)
+    XmbDrawString(dpy, fstring->win, flf->fontset,
+                  fstring->gc, fstring->x, fstring->y,
+		  fstring->str, len);
+  else
+#endif
+    if (flf->font != None)
+      XDrawString(dpy, fstring->win, fstring->gc, fstring->x, 
+		  fstring->y, fstring->str, len);
+}
+
+int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
+{
+  if (!str)
+    return 0;
+#ifdef MULTIBYTE
+  if (flf->fontset != None)
+    return XmbTextEscapement(flf->fontset, str, sl);
+#endif
+  if (flf->font != None)
+    return XTextWidth(flf->font, str, sl);
+  return 0;
+}
+
+void FlocaleAllocateWinString(FlocaleWinString **pfws)
+{
+  *pfws = (FlocaleWinString *)safemalloc(sizeof(FlocaleWinString));
+  memset(*pfws, '\0', sizeof(FlocaleWinString));
+  (*pfws)->str = NULL;
+}
+
+/* ***************************************************************************
+ * Text properties
+ * ***************************************************************************/
+/* configure does that but never knows */
+#ifdef MULTIBYTE
+#undef COMPOUND_TEXT
+#endif
+
+#if defined(MULTIBYTE) || defined(COMPOUND_TEXT)
+#define MULTIBYTE_OR_COMPOUND_TEXT_CODE(x) x
+#define MULTIBYTE_OR_COMPOUND_TEXT 1
+#else
+#define MULTIBYTE_OR_COMPOUND_TEXT_CODE(x)
+#endif
+
+void FlocaleGetNameProperty(Status (func)(Display *, Window, XTextProperty *),
+			   Display *dpy, Window w,
+			   MULTIBYTE_ARG(char ***ret_name_list)
+			   char **ret_name)
+{
+  XTextProperty text_prop;
+
+  if (func(dpy, w, &text_prop) != 0
+      MULTIBYTE_OR_COMPOUND_TEXT_CODE(&& text_prop.value))
+  {
+    MULTIBYTE_OR_COMPOUND_TEXT_CODE(if (text_prop.encoding == XA_STRING))
+    {
+      /* STRING encoding, use this as it is */
+#ifdef COMPOUND_TEXT
+      CopyString(&*ret_name, (char *)text_prop.value);
+      XFree(text_prop.value);
+#else
+      *ret_name = (char *)text_prop.value;
+      MULTIBYTE_CODE(*ret_name_list = NULL);
+#endif
+    }
+#ifdef MULTIBYTE_OR_COMPOUND_TEXT
+    else
+    {
+      char **list;
+      int num;
+
+      /* not STRING encoding, try to convert */
+      if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
+	  && num > 0 && *list)
+      {
+	/* XXX: does not consider the conversion is REALLY succeeded */
+	XFree(text_prop.value); /* return of XGetWM(Icon)Name() */
+#ifdef COMPOUND_TEXT
+	CopyString(&*ret_name, *list);
+	if (list)
+	  XFreeStringList(list);
+#else
+	*ret_name = *list;
+	MULTIBYTE_CODE(*ret_name_list = list);
+#endif
+      }
+      else
+      {
+	if (list)
+	  XFreeStringList(list);
+	XFree(text_prop.value); /* return of XGet(Icon)WMName() */
+	if (func(dpy, w, &text_prop))
+	{
+#ifdef COMPOUND_TEXT
+	  CopyString(&*ret_name, (char *)text_prop.value);
+	  XFree(text_prop.value);
+#else
+	  MULTIBYTE_CODE(*ret_name = (char *)text_prop.value);
+	  MULTIBYTE_CODE(*ret_name_list = NULL);
+#endif
+	}
+      }
+    }
+#endif /* MULTIBYTE_OR_COMPOUND_TEXT */
+  }
+}
+
+
+void FlocaleFreeNameProperty(MULTIBYTE_ARG(char ***ptext_list) char **ptext)
+{
+#ifdef MULTIBYTE
+  if (*ptext_list != NULL)
+  {
+    XFreeStringList(*ptext_list);
+    *ptext_list = NULL;
+  }
+  else
+#endif
+  {
+#ifdef COMPOUND_TEXT
+    free(*ptext);
+#else
+    XFree(*ptext);
+#endif
+  }
+  *ptext = NULL;
+
+  return;
+}
+
+Bool FlocaleTextListToTextProperty(Display *dpy, char **list, int count,
+				   XICCEncodingStyle style,
+				   XTextProperty *text_prop_return)
+{
+  int ret = False;
+
+#ifdef MULTIBYTE
+  if (Flocale != NULL)
+  {
+    ret = XmbTextListToTextProperty(dpy, list, count, style, text_prop_return);
+    if (ret == XNoMemory)
+    {
+      ret = False;
+    }
+    ret = True;
+  }
+#endif
+  if (!ret)
+  {
+    if (XStringListToTextProperty(list, count, text_prop_return) == 0)
+      ret = False;
+    else
+      ret = True;
+  }
+
+  return ret;
 }

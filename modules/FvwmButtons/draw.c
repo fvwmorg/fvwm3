@@ -40,9 +40,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#ifdef I18N_MB
-#include <X11/Xlocale.h>
-#endif
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>
@@ -106,7 +103,7 @@ void MakeButton(button_info *b)
    * padding or frame.
    */
   int ih,iw,ix,iy;
-  XFontStruct *font;
+  FlocaleFont *Ffont;
 
   if(!b)
   {
@@ -133,7 +130,7 @@ void MakeButton(button_info *b)
   if (b->parent->c->flags&b_Colorset)
     b->flags|=b_ColorsetParent;
 
-  font = buttonFont(b);
+  Ffont = buttonFont(b);
 
   GetInternalSize(b,&ix,&iy,&iw,&ih);
 
@@ -155,8 +152,8 @@ void MakeButton(button_info *b)
       exit(2);
     }
 
-    if (b->flags&b_Title && font && !(buttonJustify(b)&b_Horizontal))
-      ih -= font->ascent+font->descent;
+    if (b->flags&b_Title && Ffont && !(buttonJustify(b)&b_Horizontal))
+      ih -= Ffont->height;
 
     b->icon_w=iw;
     b->icon_h=ih;
@@ -194,11 +191,9 @@ void RedrawButton(button_info *b,int clean)
   int i,j,k,BH,BW;
   int f,x,y,px,py;
   int ix,iy,iw,ih;
-  XFontStruct *font = buttonFont(b);
-#ifdef I18N_MB
-  XFontSet fontset = buttonFontSet(b);
-#endif
+  FlocaleFont *Ffont = buttonFont(b);
   XGCValues gcv;
+  unsigned long gcm;
   int rev = 0;
   int rev_xor = 0;
   Pixel fc;
@@ -371,23 +366,18 @@ void RedrawButton(button_info *b,int clean)
 
   if(b->flags&b_Title)
   {
-#ifdef I18N_MB
-    if (fontset)
+    if (Ffont)
     {
       gcv.foreground = fc;
-      gcv.font = font->fid;
-      XChangeGC(Dpy,NormalGC,GCForeground | GCFont,&gcv);
+      gcm = GCForeground;
+      if (Ffont->font)
+      {
+	gcv.font = Ffont->font->fid;
+	gcm |= GCFont;
+      }
+      XChangeGC(Dpy,NormalGC,gcm,&gcv);
       DrawTitle(b,MyWindow,NormalGC);
     }
-#else
-    if (font)
-    {
-      gcv.foreground = fc;
-      gcv.font = font->fid;
-      XChangeGC(Dpy,NormalGC,GCForeground | GCFont,&gcv);
-      DrawTitle(b,MyWindow,NormalGC);
-    }
-#endif
   } /* title */
   else if ((b->flags & b_Panel) && (b->panel_flags.panel_indicator))
   {
@@ -477,10 +467,7 @@ void DrawTitle(button_info *b,Window win,GC gc)
 {
   int BH;
   int ix,iy,iw,ih;
-  XFontStruct *font=buttonFont(b);
-#ifdef I18N_MB
-  XFontSet fontset = buttonFontSet(b);
-#endif
+  FlocaleFont *Ffont=buttonFont(b);
   int justify=buttonJustify(b);
   int l,i,xpos;
   char *s;
@@ -492,7 +479,7 @@ void DrawTitle(button_info *b,Window win,GC gc)
 
   /* ----------------------------------------------------------------------- */
 
-  if(!(b->flags&b_Title) || !font)
+  if(!(b->flags&b_Title) || !Ffont)
     return;
 
   /* If a title is to be shown, truncate it until it fits */
@@ -512,19 +499,19 @@ void DrawTitle(button_info *b,Window win,GC gc)
 
   s = b->title;
   l = strlen(s);
-  i = XTextWidth(font,s,l);
+  i = FlocaleTextWidth(Ffont,s,l);
 
   if(i>iw)
   {
     if(just==2)
     {
       while(i>iw && *s)
-	i=XTextWidth(font,++s,--l);
+	i=FlocaleTextWidth(Ffont,++s,--l);
     }
     else /* Left or center - cut off its tail */
     {
       while(i>iw && l>0)
-	i=XTextWidth(font,s,--l);
+	i=FlocaleTextWidth(Ffont,s,--l);
     }
   }
   if(just==0 || ((justify&b_Horizontal) && (b->flags&b_Right))) /* Left */
@@ -534,34 +521,27 @@ void DrawTitle(button_info *b,Window win,GC gc)
   else /* Centered, I guess */
     xpos=ix+(iw-i)/2;
 
-  if(*s && l>0 && BH>=font->descent+font->ascent) /* Clip it somehow? */
+  if(*s && l>0 && BH>=Ffont->height) /* Clip it somehow? */
   {
+    FwinString->str = s;
+    FwinString->win = win;
+    FwinString->gc = gc;
+    FwinString->x = xpos;
     /* If there is more than the title, put it at the bottom */
     /* Unless stack flag is set, put it to the right of icon */
     if((b->flags&b_Icon ||
 	((buttonSwallowCount(b)==3) && (b->flags&b_Swallow))) &&
        !(justify&b_Horizontal))
     {
-#ifdef I18N_MB
-      XmbDrawString(Dpy, win, fontset, gc, xpos,
-		    iy+ih-font->descent, s, l);
-#else
-      XDrawString(Dpy, win, gc, xpos,
-		  iy+ih-font->descent, s, l);
-#endif
+      FwinString->y = iy+ih-Ffont->descent;
       /* Shrink the space available for icon/window */
-      ih-=font->descent+font->ascent;
+      ih-=Ffont->height;
     }
     /* Or else center vertically */
     else
     {
-#ifdef I18N_MB
-      XmbDrawString(Dpy, win, fontset, gc, xpos,
-		    iy+(ih+font->ascent-font->descent)/2, s, l);
-#else
-      XDrawString(Dpy, win, gc, xpos,
-		  iy+(ih+font->ascent-font->descent)/2, s, l);
-#endif
+      FwinString->y = iy + (ih+ Ffont->ascent - Ffont->descent)/2;
     }
+    FlocaleDrawString(Dpy, Ffont, FwinString, 0);
   }
 }

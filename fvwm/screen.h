@@ -317,7 +317,7 @@ typedef struct ScreenInfo
 
   FvwmFunction *functions;
 
-  FvwmFont DefaultFont;     	/* font structure */
+  FlocaleFont *DefaultFont;     	/* font structure */
 
   GC TransMaskGC;               /* GC for transparency masks */
   Pixel StdFore, StdBack, StdHilite, StdShadow; /* don't change the order */
@@ -335,6 +335,9 @@ typedef struct ScreenInfo
   GC ScratchGC4;
   GC TitleGC;
   int SizeStringWidth;	        /* minimum width of size window */
+
+  FlocaleWinString *TitleStr;       /* title fvwm window string */
+  FlocaleWinString *ScratchStr;
 
   FvwmDecor DefaultDecor;	/* decoration style(s) */
   FvwmDecor *cur_decor;

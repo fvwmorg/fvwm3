@@ -32,6 +32,7 @@
 #include "libs/fvwmsignal.h"
 #include "libs/setpgrp.h"
 #include "libs/FShape.h"
+#include "libs/Flocale.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "libs/Colorset.h"
@@ -1248,9 +1249,13 @@ void ApplyDefaultFontAndColors(void)
   int cset = Scr.DefaultColorset;
 
   /* make GC's */
-  gcm = GCFunction|GCFont|GCLineWidth|GCForeground|GCBackground;
+  gcm = GCFunction|GCLineWidth|GCForeground|GCBackground;
   gcv.function = GXcopy;
-  gcv.font = Scr.DefaultFont.font->fid;
+  if (Scr.DefaultFont->font)
+  {
+    gcm |= GCFont;
+    gcv.font = Scr.DefaultFont->font->fid;
+  }
   gcv.line_width = 0;
   if (cset >= 0) {
     gcv.foreground = Colorset[cset].fg;
@@ -1391,7 +1396,7 @@ void CMD_DefaultColors(F_CMD_ARGS)
 void CMD_DefaultFont(F_CMD_ARGS)
 {
   char *font;
-  FvwmFont new_font;
+  FlocaleFont *new_font;
 
   font = PeekToken(action, &action);
   if (!font)
@@ -1399,15 +1404,15 @@ void CMD_DefaultFont(F_CMD_ARGS)
     /* Try 'fixed', pass NULL font name */
   }
 
-  if (!LoadFvwmFont(dpy, font, &new_font))
+  if (!(new_font = FlocaleLoadFont(dpy, font, "FVWM")))
   {
-    if (Scr.DefaultFont.font == NULL)
+    if (Scr.DefaultFont == NULL)
       exit(1);
     else
       return;
   }
 
-  FreeFvwmFont(dpy, &Scr.DefaultFont);
+  FlocaleUnloadFont(dpy, Scr.DefaultFont);
   Scr.DefaultFont = new_font;
   /* set flags to indicate that the font has changed */
   Scr.flags.do_need_window_update = 1;

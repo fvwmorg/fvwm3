@@ -18,20 +18,13 @@
 #include <X11/Xlib.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/Flocale.h"
 #include "ButtonArray.h"
 #include "Mallocs.h"
 
 extern Display *dpy;
 extern Window Root, win;
-extern XFontStruct *ButtonFont;
-#ifdef I18N_MB
-extern XFontSet ButtonFontset;
-#ifdef __STDC__
-#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
-#endif
-#endif
+extern FlocaleFont *FButtonFont;
 extern int Clength;
 extern char *ImagePath;
 Button *StartButton;
@@ -98,8 +91,8 @@ void StartButtonInit(int height)
 
   StartButton = (Button *)ButtonNew(StartName, p, BUTTON_UP,0);
   if (p != NULL) pw = p->width+3; else pw = 0;
-  StartButtonWidth = XTextWidth(ButtonFont, StartName, strlen(StartName)) +
-    pw + 14;
+  StartButtonWidth = FlocaleTextWidth(FButtonFont, StartName, strlen(StartName))
+    + pw + 14;
   StartButtonHeight = height;
 }
 

@@ -51,7 +51,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Picture.h"
-
+#include "libs/Flocale.h"
 
 /* ------------------------------- structs --------------------------------- */
 
@@ -125,10 +125,7 @@ struct container_info_struct
   unsigned int swallow_mask; /* b_Swallow */
   byte xpad,ypad;            /* b_Padding */
   signed char framew;        /* b_Frame */
-  XFontStruct *font;         /* b_Font */
-#ifdef I18N_MB
-  XFontSet fontset;        /* b_Font */
-#endif
+  FlocaleFont *Ffont;        /* b_Font */
   char *font_string;       /* b_Font */
   char *back;              /* b_Back && !b_IconBack */
   char *back_file;         /* b_Back && b_IconBack */
@@ -162,10 +159,7 @@ struct button_info_struct
   int n;                   /* number in parent */
 
   /* conditional fields */ /* applicable if these flags are set */
-  XFontStruct *font;       /* b_Font */
-#ifdef I18N_MB
-  XFontSet fontset;        /* b_Font */
-#endif
+  FlocaleFont *Ffont;      /* b_Font */
   char *font_string;       /* b_Font */
   char *back;              /* b_Back */
   char *fore;              /* b_Fore */
@@ -254,15 +248,7 @@ extern int fd[];
 extern int new_desk;
 extern GC  NormalGC;
 extern GC  ShadowGC;
-
-/* ------------------------------ I18N_MB stuff ---------------------------- */
-#ifdef I18N_MB
-#ifdef __STDC__
-#define XTextWidth(x,y,z)       XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z)       XmbTextEscapement(x/**/set,y,z)
-#endif
-#endif
+extern FlocaleWinString *FwinString;
 
 /* ---------------------------------- misc --------------------------------- */
 

@@ -37,17 +37,6 @@
 #include <sys/bsdtypes.h> /* Saul */
 #endif
 
-#ifdef I18N_MB
-#ifdef __STDC__
-#define XTextWidth(x,y,z)	XmbTextEscapement(x ## set,y,z)
-#define XFreeFont(x,y)		XFreeFontSet(x,y ## set)
-#else
-#define XTextWidth(x,y,z)	XmbTextEscapement(x/**/set,y,z)
-#define XFreeFont(x,y)		XFreeFontSet(x,y/**/set)
-#endif
-#define DrawString(a,b,c,d,e,f,g,h,i,j,k) FakeDrawString(xobj->xfontset,a,b,c,d,e,f,g,h,i,j,k)
-#endif /* I18N_MB */
-
 /* flags */
 #define IS_HIDDEN(x) (x->flags[0])
 #define HAS_NO_RELIEF_STRING(x) (x->flags[1])
@@ -228,10 +217,7 @@ struct XObj
   Pixmap iconPixmap;		/* Icone charge */
   Pixmap icon_maskPixmap;	/* Icone masque */
   int icon_w,icon_h;		/* Largeur et hauteur de l'icone */
-  XFontStruct *xfont;
-#ifdef I18N_MB
-  XFontSet xfontset;
-#endif
+  FlocaleFont *Ffont;
   int value;			/* Valeur courante */
   int value2;			/* Valeur minimale */
   int value3;			/* Valeur maximale */

@@ -57,7 +57,7 @@ void DumpButtons(button_info *b)
 	    b->BWidth,b->BHeight,b->flags);
 
   if(b->flags&b_Font)
-    fprintf(stderr,"Font(%s,0x%lx) ",b->font_string,(unsigned long)b->font);
+    fprintf(stderr,"Font(%s,0x%lx) ",b->font_string,(unsigned long)b->Ffont);
   if(b->flags&b_Padding)
     fprintf(stderr,"Padding(%i,%i) ",b->xpad,b->ypad);
   if(b->flags&b_Frame)
@@ -98,7 +98,7 @@ void DumpButtons(button_info *b)
 	    b->c->width,b->c->height,b->c->xpos,b->c->ypos);
     /*
       fprintf(stderr,"  font(%s,%i) framew(%i) pad(%i,%i) { ",
-      b->c->font_string,(int)b->c->font,b->c->framew,b->c->xpad,
+      b->c->font_string,(int)b->c->Ffont,b->c->framew,b->c->xpad,
       b->c->ypad);
     */
     while(i<b->c->num_buttons)

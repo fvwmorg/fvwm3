@@ -62,7 +62,7 @@ int fd[2];
 
 PagerStringList *FindDeskStrings(int desk);
 PagerStringList *NewPagerStringItem(PagerStringList *last, int desk);
-extern XFontStruct *windowFont;
+extern FlocaleFont *FwindowFont;
 extern Pixmap default_pixmap;
 
 /*************************************************************************
@@ -382,14 +382,8 @@ int main(int argc, char **argv)
   if (WindowLabelFormat == NULL)
     WindowLabelFormat = safestrdup("%i");
 
-  if (font_string == NULL)
-    font_string = safestrdup("fixed");
-
   if ((HilightC == NULL) && (HilightPixmap == NULL))
     HilightDesks = 0;
-
-  if (BalloonFont == NULL)
-    BalloonFont = safestrdup("fixed");
 
   if (BalloonBorderColor == NULL)
     BalloonBorderColor = safestrdup("black");
@@ -1171,7 +1165,7 @@ void list_window_name(unsigned long *body,unsigned long type)
         break;
       }
       /* repaint by clearing window */
-      if ((windowFont != NULL) && (t->icon_name != NULL)
+      if ((FwindowFont != NULL) && (t->icon_name != NULL)
 	   && !(MiniIcons && t->mini_icon.picture)) {
 	if (t->PagerView)
 	  XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
@@ -1218,7 +1212,7 @@ void list_icon_name(unsigned long *body)
 	free(t->icon_name);
       CopyString(&t->icon_name,(char *)(&body[3]));
       /* repaint by clearing window */
-      if ((windowFont != NULL) && (t->icon_name != NULL)
+      if ((FwindowFont != NULL) && (t->icon_name != NULL)
 	   && !(MiniIcons && t->mini_icon.picture)) {
 	if (t->PagerView)
 	  XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
@@ -1800,7 +1794,14 @@ void ParseOptions(void)
 	CopyString(&font_string,next);
       }
       if(strncasecmp(font_string,"none",4) == 0)
+      {
 	uselabel = 0;
+	if (font_string)
+	{
+	  free(font_string);
+	  font_string = NULL;
+	}
+      }
     }
     else if (StrEquals(resource, "Fore"))
     {

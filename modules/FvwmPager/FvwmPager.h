@@ -15,6 +15,7 @@
 
 #include <libs/Picture.h>
 #include <libs/vpacket.h>
+#include <libs/Flocale.h>
 
 typedef struct ScreenInfo
 {
@@ -105,10 +106,7 @@ typedef struct balloon_window
 {
   Window w;              /* ID of balloon window */
   PagerWindow *pw;       /* pager window it's associated with */
-  XFontStruct *font;
-#ifdef I18N_MB
-  XFontSet fontset;
-#endif
+  FlocaleFont *Ffont;
   char *label;           /* the label displayed inside the balloon */
   int height;            /* height of balloon window based on font */
   int border;            /* border width */

@@ -36,6 +36,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include "libs/Flocale.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "events.h"
@@ -528,6 +529,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *window, DecorFace *df)
   title_width = window->title_g.width;
   title_height = window->title_g.height;
 
+
   if (pm[TBP_MAIN])
     RenderIntoWindow(gc, pm[TBP_MAIN], title_win, 0, 0, title_width,
                      title_height, (stretch_flags & (1 << TBP_MAIN)));
@@ -536,12 +538,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *window, DecorFace *df)
                      title_height, (stretch_flags & (1 << TBP_LEFT_MAIN)));
 
   if (title) {
-#ifdef I18N_MB
-    text_width = XmbTextEscapement(window->title_font.fontset, title,
-                                   strlen(title));
-#else
-    text_width = XTextWidth(window->title_font.font, title, strlen(title));
-#endif
+    text_width = FlocaleTextWidth(window->title_font, title, strlen(title));
     if (text_width > title_width)
       text_width = title_width;
     switch (TB_JUSTIFICATION(GetDecor(window, titlebar))) {
@@ -606,19 +603,19 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *window, DecorFace *df)
     }
 
     text_y_pos = title_height
-                 - (title_height - window->title_font.font->ascent) / 2
+                 - (title_height - window->title_font->font->ascent) / 2
                  - 1;
     if (title_height > 19)
       text_y_pos--;
     if (text_y_pos < 0)
       text_y_pos = 0;
-#ifdef I18N_MB
-    XmbDrawString(dpy, title_win, window->title_font.fontset,
-                  gc, text_offset, text_y_pos, title, strlen(title));
-#else
-    XDrawString(dpy, title_win, gc, text_offset, text_y_pos, title,
-                strlen(title));
-#endif
+
+    Scr.TitleStr->str = window->visible_name;
+    Scr.TitleStr->win = title_win;
+    Scr.TitleStr->y = text_y_pos;
+    Scr.TitleStr->x = text_offset;
+    Scr.TitleStr->gc = gc;
+    FlocaleDrawString(dpy, window->title_font, Scr.TitleStr, 0);
   }
   else
     left_space = right_space = title_width;
@@ -1367,12 +1364,8 @@ static void RedrawTitle(
 
   if (t->visible_name != (char *)NULL)
   {
-#ifdef I18N_MB /* cannot use macro here, rewriting... */
-    w = XmbTextEscapement(t->title_font.fontset, t->visible_name,
-			  strlen(t->visible_name));
-#else
-    w = XTextWidth(t->title_font.font, t->visible_name, strlen(t->visible_name));
-#endif
+    w = FlocaleTextWidth(
+      t->title_font, t->visible_name, strlen(t->visible_name));
     if (w > t->title_g.width - 12)
       w = t->title_g.width - 4;
     if (w < 0)
@@ -1399,8 +1392,7 @@ static void RedrawTitle(
     break;
   }
 
-  NewFontAndColor(
-    t->title_font.font->fid, cd->fore_color, cd->back_color);
+  NewFontAndColor(t->title_font, cd->fore_color, cd->back_color);
 
   /* the next bit tries to minimize redraw (veliaa@rpi.edu) */
   /* we need to check for UseBorderStyle for the titlebar */
@@ -1433,22 +1425,19 @@ static void RedrawTitle(
   /*
    * draw title
    */
-
+  Scr.TitleStr->str = t->visible_name;
+  Scr.TitleStr->win = t->title_w;
+  Scr.TitleStr->x = hor_off;
+  Scr.TitleStr->y = t->title_text_y + 1;
   if (Pdepth < 2)
   {
     XFillRectangle(
       dpy, t->title_w, ((PressedW == t->title_w) ? sgc : rgc), hor_off - 2, 0,
       w+4,t->title_g.height);
     if(t->visible_name != (char *)NULL)
-#ifdef I18N_MB
-      XmbDrawString(dpy, t->title_w, t->title_font.fontset,
-		    Scr.TitleGC, hor_off,
-		    t->title_font.y + 1,
-		    t->visible_name, strlen(t->visible_name));
-#else
-      XDrawString(dpy, t->title_w, Scr.TitleGC, hor_off,
-                  t->title_font.y + 1, t->visible_name, strlen(t->visible_name));
-#endif
+    {
+      FlocaleDrawString(dpy, t->title_font, Scr.TitleStr, 0);
+    }
     /* for mono, we clear an area in the title bar where the window
      * title goes, so that its more legible. For color, no need */
     RelieveRectangle(
@@ -1504,17 +1493,7 @@ static void RedrawTitle(
         != MultiPixmap)
 #endif
     {
-#ifdef I18N_MB
-    if(t->visible_name != (char *)NULL)
-      XmbDrawString(dpy, t->title_w, t->title_font.fontset,
-		    Scr.TitleGC, hor_off,
-		    t->title_font.y + 1,
-		    t->visible_name, strlen(t->visible_name));
-#else
-    if(t->visible_name != (char *)NULL)
-      XDrawString(dpy, t->title_w, Scr.TitleGC, hor_off,
-		  t->title_font.y + 1, t->visible_name, strlen(t->visible_name));
-#endif
+      FlocaleDrawString(dpy, t->title_font, Scr.TitleStr, 0);
     }
 
     /*

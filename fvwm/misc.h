@@ -16,17 +16,6 @@
 #ifndef MISC_H
 #define MISC_H
 
-/* MB stuff: rename XmbTextEscapement() and XFreeFont() */
-#ifdef I18N_MB
-#ifdef __STDC__
-#define XTextWidth(x,y,z)	XmbTextEscapement(x ## set,y,z)
-#define XFreeFont(x,y)		XFreeFontSet(x,y ## set)
-#else
-#define XTextWidth(x,y,z)	XmbTextEscapement(x/**/set,y,z)
-#define XFreeFont(x,y)		XFreeFontSet(x,y/**/set)
-#endif
-#endif
-
 #define GRAB_ALL      0       /* sum of all grabs */
 #define GRAB_STARTUP  1       /* Startup busy cursor */
 #define GRAB_NORMAL   2       /* DeferExecution, Move, Resize, ... */
@@ -45,7 +34,7 @@ Bool UngrabEm(int ungrab_context);
 
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
-void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor);
+void NewFontAndColor(FlocaleFont *flf, Pixel color, Pixel backcolor);
 void Keyboard_shortcuts(
   XEvent *Event, FvwmWindow *fw, int *x_defect, int *y_defect, int ReturnEvent);
 Bool check_if_fvwm_window_exists(FvwmWindow *fw);

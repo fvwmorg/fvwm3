@@ -113,17 +113,10 @@ static void setup_icon_title_size(FvwmWindow *tmp_win)
   }
   else
   {
-#ifdef I18N_MB
-     tmp_win->icon_g.title_text_width =
-       XmbTextEscapement(
-	 tmp_win->icon_font.fontset, tmp_win->visible_icon_name,
+    tmp_win->icon_g.title_text_width =
+      FlocaleTextWidth(
+	 tmp_win->icon_font, tmp_win->visible_icon_name,
 	 strlen(tmp_win->visible_icon_name));
-#else
-     tmp_win->icon_g.title_text_width =
-       XTextWidth(
-	 tmp_win->icon_font.font, tmp_win->visible_icon_name,
-	 strlen(tmp_win->visible_icon_name));
-#endif
     tmp_win->icon_g.title_w_g.height = ICON_HEIGHT(tmp_win);
     if (tmp_win->icon_g.picture_w_g.width == 0)
     {
@@ -619,8 +612,8 @@ void DrawIconWindow(FvwmWindow *tmp_win)
     tmp_win->icon_g.title_w_g.x = x_title_w;
 
     /* set up TitleGC for drawing the icon label */
-    if (tmp_win->icon_font.font != None)
-      NewFontAndColor(tmp_win->icon_font.font->fid, TextColor, BackColor);
+    if (tmp_win->icon_font->font != None)
+      NewFontAndColor(tmp_win->icon_font, TextColor, BackColor);
 
     tmp_win->icon_g.title_w_g.height = ICON_HEIGHT(tmp_win);
     XMoveResizeWindow(
@@ -658,15 +651,13 @@ void DrawIconWindow(FvwmWindow *tmp_win)
       r.height = ICON_HEIGHT(tmp_win);
       XSetClipRectangles(dpy, Scr.TitleGC, 0, 0, &r, 1, Unsorted);
     }
-#ifdef I18N_MB
-    XmbDrawString(dpy, tmp_win->icon_title_w, tmp_win->icon_font.fontset,
-#else
-    XDrawString(dpy, tmp_win->icon_title_w,
-#endif
-		Scr.TitleGC, x_title,
-		tmp_win->icon_g.title_w_g.height - tmp_win->icon_font.height +
-		tmp_win->icon_font.y + ICON_TITLE_VERT_TEXT_OFFSET,
-		tmp_win->visible_icon_name, strlen(tmp_win->visible_icon_name));
+    Scr.TitleStr->str = tmp_win->visible_icon_name;
+    Scr.TitleStr->win =  tmp_win->icon_title_w;
+    Scr.TitleStr->x = x_title;
+    Scr.TitleStr->y = tmp_win->icon_g.title_w_g.height -
+      tmp_win->icon_font->height +
+      tmp_win->icon_font->ascent + ICON_TITLE_VERT_TEXT_OFFSET;
+    FlocaleDrawString(dpy, tmp_win->icon_font, Scr.TitleStr, 0);
     RelieveRectangle(
 	    dpy, tmp_win->icon_title_w, 0, 0, w_title_w - 1,
 	    ICON_HEIGHT(tmp_win) - 1, Relief, Shadow, ICON_RELIEF_WIDTH);

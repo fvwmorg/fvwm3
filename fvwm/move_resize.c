@@ -34,6 +34,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
 #include "libs/FScreen.h"
+#include "libs/Flocale.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -423,10 +424,10 @@ void resize_geometry_window(void)
   int cset = Scr.DefaultColorset;
 
   Scr.SizeStringWidth =
-    XTextWidth(Scr.DefaultFont.font, GEOMETRY_WINDOW_STRING,
-	       sizeof(GEOMETRY_WINDOW_STRING) - 1);
+    FlocaleTextWidth(Scr.DefaultFont, GEOMETRY_WINDOW_STRING,
+		     sizeof(GEOMETRY_WINDOW_STRING) - 1);
   w = Scr.SizeStringWidth + 2 * GEOMETRY_WINDOW_BW;
-  h = Scr.DefaultFont.height + 2 * GEOMETRY_WINDOW_BW;
+  h = Scr.DefaultFont->height + 2 * GEOMETRY_WINDOW_BW;
   if (w != sizew_g.width || h != sizew_g.height)
   {
     XResizeWindow(dpy, Scr.SizeWindow, w, h);
@@ -482,7 +483,7 @@ static void DisplayPosition(
   {
     /* just clear indside the relief lines to reduce flicker */
     XClearArea(dpy,Scr.SizeWindow, GEOMETRY_WINDOW_BW, GEOMETRY_WINDOW_BW,
-	       Scr.SizeStringWidth, Scr.DefaultFont.height, False);
+	       Scr.SizeStringWidth, Scr.DefaultFont->height, False);
   }
 
   if (Pdepth >= 2)
@@ -490,23 +491,19 @@ static void DisplayPosition(
     RelieveRectangle(
       dpy, Scr.SizeWindow, 0, 0,
       Scr.SizeStringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
-      Scr.DefaultFont.height + GEOMETRY_WINDOW_BW * 2 - 1,
+      Scr.DefaultFont->height + GEOMETRY_WINDOW_BW * 2 - 1,
       Scr.StdReliefGC, Scr.StdShadowGC, GEOMETRY_WINDOW_BW);
   }
   offset = (Scr.SizeStringWidth -
-	    XTextWidth(Scr.DefaultFont.font, str, strlen(str))) / 2;
+	    FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
   offset += GEOMETRY_WINDOW_BW;
-#ifdef I18N_MB
-  XmbDrawString(dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
-		offset,
-		Scr.DefaultFont.font->ascent + GEOMETRY_WINDOW_BW,
-		str, strlen(str));
-#else
-  XDrawString(dpy, Scr.SizeWindow, Scr.StdGC,
-	      offset,
-	      Scr.DefaultFont.font->ascent + GEOMETRY_WINDOW_BW,
-	      str, strlen(str));
-#endif
+
+  Scr.ScratchStr->str = str;
+  Scr.ScratchStr->win = Scr.SizeWindow;
+  Scr.ScratchStr->gc = Scr.StdGC;
+  Scr.ScratchStr->x = offset;
+  Scr.ScratchStr->y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;;
+  FlocaleDrawString(dpy, Scr.DefaultFont, Scr.ScratchStr, 0); 
 }
 
 
@@ -561,7 +558,7 @@ static void DisplaySize(
   {
     /* just clear indside the relief lines to reduce flicker */
     XClearArea(dpy, Scr.SizeWindow, GEOMETRY_WINDOW_BW, GEOMETRY_WINDOW_BW,
-	       Scr.SizeStringWidth, Scr.DefaultFont.height, False);
+	       Scr.SizeStringWidth, Scr.DefaultFont->height, False);
   }
 
   if (Pdepth >= 2)
@@ -569,21 +566,18 @@ static void DisplaySize(
     RelieveRectangle(
       dpy, Scr.SizeWindow, 0, 0,
       Scr.SizeStringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
-      Scr.DefaultFont.height + GEOMETRY_WINDOW_BW*2 - 1,
+      Scr.DefaultFont->height + GEOMETRY_WINDOW_BW*2 - 1,
       Scr.StdReliefGC, Scr.StdShadowGC, GEOMETRY_WINDOW_BW);
   }
   offset = (Scr.SizeStringWidth -
-	    XTextWidth(Scr.DefaultFont.font, str, strlen(str))) / 2;
+	    FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
   offset += GEOMETRY_WINDOW_BW;
-#ifdef I18N_MB
-  XmbDrawString(dpy, Scr.SizeWindow, Scr.DefaultFont.fontset, Scr.StdGC,
-		offset, Scr.DefaultFont.font->ascent + GEOMETRY_WINDOW_BW,
-		str, strlen(str));
-#else
-  XDrawString(dpy, Scr.SizeWindow, Scr.StdGC,
-	      offset, Scr.DefaultFont.font->ascent + GEOMETRY_WINDOW_BW,
-	      str, strlen(str));
-#endif
+  Scr.ScratchStr->str = str;
+  Scr.ScratchStr->win = Scr.SizeWindow;
+  Scr.ScratchStr->gc = Scr.StdGC;
+  Scr.ScratchStr->x = offset;
+  Scr.ScratchStr->y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;
+  FlocaleDrawString(dpy, Scr.DefaultFont, Scr.ScratchStr, 0);
 }
 
 static Bool resize_move_window(F_CMD_ARGS)

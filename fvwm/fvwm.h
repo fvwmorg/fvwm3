@@ -63,6 +63,7 @@
 #include <X11/cursorfont.h>
 #include <X11/Intrinsic.h>
 #include <libs/Picture.h>
+#include <libs/Flocale.h>
 #include "window_flags.h"
 
 /* Macro for args passed to fvwm commands... */
@@ -502,7 +503,7 @@ typedef struct FvwmWindow
 {
   char *name;                 /* name of the window */
   char *icon_name;            /* name of the icon */
-#ifdef I18N_MB
+#ifdef MULTIBYTE
   char **name_list;           /* window name list */
   char **icon_name_list;      /* icon name list */
 #endif
@@ -546,6 +547,8 @@ typedef struct FvwmWindow
   short corner_width;
   short visual_corner_width;
 
+  FlocaleFont *title_font;    /* title font */
+  short title_text_y;         /* /Y coordinate to draw the title name */
   rectangle title_g;
   short title_top_height;     /* title height/0 for top/bottom titles */
   struct
@@ -558,8 +561,8 @@ typedef struct FvwmWindow
   int iconDepth;              /* Drawable depth for the icon */
   Pixmap iconPixmap;          /* pixmap for the icon */
   Pixmap icon_maskPixmap;     /* pixmap for the icon mask */
-  FvwmFont title_font;
-  FvwmFont icon_font;
+  FlocaleFont *icon_font;
+
   XWindowAttributes attr;     /* the child window attributes */
   XSizeHints hints;           /* normal hints */
   XWMHints *wmhints;          /* WM hints */

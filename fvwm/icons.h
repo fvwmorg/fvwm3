@@ -19,7 +19,7 @@
 #ifdef NO_ICONS
 #define ICON_HEIGHT(t) 1
 #else
-#define ICON_HEIGHT(t) ((t)->icon_font.height + 6)
+#define ICON_HEIGHT(t) ((t)->icon_font->height + 6)
 #endif
 
 int get_visible_icon_window_count(FvwmWindow *tmp_win);

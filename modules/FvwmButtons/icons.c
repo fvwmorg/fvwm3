@@ -241,7 +241,7 @@ void ConfigureIconWindow(button_info *b)
   int x,y,w,h;
   int xoff,yoff;
   int framew,xpad,ypad;
-  XFontStruct *font;
+  FlocaleFont *Ffont;
   int BW,BH;
 
   if(!b || !(b->flags&b_Icon))
@@ -257,7 +257,7 @@ void ConfigureIconWindow(button_info *b)
   buttonInfo(b,&x,&y,&xpad,&ypad,&framew);
   framew=abs(framew);
 
-  font = buttonFont(b);
+  Ffont = buttonFont(b);
   w = b->icon->width;
   h = b->icon->height;
   BW = buttonWidth(b);
@@ -265,8 +265,8 @@ void ConfigureIconWindow(button_info *b)
 
   w=min(w,BW-2*(xpad+framew));
 
-  if(b->flags&b_Title && font && !(buttonJustify(b)&b_Horizontal))
-    h = min(h,BH-2*(ypad+framew)-font->ascent-font->descent);
+  if(b->flags&b_Title && Ffont && !(buttonJustify(b)&b_Horizontal))
+    h = min(h,BH-2*(ypad+framew)-Ffont->ascent-Ffont->descent);
   else
     h = min(h,BH-2*(ypad+framew));
 
@@ -290,8 +290,8 @@ void ConfigureIconWindow(button_info *b)
       xoff = framew+xpad;
   }
 
-  if(b->flags&b_Title && font && !(buttonJustify(b)&b_Horizontal))
-    yoff=(BH-(h+font->ascent+font->descent))>>1;
+  if(b->flags&b_Title && Ffont && !(buttonJustify(b)&b_Horizontal))
+    yoff=(BH-(h+Ffont->height))>>1;
   else
     yoff=(BH-h)>>1;
 

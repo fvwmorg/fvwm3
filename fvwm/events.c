@@ -325,7 +325,6 @@ void HandleKeyPress(void)
  ***********************************************************************/
 void HandlePropertyNotify(void)
 {
-  XTextProperty text_prop;
   Bool OnThisPage = False;
   Bool was_size_inc_set;
   Bool has_icon_changed = False;
@@ -336,15 +335,8 @@ void HandlePropertyNotify(void)
   int old_height_inc;
   int old_base_width;
   int old_base_height;
-
-#ifdef I18N_MB
-  Atom actual = None;
-  int actual_format;
-  unsigned long nitems, bytesafter;
-  char *prop = NULL;
-  char **list;
-  int num;
-#endif
+  char *new_name = NULL;
+  MULTIBYTE_CODE(char **new_name_list);
 
   DBUG("HandlePropertyNotify","Routine Entered");
 
@@ -398,73 +390,26 @@ void HandlePropertyNotify(void)
     flush_property_notify(XA_WM_NAME, Tmp_win->w);
     if (HAS_EWMH_WM_NAME(Tmp_win))
       return;
-#ifdef I18N_MB
-#if 0
-fprintf(stderr, "hpn: got name packet for window 0x%08x", (int)Tmp_win);
-#endif
-    if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
-			    MAX_WINDOW_NAME_LEN, False, AnyPropertyType,
-			    &actual, &actual_format, &nitems, &bytesafter,
-			    (unsigned char **) &prop) != Success ||
-	actual == None)
+    FlocaleGetNameProperty(XGetWMName, dpy, Tmp_win->w,
+			   MULTIBYTE_ARG(&new_name_list)
+			   &new_name);
+    if (new_name == NULL)
+    {
       return;
-    if (prop) {
-      if (actual == XA_STRING) {
-	/* STRING encoding, use this as it is */
-	free_window_names (Tmp_win, True, False);
-	Tmp_win->name = prop;
-	Tmp_win->name_list = NULL;
-      } else {
-	/* not STRING encoding, try to convert */
-	text_prop.value = prop;
-	text_prop.encoding = actual;
-	text_prop.format = actual_format;
-	text_prop.nitems = nitems;
-	if (
-	  XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
-	  && num > 0 && *list) {
-	  /* XXX: does not consider the conversion is REALLY succeeded */
-	  XFree(prop); /* return of XGetWindowProperty() */
-	  free_window_names (Tmp_win, True, False);
-	  Tmp_win->name = *list;
-	  Tmp_win->name_list = list;
-	} else {
-	  if (list) XFreeStringList(list);
-	  XFree(prop); /* return of XGetWindowProperty() */
-	  if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
-	    return; /* why cannot read... */
-	  free_window_names (Tmp_win, True, False);
-	  Tmp_win->name = (char *)text_prop.value;
-	  Tmp_win->name_list = NULL;
-	}
-      }
-    } else {
-      /* XXX: fallback to original behavior, is it needed ? */
-      if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
-	return;
-      free_window_names (Tmp_win, True, False);
-      Tmp_win->name = (char *)text_prop.value;
-      Tmp_win->name_list = NULL;
     }
-#if 0
-fprintf(stderr, " '%s'\n", Tmp_win->name);
-#endif
-#else
-    if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
-      return;
+ 
     free_window_names (Tmp_win, True, False);
-    Tmp_win->name = (char *)text_prop.value;
+    Tmp_win->name = new_name;
+    MULTIBYTE_CODE(Tmp_win->name_list = new_name_list);
     if (Tmp_win->name && strlen(Tmp_win->name) > MAX_WINDOW_NAME_LEN)
-      /* limit to prevent hanging X server */
       Tmp_win->name[MAX_WINDOW_NAME_LEN] = 0;
-#endif
 
     SET_NAME_CHANGED(Tmp_win, 1);
 
     if (Tmp_win->name == NULL)
-      Tmp_win->name = NoName;
-    setup_visible_name(Tmp_win, False);
+      Tmp_win->name = NoName; /* must not happen */
 
+    setup_visible_name(Tmp_win, False);
     BroadcastWindowIconNames(Tmp_win, True, False);
 
     /* fix the name in the title bar */
@@ -490,60 +435,21 @@ fprintf(stderr, " '%s'\n", Tmp_win->name);
     flush_property_notify(XA_WM_ICON_NAME, Tmp_win->w);
     if (HAS_EWMH_WM_ICON_NAME(Tmp_win))
       return;
-#ifdef I18N_MB
-    if (XGetWindowProperty (dpy, Tmp_win->w, Event.xproperty.atom, 0L,
-			    MAX_ICON_NAME_LEN, False, AnyPropertyType,
-			    &actual, &actual_format, &nitems, &bytesafter,
-			    (unsigned char **) &prop) != Success ||
-	actual == None)
+    FlocaleGetNameProperty(XGetWMIconName, dpy, Tmp_win->w,
+			   MULTIBYTE_ARG(&new_name_list)
+			   &new_name);
+    if (new_name == NULL)
+    {
       return;
-    if (prop) {
-      if (actual == XA_STRING) {
-	/* STRING encoding, use this as it is */
-	free_window_names (Tmp_win, False, True);
-	Tmp_win->icon_name = prop;
-	Tmp_win->icon_name_list = NULL;
-      } else {
-	/* not STRING encoding, try to convert */
-	text_prop.value = prop;
-	text_prop.encoding = actual;
-	text_prop.format = actual_format;
-	text_prop.nitems = nitems;
-	if (XmbTextPropertyToTextList(dpy, &text_prop, &list, &num) >= Success
-	    && num > 0 && *list) {
-	  /* XXX: does not consider the conversion is REALLY succeeded */
-	  XFree(prop); /* return of XGetWindowProperty() */
-	  free_window_names (Tmp_win, False, True);
-	  Tmp_win->icon_name = *list;
-	  Tmp_win->icon_name_list = list;
-	} else {
-	  if (list) XFreeStringList(list);
-	  XFree(prop); /* return of XGetWindowProperty() */
-	  if (!XGetWMIconName (dpy, Tmp_win->w, &text_prop))
-	    return; /* why cannot read... */
-	  free_window_names (Tmp_win, False, True);
-	  Tmp_win->icon_name = (char *)text_prop.value;
-	  Tmp_win->icon_name_list = NULL;
-	}
-      }
-    } else {
-      /* XXX: fallback to original behavior, is it needed ? */
-      if (!XGetWMIconName(dpy, Tmp_win->w, &text_prop))
-	return;
-      free_window_names (Tmp_win, False, True);
-      Tmp_win->icon_name = (char *)text_prop.value;
-      Tmp_win->icon_name_list = NULL;
     }
-#else
-    if (!XGetWMIconName (dpy, Tmp_win->w, &text_prop))
-      return;
+
     free_window_names (Tmp_win, False, True);
-    Tmp_win->icon_name = (char *) text_prop.value;
-    if (Tmp_win->icon_name && strlen(Tmp_win->icon_name) >
-	MAX_ICON_NAME_LEN)
+    Tmp_win->icon_name = new_name;
+    MULTIBYTE_CODE(Tmp_win->icon_name_list = new_name_list);
+    if (Tmp_win->icon_name && strlen(Tmp_win->icon_name) > MAX_ICON_NAME_LEN)
       /* limit to prevent hanging X server */
       Tmp_win->icon_name[MAX_ICON_NAME_LEN] = 0;
-#endif
+
     SET_WAS_ICON_NAME_PROVIDED(Tmp_win, 1);
     if (Tmp_win->icon_name == NULL)
     {

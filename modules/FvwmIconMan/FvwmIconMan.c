@@ -28,6 +28,7 @@
 
 
 const char *MyName;
+FlocaleWinString *FwinString;
 int mods_unused = DEFAULT_MODS_UNUSED;
 
 static RETSIGTYPE TerminateHandler(int);
@@ -271,6 +272,7 @@ main(int argc, char **argv)
 #endif
 
   read_in_resources(argv[3]);
+  FlocaleAllocateWinString(&FwinString);
 
   for (i = 0; i < globals.num_managers; i++) {
     X_init_manager(i);

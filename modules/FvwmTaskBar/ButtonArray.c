@@ -38,28 +38,19 @@
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
 #include "libs/safemalloc.h"
+#include "libs/Flocale.h"
 
 #include "ButtonArray.h"
 #include "Mallocs.h"
 
-#ifdef I18N_MB
-#ifdef __STDC__
-#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
-#endif
-#endif
-
-extern XFontStruct *ButtonFont, *SelButtonFont;
-#ifdef I18N_MB
-extern XFontSet ButtonFontset, SelButtonFontset;
-#endif
+extern FlocaleFont *FButtonFont, *FSelButtonFont;
 extern Display *dpy;
 extern Window win;
 extern GC shadow, hilite, graph, whitegc, blackgc, checkered, icongraph,
           iconhilite, iconshadow, focusgraph, focushilite, focusshadow;
 extern GC iconbackgraph;
 extern GC focusbackgraph;
+extern FlocaleWinString *FwinString;
 extern int button_width;
 extern int iconcolorset;
 extern int focuscolorset;
@@ -221,10 +212,7 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
   char *t3p = "...";
   int state, x3p, newx;
   int search_len;
-  XFontStruct *font;
-#ifdef I18N_MB
-  XFontSet fontset;
-#endif
+  FlocaleFont *Ffont;
   XGCValues gcv;
   unsigned long gcm;
   GC *drawgc;
@@ -244,31 +232,23 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
   if (state != BUTTON_UP) { x++; y++; }
 
   if (state == BUTTON_BRIGHT || button == StartButton)
-#ifdef I18N_MB
   {
-    font = SelButtonFont;
-    fontset = SelButtonFontset;
+    Ffont = FSelButtonFont;
   }
-#else
-    font = SelButtonFont;
-#endif
   else
-#ifdef I18N_MB
   {
-    font = ButtonFont;
-    fontset = ButtonFontset;
+    Ffont = FButtonFont;
   }
-#else
-    font = ButtonFont;
-#endif
 
-  gcm = GCFont;
-  gcv.font = font->fid;
-  XChangeGC(dpy, *drawgc, gcm, &gcv);
+  if (Ffont->font != NULL)
+  {
+    gcm = GCFont;
+    gcv.font = Ffont->font->fid;
+    XChangeGC(dpy, *drawgc, gcm, &gcv);
+  }
 
   newx = 4;
-
-  w3p = XTextWidth(font, t3p, 3);
+  w3p = FlocaleTextWidth(Ffont, t3p, 3);
 
   if (button->p.picture != 0)
   {
@@ -299,47 +279,44 @@ void ButtonDraw(Button *button, int x, int y, int w, int h)
   if ((newx + w3p + 2) >= w)
   {
     t3p = "..\0";
-    w3p = XTextWidth(font, t3p, 2);
+    w3p = FlocaleTextWidth(Ffont, t3p, 2);
     if ((newx + w3p + 2) >= w)
     {
       t3p = ".\0";
-      w3p = XTextWidth(font, t3p, 1);
+      w3p = FlocaleTextWidth(Ffont, t3p, 1);
       if ((newx + w3p + 2) >= w)
 	return;
     }
   }
 
   search_len = strlen(button->title);
-
+  FwinString->win = win;
+  FwinString->y = y + FButtonFont->ascent + 4;
+  FwinString->gc = *drawgc;
   button->truncate = False;
-  if (XTextWidth(font, button->title, search_len) > w-newx-3) {
+
+  if (FlocaleTextWidth(Ffont, button->title, search_len) > w-newx-3) {
 
     x3p = 0;
     while (search_len >= 0
-	   && ((x3p = newx + XTextWidth(font, button->title, search_len))
+	   && ((x3p = newx + FlocaleTextWidth(Ffont, button->title, search_len))
 	       > w-w3p-3))
       search_len--;
 
-    /* It seems a little bogus that we don't see if the "..." _itself_
-       will fit on the button; what if it won't?  Oh well.  */
-#ifdef I18N_MB
-    XmbDrawString(dpy, win, fontset,
-#else
-    XDrawString(dpy, win,
-#endif
-		*drawgc, x + x3p, y+ButtonFont->ascent+4, t3p, 3);
+    FwinString->str = t3p;
+    FwinString->x = x + x3p;
+    FlocaleDrawString(dpy, Ffont, FwinString, 0);
     button->truncate = True;
   }
 
   /* Only print as much of the title as will fit.  */
   if (search_len)
-#ifdef I18N_MB
-    XmbDrawString(dpy, win, fontset,
-#else
-    XDrawString(dpy, win,
-#endif
-		*drawgc, x+newx, y+font->ascent+4,
-		button->title, search_len);
+  {
+    FwinString->str = button->title;
+    FwinString->x = x + newx;
+    FwinString->len = search_len; 
+    FlocaleDrawString(dpy, Ffont, FwinString, FWS_HAVE_LENGTH);
+  }
 }
 
 

@@ -16,7 +16,7 @@
 #include "Tools.h"
 
 /* left, center and right offsets for title 0 (not very usefull here) */
-#define MENU_LCR_OFFSETS 0,0,0
+#define MENU_LCR_OFFSETS 2,0,2
 
 /***********************************************/
 /* Fonction pour Menu / Functions for the Menu */
@@ -25,14 +25,8 @@ void InitMenu(struct XObj *xobj)
 {
   unsigned long mask;
   XSetWindowAttributes Attr;
-  int asc,desc,dir;
-  XCharStruct struc;
   int i;
   char *Option;
-#ifdef I18N_MB
-  char **ml;
-  XFontStruct **fs_list;
-#endif
 
   /* Enregistrement des couleurs et de la police / fonts and colors */
   if (xobj->colorset >= 0) {
@@ -61,26 +55,18 @@ void InitMenu(struct XObj *xobj)
 
   XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
 
-#ifdef I18N_MB
-  if ((xobj->xfontset=GetFontSetOrFixed(dpy, xobj->font)) == NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+  if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) == NULL)
+  {
+    fprintf(stderr, "%s: Couldn't load font. Exiting!\n", ScriptName);
     exit(1);
   }
-  XFontsOfFontSet(xobj->xfontset, &fs_list, &ml);
-  xobj->xfont = fs_list[0];
-#else
-  if ((xobj->xfont=GetFontOrFixed(dpy, xobj->font))==NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
-    exit(1);
-  }
-#endif
-  XSetFont(dpy, xobj->gc, xobj->xfont->fid);
+  if (xobj->Ffont->font != NULL)
+    XSetFont(dpy, xobj->gc, xobj->Ffont->font->fid);
 
   /* Size */
   Option = GetMenuTitle(xobj->title, 0);
-  xobj->width = XTextWidth(xobj->xfont, Option, strlen(Option))+6;
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  xobj->height = asc + desc + 4;
+  xobj->width = FlocaleTextWidth(xobj->Ffont, Option, strlen(Option))+6;
+  xobj->height = xobj->Ffont->height + 4;
   free(Option);
 
   /* Position */
@@ -92,7 +78,8 @@ void InitMenu(struct XObj *xobj)
     if (tabxobj[i]->TypeWidget == Menu)
     {
       Option = GetMenuTitle(tabxobj[i]->title, 0);
-      xobj->x = xobj->x+XTextWidth(tabxobj[i]->xfont, Option, strlen(Option))+10;
+      xobj->x = xobj->x+
+	FlocaleTextWidth(tabxobj[i]->Ffont, Option, strlen(Option))+10;
       free(Option);
     }
     i++;
@@ -108,7 +95,7 @@ void InitMenu(struct XObj *xobj)
 
 void DestroyMenu(struct XObj *xobj)
 {
-  XFreeFont(dpy, xobj->xfont);
+  FlocaleUnloadFont(dpy, xobj->Ffont);
   XFreeGC(dpy, xobj->gc);
   XDestroyWindow(dpy, xobj->win);
 }
@@ -165,8 +152,6 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   unsigned long mask;
   unsigned long while_mask;
   XSetWindowAttributes Attr;
-  int asc,desc,dir;
-  XCharStruct struc;
   Time start_time = 0;
   KeySym ks;
   unsigned char buf[10];
@@ -174,8 +159,7 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
 
   DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, shad, hili);
 
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  hOpt = asc+desc+10;
+  hOpt = xobj->Ffont->height + 10;
   xobj->value3 = CountOption(xobj->title);
   /* Hauteur totale du menu / total height of the menu */
   hMenu = (xobj->value3 - 1) * hOpt;
@@ -184,8 +168,8 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   for (i=2; i <= xobj->value3; i++)
   {
     str = (char*)GetMenuTitle(xobj->title, i);
-    if (wMenu < XTextWidth(xobj->xfont, str, strlen(str))+20)
-      wMenu = XTextWidth(xobj->xfont, str, strlen(str))+20;
+    if (wMenu < FlocaleTextWidth(xobj->Ffont, str, strlen(str))+20)
+      wMenu = FlocaleTextWidth(xobj->Ffont, str, strlen(str))+20;
     free(str);
   }
 
@@ -245,7 +229,8 @@ void EvtMouseMenu(struct XObj *xobj, XButtonEvent *EvtButton)
       newvalue = 0;
     if (newvalue != oldvalue)
     {
-      UnselectMenu(xobj, WinPop, hOpt, oldvalue, wMenu-5, asc, 1);
+      UnselectMenu(xobj, WinPop, hOpt, oldvalue, wMenu-5,
+		   xobj->Ffont->ascent, 1);
       SelectMenu(xobj, WinPop, hOpt, newvalue);
       oldvalue = newvalue;
     }

@@ -1,3 +1,64 @@
+2002-02-09  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmCpp/FvwmCpp.c (cpp_defs):
+	* FvwmM4/FvwmM4.c (m4_defs):
+	* FvwmWinList/ButtonArray.c (*): 
+	* FvwmWinList/FvwmWinList.c (*): 
+	* FvwmTaskBar/Goodies.c (*): 
+	* FvwmTaskBar/FvwmTaskBar.c (*):
+	* FvwmTaskBar/ButtonArray.c (*):
+	* FvwmTaskBar/Start.c (*):
+	* FvwmScript/Widgets/VScrollBar.c (*):
+	* FvwmScript/Widgets/TextField.c (*): 
+	* FvwmScript/Widgets/RadioButton.c (*): 
+	* FvwmScript/Widgets/PushButton.c (*):
+	* FvwmScript/Widgets/PopupMenu.c (*):
+	* FvwmScript/Widgets/Menu.c (*):
+	* FvwmScript/Widgets/List.c (*):
+	* FvwmScript/Widgets/ItemDraw.c (*):
+	* FvwmScript/Widgets/HScrollBar.c (*): 
+	* FvwmScript/Widgets/Tools.c (*):
+	* FvwmScript/Widgets/CheckBox.c (*):
+	* FvwmScript/Instructions.c (ChangeFont):
+	* FvwmScript/FvwmScript.c (main):
+	(Xinit): 
+	* FvwmIdent/FvwmIdent.c (list_end):
+	(main): 
+	(RedrawWindow): 
+	(AddToList):
+	* FvwmIconMan/xmanager.h:
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmIconMan/xmanager.c (get_title_geometry):
+	(get_button_geometry):
+	(draw_button):
+	(draw_empty_manager):
+	* FvwmIconMan/x.c (X_init_manager):
+	(create_manager_window):
+	* FvwmIconBox/icons.c (AdjustIconWindow):
+	* FvwmIconBox/FvwmIconBox.h:
+	* FvwmIconBox/FvwmIconBox.c (CreateWindow):
+	(CreateWindow):
+	(RedrawIcon):
+	* FvwmButtons/output.c (DumpButtons):
+	* FvwmButtons/icons.c (ConfigureIconWindow):
+	* FvwmButtons/FvwmButtons.h:
+	* FvwmButtons/FvwmButtons.c (SetTransparentBackground): 
+	(RecursiveLoadData):
+	(CreateUberButtonWindow):
+	(Loop):
+	(swallow):
+	* FvwmButtons/draw.c (DrawTitle):
+	(MakeButton):
+	(RedrawButton):
+	* FvwmButtons/button.c (buttonFont):
+	* FvwmPager/FvwmPager.h (balloon_window):
+	* FvwmPager/FvwmPager.c (ParseOptions):
+	(list_window_name):
+	(list_icon_name):
+	* FvwmPager/x_pager.c (*):
+	Use new Font and Text "Flocale" API. Note: Form and Wharf are not
+	multibyted
+	
 2002-02-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (parse_message_line):

@@ -54,18 +54,11 @@ extern Pixel back, fore;
 extern int colorset;
 extern int Clength;
 extern GC blackgc, hilite, shadow, checkered;
+extern FlocaleWinString *FwinString;
 
 GC statusgc = 0;
 GC tipsgc = 0;
-XFontStruct *StatusFont;
-#ifdef I18N_MB
-XFontSet StatusFontset;
-#ifdef __STDC__
-#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
-#endif
-#endif
+FlocaleFont *FStatusFont;
 int stwin_width = 100, goodies_width = 0;
 int anymail, unreadmail, newmail, mailcleared = 0;
 int fontheight, clock_width;
@@ -86,7 +79,7 @@ char *TipsFore = "black",
 int tipscolorset = -1;
 int IgnoreOldMail = False;
 int ShowTips = False;
-char *statusfont_string = "fixed";
+char *statusfont_string = NULL;
 int last_date = -1;
 
 void cool_get_inboxstatus();
@@ -116,11 +109,15 @@ static void CreateOrUpdateGoodyGC(void)
     pfore = fore;
     pback = back;
   }
-  gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
+  gcmask = GCForeground | GCBackground | GCGraphicsExposures;
   gcval.foreground = pfore;
   gcval.background = pback;
-  gcval.font = StatusFont->fid;
   gcval.graphics_exposures = False;
+  if (FStatusFont->font != NULL)
+  {
+    gcval.font = FStatusFont->font->fid;
+    gcmask = GCFont;
+  }
   if (statusgc)
     XChangeGC(dpy, statusgc, gcmask, &gcval);
   else
@@ -251,12 +248,6 @@ void InitGoodies(void)
 {
   struct passwd *pwent;
   char tmp[1024];
-#ifdef I18N_MB
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-#endif
 
   if (mailpath == NULL) {
     strcpy(tmp, DEFAULT_MAIL_PATH);
@@ -265,29 +256,13 @@ void InitGoodies(void)
     UpdateString(&mailpath, tmp);
   }
 
-#ifdef I18N_MB
-  if ((StatusFontset=XCreateFontSet(dpy,statusfont_string,&ml,&mc,&ds))==NULL) {
-#ifdef STRICTLY_FIXED
-    if ((StatusFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds))==NULL) {
-#else
-    if ((StatusFontset=XCreateFontSet(dpy,"fixed,-*--14-*",&ml,&mc,&ds))==NULL) {
-#endif
-      fprintf(stderr, "%s: Couldn't load fixed fontset...exiting !\n",Module);
-      exit(1);
-    }
+  if ((FStatusFont = FlocaleLoadFont(dpy, statusfont_string, Module)) == NULL)
+  {
+    fprintf(stderr, "%s: Couldn't load font. Exiting!\n",Module);
+    exit(1);
   }
-  XFontsOfFontSet(StatusFontset,&fs_list,&ml);
-  StatusFont = fs_list[0];
-#else
-  if ((StatusFont = XLoadQueryFont(dpy, statusfont_string)) == NULL) {
-    if ((StatusFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
-      fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n",Module);
-      exit(1);
-    }
-  }
-#endif
 
-  fontheight = StatusFont->ascent + StatusFont->descent;
+  fontheight = FStatusFont->height;
   CreateOrUpdateGoodyGC();
   if (clockfmt)
   {
@@ -297,10 +272,10 @@ void InitGoodies(void)
     time(&timer);
     tms = localtime(&timer);
     strftime(str, 24, clockfmt, tms);
-    clock_width = XTextWidth(StatusFont, str, strlen(str)) + 4;
+    clock_width = FlocaleTextWidth(FStatusFont, str, strlen(str)) + 4;
   }
   else
-    clock_width = XTextWidth(StatusFont, "XX:XX", 5) + 4;
+    clock_width = FlocaleTextWidth(FStatusFont, "XX:XX", 5) + 4;
   goodies_width += clock_width;
   stwin_width = goodies_width;
 }
@@ -333,14 +308,12 @@ void DrawGoodies(void)
   }
 
   Draw3dBox(win, win_width - stwin_width, 0, stwin_width, RowHeight);
-#ifdef I18N_MB
-  XmbDrawString(dpy,win,StatusFontset,statusgc,
-#else
-  XDrawString(dpy,win,statusgc,
-#endif
-	      win_width - stwin_width + 4,
-	      ((RowHeight - fontheight) >> 1) +StatusFont->ascent,
-	      str, strlen(str));
+  FwinString->win = win;
+  FwinString->gc = statusgc;
+  FwinString->str = str;
+  FwinString->x = win_width - stwin_width + 4;
+  FwinString->y = ((RowHeight - fontheight) >> 1) + FStatusFont->ascent;
+  FlocaleDrawString(dpy, FStatusFont, FwinString, 0);
 
   if (!do_check_mail)
     return;
@@ -418,12 +391,12 @@ void CreateMailTipWindow()
 void RedrawTipWindow(void)
 {
   if (Tip.text) {
-#ifdef I18N_MB
-    XmbDrawString(dpy, Tip.win, StatusFontset, tipsgc, 3, Tip.th-4,
-#else
-    XDrawString(dpy, Tip.win, tipsgc, 3, Tip.th-4,
-#endif
-                     Tip.text, strlen(Tip.text));
+    FwinString->win = Tip.win;
+    FwinString->gc = tipsgc;
+    FwinString->str = Tip.text;
+    FwinString->x = 3;
+    FwinString->y = Tip.th-4;
+    FlocaleDrawString(dpy, FStatusFont, FwinString, 0);
     XRaiseWindow(dpy, Tip.win);  /*****************/
   }
 }
@@ -438,8 +411,8 @@ void PopupTipWindow(int px, int py, const char *text)
   if (Tip.win != None)
     DestroyTipWindow();
 
-  Tip.tw = XTextWidth(StatusFont, text, strlen(text)) + 6;
-  Tip.th = StatusFont->ascent + StatusFont->descent + 4;
+  Tip.tw = FlocaleTextWidth(FStatusFont, (char *)text, strlen(text)) + 6;
+  Tip.th = FStatusFont->height + 4;
   XTranslateCoordinates(dpy, win, Root, px, py, &newx, &newy, &child);
 
   Tip.x = newx;
@@ -517,11 +490,15 @@ void CreateTipWindow(int x, int y, int w, int h)
   Tip.win = XCreateWindow(dpy, Root, x, y, w+4, h+4, 0, Pdepth, InputOutput,
 			  Pvisual, winattrmask, &winattr);
 
-  gcmask = GCForeground | GCBackground | GCFont | GCGraphicsExposures;
+  gcmask = GCForeground | GCBackground | GCGraphicsExposures;
   gcval.graphics_exposures = False;
   gcval.foreground = tip_fore;
   gcval.background = tip_back;
-  gcval.font = StatusFont->fid;
+  if (FStatusFont->font != NULL)
+  {
+    gcval.font = FStatusFont->font->fid;
+    gcmask |= GCFont;
+  }
   if (tipsgc)
     XChangeGC(dpy, tipsgc, gcmask, &gcval);
   else

@@ -22,15 +22,8 @@
 
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
-#include <libs/Flocale.h>
-#ifdef I18N_MB
-#ifdef __STDC__
-#define XTextWidth(x,y,z)       XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z)       XmbTextEscapement(x/**/set,y,z)
-#endif
-#endif
 
+#include <libs/Flocale.h>
 #include <libs/Picture.h>
 #include <libs/Colorset.h>
 #ifndef FVWM_VERSION
@@ -292,10 +285,7 @@ typedef struct win_manager {
   GC hiContext[NUM_CONTEXTS], backContext[NUM_CONTEXTS],
     reliefContext[NUM_CONTEXTS];
   GC shadowContext[NUM_CONTEXTS], flatContext[NUM_CONTEXTS];
-  XFontStruct *ButtonFont;
-#ifdef I18N_MB
-  XFontSet ButtonFontset;
-#endif
+  FlocaleFont *FButtonFont;
 #ifdef MINI_ICONS
   int draw_icons;
 #endif

@@ -78,15 +78,8 @@ extern char fAlwaysCurrentDesk;
 extern int MoveThreshold;
 
 extern int icon_w, icon_h, icon_x, icon_y, icon_xneg, icon_yneg;
-XFontStruct *font, *windowFont;
-#ifdef I18N_MB
-XFontSet fontset, windowFontset;
-#ifdef __STDC__
-#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
-#endif
-#endif
+FlocaleFont *Ffont, *FwindowFont;
+FlocaleWinString *FwinString;
 
 extern PagerWindow *Start;
 extern PagerWindow *FocusWin;
@@ -299,11 +292,6 @@ void initialize_pager(void)
 {
   XWMHints wmhints;
   XClassHint class1;
-#ifdef I18N_MB
-  char **ml;
-  XFontStruct **fs_list;
-#endif
-
   XTextProperty name;
   unsigned long valuemask;
   XSetWindowAttributes attributes;
@@ -332,37 +320,14 @@ void initialize_pager(void)
      OK, I fixed the GC below, but now something else is blowing up.
      Right now, I've got to do some Real Life stuff, so this kludge is
      in place, its still better than I found it.
+     I hope that I've fixed this (olicha)
   */
-  if (!uselabel) {
-#ifdef I18N_MB
-#ifdef STRICTLY_FIXED
-#define FALLBACK_FONT "fixed"
-#else
-#define FALLBACK_FONT "-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*"
-#endif
-#else
-#define FALLBACK_FONT "fixed"
-#endif
-    font_string = safestrdup(FALLBACK_FONT);
-  }    
-#ifdef I18N_MB
-  fontset = GetFontSetOrFixed(dpy, font_string);
-  if (fontset == NULL)
-  {
-    fprintf(stderr,"%s: No I18N fonts available, giving up\n",MyName);
-    exit(1);
-  }
-  XFontsOfFontSet(fontset, &fs_list, &ml);
-  font = fs_list[0];
-#else
-  font = GetFontOrFixed(dpy, font_string);
-  if (font == NULL)
-  {
-    fprintf(stderr,"%s: No fonts available, giving up\n",MyName);
-    exit(1);
-  }
-#endif
-  label_h = (uselabel) ? font->ascent + font->descent + 2 : 0;
+  Ffont = FlocaleLoadFont(dpy, font_string, MyName);
+
+  label_h = (uselabel) ? Ffont->height + 2 : 0;
+
+  /* init our Flocale window string */
+  FlocaleAllocateWinString(&FwinString);
 
   /* Check that shape extension exists. */
   if (FHaveShapeExtension && ShapeLabels)
@@ -370,24 +335,10 @@ void initialize_pager(void)
     ShapeLabels = (FShapesSupported) ? 1 : 0;
   }
 
-#ifdef I18N_MB
-  windowFontset = NULL;
-  windowFont = NULL;
   if(smallFont != NULL)
   {
-    windowFontset = GetFontSetOrFixed(dpy,smallFont);
-    if (windowFontset != NULL)
-    {
-      XFontsOfFontSet(windowFontset, &fs_list, &ml);
-      windowFont = fs_list[0];
-    }
+    FwindowFont = FlocaleLoadFont(dpy, smallFont, MyName);
   }
-#else
-  if(smallFont!= NULL)
-  {
-    windowFont= GetFontOrFixed(dpy, smallFont);
-  }
-#endif
 
   /* Load the colors */
   fore_pix = GetColor(PagerFore);
@@ -559,29 +510,24 @@ void initialize_pager(void)
     XSetTransientForHint(dpy, Scr.Pager_w, Scr.Root);
   }
 
-#ifdef I18N_MB
-  if((desk1==desk2)&&(Desks[0].label != NULL))
-    XmbTextListToTextProperty(dpy,&Desks[0].label,1,XStdICCTextStyle,&name);
-  else
-    XmbTextListToTextProperty(dpy,&pager_name,1,XStdICCTextStyle,&name);
-#else
   if((desk1==desk2)&&(Desks[0].label != NULL))
   {
-    if (!XStringListToTextProperty(&Desks[0].label,1,&name))
+    if (FlocaleTextListToTextProperty(
+	 dpy, &Desks[0].label, 1, XStdICCTextStyle, &name) == 0)
     {
-      fprintf(stderr,"%s: fatal error: cannot allocate desk name",MyName);
+      fprintf(stderr,"%s: fatal error: cannot allocate desk name", MyName);
       exit(0);
     }
   }
   else
   {
-    if (!XStringListToTextProperty(&pager_name,1,&name))
+    if (FlocaleTextListToTextProperty(
+	 dpy, &Desks[0].label, 1, XStdICCTextStyle, &name) == 0)
     {
-      fprintf(stderr,"%s: fatal error: cannot allocate pager name",MyName);
+      fprintf(stderr,"%s: fatal error: cannot allocate pager name", MyName);
       exit(0);
     }
   }
-#endif
 
   attributes.event_mask = (StructureNotifyMask| ExposureMask);
   if(icon_w < 1)
@@ -644,8 +590,9 @@ void initialize_pager(void)
 
   /* change colour/font for labelling mini-windows */
   XSetForeground(dpy, Scr.NormalGC, focus_fore_pix);
-  if (windowFont != NULL)
-    XSetFont(dpy, Scr.NormalGC, windowFont->fid);
+
+  if (FwindowFont != NULL && FwindowFont->font != NULL)
+    XSetFont(dpy, Scr.NormalGC, FwindowFont->font->fid);
 
   /* create the 3d bevel GC's if necessary */
   if (windowcolorset >= 0) {
@@ -671,8 +618,9 @@ void initialize_pager(void)
     /* create the GC for desk labels */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
       : Colorset[Desks[i].colorset].fg;
-    if (uselabel) {
-      gcv.font = font->fid;
+
+    if (uselabel && Ffont && Ffont->font) {
+      gcv.font = Ffont->font->fid;
       Desks[i].NormalGC =
         fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
     } else {
@@ -694,7 +642,8 @@ void initialize_pager(void)
     else
       gcv.foreground = (Desks[i].highcolorset < 0) ? fore_pix
 	: Colorset[Desks[i].highcolorset].fg;
-    if (uselabel) {
+
+    if (uselabel && Ffont && Ffont->font) {
       Desks[i].rvGC =
         fvwmlib_XCreateGC(dpy, Scr.Pager_w, GCForeground | GCFont, &gcv);
     } else {
@@ -856,30 +805,14 @@ void initialize_pager(void)
       }
 
       /* get font for balloon */
-#ifdef I18N_MB
-      if ( (Desks[i].balloon.fontset = GetFontSetOrFixed(dpy, BalloonFont))
-           == NULL ) {
-	{
-	  fprintf(stderr,"%s: No fonts available, giving up!.\n", MyName);
-	  exit(1);
-	}
-      }
-      XFontsOfFontSet(Desks[i].balloon.fontset, &fs_list, &ml);
-      Desks[i].balloon.font = fs_list[0];
-#else
-      if ( (Desks[i].balloon.font = XLoadQueryFont(dpy, BalloonFont)) == NULL )
+      Desks[i].balloon.Ffont = FlocaleLoadFont(dpy, BalloonFont, MyName);
+      if (Desks[i].balloon.Ffont == NULL)
       {
-	if ( (Desks[i].balloon.font = XLoadQueryFont(dpy, "fixed")) == NULL ) {
-	  fprintf(stderr,"%s: No fonts available.\n", MyName);
-	  exit(1);
-	}
-	fprintf(stderr, "%s: Can't find font '%s', using fixed.\n",
-		MyName, BalloonFont);
+	fprintf(stderr,"%s: No fonts available, giving up!.\n", MyName);
       }
-#endif
 
       Desks[i].balloon.height =
-	Desks[i].balloon.font->ascent + Desks[i].balloon.font->descent + 1;
+	Desks[i].balloon.Ffont->height + 1;
 
       /* this may have been set in config */
       Desks[i].balloon.border = BalloonBorderWidth;
@@ -906,16 +839,21 @@ void initialize_pager(void)
 					 InputOutput, Pvisual, valuemask,
 					 &attributes);
 
-      /* set font */
-      gcv.font = Desks[i].balloon.font->fid;
-
       /* if fore given in config set now, otherwise it'll be set later */
       gcv.foreground = (Desks[i].ballooncolorset < 0)
 	? balloon_fore_pix
 	: Colorset[Desks[i].ballooncolorset].fg;
-
-      Desks[i].BalloonGC = fvwmlib_XCreateGC(dpy, Desks[i].balloon.w,
-				     GCFont | GCForeground, &gcv);
+      if (Desks[i].balloon.Ffont->font != NULL)
+      {
+	gcv.font = Desks[i].balloon.Ffont->font->fid;
+	Desks[i].BalloonGC = fvwmlib_XCreateGC(dpy, Desks[i].balloon.w,
+					       GCFont | GCForeground, &gcv);
+      }
+      else
+      {
+	Desks[i].BalloonGC = fvwmlib_XCreateGC(dpy, Desks[i].balloon.w,
+					       GCForeground, &gcv);
+      }
 /* don't do this yet, wait for map since size will change
       if (Desks[i].ballooncolorset > -1 &&
           Colorset[Desks[i].ballooncolorset].pixmap)
@@ -1382,9 +1320,6 @@ void MovePage(Bool is_new_desk)
 {
   int n1,m1,x,y,n,m,i;
   XTextProperty name;
-#ifdef I18N_MB
-  int ret;
-#endif
   char str[100],*sptr;
   static int icon_desk_shown = -1000;
 
@@ -1429,22 +1364,13 @@ void MovePage(Bool is_new_desk)
       sprintf(str,"GoToDesk %d",Scr.CurrentDesk);
       sptr = &str[0];
     }
-#ifdef I18N_MB
-    if ((ret = XmbTextListToTextProperty(dpy,&sptr,1,XStdICCTextStyle,&name))
-        == XNoMemory)
+
+    if (FlocaleTextListToTextProperty(
+	  dpy, &sptr, 1, XStdICCTextStyle, &name) == 0)
     {
-      fprintf(stderr,"%s: cannot allocate window name",MyName);
+      fprintf(stderr,"%s: cannot allocate window name", MyName);
       return;
     }
-    else if (ret != Success)
-      return;
-#else
-    if (XStringListToTextProperty(&sptr,1,&name) == 0)
-    {
-      fprintf(stderr,"%s: cannot allocate window name",MyName);
-      return;
-    }
-#endif
     XSetWMIconName(dpy,Scr.Pager_w,&name);
     XFree(name.value);
   }
@@ -1488,7 +1414,7 @@ void ReConfigureIcons(Bool do_reconfigure_desk_only)
  ****************************************************************************/
 void DrawGrid(int desk, int erase)
 {
-  int y, y1, y2, x, x1, x2,d,hor_off,ver_off,w;
+  int y, y1, y2, x, x1, x2,d,w;
   char str[15], *ptr;
 
   if((desk < 0 ) || (desk >= ndesks))
@@ -1530,33 +1456,30 @@ void DrawGrid(int desk, int erase)
 
   d = desk1+desk;
   ptr = Desks[desk].label;
-  w=XTextWidth(font,ptr,strlen(ptr));
+  w = FlocaleTextWidth(Ffont,ptr,strlen(ptr));
   if( w > desk_w)
   {
     sprintf(str,"%d",d);
     ptr = str;
-    w=XTextWidth(font,ptr,strlen(ptr));
+    w = FlocaleTextWidth(Ffont,ptr,strlen(ptr));
   }
-  if((w<= desk_w)&&(uselabel))
+  if((w <= desk_w)&&(uselabel))
   {
-    hor_off = (desk_w -w)/2;
-    ver_off = (LabelsBelow ? desk_h + font->ascent + 1 : font->ascent + 1);
+    FwinString->str = ptr;
+    FwinString->win = Desks[desk].title_w;
     if(desk == (Scr.CurrentDesk - desk1))
-#ifdef I18N_MB
-      XmbDrawString(dpy, Desks[desk].title_w, fontset, Desks[desk].rvGC,
-		    hor_off, ver_off, ptr, strlen (ptr));
-#else
-      XDrawString(dpy, Desks[desk].title_w, Desks[desk].rvGC, hor_off, ver_off,
-		  ptr, strlen (ptr));
-#endif
-      else
-#ifdef I18N_MB
-	XmbDrawString (dpy, Desks[desk].title_w, fontset, Desks[desk].NormalGC,
-		       hor_off, ver_off, ptr, strlen (ptr));
-#else
-	XDrawString (dpy, Desks[desk].title_w, Desks[desk].NormalGC, hor_off,
-		     ver_off, ptr, strlen (ptr));
-#endif
+      FwinString->gc = Desks[desk].rvGC;
+    else
+      FwinString->gc = Desks[desk].NormalGC;
+    FwinString->x = (desk_w -w)/2;
+    FwinString->y = (LabelsBelow ? 
+		     desk_h + Ffont->ascent + 1 : Ffont->ascent + 1);
+    if(desk == (Scr.CurrentDesk - desk1))
+      FwinString->gc = Desks[desk].rvGC;
+    else
+      FwinString->gc = Desks[desk].NormalGC;
+    
+    FlocaleDrawString(dpy, Ffont, FwinString, 0);
   }
   if (FShapesSupported)
   {
@@ -2393,7 +2316,7 @@ static void do_label_window(PagerWindow *t, Window w)
   else
     XSetForeground(dpy, Scr.NormalGC, t->text);
 
-  if (windowFont == NULL)
+  if (FwindowFont == NULL)
   {
     return;
   }
@@ -2413,15 +2336,12 @@ static void do_label_window(PagerWindow *t, Window w)
   t->window_label = GetBalloonLabel(t, WindowLabelFormat);
   if (w != None)
   {
-#ifdef I18N_MB
-    XmbDrawString (dpy, w, windowFontset, Scr.NormalGC, 2,
-		   windowFont->ascent+2, t->window_label,
-		   strlen(t->window_label));
-#else
-    XDrawString (dpy, w, Scr.NormalGC, 2,
-		 windowFont->ascent+2, t->window_label,
-		 strlen(t->window_label));
-#endif
+    FwinString->str = t->window_label;
+    FwinString->win = w;
+    FwinString->gc = Scr.NormalGC;
+    FwinString->x = 2;
+    FwinString->y = FwindowFont->ascent+2;
+    FlocaleDrawString(dpy, FwindowFont, FwinString, 0);
   }
 }
 
@@ -2664,7 +2584,7 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
   if (*Desks[i].balloon.label)
   {
     window_changes.width +=
-      XTextWidth(Desks[i].balloon.font,	Desks[i].balloon.label,
+      FlocaleTextWidth(Desks[i].balloon.Ffont,	Desks[i].balloon.label,
 		 strlen(Desks[i].balloon.label));
   }
 
@@ -2816,13 +2736,12 @@ void DrawInBalloonWindow (int i)
   if ( (Desks[i].ballooncolorset < 0) && BalloonFore == NULL )
     XSetForeground(dpy, Desks[i].BalloonGC, Desks[i].balloon.pw->text);
 
-#ifdef I18N_MB
-  XmbDrawString(dpy, Desks[i].balloon.w, Desks[i].balloon.fontset, Desks[i].BalloonGC,
-#else
-  XDrawString(dpy, Desks[i].balloon.w, Desks[i].BalloonGC,
-#endif
-              2, Desks[i].balloon.font->ascent,
-              Desks[i].balloon.label,strlen(Desks[i].balloon.label));
+  FwinString->str = Desks[i].balloon.label;
+  FwinString->win = Desks[i].balloon.w;
+  FwinString->gc = Desks[i].BalloonGC;
+  FwinString->x = 2;
+  FwinString->y = Desks[i].balloon.Ffont->ascent;
+  FlocaleDrawString(dpy, Desks[i].balloon.Ffont, FwinString, 0);
 }
 
 static void set_window_colorset_background(

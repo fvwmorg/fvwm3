@@ -1150,12 +1150,7 @@ static void ChangeFont (int NbArg,long *TabArg)
   int i=0;
   char *arg[2];
   int IdItem;
-#ifdef I18N_MB
-  char **ml;
-  XFontStruct **fs_list;
-#else
-  XFontStruct *xfont;
-#endif
+  FlocaleFont *Ffont;
 
   arg[0] = CalcArg(TabArg,&i);
   i++;
@@ -1164,32 +1159,20 @@ static void ChangeFont (int NbArg,long *TabArg)
   if (tabxobj[IdItem]->font)
     free(tabxobj[IdItem]->font);
   tabxobj[IdItem]->font = safestrdup(arg[1]);
-#ifdef I18N_MB
-  /* Hmm.. Fontset is not freed. However, original alogrithm does not consider
-   * the situation of font-loading-falure.
-  */
-  if ((tabxobj[IdItem]->xfontset = GetFontSetOrFixed(dpy,tabxobj[IdItem]->font))
-      == NULL) {
-    fprintf(stderr, "[%s][ChangeFont]: Couldn't load font %s. Exiting!\n",
-	    ScriptName,tabxobj[IdItem]->font);
-    exit(1);
-  }
-  XFontsOfFontSet(tabxobj[IdItem]->xfontset, &fs_list, &ml);
-  tabxobj[IdItem]->xfont = fs_list[0];
-  XSetFont(dpy,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
-#else
-  if ((xfont = XLoadQueryFont(dpy,tabxobj[IdItem]->font)) == NULL)
-  {
-    fprintf(stderr,"[%s][ChangeFont]: Can't load font %s\n",
+
+  if ((Ffont =
+       FlocaleLoadFont(dpy, tabxobj[IdItem]->font, ScriptName)) == NULL) {
+    fprintf(stderr, "[%s][ChangeFont]: Couldn't load font %s\n",
 	    ScriptName,tabxobj[IdItem]->font);
   }
   else
   {
-    XFreeFont(dpy,tabxobj[IdItem]->xfont);
-    tabxobj[IdItem]->xfont = xfont;
-    XSetFont(dpy,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
+    FlocaleUnloadFont(dpy, tabxobj[IdItem]->Ffont);
+    tabxobj[IdItem]->Ffont = Ffont;
+    if (Ffont->font != NULL)
+      XSetFont(dpy,tabxobj[IdItem]->gc,tabxobj[IdItem]->Ffont->font->fid);
   }
-#endif
+
   if (tabxobj[IdItem]->TypeWidget != SwallowExec)
     XClearWindow(dpy, tabxobj[IdItem]->win);
   tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);

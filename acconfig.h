@@ -92,8 +92,19 @@
 /* Enables session management functionality. */
 #undef SESSION
 
-/* Enables X11 multibyte character support */
-#undef I18N_MB
+/* Enables X11 multibyte character support (was I18N_MB */
+#undef MULTIBYTE
+
+/* Enables X11 compound text conversion for windows and icons names */
+#undef COMPOUND_TEXT
+
+#ifdef MULTIBYTE
+#define MULTIBYTE_CODE(x) x
+#define MULTIBYTE_ARG(x) x,
+#else
+#define MULTIBYTE_CODE(x)
+#define MULTIBYTE_ARG(x)
+#endif
 
 /* Enables to use setlocale() provided by X */
 #undef X_LOCALE

@@ -22,12 +22,6 @@ void InitCheckBox(struct XObj *xobj)
 {
   unsigned long mask;
   XSetWindowAttributes Attr;
-  int asc,desc,dir;
-  XCharStruct struc;
-#ifdef I18N_MB
-  char **ml;
-  XFontStruct **fs_list;
-#endif
   
   /* Enregistrement des couleurs et de la police / fonts and colors */
   if (xobj->colorset >= 0) {
@@ -55,27 +49,20 @@ void InitCheckBox(struct XObj *xobj)
   xobj->gc = fvwmlib_XCreateGC(dpy,xobj->win,0,NULL);
   XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
-#ifdef I18N_MB
-  if ((xobj->xfontset = GetFontSetOrFixed(dpy,xobj->font)) == NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+  if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) == NULL)
+  {
+    fprintf(stderr, "%s: Couldn't load font. Exiting!\n", ScriptName);
     exit(1);
   }
-  XFontsOfFontSet(xobj->xfontset,&fs_list,&ml);
-  xobj->xfont = fs_list[0];
-#else
-  if ((xobj->xfont = GetFontOrFixed(dpy,xobj->font)) == NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
-    exit(1);
-  }
-#endif
-  XSetFont(dpy, xobj->gc, xobj->xfont->fid);
+  if (xobj->Ffont->font != NULL)
+    XSetFont(dpy, xobj->gc, xobj->Ffont->font->fid);
 
   XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
 
   /* Redimensionnement du widget / resize the widget */
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  xobj->height = asc+desc+5;
-  xobj->width = XTextWidth(xobj->xfont, xobj->title, strlen(xobj->title)) + 30;
+  xobj->height = xobj->Ffont->height + 5;
+  xobj->width =
+    FlocaleTextWidth(xobj->Ffont, xobj->title, strlen(xobj->title)) + 30;
   XResizeWindow(dpy, xobj->win, xobj->width, xobj->height);
   if (xobj->colorset >= 0)
     SetWindowBackground(dpy, xobj->win, xobj->width, xobj->height,
@@ -86,7 +73,7 @@ void InitCheckBox(struct XObj *xobj)
 
 void DestroyCheckBox(struct XObj *xobj)
 {
-  XFreeFont(dpy,xobj->xfont);
+  FlocaleUnloadFont(dpy, xobj->Ffont);
   XFreeGC(dpy,xobj->gc);
   XDestroyWindow(dpy,xobj->win);
 }
@@ -94,17 +81,15 @@ void DestroyCheckBox(struct XObj *xobj)
 void DrawCheckBox(struct XObj *xobj)
 {
   XSegment segm[2];
-  int asc,desc,dir;
-  XCharStruct struc;
  
   /* Dessin du rectangle arrondi / drawing of the round rectangle */
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  DrawReliefRect(0, asc-11, xobj->height, xobj->height, xobj, hili, shad);
+  DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
+		 xobj, hili, shad);
 
   /* Calcul de la position de la chaine de charactere */
   /* Compute the position of string */
-  DrawString(dpy, xobj, xobj->win, 23, asc,xobj->title, strlen(xobj->title),
-	     fore, hili, back, !xobj->flags[1]);
+  MyDrawString(dpy, xobj, xobj->win, 23, xobj->Ffont->ascent, xobj->title,
+	       fore, hili, back, !xobj->flags[1]);
   /* Dessin de la croix / draw the cross */
   if (xobj->value)
   {
@@ -133,8 +118,6 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
   Window WinBut = 0;
   int In = 0;
   XSegment segm[2];
-  int asc,desc,dir;
-  XCharStruct struc;
   
   while (End)
   {
@@ -148,8 +131,8 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
       {
 	WinBut = Win2;
 	/* Mouse on button */
-	XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-	DrawReliefRect(0, asc-11, xobj->height, xobj->height, xobj, shad, hili);
+	DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height,
+		       xobj->height, xobj, shad, hili);
 	In = 1;
       }
       else
@@ -157,7 +140,7 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
 	if (Win2 == WinBut)
 	{
 	  /* Mouse on button */
-	  DrawReliefRect(0, asc-11, xobj->height, xobj->height,
+	  DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
 			 xobj, shad, hili);
 	  In = 1;
 	}
@@ -165,7 +148,7 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
 	{
 	  In = 0;
 	  /* Mouse not on button */
-	  DrawReliefRect(0, asc-11, xobj->height, xobj->height,
+	  DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
 			 xobj, hili, shad);
 	}
       }
@@ -177,12 +160,14 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
       {
 	In = 1;
 	/* Mouse on button */
-	DrawReliefRect(0, asc-11, xobj->height, xobj->height, xobj, shad, hili);
+	DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
+		       xobj, shad, hili);
       }
       else if (In)
       {
 	/* Mouse not on button */
-	DrawReliefRect(0, asc-11, xobj->height, xobj->height, xobj, hili, shad);
+	DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height, xobj->height,
+		       xobj, hili, shad);
 	In = 0;
       }
       break;
@@ -193,7 +178,8 @@ void EvtMouseCheckBox(struct XObj *xobj, XButtonEvent *EvtButton)
       {
 	/* Envoie d'un message vide de type SingleClic pour un clique souris */
 	xobj->value = !xobj->value;
-	DrawReliefRect(0, asc-11, xobj->height, xobj->height, xobj, hili, shad);
+	DrawReliefRect(0, xobj->Ffont->ascent -11, xobj->height, xobj->height,
+		       xobj, hili, shad);
 	SendMsg(xobj,SingleClic);
       }
       if (xobj->value)
@@ -226,14 +212,12 @@ void EvtKeyCheckBox(struct XObj *xobj, XKeyEvent *EvtKey)
   KeySym ks;
   unsigned char buf[10];
   XSegment segm[2];
-  int asc,desc,dir;
-  XCharStruct struc;
 
   XLookupString(EvtKey, (char *)buf, sizeof(buf), &ks, NULL);
   if (ks == XK_Return) {
-    XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
     xobj->value = !xobj->value;
-    DrawReliefRect(0, asc-11, xobj->height, xobj->height, xobj, hili, shad);
+    DrawReliefRect(0, xobj->Ffont->ascent - 11, xobj->height,
+		   xobj->height, xobj, hili, shad);
     SendMsg(xobj,SingleClic);
     if (xobj->value)
     {

@@ -368,12 +368,16 @@ void set_last_added_item(last_added_item_type type, void *item)
 }
 
 /* some fancy font handling stuff */
-void NewFontAndColor(Font newfont, Pixel color, Pixel backcolor)
+void NewFontAndColor(FlocaleFont *flf, Pixel color, Pixel backcolor)
 {
-  Globalgcv.font = newfont;
+  Globalgcm = GCForeground | GCBackground;
+  if (flf->font)
+  {
+    Globalgcm |= GCFont;
+    Globalgcv.font = flf->font->fid;
+  }
   Globalgcv.foreground = color;
   Globalgcv.background = backcolor;
-  Globalgcm = GCFont | GCForeground | GCBackground;
   XChangeGC(dpy,Scr.TitleGC,Globalgcm,&Globalgcv);
 }
 

@@ -70,15 +70,6 @@
 #include "Mallocs.h"
 #include "libs/Colorset.h"
 
-#ifdef I18N_MB
-#ifdef __STDC__
-#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
-#endif
-#define XDrawString(t,u,v,w,x,y,z) XmbDrawString(t,u,ButtonFontset,v,w,x,y,z)
-#endif
-
 #define MAX_NO_ICON_ACTION_LENGTH (MAX_MODULE_INPUT_TEXT_LEN - 100)
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
@@ -109,10 +100,8 @@ GC shadow[MAX_COLOUR_SETS];
 GC hilite[MAX_COLOUR_SETS];
 GC background[MAX_COLOUR_SETS];
 Pixmap win_bg;
-XFontStruct *ButtonFont;
-#ifdef I18N_MB
-XFontSet ButtonFontset;
-#endif
+FlocaleFont *FButtonFont;
+FlocaleWinString *FwinString;
 int fontheight;
 int buttonheight;
 static Atom wm_del_win;
@@ -152,7 +141,7 @@ char *ClickAction[NUMBER_OF_BUTTONS] =
   *geometry="";
 int colorset[MAX_COLOUR_SETS];
 Pixmap pixmap[MAX_COLOUR_SETS];
-char *font_string = "fixed";
+char *font_string = NULL;
 Bool UseSkipList = False;
 Bool Anchor = True;
 Bool UseIconNames = False;
@@ -281,6 +270,7 @@ int main(int argc, char **argv)
   colorset[0] = colorset[1] = 0;
   colorset[2] = colorset[3] = 1;
   AllocColorset(1);
+  FlocaleAllocateWinString(&FwinString);
 
   /* Setup the XConnection */
   StartMeUp_I();
@@ -969,8 +959,8 @@ void AdjustWindow(Bool force)
     temp=ItemName(&windows,i);
     if(temp != NULL && IsItemIndexVisible(&windows,i))
     {
-	tw = 8 + XTextWidth(ButtonFont,temp,strlen(temp));
-	tw += XTextWidth(ButtonFont,"()",2);
+	tw = 8 + FlocaleTextWidth(FButtonFont,temp,strlen(temp));
+	tw += FlocaleTextWidth(FButtonFont,"()",2);
 #ifdef MINI_ICONS
 	tw += base_miw;
 #endif
@@ -1258,6 +1248,8 @@ void MakeMeWindow(void)
   wm_del_win=XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);
 
+  FwinString->win = win;
+
   {
     XTextProperty nametext;
     char *list[]={NULL,NULL};
@@ -1298,8 +1290,12 @@ void MakeMeWindow(void)
   {
     gcval.foreground=fore[i];
     gcval.background=back[i];
-    gcval.font=ButtonFont->fid;
-    gcmask=GCForeground|GCBackground|GCFont;
+    gcmask=GCForeground|GCBackground;
+    if (FButtonFont->font != NULL)
+    {
+      gcval.font=FButtonFont->font->fid;
+      gcmask |= GCFont;
+    }
     graph[i]=fvwmlib_XCreateGC(dpy,win,gcmask,&gcval);
 
     if(Pdepth < 2)
@@ -1402,12 +1398,6 @@ void StartMeUp_I(void)
 
 void StartMeUp_II(void)
 {
-#ifdef I18N_MB
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-#endif
 
   if (geometry == NULL)
     UpdateString(&geometry, "");
@@ -1418,36 +1408,16 @@ void StartMeUp_II(void)
   FScreenGetScrRect(
     NULL, fscreen, &screen_g.x, &screen_g.y, &screen_g.width, &screen_g.height);
 
-#ifdef I18N_MB
-  if ((ButtonFontset=XCreateFontSet(dpy,font_string,&ml,&mc,&ds)) == NULL) {
-#ifdef STRICTLY_FIXED
-    if ((ButtonFontset=XCreateFontSet(dpy,"fixed",&ml,&mc,&ds)) == NULL)
-    {
-      exit(1);
-    }
-#else
-    if ((ButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL)
-    {
-      exit(1);
-    }
-#endif
-  }
-  XFontsOfFontSet(ButtonFontset,&fs_list,&ml);
-  ButtonFont = fs_list[0];
-#else
-  if ((ButtonFont=XLoadQueryFont(dpy,font_string))==NULL)
+  if ((FButtonFont = FlocaleLoadFont(dpy,font_string,Module)) == NULL)
   {
-    if ((ButtonFont=XLoadQueryFont(dpy,"fixed"))==NULL)
-    {
-      exit(1);
-    }
+    fprintf(stderr,"%s: Cannot load font, Exitting\n", Module);
+    exit(1);
   }
-#endif
 
-  fontheight = ButtonFont->ascent+ButtonFont->descent;
+  fontheight = FButtonFont->height;
   buttonheight = fontheight + 3 + 2 * ReliefWidth;
 
-  win_width=XTextWidth(ButtonFont,"XXXXXXXXXXXXXXX",10);
+  win_width=FlocaleTextWidth(FButtonFont,"XXXXXXXXXXXXXXX",10);
 
 }
 

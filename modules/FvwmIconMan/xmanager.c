@@ -27,7 +27,7 @@ static char const rcsid[] =
   "$Id$";
 
 extern char *MyName;
-
+extern FlocaleWinString *FwinString; 
 
 /* button dirty bits: */
 #define ICON_STATE_CHANGED  1
@@ -1054,7 +1054,7 @@ static void get_title_geometry (WinManager *man, ButtonGeometry *g)
   text_pad = center_padding (man->fontheight, g->button_h);
 
   g->text_y = g->button_y + text_pad;
-  g->text_base = g->text_y + man->ButtonFont->ascent;
+  g->text_base = g->text_y + man->FButtonFont->ascent;
 }
 
 static void get_button_geometry (WinManager *man, Button *button,
@@ -1105,7 +1105,7 @@ static void get_button_geometry (WinManager *man, Button *button,
   text_pad = center_padding (man->fontheight, g->button_h);
 
   g->text_y = g->button_y + text_pad;
-  g->text_base = g->text_y + man->ButtonFont->ascent;
+  g->text_base = g->text_y + man->FButtonFont->ascent;
 }
 
 static void draw_3d_icon (WinManager *man, int box, ButtonGeometry *g,
@@ -1436,14 +1436,12 @@ static void draw_button (WinManager *man, int button, int force)
 			man->backContext[button_state],
 			g.text_x, g.text_y, g.text_w, g.text_h);
       }
-#ifdef I18N_MB
-      XmbDrawString (theDisplay, man->theWindow, man->ButtonFontset,
-#else
-      XDrawString (theDisplay, man->theWindow,
-#endif
-		   man->hiContext[button_state],
-		   g.text_x, g.text_base, b->drawn_state.display_string,
-		   strlen (b->drawn_state.display_string));
+      FwinString->str =  b->drawn_state.display_string;
+      FwinString->win = man->theWindow;
+      FwinString->gc = man->hiContext[button_state];
+      FwinString->x = g.text_x;
+      FwinString->y = g.text_base;
+      FlocaleDrawString(theDisplay, man->FButtonFont, FwinString, 0);
       XSetClipMask (theDisplay, man->hiContext[button_state], None);
     }
   }
@@ -1484,12 +1482,12 @@ static void draw_empty_manager (WinManager *man)
   else {
   }
   ClipRectangle (man, state, g.text_x, g.text_y, g.text_w, g.text_h);
-#ifdef I18N_MB
-  XmbDrawString (theDisplay, man->theWindow, man->ButtonFontset, man->hiContext[state],
-#else
-  XDrawString (theDisplay, man->theWindow, man->hiContext[state],
-#endif
-	       g.text_x, g.text_base, man->titlename, len);
+  FwinString->str =  man->titlename;
+  FwinString->win = man->theWindow;
+  FwinString->gc = man->hiContext[state];
+  FwinString->x = g.text_x;
+  FwinString->y = g.text_base;
+  FlocaleDrawString(theDisplay, man->FButtonFont, FwinString, 0);
   XSetClipMask (theDisplay, man->hiContext[state], None);
 }
 

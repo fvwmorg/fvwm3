@@ -16,7 +16,11 @@
 #ifndef IN_XMANAGER_H
 #define IN_XMANAGER_H
 
+#ifdef MULTIBYTE
+#define FONT_STRING "-*-fixed-medium-r-normal--13-*"
+#else
 #define FONT_STRING "8x13"
+#endif
 #define DEFAULT_BUTTON_WIDTH 200
 #define DEFAULT_BUTTON_HEIGHT 17
 #define DEFAULT_NUM_COLS  1

@@ -29,12 +29,6 @@ void InitPushButton(struct XObj *xobj)
   XSetWindowAttributes Attr;
   int i;
   char *str;
-  int asc,desc,dir;
-  XCharStruct struc;
-#ifdef I18N_MB
-  char **ml;
-  XFontStruct **fs_list;
-#endif
 
  /* Enregistrement des couleurs et de la police */
   if (xobj->colorset >= 0) {
@@ -64,20 +58,13 @@ void InitPushButton(struct XObj *xobj)
   xobj->gc = fvwmlib_XCreateGC(dpy, xobj->win, 0, NULL);
   XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
-#ifdef I18N_MB
-  if ((xobj->xfontset = GetFontSetOrFixed(dpy, xobj->font)) == NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+  if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) == NULL)
+  {
+    fprintf(stderr, "%s: Couldn't load font. Exiting!\n", ScriptName);
     exit(1);
   }
-  XFontsOfFontSet(xobj->xfontset, &fs_list, &ml);
-  xobj->xfont = fs_list[0];
-#else
-  if ((xobj->xfont = GetFontOrFixed(dpy, xobj->font)) == NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
-    exit(1);
-  }
-#endif
-  XSetFont(dpy, xobj->gc, xobj->xfont->fid);
+  if (xobj->Ffont->font != NULL)
+    XSetFont(dpy, xobj->gc, xobj->Ffont->font->fid);
 
   XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
 
@@ -85,11 +72,10 @@ void InitPushButton(struct XObj *xobj)
   str = (char*)GetMenuTitle(xobj->title, 1);
   if (xobj->icon == NULL)
   {
-    XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-    i = asc + desc + 12;
+    i = xobj->Ffont->height + 12;
     if (xobj->height < i)
       xobj->height = i;
-    i = XTextWidth(xobj->xfont, str, strlen(str))+16;
+    i = FlocaleTextWidth(xobj->Ffont, str, strlen(str)) + 16;
     if (xobj->width < i)
       xobj->width = i;
   }
@@ -102,13 +88,13 @@ void InitPushButton(struct XObj *xobj)
   }
   else
   {
-    if (xobj->icon_w + 10 >XTextWidth(xobj->xfont, str, strlen(str)) + 16)
+    if (xobj->icon_w + 10 > FlocaleTextWidth(xobj->Ffont, str, strlen(str)) + 16)
       i = xobj->icon_w + 10;
     else
-      i = XTextWidth(xobj->xfont, str, strlen(str)) + 16;
+      i = FlocaleTextWidth(xobj->Ffont, str, strlen(str)) + 16;
     if (xobj->width < i)
       xobj->width = i;
-    i = xobj->icon_h+ 2 * (asc+desc+10);
+    i = xobj->icon_h+ 2 * (xobj->Ffont->height + 10);
     if (xobj->height < i)
       xobj->height = i;
   }
@@ -123,7 +109,7 @@ void InitPushButton(struct XObj *xobj)
 
 void DestroyPushButton(struct XObj *xobj)
 {
-  XFreeFont(dpy, xobj->xfont);
+  FlocaleUnloadFont(dpy, xobj->Ffont);
   XFreeGC(dpy, xobj->gc);
   XDestroyWindow(dpy, xobj->win);
 }
@@ -149,15 +135,12 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
   int oldvalue = 0,newvalue;
   unsigned long mask;
   XSetWindowAttributes Attr;
-  int asc,desc,dir;
-  XCharStruct struc;
-  
 
   if (EvtButton->button == Button1)
   {
     j = xobj->height / 2+3;
     i = (xobj->width -
-	 XTextWidth(xobj->xfont, xobj->title, strlen(xobj->title)))/2;
+	 FlocaleTextWidth(xobj->Ffont, xobj->title, strlen(xobj->title)))/2;
 
     while (End)
     {
@@ -226,8 +209,7 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
   {
     if (xobj->value3 > 1)
     {
-      XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-      hOpt = asc+desc+10;
+      hOpt = xobj->Ffont->height + 10;
       /* Hauteur totale du menu / Total height of the menu */
       hMenu = (xobj->value3 - 1) * hOpt;
       yMenu = xobj->y + xobj->height;
@@ -235,8 +217,8 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
       for (i = 2 ; i <= xobj->value3; i++)
       {
 	str = (char*)GetMenuTitle(xobj->title, i);
-	if (wMenu < XTextWidth(xobj->xfont, str, strlen(str))+34)
-	  wMenu = XTextWidth(xobj->xfont, str, strlen(str))+34;
+	if (wMenu < FlocaleTextWidth(xobj->Ffont, str, strlen(str))+34)
+	  wMenu = FlocaleTextWidth(xobj->Ffont, str, strlen(str))+34;
 	free(str);
       }
 
@@ -290,7 +272,8 @@ void EvtMousePushButton(struct XObj *xobj, XButtonEvent *EvtButton)
 	    newvalue = 0;
 	  if (newvalue!=oldvalue)
 	  {
-	    UnselectMenu(xobj, WinPop, hOpt, oldvalue, wMenu-5, asc, 1);
+	    UnselectMenu(xobj, WinPop, hOpt, oldvalue, wMenu-5,
+			 xobj->Ffont->ascent, 1);
 	    SelectMenu(xobj, WinPop, hOpt, newvalue);
 	    oldvalue = newvalue;
 	  }

@@ -50,23 +50,14 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/Colorset.h"
+#include "libs/Flocale.h"
 
 #include "FvwmWinList.h"
 #include "ButtonArray.h"
 #include "Mallocs.h"
 
-#ifdef I18gN_MB
-#ifdef __STDC__
-#define XTextWidth(x,y,z) XmbTextEscapement(x ## set,y,z)
-#else
-#define XTextWidth(x,y,z) XmbTextEscapement(x/**/set,y,z)
-#endif
-#endif
-
-extern XFontStruct *ButtonFont;
-#ifdef I18N_MB
-extern XFontSet ButtonFontset;
-#endif
+extern FlocaleFont *FButtonFont;
+extern FlocaleWinString *FwinString;
 extern Display *dpy;
 extern Window win;
 extern GC shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
@@ -208,7 +199,7 @@ int AddButton(ButtonArray *array, char *title, Picture *p, int up)
 
 /* in Taskbar this replaces below  ArrangeButtonArray (array);*/
 
-  new->tw=XTextWidth(ButtonFont,title,strlen(title));
+  new->tw=FlocaleTextWidth(FButtonFont,title,strlen(title));
   new->truncatewidth=0;
   new->next=NULL;
   new->needsupdate=1;
@@ -232,7 +223,7 @@ int UpdateButton(ButtonArray *array, int butnum, char *title, int up)
     {
       temp->title=(char *)saferealloc(temp->title,strlen(title)+1);
       strcpy(temp->title,title);
-      temp->tw=XTextWidth(ButtonFont,title,strlen(title));
+      temp->tw=FlocaleTextWidth(FButtonFont,title,strlen(title));
       temp->truncatewidth = 0;
     }
     if (up!=-1)
@@ -396,7 +387,7 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
   char *string;
   XGCValues gcv;
   unsigned long gcm;
-  XFontStruct *font;
+  FlocaleFont *Ffont;
 
   /* The margin we want between the relief/text/pixmaps */
 #define INNER_MARGIN 2
@@ -405,13 +396,16 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
   set=button->set;
   topgc = up ? hilite[set] : shadow[set];
   bottomgc = up ? shadow[set] : hilite[set];
-  font = ButtonFont;
+  Ffont = FButtonFont;
 
-  gcm = GCFont;
-  gcv.font = font->fid;
-  XChangeGC(dpy, graph[set], gcm, &gcv);
+  if (Ffont->font != NULL)
+  {
+    gcm = GCFont;
+    gcv.font = Ffont->font->fid;
+    XChangeGC(dpy, graph[set], gcm, &gcv);
+  }
 
-  Fontheight=ButtonFont->ascent+ButtonFont->descent;
+  Fontheight=FButtonFont->height;
 
   /* handle transparency by clearing button, otherwise paint with background */
   if (clear_bg) {
@@ -450,7 +444,7 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
         static int icon_offset = -1;
 
         if (icon_offset == -1)
-          icon_offset = XTextWidth(ButtonFont, "(", 1);
+          icon_offset = FlocaleTextWidth(FButtonFont, "(", 1);
         newx += icon_offset;
       }
     }
@@ -470,7 +464,8 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
     } else {
       if (TruncateLeft) {
 	/* move the pointer up until the rest fits */
-	while (*string && (newx + XTextWidth(ButtonFont, string, strlen(string))
+	while (*string && (newx +
+			   FlocaleTextWidth(FButtonFont, string, strlen(string))
 			   + 2 * button->reliefwidth + INNER_MARGIN) > w) {
 	  string++;
 	  len--;
@@ -478,21 +473,19 @@ void DoButton(Button *button, int x, int y, int w, int h, Bool clear_bg)
 	button->truncatewidth = w;
 	button->truncate_title = string;
       } else {
-	while ((len > 1) && (newx + XTextWidth(ButtonFont, string, len)
-			   + 2 * button->reliefwidth + INNER_MARGIN) > w)
+	while ((len > 1) && (newx +
+			     FlocaleTextWidth(FButtonFont, string, len)
+			     + 2 * button->reliefwidth + INNER_MARGIN) > w)
 	  len--;
       }
     }
   }
-#ifdef I18N_MB
-  XmbDrawString(dpy,win,ButtonFontset,graph[set],x+newx+button->reliefwidth,
-              y+1+button->reliefwidth+ButtonFont->ascent,
-              string,len);
-#else
-  XDrawString(dpy,win,graph[set],x+newx+button->reliefwidth,
-              y+1+button->reliefwidth+ButtonFont->ascent,
-              string,len);
-#endif
+  FwinString->str = string;
+  FwinString->len = len;
+  FwinString->x = x+newx+button->reliefwidth;
+  FwinString->y = y+1+button->reliefwidth+FButtonFont->ascent;
+  FwinString->gc = graph[set];
+  FlocaleDrawString(dpy, FButtonFont, FwinString, FWS_HAVE_LENGTH);
 
   /* Draw relief last */
   RelieveRectangle(dpy,win,x,y,w-1,h,topgc,bottomgc,button->reliefwidth);

@@ -206,37 +206,18 @@ int buttonYPad(button_info *b)
 *** buttonFont()
 *** Give the font pointer for this button
 **/
-XFontStruct *buttonFont(button_info *b)
+FlocaleFont *buttonFont(button_info *b)
 {
   if(b->flags&b_Font)
-    return b->font;
+    return b->Ffont;
   while((b=b->parent))
     if(b->c->flags&b_Font)
-      return b->c->font;
+      return b->c->Ffont;
 #ifdef DEBUG
   fprintf(stderr,"%s: BUG: No font definition?\n",MyName);
 #endif
   return None;
 }
-
-#ifdef I18N_MB
-/**
-*** buttonFontSet()
-*** Give the font pointer for this button
-**/
-XFontSet buttonFontSet(button_info *b)
-{
-  if(b->flags&b_Font)
-    return b->fontset;
-  while((b=b->parent))
-    if(b->c->flags&b_Font)
-      return b->c->fontset;
-#ifdef DEBUG
-  fprintf(stderr,"%s: BUG: No fontset definition?\n",MyName);
-#endif
-  return None;
-}
-#endif
 
 /**
 *** buttonFore()

@@ -18,42 +18,32 @@
 /***********************************************/
 /* Fonction d'ecriture en relief               */
 /***********************************************/
-#ifdef I18N_MB
-void FakeDrawString(XFontSet FONTSET,
-		Display *dpy,struct XObj *xobj,Window win,int x,int y,char *str,
-		int strl,unsigned long ForeC,unsigned long HiC,
-		unsigned long BackC,int WithRelief)
-#else
-void DrawString(Display *dpy,struct XObj *xobj,Window win,int x,int y,char *str,
-		int strl,unsigned long ForeC,unsigned long HiC,
-		unsigned long BackC,int WithRelief)
-#endif
+void MyDrawString(Display *dpy, struct XObj *xobj, Window win, int x, int y,
+		  char *str, unsigned long ForeC,unsigned long HiC,
+		  unsigned long BackC, int WithRelief)
 {
+  FwinString->win = win;
+  FwinString->str = str;
+  FwinString->gc = xobj->gc;
   if (WithRelief)
   {
     XSetBackground(dpy, xobj->gc, xobj->TabColor[BackC]);
     XSetForeground(dpy, xobj->gc, xobj->TabColor[HiC]);
-#ifdef I18N_MB
-    XmbDrawString(dpy, win, FONTSET, xobj->gc, x+1, y+1, str, strl);
-#else
-    XDrawString(dpy, win, xobj->gc, x+1, y+1, str, strl);
-#endif
+    FwinString->x = x+1;
+    FwinString->y = y+1;
+    FlocaleDrawString(dpy, xobj->Ffont, FwinString, 0);
     XSetForeground(dpy, xobj->gc, xobj->TabColor[ForeC]);
-#ifdef I18N_MB
-    XmbDrawString(dpy, win, FONTSET, xobj->gc, x, y, str, strl);
-#else
-    XDrawString(dpy, win, xobj->gc, x, y, str, strl);
-#endif
+    FwinString->x = x;
+    FwinString->y = y;
+    FlocaleDrawString(dpy, xobj->Ffont, FwinString, 0);
   }
   else
   {
     XSetBackground(dpy, xobj->gc, xobj->TabColor[BackC]);
     XSetForeground(dpy, xobj->gc, xobj->TabColor[ForeC]);
-#ifdef I18N_MB
-    XmbDrawString(dpy, win, FONTSET, xobj->gc, x, y+1, str, strl);
-#else
-    XDrawString(dpy, win, xobj->gc, x, y+1, str, strl);
-#endif
+    FwinString->x = x;
+    FwinString->y = y+1;
+    FlocaleDrawString(dpy, xobj->Ffont, FwinString, 0);
   }
 }
 
@@ -137,8 +127,6 @@ void DrawPMenu(struct XObj *xobj, Window WinPop, int h, int StrtOpt)
   int x,y;
   unsigned int width,height;
   Window Root;
-  int asc,desc,dir;
-  XCharStruct struc;
 
   if (!XGetGeometry(dpy, WinPop, &Root, &x, &y, &width, &height, &i, &i))
     return;
@@ -169,9 +157,8 @@ void DrawPMenu(struct XObj *xobj, Window WinPop, int h, int StrtOpt)
     XDrawSegments(dpy, WinPop, xobj->gc, segm, 2);
   }
   /* Ecriture des options */
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
   for (i=StrtOpt; i <= xobj->value3; i++)
-    UnselectMenu(xobj, WinPop, h, i, width, asc, StrtOpt);
+    UnselectMenu(xobj, WinPop, h, i, width, xobj->Ffont->ascent, StrtOpt);
 }
 
 void UnselectMenu(struct XObj *xobj, Window WinPop, int hOpt, int value,
@@ -185,9 +172,10 @@ void UnselectMenu(struct XObj *xobj, Window WinPop, int hOpt, int value,
   str = (char*)GetMenuTitle(xobj->title, value + start);
   y += asc + 4;
   len = strlen(str);
-  x = GetXTextPosition(xobj, width, XTextWidth(xobj->xfont,str,len), 8, 0, 8);
-  DrawString(dpy, xobj, WinPop, x, y, str, strlen(str), fore, hili, back,
-	     !xobj->flags[1]);
+  x = GetXTextPosition(xobj, width, FlocaleTextWidth(xobj->Ffont,str,len),
+		       8, 0, 8);
+  MyDrawString(dpy, xobj, WinPop, x, y, str, fore, hili, back,
+	       !xobj->flags[1]);
   free(str);
 }
 
@@ -260,30 +248,27 @@ void DrawIconStr(int offset, struct XObj *xobj, int DoRedraw,
   int i,j;
   char *str;
   int len = 0;
-  int asc,desc,dir;
-  XCharStruct struc;
 
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
   if (DoRedraw)
     XClearArea(dpy, xobj->win, 4, 4, xobj->width-8, xobj->height-8, False);
 
   str = GetMenuTitle(xobj->title,1);
   len = strlen(str);
-  i = GetXTextPosition(xobj, xobj->width, XTextWidth(xobj->xfont,str,len),
-		       l_offset, c_offset, r_offset); 
+  i = GetXTextPosition(xobj, xobj->width, FlocaleTextWidth(xobj->Ffont,str,len),
+		       l_offset, c_offset, r_offset);
 
   if (len > 0 && xobj->iconPixmap==None)       /* Si l'icone n'existe pas */
   {
-    j = xobj->height/2 + (asc+desc)/2 + offset - 3;
-    DrawString(dpy,xobj,xobj->win,i,j,str,len,fore,hili,back,!xobj->flags[1]);
+    j = xobj->height/2 + (xobj->Ffont->height)/2 + offset - 3;
+    MyDrawString(dpy,xobj,xobj->win,i,j,str,fore,hili,back,!xobj->flags[1]);
   }
   else					/* Si l'icone existe */
   {
     if (len > 0)
     {
       j = ((xobj->height - xobj->icon_h)/4)*3 + xobj->icon_h + offset + 
-	(asc+desc)/2 - 3;
-      DrawString(dpy,xobj,xobj->win,i,j,str,len,fore,hili,back,!xobj->flags[1]);
+	(xobj->Ffont->height)/2 - 3;
+      MyDrawString(dpy,xobj,xobj->win,i,j,str,fore,hili,back,!xobj->flags[1]);
     }
     /* Dessin de l'icone */
     if (xobj->icon_maskPixmap!=None)
@@ -338,18 +323,6 @@ void DrawReliefRect(int x, int y, int width, int height, struct XObj *xobj,
     XDrawSegments(dpy, xobj->win, xobj->gc, segm, 2);
   }
   XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
-}
-
-/***********************************************/
-/* Calcul ascent de la police                  */
-/***********************************************/
-int GetAscFont(XFontStruct *xfont)
-{
-  int asc,desc,dir;
-  XCharStruct struc;
-
-  XTextExtents(xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  return asc;
 }
 
 /***********************************************/

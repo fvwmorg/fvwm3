@@ -28,12 +28,6 @@ void InitPopupMenu(struct XObj *xobj)
   XSetWindowAttributes Attr;
   int i;
   char *str;
-  int asc,desc,dir;
-  XCharStruct struc;
-#ifdef I18N_MB
-  char **ml;
-  XFontStruct **fs_list;
-#endif
 
   /* Enregistrement des couleurs et de la police / set the colors and the font */
   if (xobj->colorset >= 0) {
@@ -61,20 +55,13 @@ void InitPopupMenu(struct XObj *xobj)
   xobj->gc = fvwmlib_XCreateGC(dpy, xobj->win, 0, NULL);
   XSetForeground(dpy, xobj->gc, xobj->TabColor[fore]);
 
-#ifdef I18N_MB
-  if ((xobj->xfontset = GetFontSetOrFixed(dpy, xobj->font)) == NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+  if ((xobj->Ffont = FlocaleLoadFont(dpy, xobj->font, ScriptName)) == NULL)
+  {
+    fprintf(stderr, "%s: Couldn't load font. Exiting!\n", ScriptName);
     exit(1);
   }
-  XFontsOfFontSet(xobj->xfontset, &fs_list, &ml);
-  xobj->xfont = fs_list[0];
-#else
-  if ((xobj->xfont = GetFontOrFixed(dpy, xobj->font)) == NULL) {
-    fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
-    exit(1);
-  }
-#endif
-  XSetFont(dpy, xobj->gc, xobj->xfont->fid);
+  if (xobj->Ffont->font != NULL)
+    XSetFont(dpy, xobj->gc, xobj->Ffont->font->fid);
 
   XSetLineAttributes(dpy, xobj->gc, 1, LineSolid, CapRound, JoinMiter);
   xobj->value3 = CountOption(xobj->title);
@@ -84,14 +71,13 @@ void InitPopupMenu(struct XObj *xobj)
     xobj->value = 1;
 
   /* Redimensionnement du widget / Widget resizing */
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  xobj->height = asc +desc +12;
+  xobj->height = xobj->Ffont->height  +12;
   xobj->width = 30;
   for (i = 1; i <= xobj->value3; i++)
   {
     str = (char*)GetMenuTitle(xobj->title, i);
-    if (xobj->width<XTextWidth(xobj->xfont, str, strlen(str))+34)
-      xobj->width = XTextWidth(xobj->xfont, str, strlen(str))+34;
+    if (xobj->width < FlocaleTextWidth(xobj->Ffont, str, strlen(str))+34)
+      xobj->width = FlocaleTextWidth(xobj->Ffont, str, strlen(str))+34;
     free(str);
   }
   XResizeWindow(dpy, xobj->win, xobj->width, xobj->height);
@@ -104,7 +90,7 @@ void InitPopupMenu(struct XObj *xobj)
 
 void DestroyPopupMenu(struct XObj *xobj)
 {
-  XFreeFont(dpy, xobj->xfont);
+  FlocaleUnloadFont(dpy, xobj->Ffont);
   XFreeGC(dpy, xobj->gc);
   XDestroyWindow(dpy, xobj->win);
 }
@@ -114,10 +100,8 @@ void DrawPopupMenu(struct XObj *xobj)
   XSegment segm[4];
   char* str;
   int x,y;
-  int asc,desc,dir;
-  XCharStruct struc;
+  int asc = xobj->Ffont->ascent;
 
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
   DrawReliefRect(0, 0, xobj->width, xobj->height, xobj, hili, shad);
 
   /* Dessin de la fleche / arrow drawing */
@@ -154,9 +138,9 @@ void DrawPopupMenu(struct XObj *xobj)
   str = (char*)GetMenuTitle(xobj->title, xobj->value);
   y = asc + 5;
   x = GetXTextPosition(xobj,xobj->width,
-		       XTextWidth(xobj->xfont,str,strlen(str)),
+		       FlocaleTextWidth(xobj->Ffont,str,strlen(str)),
 		       25,8,8);
-  DrawString(dpy, xobj, xobj->win, x, y, str, strlen(str), fore, hili, back,
+  MyDrawString(dpy, xobj, xobj->win, x, y, str, fore, hili, back,
 	     !xobj->flags[1]);
 
   free(str);
@@ -174,15 +158,13 @@ void EvtMousePopupMenu(struct XObj *xobj, XButtonEvent *EvtButton)
   unsigned long mask;
   unsigned long while_mask;
   XSetWindowAttributes Attr;
-  int asc,desc,dir;
-  XCharStruct struc;
   Time start_time = 0;
   KeySym ks;
   unsigned char buf[10];
   Bool End = 1;
+  int asc = xobj->Ffont->ascent;
 
-  XTextExtents(xobj->xfont, "lp", strlen("lp"), &dir, &asc, &desc, &struc);
-  hOpt = asc + desc + 10;
+  hOpt = xobj->Ffont->height + 10;
   xobj->value3 = CountOption(xobj->title);
   yMenu = xobj->y - ((xobj->value-1) * hOpt);
   hMenu = xobj->value3 * hOpt;

@@ -61,7 +61,6 @@
 #include "libs/fvwmsignal.h"
 #include "libs/Colorset.h"
 #include "libs/vpacket.h"
-#include "libs/Flocale.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */
 #include "parse.h" /* ParseConfiguration(), parse_window_geometry() */
@@ -149,8 +148,9 @@ static Pixel hilite_pix, back_pix, shadow_pix, fore_pix;
 GC  NormalGC;
 /* needed for relief drawing only */
 GC  ShadowGC;
-static int Width,Height;
+FlocaleWinString *FwinString;
 
+static int Width,Height;
 static int x= -30000,y= -30000;
 int w = -1;
 int h = -1;
@@ -195,72 +195,6 @@ char *mymalloc(int length)
     p[--i]=255;
   return p;
 }
-#endif
-
-#ifdef I18N_MB
-char NoName[] = "Untitled";
-
-/*
- * fake XFetchName() function
- */
-static char **XFetchName_islist = NULL; /* XXX */
-static Status MyXFetchName(Display *dpy, Window win, char **winname)
-{
-  XTextProperty text;
-  char **list;
-  int nitems;
-
-  if (XGetWMName(dpy, win, &text))
-  {
-    if (text.value)
-    {
-      text.nitems = strlen(text.value);
-      if (text.encoding == XA_STRING)
-      {
-        /* STRING encoding, use this as it is */
-        *winname = (char *)text.value;
-      }
-      else
-      {
-        /* not STRING encoding, try to convert */
-        if (XmbTextPropertyToTextList(dpy, &text, &list, &nitems) >= Success
-            && nitems > 0 && *list)
-	{
-          XFree(text.value);
-          *winname = *list;
-          XFetchName_islist = list; /* XXX */
-        }
-	else
-	{
-          if (list)
-	    XFreeStringList(list);
-          XFree(text.value); /* return of XGetWMName() */
-          if (XGetWMName(dpy, win, &text)) /* XXX: read again ? */
-	  {
-	    *winname = (char *)text.value;
-	  }
-	  else
-	  {
-	    *winname = NoName;
-	  }
-        }
-      }
-      return 1;
-    }
-  }
-  return 0;
-}
-static int MyXFree(void *data)
-{
-  if (XFetchName_islist != NULL) {
-    XFreeStringList(XFetchName_islist);
-    XFetchName_islist = NULL;
-    return 0;
-  }
-  return XFree(data);
-}
-#define XFetchName(x,y,z) MyXFetchName(x,y,z)
-#define XFree(x) MyXFree(x)
 #endif
 
 /**
@@ -530,7 +464,7 @@ void SetTransparentBackground(button_info *ub,int w,int h)
     unsigned int border_width_return;
     unsigned int depth_return;
     int number, i;
-    XFontStruct *font;
+    FlocaleFont *Ffont;
     Region shape_r;
     static GC trans_gc = NULL;
 
@@ -637,10 +571,11 @@ void SetTransparentBackground(button_info *ub,int w,int h)
       }
 
       /* handle button's title */
-      font=buttonFont(b);
-      if(b->flags&b_Title && font)
+      Ffont=buttonFont(b);
+      if(b->flags&b_Title && Ffont)
       {
-	XSetFont(Dpy,trans_gc,font->fid);
+	if (Ffont->font)
+	  XSetFont(Dpy,trans_gc,Ffont->font->fid);
 	DrawTitle(b,pmap_mask,trans_gc);
       }
     }
@@ -972,7 +907,7 @@ void Loop(void)
 {
   XEvent Event;
   KeySym keysym;
-  char buffer[10],*tmp,*act;
+  char buffer[10],*act;
   int i,i2,button;
   int x;
   int y;
@@ -981,6 +916,8 @@ void Loop(void)
   static int ex=10000,ey=10000,ex2=0,ey2=0;
   button_info *tmpb;
 #endif
+  char *tmp = NULL;
+  MULTIBYTE_CODE(char **tmp_list = NULL);
 
   while( !isTerminated )
   {
@@ -1350,10 +1287,12 @@ void Loop(void)
 	      if(b->flags&b_Title)
 		free(b->title);
 	      b->flags|=b_Title;
-	      if (XFetchName(Dpy,swin,&tmp))
+	      FlocaleGetNameProperty(XGetWMName, Dpy, swin,
+				     MULTIBYTE_ARG(&tmp_list) &tmp);
+	      if (tmp != NULL)
 	      {
 		CopyString(&b->title,tmp);
-		XFree(tmp);
+		FlocaleFreeNameProperty(MULTIBYTE_ARG(&tmp_list) &tmp);
 	      }
 	      else
 	      {
@@ -1532,14 +1471,7 @@ int LoadIconFile(char *s,Picture **p)
 void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 {
   int i,j,x=0,y=0;
-  XFontStruct *font;
-#ifdef I18N_MB
-  char **ml;
-  int mc;
-  char *ds;
-  XFontStruct **fs_list;
-  XFontSet fontset = None;
-#endif
+  FlocaleFont *Ffont;
 
   if (!b)
     return;
@@ -1649,29 +1581,13 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
 #endif
 
     if(strncasecmp(b->font_string,"none",4)==0)
-      b->font=NULL;
-#ifdef I18N_MB
-    else if(!(b->fontset=XCreateFontSet(Dpy,b->font_string,&ml,&mc,&ds)))
     {
-      b->font = NULL;
-      b->flags&=~b_Font;
-      fprintf(stderr,"%s: Couldn't load fontset %s\n",MyName,
-	      b->font_string);
+      b->Ffont=NULL;
     }
-    else
-    {
-      /* fontset found */
-      XFontsOfFontSet(fontset, &fs_list, &ml);
-      b->font = fs_list[0];
-    }
-#else
-    else if(!(b->font=XLoadQueryFont(Dpy,b->font_string)))
+    else if (!(b->Ffont = FlocaleLoadFont(Dpy, b->font_string, MyName)))
     {
       b->flags&=~b_Font;
-      fprintf(stderr,"%s: Couldn't load font %s\n",MyName,
-	      b->font_string);
     }
-#endif
   }
 
   if(b->flags&b_Container && b->c->flags&b_Font)
@@ -1680,52 +1596,13 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
     fprintf(stderr,", font2 \"%s\"",b->c->font_string);
 #endif
     if(strncasecmp(b->c->font_string,"none",4)==0)
-      b->c->font=NULL;
-#ifdef I18N_MB
-    else if(!(b->c->fontset=XCreateFontSet(Dpy,b->c->font_string,&ml,&mc,&ds)))
     {
-      fprintf(stderr,"%s: Couldn't load fontset %s\n",MyName,
-	      b->c->font_string);
-      if(b==UberButton)
-      {
-#ifdef STRICTLY_FIXED
-	if(!(b->c->fontset=XCreateFontSet(Dpy,"fixed",&ml,&mc,&ds)))
-	{
-#else
-	if(!(b->c->fontset=XCreateFontSet(
-	  Dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)))
-	{
-#endif
-	  fprintf(stderr,"%s: Couldn't load fontset fixed\n",MyName);
-	  b->c->font = NULL;
-	}
-      }
-      else
-      {
-	b->c->font = NULL;
-	b->c->flags&=~b_Font;
-      }
+      b->c->Ffont = NULL;
     }
-    else
+    else if (!(b->c->Ffont = FlocaleLoadFont(Dpy, b->c->font_string, MyName)))
     {
-      /* fontset found */
-      XFontsOfFontSet(b->c->fontset, &fs_list, &ml);
-      b->c->font = fs_list[0];
+      b->c->flags&=~b_Font;
     }
-#else
-    else if(!(b->c->font=XLoadQueryFont(Dpy,b->c->font_string)))
-    {
-      fprintf(stderr,"%s: Couldn't load font %s\n",MyName,
-	      b->c->font_string);
-      if(b==UberButton)
-      {
-	if(!(b->c->font=XLoadQueryFont(Dpy,"fixed")))
-	  fprintf(stderr,"%s: Couldn't load font fixed\n",MyName);
-      }
-      else
-	b->c->flags&=~b_Font;
-    }
-#endif
   }
 
   /* Calculate subbutton sizes */
@@ -1769,24 +1646,20 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
   else
     b->flags&=~b_Icon;
 
-#ifdef I18N_MB
-  if(b->flags&b_Title && (fontset = buttonFontSet(b)) && (font=buttonFont(b)))
-#else
-  if(b->flags&b_Title && (font=buttonFont(b)))
-#endif
+  if(b->flags&b_Title && (Ffont = buttonFont(b)))
   {
 #ifdef DEBUG_LOADDATA
     fprintf(stderr,", title \"%s\"",b->title);
 #endif
     if(buttonJustify(b)&b_Horizontal)
     {
-      i+=buttonXPad(b)+XTextWidth(font,b->title,strlen(b->title));
-      j=max(j,font->ascent+font->descent);
+      i+=buttonXPad(b)+FlocaleTextWidth(Ffont,b->title,strlen(b->title));
+      j=max(j,Ffont->height);
     }
     else
     {
-      i=max(i,XTextWidth(font,b->title,strlen(b->title)));
-      j+=font->ascent+font->descent;
+      i=max(i,FlocaleTextWidth(Ffont,b->title,strlen(b->title)));
+      j+=Ffont->height;
     }
   }
 
@@ -2130,15 +2003,18 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   gcm = GCForeground|GCBackground;
   gcv.foreground = fore_pix;
   gcv.background = back_pix;
-  if(ub && ub->c && ub->c->font && ub->font)
+  if(ub && ub->c && ub->c->Ffont &&  ub->c->Ffont->font && ub->Ffont)
   {
-    gcv.font = ub->c->font->fid;
+    gcv.font = ub->c->Ffont->font->fid;
     gcm |= GCFont;
   }
   NormalGC = fvwmlib_XCreateGC(Dpy, MyWindow, gcm, &gcv);
   gcv.foreground = shadow_pix;
   gcv.background = fore_pix;
   ShadowGC = fvwmlib_XCreateGC(Dpy, MyWindow, gcm, &gcv);
+
+  /* for text drawing */
+  FlocaleAllocateWinString(&FwinString);
 
   if (ub->c->flags&b_Colorset)
   {
@@ -2927,12 +2803,13 @@ static void GetPanelGeometry(
 **/
 void swallow(unsigned long *body)
 {
-  char *temp;
   button_info *ub=UberButton,*b;
   int button=-1;
   int i;
   unsigned int d;
   Window p;
+  char *temp = NULL;
+  MULTIBYTE_CODE(char **temp_list = NULL);
 
   while(NextButton(&ub,&b,&button,0))
   {
@@ -3027,10 +2904,12 @@ void swallow(unsigned long *body)
 	  if (b->flags & b_Title)
 	    free(b->title);
 	  b->flags |= b_Title;
-	  if (XFetchName(Dpy, swin, &temp))
+	  FlocaleGetNameProperty(XGetWMName, Dpy, swin,
+				 MULTIBYTE_ARG(&temp_list) &temp);
+	  if (temp != NULL)
 	  {
 	    CopyString(&b->title, temp);
-	    XFree(temp);
+	    FlocaleFreeNameProperty(MULTIBYTE_ARG(&temp_list) &temp);
 	  }
 	  else
 	  {
