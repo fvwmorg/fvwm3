@@ -285,7 +285,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
       else if ((*w != t->w && *w != t->Parent) ||
 	       e->xbutton.subwindow == t->w ||
 	       e->xbutton.subwindow == t->Parent)
-	/* domivogt (6-Jan-198): I don't understand what's happening here. If
+	/* domivogt (6-Jan-1998): I don't understand what's happening here. If
 	 * the mouse is over the client window. The subwindow has an unique id
 	 * that no visible part of the FvwmWindow has. */
 	*w = e->xbutton.subwindow;
@@ -1203,14 +1203,9 @@ void HandleUnmapNotify(void)
   if(Scr.PreviousFocus == Tmp_win)
     Scr.PreviousFocus = NULL;
 
-  if((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
-     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win) &&
-      Scr.Focus && Scr.Focus->w == Tmp_win->transientfor))
-
   focus_grabbed = (Tmp_win == Scr.Focus) &&
     ((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
-     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win))) &&
-    !HAS_NEVER_FOCUS(Tmp_win);
+     (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)));
 
   if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
     {

@@ -216,7 +216,6 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse,
     send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
 
   XSync(dpy,0);
-
 }
 
 void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)

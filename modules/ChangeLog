@@ -1,3 +1,12 @@
+1999-06-28 Olvier Chapuis <olivier.chapuis@free.fr>
+
+	* INSTALL.fvwm2: Added LibStroke in the optional libraries section.
+	* fvwm/fvwm2.1: Corrected Stroke entries.
+
+1999-06-28  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c: removed stray fprintf
+
 1999-06-27  Olivier Chapuis <olivier.chapuis@free.fr>
 
 	* FvwmAnimate/FvwmAnimate.1: Corrected misprints

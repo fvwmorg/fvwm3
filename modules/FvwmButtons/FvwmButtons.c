@@ -1236,8 +1236,6 @@ void RecursiveLoadData(button_info *b,int *maxx,int *maxy)
       fprintf(stderr,", font \"%s\"",b->font_string);
 #     endif
 
-      fprintf(stderr, "b=0x%lx, font_string=%s\n",
-              (unsigned long)b, b? b->font_string : "(NULL)");
       if(strncasecmp(b->font_string,"none",4)==0)
 	b->font=NULL;
 #ifdef I18N_MB

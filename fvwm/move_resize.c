@@ -1375,7 +1375,7 @@ void resize_window(F_CMD_ARGS)
 		     ymotion);
        if (IS_SHADED(tmp_win))
        {
-         SetupFrame (tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+         SetupFrame (tmp_win, drag->x, drag->y,
                      drag->width, tmp_win->frame_g.height, FALSE, False);
          tmp_win->orig_g.height = drag->height;
        }
@@ -1714,10 +1714,6 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
      */
     *widthp = dwidth + 2*tmp_win->boundary_width;
     *heightp = dheight + tmp_win->title_g.height + 2*tmp_win->boundary_width;
-#if 0
-    if (is_SHADED(tmp_win))
-      *heightp = tmp_win->title_g.height + tmp_win->boundary_width;
-#endif
 
     return;
 }

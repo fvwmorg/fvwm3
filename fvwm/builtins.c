@@ -460,6 +460,7 @@ void WindowShade(F_CMD_ARGS)
     BroadcastPacket(M_WINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
   }
+  SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);
   FlushOutputQueues();
   XSync(dpy, 0);
 

@@ -1,5 +1,17 @@
 1999-06-28  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/events.c (HandleUnmapNotify): removed some copy-and-past code trash
+
+1999-06-27  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/builtins.c (WindowShade): update the border when shading a
+	window
+
+	* fvwm/move_resize.c (resize_window): fixed resizing of shaded windows
+	(shade didn't move).
+
+1999-06-28  Dominik Vogt  <dominik_vogt@gmx.de>
+
 	* fvwm/builtins.c (ApplyDefaultFontAndColors): fixed font size
 
 1999-06-28  Mikhael Goikhman  <migo@homemail.com>

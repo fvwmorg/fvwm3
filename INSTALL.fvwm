@@ -113,9 +113,9 @@ Optional libraries used by FVWM
 ===============================
 
 FVWM can optionally be compiled to use the following libraries: Xpm,
-rplay, and readline.  By default, these are probed for, and used if
-found.  If you want to use any of them, install the library before
-configuring FVWM.
+rplay, readline and LibStroke.  By default, these are probed for, 
+and used if found.  If you want to use any of them, install the library 
+before configuring FVWM.
 
 Xpm allows the use of coloured icons.  See the Xpm web page at
 http://www.inria.fr/koala/lehors/xpm.html for all the latest info and
@@ -132,6 +132,10 @@ Readline is used in one module (FvwmConsole) to allow fancy
 command-line editing, a history buffer, etc.  It is GNU software, and
 should be found on any GNU site, such as ftp://ftp.gnu.org/gnu/readline/.
 
+LibStroke allows interpretation by fvwm2 of mouse strokes (i.e., motions
+of the mouse). For more informations see the  LibStroke web page at   
+http://www.etla.net/~willey/projects/libstroke/ and the fvwm2 man page.
+
 If configure doesn't do the right thing, try one or more of the
 following flags (examples assume library is named "foo"):
 
@@ -147,6 +151,7 @@ may be found:
     xpm		X11/xpm.h
     readline	readline/readline.h
     rplay	rplay.h
+    libstroke   stroke.h
 
 Only one version of the --with-foo-library flag may be specified.
 
