@@ -828,6 +828,6 @@ button_info *select_button(button_info *ub,int x,int y)
   b = ub->c->buttons[i];
 
   return select_button(
-    b, x - (ub->c->width * column / ub->c->num_columns),
-    y - (ub->c->height * row / ub->c->num_rows));
+      b, x + ub->c->xpos - buttonXPos(b, i),
+      y + ub->c->ypos - buttonYPos(b, i));
 }
