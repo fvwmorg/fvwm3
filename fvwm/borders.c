@@ -1562,11 +1562,11 @@ static void border_draw_one_border_part(
 	if (!br->relief.is_flat)
 	{
 		border_draw_part_relief(br, frame_g, &part_g, p, is_inverted);
-	}
-	/* draw the handle marks */
-	if (br->marks.has_x_marks || br->marks.has_y_marks)
-	{
-		border_draw_part_marks(br, &part_g, part, p);
+		/* draw the handle marks */
+		if (br->marks.has_x_marks || br->marks.has_y_marks)
+		{
+			border_draw_part_marks(br, &part_g, part, p);
+		}
 	}
 	/* apply the pixmap and destroy it */
 	border_set_part_background(w, p);

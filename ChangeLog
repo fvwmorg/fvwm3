@@ -1,3 +1,8 @@
+2003-02-26  Tony Finch  <dot@dotat.at>
+
+	* fvwm/borders.c (border_draw_one_border_part):
+	Don't draw the handle relief marks when the border is flat.
+
 2003-02-27  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
