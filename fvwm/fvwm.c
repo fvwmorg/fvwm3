@@ -747,6 +747,11 @@ void StartupStuff(void)
   if (Scr.ClickTime < 0)
     Scr.ClickTime = -Scr.ClickTime;
 
+  /* It is safe to Ungrab here: if not and one of the init functions not
+   * finish we've got a complet freeze ! */
+  GrabPointerState = GRAB_NONE;
+  XUngrabPointer(dpy, CurrentTime);
+
   /* migo (04-Sep-1999): execute StartFunction */
   if (FindFunction(startFuncName)) {
     char *action = "Function " startFuncName;
@@ -772,9 +777,6 @@ void StartupStuff(void)
   ** migo (09-Jul-1999): but only on restart, otherwise it can be reused.
   */
   if (Restarting) unlink(state_filename);
-
-  GrabPointerState = GRAB_NONE;
-  XUngrabPointer(dpy, CurrentTime);
 
 } /* StartupStuff */
 
