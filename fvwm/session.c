@@ -351,7 +351,7 @@ static Bool VerifyVersionInfo(char *filename)
 static int
 SaveVersionInfo(FILE *f)
 {
-  fprintf(f, "[FVWM_VERSION] %s,%s,%s\n", VERSION, __DATE__);
+  fprintf(f, "[FVWM_VERSION] %s,%s\n", VERSION, __DATE__);
 
   return 1;
 }
@@ -838,7 +838,6 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
   {
     goingToRestart = True;
 
-fprintf(stderr,"1 state filename: '%s'\n", filename);
     saveStateFile(filename);
     setSmProperties(sm_conn, filename, SmRestartImmediately);
 
@@ -856,7 +855,6 @@ fprintf(stderr,"1 state filename: '%s'\n", filename);
     exit(0); /* let the SM restart us */
   }
 #endif
-fprintf(stderr,"2 state filename: '%s'\n", filename);
   saveStateFile(filename);
   /* return and let Done restart us */
 }
