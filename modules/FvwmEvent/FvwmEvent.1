@@ -44,6 +44,24 @@ a log file, while debugging \fIfvwm2\fP.
 \fIFvwmEvent\fP can also have builtin support for the rplay library.
 (heritage of FvwmAudio)
 
+.SH INVOCATION
+The invocation method was shown in the synopsis section. No command
+line invocation is possible. \fIFvwmEvent\fP must be invoked by the
+\fIfvwm2\fP window manager. \fIFvwmEvent\fP accepts a single
+argument:
+
+.IP \-audio
+Enables FvwmAudio compatibility mode.
+
+.IP alias
+Makes FvwmEvent use \fIalias\fP as its name. This affects which lines
+from the user's configuration file are used.
+
+Invoking FvwmEvent as \fIFvwmAudio\fP (either by using an alias or
+creating a symlink) enables FvwmAudio compatibility mode.
+
+.sp
+
 .SH CONFIGURATION OPTIONS
 \fIFvwmEvent\fP reads the same \fI.fvwm2rc\fP file as \fIfvwm2\fP
 reads when it starts up, and looks for certain configuration options:
@@ -190,56 +208,6 @@ are played.
 Specifies what volume will be assigned to the sounds when they are
 played.
 
-.SH INVOCATION
-The invocation method was shown in the synopsis section. No command
-line invocation is possible. \fIFvwmEvent\fP must be invoked by the
-\fIfvwm2\fP window manager. \fIFvwmEvents\fP accepts a single
-argument:
-
-.IP \-audio
-Enables FvwmAudio compatibility mode.
-
-.IP alias
-Makes FvwmEvent use \fIalias\fP as its name. This affects which lines
-from the user's configuration file are used.
-
-Invoking FvwmEvent as \fIFvwmAudio\fP (either by using an alias or
-creating a symlink) enables FvwmAudio compatibility mode.
-
-.sp
-
-.SH FvwmAudio Compatibility
-
-FvwmAudioPlayCmd used to call an external program.
-FvwmEventCmd calls an \fIfvwm2\fP function. External programs can be called
-using the \fIfvwm2\fP exec function "exec program".
-
-FvwmAudioDir has been removed due to the fact that the parameters
-don't have to be files any more.
-use:
-.nf
-.sp
-	DestroyFunc mysay
-	AddToFunc mysay "I" exec /rsynth/say /rsynth/audiofiles/$1
-
-	*FvwmEventCmd mysay
-.sp
-.fi
-.SH BUGS
-It's REALLY noisy when \fIfvwm2\fP starts and restarts using an audio player.
-FvwmEventDelay helps a little bit.
-
-The parameters inherent to several events are not accessible. This
-might be implemented in the future so that the command executed by
-fvwm2 looks like FvwmEventCmd FvwmEvent-parameters
-event-specific-parameters.
-
-Simple \fIFvwmAuto\fP could then be emulated by:
-.nf
-	*FvwmEventCmd
-	*FvwmEvent raise-window Raise
-.sp
-.fi
 .SH FvwmAudio Compatibility Mode
 
 When invoked in FvwmAudio compatibility mode (see above), FvwmEvent
@@ -247,14 +215,18 @@ accepts the following options to provide backwards compatibility
 for FvwmAudio:
 
 .IP "*FvwmEventPlayCmd \fIcommand\fP"
-This is equivalent to using *FvwmEventCmd. This determines the
-independent audio player program that will actually play the sounds.
-If the play command is set to \fIbuiltin-rplay\fP then the builtin
-rplay support will be used.
+This is equivalent to using *FvwmEventCmd to Exec commands. This
+determines the independent audio player program that will actually
+play the sounds. If the play command is set to \fIbuiltin-rplay\fP
+then the builtin rplay support will be used.
 
 .IP "*FvwmAudioDir \fIdirectory\fP"
 Specifies the directory to look for the audio files.  This option is
 ignored when rplay is used.
+
+.SH BUGS
+It's REALLY noisy when \fIfvwm2\fP starts and restarts using an audio player.
+FvwmEventDelay helps a little bit.
 
 .SH COPYRIGHTS
 This module has evolved of \fIFvwmAudio\fP, which in term is heavily based
