@@ -1484,7 +1484,6 @@ void MoveStickyWindows(void)
 	  else
 	    {
 	      MoveResizePagerView(t);
-
 	    }
 	}
       t = t->next;
@@ -1610,6 +1609,9 @@ void MoveWindow(XEvent *Event)
   int NewDesk,KeepMoving = 0;
   int moved = 0;
   int row,column;
+  Window JunkRoot, JunkChild;
+  int JunkX, JunkY;
+  unsigned JunkMask;
 
   t = Start;
   while ((t != NULL)&&(t->PagerView != Event->xbutton.subwindow))
@@ -1698,7 +1700,9 @@ void MoveWindow(XEvent *Event)
       NewDesk = Scr.CurrentDesk;
       if(NewDesk != t->desk)
 	{
-	  XMoveWindow(dpy,t->w,Scr.MyDisplayWidth+Scr.VxMax,
+	  XMoveWindow(dpy,
+		      IS_ICONIFIED(t) ? t->icon_w : t->w,
+		      Scr.MyDisplayWidth+Scr.VxMax,
 		      Scr.MyDisplayHeight+Scr.VyMax);
 	  XSync(dpy,0);
 	  sprintf(command,"Silent MoveToDesk 0 %d", NewDesk);
@@ -1712,20 +1716,12 @@ void MoveWindow(XEvent *Event)
 	  XDestroyWindow(dpy,t->PagerView);
 	  t->PagerView = None;
 	}
-      XTranslateCoordinates(dpy, Scr.Pager_w, Scr.Root,
-			    x, y, &x1, &y1, &dumwin);
+      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		    &x, &y, &JunkX, &JunkY, &JunkMask);
       XUngrabPointer(dpy,CurrentTime);
       XSync(dpy,0);
-#if 0
-      /*
-	This is erroneous and causes the icon_w to stay
-	 on the old page. fvwm is clever enough to figure
-	 out that the window t->w is iconified.
-      */
-      if(t->flags & ICONIFIED)
-	SendInfo(fd,"Silent Move",t->icon_w);
-      else
-#endif
+      sprintf(command, "Silent Move %dp %dp", x, y);
+      SendInfo(fd,command,t->w);
       SendInfo(fd,"Silent Raise",t->w);
       SendInfo(fd,"Silent Move",t->w);
       return;
@@ -1819,7 +1815,7 @@ void MoveWindow(XEvent *Event)
 	    }
 	  else
 	    MoveResizePagerView(t);
-	  SendInfo(fd,"Silent Raise",t->w);
+	  SendInfo(fd, "Silent Raise", t->w);
 	}
       if(Scr.CurrentDesk == t->desk)
 	{
@@ -1827,8 +1823,7 @@ void MoveWindow(XEvent *Event)
           usleep(5000);
           XSync(dpy,0);
 
-	  SendInfo(fd, "Silent Focus NoWarp",
-		   IS_ICONIFIED(t) ? t->icon_w : t->w);
+	  SendInfo(fd, "Silent Focus NoWarp", t->w);
 	}
     }
   if (is_transient)
@@ -2052,6 +2047,9 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
   int m,n1,m1;
   int moved = 0;
   int KeepMoving = 0;
+  Window JunkRoot, JunkChild;
+  int JunkX, JunkY;
+  unsigned JunkMask;
 
   if(t==NULL)
     return;
@@ -2112,11 +2110,16 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 
   if(KeepMoving)
     {
-      XTranslateCoordinates(dpy, t->IconView, Scr.Root,
-			    x, y, &x1, &y1, &dumwin);
+      char *command;
+
+      XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+		    &x, &y, &JunkX, &JunkY, &JunkMask);
       XUngrabPointer(dpy,CurrentTime);
       XSync(dpy,0);
-      SendInfo(fd, "Silent Move", IS_ICONIFIED(t) ? t->icon_w : t->w);
+      sprintf(command, "Silent Move %dp %dp", x, y);
+      SendInfo(fd,command,t->w);
+      SendInfo(fd,"Silent Raise",t->w);
+      SendInfo(fd,"Silent Move",t->w);
     }
   else
     {
@@ -2158,8 +2161,8 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 	}
       else
 	MoveResizePagerView(t);
-      SendInfo(fd, "Silent Raise",t->w);
-      SendInfo(fd, "Silent Focus NoWarp", IS_ICONIFIED(t) ? t->icon_w : t->w);
+      SendInfo(fd, "Silent Raise", t->w);
+      SendInfo(fd, "Silent Focus NoWarp", t->w);
     }
   if (is_transient)
     {

@@ -65,12 +65,6 @@ static char  *button_states[MaxButtonState]={
 #endif
 };
 
-static int
-truncate_to_multiple (int x, int m)
-{
-  return (x < 0) ? (m * (x / m - 1)) : (m * (x / m));
-}
-
 static void MaximizeHeight(FvwmWindow *win, int win_width, int win_x,
 			   int *win_height, int *win_y)
 {
@@ -245,7 +239,7 @@ void Maximize(F_CMD_ARGS)
 	  truncate_to_multiple(tmp_win->orig_g.x,Scr.MyDisplayWidth);
 	new_y = tmp_win->orig_g.y -
 	  truncate_to_multiple(tmp_win->orig_g.y,Scr.MyDisplayHeight);
-	}
+      }
     else
       {
 	new_x = tmp_win->orig_g.x - Scr.Vx;

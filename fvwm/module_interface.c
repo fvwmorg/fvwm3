@@ -378,8 +378,17 @@ int HandleModuleInput(Window w, int channel)
 	}
       if(tmp_win)
 	{
-	  Event.xbutton.x_root = tmp_win->frame_g.x;
-	  Event.xbutton.y_root = tmp_win->frame_g.y;
+	  if (!IS_ICONIFIED(tmp_win))
+	  {
+	    Event.xbutton.x_root = tmp_win->frame_g.x;
+	    Event.xbutton.y_root = tmp_win->frame_g.y;
+	  }
+	  else
+	  {
+fprintf(stderr,"message = %s, fx=%d, fy=%d\n",text,tmp_win->frame_g.x,tmp_win->frame_g.y);
+	    Event.xbutton.x_root = tmp_win->icon_x_loc;
+	    Event.xbutton.y_root = tmp_win->icon_y_loc;
+	  }
 	}
       else
 	{
@@ -546,7 +555,7 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
 /* ============================================================
     RBW - 04/16/1999 - new style packet senders for GSFR --
    ============================================================ */
-static void SendNewPacket(int module, unsigned long event_type, 
+static void SendNewPacket(int module, unsigned long event_type,
 			  unsigned long num_datum, ...)
 {
   char body[FvwmPacketMaxSize_byte];
@@ -560,7 +569,7 @@ static void SendNewPacket(int module, unsigned long event_type,
   PositiveWrite(module, (void *) &body, plen);
 }
 
-static void BroadcastNewPacket(unsigned long event_type, 
+static void BroadcastNewPacket(unsigned long event_type,
 			       unsigned long num_datum, ...)
 {
   char body[FvwmPacketMaxSize_byte];

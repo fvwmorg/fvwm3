@@ -927,6 +927,22 @@ void DeIconify(FvwmWindow *tmp_win)
 	  XMapWindow(dpy, t->w);
 	  if(t->Desk == Scr.CurrentDesk)
 	    {
+	      rectangle r;
+
+	      r.x = t->icon_x_loc;
+	      r.y = t->icon_y_loc;
+	      r.width = t->icon_w_width;
+	      r.height = t->icon_p_height+t->icon_w_height;
+	      if (IsRectangleOnThisPage(&r, t->Desk) &&
+		  !IsRectangleOnThisPage(&(t->frame_g), t->Desk))
+	      {
+		/* Make sure we keep it on screen when de-iconifying. */
+		t->frame_g.x -=
+		  truncate_to_multiple(t->frame_g.x,Scr.MyDisplayWidth);
+		t->frame_g.y -=
+		  truncate_to_multiple(t->frame_g.y,Scr.MyDisplayHeight);
+		XMoveWindow(dpy, t->frame, t->frame_g.x, t->frame_g.y);
+	      }
 	      XMapWindow(dpy, t->frame);
 	      SET_MAP_PENDING(t, 1);
 	    }

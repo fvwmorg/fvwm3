@@ -1,5 +1,15 @@
 1999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/misc.c:
+	* fvwm/builtins.c (truncate_to_multiple): moved to misc.c
+
+	* fvwm/icons.c (DeIconify): de-iconify on the current page if icon is
+	visible
+
+	* fvwm/module_interface.c (HandleModuleInput): Set position of faked
+	button press to location of icon if window is iconified. Fixes bug
+	when moving icons out of the pager.
+
 	* fvwm/virtual.c:
 	* fvwm/functions.c: include virtual.h
 

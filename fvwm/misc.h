@@ -349,5 +349,6 @@ void Keyboard_shortcuts(XEvent *, FvwmWindow*, int);
 Bool check_if_fvwm_window_exists(FvwmWindow *fw);
 void SetMaxWindowSize(F_CMD_ARGS);
 int ButtonPosition(int context, FvwmWindow * t);
+int truncate_to_multiple (int x, int m);
 
 #endif /* MISC_H */

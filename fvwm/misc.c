@@ -992,3 +992,10 @@ int ButtonPosition(int context, FvwmWindow * t)
   /* you never know... */
   return 0;
 }
+
+/* rounds x down to the next multiple of m */
+int truncate_to_multiple (int x, int m)
+{
+  return (x < 0) ? (m * ((x / m) - 1)) : (m * (x / m));
+}
+

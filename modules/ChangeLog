@@ -1,4 +1,13 @@
+1999-06-24  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (MoveWindow): fixed windows being moved into the
+	void on desk to desk transfers
+
 1999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (IconMoveWindow):
+	(MoveWindow): move window to cursor position before moving it out of
+	the pager
 
 	* FvwmTaskBar/ButtonArray.c (RemoveButton): Grr, why was this function
 	broken again?

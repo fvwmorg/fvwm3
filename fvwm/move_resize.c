@@ -387,6 +387,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
 void move_window(F_CMD_ARGS)
 {
   move_window_doit(eventp,w,tmp_win,context,action,Module,FALSE,FALSE);
+if (tmp_win)fprintf(stderr,"mw: fx=%d, fy=%d\n", tmp_win->frame_g.x, tmp_win->frame_g.y);
 }
 
 void animated_move_window(F_CMD_ARGS)
