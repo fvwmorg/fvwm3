@@ -819,7 +819,7 @@ void AutoPlaceIcon(FvwmWindow *t)
       /* init start from */
       dim[2].start_at = ICONBOX_LFT;
       if (icon_boxes_ptr->IconSign[0] == '-') {
-        dim[1].start_at += Scr.MyDisplayWidth;
+        dim[2].start_at += Scr.MyDisplayWidth;
       }
       /* init end at */
       dim[2].end_at = ICONBOX_RGT;
