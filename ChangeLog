@@ -1,3 +1,23 @@
+1999-06-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c: Implemented a 'MissingSubmenuFunc' to allow better
+	dynamic configurability for dynamic menus. This makes it possible to
+	implement a file browser creating submenus on the fly.
+
+	* fvwm/menus.c (size_menu_horizontally): fixed bug in placement of
+	 '>' submenu triangle with long titles
+
+1999-06-07  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (mr_popup_for_mi): use PeekToken instead of GetNextToken
+
+	* fvwm/move_resize.c (DoSnapAttract): fixed 'shaking windows' when
+	using SnapGrid bug
+
+	* fvwm/menus.c (pop_menu_down_and_repaint_parent):
+	(copy_menu_root):
+	fixed flickering gradient root menus that popped up themself
+
 1999-06-06  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (paint_item): Fixed previous patch.
@@ -29,7 +49,7 @@ Sun Jun  6 21:12:39 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* fvwm/repeat.c: include libs/Parse.h.
 
 	* libs/Picture.c:
-	* libs/Picture.h: 
+	* libs/Picture.h:
 	* libs/System.c:
 	* libs/fvwmlib.h:
 	* fvwm/fvwm.h:
@@ -40,26 +60,26 @@ Sun Jun  6 21:12:39 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* acconfig.h: added HAVE_STROKE
 
 	* configure.in: added check for libstroke
-   
+
 	* fvwm/Makefile.am: added stroke_LIBS and stroke_CFLAGS
-   
+
 	* fvwm/bindings.c: added stroke_binding, and ifdefs for ParseBinding()
-   
+
 	* fvwm/bindings.h: added prototypes for strokes
-   
+
 	* fvwm/events.c: added HandleMotionNotify and HandleButtonRelease
-   
+
 	* fvwm/events.h: added prototypes
-   
+
 	* fvwm/functions.c: added stroke command
-   
+
 	* fvwm/fvwm.c: added MotionMasks for X.
-   
+
 	* fvwm/parse.h: added F_STROKE
-   
+
 	* libs/Bindings.c: new prototypes for AddBinding, RemoveBinding,
  	and CheckBinding
-   
+
 	* libs/fvwmlib.h: new prototypes, and new defines for BindingType
  	and Binding struct.
 

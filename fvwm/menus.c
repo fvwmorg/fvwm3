@@ -505,7 +505,7 @@ static Bool is_submenu_mapped(MenuRoot *parent_menu, MenuItem *parent_item)
   return (win_attribs.map_state == IsViewable);
 }
 
-/* Returns a menu root that a given menu item pops up */
+/* Returns the menu root that a given menu item pops up */
 static MenuRoot *mr_popup_for_mi(MenuRoot *mr, MenuItem *mi)
 {
   char *menu_name;
@@ -521,10 +521,8 @@ static MenuRoot *mr_popup_for_mi(MenuRoot *mr, MenuItem *mi)
     return menu;
 
   /* just look past "Popup " in the action, and find that menu root */
-  GetNextToken(SkipNTokens(mi->action, 1), &menu_name);
+  menu_name = PeekToken(SkipNTokens(mi->action, 1), NULL);
   menu = FindPopup(menu_name);
-  if (menu_name != NULL)
-    free(menu_name);
   return menu;
 }
 
@@ -1152,7 +1150,9 @@ static MenuStatus MenuInteraction(
 	      || retval == MENU_TEAR_OFF
 #endif
 )
+	  {
 	    goto DO_RETURN;
+	  }
 	  /* now warp to the new menu-item, if any */
 	  if (mi && (mi != find_entry(NULL, &tmrMi) || pmp->menu != tmrMi))
 	  {
@@ -1318,6 +1318,55 @@ static MenuStatus MenuInteraction(
 	  DBUG("MenuInteraction","Popping up");
           /* get pos hints for item's action */
           get_popup_options(pmp->menu, mi, &mops);
+	  if (mrMi == pmp->menu && mrMiPopup == NULL && MI_IS_POPUP(mi) &&
+	      MR_MISSING_SUBMENU_FUNC(pmp->menu))
+	  {
+	    /* We're on a submenu item, but the submenu does not exist. The
+	     * user defined missing_submenu_action may create it. */
+	    Bool is_complex_function;
+	    Bool f;
+	    Time t;
+	    char *menu_name;
+	    char *action;
+	    extern XEvent Event;
+
+	    f = *pdo_warp_to_title;
+	    t = lastTimestamp;
+	    menu_name = PeekToken(SkipNTokens(mi->action, 1), NULL);
+	    is_complex_function =
+	      (FindFunction(MR_MISSING_SUBMENU_FUNC(pmp->menu)) != NULL);
+	    if (is_complex_function)
+	    {
+	      action =
+		safemalloc(
+		  strlen("Function") + 1 +
+		  strlen(MR_MISSING_SUBMENU_FUNC(pmp->menu)) + 1 +
+		  strlen(menu_name) + 1);
+	      sprintf(action, "Function %s %s",
+		      MR_MISSING_SUBMENU_FUNC(pmp->menu), menu_name);
+	    }
+	    else
+	    {
+	      action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
+	    }
+	    /* Execute the action */
+	    ExecuteFunctionSaveTmpWin(
+	      action, *(pmp->pTmp_win), &Event, *(pmp->pcontext) , -2,
+	      DONT_EXPAND_COMMAND);
+	    if (is_complex_function)
+	      free(action);
+	    /* restore the stuff we saved */
+	    lastTimestamp = t;
+	    *pdo_warp_to_title = f;
+	    /* grab the mouse again */
+	    if (!check_if_fvwm_window_exists(*(pmp->pTmp_win)))
+	    {
+	      *(pmp->pTmp_win) = NULL;
+	      *(pmp->pcontext) = 0;
+	    }
+	    /* Let's see if the menu exists now. */
+	    mrMiPopup = mr_popup_for_mi(pmp->menu, mi);
+	  }
 	  mrPopup = mrMiPopup;
 	  if (!mrPopup)
 	  {
@@ -1681,7 +1730,7 @@ static Bool pop_menu_up(
    ***************************************************************/
 
   /* First of all, execute the popup action (if defined). */
-  if (MR_DYNAMIC(menu).popup_action)
+  if (MR_POPUP_ACTION(menu))
   {
     char *menu_name;
     saved_pos_hints pos_hints;
@@ -1697,7 +1746,7 @@ static Bool pop_menu_up(
     /* need to ungrab the mouse during function call */
     UngrabEm();
     /* Execute the action */
-    ExecuteFunctionSaveTmpWin(MR_DYNAMIC(menu).popup_action, *pfw, &Event,
+    ExecuteFunctionSaveTmpWin(MR_POPUP_ACTION(menu), *pfw, &Event,
 			      *pcontext, -2, DONT_EXPAND_COMMAND);
     /* restore the stuff we saved */
     lastTimestamp = t;
@@ -2257,7 +2306,7 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
     /* delete this instance of the menu */
     DestroyMenu(*pmr, False);
   }
-  else if (MR_DYNAMIC(*pmr).popdown_action)
+  else if (MR_POPDOWN_ACTION(*pmr))
   {
     /* Finally execute the popdown action (if defined). */
     saved_pos_hints pos_hints;
@@ -2270,8 +2319,8 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
     /* need to ungrab the mouse during function call */
     UngrabEm();
     /* Execute the action */
-    ExecuteFunctionSaveTmpWin(MR_DYNAMIC(*pmr).popdown_action,
-			      (*pmp->pTmp_win), &Event, *(pmp->pcontext), -2,
+    ExecuteFunctionSaveTmpWin(MR_POPDOWN_ACTION(*pmr), (*pmp->pTmp_win),
+			      &Event, *(pmp->pcontext), -2,
 			      DONT_EXPAND_COMMAND);
     /* restore the stuff we saved */
     last_saved_pos_hints = pos_hints;
@@ -2304,24 +2353,46 @@ static void pop_menu_down_and_repaint_parent(
 {
   MenuRoot *parent = MR_PARENT_MENU(*pmr);
   XEvent event;
+  int mr_x;
   int mr_y;
-  unsigned int mr_height;
   unsigned int mr_width;
+  unsigned int mr_height;
+  int parent_x;
   int parent_y;
+  unsigned int parent_width;
+  unsigned int parent_height;
 
   if (*fSubmenuOverlaps && parent)
   {
-    XGetGeometry(dpy, MR_WINDOW(*pmr), &JunkRoot, &JunkX, &mr_y,
+    XGetGeometry(dpy, MR_WINDOW(*pmr), &JunkRoot, &mr_x, &mr_y,
 		 &mr_width, &mr_height, &JunkBW, &JunkDepth);
-    XGetGeometry(dpy, MR_WINDOW(parent), &JunkRoot, &JunkX, &parent_y,
-		 &JunkWidth, &JunkWidth, &JunkBW, &JunkDepth);
+    XGetGeometry(dpy, MR_WINDOW(parent), &JunkRoot, &parent_x, &parent_y,
+		 &parent_width, &parent_height, &JunkBW, &JunkDepth);
     pop_menu_down(pmr, pmp);
     /* Create a fake event to pass into paint_menu */
     event.type = Expose;
-    event.xexpose.x = 0;
+    event.xexpose.x = mr_x - parent_x;
     event.xexpose.width = mr_width;
+    if (event.xexpose.x < 0)
+    {
+      event.xexpose.width += event.xexpose.x;
+      event.xexpose.x = 0;
+    }
+    if (event.xexpose.x + event.xexpose.width > parent_width)
+    {
+      event.xexpose.width = parent_width - event.xexpose.x;
+    }
     event.xexpose.y = mr_y - parent_y;
     event.xexpose.height = mr_height;
+    if (event.xexpose.y < 0)
+    {
+      event.xexpose.height += event.xexpose.y;
+      event.xexpose.y = 0;
+    }
+    if (event.xexpose.y + event.xexpose.height > parent_height)
+    {
+      event.xexpose.height = parent_height - event.xexpose.y;
+    }
     paint_menu(parent, &event, (*pmp->pTmp_win));
     flush_expose(MR_WINDOW(parent));
   }
@@ -3257,10 +3328,12 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
 
   if (MR_COPIES(mr) == 0)
   {
-    if (MR_DYNAMIC(mr).popup_action)
-      free(MR_DYNAMIC(mr).popup_action);
-    if (MR_DYNAMIC(mr).popdown_action)
-      free(MR_DYNAMIC(mr).popdown_action);
+    if (MR_POPUP_ACTION(mr))
+      free(MR_POPUP_ACTION(mr));
+    if (MR_POPDOWN_ACTION(mr))
+      free(MR_POPDOWN_ACTION(mr));
+    if (MR_MISSING_SUBMENU_FUNC(mr))
+      free(MR_MISSING_SUBMENU_FUNC(mr));
     free(MR_NAME(mr));
     if (MR_SIDEPIC(mr))
       DestroyPicture(dpy, MR_SIDEPIC(mr));
@@ -3641,15 +3714,13 @@ static void size_menu_horizontally(MenuRoot *mr)
 	      MR_IS_LEFT_TRIANGLE(mr) = (*format == '<');
 	      x += max.triangle_width + gap_right;
 	      item_order[used_objects++] = &(MR_TRIANGLE_X_OFFSET(mr));
-	      if (is_last_object_left)
-	      {
-		if (*format == '<')
-		  left_objects++;
-		else
-		  is_last_object_left = False;
-	      }
+	      if (is_last_object_left && *format == '<')
+		left_objects++;
 	      else
+	      {
+		is_last_object_left = False;
 		right_objects++;
+	      }
 	    }
 	  }
 	  break;
@@ -3701,11 +3772,15 @@ static void size_menu_horizontally(MenuRoot *mr)
 	if (i >= left_objects)
 	{
 	  if (i >= used_objects - right_objects)
+	  {
 	    /* Right aligned item. */
 	    *(item_order[i]) += d;
+	  }
 	  else
+	  {
 	    /* Neither left nor right aligned item. */
 	    *(item_order[i]) += d / 2;
+	  }
 	}
       }
       total_width += d;
@@ -4195,6 +4270,11 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
   int i;
   short current_mini_icon = 0;
 
+  if (MR_MAPPED_COPIES(menu) > 0)
+  {
+    /* whoa, we can't handle *everything* */
+    return;
+  }
   if ((item == NULL || *item == 0) && (action == NULL || *action == 0) &&
       fNoPlus)
     return;
@@ -4209,22 +4289,32 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
 
   if (StrEquals(item, "DynamicPopupAction"))
   {
-    if (MR_DYNAMIC(menu).popup_action)
-      free(MR_DYNAMIC(menu).popup_action);
+    if (MR_POPUP_ACTION(menu))
+      free(MR_POPUP_ACTION(menu));
     if (!action || *action == 0)
-      MR_DYNAMIC(menu).popup_action = NULL;
+      MR_POPUP_ACTION(menu) = NULL;
     else
-      MR_DYNAMIC(menu).popup_action = stripcpy(action);
+      MR_POPUP_ACTION(menu) = stripcpy(action);
     return;
   }
   else if (StrEquals(item, "DynamicPopdownAction"))
   {
-    if (MR_DYNAMIC(menu).popdown_action)
-      free(MR_DYNAMIC(menu).popdown_action);
+    if (MR_POPDOWN_ACTION(menu))
+      free(MR_POPDOWN_ACTION(menu));
     if (!action || *action == 0)
-      MR_DYNAMIC(menu).popdown_action = NULL;
+      MR_POPDOWN_ACTION(menu) = NULL;
     else
-      MR_DYNAMIC(menu).popdown_action = stripcpy(action);
+      MR_POPDOWN_ACTION(menu) = stripcpy(action);
+    return;
+  }
+  else if (StrEquals(item, "MissingSubmenuFunction"))
+  {
+    if (MR_MISSING_SUBMENU_FUNC(menu))
+      free(MR_MISSING_SUBMENU_FUNC(menu));
+    if (!action || *action == 0)
+      MR_MISSING_SUBMENU_FUNC(menu) = NULL;
+    else
+      MR_MISSING_SUBMENU_FUNC(menu) = stripcpy(action);
     return;
   }
 
@@ -4463,7 +4553,7 @@ static MenuRoot *copy_menu_root(MenuRoot *menu)
   MR_NEXT_MENU(tmp) = MR_NEXT_MENU(menu);
   MR_NEXT_MENU(menu) = tmp;
   MR_WINDOW(tmp) = None;
-  memset(&(MR_DYNAMIC_FLAGS(menu)), 0, sizeof(MR_DYNAMIC_FLAGS(menu)));
+  memset(&(MR_DYNAMIC_FLAGS(tmp)), 0, sizeof(MR_DYNAMIC_FLAGS(tmp)));
 
   return tmp;
 }

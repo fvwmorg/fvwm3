@@ -1944,7 +1944,7 @@ const char *getBasename(const char *filename) {
  *   positive number of parsed arguments - on success,
  *   0 - on empty command (only spaces),
  *   negative - on no command or parsing error.
- * 
+ *
  * Any character can be quoted with a backslash (even inside single quotes).
  * Every command argument is separated by a space/tab/new-line from both sizes
  * or is at the start/end of a string. Sequential spaces are ignored.

@@ -1,5 +1,8 @@
 Changes in beta release 2.3.4 (June 1999)
 
+* Dynamic menus enhancement: The special menu item name 'MissingSubmenuFunc'
+  alows to create submenus on the fly. See manpage on 'AddToMenu' for details.
+
 * The Restart command accepts simple shell-like syntax now.
 
 * Added support for mouse strokes recognition, uses LibStroke 0.3

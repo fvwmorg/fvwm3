@@ -288,6 +288,7 @@ typedef struct MenuRootStatic
   {
     char *popup_action;
     char *popdown_action;
+    char *missing_submenu_func;
   } dynamic;
 } MenuRootStatic;
 
@@ -314,7 +315,9 @@ typedef struct MenuRootStatic
 #define MR_STYLE(m)              ((m)->s->ms)
 /* flags */
 #define MR_FLAGS(m)              ((m)->s->flags)
-#define MR_DYNAMIC(m)            ((m)->s->dynamic)
+#define MR_POPUP_ACTION(m)       ((m)->s->dynamic.popup_action)
+#define MR_POPDOWN_ACTION(m)     ((m)->s->dynamic.popdown_action)
+#define MR_MISSING_SUBMENU_FUNC(m) ((m)->s->dynamic.missing_submenu_func)
 #define MR_HAS_SIDECOLOR(m)      ((m)->s->flags.has_side_color)
 #define MR_IS_LEFT_TRIANGLE(m)   ((m)->s->flags.is_left_triangle)
 

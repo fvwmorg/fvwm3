@@ -407,7 +407,6 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
   rectangle self, other;
   FvwmWindow *tmp;
 
-  /* START OF SNAPATTRACTION BLOCK, mirrored in ButtonRelease */
   /* resist based on window edges */
   tmp = Scr.FvwmRoot.next;
   closestTop = Scr.SnapAttraction;
@@ -606,11 +605,13 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
 	}
       tmp = tmp->next;
     }
+  /* Snap grid handling */
   if(nxl == -1)
     {
       if(*px != *px / Scr.SnapGridX * Scr.SnapGridX)
 	{
-	  *px = (*px+Scr.SnapGridX/2) / Scr.SnapGridX * Scr.SnapGridX;
+	  *px = (*px + ((*px >= 0) ? Scr.SnapGridX : -Scr.SnapGridX) / 2) /
+	    Scr.SnapGridX * Scr.SnapGridX;
 	}
     }
   else
@@ -621,14 +622,14 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
     {
       if(*py != *py / Scr.SnapGridY * Scr.SnapGridY)
 	{
-	  *py = (*py+Scr.SnapGridY/2) / Scr.SnapGridY * Scr.SnapGridY;
+	  *py = (*py + ((*py >= 0) ? Scr.SnapGridY : -Scr.SnapGridY) / 2) /
+	    Scr.SnapGridY * Scr.SnapGridY;
 	}
     }
   else
     {
       *py = nyt;
     }
-  /* END OF SNAPATTRACTION BLOCK, mirrored in ButtonRelease */
 }
 
 /****************************************************************************

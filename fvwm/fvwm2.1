@@ -620,7 +620,7 @@ which should be executed if the user selects that menu item.  An empty
 menu-label ("") and the Nop function can be used to insert a separator
 into the menu.
 
-The keywords \fIDynamicPopupAction\fP and \fIDynamicPopdownAction\fP
+The keywords \fIDynamicPopUpAction\fP and \fIDynamicPopDownAction\fP
 have a special meaning when used as the name of a menu item. The action
 following the keyword is executed whenever the menu is popped up or
 down. This way you can implement dynamic menus. It is even possible for
@@ -653,6 +653,37 @@ AddToFunc MakeJpgMenu
 + I AddToMenu JpgMenu Pictures Title
 + I PipeRead 'for i in "$HOME"/Pictures/*.jpg; do echo AddToMenu JpgMenu \"`basename "$i"`\" Exec xv \""$i"\"; done'
 .EE
+
+The keyword \fIMissingSubmenuFunc\fP has a similar meaning. It is
+executed whenever you try to pop up a sub menu that does not exist.
+With this function you can define and destroy menus on the fly. You can
+use any command after the key word, but the name of a function defined
+with \fIAddToFunc\fP follows it, fvwm executes this command:
+
+.EX
+Function <function-name> <menu-name>
+.EE
+
+I.e. the name is passed to the function as its first argument and can
+be refered to with $0.
+
+Example:
+
+.EX
+# There is another shell script fvwm_make_directory_menu.sh in the utils
+# directory of the distribution. To use it, define this function in
+# your configuration file:
+
+AddToFunc MakeMissingDirectoryMenu
++ I Exec fvwm_make_directory_menu.sh $0
+
+AddToMenu SomeMenu
++ MissingSumbenuFunc MakeMissing DirectoryMenu
++ "Root directory" Popup /
+.EE
+
+This is another implementation of the file browser that uses sub menus
+for sub directories.
 
 Titles can be used within the menu. If you add the option \fItop\fP behind
 the keyword \fITitle\fP, the title will be added to the top of the menu.
@@ -2860,10 +2891,10 @@ state the \fImode\fP argument can be one of 'y', 'yes', 'on', 'true'
 or 't'. To make it non-sticky use 'n', 'no', 'off', 'false' or 'f'.
 
 .IP "Stroke \fIsequence button Context Modifiers Function\fP"
-Binds a mouse stroke sequence to a specified \fIfvwm2\fP built-in function, 
+Binds a mouse stroke sequence to a specified \fIfvwm2\fP built-in function,
 or removes the binding if \fIFunction\fP is '-'.  Definition is the same
 as for a mouse binding except that \fIsequence\fP is inserted in front of
-the button number. The \fIContext\fP and \fIModifiers\fP fields are defined 
+the button number. The \fIContext\fP and \fIModifiers\fP fields are defined
 as in the mouse binding.
 
 strokes are defined in a grid like this:
@@ -2886,7 +2917,7 @@ Stroke 0 2 R A Menu Window-Ops Nop
 .EE
 
 The following example binds the built in window list to pop up when
-mouse drag in 'L' with button 2 pressed donw, no matter where the mouse 
+mouse drag in 'L' with button 2 pressed donw, no matter where the mouse
 pointer is:
 .EX
 Stroke 1478963 2 A A WindowList
