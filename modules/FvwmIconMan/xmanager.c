@@ -1278,6 +1278,10 @@ static void draw_button (WinManager *man, int button, int force)
     return;
   }
 
+  if (dirty & STRING_CHANGED)
+  {
+    draw_background = 1;
+  }
   if (force || (dirty & REDRAW_BUTTON)) {
     ConsoleDebug (X11, "draw_button: %d forced\n", b->index);
     draw_background = 1;
