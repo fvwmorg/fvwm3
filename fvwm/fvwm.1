@@ -5001,9 +5001,12 @@ binding except that the mouse button number is replaced with a
 .IR Keyname .
 The
 .I Keyname
-is one of the entries from
+is one of the entries from the file
 .IR /usr/include/X11/keysymdef.h ,
-with the leading XK_ omitted.  The
+with the leading XK_ omitted, but only key names that are
+generated with no modifier keys or with just the
+.SM Shift
+key held are guaranteed to work.  The
 .IR Context " and " Modifiers
 fields are defined as in the
 .B Mouse

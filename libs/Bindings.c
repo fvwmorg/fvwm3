@@ -84,6 +84,22 @@ static struct charstring key_modifiers[]=
   {0,0}
 };
 
+/* Table to translate a modifier map index to a modifier that we define that
+ * generates that index.  This mapping can be chosen by each client, but the
+ * settings below try to emulate the usual terminal behaviour. */
+static unsigned int modifier_mapindex_to_mask[8] =
+{
+	ShiftMask,
+	Mod3Mask, /* Alt Gr */
+	Mod3Mask | ShiftMask,
+	/* Just guessing below here - LockMask is not used anywhere*/
+	ControlMask,
+	Mod1Mask, /* Alt/Meta on XFree86 */
+	Mod2Mask, /* Num lock on XFree86 */
+	Mod4Mask,
+	Mod5Mask, /* Scroll lock on XFree86 */
+};
+
 static int key_min;
 static int key_max;
 
@@ -93,8 +109,8 @@ static int key_max;
  * true/false values (bits)
  *
  ****************************************************************************/
-static Bool find_context( const char *string, int *output,
-			  struct charstring *table )
+static Bool find_context(
+	const char *string, int *output, struct charstring *table)
 {
   int i;
   int len = strlen( string );
@@ -358,6 +374,7 @@ int AddBinding(
   int max;
   int maxmods;
   int m;
+  int mask;
   int count = 0;
   KeySym tkeysym;
   Binding *temp;
@@ -409,29 +426,22 @@ int AddBinding(
 	  if (modifiers != AnyModifier && !(modifiers & ShiftMask))
 	  {
 	    add_modifiers = ShiftMask;
-	    bind_mask = 2;
-	    /* but don't bind it again if already bound without modifiers */
-	    check_bound_mask = 1;
-	  }
-	  break;
-	case 2:
-	  /* key generates the key sym with caps-lock depressed */
-	  if (modifiers != AnyModifier && !(modifiers & LockMask))
-	  {
-	    add_modifiers = LockMask;
-	    bind_mask = 4;
+	    bind_mask = (1 << m);
 	    /* but don't bind it again if already bound without modifiers */
 	    check_bound_mask = 1;
 	  }
 	  break;
 	default:
-	  /* key generates the key sym with unknown modifiers depressed -
-	   * can't map that to specific modifiers - treat as no modifiers */
-	  if (modifiers != AnyModifier)
+	  /* key generates the key sym with undefined modifiers depressed -
+	   * let's make an educated guess at what modifiers the user expected
+	   * based on the XFree86 default configuration. */
+	  mask = modifier_mapindex_to_mask[m - 1];
+	  if (modifiers != AnyModifier && !(modifiers & mask) != mask)
 	  {
-	    /* but don't bind it again if already bound with shift, caps-lock
-	     * or no modifiers */
-	    check_bound_mask = 0x7;
+	    add_modifiers = mask;
+	    bind_mask = (1 << m);
+	    /* but don't bind it again if already bound without modifiers */
+	    check_bound_mask = 1;
 	  }
 	  break;
 	}
@@ -455,17 +465,6 @@ int AddBinding(
 	(*pblist)->Action = (action) ? stripcpy(action) : NULL;
 	(*pblist)->Action2 = (action2) ? stripcpy(action2) : NULL;
 	(*pblist)->NextBinding = temp;
-#if 0
-	fprintf(stderr,
-   "Bindings: added binding type %c, key %X, key name %s, ctx %X mod %X act1 %s, act2 %s\n",
-		(*pblist)->type,
-		(*pblist)->Button_Key,
-		(*pblist)->key_name ? (*pblist)->key_name : "",
-		(*pblist)->Context,
-		(*pblist)->Modifier,
-		(*pblist)->Action ? (*pblist)->Action : "",
-		(*pblist)->Action2 ? (*pblist)->Action2 : "");
-#endif
 	bound_mask |= bind_mask;
 	count++;
       }
