@@ -30,9 +30,10 @@ AddToFunc FvwmProxy_Circulate
 Key Alt_L	A N	SendToModule	FvwmProxy	Show
 Key -Alt_L	A A	SendToModule	FvwmProxy	Hide
 
-*FvwmProxy: Font	-*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*
-*FvwmProxy: EnterSelect	false
-*FvwmProxy: ProxyMove	false
-*FvwmProxy: Width	180
-*FvwmProxy: Height	60
-*FvwmProxy: Separation	10
+*FvwmProxy: Font		-*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*
+*FvwmProxy: ShowMiniIcons	true
+*FvwmProxy: EnterSelect		false
+*FvwmProxy: ProxyMove		false
+*FvwmProxy: Width		180
+*FvwmProxy: Height		60
+*FvwmProxy: Separation		10

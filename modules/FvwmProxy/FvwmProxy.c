@@ -49,11 +49,11 @@
 #define PROXY_MINWIDTH		15
 #define PROXY_MINHEIGHT		10
 
-#define CMD_SHOW                "Function FvwmProxyShowFunc"
-#define CMD_HIDE                "Function FvwmProxyHideFunc"
-#define CMD_ABORT               "Function FvwmProxyAbortFunc"
-#define CMD_SELECT              "Function FvwmProxySelectFunc"
-#define CMD_MARK                "Function FvwmProxyMarkFunc"
+#define CMD_SHOW		"Function FvwmProxyShowFunc"
+#define CMD_HIDE		"Function FvwmProxyHideFunc"
+#define CMD_ABORT		"Function FvwmProxyAbortFunc"
+#define CMD_SELECT		"Function FvwmProxySelectFunc"
+#define CMD_MARK		"Function FvwmProxyMarkFunc"
 
 /* ---------------------------- local macros -------------------------------- */
 
@@ -96,12 +96,14 @@ static int cset_select = 0;
 static char *font_name = NULL;
 static FlocaleFont *Ffont;
 static int enterSelect=True;
+static int showMiniIcons=True;
 static int proxyMove=PROXY_MOVE;
 static int proxyWidth=PROXY_WIDTH;
 static int proxyHeight=PROXY_HEIGHT;
 static int proxySeparation=PROXY_SEPARATION;
 
 static char commandBuffer[256];
+static char *logfilename=NULL;
 static char *show_command;
 static char *hide_command;
 static char *mark_command;
@@ -141,7 +143,7 @@ static Bool parse_options(void)
 	select_command = safestrdup(CMD_SELECT);
 	InitGetConfigLine(fd, CatString3("*", MyName, 0));
 	for (GetConfigLine(fd, &tline); tline != NULL;
-	     GetConfigLine(fd, &tline))
+		GetConfigLine(fd, &tline))
 	{
 		char *resource;
 		char *token;
@@ -176,6 +178,14 @@ static Bool parse_options(void)
 		else if (StrEquals(resource, "Font"))
 		{
 			CopyStringWithQuotes(&font_name, tline);
+		}
+		else if (StrEquals(resource, "LogFile"))
+		{
+			CopyStringWithQuotes(&logfilename, tline);
+		}
+		else if (StrEquals(resource, "ShowMiniIcons"))
+		{
+			showMiniIcons=!strcmp(tline,"true");
 		}
 		else if (StrEquals(resource, "EnterSelect"))
 		{
@@ -294,7 +304,7 @@ static int myXErrorHandler(Display *display,XErrorEvent *error_event)
 	sprintf(request_number,"%d",error_event->request_code);
 	sprintf(buffer,"UNKNOWN");
 	XGetErrorDatabaseText(display,"XRequest",
-			      request_number,buffer,function,messagelen);
+		request_number,buffer,function,messagelen);
 
 	fprintf(errorFile,"non-fatal X error as follows, display 0x%x"
 		" op %d:%d \"%s\" serial %u error %d\n",
@@ -397,7 +407,8 @@ static void DrawWindow(
 		edge = w / 2;
 	}
 	top=(h+ Ffont->ascent - Ffont->descent)/2;	/* center */
-	top+=8;						/* HACK tweak */
+	if(showMiniIcons)
+		top+=8;					/* HACK tweak */
 
 	if(edge<5)
 		edge=5;
@@ -437,7 +448,8 @@ static void DrawWindow(
 		}
 		FlocaleDrawString(dpy, Ffont, FwinString, 0);
 	}
-	DrawPicture(proxy->proxy, (w-16)/2, 8, picture, cset);
+	if(showMiniIcons)
+		DrawPicture(proxy->proxy, (w-16)/2, 8, picture, cset);
 }
 
 static void DrawProxy(ProxyWindow *proxy)
@@ -759,7 +771,7 @@ static void DestroyWindow(Window w)
 	ProxyWindow *prev;
 
 	for (proxy=firstProxy, prev = NULL; proxy != NULL;
-	     prev = proxy, proxy=proxy->next)
+		prev = proxy, proxy=proxy->next)
 	{
 		if(proxy->proxy==w || proxy->window==w)
 			break;
@@ -1235,11 +1247,6 @@ int main(int argc, char **argv)
 	FlocaleInit(LC_CTYPE, "", "", "FvwmProxy");
 	MyName = GetFileNameFromPath(argv[0]);
 
-	errorFile=fopen("/tmp/FvwmProxy.log","a");
-
-	fprintf(errorFile,"FvwmProxy >>>>>>>>> STARTUP\n");
-	fflush(errorFile);
-
 	fd[0] = atoi(argv[1]);
 	fd[1] = atoi(argv[2]);
 
@@ -1248,16 +1255,14 @@ int main(int argc, char **argv)
 
 	if (!(dpy=XOpenDisplay(NULL)))
 	{
-		fprintf(errorFile,"can't open display\n");
-		fflush(errorFile);
+		fprintf(stderr,"can't open display\n");
 		exit (1);
 	}
 	titles[0]="FvwmProxy";
 	if(XStringListToTextProperty(titles,1,&windowName) == 0)
 	{
-		fprintf(errorFile,"Proxy_CreateBar() could not allocate space"
+		fprintf(stderr,"Proxy_CreateBar() could not allocate space"
 			" for window title");
-		fflush(errorFile);
 	}
 
 	PictureInitCMap(dpy);
@@ -1283,9 +1288,15 @@ int main(int argc, char **argv)
 		M_CONFIG_INFO| M_END_CONFIG_INFO);
 
 	if (parse_options() == False)
-	{
 		exit(1);
-	}
+
+	if(!logfilename)
+		logfilename="/dev/null";
+	errorFile=fopen(logfilename,"a");
+
+	fprintf(errorFile,"FvwmProxy >>>>>>>>> STARTUP\n");
+	fflush(errorFile);
+
 	if ((Ffont = FlocaleLoadFont(dpy, font_name, MyName)) == NULL)
 	{
 		fprintf(stderr, "%s: Couldn't load font. Exiting!\n", MyName);

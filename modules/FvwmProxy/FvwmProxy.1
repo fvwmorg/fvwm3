@@ -61,6 +61,10 @@ Specifies the size in Y of each proxy window.
 Specifies the minimum distance between proxy windows when adjusting
 for collisions.
 
+.IP "*FvwmProxy: ShowMiniIcons"
+If true, proxy windows show the mini icon for the window they represent.
+The default is true.
+
 .IP "*FvwmProxy: EnterSelect"
 If true, a proxy is automatically selected when the mouse moved
 over the proxy, even if no mouse buttons are pressed.
@@ -91,6 +95,10 @@ window and warps the mouse to near its upper left corner.
 This selects an fvwm function to be called during a FvwmProxy Mark command.
 The default is "FvwmProxyMarkFunc".
 
+.IP "*FvwmProxy: LogFile"
+If given, verbose debugging information is logged to a file named
+by the argument.  The default is no logging.
+
 .SH COMMANDS
 
 .IP "SendToModule FvwmProxy Show"
@@ -108,7 +116,7 @@ warp the mouse to a position over that window.
 .IP "SendToModule FvwmProxy Abort"
 Deactivate all proxy windows.
 This differs from the Hide command in that no action is taken
-on a selected window.
+on any selected window.
 
 .IP "SendToModule FvwmProxy Next"
 If a proxy window is selected, the next proxy is selected.
@@ -132,12 +140,14 @@ FvwmProxy initialization commands:
 
 Key Alt_L   A   N   SendToModule    FvwmProxy   Show    # hold Alt key
 Key -Alt_L  A   A   SendToModule    FvwmProxy   Hide    # release Alt key
+Key Escape  A   M   SendToModule    FvwmProxy   Abort   # Alt-Escape
 Key Tab     A   M   SendToModule    FvwmProxy   Next    # Alt-Tab
 Key Tab     A   SM  SendToModule    FvwmProxy   Prev    # Alt-Shift-Tab
 
 *FvwmProxy: Font            -*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*
 *FvwmProxy: Colorset        1
 *FvwmProxy: SelectColorset  2
+*FvwmProxy: ShowMiniIcons   true
 *FvwmProxy: EnterSelect     false
 *FvwmProxy: ProxyMove       false
 *FvwmProxy: Width           180

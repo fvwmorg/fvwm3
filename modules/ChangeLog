@@ -1,4 +1,11 @@
+2002-11-16  Jason Weber  <baboon@imonk.com>
+	* FvwmProxy/FvwmProxy.c:
+	* FvwmProxy/FvwmProxy.1:
+	* FvwmProxy/ConfigFvwmProxyDefaults:
+	Added config options ShowMiniIcons and LogFile.
+
 2002-11-15  Jason Weber  <baboon@imonk.com>
+	* FvwmProxy/FvwmProxy.h:
 	* FvwmProxy/FvwmProxy.h:
 	* FvwmProxy/FvwmProxy.c:
 	Fixed Next to really ignore windows on other desks.
