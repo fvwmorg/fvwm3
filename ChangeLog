@@ -1,3 +1,19 @@
+1999-04-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1: fixed manpage bug (half a line lost)
+
+	* fvwm/functions.c (ComplexFunction):
+	(execute_complex_function):
+	(ExecuteFunction): renamed ComplexFunction2 to execute_complex_function
+	Don't expand the command line twice when calliing a complex function
+	without the 'Function' builtin.
+
+	* libs/Parse.c (DoPeekToken): fixed parising empty tokens
+
+1999-04-22  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* configure.in: changed version to 2.3.2
+
 1999-04-22  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/gnome.c (GNOME_SetLayer): new function for updating
@@ -7,14 +23,14 @@
 
 	* fvwm/virtual.c (changeDesks): call GNOME_SetCurrentDesk.
 
-	* fvwm/misc.h: 
+	* fvwm/misc.h:
 	* fvwm/builtins.c (new_layer): new function split off from
-	change_layer to do the actual change. 
+	change_layer to do the actual change.
 
-	* fvwm/gnome.c (GNOME_ProcessClientMessage): 
+	* fvwm/gnome.c (GNOME_ProcessClientMessage):
 	implement the _WIN_LAYER client message with the new_layer
 	function. Use the XA_ defines instead of strings.
-	
+
 1999-04-21  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/events.c (HandleUnusualStackmodes): commented out two DBUG

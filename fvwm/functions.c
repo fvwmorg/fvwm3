@@ -54,7 +54,8 @@ extern FvwmWindow *Tmp_win;
 
 /* forward declarations */
 static void ComplexFunction(F_CMD_ARGS);
-static void ComplexFunction2(F_CMD_ARGS, Bool *desperate);
+static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
+				     expand_command_type expand_cmd);
 
 /*
  * be sure to keep this list properly ordered for bsearch routine!
@@ -525,7 +526,8 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     {
       Bool desperate = 1;
 
-      ComplexFunction2(eventp,w,tmp_win,context,taction, &Module, &desperate);
+      execute_complex_function(eventp,w,tmp_win,context,taction, &Module,
+			       &desperate, DONT_EXPAND_COMMAND);
       if(desperate)
 	  executeModule(eventp,w,tmp_win,context,taction, &Module);
     }
@@ -540,9 +542,9 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     Scr.flags.silent_functions = 0;
 
   if (must_free_string)
-{
+  {
     free(expaction);
-}
+  }
 
   func_depth--;
   return;
@@ -725,7 +727,7 @@ void find_func_type(char *action, short *func_type, unsigned char *flags)
 /***********************************************************************
  *
  *  Procedure:
- *	AddToFunction - add an item to a FvwmFunction
+ *	AddToFuncion - add an item to a FvwmFunction
  *
  *  Inputs:
  *	func      - pointer to the FvwmFunction to add the item
@@ -874,10 +876,12 @@ static void ComplexFunction(F_CMD_ARGS)
 {
   Bool desperate = 0;
 
-  ComplexFunction2(eventp, w, tmp_win, context, action, Module, &desperate);
+  execute_complex_function(eventp, w, tmp_win, context, action, Module,
+			   &desperate, EXPAND_COMMAND);
 }
 
-static void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
+static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
+				     expand_command_type expand_cmd)
 {
   static unsigned int cfunc_depth = 0;
   char type = MOTION;
@@ -1018,7 +1022,7 @@ static void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 	  else
 	    w = None;
 	  taction = expand(fi->action,arguments,tmp_win);
-	  ExecuteFunction(taction,tmp_win,ev,context,-2,EXPAND_COMMAND);
+	  ExecuteFunction(taction,tmp_win,ev,context,-2,expand_cmd);
 	  free(taction);
 	}
       fi = fi->next_item;

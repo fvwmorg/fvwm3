@@ -198,10 +198,7 @@ char *DoPeekToken(char *indata, char **token, char *spaces, char *delims,
   end = CopyToken(indata, tmptok, spaces, snum, delims, dnum, out_delim);
 
   if (tmptok[0] == 0)
-  {
     *token = NULL;
-    return NULL;
-  }
   else
     *token = tmptok;
   return end;
