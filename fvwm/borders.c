@@ -1231,6 +1231,7 @@ void DrawDecorations(
     change_window_background(t->frame, cd.valuemask, &cd.attributes);
     if (HAS_TITLE(t))
     {
+fprintf(stderr,"changed_window_background\n");
       change_window_background(
 	t->title_w, cd.notex_valuemask, &cd.notex_attributes);
     }

@@ -72,6 +72,7 @@
 #include "screen.h"
 #include "defaults.h"
 #include "events.h"
+#include "libs/Colorset.h"
 #include "fvwmsignal.h"
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
@@ -344,6 +345,13 @@ void HandleFocusIn(void)
 {
   XEvent d;
   Window w;
+  Window focus_w = None;
+  Window focus_fw = None;
+  Pixel fc = 0;
+  Pixel bc = 0;
+  static Window last_focus_w = None;
+  static Window last_focus_fw = None;
+  static Bool is_never_focused = True;
 
   DBUG("HandleFocusIn","Routine Entered");
 
@@ -362,14 +370,11 @@ void HandleFocusIn(void)
       if(w != Scr.NoFocusWin)
 	{
 	  Scr.UnknownWinFocused = w;
+          focus_w = w;
 	}
       else
 	{
 	  DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None);
-	  BroadcastPacket(M_FOCUS_CHANGE, 5,
-                          0, 0, (unsigned long)IsLastFocusSetByMouse(),
-                          Scr.DefaultDecor.HiColors.fore,
-                          Scr.DefaultDecor.HiColors.back);
 	  if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
 	    {
 	      if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
@@ -383,15 +388,34 @@ void HandleFocusIn(void)
 	    }
 
 	}
+      if (Scr.DefaultDecor.HiColorset >= 0)
+      {
+          fc = Colorset[Scr.DefaultDecor.HiColorset].fg;
+          bc = Colorset[Scr.DefaultDecor.HiColorset].bg;
+      }
+      else
+      {
+          fc = Scr.DefaultDecor.HiColors.fore;
+          bc = Scr.DefaultDecor.HiColors.back;
+      }
     }
-  else if(Tmp_win != Scr.Hilite)
+  else if (Tmp_win != Scr.Hilite)
     {
+      int colorset = GetDecor(Tmp_win, HiColorset);
+
       DrawDecorations(Tmp_win, DRAW_ALL, True, True, None);
-      BroadcastPacket(M_FOCUS_CHANGE, 5,
-                      Tmp_win->w, Tmp_win->frame,
-		      (unsigned long)IsLastFocusSetByMouse(),
-                      GetDecor(Tmp_win,HiColors.fore),
-                      GetDecor(Tmp_win,HiColors.back));
+      focus_w = Tmp_win->w;
+      focus_fw = Tmp_win->frame;
+      if (colorset >= 0)
+      {
+          fc = Colorset[colorset].fg;
+          bc = Colorset[colorset].bg;
+      }
+      else
+      {
+          fc = GetDecor(Tmp_win,HiColors.fore);
+          bc = GetDecor(Tmp_win,HiColors.back);
+      }
       if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
 	{
 	  if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
@@ -404,6 +428,14 @@ void HandleFocusIn(void)
 	    }
 	}
     }
+  if (is_never_focused || focus_w != last_focus_w || focus_fw != last_focus_fw)
+  {
+    BroadcastPacket(M_FOCUS_CHANGE, 5, focus_w, focus_fw,
+                    (unsigned long)IsLastFocusSetByMouse(), fc, bc);
+    last_focus_w = focus_w;
+    last_focus_fw = focus_fw;
+    is_never_focused = False;
+  }
 }
 
 /***********************************************************************

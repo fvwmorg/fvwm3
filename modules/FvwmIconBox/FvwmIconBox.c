@@ -810,7 +810,7 @@ void animate(struct icon_info *item, unsigned long *body)
 			  item->y + (item->icon_h/2), &abs_x, &abs_y, &junkw);
     if (junkw == None)
       return;
-    
+
     /* find out where it is on screen */
     XTranslateCoordinates(dpy, icon_win, Root, item->x, item->y, &abs_x, &abs_y,
 			  &junkw);
@@ -2017,24 +2017,30 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 int diffx, diffy;
 void process_message(unsigned long type, unsigned long *body)
 {
-  struct icon_info *tmp, *old;
+  struct icon_info *tmp = NULL, *old;
   char *str;
   long olddesk;
   struct ConfigWinPacket  *cfgpacket = (void *) body;
 
-  switch(type){
+  switch(type)
+  {
   case M_CONFIGURE_WINDOW:
-    if (ready){
+    if (ready)
+    {
       if (!(local_flags & CURRENT_ONLY)
 	  || (DO_SKIP_WINDOW_LIST(cfgpacket) && UseSkipList))
 	break;
       tmp = Head;
-      while(tmp != NULL){
-	if (tmp->id == cfgpacket->w){
-	  if ((tmp->desk != cfgpacket->desk) && !(IS_STICKY(tmp))){
+      while(tmp != NULL)
+      {
+	if (tmp->id == cfgpacket->w)
+        {
+	  if ((tmp->desk != cfgpacket->desk) && !(IS_STICKY(tmp)))
+          {
 	    olddesk = tmp->desk;
 	    tmp->desk = cfgpacket->desk;
-	    if (olddesk == CurrentDesk || tmp->desk == CurrentDesk){
+	    if (olddesk == CurrentDesk || tmp->desk == CurrentDesk)
+            {
 	      if (tmp->desk == CurrentDesk && sortby != UNSORT)
 		SortItem(NULL);
 	      num_icons = AdjustIconWindows();
@@ -2195,9 +2201,12 @@ void process_message(unsigned long type, unsigned long *body)
       RedrawIcon(tmp, redraw_flag);
     break;
   case M_NEW_DESK:
-    if (CurrentDesk != body[0]){
+    if (CurrentDesk != body[0])
+    {
       CurrentDesk = body[0];
-      if (body[0] != 10000 && ready){ /* 10000 is a "magic" number used in FvwmPager */
+      if (body[0] != 10000 && ready)
+      {
+        /* 10000 is a "magic" number used in FvwmPager */
 	if (sortby != UNSORT)
 	SortItem(NULL);
 	num_icons = AdjustIconWindows();

@@ -1,3 +1,8 @@
+1999-12-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (HandleFocusIn):
+	fixed clicktofocus in pager
+
 1999-12-01  Tomas Ogren  <stric@ing.umu.se>
 
 	* fvwm/Makefile.am: Added geometry.h to fvwm2_SOURCES.

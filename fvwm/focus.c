@@ -51,8 +51,7 @@ static Bool lastFocusType;
  * Sets the input focus to the indicated window.
  *
  **********************************************************************/
-static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse,
-		       Bool NoWarp)
+static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
 {
   int i;
   extern Time lastTimestamp;

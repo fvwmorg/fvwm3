@@ -1,3 +1,8 @@
+1999-12-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconBox/FvwmIconBox.c (process_message):
+	-Wall fix
+
 1999-12-03  olicha   <olivier.chapuis@free.fr>
 
 	* FvwmEvent/FvwmEvent.c (main):
