@@ -54,6 +54,7 @@ void destroy_fvwmfunc(F_CMD_ARGS);
 void add_another_item(F_CMD_ARGS);
 void add_item_to_func(F_CMD_ARGS);
 void setModulePath(F_CMD_ARGS);
+void setModuleTimeout(F_CMD_ARGS);
 void imagePath_function(F_CMD_ARGS);
 void iconPath_function(F_CMD_ARGS);
 void pixmapPath_function(F_CMD_ARGS);

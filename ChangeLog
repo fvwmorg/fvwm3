@@ -1,3 +1,15 @@
+2000-02-19  Chris Rankin  <rankinc@zipworld.com.au>
+
+    * fvwm/builtins.c
+    * fvwm/builtins.h
+    * fvwm/functions.c
+    * fvwm/fvwm2.1
+    * fvwm/module_interface.c
+    * libs/defaults.h
+	Add a new global configuration parameter ModuleTimeout to
+	determine how long fvwm will wait for a module to respond before
+	killing it. Default value is 5 seconds.
+
 2000-02-18  Hippo
 
 	* fvwm/{{fvwm,style}.h,{add_window,style}.c}: New style flags

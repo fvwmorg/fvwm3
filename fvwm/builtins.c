@@ -64,6 +64,7 @@ extern int cpctMovementDefault;
 extern int cmsDelayDefault;
 
 char *ModulePath = FVWM_MODULEDIR;
+int moduleTimeout = DEFAULT_MODULE_TIMEOUT;
 static char *exec_shell_name="/bin/sh";
 /* button state strings must match the enumerated states */
 static char  *button_states[MaxButtonState] =
@@ -853,6 +854,31 @@ void setModulePath(F_CMD_ARGS)
     setPath( &ModulePath, action, need_to_free );
     need_to_free = 1;
 }
+
+
+void setModuleTimeout(F_CMD_ARGS)
+{
+  int timeout;
+
+  /*
+   * Remove compiler warnings about unused parameters
+   */
+  (void)eventp;
+  (void)w;
+  (void)tmp_win;
+  (void)context;
+  (void)Module;
+
+  moduleTimeout = DEFAULT_MODULE_TIMEOUT;
+  if (
+       (GetIntegerArguments(action, NULL, &timeout, 1) == 1) &&
+       (timeout > 0)
+     )
+  {
+    moduleTimeout = timeout;
+  }
+}
+
 
 void SetHiColor(F_CMD_ARGS)
 {

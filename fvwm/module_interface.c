@@ -49,6 +49,13 @@
 #include "fvwmsignal.h"
 #include "libs/Colorset.h"
 
+/*
+ * Use POSIX behaviour if we can, otherwise use SysV instead
+ */
+#ifndef O_NONBLOCK
+#  define O_NONBLOCK  O_NDELAY
+#endif
+
 int npipes;
 int *readPipes;
 int *writePipes;
@@ -265,11 +272,7 @@ static int do_execute_module(F_CMD_ARGS, Bool desperate)
 
       /* make the PositiveWrite pipe non-blocking. Don't want to jam up
 	 fvwm because of an uncooperative module */
-#ifdef O_NONBLOCK
-      fcntl(writePipes[i],F_SETFL,O_NONBLOCK); /* POSIX, better behavior */
-#else
-      fcntl(writePipes[i],F_SETFL,O_NDELAY); /* early SYSV, bad behavior */
-#endif
+      fcntl(writePipes[i], F_SETFL, O_NONBLOCK);
       /* Mark the pipes close-on exec so other programs
        * won`t inherit them */
       if (fcntl(readPipes[i], F_SETFD, 1) == -1)
@@ -1176,6 +1179,8 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 extern int myxgrabcount;                /* defined in libs/Grab.c */
 int PositiveWrite(int module, unsigned long *ptr, int size)
 {
+  extern int moduleTimeout;
+
   if((pipeOn[module]<0)||(!((PipeMask[module]) & ptr[1])))
   {
     return -1;
@@ -1212,11 +1217,10 @@ int PositiveWrite(int module, unsigned long *ptr, int size)
        * We give the read a long timeout; if the module fails to
        * respond within this time then it deserves to be KILLED!!!
        *
-       * NOTE: I initially tried a smaller timeout, but FvwmAnimate
-       *       kept dying on me (CJR 30/01/00)
-       *     : One second is still not enough - try five (CJR 08/02/00)
+       * NOTE: rather than impose an arbitrary timeout on the user,
+       *       we will make this a configuration parameter.
        */
-      timeout.tv_sec = 5;
+      timeout.tv_sec = moduleTimeout;
       timeout.tv_usec = 0;
       FD_SET(readPipes[module], &readSet);
 

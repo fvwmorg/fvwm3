@@ -190,6 +190,7 @@ static const func_type func_config[] =
   {"module",       executeModule,    F_MODULE,               0},
   {"modulepath",   setModulePath,    F_MODULE_PATH,          0},
   {"modulesynchronous",executeModuleSync,F_MODULE_SYNC,      0},
+  {"moduletimeout", setModuleTimeout, F_NOP,                 0},
   {"mouse",        mouse_binding,    F_MOUSE,                0},
   {"move",         move_window,      F_MOVE,                 FUNC_NEEDS_WINDOW},
   {"movesmoothness",SetMoveSmoothness,F_MOVE_SMOOTHNESS,     0},

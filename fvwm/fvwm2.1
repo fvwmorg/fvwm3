@@ -6295,6 +6295,15 @@ command by using the key sequence
 .BR EscapeFunc ).
 
 .TP
+.BI "ModuleTimeout " timeout
+Specifies how many seconds fvwm will wait for a module to respond.
+If the module does not respond within the time limit then fvwm
+will kill it.
+.I timeout
+must be greater than zero, or it will be reset to the default value
+of 5 seconds.
+
+.TP
 .BI "SendToModule " "modulename string"
 Sends an arbitrary string (no quotes required) to all modules matching
 .IR modulename ,

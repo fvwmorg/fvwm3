@@ -72,6 +72,9 @@
 #define NR_RIGHT_BUTTONS                  5
 #define NUMBER_OF_BUTTONS                 (NR_LEFT_BUTTONS + NR_RIGHT_BUTTONS)
 
+/* module configuration */
+#define DEFAULT_MODULE_TIMEOUT            5
+
 /* misc */
 #define DEFAULT_EMULATE_MWM               False
 #define DEFAULT_EMULATE_WIN               False
