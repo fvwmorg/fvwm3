@@ -78,7 +78,7 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
 #ifdef XPM
   XpmAttributes xpm_attributes;
   int rc;
-  XpmImage	my_image;
+  XpmImage	my_image = {0};
 #endif
 
   p=(Picture*)safemalloc(sizeof(Picture));
@@ -102,11 +102,11 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
     if (rc == XpmSuccess) {
       p->width = my_image.width;
       p->height = my_image.height;
-      XpmFreeXpmImage(&my_image);
+/*       XpmFreeXpmImage(&my_image); */
       p->depth = DefaultDepthOfScreen(DefaultScreenOfDisplay(dpy));
       return p;
     }
-    XpmFreeXpmImage(&my_image);
+/*     XpmFreeXpmImage(&my_image); */
   }
 #endif
 
@@ -415,7 +415,9 @@ void c200_substitute_color(char **my_color, int color_limit) {
     }                                 /* end new low distance */
   }                                   /* end all base colors */
   /* Finally: replace the color string by the newly determined color string */
-  *my_color = base_array[minind].c_color; /* change the color */
+  free(*my_color);                      /* free old color */
+  *my_color = safemalloc(strlen(base_array[minind].c_color) + 1); /* area for new color */
+  strcpy(*my_color,base_array[minind].c_color); /* put it there */
   return;                             /* all done */
 }
 
