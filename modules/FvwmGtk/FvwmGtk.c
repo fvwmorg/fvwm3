@@ -437,14 +437,6 @@ read_fvwm_pipe (gpointer data, int source, GdkInputCondition cond)
 	process_message( packet->type, packet->timestamp, packet->body );
 }
 
-
-void
-DeadPipe (int nons)
-{
-  exit (1);
-}
-
-
 int
 main (int argc, char **argv)
 {
@@ -513,8 +505,8 @@ main (int argc, char **argv)
 
   SendText (fvwm_fd, "Send_WindowList", 0);
 
-  gtk_input_add_full (fvwm_fd[1], GDK_INPUT_READ, read_fvwm_pipe,
-                      NULL, NULL, NULL);
+  gtk_input_add_full (fvwm_fd[1], GDK_INPUT_READ | GDK_INPUT_EXCEPTION,
+		      read_fvwm_pipe, NULL, NULL, NULL);
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fvwm_fd);
