@@ -6,9 +6,10 @@
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmDragWell
 man_MANS = FvwmDragWell.1
-FvwmDragWell_SOURCES = fvwmDragWell.c xdndDragSource.c cursorStuff.c
+FvwmDragWell_SOURCES = fvwmDragWell.c xdndDragSource.c cursorStuff.c \
+	commonStuff.h cursorStuff.h dragSource.h fvwmDragWell.h
 FvwmDragWell_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
-EXTRA_DIST = $(man_MANS) README
+EXTRA_DIST = $(man_MANS)
 
 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
