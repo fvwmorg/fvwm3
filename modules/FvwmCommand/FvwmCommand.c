@@ -702,8 +702,6 @@ void list_configure(unsigned long *body)
 	    DO_SKIP_ICON_CIRCULATE( cfgpacket ) );
     printf( "do_circulate_skip_shaded: %d\n",
 	    DO_SKIP_SHADED_CIRCULATE( cfgpacket ) );
-    printf( "do_flip_transient: %d\n",
-	    DO_FLIP_TRANSIENT( cfgpacket ) );
     printf( "do_grab_focus_when_created: %d\n",
 	    DO_GRAB_FOCUS( cfgpacket ) );
     printf( "do_grab_focus_when_transient_created: %d\n",

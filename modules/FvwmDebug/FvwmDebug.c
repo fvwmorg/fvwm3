@@ -161,7 +161,7 @@ int main(int argc, char **argv)
   }
   if (output==NULL)
     output=stderr;
-        
+
 
   /* Dead pipe == Fvwm died */
   signal(SIGPIPE, DeadPipe);
@@ -556,7 +556,6 @@ void list_configure(const unsigned long *body)
 	    DO_SKIP_ICON_CIRCULATE(p));
     fprintf(output,"\t\tdo_circulate_skip_shaded: %d\n",
 	    DO_SKIP_SHADED_CIRCULATE(p));
-    fprintf(output,"\t\tdo_flip_transient: %d\n", DO_FLIP_TRANSIENT(p));
     fprintf(output,"\t\tdo_grab_focus_when_created: %d\n", DO_GRAB_FOCUS(p));
     fprintf(output,"\t\tdo_grab_focus_when_transient_created: %d\n",
 	    DO_GRAB_FOCUS_TRANSIENT(p));
