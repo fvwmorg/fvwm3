@@ -2250,22 +2250,26 @@ static Bool pop_menu_up(
 
   if (!pops->flags.has_poshints && fw && parent_menu == NULL)
   {
+    int old_y = y;
+
+    if (HAS_BOTTOM_TITLE(fw))
+      y = fw->frame_g.y + fw->frame_g.height - fw->title_g.height - 1 -
+	MR_HEIGHT(mr);
+    else
+      y = fw->frame_g.y + fw->boundary_width + fw->title_g.height + 1;
     if(context&C_LALL)
     {
-      y = fw->frame_g.y + fw->boundary_width + fw->title_g.height + 1;
       x = fw->frame_g.x + fw->boundary_width +
 	ButtonPosition(context, fw) * fw->title_g.height + 1;
     }
     else if(context&C_RALL)
     {
-      y = fw->frame_g.y + fw->boundary_width + fw->title_g.height + 1;
       x = fw->frame_g.x + fw->frame_g.width -
 	fw->boundary_width - ButtonPosition(context, fw) *
 	fw->title_g.height-MR_WIDTH(mr) + 1;
     }
     else if(context&C_TITLE)
     {
-      y = fw->frame_g.y + fw->boundary_width + fw->title_g.height + 1;
       if(x < fw->frame_g.x + fw->title_g.x)
 	x = fw->frame_g.x + fw->title_g.x;
       if((x + MR_WIDTH(mr)) >
@@ -2273,6 +2277,8 @@ static Bool pop_menu_up(
 	x = fw->frame_g.x + fw->title_g.x + fw->title_g.width-
 	  MR_WIDTH(mr) +1;
     }
+    else
+      y = old_y;
   } /* if (pops->flags.has_poshints) */
 
   /***************************************************************

@@ -1,5 +1,8 @@
 1999-11-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (pop_menu_up):
+	fixed menus from window buttons with bottom titles
+
 	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
 	(moveLoop):
 	(Maximize):
