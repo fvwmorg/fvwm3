@@ -2807,8 +2807,8 @@ or removes the binding if \fIFunction\fP is '-'.  Definition is the same
 as for a mouse binding except that \fIsequence\fP is inserted in front of
 the button number and a value of 0 for \fIbutton\fP concerns the StrokeFunc
 command. The \fIContext\fP and \fIModifiers\fP fields are defined
-as in the mouse binding. At the present time it is preferable to use
-R as context and A as modifier.
+as in the mouse binding. However, only the R Context works really 
+(if you want to use other contexts you need to use the StrokeFunc below).
 
 Strokes are defined in a grid like this:
 .EX
@@ -2819,26 +2819,26 @@ Strokes are defined in a grid like this:
  7  8  9
 .EE
 Because of the default button menu in fvwm, you may need to dis-associate
-a mouse button binding before using the stroke
+a mouse button binding (using an empty action) before using the stroke
 .EX
-Mouse 3 R A
+Mouse 3 R N
 .EE
 Also, you can still use Stroke sequence 0 to simulate a click
 .EX
-Stroke 0 3 R A Menu WindowList Nop
+Stroke 0 3 R N Menu WindowList Nop
 .EE
 The following example start xterm when mouse drag in 'I' on the root
 window with button 3 pressed down:
 .EX
-Stroke 258  3  R  A  Exec exec xterm
+Stroke 258  3  R  N  Exec exec xterm
 .EE
 An example for Netscape:
 .EX
-Stroke 7415963    3  R  A  Exec exec netscape
-Stroke 74148963   3  R  A  Exec exec netscape
-Stroke 74158963   3  R  A  Exec exec netscape
-Stroke 7418963    3  R  A  Exec exec netscape
-Stroke 415963     3  R  A  Exec exec netscape
+Stroke 7415963    3  R  N  Exec exec netscape
+Stroke 74148963   3  R  N  Exec exec netscape
+Stroke 74158963   3  R  N  Exec exec netscape
+Stroke 7418963    3  R  N  Exec exec netscape
+Stroke 415963     3  R  N  Exec exec netscape
 .EE
 Note: You need LibStroke installed and fvwm compiled with stroke
 support. LibStroke can be obtained via anonymous ftp at

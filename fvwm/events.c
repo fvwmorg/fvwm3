@@ -1454,6 +1454,7 @@ void HandleButtonRelease()
    /* unsigned int modifier; */
    int stroke;
    char *action;
+   int real_modifier;
 
    DBUG("HandleButtonRelease","Routine Entered");
 
@@ -1473,12 +1474,12 @@ void HandleButtonRelease()
 
    Context = GetContext(Tmp_win,&Event, &PressedW);
 
-   /* We currently ignore all modifiers, and contexts, too... */
-   /*  modifier = (Event.xbutton.state & mods_used); */
+   /*  Allows modifier to work (Only R context works here). */
+   real_modifier = Event.xbutton.state - (1 << (7 + Event.xbutton.button));
 
    /* need to search for an appropriate stroke binding */
    action = CheckBinding(
-     Scr.AllBindings, stroke, Event.xbutton.button, Event.xbutton.state,
+     Scr.AllBindings, stroke, Event.xbutton.button, real_modifier,
      GetUnusedModifiers(), Context, STROKE_BINDING);
    /* got a match, now process it */
 /* DEBUG printfs
