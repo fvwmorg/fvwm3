@@ -67,7 +67,7 @@
 
 #include "config.h"
 #include <X11/Xlib.h>
-#include "FCombineChars.h"
+#include "CombineChars.h"
 
 #if HAVE_BIDI
 /*

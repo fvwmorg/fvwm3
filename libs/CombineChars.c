@@ -16,7 +16,7 @@
  */
 
 
-#include "FCombineChars.h"
+#include "CombineChars.h"
 #include "config.h"
 #include <X11/Xlib.h>
 #include <stdio.h>
@@ -1539,7 +1539,7 @@ convert_to_utf8(const unsigned short int *str_ucs2, unsigned char *str_utf8,
 
 
 int
-FCombineChars(unsigned char *str_visual, int len,
+CombineChars(unsigned char *str_visual, int len,
 	      superimpose_char_t **comb_chars)
 {
         int i,j,k;  /* counters */

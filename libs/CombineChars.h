@@ -19,7 +19,7 @@ typedef struct
 } superimpose_char_t;
 
 int
-FCombineChars(unsigned char *str_visual, int str_len, 
+CombineChars(unsigned char *str_visual, int str_len, 
 	      superimpose_char_t **comb_chars);
 
 #endif /* FCOMBINECHARS_H */

@@ -7,8 +7,8 @@
  * (bidirectional) languages.
  */
 
-#ifndef FBIDIJOIN_H
-#define FBIDIJOIN_H
+#ifndef BIDIJOIN_H
+#define BIDIJOIN_H
 
 #include "config.h"
 
@@ -27,4 +27,4 @@ int shape_n_join(FriBidiChar *str_visual, int str_len);
 
 #endif /* HAVE_BIDI */
 
-#endif /* FBIDIJOIN_H */
+#endif /* BIDIJOIN_H */

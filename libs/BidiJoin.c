@@ -27,7 +27,7 @@
 
 #include "config.h"
 
-#include "FBidiJoin.h"
+#include "BidiJoin.h"
 
 #if HAVE_BIDI
 

@@ -57,7 +57,7 @@
 #include "FftInterface.h"
 #include "Colorset.h"
 #include "Ficonv.h"
-#include "FCombineChars.h"
+#include "CombineChars.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -396,8 +396,8 @@ char *FlocaleEncodeString(
 		/* if conversion to UTF-8 failed str1 will be NULL */
 		if(tmp_str != NULL)
 		{
-		        /* do combining */
-			len = FCombineChars(tmp_str,strlen(tmp_str),
+			/* do combining */
+			len = CombineChars(tmp_str,strlen(tmp_str),
 					    comb_chars);
 			/* returns the length of the resulting UTF-8 string */
 			/* convert back to current charset */
@@ -423,7 +423,6 @@ char *FlocaleEncodeString(
 
 	if (FiconvSupport && do_iconv)
 	{
-
 		str2 = FiconvCharsetToCharset(
 			dpy, flf->str_fc, flf->fc, (const char *)str1, len);
 		if (str2 == NULL)
@@ -652,12 +651,13 @@ void FlocaleRotateDrawString(
 	{
 		while(comb_chars[i].c.byte1 != 0 && comb_chars[i].c.byte2 != 0)
 		{
-		        /* draw composing character on top of corresponding
+			/* draw composing character on top of corresponding 
 			   "real" character */
-		        FlocaleWinString tmp_fws = *fws;
+			FlocaleWinString tmp_fws = *fws;
 			int offset = pixel_pos[comb_chars[i].position];
-		        int curr_len = FlocaleChar2bOneCharToUtf8(
-				comb_chars[i].c, buf);
+			int curr_len = FlocaleChar2bOneCharToUtf8(
+							    comb_chars[i].c, 
+							    buf);
 			int out_len;
 			char *buf2 = FiconvUtf8ToCharset(
 				dpy,
@@ -665,38 +665,37 @@ void FlocaleRotateDrawString(
 				(const char *)buf,curr_len);
 			if(flf->fontset != None)
 			{
-			        XmbDrawString(
-					dpy, canvas_pix, flf->fontset,
-					fws->gc, offset, height - descent,
-					buf2, strlen(buf2));
+				XmbDrawString(dpy, canvas_pix, flf->fontset, 
+					      fws->gc, offset,
+					      height - descent, buf2, 
+					      strlen(buf2));
 			}
 			else if(flf->font != None)
 			{
-			        tmp_fws.e_str = buf2;
+				tmp_fws.e_str = buf2;
 				tmp_fws.str2b = NULL;
 				if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 				{
-				        tmp_fws.str2b =
-						FlocaleUtf8ToUnicodeStr2b(
-							tmp_fws.e_str,curr_len,
-							&out_len);
+					tmp_fws.str2b = 
+					  FlocaleUtf8ToUnicodeStr2b(
+						     tmp_fws.e_str,curr_len, 
+						     &out_len);
 				}
 				else if (flf->flags.is_mb)
 				{
-				        tmp_fws.str2b =
-						FlocaleStringToString2b(
-							dpy, flf,
-							tmp_fws.e_str,
-							curr_len, &out_len);
+					tmp_fws.str2b = 
+					  FlocaleStringToString2b(
+						    dpy, flf, tmp_fws.e_str,
+						    curr_len, &out_len);
 				}
 				else
 				{
-				        out_len = strlen(buf2);
+					out_len = strlen(buf2);
 				}
 				XSetFont(dpy, font_gc, flf->font->fid);
-			        FlocaleFontStructDrawString(
+				FlocaleFontStructDrawString(
 					dpy, flf, canvas_pix, font_gc,
-					offset, height - descent,
+					offset, height - descent, 
 					fg, fgsh, has_fg_pixels, &tmp_fws,
 					out_len, True);
 			}
@@ -704,7 +703,7 @@ void FlocaleRotateDrawString(
 			free(buf2);
 			if(tmp_fws.str2b != NULL)
 			{
-			        free(tmp_fws.str2b);
+				free(tmp_fws.str2b);
 			}
 			i++;
 		}
@@ -1867,9 +1866,9 @@ void FlocaleDrawString(
 		        FlocaleWinString tmp_fws = *fws;
 			int offset = pixel_pos[comb_chars[i].position];
 			char *buf2;
-		        int curr_len = FlocaleChar2bOneCharToUtf8(
-				comb_chars[i].c, buf);
 			int out_len;
+		        curr_len = FlocaleChar2bOneCharToUtf8(comb_chars[i].c, 
+								  buf);
 			buf2 = FiconvUtf8ToCharset(
 				dpy, flf->str_fc, (const char *)buf, curr_len);
 			if(FftSupport && flf->fftf.fftfont != NULL)
@@ -1955,6 +1954,7 @@ void FlocaleDrawUnderline(
 	Display *dpy, FlocaleFont *flf, FlocaleWinString *fws, int coffset)
 {
 	int off1, off2, y, x_s, x_e;
+	/*superimpose_char_t *comb_chars = NULL;*/
 
 	/* need to encode the string first to get BIDI and combining chars */
 	/*FlocaleEncodeWinString(dpy, flf, fws, &do_free, &len, &comb_chars);

@@ -1,3 +1,14 @@
+2003-07-06  Marcus Lundblad  <ml@update.uu.se>
+
+
+	* libs/BidiJoin.[ch]:
+	* libs/CombineChars.[ch]:
+	* libs/Flocale.c (FlocaleEncodeString):
+	* libs/FBidi.[ch]:
+	* libs/Makefile.am:
+
+	Removed "F" prefix on FBidiJoin.[ch] and FCombineChars.[ch]
+	
 2003-07-06  olicha  <olivier.chapuis@free.fr>
 
 	* libs/FRender.c (FRenderRender):
