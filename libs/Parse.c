@@ -152,7 +152,7 @@ static char *CopyToken(char *src, char *dest, char *spaces, int snum,
 			   (snum && strchr(spaces, *src)) ||
 			   (dnum && strchr(delims, *src))))
   {
-    /* Check for qouted text */
+    /* Check for quoted text */
     if (IsQuote(*src))
     {
       char c = *src;

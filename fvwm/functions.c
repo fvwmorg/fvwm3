@@ -926,7 +926,7 @@ void execute_function(exec_func_args_type *efa)
   }
   /* ignore whitespace at the beginning of all config lines */
   efa->action = SkipSpaces(efa->action, NULL, 0);
-  if (!efa->action || efa->action[0] == 0 || efa->action[1] == 0)
+  if (!efa->action || efa->action[0] == 0)
   {
     /* impossibly short command */
     return;

@@ -4439,6 +4439,7 @@ colors set by
 .IR Colors .
 Instead, the corresponding colors from the given colorset are
 used.  Note that all other features of a colorset are unsupported yet.
+To stop using the colorset, the colorset number can be omitted.
 
 The
 .IR HilightFore ", " HilightBack " and " HilightColorset
@@ -4452,7 +4453,8 @@ replace the old commands
 takes the colorset number as its sole argument and overrides the
 colors set by
 .IR Colors " or " Colorset .
-for the window border.
+for the window border.  To stop using a colorset, the argument can be
+omitted.
 
 The
 .IR HilightBorderColorset

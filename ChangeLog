@@ -1,3 +1,15 @@
+2001-02-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (execute_function):
+	fixed parsing of one character commands.
+	* fvwm/style.c (ProcessNewStyle):
+	added some syntax error messages
+	parsing fixes
+	* libs/Graphics.c (ParseGradient):
+	Parsing fixes
+	* libs/Parse.c (CopyToken):
+	Corrected typo
+
 2001-02-11  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/menus/menus.read: Put /tmp in the imagepath for menus test.

@@ -930,6 +930,11 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->flag_mask.use_colorset = 1;
 	    ptmpstyle->change_mask.use_colorset = 1;
           }
+	  else
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "Style BackColor requires color argument");
+	  }
         }
         else if (StrEquals(token, "BUTTON"))
         {
@@ -943,6 +948,12 @@ void ProcessNewStyle(F_CMD_ARGS)
             ptmpstyle->flag_mask.is_button_disabled |= (1 << butt);
             ptmpstyle->change_mask.is_button_disabled |= (1 << butt);
 	  }
+	  else
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "Invalid Button Style Index given");
+	  }
+
         }
         else if (StrEquals(token, "BorderWidth"))
         {
@@ -953,6 +964,11 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->flags.has_border_width = 1;
 	    ptmpstyle->flag_mask.has_border_width = 1;
 	    ptmpstyle->change_mask.has_border_width = 1;
+	  }
+	  else
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "Style BorderWidth requires width argument");
 	  }
         }
         else if (StrEquals(token, "BackingStore"))
@@ -1018,11 +1034,13 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->flag_mask.capture_honors_starts_on_page = 1;
 	  ptmpstyle->change_mask.capture_honors_starts_on_page = 1;
 	}
-        else if (StrEquals(token, "COLORSET"))
+        else if (StrEquals(token, "ColorSet"))
 	{
 	  found = True;
           *val = -1;
 	  GetIntegerArguments(rest, NULL, val, 1);
+	  if (*val < 0)
+	    *val = -1;
 	  SSET_COLORSET(*ptmpstyle, *val);
 	  AllocColorset(*val);
 	  ptmpstyle->flags.use_colorset = (*val >= 0);
@@ -1037,7 +1055,11 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  found = True;
 	  next = GetNextToken(rest, &token);
 	  if (token == NULL)
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "Color Style requires a color argument");
 	    break;
+	  }
 	  if (strncasecmp(token, "rgb:", 4) == 0)
 	  {
 	    char *s;
@@ -1089,7 +1111,11 @@ void ProcessNewStyle(F_CMD_ARGS)
 
 	  GetNextToken(rest, &token);
 	  if (!token)
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "Color Style called with incomplete color argument.");
 	    break;
+	  }
           SAFEFREE(SGET_BACK_COLOR_NAME(*ptmpstyle));
 	  SSET_BACK_COLOR_NAME(*ptmpstyle, token);
 	  ptmpstyle->flags.has_color_back = 1;
@@ -1125,7 +1151,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SMSET_DO_CIRCULATE_SKIP_ICON(*ptmpstyle, 1);
 	  SCSET_DO_CIRCULATE_SKIP_ICON(*ptmpstyle, 1);
         }
-        else if (StrEquals(token, "CLICKTOFOCUS"))
+        else if (StrEquals(token, "ClickToFocus"))
         {
 	  found = True;
 	  SFSET_FOCUS_MODE(*ptmpstyle, FOCUS_CLICK);
@@ -1239,7 +1265,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SCSET_HAS_WINDOW_FONT(*ptmpstyle, 1);
 
 	}
-        else if (StrEquals(token, "FORECOLOR"))
+        else if (StrEquals(token, "ForeColor"))
         {
 	  found = True;
 	  GetNextToken(rest, &token);
@@ -1254,6 +1280,11 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->flag_mask.use_colorset = 1;
 	    ptmpstyle->change_mask.use_colorset = 1;
           }
+	  else
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "ForeColor Style needs color argument");
+	  }
         }
         else if (StrEquals(token, "FVWMBUTTONS"))
         {
@@ -1341,14 +1372,14 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'h':
-        if (StrEquals(token, "HINTOVERRIDE"))
+        if (StrEquals(token, "HintOverride"))
         {
 	  found = True;
 	  SFSET_HAS_MWM_OVERRIDE(*ptmpstyle, 1);
 	  SMSET_HAS_MWM_OVERRIDE(*ptmpstyle, 1);
 	  SCSET_HAS_MWM_OVERRIDE(*ptmpstyle, 1);
         }
-        else if (StrEquals(token, "HANDLES"))
+        else if (StrEquals(token, "Handles"))
         {
 	  found = True;
           ptmpstyle->flags.has_no_border = 0;
@@ -1365,6 +1396,11 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->flag_mask.has_handle_width = 1;
 	    ptmpstyle->change_mask.has_handle_width = 1;
 	  }
+	  else
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "HandleWidth Style needs width argument");
+ 	  }
         }
         else if (StrEquals(token, "HilightFore"))
         {
@@ -1381,6 +1417,11 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->flag_mask.use_colorset_hi = 1;
 	    ptmpstyle->change_mask.use_colorset_hi = 1;
           }
+	  else
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "HilightFore Style needs color argument");
+	  }
         }
         else if (StrEquals(token, "HilightBack"))
         {
@@ -1397,6 +1438,11 @@ void ProcessNewStyle(F_CMD_ARGS)
 	    ptmpstyle->flag_mask.use_colorset_hi = 1;
 	    ptmpstyle->change_mask.use_colorset_hi = 1;
           }
+	  else
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "HilightBack Style needs color argument");
+	  }
         }
         else if (StrEquals(token, "HilightColorset"))
 	{
@@ -1423,7 +1469,7 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'i':
-        if (StrEquals(token, "ICON"))
+        if (StrEquals(token, "Icon"))
         {
 	  found = True;
 	  GetNextToken(rest, &token);
@@ -1703,16 +1749,17 @@ void ProcessNewStyle(F_CMD_ARGS)
         break;
 
       case 'l':
-        if (StrEquals(token, "LENIENCE"))
+        if (StrEquals(token, "Lenience"))
         {
 	  found = True;
 	  SFSET_IS_LENIENT(*ptmpstyle, 1);
 	  SMSET_IS_LENIENT(*ptmpstyle, 1);
 	  SCSET_IS_LENIENT(*ptmpstyle, 1);
         }
-        else if (StrEquals(token, "LAYER"))
+        else if (StrEquals(token, "Layer"))
         {
 	  found = True;
+	  *val = -1;
 	  GetIntegerArguments(rest, NULL, val, 1);
 	  if(*val < 0)
 	  {
@@ -1797,6 +1844,11 @@ void ProcessNewStyle(F_CMD_ARGS)
             ptmpstyle->flag_mask.has_mini_icon = 1;
             ptmpstyle->change_mask.has_mini_icon = 1;
           }
+	  else
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "MiniIcon Style requires an Argument");
+	  }
         }
 #endif
         else if (StrEquals(token, "MWMBORDER"))
@@ -1980,7 +2032,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  SMSET_IS_LENIENT(*ptmpstyle, 1);
 	  SCSET_IS_LENIENT(*ptmpstyle, 1);
         }
-        else if (StrEquals(token, "NOBUTTON"))
+        else if (StrEquals(token, "NoButton"))
         {
 	  found = True;
           butt = -1;
@@ -1991,6 +2043,11 @@ void ProcessNewStyle(F_CMD_ARGS)
             ptmpstyle->flags.is_button_disabled |= (1 << butt);
             ptmpstyle->flag_mask.is_button_disabled |= (1 << butt);
             ptmpstyle->change_mask.is_button_disabled |= (1 << butt);
+	  }
+	  else
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "NoButton Style requires an argument");
 	  }
         }
         else if (StrEquals(token, "NOOLDECOR"))
@@ -2420,7 +2477,12 @@ void ProcessNewStyle(F_CMD_ARGS)
               fvwm_msg(ERR,"ProcessNewStyle", "UseStyle: %s style not found",
 		       token);
             }
-          } /* if (len > 0) */
+          }
+	  else
+	  {
+	    fvwm_msg(ERR, "ProcessNewStyle",
+		     "UseStyle needs an argument");
+   	  }
         }
         break;
 

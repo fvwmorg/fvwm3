@@ -448,6 +448,7 @@ unsigned int ParseGradient(char *gradient, char **rest, char ***colors_return,
     perc = (int *)safemalloc(sizeof(int) * nsegs);
     for (i = 0; i <= nsegs; i++)
     {
+      s_colors[i] = 0;
       gradient = GetNextToken(gradient, &s_colors[i]);
       if (i < nsegs)
       {
@@ -480,6 +481,24 @@ unsigned int ParseGradient(char *gradient, char **rest, char ***colors_return,
       return 0;
     }
   }
+  for (i = 0; i <= nsegs; i++)
+  {
+    if (s_colors[i] == 0)
+    {
+      int j;
+
+      for (j = 0; j <= nsegs; j++)
+      {
+	if (s_colors[j])
+	  free(s_colors[j]);
+      }
+      free(s_colors);
+      free(perc);
+      if (rest)
+	*rest = gradient;
+      return 0;
+    }
+  }
 
   /* sensible limits */
   if (npixels < 2)
@@ -493,6 +512,7 @@ unsigned int ParseGradient(char *gradient, char **rest, char ***colors_return,
   *nsegs_return = nsegs;
   if (rest)
     *rest = gradient;
+
   return npixels;
 }
 
