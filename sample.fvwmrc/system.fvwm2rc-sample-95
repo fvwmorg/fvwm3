@@ -90,10 +90,10 @@
 #!D For the fvwm-workers. These lines will not appear if the Setup95 Script
 #!D is used to install this file. I hope that the above lines give enough
 #!D information for editing this file at a devel level. Be sure to take a 
-#!D look to the perl script script-fvwm-setup95.pl and to FvwmScript-Setup95. 
+#!D look to the perl script fvwm-script-setup95.pl and to FvwmScript-Setup95. 
 #!D More information is given here.
 #!D If you add entries to the menus which contains Exec and exec then
-#!D script-fvwm-setup95.pl will check if the application run is in 
+#!D fvwm-script-setup95.pl will check if the application run is in 
 #!D the path. Supported format is
 #!D Exec exec app [options]
 #!D Exec cd path; /.app [options] (to run path/app in path)
@@ -168,7 +168,11 @@
 # Set the root cursor
 #------------------------------------------------------------------------------
 
-CursorStyle ROOT top_left_arrow
+CursorStyle ROOT         left_ptr
+CursorStyle TITLE        left_ptr
+CursorStyle DEFAULT      left_ptr
+CursorStyle SYS          left_ptr
+CursorStyle MENU         left_ptr
 
 #------------------------------------------------------------------------------
 # Fonts - one for window titles, another for icons, and another for the menus
@@ -206,8 +210,9 @@ Style * HilightFore white, HilightBack #c3c3c3
 #------------------------------------------------------------------------------
 Style * BorderWidth 5, HandleWidth 5
 
-#WIN 12
+#WIN 13
 Style	"*"	FvwmBorder  # MWMBorder
+Style	"*"	FvwmButtons
 BorderStyle	Inactive -- HiddenHandles NoInset
 BorderStyle	Active -- HiddenHandles NoInset
 TitleStyle	ActiveUp (solid Blue4 -- Flat)
@@ -221,8 +226,8 @@ AddButtonStyle	4	Pixmap mini.winXX-maximize.xpm
 AddButtonStyle	6	Pixmap mini.winXX-minimize.xpm
 
 #FVWM 11
-#Style	"*"	FvwmBorder
-#Style  "*"     MWMButtons
+#Style	"*"	FvwmBorder  # MWMBorder
+#Style	"*"	MWMButtons
 #TitleStyle	Centered
 #ButtonStyle	all	-- UseTitleStyle
 #ButtonStyle 2 17 20x20@1 30x20@1 50x40@1 70x20@1 80x20@1 80x30@0 60x50@0 80x70@1 80x80@0 70x80@0 50x60@0 30x80@0 20x80@0 20x70@0 40x50@1 20x30@0 20x20@1
@@ -376,9 +381,9 @@ BusyCursor DynamicMenu True, Read True
 # If you want to decorate transient windows:
 #Style * DecorateTransient
 # In *general* it is not a good idea to be able to lower transient window 
-# under its main window, but why not ...
+# under its main window, but why not...
 #Style * DontRaiseTransient
-# In my HO the defaults (which are "Motif" compliants are good).
+# In my HO the defaults (which are "Motif" compliant) are good.
  
 #------------------------------------------------------------------------------
 # bogus hack 
@@ -390,7 +395,7 @@ BusyCursor DynamicMenu True, Read True
 #
 
 #KFM_ICONS 1 uncomment the next line if you use the KFM "icons"
-#BugsOption RaiseOverUnmanaged 
+#BugOpts RaiseOverUnmanaged 
 
 #PANEL_PUT 1 you may try this for a "stays put" gnome panel
 #DefaultLayers 6 8 10
@@ -437,7 +442,7 @@ AddToFunc StartFunction
 
 AddToFunc InitFunction
 # Load the X Setup Scripts setting if we use it
-+ I Exec [ ! -f ~/.xinitrc-fvwm ] || ~/.xinitrc-fvwm
++ I Exec [ -f $HOME/.xinitrc-fvwm ] && sh $HOME/.xinitrc-fvwm
 #+ I Exec exec xsetroot -solid \#7F4B7F
 
 # The restart function:
@@ -453,7 +458,7 @@ AddToFunc RestartFunction
 AddToFunc SessionInitFunction
 # Do not Load the X Setup Scripts setting, some Session Managers have its own
 # method (e.g., GNOME)
-#+ I Exec [ ! -f ~/.xinitrc-fvwm ] || ~/.xinitrc-fvwm
+#+ I Exec [ -f $HOME/.xinitrc-fvwm ] && sh $HOME/.xinitrc-fvwm
 #+ I Module FvwmButtons MyButtons
 
 AddToFunc SessionRestartFunction
@@ -1606,7 +1611,7 @@ AddToMenu   Science
 + "Thx-1138%mini.calc.xpm%"	Exec exec thx-1138
 +  "GNU &plot%mini.graph.xpm%"	Exec exec xterm -T GNUplot -name GNUplot -e gnuplot
 + "&SCILAB%mini.zoom.xpm%"		Exec exec scilab
-+ "&Mapel%mini.graph2.xpm%"		Exec exec xmaple
++ "&Maple%mini.graph2.xpm%"		Exec exec xmaple
 + "&Mathematica%mini.graph2.xpm%"	Exec exec mathematica
 + "&Xaos%mini.fractal.xpm%"		Exec exec xaos
 + "&Fractint%mini.fractal.xpm%"		Exec exec xterm -font 7x14 -e xfractint

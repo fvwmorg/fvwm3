@@ -1390,11 +1390,12 @@ Main
   SingleClic :
   Begin
 
-   # Create the fvwm user home dir if needed
-   Do {[Exec /bin/mkdir -p } $FDIR
- 
-   # Backup: script-fvwm-setup95.pl do that
-   
+   # Create the fvwm user dir if needed.
+   # No, FVWM is responsible to create it. (And this command is not portable)
+   #Do {[Exec /bin/mkdir -p } $FDIR
+
+   # Backup: fvwm-script-setup95.pl does that
+
    Set $ImagePath = (GetTitle 24)
    Set $SoundPath = (GetTitle 29)
    Set $SoundPlayer = (GetTitle 33)
@@ -1441,7 +1442,7 @@ Main
    If $KdeUserMenu == {1} Then
       Set $KdeMenu = {1}
 
-   Set $PERLCMD = $DATADIR{/script-fvwm-setup95.pl --configin=} $INPUT { --dirout=} $FDIR { --fvwm=} $Fvwm { --sxs=} $Slow { --km=} $KdeMenu { --ksm=} $KdeSysMenu { --kum=} $KdeUserMenu { --kfm=} $KfmIcons { --gmg=} $GnomeMenuGtk { --gsmg=} $GnomeSysMenuGtk { --gumg=} $GnomeUserMenuGtk { --grmg=} $GnomeRHMenuGtk { --gsmf=} $GnomeSysMenuFvwm { --gumf=} $GnomeUserMenuFvwm { --grmf=} $GnomeRHMenuFvwm { --gs=} $GnomeSession { --gy=} $GnomeY { --gpath=} $GnomePath { --cde=} $Cde { --stroke=} $Stroke { --lap=} $Laptop { --pp=} $PanelStaysPut { --editor="} $Editor {" --reditor="} $Reditor {" --file="} $FileMgr {" --term="} $Term {" --spl="} $SoundPlayer {" --spa=} $SoundPath { --i=} $IP { --ip=} $ImagePath { --dip="} $DefImagePath {"}
+   Set $PERLCMD = $DATADIR {/fvwm-script-setup95.pl --configin=} $INPUT { --dirout=} $FDIR { --fvwm=} $Fvwm { --sxs=} $Slow { --km=} $KdeMenu { --ksm=} $KdeSysMenu { --kum=} $KdeUserMenu { --kfm=} $KfmIcons { --gmg=} $GnomeMenuGtk { --gsmg=} $GnomeSysMenuGtk { --gumg=} $GnomeUserMenuGtk { --grmg=} $GnomeRHMenuGtk { --gsmf=} $GnomeSysMenuFvwm { --gumf=} $GnomeUserMenuFvwm { --grmf=} $GnomeRHMenuFvwm { --gs=} $GnomeSession { --gy=} $GnomeY { --gpath=} $GnomePath { --cde=} $Cde { --stroke=} $Stroke { --lap=} $Laptop { --pp=} $PanelStaysPut { --editor="} $Editor {" --reditor="} $Reditor {" --file="} $FileMgr {" --term="} $Term {" --spl="} $SoundPlayer {" --spa=} $SoundPath { --i=} $IP { --ip=} $ImagePath { --dip="} $DefImagePath {"}
 
   Do {BusyCursor Read True}
   Do {Echo Piperead 'perl } $PERLCMD {'}
