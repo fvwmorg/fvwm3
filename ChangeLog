@@ -1,5 +1,9 @@
 1999-08-06  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
 
+	* libs/Bindings.c (GrabWindowButton): 
+	(GrabWindowKey): fixed bindings with 'N'o modifiers and the
+	IgnoreModifiers command
+
 	* fvwm/add_window.c (AddWindow): fixed grabbing of buttons for
 	ClickToFocus and MouseFocusClickRaises
 

@@ -352,8 +352,7 @@ void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 		 GrabModeAsync, GrabModeAsync);
       else
 	XUngrabKey(dpy, binding->Button_Key, binding->Modifier, w);
-      if(binding->Modifier != AnyModifier && binding->Modifier != 0 &&
-	 dead_modifiers != 0)
+      if(binding->Modifier != AnyModifier && dead_modifiers != 0)
 	{
 	  register unsigned int mods;
 	  register unsigned int max = dead_modifiers;
@@ -423,8 +422,7 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
 			GrabModeAsync, GrabModeAsync, None, cursor);
 	  else
 	    XUngrabButton(dpy, button, binding->Modifier, w);
-	  if(binding->Modifier != AnyModifier && binding->Modifier != 0 &&
-	     dead_modifiers != 0)
+	  if(binding->Modifier != AnyModifier && dead_modifiers != 0)
 	    {
 	      register unsigned int mods;
 	      register unsigned int max = dead_modifiers;
