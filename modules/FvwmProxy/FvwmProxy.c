@@ -49,7 +49,6 @@
 
 /* things we might put in a configuration file */
 
-#define	PROXY_ALT_POLLING	True	/* poll Alt key to Show/Hide proxies */
 #define PROXY_MOVE		False	/* move window when proxy is dragged */
 #define PROXY_WIDTH		180
 #define PROXY_HEIGHT		60
@@ -86,7 +85,6 @@ static GC miniIconGC;
 static Window rootWindow;
 static FILE *errorFile;
 static XTextProperty windowName;
-static int altState=0;
 static int deskNumber=0;
 static int mousex,mousey;
 static ProxyWindow *firstWindow=NULL;
@@ -451,9 +449,9 @@ static void OpenOneWindow(ProxyWindow *proxy)
 	{
 		return;
 	}
-	attributes.override_redirect = True;
 	if (proxy->proxy == None)
 	{
+		attributes.override_redirect = True;
 		proxy->proxy = XCreateWindow(
 			dpy, rootWindow, proxy->proxyx, proxy->proxyy,
 			proxy->proxyw, proxy->proxyh,border,
@@ -462,6 +460,10 @@ static void OpenOneWindow(ProxyWindow *proxy)
 		XSelectInput(
 			dpy, proxy->proxy, ButtonPressMask | ExposureMask |
 			ButtonMotionMask | EnterWindowMask);
+	}
+	else
+	{
+		XMoveWindow(dpy, proxy->proxy, proxy->proxyx, proxy->proxyy);
 	}
 	XMapRaised(dpy, proxy->proxy);
 	DrawProxyBackground(proxy);
@@ -908,7 +910,7 @@ static void ProcessMessage(FvwmPacket* packet)
 		}
 		break;
 	case M_NEW_DESK:
-		if(deskNumber!=body[0] && altState)
+		if(deskNumber!=body[0] && are_windows_shown)
 		{
 			deskNumber=body[0];
 			if(are_windows_shown)
@@ -1125,40 +1127,9 @@ static void Loop(int *fd)
 	while(1)
 	{
 		if((result=My_XNextEvent(dpy,&event))==1)
-			DispatchEvent(&event);
-
-#if PROXY_ALT_POLLING
-#if 0
 		{
-			Window root_return, child_return;
-			int root_x_return, root_y_return;
-			int win_x_return, win_y_return;
-			unsigned int mask_return;
-			int oldAltState=altState;
-
-			if (FQueryPointer(
-				    dpy,rootWindow,&root_return, &child_return,
-				    &root_x_return,&root_y_return,
-				    &win_x_return,&win_y_return,
-				    &mask_return) == False)
-			{
-				/* pointer is on another screen - ignore */
-			}
-			altState=((mask_return&0x8)!=0);
-
-			if(!oldAltState && altState)
-			{
-				fprintf(errorFile,"ALT ON\n");
-				StartProxies();
-			}
-			if(oldAltState && !altState)
-			{
-				fprintf(errorFile,"ALT OFF\n");
-				SelectProxy();
-			}
+			DispatchEvent(&event);
 		}
-#endif
-#endif
 	}
 }
 

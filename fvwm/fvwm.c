@@ -1264,9 +1264,9 @@ static void usage(int is_verbose)
 		" -S:           static palette\n"
 		" -V:           print version information\n"
 		);
-		fprintf(
-			stderr, "Try 'man %s' for more information.\n",
-		        PACKAGE);
+	fprintf(
+		stderr, "Try 'man %s' for more information.\n",
+		PACKAGE);
 
 		return;
 }
