@@ -1,4 +1,4 @@
-/* -*-c-*- */
+"/* -*-c-*- */
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -3685,8 +3685,8 @@ static Bool style_parse_one_style_option(
 					states &= ~mask;
 				}
 				S_SET_USER_STATES(SCF(*ps), states);
-				S_SET_USER_STATES(SCM(*ps), 1);
-				S_SET_USER_STATES(SCC(*ps), 1);
+				S_ADD_USER_STATES(SCM(*ps), mask);
+				S_ADD_USER_STATES(SCC(*ps), mask);
 			}
 			else
 			{
