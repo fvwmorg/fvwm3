@@ -1,3 +1,8 @@
+1998-12-18  Dan Espen  <dane@mk.bellcore.com>
+
+	* fvwm/move.c (moveLoop): Remove some fprintfs left behind by
+	accident.
+
 1998-12-18  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/bindings.c (ParseBindEntry): fixed older patch to combine

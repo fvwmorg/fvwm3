@@ -511,11 +511,9 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
 
 	  /* Resist moving windows over the edge of the screen! */
-fprintf(stderr, "xl=%d, Width=%d, MoveResistance=%d\n", xl,Width,Scr.MoveResistance);
 	  if(((xl + Width) >= Scr.MyDisplayWidth)&&
 	     ((xl + Width) < Scr.MyDisplayWidth+Scr.MoveResistance))
 	    xl = Scr.MyDisplayWidth - Width - tmp_win->bw;
-fprintf(stderr, "xl=%d\n",xl);
 	  if((xl <= 0)&&(xl > -Scr.MoveResistance))
 	    xl = 0;
 	  if(((yt + Height) >= Scr.MyDisplayHeight)&&
