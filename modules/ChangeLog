@@ -1,3 +1,8 @@
+2002-03-29  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmEvent/FvwmEvent.c (config):
+	fixed PlayCmd in audio compatible mode
+
 2002-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmDebug/FvwmDebug.c (list_configure):
@@ -6,15 +11,15 @@
 
 2002-03-24  Mikhael Goikhman  <migo@homemail.com>
 
-	* modules/FvwmButtons/Makefile.am:
-	* modules/FvwmForm/Makefile.am:
-	* modules/FvwmIconBox/Makefile.am:
-	* modules/FvwmIconMan/Makefile.am:
-	* modules/FvwmIdent/Makefile.am:
-	* modules/FvwmPager/Makefile.am:
-	* modules/FvwmScript/Makefile.am:
-	* modules/FvwmTaskBar/Makefile.am:
-	* modules/FvwmWinList/Makefile.am:
+	* FvwmButtons/Makefile.am:
+	* FvwmForm/Makefile.am:
+	* FvwmIconBox/Makefile.am:
+	* FvwmIconMan/Makefile.am:
+	* FvwmIdent/Makefile.am:
+	* FvwmPager/Makefile.am:
+	* FvwmScript/Makefile.am:
+	* FvwmTaskBar/Makefile.am:
+	* FvwmWinList/Makefile.am:
 	added Bidi_CFLAGS and Bidi_LIBS
 
 2002-03-21  Daniel Henninger  <daniel@ncsu.edu>

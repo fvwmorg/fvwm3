@@ -509,17 +509,8 @@ void config(void)
 	    free(cmd_line);
 	  if (token)
 	  {
-	    if (e - (char**)table == 4)
-	    {
-	      cmd_line = (char *)safemalloc(strlen(token)+11);
-	      strcpy(cmd_line, "Exec exec ");
-	      strcat(cmd_line, token);
-	    }
-	    else
-	    {
-	      cmd_line = (char *)safemalloc(strlen(token)+1);
-	      strcpy(cmd_line, token);
-	    }
+	    cmd_line = (char *)safemalloc(strlen(token)+1);
+	    strcpy(cmd_line, token);
 	  }
 	  else
 	  {

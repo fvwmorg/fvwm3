@@ -26,6 +26,7 @@
 #if HAVE_BIDI
 
 #include <fribidi/fribidi.h>
+#include "safemalloc.h"
 
 Bool FBidiIsApplicable(const char *charset)
 {
@@ -73,11 +74,11 @@ char *FBidiConvert(
 		return NULL;
 	}
 
-	visual_str = (char *)malloc((str_len + 1) * sizeof(char));
+	visual_str = (char *)safemalloc((str_len + 1) * sizeof(char));
 
 	/* it is possible that we allocate a bit more here, if utf-8 */
 	logical_unicode_str =
-		(FriBidiChar *)malloc((str_len + 1) * sizeof(FriBidiChar));
+		(FriBidiChar *)alloca((str_len + 1) * sizeof(FriBidiChar));
 
 	/* convert to unicode first */
 	str_len = fribidi_charset_to_unicode(
@@ -85,7 +86,7 @@ char *FBidiConvert(
 		logical_unicode_str);
 
 	visual_unicode_str =
-		(FriBidiChar *)malloc((str_len + 1) * sizeof(FriBidiChar));
+		(FriBidiChar *)alloca((str_len + 1) * sizeof(FriBidiChar));
 
 	/* apply bidi algorithm, convert logical string to visual string */
 	fribidi_log2vis(
@@ -101,9 +102,6 @@ char *FBidiConvert(
 	{
 		*is_rtl = True;
 	}
-
-	free(logical_unicode_str);
-	free(visual_unicode_str);
 
 	return visual_str;
 }
