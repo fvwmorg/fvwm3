@@ -54,8 +54,8 @@ curr_section="0"
 
 # There is some logic in here for man pages in other than section 1,
 # right now we don't need it.  Also it doesn't work because this isn't ksh...
-for i in `/bin/find $sourcedir -name '*.[1]'` ; do
-  file=`basename $i | /bin/cut -d. -f1`
+for i in `find $sourcedir -name '*.[1]'` ; do
+  file=`basename $i | cut -d. -f1`
   page=$file
   section=1
 
