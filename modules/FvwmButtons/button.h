@@ -66,6 +66,7 @@ button_info *NextButton(button_info**,button_info**,int*,int);
 /* --------------------------- button navigation --------------------------- */
 
 int button_belongs_to(button_info*,int);
+button_info *get_xy_button(button_info *ub, int row, int column);
 button_info *select_button(button_info*,int,int);
 
 /* --------------------------- button geometry ----------------------------- */

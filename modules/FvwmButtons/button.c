@@ -792,7 +792,7 @@ button_info *NextButton(button_info **ub,button_info **b,int *i,int all)
 /**
 *** button_belongs_to()
 *** Function that finds out which button a given position belongs to.
-*** Returns -1 is not part of any, button if a proper button.
+*** Returns -1 if not part of any, button if a proper button.
 **/
 int button_belongs_to(button_info *ub,int button)
 {
@@ -816,6 +816,28 @@ int button_belongs_to(button_info *ub,int button)
     }
   }
   return -1;
+}
+
+/**
+*** get_xy_button()
+*** Function that returns the button that covers the given row/column in the
+*** button matrix. Returns NULL if none.
+**/
+button_info *get_xy_button(button_info *ub, int row, int column)
+{
+	int i;
+
+	if (!(ub->flags & b_Container))
+	{
+		return NULL;
+	}
+	i = button_belongs_to(ub, column + row * ub->c->num_columns);
+	if (i == -1)
+	{
+		return NULL;
+	}
+
+	return ub->c->buttons[i];
 }
 
 /**

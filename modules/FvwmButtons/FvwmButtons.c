@@ -3141,8 +3141,11 @@ static char *message_options[] = {"Title", "Icon", NULL};
 void parse_message_line(char *line)
 {
   char *rest;
+  char *next;
   int type;
-  int n, count, i;
+  int count, i;
+  int n;
+  int vals[2];
   button_info *b, *ub = UberButton;
 
   type = GetTokenIndex(line, message_options, -1, &rest);
@@ -3152,19 +3155,39 @@ void parse_message_line(char *line)
   }
 
   /* find out which button */
-  if (GetIntegerArguments(rest, &rest, &n, 1) != 1 || n < 0) {
-    fprintf(stderr, "%s: button number must not be negative\n", MyName);
-    return;
+  n = GetIntegerArguments(rest, &rest, &(vals[0]), 1);
+  if (n < 1) {
+    fprintf(stderr, "%s: missing button number\n", MyName);
   }
-  i = count = -1;
-  /* find the button */
-  while (NextButton(&ub, &b, &i, 0)) {
-    if (++count == n)
-      break;
+  n = GetIntegerArguments(rest, &next, &(vals[1]), 1);
+  if (n < 1) {
+    if (vals[0] < 0) {
+      fprintf(stderr, "%s: button number must not be negative\n", MyName);
+      return;
+    }
+    i = count = -1;
+    /* find the button */
+    while (NextButton(&ub, &b, &i, 0)) {
+      if (++count == vals[0])
+	break;
+    }
+    if (count != vals[0] || b == NULL) {
+      fprintf(stderr, "%s: button number %d not found\n", MyName, n);
+      return;
+    }
   }
-  if (count != n || b == NULL) {
-    fprintf(stderr, "%s: button number %d not found\n", MyName, n);
-    return;
+  else {
+    rest = next;
+    if (vals[0] < 0 || vals[1] < 0) {
+      fprintf(stderr, "%s: button row/column must not be negative\n", MyName);
+      return;
+    }
+    b = get_xy_button(ub, vals[0], vals[1]);
+    if (b == NULL) {
+      fprintf(stderr, "%s: button at row %d column %d not found\n", MyName,
+	      vals[0], vals[1]);
+      return;
+    }
   }
 
   switch(type) {
