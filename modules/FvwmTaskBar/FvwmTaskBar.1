@@ -121,12 +121,12 @@ with the focus. If not specified the color specified by  *FvwmTaskBarBack or
 *FvwmTaskBarColorset is used. Note that the button which represents the window
 with the focus is also highlighted.  See "*FvwmTaskNoBrightFocus".
 
-.IP "*FvwmTaskFocusColorset \fIcolorset\fP"
+.IP "*FvwmTaskBarFocusColorset \fIcolorset\fP"
 Tells the module to use colorset \fIcolorset\fP for the button
 which represents the window with the focus. Please refer to the man page of
 the FvwmTheme module for details about colorsets.
 
-.IP "*FvwmTaskNoBrightFocus"
+.IP "*FvwmTaskBarNoBrightFocus"
 By default the button which represents the window with the focus is
 highlighted. This option disables this feature.  \fINote:\fP uou will
 want this option if you use a pixmap (via FvwmTheme) for the background.
@@ -136,6 +136,11 @@ Specifies the color to be used for the text in the tips windows.
 
 .IP "*FvwmTaskBarTipsBack \fIcolor\fP"
 Specifies the background color for the tips windows.
+
+.IP "*FvwmTaskTipsColorset \fIcolorset\fP"
+Tells the module to use colorset \fIcolorset\fP for the tips windows.  
+Please refer to the man page of the FvwmTheme module for details about 
+colorsets.
 
 .IP "*FvwmTaskBarAutoStick"
 This option causes the taskbar to "stick" either to the top or bottom
