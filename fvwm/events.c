@@ -98,6 +98,7 @@ Window PressedW;
 #endif /* !LASTEvent */
 typedef void (*PFEH)(void);
 PFEH EventHandlerJumpTable[LASTEvent];
+void  ResyncFvwmStackRing(void);
 
 /*
 ** Procedure:
@@ -1293,6 +1294,7 @@ void HandleConfigureRequest()
   int x, y, width, height;
   XConfigureRequestEvent *cre = &Event.xconfigurerequest;
   Bool sendEvent=False;
+  FvwmWindow  *FvwmSib;
 
   DBUG("HandleConfigureRequest","Routine Entered");
 DB(("HandleConfigureRequest: called for cre->window=0x%x",cre->window));
@@ -1376,10 +1378,12 @@ DB(("HandleConfigureRequest: finished 1"));
     return;
   }
 
+  /*  Stacking order change requested...  */
   if (cre->value_mask & CWStackMode)
   {
     FvwmWindow *otherwin;
 
+    otherwin  =  NULL;
     xwc.sibling = (((cre->value_mask & CWSibling) &&
                     (XFindContext (dpy, cre->above, FvwmContext,
                                    (caddr_t *) &otherwin) == XCSUCCESS))
@@ -1389,6 +1393,39 @@ DB(("HandleConfigureRequest: finished 1"));
                       cre->value_mask & (CWSibling | CWStackMode), &xwc);
 DB(("HandleConfigureRequest: reconfiguring frame window 0x%x for CWSibling|CWStackMode (sendEvent enabled)", Tmp_win->frame));
     sendEvent = True;
+
+    /*
+        RBW - Update the stacking order ring. 
+    */
+    if (xwc.stack_mode == Above || xwc.stack_mode == Below)
+      {
+        FvwmSib = (otherwin != NULL ) ? otherwin: Scr.FvwmRoot.stack_next;  /*  Set up for Above.  */
+        if (xwc.stack_mode == Below)
+	  {
+            /*
+                If Below-sibling, raise above next lower window. If no sibling,
+                bottom of stack is "above" Scr.FvwmRoot in the ring.
+            */
+            FvwmSib = (FvwmSib == otherwin) ? FvwmSib->stack_next: FvwmSib->stack_prev;
+	  }
+        if (Tmp_win != FvwmSib)                            /* Don't chain it to itself!  */
+          {
+            Tmp_win->stack_prev->stack_next = Tmp_win->stack_next;  /* Pluck from chain.   */
+            Tmp_win->stack_next->stack_prev = Tmp_win->stack_prev;
+            Tmp_win->stack_next = FvwmSib;                          /* Set new pointers.   */
+            Tmp_win->stack_prev = FvwmSib->stack_prev;
+            FvwmSib->stack_prev->stack_next = Tmp_win;              /* Re-insert above sibling. */
+            FvwmSib->stack_prev = Tmp_win;
+          }
+      }
+    else
+      {
+        /*  
+            Oh, bother! We have to rebuild the stacking order ring to figure
+            out where this one went (TopIf, BottomIf, or Opposite).
+        */
+        ResyncFvwmStackRing();
+      }
   }
 
 #ifdef SHAPE
@@ -1594,4 +1631,67 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   DBUG("My_XNextEvent","leaving My_XNextEvent");
   return 0;
 }
+
+
+
+
+/*
+    RBW - 01/07/1998  -  this is here temporarily - I mean to move it to
+    libfvwm eventually, along with some other chain manipulation functions.
+*/
+
+/*
+    ResyncFvwmStackRing - 
+    Rebuilds the stacking order ring of FVWM-managed windows. For use in cases
+    where apps raise/lower their own windows in a way that makes it difficult to
+    determine exactly where they ended up in the stacking order.
+    - Based on code from Matthias Clasen.
+*/
+void  ResyncFvwmStackRing (void)
+{
+  Window root, parent, *children;
+  unsigned int nchildren, i;
+  FvwmWindow *t1, *t2;
+
+  MyXGrabServer (dpy);
+
+  if (!XQueryTree (dpy, Scr.Root, &root, &parent, &children, &nchildren)) 
+    {
+      MyXUngrabServer (dpy);
+      return;
+    }
+
+  t2 = &Scr.FvwmRoot;
+  for (i = 0; i < nchildren; i++) 
+    {
+      for (t1 = Scr.FvwmRoot.next; t1 != NULL; t1 = t1->next) 
+	{
+	  if (t1->frame == children[i]) 
+	    {
+	      break;
+	    }
+	}
+
+      if (t1 != NULL && t1 != t2) 
+	{
+          /*  
+              Move the window to its new position, working from the bottom up
+              (that's the way XQueryTree presents the list).
+          */
+          t1->stack_prev->stack_next = t1->stack_next;  /* Pluck from chain.       */
+          t1->stack_next->stack_prev = t1->stack_prev;
+          t1->stack_next = t2;                          /* Set new pointers.       */
+          t1->stack_prev = t2->stack_prev;
+          t2->stack_prev->stack_next = t1;              /* Insert in new position. */
+          t2->stack_prev = t1;
+          t2 = t1;
+
+	}	
+    }
+  
+  MyXUngrabServer (dpy);
+  
+  XFree (children);
+}
+
 
