@@ -1,3 +1,8 @@
+2002-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (__resize_window):
+	fixed handling of MontionNotify and PropertyNotify events
+
 2002-12-03  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/borders.c (border_draw_decor_to_pixmap):
@@ -8,7 +13,7 @@
 	* fvwm/builtins.c (CMD_PrintInfo):
 	New subject nls to PrintInfo
 
-	* libs/FGettext.c (*): 
+	* libs/FGettext.c (*):
 	New command FlocalePath
 
 2002-12-02  Dominik Vogt  <dominik.vogt@gmx.de>
