@@ -16,7 +16,7 @@ dnl Various configure-time options
 dnl
 
 AC_ARG_ENABLE(dmalloc,
-  [  --enable-dmalloc        Enable support for the dmalloc debugging library],
+  [  --enable-dmalloc        enable support for the dmalloc debugging library],
   [ac_cv_dmalloc="$enableval"],
   [ac_cv_dmalloc="no"])
 
@@ -30,8 +30,8 @@ smr_SWITCH(modality, modal dialogs for applications, on, MODALITY_IS_EVIL)
 dnl smr_SWITCH(multistyle, stacked button styles, on, MULTISTYLE)
 smr_SWITCH(shape, shape extensions, on, SHAPE)
 dnl smr_SWITCH(usedecor, UseDecor style option, on, USEDECOR)
-smr_SWITCH(gnome, GNOME Window Manager Hints, off, GNOME)
-smr_SWITCH(busy-cursor, Busy Cursor Patch, on, BUSYCURSOR)
+smr_SWITCH(gnome, GNOME window manager hints, off, GNOME)
+smr_SWITCH(busy-cursor, busy cursor patch, on, BUSYCURSOR)
 
 dnl FIXME: default value should be derived from computed path to X
 dnl includes.  Actually, this should probably not appear in configure
@@ -152,7 +152,7 @@ AC_SUBST(stroke_CFLAGS)
 
 dnl FIXME: should compute availability of termcap
 dnl Forget cached values, so user can re-run configure
-unset ac_cv_header_readline_readline_h
+unset ac_cv_header_readline_history_h
 unset ac_cv_lib_readline_readline
 AC_MSG_CHECKING([with termcap])
 smr_CHECK_LIB(readline, , , readline, readline/history.h, -ltermcap)
@@ -167,6 +167,7 @@ else
   unset ac_cv_header_readline_readline_h
   unset ac_cv_lib_readline_readline
   AC_MSG_CHECKING([with ncurses])
+  dnl FIXME: smr_CHECK_LIB always adds help lines, we don't need them twice
   smr_CHECK_LIB(readline, , , readline, readline/readline.h, -lncurses)
   if test "$readline_LIBS"; then
     readline_LIBS="$readline_LIBS -lncurses"
@@ -317,8 +318,35 @@ fi
 dnl Check the availability of SM
 dnl We don't have to add any extra libraries, since
 dnl -lSM -lICE are in X_PRE_LIBS when they exist.
-AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), ,
-             [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+dnl [old check] AC_CHECK_LIB(SM, SmcOpenConnection, AC_DEFINE(SESSION), ,
+dnl [old check]            [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+
+AC_ARG_ENABLE(sm,
+  [  --disable-sm     disable session management support],
+  [ if test "$enableval" = yes; then
+    with_sm="yes, check"
+  else
+    with_sm="no"
+  fi ],
+  [ with_sm="not specified, check" ]
+)
+
+if test "$with_sm" != "no"; then
+  unset ac_cv_lib_SM_SmcOpenConnection
+
+  dnl Uncomment the following and comment out AC_CHECK_LIB to get --with-sm-*
+  dnl unset ac_cv_header_X11_SM_SMlib_h
+  dnl smr_CHECK_LIB(sm, SM, adds session management support, SmcOpenConnection,
+  dnl   X11/SM/SMlib.h,
+  dnl   [$X_LIBS $X_PRE_LIBS $X_EXTRA_LIBS], $X_CFLAGS)
+  dnl test "$sm_LIBS" && AC_DEFINE(SESSION)
+  dnl AC_SUBST(sm_LIBS)
+  dnl AC_SUBST(sm_CFLAGS)
+
+  AC_CHECK_LIB(SM, SmcOpenConnection, with_sm=yes; AC_DEFINE(SESSION),
+    with_sm=no, [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+fi
+
 
 dnl Check the availability of Gtk
 AM_PATH_GTK(1.1.0,[FVWMGTK=FvwmGtk AC_SUBST(FVWMGTK)],)
@@ -396,13 +424,14 @@ mv config.status-t config.status
 echo "
 Configuration:
 
-  FVWM Version:             $VERSION
+  FVWM Version:                    $VERSION
 
-  Have ReadLine support?    $with_readline
-  Have RPlay support?	    $with_rplay
-  Have Stroke support?      $with_stroke
-  Have XPM support? 	    $with_xpm$xpm_problem
-  Have GTK support?         $with_gtk
+  Have ReadLine support?           $with_readline
+  Have RPlay support?              $with_rplay
+  Have Stroke support?             $with_stroke
+  Have XPM support?                $with_xpm$xpm_problem
+  Have GTK support?                $with_gtk
+  Have Session Management support? $with_sm
 "
 
 case "$ac_cv_dmalloc" in
