@@ -628,7 +628,7 @@ typedef struct FvwmWindow
 	short title_text_offset;
 	short title_length;
 	short title_thickness;
-	text_direction_type title_text_dir;
+	text_rotation_type title_text_rotation;
 	struct
 	{
 		/* geometry of the icon picture window */

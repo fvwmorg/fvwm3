@@ -284,7 +284,7 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
   
 	if (fws->str == NULL || len < 1)
 		return;
-	if (fws->flags.text_direction == TEXT_DIR_LEFT_TO_RIGHT)
+	if (fws->flags.text_rotation == TEXT_ROTATED_0)
 		return; /* should not happen */
 
 	my_gc = fvwmlib_XCreateGC(dpy, fws->win, 0, NULL);
@@ -344,12 +344,12 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 	image->format = XYBitmap;
 
 	/* width, height of rotated character ... */
-	if (fws->flags.text_direction == TEXT_DIR_RIGHT_TO_LEFT)
+	if (fws->flags.text_rotation == TEXT_ROTATED_180)
 	{
 		bit_w = vert_w;
 		bit_h = vert_h;
 	}
-	else /* vertival text */
+	else /* vertical text */
 	{
 		bit_w = vert_h;
 		bit_h = vert_w; 
@@ -377,26 +377,25 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 		for (i = 0; i < bit_w; i++)
 		{
 			/* map bits ... */
-			if (fws->flags.text_direction == TEXT_DIR_BOTTOM_TO_TOP)
+			if (fws->flags.text_rotation == TEXT_ROTATED_270)
 				val = vertdata[i*vert_len + (vert_w-j-1)/8] &
 					(128>>((vert_w-j-1)%8));
 
-			else if (fws->flags.text_direction ==
-				 TEXT_DIR_RIGHT_TO_LEFT)
+			else if (fws->flags.text_rotation == TEXT_ROTATED_180)
 				val = vertdata[
-				        (vert_h-j-1)*vert_len + (vert_w-i-1)/8] &
+					(vert_h-j-1)*vert_len + (vert_w-i-1)/8] &
 					(128>>((vert_w-i-1)%8));
-		
-			else /* TEXT_DIR_TOP_TO_BOTTOM */
-				val = vertdata[(vert_h-i-1)*vert_len + j/8] & 
+
+			else /* TEXT_ROTATED_90 */
+				val = vertdata[(vert_h-i-1)*vert_len + j/8] &
 					(128>>(j%8));
-    
+
 			if (val)
 				bitdata[j*bit_len + i/8] =
 					bitdata[j*bit_len + i/8] |
-		    (128>>(i%8));
-	      }
-	  }
+					(128>>(i%8));
+		}
+	}
 
 	/* create the character's bitmap  and put the image on it */
 	rotated_pix = XCreatePixmap(dpy, fws->win, bit_w, bit_h, 1);
@@ -412,18 +411,18 @@ void FlocaleRotateDrawString(Display *dpy, FlocaleFont *flf,
 	XFreeGC(dpy, font_gc);
 
 	/* suitable offset: FIXME */
-	if (fws->flags.text_direction == TEXT_DIR_BOTTOM_TO_TOP)
+	if (fws->flags.text_rotation == TEXT_ROTATED_270)
 	{
 		xp = 1;
 		yp = fws->y;
 	}
-	else if (fws->flags.text_direction == TEXT_DIR_RIGHT_TO_LEFT)
+	else if (fws->flags.text_rotation == TEXT_ROTATED_180)
 	{
 		/* not used and not tested */
 		xp = 0;
 		yp = fws->y;
 	}
-	else /* fws->flags.text_direction == TEXT_DIR_TOP_TO_BOTTOM */
+	else /* fws->flags.text_rotation == TEXT_ROTATED_90 */
 	{
 		xp = 1;
 		yp = fws->y;
@@ -751,7 +750,7 @@ void FlocaleDrawString(
 	{
 		len = strlen(fstring->str);
 	}
-	if (fstring->flags.text_direction != TEXT_DIR_LEFT_TO_RIGHT &&
+	if (fstring->flags.text_rotation != TEXT_ROTATED_0 &&
 	    flf->fftf.fftfont == NULL)
 	{
 		FlocaleRotateDrawString(dpy, flf, fstring, len);
@@ -760,14 +759,14 @@ void FlocaleDrawString(
 	if (FftSupport && flf->fftf.fftfont != NULL)
 	{
 		int x,y;
-		switch(fstring->flags.text_direction)
+		switch(fstring->flags.text_rotation)
 		{
-		case TEXT_DIR_BOTTOM_TO_TOP:
+		case TEXT_ROTATED_270:
 			y = fstring->y +
 				FftTextWidth(&flf->fftf, fstring->str, len);
 			x = fstring->x;
 			break;
-		case TEXT_DIR_TOP_TO_BOTTOM:
+		case TEXT_ROTATED_90:
 		default:
 			y = fstring->y;
 			x = fstring->x;
@@ -775,7 +774,7 @@ void FlocaleDrawString(
 		}
 		FftDrawString(
 			dpy, fstring->win, &flf->fftf, fstring->gc, x, y,
-			fstring->str, len, fstring->flags.text_direction);
+			fstring->str, len, fstring->flags.text_rotation);
 		return;
 	}
 	if (FlocaleMultibyteSupport && flf->fontset != None)

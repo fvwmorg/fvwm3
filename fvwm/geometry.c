@@ -245,19 +245,19 @@ void get_title_font_size_and_offset(
                         is_left_title_rotated_cw : is_right_title_rotated_cw;
 		if (is_rotated_cw)
 		{
-			fw->title_text_dir = TEXT_DIR_TOP_TO_BOTTOM;
+			fw->title_text_rotation = TEXT_ROTATED_90;
 			min_offset = fw->title_font->height -
 				fw->title_font->ascent;
 		}
 		else
 		{
-			fw->title_text_dir = TEXT_DIR_BOTTOM_TO_TOP;
+			fw->title_text_rotation = TEXT_ROTATED_270;
 		}
 		break;
 	case DIR_N:
 	case DIR_S:
 	default:
-		fw->title_text_dir =  TEXT_DIR_LEFT_TO_RIGHT;
+		fw->title_text_rotation = TEXT_ROTATED_0;
 		break;
 	}
 	extra_size = (decor_size > 0) ? decor_size - font_size : 0;

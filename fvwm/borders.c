@@ -716,7 +716,7 @@ static void DrawMultiPixmapTitlebar(FvwmWindow *fw, DecorFace *df)
 			fstr.x = text_pos;
 		}
 		fstr.gc = gc;
-		fstr.flags.text_direction = fw->title_text_dir;
+		fstr.flags.text_rotation = fw->title_text_rotation;
 		FlocaleDrawString(dpy, fw->title_font, &fstr, 0);
 	}
 	else
@@ -1016,7 +1016,7 @@ static void RedrawTitle(
   memset(&fstr, 0, sizeof(fstr));
   fstr.str = t->visible_name;
   fstr.win = FW_W_TITLE(t);
-  fstr.flags.text_direction = t->title_text_dir;
+  fstr.flags.text_rotation = t->title_text_rotation;
   if (HAS_VERTICAL_TITLE(t))
   {
     fstr.y = offset;

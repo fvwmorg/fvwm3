@@ -48,19 +48,19 @@
 
 /* ---------------------------- global macros ------------------------------- */
 
-#define IS_TEXT_DIR_VERTICAL(x) \
-    (x == TEXT_DIR_TOP_TO_BOTTOM || x == TEXT_DIR_BOTTOM_TO_TOP)
+#define IS_TEXT_DRAWN_VERTICALLY(x) \
+	(x == TEXT_ROTATED_90 || x == TEXT_ROTATED_270)
 
 /* ---------------------------- type definitions ---------------------------- */
 
 typedef enum
 {
-	TEXT_DIR_LEFT_TO_RIGHT = 0,
-	TEXT_DIR_TOP_TO_BOTTOM = 1,
-	TEXT_DIR_BOTTOM_TO_TOP = 2,
-	TEXT_DIR_RIGHT_TO_LEFT = 3, /* not used and not tested */
-	TEXT_DIR_MASK          = 3,
-} text_direction_type;
+	TEXT_ROTATED_0    = 0,
+	TEXT_ROTATED_90   = 1,
+	TEXT_ROTATED_180  = 2, /* not used and not tested */
+	TEXT_ROTATED_270  = 3,
+	TEXT_ROTATED_MASK = 3,
+} text_rotation_type;
 
 typedef struct _FlocaleFont
 {
@@ -87,7 +87,7 @@ typedef struct
 	int len;
 	struct
 	{
-		unsigned text_direction : 2;
+		unsigned text_rotation : 2;
 	} flags;
 } FlocaleWinString;
 

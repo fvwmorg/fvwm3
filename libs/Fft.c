@@ -93,7 +93,7 @@ Bool is_utf8_encoding(FftFont *f)
 
 static
 FftFont *FftGetRotatedFont(
-		Display *dpy, FftFont *f, text_direction_type text_dir)
+	Display *dpy, FftFont *f, text_rotation_type text_rotation)
 {
 	FftPattern *vert_pat;
 	FftMatrix m;
@@ -108,11 +108,11 @@ FftFont *FftGetRotatedFont(
 
 	dummy = FftPatternDel(vert_pat, XFT_MATRIX);
 
-	if (text_dir == TEXT_DIR_TOP_TO_BOTTOM)
+	if (text_rotation == TEXT_ROTATED_90)
 	{
 		FFT_SET_TOP_TO_BOTTOM_MATRIX(&m);
 	}
-	else if (text_dir == TEXT_DIR_BOTTOM_TO_TOP)
+	else if (text_rotation == TEXT_ROTATED_270)
 	{
 		FFT_SET_BOTTOM_TO_TOP_MATRIX(&m);  
 	}
@@ -193,8 +193,8 @@ FftFontType *FftGetFont(Display *dpy, char *fontname)
 }
 
 void FftDrawString(
-		   Display *dpy, Window win, FftFontType *fftf, GC gc, int x,
-		   int y, char *str, int len, int direction)
+	Display *dpy, Window win, FftFontType *fftf, GC gc, int x, int y,
+	char *str, int len, int rotation)
 {
 	FftDraw *fftdraw = NULL;
 	XGCValues vr;
@@ -206,21 +206,21 @@ void FftDrawString(
 	{
 		return;
 	}
-	if (direction == TEXT_DIR_TOP_TO_BOTTOM)
+	if (rotation == TEXT_ROTATED_90)
 	{
 		if (fftf->tb_fftfont == NULL)
 		{
 			fftf->tb_fftfont =
-				FftGetRotatedFont(dpy, fftf->fftfont, direction);
+				FftGetRotatedFont(dpy, fftf->fftfont, rotation);
 		}
 		uf = fftf->tb_fftfont;
 	}
-	else if (direction == TEXT_DIR_BOTTOM_TO_TOP)
+	else if (rotation == TEXT_ROTATED_270)
 	{
 		if (fftf->bt_fftfont == NULL)
 		{
 			fftf->bt_fftfont =
-				FftGetRotatedFont(dpy, fftf->fftfont, direction);
+				FftGetRotatedFont(dpy, fftf->fftfont, rotation);
 		}
 		uf = fftf->bt_fftfont;
 	}
