@@ -75,8 +75,10 @@ typedef struct FImageLoader
 /* without repeatedly having to transform them.   */
 typedef struct
 {
-	char * c_color;	/* Pointer to the name of the color */
-	XColor rgb_space;                     /* rgb color info */
+	char * c_color;	          /* Pointer to the name of the color */
+	XColor rgb_space;         /* rgb color info */
+	Bool allocated;           /* True if the pixel of the rgb_space 
+				   * is allocated */
 } Color_Info;
 
 /* ---------------------------- forward declarations ------------------------ */
@@ -223,10 +225,7 @@ void c100_init_base_table ()
 		/* change all base colors to numbers */
 		c300_color_to_rgb(
 			base_array[i].c_color, &base_array[i].rgb_space);
-		fprintf(stderr, "Palette %i: %u, %u, %u\n",i,
-			base_array[i].rgb_space.red/257,
-			base_array[i].rgb_space.green/257, 
-			base_array[i].rgb_space.blue/257);
+		base_array[i].allocated = False;
 	}
 
 	return;
@@ -329,7 +328,10 @@ static void FImageReduceRGBColor(XColor *c, int color_limit)
 	double dst;
 	
 	if (color_limit <= 0)
+	{
+		XAllocColor(Pdpy, Pcmap, c);
 		return;
+	}
 	if (color_limit_base_table_init == 'n') {
 		c100_init_base_table();
 		color_limit_base_table_init = 'y';
@@ -341,19 +343,21 @@ static void FImageReduceRGBColor(XColor *c, int color_limit)
 	}
 	for(i=0; i < limit; i++) {
 		dst = c400_distance (c, &base_array[i].rgb_space);
-		if (dst < mindst ) {        /* less than min and better than
-					     * last */
-			mindst=dst;         /* new minimum */
-			minind=i;           /* save loc of new winner */
-			if (dst <= 100) {   /* if close enough */
-				break;      /* done */
-			}                   /* end close enough */
-		}                           /* end new low distance */
-	}                                   /* end all base colors */
+		if (dst < mindst ) {
+			mindst=dst;
+			minind=i;
+			if (dst <= 100) {
+				break;
+			}
+		}
+	}
 
-	c->red = base_array[minind].rgb_space.red;
-	c->green = base_array[minind].rgb_space.green;	
-	c->blue = base_array[minind].rgb_space.blue;
+	if (!base_array[minind].allocated)
+	{
+		if (XAllocColor(Pdpy, Pcmap, &base_array[minind].rgb_space))
+			base_array[minind].allocated = True;
+	}
+	c->pixel = base_array[minind].rgb_space.pixel;
 	return;
 }
 
@@ -730,7 +734,7 @@ Bool FImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
 			g = data[k++];
 			r = data[k++];
 			a = data[k++];
-			if ((a >= FIMAGE_ALPHA_LIMIT) &&
+			if ((a >= FIMAGE_ALPHA_LIMIT) && color_limit <= 0 &&
 			    (Pvisual->class == DirectColor ||
 			     Pvisual->class == TrueColor))
 			{
@@ -738,17 +742,10 @@ Bool FImageCreatePixmapFromArgbData(Display *dpy, Window Root, int color_limit,
 			}
 			else if (a >= FIMAGE_ALPHA_LIMIT)
 			{
-				/* FIXME: a faster method ? */
-				/* Yep allocate the color in the color limit
-				 * palette ??*/
 				c.blue = b * 257;
 				c.green = g * 257;
 				c.red = r * 257;
 				FImageReduceRGBColor(&c,color_limit);
-				if (!XAllocColor(Pdpy, Pcmap, &c))
-				{
-					/* no warrning */
-				}
 			}
 			else
 			{

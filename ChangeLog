@@ -1,5 +1,11 @@
 2002-04-05  olicha  <olivier.chapuis@free.fr>
 
+	* libs/FImageLoader.c (c100_init_base_table):
+	(FImageReduceRGBColor):
+	(FImageCreatePixmapFromArgbData):
+	Speed up color limitation for png image and ewmh icons
+	Respect color limit even with DirectColor and TrueColor
+
 	* configure.in:
 	* acconfig.h (HAVE_PNG):
 	Added test for libpng. Enable FvwmBanner, FvwmScript and xpmroot
