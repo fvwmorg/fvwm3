@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "FVWMWINDOWMENU 1"
-.TH FVWMWINDOWMENU 1 "2003-11-12" "perl v5.8.1" "FVWM Modules"
+.TH FVWMWINDOWMENU 1 "2004-06-05" "perl v5.8.1" "FVWM Module"
 .SH "NAME"
 FvwmWindowMenu \- open configurable fvwm menu listing current windows
 .SH "SYNOPSIS"
@@ -149,13 +149,14 @@ and easy to customize. Unlike \fBFvwmIconMan\fR or \fBFvwmWinList\fR the
 module does not draw its own window, but instead creates an
 \&\fIfvwm\fR menu and asks \fIfvwm\fR to pop it up.
 .PP
-By defining a set of regular expressions using Show, windows may
-be sorted into sections based on the regexp matching their
-name, icon name, class or resource.
+By defining a set of regular expressions, windows may
+be sorted into sections based on a regexp matching the window
+name, class or resource and included in the menu.
 .PP
-Similarly, matches in DontShow will be excluded from the list.
+Similarly, another set of regular expressions can be used to exclude
+items from the menu.
 .PP
-Any windows not matching an instance of Show or DontShow will
+Any windows not matching an instance of the include or exclude list will
 be placed in the last section of the menu.
 .SH "USAGE"
 .IX Header "USAGE"
@@ -186,41 +187,50 @@ create \fIfvwm\fR menus and invoke them using the corresponding commands
 \&\fBMenu\fR and \fBPopup\fR. If the module was started with \*(L"\-g\*(R" switch, it
 additionally supports \fBPostBar\fR (not implemented yet).
 .PP
-Set module options for windows to show or not show. The syntax is:
+Set module options for windows to include (Show) or exclude (DontShow).
+The syntax is:
 .PP
-.Vb 2
-\&    *FvwmWindowMenu: Show type = pattern
-\&    *FvwmWindowMenu: DontShow type = pattern
+.Vb 6
+\&    *FvwmWindowMenu: ShowName pattern
+\&    *FvwmWindowMenu: ShowClass pattern
+\&    *FvwmWindowMenu: ShowResource pattern
+\&    *FvwmWindowMenu: DontShowName pattern
+\&    *FvwmWindowMenu: DontShowClass pattern
+\&    *FvwmWindowMenu: DontShowResource pattern
 .Ve
 .PP
-where type is one of \fIname\fR, \fIicon\fR, \fIclass\fR or \fIresource\fR. Pattern is
-a perl regular expression that will be evaluated in m// context.
+Pattern is a perl regular expression that will be evaluated in m// context.
 See \fIperlre\fR\|(1).
 .PP
 For example:
 .PP
 .Vb 2
-\&    *FvwmWindowMenu: Show resource = Galeon|Navigator|mozilla-bin
-\&    *FvwmWindowMenu: Show name = ^emacs
+\&    *FvwmWindowMenu: ShowResource ^gvim
+\&    *FvwmWindowMenu: ShowName Galeon|Navigator|mozilla-bin|Firefox
 .Ve
 .PP
-will define two sections containing respectively browsers, and emacs.
-Number of sections is unlimited. The strings are perl regular
-expressions that will be evaluated in m// context. See \fIperlre\fR\|(1).
+will define two sections containing respectively browsers, and GVim. A third
+section will contain all other windows.
+.PP
+To only include matching windows, add:
+.PP
+.Vb 1
+\&        *FvwmWindowMenu: DontShowName .*
+.Ve
 .PP
 Similarly:
 .PP
 .Vb 2
-\&    *FvwmWindowMenu: DontShow name = ^Fvwm
-\&    *FvwmWindowMenu: DontShow class = Gkrellm
+\&    *FvwmWindowMenu: DontShowName ^Fvwm
+\&    *FvwmWindowMenu: DontShowClass Gkrellm
 .Ve
 .PP
 will cause the menu to ignore windows with name beginning with Fvwm
 or class gkrellm.
 .PP
 Other options:
-.IP "*FvwmWindowMenu: \fIOnlyIconic\fR {on|off}" 4
-.IX Item "*FvwmWindowMenu: OnlyIconic {on|off}"
+.IP "*FvwmWindowMenu: \fIOnlyIconified\fR {on|off}" 4
+.IX Item "*FvwmWindowMenu: OnlyIconified {on|off}"
 show only iconified windows
 .IP "*FvwmWindowMenu: \fIAllDesks\fR {on|off}" 4
 .IX Item "*FvwmWindowMenu: AllDesks {on|off}"
@@ -228,8 +238,8 @@ show windows from all desks
 .IP "*FvwmWindowMenu: \fIAllPages\fR {on|off}" 4
 .IX Item "*FvwmWindowMenu: AllPages {on|off}"
 show windows from all pages
-.IP "*FvwmWindowMenu: \fIMaxlen\fR 32" 4
-.IX Item "*FvwmWindowMenu: Maxlen 32"
+.IP "*FvwmWindowMenu: \fIMaxLen\fR 32" 4
+.IX Item "*FvwmWindowMenu: MaxLen 32"
 max length in chars of entry
 .IP "*FvwmWindowMenu: \fIMenuName\fR MyMenu" 4
 .IX Item "*FvwmWindowMenu: MenuName MyMenu"
@@ -254,7 +264,11 @@ the window name, icon name, class or resource
 .ie n .IP "%x, %y" 4
 .el .IP "%x, \f(CW%y\fR" 4
 .IX Item "%x, %y"
-the window x or y coordinates on current page
+the window x or y coordinates w.r.t. the page the window is on.
+.ie n .IP "%X, %Y" 4
+.el .IP "%X, \f(CW%Y\fR" 4
+.IX Item "%X, %Y"
+the window x or y coordinates w.r.t. the desk the window is on.
 .IP "%d" 4
 .IX Item "%d"
 the window desk number
@@ -293,6 +307,12 @@ Hold this button while navigating using cursor keys, then release it.
 .Vb 1
 \&    Key Super_R A A SendToModule FvwmWindowMenu Post Root c c WarpTitle
 .Ve
-.SH "AUTHOR"
-.IX Header "AUTHOR"
-Ric Lister <http://cns.georgetown.edu/~ric/>
+.SH "AUTHORS"
+.IX Header "AUTHORS"
+.RE
+.IP "Ric Lister <http://cns.georgetown.edu/~ric/>"
+.IX Item "Ric Lister <http://cns.georgetown.edu/~ric/>"
+.RE
+.PD 0
+.IP "Scott Smedley"
+.IX Item "Scott Smedley"

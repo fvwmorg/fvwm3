@@ -1,3 +1,8 @@
+2004-06-05  Scott Smedley  <ss@aao.gov.au>
+
+	* FVWM/Tracker/WindowList.pm:
+	actually implemented tracker & all observables.
+
 2004-04-24  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Tracker.pm:

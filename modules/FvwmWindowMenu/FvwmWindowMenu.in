@@ -28,9 +28,7 @@ BEGIN {
 
 use lib "@FVWM_PERLLIBDIR@";
 use FVWM::Module;
-use General::FileSystem "-quiet";
 use General::Parse;
-use Getopt::Long;
 
 my $moduleType = "";
 my $moduleClass = "FVWM::Module";
@@ -47,293 +45,180 @@ if ($ARGV[5] && $ARGV[5] eq "-g") {
 	}
 }
 
-# default user options
-my $opt = {
-	onlyiconic   => 0,      # only list iconified windows
-	alldesks     => 0,      # list windows on all desks
-	allpages     => 0,      # list windows on all pages
-	maxlen       => 32,     # max chars for window name in menu
-	menuname     => "MenuFvwmWindowMenu",  # name of fvwm menu to create
-	menustyle    => undef,  # name of fvwm menu style to use
-	itemformat   => "%m%n%t%t(+%x+%y) - Desk %d",  # format of menu items
-	function     => "WindowListFunc",
-};
-
-# get size of your screen
-my $screen;
-
-# I would like a better way of getting screen dimensions!
-open(XWININFO, "xwininfo -root|") || die "can't run xwininfo";
-while (<XWININFO>) {
-	$screen->{w} = $1 if /Width:\s*(\d+)/;
-	$screen->{h} = $1 if /Height:\s*(\d+)/;
-}
-close(XWININFO);
-
-
-# some global vars
-my %window;
-my $desk = 0;
-my $page_nx = 0;
-my $page_ny = 0;
-
-# show = window matches to display in order, each entry defines a section
-# dontshow = window matches to ignore, none of these will show up in the menu
-my (@show, @dontshow);
-
 # init the module
 # set Debug = 0 for no messages at all
-# set Debug = 1 to see my messages about window decisions
+# set Debug = 1 to see messages about window decisions
 # set Debug = 2 to see also perllib messages about communication
 my $module = new $moduleClass(
 	Name => "FvwmWindowMenu",
-	Mask => M_WINDOW_NAME | M_STRING |
-		M_NEW_PAGE | M_NEW_DESK |
-		M_ADD_WINDOW | M_CONFIGURE_WINDOW |
-		M_RES_NAME | M_RES_CLASS | M_ICON_NAME |
-		M_DESTROY_WINDOW | M_END_WINDOWLIST |
-		M_ICONIFY | M_DEICONIFY | M_MINI_ICON |
-		M_CONFIG_INFO | M_SENDCONFIG,
+	Mask => M_STRING,
 	Debug => 0,
 );
 
 $module->debug("starting " . $module->name);
 
-# process module options
-$module->addHandler(M_CONFIG_INFO, sub {
-	my ($module, $event) = @_;
+my $configTracker = $module->track('ModuleConfig',
+	DefaultConfig => {
+		OnlyIconified => 'off',
+		AllDesks => 'off',
+		AllPages => 'off',
+		MaxLen => 32,
+		MenuName => 'MyMenu',
+		MenuStyle => '',
+		Debug => 0,
+		Function => 'MyWindowListFunc',
+		ItemFormat => '%m%n%t%t(+%x+%y) - Desk %d',
+		ShowName => '',
+		ShowClass => '',
+		ShowResource => '',
+		DontShowName => '',
+		DontShowClass => '',
+		DontShowResource => '',
+	});
 
-	my $modname = $module->name;
-	return unless $event->_text =~ /^\*$modname(.*)$/;
-	$_ = $1;
+my $pConfig = $configTracker->data();
+my $winTracker = $module->track("WindowList", "!stack icons names winfo");
 
-	# get show array
-	if ( /^show\s+(\w+)\s*=\s*(.*)$/i ) {
-		(my $type = $1) =~ tr/A-Z/a-z/;
-		push(@show, { type => $type, pattern => $2 });
-	}
-
-	# get dontshow array
-	elsif ( /^dontshow\s+(\w+)\s*=\s*(.*)$/i ) {
-		(my $type = $1) =~ tr/A-Z/a-z/;
-		push(@dontshow, { type => $type, pattern => $2 });
-	}
-
-	# match format string in quotes
-	elsif ( /^itemformat\s+([\"\'])(.*)\1/i ) {
-		$opt->{itemformat} = $2;
-	}
-
-	# get all other options, arg of 'off' sets opt to 0
-	elsif (  /^(\w+)\s*(\w+)/i ) {
-		(my $arg1 = $1) =~ tr/A-Z/a-z/;
-		$opt->{$arg1} = ($2 =~ /^off$/i) ? 0 : $2;
-	}
-
-	# should probably do more error checking
-});
-
-
-# handler to get page and desk info
-$module->addHandler(M_NEW_PAGE, sub {
-	my ($module, $event) = @_;
-
-	$desk = $event->_desk;
-
-	my $width  = $event->_vp_width || 1;
-	my $height = $event->_vp_height || 1;
-
-	$page_nx = int($event->_vp_x / $width);
-	$page_ny = int($event->_vp_y / $height);
-});
-
-
-$module->addHandler(M_NEW_DESK, sub {
-	my ($module, $event) = @_;
-	$desk = $event->_desk;
-});
-
-
-$module->addHandler(M_STRING, sub{
+$module->addHandler(M_STRING, sub {
 	my ($module, $event) = @_;
 	my ($action, $args) = getToken($event->_text);
 	return unless $action;
 	if ($action =~ /^Post|Menu|Popup$/i) {
-		&PopupMenu($action, $args);
+		PopupMenu($action, $args);
 	} elsif ($action =~ /^ShowBar$/i) {
 		if ($moduleType ne "gtk") {
 			$module->debug("Not started with Gtk support", 0);
 			return;
 		}
-		&PopupTaskBar();
+		PopupTaskBar();
 	} else {
 		$module->debug("Unknown action $action", 0);
 	}
 });
 
-
-$module->addHandler(M_ADD_WINDOW|M_CONFIGURE_WINDOW, sub {
-	my ($module, $event) = @_;
-
-	$window{$event->_win_id}->{desk} = $event->_desk;
-	$window{$event->_win_id}->{x} = $event->_frame_x;
-	$window{$event->_win_id}->{y} = $event->_frame_y;
-});
-
-
-$module->addHandler(M_DESTROY_WINDOW, sub {
-	my ($module, $event) = @_;
-	delete $window{$event->_win_id};
-});
-
-
-$module->addHandler(M_WINDOW_NAME, sub {
-	my ($module, $event) = @_;
-	$window{$event->_win_id}->{name} = $event->_name;
-});
-
-$module->addHandler(M_ICON_NAME, sub {
-	my ($module, $event) = @_;
-	$window{$event->_win_id}->{icon} = $event->_name;
-});
-
-$module->addHandler(M_RES_CLASS, sub {
-	my ($module, $event) = @_;
-	$window{$event->_win_id}->{class} = $event->_name;
-});
-
-$module->addHandler(M_RES_NAME, sub {
-	my ($module, $event) = @_;
-	$window{$event->_win_id}->{resource} = $event->_name;
-});
-
-
-
-$module->addHandler(M_ICONIFY, sub {
-	my ($module, $event) = @_;
-	$window{$event->_win_id}->{iconic} = 1;
-});
-
-
-$module->addHandler(M_DEICONIFY, sub {
-	my ($module, $event) = @_;
-	$window{$event->_win_id}->{iconic} = 0;
-});
-
-
-$module->addHandler(M_MINI_ICON, sub {
-	my ($module, $event) = @_;
-	$window{$event->_win_id}->{mini_icon} = $event->_name;
-});
-
-
 # does all the work and pops up the menu
-sub PopupMenu {
+sub PopupMenu ($$) {
 	my ($action, $args) = @_;
-	my $command = $action =~ /^Popup$/i? "Popup": "Menu";
+	my $command = ($action =~ /^Popup$/i ? "Popup" : "Menu");
 
-	my @section;
+	my @aSection;
 
-	# loop on list of windows
-	foreach my $id ( keys %window ) {
+	# loop on list of all windows
+	my $pData = $winTracker->data();
+	foreach my $id (keys(%{$pData}))
+	{
+		my $p = $pData->{$id};
+		$module->debug("\t$id - " . $p->{window_name});
 
-		$module->debug("\t$id - " . $window{$id}->{name});
-
-		# skip windows in the dontshow array
-		my $dont_show_me;
-		foreach ( @dontshow ) {
-			my $p = $_->{pattern};
-			$dont_show_me = 1, last
-				if $window{$id}->{$_->{type}} =~ /$p/;
+		if ($pConfig->{AllDesks} =~ /off/i &&
+			$p->{desk} != $winTracker->pageInfo('desk_n'))
+		{
+			$module->debug("\t\tnot on this desk");
+			next;
 		}
 
-		$module->debug("\t\tin dontshow list"), next
-			if $dont_show_me;
-
-		# skip windows not on this desk if alldesks not set
-		$module->debug("\t\tnot on this desk"), next
-			unless $opt->{alldesks} || $window{$id}->{desk} == $desk;
-
-		# show only iconic windows if onlyiconic set
-		$module->debug("\t\tskipping because not iconified"), next
-			if $opt->{onlyiconic} && ! $window{$id}->{iconic};
-
-		# skip window if its top left is not on this page
-		$module->debug("\t\tnot on this page"), next
-			if ! $opt->{allpages} && (
-				$window{$id}->{x} < 0 ||
-				$window{$id}->{x} >= $screen->{w} ||
-				$window{$id}->{y} < 0 ||
-				$window{$id}->{y} >= $screen->{h});
-
-		# loop on sections and choose which one to file in
-		my $sectctr = 0;
-		foreach ( @show ) {
- 			my $p = $_->{pattern};
- 			last if $window{$id}->{$_->{type}} =~ /$p/ ;
-			++$sectctr;
+		if ($pConfig->{AllPages} =~ /off/i &&
+			($p->{page_x} != $winTracker->pageInfo('page_x') ||
+			 $p->{page_y} != $winTracker->pageInfo('page_y')))
+		{
+			$module->debug("\t\tnot on this page");
+			next;
 		}
 
-		# if we got here add the window to the last section
-		# which is 'none of the above'
-		$module->debug("\t\tadding to section $sectctr");
-		&AddToSection(\$section[$sectctr], $id);
+		if ($pConfig->{OnlyIconified} =~ /on/i && !$p->{iconified})
+		{
+			$module->debug("\t\tnot iconified");
+			next;
+		}
+
+ 		my $section = 3;
+		if ($pConfig->{ShowName} ne '' &&
+ 			$p->{window_name} =~ /$pConfig->{ShowName}/i) {
+			$section = 0;
+		} elsif ($pConfig->{ShowClass} ne '' &&
+			$p->{res_class_name} =~ /$pConfig->{ShowClass}/i) {
+			$section = 1;
+		} elsif ($pConfig->{ShowResource} ne '' &&
+			$p->{res_name} =~ /$pConfig->{ShowResource}/i) {
+			$section = 2;
+		}
+
+		if ($section == 3)
+		{
+			if (($pConfig->{DontShowName} ne '' &&
+				$p->{window_name} =~ /$pConfig->{DontShowName}/i) ||
+				($pConfig->{DontShowClass} ne '' &&
+				$p->{res_class_name} =~ /$pConfig->{DontShowClass}/i) ||
+				($pConfig->{DontShowResource} ne '' &&
+				$p->{res_name} =~ /$pConfig->{DontShowResource}/i))
+			{
+				$module->debug("\t\tin dontshow list");
+				next;
+			}
+		}
+		$module->debug("\t\tadding to section $section");
+		AddToSection(\$aSection[$section], $id);
 	}
 
-
 	# tell fvwm to start the menu
-	$module->send("DestroyMenu $opt->{menuname}");
-	$module->send("AddToMenu $opt->{menuname} 'Desk $desk, "
-		. "Page $page_nx $page_ny' Title");
+	$module->send("DestroyMenu recreate $pConfig->{MenuName}");
+	$module->send("AddToMenu " . $pConfig->{MenuName} . " 'Desk " .
+		$winTracker->pageInfo('desk_n') . ", Page " .
+		$winTracker->pageInfo('page_x') . ' ' .
+		$winTracker->pageInfo('page_y') . "' Title");
 
 	# now loop on sections sending menu entries to fvwm
-	while ( @section ) {
-		my $s = shift @section;
+	while ( @aSection ) {
+		my $s = shift @aSection;
 
 		if ($s) {
 			$module->send($s);
-
 			# add separator after section unless it is the last
-			$module->send("+ \"\" Nop") if @section;
+			$module->send("+ \"\" Nop") if @aSection;
 		}
 	}
 
 	# set a menustyle if one given
-	$module->send("ChangeMenuStyle $opt->{menustyle} $opt->{menuname}")
-		if $opt->{menustyle};
+	$module->send("ChangeMenuStyle $pConfig->{MenuStyle} $pConfig->{MenuName}")
+		if ($pConfig->{MenuStyle} ne '');
 
 	# popup the menu with args we were sent
-	$module->send("$command $opt->{menuname} $args");
+	$module->send("$command $pConfig->{MenuName} $args");
 }
 
 
 # build a line containing the fvwm menu entry for a window
-# then add it to the appropriate member of the global array @section
+# then add it to the appropriate member of the global array @aSection
 # args: pointer to section, window id
-sub AddToSection {
+sub AddToSection ($$) {
 	my ($s, $id) = @_;
 
-	my $format = $opt->{itemformat};
+	my $format = $pConfig->{ItemFormat};
+	my $p = $winTracker->data($id);
 
 	# hack: insert __%__ instead of % to avoid bogus substitution later
 	$format =~ s/%%/__%____%__/g;
 
 	# make format string substitutions
 	$format =~ s/%t/\t/g;
-	$format =~ s/%n/&Shorten($window{$id}->{name}, $opt->{maxlen})/ge;
-	$format =~ s/%i/&Shorten($window{$id}->{icon}, $opt->{maxlen})/ge;
-	$format =~ s/%c/&Shorten($window{$id}->{class}, $opt->{maxlen})/ge;
-	$format =~ s/%r/&Shorten($window{$id}->{resource}, $opt->{maxlen})/ge;
-	$format =~ s/%x/$window{$id}->{x}/g;
-	$format =~ s/%y/$window{$id}->{y}/g;
-	$format =~ s/%d/$window{$id}->{desk}/g;
+	$format =~ s/%n/&Shorten($p->{window_name})/ge;
+	$format =~ s/%i/&Shorten($p->{icon_name})/ge;
+	$format =~ s/%c/&Shorten($p->{res_class_name})/ge;
+	$format =~ s/%r/&Shorten($p->{res_name})/ge;
+	$format =~ s/%X/$p->{x}/g;
+	$format =~ s/%Y/$p->{y}/g;
+	$format =~ s/%x/$p->{frame_x}/g;
+	$format =~ s/%y/$p->{frame_y}/g;
+	$format =~ s/%d/$p->{desk}/g;
 
-	$format =~ s/%m/__%__$window{$id}->{mini_icon}__%__/g;
+	# TODO: doesn't handle EWMH icons yet.
+	$format =~ s/%m// if ($p->{mini_icon_name} eq 'ewmh_mini_icon');
+	$format =~ s/%m/__%__$p->{mini_icon_name}__%__/g;
 
-	if ($window{$id}->{iconic}) {
-		$format =~ s/%M/__%__$window{$id}->{mini_icon}__%__/g;
-	}
-	else {
+	# %M is strange - does anyone really want this behaviour? -- SS.
+	if ($p->{iconified}) {
+		$format =~ s/%M/__%__$p->{mini_icon_name}__%__/g;
+	} else {
 		$format =~ s/%M//g;
 	}
 	
@@ -345,20 +230,20 @@ sub AddToSection {
 
 	# add the entry to the section
 	# support two ways for now: window context (new), window id param (old)
-	$$s .= qq(+ "$format" WindowId $id $opt->{function} $id\n);
+	$$s .= qq(+ "$format" WindowId $id $pConfig->{Function} $id\n);
 }
 
 
 # shorten a string to given length and append ellipses
-sub Shorten {
-	my($string, $length) = @_;
+sub Shorten ($) {
+	my ($string) = @_;
+	my $length = $pConfig->{MaxLen};
 
 	my $r = substr($string, 0, $length);
 	$r .= "..." if length($string) > $length;
 
 	return $r;
 }
-
 
 sub PopupTaskBar () {
 	my ($w, $h) = (180, 60);
@@ -367,7 +252,10 @@ sub PopupTaskBar () {
 	$window->set_title("FvwmWindowMenuBar");
 	$window->set_border_width(5);
 	$window->set_usize($w, $h);
-	$window->set_uposition(($screen->{w} - $w) / 2, ($screen->{h} - $h) / 2);
+
+	my $screenW = $winTracker->pageInfo('vp_width');
+	my $screenH = $winTracker->pageInfo('vp_height');
+	$window->set_uposition(($screenW - $w) / 2, ($screenH - $h) / 2);
 
 	my $frame = new Gtk::Frame();
 	$window->add($frame);
@@ -390,9 +278,6 @@ sub PopupTaskBar () {
 }
 
 
-# main loop
-$module->send("Send_ConfigInfo");
-$module->send("Send_WindowList");
 $module->send(
 	"Style FvwmWindowMenuBar UsePPosition, !Title, !Borders, " .
 	"StaysOnTop, WindowListSkip, CascadePlacement, SloppyFocus"
@@ -425,13 +310,14 @@ and easy to customize. Unlike B<FvwmIconMan> or B<FvwmWinList> the
 module does not draw its own window, but instead creates an
 I<fvwm> menu and asks I<fvwm> to pop it up.
 
-By defining a set of regular expressions using Show, windows may
-be sorted into sections based on the regexp matching their
-name, icon name, class or resource.
+By defining a set of regular expressions, windows may
+be sorted into sections based on a regexp matching the window
+name, class or resource and included in the menu.
 
-Similarly, matches in DontShow will be excluded from the list.
+Similarly, another set of regular expressions can be used to exclude
+items from the menu.
 
-Any windows not matching an instance of Show or DontShow will
+Any windows not matching an instance of the include or exclude list will
 be placed in the last section of the menu.
 
 =head1 USAGE
@@ -457,28 +343,35 @@ create I<fvwm> menus and invoke them using the corresponding commands
 B<Menu> and B<Popup>. If the module was started with "-g" switch, it
 additionally supports B<PostBar> (not implemented yet).
 
-Set module options for windows to show or not show. The syntax is:
+Set module options for windows to include (Show) or exclude (DontShow).
+The syntax is:
 
-    *FvwmWindowMenu: Show type = pattern
-    *FvwmWindowMenu: DontShow type = pattern
+    *FvwmWindowMenu: ShowName pattern
+    *FvwmWindowMenu: ShowClass pattern
+    *FvwmWindowMenu: ShowResource pattern
+    *FvwmWindowMenu: DontShowName pattern
+    *FvwmWindowMenu: DontShowClass pattern
+    *FvwmWindowMenu: DontShowResource pattern
 
-where type is one of I<name>, I<icon>, I<class> or I<resource>. Pattern is
-a perl regular expression that will be evaluated in m// context.
+Pattern is a perl regular expression that will be evaluated in m// context.
 See perlre(1).
 
 For example:
 
-    *FvwmWindowMenu: Show resource = Galeon|Navigator|mozilla-bin
-    *FvwmWindowMenu: Show name = ^emacs
+    *FvwmWindowMenu: ShowResource ^gvim
+    *FvwmWindowMenu: ShowName Galeon|Navigator|mozilla-bin|Firefox
 
-will define two sections containing respectively browsers, and emacs.
-Number of sections is unlimited. The strings are perl regular
-expressions that will be evaluated in m// context. See perlre(1).
+will define two sections containing respectively browsers, and GVim. A third
+section will contain all other windows.
+
+To only include matching windows, add:
+
+	*FvwmWindowMenu: DontShowName .*
 
 Similarly:
 
-    *FvwmWindowMenu: DontShow name = ^Fvwm
-    *FvwmWindowMenu: DontShow class = Gkrellm
+    *FvwmWindowMenu: DontShowName ^Fvwm
+    *FvwmWindowMenu: DontShowClass Gkrellm
 
 will cause the menu to ignore windows with name beginning with Fvwm
 or class gkrellm.
@@ -487,7 +380,7 @@ Other options:
 
 =over 4
 
-=item *FvwmWindowMenu: I<OnlyIconic> {on|off}
+=item *FvwmWindowMenu: I<OnlyIconified> {on|off}
 
 show only iconified windows
 
@@ -499,7 +392,7 @@ show windows from all desks
 
 show windows from all pages
 
-=item *FvwmWindowMenu: I<Maxlen> 32
+=item *FvwmWindowMenu: I<MaxLen> 32
 
 max length in chars of entry
 
@@ -531,7 +424,11 @@ the window name, icon name, class or resource
 
 =item %x, %y
 
-the window x or y coordinates on current page
+the window x or y coordinates w.r.t. the page the window is on.
+
+=item %X, %Y
+
+the window x or y coordinates w.r.t. the desk the window is on.
 
 =item %d
 
@@ -573,8 +470,10 @@ Hold this button while navigating using cursor keys, then release it.
 
     Key Super_R A A SendToModule FvwmWindowMenu Post Root c c WarpTitle
 
-=head1 AUTHOR
+=head1 AUTHORS
 
-Ric Lister <http://cns.georgetown.edu/~ric/>
+=item Ric Lister <http://cns.georgetown.edu/~ric/>
+
+=item Scott Smedley
 
 =cut
