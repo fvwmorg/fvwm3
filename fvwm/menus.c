@@ -143,11 +143,12 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
   Time t0 = lastTimestamp;
   extern Time lastTimestamp;
   static int cindirectDeep = 0;
+  XEvent tmpevent;
 
   DBUG("do_menu","called");
 
   if (fStick && cmenuDeep == 0)
-    XSync(dpy, True);
+    XCheckTypedEvent(dpy, ButtonPressMask, &tmpevent);
   key_press = (eventp && (eventp == (XEvent *)1 || eventp->type == KeyPress));
   /* this condition could get ugly */
   if(menu == NULL || menu->flags.f.is_in_use) {
@@ -1297,6 +1298,7 @@ Bool FPopupMenu(MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
   /* popup the menu */
   XMoveWindow(dpy, menu->w, x, y);
   XMapRaised(dpy, menu->w);
+  XFlush(dpy);
   if (ret_overlap) {
     *ret_overlap =
       DoMenusOverlap(menuPrior, x, y, menu->width, menu->height, False) ?

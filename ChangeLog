@@ -1,3 +1,8 @@
+1999-03-23  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/events.c (HandleButtonPress): fixed border drawing and button
+	drawing
+
 1999-03-24  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/resize.c (resize_window): 
@@ -43,10 +48,10 @@
 
 1999-03-22  Matthias Clasen <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/add_window.c (LookInList): Initialize layer to 
+	* fvwm/add_window.c (LookInList): Initialize layer to
 	Scr.StaysPutLayer. This means that windows without
 	any layer-setting style option (StaysOnTop/StaysPut/Layer)
-	are put in the same layer as those with explicit StaysPut. 
+	are put in the same layer as those with explicit StaysPut.
 
 1999-03-22  Dominik Vogt  <dominik_vogt@gmx.de>
 

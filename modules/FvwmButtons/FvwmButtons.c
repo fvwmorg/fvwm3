@@ -718,7 +718,8 @@ void Loop(void)
 	  {
 	  case Expose:
             PanelIndex = MainPanel;
-            while (PanelIndex && (PanelIndex->uber->IconWinParent != Event.xany.window))
+            while (PanelIndex &&
+		   (PanelIndex->uber->IconWinParent != Event.xany.window))
               PanelIndex = PanelIndex->next;
             if (PanelIndex)
             { UberButton = PanelIndex->uber;
