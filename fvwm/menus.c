@@ -4962,7 +4962,7 @@ static void scanForHotkeys(MenuItem *it, int column)
 	/* It's a hot key marker - work out the offset value */
 	MI_HOTKEY_COFFSET(it) = txt - start;
 	MI_HOTKEY_COLUMN(it) = column;
-	MI_HAS_HOTKEY(it) = 1;
+	MI_HAS_HOTKEY(it) = (txt[1] != '\0');
 	MI_IS_HOTKEY_AUTOMATIC(it) = 0;
 	for (; *txt != '\0'; txt++)
 	{

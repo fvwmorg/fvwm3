@@ -416,35 +416,41 @@ is read, because it contains styles or module configurations which can affect
 window appearance and functionality.
 
 The standard way to start applications or modules on fvwm's start up is to
-add them to an initialization function (usually "StartFunction" or
-"InitFunction").  This way they are only started after fvwm reads
+add them to an initialization function (usually
+.BR StartFunction " or " InitFunction ).
+This way they are only started after fvwm reads
 the entire
 .IR .fvwm2rc .
 
 Fvwm has three special functions for initialization:
-"StartFunction", which is executed on startups and restarts; "InitFunction"
-and "RestartFunction", which are executed during initialization and restarts
-(respectively) just after "StartFunction".  These may be customized
-in a user's
+.BR StartFunction ,
+which is executed on startups and restarts;
+.BR InitFunction " and " RestartFunction ,
+which are executed during initialization and restarts (respectively)
+just after StartFunction. These functions may be customized in a user's
 .I .fvwm2rc
 file via the
 .B AddToFunc
-facility (described later) to start up modules, xterms, or whatever
+command (described later) to start up modules, xterms, or whatever
 you'd like to have started by fvwm.
 
-Fvwm has also a special exit function: "ExitFunction",
+Fvwm has also a special exit function:
+. BR ExitFunction ,
 executed when exiting or restarting before actually quitting.
 It could be used to explicitly kill modules, etc.
 
-If fvwm is run under a session manager, functions "SessionInitFunction"
-and "SessionRestartFunction" are executed instead of "InitFunction" and
-"RestartFunction". This helps to define a user's
+If fvwm is run under a session manager, functions
+.BR SessionInitFunction " and " SessionRestartFunction
+are executed instead of InitFunction and RestartFunction.
+This helps to define the user's
 .I .fvwm2rc
 file to be good for both running under a session manager and without
 it.  Generally it is a bad idea to start xterms or other applications
 in "Session*" functions.  Also someone can decide to start different
 modules while running under a session manager or not.  For the similar
-purposes "SessionExitFunction" is used instead of "ExitFunction".
+purposes
+. B SessionExitFunction
+is used instead of ExitFunction.
 .EX
 DestroyFunc StartFunction
 AddToFunc StartFunction
