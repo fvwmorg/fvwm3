@@ -94,7 +94,6 @@ FvwmScript_SOURCES = FvwmScript.c Instructions.c libyywrap.c \
 FvwmScript_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 YFLAGS = -d
-#scanner.o: script.h
 
 man_MANS = FvwmScript.1
 EXTRA_DIST = $(man_MANS) BUGS
