@@ -1,5 +1,9 @@
 2002-10-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/menustyle.c (menustyle_parse_style):
+	fixed HilightBack default
+
 	* fvwm/bindings.c (binding_cmd):
 	(bind_get_bound_button_contexts):
 	(ParseBinding):

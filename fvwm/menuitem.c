@@ -397,8 +397,7 @@ void menuitem_paint(
 	/* Hilight or clear the background. */
 	lit_x_start = -1;
 	lit_x_end = -1;
-	if (is_item_selected &&
-	    (ST_DO_HILIGHT_BACK(ms) || ST_DO_HILIGHT_FORE(ms)))
+	if (is_item_selected && ST_DO_HILIGHT_BACK(ms))
 	{
 		/* Hilight the background. */
 		if (MDIM_HILIGHT_WIDTH(*dim) - 2 * relief_thickness > 0)

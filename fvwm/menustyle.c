@@ -794,6 +794,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 				ST_TITLE_UNDERLINES(tmpms) = 1;
 				ST_HAS_LONG_SEPARATORS(tmpms) = 0;
 				ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
+				ST_DO_HILIGHT_BACK(tmpms) = 0;
 			}
 			else if (i == 1)
 			{
@@ -807,6 +808,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 				ST_TITLE_UNDERLINES(tmpms) = 2;
 				ST_HAS_LONG_SEPARATORS(tmpms) = 1;
 				ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
+				ST_DO_HILIGHT_BACK(tmpms) = 0;
 			}
 			else /* i == 2 */
 			{
@@ -820,11 +822,11 @@ void menustyle_parse_style(F_CMD_ARGS)
 				ST_TITLE_UNDERLINES(tmpms) = 1;
 				ST_HAS_LONG_SEPARATORS(tmpms) = 0;
 				ST_HAS_TRIANGLE_RELIEF(tmpms) = 0;
+				ST_DO_HILIGHT_BACK(tmpms) = 1;
 			}
 
 			/* common settings */
 			ST_DO_HILIGHT_FORE(tmpms) = 1;
-			ST_DO_HILIGHT_BACK(tmpms) = 1;
 			ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
 			ST_ACTIVE_AREA_PERCENT(tmpms) =
 				DEFAULT_MENU_POPUP_NOW_RATIO;
