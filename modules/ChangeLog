@@ -1,4 +1,17 @@
+2003-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/xmanager.c (check_in_window):
+	* FvwmIconMan/winlist.c (figure_win_manager):
+	(check_resolution):
+	* FvwmIconMan/fvwm.c (win_in_viewport):
+	In FvwmIconMan, windows can move from one manager to another acoording
+	to the managers' Resolution options.
+
 2003-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/fvwm.c (set_win_configuration):
+	fix for drawing the focused window upon page change
+	(win_in_viewport):
 
 	* FvwmButtons/FvwmButtons.c (Loop):
 	(SetTransparentBackground):
@@ -18,7 +31,6 @@
 
 	* FvwmAuto/FvwmAuto.c (main): Remove bad debug code.
 
->>>>>>> 1.1040
 2003-02-23  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmPager/x_pager.c (Scroll): Fix pointer centering when returning on

@@ -1,14 +1,14 @@
 ----- Summary ------------------------------------------------------------------
 
-Issues opened recently:
-Issues closed recently: 2
+Issues opened recently: many
+Issues closed recently: some
                              open / closed
 A. Release stopping bugs:       0 / 1
-B. Normal bugs:                 7 / 1
-C. To be verified:             22 / 1
+B. Normal bugs:                 8 / 2
+C. To be verified:             22 / 4
 D. To be discussed:             1 / 0
-E. To do:                       5 / 0
-F. Distribution issues:         4 / 1        
+E. To do:                      10 / 0
+F. Distribution issues:         4 / 1
 G. Testing:                     5 / 0
 
 Total:                         45 / 3
@@ -33,11 +33,6 @@ B. Normal Bugs (8)
   B.1 emacs and maximize [bug #991]
       Ref.: 2003-02-21 "fvwm-bug@fvwm.org" Notification: incoming/991
 
-  B.3 Fixed FvwmButtons if "*FvwmButtons: Pixmap none" is used.
-      Ref.: 2002-11-05 "Kingsly John" FvwmButtons and Transparency
-	    2002-12-19 "Andy Arbon"   FVWM: FvwmButtons problem
-      [Olivier]
-
   B.4 Fvwm doesn't seem to render what Unicode terms as "combining" or
       "composing" characters/marks/ligatures (eg. U+0308 or U+064E) correctly.
       Ref.: 2003-02-12  "Nadim Shaikli" Composing characters within fvwm
@@ -49,16 +44,14 @@ B. Normal Bugs (8)
   B.6 Edge scrolling breaks on non-rectangular Xinerama display [#987,2003-02-11]
       Maybe not a bug: a miss-feature
 
+      [dv: Would not do anything about it]
+
   B.7 strange xawtv fullscreen handling [#973,2002-12-23]. Not a bug? Dominik?
 
   B.8 Menu double-click action not working? [#955,2002-11-06]
 
-C. To be verified (24)
+C. To be verified (25)
 -----------------
-
-  C.1 FvwmIconMan "Resolution" option doesn't work correctly with
-      NumManagers > 1
-      Ref.: 2003-01-17 "Grzegorz Nieweglows" Bug in FvwmIconMan
 
   C.2 StartOnScreen and Xinerama/SLS
       Ref.: 2002-12-22 "Andy Arbon" FVWM: Possible bug in StartsOnScreen
@@ -66,6 +59,8 @@ C. To be verified (24)
   C.3 Moving resizing certain applications with EWMH support (Mozilla,
       konqueror). [#980,2003-01-16,#965,2002-12-02]. Dominik, Dorothy is
       this fixed?
+
+      [dv: i did not do anything about it yet]
 
   C.5 Gtk+-2 and window placement [#938,2.4,2002-10-18]
 
@@ -79,8 +74,6 @@ C. To be verified (24)
   C.9 Moving operation delayed together with XFree86 4.2.0 xtt module
       [#903,2002-07-07] Not an fvwm bug?
 
-  C.10 moving XMMS window is too slow [#?,]
-
   C.11 problem when resizing Aviplay movie window [#870,2002-04-05]
 
   C.12 FvwmScript swallowexec doesn't work [#867,2.4,2002-04-01]
@@ -89,6 +82,7 @@ C. To be verified (24)
 
   C.14 Focus inconsistent when deiconifying under mouse [#833,2.4,2001-12-19].
        Fixed?
+       [dv, 02-Mar-2003: I guess that's unfixable]
 
   C.15 Right mouse-click turn screen to black with xmgrace [#792,2.4,2001-10-10]
        Not a fvwm Bug?
@@ -114,13 +108,23 @@ C. To be verified (24)
 
   C.24 window appear/disappear in the Pager [#731,2.4,2001-07-04]. Fixed?
 
+  C.25 Taskbar crashes when being resized, reported on 15-Feb-2003 by Gert
+       Brinkmann (fvwm mailing list)
+       [dv: added on 02-Mar-2003; requested core dump and config]
+
+  C.26 ClickToFocus broken? [#993,2.5.5,2003-02-26].
+       [dv: added on 02-Mar-2003; asked for a config file but go no reply]
+
+
 D. To be discussed (1)
 ------------------
 
   D.1 Make the distinction between FVWM and fvwm?
 
+      [dv: huh?]
 
-E. To do (5)
+
+E. To do (10)
 --------
 
   E.1 Complete this document
@@ -138,6 +142,21 @@ E. To do (5)
   E.5 Disable Tear-off Menu by default (add --enable-tear-off-menu
       option to configure?)
 
+  E.6 Rename FvwmProxy
+      [dv: added on 02-Mar-2003]
+
+  E.7 Fix the FvwmProxy placement algorithm (it may loop and can place windows
+      off screen)
+      [dv: added on 02-Mar-2003]
+
+  E.8 Remove key release bindings
+      [dv: added on 02-Mar-2003]
+
+  E.9 Either document or disable tear off menus
+      [dv: added on 02-Mar-2003]
+
+  E.10 Rename the "cond", "condcase", etc. commands
+      [dv: added on 02-Mar-2003]
 
 F. Distribution issues (4)
 ----------------------
@@ -174,13 +193,30 @@ G. Testing (5)
       Ref.:  2003-02-09 "David Fries" pager display problems
       [Olivier or Dominik?, No Dan :) 2003-03-01]
 
+  B.3 Fixed FvwmButtons if "*FvwmButtons: Pixmap none" is used.
+      Ref.: 2002-11-05 "Kingsly John" FvwmButtons and Transparency
+	    2002-12-19 "Andy Arbon"   FVWM: FvwmButtons problem
+      [Olivier]
+      [dv: fixed on 02-Mar-2003, 2.5.7; Note:  it is still utterly broken when
+      the window becomes too small]
+
+  C.1 FvwmIconMan "Resolution" option doesn't work correctly with
+      NumManagers > 1
+      Ref.: 2003-01-17 "Grzegorz Nieweglows" Bug in FvwmIconMan
+      [dv: not a bug, but fixed anyway on 02-Mar-2003, 2.5.7]
+
+  C.10 moving XMMS window is too slow [#?,]
+       [dv: cat bug_report | grep "xmms" && mv bug_report trash]
+
   C.21 Pager drawing problem [#762,2.4,2001-08-14].
        {Dan same as B.2 2003-03-01}
- 
+
 ---- Postponed until after 2.6 ------------------------------------------------
 
   F.4 Translate our documentation into "xml/docbook" format
       [Olivier: do not have the time now, but if someone wants to do it,
        (s)he is welcome]
+
+  F.5 Dump fvwm and write a better window manager :-)
 
 ---- Closed -------------------------------------------------------------------

@@ -1398,6 +1398,21 @@ void check_in_window (WinData *win)
   int in_viewport;
   int is_state_selected;
 
+  if (win->complete) {
+    WinManager *oldman;
+    WinManager *newman;
+
+    ConsoleDebug (X11, "change_windows_manager: %s\n", win->titlename);
+
+    oldman = win->manager;
+    newman = figure_win_manager (win, ALL_NAME);
+    if (oldman && newman != oldman && win->button) {
+      oldman->we_are_drawing = 1;
+      delete_windows_button (win);
+  }
+  win->manager = newman;
+  }
+
   if (win->manager && win->complete) {
     is_state_selected =
 	    ((!win->manager->showonlyiconic || win->iconified) &&
@@ -1796,7 +1811,6 @@ void draw_manager (WinManager *man)
 
   if (!man->window_up)
     return;
-
   ConsoleDebug (X11, "Drawing Manager: %s\n", man->titlename);
   redraw_all = man->dirty_flags & REDRAW_MANAGER;
 

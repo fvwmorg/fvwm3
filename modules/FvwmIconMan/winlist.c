@@ -130,6 +130,71 @@ static int matches_string (NameType type, char *pattern, char *tname,
   return ans;
 }
 
+int check_resolution(WinManager *manager, WinData *win)
+{
+  int flag = 0;
+  int reverse = 0;
+  rectangle g;
+
+  assert (manager);
+
+  if (IS_ICONIFIED(win) && !IS_ICON_SUPPRESSED(win))
+  {
+	  g = win->icon_g;
+  }
+  else
+  {
+	  g.x = win->x;
+	  g.y = win->y;
+	  g.width = win->width;
+	  g.height = win->height;
+  }
+  switch (manager->res) {
+  case SHOW_GLOBAL:
+    flag = 1;
+    break;
+
+  case NO_SHOW_DESKTOP:
+    reverse = 1;
+    /* fall through to next case */
+  case SHOW_DESKTOP:
+    if (IS_STICKY_ACROSS_PAGES(win) || win->desknum == globals.desknum)
+      flag = 1;
+    break;
+
+  case NO_SHOW_PAGE:
+    reverse = 1;
+    /* fall through to next case */
+  case SHOW_PAGE:
+    if (IS_STICKY_ACROSS_PAGES(win)) {
+      flag = 1;
+    } else if (win->desknum == globals.desknum) {
+      /* win and screen intersect if they are not disjoint in x and y */
+      flag = RECTANGLES_INTERSECT(
+	g.x, g.y, g.width, g.height,
+	manager->managed_g.x, manager->managed_g.y,
+	manager->managed_g.width, manager->managed_g.height);
+    }
+    break;
+
+  case NO_SHOW_SCREEN:
+    reverse = 1;
+    /* fall through to next case */
+  case SHOW_SCREEN:
+    if (win->desknum == globals.desknum) {
+      /* win and screen intersect if they are not disjoint in x and y */
+      flag = RECTANGLES_INTERSECT(
+	g.x, g.y, g.width, g.height,
+	manager->managed_g.x, manager->managed_g.y,
+	manager->managed_g.width, manager->managed_g.height);
+    }
+    break;
+  }
+  flag ^= reverse;
+
+  return flag;
+}
+
 static int iconmanager_show (WinManager *man, char *tname, char *iname,
 			     char *rname, char *cname)
 {
@@ -226,7 +291,8 @@ WinManager *figure_win_manager (WinData *win, Uchar name_mask)
 
   for (i = 0, man = &globals.managers[0]; i < globals.num_managers;
        i++, man++) {
-    if (iconmanager_show (man, tname, iname, rname, cname)) {
+    if (iconmanager_show (man, tname, iname, rname, cname) &&
+	check_resolution(man, win)) {
       if (man != win->manager) {
 	assert (man->magic == 0x12344321);
       }

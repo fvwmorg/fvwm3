@@ -396,6 +396,7 @@ extern int expand_weighted_sorts (void);
 extern WinData *new_windata (void);
 extern void free_windata (WinData *p);
 extern int check_win_complete (WinData *p);
+int check_resolution(WinManager *man, WinData *win);
 extern WinManager *figure_win_manager (WinData *win, Uchar mask);
 extern void init_winlists (void);
 extern void delete_win_hashtab (WinData *win);

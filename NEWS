@@ -5,6 +5,9 @@ _+_A HREF="#2.4.15"_-_2.4.15_+_/A_-_.
 
 Changes in development release 2.5.7 (not released yet)
 
+* In FvwmIconMan, windows can move from one manager to another
+  acoording to the managers' Resolution options.
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.6 (28-Feb-2003)

@@ -143,68 +143,7 @@ static void got_configure (WinManager *man)
  */
 int win_in_viewport (WinData *win)
 {
-  WinManager *manager = win->manager;
-  int flag = 0;
-  int reverse = 0;
-  rectangle g;
-
-  assert (manager);
-
-  if (IS_ICONIFIED(win) && !IS_ICON_SUPPRESSED(win))
-  {
-	  g = win->icon_g;
-  }
-  else
-  {
-	  g.x = win->x;
-	  g.y = win->y;
-	  g.width = win->width;
-	  g.height = win->height;
-  }
-  switch (manager->res) {
-  case SHOW_GLOBAL:
-    flag = 1;
-    break;
-
-  case NO_SHOW_DESKTOP:
-    reverse = 1;
-    /* fall through to next case */
-  case SHOW_DESKTOP:
-    if (IS_STICKY_ACROSS_PAGES(win) || win->desknum == globals.desknum)
-      flag = 1;
-    break;
-
-  case NO_SHOW_PAGE:
-    reverse = 1;
-    /* fall through to next case */
-  case SHOW_PAGE:
-    if (IS_STICKY_ACROSS_PAGES(win)) {
-      flag = 1;
-    } else if (win->desknum == globals.desknum) {
-      /* win and screen intersect if they are not disjoint in x and y */
-      flag = RECTANGLES_INTERSECT(
-	g.x, g.y, g.width, g.height,
-	manager->managed_g.x, manager->managed_g.y,
-	manager->managed_g.width, manager->managed_g.height);
-    }
-    break;
-
-  case NO_SHOW_SCREEN:
-    reverse = 1;
-    /* fall through to next case */
-  case SHOW_SCREEN:
-    if (win->desknum == globals.desknum) {
-      /* win and screen intersect if they are not disjoint in x and y */
-      flag = RECTANGLES_INTERSECT(
-	g.x, g.y, g.width, g.height,
-	manager->managed_g.x, manager->managed_g.y,
-	manager->managed_g.width, manager->managed_g.height);
-    }
-    break;
-  }
-  flag ^= reverse;
-
-  return flag;
+  return check_resolution(win->manager, win);
 }
 
 
@@ -231,7 +170,7 @@ static void set_win_configuration (WinData *win, FvwmPacketBody *body)
   win->width = body->add_config_data.frame_width;
   win->height = body->add_config_data.frame_height;
   win->iconified =  IS_ICONIFIED(&(body->add_config_data));
-  win->state = PLAIN_CONTEXT;
+  win->state = (win == fvwm_focus_win) ? FOCUS_CONTEXT : PLAIN_CONTEXT;
   win->geometry_set = 1;
   memcpy(&(win->flags), &(body->add_config_data.flags), sizeof(win->flags));
 }
