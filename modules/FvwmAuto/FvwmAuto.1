@@ -25,13 +25,9 @@ The correct syntax is:
 .EX
 Module FvwmAuto Timeout [EnterCommand [LeaveCommand]]
 .sp
-AddToMenu Modules Modules Title
-+                 Audio   Module FvwmAudio
-+                 Auto    Module FvwmAuto 300 "silent raise" "silent lower"
-+                 Buttons Module FvwmButtons
-+                 Ident   Module FvwmIdent
-+                 Banner  Module FvwmBanner
-+                 Pager   Module FvwmPager 0 3
+AddToMenu Modules
++ "Auto Raise (300 ms)"  Module FvwmAuto 300
++ "Auto Raise/Lower"     Module FvwmAuto 300 "Silent Raise" "Silent Lower"
 .EE
 .fi
 The \fITimeout\fP argument is required. It specifies how long a window must
@@ -59,6 +55,40 @@ Experiment with:
 Module FvwmAuto 0 Nop "Silent Lower"
 Module FvwmAuto 0 Nop "Silent Iconify"
 .EE
+
+More complex example (three FvwmAuto's are running):
+.nf
+.EX
+DestroyFunc RestoreIconified
+AddToFunc   RestoreIconified
++ I Current (Iconic) Iconify false
+
+DestroyFunc RegisterFocus
+AddToFunc   RegisterFocus
++ I Exec echo "`date +%T` $n focussed" >>/tmp/focus-stats.txt
+
+DestroyFunc RegisterUnfocus
+AddToFunc   RegisterUnfocus
++ I Exec echo "`date +%T` $n unfocussed" >>/tmp/focus-stats.txt
+
+KillModule FvwmAuto
+Module FvwmAuto 250 Raise Nop
+Module FvwmAuto 800 RestoreIconified Nop
+Module FvwmAuto   0 RegisterFocus RegisterUnfocus
+.EE
+
+.SH NOTES
+
+There is a special Raise/Lower support in FvwmAuto. It was added to improve
+Raise/Lower callbacks, since most of FvwmAuto usages is auto-raising or
+auto-lowering. This imrovement includes locking on M_RAISE_WINDOW and
+M_LOWER_WINDOW packets and not raising/lowering explicitely raised windows.
+The special Raise/Lower support is enabled only when either
+\fIEnterCommand\fP or \fILeaveCommand\fP contain substring "Raise" or
+"Lower". You can use this fact to enable/disable any special support by
+renaming these commands, if FvwmAuto does not automatically do want you
+expect it to do.
+
 .SH AUTHOR
 .nf
 FvwmAuto just appeared one day, nobody knows how.

@@ -573,7 +573,7 @@ void initialize_pager(void)
   wmhints.flags |= InputHint | StateHint | IconWindowHint;
 
   class1.res_name = MyName;
-  class1.res_class = "FvwmModule";
+  class1.res_class = "FvwmPager";
 
   XSetWMProperties(dpy,Scr.Pager_w,&name,&name,NULL,0,
 		   &sizehints,&wmhints,&class1);

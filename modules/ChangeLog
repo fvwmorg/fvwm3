@@ -1,3 +1,8 @@
+2000-05-31  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmPager/x_pager.c: set resource class to module name (FvwmPager).
+	* FvwmAuto/FvwmAuto.c: documented a special Raise/Lower support.
+
 2000-05-31  Hippo
 
 	* FvwmPager/x_pager.c: Position of small windows on page boundaries.
@@ -17,12 +22,12 @@
 	* FvwmCommand/FvwmCommand.c (list_new_page):
 	fixed printf arguments
 
-2000-05-27  olicha <olivier.chapuis@free.fr>
+2000-05-27  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIconBox/FvwmIconBox.{c,h}:
 	Fixed NoIcon/Icon and WindowListSkip/Hit style Change
 
-2000-05-26  olicha <olivier.chapuis@free.fr>
+2000-05-26  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIconMan/xmanager.c (check_in_window, set_win_iconified):
 	Fixed NoIconAction and WindowListSkip/Hit style Change
@@ -36,7 +41,7 @@
 	* FvwmCommand/FvwmCommand.c (list_configure):
 	removed FlipTransient style
 
-2000-05-25  olicha <olivier.chapuis@free.fr>
+2000-05-25  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmWinList/FvwmWinList.c:
 	Rename the OLD_BUGGY_WINDOW_PLACEMENT ifdef by COMPLEX_WINDOW_PLACEMENT
@@ -49,14 +54,14 @@
 	Preparation for fixing Stick/Slipery and WindowListSkip/Hit
 	style change.
 
-2000-05-24  olicha <olivier.chapuis@free.fr>
+2000-05-24  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	Fixed shading with an AutoHide/Stick
 
 	* FvwmTaskBar/Goodies.c (PopupTipWindow): Fixed tips position
 
-2000-05-20  olicha <olivier.chapuis@free.fr>
+2000-05-20  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Scripts/ScriptFvwmSetup95.in
 	Corrected a miss print (thanks to sa)
@@ -69,7 +74,7 @@
 	Complete GSFR conversion. Fixed WindowListSkip/Hit style change.
 	Remove dummy code (e.g., the swallow code)
 
-2000-05-17  olicha <olivier.chapuis@free.fr>
+2000-05-17  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Widgets/TextField.c (*):
 	Fixed long text input
