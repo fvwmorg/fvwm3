@@ -1,64 +1,58 @@
-Dedication
-----------
-
-  This release is dedicated to all victims of the war in Iraq that
-  began in March, 2003.  The following people, many of them users
-  or developers of fvwm, would like to express their sympathies to
-  those affected:
-
-  Alex Wallis
-  André Bonhôte
-  Ben Winslow
-  Bob Crochelt
-  Bob Woodside
-  Cameron Simpson
-  Dan Espen
-  Dennis McGregor
-  Diane Merriman
-  Dominik Vogt
-  Dorothy Robinson
-  Fabien Villard
-  Gregg Dameron
-  Jeremie Petit
-  John Latham
-  Kingsly John
-  Larry Gensch
-  Marcus Lundblad
-  Mathias Megyei
-  Mike Han
-  Mikhael Goikhman
-  Olivier Chapuis
-  Paul Smith
-  Rainer Koehler
-  Ross Hamilton
-  Scott Smedley
-  Timothy Groves
-  Tomas Ögren
-  Uwe Pross
-
--------------------------------------------------------------------
-
-Fvwm is a powerful window manager.  Version 2.5.7 is an unstable
+fvwm is a powerful window manager.  Version 2.5.8 is an unstable
 release that includes improvements over unstable 2.5.7 and stable
-2.4.16 versions.  You are welcome to upgrade and test the new
+2.4.17 versions.  You are welcome to upgrade and test the new
 features or help stabilizing the code.  Please be aware that any
 features introduced in the 2.5.x development versions may be
 renamed, changed or removed without notice before 2.6.0.
 
 This release is available at the home page: http://www.fvwm.org/.
-We are 10 year old now, participate in the birthday events!
-
-Bug Fixes:
-----------
-
-See ChangeLog and NEWS (the 2.4.x section) files for details.
+We are 10 years old now as of Juny 2003!
 
 Improvements:
 -------------
 
+* The Break command can be told the number of nested function
+  levels to break out of.  Break now has a return code of -2
+  ("Break").
+
+* New extended variable $[func.context].
+
+* Directions can be abbreviated with -, _, [, ], <, >, v or ^ like
+  in key or mouse bindings.
+
+* fvwm now handles what Unicode calls "combining characters" (i.e.
+  marks drawn on top of other characters).
+
+* FvwmAnimate now supports dynamical commands "pause", "play",
+  "push", "pop" and "reset" to manipulate the playing state.
+
 New features:
 -------------
+
+* New commands WindowStyle and DestroyWindowStyle for individual
+  (per window) styles.
+
+* fvwm supports tear off menus.  See the "Tear Off Menus" section
+  in the man page or press Backspace on any menu to try them out.
+
+* New Style option MoveByProgramMethod.  Tries to autodetect
+  whether application windows are moved honouring the ICCCM or not
+  (default).  The method can be overridden manually if the
+  detection does not work.
+
+* New prefix command KeepRc.
+
+* Renamed the Cond command to TestRc, and the On command to Test.
+  Removed the CondCase command.  Use "KeepRc TestRc" instead.
 
 Other changes:
 --------------
 
+* Added a nice autohide script to the FAQ.
+
+Bug Fixes:
+----------
+
+* The conditions !Current... and !Layer now work as expected.
+
+See ChangeLog and NEWS (the 2.4.x section) files for all details.

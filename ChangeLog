@@ -3,6 +3,10 @@
 	* Makefile.am:
 	fixed deb creation
 
+	* configure.in:
+	* NEWS:
+	updated for 2.5.8 release
+
 2003-10-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am:
