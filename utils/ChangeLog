@@ -1,3 +1,8 @@
+2001-07-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm24_convert.in:
+	update $dest2 only after all changes to $dest, not before
+
 2001-07-08  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm24_convert.in:

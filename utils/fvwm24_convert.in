@@ -10,7 +10,6 @@ eval '(exit $?0)' && eval 'exec perl -S $0 ${1+"$@"}'
 
 
 ($source,$dest) = @ARGV;
-$dest2 = "$dest.pass1";
 if ( $source eq "") {
   $source = "$ENV{'HOME'}/.fvwm2rc";
 }
@@ -21,6 +20,7 @@ if ( ! -e $source ) {
 if ($dest eq "") {
   $dest = "$ENV{'HOME'}/.fvwm/.fvwm2rc";
 }
+$dest2 = "$dest.pass1";
 if ( -e $dest ) {
   die "Output file $dest already exists, exiting.\n";
 }
@@ -54,7 +54,7 @@ $\ = "\n";			# set output record separator
 print "Input from $source, output to $dest\n";
 parse_pass($source, $dest2, 1);
 parse_pass($dest2, $dest, 2);
-system "rm $dest2 2>/dev/null";
+unlink($dest2);
 exit 0;
 
 
