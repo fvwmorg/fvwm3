@@ -124,10 +124,12 @@ static void apply_window_updates(
 	 *
 	 * These are a bit complicated because they can move windows to a
 	 * different page or desk. */
+	ecc.type = EXCT_NULL;
 	ecc.w.fw = t;
 	ecc.w.w = FW_W_FRAME(t);
 	ecc.w.wcontext = C_FRAME;
-	exc = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+	exc = exc_create_context(
+		&ecc, ECC_TYPE | ECC_FW | ECC_W | ECC_WCONTEXT);
 	if (flags->do_update_stick_icon && IS_ICONIFIED(t) && !IS_STICKY(t))
 	{
 		if (IS_ICON_STICKY(pstyle))

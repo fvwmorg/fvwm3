@@ -788,13 +788,13 @@ void HandleClientMessage(const evh_args_t *ea)
 	if (te->xclient.message_type == _XA_WM_CHANGE_STATE &&
 	    fw && te->xclient.data.l[0] == IconicState && !IS_ICONIFIED(fw))
 	{
-		const exec_context_t *exc2;
-		exec_context_changes_t ecc;;
+		const exec_context_t *exc;
+		exec_context_changes_t ecc;
 
 		ecc.w.wcontext = C_WINDOW;
-		exc2 = exc_clone_context(ea->exc, &ecc, ECC_WCONTEXT);
-		execute_function(NULL, exc2, "Iconify", 0);
-		exc_destroy_context(exc2);
+		exc = exc_clone_context(ea->exc, &ecc, ECC_WCONTEXT);
+		execute_function(NULL, exc, "Iconify", 0);
+		exc_destroy_context(exc);
 		return;
 	}
 
@@ -2735,15 +2735,15 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", fw->name));
 		}
 		if (urgency_action)
 		{
-			const exec_context_t *exc2;
+			const exec_context_t *exc;
 			exec_context_changes_t ecc;
 
 			ecc.w.fw = fw;
 			ecc.w.wcontext = C_WINDOW;
-			exc2 = exc_clone_context(
+			exc = exc_clone_context(
 				ea->exc, &ecc, ECC_FW | ECC_WCONTEXT);
-			execute_function(NULL, ea->exc, urgency_action, 0);
-			exc_destroy_context(exc2);
+			execute_function(NULL, exc, urgency_action, 0);
+			exc_destroy_context(exc);
 		}
 		break;
 	case XA_WM_NORMAL_HINTS:
@@ -3016,6 +3016,7 @@ void HandleVisibilityNotify(const evh_args_t *ea)
 		case VisibilityPartiallyObscured:
 			SET_FULLY_VISIBLE(fw, 0);
 			SET_PARTIALLY_VISIBLE(fw, 1);
+			break;
 		default:
 			SET_FULLY_VISIBLE(fw, 0);
 			SET_PARTIALLY_VISIBLE(fw, 0);
@@ -3612,8 +3613,9 @@ void CoerceEnterNotifyOnCurrentWindow(void)
 		}
 	}
 	e.xcrossing.focus = (fw == get_focus_window()) ? True : False;
+	ecc.type = EXCT_NULL;
 	ecc.x.etrigger = &e;
-	ea.exc = exc_create_context(&ecc, ECC_ETRIGGER);
+	ea.exc = exc_create_context(&ecc, ECC_TYPE | ECC_ETRIGGER);
 	HandleEnterNotify(&ea);
 	exc_destroy_context(ea.exc);
 

@@ -200,7 +200,7 @@ static void CaptureOneWindow(
 		ecc.x.etrigger = &e;
 		ea.exc = exc_clone_context(exc, &ecc, ECC_ETRIGGER);
 		HandleMapRequestKeepRaised(&ea, keep_on_top_win, fw, &win_opts);
-		exc_destroy_context(exc);
+		exc_destroy_context(ea.exc);
 
 		/* HandleMapRequestKeepRaised may have destroyed the fw if the
 		 * window vanished while in AddWindow(), so don't access fw
@@ -1455,8 +1455,9 @@ static Bool setup_window_placement(
 	{
 		win_opts->initial_state = IconicState;
 	}
+	ecc.type = EXCT_NULL;
 	ecc.w.fw = fw;
-	exc = exc_create_context(&ecc, ECC_FW);
+	exc = exc_create_context(&ecc, ECC_TYPE | ECC_FW);
 	rc = PlaceWindow(
 		exc, &pstyle->flags, attr_g, SGET_START_DESK(*pstyle),
 		SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle),
@@ -2868,7 +2869,10 @@ void destroy_window(FvwmWindow *fw)
 	/****** remove from window list ******/
 
 	/* first of all, remove the window from the list of all windows! */
-	fw->prev->next = fw->next;
+	if (fw->prev != NULL)
+	{
+		fw->prev->next = fw->next;
+	}
 	if (fw->next != NULL)
 	{
 		fw->next->prev = fw->prev;

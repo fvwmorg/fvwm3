@@ -177,8 +177,16 @@ static void circulate_cmd(
 	}
 	if ((!found == !do_use_found) && restofline)
 	{
-		execute_function_override_wcontext(
-			cond_rc, exc, action, 0, new_context);
+		const exec_context_t *exc2;
+		exec_context_changes_t ecc;
+
+		ecc.w.fw = found;
+		ecc.w.w = (found != NULL) ? FW_W(found) : None;
+		ecc.w.wcontext = new_context;
+		exc2 = exc_clone_context(
+			exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+		execute_function(cond_rc, exc2, restofline, 0);
+		exc_destroy_context(exc2);
 	}
 
 	return;
@@ -772,6 +780,7 @@ void CMD_PointerWindow(F_CMD_ARGS)
 	ecc.w.fw = get_pointer_fvwm_window();
 	exc = exc_clone_context(exc, &ecc, ECC_FW);
 	select_cmd(F_PASS_ARGS);
+	exc_destroy_context(exc);
 
 	return;
 }

@@ -686,8 +686,10 @@ static void ExecuteModuleCommand(Window w, int module, char *text)
 	ecc.w.w = w;
 	ecc.w.wcontext = GetContext(NULL, ecc.w.fw, &e, &w);
 	ecc.x.etrigger = &e;
+	ecc.m.modnum = module;
 	exc = exc_create_context(
-		&ecc, ECC_TYPE | ECC_ETRIGGER | ECC_FW | ECC_W | ECC_WCONTEXT);
+		&ecc, ECC_TYPE | ECC_ETRIGGER | ECC_FW | ECC_W | ECC_WCONTEXT |
+		ECC_MODNUM);
 	execute_function(NULL, exc, text, 0);
 	exc_destroy_context(exc);
 

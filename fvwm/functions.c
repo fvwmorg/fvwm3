@@ -113,11 +113,6 @@ static void execute_complex_function(
  *          next button press if the context is C_ROOT
  *
  *  Inputs:
- *      eventp  - pointer to XEvent to patch up
- *      w       - pointer to Window to patch up
- *      fw - pointer to FvwmWindow Structure to patch up
- *      context - the context in which the mouse button was pressed
- *      func    - the function to defer
  *      cursor  - the cursor to display while waiting
  *      finishEvent - ButtonRelease or ButtonPress; tells what kind of event to
  *                    terminate on.
@@ -138,6 +133,10 @@ static Bool DeferExecution(
 	FvwmWindow *fw;
 
 	fw = ret_ecc->w.fw;
+	if (fw != NULL)
+	{
+		return False;
+	}
 	w = ret_ecc->w.w;
 	original_w = w;
 	wcontext = ret_ecc->w.wcontext;
@@ -237,7 +236,7 @@ static Bool DeferExecution(
 		return True;
 	}
 	*ret_mask |= ECC_FW;
-	if (XFindContext(dpy, w, FvwmContext, (caddr_t *)fw) == XCNOENT)
+	if (XFindContext(dpy, w, FvwmContext, (caddr_t *)&fw) == XCNOENT)
 	{
 		ret_ecc->w.fw = NULL;
 		ret_ecc->w.w = w;
@@ -423,14 +422,10 @@ static void __execute_function(
 	}
 	else
 	{
-		w = None;
-		if (exc->x.etrigger)
+		w = GetSubwindowFromEvent(dpy, exc->x.etrigger);
+		if (w == None)
 		{
-			w = GetSubwindowFromEvent(dpy, exc->x.etrigger);
-			if (w == None)
-			{
-				w = exc->x.etrigger->xany.window;
-			}
+			w = exc->x.etrigger->xany.window;
 		}
 		if (w == None)
 		{
@@ -461,7 +456,9 @@ static void __execute_function(
 			trash = PeekToken(taction, &trash2);
 		}
 		else
+		{
 			break;
+		}
 	}
 	if (taction == NULL)
 	{
@@ -607,7 +604,7 @@ static void __execute_function(
 			}
 			exc2 = exc_clone_context(exc, &ecc, mask);
 			execute_complex_function(
-				cond_rc, exc, runaction, &desperate);
+				cond_rc, exc2, runaction, &desperate);
 			if (!bif && desperate)
 			{
 				if (executeModuleDesperate(
@@ -1060,7 +1057,7 @@ static void execute_complex_function(
 	ecc.x.etrigger = &d;
 	ecc.w.w = (ecc.w.fw) ? FW_W_FRAME(ecc.w.fw) : None;
 	mask |= ECC_ETRIGGER | ECC_W;
-	exc2 = exc_clone_context(exc2, &ecc, mask);
+	exc2 = exc_clone_context(exc, &ecc, mask);
 	__run_complex_function_items(
 		&cond_func_rc, type, func, exc2, arguments);
 	exc_destroy_context(exc2);
@@ -1219,7 +1216,9 @@ void execute_function_override_window(
 	}
 	else
 	{
-		exc2 = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+		ecc.type = EXCT_NULL;
+		exc2 = exc_create_context(
+			&ecc, ECC_TYPE | ECC_FW | ECC_W | ECC_WCONTEXT);
 	}
 	execute_function(cond_rc, exc2, action, exec_flags);
 	exc_destroy_context(exc2);

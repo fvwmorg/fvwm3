@@ -3613,7 +3613,8 @@ static int pop_menu_up(
 		ecc.w.fw = *pfw;
 		ecc.w.w = (*pfw) ? FW_W(*pfw) : None;
 		ecc.w.wcontext = *pcontext;
-		exc = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+		exc = exc_clone_context(
+			pmp->exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
 		old_emf = Scr.flags.is_executing_menu_function;
 		Scr.flags.is_executing_menu_function = 1;
 		execute_function(
@@ -4257,7 +4258,8 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 		ecc.w.fw = *pmp->pfw;
 		ecc.w.w = (*pmp->pfw) ? FW_W(*pmp->pfw) : None;
 		ecc.w.wcontext = *pmp->pcontext;
-		exc = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+		exc = exc_clone_context(
+			pmp->exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
 		old_emf = Scr.flags.is_executing_menu_function;
 		Scr.flags.is_executing_menu_function = 1;
 		execute_function(
@@ -5246,7 +5248,8 @@ static mloop_ret_code_t __mloop_do_popup(
 		ecc.w.fw = *pmp->pfw;
 		ecc.w.w = (*pmp->pfw) ? FW_W(*pmp->pfw) : None;
 		ecc.w.wcontext = *pmp->pcontext;
-		exc = exc_create_context(&ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
+		exc = exc_clone_context(
+			pmp->exc, &ecc, ECC_FW | ECC_W | ECC_WCONTEXT);
 		old_emf = Scr.flags.is_executing_menu_function;
 		Scr.flags.is_executing_menu_function = 1;
 		execute_function(
@@ -6033,8 +6036,9 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	ev.xmaprequest.parent = Scr.Root;
 	ev.xmaprequest.window = MR_WINDOW(mr);
 	fev_fake_event(&ev);
+	ecc.type = EXCT_NULL;
 	ecc.x.etrigger = &ev;
-	ea.exc = exc_create_context(&ecc, ECC_ETRIGGER);
+	ea.exc = exc_create_context(&ecc, ECC_TYPE | ECC_ETRIGGER);
 	HandleMapRequestKeepRaised(&ea, None, NULL, &win_opts);
 	exc_destroy_context(ea.exc);
 
@@ -6420,8 +6424,8 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 					ecc.w.w = (*pmp->pfw) ?
 						FW_W(*pmp->pfw) : None;
 					ecc.w.wcontext = *pmp->pcontext;
-					exc = exc_create_context(
-						&ecc, ECC_FW | ECC_W |
+					exc = exc_clone_context(
+						pmp->exc, &ecc, ECC_FW | ECC_W |
 						ECC_WCONTEXT);
 					Scr.flags.is_executing_menu_function =
 						1;
