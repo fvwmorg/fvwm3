@@ -1,3 +1,8 @@
+1999-05-05  Dan Espen  <dane@mk.bellcore.com>
+
+	* FvwmForm/FvwmForm.1: Man page update to make it clear that you use
+	^M, not the string "RETURN" for a button activated by the keyboard.
+
 1999-05-04  Hippo
 
 	* FvwmButtons/*.c: does dynamic color changing.
