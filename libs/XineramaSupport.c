@@ -122,7 +122,7 @@ void XineramaSupportInit(Display *dpy)
     int h;
     int ws;
     unsigned long scr;
-    Window root; 
+    Window root;
     XSetWindowAttributes attributes;
 
     scr = DefaultScreen(disp);
@@ -169,7 +169,7 @@ void XineramaSupportInit(Display *dpy)
     /* add delimiter */
     attributes.background_pixel = WhitePixel(disp, scr);
     attributes.override_redirect = True;
-    blank_w = XCreateWindow(disp, root, 0, 7 * h / 8, ws, h/8, 0, CopyFromParent,
+    blank_w = XCreateWindow(disp, root, 0, 7 * h / 8, ws, 2, 0, CopyFromParent,
 			    CopyFromParent, CopyFromParent,
 			    CWBackPixel|CWOverrideRedirect,
 			    &attributes);

@@ -137,7 +137,7 @@ static void paint_menu(MenuRoot *, XEvent *, FvwmWindow *fw);
 static void select_menu_item(
   MenuRoot *mr, MenuItem *mi, Bool select, FvwmWindow *fw);
 static MenuRoot *copy_menu_root(MenuRoot *mr);
-static void make_menu(MenuRoot *mr);
+static void make_menu(MenuRoot *mr, MenuParameters *pmp);
 static void make_menu_window(MenuRoot *mr);
 static void get_xy_from_position_hints(
   MenuPosHints *ph, int width, int height, int context_width,
@@ -609,8 +609,12 @@ static MenuRoot *FindPopup(char *popup_name)
 
 /* Make sure the menu is properly rebuilt when the style or the menu has
  * changed. */
-void update_menu(MenuRoot *mr)
+static void update_menu(MenuRoot *mr, MenuParameters *pmp)
 {
+  int sw;
+  int sh;
+  Bool has_screen_size_changed = False;
+
   if (MST_IS_UPDATED(mr))
   {
     /* The menu style has changed. */
@@ -626,10 +630,18 @@ void update_menu(MenuRoot *mr)
     }
     MST_IS_UPDATED(mr) = 0;
   }
-  if (MR_IS_UPDATED(mr))
+  XineramaSupportGetScrRect(
+    pmp->screen_origin_x, pmp->screen_origin_y, &JunkX, &JunkY, &sw, &sh);
+  if (sw != MR_SCREEN_WIDTH(mr) || sh != MR_SCREEN_HEIGHT(mr))
   {
-    /* The menu has changed. We have to re-make it. */
-    make_menu(mr);
+    has_screen_size_changed = True;
+    MR_SCREEN_WIDTH(mr) = (unsigned short)sw;
+    MR_SCREEN_HEIGHT(mr) = (unsigned short)sh;
+  }
+  if (MR_IS_UPDATED(mr) || has_screen_size_changed)
+  {
+    /* The menu or the screen dimensions have changed. We have to re-make it. */
+    make_menu(mr, pmp);
   }
 
   return;
@@ -714,7 +726,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
       x_start = -1;
       y_start = -1;
     }
-    pmp->flags.has_screen_origin = pmp->pops->pos_hints.has_screen_origin;
     pmp->screen_origin_x = pmp->pops->pos_hints.screen_origin_x;
     pmp->screen_origin_y = pmp->pops->pos_hints.screen_origin_y;
   }
@@ -724,7 +735,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
     Bool prefer_left_submenus = False;
 
     /* Make sure we are using the latest style and menu layout. */
-    update_menu(pmp->menu);
+    update_menu(pmp->menu, pmp);
 
     if (pmp->flags.is_submenu)
     {
@@ -2135,7 +2146,7 @@ static void MenuInteraction(
 	    Bool prefer_left_submenus;
 
 	    /* Make sure we are using the latest style and menu layout. */
-	    update_menu(mrPopup);
+	    update_menu(mrPopup, pmp);
 
 	    get_prefered_popup_position(
 	      pmp->menu, mrPopup, &x, &y, &prefer_left_submenus);
@@ -2211,7 +2222,6 @@ static void MenuInteraction(
 	  mp.button_window = pmp->button_window;
 	  mp.pcontext = pmp->pcontext;
 	  mp.flags.has_default_action = False;
-	  mp.flags.has_screen_origin = True;
 	  mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
 	  mp.flags.is_sticky = False;
 	  mp.flags.is_submenu = True;
@@ -2442,6 +2452,8 @@ static void MenuInteraction(
       {
 	last_saved_pos_hints.flags.do_ignore_pos_hints = True;
       } /* mops.flags.do_select_in_place */
+      last_saved_pos_hints.pos_hints.screen_origin_x = pmp->screen_origin_x;
+      last_saved_pos_hints.pos_hints.screen_origin_y = pmp->screen_origin_y;
     } /* a menu was selected */
     break;
 #ifdef TEAR_OFF_MENUS
@@ -2542,8 +2554,7 @@ static int pop_menu_up(
   int scr_x, scr_y, scr_w, scr_h;
 
   mr = *pmenu;
-  if (!mr || MR_WINDOW(mr) == None ||
-      (MR_MAPPED_COPIES(mr) > 0 && MR_COPIES(mr) >= MAX_MENU_COPIES))
+  if (!mr || (MR_MAPPED_COPIES(mr) > 0 && MR_COPIES(mr) >= MAX_MENU_COPIES))
   {
     *pdo_warp_to_title = False;
     return False;
@@ -2608,24 +2619,31 @@ static int pop_menu_up(
 	free(menu_name);
       }
       mr = *pmenu;
+#if 0
       if (mr)
       {
-	make_menu(mr);
+	make_menu(mr, pmp);
       }
+#endif
     }
   }
-  fw = *pfw;
-  if (fw && !check_if_fvwm_window_exists(fw))
-    fw = NULL;
-  context = *pcontext;
-
-  if(mr == NULL || MR_FIRST_ITEM(mr) == NULL || MR_ITEMS(mr) == 0)
+#if 1
+  if (mr)
+  {
+    update_menu(mr, pmp);
+  }
+#endif
+  if (mr == NULL || MR_FIRST_ITEM(mr) == NULL || MR_ITEMS(mr) == 0)
   {
     /* The menu deleted itself or all its items or it has been empty from the
      * start. */
     *pdo_warp_to_title = False;
     return False;
   }
+  fw = *pfw;
+  if (fw && !check_if_fvwm_window_exists(fw))
+    fw = NULL;
+  context = *pcontext;
 
   /***************************************************************
    * Create a new menu instance (if necessary)
@@ -4431,15 +4449,13 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	    sscanf(format, "%d%n", &gap_left, &chars) >= 1 ||
 	    sscanf(format, ".%d%n", &gap_right, &chars) >= 1)
 	{
-/*!!! Don't know where to get (x,y) for current screen if it is at all
- possible -- it can be a "detached" menu -- D.Yu.B. */
-	  if (gap_left > Scr.MyDisplayWidth ||
-	      gap_left < -Scr.MyDisplayWidth)
+	  if (gap_left > MR_SCREEN_WIDTH(msp->menu) ||
+	      gap_left < -MR_SCREEN_WIDTH(msp->menu))
 	  {
 	    gap_left = 0;
 	  }
-	  if (gap_right > Scr.MyDisplayHeight ||
-	      gap_right < -Scr.MyDisplayHeight)
+	  if (gap_right > MR_SCREEN_HEIGHT(msp->menu) ||
+	      gap_right < -MR_SCREEN_HEIGHT(msp->menu))
 	  {
 	    gap_right = 0;
 	  }
@@ -4617,15 +4633,15 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
     /* Hide unplaced parts of the menu. */
     if (!sidepic_placed)
     {
-      MR_SIDEPIC_X_OFFSET(msp->menu) = 2 * Scr.MyDisplayWidth;
+      MR_SIDEPIC_X_OFFSET(msp->menu) = 2 * MR_SCREEN_WIDTH(msp->menu);
     }
     for (i = icons_placed; i < MAX_MENU_ITEM_MINI_ICONS; i++)
     {
-      MR_ICON_X_OFFSET(msp->menu)[i] = 2 * Scr.MyDisplayWidth;
+      MR_ICON_X_OFFSET(msp->menu)[i] = 2 * MR_SCREEN_WIDTH(msp->menu);
     }
     if (!triangle_placed)
     {
-      MR_TRIANGLE_X_OFFSET(msp->menu) = 2 * Scr.MyDisplayWidth;
+      MR_TRIANGLE_X_OFFSET(msp->menu) = 2 * MR_SCREEN_WIDTH(msp->menu);
     }
     msp->flags.is_popup_indicator_used = triangle_placed;
 
@@ -4845,7 +4861,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
      * we need to add a "More..." entry pointing to a new menu */
     if (y + MST_BORDER_WIDTH(msp->menu) +
 	((MI_IS_SELECTABLE(mi)) ? relief_thickness : 0)
-	> Scr.MyDisplayHeight)
+	> MR_SCREEN_HEIGHT(msp->menu))
     {
       /* Item does not fit on screen anymore. */
       Bool does_fit = False;
@@ -4861,7 +4877,7 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
 	mi = MI_PREV_ITEM(mi);
 	cItems--;
 	if (y + MST_BORDER_WIDTH(msp->menu) + simple_entry_height +
-	    2 * relief_thickness <= Scr.MyDisplayHeight)
+	    2 * relief_thickness <= MR_SCREEN_HEIGHT(msp->menu))
 	{
 	  /* ok, it fits now */
 	  does_fit = True;
@@ -4975,15 +4991,17 @@ static void make_menu_window(MenuRoot *mr)
  * Generates the window for a menu
  *
  ****************************************************************************/
-static void make_menu(MenuRoot *mr)
+static void make_menu(MenuRoot *mr, MenuParameters *pmp)
 {
   MenuSizingParameters msp;
   Bool has_continuation_menu = False;
 
+#if 0
   if (!Scr.flags.windows_captured)
   {
     return;
   }
+#endif
   if (MR_MAPPED_COPIES(mr) > 0)
   {
     return;
@@ -5582,7 +5600,6 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   tc = Context;
   mp.pcontext = &tc;
   mp.flags.has_default_action = (action != NULL);
-  mp.flags.has_screen_origin = False;
   mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
   mp.flags.is_sticky = fStaysUp;
   mp.flags.is_submenu = False;
@@ -7452,6 +7469,13 @@ char *get_menu_options(
       if (tok == NULL)
       {
 	fvwm_msg(ERR,"get_menu_options","missing rectangle geometry");
+	if (!pops->pos_hints.has_screen_origin)
+	{
+	  /* xinerama: emergency fallback */
+	  pops->pos_hints.has_screen_origin = 1;
+	  pops->pos_hints.screen_origin_x = 0;
+	  pops->pos_hints.screen_origin_y = 0;
+	}
 	return action;
       }
       flags = XParseGeometry(tok, &x, &y, &width, &height);
@@ -7459,6 +7483,13 @@ char *get_menu_options(
       {
 	free(tok);
 	fvwm_msg(ERR,"get_menu_options","invalid rectangle geometry");
+	if (!pops->pos_hints.has_screen_origin)
+	{
+	  /* xinerama: emergency fallback */
+	  pops->pos_hints.has_screen_origin = 1;
+	  pops->pos_hints.screen_origin_x = 0;
+	  pops->pos_hints.screen_origin_y = 0;
+	}
 	return action;
       }
       if (!(flags & WidthValue))
@@ -7676,7 +7707,7 @@ static void get_popup_options(
   if (!mi)
     return;
   pops->flags.has_poshints = 0;
-  pops->pos_hints.has_screen_origin = pmp->flags.has_screen_origin;
+  pops->pos_hints.has_screen_origin = True;
   pops->pos_hints.screen_origin_x = pmp->screen_origin_x;
   pops->pos_hints.screen_origin_y = pmp->screen_origin_y;
   /* just look past "Popup <name>" in the action */

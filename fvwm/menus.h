@@ -421,6 +421,8 @@ typedef struct MenuRootStatic
   unsigned short hilight_width;       /* width of the area to be hilighted */
   unsigned short y_offset;            /* y coordinate for item */
   unsigned short items;               /* number of items in the menu */
+  unsigned short screen_width;        /* width and height of the last screen */
+  unsigned short screen_height;       /*   the menu was mapped on */
   Picture *sidePic;
   Pixel sideColor;
   /* Menu Face    */
@@ -457,6 +459,8 @@ typedef struct MenuRootStatic
 #define MR_HILIGHT_X_OFFSET(m)   ((m)->s->hilight_x_offset)
 #define MR_HILIGHT_WIDTH(m)      ((m)->s->hilight_width)
 #define MR_ITEMS(m)              ((m)->s->items)
+#define MR_SCREEN_WIDTH(m)       ((m)->s->screen_width)
+#define MR_SCREEN_HEIGHT(m)      ((m)->s->screen_height)
 #define MR_SIDEPIC(m)            ((m)->s->sidePic)
 #define MR_SIDECOLOR(m)          ((m)->s->sideColor)
 #define MR_STYLE(m)              ((m)->s->ms)
@@ -601,7 +605,6 @@ typedef struct
   struct
   {
     unsigned has_default_action : 1;
-    unsigned has_screen_origin : 1;
     unsigned is_invoked_by_key_press : 1;
     unsigned is_menu_from_frame_or_window_or_titlebar : 1;
     unsigned is_sticky : 1;
