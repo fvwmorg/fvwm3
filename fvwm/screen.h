@@ -199,10 +199,15 @@ typedef enum
 typedef struct
 {
   unsigned just : 2; /* was JustificationType : 2 */
+  int layer;
   struct
   {
     unsigned has_changed : 1;
     mwm_flags mwm_decor_flags : 9;
+    /* Support {ButtonStyle <number> - Layer 4} construction, so button
+     * can be rendered 'pressed in' when the window is assigned to a
+     * particular layer. */
+    unsigned has_layer : 1;
   } flags;
   DecorFace state[BS_MaxButtonState];
 } TitleButton;
@@ -210,6 +215,7 @@ typedef struct
 #define TB_FLAGS(tb)              ((tb).flags)
 #define TB_STATE(tb)              ((tb).state)
 #define TB_JUSTIFICATION(tb)      ((tb).just)
+#define TB_LAYER(tb)              ((tb).layer)
 #define TB_MWM_DECOR_FLAGS(tb)    ((tb).flags.mwm_decor_flags)
 #define TB_HAS_CHANGED(tb)     \
   (!!((tb).flags.has_changed))

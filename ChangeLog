@@ -1,5 +1,15 @@
 2002-01-16  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/stack.c (new_layer):
+	* fvwm/borders.c (DrawButton):
+	(RedrawButtons):
+	(RedrawTitle):
+	* fvwm/builtins.c (SetLayerButtonFlag):
+	(do_button_style):
+	* fvwm/screen.h (struct):
+	Applied the layer button patch by Richard Curnow with a few
+	modifications
+
 	* fvwm/icons.c (GetIconBitmap):
 	(GetIconWindow):
 	Ignore client icons that have the wrong depth

@@ -6266,7 +6266,7 @@ un-pressed and pressed states for buttons on active windows; while
 the "Inactive" state denotes buttons on inactive windows.  The
 "ToggledActiveUp", "ToggledActiveDown" and "ToggledInactive"
 states are used instead for buttons which have one of the
-.IR MwmDecorMax ", " MwmDecorShade " or " MwmDecorStick
+.IR MwmDecorMax ", " MwmDecorShade ", " MwmDecorStick " or " MwmDecorLayer
 hints, if the window is maximized, shaded or sticky, respectively.
 .EX
 AddToDecor Default
@@ -6566,6 +6566,14 @@ button looks pressed in.
 should be assigned to title-bar buttons which make the window
 sticky. When the window is sticky, the vector pattern on the
 button looks pressed in.
+
+The flag
+.IB "MwmDecorLayer " layer
+should be assigned to title-bar buttons which place the window in
+the layer numbered
+.BR layer .
+When the window is on that specific layer, the vector pattern on
+the button looks pressed in.
 
 .TP
 .BI "ChangeDecor " decor

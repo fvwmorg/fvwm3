@@ -2407,6 +2407,48 @@ void reset_decor_changes(void)
 #endif
 }
 
+static void SetLayerButtonFlag(
+  int layer, int multi, int set, FvwmDecor *decor, TitleButton *tb)
+{
+  int i;
+  int start = 0;
+  int add = 2;
+
+  if (multi)
+  {
+    if (multi == 2)
+      start = 1;
+    else if (multi == 3)
+      add = 1;
+    for (i = start; i < NUMBER_OF_BUTTONS; i += add)
+    {
+      if (set)
+      {
+        TB_FLAGS(decor->buttons[i]).has_layer = 1;
+        TB_LAYER(decor->buttons[i]) = layer;
+      }
+      else
+      {
+        TB_FLAGS(decor->buttons[i]).has_layer = 0;
+      }
+    }
+  }
+  else
+  {
+    if (set)
+    {
+      TB_FLAGS(*tb).has_layer = 1;
+      TB_LAYER(*tb) = layer;
+    }
+    else
+    {
+      TB_FLAGS(*tb).has_layer = 0;
+    }
+  }
+
+  return;
+}
+
 /*****************************************************************************
  *
  * Changes a button decoration style (changes by veliaa@rpi.edu)
@@ -2576,6 +2618,32 @@ static void do_button_style(F_CMD_ARGS, Bool do_add)
 	{
 	  SetMWMButtonFlag(MWM_DECOR_STICK, multi, set, decor, tb);
 	}
+        else if (StrEquals(tok, "MwmDecorLayer"))
+        {
+          int layer, got_number;
+          char *ltok;
+          text = GetNextToken(text, &ltok);
+          if (ltok)
+          {
+            got_number = (sscanf(ltok, "%d", &layer) == 1);
+            free (ltok);
+          }
+          else
+          {
+            got_number = 0;
+          }
+          if (!ltok || !got_number)
+          {
+            fvwm_msg(ERR, "ButtonStyle",
+                     "could not read integer value for layer -- line: %s",
+                     text);
+          }
+          else
+          {
+            SetLayerButtonFlag(layer, multi, set, decor, tb);
+          }
+
+        }
 	else
 	{
 	  fvwm_msg(ERR, "ButtonStyle",

@@ -224,7 +224,8 @@ static void clip_button_pixmap(
 static void DrawButton(
   FvwmWindow *t, Window win, int w, int h, DecorFace *df, GC ReliefGC,
   GC ShadowGC, Pixel fore_color, Pixel back_color, Bool is_lowest,
-  mwm_flags stateflags, int left1right0, XRectangle *rclip,
+  mwm_flags stateflags, int set_layer, int layer,
+  int left1right0, XRectangle *rclip,
   Pixmap *pbutton_background_pixmap)
 {
   register DecorFaceType type = DFS_FACE_TYPE(df->style);
@@ -256,7 +257,8 @@ static void DrawButton(
     if(HAS_MWM_BUTTONS(t) &&
        ((stateflags & MWM_DECOR_MAXIMIZE && IS_MAXIMIZED(t)) ||
 	(stateflags & MWM_DECOR_SHADE && IS_SHADED(t)) ||
-	(stateflags & MWM_DECOR_STICK && IS_STICKY(t))))
+	(stateflags & MWM_DECOR_STICK && IS_STICKY(t)) ||
+        (set_layer && (t->layer == layer))))
     {
       DrawLinePattern(win, ShadowGC, ReliefGC, fore_color, back_color,
         &df->u.vector, w, h);
@@ -1282,8 +1284,10 @@ static void RedrawButtons(
 	    DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
 		       tsdf, cd->relief_gc, cd->shadow_gc,
 		       cd->fore_color, cd->back_color, is_lowest,
-		       TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])),
-                       left1right0, NULL, pass_bg_pixmap);
+ 		       TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])),
+		       TB_FLAGS(t->decor->buttons[i]).has_layer,
+		       TB_LAYER(t->decor->buttons[i]), left1right0, NULL,
+		       pass_bg_pixmap);
 	    is_lowest = False;
 	  }
 	}
@@ -1291,10 +1295,12 @@ static void RedrawButtons(
 	for (; df; df = df->next)
 	{
 	  DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
-		     df, cd->relief_gc, cd->shadow_gc,
-		     cd->fore_color, cd->back_color, is_lowest,
-		     TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), left1right0,
-                     NULL, pass_bg_pixmap);
+  		     df, cd->relief_gc, cd->shadow_gc,
+  		     cd->fore_color, cd->back_color, is_lowest,
+ 		     TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])),
+		     TB_FLAGS(t->decor->buttons[i]).has_layer,
+		     TB_LAYER(t->decor->buttons[i]),
+		     left1right0, NULL, pass_bg_pixmap);
 	  is_lowest = False;
 	}
 
@@ -1472,7 +1478,9 @@ static void RedrawTitle(
       {
 	DrawButton(
 	  t, t->title_w, t->title_g.width, t->title_g.height, df, sgc,
-	  rgc, cd->fore_color, cd->back_color, is_lowest, 0, 1, rclip,
+	  rgc, cd->fore_color, cd->back_color, is_lowest, 0,
+          0, 0,
+          1, rclip,
           pass_bg_pixmap);
 	is_lowest = False;
       }
@@ -1483,7 +1491,9 @@ static void RedrawTitle(
       {
 	DrawButton(
 	  t, t->title_w, t->title_g.width, t->title_g.height, df, rgc,
-	  sgc, cd->fore_color, cd->back_color, is_lowest, 0, 1, rclip,
+	  sgc, cd->fore_color, cd->back_color, is_lowest, 0,
+          0, 0,
+          1, rclip,
           pass_bg_pixmap);
 	is_lowest = False;
       }

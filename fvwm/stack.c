@@ -1281,6 +1281,10 @@ void new_layer(FvwmWindow *tmp_win, int layer)
        prev = s, s = s->stack_next)
   {
     s->layer = layer;
+    /* redraw title and buttons to update layer buttons */
+    DrawDecorations(
+      s, DRAW_TITLE | DRAW_BUTTONS, (Scr.Hilite == tmp_win), True, None,
+      CLEAR_NONE);
     GNOME_SetLayer(tmp_win);
     EWMH_SetWMState(tmp_win, False);
   }
