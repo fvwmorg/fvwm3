@@ -1,5 +1,9 @@
 2000-01-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/ColorUtils.c (GetShadowColor):
+	(GetHilightColor):
+	Use old code for 'medium' colours.
+
 	* fvwm/events.c (HandleFocusIn):
 	* fvwm/module_interface.c (send_list_func):
 	added hilight colour set to M_FOCUS_CHANGE packet

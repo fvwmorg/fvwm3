@@ -64,6 +64,153 @@ extern Display *Pdpy;
 
 static XColor color;
 
+/**** This part is the olf fvwm way to calculate colours. Still used for
+ **** 'medium' brigness colours. */
+#define DARKNESS_FACTOR 0.5
+#define BRIGHTNESS_FACTOR 1.4
+#define SCALE 65535.0
+#define HALF_SCALE (SCALE / 2)
+typedef enum {
+  R_MAX_G_MIN, R_MAX_B_MIN,
+  G_MAX_B_MIN, G_MAX_R_MIN,
+  B_MAX_R_MIN, B_MAX_G_MIN
+} MinMaxState;
+static void
+color_mult (unsigned short *red,
+	    unsigned short *green,
+	    unsigned short *blue, double k)
+{
+  if (*red == *green && *red == *blue) {
+    double temp;
+    /* A shade of gray */
+    temp = k * (double) (*red);
+    if (temp > SCALE) {
+      temp = SCALE;
+    }
+    *red = (unsigned short)(temp);
+    *green = *red;
+    *blue = *red;
+  } else {
+    /* Non-zero saturation */
+    double r, g, b;
+    double min, max;
+    double a, l, s;
+    double delta;
+    double middle;
+    MinMaxState min_max_state;
+
+    r = (double) *red;
+    g = (double) *green;
+    b = (double) *blue;
+
+    if (r > g) {
+      if (r > b) {
+	max = r;
+	if (g < b) {
+	  min = g;
+	  min_max_state = R_MAX_G_MIN;
+	  a = b - g;
+	} else {
+	  min = b;
+	  min_max_state = R_MAX_B_MIN;
+	  a = g - b;
+	}
+      } else {
+	max = b;
+	min = g;
+	min_max_state = B_MAX_G_MIN;
+	a = r - g;
+      }
+    } else {
+      if (g > b) {
+	max = g;
+	if (b < r) {
+	  min = b;
+	  min_max_state = G_MAX_B_MIN;
+	  a = r - b;
+	} else {
+	  min = r;
+	  min_max_state = G_MAX_R_MIN;
+	  a = b - r;
+	}
+      } else {
+	max = b;
+	min = r;
+	min_max_state = B_MAX_R_MIN;
+	a = g - r;
+      }
+    }
+
+    delta = max - min;
+    a = a / delta;
+
+    l = (max + min) / 2;
+    if (l <= HALF_SCALE) {
+      s = max + min;
+    } else {
+      s = 2.0 * SCALE - (max + min);
+    }
+    s = delta/s;
+
+    l *= k;
+    if (l > SCALE) {
+      l = SCALE;
+    }
+    s *= k;
+    if (s > 1.0) {
+      s = 1.0;
+    }
+
+    if (l <= HALF_SCALE) {
+      max = l * (1 + s);
+    } else {
+      max = s * SCALE + l - s * l;
+    }
+
+    min = 2 * l - max;
+    delta = max - min;
+    middle = min + delta * a;
+
+    switch (min_max_state) {
+    case R_MAX_G_MIN:
+      r = max;
+      g = min;
+      b = middle;
+      break;
+    case R_MAX_B_MIN:
+      r = max;
+      g = middle;
+      b = min;
+      break;
+    case G_MAX_B_MIN:
+      r = middle;
+      g = max;
+      b = min;
+      break;
+    case G_MAX_R_MIN:
+      r = min;
+      g = max;
+      b = middle;
+      break;
+    case B_MAX_G_MIN:
+      r = middle;
+      g = min;
+      b = max;
+      break;
+    case B_MAX_R_MIN:
+      r = min;
+      g = middle;
+      b = max;
+      break;
+    }
+
+    *red = (unsigned short) r;
+    *green = (unsigned short) g;
+    *blue = (unsigned short) b;
+  }
+}
+/**** End of original fvwm code. ****/
+
 XColor *GetShadowColor(Pixel background)
 {
   long brightness, brightadj;
@@ -96,12 +243,16 @@ XColor *GetShadowColor(Pixel background)
    */
   else
     {
+#if 1
+      color_mult(&color.red, &color.green, &color.blue, DARKNESS_FACTOR);
+#else
       brightness = (brightness + (PCT_BRIGHTNESS >> 1)) / PCT_BRIGHTNESS;
       brightadj = PCT_MEDIUM_BOTTOM_BASE +
         (brightness * PCT_MEDIUM_BOTTOM_RANGE + 50) / 100;
       color.red = (red * brightadj + 50) / 100;
       color.green = (green * brightadj + 50) / 100;
       color.blue = (blue * brightadj + 50) / 100;
+#endif
     }
   return &color;
 }
@@ -147,12 +298,16 @@ XColor *GetHiliteColor(Pixel background)
    */
   else
     {
+#if 1
+      color_mult(&color.red, &color.green, &color.blue, BRIGHTNESS_FACTOR);
+#else
       brightness = (brightness + (PCT_BRIGHTNESS >> 1)) / PCT_BRIGHTNESS;
       brightadj = PCT_MEDIUM_TOP_BASE +
         (brightness * PCT_MEDIUM_TOP_RANGE + 50) / 100;
       color.red = 0xffff - ((0xffff - red) * brightadj + 50) / 100;
       color.green = 0xffff - ((0xffff - green) * brightadj + 50) / 100;
       color.blue = 0xffff - ((0xffff - blue) * brightadj + 50) / 100;
+#endif
     }
   return &color;
 }
