@@ -58,6 +58,34 @@ CreateFunc AddTest
 
 # Now start defining test functions:
 
+AddTest "Test AddToFunc" AddToFunc-Func
+AddToFunc AddToFunc-Func
++ I nop
++ Immediate nop
++ C nop
++ ClickTime
++ H nop
++ Hold nop
++ X nop
++ XorPixmap nop
++ Xyzzy nop
++ D nop
++ Desk 0 0
++ M nop
++ Menu nop nop nop
+AddToFunc AddToFunc-Func I nop
+AddToFunc AddToFunc-Func Immediate nop
+AddToFunc AddToFunc-Func C nop
+AddToFunc AddToFunc-Func ClickTime
+AddToFunc AddToFunc-Func H nop
+AddToFunc AddToFunc-Func Hold nop
+AddToFunc AddToFunc-Func X nop
+AddToFunc AddToFunc-Func D nop
+AddToFunc AddToFunc-Func Desk 0 0
+AddToFunc AddToFunc-Func M nop
+AddToFunc AddToFunc-Func Menu nop nop nop
+
+
 # This one has to be first, other tests use it.
 AddTest "Test ImagePath and SetEnv" ImagePath-Func
 AddToFunc ImagePath-Func
