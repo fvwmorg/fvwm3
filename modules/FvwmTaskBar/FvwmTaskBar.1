@@ -52,16 +52,26 @@ option of FVWM for it to be executed by FVWM.
 .SH CONFIGURATION OPTIONS
 The following options can be placed in the .fvwm2rc file
 
-.IP "*FvwmTaskBarGeometry \fI{+-}<X>x{+-}<Y>\fP"
-Specifies the location and gravity of the FvwmTaskBar window.  At the
-current version, width size is not supported and the taskbar will resize 
-itself to fill the full width of the screen. The height size is controled
-with the *FvwmTaskBarRows configuration option. If the AutoStick option 
-is also specified, the module will automatically "stick" to the top or 
+.IP "*FvwmTaskBarGeometry \fI{+-}<X>{+-}<Y>\fP"
+Specifies the location and gravity of the FvwmTaskBar window.
+Currently, this option is scanned as a normal X geometry string.
+You can include the width and the height in addition to the "x" and
+"y" offset.  However, only the "x" and "y" offset are used.
+To avoid possible future compatibility problems, only code the "x" and
+"y" offset.
+
+The actual width of the taskbar is always the full width of the screen
+and the height is controlled by the *FvwmTaskBarRows option.
+
+If the AutoStick option
+is specified, the taskbar automatically "sticks" to the top or 
 the bottom of the screen, whichever is closest to the geometry specification.
 
+To position the taskbar at the bottom of the screen, use a geometry of
+"+0-1".
+
 .IP  "*FvwmTaskBarRows r"
-Specifies the initial number of rows of the FvwmTaskBar window. Default 
+Specifies the initial number in rows of the FvwmTaskBar window. Default 
 is 1 and the maximum is 8.
 
 .IP "*FvwmTaskBarFont \fIfont\fP"
