@@ -1,3 +1,20 @@
+2002-08-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (style_parse_one_style_option):
+	Old focus styles override less of the behaviour specified with the
+	FP... styles; use defaults instead without setting the mask
+	(style_parse_one_style_option):
+	removed the styles MouseFocusClickIgnoreMotion and
+	MouseFocusClickIgnoreMotionOff, use the corresponfing FP... styles
+	instead
+	(style_parse_one_style_option):
+	ClickToFocusRaises now works only on the client window, not on the
+	decorations
+	(style_parse_one_style_option):
+	fixed FocusFollowsMouse style
+	(style_set_old_focus_policy):
+	moved old default focus settings to a separate function, simplified code
+
 2002-08-14  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1: Add hot-spot is an offset information,

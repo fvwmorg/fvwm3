@@ -5,11 +5,12 @@ _+_A HREF="#2.4.9"_-_2.4.9_+_/A_-_.
 
 Changes in alpha release 2.5.3 (not released yet)
 
-* Removed the old module interface for ConfigureWindow packets.
-  External modules relying on this interface no longer work.
+* Removed the old module interface for ConfigureWindow
+  packets. External modules relying on this interface no longer
+  work.
 
-* Fixed interaction bug between CascadePlacement and StartsOnPage -
-  if the target page was at a negative x or y page displacement
+* Fixed interaction bug between CascadePlacement and StartsOnPage
+  - if the target page was at a negative x or y page displacement
   from the current viewport, the window would be placed on the
   wrong page.
 
@@ -27,9 +28,9 @@ Changes in alpha release 2.5.3 (not released yet)
 * Vastly improved FvwmEvent performance.
 
 * FvwmAuto can operate on Enter and Leave events too.  This makes
-  it possible to have autoraising with ClickToFocus and NeverFocus.
-  See -menter and -menterleave options and examples in the FvwmAuto
-  man page.
+  it possible to have autoraising with ClickToFocus and
+  NeverFocus. See -menter and -menterleave options and examples in
+  the FvwmAuto man page.
 
 * The "hangon" strings in FvwmButtons support wildcards.
 
@@ -38,21 +39,27 @@ Changes in alpha release 2.5.3 (not released yet)
 * New option "FromPointer" and direction "Center" to the Direction
   command.
 
-* The styles ClickToFocusRaises(Off) and MouseFocusClickRaises(Off)
-  are now different names for the same style.  Configurations that
-  used
+* The styles ClickToFocusRaises(Off) and
+  MouseFocusClickRaises(Off) are now different names for the same
+  style.  Configurations that used
 
     Style * ClickToFocus, ClickToFocusRaises
     Style * MouseFocusClickRaisesOff
 
   or vice versa no longer work as like before.  Remove the second
-  line to fix the problem.
+  line to fix the problem.  ClickToFocusRaises now works only on
+  the client part of a window, not on the decorations as it did
+  before.
 
-* New color limit method for screens that only display 256 colors (or less)
+* New color limit method for screens that only display 256 colors
+  (or less).
 
-* In depth less or equal to 16 image and gradient can be dithered. This
-can be enabled/disabled by using the new dither/nodither options to
-the Colorset coomand
+* In depth less or equal to 16 image and gradient can be
+  dithered. This can be enabled/disabled by using the new
+  dither/nodither options to the Colorset command.
+
+* Removed the styles MouseFocusClickIgnoreMotion and
+  MouseFocusClickIgnoreMotionOff again.
 
 -------------------------------------------------------------------
 
@@ -64,9 +71,11 @@ Changes in alpha release 2.5.2 (24-Jun-2002)
 * New Colorset options: fgsh for shadow text and fg_alpha for
   merging text with the background.
 
-* New module FvwmPerl adds perl scripting ability to fvwm commands.
+* New module FvwmPerl adds perl scripting ability to fvwm
+  commands.
 
-* Provided powerful perl library for creating FVWM modules in perl.
+* Provided powerful perl library for creating FVWM modules in
+  perl.
 
 * New WindowList option IconifiedtAtEnd.
 
@@ -88,34 +97,38 @@ Changes in alpha release 2.5.2 (24-Jun-2002)
 * Improved CascadePlacement, the last used position is reused if
   the last placed window does not exist any more.
 
-* FvwmIconMan may now change the resolution dynamically, just issue
-  "*FvwmIconMan: resolution page" while FvwmIconMan is running.
+* FvwmIconMan may now change the resolution dynamically, just
+  issue "*FvwmIconMan: resolution page" while FvwmIconMan is
+  running.
 
 * New command XineramaSlsScreens.
 
 * MoveToPage and MoveToDesk no longer unstick windows.
 
 * It is possible to specify a string encoding in a font name, see
-  the FONT AND STRING ENCODINGS section of fvwm manual page.
+  the "FONT AND STRING ENCODINGS" section of fvwm manual page.
 
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.1 (26-Apr-2002)
 
-* Changed the executable and the man page names from fvwm2 to fvwm.
-  The old names are still supported by symlinking.
+* Changed the executable and the man page names from fvwm2 to
+  fvwm. The old names are still supported by symlinking.
 
-* All fvwm utilities are renamed to conform to the "fvwm-" scheme.
-  fvwm-bug, fvwm-root (was xpmroot), fvwm-config, fvwm-convert-2.4.
+* All fvwm utilities are renamed to conform to the "fvwm-"
+  scheme. fvwm-bug, fvwm-root (was xpmroot), fvwm-config,
+  fvwm-convert-2.4.
 
-* Added a full support for the side window titles. New Style options
-  TitleAtLeft and TitleAtRight added to TitleAtTop and TitleAtBottom.
+* Added a full support for the side window titles. New Style
+  options TitleAtLeft and TitleAtRight added to TitleAtTop and
+  TitleAtBottom.
 
 * A title text may now be optionally rotated for both vertical and
-  horizontal title directions, search for "Rotated" in the man page.
+  horizontal title directions, search for "Rotated" in the man
+  page.
 
-* Added support for loading images in PNG (including alpha blending)
-  and XBM formats anywhere.
+* Added support for loading images in PNG (including alpha
+  blending) and XBM formats anywhere.
 
 * New commands Schedule and Deschedule.
 
@@ -123,30 +136,35 @@ Changes in alpha release 2.5.1 (26-Apr-2002)
 
 * New commands XSync and XSynchronize for debugging purposes.
 
-* In interactive move/placement when Alt/Meta modifier is pressed, snap
-  attraction (SnapAttraction, SnapGrid and EdgeResistance) is ignored.
+* In interactive move/placement when Alt/Meta modifier is pressed,
+  snap attraction (SnapAttraction, SnapGrid and EdgeResistance) is
+  ignored.
 
 * New flags (No)FvwmModule to FvwmButtons Swallow option
 
-* The I18N_MB patch (--enable-multibyte) has been rewritten. MULTIBYTE
-  is used to identify what is was I18N_MB. A set of locale functions
-  (locale initialization, font loading, text drawing, ...etc.) is created
-  in libs/Flocale.{c,h} and used in the entire fvwm code (but FvwmWharf).
-  Font loading and memory management is improved in the multibyte case.
+* The I18N_MB patch (--enable-multibyte) has been
+  rewritten. MULTIBYTE is used to identify what is was I18N_MB. A
+  set of locale functions (locale initialization, font loading,
+  text drawing, ...etc.) is created in libs/Flocale.{c,h} and used
+  in the entire fvwm code (but FvwmWharf).  Font loading and
+  memory management is improved in the multibyte case.
 
 * Better support of non ISO-8859-1 window and icon titles. See the
-  --disable-compound-text option in INSTALL.fvwm for more details.
+  --disable-compound-text option in INSTALL.fvwm for more
+  details.
 
-* Added anti-aliased text rendering support using Xft (use --enable-xft
-  to enable it). Recent versions of XFree and freetype2 are needed (see
-  the FONT NAMES AND FONT LOADING section of the fvwm manual page).
+* Added anti-aliased text rendering support using Xft (use
+  --enable-xft to enable it). Recent versions of XFree and
+  freetype2 are needed (see the FONT NAMES AND FONT LOADING
+  section of the fvwm manual page).
 
 * Conditional commands now have a return code (Match, NoMatch or
   Error).  This return code can be checked and tied to an action
   with the new commands Cond and CondCase.
 
 * Bindings can be made to the separate parts of the window border
-  with the new contexts '[', ']', '-', '_', '<', '^', '>' and 'v'.
+  with the new contexts '[', ']', '-', '_', '<', '^', '>' and
+  'v'.
 
 * New parameters for FvwmRearange: -maximize and -animate.
 
@@ -182,16 +200,18 @@ Changes in alpha release 2.5.1 (26-Apr-2002)
 
 * New option MinimalLayer for FvwmIdent to control window layer.
 
-* New FvwmIconMan configuration syntax now conforms to the syntax of
-  other modules, see the man page.
+* New FvwmIconMan configuration syntax now conforms to the syntax
+  of other modules, see the man page.
 
-* FvwmForm can automatically run commands after a timeout interval.
+* FvwmForm can automatically run commands after a timeout
+  interval.
 
 * Fvwm commands can be invoked when the edge of the screen is hit
   with the mouse.
 
-* New commands Colorset, ReadWriteColors and CleanupColorsets allow
-  the colorset functionality previously available using FvwmTheme.
+* New commands Colorset, ReadWriteColors and CleanupColorsets
+  allow the colorset functionality previously available using
+  FvwmTheme.
 
 * FvwmTheme is obsolete now, but still supported for some time.
 
@@ -212,44 +232,47 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 
 * New command ResizeMoveMaximize similarly.
 
-* New styles FixedPPosition, FixedUSPosition, FixedSize, FixedUSSize,
-  FixedPSize, VariablePPosition, VariableUSPosition, VariableSize,
-  VariableUSSize, and VariablePSize.
+* New styles FixedPPosition, FixedUSPosition, FixedSize,
+  FixedUSSize, FixedPSize, VariablePPosition, VariableUSPosition,
+  VariableSize, VariableUSSize, and VariablePSize.
 
 * Actions can be bound to windows swallowed in FvwmButtons.  To
   disable this feature for a specific button, the new option
   ActionIgnoresClientWindow can be used.
 
-* Fvwm respect the extended window manager hints specification.
-  This allows fvwm to work with KDE version >= 2 and GNOME version 2.
-  This support is configurable using a bunch of new commands and style
-  options, search for "EWMH" in the man page.
+* Fvwm respect the extended window manager hints
+  specification. This allows fvwm to work with KDE version >= 2
+  and GNOME version 2. This support is configurable using a bunch
+  of new commands and style options, search for "EWMH" in the man
+  page.
 
-* New DateFormat option in FvwmTaskBar to change the date format in
-  the clock's popup tip.
+* New DateFormat option in FvwmTaskBar to change the date format
+  in the clock's popup tip.
 
-* Window titlebars may now be designed using a new powerful TitleStyle
-  option MultiPixmap, that enables to specify separate pixmaps for
-  different parts of the titlebar: Main, LeftEnd, LeftOfText, UnderText,
-  RightOfText, RightEnd and more.
+* Window titlebars may now be designed using a new powerful
+  TitleStyle option MultiPixmap, that enables to specify separate
+  pixmaps for different parts of the titlebar: Main, LeftEnd,
+  LeftOfText, UnderText, RightOfText, RightEnd and more.
 
-* New styles PlacementOverlapPenalties and PlacementOverlapPercentPenalties.
+* New styles PlacementOverlapPenalties and
+  PlacementOverlapPercentPenalties.
 
-* New styles IndexedWindowName / ExactWindowName and IndexedIconName /
-  ExactIconName.
+* New styles IndexedWindowName / ExactWindowName and
+  IndexedIconName / ExactIconName.
 
-* New command "DesktopName desk name" to define the name of a desktop for
-  the FvwmPager, the WindowList and ewmh compliant pagers. New expanding
-  variables $[desk.name<n>] for the desktop names.
+* New command "DesktopName desk name" to define the name of a
+  desktop for the FvwmPager, the WindowList and ewmh compliant
+  pagers. New expanding variables $[desk.name<n>] for the desktop
+  names.
 
-* New window list options NoDeskNum, NoCurrentDeskTitle, TitleForAllDesks,
-  NoNumInDeskTitle
+* New window list options NoDeskNum, NoCurrentDeskTitle,
+  TitleForAllDesks, NoNumInDeskTitle.
 
 * New emacs style bindings in menus.
 
-* New Maximize global flag "layer" which causes the various grow methods
-  to ignore the windows with a layer less than or equal to the layer on
-  the window which is maximized.
+* New Maximize global flag "layer" which causes the various grow
+  methods to ignore the windows with a layer less than or equal to
+  the layer on the window which is maximized.
 
 * Better support of the Transparent colorset in the modules and in
   animated menus.

@@ -5479,7 +5479,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR ClickToFocusPassesClickOff " / " ClickToFocusPassesClick ,
 .IR ClickToFocusRaisesOff " / " ClickToFocusRaises ,
 .IR MouseFocusClickRaises " / " MouseFocusClickRaisesOff ,
-.IR MouseFocusClickIgnoreMotion " / " MouseFocusClickIgnoreMotionOff,
+.\" .IR MouseFocusClickIgnoreMotion " / " MouseFocusClickIgnoreMotionOff,
 .IR StartsLowered " / " StartsRaised ,
 .IR GrabFocus " / " GrabFocusOff ,
 .IR GrabFocusTransientOff " / " GrabFocusTransient ,
@@ -5557,29 +5557,29 @@ Note: in fvwm versions prior to
 .I ClickToFocus
 while the "Mouse..." options applied to windows with a different
 focus policy.  This is no longer the case.
-
-With
-.I MouseFocusClickIgnoreMotion
-the click that would normally raise a window with the
-.I MouseFocusClickRaises
-style is ignored if the pointer moves too far while the button is
-pressed (see
-.B MoveThreshold
-command).  This is useful to select text in a terminal window with
-the mouse without raising the window.  However, mouse bindings on
-the client window are not guaranteed to work anymore (see
-.B Mouse
-command).  If
-.I MouseFocusClickRaisesOff
-is used,
-.I MouseFocusClickIgnoreMotion
-has no meaning.  With
-.I  MouseFocusClickIgnoreMotionOff
-the window is always raised, regardless of pointer motion.
-The defaults are
-.IR ClickToFocusPassesClick ,
-.IR ClickToFocusRaises ,
-.IR MouseFocusClickRaisesOff " and " MouseFocusClickIgnoreMotionOff .
+.\"
+.\" With
+.\" .I MouseFocusClickIgnoreMotion
+.\" the click that would normally raise a window with the
+.\" .I MouseFocusClickRaises
+.\" style is ignored if the pointer moves too far while the button is
+.\" pressed (see
+.\" .B MoveThreshold
+.\" command).  This is useful to select text in a terminal window with
+.\" the mouse without raising the window.  However, mouse bindings on
+.\" the client window are not guaranteed to work anymore (see
+.\" .B Mouse
+.\" command).  If
+.\" .I MouseFocusClickRaisesOff
+.\" is used,
+.\" .I MouseFocusClickIgnoreMotion
+.\" has no meaning.  With
+.\" .I  MouseFocusClickIgnoreMotionOff
+.\" the window is always raised, regardless of pointer motion.
+.\" The defaults are
+.\" .IR ClickToFocusPassesClick ,
+.\" .IR ClickToFocusRaises ,
+.\" .IR MouseFocusClickRaisesOff " and " MouseFocusClickIgnoreMotionOff .
 
 .I GrabFocus
 causes a newly mapped window to grab the focus, while
