@@ -1,5 +1,11 @@
 2001-11-24  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/ewmh_internal.h:
+	* fvwM/ewmh.c:
+	Removed a non standard macro
+
+2001-11-24  olicha  <olivier.chapuis@free.fr>
+
 	* fvwm/fvwm2.1:
 	Documented the previous ewmh style in a new Style subsection
 

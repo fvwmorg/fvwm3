@@ -155,12 +155,7 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 /* debugging */
 #ifdef EWMH_DEBUG
 void  EWMH_DLOG(char *msg, ...);
-#define EWMH_DEBUG_CODE(x) x
-
 #else
-
-#define EWMH_DLOG(x, ...)
-#define EWMH_DEBUG_CODE(x)
 
 #endif
 

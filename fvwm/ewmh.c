@@ -1002,7 +1002,7 @@ void EWMH_GetStyle(FvwmWindow *fwin, window_style *style)
 /* see also EWMH_WMName and EWMH_WMIconName in add_window */
 void EWMH_WindowInit(FvwmWindow *fwin)
 {
-  EWMH_DLOG("Init window 0x%lx",fwin->w);
+  /*EWMH_DLOG("Init window 0x%lx",fwin->w);*/
   EWMH_SetWMState(fwin);
   EWMH_SetWMDesktop(fwin);
   EWMH_SetFrameStrut(fwin);
@@ -1014,7 +1014,7 @@ void EWMH_WindowInit(FvwmWindow *fwin)
   if (ksmserver_workarround(fwin))
     return;
   ewmh_WMIcon(fwin, NULL, NULL);
-  EWMH_DLOG("window 0x%lx initialised",fwin->w);
+  /*EWMH_DLOG("window 0x%lx initialised",fwin->w);*/
 }
 
 /* a window are going to be destroyed */
