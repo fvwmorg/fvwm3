@@ -879,7 +879,6 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   if(!PPosOverride)
     XFlush(dpy);
 
-  fprintf(stderr,"adding\n");
   /* If the window has never been mapped before ... */
   if(!Tmp_win || (Tmp_win && DO_REUSE_DESTROYED(Tmp_win)))
   {

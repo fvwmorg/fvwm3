@@ -282,8 +282,7 @@ static void RaiseOrLowerWindow(
    * recursion stuff for new windows because the must_move_transients() call
    * needs a properly ordered stack ring - but the new window is still at the
    * front of the stack ring. */
-  if (allow_recursion && !is_new_window &&
-      IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
+  if (allow_recursion && !is_new_window)
   {
     /*
      * This part makes Raise/Lower on a Transient act on its Main and sibling
@@ -296,15 +295,21 @@ static void RaiseOrLowerWindow(
      *
      * Another strategy is required to handle trees of Main+Transients
      */
-    for (t2 = Scr.FvwmRoot.stack_next;
-	 t2 != &Scr.FvwmRoot && t2->w != t->transientfor; t2 = t2->stack_next)
+    if (IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
     {
-      /* just seek the right window */
-    }
-    if (t2->w == t->transientfor)
-    {
-      RaiseOrLowerWindow(t2,do_lower,False,False);
-      return;
+      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot;
+	   t2 = t2->stack_next)
+      {
+        if (t2->w == t->transientfor)
+        {
+          if ((!do_lower && DO_RAISE_TRANSIENT(t2)) ||
+              (do_lower && DO_LOWER_TRANSIENT(t2))  )
+          {
+	    RaiseOrLowerWindow(t2,do_lower,False,False);
+	    return;
+          }
+        }
+      }
     }
   }
 
@@ -666,41 +671,41 @@ void ResyncFvwmStackRing (void)
 
   t2 = &Scr.FvwmRoot;
   for (i = 0; i < nchildren; i++)
-  {
-    for (t1 = Scr.FvwmRoot.next; t1 != NULL; t1 = t1->next)
     {
-      if (IS_ICONIFIED(t1) && !IS_ICON_SUPPRESSED(t1))
-      {
-	if (t1->icon_w == children[i])
+      for (t1 = Scr.FvwmRoot.next; t1 != NULL; t1 = t1->next)
 	{
-	  break;
+          if (IS_ICONIFIED(t1) && !IS_ICON_SUPPRESSED(t1))
+            {
+	      if (t1->icon_w == children[i])
+	        {
+	          break;
+	        }
+              else if (t1->icon_pixmap_w == children[i])
+	        {
+	          break;
+	        }
+            }
+          else
+            {
+	      if (t1->frame == children[i])
+	        {
+	          break;
+	        }
+            }
 	}
-	else if (t1->icon_pixmap_w == children[i])
-	{
-	  break;
-	}
-      }
-      else
-      {
-	if (t1->frame == children[i])
-	{
-	  break;
-	}
-      }
-    }
 
-    if (t1 != NULL && t1 != t2)
-    {
-      /*
-       * Move the window to its new position, working from the bottom up
-       * (that is the way XQueryTree presents the list).
-       */
-      /* Pluck from chain. */
-      remove_window_from_stack_ring(t1);
-      add_window_to_stack_ring_after(t1, t2->stack_prev);
-      t2 = t1;
+      if (t1 != NULL && t1 != t2)
+	{
+          /*
+              Move the window to its new position, working from the bottom up
+              (that's the way XQueryTree presents the list).
+          */
+	  /* Pluck from chain. */
+	  remove_window_from_stack_ring(t1);
+	  add_window_to_stack_ring_after(t1, t2->stack_prev);
+          t2 = t1;
+	}
     }
-  }
 
   MyXUngrabServer (dpy);
 
@@ -809,30 +814,30 @@ new_layer (FvwmWindow *tmp_win, int layer)
     LowerWindow(tmp_win);
   }
   else if (layer > tmp_win->layer)
-  {
-    if (DO_RAISE_TRANSIENT(tmp_win))
     {
-      /* this could be done much more efficiently */
-      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
-      {
-	next = t2->stack_next;
-	if ((IS_TRANSIENT(t2)) &&
-	    (t2->transientfor == tmp_win->w) &&
-	    (t2 != tmp_win) &&
-	    (t2->layer >= tmp_win->layer) &&
-	    (t2->layer < layer))
+      if (DO_RAISE_TRANSIENT(tmp_win))
 	{
-	  t2->layer = layer;
-	  LowerWindow(t2);
+	  /* this could be done much more efficiently */
+	  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
+	    {
+	      next = t2->stack_next;
+	      if ((IS_TRANSIENT(t2)) &&
+		  (t2->transientfor == tmp_win->w) &&
+		  (t2 != tmp_win) &&
+		  (t2->layer >= tmp_win->layer) &&
+		  (t2->layer < layer))
+		{
+		  t2->layer = layer;
+		  LowerWindow(t2);
+		}
+	    }
 	}
-      }
+      tmp_win->layer = layer;
+      /* see comment above */
+      ResyncFvwmStackRing();
+      /* see comment above */
+      RaiseWindow(tmp_win);
     }
-    tmp_win->layer = layer;
-    /* see comment above */
-    ResyncFvwmStackRing();
-    /* see comment above */
-    RaiseWindow(tmp_win);
-  }
 
   GNOME_SetLayer (tmp_win);
 }
@@ -923,33 +928,33 @@ void change_layer(F_CMD_ARGS)
 
   token = PeekToken(action, NULL);
   if (StrEquals("default", token))
-  {
-    layer = tmp_win->default_layer;
-  }
-  else
-  {
-    n = GetIntegerArguments(action, NULL, val, 2);
-
-    layer = tmp_win->layer;
-    if ((n == 1) ||
-	((n == 2) && (val[0] != 0)))
-    {
-      layer += val[0];
-    }
-    else if ((n == 2) && (val[1] >= 0))
-    {
-      layer = val[1];
-    }
-    else
     {
       layer = tmp_win->default_layer;
     }
-  }
+  else
+    {
+      n = GetIntegerArguments(action, NULL, val, 2);
+
+      layer = tmp_win->layer;
+      if ((n == 1) ||
+	  ((n == 2) && (val[0] != 0)))
+	{
+	  layer += val[0];
+	}
+      else if ((n == 2) && (val[1] >= 0))
+	{
+	  layer = val[1];
+	}
+      else
+	{
+	  layer = tmp_win->default_layer;
+	}
+    }
 
   if (layer < 0)
-  {
-    layer = 0;
-  }
+    {
+      layer = 0;
+    }
 
   new_layer (tmp_win, layer);
 }
@@ -963,43 +968,43 @@ void SetDefaultLayers(F_CMD_ARGS)
 
   bot = PeekToken(action, &action);
   if (bot)
-  {
-    i = atoi (bot);
-    if (i < 0)
     {
-      fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+       i = atoi (bot);
+       if (i < 0)
+         {
+           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+         }
+       else
+         {
+           Scr.BottomLayer = i;
+         }
     }
-    else
-    {
-      Scr.BottomLayer = i;
-    }
-  }
 
   def = PeekToken(action, &action);
   if (def)
-  {
-    i = atoi (def);
-    if (i < 0)
     {
-      fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+       i = atoi (def);
+       if (i < 0)
+         {
+           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+         }
+       else
+         {
+           Scr.DefaultLayer = i;
+         }
     }
-    else
-    {
-      Scr.DefaultLayer = i;
-    }
-  }
 
   top = PeekToken(action, &action);
   if (top)
-  {
-    i = atoi (top);
-    if (i < 0)
     {
-      fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+       i = atoi (top);
+       if (i < 0)
+         {
+           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
+         }
+       else
+         {
+           Scr.TopLayer = i;
+         }
     }
-    else
-    {
-      Scr.TopLayer = i;
-    }
-  }
 }
