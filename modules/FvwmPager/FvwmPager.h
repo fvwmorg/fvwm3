@@ -118,7 +118,6 @@ typedef struct desk_info
   char *Dcolor;
   char *label;
   GC NormalGC;
-  GC StdGC;
   GC DashedGC;
   GC HiliteGC;
   GC rvGC;

@@ -501,10 +501,14 @@ void initialize_pager(void)
   XFree((char *)name.value);
 
   /* change font for labelling mini-windows */
+  gcm = GCForeground | GCBackground;
   gcv.foreground = focus_fore_pix;
   gcv.background = focus_pix;
-  gcv.font = windowFont->fid;
-  XChangeGC(dpy, Scr.NormalGC, GCForeground|GCBackground|GCFont, &gcv);
+  if (windowFont != NULL) {
+    gcm |= GCFont;
+    gcv.font = windowFont->fid;
+  }
+  XChangeGC(dpy, Scr.NormalGC, gcm, &gcv);
   
   for(i=0;i<ndesks;i++)
     {
@@ -518,21 +522,9 @@ void initialize_pager(void)
 			: Colorset[Desks[i].colorset % nColorsets].fg;
       gcv.background = (Desks[i].colorset < 0) ? back_pix
 			: Colorset[Desks[i].colorset % nColorsets].bg;
-      gcv.font =  font->fid;
-
+      gcv.font = font->fid;
       Desks[i].NormalGC = XCreateGC(dpy, Scr.Pager_w, gcm, &gcv);
 
-      if(windowFont != NULL)
-        {
-          /* Create GC's for doing window labels */
-          gcv.foreground = focus_fore_pix;
-          gcv.background = focus_pix;
-          gcv.font =  windowFont->fid;
-          Desks[i].StdGC = XCreateGC(dpy, Scr.Pager_w, gcm, &gcv);
-        }
-
-      gcm = GCForeground|GCBackground|GCFont;
-      gcv.font =  font->fid;
       gcv.foreground = (Desks[i].highcolorset < 0) ? hi_pix
 			: Colorset[Desks[i].highcolorset % nColorsets].bg;
       gcv.background = (Desks[i].highcolorset < 0)
@@ -617,7 +609,7 @@ void initialize_pager(void)
       {
           SetWindowBackground(dpy, Desks[i].w, w, desk_h,
                               &Colorset[Desks[i].colorset % nColorsets],
-                              Pdepth, Desks[i].NormalGC);
+                              Pdepth, Scr.NormalGC);
       }
 
 
@@ -1152,7 +1144,7 @@ void ReConfigure(void)
         {
           SetWindowBackground(dpy, Desks[i].w, desk_w, desk_h,
                             &Colorset[Desks[i].colorset % nColorsets],
-                            Pdepth, Desks[i].NormalGC);
+                            Pdepth, Scr.NormalGC);
       }
 	      if (HilightDesks)
 		{
@@ -2748,8 +2740,7 @@ void change_colorset(int colorset)
       XClearArea(dpy, Desks[i].title_w, 0, 0, 0, 0, True);
       XChangeWindowAttributes(dpy,Desks[i].w, CWBorderPixel, &attributes);
       SetWindowBackground(dpy, Desks[i].w, 0, 0,
-			  &Colorset[colorset % nColorsets], Pdepth,
-			  Desks[i].NormalGC);
+			  &Colorset[colorset % nColorsets], Pdepth, Scr.NormalGC);
 
       XSetForeground(dpy, Desks[i].NormalGC,Colorset[colorset % nColorsets].fg);
       XSetBackground(dpy, Desks[i].NormalGC,Colorset[colorset % nColorsets].bg);
