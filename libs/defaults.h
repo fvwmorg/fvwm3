@@ -59,6 +59,7 @@
 
 /* Tunable parameters. */
 #define MAX_GRADIENT_SEGMENTS          1000
+#define MAX_GRADIENT_COLORS            10000
 /* Don't page if the pointer has moved for more than this many pixels between
  * two samples */
 #define MAX_PAGING_MOVE_DISTANCE          5
