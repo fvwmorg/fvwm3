@@ -287,9 +287,7 @@ int main(int argc, char **argv)
 		last_time = time(0);
 	}
 	/* tell fvwm we're running */
-#if 0
 	SetMessageMask(fd, m_selected);
-#endif
 	SetMessageMask(fd, mx_selected | M_EXTENDED_MSG);
 	m_sync = (m_selected & SYNC_MASK_M);
 	mx_sync = (mx_selected & SYNC_MASK_M) | M_EXTENDED_MSG;
@@ -530,13 +528,12 @@ void handle_config_line(char *buf, char **phost)
 	{
 		/* skip matched token */
 		p += strlen(*e);
-		p = GetNextToken(p, &token);
+		token = PeekToken(p, &p);
 		switch (e - (char**)table)
 		{
-		case 0:
 		case 4:
-			/* Cmd */
-			if (!audio_compat && e - (char**)table == 4)
+			/* PlayCmd */
+			if (!audio_compat)
 			{
 				/* PlayCmd */
 				fprintf(stderr,
@@ -544,19 +541,20 @@ void handle_config_line(char *buf, char **phost)
 					" invoked as FvwmAudio\n", MyName+1);
 				break;
 			}
+			/* fall through */
+		case 0:
+			/* Cmd */
 			if (cmd_line)
 			{
 				free(cmd_line);
 			}
 			if (token)
 			{
-				cmd_line = (char *)safemalloc(strlen(token)+1);
-				strcpy(cmd_line, token);
+				cmd_line = safestrdup(token);
 			}
 			else
 			{
-				cmd_line = (char *)safemalloc(1);
-				*cmd_line = 0;
+				cmd_line = safestrdup("");
 			}
 			break;
 
@@ -646,10 +644,6 @@ void handle_config_line(char *buf, char **phost)
 			break;
 
 		}
-		if (token)
-		{
-			free(token);
-		}
 	}
 	else
 	{
@@ -738,7 +732,7 @@ void config(void)
 
 	/* get config lines with my name */
 	InitGetConfigLine(fd,MyName);
-	while (GetConfigLine(fd,&buf), buf != NULL)
+	while (GetConfigLine(fd,&buf), buf != NULL && *buf != 0)
 	{
 		if (buf[strlen(buf)-1] == '\n')
 		{

@@ -1,4 +1,14 @@
+2002-12-01  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmEvent/FvwmEvent.c (main):
+	request only the events that have an associated action
+
 2002-11-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmEvent/FvwmEvent.c (handle_config_line):
+	simplified code a bit
+	(config):
+	fixed an off-by-one array access
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
 	Fixed windows using WindowListSkip appearing in the TaskBar

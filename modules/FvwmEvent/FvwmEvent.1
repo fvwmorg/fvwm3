@@ -185,6 +185,9 @@ a window.  With the -passid option, that window's id is passed to
 fvwm.  An enter_window event is generated too when the pointer
 leaves a window and moves into the root window.  In this case, the
 id passed is 0.
+
+Note: When the shutdown event arrives, FvwmEvent may be killed
+before it can trigger the associated action.
 .sp
 .fi
 Provided \fIfvwm\fP supports it (not yet), there's an additional event to
