@@ -177,12 +177,15 @@ void MakeButton(button_info *b)
   }
 }
 
-static int buttonBGColorset (button_info *b)
+static int buttonBGColorset(button_info *b)
 {
 	if (b->flags & b_Hangon)
 	{
-		if (UberButton->c->flags & b_PressColorset)
+		if ((UberButton->c->flags & b_PressColorset) &&
+		    (buttonSwallow(b) & b_UseOld))
+		{
 			return UberButton->c->pressColorset;
+		}
 	}
 	else if (b == ActiveButton &&
 		UberButton->c->flags & b_ActiveColorset)
@@ -190,14 +193,17 @@ static int buttonBGColorset (button_info *b)
 		return UberButton->c->activeColorset;
 	}
 	else if (b == CurrentButton &&
-		UberButton->c->flags & b_PressColorset)
+		 UberButton->c->flags & b_PressColorset)
 	{
 		return UberButton->c->pressColorset;
 	}
-
 	if (b->flags & b_Colorset)
+	{
 		return b->colorset;
+	}
+
 	return -1;
+
 }
 
 
@@ -484,12 +490,16 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 		else if (UberButton->c->flags & b_TransBack)
 		{
 			/* TODO: fixme, this ain't right -- SS. */
-			fprintf(stderr, "trans back w=%d\n", UberButton->c->width);
-			SetTransparentBackground(UberButton, UberButton->c->width, UberButton->c->height);
+			fprintf(
+				stderr, "trans back w=%d\n",
+				UberButton->c->width);
+			SetTransparentBackground(
+				UberButton, UberButton->c->width,
+				UberButton->c->height);
 		}
 #endif
-		else if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
-			 b->flags&b_Colorset)
+		else if (buttonSwallowCount(b) == 3 &&
+			 (b->flags & b_Swallow) && b->flags&b_Colorset)
 		{
 			/* Set the back color of the buttons for shaped apps
 			 * (olicha 00-03-09) and also for transparent modules */
@@ -510,37 +520,34 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				/* module */
 			}
 		}
-		else
+		else if (do_draw)
 		{
-			if (do_draw)
+			int cs = buttonBGColorset(b);
+			cleaned = True;
+			XClearArea(Dpy, MyWindow, clip.x,
+				   clip.y, clip.width, clip.height,
+				   False);
+			if (cs >= 0)
 			{
-				int cs = buttonBGColorset(b);
-				cleaned = True;
-				XClearArea(Dpy, MyWindow, clip.x,
-					clip.y, clip.width, clip.height,
-					False);
-				if (cs >= 0)
-				{
-					SetRectangleBackground(Dpy, MyWindow,
-                                                clip.x, clip.y, clip.width,
-                                                clip.height, &Colorset[cs],
-                                                Pdepth, NormalGC);
-				}
-				else if (b->flags & b_Back &&
-					!(UberButton->c->flags & b_Colorset))
-				{
-					gcv.background = b->bc;
-					XChangeGC(Dpy,NormalGC,GCBackground,
-						&gcv);
-					XFillRectangle(Dpy, MyWindow, NormalGC,
-						clip.x, clip.y, clip.width,
-						clip.height);
-				}
+				SetRectangleBackground(
+					Dpy, MyWindow, clip.x, clip.y,
+					clip.width, clip.height, &Colorset[cs],
+					Pdepth, NormalGC);
+			}
+			else if (b->flags & b_Back &&
+				 !(UberButton->c->flags & b_Colorset))
+			{
+				gcv.background = b->bc;
+				XChangeGC(Dpy,NormalGC,GCBackground,
+					  &gcv);
+				XFillRectangle(Dpy, MyWindow, NormalGC,
+					       clip.x, clip.y, clip.width,
+					       clip.height);
 			}
 		}
 	}
 
-	/* ------------------------------------------------------------------ */
+/* ------------------------------------------------------------------ */
 
 	if (cleaned && (b->flags & (b_Title|b_ActiveTitle|b_PressTitle)))
 	{

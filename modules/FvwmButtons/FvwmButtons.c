@@ -74,7 +74,7 @@
 #define MW_EVENTS   (ExposureMask |\
 		     StructureNotifyMask |\
 		     ButtonReleaseMask | ButtonPressMask |\
-		     LeaveWindowMask | PointerMotionMask |\
+		     LeaveWindowMask | EnterWindowMask | PointerMotionMask |\
 		     KeyReleaseMask | KeyPressMask | ButtonMotionMask)
 /* SW_EVENTS are for swallowed windows... */
 #define SW_EVENTS   (PropertyChangeMask | StructureNotifyMask |\
@@ -925,6 +925,51 @@ static Bool reallyLeaveWindow (const int x, const int y,
 	return True;
 }
 
+static button_info *handle_new_position(
+	button_info *b, int pos_x, int pos_y)
+{
+	Bool f = is_pointer_in_current_button, redraw = False;
+
+	if (pos_x < 0 || pos_x >= Width ||
+	    pos_y < 0 || pos_y >= Height)
+	{
+		/* cursor is outside of FvwmButtons window. */
+		return b;
+	}
+
+	/* find out which button the cursor is in now. */
+	b = select_button(UberButton, pos_x, pos_y);
+
+	is_pointer_in_current_button =
+		(CurrentButton && CurrentButton == b);
+	if (CurrentButton && is_pointer_in_current_button != f)
+	{
+		redraw = True;
+	}
+
+	if (b != ActiveButton && CurrentButton == NULL)
+	{
+		if (ActiveButton)
+		{
+			button_info *tmp = ActiveButton;
+			ActiveButton = b;
+			RedrawButton(tmp, DRAW_FORCE, NULL);
+		}
+		if (b->flags & (b_ActiveIcon | b_ActiveTitle) ||
+		    UberButton->c->flags & b_ActiveColorset)
+		{
+			ActiveButton = b;
+			redraw = True;
+		}
+	}
+	if (redraw)
+	{
+		RedrawButton(b, DRAW_FORCE, NULL);
+	}
+
+	return b;
+}
+
 /* -------------------------------- Main Loop -------------------------------*/
 
 /**
@@ -1075,51 +1120,21 @@ void Loop(void)
       }
       break;
 
+	case EnterNotify:
+{/*!!!*/static int ecount = 0;
+/*!!!*/fprintf(stderr, "-------- en (%d): w 0x%08x sw 0x%08x mode 0x%x detail 0x%x\n", ++ecount, (int)Event.xcrossing.window, (int)Event.xcrossing.subwindow, Event.xcrossing.mode, Event.xcrossing.detail);}
+		b = handle_new_position(
+			b, Event.xcrossing.x, Event.xcrossing.y);
+		break;
+
 	case MotionNotify:
-	{
-		Bool f = is_pointer_in_current_button, redraw = False;
-		if (Event.xmotion.x < 0 || Event.xmotion.x >= Width ||
-			Event.xmotion.y < 0 || Event.xmotion.y >= Height)
-		{
-			/* cursor is outside of FvwmButtons window. */
-			break;
-		}
-
-		/* find out which button the cursor is in now. */
-		b = select_button(UberButton, Event.xmotion.x, Event.xmotion.y);
-
-		is_pointer_in_current_button =
-			(CurrentButton && CurrentButton == b);
-		if (CurrentButton && is_pointer_in_current_button != f)
-		{
-			redraw = True;
-		}
-
-		if (b != ActiveButton && CurrentButton == NULL)
-		{
-			if (ActiveButton)
-			{
-				button_info *tmp = ActiveButton;
-				ActiveButton = b;
-				RedrawButton(tmp, DRAW_FORCE, NULL);
-			}
-			if (b->flags & (b_ActiveIcon | b_ActiveTitle) ||
-				UberButton->c->flags & b_ActiveColorset)
-			{
-				ActiveButton = b;
-				redraw = True;
-			}
-		}
-
-		if (redraw)
-		{
-			RedrawButton(b, DRAW_FORCE, NULL);
-		}
-	}
-	break;
+		b = handle_new_position(b, Event.xmotion.x, Event.xmotion.y);
+		break;
 
 	case LeaveNotify:
 	{
+/*!!!*/static int ecount = 0;
+/*!!!*/fprintf(stderr, "-------- ln (%d): w 0x%08x sw 0x%08x mode 0x%x detail 0x%x\n", ++ecount, (int)Event.xcrossing.window, (int)Event.xcrossing.subwindow, Event.xcrossing.mode, Event.xcrossing.detail);
 		if (reallyLeaveWindow(Event.xcrossing.x, Event.xcrossing.y,
 			Event.xcrossing.window, NULL))
 		{
@@ -1142,6 +1157,7 @@ void Loop(void)
 	  break;                        /* fall through to ButtonPress */
 
       case ButtonPress:
+/*!!!*/fprintf(stderr,"-------- bp\n");
 	if (Event.xbutton.window == MyWindow)
 	{
 	  x = Event.xbutton.x;
@@ -1220,6 +1236,7 @@ void Loop(void)
 
       case KeyRelease:
       case ButtonRelease:
+/*!!!*/fprintf(stderr,"-------- br: ab 0x%08x\n", (int)ActiveButton);
 	if (CurrentButton == NULL || !is_pointer_in_current_button)
 	{
 		if (CurrentButton)
@@ -1252,6 +1269,7 @@ void Loop(void)
 	act = GetButtonAction(b,Event.xbutton.button);
 	if (b && !act && (b->flags & b_Panel))
 	{
+	  ActiveButton = b;
 	  HandlePanelPress(b);
 	  if (b->newflags.panel_mapped == 0)
 	  {
@@ -2383,8 +2401,8 @@ void SpawnSome(void)
     return;
   first=0;
   while(NextButton(&ub,&b,&button,0))
-    if((buttonSwallowCount(b)==1) && b->flags&b_Hangon &&
-       buttonSwallow(b)&b_UseOld)
+    if((buttonSwallowCount(b)==1) && (b->flags&b_Hangon) &&
+       (buttonSwallow(b)&b_UseOld))
       if(b->spawn)
       {
 #ifdef DEBUG_HANGON
