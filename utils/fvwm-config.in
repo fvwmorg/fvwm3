@@ -60,6 +60,8 @@ with_xpm=@with_xpm@
 with_gtk=@with_gtk@
 with_gnome=@with_gnome@
 with_sm=@with_sm@
+with_gnomelibs=@with_gnomelibs@
+with_multibyte=@with_multibyte@
 
 while test $# -gt 0; do
 	case "$1" in
@@ -103,13 +105,15 @@ while test $# -gt 0; do
 			echo "$fvwm_userdir" ;;
 
 		--supports|-supports|-s)
-			test "$with_readline" = "yes" && echo "readline"
-			test "$with_rplay"    = "yes" && echo "rplay"
-			test "$with_stroke"   = "yes" && echo "stroke"
-			test "$with_xpm"      = "yes" && echo "xpm"
-			test "$with_gtk"      = "yes" && echo "gtk"
-			test "$with_gnome"    = "yes" && echo "gnome"
-			test "$with_sm"       = "yes" && echo "sm"
+			test "$with_readline"  = "yes" && echo "readline"
+			test "$with_rplay"     = "yes" && echo "rplay"
+			test "$with_stroke"    = "yes" && echo "stroke"
+			test "$with_xpm"       = "yes" && echo "xpm"
+			test "$with_gtk"       = "yes" && echo "gtk"
+			test "$with_gnome"     = "yes" && echo "gnome"
+			test "$with_sm"        = "yes" && echo "sm"
+			test "$with_gnomelibs" = "yes" && echo "gnomelibs"
+			test "$with_multibyte" = "yes" && echo "multibyte"
 			;;
 
 		--supports-*)
@@ -147,6 +151,8 @@ while test $# -gt 0; do
 			echo "	gtk: $with_gtk"
 			echo "	gnome (gnome wm hints): $with_gnome"
 			echo "	sm (session management): $with_sm"
+			echo "	gnomelibs: $with_gnomelibs"
+			echo "	multibyte: $with_multibyte"
 			;;
 
 		*)

@@ -1,6 +1,12 @@
+2001-01-24  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in: renamed --enable-kanji to --enable-multibyte
+	* acinclude.m4: renamed want_gnome to with_gnomelibs
+	* fvwm/fvwm.c: show multibyte support in -version
+
 2001-01-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
-	* configure (Configuration):
+	* configure.in (Configuration):
 	print I18N_MB option in configure summary
 
 	* fvwm/virtual.c (MoveViewport):

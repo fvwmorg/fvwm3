@@ -23,20 +23,25 @@ AC_ARG_ENABLE(dmalloc,
   [ac_cv_dmalloc="no"])
 
 AC_ARG_ENABLE(efence,
-  [  --enable-efence        enable support for the efence debugging library],
+  [  --enable-efence         enable support for the efence debugging library],
   [ac_cv_efence="$enableval"],
   [ac_cv_efence="no"])
 
 dnl NOTE: the disabled options will be removed in the near future for better
 dnl maintainability of the code.
 smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
-smr_SWITCH(kanji, multibyte character support (does not work yet), off, I18N_MB)
+smr_SWITCH(multibyte, multibyte character support (experimental), off, I18N_MB)
 dnl smr_SWITCH(mini-icons, MiniIcon style option, on, MINI_ICONS)
 smr_SWITCH(move-bug-workaround, workaround for flickering windows during move, off, DISABLE_CONFIGURE_NOTIFY_DURING_MOVE)
 smr_SWITCH(modality, modal dialogs for applications, on, MODALITY_IS_EVIL)
 dnl smr_SWITCH(multistyle, stacked button styles, on, MULTISTYLE)
 smr_SWITCH(shape, shape extensions, on, SHAPE)
 dnl smr_SWITCH(usedecor, UseDecor style option, on, USEDECOR)
+
+AC_ARG_ENABLE(kanji,
+  [  --enable-kanji          obsolete, please use --enable-multibyte instead],
+  [AC_MSG_ERROR(--enable-kanji is obsolete; use --enable-multibyte instead.)],
+  [])
 
 dnl FIXME: default value should be derived from computed path to X
 dnl includes.  Actually, this should probably not appear in configure
@@ -252,8 +257,12 @@ AC_SUBST(readline_LIBS)
 AC_SUBST(readline_CFLAGS)
 
 
+dnl ********* multibyte
+with_multibyte=no
+
 dnl FreeBSD has libxpg4, check this and use if found.
-if test "$enable_kanji" = yes; then
+if test "$enable_multibyte" = yes; then
+  with_multibyte=yes
   AC_CANONICAL_HOST
   case $host_os in
     freebsd*)
@@ -440,6 +449,8 @@ AC_SUBST(with_xpm)
 AC_SUBST(with_gtk)
 AC_SUBST(with_gnome)
 AC_SUBST(with_sm)
+AC_SUBST(with_gnomelibs)
+AC_SUBST(with_multibyte)
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 utils/Makefile utils/fvwm-config
@@ -507,12 +518,9 @@ Configuration:
   Have GTK support?                      $with_gtk
   Have GNOME Window Manager support?     $with_gnome
   Have Session Management support?       $with_sm
-  Have GNOME support in FvwmGtk?         $want_gnome"
-case "$enable_kanji" in
-  yes) echo "  Have multibyte support (experimental)? yes" ;;
-  **)  echo "  Have multibyte support (experimental)? no" ;;
-esac
-echo
+  Have GNOME support in FvwmGtk?         $with_gnomelibs
+  Have MultiByte support (experimental)? $with_multibyte
+"
 case "$ac_cv_dmalloc" in
   yes) echo "  DMALLOC heap debugging library enabled." ;;
 esac

@@ -2312,6 +2312,9 @@ static void setVersionInfo(void)
 #ifdef SESSION
   strcat(support_str, " SM,");
 #endif
+#ifdef I18N_MB
+  strcat(support_str, " I18N_MB,");
+#endif
 
   support_len = strlen(support_str);
   if (support_len)
