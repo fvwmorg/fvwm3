@@ -2079,7 +2079,7 @@ char *GetBalloonLabel(const PagerWindow *pw,const char *fmt)
         buffer[0] = '%';
         INSERT(buffer);
         break;
-      default:
+      default:;
       }
     } else {
       buffer[0] = *pos;

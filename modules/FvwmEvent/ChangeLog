@@ -1,3 +1,8 @@
+1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
+
+	* FvwmEvent.c: Finished the removal of Parse.c and Parse.h from
+	FvwmEvent.
+
 1999-02-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* Makefile.am (FvwmEvent_SOURCES: Remove Parse.c and Parse.h,

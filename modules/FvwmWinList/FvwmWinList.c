@@ -693,7 +693,7 @@ void LoopOnEvents(void)
 Window find_frame_window (Window win, int *off_x, int *off_y)
 {
   Window root, parent, *junkw;
-  int junki;
+  unsigned int junki;
   XWindowAttributes attr;
 
   while (1) {

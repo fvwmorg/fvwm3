@@ -15,8 +15,6 @@
 
 #include <stdio.h>
 #include <signal.h>
-#include <fcntl.h>
-#include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
 
@@ -24,9 +22,8 @@
 #include <sys/select.h>
 #endif
 
-#include <unistd.h>
 #include <ctype.h>
-#include <stdlib.h>
+
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/Xproto.h>
@@ -35,7 +32,7 @@
 #include <X11/cursorfont.h>
 #include <X11/Xmu/WinUtil.h>
 
-#include "../../fvwm/module.h"
+#include <fvwm/module.h>
 #include "FvwmScroll.h"
 
 char *MyName;

@@ -83,20 +83,17 @@
  */
 
 #include "config.h"
-#include "../../fvwm/module.h"
-#include "fvwmlib.h"
+#include <fvwm/module.h>
+#include <fvwmlib.h>
+#include <ModParse.h>
 
 /*
  * fvwm includes:
  */
 #include <stdio.h>
-#include <stdlib.h>
 #include <signal.h>
-#include <fcntl.h>
-#include <string.h>
 #include <sys/wait.h>
 #include <sys/time.h>
-#include <unistd.h>
 #include <ctype.h>
 
 /*
@@ -107,7 +104,6 @@
 #undef M_ERROR /* Solaris fix */
 #endif
 
-#include "Parse.h"
 
 #ifdef DEBUG
 #define INFO(x) fprintf(stderr,x)

@@ -1356,7 +1356,7 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
     if (f == True)
     {
       int iy, ih;
-      int mw, mh;
+      unsigned int mw, mh;
 
       if (!mi->mr->flags.f.painted)
       {
@@ -1498,7 +1498,7 @@ static void PopDownAndRepaintParent(MenuRoot *mr, Bool *fSubmenuOverlaps)
   MenuRoot *parent = mr->mrDynamicPrev;
   XEvent event;
   int mr_y;
-  int mr_height;
+  unsigned int mr_height;
   int parent_y;
 
   if (*fSubmenuOverlaps && parent)

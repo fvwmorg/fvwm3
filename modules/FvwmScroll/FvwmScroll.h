@@ -1,4 +1,14 @@
-#include "fvwmlib.h"       
+#include <libs/fvwmlib.h>
+
+extern char* MyName;
+extern Display* dpy;
+extern Window Root;
+extern int screen;
+extern int d_depth;
+
+extern int fd_width;
+extern int x_fd;
+
 
 char *safemalloc(int length);
 void DeadPipe(int nonsense);

@@ -64,18 +64,13 @@
 
  */
 #include "config.h"
-#include "../../libs/fvwmlib.h"
 
 #include <stdio.h>
 #include <ctype.h>
 #include <signal.h>
 
-#include <sys/types.h>
 #include <sys/time.h>
 #include <fcntl.h>
-#if defined ___AIX || defined _AIX || defined ___AIXV3
-#include <sys/select.h>
-#endif
 
 #include <X11/Xlib.h>
 #include <X11/X.h>
@@ -84,15 +79,13 @@
 #define XK_MISCELLANY
 #include <X11/keysymdef.h>
 
-#include <unistd.h>                     /* for write */
-
-#include "../../fvwm/module.h"          /* for headersize, etc. */
-#include "../../libs/fvwmlib.h"
+#include "fvwm/module.h"          /* for headersize, etc. */
+#include "libs/fvwmlib.h"
 
 #include <ModParse.h>                   /* for FindToken */
 
 #define IamTheMain 1                    /* in FvwmForm.h, chg extern to "" */
-#include <FvwmForm.h>                   /* common FvwmForm stuff */
+#include "FvwmForm.h"                   /* common FvwmForm stuff */
 #undef IamTheMain
 
 /* prototypes */

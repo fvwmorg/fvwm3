@@ -1,3 +1,10 @@
+1999-03-02  Steven Michael ROBBINS  <stever@hojpoj.cs.mcgill.ca>
+
+	* fvwm/fvwm.h: add 'extern' keyword to Bool fFvwmInStartup,
+	otherwise it is defined in each .c file that includes <fvwm/fvwm.h>
+
+	* fvwm/modconf.c: add 'extern' keyword to PipeMask; ditto.
+
 1999-03-02  Dan Espen  <dane@mk.bellcore.com>
 
 	* fvwm/fvwm2.1: Changed fvwm to fvwm2 everywhere I thought it should

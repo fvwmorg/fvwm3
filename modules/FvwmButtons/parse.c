@@ -433,7 +433,8 @@ void match_string(button_info **uberb,char *s)
 	  if((*s>='0' && *s<='9') || *s=='+' || *s=='-')
 	    {
 	      char *geom;
-	      int x,y,w,h,flags;
+	      int x,y,flags;
+	      unsigned int w,h;
 	      geom=seekright(&s);
 	      if (geom)
 		{

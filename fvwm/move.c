@@ -168,7 +168,7 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int FinalX, FinalY;
   int n;
   int x,y;
-  int width, height;
+  unsigned int width, height;
   int page[2];
   Bool fWarp = FALSE;
 

@@ -42,7 +42,7 @@
 #include "screen.h"
 #include "module.h"
 
-unsigned long *PipeMask;                /* in module.c */
+extern unsigned long *PipeMask;                /* in module.c */
 
 extern Boolean debugging;
 

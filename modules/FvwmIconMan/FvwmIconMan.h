@@ -237,7 +237,7 @@ typedef struct {
      This like border width go in WinManager */
   int x, y, width, height;
   int gravity_x, gravity_y; /* anchor point for window's gravity */
-  int rows, cols;
+  unsigned int rows, cols;
   int boxheight, boxwidth;
   GrowDirection dir;
 } ManGeometry;

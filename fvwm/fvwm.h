@@ -1,3 +1,6 @@
+#ifndef FVWM_H
+#define FVWM_H
+
 /****************************************************************************
  * This module is based on Twm, but has been siginificantly modified
  * by Rob Nation
@@ -33,9 +36,6 @@
 /***********************************************************************
  * fvwm include file
  ***********************************************************************/
-
-#ifndef _FVWM_
-#define _FVWM_
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -109,7 +109,7 @@ typedef struct ColorPair
 } ColorPair;
 
 #ifdef MINI_ICONS
-#include "../libs/fvwmlib.h"
+#include <libs/fvwmlib.h>
 #endif
 
 #ifdef USEDECOR
@@ -381,7 +381,7 @@ extern XContext FvwmContext;
 
 extern Window BlackoutWin;
 
-Bool fFvwmInStartup;
+extern Bool fFvwmInStartup;
 
 extern Boolean ShapesSupported;
 

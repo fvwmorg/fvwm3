@@ -121,7 +121,7 @@ static void handle_buttonevent (XEvent *theEvent, WinManager *man)
 Window find_frame_window (Window win, int *off_x, int *off_y)
 {
   Window root, parent, *junkw;
-  int junki;
+  unsigned int junki;
   XWindowAttributes attr;
 
   ConsoleDebug (X11, "In find_frame_window: 0x%x\n", win);
@@ -462,7 +462,7 @@ void read_all_reparent_events (WinManager *man, int block)
 void X_init_manager (int man_id)
 {
   WinManager *man;
-  int width, height;
+  unsigned int width, height;
   int i, x, y, geometry_mask;
   ConsoleDebug (X11, "In X_init_manager\n");
 
@@ -618,10 +618,11 @@ void X_init_manager (int man_id)
   if (globals.transient) {
     Window dummyroot, dummychild;
     int junk;
+    unsigned int ujunk;
 
     XQueryPointer(theDisplay, theRoot, &dummyroot, &dummychild,
 		  &man->geometry.x,
-		  &man->geometry.y, &junk, &junk, &junk);
+		  &man->geometry.y, &junk, &junk, &ujunk);
     man->geometry.dir |= GROW_DOWN | GROW_RIGHT;
     man->sizehints_flags |= USPosition;
   }

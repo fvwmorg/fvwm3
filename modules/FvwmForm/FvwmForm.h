@@ -1,3 +1,6 @@
+#ifndef FVWMFORM_H
+#define FVWMFORM_H
+
 /*  Modification History
 
  Created 12/20/98 Dan Espen:
@@ -5,7 +8,6 @@
  - FvwmForm.c got too big for my home machine to deal with.
 
  */
-#ifndef FVWMFORM_H                      /* skip whole thing 2nd time */
 
 /* I hate things defined in 2 places. */
 #ifdef IamTheMain
@@ -277,4 +279,5 @@ char * ParseCommand (int, char *, char, int *, char **s); /* ParseCommand.c */
 void DeadPipe(int nonsense);            /* FvwmForm.c */
 void DefineMe();                        /* DefineMe.c */
 
-#endif FVWMFORM_H     /* end whole file */
+#endif
+
