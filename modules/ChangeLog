@@ -1,3 +1,9 @@
+1999-10-24  Chris Rankin
+
+	* FvwmSaveDesk, FvwmSave, FvwmDebug, FvwmIdent: removed duplicate
+      prototypes
+	* FvwmIconMan: some Wall fixes; also put "const" in a few places
+
 1999-10-22  Douglas Straub
 
 	* FvwmDragWell/*: new module
