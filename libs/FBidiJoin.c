@@ -174,38 +174,6 @@ get_shaped_entry(FriBidiChar ch)
 	return NULL;
 }
 
-static FriBidiChar
-get_shaped_combined_char(
-	FriBidiChar ch_first, FriBidiChar ch_second, Bool do_have_initial)
-{
-	int count;
-	int table_size;
-
-	table_size = sizeof(shaped_comb_table) / sizeof(shaped_comb_table[0]);
-
-	for (count = 0; count < table_size; count++)
-	{
-		/* Make sure we have the right combination of characters */
-		if (
-			ch_first  == shaped_comb_table[count].first
-			&&
-			ch_second == shaped_comb_table[count].second)
-		{
-			/* Find out how to shape the combined character */
-			if (do_have_initial)
-			{
-				return shaped_comb_table[count].comb_joined;
-			}
-			else
-			{
-				return shaped_comb_table[count].comb_isolated;
-			}
-		}
-	}
-
-	return 0;
-}
-
 /* ------------------------- interface functions --------------------------- */
 
 int
@@ -257,20 +225,6 @@ shape_n_join(
 		{
 			if (next)
 			{
-				/* Deal with those pesky combinational
-				 * 2-characters that become 1 */
-				/*combined = get_shaped_combined_char(
-					curr->base, next->base,
-					(prev && prev->initial));
-
-				if (combined)
-				{*/ 
-					/* Skip current char (ie. nullify it)
-					 * and combo-shape the previous char */
-				/*len--;
-					str_visual[len] = combined;
-				}
-			        else */
 			       if (prev)
 				{
 					if (!prev->initial || !prev->medial)
