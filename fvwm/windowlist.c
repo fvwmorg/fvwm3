@@ -33,6 +33,7 @@
 
 #include "libs/fvwmlib.h"
 #include <libs/gravity.h>
+#include <libs/FScreen.h>
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -50,22 +51,26 @@
 
 extern FvwmWindow *Fw;
 
-#define SHOW_GEOMETRY           (1<<0)
-#define SHOW_ALLDESKS           (1<<1)
-#define SHOW_NORMAL             (1<<2)
-#define SHOW_ICONIC             (1<<3)
-#define SHOW_STICKY             (1<<4)
-#define NO_DESK_SORT            (1<<6)
-#define SHOW_ICONNAME           (1<<7)
-#define SHOW_ALPHABETIC         (1<<8)
-#define SORT_CLASSNAME          (1<<9)
-#define SORT_REVERSE            (1<<10)
-#define SHOW_INFONOTGEO         (1<<11)
-#define NO_DESK_NUM             (1<<12)
-#define NO_CURRENT_DESK_TITLE   (1<<13)
-#define TITLE_FOR_ALL_DESKS     (1<<14)
-#define NO_NUM_IN_DESK_TITLE    (1<<15)
-#define SHOW_EVERYTHING (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | \
+#define SHOW_GEOMETRY		(1<<0)
+#define SHOW_ALLDESKS		(1<<1)
+#define SHOW_NORMAL		(1<<2)
+#define SHOW_ICONIC		(1<<3)
+#define SHOW_STICKY		(1<<4)
+#define NO_DESK_SORT		(1<<6)
+#define SHOW_ICONNAME		(1<<7)
+#define SHOW_ALPHABETIC		(1<<8)
+#define SORT_CLASSNAME		(1<<9)
+#define SORT_REVERSE		(1<<10)
+#define SHOW_INFONOTGEO		(1<<11)
+#define NO_DESK_NUM		(1<<12)
+#define NO_CURRENT_DESK_TITLE	(1<<13)
+#define TITLE_FOR_ALL_DESKS	(1<<14)
+#define NO_NUM_IN_DESK_TITLE	(1<<15)
+#define SHOW_PAGE_X		(1<<16)
+#define SHOW_PAGE_Y		(1<<17)
+#define NO_LAYER		(1<<18)
+#define SHOW_SCREEN		(1<<19)
+#define SHOW_DEFAULT (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | \
 	SHOW_ICONIC | SHOW_STICKY)
 
 static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
@@ -166,8 +171,8 @@ void CMD_WindowList(F_CMD_ARGS)
 	FvwmWindow **iconifiedList = NULL;
 	int numWindows;
 	int ii;
-	char tname[80];
-	char loc[40];
+	char tname[128];
+	char loc[64];
 	char *name=NULL;
 	int dwidth;
 	int dheight;
@@ -180,7 +185,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	char *opts=NULL;
 	char *tok=NULL;
 	int desk = Scr.CurrentDesk;
-	unsigned long flags = SHOW_EVERYTHING;
+	unsigned long flags = SHOW_DEFAULT;
 	char *func = NULL;
 	char *tfunc = NULL;
 	char *default_action = NULL;
@@ -189,6 +194,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	MenuOptions mops;
 	int low_layer = 0;  /* show all layers by default */
 	int high_layer = INT_MAX;
+	int max_label_width = 0;
 	int tc;
 	int show_listskip = 0; /* do not show listskip by default */
 	Bool use_hotkey = True;
@@ -293,6 +299,22 @@ void CMD_WindowList(F_CMD_ARGS)
 			{
 				flags |= NO_DESK_SORT;
 			}
+			else if (StrEquals(tok,"ShowPage"))
+			{
+				flags |= SHOW_PAGE_X | SHOW_PAGE_Y;
+			}
+			else if (StrEquals(tok,"ShowPageX"))
+			{
+				flags |= SHOW_PAGE_X;
+			}
+			else if (StrEquals(tok,"ShowPageY"))
+			{
+				flags |= SHOW_PAGE_Y;
+			}
+			else if (StrEquals(tok,"ShowScreen"))
+			{
+				flags |= SHOW_SCREEN;
+			}
 			else if (StrEquals(tok,"UseIconName"))
 			{
 				flags |= SHOW_ICONNAME;
@@ -359,6 +381,10 @@ void CMD_WindowList(F_CMD_ARGS)
 			else if (StrEquals(tok,"NoDeskNum"))
 			{
 				flags |= NO_DESK_NUM;
+			}
+			else if (StrEquals(tok,"NoLayer"))
+			{
+				flags |= NO_LAYER;
 			}
 			else if (StrEquals(tok,"NoCurrentDeskTitle"))
 			{
@@ -433,6 +459,21 @@ void CMD_WindowList(F_CMD_ARGS)
 				}
 				sor_keyname = NULL;
 				opts = GetNextSimpleOption(opts, &sor_keyname);
+			}
+			else if (StrEquals(tok, "MaxLabelWidth"))
+			{
+				char *wid;
+
+				opts = GetNextSimpleOption(opts, &wid);
+				if (wid)
+				{
+					max_label_width = atoi(wid);
+					if (max_label_width < 1)
+					{
+						max_label_width = 1;
+					}
+					free(wid);
+				}
 			}
 			else if (!opts || !*opts)
 			{
@@ -667,10 +708,12 @@ void CMD_WindowList(F_CMD_ARGS)
 						      SHOW_INFONOTGEO)) &&
 						    !(flags &
 						      TITLE_FOR_ALL_DESKS))
+						{
 							AddToMenu(
 								mr, NULL, NULL,
 								False, False,
 								False);
+						}
 						if (flags & TITLE_FOR_ALL_DESKS)
 						{
 							tlabel = get_desk_title(
@@ -709,8 +752,14 @@ void CMD_WindowList(F_CMD_ARGS)
 				{
 					name = "NULL_NAME";
 				}
+				else if (max_label_width > 0 &&
+					 strlen(name) > max_label_width)
+				{
+					name = strdup(name);
+					name[max_label_width] = '\0';
+				}
 
-				t_hot = safemalloc(strlen(name) + 48);
+				t_hot = safemalloc(strlen(name) + 80);
 				if (use_hotkey)
 				{
 					/* Generate label */
@@ -772,19 +821,48 @@ void CMD_WindowList(F_CMD_ARGS)
 					if (IS_ICONIFIED(t))
 					{
 						strcpy(tname, "(");
+						strcat(tname, loc);
 					}
-					if (flags & NO_DESK_NUM)
+					if (!(flags & NO_DESK_NUM))
 					{
-						sprintf(loc, "(%d):",
-							get_layer(t));
+						sprintf(loc, "%d", t->Desk);
+						strcat(tname, loc);
 					}
-					else
+					if (flags & SHOW_SCREEN)
 					{
-						sprintf(loc, "%d(%d):",
-							t->Desk, get_layer(t));
-					}
-					strcat(tname,loc);
+						fscreen_scr_arg fscr;
+						int scr;
 
+						fscr.xypos.x =
+							Scr.Vx + t->frame_g.x +
+							t->frame_g.width / 2;;
+						fscr.xypos.y =
+							Scr.Vy + t->frame_g.y +
+							t->frame_g.height / 2;;
+						scr = FScreenGetScrId(
+							&fscr, FSCREEN_XYPOS);
+						sprintf(loc, "@%d", scr);
+						strcat(tname, loc);
+					}
+					if (flags & SHOW_PAGE_X)
+					{
+						sprintf(loc, "+%d", Scr.Vx /
+							Scr.MyDisplayWidth);
+						strcat(tname, loc);
+					}
+					if (flags & SHOW_PAGE_Y)
+					{
+						sprintf(loc, "+%d", Scr.Vy /
+							Scr.MyDisplayHeight);
+						strcat(tname, loc);
+					}
+					if (!(flags & NO_LAYER))
+					{
+						sprintf(loc, "(%d)",
+							(get_layer(t)));
+						strcat(tname, loc);
+					}
+					strcat(tname, ":");
 					get_window_borders(t, &b);
 					dheight = t->frame_g.height -
 						b.total_size.height;

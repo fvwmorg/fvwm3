@@ -48,6 +48,8 @@ void FScreenSetPrimaryScreen(int scr);
 /* Screen info */
 Bool FScreenGetScrRect(
 	fscreen_scr_arg *arg, int screen, int *x, int *y, int *w, int *h);
+Bool FScreenGetScrId(
+	fscreen_scr_arg *arg, int screen);
 void FScreenTranslateCoordinates(
 	fscreen_scr_arg *arg_src, int screen_src,
 	fscreen_scr_arg *arg_dest, int screen_dest,

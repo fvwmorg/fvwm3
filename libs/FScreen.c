@@ -680,27 +680,8 @@ static int FindScreenOfXY(int x, int y)
 	return 0;
 }
 
-/* Returns the specified screens geometry rectangle.  screen can be a screen
- * number or any of the values FSCREEN_GLOBAL, FSCREEN_CURRENT,
- * FSCREEN_PRIMARY or FSCREEN_XYPOS.  The arg union only has a meaning for
- * FSCREEN_CURRENT and FSCREEN_XYARG.  For FSCREEN_CURRENT its mouse_ev member
- * may be given.  It is tried to find out the pointer position from the event
- * first before querying the pointer.  For FSCREEN_XYPOS the xpos member is used
- * to fetch the x/y position of the point on the screen.  If arg is NULL, the
- * position 0 0 is assumed instead.
- *
- * Any of the arguments arg, x, y, w and h may be NULL.
- *
- * FSCREEN_GLOBAL:  return the global screen dimensions
- * FSCREEN_CURRENT: return dimensions of the screen with the pointer
- * FSCREEN_PRIMARY: return the primary screen dimensions
- * FSCREEN_XYPOS:   return dimensions of the screen with the given coordinates
- *
- * The function returns False if the global screen was returned and more than
- * one screen is configured.  Otherwise it returns True.
- */
-Bool FScreenGetScrRect(
-	fscreen_scr_arg *arg, int screen, int *x, int *y, int *w, int *h)
+static int FindScreen(
+	fscreen_scr_arg *arg, int screen)
 {
 	fscreen_scr_arg tmp;
 
@@ -744,6 +725,32 @@ Bool FScreenGetScrRect(
 		break;
 	}
 
+	return screen;
+}
+
+/* Returns the specified screens geometry rectangle.  screen can be a screen
+ * number or any of the values FSCREEN_GLOBAL, FSCREEN_CURRENT,
+ * FSCREEN_PRIMARY or FSCREEN_XYPOS.  The arg union only has a meaning for
+ * FSCREEN_CURRENT and FSCREEN_XYARG.  For FSCREEN_CURRENT its mouse_ev member
+ * may be given.  It is tried to find out the pointer position from the event
+ * first before querying the pointer.  For FSCREEN_XYPOS the xpos member is used
+ * to fetch the x/y position of the point on the screen.  If arg is NULL, the
+ * position 0 0 is assumed instead.
+ *
+ * Any of the arguments arg, x, y, w and h may be NULL.
+ *
+ * FSCREEN_GLOBAL:  return the global screen dimensions
+ * FSCREEN_CURRENT: return dimensions of the screen with the pointer
+ * FSCREEN_PRIMARY: return the primary screen dimensions
+ * FSCREEN_XYPOS:   return dimensions of the screen with the given coordinates
+ *
+ * The function returns False if the global screen was returned and more than
+ * one screen is configured.  Otherwise it returns True.
+ */
+Bool FScreenGetScrRect(
+	fscreen_scr_arg *arg, int screen, int *x, int *y, int *w, int *h)
+{
+	screen = FindScreen(arg, screen);
 	if (screen < first_to_check || screen > last_to_check)
 	{
 		screen = 0;
@@ -766,6 +773,19 @@ Bool FScreenGetScrRect(
 	}
 
 	return !(screen == 0 && num_screens > 1);
+}
+
+/* returns the screen id */
+Bool FScreenGetScrId(
+	fscreen_scr_arg *arg, int screen)
+{
+	screen = FindScreen(arg, screen);
+	if (screen < 0)
+	{
+		screen = FSCREEN_GLOBAL;
+	}
+
+	return screen;
 }
 
 /* Translates the coodinates *x *y from the screen specified by arg_src and

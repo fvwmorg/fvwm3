@@ -11,6 +11,9 @@ Spelling fixes in all man pages.
 Steve Talley:
 Style option IconSize.
 
+Maxim F. Ischenko:
+Original patch for MaxLabelWidth option in WindowList command.
+
 Jan Echternach:
 TMPDIR security patch.
 

@@ -1124,7 +1124,6 @@ void HandleConfigureRequest(void)
 				dpy, &e, test_resizing_event, (char *)&args);
 			if (args.ret_does_match == False)
 			{
-fprintf(stderr,"cre: no matching event\n");
 				break;
 			}
 			else if (args.ret_type == PropertyNotify)
@@ -1132,12 +1131,10 @@ fprintf(stderr,"cre: no matching event\n");
 				/* Can't merge events with a PropertyNotify in
 				 * between.  The event is still on the queue.
 				 */
-fprintf(stderr,"cre: can't merge\n");
 				break;
 			}
 			else if (args.ret_type != ConfigureRequest)
 			{
-fprintf(stderr,"cre: uh, oh! unhandled event taken off the queue? (type %d)\n", (int)args.ret_type);
 				continue;
 			}
 			/* Event was removed from the queue and stored in e. */
@@ -1149,7 +1146,6 @@ fprintf(stderr,"cre: uh, oh! unhandled event taken off the queue? (type %d)\n", 
 			if (((vma & xm) == 0 && (vmo & xm) == xm) ||
 			    ((vma & ym) == 0 && (vmo & ym) == ym))
 			{
-fprintf(stderr,"cre: event put back\n");
 				/* can't merge events since location of window
 				 * might get screwed up. */
 				XPutBackEvent(dpy, &e);
@@ -1190,7 +1186,6 @@ fprintf(stderr,"cre: event put back\n");
 			}
 			cn_count++;
 		}
-fprintf(stderr, "cre: cn_count = %d\n", cn_count);
 #endif
 
 #if 1
@@ -1374,7 +1369,6 @@ fprintf(stderr, "cre: cn_count = %d\n", cn_count);
 	{
 		do_send_event = 1;
 	}
-fprintf(stderr, "cre: sending %d ConfigureNotify events\n", cn_count);
 	for ( ; cn_count > 0; cn_count--)
 	{
 		SendConfigureNotify(

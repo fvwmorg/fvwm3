@@ -16,7 +16,8 @@ Changes in alpha release 2.5.3 (not released yet)
 
 * New Style option IconSize for restricting icon sizes.
 
-* New WindowList option SortClassName.
+* New WindowList options SortClassName, MaxLabelLength, NoLayer,
+  ShowScreen, ShowPage, ShowPageX and ShowPageY.
 
 * Restored old way of handling clicks in windows with ClickToFocus
   and ClickToFocusPassesClickOff.  This fixes a problem with
