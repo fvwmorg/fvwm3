@@ -49,7 +49,7 @@ Changes in alpha release 2.3.3 (June 1999)
 Changes in alpha release 2.3.2 (May 1999)
 
 * The Meta-Tab binding to invoke the window list as described in the FAQ
-  is now built-in.  You can remove it as described in the fvwm2 man page.
+  is  now built-in.  You can  remove it as  described in the fvwm2 man page.
 
 * The MoveThreshold command lets the user fine tune the threshold when a click
   becomes a move. It works in FvwmPager too.
