@@ -751,11 +751,11 @@ style can be used.
 
 .SH EXTENDED WINDOW MANAGER HINTS
 
-Fvwm attempts to respect the extended window manager hints
-(ewmh or EWMH for short) specification:
+Fvwm attempts to respect the extended window manager hints (ewmh
+or EWMH for short) specification:
 .BR http://www.freedesktop.org/standards/wm-spec.html
-and some extensions of this specification.
-This allows fvwm to work with
+and some extensions of this specification.  This allows fvwm to
+work with
 .SM KDE
 version >= 2,
 .SM GNOME
@@ -765,9 +765,8 @@ version 2 and other applications which respect this specification
 version 2). Applications which respect this specification are
 called ewmh compliant applications.
 
-This support is a compile time option.
-If selected at compile time,
-this support is configurable with styles and commands.
+This support is a compile time option.  If selected at compile
+time, this support is configurable with styles and commands.
 
 These styles and commands have
 .SM EWMH
@@ -775,15 +774,15 @@ as the prefix (so you can find them easily in this man page).
 
 There is a new Context 'D' for the
 .BR Key ", " PointerKey ", " Mouse " and " Stroke
-commands. This context is for desktop
-applications (such as kdesktop and Nautilus desktop).
+commands. This context is for desktop applications (such as
+kdesktop and Nautilus desktop).
 
 When a compliant taskbar asks fvwm to activate a window (typically
-when you click on a button which represents a window in such a taskbar),
-then fvwm calls the complex function
+when you click on a button which represents a window in such a
+taskbar), then fvwm calls the complex function
 .B EWMHActivateWindowFunc
-which by default is Iconify Off, Focus and Raise. You can redefine this
-function.  For example:
+which by default is Iconify Off, Focus and Raise. You can redefine
+this function.  For example:
 .EX
 DestroyFunc EWMHActivateWindowFunc
 AddToFunc EWMHActivateWindowFunc I Iconify Off
@@ -795,22 +794,21 @@ additionally warps the cursor to the center of the window.
 
 The
 .SM EWMH
-specification introduces the notion of Working Area.
-Without ewmh support the Working Area is the full visible screen
-(or all your screens if you have a multi head setup and you use Xinerama).
-However, compliant applications (such as a panel) can ask to reserve space
-at the edge of the screen.
-If this is the case, the Working Area is your
-full visible screen minus these reserved spaces. If a panel can be
-hidden by clicking on a button the Working Area does not change (as
-you can unhide the panel at any time), but the Dynamic Working Area
-is updated: the space reserved by the panel is removed (and added
-again if you pop up the panel). The Dynamic Working Area may be used
-when fvwm places or maximizes a window.
-To know if an application reserves space you can type
-"xprop | grep _NET_WM_STRUT" in a terminal and select the application.
-If four numbers appear then these numbers define the reserved space
-as explained in the
+specification introduces the notion of Working Area.  Without ewmh
+support the Working Area is the full visible screen (or all your
+screens if you have a multi head setup and you use Xinerama).
+However, compliant applications (such as a panel) can ask to
+reserve space at the edge of the screen.  If this is the case, the
+Working Area is your full visible screen minus these reserved
+spaces. If a panel can be hidden by clicking on a button the
+Working Area does not change (as you can unhide the panel at any
+time), but the Dynamic Working Area is updated: the space reserved
+by the panel is removed (and added again if you pop up the
+panel). The Dynamic Working Area may be used when fvwm places or
+maximizes a window.  To know if an application reserves space you
+can type "xprop | grep _NET_WM_STRUT" in a terminal and select the
+application.  If four numbers appear then these numbers define the
+reserved space as explained in the
 .B EWMHBaseStrut
 command.
 
@@ -922,12 +920,13 @@ can be used as a source of examples for fvwm configuration.
 .\"needs_lang_check
 .SH FONT NAMES AND FONT LOADING
 
-The font used for the text of a window title, an icon title, a menu and the
-geometry window can be specified by using the Font and IconFont Style,
-the Font MenuStyle and the DefaultFont command. Also, all the Modules which
-use text have configuration command(s) to specify font(s). All this styles
-and commands take a font name as argument. The aim of this section is
-to explain what is a font name for fvwm and which fonts fvwm load.
+The font used for the text of a window title, an icon title, a
+menu and the geometry window can be specified by using the Font
+and IconFont Style, the Font MenuStyle and the DefaultFont
+command. Also, all the Modules which use text have configuration
+command(s) to specify font(s). All this styles and commands take a
+font name as argument. The aim of this section is to explain what
+is a font name for fvwm and which fonts fvwm load.
 
 First, you can use what we can call a usual font name as
 .EX
@@ -935,18 +934,18 @@ First, you can use what we can call a usual font name as
 -adobe-courier-bold-r-normal--10-*
 -*-fixed-medium-o-normal--14-*-ISO8859-15
 .EE
-That is, you can use an X Logical Font Description (XLFD for short).
-Then the "first" font which match the description is loaded and
-used. This "first" font depends of your font path and also of your
-locale if fvwm has been compiled with the --enable-multibyte option
-to configure.
-If you have multibyte support, font which match the locale charset
-is loaded in priority. For example with
+That is, you can use an X Logical Font Description (XLFD for
+short).  Then the "first" font which match the description is
+loaded and used. This "first" font depends of your font path and
+also of your locale if fvwm has been compiled with the
+--enable-multibyte option to configure.  If you have multibyte
+support, font which match the locale charset is loaded in
+priority. For example with
 .EX
 -adobe-courier-bold-r-normal--10-*
 .EE
-if the locale charset is ISO8859-1, then fvwm try first to load a font
-which match
+if the locale charset is ISO8859-1, then fvwm try first to load a
+font which match
 .EX
 -adobe-courier-bold-r-normal--10-*-ISO8859-1
 .EE
@@ -961,70 +960,69 @@ is a period separated list of (simple) XLFD as:
 -adobe-courier-bold-r-normal--14-*,-*-courier-medium-r-normal--14-*
 .EE
 Without multibyte support each simple font name is tried until a
-matching font is found. With multibyte support each simple font name
-is tried until a matching font with the locale charset is found and
-if this fails each simple font name is tried without constraint on
-the charset.
+matching font is found. With multibyte support each simple font
+name is tried until a matching font with the locale charset is
+found and if this fails each simple font name is tried without
+constraint on the charset.
 
-More details on the XLFD can be found in various document as
-the X manual page, the X Logical Font Description Conventions document
+More details on the XLFD can be found in various document as the X
+manual page, the X Logical Font Description Conventions document
 (called xlfd) and the XLoadFont and XCreateFontSet manual pages.
 Here some useful utilities: xlsfonts, xfontsel, xfd and xset.
 
-If you have Xft support (--enable-xft configure option) you can specify
-an Xft font name (description) of a true type (or Type1) font prefixed
-by "xft:" as
+If you have Xft support (--enable-xft configure option) you can
+specify an Xft font name (description) of a true type (or Type1)
+font prefixed by "xft:" as
 .EX
 "xft:Luxi Mono"
 "xft:Luxi Mono:Medium:Roman:size=14:encoding=iso8859-1"
 .EE
-Then the "first" font which match the description is loaded.
-This first font strongly depends on the XftConfig configuration
-file.
+Then the "first" font which match the description is loaded.  This
+first font strongly depends on the XftConfig configuration file.
 Unfortunately, it does not seem that there is a documentation on
-Xft font names (but it is similar to the XLFD on some point).
-One may read the Xft manual page. It seems that the first string
-which follows "xft:" is always considered as the family.
-With the second example
-Luxi Mono is the Family (Other XFree TTF family: "Luxi Serif", "Luxi Sans"),
-Medium is the Weight (other possible weight: Light, DemiBold, Bold, Black),
-Roman is the slant or the style (other possibility: Regular, Oblique, Italic)
-size specify the point size (for a pixel size use pixelsize=),
-encoding allows to define the charset.
-Using iso10646-1 allows to display UTF-8 strings (in menu for example)
-without multibyte support neither an UTF-8 locale (which is not available
-for all C libraries).
-An important parameter is "minspace=bool" where bool is True or
-False. If bool is False (the default?) Xft gives a greater font height
-to fvwm than if bool is True. This may modify text placement, icon and
-window title height, line spacing in menus and FvwmIdent, buttons
-height in some fvwm modules ...etc.  
-With a LCD monitor you may try to add "rgba=mode" where mode is either
-rgb, bgr, vrgb or vbgr to enable subpixel rendering. The good mode depends
-on the way your LCD cells are arranged.
-You can play with the rasterization by adding "matrix=x y 0 1" where
-x is a positive float and y is a positive or negative float (try 2 0 0 1
-and 1 -1 0 1, as 1 0 0 1 is the default). 
-You can pass other specification in between ":", as "foundry=foundry_name", 
-"spacing=type" where type can be monospace, proportional or charcell,
-"charwidth=integer", "charheight=integer" or "antialias=bool" where bool is
-True or False. It does not seems that these parameters are always taken
-in account. Moreover, for each category it is possible to give
-several value separated by a period:
+Xft font names (but it is similar to the XLFD on some point).  One
+may read the Xft manual page. It seems that the first string which
+follows "xft:" is always considered as the family.  With the
+second example Luxi Mono is the Family (Other XFree TTF family:
+"Luxi Serif", "Luxi Sans"), Medium is the Weight (other possible
+weight: Light, DemiBold, Bold, Black), Roman is the slant or the
+style (other possibility: Regular, Oblique, Italic) size specify
+the point size (for a pixel size use pixelsize=), encoding allows
+to define the charset.  Using iso10646-1 allows to display UTF-8
+strings (in menu for example) without multibyte support neither an
+UTF-8 locale (which is not available for all C libraries).  An
+important parameter is "minspace=bool" where bool is True or
+False. If bool is False (the default?) Xft gives a greater font
+height to fvwm than if bool is True. This may modify text
+placement, icon and window title height, line spacing in menus and
+FvwmIdent, buttons height in some fvwm modules ...etc.  With a LCD
+monitor you may try to add "rgba=mode" where mode is either rgb,
+bgr, vrgb or vbgr to enable subpixel rendering. The good mode
+depends on the way your LCD cells are arranged.  You can play with
+the rasterization by adding "matrix=x y 0 1" where x is a positive
+float and y is a positive or negative float (try 2 0 0 1 and 1 -1
+0 1, as 1 0 0 1 is the default).  You can pass other specification
+in between ":", as "foundry=foundry_name", "spacing=type" where
+type can be monospace, proportional or charcell,
+"charwidth=integer", "charheight=integer" or "antialias=bool"
+where bool is True or False. It does not seems that these
+parameters are always taken in account. Moreover, for each
+category it is possible to give several value separated by a
+period:
 .EX
 "xft:familly1,familly2:pixelsize=13:encoding=koi8-u,iso8859-15"
 .EE
-To determine which Xft fonts are really loaded you can
-export XFT_DEBUG=1 before starting fvwm and take a look to the
-errors log. Any way, Xft support is experimental (from the X and the fvwm
-point of view) and the quality of the rendering depends on number of
-parameters (as the XFree and the freetype versions and your video card(s)).
-Moreover, the Xft protocol forces fvwm to proceed
+To determine which Xft fonts are really loaded you can export
+XFT_DEBUG=1 before starting fvwm and take a look to the errors
+log. Any way, Xft support is experimental (from the X and the fvwm
+point of view) and the quality of the rendering depends on number
+of parameters (as the XFree and the freetype versions and your
+video card(s)).  Moreover, the Xft protocol forces fvwm to proceed
 more redrawing which can lead to text flickering. If your are not
 happy with this simply do not use Xft rendering.
 
-Finally, after an Xft font name you can add after a ";" an XLFD font name
-(simple or extended) as:
+Finally, after an Xft font name you can add after a ";" an XLFD
+font name (simple or extended) as:
 .EX
 xft:Verdana:pixelsize=14;-adobe-courier-bold-r-normal--14-*
 .EE
@@ -2141,7 +2139,8 @@ effect can be created by setting all the other options one by one.
 .IR Mwm " and " Win
 style menus popup sub-menus automatically.
 .I Win
-menus indicate the current menu item by changing the background to dark.
+menus indicate the current menu item by changing the background to
+dark.
 .I Fvwm
 sub-menus overlap the parent menu,
 .IR Mwm " and " Win
@@ -2820,9 +2819,9 @@ PseudoColor root and fvwm using a 24 bit TrueColor visual).
 
 The
 .I ModalityIsEvil
-option controls whether Motif applications have the ability to have
-modal dialogs (dialogs that force you to close them first before
-you can do anything else).  The default is to not allow
+option controls whether Motif applications have the ability to
+have modal dialogs (dialogs that force you to close them first
+before you can do anything else).  The default is to not allow
 applications to have modal dialogs.  Use this option with care.
 Once this option is turned on, you have to restart fvwm to turn it
 off.
@@ -2851,13 +2850,11 @@ likely safe to leave this option at its default.
 
 .I EWMHIconicStateWorkaround
 is needed by EWMH compliant pagers or taskbars which represent
-windows which are on a different desktops
-as iconified. These pagers and taskbars use
-a version of the EWMH specification before version 1.2 (the
-current KDE2&3 versions).
-These pagers and taskbars use the
-IconicState WM_STATE state to determine if an application is iconified.
-This state, according to the
+windows which are on a different desktops as iconified. These
+pagers and taskbars use a version of the EWMH specification before
+version 1.2 (the current KDE2&3 versions).  These pagers and
+taskbars use the IconicState WM_STATE state to determine if an
+application is iconified.  This state, according to the
 .SM ICCCM ,
 does not imply that a window is iconified (in the usual sense).
 Turning on this option forces fvwm2 to establish an equivalence
@@ -2939,7 +2936,7 @@ to the default.
 .BI "ColorLimit " limit
 Specifies a
 .I limit
-on the colors used in  pixmaps used  by fvwm. Zero (the default)
+on the colors used in pixmaps used by fvwm. Zero (the default)
 sets no limit.  Fvwm uses pixmaps for icons, mini-icons, and
 pixmap borders, menu backgrounds and titles. This command limits
 pixmap colors to a set of colors that starts out with common
@@ -3701,9 +3698,8 @@ option.
 is only useful if a desktop name is defined with the
 .B DesktopName
 command. It causes fvwm to not display the desktop number before
-the desktop name.
-By default, the WindowList menu have a title which indicates the current
-desk or the selected desktop if the
+the desktop name.  By default, the WindowList menu have a title
+which indicates the current desk or the selected desktop if the
 .I Desk
 condition is used.
 The
@@ -4459,10 +4455,11 @@ The optional
 argument is a space separated list containing the following
 key words:
 .IR ewmhiwa ", " layer " and " screen .
-.I ewmhiwa causes fvwm to ignore the EWMH working area.
+.I ewmhiwa
+causes fvwm to ignore the EWMH working area.
 .I layer
-causes the various grow methods to ignore the windows with a layer less
-than or equal to the layer on the window which is maximized.
+causes the various grow methods to ignore the windows with a layer
+less than or equal to the layer on the window which is maximized.
 .I screen
 must have an argument which specifies the Xinerama screen on which
 to operate.
@@ -4491,7 +4488,8 @@ To expand a window horizontally until any other window is found:
 .EX
 Mouse 0 4 A Maximize 0 grow
 .EE
-To expand a window until any other window with a larger layer is found:
+To expand a window until any other window with a larger layer is
+found:
 .EX
 Mouse 0 4 A Maximize layer grow grow
 .EE
@@ -4875,8 +4873,8 @@ looks for a stroke binding of the form
 .EX
 Stroke sequence 0 Context Modifiers action
 .EE
-and executes the corresponding action (Note the 0).  Normal use of this
-function is via a
+and executes the corresponding action (Note the 0).  Normal use of
+this function is via a
 .BR Mouse " or " Key
 command.  Examples:
 .EX
@@ -4911,22 +4909,24 @@ allow you to abort the command.
 The
 .B StrokeFunc
 command has five options:
-.IR NotStayPressed ", " EchoSequence ", " DrawMotion ", " FeedBack " and " StrokeWidth.
+.IR NotStayPressed ", " EchoSequence ", " DrawMotion ", "
+.IR FeedBack " and " StrokeWidth .
 These options are disabled by default.
 .I EchoSequence
 causes fvwm to Echo the recorded stroke sequence.
 .I DrawMotion
 causes fvwm to draw the mouse motion on the screen.
 .I FeedBack
-causes fvwm to display during a fraction of second the cursor of the
+causes fvwm to display during a fraction of second the cursor of
+the
 .I WAIT
 context of the
 .B CursorStyle
 command if the recorded stroke sequence corresponds to a stroke
 binding.
 .I StrokeWidth
-takes an integer argument, which must be  >= 0 and <= 100 and
-which defines the width of the line for the
+takes an integer argument, which must be >= 0 and <= 100 and which
+defines the width of the line for the
 .I DrawMotion option.
 
 .I NotStayPressed
@@ -4990,9 +4990,9 @@ default or to set the window manager default styles.
 .I stylename
 can be a window's name, class, or resource string.  It may contain
 the wildcards '*' and '?', which are matched in the usual Unix
-filename manner.  They are searched in the reverse order
-stated.  When two conflicting styles apply to the same window, the
-style that was changed last wins.
+filename manner.  They are searched in the reverse order stated.
+When two conflicting styles apply to the same window, the style
+that was changed last wins.
 
 Note: windows that have no name (WM_NAME) are given a name of
 "Untitled", and windows that don't have a class (WM_CLASS,
@@ -5338,9 +5338,9 @@ style.
 .I Icon
 takes an (optional) unquoted string argument which is the icon
 bitmap or pixmap to use. Icons specified this way override pixmap
-icons, but not icon windows or the ewmh icon, provided by the client in the
-application (with the WM_HINTS property or with the ewmh _NET_WM_ICON
-property).  The
+icons, but not icon windows or the ewmh icon, provided by the
+client in the application (with the WM_HINTS property or with the
+ewmh _NET_WM_ICON property).  The
 .I IconOverride
 style changes the behavior to override any client-provided icons;
 the
@@ -5681,7 +5681,9 @@ instead of the overlapped area in pixels.  This placement policy
 tries to avoid covering other windows completely and tries even
 harder not to cover small windows.
 This can be configured with the
-.IR PlacementOverlapPenalties " and " PlacementOverlapPercentPenalties
+.I PlacementOverlapPenalties
+and
+.I PlacementOverlapPercentPenalties
 styles.
 
 .I PlacementOverlapPenalties
@@ -5701,31 +5703,32 @@ The
 .I norm
 factor affects normal windows, the
 .I ontop
-factor affects windows with a greater layer than the window being placed, the
+factor affects windows with a greater layer than the window being
+placed, the
 .I icon
 factor affects icons, the
 .I below
-factor affects windows with a smaller layer than the window being placed, the
+factor affects windows with a smaller layer than the window being
+placed, the
 .I strut
 factor affects the complement of the EWMH working area if the
 window being placed has the
 .I EWMHPlacementUseWoringArea
-style and windows with an EWMH strut hint (i.e., a "please does not cover me"
-hint) if the window being placed has the
+style and windows with an EWMH strut hint (i.e., a "please does
+not cover me" hint) if the window being placed has the
 .I EWMHPlacementUseDynamicWorkingArea
-style.
-These factors represent the amount of area that these types of
-windows (or area) are counted as, when a new window
-is placed.
-For example, by default the area of ontop windows is counted 5 times
-as much as normal windows.  So
+style.  These factors represent the amount of area that these
+types of windows (or area) are counted as, when a new window is
+placed.  For example, by default the area of ontop windows is
+counted 5 times as much as normal windows.  So
 .IR MinOverlapPlacement " and "  MinOverlapPercentPlacement
-will cover 5 times as much area of another window before it will cover an ontop
-window.  To treat ontop windows the same as other windows, set this to 1.
-To really, really avoid putting windows under ontop windows, set this to a
-high value, say 1000. This style affects the window already mapped and
-not the window which is currently placed. There is one exception to this
-rule: in the case of the window being placed has the
+will cover 5 times as much area of another window before it will
+cover an ontop window.  To treat ontop windows the same as other
+windows, set this to 1.  To really, really avoid putting windows
+under ontop windows, set this to a high value, say 1000. This
+style affects the window already mapped and not the window which
+is currently placed. There is one exception to this rule: in the
+case of the window being placed has the
 .I EWMHPlacementUseWorkingArea
 style the
 .I strut
@@ -5749,8 +5752,8 @@ style. The
 .I cover_xx
 factor is used when the window being placed covers at least
 .I xx
-percent of the window. This factor is added to the factor determined
-by the
+percent of the window. This factor is added to the factor
+determined by the
 .IR PlacementOverlapPenalties
 style.
 
@@ -5898,13 +5901,13 @@ for it to appear.
 .I StartsOnScreen
 takes one argument.  It can be 'p' for the primary screen, 'c' for
 the current screen (containing the mouse pointer), 'g' for the
-global screen or the screen number itself (counting from zero).
-A new window is placed on the specified Xinerama screen.  The
+global screen or the screen number itself (counting from zero).  A
+new window is placed on the specified Xinerama screen.  The
 default is to place windows on the screen that contains the mouse
-pointer at the time the window is created.
-However, those windows which are not placed by FVWM (i.e., those with
-a USPosition hint from a user specified geometry) are normally placed
-in a position relative to the global screen.  The
+pointer at the time the window is created.  However, those windows
+which are not placed by FVWM (i.e., those with a USPosition hint
+from a user specified geometry) are normally placed in a position
+relative to the global screen.  The
 .I StartsOnScreen
 style is also useful to cause these windows to be placed relative
 to a specific Xinerama screen.  For example:
@@ -5913,12 +5916,11 @@ Style * StartsOnScreen c
 .EE
 Would cause all windows, including those with their own geometry
 to be placed relative to the current Xinerama screen rather than
-the global screen.
-For those standard Xt programs which understand this usage, the
-starting desk/page can also be specified via a resource (e.g.,
-"-xrm '*fvwmscreen: c'").  ('fvwmscreen' was chosen
-because some applications already use '.screen' for other
-purposes.)
+the global screen.  For those standard Xt programs which
+understand this usage, the starting desk/page can also be
+specified via a resource (e.g., "-xrm '*fvwmscreen: c'").
+('fvwmscreen' was chosen because some applications already use
+'.screen' for other purposes.)
 
 .I StartsOnPageIncludesTransients
 causes the
@@ -6023,8 +6025,8 @@ decorations.
 .I NakedTransient
 (the default) causes transient windows not to be given the
 standard decorations. You can only bind keys or mouse buttons to
-the sides and the client window of an undecorated window ('S'
-and 'W' contexts in bindings, see
+the sides and the client window of an undecorated window ('S' and
+'W' contexts in bindings, see
 .BR Mouse " and " Key
 commands).
 
@@ -6076,29 +6078,30 @@ Style * StackTransientParent
 .\" +++++++++++++++ Extended WM Hints styles
 .TP
 .B Extended Window Manager Hints Styles
-To understand some terminologies used in this sub section you should
-read the
+To understand some terminologies used in this sub section you
+should read the
 .B EXTENDED WINDOW MANAGER HINTS
 section.
 
 .I EWMHDonateIcon
-instructs fvwm to set the application ewmh icon hint with the icon that
-is used by fvwm if the application does not provide such hint
+instructs fvwm to set the application ewmh icon hint with the icon
+that is used by fvwm if the application does not provide such hint
 (and if the icon used by fvwm is not an icon window).
 .I EWMHDonateMiniIcon
-does the same thing for mini icons. This allows
-compliant pager, taskbar, iconbox ...etc to display the same (mini) icons
-as fvwm. Note that on some hardware (e.g., 8-bit displays) these styles
-can slow down window mapping and that in general only one of
-these styles is needed by a compliant application.
+does the same thing for mini icons. This allows compliant pager,
+taskbar, iconbox ...etc to display the same (mini) icons as
+fvwm. Note that on some hardware (e.g., 8-bit displays) these
+styles can slow down window mapping and that in general only one
+of these styles is needed by a compliant application.
 .I EWMHDontDonateIcon
 and
 .I EWMHDontDonateMiniIcon
-restore the defaults which are to not set any ewmh (mini) icons hints.
+restore the defaults which are to not set any ewmh (mini) icons
+hints.
 
-By default, if an application provides an ewmh icon hint of small size
-(i.e., height and width less than or equal to 22), then fvwm uses this
-icon as its mini icon.
+By default, if an application provides an ewmh icon hint of small
+size (i.e., height and width less than or equal to 22), then fvwm
+uses this icon as its mini icon.
 .I EWMHMiniIconOverride
 instructs fvwm to ignore emwh icons and to use the mini icon
 provided by the
@@ -6108,15 +6111,15 @@ style.
 restores the default.
 
 .I EWMHUseStackingOrderHints
-causes fvwm to use EWMH hints which change the window layer (such a hint
-is used by KDE and is not standard).
+causes fvwm to use EWMH hints which change the window layer (such
+a hint is used by KDE and is not standard).
 .I EWMHIgnoreStackingOrderHints
 causes fvwm to ignore such hints.
 
-An application can ask for some reserved space on the desktop by a hint.
-In the EWMH terminology such a hint is called a strut and it is
-used to compute the working area and may be
-used for window placement and in the maximize command.
+An application can ask for some reserved space on the desktop by a
+hint.  In the EWMH terminology such a hint is called a strut and
+it is used to compute the working area and may be used for window
+placement and in the maximize command.
 .I EWMHIgnoreStrutHints
 causes fvwm to ignore such hints, as
 .IR EWMHUseStrutHints ,
@@ -6138,8 +6141,8 @@ the EWMH working area is used as with
 the EWMH dynamic working area is used (the default).
 
 .I EWMHPlacementIgnoreWorkingArea
-causes fvwm to ignore the EWMH working area when it places (or places again)
-a window. With
+causes fvwm to ignore the EWMH working area when it places (or
+places again) a window. With
 .I EWMHPlacementUseWorkingArea
 the EWMH working area is taken in account as with
 .I EWMHPlacementUseDynamicWorkingArea
@@ -6156,7 +6159,7 @@ style.
 .B Miscellaneous
 The
 .IR BackingStore ", " BackingStoreOff " and " BackingStoreWindowDefault
-determine if the X server uses backing store for the window or
+determine if the X server uses backing storefor the window or
 not.
 .I BackingStore
 means that the X server tries to keep the obscured parts of a
@@ -6177,10 +6180,10 @@ Note: This style is useless if the X server does not allow backing
 store.
 
 .I SaveUnder
-enables the corresponding window attribute in the X server.
-For a window using this style, the X server tries to store the
-graphics below it in memory which is usually slower if the client
-runs on the same machine as the X server.
+enables the corresponding window attribute in the X server.  For a
+window using this style, the X server tries to store the graphics
+below it in memory which is usually slower if the client runs on
+the same machine as the X server.
 .I SaveUnder
 may speed up fvwm if the connection to the X server is slow
 (e.g. over a modem link).  To disable backing store, use the
@@ -6251,7 +6254,7 @@ without retyping.  For example:
 .EX
   Style rxvt UseStyle XTerm
 .EE
-Warning:  If a style is built from one or more parent styles and
+Warning: If a style is built from one or more parent styles and
 the parent styles are changed, the derived style is not
 modified. To achieve this you have to issue the
 .I UseStyle
@@ -6725,7 +6728,8 @@ are mutually exclusive, and can be specified for the initial
 .B ButtonStyle
 only.
 .IR UseTitleStyle " and " UseBorderStyle
-are also mutually exclusive (both can be off however).  The default is
+are also mutually exclusive (both can be off however).  The
+default is
 .I Raised
 with both
 .I UseBorderStyle " and " UseTitleStyle
@@ -6790,11 +6794,10 @@ is a number of point specifications of the form
 are point coordinates inside the button, given in percents
 (from 0 to 100).
 .I C
-specifies a line color (0 - the shadow color, 1 - the highlight color,
-2 - the background color, 3 - the foreground color).
-The first point color is not used.
-You can use up to 32 points in a line pattern.
-This style is partially destructive.
+specifies a line color (0 - the shadow color, 1 - the highlight
+color, 2 - the background color, 3 - the foreground color).  The
+first point color is not used.  You can use up to 32 points in a
+line pattern.  This style is partially destructive.
 
 The specification is a little cumbersome:
 .EX
@@ -7052,10 +7055,10 @@ in addition to a simple
 .I TiledPixmap
 accepts an additional powerful
 .IR MultiPixmap
-option. This allows you to specify different pixmaps for different parts
-of the titlebar. Some of them are tiled or stretched to fit a particular
-space; others are discrete "transition" pixmaps which are not resized in
-any way. The definable pixmaps are:
+option. This allows you to specify different pixmaps for different
+parts of the titlebar. Some of them are tiled or stretched to fit
+a particular space; others are discrete "transition" pixmaps which
+are not resized in any way. The definable pixmaps are:
 .EX
 .IB "Main (tiled" / "stretched)"
   The main titlebar pixmap
@@ -7101,9 +7104,9 @@ The syntax for this style type is:
 .EX
 MultiPixmap <section> (<flag>) <pixmap filename>, ...
 .EE
-continuing for whatever pixmaps you want to define. By default, all
-non-transition pixmaps are tiled. If you want one stretched instead (this is
-allowed for
+continuing for whatever pixmaps you want to define. By default,
+all non-transition pixmaps are tiled. If you want one stretched
+instead (this is allowed for
 .IR Main ", " LeftMain ", " RightMain ", and " UnderText "),"
 add
 .I (stretched)
@@ -7162,8 +7165,8 @@ command and in the
 where it override the
 .I Label
 configuration option. Moreover, if consecutive names starting from
-desktop 0 are defined, then these names can be used by any EWMH compliant
-application (as a pager).
+desktop 0 are defined, then these names can be used by any EWMH
+compliant application (as a pager).
 
 .TP
 .BI "DeskTopSize " Horizontal x Vertical
@@ -7336,8 +7339,8 @@ are active.  Desktop numbers must be between 2147483647 and
 
 .TP
 .BI "EWMHBaseStrut " left " " right " " top " " bottom
-Where left, right, top and bottom are positive or null integers which
-define bands at the edge of the screen.
+Where left, right, top and bottom are positive or null integers
+which define bands at the edge of the screen.
 .I left
 defines a band on the left of your screen of width
 .IR left ","
@@ -7351,10 +7354,10 @@ and
 .I bottom
 defines a band on the bottom of your screen of height
 .IR bottom "."
-The unit is the pixel and the default is 0 0 0 0.
-These areas define additional reserved space to the reserved space
-defined by some ewmh compliant applications. This is used to compute
-the Working Area. See the
+The unit is the pixel and the default is 0 0 0 0.  These areas
+define additional reserved space to the reserved space defined by
+some ewmh compliant applications. This is used to compute the
+Working Area. See the
 .B EXTENDED WINDOW MANAGER HINTS
 section for a definition of the Working Area.
 .\" You can override the Working Area by using this command together
@@ -7364,8 +7367,8 @@ section for a definition of the Working Area.
 .BI "EWMHNumberOfDesktops " num "  [" max "]"
 This command is useful only for an ewmh compliant pager or taskbar
 (as kpager or kicker taskbar) and not for fvwm modules (FvwmPager
-or FvwmIconMan). It causes a compliant application to
-consider at least
+or FvwmIconMan). It causes a compliant application to consider at
+least
 .I num
 desktops (desktop 0 to desktop
 .IR num "-1)."
@@ -7375,12 +7378,11 @@ causes a compliant application to never consider more than
 .I max
 desktops. If
 .I max
-is 0 (the default) there is no limitation.
-The actual mumbler of desktops is determined dynamically.
-It is at least
+is 0 (the default) there is no limitation.  The actual mumbler of
+desktops is determined dynamically.  It is at least
 .IR num ","
-but it can be d if there is a window on desktop d-1 (or if
-the current desktop is desktop d-1) and d is less or equal to
+but it can be d if there is a window on desktop d-1 (or if the
+current desktop is desktop d-1) and d is less or equal to
 .I max
 or
 .I max
@@ -7393,9 +7395,8 @@ less than or equal to
 .I max
 or if
 .I max
-is null.
-Note that negative desktops are not supported by the ewmh specification.
-The default is 4 0.
+is null.  Note that negative desktops are not supported by the
+ewmh specification.  The default is 4 0.
 
 .TP
 .BI "GotoDeskAndPage " prev " | " "desk xpage ypage"
@@ -7735,8 +7736,8 @@ does not coincide with a fvwm built-in function name
 
 .TP
 .BI "Nop"
-Does nothing.  This is used to insert a blank line or separator in a
-menu.  If the menu item specification is
+Does nothing.  This is used to insert a blank line or separator in
+a menu.  If the menu item specification is
 .EX
 Nop " "
 .EE
@@ -8068,8 +8069,8 @@ option of the
 .B Style
 command.
 
-The "PlacedByFvwm" condition excludes all windows that have been placed
-manually or by using the user or program position hint.
+The "PlacedByFvwm" condition excludes all windows that have been
+placed manually or by using the user or program position hint.
 
 Note that earlier versions of fvwm required the conditions to be
 enclosed in brackets instead of parentheses (this is still
@@ -8127,7 +8128,8 @@ Returns 1 if no window matches the conditions and 0 otherwise.
 works like
 .B Function
 if invoked in the context of a window.  If invoked in the root
-window, it first asks the user to pick a window and then executes the
+window, it first asks the user to pick a window and then executes
+the
 .I command
 in the context of that window.  This avoids annoying multiple
 selections with complex functions.  The command is executed only
@@ -8163,8 +8165,9 @@ Conditions are the same as for
 .B This
 executes the specified
 .I command
-in the context of the current operand window.  If there is no operand window
-(i.e. it is invoked in the root window), the command is ignored.
+in the context of the current operand window.  If there is no
+operand window (i.e. it is invoked in the root window), the
+command is ignored.
 .B This
 is always silent, i.e. non-interactive.
 The command is executed only if the given
@@ -8259,9 +8262,8 @@ this is recommended to avoid conflicts.
 Deletes module configuration entries, so that new configuration
 lines may be entered instead.  This also sometimes the only way to
 turn back some module settings, previously defined.  This changes
-the way a module runs during a fvwm session without
-restarting.  Wildcards can be used for portions of the name as
-well.
+the way a module runs during a fvwm session without restarting.
+Wildcards can be used for portions of the name as well.
 
 The new non-conflicting syntax allows a delimiter, a colon and
 optional spaces between the module name and the rest of the line.
@@ -8364,9 +8366,8 @@ with m4),
 .B FvwmWinList
 (a window list),
 .B FvwmWharf
-(an AfterStep like button bar).
-These modules have their own man pages.  There may be other
-modules out on there as well.
+(an AfterStep like button bar).  These modules have their own man
+pages.  There may be other modules out on there as well.
 
 Note,
 .B FvwmTheme
@@ -8611,7 +8612,8 @@ The color gradient syntax has two forms:
 This form specifies a linear gradient.  The arguments denote the
 total number of
 .I colors
-to allocate (between 2 and 1000), the initial color and the final color.
+to allocate (between 2 and 1000), the initial color and the final
+color.
 
 Example:
 .EX
