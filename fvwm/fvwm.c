@@ -644,16 +644,17 @@ int main(int argc, char **argv)
   if(Pdepth<2)
   {
     Scr.gray_pixmap =
-      XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin, g_bits, g_width, g_height,
-				  Colorset[0].fg, Colorset[0].bg, Pdepth);
+      XCreatePixmapFromBitmapData(dpy,Scr.NoFocusWin, g_bits, g_width,
+				  g_height, BlackPixel(dpy, Scr.screen),
+				  WhitePixel(dpy, Scr.screen), Pdepth);
     Scr.light_gray_pixmap =
       XCreatePixmapFromBitmapData(dpy, Scr.NoFocusWin, l_g_bits, l_g_width,
-				  l_g_height, Colorset[0].fg, Colorset[0].bg,
-				  Pdepth);
+				  l_g_height, BlackPixel(dpy, Scr.screen),
+				  WhitePixel(dpy, Scr.screen), Pdepth);
     Scr.sticky_gray_pixmap =
       XCreatePixmapFromBitmapData(dpy, Scr.NoFocusWin, s_g_bits, s_g_width,
-				  s_g_height, Colorset[0].fg, Colorset[0].bg,
-				  Pdepth);
+				  s_g_height, BlackPixel(dpy, Scr.screen),
+				  WhitePixel(dpy, Scr.screen), Pdepth);
   }
 
   /* create the move/resize feedback window */
