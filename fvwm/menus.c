@@ -7628,7 +7628,7 @@ char *get_menu_options(
 		{
 			pops->pos_hints.has_screen_origin = 1;
 			if (!fev_get_evpos_or_query(
-				    dpy, None, e,
+				    dpy, Scr.Root, e,
 				    &pops->pos_hints.screen_origin_x,
 				    &pops->pos_hints.screen_origin_y))
 			{

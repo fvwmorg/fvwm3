@@ -898,45 +898,18 @@ void FScreenCenterOnScreen(
 	return;
 }
 
-void FScreenGetResistanceRect(int wx, int wy, int ww, int wh,
-			      int *x0, int *y0, int *x1, int *y1)
+void FScreenGetResistanceRect(
+	int wx, int wy, int ww, int wh, int *x0, int *y0, int *x1, int *y1)
 {
-	int  scr;
-	int  sx0, sy0, sx1, sy1;
+	fscreen_scr_arg arg;
 
-	/* Assign initial far-out-of-screen values */
-	*x0 = 32767;
-	*y0 = 32767;
-	*x1 = -32768;
-	*y1 = -32768;
+	arg.xypos.x = wx + ww / 2;
+	arg.xypos.y = wy + wh / 2;
+	FScreenGetScrRect(&arg, FSCREEN_XYPOS, x0, y0, x1, y1);
+	*x1 += *x0;
+	*y1 += *y0;
 
-	/* Convert size to 2-nd edge coords */
-	ww += wx;
-	wh += wy;
-
-	for (scr = first_to_check;  scr <= last_to_check;  scr++)
-	{
-		sx0 = screens[scr].x_org;
-		sy0 = screens[scr].y_org;
-		sx1 = screens[scr].width  + sx0;
-		sy1 = screens[scr].height + sy0;
-
-		/* Take this screen into account only if it intersects with the
-		 * window. Otherwise this algorithm would behave badly in case
-		 * of non-regularly-tiled screens (i.e. when they don't form a
-		 * regular grid). */
-		if (sx0 < ww && sx1 > wx && sy0 < wh && sy1 > wy)
-		{
-			if (sx0 >= wx && sx0 - wx < *x0 - wx)
-				*x0 = sx0;
-			if (sy0 >= wy && sy0 - wy < *y0 - wy)
-				*y0 = sy0;
-			if (sx1 <= ww && ww - sx1 < ww - *x1)
-				*x1 = sx1;
-			if (sy1 <= wh && wh - sy1 < wh - *y1)
-				*y1 = sy1;
-		}
-	}
+	return;
 }
 
 /* Arguments work exactly like for FScreenGetScrRect() */

@@ -8549,7 +8549,9 @@ will be set to the value of
 .IR moving .
 Set
 .I xinerama-moving
-to zero to ignore individual screen edges.
+to zero to ignore individual screen edges.  Note that the center of
+the window being moved determines the xinarema screen on which the
+window should be kept.
 
 .TP
 .BI "EdgeScroll " horizontal "[" p "] " vertical "[" p "]"

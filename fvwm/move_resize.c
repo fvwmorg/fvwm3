@@ -1821,7 +1821,7 @@ static void DoSnapAttract(
 			&scr_y1);
 
 		/* snap to right edge */
-		if (scr_x1 != Scr.MyDisplayWidth  &&
+		if (scr_x1 < Scr.MyDisplayWidth &&
 		    *px + Width >= scr_x1 && *px + Width <
 		    scr_x1 + Scr.XiMoveResistance)
 		{
@@ -1829,7 +1829,7 @@ static void DoSnapAttract(
 			do_recalc_rectangle = True;
 		}
 		/* snap to left edge */
-		else if (scr_x0 != 0 &&
+		else if (scr_x0 > 0 &&
 			 *px <= scr_x0 && scr_x0 - *px < Scr.XiMoveResistance)
 		{
 			*px = scr_x0;
@@ -1845,14 +1845,14 @@ static void DoSnapAttract(
 				&scr_x1, &scr_y1);
 		}
 		/* snap to bottom edge */
-		if (scr_y1 != Scr.MyDisplayHeight &&
+		if (scr_y1 < Scr.MyDisplayHeight &&
 		    *py + Height >= scr_y1 && *py + Height <
 		    scr_y1 + Scr.XiMoveResistance)
 		{
 			*py = scr_y1 - Height;
 		}
 		/* snap to top edge */
-		else if (scr_y0 != 0 &&
+		else if (scr_y0 > 0 &&
 			 *py <= scr_y0 && scr_y0 - *py < Scr.XiMoveResistance)
 		{
 			*py = scr_y0;
