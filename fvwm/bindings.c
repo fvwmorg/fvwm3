@@ -124,15 +124,6 @@ static void activate_binding(
 	for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
 		if (!IS_EWMH_DESKTOP(FW_W(t)) &&
-		    (binding->Context & C_WINDOW) &&
-		    (binding->type == MOUSE_BINDING
-		     STROKE_CODE(|| binding->type == STROKE_BINDING)))
-		{
-			GrabWindowButton(
-				dpy, FW_W_PARENT(t), binding, C_WINDOW,
-				GetUnusedModifiers(), None, do_grab);
-		}
-		if (!IS_EWMH_DESKTOP(FW_W(t)) &&
 		    (binding->Context & (C_WINDOW | C_DECOR)) &&
 		    binding->type == KEY_BINDING)
 		{
@@ -475,10 +466,9 @@ int ParseBinding(
 			" ignored.");
 		modifier = AnyModifier;
 	}
-	if ((type == MOUSE_BINDING)&&
-	    (context & (C_WINDOW|C_EWMH_DESKTOP))&&
-	    (((modifier==0)||modifier == AnyModifier)) &&
-	    (buttons_grabbed != NULL))
+	if ((type == MOUSE_BINDING STROKE_CODE(|| type == STROKE_BINDING)) &&
+	    (context & (C_WINDOW | C_EWMH_DESKTOP)) &&
+	    buttons_grabbed != NULL)
 	{
 		if (button == 0)
 		{

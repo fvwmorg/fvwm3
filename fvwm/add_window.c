@@ -1495,16 +1495,11 @@ static void setup_key_and_button_grabs(FvwmWindow *fw)
 	 * the other contexts, new windows have problems when bindings are
 	 * removed.  Therefore, grab all keys in a single pass through the
 	 * list. */
-	GrabAllWindowKeysAndButtons(
-		dpy, FW_W_PARENT(fw), Scr.AllBindings, C_WINDOW,
-		GetUnusedModifiers(), None, True);
 	GrabAllWindowKeys(
 		dpy, FW_W_FRAME(fw), Scr.AllBindings,
-		C_TITLE|C_RALL|C_LALL|C_SIDEBAR, GetUnusedModifiers(), True);
+		C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR, GetUnusedModifiers(),
+		True);
 #endif
-	GrabAllWindowButtons(
-		dpy, FW_W_PARENT(fw), Scr.AllBindings, C_WINDOW,
-		GetUnusedModifiers(), None, True);
 	GrabAllWindowKeys(
 		dpy, FW_W_FRAME(fw), Scr.AllBindings,
 		C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_WINDOW, GetUnusedModifiers(),

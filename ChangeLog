@@ -1,5 +1,16 @@
 2002-10-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (setup_key_and_button_grabs):
+	* fvwm/bindings.c (ParseBinding):
+	(activate_binding):
+	* fvwm/add_window.c (setup_key_and_button_grabs):
+	don't grab window context specific bindings anymore; instead, set
+	Scr.buttons2grab accordingly
+
+	* fvwm/bindings.c (activate_binding):
+	fixed stroke bindings on window context being ignored if no other
+	action was bound to that context
+
 	* fvwm/add_window.c (destroy_icon):
 	fixed duplicate icon pixmap when switching from NoIconOverride to
 	IconOverride
