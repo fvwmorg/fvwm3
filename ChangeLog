@@ -1,3 +1,13 @@
+1999-05-24  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/fvwm.c (Done): call RestartInSession if command is
+	empty or contains "fvwm". Remove unnecessary "if (command)"
+	statements, since Done is never called as Done (1, NULL).
+	That wouldn't work anyway, since Done uses strstr on command
+	without checking for NULL. If exec of command fails, try
+	g_argv[0] with the newly constructed my_argv before reverting
+	to g_argv (makes Restart without argument work again).
+
 1999-05-24  Dan Espen  <dane@mk.bellcore.com>
 
 	* fvwm/functions.c (expand): Applied patch from Brad to fix

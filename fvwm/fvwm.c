@@ -1690,6 +1690,7 @@ RETSIGTYPE SigDone(int sig)
   fvwmSetTerminate(sig);
 }
 
+/* if restart is true, command must not be NULL... */
 void Done(int restart, char *command)
 {
   FvwmFunction *func;
@@ -1715,7 +1716,7 @@ void Done(int restart, char *command)
   {
      char* filename = strdup( CatString2(user_home_dir, "/.fvwm_restart") );
 
-     if (!command || strstr (command, "fvwm"))
+     if (*command == '\0' || strstr (command, "fvwm"))
        {
 	 RestartInSession (filename); /* won't return under SM */
        }
@@ -1767,15 +1768,16 @@ void Done(int restart, char *command)
        * not sleep, but this is adequate for now */
       sleep(1);
       ReapChildren();
-      if (command)
-        execvp(command,my_argv);
-    }
-    if (command)
-    {
+      execvp(command,my_argv);
       fvwm_msg(ERR,"Done","Call of '%s' failed!!!! (restarting '%s' instead)",
 	       command, g_argv[0]);
       perror("  system error description");
+      
+      execvp(g_argv[0], my_argv);    /* that _should_ work */
+      fvwm_msg(ERR,"Done","Call of '%s' failed!!!! (trying again)", g_argv[0]);
+      perror("  system error description");
     }
+
     execvp(g_argv[0], g_argv);    /* that _should_ work */
     fvwm_msg(ERR,"Done","Call of '%s' failed!!!!", g_argv[0]);
   }
