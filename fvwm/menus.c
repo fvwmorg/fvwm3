@@ -2107,7 +2107,9 @@ static void MenuInteraction(
 	  mi_with_popup = NULL;
 	  MR_SUBMENU_ITEM(pmp->menu) = NULL;
 	  if (mrPopup == mrPopdown)
+	  {
 	    mrPopup = NULL;
+	  }
 	  mrPopdown = NULL;
 	}
 	flags.do_popdown = False;
@@ -2238,12 +2240,12 @@ static void MenuInteraction(
 	  {
 	    if (mrPopdown != mrPopup)
 	    {
-	      pop_menu_down_and_repaint_parent(
-		&mrPopdown, &does_popdown_submenu_overlap, pmp);
 	      if (mi_with_popup == MR_PARENT_ITEM(mrPopdown))
 	      {
 		mi_with_popup = NULL;
 	      }
+	      pop_menu_down_and_repaint_parent(
+		&mrPopdown, &does_popdown_submenu_overlap, pmp);
 	    }
 	    mrPopdown = NULL;
 	  }
@@ -2334,7 +2336,9 @@ static void MenuInteraction(
 	  mi_with_popup = NULL;
 	  MR_SUBMENU_ITEM(pmp->menu) = NULL;
 	  if (mrPopup == mrPopdown)
+	  {
 	    mrPopdown = NULL;
+	  }
 	  mrPopup = NULL;
 	}
 	if (pmret->rc == MENU_POPDOWN)
@@ -2409,7 +2413,9 @@ static void MenuInteraction(
 	    mi_with_popup = NULL;
 	    MR_SUBMENU_ITEM(pmp->menu) = NULL;
 	    if (mrPopup == mrPopdown)
+	    {
 	      mrPopdown = NULL;
+	    }
 	    mrPopup = NULL;
 	  }
 	  else if (x < mx || x >= mx + mw || y < my || y >= my + mh)
@@ -3851,7 +3857,6 @@ static void paint_menu_gradient_background(
 		int cindex = -1;
 		XRectangle r;
 		FvwmPicture *sidePic = NULL;
-		int bw = bw;
 
 		if (MR_SIDEPIC(mr))
 		{

@@ -1,5 +1,10 @@
 2002-07-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menus.c (MenuInteraction):
+	fixed core dump w/ dynamic popdown action destroying a menu
+	(paint_menu_gradient_background):
+	fixed hang and/or incorrect drawing of b and d gradients in menus
+
 	* fvwm/events.c (HandleEnterNotify):
 	(HandleLeaveNotify):
 	improved LEAVE_WINDOW/ENTER_WINDOW handling
