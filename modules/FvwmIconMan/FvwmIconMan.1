@@ -112,6 +112,7 @@ selectbutton    style for selected buttons flat black grey
 selectcolorset
 shape           use shape extension        false
 show            list of windows to show
+showonlyicons   only icons visible         false
 sort            keep managers sorted       name
 title           manager title              FvwmIconMan
 titlebutton     style for title button     raisededge black grey
@@ -320,9 +321,16 @@ manager with the lowest id gets it.
 If a window matches one of the patterns in the list, then it may be handled
 by this manager.
 
+.IP "*FvwmIconMan*[id*]show \fIpattern list\fP"
+If a window matches one of the patterns in the list, then it may be handled
+by this manager.
+
 .IP "*FvwmIconMan*[id*]dontshow \fIpattern list\fP"
 If a window matches one of the patterns in the list, then it may not be
 handled by this manager.
+
+.IP "*FvwmIconMan*[id*]showonlyicons \fIboolean\fP"
+Only iconified windows are shown if \fIboolean\fP is true.
 
 .SH ACTIONS
 Actions are commands which may be bound to an event of the type: a key press, a
