@@ -24,8 +24,6 @@
 
 #include "FvwmConsole.h"
 
-#define MYVERSION "1.3"
-
 char *MyName;
 
 int Fd[2];  /* pipe to fvwm */
@@ -72,8 +70,8 @@ int main(int argc, char *argv[])
   strcat( client, "C" );
 
   if(argc < FARGS)    {
-	fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",
-		MyName, MYVERSION);
+	fprintf(stderr,"%s version %s should only be executed by fvwm!\n",
+		MyName, VERSION);
 	exit(1);
   }
 
@@ -231,8 +229,8 @@ void server ( void )
   }
   send(Ns, C_END, strlen(C_END), 0);
   strcpy( ver, MyName);
-  strcat( ver, " Ver. " );
-  strcat( ver, MYVERSION);
+  strcat( ver, " version " );
+  strcat( ver, VERSION);
   strcat( ver, "\n" );
   send(Ns, ver, strlen(ver), 0 );
 

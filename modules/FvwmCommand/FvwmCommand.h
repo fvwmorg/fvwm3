@@ -48,5 +48,3 @@ extern char *sys_errlist[];
 #define FARGS 6
 
 #define SOL  sizeof( unsigned long )
-
-#define MYVERSION "1.5"

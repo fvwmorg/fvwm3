@@ -27,11 +27,6 @@
 #include "libs/Module.h"
 
 
-static char *IM_VERSION = "1.3";
-
-static char const rcsid[] =
-  "$Id$";
-
 const char *MyName;
 
 static RETSIGTYPE TerminateHandler(int);
@@ -220,8 +215,8 @@ main(int argc, char **argv)
 
   if(argc < 6)
   {
-    fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
-      IM_VERSION);
+    fprintf(stderr, "%s version %s should only be executed by fvwm!\n",
+      Module, VERSION);
     ShutMeDown(1);
   }
   Fvwm_fd[0] = atoi(argv[1]);

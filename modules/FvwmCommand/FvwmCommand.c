@@ -179,7 +179,7 @@ int main ( int argc, char *argv[])
       Opt_info = atoi( optarg );
       break;
     case 'v':
-      printf("%s %s\n", MYNAME, MYVERSION );
+      printf("%s %s\n", MYNAME, VERSION );
       exit(0);
     case 'w':
       Tv.tv_usec = atoi( optarg ) % 1000000;

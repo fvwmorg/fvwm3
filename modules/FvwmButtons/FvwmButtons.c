@@ -744,8 +744,8 @@ int main(int argc, char **argv)
 
   if(argc<6 || argc>10)
   {
-    fprintf(stderr,"%s v%s should only be executed by fvwm!\n",MyName,
-	    VERSION);
+    fprintf(stderr, "%s version %s should only be executed by fvwm!\n",
+	    MyName, VERSION);
     exit(1);
   }
 

@@ -74,8 +74,8 @@ int main(int argc, char *argv[])
 
   if (argc < FARGS)
   {
-    fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",
-	    MYNAME, MYVERSION);
+    fprintf(stderr, "%s version %s should only be executed by fvwm!\n",
+	    MYNAME, VERSION);
     exit(1);
   }
 
