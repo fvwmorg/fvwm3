@@ -20,8 +20,8 @@
 #ifndef START_H
 #define START_H
 
-typedef struct startAndMiniButtonItem {
-  struct startAndMiniButtonItem *head, *tail;
+typedef struct startAndLaunchButtonItem {
+  struct startAndLaunchButtonItem *head, *tail;
   int index;
   Button *buttonItem;
   int width, height;
@@ -30,12 +30,13 @@ typedef struct startAndMiniButtonItem {
   char *buttonStartCommand;
   char *buttonCaption;
   char *buttonIconFileName;
-} StartAndMiniButtonItem;
+  char *buttonToolTip;
+} StartAndLaunchButtonItem;
 
 extern Bool StartButtonParseConfig(char *tline);
 extern void StartButtonInit(int height);
-extern void StartAndMiniButtonItemInit(StartAndMiniButtonItem *item);
-extern void AddStartAndMiniButtonItem(StartAndMiniButtonItem *item);
+extern void StartAndLaunchButtonItemInit(StartAndLaunchButtonItem *item);
+extern void AddStartAndLaunchButtonItem(StartAndLaunchButtonItem *item);
 extern int StartButtonUpdate(const char *title, int index, int state);
 extern void StartButtonDraw(int force);
 extern int  MouseInStartButton(int x, int y, int *whichButton, Bool *startButtonPressed);

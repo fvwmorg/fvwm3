@@ -5,6 +5,11 @@ _+_A HREF="#2.4.10"_-_2.4.10_+_/A_-_.
 
 Changes in *unstable* development release 2.5.4 (not released yet)
 
+* FvwmTaskBar may now include mini launchbuttons using the Button
+  command.  Also has new options for spacing the buttons:
+  WindowButtonsLeftMargin, WindowButtonsRightMargin, and
+  StartButtonRightMargin.  See man page for details.
+
 * Style switches can be prefixed with '!' to inverse their meaning.
   For example, "Style * Sticky" is the same as "Style * !Slippery".
   This works *only* for pairs of styles that take no arguments and

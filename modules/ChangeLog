@@ -1,3 +1,15 @@
+2002-09-15 Ben Mathews <benmathews@adelphia.net>
+
+	* FvwmTaskBar/Start.h:
+	* FvwmTaskBar/Start.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/ButtonArray.c:
+	* FvwmTaskBar/FvwmTaskBar.1:
+	FvwmTaskBar may now include shortcut minibuttons using the Button
+	command.  Also has new options for spacing the buttons:
+	WindowButtonsLeftMargin, WindowButtonsRightMargin, and
+	StartButtonRightMargin.
+
 2002-09-16  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/FvwmPager.c (list_new_desk):
@@ -10,7 +22,7 @@
 2002-09-15  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmPager/x_pager.c (update_pr_transparent_subwindows):
-	(update_pr_transparent_windows): 
+	(update_pr_transparent_windows):
 	(change_colorset):
 	More transparent fixes
 
@@ -33,8 +45,8 @@
 
 	* FvwmPager/FvwmPager.c (list_property_change):
 	* FvwmPager/FvwmPager.h
-	* FvwmPager/x_pager.c (draw_desk_background): 
-	(ReConfigure): 
+	* FvwmPager/x_pager.c (draw_desk_background):
+	(ReConfigure):
 	(update_transparent_windows):
 	(MovePage):
 	(ChangeDeskForWindow):
@@ -45,7 +57,7 @@
 
 2002-09-12  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmCpp/FvwmCpp.1: 
+	* FvwmCpp/FvwmCpp.1:
 	* FvwmM4/FvwmM4.1: New way to present module synopsis,
 	more prominent discussion of ModuleSynchronous.
 
@@ -53,21 +65,21 @@
 
 	* FvwmIconMan/xmanager.c (GetRegion):
 	(GetRectangleIntersection):
-	(clear_button): 
+	(clear_button):
 	(add_win_state):
-	(del_win_state): 
+	(del_win_state):
 	(clear_empty_region):
 	(resize_manager):
-	(iconify_box): 
+	(iconify_box):
 	(draw_button_background):
 	(draw_button):
 	(draw_empty_manager):
 	(draw_transparent_buttons):
 	(man_exposed):
 	* FvwmIconMan/x.c (xevent_loop):
-	(create_manager_window): 
-	(recreate_background): 
-	(change_colorset): 
+	(create_manager_window):
+	(recreate_background):
+	(change_colorset):
 	(recreate_transparent_bgs):
 	* FvwmIconMan/FvwmIconMan.h:
 	* FvwmIconMan/fvwm.c (focus_change):
@@ -91,7 +103,7 @@
 	* FvwmDragWell/fvwmDragWell.c (XStartup):
 	* FvwmDragWell/Makefile.am:
 	* FvwmIdent/Makefile.am:
-	* FvwmIdent/FvwmIdent.c (main): 
+	* FvwmIdent/FvwmIdent.c (main):
 	* FvwmForm/Makefile.am:
 	* FvwmDragWell/Makefile.am:
 	Colorset may use XRrender, so link and init xrender

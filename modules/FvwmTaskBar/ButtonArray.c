@@ -680,7 +680,7 @@ int LocateButton(ButtonArray *array, int xp,  int yp, int *xb, int *yb,
 /* -------------------------------------------------------------------------
     ButtonCoordinates - Compute the coordinates of a button (animation)
    ------------------------------------------------------------------------- */
-extern int  StartAndMiniButtonsWidth;
+extern int  StartAndLaunchButtonsWidth;
 void ButtonCoordinates(ButtonArray *array, int numbut, int *xc, int *yc)
 {
 	Button *temp;
@@ -702,7 +702,7 @@ void ButtonCoordinates(ButtonArray *array, int numbut, int *xc, int *yc)
 		}
 	}
 
-	*xc = x+ StartAndMiniButtonsWidth+3;
+	*xc = x+ StartAndLaunchButtonsWidth+3;
 	*yc = y;
 }
 
