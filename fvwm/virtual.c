@@ -1807,8 +1807,8 @@ void CMD_GotoDeskAndPage(F_CMD_ARGS)
 	if (MatchToken(action, "prev"))
 	{
 		val[0] = prev_desk_and_page_desk;
-		val[1] = prev_desk_and_page_page_x;
-		val[2] = prev_desk_and_page_page_y;
+		val[1] = prev_desk_and_page_page_x / Scr.MyDisplayWidth;
+		val[2] = prev_desk_and_page_page_y / Scr.MyDisplayHeight;
 	}
 	else if (GetIntegerArguments(action, NULL, val, 3) != 3)
 	{
