@@ -2509,21 +2509,9 @@ void HandlePropertyNotify(const evh_args_t *ea)
 	{
 	case XA_WM_TRANSIENT_FOR:
 		flush_property_notify(XA_WM_TRANSIENT_FOR, FW_W(fw));
-		if (XGetTransientForHint(dpy, FW_W(fw), &FW_W_TRANSIENTFOR(fw)))
+		if (setup_transientfor(fw) == True)
 		{
-			SET_TRANSIENT(fw, 1);
-			if (!XGetGeometry(
-				    dpy, FW_W_TRANSIENTFOR(fw), &JunkRoot,
-				    &JunkX, &JunkY, &JunkWidth, &JunkHeight,
-				    &JunkBW, &JunkDepth))
-			{
-				FW_W_TRANSIENTFOR(fw) = Scr.Root;
-			}
 			RaiseWindow(fw);
-		}
-		else
-		{
-			SET_TRANSIENT(fw, 0);
 		}
 		break;
 

@@ -430,6 +430,11 @@ static void apply_window_updates(
 		border_redraw_decorations(t);
 		set_focus_window(NULL);
 	}
+	if (flags->do_update_icon_size_limits)
+	{
+		setup_icon_size_limits(t, pstyle);
+		flags->do_update_icon = True;
+	}
 	if (flags->do_update_icon_font)
 	{
 		if (!is_style_initialised)

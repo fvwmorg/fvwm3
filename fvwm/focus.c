@@ -43,6 +43,7 @@
 #include "stack.h"
 #include "geometry.h"
 #include "colormaps.h"
+#include "add_window.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -788,14 +789,7 @@ Bool focus_query_open_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win)
 		/* Don't steal the focus from the current window */
 		return False;
 	}
-	if (IS_TRANSIENT(fw) && !XGetGeometry(
-		    dpy, FW_W_TRANSIENTFOR(fw), &JunkRoot, &JunkX, &JunkY,
-		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
-	{
-		/* Gee, the transientfor does not exist! These evil application
-		 * programmers must hate us a lot ;-) */
-		FW_W_TRANSIENTFOR(fw) = Scr.Root;
-	}
+	validate_transientfor(fw);
 	if (IS_TRANSIENT(fw) && FW_W_TRANSIENTFOR(fw) != Scr.Root)
 	{
 		if (focus_win != NULL &&

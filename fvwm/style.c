@@ -3971,6 +3971,15 @@ void check_window_style_change(
 	}
 
 	/*
+	 * has_icon_size_limits
+	 */
+	if (ret_style->change_mask.has_icon_size_limits)
+	{
+		flags->do_update_icon_size_limits = True;
+		flags->do_update_icon = True;
+	}
+
+	/*
 	 *   has_icon_boxes
 	 */
 	if (ret_style->change_mask.has_icon_boxes)

@@ -697,7 +697,7 @@ static void setup_mini_icon(FvwmWindow *fw, window_style *pstyle)
  * Copy icon size limits from window_style structure to FvwmWindow
  * structure.
  */
-static void setup_icon_size_limits(FvwmWindow *fw, window_style *pstyle)
+void setup_icon_size_limits(FvwmWindow *fw, window_style *pstyle)
 {
 	if (SHAS_ICON_SIZE_LIMITS(&pstyle->flags))
 	{
@@ -1995,6 +1995,43 @@ void setup_focus_policy(FvwmWindow *fw)
 	return;
 }
 
+Bool validate_transientfor(FvwmWindow *fw)
+{
+	XWindowAttributes wa;
+	Window w;
+
+	w = FW_W_TRANSIENTFOR(fw);
+	if (w == None || w == FW_W(fw))
+	{
+		FW_W_TRANSIENTFOR(fw) = Scr.Root;
+		return False;
+	}
+	else if (!XGetWindowAttributes(dpy, w, &wa) ||
+		 wa.map_state != IsViewable)
+	{
+		/* transientfor does not exist or is not viewable or unmapped */
+		FW_W_TRANSIENTFOR(fw) = Scr.Root;
+		return False;
+	}
+
+	return True;
+}
+
+Bool setup_transientfor(FvwmWindow *fw)
+{
+	Bool rc;
+
+	rc = XGetTransientForHint(dpy, FW_W(fw), &FW_W_TRANSIENTFOR(fw));
+	SET_TRANSIENT(fw, rc);
+	if (rc == False)
+	{
+		FW_W_TRANSIENTFOR(fw) = Scr.Root;
+	}
+	validate_transientfor(fw);
+
+	return rc;
+}
+
 /***********************************************************************
  *
  *  Procedure:
@@ -2059,9 +2096,7 @@ FvwmWindow *AddWindow(
 	/* get merged styles */
 	lookup_style(fw, &style);
 	sflags = SGET_FLAGS_POINTER(style);
-	SET_TRANSIENT(
-		fw, !!XGetTransientForHint(
-			dpy, FW_W(fw), &FW_W_TRANSIENTFOR(fw)));
+	setup_transientfor(fw);
 	if (win_opts->flags.is_menu)
 	{
 		SET_TEAR_OFF_MENU(fw, 1);

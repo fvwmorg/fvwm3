@@ -33,6 +33,7 @@ typedef struct
 	unsigned do_update_icon_boxes : 1;
 	unsigned do_update_icon_font : 1;
 	unsigned do_update_icon_placement : 1;
+	unsigned do_update_icon_size_limits : 1;
 	unsigned do_update_icon_title : 1;
 	unsigned do_update_visible_icon_name : 1;
 	unsigned do_update_mini_icon : 1;
