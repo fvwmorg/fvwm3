@@ -184,6 +184,7 @@ typedef struct _form {
   int padVText;                         /* vert space for text item */
   char *leading;                        /* part of command to match for data */
   char *file_to_read;                   /* file to read for data */
+  char *title;                          /* form title, NULL, use alias */
 } Form;
 
 EXTERN Form cur_form;                   /* current form */

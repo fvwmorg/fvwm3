@@ -203,6 +203,7 @@ static void ct_Position(char *);
 static void ct_Read(char *);
 static void ct_Selection(char *);
 static void ct_Text(char *);
+static void ct_Title(char *);
 static void ct_UseData(char *);
 static void ct_padVText(char *);
 static void ct_WarpPointer(char *);
@@ -231,6 +232,7 @@ static struct CommandTable ct_table[] = {
   {"Position",ct_Position},
   {"Selection",ct_Selection},
   {"Text",ct_Text},
+  {"Title",ct_Title},
   {"UseData",ct_UseData},
   {"WarpPointer",ct_WarpPointer}
 };
@@ -592,6 +594,17 @@ static void ct_Text(char *cp) {
   myfprintf((stderr, "Text \"%s\" [%d, %d]\n", item->text.value,
              item->header.size_x, item->header.size_y));
   AddToLine(item);
+}
+/* Set the form's title.
+   The default is the aliasname.
+   If there is no quoted string, create a blank title. */
+static void ct_Title(char *cp) {
+  /* syntax: *FFTitle "<text>" */
+  if (*cp == '\"')
+    CF.title = CopyQuotedString(++cp);
+  else
+    CF.title = "";
+  myfprintf((stderr, "Title \"%s\"\n", CF.title));
 }
 static void ct_padVText(char *cp) {
   /* syntax: *FFText "<padVText pixels>" */
@@ -1326,7 +1339,10 @@ static void OpenWindows ()
 			   CWColormap | CWBackPixel | CWBorderPixel, &xswa);
   XSelectInput(dpy, CF.frame,
                KeyPressMask | ExposureMask | StructureNotifyMask);
-  XStoreName(dpy, CF.frame, MyName+1);
+  if (!CF.title) {
+    CF.title = MyName+1;
+  }
+  XStoreName(dpy, CF.frame, CF.title);
   XSetWMHints(dpy, CF.frame, &wmh);
   sh.x = x, sh.y = y;
   sh.width = CF.max_width, sh.height = CF.total_height;
