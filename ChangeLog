@@ -1,3 +1,11 @@
+2001-05-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (setup_key_and_button_grabs):
+	fixed bug #711 (key bindings not properly removed)
+
+	* fvwm/events.c (GetContext):
+	fix to catch button presses with unclutter
+
 2001-05-29  Mikhael Goikhman  <migo@homemail.com>
 
 	* acconfig.h:
@@ -11,6 +19,8 @@
 	* fvwm/add_window.c (destroy_window):
 	unmap the window immediately when it's going to be destroyed soo so that
 	it does not hang around during a wait
+	(destroy_window):
+	inform modules that window will be gone soon too
 
 	* fvwm/builtins.c (CMD_Wait):
 	fixed core dump

@@ -1198,10 +1198,20 @@ void setup_focus_policy(FvwmWindow *tmp_win)
 
 void setup_key_and_button_grabs(FvwmWindow *tmp_win)
 {
+#ifdef BUGS_ARE_COOL
+  /* dv (29-May-2001): If keys are grabbed separately for C_WINDOW and the other
+   * contexts, new windows have problems wen bindings are removed.  Therefore,
+   * grab all keys in a single pass through the list. */
   GrabAllWindowKeysAndButtons(dpy, tmp_win->Parent, Scr.AllBindings,
 			      C_WINDOW, GetUnusedModifiers(), None, True);
   GrabAllWindowKeys(dpy, tmp_win->frame, Scr.AllBindings,
 		    C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+		    GetUnusedModifiers(), True);
+#endif
+  GrabAllWindowButtons(dpy, tmp_win->Parent, Scr.AllBindings,
+		       C_WINDOW, GetUnusedModifiers(), None, True);
+  GrabAllWindowKeys(dpy, tmp_win->frame, Scr.AllBindings,
+		    C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_WINDOW,
 		    GetUnusedModifiers(), True);
   setup_focus_policy(tmp_win);
   /* Special handling for MouseFocusClickRaises *only*. If a
@@ -1952,6 +1962,8 @@ void destroy_window(FvwmWindow *tmp_win)
     {
       XUnmapWindow(dpy, tmp_win->frame);
     }
+    BroadcastPacket(M_DESTROY_WINDOW, 3,
+		    tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);
 
     return;
   }

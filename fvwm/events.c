@@ -2893,8 +2893,15 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
 
   if (*w == Scr.NoFocusWin)
     return C_ROOT;
-  if (e->xkey.subwindow != None && e->xany.window != t->w)
+  if (e->xkey.subwindow != None &&
+      (e->xkey.window == t->decor_w || e->xkey.window == t->Parent))
+  {
     *w = e->xkey.subwindow;
+  }
+  else
+  {
+    e->xkey.subwindow = None;
+  }
   if (*w == Scr.Root)
     return C_ROOT;
   if (t)
