@@ -1577,7 +1577,7 @@ void ParseOptions(void)
 	  tmp = &tline[Clength+9];
 	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
-	  tmp[strlen(tmp)-1] = 0;
+	  tmp[strlen(tmp)] = 0;
 	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
 	  if (flags & WidthValue)
 	    num_columns = width;
@@ -1596,7 +1596,7 @@ void ParseOptions(void)
 	  tmp = &tline[Clength+12];
 	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
-	  tmp[strlen(tmp)-1] = 0;
+	  tmp[strlen(tmp)] = 0;
 
 	  flags = XParseGeometry(tmp,&g_x,&g_y,&width,&height);
 	  if (flags & WidthValue)

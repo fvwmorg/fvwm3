@@ -914,8 +914,6 @@ static void ParseConfigLine(char *tline)
     case 2: /* Geometry */
       while (isspace((unsigned char)*rest) && *rest != '\n' && *rest != 0)
 	rest++;
-      if (*rest != 0)
-	rest[strlen(rest) - 1] = 0;
       UpdateString(&geometry, rest);
       break;
     case 3: /* Fore */
@@ -1683,7 +1681,7 @@ void StartMeUp(void)
    NRows = 1;
    RowHeight = fontheight + 8;
 
-   /* win_border = 7; default border width */
+   win_border = 4; /* default border width */
    win_height = RowHeight+(RowsNumber-1)*(RowHeight+2);
    win_width = ScreenWidth - (win_border << 1);
 

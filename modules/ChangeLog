@@ -1,3 +1,11 @@
+2000-06-28  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/Goodies.c:
+	* FvwmIconBox/FvwmIconBox.c:
+	Fixed modules config commands parsing problems caused by the new
+	ModuleConfig implementation.
+	
 2000-06-22  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* FvwmPager/x_pager.c: revert mini-window size calculation, and

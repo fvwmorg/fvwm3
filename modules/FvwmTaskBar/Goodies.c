@@ -211,7 +211,6 @@ Bool GoodiesParseConfig(char *tline)
     break;
   case 3: /* ClockFormat */
     UpdateString(&clockfmt, rest);
-    clockfmt[strlen(clockfmt)-1] = 0;
     break;
   case 4: /* StatusFont */
     CopyString(&statusfont_string, rest);
