@@ -840,7 +840,8 @@ void HandleExpose(void)
 	{
 		return;
 	}
-	if (Event.xany.window == FW_W_ICON_TITLE(Fw))
+	if (Event.xany.window == FW_W_ICON_TITLE(Fw) ||
+	    Event.xany.window == FW_W_ICON_PIXMAP(Fw))
 	{
 		border_draw_decorations(
 			Fw, PART_TITLE, (Scr.Hilite == Fw), True, CLEAR_NONE,
@@ -2054,7 +2055,8 @@ void HandleEnterNotify(void)
      or icon title will be initially raised. */
   if (IS_ICONIFIED(Fw) && (ewp->mode == NotifyNormal) &&
       (ewp->window == FW_W_ICON_PIXMAP(Fw) ||
-       ewp->window == FW_W_ICON_TITLE(Fw)))
+       ewp->window == FW_W_ICON_TITLE(Fw)) &&
+      FW_W_ICON_PIXMAP(Fw) != None)
   {
     SET_ICON_ENTERED(Fw,1);
     DrawIconWindow(Fw);

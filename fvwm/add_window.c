@@ -2165,6 +2165,25 @@ FvwmWindow *AddWindow(
 		XAddToSaveSet(dpy, FW_W(fw));
 	}
 
+	/****** now we can sefely ungrab the server ******/
+	MyXUngrabServer(dpy);
+
+	/* these are sent and broadcast before res_{class,name} for the benefit
+	 * of FvwmIconBox which can't handle M_ICON_FILE after M_RES_NAME */
+	/****** icon and mini icon ******/
+	/* migo (20-Jan-2000): the logic is to unset this flag on NULL values */
+	SET_WAS_ICON_NAME_PROVIDED(fw, 1);
+	setup_icon(fw, &style);
+        if (FMiniIconsSupported)
+        {
+                setup_mini_icon(fw, &style);
+        }
+
+	BroadcastName(M_RES_CLASS,FW_W(fw),FW_W_FRAME(fw),
+		      (unsigned long)fw,fw->class.res_class);
+	BroadcastName(M_RES_NAME,FW_W(fw),FW_W_FRAME(fw),
+		      (unsigned long)fw,fw->class.res_name);
+
 	/****** arrange the frame ******/
 	frame_force_setup_window(
 		fw, fw->frame_g.x, fw->frame_g.y,
@@ -2183,28 +2202,9 @@ FvwmWindow *AddWindow(
 			dpy, FW_W_FRAME(fw), CWSibling|CWStackMode, &xwc);
 	}
 
-	/****** now we can sefely ungrab the server ******/
-	MyXUngrabServer(dpy);
-
 	/****** inform modules of new window ******/
 	BroadcastConfig(M_ADD_WINDOW,fw);
 	BroadcastWindowIconNames(fw, True, False);
-
-	/* these are sent and broadcast before res_{class,name} for the benefit
-	 * of FvwmIconBox which can't handle M_ICON_FILE after M_RES_NAME */
-	/****** icon and mini icon ******/
-	/* migo (20-Jan-2000): the logic is to unset this flag on NULL values */
-	SET_WAS_ICON_NAME_PROVIDED(fw, 1);
-	setup_icon(fw, &style);
-        if (FMiniIconsSupported)
-        {
-                setup_mini_icon(fw, &style);
-        }
-
-	BroadcastName(M_RES_CLASS,FW_W(fw),FW_W_FRAME(fw),
-		      (unsigned long)fw,fw->class.res_class);
-	BroadcastName(M_RES_NAME,FW_W(fw),FW_W_FRAME(fw),
-		      (unsigned long)fw,fw->class.res_name);
 
 	/****** stick window ******/
 	if (IS_STICKY(fw) && (!(fw->hints.flags & USPosition) || used_sm))

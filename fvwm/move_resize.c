@@ -2800,7 +2800,10 @@ static Bool resize_window(F_CMD_ARGS)
     Scr.flags.is_wire_frame_displayed = False;
     MyXUngrabServer(dpy);
   }
-  frame_free_move_resize_args(fw, mr_args);
+  if (mr_args != NULL)
+  {
+    frame_free_move_resize_args(fw, mr_args);
+  }
   MyXUngrabKeyboard(dpy);
   xmotion = 0;
   ymotion = 0;

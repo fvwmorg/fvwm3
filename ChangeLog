@@ -1,5 +1,16 @@
 2002-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/add_window.c (AddWindow):
+	fixed mini icon update
+
+	* fvwm/events.c (HandleEnterNotify):
+	fixed icon picture redrawing
+	icon titles are no longer raised and expanded if the icon has only a
+	title
+
+	* fvwm/move_resize.c (resize_window):
+	fixed core dump
+
 	* libs/gravity.c (gravity_move_resize_parent_child):
 	* fvwm/frame.c (frame_get_titlebar_dimensions):
 	(frame_prepare_animation_shape):
