@@ -5536,7 +5536,7 @@ slashes ('/').  The last style in these groups is the default.
 .IR NoUSPosition " / " UseUSPosition ,
 .IR NoTransientPPosition " / " UseTransientPPosition ,
 .IR NoTransientUSPosition " / " UseTransientUSPosition ,
-.IR UseIconPosition " / " NoIconPosition ,
+.IR NoIconPosition " / " UseIconPosition ,
 .IR Lenience " / " NoLenience ,
 .IR ClickToFocus " / " SloppyFocus " /"
 .IR MouseFocus | FocusFollowsMouse " / " NeverFocus ,
