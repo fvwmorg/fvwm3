@@ -2354,6 +2354,13 @@ style-option/opposite-style-option.  The opposite-style-option for
 entries that have them describes the \fIfvwm\fP default behavior and
 can be used if you want to change the \fIfvwm\fP default behavior.
 
+\fIDecorateTransient\fP causes transient windows, which are normally
+left undecorated, to be given the usual \fIfvwm\fP decorations (title
+bar, buttons, etc.). Note that some pop-up windows, such as the xterm
+menus, are not managed by the window manager and still do not receive
+decorations. \fINakedTransient\fP (the default) causes transient windows
+not to be given the standard decorations.
+
 \fIIcon\fP takes an (optional) unquoted string argument which is the icon
 bitmap or pixmap to use.
 
