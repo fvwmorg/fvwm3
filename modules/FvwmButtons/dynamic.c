@@ -71,22 +71,37 @@ static void show_error(const char *msg, ...)
 	va_end(args);
 }
 
-static void change_button_title(button_info *b, const char *text)
+static void change_button_title(button_info *b, const char *text,
+	const unsigned long flag)
 {
+	char **title;
 	if (text == NULL)
 	{
 		show_error("No title to change specified, unsupported\n");
 		return;
 	}
-	b->flags |= b_Title;
-	free(b->title);
-	CopyString(&b->title, text);
-	return;
+	b->flags |= flag;
+	if (flag == b_Title)
+		title = &b->title;
+	else if (flag == b_ActiveTitle)
+		title = &b->activeTitle;
+	else if (flag == b_PressTitle)
+		title = &b->pressTitle;
+	else
+	{
+		show_error("BUG: invalid flag %d\n", flag);
+		return;
+	}
+
+	free(*title);
+	CopyString(title, text);
 }
 
-static void change_button_icon(button_info *b, const char *file)
+static void change_button_icon(button_info *b, const char *file,
+	const unsigned long flag)
 {
-	FvwmPicture *new_icon;
+	FvwmPicture *new_icon, **icon;
+	char		**icon_file;
 
 	if (file == NULL)
 	{
@@ -98,12 +113,37 @@ static void change_button_icon(button_info *b, const char *file)
 		show_error("Cannot load icon %s\n", file);
 		return;
 	}
-	b->flags |= b_Icon;
-	free(b->icon_file);
-	PDestroyFvwmPicture(Dpy, b->icon);
-	b->icon = new_icon;
-	CopyString(&b->icon_file, file);
-	RedrawButton(b, DRAW_FORCE, NULL);
+	/* The dimensions of individual buttons (& the overall size of the
+	 * FvwmButtons window) is based on the initial configuration for the
+	 * module. In some configurations, dynamically adding/changing a
+	 * title/icon may mean it no longer fits on a button. Currently, there
+	 * are no checks for this occurance.
+	 */
+	b->flags |= flag;
+	if (flag == b_Icon)
+	{
+		icon_file = &b->icon_file;
+		icon = &b->icon;
+	}
+	else if (flag == b_ActiveIcon)
+	{
+		icon_file = &b->active_icon_file;
+		icon = &b->activeicon;
+	}
+	else if (flag == b_PressIcon)
+	{
+		icon_file = &b->press_icon_file;
+		icon = &b->pressicon;
+	}
+	else
+	{
+		show_error("BUG: invalid flag %d\n", flag);
+		return;
+	}
+	free(*icon_file);
+	PDestroyFvwmPicture(Dpy, *icon);
+	*icon = new_icon;
+	CopyString(icon_file, file);
 }
 
 #if 0
@@ -232,10 +272,9 @@ static char *actions[] =
 	"Silent", "ChangeButton", "ExpandButtonVars", NULL
 };
 
-/* TODO: Should probably allow the HoverIcon & HoverTitle to change one day. */
 static char *button_options[] =
 {
-	"Title", "Icon", NULL
+	"Title", "Icon", "ActiveTitle", "ActiveIcon", "PressTitle", "PressIcon", NULL
 };
 
 void parse_message_line(char *line)
@@ -285,8 +324,8 @@ void parse_message_line(char *line)
 				rest++;
 			}
 	                if (!option_pair)
-        	        {
-                	        continue;
+		        {
+				continue;
 	                }
 
 			option = GetTokenIndex(
@@ -307,11 +346,27 @@ void parse_message_line(char *line)
 			{
 			case 0:
 				/* Title */
-				change_button_title(b, value);
+				change_button_title(b, value, b_Title);
 				break;
 			case 1:
 				/* Icon */
-				change_button_icon(b, value);
+				change_button_icon(b, value, b_Icon);
+				break;
+			case 2:
+				/* ActiveTitle */
+				change_button_title(b, value, b_ActiveTitle);
+				break;
+			case 3:
+				/* ActiveIcon */
+				change_button_icon(b, value, b_ActiveIcon);
+				break;
+			case 4:
+				/* PressTitle */
+				change_button_title(b, value, b_PressTitle);
+				break;
+			case 5:
+				/* PressIcon */
+				change_button_icon(b, value, b_PressIcon);
 				break;
 			}
 

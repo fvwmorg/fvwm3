@@ -996,8 +996,9 @@ with the given number is assumed.  And finally,
 may be in the form +x+y, where x and y are a column number and
 a row number of the button to be changed.
 It is possible to specify multiple option pairs (name with value)
-by delimiting them using comma. Currentrly options include
-.BR Title " and " Icon .
+by delimiting them using comma. Currently options include
+.BR Title ", " ActiveTitle ", " PressTitle ", " Icon ", "
+.BR ActiveIcon " and " PressIcon .
 
 .IP "ExpandButtonVars \fIbutton_id\fP command"
 where
@@ -1022,7 +1023,7 @@ SendToModule FvwmButtons Silent \\
 .fi
 
 .SH SAMPLE CONFIGURATION
-The following are excepts from a .fvwm2rc file which describe
+The following are excerpts from a .fvwm2rc file which describe
 FvwmButtons initialization commands:
 
 .nf

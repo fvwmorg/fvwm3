@@ -469,7 +469,6 @@ Pixmap shapeMask = None;
 **/
 void SetTransparentBackground(button_info *ub,int w,int h)
 {
-	fprintf(stderr, "SetTransparentBackground()\n");
 	if (FShapesSupported)
 	{
 		button_info *b;
