@@ -38,6 +38,12 @@
  * </generalArgs>
  */
 
+/* return a pixmap of depth depth which is the copy of the src pixmap of depth
+ * 1 using the gc for the bg and fg colors */
+Pixmap PictureBitmapToPixmap(
+	Display *dpy, Window win, Pixmap src, int depth, GC gc,
+	int src_x, int src_y, int src_w, int src_h);
+
 /*
  * <pubfunc>PGraphicsRenderPixmaps
  * <description>

@@ -949,6 +949,39 @@ Pixmap PCreateDitherPixmap(
 }
 
 /* ---------------------------- interface functions ------------------------- */
+Pixmap PictureBitmapToPixmap(
+	Display *dpy, Window win, Pixmap src, int depth, GC gc,
+	int src_x, int src_y, int src_w, int src_h)
+{
+	Pixmap dest = None;
+	Bool free_gc = False;
+
+	dest = XCreatePixmap(dpy, win, src_w, src_h, depth);
+	if (dest && gc == None)
+	{
+		XGCValues gcv;
+
+		gc = fvwmlib_XCreateGC(dpy, src, 0, NULL);
+		gcv.foreground = WhitePixel(dpy, DefaultScreen(dpy));
+		gcv.background = BlackPixel(dpy, DefaultScreen(dpy));
+		XChangeGC(dpy, gc, GCBackground|GCForeground, &gcv);
+		free_gc = True;
+	}
+	if (dest && gc)
+	{
+		XCopyPlane(
+			dpy, src, dest, gc,
+			src_x, src_y, src_w, src_h, 0, 0, 1);
+	}
+	
+	if (free_gc && gc)
+	{
+		XFreeGC(dpy, gc);
+	}
+
+	return dest;
+}
+
 void PGraphicsRenderPixmaps(
 	Display *dpy, Window win, Pixmap pixmap, Pixmap mask, Pixmap alpha,
 	int depth, FvwmRenderAttributes *fra, Drawable d,
@@ -1253,10 +1286,9 @@ void PGraphicsTintRectangle(
 	Pixmap p;
 	FvwmRenderAttributes fra;
 
-	if (FRenderRender(
-		dpy, win, None, None, None, Pdepth, 100, tint, tint_percent,
-		dest, gc, alpha_gc, 0, 0, 1, 1,
-		dest_x, dest_y, dest_w, dest_h, True))
+	if (FRenderTintRectangle(
+		dpy, win, None, tint, tint_percent, dest,
+		dest_x, dest_y, dest_w, dest_h))
 	{
 		return;
 	}

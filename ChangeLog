@@ -1,5 +1,14 @@
 2002-09-20  olicha  <olivier.chapuis@free.fr>
 
+	* libs/FRender.c (FRenderTintPicture):
+	(FRenderTintRectangle):
+	(FRenderRender):
+	* libs/FRenderInterface.h:
+	* libs/PictureGraphics.c (PGraphicsTintRectangle):
+	Make FRender code more modular. Add a 24+8 tinting method and enable it
+	in the place of the 32 tinting method (which can be enabled by defining
+	USE_ABSOLUTE_FORMATE)
+
 	* fvwm/menus.c (get_menu_repaint_transparent_parameters):
 	(animated_move_back):
 	(pop_menu_up):

@@ -19,6 +19,10 @@
 #ifndef F_RENDER_INTERFACE_H
 #define F_RENDER_INTERFACE_H
 
+Bool FRenderTintRectangle(
+	Display *dpy, Window win, Pixmap mask, Pixel tint, int shade_percent,
+	Drawable d, int dest_x, int dest_y, int dest_w, int dest_h);
+
 int FRenderRender(
 	Display *dpy, Window win, Pixmap pixmap, Pixmap mask, Pixmap alpha,
 	int depth, int shade_percent, Pixel tint, int tint_percent,
