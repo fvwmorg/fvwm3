@@ -45,12 +45,4 @@ _fvwm-menu-headlines.1: fvwm-menu-headlines.in
 
 pod2man: _fvwm-menu-xlock.1 _fvwm-menu-directory.1 _fvwm-menu-headlines.1
 
-fvwmbug: fvwmbug.sh
-	@rm -f $@
-	BUILDER=$${USER-$${LOGNAME-`whoami`}} && \
-	sed -e 's,xCCx,$(CC),'  -e 's,xCFLAGSx,$(CFLAGS),' \
-	    -e 's,xprefixx,$(prefix),' -e 's,xdatadirx,$(datadir),' \
-	    -e 's,xlibexecdirx,$(libexecdir),' -e "s,xBUILDERx,$$BUILDER," \
-	    fvwmbug.sh > $@
-
 CLEANFILES = $(bin_SCRIPTS) $(bin_PROGRAMS)

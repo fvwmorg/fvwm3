@@ -90,6 +90,17 @@ users home directory to create the users starting .fvwm2rc.
 See the fvwm2 man page under "INITIALIZATION".
 
 
+Bug Reports
+===========
+
+One of the installed scripts is fvwmbug that allows users to send bug
+reports to either the local address or the developer address or both.
+The local email address defaults to the installer login, probably root.
+To override this default, set $FVWM_BUGADDR before running ./configure.
+
+There is also a web based bug reporting system, see the Home Page.
+
+
 C++
 ===
 

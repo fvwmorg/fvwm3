@@ -1,3 +1,11 @@
+2002-02-07  Mikhael Goikhman  <migo@homemail.com>
+
+	* configure.in:
+	generate fvwmbug, not fvwmbug.sh; prepare LOCAL_BUGADDR for it
+
+	* INSTALL.fvwm:
+	New section "Bug Reports".
+
 2002-02-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/update.c (apply_window_updates):

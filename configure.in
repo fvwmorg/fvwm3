@@ -624,11 +624,15 @@ AC_SUBST(with_stroke)
 AC_SUBST(with_xinerama)
 AC_SUBST(with_xpm)
 
+LOCAL_BUGADDR=${FVWM_BUGADDR-${USER-${LOGNAME-`whoami`}}}
+AC_SUBST(LOCAL_BUGADDR)
+
+
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
 utils/Makefile utils/fvwm-config
 utils/fvwm-menu-xlock utils/fvwm-menu-directory
 utils/fvwm-menu-desktop utils/fvwm-menu-headlines
-utils/fvwm24_convert utils/fvwmbug.sh
+utils/fvwm24_convert utils/fvwmbug
 rpm/Makefile rpm/fvwm.spec docs/fvwm.lsm
 docs/Makefile sample.fvwmrc/Makefile tests/Makefile
 dnl
