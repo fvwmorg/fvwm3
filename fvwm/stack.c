@@ -31,6 +31,7 @@
 #include "defaults.h"
 #include "module_interface.h"
 #include "stack.h"
+#include "events.h"
 #include "borders.h"
 #include "virtual.h"
 #include "gnome.h"
@@ -715,7 +716,10 @@ static void RaiseOrLowerWindow(
   /* If the window has been raised, make sure the decorations are updated
    * immediately in case we are in a complex function (e.g. raise, unshade). */
   if (!do_lower)
-    DrawDecorations(t, DRAW_ALL, (Scr.Hilite == t), True, None);
+  {
+    XSync(dpy, 0);
+    handle_all_expose();
+  }
 }
 
 /*

@@ -1,5 +1,8 @@
 2001-02-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/stack.c (RaiseOrLowerWindow):
+	reduce flickering when raising windows
+
 	* fvwm/misc.c (intersect_xrectangles):
 	* fvwm/borders.c (RedrawBorder):
 	Fixed clipping of depresser dorder parts
