@@ -537,12 +537,7 @@ void config(void)
       else  /* test for isspace(*p) ??? */
       {
 	p = GetNextSimpleOption( p, &event );
-#if 0
-	/* this is bad for commands with whitespace */
 	p = GetNextSimpleOption( p, &action );
-#else
-	action = strdup(p);
-#endif
 
 	INFO(event);
 	INFO("  ");

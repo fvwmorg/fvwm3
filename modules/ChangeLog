@@ -1,3 +1,8 @@
+1999-05-12  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* FvwmEvent/FvwmEvent.c (config): revert the patch to the
+	parsing of *FvwmEvent lines, since it was based on misinformation.
+
 1999-05-12  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmGtk/Makefile.am (INCLUDES): We appear to be standardizing on
