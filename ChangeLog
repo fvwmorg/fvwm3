@@ -1,7 +1,7 @@
 2002-07-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (WaitForButtonsUp):
-	fixed handling of butoon release events
+	fixed handling of button release events
 
 2002-07-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
