@@ -787,13 +787,20 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
 Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
 				      int type, char *action,
 				      unsigned int *width_return,
-				      unsigned int *height_return)
+				      unsigned int *height_return,
+				      Pixel **pixels_return, int *nalloc_pixels)
 {
   Pixel *pixels;
   unsigned int ncolors = 0;
   char **colors;
   int *perc, nsegs;
   Pixmap pixmap = None;
+
+  /* set return pixels to NULL in case of premature return */
+  if (pixels_return)
+    *pixels_return = NULL;
+  if (nalloc_pixels)
+    *nalloc_pixels = 0;
 
   /* translate the gradient string into an array of colors etc */
   if (!(ncolors = ParseGradient(action, NULL, &colors, &perc, &nsegs))) {
@@ -813,7 +820,18 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
     pixmap = CreateGradientPixmap(dpy, d, gc, type, *width_return,
 				  *height_return, ncolors, pixels, None, 0, 0,
 				  0, 0);
-  free(pixels);
+
+  /* if the caller has not asked for the pixels there is probably a leak */
+  if (!pixels_return) {
+    fprintf(stderr,
+	    "CreateGradient: potential color leak, losing track of pixels\n");
+    free(pixels);
+  } else
+    *pixels_return = pixels;
+
+  if (nalloc_pixels)
+    *nalloc_pixels = ncolors;
+
   return pixmap;
 }
 

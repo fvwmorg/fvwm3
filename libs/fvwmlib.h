@@ -278,7 +278,8 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
 Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
 				      int type, char *action,
 				      unsigned int *width_return,
-				      unsigned int *height_return);
+				      unsigned int *height_return,
+				      Pixel **alloc_pixels, int *nalloc_pixels);
 
 void DrawTrianglePattern(
   Display *dpy, Drawable d, GC ReliefGC, GC ShadowGC, GC FillGC,

@@ -39,6 +39,9 @@ typedef struct {
   /* FvwmTheme use only. */
   Pixmap mask;
   unsigned int color_flags : 6;
+  Picture *picture;
+  Pixel *pixels;
+  int nalloc_pixels;
 #endif
 } colorset_struct;
 

@@ -47,7 +47,9 @@ Will create or modify colorset \fIn\fP. Each colorset has four colors, an
 optional pixmap and an optional shape mask.  The four colors are used by
 modules as the foreground, background, highlight and shadow colors.  When
 a colorset is created it defaults to a foreground of black and background of
-gray.
+gray.  The background and foreground are marked as "average" and "contrast"
+(see later) so that just specifiying a pixmap or gradient gives sensible
+results.
 
 Warning: The highest colorset number used determines memory consumption.
 Thus if you define 'Colorset 100000', the memory for 100001 colorsets will
@@ -154,7 +156,8 @@ will cause depression
 .in -.3i
 
 will set the background color and the relief colors to match the background
-pixmap.
+pixmap. This is the default setting but it must be used if a background color
+was specified and is now not required.
 
 .in +.3i
 *FvwmThemeColorset 3 YGradient 200 3 \\

@@ -279,7 +279,6 @@ static void parse_colorset(char *line)
   char *bg = NULL;
   char *hi = NULL;
   char *sh = NULL;
-  Picture *picture;
   Bool have_pixels_changed = False;
   Bool has_fg_changed = False;
   Bool has_bg_changed = False;
@@ -341,6 +340,8 @@ static void parse_colorset(char *line)
       Colorset[nColorsets].bg = GetColor(gray);
       Colorset[nColorsets].hilite = GetHilite(Colorset[nColorsets].bg);
       Colorset[nColorsets].shadow = GetShadow(Colorset[nColorsets].bg);
+      /* set flags for fg contrast, bg average in case just a pixmap is given */
+      Colorset[nColorsets].color_flags = FG_CONTRAST | BG_AVERAGE;
     }
   nColorsets++;
   }
@@ -391,6 +392,13 @@ static void parse_colorset(char *line)
     case 13: /* Pixmap */
     case 14: /* AspectPixmap */
       has_pixmap_changed = True;
+      if (cs->picture) {
+	if (cs->picture->picture != cs->pixmap)
+	  fprintf(stderr, "FvwmTheme warning1: cs->picture != cs->pixmap\n");
+	DestroyPicture(dpy, cs->picture);
+	cs->picture = None;
+	cs->pixmap = None;
+      }
       if (cs->pixmap)
       {
 	XFreePixmap(dpy, cs->pixmap);
@@ -400,6 +408,12 @@ static void parse_colorset(char *line)
       {
 	XFreePixmap(dpy, cs->mask);
 	cs->mask = None;
+      }
+      if (cs->pixels && cs->nalloc_pixels) {
+	XFreeColors(dpy, Pcmap, cs->pixels, cs->nalloc_pixels, 0);
+	free(cs->pixels);
+	cs->pixels = NULL;
+	cs->nalloc_pixels = 0;
       }
       /* set the flags */
       if (csetopts[i][0] == 'T')
@@ -414,32 +428,28 @@ static void parse_colorset(char *line)
       if (!token)
 	break;
       /* load the file using the color reduction routines in Picture.c */
-      picture = GetPicture(dpy, win, NULL, token, color_limit);
-      if (!picture)
+      cs->picture = CachePicture(dpy, win, NULL, token, color_limit);
+      if (!cs->picture) {
 	fprintf(stderr, "%s: can't load picture %s\n", name, token);
-      if (!picture)
-	break;
-      /* don't try to be smart with bitmaps */
-      if (picture->depth != Pdepth) {
-	fprintf(stderr, "%s: bitmaps not supported\n", name);
-	DestroyPicture(dpy, picture);
 	break;
       }
-      /* copy the picture pixmap, then destroy the picture
-       * could cache picture but it would require an extension to the struct
-       * and I don't expect the same pixmap to be re-used very often */
-      cs->width = picture->width;
-      cs->height = picture->height;
-      cs->pixmap = XCreatePixmap(dpy, win, cs->width, cs->height, Pdepth);
+      /* don't try to be smart with bitmaps */
+      if (cs->picture->depth != Pdepth) {
+	fprintf(stderr, "%s: bitmaps not supported\n", name);
+	DestroyPicture(dpy, cs->picture);
+	cs->picture = None;
+	break;
+      }
+      /* copy the picture pixmap into the public colorset structure */
+      cs->width = cs->picture->width;
+      cs->height = cs->picture->height;
+      cs->pixmap = cs->picture->picture;
 
       if (cs->pixmap)
       {
-	/* we can't handle the mask here because we don't know the background
-	 * colour yet. */
-	XCopyArea(dpy, picture->picture, cs->pixmap, gc, 0, 0, cs->width,
-		  cs->height, 0, 0);
-	if (picture->mask != None)
+	if (cs->picture->mask != None)
 	{
+	  /* make an inverted copy of the mask */
 	  cs->mask = XCreatePixmap(dpy, win, cs->width, cs->height, 1);
 	  if (cs->mask)
 	  {
@@ -448,21 +458,18 @@ static void parse_colorset(char *line)
 	      xgcv.foreground = 1;
 	      xgcv.background = 0;
 	      /* create a gc for 1 bit depth */
-	      mono_gc = XCreateGC(
-		dpy, picture->mask, GCForeground|GCBackground, &xgcv);
+	      mono_gc = XCreateGC(dpy, cs->mask, GCForeground | GCBackground,
+				  &xgcv);
 	    }
-	    XCopyArea(dpy, picture->mask, cs->mask, mono_gc, 0, 0,
+	    XCopyArea(dpy, cs->picture->mask, cs->mask, mono_gc, 0, 0,
 		      cs->width, cs->height, 0, 0);
 	    /* Invert the mask. We use it to draw the background. */
 	    XSetFunction(dpy, mono_gc, GXinvert);
-	    XFillRectangle(
-	      dpy, cs->mask, mono_gc, 0, 0, cs->width, cs->height);
+	    XFillRectangle(dpy, cs->mask, mono_gc, 0, 0, cs->width, cs->height);
 	    XSetFunction(dpy, mono_gc, GXcopy);
 	  }
 	}
       }
-      DestroyPicture(dpy, picture);
-      picture = None;
       break;
     case 15: /* Shape */
     case 16: /* TiledShape */
@@ -487,8 +494,10 @@ static void parse_colorset(char *line)
       /* try to load the shape mask */
       if (token)
       {
+        Picture *picture;
+
 	/* load the shape mask */
-	picture = GetPicture(dpy, win, NULL, token, color_limit);
+	picture = CachePicture(dpy, win, NULL, token, color_limit);
 	if (!picture)
 	  fprintf(stderr, "%s: can't load picture %s\n", name, token);
 	else if (picture->depth != 1 && picture->mask == None)
@@ -545,6 +554,13 @@ static void parse_colorset(char *line)
 	if (!IsGradientTypeSupported(type))
 	  break;
 	has_pixmap_changed = True;
+	if (cs->picture) {
+	  if (cs->picture->picture != cs->pixmap)
+	    fprintf(stderr, "FvwmTheme wrning2: cs->picture != cs->pixmap\n");
+	  DestroyPicture(dpy, cs->picture);
+	  cs->picture = None;
+	  cs->pixmap = None;
+	}
 	if (cs->pixmap)
 	{
 	  XFreePixmap(dpy, cs->pixmap);
@@ -555,9 +571,16 @@ static void parse_colorset(char *line)
 	  XFreePixmap(dpy, cs->mask);
 	  cs->mask = None;
 	}
+	if (cs->pixels && cs->nalloc_pixels) {
+	  XFreeColors(dpy, Pcmap, cs->pixels, cs->nalloc_pixels, 0);
+	  free(cs->pixels);
+	  cs->pixels = NULL;
+	  cs->nalloc_pixels = 0;
+	}
 	/* create a pixmap of the gradient type */
-	cs->pixmap =
-	  CreateGradientPixmapFromString(dpy, win, gc, type, args, &w, &h);
+	cs->pixmap = CreateGradientPixmapFromString(dpy, win, gc, type, args,
+						    &w, &h, &cs->pixels,
+						    &cs->nalloc_pixels);
 	cs->width = w;
 	cs->height = h;
 	if (type == V_GRADIENT)

@@ -1,3 +1,8 @@
+1999-10-25  Hippo
+
+	* FvwmHeme/FvwmTheme.c: Removed color leaks when changing pixmap or
+	gradient.  bg and fg default to average and contrast.
+
 1999-10-24  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/ReadXServer.c (ReadXServer): Fix problem caused by the usage
