@@ -79,6 +79,9 @@ typedef struct
 	short width;
 	short height;
 } XineramaScreenInfo;
+#define XineramaQueryScreens(a, b) 0
+#define XineramaQueryExtension(da, b, c) 0
+#define XineramaIsActive(a) 0
 #endif
 
 #ifdef USE_XINERAMA_EMULATION
@@ -246,6 +249,7 @@ void FScreenInit(Display *dpy)
 	{
 		return;
 	}
+	dummy_rc = 0;
 	is_initialised = True;
 	disp = dpy;
 	if (FScreenXineramaEmulation)

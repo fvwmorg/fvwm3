@@ -117,8 +117,8 @@ void EWMH_SetDesktopNames(void);
 /* ewmh_conf.c */
 
 /* ewmh_events.c */
-#define EWMH_ProcessClientMessage(x, y) 0
-#define EWMH_ProcessPropertyNotify(x, y)
+#define EWMH_ProcessClientMessage(x) 0
+#define EWMH_ProcessPropertyNotify(x)
 
 /* ewmh_icon.c */
 #define EWMH_DoUpdateWmIcon(x,y,z)

@@ -65,7 +65,7 @@ void GNOME_SetClientList(void);
 #else
 
 #define GNOME_Init()
-#define GNOME_ProcessClientMessage(fwin, ev) 0
+#define GNOME_ProcessClientMessage(exc) 0
 #define GNOME_ButtonFunc(eventp, w, fwin, context, action, Module)
 #define GNOME_ProxyButtonEvent(ev)
 #define GNOME_ShowDesks(eventp, w, fwin, context, action, Module)
@@ -75,7 +75,7 @@ void GNOME_SetClientList(void);
 #define GNOME_SetLayer(fwin)
 #define GNOME_SetDesk(fwin)
 #define GNOME_SetWinArea(w)
-#define GNOME_HandlePropRequest(propm, prop, win, ev)
+#define GNOME_HandlePropRequest(exc, propm, prop)
 #define GNOME_SetAreaCount()
 #define GNOME_SetDeskCount()
 #define GNOME_SetCurrentArea()
