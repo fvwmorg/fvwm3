@@ -1691,8 +1691,13 @@ static void UpdateMenuStyle(MenuStyle *ms)
     ms->look.MenuActiveColors.back = ms->look.MenuColors.back;
   if (!ms->look.f.hasStippleFore)
     ms->look.MenuStippleColors.fore = ms->look.MenuColors.back;
-  ms->look.MenuRelief.back = GetShadow(ms->look.MenuColors.back);
-  ms->look.MenuRelief.fore = GetHilite(ms->look.MenuColors.back);
+  if(Scr.d_depth > 2) {                 /* if not black and white */
+    ms->look.MenuRelief.back = GetShadow(ms->look.MenuColors.back);
+    ms->look.MenuRelief.fore = GetHilite(ms->look.MenuColors.back);
+  } else {                              /* black and white */
+    ms->look.MenuRelief.back = GetColor("black");
+    ms->look.MenuRelief.fore = GetColor("white");
+  }
   ms->look.MenuStippleColors.back = ms->look.MenuColors.back;
 
   /* make GC's */
