@@ -1,14 +1,39 @@
 ################## FvwmButtons button-bar ################################
+*----------------*----*----*---*-----------*
+*                *biff*clck*   *           *
+*  FvwmIconMan   *----*----* ^ *   Pager   *
+*                *  xload  *   *           *
+*----------------*----*----*---*-----------*
+KillModule FvwmButtons
 DestroyModuleConfig FvwmButtons: *
 *FvwmButtons: Geometry 520x100-1-1
 *FvwmButtons: Back bisque3
-*FvwmButtons: (Frame 2, Padding 2 2, \
-	Container(Rows 2 Columns 5 Frame 1 Padding 10 0))
-*FvwmButtons: (3x2, Frame 2, Swallow "FvwmIconMan" "Module FvwmIconMan")
-*FvwmButtons: (1x2, Frame 2, Swallow(UseOld) "FvwmPager" "Module FvwmPager 0 0")
-*FvwmButtons: (1x2, Frame 0, Container(Rows 2 Columns 2 Frame 0))
+*FvwmButtons: (Frame 2, Padding 2 2, Container(Rows 2 Columns 9 Frame 1 Padding 10 0))
+# Show 5 more desks in a popup panel:
+# Unfortunately, a popup shows the desks 1 to 5, then 0
+*FvwmButtons: (4x2, Frame 2, Swallow "FvwmIconMan" "Module FvwmIconMan")
+*FvwmButtons: (2x2, Frame 0, Container(Rows 2 Columns 2 Frame 0))
 *FvwmButtons: (Frame 2, Swallow(UseOld,NoHints,Respawn) "xbiff" `Exec exec xbiff -bg bisque3`)
 *FvwmButtons: (Frame 3, Swallow(UseOld,NoHints,Respawn) "xclock" `Exec exec xclock -bg bisque3 -fg black -hd black -hl black -padding 0 -update 1`)
 *FvwmButtons: (2x1, Frame 2, Swallow(UseOld,NoHints,Respawn) "xload" `Exec exec xload -bg bisque3 -fg black -update 5 -nolabel`)
 *FvwmButtons: (End)
+# The 8 pixels in -108 are to account for the frames:
+*FvwmButtons: (1x2, Panel(up, indicator, delay 5000, steps 5, position Root 46 -108p) FvwmPagerSubPanel "Module FvwmPager FvwmPagerSubPanel 1 5")
+*FvwmButtons: (2x2, Frame 2, Swallow(UseOld) "Inline" "Module FvwmPager Inline 0 0")
 *FvwmButtons: (End)
+
+DestroyModuleConfig Inline: *
+*Inline: Rows 1
+*Inline: Columns 1
+DestroyModuleConfig FvwmPagerSubPanel: *
+*FvwmPagerSubPanel: Rows 5
+*FvwmPagerSubPanel: Columns 1
+
+# To include the panel in a button
+#DestroyModuleConfig SubPanel 
+#*SubPanel: (1x2, Frame 0, Swallow(UseOld) "FvwmPager" "Module FvwmPager 5 1")
+#*SubPanel: (Icon my_lock.xpm, Action Exec xlock)
+#*SubPanel: (Icon my_move.xpm, Action Move)
+
+# Use this command to start it:
+#Module FvwmButtons

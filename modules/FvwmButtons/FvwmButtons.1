@@ -1,31 +1,16 @@
 .\" t # I don't know this stuff, sorry. -Jarl
 .\" @(#)FvwmButtons.1	1/28/94
-.TH FvwmButtons 1 "7 May 1999"
+.TH FvwmButtons 1 "28 Feb 2001"
 .UC
 .SH NAME
 FvwmButtons \- the FVWM buttonbox module
 .SH SYNOPSIS
-\fBFvwmButtons\fP [\fI-g geometry\fP] [\fI-transient|-transientpanel\fP] [\fIname\fP [\fIconfig file\fP]]
-FvwmButtons is spawned by fvwm, so no command line invocation will work.
 
-With the \fI-g\fP option you can specify the geometry of the main window.
-The command line option takes precedence over any other geometry settings
-in the configuration file.
-
-The \fI-transient\fP option tells FvwmButtons to terminate itself
-after the first key or button press has been received (presses to open
-a sub panel do not count) or a sub panel has been closed or re-spawned.
-This is especially useful for sub panels where you want to select
-a single button and have it closed automatically.  It could be used
-too to create two-dimensional graphical menus.  Since \fI-transient\fP
-is an option, not a configuration setting you can use the same
-configuration for transient and non transient button bars.
-
-The \fI-transientpanel\fP option does roughly the same as the -transient
-option, but instead of closing the whole button bar, the window is
-merely hidden.  This is very useful if the button bar is started as
-a subpanel of another button bar because it avoids that it must be
-started again when something is selected.
+.\" I Tried this with .BI like fvwm2 uses, but it made a mess. dje 2/28/01
+.B FvwmButtons [-g
+.I geometry
+.B ] [-transient | -transientpanel]
+.I [ name [ config file ] ]
 
 .SH DESCRIPTION
 The FvwmButtons module provides a window of buttons which sits on the X
@@ -39,13 +24,47 @@ invoked.  Even other applications can be 'swallowed' by the button
 bar.
 
 Panels that are opened on a button press are available too.
-See \fICREATING PANELS\fP section for details.
+See
+.I "CREATING PANELS"
+section for details.
+
+.SH OPTIONS
+
+The
+.I -g
+option specifies the geometry of the main window.
+The command line option takes precedence over any other geometry settings
+in the configuration file.
+
+The
+.I -transient
+option tells FvwmButtons to terminate itself
+after the first key or button press has been received (presses to open
+a sub panel do not count) or a sub panel has been closed or re-spawned.
+This is especially useful for sub panels where you want to select
+a single button and have it closed automatically.  It could be used
+to create two-dimensional graphical menus.  Since
+.I -transient
+is an option, not a configuration setting you can use the same
+configuration for transient and non transient button bars.
+
+The
+.I -transientpanel
+option does roughly the same as the
+.I -transient
+option, but instead of closing the whole button bar, the window is
+merely hidden.  This is very useful if the button bar is started as
+a subpanel of another button bar because it avoids that it must be
+started again when something is selected.
 
 .SH INVOCATION
+
+FvwmButtons is spawned by fvwm, so command line invocation will not work.
+
 FvwmButtons can be invoked by inserting the line 'Module FvwmButtons
 OptionalName' in the .fvwm2rc file.
 This should be placed in the StartFunction if FvwmButtons
-is to be spawned during fvwm's initialization, or can be bound to a
+is to be spawned during fvwm's initialization. This can be bound to a
 menu or mouse button or keystroke to invoke it later.
 
 When invoked with the \fIOptionalName\fP argument, the \fIOptionalName\fP
@@ -56,7 +75,7 @@ AddToFunc StartFunction Module FvwmButtons MyButtonBox
 .sp
 .fi
 FvwmButtons will then use only the lines
-starting with "*SomeButtons", instead of the default "*FvwmButtons".
+starting with "*MyButtonBox", instead of the default "*FvwmButtons".
 
 .SH CONFIGURATION OPTIONS
 The following commands are understood by FvwmButtons:
@@ -67,19 +86,32 @@ are calculated from the background color.
 
 .IP "*FvwmButtons: BoxSize \fIalgorithm\fP"
 This option specifies how serious FvwmButtons takes the Rows and Columns
-options (see below). It can be one of \fIdumb\fP, \fIfixed\fP or \fIsmart\fP.
+options (see below). It can be one of
+.I dumb,
+.I fixed
+or
+.I smart.
 
-If \fIfixed\fP is used and both Rows and Columns are specified and non-zero,
+If
+.I fixed
+is used and both Rows and Columns are specified and non-zero,
 FvwmButtons uses exactly the number of rows and columns specified.
 If the box is too small to accommodate all buttons the module will fail.
 
-If \fIsmart\fP is used FvwmButtons enlarges the box so
+If 
+.I smart
+is used FvwmButtons enlarges the box so
 all buttons have a chance to fit. The number of columns is increased to at
 least the width of the widest button and new rows are added until all buttons
 are placed. For the best tolerance of configuration of errors use the
 smart option.
 
-.\" dje, dumb is not described!
+.I dumb
+is neither
+.I fixed
+nor
+.I smart.
+This is the default.
 
 .IP "*FvwmButtons: Colorset \fIcolorset\fP"
 Tells the module to use colorset \fIcolorset\fP for the window
@@ -300,7 +332,8 @@ The \fIsteps animation-steps\fP option defines the number of
 animation steps.
 
 The \fIdelay ms\fP option sets the delay between the steps
-of the animation in milliseconds.
+of the animation in milliseconds.  Use zero for no delay.
+The maximum delay is 10 seconds (10000).
 
 The \fIsmooth\fP option causes the panel  to  redraw  between
 the steps of the animation.  The sliding animation
@@ -308,12 +341,18 @@ may be smoother this way, it depends on the application,
 and display speed.  The application may appear to grow
 instead of sliding out.  The animation may be slower.
 
-.\" dje, is the disabler, "NoHints"?
-.\" dv: yes, its "nohints". BTW, all the options are listed as strings in double quotes in pars.c.
-If the \fIHints\fP option is enabled (the default) FvwmButtons may not know
-the actual window size and the number of animation steps may be slightly off.
+The
+.I Hints
+option causes FvwmButtons to use the applications size hints
+to calculate the size of the animation steps.
+.I Hints
+is the default.
+If the number of steps is not what you want, try using
+.I NoHints.
 
-The \fInoborder\fP option tells FvwmButtons to ignore the borders
+The
+.I noborder
+option tells FvwmButtons to ignore the borders
 of the window when calculating positions for the animation (equivalent
 to set noplr and noptb in the position option).
 
