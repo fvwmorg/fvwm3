@@ -1,3 +1,7 @@
+1999-04-08  Hippo
+
+	* FvwmDebug/FvwmDebug.{c,h}: added decode for M_NEW_LOOK packet
+
 1999-04-08  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (Scroll): fixed typo in previous patch
