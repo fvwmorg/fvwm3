@@ -1,18 +1,18 @@
 ----- Summary ------------------------------------------------------------------
 
 Issues opened recently: 0
-Issues closed recently: 1 (B.8)
+Issues closed recently: 1 (B.9)
 
                              open / total
 A. Release stopping bugs:       0 / 1
-B. Normal bugs:                 2 / 8
+B. Normal bugs:                 2 / 9
 C. To be verified:             12 / 26
 D. To be discussed:             1 / 2
 E. To do:                      10 / 17
 F. Distribution issues:         3 / 4
 G. Testing:                     5 / 5
 
-Total:                         33 / 63
+Total:                         33 / 64
 
 - When you add/close an item give dates
 
@@ -172,11 +172,6 @@ G. Testing
 
 ---- Closed recently ----------------------------------------------------------
 
-  B.8 FlocaleDrawUnderline in libs/Flocale.c doesn't work with BIDI locales
-      and strings containing composing characters
-      [malu: added on 29-Jun-2003]
-      [malu: done on 09-Jul-2003]
-
 ---- Postponed until after 2.6 ------------------------------------------------
 
   F.4 Translate our documentation into "xml/docbook" format
@@ -217,6 +212,11 @@ G. Testing
 
   B.8 Menu double-click action not working? [#955,2002-11-06]
       [dv: fixed on 28-Mar-2003]
+
+  B.9 FlocaleDrawUnderline in libs/Flocale.c doesn't work with BIDI locales
+      and strings containing composing characters
+      [malu: added on 29-Jun-2003]
+      [malu: done on 09-Jul-2003]
 
   C.1 FvwmIconMan "Resolution" option doesn't work correctly with
       NumManagers > 1
@@ -278,14 +278,14 @@ G. Testing
   E.5 Disable Tear-off Menu by default (add --enable-tear-off-menu
       option to configure?)
       [dv: nope, please no more configure options]
-      [dv: 8-Jul-2003: documented them instead]
+      [duplicate of E.9]
 
   E.8 Remove key release bindings
       [dv: added on 02-Mar-2003]
 
   E.9 Either document or disable tear off menus
       [dv: added on 02-Mar-2003]
-      [duplicate of E.5]
+      [dv: 8-Jul-2003: done]
 
   E.10 Rename the "cond", "condcase", etc. commands
        [dv: added on 02-Mar-2003]
