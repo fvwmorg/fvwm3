@@ -79,7 +79,7 @@ typedef struct
 #endif
 
 #if 0
-#ifdef HAS_RANDR
+#ifdef HAVE_RANDR
 #include <X11/Xproto.h>
 #include <X11/extensions/Xrandr.h>
 #endif
@@ -804,7 +804,7 @@ int XineramaSupportParseGeometry(
 # if 0
 int  XineramaSupportGetRandrEventType(void)
 {
-#ifdef HAS_RANDR
+#ifdef HAVE_RANDR
   return randr_active? randr_event_base + RRScreenChangeNotify : 0;
 #else
   return 0;
@@ -815,7 +815,7 @@ Bool XineramaSupportHandleRandrEvent(XEvent *event,
                                      int *old_w, int *old_h,
                                      int *new_w, int *new_h)
 {
-#ifndef HAS_RANDR
+#ifndef HAVE_RANDR
   return 0;
 #else
   XRRScreenChangeNotifyEvent *ev = (XRRScreenChangeNotifyEvent *)event;
@@ -823,7 +823,9 @@ Bool XineramaSupportHandleRandrEvent(XEvent *event,
 
   if (!randr_active  ||
       event->type != randr_event_base + RRScreenChangeNotify)
+  {
     return 0;
+  }
 
   nw = ev->width;
   nh = ev->height;
@@ -846,8 +848,10 @@ Bool XineramaSupportHandleRandrEvent(XEvent *event,
   *old_w = screens[0].width;
   *old_h = screens[0].height;
 
-  screens[0].width  = *new_w = nw;
-  screens[0].height = *new_h = nh;
+  screens[0].width  = nw;
+  *new_w = nw;
+  screens[0].height = nh;
+  *new_h = nh;
 
 #ifdef DEBUG_PRINTS
   fprintf(stderr, "HandleRandrEvent(): rot=%d, old=%d*%d, new=%d*%d, d=%d*%d\n",
