@@ -964,12 +964,12 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
   }
   tb_style = GetDecor(t,titlebar.state[title_state].style);
   if (tb_flags & HOffCenter) {
-      if (tb_flags & HRight)
-	  hor_off = t->title_g.width - w - 10;
-      else
-	  hor_off = 10;
+    if (tb_flags & HRight)
+      hor_off = t->title_g.width - w - 10;
+    else
+      hor_off = 10;
   } else
-      hor_off = (t->title_g.width - w) / 2;
+    hor_off = (t->title_g.width - w) / 2;
 
   NewFontAndColor(GetDecor(t,WindowFont.font->fid),Forecolor, BackColor);
 

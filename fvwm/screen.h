@@ -97,7 +97,7 @@ enum {
 
     /* specific style flags */
     /* justification bits (3.17 -> 4 bits) */
-    HOffCenter                  = (1<<4),
+    HOffCenter                  = (1<<12),
     HRight                      = (1<<5),
     VOffCenter                  = (1<<6),
     VBottom                     = (1<<7),
@@ -111,6 +111,7 @@ enum {
 #endif
     FlatButton                  = (1<<10),
     SunkButton                  = (1<<11)
+    /* 12 use above! */
 };
 
 #ifdef BORDERSTYLE
