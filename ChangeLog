@@ -1,6 +1,7 @@
 2000-11-24  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/purify/purify.fvwm2rc: Add DestroyMenuStyle, fix duplications.
+	Add Menu, MenuStyle.
 	* fvwm/fvwm2.1 (DestroyMenuStyle): Typo.
 
 2000-11-23  Dan Espen  <dane@mk.telcordia.com>

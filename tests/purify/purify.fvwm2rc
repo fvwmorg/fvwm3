@@ -95,11 +95,84 @@ DestroyMenuStyle
 DestroyMenuStyle MenuStyleDoesntExist
 DestroyMenuStyle MenuStyleDoesntExist MenuStyleDoesntExist
 DestroyMenuStyle MenuStyleDoesntExist MenuStyleDoesntExistEither
-Echo "Attempt to destroy the same menu twice"
+Echo "Attempt to destroy the same menu style twice"
 DestroyMenuStyle Menu_DestroyMenuStyle
 Echo "Attempt to destroy the default menu style"
 DestroyMenuStyle *
 Echo End intentional errors
+
+Log "Test Menu Positioning"
+
+DestroyMenu Menu-Position
+AddToMenu Menu-Position "Menu Position tests" Title
++ "Position Root 0p 0p"
+Menu Menu-Position Root 0p 0p
++ "Position Root 100p 100p"
+Menu Menu-Position Root 100p 100p
++ "Position Root 100 100"
+Menu Menu-Position Root 100 100
++ "Position Root 50 100"
+Menu Menu-Position Root 50 100
+#   Purposely more than 100%:
++ "Position Root 150 10"
+Menu Menu-Position Root 150 10
++ "Position Mouse -150p -50p"
+Menu Menu-Position Mouse -150p -50p
+# There are lots more of these...and lots more options for the menu command.
+
+Log "Test MenuStyle"
+
+# Attempt to use every option:
+MenuStyle FvwmStyle Fvwm, BorderWidth 10, Foreground black, Background Gray
+MenuStyle FvwmStyle Greyed blue,  HilightBack, ActiveFore, Hilight3DThick
+MenuStyle FvwmStyle Animation, Font 9x15bold, PopupOffset 2 2, TitleWarp
+MenuStyle FvwmStyle TitleUnderlines0, SeparatorsLong, TrianglesSolid
+MenuStyle FvwmStyle AutomaticHotkeys, PopupAsRootMenu, RemoveSubmenus
+MenuStyle FvwmStyle SubmenusRight, SelectOnRelease Alt, VerticalItemSpacing -2
+
+MenuStyle MwmStyle Mwm, HilightBackOff, ActiveForeOff, Hilight3DThin
+MenuStyle MwmStyle AnimationOff, PopupDelayed, TitleWarpOff
+MenuStyle MwmStyle Font -*-*-*-*-normal--*-160-75-75-m-50-iso8859-*
+MenuStyle MwmStyle TitleUnderlines1, SeparatorsShort, TrianglesRelief
+MenuStyle MwmStyle AutomaticHotkeysOff, PopupAsSubmenu, HoldSubmenus
+MenuStyle MwmStyle SubmenusLeft, VerticalTitleSpacing 5
+
+# Since the Theme module may not be running this Style may not display well:
+MenuStyle WinStyle MenuColorset 0, ActiveColorset 0, GreyedColorset 0
+MenuStyle WinStyle Hilight3DOff, PopupImmediately
+
+MenuStyle XStyle Hilight3DThickness -3, MenuFace Solid Maroon
+MenuStyle XStyle TitleUnderlines2, SidePic test1.xpm, SideColor cyan
+# I have no idea what this will do but its in the man page:
+MenuStyle XStyle ItemFormat "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
+
+# This only works for the default menuStyle:
+MenuStyle * PopupDelay 12, DoubleClickTime 2
+MenuStyle * PopupDelay 0
+DestroyMenu Main
+AddToMenu Main "Main menu - Test MenuStyles"
++ "Popup FvwmStyle" Popup FvwmStyle
++ "Popup MwmStyle" Popup MwmStyle
++ "Popup WinStyle" Popup WinStyle
++ "Popup XStyle" Popup XStyle item +0 -100m
++ "To complete this test, Popup all the sub-menus"
+DestroyMenu FvwmStyle
+AddToMenu FvwmStyle "FvwmStyle Menu" Title
++ "An item in the menu"
+ChangeMenuStyle FvwmStyle FvwmStyle
+DestroyMenu MwmStyle
+AddToMenu MwmStyle "MwmStyle Menu" Title
++ "An item in the menu"
+ChangeMenuStyle MwmStyle MwmStyle
+DestroyMenu WinStyle
+AddToMenu WinStyle "WinStyle Menu" Title
++ "An item in the menu"
+ChangeMenuStyle WinStyle WinStyle
+DestroyMenu XStyle
+AddToMenu XStyle "XStyle Menu" Title
++ "An item in the menu"
+ChangeMenuStyle XStyle XStyle
+Menu Main
 
 # Ending ManPage Order
 
