@@ -83,7 +83,6 @@ static char *seekright(char **s)
 
 static char *my_get_font(char **s)
 {
-  char *rest;
   char *option;
   int len;
 
@@ -577,11 +576,7 @@ static void ParseContainer(char **ss,button_info *b)
     case 2: /* Font */
       if (b->c->font_string)
         free(b->c->font_string);
-#if 0
-      b->c->font_string=seekright(&s);
-#else
       b->font_string = my_get_font(&s);
-#endif
       if(b->c->font_string)
       {
 	b->c->flags|=b_Font;
@@ -853,11 +848,7 @@ static void ParseButton(button_info **uberb,char *s)
       case 2: /* Font */
 	if(b->flags&b_Font && b->font_string)
 	  free(b->font_string);
-#if 0
-	b->font_string=seekright(&s);
-#else
         b->font_string = my_get_font(&s);
-#endif
 	if(b->font_string)
 	{
 	  b->flags|=b_Font;
