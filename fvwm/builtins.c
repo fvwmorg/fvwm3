@@ -422,7 +422,7 @@ void WindowShade(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		   tmp_win->frame_x,
 		   tmp_win->frame_y,
 		   tmp_win->frame_width,
-		   tmp_win->title_height + tmp_win->boundary_width,
+                   tmp_win->title_height+tmp_win->boundary_width-tmp_win->bw,
 		   False);
         BroadcastPacket(M_WINDOWSHADE, 3,
                         tmp_win->w, tmp_win->frame, (unsigned long)tmp_win);

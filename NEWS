@@ -1,5 +1,11 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* Session management. Fvwm talks to a session manager 
+  and saves and restores its state.
+
+* Layers. New commands Layer, DefaultLayers; new Style 
+  option, WindowList option and condition Layer.
+
 * Lots of changes to FvwmForm:
   No limits of form size.
   Fonts and colors can change anywhere in the form.

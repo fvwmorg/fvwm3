@@ -1,3 +1,8 @@
+1999-02-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* Makefile.am (FvwmEvent_SOURCES: Remove Parse.c and Parse.h,
+	use the corresponding functions from libs/ModParse.c.
+	
 1999-01-08  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmEvent.c (main): Remove USE_POSIX/USE_BSD stuff and rely on

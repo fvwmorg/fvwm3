@@ -871,7 +871,7 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
       XFlush(dpy);
     }
 
-  if (eventp->type != KeyPress)
+  if (eventp->type == ButtonPress)
     {
       DragX = eventp->xbutton.x_root;
       DragY = eventp->xbutton.y_root;

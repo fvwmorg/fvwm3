@@ -25,7 +25,7 @@
 */
 
 
-char *PeekArgument(const char *pstr)
+char *DoPeekArgument(const char *pstr, char **pret)
 {
   char *tok=NULL;
   const char *p;
@@ -78,13 +78,20 @@ char *PeekArgument(const char *pstr)
 
     if (len)
     {
-      tok = (char *)malloc(len+1);
+      tok = (char *)safemalloc(len+1);
       strncpy(tok,tmptok,len);
       tok[len]='\0';
     }
   }
 
+  if (!isspace(*p)) p++;
+  if (pret) *pret = (char*)p;
   return tok;
+}
+
+char *PeekArgument(const char *pstr)
+{
+  return DoPeekArgument(pstr, NULL);
 }
 
 /*
@@ -95,12 +102,10 @@ char *GetArgument(char **pstr)
 {
   char *tok ;
 
-  if (!pstr || !*pstr || !(tok=PeekArgument(*pstr)))
+  if (!pstr || !*pstr || !(tok=DoPeekArgument(*pstr, pstr)))
     return NULL;			/* *pstr=NULL; ???? */
 
   /* skip tok and following whitespace/separators in pstr & DON'T realloc */
-  EatWS(*pstr);
-  *pstr += strlen(tok);			/* != actual size (quote-collapsing) */
   EatWS(*pstr);
 
   if (!**pstr) 

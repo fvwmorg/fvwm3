@@ -1,4 +1,21 @@
-1999-02-27  Matthias Clasen  <clasen@clasen.home.uni-freiburg.de>
+1999-02-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* AUTHORS: fix the spelling of my name. 
+
+	* libs/ModParse.c (GetArgument): fix GetArgument for quoted args. 
+	(DoPeekArgument): new function needed in GetArgument. 
+	Use safemalloc instead of malloc ( change copied from  
+	modules/FvwmEvent/Parse.c ).
+	(PeekArgument): now call DoPeekArgument.
+
+	* fvwm/move.c (InteractiveMove): fix behaviour of 
+	InteractiveMove when called from a context other than a 
+	ButtonPress or KeyPress.
+
+	* fvwm/builtins.c (WindowShade): fix an off-by-one error
+	with shaded FvwmBorder windows.
+
+1999-02-27  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/{add_window,builtins,events,functions,fvwm,misc,
 	   placement,session,style,windows}.c:
@@ -6,11 +23,11 @@
 	* fvwm/fvwm2.1:
 	implement a layered stacking order.	
 
-	* configure.in, config.h.in:
+	* configure.in, acconfig.h:
 	* fvwm/{session,add_window,events,fvwm,icons}.c:
 	* fvwm/{fvwm,misc}.h: 
-	* fvwm/fvwm2.1:
-	add session management functionality (make fvwm a client 
+	* NEWS, fvwm/fvwm2.1:
+	add session management functionality ( make fvwm a client 
 	of a X SMP compliant session manager).
 	
 Sat Feb 27 12:49:23 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
