@@ -1368,7 +1368,7 @@ void nocolor(char *a, char *b)
 
 void MySendFvwmPipe(int *fd, char *message, unsigned long window)
 {
-  int w;
+  long w;
   char *hold, *temp, *temp_msg;
   hold = message;
 
@@ -1389,7 +1389,7 @@ void MySendFvwmPipe(int *fd, char *message, unsigned long window)
       write(fd[0], &window, sizeof(unsigned long));
 
       w=strlen(temp_msg);
-      write(fd[0], &w, sizeof(int));
+      write(fd[0], &w, sizeof(w));
       write(fd[0], temp_msg, w);
 
       /* keep going */

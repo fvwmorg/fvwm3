@@ -15,3 +15,5 @@ Fvwm 2.4.1 is a bug fix release for version 2.4.0.
 ** Fixed problems with autoconf-2.50.
 
 ** Problem with "make FvwmGtk" and imlib fixed.
+
+** Problem with FvwmIconBox exitting on 64 bit platforms fixed.
