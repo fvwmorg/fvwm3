@@ -234,6 +234,7 @@ static void get_prefered_popup_position(
   Bool *pprefer_left_submenus)
 {
   int menu_x, menu_y;
+  MenuItem *mi = NULL;
 
   if (!XGetGeometry(dpy, MR_WINDOW(mr), &JunkRoot, &menu_x, &menu_y,
 		    &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
@@ -260,9 +261,17 @@ static void get_prefered_popup_position(
     *px = get_right_popup_x_position(mr, submenu, menu_x);
   }
   /* get the y position */
-  if(MR_SELECTED_ITEM(mr))
+  if (MR_TO_BE_SELECTED_ITEM(mr))
   {
-    *py = menu_y + MI_Y_OFFSET(MR_SELECTED_ITEM(mr)) -
+    mi = MR_TO_BE_SELECTED_ITEM(mr);
+  }
+  else if (MR_SELECTED_ITEM(mr))
+  {
+    mi = MR_SELECTED_ITEM(mr);
+  }
+  if (mi)
+  {
+    *py = menu_y + MI_Y_OFFSET(mi) -
       MST_BORDER_WIDTH(mr) + MST_RELIEF_THICKNESS(mr);
   }
   else
@@ -1361,7 +1370,6 @@ static void MenuInteraction(
   extern XEvent Event;
   MenuItem *mi = NULL;
   MenuItem *tmi;
-  MenuItem *miSelect = NULL;
   MenuItem *miUnselect = NULL;
   MenuRoot *mrMi = NULL;
   MenuRoot *tmrMi = NULL;
@@ -1803,7 +1811,7 @@ static void MenuInteraction(
 	}
 	if (miUnselect)
 	{
-	  miSelect = mi;
+	  MR_TO_BE_SELECTED_ITEM(pmp->menu) = mi;
 	}
 	else
 	{
@@ -1929,14 +1937,15 @@ static void MenuInteraction(
 	    &mrPopdown, &does_popdown_submenu_overlap, pmp);
 	  if (miUnselect)
 	  {
-	    select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-			     (*pmp->pTmp_win));
+	    select_menu_item(pmp->menu, miUnselect, False, (*pmp->pTmp_win));
 	    miUnselect = NULL;
 	  }
-	  if (miSelect)
+	  if (MR_TO_BE_SELECTED_ITEM(pmp->menu))
 	  {
-	    select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
-	    miSelect = NULL;
+	    select_menu_item(
+	      pmp->menu, MR_TO_BE_SELECTED_ITEM(pmp->menu), True,
+	      (*pmp->pTmp_win));
+	    MR_TO_BE_SELECTED_ITEM(pmp->menu) = NULL;
 	  }
 	  if (mrPopup == mrPopdown)
 	    mrPopup = NULL;
@@ -2067,14 +2076,16 @@ static void MenuInteraction(
 	      }
 	      if (miUnselect)
 	      {
-		select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
-				 (*pmp->pTmp_win));
+		select_menu_item(
+		  pmp->menu, miUnselect, False, (*pmp->pTmp_win));
 		miUnselect = NULL;
 	      }
-	      if (miSelect)
+	      if (MR_TO_BE_SELECTED_ITEM(pmp->menu))
 	      {
-		select_menu_item(pmp->menu, mi, True, (*pmp->pTmp_win));
-		miSelect = NULL;
+		select_menu_item(
+		  pmp->menu, MR_TO_BE_SELECTED_ITEM(pmp->menu), True,
+		  (*pmp->pTmp_win));
+		MR_TO_BE_SELECTED_ITEM(pmp->menu) = NULL;
 	      }
 	      mrPopdown = NULL;
 	    }
@@ -2233,6 +2244,7 @@ static void MenuInteraction(
   } /* while (True) */
 
   DO_RETURN:
+  MR_TO_BE_SELECTED_ITEM(pmp->menu) = NULL;
   if (mrPopdown)
   {
     pop_menu_down_and_repaint_parent(
@@ -2876,6 +2888,8 @@ static void select_menu_item(
 
   if (select == False)
     MI_WAS_DESELECTED(mi) = True;
+  else
+    MR_TO_BE_SELECTED_ITEM(mr) = NULL;
 
   if (!MST_HAS_MENU_CSET(mr))
   {
@@ -6915,11 +6929,19 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 	return action;
       }
       flags = XParseGeometry(tok, &x, &y, &width, &height);
-      if ((flags & AllValues) != AllValues)
+      if ((flags & (XValue | YValue)) != (XValue | YValue))
       {
 	free(tok);
 	fvwm_msg(ERR,"GetMenuOptions","invalid rectangle geometry");
 	return action;
+      }
+      if (!(flags & WidthValue))
+      {
+	width = 1;
+      }
+      if (!(flags & HeightValue))
+      {
+	height = 1;
       }
       if (flags & XNegative)
 	x = Scr.MyDisplayWidth - x - width;
