@@ -1,3 +1,10 @@
+2001-08-25  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm-menu-directory.in:
+	* fvwm-menu-directory.1:
+	fixed several kinds of escaping in menu names, menu items and shell
+	commands
+
 2001-08-15  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-config.in:

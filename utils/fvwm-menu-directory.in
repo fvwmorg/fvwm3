@@ -6,6 +6,8 @@
 # To speed up the script, several optimizations were made: trying to minimize
 # the number of additional file operations, function calls and includes.
 
+#print STDERR "fvwm-menu-directory @ARGV\n";
+
 use strict;
 use Getopt::Long;
 
@@ -28,7 +30,7 @@ my $commT = undef;
 my $commF = undef;
 my $commA = undef;
 my $all   = 0;  # whether show hidden files (like in 'ls -A')
-my $links = 0;  # either follow linked dirs or not
+my $links = 0;  # whether follow linked dirs or not
 my $order = 5;  # -6, -5, -4, -3, -2, -1, 1, 2, 3, 4, 5, 6
 my $reuse = 0;  # non-popup mode
 my $wmIcons = 0;
@@ -140,7 +142,7 @@ $commF = defined $execF? qq(Exec $execF "%f"):     "Nop" if !defined $commF;
 $commA = defined $execA? qq(Exec $execA "%f"):    $commF if !defined $commA;
 
 # manage special directories if needed
-my ($specialDirLines, $specialDirPos, , @specialDirs) = ("");
+my ($specialDirLines, $specialDirPos, @specialDirs) = ("");
 $specialDirVal = "1,2" if defined $specialDirVal && $specialDirVal eq "";
 if ($specialDirVal && $specialDirVal =~ /([\d,]+)(-?)/) {
 	@specialDirs = grep(/^[1-3]$/, split(/,+/, $1));
@@ -210,10 +212,11 @@ foreach (@files) {
 	} else {
 		# something else, apply editor to it or run itself
 		my $itemStr = $itemF_eval? evalItem($_, $filePath): $_;
+		$itemStr = escapeItemName($itemStr);
 		my $isApp = -x && -f;
 		my $iconStr = $isApp && $iconAStr? $iconAStr: $iconFStr;
 		my $fileAct = $isApp? $commA: $commF;
-		$fileAct =~ s/%f/$filePath/g;
+		$fileAct =~ s/%f/escapeFileName($filePath)/ge;
 		print qq(+ "$iconStr$itemStr" $fileAct\n);
 	}
 }
@@ -229,12 +232,43 @@ exit(0);
 
 # ---------------------------------------------------------------------------
 
+sub escapeMenuName ($) {
+	my $name = shift;
+   $name =~ s/\\/\\\\/g;
+   $name =~ s/"/\\"/g;
+   $name =~ s/\$/\\\$/g;
+   $name =~ s/\^/^^/g;
+   $name =~ s/@/@@/g;
+   $name;
+}
+
+sub escapeItemName ($) {
+	my $name = shift;
+   $name =~ s/\\/\\\\/g;
+   $name =~ s/"/\\"/g;
+   $name =~ s/\$/\\\$/g;
+   $name =~ s/%/%%/g;
+   $name =~ s/&/&&/g;
+   $name =~ s/\*/**/g;
+   $name;
+}
+
+sub escapeFileName ($) {
+	my $name = shift;
+   $name =~ s/\\/\\\\/g;
+   $name =~ s/"/\\"/g;
+   $name =~ s/\$/\\\$/g;
+   $name;
+}
+
 sub evalFolderLine ($$) {
 	my ($_name, $dir) = @_;
 	my $itemStr = $dir && $itemF_eval? evalItem($_name, $dir): $_name;
+	$itemStr = escapeItemName($itemStr);
 	my $act = !$dir || $checkSubdirs && !-x $dir? "Nop": !$reuse?
-		qq(Popup "$dir"$submenuPos):
-		qq(PipeRead 'echo "$dir" >$dirFile; echo Menu "$name" WarpTitle');
+		qq(Popup ") . escapeMenuName($dir) . qq("$submenuPos):
+		qq(PipeRead 'echo ") . escapeFileName($dir) . qq(" >$dirFile; )
+		. qq(echo Menu ") . escapeMenuName($name) . qq(" WarpTitle');
 	return qq(+ "$iconDStr$itemStr" $act\n);
 }
 
@@ -460,7 +494,7 @@ The actual file name is appended to the command.
 
 B<--exec-app[=CMD]> - an fvwm Exec command on +x files, default is '-',
 which means the same command as on regular files. If no CMD is given,
-it is assumed to be an empty - simply run the +x file.
+it is assumed to be empty - simply run the +x file.
 If the command is not started with '^' X terminal call is prepended.
 The actual file name is appended to the command.
 
@@ -489,8 +523,8 @@ In fact, --exec-app=^exec is equivalent
 to --command-app='Exec exec "%f"'
 
 B<--[no]reuse> - no pop-up menus, reuse the same menu, default is --noreuse.
-When you specify this option the Menu style is used, not Popup. Also,
-the --name parameter is not ignored and --dir parameter is ignored
+When you specify this option the Menu action is used, not Popup. Also,
+the --name parameter is not ignored, and --dir parameter is ignored
 if there is ~/.fvwm/.fvwm-menu-directory.dir file. This file is only created
 or used with this option specified, it is the only solution for the current
 fvwm menu state.
@@ -510,11 +544,12 @@ special directory indexes, where 1 is parent directory, 2 is home directory,
 are added at the bottom of menu instead of top. Value "0" or any bad value
 is equivalent to non-specifying this option at all.
 
-B<--[no]memory-for-speed> - use speed optimization, default is
+B<--[no]memory-for-speed> - use speed optimization, i.e. use previously
+created directory menus without destroying it when closed, default is
 --nomemory-for-speed
 
     Warning: speed optimization takes up a lot of memory
-    that is never free d again while fvwm is running.
+    that is never free'd again while fvwm is running.
 
 B<--menu-style=NAME> - assign MenuStyle NAME to the menus
 
@@ -529,12 +564,12 @@ in the next versions.
 Put this into your fvwm configuration file to invoke the script:
 
   AddToFunc FuncFvwmMenuDirectory
-  + I PipeRead "fvwm-menu-directory -d $0"
+  + I PipeRead "fvwm-menu-directory -d '$0'"
 
-More complex example (the + line is a one long line):
+More complex example (the plus line is a one long line):
 
   # AddToFunc FuncFvwmMenuDirectory
-  # + I PipeRead "fvwm-menu-directory -d $0 -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --wm-icons"
+  # + I PipeRead "fvwm-menu-directory -d '$0' -x 'Eterm -g 80x40 -e' -a -l -o 6 --exec-app --exec-title 'tcsh -l' --exec-file 'vim -R' -t 'Go to: %d' --wm-icons"
 
 And put this in the menu from which you want to pop-up the directory menus:
 
@@ -547,7 +582,7 @@ Note: please use absolute path names.
 It is a good idea to set the menu pop-up delay to something positive
 and enable busy cursor
 
-  MenuStyle * PopupDelayed, PopupDelay 100
+  MenuStyle * PopupDelayed, PopupDelay 200
   BusyCursor DynamicMenu True
 
 in your configuration file when using this script for better results.
