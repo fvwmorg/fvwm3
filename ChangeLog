@@ -1,5 +1,12 @@
 2002-05-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/colorset.c (parse_colorset):
+	(free_colorset_background):
+	(parse_pixmap):
+	(parse_tint):
+	fixed various bugs and core dumps w/ the cs->picture structure;
+	note: it's a pointer, so compare with NULL, not with None
+
 	* fvwm/frame.c (frame_setup_window):
 	(frame_setup_window_app_request):
 	(frame_force_setup_window):
@@ -29,7 +36,8 @@
 
 2002-05-02  Dan Espen  <dane@mk.telcordia.com>
 
-	* fvwm/fvwm.1 (file): Restore icons and images text with some improvement.
+	* fvwm/fvwm.1 (file): Restore icons and images text with some
+	improvement.
 	Started on lang check, not done yet.
 
 2002-05-02  Mikhail Kruk  <meshko@cs.brandeis.edu>
