@@ -242,6 +242,7 @@ typedef struct ScreenInfo
 				   colormap windows */
   FvwmWindow *pushed_window;	/* saved window to install when pushes drops
 				   to zero */
+  Bool exceed_hack;
   Cursor *FvwmCursors;
 
   char *DefaultIcon;            /* Icon to use when no other icons are found */

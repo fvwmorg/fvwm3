@@ -159,15 +159,11 @@ void InstallWindowColormaps (FvwmWindow *tmp)
    * root colormap(s) ends.
    */
   Scr.pushed_window = tmp;
-  /* Don't load any new colormap if root colormap(s) has been
+  /* Don't load any new colormap if root/fvwm colormap(s) has been
    * force loaded.
    */
-  if (Scr.root_pushes
-      || client_controls_colormaps
-      )
-    {
-      return;
-    }
+  if (Scr.root_pushes || Scr.fvwm_pushes || client_controls_colormaps)
+    return;
 
   if(tmp->number_cmap_windows > 0)
     {
@@ -190,7 +186,7 @@ void InstallWindowColormaps (FvwmWindow *tmp)
              )
 	    {
 	      last_cmap = attributes.colormap;
-	      XInstallColormap(dpy,attributes.colormap);
+	      XInstallColormap(dpy, last_cmap);
 	    }
 	}
     }
@@ -204,7 +200,7 @@ void InstallWindowColormaps (FvwmWindow *tmp)
         )
 	{
 	  last_cmap = tmp->attr.colormap;
-	  XInstallColormap(dpy,tmp->attr.colormap);
+	  XInstallColormap(dpy, last_cmap);
 	}
     }
 }
@@ -222,20 +218,14 @@ void InstallWindowColormaps (FvwmWindow *tmp)
  *	   as long as there is one UninstallRootColormap call per
  *	   InstallRootColormap call.
  *
- *	   The final UninstallRootColormap will cause the colormap list
- *	   which would otherwise have be loaded to be loaded, unless
- *	   Enter or Leave Notify events are queued, indicating some
- *	   other colormap list would potentially be loaded anyway.
+ *	   {Uni,I}nstall{Root,Fvwm}Colormap calls may be freely intermixed
  ***********************************************************************/
 void InstallRootColormap(void)
 {
-  FvwmWindow *tmp;
-  if (Scr.root_pushes == 0)
-    {
-      tmp = Scr.pushed_window;
-      XInstallColormap(dpy, DefaultColormap(dpy, Scr.screen));
-      Scr.pushed_window = tmp;
-    }
+  if (last_cmap != DefaultColormap(dpy, Scr.screen)) {
+    last_cmap = DefaultColormap(dpy, Scr.screen);
+    XInstallColormap(dpy, last_cmap);
+  }
   Scr.root_pushes++;
   return;
 }
@@ -244,6 +234,7 @@ void InstallRootColormap(void)
  *
  * Unstacks one layer of root colormap pushing
  * If we peel off the last layer, re-install the application colormap
+ * or the fvwm colormap if fvwm has a menu posted
  *
  ***************************************************************************/
 void UninstallRootColormap(void)
@@ -251,10 +242,14 @@ void UninstallRootColormap(void)
   if (Scr.root_pushes)
     Scr.root_pushes--;
 
-  if (!Scr.root_pushes)
-    {
+  if (!Scr.root_pushes) {
+    if (!Scr.fvwm_pushes) {
       InstallWindowColormaps(Scr.pushed_window);
-    }
+    } else if (last_cmap != Pcmap) {
+      last_cmap = Pcmap;
+      XInstallColormap(dpy, last_cmap);
+    }      
+  }
 
   return;
 }
@@ -269,13 +264,10 @@ void UninstallRootColormap(void)
  ***********************************************************************/
 void InstallFvwmColormap(void)
 {
-  FvwmWindow *tmp;
-  if (Scr.fvwm_pushes == 0)
-    {
-      tmp = Scr.pushed_window;
-      InstallWindowColormaps(&Scr.FvwmRoot);
-      Scr.pushed_window = tmp;
-    }
+  if (last_cmap != Pcmap) {
+    last_cmap = Pcmap;
+    XInstallColormap(dpy, last_cmap);
+  }
   Scr.fvwm_pushes++;
   return;
 }
@@ -285,10 +277,14 @@ void UninstallFvwmColormap(void)
   if (Scr.fvwm_pushes)
     Scr.fvwm_pushes--;
 
-  if (!Scr.fvwm_pushes)
-    {
+  if (!Scr.fvwm_pushes) {
+    if (!Scr.root_pushes) {
       InstallWindowColormaps(Scr.pushed_window);
+    } else if (last_cmap != DefaultColormap(dpy, Scr.screen)) {
+      last_cmap = DefaultColormap(dpy, Scr.screen);
+      XInstallColormap(dpy, last_cmap);
     }
+  }
 
   return;
 }
@@ -359,8 +355,8 @@ void EnterSubWindowColormap(Window win)
 	if (t->cmap_windows[i] == win)
 	{
 	  XGetWindowAttributes(dpy,win,&attribs);
-	  XInstallColormap(dpy,attribs.colormap);
 	  last_cmap = attribs.colormap;
+	  XInstallColormap(dpy, last_cmap);
 	  return;
 	}
       }

@@ -180,10 +180,10 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     {
       /* client supplied icon pixmap and fvwm is using another visual */
       /* use it as the background pixmap, don't try to put relief on it
-       * because fvwm will not have the correct colors and
-       * don't ask for exposures */
+       * because fvwm will not have the correct colors
+       * the Exceed server has problems maintaining the icon window, it usually
+       * fails to refresh the icon leaving it black so ask for expose events */
       attributes.background_pixmap = tmp_win->iconPixmap;
-      attributes.event_mask &= ~ExposureMask;
       attributes.colormap = DefaultColormap(dpy, Scr.screen);
       valuemask &= ~CWBackPixel;
       valuemask |= CWBackPixmap;
@@ -388,6 +388,19 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 	XCopyArea(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
 		  Scr.ScratchGC3, 0, 0, tmp_win->icon_p_width - 4,
 		  tmp_win->icon_p_height - 4, 2, 2);
+      }
+      else
+      {
+        /* it's a client pixmap and fvwm is not using the root visual
+         * The icon window has no 3d border so copy to (0,0)
+         * install the root colormap temporarily to help the Exceed server */
+        if (Scr.exceed_hack)
+          InstallRootColormap();
+	XCopyArea(dpy, tmp_win->iconPixmap, tmp_win->icon_pixmap_w,
+		  DefaultGC(dpy, Scr.screen), 0, 0, tmp_win->icon_p_width,
+		  tmp_win->icon_p_height, 0, 0);
+	if (Scr.exceed_hack)
+	  UninstallRootColormap();
       }
     }
   }
