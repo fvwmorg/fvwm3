@@ -203,16 +203,16 @@ Bool IsGradientTypeSupported(char type)
  * Allocates a linear color gradient (veliaa@rpi.edu)
  *
  ****************************************************************************/
-Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels,
-			   int skip_first_color)
+Pixel *AllocLinearGradient(
+  char *s_from, char *s_to, int npixels, int skip_first_color)
 {
   Pixel *pixels;
   XColor from, to, c;
-  int r;
+  float r;
   float dr;
-  int g;
+  float g;
   float dg;
-  int b;
+  float b;
   float db;
   int i;
   int got_all = 1;
@@ -234,28 +234,53 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels,
     fprintf(stderr, "Cannot parse color \"%s\"\n", s_to ? s_to : "<blank>");
     return NULL;
   }
+
+#define DEBUG_ALG 0
+#if DEBUG_ALG
+fprintf(stderr,"\n*** from '%s to '%s' skip %d\n", s_from?s_from:"", s_to?s_to:"", skip_first_color);
+fprintf(stderr,"*** from.red %d, from.green %d, from.red %d\n", (int)from.red, (int)from.green, (int)from.blue);
+fprintf(stderr,"*** to.red %d, to.green %d, to.red %d\n", (int)to.red, (int)to.green, (int)to.blue);
+#endif
   /* divisor must not be zero, hence this calculation */
   div = (npixels == 1) ? 1 : npixels - 1;
   c = from;
   /* red part and step width */
   r = from.red;
-  dr = (float)(to.red - from.red) / (float)div;
+  dr = (float)(to.red - from.red);
   /* green part and step width */
   g = from.green;
-  dg = (float)(to.green - from.green) / (float)div;
+  dg = (float)(to.green - from.green);
   /* blue part and step width */
   b = from.blue;
-  db = (float)(to.blue - from.blue) / (float)div;
+  db = (float)(to.blue - from.blue);
+#if DEBUG_ALG
+fprintf(stderr,"*** div %d,, c.red %d, c.green %d, c.blue %d, t %f, g %f, b %f, dr %f, dg %f, db %f\n", div, (int)c.red, (int)c.green, (int)c.blue, r, g, b, dr, dg, db);
+#endif
   pixels = (Pixel *)safemalloc(sizeof(Pixel) * npixels);
+  memset(pixels, 0, sizeof(Pixel) * npixels);
   c.flags = DoRed | DoGreen | DoBlue;
-  for (i = skip_first_color; i < npixels; ++i)
+  for (i = (skip_first_color) ? 1 : 0; i < npixels && div > 0; ++i)
   {
-    c.red   = (unsigned short)(r + (i * dr + 0.5));
-    c.green = (unsigned short)(g + (i * dg + 0.5));
-    c.blue  = (unsigned short)(b + (i * db + 0.5));
+    c.red   = (unsigned short)((int)(r + dr / (float)div * (float)i + 0.5));
+    c.green = (unsigned short)((int)(g + dg / (float)div * (float)i + 0.5));
+    c.blue  = (unsigned short)((int)(b + db / (float)div * (float)i + 0.5));
+#if DEBUG_ALG
+fprintf(stderr, "*** %i: c.red %d, c.green %d, c.blue %d\n", i, (int)c.red, (int)c.green, (int)c.blue);
+#endif
     if (!XAllocColor(Pdpy, Pcmap, &c))
+    {
       got_all = 0;
-    pixels[ i ] = c.pixel;
+#if DEBUG_ALG
+fprintf(stderr, "*** could not get colour %d\n", i);
+#endif
+    }
+#if DEBUG_ALG
+else
+{
+fprintf(stderr, "*** final color: c.p %d, dc.red %d, c.green %d, c.blue %d\n", (int)c.pixel, (int)c.red, (int)c.green, (int)c.blue);
+}
+#endif
+    pixels[i] = c.pixel;
   }
   if (!got_all)
   {
@@ -270,8 +295,8 @@ Pixel *AllocLinearGradient(char *s_from, char *s_to, int npixels,
  * Allocates a nonlinear color gradient (veliaa@rpi.edu)
  *
  ****************************************************************************/
-Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
-			      int nsegs, int npixels)
+Pixel *AllocNonlinearGradient(
+  char *s_colors[], int clen[], int nsegs, int npixels)
 {
   Pixel *pixels = (Pixel *)safemalloc(sizeof(Pixel) * npixels);
   int i;
