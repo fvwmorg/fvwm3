@@ -1765,7 +1765,7 @@ void ProcessNewStyle(F_CMD_ARGS)
         if (StrEquals(token, "KeepWindowGroupsOnDesk"))
 	{
 	  found = True;
-	  SFSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 0);
+	  SFSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
 	  SMSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
 	  SCSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
 	}
@@ -2418,7 +2418,7 @@ void ProcessNewStyle(F_CMD_ARGS)
         else if (StrEquals(token, "ScatterWindowGroups"))
 	{
 	  found = True;
-	  SFSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
+	  SFSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 0);
 	  SMSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
 	  SCSET_DO_USE_WINDOW_GROUP_HINT(*ptmpstyle, 1);
 	}
