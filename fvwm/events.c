@@ -980,7 +980,6 @@ static void fake_map_unmap_notify(FvwmWindow *tmp_win, int event_type)
  ************************************************************************/
 void HandleMapRequest(void)
 {
-XSynchronize(dpy,1);
   DBUG("HandleMapRequest","Routine Entered");
 
   if (fFvwmInStartup)
@@ -1433,7 +1432,6 @@ void HandleUnmapNotify(void)
     ((!IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS(Tmp_win)) ||
      (IS_TRANSIENT(Tmp_win) && DO_GRAB_FOCUS_TRANSIENT(Tmp_win)));
   restore_focus_after_unmap(Tmp_win, False);
-  SET_MAP_PENDING(Tmp_win, 0);
   if (!IS_MAPPED(Tmp_win) && !IS_ICONIFIED(Tmp_win))
   {
     return;

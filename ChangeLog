@@ -1,5 +1,9 @@
 2002-01-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/defaults.h:
+	* fvwm/misc.c (GrabEm):
+	reduced number of grab attempts from 500 to 50 @ 10 ms = 0.5 seconds */
+
 	* fvwm/events.c (HandleUnmapNotify):
 	(HandleMapRequestKeepRaised):
 	(check_map_request):

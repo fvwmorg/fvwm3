@@ -149,7 +149,7 @@ Bool GrabEm(int cursor, int grab_context)
     return False;
   default:
     grab_win = Scr.Root;
-    rep = 500;
+    rep = NUMBER_OF_GRAB_ATTEMPTS;
     break;
   }
 
@@ -173,7 +173,7 @@ Bool GrabEm(int cursor, int grab_context)
     default:
       /* If you go too fast, other windows may not get a change to release
        * any grab that they have. */
-      usleep(10000);
+      usleep(1000 * TIME_BETWEEN_GRAB_ATTEMPTS);
       i++;
       break;
     }

@@ -30,6 +30,10 @@
 #define CLOCK_SKEW_MS		       30000 /* ms */
 
 
+/*** grabbing the pointer ***/
+#define NUMBER_OF_GRAB_ATTEMPTS          100
+#define TIME_BETWEEN_GRAB_ATTEMPTS        10 /* ms */
+
 /*** bindings and mouse buttons ***/
 /* Fvwm needs at least 3 buttons. X currently supports up to 5 buttons, so you
  * can use 3, 4 or 5 here. */
