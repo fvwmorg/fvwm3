@@ -1929,6 +1929,7 @@ void HandleLeaveNotify(void)
 		BroadcastPacket(
 			MX_LEAVE_WINDOW, 3, FW_W(Fw), FW_W_FRAME(Fw),
 			(unsigned long)Fw);
+		BroadcastPacket(MX_ENTER_WINDOW, 3, Scr.Root, NULL, NULL);
 	}
 
 	return;

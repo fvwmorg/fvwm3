@@ -18,6 +18,11 @@ Changes in alpha release 2.5.3 (not released yet)
 
 * Vastly improved FvwmEvent performance.
 
+* FvwmAuto can operate on Enter and Leave events too.  This makes
+  it possible to have autoraising with ClickToFocus and NeverFocus.
+  See -menter and -menterleave options and examples in the FvwmAuto
+  man page.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)

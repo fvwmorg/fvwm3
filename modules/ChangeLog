@@ -1,5 +1,10 @@
 2002-07-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmAuto/FvwmAuto.c:
+	* FvwmAuto/FvwmAuto.1 (Note):
+	new options -mfocus, -menter and -menterleave in FvwmAuto
+	FvwmAuto can now operate on Enter/Leave events instead of Focus events
+
 	* FvwmEvent/FvwmEvent.c (main):
 	select only events that are handled
 

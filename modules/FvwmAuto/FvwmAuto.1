@@ -23,7 +23,7 @@
 The correct syntax is:
 .nf
 .EX
-Module FvwmAuto Timeout [-passid] [EnterCommand [LeaveCommand]]
+Module FvwmAuto Timeout [-passid] [-menter|-menterleave|-mfocus] [EnterCommand [LeaveCommand]]
 .sp
 AddToMenu Modules
 + "Auto Raise (300 ms)"  Module FvwmAuto 300
@@ -39,6 +39,30 @@ If the literal option \fI-passid\fP is given, the window id of the
 window just entered or left is appended to the command that is
 sent to fvwm.  This can be used with the \fBWindowId\fP command of
 fvwm.
+
+The options \fI-menter\fP, \fI-menterleave\fP and \fI-mfocus\fP
+influence the actions FvwmAuto reacts to.  No more than one of the
+options can be chosen.  In
+.I -mfocus
+mode, FvwmAuto raises the window that has the focus.  In
+.I -menter
+mode, FvwmAuto raises the window under the pointer when the
+pointer enters a window.  The
+.I LeaveCommand
+is executed on the window that was below the pointer before it
+entered the new window.  In
+.I -menterleave
+mode, FvwmAuto works just like in
+.I -menter
+mode, but the
+.I LeaveCommand
+is also executed if the pointer moves out of a window but does not
+enter a new window.  The latter two modes of operation are useful
+with windows that do not accept the focus.
+
+Note: -menterleave mode can interfere with popup windows of some
+applications.  One example is the zoom menu of Ghostview.  Please
+do not complain about this to us - it is a bug in Ghostview.
 
 \fIEnterCommand\fP and \fILeaveCommand\fP are optional.
 \fIEnterCommand\fP is executed \fITimeout\fP milliseconds after a
@@ -59,6 +83,30 @@ Experiment with:
 .EX
 Module FvwmAuto 0 Nop "Silent Lower"
 Module FvwmAuto 0 Nop "Silent Iconify"
+.EE
+
+An example for auto raising windows with ClickToFocus:
+.nf
+.EX
+Style * ClickToFocus
+FvwmAuto 0 -enter "Silent Raise"
+.EE
+
+An example for auto raising and lowering only some windows:
+.nf
+To start FvwmAuto:
+.EX
+FvwmAuto 0 -passid -enterleave \\
+"Silent selective_raiselower raise" \\
+"Silent selective_raiselower lower"
+.EE
+And put this in your .fvwm2rc:
+.EX
+AddToFunc selective_raiselower
++ I WindowId $1 (FvwmIconMan) $0
++ I WindowId $1 (FvwmButtons) $0
++ I WindowId $1 (xclock) $0
+...
 .EE
 
 More complex example (three FvwmAuto's are running):
