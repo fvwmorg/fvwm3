@@ -1,3 +1,18 @@
+2003-04-14  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/conditional.c (CMD_Cond):
+	allow to negate the condition code with '!' prefix
+
+	* fvwm/schedule.c (CMD_Schedule):
+	(CMD_Deschedule):
+	support hexadecimal ids
+
+	* libs/Parse.c (GetIntegerArguments):
+	(_get_suffixed_integer_arguments):
+	(GetSuffixedIntegerArguments):
+	(GetIntegerArgumentsAnyBase):
+	new utitily function to allow hexadecimal integer arguments
+
 2003-04-10  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Flocale.c (FlocaleGetFullNameOfFontStruct):
@@ -10,7 +25,7 @@
 	* libs/FlocaleCharset.c (FlocaleCharsetIsCharsetXLocale):
 	(FlocaleCharsetPrintXOMInfo):
 	Load a FontSet only when this is reasonable. Finished PrintInfo locale 2
-	
+
 2003-04-08  olicha  <olivier.chapuis@free.fr>
 
 	* libs/defaults.h (FLOCALE_MB_FALLBACK_FONT):

@@ -5,6 +5,12 @@ _+_A HREF="#2.4.15"_-_2.4.15_+_/A_-_.
 
 Changes in development release 2.5.7 (not released yet)
 
+* The commands Cond and CondCase now support checking for
+  inequality by prefixing the return code with '!'.
+
+* Schedule and Deschedule support hexadecimal and octal command
+  ids.
+
 * In FvwmIconMan, windows can move from one manager to another
   acoording to the managers' Resolution options.
 

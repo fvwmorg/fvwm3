@@ -276,7 +276,7 @@ void CMD_Schedule(F_CMD_ARGS)
 #endif
 	time = current_time + (Time)ms;
 	/* get the job group id to schedule */
-	n = GetIntegerArguments(action, &taction, &id, 1);
+	n = GetIntegerArgumentsAnyBase(action, &taction, &id, 1);
 	if (n >= 1)
 	{
 		pid = &id;
@@ -308,7 +308,7 @@ void CMD_Deschedule(F_CMD_ARGS)
 	int n;
 
 	/* get the job group id to deschedule */
-	n = GetIntegerArguments(action, &action, &id, 1);
+	n = GetIntegerArgumentsAnyBase(action, &action, &id, 1);
 	if (n <= 0)
 	{
 		/* none, use default */

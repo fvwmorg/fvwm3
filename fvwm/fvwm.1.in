@@ -3979,7 +3979,8 @@ is executed in the same context window as the
 .B Schedule
 command.  An optional integer argument
 .I command_id
-may be given.  This id can be used with the
+may be given in decimal, hexadecimal or octal format.  This id can
+be used with the
 .B Deschedule
 command to remove the scheduled command before it is executed.  If
 no id is given, fvwm uses negative id numbers, starting with -1
@@ -3994,6 +3995,13 @@ expansion, and, when
 is finally executed, it is expanded again.  It may therefore be
 necessary to quote the parts of the command that must not be
 expanded twice.
+
+Note:  A window's id as it is returned with $w can be used as the
+.IR command_id .
+Example:
+.EX
+Current Schedule 1000 $w WindowShade
+.EE
 
 .TP
 .BI "State " state " [" bool "]"
@@ -9269,7 +9277,7 @@ AddToFunc PickWindowRaiseAndDeiconify
 .EE
 
 .TP
-.BI "Cond [(" returncode ")] " command
+.BI "Cond [([!]" returncode ")] " command
 Performs
 .I command
 if the last conditional command returned the value
@@ -9278,7 +9286,10 @@ Instead of the numeric values 0 (no match), 1 (match) and -1
 (error), the symbolic names "NoMatch", "Match" and "Error" can be
 used.  If no
 .I returncode
-is given, the default 0 is assumed.
+is given, the default 0 is assumed.  If the return code is
+prefixed with '!', the command is executed if
+.I returncode
+does not match the value returned by the conditional command.
 .B Cond
 command can only be used inside functions.  If the
 .I command

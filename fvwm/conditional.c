@@ -1369,8 +1369,10 @@ void CMD_WindowId(F_CMD_ARGS)
 void CMD_Cond(F_CMD_ARGS)
 {
 	fvwm_cond_func_rc match_rc;
+	char *orig_flags;
 	char *flags;
 	char *restofline;
+	int is_not_reversed = 1;
 
 	if (cond_rc == NULL)
 	{
@@ -1378,36 +1380,45 @@ void CMD_Cond(F_CMD_ARGS)
 		return;
 	}
 	/* Create window mask */
-	flags = CreateFlagString(action, &restofline);
+	orig_flags = CreateFlagString(action, &restofline);
+	flags = orig_flags;
 	if (flags == NULL)
 	{
 		match_rc = COND_RC_NO_MATCH;
 	}
-	else if (StrEquals(flags, "1") || StrEquals(flags, "match"))
-	{
-		match_rc = COND_RC_OK;
-	}
-	else if (StrEquals(flags, "0") || StrEquals(flags, "nomatch"))
-	{
-		match_rc = COND_RC_NO_MATCH;
-	}
-	else if (StrEquals(flags, "-1") || StrEquals(flags, "error"))
-	{
-		match_rc = COND_RC_ERROR;
-	}
 	else
 	{
-		match_rc = COND_RC_NO_MATCH;
+		if (*flags == '!')
+		{
+			is_not_reversed = 0;
+			flags++;
+		}
+		if (StrEquals(flags, "1") || StrEquals(flags, "match"))
+		{
+			match_rc = COND_RC_OK;
+		}
+		else if (StrEquals(flags, "0") || StrEquals(flags, "nomatch"))
+		{
+			match_rc = COND_RC_NO_MATCH;
+		}
+		else if (StrEquals(flags, "-1") || StrEquals(flags, "error"))
+		{
+			match_rc = COND_RC_ERROR;
+		}
+		else
+		{
+			match_rc = COND_RC_NO_MATCH;
+		}
 	}
-	if (*cond_rc == match_rc && restofline != NULL)
+	if ((*cond_rc == match_rc) == is_not_reversed && restofline != NULL)
 	{
 		/* execute the command in root window context; overwrite the
 		 * return code with the return code of the command */
 		execute_function(cond_rc, exc, restofline, 0);
 	}
-	if (flags != NULL)
+	if (orig_flags != NULL)
 	{
-		free(flags);
+		free(orig_flags);
 	}
 
 	return;

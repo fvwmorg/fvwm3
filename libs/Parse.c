@@ -549,9 +549,9 @@ char *GetModuleResource(char *indata, char **resource, char *module_name)
  * ret_suffixnum (0 = no suffix, 1 = first suffix in suffixlist ...).
  *
  **************************************************************************/
-int GetSuffixedIntegerArguments(
+int _get_suffixed_integer_arguments(
 	char *action, char **ret_action, int *retvals, int num,
-	char *suffixlist, int *ret_suffixnum)
+	char *suffixlist, int *ret_suffixnum, char *parsestring)
 {
 	int i;
 	int j;
@@ -574,7 +574,7 @@ int GetSuffixedIntegerArguments(
 		{
 			break;
 		}
-		if (sscanf(token, "%d%n", &(retvals[i]), &n) < 1)
+		if (sscanf(token, parsestring, &(retvals[i]), &n) < 1)
 		{
 			break;
 		}
@@ -622,6 +622,15 @@ int GetSuffixedIntegerArguments(
 	return i;
 }
 
+int GetSuffixedIntegerArguments(
+	char *action, char **ret_action, int *retvals, int num,
+	char *suffixlist, int *ret_suffixnum)
+{
+	return _get_suffixed_integer_arguments(
+		action, ret_action, retvals, num, suffixlist, ret_suffixnum,
+		"%d%n");
+}
+
 /****************************************************************************
  *
  * This function converts the suffix/number pairs returned by
@@ -648,10 +657,22 @@ int SuffixToPercentValue(int value, int suffix, int *unit_table)
  **************************************************************************/
 int GetIntegerArguments(char *action, char **ret_action, int *retvals,int num)
 {
-	return GetSuffixedIntegerArguments(
-		action, ret_action, retvals, num, NULL, NULL);
+	return _get_suffixed_integer_arguments(
+		action, ret_action, retvals, num, NULL, NULL, "%d%n");
 }
 
+/****************************************************************************
+ *
+ * Same as above, but supports hexadecimal and octal integers via 0x and 0
+ * prefixes.
+ *
+ **************************************************************************/
+int GetIntegerArgumentsAnyBase(
+	char *action, char **ret_action, int *retvals,int num)
+{
+	return _get_suffixed_integer_arguments(
+		action, ret_action, retvals, num, NULL, NULL, "%i%n");
+}
 
 /***************************************************************************
  *
