@@ -1,3 +1,8 @@
+Tue Feb 23 10:31:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* links.html: updated changed links, removed some dead links and
+	one happily obsolete one -- my old v2.0.46 autoconf patches.
+
 1999-02-19  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* download.html: updated for 2.2
