@@ -3,6 +3,9 @@ Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
 
+Suzanne Britton:
+Multi-pixmap titlebars patch.
+
 Lorenz Minder:
 Patches for fvwm-setup95 and safestrdup.
 

@@ -9,6 +9,16 @@
 	* fvwm/fvwm2.1:
 	* fvwm/screen.h:
 	exclude the TitleStyle MultiPixmap feature (only) before forking
+	...
+	and restore it after that
+
+	* NEWS:
+	* configure.in:
+	change version string to 2.5.0
+
+	* NEWS:
+	added a missing entry for the stable release 2.4.0 (03-Jul-2001);
+	added a link to the stable version 2.4.4 (not released yet)
 
 2001-10-30  Mikhael Goikhman  <migo@homemail.com>
 

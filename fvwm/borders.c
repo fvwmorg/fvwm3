@@ -271,10 +271,29 @@ static void DrawButton(
   case MiniIconButton:
   case PixmapButton:
   case TiledPixmapButton:
+#ifdef FANCY_TITLEBARS
+  case MultiPixmap:       /* in case of UseTitleStyle */
+#endif
     if (type == PixmapButton || type == TiledPixmapButton)
     {
       p = df->u.p;
     }
+#ifdef FANCY_TITLEBARS
+    else if (type == MultiPixmap) {
+      if (left1right0 && df->u.multi_pixmaps[TBP_LEFT_BUTTONS])
+        p = df->u.multi_pixmaps[TBP_LEFT_BUTTONS];
+      else if (!left1right0 && df->u.multi_pixmaps[TBP_RIGHT_BUTTONS])
+        p = df->u.multi_pixmaps[TBP_RIGHT_BUTTONS];
+      else if (df->u.multi_pixmaps[TBP_BUTTONS])
+        p = df->u.multi_pixmaps[TBP_BUTTONS];
+      else if (left1right0 && df->u.multi_pixmaps[TBP_LEFT_MAIN])
+        p = df->u.multi_pixmaps[TBP_LEFT_MAIN];
+      else if (!left1right0 && df->u.multi_pixmaps[TBP_RIGHT_MAIN])
+        p = df->u.multi_pixmaps[TBP_RIGHT_MAIN];
+      else
+        p = df->u.multi_pixmaps[TBP_MAIN];
+    }
+#endif
     else
     {
       if (!t->mini_icon)
@@ -298,6 +317,9 @@ static void DrawButton(
     if (is_lowest && !p->mask && pbutton_background_pixmap)
     {
       if (type == TiledPixmapButton ||
+#ifdef FANCY_TITLEBARS
+          type == MultiPixmap ||
+#endif
 	  (p && p->width >= width && p->height >= height))
       {
 	/* better performance: set a background pixmap if possible, i.e. if the
@@ -326,7 +348,11 @@ static void DrawButton(
 	XClearWindow(dpy, win);
       }
     }
-    if (type != TiledPixmapButton)
+    if (type != TiledPixmapButton
+#ifdef FANCY_TITLEBARS
+        && type != MultiPixmap
+#endif
+       )
     {
       if (DFS_H_JUSTIFICATION(df->style) == JUST_RIGHT)
 	x += (int)(width - p->width);
@@ -354,7 +380,11 @@ static void DrawButton(
 
     XSetClipMask(dpy, Scr.TransMaskGC, p->mask);
     XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
-    if (type != TiledPixmapButton)
+    if (type != TiledPixmapButton
+#ifdef FANCY_TITLEBARS
+        && type != MultiPixmap
+#endif
+       )
     {
       int cx = x;
       int cy = y;
@@ -447,6 +477,159 @@ static void DrawButton(
 
   return;
 }
+
+#ifdef FANCY_TITLEBARS
+
+/****************************************************************************
+ *
+ *  Tile or stretch src into dest, starting at the given location and
+ *  continuing for the given width and height. This is a utility function used
+ *  by DrawMultiPixmapTitlebar. (tril@igs.net)
+ *
+ ****************************************************************************/
+static void RenderIntoWindow(GC gc, Picture *src, Window dest, int x_start,
+                             int y_start, int width, int height, Bool stretch)
+{
+  Pixmap pm;
+  if (stretch)
+    pm = CreateStretchPixmap(dpy, src->picture, src->width, src->height,
+                             src->depth, width, height, gc);
+  else
+    pm = CreateTiledPixmap(dpy, src->picture, src->width, src->height,
+                           width, height, src->depth, gc);
+  XCopyArea(dpy, pm, dest, gc, 0, 0, width, height, x_start, y_start);
+  XFreePixmap(dpy, pm);
+}
+
+/****************************************************************************
+ *
+ *  Redraws multi-pixmap titlebar (tril@igs.net)
+ *
+ ****************************************************************************/
+static void DrawMultiPixmapTitlebar(FvwmWindow *window, DecorFace *df)
+{
+  Window       title_win;
+  GC           gc;
+  const char  *title;
+  Picture    **pm;
+  short        stretch_flags;
+  int          title_width, title_height, text_width, text_offset, text_y_pos;
+  int          left_space, right_space, under_offset, under_width;
+
+  pm = df->u.multi_pixmaps;
+  stretch_flags = df->u.multi_stretch_flags;
+  gc = Scr.TitleGC;
+  XSetClipMask(dpy, gc, None);
+  title_win = window->title_w;
+  title = window->name;
+  title_width = window->title_g.width;
+  title_height = window->title_g.height;
+
+  if (pm[TBP_MAIN])
+    RenderIntoWindow(gc, pm[TBP_MAIN], title_win, 0, 0, title_width,
+                     title_height, (stretch_flags & (1 << TBP_MAIN)));
+  else if (!title)
+    RenderIntoWindow(gc, pm[TBP_LEFT_MAIN], title_win, 0, 0, title_width,
+                     title_height, (stretch_flags & (1 << TBP_LEFT_MAIN)));
+
+  if (title) {
+#ifdef I18N_MB
+    text_width = XmbTextEscapement(window->title_font.fontset, title,
+                                   strlen(title));
+#else
+    text_width = XTextWidth(window->title_font.font, title, strlen(title));
+#endif
+    if (text_width > title_width)
+      text_width = title_width;
+    switch (TB_JUSTIFICATION(GetDecor(window, titlebar))) {
+    case JUST_LEFT:
+      text_offset = TITLE_PADDING;
+      if (pm[TBP_LEFT_OF_TEXT])
+        text_offset += pm[TBP_LEFT_OF_TEXT]->width;
+      if (pm[TBP_LEFT_END])
+        text_offset += pm[TBP_LEFT_END]->width;
+      if (text_offset > title_width - text_width)
+        text_offset = title_width - text_width;
+      break;
+    case JUST_RIGHT:
+      text_offset = title_width - text_width - TITLE_PADDING;
+      if (pm[TBP_RIGHT_OF_TEXT])
+        text_offset -= pm[TBP_RIGHT_OF_TEXT]->width;
+      if (pm[TBP_RIGHT_END])
+        text_offset -= pm[TBP_RIGHT_END]->width;
+      if (text_offset < 0)
+        text_offset = 0;
+      break;
+    default:
+      text_offset = (title_width - text_width) / 2;
+      break;
+    }
+    under_offset = text_offset;
+    under_width = text_width;
+    /* If there's title padding, put it *inside* the undertext area: */
+    if (under_offset >= TITLE_PADDING) {
+      under_offset -= TITLE_PADDING;
+      under_width += TITLE_PADDING;
+    }
+    if (under_offset + under_width + TITLE_PADDING <= title_width)
+      under_width += TITLE_PADDING;
+    left_space = under_offset;
+    right_space = title_width - left_space - under_width;
+
+    if (pm[TBP_LEFT_MAIN] && left_space > 0)
+      RenderIntoWindow(gc, pm[TBP_LEFT_MAIN], title_win, 0, 0, left_space,
+                       title_height, (stretch_flags & (1 << TBP_LEFT_MAIN)));
+    if (pm[TBP_RIGHT_MAIN] && right_space > 0)
+      RenderIntoWindow(gc, pm[TBP_RIGHT_MAIN], title_win,
+                       under_offset + under_width, 0, right_space,
+                       title_height, (stretch_flags & (1 << TBP_RIGHT_MAIN)));
+    if (pm[TBP_UNDER_TEXT] && under_width > 0)
+      RenderIntoWindow(gc, pm[TBP_UNDER_TEXT], title_win, under_offset, 0,
+                       under_width, title_height,
+                       (stretch_flags & (1 << TBP_UNDER_TEXT)));
+    if (pm[TBP_LEFT_OF_TEXT] &&
+        pm[TBP_LEFT_OF_TEXT]->width <= left_space) {
+      XCopyArea(dpy, pm[TBP_LEFT_OF_TEXT]->picture, title_win, gc, 0, 0,
+                pm[TBP_LEFT_OF_TEXT]->width, title_height,
+                under_offset - pm[TBP_LEFT_OF_TEXT]->width, 0);
+      left_space -= pm[TBP_LEFT_OF_TEXT]->width;
+    }
+    if (pm[TBP_RIGHT_OF_TEXT] &&
+        pm[TBP_RIGHT_OF_TEXT]->width <= right_space) {
+      XCopyArea(dpy, pm[TBP_RIGHT_OF_TEXT]->picture, title_win, gc, 0, 0,
+                pm[TBP_RIGHT_OF_TEXT]->width, title_height,
+                under_offset + under_width, 0);
+      right_space -= pm[TBP_RIGHT_OF_TEXT]->width;
+    }
+
+    text_y_pos = title_height
+                 - (title_height - window->title_font.font->ascent) / 2
+                 - 1;
+    if (title_height > 19)
+      text_y_pos--;
+    if (text_y_pos < 0)
+      text_y_pos = 0;
+#ifdef I18N_MB
+    XmbDrawString(dpy, title_win, window->title_font.fontset, gc, text_offset,
+                  gc, text_offset, text_y_pos, title, strlen(title));
+#else
+    XDrawString(dpy, title_win, gc, text_offset, text_y_pos, title,
+                strlen(title));
+#endif
+  }
+  else
+    left_space = right_space = title_width;
+
+  if (pm[TBP_LEFT_END] && pm[TBP_LEFT_END]->width <= left_space)
+    XCopyArea(dpy, pm[TBP_LEFT_END]->picture, title_win, gc, 0, 0,
+              pm[TBP_LEFT_END]->width, title_height, 0, 0);
+  if (pm[TBP_RIGHT_END] && pm[TBP_RIGHT_END]->width <= right_space)
+    XCopyArea(dpy, pm[TBP_RIGHT_END]->picture, title_win, gc, 0, 0,
+              pm[TBP_RIGHT_END]->width, title_height,
+              title_width - pm[TBP_RIGHT_END]->width, 0);
+}
+
+#endif /* FANCY_TITLEBARS */
 
 /* rules to get button state */
 static enum ButtonState get_button_state(
@@ -1029,6 +1212,7 @@ static void RedrawButtons(
   Window expose_win, XRectangle *rclip)
 {
   int i;
+  int left1right0;
   Bool is_lowest = True;
   Pixmap *pass_bg_pixmap;
 
@@ -1042,8 +1226,10 @@ static void RedrawButtons(
 
   for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
-    if (t->button_w[i] != None && (((i & 1) && i / 2 < Scr.nr_right_buttons) ||
-				   (!(i & 1) && i / 2 < Scr.nr_left_buttons)))
+    left1right0 = !(i&1);
+    if (t->button_w[i] != None &&
+        ((!left1right0 && i/2 < Scr.nr_right_buttons) ||
+         (left1right0  && i/2 < Scr.nr_left_buttons)))
     {
       mwm_flags stateflags =
 	TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i]));
@@ -1097,8 +1283,8 @@ static void RedrawButtons(
 	    DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
 		       tsdf, cd->relief_gc, cd->shadow_gc,
 		       cd->fore_color, cd->back_color, is_lowest,
-		       TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), 1, NULL,
-		       pass_bg_pixmap);
+		       TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])),
+                       left1right0, NULL, pass_bg_pixmap);
 	    is_lowest = False;
 	  }
 	}
@@ -1110,8 +1296,8 @@ static void RedrawButtons(
 	  DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
 		     df, cd->relief_gc, cd->shadow_gc,
 		     cd->fore_color, cd->back_color, is_lowest,
-		     TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), 1, NULL,
-		     pass_bg_pixmap);
+		     TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), left1right0,
+                     NULL, pass_bg_pixmap);
 	  is_lowest = False;
 	}
 
@@ -1276,6 +1462,11 @@ static void RedrawTitle(
     /* draw compound titlebar (veliaa@rpi.edu) */
     Bool is_lowest = True;
 
+#ifdef FANCY_TITLEBARS
+    if (df->style.face_type == MultiPixmap)
+      DrawMultiPixmapTitlebar(t, df);
+    else
+#endif
     if (PressedW == t->title_w)
     {
 #ifdef MULTISTYLE
@@ -1319,6 +1510,11 @@ static void RedrawTitle(
       break;
     }
 
+#ifdef FANCY_TITLEBARS
+    if (TB_STATE(GetDecor(t, titlebar))[title_state].style.face_type
+        != MultiPixmap)
+#endif
+    {
 #ifdef I18N_MB
     if(t->name != (char *)NULL)
       XmbDrawString(dpy, t->title_w, t->title_font.fontset,
@@ -1329,6 +1525,7 @@ static void RedrawTitle(
       XDrawString(dpy, t->title_w, Scr.TitleGC, hor_off,
 		  t->title_font.y + 1, t->name, strlen(t->name));
 #endif
+    }
   }
 
   /*

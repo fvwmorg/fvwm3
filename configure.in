@@ -2,7 +2,7 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
-AM_INIT_AUTOMAKE(fvwm, 2.4.4)
+AM_INIT_AUTOMAKE(fvwm, 2.5.0)
 AM_CONFIG_HEADER(config.h)
 
 FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}
@@ -38,6 +38,7 @@ AC_ARG_ENABLE(efence,
 smr_SWITCH(command-log, command logging, off, FVWM_COMMAND_LOG)
 smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
 smr_SWITCH(multibyte, multibyte character support (experimental), off, I18N_MB)
+smr_SWITCH(multipixmap-titles, fancy pixmap titlebars, on, FANCY_TITLEBARS)
 dnl dummy: smr_SWITCH(sm, dummy for test script, on, SESSION)
 
 AC_ARG_ENABLE(kanji,
