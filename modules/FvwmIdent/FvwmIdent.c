@@ -8,10 +8,6 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#define XLIB_ILLEGAL_ACCESS
-#define TRUE 1
-#define FALSE
-
 #define YES "Yes"
 #define NO  "No"
 
@@ -39,6 +35,7 @@
 #include <X11/cursorfont.h>
 
 #include "fvwm/module.h"
+#include "libs/ModGraph.h"
 #include "FvwmIdent.h"
 
 char *MyName;
@@ -47,27 +44,18 @@ int fd[2];
 
 Display *dpy;			/* which display are we talking to */
 Window Root;
+Graphics *G;
 int screen;
 int x_fd;
-int depth;
-Visual* viz;
-VisualID vid;
-Colormap cmap;
-GContext gcontext = None;
 int ScreenWidth, ScreenHeight;
 
 char *BackColor = "white";
 char *ForeColor = "black";
 char *font_string = "fixed";
 
-Pixel back_pix, fore_pix;
-GC  NormalGC = None;
+Pixel fore_pix;
 Window main_win;
 Window app_win;
-XFontStruct *font;
-Font fid;
-
-Bool UseFvwmLook = True;
 
 int Width, Height,win_x,win_y;
 
@@ -135,49 +123,43 @@ int main(int argc, char **argv)
   x_fd = XConnectionNumber(dpy);
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
-  depth = DefaultDepth(dpy, screen);
-  viz = DefaultVisual(dpy, screen);
-  vid = XVisualIDFromVisual(viz);
-  cmap = DefaultColormap(dpy, screen);
+  
+  G = (Graphics *)safemalloc(sizeof(Graphics));
+  memset(G, 0, sizeof(Graphics));
+  G->create_foreGC = True;
+  InitGraphics(dpy, G);
 
   ScreenHeight = DisplayHeight(dpy,screen);
   ScreenWidth = DisplayWidth(dpy,screen);
 
   SetMessageMask(fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
                  | M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST | M_CONFIG_INFO
-                 | M_END_CONFIG_INFO);
+                 | M_END_CONFIG_INFO | M_SENDCONFIG);
   /* scan config file for set-up parameters */
   /* Colors and fonts */
 
   GetConfigLine(fd,&tline);
 
-  while(tline != (char *)0)
-    {
-      if(strlen(tline)>1)
-	{
-	  if(strncasecmp(tline, "Default_graphics ", 16)==0)  {
-            change_defaults(tline + 17);
-          }
-	  if(strncasecmp(tline, CatString3(MyName,"Font",""),Clength+4)==0)
-	    {
-	      CopyString(&font_string,&tline[Clength+4]);
-	      UseFvwmLook = False;
-	    }
-	  else if(strncasecmp(tline,CatString3(MyName,"Fore",""),
-				Clength+4)==0)
-	    {
-	      CopyString(&ForeColor,&tline[Clength+4]);
-	      UseFvwmLook = False;
-	    }
-	  else if(strncasecmp(tline,CatString3(MyName, "Back",""),
-				Clength+4)==0)
-	    {
-	      CopyString(&BackColor,&tline[Clength+4]);
-	      UseFvwmLook = False;
-	    }
-	}
-      GetConfigLine(fd,&tline);
+  while(tline != (char *)0) {
+    if(strlen(tline)>1) {
+      if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)  {
+        ParseGraphics(dpy, tline, G);
+      }
+      else if(strncasecmp(tline, CatString3(MyName,"Font",""),Clength+4)==0) {
+        CopyString(&font_string,&tline[Clength+4]);
+        G->useFvwmLook = False;
+      }
+      else if(strncasecmp(tline,CatString3(MyName,"Fore",""), Clength+4)==0) {
+        CopyString(&ForeColor,&tline[Clength+4]);
+        G->useFvwmLook = False;
+      }
+      else if(strncasecmp(tline,CatString3(MyName, "Back",""), Clength+4)==0) {
+        CopyString(&BackColor,&tline[Clength+4]);
+        G->useFvwmLook = False;
+      }
     }
+    GetConfigLine(fd,&tline);
+  }
 
   if(app_win == 0)
     GetTargetWindow(&app_win);
@@ -192,31 +174,6 @@ int main(int argc, char **argv)
   Loop(fd);
   return 0;
 }
-
-/*************************************************************************
- *
- * Default_graphics config line received, change builtin defaults
- *
- ************************************************************************/
-void change_defaults(char *line) {
-XVisualInfo vizinfo, *xvi;
-int count;
-long junk;
-
-  if (10 != sscanf(line, "%lx %lx %x %lx %lx %lx %lx %lx %lx %lx\n",
-		   &vizinfo.visualid, &cmap, &depth, &junk, &junk,
-		   &back_pix, &gcontext, &junk, &junk, &fid)) {
-    fprintf(stderr, "badly formed DefaultGraphics line\n");
-    exit(1);
-  }
-
-  /* fvwm passes the VisualID over, have to get a Visual pointer from this */
-  if ((xvi = XGetVisualInfo(dpy, VisualIDMask, &vizinfo, &count)) == NULL)
-    return;
-  viz = xvi->visual;
-  XFree(xvi);
-}
-
 
 /**************************************************************************
  *
@@ -283,7 +240,6 @@ void process_message(unsigned long type,unsigned long *body)
  **********************************************************************/
 void DeadPipe(int nonsense)
 {
-  freelist();
   exit(0);
 }
 
@@ -397,17 +353,13 @@ void list_end(void)
       exit(0);
     }
 
-  close(fd[0]);
-  close(fd[1]);
+  /* tell fvwm to only send config messages */
+  SetMessageMask(fd, M_CONFIG_INFO | M_SENDCONFIG);
 
   /* load the font */
-  if (UseFvwmLook) {
-    if ((font = XQueryFont(dpy, fid)) == NULL)
-      exit(1);
-  }
-  else {
-    if ((font = XLoadQueryFont(dpy, font_string)) == NULL)
-      if ((font = XLoadQueryFont(dpy, "fixed")) == NULL)
+  if (!G->useFvwmLook) {
+    if ((G->font = XLoadQueryFont(dpy, font_string)) == NULL)
+      if ((G->font = XLoadQueryFont(dpy, "fixed")) == NULL)
 	exit(1);
   }
 
@@ -417,7 +369,7 @@ void list_end(void)
   /* size and create the window */
   lmax = max_col1 + max_col2 + 15;
 
-  height = ListSize*(font->ascent+font->descent);
+  height = ListSize*(G->font->ascent + G->font->descent);
 
   mysizehints.flags=
     USSize|USPosition|PWinGravity|PResizeInc|PBaseSize|PMinSize|PMaxSize;
@@ -454,23 +406,26 @@ void list_end(void)
   mysizehints.y = y;
 
 
-  if (!UseFvwmLook) {
-    if(depth < 2) {
-      back_pix = GetColor("white");
+  if (!G->useFvwmLook) {
+    G->bgtype.bits.is_pixmap = False;
+    if(G->depth < 2) {
+      G->bg.pixel = GetColor("white");
       fore_pix = GetColor("black");
     } else {
-      back_pix = GetColor(BackColor);
+      G->bg.pixel = GetColor(BackColor);
       fore_pix = GetColor(ForeColor);
     }
   }
 
-  attributes.colormap = cmap;
-  attributes.background_pixel = back_pix;
+  attributes.colormap = G->cmap;
+  attributes.background_pixmap = None;
+  attributes.border_pixel = 0;
   main_win = XCreateWindow(dpy, Root, mysizehints.x, mysizehints.y,
-			   mysizehints.width, mysizehints.height, 0, depth,
-			   InputOutput, viz, CWColormap | CWBackPixel,
+			   mysizehints.width, mysizehints.height, 0, G->depth,
+			   InputOutput, G->viz,
+			   CWColormap | CWBackPixmap | CWBorderPixel,
 			   &attributes);
-  XSetTransientForHint(dpy,main_win,app_win);
+  SetWindowBackground(dpy, main_win, &(G->bg), &(G->bgtype));
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,main_win,&wm_del_win,1);
 
@@ -478,43 +433,65 @@ void list_end(void)
   XSelectInput(dpy,main_win,MW_EVENTS);
   change_window_name(&MyName[1]);
 
-  gcm = GCForeground|GCFont;
-  gcv.foreground = fore_pix;
-  gcv.font =  font->fid;
-  NormalGC = XCreateGC(dpy, Root, gcm, &gcv);
-
-  /* This looks horrible, but is the only way I could think of getting a GC
-   * given a GContext since there is no gcv.gcontext.
-   * I assume that the original GContext is freed by the server at exit */
-  if (UseFvwmLook)
-    NormalGC->gid = gcontext;
-
+  if (!G->useFvwmLook) {
+    gcm = GCForeground|GCFont;
+    gcv.foreground = fore_pix;
+    gcv.font =  G->font->fid;
+    G->foreGC = XCreateGC(dpy, main_win, gcm, &gcv);
+  }
+  
   XMapWindow(dpy,main_win);
 
   /* Window is created. Display it until the user clicks or deletes it. */
-  while(1)
-    {
+  /* also grok any dynamic config changes */
+  while(1) {
+    int x_fd = XConnectionNumber(dpy);
+    fd_set fdset;
+
+    FD_ZERO(&fdset);
+    FD_SET(fd[1], &fdset);
+    FD_SET(x_fd, &fdset);
+
+    /* process all X events first */
+    while (XPending(dpy)) {
       XNextEvent(dpy,&Event);
-      switch(Event.type)
-	{
-	case Expose:
+      switch(Event.type) {
+        case Expose:
 	  if(Event.xexpose.count == 0)
 	    RedrawWindow();
 	  break;
-	case KeyRelease:
-	case ButtonRelease:
-	  freelist();
+        case KeyRelease:
+        case ButtonRelease:
 	  exit(0);
-	case ClientMessage:
+        case ClientMessage:
 	  if (Event.xclient.format==32 && Event.xclient.data.l[0]==wm_del_win)
-	    {
-	      freelist();
-	      exit(0);
-	    }
-	default:
+	    exit(0);
+        default:
 	  break;
-	}
+      }
     }
+
+    /* wait for X-event or config line */
+    select((SELECT_TYPE_ARG1)fd_width, SELECT_TYPE_ARG234 &fdset,
+	   SELECT_TYPE_ARG234 0, SELECT_TYPE_ARG234 0, SELECT_TYPE_ARG5 NULL);
+
+    /* parse any config lines (only the fvwm_look) */
+    if (FD_ISSET(fd[1], &fdset)) {
+      char *tline;
+
+      GetConfigLine(fd, &tline);
+      if (tline != NULL && (strlen(tline) > 1)) {
+	if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0) {
+	  if (ParseGraphics(dpy, tline, G)) {
+	    SetWindowBackground(dpy, main_win, &(G->bg), &(G->bgtype));
+	  }
+	}
+      }
+
+      /* free up line malloc'd by GetConfigLine */
+      if (tline) free(tline);
+    }
+  }
 
 }
 
@@ -568,16 +545,18 @@ void RedrawWindow(void)
   int fontheight,i=0;
   struct Item *cur = itemlistRoot;
 
-  fontheight = font->ascent + font->descent;
+  fontheight = G->font->ascent + G->font->descent;
 
   while(cur != NULL)
     {
       /* first column */
-      XDrawString(dpy,main_win,NormalGC,5,5+font->ascent+i*fontheight,
-		  cur->col1,strlen(cur->col1));
+      XDrawString(dpy, main_win, G->foreGC, 5,
+		  5 + G->font->ascent + i * fontheight, cur->col1,
+		  strlen(cur->col1));
       /* second column */
-      XDrawString(dpy,main_win,NormalGC,10+max_col1,5+font->ascent+i*fontheight,
-		  cur->col2,strlen(cur->col2));
+      XDrawString(dpy, main_win, G->foreGC, 10 + max_col1,
+		  5 + G->font->ascent + i * fontheight, cur->col2,
+		  strlen(cur->col2));
       ++i;
       cur = cur->next;
     }
@@ -611,8 +590,8 @@ void AddToList(char *s1, char* s2)
   int tw1, tw2;
   struct Item* item, *cur = itemlistRoot;
 
-  tw1 = XTextWidth(font, s1, strlen(s1));
-  tw2 = XTextWidth(font, s2, strlen(s2));
+  tw1 = XTextWidth(G->font, s1, strlen(s1));
+  tw2 = XTextWidth(G->font, s2, strlen(s2));
   max_col1 = max_col1 > tw1 ? max_col1 : tw1;
   max_col2 = max_col2 > tw2 ? max_col2 : tw2;
 
@@ -838,19 +817,6 @@ void MakeList(void)
   }
 }
 
-void freelist(void)
-{
-  struct Item* cur = itemlistRoot, *cur2;
-
-  while(cur != NULL)
-    {
-      cur2 = cur;
-      cur = cur->next;
-      free(cur2);
-    }
-}
-
-
 void nocolor(char *a, char *b)
 {
  fprintf(stderr,"FvwmInitBanner: can't %s %s\n", a,b);
@@ -864,22 +830,15 @@ void nocolor(char *a, char *b)
 Pixel GetColor(char *name)
 {
   XColor color;
-  XWindowAttributes attributes;
 
-  XGetWindowAttributes(dpy,Root,&attributes);
   color.pixel = 0;
-   if (!XParseColor (dpy, attributes.colormap, name, &color))
+   if (!XParseColor (dpy, G->cmap, name, &color))
      {
        nocolor("parse",name);
      }
-   else if(!XAllocColor (dpy, attributes.colormap, &color))
+   else if(!XAllocColor (dpy, G->cmap, &color))
      {
        nocolor("alloc",name);
      }
   return color.pixel;
 }
-
-
-
-
-

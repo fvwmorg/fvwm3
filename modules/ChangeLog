@@ -1,3 +1,8 @@
+1999-04-27  Hippo
+
+	* FvwmIdent/FvwmIdent.c: uses new functions in ModGraph.c, can do
+	dynamic color changing with the fvwm DefaultColors command.
+
 Mon Apr 26 12:20:54 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmForm/FormFvwmSetup.in: Don't require trailing slash in

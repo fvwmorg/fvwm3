@@ -52,7 +52,6 @@ Pixel GetColor(char *name);
 void nocolor(char *a, char *b);
 void AddToList(char *, char *);
 void MakeList(void);
-void freelist(void);
 
 void change_defaults(char *body);
 void list_configure(unsigned long *body);
