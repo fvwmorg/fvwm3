@@ -4,12 +4,20 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 Changes in beta release 2.3.28 (not released yet)
 
 * New menu styles PopdownImmediately, PopdownDelayed and PopdownDelay.
+
 * New command CopyMenuStyle
-* Replace Dump/SmartPlacement, Active/RandomPlacement, SmartPlacement/Off 
+
+* Replaced Dump/SmartPlacement, Active/RandomPlacement, SmartPlacement/Off
   style by ManualPlacement / CascadePlacement / MinOverlapPlacement /
   MinOverlapPercentPlacement / TileManualPlacement /TileCascadePlacement
   (old style still supported).
-* We have two "clever" placement algorithm: MinOverlapPlacement (the old one)
+
+* Replaced ActivePlacementHonorsStartsOnPage with
+  ManualPlacementHonorsStartsOnPage and
+  ActivePlacementHonorsStartsOnPageOff with
+  ManualPlacementHonorsStartsOnPageOff
+
+* We have two "clever" placement algorithms: MinOverlapPlacement (the old one)
   and MinOverlapPercentPlacement.
 
 Changes in beta release 2.3.27 (2001-01-03)
