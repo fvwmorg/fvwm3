@@ -1,5 +1,13 @@
 2002-05-03  olicha  <olivier.chapuis@free.fr>
 
+	* libs/PictureImageLoader.h
+	* libs/PictureImageLoader.c (PImageLoadPixmapFromFile):
+	(PImageLoadFvwmPictureFromFile):
+	(FIMAGE_CMD_ARGS):
+	(PImageLoadXpm):
+	Fixed initialization of alloc_pixels ptr of the FvwmPicture structure
+
+2002-05-03  olicha  <olivier.chapuis@free.fr>
 	* fvwm/colorset.c (parse_tint):
 	(parse_colorset):
 	Fixed tint and bg of the transparent part of a pixmap 

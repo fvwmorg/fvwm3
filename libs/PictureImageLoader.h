@@ -48,7 +48,7 @@ Bool PImageLoadPixmapFromFile(Display *dpy, Window Root, char *file,
 			      int color_limit,
 			      Pixmap *pixmap, Pixmap *mask, Pixmap *alpha,
 			      int *width, int *height, int *depth,
-			      int *nalloc_pixels, Pixel *alloc_pixels,
+			      int *nalloc_pixels, Pixel **alloc_pixels,
 			      FvwmPictureFlags fpf);
 
 /*

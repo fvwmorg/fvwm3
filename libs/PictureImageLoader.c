@@ -47,7 +47,7 @@
                   int color_limit, \
 		  Pixmap *pixmap, Pixmap *mask, Pixmap *alpha, \
 		  int *width, int *height, int *depth, \
-		  int *nalloc_pixels, Pixel *alloc_pixels, \
+		  int *nalloc_pixels, Pixel **alloc_pixels, \
                   FvwmPictureFlags fpf
 
 typedef struct PImageLoader
@@ -662,7 +662,7 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 			FxpmFreeXpmImage(&my_image);
 			if (fpf.alloc_pixels && nalloc_pixels != NULL)
 			{
-				alloc_pixels = xpm_attributes.alloc_pixels;
+				*alloc_pixels = xpm_attributes.alloc_pixels;
 				*nalloc_pixels = xpm_attributes.nalloc_pixels;
 			}
 			return True;
@@ -833,7 +833,7 @@ Bool PImageLoadPixmapFromFile(Display *dpy, Window Root, char *path,
 			      int color_limit,
 			      Pixmap *pixmap, Pixmap *mask, Pixmap *alpha,
 			      int *width, int *height, int *depth,
-			      int *nalloc_pixels, Pixel *alloc_pixels,
+			      int *nalloc_pixels, Pixel **alloc_pixels,
 			      FvwmPictureFlags fpf)
 {
 	int done = 0, i = 0, tried = -1;
@@ -906,15 +906,11 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(Display *dpy, Window Root, char *path
 	if (!PImageLoadPixmapFromFile(dpy, Root, path, color_limit,
 				      &pixmap, &mask, &alpha,
 				      &width, &height, &depth,
-				      &nalloc_pixels, alloc_pixels, fpf))
+				      &nalloc_pixels, &alloc_pixels, fpf))
 	{
 		return NULL;
 	}
  
-#if 0
-	if (alloc_pixels != NULL)
-		fprintf(stderr, "PImageLoadPixmapFromFile return alloc_pix\n");
-#endif
 	p = (FvwmPicture*)safemalloc(sizeof(FvwmPicture));
 	memset(p, 0, sizeof(FvwmPicture));
 	p->count = 1;
