@@ -178,8 +178,7 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   */
   if (Scr.Ungrabbed != Fw)
   {
-    /* need to grab all buttons for window that we are about to
-     * unfocus */
+    /* need to grab all buttons for window that we are about to unfocus */
     focus_grab_buttons(Scr.Ungrabbed, False);
   }
   /* if we do click to focus, remove the grab on mouse events that
@@ -190,19 +189,23 @@ static void DoSetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse, Bool NoWarp)
   }
   /* RBW - allow focus to go to a NoIconTitle icon window so
    * auto-raise will work on it... */
-  if((Fw)&&(IS_ICONIFIED(Fw)))
+  if (Fw && IS_ICONIFIED(Fw))
   {
+    Bool is_window_selected = False;
+
     if (Fw->icon_w)
     {
       w = Fw->icon_w;
+      is_window_selected = True;
     }
-    else if (Fw->icon_pixmap_w)
+    if ((!is_window_selected || WAS_ICON_HINT_PROVIDED(Fw)) &&
+	Fw->icon_pixmap_w)
     {
       w = Fw->icon_pixmap_w;
     }
   }
 
-  if(Fw && IS_LENIENT(Fw))
+  if (Fw && IS_LENIENT(Fw))
   {
     FOCUS_SET(w);
     Scr.Focus = Fw;
