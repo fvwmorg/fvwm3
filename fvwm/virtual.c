@@ -798,7 +798,8 @@ void MoveViewport(int newx, int newy, Bool grab)
       tyt = t->frame_g.y;
       txr = t->frame_g.x + t->frame_g.width;
       tyb = t->frame_g.y + t->frame_g.height;
-      if (IS_STICKY(t) && !IS_VIEWPORT_MOVED(t))
+      if ((IS_STICKY(t) || (IS_ICONIFIED(t) && IS_ICON_STICKY(t))) &&
+          !IS_VIEWPORT_MOVED(t))
       {
 	/* the absolute position has changed */
 	t->normal_g.x -= deltax;
