@@ -29,6 +29,8 @@
 #include "fvwmlib.h"
 #include "Fft.h"
 #include "Colorset.h"
+#include "gravity.h"
+
 /* FlocaleCharset.h and Ficonv.h should not be included */
 
 /* ---------------------------- global definitions -------------------------- */
@@ -100,21 +102,21 @@
                      MULTIDIR_BOTTOM_LEFT
 
 #define FLF_MULTIDIR_HAS_UPPER(flf) \
-              ((flf->flags.shadow_dir & MULTIDIR_UPPER_LEFT) || \
-               (flf->flags.shadow_dir & MULTIDIR_UPPER) || \
-               (flf->flags.shadow_dir & MULTIDIR_UPPER_RIGHT))
+              ((flf->flags.shadow_dir & MULTI_DIR_NW) || \
+               (flf->flags.shadow_dir & MULTI_DIR_N) || \
+               (flf->flags.shadow_dir & MULTI_DIR_NE))
 #define FLF_MULTIDIR_HAS_BOTTOM(flf) \
-              ((flf->flags.shadow_dir & MULTIDIR_BOTTOM_LEFT) || \
-               (flf->flags.shadow_dir & MULTIDIR_BOTTOM) || \
-               (flf->flags.shadow_dir & MULTIDIR_BOTTOM_RIGHT))
+              ((flf->flags.shadow_dir & MULTI_DIR_SW) || \
+               (flf->flags.shadow_dir & MULTI_DIR_S) || \
+               (flf->flags.shadow_dir & MULTI_DIR_SE))
 #define FLF_MULTIDIR_HAS_LEFT(flf) \
-              ((flf->flags.shadow_dir & MULTIDIR_UPPER_LEFT) || \
-               (flf->flags.shadow_dir & MULTIDIR_LEFT) || \
-               (flf->flags.shadow_dir & MULTIDIR_BOTTOM_LEFT))
+              ((flf->flags.shadow_dir & MULTI_DIR_SW) || \
+               (flf->flags.shadow_dir & MULTI_DIR_W) || \
+               (flf->flags.shadow_dir & MULTI_DIR_NW))
 #define FLF_MULTIDIR_HAS_RIGHT(x) \
-              ((flf->flags.shadow_dir & MULTIDIR_UPPER_RIGHT) || \
-               (flf->flags.shadow_dir & MULTIDIR_RIGHT) || \
-               (flf->flags.shadow_dir & MULTIDIR_BOTTOM_RIGHT))
+              ((flf->flags.shadow_dir & MULTI_DIR_SE) || \
+               (flf->flags.shadow_dir & MULTI_DIR_E) || \
+               (flf->flags.shadow_dir & MULTI_DIR_SW))
 
 #define FLF_SHADOW_HEIGHT(flf) \
  (flf->shadow_size * (FLF_MULTIDIR_HAS_UPPER(flf)+FLF_MULTIDIR_HAS_BOTTOM(flf)))

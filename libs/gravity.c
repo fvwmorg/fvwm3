@@ -21,6 +21,7 @@
 
 #include <X11/Xlib.h>
 #include "Parse.h"
+#include "Strings.h"
 #include "fvwmrect.h"
 #include "gravity.h"
 
@@ -447,4 +448,48 @@ direction_type ParseDirectionArgument(
 	}
 
 	return (direction_type)rc;
+}
+
+multi_direction_type ParseMultiDirectionArgument(
+	char *action, char **ret_action)
+{
+	int rc = MULTI_DIR_NONE;
+	char *token, *str;
+	direction_type dir = ParseDirectionArgument(action, ret_action, -1);
+
+	if (dir != -1)
+	{
+		rc = (1 << dir);
+	}
+	else
+	{
+		token = PeekToken(action, &str);
+		if (StrEquals(token, "all"))
+		{
+			rc = MULTI_DIR_ALL;
+			*ret_action = str;
+		}
+		else
+		{
+			rc = MULTI_DIR_NONE;
+		}
+	}
+	return (multi_direction_type)rc;
+}
+
+void GetNextMultiDirection(int dir_set, multi_direction_type *dir)
+{
+	if (*dir == MULTI_DIR_NONE)
+	{
+		*dir = FIRST_MULTI_DIR;
+		if (dir_set & *dir)
+			return;
+	}
+	while(*dir != LAST_MULTI_DIR)
+	{
+		*dir = (*dir << 1);
+		if (dir_set & *dir)
+			return;
+	}
+	*dir = MULTI_DIR_NONE;
 }

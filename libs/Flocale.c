@@ -91,8 +91,9 @@ void FlocaleParseShadow(char *str, int *shadow_size, int *direction,
 {
 	char *dir_str;
 	char *token;
+	multi_direction_type dir;
 
-	*direction = 0;
+	*direction = MULTI_DIR_NONE;
 	token = PeekToken(str, &dir_str);
 	if (token == NULL || *token == 0 ||
 	    (GetIntegerArguments(token, NULL, shadow_size, 1) != 1) ||
@@ -104,116 +105,24 @@ void FlocaleParseShadow(char *str, int *shadow_size, int *direction,
 			(module)? module: "FVWM", fontname);
 		return;
 	}
-	token = PeekToken(dir_str, &dir_str);
-	if (!token || !*token || *token == '\n')
+	while(dir_str && *dir_str && *dir_str != '\n')
 	{
-		*direction |= MULTIDIR_BOTTOM_RIGHT;
-		return;
-	}
-	while(token && *token && *token != '\n')
-	{
-		if (StrEquals(token,"br"))
+		dir = ParseMultiDirectionArgument(dir_str, &dir_str);
+		if (dir == MULTI_DIR_NONE)
 		{
-			*direction |= MULTIDIR_BOTTOM_RIGHT;
-		}
-		else if (StrEquals(token,"ur"))
-		{
-			*direction |= MULTIDIR_UPPER_RIGHT;
-		}
-		else if (StrEquals(token,"bl"))
-		{
-			*direction |= MULTIDIR_BOTTOM_LEFT;
-		}
-		else if (StrEquals(token,"ul"))
-		{
-			*direction |= MULTIDIR_UPPER_LEFT;
-		}
-		else if (StrEquals(token,"l"))
-		{
-			*direction |= MULTIDIR_LEFT;
-		}
-		else if (StrEquals(token,"r"))
-		{
-			*direction |= MULTIDIR_RIGHT;
-		}
-		else if (StrEquals(token,"b"))
-		{
-			*direction |= MULTIDIR_BOTTOM;
-		}
-		else if (StrEquals(token,"u"))
-		{
-			*direction |= MULTIDIR_UPPER;
-		}
-		else if (StrEquals(token,"all"))
-		{
-			*direction |= MULTIDIR_ALL;
+			fprintf(stderr,"[%s][FlocaleGetFont]: WARNING -- bad "
+				"shadow direction in font description:\n"
+				"\t%s\n",
+				(module)? module: "FVWM", fontname);
+			PeekToken(dir_str, &dir_str); /* skip it */
 		}
 		else
 		{
-			fprintf(stderr,"[%s][FlocaleGetFont]: WARNING -- bad "
-				"shadow direction %s in font description:"
-				"%s\n",
-				(module)? module: "FVWM", token, fontname);
+			*direction |= dir;
 		}
-		token = PeekToken(dir_str, &dir_str);
 	}
-	if (*direction == 0)
-		*direction = MULTIDIR_BOTTOM_RIGHT;
-}
-
-static
-void FlocaleGetNextShadowDirection(FlocaleFont *flf, short *dir)
-{
-
-	if (*dir == 0)
-	{
-		*dir = MULTIDIR_LEFT;
-		if (*dir & flf->flags.shadow_dir)
-			return;
-	}
-	if (*dir & MULTIDIR_LEFT)
-	{
-		*dir = MULTIDIR_UPPER_LEFT;
-		if (*dir & flf->flags.shadow_dir)
-			return;
-	}
-	if (*dir & MULTIDIR_UPPER_LEFT)
-	{
-		*dir = MULTIDIR_UPPER;
-		if (*dir & flf->flags.shadow_dir)
-			return;
-	}
-	if (*dir & MULTIDIR_UPPER)
-	{
-		*dir = MULTIDIR_UPPER_RIGHT;
-		if (*dir & flf->flags.shadow_dir)
-			return;
-	}
-	if (*dir & MULTIDIR_UPPER_RIGHT)
-	{
-		*dir = MULTIDIR_RIGHT;
-		if (*dir & flf->flags.shadow_dir)
-			return;
-	}
-	if (*dir & MULTIDIR_RIGHT)
-	{
-		*dir = MULTIDIR_BOTTOM_RIGHT;
-		if (*dir & flf->flags.shadow_dir)
-			return;
-	}
-	if (*dir & MULTIDIR_BOTTOM_RIGHT)
-	{
-		*dir = MULTIDIR_BOTTOM;
-		if (*dir & flf->flags.shadow_dir)
-			return;
-	}
-	if (*dir & MULTIDIR_BOTTOM)
-	{
-		*dir = MULTIDIR_BOTTOM_LEFT;
-		if (*dir & flf->flags.shadow_dir)
-			return;
-	}
-	*dir = 0;
+	if (*direction == MULTI_DIR_NONE)
+		*direction = MULTI_DIR_SE;
 }
 
 /* ***************************************************************************
@@ -1104,21 +1013,21 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 				  int *x, int *y, int *step)
 {
 
-	static unsigned short direction = 0;
+	static multi_direction_type direction = MULTI_DIR_NONE;
 	static unsigned short inter_step = 0;
 	static unsigned short x_sign = 0, y_sign = 0;
 
 	if (*step == 0)
 	{
-		direction = 0;
+		direction = MULTI_DIR_NONE;
 	}
 	if (*step == 0 || inter_step == flf->shadow_size)
 	{
 		/* setup a new direction */
 		inter_step = 0;
-		FlocaleGetNextShadowDirection(flf, &direction);
+		GetNextMultiDirection(flf->flags.shadow_dir, &direction);
 	}
-	if (direction == 0)
+	if (direction == MULTI_DIR_NONE)
 	{
 		/* finished; return the position for the no shadow drawing */
 		switch(fws->flags.text_rotation)
@@ -1165,49 +1074,49 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 		case TEXT_ROTATED_270: /* CCW */
 			switch(direction)
 			{
-			case MULTIDIR_LEFT:
+			case MULTI_DIR_W:
 				*x = TR_CCW_ORIG_X;
 				*y = TR_CCW_ORIG_Y + 1;
 				x_sign = 0;
 				y_sign = 1;
 				break;
-			case MULTIDIR_UPPER_LEFT:
+			case MULTI_DIR_NW:
 				*x = TR_CCW_ORIG_X - flf->shadow_size;
 				*y = TR_CCW_ORIG_Y + flf->shadow_size;
 				x_sign = 1;
 				y_sign = - 1;
 				break;
-			case MULTIDIR_UPPER:
+			case MULTI_DIR_N:
 				*x = TR_CCW_ORIG_X - flf->shadow_size;
 				*y = TR_CCW_ORIG_Y;
 				x_sign = 1;
 				y_sign = 0;
 				break;
-			case MULTIDIR_UPPER_RIGHT:
+			case MULTI_DIR_NE:
 				*x = TR_CCW_ORIG_X - flf->shadow_size;
 				*y = TR_CCW_ORIG_Y - flf->shadow_size;
 				x_sign = 1;
 				y_sign = 1;
 				break;
-			case MULTIDIR_RIGHT:
+			case MULTI_DIR_E:
 				*x = TR_CCW_ORIG_X;
 				*y = TR_CCW_ORIG_Y - 1;
 				x_sign = 0;
 				y_sign = -1;
 				break;
-			case MULTIDIR_BOTTOM_RIGHT:
+			case MULTI_DIR_SE:
 				*x = TR_CCW_ORIG_X + 1;
 				*y = TR_CCW_ORIG_Y - 1;
 				x_sign = 1;
 				y_sign = -1;
 				break;
-			case MULTIDIR_BOTTOM:
+			case MULTI_DIR_S:
 				*x = TR_CCW_ORIG_X + 1;
 				*y = TR_CCW_ORIG_Y;
 				x_sign = 1;
 				y_sign = 0;
 				break;
-			case MULTIDIR_BOTTOM_LEFT:
+			case MULTI_DIR_SW:
 				*x = TR_CCW_ORIG_X + flf->shadow_size;
 				*y = TR_CCW_ORIG_Y + flf->shadow_size;
 				x_sign = -1;
@@ -1220,49 +1129,49 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 		case TEXT_ROTATED_180: /* (exact "opposite" of normal dir) */
 			switch(direction)
 			{
-			case MULTIDIR_LEFT:
+			case MULTI_DIR_W:
 				*x = REVERSE_ORIG_X + flf->shadow_size;
 				*y = REVERSE_ORIG_Y;
 				x_sign = -1;
 				y_sign = 0;
 				break;
-			case MULTIDIR_UPPER_LEFT:
+			case MULTI_DIR_NW:
 				*x = REVERSE_ORIG_X + flf->shadow_size;
 				*y = REVERSE_ORIG_Y + flf->shadow_size;
 				x_sign = -1;
 				y_sign = -1;
 				break;
-			case MULTIDIR_UPPER:
+			case MULTI_DIR_N:
 				*x = REVERSE_ORIG_X;
 				*y = REVERSE_ORIG_Y + flf->shadow_size;
 				x_sign = 0;
 				y_sign = -1;
 				break;
-			case MULTIDIR_UPPER_RIGHT:
+			case MULTI_DIR_NE:
 				*x = REVERSE_ORIG_X - 1;
 				*y = REVERSE_ORIG_Y + 1;
 				x_sign = -1;
 				y_sign = 1;
 				break;
-			case MULTIDIR_RIGHT:
+			case MULTI_DIR_E:
 				*x = REVERSE_ORIG_X - 1;
 				*y = REVERSE_ORIG_Y;
 				x_sign = -1;
 				y_sign = 0;
 				break;
-			case MULTIDIR_BOTTOM_RIGHT:
+			case MULTI_DIR_SE:
 				*x = REVERSE_ORIG_X - 1;
 				*y = REVERSE_ORIG_Y - 1;
 				x_sign = -1;
 				y_sign = -1;
 				break;
-			case MULTIDIR_BOTTOM:
+			case MULTI_DIR_S:
 				*x = REVERSE_ORIG_X;
 				*y = REVERSE_ORIG_Y - 1;
 				x_sign = 0;
 				y_sign = -1;
 				break;
-			case MULTIDIR_BOTTOM_LEFT:
+			case MULTI_DIR_SW:
 				*x = REVERSE_ORIG_X + flf->shadow_size;
 				*y = REVERSE_ORIG_Y - flf->shadow_size;
 				x_sign = -1;
@@ -1275,49 +1184,49 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 		case TEXT_ROTATED_90: /* CW (exact "opposite" of CCW) */
 			switch(direction)
 			{
-			case MULTIDIR_LEFT:
+			case MULTI_DIR_W:
 				*x = TR_CW_ORIG_X;
 				*y = TR_CW_ORIG_Y - 1;
 				x_sign = 0;
 				y_sign = -1;
 				break;
-			case MULTIDIR_UPPER_LEFT:
+			case MULTI_DIR_NW:
 				*x = TR_CW_ORIG_X + flf->shadow_size;
 				*y = TR_CW_ORIG_Y - flf->shadow_size;
 				x_sign = -1;
 				y_sign = +1;
 				break;
-			case MULTIDIR_UPPER:
+			case MULTI_DIR_N:
 				*x = TR_CW_ORIG_X + flf->shadow_size;
 				*y = TR_CW_ORIG_Y;
 				x_sign = -1;
 				y_sign = 0;
 				break;
-			case MULTIDIR_UPPER_RIGHT:
+			case MULTI_DIR_NE:
 				*x = TR_CW_ORIG_X + flf->shadow_size;
 				*y = TR_CW_ORIG_Y + flf->shadow_size;
 				x_sign = -1;
 				y_sign = -1;
 				break;
-			case MULTIDIR_RIGHT:
+			case MULTI_DIR_E:
 				*x = TR_CW_ORIG_X;
 				*y = TR_CW_ORIG_Y + 1;
 				x_sign = 0;
 				y_sign = 1;
 				break;
-			case MULTIDIR_BOTTOM_RIGHT:
+			case MULTI_DIR_SE:
 				*x = TR_CW_ORIG_X - 1;
 				*y = TR_CW_ORIG_Y + 1;
 				x_sign = -1;
 				y_sign = 1;
 				break;
-			case MULTIDIR_BOTTOM:
+			case MULTI_DIR_S:
 				*x = TR_CW_ORIG_X - 1;
 				*y = TR_CW_ORIG_Y;
 				x_sign = -1;
 				y_sign = 0;
 				break;
-			case MULTIDIR_BOTTOM_LEFT:
+			case MULTI_DIR_SW:
 				*x = TR_CW_ORIG_X - flf->shadow_size;
 				*y = TR_CW_ORIG_Y - flf->shadow_size;
 				x_sign = 1;
@@ -1331,49 +1240,49 @@ Bool FlocaleGetShadowTextPosition(FlocaleFont *flf, FlocaleWinString *fws,
 		default: /* no rotation */
 			switch(direction)
 			{
-			case MULTIDIR_LEFT:
+			case MULTI_DIR_W:
 				*x = NORMAL_ORIG_X - flf->shadow_size;
 				*y = NORMAL_ORIG_Y;
 				x_sign = 1;
 				y_sign = 0;
 				break;
-			case MULTIDIR_UPPER_LEFT:
+			case MULTI_DIR_NW:
 				*x = NORMAL_ORIG_X - flf->shadow_size;
 				*y = NORMAL_ORIG_Y - flf->shadow_size;
 				x_sign = 1;
 				y_sign = 1;
 				break;
-			case MULTIDIR_UPPER:
+			case MULTI_DIR_N:
 				*x = NORMAL_ORIG_X;
 				*y = NORMAL_ORIG_Y - flf->shadow_size;
 				x_sign = 0;
 				y_sign = 1;
 				break;
-			case MULTIDIR_UPPER_RIGHT:
+			case MULTI_DIR_NE:
 				*x = NORMAL_ORIG_X + 1;
 				*y = NORMAL_ORIG_Y - 1;
 				x_sign = 1;
 				y_sign = -1;
 				break;
-			case MULTIDIR_RIGHT:
+			case MULTI_DIR_E:
 				*x = NORMAL_ORIG_X + 1;
 				*y = NORMAL_ORIG_Y;
 				x_sign = 1;
 				y_sign = 0;
 				break;
-			case MULTIDIR_BOTTOM_RIGHT:
+			case MULTI_DIR_SE:
 				*x = NORMAL_ORIG_X + 1;
 				*y = NORMAL_ORIG_Y + 1;
 				x_sign = 1;
 				y_sign = 1;
 				break;
-			case MULTIDIR_BOTTOM:
+			case MULTI_DIR_S:
 				*x = NORMAL_ORIG_X;
 				*y = NORMAL_ORIG_Y + 1;
 				x_sign = 0;
 				y_sign = 1;
 				break;
-			case MULTIDIR_BOTTOM_LEFT:
+			case MULTI_DIR_SW:
 				*x = NORMAL_ORIG_X - flf->shadow_size;
 				*y = NORMAL_ORIG_Y + flf->shadow_size;
 				x_sign = 1;

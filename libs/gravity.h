@@ -40,6 +40,23 @@ typedef enum
 	DIR_MASK = 7,
 } direction_type;
 
+typedef enum
+{
+	MULTI_DIR_NONE = 0,
+	MULTI_DIR_N =    (1 << DIR_N),
+	MULTI_DIR_E =    (1 << DIR_E),
+	MULTI_DIR_S =    (1 << DIR_S),
+	MULTI_DIR_W =    (1 << DIR_W),
+	MULTI_DIR_NE =   (1 << DIR_NE),
+	MULTI_DIR_SE =   (1 << DIR_SE),
+	MULTI_DIR_SW =   (1 << DIR_SW),
+	MULTI_DIR_NW =   (1 << DIR_NW),
+	MULTI_DIR_ALL =  MULTI_DIR_N | MULTI_DIR_E | MULTI_DIR_S | MULTI_DIR_W |
+	          MULTI_DIR_NE | MULTI_DIR_SE | MULTI_DIR_SW | MULTI_DIR_NW,
+} multi_direction_type;
+
+#define FIRST_MULTI_DIR MULTI_DIR_N
+#define LAST_MULTI_DIR  MULTI_DIR_NW
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- interface functions ------------------------- */
@@ -65,5 +82,8 @@ int gravity_dir_to_sign_one_axis(
 	direction_type dir);
 direction_type ParseDirectionArgument(
 	char *action, char **ret_action, direction_type default_ret);
+multi_direction_type ParseMultiDirectionArgument(
+	char *action, char **ret_action);
+void GetNextMultiDirection(int dir_set, multi_direction_type *dir);
 
 #endif /* GRAVITY_H */
