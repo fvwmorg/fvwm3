@@ -688,7 +688,6 @@ HandleTerminate(int sig) {
 
 int main(int argc, char **argv) {
   char *s;
-  char mask_mesg[20];
   char cmd[200];                        /* really big area for a command */
 
   /* Save our program  name - for error events */
@@ -764,16 +763,15 @@ int main(int argc, char **argv) {
   sprintf(cmd,"read .%s Quiet",MyName+1); /* read quiet modules config */
   SendText(Channel,cmd,0);
   ParseOptions();                       /* get cmds fvwm has parsed */
-
-  sprintf(mask_mesg,"SET_MASK %lu\n",(unsigned long)
-          (M_ICONIFY|M_DEICONIFY|M_STRING
-           |M_LOCKONSEND|M_SENDCONFIG|M_CONFIG_INFO));
-  SendInfo(Channel, mask_mesg, 0);      /* tell fvwm about our mask */
+  
+  SetMessageMask(Channel, M_ICONIFY|M_DEICONIFY|M_STRING|M_SENDCONFIG
+		 |M_CONFIG_INFO);        /* tell fvwm about our mask */
   CreateDrawGC();			/* create initial GC if necc. */
   SendText(Channel,"Nop",0);
   DefineMe();
   running = True;                       /* out of initialization phase */
   SendFinishedStartupNotification(Channel); /* tell fvwm we're running */
+  SetSyncMask(Channel,M_ICONIFY|M_DEICONIFY|M_STRING); /* lock on send mask */
   Loop();                               /* start running */
   return 0;
 }
@@ -897,7 +895,8 @@ static void Loop(void) {
       } /* end switch header */
 
     myfprintf((stderr,"Sending unlock\n"));
-    SendInfo(Channel, "UNLOCK 1\n", 0); /* fvwm can continue now! */
+    if (packet->type != M_CONFIG_INFO)
+      SendInfo(Channel, "UNLOCK 1\n", 0); /* fvwm can continue now! */
     if ((Animate.resize == AnimateResizeNone  /* If no animation desired */
         && animate_none >= 1)		/* and 1 animation(s) */
         || stop_recvd) {		/* or stop cmd */

@@ -81,7 +81,6 @@ int main(int argc, char **argv)
 {
   char *enter_fn="Silent Raise";	/* default */
   char *leave_fn=NULL;
-  char mask_mesg[80];
   unsigned long last_win = 0;	/* last window handled */
   unsigned long focus_win = 0;	/* current focus */
   unsigned long raised_win = 0;
@@ -133,11 +132,12 @@ int main(int argc, char **argv)
   }
 
   fd_width = GetFdWidth();
-  sprintf(mask_mesg,"SET_MASK %lu\n",
-	  (unsigned long)(M_FOCUS_CHANGE|M_RAISE_WINDOW|M_LOCKONSEND));
-  SendInfo(fd,mask_mesg,0);
+  
+  SetMessageMask(fd,M_FOCUS_CHANGE|M_RAISE_WINDOW);
   /* tell fvwm we're running */
   SendFinishedStartupNotification(fd);
+  /* tell fvwm that we want to be lock on send */
+  SetSyncMask(fd, M_FOCUS_CHANGE|M_RAISE_WINDOW);
 
   while(1)
   {

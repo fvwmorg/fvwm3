@@ -1,5 +1,12 @@
 1999-11-12 olicha <olivier.chapuis@free.fr>
 
+	* FvwmAnimate/FvwmAnimate.c (main):
+        (Loop):
+	* FvwmAuto/FvwmAuto.c (main):
+        Use SetSyncMask in the place of M_LOCKONSEND
+
+1999-11-12 olicha <olivier.chapuis@free.fr>
+
 	* FvwmTaskBar/FvwmTaskBar.c (main):
         (ParseConfig):
         (ProcessMessage):
