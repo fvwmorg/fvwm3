@@ -746,15 +746,14 @@ void DispatchEvent(XEvent *Event)
 	    {
 	      if(Event->xany.window == Desks[i].w)
 		{
-		  if (Scr.CurrentDesk != i + desk1)
-		    {
-		      SwitchToDeskAndPage(i,Event);
-		      Scr.CurrentDesk = i + desk1;
-		      Wait = 0;
-		    }
 		  XQueryPointer(dpy, Desks[i].w, &JunkRoot, &JunkChild,
 				&JunkX, &JunkY,&x, &y, &JunkMask);
-		  Scroll(desk_w, desk_h, x, y, i);
+		  Scroll(desk_w, desk_h, x, y, Scr.CurrentDesk);
+		  if (Scr.CurrentDesk != i + desk1)
+		    {
+		      Wait = 0;
+		      SwitchToDesk(i);
+		    }
 		  break;
 		}
 	    }
@@ -1192,7 +1191,6 @@ void SwitchToDeskAndPage(int Desk, XEvent *Event)
   if (Scr.CurrentDesk != (Desk+desk1))
     {
       int vx, vy;
-      SendInfo(fd,"GoToDesk 0 10000\n",0);
       /* patch to let mouse button 3 change desks and do not cling to a page */
       vx = Event->xbutton.x*(Scr.VxMax+Scr.MyDisplayWidth)/
 	(desk_w*Scr.MyDisplayWidth);
@@ -1792,7 +1790,6 @@ XErrorHandler FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
 #if 1
   extern Bool error_occured;
-
   error_occured = True;
   return 0;
 #else
