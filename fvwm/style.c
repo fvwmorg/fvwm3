@@ -3356,26 +3356,26 @@ static Bool style_parse_one_style_option(
 		else if (StrEquals(token, "TitleAtBottom"))
 		{
 			S_SET_TITLE_DIR(SCF(*ps), DIR_S);
-			S_SET_TITLE_DIR(SCM(*ps), 1);
-			S_SET_TITLE_DIR(SCC(*ps), 1);
+			S_SET_TITLE_DIR(SCM(*ps), DIR_MAJOR_MASK);
+			S_SET_TITLE_DIR(SCC(*ps), DIR_MAJOR_MASK);
 		}
 		else if (StrEquals(token, "TitleAtTop"))
 		{
 			S_SET_TITLE_DIR(SCF(*ps), DIR_N);
-			S_SET_TITLE_DIR(SCM(*ps), 1);
-			S_SET_TITLE_DIR(SCC(*ps), 1);
+			S_SET_TITLE_DIR(SCM(*ps), DIR_MAJOR_MASK);
+			S_SET_TITLE_DIR(SCC(*ps), DIR_MAJOR_MASK);
 		}
 		else if (StrEquals(token, "TitleAtLeft"))
 		{
 			S_SET_TITLE_DIR(SCF(*ps), DIR_W);
-			S_SET_TITLE_DIR(SCM(*ps), 1);
-			S_SET_TITLE_DIR(SCC(*ps), 1);
+			S_SET_TITLE_DIR(SCM(*ps), DIR_MAJOR_MASK);
+			S_SET_TITLE_DIR(SCC(*ps), DIR_MAJOR_MASK);
 		}
 		else if (StrEquals(token, "TitleAtRight"))
 		{
 			S_SET_TITLE_DIR(SCF(*ps), DIR_E);
-			S_SET_TITLE_DIR(SCM(*ps), 1);
-			S_SET_TITLE_DIR(SCC(*ps), 1);
+			S_SET_TITLE_DIR(SCM(*ps), DIR_MAJOR_MASK);
+			S_SET_TITLE_DIR(SCC(*ps), DIR_MAJOR_MASK);
 		}
 		else if (StrEquals(token, "TopTitleRotated"))
 		{

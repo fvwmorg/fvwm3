@@ -1,3 +1,9 @@
+2002-08-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (style_parse_one_style_option):
+	fixed flag_mask and change_mask of TitleAt... styles that broke left
+	and bottom titles
+
 2002-08-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.1.in:
