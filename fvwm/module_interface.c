@@ -601,6 +601,8 @@ int HandleModuleInput(Window w, int channel, char *expect)
                         &Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask);
 	}
 #else
+      /* On the other hand, if we always query the pointer, the pager-drag-out
+       * feature doesn't work properly. */
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
 		    &Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask);
 #endif

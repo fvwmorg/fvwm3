@@ -2113,7 +2113,7 @@ void MoveWindow(XEvent *Event)
     sprintf(command, "Silent Move %dp %dp", x, y);
     SendInfo(fd,command,t->w);
     SendInfo(fd,"Silent Raise",t->w);
-    SendInfo(fd,"Silent Move",t->w);
+    SendInfo(fd,"Silent Move Pointer",t->w);
     return;
   }
   else
@@ -2513,7 +2513,7 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
       sprintf(command, "Silent Move %dp %dp", x, y);
       SendInfo(fd,command,t->w);
       SendInfo(fd,"Silent Raise",t->w);
-      SendInfo(fd,"Silent Move",t->w);
+      SendInfo(fd,"Silent Move Pointer",t->w);
     }
   else
     {

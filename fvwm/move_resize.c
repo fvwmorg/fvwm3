@@ -151,18 +151,30 @@ static int GetOnePositionArgument(
  *  w+5  w-10p       Pointer relative position, right 5%, up ten pixels
  * Returns 2 when x & y have parsed without error, 0 otherwise
  */
-static int GetMoveArguments(char *action, int x, int y, int w, int h,
-			    int *pFinalX, int *pFinalY, Bool *fWarp)
+static int GetMoveArguments(
+  char *action, int x, int y, int w, int h, int *pFinalX, int *pFinalY,
+  Bool *fWarp, Bool *fPointer)
 {
-  char *s1, *s2, *warp;
+  char *s1 = NULL;
+  char *s2 = NULL;
+  char *warp = NULL;
   int scrWidth = Scr.MyDisplayWidth;
   int scrHeight = Scr.MyDisplayHeight;
   int retval = 0;
 
   action = GetNextToken(action, &s1);
-  action = GetNextToken(action, &s2);
-  GetNextToken(action, &warp);
-  *fWarp = StrEquals(warp, "Warp");
+  if (s1 && StrEquals(s1, "pointer"))
+  {
+      *fPointer = True;
+      free(s1);
+      return 0;
+  }
+  else
+  {
+    action = GetNextToken(action, &s2);
+    warp = PeekToken(action, &action);
+    *fWarp = StrEquals(warp, "Warp");
+  }
 
   if (s1 != NULL && s2 != NULL)
   {
@@ -192,14 +204,13 @@ static int GetMoveArguments(char *action, int x, int y, int w, int h,
     free(s1);
   if (s2)
     free(s2);
-  if (warp)
-    free(warp);
 
   return retval;
 }
 
-static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
-			    int *FinalY, XEvent *eventp)
+static void InteractiveMove(
+  Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY, XEvent *eventp,
+  Bool do_start_at_pointer)
 {
   int origDragX,origDragY,DragX, DragY, DragWidth, DragHeight;
   int XOffset, YOffset;
@@ -217,9 +228,20 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
    * unconditionally to remove the external */
   XFlush(dpy);
 
-  /* Although a move is usually done with a button depressed we have to check
-   * for ButtonRelease too since the event may be faked. */
-  GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &DragX, &DragY);
+  if (do_start_at_pointer)
+  {
+    XQueryPointer(
+      dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX, &DragY, &JunkX, &JunkY,
+      &JunkMask);
+    origDragX = DragX;
+    origDragY = DragY;
+  }
+  else
+  {
+    /* Although a move is usually done with a button depressed we have to check
+     * for ButtonRelease too since the event may be faked. */
+    GetLocationFromEventOrQuery(dpy, Scr.Root, &Event, &DragX, &DragY);
+  }
 
   if(!GrabEm(CRS_MOVE, GRAB_NORMAL))
   {
@@ -227,9 +249,12 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
     return;
   }
 
-  XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
-	       (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,
-	       &JunkBW,  &JunkDepth);
+  if (!do_start_at_pointer)
+  {
+    XGetGeometry(dpy, w, &JunkRoot, &origDragX, &origDragY,
+                 (unsigned int *)&DragWidth, (unsigned int *)&DragHeight,
+                 &JunkBW,  &JunkDepth);
+  }
 
   if(DragWidth*DragHeight <
      (Scr.OpaqueSize*Scr.MyDisplayWidth*Scr.MyDisplayHeight)/100)
@@ -418,6 +443,7 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
   unsigned int width, height;
   int page_x, page_y;
   Bool fWarp = False;
+  Bool fPointer = False;
   int dx;
   int dy;
 
@@ -464,9 +490,11 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
   }
   else
   {
-    n = GetMoveArguments(action,x,y,width,height,&FinalX,&FinalY,&fWarp);
-    if (n != 2)
-      InteractiveMove(&w,tmp_win,&FinalX,&FinalY,eventp);
+    n = GetMoveArguments(
+      action, x, y, width, height, &FinalX, &FinalY, &fWarp, &fPointer);
+
+    if (n != 2 || fPointer)
+      InteractiveMove(&w, tmp_win, &FinalX, &FinalY, eventp, fPointer);
   }
 
   dx = FinalX - tmp_win->frame_g.x;

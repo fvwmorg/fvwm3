@@ -1,5 +1,15 @@
 2000-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmCommand/FvwmCommandS.c:
+	removed debug fprintf
+
+	* FvwmIconMan/xmanager.c (clear_empty_region):
+	fixed drawing background in non-transparent IconMan
+
+	* FvwmPager/x_pager.c (MoveWindow):
+	(IconMoveWindow):
+	fixed dragging windows out of pager
+
 	* FvwmCommand/FvwmCommand.c:
 	-Wall fix
 

@@ -2265,15 +2265,15 @@ AddToFunc lower-to-bottom
 .EE
 
 .TP
-.B "Move" "[\fI[w|m]x [w|m]y\fP [\fIWarp\fP]]|[pointer]"
+.B "Move" "[\fI[w|m]x [w|m]y\fP [\fIWarp\fP]] | [pointer]"
 Allows the user to move a window.  If called from somewhere in a
 window or its border, then that window will be moved.  If called from
 the root window then the user will be allowed to select the target
 window.  If the optional argument \fIWarp\fP is specified the pointer
-is warped with the window.
-
-  The single argument \fImouse\fP indicated
-that the top left corner of the window
+is warped with the window.  If the single argument \fIpointer\fP is
+given, the top left corner of the window window is moved to the pointer
+position before starting the operation; this is mainly intended for
+internal use by modules like FvwmPager.
 
 The operation can be aborted with Escape or by pressing any mouse button
 (except button 1 which confirms the move).

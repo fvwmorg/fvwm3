@@ -1021,6 +1021,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 
   Event.xany.window = Event.xmaprequest.window;
 
+fprintf(stderr,"hmrkr\n");
   if (ReuseWin == NULL)
   {
     if(XFindContext(dpy, Event.xany.window, FvwmContext,
@@ -1168,6 +1169,7 @@ void HandleMapNotify(void)
   if(Event.xmap.event != Event.xmap.window)
     return;
 
+  SET_MAP_PENDING(Tmp_win, 0);
   /* don't map if the event was caused by a de-iconify */
   if (IS_DEICONIFY_PENDING(Tmp_win))
   {
@@ -1223,7 +1225,6 @@ void HandleMapNotify(void)
   MyXUngrabServer (dpy);
   XFlush (dpy);
   SET_MAPPED(Tmp_win, 1);
-  SET_MAP_PENDING(Tmp_win, 0);
   SET_ICONIFIED(Tmp_win, 0);
   SET_ICON_UNMAPPED(Tmp_win, 0);
   if (DO_ICONIFY_AFTER_MAP(Tmp_win))

@@ -171,16 +171,16 @@ static void UnmapIt(FvwmWindow *t)
   eventMask = winattrs.your_event_mask;
   XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
   if(IS_ICONIFIED(t))
-    {
-      if(t->icon_pixmap_w != None)
-	XUnmapWindow(dpy,t->icon_pixmap_w);
-      if(t->icon_w != None)
-	XUnmapWindow(dpy,t->icon_w);
-    }
-  else if(IS_MAPPED(t) || IS_MAP_PENDING(t))
-    {
-      XUnmapWindow(dpy,t->frame);
-    }
+  {
+    if(t->icon_pixmap_w != None)
+      XUnmapWindow(dpy,t->icon_pixmap_w);
+    if(t->icon_w != None)
+      XUnmapWindow(dpy,t->icon_w);
+  }
+  else
+  {
+    XUnmapWindow(dpy,t->frame);
+  }
   XSelectInput(dpy, t->w, eventMask);
 }
 
@@ -201,7 +201,6 @@ static void MapIt(FvwmWindow *t)
   else if(IS_MAPPED(t))
     {
       XMapWindow(dpy,t->frame);
-      SET_MAP_PENDING(t, 1);
       XMapWindow(dpy, t->Parent);
       XMapWindow(dpy, t->decor_w);
    }
@@ -980,11 +979,11 @@ void UnmapDesk(int desk, Bool grab)
       {
 	if(t->Desk == desk)
 	{
-	 if (Scr.Focus == t)
-	   t->FocusDesk = desk;
-	 else
-	   t->FocusDesk = -1;
-	 UnmapIt(t);
+          if (Scr.Focus == t)
+            t->FocusDesk = desk;
+          else
+            t->FocusDesk = -1;
+          UnmapIt(t);
 	}
       }
     else

@@ -818,17 +818,21 @@ static void clear_empty_region (WinManager *man)
 		rects[0].x, rects[0].y, rects[0].width, rects[0].height,
 		rects[1].x, rects[1].y, rects[1].width, rects[1].height);
 
-#if 0
-  XFillRectangles (theDisplay, man->theWindow,
-		   man->backContext[DEFAULT], rects, num_rects);
-#else
-  for(n=0; n < num_rects; n++)
+  if (man->colorsets[DEFAULT] >= 0 &&
+      Colorset[man->colorsets[DEFAULT]].pixmap == ParentRelative)
   {
-    XClearArea(
-      theDisplay, man->theWindow, rects[n].x, rects[n].y, rects[n].width,
-      rects[n].height, False);
+    for(n=0; n < num_rects; n++)
+    {
+      XClearArea(
+        theDisplay, man->theWindow, rects[n].x, rects[n].y, rects[n].width,
+        rects[n].height, False);
+    }
   }
-#endif
+  else
+  {
+    XFillRectangles (theDisplay, man->theWindow,
+                     man->backContext[DEFAULT], rects, num_rects);
+  }
 }
 
 void set_shape (WinManager *man)

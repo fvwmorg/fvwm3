@@ -1,3 +1,16 @@
+2000-01-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/virtual.c (MapIt):
+	* fvwm/events.c (HandleMapNotify):
+	* fvwm/virtual.c (UnmapIt):
+	fixed is_map_pending flag and reduced usage of it
+
+	* fvwm/fvwm2.1 (Move):
+ 	finished man page entry
+
+	* fvwm/move_resize.c (move_window_doit):
+	new option 'pointer' to move command; inteded for use with FvwmPager
+
 2000-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/module_interface.c (PositiveWrite):
