@@ -230,13 +230,13 @@ as its initialization file.  This is equivalent to
 .BR "-h" " | " "--help"
 A short usage description is printed.
 .TP
-.BR "-r" " | " "-replace"
+.BR "-r" " | " "--replace"
 Try to take over from a previously running wm.  This does not work
 unless the other wm is
 .SM ICCCM
 2.0 compliant.
 .TP
-.BR "-F" " | " "-restore "
+.BR "-F" " | " "--restore "
 .I state-file
 This option is used when fvwm is started by a session manager.
 Should not be used by a user.
@@ -303,7 +303,7 @@ pre-allocated palette is auto detected the defaults are as follow:
 .EX
             | depth 8 (256 colors)| depth 4 (16 colors)
 ------------|---------------------|--------------------
-PseudoColor | 68 (4 cc + 4 grey)  | 10 (2 cc* + 2 grey)
+PseudoColor | 68 (4 cc + 4 grey)  | 10 (2 cc + 2 grey)
 ------------|---------------------|--------------------
 GrayScale   | 64 regular grey     |  8 regular grey
 ----------- |---------------------|--------------------

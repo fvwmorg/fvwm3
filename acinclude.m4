@@ -1208,8 +1208,8 @@ pkg_config_fontconfig_exists=""
 
 if test "$FC_CONFIG" = "no" ; then
   if test "x$PKG_CONFIG" != "xno" ; then
-    if pkg-config --exists 'fontconfig' ; then
-      if pkg-config --exists 'fontconfig >= $1' ; then
+    if $PKG_CONFIG --exists 'fontconfig' ; then
+      if $PKG_CONFIG --exists 'fontconfig >= $1' ; then
         FC_CFLAGS=`$PKG_CONFIG --cflags fontconfig`
         FC_LIBS=`$PKG_CONFIG --libs fontconfig`
       else
@@ -1266,7 +1266,7 @@ if test "x$no_fc" = x ; then
     CFLAGS="$CFLAGS $FC_CFLAGS $FT2_CFLAGS"
     LIBS="$FC_LIBS $LIBS $FT2_LIBS"
 dnl
-dnl Sanity checks for the results of fontconfig-config to some extent
+dnl Sanity checks for the results of fontconfig-config/pkg-config to some extent
 dnl
       AC_TRY_RUN([
 #include <fontconfig/fontconfig.h>
@@ -1295,29 +1295,27 @@ main()
   fi
 fi
 
-if test "x$no_fc" = x ; then
-   AC_MSG_RESULT(yes)
-   ifelse([$2], , :, [$2])
+if test "x$no_fc" = x; then
+  AC_MSG_RESULT(yes)
+  ifelse([$2], , :, [$2])
 else
-   AC_MSG_RESULT(no)
-   if test "x$fc_config_is_lt" = "xyes" ; then
-       echo "*** Your Fontconfig package version is < $1"
-   elif test "$FC_CONFIG" != "no" ; then
-       echo "*** The Fontconfig test program failed to run.  If your system uses"
-       echo "*** shared libraries and they are installed outside the normal"
-       echo "*** system library path, make sure the variable LD_LIBRARY_PATH"
-       echo "*** (or whatever is appropiate for your system) is correctly set."
-     fi
-   fi
-   if test "x$pkg_config_fontconfig_exists" = "xmaybe" ; then
-      echo "*** fontconfig was not found in the pkg-config search path."
-      echo "*** either fontconfig is not installed or perhaps you should"
-      echo "*** add the directory containing fontconfig.pc to the "
-      echo "*** PKG_CONFIG_PATH environment variable."
-   fi
-   FC_CFLAGS=""
-   FC_LIBS=""
-   ifelse([$3], , :, [$3])
+  AC_MSG_RESULT(no)
+  if test "x$fc_config_is_lt" = "xyes"; then
+    echo "*** Your Fontconfig package version is < $1"
+  elif test "x$pkg_config_fontconfig_exists" = "xmaybe"; then
+    echo "*** fontconfig was not found in the pkg-config search path."
+    echo "*** either fontconfig is not installed or perhaps you should"
+    echo "*** add the directory containing fontconfig.pc to the "
+    echo "*** PKG_CONFIG_PATH environment variable."
+  elif test "$FC_CONFIG" != "no"; then
+    echo "*** The Fontconfig test program failed to run.  If your system uses"
+    echo "*** shared libraries and they are installed outside the normal"
+    echo "*** system library path, make sure the variable LD_LIBRARY_PATH"
+    echo "*** (or whatever is appropiate for your system) is correctly set."
+  fi
+  FC_CFLAGS=""
+  FC_LIBS=""
+  ifelse([$3], , :, [$3])
 fi
 AC_SUBST(FC_CFLAGS)
 AC_SUBST(FC_LIBS)
@@ -1366,8 +1364,8 @@ pkg_config_xft_exists=""
 
 if test "$XFT_CONFIG" = "no" ; then
   if test "x$PKG_CONFIG" != "xno" ; then
-    if pkg-config --exists 'xft' ; then
-      if pkg-config --exists 'xft >= $1' ; then
+    if $PKG_CONFIG --exists 'xft' ; then
+      if $PKG_CONFIG --exists 'xft >= $1' ; then
         XFT_CFLAGS=`$PKG_CONFIG --cflags xft`
         XFT_LIBS=`$PKG_CONFIG --libs xft`
       else
@@ -1410,6 +1408,7 @@ else
           fi
         fi
       fi
+    fi
   fi
   if test "x$xft_config_is_lt" = "xyes" ; then
     ifelse([$3], , :, [$3])
@@ -1423,7 +1422,7 @@ if test "x$no_xft" = x ; then
     CFLAGS="$XFT_CFLAGS $CFLAGS"
     LIBS="$XFT_LIBS $LIBS"
 dnl
-dnl Sanity checks for the results of xft-config to some extent
+dnl Sanity checks for the results of xft-config/pkg-config to some extent
 dnl
       AC_TRY_RUN([
 #include <X11/Xft/Xft.h>
@@ -1447,37 +1446,37 @@ main()
   }
 }
 ],, no_xft=yes,[echo $ac_n "cross compiling; assumed OK... $ac_c"])
-      CFLAGS="$ac_save_CFLAGS"
+    CFLAGS="$ac_save_CFLAGS"
     LIBS="$ac_save_LIBS"
   fi
 fi
 
-if test "x$no_xft" = x ; then
-   AC_MSG_RESULT(yes)
-   ifelse([$2], , :, [$2])
+if test "x$no_xft" = x; then
+  AC_MSG_RESULT(yes)
+  ifelse([$2], , :, [$2])
 else
-   AC_MSG_RESULT(no)
-   if test "x$xft_config_is_lt" = "xyes" ; then
-       echo "*** Your xft2 package version is < $1"
-   elif test "x$pkg_config_fontconfig_exists" = "xmaybe" ; then
-      echo "*** xft2 was not found in the pkg-config search path."
-      echo "*** either xft is not installed or perhaps you should"
-      echo "*** add the directory containing xft.pc to the "
-      echo "*** PKG_CONFIG_PATH environment variable."
-   elif test "$XFT_CONFIG" = "no" ; then
-     echo "*** The xft-config script installed by Xft 2 could not be found."
-     echo "*** If Xft 2 was installed in PREFIX, make sure PREFIX/bin is in"
-     echo "*** your path, or set the XFT_CONFIG environment variable to the"
-     echo "*** full path to xft-config."
-   else
-     echo "*** The Xft test program failed to run.  If your system uses"
-     echo "*** shared libraries and they are installed outside the normal"
-     echo "*** system library path, make sure the variable LD_LIBRARY_PATH"
-     echo "*** (or whatever is appropiate for your system) is correctly set."
-   fi
-   XFT_CFLAGS=""
-   XFT_LIBS=""
-   ifelse([$3], , :, [$3])
+  AC_MSG_RESULT(no)
+  if test "x$xft_config_is_lt" = "xyes"; then
+    echo "*** Your xft2 package version is < $1"
+  elif test "x$pkg_config_fontconfig_exists" = "xmaybe" ; then
+    echo "*** xft2 was not found in the pkg-config search path."
+    echo "*** either xft is not installed or perhaps you should"
+    echo "*** add the directory containing xft.pc to the "
+    echo "*** PKG_CONFIG_PATH environment variable."
+  elif test "$XFT_CONFIG" = "no"; then
+    echo "*** The xft-config script installed by Xft 2 could not be found."
+    echo "*** If Xft 2 was installed in PREFIX, make sure PREFIX/bin is in"
+    echo "*** your path, or set the XFT_CONFIG environment variable to the"
+    echo "*** full path to xft-config."
+  else
+    echo "*** The Xft test program failed to run.  If your system uses"
+    echo "*** shared libraries and they are installed outside the normal"
+    echo "*** system library path, make sure the variable LD_LIBRARY_PATH"
+    echo "*** (or whatever is appropiate for your system) is correctly set."
+  fi
+  XFT_CFLAGS=""
+  XFT_LIBS=""
+  ifelse([$3], , :, [$3])
 fi
 AC_SUBST(XFT_CFLAGS)
 AC_SUBST(XFT_LIBS)

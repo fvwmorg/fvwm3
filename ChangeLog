@@ -1,5 +1,12 @@
-2003-07-23  Dominik Vogt  <dominik.vogt@gmx.de>
+2003-07-24  Mikhael Goikhman  <migo@homemail.com>
 
+	* M acinclude.m4
+	fixed xft/fontconfig detection with pkg-config
+
+	* fvwm/fvwm.1.in:
+	corrections in some long option names
+
+2003-07-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (setup_style_and_decor):
 	* fvwm/geometry.c (set_window_border_size):
