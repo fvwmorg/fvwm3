@@ -8635,7 +8635,7 @@ enclosed in brackets instead of parentheses (this is still
 supported for backward compatibility).
 
 .TP
-.BI "Direction " direction " [(" conditions ")] " command
+.BI "Direction [" FromPointer "] " direction " [(" conditions ")] " command
 Performs
 .I command
 (typically
@@ -8644,14 +8644,22 @@ on a window in the given direction which satisfies all
 .IR conditions .
 Conditions are the same as for
 .BR Current .
-The
+Normally, the center of the currently focused window or the
+context window inwhich the command was invoked is taken as the
+starting point.  Lacking such a window, or when the
+.I FromPointer
+option is given, the current position of the pointer is taken as
+the starting point.  The
 .I direction
 may be one of "North", "Northeast", "East", "Southeast", "South",
-"Southwest", "West" and "Northwest".  Which window
+"Southwest", "West", "Northwest" and "Center".  Which window
 .B Direction
 selects depends on angle and distance between the center points of
 the windows.  Closer windows are considered a better match than
-those farther away.  Returns -1 if an invalid direction was given.
+those farther away.  The
+.I Center
+direction simply selects the window closest to the starting point.
+Returns -1 if an invalid direction was given.
 
 .TP
 .BI "Next [(" conditions ")] " command

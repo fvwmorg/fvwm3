@@ -37,6 +37,7 @@ typedef enum
 	DIR_SE = 5,
 	DIR_SW = 6,
 	DIR_NW = 7,
+	DIR_MINOR_MASK = 7,
 	DIR_MASK = 7,
 	DIR_C = 8,
 	DIR_ALL_MASK = 8,

@@ -32,6 +32,9 @@ Changes in alpha release 2.5.3 (not released yet)
 
 * New option "Icon" to PlaceAgain command.
 
+* New option "FromPointer" and direction "Center" to the Direction
+  command.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.2 (24-Jun-2002)

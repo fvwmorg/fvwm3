@@ -24,6 +24,7 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <math.h>
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
@@ -819,28 +820,32 @@ void CMD_Direction(F_CMD_ARGS)
 	char *flags;
 	char *restofline;
 	char *tmp;
+	float tx;
+	float ty;
 	WindowConditionMask mask;
+	Bool is_pointer_relative;
 
 	/* Parse the direction. */
-	action = GetNextToken(action, &tmp);
+	tmp = PeekToken(action, &action);
+	if (StrEquals(tmp, "FromPointer"))
+	{
+		is_pointer_relative = True;
+		tmp = PeekToken(action, &action);
+	}
+	else
+	{
+		is_pointer_relative = False;
+	}
 	dir = gravity_parse_dir_argument(tmp, NULL, -1);
-	if (dir == -1 || dir > DIR_MASK)
+	if (dir == -1 || dir > DIR_ALL_MASK)
 	{
 		fvwm_msg(ERR, "Direction", "Invalid direction %s",
 			 (tmp) ? tmp : "");
-		if (tmp)
-		{
-			free(tmp);
-		}
 		if (cond_rc != NULL)
 		{
 			*cond_rc = COND_RC_ERROR;
 		}
 		return;
-	}
-	if (tmp)
-	{
-		free(tmp);
 	}
 
 	/* Create the mask for flags */
@@ -866,7 +871,7 @@ void CMD_Direction(F_CMD_ARGS)
 
 	/* If there is a focused window, use that as a starting point.
 	 * Otherwise we use the pointer as a starting point. */
-	if (fw)
+	if (fw && is_pointer_relative == False)
 	{
 		get_visible_window_or_icon_geometry(fw, &my_g);
 		my_cx = my_g.x + my_g.width / 2;
@@ -909,7 +914,7 @@ void CMD_Direction(F_CMD_ARGS)
 		his_cx = his_g.x + his_g.width / 2;
 		his_cy = his_g.y + his_g.height / 2;
 
-		if (dir > 3)
+		if (dir > DIR_MAJOR_MASK && dir <= DIR_MINOR_MASK)
 		{
 			int tx;
 			/* Rotate the diagonals 45 degrees counterclockwise. To
@@ -925,25 +930,33 @@ void CMD_Direction(F_CMD_ARGS)
 		 * direction. */
 		switch (dir)
 		{
-		case 0: /* N */
-		case 2: /* S */
-		case 4: /* NE */
-		case 6: /* SW */
+		case DIR_N:
+		case DIR_S:
+		case DIR_NE:
+		case DIR_SW:
 			offset = (his_cx < 0) ? -his_cx : his_cx;
 			distance = (dir == 0 || dir == 4) ? -his_cy : his_cy;
 			break;
-		case 1: /* E */
-		case 3: /* W */
-		case 5: /* SE */
-		case 7: /* NW */
+		case DIR_E: /* E */
+		case DIR_W: /* W */
+		case DIR_SE: /* SE */
+		case DIR_NW: /* NW */
 			offset = (his_cy < 0) ? -his_cy : his_cy;
 			distance = (dir == 3 || dir == 7) ? -his_cx : his_cx;
+			break;
+		case DIR_C:
+			offset = 0;
+			tx = (float)his_cx;
+			ty = (float)his_cy;
+			distance = (int)sqrt(tx * tx + ty * ty);
 			break;
 		}
 
 		/* Target must be in given direction. */
 		if (distance <= 0)
+		{
 			continue;
+		}
 
 		/* Calculate score for this window.  The smaller the better. */
 		score = distance + offset;
@@ -951,7 +964,9 @@ void CMD_Direction(F_CMD_ARGS)
 		 * penalized and will only be chosen if nothing else within a
 		 * million pixels */
 		if (offset > distance)
+		{
 			score += 1000000;
+		}
 		if (best_score == -1 || score < best_score)
 		{
 			best_window = window;
