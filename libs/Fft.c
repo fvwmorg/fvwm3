@@ -83,7 +83,7 @@ void FftSetupEncoding(FftFontType *fftf)
 	while(i < f->pattern->num)
 	{
 		e = &f->pattern->elts[i];
-		if (StrEquals(e->object, XFT_ENCODING) &&
+		if (StrEquals(e->object, FFT_ENCODING) &&
 		    e->values->value.u.s != NULL)
 		{
 			fftf->encoding = e->values->value.u.s;

@@ -1,5 +1,8 @@
 2002-03-25  olicha  <olivier.chapuis@free.fr>
 
+	* libs/Fft.c (FftSetupEncoding):
+	Fixed compilation
+
 	* libs/Flocale.c (FlocaleDrawString):
 	* libs/FBidi.c (FBidiConvert):
 	* libs/FBidi.h:
