@@ -505,6 +505,8 @@ typedef struct FvwmWindow
   rectangle frame_g;
   rectangle normal_g;         /* absolute geometry when not maximized */
   rectangle max_g;            /* maximized window geometry */
+  size_rect max_g_defect;     /* defect between maximized geometry before and
+			       * after constraining size. */
   position max_offset;        /* original delta between normalized and
 			       * maximized window, used to keep unmaximized
 			       * window at same screen position */

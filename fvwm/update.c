@@ -189,16 +189,17 @@ static void apply_window_updates(
     setup_frame_size_limits(t, pstyle);
     old_g = t->frame_g;
     t->frame_g = t->normal_g;
-    gravity_constrain_size(t->hints.win_gravity, t, &(t->frame_g));
+    gravity_constrain_size(t->hints.win_gravity, t, &(t->frame_g), 0);
     t->normal_g = t->frame_g;
     if (IS_MAXIMIZED(t))
     {
       t->frame_g = t->max_g;
-      gravity_constrain_size(t->hints.win_gravity, t, &(t->frame_g));
+      gravity_constrain_size(
+	t->hints.win_gravity, t, &(t->frame_g), CS_UPDATE_MAX_DEFECT);
       t->max_g = t->frame_g;
     }
     t->frame_g = old_g;
-    gravity_constrain_size(t->hints.win_gravity, t, &(t->frame_g));
+    gravity_constrain_size(t->hints.win_gravity, t, &(t->frame_g), 0);
 
     flags->do_setup_frame = True;
     flags->do_redraw_decoration = True;

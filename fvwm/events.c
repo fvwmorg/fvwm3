@@ -740,7 +740,7 @@ ICON_DBG((stderr,"hpn: applying new icon '%s'\n", Tmp_win->name));
 	  Tmp_win->hints.win_gravity, &Tmp_win->normal_g, wdiff, hdiff);
       }
       gravity_constrain_size(
-	Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->normal_g);
+	Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->normal_g, 0);
       if (!IS_MAXIMIZED(Tmp_win))
       {
 	rectangle new_g;
@@ -769,7 +769,8 @@ ICON_DBG((stderr,"hpn: applying new icon '%s'\n", Tmp_win->name));
 	w = Tmp_win->max_g.width;
 	h = Tmp_win->max_g.height;
 	gravity_constrain_size(
-	  Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->max_g);
+	  Tmp_win->hints.win_gravity, Tmp_win, &Tmp_win->max_g,
+	  CS_UPDATE_MAX_DEFECT);
 	if (w != Tmp_win->max_g.width ||
 	    h != Tmp_win->max_g.height)
 	{
@@ -2290,8 +2291,7 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
     constr_w = oldnew_w;
     constr_h = oldnew_h;
     constrain_size(
-      Tmp_win, (unsigned int *)&constr_w, (unsigned int *)&constr_h, 0, 0,
-      False);
+      Tmp_win, (unsigned int *)&constr_w, (unsigned int *)&constr_h, 0, 0, 0);
     dw += (constr_w - oldnew_w);
     dh += (constr_h - oldnew_h);
     if ((cre->value_mask & CWX) && dw)

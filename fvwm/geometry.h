@@ -16,6 +16,9 @@
 #ifndef GEOMETRY_H
 #define GEOMETRY_H
 
+#define CS_ROUND_UP          0x01
+#define CS_UPDATE_MAX_DEFECT 0x02
+
 void gravity_get_offsets(int grav, int *xp,int *yp);
 void gravity_move(int gravity, rectangle *rect, int xdiff, int ydiff);
 void gravity_resize(int gravity, rectangle *rect, int wdiff, int hdiff);
@@ -35,12 +38,9 @@ void update_relative_geometry(FvwmWindow *tmp_win);
 void update_absolute_geometry(FvwmWindow *tmp_win);
 void maximize_adjust_offset(FvwmWindow *tmp_win);
 void constrain_size(
-  FvwmWindow *, unsigned int *width, unsigned int *height, int xmotion,
-  int ymotion, Bool roundUp);
-void constrain_size(
-  FvwmWindow *, unsigned int *width, unsigned int *height, int xmotion,
-  int ymotion, Bool roundUp);
+  FvwmWindow *tmp_win, unsigned int *widthp, unsigned int *heightp,
+  int xmotion, int ymotion, int flags);
 void gravity_constrain_size(
-  int gravity, FvwmWindow *t, rectangle *rect);
+  int gravity, FvwmWindow *t, rectangle *rect, int flags);
 
 #endif /* PLACEMENT_H */

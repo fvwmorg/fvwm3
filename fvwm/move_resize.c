@@ -630,7 +630,7 @@ void CMD_ResizeMove(F_CMD_ARGS)
   dy = FinalY - tmp_win->frame_g.y;
   /* size will be less or equal to requested */
   constrain_size(tmp_win, (unsigned int *)&FinalW, (unsigned int *)&FinalH,
-		 0, 0, False);
+		 0, 0, 0);
   if (IS_SHADED(tmp_win))
   {
     SetupFrame(tmp_win, FinalX, FinalY, FinalW, tmp_win->frame_g.height, False);
@@ -2171,19 +2171,26 @@ void CMD_Resize(F_CMD_ARGS)
 
   if (n == 2)
   {
+    rectangle new_g;
+
     /* size will be less or equal to requested */
+    new_g = tmp_win->frame_g;
     constrain_size(
       tmp_win, (unsigned int *)&drag->width, (unsigned int *)&drag->height,
-      xmotion, ymotion, False);
+      xmotion, ymotion, 0);
+    gravity_resize(
+      tmp_win->hints.win_gravity, &new_g,
+      drag->width - new_g.width, drag->height - new_g.height);
+    tmp_win->frame_g = new_g;
     if (IS_SHADED(tmp_win))
     {
-      SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		 drag->width, tmp_win->frame_g.height, False);
+      ForceSetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+		      drag->width, tmp_win->frame_g.height, False);
     }
     else
     {
-      SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		 drag->width, drag->height, False);
+      ForceSetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
+		      drag->width, drag->height, False);
     }
     DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
     update_absolute_geometry(tmp_win);
@@ -2566,7 +2573,7 @@ void CMD_Resize(F_CMD_ARGS)
     /* size will be >= to requested */
     constrain_size(
       tmp_win, (unsigned int *)&drag->width, (unsigned int *)&drag->height,
-      xmotion, ymotion, True);
+      xmotion, ymotion, CS_ROUND_UP);
     if (IS_SHADED(tmp_win))
     {
       if (HAS_BOTTOM_TITLE(tmp_win))
@@ -2692,7 +2699,7 @@ static void DoResize(
     /* round up to nearest OK size to keep pointer inside rubberband */
     constrain_size(
       tmp_win, (unsigned int *)&drag->width, (unsigned int *)&drag->height,
-      *xmotionp, *ymotionp, True);
+      *xmotionp, *ymotionp, CS_ROUND_UP);
     if (*xmotionp == 1)
       drag->x = orig->x + orig->width - drag->width;
     if (*ymotionp == 1)
@@ -3242,8 +3249,10 @@ void CMD_Maximize(F_CMD_ARGS)
     }
     /* now maximize it */
     SET_MAXIMIZED(tmp_win, 1);
+    tmp_win->max_g_defect.width = 0;
+    tmp_win->max_g_defect.height = 0;
     constrain_size(tmp_win, (unsigned int *)&new_g.width,
-		   (unsigned int *)&new_g.height, 0, 0, False);
+		   (unsigned int *)&new_g.height, 0, 0, CS_UPDATE_MAX_DEFECT);
     tmp_win->max_g = new_g;
     if (IS_SHADED(tmp_win))
       get_shaded_geometry(tmp_win, &new_g, &tmp_win->max_g);

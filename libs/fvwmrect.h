@@ -37,6 +37,12 @@ typedef struct
   int y;
 } position;
 
+typedef struct
+{
+  int width;
+  int height;
+} size_rect;
+
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- interface functions ------------------------- */

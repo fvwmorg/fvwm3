@@ -1381,16 +1381,16 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     setup_frame_size_limits(tmp_win, &style);
     constrain_size(
       tmp_win, (unsigned int *)&tmp_win->frame_g.width,
-      (unsigned int *)&tmp_win->frame_g.height, 0, 0, False);
+      (unsigned int *)&tmp_win->frame_g.height, 0, 0, 0);
 
     /****** maximize ******/
     if (do_maximize)
     {
+      SET_MAXIMIZED(tmp_win, 1);
       constrain_size(
 	tmp_win, (unsigned int *)&tmp_win->max_g.width,
-	(unsigned int *)&tmp_win->max_g.height, 0, 0, False);
+	(unsigned int *)&tmp_win->max_g.height, 0, 0, CS_UPDATE_MAX_DEFECT);
       get_relative_geometry(&tmp_win->frame_g, &tmp_win->max_g);
-      SET_MAXIMIZED(tmp_win, 1);
     }
     else
     {
@@ -1425,7 +1425,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height
       + 2 * tmp_win->boundary_width;
     gravity_constrain_size(
-      tmp_win->hints.win_gravity, tmp_win, &tmp_win->frame_g);
+      tmp_win->hints.win_gravity, tmp_win, &tmp_win->frame_g, 0);
 
     update_absolute_geometry(tmp_win);
   }

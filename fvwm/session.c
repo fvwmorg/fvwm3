@@ -61,6 +61,7 @@ typedef struct _match
   char               **wm_command;
   int                 x, y, w, h, icon_x, icon_y;
   int                 x_max, y_max, w_max, h_max;
+  int                 width_defect_max, height_defect_max;
   int                 max_x_offset, max_y_offset;
   int                 desktop;
   int                 layer;
@@ -456,9 +457,10 @@ SaveWindowStates(FILE *f)
       save_g.y -= Scr.Vy;
     }
     fprintf(
-      f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i %i %i %i\n",
+      f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i\n",
       save_g.x, save_g.y, save_g.width, save_g.height,
       ewin->max_g.x, ewin->max_g.y, ewin->max_g.width, ewin->max_g.height,
+      ewin->max_g_defect.width, ewin->max_g_defect.height,
       ewin->icon_g.x + ((!is_icon_sticky) ? Scr.Vx : 0),
       ewin->icon_g.y + ((!is_icon_sticky) ? Scr.Vy : 0),
       ewin->hints.win_gravity,
@@ -540,6 +542,8 @@ LoadWindowStates(char *filename)
       matches[num_match - 1].y_max = 0;
       matches[num_match - 1].w_max = Scr.MyDisplayWidth;
       matches[num_match - 1].h_max = Scr.MyDisplayHeight;
+      matches[num_match - 1].width_defect_max = 0;
+      matches[num_match - 1].height_defect_max = 0;
       matches[num_match - 1].icon_x = 0;
       matches[num_match - 1].icon_y = 0;
       matches[num_match - 1].desktop = 0;
@@ -550,7 +554,7 @@ LoadWindowStates(char *filename)
     }
     else if (!strcmp(s1, "[GEOMETRY]"))
     {
-      sscanf(s, "%*s %i %i %i %i %i %i %i %i %i %i %i %i %i",
+      sscanf(s, "%*s %i %i %i %i %i %i %i %i %i %i %i %i %i %i %i",
 	     &(matches[num_match - 1].x),
 	     &(matches[num_match - 1].y),
 	     &(matches[num_match - 1].w),
@@ -559,6 +563,8 @@ LoadWindowStates(char *filename)
 	     &(matches[num_match - 1].y_max),
 	     &(matches[num_match - 1].w_max),
 	     &(matches[num_match - 1].h_max),
+	     &(matches[num_match - 1].width_defect_max),
+	     &(matches[num_match - 1].height_defect_max),
 	     &(matches[num_match - 1].icon_x),
 	     &(matches[num_match - 1].icon_y),
 	     &(matches[num_match - 1].gravity),
@@ -803,6 +809,8 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *do_max)
       ewin->max_g.y = matches[i].y_max;
       ewin->max_g.width = matches[i].w_max;
       ewin->max_g.height = matches[i].h_max;
+      ewin->max_g_defect.width = matches[i].width_defect_max;
+      ewin->max_g_defect.height = matches[i].height_defect_max;
       ewin->max_offset.x = matches[i].max_x_offset;
       ewin->max_offset.y = matches[i].max_y_offset;
       SET_STICKY(ewin, IS_STICKY(&(matches[i])));

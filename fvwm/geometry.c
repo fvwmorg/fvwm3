@@ -310,7 +310,7 @@ fprintf(stderr, "mao: y += %d\n", ((-off_y) / Scr.MyDisplayHeight) * Scr.MyDispl
  ***********************************************************************/
 void constrain_size(
   FvwmWindow *tmp_win, unsigned int *widthp, unsigned int *heightp,
-  int xmotion, int ymotion, Bool roundUp)
+  int xmotion, int ymotion, int flags)
 {
 #define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
   int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
@@ -318,7 +318,16 @@ void constrain_size(
   int dwidth = *widthp, dheight = *heightp;
   int roundUpX = 0;
   int roundUpY = 0;
+  int old_w = 0;
+  int old_h = 0;
 
+  if (IS_MAXIMIZED(tmp_win) && (flags & CS_UPDATE_MAX_DEFECT))
+  {
+    *widthp += tmp_win->max_g_defect.width;
+    *heightp += tmp_win->max_g_defect.height;
+    old_w = *widthp;
+    old_h = *heightp;
+  }
   dwidth -= 2 *tmp_win->boundary_width;
   dheight -= (tmp_win->title_g.height + 2 * tmp_win->boundary_width);
 
@@ -364,7 +373,7 @@ void constrain_size(
    * Second, round to base + N * inc (up or down depending on resize type)
    * if rounding up store amount
    */
-  if (!roundUp)
+  if (!(flags & CS_ROUND_UP))
   {
     dwidth = (((dwidth - baseWidth) / xinc) * xinc) + baseWidth;
     dheight = (((dheight - baseHeight) / yinc) * yinc) + baseHeight;
@@ -383,7 +392,7 @@ void constrain_size(
   /*
    * Step 2a: check we didn't move the edge off screen in interactive moves
    */
-  if (roundUp && Event.type == MotionNotify)
+  if ((flags & CS_ROUND_UP) && Event.type == MotionNotify)
   {
     if (xmotion > 0 && Event.xmotion.x_root < roundUpX)
       dwidth -= xinc;
@@ -507,6 +516,12 @@ void constrain_size(
    */
   *widthp = dwidth + 2*tmp_win->boundary_width;
   *heightp = dheight + tmp_win->title_g.height + 2*tmp_win->boundary_width;
+  if (IS_MAXIMIZED(tmp_win) && (flags & CS_UPDATE_MAX_DEFECT))
+  {
+    /* update size defect for maximized window */
+    tmp_win->max_g_defect.width = old_w - *widthp;
+    tmp_win->max_g_defect.height = old_h - *heightp;
+  }
 
   return;
 }
@@ -517,7 +532,7 @@ void constrain_size(
  * target geometry is expected to be in *rect and will be retured through rect.
  */
 void gravity_constrain_size(
-  int gravity, FvwmWindow *t, rectangle *rect)
+  int gravity, FvwmWindow *t, rectangle *rect, int flags)
 {
   rectangle old_g = t->frame_g;
   rectangle new_g = *rect;
@@ -525,8 +540,17 @@ void gravity_constrain_size(
   int new_height = new_g.height;
 
   t->frame_g = *rect;
+  if (IS_MAXIMIZED(t) && (flags & CS_UPDATE_MAX_DEFECT))
+  {
+    gravity_resize(
+      gravity, &new_g, t->max_g_defect.width, t->max_g_defect.height);
+    t->max_g_defect.width = 0;
+    t->max_g_defect.height = 0;
+    new_width = new_g.width;
+    new_height = new_g.height;
+  }
   constrain_size(
-    t, (unsigned int *)&new_width, (unsigned int *)&new_height, 0, 0, False);
+    t, (unsigned int *)&new_width, (unsigned int *)&new_height, 0, 0, flags);
   if (new_g.width != new_width || new_g.height != new_height)
   {
     gravity_resize(
