@@ -1,3 +1,7 @@
+2000-01-24  Hippo
+
+	* FvwmIconMan/xmanager.c: Fixed dissapearing mini-icons
+
 2000-01-24  Brad Giaccio  <bgiaccio@psrw.com>
 
 	* FvwmPager/FvwmPager.c (ParseOptions): fix for fonts with quotes and "none"
@@ -10,14 +14,14 @@
 
 	* FvwmIconMan/FvwmIconMan.c
 	Similar trick as for FvwmAuto; just do these two modules for now
-    as these are the only ones that people are seeing problems with.
+	as these are the only ones that people are seeing problems with.
 
 2000-01-21  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* FvwmAuto/FvwmAuto.c
 	Changed default signal disposition to SA_RESTART instead of
-    SA_INTERRUPT. Hopefully non-Linux OSs also interrupt select()
-    regardless of this setting.
+	SA_INTERRUPT. Hopefully non-Linux OSs also interrupt select()
+	regardless of this setting.
 
 2000-01-19  Dominik Vogt  <dominik.vogt@gmx.de>
 

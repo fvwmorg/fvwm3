@@ -1278,10 +1278,6 @@ static void draw_button (WinManager *man, int button, int force)
     return;
   }
 
-  if (dirty & STRING_CHANGED)
-  {
-    draw_background = 1;
-  }
   if (force || (dirty & REDRAW_BUTTON)) {
     ConsoleDebug (X11, "draw_button: %d forced\n", b->index);
     draw_background = 1;
@@ -1292,7 +1288,7 @@ static void draw_button (WinManager *man, int button, int force)
   if (dirty) {
     ConsoleDebug (X11, "draw_button: %d dirty\n", b->index);
     if (win) {
-      if (dirty & GEOMETRY_CHANGED) {
+      if (GEOMETRY_CHANGED) {
 	ConsoleDebug (X11, "\tGeometry changed\n");
 	/* Determine if geometry has changed relative to the
 	   window gravity */
@@ -1306,7 +1302,7 @@ static void draw_button (WinManager *man, int button, int force)
 	  draw_string = 1;
 	}
       }
-      if (dirty & STATE_CHANGED) {
+      if (STATE_CHANGED) {
 	ConsoleDebug (X11, "\tState changed\n");
 	b->drawn_state.state = win->state;
 	draw_background = 1;
@@ -1314,7 +1310,7 @@ static void draw_button (WinManager *man, int button, int force)
 	draw_string = 1;
       }
 #ifdef MINI_ICONS
-      if (dirty & PICTURE_CHANGED) {
+      if (PICTURE_CHANGED) {
 	Picture tpic;
 
 	ConsoleDebug (X11, "\tPicture changed\n");
@@ -1328,18 +1324,19 @@ static void draw_button (WinManager *man, int button, int force)
 	clear_old_pic = 1;
       }
 #endif
-      if ((dirty & ICON_STATE_CHANGED) &&
-	  b->drawn_state.iconified != win->iconified) {
+      if (ICON_STATE_CHANGED && b->drawn_state.iconified != win->iconified) {
 	ConsoleDebug (X11, "\tIcon changed\n");
 	b->drawn_state.iconified = win->iconified;
 	draw_icon = 1;
 	draw_background = 1;
 	draw_string = 1;
       }
-      if (dirty & STRING_CHANGED) {
+      if (STRING_CHANGED) {
 	ConsoleDebug (X11, "\tString changed: %s\n", win->display_string);
 	b->drawn_state.display_string = win->display_string;
 	assert (b->drawn_state.display_string);
+	draw_icon = 1;
+	draw_background = 1;
 	draw_string = 1;
       }
     }
