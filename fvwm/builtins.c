@@ -1470,7 +1470,7 @@ static void ApplyDefaultFontAndColors(void)
   int hei;
 
   Scr.StdFont.y = Scr.StdFont.font->ascent;
-#ifdef I18N_MB /* ??? */
+#ifndef I18N_MB
   Scr.StdFont.height = Scr.StdFont.font->ascent + Scr.StdFont.font->descent;
 #endif
 

@@ -1,3 +1,7 @@
+1999-06-28  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/builtins.c (ApplyDefaultFontAndColors): fixed font size
+
 1999-06-28  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/session.c (my_module): fixed
