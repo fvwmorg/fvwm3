@@ -577,6 +577,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 					CLEAR_USER_STATES(mask, state);
 				}
 				SETM_USER_STATES(mask, state);
+				free(condition);
 				tmp = GetNextToken(tmp, &condition);
 			}
 		}
@@ -588,6 +589,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			}
 			else if (sscanf(tmp, "%d", &mask->layer))
 			{
+				free(condition);
 				tmp = GetNextToken (tmp, &condition);
 				if (mask->layer < 0)
 				{
