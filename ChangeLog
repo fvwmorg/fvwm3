@@ -1,5 +1,8 @@
 2002-06-19  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/colorset.h:
+	Removed not useful #define/#undef FVWM_COLORSET_PRIVATE
+
 	* INSTALL.fvwm:
 	Removed --enable-mulibyte and --disable-compound-text config option
 	documentation. s/enable-xft/disable-xft/ and document --disable-xrender

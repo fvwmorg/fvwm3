@@ -16,10 +16,7 @@
 #ifndef __COLORSET_H
 #define __COLORSET_H
 
-#undef FVWM_COLORSET_PRIVATE
-#define FVWM_COLORSET_PRIVATE
 #include "libs/Colorset.h"
-#undef	FVWM_COLORSET_PRIVATE
 
 void parse_colorset(int n, char *line);
 void cleanup_colorsets();
