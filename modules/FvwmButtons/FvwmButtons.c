@@ -2790,9 +2790,11 @@ void swallow(unsigned long *body)
 	/*error checking*/
 	XReparentWindow(Dpy,swin,MyWindow,-32768,-32768);
 	XSync(Dpy, 0);
+	MyXUngrabServer(Dpy);
+	XSync(Dpy, 0);
+	usleep(50000);
 	b->swallow &= ~b_Count;
 	b->swallow |= 3;
-fprintf(stderr, "+++ swallowing ");
 	if (buttonSwallow(b) & b_UseTitle)
 	{
 	  if (b->flags & b_Title)
@@ -2801,21 +2803,17 @@ fprintf(stderr, "+++ swallowing ");
 	  if (XFetchName(Dpy, swin, &temp))
 	  {
 	    CopyString(&b->title, temp);
-fprintf(stderr, "'%s'\n", b->title);
 	    XFree(temp);
 	  }
 	  else
 	  {
 	    CopyString(&b->title, "");
-fprintf(stderr, "(untitled)\n");
 	  }
 	}
-else fprintf(stderr, "(do not use title)\n");
 
 	MakeButton(b);
 	XMapWindow(Dpy, swin);
 	XSync(Dpy, 0);
-	MyXUngrabServer(Dpy);
 
 	if (b->flags & b_Colorset)
 	{
