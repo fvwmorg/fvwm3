@@ -268,22 +268,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
   {
     case M_ADD_WINDOW:
     case M_CONFIGURE_WINDOW:
-      if (body[0] == win)
-      {
-        /* gross hack for anchored resizes, should be able to call XResizeWindow
-           and have fvwm move the window correctly w.r.t. the gravity.  Until this
-           is so this program has to do its own gravity management. */
-        /* what happens here is that fvwm sends the size and position of
-           FvwmWinLists' parent, this has to compensate for the frame
-           to get the position of the WinList window so that when XMoveResize
-           is called the window doesn't creep */
-        /* if fvwm is fixed to handle windows resizing themselves then this
-           whole section can be deleted. */
-        win_title=(int)body[9];
-        win_border=(int)body[10];
-        win_x = (int)body[3] + win_border;
-        win_y = (int)body[4] + win_border + win_title;
-      }
       if ((i = FindItem(&windows,body[0]))!=-1) 
       { 
 	if(UpdateItemDesk(&windows, i, body[7]) > 0)
@@ -658,15 +642,44 @@ void LoopOnEvents()
         break;
     }
   }
-} 
+}
+
+
+/******************************************************************************
+  find_frame_window - looks for ancestor that is a child of the root
+  Cribbed from FvwmIconMan/x.c - maybe should be in a library
+  Returns the root-child and fills in off_x, off_y to give offset
+******************************************************************************/
+Window find_frame_window (Window win, int *off_x, int *off_y)
+{
+  Window root, parent, *junkw;
+  int junki;
+  XWindowAttributes attr;
+
+  while (1) {
+    XQueryTree (dpy, win, &root, &parent, &junkw, &junki);
+    if (junkw)
+      XFree (junkw);
+    if (parent == root)
+      break;
+    XGetWindowAttributes (dpy, win, &attr);
+    *off_x += attr.x + attr.border_width;
+    *off_y += attr.y + attr.border_width;
+    win = parent;
+  }
+
+  return win;
+}
 
 /******************************************************************************
   AdjustWindow - Resize the window according to maxwidth by number of buttons
 ******************************************************************************/
 void AdjustWindow()
 {
-  int new_width=0,new_height=0,tw,i,total;
+  int new_width=0,new_height=0,tw,i,total,off_x,off_y;
   char *temp;
+  Window frame;
+  XWindowAttributes win_attr, frame_attr;
 
   total = ItemCountD(&windows );
   if (!total)
@@ -697,18 +710,22 @@ void AdjustWindow()
   if (WindowIsUp && (new_height!=win_height  || new_width!=win_width))
   {
     if (Anchor)
-    /* if fvwm is fixed to handle windows with gravity resizing themselves
-       this will be redundant, just a XResizeWindow will work. How to handle
-       NoAnchor in that case is left as an exercise for the reader. */
     {
-      if (win_grav==SouthEastGravity || win_grav==NorthEastGravity)
-        win_x-=(new_width-win_width);
+      off_x = off_y = 0;
+      MyXGrabServer(dpy);
+      frame = find_frame_window(win, &off_x, &off_y);
+      XGetWindowAttributes(dpy, frame, &frame_attr);
+      XGetWindowAttributes(dpy, win, &win_attr);
+      win_x = frame_attr.x + frame_attr.border_width + off_x;
+      win_y = frame_attr.y + frame_attr.border_width + off_y;
 
-      if (win_grav==SouthEastGravity || win_grav==SouthWestGravity)
-        win_y-=(new_height-win_height);
+      if (win_grav == SouthEastGravity || win_grav == NorthEastGravity)
+        win_x += win_attr.width - new_width;
+      if (win_grav == SouthEastGravity || win_grav == SouthWestGravity)
+        win_y += win_attr.height - new_height;
 
       XMoveResizeWindow(dpy, win, win_x, win_y, new_width, new_height);
-
+      MyXUngrabServer(dpy);
     }
     else
       XResizeWindow(dpy, win, new_width, new_height);
