@@ -214,7 +214,7 @@ Main
    Begin
     Do {Exec xscreensaver-command -exit}
     Do {Exec xscreensaver -no-splash&}
-    WriteToFile $FILE {xscreensaver}
+    WriteToFile $FILE {xscreensaver -no-splash&}
    End
    Else
    Begin

@@ -1,3 +1,8 @@
+2000-01-30 olicha	<olivier.chapuis@free.fr>
+	
+	* FvwmScript/Scripts/ScriptFvwmScreenSetup:
+	A write to file fix
+
 2000-01-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/FvwmPager.c (list_deiconify):
@@ -6,7 +11,7 @@
 	* FvwmGtk/FvwmGtk.1:
 	fixed typo
 
-2000-01-26 olicha	<olivier.chapuis@free.fr>
+2000-01-28 olicha	<olivier.chapuis@free.fr>
 
 	* FvwmPager/FvwmPager.c (main):
 	* FvwmPager/FvwmPager.1:
