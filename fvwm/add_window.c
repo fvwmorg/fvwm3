@@ -247,8 +247,8 @@ static void hide_screen(
 			CWBackingStore | CWBackPixmap;
 		hide_win = XCreateWindow(
 			dpy, Scr.Root, 0, 0, Scr.MyDisplayWidth,
-			Scr.MyDisplayHeight, 0, CopyFromParent, InputOutput,
-			CopyFromParent, valuemask, &xswa);
+			Scr.MyDisplayHeight, 0, Pdepth, InputOutput,
+		        Pvisual, valuemask, &xswa);
 		if (hide_win)
 		{
 			/* When recapturing, all windows are reparented to this
@@ -1211,8 +1211,8 @@ void setup_title_window(
 	pattributes->event_mask = XEVMASK_TITLEW;
 
 	FW_W_TITLE(fw) = XCreateWindow(
-		dpy, FW_W_FRAME(fw), 0, 0, 1, 1, 0, CopyFromParent,
-		InputOutput, CopyFromParent, valuemask, pattributes);
+		dpy, FW_W_FRAME(fw), 0, 0, 1, 1, 0, Pdepth, InputOutput,
+                Pvisual, valuemask, pattributes);
 	XSaveContext(dpy, FW_W_TITLE(fw), FvwmContext, (caddr_t) fw);
 
 	return;
@@ -1267,8 +1267,8 @@ void setup_button_windows(
 			FW_W_BUTTON(fw, i) =
 				XCreateWindow(
 					dpy, FW_W_FRAME(fw), 0, 0, 1, 1, 0,
-					CopyFromParent, InputOutput,
-					CopyFromParent, valuemask, pattributes);
+					Pdepth, InputOutput, Pvisual,
+					valuemask, pattributes);
 			XSaveContext(
 				dpy, FW_W_BUTTON(fw, i), FvwmContext,
 				(caddr_t)fw);
@@ -1417,14 +1417,14 @@ void setup_resize_handle_windows(FvwmWindow *fw)
 	{
 		attributes.win_gravity = c_grav[i];
 		FW_W_CORNER(fw, i) = XCreateWindow(
-			dpy, FW_W_FRAME(fw), -1, -1, 1, 1, 0, 0, InputOutput,
-			DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
+			dpy, FW_W_FRAME(fw), -1, -1, 1, 1, 0, Pdepth,
+                        InputOutput, Pvisual, valuemask, &attributes);
 		XSaveContext(
 			dpy, FW_W_CORNER(fw, i), FvwmContext, (caddr_t)fw);
 		attributes.win_gravity = s_grav[i];
 		FW_W_SIDE(fw, i) = XCreateWindow(
-			dpy, FW_W_FRAME(fw), -1, -1, 1, 1, 0, 0, InputOutput,
-			DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
+			dpy, FW_W_FRAME(fw), -1, -1, 1, 1, 0, Pdepth,
+                        InputOutput, Pvisual, valuemask, &attributes);
 		XSaveContext(dpy, FW_W_SIDE(fw, i), FvwmContext, (caddr_t)fw);
 	}
 	setup_resize_handle_cursors(fw);
