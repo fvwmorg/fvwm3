@@ -499,7 +499,6 @@ FvwmWindow *AddWindow(Window w)
   /* create the resize handles */
   /* sides and corners are input only */
   /* title and buttons maybe one day */
-  /* not sure about having expose events here */
   attributes.event_mask = (ButtonPressMask|ButtonReleaseMask
 			   |EnterWindowMask|LeaveWindowMask);
   tmp_win->title_x = tmp_win->title_y = 0;
@@ -530,6 +529,8 @@ FvwmWindow *AddWindow(Window w)
 
   /* restore valuemask to rmemeber background */
   valuemask = valuemask_save;
+  attributes.event_mask = (ButtonPressMask|ButtonReleaseMask
+			   |EnterWindowMask|LeaveWindowMask|ExposureMask);
 
   if (tmp_win->flags & TITLE)
     {
