@@ -1253,7 +1253,6 @@ void CMD_Cond(F_CMD_ARGS)
 	fvwm_cond_func_rc match_rc;
 	char *flags;
 	char *restofline;
-	int toggle;
 
 	if (cond_rc == NULL)
 	{
@@ -1266,11 +1265,15 @@ void CMD_Cond(F_CMD_ARGS)
 	{
 		match_rc = COND_RC_NO_MATCH;
 	}
-	else if ((toggle = ParseToggleArgument(flags, NULL, -1, 0)) != -1)
+	else if (StrEquals(flags, "1") || StrEquals(flags, "match"))
 	{
-		match_rc = (toggle == 1) ? COND_RC_OK : COND_RC_NO_MATCH;
+		match_rc = COND_RC_OK;
 	}
-	else if (StrEquals(flags, "error") || StrEquals(flags, "-1"))
+	else if (StrEquals(flags, "0") || StrEquals(flags, "nomatch"))
+	{
+		match_rc = COND_RC_NO_MATCH;
+	}
+	else if (StrEquals(flags, "-1") || StrEquals(flags, "error"))
 	{
 		match_rc = COND_RC_ERROR;
 	}
@@ -1297,9 +1300,10 @@ void CMD_Cond(F_CMD_ARGS)
 
 void CMD_CondCase(F_CMD_ARGS)
 {
-	fvwm_cond_func_rc tmp_rc = COND_RC_OK;
+	fvwm_cond_func_rc tmp_rc;
 
 	/* same as Cond, but does not modify the return code */
+        tmp_rc = (cond_rc != NULL) ? *cond_rc : COND_RC_OK;
 	CMD_Cond(&tmp_rc, eventp, w, tmp_win, context, action, Module);
 
 	return;

@@ -1,5 +1,10 @@
 2002-02-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/conditional.c (CMD_CondCase):
+	fixed CondCase command
+	(CMD_Cond):
+	fixed numeric return codes
+
 	* fvwm/add_window.c (CMD_Recapture):
 	fixed focus loss w/ SloppyFocus and MouseFocus after RecaptureWindow
 

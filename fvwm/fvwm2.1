@@ -7829,7 +7829,7 @@ command does not have a return code.  Example:
 .EX
 AddToFunc PickWindowRaiseAndDeiconify
 + I Pick
-+ I Cond (-1) Break
++ I Cond (Error) Break
 + I Raise
 + I Iconify off
 .EE
@@ -7838,10 +7838,11 @@ AddToFunc PickWindowRaiseAndDeiconify
 .BI "Cond [(" returncode ")] " command
 Performs
 .I command
-if the last conditional command returned the boolean value
+if the last conditional command returned the value
 .IR returncode .
-The values "error" or "-1" can also be used to check for an error
-condition (see description of the commands).  If no
+Instead of the numeric values 0 (no match), 1 (match) and -1
+(error), the symbolic names "NoMatch", "Match" and "Error" can be
+used.  If no
 .I returncode
 is given, the default 0 is assumed.
 .B Cond
@@ -7852,7 +7853,7 @@ replaced by the new one.  Example:
 .EX
 AddToFunc ToggleXterm
 + I Any (my_xtermwindow) Close
-+ I Cond (0) Exec xterm -T my_xtermwindow
++ I Cond (NoMatch) Exec xterm -T my_xtermwindow
 .EE
 
 .TP
