@@ -1,3 +1,9 @@
+2000-11-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* modules/FvwmBacker/root_bits.c:
+	* modules/FvwmTaskBar/ButtonArray.c:
+	-Wall -Werror fixes
+
 2000-11-09  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmScript/FvwmScript.1:

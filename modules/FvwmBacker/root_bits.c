@@ -16,6 +16,10 @@
 #include <X11/Xlib.h>
 #include <stdio.h>
 
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+
 extern Display *dpy;
 extern int screen;
 extern char *Module;

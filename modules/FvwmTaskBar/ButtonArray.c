@@ -84,7 +84,7 @@ extern int NRows, RowHeight;
 void Draw3dRect(Window wn, int x, int y, int w, int h, int state,
 		Bool iconified)
 {
-  colorset_struct *cset;
+  colorset_struct *cset = &Colorset[0];  /* initialize to avoid warning */
   int d = 1;
 
   if (ThreeDfvwm)
