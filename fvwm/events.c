@@ -416,6 +416,20 @@ void HandlePropertyNotify()
   
   switch (Event.xproperty.atom) 
     {
+    case XA_WM_TRANSIENT_FOR:
+      {
+        if(XGetTransientForHint(dpy, Tmp_win->w, &Tmp_win->transientfor))
+        {
+           Tmp_win->flags |= TRANSIENT;
+           RaiseWindow(Tmp_win);
+        }
+        else
+        {   
+           Tmp_win->flags &= ~TRANSIENT;
+        }
+      }
+      break;
+
     case XA_WM_NAME:
       if (!XGetWMName(dpy, Tmp_win->w, &text_prop))
 	return;

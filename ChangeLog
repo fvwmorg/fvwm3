@@ -1,3 +1,8 @@
+1998-11-04  /users/domivogt  <dominik_vogt@hp.com>
+
+	* fvwm/events.c (HandlePropertyNotify): Fixed the fix
+	* for TransientFor Bug
+
 1998-11-03  /users/domivogt  <dominik_vogt@hp.com>
 
 	* fvwm/misc.c (GetPositionArguments): Added MkLinux fix
