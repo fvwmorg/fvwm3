@@ -159,8 +159,12 @@ void MakeButton(button_info *b)
 		b->hints->flags=0;
 	      ConstrainSize(b->hints,&b->icon_w,&b->icon_h);
 	    }
-	  XMoveResizeWindow(Dpy,b->IconWin,ix+(iw-b->icon_w)/2,
-			    iy+(ih-b->icon_h)/2,b->icon_w,b->icon_h);
+	  if (b->flags & b_Right)
+	    ix += iw-b->icon_w;
+	  else if (!(b->flags & b_Left))
+	    ix += (iw-b->icon_w)/2;
+	  XMoveResizeWindow(Dpy,b->IconWin,ix,iy+(ih-b->icon_h)/2,
+			    b->icon_w,b->icon_h);
 	}
       else
 	XMoveWindow(Dpy,b->IconWin,2000,2000);	

@@ -1,6 +1,6 @@
 .\" t # I don't know this stuff, sorry. -Jarl
 .\" @(#)FvwmButtons.1	1/28/94
-.TH FvwmButtons 1 "Mar 9 1996"
+.TH FvwmButtons 1 "Nov 1 1998"
 .UC
 .SH NAME
 FvwmButtons \- the FVWM buttonbox module
@@ -124,13 +124,16 @@ general action.
 .IP "  Back \fIcolor\fP"
 Specifies the background color to be used drawing this box. A relief color
 and a shadow color will also be calculated from this.
+.IP "  Center"
+The contents of the button is centered on the button. This is the default but
+may be changed by \fILeft\fP or \fIRight\fP.
 .IP "  Container [(\fIoptions\fP)]"
 Specifies that this button will contain a miniature buttonbox, more or less
 equivalent to swallowing another FvwmButtons module. The options are the
 same as can be given for a single button, but they affect all
 the contained buttons. Options available for this use are \fIBack, Font,
 Fore, Frame\fP and \fIPadding\fP. Flags for Title and Swallow options can
-be set with \fITitle(flags)\fP and \fISwallow(flags\fP.
+be set with \fITitle(flags)\fP and \fISwallow(flags)\fP.
 You should also specify either "Columns \fIwidth\fP" or "Rows \fIheight\fP",
 or "Rows 2" will be assumed for purpose of arranging the buttons inside
 the container. For an example, see the \fISample configuration\fP section.
@@ -166,6 +169,9 @@ The name of an X11 bitmap file or XPM color icon file, containing the
 icon to display on the button. FvwmButtons will search through the path
 specified in the fvwm IconPath or PixmapPath 
 configuration items to find the icon file.
+.IP "  Left"
+The contents of the button will be aligned to the left. The default is to
+center the contents on the button.
 .IP "  NoSize"
 This option specifies that this button will not be considered at all when
 making the initial calculations of buttonsizes. Useful for the odd button
@@ -177,6 +183,9 @@ is normally 2 pixels to the sides and 4 pixels above and below, except
 for swallowed windows and containers, which are by default not padded at all. 
 This option sets the horizontal padding to \fIwidth\fP and the vertical
 padding to \fIheight\fP.
+.IP "  Right"
+The contents of the button will be aligned to the Right. The default is to
+center the contents on the button.
 .IP "  Size \fIwidth height\fP"
 Specifies that the contents of this button will require \fIwidth\fP by
 \fIheight\fP pixels, regardless of what size FvwmButtons calculates from
@@ -498,8 +507,8 @@ Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 *FvwmButtons(6x5, Swallow "FvwmXclock" `Exec xclock   \\
   -name FvwmXclock -geometry 40x40+0-0 -padding 1     \\
   -analog -chime -bg rgb:90/80/90`)
-*FvwmButtons(13x5, Swallow (NoClose) "FvwmIconMan"    \\
-'Module FvwmIconMan')
+*FvwmButtons(13x5, Left, Swallow (NoClose)            \\
+"FvwmIconMan" 'Module FvwmIconMan')
 *FvwmButtons(20x5, Padding 0, Swallow "xosview"       \\
   `Exec /usr/X11R6/bin/xosview -cpu -int -page -net   \\
   -geometry 100x50+0-0 -font 5x7`)
@@ -521,4 +530,4 @@ The statement above still applies.
 
 .SH AUTHOR
 Robert Nation.
-Somewhat enhanced by Jarl Totland.
+Somewhat enhanced by Jarl Totland, Jui-Hsuan Joshua Feng and Dominik Vogt.

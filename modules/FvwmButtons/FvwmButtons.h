@@ -39,27 +39,29 @@
 /* ------------------------------- structs --------------------------------- */
 
 /* flags for b->flags */
-#define b_Container 0x0001 /* Contains several buttons */
-#define b_Font      0x0002 /* Has personal font data */
-#define b_Fore      0x0004 /* Has personal text color */
-#define b_Back      0x0008 /* Has personal background color (or "none") */ 
-#define b_Padding   0x0010 /* Has personal padding data */
-#define b_Frame     0x0020 /* Has personal framewidth */
-#define b_Title     0x0040 /* Contains title */
-#define b_Icon      0x0080 /* Contains icon */
-#define b_Swallow   0x0100 /* Contains swallowed window */
-#define b_Action    0x0200 /* Fvwm action when clicked on */
-#define b_Hangon    0x0400 /* Is waiting for a window before turning active */
-#define b_Justify   0x0800 /* Has justification info */
-#define b_Size      0x1000 /* Has a minimum size, don't guess */
-#define b_IconBack  0x2000 /* Has an icon as background */
-#define b_IconParent 0x4000 /* Parent button has an icon as background */
-#define b_TransBack 0x8000 /* Transparent background */
-
-/* flags for b->posflags */
-#define b_SizeFixed   0x01 /* User provided rows/columns may not be altered */
-#define b_PosFixed    0x02 /* User provided button position */
-#define b_SizeSmart   0x04 /* Improved button box sizing */
+#define b_Container  0x00000001 /* Contains several buttons */
+#define b_Font       0x00000002 /* Has personal font data */
+#define b_Fore       0x00000004 /* Has personal text color */
+#define b_Back       0x00000008 /* Has personal background color (or "none")*/ 
+#define b_Padding    0x00000010 /* Has personal padding data */
+#define b_Frame      0x00000020 /* Has personal framewidth */
+#define b_Title      0x00000040 /* Contains title */
+#define b_Icon       0x00000080 /* Contains icon */
+#define b_Swallow    0x00000100 /* Contains swallowed window */
+#define b_Action     0x00000200 /* Fvwm action when clicked on */
+#define b_Hangon     0x00000400 /* Is waiting for a window before turning
+				 * active */
+#define b_Justify    0x00000800 /* Has justification info */
+#define b_Size       0x00001000 /* Has a minimum size, don't guess */
+#define b_IconBack   0x00002000 /* Has an icon as background */
+#define b_IconParent 0x00004000 /* Parent button has an icon as background */
+#define b_TransBack  0x00008000 /* Transparent background */
+#define b_Left       0x00010000 /* Button is left-aligned */
+#define b_Right      0x00020000 /* Button is right-aligned */
+#define b_SizeFixed  0x00040000 /* User provided rows/columns may not be
+				 * altered */
+#define b_PosFixed   0x00080000 /* User provided button position */
+#define b_SizeSmart  0x00100000 /* Improved button box sizing */
 
 /* Flags for b->swallow */
 #define b_Count       0x03 /* Init counter for swallowing */
@@ -92,8 +94,7 @@ struct container_info_struct
   int ButtonHeight;
   int xpos,ypos;
 
-  ushort flags;            /* Which data are set in this container? */
-  byte posflags;           /* Button placement behaviour */
+  unsigned long flags;     /* Which data are set in this container? */
   byte justify;            /* b_Justify */
   byte justify_mask;       /* b_Justify */
   byte swallow;            /* b_Swallow */
@@ -114,8 +115,7 @@ struct container_info_struct
 struct button_info_struct
 {
   /* required fields */
-  ushort flags;
-  byte posflags;           /* Button placement behaviour */
+  unsigned long flags;
   int  BPosX,BPosY;        /* position in button units from top left */
   byte BWidth,BHeight;     /* width and height in button units  */
   button_info *parent;

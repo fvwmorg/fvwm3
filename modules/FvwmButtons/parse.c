@@ -97,7 +97,7 @@ int ParseBack(char **ss)
 *** ParseBoxSize()
 *** Parses the options possible to BoxSize
 **/
-void ParseBoxSize(char **ss, byte *posflags)
+void ParseBoxSize(char **ss, unsigned long *flags)
 {
   char *opts[]={"dumb","fixed","smart",NULL};
   char *s = *ss;
@@ -109,18 +109,18 @@ void ParseBoxSize(char **ss, byte *posflags)
   switch(m)
     {
     case 0:
-      *posflags &= ~(b_SizeFixed|b_SizeSmart);
+      *flags &= ~(b_SizeFixed|b_SizeSmart);
       break;
     case 1:
-      *posflags |= b_SizeFixed;
-      *posflags &= ~b_SizeSmart;
+      *flags |= b_SizeFixed;
+      *flags &= ~b_SizeSmart;
       break;
     case 2:
-      *posflags |= b_SizeSmart;
-      *posflags &= ~b_SizeFixed;
+      *flags |= b_SizeSmart;
+      *flags &= ~b_SizeFixed;
       break;
     default:
-      *posflags &= ~(b_SizeFixed|b_SizeSmart);
+      *flags &= ~(b_SizeFixed|b_SizeSmart);
       fprintf(stderr,"%s: Illegal boxsize option \"%s\"\n",MyName, s);
       break;
     }
@@ -380,7 +380,7 @@ void ParseContainer(char **ss,button_info *b)
 	    fprintf(stderr,"%s: Illegal size arguments\n",MyName);
 	  break;
 	case 11: /* BoxSize */
-	  ParseBoxSize(&s, &b->c->posflags);
+	  ParseBoxSize(&s, &b->c->flags);
 	  break;
 
 	default:
@@ -414,7 +414,7 @@ void match_string(button_info **uberb,char *s)
     {
       char *opts[]={"back","fore","font","title","icon","frame","padding",
 		      "swallow","action","container","end","nosize","size",
-                      "panel",
+                      "panel", "left", "right", "center"
 		      NULL};
       trimleft(s);
       while(*s && *s!=')')
@@ -429,8 +429,8 @@ void match_string(button_info **uberb,char *s)
 		  flags=XParseGeometry(geom, &x, &y, &w, &h);
 		  if(flags&WidthValue)  b->BWidth=w;
 		  if(flags&HeightValue) b->BHeight=h;
-		  if(flags&XValue) { b->BPosX=x; b->posflags|=b_PosFixed; }
-		  if(flags&YValue) { b->BPosY=y; b->posflags|=b_PosFixed; }
+		  if(flags&XValue) { b->BPosX=x; b->flags|=b_PosFixed; }
+		  if(flags&YValue) { b->BPosY=y; b->flags|=b_PosFixed; }
 		  if(flags&XNegative) b->BPosX=-1-x;
 		  if(flags&YNegative) b->BPosY=-1-y;
 		  free(geom);
@@ -681,6 +681,20 @@ void match_string(button_info **uberb,char *s)
               b->hangon = t;  /* which panel to popup */
 	      break;
 
+	    case 14: /* Left */
+	      b->flags |= b_Left;
+	      b->flags &= ~b_Right;
+	      break;
+
+	    case 15: /* Right */
+	      b->flags |= b_Right;
+	      b->flags &= ~b_Left;
+	      break;
+
+	    case 16: /* Center */
+	      b->flags &= ~(b_Right|b_Left);
+	      break;
+
 	    default:
 	      t=seekright(&s);
 	      fprintf(stderr,"%s: Illegal button option \"%s\"\n",MyName,
@@ -862,7 +876,7 @@ void ParseConfigLine(button_info **ubb,char *s)
       *ubb = UberButton;
       break;
     case 11: /* BoxSize */
-      ParseBoxSize(&s, &ub->c->posflags);
+      ParseBoxSize(&s, &ub->c->flags);
       break;
     default:
       trimleft(s);

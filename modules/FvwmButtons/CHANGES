@@ -1,6 +1,11 @@
 
 Changed since FvwmButtons-200396b
 
+ * 110198: Updated manpage
+
+ * 110198: Animated panel, button geometry and 'Left', 'Right', 'Center'
+   options have been added.
+
  * 200396: Updated TODO file some.
 
  * 210396: Fixed Desk buttons that didn't hang correctly.

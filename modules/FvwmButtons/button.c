@@ -322,7 +322,7 @@ button_info *alloc_button(button_info *ub,int num)
   b=(button_info*)mymalloc(sizeof(button_info));
   ub->c->buttons[num]=b;
 
-  b->flags = b->posflags = 0;
+  b->flags = b->flags = 0;
   b->swallow = 0;
   b->BWidth = b->BHeight = 1;
   b->BPosX = b->BPosY = 0;
@@ -410,7 +410,7 @@ char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
     }
   if (y>=c->num_rows || y<0)
     {
-      if (b->posflags&b_PosFixed || !(ub->c->posflags&b_SizeSmart) || y<0)
+      if (b->flags&b_PosFixed || !(ub->c->flags&b_SizeSmart) || y<0)
 	{
 	  fprintf(stderr,"%s: Button out of vertical range. Quitting.\n",MyName);
 	  fprintf(stderr,"Button=%d num_rows=%d BPosY=%d\n",
@@ -430,7 +430,7 @@ char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
     }
   if(y+b->BHeight>c->num_rows)
     {
-      if (c->posflags&b_SizeSmart)
+      if (c->flags&b_SizeSmart)
 	{
 	  c->num_rows=y+b->BHeight;
 	  c->num_buttons=c->num_columns*c->num_rows;
@@ -516,7 +516,7 @@ void ShuffleButtons(button_info *ub)
   for(i=0;i<num_items;i++)
     actual_buttons_used+=local_buttons[i]->BWidth*local_buttons[i]->BHeight;
   
-  if (!(c->posflags&b_SizeFixed)||!(c->num_rows)||!(c->num_columns))
+  if (!(c->flags&b_SizeFixed)||!(c->num_rows)||!(c->num_columns))
     {
       /* Size and create the window */
       if(c->num_rows==0 && c->num_columns==0)
@@ -527,14 +527,14 @@ void ShuffleButtons(button_info *ub)
 	c->num_rows=1+(actual_buttons_used-1)/c->num_columns;
       while(c->num_rows * c->num_columns < actual_buttons_used)
 	c->num_columns++;
-      if (!(c->posflags&b_SizeFixed))
+      if (!(c->flags&b_SizeFixed))
 	{
 	  while(c->num_rows*c->num_columns >= actual_buttons_used + c->num_columns)
 	    c->num_rows--;
 	}
     }
   
-  if (c->posflags&b_SizeSmart)
+  if (c->flags&b_SizeSmart)
     {
       /* Set rows/columns to at least the height/width of largest button */
       for(i=0;i<num_items;i++)
@@ -542,13 +542,13 @@ void ShuffleButtons(button_info *ub)
 	  b=local_buttons[i];
           if (c->num_rows<b->BHeight) c->num_rows=b->BHeight;
 	  if (c->num_columns<b->BWidth) c->num_columns=b->BWidth;
-          if (b->posflags&b_PosFixed && c->num_columns<b->BWidth+b->BPosX)
+          if (b->flags&b_PosFixed && c->num_columns<b->BWidth+b->BPosX)
 	    c->num_columns=b->BWidth+b->BPosX;
-          if (b->posflags&b_PosFixed && c->num_columns<b->BWidth-b->BPosX)
+          if (b->flags&b_PosFixed && c->num_columns<b->BWidth-b->BPosX)
 	    c->num_columns=b->BWidth-b->BPosX;
-          if (b->posflags&b_PosFixed && c->num_rows<b->BHeight+b->BPosY)
+          if (b->flags&b_PosFixed && c->num_rows<b->BHeight+b->BPosY)
 	    c->num_rows=b->BHeight+b->BPosY;
-          if (b->posflags&b_PosFixed && c->num_rows<b->BHeight-b->BPosY)
+          if (b->flags&b_PosFixed && c->num_rows<b->BHeight-b->BPosY)
 	    c->num_rows=b->BHeight-b->BPosY;
 	}
     }
@@ -570,7 +570,7 @@ void ShuffleButtons(button_info *ub)
   for(i=0;i<num_items;i++)
     {
       b=local_buttons[i];
-      if (!(b->posflags&b_PosFixed)) continue;
+      if (!(b->flags&b_PosFixed)) continue;
       /* recalculate position for negative offsets */
       if (b->BPosX<0) b->BPosX=b->BPosX+c->num_columns-b->BWidth+1;
       if (b->BPosY<0) b->BPosY=b->BPosY+c->num_rows-b->BHeight+1;
@@ -588,7 +588,7 @@ void ShuffleButtons(button_info *ub)
   for(i=0;i<num_items;i++)
     {
       b=local_buttons[i];
-      if (b->posflags&b_PosFixed) continue;
+      if (b->flags&b_PosFixed) continue;
       
       if (next_button_x+b->BWidth>c->num_columns)
 	{

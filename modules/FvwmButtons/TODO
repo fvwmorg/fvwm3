@@ -1,6 +1,8 @@
 
 Things that should be done for the next release:
 
+ * Animated panels have to be documented in the manpage.
+
  * Work in progress: free setting of relief and shadow color, getting back
    background pixmaps. Optional extra arguments to Frame.. Frame f1 f2 would
    be for normal/depressed relief width... Frame f1 f2 f3 f4 could be 
