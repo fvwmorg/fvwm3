@@ -1,5 +1,8 @@
 1998-11-09  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/move.c: Applied the bugfix for the move-lagging-behind
+	problem.
+
 	* modules/FvwmRearrange: new module added (merged FvwmTile and
 	FvwmCascade).
 

@@ -597,23 +597,17 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
   if (menuFromFrameOrWindowOrTitlebar)
     {
       /* warp the pointer to the cursor position from before menu appeared*/
-      /* FIXGJB: XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, Stashed_X,Stashed_Y); */
       XFlush(dpy);
     }
 
-
-  DragX = eventp->xbutton.x_root;
-  DragY = eventp->xbutton.y_root;
-  /* If this is commented out, then the move starts from the button press
-   * location instead of the current location */
-/*  RBW-temp  - uncommenting this does 2 things:
-      - breaks moving a window "out of the Pager" onto the desktop (we
-        don't want the window in its current location, we want it *here*)
-      - causes the cursor to "lead" the move during normal grab-and-drag
-        operations
-  XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
-      &DragX, &DragY,	&JunkX, &JunkY, &JunkMask);
-*/
+  if (eventp->type != KeyPress)
+    {
+      DragX = eventp->xbutton.x_root;
+      DragY = eventp->xbutton.y_root;
+    }
+  else
+    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &DragX, &DragY,
+                  &JunkX, &JunkY, &JunkMask);
 
   if(!GrabEm(MOVE))
     {
