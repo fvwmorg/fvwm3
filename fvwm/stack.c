@@ -1126,6 +1126,10 @@ void mark_transient_subtree(
     {
       s->pscratch = get_transientfor_fvwmwindow(s);
     }
+    else
+    {
+      s->pscratch = NULL;
+    }
   }
   /* now loop over the windows and mark the ones we need to move */
   SET_IN_TRANSIENT_SUBTREE(t, 1);
@@ -1154,7 +1158,7 @@ void mark_transient_subtree(
       if (!IS_TRANSIENT(s) && !use_group_hint)
 	continue;
       r = (FvwmWindow *)s->pscratch;
-      if (do_ignore_icons && IS_ICONIFIED(r))
+      if (do_ignore_icons && r && IS_ICONIFIED(r))
 	continue;
       if (IS_TRANSIENT(s))
       {

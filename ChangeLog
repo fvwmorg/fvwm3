@@ -1,5 +1,11 @@
 2001-03-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/stack.c (mark_transient_subtree):
+	fixed core dump
+
+	* libs/ColorUtils.c (GetShadowOrHiliteColor):
+	attempt to 'fix' UMR
+
 	* fvwm/colors.c (FreeColors):
 	* fvwm/builtins.c (SetDefaultColors):
 	* fvwm/module_interface.c (send_list_func):

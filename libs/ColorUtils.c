@@ -215,7 +215,7 @@ static XColor *GetShadowOrHiliteColor(
   Pixel background, float light, float dark, float factor)
 {
   long brightness;
-  unsigned short red, green, blue;
+  unsigned int red, green, blue;
 
   memset(&color, 0, sizeof(color));
   color.pixel = background;
@@ -228,16 +228,22 @@ static XColor *GetShadowOrHiliteColor(
   /* For "dark" backgrounds, make everything a fixed %age lighter */
   if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
   {
-    color.red = 0xffff - ((0xffff - red) * dark + 50) / 100;
-    color.green = 0xffff - ((0xffff - green) * dark + 50) / 100;
-    color.blue = 0xffff - ((0xffff - blue) * dark + 50) / 100;
+    color.red =
+      (unsigned short)(0xffff - ((0xffff - red) * dark + 50) / 100);
+    color.green =
+      (unsigned short)(0xffff - ((0xffff - green) * dark + 50) / 100);
+    color.blue =
+      (unsigned short)(0xffff - ((0xffff - blue) * dark + 50) / 100);
   }
   /* For "light" background, make everything a fixed %age darker */
   else if (brightness > XmDEFAULT_LIGHT_THRESHOLD * PCT_BRIGHTNESS)
   {
-    color.red = (red * light + 50) / 100;
-    color.green = (green * light + 50) / 100;
-    color.blue = (blue * light + 50) / 100;
+    color.red =
+      (unsigned short)((red * light + 50) / 100);
+    color.green =
+      (unsigned short)((green * light + 50) / 100);
+    color.blue =
+      (unsigned short)((blue * light + 50) / 100);
   }
   /* For "medium" background, select is a fixed %age darker;
    * top (lighter) and bottom (darker) are a variable %age
