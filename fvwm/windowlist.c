@@ -1044,7 +1044,7 @@ void CMD_WindowList(F_CMD_ARGS)
 	{
 		free(iconifiedList);
 	}
-	/* Use the WindowList menu style is there is one */
+	/* Use the WindowList menu style if there is one */
 	change_mr_menu_style(mr, "WindowList");
 
 	/* Activate select_on_release style */
