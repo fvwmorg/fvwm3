@@ -46,6 +46,7 @@
 #include "libs/fvwmlib.h"
 #include "fvwm/module.h"
 #include "fvwm/fvwm.h"
+#include "fvwm/vpacket.h"
 
 typedef struct window_item {
 	Window frame;
@@ -108,41 +109,41 @@ void free_window_list(window_list *wl)
 int is_suitable_window(unsigned long *body)
 {
 	XWindowAttributes xwa;
-	unsigned long flags = body[8];
+        struct ConfigWinPacket  *cfgpacket = (void *) body;
 
-	if ((flags&WINDOWLISTSKIP) && !all)
+	if ((DO_SKIP_WINDOW_LIST(cfgpacket)) && !all)
 		return 0;
 
-	if ((flags&MAXIMIZED) && !maximized)
+	if ((IS_MAXIMIZED(cfgpacket)) && !maximized)
 		return 0;
 
-	if ((flags&STICKY) && !sticky)
+	if ((IS_STICKY(cfgpacket)) && !sticky)
 		return 0;
 
-	if (!XGetWindowAttributes(dpy, (Window)body[1], &xwa))
+	if (!XGetWindowAttributes(dpy, cfgpacket->w, &xwa))
 		return 0;
 
 	if (xwa.map_state != IsViewable)
 		return 0;
 
-	if (!(flags&MAPPED))
+	if (!(IS_MAPPED(cfgpacket)))
 		return 0;
 
-	if (flags&ICONIFIED)
+	if (IS_ICONIFIED(cfgpacket))
 		return 0;
 
 	if (!desk) {
-		int x = (int)body[3], y = (int)body[4];
-		int w = (int)body[5], h = (int)body[6];
+		int x = (int)cfgpacket->frame_x, y = (int)cfgpacket->frame_y;
+		int w = (int)cfgpacket->frame_width, h = (int)cfgpacket->frame_height;
 		if (!((x < dwidth) && (y < dheight)
 		      && (x + w > 0) && (y + h > 0)))
 			return 0;
 	}
 
-	if (!(flags&TITLE) && !untitled)
+	if (!(HAS_TITLE(cfgpacket)) && !untitled)
 		return 0;
 
-	if ((flags&TRANSIENT) && !transients)
+	if ((IS_TRANSIENT(cfgpacket)) && !transients)
 		return 0;
 
 	return 1;
@@ -151,22 +152,24 @@ int is_suitable_window(unsigned long *body)
 int get_window(void)
 {
 	unsigned long header[HEADER_SIZE], *body;
+        struct ConfigWinPacket  *cfgpacket;
 	int count, last = 0;
 	fd_set infds;
 	FD_ZERO(&infds);
 	FD_SET(fd[1], &infds);
 	select(fd_width,&infds, 0, 0, NULL);
 	if ((count = ReadFvwmPacket(fd[1],header,&body)) > 0) {
+                cfgpacket = (void *) body;
 		switch (header[1]) {
 		case M_CONFIGURE_WINDOW:
 			if (is_suitable_window(body)) {
 				window_item *wi =
 					(window_item*)safemalloc(sizeof( window_item ));
-				wi->frame = (Window)body[1];
-				wi->th = (int)body[9];
-				wi->bw = (int)body[10];
-				wi->width = body[5];
-				wi->height = body[6];
+				wi->frame = cfgpacket->frame;
+				wi->th = cfgpacket->title_height;
+				wi->bw = cfgpacket->border_width;
+				wi->width = cfgpacket->frame_width;
+				wi->height = cfgpacket->frame_height;
 				if (!wins_tail) wins_tail = wi;
 				insert_window_list(&wins, wi);
 				++wins_count;
