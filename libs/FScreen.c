@@ -137,7 +137,7 @@ static int                 randr_error_base  = -1;
 #endif
 
 #ifdef USE_XINERAMA_EMULATION
-static Window blank_w, vert_w;
+static Window blank_w, vert_w, blank2_w, blank3_w;
 #endif
 
 static int FScreenParseScreenBit(char *arg, char default_screen);
@@ -187,6 +187,8 @@ static void FScreenUpdateEmulationMapState(void)
     if (!is_mapped)
     {
       XMapRaised(disp, blank_w);
+      XMapRaised(disp, blank2_w);
+      XMapRaised(disp, blank3_w);
       XMapRaised(disp, vert_w);
       is_mapped = True;
     }
@@ -196,6 +198,8 @@ static void FScreenUpdateEmulationMapState(void)
     if (is_mapped)
     {
       XUnmapWindow(disp, blank_w);
+      XUnmapWindow(disp, blank2_w);
+      XUnmapWindow(disp, blank3_w);
       XUnmapWindow(disp, vert_w);
       is_mapped = False;
     }
@@ -278,23 +282,33 @@ void FScreenInit(Display *dpy)
     h = DisplayHeight(disp, scr);
     screens_xi[1].screen_number = 0;
     screens_xi[1].x_org         = 0;
-    screens_xi[1].y_org         = 0;
+    screens_xi[1].y_org         = h / 16;
     screens_xi[1].width         = ws;
     screens_xi[1].height        = 7 * h / 8;
     screens_xi[2].screen_number = 1;
     screens_xi[2].x_org         = ws;
     screens_xi[2].y_org         = 0;
     screens_xi[2].width         = w - ws;
-    screens_xi[2].height        = h;
+    screens_xi[2].height        = 7 * h / 8;
     /* add delimiter */
     attributes.background_pixel = WhitePixel(disp, scr);
     attributes.override_redirect = True;
     blank_w = XCreateWindow(
-      disp, root, 0, 7 * h / 8 - 1, ws, 2, 0, CopyFromParent, CopyFromParent,
+      disp, root, 0, screens_xi[1].y_org - 1, screens_xi[1].width, 2, 0,
+      CopyFromParent, CopyFromParent, CopyFromParent,
+      CWBackPixel|CWOverrideRedirect, &attributes);
+    blank2_w = XCreateWindow(
+      disp, root, 0, screens_xi[1].y_org + screens_xi[1].height - 1,
+      screens_xi[1].width, 2, 0, CopyFromParent, CopyFromParent,
+      CopyFromParent, CWBackPixel|CWOverrideRedirect, &attributes);
+    blank3_w = XCreateWindow(
+      disp, root, screens_xi[2].x_org, screens_xi[2].height - 1,
+      w - screens_xi[2].x_org, 2, 0, CopyFromParent, CopyFromParent,
       CopyFromParent, CWBackPixel|CWOverrideRedirect, &attributes);
     vert_w = XCreateWindow(
-      disp, root, ws - 1, 0, 2, h, 0, CopyFromParent, CopyFromParent,
-      CopyFromParent, CWBackPixel|CWOverrideRedirect, &attributes);
+      disp, root, screens_xi[2].x_org - 1, 0, 2, h, 0, CopyFromParent,
+      CopyFromParent, CopyFromParent, CWBackPixel|CWOverrideRedirect,
+      &attributes);
   }
   else
 #endif

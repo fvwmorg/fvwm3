@@ -194,9 +194,9 @@ Configuration tests:
   - Run
       automake --add-missing; autoreconf
     If you checked out fresh sources in, run the same line again
-    (automake generated a file that autoreconf needs and
+    (automake generates a file that autoreconf needs and
     autoreconf generates a file that automake needs.  If you fail
-    to do so, the tarball may be screwed.)
+    to do so, the tarball may not contain all the necessary files.)
       automake --add-missing; autoreconf
   - If you are building a stable release, remove the config.cache
     file if there is one.  Of course doing this for a development
@@ -215,14 +215,22 @@ Compile tests:
   - Double check that you get no warnings during the build (the
     options for compilers other than gcc may be different):
       make CFLAGS="-g -O2 -Wall -Werror"
+    On some systems, the system include files generate warnings.
+    On such a system you have to omit the -Werror option and check
+    the output of the compilation run for warnings manually.  It
+    is important to use the -O2 option because some versions of
+    gcc seem to have a bug: when -Wall is used, but not -O2, no
+    warnings are generated at all.  The only warning that can be
+    safely ignored is this: "the use of `tempnam' is dangerous,
+    better use `mkstemp'"
   - Fix all warnings and problems, commit the changes and repeat
-    the previous step.
+    the previous step until no more warnings occur.
 
 Build and test the release tarballs:
 
   The next step will create the tar file, then unpack it and
-  attempt a build & install (to a scratch directory, not
-  /usr/local).  This makes sure that you really *did* include all
+  attempt to build fvwm from it and install to a scratch
+  directory.  This makes sure that you really *did* include all
   the files necessary to build the package into the tar file.  It
   may be hard to appreciate how useful this is, until it has
   reminded you that you forgot file "foo.h" in some _SOURCES line.
@@ -264,6 +272,8 @@ Update the release dates and numbers:
   - Increase the version number in configure.in (see above) and
     commit this change.
   - Create an entry in the ChangeLog file indicating the release.
+    Commit this change.
+  - Create a new entry for future changes in the NEWS file.
     Commit this change.
 
 Update the development branch:

@@ -1,5 +1,9 @@
 2002-03-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/FScreen.c (FScreenInit):
+	(FScreenUpdateEmulationMapState):
+	changed Xinerame emulation layout
+
 	* fvwm/fvwm2.1:
 	Corrected the description of the XineramaPrimaryScreen command that was
 	essentially lying.
