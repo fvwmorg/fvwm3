@@ -947,7 +947,7 @@ static void InteractiveMove(
 		 * have to check for ButtonRelease too since the event may be
 		 * faked. */
 		fev_get_evpos_or_query(
-			dpy, Scr.Root, exc->x.etrigger, &DragX, &DragY);
+			dpy, Scr.Root, exc->x.elast, &DragX, &DragY);
 	}
 
 	MyXGrabServer(dpy);
@@ -1932,25 +1932,18 @@ Bool __move_loop(
 	/* prevent flicker when paging */
 	SET_WINDOW_BEING_MOVED_OPAQUE(fw, do_move_opaque);
 
+	if (FQueryPointer(
+		    dpy, Scr.Root, &JunkRoot, &JunkChild, &xl, &yt,
+		    &JunkX, &JunkY, &button_mask) == False)
 	{
-		int xl_bak;
-		int yt_bak;
-
-		xl_bak = xl;
-		yt_bak = yt;
-		if (FQueryPointer(
-			    dpy, Scr.Root, &JunkRoot, &JunkChild, &xl, &yt,
-			    &JunkX, &JunkY, &button_mask) == False)
-		{
-			/* pointer is on a different screen */
-			xl = xl_bak;
-			yt = yt_bak;
-		}
-		else
-		{
-			xl += XOffset;
-			yt += YOffset;
-		}
+		/* pointer is on a different screen */
+		xl = 0;
+		yt = 0;
+	}
+	else
+	{
+		xl += XOffset;
+		yt += YOffset;
 	}
 	button_mask &= DEFAULT_ALL_BUTTONS_MASK;
 	xl_orig = xl;

@@ -219,7 +219,11 @@ static Bool DeferExecution(
 
 	w = e.xany.window;
 	ret_ecc->x.etrigger = &e;
-	*ret_mask |= ECC_ETRIGGER | ECC_W | ECC_WCONTEXT;
+	*ret_mask |= ECC_W | ECC_WCONTEXT;
+	if (e.type != MotionNotify)
+	{
+		*ret_mask |= ECC_ETRIGGER;
+	}
 	if ((w == Scr.Root || w == Scr.NoFocusWin) &&
 	    e.xbutton.subwindow != None)
 	{
