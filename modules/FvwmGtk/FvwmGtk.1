@@ -113,11 +113,10 @@ a permanent window; activating it once more makes the menu disappear again.
 
 .SH WINDOW LISTS
 
-Window lists are special dynamically created menus. They offer a list of
-all windows managed by fvwm and send "WindowListFunc window-id" back to
-fvwm, where window-id is the ID of the selected window in hexadecimal
-notation as expected by fvwm. WindowListFunc is the same function that is
-also used by fvwm for its builtin window list.
+Window lists are special dynamically created menus. They offer a list of all
+windows managed by fvwm and send "WindowListFunc" back to fvwm within the
+window context of the selected window. WindowListFunc is the same function
+that is also used by fvwm for its builtin window list.
 
 .IP "*FvwmGtk: WindowList \fBname\fP [ \fBoption\fP... ]"
 Creates a window-list bound to \fBname\fP. The window-list will be

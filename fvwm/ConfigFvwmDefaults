@@ -15,10 +15,10 @@ Key Escape A MC EscapeFunc
 
 # Needed by the builtin WindowList command, this should match the manpage
 AddToFunc WindowListFunc
-+ I WindowId $0 Iconify off
-+ I WindowId $0 FlipFocus
-+ I WindowId $0 Raise
-+ I WindowId $0 WarpToWindow 5p 5p
++ I Iconify off
++ I FlipFocus
++ I Raise
++ I WarpToWindow 5p 5p
 
 # Needed by the ewmh support
 AddToFunc EWMHActivateWindowFunc

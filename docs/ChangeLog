@@ -1,3 +1,9 @@
+2003-04-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* FAQ:
+	WindowListFunc is executed now within a window context,
+	so "WindowId $0" is not needed anymore in its definition
+
 2003-04-07  Uwe Pross  <uwe.pross@gmx.net>
 
 	* FAQ: 

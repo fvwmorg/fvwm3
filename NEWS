@@ -30,6 +30,10 @@ Changes in development release 2.5.7 (not released yet)
   LocaleTitle. New instruction ChangeLocaleTitle and new function
   Gettext.
 
+* WindowListFunc is executed now within a window context, so
+  a prefix "WindowId $0" is not needed in its definition anymore
+  and it is advised to remove it in user configs.
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.6 (28-Feb-2003)

@@ -1346,13 +1346,13 @@ Key F3		A	MS	WindowList mouse -1p -1p
 
 DestroyFunc my_dbltab2
 AddToFunc   my_dbltab2
-+ I WindowListFunc $w
++ I WindowListFunc
 DestroyFunc my_dbltab_prev
 AddToFunc   my_dbltab_prev
 + I Prev my_dbltab2
 
-Key Tab A M	WindowList Root c c NoGeometry, NoDeskSort, SelectOnRelease Alt_L my_dbltab_prev
-Key Tab	A CM	WindowList Root c c NoGeometry, OnlyListSkip, SelectOnRelease
+Key Tab A M	WindowList Root c c CurrentAtEnd, IconifiedAtEnd, NoGeometry, NoDeskSort, SelectOnRelease Alt_L my_dbltab_prev
+Key Tab	A CM	WindowList Root c c CurrentAtEnd, IconifiedAtEnd, NoGeometry, OnlyListSkip, SelectOnRelease
 
 
 #------------------------------------------------------------------------------

@@ -39,7 +39,9 @@ window_list_item (window_list_entry *wle, window_list_options *opts)
   char *argv[4];
   char desk[10], cmd[200], geo[200];
 
-  g_snprintf (cmd, sizeof (cmd), "%s %#lx",
+  /* support two ways for now: window context (new) and window id param (old) */
+  g_snprintf (cmd, sizeof (cmd), "WindowId %#lx %s %#lx",
+	      wle->w,
 	      opts->function ? opts->function : "WindowListFunc",
 	      wle->w);
   g_snprintf(desk, sizeof (desk), "%d", wle->desk);

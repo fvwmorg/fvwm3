@@ -88,7 +88,7 @@ respectively.
 .IP "*FvwmProxy: Action Select \fIcommand\fP"
 This selects an fvwm function to be called during a FvwmProxy Hide command
 for the window whose proxy was selected.
-The default is WindowListFunc $w.  WindowListFunc is predefined by the
+The default is WindowListFunc.  WindowListFunc is predefined by the
 fvwm install.  You can replace it, add to it,
 or supply an independent function.
 
@@ -200,7 +200,7 @@ try adding
 .nf
 .sp
 AddToFunc WindowListFunc
-+ I WindowId $w WarpToWindow 50 50
++ I WarpToWindow 50 50
 .sp
 .fi
 or just make your own list function from scratch.

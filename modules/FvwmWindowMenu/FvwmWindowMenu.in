@@ -344,7 +344,8 @@ sub AddToSection {
 	$format =~ s/"/\\"/g;
 
 	# add the entry to the section
-	$$s .= qq(+ "$format" $opt->{function} $id\n);
+	# support two ways for now: window context (new), window id param (old)
+	$$s .= qq(+ "$format" WindowId $id $opt->{function} $id\n);
 }
 
 

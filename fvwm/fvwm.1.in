@@ -4132,10 +4132,10 @@ run with the window id of that window passed in as $0. The default
 "WindowListFunc" looks like this:
 .EX
 AddToFunc WindowListFunc
- + I WindowId $0 Iconify off
- + I WindowId $0 FlipFocus
- + I WindowId $0 Raise
- + I WindowId $0 WarpToWindow 5p 5p
++ I Iconify off
++ I FlipFocus
++ I Raise
++ I WarpToWindow 5p 5p
 .EE
 You can destroy the built-in "WindowListFunc" and create your own
 if these defaults do not suit you.
@@ -4185,8 +4185,9 @@ is useful to define a default window if you have bound the window
 list to a key (or button) like this:
 .EX
 # Here we call an existing function, but it may be different
+# See the default WindowListFunc definition earlier in this doc
 AddToFunc SwitchToWindow
-+ I WindowListFunc $[w.id]
++ I WindowListFunc
 
 Key Tab A M WindowList "Prev SwitchToWindow"
 .EE

@@ -1,3 +1,15 @@
+2003-04-15  Mikhael Goikhman  <migo@homemail.com>
+
+	* modules/FvwmGtk/FvwmGtk.1:
+	* modules/FvwmGtk/windowlist.c:
+	* modules/FvwmProxy/FvwmProxy.1:
+	* modules/FvwmProxy/FvwmProxy.c:
+	* modules/FvwmWindowMenu/FvwmWindowMenu.in:
+	WindowListFunc is executed now within a window context,
+	so "WindowId $0" is not needed anymore in its definition
+	These 3 windolist modules support execution of WindowListFunc
+	in the old and the new ways for now.
+
 2003-04-14  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Scripts/FvwmScript-FileBrowser:

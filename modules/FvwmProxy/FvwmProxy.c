@@ -57,7 +57,7 @@
 #define CMD_SELECT		"Function FvwmProxySelectFunc"
 #define CMD_MARK		"Function FvwmProxyMarkFunc"
 #else
-#define CMD_SELECT		"WindowListFunc $w"
+#define CMD_SELECT		"WindowListFunc $[w.id]"
 #define CMD_CLICK1		"Raise"
 #define CMD_CLICK3		"Lower"
 #define CMD_DEFAULT		"Nop"
