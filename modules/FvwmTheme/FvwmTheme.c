@@ -84,7 +84,7 @@ void MyXParseColor(
 {
   if (!XParseColor(display, colormap, spec, exact_def_return))
   {
-    fprintf(stderr,"%s: can't parse color \"%s\"", name, (spec) ? spec : "");
+    fprintf(stderr,"%s: can't parse color \"%s\"\n", name, (spec) ? spec : "");
     exact_def_return->red = 0;
     exact_def_return->green = 0;
     exact_def_return->blue = 0;

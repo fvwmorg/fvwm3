@@ -559,13 +559,22 @@ Pixel GetColor(char *name)
   case 2:
   case 3:
     if (!isdigit(*rest) || (*rest == '0' && *(rest + 1) != 0))
+    {
       /* not a non-negative integer without leading zeros */
+      fprintf(stderr, "Invalid colorset number in color '%s'\n", name);
       return 0;
-    if (sscanf(rest, "%d]%n", &cs, &n) < 1)
+    }
+    sscanf(rest, "%d%n", &cs, &n);
+    if (*(rest + n) != ']')
+    {
+      fprintf(stderr, "No closing brace after '%d' in color '%s'\n", cs, name);
       return 0;
-    if (*(rest + n) != 0)
-      /* trailing characters */
+    }
+    if (*(rest + n + 1) != 0)
+    {
+      fprintf(stderr, "Trailing characters after brace in color '%s'\n", name);
       return 0;
+    }
     AllocColorset(cs);
     switch (i)
     {
