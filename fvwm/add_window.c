@@ -686,9 +686,11 @@ FvwmWindow *AddWindow(Window w)
   SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,width,height, True);
 
 #ifdef SESSION
+#ifdef WINDOWSHADE
   if (do_shade) { 
     WindowShade(&Event, tmp_win->w, tmp_win, C_WINDOW, "", 0);
   }
+#endif
 
   if (do_maximize) { 
     /* This is essentially Maximize, only we want the given dimensions */

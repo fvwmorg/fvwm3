@@ -315,15 +315,20 @@ SaveWindowStates(FILE *f)
 	      ewin->orig_ht - 2*ewin->boundary_width 
 	      - ewin->title_height, 
 	      xmax, ymax,
-	      ewin->frame_width,
-	      ewin->frame_height,
-	      
+            ewin->frame_width,
+            ewin->maximized_ht,
+
 	      Scr.Vx + ewin->icon_x_loc,
 	      Scr.Vy + ewin->icon_y_loc);
       fprintf(f, "  [DESK] %i\n", ewin->Desk);
       fprintf(f, "  [LAYER] %i\n", ewin->layer);
       fprintf(f, "  [FLAGS] %lu %i %i\n", ewin->flags, 
-	      !!(ewin->buttons & WSHADE), ewin->tmpflags.NameChanged); 
+#ifdef WINDOWSHADE
+	      !!(ewin->buttons & WSHADE), 
+#else 
+              0,
+#endif
+ewin->tmpflags.NameChanged); 
     }
   return 1;
 }
@@ -358,8 +363,8 @@ LoadWindowStates(char *filename)
                matches[num_match - 1].h = 100;
                matches[num_match - 1].x_max = 0;
                matches[num_match - 1].y_max = 0;
-               matches[num_match - 1].w_max = 100;
-               matches[num_match - 1].h_max = 100;
+               matches[num_match - 1].w_max = Scr.MyDisplayWidth;
+               matches[num_match - 1].h_max = Scr.MyDisplayHeight;
                matches[num_match - 1].icon_x = 0;
                matches[num_match - 1].icon_y = 0;
                matches[num_match - 1].desktop = 0;

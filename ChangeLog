@@ -1,3 +1,11 @@
+1999-03-02  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/session.c (SaveWindowStates): 
+	* fvwm/add_window.c (AddWindow): 
+	* fvwm/move.c (AnimatedMoveAnyWindow): 
+	(moveLoop): insert #ifdef WINDOWSHADE ... #endif to
+	make configure --disable-windowshade work.
+
 1999-03-02  Dan Espen  <dane@mk.bellcore.com>
 
 	* NEWS: Updated news on FvwmAnimate fonts and colors defaults.
