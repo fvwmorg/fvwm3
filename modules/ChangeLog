@@ -1,7 +1,18 @@
 2001-02-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmButtons/icons.c (CreateIconWindow):
+	(CreateBackIconWindow):
+	(ConfigureIconWindow):
+	* FvwmButtons/FvwmButtons.c (SetTransparentBackground):
+	(Loop):
+	(main):
+	(swallow):
+	Don't use shape extension if not supported by server.
+
 	* FvwmButtons/FvwmButtons.c (Loop):
 	handle transparency when resizing button bar
+	(SetTransparentBackground):
+	properly handle changing shape masks in buttons
 
 2001-02-18  Dan Espen  <dane@mk.telcordia.com>
 

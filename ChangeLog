@@ -1,5 +1,12 @@
 2001-02-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/move_resize.c (Maximize):
+	(handle_stick):
+	* fvwm/builtins.c (WindowShade):
+	* fvwm/icons.c (DeIconify):
+	regrab buttons on focused window when deiconifying or unshading or
+	(un)maximizing or (un)sticking a window
+
 	* fvwm/borders.c (DrawButton):
 	(RedrawButtons):
 	* fvwm/menus.c (paint_menu):

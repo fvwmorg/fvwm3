@@ -62,6 +62,10 @@
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 
+#ifdef SHAPE
+extern Boolean ShapesSupported;
+#endif /* SHAPE */
+
 /****************************************************************************
  *
  * Creates an Icon Window
@@ -105,10 +109,13 @@ void CreateIconWindow(button_info *b)
 
 #ifdef XPM
 #ifdef SHAPE
-  if (b->icon->mask!=None)
+  if (ShapesSupported)
   {
-    XShapeCombineMask(
-      Dpy, b->IconWin, ShapeBounding, 0, 0, b->icon->mask, ShapeSet);
+    if (b->icon->mask!=None)
+    {
+      XShapeCombineMask(
+	Dpy, b->IconWin, ShapeBounding, 0, 0, b->icon->mask, ShapeSet);
+    }
   }
 #endif
 #endif
@@ -124,8 +131,11 @@ void CreateIconWindow(button_info *b)
     XChangeGC(Dpy,NormalGC,GCForeground | GCBackground,&gcv);
 
 #ifdef SHAPE
-    XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
-		      b->icon->picture,ShapeSet);
+    if (ShapesSupported)
+    {
+      XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
+			b->icon->picture,ShapeSet);
+    }
 #endif
 
     temp = XCreatePixmap(Dpy,MyWindow,b->icon->width,
@@ -187,10 +197,13 @@ void CreateBackIconWindow(button_info *b)
 
 #ifdef XPM
 #ifdef SHAPE
-  if (b->icon->mask!=None)
+  if (ShapesSupported)
   {
-    XShapeCombineMask(
-      Dpy, b->IconWin, ShapeBounding, 0, 0, b->icon->mask, ShapeSet);
+    if (b->icon->mask!=None)
+    {
+      XShapeCombineMask(
+	Dpy, b->IconWin, ShapeBounding, 0, 0, b->icon->mask, ShapeSet);
+    }
   }
 #endif
 #endif
@@ -205,8 +218,11 @@ void CreateBackIconWindow(button_info *b)
     XChangeGC(Dpy,NormalGC,GCForeground | GCBackground,&gcv);
 
 #ifdef SHAPE
-    XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
-		      b->icon->picture,ShapeSet);
+    if (ShapesSupported)
+    {
+      XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
+			b->icon->picture,ShapeSet);
+    }
 #endif
 
     temp = XCreatePixmap(Dpy,MyWindow,b->icon->width,
@@ -306,10 +322,13 @@ void ConfigureIconWindow(button_info *b)
 #if 0
 #ifdef XPM
 #ifdef SHAPE
-  if (b->icon->mask!=None)
+  if (ShapesSupported)
   {
-    XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
-		      b->icon->mask,ShapeSet);
+    if (b->icon->mask!=None)
+    {
+      XShapeCombineMask(Dpy,b->IconWin,ShapeBounding,0,0,
+			b->icon->mask,ShapeSet);
+    }
   }
 #endif
 #endif

@@ -91,6 +91,12 @@
 #define MySendText(a,b,c) SendText((a),(b),(c));
 #endif
 
+#ifdef SHAPE
+int ShapeEventBase = -10000;
+int ShapeErrorBase = -10000;
+Boolean ShapesSupported=False;
+#endif /* SHAPE */
+
 extern int nColorsets;	/* in libs/Colorsets.c */
 
 /* --------------------------- external functions -------------------------- */
@@ -522,6 +528,8 @@ void SetTransparentBackground(button_info *ub,int w,int h)
   int number, i;
   XFontStruct *font;
 
+  if (!ShapesSupported)
+    return;
   pmap_mask = XCreatePixmap(Dpy,MyWindow,w,h,1);
   if (pmap_mask == None)
     return;
@@ -598,6 +606,17 @@ void SetTransparentBackground(button_info *ub,int w,int h)
   }
   XShapeCombineMask(Dpy, MyWindow, ShapeBounding, 0, 0, pmap_mask, ShapeUnion);
   XFreePixmap(Dpy, pmap_mask);
+
+  {
+    XEvent dummy;
+
+    XSync(Dpy, 0);
+    /* Flush shape notify events */
+    while (XCheckTypedEvent(Dpy, ShapeEventBase+ShapeNotify, &dummy))
+    {
+      /* nothing */
+    }
+  }
 
   return;
 }
@@ -780,6 +799,10 @@ int main(int argc, char **argv)
   UberButton->title   = MyName;
   UberButton->swallow = 1; /* the panel is shown */
 
+#ifdef SHAPE
+  ShapesSupported = XShapeQueryExtension(Dpy, &ShapeEventBase, &ShapeErrorBase);
+#endif /* SHAPE */
+
   /* parse module options */
   ParseConfiguration(UberButton);
   /* we can't set the size if it was specified in pixels per button here;
@@ -862,8 +885,11 @@ int main(int argc, char **argv)
     ConfigureIconWindow(b);
 
 #ifdef SHAPE
-  if(UberButton->c->flags&b_TransBack)
-    SetTransparentBackground(UberButton,Width,Height);
+  if (ShapesSupported)
+  {
+    if (UberButton->c->flags&b_TransBack)
+      SetTransparentBackground(UberButton,Width,Height);
+  }
 #endif
 
   i=-1;
@@ -925,6 +951,23 @@ void Loop(void)
   {
     if(My_XNextEvent(Dpy,&Event))
     {
+#ifdef SHAPE
+      if (ShapesSupported)
+      {
+	if (Event.type == ShapeEventBase + ShapeNotify)
+	{
+	  XShapeEvent *sev = (XShapeEvent *) &Event;
+
+	  if (sev->kind != ShapeBounding)
+	    return;
+	  if (UberButton->c->flags & b_TransBack)
+	  {
+	    SetTransparentBackground(UberButton, Width, Height);
+	  }
+	  continue;
+	}
+      }
+#endif
       switch(Event.type)
       {
       case Expose:
@@ -1007,15 +1050,6 @@ void Loop(void)
 	}
       }
       break;
-
-#ifdef SHAPE
-      case ShapeNotify:
-	if (UberButton->c->flags & b_TransBack)
-	{
-	  SetTransparentBackground(UberButton, Width, Height);
-	}
-	break;
-#endif
 
       case KeyPress:
 	XLookupString(&Event.xkey,buffer,10,&keysym,0);
@@ -1208,9 +1242,12 @@ void Loop(void)
 		b->hints->flags = 0;
 	      MakeButton(b);
 #ifdef SHAPE
-	      if (UberButton->c->flags & b_TransBack)
+	      if (ShapesSupported)
 	      {
-		SetTransparentBackground(UberButton, Width, Height);
+		if (UberButton->c->flags & b_TransBack)
+		{
+		  SetTransparentBackground(UberButton, Width, Height);
+		}
 	      }
 #endif
 	    }
@@ -2756,10 +2793,13 @@ void swallow(unsigned long *body)
 	  change_swallowed_window_colorset(b, True);
 	}
 #ifdef SHAPE
-	if (UberButton->c->flags & b_TransBack)
+	if (ShapesSupported)
 	{
-	  SetTransparentBackground(UberButton, Width, Height);
-	  XShapeSelectInput(Dpy, swin, ShapeNotifyMask);
+	  if (UberButton->c->flags & b_TransBack)
+	  {
+	    SetTransparentBackground(UberButton, Width, Height);
+	    XShapeSelectInput(Dpy, swin, ShapeNotifyMask);
+	  }
 	}
 #endif
 	RedrawButton(b,1);

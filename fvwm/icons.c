@@ -1325,7 +1325,10 @@ void DeIconify(FvwmWindow *tmp_win)
 #if 1
   RaiseWindow(tmp_win); /* moved dje */
 #endif
-
+  if (Scr.Focus)
+  {
+    focus_grab_buttons(Scr.Focus, True);
+  }
   if(HAS_CLICK_FOCUS(tmp_win))
     FocusOn(tmp_win, TRUE, "");
   GNOME_SetWinArea(tmp_win);
@@ -1496,6 +1499,12 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 	DeleteFocus(1);
     }
   }
+  if (Scr.Focus)
+  {
+    focus_grab_buttons(Scr.Focus, True);
+  }
+
+  return;
 }
 
 

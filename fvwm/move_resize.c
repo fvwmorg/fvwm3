@@ -42,6 +42,7 @@
 #include "defaults.h"
 #include "move_resize.h"
 #include "module_interface.h"
+#include "focus.h"
 #include "borders.h"
 #include "geometry.h"
 #include "gnome.h"
@@ -2974,6 +2975,10 @@ void Maximize(F_CMD_ARGS)
 fprintf(stderr,"%d %d %d %d, max_offset.x = %d, max_offset.y = %d\n", tmp_win->max_g.x, tmp_win->max_g.y, tmp_win->max_g.width, tmp_win->max_g.height, tmp_win->max_offset.x, tmp_win->max_offset.y);
 #endif
   }
+  if (Scr.Focus)
+  {
+    focus_grab_buttons(Scr.Focus, True);
+  }
   GNOME_SetWinArea(tmp_win);
 }
 
@@ -3008,6 +3013,10 @@ void handle_stick(F_CMD_ARGS, int toggle)
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   DrawDecorations(tmp_win, DRAW_TITLE, (Scr.Hilite==tmp_win), True, None);
+  if (Scr.Focus)
+  {
+    focus_grab_buttons(Scr.Focus, True);
+  }
   GNOME_SetHints(tmp_win);
 }
 

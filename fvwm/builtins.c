@@ -254,6 +254,10 @@ void WindowShade(F_CMD_ARGS)
       {
 	XMoveWindow(dpy, tmp_win->w, 0, 0);
       }
+      if (Scr.Focus)
+      {
+	focus_grab_buttons(Scr.Focus, True);
+      }
     }
     else
     {
