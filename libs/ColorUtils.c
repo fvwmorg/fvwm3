@@ -227,26 +227,26 @@ static XColor *GetShadowOrHiliteColor(
   brightness = BRIGHTNESS(red, green, blue);
   /* For "dark" backgrounds, make everything a fixed %age lighter */
   if (brightness < XmDEFAULT_DARK_THRESHOLD * PCT_BRIGHTNESS)
-    {
-      color.red = 0xffff - ((0xffff - red) * dark + 50) / 100;
-      color.green = 0xffff - ((0xffff - green) * dark + 50) / 100;
-      color.blue = 0xffff - ((0xffff - blue) * dark + 50) / 100;
-    }
+  {
+    color.red = 0xffff - ((0xffff - red) * dark + 50) / 100;
+    color.green = 0xffff - ((0xffff - green) * dark + 50) / 100;
+    color.blue = 0xffff - ((0xffff - blue) * dark + 50) / 100;
+  }
   /* For "light" background, make everything a fixed %age darker */
   else if (brightness > XmDEFAULT_LIGHT_THRESHOLD * PCT_BRIGHTNESS)
-    {
-      color.red = (red * light + 50) / 100;
-      color.green = (green * light + 50) / 100;
-      color.blue = (blue * light + 50) / 100;
-    }
+  {
+    color.red = (red * light + 50) / 100;
+    color.green = (green * light + 50) / 100;
+    color.blue = (blue * light + 50) / 100;
+  }
   /* For "medium" background, select is a fixed %age darker;
    * top (lighter) and bottom (darker) are a variable %age
    * based on the background's brightness
    */
   else
-    {
-      color_mult(&color.red, &color.green, &color.blue, factor);
-    }
+  {
+    color_mult(&color.red, &color.green, &color.blue, factor);
+  }
   return &color;
 }
 
@@ -254,7 +254,7 @@ static XColor *GetShadowOrHiliteColor(
 XColor *GetShadowColor(Pixel background)
 {
   return GetShadowOrHiliteColor(
-    background, PCT_DARK_BOTTOM, PCT_DARK_TOP, DARKNESS_FACTOR);
+    background, PCT_DARK_BOTTOM, PCT_LIGHT_BOTTOM, DARKNESS_FACTOR);
 }
 
 Pixel GetShadow(Pixel background)
@@ -269,7 +269,7 @@ Pixel GetShadow(Pixel background)
 XColor *GetHiliteColor(Pixel background)
 {
   return GetShadowOrHiliteColor(
-    background, PCT_LIGHT_BOTTOM, PCT_LIGHT_BOTTOM, BRIGHTNESS_FACTOR);
+    background, PCT_DARK_TOP, PCT_LIGHT_TOP, BRIGHTNESS_FACTOR);
 }
 
 Pixel GetHilite(Pixel background)

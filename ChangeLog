@@ -1,5 +1,10 @@
 2001-03-02  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* libs/ColorUtils.c (GetHiliteColor):
+	(GetShadowColor):
+	fixed parameters to GetShadowOrHiliteColor calls screwing up colour
+	calculations
+
 	* fvwm/events.c (HandleMapRequestKeepRaised):
 	icon position hint was sometimes used although it was not set
 	(fake_map_unmap_notify):
