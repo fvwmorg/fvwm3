@@ -1135,6 +1135,16 @@ DestroyModuleConfig FvwmButtons*
 .EE
 
 
+.IP "Direction \fIdirection\fP (\fIconditions\fP) \fIcommand\fP"
+Performs \fIcommand\fP (typically Focus) on a window in the given
+direction which satisfies all \fIconditions\fP.  Conditions are the same
+as for \fICurrent\fP. The \fIdirection\fP may be one of North, Northeast,
+East, Southeast, South, Southwest, West and Northwest. Which window
+Direction selects depends on angle and distance between the centerpoints
+of the windows. Closer windows are considered a better match than
+those farther away.
+
+
 .IP "Echo \fIstring\fP"
 Prints a message to stderr.  Potentially useful for debugging things
 in your .fvwm2rc.

@@ -1,5 +1,7 @@
 1998-11-27  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/fvwm2.1: entry for 'Direction'
+
 	* fvwm/events.c (HandleMapNotify): changed logic for new
 	click-to-focus windows to receive focus (as hited at by Tim Phipps).
 
