@@ -378,7 +378,6 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
 #ifdef MINI_ICONS
   case M_MINI_ICON:
-fprintf(stderr,"*** got miniicon 0x%x\n", (int)body[6]);
     if ((i=FindItem(&windows,body[0]))==-1) break;
 
     if (UpdateButton(&buttons,i,NULL,-1)!=-1)
@@ -886,7 +885,6 @@ void AdjustWindow(Bool force)
   {
     if(ButtonPicture(&buttons,i)->picture != None)
     {
-fprintf(stderr,"button %s has picture 0x%x\n", ButtonName(&buttons,i),(int)ButtonPicture(&buttons,i));
 	base_miw = 14; /* for title icon */ /* Magic Number */
         break;
     }

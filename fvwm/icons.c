@@ -795,6 +795,7 @@ do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr)
     }
     return (1);                         /* use box */
   }
+
   /* Here its not the first call, we are either on the chain or at
      the global box */
   if (*icon_boxes_ptr == global_icon_box_ptr) { /* if the global box */

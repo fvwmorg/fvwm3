@@ -35,6 +35,7 @@
 #define SDO_STACK_TRANSIENT_PARENT(sf) \
                                       ((sf)->common.do_stack_transient_parent)
 #define SDO_START_ICONIC(sf)          ((sf)->common.do_start_iconic)
+#define SIS_BUTTON_DISABLED(sf)       ((sf)->is_button_disabled)
 #define SIS_ICON_STICKY(sf)           ((sf)->common.is_icon_sticky)
 #define SIS_ICON_SUPPRESSED(sf)       ((sf)->common.is_icon_suppressed)
 #define SIS_LENIENT(sf)               ((sf)->common.is_lenient)
@@ -62,6 +63,7 @@
 #define SHAS_COLOR_FORE(sf)           ((sf)->has_color_fore)
 #define SHAS_HANDLE_WIDTH(sf)         ((sf)->has_handle_width)
 #define SHAS_ICON(sf)                 ((sf)->has_icon)
+#define SHAS_ICON_BOXES(sf)           ((sf)->has_icon_boxes)
 #define SHAS_MAX_WINDOW_SIZE(sf)      ((sf)->has_max_window_size)
 #ifdef MINI_ICONS
 #define SHAS_MINI_ICON(sf)            ((sf)->has_mini_icon)
@@ -71,6 +73,7 @@
 #define SHAS_NO_BORDER(sf)            ((sf)->has_no_border)
 #define SHAS_NO_TITLE(sf)             ((sf)->has_no_title)
 #define SHAS_OL_DECOR(sf)             ((sf)->has_ol_decor)
+#define SUSE_LAYER(sf)                ((sf)->use_layer)
 #define SUSE_NO_PPOSITION(sf)         ((sf)->use_no_pposition)
 #define SUSE_START_ON_DESK(sf)        ((sf)->use_start_on_desk)
 #define SUSE_START_ON_PAGE_FOR_TRANSIENT(sf) \
@@ -96,7 +99,6 @@
 #define SGET_FORE_COLOR_NAME(style)   ((style).fore_color_name)
 #define SGET_BACK_COLOR_NAME(style)   ((style).back_color_name)
 #define SGET_FLAGS_POINTER(style)     (&((style).flags))
-#define SGET_BUTTONS(style)           ((style).on_buttons)
 #define SGET_BORDER_WIDTH(style)      ((style).border_width)
 #define SGET_HANDLE_WIDTH(style)      ((style).handle_width)
 #define SGET_LAYER(style)             ((style).layer)
@@ -113,5 +115,7 @@ void ProcessNewStyle(F_CMD_ARGS);
 void ProcessDestroyStyle(F_CMD_ARGS);
 void lookup_style(FvwmWindow *tmp_win, window_style *styles);
 int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len);
+void reset_style_changes(void);
+void handle_style_changes(void);
 
 #endif /* _STYLE_ */

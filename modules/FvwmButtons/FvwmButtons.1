@@ -293,7 +293,7 @@ buttons with the \fISwallow\fP command below, but they are not displayed
 within the button.  Instead they are hidden until the user presses
 the panel's button.  Then the panel (i.e. the window of the swallowed
 appication) opens with a sliding animation.  The \fIoptions\fP can
-be any of the \fIflags\fP described for the Swallow command. In addition
+be any of the \fIflags\fP described for the Swallow command.  In addition
 a direction 'left', 'right', 'up' or 'down' can be used to specify the
 direction where from the button the panel shall be posted.
 
@@ -333,15 +333,20 @@ Example:
 .sp
   # To include the panel in a button
   *FvwmButtons(Panel(down, delay 0, steps 16) \\
-    SubPanel "Module FvwmButtons Panel1")
+    SubPanel "Module FvwmButtons SubPanel")
 
   # To define the panel as an instance of
   # FvwmButtons with a different name:
-  *Panel1(Icon my_lock.xpm, Action Exec xlock)
-  *Panel1(Icon my_move.xpm, Action Move)
+  *SubPanel(Icon my_lock.xpm, Action Exec xlock)
+  *SubPanel(Icon my_move.xpm, Action Move)
   ...
 .sp
 .fi
+
+Note that you can not call your panel 'FvwmButtonsSubPanel' because
+when fvwm encounters a configuration line like '*FvwmButtonsSubPanel',
+it will see that is begins with '*FvwmButtons' and send it to your
+main FvwmButtons module too, screwing it up completely.
 
 .IP "  Right"
 The contents of the button will be aligned to the Right. The default is to
@@ -648,10 +653,10 @@ instance of FvwmButtons a different name.
 
 .nf
 .sp
-*FvwmButtons(Title WinOps, Panel FvwmButtonsWinOps \\
-  "Module FvwmButtons FvwmButtonsWinOps")
-*FvwmButtons(Title Tools , Panel FvwmButtonsTools \\
-  "Module FvwmButtons FvwmButtonsTools")
+*FvwmButtons(Title WinOps, Panel WinOps \\
+  "Module FvwmButtons WinOps")
+*FvwmButtons(Title Tools , Panel Tools \\
+  "Module FvwmButtons Tools")
 .sp
 .fi
 
@@ -661,8 +666,8 @@ start FvwmButtons with the '-transientpanel' option:
 
 .nf
 .sp
-*FvwmButtons(Title Tools , Panel(down) FvwmButtonsTools \\
-  "Module FvwmButtons -transientpanel FvwmButtonsTools")
+*FvwmButtons(Title Tools , Panel(down) Tools \\
+  "Module FvwmButtons -transientpanel Tools")
 .sp
 .fi
 
@@ -673,14 +678,14 @@ the same name in your Style commands:
 
 .nf
 .sp
-*FvwmButtonsWinOpsBack bisque2
+*WinOpsBack bisque2
 ...
-*FvwmButtonsToolsBack bisque2
+*ToolsBack bisque2
 ...
-Style "FvwmButtonsWinOps" Title, NoHandles, BorderWidth 0
-Style "FvwmButtonsWinOps" NoButton 2, NoButton 4, Sticky
-Style "FvwmButtonsTools" Title, NoHandles, BorderWidth 0
-Style "FvwmButtonsTools" NoButton 2, NoButton 4, Sticky
+Style "WinOps" Title, NoHandles, BorderWidth 0
+Style "WinOps" NoButton 2, NoButton 4, Sticky
+Style "Tools" Title, NoHandles, BorderWidth 0
+Style "Tools" NoButton 2, NoButton 4, Sticky
 .sp
 .fi
 
@@ -796,10 +801,10 @@ AddToFunc StartFunction  "I" Module FvwmButtons
 Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 
 # Make the menu/panel look like CDE
-Style "FvwmButtonsWinOps" Title, NoHandles, BorderWidth 0
-Style "FvwmButtonsWinOps" NoButton 2, NoButton 4, Sticky
-Style "FvwmButtonsTools" Title, NoHandles, BorderWidth 0
-Style "FvwmButtonsTools" NoButton 2, NoButton 4, Sticky
+Style "WinOps" Title, NoHandles, BorderWidth 0
+Style "WinOps" NoButton 2, NoButton 4, Sticky
+Style "Tools" Title, NoHandles, BorderWidth 0
+Style "Tools" NoButton 2, NoButton 4, Sticky
 
 ##########################################################
 
@@ -812,9 +817,9 @@ Style "FvwmButtonsTools" NoButton 2, NoButton 4, Sticky
 *FvwmButtonsPadding 2 2
 
 *FvwmButtons(Title WinOps, Panel WinOps \\
-  "Module FvwmButtons -transientpanel FvwmButtonsWinOps")
+  "Module FvwmButtons -transientpanel WinOps")
 *FvwmButtons(Title Tools, Panel Tools \\
-  "Module FvwmButtons -transientpanel FvwmButtonsTools")
+  "Module FvwmButtons -transientpanel Tools")
 
 *FvwmButtons(Title Resize,Icon resize.xpm ,Action Resize)
 *FvwmButtons(Title Move  ,Icon arrows2.xpm,Action Move  )
@@ -858,21 +863,21 @@ The other panels are specified after the root panel:
 .nf
 .sp
 ########## PANEL WinOps
-*FvwmButtonsWinOpsBack bisque2
-*FvwmButtonsWinOpsGeometry -3-3
-*FvwmButtonsWinOpsColumns 1
+*WinOpsBack bisque2
+*WinOpsGeometry -3-3
+*WinOpsColumns 1
 
-*FvwmButtonsWinOps(Title Resize,Icon resize.xpm ,Action Resize)
-*FvwmButtonsWinOps(Title Move  ,Icon arrows2.xpm,Action Move  )
-*FvwmButtonsWinOps(Title Lower ,Icon Down       ,Action Lower )
-*FvwmButtonsWinOps(Title Raise ,Icon Up         ,Action Raise )
+*WinOps(Title Resize,Icon resize.xpm ,Action Resize)
+*WinOps(Title Move  ,Icon arrows2.xpm,Action Move  )
+*WinOps(Title Lower ,Icon Down       ,Action Lower )
+*WinOps(Title Raise ,Icon Up         ,Action Raise )
 
 ########## PANEL Tools
-*FvwmButtonsToolsBack bisque2
-*FvwmButtonsToolsGeometry -1-1
-*FvwmButtonsToolsColumns 1
+*ToolsBack bisque2
+*ToolsGeometry -1-1
+*ToolsColumns 1
 
-*FvwmButtonsTools(Title Kill  ,Icon bomb.xpm   ,Action Destroy)
+*Tools(Title Kill  ,Icon bomb.xpm   ,Action Destroy)
 .sp
 .fi
 

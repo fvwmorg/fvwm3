@@ -395,6 +395,7 @@ typedef struct ScreenInfo
   } gs; /* global style structure */
   struct
   {
+    unsigned has_any_style_changed : 1;
     unsigned has_icon_font : 1;
     unsigned has_window_font : 1;
     unsigned silent_functions : 1;

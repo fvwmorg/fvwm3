@@ -155,6 +155,7 @@ typedef struct
   unsigned do_flip_transient : 1;
   unsigned do_grab_focus_when_created : 1;
   unsigned do_grab_focus_when_transient_created : 1;
+  unsigned do_ignore_restack : 1;
   unsigned do_lower_transient : 1;
   unsigned do_not_show_on_map : 1;
   unsigned do_raise_transient : 1;
@@ -168,18 +169,17 @@ typedef struct
 #define FOCUS_NEVER   0x3
 #define FOCUS_MASK    0x3
   unsigned focus_mode : 2;
+  unsigned has_depressable_border : 1;
   unsigned has_mwm_border : 1;
   unsigned has_mwm_buttons : 1;
   unsigned has_mwm_override : 1;
   unsigned has_override_size : 1;
   unsigned has_no_icon_title : 1;
+  unsigned is_fixed : 1;
   unsigned is_icon_sticky : 1;
   unsigned is_icon_suppressed : 1;
   unsigned is_lenient : 1;
   unsigned is_sticky : 1;
-  unsigned ignore_restack : 1;
-  unsigned is_fixed : 1;
-  unsigned has_depressable_border : 1;
 } common_flags_type;
 
 typedef struct
@@ -233,6 +233,7 @@ typedef struct
   unsigned has_decor : 1;
   unsigned has_handle_width : 1;
   unsigned has_icon : 1;
+  unsigned has_icon_boxes : 1;
   unsigned has_max_window_size : 1;
 #ifdef MINI_ICONS
   unsigned has_mini_icon : 1;
@@ -240,9 +241,11 @@ typedef struct
   unsigned has_mwm_decor : 1;
   unsigned has_mwm_functions : 1;
   unsigned has_no_border : 1;
-  unsigned use_no_pposition : 1;
   unsigned has_no_title : 1;
   unsigned has_ol_decor : 1;
+  unsigned is_button_disabled : 10;
+  unsigned use_layer : 1;
+  unsigned use_no_pposition : 1;
   unsigned use_start_on_desk : 1;
   unsigned use_start_on_page_for_transient : 1;
   unsigned active_placement_honors_starts_on_page : 1;
@@ -269,10 +272,6 @@ typedef struct window_style
 #endif
   char *fore_color_name; /* ForeColor */
   char *back_color_name; /* BackColor */
-  style_flags flags;
-  style_flags flag_mask;
-  unsigned long on_buttons;
-  unsigned long off_buttons;
   int border_width;
   int layer;
   int handle_width; /* resize_width */
@@ -282,6 +281,10 @@ typedef struct window_style
   int max_window_width;
   int max_window_height;
   icon_boxes *IconBoxes;                /* pointer to iconbox(s) */
+  style_flags flags;
+  style_flags flag_mask;
+  style_flags change_mask;
+  unsigned has_style_changed : 1;
 } window_style;
 
 /* for each window that is on the display, one of these structures

@@ -71,6 +71,7 @@
 #include "misc.h"
 #include "bindings.h"
 #include "screen.h"
+#include "style.h"
 #ifdef SHAPE
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
@@ -1780,7 +1781,7 @@ void HandleConfigureRequest(void)
   /*  Stacking order change requested...  */
   /*  Handle this *after* geometry changes, since we need the new
       geometry in occlusion calculations */
-  if ( (cre->value_mask & CWStackMode) && !IGNORE_RESTACK(Tmp_win) )
+  if ( (cre->value_mask & CWStackMode) && !DO_IGNORE_RESTACK(Tmp_win) )
     {
       FvwmWindow *otherwin = NULL;
 
@@ -2065,9 +2066,15 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     /* select has timed out, things must have calmed down so let's decorate */
     if (fFvwmInStartup) {
       fvwm_msg(ERR, "My_XNextEvent",
-               "Some command line modules have not quit, Starting up after timeout.\n");
+               "Some command line modules have not quit, "
+	       "Starting up after timeout.\n");
       StartupStuff();
       timeoutP = NULL; /* set an infinite timeout to stop ticking */
+      reset_style_changes();
+    }
+    else if (Scr.flags.has_any_style_changed)
+    {
+      handle_style_changes();
     }
   }
 

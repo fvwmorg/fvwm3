@@ -155,6 +155,8 @@ static void merge_styles(window_style *merged_style, window_style *add_style,
   char *add_flags;
   char *merge_mask;
   char *add_mask;
+  char *merge_change_mask;
+  char *add_change_mask;
 
   if (add_style->flag_mask.has_icon)
   {
@@ -253,15 +255,16 @@ static void merge_styles(window_style *merged_style, window_style *add_style,
   add_flags = (char *)&(add_style->flags);
   merge_mask = (char *)&(merged_style->flag_mask);
   add_mask = (char *)&(add_style->flag_mask);
+  merge_change_mask = (char *)&(merged_style->change_mask);
+  add_change_mask = (char *)&(add_style->change_mask);
   for (i = 0; i < sizeof(style_flags); i++)
   {
     merge_flags[i] |= (add_flags[i] & add_mask[i]);
     merge_flags[i] &= (add_flags[i] | ~add_mask[i]);
     merge_mask[i] |= add_mask[i];
+    merge_change_mask[i] &= ~(add_mask[i]);
+    merge_change_mask[i] |= add_change_mask[i];
   }
-  /* combine buttons */
-  merged_style->on_buttons |= add_style->on_buttons;
-  merged_style->on_buttons &= ~(add_style->off_buttons);
 
   /* Note, only one style cmd can define a windows iconboxes,
    * the last one encountered. */
@@ -279,10 +282,11 @@ static void merge_styles(window_style *merged_style, window_style *add_style,
       merged_style->IconBoxes = add_style->IconBoxes;
     }
   }
-  if (add_style->layer != -9)
+  if (add_style->flags.use_layer)
   {
     merged_style->layer = add_style->layer;
   }
+  merged_style->has_style_changed |= add_style->has_style_changed;
   return;
 }
 
@@ -437,8 +441,6 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
 
   /* clear callers return area */
   memset(styles, 0, sizeof(window_style));
-  /* initialize to default layer */
-  styles->layer = Scr.DefaultLayer;
 #ifdef GNOME
   /* initialize with GNOME hints */
   GNOME_GetStyle (tmp_win, styles);
@@ -496,7 +498,18 @@ int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len)
 
 
 /* Process a style command.  First built up in a temp area.
-   If valid, added to the list in a malloced area. */
+ * If valid, added to the list in a malloced area.
+ *
+ *
+ *                    *** Important note ***
+ *
+ * Remember that *all* styles need a flag, flag_mask and change_mask.
+ * It is not enough to add the code for new styles in this function.
+ * There *must* be corresponding code in handle_new_window_style()
+ * and merge_styles() too.  And don't forget that allocated memory
+ * must be freed in ProcessDestroyStyle().
+ *
+ */
 void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
                      unsigned long context,char *action, int *Module )
 {
@@ -523,8 +536,10 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
   ptmpstyle = (window_style *)safemalloc(sizeof(window_style));
   /* init temp window_style area */
   memset(ptmpstyle, 0, sizeof(window_style));
-  /* default uninitialised layer */
-  ptmpstyle->layer = -9;
+  /* mark style as changed */
+  ptmpstyle->has_style_changed = 1;
+  /* set global flag */
+  Scr.flags.has_any_style_changed = 1;
   /* default StartsOnPage behavior for initial capture */
   ptmpstyle->flags.capture_honors_starts_on_page = 1;
 
@@ -567,24 +582,28 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.do_place_random = 0;
           ptmpstyle->flag_mask.do_place_random = 1;
+          ptmpstyle->change_mask.do_place_random = 1;
         }
 	else if(StrEquals(token, "ACTIVEPLACEMENTHONORSSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.active_placement_honors_starts_on_page = 1;
 	  ptmpstyle->flag_mask.active_placement_honors_starts_on_page = 1;
+	  ptmpstyle->change_mask.active_placement_honors_starts_on_page = 1;
 	}
 	else if(StrEquals(token, "ACTIVEPLACEMENTIGNORESSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.active_placement_honors_starts_on_page = 0;
 	  ptmpstyle->flag_mask.active_placement_honors_starts_on_page = 1;
+	  ptmpstyle->change_mask.active_placement_honors_starts_on_page = 1;
 	}
         else if(StrEquals(token, "AllowRestack"))
         {
           found = True;
-          ptmpstyle->flags.common.ignore_restack = 0;
-          ptmpstyle->flag_mask.common.ignore_restack = 1;
+          ptmpstyle->flags.common.do_ignore_restack = 0;
+          ptmpstyle->flag_mask.common.do_ignore_restack = 1;
+          ptmpstyle->change_mask.common.do_ignore_restack = 1;
         }
         break;
 
@@ -598,6 +617,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             ptmpstyle->back_color_name = token;
             ptmpstyle->flags.has_color_back = 1;
             ptmpstyle->flag_mask.has_color_back = 1;
+            ptmpstyle->change_mask.has_color_back = 1;
           }
         }
         else if (StrEquals(token, "BUTTON"))
@@ -608,7 +628,11 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           if (butt == 0)
 	    butt = 10;
           if (butt > 0 && butt <= 10)
-            ptmpstyle->off_buttons |= (1<<(butt-1));
+	  {
+            ptmpstyle->flags.is_button_disabled &= ~(1<<(butt-1));
+            ptmpstyle->flag_mask.is_button_disabled |= (1<<(butt-1));
+            ptmpstyle->change_mask.is_button_disabled |= (1<<(butt-1));
+	  }
         }
         else if(StrEquals(token, "BorderWidth"))
         {
@@ -617,6 +641,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  {
 	    ptmpstyle->flags.has_border_width = 1;
 	    ptmpstyle->flag_mask.has_border_width = 1;
+	    ptmpstyle->change_mask.has_border_width = 1;
 	  }
         }
         break;
@@ -627,12 +652,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
 	  ptmpstyle->flags.capture_honors_starts_on_page = 1;
 	  ptmpstyle->flag_mask.capture_honors_starts_on_page = 1;
+	  ptmpstyle->change_mask.capture_honors_starts_on_page = 1;
 	}
 	else if(StrEquals(token, "CAPTUREIGNORESSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.capture_honors_starts_on_page = 0;
 	  ptmpstyle->flag_mask.capture_honors_starts_on_page = 1;
+	  ptmpstyle->change_mask.capture_honors_starts_on_page = 1;
 	}
         else if(StrEquals(token, "COLOR"))
         {
@@ -645,6 +672,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  ptmpstyle->fore_color_name = token;
 	  ptmpstyle->flags.has_color_fore = 1;
 	  ptmpstyle->flag_mask.has_color_fore = 1;
+	  ptmpstyle->change_mask.has_color_fore = 1;
 
 	  if (c != '/')
 	  {
@@ -661,6 +689,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  ptmpstyle->back_color_name = token;
 	  ptmpstyle->flags.has_color_back = 1;
 	  ptmpstyle->flag_mask.has_color_back = 1;
+	  ptmpstyle->change_mask.has_color_back = 1;
 	  break;
         }
         else if(StrEquals(token, "CirculateSkipIcon"))
@@ -668,32 +697,38 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.common.do_circulate_skip_icon = 1;
           ptmpstyle->flag_mask.common.do_circulate_skip_icon = 1;
+          ptmpstyle->change_mask.common.do_circulate_skip_icon = 1;
         }
         else if(StrEquals(token, "CirculateHitIcon"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_circulate_skip_icon = 0;
           ptmpstyle->flag_mask.common.do_circulate_skip_icon = 1;
+          ptmpstyle->change_mask.common.do_circulate_skip_icon = 1;
         }
         else if(StrEquals(token, "CLICKTOFOCUS"))
         {
 	  found = True;
           ptmpstyle->flags.common.focus_mode = FOCUS_CLICK;
           ptmpstyle->flag_mask.common.focus_mode = FOCUS_MASK;
+          ptmpstyle->change_mask.common.focus_mode = FOCUS_MASK;
           ptmpstyle->flags.common.do_grab_focus_when_created = 1;
           ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->change_mask.common.do_grab_focus_when_created = 1;
         }
         else if(StrEquals(token, "CirculateSkip"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_circulate_skip = 1;
           ptmpstyle->flag_mask.common.do_circulate_skip = 1;
+          ptmpstyle->change_mask.common.do_circulate_skip = 1;
         }
         else if(StrEquals(token, "CirculateHit"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_circulate_skip = 0;
           ptmpstyle->flag_mask.common.do_circulate_skip = 1;
+          ptmpstyle->change_mask.common.do_circulate_skip = 1;
         }
         break;
 
@@ -703,42 +738,49 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.common.has_depressable_border = 1;
           ptmpstyle->flag_mask.common.has_depressable_border = 1;
+          ptmpstyle->change_mask.common.has_depressable_border = 1;
 	}
         else if(StrEquals(token, "DecorateTransient"))
         {
 	  found = True;
           ptmpstyle->flags.do_decorate_transient = 1;
           ptmpstyle->flag_mask.do_decorate_transient = 1;
+          ptmpstyle->change_mask.do_decorate_transient = 1;
         }
         else if(StrEquals(token, "DUMBPLACEMENT"))
         {
 	  found = True;
           ptmpstyle->flags.do_place_smart = 0;
           ptmpstyle->flag_mask.do_place_smart = 1;
+          ptmpstyle->change_mask.do_place_smart = 1;
         }
         else if(StrEquals(token, "DontFlipTransient"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_flip_transient = 0;
           ptmpstyle->flag_mask.common.do_flip_transient = 1;
+          ptmpstyle->change_mask.common.do_flip_transient = 1;
         }
         else if(StrEquals(token, "DONTRAISETRANSIENT"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_raise_transient = 0;
           ptmpstyle->flag_mask.common.do_raise_transient = 1;
+          ptmpstyle->change_mask.common.do_raise_transient = 1;
         }
         else if(StrEquals(token, "DONTLOWERTRANSIENT"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_lower_transient = 0;
           ptmpstyle->flag_mask.common.do_lower_transient = 1;
+          ptmpstyle->change_mask.common.do_lower_transient = 1;
         }
         else if(StrEquals(token, "DontStackTransientParent"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_stack_transient_parent = 0;
           ptmpstyle->flag_mask.common.do_stack_transient_parent = 1;
+          ptmpstyle->change_mask.common.do_stack_transient_parent = 1;
         }
         break;
 
@@ -751,18 +793,21 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.common.has_depressable_border = 0;
           ptmpstyle->flag_mask.common.has_depressable_border = 1;
+          ptmpstyle->change_mask.common.has_depressable_border = 1;
 	}
         else if(StrEquals(token, "FixedPosition"))
 	{
 	  found = True;
 	  ptmpstyle->flags.common.is_fixed = 1;
 	  ptmpstyle->flag_mask.common.is_fixed = 1;
+	  ptmpstyle->change_mask.common.is_fixed = 1;
 	}
         else if(StrEquals(token, "FlipTransient"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_flip_transient = 1;
           ptmpstyle->flag_mask.common.do_flip_transient = 1;
+          ptmpstyle->change_mask.common.do_flip_transient = 1;
         }
         else if(StrEquals(token, "FORECOLOR"))
         {
@@ -773,6 +818,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             ptmpstyle->fore_color_name = token;
             ptmpstyle->flags.has_color_fore = 1;
             ptmpstyle->flag_mask.has_color_fore = 1;
+            ptmpstyle->change_mask.has_color_fore = 1;
           }
         }
         else if(StrEquals(token, "FVWMBUTTONS"))
@@ -780,20 +826,24 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.common.has_mwm_buttons = 0;
           ptmpstyle->flag_mask.common.has_mwm_buttons = 1;
+          ptmpstyle->change_mask.common.has_mwm_buttons = 1;
         }
         else if(StrEquals(token, "FVWMBORDER"))
         {
 	  found = True;
           ptmpstyle->flags.common.has_mwm_border = 0;
           ptmpstyle->flag_mask.common.has_mwm_border = 1;
+          ptmpstyle->change_mask.common.has_mwm_border = 1;
         }
         else if(StrEquals(token, "FocusFollowsMouse"))
         {
 	  found = True;
           ptmpstyle->flags.common.focus_mode = FOCUS_MOUSE;
           ptmpstyle->flag_mask.common.focus_mode = FOCUS_MASK;
+          ptmpstyle->change_mask.common.focus_mode = FOCUS_MASK;
           ptmpstyle->flags.common.do_grab_focus_when_created = 0;
           ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->change_mask.common.do_grab_focus_when_created = 1;
         }
         break;
 
@@ -803,24 +853,30 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.common.do_grab_focus_when_created = 0;
           ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->change_mask.common.do_grab_focus_when_created = 1;
         }
         else if(StrEquals(token, "GrabFocus"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_grab_focus_when_created = 1;
           ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->change_mask.common.do_grab_focus_when_created = 1;
         }
         else if(StrEquals(token, "GrabFocusTransientOff"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_grab_focus_when_transient_created = 0;
           ptmpstyle->flag_mask.common.do_grab_focus_when_transient_created = 1;
+          ptmpstyle->change_mask.common.do_grab_focus_when_transient_created =
+	    1;
         }
         else if(StrEquals(token, "GrabFocusTransient"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_grab_focus_when_transient_created = 1;
           ptmpstyle->flag_mask.common.do_grab_focus_when_transient_created = 1;
+          ptmpstyle->change_mask.common.do_grab_focus_when_transient_created =
+	    1;
         }
         break;
 
@@ -830,12 +886,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.common.has_mwm_override = 1;
           ptmpstyle->flag_mask.common.has_mwm_override = 1;
+          ptmpstyle->change_mask.common.has_mwm_override = 1;
         }
         else if(StrEquals(token, "HANDLES"))
         {
 	  found = True;
           ptmpstyle->flags.has_no_border = 0;
           ptmpstyle->flag_mask.has_no_border = 1;
+          ptmpstyle->change_mask.has_no_border = 1;
         }
         else if(StrEquals(token, "HandleWidth"))
         {
@@ -844,6 +902,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  {
 	    ptmpstyle->flags.has_handle_width = 1;
 	    ptmpstyle->flag_mask.has_handle_width = 1;
+	    ptmpstyle->change_mask.has_handle_width = 1;
 	  }
         }
         break;
@@ -854,25 +913,27 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
 	  ptmpstyle->flags.icon_override = ICON_OVERRIDE;
 	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
+	  ptmpstyle->change_mask.icon_override = ICON_OVERRIDE_MASK;
 	}
         else if(StrEquals(token, "IgnoreRestack"))
         {
 	  found = True;
-	  ptmpstyle->flags.common.ignore_restack = 1;
-	  ptmpstyle->flag_mask.common.ignore_restack = 1;
+	  ptmpstyle->flags.common.do_ignore_restack = 1;
+	  ptmpstyle->flag_mask.common.do_ignore_restack = 1;
+	  ptmpstyle->change_mask.common.do_ignore_restack = 1;
         }
         else if(StrEquals(token, "IconTitle"))
         {
 	  found = True;
           ptmpstyle->flags.common.has_no_icon_title = 0;
           ptmpstyle->flag_mask.common.has_no_icon_title = 1;
+          ptmpstyle->change_mask.common.has_no_icon_title = 1;
         }
         else if(StrEquals(token, "IconBox"))
         {
           icon_boxes *IconBoxes = NULL;
 
 	  found = True;
-	  /* free old icon boxes (if any) */
           IconBoxes = (icon_boxes *)safemalloc(sizeof(icon_boxes));
 	  /* clear it */
           memset(IconBoxes, 0, sizeof(icon_boxes));
@@ -959,11 +1020,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
                 IconBoxes->IconBox[3] = height + IconBoxes->IconBox[1];
               } /* end icon geom worked */
             } else {
-	      /* no word or too long */
-              fvwm_msg(ERR, "ProcessNewStyle",
-                       "IconBox requires 4 numbers or geometry! Too long (%d).",
-                       l);
-	      /* Drop the box */
+	      /* no word or too long; drop the box */
               free(IconBoxes);
 	      /* forget about it */
               IconBoxes = 0;
@@ -982,6 +1039,9 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	    /* new current box. save for grid */
             which = IconBoxes;
           } /* end no error */
+	  ptmpstyle->flags.has_icon_boxes = !!(ptmpstyle->IconBoxes);
+	  ptmpstyle->flag_mask.has_icon_boxes = 1;
+	  ptmpstyle->change_mask.has_icon_boxes = 1;
         } /* end iconbox parameter */
         else if(StrEquals(token, "ICONGRID")) {
 	  found = True;
@@ -1066,9 +1126,11 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           ptmpstyle->icon_name = token;
           ptmpstyle->flags.has_icon = (token != NULL);
           ptmpstyle->flag_mask.has_icon = 1;
+          ptmpstyle->change_mask.has_icon = 1;
 
 	  ptmpstyle->flags.common.is_icon_suppressed = 0;
 	  ptmpstyle->flag_mask.common.is_icon_suppressed = 1;
+	  ptmpstyle->change_mask.common.is_icon_suppressed = 1;
         }
         break;
 
@@ -1084,6 +1146,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.common.is_lenient = 1;
           ptmpstyle->flag_mask.common.is_lenient = 1;
+          ptmpstyle->change_mask.common.is_lenient = 1;
         }
         else if (StrEquals(token, "LAYER"))
         {
@@ -1094,7 +1157,15 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	    fvwm_msg(ERR, "ProcessNewStyle",
 		     "Layer must be positive or zero." );
 	    /* mark layer unset */
-	    ptmpstyle->layer = -9;
+	    ptmpstyle->flags.use_layer = 0;
+	    ptmpstyle->flag_mask.use_layer = 1;
+	    ptmpstyle->change_mask.use_layer = 1;
+	  }
+	  else
+	  {
+	    ptmpstyle->flags.use_layer = 1;
+	    ptmpstyle->flag_mask.use_layer = 1;
+	    ptmpstyle->change_mask.use_layer = 1;
 	  }
 	}
         else if(StrEquals(token, "LOWERTRANSIENT"))
@@ -1102,6 +1173,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.common.do_lower_transient = 1;
           ptmpstyle->flag_mask.common.do_lower_transient = 1;
+          ptmpstyle->change_mask.common.do_lower_transient = 1;
         }
         break;
 
@@ -1111,6 +1183,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.common.has_mwm_buttons = 1;
           ptmpstyle->flag_mask.common.has_mwm_buttons = 1;
+          ptmpstyle->change_mask.common.has_mwm_buttons = 1;
         }
 #ifdef MINI_ICONS
         else if (StrEquals(token, "MINIICON"))
@@ -1122,6 +1195,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
             ptmpstyle->mini_icon_name = token;
             ptmpstyle->flags.has_mini_icon = 1;
             ptmpstyle->flag_mask.has_mini_icon = 1;
+            ptmpstyle->change_mask.has_mini_icon = 1;
           }
         }
 #endif
@@ -1130,26 +1204,31 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.common.has_mwm_border = 1;
           ptmpstyle->flag_mask.common.has_mwm_border = 1;
+          ptmpstyle->change_mask.common.has_mwm_border = 1;
         }
         else if(StrEquals(token, "MWMDECOR"))
         {
 	  found = True;
           ptmpstyle->flags.has_mwm_decor = 1;
           ptmpstyle->flag_mask.has_mwm_decor = 1;
+          ptmpstyle->change_mask.has_mwm_decor = 1;
         }
         else if(StrEquals(token, "MWMFUNCTIONS"))
         {
 	  found = True;
           ptmpstyle->flags.has_mwm_functions = 1;
           ptmpstyle->flag_mask.has_mwm_functions = 1;
+          ptmpstyle->change_mask.has_mwm_functions = 1;
         }
         else if(StrEquals(token, "MOUSEFOCUS"))
         {
 	  found = True;
           ptmpstyle->flags.common.focus_mode = FOCUS_MOUSE;
           ptmpstyle->flag_mask.common.focus_mode = FOCUS_MASK;
+          ptmpstyle->change_mask.common.focus_mode = FOCUS_MASK;
           ptmpstyle->flags.common.do_grab_focus_when_created = 0;
           ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->change_mask.common.do_grab_focus_when_created = 1;
         }
         else if(StrEquals(token, "MAXWINDOWSIZE"))
 	{
@@ -1184,6 +1263,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  ptmpstyle->max_window_height = val2;
 	  ptmpstyle->flags.has_max_window_size = 1;
 	  ptmpstyle->flag_mask.has_max_window_size = 1;
+	  ptmpstyle->change_mask.has_max_window_size = 1;
 	}
         break;
 
@@ -1193,78 +1273,91 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
 	  ptmpstyle->flags.icon_override = NO_ACTIVE_ICON_OVERRIDE;
 	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
+	  ptmpstyle->change_mask.icon_override = ICON_OVERRIDE_MASK;
 	}
 	else if(StrEquals(token, "NoIconOverride"))
 	{
 	  found = True;
 	  ptmpstyle->flags.icon_override = NO_ICON_OVERRIDE;
 	  ptmpstyle->flag_mask.icon_override = ICON_OVERRIDE_MASK;
+	  ptmpstyle->change_mask.icon_override = ICON_OVERRIDE_MASK;
 	}
         else if(StrEquals(token, "NoIconTitle"))
         {
 	  found = True;
           ptmpstyle->flags.common.has_no_icon_title = 1;
           ptmpstyle->flag_mask.common.has_no_icon_title = 1;
+          ptmpstyle->change_mask.common.has_no_icon_title = 1;
         }
         else if(StrEquals(token, "NOICON"))
         {
 	  found = True;
           ptmpstyle->flags.common.is_icon_suppressed = 1;
           ptmpstyle->flag_mask.common.is_icon_suppressed = 1;
+          ptmpstyle->change_mask.common.is_icon_suppressed = 1;
         }
         else if(StrEquals(token, "NOTITLE"))
         {
 	  found = True;
           ptmpstyle->flags.has_no_title = 1;
           ptmpstyle->flag_mask.has_no_title = 1;
+          ptmpstyle->change_mask.has_no_title = 1;
         }
         else if(StrEquals(token, "NoPPosition"))
         {
 	  found = True;
           ptmpstyle->flags.use_no_pposition = 1;
           ptmpstyle->flag_mask.use_no_pposition = 1;
+          ptmpstyle->change_mask.use_no_pposition = 1;
         }
         else if(StrEquals(token, "NakedTransient"))
         {
 	  found = True;
           ptmpstyle->flags.do_decorate_transient = 0;
           ptmpstyle->flag_mask.do_decorate_transient = 1;
+          ptmpstyle->change_mask.do_decorate_transient = 1;
         }
         else if(StrEquals(token, "NODECORHINT"))
         {
 	  found = True;
           ptmpstyle->flags.has_mwm_decor = 0;
           ptmpstyle->flag_mask.has_mwm_decor = 1;
+          ptmpstyle->change_mask.has_mwm_decor = 1;
         }
         else if(StrEquals(token, "NOFUNCHINT"))
         {
 	  found = True;
           ptmpstyle->flags.has_mwm_functions = 0;
           ptmpstyle->flag_mask.has_mwm_functions = 1;
+          ptmpstyle->change_mask.has_mwm_functions = 1;
         }
         else if(StrEquals(token, "NOOVERRIDE"))
         {
 	  found = True;
           ptmpstyle->flags.common.has_mwm_override = 0;
           ptmpstyle->flag_mask.common.has_mwm_override = 1;
+          ptmpstyle->change_mask.common.has_mwm_override = 1;
         }
         else if(StrEquals(token, "NORESIZEOVERRIDE"))
         {
 	  found = True;
           ptmpstyle->flags.common.has_override_size = 0;
           ptmpstyle->flag_mask.common.has_override_size = 1;
+          ptmpstyle->change_mask.common.has_override_size = 1;
         }
         else if(StrEquals(token, "NOHANDLES"))
         {
 	  found = True;
           ptmpstyle->flags.has_no_border = 1;
           ptmpstyle->flag_mask.has_no_border = 1;
+          ptmpstyle->change_mask.has_no_border = 1;
         }
         else if(StrEquals(token, "NOLENIENCE"))
         {
 	  found = True;
           ptmpstyle->flags.common.is_lenient = 0;
           ptmpstyle->flag_mask.common.is_lenient = 1;
+          ptmpstyle->change_mask.common.is_lenient = 1;
         }
         else if (StrEquals(token, "NOBUTTON"))
         {
@@ -1274,21 +1367,28 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           if (butt == 0)
 	    butt = 10;
           if (butt > 0 && butt <= 10)
-            ptmpstyle->on_buttons |= (1<<(butt-1));
+	  {
+            ptmpstyle->flags.is_button_disabled |= (1<<(butt-1));
+            ptmpstyle->flag_mask.is_button_disabled |= (1<<(butt-1));
+            ptmpstyle->change_mask.is_button_disabled |= (1<<(butt-1));
+	  }
         }
         else if(StrEquals(token, "NOOLDECOR"))
         {
 	  found = True;
           ptmpstyle->flags.has_ol_decor = 0;
           ptmpstyle->flag_mask.has_ol_decor = 1;
+          ptmpstyle->change_mask.has_ol_decor = 1;
         }
         else if(StrEquals(token, "NEVERFOCUS"))
         {
 	  found = True;
           ptmpstyle->flags.common.focus_mode = FOCUS_NEVER;
           ptmpstyle->flag_mask.common.focus_mode = FOCUS_MASK;
+          ptmpstyle->change_mask.common.focus_mode = FOCUS_MASK;
           ptmpstyle->flags.common.do_grab_focus_when_created = 0;
           ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->change_mask.common.do_grab_focus_when_created = 1;
         }
         break;
 
@@ -1298,6 +1398,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.has_ol_decor = 1;
           ptmpstyle->flag_mask.has_ol_decor = 1;
+          ptmpstyle->change_mask.has_ol_decor = 1;
         }
         break;
 
@@ -1313,42 +1414,49 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.common.do_raise_transient = 1;
           ptmpstyle->flag_mask.common.do_raise_transient = 1;
+          ptmpstyle->change_mask.common.do_raise_transient = 1;
         }
         else if(StrEquals(token, "RANDOMPLACEMENT"))
         {
 	  found = True;
           ptmpstyle->flags.do_place_random = 1;
           ptmpstyle->flag_mask.do_place_random = 1;
+          ptmpstyle->change_mask.do_place_random = 1;
         }
 	else if(StrEquals(token, "RECAPTUREHONORSSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.recapture_honors_starts_on_page = 1;
 	  ptmpstyle->flag_mask.recapture_honors_starts_on_page = 1;
+	  ptmpstyle->change_mask.recapture_honors_starts_on_page = 1;
 	}
 	else if(StrEquals(token, "RECAPTUREIGNORESSTARTSONPAGE"))
 	{
 	  found = True;
 	  ptmpstyle->flags.recapture_honors_starts_on_page = 0;
 	  ptmpstyle->flag_mask.recapture_honors_starts_on_page = 1;
+	  ptmpstyle->change_mask.recapture_honors_starts_on_page = 1;
 	}
         else if(StrEquals(token, "RESIZEHINTOVERRIDE"))
         {
 	  found = True;
           ptmpstyle->flags.common.has_override_size = 1;
           ptmpstyle->flag_mask.common.has_override_size = 1;
+          ptmpstyle->change_mask.common.has_override_size = 1;
         }
         else if(StrEquals(token, "ResizeOpaque"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_resize_opaque = 1;
           ptmpstyle->flag_mask.common.do_resize_opaque = 1;
+          ptmpstyle->change_mask.common.do_resize_opaque = 1;
         }
         else if(StrEquals(token, "ResizeOutline"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_resize_opaque = 0;
           ptmpstyle->flag_mask.common.do_resize_opaque = 1;
+          ptmpstyle->change_mask.common.do_resize_opaque = 1;
         }
         break;
 
@@ -1358,83 +1466,104 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.do_place_smart = 1;
           ptmpstyle->flag_mask.do_place_smart = 1;
+          ptmpstyle->change_mask.do_place_smart = 1;
         }
         else if(StrEquals(token, "SkipMapping"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_not_show_on_map = 1;
           ptmpstyle->flag_mask.common.do_not_show_on_map = 1;
+          ptmpstyle->change_mask.common.do_not_show_on_map = 1;
         }
         else if(StrEquals(token, "ShowMapping"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_not_show_on_map = 0;
           ptmpstyle->flag_mask.common.do_not_show_on_map = 1;
+          ptmpstyle->change_mask.common.do_not_show_on_map = 1;
         }
         else if(StrEquals(token, "StackTransientParent"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_stack_transient_parent = 1;
           ptmpstyle->flag_mask.common.do_stack_transient_parent = 1;
+          ptmpstyle->change_mask.common.do_stack_transient_parent = 1;
         }
         else if(StrEquals(token, "StickyIcon"))
         {
 	  found = True;
           ptmpstyle->flags.common.is_icon_sticky = 1;
           ptmpstyle->flag_mask.common.is_icon_sticky = 1;
+          ptmpstyle->change_mask.common.is_icon_sticky = 1;
         }
         else if(StrEquals(token, "SlipperyIcon"))
         {
 	  found = True;
           ptmpstyle->flags.common.is_icon_sticky = 0;
           ptmpstyle->flag_mask.common.is_icon_sticky = 1;
+          ptmpstyle->change_mask.common.is_icon_sticky = 1;
         }
         else if(StrEquals(token, "SLOPPYFOCUS"))
         {
 	  found = True;
           ptmpstyle->flags.common.focus_mode = FOCUS_SLOPPY;
           ptmpstyle->flag_mask.common.focus_mode = FOCUS_MASK;
+          ptmpstyle->change_mask.common.focus_mode = FOCUS_MASK;
           ptmpstyle->flags.common.do_grab_focus_when_created = 0;
           ptmpstyle->flag_mask.common.do_grab_focus_when_created = 1;
+          ptmpstyle->change_mask.common.do_grab_focus_when_created = 1;
         }
         else if(StrEquals(token, "StartIconic"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_start_iconic = 1;
           ptmpstyle->flag_mask.common.do_start_iconic = 1;
+          ptmpstyle->change_mask.common.do_start_iconic = 1;
         }
         else if(StrEquals(token, "StartNormal"))
         {
 	  found = True;
           ptmpstyle->flags.common.do_start_iconic = 0;
           ptmpstyle->flag_mask.common.do_start_iconic = 1;
+          ptmpstyle->change_mask.common.do_start_iconic = 1;
         }
         else if(StrEquals(token, "StaysOnBottom"))
         {
 	  found = True;
           ptmpstyle->layer = Scr.BottomLayer;
+	  ptmpstyle->flags.use_layer = 1;
+	  ptmpstyle->flag_mask.use_layer = 1;
+	  ptmpstyle->change_mask.use_layer = 1;
         }
         else if(StrEquals(token, "StaysOnTop"))
         {
 	  found = True;
           ptmpstyle->layer = Scr.TopLayer;
+	  ptmpstyle->flags.use_layer = 1;
+	  ptmpstyle->flag_mask.use_layer = 1;
+	  ptmpstyle->change_mask.use_layer = 1;
         }
         else if(StrEquals(token, "StaysPut"))
         {
 	  found = True;
           ptmpstyle->layer = Scr.DefaultLayer;
+	  ptmpstyle->flags.use_layer = 1;
+	  ptmpstyle->flag_mask.use_layer = 1;
+	  ptmpstyle->change_mask.use_layer = 1;
         }
         else if(StrEquals(token, "Sticky"))
         {
 	  found = True;
           ptmpstyle->flags.common.is_sticky = 1;
           ptmpstyle->flag_mask.common.is_sticky = 1;
+          ptmpstyle->change_mask.common.is_sticky = 1;
         }
         else if(StrEquals(token, "Slippery"))
         {
 	  found = True;
           ptmpstyle->flags.common.is_sticky = 0;
           ptmpstyle->flag_mask.common.is_sticky = 1;
+          ptmpstyle->change_mask.common.is_sticky = 1;
         }
         else if(StrEquals(token, "STARTSONDESK"))
         {
@@ -1445,6 +1574,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  {
 	    ptmpstyle->flags.use_start_on_desk = 1;
 	    ptmpstyle->flag_mask.use_start_on_desk = 1;
+	    ptmpstyle->change_mask.use_start_on_desk = 1;
 	    /*  RBW - 11/20/1998 - allow for the special case of -1  */
 	    ptmpstyle->start_desk = (tmpno[0] > -1) ? tmpno[0] + 1 : tmpno[0];
 	  }
@@ -1496,6 +1626,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  {
 	    ptmpstyle->flags.use_start_on_desk = 1;
 	    ptmpstyle->flag_mask.use_start_on_desk = 1;
+	    ptmpstyle->change_mask.use_start_on_desk = 1;
 	  }
 	}
 	else if(StrEquals(token, "STARTSONPAGEINCLUDESTRANSIENTS"))
@@ -1503,12 +1634,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
 	  ptmpstyle->flags.use_start_on_page_for_transient = 1;
 	  ptmpstyle->flag_mask.use_start_on_page_for_transient = 1;
+	  ptmpstyle->change_mask.use_start_on_page_for_transient = 1;
 	}
 	else if(StrEquals(token, "STARTSONPAGEIGNORESTRANSIENTS"))
 	{
 	  found = True;
 	  ptmpstyle->flags.use_start_on_page_for_transient = 0;
 	  ptmpstyle->flag_mask.use_start_on_page_for_transient = 1;
+	  ptmpstyle->change_mask.use_start_on_page_for_transient = 1;
 	}
 	/**/
 	else if(StrEquals(token, "STARTSANYWHERE"))
@@ -1516,18 +1649,21 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
 	  ptmpstyle->flags.use_start_on_desk = 0;
 	  ptmpstyle->flag_mask.use_start_on_desk = 1;
+	  ptmpstyle->change_mask.use_start_on_desk = 1;
 	}
         else if (StrEquals(token, "STARTSLOWERED"))
         {
 	  found = True;
           ptmpstyle->flags.do_start_lowered = 1;
           ptmpstyle->flag_mask.do_start_lowered = 1;
+          ptmpstyle->change_mask.do_start_lowered = 1;
         }
         else if (StrEquals(token, "STARTSRAISED"))
         {
 	  found = True;
           ptmpstyle->flags.do_start_lowered = 0;
           ptmpstyle->flag_mask.do_start_lowered = 1;
+          ptmpstyle->change_mask.do_start_lowered = 1;
         }
         break;
 
@@ -1537,6 +1673,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.has_no_title = 0;
           ptmpstyle->flag_mask.has_no_title = 1;
+          ptmpstyle->change_mask.has_no_title = 1;
         }
         break;
 
@@ -1546,6 +1683,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           ptmpstyle->flags.use_no_pposition = 0;
           ptmpstyle->flag_mask.use_no_pposition = 1;
+          ptmpstyle->change_mask.use_no_pposition = 1;
         }
 #ifdef USEDECOR
         if(StrEquals(token, "UseDecor"))
@@ -1556,6 +1694,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  ptmpstyle->decor_name = token;
           ptmpstyle->flags.has_decor = (token != NULL);
           ptmpstyle->flag_mask.has_decor = (token != NULL);
+          ptmpstyle->change_mask.has_decor = (token != NULL);
         }
 #endif
         else if(StrEquals(token, "UseStyle"))
@@ -1606,6 +1745,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	    found = True;
             ptmpstyle->flags.common.is_fixed = 0;
             ptmpstyle->flag_mask.common.is_fixed = 1;
+            ptmpstyle->change_mask.common.is_fixed = 1;
 	  }
         break;
 
@@ -1615,12 +1755,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
 	  ptmpstyle->flags.common.do_window_list_skip = 1;
 	  ptmpstyle->flag_mask.common.do_window_list_skip = 1;
+	  ptmpstyle->change_mask.common.do_window_list_skip = 1;
         }
         else if(StrEquals(token, "WindowListHit"))
         {
 	  found = True;
 	  ptmpstyle->flags.common.do_window_list_skip = 0;
 	  ptmpstyle->flag_mask.common.do_window_list_skip = 1;
+	  ptmpstyle->change_mask.common.do_window_list_skip = 1;
         }
         break;
 
@@ -1661,8 +1803,55 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
       Scr.DefaultIcon = ptmpstyle->icon_name;
     ptmpstyle->flags.has_icon = 0;
     ptmpstyle->flag_mask.has_icon = 0;
+    ptmpstyle->change_mask.has_icon = 0;
     ptmpstyle->icon_name = NULL;
   }
   /* add temp name list to list */
   add_style_to_list(ptmpstyle);
+}
+
+
+static void handle_window_style_change(FvwmWindow *t)
+{
+  window_style style;
+
+  lookup_style(t, &style);
+  if (style.has_style_changed == 0)
+  {
+    /* nothing to do */
+    return;
+  }
+
+  /*!!! still to be written */
+  /* now we have to do the real work */
+
+  return;
+}
+
+void reset_style_changes(void)
+{
+  window_style *temp;
+
+  for (temp = all_styles; temp != NULL; temp = temp->next)
+  {
+    temp->has_style_changed = 0;
+  }
+  Scr.flags.has_any_style_changed = 0;
+
+  return;
+}
+
+void handle_style_changes(void)
+{
+  FvwmWindow *t;
+
+  /* update styles for all windows */
+  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
+  {
+    handle_window_style_change(t);
+  }
+  /* finally clean up the change flags */
+  reset_style_changes();
+
+  return;
 }

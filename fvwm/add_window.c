@@ -283,12 +283,23 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   sflags = SGET_FLAGS_POINTER(style);
 
   /* copy iconboxes ptr (if any) */
-  tmp_win->IconBoxes = SGET_ICON_BOXES(style);
+  if (SHAS_ICON_BOXES(sflags))
+    tmp_win->IconBoxes = SGET_ICON_BOXES(style);
+  else
+    tmp_win->IconBoxes = NULL;
   /* on and off buttons combined. */
-  tmp_win->buttons = SGET_BUTTONS(style);
+  tmp_win->buttons = SIS_BUTTON_DISABLED(sflags);
   /* FIXME: shouldn't transients inherit the layer ? */
-  set_default_layer(tmp_win, SGET_LAYER(style));
-  set_layer(tmp_win, SGET_LAYER(style));
+  if (SUSE_LAYER(sflags))
+  {
+    set_default_layer(tmp_win, SGET_LAYER(style));
+    set_layer(tmp_win, SGET_LAYER(style));
+  }
+  else
+  {
+    set_default_layer(tmp_win, Scr.DefaultLayer);
+    set_layer(tmp_win, Scr.DefaultLayer);
+  }
 
 #ifdef USEDECOR
   /* search for a UseDecor tag in the Style */

@@ -92,8 +92,8 @@
                                ((fw)->flags.common.has_mwm_override)
 #define HAS_OVERRIDE_SIZE_HINTS(fw)  \
                                ((fw)->flags.common.has_override_size)
-#define IGNORE_RESTACK(fw)  \
-                               ((fw)->flags.common.ignore_restack)
+#define DO_IGNORE_RESTACK(fw)  \
+                               ((fw)->flags.common.do_ignore_restack)
 #define IS_FIXED(fw)  \
                                ((fw)->flags.common.is_fixed)
 #define SET_FIXED(fw,x)        (fw)->flags.common.is_fixed = !!(x)

@@ -2053,7 +2053,7 @@ The \fIoptions\fP passed to WindowList can be "NoGeometry", "Function
 <funcname>", "Desk <desknum>", "CurrentDesk", "NoIcons", "Icons",
 "OnlyIcons", "NoNormal", "Normal", "OnlyNormal", "NoSticky", "Sticky",
 "OnlySticky", "NoOnTop", "OnTop", "OnlyOnTop", "Layer m [n]",
-"UseListSkip", "OnlyListSkip", "NoDeskSort", "UseIconName", "Alphabetic", 
+"UseListSkip", "OnlyListSkip", "NoDeskSort", "UseIconName", "Alphabetic",
 "NotAlphabetic".
 
 (Note - normal means not iconic, sticky, or ontop)
@@ -2075,7 +2075,7 @@ the following:
 WindowList OnlyIcons, Sticky, OnTop, Geometry
 .EE
 (Note - the "Only" options essentially wipe out all other ones... but
-the "OnlyListSkip" option which just causes WindowList to only consider 
+the "OnlyListSkip" option which just causes WindowList to only consider
 the windows with WindowListSkip style)
 
 
@@ -3350,7 +3350,9 @@ Style * IconBox -80x200-1-1, \\
 .EE
 If you never define an iconbox, or you fill all the iconboxes, fvwm
 has a default icon box that covers the screen, it filled top to bottom,
-then left to right, and has an 80x80 pixel grid.
+then left to right, and has an 80x80 pixel grid.  To disable all but
+the default icon box you can use IconBox without arguments in a
+separate Style command.
 
 Hint: You can auto arrange your icons in the icon box with a simple
 fvwm function. Put the DeiconifyAndRearrange function below in your

@@ -500,6 +500,8 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
   if (retval)
     {
       style->layer = *(int*)retval;
+      style->flags.use_layer = (style->layer >= 0) ? 1 : 0;
+      style->flag_mask.use_layer = 1;
       free(retval);
     }
 

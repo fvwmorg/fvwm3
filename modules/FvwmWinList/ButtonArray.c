@@ -96,13 +96,11 @@ Button *ButtonNew(char *title, Picture *p, int up)
   if (p != NULL)
   {
     new->p.picture = p->picture;
-fprintf(stderr,"new button has picture\n");
     new->p.mask = p->mask;
     new->p.width = p->width;
     new->p.height = p->height;
     new->p.depth = p->depth;
   } else {
-fprintf(stderr,"new button has no picture\n");
     new->p.picture = None;
     new->p.width = None;
   }

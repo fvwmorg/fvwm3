@@ -1,3 +1,32 @@
+1999-10-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (reset_style_changes):
+	(handle_style_changes):
+	* fvwm/events.c (My_XNextEvent):
+	Code to handle style changes without recapture. Doesn't do anything
+	useful yet.
+
+	* fvwm/style.c (merge_styles):
+	(ProcessNewStyle): all style flags (i.e. all styles) have a change_mask
+	indicationg that the style has changed.
+
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/style.c (ProcessNewStyle):
+	Icon boxes can be reset to default by omitting the arguments,
+	icon boxes now have their own style flag
+
+	* fvwm/style.c (ProcessNewStyle):
+	* fvwm/gnome.c (GNOME_GetStyle):
+	* fvwm/add_window.c (AddWindow):
+	rewrote layer style to work like the other style flags
+
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/style.c (ProcessNewStyle):
+	(merge_styles):
+	* fvwm/fvwm.h (style_flags):
+	(window_style):
+	rewrote button flags to work like any other style flags
+
 1999-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.c (main): tried to fix problem causing black titles with
