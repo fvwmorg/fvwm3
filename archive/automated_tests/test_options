@@ -29,7 +29,7 @@ disable_options ()
     optlist="$optlist --disable-${opt[$1]}"
     shift
   done
-  k=0
+  k=1
   while [ ! "${opt[$k]}" = "" ]; do
     echo $optlist | grep -q -- "--disable-${opt[$k]}" ||
       optlist="$optlist --enable-${opt[$k]}"
@@ -67,7 +67,7 @@ typeset -i n
 
 # get the option list
 
-n=0
+n=1
 grep smr_SWITCH configure.in | grep -v debug-msgs |
 sed -e 's/^smr_SWITCH.//g' |
 cut -f 1 -d "," |
@@ -78,18 +78,20 @@ done
 
 # now do the tests
 
-disable_options
-reverse_options
-build all_disabled
-
-n=0
+n=1
 while [ ! "${opt[$n]}" = "" ]; do
+  echo disable_options ${opt[$n]}
   disable_options ${opt[$n]}
+  echo build ${opt[$n]}_off
   build ${opt[$n]}_off
   reverse_options
+  echo build ${opt[$n]}_on
   build ${opt[$n]}_on
   n=$n+1
 done
 
+disable_options
+reverse_options
+build all_disabled
 disable_options
 build all_enabled
