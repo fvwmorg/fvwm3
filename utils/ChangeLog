@@ -1,3 +1,10 @@
+2000-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* make_fvwmdist.sh:
+	added environment variable to allow bringing up the network
+	programmatically
+	documentation in file
+
 2000-11-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* make_fvwmdist.sh:

@@ -1,5 +1,21 @@
 #!/bin/sh
 
+# options:
+#
+#  -r   build and commit a release (tags the sources and updates version info)
+#
+# environment variables:
+#
+#   FVWMRELNAME
+#     The name that will show up in the ChangeLog (only with -r).
+#   FVWMRELEMAIL
+#     The email address that will show up in the ChangeLog (only with -r).
+#   FVWMRELPRECVSCOMMAND
+#     A command that will be executed before the first cvs command. Can be used
+#     to bring up the network prior to network access. (only with -r)
+#   FVWMRELPOSTCVSCOMMAND
+#     Same as above, but executed after the last cvs command.
+
 CHECK_FILE=AUTHORS
 CHECK_STRING1=fvwm
 CHECK_STRING2="Robert Nation"
@@ -103,6 +119,9 @@ else
     < NEWS > $NNEWS || err_exit 12
   mv $NNEWS NEWS || err_exit 13
   echo tagging CVS source
+  if [ ! "$FVWMRELPRECVSCOMMAND" = "" ] ; then
+    $FVWMRELPRECVSCOMMAND
+  fi
   cvs tag version-${VRELEASE}_${VMAJOR}_$VMINOR || err_exit 14
   echo increasing version number in configure.in
   NCFG="new-configure.in"
@@ -122,8 +141,12 @@ else
   cat ChangeLog >> $NCLOG
   mv $NCLOG ChangeLog || err_exit 19
   echo committing configure.in and ChangeLog
-  cvs commit -m "* Set development version to $VRELEASE.$VMAJOR.$[VMINOR + 1]." \
+  cvs commit -m \
+    "* Set development version to $VRELEASE.$VMAJOR.$[VMINOR + 1]." \
     NEWS configure.in ChangeLog || err_exit 20
+  if [ ! "$FVWMRELPOSTCVSCOMMAND" = "" ] ; then
+    $FVWMRELPOSTCVSCOMMAND
+  fi
   echo
   echo Then
   echo " . Upload the distribution to ftp://ftp.fvwm.org/pub/incoming/fvwm"
