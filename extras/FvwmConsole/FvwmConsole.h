@@ -1,10 +1,10 @@
-/*
-#ifdef ISC
-#include <sys/bsdtypes.h> 
-#endif 
-*/
+#include "config.h"
 
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+#if HAVE_SYS_BSDTYPES_H
+#include <sys/bsdtypes.h>
+#endif
+
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -13,18 +13,15 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <sys/time.h>
 #include <sys/types.h>
-#if defined __linux
-#include <linux/time.h>
-#endif
 #include <sys/un.h>
 #include <sys/socket.h>
 #include <signal.h>
 #include <errno.h>
 #include <string.h>
 
-#include "../../config.h"
-#include "../../libs/fvwmlib.h"     
+#include "fvwmlib.h"
 #include "../../fvwm/module.h"
 
 #define S_NAME  "/.FvConSocket"
@@ -39,7 +36,7 @@
 #define M_PASS M_ERROR
 
 /* number of default arguments when invoked from fvwm */
-#define FARGS 6   
+#define FARGS 6
 
 #define XTERM "xterm"
 

@@ -1,4 +1,4 @@
-#!/users/hw/isogai/bin/perl
+#!/usr/local/bin/perl
 #    $0 - Front end of FvwmConsole
 #    FvwmConsole server must be running
 

@@ -1,0 +1,17 @@
+Changes on FvwmCommand
+
+05/11/98 Ver. 1.5
+
+  Fixed bugs in reading and writing FIFOs.
+
+  Will not exit after bad messages.
+
+  Server keeps track of connection to client to avoid sending
+  unnecessary messages.
+
+  Handle multiple (long) commands correctly.
+
+  Added lock mechanism to avoid connecting multiple FvwmCommand
+  to a FIFO. 
+
+  Added focus-link.pl script and its manpage.

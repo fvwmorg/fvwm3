@@ -1,5 +1,7 @@
+#include "config.h"
+#include "fvwmlib.h"
 
-#if defined ___AIX || defined _AIX || defined __QNX__ || defined ___AIXV3 || defined AIXV3 || defined _SEQUENT_
+#if HAVE_SYS_SELECT_H
 #include <sys/select.h>
 #endif
 
@@ -10,7 +12,7 @@
 #else
 #define	 _select(s, fd, r, w, t) \
 			select(s, fd, r, w, t)
-#endif  
+#endif
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -29,8 +31,6 @@
 #include <errno.h>
 #include <string.h>
 
-#include "../../config.h"
-#include "../../libs/fvwmlib.h"     
 #include "../../fvwm/module.h"
 
 #ifndef HAVE_STRERROR
@@ -48,7 +48,7 @@ extern char *sys_errlist[];
 #define CMD_EXIT          "#@exit\n"
 
 /* number of default arguments when invoked from fvwm2 */
-#define FARGS 6   
+#define FARGS 6
 
 #define SOL  sizeof( unsigned long )
 
