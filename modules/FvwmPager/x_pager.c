@@ -1513,29 +1513,24 @@ void AddNewWindow(PagerWindow *t)
 {
   unsigned long valuemask;
   XSetWindowAttributes attributes;
-  int i,x,y,w,h,n,m,n1,m1;
+  int i, x, y, w, h, n, m, n1, m1;
 
   i = t->desk - desk1;
-  n = (Scr.VxMax)/Scr.MyDisplayWidth;
-  m = (Scr.VyMax)/Scr.MyDisplayHeight;
-  n1 = (Scr.Vx+t->x)/Scr.MyDisplayWidth;
-  m1 = (Scr.Vy+t->y)/Scr.MyDisplayHeight;
-  x = (Scr.Vx + t->x)*(desk_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
-  y = (Scr.Vy + t->y)*(desk_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
-#if 0
+  n = Scr.VxMax / Scr.MyDisplayWidth;
+  m = Scr.VyMax / Scr.MyDisplayHeight;
+  n1 = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
+  m1 = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
+  x = (Scr.Vx + t->x) * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
+  y = (Scr.Vy + t->y) * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
   /* calculate size based on bottom right coordinate */
-  w = (Scr.Vx + t->x + t->width+2)*(desk_w-n)/
-    (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
-  h = (Scr.Vy + t->y + t->height+2)*(desk_h-m)/
-    (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
-#else
-  /* calculate size based on width, height */
-  w = t->width * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth);
-  h = t->height * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight);
-#endif
-  if(w<1)
+  w = (Scr.Vx + t->x + t->width) * (desk_w - n)
+      / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
+  h = (Scr.Vy + t->y + t->height) * (desk_h - m)
+      / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
+
+  if (w < 1)
     w = 1;
-  if(h<1)
+  if (h < 1)
     h = 1;
 
   t->pager_view_width = w;
@@ -1548,7 +1543,7 @@ void AddNewWindow(PagerWindow *t)
      popping up balloon window */
   attributes.event_mask = (ExposureMask | EnterWindowMask | LeaveWindowMask);
 
-  if((i >= 0)&& (i <ndesks))
+  if ((i >= 0) && (i < ndesks))
     {
       t->PagerView = XCreateWindow(dpy,Desks[i].w, x, y, w, h, 0,
 				   CopyFromParent, InputOutput, CopyFromParent,
@@ -1563,22 +1558,17 @@ void AddNewWindow(PagerWindow *t)
     t->PagerView = None;
 
 
-  x = (Scr.Vx + t->x)*(icon_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
-  y = (Scr.Vy + t->y)*(icon_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
-#if 0
+  x = (Scr.Vx + t->x) * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
+  y = (Scr.Vy + t->y) * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
   /* calculate size based on bottom right coordinate */
-  w = (Scr.Vx + t->x + t->width+2)*(icon_w-n)/
-    (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
-  h = (Scr.Vy + t->y + t->height+2)*(icon_h-m)/
-    (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
-#else
-  /* calculate size based on width, height */
-  w = t->width * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth);
-  h = t->height * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight);
-#endif
-  if(w<1)
+  w = (Scr.Vx + t->x + t->width) * (icon_w - n)
+      / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
+  h = (Scr.Vy + t->y + t->height) * (icon_h - m)
+      / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
+
+  if (w < 1)
     w = 1;
-  if(h<1)
+  if (h < 1)
     h = 1;
 
   t->icon_view_width = w;
@@ -1616,7 +1606,8 @@ void AddNewWindow(PagerWindow *t)
 
 void ChangeDeskForWindow(PagerWindow *t,long newdesk)
 {
-  int i,x,y,w,h,n,m,n1,m1;
+  int i, x, y, w, h, n, m, n1, m1;
+  Bool size_changed = False;
 
   i = newdesk - desk1;
 
@@ -1628,26 +1619,43 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
       return;
     }
 
-  n = (Scr.VxMax)/Scr.MyDisplayWidth;
-  m = (Scr.VyMax)/Scr.MyDisplayHeight;
-  n1 = (Scr.Vx+t->x)/Scr.MyDisplayWidth;
-  m1 = (Scr.Vy+t->y)/Scr.MyDisplayHeight;
-  x = (Scr.Vx + t->x)*(desk_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
-  y = (Scr.Vy + t->y)*(desk_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
-  w = (Scr.Vx + t->x + t->width+2)*(desk_w-n) /
-    (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
-  h = (Scr.Vy + t->y + t->height+2)*(desk_h-m) /
-    (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
+  n = Scr.VxMax / Scr.MyDisplayWidth;
+  m = Scr.VyMax / Scr.MyDisplayHeight;
+  n1 = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
+  m1 = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
+  x = (Scr.Vx + t->x) * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
+  y = (Scr.Vy + t->y) * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
+  w = (Scr.Vx + t->x + t->width) * (desk_w - n)
+      / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
+  h = (Scr.Vy + t->y + t->height) * (desk_h - m)
+      / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
   if (w < 1)
     w = 1;
   if (h < 1)
     h = 1;
-	t->pager_view_width		= w;
-	t->pager_view_height	= h;
-  if((i >= 0)&&(i < ndesks))
+  if ((t->pager_view_width != w) || (t->pager_view_height != h)) {
+    t->pager_view_width = w;
+    t->pager_view_height = h;
+    size_changed = True;
+  }
+
+  if ((i >= 0) && (i < ndesks))
     {
       XReparentWindow(dpy, t->PagerView, Desks[i].w, x,y);
-      XResizeWindow(dpy,t->PagerView,w,h);
+      if (size_changed) {
+	XResizeWindow(dpy, t->PagerView, w, h);
+	if ((t != FocusWin) && (windowcolorset > -1)) {
+	  SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
+			      t->pager_view_height,
+			      &Colorset[windowcolorset % nColorsets],
+			      Pdepth, Scr.NormalGC);
+	} else if ((t == FocusWin) && (activecolorset > -1)) {
+	  SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
+			      t->pager_view_height,
+			      &Colorset[activecolorset % nColorsets],
+			      Pdepth, Scr.NormalGC);
+	}
+      }
     }
   else
     {
@@ -1655,49 +1663,58 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
       t->PagerView = None;
     }
   t->desk = i+desk1;
-  XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
 
-  x = (Scr.Vx + t->x)*(icon_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
-  y = (Scr.Vy + t->y)*(icon_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
-  w = (Scr.Vx + t->x + t->width+2)*(icon_w-n) /
-    (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
-  h = (Scr.Vy + t->y + t->height+2)*(icon_h-m) /
-    (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
+  x = (Scr.Vx + t->x) * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
+  y = (Scr.Vy + t->y) * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
+  w = (Scr.Vx + t->x + t->width) * (icon_w-n)
+      / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
+  h = (Scr.Vy + t->y + t->height) * (icon_h - m)
+      / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
   if (w < 1)
     w = 1;
   if (h < 1)
     h = 1;
-	t->icon_view_width	= w;
-	t->icon_view_height	= h;
-  if(Scr.CurrentDesk == t->desk)
-    XMoveResizeWindow(dpy,t->IconView,x,y,w,h);
-  else
+  if ((t->icon_view_width != w) || (t->icon_view_height != h)) {
+    t->icon_view_width = w;
+    t->icon_view_height = h;
+    size_changed = True;
+  } else
+    size_changed = False;
+  if(Scr.CurrentDesk != t->desk)
     XMoveResizeWindow(dpy,t->IconView,-1000,-1000,w,h);
+  else {
+    XMoveResizeWindow(dpy,t->IconView,x,y,w,h);
+    if (size_changed) {
+      if ((t != FocusWin) && (windowcolorset > -1)) {
+	SetWindowBackground(dpy, t->IconView, t->icon_view_width,
+			    t->icon_view_height,
+			    &Colorset[windowcolorset % nColorsets],
+			    Pdepth, Scr.NormalGC);
+      } else if ((t == FocusWin) && (activecolorset > -1)) {
+	SetWindowBackground(dpy, t->IconView, t->icon_view_width,
+			    t->icon_view_height,
+			    &Colorset[activecolorset % nColorsets],
+			    Pdepth, Scr.NormalGC);
+      }
+    }
+  }
 }
 
 void MoveResizePagerView(PagerWindow *t)
 {
-  int x,y,w,h,n,m,n1,m1;
+  int x, y, w, h, n, m, n1, m1;
   Bool size_changed = False;
 
-  n = (Scr.VxMax)/Scr.MyDisplayWidth;
-  m = (Scr.VyMax)/Scr.MyDisplayHeight;
-  n1 = (Scr.Vx+t->x)/Scr.MyDisplayWidth;
-  m1 = (Scr.Vy+t->y)/Scr.MyDisplayHeight;
-  x = (Scr.Vx + t->x)*(desk_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
-  y = (Scr.Vy + t->y)*(desk_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
-#if 0
-  /* calculate size based on bottom right coordinate */
-  w = (Scr.Vx + t->x + t->width+2)*(desk_w-n)/
-    (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
-  h = (Scr.Vy + t->y + t->height+2)*(desk_h-m)/
-    (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
-#else
-  /* calculate size based on width, height */
-  w = t->width * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth);
-  h = t->height * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight);
-#endif
-
+  n = Scr.VxMax / Scr.MyDisplayWidth;
+  m = Scr.VyMax / Scr.MyDisplayHeight;
+  n1 = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
+  m1 = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
+  x = (Scr.Vx + t->x) * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
+  y = (Scr.Vy + t->y) * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
+  w = (Scr.Vx + t->x + t->width) * (desk_w - n)
+      / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
+  h = (Scr.Vy + t->y + t->height) * (desk_h - m)
+      / (Scr.VyMax + Scr.MyDisplayHeight) - y + m1;
   if (w < 1)
     w = 1;
   if (h < 1)
@@ -1710,8 +1727,19 @@ void MoveResizePagerView(PagerWindow *t)
   }
   if(t->PagerView != None) {
     XMoveResizeWindow(dpy,t->PagerView,x,y,w,h);
-    if (windowcolorset > -1 && size_changed)
-      XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
+    if (size_changed) {
+      if ((t != FocusWin) && (windowcolorset > -1)) {
+	SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
+			    t->pager_view_height,
+			    &Colorset[windowcolorset % nColorsets],
+			    Pdepth, Scr.NormalGC);
+      } else if ((t == FocusWin) && (activecolorset > -1)) {
+	SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
+			    t->pager_view_height,
+			    &Colorset[activecolorset % nColorsets],
+			    Pdepth, Scr.NormalGC);
+      }
+    }
   } else if((t->desk >= desk1)&&(t->desk <= desk2))
     {
       XDestroyWindow(dpy,t->IconView);
@@ -1719,20 +1747,12 @@ void MoveResizePagerView(PagerWindow *t)
       return;
     }
 
-  x = (Scr.Vx + t->x)*(icon_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
-  y = (Scr.Vy + t->y)*(icon_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
-#if 0
-  /* calculate size based on bottom right coordinate */
-  w = (Scr.Vx + t->x + t->width+2)*(icon_w-n)/
-    (Scr.VxMax + Scr.MyDisplayWidth) - 2 - x + n1;
-  h = (Scr.Vy + t->y + t->height+2)*(icon_h-m)/
-    (Scr.VyMax + Scr.MyDisplayHeight) -2 - y +m1;
-#else
-  /* calculate size based on width, height */
-  w = t->width * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth);
-  h = t->height * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight);
-#endif
-
+  x = (Scr.Vx + t->x) * (icon_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
+  y = (Scr.Vy + t->y) * (icon_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
+  w = (Scr.Vx + t->x + t->width) * (icon_w - n)
+      / (Scr.VxMax + Scr.MyDisplayWidth) - x + n1;
+  h = (Scr.Vy + t->y + t->height) * (icon_h - m)
+      / (Scr.VyMax + Scr.MyDisplayHeight) - y +m1;
   if (w < 1)
     w = 1;
   if (h < 1)
@@ -1747,8 +1767,19 @@ void MoveResizePagerView(PagerWindow *t)
 
   if(Scr.CurrentDesk == t->desk) {
     XMoveResizeWindow(dpy,t->IconView,x,y,w,h);
-    if (windowcolorset > -1 && size_changed)
-      XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
+    if (size_changed) {
+      if ((t != FocusWin) && (windowcolorset > -1)) {
+	SetWindowBackground(dpy, t->IconView, t->icon_view_width,
+			    t->icon_view_height,
+			    &Colorset[windowcolorset % nColorsets],
+			    Pdepth, Scr.NormalGC);
+      } else if ((t == FocusWin) && (activecolorset > -1)) {
+	SetWindowBackground(dpy, t->IconView, t->icon_view_width,
+			    t->icon_view_height,
+			    &Colorset[activecolorset % nColorsets],
+			    Pdepth, Scr.NormalGC);
+      }
+    }
   } else
     XMoveResizeWindow(dpy,t->IconView,-1000,-1000,w,h);
 }
@@ -1812,6 +1843,9 @@ void Hilight(PagerWindow *t, int on)
 					 Scr.light_gray_pixmap);
 	    }
 	}
+      if(t->PagerView != None)
+	XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
+      XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
     }
   else
     {
@@ -1822,7 +1856,8 @@ void Hilight(PagerWindow *t, int on)
 	      XSetWindowBackground(dpy,t->PagerView,focus_pix);
 	      XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
 	    } else
-	      SetWindowBackground(dpy, t->PagerView, 0, 0,
+	      SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
+				  t->pager_view_height,
 				  &Colorset[activecolorset % nColorsets],
 				  Pdepth, Scr.NormalGC);
 	  }
@@ -1830,9 +1865,10 @@ void Hilight(PagerWindow *t, int on)
 	    XSetWindowBackground(dpy,t->IconView,focus_pix);
 	    XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
 	  } else
-	  SetWindowBackground(dpy, t->IconView, 0, 0,
-			      &Colorset[activecolorset % nColorsets], Pdepth,
-			      Scr.NormalGC);
+	    SetWindowBackground(dpy, t->IconView, t->icon_view_width,
+				t->icon_view_height,
+			        &Colorset[activecolorset % nColorsets], Pdepth,
+			        Scr.NormalGC);
 	}
       else
 	{
@@ -1841,7 +1877,8 @@ void Hilight(PagerWindow *t, int on)
 	      XSetWindowBackground(dpy,t->PagerView,t->back);
 	      XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
 	    } else
-	      SetWindowBackground(dpy, t->PagerView, 0, 0,
+	      SetWindowBackground(dpy, t->PagerView, t->pager_view_width, 
+				  t->pager_view_height,
 				  &Colorset[windowcolorset % nColorsets],
 				  Pdepth, Scr.NormalGC);
 	  }
@@ -1849,7 +1886,8 @@ void Hilight(PagerWindow *t, int on)
 	    XSetWindowBackground(dpy,t->IconView,t->back);
 	    XClearArea(dpy, t->IconView, 0, 0, 0, 0, True);
 	  } else
-	    SetWindowBackground(dpy, t->IconView, 0, 0,
+	    SetWindowBackground(dpy, t->IconView, t->icon_view_width,
+				t->icon_view_height,
 				&Colorset[windowcolorset % nColorsets], Pdepth,
 				Scr.NormalGC);
 	}
@@ -1945,16 +1983,16 @@ void MoveWindow(XEvent *Event)
   if((NewDesk < 0)||(NewDesk >= ndesks))
     return;
 
-  n = (Scr.VxMax)/Scr.MyDisplayWidth;
-  m = (Scr.VyMax)/Scr.MyDisplayHeight;
-  n1 = (Scr.Vx+t->x)/Scr.MyDisplayWidth;
-  m1 = (Scr.Vy+t->y)/Scr.MyDisplayHeight;
-  wx = (Scr.Vx + t->x)*(desk_w-n)/(Scr.VxMax + Scr.MyDisplayWidth) +n1;
-  wy = (Scr.Vy + t->y)*(desk_h-m)/(Scr.VyMax + Scr.MyDisplayHeight)+m1;
-  wx1 = wx+(desk_w+1)*(NewDesk%Columns);
-  wy1 = wy + label_h + (desk_h+label_h+1)*(NewDesk/Columns);
+  n = Scr.VxMax / Scr.MyDisplayWidth;
+  m = Scr.VyMax / Scr.MyDisplayHeight;
+  n1 = (Scr.Vx + t->x) / Scr.MyDisplayWidth;
+  m1 = (Scr.Vy + t->y) / Scr.MyDisplayHeight;
+  wx = (Scr.Vx + t->x) * (desk_w - n) / (Scr.VxMax + Scr.MyDisplayWidth) + n1;
+  wy = (Scr.Vy + t->y) * (desk_h - m) / (Scr.VyMax + Scr.MyDisplayHeight) + m1;
+  wx1 = wx + (desk_w + 1) * (NewDesk % Columns);
+  wy1 = wy + label_h + (desk_h + label_h + 1) * (NewDesk / Columns);
 
-  XReparentWindow(dpy, t->PagerView, Scr.Pager_w,wx1,wy1);
+  XReparentWindow(dpy, t->PagerView, Scr.Pager_w, wx1, wy1);
   XRaiseWindow(dpy,t->PagerView);
 
   XTranslateCoordinates(dpy, Event->xany.window, t->PagerView,
@@ -2754,10 +2792,11 @@ void change_colorset(int colorset)
       t->text = Colorset[colorset % nColorsets].fg;
       if(t != FocusWin) {
         if(t->PagerView != None)
-          SetWindowBackground(dpy, t->PagerView, 0, 0, wcsetp, Pdepth,
+          SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
+			      t->pager_view_height, wcsetp, Pdepth,
 			      Scr.NormalGC);
-        SetWindowBackground(dpy, t->IconView, 0, 0, wcsetp, Pdepth,
-			    Scr.NormalGC);
+        SetWindowBackground(dpy, t->IconView, t->icon_view_width,
+			    t->icon_view_height, wcsetp, Pdepth, Scr.NormalGC);
       }
     }
   }
@@ -2776,10 +2815,11 @@ void change_colorset(int colorset)
     {
       if(t->PagerView != None)
       {
-        SetWindowBackground(dpy, t->PagerView, 0, 0, acsetp, Pdepth,
-			    Scr.NormalGC);
+        SetWindowBackground(dpy, t->PagerView, t->pager_view_width,
+			    t->pager_view_height, acsetp, Pdepth, Scr.NormalGC);
       }
-      SetWindowBackground(dpy, t->IconView, 0, 0, acsetp, Pdepth, Scr.NormalGC);
+      SetWindowBackground(dpy, t->IconView, t->icon_view_width,
+			  t->icon_view_height, acsetp, Pdepth, Scr.NormalGC);
     }
   }
 
