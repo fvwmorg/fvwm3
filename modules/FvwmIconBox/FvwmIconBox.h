@@ -181,6 +181,7 @@ extern int icon_relief;
 #define CLICK 1
 #define ONE_AND_A_HALF_CLICKS 3
 #define DOUBLE_CLICK 2
+#define TIMEOUT 3
 
 /* sorting */
 #define UNSORT     0

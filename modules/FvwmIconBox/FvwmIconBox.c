@@ -145,7 +145,7 @@ int interval = 8;
 int motion = NONE;
 int primary = LEFT, secondary = BOTTOM;
 int xneg = 0, yneg = 0;
-int ClickTime = 150;
+int ClickTime = DEFAULT_CLICKTIME;
 unsigned int bar_width = 9;
 int redraw_flag = 3;
 int icon_relief = 4;
@@ -181,6 +181,7 @@ int sortby = UNSORT;
 char* AnimCommand = NULL;
 
 int save_color_limit = 0;                   /* color limit from config */
+static Bool have_double_click = False;
 static Bool is_dead_pipe = False;
 
 static RETSIGTYPE TerminateHandler(int);
@@ -2028,7 +2029,10 @@ void parsemouse(char *tline)
   if (strncasecmp(start, "Click", 5) == 0)
     f->type = CLICK;
   else if (strncasecmp(start, "DoubleClick", 11) == 0)
+  {
     f->type = DOUBLE_CLICK;
+    have_double_click = True;
+  }
 
   /* actions */
   tline = end;
@@ -2904,34 +2908,72 @@ void freeitem(struct icon_info *item, int d)
 
 
 /************************************************************************
-  IsClick
-  	Based on functions.c from Fvwm:
-	Copyright 1988, Evans and Sutherland Computer Corporation,
-       	Copyright 1989, Massachusetts Institute of Technology,
-       	Copyright 1993, Robert Nation.
+ * CheckActionType
+ *   Based on functions.c from Fvwm:
  ***********************************************************************/
-Bool IsClick(int x,int y,unsigned EndMask, XEvent *d)
+static int CheckActionType(
+  int x, int y, XEvent *d, Bool may_time_out, Bool is_button_pressed)
 {
   int xcurrent,ycurrent,total = 0;
+  int dist;
+  Bool do_sleep = False;
 
   xcurrent = x;
   ycurrent = y;
-  while((total < ClickTime)&&
-        (x - xcurrent < 5)&&(x - xcurrent > -5)&&
-        (y - ycurrent < 5)&&(y - ycurrent > -5))
+  dist = DEFAULT_MOVE_THRESHOLD;
+
+  while (total < ClickTime || !may_time_out)
+  {
+    if (!(x - xcurrent <= dist && xcurrent - x <= dist &&
+	  y - ycurrent <= dist && ycurrent - y <= dist))
     {
-      usleep(10000);
-      total+=10;
-      if(XCheckMaskEvent (dpy,EndMask, d))
-	return True;
-      if(XCheckMaskEvent (dpy,ButtonMotionMask|PointerMotionMask, d))
-        {
-          xcurrent = d->xmotion.x_root;
-          ycurrent = d->xmotion.y_root;
-        }
+      return TIMEOUT;
     }
-  return False;
+
+    if (do_sleep)
+    {
+      usleep(20000);
+    }
+    else
+    {
+      usleep(1);
+      do_sleep = 1;
+    }
+    total += 20;
+    if (XCheckMaskEvent(dpy, ButtonReleaseMask|ButtonMotionMask|
+			PointerMotionMask|ButtonPressMask|ExposureMask, d))
+    {
+      do_sleep = 0;
+      switch (d->xany.type)
+      {
+      case ButtonRelease:
+	return CLICK;
+      case MotionNotify:
+	if ((d->xmotion.state & DEFAULT_ALL_BUTTONS_MASK) ||
+            !is_button_pressed)
+	{
+	  xcurrent = d->xmotion.x_root;
+	  ycurrent = d->xmotion.y_root;
+	}
+        else
+	{
+	  return CLICK;
+	}
+	break;
+      case ButtonPress:
+	if (may_time_out)
+	  is_button_pressed = True;
+	break;
+      default:
+	/* can't happen */
+	break;
+      }
+    }
+  }
+
+  return TIMEOUT;
 }
+
 
 /************************************************************************
  * ExecuteAction
@@ -2947,26 +2989,31 @@ void ExecuteAction(int x, int y, struct icon_info *item)
   XEvent d;
   struct mousefunc *tmp;
 
-   /* Wait and see if we have a click, or a move */
-  /* wait 100 msec, see if the used releases the button */
-  if(IsClick(x,y,ButtonReleaseMask,&d))
+  /* Wait and see if we have a click, or a move */
+  /* wait forever, see if the user releases the button */
+  type = CheckActionType(x, y, &d, False, True);
+  if (type == CLICK)
+  {
+    ev = &d;
+    /* If it was a click, wait to see if its a double click */
+    if (have_double_click)
     {
-      type = CLICK;
-      ev = &d;
+      type = CheckActionType(x, y, &d, True, False);
+      switch (type)
+      {
+      case CLICK:
+	type = DOUBLE_CLICK;
+	ev = &d;
+	break;
+      case TIMEOUT:
+	type = CLICK;
+	break;
+      default:
+	/* can't happen */
+	break;
+      }
     }
-
-  /* If it was a click, wait to see if its a double click */
-  if((type == CLICK) && (IsClick(x,y,ButtonPressMask, &d)))
-    {
-      type = ONE_AND_A_HALF_CLICKS;
-      ev = &d;
-    }
-  if((type == ONE_AND_A_HALF_CLICKS) &&
-     (IsClick(x,y,ButtonReleaseMask, &d)))
-    {
-      type = DOUBLE_CLICK;
-      ev = &d;
-    }
+  }
   tmp = MouseActions;
 
   while (tmp != NULL){
