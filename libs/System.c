@@ -112,7 +112,7 @@ char *searchPath(
 	int type)
 {
 	char *path;
-	int filename_len = strlen(filename);
+	int filename_len;
 	int maxpath_len;
 
 	if (filename == NULL || *filename == 0)
@@ -120,6 +120,7 @@ char *searchPath(
 		return NULL;
 	}
 
+	filename_len = strlen(filename);
 	maxpath_len = (pathlist) ? strlen(pathlist) : 0;
 	maxpath_len += (suffix) ? strlen(suffix) : 0;
 
