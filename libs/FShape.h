@@ -55,7 +55,7 @@ extern int FShapeErrorBase;
 /* Shapes compiled in? */
 extern Bool FShapesSupported;
 /* Shapes supported by server? */
-#define FHaveShapeExtension 0
+#define FHaveShapeExtension 1
 void FShapeInit(Display *dpy);
 
 #else

@@ -346,6 +346,11 @@ void FScreenSLSOnOff(Bool do_enable)
   if (do_enable)
   {
     total_screens = total_screens_sls;
+    if (!screens_sls)
+    {
+      /* Sls not configured yet, use whole screen by default */
+      FScreenConfigureSLS(1, 1);
+    }
     screens = screens_sls;
   }
   else

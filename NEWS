@@ -1,7 +1,9 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.4.0"_-_2.4.0_+_/A_-_.
 
-Changes in beta 2.5.0 (not released yet)
+Changes in beta 2.4.3 (not released yet)
+
+* Fixed activation of shape extension.
 
 * Fixed problems with overriding key bindings.
 

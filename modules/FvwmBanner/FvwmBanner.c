@@ -151,6 +151,7 @@ int main(int argc, char **argv)
 
   InitPictureCMap(dpy);
   FScreenInit(dpy);
+  FShapeInit(dpy);
   parseOptions(fd);
 
   /* chick in the neck situation:
