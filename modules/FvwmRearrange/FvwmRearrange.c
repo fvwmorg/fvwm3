@@ -616,4 +616,5 @@ int main(int argc, char *argv[])
     free_window_list(&wins);
     if (console != stderr)
 	fclose(console);
+    return 0;
 }

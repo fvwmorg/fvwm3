@@ -603,17 +603,17 @@ calculator to the left.  The following:
 Omits the "Calculator" label, but leaves the picture.  The pictures
 used with this feature should be small (perhaps 16x16).
 
-If the menu-label contains a sub-string which is set off by at signs
-("@"), then the text between them is expected to be the name of an
-xpm or bitmap file to draw along the left side of the menu (a "side
-pixmap").
+If the menu-name (not the label)  contains a sub-string which is set
+off by at signs ("@"), then the text between them is expected to be
+the name of an xpm or bitmap file to draw along the left side of the
+menu (a "side pixmap").
 For example
 .EX
 AddToMenu "StartMenu@linux-menu.xpm@"
 .EE
 creates a menu with a picture in its bottom left corner.
 
-If the menu name contains also a sub-string set of by '^'s, then the
+If the menu-name contains also a sub-string set of by '^'s, then the
 text between '^'s is expected to be the name a of X11 color and the
 column containing the side picture will be colorized with that
 color. For example

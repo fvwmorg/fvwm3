@@ -223,11 +223,13 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
     {
       if (e->type == KeyPress)
 	*w = e->xkey.subwindow;
-      else if (*w != t->w && *w != t->Parent)
+      else if ((*w != t->w && *w != t->Parent) ||
+	       e->xbutton.subwindow == t->w ||
+	       e->xbutton.subwindow == t->Parent)
 	/* domivogt (6-Jan-198): I don't understand what's happening here. If
 	 * the mouse is over the client window. The subwindow has an unique id
 	 * that no visible part of the FvwmWindow has. */
-	e->xbutton.subwindow;
+	*w = e->xbutton.subwindow;
     }
 #endif
 

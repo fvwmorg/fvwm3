@@ -172,6 +172,7 @@ int main(int argc, char **argv)
   SendInfo(fd,"Send_WindowList",0);
 
   Loop(fd);
+  return 0;
 }
 
 /**************************************************************************
