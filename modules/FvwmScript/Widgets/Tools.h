@@ -15,6 +15,8 @@
 
 #include "../types.h"
 
+extern Display *dpy;
+extern int screen;
 extern char *Scrapt;
 extern Atom propriete;
 extern Atom type;

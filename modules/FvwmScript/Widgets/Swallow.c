@@ -39,10 +39,10 @@ void DrawRelief(struct XObj *xobj)
    segm[1].x2=xobj->x-i;
    segm[1].y2=xobj->y+xobj->height+i-2;
    if (xobj->value==-1)
-    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
+    XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
    else
-    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
-   XDrawSegments(xobj->display,*xobj->ParentWin,xobj->gc,segm,2);
+    XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+   XDrawSegments(dpy,*xobj->ParentWin,xobj->gc,segm,2);
 
    segm[0].x1=xobj->x-i;
    segm[0].y1=xobj->y+xobj->height+i-1;
@@ -53,10 +53,10 @@ void DrawRelief(struct XObj *xobj)
    segm[1].x2=xobj->x+xobj->width+i-1;
    segm[1].y2=xobj->y+xobj->height+i-1;
    if (xobj->value==-1)
-    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
+    XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
    else
-    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
-   XDrawSegments(xobj->display,*xobj->ParentWin,xobj->gc,segm,2);
+    XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
+   XDrawSegments(dpy,*xobj->ParentWin,xobj->gc,segm,2);
   }
  }
 
@@ -68,15 +68,15 @@ void InitSwallow(struct XObj *xobj)
  XSetWindowAttributes Attr;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
+ xobj->TabColor[fore] = GetColor(xobj->forecolor);
+ xobj->TabColor[back] = GetColor(xobj->backcolor);
+ xobj->TabColor[li] = GetColor(xobj->licolor);
+ xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ xobj->TabColor[black] = GetColor("#000000");
+ xobj->TabColor[white] = GetColor("#FFFFFF");
 
  mask=0;
- xobj->win=XCreateWindow(xobj->display,*xobj->ParentWin,
+ xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
 		-1000,-1000,xobj->width,xobj->height,0,
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
@@ -98,10 +98,10 @@ void InitSwallow(struct XObj *xobj)
 
 void DestroySwallow(struct XObj *xobj)
 {
- XSetCloseDownMode(xobj->display,DestroyAll);
+ XSetCloseDownMode(dpy,DestroyAll);
  /* Arrete le programme swallow */
  if (xobj->win!=None)
-  XKillClient(xobj->display, xobj->win);
+  XKillClient(dpy, xobj->win);
 }
 
 void DrawSwallow(struct XObj *xobj)
@@ -130,8 +130,8 @@ void CheckForHangon(struct XObj *xobj,unsigned long *body)
    free(xobj->title);
    xobj->title=(char*)calloc(sizeof(char),20);
    sprintf(xobj->title,"No window");
-   XUnmapWindow(xobj->display,xobj->win);
-   XSetWindowBorderWidth(xobj->display,xobj->win,0);
+   XUnmapWindow(dpy,xobj->win);
+   XSetWindowBorderWidth(dpy,xobj->win,0);
   }
   free(cbody);
 }
@@ -141,9 +141,9 @@ void swallow(struct XObj *xobj,unsigned long *body)
 
  if(xobj->win == (Window)body[0])
  {
-  XReparentWindow(xobj->display,xobj->win,*xobj->ParentWin,xobj->x,xobj->y);
-  XResizeWindow(xobj->display,xobj->win,xobj->width,xobj->height);
-  XMapWindow(xobj->display,xobj->win);
+  XReparentWindow(dpy,xobj->win,*xobj->ParentWin,xobj->x,xobj->y);
+  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
+  XMapWindow(dpy,xobj->win);
  }
 }
 

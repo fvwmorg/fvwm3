@@ -31,32 +31,32 @@ void InitList(struct XObj *xobj)
  int NbVisCell,NbCell;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
+ xobj->TabColor[fore] = GetColor(xobj->forecolor);
+ xobj->TabColor[back] = GetColor(xobj->backcolor);
+ xobj->TabColor[li] = GetColor(xobj->licolor);
+ xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ xobj->TabColor[black] = GetColor("#000000");
+ xobj->TabColor[white] = GetColor("#FFFFFF");
 
 
  mask=0;
- Attr.background_pixel=xobj->TabColor[back].pixel;
+ Attr.background_pixel=xobj->TabColor[back];
  mask|=CWBackPixel;
- Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2);
+ Attr.cursor=XCreateFontCursor(dpy,XC_hand2);
  mask|=CWCursor;		/* Curseur pour la fenetre */
- xobj->win=XCreateWindow(xobj->display,*xobj->ParentWin,
+ xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
 		xobj->x,xobj->y,xobj->width,xobj->height,0,
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
 
- xobj->gc=XCreateGC(xobj->display,xobj->win,0,NULL);
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
- XSetBackground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
- XSetLineAttributes(xobj->display,xobj->gc,1,LineSolid,CapRound,JoinMiter);
- if ((xobj->xfont=XLoadQueryFont(xobj->display,xobj->font))==NULL)
+ xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+ XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
+ XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
+ if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)
    fprintf(stderr,"Can't load font %s\n",xobj->font);
  else
-  XSetFont(xobj->display,xobj->gc,xobj->xfont->fid);
+  XSetFont(dpy,xobj->gc,xobj->xfont->fid);
 
  /* Calcul de la taille du widget */
  /* Taille minimum: une ligne ou ascenseur visible */
@@ -74,7 +74,7 @@ void InitList(struct XObj *xobj)
   resize=1;
  }
  if (resize)
-  XResizeWindow(xobj->display,xobj->win,xobj->width,xobj->height);
+  XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
 
  /* Calcul de la premiere cellule visible */
  NbVisCell=(xobj->height-2-3*BdWidth)/(asc+desc+3);
@@ -99,8 +99,8 @@ void DrawVSbList(struct XObj *xobj,int NbCell,int NbVisCell,int press)
  r.x=xobj->width-(6+BdWidth)-SbWidth;
  r.height=xobj->height-r.y-2*BdWidth;
  r.width=SbWidth+4;
- DrawReliefRect(r.x,r.y,r.width,r.height,xobj,xobj->TabColor[shad].pixel,
-		xobj->TabColor[li].pixel,xobj->TabColor[fore].pixel,-1);
+ DrawReliefRect(r.x,r.y,r.width,r.height,xobj,xobj->TabColor[shad],
+		xobj->TabColor[li],xobj->TabColor[fore],-1);
 
  /* Calcul du rectangle pour les fleches*/
  r.x=r.x+2;
@@ -117,8 +117,8 @@ void DrawVSbList(struct XObj *xobj,int NbCell,int NbVisCell,int press)
  r.height=r.height-26;
 
  /* Effacement */
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
- XFillRectangle(xobj->display,xobj->win,xobj->gc,r.x+1,r.y+1,r.width-2,r.height-2);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
+ XFillRectangle(dpy,xobj->win,xobj->gc,r.x+1,r.y+1,r.width-2,r.height-2);
 
  /* Dessin du pouce */
  if (NbVisCell<NbCell)
@@ -126,8 +126,8 @@ void DrawVSbList(struct XObj *xobj,int NbCell,int NbVisCell,int press)
  else
   SizeTh=r.height;
  PosTh=(xobj->value2-1)*(r.height-8)/NbCell;
- DrawReliefRect(r.x,r.y+PosTh,r.width,SizeTh,xobj,xobj->TabColor[li].pixel,
-		xobj->TabColor[shad].pixel,xobj->TabColor[fore].pixel,-1);
+ DrawReliefRect(r.x,r.y+PosTh,r.width,SizeTh,xobj,xobj->TabColor[li],
+		xobj->TabColor[shad],xobj->TabColor[fore],-1);
 }
 
 void DrawCellule(struct XObj *xobj,int NbCell,int NbVisCell,int HeightCell,int asc)
@@ -142,7 +142,7 @@ void DrawCellule(struct XObj *xobj,int NbCell,int NbVisCell,int HeightCell,int a
     r.height=xobj->height-r.y-4-2*BdWidth;
 
     /* Dessin des cellules */
-    XSetClipRectangles(xobj->display,xobj->gc,0,0,&r,1,Unsorted);
+    XSetClipRectangles(dpy,xobj->gc,0,0,&r,1,Unsorted);
     for (i=xobj->value2;i<xobj->value2+NbVisCell;i++)
     {
 	Title=GetMenuTitle(xobj->title,i);
@@ -150,37 +150,37 @@ void DrawCellule(struct XObj *xobj,int NbCell,int NbVisCell,int HeightCell,int a
 	{
 	    if (xobj->value==i)
 	    {
-		XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
-		XFillRectangle(xobj->display,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
+		XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
+		XFillRectangle(dpy,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
 			       xobj->width-2,HeightCell-2);
-		DrawString(xobj->display,xobj->gc,xobj->win,5+r.x,(i-xobj->value2)*HeightCell+asc+2+r.y,Title,
-			   strlen(Title),xobj->TabColor[fore].pixel,xobj->TabColor[back].pixel,
-			   xobj->TabColor[shad].pixel,!xobj->flags[1]);
+		DrawString(dpy,xobj->gc,xobj->win,5+r.x,(i-xobj->value2)*HeightCell+asc+2+r.y,Title,
+			   strlen(Title),xobj->TabColor[fore],xobj->TabColor[back],
+			   xobj->TabColor[shad],!xobj->flags[1]);
 	    }
 	    else
 	    {
-		XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
-		XFillRectangle(xobj->display,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
+		XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
+		XFillRectangle(dpy,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
 			       xobj->width-2,HeightCell-2);
-		DrawString(xobj->display,xobj->gc,xobj->win,5+r.x,(i-xobj->value2)*HeightCell+asc+2+r.y,Title,
-			   strlen(Title),xobj->TabColor[fore].pixel,xobj->TabColor[li].pixel,
-			   xobj->TabColor[back].pixel,!xobj->flags[1]);
+		DrawString(dpy,xobj->gc,xobj->win,5+r.x,(i-xobj->value2)*HeightCell+asc+2+r.y,Title,
+			   strlen(Title),xobj->TabColor[fore],xobj->TabColor[li],
+			   xobj->TabColor[back],!xobj->flags[1]);
 	    }
 	}
 	else
 	{
-	    XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
-	    XFillRectangle(xobj->display,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
+	    XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
+	    XFillRectangle(dpy,xobj->win,xobj->gc,r.x+2,r.y+(i-xobj->value2)*HeightCell+2,
 			   xobj->width-2,HeightCell-2);
 	}
     }
-    XSetClipMask(xobj->display,xobj->gc,None);
+    XSetClipMask(dpy,xobj->gc,None);
 }
 
 void DestroyList(struct XObj *xobj)
 {
- XFreeGC(xobj->display,xobj->gc);
- XDestroyWindow(xobj->display,xobj->win);
+ XFreeGC(dpy,xobj->gc);
+ XDestroyWindow(dpy,xobj->win);
 }
 
 void DrawList(struct XObj *xobj)
@@ -192,15 +192,15 @@ void DrawList(struct XObj *xobj)
 
  /* Dessin du contour */
  DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-	xobj->TabColor[li].pixel,xobj->TabColor[shad].pixel,xobj->TabColor[fore].pixel,-1);
+	xobj->TabColor[li],xobj->TabColor[shad],xobj->TabColor[fore],-1);
 
  /* Dessin du contour de la liste */
  r.x=2+BdWidth;
  r.y=r.x;
  r.width=xobj->width-r.x-4-2*BdWidth-SbWidth;
  r.height=xobj->height-r.y-2*BdWidth;
- DrawReliefRect(r.x,r.y,r.width,r.height,xobj,xobj->TabColor[shad].pixel,
-	xobj->TabColor[li].pixel,xobj->TabColor[fore].pixel,-1);
+ DrawReliefRect(r.x,r.y,r.width,r.height,xobj,xobj->TabColor[shad],
+	xobj->TabColor[li],xobj->TabColor[fore],-1);
 
  /* Calcul du nombre de cellules visibles */
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
@@ -283,7 +283,7 @@ void EvtMouseList(struct XObj *xobj,XButtonEvent *EvtButton)
   DrawVSbList(xobj,NbCell,NbVisCell,1);
   do
   {
-   XQueryPointer(xobj->display,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
+   XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
    pt.y=y2-xobj->y;
    pt.x=x2-xobj->x;
    if (PtInRect(pt,rect))
@@ -323,7 +323,7 @@ void EvtMouseList(struct XObj *xobj,XButtonEvent *EvtButton)
    FD_SET(x_fd,&in_fdset);
    select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
   }
-  while (!XCheckTypedEvent(xobj->display,ButtonRelease,&event));
+  while (!XCheckTypedEvent(dpy,ButtonRelease,&event));
   DrawVSbList(xobj,NbCell,NbVisCell,0);
   return;
  }
@@ -335,7 +335,7 @@ void EvtMouseList(struct XObj *xobj,XButtonEvent *EvtButton)
   DrawVSbList(xobj,NbCell,NbVisCell,2);
   do
   {
-   XQueryPointer(xobj->display,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
+   XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
    pt.y=y2-xobj->y;
    pt.x=x2-xobj->x;
    if (PtInRect(pt,rect))
@@ -373,7 +373,7 @@ void EvtMouseList(struct XObj *xobj,XButtonEvent *EvtButton)
    FD_SET(x_fd,&in_fdset);
    select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
   }
-  while (!XCheckTypedEvent(xobj->display,ButtonRelease,&event));
+  while (!XCheckTypedEvent(dpy,ButtonRelease,&event));
   DrawVSbList(xobj,NbCell,NbVisCell,0);
   return;
  }
@@ -396,7 +396,7 @@ void EvtMouseList(struct XObj *xobj,XButtonEvent *EvtButton)
    PosMouse=pt.y-rectT.y-HeightCell/2+2;
    do
    {
-    XQueryPointer(xobj->display,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
+    XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
     /* Calcul de l'id de la premiere cellule */
     pt.y=y2-xobj->y-PosMouse;
     NPosCell=(pt.y-rect.y)*NbCell/(rect.height);
@@ -419,7 +419,7 @@ void EvtMouseList(struct XObj *xobj,XButtonEvent *EvtButton)
     FD_SET(x_fd,&in_fdset);
     select(32, SELECT_FD_SET_CAST &in_fdset, NULL, NULL, NULL);
    }
-   while (!XCheckTypedEvent(xobj->display,ButtonRelease,&event));
+   while (!XCheckTypedEvent(dpy,ButtonRelease,&event));
   }
   else if (pt.y<rectT.y)
   {

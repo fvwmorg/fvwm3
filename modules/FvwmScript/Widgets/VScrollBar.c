@@ -32,29 +32,29 @@ void DrawThumbV(struct XObj *xobj)
  y=3+(xobj->height-36)*(xobj->value-xobj->value3)/(xobj->value2-xobj->value3);
  w=18;
  h=30;
- DrawReliefRect(x,y,w,h,xobj,xobj->TabColor[li].pixel,xobj->TabColor[shad].pixel,
- 		xobj->TabColor[black].pixel,-1);
+ DrawReliefRect(x,y,w,h,xobj,xobj->TabColor[li],xobj->TabColor[shad],
+ 		xobj->TabColor[black],-1);
  segm.x1=x+3;
  segm.y1=y+15;
  segm.x2=x+w-3;
  segm.y2=y+15;
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,&segm,1);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,&segm,1);
  segm.x1=x+3;
  segm.y1=y+16;
  segm.x2=x+w-3;
  segm.y2=y+16;
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,&segm,1);
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,&segm,1);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
 
  sprintf(str,"%d",xobj->value);
  x=x-XTextWidth(xobj->xfont,str,strlen(str))-6;
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  y=y+13+asc/2;
- DrawString(xobj->display,xobj->gc,xobj->win,x,y,str,
-	strlen(str),xobj->TabColor[fore].pixel,
-	xobj->TabColor[li].pixel,xobj->TabColor[back].pixel,
+ DrawString(dpy,xobj->gc,xobj->win,x,y,str,
+	strlen(str),xobj->TabColor[fore],
+	xobj->TabColor[li],xobj->TabColor[back],
 	!xobj->flags[1]);
 
 }
@@ -68,12 +68,12 @@ void HideThumbV(struct XObj *xobj)
 
  x=xobj->width/2-8;
  y=4+(xobj->height-36)*(xobj->value-xobj->value3)/(xobj->value2-xobj->value3);
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
- XFillRectangle(xobj->display,xobj->win,xobj->gc,x,y,16,28);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
+ XFillRectangle(dpy,xobj->win,xobj->gc,x,y,16,28);
  sprintf(str,"%d",xobj->value);
  x=x-XTextWidth(xobj->xfont,str,strlen(str))-7;
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
- XFillRectangle(xobj->display,xobj->win,xobj->gc,x,y,XTextWidth(xobj->xfont,
+ XFillRectangle(dpy,xobj->win,xobj->gc,x,y,XTextWidth(xobj->xfont,
  	str,strlen(str)),asc+desc+8);
 }
 
@@ -87,33 +87,33 @@ void InitVScrollBar(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
+ xobj->TabColor[fore] = GetColor(xobj->forecolor);
+ xobj->TabColor[back] = GetColor(xobj->backcolor);
+ xobj->TabColor[li] = GetColor(xobj->licolor);
+ xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ xobj->TabColor[black] = GetColor("#000000");
+ xobj->TabColor[white] = GetColor("#FFFFFF");
 
 
  mask=0;
- Attr.background_pixel=xobj->TabColor[back].pixel;
+ Attr.background_pixel=xobj->TabColor[back];
  mask|=CWBackPixel;
- Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2);
+ Attr.cursor=XCreateFontCursor(dpy,XC_hand2);
  mask|=CWCursor;		/* Curseur pour la fenetre */
 
- xobj->win=XCreateWindow(xobj->display,*xobj->ParentWin,
+ xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
 		xobj->x,xobj->y,xobj->width,xobj->height,0,
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
- xobj->gc=XCreateGC(xobj->display,xobj->win,0,NULL);
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
- XSetBackground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
- if ((xobj->xfont=XLoadQueryFont(xobj->display,xobj->font))==NULL)
+ xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+ XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
+ if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)
    fprintf(stderr,"Can't load font %s\n",xobj->font);
  else
-  XSetFont(xobj->display,xobj->gc,xobj->xfont->fid);
+  XSetFont(dpy,xobj->gc,xobj->xfont->fid);
 
- XSetLineAttributes(xobj->display,xobj->gc,1,LineSolid,CapRound,JoinMiter);
+ XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
 
  if ((xobj->value3-xobj->value2)<=0)
   xobj->value3=xobj->value2+10;
@@ -133,15 +133,15 @@ void InitVScrollBar(struct XObj *xobj)
  else
   i=i*2+30;
  xobj->width=i;
- XResizeWindow(xobj->display,xobj->win,xobj->width,xobj->height);
+ XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
 
 }
 
 void DestroyVScrollBar(struct XObj *xobj)
 {
- XFreeFont(xobj->display,xobj->xfont);
- XFreeGC(xobj->display,xobj->gc);
- XDestroyWindow(xobj->display,xobj->win);
+ XFreeFont(dpy,xobj->xfont);
+ XFreeGC(dpy,xobj->gc);
+ XDestroyWindow(dpy,xobj->win);
 }
 
 void DrawVScrollBar(struct XObj *xobj)
@@ -156,8 +156,8 @@ void DrawVScrollBar(struct XObj *xobj)
  y=0;
  w=24;
  h=xobj->height;
- DrawReliefRect(x,y,w,h,xobj,xobj->TabColor[shad].pixel,xobj->TabColor[li].pixel,
- 		xobj->TabColor[black].pixel,1);
+ DrawReliefRect(x,y,w,h,xobj,xobj->TabColor[shad],xobj->TabColor[li],
+ 		xobj->TabColor[black],1);
  DrawThumbV(xobj);
 
  /* Ecriture des valeurs */
@@ -165,15 +165,15 @@ void DrawVScrollBar(struct XObj *xobj)
  x=x+26;
  y=asc+2;
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
- DrawString(xobj->display,xobj->gc,xobj->win,x,y,str,
-	strlen(str),xobj->TabColor[fore].pixel,
-	xobj->TabColor[li].pixel,xobj->TabColor[back].pixel,
+ DrawString(dpy,xobj->gc,xobj->win,x,y,str,
+	strlen(str),xobj->TabColor[fore],
+	xobj->TabColor[li],xobj->TabColor[back],
 	!xobj->flags[1]);
  sprintf(str,"%d",xobj->value2);
  y=h-desc-2;
- DrawString(xobj->display,xobj->gc,xobj->win,x,y,str,
-	strlen(str),xobj->TabColor[fore].pixel,
-	xobj->TabColor[li].pixel,xobj->TabColor[back].pixel,
+ DrawString(dpy,xobj->gc,xobj->win,x,y,str,
+	strlen(str),xobj->TabColor[fore],
+	xobj->TabColor[li],xobj->TabColor[back],
 	!xobj->flags[1]);
 }
 
@@ -190,7 +190,7 @@ void EvtMouseVScrollBar(struct XObj *xobj,XButtonEvent *EvtButton)
  do
  {
   /* On suit les mouvements de la souris */
-  XQueryPointer(xobj->display,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
+  XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
   y2=y2-xobj->y;
   if (y2<15) y2=15;
   if (y2>xobj->height-21) y2=xobj->height-21;
@@ -210,7 +210,7 @@ void EvtMouseVScrollBar(struct XObj *xobj,XButtonEvent *EvtButton)
    }
   }
  }
- while (!XCheckTypedEvent(xobj->display,ButtonRelease,&event));
+ while (!XCheckTypedEvent(dpy,ButtonRelease,&event));
 }
 
 void EvtKeyVScrollBar(struct XObj *xobj,XKeyEvent *EvtKey)

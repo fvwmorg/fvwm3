@@ -99,7 +99,7 @@ void DrawPMenu(struct XObj *xobj,Window WinPop,int h,int StrtOpt)
  int asc,desc,dir;
  XCharStruct struc;
 
- XGetGeometry(xobj->display,WinPop,&Root,&x,&y,&width,&height,&i,&i);
+ XGetGeometry(dpy,WinPop,&Root,&x,&y,&width,&height,&i,&i);
  for (i=0;i<2;i++)
  {
   segm[0].x1=i;
@@ -111,8 +111,8 @@ void DrawPMenu(struct XObj *xobj,Window WinPop,int h,int StrtOpt)
   segm[1].y1=i;
   segm[1].x2=i;
   segm[1].y2=height-i-1;
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
-  XDrawSegments(xobj->display,WinPop,xobj->gc,segm,2);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+  XDrawSegments(dpy,WinPop,xobj->gc,segm,2);
 
   segm[0].x1=1+i;
   segm[0].y1=height-i-1;
@@ -123,8 +123,8 @@ void DrawPMenu(struct XObj *xobj,Window WinPop,int h,int StrtOpt)
   segm[1].y1=i;
   segm[1].x2=width-i-1;
   segm[1].y2=height-i-1;
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
-  XDrawSegments(xobj->display,WinPop,xobj->gc,segm,2);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
+  XDrawSegments(dpy,WinPop,xobj->gc,segm,2);
  }
  /* Ecriture des options */
  x=0;
@@ -140,9 +140,9 @@ void DrawPMenu(struct XObj *xobj,Window WinPop,int h,int StrtOpt)
   str=(char*)GetMenuTitle(xobj->title,i);
   XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
   y=h*(i-StrtOpt)+asc+4;
-  DrawString(xobj->display,xobj->gc,WinPop,width-x-8,y,str,
-  		strlen(str),xobj->TabColor[fore].pixel,
-		xobj->TabColor[li].pixel,xobj->TabColor[back].pixel,
+  DrawString(dpy,xobj->gc,WinPop,width-x-8,y,str,
+  		strlen(str),xobj->TabColor[fore],
+		xobj->TabColor[li],xobj->TabColor[back],
 		!xobj->flags[1]);
  free(str);
  }
@@ -159,7 +159,7 @@ void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int newvalue,int Show)
  unsigned int width,height;
  Window Root;
 
- XGetGeometry(xobj->display,WinPop,&Root,&x,&y,&width,&height,&i,&i);
+ XGetGeometry(dpy,WinPop,&Root,&x,&y,&width,&height,&i,&i);
  y=hOpt*(newvalue-1);
  for (i=0;i<2;i++)
  {
@@ -173,10 +173,10 @@ void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int newvalue,int Show)
   segm[1].x2=i+2;
   segm[1].y2=y+hOpt-4-i;
   if (Show)
-   XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
+   XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
   else
-   XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
-  XDrawSegments(xobj->display,WinPop,xobj->gc,segm,2);
+   XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
+  XDrawSegments(dpy,WinPop,xobj->gc,segm,2);
 
   segm[0].x1=i+3;
   segm[0].y1=y-i-3+hOpt;
@@ -188,10 +188,10 @@ void SelectMenu(struct XObj *xobj,Window WinPop,int hOpt,int newvalue,int Show)
   segm[1].x2=width-i-3;
   segm[1].y2=i+y-4+hOpt;
   if (Show)
-   XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
+   XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
   else
-   XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
-  XDrawSegments(xobj->display,WinPop,xobj->gc,segm,2);
+   XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
+  XDrawSegments(dpy,WinPop,xobj->gc,segm,2);
  }
 }
 
@@ -226,8 +226,8 @@ void DrawIconStr(int offset,struct XObj *xobj,int DoRedraw)
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  if (DoRedraw)
  {
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
-  XFillRectangle(xobj->display,xobj->win,xobj->gc,4,4,xobj->width-8,xobj->height-8);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
+  XFillRectangle(dpy,xobj->win,xobj->gc,4,4,xobj->width-8,xobj->height-8);
  }
 
  if (xobj->iconPixmap==None)			/* Si l'icone n'existe pas */
@@ -235,9 +235,9 @@ void DrawIconStr(int offset,struct XObj *xobj,int DoRedraw)
   str=GetMenuTitle(xobj->title,1);
   j=xobj->height/2+(asc+desc)/2+offset-3;
   i=(xobj->width-XTextWidth(xobj->xfont,str,strlen(str)))/2+offset;
-  DrawString(xobj->display,xobj->gc,xobj->win,i,j,str,
-	strlen(str),xobj->TabColor[fore].pixel,xobj->TabColor[li].pixel,
-	xobj->TabColor[back].pixel,!xobj->flags[1]);
+  DrawString(dpy,xobj->gc,xobj->win,i,j,str,
+	strlen(str),xobj->TabColor[fore],xobj->TabColor[li],
+	xobj->TabColor[back],!xobj->flags[1]);
   free(str);
  }
  else					/* Si l'icone existe */
@@ -249,22 +249,22 @@ void DrawIconStr(int offset,struct XObj *xobj,int DoRedraw)
    {
     i=(xobj->width-XTextWidth(xobj->xfont,str,strlen(str)))/2+offset;
     j=((xobj->height - xobj->icon_h)/4)*3 + xobj->icon_h+offset+(asc+desc)/2-3;
-    DrawString(xobj->display,xobj->gc,xobj->win,i,j,str,
-	strlen(str),xobj->TabColor[fore].pixel,xobj->TabColor[li].pixel,
-	xobj->TabColor[back].pixel,!xobj->flags[1]);
+    DrawString(dpy,xobj->gc,xobj->win,i,j,str,
+	strlen(str),xobj->TabColor[fore],xobj->TabColor[li],
+	xobj->TabColor[back],!xobj->flags[1]);
    }
    free(str);
   }
   /* Dessin de l'icone */
   if (xobj->icon_maskPixmap!=None)
-   XSetClipMask(xobj->display,xobj->gc,xobj->icon_maskPixmap);
+   XSetClipMask(dpy,xobj->gc,xobj->icon_maskPixmap);
   j=(xobj->height - xobj->icon_h)/2+offset;
   i=(xobj->width - xobj->icon_w)/2+offset;
-  XSetClipOrigin(xobj->display,xobj->gc,i,j);
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
-  XCopyArea(xobj->display,xobj->iconPixmap,xobj->win,xobj->gc,0,0,
+  XSetClipOrigin(dpy,xobj->gc,i,j);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+  XCopyArea(dpy,xobj->iconPixmap,xobj->win,xobj->gc,0,0,
   						xobj->icon_w,xobj->icon_h,i,j);
-  XSetClipMask(xobj->display,xobj->gc,None);
+  XSetClipMask(dpy,xobj->gc,None);
  }
 }
 
@@ -278,8 +278,8 @@ void DrawReliefRect(int x,int y,int width,int height,struct XObj *xobj,
  int i;
  int j;
 
-/* XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
- XFillRectangle(xobj->display,xobj->win,xobj->gc,x,y,width,height);*/
+/* XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
+ XFillRectangle(dpy,xobj->win,xobj->gc,x,y,width,height);*/
  width--;
  height--;
 
@@ -294,8 +294,8 @@ void DrawReliefRect(int x,int y,int width,int height,struct XObj *xobj,
   segm[1].y1=i+y;
   segm[1].x2=width+j+x+1;
   segm[1].y2=i+y;
-  XSetForeground(xobj->display,xobj->gc,LiC);
-  XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,2);
+  XSetForeground(dpy,xobj->gc,LiC);
+  XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
 
   segm[0].x1=width+j+x+1;
   segm[0].y1=i+1+y;
@@ -305,16 +305,16 @@ void DrawReliefRect(int x,int y,int width,int height,struct XObj *xobj,
   segm[1].y1=height+j+y+1;
   segm[1].x2=width+j+x+1;
   segm[1].y2=height+j+y+1;
-  XSetForeground(xobj->display,xobj->gc,ShadC);
-  XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,2);
+  XSetForeground(dpy,xobj->gc,ShadC);
+  XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
  }
- XSetForeground(xobj->display,xobj->gc,ForeC);
+ XSetForeground(dpy,xobj->gc,ForeC);
  if (RectIn==1)			/* Rectangle a l'interieur */
-  XDrawRectangle(xobj->display,xobj->win,xobj->gc,x+3,y+3,
+  XDrawRectangle(dpy,xobj->win,xobj->gc,x+3,y+3,
  		width-6,height-6);
  else if (RectIn==0)		/* Rectangle a l'exterieur */
-  XDrawRectangle(xobj->display,xobj->win,xobj->gc,x,y,width,height);
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
+  XDrawRectangle(dpy,xobj->win,xobj->gc,x,y,width,height);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
 }
 
 /***********************************************/
@@ -418,10 +418,10 @@ void DrawArrowN(struct XObj *xobj,int x,int y,int Press)
  segm[1].x2=1+x;
  segm[1].y2=12+y;
  if (Press==1)
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
  else
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,2);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
 
  segm[0].x1=2+x;
  segm[0].y1=11+y;
@@ -441,10 +441,10 @@ void DrawArrowN(struct XObj *xobj,int x,int y,int Press)
  segm[3].x2=10+x;
  segm[3].y2=11+y;
  if (Press==1)
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
  else
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,4);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,segm,4);
 }
 
 /************************************************************/
@@ -472,10 +472,10 @@ void DrawArrowS(struct XObj *xobj,int x,int y,int Press)
  segm[3].x2=5+x;
  segm[3].y2=8+y;
  if (Press==1)
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
  else
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,4);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,segm,4);
 
  segm[0].x1=6+x;
  segm[0].y1=11+y;
@@ -486,10 +486,10 @@ void DrawArrowS(struct XObj *xobj,int x,int y,int Press)
  segm[1].x2=10+x;
  segm[1].y2=2+y;
  if (Press==1)
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
  else
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,2);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
 }
 
 void DrawArrowE(struct XObj *xobj,int x,int y,int Press)
@@ -505,10 +505,10 @@ void DrawArrowE(struct XObj *xobj,int x,int y,int Press)
  segm[1].x2=2+x;
  segm[1].y2=10+y;
  if (Press==1)
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
  else
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,2);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
 
  segm[0].x1=0+x;
  segm[0].y1=0+y;
@@ -528,10 +528,10 @@ void DrawArrowE(struct XObj *xobj,int x,int y,int Press)
  segm[3].x2=9+x;
  segm[3].y2=5+y;
  if (Press==1)
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
  else
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,4);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,segm,4);
 }
 
 void DrawArrowW(struct XObj *xobj,int x,int y,int Press)
@@ -547,10 +547,10 @@ void DrawArrowW(struct XObj *xobj,int x,int y,int Press)
  segm[1].x2=10+x;
  segm[1].y2=2+y;
  if (Press==1)
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
  else
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,2);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
 
  segm[0].x1=0+x;
  segm[0].y1=6+y;
@@ -570,10 +570,10 @@ void DrawArrowW(struct XObj *xobj,int x,int y,int Press)
  segm[3].x2=11+x;
  segm[3].y2=11+y;
  if (Press==1)
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
  else
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,4);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,segm,4);
  }
 
 int PtInRect(XPoint pt,XRectangle rect)
@@ -600,7 +600,7 @@ void Wait(int t)
 int IsItDoubleClic(struct XObj *xobj)
 {
  XEvent Event;
- XFlush(xobj->display);
+ XFlush(dpy);
  Wait(12);
- return (XCheckTypedEvent(xobj->display,ButtonPress,&Event));
+ return (XCheckTypedEvent(dpy,ButtonPress,&Event));
 }

@@ -33,33 +33,33 @@ void InitPopupMenu(struct XObj *xobj)
  XCharStruct struc;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
+ xobj->TabColor[fore] = GetColor(xobj->forecolor);
+ xobj->TabColor[back] = GetColor(xobj->backcolor);
+ xobj->TabColor[li] = GetColor(xobj->licolor);
+ xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ xobj->TabColor[black] = GetColor("#000000");
+ xobj->TabColor[white] = GetColor("#FFFFFF");
 
 
  mask=0;
- Attr.background_pixel=xobj->TabColor[back].pixel;
+ Attr.background_pixel=xobj->TabColor[back];
  mask|=CWBackPixel;
- Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2);
+ Attr.cursor=XCreateFontCursor(dpy,XC_hand2);
  mask|=CWCursor;		/* Curseur pour la fenetre */
 
- xobj->win=XCreateWindow(xobj->display,*xobj->ParentWin,
+ xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
 		xobj->x,xobj->y,xobj->width,xobj->height,0,
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
- xobj->gc=XCreateGC(xobj->display,xobj->win,0,NULL);
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
- XSetBackground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
- if ((xobj->xfont=XLoadQueryFont(xobj->display,xobj->font))==NULL)
+ xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+ XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
+ if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)
    fprintf(stderr,"Can't load font %s\n",xobj->font);
  else
-  XSetFont(xobj->display,xobj->gc,xobj->xfont->fid);
+  XSetFont(dpy,xobj->gc,xobj->xfont->fid);
 
- XSetLineAttributes(xobj->display,xobj->gc,1,LineSolid,CapRound,JoinMiter);
+ XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
  xobj->value3=CountOption(xobj->title);
  if (xobj->value>xobj->value3)
   xobj->value=xobj->value3;
@@ -77,14 +77,14 @@ void InitPopupMenu(struct XObj *xobj)
    xobj->width=XTextWidth(xobj->xfont,str,strlen(str))+34;
   free(str);
  }
- XResizeWindow(xobj->display,xobj->win,xobj->width,xobj->height);
+ XResizeWindow(dpy,xobj->win,xobj->width,xobj->height);
 }
 
 void DestroyPopupMenu(struct XObj *xobj)
 {
- XFreeFont(xobj->display,xobj->xfont);
- XFreeGC(xobj->display,xobj->gc);
- XDestroyWindow(xobj->display,xobj->win);
+ XFreeFont(dpy,xobj->xfont);
+ XFreeGC(dpy,xobj->gc);
+ XDestroyWindow(dpy,xobj->win);
 }
 
 void DrawPopupMenu(struct XObj *xobj)
@@ -97,7 +97,7 @@ void DrawPopupMenu(struct XObj *xobj)
 
  XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
  DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-   xobj->TabColor[li].pixel,xobj->TabColor[shad].pixel,xobj->TabColor[black].pixel,0);
+   xobj->TabColor[li],xobj->TabColor[shad],xobj->TabColor[black],0);
 
  /* Dessin de la fleche */
  segm[0].x1=7;
@@ -116,8 +116,8 @@ void DrawPopupMenu(struct XObj *xobj)
  segm[3].y1=asc;
  segm[3].x2=12;
  segm[3].y2=5+asc;
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,4);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,segm,4);
  segm[0].x1=17;
  segm[0].y1=asc+1;
  segm[0].x2=13;
@@ -126,16 +126,16 @@ void DrawPopupMenu(struct XObj *xobj)
  segm[1].y1=asc;
  segm[1].x2=14;
  segm[1].y2=5+asc;
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
- XDrawSegments(xobj->display,xobj->win,xobj->gc,segm,2);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+ XDrawSegments(dpy,xobj->win,xobj->gc,segm,2);
 
  /* Dessin du titre du popup menu */
  str=(char*)GetMenuTitle(xobj->title,xobj->value);
  x=25;
  y=asc+5;
- DrawString(xobj->display,xobj->gc,xobj->win,x,y,str,
-	strlen(str),xobj->TabColor[fore].pixel,xobj->TabColor[li].pixel,
-	xobj->TabColor[back].pixel,
+ DrawString(dpy,xobj->gc,xobj->win,x,y,str,
+	strlen(str),xobj->TabColor[fore],xobj->TabColor[li],
+	xobj->TabColor[back],
 	!xobj->flags[1]);
 
  free(str);
@@ -160,31 +160,35 @@ void EvtMousePopupMenu(struct XObj *xobj,XButtonEvent *EvtButton)
  hMenu=xobj->value3*hOpt;
 
  /* Creation de la fenetre menu */
- XTranslateCoordinates(xobj->display,*xobj->ParentWin,
- 		XRootWindow(xobj->display,XDefaultScreen(xobj->display)),xobj->x,yMenu,&x,&y,&Win1);
+ XTranslateCoordinates(dpy,*xobj->ParentWin,
+ 		XRootWindow(dpy,XDefaultScreen(dpy)),xobj->x,yMenu,&x,&y,&Win1);
  if (x<0) x=0;
  if (y<0) y=0;
- if (x+xobj->width>XDisplayWidth(xobj->display,XDefaultScreen(xobj->display)))
-  x=XDisplayWidth(xobj->display,XDefaultScreen(xobj->display))-xobj->width;
- if (y+hMenu>XDisplayHeight(xobj->display,XDefaultScreen(xobj->display)))
-  y=XDisplayHeight(xobj->display,XDefaultScreen(xobj->display))-hMenu;
+ if (x+xobj->width>XDisplayWidth(dpy,XDefaultScreen(dpy)))
+  x=XDisplayWidth(dpy,XDefaultScreen(dpy))-xobj->width;
+ if (y+hMenu>XDisplayHeight(dpy,XDefaultScreen(dpy)))
+  y=XDisplayHeight(dpy,XDefaultScreen(dpy))-hMenu;
  mask=0;
- Attr.background_pixel=xobj->TabColor[back].pixel;
+ Attr.background_pixel=xobj->TabColor[back];
  mask|=CWBackPixel;
- Attr.cursor=XCreateFontCursor(xobj->display,XC_hand2);
+ Attr.border_pixel = xobj->TabColor[fore];
+ mask |= CWBorderPixel;
+ Attr.colormap = Pcmap;
+ mask |= CWColormap; 
+ Attr.cursor=XCreateFontCursor(dpy,XC_hand2);
  mask|=CWCursor;		/* Curseur pour la fenetre */
  Attr.override_redirect=True;
  mask|=CWOverrideRedirect;
- WinPop=XCreateWindow(xobj->display,XRootWindow(xobj->display,XDefaultScreen(xobj->display)),
+ WinPop=XCreateWindow(dpy,XRootWindow(dpy,screen),
  	x,y,xobj->width-2,hMenu,1,
- 	CopyFromParent,InputOutput,CopyFromParent,mask,&Attr);
- XMapRaised(xobj->display,WinPop);
+ 	Pdepth,InputOutput,Pvisual,mask,&Attr);
+ XMapRaised(dpy,WinPop);
 
   /* Dessin du menu */
  DrawPMenu(xobj,WinPop,hOpt,1);
  do
  {
-  XQueryPointer(xobj->display,XRootWindow(xobj->display,XDefaultScreen(xobj->display)),
+  XQueryPointer(dpy,XRootWindow(dpy,XDefaultScreen(dpy)),
   			&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
   /* Determiner l'option courante */
   y2=y2-y;
@@ -204,8 +208,8 @@ void EvtMousePopupMenu(struct XObj *xobj,XButtonEvent *EvtButton)
    }
   }
  }
- while (!XCheckTypedEvent(xobj->display,ButtonRelease,&event));
- XDestroyWindow(xobj->display,WinPop);
+ while (!XCheckTypedEvent(dpy,ButtonRelease,&event));
+ XDestroyWindow(dpy,WinPop);
  if (newvalue!=0)
  {
   xobj->value=newvalue;

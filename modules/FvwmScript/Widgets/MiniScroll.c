@@ -26,33 +26,33 @@ void InitMiniScroll(struct XObj *xobj)
  int i;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
+ xobj->TabColor[fore] = GetColor(xobj->forecolor);
+ xobj->TabColor[back] = GetColor(xobj->backcolor);
+ xobj->TabColor[li] = GetColor(xobj->licolor);
+ xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ xobj->TabColor[black] = GetColor("#000000");
+ xobj->TabColor[white] = GetColor("#FFFFFF");
 
 
  mask=0;
- Attr.background_pixel=xobj->TabColor[back].pixel;
+ Attr.background_pixel=xobj->TabColor[back];
  mask|=CWBackPixel;
 
  /* La taille du widget est fixe */
  xobj->width=19;
  xobj->height=34;
- xobj->win=XCreateWindow(xobj->display,*xobj->ParentWin,
+ xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
 		xobj->x,xobj->y,xobj->width,xobj->height,1,
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
- xobj->gc=XCreateGC(xobj->display,xobj->win,0,NULL);
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
- XSetBackground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
- if ((xobj->xfont=XLoadQueryFont(xobj->display,xobj->font))==NULL)
+ xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+ XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
+ if ((xobj->xfont=XLoadQueryFont(dpy,xobj->font))==NULL)
    fprintf(stderr,"Can't load font %s\n",xobj->font);
  else
-  XSetFont(xobj->display,xobj->gc,xobj->xfont->fid);
- XSetLineAttributes(xobj->display,xobj->gc,1,LineSolid,CapRound,JoinMiter);
+  XSetFont(dpy,xobj->gc,xobj->xfont->fid);
+ XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
  if (xobj->value2>xobj->value3)
  {
   i=xobj->value2;
@@ -65,16 +65,16 @@ void InitMiniScroll(struct XObj *xobj)
 
 void DestroyMiniScroll(struct XObj *xobj)
 {
- XFreeFont(xobj->display,xobj->xfont);
- XFreeGC(xobj->display,xobj->gc);
- XDestroyWindow(xobj->display,xobj->win);
+ XFreeFont(dpy,xobj->xfont);
+ XFreeGC(dpy,xobj->gc);
+ XDestroyWindow(dpy,xobj->win);
 }
 
 void DrawMiniScroll(struct XObj *xobj)
 {
 
- DrawReliefRect(-1,-1,xobj->width+2,xobj->height+2,xobj,xobj->TabColor[li].pixel,
- 		xobj->TabColor[shad].pixel,xobj->TabColor[black].pixel,-1);
+ DrawReliefRect(-1,-1,xobj->width+2,xobj->height+2,xobj,xobj->TabColor[li],
+ 		xobj->TabColor[shad],xobj->TabColor[black],-1);
 
  /* Dessin de la fleche du haut */
  DrawArrowN(xobj,3,3,0);
@@ -94,7 +94,7 @@ void EvtMouseMiniScroll(struct XObj *xobj,XButtonEvent *EvtButton)
 
  do
  {
-  XQueryPointer(xobj->display,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
+  XQueryPointer(dpy,*xobj->ParentWin,&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
   /* Determiner l'option courante */
   y2=y2-xobj->y;
   x2=x2-xobj->x;
@@ -150,7 +150,7 @@ void EvtMouseMiniScroll(struct XObj *xobj,XButtonEvent *EvtButton)
    DrawArrowS(xobj,3,18,0);
   }
  }
- while (!XCheckTypedEvent(xobj->display,ButtonRelease,&event));
+ while (!XCheckTypedEvent(dpy,ButtonRelease,&event));
  DrawArrowN(xobj,3,3,0);
  DrawArrowS(xobj,3,18,0);
 }

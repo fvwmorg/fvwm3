@@ -27,12 +27,12 @@ void InitVDipstick(struct XObj *xobj)
  XSetWindowAttributes Attr;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
+ xobj->TabColor[fore] = GetColor(xobj->forecolor);
+ xobj->TabColor[back] = GetColor(xobj->backcolor);
+ xobj->TabColor[li] = GetColor(xobj->licolor);
+ xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ xobj->TabColor[black] = GetColor("#000000");
+ xobj->TabColor[white] = GetColor("#FFFFFF");
 
  /* Minimum size */
  if (xobj->width<11)
@@ -41,16 +41,16 @@ void InitVDipstick(struct XObj *xobj)
   xobj->height=30;
 
  mask=0;
- Attr.background_pixel=x11base->TabColor[back].pixel;
+ Attr.background_pixel=x11base->TabColor[back];
  mask|=CWBackPixel;
- xobj->win=XCreateWindow(xobj->display,*xobj->ParentWin,
+ xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
 		xobj->x,xobj->y,xobj->width,xobj->height,0,
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
- xobj->gc=XCreateGC(xobj->display,xobj->win,0,NULL);
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
- XSetBackground(xobj->display,xobj->gc,x11base->TabColor[back].pixel);
- XSetLineAttributes(xobj->display,xobj->gc,1,LineSolid,CapRound,JoinMiter);
+ xobj->gc=XCreateGC(dpy,xobj->win,0,NULL);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+ XSetBackground(dpy,xobj->gc,x11base->TabColor[back]);
+ XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
 
  if (xobj->value2>xobj->value3)
   xobj->value3=xobj->value2+50;
@@ -62,8 +62,8 @@ void InitVDipstick(struct XObj *xobj)
 
 void DestroyVDipstick(struct XObj *xobj)
 {
- XFreeGC(xobj->display,xobj->gc);
- XDestroyWindow(xobj->display,xobj->win);
+ XFreeGC(dpy,xobj->gc);
+ XDestroyWindow(dpy,xobj->win);
 }
 
 void DrawVDipstick(struct XObj *xobj)
@@ -74,15 +74,15 @@ void DrawVDipstick(struct XObj *xobj)
  j=xobj->height-i;
 
  DrawReliefRect(0,0,xobj->width,xobj->height,xobj,
-		x11base->TabColor[shad].pixel,x11base->TabColor[li].pixel,
-		x11base->TabColor[black].pixel,-1);
+		x11base->TabColor[shad],x11base->TabColor[li],
+		x11base->TabColor[black],-1);
  if (i!=0)
  {
   DrawReliefRect(2,j-2,xobj->width-4,i,xobj,
-		xobj->TabColor[li].pixel,xobj->TabColor[shad].pixel,
-		xobj->TabColor[black].pixel,-1);
-  XSetForeground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
-  XFillRectangle(xobj->display,xobj->win,xobj->gc,5,j+1,xobj->width-10,i-6);
+		xobj->TabColor[li],xobj->TabColor[shad],
+		xobj->TabColor[black],-1);
+  XSetForeground(dpy,xobj->gc,xobj->TabColor[back]);
+  XFillRectangle(dpy,xobj->win,xobj->gc,5,j+1,xobj->width-10,i-6);
  }
 
 }

@@ -63,6 +63,8 @@ Window ref;
 extern int yyparse(void);
 extern void (*TabCom[30]) (int NbArg,long *TabArg);
 
+Display *dpy;
+int screen;
 X11base *x11base;		/* Pour le serveur X */
 TypeBuffSend BuffSend;		/* Pour les communication entre script */
 int grab_server = 0;
@@ -89,16 +91,16 @@ ShutdownX(void)
  struct timeval tv;
 
 #ifdef DEBUG			/* For debugging */
-  XSync(x11base->display,0);
+  XSync(dpy,0);
 #endif
 
  /* On cache la fenetre */
- XUnmapWindow(x11base->display,x11base->win);
- XFlush(x11base->display);
+ XUnmapWindow(dpy,x11base->win);
+ XFlush(dpy);
 
  /* Le script ne possede plus la propriete */
- MyAtom=XInternAtom(x11base->display,x11base->TabScriptId[1],False);
- XSetSelectionOwner(x11base->display,MyAtom,x11base->root,CurrentTime);
+ MyAtom=XInternAtom(dpy,x11base->TabScriptId[1],False);
+ XSetSelectionOwner(dpy,MyAtom,x11base->root,CurrentTime);
 
  /* On verifie si tous les messages ont ete envoyes */
  while( !isTerminated && (BuffSend.NbMsg>0) && (NbEssai<10000) )
@@ -111,27 +113,23 @@ ShutdownX(void)
   {
     if (FD_ISSET(x_fd, &in_fdset))
     {
-     if (XCheckTypedEvent(x11base->display,SelectionRequest,&event))
+     if (XCheckTypedEvent(dpy,SelectionRequest,&event))
       SendMsgToScript(event);
      else
       NbEssai++;
     }
   }
  }
- XFlush(x11base->display);
+ XFlush(dpy);
 
  /* Attente de deux secondes afin d'etre sur que tous */
  /* les messages soient arrives a destination         */
  /* On quitte proprement le serveur X */
  for (i=0;i<nbobj;i++)
   tabxobj[i]->DestroyObj(tabxobj[i]);
- XFlush(x11base->display);
-/* XSync(x11base->display,True);*/
+ XFlush(dpy);
  sleep(2);
- XFreeGC(x11base->display,x11base->gc);
- XFreeColormap(x11base->display,x11base->colormap);
- XDestroyWindow(x11base->display,x11base->win);
- XCloseDisplay(x11base->display);
+ XCloseDisplay(dpy);
 }
 
 
@@ -217,12 +215,15 @@ void Xinit(int IsFather)
  __bounds_debug_no_checking=True;
 #endif
 
- x11base->display=XOpenDisplay(NULL);
- if (x11base->display==NULL)
+ dpy=XOpenDisplay(NULL);
+ if (dpy==NULL)
  {
    fprintf(stderr,"%s: Can't open display %s", ModuleName, XDisplayName(NULL));
    exit(1);
  }
+ screen=DefaultScreen(dpy);
+ InitPictureCMap(dpy);
+ AllocColorset(0);
 
 #ifdef MEMDEBUG
  __bounds_debug_no_checking=False;
@@ -235,21 +236,16 @@ void Xinit(int IsFather)
   {
    sprintf(name,"%c%xFvwmScript",161,i);
    i++;
-   myatom=XInternAtom(x11base->display,name,False);
+   myatom=XInternAtom(dpy,name,False);
   }
-  while (XGetSelectionOwner(x11base->display,myatom)!=None);
+  while (XGetSelectionOwner(dpy,myatom)!=None);
   x11base->TabScriptId[1]=name;
   x11base->TabScriptId[0]=NULL;
  }
 
  x11base->NbChild=0;
- x11base->screen=DefaultScreen(x11base->display);
- x11base->WhitePix=WhitePixel(x11base->display,x11base->screen);
- x11base->BlackPix=BlackPixel(x11base->display,x11base->screen);
- x11base->depth=XDefaultDepth(x11base->display,x11base->screen);
- x11base->colormap = DefaultColormap(x11base->display,x11base->screen);
- x11base->root = RootWindow(x11base->display,x11base->screen);
- x_fd = XConnectionNumber(x11base->display);
+ x11base->root = RootWindow(dpy,screen);
+ x_fd = XConnectionNumber(dpy);
 
  /* install exit procedure to close X down again */
  atexit(ShutdownX);
@@ -264,8 +260,8 @@ void LoadIcon(struct XObj *xobj)
 
   if ((xobj->icon)!=NULL)
   {
-    pic = LoadPicture(xobj->display,
-		      RootWindow(xobj->display,DefaultScreen(xobj->display)),
+    pic = LoadPicture(dpy,
+		      RootWindow(dpy,DefaultScreen(dpy)),
 		      imagePath, save_color_limit);
     if (!pic)
     {
@@ -282,23 +278,6 @@ void LoadIcon(struct XObj *xobj)
 }
 
 
-int MyAllocNamedColor(Display *display,Colormap colormap,char* colorname,XColor* color)
-{
- static XColor TempColor;
-
- if (colorname[0]=='#')
- {
-  if (XParseColor(display,colormap,colorname,color))
-   return XAllocColor(display,colormap,color);
- }
- else
- {
-  if (XLookupColor(display,colormap,colorname,&TempColor,color))
-   return XAllocColor(display,colormap,color);
- }
- return 0;
-}
-
 /* Ouvre une fenetre pour l'affichage du GUI */
 void OpenWindow (void)
 {
@@ -309,36 +288,37 @@ void OpenWindow (void)
  XSetWindowAttributes Attr;
 
  /* Allocation des couleurs */
- MyAllocNamedColor(x11base->display,x11base->colormap,x11base->forecolor,&x11base->TabColor[fore]);
- MyAllocNamedColor(x11base->display,x11base->colormap,x11base->backcolor,&x11base->TabColor[back]);
- MyAllocNamedColor(x11base->display,x11base->colormap,x11base->shadcolor,&x11base->TabColor[shad]);
- MyAllocNamedColor(x11base->display,x11base->colormap,x11base->licolor,&x11base->TabColor[li]);
- MyAllocNamedColor(x11base->display,x11base->colormap,"#000000",&x11base->TabColor[black]);
- MyAllocNamedColor(x11base->display,x11base->colormap,"#FFFFFF",&x11base->TabColor[white]);
+ x11base->TabColor[fore] = GetColor(x11base->forecolor);
+ x11base->TabColor[back] = GetColor(x11base->backcolor);
+ x11base->TabColor[shad] = GetColor(x11base->shadcolor);
+ x11base->TabColor[li] = GetColor(x11base->licolor);
+ x11base->TabColor[black] = GetColor("#000000");
+ x11base->TabColor[white] = GetColor("#FFFFFF");
 
  /* Definition des caracteristiques de la fentre */
- mask=0;
- mask|=CWBackPixel;
- Attr.background_pixel=x11base->TabColor[back].pixel;
+ mask = CWBackPixel | CWBorderPixel | CWColormap;
+ Attr.background_pixel = x11base->TabColor[back];
+ Attr.border_pixel = 0;
+ Attr.colormap = Pcmap;
 
- x11base->win=XCreateWindow(x11base->display,
-			DefaultRootWindow(x11base->display),
+ x11base->win=XCreateWindow(dpy,
+			DefaultRootWindow(dpy),
 			x11base->size.x,
 			x11base->size.y,
 			x11base->size.width,
 			x11base->size.height,0,
-			CopyFromParent,
+			Pdepth,
 			InputOutput,
-			CopyFromParent,
+			Pvisual,
 			mask,&Attr);
 
- XSetWindowColormap(x11base->display,x11base->win,x11base->colormap);
- x11base->gc=XCreateGC(x11base->display,x11base->win,0,NULL);
+ XSetWindowColormap(dpy,x11base->win,Pcmap);
+ x11base->gc=XCreateGC(dpy,x11base->win,0,NULL);
 
  /* Choix des evts recus par la fenetre */
- XSelectInput(x11base->display,x11base->win,KeyPressMask|ButtonPressMask|
+ XSelectInput(dpy,x11base->win,KeyPressMask|ButtonPressMask|
 	ExposureMask|ButtonReleaseMask|EnterWindowMask|LeaveWindowMask|ButtonMotionMask);
- XSelectInput(x11base->display,x11base->root,PropertyChangeMask);
+ XSelectInput(dpy,x11base->root,PropertyChangeMask);
 
  /* Specification des parametres utilises par le gestionnaire de fenetre */
  if (XStringListToTextProperty(&x11base->title,1,&Name)==0)
@@ -348,10 +328,10 @@ void OpenWindow (void)
  {
   IndicNorm->x=x11base->size.x;
   IndicNorm->y=x11base->size.y;
-  IndicNorm->flags=PSize|PMinSize|PMaxSize|PResizeInc|PBaseSize|PPosition;
+  IndicNorm->flags=PSize|PMinSize|PMaxSize|PBaseSize|PPosition;
  }
  else
-  IndicNorm->flags=PSize|PMinSize|PMaxSize|PResizeInc|PBaseSize;
+  IndicNorm->flags=PSize|PMinSize|PMaxSize|PBaseSize;
  IndicNorm->width=x11base->size.width;
  IndicNorm->height=x11base->size.height;
  IndicNorm->min_width=x11base->size.width;
@@ -362,14 +342,14 @@ void OpenWindow (void)
  IndicWM->input=True;
  IndicWM->initial_state=NormalState;
  IndicWM->flags=InputHint|StateHint;
- XSetWMProperties(x11base->display,x11base->win,&Name,
+ XSetWMProperties(dpy,x11base->win,&Name,
        &Name,NULL,0,IndicNorm,IndicWM,NULL);
  Scrapt=(char*)calloc(sizeof(char),1);
 
  /* Construction des atomes pour la communication inter-application */
- propriete=XInternAtom(x11base->display,"Prop_selection",False);
- wm_del_win = XInternAtom(x11base->display,"WM_DELETE_WINDOW",False);
- XSetWMProtocols(x11base->display,x11base->win,&wm_del_win,1);
+ propriete=XInternAtom(dpy,"Prop_selection",False);
+ wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
+ XSetWMProtocols(dpy,x11base->win,&wm_del_win,1);
 
 }
 
@@ -485,10 +465,7 @@ void BuildGUI(int IsFather)
 
   ChooseFunction(tabxobj[i],(*tabobj)[i].type);
   tabxobj[i]->gc=x11base->gc;
-  tabxobj[i]->display=x11base->display;
   tabxobj[i]->ParentWin=&(x11base->win);
-  tabxobj[i]->Screen=x11base->screen;
-  tabxobj[i]->colormap=&(x11base->colormap);
   tabxobj[i]->iconPixmap=None;
   tabxobj[i]->icon_maskPixmap=None;
 
@@ -510,10 +487,10 @@ void BuildGUI(int IsFather)
 
  free(tabobj);
  free(scriptprop);
- XMapRaised(x11base->display,x11base->win);
+ XMapRaised(dpy,x11base->win);
  for (i=0;i<nbobj;i++)
   if (tabxobj[i]->flags[0]!=True)
-   XMapWindow(x11base->display,tabxobj[i]->win);
+   XMapWindow(dpy,tabxobj[i]->win);
 }
 
 
@@ -541,14 +518,14 @@ void SendMsgToScript(XEvent event)
  static XEvent evnt_sel;
  int i;
 
- Sender=XInternAtom(x11base->display,x11base->TabScriptId[1],True);
+ Sender=XInternAtom(dpy,x11base->TabScriptId[1],True);
 
  if (event.xselectionrequest.selection==Sender)
  {
   i=0;
   while ((i<BuffSend.NbMsg)&&(event.xselectionrequest.target!=Receiver))
   {
-   Receiver=XInternAtom(x11base->display,BuffSend.TabMsg[i].R,True);
+   Receiver=XInternAtom(dpy,BuffSend.TabMsg[i].R,True);
    i++;
   }
   i--;
@@ -562,7 +539,7 @@ void SendMsgToScript(XEvent event)
   if (event.xselectionrequest.target==Receiver)		/* On a trouve le recepteur */
   {
    evnt_sel.xselection.property=event.xselectionrequest.property;
-   XChangeProperty(x11base->display,
+   XChangeProperty(dpy,
 		   evnt_sel.xselection.requestor,
 		   evnt_sel.xselection.property,
 		   evnt_sel.xselection.target,
@@ -583,7 +560,7 @@ void SendMsgToScript(XEvent event)
     /* Cas ou le recepteur demande un message et qu'il n'y en a pas */
     evnt_sel.xselection.property=None;
   }
-  XSendEvent(x11base->display,evnt_sel.xselection.requestor,False,0,&evnt_sel);
+  XSendEvent(dpy,evnt_sel.xselection.requestor,False,0,&evnt_sel);
  }
 }
 
@@ -594,9 +571,9 @@ void ReadXServer (void)
  int i;
  char *octet;
 
-  while (XEventsQueued(x11base->display, QueuedAfterReading))
+  while (XEventsQueued(dpy, QueuedAfterReading))
   {
-    XNextEvent(x11base->display, &event);
+    XNextEvent(dpy, &event);
     switch (event.type)
     {
       case Expose:
@@ -647,7 +624,7 @@ void ReadXServer (void)
             switch (event.xselectionrequest.target)
             {
              case XA_STRING:
-              XChangeProperty(x11base->display,
+              XChangeProperty(dpy,
 			      evnt_sel.xselection.requestor,
 			      evnt_sel.xselection.property,
 			      evnt_sel.xselection.target,
@@ -658,7 +635,7 @@ void ReadXServer (void)
              break;
              default:evnt_sel.xselection.property=None;
             }
-            XSendEvent(x11base->display,evnt_sel.xselection.requestor,
+            XSendEvent(dpy,evnt_sel.xselection.requestor,
 		       False,0,&evnt_sel);
            }
 	   else
@@ -675,21 +652,21 @@ void ReadXServer (void)
 	  break;
       case PropertyNotify:
            if (event.xproperty.atom==XA_CUT_BUFFER0)
-            octet=XFetchBuffer(x11base->display,&i,0);
+            octet=XFetchBuffer(dpy,&i,0);
            else if (event.xproperty.atom==XA_CUT_BUFFER1)
-            octet=XFetchBuffer(x11base->display,&i,1);
+            octet=XFetchBuffer(dpy,&i,1);
            else if (event.xproperty.atom==XA_CUT_BUFFER2)
-            octet=XFetchBuffer(x11base->display,&i,2);
+            octet=XFetchBuffer(dpy,&i,2);
            else if (event.xproperty.atom==XA_CUT_BUFFER3)
-            octet=XFetchBuffer(x11base->display,&i,3);
+            octet=XFetchBuffer(dpy,&i,3);
            else if (event.xproperty.atom==XA_CUT_BUFFER4)
-            octet=XFetchBuffer(x11base->display,&i,4);
+            octet=XFetchBuffer(dpy,&i,4);
            else if (event.xproperty.atom==XA_CUT_BUFFER5)
-            octet=XFetchBuffer(x11base->display,&i,5);
+            octet=XFetchBuffer(dpy,&i,5);
            else if (event.xproperty.atom==XA_CUT_BUFFER6)
-            octet=XFetchBuffer(x11base->display,&i,6);
+            octet=XFetchBuffer(dpy,&i,6);
            else if (event.xproperty.atom==XA_CUT_BUFFER7)
-            octet=XFetchBuffer(x11base->display,&i,7);
+            octet=XFetchBuffer(dpy,&i,7);
            else break;
            if (i>0)
 	   {
@@ -720,7 +697,7 @@ void MainLoop (void)
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-  XFlush(x11base->display);
+  XFlush(dpy);
 
   tv.tv_sec = 1;
   tv.tv_usec = 0;
@@ -761,8 +738,8 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
 
  if (IsFather)			/* Cas du pere */
  {
-  myatom=XInternAtom(x11base->display,x11base->TabScriptId[1],True);
-  XSetSelectionOwner(x11base->display,myatom,x11base->win,CurrentTime);
+  myatom=XInternAtom(dpy,x11base->TabScriptId[1],True);
+  XSetSelectionOwner(dpy,myatom,x11base->win,CurrentTime);
   FisrtArg=9;
  }
  else
@@ -770,8 +747,8 @@ void ReadFvwmScriptArg(int argc, char **argv,int IsFather)
   x11base->TabScriptId[0]=(char*)calloc(sizeof(char),strlen(argv[7]));
   x11base->TabScriptId[0]=strncpy(x11base->TabScriptId[0],argv[7],strlen("FvwmScript")+3);
   x11base->TabScriptId[1]=argv[7];
-  myatom=XInternAtom(x11base->display,x11base->TabScriptId[1],True);
-  XSetSelectionOwner(x11base->display,myatom,x11base->win,CurrentTime);
+  myatom=XInternAtom(dpy,x11base->TabScriptId[1],True);
+  XSetSelectionOwner(dpy,myatom,x11base->win,CurrentTime);
   FisrtArg=8;
  }
 }

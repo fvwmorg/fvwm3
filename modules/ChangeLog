@@ -1,6 +1,8 @@
 1999-09-16  Hippo
 
 	* FvwmScroll/*: Fixed man page formatting, removed generated files
+	removed many copies of display and colormap, uses GetColor from fvwmlib,
+	uses same Visual as fvwm.
 
 1999-09-16  Mikhael Goikhman  <migo@homemail.com>
 

@@ -15,8 +15,10 @@
 
 #include "config.h"
 
-#include <libs/Module.h>
-#include <libs/fvwmlib.h>
+#include "libs/fvwmlib.h"
+#include "libs/Module.h"
+#include "libs/Picture.h"
+#include "libs/Colorset.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -58,8 +60,6 @@
 #include <X11/xpm.h>
 #endif
 
-#include <X11/X.h>
-
 /* Prototype for yylex().  There must be a way to get this automatically from
    yacc/bison.  */
 extern int yylex(void);
@@ -72,10 +72,6 @@ extern int yylex(void);
 #define fore 3
 #define shad 4
 #define li 5
-
-/* Constante vrai ou faux */
-#define True 1
-#define False 0
 
 /* Constante type de widget */
 #define PushButton	1
@@ -160,16 +156,10 @@ typedef MyObject TabObj[100];
 
 typedef struct
 {
-  Display *display ;
-  int screen ;
   Window root ;
   Window win ;
-  Colormap colormap ;
   GC gc ;
-  int depth ;
-  unsigned long WhitePix ;
-  unsigned long BlackPix ;
-  XColor TabColor[6];
+  Pixel TabColor[6];
   XSizeHints size;
   char *backcolor;
   char *forecolor;
@@ -203,10 +193,7 @@ struct XObj
   int TypeWidget;
   Window win;		/* Fenetre contenant l'objet */
   Window *ParentWin;		/* Fenetre parent */
-  Display *display;
-  int Screen;
-  Colormap *colormap;
-  XColor TabColor[6];
+  Pixel TabColor[6];
   GC gc;			/* gc utilise pour les requetes: 4 octets */
   int id;			/* Numero d'id */
   int x,y;			/* Origine du bouton */
@@ -246,8 +233,6 @@ void SendMsg(struct XObj *xobj,int TypeMsg);
 void ExecBloc(Bloc *bloc);
 
 void UnselectAllTextField(struct XObj **xobj);
-
-int MyAllocNamedColor(Display *display,Colormap colormap,char* colorname,XColor* color);
 
 void Quit (int NbArg,long *TabArg) __attribute__((noreturn));
 

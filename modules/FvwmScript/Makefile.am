@@ -18,6 +18,6 @@ man_MANS = FvwmScript.1
 EXTRA_DIST = $(man_MANS) BUGS script.h
 
 LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs -lfvwm \
-	$(xpm_LIBS) $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
+	$(xpm_LIBS) $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
 INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 

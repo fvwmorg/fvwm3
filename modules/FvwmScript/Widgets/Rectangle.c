@@ -25,20 +25,20 @@ void InitRectangle(struct XObj *xobj)
  XSetWindowAttributes Attr;
 
  /* Enregistrement des couleurs et de la police */
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->forecolor,&xobj->TabColor[fore]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->backcolor,&xobj->TabColor[back]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->licolor,&xobj->TabColor[li]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,xobj->shadcolor,&xobj->TabColor[shad]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#000000",&xobj->TabColor[black]);
- MyAllocNamedColor(xobj->display,*xobj->colormap,"#FFFFFF",&xobj->TabColor[white]);
+ xobj->TabColor[fore] = GetColor(xobj->forecolor);
+ xobj->TabColor[back] = GetColor(xobj->backcolor);
+ xobj->TabColor[li] = GetColor(xobj->licolor);
+ xobj->TabColor[shad] = GetColor(xobj->shadcolor);
+ xobj->TabColor[black] = GetColor("#000000");
+ xobj->TabColor[white] = GetColor("#FFFFFF");
 
- xobj->gc=XCreateGC(xobj->display,*xobj->ParentWin,0,NULL);
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[fore].pixel);
- XSetBackground(xobj->display,xobj->gc,xobj->TabColor[back].pixel);
- XSetLineAttributes(xobj->display,xobj->gc,1,LineSolid,CapRound,JoinMiter);
+ xobj->gc=XCreateGC(dpy,*xobj->ParentWin,0,NULL);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[fore]);
+ XSetBackground(dpy,xobj->gc,xobj->TabColor[back]);
+ XSetLineAttributes(dpy,xobj->gc,1,LineSolid,CapRound,JoinMiter);
 
  mask=0;
- xobj->win=XCreateWindow(xobj->display,*xobj->ParentWin,
+ xobj->win=XCreateWindow(dpy,*xobj->ParentWin,
 		-1000,-1000,xobj->width,xobj->height,0,
 		CopyFromParent,InputOutput,CopyFromParent,
 		mask,&Attr);
@@ -46,8 +46,8 @@ void InitRectangle(struct XObj *xobj)
 
 void DestroyRectangle(struct XObj *xobj)
 {
- XFreeGC(xobj->display,xobj->gc);
- XDestroyWindow(xobj->display,xobj->win);
+ XFreeGC(dpy,xobj->gc);
+ XDestroyWindow(dpy,xobj->win);
 }
 
 void DrawRectangle(struct XObj *xobj)
@@ -74,8 +74,8 @@ void DrawRectangle(struct XObj *xobj)
  segm[3].x2=xobj->width-2+xobj->x;
  segm[3].y2=xobj->height-2+xobj->y;
 
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[shad].pixel);
- XDrawSegments(xobj->display,*xobj->ParentWin,xobj->gc,segm,4);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[shad]);
+ XDrawSegments(dpy,*xobj->ParentWin,xobj->gc,segm,4);
 
 
  segm[0].x1=1+xobj->x;
@@ -98,8 +98,8 @@ void DrawRectangle(struct XObj *xobj)
  segm[3].x2=xobj->width-1+xobj->x;
  segm[3].y2=xobj->height-1+xobj->y;
 
- XSetForeground(xobj->display,xobj->gc,xobj->TabColor[li].pixel);
- XDrawSegments(xobj->display,*xobj->ParentWin,xobj->gc,segm,4);
+ XSetForeground(dpy,xobj->gc,xobj->TabColor[li]);
+ XDrawSegments(dpy,*xobj->ParentWin,xobj->gc,segm,4);
 
 }
 

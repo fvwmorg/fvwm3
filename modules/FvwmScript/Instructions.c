@@ -23,6 +23,8 @@ void (*TabCom[30]) (int NbArg,long *TabArg);
 char *(*TabFunc[20]) (int *NbArg, long *TabArg);
 int (*TabComp[15]) (char *arg1,char *arg2);
 
+extern Display *dpy;
+extern int screen;
 extern X11base *x11base;
 extern int grab_serve;
 extern struct XObj *tabxobj[100];
@@ -428,10 +430,10 @@ char *LaunchScript (int *NbArg,long *TabArg)
   do
   {
    sprintf(x11base->TabScriptId[x11base->NbChild+2],"%s%x",x11base->TabScriptId[1],i);
-   MyAtom=XInternAtom(x11base->display,x11base->TabScriptId[x11base->NbChild+2],False);
+   MyAtom=XInternAtom(dpy,x11base->TabScriptId[x11base->NbChild+2],False);
    i++;
   }
-  while (XGetSelectionOwner(x11base->display,MyAtom)!=None);
+  while (XGetSelectionOwner(dpy,MyAtom)!=None);
  }
  else
  {
@@ -524,7 +526,7 @@ char *ReceivFromScript (int *NbArg,long *TabArg)
  sprintf(msg,"No message");
 
  /* Recuperation des atomes */
- AReceiv=XInternAtom(x11base->display,x11base->TabScriptId[1],True);
+ AReceiv=XInternAtom(dpy,x11base->TabScriptId[1],True);
  if (AReceiv==None)
  {
   fprintf(stderr,"Error with atome\n");
@@ -535,7 +537,7 @@ char *ReceivFromScript (int *NbArg,long *TabArg)
  {
      if (x11base->TabScriptId[send]!=NULL)
      {
-	 ASend=XInternAtom(x11base->display,x11base->TabScriptId[send],True);
+	 ASend=XInternAtom(dpy,x11base->TabScriptId[send],True);
 	 if (ASend==None)
 	     fprintf(stderr,"Error with atome\n");
      }
@@ -546,20 +548,20 @@ char *ReceivFromScript (int *NbArg,long *TabArg)
      return msg;
 
  /* Recuperation du message */
- XConvertSelection(x11base->display,ASend,AReceiv,propriete,x11base->win,CurrentTime);
- while ((!XCheckTypedEvent(x11base->display,SelectionNotify,&event))&&(NbEssai<25000))
+ XConvertSelection(dpy,ASend,AReceiv,propriete,x11base->win,CurrentTime);
+ while ((!XCheckTypedEvent(dpy,SelectionNotify,&event))&&(NbEssai<25000))
   NbEssai++;
  if (event.xselection.property!=None)
   if (event.xselection.selection==ASend)
   {
-   XGetWindowProperty(x11base->display,event.xselection.requestor,event.xselection.property,0,
+   XGetWindowProperty(dpy,event.xselection.requestor,event.xselection.property,0,
  	8192,False,event.xselection.target,&type,&format,&longueur,&octets_restant,
  	&donnees);
    if (longueur>0)
    {
     msg=(char*)realloc((void*)msg,(longueur+1)*sizeof(char));
     msg=strcpy(msg,(char *)donnees);
-    XDeleteProperty(x11base->display,event.xselection.requestor,event.xselection.property);
+    XDeleteProperty(dpy,event.xselection.requestor,event.xselection.property);
     XFree(donnees);
    }
   }
@@ -609,7 +611,7 @@ void HideObj (int NbArg,long *TabArg)
 
  tabxobj[IdItem]->flags[0]=True;
  /* On cache la fentre pour la faire disparaitre */
- XUnmapWindow(x11base->display,tabxobj[IdItem]->win);
+ XUnmapWindow(dpy,tabxobj[IdItem]->win);
  free(arg[0]);
 }
 
@@ -623,7 +625,7 @@ void ShowObj (int NbArg,long *TabArg)
  IdItem= TabIdObj[atoi(arg[0])];
 
  tabxobj[IdItem]->flags[0]=False;
- XMapWindow(x11base->display,tabxobj[IdItem]->win);
+ XMapWindow(dpy,tabxobj[IdItem]->win);
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
  free(arg[0]);
 }
@@ -706,7 +708,7 @@ void ChangePos (int NbArg,long *TabArg)
   an[i]=atoi(arg[i]);
  tabxobj[IdItem]->x=an[1];
  tabxobj[IdItem]->y=an[2];
- XMoveWindow(x11base->display,tabxobj[IdItem]->win,an[1],an[2]);
+ XMoveWindow(dpy,tabxobj[IdItem]->win,an[1],an[2]);
 
  free(arg[0]);
  free(arg[1]);
@@ -738,7 +740,7 @@ void ChangeFont (int NbArg,long *TabArg)
  /* Hmm.. Fontset is not freed. However, original alogrithm does not consider
   * the situation of font-loading-falure.
   */
- if ((tabxobj[IdItem]->xfontset = XCreateFontSet(tabxobj[IdItem]->display, tabxobj[IdItem]->font, &ml, &mc, &ds)) == NULL)
+ if ((tabxobj[IdItem]->xfontset = XCreateFontSet(dpy, tabxobj[IdItem]->font, &ml, &mc, &ds)) == NULL)
   {
    fprintf(stderr,"Can't load fontset %s\n",tabxobj[IdItem]->font);
   }
@@ -746,18 +748,18 @@ void ChangeFont (int NbArg,long *TabArg)
  {
   XFontsOfFontSet(tabxobj[IdItem]->xfontset, &fs_list, &ml);
   tabxobj[IdItem]->xfont = fs_list[0];
-  XSetFont(tabxobj[IdItem]->display,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
+  XSetFont(dpy,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
  }
 #else
- if ((xfont=XLoadQueryFont(tabxobj[IdItem]->display,tabxobj[IdItem]->font))==NULL)
+ if ((xfont=XLoadQueryFont(dpy,tabxobj[IdItem]->font))==NULL)
   {
    fprintf(stderr,"Can't load font %s\n",tabxobj[IdItem]->font);
   }
  else
  {
-  XFreeFont(tabxobj[IdItem]->display,tabxobj[IdItem]->xfont);
+  XFreeFont(dpy,tabxobj[IdItem]->xfont);
   tabxobj[IdItem]->xfont=xfont;
-  XSetFont(tabxobj[IdItem]->display,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
+  XSetFont(dpy,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
  }
 #endif
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
@@ -783,7 +785,7 @@ void ChangeSize (int NbArg,long *TabArg)
   an[i]=atoi(arg[i]);
  tabxobj[IdItem]->width=an[1];
  tabxobj[IdItem]->height=an[2];
- XResizeWindow(x11base->display,tabxobj[IdItem]->win,an[1],an[2]);
+ XResizeWindow(dpy,tabxobj[IdItem]->win,an[1],an[2]);
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
  free(arg[0]);
  free(arg[1]);
@@ -821,9 +823,9 @@ void ChangeIcon (int NbArg,long *TabArg)
  {
   free(tabxobj[IdItem]->icon);
   if (tabxobj[IdItem]->iconPixmap!=None)
-   XFreePixmap(tabxobj[IdItem]->display,tabxobj[IdItem]->iconPixmap);
+   XFreePixmap(dpy,tabxobj[IdItem]->iconPixmap);
   if (tabxobj[IdItem]->icon_maskPixmap!=None)
-   XFreePixmap(tabxobj[IdItem]->display,tabxobj[IdItem]->icon_maskPixmap);
+   XFreePixmap(dpy,tabxobj[IdItem]->icon_maskPixmap);
  }*/
  tabxobj[IdItem]->icon=strdup(arg[1]);
  LoadIcon(tabxobj[IdItem]);
@@ -844,14 +846,13 @@ void ChangeForeColor (int NbArg,long *TabArg)
  IdItem= TabIdObj[atoi(arg[0])];
 
  /* Liberation de la couleur */
- XFreeColors(tabxobj[IdItem]->display,*(tabxobj[IdItem])->colormap,
+ XFreeColors(dpy,Pcmap,
 		(void*)(&(tabxobj[IdItem])->TabColor[fore]),1,0);
 
  tabxobj[IdItem]->forecolor=(char*)calloc(100,sizeof(char));
  sprintf(tabxobj[IdItem]->forecolor,"%s",arg[1]);
 
- MyAllocNamedColor(tabxobj[IdItem]->display,*(tabxobj[IdItem])->colormap,
-		tabxobj[IdItem]->forecolor,&(tabxobj[IdItem])->TabColor[fore]);
+ tabxobj[IdItem]->TabColor[fore] = GetColor(tabxobj[IdItem]->forecolor);
 
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
 
@@ -872,14 +873,13 @@ void ChangeBackColor (int NbArg,long *TabArg)
  IdItem= TabIdObj[atoi(arg[0])];
 
  /* Liberation de la couleur */
- XFreeColors(tabxobj[IdItem]->display,*(tabxobj[IdItem])->colormap,
+ XFreeColors(dpy,Pcmap,
 		(void*)(&(tabxobj[IdItem])->TabColor[back]),1,0);
 
  tabxobj[IdItem]->backcolor=(char*)calloc(100,sizeof(char));
  sprintf(tabxobj[IdItem]->backcolor,"%s",arg[1]);
 
- MyAllocNamedColor(tabxobj[IdItem]->display,*(tabxobj[IdItem])->colormap,
-		tabxobj[IdItem]->backcolor,&(tabxobj[IdItem])->TabColor[back]);
+ tabxobj[IdItem]->TabColor[back] = GetColor(tabxobj[IdItem]->backcolor);
 
  tabxobj[IdItem]->DrawObj(tabxobj[IdItem]);
 
@@ -931,7 +931,7 @@ void WarpPointer(int NbArg,long *TabArg)
  arg=CalcArg(TabArg,&i);
  IdItem= TabIdObj[atoi(arg)];
  /* Deplacement du pointeur sur l'objet */
- XWarpPointer(x11base->display,None,tabxobj[IdItem]->win,0,0,0,0,
+ XWarpPointer(dpy,None,tabxobj[IdItem]->win,0,0,0,0,
 	tabxobj[IdItem]->width/2,tabxobj[IdItem]->height+10);
  free(arg);
 }
@@ -1178,9 +1178,9 @@ void SendToScript (int NbArg,long *TabArg)
  /* Calcul recepteur */
  R=(char*)calloc(strlen(x11base->TabScriptId[dest])+1,sizeof(char));
  sprintf(R,"%s",x11base->TabScriptId[dest]);
- myatom=XInternAtom(x11base->display,R,True);
+ myatom=XInternAtom(dpy,R,True);
 
- if ((BuffSend.NbMsg<40)&&(XGetSelectionOwner(x11base->display,myatom)!=None))
+ if ((BuffSend.NbMsg<40)&&(XGetSelectionOwner(dpy,myatom)!=None))
  {
   /* Enregistrement dans le buffer du message */
   BuffSend.TabMsg[BuffSend.NbMsg].Msg=Msg;
@@ -1190,7 +1190,7 @@ void SendToScript (int NbArg,long *TabArg)
   BuffSend.NbMsg++;
 
   /* Reveil du destinataire */
-  XConvertSelection(x11base->display,XInternAtom(x11base->display,x11base->TabScriptId[dest],True)
+  XConvertSelection(dpy,XInternAtom(dpy,x11base->TabScriptId[dest],True)
 			,propriete,propriete,x11base->win,CurrentTime);
  }
  else
