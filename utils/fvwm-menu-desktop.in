@@ -14,45 +14,15 @@
 # The script is distributed by the same terms as fvwm itself.
 # See GNU General Public License for details.
 #
-# ---------------------------------------------------------------------------
-# Modification History
-#
-#  * migo (17/08/2000): be more quiet; s/--fvwm-gtk-name/--fvwmgtk-alias/
-#
-#  * migo (29/01/2000): Added --wm-icons; changed --i-know-what-i-do (flag)
-#    to --time-limit (integer), the default is now 15 seconds, not 10.
-#
-#  * migo (15/08/1999): Prepared for inclusion into fvwm. Many small fixes
-#    in the script and the man page. All 'fvwm2' replaced with 'fvwm' except
-#    for file names and fvwm2gnome. New --fvwm-gtk-name option.
-#
-#  * 13/08/1999: Rename the script and some options. Use strict. Bug fixes.
-#    Add showHelp and showVersion.
-#
-#  * 03/08/1999: General clean up (thanks Mikhael !). Set a version number:
-#    Version 0.7
-#
-#  * 22/07/1999: Test version
-#
-#----------------------------------------------------------------------------
-# TODO MUST:
-#    1. Correct the English of the man page (partially done).
-#
-# TODO:
-#    1. Prevent "inconsistent" conjunctions of options (perhaps we can do
-#       GetOptions with hands (in my machine I think I will win 0.15 sec).
-#    2. Better default ?
-#    3. Make a general clean up II.
-#
 #----------------------------------------------------------------------------
 # The script: Main
 
 #--------
 # Modules
 use strict;
-# For the option
+# For command line options
 use Getopt::Long;
-# version needs to be fvwm version or script version ?
+
 my $version = "@VERSION@";
 
 #--------
@@ -980,7 +950,7 @@ Options:
 	--utf8                    For desktop entries coded in UTF-8 (KDE2)
 	--uniconv                 Use (un)iconv for UTF-8 translation
 	--uniconv-exec            uniconv or iconv (default)
-	--menu-style name         use name for the menu style of FVWM menus
+	--menu-style name         assign specified MenuStyle name to menus
 	--[no]check-app           [do not] check that apps are in your path
 	--time-limit NUM          limit script running time to NUM seconds
 Short options are ok if not ambiguous: -h, -x, -icon-a.

@@ -324,7 +324,7 @@ sub showHelp {
 	print "\t--check-subdir     check subdir for +x permission (no)\n";
 	print "\t--special-dirs[=X] include .. and ~ directories (no)\n";
 	print "\t--memory-for-speed use speed optimization (no)\n";
-	print "\t--menu-style=NAME  use NAME as MenuStyle\n";
+	print "\t--menu-style=NAME  assign specified MenuStyle name to menus\n";
 	print "Short options are ok if not ambiguous: -a, -icon-f.\n";
 	exit 0;
 }
@@ -372,10 +372,10 @@ B<fvwm-menu-directory>
 [ B<--command-file>|B<-command-f> CMD ]
 [ B<--command-app>|B<-command-a> CMD ]
 [ B<--[no]reuse>|B<-r> ]
-[ B<--[no]check-subdir>|B<-che> ]
+[ B<--[no]check-subdir>|B<-ch> ]
 [ B<--special-dirs>|B<-s> [VALUE] ]
-[ B<--[no]memory-for-speed>|B<-m> ]
-[ B<--menu-style>|B<-m> NAME ]
+[ B<--[no]memory-for-speed>|B<-mem> ]
+[ B<--menu-style>|B<-men> NAME ]
 
 =head1 DESCRIPTION
 
@@ -516,7 +516,7 @@ B<--[no]memory-for-speed> - use speed optimization, default is
     Warning: speed optimization takes up a lot of memory
     that is never free'd again while fvwm is running.
 
-B<--menu-style=NAME> - Use Name as MenuStyle for the menus.
+B<--menu-style=NAME> - assign MenuStyle NAME to the menus
 
 
 Option parameters can be specified both using '=' and in the next argument.

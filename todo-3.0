@@ -8,8 +8,8 @@ In no particular order and maybe best to do in parts (3.0, 3.2 ...)
   6) Change FvwmCommand to use the socket and readline, remove FvwmCommandS.
   7) Remove FvwmConsole (it's "Exec xterm -e FvwmCommand").
   8) Make FvwmButtons titles and icons controllable with SendToModule.
-  9) New command ModuleAlias <alias> <module> <args...>
- 10) Make KillModule/SendToModule understand aliases.
+  9) New command ModuleAlias <alias> <module> <args...> (should be discussed)
+ 10) Make KillModule/SendToModule understand aliases. (already done in 2.3.21)
  11) Remove all alias handling code from modules.
  12) New option for FvwmIconMan to follow WinList order.
  13) Put tooltips and fix colorsets in FvwmIconMan.
@@ -18,20 +18,21 @@ In no particular order and maybe best to do in parts (3.0, 3.2 ...)
  15.5) Remove FvwmWinList (It's just FvwmIconMan).
  15.5.5) Remove FvwmIconBox (It's just FvwmIconMan with some enhancements ???).
  16) Expand Style command to support name=pattern syntax.
+     Style (Name "File *", Class XPaint, Resource *browser) NoIcon
  17) Add id-pattern to Style command.
  18) Split style lists into 5 (resource, class, icon, name, id).
  19) Styles get applied in the above order.
  20) Split each style list into two (one with wildcards, one without).
  21) The un-wildcard type of list can be a hash list as only one will apply.
  22) Split Style into run time control (Style) and startup style (InitialStyle).
- 23) Move Stick/Iconify/Maximize/Shade/Desk to Style and InitialStyle.
+ 23) Move Stick/Iconify/Maximize/Shade/GotoDesk to Style and InitialStyle.
  24) New Style: DecoratedByModule/DecoratedByFvwm
  25) Remove {Border,Title,Button}Style and decors, just one simple look in fvwm.
  26) New module FvwmDecor to do fancy per window decoration.
  27) Figure out how resizing works with FvwmDecor.
  28) Put side title and shaped borders into FvwmDecor.
  29) Tear off menus.
- 30) New placement code.
+ 30) New placement code. (mostly done in 2.3.28)
  31) Pie menus?
  32) Key/Button dependent bindings in menus.
  33) Pressing the submenu trinagle may have a different effect than pressing the
@@ -39,3 +40,10 @@ In no particular order and maybe best to do in parts (3.0, 3.2 ...)
  34) Limit menu width or even parts of the item format.
  35) Multi colums menus a la Windows or scrolling menus like MacOs?
  36) Includable menus or menu sections.
+ 37) Table menus?
+     MenuStyle style_name Columns n; MenuStyle style_name Rows m.
+ 38) Style UnderCursorPlacement; global or style UnderCursorPlacementOffset X Y.
+     Equivalent to FvwmEvent add_window with Move m+X m+Y, but more effective.
+ 39) UnconstrainedMove, like Move with no resistance or snap attraction.
+ 40) Title tile pixmaps wrapping (avoiding) title text.
+ 41) Timeouts for pager balloons?

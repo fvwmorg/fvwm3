@@ -1,3 +1,9 @@
+2000-01-21  Mikhael Goikhman  <migo@homemail.com>
+
+	* utils/fvwm-menu-desktop.{in,1}:
+	* utils/fvwm-menu-directory.{in,1}:
+	rewordings
+
 2000-01-20  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm-menu-desktop.in:
