@@ -1,10 +1,20 @@
+2000-05-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmCommand/FvwmCommandS.c (server):
+	* FvwmCommand/FvwmCommand.c (main):
+	fixed random pipe name bug (used uninitialised array instead of display
+	name)
+
+	* FvwmCommand/FvwmCommand.c (list_new_page):
+	fixed printf arguments
+
 2000-05-27  olicha <olivier.chapuis@free.fr>
 
 	* FvwmIconBox/FvwmIconBox.{c,h}:
 	Fixed NoIcon/Icon and WindowListSkip/Hit style Change
-	
+
 2000-05-26  olicha <olivier.chapuis@free.fr>
-	
+
 	* FvwmIconMan/xmanager.c (check_in_window, set_win_iconified):
 	Fixed NoIconAction and WindowListSkip/Hit style Change
 

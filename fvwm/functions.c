@@ -300,11 +300,24 @@ static char *function_vars[] =
   "bg.cs",
   "hilight.cs",
   "shadow.cs",
+  "desk.width",
+  "desk.height",
+  "vp.x",
+  "vp.y",
+  "vp.width",
+  "vp.height",
+  "w.x",
+  "w.y",
+  "w.width",
+  "w.height",
+  "screen",
   NULL
 };
 
-static int expand_extended_var(char *var_name, char *output)
+static int expand_extended_var(
+  char *var_name, char *output, FvwmWindow *tmp_win)
 {
+  char *s;
   char *rest;
   char dummy[64];
   char *target = (output) ? output : dummy;
@@ -312,7 +325,10 @@ static int expand_extended_var(char *var_name, char *output)
   int n;
   int i;
   Pixel pixel = 0;
+  int val = -12345678;
+  Bool is_numeric = False;
 
+  /* allow partial matches for *.cs variables */
   switch ((i = GetTokenIndex(var_name, function_vars, -1, &rest)))
   {
   case 0:
@@ -333,27 +349,124 @@ static int expand_extended_var(char *var_name, char *output)
     switch (i)
     {
     case 0:
+      /* fg.cs */
       pixel = Colorset[cs].fg;
       break;
     case 1:
+      /* bg.cs */
       pixel = Colorset[cs].bg;
       break;
     case 2:
+      /* hilight.cs */
       pixel = Colorset[cs].hilite;
       break;
     case 3:
+      /* shadow.cs */
       pixel = Colorset[cs].shadow;
       break;
     }
     return pixel_to_color_string(dpy, Pcmap, pixel, target, False);
   default:
-    /* unknown variable */
-    return 0;
+    break;
   }
+
+  /* only exact matches for all other variables */
+  switch ((i = GetTokenIndex(var_name, function_vars, 0, &rest)))
+  {
+  case 4:
+    /* desk.width */
+    is_numeric = True;
+    val = Scr.VxMax + Scr.MyDisplayWidth;
+    break;
+  case 5:
+    /* desk.height */
+    is_numeric = True;
+    val = Scr.VyMax + Scr.MyDisplayHeight;
+    break;
+  case 6:
+    /* vp.x */
+    is_numeric = True;
+    val = Scr.Vx;
+    break;
+  case 7:
+    /* vp.y */
+    is_numeric = True;
+    val = Scr.Vy;
+    break;
+  case 8:
+    /* vp.width */
+    is_numeric = True;
+    val = Scr.MyDisplayWidth;
+    break;
+  case 9:
+    /* vp.height */
+    is_numeric = True;
+    val = Scr.MyDisplayHeight;
+    break;
+  case 10:
+  case 11:
+  case 12:
+  case 13:
+    if (!tmp_win || IS_ICONIFIED(tmp_win))
+      return 0;
+    else
+    {
+      is_numeric = True;
+      switch (i)
+      {
+      case 10:
+	/* w.x */
+	val = tmp_win->frame_g.x;
+	break;
+      case 11:
+	/* w.y */
+	val = tmp_win->frame_g.y;
+	break;
+      case 12:
+	/* w.width */
+	val = tmp_win->frame_g.width;
+	break;
+      case 13:
+	/* w.height */
+	val = tmp_win->frame_g.height;
+	break;
+      default:
+	return 0;
+      }
+    }
+    break;
+  case 14:
+    /* screen */
+    is_numeric = True;
+    val = Scr.screen;
+    break;
+  default:
+    /* unknown variable - try to find it in the environment */
+    s = getenv(var_name);
+    if (s)
+    {
+      if (output)
+      {
+	strcpy(output, s);
+      }
+      return strlen(s);
+    }
+    else
+    {
+      return 0;
+    }
+  }
+  if (is_numeric)
+  {
+    sprintf(target, "%d", val);
+    return strlen(target);
+  }
+
+  return 0;
 }
 
-static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
-		    Bool addto)
+static char *expand(
+  char *input, char *arguments[], FvwmWindow *tmp_win, Bool addto)
 {
   int l,i,l2,n,k,j,m;
   int xlen;
@@ -382,20 +495,21 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
 	/* extended variables */
 	var = &input[i+2];
 	m = i + 2;
-	while (m < l && input[m] != ']' && !isspace(input[m]) && input[m])
+	while (m < l && input[m] != ']' && input[m])
 	  m++;
 	if (input[m] == ']')
 	{
 	  input[m] = 0;
 	  /* handle variable name */
 	  k = strlen(var);
-	  xlen = expand_extended_var(var, NULL);
-	  input[m] = ']';
-	  if (xlen > 0)
+	  if (!addto)
 	  {
-	    l2 += xlen - k + 2;
-	    i += k + 2;
+	    xlen = expand_extended_var(var, NULL, tmp_win);
+	    if (xlen > 0)
+	      l2 += xlen - (k + 2);
 	  }
+	  i += k + 2;
+	  input[m] = ']';
 	}
 	break;
       case '0':
@@ -408,7 +522,11 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
       case '7':
       case '8':
       case '9':
-	n = input[i+1] - '0';
+      case '*':
+	if (input[i+1] == '*')
+	  n = 0;
+	else
+	  n = input[i+1] - '0' + 1;
 	if(arguments[n] != NULL)
 	{
 	  l2 += strlen(arguments[n])-2;
@@ -474,23 +592,23 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
       switch (input[i+1])
       {
       case '[':
+	/* extended variables */
 	if (addto)
 	{
 	  /* Don't expand these in an 'AddToFunc' command */
 	  out[j++] = input[i];
 	  break;
 	}
-	/* extended variables */
 	var = &input[i+2];
 	m = i + 2;
-	while (m < l && input[m] != ']' && !isspace(input[m]) && input[m])
+	while (m < l && input[m] != ']' && input[m])
 	  m++;
 	if (input[m] == ']')
 	{
 	  input[m] = 0;
 	  /* handle variable name */
 	  k = strlen(var);
-	  xlen = expand_extended_var(var, &out[j]);
+	  xlen = expand_extended_var(var, &out[j], tmp_win);
 	  input[m] = ']';
 	  if (xlen > 0)
 	  {
@@ -517,7 +635,11 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win,
       case '7':
       case '8':
       case '9':
-	n = input[i+1] - '0';
+      case '*':
+	if (input[i+1] == '*')
+	  n = 0;
+	else
+	  n = input[i+1] - '0' + 1;
 	if(arguments[n] != NULL)
 	{
 	  for(k=0;arguments[n][k];k++)
@@ -721,7 +843,7 @@ void ExecuteFunction(
   char *trash;
   char *trash2;
   char *expaction = NULL;
-  char *arguments[10];
+  char *arguments[11];
   const func_type *bif;
   Bool set_silent;
   Bool must_free_string = False;
@@ -757,12 +879,12 @@ void ExecuteFunction(
   func_depth++;
   if (args)
   {
-    for(j=0;j<10;j++)
+    for(j=0;j<11;j++)
       arguments[j] = args[j];
   }
   else
   {
-    for(j=0;j<10;j++)
+    for(j=0;j<11;j++)
       arguments[j] = NULL;
   }
 
@@ -1267,7 +1389,7 @@ static void execute_complex_function(
   Bool HaveHold = False;
   Bool NeedsTarget = False;
   Bool ImmediateNeedsTarget = False;
-  char *arguments[10], *taction;
+  char *arguments[11], *taction;
   char* func_name;
   int x, y ,i;
   XEvent d, *ev;
@@ -1284,15 +1406,25 @@ static void execute_complex_function(
   func = FindFunction(func_name);
   free(func_name);
   if(func == NULL)
-    {
-      if(*desperate == 0)
-	fvwm_msg(ERR,"ComplexFunction","No such function %s",action);
-      return;
-    }
+  {
+    if(*desperate == 0)
+      fvwm_msg(ERR,"ComplexFunction","No such function %s",action);
+    return;
+  }
   *desperate = 0;
-  /* Get the argument list */
-  for(i=0;i<10;i++)
-    taction = GetNextToken(taction,&arguments[i]);
+  /* duplicate the whole argument list for use as '$*' */
+  if (taction)
+  {
+    arguments[0] = strdup(taction);
+    /* Get the argument list */
+    for(i=1;i<11;i++)
+      taction = GetNextToken(taction,&arguments[i]);
+  }
+  else
+  {
+    for(i=0;i<11;i++)
+      arguments[i] = NULL;
+  }
   /* see functions.c to find out which functions need a window to operate on */
   ev = eventp;
   /* In case we want to perform an action on a button press, we
@@ -1320,7 +1452,7 @@ static void execute_complex_function(
     {
       func->use_depth--;
       WaitForButtonsUp(False);
-      for(i=0;i<10;i++)
+      for(i=0;i<11;i++)
         if(arguments[i] != NULL)
           free(arguments[i]);
       return;
@@ -1359,7 +1491,7 @@ static void execute_complex_function(
   if(!Persist)
     {
       func->use_depth--;
-      for(i=0;i<10;i++)
+      for(i=0;i<11;i++)
 	if(arguments[i] != NULL)
 	  free(arguments[i]);
       return;
@@ -1373,7 +1505,7 @@ static void execute_complex_function(
 	{
 	  func->use_depth--;
 	  WaitForButtonsUp(False);
-	  for(i=0;i<10;i++)
+	  for(i=0;i<11;i++)
 	    if(arguments[i] != NULL)
 	      free(arguments[i]);
 	  return;
@@ -1384,7 +1516,7 @@ static void execute_complex_function(
     {
       func->use_depth--;
       XBell(dpy, 0);
-      for(i=0;i<10;i++)
+      for(i=0;i<11;i++)
 	if(arguments[i] != NULL)
 	  free(arguments[i]);
       return;
@@ -1471,7 +1603,7 @@ static void execute_complex_function(
   WaitForButtonsUp(False);
   /* This is the right place to ungrab the pointer (see comment above). */
   UngrabEm(GRAB_NORMAL);
-  for(i=0;i<10;i++)
+  for(i=0;i<11;i++)
     if(arguments[i] != NULL)
       free(arguments[i]);
   func->use_depth--;

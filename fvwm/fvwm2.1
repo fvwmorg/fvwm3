@@ -924,16 +924,14 @@ The current desk number.
 .in +.5i
 $n
 .in +.3i
-The window's name or "$n" if no window is
-associated with the command.
+The window's name or "$n" if no window is associated with the command.
 .in -.3i
 .in -.5i
 
 .in +.5i
 $r
 .in +.3i
-The window's resource name or "$r" if no window is
-associated with the command.
+The window's resource name or "$r" if no window is associated with the command.
 .in -.3i
 .in -.5i
 
@@ -980,6 +978,53 @@ is undefined, the "$..." is deleted from the command line.
 .in -.5i
 
 .in +.5i
+$*
+.in +.3i
+All positional parameters given to a complex function.  This
+includes parameters that follow after "$9".
+.in -.3i
+.in -.5i
+
+.in +.5i
+$[vp.x]
+$[vp.y]
+$[vp.width]
+$[vp.height]
+.in +.3i
+Either coordinate or the width or height of the current viewport.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$[desk.width]
+$[desk.height]
+.in +.3i
+The width or height of the whole desktop, i.e. the width or height
+multiplied by the number of pages in x or y direction.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$[w.x]
+$[w.y]
+$[w.width]
+$[w.height]
+.in +.3i
+Either coordinate or the width or height of the current window if it
+is not iconified.  If no window is associated with the command or the
+window is iconified, the string is left as is.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$[screen]
+.in +.3i
+The screen number fvwm is running on.  Useful for setups with
+multiple screens.
+.in -.3i
+.in -.5i
+
+.in +.5i
 $[fg.cs<n>]
 .in -.5i
 .in +.5i
@@ -1010,6 +1055,16 @@ you use this in commands like
 .EX
 Style * HilightFore $[fg.cs0], HilightBack $[bg.cs0]
 .EE
+.in -.3i
+.in -.5i
+
+.in +.5i
+$[...]
+.in +.3i
+If the string within the braces is neither of the above, fvwm
+tries to find an environment variable with this name and replaces
+its value if one is found (e.g. "$[PAGER]" could be replaced by
+"more").  Otherwise the string is left as is.
 .in -.3i
 .in -.5i
 

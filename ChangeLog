@@ -1,4 +1,37 @@
-2000-05-25  dominik.vogt@fvwm.org  <Dominik Vogt>
+2000-05-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (execute_complex_function):
+	fixed core dump when undefined arguments were accessed
+	(expand):
+	variables in $[...] may contain spaces (not useful, but less buggy)
+	(expand):
+	fixed core dump when $[...] arguments expand to a string that is
+	shorter than the '...'
+	(expand):
+	fixed temporary waste of memory
+	(expand):
+	performance enhancement
+
+	* fvwm/fvwm2.1:
+	* fvwm/functions.c (execute_complex_function):
+	(ExecuteFunction):
+	(expand):
+	implemented '$*' function argument
+	(expand_extended_var):
+	implemented several very trivial new extended variables:
+	  $[desk.width], $[desk.height]
+	  $[vp.x], $[vp.y], $[vp.width], $[vp.height]
+	  $[w.x], $[w.y], $[w.width], $[w.height]
+	  $[screen]
+	  $[<environment variable>]
+
+2000-05-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/stack.c (RaiseOrLowerWindow):
+	performance enhancement
+	reindented some code
+
+2000-05-25  Dominik Vogt  <dominik.vogt@fvwm.org>
 
 	* configure.in: changed version to 2.3.18
 

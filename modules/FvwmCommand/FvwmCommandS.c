@@ -30,7 +30,7 @@
 #include "libs/fvwmsignal.h"
 
 #define MYNAME   "FvwmCommandS"
-#define MAXHOSTNAME 255
+#define MAXHOSTNAME 32
 
 int Fd[2]; /* pipes to fvwm */
 int FfdC; /* command fifo file discriptors */
@@ -40,8 +40,7 @@ char *FfdC_name, *FfdM_name; /* fifo names */
 
 ino_t FfdC_ino, FfdM_ino; /* fifo inode numbers */
 
-char client[MAXHOSTNAME];
-char hostname[32];
+char hostname[MAXHOSTNAME];
 
 int open_fifos(const char *f_stem);
 void close_fifos(void);
@@ -154,7 +153,13 @@ void server (char *name)
     home = getenv("HOME");
     if  (home == NULL)
       home = "";
-    f_stem = safemalloc(strlen(home) + strlen(F_NAME) + MAXHOSTNAME + 4);
+    dpy_name = getenv("DISPLAY");
+    if (!dpy_name)
+      dpy_name = ":0";
+    if (strncmp(dpy_name, "unix:", 5) == 0)
+      dpy_name += 4;
+    f_stem = safemalloc(strlen(home) + strlen(F_NAME) + MAXHOSTNAME +
+			strlen(dpy_name) + 4);
     strcpy(f_stem, home);
     if (f_stem[strlen(f_stem)-1] != '/')
     {
@@ -164,15 +169,12 @@ void server (char *name)
 
     /* Make it unique */
     strcat(f_stem, "-");
-    gethostname(hostname,32);
-    dpy_name = getenv("DISPLAY");
-    if (!dpy_name)
-      dpy_name = ":0";
-    if (strncmp(dpy_name, "unix:", 5) == 0)
-      dpy_name += 4;
     if (!dpy_name[0] || ':' == dpy_name[0])
-      strcat(f_stem, hostname );  /* Put hostname before dpy if not there */
-    strcat(f_stem, client);
+    {
+      gethostname(hostname, MAXHOSTNAME);
+      strcat(f_stem, hostname);  /* Put hostname before dpy if not there */
+    }
+    strcat(f_stem, dpy_name);
   }
   else
   {

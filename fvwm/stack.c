@@ -82,15 +82,15 @@ Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
 }
 
 
-/*===================================================================
-  Raise a target and all higher FVWM-managed windows above any
-    override_redirects:
-    - locate the highest override_redirect above our target
-    - put all the FvwmWindows from the target to the highest FvwmWindow
-      below the highest override_redirect in the restack list
-    - configure our target window above the override_redirect sibling,
-      and restack.
-  ===================================================================*/
+/********************************************************************
+ * Raise a target and all higher FVWM-managed windows above any
+ *  override_redirects:
+ *  - locate the highest override_redirect above our target
+ *  - put all the FvwmWindows from the target to the highest FvwmWindow
+ *    below the highest override_redirect in the restack list
+ *  - configure our target window above the override_redirect sibling,
+ *    and restack.
+ ********************************************************************/
 static void raise_over_unmanaged(FvwmWindow *t)
 {
   Window junk;
@@ -113,10 +113,10 @@ static void raise_over_unmanaged(FvwmWindow *t)
   found = False;
   XQueryTree(dpy, Scr.Root, &junk, &junk, &tops, &num);
 
-  /*===================================================================
-    Locate the highest override_redirect window above our target, and
-    the highest of our windows below it.
-    ===================================================================*/
+  /********************************************************************
+   * Locate the highest override_redirect window above our target, and
+   * the highest of our windows below it.
+   ********************************************************************/
   for (i = 0; i < num; i++)  {
     if (tops[i] == t->frame)  {
       found = True;
@@ -149,9 +149,9 @@ static void raise_over_unmanaged(FvwmWindow *t)
     }    /*  end  if found  */
   }      /*  end  for  */
 
-  /*===================================================================
-    Count the windows we need to restack, then build the stack list.
-    ===================================================================*/
+  /********************************************************************
+   * Count the windows we need to restack, then build the stack list.
+   ********************************************************************/
   if (OR_Above)
   {
     i = 0;
@@ -282,7 +282,8 @@ static void RaiseOrLowerWindow(
    * recursion stuff for new windows because the must_move_transients() call
    * needs a properly ordered stack ring - but the new window is still at the
    * front of the stack ring. */
-  if (allow_recursion && !is_new_window)
+  if (allow_recursion && !is_new_window &&
+      IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
   {
     /*
      * This part makes Raise/Lower on a Transient act on its Main and sibling
@@ -295,21 +296,15 @@ static void RaiseOrLowerWindow(
      *
      * Another strategy is required to handle trees of Main+Transients
      */
-    if (IS_TRANSIENT(t) && DO_STACK_TRANSIENT_PARENT(t))
+    for (t2 = Scr.FvwmRoot.stack_next;
+	 t2 != &Scr.FvwmRoot && t2->w != t->transientfor; t2 = t2->stack_next)
     {
-      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot;
-	   t2 = t2->stack_next)
-      {
-        if (t2->w == t->transientfor)
-        {
-          if ((!do_lower && DO_RAISE_TRANSIENT(t2)) ||
-              (do_lower && DO_LOWER_TRANSIENT(t2))  )
-          {
-	    RaiseOrLowerWindow(t2,do_lower,False,False);
-	    return;
-          }
-        }
-      }
+      /* just seek the right window */
+    }
+    if (t2->w == t->transientfor)
+    {
+      RaiseOrLowerWindow(t2,do_lower,False,False);
+      return;
     }
   }
 
@@ -467,12 +462,10 @@ static void RaiseOrLowerWindow(
 
   if (!do_lower)
   {
-    /*
-        This hack raises the target and all higher FVWM windows over any
-style * grabfocusoff        override_redirect windows that may be above it. This is used to
-        cope with ill-bahaved applications that insist on using long-lived
-        override_redirects.
-    */
+    /* This hack raises the target and all higher FVWM windows over any style
+     * grabfocusoff override_redirect windows that may be above it. This is
+     * used to cope with ill-bahaved applications that insist on using
+     * long-lived override_redirects. */
     if (Scr.bo.RaiseOverUnmanaged)
     {
       raise_over_unmanaged(t);
@@ -666,48 +659,48 @@ void ResyncFvwmStackRing (void)
   MyXGrabServer (dpy);
 
   if (!XQueryTree (dpy, Scr.Root, &root, &parent, &children, &nchildren))
-    {
-      MyXUngrabServer (dpy);
-      return;
-    }
+  {
+    MyXUngrabServer (dpy);
+    return;
+  }
 
   t2 = &Scr.FvwmRoot;
   for (i = 0; i < nchildren; i++)
+  {
+    for (t1 = Scr.FvwmRoot.next; t1 != NULL; t1 = t1->next)
     {
-      for (t1 = Scr.FvwmRoot.next; t1 != NULL; t1 = t1->next)
+      if (IS_ICONIFIED(t1) && !IS_ICON_SUPPRESSED(t1))
+      {
+	if (t1->icon_w == children[i])
 	{
-          if (IS_ICONIFIED(t1) && !IS_ICON_SUPPRESSED(t1))
-            {
-	      if (t1->icon_w == children[i])
-	        {
-	          break;
-	        }
-              else if (t1->icon_pixmap_w == children[i])
-	        {
-	          break;
-	        }
-            }
-          else
-            {
-	      if (t1->frame == children[i])
-	        {
-	          break;
-	        }
-            }
+	  break;
 	}
-
-      if (t1 != NULL && t1 != t2)
+	else if (t1->icon_pixmap_w == children[i])
 	{
-          /*
-              Move the window to its new position, working from the bottom up
-              (that's the way XQueryTree presents the list).
-          */
-	  /* Pluck from chain. */
-	  remove_window_from_stack_ring(t1);
-	  add_window_to_stack_ring_after(t1, t2->stack_prev);
-          t2 = t1;
+	  break;
 	}
+      }
+      else
+      {
+	if (t1->frame == children[i])
+	{
+	  break;
+	}
+      }
     }
+
+    if (t1 != NULL && t1 != t2)
+    {
+      /*
+       * Move the window to its new position, working from the bottom up
+       * (that is the way XQueryTree presents the list).
+       */
+      /* Pluck from chain. */
+      remove_window_from_stack_ring(t1);
+      add_window_to_stack_ring_after(t1, t2->stack_prev);
+      t2 = t1;
+    }
+  }
 
   MyXUngrabServer (dpy);
 
@@ -725,21 +718,21 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
   extern Time lastTimestamp;
 
   if (s1 == &Scr.FvwmRoot)
-   {
-      t = s1->stack_next;
-      /* t has been moved to the top of stack */
+  {
+    t = s1->stack_next;
+    /* t has been moved to the top of stack */
 
-      BroadcastPacket (M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
-      if (t->stack_next == s2)
-        {
-          /* avoid sending empty RESTACK packet */
-          return;
-        }
-   }
+    BroadcastPacket (M_RAISE_WINDOW, 3, t->w, t->frame, (unsigned long)t);
+    if (t->stack_next == s2)
+    {
+      /* avoid sending empty RESTACK packet */
+      return;
+    }
+  }
   else
-   {
-      t = s1;
-   }
+  {
+    t = s1;
+  }
   for (t2 = t, num = 1 ; t2 != s2; t2 = t2->stack_next, num++)
     ;
 
@@ -753,9 +746,9 @@ void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
   *(bp++) = lastTimestamp;
   for (t2 = t; t2 != s2; t2 = t2->stack_next)
    {
-      *(bp++) = t2->w;
-      *(bp++) = t2->frame;
-      *(bp++) = (unsigned long)t2;
+     *(bp++) = t2->w;
+     *(bp++) = t2->frame;
+     *(bp++) = (unsigned long)t2;
    }
    for (i = 0; i < npipes; i++)
      PositiveWrite(i, body, length*sizeof(unsigned long));
@@ -802,45 +795,44 @@ new_layer (FvwmWindow *tmp_win, int layer)
   FvwmWindow *t2, *next;
 
   if (layer < tmp_win->layer)
-    {
-      tmp_win->layer = layer;
-      /* temporary fix; new transient handling code assumes the layers are
-       * properly arranged when RaiseOrLowerWindow() is called. */
-      ResyncFvwmStackRing();
-      /* domivogt (9-Sep-1999): this was RaiseWindow before. The intent may
-       * have been good (put the window on top of the new lower layer), but it
-       * doesn't work with applications like the gnome panel that use the layer
-       * hint as a poor man's raise/lower, i.e. if panel is on the top level
-       * and requests to be lowered to the normal level it stays on top of all
-       * normal windows. This is not what intended to do with lowering
-       * itself. */
-      LowerWindow(tmp_win);
-    }
+  {
+    tmp_win->layer = layer;
+    /* temporary fix; new transient handling code assumes the layers are
+     * properly arranged when RaiseOrLowerWindow() is called. */
+    ResyncFvwmStackRing();
+    /* domivogt (9-Sep-1999): this was RaiseWindow before. The intent may
+     * have been good (put the window on top of the new lower layer), but it
+     * doesn't work with applications like the gnome panel that use the layer
+     * hint as a poor man's raise/lower, i.e. if panel is on the top level
+     * and requests to be lowered to the normal level it stays on top of all
+     * normal windows. This is not what was intended by lowering. */
+    LowerWindow(tmp_win);
+  }
   else if (layer > tmp_win->layer)
+  {
+    if (DO_RAISE_TRANSIENT(tmp_win))
     {
-      if (DO_RAISE_TRANSIENT(tmp_win))
+      /* this could be done much more efficiently */
+      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
+      {
+	next = t2->stack_next;
+	if ((IS_TRANSIENT(t2)) &&
+	    (t2->transientfor == tmp_win->w) &&
+	    (t2 != tmp_win) &&
+	    (t2->layer >= tmp_win->layer) &&
+	    (t2->layer < layer))
 	{
-	  /* this could be done much more efficiently */
-	  for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
-	    {
-	      next = t2->stack_next;
-	      if ((IS_TRANSIENT(t2)) &&
-		  (t2->transientfor == tmp_win->w) &&
-		  (t2 != tmp_win) &&
-		  (t2->layer >= tmp_win->layer) &&
-		  (t2->layer < layer))
-		{
-		  t2->layer = layer;
-		  LowerWindow(t2);
-		}
-	    }
+	  t2->layer = layer;
+	  LowerWindow(t2);
 	}
-      tmp_win->layer = layer;
-      /* see comment above */
-      ResyncFvwmStackRing();
-      /* see comment above */
-      RaiseWindow(tmp_win);
+      }
     }
+    tmp_win->layer = layer;
+    /* see comment above */
+    ResyncFvwmStackRing();
+    /* see comment above */
+    RaiseWindow(tmp_win);
+  }
 
   GNOME_SetLayer (tmp_win);
 }
@@ -931,33 +923,33 @@ void change_layer(F_CMD_ARGS)
 
   token = PeekToken(action, NULL);
   if (StrEquals("default", token))
+  {
+    layer = tmp_win->default_layer;
+  }
+  else
+  {
+    n = GetIntegerArguments(action, NULL, val, 2);
+
+    layer = tmp_win->layer;
+    if ((n == 1) ||
+	((n == 2) && (val[0] != 0)))
+    {
+      layer += val[0];
+    }
+    else if ((n == 2) && (val[1] >= 0))
+    {
+      layer = val[1];
+    }
+    else
     {
       layer = tmp_win->default_layer;
     }
-  else
-    {
-      n = GetIntegerArguments(action, NULL, val, 2);
-
-      layer = tmp_win->layer;
-      if ((n == 1) ||
-	  ((n == 2) && (val[0] != 0)))
-	{
-	  layer += val[0];
-	}
-      else if ((n == 2) && (val[1] >= 0))
-	{
-	  layer = val[1];
-	}
-      else
-	{
-	  layer = tmp_win->default_layer;
-	}
-    }
+  }
 
   if (layer < 0)
-    {
-      layer = 0;
-    }
+  {
+    layer = 0;
+  }
 
   new_layer (tmp_win, layer);
 }
@@ -971,43 +963,43 @@ void SetDefaultLayers(F_CMD_ARGS)
 
   bot = PeekToken(action, &action);
   if (bot)
+  {
+    i = atoi (bot);
+    if (i < 0)
     {
-       i = atoi (bot);
-       if (i < 0)
-         {
-           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
-         }
-       else
-         {
-           Scr.BottomLayer = i;
-         }
+      fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
     }
+    else
+    {
+      Scr.BottomLayer = i;
+    }
+  }
 
   def = PeekToken(action, &action);
   if (def)
+  {
+    i = atoi (def);
+    if (i < 0)
     {
-       i = atoi (def);
-       if (i < 0)
-         {
-           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
-         }
-       else
-         {
-           Scr.DefaultLayer = i;
-         }
+      fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
     }
+    else
+    {
+      Scr.DefaultLayer = i;
+    }
+  }
 
   top = PeekToken(action, &action);
   if (top)
+  {
+    i = atoi (top);
+    if (i < 0)
     {
-       i = atoi (top);
-       if (i < 0)
-         {
-           fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
-         }
-       else
-         {
-           Scr.TopLayer = i;
-         }
+      fvwm_msg(ERR,"DefaultLayers", "Layer must be non-negative." );
     }
+    else
+    {
+      Scr.TopLayer = i;
+    }
+  }
 }

@@ -1,8 +1,14 @@
 Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
-
 Changes in beta release 2.3.19 (not released yet)
+
+* Implemented '$*' in complex functions.  This works like in a
+  shell and is replaced by all arguments of a function.
+
+* Implemented several new parameters:
+    $[desk.width], $[desk.height], $[vp.x], $[vp.y], $[vp.width], $[vp.height],
+    $[w.x], $[w.y], $[w.width], $[w.height], $[screen], $[<env-var>]
 
 Changes in beta release 2.3.18 (May 2000)
 

@@ -30,7 +30,7 @@
 #include "libs/fvwmlib.h"
 
 #define MYNAME "FvwmCommand"
-#define MAXHOSTNAME 255
+#define MAXHOSTNAME 32
 
 int  Fdr, Fdw;  /* file discriptor for fifo */
 FILE *Frun;     /* File contains pid */
@@ -49,8 +49,7 @@ FILE *Fp;
 
 volatile sig_atomic_t  Bg;  /* FvwmCommand in background */
 
-char client[MAXHOSTNAME];
-char hostname[32];
+char hostname[MAXHOSTNAME];
 
 void err_msg( const char *msg );
 void err_quit( const char *msg );
@@ -200,15 +199,21 @@ int main ( int argc, char *argv[])
     }
   }
 
-
   if( f_stem == NULL )
   {
     char *dpy_name;
 
     /* default name */
     home = getenv("HOME");
-    if (!home)  home = "";
-    f_stem = safemalloc( strlen(home) + strlen(F_NAME) + MAXHOSTNAME + 4);
+    if (!home)
+      home = "";
+    dpy_name = getenv("DISPLAY");
+    if (!dpy_name)
+      dpy_name = ":0";
+    if (strncmp(dpy_name, "unix:", 5) == 0)
+      dpy_name += 4;
+    f_stem = safemalloc(strlen(home) + strlen(F_NAME) + MAXHOSTNAME +
+			strlen(dpy_name) + 4);
     strcpy (f_stem, home);
     if (f_stem[strlen(f_stem)-1] != '/')
     {
@@ -217,16 +222,13 @@ int main ( int argc, char *argv[])
     strcat (f_stem, F_NAME);
 
     /* Make it unique */
-    strcat (f_stem, "-");
-    gethostname(hostname,32);
-    dpy_name = getenv("DISPLAY");
-    if (!dpy_name)
-      dpy_name = ":0";
-    if (strncmp(dpy_name, "unix:", 5) == 0)
-      dpy_name += 4;
-    if (!dpy_name[0]  ||  ':' == dpy_name[0])
-      strcat( f_stem, hostname );  /* Put hostname before dpy if not there */
-    strcat (f_stem, client);
+    strcat(f_stem, "-");
+    if (!dpy_name[0] || ':' == dpy_name[0])
+    {
+      gethostname(hostname, MAXHOSTNAME);
+      strcat(f_stem, hostname);  /* Put hostname before dpy if not there */
+    }
+    strcat(f_stem, dpy_name);
   }
 
   /* create 2 fifos */
@@ -920,7 +922,7 @@ void list_new_page(unsigned long *body)
 {
   printf( "           %-20s x %ld, y %ld, desk %ld, max x %ld, max y %ld\n",
 	  "new page",
-	  body[0], body[0], body[2], body[3], body[4]);
+	  body[0], body[1], body[2], body[3], body[4]);
 }
 
 /*************************************************************************
