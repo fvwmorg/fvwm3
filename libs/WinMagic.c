@@ -16,7 +16,7 @@
  */
 
 /*
-** Slide.c:
+** WinMagic.c:
 ** This file supplied routines for moving and resizing windows in an animated
 ** fashion.
 */
@@ -161,4 +161,30 @@ void SlideWindow(
   }
 
   return;
+}
+
+/* This function returns the top level ancestor of the window 'child'. It
+ * returns None if an error occurs or if the window is a top level window. */
+Window GetTopAncestorWindow(Display *dpy, Window child)
+{
+  Window root = None;
+  Window ancestor = child;
+  Window last_child = child;
+  Window *children;
+  int nchildren;
+
+  if (child == None)
+    return None;
+
+  while (ancestor != root)
+  {
+    last_child = ancestor;
+    children = NULL;
+    if (!XQueryTree(dpy, last_child, &root, &ancestor, &children, &nchildren))
+      return None;
+    if (children)
+      XFree(children);
+  }
+
+  return (last_child == child) ? None : last_child;
 }
