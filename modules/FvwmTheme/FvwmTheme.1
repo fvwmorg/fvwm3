@@ -70,8 +70,16 @@ name.
 set the background color.  It also sets the highlight and shadow colors to
 values that give a 3d effect unless these have been explicitly set with the
 options below.  The special name \fIAverage\fP may be used to select a color
-that is the average color of the pixmap.  The background color is reset to
-the default value if the color name is omitted.
+that is the average color of the pixmap.
+.\"needs_lang_check
+Note that if the pixmap is tinted with the
+.I Tint
+option, the tint is not taken in account in the computation of the average
+color. You should use the
+.I bgTint
+option to get the "real" average colour.
+.\"end
+The background color is reset to the default value if the color name is omitted.
 
 \fIhi\fP, \fIHilite\fP and \fIHilight\fP take a color name as as argument and
 set the highlight color.  If the hilight color is not explicitly set,
@@ -83,6 +91,14 @@ set the shadow color.  If the shadow color is not explicitly set,
 the default is to calculate it from the background color.  To switch back
 to the default behavior the color name can be omitted.
 
+.I fgsh
+takes a color name as an argument and sets the color used by the
+shadowing font effect. See the
+.B FONT SHADOW EFFECTS
+section of the fvwm man page. By default this color is computed from
+the foreground and background colors.
+To switch back to the default the color name can be omitted.
+
 \fIPixmap\fP, \fITiledPixmap\fP and \fIAspectPixmap\fP take a file name as
 an argument, search the \fIImagePath\fP and use it as the background pixmap.
 Any transparent parts are filled with the background color.  Not specifying a
@@ -90,7 +106,7 @@ file name removes any existing one from the colorset.  \fITiledPixmap\fP will
 produce repeated copies of the image with no scaling, \fIPixmap\fP will
 cause the image to be stretched to fit whatever object the colorset is applied
 to and \fIAscpectPixmap\fP will stretch to fit but will retain the image
-aspect ratio.  Bitmaps are not supported.
+aspect ratio.
 
 \fITransparent\fP tries to create a transparent background pixmap.
 It may be necessary to reapply this option whenever the background
@@ -131,62 +147,117 @@ and Y is a Yin Yang style (but without the dots, we are not \fIthat\fP mad).
 Please refer to the \fICOLOR GRADIENTS\fP section in the \fIfvwm\fP man page
 for the syntax of gradients.
 
-.I fgsh
-takes a color name as an argument and sets the color used by the
-shadowing font effect. See the
-.B FONT SHADOW EFFECTS
-section of the fvwm man page. By default this color is computed from
-the foreground and background colors.
-To switch back to the default the color name can be omitted.
+.\"needs_lang_check
+.I Tint
+takes 2 arguments, a colour and an integer between 0 and 100.
+It causes the image defined using
+.I ?Pixmap
+or
+.I ?Gradient
+to be tinted with the specified colour and a percentage rate given
+by the integer.
+If the image is transparent
+.I Tint
+tints only the image part.
+Unfortunately, a colorset background specified using the
+.I Transparent
+option cannot be tinted.
+With no arguments this option removes the tint.
 
-.I fg_alpha
+.I fgTint
+takes 2 arguments, a colour and an integer between 0 and 100.
+It causes the colour defined using
+.I fg
+to be tinted with the specified colour and a percentage rate given
+by the integer.
+With no arguments this option removes the tint.
+
+.I bgTint
+takes 2 arguments, a colour and an integer between 0 and 100.
+It causes the colour defined using
+.I bg
+to be tinted with the specified colour and a percentage rate given
+by the integer. If the
+.I sh
+and
+.I hi
+colours are not specified, there are recomputed from the tinted bg colour.
+With no arguments this option removes the tint.
+
+.I Alpha
 takes an integer between 0 and 100 as an (percentage) argument.
-It causes fvwm to merge the text and the  background with this rate
+It causes fvwm to merge the image defined using
+.I ?Pixmap
+or
+.I ?Gradient
+with the
+.I bg
+colour with this rate percentage. If this rate is 0 the image is hidden and
+if it is 100 the image is applied as usual (no merge).
+The default is 100 and it is restored if no argument is given.
+
+.I fgAlpha
+takes an integer between 0 and 100 as an (percentage) argument.
+It causes fvwm to merge the text and the colorset background with this rate
 percentage. If this rate is 0 the text is hidden and if it is 100
 the text is applied as usual (no merge). The default is 100 and it
 is restored if no argument is given.
 This option has an effect only with font loaded by Xft, see the
 .B FONT NAMES AND FONT LOADING
 section of fvwm man page.
+The default is 100 and it is restored if no argument is given.
+
+.I Dither
+causes fvwm to dither the image defined using
+.I ?Pixmap
+or
+.I ?Gradient.
+This is useful only with screen with depth less or equal to 16 (i.e.,
+on screen which can only display less than 65537 colours at once).
+This effect allows to let you be leave that you have a lot of
+available colors.
+.I NoDither
+causes fvwm to do not dither the images.
+.I Dither
+is the default if the depth <= 8 (screen with <= 256 colors).
+In depth 15 (32768 colors) and 16 (65536 colors), the
+default is
+.IR NoDither ,
+however this effect can be useful with images which contains
+a lot of close colors. For example a "fine" gradient will look
+more smooth.
+
+.I IconTint
+takes 2 arguments, a colour and an integer between 0 and 100.
+It causes fvwm or a module to tint the "icons" which are rendered
+into the colorset background with the specified colour and a percentage
+rate given by the integer. Here "icons" means, fvwm Icons, fvwm menu icons,
+MiniIcons which represent applications in various modules, image
+loaded by modules (e.g., image specified by the
+.I Icon
+FvwmButtons button option) ...etc.
+With no arguments this option removes the icon tint.
+
+.I IconAlpha
+takes an integer between 0 and 100 as an (percentage) argument.
+It causes fvwm to merge the "icons" which is rendered
+into the colorset background with this rate percentage.
+The default is 100 and it is restored if no argument is given.
+
+.IR Note :
+It is equivalent to use "Tint a_color rate" and "Alpha a" if a = 100-rate
+and the bg color is a_color. This equivalence does not hold for IconAlpha
+and IconTint as the background can be an image or a gradient (and not an
+uniform color background).
+However, in some case you can achieve (almost) the same effect by using
+IconTint in the place of IconAlpha. This is preferable as, in general,
+IconAlpha will generate more redrawing than IconTint.
 .\"end
 
-.I Tint
-and
-.I TintMask
-both take 2 arguments, a colour and an integer between 0 and 100.
-They cause the image defined using
-.IR Pixmap ,
-.I TiledPixmap
-or
-.I AspectPixmap
-to be tinted with the specified colour and a percentage rate given
-by the integer.
-If the image is not transparent both options work equally.
-If the image is transparent
-.I Tint
-tints the image part and the colorset background under it,
-.I TintMask
-tints only the image part.
-Unfortunately, a colorset background specified using the
-.I Transparent
-option cannot be tinted.  Note that this option is activated only
-if fvwm is compiled with the XFree Xrender support (needs XFree
-version 4.1 or better).  Run "fvwm-config --supports | grep xrender"
-if you are not sure.
-
 .I NoShape
-removes the shape mask from the colorset,
+removes the shape mask from the colorset while
 .I Plain
-removes the background pixmap or gradient while
-.I NoTint
-removes the pixmap tint.
-
-.IP "*FvwmTheme: ReadWriteColors"
-Tells FvwmTheme to use read/write color cells for the foreground and background
-pixels.  This can make changing colorsets much faster but can only be used with
-PseudoColor displays.  This option must be specified first and it cannot be
-turned off.  If the pixmap and shape of a colorset are unchanged modules
-do not redraw when the colors are changed.
+removes the background pixmap or gradient.
 
 .SH COMMANDS
 The following FVWM command may be executed at any time to alter the colorsets.
@@ -235,7 +306,7 @@ will add a Yin Yang gradient background pixmap to colorset 3.  If the
 background is set to average it will be recomputed as will the foreground
 if that is set to contrast.
 
-	.EX
+.EX
  #!/bin/sh
  FvwmCommand "SendToModule FvwmTheme Colorset 7
    fg navy, bg gray"
@@ -250,7 +321,7 @@ if that is set to contrast.
  done
 .EE
 
-will make colorset 7 blink if used with the *FvwmTheme: ReadWriteColors option.
+will make colorset 7 blink.
 
 The color names used in color sets can be substituted in any fvwm
 command.  Please refer to the \fICOMMAND EXPANSION\fP

@@ -16,6 +16,11 @@ Changes in alpha release 2.5.4 (not released yet)
     ChangeButton <button-id> <properties-to-change>
     ExpandButtonVars <button-id> <command-to-expand>
 
+* New Colorset options bgTint, fgTint (which complete Tint), Alpha,
+  IconTint and IconAlpha
+
+* Alpha blending rendering is supported even without XRender support
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.3 (25-Aug-2002)
