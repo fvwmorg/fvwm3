@@ -1,3 +1,8 @@
+Mon May 24 20:13:34 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* utils/Makefile.am (fvwmbug): fix build rule that had the
+	filename before the '-e' options of 'sed'.
+
 Mon May 24 17:45:34 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/wild.c: include wild.h.

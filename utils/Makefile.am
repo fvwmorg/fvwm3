@@ -20,9 +20,10 @@ INCLUDES = -I$(top_srcdir) $(xpm_CFLAGS) $(X_CFLAGS)
 fvwmbug: fvwmbug.sh FORCE
 	@rm -f $@
 	BUILDER=$${USER-$${LOGNAME-`whoami`}} && \
-	sed $< > $@ -e 's,xCCx,$(CC),'  -e 's,xCFLAGSx,$(CFLAGS),' \
+	sed -e 's,xCCx,$(CC),'  -e 's,xCFLAGSx,$(CFLAGS),' \
 	    -e 's,xprefixx,$(prefix),' -e 's,xsysconfdirx,$(sysconfdir),' \
-	    -e 's,xlibexecdirx,$(libexecdir),' -e "s,xBUILDERx,$$BUILDER,"
+	    -e 's,xlibexecdirx,$(libexecdir),' -e "s,xBUILDERx,$$BUILDER," \
+	    $< > $@
 
 BuildXLockMenu: BuildXLockMenu.in
 	@rm -f $@
