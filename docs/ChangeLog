@@ -1,3 +1,20 @@
+Sun Jul 11 10:42:20 1999  DanEspen  <dje@blue>
+
+	* TODO (Bugfixes): Remove TODO items: "Allow env var to specify
+	an additional read directory ($FVWMRCDIR or $FVWMHOME or something
+ 	similiar)?"  (Its done.)
+	"Add better overall icon handling options?"
+	(I can only guess what it meant, but I think the default box covers it.)
+	"Support for passwords in FvwmForm"
+	You can set the fg/bg color on a field by field basis.
+	"Fix line spacing in FvwmForm for lines that have only text (no buttons)
+	so that FvwmForm can be used as a "Help" form."
+	Done.
+	"Run profiling on FVWM to see if I can speed it up any more"
+	Its been done.
+	(We could dispense with the TODO file completely and rely on
+	Jitterbug instead.)
+	
 1999-07-04  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* DEVELOPERS: updated realese building procedure

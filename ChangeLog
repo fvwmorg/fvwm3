@@ -1,3 +1,14 @@
+Sun Jul 11 11:16:15 1999  DanEspen  <dje@blue>
+
+	* NEWS: Describe the default iconbox.
+
+	* fvwm/fvwm2.1 (iconbox): Describe the default iconbox.
+
+	* fvwm/icons.c: Create a global icon box that covers the screen.
+	This is used whenever the "style xxx" iconboxes run out of room
+	or if you never defined an iconbox at all.
+	This should fix the icons piling up at 0,0 problem.
+
 1999-07-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.c:

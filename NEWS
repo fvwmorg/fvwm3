@@ -1,5 +1,9 @@
 Changes in beta release 2.3.6 (July 1999)
 
+* If you never define an iconbox, or you fill all the iconboxes, fvwm2
+  has a default icon box that covers the screen, it filled top to bottom,
+  then left to right, and has an 80x80 pixel grid.
+
 * The new styles LowerTransient and DontLowerTransient allow to control if the
   transients of a window are lowered when the window itself is lowered
   (default) or not.

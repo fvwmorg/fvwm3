@@ -59,6 +59,7 @@
 #include <libs/Picture.h>
 
 
+static int do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr);
 static void GetBitmapFile(FvwmWindow *tmp_win);
 static void GetXPMFile(FvwmWindow *tmp_win);
 
@@ -540,9 +541,8 @@ void AutoPlaceIcon(FvwmWindow *t)
     loc_ok = False;
 
     /* check all boxes in order */
-    for(icon_boxes_ptr= t->IconBoxes;   /* init */
-        icon_boxes_ptr != NULL; /* until no more boxes */
-        icon_boxes_ptr = icon_boxes_ptr->next) { /* all boxes */
+    icon_boxes_ptr = NULL;              /* init */
+    while(do_all_iconboxes(t, &icon_boxes_ptr)) {
       if (loc_ok == True) {
 	/* leave for loop */
         break;
@@ -720,6 +720,46 @@ void AutoPlaceIcon(FvwmWindow *t)
   }
 }
 
+static icon_boxes *global_icon_box_ptr;
+/* Find next icon box to try to place icon in.
+   Goes thru chain that the window got thru style matching,
+   then the global icon box.
+   Create the global icon box on first call.
+   Return code indicates when the boxes are used up.
+   The boxes could only get completely used up when you fill the screen
+   with them.
+*/
+static int
+do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr) {
+  if (global_icon_box_ptr == 0) {       /* if first time */
+    /* Right now, the global box is hard-coded, fills the screen,
+       uses an 80x80 grid, and fills top-bottom, left-right */
+    global_icon_box_ptr = calloc(1, sizeof(icon_boxes));
+    global_icon_box_ptr->IconBox[2] = Scr.MyDisplayHeight;
+    global_icon_box_ptr->IconBox[3] = Scr.MyDisplayWidth;
+    global_icon_box_ptr->IconGrid[0] = 80;
+    global_icon_box_ptr->IconGrid[1] = 80;
+    global_icon_box_ptr->IconFlags = ICONFILLHRZ;
+  }
+  if (*icon_boxes_ptr == NULL) {        /* first time? */
+    *icon_boxes_ptr = t->IconBoxes;     /* start at windows box */
+    if (!*icon_boxes_ptr) {             /* if window has no box */
+      *icon_boxes_ptr = global_icon_box_ptr; /* use global box */
+    }
+    return (1);                         /* use box */
+  }
+  /* Here its not the first call, we are either on the chain or at
+     the global box */
+  if (*icon_boxes_ptr == global_icon_box_ptr) { /* if the global box */
+    return (0);                         /* completely out of boxes (unlikely) */
+  }
+  *icon_boxes_ptr = (*icon_boxes_ptr)->next; /* move to next one on chain */
+  if (*icon_boxes_ptr) {                /* if there is a next one */
+    return (1);                         /* return it */
+  }
+  *icon_boxes_ptr = global_icon_box_ptr; /* global box */
+  return (1);                           /* use it */
+}
 
 /****************************************************************************
  *
