@@ -8,6 +8,11 @@
 	* FVWM/Module/Tk.pm:
 	a new perl module subclass for writting Perl/Tk modules
 
+	* FVWM/Constants.pm:
+	* FVWM/Makefile.am:
+	* FVWM/create-constants:
+	fixed creating perl constants
+
 2002-02-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Module.pm.in:

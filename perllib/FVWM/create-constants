@@ -1,6 +1,8 @@
 #!/bin/sh
 
-infile=/data/cvs/fvwm/fvwm/libs/Module.h
+: ${fvwm_libdir=../../libs}
+
+infile=${fvwm_libdir}/Module.h
 outfile=`dirname $0`/Constants.pm
 
 ( \
