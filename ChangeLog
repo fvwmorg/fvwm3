@@ -1,5 +1,7 @@
 2000-01-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in: changed version to 2.3.14
+
 	* libs/System.c (getFileStamp):
 	-Wall fix
 
