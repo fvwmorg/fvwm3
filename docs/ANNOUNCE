@@ -1,6 +1,36 @@
-Fvwm is a powerful window manager.  Version 2.5.6 is an
+Dedication
+----------
+
+  This release is dedicated to all victims of the war in Iraq that
+  began in March, 2003.  The following people, many of them users
+  or developers of fvwm, would like to express their sympathies to
+  those affected:
+
+  Dominik Vogt
+  Mikhael Goikhman
+  Uwe Pross
+  Bob Woodside
+  Kingsly John
+  Paul Smith
+  SCoTT SMeDLeY
+  Cameron Simpson
+  Mathias Megyei
+  Andre Bonhote
+  Dan Espen
+  Olivier Chapuis
+  Timothy Groves
+  Ben Winslow
+  Dorothy Robinson
+  Alex Wallis
+  Bob Crochelt
+  Dennis McGregor
+  Marcus Lundblad
+
+-------------------------------------------------------------------
+
+Fvwm is a powerful window manager.  Version 2.5.7 is an
 unstable release that includes new features and improvements over
-unstable 2.5.5 and stable 2.4.15 versions.  You are welcome to
+unstable 2.5.6 and stable 2.4.15 versions.  You are welcome to
 upgrade and test the new features or help stabilizing the code.
 Please be aware that any features introduced in the 2.5.x
 development versions may be renamed, changed or removed without
@@ -16,53 +46,9 @@ See ChangeLog file for details.
 Improved:
 ---------
 
-* Improvement in MultiPixmap.  In particular Colorset and Solid
-  color can be specified.
-
-* Minor incompatible improvements to the Perl library API.
-
 New features:
 -------------
-
-* New ButtonStyle and TitleStyle style options AdjustedPixmap,
-  StretchedPixmap and ShrunkPixmap.
-
-* Use the MIT Shared Memory Extension for XImage.
-
-* The TitleStyle decor of a vertical window Title is rotated.
-  This is controllable using a new style option:
-
-    !UseTitleDecorRotation / UseTitleDecorRotation
-
-* New style options IconBackgroundColorset, IconTitleColorset,
-  HilightIconTitleColorset, IconTitleRelief, IconBackgroundRelief
-  and IconBackgroundPadding.
-
-* New option to IconSize style: Adjusted, Stretched, Shrunk.
-
-* New shortcuts for button states: AllActiveUp, AllActiveDown,
-  AllInactiveUp, AllInactiveDown.
-
-* New Style options:
-
-    Closable, Iconifiable, Maximizable, AllowMaximizeFixedSize
-
-* New conditions for matching windows:
-
-    Closable, Iconifiable, Maximizable, FixedSize and HasHandles
-
-* New conditional command On for non-window related conditions.
-
-* All single letter variables are deprecated now; new variables:
-
-    $[w.id], $[w.name], $[w.iconname], $[w.class], $[w.resource],
-    $[desk.n], $[version.num], $[version.info], $[version.line],
-    $[desk.pagesx], $[desk.pagesy]
 
 Other changes:
 --------------
 
-* Renamed FvwmWindowLister to FvwmWindowMenu.
-
-* Removed --disable-gnome-hints and --disable-ewmh configure
-  options.
