@@ -918,8 +918,8 @@ void GetWindowSizeHints(FvwmWindow *tmp)
    * filled in! */
   if (tmp->hints.flags & PResizeInc)
     {
-      if (tmp->hints.width_inc == 0) tmp->hints.width_inc = 1;
-      if (tmp->hints.height_inc == 0) tmp->hints.height_inc = 1;
+      if (tmp->hints.width_inc <= 0) tmp->hints.width_inc = 1;
+      if (tmp->hints.height_inc <= 0) tmp->hints.height_inc = 1;
     }
   else
     {
@@ -932,7 +932,12 @@ void GetWindowSizeHints(FvwmWindow *tmp)
    * and vice-versa.
    */
 
-  if(!(tmp->hints.flags & PBaseSize))
+  if(tmp->hints.flags & PBaseSize)
+    {
+      if (tmp->hints.base_width < 0) tmp->hints.base_width = 0;
+      if (tmp->hints.base_height < 0) tmp->hints.base_height = 0;
+    }
+  else
     {
       if(tmp->hints.flags & PMinSize)
 	{
@@ -945,47 +950,50 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 	  tmp->hints.base_height = 0;
 	}
     }
-  if(!(tmp->hints.flags & PMinSize))
+
+  if(tmp->hints.flags & PMinSize)
     {
-      tmp->hints.min_width = tmp->hints.base_width;
-      tmp->hints.min_height = tmp->hints.base_height;
+      if (tmp->hints.min_width <= 0) tmp->hints.min_width = 1;
+      if (tmp->hints.min_height <= 0) tmp->hints.min_height = 1;      
     }
-  if(!(tmp->hints.flags & PMaxSize))
+  else
+    {
+      if(tmp->hints.flags & PBaseSize)
+	{
+	  tmp->hints.min_width = tmp->hints.base_width;
+	  tmp->hints.min_height = tmp->hints.base_height;
+	}
+      else 
+	{
+	  tmp->hints.min_width = 1;
+	  tmp->hints.min_height = 1;
+	}
+    }
+
+  if(tmp->hints.flags & PMaxSize)
+    {
+      if(tmp->hints.max_width < tmp->hints.min_width)
+	tmp->hints.max_width = MAX_WINDOW_WIDTH;
+      if(tmp->hints.max_height < tmp->hints.min_height)
+	tmp->hints.max_height = MAX_WINDOW_HEIGHT;
+    }
+  else
     {
       tmp->hints.max_width = MAX_WINDOW_WIDTH;
       tmp->hints.max_height = MAX_WINDOW_HEIGHT;
     }
-  if (tmp->hints.flags & PBaseSize)
-    {
-      if (((tmp->hints.flags & PMinSize) &&
-	   (tmp->hints.base_width < tmp->hints.min_width ||
-	    tmp->hints.base_height < tmp->hints.min_height)) ||
-	  ((tmp->hints.flags & PMaxSize) &&
-	   (tmp->hints.base_width > tmp->hints.max_width ||
-	    tmp->hints.base_height > tmp->hints.max_height)))
-	{
-	  /* The size hints are broken. Ignore min and max hints! */
-	  tmp->hints.max_width = MAX_WINDOW_WIDTH;
-	  tmp->hints.max_height = MAX_WINDOW_HEIGHT;
-	  tmp->hints.min_height = 1;
-	  tmp->hints.min_width = 1;
-	}
-    }
-  if(tmp->hints.max_width < tmp->hints.min_width)
-    tmp->hints.max_width = MAX_WINDOW_WIDTH;
-  if(tmp->hints.max_height < tmp->hints.min_height)
-    tmp->hints.max_height = MAX_WINDOW_HEIGHT;
 
-  /* Zero width/height windows are bad news! */
-  if(tmp->hints.min_height <= 0)
-    tmp->hints.min_height = 1;
-  if(tmp->hints.min_width <= 0)
-    tmp->hints.min_width = 1;
+  if (HAS_OVERRIDE_SIZE_HINTS(tmp))
+    {
+      tmp->hints.min_width = 1;
+      tmp->hints.min_height = 1;
+      tmp->hints.max_width = MAX_WINDOW_WIDTH;
+      tmp->hints.max_height = MAX_WINDOW_HEIGHT;
+    }
 
   if(!(tmp->hints.flags & PWinGravity))
     {
       tmp->hints.win_gravity = NorthWestGravity;
-      tmp->hints.flags |= PWinGravity;
     }
 
   if (tmp->hints.flags & PAspect)
@@ -1022,3 +1030,4 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     }
   }
 }
+

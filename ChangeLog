@@ -1,3 +1,31 @@
+1999-05-04  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/placement.c (GetGravityOffsets): remove unnecessary
+	check for PWinGravity. We make sure the value is valid in 
+	GetWindowSizeHints.
+
+	* fvwm/module_interface.c (CONFIGARGS): 
+	* fvwm/module_interface.c (OLDCONFIGARGS): 
+	* fvwm/module_interface.c (CONFIGARGSNEW): 
+	* fvwm/module.c (CONFIGARGS): 
+	* fvwm/module.c (OLDCONFIGARGS): 
+	* fvwm/module.c (CONFIGARGSNEW): remove unnecessary checks
+	for PBaseSize and PResizeInc from these macros. We make sure
+	the values are valid in GetWindowSizeHints.
+
+	* fvwm/move_resize.c (ConstrainSize): remove the override_size
+	flag handling here, since it is now done in GetWindowSizeHints.
+	Be more ICCCM 2 compliant by applying the aspect ratio to
+	size - base_size if the base_size is explicitly given. 
+
+	* fvwm/add_window.c (GetWindowSizeHints): completely rewritten.
+	It now modifies the hints in the following way: ensure that
+	1 <= inc, 0 <= base, 1 <= min <= max. It uses the follwing
+	defaults: 1 for inc, min or 0 for base, base or 1 for min, 
+	MAX_WINDOW for max, NorthWest for gravity. PAspect is unset 
+	if the aspect ratios are broken. Apart from that, the flags are
+	not changed. The override_size style is now handled here as well.
+
 1999-05-04  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/move_resize.c (moveLoop): fixed move/page bug when the button

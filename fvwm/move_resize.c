@@ -1570,21 +1570,6 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
     xinc = tmp_win->hints.width_inc;
     yinc = tmp_win->hints.height_inc;
 
-    /* A hack to fix broken applications. */
-    if (HAS_OVERRIDE_SIZE_HINTS(tmp_win))
-      {
-	if(tmp_win->hints.flags & PMinSize)
-	  {
-	    minWidth = 1;
-	    minHeight = 1;
-	  }
-	if(tmp_win->hints.flags & PMaxSize)
-	  {
-	    maxWidth = MAX_WINDOW_WIDTH;
-	    maxHeight = MAX_WINDOW_HEIGHT;
-	  }
-      }
-
     /*
      * First, clamp to min and max values
      */
@@ -1630,6 +1615,23 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
 
     if (tmp_win->hints.flags & PAspect)
       {
+
+	if (tmp_win->hints.flags & PBaseSize)
+	  {
+	    /* ICCCM 2 demands that aspect ratio should apply 
+	       to width - base_width if base_width is explicitly
+	       given. This might give funny results if dwidth is 
+	       smaller than baseWidth. Maybe we should warn about
+	       slightly broken size hints if base is larger than
+	       min. */
+	    dwidth -= baseWidth;
+	    maxWidth -= baseWidth;
+	    minWidth -= baseWidth;
+	    dheight -= baseHeight;
+	    maxHeight -= baseHeight;
+	    minHeight -= baseHeight;
+	  }
+
 	if ((minAspectX * dheight > minAspectY * dwidth)&&(xmotion == 0))
 	  {
 	    /* Change width to match */
@@ -1674,7 +1676,14 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
 		  dheight += delta;
 	      }
 	  }
+
+	if (tmp_win->hints.flags & PBaseSize)
+	  {
+	    dwidth += baseWidth;
+	    dheight += baseHeight;
+	  }
       }
+
 
     /*
      * Fourth, account for border width and title height

@@ -43,7 +43,7 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
-#include "module_interface.h"
+#include "module.h"
 
 
 int npipes;
@@ -53,6 +53,7 @@ int *pipeOn;
 char **pipeName;
 /*  RBW - hack for gsfr new config args  */
 unsigned long junkzero = 0;
+unsigned long junkone  = 1;
 
 unsigned long *PipeMask;
 struct queue_buff_struct **pipeQueue;
@@ -403,10 +404,7 @@ RETSIGTYPE DeadPipe(int nonsense)
 
 void KillModule(int channel, int place)
 {
-#if 0
-  /* this causes a coredump (why?) */
   DBUG("KillModule %i\n", place);
-#endif
   close(readPipes[channel]);
   close(writePipes[channel]);
 
@@ -591,10 +589,10 @@ BroadcastNewPacket(unsigned long event_type, unsigned long num_datum, ...)
             (_t)->flags,\
             (_t)->title_height,\
             (_t)->boundary_width,\
-	    (_t)->hints.base_width,\
-	    (_t)->hints.base_height,\
-	    (_t)->hints.width_inc,\
-	    (_t)->hints.height_inc,\
+            (_t)->hints.base_width,\
+            (_t)->hints.base_height,\
+            (_t)->hints.width_inc,\
+            (_t)->hints.height_inc,\
             (_t)->hints.min_width,\
             (_t)->hints.min_height,\
             (_t)->hints.max_width,\
@@ -618,10 +616,10 @@ BroadcastNewPacket(unsigned long event_type, unsigned long num_datum, ...)
             old_flags,\
             (_t)->title_height,\
             (_t)->boundary_width,\
-	    (_t)->hints.base_width,\
-	    (_t)->hints.base_height,\
-	    (_t)->hints.width_inc,\
-	    (_t)->hints.height_inc,\
+            (_t)->hints.base_width,\
+            (_t)->hints.base_height,\
+            (_t)->hints.width_inc,\
+            (_t)->hints.height_inc,\
             (_t)->hints.min_width,\
             (_t)->hints.min_height,\
             (_t)->hints.max_width,\
@@ -707,11 +705,11 @@ BroadcastNewPacket(unsigned long event_type, unsigned long num_datum, ...)
 	    (unsigned long)(sizeof(unsigned long)),\
             &(*(_t))->boundary_width,\
 	    (unsigned long)(sizeof(unsigned long)),\
-	    &(*(_t))->hints.base_width,\
+            &(*(_t))->hints.base_width,\
 	    (unsigned long)(sizeof(unsigned long)),\
 	    &(*(_t))->hints.base_height,\
 	    (unsigned long)(sizeof(unsigned long)),\
-	    &(*(_t))->hints.width_inc,\
+            &(*(_t))->hints.width_inc,\
 	    (unsigned long)(sizeof(unsigned long)),\
 	    &(*(_t))->hints.height_inc,\
 	    (unsigned long)(sizeof(unsigned long)),\
@@ -1148,3 +1146,4 @@ void set_mask_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   GetIntegerArguments(action, NULL, &val, 1);
   PipeMask[*Module] = (unsigned long)val;
 }
+

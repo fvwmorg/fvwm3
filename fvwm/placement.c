@@ -864,8 +864,7 @@ void GetGravityOffsets (FvwmWindow *tmp,int *xp,int *yp)
     {  1,  1 },			/* SouthEastGravity */
     {  0,  0 },			/* StaticGravity */
   };
-  register int g = ((tmp->hints.flags & PWinGravity)
-		    ? tmp->hints.win_gravity : NorthWestGravity);
+  register int g = tmp->hints.win_gravity;
 
   if (g < ForgetGravity || g > StaticGravity)
     *xp = *yp = 0;
