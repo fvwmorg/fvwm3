@@ -111,7 +111,7 @@ else
   touch $NCLOG || err_exit 18
   echo `date +%Y-%m-%d`"  $FVWMRELNAME  <$FVWMRELEMAIL>" > $NCLOG
   echo >> $NCLOG
-  echo "	* configure.in: changed version to $VRELEASE.$VMAJOR.$VMINOR" \
+  echo "	* configure.in: changed version to $VRELEASE.$VMAJOR.$[VMINOR + 1]" \
     >> $NCLOG
   echo >> $NCLOG
   cat ChangeLog >> $NCLOG
