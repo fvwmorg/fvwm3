@@ -1262,6 +1262,8 @@ void GetPopupOptions(MenuItem *mi, MenuOptions *pops)
 {
   char *junk = NULL, *action;
 
+  if (!IS_POPUP_MENU_ITEM(mi))
+    return;
   pops->flags &= ~MENU_HAS_POSHINTS;
   if (mi == NULL)
     return;
