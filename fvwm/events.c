@@ -238,13 +238,17 @@ void HandleEvents(void)
   send_motion = FALSE;
 #endif /* HAVE_STROKE */
   while ( !isTerminated )
+  {
+    last_event_type = 0;
+    if (Scr.flags.has_any_style_changed)
     {
-      last_event_type = 0;
-      if(My_XNextEvent(dpy, &Event))
-	{
-	  DispatchEvent(False);
-	}
+      handle_style_changes();
     }
+    if(My_XNextEvent(dpy, &Event))
+    {
+      DispatchEvent(False);
+    }
+  }
 }
 
 /***********************************************************************
@@ -2072,14 +2076,8 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       timeoutP = NULL; /* set an infinite timeout to stop ticking */
       reset_style_changes();
     }
-    else if (Scr.flags.has_any_style_changed)
-    {
-      handle_style_changes();
-    }
   }
 
   DBUG("My_XNextEvent","leaving My_XNextEvent");
   return 0;
 }
-
-

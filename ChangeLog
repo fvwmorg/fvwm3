@@ -1,5 +1,23 @@
 1999-10-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/session.c (SaveWindowStates):
+	(matchWin): fixed several session management bugs:
+	SM tried to remember states of modules (which is impossible since the
+	modules are killed and get new windows over a restart)
+	SM simply matched by window id over a restart (which fails for the
+	same reason)
+
+	* fvwm/fvwm.h (FvwmWindow): removed unused member 'style'
+
+	* fvwm/events.c:
+	* fvwm/style.c (handle_window_style_change):
+	update static window styles immediately
+
+	* fvwm/gnome.c (GNOME_GetStyle):
+	* fvwm/style.c (ProcessNewStyle):
+	* fvwm/fvwm.h:
+ 	common window flags divided into dynamic and static part
+
 	* fvwm/move_resize.c (moveLoop): prevent configure notify events if
 	the position didn't change
 

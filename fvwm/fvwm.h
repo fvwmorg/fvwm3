@@ -150,36 +150,41 @@ struct FvwmDecor;		/* definition in screen.h */
 typedef struct
 {
   /* common flags (former flags in bits 0-12) */
-  unsigned do_circulate_skip : 1;
-  unsigned do_circulate_skip_icon : 1;
-  unsigned do_flip_transient : 1;
-  unsigned do_grab_focus_when_created : 1;
-  unsigned do_grab_focus_when_transient_created : 1;
-  unsigned do_ignore_restack : 1;
-  unsigned do_lower_transient : 1;
-  unsigned do_not_show_on_map : 1;
-  unsigned do_raise_transient : 1;
-  unsigned do_resize_opaque : 1;
-  unsigned do_stack_transient_parent : 1;
-  unsigned do_start_iconic : 1;
-  unsigned do_window_list_skip : 1;
+  unsigned is_sticky : 1;
+  /* static flags that do not change dynamically after the window has been
+   * created */
+  struct
+  {
+    unsigned do_circulate_skip : 1;
+    unsigned do_circulate_skip_icon : 1;
+    unsigned do_flip_transient : 1;
+    unsigned do_grab_focus_when_created : 1;
+    unsigned do_grab_focus_when_transient_created : 1;
+    unsigned do_ignore_restack : 1;
+    unsigned do_lower_transient : 1;
+    unsigned do_not_show_on_map : 1;
+    unsigned do_raise_transient : 1;
+    unsigned do_resize_opaque : 1;
+    unsigned do_stack_transient_parent : 1;
+    unsigned do_start_iconic : 1;
+    unsigned do_window_list_skip : 1;
 #define FOCUS_MOUSE   0x0
 #define FOCUS_CLICK   0x1
 #define FOCUS_SLOPPY  0x2
 #define FOCUS_NEVER   0x3
 #define FOCUS_MASK    0x3
-  unsigned focus_mode : 2;
-  unsigned has_depressable_border : 1;
-  unsigned has_mwm_border : 1;
-  unsigned has_mwm_buttons : 1;
-  unsigned has_mwm_override : 1;
-  unsigned has_override_size : 1;
-  unsigned has_no_icon_title : 1;
-  unsigned is_fixed : 1;
-  unsigned is_icon_sticky : 1;
-  unsigned is_icon_suppressed : 1;
-  unsigned is_lenient : 1;
-  unsigned is_sticky : 1;
+    unsigned focus_mode : 2;
+    unsigned has_depressable_border : 1;
+    unsigned has_mwm_border : 1;
+    unsigned has_mwm_buttons : 1;
+    unsigned has_mwm_override : 1;
+    unsigned has_no_icon_title : 1;
+    unsigned has_override_size : 1;
+    unsigned is_fixed : 1;
+    unsigned is_icon_sticky : 1;
+    unsigned is_icon_suppressed : 1;
+    unsigned is_lenient : 1;
+  } s;
 } common_flags_type;
 
 typedef struct
@@ -356,7 +361,6 @@ typedef struct FvwmWindow
     Window transientfor;
 
     window_flags flags;
-    window_style style;
 
 #ifdef MINI_ICONS
     char *mini_pixmap_file;

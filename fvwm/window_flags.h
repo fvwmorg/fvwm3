@@ -17,88 +17,91 @@
 #define _WINDOW_FLAGS_
 
 /* access to the common flags of a window */
-#define DO_FLIP_TRANSIENT(fw)  ((fw)->flags.common.do_flip_transient)
-#define DO_GRAB_FOCUS(fw) \
-          ((fw)->flags.common.do_grab_focus_when_created)
-#define DO_GRAB_FOCUS_TRANSIENT(fw) \
-          ((fw)->flags.common.do_grab_focus_when_transient_created)
-#define DO_LOWER_TRANSIENT(fw) ((fw)->flags.common.do_lower_transient)
-#define DO_NOT_SHOW_ON_MAP(fw)  \
-          ((fw)->flags.common.do_not_show_on_map)
-#define DO_RAISE_TRANSIENT(fw) ((fw)->flags.common.do_raise_transient)
-#define DO_RESIZE_OPAQUE(fw)   ((fw)->flags.common.do_resize_opaque)
-#define DO_SKIP_CIRCULATE(fw)  \
-          ((fw)->flags.common.do_circulate_skip)
-#define SET_DO_SKIP_CIRCULATE(fw,x) \
-          (fw)->flags.common.do_circulate_skip = !!(x)
-#define SETM_DO_SKIP_CIRCULATE(fw,x) \
-          (fw)->flag_mask.common.do_circulate_skip = !!(x)
-#define DO_SKIP_ICON_CIRCULATE(fw) \
-          ((fw)->flags.common.do_circulate_skip_icon)
-#define SET_DO_SKIP_ICON_CIRCULATE(fw,x) \
-          (fw)->flags.common.do_circulate_skip_icon = !!(x)
-#define SETM_DO_SKIP_ICON_CIRCULATE(fw,x) \
-          (fw)->flag_mask.common.do_circulate_skip_icon = !!(x)
-#define DO_SKIP_WINDOW_LIST(fw) \
-          ((fw)->flags.common.do_window_list_skip)
-#define SET_DO_SKIP_WINDOW_LIST(fw,x) \
-          (fw)->flags.common.do_window_list_skip = !!(x)
-#define SETM_DO_SKIP_WINDOW_LIST(fw,x) \
-          (fw)->flag_mask.common.do_window_list_skip = !!(x)
-#define DO_STACK_TRANSIENT_PARENT(fw) \
-          ((fw)->flags.common.do_stack_transient_parent)
-#define DO_START_ICONIC(fw)    ((fw)->flags.common.do_start_iconic)
-#define SET_DO_START_ICONIC(fw,x) \
-          (fw)->flags.common.do_start_iconic = !!(x)
-#define SETM_DO_START_ICONIC(fw,x) \
-          (fw)->flag_mask.common.do_start_iconic = !!(x)
+#define FW_COMMON_FLAGS(fw)         ((fw)->flags.common)
+#define FW_COMMON_STATIC_FLAGS(fw)  ((fw)->flags.common.s)
 
-#define IS_ICON_STICKY(fw)     ((fw)->flags.common.is_icon_sticky)
-#define SET_ICON_STICKY(fw,x)  (fw)->flags.common.is_icon_sticky = !!(x)
+#define DO_FLIP_TRANSIENT(fw)  ((fw)->flags.common.s.do_flip_transient)
+#define DO_GRAB_FOCUS(fw) \
+          ((fw)->flags.common.s.do_grab_focus_when_created)
+#define DO_GRAB_FOCUS_TRANSIENT(fw) \
+          ((fw)->flags.common.s.do_grab_focus_when_transient_created)
+#define DO_LOWER_TRANSIENT(fw) ((fw)->flags.common.s.do_lower_transient)
+#define DO_NOT_SHOW_ON_MAP(fw)  \
+          ((fw)->flags.common.s.do_not_show_on_map)
+#define DO_RAISE_TRANSIENT(fw) ((fw)->flags.common.s.do_raise_transient)
+#define DO_RESIZE_OPAQUE(fw)   ((fw)->flags.common.s.do_resize_opaque)
+#define DO_SKIP_CIRCULATE(fw)  \
+          ((fw)->flags.common.s.do_circulate_skip)
+#define SET_DO_SKIP_CIRCULATE(fw,x) \
+          (fw)->flags.common.s.do_circulate_skip = !!(x)
+#define SETM_DO_SKIP_CIRCULATE(fw,x) \
+          (fw)->flag_mask.common.s.do_circulate_skip = !!(x)
+#define DO_SKIP_ICON_CIRCULATE(fw) \
+          ((fw)->flags.common.s.do_circulate_skip_icon)
+#define SET_DO_SKIP_ICON_CIRCULATE(fw,x) \
+          (fw)->flags.common.s.do_circulate_skip_icon = !!(x)
+#define SETM_DO_SKIP_ICON_CIRCULATE(fw,x) \
+          (fw)->flag_mask.common.s.do_circulate_skip_icon = !!(x)
+#define DO_SKIP_WINDOW_LIST(fw) \
+          ((fw)->flags.common.s.do_window_list_skip)
+#define SET_DO_SKIP_WINDOW_LIST(fw,x) \
+          (fw)->flags.common.s.do_window_list_skip = !!(x)
+#define SETM_DO_SKIP_WINDOW_LIST(fw,x) \
+          (fw)->flag_mask.common.s.do_window_list_skip = !!(x)
+#define DO_STACK_TRANSIENT_PARENT(fw) \
+          ((fw)->flags.common.s.do_stack_transient_parent)
+#define DO_START_ICONIC(fw)    ((fw)->flags.common.s.do_start_iconic)
+#define SET_DO_START_ICONIC(fw,x) \
+          (fw)->flags.common.s.do_start_iconic = !!(x)
+#define SETM_DO_START_ICONIC(fw,x) \
+          (fw)->flag_mask.common.s.do_start_iconic = !!(x)
+
+#define IS_ICON_STICKY(fw)     ((fw)->flags.common.s.is_icon_sticky)
+#define SET_ICON_STICKY(fw,x)  (fw)->flags.common.s.is_icon_sticky = !!(x)
 #define SETM_ICON_STICKY(fw,x) \
-          (fw)->flag_mask.common.is_icon_sticky = !!(x)
+          (fw)->flag_mask.common.s.is_icon_sticky = !!(x)
 #define IS_ICON_SUPPRESSED(fw) \
-          ((fw)->flags.common.is_icon_suppressed)
+          ((fw)->flags.common.s.is_icon_suppressed)
 #define SET_ICON_SUPPRESSED(fw,x)  \
-          (fw)->flags.common.is_icon_suppressed = !!(x)
+          (fw)->flags.common.s.is_icon_suppressed = !!(x)
 #define SETM_ICON_SUPPRESSED(fw,x) \
-          (fw)->flag_mask.common.is_icon_suppressed = !!(x)
-#define IS_LENIENT(fw)         ((fw)->flags.common.is_lenient)
-#define SET_LENIENT(fw,x)      (fw)->flags.common.is_lenient = !!(x)
-#define SETM_LENIENT(fw,x)     (fw)->flag_mask.common.is_lenient = !!(x)
+          (fw)->flag_mask.common.s.is_icon_suppressed = !!(x)
+#define IS_LENIENT(fw)         ((fw)->flags.common.s.is_lenient)
+#define SET_LENIENT(fw,x)      (fw)->flags.common.s.is_lenient = !!(x)
+#define SETM_LENIENT(fw,x)     (fw)->flag_mask.common.s.is_lenient = !!(x)
 #define IS_STICKY(fw)          ((fw)->flags.common.is_sticky)
 #define SET_STICKY(fw,x)       (fw)->flags.common.is_sticky = !!(x)
 #define SETM_STICKY(fw,x)      (fw)->flag_mask.common.is_sticky = !!(x)
-#define GET_FOCUS_MODE(fw)     ((fw)->flags.common.focus_mode)
-#define SET_FOCUS_MODE(fw,x)   (fw)->flags.common.focus_mode = (x)
-#define SETM_FOCUS_MODE(fw,x)  (fw)->flag_mask.common.focus_mode =(x)
+#define GET_FOCUS_MODE(fw)     ((fw)->flags.common.s.focus_mode)
+#define SET_FOCUS_MODE(fw,x)   (fw)->flags.common.s.focus_mode = (x)
+#define SETM_FOCUS_MODE(fw,x)  (fw)->flag_mask.common.s.focus_mode =(x)
 #define HAS_CLICK_FOCUS(fw)    \
-          ((fw)->flags.common.focus_mode == FOCUS_CLICK)
+          ((fw)->flags.common.s.focus_mode == FOCUS_CLICK)
 #define HAS_MOUSE_FOCUS(fw)    \
-          ((fw)->flags.common.focus_mode == FOCUS_MOUSE)
+          ((fw)->flags.common.s.focus_mode == FOCUS_MOUSE)
 #define HAS_SLOPPY_FOCUS(fw)   \
-          ((fw)->flags.common.focus_mode == FOCUS_SLOPPY)
+          ((fw)->flags.common.s.focus_mode == FOCUS_SLOPPY)
 #define HAS_NEVER_FOCUS(fw)   \
-          ((fw)->flags.common.focus_mode == FOCUS_NEVER)
+          ((fw)->flags.common.s.focus_mode == FOCUS_NEVER)
 #define HAS_NO_ICON_TITLE(fw)  \
-          ((fw)->flags.common.has_no_icon_title)
+          ((fw)->flags.common.s.has_no_icon_title)
 #define SET_HAS_NO_ICON_TITLE(fw,x) \
-          (fw)->flags.common.has_no_icon_title = !!(x)
+          (fw)->flags.common.s.has_no_icon_title = !!(x)
 #define SETM_HAS_NO_ICON_TITLE(fw,x) \
-          (fw)->flag_mask.common.has_no_icon_title = !!(x)
-#define HAS_MWM_BORDER(fw)     ((fw)->flags.common.has_mwm_border)
-#define HAS_MWM_BUTTONS(fw)    ((fw)->flags.common.has_mwm_buttons)
+          (fw)->flag_mask.common.s.has_no_icon_title = !!(x)
+#define HAS_MWM_BORDER(fw)     ((fw)->flags.common.s.has_mwm_border)
+#define HAS_MWM_BUTTONS(fw)    ((fw)->flags.common.s.has_mwm_buttons)
 #define HAS_MWM_OVERRIDE_HINTS(fw)  \
-                               ((fw)->flags.common.has_mwm_override)
+                               ((fw)->flags.common.s.has_mwm_override)
 #define HAS_OVERRIDE_SIZE_HINTS(fw)  \
-                               ((fw)->flags.common.has_override_size)
+                               ((fw)->flags.common.s.has_override_size)
 #define DO_IGNORE_RESTACK(fw)  \
-                               ((fw)->flags.common.do_ignore_restack)
+                               ((fw)->flags.common.s.do_ignore_restack)
 #define IS_FIXED(fw)  \
-                               ((fw)->flags.common.is_fixed)
-#define SET_FIXED(fw,x)        (fw)->flags.common.is_fixed = !!(x)
-#define SETM_FIXED(fw,x)       (fw)->flag_mask.common.is_fixed = !!(x)
-#define HAS_DEPRESSABLE_BORDER(fw) ((fw)->flags.common.has_depressable_border)
+                               ((fw)->flags.common.s.is_fixed)
+#define SET_FIXED(fw,x)        (fw)->flags.common.s.is_fixed = !!(x)
+#define SETM_FIXED(fw,x)       (fw)->flag_mask.common.s.is_fixed = !!(x)
+#define HAS_DEPRESSABLE_BORDER(fw) ((fw)->flags.common.s.has_depressable_border)
 
 
 /* access to the special flags of a window */

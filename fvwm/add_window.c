@@ -290,13 +290,16 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* on and off buttons combined. */
   tmp_win->buttons = SIS_BUTTON_DISABLED(sflags);
   /* FIXME: shouldn't transients inherit the layer ? */
+fprintf(stderr,"window: %s\n",tmp_win->name);
   if (SUSE_LAYER(sflags))
   {
+fprintf(stderr,"1 new layer: %d\n", SGET_LAYER(style));
     set_default_layer(tmp_win, SGET_LAYER(style));
     set_layer(tmp_win, SGET_LAYER(style));
   }
   else
   {
+fprintf(stderr,"2 new layers: %d\n", Scr.DefaultLayer);
     set_default_layer(tmp_win, Scr.DefaultLayer);
     set_layer(tmp_win, Scr.DefaultLayer);
   }
@@ -916,7 +919,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #ifdef GNOME
   /* set GNOME hints on the window from flags set on tmp_win */
   GNOME_SetHints(tmp_win);
+#if 0
   GNOME_SetLayer(tmp_win);
+#endif
   GNOME_SetDesk(tmp_win);
 #endif
 

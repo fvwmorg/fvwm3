@@ -563,14 +563,8 @@ void refresh_win_function(F_CMD_ARGS)
 }
 
 
-void stick_function(F_CMD_ARGS)
+void handle_stick(F_CMD_ARGS, int toggle)
 {
-  int toggle;
-
-  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
-    return;
-
-  toggle = ParseToggleArgument(action, &action, -1, 0);
   if ((toggle == 1 && IS_STICKY(tmp_win)) ||
       (toggle == 0 && !IS_STICKY(tmp_win)))
     return;
@@ -600,6 +594,18 @@ void stick_function(F_CMD_ARGS)
 #ifdef GNOME
   GNOME_SetHints (tmp_win);
 #endif
+}
+
+void stick_function(F_CMD_ARGS)
+{
+  int toggle;
+
+  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
+    return;
+
+  toggle = ParseToggleArgument(action, &action, -1, 0);
+
+  handle_stick(eventp, w, tmp_win, context, action, Module, toggle);
 }
 
 void wait_func(F_CMD_ARGS)

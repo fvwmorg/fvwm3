@@ -526,8 +526,8 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
 
       if (*(int*)retval & WIN_STATE_FIXED_POSITION)
 	{
-          style->flags.common.is_fixed = 1;
-          style->flag_mask.common.is_fixed = 1;
+          style->flags.common.s.is_fixed = 1;
+          style->flag_mask.common.s.is_fixed = 1;
 	}
 
       free(retval);
@@ -542,8 +542,8 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
     {
       if (*retval & WIN_HINTS_SKIP_WINLIST)
 	{
-	  style->flags.common.do_window_list_skip = 1;
-	  style->flag_mask.common.do_window_list_skip = 1;
+	  style->flags.common.s.do_window_list_skip = 1;
+	  style->flag_mask.common.s.do_window_list_skip = 1;
 	}
 
       free(retval);

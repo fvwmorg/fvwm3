@@ -355,7 +355,7 @@ void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
       else
       {
 	SET_HAS_NO_ICON_TITLE(t, 1);
-    }
+      }
     }
 
   /* Now I have the un-altered decor and functions, but with the

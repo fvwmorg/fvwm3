@@ -318,6 +318,13 @@ SaveWindowStates(FILE *f)
     {
       Bool is_icon_sticky;
 
+      if (XGetGeometry(dpy, ewin->w, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
+                       &JunkHeight, &JunkBW, &JunkDepth))
+      {
+          /* Don't save the state of windows that already died (i.e. modules)!
+           */
+          continue;
+      }
       is_icon_sticky = (IS_STICKY(ewin) ||
 			(IS_ICONIFIED(ewin) && IS_ICON_STICKY(ewin)));
       fprintf(f, "[CLIENT] %lx\n", ewin->w);
@@ -542,12 +549,15 @@ static Bool matchWin(FvwmWindow *w, Match *m)
   int wm_command_count = 0, i;
   int found;
 
-
+#if 0
+  /* No! When restarting fvwm kills/spawns modules. This does mix up the
+   * positions of the module windows. */
   if (Restarting)
     {
        /* simply match by window id */
        return (w->w == m->win);
     }
+#endif
 
   found = 0;
   client_id = GetClientID(w->w);
