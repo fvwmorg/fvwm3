@@ -1199,49 +1199,6 @@ static void DoSnapAttract(
       if (!((other.x + (int)other.width) < (*px) ||
 	    (other.x) > (*px + (int)self.width)))
       {
-	dist = abs(Scr.MyDisplayWidth - (*px + (int)self.width));
-
-	if(dist < closestRight)
-	{
-	  closestRight = dist;
-
-	  if(((*px + (int)self.width) >= Scr.MyDisplayWidth)&&
-	     ((*px + (int)self.width) < Scr.MyDisplayWidth +
-	      Scr.SnapAttraction))
-	    {
-	    nxl = Scr.MyDisplayWidth - (int)self.width;
-	  }
-
-	  if(((*px + (int)self.width) >= Scr.MyDisplayWidth -
-	      Scr.SnapAttraction)&&
-	     ((*px + (int)self.width) < Scr.MyDisplayWidth))
-	  {
-	    nxl = Scr.MyDisplayWidth - (int)self.width;
-	  }
-	}
-
-	dist = abs(*px);
-
-	if(dist < closestLeft)
-	{
-	  closestLeft = dist;
-
-	  if((*px <= 0)&&
-	     (*px > - Scr.SnapAttraction))
-	  {
-	    nxl = 0;
-	  }
-	  if((*px <= Scr.SnapAttraction)&&
-	     (*px > 0))
-	  {
-	    nxl = 0;
-	  }
-	}
-      }
-
-      if(!((other.x + (int)other.width) < (*px) ||
-	   (other.x) > (*px + (int)self.width)))
-      {
 	dist = abs(other.y - (*py + (int)self.height));
 	if (dist < closestBottom)
 	{
@@ -1280,7 +1237,6 @@ static void DoSnapAttract(
   if ((Scr.SnapMode & SNAP_SCREEN) && Scr.SnapAttraction > 0)
   {
     /* horizontally */
-    /* vertically */
     if (!(Scr.MyDisplayWidth < (*px) || (*px + (int)self.width) < 0))
     {
       dist = abs(Scr.MyDisplayHeight - (*py + (int)self.height));
@@ -1314,6 +1270,7 @@ static void DoSnapAttract(
 	}
       }
     } /* horizontally */
+    /* vertically */
     if (!(Scr.MyDisplayHeight < (*py) || (*py + (int)self.height) < 0))
     {
       dist = abs(Scr.MyDisplayWidth - (*px + (int)self.width));
@@ -1381,10 +1338,6 @@ static void DoSnapAttract(
       *py = (*py + ((*py >= 0) ? Scr.SnapGridY : -Scr.SnapGridY) / 2) /
 	Scr.SnapGridY * Scr.SnapGridY;
     }
-  }
-  else
-  {
-    *py = nyt;
   }
 
   /*

@@ -531,8 +531,8 @@ typedef struct MenuRootDynamic
 
 typedef struct MenuRoot
 {
-    MenuRootStatic *s;
-    MenuRootDynamic *d;
+  MenuRootStatic *s;
+  MenuRootDynamic *d;
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
 
@@ -552,13 +552,17 @@ typedef struct
   float x_factor;         /* to take menu width into account (0, -1 or -0.5) */
   float context_x_factor; /* additional offset factor to x */
   float y_factor;         /* same with height */
+  int screen_origin_x;
+  int screen_origin_y;
   Bool is_relative;       /* FALSE if referring to absolute screen position */
   Bool is_menu_relative;  /* TRUE if referring to a part of a menu */
+  Bool has_screen_origin;
 } MenuPosHints;
 
 typedef struct
 {
   MenuPosHints pos_hints;
+  /* A position on the Xinerama screen on which the menu should be started. */
   struct
   {
     unsigned do_not_warp : 1;
@@ -591,9 +595,13 @@ typedef struct
   char **ret_paction;
   XEvent *event_propagate_to_submenu;
   MenuOptions *pops;
+  /* A position on the Xinerama screen on which the menu should be started. */
+  int screen_origin_x;
+  int screen_origin_y;
   struct
   {
     unsigned has_default_action : 1;
+    unsigned has_screen_origin : 1;
     unsigned is_invoked_by_key_press : 1;
     unsigned is_menu_from_frame_or_window_or_titlebar : 1;
     unsigned is_sticky : 1;
@@ -687,8 +695,9 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
 void do_menu(MenuParameters *pmp, MenuReturn *pret);
-char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
-		     MenuRoot *mr, MenuItem *mi, MenuOptions *pops);
+char *get_menu_options(
+  char *action, Window w, FvwmWindow *tmp_win, XEvent *e, MenuRoot *mr,
+  MenuItem *mi, MenuOptions *pops);
 Bool DestroyMenu(MenuRoot *mr, Bool do_recreate, Bool is_command_request);
 void add_another_menu_item(char *action);
 void change_mr_menu_style(MenuRoot *mr, char *stylename);

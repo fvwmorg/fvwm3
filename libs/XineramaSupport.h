@@ -7,11 +7,12 @@ void XineramaSupportInit(Display *dpy);
 void XineramaSupportDisable(void);
 void XineramaSupportEnable(void);
 
-void XineramaSupportClipToScreen(int *x, int *y, int w, int h);
+void XineramaSupportClipToScreen(
+  int src_x, int src_y, int *dest_x, int *dest_y, int w, int h);
 void XineramaSupportCenter(int ms_x, int ms_y, int *x, int *y, int w, int h);
 void XineramaSupportCenterCurrent(int *x, int *y, int w, int h);
 void XineramaSupportGetCurrent00(int *x, int *y);
-void XineramaSupportGetScrRect(
+Bool XineramaSupportGetScrRect(
   int l_x, int l_y, int *x, int *y, int *w, int *h);
 void XineramaSupportGetCurrentScrRect(int *x, int *y, int *w, int *h);
 void XineramaSupportGetResistanceRect(

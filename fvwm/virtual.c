@@ -324,7 +324,6 @@ void CMD_EdgeResistance(F_CMD_ARGS)
   int n;
 
   n = GetIntegerArguments(action, NULL, val, 3);
-  fprintf(stderr, "%s: n=%d\n", __FUNCTION__, n);
   if (n < 2 || n > 3)
   {
     fvwm_msg(ERR, "SetEdgeResistance",

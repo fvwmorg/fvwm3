@@ -5,6 +5,12 @@ Changes in beta release 2.4.1 (not released yet)
 
 * Added Xinerama support.
 
+* New commands XineramaEnable and XineramaDisable.
+
+* New context rectangle option XineramaRoot for the menu commands.
+
+* Improved detection of the Shape library.
+
 * Fixed the CirculateSkipIcon and CirculateSkipShaded options in
   conditional commands.
 

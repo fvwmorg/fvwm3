@@ -32,9 +32,9 @@
  *   because Xinerama extension is missing on display).
  *
  *   If Xinerama is available, this module maintains a list of screens,
- *   from [1] to [numscreens].  screens[0] is always the "global" screen,
+ *   from [1] to [num_screens].  screens[0] is always the "global" screen,
  *   so if Xinerama is unavailable or disabled, the module performs
- *   all checks on screens[0] instead of screens[1..numscreens].
+ *   all checks on screens[0] instead of screens[1..num_screens].
  *
  *   The client should first call the XineramaSupportInit(), passing
  *   it the opened display descriptor.  During this call the list of
@@ -79,7 +79,7 @@ static Display            *disp              = NULL;
 static Bool                is_xinerama_disabled = 0;
 static XineramaScreenInfo *screens;
 /* # of Xinerama screens, *not* counting the [0]global, 0 if disabled */
-static int                 numscreens        = 0;
+static int                 num_screens        = 0;
 /* # of Xinerama screens, *not* counting the [0]global */
 static int                 total_screens     = 0;
 static int                 first_to_check    = 0;
@@ -91,7 +91,7 @@ static void XineramaSupportSetState(Bool onoff)
   if (onoff && total_screens > 0)
   {
     first_to_check = 1;
-    last_to_check  = numscreens;
+    last_to_check  = num_screens;
   }
   else
   {
@@ -140,7 +140,7 @@ void XineramaSupportInit(Display *dpy)
      */
     count = 2;
     total_screens = count;
-    numscreens = (is_xinerama_disabled) ? 0 : count;
+    num_screens = (is_xinerama_disabled) ? 0 : count;
     screens = (XineramaScreenInfo *)
       safemalloc(sizeof(XineramaScreenInfo) * (1 + count));
     /* calculate the faked sub screen dimensions */
@@ -169,7 +169,7 @@ void XineramaSupportInit(Display *dpy)
 
     info = XineramaQueryScreens(disp, &count);
     total_screens = count;
-    numscreens = (is_xinerama_disabled) ? 0 : count;
+    num_screens = (is_xinerama_disabled) ? 0 : count;
     screens = (XineramaScreenInfo *)
       safemalloc(sizeof(XineramaScreenInfo) * (1 + count));
     memcpy(screens + 1, info, sizeof(XineramaScreenInfo) * count);
@@ -178,7 +178,7 @@ void XineramaSupportInit(Display *dpy)
   else
 #endif
   {
-    numscreens = 0;
+    num_screens = 0;
     total_screens = 0;
     screens = (XineramaScreenInfo *)safemalloc(sizeof(XineramaScreenInfo)*1);
   }
@@ -199,7 +199,7 @@ void XineramaSupportInit(Display *dpy)
 void XineramaSupportDisable(void)
 {
   is_xinerama_disabled = 1;
-  numscreens = 0;
+  num_screens = 0;
   /* Fill in the screen range */
   XineramaSupportSetState(1);
 }
@@ -207,7 +207,7 @@ void XineramaSupportDisable(void)
 void XineramaSupportEnable(void)
 {
   is_xinerama_disabled = 0;
-  numscreens = total_screens;
+  num_screens = total_screens;
   /* Fill in the screen range */
   XineramaSupportSetState(1);
 }
@@ -247,18 +247,19 @@ static void GetMouseXY(int *x, int *y)
   return;
 }
 
-void XineramaSupportClipToScreen(int *x, int *y, int w, int h)
+void XineramaSupportClipToScreen(
+  int src_x, int src_y, int *dest_x, int *dest_y, int w, int h)
 {
-  int  scr = FindScreenOfXY(*x, *y);
+  int  scr = FindScreenOfXY(src_x, src_y);
 
-  if (*x + w > screens[scr].x_org + screens[scr].width)
-    *x = screens[scr].x_org + screens[scr].width - w;
-  if (*y + h > screens[scr].y_org + screens[scr].height)
-    *y = screens[scr].y_org + screens[scr].height - h;
-  if (*x < screens[scr].x_org)
-    *x = screens[scr].x_org;
-  if (*y < screens[scr].y_org)
-    *y = screens[scr].y_org;
+  if (*dest_x + w > screens[scr].x_org + screens[scr].width)
+    *dest_x = screens[scr].x_org + screens[scr].width - w;
+  if (*dest_y + h > screens[scr].y_org + screens[scr].height)
+    *dest_y = screens[scr].y_org + screens[scr].height - h;
+  if (*dest_x < screens[scr].x_org)
+    *dest_x = screens[scr].x_org;
+  if (*dest_y < screens[scr].y_org)
+    *dest_y = screens[scr].y_org;
 }
 
 void XineramaSupportCenter(int ms_x, int ms_y, int *x, int *y, int w, int h)
@@ -295,7 +296,7 @@ void XineramaSupportGetCurrent00(int *x, int *y)
   *y = screens[scr].y_org;
 }
 
-void XineramaSupportGetScrRect(int l_x, int l_y, int *x, int *y, int *w, int *h)
+Bool XineramaSupportGetScrRect(int l_x, int l_y, int *x, int *y, int *w, int *h)
 {
   int scr = FindScreenOfXY(l_x, l_y);
 
@@ -303,6 +304,9 @@ void XineramaSupportGetScrRect(int l_x, int l_y, int *x, int *y, int *w, int *h)
   *y = screens[scr].y_org;
   *w = screens[scr].width;
   *h = screens[scr].height;
+
+  /* Return 0 if the point was on none of the defined screens */
+  return !(scr == 0 && num_screens > 1);
 }
 
 void XineramaSupportGetCurrentScrRect(int *x, int *y, int *w, int *h)

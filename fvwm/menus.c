@@ -92,7 +92,7 @@ typedef struct
 static saved_pos_hints last_saved_pos_hints =
 {
   { False, False },
-  { 0, 0, 0.0, 0.0, False }
+  { 0, 0, 0.0, 0.0, 0, 0, False, False, False }
 };
 
 /***************************************************************
@@ -129,7 +129,8 @@ static int pop_menu_up(
 static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp);
 static void pop_menu_down_and_repaint_parent(
   MenuRoot **pmr, Bool *fSubmenuOverlaps, MenuParameters *pmp);
-static void get_popup_options(MenuRoot *mr, MenuItem *mi, MenuOptions *pops);
+static void get_popup_options(
+  MenuParameters *pmp, MenuItem *mi, MenuOptions *pops);
 static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 		       Bool do_redraw_menu_border);
 static void paint_menu(MenuRoot *, XEvent *, FvwmWindow *fw);
@@ -678,7 +679,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   {
     XCheckTypedEvent(dpy, ButtonPressMask, &tmpevent);
   }
-  if(pmp->menu == NULL)
+  if (pmp->menu == NULL)
   {
     pmret->rc = MENU_ERROR;
     return;
@@ -713,6 +714,9 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
       x_start = -1;
       y_start = -1;
     }
+    pmp->flags.has_screen_origin = pmp->pops->pos_hints.has_screen_origin;
+    pmp->screen_origin_x = pmp->pops->pos_hints.screen_origin_x;
+    pmp->screen_origin_y = pmp->pops->pos_hints.screen_origin_y;
   }
   /* Figure out where we should popup, if possible */
   if (!pmp->flags.is_already_mapped)
@@ -743,8 +747,14 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
       XineramaSupportGetScrRect(x, y, &scr_x, &scr_y, &scr_w, &scr_h);
       x -= menu_middle_x_offset(pmp->menu);
       y -= item_middle_y_offset(pmp->menu, MR_FIRST_ITEM(pmp->menu));
-      if (x < scr_x) x = scr_x;
-      if (y < scr_y) y = scr_y;
+      if (x < scr_x)
+      {
+	x = scr_x;
+      }
+      if (y < scr_y)
+      {
+	y = scr_y;
+      }
     }
 
     /* pop_menu_up may move the x,y to make it fit on screen more nicely */
@@ -2042,7 +2052,7 @@ static void MenuInteraction(
 	  paint_menu(pmp->menu, NULL, (*pmp->pTmp_win));
 	}
 	/* get pos hints for item's action */
-	get_popup_options(pmp->menu, mi, &mops);
+	get_popup_options(pmp, mi, &mops);
 	if (mrMi == pmp->menu && mrMiPopup == NULL && MI_IS_POPUP(mi) &&
 	    MR_MISSING_SUBMENU_FUNC(pmp->menu))
 	{
@@ -2201,6 +2211,7 @@ static void MenuInteraction(
 	  mp.button_window = pmp->button_window;
 	  mp.pcontext = pmp->pcontext;
 	  mp.flags.has_default_action = False;
+	  mp.flags.has_screen_origin = True;
 	  mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
 	  mp.flags.is_sticky = False;
 	  mp.flags.is_submenu = True;
@@ -2208,6 +2219,8 @@ static void MenuInteraction(
 	  mp.eventp = (flags.do_popup_and_warp) ? (XEvent *)1 : NULL;
 	  mp.pops = &mops;
 	  mp.ret_paction = pmp->ret_paction;
+	  mp.screen_origin_x = pmp->screen_origin_x;
+	  mp.screen_origin_y = pmp->screen_origin_y;
 	  if (flags.do_propagate_event_into_submenu)
 	  {
 	    memcpy(&e, &Event, sizeof(XEvent));
@@ -2382,7 +2395,7 @@ static void MenuInteraction(
     pmret->rc = MENU_DONE;
     if (pmp->ret_paction && *pmp->ret_paction && mi && MI_IS_POPUP(mi))
     {
-      get_popup_options(pmp->menu, mi, &mops);
+      get_popup_options(pmp, mi, &mops);
       if (mops.flags.do_select_in_place)
       {
 	MenuRoot *submenu;
@@ -2664,34 +2677,76 @@ static int pop_menu_up(
       pmp->flags.is_first_root_menu)
   {
     int old_y = y;
+    int cx;
+    int cy;
+    Bool has_context;
 
     if (HAS_BOTTOM_TITLE(fw))
-      y = fw->frame_g.y - fw->boundary_width - fw->title_g.height +
-	fw->frame_g.height - MR_HEIGHT(mr);
+    {
+      y = fw->frame_g.y + fw->frame_g.height -
+	fw->boundary_width - fw->title_g.height - MR_HEIGHT(mr);
+      cy = fw->frame_g.y - fw->boundary_width - fw->title_g.height / 2;
+    }
     else
+    {
       y = fw->frame_g.y + fw->boundary_width + fw->title_g.height;
-    if(context&C_LALL)
+      cy = y - fw->title_g.height / 2;
+    }
+    has_context = 0;
+    if (context&C_LALL)
     {
       x = fw->frame_g.x + fw->boundary_width +
 	ButtonPosition(context, fw) * fw->title_g.height;
+      cx = x + fw->title_g.height / 2;
+      has_context = 1;
     }
-    else if(context&C_RALL)
+    else if (context&C_RALL)
     {
       x = fw->frame_g.x + fw->frame_g.width -
 	fw->boundary_width - ButtonPosition(context, fw) *
-	fw->title_g.height-MR_WIDTH(mr);
+	fw->title_g.height - MR_WIDTH(mr);
+      cx = x + fw->title_g.height / 2;
+      has_context = 1;
     }
-    else if(context&C_TITLE)
+    else if (context&C_TITLE)
     {
-      if(x < fw->frame_g.x + fw->title_g.x)
+      if (x < fw->frame_g.x + fw->title_g.x)
+      {
 	x = fw->frame_g.x + fw->title_g.x;
-      if((x + MR_WIDTH(mr)) >
-	 (fw->frame_g.x + fw->title_g.x + fw->title_g.width))
-	x = fw->frame_g.x + fw->title_g.x + fw->title_g.width-
-	  MR_WIDTH(mr);
+      }
+      if (x + MR_WIDTH(mr) >
+	  fw->frame_g.x + fw->title_g.x + fw->title_g.width)
+      {
+	x = fw->frame_g.x + fw->title_g.x + fw->title_g.width - MR_WIDTH(mr);
+      }
+      cx = x;
+      has_context = 1;
     }
     else
+    {
       y = old_y;
+    }
+    if (has_context)
+    {
+      pops->pos_hints.has_screen_origin = True;
+      if (XineramaSupportGetScrRect(
+	    cx, cy, &JunkX, &JunkY, &JunkWidth, &JunkHeight))
+      {
+	/* use current cx/cy */
+      }
+      else if (XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
+			     &cx, &cy, &JunkX, &JunkY, &JunkMask))
+      {
+	/* use pointer's position */
+      }
+      else
+      {
+	cx = -1;
+	cy = -1;
+      }
+      pops->pos_hints.screen_origin_x = cx;
+      pops->pos_hints.screen_origin_y = cy;
+    }
   } /* if (pops->flags.has_poshints) */
 
   /***************************************************************
@@ -2708,17 +2763,21 @@ static int pop_menu_up(
   }
 
   /* clip to screen */
-  XineramaSupportClipToScreen(&x, &y, MR_WIDTH(mr), MR_HEIGHT(mr));
+  XineramaSupportClipToScreen(
+    pops->pos_hints.screen_origin_x, pops->pos_hints.screen_origin_y,
+    &x, &y, MR_WIDTH(mr), MR_HEIGHT(mr));
 
   /* "this" screen is defined -- so get its coords for future reference */
-  XineramaSupportGetScrRect(x, y, &scr_x, &scr_y, &scr_w, &scr_h);
+  XineramaSupportGetScrRect(
+    pops->pos_hints.screen_origin_x, pops->pos_hints.screen_origin_y,
+    &scr_x, &scr_y, &scr_w, &scr_h);
 
   /***************************************************************
    * Calculate position and animate menus
    ***************************************************************/
 
   if (parent_menu == NULL ||
-      !XGetGeometry(dpy,MR_WINDOW(parent_menu), &JunkRoot,&prev_x,&prev_y,
+      !XGetGeometry(dpy, MR_WINDOW(parent_menu), &JunkRoot, &prev_x, &prev_y,
 		    &prev_width,&prev_height, &JunkBW, &JunkDepth))
   {
     MR_HAS_POPPED_UP_LEFT(mr) = 0;
@@ -5492,7 +5551,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   memset(&mops, 0, sizeof(mops));
   memset(&mret, 0, sizeof(MenuReturn));
   action = GetNextToken(action,&menu_name);
-  action = GetMenuOptions(action, w, tmp_win, NULL, NULL, &mops);
+  action = get_menu_options(action, w, tmp_win, eventp, NULL, NULL, &mops);
   while (action && *action && isspace((unsigned char)*action))
     action++;
   if (action && *action == 0)
@@ -5526,6 +5585,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   tc = Context;
   mp.pcontext = &tc;
   mp.flags.has_default_action = (action != NULL);
+  mp.flags.has_screen_origin = False;
   mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
   mp.flags.is_sticky = fStaysUp;
   mp.flags.is_submenu = False;
@@ -7140,7 +7200,7 @@ static void get_xy_from_position_hints(
 }
 
 /*****************************************************************************
- * Used by GetMenuOptions
+ * Used by get_menu_options
  *
  * The vars are named for the x-direction, but this is used for both x and y
  *****************************************************************************/
@@ -7223,7 +7283,7 @@ static char *get_one_menu_position_argument(
 }
 
 /*****************************************************************************
- * GetMenuOptions is used for Menu, Popup and WindowList
+ * get_menu_options is used for Menu, Popup and WindowList
  * It parses strings matching
  *
  *   [ [context-rectangle] x y ] [special-options] [other arguments]
@@ -7233,8 +7293,9 @@ static char *get_one_menu_position_argument(
  *
  * See documentation for a detailed description.
  ****************************************************************************/
-char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
-		     MenuRoot *mr, MenuItem *mi, MenuOptions *pops)
+char *get_menu_options(
+  char *action, Window w, FvwmWindow *tmp_win, XEvent *e, MenuRoot *mr,
+  MenuItem *mi, MenuOptions *pops)
 {
   char *tok = NULL;
   char *naction = action;
@@ -7249,16 +7310,21 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
   float dummy_float;
   Bool dummy_flag;
   Window context_window = None;
-  Bool fHasContext, fUseItemOffset, fRectangleContext;
+  Bool fHasContext, fUseItemOffset, fRectangleContext, fXineramaRoot;
   Bool fValidPosHints =
     last_saved_pos_hints.flags.is_last_menu_pos_hints_valid;
   /* If this is set we may want to reverse the position hints, so don't sum up
    * the totals right now. This is useful for the SubmenusLeft style. */
 
+  fXineramaRoot = False;
+  if (!pops->pos_hints.has_screen_origin)
+  {
+    /* find out the Xinerama screen on which to open the menu */
+  }
   last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = False;
   if (pops == NULL)
   {
-    fvwm_msg(ERR,"GetMenuOptions","no MenuOptions pointer passed");
+    fvwm_msg(ERR,"get_menu_options","no MenuOptions pointer passed");
     return action;
   }
 
@@ -7292,7 +7358,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       else if (tmp_win)
       {
 	if (IS_ICONIFIED(tmp_win))
-	  context_window=tmp_win->icon_pixmap_w;
+	  context_window = tmp_win->icon_pixmap_w;
 	else
 	  context_window = tmp_win->frame;
       }
@@ -7320,17 +7386,17 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     }
     else if (StrEquals(tok,"icon"))
     {
-      if (tmp_win)
+      if (tmp_win && IS_ICONIFIED(tmp_win))
 	context_window = tmp_win->icon_pixmap_w;
     }
     else if (StrEquals(tok,"window"))
     {
-      if (tmp_win)
+      if (tmp_win && !IS_ICONIFIED(tmp_win))
 	context_window = tmp_win->frame;
     }
     else if (StrEquals(tok,"interior"))
     {
-      if (tmp_win)
+      if (tmp_win && !IS_ICONIFIED(tmp_win))
 	context_window = tmp_win->w;
     }
     else if (StrEquals(tok,"title"))
@@ -7350,7 +7416,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       {
 	fHasContext = False;
       }
-      else if (tmp_win)
+      else if (tmp_win && !IS_ICONIFIED(tmp_win))
       {
 	button = BUTTON_INDEX(button);
 	context_window = tmp_win->button_w[button];
@@ -7360,6 +7426,12 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     {
       context_window = Scr.Root;
       pops->pos_hints.is_relative = False;
+    }
+    else if (StrEquals(tok,"xineramaroot"))
+    {
+      context_window = Scr.Root;
+      pops->pos_hints.is_relative = False;
+      fXineramaRoot = True;
     }
     else if (StrEquals(tok,"mouse"))
     {
@@ -7373,14 +7445,14 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       naction = GetNextToken(naction, &tok);
       if (tok == NULL)
       {
-	fvwm_msg(ERR,"GetMenuOptions","missing rectangle geometry");
+	fvwm_msg(ERR,"get_menu_options","missing rectangle geometry");
 	return action;
       }
       flags = XParseGeometry(tok, &x, &y, &width, &height);
       if ((flags & (XValue | YValue)) != (XValue | YValue))
       {
 	free(tok);
-	fvwm_msg(ERR,"GetMenuOptions","invalid rectangle geometry");
+	fvwm_msg(ERR,"get_menu_options","invalid rectangle geometry");
 	return action;
       }
       if (!(flags & WidthValue))
@@ -7391,8 +7463,8 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       {
 	height = 1;
       }
-/*!!!These calculations shouldn't be affected by Xinerama support logic
- since geometry specifications are for "global" screen -- D.Yu.B. */
+      /* These calculations shouldn't be affected by Xinerama support logic
+       * since geometry specifications are for "global" screen */
       if (flags & XNegative)
 	x = Scr.MyDisplayWidth - x - width;
       if (flags & YNegative)
@@ -7427,22 +7499,78 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     else
       naction = action;
 
-    if (!fRectangleContext &&
-	(!context_window || !fHasContext ||
-	 !XGetGeometry(dpy, context_window, &JunkRoot, &JunkX, &JunkY,
-		       &width, &height, &JunkBW, &JunkDepth) ||
-	 !XTranslateCoordinates(
-	   dpy, context_window, Scr.Root, 0, 0, &x, &y, &JunkChild)))
+    if (fRectangleContext)
+    {
+      if (!pops->pos_hints.has_screen_origin)
+      {
+	/* xinerama: use global screen as reference */
+	pops->pos_hints.has_screen_origin = 1;
+	pops->pos_hints.screen_origin_x = -1;
+	pops->pos_hints.screen_origin_y = -1;
+      }
+      /* nothing else to do */
+    }
+    else if (!fHasContext || !context_window ||
+	     !XGetGeometry(dpy, context_window, &JunkRoot, &JunkX, &JunkY,
+			   &width, &height, &JunkBW, &JunkDepth) ||
+	     !XTranslateCoordinates(
+	       dpy, context_window, Scr.Root, 0, 0, &x, &y, &JunkChild))
     {
       /* no window or could not get geometry */
-      XQueryPointer(dpy,Scr.Root, &JunkRoot, &JunkChild,&x,&y, &JunkX, &JunkY,
+      XQueryPointer(dpy,Scr.Root, &JunkRoot, &JunkChild, &x, &y, &JunkX, &JunkY,
 		    &JunkMask);
       width = height = 1;
+      if (!pops->pos_hints.has_screen_origin)
+      {
+	/* xinerama: use screen with pinter as reference */
+	pops->pos_hints.has_screen_origin = 1;
+	pops->pos_hints.screen_origin_x = x;
+	pops->pos_hints.screen_origin_y = y;
+      }
     }
-    else if (fUseItemOffset)
+    else
     {
-      y += MI_Y_OFFSET(mi);
-      height = MI_HEIGHT(mi);
+      /* we have a context window */
+      if (fUseItemOffset)
+      {
+	y += MI_Y_OFFSET(mi);
+	height = MI_HEIGHT(mi);
+      }
+      if (!pops->pos_hints.has_screen_origin)
+      {
+	pops->pos_hints.has_screen_origin = 1;
+	if (fXineramaRoot)
+	{
+	  /* use whole screen */
+	  pops->pos_hints.screen_origin_x = -1;
+	  pops->pos_hints.screen_origin_y = -1;
+	}
+	else if (context_window == Scr.Root)
+	{
+	  /* xinerama: use screen that contains the window center as reference
+	   */
+	  if (!GetLocationFromEventOrQuery(
+		dpy, context_window, e, &pops->pos_hints.screen_origin_x,
+		&pops->pos_hints.screen_origin_y))
+	  {
+	    pops->pos_hints.screen_origin_x = 0;
+	    pops->pos_hints.screen_origin_y = 0;
+	  }
+	  else
+	  {
+	    XineramaSupportGetScrRect(
+	      pops->pos_hints.screen_origin_x, pops->pos_hints.screen_origin_y,
+	      &x, &y, &width, &height);
+	  }
+	}
+	else
+	{
+	  /* xinerama: use screen that contains the window center as reference
+	   */
+	  pops->pos_hints.screen_origin_x = JunkX + width / 2;
+	  pops->pos_hints.screen_origin_y = JunkY + height / 2;
+	}
+      }
     }
 
     /* parse position arguments */
@@ -7465,7 +7593,7 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     {
       /* argument is missing or invalid */
       if (fHasContext)
-	fvwm_msg(ERR,"GetMenuOptions","invalid position arguments");
+	fvwm_msg(ERR,"get_menu_options","invalid position arguments");
       naction = action;
       taction = action;
       break;
@@ -7536,12 +7664,17 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 
 
 /* Returns the menu options for the menu that a given menu item pops up */
-static void get_popup_options(MenuRoot *mr, MenuItem *mi, MenuOptions *pops)
+static void get_popup_options(
+  MenuParameters *pmp, MenuItem *mi, MenuOptions *pops)
 {
   if (!mi)
     return;
   pops->flags.has_poshints = 0;
+  pops->pos_hints.has_screen_origin = pmp->flags.has_screen_origin;
+  pops->pos_hints.screen_origin_x = pmp->screen_origin_x;
+  pops->pos_hints.screen_origin_y = pmp->screen_origin_y;
   /* just look past "Popup <name>" in the action */
-  GetMenuOptions(
-    SkipNTokens(MI_ACTION(mi), 2), MR_WINDOW(mr), NULL, mr, mi, pops);
+  get_menu_options(
+    SkipNTokens(MI_ACTION(mi), 2), MR_WINDOW(pmp->menu), NULL, NULL, pmp->menu,
+    mi, pops);
 }

@@ -142,7 +142,7 @@ void CMD_WindowList(F_CMD_ARGS)
     if (action && *action)
     {
       /* parse postitioning args */
-      opts = GetMenuOptions(action, w, tmp_win, NULL, NULL, &mops);
+      opts = get_menu_options(action, w, tmp_win, eventp, NULL, NULL, &mops);
     }
 
     /* parse options */
@@ -527,6 +527,7 @@ void CMD_WindowList(F_CMD_ARGS)
   tc = context;
   mp.pcontext = &tc;
   mp.flags.has_default_action = (default_action && *default_action != 0);
+  mp.flags.has_screen_origin = False;
   mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
   mp.flags.is_sticky = True;
   mp.flags.is_submenu = False;
