@@ -125,12 +125,14 @@ int fpol_query_allow_user_focus(
 #if 0
 /*** to do: ***/
 
-/*!!!*/unsigned do_focus_enter : 1;
+Write style flags;
+
+unsigned do_focus_enter : 1;
 unsigned do_unfocus_leave : 1;
 /*!!!*/unsigned do_focus_click_client : 1;
 /*!!!*/unsigned do_focus_click_decor : 1;
-/*!!!*/unsigned do_focus_by_program : 1;
-/*!!!*/unsigned do_focus_by_function : 1;
+unsigned do_focus_by_program : 1;
+unsigned do_focus_by_function : 1;
 unsigned do_warp_pointer_on_focus_func : 1;
 unsigned is_lenient : 1;
 unsigned do_raise_focused_client_click : 1;
