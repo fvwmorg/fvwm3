@@ -855,7 +855,9 @@ static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 	if (do_grab_window == True)
 	{
 		grab_buttons |= FP_USE_MOUSE_BUTTONS(FW_FOCUS_POLICY(fw));
+#if 0
 fprintf(stderr,"gb: 0x%x\n", grab_buttons);
+#endif
 	}
 	if (grab_buttons != fw->grabbed_buttons)
 	{

@@ -174,7 +174,7 @@ flist *flist_remove_obj(flist *list, void *object)
 	return list;
 }
 
-flist *flist_free_fist(flist *list)
+flist *flist_free_list(flist *list)
 {
 	flist *tl;
   
