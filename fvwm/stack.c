@@ -495,7 +495,7 @@ static void RaiseOrLowerWindow(
   {
     /*
         This hack raises the target and all higher FVWM windows over any
-        override_redirect windows that may be above it. This is used to
+style * grabfocusoff        override_redirect windows that may be above it. This is used to
         cope with ill-bahaved applications that insist on using long-lived
         override_redirects.
     */

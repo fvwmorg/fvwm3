@@ -1384,9 +1384,10 @@ static void AddToCommandQueue(Window window, int module, char *command)
  *	EmptyCommandQueue - runs command from the module command queue
  *
  ************************************************************************/
-void ExecuteCommandQueue(void)
+Bool ExecuteCommandQueue(void)
 {
   CommandQueue *temp;
+  Bool is_not_empty = (CQstart != NULL);
 
   while (CQstart)
   {
@@ -1403,6 +1404,8 @@ void ExecuteCommandQueue(void)
 
   /* the queue is now empty so the end pointer must be changed */
   CQlast = NULL;
+
+  return is_not_empty;
 }
 
 void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,

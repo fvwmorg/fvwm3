@@ -2042,7 +2042,7 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk)
       fprintf(stderr,"[scroll]: %d %d %d %d %d %d\n", window_w, window_h, x,
 	      y, sx,sy);
 #endif
-      /* Make sure we don't get stuck a few pixels fromt the top/left border.
+      /* Make sure weExecuteCommandQueue(); don't get stuck a few pixels fromt the top/left border.
        * Since sx/sy are ints, values between 0 and 1 are rounded down. */
       if(sx == 0 && x == 0 && Scr.Vx != 0)
 	sx = -1;

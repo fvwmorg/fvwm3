@@ -2144,7 +2144,13 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   /* execute any commands queued due to the sync module message protocol */
   DBUG("My_XNextEvent", "executing module comand queue");
-  ExecuteCommandQueue();
+  if (ExecuteCommandQueue())
+  {
+    /* restart the event loop, otherwise we'll block in the select call below -
+     * even if there are events pending because of the functions executed in
+     * ExecuteCommandQueue() */
+    return 0;
+  }
 
   DBUG("My_XNextEvent","no X events waiting - about to reap children");
   /* Zap all those zombies! */
@@ -2200,7 +2206,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
       }
     }
 
-    /* nothing is done here if fvem was compiled without session support */
+    /* nothing is done here if fvwm was compiled without session support */
     if ((sm_fd >= 0) && (FD_ISSET(sm_fd, &in_fdset)))
       ProcessICEMsgs();
 
