@@ -1,3 +1,11 @@
+2002-12-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/FShm.h:
+	fixed compilation without XShm
+
+	* fvwm/borders.c (border_rotate_titlebar_descr):
+	fixed warning: deprecated use of label at end of compound statement
+
 2002-12-27  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ConfigFvwmDefaults:

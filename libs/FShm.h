@@ -74,7 +74,7 @@ typedef struct {
 #define FShmAttach(a, b)                              0
 #define FShmDetach(a, b)                              0
 #define FShmPutImage(a, b, c, d, e, f, g, h, i, j, k) 0
-#define FShmGetImage(a, b, c, d, e, f, g)             0
+#define FShmGetImage(a, b, c, d, e, f)                0
 #define FShmCreateImage(a, b, c, d, e, f, g, h)       NULL
 
 /* shm */

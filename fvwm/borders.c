@@ -3923,7 +3923,8 @@ static void border_rotate_titlebar_descr(
 			tr.width = r->width; \
 			tr.height = r->height; \
 			break; \
-		default: \
+		case ROTATION_0: \
+			break; \
 		} \
 		r->x = tr.x; \
 		r->y = tr.y; \
@@ -3953,7 +3954,8 @@ static void border_rotate_titlebar_descr(
 		td->left_of_text_length = td->right_of_text_length;
 		td->right_of_text_length = tmpi;
 		break;
-	default:
+	case ROTATION_0:
+		break;
 	}
 
 	ROTATE_RECTANGLE(rotation, (&td->left_buttons_g), True, False, False)
