@@ -530,15 +530,14 @@ fprintf(stderr,"move window '%s'\n", tmp_win->name);
   {
     tmp_win->max_g.x += dx;
     tmp_win->max_g.y += dy;
-    update_absolute_geometry(tmp_win);
-    maximize_adjust_offset(tmp_win);
   }
   else
   {
     tmp_win->normal_g.x += dx;
     tmp_win->normal_g.y += dy;
-    update_absolute_geometry(tmp_win);
   }
+  update_absolute_geometry(tmp_win);
+  maximize_adjust_offset(tmp_win);
   XSync(dpy, 0);
   GNOME_SetWinArea(tmp_win);
   return;
@@ -546,17 +545,17 @@ fprintf(stderr,"move window '%s'\n", tmp_win->name);
 
 void move_window(F_CMD_ARGS)
 {
-  move_window_doit(eventp,w,tmp_win,context,action,Module,False,False);
+  move_window_doit(F_PASS_ARGS, False, False);
 }
 
 void animated_move_window(F_CMD_ARGS)
 {
-  move_window_doit(eventp,w,tmp_win,context,action,Module,True,False);
+  move_window_doit(F_PASS_ARGS, True, False);
 }
 
 void move_window_to_page(F_CMD_ARGS)
 {
-  move_window_doit(eventp,w,tmp_win,context,action,Module,False,True);
+  move_window_doit(F_PASS_ARGS, False, True);
 }
 
 /* This function does the SnapAttraction stuff. If takes x and y coordinates
@@ -1627,8 +1626,8 @@ fprintf(stderr,"resize window '%s'\n", tmp_win->name);
     }
     DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
     update_absolute_geometry(tmp_win);
-    GNOME_SetWinArea(tmp_win);
     maximize_adjust_offset(tmp_win);
+    GNOME_SetWinArea(tmp_win);
     ResizeWindow = None;
     return;
   }
@@ -2665,7 +2664,6 @@ void handle_stick(F_CMD_ARGS, int toggle)
 fprintf(stderr,"unstick window '%s'\n", tmp_win->name);
 #endif
     SET_STICKY(tmp_win, 0);
-    update_absolute_geometry(tmp_win);
     tmp_win->Desk = Scr.CurrentDesk;
     GNOME_SetDeskCount();
     GNOME_SetDesk(tmp_win);
@@ -2688,8 +2686,7 @@ fprintf(stderr,"stick window '%s'\n", tmp_win->name);
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   DrawDecorations(tmp_win, DRAW_TITLE, (Scr.Hilite==tmp_win), True, None);
-
-  GNOME_SetHints (tmp_win);
+  GNOME_SetHints(tmp_win);
 }
 
 void stick_function(F_CMD_ARGS)

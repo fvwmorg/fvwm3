@@ -219,27 +219,45 @@ void maximize_adjust_offset(FvwmWindow *tmp_win)
   int off_x;
   int off_y;
 
+  if (!IS_MAXIMIZED(tmp_win))
+    /* otherwise we might corrupt the normal_g */
+    return;
   off_x = tmp_win->normal_g.x - tmp_win->max_g.x - tmp_win->max_offset.x;
   off_y = tmp_win->normal_g.y - tmp_win->max_g.y - tmp_win->max_offset.y;
+#if 0
+fprintf(stderr,"mao: xo=%d, yo=%d\n", off_x, off_y);
+#endif
   if (off_x >= Scr.MyDisplayWidth)
   {
     tmp_win->normal_g.x -=
       (off_x / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
+#if 0
+fprintf(stderr, "mao: x -= %d\n", (off_x / Scr.MyDisplayWidth) * Scr.MyDisplayWidth);
+#endif
   }
-  else if (off_x <= Scr.MyDisplayWidth)
+  else if (off_x <= -Scr.MyDisplayWidth)
   {
     tmp_win->normal_g.x +=
       ((-off_x) / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
+#if 0
+fprintf(stderr, "mao: x += %d\n", ((-off_x) / Scr.MyDisplayWidth) * Scr.MyDisplayWidth);
+#endif
   }
   if (off_y >= Scr.MyDisplayHeight)
   {
     tmp_win->normal_g.y -=
       (off_y / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
+#if 0
+fprintf(stderr, "mao: y -= %d\n", (off_y / Scr.MyDisplayHeight) * Scr.MyDisplayHeight);
+#endif
   }
-  else if (off_y <= Scr.MyDisplayHeight)
+  else if (off_y <= -Scr.MyDisplayHeight)
   {
     tmp_win->normal_g.y +=
       ((-off_y) / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
+#if 0
+fprintf(stderr, "mao: y += %d\n", ((-off_y) / Scr.MyDisplayHeight) * Scr.MyDisplayHeight);
+#endif
   }
 }
 

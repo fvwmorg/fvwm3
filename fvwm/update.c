@@ -108,6 +108,11 @@ static void apply_window_updates(
       old_t.hints.win_gravity, t, &t->normal_g, &naked_g);
     if (IS_MAXIMIZED(t))
     {
+      int off_x = old_t.normal_g.x - old_t.max_g.x;
+      int off_y = old_t.normal_g.y - old_t.max_g.y;
+      int new_off_x;
+      int new_off_y;
+
       /* maximized windows are always considered to have NorthWestGravity */
       gravity_get_naked_geometry(
 	NorthWestGravity, &old_t, &naked_g, &t->max_g);
@@ -116,6 +121,12 @@ static void apply_window_updates(
       gravity_add_decoration(
 	NorthWestGravity, t, &t->max_g, &naked_g);
       new_g = &t->max_g;
+      /* prevent random paging when unmaximizing after e.g. the border width has
+       * changed */
+      new_off_x = t->normal_g.x - t->max_g.x;
+      new_off_y = t->normal_g.y - t->max_g.y;
+      t->max_offset.x += new_off_x - off_x;
+      t->max_offset.y += new_off_y - off_y;
     }
     else
     {
@@ -135,7 +146,13 @@ static void apply_window_updates(
   if (flags->do_setup_frame)
   {
     if (IS_SHADED(t))
+    {
+      rectangle *new_g;
+
+      new_g = (IS_MAXIMIZED(t)) ? &t->max_g : &t->normal_g;
+      get_relative_geometry(&t->frame_g, new_g);
       get_shaded_geometry(t, &t->frame_g, &t->frame_g);
+    }
     ForceSetupFrame(t, t->frame_g.x, t->frame_g.y, t->frame_g.width,
 		    t->frame_g.height, True);
     GNOME_SetWinArea(t);

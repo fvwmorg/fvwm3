@@ -1,5 +1,19 @@
 1999-12-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/update.c (apply_window_updates):
+	prevent paging a window when unmaximizing after style update
+
+	* fvwm/move_resize.c (handle_stick):
+	removed unnecessary code
+
+	* fvwm/geometry.c (maximize_adjust_offset):
+	check if window is maximized before doing anything
+	fixed shading to different page when window was maximised, moved,
+	minimised, resized and then shaded
+
+	* fvwm/update.c (apply_window_updates):
+	warp shaded windows to new position when titleattop/bottom changes
+
 	* fvwm/fvwm2.1 (Examples):
 	removed remnant of experimental 'MouseClick' command
 

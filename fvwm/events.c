@@ -1964,8 +1964,7 @@ void HandleConfigureRequest(void)
     }
     /* make sure the window structure has the new position */
     update_absolute_geometry(Tmp_win);
-    if (IS_MAXIMIZED(Tmp_win))
-      maximize_adjust_offset(Tmp_win);
+    maximize_adjust_offset(Tmp_win);
     GNOME_SetWinArea(Tmp_win);
   }
 
