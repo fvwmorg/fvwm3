@@ -31,9 +31,12 @@ echo "<html>
 " > $outfile
 
 # Embed the text with some adjustment:
-sed -e 's/&/\&amp;/' \
-    -e 's/</\&lt;/' \
-    -e 's/>/\&gt;/' $1 >> $outfile
+sed -e 's/&/\&amp;/g' \
+    -e 's/</\&lt;/g' \
+    -e 's/>/\&gt;/g' \
+    -e 's/_+_/</g' \
+    -e 's/_-_/>/g' \
+$1 >> $outfile
 
 # make footer:
 echo "</pre>
