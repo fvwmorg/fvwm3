@@ -1,3 +1,7 @@
+1999-09-16  Hippo
+
+	* FvwmScroll/*: Fixed man page formatting, removed generated files
+
 1999-09-16  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmBanner/fvwm-logo-old.xpm: renamed from fvwm2_big.xpm,
