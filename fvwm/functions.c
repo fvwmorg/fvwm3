@@ -678,7 +678,12 @@ static char *expand(
 	  }
 	  else
 	  {
-	    out[j++] = input[i];
+	    /* copy the whole string in square brackets */
+	    for ( ; i <= m; i++, j++)
+	    {
+		    out[j] = input[i];
+	    }
+	    i--;
 	  }
 	}
 	else
