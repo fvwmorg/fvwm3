@@ -787,8 +787,7 @@ static cfunc_action_type CheckActionType(
       case ButtonRelease:
 	return CF_CLICK;
       case MotionNotify:
-	if (d->xmotion.state &
-	    (Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask) ||
+	if ((d->xmotion.state & DEFAULT_ALL_BUTTONS_MASK) ||
             !is_button_pressed)
 	{
 	  xcurrent = d->xmotion.x_root;

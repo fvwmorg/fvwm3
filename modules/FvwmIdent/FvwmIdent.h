@@ -60,6 +60,7 @@ void RedrawWindow(void);
 void change_window_name(char *str);
 Pixel GetColor(char *name);
 void nocolor(char *a, char *b);
+void DestroyList(void);
 void AddToList(char *, char *);
 void MakeList(void);
 

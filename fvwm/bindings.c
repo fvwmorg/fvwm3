@@ -98,7 +98,7 @@ int ParseBinding(
   KeySym keysym = NoSymbol;
   int contexts;
   int mods;
-  int unbind_request = False;
+  Bool is_unbind_request = False;
 
   /* tline points after the key word "Mouse" or "Key" */
   ptr = GetNextToken(tline, &token);
@@ -143,7 +143,15 @@ int ParseBinding(
     }
 #endif /* HAVE_STROKE */
     else
-      n1 = sscanf(token,"%d",&button);
+    {
+      n1 = sscanf(token, "%d", &button);
+      if (button < 0 || button > NUMBER_OF_MOUSE_BUTTONS)
+      {
+	fvwm_msg(ERR,"ParseBinding","Illegal mouse button in line %s", tline);
+	free(token);
+	return 0;
+      }
+    }
     free(token);
   }
 
@@ -159,21 +167,21 @@ int ParseBinding(
   }
 #endif /* HAVE_STROKE */
 
-  ptr = GetNextToken(ptr,&token);
+  ptr = GetNextToken(ptr, &token);
   if(token != NULL)
   {
     n2 = sscanf(token,"%19s",context);
     free(token);
   }
 
-  action = GetNextToken(ptr,&token);
+  action = GetNextToken(ptr, &token);
   if(token != NULL)
   {
     n3 = sscanf(token,"%19s",modifiers);
     free(token);
   }
 
-  if(n1 != 1 || n2 != 1 || n3 != 1
+  if (n1 != 1 || n2 != 1 || n3 != 1
      STROKE_CODE(|| (type == STROKE_BINDING && n4 != 1)))
   {
     fvwm_msg(ERR,"ParseBinding","Syntax error in line %s", tline);
@@ -202,33 +210,34 @@ int ParseBinding(
   while (*action && (*action == ' ' || *action == '\t'))
     action++;
   /* see if it is an unbind request */
-  if (!action || action[0] == '-') 
-    unbind_request = True;
+  if (!action || action[0] == '-')
+    is_unbind_request = True;
 
   /*
   ** Remove the "old" bindings if any
   */
   {
     Bool is_binding_removed = False;
-    Binding *b = RemoveBinding(dpy, pblist, type, STROKE_ARG(stroke)
-		      button, keysym, mods, contexts);
-    if (b != NULL) 
+    Binding *b;
+    Binding *prev;
+    Binding *tmp;
+
+    for (b = *pblist, prev = NULL; b != NULL; prev = b, b = tmp)
     {
-      if (unbind_request) {
-	activate_binding(b, type, False, do_ungrab_root);
+      tmp = b->NextBinding;
+      if (MatchBinding(
+	dpy, b, STROKE_ARG(stroke)
+	button, keysym, mods, GetUnusedModifiers(), contexts, type))
+      {
+	/* found a matching binding */
+	if (is_unbind_request && !is_binding_removed)
+	{
+	  /* release the grab */
+	  activate_binding(b, type, False, do_ungrab_root);
+	}
+	RemoveBinding(pblist, b, prev);
 	is_binding_removed = True;
       }
-      if (b->key_name)
-	free(b->key_name);
-      STROKE_CODE(
-      if (b->Stroke_Seq)
-        free(b->Stroke_Seq);
-      );
-      if (b->Action)
-	free(b->Action);
-      if (b->Action2)
-	free(b->Action2);
-      free(b);
     }
 
     if (is_binding_removed)
@@ -263,7 +272,8 @@ int ParseBinding(
   }
 
   /* return if it is an unbind request */
-  if (unbind_request) return 0;
+  if (is_unbind_request)
+    return 0;
 
   update_nr_buttons(contexts, nr_left_buttons, nr_right_buttons);
 
@@ -274,7 +284,7 @@ int ParseBinding(
     mods = AnyModifier;
   }
 
-  if((type == MOUSE_BINDING)&&(contexts & C_WINDOW)&&
+  if ((type == MOUSE_BINDING)&&(contexts & C_WINDOW)&&
      (((mods==0)||mods == AnyModifier)) && (buttons_grabbed != NULL))
   {
     *buttons_grabbed &= ~(1<<(button-1));
@@ -398,11 +408,11 @@ void ignore_modifiers(F_CMD_ARGS)
     return;
 
   if (StrEquals(token, "default"))
-    {
-      free(token);
-      mods_unused = MODS_UNUSED_DEFAULT;
-      return;
-    }
+  {
+    free(token);
+    mods_unused = MODS_UNUSED_DEFAULT;
+    return;
+  }
 
   if (ParseModifiers(token, &mods_unused))
     fvwm_msg(ERR, "ignore_modifiers", "illegal modifier in line %s\n", action);

@@ -393,7 +393,7 @@ int GetEqualSizeChildren(
 typedef struct Binding
 {
   BindingType type;       /* Is it a mouse, key, or stroke binding */
-  STROKE_CODE(void *Stroke_Seq;         /* stroke sequence */)
+  STROKE_CODE(void *Stroke_Seq;) /* stroke sequence */
   int Button_Key;         /* Mouse Button number of Keycode */
   char *key_name;         /* In case of keycode, give the key_name too */
   int Context;            /* Contex is Fvwm context, ie titlebar, frame, etc */
@@ -409,9 +409,11 @@ int AddBinding(Display *dpy, Binding **pblist, BindingType type,
 	       STROKE_ARG(void *stroke)
 	       int button, KeySym keysym, char *key_name,
 	       int modifiers, int contexts, void *action, void *action2);
-Binding *RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
-		   STROKE_ARG(char *stroke)
-		   int button, KeySym keysym, int modifiers, int contexts);
+void FreeBinding(Binding *b);
+void RemoveBinding(Binding **pblist, Binding *b, Binding *prev);
+Bool RemoveMatchingBinding(
+  Display *dpy, Binding **pblist, BindingType type, STROKE_ARG(char *stroke)
+  int button, KeySym keysym, int modifiers, int contexts);
 void *CheckBinding(Binding *blist,
 		   STROKE_ARG(char *stroke)
 		   int button_keycode,

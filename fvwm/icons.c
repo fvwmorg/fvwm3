@@ -355,7 +355,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
 
     /* text position */
     x = (tmp_win->icon_g.width - tmp_win->icon_t_width) / 2;
-    if(x < 3)
+    if (x < 3)
       x = 3;
     if ((IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win)))
     {

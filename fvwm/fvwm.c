@@ -578,8 +578,7 @@ int main(int argc, char **argv)
                SubstructureRedirectMask | KeyPressMask |
                SubstructureNotifyMask|
 	       ColormapChangeMask|
-	       STROKE_CODE(ButtonMotionMask | Button1MotionMask |
-			   Button2MotionMask | Button3MotionMask |)
+	       STROKE_CODE(ButtonMotionMask | DEFAULT_ALL_BUTTONS_MOTION_MASK |)
                ButtonPressMask | ButtonReleaseMask );
   XSync(dpy, 0);
 

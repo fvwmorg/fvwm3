@@ -274,8 +274,9 @@ void ReadXServer ()
 	    goto redraw_newcursor;
 	  }
 	  /* unrecognized key press, check for buttons */
-	  for (item = root_item_ptr; item != 0;
-               item = item->header.next) {/* all items */
+	  for (item = root_item_ptr; item != 0; item = item->header.next)
+	  {
+	    /* all items */
 	    myfprintf((stderr, "Button: keypress==%d\n",
 		    item->button.keypress));
 	    if (item->type == I_BUTTON && item->button.keypress == keypress) {

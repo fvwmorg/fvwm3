@@ -95,11 +95,6 @@ unsigned long context, int Module
 #define NO_FOCUS_WIN_EVMASK KeyPressMask|FocusChangeMask
 #define NO_FOCUS_WIN_MENU_EVMASK KeyPressMask|KeyReleaseMask|FocusChangeMask
 
-/* the maximum number of mouse buttons fvwm knows about */
-/* don't think that upping this to 5 will make everything
- * hunky-dory with 5 button mouses */
-#define MAX_BUTTONS 3
-
 #if RETSIGTYPE != void
 #define SIGNAL_RETURN return 0
 #else

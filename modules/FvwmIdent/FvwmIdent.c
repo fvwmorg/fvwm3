@@ -222,13 +222,14 @@ int main(int argc, char **argv)
  *************************************************************************/
 void Loop(int *fd)
 {
-    while (1) {
-	FvwmPacket* packet = ReadFvwmPacket(fd[1]);
-	if ( packet == NULL )
-	    exit(0);
-	else
-	    process_message( packet->type, packet->body );
-    }
+  while (1)
+  {
+    FvwmPacket* packet = ReadFvwmPacket(fd[1]);
+    if ( packet == NULL )
+      exit(0);
+    else
+      process_message( packet->type, packet->body );
+  }
 }
 
 
@@ -312,7 +313,6 @@ void list_configure(unsigned long *body)
       target.gravity = cfgpacket->hints_win_gravity;
       found = 1;
     }
-
 }
 
 /*************************************************************************
@@ -337,7 +337,7 @@ void list_icon_name(unsigned long *body)
 {
   if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
     {
-      strncat(target.icon_name,(char *)&body[3],255);
+      strncpy(target.icon_name,(char *)&body[3],255);
     }
 }
 
@@ -351,7 +351,7 @@ void list_class(unsigned long *body)
 {
   if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
     {
-      strncat(target.class,(char *)&body[3],255);
+      strncpy(target.class,(char *)&body[3],255);
     }
 }
 
@@ -365,7 +365,7 @@ void list_res_name(unsigned long *body)
 {
   if((app_win == (Window)body[1])||(app_win == (Window)body[0]))
     {
-      strncat(target.res,(char *)&body[3],255);
+      strncpy(target.res,(char *)&body[3],255);
     }
 }
 
@@ -526,7 +526,7 @@ void list_end(void)
 	  is_key_pressed = 1;
 	  break;
         case ButtonPress:
-	  is_button_pressed = 1;
+	  is_button_pressed = Event.xbutton.button;
 	  break;
         case KeyRelease:
 	  if (is_key_pressed)
@@ -535,9 +535,27 @@ void list_end(void)
 	    break;
         case ButtonRelease:
 	  if (is_button_pressed)
-	    exit(0);
-	  else
-	    break;
+	  {
+	    if (is_button_pressed == 2 && Event.xbutton.button == 2)
+	    {
+	      /* select a new window when button 2 is pressed */
+	      fvwmlib_get_target_window(dpy, screen, MyName, &app_win, True);
+	      SetMessageMask(
+		fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
+		| M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST | M_CONFIG_INFO
+		| M_END_CONFIG_INFO | M_SENDCONFIG);
+	      SendInfo(fd,"Send_WindowList",0);
+	      XDestroyWindow(dpy, main_win);
+	      DestroyList();
+	      found = 0;
+	      return;
+	    }
+	    else
+	    {
+	      exit(0);
+	    }
+	  }
+	  break;
         case ClientMessage:
 	  if (Event.xclient.format==32 && Event.xclient.data.l[0]==wm_del_win)
 	    exit(0);
@@ -664,6 +682,19 @@ void change_window_name(char *str)
   XSetClassHint(dpy,main_win,&myclasshints);
 }
 
+
+void DestroyList(void)
+{
+  struct Item *t;
+  struct Item *tmp;
+
+  for (t = itemlistRoot; t; t = tmp)
+  {
+    tmp = t->next;
+    free(t);
+  }
+  itemlistRoot = NULL;
+}
 
 /**************************************************************************
 *

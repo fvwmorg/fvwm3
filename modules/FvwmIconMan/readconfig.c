@@ -13,10 +13,12 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#include "config.h"
 #include <ctype.h>
 #include <stdlib.h>
 #include "FvwmIconMan.h"
 #include "readconfig.h"
+#include "libs/defaults.h"
 #include <libs/Module.h>
 
 static char const rcsid[] =
@@ -703,6 +705,11 @@ Binding *ParseMouseEntry (char *tline)
   action = DoGetNextToken(tline,&token, NULL, ",", NULL);
   if(token != NULL) {
     n1 = sscanf(token,"%d",&button);
+    if (n1 == 1 && (button < 0 || button > NUMBER_OF_MOUSE_BUTTONS))
+    {
+      /* syntax error */
+      n1 = 0;
+    }
     Free(token);
   }
 

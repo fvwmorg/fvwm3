@@ -112,7 +112,8 @@ void deadPipe(int nonsense)
  *  Arguments:
  *   but - the button to draw upon
  */
-int drawX(DragWellButton *but) {
+int drawX(DragWellButton *but)
+{
   /*upper left to bottom right*/
   XDrawLine(xg.dpy, but->win, xg.antiReliefGC, but->wx+4, but->wy+4,
 	    but->wx+but->w-4,but->wy+but->h-4);
@@ -211,13 +212,15 @@ void dragwellAnimate() {
     if (dragBut.state == DRAGWELL_BUTTON_PUSHED)
       XClearArea(xg.dpy,xg.win,xg.dbx+2,xg.dby+2,xg.dbw-2,xg.dbh-2,False);
     else
-      XFillRectangle(xg.dpy,xg.win,xg.buttonGC,xg.dbx+2,xg.dby+2,xg.dbw-2,xg.dbh-2);
-    /*This way, the animation time is constant regardless of size of box(assuming
-      drawing is instantaneous...*/
+      XFillRectangle(
+	xg.dpy,xg.win,xg.buttonGC,xg.dbx+2,xg.dby+2,xg.dbw-2,xg.dbh-2);
+    /*This way, the animation time is constant regardless of size of
+     * box(assuming drawing is instantaneous...*/
     sleepTime = TOTAL_ANIMATION_TIME/(xg.dbh-3);
     for (i=xg.dby+xg.dbh-2;i>xg.dby;i--) {
       if (dragBut.state == DRAGWELL_BUTTON_PUSHED)
-        XFillRectangle(xg.dpy,xg.win,xg.buttonGC,xg.dbx+2,i,xg.dbw-3,xg.dby+xg.dbh-1-i);
+        XFillRectangle(
+	  xg.dpy,xg.win,xg.buttonGC,xg.dbx+2,i,xg.dbw-3,xg.dby+xg.dbh-1-i);
       else
         XClearArea(xg.dpy,xg.win,xg.dbx+2,i,xg.dbw-3,xg.dby+xg.dbh-1-i,False);
       XFlush(xg.dpy);

@@ -1193,7 +1193,7 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
 		&JunkX, &JunkY, &button_mask);
-  button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
+  button_mask &= DEFAULT_ALL_BUTTONS_MASK;
   xl += XOffset;
   yt += YOffset;
   xl_orig = xl;
@@ -1285,11 +1285,8 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       break;
     case ButtonPress:
       XAllowEvents(dpy,ReplayPointer,CurrentTime);
-      if (((Event.xbutton.button == 1) && (button_mask & Button1Mask)) ||
-	  ((Event.xbutton.button == 2) && (button_mask & Button2Mask)) ||
-	  ((Event.xbutton.button == 3) && (button_mask & Button3Mask)) ||
-	  ((Event.xbutton.button == 4) && (button_mask & Button4Mask)) ||
-	  ((Event.xbutton.button == 5) && (button_mask & Button5Mask)))
+      if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
+	  ((Button1Mask << (Event.xbutton.button - 1)) & button_mask))
       {
 	/* No new button was pressed, just a delayed event */
 	done = True;
@@ -1832,7 +1829,7 @@ void resize_window(F_CMD_ARGS)
   ResizeWindow = tmp_win->frame;
   XQueryPointer( dpy, ResizeWindow, &JunkRoot, &JunkChild,
 		 &JunkX, &JunkY, &px, &py, &button_mask);
-  button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
+  button_mask &= DEFAULT_ALL_BUTTONS_MASK;
 
   if(check_if_function_allowed(F_RESIZE,tmp_win,True,NULL) == 0)
   {
@@ -2156,11 +2153,8 @@ void resize_window(F_CMD_ARGS)
     case ButtonPress:
       XAllowEvents(dpy,ReplayPointer,CurrentTime);
       done = True;
-      if (((Event.xbutton.button == 1) && (button_mask & Button1Mask)) ||
-	  ((Event.xbutton.button == 2) && (button_mask & Button2Mask)) ||
-	  ((Event.xbutton.button == 3) && (button_mask & Button3Mask)) ||
-	  ((Event.xbutton.button == 4) && (button_mask & Button4Mask)) ||
-	  ((Event.xbutton.button == 5) && (button_mask & Button5Mask)))
+      if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
+	  ((Button1Mask << (Event.xbutton.button - 1)) & button_mask))
       {
 	/* No new button was pressed, just a delayed event */
 	break;

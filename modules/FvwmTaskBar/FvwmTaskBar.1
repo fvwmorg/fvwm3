@@ -138,8 +138,8 @@ Specifies the color to be used for the text in the tips windows.
 Specifies the background color for the tips windows.
 
 .IP "*FvwmTaskTipsColorset \fIcolorset\fP"
-Tells the module to use colorset \fIcolorset\fP for the tips windows.  
-Please refer to the man page of the FvwmTheme module for details about 
+Tells the module to use colorset \fIcolorset\fP for the tips windows.
+Please refer to the man page of the FvwmTheme module for details about
 colorsets.
 
 .IP "*FvwmTaskBarAutoStick"
@@ -174,7 +174,9 @@ they are not shown.
 
 .IP "*FvwmTaskBarAction \fIaction response\fP"
 Tells FvwmTaskBar to do \fIresponse\fP when \fIaction\fP is done.  The
-currently supported \fIaction\fPs are: Click1, Click2, Click3.  The currently
+currently supported \fIaction\fPs are: Click1, Click2, Click3 and so on.
+By default the module supports 3 mouse buttons, but it can be compiled
+to support more.  The currently
 supported \fIresponse\fPs are any fvwm built-in commands, including modules
 and functions.  Warning: Use of the former syntax that allowed to use comma
 separated lists of commands is strongly discouraged due to synchronization

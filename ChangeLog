@@ -1,3 +1,32 @@
+2000-10-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.c (main):
+	* fvwm/move_resize.c (resize_window):
+	(moveLoop):
+	* fvwm/misc.c (WaitForButtonsUp):
+	* fvwm/functions.c (CheckActionType):
+	* fvwm/focus.c (focus_grab_buttons):
+	* fvwm/bindings.c (ParseBinding):
+	* libs/Bindings.c (GrabWindowButton):
+	the number of supported buttons is now a macro in defaults.h
+	theoretically it should be possible to support 5 mouse buttons now
+
+	* libs/defaults.h (NUMBER_OF_MOUSE_BUTTONS):
+	moved it here instead
+
+	* fvwm/fvwm.h (MAX_BUTTONS):
+	removed unused macro
+
+	* fvwm/bindings.c (ParseBinding):
+	fixed FMR
+	* libs/fvwmlib.h:
+	* libs/Bindings.c (DestroyBinding):
+	(RemoveBinding):
+	(RemoveMatchingBinding):
+	partially rewrote binding list handling
+	(MatchBinding):
+	performance enhancements and bugfixes
+
 2000-10-03  Dan Espen  <dane@mk.telcordia.com>
 
 	* libs/fvwmlib.h: remove #define MTRACE_DEBUGGING, its not portable.
@@ -15,7 +44,7 @@
 	* fvwm/read.c (run_command_file):
 	* fvwm/module_interface.c (DeleteMessageQueueBuff):
 	Applied dmalloc suggestions
-	
+
 2000-09-24  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/gnome.c (GNOME_ProcessClientMessage):
@@ -31,12 +60,12 @@
 
 	* fvwm/gnome.c (GNOME_ProcessClientMessage):
 	fixed a gnome hints core dump
-	
+
 2000-09-24  olicha  <olivier.chapuis@free.fr>
 
 	* utils/fvwm-menu-desktop.in:
 	fixed a problem with directory with a space in its name
-	
+
 2000-09-24  Mikhael Goikhman  <migo@homemail.com>
 
 	* rpm/Makefile.am:

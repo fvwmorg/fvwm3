@@ -133,78 +133,108 @@ Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask)
   return find_context(in_modifiers, out_modifier_mask, key_modifiers);
 }
 
-/*
-** to remove a binding from the global list (probably needs more processing
-** for mouse binding lines though, like when context is a title bar button).
-** Specify either button or keysym, depending on type.
-*/
-Binding *RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
-		   STROKE_ARG(char *stroke)
-		   int button, KeySym keysym, int modifiers, int contexts)
+/* Free the memory use by a binding. */
+void FreeBindingStruct(Binding *b)
 {
-  Binding *temp=*pblist, *temp2, *prev=NULL, *b=NULL;
+  if (b->key_name)
+    free(b->key_name);
+  STROKE_CODE(
+    if (b->Stroke_Seq)
+      free(b->Stroke_Seq);
+    );
+  if (b->Action)
+    free(b->Action);
+  if (b->Action2)
+    free(b->Action2);
+  free(b);
+}
+
+/* Unlink a binding b from a binding list pblist.  The previous binding in the
+ * list (prev) must be given also.  Pass NULL at the beginning of the list.
+ * The *pblist pointer may be modified by this function. */
+static void UnlinkBinding(Binding **pblist, Binding *b, Binding *prev)
+{
+  Binding *t;
+
+  if (!prev && b != *pblist)
+  {
+    for (t = *pblist; t && t != b; prev = t, t = t->NextBinding)
+    {
+      /* Find the previous binding in the list. */
+    }
+    if (t == NULL)
+    {
+      /* Binding not found */
+      return;
+    }
+  }
+
+  if (prev)
+  {
+    /* middle of list */
+    prev->NextBinding = b->NextBinding;
+  }
+  else
+  {
+    /* must have been first one, set new start */
+    *pblist = b->NextBinding;
+  }
+
+  return;
+}
+
+/* To remove a binding from the global list (probably needs more processing
+ * for mouse binding lines though, like when context is a title bar button).
+ * Specify either button or keysym, depending on type. */
+void RemoveBinding(Binding **pblist, Binding *b, Binding *prev)
+{
+  UnlinkBinding(pblist, b, NULL);
+  FreeBindingStruct(b);
+}
+
+/* To remove a binding from the global list (probably needs more processing
+ * for mouse binding lines though, like when context is a title bar button).
+ * Specify either button or keysym, depending on type. */
+Bool RemoveMatchingBinding(
+  Display *dpy, Binding **pblist, BindingType type, STROKE_ARG(char *stroke)
+  int button, KeySym keysym, int modifiers, int contexts)
+{
+  Binding *t;
+  Binding *prev;
   KeyCode keycode = 0;
 
+  if (!*pblist)
+    return False;
   if (type == KEY_BINDING)
     keycode = XKeysymToKeycode(dpy, keysym);
 
-  while (temp)
+  for (t = *pblist, prev = NULL; t; prev = t, t = t->NextBinding)
   {
-    temp2 = temp->NextBinding;
-    if (temp->type == type)
+    if (t->type == type)
     {
       if (((type == KEY_BINDING &&
-	    temp->Button_Key == keycode) ||
+	    t->Button_Key == keycode) ||
 	   STROKE_CODE(
 	     (type == STROKE_BINDING &&
-	      temp->Button_Key == button &&
-	      (strcmp(temp->Stroke_Seq,stroke) == 0)) ||
+	      t->Button_Key == button &&
+	      (strcmp(t->Stroke_Seq,stroke) == 0)) ||
 	     )
 	   (type == MOUSE_BINDING &&
-	    temp->Button_Key == button)) &&
-	  (temp->Context == contexts) &&
-	  (temp->Modifier == modifiers))
+	    t->Button_Key == button)) &&
+	  (t->Context == contexts) &&
+	  (t->Modifier == modifiers))
       {
-        /* we found it, remove it from list */
-	if (b != NULL) 
-	  free(b);
-	b = (Binding *)safemalloc(sizeof(Binding));
-	b->type = temp->type;
-	b->Button_Key = temp->Button_Key;
-	b->Context = temp->Context;
-	b->Modifier = temp->Modifier;
-	/* just return the needed information for  activate_binding */
-	STROKE_CODE(b->Stroke_Seq = NULL);
-	b->key_name = NULL;
-	b->Action = NULL;
- 	b->Action2 = NULL;
-        if (prev) /* middle of list */
-        {
-          prev->NextBinding = temp2;
-        }
-        else /* must have been first one, set new start */
-        {
-          *pblist = temp2;
-        }
-	if (temp->key_name)
-	  free(temp->key_name);
-	STROKE_CODE(
-	  if (temp->Stroke_Seq)
-	    free(temp->Stroke_Seq);
-	  );
-	if (temp->Action)
-	  free(temp->Action);
-	if (temp->Action2)
-	  free(temp->Action2);
-        free(temp);
-        temp=NULL;
+	/* found a matching binding - remove it */
+	UnlinkBinding(pblist, t, prev);
+	FreeBindingStruct(t);
+        t = NULL;
+	/* break out of the loop */
+	return True;
       }
     }
-    if (temp)
-      prev=temp;
-    temp=temp2;
   }
-  return b;
+
+  return False;
 }
 
 
@@ -342,9 +372,9 @@ Bool MatchBinding(Display *dpy, Binding *b,
 {
   unsigned int used_modifiers = ~dead_modifiers;
   static int *kc_list = NULL;
-  static KeySym kc_ksym = NoSymbol;
   static int kc_len = 0;
   static int kc_maxlen = 0;
+  static KeySym last_keysym = NoSymbol;
 
   modifier &= used_modifiers;
   if (((b->Modifier & used_modifiers) != modifier &&
@@ -358,24 +388,26 @@ Bool MatchBinding(Display *dpy, Binding *b,
   /* See comment in AddBinding why this logic is necessary. */
   if (type == KEY_BINDING)
   {
-    int max;
-    int min;
-    int maxmods;
+    const int maxmods = 8;
+    static int max = 0;
+    static int min = 0;
     KeySym tkeysym;
     int i;
     int m;
 
-    XDisplayKeycodes(dpy, &min, &max);
-    maxmods = 8;
-
     if (keysym == NoSymbol)
       return False;
-    if (kc_ksym != keysym)
+    if (max == 0)
+      XDisplayKeycodes(dpy, &min, &max);
+
+    if (keysym != last_keysym)
     {
+      /* Rebuild array of key symbols. This is stored between calls to reduce
+       * X server traffic. */
       kc_len = 0;
-      if (kc_list != NULL)
+      if (kc_list)
 	free(kc_list);
-      kc_list = (int *)safemalloc(sizeof(int) * 8);
+      kc_list = (int *)safemalloc(sizeof(int) * maxmods);
       for (i = min; i <= max; i++)
       {
 	for (m = 0, tkeysym = XK_Left; m <= maxmods && tkeysym != NoSymbol; m++)
@@ -499,7 +531,7 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
        STROKE_CODE(|| (binding->type == STROKE_BINDING))))
   {
     int bmin = 1;
-    int bmax = 3;
+    int bmax = NUMBER_OF_MOUSE_BUTTONS;
     int button;
 
     if(binding->Button_Key >0)

@@ -80,7 +80,7 @@
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
 
-#define SomeButtonDown(a) ((a)&Button1Mask||(a)&Button2Mask||(a)&Button3Mask)
+#define SomeButtonDown(a) ((a) & DEFAULT_ALL_BUTTONS_MASK)
 #define COMPLEX_WINDOW_PLACEMENT
 
 /* File type information */
@@ -134,10 +134,16 @@ int MinWidth=DEFMINWIDTH;
 int MaxWidth=DEFMAXWIDTH;
 ButtonArray buttons;
 List windows;
-char *ClickAction[3]={"Iconify -1,Raise","Iconify","Lower"},*EnterAction,
-      *BackColor[MAX_COLOUR_SETS] = { "white" },
-      *ForeColor[MAX_COLOUR_SETS] = { "black" },
-      *geometry="";
+char *ClickAction[NUMBER_OF_BUTTONS] =
+{
+  "Iconify -1,Raise",
+  "Iconify",
+  "Lower"
+},
+  *EnterAction,
+  *BackColor[MAX_COLOUR_SETS] = { "white" },
+  *ForeColor[MAX_COLOUR_SETS] = { "black" },
+  *geometry="";
 int colorset[MAX_COLOUR_SETS];
 Pixmap pixmap[MAX_COLOUR_SETS];
 char *font_string = "fixed";
@@ -181,6 +187,12 @@ int main(int argc, char **argv)
 #ifdef HAVE_SIGACTION
   struct sigaction  sigact;
 #endif
+  int i;
+
+  for (i = 3; i < NUMBER_OF_MOUSE_BUTTONS; i++)
+  {
+    ClickAction[i] = "Nop";
+  }
 
   /* Save the program name for error messages and config parsing */
   temp = argv[0];
@@ -762,8 +774,9 @@ void LoopOnEvents(void)
         if (Pressed)
         {
           num=WhichButton(&buttons,Event.xbutton.x,Event.xbutton.y);
-          if (num!=-1)
-          {
+          if (num!=-1 && Event.xbutton.button >= 1 &&
+	      Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
+	  {
             SendFvwmPipe(Fvwm_fd,
 			 ClickAction[(Transient) ? 0:Event.xbutton.button-1],
 			 ItemID(&windows,num));
@@ -1026,13 +1039,20 @@ void LinkAction(char *string)
 {
 char *temp;
   temp=string;
-  while(isspace((unsigned char)*temp)) temp++;
-  if(strncasecmp(temp, "Click1", 6)==0)
-    CopyString(&ClickAction[0],&temp[6]);
-  else if(strncasecmp(temp, "Click2", 6)==0)
-    CopyString(&ClickAction[1],&temp[6]);
-  else if(strncasecmp(temp, "Click3", 6)==0)
-    CopyString(&ClickAction[2],&temp[6]);
+  while(isspace((unsigned char)*temp))
+    temp++;
+  if(strncasecmp(temp, "Click", 5)==0)
+  {
+    int n;
+    int b;
+    int i;
+
+    i = sscanf(temp + 5, "%d%n", &b, &n);
+    if (i > 0 && b >=1 && b <= NUMBER_OF_MOUSE_BUTTONS)
+    {
+      CopyString(&ClickAction[b - 1], temp + 5 + n);
+    }
+  }
   else if(strncasecmp(temp, "Enter", 5)==0)
     CopyString(&EnterAction,&temp[5]);
 }

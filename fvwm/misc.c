@@ -77,7 +77,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
     XAllowEvents(dpy,ReplayPointer,CurrentTime);
     XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &JunkX,
 		  &JunkY, &mask);
-    if(!(mask&(Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask)))
+    if(!(mask&(DEFAULT_ALL_BUTTONS_MASK)))
       AllUp = True;
     /* handle expose events */
     if (do_handle_expose && XPending(dpy) &&

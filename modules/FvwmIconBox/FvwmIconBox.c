@@ -61,6 +61,7 @@
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 
+#include "libs/defaults.h"
 #include "libs/fvwmlib.h"
 #include "fvwm/fvwm.h"
 #include "libs/Colorset.h"
@@ -1680,7 +1681,8 @@ void ParseOptions(void)
 					      "UseSkipList"),Clength+10)==0)
 	  UseSkipList = True;
 	else if (strncasecmp(tline,CatString3("*",MyName,
-					      "Resolution"),Clength+11)==0){
+					      "Resolution"),Clength+11)==0)
+	{
 	  tmp = &tline[Clength+11];
 	  while(((isspace((unsigned char)*tmp))&&(*tmp != '\n'))&&(*tmp != 0))
 	    tmp++;
@@ -1688,7 +1690,8 @@ void ParseOptions(void)
 	    m_mask |= M_NEW_DESK;
 	    local_flags |= CURRENT_ONLY;
 	  }
-	}else if (strncasecmp(tline,CatString3("*",MyName,
+	}
+	else if (strncasecmp(tline,CatString3("*",MyName,
 					      "Mouse"),Clength+6)==0)
 	  parsemouse(&tline[Clength + 6]);
 	else if (strncasecmp(tline,CatString3("*",MyName,
@@ -1821,6 +1824,8 @@ void parsemouse(char *tline)
 {
   struct mousefunc *f = NULL;
   int len;
+  int n;
+  int b;
   char *ptr,*start,*end,*tmp;
 
   f = (struct mousefunc *)safemalloc(sizeof(struct mousefunc));
@@ -1834,12 +1839,11 @@ void parsemouse(char *tline)
   end = tline;
   while((!isspace((unsigned char)*end))&&(*end!='\n')&&(*end!=0))
     end++;
-  if (strncasecmp(start, "1", 1) == 0)
-    f->mouse = Button1;
-  else if (strncasecmp(start, "2", 1) == 0)
-    f->mouse = Button2;
-  else if (strncasecmp(start, "3", 1) == 0)
-    f->mouse = Button3;
+  n = scanf(start, "%d", &b);
+  if (n > 0 && b >= 0 && b <= NUMBER_OF_MOUSE_BUTTONS)
+    f->mouse = b;
+  else
+    f->mouse = -1;
   /* click or doubleclick */
   tline = end;
   /* skip spaces */
@@ -2040,18 +2044,18 @@ void process_message(unsigned long type, unsigned long *body)
 	  {
 	    if (IS_ICON_SUPPRESSED(cfgpacket))
 	      add = 1;
-	    else 
+	    else
 	      remove = 1;
 	    SET_ICON_SUPPRESSED(tmp,IS_ICON_SUPPRESSED(cfgpacket));
 	  }
-	  if (UseSkipList && 
+	  if (UseSkipList &&
 	      DO_SKIP_WINDOW_LIST(cfgpacket) != DO_SKIP_WINDOW_LIST(tmp))
 	  {
 	    if (!DO_SKIP_WINDOW_LIST(cfgpacket))
 	      add = 1;
 	    else
 	      remove = 1;
-	    SET_DO_SKIP_WINDOW_LIST(tmp,DO_SKIP_WINDOW_LIST(cfgpacket)); 
+	    SET_DO_SKIP_WINDOW_LIST(tmp,DO_SKIP_WINDOW_LIST(cfgpacket));
 	  }
 	  if ((local_flags & CURRENT_ONLY) &&
 	      tmp->desk != cfgpacket->desk && !IS_STICKY(tmp))
@@ -2350,7 +2354,7 @@ int window_cond(struct icon_info *item)
 {
   if ((!(local_flags & CURRENT_ONLY) ||
       (IS_STICKY(item)) || (item->desk == CurrentDesk)) &&
-      IS_ICON_SUPPRESSED(item) && 
+      IS_ICON_SUPPRESSED(item) &&
       (!DO_SKIP_WINDOW_LIST(item) || !UseSkipList))
     return 1;
 
@@ -2420,7 +2424,7 @@ Bool AddItem(ConfigWinPacket *cfgpacket)
   Head = new;
   Tail = new;
 
-  if (window_cond(new)) { 
+  if (window_cond(new)) {
     num_icons++;
     return True;
   }
@@ -2798,7 +2802,9 @@ void ExecuteAction(int x, int y, struct icon_info *item)
   tmp = MouseActions;
 
   while (tmp != NULL){
-    if (tmp->mouse == d.xbutton.button && tmp->type == type){
+    if ((tmp->mouse == d.xbutton.button || tmp->mouse == 0) &&
+	tmp->type == type)
+    {
       SendFvwmPipe(fd, tmp->action, item->id);
       return;
     }

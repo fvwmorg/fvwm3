@@ -57,6 +57,7 @@
 #include <X11/extensions/shape.h>
 #endif
 
+#include "libs/defaults.h"
 #include "libs/fvwmlib.h"
 #include "fvwm/fvwm.h"
 #include "libs/Module.h"
@@ -432,9 +433,9 @@ void AddButtonAction(button_info *b,int n,char *action)
   char *s;
   char *t;
 
-  if(!b || n<0 || n>3 || !action)
+  if(!b || n < 0 || n > NUMBER_OF_MOUSE_BUTTONS || !action)
   {
-    fprintf(stderr,"%s: BUG: AddButtonAction failed\n",MyName);
+    fprintf(stderr, "%s: BUG: AddButtonAction failed\n", MyName);
     exit(2);
   }
   if(b->flags&b_Action)
@@ -445,8 +446,9 @@ void AddButtonAction(button_info *b,int n,char *action)
   else
   {
     int i;
-    b->action=(char**)mymalloc(4*sizeof(char*));
-    for(i=0;i<4;b->action[i++]=NULL);
+    b->action=(char**)mymalloc((NUMBER_OF_MOUSE_BUTTONS + 1) * sizeof(char*));
+    for (i = 0; i <= NUMBER_OF_MOUSE_BUTTONS; b->action[i++] = NULL)
+      ;
     b->flags|=b_Action;
   }
 
@@ -484,7 +486,8 @@ void AddButtonAction(button_info *b,int n,char *action)
 **/
 char *GetButtonAction(button_info *b,int n)
 {
-  if(!b || !(b->flags&b_Action) || !(b->action) || n<0 || n>3)
+  if(!b || !(b->flags&b_Action) || !(b->action) || n < 0 ||
+     n > NUMBER_OF_MOUSE_BUTTONS)
     return NULL;
   if (!b->action[n])
     return NULL;

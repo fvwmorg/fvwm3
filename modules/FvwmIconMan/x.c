@@ -99,7 +99,8 @@ static void handle_buttonevent (XEvent *theEvent, WinManager *man)
   Binding *MouseEntry;
 
   b = xy_to_button (man, theEvent->xbutton.x, theEvent->xbutton.y);
-  if (b && theEvent->xbutton.button >= 1 && theEvent->xbutton.button <= 3) {
+  if (b && theEvent->xbutton.button >= 1 &&
+      theEvent->xbutton.button <= NUMBER_OF_MOUSE_BUTTONS) {
     win = b->drawn_state.win;
     if (win != NULL) {
       ConsoleDebug (X11, "Found the window:\n");

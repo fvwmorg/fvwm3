@@ -81,11 +81,12 @@
 #define MAX_NO_ICON_ACTION_LENGTH (MAX_MODULE_INPUT_TEXT_LEN - 100)
 
 #define GRAB_EVENTS (ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|EnterWindowMask|LeaveWindowMask)
-#define SomeButtonDown(a) ((a)&Button1Mask||(a)&Button2Mask||(a)&Button3Mask)
+#define SomeButtonDown(a) ((a) & DEFAULT_ALL_BUTTONS_MASK)
 
 #define DEFAULT_CLICK1 "Iconify -1, Raise, Focus"
 #define DEFAULT_CLICK2 "Iconify +1, Lower"
 #define DEFAULT_CLICK3 "Nop"
+#define DEFAULT_CLICK_N "Nop"
 
 #define gray_width  8
 #define gray_height 8
@@ -162,7 +163,12 @@ int UpdateInterval = 30;
 ButtonArray buttons;
 List windows;
 
-char *ClickAction[3] = { DEFAULT_CLICK1, DEFAULT_CLICK2, DEFAULT_CLICK3 },
+char *ClickAction[NUMBER_OF_MOUSE_BUTTONS] =
+{
+  DEFAULT_CLICK1,
+  DEFAULT_CLICK2,
+  DEFAULT_CLICK3
+},
      *EnterAction,
      *BackColor      = "white",
      *ForeColor      = "black",
@@ -229,6 +235,12 @@ int main(int argc, char **argv)
 {
   const char *temp;
   char *s;
+  int i;
+
+  for (i = 3; i < NUMBER_OF_MOUSE_BUTTONS; i++)
+  {
+    ClickAction[i] = DEFAULT_CLICK_N;
+  }
 
   /* Save the program name for error messages and config parsing */
   temp = argv[0];
@@ -370,7 +382,7 @@ void EndLessLoop(void)
     XFlush(dpy);
     if ( fvwmSelect(fd_width, &readset, NULL, NULL, &tv) > 0 )
     {
-      
+
       if (FD_ISSET(x_fd, &readset) || XPending(dpy))
         LoopOnEvents();
 
@@ -465,20 +477,20 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  win_x = win_border;
 	  if (!win_is_shaded) {
 	    if (win_y > Midline)
-	      win_y = ScreenHeight - 
-		(AutoHide ? 2 - win_title_height*win_has_bottom_title : 
+	      win_y = ScreenHeight -
+		(AutoHide ? 2 - win_title_height*win_has_bottom_title :
 		 win_height + win_border);
 	    else
-	      win_y = AutoHide ? 2 + win_title_height*win_has_bottom_title 
+	      win_y = AutoHide ? 2 + win_title_height*win_has_bottom_title
 		- win_height : win_border + win_title_height;
 	  }
 	  else
 	  {
 	   if (win_y > Midline)
-	    win_y = ScreenHeight - win_border - 
+	    win_y = ScreenHeight - win_border -
 	      (win_has_bottom_title)*win_height;
 	  else
-	     win_y = win_title_height + win_border - 
+	     win_y = win_title_height + win_border -
 	       (win_has_bottom_title)*win_height;
 	  }
 	}
@@ -501,13 +513,13 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if (AutoStick && win_is_shaded != IS_SHADED(cfgpacket))
       {
 	win_is_shaded = IS_SHADED(cfgpacket);
-	if (win_is_shaded) 
+	if (win_is_shaded)
 	{
 	   if (win_y > Midline)
-	    win_y = ScreenHeight - win_border - 
+	    win_y = ScreenHeight - win_border -
 	      (win_has_bottom_title)*win_height;
 	  else
-	     win_y = win_title_height + win_border - 
+	     win_y = win_title_height + win_border -
 	       (win_has_bottom_title)*win_height;
 	}
 	else
@@ -569,7 +581,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 		   IsItemIndexIconified(&windows, i));
           redraw = 1;
       }
-	
+
     }
     else
     {
@@ -622,7 +634,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     {
       if (GetDeskNumber(&windows, i, &Desk) == 0)
 	break;
-      if ((!DeskOnly || Desk == DeskNumber) && 
+      if ((!DeskOnly || Desk == DeskNumber) &&
 	  (!UseSkipList || !IsItemIndexSkipWindowList(&windows, i)))
       {
 	AddButton(&buttons, string, NULL, BUTTON_UP, i,
@@ -742,7 +754,7 @@ void redraw_buttons()
 
   for (item=windows.head; item; item=item->next)
   {
-    if ((DeskNumber == item->Desk || IS_STICKY(item)) && 
+    if ((DeskNumber == item->Desk || IS_STICKY(item)) &&
 	(!DO_SKIP_WINDOW_LIST(item) || !UseSkipList))
     {
       AddButton(&buttons, item->name, &(item->p), BUTTON_UP, item->count,
@@ -1154,8 +1166,12 @@ void LoopOnEvents(void)
 	    StartButtonUpdate(NULL, BUTTON_UP);
 	} else {
           ButReleased = ButPressed; /* Avoid race fvwm pipe */
-          SendFvwmPipe(Fvwm_fd, ClickAction[Event.xbutton.button-1],
-                       ItemID(&windows, num));
+	  if (Event.xbutton.button >= 1 &&
+	      Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS)
+	  {
+	    SendFvwmPipe(Fvwm_fd, ClickAction[Event.xbutton.button-1],
+			 ItemID(&windows, num));
+	  }
         }
 
         if (MouseInStartButton(Event.xbutton.x, Event.xbutton.y)) {
@@ -1311,7 +1327,7 @@ void LoopOnEvents(void)
 	      win_y = ScreenHeight - 2 +
 		win_title_height*win_has_bottom_title;
 	    else
-	      win_y = 2 + win_title_height*win_has_bottom_title 
+	      win_y = 2 + win_title_height*win_has_bottom_title
 		- win_height;
 	    XSync(dpy,0);
 	    XMoveWindow(dpy, win, win_x, win_y);
@@ -1379,12 +1395,19 @@ void LinkAction(const char *string)
 {
   const char *temp=string;
   while(isspace((unsigned char)*temp)) temp++;
-  if(strncasecmp(temp, "Click1", 6)==0)
-    CopyString(&ClickAction[0],&temp[6]);
-  else if(strncasecmp(temp, "Click2", 6)==0)
-    CopyString(&ClickAction[1],&temp[6]);
-  else if(strncasecmp(temp, "Click3", 6)==0)
-    CopyString(&ClickAction[2],&temp[6]);
+
+  if(strncasecmp(temp, "Click", 5)==0)
+  {
+    int n;
+    int b;
+    int i;
+
+    i = sscanf(temp + 5, "%d%n", &b, &n);
+    if (i > 0 && b >=1 && b <= NUMBER_OF_MOUSE_BUTTONS)
+    {
+      CopyString(&ClickAction[b - 1], temp + 5 + n);
+    }
+  }
   else if(strncasecmp(temp, "Enter", 5)==0)
     CopyString(&EnterAction,&temp[5]);
 }
@@ -1950,8 +1973,8 @@ void HideTaskBar()
   {
     XQueryPointer(dpy, win, &d_rt,&d_ch, &d_x, &d_y,
 		  &wx, &wy, &mask);
-    if (wy >= -(win_border + win_title_height*(1-win_has_bottom_title)) && 
-	wy < win_height + win_border + 
+    if (wy >= -(win_border + win_title_height*(1-win_has_bottom_title)) &&
+	wy < win_height + win_border +
 	win_title_height*win_has_bottom_title)
     {
       if (wy < 0 || wy >= win_height || wx < 0 || wx >= win_width)
@@ -1964,12 +1987,12 @@ void HideTaskBar()
   inc_y += (NRows >= 3 ? 2 : 0) + (NRows >= 5 ? 2 : 0);
 
   if (win_y < Midline) {
-    new_win_y = 2 + win_title_height*win_has_bottom_title - 
+    new_win_y = 2 + win_title_height*win_has_bottom_title -
       win_height;
     for (; win_y>=new_win_y; win_y -=inc_y)
       XMoveWindow(dpy, win, win_x, win_y);
   } else {
-    new_win_y = (int)ScreenHeight - 2 + 
+    new_win_y = (int)ScreenHeight - 2 +
       win_title_height*win_has_bottom_title;
     for (; win_y<=new_win_y; win_y +=inc_y)
       XMoveWindow(dpy, win, win_x, win_y);

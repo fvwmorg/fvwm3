@@ -488,7 +488,7 @@ Bool focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
     Scr.Ungrabbed = (do_grab) ? NULL : tmp_win;
     if (do_grab)
       XSync(dpy, 0);
-    for (i = 0; i < 3; i++)
+    for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
     {
       if (!(Scr.buttons2grab & (1<<i)))
 	continue;

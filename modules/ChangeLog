@@ -1,3 +1,31 @@
+2000-10-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+
+	* FvwmWinList/FvwmWinList.c (SomeButtonDown):
+	(main):
+	(LinkAction):
+	(LoopOnEvents):
+	(LoopOnEvents):
+	* FvwmTaskBar/FvwmTaskBar.c (SomeButtonDown):
+	(main):
+	(LinkAction):
+	(LoopOnEvents):
+	* FvwmIconMan/x.c (handle_buttonevent):
+	* FvwmIconMan/readconfig.c (ParseMouseEntry):
+	* FvwmIconBox/FvwmIconBox.c (parsemouse):
+	(ExecuteAction):
+	* FvwmButtons/FvwmButtons.c (AddButtonAction):
+	(GetButtonAction):
+	(AddButtonAction):
+	all modules can handle NUMBER_OF_MOUSE_BUTTONS mouse buttons
+
+	* FvwmWinList/FvwmWinList.c (LoopOnEvents):
+	* FvwmTaskBar/FvwmTaskBar.c (LoopOnEvents):
+	fixed possible core dump
+
+	* FvwmIdent/FvwmIdent.c (list_end):
+	pressing button 2 asks for a new window
+
 2000-10-04  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmForm/FormFvwmRlogin., FvwmForm/FormFvwmForm.: Can't use \n
