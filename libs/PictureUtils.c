@@ -1776,6 +1776,140 @@ int PictureAllocColorAllProp(
 	return 0;
 }
 
+int PictureAllocColorImage(
+	Display *dpy, PictureImageColorAllocator *pica, XColor *c, int x, int y)
+{
+	int r;
+
+	r = PictureAllocColorAllProp(
+		dpy, pica->cmap, c, x, y,
+		pica->no_limit, pica->is_8, pica->dither);
+	if (r && pica->pixels_table != NULL && pica->pixels_table_size &&
+	    c->pixel < pica->pixels_table_size)
+	{
+		pica->pixels_table[c->pixel]++;
+	}
+	return r;
+}
+
+PictureImageColorAllocator *PictureOpenImageColorAllocator(
+	Display *dpy, Colormap cmap, int x, int y, Bool no_limit,
+	Bool do_not_save_pixels, int dither, Bool is_8)
+{
+	PictureImageColorAllocator *pica;
+	Bool do_save_pixels = False;
+
+	pica = (PictureImageColorAllocator *)safemalloc(
+		sizeof(PictureImageColorAllocator));
+	if (Pdepth <= 8 && !do_not_save_pixels && (Pvisual->class & 1) &&
+	    ((PUseDynamicColors && Pct) || no_limit))
+	{
+		int s =  1 << Pdepth;
+		pica->pixels_table = (unsigned long *)safecalloc(
+			s, sizeof(unsigned long));
+		pica->pixels_table_size = s;
+		do_save_pixels = True;
+	}
+	if (!do_save_pixels)
+	{
+		pica->pixels_table = NULL;
+		pica->pixels_table_size = 0;
+	}
+	pica->is_8 = is_8;
+	if (dither && Pdepth <= 16)
+	{
+		pica->dither = dither;
+	}
+	else
+	{
+		pica->dither = dither;
+	}
+	pica->no_limit = no_limit;
+	pica->cmap = cmap;
+	return pica;
+}
+
+void PictureCloseImageColorAllocator(
+	Display *dpy, PictureImageColorAllocator *pica, int *nalloc_pixels,
+	Pixel **alloc_pixels, Bool *no_limit)
+{
+	if (nalloc_pixels)
+	{
+		*nalloc_pixels = 0;
+	}
+	if (alloc_pixels != NULL)
+	{
+		*alloc_pixels = NULL;
+	}
+	if (no_limit != NULL)
+	{
+		*no_limit = 0;
+	}
+	if (pica->pixels_table)
+	{
+		int i,j;
+		int k = 0, l = 0, np = 0;
+		int free_num = 0;
+		Pixel *free_pixels = NULL;
+		Pixel *save_pixels = NULL;
+
+		for(i = 0; i < pica->pixels_table_size; i++)
+		{
+			if (pica->pixels_table[i])
+			{
+				free_num += (pica->pixels_table[i]-1);
+				np++;
+			}
+		}
+		if (free_num)
+		{
+			free_pixels = (Pixel *)safemalloc(
+				free_num * sizeof(Pixel));
+		}
+		if (np && nalloc_pixels != NULL && alloc_pixels != NULL)
+		{
+			save_pixels = (Pixel *)safemalloc(np * sizeof(Pixel));
+		}
+		for(i = 0; i < pica->pixels_table_size; i++)
+		{
+			if (pica->pixels_table[i])
+			{
+				if (save_pixels)
+				{
+					save_pixels[k++] = i;
+				}
+				for(j=1; j < pica->pixels_table[i]; j++)
+				{
+					free_pixels[l++] = i; 
+				}
+			}
+		}
+		if (free_num)
+		{
+			PictureFreeColors(
+				dpy, pica->cmap, free_pixels, free_num, 0,
+				pica->no_limit);
+			free(free_pixels);
+		}
+		if (nalloc_pixels != NULL && alloc_pixels != NULL)
+		{
+			*nalloc_pixels = np;
+			*alloc_pixels = save_pixels;
+			if (no_limit != NULL)
+			{
+				*no_limit = pica->no_limit;
+			}
+		}
+		else if (save_pixels)
+		{
+			free(save_pixels);
+		}
+		free(pica->pixels_table);
+	}
+	free(pica);
+	return;
+}
+
 void PictureFreeColors(
 	Display *dpy, Colormap cmap, Pixel *pixels, int n, unsigned long planes,
 	Bool no_limit)

@@ -289,7 +289,7 @@ void SetRootWindow(char *tline)
 	}
 	if (!PImageLoadPixmapFromFile(
 		dpy, root, file_path, &temp_pix, &shapeMask, &alpha,
-		&w, &h, &depth, &nalloc_pixels, &alloc_pixels, fpa))
+		&w, &h, &depth, &nalloc_pixels, &alloc_pixels, 0, fpa))
 	{
 		fprintf(
 			stderr, "[fvwm-root] failed to load image file '%s'\n",

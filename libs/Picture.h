@@ -57,7 +57,8 @@ FvwmPicture* PCacheFvwmPicture(
  */
 FvwmPicture *PLoadFvwmPictureFromPixmap(
 	Display *dpy, Window win, char *name, Pixmap pixmap, Pixmap mask,
-	Pixmap alpha, int width, int height);
+	Pixmap alpha, int width, int height, int nalloc_pixels,
+	Pixel *alloc_pixels, int no_limit);
 
 /* <pubfunc>PDestroyFvwmPicture
  * <description>
@@ -68,7 +69,8 @@ FvwmPicture *PLoadFvwmPictureFromPixmap(
  */
 FvwmPicture *PCacheFvwmPictureFromPixmap(
 	Display *dpy, Window win, char *name, Pixmap pixmap,
-	Pixmap mask, Pixmap alpha, int width, int height);
+	Pixmap mask, Pixmap alpha, int width, int height, int nalloc_pixels,
+	Pixel *alloc_pixels, int no_limit);
 
 /* <pubfunc>PDestroyFvwmPicture
  * <description>

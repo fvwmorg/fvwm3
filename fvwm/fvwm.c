@@ -46,6 +46,7 @@
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/FShape.h"
+#include "libs/PictureBase.h"
 #include "libs/PictureUtils.h"
 #include "libs/FRenderInit.h"
 #include "fvwm.h"

@@ -54,6 +54,7 @@
 #include "libs/FShape.h"
 #include "libs/FScreen.h"
 #include "libs/Picture.h"
+#include "libs/PictureUtils.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -1259,6 +1260,20 @@ static void destroy_icon(FvwmWindow *fw)
 		{
 			XFreePixmap(dpy, fw->icon_alphaPixmap);
 			fw->icon_alphaPixmap = None;
+		}
+		if (fw->icon_alloc_pixels != NULL)
+		{
+			if (fw->icon_nalloc_pixels != 0)
+			{
+				PictureFreeColors(
+					dpy, Pcmap, fw->icon_alloc_pixels,
+					fw->icon_nalloc_pixels, 0,
+					fw->icon_no_limit);
+			}
+			free(fw->icon_alloc_pixels);
+			fw->icon_alloc_pixels = NULL;
+			fw->icon_nalloc_pixels = 0;
+			fw->icon_no_limit = 0;
 		}
 	}
 	if (FW_W_ICON_TITLE(fw))

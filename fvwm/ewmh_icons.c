@@ -25,6 +25,7 @@
 #include "libs/FShape.h"
 #include "libs/PictureBase.h"
 #include "libs/Picture.h"
+#include "libs/PictureUtils.h"
 #include "libs/PictureImageLoader.h"
 #include "libs/FRenderInit.h"
 #include "fvwm.h"
@@ -200,6 +201,9 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 	Pixmap save_icon_pixmap = None;
 	Pixmap save_icon_mask = None;
 	Pixmap save_icon_alpha = None;
+	int save_icon_nalloc_pixels = 0;
+	Pixel *save_icon_alloc_pixels = NULL;
+	int save_icon_no_limit = 0;
 	Window save_icon_pixmap_w = None;
 	Bool is_pixmap_ours = False;
 	Bool is_icon_ours = False;
@@ -230,6 +234,9 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 		save_icon_pixmap = fwin->iconPixmap;
 		save_icon_mask = fwin->icon_maskPixmap;
 		save_icon_alpha = fwin->icon_alphaPixmap;
+		save_icon_nalloc_pixels = fwin->icon_nalloc_pixels;
+		save_icon_alloc_pixels = fwin->icon_alloc_pixels;
+		save_icon_no_limit = fwin->icon_no_limit;
 		save_icon_pixmap_w =  FW_W_ICON_PIXMAP(fwin);
 		is_pixmap_ours = IS_PIXMAP_OURS(fwin);
 		is_icon_ours = IS_ICON_OURS(fwin);
@@ -242,6 +249,17 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 		alpha = fwin->icon_alphaPixmap;
 		width = fwin->icon_g.picture_w_g.width;
 		height = fwin->icon_g.picture_w_g.height;
+		if (fwin->icon_alloc_pixels != NULL)
+		{
+			if (fwin->icon_nalloc_pixels != 0)
+			{
+				PictureFreeColors(
+					dpy, Pcmap, fwin->icon_alloc_pixels,
+					fwin->icon_nalloc_pixels, 0,
+					fwin->icon_no_limit);
+			}
+			free(fwin->icon_alloc_pixels);
+		}
 
 		fwin->icon_g.picture_w_g.width = save_picture_w_g_width;
 		fwin->icon_g.picture_w_g.height = save_picture_w_g_height;
@@ -249,6 +267,9 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 		fwin->iconPixmap = save_icon_pixmap;
 		fwin->icon_maskPixmap = save_icon_mask;
 		fwin->icon_alphaPixmap = save_icon_alpha;
+		fwin->icon_nalloc_pixels = save_icon_nalloc_pixels;
+		fwin->icon_alloc_pixels = save_icon_alloc_pixels;
+		fwin->icon_no_limit = save_icon_no_limit;
 		FW_W_ICON_PIXMAP(fwin) = save_icon_pixmap_w;
 		SET_ICON_OURS(fwin, is_icon_ours);
 		SET_PIXMAP_OURS(fwin, is_pixmap_ours);
@@ -661,6 +682,9 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 	Pixmap alpha = None;
 	Bool free_list = False;
 	int have_alpha;
+	int nalloc_pixels;
+	Pixel *alloc_pixels;
+	int no_limit;
 	FvwmPictureAttributes fpa;
 
 	if (list == NULL)
@@ -711,7 +735,8 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 	}
 	if (!PImageCreatePixmapFromArgbData(
 		dpy, Scr.Root, (unsigned char *)list, start, width, height,
-		pixmap, mask, alpha, &have_alpha, fpa) || pixmap == None)
+		pixmap, mask, alpha, &have_alpha, &nalloc_pixels, &alloc_pixels,
+		&no_limit, fpa) || pixmap == None)
 	{
 		fvwm_msg(ERR, "EWMH_SetIconFromWMIcon",
 			 "fail to create a pixmap\n");
@@ -780,7 +805,10 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 							      Scr.NoFocusWin,
 							      name,
 							      pixmap,mask,alpha,
-							      width, height);
+							      width, height,
+							      nalloc_pixels,
+							      alloc_pixels,
+							      no_limit);
 		if (fwin->mini_icon != NULL)
 		{
 			fwin->mini_pixmap_file = name;
@@ -797,6 +825,9 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 		fwin->iconPixmap = pixmap;
 		fwin->icon_maskPixmap = mask;
 		fwin->icon_alphaPixmap = alpha;
+		fwin->icon_nalloc_pixels = nalloc_pixels;
+		fwin->icon_alloc_pixels = alloc_pixels;
+		fwin->icon_no_limit = no_limit;
 		fwin->icon_g.picture_w_g.width = width;
 		fwin->icon_g.picture_w_g.height = height;
 		fwin->iconDepth = Pdepth;

@@ -244,7 +244,7 @@ void GetIconFromFile(struct icon_info *item)
 			item->icon_file, imagePath);
 		return;
 	}
-	fpa.mask = FPAM_NO_ALLOC_PIXELS; /* olicha why ? */
+	fpa.mask = 0;
 	if (Iconcolorset >= 0 && Colorset[Iconcolorset].do_dither_icon)
 	{
 		fpa.mask |= FPAM_DITHER;
@@ -255,7 +255,8 @@ void GetIconFromFile(struct icon_info *item)
 		dpy, main_win, path, &item->iconPixmap,
 		&item->icon_maskPixmap,
 		&item->icon_alphaPixmap, &item->icon_w, &item->icon_h,
-		&item->icon_depth, 0, NULL, fpa))
+		&item->icon_depth, &item->icon_nalloc_pixels,
+		&item->icon_alloc_pixels, &item->icon_no_limit, fpa))
 	{
 		fprintf(stderr, "[FvwmIconBox] cannot load pixmap from "
 			"file '%s'\n",path);
@@ -433,7 +434,7 @@ Bool GetBackPixmap(void)
 	}
 	if (!PImageLoadPixmapFromFile(
 		dpy, main_win, path, &tmp_pixmap, &maskPixmap, NULL, &w, &h,
-		&icon_depth, 0, NULL, fpa))
+		&icon_depth, 0, NULL, 0, fpa))
 	{
 		w = 0;
 		h = 0;

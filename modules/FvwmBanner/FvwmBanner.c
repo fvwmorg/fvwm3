@@ -324,7 +324,8 @@ void GetImageFile(char *file, char *path)
 	{
 		if(PImageLoadPixmapFromFile(
 			dpy, Root, full_file, &view.pixmap, &view.mask, None,
-			&view.width, &view.height, &view.depth, 0, NULL, fpa))
+			&view.width, &view.height, &view.depth, 0, NULL, 0,
+			fpa))
 		{
 			return;
 		}

@@ -110,29 +110,32 @@ extern char *IconwinPixmapFile;
 
 struct icon_info
 {
-  char *action;
-  char *name;
-  char *window_name;
-  char *res_class;
-  char *res_name;
-  char *icon_file;
-  int x;
-  int y;
-  int icon_w;
-  int icon_h;
-  Pixmap iconPixmap;            /* pixmap for the icon */
-  Pixmap icon_maskPixmap;
-  Pixmap icon_alphaPixmap;
-  Window IconWin;
-  Window icon_pixmap_w;
-  XWMHints *wmhints;
-  int icon_depth;
-  long id;
-  long desk;
-  window_flags flags;
-  long extra_flags;
-  struct icon_info *next;
-  struct icon_info *prev;
+	char *action;
+	char *name;
+	char *window_name;
+	char *res_class;
+	char *res_name;
+	char *icon_file;
+	int x;
+	int y;
+	int icon_w;
+	int icon_h;
+	Pixmap iconPixmap;            /* pixmap for the icon */
+	Pixmap icon_maskPixmap;
+	Pixmap icon_alphaPixmap;
+	int icon_depth;
+	int icon_nalloc_pixels;
+	Pixel *icon_alloc_pixels;
+	int icon_no_limit;
+	Window IconWin;
+	Window icon_pixmap_w;
+	XWMHints *wmhints;
+	long id;
+	long desk;
+	window_flags flags;
+	long extra_flags;
+	struct icon_info *next;
+	struct icon_info *prev;
 };
 
 struct iconfile

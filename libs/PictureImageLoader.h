@@ -36,6 +36,7 @@
 Bool PImageCreatePixmapFromArgbData(
 	Display *dpy, Window win, unsigned char *data, int start, int width,
 	int height, Pixmap pixmap, Pixmap mask, Pixmap alpha, int *have_alpha,
+	int *nalloc_pixels, Pixel **alloc_pixels, int *no_limit,
 	FvwmPictureAttributes fpa);
 /*
  * <pubfunc>PImageLoadPixmapFromFile
@@ -46,7 +47,7 @@ Bool PImageCreatePixmapFromArgbData(
 Bool PImageLoadPixmapFromFile(
 	Display *dpy, Window win, char *file, Pixmap *pixmap, Pixmap *mask,
 	Pixmap *alpha, int *width, int *height, int *depth, int *nalloc_pixels,
-	Pixel **alloc_pixels, FvwmPictureAttributes fpa);
+	Pixel **alloc_pixels, int *no_limit, FvwmPictureAttributes fpa);
 
 /*
  * <pubfunc>PImageLoadPixmapFromFile

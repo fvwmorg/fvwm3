@@ -159,7 +159,7 @@ void PDestroyFvwmPicture(Display *dpy, FvwmPicture *p)
 		{
 			PictureFreeColors(
 				dpy, Pcmap, p->alloc_pixels, p->nalloc_pixels,
-				0, False);
+				0, p->no_limit);
 		}
 		free(p->alloc_pixels);
 	}
@@ -202,7 +202,8 @@ void PDestroyFvwmPicture(Display *dpy, FvwmPicture *p)
 
 FvwmPicture *PLoadFvwmPictureFromPixmap(
 	Display *dpy, Window win, char *name, Pixmap pixmap,
-	Pixmap mask, Pixmap alpha, int width, int height)
+	Pixmap mask, Pixmap alpha, int width, int height, int nalloc_pixels,
+	Pixel *alloc_pixels, int no_limit)
 {
 	FvwmPicture *q;
 
@@ -218,15 +219,16 @@ FvwmPicture *PLoadFvwmPictureFromPixmap(
 	q->width = width;
 	q->height = height;
 	q->depth = Pdepth;
-	q->alloc_pixels = 0;
-	q->nalloc_pixels = 0;
-
+	q->nalloc_pixels = nalloc_pixels;
+	q->alloc_pixels = alloc_pixels;
+	q->no_limit = no_limit;
 	return q;
 }
 
 FvwmPicture *PCacheFvwmPictureFromPixmap(
 	Display *dpy, Window win, char *name, Pixmap pixmap,
-	Pixmap mask, Pixmap alpha, int width, int height)
+	Pixmap mask, Pixmap alpha, int width, int height, int nalloc_pixels,
+	Pixel *alloc_pixels, int no_limit)
 {
 	FvwmPicture *p = FvwmPictureList;
 
@@ -244,8 +246,9 @@ FvwmPicture *PCacheFvwmPictureFromPixmap(
 	}
 
 	/* Not previously cached, have to load. Put it first in list */
-	p = PLoadFvwmPictureFromPixmap(dpy, win, name, pixmap, mask,
-				       alpha, width, height);
+	p = PLoadFvwmPictureFromPixmap(
+		dpy, win, name, pixmap, mask, alpha, width, height,
+		nalloc_pixels, alloc_pixels, no_limit);
 	if(p)
 	{
 		p->next = FvwmPictureList;

@@ -48,7 +48,7 @@
 #define FIMAGE_CMD_ARGS Display *dpy, Window win, char *path, \
 		  Pixmap *pixmap, Pixmap *mask, Pixmap *alpha, \
 		  int *width, int *height, int *depth, \
-		  int *nalloc_pixels, Pixel **alloc_pixels, \
+		  int *nalloc_pixels, Pixel **alloc_pixels, int *no_limit, \
 		  FvwmPictureAttributes fpa
 
 typedef struct PImageLoader
@@ -225,7 +225,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 	}
 	if (!PImageCreatePixmapFromArgbData(
 		dpy, win, (unsigned char *)data, 0, w, h, *pixmap, *mask,
-		*alpha, &have_alpha, fpa)
+		*alpha, &have_alpha, nalloc_pixels, alloc_pixels, no_limit, fpa)
 	    || *pixmap == None)
 	{
 		if (*pixmap != None)
@@ -265,18 +265,12 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 	XImage *im, *im_mask = NULL;
 	XColor *colors;
 	XColor tc;
-	Pixel *pixels;
 	int i,j,w,h;
 	int k = 0, m = 0;
 	char *color_mask;
 	char point_mask;
 	Bool have_mask = False;
-	int no_color_limit = !!(fpa.mask & FPAM_NO_COLOR_LIMIT);
-	int do_dither = !!((fpa.mask & FPAM_DITHER) && Pdepth <= 16 &&
-		!(no_color_limit && Pdepth <= 8));
-	int do_allocate = !!(PUseDynamicColors &&
-			   !(fpa.mask & FPAM_NO_ALLOC_PIXELS) &&
-			   !do_dither);
+	PictureImageColorAllocator *pica;
 #ifdef HAVE_SIGACTION
 	struct sigaction defaultHandler;
 	struct sigaction originalHandler;
@@ -329,6 +323,12 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 
 	colors = (XColor *)safemalloc(xpm_im.ncolors * sizeof(XColor));
 	color_mask = (char *)safemalloc(xpm_im.ncolors);
+	pica = PictureOpenImageColorAllocator(
+		dpy, Pcmap, w, h,
+		fpa.mask & FPAM_NO_COLOR_LIMIT,
+		fpa.mask & FPAM_NO_ALLOC_PIXELS, 
+		fpa.mask & FPAM_DITHER,
+		False);
 	for(i=0; i < xpm_im.ncolors; i++)
 	{
 		xpm_color = &xpm_im.colorTable[i];
@@ -360,11 +360,10 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 		else
 		{
 			color_mask[i] = 0;
-			if (!do_dither)
+			if (!pica->dither)
 			{
-				PictureAllocColorAllProp(
-					dpy, Pcmap, &colors[i], 0, 0,
-					no_color_limit, False, do_dither);
+				PictureAllocColorImage(
+					dpy, pica, &colors[i], 0, 0);
 			}
 			k++;
 		}
@@ -396,12 +395,10 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 			}
 			else
 			{
-				if (do_dither)
+				if (pica->dither)
 				{
-					PictureAllocColorAllProp(
-						dpy, Pcmap, &tc, i, j,
-						no_color_limit, False,
-						do_dither);
+					PictureAllocColorImage(
+						dpy, pica, &tc, i, j);
 				}
 				if (im_mask)
 				{
@@ -436,20 +433,8 @@ Bool PImageLoadXpm(FIMAGE_CMD_ARGS)
 	*height = h;
 	*depth = Pdepth;
 
-	if (do_allocate && nalloc_pixels != NULL && nalloc_pixels != NULL)
-	{
-		/* no dither is assumed */
-		pixels = (Pixel *)safemalloc(k*sizeof(Pixel));
-		k = 0;
-		for (i=0; i < xpm_im.ncolors; i++)
-		{
-			if (!color_mask[i])
-				pixels[k++] = colors[i].pixel; 
-		}
-		*nalloc_pixels = k;
-		*alloc_pixels = pixels;
-	}
-
+	PictureCloseImageColorAllocator(
+		dpy, pica, nalloc_pixels, alloc_pixels, no_limit);
 	free(colors);
 	free(color_mask);
 	FxpmFreeXpmImage(&xpm_im);
@@ -483,10 +468,10 @@ Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
  * argb data to pixmaps
  *
  * ***************************************************************************/
-/* FIXME: colors leaks (if PUseDynamicColors) */
 Bool PImageCreatePixmapFromArgbData(
 	Display *dpy, Window win, unsigned char *data, int start, int width,
 	int height, Pixmap pixmap, Pixmap mask, Pixmap alpha, int *have_alpha,
+	int *nalloc_pixels, Pixel **alloc_pixels, int *no_limit,
 	FvwmPictureAttributes fpa)
 {
 	GC mono_gc = None;
@@ -499,16 +484,8 @@ Bool PImageCreatePixmapFromArgbData(
 	int a;
 	Bool use_alpha_pix = (alpha != None && !(fpa.mask & FPAM_NO_ALPHA)
 		&& FRenderGetAlphaDepth());
+	PictureImageColorAllocator *pica;
 	int alpha_limit = 0;
-	int no_color_limit = !!(fpa.mask & FPAM_NO_COLOR_LIMIT);
-	int do_dither = !!((fpa.mask & FPAM_DITHER) && Pdepth <= 16 &&
-			 !(no_color_limit && Pdepth <= 8));
-#if 0
-	/* FIXME: color leak */ 
-	int do_allocate = !!(PUseDynamicColors &&
-			   !(fpa.mask & FPAM_NO_ALLOC_PIXELS) &&
-			   !do_dither);
-#endif
 
 	*have_alpha = False;
 	if (use_alpha_pix)
@@ -558,6 +535,12 @@ Bool PImageCreatePixmapFromArgbData(
 		a_image->data = safemalloc(a_image->bytes_per_line * height);
 	}
 
+	pica = PictureOpenImageColorAllocator(
+		dpy, Pcmap, width, height,
+		!!(fpa.mask & FPAM_NO_COLOR_LIMIT),
+		!!(fpa.mask & FPAM_NO_ALLOC_PIXELS), 
+		!!(fpa.mask & FPAM_DITHER),
+		True);
 	k = 4*start;
 	c.flags = DoRed | DoGreen | DoBlue;
 	if (!use_alpha_pix)
@@ -575,9 +558,8 @@ Bool PImageCreatePixmapFromArgbData(
 
 			if (a > alpha_limit)
 			{
-				PictureAllocColorAllProp(
-					dpy, Pcmap, &c, i, j, no_color_limit,
-					True, do_dither);
+				PictureAllocColorImage(
+					dpy, pica, &c, i, j);
 			}
 			else
 			{
@@ -619,6 +601,8 @@ Bool PImageCreatePixmapFromArgbData(
 		XFreeGC(dpy, mono_gc);
 	if (a_gc != None)
 		XFreeGC(dpy, a_gc);
+	PictureCloseImageColorAllocator(
+		dpy, pica, nalloc_pixels, alloc_pixels, no_limit);
 	return True;
 }
 
@@ -632,7 +616,7 @@ Bool PImageCreatePixmapFromArgbData(
 Bool PImageLoadPixmapFromFile(
 	Display *dpy, Window win, char *path, Pixmap *pixmap, Pixmap *mask,
 	Pixmap *alpha, int *width, int *height, int *depth, int *nalloc_pixels,
-	Pixel **alloc_pixels, FvwmPictureAttributes fpa)
+	Pixel **alloc_pixels, int *no_limit, FvwmPictureAttributes fpa)
 {
 	int done = 0, i = 0, tried = -1;
 	char *ext = NULL;
@@ -651,7 +635,8 @@ Bool PImageLoadPixmapFromFile(
 		{
 			if (Loaders[i].func(
 				dpy, win, path, pixmap, mask, alpha, width,
-				height, depth, nalloc_pixels, alloc_pixels, fpa))
+				height, depth, nalloc_pixels, alloc_pixels,
+				no_limit, fpa))
 			{
 				return True;
 			}
@@ -666,7 +651,7 @@ Bool PImageLoadPixmapFromFile(
 	{
 		if (i != tried && Loaders[i].func(
 			dpy, win, path, pixmap, mask, alpha, width, height,
-			depth, nalloc_pixels, alloc_pixels, fpa))
+			depth, nalloc_pixels, alloc_pixels, no_limit, fpa))
 		{
 			return True;
 		}
@@ -680,7 +665,10 @@ Bool PImageLoadPixmapFromFile(
 	{
 		*nalloc_pixels = 0;
 	}
-	alloc_pixels = NULL;
+	if (alloc_pixels != NULL)
+	{
+		*alloc_pixels = NULL;
+	}
 	return False;
 }
 
@@ -691,13 +679,13 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
 	Pixmap pixmap = None;
 	Pixmap mask = None;
 	Pixmap alpha = None;
-	int width = 0, height = 0, depth = 0;
+	int width = 0, height = 0, depth = 0, no_limit;
 	int nalloc_pixels = 0;
 	Pixel *alloc_pixels = NULL;
 
 	if (!PImageLoadPixmapFromFile(
 		dpy, win, path, &pixmap, &mask, &alpha, &width, &height,
-		&depth, &nalloc_pixels, &alloc_pixels, fpa))
+		&depth, &nalloc_pixels, &alloc_pixels, &no_limit, fpa))
 	{
 		return NULL;
 	}
@@ -717,7 +705,7 @@ FvwmPicture *PImageLoadFvwmPictureFromFile(
 	p->depth = depth;
 	p->nalloc_pixels = nalloc_pixels;
 	p->alloc_pixels = alloc_pixels;
-
+	p->no_limit = no_limit;
 	return p;
 }
 

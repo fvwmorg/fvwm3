@@ -63,6 +63,7 @@
 #include "libs/Colorset.h"
 #include "fvwm/fvwm.h"
 #include "libs/PictureGraphics.h"
+#include "libs/PictureUtils.h"
 #include "FvwmIconBox.h"
 
 
@@ -2962,35 +2963,50 @@ void ShowKAction(void)
 
 void freeitem(struct icon_info *item, int d)
 {
-  if (item == NULL)
-    return;
+	if (item == NULL)
+		return;
 
-  if (!(IS_ICON_OURS(item))){
-    if (max_icon_height != 0)
-    XUnmapWindow(dpy, item->icon_pixmap_w);
-    if (d == 0)
-      XReparentWindow(dpy, item->icon_pixmap_w, Root, 0, 0);
-  }
+	if (!(IS_ICON_OURS(item))){
+		if (max_icon_height != 0)
+			XUnmapWindow(dpy, item->icon_pixmap_w);
+		if (d == 0)
+			XReparentWindow(dpy, item->icon_pixmap_w, Root, 0, 0);
+	}
 
-  if (item->name != NULL)
-    free(item->name);
-  if (item->window_name != NULL)
-    free(item->window_name);
-  if (item->res_name != NULL)
-    free(item->res_name);
-  if (item->res_class != NULL)
-    free(item->res_class);
-  if (item->icon_file != NULL)
-    free(item->icon_file);
-  if (item->iconPixmap != None)
-    XFreePixmap(dpy, item->iconPixmap);
-  if (item->icon_maskPixmap != None &&
-      (item->wmhints == NULL ||
-       !(item->wmhints->flags & (IconPixmapHint|IconWindowHint))))
-    XFreePixmap(dpy, item->icon_maskPixmap);
-  if (item->wmhints != NULL)
-    XFree(item->wmhints);
-  free(item);
+	if (item->name != NULL)
+		free(item->name);
+	if (item->window_name != NULL)
+		free(item->window_name);
+	if (item->res_name != NULL)
+		free(item->res_name);
+	if (item->res_class != NULL)
+		free(item->res_class);
+	if (item->icon_file != NULL)
+		free(item->icon_file);
+	if (item->iconPixmap != None)
+		XFreePixmap(dpy, item->iconPixmap);
+	if (item->icon_maskPixmap != None &&
+	    (item->wmhints == NULL ||
+	     !(item->wmhints->flags & (IconPixmapHint|IconWindowHint))))
+	{
+		XFreePixmap(dpy, item->icon_maskPixmap);
+	}
+	if (item->iconPixmap != None)
+		XFreePixmap(dpy, item->icon_alphaPixmap);
+	if (item->icon_alloc_pixels != NULL)
+	{
+		if (item->icon_nalloc_pixels != 0)
+		{
+			PictureFreeColors(
+				dpy, Pcmap, item->icon_alloc_pixels,
+				item->icon_nalloc_pixels, 0,
+				item->icon_no_limit);
+		}
+		free(item->icon_alloc_pixels);
+	}
+	if (item->wmhints != NULL)
+		XFree(item->wmhints);
+	free(item);
 }
 
 

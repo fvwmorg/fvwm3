@@ -81,7 +81,7 @@ Bool LoadIconFile(int button, int ico)
 		&Buttons[button].icons[ico].mask,
 		&Buttons[button].icons[ico].alpha, &Buttons[button].icons[ico].w,
 		&Buttons[button].icons[ico].h, &Buttons[button].icons[ico].depth,
-		0, NULL, fpa))
+		0, NULL, 0, fpa))
 	{
 		fprintf(stderr, "[FvwmWharf] cannot load pixmap from "
 			"file '%s'\n",path);

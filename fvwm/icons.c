@@ -76,6 +76,9 @@ void clear_icon(FvwmWindow *fw)
 	fw->iconPixmap = None;
 	fw->icon_maskPixmap = None;
 	fw->icon_alphaPixmap = None;
+	fw->icon_nalloc_pixels = 0;
+	fw->icon_alloc_pixels = NULL;
+	fw->icon_no_limit = 0;
 	memset(&fw->icon_g, 0, sizeof(fw->icon_g));
 
 	return;
@@ -1807,7 +1810,7 @@ static void GetIconFromFile(FvwmWindow *fw)
 	char *path = NULL;
 	FvwmPictureAttributes fpa;
 
-	fpa.mask = FPAM_NO_ALLOC_PIXELS; /* olicha why ? */
+	fpa.mask = 0;
 	if (fw->cs >= 0 && Colorset[fw->cs].do_dither_icon)
 	{
 		fpa.mask |= FPAM_DITHER;
@@ -1820,9 +1823,11 @@ static void GetIconFromFile(FvwmWindow *fw)
 		return;
 	}
 	if (!PImageLoadPixmapFromFile(
-		dpy, Scr.Root, path, &fw->iconPixmap, &fw->icon_maskPixmap,
+		dpy, Scr.NoFocusWin, path, &fw->iconPixmap, &fw->icon_maskPixmap,
 		&fw->icon_alphaPixmap, &fw->icon_g.picture_w_g.width,
-		&fw->icon_g.picture_w_g.height, &fw->iconDepth, 0, NULL, fpa))
+		&fw->icon_g.picture_w_g.height, &fw->iconDepth,
+		&fw->icon_nalloc_pixels, &fw->icon_alloc_pixels,
+		&fw->icon_no_limit, fpa))
 	{
 		fvwm_msg(ERR, "GetIconFromFile", "Failed to load %s", path);
 		free(path);

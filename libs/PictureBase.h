@@ -107,6 +107,7 @@ typedef struct FvwmPictureThing
 	unsigned int count;
 	Pixel *alloc_pixels;
 	int nalloc_pixels;
+	Bool no_limit;
 } FvwmPicture;
 
 typedef struct
@@ -149,10 +150,20 @@ typedef struct
 	Pixel tint;
 	short tint_percent;
 	Pixel uniform_pixel;
-	colorset_t *colorset;;
+	colorset_t *colorset;
 } FvwmRenderAttributes;
 
 /* alpha limit if we cannot use the alpha channel */
 #define PICTURE_ALPHA_LIMIT 130
+
+typedef struct
+{
+	Colormap cmap;
+	int dither;
+	int no_limit;
+	Bool is_8;
+	unsigned long *pixels_table;
+	int pixels_table_size;
+} PictureImageColorAllocator;
 
 #endif /* Picture_Base_H */

@@ -725,11 +725,10 @@ Drawable CreateGradientPixmap(
 	XRectangle *rclip)
 {
 	Pixmap pixmap = None;
-	Pixel *pixels = NULL;
+	PictureImageColorAllocator *pica = NULL;
 	XColor c;
 	XImage *image;
 	register int i, j;
-	int k = 0;
 	XGCValues xgcv;
 	Drawable target;
 	int t_x;
@@ -737,7 +736,7 @@ Drawable CreateGradientPixmap(
 	int t_width;
 	int t_height;
 	int ps;
-
+	
 	if (d_pixels != NULL && *d_pixels != NULL)
 	{
 		if (d_npixels != NULL && *d_npixels > 0)
@@ -789,9 +788,11 @@ Drawable CreateGradientPixmap(
 	}
 	/* create space for drawing the image locally */
 	image->data = safemalloc(image->bytes_per_line * t_height);
-	if (dither && PUseDynamicColors)
+	if (dither)
 	{
-		pixels = (Pixel *)safemalloc(t_width * t_height * sizeof(Pixel));
+		pica = PictureOpenImageColorAllocator(
+			dpy, Pcmap, t_width, t_height,
+			False, False, dither, False);
 	}
 	ps = t_width * t_height;
 	/* now do the fancy drawing */
@@ -808,11 +809,8 @@ Drawable CreateGradientPixmap(
 				if (dither)
 				{
 					c = xcs[d];
-					PictureAllocColorAllProp(
-						dpy, Pcmap, &c, i,j, False,
-						False, True);
-					if (PUseDynamicColors)
-						pixels[k++] = c.pixel;
+					PictureAllocColorImage(
+						dpy, pica, &c, i, j);
 				}
 				XPutPixel(image, i, j, c.pixel);
 			}
@@ -830,11 +828,8 @@ Drawable CreateGradientPixmap(
 				if (dither)
 				{
 					c = xcs[d];
-					PictureAllocColorAllProp(
-						dpy, Pcmap, &c, i,j, False,
-						False,True);
-					if (PUseDynamicColors)
-						pixels[k++] = c.pixel;
+					PictureAllocColorImage(
+						dpy, pica, &c, i, j);
 				}
 				XPutPixel(image, i, j, c.pixel);
 			}
@@ -851,11 +846,8 @@ Drawable CreateGradientPixmap(
 				c = xcs[(i+j) * ncolors / t_scale];
 				if (dither)
 				{
-					PictureAllocColorAllProp(
-						dpy, Pcmap, &c, i,j, False,
-						False,True);
-					if (PUseDynamicColors)
-						pixels[k++] = c.pixel;
+					PictureAllocColorImage(
+						dpy, pica, &c, i, j);
 				}
 				XPutPixel(image, i, j, c.pixel);
 			}
@@ -873,11 +865,8 @@ Drawable CreateGradientPixmap(
 				       t_scale];
 				if (dither)
 				{
-					PictureAllocColorAllProp(
-						dpy, Pcmap, &c, i,j, False,
-						False, True);
-					if (PUseDynamicColors)
-						pixels[k++] = c.pixel;
+					PictureAllocColorImage(
+						dpy, pica, &c, i, j);
 				}
 				XPutPixel(image, i, j, c.pixel);
 			}
@@ -897,11 +886,8 @@ Drawable CreateGradientPixmap(
 				       t_scale];
 				if (dither)
 				{
-					PictureAllocColorAllProp(
-						dpy, Pcmap, &c, i,j, False,
-						False,True);
-					if (PUseDynamicColors)
-						pixels[k++] = c.pixel;
+					PictureAllocColorImage(
+						dpy, pica, &c, i, j);
 				}
 				XPutPixel(image, i, j, c.pixel);
 			}
@@ -926,11 +912,8 @@ Drawable CreateGradientPixmap(
 				c = xcs[(int)((rad * ncolors - 0.5) / t_scale)];
 				if (dither)
 				{
-					PictureAllocColorAllProp(
-						dpy, Pcmap, &c, i,j, False,
-						False,True);
-					if (PUseDynamicColors)
-						pixels[k++] = c.pixel;
+					PictureAllocColorImage(
+						dpy, pica, &c, i, j);
 				}
 				XPutPixel(image, i, j, c.pixel);
 			}
@@ -965,11 +948,8 @@ Drawable CreateGradientPixmap(
 				c = xcs[(int)(angle * M_1_PI * 0.5 * ncolors)];
 				if (dither)
 				{
-					PictureAllocColorAllProp(
-						dpy, Pcmap, &c, i,j, False,
-						False,True);
-					if (PUseDynamicColors)
-						pixels[k++] = c.pixel;
+					PictureAllocColorImage(
+						dpy, pica, &c, i, j);
 				}
 				XPutPixel(image, i, j, c.pixel);
 			}
@@ -1017,11 +997,8 @@ Drawable CreateGradientPixmap(
 				c = xcs[(int)(angle * M_1_PI * 0.5 * ncolors)];
 				if (dither)
 				{
-					PictureAllocColorAllProp(
-						dpy, Pcmap, &c, i,j, False,
-						False,True);
-					if (PUseDynamicColors)
-						pixels[k++] = c.pixel;
+					PictureAllocColorImage(
+						dpy, pica, &c, i, j);
 				}
 				XPutPixel(image, i, j, c.pixel);
 			}
@@ -1033,27 +1010,19 @@ Drawable CreateGradientPixmap(
 		 * color */
 		memset(image->data, 0, image->bytes_per_line * t_height);
 		XAddPixel(image, xcs[0].pixel);
-		if (dither && PUseDynamicColors)
-		{
-			free(pixels);
-			pixels = (Pixel *)safemalloc(sizeof(Pixel));
-			pixels[0] = xcs[0].pixel;
-			ps = 1;
-		}
 		break;
 	}
 
-	if (dither && PUseDynamicColors)
+	if (dither)
 	{
 		if (d_pixels != NULL && d_npixels != NULL)
 		{
-			*d_pixels = pixels;
-			*d_npixels = ps;
+			PictureCloseImageColorAllocator(
+				dpy, pica, d_npixels, d_pixels, 0);
 		}
 		else
 		{
-			/* color leak */
-			free(pixels);
+			/* possible color leak */
 		}
 	}
 
