@@ -27,8 +27,6 @@
 #include "libs/Module.h"
 
 
-static fd_set_size_t fd_width;
-
 static char *IM_VERSION = "1.3";
 
 static char const rcsid[] =
@@ -122,6 +120,14 @@ static void
 main_loop (void)
 {
   fd_set readset, saveset;
+  fd_set_size_t fd_width = x_fd;
+
+  /*
+   * Calculate which is descriptor is numerically higher:
+   * this determines how wide the descriptor set needs to be ...
+   */
+  if (fd_width < Fvwm_fd[1]) fd_width = Fvwm_fd[1];
+  ++fd_width;
 
   FD_ZERO(&saveset);
   FD_SET(Fvwm_fd[1], &saveset);
@@ -232,8 +238,8 @@ main(int argc, char **argv)
     sigaddset(&sigact.sa_mask, SIGHUP);
     sigaddset(&sigact.sa_mask, SIGTERM);
     sigaddset(&sigact.sa_mask, SIGQUIT);
-# ifdef SA_INTERRUPT
-    sigact.sa_flags = SA_INTERRUPT;
+# ifdef SA_RESTART
+    sigact.sa_flags = SA_RESTART;
 # else
     sigact.sa_flags = 0;
 # endif
@@ -260,11 +266,11 @@ main(int argc, char **argv)
   signal(SIGTERM, TerminateHandler);
   signal(SIGQUIT, TerminateHandler);
 #ifdef HAVE_SIGINTERRUPT
-  siginterrupt(SIGPIPE, 1);
-  siginterrupt(SIGINT, 1);
-  siginterrupt(SIGHUP, 1);
-  siginterrupt(SIGTERM, 1);
-  siginterrupt(SIGQUIT, 1);
+  siginterrupt(SIGPIPE, 0);
+  siginterrupt(SIGINT, 0);
+  siginterrupt(SIGHUP, 0);
+  siginterrupt(SIGTERM, 0);
+  siginterrupt(SIGQUIT, 0);
 #endif
 #endif
 
@@ -275,7 +281,6 @@ main(int argc, char **argv)
   }
 
   assert(globals.managers);
-  fd_width = GetFdWidth();
 
   SetMessageMask(Fvwm_fd, M_CONFIGURE_WINDOW | M_RES_CLASS | M_RES_NAME |
                  M_ADD_WINDOW | M_DESTROY_WINDOW | M_ICON_NAME |

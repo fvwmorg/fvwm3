@@ -1,5 +1,11 @@
 2000-01-21  Chris Rankin  <rankinc@zipworld.com.au>
 
+	* FvwmIconMan/FvwmIconMan.c
+	Similar trick as for FvwmAuto; just do these two modules for now
+    as these are the only ones that people are seeing problems with.
+
+2000-01-21  Chris Rankin  <rankinc@zipworld.com.au>
+
 	* FvwmAuto/FvwmAuto.c
 	Changed default signal disposition to SA_RESTART instead of
     SA_INTERRUPT. Hopefully non-Linux OSs also interrupt select()
