@@ -764,3 +764,76 @@ void update_last_screen_focus_window(FvwmWindow *fw)
 
   return;
 }
+
+void set_focus_model(FvwmWindow *fw)
+{
+  if (fw->wmhints && (fw->wmhints->flags & InputHint) && fw->wmhints->input)
+  {
+    if (WM_TAKES_FOCUS(fw))
+    {
+      fw->focus_model = FM_LOCALLY_ACTIVE;
+    }
+    else
+    {
+      fw->focus_model = FM_PASSIVE;
+    }
+  }
+  else
+  {
+    if (WM_TAKES_FOCUS(fw))
+    {
+      fw->focus_model = FM_GLOBALLY_ACTIVE;
+    }
+    else
+    {
+      fw->focus_model = FM_NO_INPUT;
+    }
+  }
+
+  return;
+}
+
+/* This function is part of a hack to make focus handling work better with
+ * applications that use the passive focus model but manage focus in their own
+ * sub windows and should thus use the locally active focus model instead.
+ * There are many examples like netscape or ddd. */
+void refresh_focus(FvwmWindow *fw)
+{
+  Bool do_refresh = False;
+
+  if (fw == NULL || fw != get_focus_window() || HAS_NEVER_FOCUS(fw))
+  {
+    /* only refresh the focus on the currently focused window */
+    return;
+  }
+
+  /* only refresh the focus for windows with the passive focus model so that
+   * we don't disturb focus handling more than necessary */
+  switch (fw->focus_model)
+  {
+  case FM_PASSIVE:
+    do_refresh = True;
+    break;
+  case FM_NO_INPUT:
+  case FM_GLOBALLY_ACTIVE:
+  case FM_LOCALLY_ACTIVE:
+  default:
+    do_refresh = False;
+    break;
+  }
+  if (do_refresh)
+  {
+    XWindowAttributes winattrs;
+
+    MyXGrabServer(dpy);
+    if (XGetWindowAttributes(dpy, fw->w, &winattrs))
+    {
+      XSelectInput(dpy, fw->w, winattrs.your_event_mask & ~FocusChangeMask);
+      FOCUS_SET(fw->w);
+      XSelectInput(dpy, fw->w, winattrs.your_event_mask);
+    }
+    MyXUngrabServer(dpy);
+  }
+
+  return;
+}

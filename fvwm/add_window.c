@@ -278,7 +278,7 @@ void setup_window_name_count(FvwmWindow *tmp_win)
   tmp_win->name_count = count;
 }
 
-void setup_icon_name_count(FvwmWindow *tmp_win)
+static void setup_icon_name_count(FvwmWindow *tmp_win)
 {
   FvwmWindow *t;
   int count = 0;
@@ -386,7 +386,7 @@ void setup_window_name(FvwmWindow *tmp_win)
     fvwm_msg(DBG,"setup_window_name","Assigned name %s'",tmp_win->name);
 }
 
-void setup_class_and_resource(FvwmWindow *tmp_win)
+static void setup_class_and_resource(FvwmWindow *tmp_win)
 {
   /* removing NoClass change for now... */
   tmp_win->class.res_name = NoResource;
@@ -405,6 +405,7 @@ void setup_class_and_resource(FvwmWindow *tmp_win)
 void setup_wm_hints(FvwmWindow *tmp_win)
 {
   tmp_win->wmhints = XGetWMHints(dpy, tmp_win->w);
+  set_focus_model(tmp_win);
 }
 
 static void destroy_window_font(FvwmWindow *tmp_win)
@@ -1794,7 +1795,10 @@ void FetchWmProtocols (FvwmWindow *tmp)
     for (i = 0, ap = protocols; i < n; i++, ap++)
     {
       if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
+      {
 	SET_WM_TAKES_FOCUS(tmp, 1);
+	set_focus_model(tmp);
+      }
       if (*ap == (Atom)_XA_WM_DELETE_WINDOW)
 	SET_WM_DELETES_WINDOW(tmp, 1);
     }
@@ -1813,7 +1817,10 @@ void FetchWmProtocols (FvwmWindow *tmp)
       for (i = 0, ap = protocols; i < nitems; i++, ap++)
       {
 	if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
+	{
 	  SET_WM_TAKES_FOCUS(tmp, 1);
+	  set_focus_model(tmp);
+	}
 	if (*ap == (Atom)_XA_WM_DELETE_WINDOW)
 	  SET_WM_DELETES_WINDOW(tmp, 1);
       }
@@ -2171,13 +2178,17 @@ void free_window_names(FvwmWindow *tmp, Bool nukename, Bool nukeicon)
   {
 #ifdef CODE_WITH_LEAK_I_THINK
     if ((tmp->name != tmp->icon_name || nukename) && tmp->icon_name != NoName)
-#else
-    if ((tmp->name != tmp->icon_name) && tmp->icon_name != NoName)
-#endif
     {
       FREE_TEXT_PROPERTY(&(tmp->icon_name), &(tmp->icon_name_list));
       tmp->visible_icon_name = NULL;
     }
+#else
+    if ((tmp->name != tmp->icon_name) && tmp->icon_name != NoName)
+    {
+      FREE_TEXT_PROPERTY(&(tmp->icon_name), &(tmp->icon_name_list));
+      tmp->visible_icon_name = NULL;
+    }
+#endif
   }
 
   return;
