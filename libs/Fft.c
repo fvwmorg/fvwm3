@@ -379,7 +379,7 @@ void FftDrawString(
 	{
 #if 0
 		fprintf(stderr, "[fvwmlibs][FftDrawString]: ERROR --"
-			" cannot found color\n");
+			" cannot find color\n");
 #endif
 		xfg.pixel = WhitePixel(dpy, fftscreen);
 	}
@@ -413,11 +413,6 @@ void FftDrawString(
 	}
 	else if (FLC_ENCODING_TYPE_IS_UTF_8(flf->fc))
 	{
-		while (FlocaleGetShadowTextPosition(&xt, &yt, &gstp_args))
-		{
-			DrawStringFunc(
-				fftdraw, &fft_fgsh, uf, xt, yt, str, len);
-		}
 		DrawStringFunc = FftPDrawString16;
 		str = (char *)FftUtf8ToFftString16(
 			  (unsigned char *)fws->e_str, len, &len);

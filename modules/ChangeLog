@@ -1,3 +1,8 @@
+2002-08-07  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmCommand/FvwmCommand.c (main):
+	fixed unused variable warnings
+
 2002-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmWinList/FvwmWinList.c:

@@ -670,7 +670,7 @@ Bool focus_query_click_to_raise(
 	{
 		flag = FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
 	}
-	else if (!is_focused && !is_client_click)
+	else /* if (!is_focused && !is_client_click) */
 	{
 		flag = FP_DO_RAISE_UNFOCUSED_DECOR_CLICK(FW_FOCUS_POLICY(fw));
 	}

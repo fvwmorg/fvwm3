@@ -90,7 +90,7 @@ int main ( int argc, char *argv[])
   int  Rc;
   struct timeval tv2;
   extern char *optarg;
-  extern int  optind, opterr, optopt;
+  extern int  optind;
 
 #ifdef HAVE_SIGACTION
   {
