@@ -303,24 +303,33 @@ static void parse_colorset(char *line)
 
   /* if new colorsets are created initialize them to black on gray */
   while (nSets <= n) {
+    colorset_struct *ncs = &Colorset[nSets];
+    short red, green, blue;
+
     have_pixels_changed = True;
     if (privateCells) {
-      XAllocColorCells(dpy, Pcmap, False, NULL, 0, &Colorset[nSets].fg, 4);
+      /* grab four writeable cells */
+      XAllocColorCells(dpy, Pcmap, False, NULL, 0, &(ncs->fg), 4);
+      /* set the fg color */
       XParseColor(dpy, Pcmap, black, &color);
-      color.pixel = Colorset[nSets].fg;
+      color.pixel = ncs->fg;
       XStoreColor(dpy, Pcmap, &color);
+      /* set the bg */
       XParseColor(dpy, Pcmap, gray, &color);
-      color.pixel = Colorset[nSets].bg;
+      red = color.red; green = color.green; blue = color.blue;
+      color.pixel = ncs->bg;
       XStoreColor(dpy, Pcmap, &color);
+      /* calculate and set the hilite */
       color_mult(&color.red, &color.green, &color.blue, BRIGHTNESS_FACTOR);
-      color.pixel = Colorset[nSets].hilite;
+      color.pixel = ncs->hilite;
       XStoreColor(dpy, Pcmap, &color);
-      color.pixel = Colorset[nSets].bg;
-      XQueryColor(dpy, Pcmap, &color);
+      /* calculate and set the shadow */
+      color.red = red; color.green = green; color.blue = blue;
       color_mult(&color.red, &color.green, &color.blue, DARKNESS_FACTOR);
-      color.pixel = Colorset[nSets].shadow;
+      color.pixel = ncs->shadow;
       XStoreColor(dpy, Pcmap, &color);
     } else {
+      /* grab four shareable colors */
       Colorset[nSets].fg = GetColor(black);
       Colorset[nSets].bg = GetColor(gray);
       Colorset[nSets].hilite = GetHilite(Colorset[nSets].bg);
@@ -624,10 +633,13 @@ static void parse_colorset(char *line)
 	  color.pixel = cs->bg;
 	  XStoreColor(dpy, Pcmap, &color);
 	} else {
+	  Pixel old_bg = cs->bg;
+
 	  XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
 	  XAllocColor(dpy, Pcmap, &color);
 	  cs->bg = color.pixel;
-	  have_pixels_changed = True;
+	  if (old_bg != cs->bg)
+	    have_pixels_changed = True;
 	}
       }
     } /* average */
@@ -644,9 +656,12 @@ static void parse_colorset(char *line)
 	color.pixel = cs->bg;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
+	Pixel old_bg = cs->bg;
+
 	XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
 	cs->bg = GetColor(bg);
-	have_pixels_changed = True;
+	if (old_bg != cs->bg)
+	  have_pixels_changed = True;
       }
     } /* user specified */
     else if (bg == NULL)
@@ -661,9 +676,12 @@ static void parse_colorset(char *line)
         color.pixel = cs->bg;
         XStoreColor(dpy, Pcmap, &color);
       } else {
+	Pixel old_bg = cs->bg;
+
 	XFreeColors(dpy, Pcmap, &cs->bg, 1, 0);
 	cs->bg = GetColor(gray);
-        have_pixels_changed = True;
+	if (old_bg != cs->bg)
+	  have_pixels_changed = True;
       }
     }
   } /* has_bg_changed */
@@ -686,10 +704,13 @@ static void parse_colorset(char *line)
 	color.pixel = cs->fg;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
+	Pixel old_fg = cs->fg;
+
 	XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
 	XAllocColor(dpy, Pcmap, &color);
 	cs->fg = color.pixel;
-	have_pixels_changed = True;
+	if (old_fg != cs->fg)
+	  have_pixels_changed = True;
       }
     } /* contrast */
     else if ((cs->color_flags & FG_SUPPLIED) && fg != NULL)
@@ -700,9 +721,12 @@ static void parse_colorset(char *line)
 	color.pixel = cs->fg;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
+	Pixel old_fg = cs->fg;
+
 	XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
 	cs->fg = GetColor(fg);
-	have_pixels_changed = True;
+	if (old_fg != cs->fg)
+	  have_pixels_changed = True;
       }
     } /* user specified */
     else if (fg == NULL)
@@ -714,9 +738,12 @@ static void parse_colorset(char *line)
         color.pixel = cs->fg;
         XStoreColor(dpy, Pcmap, &color);
       } else {
+	Pixel old_fg = cs->fg;
+
 	XFreeColors(dpy, Pcmap, &cs->fg, 1, 0);
 	cs->fg = GetColor(black);
-        have_pixels_changed = True;
+	if (old_fg != cs->fg)
+	  have_pixels_changed = True;
       }
     }
   } /* has_fg_changed */
@@ -735,9 +762,12 @@ static void parse_colorset(char *line)
 	color.pixel = cs->hilite;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
+	Pixel old_hilite = cs->hilite;
+
 	XFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
 	cs->hilite = GetColor(hi);
-	have_pixels_changed = True;
+	if (old_hilite != cs->hilite)
+	  have_pixels_changed = True;
       }
     } /* user specified */
     else if (hi == NULL)
@@ -751,9 +781,12 @@ static void parse_colorset(char *line)
 	color.pixel = cs->hilite;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
+	Pixel old_hilite = cs->hilite;
+
 	XFreeColors(dpy, Pcmap, &cs->hilite, 1, 0);
-        cs->hilite = GetHilite(cs->bg);
-	have_pixels_changed = True;
+	cs->hilite = GetHilite(cs->bg);
+	if (old_hilite != cs->hilite)
+	  have_pixels_changed = True;
       }
     }
   } /* has_hi_changed */
@@ -772,9 +805,12 @@ static void parse_colorset(char *line)
 	color.pixel = cs->shadow;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
+	Pixel old_shadow = cs->shadow;
+
 	XFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
 	cs->shadow = GetColor(sh);
-	have_pixels_changed = True;
+	if (old_shadow != cs->shadow)
+	  have_pixels_changed = True;
       }
     } /* user specified */
     else if (sh == NULL)
@@ -786,9 +822,12 @@ static void parse_colorset(char *line)
 	color.pixel = cs->shadow;
 	XStoreColor(dpy, Pcmap, &color);
       } else {
+	Pixel old_shadow = cs->shadow;
+
 	XFreeColors(dpy, Pcmap, &cs->shadow, 1, 0);
-        cs->shadow = GetShadow(cs->bg);
-	have_pixels_changed = True;
+	cs->shadow = GetShadow(cs->bg);
+	if (old_shadow != cs->shadow)
+	  have_pixels_changed = True;
       }
     }
   } /* has_sh_changed */
