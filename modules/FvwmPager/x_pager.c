@@ -1703,7 +1703,7 @@ void DrawGrid(int desk, int erase, Window ew, XRectangle *r)
 		}
 		else
 		{
-			cs = Desks[desk].highcolorset;
+			cs = Desks[desk].colorset;
 			FwinString->gc = Desks[desk].NormalGC;
 		}
 

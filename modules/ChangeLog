@@ -1,5 +1,8 @@
 2002-10-09  olicha  <olivier.chapuis@free.fr>
 
+	* FvwmPager/x_pager.c (DrawGrid):
+	Fixed desk lable colorset
+
 	* FvwmScript/FvwmScript.c (LoadIcon):
 	* FvwmIconBox/icons.c (GetIconFromFile):
 	Image should be loaded with the module main window not the root
