@@ -370,7 +370,13 @@ static void __check_click_to_focus_or_raise(
 	}
  	ret_args->do_raise =
 		focus_query_click_to_raise(fw, f.is_focused, context);
+#define EXPERIMENTAL_ROU_HANDLING_V2
+#ifdef EXPERIMENTAL_ROU_HANDLING_V2
+/*  RBW -- Dang! This works without the one in HandleEnterNotify!  */
+	if (ret_args->do_raise && is_on_top_of_layer_and_above_unmanaged(fw))
+#else
 	if (ret_args->do_raise && is_on_top_of_layer(fw))
+#endif
 	{
 		ret_args->do_raise = 0;
 	}
@@ -1718,7 +1724,12 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
                 if (ewp->window == FW_W(Fw))
                 {
                   /*  Event is for the client window...*/
+#ifndef EXPERIMENTAL_ROU_HANDLING_V2
+/*  RBW --  This may still be needed at times, I'm not sure yet.  */
 		  SetFocusWindowClientEntered(Fw, True, FOCUS_SET_BY_ENTER);
+#else
+		  SetFocusWindow(Fw, True, FOCUS_SET_BY_ENTER);
+#endif
                 }
                 else
                 {
