@@ -1,5 +1,8 @@
 1998-12-15  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* FvwmWinList/ButtonArray.c (ButtonArrayMaxWidth): function not used
+	put in #if/#endif
+
 	* FvwmWinList/FvwmWinList.c (ProcessMessage): Applied patch to suppress
 	redrawing by Nadim Saeed
 

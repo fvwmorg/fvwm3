@@ -1,10 +1,10 @@
-/* FvwmWinList Module for Fvwm. 
+/* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
  *
  * The functions in this source file that are the original work of Mike Finger.
- * 
+ *
  * No guarantees or warantees or anything are provided or implied in any way
  * whatsoever. Use this program at your own risk. Permission to use this
  * program for any purpose is given, as long as the copyright is kept intact.
@@ -244,7 +244,7 @@ void RemoveButton(ButtonArray *array, int butnum)
 ******************************************************************************/
 Button *find_n(ButtonArray *array, int n)
 {
-  Button *temp; 
+  Button *temp;
   int i;
 
   temp=array->head;
@@ -346,9 +346,10 @@ void DoButton(Button *button, int x, int y, int w, int h)
       }
     }
   }
+fprintf(stderr,"tname=\"%s\"\n",string?string:"(NULL)");
   XDrawString(dpy,win,graph[set],x+newx,y+3+ButtonFont->ascent,string,strlen(string));
   button->needsupdate=0;
-  
+
   /* Draw relief last, don't forget that XDrawLine doesn't do the last pixel */
   XDrawLine(dpy,win,topgc,x,y,x+w-1,y);
   XDrawLine(dpy,win,topgc,x+1,y+1,x+w-2,y+1);
@@ -369,7 +370,7 @@ void DrawButtonArray(ButtonArray *barray, int all)
   Button *btn;
   int i = 0;		/* buttons displayed */
 
-  for(btn = barray->head; btn != NULL; btn = btn->next) 
+  for(btn = barray->head; btn != NULL; btn = btn->next)
   {
     if((!ShowCurrentDesk) || ( btn->desk == CurrentDesk ) )
     {
@@ -393,7 +394,7 @@ void DrawButtonArray(ButtonArray *barray, int all)
 void SwitchButton(ButtonArray *array, int butnum)
 {
   Button *btn;
-  
+
   btn = find_n(array, butnum);
   btn->up =!btn->up;
   btn->needsupdate=1;
@@ -407,7 +408,7 @@ void RadioButton(ButtonArray *array, int butnum)
 {
   Button *temp;
   int i;
-  
+
   for(temp=array->head,i=0; temp!=NULL; temp=temp->next,i++)
   {
     if (i == butnum)
@@ -490,6 +491,7 @@ void PrintButtons(ButtonArray *array)
     ConsoleMessage("   %s is %s\n",temp->title,(temp->up) ? "Up":"Down");
 }
 
+#if 0
 /******************************************************************************
   ButtonArrayMaxWidth - Calculate the width needed for the widest title
 ******************************************************************************/
@@ -501,3 +503,4 @@ int x=0;
     x=max(temp->tw,x);
   return x;
 }
+#endif
