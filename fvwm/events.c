@@ -571,7 +571,7 @@ fprintf(stderr,"_cdim: --- not moved 0x%08x '%s'\n", (int)fw, fw->visible_name);
 	__cr_get_grav_position(&grav_g, fw, cre, b);
 	__cr_get_static_position(&static_g, fw, cre, b);
 	if (static_g.x == grav_g.x)
-	{
+ 	{
 		/* both methods have the same result; ignore */
 		has_x = 0;
 	}
@@ -595,8 +595,8 @@ fprintf(stderr,"_cdim: --- not moved 0x%08x '%s'\n", (int)fw, fw->visible_name);
 fprintf(stderr,"s %3d/%3d %2d/%2d, g %3d/%3d %2d/%2d: ", static_g.x, static_g.y, ds_g.x, ds_g.y, grav_g.x, grav_g.y, dg_g.x, dg_g.y);
 #endif
 	/* check full screen */
-	if ((cre->value_mask & (CWWidth | CWHeight | CWX | CWY)) ==
-	    (CWWidth | CWHeight | CWX | CWY) && (has_x || has_y) &&
+	if ((cre->value_mask & (CWX | CWY)) == (CWX | CWY) &&
+	    (has_x || has_y) &&
 	    cre->width == Scr.MyDisplayWidth &&
 	    cre->height == Scr.MyDisplayHeight)
 	{

@@ -1,3 +1,8 @@
+2004-02-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (__cr_detect_icccm_move):
+	improved motion method detection for fullscreen requests
+
 2004-02-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (AddWindow):

@@ -207,6 +207,17 @@ void FindLockMods(void);
 static void configure_all_icon_windows(void);
 
 
+int myErrorHandler(Display *dpy, XErrorEvent *event)
+{
+	if(event->error_code == BadWindow || event->error_code == BadDrawable)
+	{
+		return 0;
+	}
+	PrintXErrorAndCoredump(dpy, event, MyName);
+
+	return 0;
+}
+
 /*
  *
  *  Procedure:
@@ -275,6 +286,7 @@ int main(int argc, char **argv)
   AllocColorset(0);
   FShapeInit(dpy);
   FRenderInit(dpy);
+  XSetErrorHandler(myErrorHandler);
 
   x_fd = XConnectionNumber(dpy);
 
@@ -546,7 +558,7 @@ void Loop(void)
 	      }
 	      XTranslateCoordinates(
 		dpy,main_win,Root,LastX,LastY,&LastX,&LastY,&junk);
-	      /*!!! Note: maybe it will be better to use (LastX+W/2,LastY+H/2)
+	      /* Note: maybe it will be better to use (LastX+W/2,LastY+H/2)
 		in ScrRect query? That could help in pathological cases when
 		Wharf is not completely on a single screen. */
 	      fscr.xypos.x = LastX;
@@ -1347,7 +1359,6 @@ void CreateShadowGC(void)
   }
   else if (global_colorset >= 0)
   {
-    /*!!! ??? right?*/
     fore_pix = Colorset[global_colorset].shadow;
     light_grey = Colorset[global_colorset].hilite;
   }
