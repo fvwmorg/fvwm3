@@ -1269,15 +1269,15 @@ down the
 .SM control
 key causes the cursor movement to go in smaller steps. Standard
 emacs and vi cursor movement controls (
-.SM Ctrl-n,
-.SM Ctrl-p,
-.SM Ctrl-f,
-.SM Ctrl-b,
+.SM n,
+.SM p,
+.SM f,
+.SM b,
 and
-.SM Ctrl-j,
-.SM Ctrl-k,
-.SM Ctrl-h,
-.SM Ctrl-l
+.SM j,
+.SM k,
+.SM h,
+.SM l
 ) can be used instead of the arrow keys.
 
 .SH SESSION MANAGEMENT

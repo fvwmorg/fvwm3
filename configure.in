@@ -1012,7 +1012,6 @@ dnl
 	modules/FvwmPager/Makefile
 	modules/FvwmPerl/Makefile
 	modules/FvwmPerl/FvwmPerl
-	modules/FvwmProxy/Makefile
 	modules/FvwmRearrange/Makefile
 	modules/FvwmSave/Makefile
 	modules/FvwmSaveDesk/Makefile

@@ -1,5 +1,8 @@
 2002-10-31  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm.1.in:
+	corrected cursor movement key bindings
+
 	* fvwm/bindings.c (activate_binding):
 	fixed problem w/ bindings being overridden by applications OpenOffice
 	and the Gnome panel

@@ -4,5 +4,8 @@ SUBDIRS = \
 	FvwmAnimate FvwmAuto FvwmBacker FvwmBanner FvwmButtons FvwmCommand \
 	FvwmConsole FvwmCpp FvwmDebug FvwmDragWell FvwmEvent FvwmForm \
 	FvwmGtk FvwmIconBox FvwmIconMan FvwmIdent FvwmM4 FvwmPager \
-	FvwmPerl FvwmProxy FvwmRearrange FvwmSave FvwmSaveDesk FvwmScript \
+	FvwmPerl FvwmRearrange FvwmSave FvwmSaveDesk FvwmScript \
 	FvwmScroll FvwmTaskBar FvwmTheme FvwmWharf FvwmWinList
+
+nodist_SUBDIRS = \
+	FvwmProxy
