@@ -940,7 +940,7 @@ void GNOME_HandlePropRequest(unsigned int propm,
     somthing.
  -----------------------------------------------------------------------*/
 #ifdef FVWM_DEBUG_MSGS
-  fvwm_msg(DBG, "HandleGnomePropRequest", "window is %d", FW_W(fwin));
+  fvwm_msg(DBG, "HandleGnomePropRequest", "window is %d", (int)FW_W(fwin));
 #endif
   if (fwin == NULL)
     return;
@@ -956,7 +956,7 @@ void GNOME_HandlePropRequest(unsigned int propm,
   oldprop &= ~(propm);
   oldprop |= (propm & prop);
 #ifdef FVWM_DEBUG_MSGS
-  fvwm_msg(DBG, "HandleGnomePropRequest", "oldprop req is %d", oldprop);
+  fvwm_msg(DBG, "HandleGnomePropRequest", "oldprop req is %d", (int)oldprop);
 #endif
   XChangeProperty(dpy, FW_W(fwin), a, XA_CARDINAL, 32,
 		  PropModeReplace, (unsigned char *)&oldprop, 1);
