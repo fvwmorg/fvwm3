@@ -2,6 +2,8 @@
 
 	* libs/Graphics.c (AllocLinearGradient):
 	fixed rounding errors
+	(AllocLinearGradient):
+	removed debug code
 
 	* fvwm/move_resize.c (CMD_Resize):
 	fixed resizing shaded windows
