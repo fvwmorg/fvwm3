@@ -1,3 +1,9 @@
+1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmGoodStuff/FvwmGoodStuff.c (RelieveWindow):
+	* FvwmGoodStuff/FvwmGoodStuff.h: removed inline from declaration of
+	RelieveWindow
+
 1999-01-26  Steven Michael ROBBINS  <stever@jeff.cs.mcgill.ca>
 
 	* FvwmConfig/WinBase.C: Removed include of strings.h, moved
@@ -15,33 +21,33 @@
 Sun Jan 10 23:13:45 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmGoodStuff/FvwmGoodStuff.c (main): Inserted parentheses
-	around && within ||. 
+	around && within ||.
 
 Sun Jan 10 23:06:00 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmWharf/FvwmWharf.c: 
-	* FvwmTaskBar/FvwmTaskBar.c: 
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
 	* FvwmDebug/FvwmDebug.c: Removed unused variables.
 
 Sun Jan 10 21:11:09 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmWharf/FvwmWharf.c (main): 
-	* FvwmTaskBar/FvwmTaskBar.c (main): 
-	* FvwmScript/FvwmScript.c (main): 
-	* FvwmPipe/FvwmPipe.c (main): 
-	* FvwmGoodStuff/FvwmGoodStuff.c (main): 
+	* FvwmWharf/FvwmWharf.c (main):
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	* FvwmScript/FvwmScript.c (main):
+	* FvwmPipe/FvwmPipe.c (main):
+	* FvwmGoodStuff/FvwmGoodStuff.c (main):
 	* FvwmDebug/FvwmDebug.c (main): Fixed "control reaches end of
 	non-void function" bug.
 
 Sun Jan 10 15:14:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmTaskBar/Colors.c: 
+	* FvwmTaskBar/Colors.c:
 	* FvwmGoodStuff/FvwmGoodStuff.c (GetHilite): Removed min & max
 	macros; they are already in config.h.
 
 Sun Jan 10 15:11:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmCommand/FvwmCommand.c: 
+	* FvwmCommand/FvwmCommand.c:
 	* FvwmCommand/FvwmCommand.h: Replaced select() code conditional on
 	__hpux with code that uses SELECT_TYPE_ARG234.
 
@@ -51,20 +57,20 @@ Sun Jan 10 15:08:43 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 Sun Jan 10 15:05:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmWharf/icons.c: 
+	* FvwmWharf/icons.c:
 	* FvwmGoodStuff/icons.c: Replaced NeXT with HAVE_FNCTL_H.
 
 Sun Jan 10 15:03:26 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmGoodStuff/FvwmGoodStuff.c: 
-	* FvwmTaskBar/FvwmTaskBar.c: 
+	* FvwmGoodStuff/FvwmGoodStuff.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
 	* FvwmWharf/FvwmWharf.c: Replaced messy set of symbols with
-	HAVE_SYS_SELECT_H. 
+	HAVE_SYS_SELECT_H.
 
 Sun Jan 10 15:01:37 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
-	* FvwmWharf/FvwmWharf.c: 
-	* FvwmTaskBar/FvwmTaskBar.c: 
+	* FvwmWharf/FvwmWharf.c:
+	* FvwmTaskBar/FvwmTaskBar.c:
 	* FvwmGoodStuff/FvwmGoodStuff.c: Replaced symbol ISC with
 	HAVE_SYS_BSDTYPES_H.
 

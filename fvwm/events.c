@@ -577,7 +577,6 @@ void HandlePropertyNotify()
       break;
 
     case XA_WM_NORMAL_HINTS:
-DB(("HandlePropertyNotify: XA_WM_NORMAL_HINTS calling GetWindowSizeHints"));
       GetWindowSizeHints (Tmp_win);
 #if 0
       /*
@@ -597,7 +596,6 @@ DB(("HandlePropertyNotify: XA_WM_NORMAL_HINTS calling GetWindowSizeHints"));
       }
 #endif /* 0 */
       BroadcastConfig(M_CONFIGURE_WINDOW,Tmp_win);
-DB(("HandlePropertyNotify: XA_WM_NORMAL_HINTS done"));
       break;
 
     default:
@@ -1297,8 +1295,6 @@ void HandleConfigureRequest()
   FvwmWindow  *FvwmSib;
 
   DBUG("HandleConfigureRequest","Routine Entered");
-DB(("HandleConfigureRequest: called for cre->window=0x%x",cre->window));
-DB(("HandleConfigureRequest: cre->x=%d, cre->y=%d, cre->width=%d, cre->height=%d, cre->border_width=%d", cre->x, cre->y, cre->width, cre->height, cre->border_width));
 
   /*
    * Event.xany.window is Event.xconfigurerequest.parent, so Tmp_win will
@@ -1308,8 +1304,6 @@ DB(("HandleConfigureRequest: cre->x=%d, cre->y=%d, cre->width=%d, cre->height=%d
   if (XFindContext (dpy, cre->window, FvwmContext, (caddr_t *) &Tmp_win) ==
       XCNOENT)
     Tmp_win = NULL;
-  if (Tmp_win != NULL) DB_WI_ALL("HandleConfigureRequest",Tmp_win);
-else DB(("HandleConfigureRequest: Tmp_win=0x%x",Tmp_win));
 
   /*
    * According to the July 27, 1988 ICCCM draft, we should ignore size and
@@ -1320,7 +1314,6 @@ else DB(("HandleConfigureRequest: Tmp_win=0x%x",Tmp_win));
   if (!Tmp_win || cre->window == Tmp_win->icon_w ||
       cre->window == Tmp_win->icon_pixmap_w)
   {
-DB(("HandleConfigureRequest: Tmp_win==NULL or icon_w or icon_pixmap_w"));
 
     xwcm = cre->value_mask &
       (CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
@@ -1330,7 +1323,6 @@ DB(("HandleConfigureRequest: Tmp_win==NULL or icon_w or icon_pixmap_w"));
     {
       Tmp_win->icon_p_height = cre->height+ cre->border_width +
 	cre->border_width;
-DB(("HandleConfigureRequest: new icon_p_height=%d", Tmp_win->icon_p_height));
     }
     else if((Tmp_win)&&((Tmp_win->icon_w == cre->window)))
     {
@@ -1345,13 +1337,11 @@ DB(("HandleConfigureRequest: new icon_p_height=%d", Tmp_win->icon_p_height));
                         Tmp_win->icon_x_loc, Tmp_win->icon_y_loc,
                         Tmp_win->icon_w_width,
                         Tmp_win->icon_w_height + Tmp_win->icon_p_height);
-DB(("HandleConfigureRequest: icon_xl_loc=%d, icon_x_loc=%d, icon_y_loc=%d, icon_w_width=%d, icon_w_height=%d", Tmp_win->icon_xl_loc, Tmp_win->icon_x_loc, Tmp_win->icon_y_loc, Tmp_win->icon_w_width, Tmp_win->icon_w_height));
     }
     xwc.width = cre->width;
     xwc.height = cre->height;
     xwc.border_width = cre->border_width;
 
-DB(("HandleConfigureRequest: configuring window 0x%x, x=%d, y=%d, width=%d, height=%d, border_width=%d",Event.xany.window, xwc.x, xwc.y, xwc.width, xwc.height, xwc.border_width));
     XConfigureWindow(dpy, Event.xany.window, xwcm, &xwc);
 
     if(Tmp_win)
@@ -1363,18 +1353,15 @@ DB(("HandleConfigureRequest: configuring window 0x%x, x=%d, y=%d, width=%d, heig
 	xwc.y = Tmp_win->icon_y_loc - Tmp_win->icon_p_height;
 	xwcm = cre->value_mask & (CWX | CWY);
 	XConfigureWindow(dpy, Tmp_win->icon_pixmap_w, xwcm, &xwc);
-DB(("HandleConfigureRequest: reconfiguring icon pixmap window 0x%x with pixmap window 0x%x, x=%d, y=%d", Tmp_win->icon_pixmap_w, xwc.x, xwc.y));
       }
       if(Tmp_win->icon_w != None)
       {
 	xwc.x = Tmp_win->icon_x_loc;
 	xwc.y = Tmp_win->icon_y_loc;
 	xwcm = cre->value_mask & (CWX | CWY);
-DB(("HandleConfigureRequest: reconfiguring icon pixmap window 0x%x with pixmap window 0x%x, x=%d, y=%d", Tmp_win->icon_w, xwc.x, xwc.y));
         XConfigureWindow(dpy, Tmp_win->icon_w, xwcm, &xwc);
       }
     }
-DB(("HandleConfigureRequest: finished 1"));
     return;
   }
 
@@ -1391,11 +1378,10 @@ DB(("HandleConfigureRequest: finished 1"));
     xwc.stack_mode = cre->detail;
     XConfigureWindow (dpy, Tmp_win->frame,
                       cre->value_mask & (CWSibling | CWStackMode), &xwc);
-DB(("HandleConfigureRequest: reconfiguring frame window 0x%x for CWSibling|CWStackMode (sendEvent enabled)", Tmp_win->frame));
     sendEvent = True;
 
     /*
-        RBW - Update the stacking order ring. 
+        RBW - Update the stacking order ring.
     */
     if (xwc.stack_mode == Above || xwc.stack_mode == Below)
       {
@@ -1420,7 +1406,7 @@ DB(("HandleConfigureRequest: reconfiguring frame window 0x%x for CWSibling|CWSta
       }
     else
       {
-        /*  
+        /*
             Oh, bother! We have to rebuild the stacking order ring to figure
             out where this one went (TopIf, BottomIf, or Opposite).
         */
@@ -1454,7 +1440,6 @@ DB(("HandleConfigureRequest: reconfiguring frame window 0x%x for CWSibling|CWSta
   }
   /* override even if border change */
 
-DB(("HandleConfigureRequest: x=%d, y=%d, width=%d, height=%d",x,y,width,height));
   if (cre->value_mask & CWX)
     x = cre->x - Tmp_win->boundary_width - Tmp_win->bw;
   if (cre->value_mask & CWY)
@@ -1463,7 +1448,6 @@ DB(("HandleConfigureRequest: x=%d, y=%d, width=%d, height=%d",x,y,width,height))
     width = cre->width + 2*Tmp_win->boundary_width;
   if (cre->value_mask & CWHeight)
     height = cre->height+Tmp_win->title_height+2*Tmp_win->boundary_width;
-DB(("HandleConfigureRequest: after override: x=%d, y=%d, width=%d, height=%d",x,y,width,height));
 
   /*
    * SetupWindow (x,y) are the location of the upper-left outer corner and
@@ -1472,14 +1456,9 @@ DB(("HandleConfigureRequest: after override: x=%d, y=%d, width=%d, height=%d",x,
    * requested client window width; the inner height is the same as the
    * requested client window height plus any title bar slop.
    */
-DB(("HandleConfigureRequest: calling ConstrainSize"));
   ConstrainSize(Tmp_win, &width, &height, False, 0, 0);
-DB(("HandleConfigureRequest: after ConstrainSize: width=%d, height=%d",width,height));
-DB(("HandleConfigureRequest: calling SetupFrame"));
   SetupFrame (Tmp_win, x, y, width, height,sendEvent);
-DB(("HandleConfigureRequest: calling KeepOnTop"));
   KeepOnTop();
-DB(("HandleConfigureRequest: finished 2"));
 }
 
 /***********************************************************************
@@ -1641,7 +1620,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 */
 
 /*
-    ResyncFvwmStackRing - 
+    ResyncFvwmStackRing -
     Rebuilds the stacking order ring of FVWM-managed windows. For use in cases
     where apps raise/lower their own windows in a way that makes it difficult to
     determine exactly where they ended up in the stacking order.
@@ -1655,20 +1634,20 @@ void  ResyncFvwmStackRing (void)
 
   MyXGrabServer (dpy);
 
-  if (!XQueryTree (dpy, Scr.Root, &root, &parent, &children, &nchildren)) 
+  if (!XQueryTree (dpy, Scr.Root, &root, &parent, &children, &nchildren))
     {
       MyXUngrabServer (dpy);
       return;
     }
 
   t2 = &Scr.FvwmRoot;
-  for (i = 0; i < nchildren; i++) 
+  for (i = 0; i < nchildren; i++)
     {
-      for (t1 = Scr.FvwmRoot.next; t1 != NULL; t1 = t1->next) 
+      for (t1 = Scr.FvwmRoot.next; t1 != NULL; t1 = t1->next)
 	{
           if (t1->flags & ICONIFIED && (!(t1->flags & SUPPRESSICON)))
             {
-	      if (t1->icon_w == children[i]) 
+	      if (t1->icon_w == children[i])
 	        {
 	          break;
 	        }
@@ -1679,16 +1658,16 @@ void  ResyncFvwmStackRing (void)
             }
           else
             {
-	      if (t1->frame == children[i]) 
+	      if (t1->frame == children[i])
 	        {
 	          break;
 	        }
             }
 	}
 
-      if (t1 != NULL && t1 != t2) 
+      if (t1 != NULL && t1 != t2)
 	{
-          /*  
+          /*
               Move the window to its new position, working from the bottom up
               (that's the way XQueryTree presents the list).
           */
@@ -1700,11 +1679,11 @@ void  ResyncFvwmStackRing (void)
           t2->stack_prev = t1;
           t2 = t1;
 
-	}	
+	}
     }
-  
+
   MyXUngrabServer (dpy);
-  
+
   XFree (children);
 }
 

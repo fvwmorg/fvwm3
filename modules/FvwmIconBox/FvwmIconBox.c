@@ -835,8 +835,7 @@ void RedrawBottomButton(GC rgc, GC sgc)
     Original work from GoodStuff:
       Copyright 1993, Robert Nation.
 ************************************************************************/
-inline void RelieveWindow(Window win,int x,int y,int w,int h,
-		   GC rgc,GC sgc)
+void RelieveWindow(Window win,int x,int y,int w,int h, GC rgc,GC sgc)
 {
   XSegment seg[4];
   int i;
@@ -2654,9 +2653,9 @@ XErrorHandler myErrorHandler(Display *dpy, XErrorEvent *event)
   XGetErrorText(dpy, event->error_code, msg, 256);
 
   fprintf(stderr, "Error in %s:  %s \n", MyName, msg);
-  fprintf(stderr, "Major opcode of failed request:  %d \n", 
+  fprintf(stderr, "Major opcode of failed request:  %d \n",
 	  event->request_code);
-  fprintf(stderr, "Resource id of failed request:  0x%lx \n", 
+  fprintf(stderr, "Resource id of failed request:  0x%lx \n",
 	  event->resourceid);
   return 0;
 }

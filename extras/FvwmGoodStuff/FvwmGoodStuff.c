@@ -593,8 +593,7 @@ void RedrawWindow(int newbutton)
  *  Draws the relief pattern around a window
  *
  ****************************************************************************/
-inline void RelieveWindow(Window win,int x,int y,int w,int h,
-		   GC rgc,GC sgc)
+void RelieveWindow(Window win,int x,int y,int w,int h, GC rgc,GC sgc)
 {
   XSegment seg[4];
   int i;

@@ -1,3 +1,9 @@
+1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FvwmIconBox/FvwmIconBox.c (RelieveWindow):
+	* FvwmIconBox/FvwmIconBox.h: removed inline from declaration of
+	RelieveWindow
+
 1999-01-22  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmWinList/Mallocs.c (UpdateString): Increment the length, not

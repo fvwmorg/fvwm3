@@ -1,3 +1,15 @@
+1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/add_window.c:
+	* fvwm/resize.c:
+	* fvwm/events.c: removed debug statements for wandering/growing
+	windows bug
+
+	* fvwm/borders.c (RelieveWindowHH):
+	(RelieveWindow):
+	* fvwm/misc.h: removed inline from declarations of RelieveWindow and
+	RelieveWindowHH
+
 1999-02-12  Bob Woodside  <proteus@pcnet.com>
 	* fvwm/events.c: Corrected failure to focus/auto-raise NoIconTitle
 	icon windows.

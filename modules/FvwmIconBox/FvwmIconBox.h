@@ -1,9 +1,9 @@
 /*************************************************************************
  *
  * Subroutine Prototypes
- * 
+ *
  *************************************************************************/
-#include "../../libs/fvwmlib.h"       
+#include "../../libs/fvwmlib.h"
 struct icon_info;
 Bool ExecIconBoxFunction(char *msg);
 extern void   CreateWindow(void);
@@ -18,7 +18,7 @@ extern void   ParseOptions(void);
 extern char   *safemalloc(int length);
 extern int    My_XNextEvent(Display *dpy, XEvent *event);
 extern void   CopyString(char **dest, char *source);
-extern inline void RelieveWindow(Window win,int x,int y,int w,int h,GC rGC,GC sGC);
+extern void   RelieveWindow(Window win,int x,int y,int w,int h,GC rGC,GC sGC);
 extern void   SendFvwmPipe(int *,char *text, unsigned long window);
 extern void   DeadPipe(int nonsense);
 extern void   CreateIconWindow(struct icon_info *item);
@@ -107,7 +107,7 @@ struct icon_info
   int icon_w;
   int icon_h;
   Pixmap iconPixmap;		/* pixmap for the icon */
-  Pixmap icon_maskPixmap;	
+  Pixmap icon_maskPixmap;
   Window IconWin;
   Window icon_pixmap_w;
   XWMHints *wmhints;
@@ -138,7 +138,7 @@ struct mousefunc
 struct keyfunc
 {
   char *name;
-  KeyCode keycode;           
+  KeyCode keycode;
   char *action;
   struct keyfunc *next;
 };

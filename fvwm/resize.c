@@ -470,8 +470,6 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp,
     int dwidth = *widthp, dheight = *heightp;
     int constrainx, constrainy;
 
-DB(("ConstrainSize: called to constrain tmp_win=0x%x, width=%d, height=%d, roundUp=%d",tmp_win,*widthp,*heightp,roundUp));
-DB_WI_ALL("ConstrainSize",tmp_win);
     /* roundUp is True if called from an interactive resize */
     if (roundUp)
       {
@@ -501,7 +499,6 @@ DB_WI_ALL("ConstrainSize",tmp_win);
     xinc = tmp_win->hints.width_inc;
     yinc = tmp_win->hints.height_inc;
 
-DB(("ConstrainSize: constrainx=%d, constrainy=%d, dwidth=%d, dheight=%d, minWidth=%d, minHeight=%d, baseWidth=%d, baseHeight=%d, maxWidth=%d, maxHeight=%d, xinc=%d, yinc=%d",constrainx,constrainy,dwidth,dheight,minWidth,minHeight,baseWidth,baseHeight,maxWidth,maxHeight,xinc,yinc));
     /*
      * First, clamp to min and max values
      */
@@ -510,7 +507,6 @@ DB(("ConstrainSize: constrainx=%d, constrainy=%d, dwidth=%d, dheight=%d, minWidt
 
     if (dwidth > maxWidth) dwidth = maxWidth;
     if (dheight > maxHeight) dheight = maxHeight;
-DB(("ConstrainSize: after clamp: dwidth=%d, dheight=%d",dwidth,dheight));
 
 
     /*
@@ -518,7 +514,6 @@ DB(("ConstrainSize: after clamp: dwidth=%d, dheight=%d",dwidth,dheight));
      */
     dwidth = ((dwidth - baseWidth + constrainx) / xinc * xinc) + baseWidth;
     dheight = ((dheight - baseHeight + constrainy) / yinc * yinc) + baseHeight;
-DB(("ConstrainSize: after round: dwidth=%d, dheight=%d",dwidth,dheight));
 
 
     /*
@@ -545,7 +540,6 @@ DB(("ConstrainSize: after round: dwidth=%d, dheight=%d",dwidth,dheight));
 
     if (tmp_win->hints.flags & PAspect)
       {
-DB(("ConstrainSize: has aspect"));
 	if ((minAspectX * dheight > minAspectY * dwidth)&&(xmotion == 0))
 	  {
 	    /* Change width to match */
@@ -553,7 +547,6 @@ DB(("ConstrainSize: has aspect"));
 			     xinc);
 	    if (dwidth + delta <= maxWidth)
 	      dwidth += delta;
-DB(("ConstrainSize: aspect 1: dwidth=%d, delta=%d",dwidth,delta));
 	  }
 	if (minAspectX * dheight > minAspectY * dwidth)
 	  {
@@ -568,7 +561,6 @@ DB(("ConstrainSize: aspect 1: dwidth=%d, delta=%d",dwidth,delta));
 		if (dwidth + delta <= maxWidth)
 		  dwidth += delta;
 	      }
-DB(("ConstrainSize: aspect 2: dwidth=%d, delta=%d, dheight=%d",dwidth,delta,dheight));
 	  }
 
         if ((maxAspectX * dheight < maxAspectY * dwidth)&&(ymotion == 0))
@@ -577,7 +569,6 @@ DB(("ConstrainSize: aspect 2: dwidth=%d, delta=%d, dheight=%d",dwidth,delta,dhei
                              yinc);
             if (dheight + delta <= maxHeight)
 	      dheight += delta;
-DB(("ConstrainSize: aspect 2: dheight=%d, delta=%d=%d",dheight,delta));
 	  }
         if ((maxAspectX * dheight < maxAspectY * dwidth))
 	  {
@@ -592,10 +583,8 @@ DB(("ConstrainSize: aspect 2: dheight=%d, delta=%d=%d",dheight,delta));
 		if (dheight + delta <= maxHeight)
 		  dheight += delta;
 	      }
-DB(("ConstrainSize: aspect 2: dwidth=%d, delta=%d, dheight=%d",dwidth,delta,dheight));
 	  }
       }
-DB(("ConstrainSize: after reaspect: dwidth=%d, dheight=%d",dwidth,dheight));
 
     /*
      * Fourth, account for border width and title height
@@ -607,7 +596,6 @@ DB(("ConstrainSize: after reaspect: dwidth=%d, dheight=%d",dwidth,dheight));
       *heightp = tmp_win->title_height + tmp_win->boundary_width;
 #endif
 
-DB(("ConstrainSize: final width=%d, final height=%d",*widthp,*heightp));
     return;
 }
 

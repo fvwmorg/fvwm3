@@ -882,9 +882,8 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
  *  Draws the relief pattern around a window
  *
  ****************************************************************************/
-inline void RelieveWindow(FvwmWindow *t,Window win,
-			       int x,int y,int w,int h,
-			       GC ReliefGC,GC ShadowGC, int hilite)
+void RelieveWindow(FvwmWindow *t,Window win, int x,int y,int w,int h,
+		   GC ReliefGC, GC ShadowGC, int hilite)
 {
   XSegment seg[4];
   int i;
@@ -961,10 +960,8 @@ inline void RelieveWindow(FvwmWindow *t,Window win,
  *  (veliaa@rpi.edu)
  *
  ****************************************************************************/
-inline void RelieveWindowHH(FvwmWindow *t,Window win,
-			       int x,int y,int w,int h,
-			       GC ReliefGC,GC ShadowGC,
-			       int draw, int hilite)
+void RelieveWindowHH(FvwmWindow *t,Window win, int x,int y,int w,int h,
+		     GC ReliefGC, GC ShadowGC, int draw, int hilite)
 {
     XSegment seg[4];
     int i = 0;
@@ -1612,5 +1609,3 @@ void SetShape(FvwmWindow *tmp_win, int w)
   }
 #endif
 }
-
-

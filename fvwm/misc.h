@@ -209,10 +209,10 @@ extern void       DrawIconWindow(FvwmWindow *);
 extern void       CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y);
 
 
-extern inline void RelieveWindow(FvwmWindow *, Window,
-				      int, int, int, int, GC, GC, int);
-extern inline void RelieveWindowHH(FvwmWindow *,Window,
-					int,int,int,int, GC,GC, int, int);
+extern void RelieveWindow(FvwmWindow *, Window, int, int, int, int, GC, GC,
+			  int);
+extern void RelieveWindowHH(FvwmWindow *,Window, int,int,int,int, GC, GC, int,
+			    int);
 void RelieveParts(FvwmWindow *t,int i,GC hor, GC vert);
 #define NO_HILITE     0x0000
 #define TOP_HILITE    0x0001

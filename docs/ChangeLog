@@ -1,3 +1,7 @@
+1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FAQ (15): Added RedHat configuration question
+
 1999-02-04  Paul D. Smith  <psmith@gnu.org>
 
 	* cvs.html: Update CVS pserver hostname.

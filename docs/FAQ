@@ -2,7 +2,7 @@
                    FVWM Frequently Asked Questions
 ======================================================================
 
-Last updated 02 Feb 1999 for release 2.2.0.
+Last updated 12 Feb 1999 for release 2.2.0.
 
 INDEX
 
@@ -29,9 +29,9 @@ INDEX
            can I get XPM support?
        14) I'm trying to compile FVWM under SunOS using cc, but the compiler
            is having lots of problems.  What gives?
-
-       15) (Question gone)
-
+       15) I use FVWM on a RedHat Linux system and can't figure out how to
+           change my FVWM configuration. I've read the FVWM manpage but when
+           I edit my .fvwm2rc nothing seems to happen. What's going on ?
        16) I'd really like to see neat feature XYZ in FVWM.
            Wouldn't that be cool?  I even have a patch.  When can it
            be added?
@@ -548,6 +548,19 @@ A: FVWM uses the XPM (X PixMap) library to provide support for colored
 
 A: cc under SunOS is not an ANSI C compiler.  Try using acc or gcc
    instead.
+
+----------------------------------------------------------------------
+
+15) I use FVWM on a RedHat Linux system and can't figure out how to
+    change my FVWM configuration. I've read the FVWM manpage but when
+    I edit my .fvwm2rc nothing seems to happen. What's going on?
+
+A: RedHat Linux installs the X server accompanied (by default) by a
+   configuration management system. In earlier releases it was called
+   TheNextLevel and in more recent releases it's called AnotherLevel.
+   For further information about TheNextLevel, consult RedHat's
+   documentation in /usr/doc/TheNextLevel/. For information about
+   AnotherLevel, do a 'man AnotherLevel'.
 
 ----------------------------------------------------------------------
 

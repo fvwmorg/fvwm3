@@ -1,9 +1,9 @@
-#include "fvwmlib.h"       
+#include "fvwmlib.h"
 
 /*************************************************************************
  *
  * Subroutine Prototypes
- * 
+ *
  *************************************************************************/
 extern void   CreateWindow(void);
 extern Pixel  GetColor(char *name);
@@ -17,7 +17,7 @@ extern void   ParseOptions(void);
 extern char   *safemalloc(int length);
 extern void   change_window_name(char *str);
 extern int    My_XNextEvent(Display *dpy, XEvent *event);
-extern inline void RelieveWindow(Window win,int x,int y,int w,int h,GC rGC,GC sGC);
+extern void   RelieveWindow(Window win,int x,int y,int w,int h,GC rGC,GC sGC);
 extern void   DeadPipe(int nonsense);
 extern void   LoadIconFile(int button);
 extern void   CreateIconWindow(int button);
