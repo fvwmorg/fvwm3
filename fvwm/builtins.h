@@ -72,8 +72,6 @@ void AddTitleStyle(F_CMD_ARGS);
 #endif
 void ApplyDefaultFontAndColors(void);
 void SetClick(F_CMD_ARGS);
-void Recapture(F_CMD_ARGS);
-void RecaptureWindow(F_CMD_ARGS);
 void SetEnv(F_CMD_ARGS);
 void UnsetEnv(F_CMD_ARGS);
 STROKE_CODE(void strokeFunc(F_CMD_ARGS);)

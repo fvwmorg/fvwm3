@@ -1,3 +1,18 @@
+2001-03-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.c (MappedNotOverride):
+	* fvwm/builtins.c (RecaptureWindow):
+	(Recapture):
+	(do_recapture):
+	* fvwm/fvwm.c (Reborder):
+	(CaptureOneWindow):
+	(hide_screen):
+	(CaptureAllWindows):
+	functions moved to add_window.c
+
+	* fvwm/session.c (RestartInSession):
+	fixed windows travelling upon restart with outdates session state file
+
 2001-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (button_states):

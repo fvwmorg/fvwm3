@@ -32,6 +32,7 @@
 #include "externs.h"
 #include "cursor.h"
 #include "functions.h"
+#include "add_window.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -866,6 +867,9 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
 
     saveStateFile(filename);
     setSmProperties(sm_conn, filename, SmRestartImmediately);
+
+    MoveViewport(0, 0, False);
+    Reborder();
 
     CloseICCCM2();
     XCloseDisplay(dpy);

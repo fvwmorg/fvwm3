@@ -2482,41 +2482,6 @@ void UnsetEnv(F_CMD_ARGS)
   /*free(szVar);*/
 }
 
-static void do_recapture(F_CMD_ARGS, Bool fSingle)
-{
-  if (fSingle)
-  {
-    if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
-      return;
-  }
-  MyXGrabServer(dpy);
-  if (fSingle)
-    CaptureOneWindow(tmp_win, tmp_win->w, None, None, True);
-  else
-    CaptureAllWindows(True);
-  /* Throw away queued up events. We don't want user input during a
-   * recapture. The window the user clicks in might disapper at the very same
-   * moment and the click goes through to the root window. Not good */
-  XAllowEvents(dpy, AsyncPointer, CurrentTime);
-  discard_events(
-    ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask|
-    EnterWindowMask|LeaveWindowMask|KeyPressMask|KeyReleaseMask);
-#ifdef DEBUG_STACK_RING
-  verify_stack_ring_consistency();
-#endif
-  MyXUngrabServer(dpy);
-}
-
-void Recapture(F_CMD_ARGS)
-{
-  do_recapture(F_PASS_ARGS, False);
-}
-
-void RecaptureWindow(F_CMD_ARGS)
-{
-  do_recapture(F_PASS_ARGS, True);
-}
-
 void SetGlobalOptions(F_CMD_ARGS)
 {
   char *opt;
