@@ -27,6 +27,36 @@
 
 /* ---------------------------- access macros ------------------------------- */
 
+#define FP_DO_RAISE_FOCUSED_CLICK(fp) \
+	((fp).do_raise_focused_click)
+#define FP_DO_RAISE_UNFOCUSED_CLICK(fp) \
+	((fp).do_raise_unfocused_click)
+#define FP_DO_FOCUS_CLICK(fp) \
+	((fp).do_focus_click)
+#define FP_DO_RAISE_FOCUSED_CLIENT_CLICK(fp) \
+	((fp).do_raise_focused_click.client)
+#define FPS_RAISE_FOCUSED_CLIENT_CLICK(fp,x) \
+	((fp).do_raise_focused_click.client = !!(x))
+#define FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(fp) \
+	((fp).do_raise_unfocused_click.client)
+#define FPS_RAISE_UNFOCUSED_CLIENT_CLICK(fp,x) \
+	((fp).do_raise_unfocused_click.client = !!(x))
+#define FP_DO_RAISE_FOCUSED_DECOR_CLICK(fp) \
+	((fp).do_raise_focused_click.decor)
+#define FPS_RAISE_FOCUSED_DECOR_CLICK(fp,x) \
+	((fp).do_raise_focused_click.decor = !!(x))
+#define FP_DO_RAISE_UNFOCUSED_DECOR_CLICK(fp) \
+	((fp).do_raise_unfocused_click.decor)
+#define FPS_RAISE_UNFOCUSED_DECOR_CLICK(fp,x) \
+	((fp).do_raise_unfocused_click.decor = !!(x))
+#define FP_DO_RAISE_FOCUSED_ICON_CLICK(fp) \
+	((fp).do_raise_focused_click.icon)
+#define FPS_RAISE_FOCUSED_ICON_CLICK(fp,x) \
+	((fp).do_raise_focused_click.icon = !!(x))
+#define FP_DO_RAISE_UNFOCUSED_ICON_CLICK(fp) \
+	((fp).do_raise_unfocused_click.icon)
+#define FPS_RAISE_UNFOCUSED_ICON_CLICK(fp,x) \
+	((fp).do_raise_unfocused_click.icon = !!(x))
 #define FP_DO_FOCUS_ENTER(fp) \
 	((fp).do_focus_enter)
 #define FPS_FOCUS_ENTER(fp,x) \
@@ -36,13 +66,17 @@
 #define FPS_UNFOCUS_LEAVE(fp,x) \
 	((fp).do_unfocus_leave = !!(x))
 #define FP_DO_FOCUS_CLICK_CLIENT(fp) \
-	((fp).do_focus_click_client)
+	((fp).do_focus_click.client)
 #define FPS_FOCUS_CLICK_CLIENT(fp,x) \
-	((fp).do_focus_click_client = !!(x))
+	((fp).do_focus_click.client = !!(x))
 #define FP_DO_FOCUS_CLICK_DECOR(fp) \
-	((fp).do_focus_click_decor)
+	((fp).do_focus_click.decor)
 #define FPS_FOCUS_CLICK_DECOR(fp,x) \
-	((fp).do_focus_click_decor = !!(x))
+	((fp).do_focus_click.decor = !!(x))
+#define FP_DO_FOCUS_CLICK_ICON(fp) \
+	((fp).do_focus_click.icon)
+#define FPS_FOCUS_CLICK_ICON(fp,x) \
+	((fp).do_focus_click.icon = !!(x))
 #define FP_DO_FOCUS_BY_PROGRAM(fp) \
 	((fp).do_focus_by_program)
 #define FPS_FOCUS_BY_PROGRAM(fp,x) \
@@ -59,22 +93,6 @@
 	((fp).is_lenient)
 #define FPS_LENIENT(fp,x) \
 	((fp).is_lenient = !!(x))
-#define FP_DO_RAISE_FOCUSED_CLIENT_CLICK(fp) \
-	((fp).do_raise_focused_client_click)
-#define FPS_RAISE_FOCUSED_CLIENT_CLICK(fp,x) \
-	((fp).do_raise_focused_client_click = !!(x))
-#define FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(fp) \
-	((fp).do_raise_unfocused_client_click)
-#define FPS_RAISE_UNFOCUSED_CLIENT_CLICK(fp,x) \
-	((fp).do_raise_unfocused_client_click = !!(x))
-#define FP_DO_RAISE_FOCUSED_DECOR_CLICK(fp) \
-	((fp).do_raise_focused_decor_click)
-#define FPS_RAISE_FOCUSED_DECOR_CLICK(fp,x) \
-	((fp).do_raise_focused_decor_click = !!(x))
-#define FP_DO_RAISE_UNFOCUSED_DECOR_CLICK(fp) \
-	((fp).do_raise_unfocused_decor_click)
-#define FPS_RAISE_UNFOCUSED_DECOR_CLICK(fp,x) \
-	((fp).do_raise_unfocused_decor_click = !!(x))
 #define FP_USE_MOUSE_BUTTONS(fp) \
 	((fp).use_mouse_buttons)
 #define FPS_MOUSE_BUTTONS(fp,x) \
@@ -148,6 +166,7 @@ typedef enum
 {
 	FOCUS_SET_BY_CLICK_CLIENT,
 	FOCUS_SET_BY_CLICK_DECOR,
+	FOCUS_SET_BY_CLICK_ICON,
 	FOCUS_SET_BY_ENTER,
 	FOCUS_SET_BY_PROGRAM,
 	FOCUS_SET_BY_FUNCTION,
@@ -157,21 +176,25 @@ typedef enum
 
 typedef struct
 {
+	unsigned client : 1;
+	unsigned decor : 1;
+	unsigned icon : 1;
+} fpol_context_t;
+
+typedef struct
+{
+	/* raising the window */
+	fpol_context_t do_raise_focused_click;
+	fpol_context_t do_raise_unfocused_click;
 	/* focus transition */
+	fpol_context_t do_focus_click;
 	unsigned do_focus_enter : 1;
 	unsigned do_unfocus_leave : 1;
-	unsigned do_focus_click_client : 1;
-	unsigned do_focus_click_decor : 1;
 	unsigned do_focus_by_program : 1;
 	unsigned do_focus_by_function : 1;
 	unsigned do_warp_pointer_on_focus_func : 1;
 	/* application focus model */
 	unsigned is_lenient : 1;
-	/* raising the window */
-	unsigned do_raise_focused_client_click : 1;
-	unsigned do_raise_unfocused_client_click : 1;
-	unsigned do_raise_focused_decor_click : 1;
-	unsigned do_raise_unfocused_decor_click : 1;
 	/* click configuration */
 	unsigned use_mouse_buttons : NUMBER_OF_MOUSE_BUTTONS;
 	unsigned use_modifiers : 8;

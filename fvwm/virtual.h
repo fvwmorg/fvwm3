@@ -20,6 +20,7 @@ int HandlePaging(int, int, int *, int *, int *, int *, Bool, Bool, Bool);
 void checkPanFrames(void);
 void raisePanFrames(void);
 void initPanFrames(void);
+Bool is_pan_frame(Window w);
 void MoveViewport(int newx, int newy,Bool);
 void goto_desk(int desk);
 void do_move_window_to_desk(FvwmWindow *fw, int desk);

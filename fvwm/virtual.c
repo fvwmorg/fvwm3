@@ -824,12 +824,24 @@ void checkPanFrames(void)
 	}
 
 	/* correct the unmap variables if pan frame commands are set */
-	if ( edge_thickness != 0)
+	if (edge_thickness != 0)
 	{
-		if ( Scr.PanFrameLeft.command   != NULL) do_unmap_l = False ;
-		if ( Scr.PanFrameRight.command  != NULL) do_unmap_r = False ;
-		if ( Scr.PanFrameBottom.command != NULL) do_unmap_b = False ;
-		if ( Scr.PanFrameTop.command    != NULL) do_unmap_t = False ;
+		if (Scr.PanFrameLeft.command != NULL)
+		{
+			do_unmap_l = False;
+		}
+		if (Scr.PanFrameRight.command != NULL)
+		{
+			do_unmap_r = False;
+		}
+		if (Scr.PanFrameBottom.command != NULL)
+		{
+			do_unmap_b = False;
+		}
+		if (Scr.PanFrameTop.command != NULL)
+		{
+			do_unmap_t = False;
+		}
 	}
 
 	/*
@@ -1016,6 +1028,19 @@ void initPanFrames(void)
 	edge_thickness = saved_thickness;
 
 	return;
+}
+
+Bool is_pan_frame(Window w)
+{
+	if (w == Scr.PanFrameTop.win || w == Scr.PanFrameBottom.win ||
+	    w == Scr.PanFrameLeft.win || w == Scr.PanFrameRight.win)
+	{
+		return True;
+	}
+	else
+	{
+		return False;
+	}
 }
 
 /***************************************************************************

@@ -136,6 +136,14 @@ typedef struct
 	unsigned long ret_type;
 } check_if_event_args;
 
+typedef struct
+{
+	unsigned do_forbid_function : 1;
+	unsigned do_focus : 1;
+	unsigned do_swallow_click : 1;
+	unsigned do_raise : 1;
+} hfrc_ret_t;
+
 /* ---------------------------- forward declarations ------------------------ */
 
 /* ---------------------------- local variables ----------------------------- */
@@ -306,6 +314,385 @@ void SendConfigureNotify(
 	return;
 }
 
+/* Helper function for __handle_focus_raise_click(). */
+static Bool __test_for_motion(int x0, int y0)
+{
+	int x;
+	int y;
+	unsigned int mask;
+
+	/* Query the pointer to do this. We can't check for events here since
+	 * the events are still needed if the pointer moves. */
+	for (x = x0, y = y0; XQueryPointer(
+		     dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY,
+		     &x, &y, &mask) == True; usleep(20000))
+	{
+		if ((mask & DEFAULT_ALL_BUTTONS_MASK) == 0)
+		{
+			/* all buttons are released */
+			return False;
+		}
+		else if (abs(x - x0) >= Scr.MoveThreshold ||
+			 abs(y - y0) >= Scr.MoveThreshold)
+		{
+			/* the pointer has moved */
+			return True;
+		}
+	}
+
+	/* pointer has moved off screen */
+	return True;
+}
+
+/* Helper function for __handle_focus_raise_click(). */
+static void __check_click_to_focus_or_raise(
+	hfrc_ret_t *ret_args, XEvent *e, FvwmWindow *fw, int context)
+{
+	struct
+	{
+		unsigned is_client_click : 1;
+		unsigned is_focused : 1;
+	} f;
+
+	f.is_focused = !!focus_is_focused(fw);
+	f.is_client_click = (context == C_WINDOW) ? True : False;
+	/* check if we need to raise and/or focus the window */
+	ret_args->do_focus = focus_query_click_to_focus(fw, context);
+	if (context == C_WINDOW && !ret_args->do_focus && !f.is_focused &&
+	    FP_DO_FOCUS_BY_PROGRAM(FW_FOCUS_POLICY(fw)) &&
+	    !fpol_query_allow_user_focus(&FW_FOCUS_POLICY(fw)))
+	{
+		/* Give the window a chance to to take focus itself */
+		ret_args->do_focus = 1;
+	}
+	if (ret_args->do_focus && focus_is_focused(fw))
+	{
+		ret_args->do_focus = 0;
+	}
+ 	ret_args->do_raise =
+		focus_query_click_to_raise(fw, f.is_focused, context);
+	if (ret_args->do_raise && is_on_top_of_layer(fw))
+	{
+		ret_args->do_raise = 0;
+	}
+	if ((ret_args->do_focus &&
+	     FP_DO_IGNORE_FOCUS_CLICK_MOTION(FW_FOCUS_POLICY(fw))) ||
+	    (ret_args->do_raise &&
+	     FP_DO_IGNORE_RAISE_CLICK_MOTION(FW_FOCUS_POLICY(fw))))
+	{
+		/* Pass further events to the application and check if a button
+		 * release or motion event occurs next.  If we don't do this
+		 * here, the pointer will seem to be frozen in
+		 * __test_for_motion(). */
+		XAllowEvents(dpy, ReplayPointer, CurrentTime);
+		if (__test_for_motion(e->xbutton.x_root, e->xbutton.y_root))
+		{
+			/* the pointer was moved, process event normally */
+			ret_args->do_focus = 0;
+			ret_args->do_raise = 0;
+		}
+	}
+
+
+	if (ret_args->do_focus || ret_args->do_raise)
+	{
+		if (!((ret_args->do_focus &&
+		       FP_DO_ALLOW_FUNC_FOCUS_CLICK(FW_FOCUS_POLICY(fw))) ||
+		      (ret_args->do_raise &&
+		       FP_DO_ALLOW_FUNC_RAISE_CLICK(FW_FOCUS_POLICY(fw)))))
+		{
+			ret_args->do_forbid_function = 1;
+		}
+		if (!((ret_args->do_focus &&
+		       FP_DO_PASS_FOCUS_CLICK(FW_FOCUS_POLICY(fw))) ||
+		      (ret_args->do_raise &&
+		       FP_DO_PASS_RAISE_CLICK(FW_FOCUS_POLICY(fw)))))
+		{
+			ret_args->do_swallow_click = 1;
+		}
+	}
+
+	return;
+}
+
+/* Finds out if the click on a window must be used to focus or raise it. */
+static void __handle_focus_raise_click(
+	hfrc_ret_t *ret_args, XEvent *e, FvwmWindow *fw, int context)
+{
+	memset (ret_args, 0, sizeof(*ret_args));
+	if (fw == NULL)
+	{
+		return;
+	}
+	/* check for proper click button and modifiers*/
+	if (FP_USE_MOUSE_BUTTONS(FW_FOCUS_POLICY(fw)) != 0 &&
+	    !(FP_USE_MOUSE_BUTTONS(FW_FOCUS_POLICY(fw)) &
+	      (1 << (e->xbutton.button - 1))))
+	{
+		/* wrong button, handle click normally */
+		return;
+	}
+	else if (MaskUsedModifiers(FP_USE_MODIFIERS(FW_FOCUS_POLICY(fw))) !=
+		 MaskUsedModifiers(Event.xbutton.state))
+	{
+		/* right button but wrong modifiers, handle click normally */
+		return;
+	}
+	else
+	{
+		__check_click_to_focus_or_raise(ret_args, e, fw, context);
+	}
+
+	return;
+}
+
+/* Helper function for HandleButtonPress */
+static Bool __is_bpress_window_handled(XEvent *e, FvwmWindow *fw)
+{
+	Window eventw;
+
+	if (fw == NULL)
+	{
+		if (Event.xbutton.window != Scr.Root &&
+		    !is_pan_frame(Event.xbutton.window))
+		{
+			/* Ignore events in unmanaged windows or subwindows of
+			 * a client */
+			return False;
+		}
+		else
+		{
+			return True;
+		}
+	}
+	eventw = (Event.xbutton.subwindow != None &&
+		  Event.xany.window != FW_W(fw)) ?
+		Event.xbutton.subwindow : Event.xany.window;
+	if (is_frame_hide_window(eventw) || eventw == FW_W_FRAME(fw))
+	{
+		return False;
+	}
+	if (!XGetGeometry(
+		    dpy, eventw, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
+		    &JunkHeight, &JunkBW, &JunkDepth))
+	{
+		/* The window has already died. */
+		return False;
+	}
+
+	return True;
+}
+
+/* Helper function for __handle_bpress_on_managed */
+static Bool __handle_click_to_focus(FvwmWindow *fw, int context)
+{
+	fpol_set_focus_by_t set_by;
+
+	switch (context)
+	{
+	case C_WINDOW:
+		set_by = FOCUS_SET_BY_CLICK_CLIENT;
+		break;
+	case C_ICON:
+		set_by = FOCUS_SET_BY_CLICK_ICON;
+		break;
+	default:
+		set_by = FOCUS_SET_BY_CLICK_DECOR;
+		break;
+	}
+	SetFocusWindow(fw, True, set_by);
+
+	/* update the decorations */
+	if (!IS_ICONIFIED(fw))
+	{
+		border_draw_decorations(
+			fw, PART_ALL, True, True, CLEAR_ALL, NULL, NULL);
+	}
+
+	return focus_is_focused(fw);
+}
+
+/* Helper function for __handle_bpress_on_managed */
+static Bool __handle_click_to_raise(FvwmWindow *fw, int context)
+{
+	Bool rc = False;
+	int is_focused;
+
+	is_focused = focus_is_focused(fw);
+	if (focus_query_click_to_raise(fw, is_focused, True))
+	{
+		rc = True;
+	}
+
+	return rc;
+}
+
+/* Helper function for HandleButtonPress */
+static void __handle_bpress_stroke(void)
+{
+	STROKE_CODE(stroke_init());
+	STROKE_CODE(send_motion = True);
+
+	return;
+}
+
+/* Helper function for __handle_bpress_on_managed */
+static Bool __handle_bpress_action(
+	FvwmWindow *fw, XEvent *e, char *action, int context)
+{
+	window_parts part;
+	Bool do_force;
+	Bool rc = False;
+
+	if (!action || *action == 0)
+	{
+		return False;
+	}
+	/* draw pressed in decorations */
+	part = border_context_to_parts(context);
+	do_force = (part & PART_TITLEBAR) ? True : False;
+	border_draw_decorations(
+		fw, part, (Scr.Hilite == fw), do_force, CLEAR_ALL, NULL, NULL);
+	/* execute the action */
+	if (IS_ICONIFIED(fw))
+	{
+		/* release the pointer since it can't do harm over an icon */
+		XAllowEvents(dpy, AsyncPointer, CurrentTime);
+	}
+	old_execute_function(NULL, action, fw, e, context, -1, 0, NULL);
+	if (context != C_WINDOW && context != C_NO_CONTEXT)
+	{
+		WaitForButtonsUp(True);
+		rc = True;
+	}
+	/* redraw decorations */
+	PressedW = None;
+	if (check_if_fvwm_window_exists(fw))
+	{
+		part = border_context_to_parts(context);
+		do_force = (part & PART_TITLEBAR) ? True : False;
+		border_draw_decorations(
+			fw, part, (Scr.Hilite == fw), do_force,
+			CLEAR_ALL, NULL, NULL);
+	}
+
+	return rc;
+}
+
+/* Handles button presses on the root window. */
+static void __handle_bpress_on_root(XEvent *e)
+{
+	char *action;
+
+	PressedW = None;
+	__handle_bpress_stroke();
+	/* search for an appropriate mouse binding */
+	action = CheckBinding(
+		Scr.AllBindings, STROKE_ARG(0) e->xbutton.button,
+		e->xbutton.state, GetUnusedModifiers(), C_ROOT,
+		MOUSE_BINDING);
+	if (action && *action)
+	{
+		old_execute_function(
+			NULL, action, NULL, e, C_ROOT, -1, 0, NULL);
+		WaitForButtonsUp(True);
+	}
+	else
+	{
+		/* do gnome buttonpress forwarding if win == root */
+		GNOME_ProxyButtonEvent(&Event);
+	}
+
+	return;
+}
+
+/* Handles button presses on unmanaged windows */
+static void __handle_bpress_on_unmanaged(XEvent *e, FvwmWindow *fw)
+{
+	/* Pass the event to the application. */
+	XAllowEvents(dpy, ReplayPointer, CurrentTime);
+	XFlush(dpy);
+
+	return;
+}
+
+/* Handles button presses on managed windows */
+static void __handle_bpress_on_managed(XEvent *e, FvwmWindow *fw)
+{
+	int context;
+	char *action;
+	hfrc_ret_t f;
+
+	context = GetContext(fw, e, &PressedW);
+	/* Now handle click to focus and click to raise. */
+	__handle_focus_raise_click(&f, e, fw, context);
+fprintf(stderr,"hbom: f %d, r %d, ff %d, sc %d\n", f.do_focus, f.do_raise, f.do_forbid_function, f.do_swallow_click);
+	if (f.do_focus)
+	{
+		if (!__handle_click_to_focus(fw, context))
+		{
+			/* Window didn't accept the focus; pass the click to the
+			 * application. */
+			f.do_swallow_click = 0;
+		}
+	}
+	if (f.do_raise)
+	{
+		if (__handle_click_to_raise(fw, context) == True)
+		{
+			/* We can't raise the window immediately because the
+			 * action bound to the click might be "Lower" or
+			 * "RaiseLower". So mark the window as scheduled to be
+			 * raised after the binding is executed. Functions that
+			 * modify the stacking order will reset this flag. */
+			SET_SCHEDULED_FOR_RAISE(fw, 1);
+		}
+	}
+	/* handle bindings */
+	if (!f.do_forbid_function)
+	{
+		/* stroke bindings */
+		__handle_bpress_stroke();
+		/* mouse bindings */
+		action = CheckBinding(
+			Scr.AllBindings, STROKE_ARG(0) e->xbutton.button,
+			e->xbutton.state, GetUnusedModifiers(), context,
+			MOUSE_BINDING);
+		if (__handle_bpress_action(fw, e, action, context))
+		{
+			f.do_swallow_click = 1;
+		}
+	}
+	/* raise the window */
+	if (IS_SCHEDULED_FOR_RAISE(fw))
+	{
+		/* Now that we know the action did not restack the window we
+		 * can raise it.
+		 * dv (10-Aug-2002):  We can safely raise the window after
+		 * redrawing it since all the decorations are drawn in the
+		 * window background and no Expose event is generated. */
+		RaiseWindow(fw);
+		SET_SCHEDULED_FOR_RAISE(fw, 0);
+	}
+	/* clean up */
+	if (f.do_focus)
+	{
+		focus_grab_buttons(fw);
+	}
+	if (!f.do_swallow_click)
+	{
+		/* pass the click to the application */
+		XAllowEvents(dpy, ReplayPointer, CurrentTime);
+		XFlush(dpy);
+	}
+	else if (f.do_focus || f.do_raise)
+	{
+		WaitForButtonsUp(True);
+	}
+
+	return;
+}
+
 /* ---------------------------- event handlers ------------------------------ */
 
 /***********************************************************************
@@ -314,330 +701,22 @@ void SendConfigureNotify(
  *      HandleButtonPress - ButtonPress event handler
  *
  ***********************************************************************/
-static Bool __handle_focus_raise_click(
-	FvwmWindow *Fw, Bool *ret_do_pass_click, Bool *ret_do_regrab_buttons,
- 	Bool *ret_do_wait_for_button_release)
-{
-	int context;
-	Bool is_focused;
-
-	is_focused = focus_is_focused(Fw);
-	*ret_do_pass_click = True;
-	*ret_do_regrab_buttons = False;
-	*ret_do_wait_for_button_release = False;
-	if (Fw && !fpol_query_allow_user_focus(&FW_FOCUS_POLICY(Fw)))
-	{
-		/* It might seem odd to try to focus a window that never is
-		 * given focus by fvwm, but the window might want to take focus
-		 * itself, and SetFocus will tell it to do so in this case
-		 * instead of giving it focus. */
-		SetFocusWindow(Fw, True, FOCUS_SET_BY_CLICK_CLIENT);
-	}
-	/* click to focus stuff goes here */
-	else if (Fw &&
-		 (FP_DO_FOCUS_CLICK_CLIENT(FW_FOCUS_POLICY(Fw)) ||
-		  FP_DO_FOCUS_CLICK_DECOR(FW_FOCUS_POLICY(Fw))))
-	{
-		unsigned was_already_focused;
-
-		context = GetContext(Fw, &Event, &PressedW);
-		if (!is_focused)
-		{
-			SetFocusWindow(
-				Fw, True, (context == C_WINDOW) ?
-				FOCUS_SET_BY_CLICK_CLIENT :
-				FOCUS_SET_BY_CLICK_DECOR);
-			was_already_focused = 0;
-		}
-		else
-		{
-			was_already_focused = 1;
-		}
-		/* RBW - 12/09/.1999- I'm not sure we need to check both cases,
-		 * but I'll leave this as is for now.  */
-		if (focus_query_click_to_raise(Fw, is_focused, True))
-		{
-			/* We can't raise the window immediately because the
-			 * action bound to the click might be "Lower" or
-			 * "RaiseLower". So mark the window as scheduled to be
-			 * raised after the binding is executed. Functions that
-			 * modify the stacking order will reset this flag. */
-			SET_SCHEDULED_FOR_RAISE(Fw, 1);
-		}
-		*ret_do_regrab_buttons = True;
-
-		if (!IS_ICONIFIED(Fw) && context == C_WINDOW)
-		{
-			if (Fw && IS_SCHEDULED_FOR_RAISE(Fw))
-			{
-				RaiseWindow(Fw);
-				SET_SCHEDULED_FOR_RAISE(Fw, 0);
-			}
-			focus_grab_buttons(Fw);
-			XFlush(dpy);
-			/* Pass click event to just clicked to focus window? Do
-			 * not swallow the click if the window didn't accept
-			 * the focus. */
-			if (!DO_NOT_PASS_CLICK_FOCUS_CLICK(Fw) ||
-			    get_focus_window() != Fw || was_already_focused)
-			{
-				/* fall through and pass the click to the app
-				 * later. */
-			}
-			else /* don't pass click to just focused window */
-			{
-				XAllowEvents(dpy,AsyncPointer,CurrentTime);
-				*ret_do_wait_for_button_release = True;
-				*ret_do_pass_click = False;
-			}
-		}
-		if (!IS_ICONIFIED(Fw))
-		{
-			border_draw_decorations(
-				Fw, PART_ALL, True, True, CLEAR_ALL, NULL,
-				NULL);
-		}
-	}
-	else if (Fw && Event.xbutton.window == FW_W_PARENT(Fw) &&
-		 (FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(Fw)) ||
-		  fpol_query_allow_user_focus(&FW_FOCUS_POLICY(Fw))) &&
-		 focus_query_click_to_raise(Fw, is_focused, True))
-	{
-		/* RBW - Release the Parent grab here (whether we raise or
-		 * not). We have to wait till this point or we would miss the
-		 * raise click, which is not contemporaneous with the focus
-		 * change. */
-		if (!is_on_top_of_layer(Fw) &&
-		    MaskUsedModifiers(Event.xbutton.state) == 0)
-		{
-			if (!FP_DO_IGNORE_FOCUS_CLICK_MOTION(
-				    FW_FOCUS_POLICY(Fw)))
-			{
-				/* raise immediately and pass the click to the
-				 * application */
-				RaiseWindow(Fw);
-				focus_grab_buttons(Fw);
-				XAllowEvents(dpy,ReplayPointer,CurrentTime);
-				return True;
-			}
-			else
-			{
-				Bool is_click = False;
-				Bool is_done = False;
-				int x0 = Event.xbutton.x_root;
-				int y0 = Event.xbutton.y_root;
-				int x = Event.xbutton.x_root;
-				int y = Event.xbutton.y_root;
-				unsigned int mask;
-
-				/* pass further events to the application and
-				 * check if a button release or motion event
-				 * occurs next */
-				XAllowEvents(dpy, ReplayPointer, CurrentTime);
-				/* query the pointer to do this. we can't check
-				 * for events here since the events are still
-				 * needed if the pointer moves */
-				while (!is_done && XQueryPointer(
-					       dpy, Scr.Root, &JunkRoot,
-					       &JunkChild, &JunkX, &JunkY, &x,
-					       &y, &mask) == True)
-				{
-					if ((mask & DEFAULT_ALL_BUTTONS_MASK) ==
-					    0)
-					{
-						/* all buttons are released */
-						is_done = True;
-						is_click = True;
-					}
-					else if (abs(x - x0) >=
-						 Scr.MoveThreshold ||
-						 abs(y - y0) >=
-						 Scr.MoveThreshold)
-					{
-						/* the pointer has moved */
-						is_done = True;
-						is_click = False;
-					}
-					else
-					{
-						usleep(20000);
-					}
-				}
-				if (is_done == False || is_click == True)
-				{
-					/* raise the window and exit */
-					RaiseWindow(Fw);
-					focus_grab_buttons(Fw);
-					return True;
-				}
-				else
-				{
-					/* the pointer was moved, process event
-					 * normally */
-				}
-			}
-		}
-		focus_grab_buttons(Fw);
-	}
-
-	return False;
-}
-
 void HandleButtonPress(void)
 {
-	int context;
-	int local_context;
-	char *action;
-	FvwmWindow *button_window;
-	Window OldPressedW;
-	Window eventw;
-	Bool do_regrab_buttons;
-	Bool do_pass_click;
-	Bool do_wait_for_button_release;
-	Bool has_binding = False;
-
 	DBUG("HandleButtonPress","Routine Entered");
 
 	GrabEm(CRS_NONE, GRAB_PASSIVE);
-	if (!Fw &&
-	    Event.xbutton.window != Scr.PanFrameTop.win &&
-	    Event.xbutton.window != Scr.PanFrameBottom.win &&
-	    Event.xbutton.window != Scr.PanFrameLeft.win &&
-	    Event.xbutton.window != Scr.PanFrameRight.win &&
-	    Event.xbutton.window != Scr.Root)
+	if (__is_bpress_window_handled(&Event, Fw) == False)
 	{
-		/* event in unmanaged window or subwindow of a client */
-		XAllowEvents(dpy,ReplayPointer,CurrentTime);
-		XFlush(dpy);
-		UngrabEm(GRAB_PASSIVE);
-		return;
+		__handle_bpress_on_unmanaged(&Event, Fw);
 	}
-	if (Event.xbutton.subwindow != None &&
-	    (Fw == None || Event.xany.window != FW_W(Fw)))
+	else if (Fw != NULL)
 	{
-		eventw = Event.xbutton.subwindow;
+		__handle_bpress_on_managed(&Event, Fw);
 	}
 	else
 	{
-		eventw = Event.xany.window;
-	}
-	if (is_frame_hide_window(eventw) ||
-	    (Fw != NULL && eventw == FW_W_FRAME(Fw)))
-	{
-		/* ignore it */
-		XAllowEvents(dpy,ReplayPointer,CurrentTime);
-		XFlush(dpy);
-		UngrabEm(GRAB_PASSIVE);
-		return;
-	}
-	if (!XGetGeometry(dpy, eventw, &JunkRoot, &JunkX, &JunkY,
-			  &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
-	{
-		/* The window has already died. Just pass the event to the
-		 * application. */
-		XAllowEvents(dpy,ReplayPointer,CurrentTime);
-		XFlush(dpy);
-		UngrabEm(GRAB_PASSIVE);
-		return;
-	}
-	if (__handle_focus_raise_click(
-		    Fw, &do_pass_click, &do_regrab_buttons,
-		    &do_wait_for_button_release) == True)
-	{
-		XFlush(dpy);
-		UngrabEm(GRAB_PASSIVE);
-		return;
-	}
-
-	context = GetContext(Fw, &Event, &PressedW);
-	local_context = context;
-	STROKE_CODE(stroke_init());
-	STROKE_CODE(send_motion = TRUE);
-	/* need to search for an appropriate mouse binding */
-	action = CheckBinding(
-		Scr.AllBindings, STROKE_ARG(0) Event.xbutton.button,
-		Event.xbutton.state, GetUnusedModifiers(), context,
-		MOUSE_BINDING);
-	if (action && *action)
-	{
-		has_binding = True;
-	}
-	if (Fw && has_binding)
-	{
-		window_parts part;
-		Bool do_force;
-
-		part = border_context_to_parts(local_context);
-		do_force = (part & PART_TITLEBAR) ? True : False;
-		border_draw_decorations(
-			Fw, part, (Scr.Hilite == Fw), do_force, CLEAR_ALL,
-			NULL, NULL);
-	}
-
-	/* we have to execute a function or pop up a menu */
-	button_window = Fw;
-	if (action && *action)
-	{
-		if (Fw && IS_ICONIFIED(Fw))
-		{
-			/* release the pointer since it can't do harm over an
-			 * icon */
-			XAllowEvents(dpy, AsyncPointer, CurrentTime);
-		}
-		old_execute_function(
-			NULL, action, Fw, &Event, context, -1, 0, NULL);
-		if (context != C_WINDOW && context != C_NO_CONTEXT)
-		{
-			WaitForButtonsUp(True);
-			do_pass_click = False;
-		}
-	}
-	else if (Scr.Root == Event.xany.window)
-	{
-		/*
-		 * do gnome buttonpress forwarding if win == root
-		 */
-		GNOME_ProxyButtonEvent(&Event);
-		do_pass_click = False;
-	}
-
-	if (do_pass_click)
-	{
-		XAllowEvents(dpy,ReplayPointer,CurrentTime);
-		XFlush(dpy);
-	}
-
-	if (button_window && IS_SCHEDULED_FOR_RAISE(button_window) &&
-	    has_binding)
-	{
-		/* now that we know the action did not restack the window we
-		 * can raise it. */
-		RaiseWindow(button_window);
-		SET_SCHEDULED_FOR_RAISE(button_window, 0);
-	}
-	if (do_regrab_buttons)
-	{
-		focus_grab_buttons(Fw);
-	}
-
-	OldPressedW = PressedW;
-	PressedW = None;
-	if (button_window && check_if_fvwm_window_exists(button_window) &&
-	    has_binding)
-	{
-		window_parts part;
-		Bool do_force;
-
-		part = border_context_to_parts(local_context);
-		do_force = (part & PART_TITLEBAR) ? True : False;
-		border_draw_decorations(
-			button_window, part, (Scr.Hilite == button_window),
-			do_force, CLEAR_ALL, NULL, NULL);
-	}
-	button_window = NULL;
-	if (do_wait_for_button_release)
-	{
-		WaitForButtonsUp(True);
+		__handle_bpress_on_root(&Event);
 	}
 	UngrabEm(GRAB_PASSIVE);
 
@@ -660,7 +739,7 @@ void HandleButtonRelease()
 
 	DBUG("HandleButtonRelease","Routine Entered");
 
-	send_motion = FALSE;
+	send_motion = False;
 	stroke_trans (sequence);
 
 	DBUG("HandleButtonRelease",sequence);
@@ -1507,14 +1586,10 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		Scr.flags.is_pointer_on_this_screen = 1;
 	}
 
-	/* an EnterEvent in one of the PanFrameWindows activates the Paging or
-	   an EdgeCommand */
-	if (ewp->window==Scr.PanFrameTop.win ||
-	    ewp->window==Scr.PanFrameLeft.win ||
-	    ewp->window==Scr.PanFrameRight.win ||
-	    ewp->window==Scr.PanFrameBottom.win)
+	/* An EnterEvent in one of the PanFrameWindows activates the Paging or
+	   an EdgeCommand. */
+	if (is_pan_frame(ewp->window))
 	{
-
 		/* check for edge commands */
 		if (ewp->window == Scr.PanFrameTop.win &&
 		    Scr.PanFrameTop.command != NULL)
@@ -2337,7 +2412,7 @@ void HandleMotionNotify()
 {
 	DBUG("HandleMotionNotify","Routine Entered");
 
-	if (send_motion == TRUE)
+	if (send_motion == True)
 	{
 		stroke_record (Event.xmotion.x,Event.xmotion.y);
 	}
@@ -3241,7 +3316,7 @@ void DispatchEvent(Bool preserve_Fw)
 void HandleEvents(void)
 {
 	DBUG("HandleEvents","Routine Entered");
-	STROKE_CODE(send_motion = FALSE);
+	STROKE_CODE(send_motion = False);
 	while (!isTerminated)
 	{
 		last_event_type = 0;

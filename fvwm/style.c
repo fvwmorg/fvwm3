@@ -1302,6 +1302,15 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_CLICK_DECOR(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_CLICK_DECOR(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_ICON(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_ICON(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_ICON(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_PASS_FOCUS_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_PASS_FOCUS_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_PASS_FOCUS_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SF_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SC_FOCUS_POLICY(*ptmpstyle), 1);
@@ -2223,6 +2232,15 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_FOCUS_CLICK_DECOR(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_CLICK_DECOR(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_ICON(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_CLICK_ICON(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_ICON(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_PASS_FOCUS_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_PASS_FOCUS_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_PASS_FOCUS_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SF_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SC_FOCUS_POLICY(*ptmpstyle), 1);
@@ -2260,16 +2278,16 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "MouseFocusClickIgnoreMotion"))
 	{
 	  found = True;
-	  FPS_IGNORE_FOCUS_CLICK_MOTION(SF_FOCUS_POLICY(*ptmpstyle), 1);
-	  FPS_IGNORE_FOCUS_CLICK_MOTION(SM_FOCUS_POLICY(*ptmpstyle), 1);
-	  FPS_IGNORE_FOCUS_CLICK_MOTION(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_IGNORE_RAISE_CLICK_MOTION(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_IGNORE_RAISE_CLICK_MOTION(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_IGNORE_RAISE_CLICK_MOTION(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "MouseFocusClickIgnoreMotionOff"))
 	{
 	  found = True;
-	  FPS_IGNORE_FOCUS_CLICK_MOTION(SF_FOCUS_POLICY(*ptmpstyle), 0);
-	  FPS_IGNORE_FOCUS_CLICK_MOTION(SM_FOCUS_POLICY(*ptmpstyle), 1);
-	  FPS_IGNORE_FOCUS_CLICK_MOTION(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_IGNORE_RAISE_CLICK_MOTION(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_IGNORE_RAISE_CLICK_MOTION(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_IGNORE_RAISE_CLICK_MOTION(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	}
 	else if (StrEquals(token, "MAXWINDOWSIZE"))
 	{
@@ -2480,6 +2498,15 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_FOCUS_CLICK_DECOR(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_CLICK_DECOR(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_ICON(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_CLICK_ICON(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_ICON(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_PASS_FOCUS_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_PASS_FOCUS_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_PASS_FOCUS_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SF_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SC_FOCUS_POLICY(*ptmpstyle), 1);
@@ -2741,6 +2768,15 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  FPS_FOCUS_CLICK_DECOR(SF_FOCUS_POLICY(*ptmpstyle), 0);
 	  FPS_FOCUS_CLICK_DECOR(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_CLICK_DECOR(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_ICON(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_FOCUS_CLICK_ICON(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_FOCUS_CLICK_ICON(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_RAISE_UNFOCUSED_CLIENT_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_PASS_FOCUS_CLICK(SF_FOCUS_POLICY(*ptmpstyle), 0);
+	  FPS_PASS_FOCUS_CLICK(SM_FOCUS_POLICY(*ptmpstyle), 1);
+	  FPS_PASS_FOCUS_CLICK(SC_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SF_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SM_FOCUS_POLICY(*ptmpstyle), 1);
 	  FPS_FOCUS_BY_PROGRAM(SC_FOCUS_POLICY(*ptmpstyle), 1);

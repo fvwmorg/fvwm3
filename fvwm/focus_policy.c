@@ -64,6 +64,10 @@ void fpol_init_default_fp(focus_policy_t *fp)
 		*fp, DEF_FP_RAISE_FOCUSED_DECOR_CLICK);
 	FPS_RAISE_UNFOCUSED_DECOR_CLICK(
 		*fp, DEF_FP_RAISE_UNFOCUSED_DECOR_CLICK);
+	FPS_RAISE_FOCUSED_ICON_CLICK(
+		*fp, DEF_FP_RAISE_FOCUSED_ICON_CLICK);
+	FPS_RAISE_UNFOCUSED_ICON_CLICK(
+		*fp, DEF_FP_RAISE_UNFOCUSED_ICON_CLICK);
 	FPS_MOUSE_BUTTONS(*fp, DEF_FP_MOUSE_BUTTONS);
 	FPS_MODIFIERS(*fp, DEF_FP_MODIFIERS);
 	FPS_PASS_FOCUS_CLICK(*fp, DEF_FP_PASS_FOCUS_CLICK);
@@ -94,6 +98,8 @@ int fpol_query_allow_set_focus(
 		return FP_DO_FOCUS_CLICK_CLIENT(*fpol);
 	case FOCUS_SET_BY_CLICK_DECOR:
 		return FP_DO_FOCUS_CLICK_DECOR(*fpol);
+	case FOCUS_SET_BY_CLICK_ICON:
+		return FP_DO_FOCUS_CLICK_ICON(*fpol);
 	case FOCUS_SET_BY_PROGRAM:
 		return FP_DO_FOCUS_BY_PROGRAM(*fpol);
 	case FOCUS_SET_BY_FUNCTION:
@@ -186,6 +192,7 @@ unsigned do_focus_enter : 1;
 unsigned do_unfocus_leave : 1;
 unsigned do_focus_click_client : 1;
 unsigned do_focus_click_decor : 1;
+unsigned do_focus_click_icon : 1;
 unsigned do_focus_by_program : 1;
 unsigned do_focus_by_function : 1;
 unsigned do_warp_pointer_on_focus_func : 1;
@@ -194,14 +201,16 @@ unsigned do_raise_focused_client_click : 1;
 unsigned do_raise_unfocused_client_click : 1;
 unsigned do_raise_focused_decor_click : 1;
 unsigned do_raise_unfocused_decor_click : 1;
-/*!!!*/unsigned use_mouse_buttons : NUMBER_OF_MOUSE_BUTTONS;
-/*!!!*/unsigned use_modifiers : 8;
-/*!!!*/unsigned do_pass_focus_click : 1;
-/*!!!*/unsigned do_pass_raise_click : 1;
-/*!!!*/unsigned do_ignore_focus_click_motion : 1;
-/*!!!*/unsigned do_ignore_raise_click_motion : 1;
-/*!!!*/unsigned do_allow_func_focus_click : 1;
-/*!!!*/unsigned do_allow_func_raise_click : 1;
+unsigned do_raise_focused_icon_click : 1;
+unsigned do_raise_unfocused_icon_click : 1;
+unsigned use_mouse_buttons : NUMBER_OF_MOUSE_BUTTONS;
+unsigned use_modifiers : 8;
+unsigned do_pass_focus_click : 1;
+unsigned do_pass_raise_click : 1;
+unsigned do_ignore_focus_click_motion : 1;
+unsigned do_ignore_raise_click_motion : 1;
+unsigned do_allow_func_focus_click : 1;
+unsigned do_allow_func_raise_click : 1;
 unsigned do_open_grab_focus : 1;
 unsigned do_open_grab_focus_transient : 1;
 unsigned do_override_grab_focus : 1;

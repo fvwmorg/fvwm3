@@ -99,6 +99,27 @@ static void SetPointerEventPosition(XEvent *eventp, int x, int y)
 	return;
 }
 
+static Bool focus_get_fpol_context_flag(
+	fpol_context_t *fpol_context, int context)
+{
+	int flag;
+
+	switch (context)
+	{
+	case C_WINDOW:
+		flag = fpol_context->client;
+		break;
+	case C_ICON:
+		flag = fpol_context->icon;
+		break;
+	default:
+		flag = fpol_context->decor;
+		break;
+	}
+
+	return (flag) ? True : False;
+}
+
 /********************************************************************
  * Helper functions for setting the focus
  ********************************************************************/
@@ -514,7 +535,7 @@ static Bool focus_query_grab_buttons(FvwmWindow *fw)
 	Bool flag;
 	Bool is_focused;
 
-	if (fw->Desk != Scr.CurrentDesk)
+	if (fw->Desk != Scr.CurrentDesk || IS_ICONIFIED(fw))
 	{
 		return False;
 	}
@@ -746,63 +767,6 @@ static void __focus_grab_one_button(
 
 /* ---------------------------- interface functions ------------------------- */
 
-void focus_grab_buttons(FvwmWindow *fw)
-{
-	int i;
-	Bool do_grab_window = False;
-	int grab_buttons = Scr.buttons2grab;
-
-	if (fw == NULL || IS_SCHEDULED_FOR_DESTROY(fw))
-	{
-		/* It's pointless to grab buttons on dying windows */
-		return;
-	}
-	do_grab_window = focus_query_grab_buttons(fw);
-	if (do_grab_window == True)
-	{
-		grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
-	}
-	if (grab_buttons != fw->grabbed_buttons)
-	{
-		MyXGrabServer(dpy);
-		for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
-		{
-			__focus_grab_one_button(fw, i, grab_buttons);
-		} /* for */
-		MyXUngrabServer (dpy);
-	}
-
-	return;
-}
-
-void focus_grab_buttons_on_layer(int layer)
-{
-	FvwmWindow *fw;
-
-	for (fw = Scr.FvwmRoot.stack_next; fw->layer >= layer;
-	     fw = fw->stack_next)
-	{
-		if (fw->layer == layer)
-		{
-			focus_grab_buttons(fw);
-		}
-	}
-
-	return;
-}
-
-void focus_grab_buttons_all(void)
-{
-	FvwmWindow *fw;
-
-	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
-	{
-		focus_grab_buttons(fw);
-	}
-
-	return;
-}
-
 Bool focus_does_accept_input_focus(FvwmWindow *fw)
 {
 	return (!fw || !fw->wmhints ||
@@ -815,28 +779,30 @@ Bool focus_is_focused(FvwmWindow *fw)
 }
 
 Bool focus_query_click_to_raise(
-	FvwmWindow *fw, Bool is_focused, Bool is_client_click)
+	FvwmWindow *fw, Bool is_focused, int context)
 {
-	Bool flag;
+	fpol_context_t *c;
 
-	if (is_focused && is_client_click)
+	if (is_focused)
 	{
-		flag = FP_DO_RAISE_FOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
+		c = &FP_DO_RAISE_FOCUSED_CLICK(FW_FOCUS_POLICY(fw));
 	}
-	else if (is_focused && !is_client_click)
+	else
 	{
-		flag = FP_DO_RAISE_FOCUSED_DECOR_CLICK(FW_FOCUS_POLICY(fw));
-	}
-	else if (!is_focused && is_client_click)
-	{
-		flag = FP_DO_RAISE_UNFOCUSED_CLIENT_CLICK(FW_FOCUS_POLICY(fw));
-	}
-	else /* if (!is_focused && !is_client_click) */
-	{
-		flag = FP_DO_RAISE_UNFOCUSED_DECOR_CLICK(FW_FOCUS_POLICY(fw));
+		c = &FP_DO_RAISE_UNFOCUSED_CLICK(FW_FOCUS_POLICY(fw));
 	}
 
-	return (flag) ? True : False;
+	return focus_get_fpol_context_flag(c, context);
+}
+
+Bool focus_query_click_to_focus(
+	FvwmWindow *fw, int context)
+{
+	fpol_context_t *c;
+
+	c = &FP_DO_FOCUS_CLICK(FW_FOCUS_POLICY(fw));
+
+	return focus_get_fpol_context_flag(c, context);
 }
 
 /* Takes as input the window that wants the focus and the one that currently
@@ -915,6 +881,63 @@ Bool focus_query_close_release_focus(FvwmWindow *fw)
 	}
 
 	return False;
+}
+
+void focus_grab_buttons(FvwmWindow *fw)
+{
+	int i;
+	Bool do_grab_window = False;
+	int grab_buttons = Scr.buttons2grab;
+
+	if (fw == NULL || IS_SCHEDULED_FOR_DESTROY(fw))
+	{
+		/* It's pointless to grab buttons on dying windows */
+		return;
+	}
+	do_grab_window = focus_query_grab_buttons(fw);
+	if (do_grab_window == True)
+	{
+		grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+	}
+	if (grab_buttons != fw->grabbed_buttons)
+	{
+		MyXGrabServer(dpy);
+		for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
+		{
+			__focus_grab_one_button(fw, i, grab_buttons);
+		} /* for */
+		MyXUngrabServer (dpy);
+	}
+
+	return;
+}
+
+void focus_grab_buttons_on_layer(int layer)
+{
+	FvwmWindow *fw;
+
+	for (fw = Scr.FvwmRoot.stack_next; fw->layer >= layer;
+	     fw = fw->stack_next)
+	{
+		if (fw->layer == layer)
+		{
+			focus_grab_buttons(fw);
+		}
+	}
+
+	return;
+}
+
+void focus_grab_buttons_all(void)
+{
+	FvwmWindow *fw;
+
+	for (fw = Scr.FvwmRoot.next; fw != NULL; fw = fw->next)
+	{
+		focus_grab_buttons(fw);
+	}
+
+	return;
 }
 
 void SetFocusWindow(

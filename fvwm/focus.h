@@ -60,7 +60,9 @@ void focus_grab_buttons_on_pointer_window(void);
 Bool focus_does_accept_input_focus(FvwmWindow *fw);
 Bool focus_is_focused(FvwmWindow *fw);
 Bool focus_query_click_to_raise(
-	FvwmWindow *Fw, Bool is_focused, Bool is_client_click);
+	FvwmWindow *fw, Bool is_focused, int context);
+Bool focus_query_click_to_focus(
+	FvwmWindow *fw, int context);
 Bool focus_query_open_grab_focus(FvwmWindow *fw, FvwmWindow *focus_win);
 Bool focus_query_close_release_focus(FvwmWindow *fw);
 FvwmWindow *focus_get_transientfor_fwin(FvwmWindow *fw);
