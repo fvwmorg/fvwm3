@@ -1021,7 +1021,7 @@ specification.  For example "CursorMove -10p -10p" means move ten
 pixels up and ten pixels left.  The CursorMove function should not be
 called from pop-up menus.
 
-.IP "CursorStyle \fIcontext cursornum\fP"
+.IP "CursorStyle \fIcontext\fP \fInumber-or-xpm\fP [ \fIfore\fP \fIback\fP ]"
 Defines a new cursor for the specified context.  The various contexts
 are:
 
@@ -1112,14 +1112,19 @@ used in the bottom right corner of a window
 .in -.3i
 .in -.5i
 
-And the cursornum is the numeric value of the cursor as defined in the
-include file X11/cursorfont.h.  An example:
+And the \fInumber-or-xpm\fP is either the numeric value of the cursor 
+as defined in the include file X11/cursorfont.h or the name of an xpm
+file containing a pixmap of depth 1 with a mask and an hotspot.
+ An example:
 .EX
 # make the kill cursor be XC_gumby:
 CursorStyle DESTROY 56
+CursorStyle TOP_LEFT topl.xpm
 .EE
-The defaults are shown in parenthesis above.
+The defaults are shown in parenthesis above. 
 
+The optional \fIfg\fP and \fIbg\fP arguments specify the foreground
+and background colors for the cursor, defaulting to black and white.
 
 .IP "DefaultColors [ \fI foreground background\fP ]"
 \fIDefaultColors\fP sets the default forground and background
@@ -1356,7 +1361,7 @@ ExecUseShell /usr/local/bin/tcsh
 .EE
 
 
-.IP "FlipFocus"
+.IP "FlipFocus [ \fIfixed\fP ]"
 Executes a \fIFocus\fP command as if the user had used the pointer to
 select the window.  This command alters the order of the windowlist in
 the same way as clicking in a window to focus, i.e. the target window is
@@ -1365,14 +1370,17 @@ recommended for use with the \fIDirection\fP command and in the function
 invoked from \fIWindowList\fP.
 
 
-.IP "Focus"
-Moves the viewport or window as needed to make the selected window
-visible.  Sets the keyboard focus to the selected window.  Raises the
-window if needed to make it visible.  Does not warp the pointer into
-the selected window (see WarpToWindow function).  Does not de-iconify.
+.IP "Focus [ \fIfixed\fP ]"
+Sets the keyboard focus to the selected window. If the \fIfixed\fP
+argument is given, this is all it does. Otherwise it also moves the 
+viewport or window as needed to make the selected window visible and 
+raises the window if needed to make it visible.  Does not warp the pointer 
+into the selected window (see WarpToWindow function).  Does not de-iconify.
 This command does not alter the order of the windowlist, it rotates the
 windowlist around so that the target window is at the start.
 
+When the \fIfixed\fP argument is given, Focus cannot transfer the 
+keyboard focus to windows on other desks.
 
 .IP "Function \fI\FunctionName\\fP"
 Used to bind a previously defined function to a key or mouse button.
