@@ -1,3 +1,16 @@
+2000-12-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.c (catch_exit):
+	atexit function that tries to release any server, keyboard and pointer
+	grabs when fvwm shuts down
+
+	* fvwm/move_resize.c (InteractiveMove):
+	cope with large desktops and large OpaqueMoveSize values (e.g. 1600x1200
+	and OpaqueMoveSize 2000 caused an integer overflow)
+
+	* fvwm/fvwm.c (CaptureOneWindow):
+	fixed recapture -> wire frame moves
+
 2000-12-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/builtins.c (wait_func):

@@ -488,11 +488,22 @@ static void InteractiveMove(
     origDragY = DragY;
   }
 
-  if(IS_MAPPED(tmp_win) && DragWidth*DragHeight <
-     (Scr.OpaqueSize*Scr.MyDisplayWidth*Scr.MyDisplayHeight)/100)
+  if (IS_ICONIFIED(tmp_win))
     do_move_opaque = True;
-  else if (IS_ICONIFIED(tmp_win))
-    do_move_opaque = True;
+  else if (IS_MAPPED(tmp_win))
+  {
+    float areapct;
+
+    areapct = 100.0;
+    areapct *= ((float)DragWidth / (float)Scr.MyDisplayWidth);
+    areapct *= ((float)DragHeight / (float)Scr.MyDisplayHeight);
+    /* round up */
+    areapct += 0.1;
+    if ((float)areapct <= (float)Scr.OpaqueSize)
+    {
+      do_move_opaque = True;
+    }
+  }
 
   if (do_move_opaque)
   {

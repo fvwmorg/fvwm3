@@ -96,7 +96,7 @@ int master_pid;			/* process number of 1st fvwm process */
 
 ScreenInfo Scr;		        /* structures for the screen */
 MenuInfo Menus;                 /* structures for menus */
-Display *dpy;			/* which display are we talking to */
+Display *dpy = NULL;		/* which display are we talking to */
 
 Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
 Bool DoingCommandLine = False;	/* Set True before each cmd line arg */
@@ -116,6 +116,7 @@ void SaveDesktopState(void);
 void SetMWM_INFO(Window window);
 void SetRCDefaults(void);
 void StartupStuff(void);
+static void catch_exit(void);
 static RETSIGTYPE SigDone(int);
 static RETSIGTYPE Restart(int);
 static RETSIGTYPE ReapChildren(int);
@@ -375,6 +376,7 @@ int main(int argc, char **argv)
     fvwm_msg(ERR,"main","can't open display %s", XDisplayName(display_name));
     exit (1);
   }
+  atexit(catch_exit);
   Scr.screen= DefaultScreen(dpy);
   Scr.NumberOfScreens = ScreenCount(dpy);
 
@@ -467,12 +469,6 @@ int main(int argc, char **argv)
   {
     fvwm_msg(ERR,"main","Screen %d is not a valid screen",(char *)Scr.screen);
     exit(1);
-  }
-
-  {
-    Cursor cursor = XCreateFontCursor(dpy, XC_watch);
-    XGrabPointer(dpy, Scr.Root, 0, 0, GrabModeAsync, GrabModeAsync,
-		 None, cursor, CurrentTime);
   }
 
   if (visualClass != -1) {
@@ -583,6 +579,14 @@ int main(int argc, char **argv)
   XSync(dpy, 0);
 
   XSetErrorHandler(FvwmErrorHandler);
+
+  {
+    /* do not grab the pointer earlier because if fvwm exits with the pointer
+     * grabbed while a different display is visible, XFree 4.0 freezes. */
+    Cursor cursor = XCreateFontCursor(dpy, XC_watch);
+    XGrabPointer(dpy, Scr.Root, 0, 0, GrabModeAsync, GrabModeAsync,
+		 None, cursor, CurrentTime);
+  }
 
   {
     Atom atype;
@@ -743,9 +747,24 @@ int main(int argc, char **argv)
     DBUG("main","Unknown FVWM run-state");
   }
 
-  return 0;
+  exit(0);
 }
 
+
+/* exit handler that will try to release any grabs */
+static void catch_exit(void)
+{
+  if (dpy != NULL)
+  {
+    /* Don't care if this is called from an X error handler. We *have* to try
+     * this, whatever happens. XFree 4.0 may freeze if we don't do this. */
+    XUngrabServer(dpy);
+    XUngrabPointer(dpy, CurrentTime);
+    XUngrabKeyboard(dpy, CurrentTime);
+  }
+
+  return;
+}
 
 /*
 ** StartupStuff
@@ -844,6 +863,7 @@ void CaptureOneWindow(
   if (XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw) != XCNOENT)
   {
     Bool f = PPosOverride;
+    Bool is_mapped = IS_MAPPED(fw);
 
     PPosOverride = True;
     if (IS_ICONIFIED(fw))
@@ -876,7 +896,10 @@ void CaptureOneWindow(
     Event.xmaprequest.window = w;
     HandleMapRequestKeepRaised(keep_on_top_win, fw);
     if (!fFvwmInStartup)
+    {
       SET_MAP_PENDING(fw, 0);
+      SET_MAPPED(fw, is_mapped);
+    }
     /* Clean out isIconicState here, otherwise all new windos may start
      * iconified. */
     isIconicState = DontCareState;
@@ -1839,6 +1862,11 @@ void Done(int restart, char *command)
 {
   const char *exitFuncName;
 
+  /* XFree freeze hack */
+  XUngrabPointer(dpy, CurrentTime);
+  XUngrabKeyboard(dpy, CurrentTime);
+  XUngrabServer(dpy);
+
   if (!restart)
   {
     MoveViewport(0,0,False);
@@ -1890,7 +1918,9 @@ void Done(int restart, char *command)
 
     /* Really make sure that the connection is closed and cleared! */
     CloseICCCM2();
+    catch_exit();
     XCloseDisplay(dpy);
+    dpy = NULL;
 
     /* really need to destroy all windows, explicitly,
      * not sleep, but this is adequate for now */
@@ -1952,7 +1982,9 @@ void Done(int restart, char *command)
   else
   {
     CloseICCCM2();
+    catch_exit();
     XCloseDisplay(dpy);
+    dpy = NULL;
   }
 
   /* Close all my pipes */

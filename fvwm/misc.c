@@ -83,8 +83,8 @@ static void change_grab_cursor(int cursor)
  * GRAB_PASSIVE does not actually grab, but only delays the following ungrab
  * until the GRAB_PASSIVE is released too.
  ****************************************************************************/
-#undef DEBUG_GRAB
-#ifdef DEBUG_GRAB
+#define DEBUG_GRAB 0
+#if DEBUG_GRAB
 void print_grab_stats(char *text)
 {
   int i;
@@ -195,7 +195,7 @@ Bool GrabEm(int cursor, int grab_context)
   }
   grab_count[grab_context]++;
   grab_count[GRAB_ALL]++;
-#ifdef DEBUG_GRAB
+#if DEBUG_GRAB
 print_grab_stats("grabbed");
 #endif
   return True;
@@ -261,7 +261,7 @@ void UngrabEm(int ungrab_context)
     }
     if (grab_count[GRAB_ALL] > grab_count[GRAB_PASSIVE])
     {
-#ifdef DEBUG_GRAB
+#if DEBUG_GRAB
 print_grab_stats("-restore");
 #endif
       change_grab_cursor(new_cursor);
@@ -269,7 +269,7 @@ print_grab_stats("-restore");
   }
   else
   {
-#ifdef DEBUG_GRAB
+#if DEBUG_GRAB
 print_grab_stats("-ungrab");
 #endif
     XUngrabPointer(dpy, CurrentTime);

@@ -597,6 +597,9 @@ void HandlePropertyNotify(void)
     old_height_inc = Tmp_win->hints.height_inc;
     old_base_width = Tmp_win->hints.base_width;
     old_base_height = Tmp_win->hints.base_height;
+    /* hack: pause for the tenth of a second to prevent certain race conditions
+     * when xemacs is mapped. Hopefully this delay does not hurt. */
+    usleep(100000);
     GetWindowSizeHints(Tmp_win);
     if (old_width_inc != Tmp_win->hints.width_inc ||
 	old_height_inc != Tmp_win->hints.height_inc)
@@ -891,6 +894,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
     XRaiseWindow(dpy, KeepRaised);
   }
   /* If it's not merely iconified, and we have hints, use them. */
+
   if (!IS_ICONIFIED(Tmp_win))
   {
     int state;
@@ -1827,7 +1831,13 @@ void HandleConfigureRequest(void)
       XCNOENT)
     Tmp_win = NULL;
 
-#define EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
+#define NO_EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
+  /* This is not a good idea because this interferes with changes in the size
+   * hints of the window.  However, it is impossible to be completely safe here.
+   * For example, is the client changes the size inc, then resizes its of window
+   * and then changes the size inc again - all in one batch - then the WM will
+   * read the *second* size inc upon the *first* event and use the wrong one in
+   * the ConfigureRequest calculations. */
 #ifdef EXPERIMENTAL_ANTI_RACE_CONDITION_CODE
   /* merge all pending ConfigureRequests for the window into a single event */
   if (Tmp_win)

@@ -45,6 +45,8 @@ static void ResyncFvwmStackRing(void);
 static void ResyncXStackingOrder(void);
 static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2);
 
+#define DEBUG_STACK_RING 1
+#ifdef DEBUG_STACK_RING
 /* debugging function */
 static void dump_stack_ring(void)
 {
@@ -155,6 +157,7 @@ static void verify_stack_ring_consistency(void)
 
   return;
 }
+#endif
 
 /* Remove a window from the stack ring */
 void remove_window_from_stack_ring(FvwmWindow *t)
@@ -724,14 +727,18 @@ static void RaiseOrLowerWindow(
 void RaiseWindow(FvwmWindow *t)
 {
   RaiseOrLowerWindow(t, False, True, False);
+#ifdef DEBUG_STACK_RING
   verify_stack_ring_consistency();
+#endif
   return;
 }
 
 void LowerWindow(FvwmWindow *t)
 {
   RaiseOrLowerWindow(t, True, True, False);
+#ifdef DEBUG_STACK_RING
   verify_stack_ring_consistency();
+#endif
   return;
 }
 
@@ -835,7 +842,9 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
     break;
   }
 /*  DBUG("HandleUnusualStackmodes", "\t---> %d\n", restack);*/
+#ifdef DEBUG_STACK_RING
   verify_stack_ring_consistency();
+#endif
   return restack;
 }
 
@@ -1007,7 +1016,9 @@ static void BroadcastRestack (FvwmWindow *s1, FvwmWindow *s2)
   for (i = 0; i < npipes; i++)
     PositiveWrite(i, body, length*sizeof(unsigned long));
   free(body);
+#ifdef DEBUG_STACK_RING
   verify_stack_ring_consistency();
+#endif
 
   return;
 }
@@ -1167,7 +1178,7 @@ void new_layer(FvwmWindow *tmp_win, int layer)
   list_head.stack_next = &list_head;
   list_head.stack_prev = &list_head;
   count = collect_transients_recursive(
-    tmp_win, &list_head, layer, (layer < tmp_win->layer));
+    tmp_win, &list_head, tmp_win->layer, (layer < tmp_win->layer));
   if (count == 0)
   {
     /* no windows to move */
@@ -1274,8 +1285,9 @@ void raiselower_func(F_CMD_ARGS)
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
   {
-/*fixme: debug code */
-dump_stack_ring();
+#ifdef DEBUG_STACK_RING
+    dump_stack_ring();
+#endif
     return;
   }
 
@@ -1330,7 +1342,9 @@ void change_layer(F_CMD_ARGS)
   }
   new_layer(tmp_win, layer);
 
+#ifdef DEBUG_STACK_RING
   verify_stack_ring_consistency();
+#endif
 }
 
 void SetDefaultLayers(F_CMD_ARGS)
@@ -1382,5 +1396,7 @@ void SetDefaultLayers(F_CMD_ARGS)
     }
   }
 
+#ifdef DEBUG_STACK_RING
   verify_stack_ring_consistency();
+#endif
 }
