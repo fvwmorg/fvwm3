@@ -2029,6 +2029,9 @@ void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #ifdef MULTISTYLE
 	    tmpbf.next = NULL;
 #endif
+#ifdef MINI_ICONS
+	    tmpbf->u.p = NULL;
+#endif
 	    if (StrEquals(parm,"active"))
 		bf = &fl->BorderStyle.active;
 	    else
@@ -2073,6 +2076,9 @@ void SetBorderStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	    tmpbf.style = SimpleButton;
 #ifdef MULTISTYLE
 	    tmpbf.next = NULL;
+#endif
+#ifdef MINI_ICONS
+	    tmpbf->u.p = NULL;
 #endif
 	    if (ReadButtonFace(prev, &tmpbf,-1,True)) {
 		FreeButtonFace(dpy,&fl->BorderStyle.active);
@@ -2792,6 +2798,9 @@ char *ReadTitleButton(char *s, TitleButton *tb, Boolean append, int button)
 #ifdef MULTISTYLE
     tmpbf.next = NULL;
 #endif
+#ifdef MINI_ICONS
+    tmpbf->u.p = NULL;
+#endif
 
     if (strncmp(spec, "--",2)==0) {
 	/* only change flags */
@@ -3152,21 +3161,22 @@ void DestroyDecor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 void add_item_to_decor(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 		      unsigned long context, char *action,int* Module)
 {
-    FvwmDecor *fl = &Scr.DefaultDecor, *found = NULL;
+    FvwmDecor *f, *found = NULL;
     char *item = NULL, *s = action;
 
     last_menu = NULL;
 
     s = GetNextToken(s, &item);
 
-    if (!s || !item)
+    if (!item)
+      return;
+    if (!s)
       {
-	if (item)
-	  free(item);
+	free(item);
 	return;
       }
     /* search for tag */
-    for (; fl; fl = fl->next)
+    for (fl = &Scr.DefaultDecor; fl; fl = fl->next)
 	if (fl->tag)
 	    if (StrEquals(item, fl->tag)) {
 		found = fl;

@@ -1,7 +1,11 @@
 1998-12-09  Dominik Vogt  <dominik_vogt@hp.com>
 
-	* fvwm/resize.c: don't wait for buttons up before resizing a window when
-	initially placing it
+	* fvwm/builtins.c (add_item_to_decor): a little clean up
+	(SetBorderStyle): fix for MiniIcon coredump
+	(SetBorderStyle): fix for MiniIcon coredump
+
+	* fvwm/resize.c: don't wait for buttons up before resizing a window
+	when initially placing it
 
 	* fvwm/move.c (moveLoop): a little clean up
 	(DisplayPosition): a little clean up
