@@ -1,3 +1,8 @@
+2003-09-04  olicha  <olivier.chapuis@free.fr>
+
+	* todo-2.6:
+	Added E.18, added comments on C.9 and C.15
+
 2003-09-03  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Flocale.c (FlocaleTextWidth):
