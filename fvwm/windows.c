@@ -17,7 +17,7 @@
 #include <string.h>
 #include <limits.h>
 
-#include "../configure.h"
+#include "config.h"
 #include "fvwmlib.h"
 
 #include "fvwm.h"

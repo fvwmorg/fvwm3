@@ -14,7 +14,7 @@
 #define YES "Yes"
 #define NO  "No"
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -37,7 +37,6 @@
 
 #include "../../fvwm/module.h"
 #include "FvwmIdent.h"
-#include "../../version.h"
 
 char *MyName;
 int fd_width;

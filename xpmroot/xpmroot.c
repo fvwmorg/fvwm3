@@ -6,14 +6,13 @@
  * this program or anything related to it.
  ****************************************************************************/
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
 #include <string.h>
 #include <X11/Xos.h>
 #include <X11/Xatom.h>
-#include "../version.h"
 #include "../libs/fvwmlib.h"     
 #include <X11/xpm.h> /* Has to be after Intrinsic.h gets included */
 

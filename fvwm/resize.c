@@ -13,7 +13,7 @@
  * window resizing borrowed from the "wm" window manager
  *
  ***********************************************************************/
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <X11/keysym.h>

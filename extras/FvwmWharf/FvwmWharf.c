@@ -37,7 +37,7 @@
 #define FALSE 0
 #define DOUBLECLICKTIME 1
 
-#include "../../configure.h"
+#include "config.h"
 
 #ifdef ISC
 #include <sys/bsdtypes.h> /* Saul */
@@ -64,7 +64,6 @@
 #include <syslog.h>
 
 #include "Wharf.h"
-#include "../../version.h"
 #define AFTER_ICONS 1
 /*#include "../../afterstep/asbuttons.h" pdg */
 

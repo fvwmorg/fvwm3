@@ -7,7 +7,7 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -21,7 +21,6 @@
 #include "../../fvwm/module.h"
 
 #include "FvwmDebug.h"
-#include "../../version.h"
 
 char *MyName;
 int fd_width;

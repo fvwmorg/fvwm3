@@ -5,7 +5,7 @@
  *                                                                           
  ***************************************************************************/
 
-#include "../../configure.h"
+#include "config.h"
 #ifdef ISC
 #include <sys/bsdtypes.h> /* Saul */
 #endif
@@ -47,7 +47,6 @@
 #include "../../icons/k2.xpm"
 #endif /* 0 */
 
-#include "../../version.h"
 
 typedef struct _XpmIcon {
     Pixmap pixmap;

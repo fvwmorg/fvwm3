@@ -33,7 +33,7 @@
  *
  ****************************************************************************/
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -45,6 +45,8 @@
 #include "screen.h"
 #include "parse.h"
 #include "menus.h"
+#include "lang-strings.h"
+
 
 extern Atom _XA_MwmAtom;
 

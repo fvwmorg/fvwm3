@@ -14,6 +14,8 @@
 
 /* ------------------------------- includes -------------------------------- */
 
+#include "config.h"
+
 #ifdef ISC
 #include <sys/bsdtypes.h> /* Saul */
 #endif
@@ -45,9 +47,7 @@
 #include <X11/extensions/shape.h>
 #endif
 
-#include "../../configure.h"
 #include "../../fvwm/module.h"
-#include "../../version.h"
 #include "../../libs/fvwmlib.h"
 #include "FvwmButtons.h"
 #include "misc.h" /* ConstrainSize() */

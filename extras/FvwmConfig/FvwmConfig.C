@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include <stdio.h>
 #include <iostream.h>
 #include <stdlib.h>
@@ -12,8 +14,6 @@
 extern "C" {
 #include "../../libs/fvwmlib.h"
 }
-#include "../../version.h"
-#include "../../configure.h"
 #include "../../fvwm/module.h"
 
 #define ClickToFocus (1<<10)

@@ -49,6 +49,11 @@
 #include <stdlib.h>                     /* for exit */
 #include <X11/xpm.h>                    /* XPM stuff */
 
+#ifndef EXIT_FAILURE
+#define EXIT_FAILURE 1
+#endif
+
+
 struct rgb_s {
   int r;
   int g;

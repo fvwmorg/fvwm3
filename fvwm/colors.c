@@ -6,7 +6,7 @@
  ****************************************************************************/
 
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -26,7 +26,6 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
-#include "../version.h"
 
 char *white = "white";
 char *black = "black";

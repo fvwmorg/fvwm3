@@ -29,8 +29,7 @@
 #include <errno.h>
 #include <string.h>
 
-#include "../../configure.h"
-#include "../../version.h"
+#include "config.h"
 #include "../../libs/fvwmlib.h"     
 #include "../../fvwm/module.h"
 #if defined (sparc) && !defined (SVR4)

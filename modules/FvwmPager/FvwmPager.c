@@ -10,7 +10,7 @@
 #define TRUE 1
 #define FALSE 
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -39,7 +39,6 @@
 
 #include "../../libs/fvwmlib.h"       
 #include "FvwmPager.h"
-#include "../../version.h"
 #include "../../fvwm/fvwm.h"
 
 char *MyName;

@@ -21,7 +21,7 @@
 #define TRUE 1
 #define FALSE 
 
-#include "../../configure.h"
+#include "config.h"
 #ifdef ISC
 #include <sys/bsdtypes.h> /* Saul */
 #endif 
@@ -40,7 +40,6 @@
 #include <stdlib.h>
 #include "../../fvwm/module.h"
 #include "../../libs/fvwmlib.h"     
-#include "../../version.h"
 
 #ifdef __hpux
 # define HPUX_CAST (int *)

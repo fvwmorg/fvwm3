@@ -11,7 +11,7 @@
 #define TRUE 1
 #define FALSE  0
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -37,7 +37,6 @@
 #include "../../fvwm/module.h"
 
 #include "FvwmCpp.h"
-#include "../../version.h"
 #include "../../libs/fvwmlib.h"
 #include <X11/StringDefs.h>
 #include <X11/Intrinsic.h>
@@ -336,7 +335,7 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 
     fputs(MkDef("OPTIONS", options), tmpf);
 
-    fputs(MkDef("FVWMDIR", FVWMDIR), tmpf);
+    fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);
     
     /*
      * At this point, we've sent the definitions to cpp.  Just include

@@ -5,7 +5,7 @@
  * as long as the copyright notice is preserved
  ****************************************************************************/
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>

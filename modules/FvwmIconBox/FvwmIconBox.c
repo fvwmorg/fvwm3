@@ -17,7 +17,7 @@
 #define VERTICAL 1
 #define HORIZONTAL 2
 
-#include "../../configure.h"
+#include "config.h"
 
 #ifdef ISC
 #include <sys/bsdtypes.h> /* Saul */
@@ -53,7 +53,6 @@
 #endif
 
 #include "FvwmIconBox.h"
-#include "../../version.h"
 
 char *MyName;
 

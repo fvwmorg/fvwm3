@@ -96,9 +96,8 @@
 #undef M_ERROR /* Solaris fix */
 #endif
 
-#include "../../configure.h"
+#include "config.h"
 #include "../../fvwm/module.h"
-#include "../../version.h"
 #include "../../libs/fvwmlib.h"     
 
 #define BUILTIN_STARTUP		MAX_MESSAGES

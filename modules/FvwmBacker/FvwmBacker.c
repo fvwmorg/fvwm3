@@ -25,7 +25,7 @@
  * A. Davison
  * Septmber 1994.
  */
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -44,7 +44,6 @@
 #include <stdlib.h>
 
 #include "../../fvwm/module.h"
-#include "../../version.h"
 #include "FvwmBacker.h"
 #include "Mallocs.h"
 

@@ -12,7 +12,7 @@
  *  Things to do:  Convert to C++  (In Progress)
  */
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>

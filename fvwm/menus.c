@@ -37,7 +37,7 @@
  *
  ***********************************************************************/
 /* #define FVWM_DEBUG_MSGS */
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <assert.h>

@@ -19,7 +19,7 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -46,7 +46,6 @@
 #include <X11/cursorfont.h>
 
 #include "../../fvwm/module.h"
-#include "../../version.h"
 #include "../../libs/fvwmlib.h"  /* for pixmaps routines */
 
 

@@ -12,7 +12,7 @@
 #include <strings.h>
 #include <sys/types.h>
 #include <sys/time.h>
-#include "../../configure.h"
+#include "config.h"
 #include "WinBase.h"
 
 char *def_geom_string = NULL;

@@ -9,7 +9,7 @@
  * warrantees of any sort whatsoever are given or implied or anything.
  ****************************************************************************/
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <unistd.h>

@@ -11,7 +11,7 @@
 #include <sys/select.h>
 #endif
 
-#include "../configure.h"
+#include "config.h"
 
 #if HAVE_UNAME
 #include <sys/utsname.h>

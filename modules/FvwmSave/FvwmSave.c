@@ -11,7 +11,7 @@
 #define TRUE 1
 #define FALSE 
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -31,7 +31,6 @@
 #include "../../fvwm/module.h"
 
 #include "FvwmSave.h"
-#include "../../version.h"
 
 char *MyName;
 int fd[2];

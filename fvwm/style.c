@@ -21,7 +21,7 @@
  * code for parsing the fvwm style command
  *
  ***********************************************************************/
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <string.h>
@@ -34,7 +34,6 @@
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
-#include "../version.h"
 
 static int Get_TBLR(char *, unsigned char *); /* prototype */
 static void AddToList(name_list *);     /* prototype */

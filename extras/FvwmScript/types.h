@@ -1,3 +1,7 @@
+#include "config.h"
+#include "../../fvwm/module.h"
+#include "fvwmlib.h"  
+
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
@@ -28,10 +32,6 @@
 #include <X11/xpm.h>
 #include <X11/X.h>
 
-#include "../../configure.h"
-#include "../../fvwm/module.h"
-#include "../../libs/fvwmlib.h"  
-#include "../../version.h"
 
 /* Constante de couleurs */
 #define black 0

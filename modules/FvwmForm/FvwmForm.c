@@ -5,7 +5,7 @@
  * risk.  Permission to use, modify, and redistribute this program is hereby
  * given, provided that this copyright is kept intact.
  */
-#include "../../configure.h"
+#include "config.h"
 #include "../../libs/fvwmlib.h"
 
 #include <stdio.h>

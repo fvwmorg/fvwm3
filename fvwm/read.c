@@ -11,7 +11,7 @@
  * Its now in "modconf.c".
  * *************************************************************************
  */
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -111,7 +111,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
       if((filename != NULL)&&(filename!= ofilename))
         free(filename);
       /* find the home directory to look in */
-      Home = FVWMDIR;
+      Home = FVWM_CONFIGDIR;
       HomeLen = strlen(Home);
       home_file = safemalloc(HomeLen + strlen(ofilename)+3);
       strcpy(home_file,Home);
@@ -127,7 +127,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     if (missing_quiet == 'n') {         /* if quiet option not on */
       fvwm_msg(ERR,
                piperead?"PipeRead":"Read",
-               piperead?"command '%s' not run":"file '%s' not found in $HOME or "FVWMDIR,
+               piperead?"command '%s' not run":"file '%s' not found in $HOME or "FVWM_CONFIGDIR,
                ofilename);
     } /* end quiet option not on */
     if((ofilename != filename)&&(filename != NULL))

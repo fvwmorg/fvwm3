@@ -11,7 +11,7 @@
  * fvwm - "F? Virtual Window Manager"
  ***********************************************************************/
 
-#include "../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -42,7 +42,6 @@
 
 #define MAXHOSTNAME 255
 
-#include "../version.h"
 
 #ifndef lint
 static char sccsid[] = "@(#)fvwm.c " VERSION " " __DATE__ " fvwm";

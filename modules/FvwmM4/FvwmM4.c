@@ -11,7 +11,7 @@
 #define TRUE 1
 #define FALSE  0
 
-#include "../../configure.h"
+#include "config.h"
 
 #include <stdio.h>
 #include <signal.h>
@@ -37,7 +37,6 @@
 #include "../../fvwm/module.h"
 
 #include "FvwmM4.h"
-#include "../../version.h"
 #include "../../libs/fvwmlib.h"
 #include <X11/StringDefs.h>
 #include <X11/Shell.h>
@@ -365,7 +364,7 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
 
   fputs(MkDef("OPTIONS", options), tmpf);
 
-  fputs(MkDef("FVWMDIR", FVWMDIR), tmpf);
+  fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);
     
   /*
    * At this point, we've sent the definitions to m4.  Just include

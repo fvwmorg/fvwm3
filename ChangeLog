@@ -1,3 +1,12 @@
+Sat Oct 31 06:44:50 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* Basic autoconfiguration support added.
+
+Sat Oct 31 06:02:37 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* modules/FvwmCpp: 
+	* modules/FvwmM4: Changed FVWMDIR to FVWM_MODULEDIR.
+
 Hey XEmacs, this is -*-text-*- mode
 
 2.0.47

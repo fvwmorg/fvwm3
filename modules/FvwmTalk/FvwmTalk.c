@@ -14,7 +14,7 @@
 #define ALL 2
 #define PROP_SIZE 1024
 
-#include "../../configure.h"
+#include "config.h"
 #ifdef ISC
 #include <sys/bsdtypes.h> /* Saul */
 #endif 
@@ -44,7 +44,6 @@
 #include "../../fvwm/module.h"
 
 #include "FvwmTalk.h"
-#include "../../version.h"
 
 char *MyName;
 int fd_width,screen, d_depth;
