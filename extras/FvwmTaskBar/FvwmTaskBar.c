@@ -130,7 +130,7 @@ int UseSkipList    = False,
     adjust_flag    = False,
     AutoStick      = False,
     AutoHide       = False,
-    AutoFocus      = False,      // mosh
+    AutoFocus      = False,
     HighlightFocus = False;
 
 unsigned int ScreenWidth, ScreenHeight;
@@ -531,7 +531,7 @@ void RedrawWindow(int force)
     if (Tip.open){
       RedrawTipWindow();
 
-      // 98-11-21 13:45, Mohsin_Ahmed, mailto:mosh@sasi.com.
+      /* 98-11-21 13:45, Mohsin_Ahmed, mailto:mosh@sasi.com. */
       if( Tip.type >= 0 && AutoFocus ){
           SendFvwmPipe( "Iconify -1, Raise, Focus",
                         ItemID( &windows, Tip.type ) );

@@ -1,3 +1,8 @@
+Mon Mar  8 17:21:09 1999  Steve ROBBINS  <stever@lear.bic.mni.mcgill.ca>
+
+	* FvwmTaskBar/FvwmTaskBar.c: 
+	(RedrawWindow): removed C++-style // comments.
+
 1999-03-06  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmWharf/FvwmWharf.c (main):
