@@ -1,3 +1,10 @@
+1999-08-29 Chris Rankin
+
+	* fvwm/menus.c: Wall fixes (one unused variable, brackets around
+      boolean expressions and removed a "*" from a pointer operation)
+	* libs/Graphics.c: Wall fixes (CreateStretchPixmap returns None
+      if the validation fails, rather than nothing at all).
+
 1999-08-27 Hippo
 
 	* libs/Picture.{h,c}: New function GetPictureAndFree() === {
