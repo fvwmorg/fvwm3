@@ -990,8 +990,9 @@ int ewmh_HandleDesktop(EWMH_CMD_ARGS)
   if (Scr.EwmhDesktop != NULL && FW_W(Scr.EwmhDesktop) != FW_W(fwin))
   {
     fvwm_msg(WARN,"ewmh_HandleDesktop",
-	"An Desktop application (0x%lx) already run! This can cause problem\n",
-	 FW_W(Scr.EwmhDesktop));
+	     "An Desktop application (0x%lx) already runs! This can cause"
+	     " problems\n",
+	     FW_W(Scr.EwmhDesktop));
     /* what to do ? */
   }
 
