@@ -1094,7 +1094,7 @@ void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
 
 static void get_common_decorations(
   common_decorations_type *cd, FvwmWindow *t, draw_window_parts draw_parts,
-  Bool has_focus, int force, Window expose_win)
+  Bool has_focus, int force, Window expose_win, Bool is_border)
 {
   color_quad *draw_colors;
 
@@ -1107,7 +1107,8 @@ static void get_common_decorations(
       cd->texture_pixmap = GetDecor(t, BorderStyle.active.u.p->picture);
     }
     cd->back_pixmap= Scr.gray_pixmap;
-    draw_colors = &(t->hicolors);
+    if (is_border) draw_colors = &(t->border_hicolors);
+    else draw_colors = &(t->hicolors);
   }
   else
   {
@@ -1120,7 +1121,8 @@ static void get_common_decorations(
       cd->back_pixmap = Scr.sticky_gray_pixmap;
     else
     cd->back_pixmap = Scr.light_gray_pixmap;
-    draw_colors = &(t->colors);
+    if (is_border) draw_colors = &(t->border_colors);
+    else draw_colors = &(t->colors);
   }
   cd->fore_color = draw_colors->fore;
   cd->back_color = draw_colors->back;
@@ -1249,24 +1251,28 @@ void DrawDecorations(
   }
 
   get_common_decorations(
-    &cd, t, draw_parts, has_focus, force, expose_win);
+    &cd, t, draw_parts, has_focus, force, expose_win, FALSE);
 
-  if (cd.flags.has_color_changed)
+  if (cd.flags.has_color_changed && HAS_TITLE(t))
   {
-    change_window_background(t->decor_w, cd.valuemask, &cd.attributes);
-    if (HAS_TITLE(t))
-    {
-      change_window_background(
-	t->title_w, cd.notex_valuemask, &cd.notex_attributes);
-    }
+    change_window_background(
+      t->title_w, cd.notex_valuemask, &cd.notex_attributes);
   }
 
-  if ((draw_parts & DRAW_FRAME) && is_frame_redraw_allowed)
-    RedrawBorder(&cd, t, has_focus, force, expose_win);
   if ((draw_parts & DRAW_BUTTONS) && HAS_TITLE(t) && is_button_redraw_allowed)
     RedrawButtons(&cd, t, has_focus, force, expose_win);
   if ((draw_parts & DRAW_TITLE) && HAS_TITLE(t) && is_title_redraw_allowed)
     RedrawTitle(&cd, t, has_focus);
+  get_common_decorations(
+    &cd, t, draw_parts, has_focus, force, expose_win, TRUE);
+  if (cd.flags.has_color_changed ||
+      ((draw_parts & DRAW_FRAME) && (is_frame_redraw_allowed)))
+  {
+    get_common_decorations(
+      &cd, t, draw_parts, has_focus, force, expose_win, TRUE);
+    change_window_background(t->decor_w, cd.valuemask, &cd.attributes);
+    RedrawBorder(&cd, t, has_focus, force, expose_win);
+  }
 
   /* Sync to make the change look fast! */
   XSync(dpy,0);

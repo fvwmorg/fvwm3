@@ -455,6 +455,14 @@ static void merge_styles(window_style *merged_style, window_style *add_style,
   {
     SSET_COLORSET_HI(*merged_style, SGET_COLORSET_HI(*add_style));
   }
+  if (add_style->flags.use_border_colorset)
+  {
+    SSET_BORDER_COLORSET(*merged_style, SGET_BORDER_COLORSET(*add_style));
+  }
+  if (add_style->flags.use_border_colorset_hi)
+  {
+    SSET_BORDER_COLORSET_HI(*merged_style,SGET_BORDER_COLORSET_HI(*add_style));
+  }
   merged_style->has_style_changed |= add_style->has_style_changed;
   return;
 }
@@ -951,6 +959,17 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->flag_mask.use_backing_store = 1;
 	  ptmpstyle->change_mask.use_backing_store = 1;
         }
+	else if(StrEquals(token, "BorderColorset"))
+	{	  
+	  found = True;
+          *val = -1;
+	  GetIntegerArguments(rest, NULL, val, 1);
+	  SSET_BORDER_COLORSET(*ptmpstyle, *val);
+	  AllocColorset(*val);
+	  ptmpstyle->flags.use_border_colorset = (*val >= 0);
+	  ptmpstyle->flag_mask.use_border_colorset = 1;
+	  ptmpstyle->change_mask.use_border_colorset = 1;
+	}
         break;
 
       case 'c':
@@ -1367,6 +1386,17 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->flags.use_colorset_hi = (*val >= 0);
 	  ptmpstyle->flag_mask.use_colorset_hi = 1;
 	  ptmpstyle->change_mask.use_colorset_hi = 1;
+	}
+        else if(StrEquals(token, "HilightBorderColorset"))
+	{
+	  found = True;
+          *val = -1;
+	  GetIntegerArguments(rest, NULL, val, 1);
+	  SSET_BORDER_COLORSET_HI(*ptmpstyle, *val);
+	  AllocColorset(*val);
+	  ptmpstyle->flags.use_border_colorset_hi = (*val >= 0);
+	  ptmpstyle->flag_mask.use_border_colorset_hi = 1;
+	  ptmpstyle->change_mask.use_border_colorset_hi = 1;
 	}
         break;
 
@@ -2563,10 +2593,12 @@ void check_window_style_change(
    * has_color_back
    * has_color_fore
    * use_colorset
+   * use_border_colorset
    */
   if (ret_style->change_mask.has_color_fore ||
       ret_style->change_mask.has_color_back ||
-      ret_style->change_mask.use_colorset)
+      ret_style->change_mask.use_colorset ||
+      ret_style->change_mask.use_border_colorset)
   {
     flags->do_update_window_color = True;
   }
@@ -2574,10 +2606,12 @@ void check_window_style_change(
    * has_color_back_hi
    * has_color_fore_hi
    * use_colorset_hi
+   * use_border_colorset_hi
    */
   if (ret_style->change_mask.has_color_fore_hi ||
       ret_style->change_mask.has_color_back_hi ||
-      ret_style->change_mask.use_colorset_hi)
+      ret_style->change_mask.use_colorset_hi ||
+      ret_style->change_mask.use_border_colorset_hi)
   {
     flags->do_update_window_color_hi = True;
   }
@@ -2683,6 +2717,20 @@ void update_style_colorset(int colorset)
       temp->change_mask.use_colorset_hi = 1;
       Scr.flags.do_need_window_update = 1;
     }
+    if (SUSE_BORDER_COLORSET(&temp->flags) && 
+	SGET_BORDER_COLORSET(*temp) == colorset)
+    {
+      temp->has_style_changed = 1;
+      temp->change_mask.use_border_colorset = 1;
+      Scr.flags.do_need_window_update = 1;
+    }
+    if (SUSE_BORDER_COLORSET_HI(&temp->flags) && 
+	SGET_BORDER_COLORSET_HI(*temp) == colorset)
+    {
+      temp->has_style_changed = 1;
+      temp->change_mask.use_border_colorset_hi = 1;
+      Scr.flags.do_need_window_update = 1;
+    }
   }
 }
 
@@ -2715,6 +2763,19 @@ void update_window_color_style(FvwmWindow *tmp_win, window_style *pstyle)
     tmp_win->colors.shadow = Colorset[cs].shadow;
     tmp_win->colors.back = Colorset[cs].bg;
   }
+  if (SUSE_BORDER_COLORSET(&pstyle->flags))
+  {
+    cs = SGET_BORDER_COLORSET(*pstyle);
+    tmp_win->border_colors.hilight = Colorset[cs].hilite;
+    tmp_win->border_colors.shadow = Colorset[cs].shadow;
+    tmp_win->border_colors.back = Colorset[cs].bg;
+  }
+  else
+  {
+    tmp_win->border_colors.hilight = tmp_win->colors.hilight;
+    tmp_win->border_colors.shadow = tmp_win->colors.shadow;
+    tmp_win->border_colors.back = tmp_win->colors.back;
+  }
 }
 
 void update_window_color_hi_style(FvwmWindow *tmp_win, window_style *pstyle)
@@ -2734,7 +2795,7 @@ void update_window_color_hi_style(FvwmWindow *tmp_win, window_style *pstyle)
   {
     tmp_win->hicolors.fore = Colorset[cs].fg;
   }
-  if(SGET_BACK_COLOR_NAME(*pstyle) != NULL && !SUSE_COLORSET_HI(&pstyle->flags))
+  if(SGET_BACK_COLOR_NAME_HI(*pstyle) != NULL && !SUSE_COLORSET_HI(&pstyle->flags))
   {
     tmp_win->hicolors.back = GetColor(SGET_BACK_COLOR_NAME_HI(*pstyle));
     tmp_win->hicolors.shadow = GetShadow(tmp_win->hicolors.back);
@@ -2745,5 +2806,18 @@ void update_window_color_hi_style(FvwmWindow *tmp_win, window_style *pstyle)
     tmp_win->hicolors.hilight = Colorset[cs].hilite;
     tmp_win->hicolors.shadow = Colorset[cs].shadow;
     tmp_win->hicolors.back = Colorset[cs].bg;
+  }
+  if (SUSE_BORDER_COLORSET_HI(&pstyle->flags))
+  {
+    cs = SGET_BORDER_COLORSET_HI(*pstyle);
+    tmp_win->border_hicolors.hilight = Colorset[cs].hilite;
+    tmp_win->border_hicolors.shadow = Colorset[cs].shadow;
+    tmp_win->border_hicolors.back = Colorset[cs].bg;
+  }
+  else
+  {
+    tmp_win->border_hicolors.hilight = tmp_win->hicolors.hilight;
+    tmp_win->border_hicolors.shadow = tmp_win->hicolors.shadow;
+    tmp_win->border_hicolors.back = tmp_win->hicolors.back;
   }
 }

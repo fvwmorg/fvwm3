@@ -3938,6 +3938,7 @@ is a comma separated list containing one or more of the keywords
 .IR StartIconic " / " StartNormal ,
 .IR Color ", " ForeColor ", " BackColor ", " Colorset ,
 .IR HilightFore ", " HilightBack ", " HilightColorset ,
+.IR BorderColorset ", " HilightBorderColorset ,
 .IR Font ,
 .IR IconFont ,
 .IR StartsOnDesk " / " StartsOnPage " / " StartsAnyWhere ,
@@ -4107,10 +4108,22 @@ used.  Note that all other features of a colorset are unsupported yet.
 The
 .IR HilightFore ", " HilightBack " and " HilightColorset
 styles work exactly like
-.IT ForeColor ", " BackColor " and " Colorset
+.IR ForeColor ", " BackColor " and " Colorset
 but are used only if the window has the focus.  These styles
 replace the old commands
 .BR HilightColor " and " HilightColorset .
+
+.IR BorderColorset
+takes the colorset number as its sole argument and overrides the
+colors set by
+.IR Colors " or " Colorset .
+for the window border.
+
+The
+.IR HilightBorderColorset
+styles work exactly like
+.IR BorderColorset
+but is used only if the window has the focus.
 
 The
 .IR Font " and " IconFont
@@ -4330,8 +4343,8 @@ This miniature icon can be drawn in a title-bar button (see
 .BR ButtonStyle ),
 and can be used by various fvwm modules
 .RB ( FvwmWinList ", " FvwmIconMan " and " FvwmTaskBar ).
-It takes the name of a pixmap as an argument.
 
+It takes the name of a pixmap as an argument.
 .IR WindowShadeShrinks " and " WindowShadeScrolls
 control if the contents of a window that is being shaded with the
 .B WindowShade

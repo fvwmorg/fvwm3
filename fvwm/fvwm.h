@@ -307,6 +307,8 @@ typedef struct
   unsigned use_parent_relative : 1;
   unsigned use_colorset : 1;
   unsigned use_colorset_hi : 1;
+  unsigned use_border_colorset : 1;
+  unsigned use_border_colorset_hi : 1;
   unsigned use_layer : 1;
   unsigned use_no_pposition : 1;
   unsigned use_start_on_desk : 1;
@@ -345,6 +347,8 @@ typedef struct window_style
   char *back_color_name_hi;
   int colorset;
   int colorset_hi;
+  int border_colorset;
+  int border_colorset_hi;
   int border_width;
   int handle_width; /* resize handle width */
   int layer;
@@ -448,6 +452,9 @@ typedef struct FvwmWindow
   int number_cmap_windows;    /* Should generally be 0 */
   color_quad colors;
   color_quad hicolors;
+  color_quad border_colors;
+  color_quad border_hicolors;
+
   unsigned long buttons;
   icon_boxes *IconBoxes;              /* zero or more iconboxes */
 

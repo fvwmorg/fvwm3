@@ -3,6 +3,8 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.16 (not released yet)
 
+* New style option BorderColorset and HilightBorderColorset. 
+
 Changes in beta release 2.3.15 (February 2000)
 
 * Reduced memory usage of multiple window styles.
