@@ -1,0 +1,152 @@
+<html>
+<head>
+<title>The Official FVWM Homepage - CVS Procedures</title>
+</head>
+  <body BACKGROUND="black-stone1.jpg"
+    bgcolor="#000000" text="#ffffff"
+    link="#FFFF88" vlink="#EEDDDD" alink="#ff0000">
+<center>
+<h1><font color="pink">The Official FVWM Homepage - CVS Procedures</font></h1>
+</center>
+
+<H2> <font color="turquoise">Overview</font></h2>
+Fvwm2 development uses a CVS server.
+
+To know  what is going in  with the source tree  you should be reading
+mail      on   the    Fvwm      Workers      List.    See   the     <a
+href"mailinglist.html">Mailing  List     Info</a>  page      for  more
+information.
+
+<H2> <font color="turquoise">Development Source Code Download</font></h2>
+To just download development source code, you can use the "anonymous" login.
+Of course, you need the cvs client software on your local machine.
+First you must login:
+
+<pre><font color="yellow">
+cvs -z3 -d :pserver:anonymous@cvs.hpc.uh.edu:/home/cvs/fvwm login
+</pre></font>
+(The password is 'guest').  If you see no reaction to this command
+that indicates it worked.
+
+Then you can checkout the latest source code with:
+<pre><font color="yellow">
+cvs -z3 -d :pserver:dane@cvs.hpc.uh.edu:/home/cvs/fvwm checkout fvwm
+</pre></font>
+
+This creates a "fvwm" directory in your current directory.  Under the
+"fvwm" directory you will find the current main branch source code.
+
+<H2> <font color="turquoise">Branches</font></h2>
+You can see branches off the main branch by using the "status -v" command:
+<pre><font color="yellow">
+cd fvwm
+cvs status -v README
+</pre></font>
+
+(Once you "cd" into the source directory, you no longer have to type in
+the whole "-d" argument, its stored inside the source tree.)
+
+The "status -v" command should be issued against a file that has been in the source
+tree from the very beginning.  The "README" file is always a good bet.
+
+To retrieve a branch, you can do the "checkout" shown above with the "-r branch_name"
+argument:
+<pre><font color="yellow">
+cvs -z3 -d :pserver:dane@cvs.hpc.uh.edu:/home/cvs/fvwm checkout -r branch_name fvwm
+</pre></font>
+
+<H2> <font color="turquoise">Getting Updates</font></h2>
+If you have an existing tree, and you just want to update it:
+
+<pre><font color="yellow">
+cd fvwm
+cvs update (-r branch_name)
+</pre></font>
+
+The "update" command can be used  to go to any  branch in the tree, it
+doesn't matter whether  it is  an earlier or  later  branch.  "Update"
+without an argument makes the tree current based  on the branch it was
+last on.
+
+<H2> <font color="turquoise">Getting Update Access</font></h2>
+Using the procedures described above, and being on the workers list
+are a pre-requisite to gaining update access.  We expect to have heard
+from you more than once on the fvwm-workers list so that we have some
+idea who you are.
+
+Doing some testing, submitting some patches, and getting involved
+in the discussions will help us know about you.
+
+After you have been involved for a while,
+if we don't suggest it, then ask.
+The fvwm2 development team is not a closed environment, we welcome new
+members.  There are no required duties, all work is strictly voluntary.
+
+If there is agreement on the list that you should be given update access,
+you will need to choose a CVS user ID and provide an encrypted password.
+The latter can be obtained with the following Perl snippet:
+
+<pre><font color="yellow">
+  perl -e 'print crypt("yourpass",join("",((a..z,A..Z,0..9)[rand(62),rand(62)]))), "\n"'
+</pre></font>
+
+Change 'yourpass' to whatever you want your password to be.
+
+Once you have update access, re-do the "login" command above using your
+CVS user ID and and password, and you are on your way.
+
+<H2> <font color="turquoise">Starting a Project</font></h2>
+Discuss your ideas on the workers list before you start.
+Someone may be working on the same thing you have in mind.
+
+If you just have a small patch you want to make, you may just commit it
+to the main branch.  If the change is large, and lots of other work
+is going on, you may want to do your changes on a "side branch" which
+will get merged into the main branch later on.
+
+<H2> <font color="turquoise">Creating a Branch</font></h2>
+Branches are assigned names.  We prefer branch names consisting
+of 2 fully spelled out words connected by an underscore.
+The first branch was "animate_icons" which should set the pattern
+for future branch names.
+
+Assuming you have a checked out source tree, you create a branch
+called new_branch:
+
+<pre><font color="yellow">
+cd fvwm
+cvs rtag new_branch_start fvwm
+cvs rtag -b -r new_branch_start new_branch fvwm
+</pre></font>
+
+Every branch must have a start tag.  The "-r new_branch_start"
+puts the branch "new_branch" on the "new_branch_start"
+branch.
+
+The "-b" makes the branch a branch off the main branch.
+
+<H2> <font color="turquoise">Adding Directories and Files</font></h2>
+First create the new directories and modules.  Then, assuming
+the new directory is named "newdir" and the new module is
+"newmod.c":
+
+<pre><font color="yellow">
+cd fvwm
+cvs add -m  "New directory for ..." newdir
+cd newdir
+cvs add -m "New module for ..." newmod.c
+</pre></font>
+
+<H2> <font color="turquoise">Committing Changes</font></h2>
+When you commit, you can commit from a sub-directory, or from
+the top of the tree.  If you don't indicate the file to commit,
+everything you have added (with add), changed or deleted (with remove)
+is committed from the current directory down.
+
+<pre><font color="yellow">
+cd fvwm
+cvs commit (-r branch_name) (files)
+</pre></font>
+
+</body>
+</html>
