@@ -90,8 +90,8 @@ typedef struct
   unsigned face_type : 3; /* was DecorFaceType : 3 */
   struct
   {
-    JustificationType h_justification : 2;
-    JustificationType v_justification : 2;
+    unsigned h_justification : 2; /* was JustificationType : 2 */
+    unsigned v_justification : 2; /* was JustificationType : 2 */
 #define DFS_BUTTON_IS_UP   0
 #define DFS_BUTTON_IS_FLAT 1
 #define DFS_BUTTON_IS_SUNK 2
@@ -180,7 +180,7 @@ typedef enum
 
 typedef struct
 {
-  JustificationType just : 2;
+  unsigned just : 2; /* was JustificationType : 2 */
   struct
   {
     unsigned has_changed : 1;

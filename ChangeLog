@@ -2,6 +2,7 @@
 
 	* fvwm/screen.h (struct):
 	use 'unsigned : 3' instead of 'DecorFaceType : 3'
+	use 'unsigned : 2' instead of 'JustificationType : 2'
 
 	* fvwm/icons.c (AutoPlaceIcon):
 	another page flipping fix:
