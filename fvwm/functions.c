@@ -1232,6 +1232,7 @@ int DeferExecution(
       if (keysym == XK_Escape)
       {
 	UngrabEm(GRAB_NORMAL);
+	MyXUngrabKeyboard(dpy);
 	return True;
       }
       Keyboard_shortcuts(eventp, NULL, FinishEvent);
@@ -1258,7 +1259,6 @@ int DeferExecution(
     {
       DispatchEvent(False);
     }
-
   }
 
   MyXUngrabKeyboard(dpy);

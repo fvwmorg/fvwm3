@@ -1955,11 +1955,13 @@ void HandleLeaveNotify(void)
     {
       xcrossing_last_grab_window = Tmp_win;
     }
+#ifdef FOCUS_EXPANDS_TITLE
     if (Tmp_win && IS_ICONIFIED(Tmp_win))
     {
       SET_ICON_ENTERED(Tmp_win, 0);
       DrawIconWindow(Tmp_win);
     }
+#endif
     return;
   }
   /* CDE-like behaviour of raising the icon title if the icon
