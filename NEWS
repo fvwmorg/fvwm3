@@ -3,6 +3,9 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.14 (not released yet)
 
+* New style option ParentalRelativity to enable Fvwm modules to use
+  'Transparent' colorsets from FvwmTheme.  'Opacity' turns it off.
+
 * The GlobalOpts command was removed in favour of individual
   window styles.  Please look for GlobalOpts in the man page to
   find out how to get the old functionality.

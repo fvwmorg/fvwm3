@@ -3982,6 +3982,7 @@ is a comma separated list containing one or more of the keywords
 .IR MaxWindowSize ,
 .IR ResizeOpaque " / " ResizeOutline ,
 .IR BackingStore " / " BackingStoreOff ,
+.IR Opacity " / " ParentalRelativity ,
 .IR SaveUnder " / " SaveUnderOff ,
 .IR WindowShadeShrinks " / " WindowShadeScrolls ,
 .IR WindowShadeSteps.
@@ -4663,6 +4664,15 @@ link).  By default both styles are turned off.  To switch them off
 explicitly you can use the
 .IR BackingStoreOff " and " SaveUnderOff
 styles.
+
+.I ParentalRelativity
+enables clients that use a background pixmap of type
+.IR ParentRelative
+to achieve transparency. Fvwm modules that support transparent colorsets
+require this setting.
+.I Opacity
+is the default and should be used for all non-tranparent clients for better
+performance.
 
 .I MwmDecor
 makes fvwm attempt to recognize and respect the mwm decoration

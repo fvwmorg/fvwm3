@@ -1689,9 +1689,23 @@ void ProcessNewStyle(F_CMD_ARGS)
           ptmpstyle->flag_mask.has_ol_decor = 1;
           ptmpstyle->change_mask.has_ol_decor = 1;
         }
+        else if(StrEquals(token, "Opacity"))
+        {
+          found = True;
+	  ptmpstyle->flags.use_parent_relative = 0;
+	  ptmpstyle->flag_mask.use_parent_relative = 1;
+	  ptmpstyle->change_mask.use_parent_relative = 1;
+        }
         break;
 
       case 'p':
+        if(StrEquals(token, "ParentalRelativity"))
+        {
+          found = True;
+	  ptmpstyle->flags.use_parent_relative = 1;
+	  ptmpstyle->flag_mask.use_parent_relative = 1;
+	  ptmpstyle->change_mask.use_parent_relative = 1;
+        }
         break;
 
       case 'q':
@@ -2425,7 +2439,8 @@ void check_window_style_change(
   }
 
   if (ret_style->change_mask.do_save_under ||
-      ret_style->change_mask.use_backing_store)
+      ret_style->change_mask.use_backing_store ||
+      ret_style->change_mask.use_parent_relative)
   {
     flags->do_update_frame_attributes = True;
   }

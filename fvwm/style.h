@@ -40,6 +40,7 @@
 #define SIS_BUTTON_DISABLED(sf)       ((sf)->is_button_disabled)
 #define SPLACEMENT_MODE(sf)           ((sf)->placement_mode)
 #define SUSE_BACKING_STORE(sf)        ((sf)->use_backing_store)
+#define SUSE_PARENT_RELATIVE(sf)      ((sf)->use_parent_relative)
 #define SUSE_COLORSET(sf)             ((sf)->use_colorset)
 #define SUSE_COLORSET_HI(sf)          ((sf)->use_colorset_hi)
 #define SUSE_LAYER(sf)                ((sf)->use_layer)

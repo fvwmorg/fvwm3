@@ -304,6 +304,7 @@ typedef struct
 #endif
   unsigned is_button_disabled : 10;
   unsigned use_backing_store : 1;
+  unsigned use_parent_relative : 1;
   unsigned use_colorset : 1;
   unsigned use_colorset_hi : 1;
   unsigned use_layer : 1;

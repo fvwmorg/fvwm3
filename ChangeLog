@@ -1,3 +1,8 @@
+2000-02-18  Hippo
+
+	* fvwm/{{fvwm,style}.h,{add_window,style}.c}: New style flags
+	ParentalRelativity, Opacity.
+
 2000-02-14  Hippo
 
 	* fvwm/add_window.{c,h}: Simplified window creation calls,

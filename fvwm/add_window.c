@@ -919,6 +919,12 @@ void setup_frame_attributes(
     }
   }
 
+  /* parent_relative is applied to the frame and the parent */
+  xswa.background_pixmap = pstyle->flags.use_parent_relative
+			   ? ParentRelative : None;
+  XChangeWindowAttributes(dpy, tmp_win->frame, CWBackPixmap, &xswa);
+  XChangeWindowAttributes(dpy, tmp_win->Parent, CWBackPixmap, &xswa);
+
   /* Save_under is only useful on the frame */
   xswa.save_under = pstyle->flags.do_save_under
 		    ? Scr.flags.do_save_under : NotUseful;
