@@ -59,6 +59,7 @@
 #include "draw.h"
 
 extern Pixmap shapeMask;
+extern GC transGC;
 
 /* ---------------- Functions that design and draw buttons ----------------- */
 
@@ -550,9 +551,12 @@ void RedrawButton(button_info *b, int draw, XEvent *pev)
 				int w = buttonWidth(b), h = buttonHeight(b);
 				FvwmPicture *icon = buttonIcon(b);
 				XGCValues gcv;
-				GC transGC = fvwmlib_XCreateGC(Dpy, shapeMask,
-					0, &gcv);
 
+				if (transGC == NULL)
+				{
+					transGC = fvwmlib_XCreateGC(
+						Dpy, shapeMask, 0, &gcv);
+				}
 				XSetClipMask(Dpy, transGC, None);
 				XSetForeground(Dpy, transGC, 0);
 				XFillRectangle(Dpy, shapeMask, transGC,x,y,w,h);

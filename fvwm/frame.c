@@ -1183,7 +1183,7 @@ static int frame_get_shading_laziness(
 	}
 }
 
-static void frame_reshape_border(FvwmWindow *fw)
+void frame_reshape_border(FvwmWindow *fw)
 {
 	int dw;
 	int dh;
@@ -1234,13 +1234,17 @@ static void frame_reshape_border(FvwmWindow *fw)
 			SET_SHADED_DIR(fw, GET_TITLE_DIR(fw));
 		}
 		get_shaded_geometry(fw, &fw->frame_g, new_g);
+		frame_force_setup_window(
+			fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
+			fw->frame_g.height, False);
 	}
 	else
 	{
-		get_relative_geometry(&fw->frame_g, new_g);
+		get_relative_geometry(new_g, new_g);
+		frame_force_setup_window(
+			fw, new_g->x, new_g->y, new_g->width, new_g->height,
+			True);
 	}
-	frame_force_setup_window(
-		fw, new_g->x, new_g->y, new_g->width, new_g->height, True);
 
 	return;
 }

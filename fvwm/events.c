@@ -1200,7 +1200,7 @@ void __handle_configure_request(
 	{
 		__handle_cr_on_icon(&cre, fw);
 	}
-	if (FHaveShapeExtension && FShapesSupported)
+	if (FShapesSupported)
 	{
 		__handle_cr_on_shaped(fw);
 	}

@@ -139,9 +139,11 @@ static Atom _XA_WM_DEL_WIN;
 char *imagePath = NULL;
 
 static Pixel hilite_pix, back_pix, shadow_pix, fore_pix;
-GC  NormalGC;
+GC NormalGC;
 /* needed for relief drawing only */
-GC  ShadowGC;
+GC ShadowGC;
+/* needed for transparency */
+GC transGC = NULL;
 
 int Width, Height;
 static int x= -30000,y= -30000;
@@ -473,10 +475,18 @@ void SetTransparentBackground(button_info *ub,int w,int h)
 	{
 		button_info *b;
 		int i = -1;
+		XGCValues gcv;
 
 		if (shapeMask != None)
 			XFreePixmap(Dpy, shapeMask);
 		shapeMask = XCreatePixmap(Dpy, MyWindow, w, h, 1);
+		if (transGC == NULL)
+		{
+			transGC = fvwmlib_XCreateGC(Dpy, shapeMask, 0, &gcv);
+		}
+		XSetClipMask(Dpy, transGC, None);
+		XSetForeground(Dpy, transGC, 1);
+		XFillRectangle(Dpy, shapeMask, transGC, x, y, w, h);
 
 		while (NextButton(&ub, &b, &i, 0))
 		{

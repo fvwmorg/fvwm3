@@ -1,3 +1,11 @@
+2004-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (SetTransparentBackground):
+	fixed uninitialised shape in empty buttons
+
+	* FvwmButtons/draw.c (RedrawButton):
+	fixed GC leak
+
 2004-10-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmScript/Instructions.c (Loop):

@@ -1,3 +1,10 @@
+2004-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/frame.c (frame_reshape_border):
+	re-shaping shaded windows no longer unshades them
+	re-shaping unshaded windows on pages other than 0 0 no longer moves
+	them out of the current page
+
 2004-10-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/events.c (__cr_detect_icccm_move):
