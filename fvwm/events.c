@@ -1424,12 +1424,12 @@ void HandleButtonPress(void)
 
   OldPressedW = PressedW;
   PressedW = None;
-  if (Tmp_win)
+  if (ButtonWindow)
   {
-    if (Context == C_TITLE)
+    if (LocalContext == C_TITLE)
       DrawDecorations(
         ButtonWindow, DRAW_TITLE, (Scr.Hilite == ButtonWindow), True, None);
-    else if (Context & (C_LALL | C_RALL))
+    else if (LocalContext & (C_LALL | C_RALL))
       DrawDecorations(
         ButtonWindow, DRAW_BUTTONS, (Scr.Hilite == ButtonWindow), True,
         OldPressedW);
