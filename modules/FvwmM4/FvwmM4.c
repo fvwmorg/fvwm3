@@ -8,9 +8,6 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#define TRUE 1
-#define FALSE  0
-
 #include "config.h"
 
 #include <stdio.h>
@@ -47,9 +44,6 @@
 char *MyName;
 int fd[2];
 
-int ScreenWidth, ScreenHeight;
-int Mscreen;
-
 long Vx, Vy;
 static char *MkDef(char *name, char *def);
 static char *MkNum(char *name,int def);
@@ -66,10 +60,11 @@ int  m4_default_quotes;         /* Use default m4 quotes */
 char *m4_startquote = "`";         /* Left quote characters for m4 */
 char *m4_endquote = "'";           /* Right quote characters for m4 */
 
+Graphics *G;
+
 /***********************************************************************
  *
  *  Procedure:
-
  *	main - start of module
  *
  ***********************************************************************/
@@ -80,10 +75,11 @@ int main(int argc, char **argv)
   char *display_name = NULL;
   char *filename = NULL;
   char *tmp_file, read_string[80],delete_string[80];
+  char *tline;
   int i,m4_debug = 0;
 
-  m4_enable = TRUE;
-  m4_prefix = FALSE;
+  m4_enable = True;
+  m4_prefix = False;
   strcpy(m4_options,"");
   m4_default_quotes = 1;
 
@@ -102,22 +98,8 @@ int main(int argc, char **argv)
     {
       fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",MyName,
 	      VERSION);
-      fprintf(stderr,"Wanted argc == 6. Got %d\n",argc);
       exit(1);
     }
-
-  /* Open the X display */
-  if (!(dpy = XOpenDisplay(display_name)))
-    {
-      fprintf(stderr,"%s: can't open display %s", MyName,
-	      XDisplayName(display_name));
-      exit (1);
-    }
-
-
-  Mscreen= DefaultScreen(dpy);
-  ScreenHeight = DisplayHeight(dpy,Mscreen);
-  ScreenWidth = DisplayWidth(dpy,Mscreen);
 
   /* We should exit if our fvwm pipes die */
   signal (SIGPIPE, DeadPipe);
@@ -183,6 +165,20 @@ int main(int argc, char **argv)
       exit (1);
     }
 
+  /* set up G */
+  G = CreateGraphics();
+  InitGraphics(dpy, G);
+  
+  /* get fvwm to send the DefaultGraphics config line so we get the visuals */
+  InitGetConfigLine(fd, "xyzzy");
+  GetConfigLine(fd, &tline);
+  while(tline != (char *)0) {
+    if(strlen(tline) > 1)
+      if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)
+        ParseGraphics(dpy, tline, G);
+    GetConfigLine(fd,&tline);
+  }
+
   tmp_file = m4_defs(dpy, display_name,m4_options, filename);
 
   sprintf(read_string,"read %s\n",tmp_file);
@@ -200,7 +196,6 @@ int main(int argc, char **argv)
 
 
 
-
 static char *m4_defs(Display *display, const char *host, char *m4_options, char *config_file)
 {
   Screen *screen;
@@ -212,8 +207,11 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   struct hostent *hostname;
   char *vc;			/* Visual Class */
   FILE *tmpf;
-  int fd;
   struct passwd *pwent;
+  int fd;
+  int ScreenWidth, ScreenHeight;
+  int Mscreen;
+
   /* Generate a temporary filename.  Honor the TMPDIR environment variable,
      if set. Hope nobody deletes this file! */
 
@@ -310,17 +308,22 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
   fputs(MkNum("REVISION", ProtocolRevision(display)), tmpf);
   fputs(MkDef("VENDOR", ServerVendor(display)), tmpf);
   fputs(MkNum("RELEASE", VendorRelease(display)), tmpf);
-  screen = ScreenOfDisplay(display, Mscreen);
-  visual = DefaultVisualOfScreen(screen);
+
+  Mscreen= DefaultScreen(display);
+  fputs(MkNum("SCREEN", Mscreen), tmpf);
+
+  ScreenWidth = DisplayWidth(display,Mscreen);
+  ScreenHeight = DisplayHeight(display,Mscreen);
   fputs(MkNum("WIDTH", DisplayWidth(display,Mscreen)), tmpf);
   fputs(MkNum("HEIGHT", DisplayHeight(display,Mscreen)), tmpf);
 
+  screen = ScreenOfDisplay(display, Mscreen);
   fputs(MkNum("X_RESOLUTION",Resolution(screen->width,screen->mwidth)),tmpf);
   fputs(MkNum("Y_RESOLUTION",Resolution(screen->height,screen->mheight)),tmpf);
   fputs(MkNum("PLANES",DisplayPlanes(display, Mscreen)), tmpf);
 
+  visual = DefaultVisualOfScreen(screen);
   fputs(MkNum("BITS_PER_RGB", visual->bits_per_rgb), tmpf);
-  fputs(MkNum("SCREEN", Mscreen), tmpf);
 
   switch(visual->class)
   {
@@ -346,12 +349,44 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
       vc = "NonStandard";
       break;
   }
-
   fputs(MkDef("CLASS", vc), tmpf);
+
+  switch(G->viz->class)
+  {
+    case(StaticGray):
+      vc = "StaticGray";
+      break;
+    case(GrayScale):
+      vc = "GrayScale";
+      break;
+    case(StaticColor):
+      vc = "StaticColor";
+      break;
+    case(PseudoColor):
+      vc = "PseudoColor";
+      break;
+    case(TrueColor):
+      vc = "TrueColor";
+      break;
+    case(DirectColor):
+      vc = "DirectColor";
+      break;
+    default:
+      vc = "NonStandard";
+      break;
+  }
+  fputs(MkDef("FVWM_CLASS", vc), tmpf);
+
   if (visual->class != StaticGray && visual->class != GrayScale)
     fputs(MkDef("COLOR", "Yes"), tmpf);
   else
     fputs(MkDef("COLOR", "No"), tmpf);
+
+  if (G->viz->class != StaticGray && G->viz->class != GrayScale)
+    fputs(MkDef("FVWM_COLOR", "Yes"), tmpf);
+  else
+    fputs(MkDef("FVWM_COLOR", "No"), tmpf);
+
   fputs(MkDef("FVWM_VERSION", VERSION), tmpf);
 
   /* Add options together */
@@ -400,72 +435,50 @@ void DeadPipe(int nonsense)
   exit(0);
 }
 
-
-
 static char *MkDef(char *name, char *def)
 {
-    static char *cp = NULL;
-    static int maxsize = 0;
-    int n;
+  char *cp = NULL;
+  int n;
 
-    /* The char * storage only lasts for 1 call... */
+  /* Get space to hold everything, if needed */
 
-    /* Get space to hold everything, if needed */
+  n = EXTRA + strlen(name) + strlen(def);
+  cp = safemalloc(n);
 
-    n = EXTRA + strlen(name) + strlen(def);
-    if (n > maxsize) {
-	maxsize = n;
-	if (cp == NULL) {
-	    cp = malloc(n);
-	} else {
-	    cp = realloc(cp, n);
-	}
-    }
+  if (m4_prefix)
+    strcpy(cp, "m4_define(");
+  else
+    strcpy(cp, "define(");
 
-    if (cp == NULL) {
-	perror("MkDef can't allocate enough space for a macro definition");
-	exit(0377);
-    }
+  strcat(cp, name);
 
-    /* Create the macro definition, using the appropriate prefix, if any */
+  /* Tack on "," and 2 sets of starting quotes */
+  strcat(cp, ",");
+  strcat(cp, m4_startquote);
+  strcat(cp, m4_startquote);
 
-    if (m4_prefix)
-      {
-	strcpy(cp, "m4_define(");
-      }
-    else
-      strcpy(cp, "define(");
+  /* The definition itself */
+  strcat(cp, def);
 
-    strcat(cp, name);
+  /* Add 2 sets of closing quotes */
+  strcat(cp, m4_endquote);
+  strcat(cp, m4_endquote);
 
-    /* Tack on "," and 2 sets of starting quotes */
-    strcat(cp, ",");
-    strcat(cp, m4_startquote);
-    strcat(cp, m4_startquote);
+  /* End the definition, appropriately */
+  strcat(cp, ")");
+  if (m4_prefix)
+    strcat(cp, "m4_");
 
-    /* The definition itself */
-    strcat(cp, def);
+  strcat(cp, "dnl\n");
 
-    /* Add 2 sets of closing quotes */
-    strcat(cp, m4_endquote);
-    strcat(cp, m4_endquote);
-
-    /* End the definition, appropriately */
-    strcat(cp, ")");
-    if (m4_prefix)
-      {
-	strcat(cp, "m4_");
-      }
-
-    strcat(cp, "dnl\n");
-
-   return(cp);
+  return(cp);
 }
 
 static char *MkNum(char *name,int def)
 {
-    char num[20];
+  char num[20];
 
-    sprintf(num, "%d", def);
-    return(MkDef(name, num));
+  sprintf(num, "%d", def);
+
+  return(MkDef(name, num));
 }

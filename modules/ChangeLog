@@ -1,3 +1,8 @@
+1999-06-23  Hippo
+
+	* Fvwm{M4,Cpp}/Fvwm{M4,Cpp}.{c,1}: added new variable FVWM_CLASS and
+	FVWM_COLOR to reflect the visual type used by fvwm.
+
 1999-06-23  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmScript/script.c: increased number of allowed variables to 512

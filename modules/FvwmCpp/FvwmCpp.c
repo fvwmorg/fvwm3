@@ -8,9 +8,6 @@
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact. */
 
-#define TRUE 1
-#define FALSE  0
-
 #include "config.h"
 
 #include <stdio.h>
@@ -39,7 +36,6 @@
 #include "FvwmCpp.h"
 #include "libs/fvwmlib.h"
 #include <X11/StringDefs.h>
-#include <X11/Intrinsic.h>
 #include <X11/Shell.h>
 #include <X11/extensions/shape.h>
 #include <X11/Xmu/SysUtil.h>
@@ -47,11 +43,6 @@
 
 char *MyName;
 int fd[2];
-
-struct list *list_root = NULL;
-
-int ScreenWidth, ScreenHeight;
-int Mscreen;
 
 long Vx, Vy;
 static char *MkDef(char *name, char *def);
@@ -65,10 +56,11 @@ char *cpp_prog = FVWM_CPP;          /* Name of the cpp program */
 char cpp_options[BUFSIZ];
 char cpp_outfile[BUFSIZ]="";
 
+Graphics *G;
+
 /***********************************************************************
  *
  *  Procedure:
-
  *	main - start of module
  *
  ***********************************************************************/
@@ -100,19 +92,6 @@ int main(int argc, char **argv)
 	      VERSION);
       exit(1);
     }
-
-  /* Open the X display */
-  if (!(dpy = XOpenDisplay(display_name)))
-    {
-      fprintf(stderr,"%s: can't open display %s", MyName,
-	      XDisplayName(display_name));
-      exit (1);
-    }
-
-
-  Mscreen= DefaultScreen(dpy);
-  ScreenHeight = DisplayHeight(dpy,Mscreen);
-  ScreenWidth = DisplayWidth(dpy,Mscreen);
 
   /* We should exit if our fvwm pipes die */
   signal (SIGPIPE, DeadPipe);
@@ -170,6 +149,20 @@ int main(int argc, char **argv)
       exit (1);
     }
 
+  /* set up G */
+  G = CreateGraphics();
+  InitGraphics(dpy, G);
+  
+  /* get fvwm to send the DefaultGraphics config line so we get the visuals */
+  InitGetConfigLine(fd, "xyzzy");
+  GetConfigLine(fd, &tline);
+  while(tline != (char *)0) {
+    if(strlen(tline) > 1)
+      if(strncasecmp(tline, DEFGRAPHSTR, DEFGRAPHLEN)==0)
+        ParseGraphics(dpy, tline, G);
+    GetConfigLine(fd,&tline);
+  }
+
   tmp_file = cpp_defs(dpy, display_name,cpp_options, filename);
 
   sprintf(read_string,"read %s\n",tmp_file);
@@ -200,6 +193,9 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   FILE *tmpf;
   struct passwd *pwent;
   int fd;
+  int ScreenWidth, ScreenHeight;
+  int Mscreen;
+
   /* Generate a temporary filename.  Honor the TMPDIR environment variable,
      if set. Hope nobody deletes this file! */
 
@@ -281,75 +277,112 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
   fputs(MkNum("REVISION", ProtocolRevision(display)), tmpf);
   fputs(MkDef("VENDOR", ServerVendor(display)), tmpf);
   fputs(MkNum("RELEASE", VendorRelease(display)), tmpf);
-  screen = ScreenOfDisplay(display, Mscreen);
-  visual = DefaultVisualOfScreen(screen);
+
+  Mscreen= DefaultScreen(display);
+  fputs(MkNum("SCREEN", Mscreen), tmpf);
+
+  ScreenWidth = DisplayWidth(display,Mscreen);
+  ScreenHeight = DisplayHeight(display,Mscreen);
   fputs(MkNum("WIDTH", DisplayWidth(display,Mscreen)), tmpf);
   fputs(MkNum("HEIGHT", DisplayHeight(display,Mscreen)), tmpf);
 
+  screen = ScreenOfDisplay(display, Mscreen);
   fputs(MkNum("X_RESOLUTION",Resolution(screen->width,screen->mwidth)),tmpf);
   fputs(MkNum("Y_RESOLUTION",Resolution(screen->height,screen->mheight)),tmpf);
   fputs(MkNum("PLANES",DisplayPlanes(display, Mscreen)), tmpf);
 
+  visual = DefaultVisualOfScreen(screen);
   fputs(MkNum("BITS_PER_RGB", visual->bits_per_rgb), tmpf);
-  fputs(MkNum("SCREEN", Mscreen), tmpf);
 
   switch(visual->class)
-    {
+  {
     case(StaticGray):
-	  vc = "StaticGray";
-	break;
-	case(GrayScale):
-	  vc = "GrayScale";
-	break;
-	case(StaticColor):
-	  vc = "StaticColor";
-	break;
-	case(PseudoColor):
-	  vc = "PseudoColor";
-	break;
-	case(TrueColor):
-	  vc = "TrueColor";
-	break;
-	case(DirectColor):
-	  vc = "DirectColor";
-	break;
-      default:
-	vc = "NonStandard";
-	break;
-      }
+      vc = "StaticGray";
+      break;
+    case(GrayScale):
+      vc = "GrayScale";
+      break;
+    case(StaticColor):
+      vc = "StaticColor";
+      break;
+    case(PseudoColor):
+      vc = "PseudoColor";
+      break;
+    case(TrueColor):
+      vc = "TrueColor";
+      break;
+    case(DirectColor):
+      vc = "DirectColor";
+      break;
+    default:
+      vc = "NonStandard";
+      break;
+  }
+  fputs(MkDef("CLASS", vc), tmpf);
 
-    fputs(MkDef("CLASS", vc), tmpf);
-    if (visual->class != StaticGray && visual->class != GrayScale)
-      fputs(MkDef("COLOR", "Yes"), tmpf);
-    else
-      fputs(MkDef("COLOR", "No"), tmpf);
-    fputs(MkDef("FVWM_VERSION", VERSION), tmpf);
+  switch(G->viz->class)
+  {
+    case(StaticGray):
+      vc = "StaticGray";
+      break;
+    case(GrayScale):
+      vc = "GrayScale";
+      break;
+    case(StaticColor):
+      vc = "StaticColor";
+      break;
+    case(PseudoColor):
+      vc = "PseudoColor";
+      break;
+    case(TrueColor):
+      vc = "TrueColor";
+      break;
+    case(DirectColor):
+      vc = "DirectColor";
+      break;
+    default:
+      vc = "NonStandard";
+      break;
+  }
+  fputs(MkDef("FVWM_CLASS", vc), tmpf);
 
-    /* Add options together */
-    *options = '\0';
+  if (visual->class != StaticGray && visual->class != GrayScale)
+    fputs(MkDef("COLOR", "Yes"), tmpf);
+  else
+    fputs(MkDef("COLOR", "No"), tmpf);
+
+  if (G->viz->class != StaticGray && G->viz->class != GrayScale)
+    fputs(MkDef("FVWM_COLOR", "Yes"), tmpf);
+  else
+    fputs(MkDef("FVWM_COLOR", "No"), tmpf);
+
+  fputs(MkDef("FVWM_VERSION", VERSION), tmpf);
+
+  /* Add options together */
+  *options = '\0';
 #ifdef	SHAPE
-    strcat(options, "SHAPE ");
+  strcat(options, "SHAPE ");
 #endif
 #ifdef	XPM
-    strcat(options, "XPM ");
+  strcat(options, "XPM ");
 #endif
 
-    strcat(options, "Cpp ");
+  strcat(options, "Cpp ");
 
-    fputs(MkDef("OPTIONS", options), tmpf);
+  fputs(MkDef("OPTIONS", options), tmpf);
 
-    fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);
-    fputs(MkDef("FVWM_CONFIGDIR", FVWM_CONFIGDIR), tmpf);
+  fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);
+  fputs(MkDef("FVWM_CONFIGDIR", FVWM_CONFIGDIR), tmpf);
 
-    /*
-     * At this point, we've sent the definitions to cpp.  Just include
-     * the fvwmrc file now.
-     */
+  /*
+   * At this point, we've sent the definitions to cpp.  Just include
+   * the fvwmrc file now.
+   */
 
-    fprintf(tmpf, "#include \"%s\"\n", config_file);
+  fprintf(tmpf, "#include \"%s\"\n", config_file);
 
-    pclose(tmpf);
-    return(tmp_name);
+  pclose(tmpf);
+  return(tmp_name);
 }
 
 
