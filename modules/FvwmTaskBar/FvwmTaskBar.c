@@ -102,7 +102,6 @@ unsigned char gray_bits[] = { 0xaa, 0x55, 0xaa, 0x55,
                               0xaa, 0x55, 0xaa, 0x55 };
 
 /* File type information */
-FILE  *console;
 int   Fvwm_fd[2];
 int   x_fd;
 
@@ -251,14 +250,10 @@ int main(int argc, char **argv)
 #ifdef I18N_MB
   setlocale(LC_CTYPE, "");
 #endif
-  /* Open the console for messages */
-  OpenConsole();
 
   if((argc != 6)&&(argc != 7)) {
     fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
 	    VERSION);
-    ConsoleMessage("%s Version %s should only be executed by fvwm!\n",Module,
-		   VERSION);
     exit(1);
   }
 
@@ -349,7 +344,7 @@ int main(int argc, char **argv)
 #ifdef FVWM_DEBUG_MSGS
   if ( isTerminated )
   {
-    ConsoleMessage("Received signal: exiting...\n");
+    fprintf(stderr, "%s: Received signal: exiting...\n", Module);
   }
 #endif
   return 0;
@@ -784,41 +779,6 @@ void RedrawWindow(int force)
     LoopOnEvents();
 }
 
-/******************************************************************************
-  ConsoleMessage - Print a message on the console.  Works like printf.
-******************************************************************************/
-void ConsoleMessage(char *fmt, ...)
-{
-#ifndef NO_CONSOLE
-  va_list args;
-  FILE *filep;
-
-  if (console == NULL)
-    filep = stderr;
-  else
-    filep = console;
-  va_start(args, fmt);
-  vfprintf(filep, fmt, args);
-  va_end(args);
-  fflush(console);
-#endif
-}
-
-/******************************************************************************
-  OpenConsole - Open the console as a way of sending messages
-******************************************************************************/
-int OpenConsole(void)
-{
-#ifndef NO_CONSOLE
-  if ((console = fopen("/dev/console","w")) == NULL)
-  {
-    fprintf(stderr, "%s: cannot open console\n", Module);
-    return 0;
-  }
-#endif
-  return 1;
-}
-
 static char *configopts[] =
 {
   "imagepath",
@@ -984,7 +944,7 @@ static void ParseConfigLine(char *tline)
 	/* tell fvwm to launch the module for us */
 	str = safemalloc(strlen(rest) + 8);
 	sprintf(str, "Module %s", rest);
-	ConsoleMessage("Trying to: %s", str);
+	fprintf(stderr, "%s: Trying to: %s", Module, str);
 	SendFvwmPipe(Fvwm_fd, str, 0);
 
 	/* Remember the anticipated window's name for swallowing */
@@ -997,7 +957,7 @@ static void ParseConfigLine(char *tline)
 	if (i > j)
 	{
 	  str[i] = 0;
-	  ConsoleMessage("Looking for window: [%s]\n", &str[j]);
+	  fprintf(stderr,"%s: Looking for window: [%s]\n", Module, &str[j]);
 	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
 	}
 	free(str);
@@ -1008,7 +968,7 @@ static void ParseConfigLine(char *tline)
 	/* tell fvwm to Exec the process for us */
 	str = safemalloc(strlen(rest) + 6);
 	sprintf(str, "Exec %s", rest);
-	ConsoleMessage("Trying to: %s", str);
+	fprintf(stderr,"%s: Trying to: %s", Module, str);
 	SendFvwmPipe(Fvwm_fd, str, 0);
 
 	/* Remember the anticipated window's name for swallowing */
@@ -1021,7 +981,7 @@ static void ParseConfigLine(char *tline)
 	if (i > j)
 	{
 	  str[i] = 0;
-	  ConsoleMessage("Looking for window: [%s]\n", &str[j]);
+	  fprintf(stderr,"%s: Looking for window: [%s]\n", Module, &str[j]);
 	  AddItemName(&swallowed, &str[j], F_NOT_SWALLOWED);
 	}
 	free(str);
@@ -1102,7 +1062,7 @@ void Swallow(unsigned long *body)
 
   /* Do not swallow it next time */
   UpdateNameItem(&swallowed, (char*)&body[3], body[0], F_SWALLOWED);
-  ConsoleMessage("-> Swallowed: %s\n",(char*)&body[3]);
+  fprintf(stderr,"%s: -> Swallowed: %s\n",Module,(char*)&body[3]);
   RedrawWindow(1);
 }
 
@@ -1755,7 +1715,7 @@ void StartMeUp(void)
 #else
      if ((ButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL)
 #endif
-       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
+       fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n",Module);
        exit(1);
    }
    XFontsOfFontSet(ButtonFontset,&fs_list,&ml);
@@ -1766,7 +1726,7 @@ void StartMeUp(void)
 #else
      if ((SelButtonFontset=XCreateFontSet(dpy,"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",&ml,&mc,&ds)) == NULL)
 #endif
-       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
+       fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n",Module);
        exit(1);
    }
    XFontsOfFontSet(SelButtonFontset,&fs_list,&ml);
@@ -1774,13 +1734,13 @@ void StartMeUp(void)
 #else
    if ((ButtonFont = XLoadQueryFont(dpy, font_string)) == NULL) {
      if ((ButtonFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
-       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
+       fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n", Module);
        exit(1);
      }
    }
    if ((SelButtonFont = XLoadQueryFont(dpy, selfont_string)) == NULL) {
      if ((SelButtonFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
-       ConsoleMessage("Couldn't load fixed font. Exiting!\n");
+       fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n", Module);
        exit(1);
      }
    }

@@ -1551,10 +1551,10 @@ AddToMenu Programs
 #CDE 15
 #DestroyMenu cde-menu
 #AddToMenu   cde-menu
-#+ "&Applications Manager%min.programs.xpm%" Exec exec /usr/dt/bin/dtaction Dtappmgr
+#+ "&Applications Manager%mini.programs.xpm%" Exec exec /usr/dt/bin/dtaction Dtappmgr
 #+ "&Terminal%mini.term.xpm%"            Exec exec /usr/dt/bin/dtterm
 #+ "&File Manager%mini.filemgr.xpm%"     Exec exec /usr/dt/bin/dtfile
-#+ "&Trash Can%min.programs.xpm%" Exec exec /usr/dt/bin/dtaction Dttrash
+#+ "&Trash Can%mini.paper.xpm%" Exec exec /usr/dt/bin/dtaction Dttrash
 #+ "Text &Editor%mini.edit.xpm%"         Exec exec /usr/dt/bin/dtpad
 #+ "Desktop &Help%mini.book1.xpm%"       Exec exec /usr/dt/bin/dthelpview -helpVolume browser
 #+ "Man Pages%mini.book1.xpm%"           Exec exec /usr/dt/bin/dthelpview -man
@@ -1562,7 +1562,7 @@ AddToMenu Programs
 #+ "&Calandar%mini.calandar.xpm"         Exec exec /usr/dt/bin/dtcm
 #+ "&Calculator%mini.calc.xpm%"          Exec exec /usr/dt/bin/dtcalc
 #+ "&Icon Editor%mini.palette.xpm%"      Exec exec /usr/dt/bin/dticon
-#+ "&Print Manager%mini.print.xpm%"	Exec exec /usr/dt/bin/dtprintinfo
+#+ "&Print Manager%mini.fax.xpm%"	Exec exec /usr/dt/bin/dtprintinfo
 #+ "&Styles Manager%mini.hammer.xpm%"    Exec exec /usr/dt/bin/dtstyle
 
 #------------------------------------------------------------------------------
@@ -2863,7 +2863,9 @@ DestroyModuleConfig FvwmDesker*
 #------------------ FvwmTaskBar
 #------------------------------------------------------------------------------
 
-Style "FvwmTaskBar" NoTitle,Sticky,WindowListSkip,CirculateSkip,NoHandles
+Style "FvwmTaskBar" NoTitle,Sticky,WindowListSkip,CirculateSkip,NoHandles, \
+			TitleAtBottom
+# Note: Title at bottom is for shading.
 
 *FvwmTaskBarGeometry +0-0
 *FvwmTaskBarFore Black

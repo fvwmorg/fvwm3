@@ -38,6 +38,7 @@
 #include "List.h"
 #include "Mallocs.h"
 
+extern char *Module;
 
 /******************************************************************************
   InitList - Initialize the list
@@ -242,17 +243,17 @@ void FreeList(List *list)
 }
 
 /******************************************************************************
-  PrintList - Print the list of item on the console. (Debugging)
+  PrintList - Print the list of item to stderr. (Debugging)
 ******************************************************************************/
 void PrintList(List *list)
 {
   Item *temp;
-  ConsoleMessage("List of Items:\n");
-  ConsoleMessage("   %10s %-15s %-15s %-15s %-15s Flgs\n","ID","Name","I-Name",
+  fprintf(stderr,"%s List of Items:\n", Module);
+  fprintf(stderr,"   %10s %-15s %-15s %-15s %-15s Flgs\n","ID","Name","I-Name",
 		 "R-Name","R-Class");
-  ConsoleMessage("   ---------- --------------- --------------- --------------- --------------- ----\n");
+  fprintf(stderr,"   ---------- --------------- --------------- --------------- --------------- ----\n");
   for(temp=list->head;temp!=NULL;temp=temp->next) {
-    ConsoleMessage("   %10ld %-15.15s %4d\n",temp->id,
+    fprintf(stderr,"   %10ld %-15.15s %4d\n",temp->id,
 		   (temp->name==NULL) ? "<null>" : temp->name,
 		   temp->tb_flags);
   }

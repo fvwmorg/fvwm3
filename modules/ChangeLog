@@ -1,3 +1,10 @@
+2000-04-25  olicha <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c:
+	* FvwmTaskBar/List.c:
+	* FvwmTaskBar/Goodies.c:
+	Messages go to stderr as almost all the other modules
+
 2000-04-24  olicha <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):

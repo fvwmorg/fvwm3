@@ -50,6 +50,7 @@ extern Display *dpy;
 extern Window Root, win;
 extern int Fvwm_fd[2];
 extern int screen;
+extern char *Module;
 extern int win_width, win_height, win_y, win_border,
        ScreenWidth, ScreenHeight, RowHeight;
 extern Pixel back, fore;
@@ -267,7 +268,7 @@ void InitGoodies(void)
 #else
     if ((StatusFontset=XCreateFontSet(dpy,"fixed,-*--14-*",&ml,&mc,&ds))==NULL) {
 #endif
-      ConsoleMessage("Couldn't load fixed fontset...exiting !\n");
+      fprintf(stderr, "%s: Couldn't load fixed fontset...exiting !\n",Module);
       exit(1);
     }
   }
@@ -276,7 +277,7 @@ void InitGoodies(void)
 #else
   if ((StatusFont = XLoadQueryFont(dpy, statusfont_string)) == NULL) {
     if ((StatusFont = XLoadQueryFont(dpy, "fixed")) == NULL) {
-      ConsoleMessage("Couldn't load fixed font. Exiting!\n");
+      fprintf(stderr, "%s: Couldn't load fixed font. Exiting!\n",Module);
       exit(1);
     }
   }
@@ -498,7 +499,7 @@ void CreateTipWindow(int x, int y, int w, int h)
   winattr.border_pixel = BlackPixel(dpy, screen);
   winattr.colormap = Pcmap;
   winattr.override_redirect = True;
- winattr.save_under = True;
+  winattr.save_under = True;
   winattr.event_mask = ExposureMask;
   Tip.win = XCreateWindow(dpy, Root, x, y, w+4, h+4, 0, Pdepth, InputOutput,
 			  Pvisual, winattrmask, &winattr);
