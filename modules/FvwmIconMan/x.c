@@ -291,6 +291,20 @@ void xevent_loop (void)
       ConsoleDebug (X11, "\tborderwidth = %d\n",
 		    theEvent.xconfigure.border_width);
       ConsoleDebug (X11, "\tsendevent = %d\n", theEvent.xconfigure.send_event);
+      
+      if ( man->geometry.width != theEvent.xconfigure.width || 
+           man->geometry.height != theEvent.xconfigure.height) {
+        man->geometry.width = theEvent.xconfigure.width; 
+        man->geometry.height = theEvent.xconfigure.height;
+        if (man->colorsets[DEFAULT] != -1) {
+          SetWindowBackground(theDisplay, man->theWindow, 
+                              man->geometry.width, man->geometry.height,
+                              &Colorset[man->colorsets[DEFAULT] % nColorsets],
+                              Pdepth, man->backContext[DEFAULT]);
+        }
+        force_manager_redraw(man);
+      }
+
 #if 0
       set_manager_width (man, theEvent.xconfigure.width);
       ConsoleDebug (X11, "\tboxwidth = %d\n", man->geometry.boxwidth);
@@ -752,8 +766,8 @@ void create_manager_window (int man_id)
   ConsoleDebug (X11, "gravity: %d %d\n", sizehints.win_gravity, man->gravity);
 
 
-  winattr.background_pixel = man->backcolor[PLAIN_CONTEXT];
-  winattr.border_pixel = man->forecolor[PLAIN_CONTEXT];
+  winattr.background_pixel = man->backcolor[DEFAULT];
+  winattr.border_pixel = man->forecolor[DEFAULT];
   winattr.backing_store = WhenMapped;
   winattr.bit_gravity = man->gravity;
   winattr.colormap = Pcmap;
@@ -832,6 +846,10 @@ void create_manager_window (int man_id)
       XSetFillStyle(theDisplay, man->backContext[i], FillSolid);
     }
   }
+  if (man->pixmap[DEFAULT]) {
+    /* set Background explicitlly since ConfigureNotify checks for a change in size*/
+    XSetWindowBackgroundPixmap(theDisplay, man->theWindow, man->pixmap[DEFAULT]);
+  }
 
   set_window_properties (man->theWindow, man->titlename,
 			 man->iconname, &sizehints);
@@ -888,12 +906,12 @@ void change_colorset(int color) {
         man->shadowcolor[i] = Colorset[man->colorsets[i] % nColorsets].shadow;
         man->hicolor[i] = Colorset[man->colorsets[i] % nColorsets].hilite;
 
-        if (i == PLAIN_CONTEXT)
+        if (i == DEFAULT)
         {
           XSetWindowBackground(theDisplay, man->theWindow,
-                               man->backcolor[PLAIN_CONTEXT]);
+                               man->backcolor[DEFAULT]);
           XSetWindowBorder(theDisplay, man->theWindow,
-                           man->forecolor[PLAIN_CONTEXT]);
+                           man->forecolor[DEFAULT]);
         }
 	if (!man->backContext[i] || !man->hiContext[i] ||
 	    !man->flatContext[i] || !man->reliefContext[i] ||

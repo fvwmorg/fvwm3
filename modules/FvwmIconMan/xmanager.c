@@ -762,7 +762,7 @@ static void clear_empty_region (WinManager *man)
 		rects[1].x, rects[1].y, rects[1].width, rects[1].height);
 
   XFillRectangles (theDisplay, man->theWindow,
-		   man->backContext[PLAIN_CONTEXT], rects, num_rects);
+		   man->backContext[DEFAULT], rects, num_rects);
 }
 
 void set_shape (WinManager *man)
