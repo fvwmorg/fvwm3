@@ -1352,7 +1352,6 @@ void ReConfigure(void)
     for(j=0;j<Columns;j++)
     {
       i = k*Columns+j;
-
       if (i<ndesks)
       {
 	XMoveResizeWindow(
@@ -1366,7 +1365,6 @@ void ReConfigure(void)
 		{
 			draw_desk_background(i, w, h);
 		}
-		continue;
 	}
 	if (HilightDesks)
 	{
