@@ -649,7 +649,7 @@ void set_win_iconified (WinData *win, int iconified)
      * all iconified windows to the far left of whereever thae manager would
      * eventually be. */
     if (win->manager->AnimCommand && (win->manager->AnimCommand[0] != 0)
-	&& IS_ICON_SUPPRESSED(win) && (win->button->w != 0) 
+	&& IS_ICON_SUPPRESSED(win) && (win->button->w != 0)
 	&& (win->button->h !=0) )
     {
       int abs_x, abs_y;
@@ -1437,6 +1437,7 @@ static void draw_empty_manager (WinManager *man)
   int len = strlen (man->titlename);
 
   ConsoleDebug (X11, "draw_empty_manager\n");
+  clear_empty_region (man);
   get_title_geometry (man, &g);
 
   if (len > 0)
