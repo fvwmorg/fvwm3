@@ -846,10 +846,15 @@ void CMD_Direction(F_CMD_ARGS)
 	int my_cy;
 	int his_cx;
 	int his_cy;
+	int cross=0;
 	int offset = 0;
 	int distance = 0;
+	int cycle=False;
+	int forward=False;
 	int score;
+	int best_cross=0;
 	int best_score;
+	int worst_score= -1;
 	FvwmWindow *window;
 	FvwmWindow *best_window;
 	int dir;
@@ -872,6 +877,11 @@ void CMD_Direction(F_CMD_ARGS)
 	else
 	{
 		is_pointer_relative = False;
+	}
+	if(!strncmp(tmp,"Cycle",5))
+	{
+		cycle=True;
+		tmp+=5;
 	}
 	dir = gravity_parse_dir_argument(tmp, NULL, -1);
 	if (dir == -1 || dir > DIR_ALL_MASK)
@@ -967,19 +977,23 @@ void CMD_Direction(F_CMD_ARGS)
 		 * direction. */
 		switch (dir)
 		{
-		case DIR_N:
 		case DIR_S:
-		case DIR_NE:
 		case DIR_SW:
+			forward=True;
+		case DIR_N:
+		case DIR_NE:
+			cross = his_cx;
 			offset = (his_cx < 0) ? -his_cx : his_cx;
-			distance = (dir == 0 || dir == 4) ? -his_cy : his_cy;
+			distance = (dir == DIR_N || dir == DIR_NE) ? -his_cy : his_cy;
 			break;
 		case DIR_E: /* E */
-		case DIR_W: /* W */
 		case DIR_SE: /* SE */
+			forward=True;
+		case DIR_W: /* W */
 		case DIR_NW: /* NW */
+			cross = his_cy;
 			offset = (his_cy < 0) ? -his_cy : his_cy;
-			distance = (dir == 3 || dir == 7) ? -his_cx : his_cx;
+			distance = (dir == DIR_W || dir == DIR_NW) ? -his_cx : his_cx;
 			break;
 		case DIR_C:
 			offset = 0;
@@ -989,25 +1003,51 @@ void CMD_Direction(F_CMD_ARGS)
 			break;
 		}
 
-		/* Target must be in given direction. */
-		if (distance <= 0)
-		{
+		if(cycle)
+			offset=0;
+		else if (distance <= 0)		/* Target must be in given direction. */
 			continue;
-		}
 
 		/* Calculate score for this window.  The smaller the better. */
 		score = distance + offset;
-		/* windows more than 45 degrees off the direction are heavily
-		 * penalized and will only be chosen if nothing else within a
-		 * million pixels */
-		if (offset > distance)
+
+		if(cycle)
 		{
-			score += 1000000;
+			int ordered=(forward == (cross<best_cross));
+
+			if (distance<0 && best_score == -1 && (score < worst_score ||
+				(score==worst_score && ordered)))
+			{
+				best_window = window;
+				worst_score = score;
+				best_cross = cross;
+			}
+
+			if(score==0 && forward==(cross<0))
+				continue;
+
+			if (distance>=0 && (best_score == -1 || score < best_score ||
+				(score==best_score && ordered)))
+			{
+				best_window = window;
+				best_score = score;
+				best_cross = cross;
+			}
 		}
-		if (best_score == -1 || score < best_score)
+		else
 		{
-			best_window = window;
-			best_score = score;
+			/* windows more than 45 degrees off the direction are heavily
+			 * penalized and will only be chosen if nothing else within a
+			 * million pixels */
+			if (offset > distance)
+			{
+				score += 1000000;
+			}
+			if (best_score == -1 || score < best_score)
+			{
+				best_window = window;
+				best_score = score;
+			}
 		}
 	} /* for */
 

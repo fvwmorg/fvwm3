@@ -1,3 +1,9 @@
+2002-11-24  Jason Weber  <baboon@imonk.com>
+	* fvwm/conditional.c
+	Extended Direction to allow CycleWest, CycleEast, etc that guarantees
+	eventual traversal of all windows over repeated calls.  It also cycles
+	back to the opposite extent when it hits the limit in the given direction.
+
 2002-11-22  olicha  <olivier.chapuis@free.fr>
 	
 	* fvwm/borders.h:

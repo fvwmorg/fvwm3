@@ -1,6 +1,6 @@
 .\" t
 .\" @(#)FvwmProxy.1
-.TH FvwmProxy 1 "20021014"
+.TH FvwmProxy 1 "20021119"
 .UC
 .SH NAME
 FvwmProxy \- the FVWM Proxy module
@@ -29,9 +29,6 @@ Copyright 2002, Jason Weber. No guarantees or warranties or anything
 are provided or implied in any way whatsoever. Use this program at your
 own risk.
 
-.SH INITIALIZATION
-
-
 .SH INVOCATION
 FvwmProxy can be invoked by inserting the line 'Module FvwmProxy' in
 the .fvwm2rc file. This can be placed on a line by itself, if FvwmProxy
@@ -42,68 +39,86 @@ to locate FvwmProxy.
 
 .SH CONFIGURATION OPTIONS
 
-.IP "*FvwmProxy: Colorset"
+.IP "*FvwmProxy: Colorset \fIn\fP"
 Specifies the color theme for unselected proxy windows.
 
-.IP "*FvwmProxy: SelectColorset"
+.IP "*FvwmProxy: SelectColorset \fIn\fP"
 Specifies the color theme for the selected proxy window.
 
-.IP "*FvwmProxy: Font"
+.IP "*FvwmProxy: Font \fIfont\fP"
 Specifies the font used for all proxy window text.
 
-.IP "*FvwmProxy: Width"
+.IP "*FvwmProxy: Width \fIw\fP"
 Specifies the size in X of each proxy window.
 
-.IP "*FvwmProxy: Height"
+.IP "*FvwmProxy: Height \fIh\fP"
 Specifies the size in Y of each proxy window.
 
-.IP "*FvwmProxy: Separation"
+.IP "*FvwmProxy: Separation \fId\fP"
 Specifies the minimum distance between proxy windows when adjusting
 for collisions.
 
-.IP "*FvwmProxy: ShowMiniIcons"
-If true, proxy windows show the mini icon for the window they represent.
-The default is true.
+.IP "*FvwmProxy: ShowMiniIcons \fIbool\fP"
+If true, proxy windows show the mini icon for the window they represent,
+if it has a mini icon.  The default is true.
 
-.IP "*FvwmProxy: EnterSelect"
+.IP "*FvwmProxy: EnterSelect \fIbool\fP"
 If true, a proxy is automatically selected when the mouse moved
 over the proxy, even if no mouse buttons are pressed.
 
-.IP "*FvwmProxy: ProxyMove"
+.IP "*FvwmProxy: ProxyMove \fIbool\fP"
 If true, moving a proxy window will move the window it represents.
 Currently, the proxied window doesn't recognize snap effects during
 this operation.
 
-.IP "*FvwmProxy: ShowCommand"
-This selects an fvwm function to be called during a FvwmProxy Show command.
-The default is "FvwmProxyShowFunc".
+.IP "*FvwmProxy: Action \fImouseaction\fP \fIresponse\fP"
+Tells FvwmProxy to do the specified \fIresponse\fP when the given
+\fIaction\fP is done.
+The currently supported mouseactions are: Click1, Click2, Click3 and so on,
+representing mouse clicks with various buttons.
+By default, the module supports 3 mouse buttons, but it can be
+compiled to support more.
+The default responses are Raise, Nop, and Lower for Click1, Click2, Click3,
+respectively.
 
-.IP "*FvwmProxy: HideCommand"
-This selects an fvwm function to be called during a FvwmProxy Hide command.
-The default is "FvwmProxyHideFunc".
-
-.IP "*FvwmProxy: AbortCommand"
-This selects an fvwm function to be called during a FvwmProxy Abort command.
-The default is "FvwmProxyAbortFunc".
-
-.IP "*FvwmProxy: SelectCommand"
+.IP "*FvwmProxy: Action Select\fIcommand\fP"
 This selects an fvwm function to be called during a FvwmProxy Select command.
 The default is "FvwmProxySelectFunc", which by default, raises the selected
 window and warps the mouse to near its upper left corner.
+The default is WindowListFunc $w.  WindowListFunc is predefined by the
+fvwm install.  You can replace it, add to it,
+or supply an independent function.
 
-.IP "*FvwmProxy: MarkCommand"
-This selects an fvwm function to be called during a FvwmProxy Mark command.
-The default is "FvwmProxyMarkFunc".
+.IP "*FvwmProxy: Action Show\fIcommand\fP"
+This selects an fvwm function to be called during a FvwmProxy Show command.
+The default is Nop.
 
-.IP "*FvwmProxy: LogFile"
+.IP "*FvwmProxy: Action Hide\fIcommand\fP"
+This selects an fvwm function to be called during a FvwmProxy Hide command.
+The default is Nop.
+
+.IP "*FvwmProxy: Action Abort\fIcommand\fP"
+This selects an fvwm function to be called during a FvwmProxy Abort command.
+The default is Nop.
+
+.IP "*FvwmProxy: Action Mark\fIcommand\fP"
+This selects an fvwm function to be called on a window after it is marked.
+The default is Nop.
+
+.IP "*FvwmProxy: Action Unmark\fIcommand\fP"
+This selects an fvwm function to be called on a marked window just after
+another winodw get the mark.
+The default is Nop.
+
+.IP "*FvwmProxy: LogFile \fIpathname\fP"
 If given, verbose debugging information is logged to a file named
 by the argument.  The default is no logging.
 
 .SH COMMANDS
 
 .IP "SendToModule FvwmProxy Show"
-Activate proxy windows for all windows on the current desk without
-the WindowListSkip option.
+Activate proxy windows for all windows on the current desk that
+do not use the WindowListSkip option.
 If the desk is switched, new proxies are automatically generated.
 
 .IP "SendToModule FvwmProxy Hide"
@@ -118,7 +133,14 @@ Deactivate all proxy windows.
 This differs from the Hide command in that no action is taken
 on any selected window.
 
-.IP "SendToModule FvwmProxy Next"
+.IP "SendToModule FvwmProxy Circulate \fIcommand\fP"
+Tell FvwmProxy to run a conditional command and mark the result.
+The imbedded command \fISendToModule FvwmProxy Mark\fP is automatically
+appended after the optional condition, so given your own imbedded command
+will probably fail.
+An example argument to Circulate is \fIDirection CycleEast (CurrentPage)\fP.
+
+.IP "SendToModule FvwmProxy Next" (temporary)
 If a proxy window is selected, the next proxy is selected.
 Windows with the WindowListSkip option are ignored.
 The proxies are sorted left to right during the Show command.
@@ -126,11 +148,15 @@ If no proxy is currently selected, but a proxy on this desk was
 selected on a recent show, that proxy is selected.
 If no proxy on this desk was recently selected,
 the leftmost proxy is used.
+This duplicates the functionality of
+Circulate Direction CycleEast (CurrentPage).
 
-.IP "SendToModule FvwmProxy Prev"
+.IP "SendToModule FvwmProxy Prev" (temporary)
 If a proxy window is selected, the previous proxy is selected.
 The starting point is the same as with the Next command, except
 that the choice with no recent selection is the rightmost proxy.
+This duplicates the functionality of
+Circulate Direction CycleWest (CurrentPage).
 
 .SH SAMPLE CONFIGURATION
 The following are excerpts from a .fvwm2rc file which describe
@@ -141,8 +167,8 @@ FvwmProxy initialization commands:
 Key Alt_L   A   N   SendToModule    FvwmProxy   Show    # hold Alt key
 Key -Alt_L  A   A   SendToModule    FvwmProxy   Hide    # release Alt key
 Key Escape  A   M   SendToModule    FvwmProxy   Abort   # Alt-Escape
-Key Tab     A   M   SendToModule    FvwmProxy   Next    # Alt-Tab
-Key Tab     A   SM  SendToModule    FvwmProxy   Prev    # Alt-Shift-Tab
+Key Tab     A   M   SendToModule    FvwmProxy   Circulate Direction CycleEast (CurrentPage)    # Alt-Tab
+Key Tab     A   SM  SendToModule    FvwmProxy   Circulate Direction CycleWest (CurrentPage)    # Alt-Shift-Tab
 
 *FvwmProxy: Font            -*-helvetica-bold-r-*-*-18-*-*-*-*-*-*-*
 *FvwmProxy: Colorset        1
@@ -154,16 +180,19 @@ Key Tab     A   SM  SendToModule    FvwmProxy   Prev    # Alt-Shift-Tab
 *FvwmProxy: Height          60
 *FvwmProxy: Separation      10
 
+*FvwmProxy: Action  Click1  Raise
+*FvwmProxy: Action  Click3  Lower
+
 # warp mouse to center of window when selected
 AddToFunc FvwmProxySelectFunc
 + I WindowId $w WarpToWindow 50 50
 .sp
 .fi
 
-The default configuration does not activate the Next and Prev using
-Alt-Tab since that is, by default, used by another module.
-Adding these lines to your .fvwm2rc will switch this responsibility
-to FvwmProxy.
+The default configuration does not activate any Next/Prev operations
+for Alt-Tab since that sequence is, by default, used by another module.
+Adding appropriate key mappings to your .fvwm2rc can switch this
+responsibility to FvwmProxy.
 
 .SH AUTHOR
 Jason Weber

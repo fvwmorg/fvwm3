@@ -1,3 +1,20 @@
+2002-11-24  Jason Weber  <baboon@imonk.com>
+
+	* FvwmProxy/ConfigFvwmProxyDefaults:
+	* FvwmProxy/FvwmProxy.c (ProcessMessage):
+	Twiddled with icon text placement rules.
+	Added programmable Action options for Click1, Click2, ...
+	Fixed background clear during internal Next/Prev
+		(which we're getting rid of).
+	Changed all the *Command options to the Action syntax.
+	Added the Circulate command that used core fvwm functions instead
+		of internal Next/Prev.
+	Commented out lots of code being phased out.
+	Added Unmark Action to mirror Mark Action.
+
+	* FvwmProxy/FvwmProxy.1:
+	Updated for Action commands and various formatting.
+
 2002-11-20  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmProxy/ConfigFvwmProxyDefaults:
