@@ -38,10 +38,10 @@
 #include "config.h"
 #include <stdio.h>
 
+#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
-#include "libs/fvwmlib.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -57,6 +57,15 @@
 #include "geometry.h"
 #include "move_resize.h"
 #include "add_window.h"
+
+static void init_style(
+  FvwmWindow *old_t, FvwmWindow *t, window_style *pstyle, short *pbuttons)
+{
+  /* copy window structure because we still need some old values */
+  memcpy(old_t, t, sizeof(FvwmWindow));
+  /* determine level of decoration */
+  setup_style_and_decor(t, pstyle, pbuttons);
+}
 
 static void apply_window_updates(
   FvwmWindow *t, update_win *flags, window_style *pstyle, FvwmWindow *focus_w)
@@ -90,14 +99,13 @@ static void apply_window_updates(
 
   if (flags->do_update_window_font || flags->do_update_window_font_height)
   {
-    /* copy window structure because we still need some old values */
-    memcpy(&old_t, t, sizeof(FvwmWindow));
-    /* determine level of decoration */
-    setup_style_and_decor(t, pstyle, &buttons);
-    is_style_initialised = True;
-
+    if (!is_style_initialised)
+    {
+      init_style(&old_t, t, pstyle, &buttons);
+      is_style_initialised = True;
+    }
     setup_window_font(
-      t, pstyle, False, (flags->do_update_window_font && HAS_WINDOW_FONT(t)));
+      t, pstyle, (flags->do_update_window_font && HAS_WINDOW_FONT(t)));
     flags->do_redecorate = True;
   }
   if (flags->do_redecorate)
@@ -107,10 +115,7 @@ static void apply_window_updates(
 
     if (!is_style_initialised)
     {
-      /* copy window structure because we still need some old values */
-      memcpy(&old_t, t, sizeof(FvwmWindow));
-      /* determine level of decoration */
-      setup_style_and_decor(t, pstyle, &buttons);
+      init_style(&old_t, t, pstyle, &buttons);
       is_style_initialised = True;
     }
 
@@ -197,6 +202,17 @@ static void apply_window_updates(
       DrawDecorations(t, DRAW_ALL, (Scr.Hilite == t), 2, None);
     Scr.Hilite = u;
   }
+  if (flags->do_update_icon_font)
+  {
+    if (!is_style_initialised)
+    {
+      init_style(&old_t, t, pstyle, &buttons);
+      is_style_initialised = True;
+    }
+    setup_icon_font(
+      t, pstyle, (flags->do_update_icon_font && HAS_ICON_FONT(t)));
+    flags->do_update_icon_title = True;
+  }
   if (flags->do_update_icon_boxes)
   {
     change_icon_boxes(t, pstyle);
@@ -209,6 +225,13 @@ static void apply_window_updates(
       SET_ICONIFIED(t, 0);
       Iconify(t, 0, 0);
     }
+    flags->do_update_icon_title = False;
+  }
+  if (flags->do_update_icon_title)
+  {
+    RedoIconName(t);
+    if (IS_ICONIFIED(t))
+      DrawIconWindow(t);
   }
   if (flags->do_setup_focus_policy)
   {
@@ -279,12 +302,10 @@ void flush_window_updates(void)
       flags.do_redecorate = True;
       flags.do_update_window_font_height = True;
     }
-#if 0
     if (Scr.flags.has_default_font_changed && !HAS_ICON_FONT(t))
     {
-      flags->do_update_icon_font = True;
+      flags.do_update_icon_font = True;
     }
-#endif
     if (Scr.flags.has_default_font_changed && !HAS_WINDOW_FONT(t))
     {
       flags.do_update_window_font = True;

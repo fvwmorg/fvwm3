@@ -57,9 +57,9 @@
 #include <X11/extensions/shape.h>
 #endif
 
+#include "libs/fvwmlib.h"
 #include "fvwm/fvwm.h"
 #include "libs/Module.h"
-#include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Colorset.h"
 #include "libs/vpacket.h"

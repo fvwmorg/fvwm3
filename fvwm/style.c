@@ -38,10 +38,10 @@
 #include "config.h"
 #include <stdio.h>
 
+#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
-#include "libs/fvwmlib.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -216,7 +216,6 @@ static void merge_styles(window_style *merged_style, window_style *add_style,
     }
   }
 #endif
-#if 0
   if (SFHAS_ICON_FONT(*add_style))
   {
     if (do_free)
@@ -230,7 +229,6 @@ static void merge_styles(window_style *merged_style, window_style *add_style,
       SSET_ICON_FONT(*merged_style, SGET_ICON_FONT(*add_style));
     }
   }
-#endif
   if (SFHAS_WINDOW_FONT(*add_style))
   {
     if (do_free)
@@ -379,9 +377,7 @@ static void free_style(window_style *style)
   SAFEFREE(SGET_BACK_COLOR_NAME_HI(*style));
   SAFEFREE(SGET_FORE_COLOR_NAME_HI(*style));
   SAFEFREE(SGET_DECOR_NAME(*style));
-#if 0
   SAFEFREE(SGET_ICON_FONT(*style));
-#endif
   SAFEFREE(SGET_WINDOW_FONT(*style));
   SAFEFREE(SGET_ICON_NAME(*style));
   SAFEFREE(SGET_MINI_ICON_NAME(*style));
@@ -1140,7 +1136,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  SMSET_IS_ICON_SUPPRESSED(*ptmpstyle, 1);
 	  SCSET_IS_ICON_SUPPRESSED(*ptmpstyle, 1);
         }
-#if 0
 	else if (StrEquals(token, "IconFont"))
 	{
 	  found = True;
@@ -1152,7 +1147,6 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  SCSET_HAS_ICON_FONT(*ptmpstyle, 1);
 
 	}
-#endif
 	if(StrEquals(token, "IconOverride"))
 	{
 	  found = True;
@@ -2145,7 +2139,6 @@ void check_window_style_change(
     flags->do_redecorate = True;
   }
 
-#if 0
   /*
    * has_icon_font
    */
@@ -2153,7 +2146,6 @@ void check_window_style_change(
   {
     flags->do_update_icon_font = True;
   }
-#endif
 
   /*
    * has_window_font
@@ -2188,23 +2180,30 @@ void check_window_style_change(
 
   /* not implemented yet:
    *
-   *   handling changes in included decors
    *   handling the 'usestyle' style
    */
 
   /*
    * has_icon
-   * has_no_icon_title
    * icon_override
-   * is_icon_suppressed
    */
   if (ret_style->change_mask.has_icon ||
-      ret_style->change_mask.icon_override ||
-      SCHAS_NO_ICON_TITLE(*ret_style) ||
-      SCIS_ICON_SUPPRESSED(*ret_style))
+      ret_style->change_mask.icon_override )
   {
     flags->do_update_icon = True;
   }
+
+  /*
+   * has_no_icon_title
+   * is_icon_suppressed
+   */
+  if (SCHAS_NO_ICON_TITLE(*ret_style) ||
+      SCIS_ICON_SUPPRESSED(*ret_style))
+  {
+    flags->do_update_icon = True;
+    flags->do_update_icon_title = True;
+  }
+
 
   /*
    *   has_icon_boxes
@@ -2260,11 +2259,19 @@ void check_window_style_change(
   /*
    * has_decor
    */
-  if (ret_style->change_mask.has_decor ||
-      ret_style->change_mask.has_no_title)
+  if (ret_style->change_mask.has_decor)
   {
     flags->do_redecorate = True;
     flags->do_update_window_font_height = True;
+  }
+
+  /*
+   * has_no_title
+   */
+  if (ret_style->change_mask.has_no_title)
+  {
+    flags->do_redecorate = True;
+    flags->do_update_window_font = True;
   }
 
   /*

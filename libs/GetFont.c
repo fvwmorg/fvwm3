@@ -45,3 +45,94 @@ XFontStruct *GetFontOrFixed(Display *disp, char *fontname)
   return fnt;
 }
 
+/*
+** loads fontset or "fixed" on failure
+*/
+XFontSet GetFontSetOrFixed(Display *disp, char *fontname)
+{
+  XFontSet fontset;
+  char **ml;
+  int mc;
+  char *ds;
+
+  if ((fontset = XCreateFontSet(disp,fontname,&ml,&mc,&ds))==NULL)
+  {
+    fprintf(stderr,
+            "[FVWM][GetFontSetOrFixed]: "
+	    "WARNING -- can't get fontset %s, trying 'fixed'\n",
+            fontname);
+    /* fixed should always be avail, so try that */
+#ifdef STRICTLY_FIXED
+    if ((fontset = XCreateFontSet(disp,"fixed",&ml,&mc,&ds))==NULL)
+    {
+      fprintf(stderr,
+	      "[FVWM][GetFontSetOrFixed]: "
+	      "ERROR -- can't get fontset 'fixed'\n");
+    }
+#else
+    /* Yes, you say it's not a *FIXED* font, but it helps you. */
+    if ((fontset =
+	 XCreateFontSet(disp,
+			"-*-fixed-medium-r-normal-*-14-*-*-*-*-*-*-*",
+			&ml, &mc, &ds)) == NULL)
+    {
+      fprintf(stderr,"[FVWM][GetFontSetOrFixed]: "
+	      "ERROR -- can't get fontset 'fixed'\n");
+    }
+#endif
+  }
+
+  return fontset;
+}
+
+
+Bool LoadFvwmFont(Display *dpy, char *fontname, FvwmFont *ret_font)
+{
+#ifdef I18N_MB
+  XFontSet newfontset;
+
+  if ((newfontset = GetFontSetOrFixed(dpy, fontname)))
+  {
+    XFontSetExtents *fset_extents;
+    XFontStruct **fs_list;
+    char **ml;
+
+    ret_font->fontset = newfontset;
+    /* backward compatiblity setup */
+    XFontsOfFontSet(newfontset, &fs_list, &ml);
+    ret_font->font = fs_list[0];
+    fset_extents = XExtentsOfFontSet(newfontset);
+    ret_font->height = fset_extents->max_logical_extent.height;
+  }
+#else
+  XFontStruct *newfont;
+
+  if ((newfont = GetFontOrFixed(dpy, fontname)))
+  {
+    ret_font->font = newfont;
+    ret_font->height = ret_font->font->ascent + ret_font->font->descent;
+  }
+#endif
+  else
+  {
+    return False;
+  }
+  ret_font->y = ret_font->font->ascent;
+
+  return True;
+}
+
+void FreeFvwmFont(Display *dpy, FvwmFont *font)
+{
+#ifdef I18N_MB
+  if (font->fontset)
+    XFreeFontSet(dpy, font->fontset);
+  font->fontset = None;
+#else
+  if (font->font)
+    XFreeFont(dpy, font->font);
+#endif
+  font->font = None;
+
+  return;
+}

@@ -80,7 +80,7 @@ void ProcessICEMsgs(void);
 
 #else
 
-#define sm_id -1
+#define sm_fd -1
 #define ProcessICEMsgs()
 #define SessionInit()
 #define SetClientID(new_id)

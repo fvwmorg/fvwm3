@@ -32,8 +32,8 @@ SnapAttraction 20 SameType
 #
 # IconFont		Sets the font that will be used for icon labels.
 #
-Style * Font	-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
-IconFont	-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+Style * Font		-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
+Style * IconFont	-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
 
 # Highlight color
 #

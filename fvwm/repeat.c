@@ -19,6 +19,7 @@
 
 #include <stdio.h>
 
+#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"

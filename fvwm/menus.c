@@ -57,8 +57,8 @@
 #include <assert.h>
 #include <X11/keysym.h>
 
-#include "fvwm.h"
 #include <libs/fvwmlib.h>
+#include "fvwm.h"
 #include "events.h"
 #include "menus.h"
 #include "cursor.h"
@@ -5248,15 +5248,6 @@ static void UpdateMenuStyle(MenuStyle *ms)
   }
   ST_IS_UPDATED(ms) = 1;
 
-  if (ST_PSTDFONT(ms) && ST_PSTDFONT(ms) != &Scr.DefaultFont)
-  {
-    ST_PSTDFONT(ms)->y = ST_PSTDFONT(ms)->font->ascent;
-#ifndef I18N_MB
-    ST_PSTDFONT(ms)->height =
-      ST_PSTDFONT(ms)->font->ascent + ST_PSTDFONT(ms)->font->descent;
-#endif
-  }
-
   /* calculate colors based on foreground */
   if (!ST_HAS_ACTIVE_FORE(ms))
     ST_MENU_ACTIVE_COLORS(ms).fore = ST_MENU_COLORS(ms).fore;
@@ -5471,11 +5462,7 @@ static void NewMenuStyle(F_CMD_ARGS)
   Bool is_default_style = False;
   int val[2];
   int n;
-#ifdef I18N_MB
-  XFontSet xfset = NULL;
-#else
-  XFontStruct *xfs = NULL;
-#endif
+  FvwmFont new_font;
   int i;
 
   action = GetNextToken(action, &name);
@@ -5599,11 +5586,7 @@ static void NewMenuStyle(F_CMD_ARGS)
       ST_FACE(tmpms).type = SimpleMenu;
       if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.DefaultFont)
       {
-#ifdef I18N_MB
-	XFreeFontSet(dpy, ST_PSTDFONT(tmpms)->fontset);
-#else
-	XFreeFont(dpy, ST_PSTDFONT(tmpms)->font);
-#endif
+	FreeFvwmFont(dpy, ST_PSTDFONT(tmpms));
 	free(ST_PSTDFONT(tmpms));
       }
       ST_PSTDFONT(tmpms) = &Scr.DefaultFont;
@@ -5723,25 +5706,15 @@ static void NewMenuStyle(F_CMD_ARGS)
       break;
 
     case 15: /* Font */
-#ifdef I18N_MB
-      if (arg1 && (xfset = GetFontSetOrFixed(dpy, arg1)) == NULL)
-#else
-      if (arg1 && (xfs = GetFontOrFixed(dpy, arg1)) == NULL)
-#endif
+      if (arg1 && !LoadFvwmFont(dpy, arg1, &new_font))
       {
-	fvwm_msg(ERR,"NewMenuStyle",
+	fvwm_msg(ERR, "NewMenuStyle",
 		 "Couldn't load font '%s' or 'fixed'\n", arg1);
 	break;
       }
       if (ST_PSTDFONT(tmpms) && ST_PSTDFONT(tmpms) != &Scr.DefaultFont)
       {
-#ifdef I18N_MB
-	if (ST_PSTDFONT(tmpms)->fontset)
-	  XFreeFontSet(dpy, ST_PSTDFONT(tmpms)->fontset);
-#else
-	if (ST_PSTDFONT(tmpms)->font)
-	  XFreeFont(dpy, ST_PSTDFONT(tmpms)->font);
-#endif
+	FreeFvwmFont(dpy, ST_PSTDFONT(tmpms));
 	free(ST_PSTDFONT(tmpms));
       }
       if (arg1 == NULL)
@@ -5751,23 +5724,8 @@ static void NewMenuStyle(F_CMD_ARGS)
       }
       else
       {
-#ifdef I18N_MB
-	XFontSetExtents *fset_extents;
-	XFontStruct **fs_list;
-	char **ml;
-
-	ST_PSTDFONT(tmpms) = (MyFont *)safemalloc(sizeof(MyFont));
-	ST_PSTDFONT(tmpms)->fontset = xfset;
-
-	/* backward compatiblity setup */
-	XFontsOfFontSet(xfset, &fs_list, &ml);
-	ST_PSTDFONT(tmpms)->font = fs_list[0];
-	fset_extents = XExtentsOfFontSet(xfset);
-	ST_PSTDFONT(tmpms)->height = fset_extents->max_logical_extent.height;
-#else
-	ST_PSTDFONT(tmpms) = (MyFont *)safemalloc(sizeof(MyFont));
-	ST_PSTDFONT(tmpms)->font = xfs;
-#endif
+	ST_PSTDFONT(tmpms) = (FvwmFont *)safemalloc(sizeof(FvwmFont));
+	*ST_PSTDFONT(tmpms) = new_font;
       }
       has_gc_changed = True;
       break;

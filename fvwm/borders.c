@@ -34,10 +34,10 @@
 #include <signal.h>
 #include <string.h>
 
+#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
-#include "libs/fvwmlib.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -907,7 +907,7 @@ void RedrawTitle(common_decorations_type *cd, FvwmWindow *t, Bool has_focus)
       t->title_g.height);
     if(t->name != (char *)NULL)
 #ifdef I18N_MB
-      XmbDrawString(dpy, t->title_w, GetDecor(t,WindowFont.fontset),
+      XmbDrawString(dpy, t->title_w, t->title_font.fontset,
 		    Scr.TitleGC, hor_off,
 		    t->title_font.y + 1, t->name, strlen(t->name));
 #else
@@ -962,7 +962,7 @@ void RedrawTitle(common_decorations_type *cd, FvwmWindow *t, Bool has_focus)
 
 #ifdef I18N_MB
     if(t->name != (char *)NULL)
-      XmbDrawString(dpy, t->title_w, GetDecor(t, WindowFont.fontset),
+      XmbDrawString(dpy, t->title_w, t->title_font.fontset,
 		    Scr.TitleGC, hor_off,
 		    t->title_font.y + 1, t->name, strlen(t->name));
 #else

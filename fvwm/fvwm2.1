@@ -1961,8 +1961,8 @@ specified. To reset the default font to the built in default, omit
 the argument. The default font is used for menus, window titles,
 icon titles as well as the geometry feedback windows during a move
 or resize operation. To override the default font in a specific
-context, use the \fIStyle * Font\fP, \fIIconFont\fP or \fIMenuStyle\fP
-commands.
+context, use the \fIStyle * Font\fP, \fIStyle * IconFont\fP or
+\fIMenuStyle\fP commands.
 
 
 .TP
@@ -2081,9 +2081,11 @@ instead.
 
 .TP
 .B "IconFont" "[\fIfontname\fP]"
-Makes fvwm use font \fIfontname\fP for icon labels. To reset
-this font to the default font (see \fIDefaultFont\fP) you may omit
-\fIfontname\fP.
+This command is obsoleted by the style option 'IconFont'.  Please use
+.EX
+Style * IconFont fontname
+.EE
+instead.
 
 
 .TP
@@ -3464,6 +3466,7 @@ StartIconic / StartNormal,
 Color, ForeColor, BackColor, Colorset,
 HilightFore, HilightBack, HilightColorset,
 Font,
+IconFont,
 StartsOnDesk / StartsOnPage / StartsAnyWhere,
 ActivePlacementHonorsStartsOnPage / ActivePlacementIgnoresStartsOnPage,
 CaptureHonorsStartsOnPage / CaptureIgnoresStartsOnPage,
@@ -3840,11 +3843,11 @@ styles work exactly like \fIForeColor\fP, \fIBackColor\fP and
 \fIColorset\fP but are used only if the window has the focus.
 These styles replace the old commands HilightColor and HilightColorset.
 
-The \fIFont\fP option takes the name of a font as its sole argument.
-This font is used in the window title.  By default the font given in
-the \fIDefaultFont\fP command is used.  To revert back to the default,
-use the style without the name argument.  This style replaces the
-older WindowFont command.
+The \fIFont\fP and \fIIconFont\fP options take the name of a font
+as their sole argument.  This font is used in the window or icon title.
+By default the font given in the \fIDefaultFont\fP command is used.
+To revert back to the default, use the style without the name argument.
+These styles replace the older WindowFont and IconFont commands.
 
 \fIUseDecor\fP accepts one argument: the name of a decor created with
 AddToDecor.  If UseDecor is not specified, the "Default" decor is

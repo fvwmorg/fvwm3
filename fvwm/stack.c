@@ -20,10 +20,10 @@
 #include <signal.h>
 #include <stdarg.h>
 
+#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
-#include "libs/fvwmlib.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"

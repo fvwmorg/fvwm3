@@ -55,10 +55,10 @@
 
 #include <stdio.h>
 
+#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
-#include "libs/fvwmlib.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -229,29 +229,39 @@ static void destroy_window_font(FvwmWindow *tmp_win)
 {
   if (HAS_WINDOW_FONT(tmp_win))
   {
-#ifdef I18N_MB
-    XFreeFontSet(dpy, decor->WindowFont.fontset);
-#else
-    XFreeFont(dpy, tmp_win->title_font.font);
-#endif
+    FreeFvwmFont(dpy, &(tmp_win->title_font));
   }
+  SET_WINDOW_FONT_LOADED(tmp_win, 0);
 }
 
 void setup_window_font(
-  FvwmWindow *tmp_win, window_style *pstyle, Bool do_load, Bool do_reload)
+  FvwmWindow *tmp_win, window_style *pstyle, Bool do_destroy)
 {
   Bool has_font = SFHAS_WINDOW_FONT(*pstyle);
   int height;
   int old_height = 0;
 
-  if (!do_load)
+#if 0
+  if (!HAS_TITLE(tmp_win))
+  {
+    tmp_win->title_g.height = 0;
+    if (IS_WINDOW_FONT_LOADED(tmp_win))
+    {
+      destroy_window_font(tmp_win);
+      SET_WINDOW_FONT_LOADED(tmp_win, 0);
+    }
+    return;
+  }
+#endif
+
+  if (!IS_WINDOW_FONT_LOADED(tmp_win))
   {
     old_height = tmp_win->title_g.height;
   }
 
   if (has_font)
   {
-    if (do_reload)
+    if (do_destroy)
     {
       destroy_window_font(tmp_win);
     }
@@ -260,45 +270,13 @@ void setup_window_font(
     {
       has_font = False;
     }
-    else if (do_load || do_reload)
+    else if (!IS_WINDOW_FONT_LOADED(tmp_win) || do_destroy)
     {
-#ifdef I18N_MB
-      XFontSet newfontset;
-
-      if ((newfontset = GetFontSetOrFixed(dpy, SGET_WINDOW_FONT(*pstyle))))
+      if (!LoadFvwmFont(dpy, SGET_WINDOW_FONT(*pstyle), &(tmp_win->title_font)))
       {
-	XFontSetExtents *fset_extents;
-	XFontStruct **fs_list;
-	char **ml;
-
-	tmp_win->window_font.fontset = newfontset;
-	/* backward compatiblity setup */
-	XFontsOfFontSet(newfontset, &fs_list, &ml);
-	tmp_win->window_font.font = fs_list[0];
-	fset_extents = XExtentsOfFontSet(newfontset);
-	tmp_win->window_font.height = fset_extents->max_logical_extent.height;
-      }
-#else
-      XFontStruct *newfont;
-
-      if ((newfont = GetFontOrFixed(dpy, SGET_WINDOW_FONT(*pstyle))))
-      {
-	SET_HAS_WINDOW_FONT(tmp_win, 1);
-	tmp_win->title_font.font = newfont;
-	tmp_win->title_font.height =
-	  tmp_win->title_font.font->ascent +
-	  tmp_win->title_font.font->descent;
-      }
-#endif
-      else
-      {
-	fvwm_msg(
-	  ERR, "LoadWindowFont", "Couldn't load font '%s' or 'fixed'\n",
-	  SGET_WINDOW_FONT(*pstyle));
 	has_font = False;
       }
-      tmp_win->title_font.y = tmp_win->title_font.font->ascent;
-    } /* if (do_reload) */
+    } /* if (do_destroy) */
   } /* if (SFHAS_WINDOW_FONT(*pstyle)) */
   if (!has_font)
   {
@@ -329,11 +307,66 @@ void setup_window_font(
     tmp_win->title_g.height =
       tmp_win->title_font.height + EXTRA_TITLE_FONT_HEIGHT;
   }
-
   if (!HAS_TITLE(tmp_win))
   {
     tmp_win->title_g.height = 0;
   }
+
+  SET_WINDOW_FONT_LOADED(tmp_win, 1);
+
+  return;
+}
+
+static void destroy_icon_font(FvwmWindow *tmp_win)
+{
+  if (HAS_ICON_FONT(tmp_win))
+  {
+    FreeFvwmFont(dpy, &(tmp_win->icon_font));
+  }
+  SET_ICON_FONT_LOADED(tmp_win, 0);
+}
+
+void setup_icon_font(
+  FvwmWindow *tmp_win, window_style *pstyle, Bool do_destroy)
+{
+  Bool has_font = SFHAS_ICON_FONT(*pstyle);
+
+  if (IS_ICON_SUPPRESSED(tmp_win) || HAS_NO_ICON_TITLE(tmp_win))
+  {
+    if (IS_ICON_FONT_LOADED(tmp_win))
+    {
+      destroy_icon_font(tmp_win);
+      SET_ICON_FONT_LOADED(tmp_win, 0);
+    }
+    return;
+  }
+
+  if (has_font)
+  {
+    if (do_destroy)
+    {
+      destroy_icon_font(tmp_win);
+    }
+
+    if (!SGET_ICON_FONT(*pstyle))
+    {
+      has_font = False;
+    }
+    else if (!IS_ICON_FONT_LOADED(tmp_win) || do_destroy)
+    {
+      if (!LoadFvwmFont(dpy, SGET_ICON_FONT(*pstyle), &(tmp_win->icon_font)))
+      {
+	has_font = False;
+      }
+    } /* if (do_destroy) */
+  } /* if (SFHAS_ICON_FONT(*pstyle)) */
+  if (!has_font)
+  {
+    /* no explicit font, use default font instead */
+    tmp_win->icon_font = Scr.DefaultFont;
+  }
+  SET_HAS_ICON_FONT(tmp_win, has_font);
+  SET_ICON_FONT_LOADED(tmp_win, 1);
 
   return;
 }
@@ -587,11 +620,11 @@ void setup_frame_window(
      ButtonReleaseMask);
   pattributes->event_mask |= KeyPressMask;
   /* decor window, parent of all decorative subwindows */
-  tmp_win->decor_w = XCreateWindow(dpy, tmp_win->frame, 0, 0,
-				   tmp_win->frame_g.width,
-				   tmp_win->frame_g.height, 0, Pdepth,
-				   InputOutput, Pvisual, valuemask,
-				   pattributes);
+  tmp_win->decor_w =
+    XCreateWindow(
+      dpy, tmp_win->frame, 0, 0, tmp_win->frame_g.width,
+      tmp_win->frame_g.height, 0, Pdepth, InputOutput, Pvisual, valuemask,
+      pattributes);
   XSaveContext(dpy, tmp_win->decor_w, FvwmContext, (caddr_t) tmp_win);
 
   /* restore background */
@@ -622,14 +655,11 @@ void setup_title_window(
   tmp_win->title_g.x = tmp_win->boundary_width + tmp_win->title_g.height + 1;
   tmp_win->title_g.y = tmp_win->boundary_width;
   pattributes->cursor = Scr.FvwmCursors[CRS_TITLE];
-  tmp_win->title_w = XCreateWindow(dpy, tmp_win->decor_w,
-				   tmp_win->title_g.x,
-				   tmp_win->title_g.y,
-				   tmp_win->title_g.width,
-				   tmp_win->title_g.height, 0,
-				   CopyFromParent,
-				   InputOutput, CopyFromParent, valuemask,
-				   pattributes);
+  tmp_win->title_w =
+    XCreateWindow(
+      dpy, tmp_win->decor_w, tmp_win->title_g.x, tmp_win->title_g.y,
+      tmp_win->title_g.width, tmp_win->title_g.height, 0, CopyFromParent,
+      InputOutput, CopyFromParent, valuemask, pattributes);
   XSaveContext(dpy, tmp_win->title_w, FvwmContext, (caddr_t) tmp_win);
 }
 
@@ -767,19 +797,17 @@ void setup_resize_handle_windows(FvwmWindow *tmp_win)
     for(i = 0; i < 4; i++)
     {
       attributes.cursor = Scr.FvwmCursors[CRS_TOP_LEFT+i];
-      tmp_win->corners[i] = XCreateWindow (dpy, tmp_win->decor_w, 0, 0,
-					   tmp_win->corner_width,
-					   tmp_win->corner_width, 0, 0,
-					   InputOnly,
-					   DefaultVisual(dpy, Scr.screen),
-					   valuemask, &attributes);
+      tmp_win->corners[i] =
+	XCreateWindow(
+	  dpy, tmp_win->decor_w, 0, 0, tmp_win->corner_width,
+	  tmp_win->corner_width, 0, 0, InputOnly,
+	  DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
       attributes.cursor = Scr.FvwmCursors[CRS_TOP+i];
-      tmp_win->sides[i] = XCreateWindow (dpy, tmp_win->decor_w, 0, 0,
-					 tmp_win->boundary_width,
-					 tmp_win->boundary_width, 0, 0,
-					 InputOnly,
-					 DefaultVisual(dpy, Scr.screen),
-					 valuemask, &attributes);
+      tmp_win->sides[i] =
+	XCreateWindow(
+	  dpy, tmp_win->decor_w, 0, 0, tmp_win->boundary_width,
+	  tmp_win->boundary_width, 0, 0, InputOnly,
+	  DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
       XSaveContext(dpy, tmp_win->sides[i], FvwmContext, (caddr_t) tmp_win);
       XSaveContext(dpy, tmp_win->corners[i], FvwmContext, (caddr_t) tmp_win);
     }
@@ -1215,8 +1243,9 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   memcpy(&(FW_COMMON_FLAGS(tmp_win)), &(sflags->common),
          sizeof(common_flags_type));
 
-  /****** title font ******/
-  setup_window_font(tmp_win, &style, True, False);
+  /****** fonts ******/
+  setup_window_font(tmp_win, &style, False);
+  setup_icon_font(tmp_win, &style, False);
 
   /****** state setup ******/
   SET_TRANSIENT(

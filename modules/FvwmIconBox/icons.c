@@ -50,6 +50,7 @@
 #include <fcntl.h>
 #endif
 
+#include "libs/fvwmlib.h"
 #include "fvwm/fvwm.h"
 #include "FvwmIconBox.h"
 

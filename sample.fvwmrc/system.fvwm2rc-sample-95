@@ -29,8 +29,8 @@ ImagePath /usr/local/lib/X11/pixmaps:/usr/local/lib/X11/mini-icons:/home/avatar/
 # Fonts - one for window titles, another for icons, and another for the menus
 #------------------------------------------------------------------------------
 
-Style * Font	lucidasanstypewriter-14
-IconFont	fixed
+Style * Font		lucidasanstypewriter-14
+Style * IconFont	fixed
 
 
 #------------------------------------------------------------------------------

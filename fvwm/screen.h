@@ -275,8 +275,7 @@ typedef struct ScreenInfo
 
   FvwmFunction *functions;
 
-  MyFont DefaultFont;     	/* font structure */
-  MyFont IconFont;      /* for icon labels */
+  FvwmFont DefaultFont;     	/* font structure */
 
   GC TransMaskGC;               /* GC for transparency masks */
   Pixel StdFore, StdBack, StdHilite, StdShadow; /* don't change the order */
@@ -381,8 +380,6 @@ typedef struct ScreenInfo
     unsigned do_need_window_update : 1;
     unsigned has_default_font_changed : 1;
     unsigned has_default_color_changed : 1;
-    unsigned has_icon_font : 1;
-    unsigned has_window_font : 1;
     unsigned has_nr_buttons_changed : 1;
     unsigned silent_functions : 1;
     unsigned windows_captured : 1;

@@ -37,10 +37,10 @@
 #  include <pwd.h>
 #endif
 
+#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
-#include "libs/fvwmlib.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -1515,7 +1515,6 @@ static void InitVariables(void)
   Scr.Ungrabbed = NULL;
 
   Scr.DefaultFont.font = NULL;
-  Scr.IconFont.font = NULL;
 
   Scr.VxMax = 2*Scr.MyDisplayWidth;
   Scr.VyMax = 2*Scr.MyDisplayHeight;

@@ -34,8 +34,8 @@ MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-* fvwm
 # Set fonts to use on title bar and icon label
 Style * Font            9x15
 # Style * Font            -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
-IconFont                9x15
-# IconFont                -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+Style * IconFont        9x15
+# Style * IconFont        -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 
 ############################################################################
 # ICON Setup

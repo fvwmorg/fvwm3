@@ -13,7 +13,7 @@ ButtonStyle 4 4 50x65@1 35x35@1 65x35@1 50x65@0
 
 EdgeResistance 250 10
 Style * Font 		-adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
-IconFont		-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+Style * IconFont	-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
 EdgeScroll 100 100
 
 DeskTopSize 2x2

@@ -771,7 +771,7 @@ A: Start with a new one or convert your old one.  This can be done by
    HiForeColor colorname                      Style (HilightFore color)
    Icon windowname bitmap-file                Style (Icon iconname-file)
    IconBox left top right bottom              Style (IconBox l t r b)
-   IconFont fontname                          <-
+   IconFont fontname                          Style (IconFont fontname)
    IconPath path                              ImagePath path
    Key keyname Context Modifiers Function     <-
    Lenience                                   Style (Lenience)
@@ -817,7 +817,7 @@ A: Start with a new one or convert your old one.  This can be done by
    StubbornPlacement                          (obsoleted)
    Style windowname options                   <-
    SuppressIcons                              Style (NoIcon)
-   WindowFont fontname                        Style (Font name)
+   WindowFont fontname                        Style (Font fontname)
    WindowListSkip windowname                  Style (WindowListSkip)
    XORvalue number                            <-
 
@@ -859,24 +859,46 @@ A: Start with a new one or convert your old one.  This can be done by
 
    *** New in fvwm-2 **
 
+   All
    AnimatedMove
+   BugOpts
+   BusyCursor
+   DefaultColors
+   DefaultColorset
+   DefaultFont
+   DefaultIcon
+   DefaultLayers
    Destroy
    DestroyMenu
+   EdgeThickness
+   Emulate
+   EscapeFunc
    ExecUseShell
+   HideGeometryWindow
    KillModule
+   Layer
    Menu menu-name double-click-action
    MoveToDesk
    MoveToPage
    Next (conditions) command
    None (arguments) command
+   Pick
+   PointerKey
    Prev (conditions) command
+   QuitSession
    Read filename
    Recapture
+   RecaptureWindow
+   SaveQuitSession
+   SaveSession
+   Silent
    SnapAttraction
    SnapGrid
+   StrokeFunc
+   XORPixmap
    +
    (more functions are being added from time to time, so please check
-    the man page too).
+    the man page and the NEWS file too).
 
 ----------------------------------------------------------------------
 

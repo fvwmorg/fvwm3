@@ -27,10 +27,10 @@
 #include <pwd.h>
 #include <signal.h>
 
+#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
-#include "libs/fvwmlib.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -160,7 +160,7 @@ static char *getUniqueStateFilename(void)
 }
 
 #else
-#define setRealStateFilename(char *filename)
+#define setRealStateFilename(filename)
 #endif /* SESSION */
 
 void

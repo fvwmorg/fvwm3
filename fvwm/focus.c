@@ -31,10 +31,10 @@
 
 #include <stdio.h>
 
+#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
-#include "libs/fvwmlib.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -280,7 +280,7 @@ void FocusOn(FvwmWindow *t, Bool FocusByMouse, char *action)
     if(IS_ICONIFIED(t))
     {
       cx = t->icon_xl_loc + t->icon_g.width/2;
-      cy = t->icon_g.y + t->icon_p_height + ICON_HEIGHT/2;
+      cy = t->icon_g.y + t->icon_p_height + ICON_HEIGHT(t) / 2;
     }
     else
     {
@@ -333,7 +333,7 @@ static void WarpOn(XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit,
   if(IS_ICONIFIED(t))
   {
     cx = t->icon_xl_loc + t->icon_g.width/2;
-    cy = t->icon_g.y + t->icon_p_height + ICON_HEIGHT/2;
+    cy = t->icon_g.y + t->icon_p_height + ICON_HEIGHT(t) / 2;
   }
   else
   {
@@ -349,7 +349,7 @@ static void WarpOn(XEvent *eventp, FvwmWindow *t, int warp_x, int x_unit,
   if(IS_ICONIFIED(t))
   {
     x = t->icon_xl_loc + t->icon_g.width/2;
-    y = t->icon_g.y + t->icon_p_height + ICON_HEIGHT/2;
+    y = t->icon_g.y + t->icon_p_height + ICON_HEIGHT(t) / 2;
   }
   else
   {

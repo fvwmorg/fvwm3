@@ -204,23 +204,24 @@ BEGIN   {
 ########## Standard Colors ###########
 /^[ \t]*StdForeColor[ \t]*/	{
         dflt["stdforecolor"]=stdforecolor=$2;
-	printf ("#!%s (new command=Style \"*\" Color f/b)\n", $0);
-	print "Style \"*\" ForeColor " $2;
+	printf ("#!%s (new command=Style * Color f/b)\n", $0);
+	print "Style * ForeColor " $2;
 	next;
 }
 
 /^[ \t]*StdBackColor[ \t]*/	{
 	dflt["stdbackcolor"]=stdbackcolor=$2;
-	printf ("#!%s (new command=Style \"*\" Color f/b)\n", $0);
-	print "Style \"*\" BackColor " $2;
+	printf ("#!%s (new command=Style * Color f/b)\n", $0);
+	print "Style * BackColor " $2;
 	next;
 }
 
 ########## Icon Related Stuff ##########
-/^[ \t]*IconBox[ \t]*/		{ print "Style \"*\" " $0; next; }
+/^[ \t]*IconBox[ \t]*/		{ print "Style * " $0; next; }
+/^[ \t]*IconFont[ \t]*/		{ printf "Style * IconFont %s", $2; next; }
 /^[ \t]*IconFont[ \t]*/		{ print $0; next; }
-/^[ \t]*SuppressIcons[ \t]*/	{ print "Style \"*\" NoIcon"; next; }
-/^[ \t]*StickyIcons[ \t]*/	{ print "Style \"*\" StickyIcon"; next; }
+/^[ \t]*SuppressIcons[ \t]*/	{ print "Style * NoIcon"; next; }
+/^[ \t]*StickyIcons[ \t]*/	{ print "Style * StickyIcon"; next; }
 /^[ \t]*ModulePath[ \t]*/	{ print "#! (ModulePath command commented out)\n#" $0; next; }
 /^[ \t]*PixmapPath[ \t]*/	{ print $0; next; }
 /^[ \t]*IconPath[ \t]*/		{ print $0; next; }
@@ -228,44 +229,44 @@ BEGIN   {
 /^[ \t]*Icon[ \t]+/		{ printf "Style %s Icon %s\n", $2, $3; next; }
 
 ########## MWM hints ##########
-/^[ \t]*MWMFunctionHints[ \t]*/	{ printf ("Style \"*\" MWMFunctions\n"); next; }
-/^[ \t]*MWMDecor[ \t]*/		{ printf ("Style \"*\" MWMDecor\n"); next; }
-/^[ \t]*MWMDecorHints[ \t]*/	{ printf ("Style \"*\" MWMDecor\n"); next; }
-/^[ \t]*MWMBorders[ \t]*/	{ printf ("Style \"*\" MWMBorder\n"); next; }
-/^[ \t]*MWMButtons[ \t]*/	{ printf ("Style \"*\" MWMButtons\n"); next; }
-/^[ \t]*MWMHintOverride[ \t]*/	{ printf ("Style \"*\" HintOverride\n"); next; }
+/^[ \t]*MWMFunctionHints[ \t]*/	{ printf ("Style * MWMFunctions\n"); next; }
+/^[ \t]*MWMDecor[ \t]*/		{ printf ("Style * MWMDecor\n"); next; }
+/^[ \t]*MWMDecorHints[ \t]*/	{ printf ("Style * MWMDecor\n"); next; }
+/^[ \t]*MWMBorders[ \t]*/	{ printf ("Style * MWMBorder\n"); next; }
+/^[ \t]*MWMButtons[ \t]*/	{ printf ("Style * MWMButtons\n"); next; }
+/^[ \t]*MWMHintOverride[ \t]*/	{ printf ("Style * HintOverride\n"); next; }
 
 ########## Placement & Focus styles ##########
-/^[ \t]*RandomPlacement[ \t]*/	{ print "Style \"*\" " $0; placement = TRUE; next; }
-/^[ \t]*SmartPlacement[ \t]*/	{ print "Style \"*\" " $0; placement = TRUE; next; }
+/^[ \t]*RandomPlacement[ \t]*/	{ print "Style * " $0; placement = TRUE; next; }
+/^[ \t]*SmartPlacement[ \t]*/	{ print "Style * " $0; placement = TRUE; next; }
 /^[ \t]*Sticky(Back|Fore)Color[ \t]*/ {
       print "#! " $0 " (not supported in FVWM2)"; next;
 }
 /^[ \t]*Sticky[ \t]+/		{ printf "Style \"%s\" Sticky\n", $2; next; }
-/^[ \t]*NoPPosition[ \t]*/	{ print "Style \"*\" " $0; next; }
-/^[ \t]*ClickToFocus[ \t]*/	{ print "Style \"*\" " $0; next; }
-/^[ \t]*SloppyFocus[ \t]*/	{ print "Style \"*\" " $0; next; }
+/^[ \t]*NoPPosition[ \t]*/	{ print "Style * " $0; next; }
+/^[ \t]*ClickToFocus[ \t]*/	{ print "Style * " $0; next; }
+/^[ \t]*SloppyFocus[ \t]*/	{ print "Style * " $0; next; }
 /^[ \t]*StaysOnTop[ \t]*/	{ printf "Style \"%s\" StaysOnTop\n", $2; next; }
 /^[ \t]*AutoRaise[ \t]*/	{
         print "#! " $0 " (use Module FvwmAuto)";
-	print "AddToFunc \"StartFunction\" \"I\" Module FvwmAuto " $2;
+	print "AddToFunc \"StartFunction\" I Module FvwmAuto " $2;
 	next;
 }
 
 ########## Decoration styles ##########
-/^[ \t]*BorderWidth[ \t]*/	{ print "Style \"*\" " $0; next; }
-/^[ \t]*HandleWidth[ \t]*/	{ print "Style \"*\" " $0; next; }
-/^[ \t]*DecorateTransients[ \t]*/ { print "Style \"*\" DecorateTransient"; next; }
+/^[ \t]*BorderWidth[ \t]*/	{ print "Style * " $0; next; }
+/^[ \t]*HandleWidth[ \t]*/	{ print "Style * " $0; next; }
+/^[ \t]*DecorateTransients[ \t]*/ { print "Style * DecorateTransient"; next; }
 /^[ \t]*XORvalue[ \t]*/		{ print $0; next; }
-/^[ \t]*BoundaryWidth[ \t]*/	{ printf "Style \"*\" HandleWidth %s\n", $2; next; }
-/^[ \t]*NoBoundaryWidth[ \t]*/	{ print "Style \"*\" BorderWidth " $2; next; }
-/^[ \t]*NoTitle[ \t]*/		{ print "Style \"*\" " $0; next; }
-/^[ \t]*NoBorder[ \t]*/		{ print "Style \"*\" " $0; next; }
+/^[ \t]*BoundaryWidth[ \t]*/	{ printf "Style * HandleWidth %s\n", $2; next; }
+/^[ \t]*NoBoundaryWidth[ \t]*/	{ print "Style * BorderWidth " $2; next; }
+/^[ \t]*NoTitle[ \t]*/		{ print "Style * " $0; next; }
+/^[ \t]*NoBorder[ \t]*/		{ print "Style * " $0; next; }
 
 
 
 ########## Etc ##########
-/^[ \t]*Lenience[ \t]*/		{ print "Style \"*\" " $0; next; }
+/^[ \t]*Lenience[ \t]*/		{ print "Style * " $0; next; }
 /^[ \t]*Style[ \t]*/		{ print $0; next; }
 # Key keyname context mods (Exec|Module|Restart) ...
 #  used to be followed by a "name"; it is no longer
@@ -358,7 +359,7 @@ BEGIN   {
 
 # hack: Modules spawned outside of a function, menu, or popup cannot have leading whitespace.
 # add these to the startfunction
-/^Module[ \t]*/                 { printf "AddToFunc \"StartFunction\" \"I\" %s \n", $0; next; }
+/^Module[ \t]*/                 { printf "AddToFunc \"StartFunction\" I %s \n", $0; next; }
 
 # hack: function declarations cannot have leading whitespace
 /^Function[ \t]*/		{
@@ -493,13 +494,13 @@ BEGIN   {
     if (infunction) {
         #gsub("[ 	]PopUp[ 	]", " "); }
 	if ($2 == "\"Motion\"")
-	    context="\"M\"";
+	    context="M";
 	else if ($2 == "\"Click\"")
-	    context="\"C\"";
+	    context="C";
 	else if ($2 == "\"DoubleClick\"")
-	    context="\"D\"";
+	    context="D";
 	else if ($2 == "\"Immediate\"")
-	    context="\"I\"";
+	    context="I";
 	else context=$2;
 		printf "%s", prefix " " context " " $1;
 	for (i=3; i<=NF; ++i)
@@ -546,7 +547,7 @@ END {
     }
     if (!placement) {
         printf "# overide default RandomPlacement and SmartPlacement Styles\n";
-        printf "Style \"*\" %s\n", dflt["placement"];
+        printf "Style * %s\n", dflt["placement"];
     }
 }
 '

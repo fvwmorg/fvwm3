@@ -33,10 +33,10 @@
 #include <stdarg.h>
 #include <sys/wait.h>
 
+#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
-#include "libs/fvwmlib.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -198,7 +198,7 @@ Bool GrabEm(int cursor, int grab_context)
   }
   mask = ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask
     | EnterWindowMask | LeaveWindowMask;
-  while((i<1000)&&
+  while((i < 500)&&
 	(val = XGrabPointer(
 	  dpy, grab_win, True, mask, GrabModeAsync, GrabModeAsync, Scr.Root,
 	  Scr.FvwmCursors[cursor], CurrentTime) != GrabSuccess))
@@ -206,7 +206,7 @@ Bool GrabEm(int cursor, int grab_context)
       i++;
       /* If you go too fast, other windows may not get a change to release
        * any grab that they have. */
-      usleep(1000);
+      usleep(10000);
     }
 
   /* If we fall out of the loop without grabbing the pointer, its

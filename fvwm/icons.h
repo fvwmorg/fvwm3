@@ -17,9 +17,9 @@
 #define _ICONS_
 
 #ifdef NO_ICONS
-#define ICON_HEIGHT 1
+#define ICON_HEIGHT(t) 1
 #else
-#define ICON_HEIGHT (Scr.IconFont.height+6)
+#define ICON_HEIGHT(t) ((t)->icon_font.height + 6)
 #endif
 
 void AutoPlaceIcon(FvwmWindow *);

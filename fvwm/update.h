@@ -27,6 +27,7 @@ typedef struct
   unsigned do_update_icon : 1;
   unsigned do_update_icon_boxes : 1;
   unsigned do_update_icon_font : 1;
+  unsigned do_update_icon_title : 1;
   unsigned do_update_mini_icon : 1;
   unsigned do_update_stick : 1;
   unsigned do_update_stick_icon : 1;

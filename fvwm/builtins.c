@@ -28,8 +28,8 @@
 #include <errno.h>
 #include <X11/keysym.h>
 
-#include "fvwm.h"
 #include "libs/fvwmlib.h"
+#include "fvwm.h"
 #include "libs/Colorset.h"
 #include "bindings.h"
 #include "misc.h"
@@ -55,7 +55,6 @@
 #include "stroke.h"
 #endif /* HAVE_STROKE */
 
-static void ApplyIconFont(void);
 static char *ReadTitleButton(
     char *s, TitleButton *tb, Boolean append, int button);
 
@@ -886,7 +885,7 @@ void SetHiColorset(F_CMD_ARGS)
     fvwm_msg(
       ERR, "SetHiColorset",
       "Decors do not support the HilightColorset command anymore.\n"
-      "    Please use 'Style <stylename> HilightColorset <colorset>' instead."
+      "    Please use 'Style <stylename> HilightColorset <colorset>' instead.\n"
       "    Sorry for the inconvenience.");
     return;
   }
@@ -932,7 +931,6 @@ void do_title_style(F_CMD_ARGS, Bool do_add)
     }
     else if (!do_add && StrEquals(parm,"height"))
     {
-#if 1
       int height = 0;
       int next = 0;
 
@@ -953,59 +951,6 @@ void do_title_style(F_CMD_ARGS, Bool do_add)
       }
       if (action)
 	action += next;
-#else
-      int height, next;
-      if ( sscanf(action, "%d%n", &height, &next) > 0
-	   && height > 4
-	   && height <= 256)
-      {
-	int x,y,w,h,extra_height;
-	FvwmWindow *tmp = Scr.FvwmRoot.next, *hi = Scr.Hilite;
-
-	extra_height = decor->TitleHeight;
-	decor->TitleHeight = height;
-	extra_height -= decor->TitleHeight;
-
-#ifdef I18N_MB
-	decor->WindowFont.y = decor->WindowFont.font->ascent
-	  + (height - (decor->WindowFont.height + EXTRA_TITLE_FONT_HEIGHT)) / 2;
-#else
-	decor->WindowFont.y = decor->WindowFont.font->ascent
-	  + (height - (decor->WindowFont.font->ascent
-		       + decor->WindowFont.font->descent
-		       + EXTRA_TITLE_FONT_HEIGHT)) / 2;
-#endif
-	if (decor->WindowFont.y < decor->WindowFont.font->ascent)
-	  decor->WindowFont.y = decor->WindowFont.font->ascent;
-
-	tmp = Scr.FvwmRoot.next;
-	hi = Scr.Hilite;
-	while(tmp)
-	{
-	  if (!HAS_TITLE(tmp)
-#ifdef USEDECOR
-	      || (tmp->decor != decor)
-#endif
-	    ) {
-	    tmp = tmp->next;
-	    continue;
-	  }
-	  x = tmp->frame_g.x;
-	  y = tmp->frame_g.y;
-	  w = tmp->frame_g.width;
-	  h = tmp->frame_g.height-extra_height;
-	  ForceSetupFrame(tmp, x, y, w, h, True);
-	  DrawDecorations(tmp, DRAW_TITLE, True, True, None);
-	  DrawDecorations(tmp, DRAW_TITLE, False, True, None);
-	  tmp = tmp->next;
-	}
-	DrawDecorations(hi, DRAW_TITLE, True, True, None);
-      }
-      else
-	fvwm_msg(ERR,"SetTitleStyle",
-		 "bad height argument (height must be from 5 to 256)");
-      action += next;
-#endif
     }
     else
     {
@@ -1105,16 +1050,6 @@ void ApplyDefaultFontAndColors(void)
     }
   }
 
-  if (Scr.flags.has_icon_font == 0)
-  {
-#ifdef I18N_MB
-    Scr.IconFont.fontset = Scr.DefaultFont.fontset;
-    Scr.IconFont.height = Scr.DefaultFont.height;
-#endif
-    Scr.IconFont.font = Scr.DefaultFont.font;
-    ApplyIconFont();
-  }
-
   UpdateAllMenuStyles();
 }
 
@@ -1202,14 +1137,7 @@ void SetDefaultColors(F_CMD_ARGS)
 void LoadDefaultFont(F_CMD_ARGS)
 {
   char *font;
-#ifdef I18N_MB
-  XFontSet xfset;
-  XFontSetExtents *fset_extents;
-  XFontStruct **fs_list;
-  char **ml;
-#else
-  XFontStruct *xfs = NULL;
-#endif
+  FvwmFont new_font;
 
   font = PeekToken(action, &action);
   if (!font)
@@ -1218,18 +1146,7 @@ void LoadDefaultFont(F_CMD_ARGS)
     font = "";
   }
 
-#ifdef I18N_MB
-  if ((xfset = GetFontSetOrFixed(dpy, font)) == NULL)
-  {
-    fvwm_msg(
-      ERR, "SetDefaultFont", "Couldn't load font '%s' or 'fixed'\n", font);
-    if (Scr.DefaultFont.fontset == NULL)
-      exit(1);
-    else
-      return;
-  }
-#else
-  if ((xfs = GetFontOrFixed(dpy, font)) == NULL)
+  if (!LoadFvwmFont(dpy, font, &new_font))
   {
     fvwm_msg(
       ERR, "SetDefaultFont", "Couldn't load font '%s' or 'fixed'\n", font);
@@ -1238,118 +1155,37 @@ void LoadDefaultFont(F_CMD_ARGS)
     else
       return;
   }
-#endif
 
-  /* update the font structure */
-#ifdef I18N_MB
-  if (Scr.DefaultFont.fontset != NULL)
-    XFreeFontSet(dpy, Scr.DefaultFont.fontset);
-  Scr.DefaultFont.fontset = xfset;
-
-  /* backward compatiblity setup */
-  XFontsOfFontSet(xfset, &fs_list, &ml);
-  Scr.DefaultFont.font = fs_list[0];
-  fset_extents = XExtentsOfFontSet(xfset);
-  Scr.DefaultFont.height = fset_extents->max_logical_extent.height;
-#else
-  if (Scr.DefaultFont.font)
-    XFreeFont(dpy, Scr.DefaultFont.font);
-  Scr.DefaultFont.font = xfs;
-  Scr.DefaultFont.height =
-    Scr.DefaultFont.font->ascent + Scr.DefaultFont.font->descent;
-#endif
-  Scr.DefaultFont.y = Scr.DefaultFont.font->ascent;
-
+  FreeFvwmFont(dpy, &Scr.DefaultFont);
+  Scr.DefaultFont = new_font;
   /* set flags to indicate that the font has changed */
   Scr.flags.do_need_window_update = 1;
   Scr.flags.has_default_font_changed = 1;
 }
 
-static void ApplyIconFont(void)
-{
-  FvwmWindow *tmp;
-
-#ifndef I18N_MB
-  Scr.IconFont.height = Scr.IconFont.font->ascent+Scr.IconFont.font->descent;
-#endif
-  Scr.IconFont.y = Scr.IconFont.font->ascent;
-
-  tmp = Scr.FvwmRoot.next;
-  while(tmp)
-  {
-    RedoIconName(tmp);
-
-    if(IS_ICONIFIED(tmp))
-    {
-      DrawIconWindow(tmp);
-    }
-    tmp = tmp->next;
-  }
-}
-
 void LoadIconFont(F_CMD_ARGS)
 {
-  char *font;
-#ifdef I18N_MB
-  XFontSet newfontset;
-#else
-  XFontStruct *newfont;
-#endif
+  char *newaction;
 
-flush_window_updates();
-
-  action = GetNextToken(action,&font);
-  if (!font)
+#ifdef USEDECOR
+  if (cur_decor && cur_decor != &Scr.DefaultDecor)
   {
-    if (Scr.flags.has_icon_font == 1)
-    {
-      /* reset to default font */
-      XFreeFont(dpy, Scr.IconFont.font);
-      Scr.flags.has_icon_font = 0;
-    }
-#ifdef I18N_MB
-    Scr.IconFont.fontset = Scr.DefaultFont.fontset;
-    Scr.IconFont.height = Scr.DefaultFont.height;
-#endif
-    Scr.IconFont.font = Scr.DefaultFont.font;
-    ApplyIconFont();
+    fvwm_msg(
+      ERR, "LoadIconFont",
+      "Decors do not support the IconFont command anymore.\n"
+      "    Please use 'Style <stylename> IconFont <fontname>' instead.\n"
+      "    Sorry for the inconvenience.");
     return;
   }
-
-#ifdef I18N_MB
-  if ((newfontset = GetFontSetOrFixed(dpy, font))!=NULL)
-  {
-    XFontSetExtents *fset_extents;
-    XFontStruct **fs_list;
-    char **ml;
-
-    if (Scr.IconFont.fontset != NULL && Scr.flags.has_icon_font == 1)
-      XFreeFontSet(dpy, Scr.IconFont.fontset);
-    Scr.flags.has_icon_font = 1;
-    Scr.IconFont.fontset = newfontset;
-
-    /* backward compatiblity setup */
-    XFontsOfFontSet(newfontset, &fs_list, &ml);
-    Scr.IconFont.font = fs_list[0];
-    fset_extents = XExtentsOfFontSet(newfontset);
-    Scr.IconFont.height = fset_extents->max_logical_extent.height;
-#else
-  if ((newfont = GetFontOrFixed(dpy, font)))
-  {
-    if (Scr.IconFont.font && Scr.flags.has_icon_font == 1)
-      XFreeFont(dpy, Scr.IconFont.font);
-    Scr.flags.has_icon_font = 1;
-    Scr.IconFont.font = newfont;
 #endif
-    ApplyIconFont();
-  }
-  else
+  if (action)
   {
-    fvwm_msg(ERR,"LoadIconFont","Couldn't load font '%s' or 'fixed'\n", font);
+    newaction = safemalloc(strlen(action) + 16);
+    sprintf(newaction, "* IconFont %s", action);
+    action = newaction;
+    ProcessNewStyle(F_PASS_ARGS);
   }
-  free(font);
 }
-
 
 void LoadWindowFont(F_CMD_ARGS)
 {
@@ -1361,7 +1197,7 @@ void LoadWindowFont(F_CMD_ARGS)
     fvwm_msg(
       ERR, "LoadWindowFont",
       "Decors do not support the WindowFont command anymore.\n"
-      "    Please use 'Style <stylename> Font <fontname>' instead."
+      "    Please use 'Style <stylename> Font <fontname>' instead.\n"
       "    Sorry for the inconvenience.");
     return;
   }

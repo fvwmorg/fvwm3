@@ -1,3 +1,10 @@
+2000-01-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/FvwmTaskBar.h:
+	* FvwmButtons/FvwmButtons.c:
+	* FvwmIconBox/FvwmIconBox.c:
+	include fvwmlib.h before fvwm.h
+
 1999-12-31  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmScript/FvwmScript.1: Adjustments.
@@ -5,7 +12,7 @@
 1999-12-31  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Scripts/*:
-	Rename Buttons, Colorset, Date, FileBrowser, Find, ScreenDump, 
+	Rename Buttons, Colorset, Date, FileBrowser, Find, ScreenDump,
 	ScreenSetup and WidgetDemo to ScriptFvwm*.
 	Rename and modify BellSetup, KeyboardSetup, PointerSetup, Quit.
 	Replace DeskSetup by ScriptFvwmDefaultStyle that allows to change
@@ -21,7 +28,7 @@
 	* FvwmScript/FvwmScript.c (BuildGUI):
         Fixed DefaultColorset
 	Fixed main Colorset against Widget Colors
-	
+
 1999-12-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.c (swallow):

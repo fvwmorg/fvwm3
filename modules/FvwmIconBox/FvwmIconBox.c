@@ -61,6 +61,7 @@
 #include <X11/extensions/shape.h>
 #endif /* SHAPE */
 
+#include "libs/fvwmlib.h"
 #include "fvwm/fvwm.h"
 #include "libs/Colorset.h"
 #include "FvwmIconBox.h"

@@ -37,11 +37,11 @@
 #include <X11/xpm.h>
 #endif /* XPM */
 
+#include "libs/fvwmlib.h"
 #include <stdio.h>
 #include "fvwm.h"
 #include "cursor.h"
 #include "functions.h"
-#include "libs/fvwmlib.h"
 #include "bindings.h"
 #include "misc.h"
 #include "screen.h"
@@ -119,9 +119,9 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   if (!(HAS_NO_ICON_TITLE(tmp_win))||(tmp_win->icon_p_height == 0))
   {
     tmp_win->icon_t_width =
-      XTextWidth(Scr.IconFont.font, tmp_win->icon_name,
+      XTextWidth(tmp_win->icon_font.font, tmp_win->icon_name,
 		 strlen(tmp_win->icon_name));
-    tmp_win->icon_g.height = ICON_HEIGHT;
+    tmp_win->icon_g.height = ICON_HEIGHT(tmp_win);
   }
   else
   {
@@ -158,12 +158,13 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 			   | EnterWindowMask | LeaveWindowMask
 			   | FocusChangeMask );
   if (!(HAS_NO_ICON_TITLE(tmp_win)) || (tmp_win->icon_p_height == 0))
-    tmp_win->icon_w = XCreateWindow(dpy, Scr.Root, def_x,
-				    def_y + tmp_win->icon_p_height,
-				    tmp_win->icon_g.width,
-				    tmp_win->icon_g.height, 0, Pdepth,
-				    InputOutput, Pvisual, valuemask,
-				    &attributes);
+  {
+    tmp_win->icon_w =
+      XCreateWindow(
+	dpy, Scr.Root, def_x, def_y + tmp_win->icon_p_height,
+	tmp_win->icon_g.width, tmp_win->icon_g.height, 0, Pdepth,
+	InputOutput, Pvisual, valuemask, &attributes);
+  }
   if (Scr.DefaultColorset >= 0)
     SetWindowBackground(dpy, tmp_win->icon_w, tmp_win->icon_g.width,
 			tmp_win->icon_g.height, &Colorset[Scr.DefaultColorset],
@@ -174,12 +175,13 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
      && (tmp_win->icon_p_height > 0))
   {
     /* use fvwm's visuals in these cases */
-    if (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win)) {
-      tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, def_x, def_y,
-					     tmp_win->icon_p_width,
-					     tmp_win->icon_p_height, 0,
-					     Pdepth, InputOutput,
-					     Pvisual, valuemask, &attributes);
+    if (Pdefault || (tmp_win->iconDepth == 1) || IS_PIXMAP_OURS(tmp_win))
+    {
+      tmp_win->icon_pixmap_w =
+	XCreateWindow(
+	  dpy, Scr.Root, def_x, def_y, tmp_win->icon_p_width,
+	  tmp_win->icon_p_height, 0, Pdepth, InputOutput, Pvisual, valuemask,
+	  &attributes);
       if (Scr.DefaultColorset >= 0)
 	SetWindowBackground(dpy, tmp_win->icon_w, tmp_win->icon_p_width,
 			    tmp_win->icon_p_height,
@@ -197,13 +199,11 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       attributes.colormap = DefaultColormap(dpy, Scr.screen);
       valuemask &= ~CWBackPixel;
       valuemask |= CWBackPixmap;
-      tmp_win->icon_pixmap_w = XCreateWindow(dpy, Scr.Root, def_x, def_y,
-					     tmp_win->icon_p_width,
-					     tmp_win->icon_p_height, 0,
-					     DefaultDepth(dpy, Scr.screen),
-					     InputOutput,
-					     DefaultVisual(dpy, Scr.screen),
-					     valuemask, &attributes);
+      tmp_win->icon_pixmap_w =
+	XCreateWindow(
+	  dpy, Scr.Root, def_x, def_y, tmp_win->icon_p_width,
+	  tmp_win->icon_p_height, 0, DefaultDepth(dpy, Scr.screen), InputOutput,
+	  DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
     }
   }
   else
@@ -339,19 +339,21 @@ void DrawIconWindow(FvwmWindow *tmp_win)
   }
 
   /* set up TitleGC for drawing the icon label */
-  NewFontAndColor(Scr.IconFont.font->fid,TextColor,BackColor);
-  if(tmp_win->icon_w != None) {
-    tmp_win->icon_g.height = ICON_HEIGHT;
+  if (tmp_win->icon_font.font != None)
+    NewFontAndColor(tmp_win->icon_font.font->fid, TextColor, BackColor);
+  if(tmp_win->icon_w != None)
+  {
+    tmp_win->icon_g.height = ICON_HEIGHT(tmp_win);
     XMoveResizeWindow(dpy, tmp_win->icon_w, tmp_win->icon_xl_loc,
                       tmp_win->icon_g.y + tmp_win->icon_p_height,
-                      tmp_win->icon_g.width,ICON_HEIGHT);
+                      tmp_win->icon_g.width,ICON_HEIGHT(tmp_win));
     XSetWindowBackground(dpy, tmp_win->icon_w, BackColor);
     XClearWindow(dpy,tmp_win->icon_w);
 
     /* text position */
     x = (tmp_win->icon_g.width - tmp_win->icon_t_width) / 2;
-    if(x < 5)
-      x = 5;
+    if(x < 3)
+      x = 3;
     if ((IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win)))
     {
       XRectangle r;
@@ -361,25 +363,26 @@ void DrawIconWindow(FvwmWindow *tmp_win)
       r.x = 0;
       r.y = 0;
       r.width = tmp_win->icon_g.width - 7;
-      r.height = ICON_HEIGHT;
+      r.height = ICON_HEIGHT(tmp_win);
       XSetClipRectangles(dpy, Scr.TitleGC, 0, 0, &r, 1, Unsorted);
     }
 #ifdef I18N_MB
-    XmbDrawString (dpy, tmp_win->icon_w, Scr.IconFont.fontset,
+    XmbDrawString (dpy, tmp_win->icon_w, tmp_win->icon_font.fontset,
 #else
     XDrawString (dpy, tmp_win->icon_w,
 #endif
 		 Scr.TitleGC, x,
-		 tmp_win->icon_g.height - Scr.IconFont.height + Scr.IconFont.y
-		 - 3, tmp_win->icon_name, strlen(tmp_win->icon_name));
+		 tmp_win->icon_g.height - tmp_win->icon_font.height +
+		 tmp_win->icon_font.y - 3, tmp_win->icon_name,
+		 strlen(tmp_win->icon_name));
     RelieveRectangle(dpy, tmp_win->icon_w, 0, 0, tmp_win->icon_g.width - 1,
-		     ICON_HEIGHT - 1, Relief, Shadow, 2);
+		     ICON_HEIGHT(tmp_win) - 1, Relief, Shadow, 2);
     if (IS_STICKY(tmp_win) || IS_ICON_STICKY(tmp_win))
     {
       /* an odd number of lines every 4 pixels */
-      int num = (ICON_HEIGHT / 8) * 2 - 1;
-      int min = ICON_HEIGHT / 2 - num * 2 + 1;
-      int max = ICON_HEIGHT / 2 + num * 2 - 3;
+      int num = (ICON_HEIGHT(tmp_win) / 8) * 2 - 1;
+      int min = ICON_HEIGHT(tmp_win) / 2 - num * 2 + 1;
+      int max = ICON_HEIGHT(tmp_win) / 2 + num * 2 - 3;
       int i;
       int stipple_w = x - 6;
 
@@ -486,7 +489,7 @@ void RedoIconName(FvwmWindow *tmp_win)
   if (tmp_win->icon_w == (int)NULL)
     return;
 
-  tmp_win->icon_t_width = XTextWidth(Scr.IconFont.font,tmp_win->icon_name,
+  tmp_win->icon_t_width = XTextWidth(tmp_win->icon_font.font,tmp_win->icon_name,
 				     strlen(tmp_win->icon_name));
   /* clear the icon window, and trigger a re-draw via an expose event */
   if (IS_ICONIFIED(tmp_win))
@@ -793,9 +796,9 @@ void AutoPlaceIcon(FvwmWindow *t)
     t->icon_xl_loc = t->icon_g.x;
 
     if (t->icon_w != None)
-      XMoveResizeWindow(dpy, t->icon_w, t->icon_xl_loc,
-                        t->icon_g.y+t->icon_p_height,
-                        t->icon_g.width,ICON_HEIGHT);
+      XMoveResizeWindow(
+	dpy, t->icon_w, t->icon_xl_loc, t->icon_g.y+t->icon_p_height,
+	t->icon_g.width, ICON_HEIGHT(t));
     BroadcastPacket(M_ICON_LOCATION, 7,
                     t->w, t->frame,
                     (unsigned long)t,
@@ -1206,7 +1209,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   /* if no pixmap we want icon width to change to text width every iconify */
   if( (tmp_win->icon_w != None) && (tmp_win->icon_pixmap_w == None) ) {
     tmp_win->icon_t_width =
-      XTextWidth(Scr.IconFont.font,tmp_win->icon_name,
+      XTextWidth(tmp_win->icon_font.font,tmp_win->icon_name,
                  strlen(tmp_win->icon_name));
     tmp_win->icon_p_width = tmp_win->icon_t_width+6 + 4;
     tmp_win->icon_g.width = tmp_win->icon_p_width;

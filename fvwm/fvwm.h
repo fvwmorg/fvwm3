@@ -135,16 +135,6 @@ typedef struct icon_boxes_struct
 #define ICONFILLHRZ (1<<2)
 } icon_boxes;
 
-typedef struct MyFont
-{
-  XFontStruct *font;		/* font structure */
-#ifdef I18N_MB
-  XFontSet fontset;		/* font set */
-#endif
-  int height;			/* height of the font */
-  int y;			/* Y coordinate to draw characters */
-} MyFont;
-
 typedef struct
 {
   Pixel fore;
@@ -168,6 +158,8 @@ typedef struct
 {
   /* common flags (former flags in bits 0-12) */
   unsigned is_sticky : 1;
+  unsigned has_icon_font : 1;
+  unsigned has_window_font : 1;
   /* static flags that do not change dynamically after the window has been
    * created */
   struct
@@ -194,15 +186,11 @@ typedef struct
     unsigned focus_mode : 2;
     unsigned has_bottom_title : 1;
     unsigned has_depressable_border : 1;
-#if 0
-    unsigned has_icon_font : 1;
-#endif
     unsigned has_mwm_border : 1;
     unsigned has_mwm_buttons : 1;
     unsigned has_mwm_override : 1;
     unsigned has_no_icon_title : 1;
     unsigned has_override_size : 1;
-    unsigned has_window_font : 1;
     unsigned is_fixed : 1;
     unsigned is_icon_sticky : 1;
     unsigned is_icon_suppressed : 1;
@@ -224,6 +212,7 @@ typedef struct
   unsigned is_iconified_by_parent : 1; /* To prevent iconified transients in a
 					* parent icon from counting for Next */
   unsigned is_icon_entered : 1; /* is the pointer over the icon? */
+  unsigned is_icon_font_loaded : 1;
   unsigned is_icon_ours : 1; /* is the icon window supplied by the app? */
   unsigned is_icon_shaped : 1; /* is the icon shaped? */
   unsigned is_icon_moved : 1; /* has the icon been moved by the user? */
@@ -244,6 +233,7 @@ typedef struct
 				      * but didn't receive a UnmapNotify yet.*/
   unsigned is_viewport_moved : 1; /* To prevent double move in MoveViewport.*/
   unsigned is_window_being_moved_opaque : 1;
+  unsigned is_window_font_loaded : 1;
   unsigned is_window_shaded : 1;
 } window_flags;
 
@@ -304,9 +294,7 @@ typedef struct window_style
 #ifdef USEDECOR
   char *decor_name;
 #endif
-#if 0
   char *icon_font;
-#endif
   char *window_font;
   char *fore_color_name;
   char *back_color_name;
@@ -384,10 +372,8 @@ typedef struct FvwmWindow
   char **name_list;           /* window name list */
   char **icon_name_list;      /* icon name list */
 #endif
-  MyFont title_font;
-#if 0
-  MyFont icon_font;
-#endif
+  FvwmFont title_font;
+  FvwmFont icon_font;
   XWindowAttributes attr;     /* the child window attributes */
   XSizeHints hints;           /* normal hints */
   XWMHints *wmhints;          /* WM hints */

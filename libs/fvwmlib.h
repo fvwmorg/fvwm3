@@ -176,8 +176,20 @@ int pixel_to_color_string(
  * Wrappers around various X11 routines
  ***********************************************************************/
 
+typedef struct FvwmFont
+{
+  XFontStruct *font;		/* font structure */
+#ifdef I18N_MB
+  XFontSet fontset;		/* font set */
+#endif
+  int height;			/* height of the font */
+  int y;			/* Y coordinate to draw characters */
+} FvwmFont;
+
 XFontStruct *GetFontOrFixed(Display *disp, char *fontname);
 XFontSet GetFontSetOrFixed(Display *disp, char *fontname);
+Bool LoadFvwmFont(Display *dpy, char *fontname, FvwmFont *ret_font);
+void FreeFvwmFont(Display *dpy, FvwmFont *font);
 
 void MyXGrabServer(Display *disp);
 void MyXUngrabServer(Display *disp);

@@ -37,8 +37,8 @@
 #define FVWMTASKBAR_H
 
 #include "config.h"
-#include "fvwm/fvwm.h"
 #include "libs/fvwmlib.h"
+#include "fvwm/fvwm.h"
 #include "libs/vpacket.h"
 
 #include <X11/Xlib.h>

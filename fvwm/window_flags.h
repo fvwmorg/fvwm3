@@ -90,14 +90,12 @@
           ((fw)->flags.common.s.focus_mode == FOCUS_CLICK)
 #define HAS_MOUSE_FOCUS(fw)    \
           ((fw)->flags.common.s.focus_mode == FOCUS_MOUSE)
-#if 0
 #define HAS_ICON_FONT(fw)  \
-          ((fw)->flags.common.s.nas_icon_font)
+          ((fw)->flags.common.has_icon_font)
 #define SET_HAS_ICON_FONT(fw,x) \
-          (fw)->flags.common.s.nas_icon_font = !!(x)
+          (fw)->flags.common.has_icon_font = !!(x)
 #define SETM_HAS_ICON_FONT(fw,x) \
-          (fw)->flag_mask.common.s.nas_icon_font = !!(x)
-#endif
+          (fw)->flag_mask.common.has_icon_font = !!(x)
 #define HAS_SLOPPY_FOCUS(fw)   \
           ((fw)->flags.common.s.focus_mode == FOCUS_SLOPPY)
 #define HAS_NEVER_FOCUS(fw)   \
@@ -109,11 +107,11 @@
 #define SETM_HAS_NO_ICON_TITLE(fw,x) \
           (fw)->flag_mask.common.s.has_no_icon_title = !!(x)
 #define HAS_WINDOW_FONT(fw)  \
-          ((fw)->flags.common.s.has_window_font)
+          ((fw)->flags.common.has_window_font)
 #define SET_HAS_WINDOW_FONT(fw,x) \
-          (fw)->flags.common.s.has_window_font = !!(x)
+          (fw)->flags.common.has_window_font = !!(x)
 #define SETM_HAS_WINDOW_FONT(fw,x) \
-          (fw)->flag_mask.common.s.has_window_font = !!(x)
+          (fw)->flag_mask.common.has_window_font = !!(x)
 #define HAS_MWM_BORDER(fw)     ((fw)->flags.common.s.has_mwm_border)
 #define HAS_MWM_BUTTONS(fw)    ((fw)->flags.common.s.has_mwm_buttons)
 #define HAS_MWM_OVERRIDE_HINTS(fw)  \
@@ -144,6 +142,9 @@
 #define IS_MAPPED(fw)          ((fw)->flags.is_mapped)
 #define SET_MAPPED(fw,x)       (fw)->flags.is_mapped = !!(x)
 #define SETM_MAPPED(fw,x)      (fw)->flag_mask.is_mapped = !!(x)
+#define IS_ICON_FONT_LOADED(fw)     ((fw)->flags.is_icon_font_loaded)
+#define SET_ICON_FONT_LOADED(fw,x)  (fw)->flags.is_icon_font_loaded = !!(x)
+#define SETM_ICON_FONT_LOADED(fw,x) (fw)->flag_mask.is_icon_font_loaded = !!(x)
 #define IS_ICONIFIED(fw)       ((fw)->flags.is_iconified)
 #define SET_ICONIFIED(fw,x)    (fw)->flags.is_iconified = !!(x)
 #define SETM_ICONIFIED(fw,x)   (fw)->flag_mask.is_iconified = !!(x)
@@ -191,7 +192,7 @@
 #define IS_DEICONIFY_PENDING(fw)     ((fw)->flags.is_deiconify_pending)
 #define SET_DEICONIFY_PENDING(fw,x)  (fw)->flags.is_deiconify_pending = !!(x)
 #define SETM_DEICONIFY_PENDING(fw,x) \
-                               (fw)->flag_mask.is_deiconify_pending = !!(x)
+          (fw)->flag_mask.is_deiconify_pending = !!(x)
 #define IS_VIEWPORT_MOVED(fw)  ((fw)->flags.is_viewport_moved)
 #define SET_VIEWPORT_MOVED(fw,x) \
           (fw)->flags.is_viewport_moved = !!(x)
@@ -210,11 +211,15 @@
 #define SETM_PARTIALLY_VISIBLE(fw,x) \
           (fw)->flag_mask.is_partially_visible = !!(x)
 #define IS_WINDOW_BEING_MOVED_OPAQUE(fw) \
-                               ((fw)->flags.is_window_being_moved_opaque)
+          ((fw)->flags.is_window_being_moved_opaque)
 #define SET_WINDOW_BEING_MOVED_OPAQUE(fw,x) \
           (fw)->flags.is_window_being_moved_opaque = !!(x)
 #define SETM_WINDOW_BEING_MOVED_OPAQUE(fw,x) \
           (fw)->flag_mask.is_window_being_moved_opaque = !!(x)
+#define IS_WINDOW_FONT_LOADED(fw)     ((fw)->flags.is_window_font_loaded)
+#define SET_WINDOW_FONT_LOADED(fw,x)  (fw)->flags.is_window_font_loaded = !!(x)
+#define SETM_WINDOW_FONT_LOADED(fw,x) \
+          (fw)->flag_mask.is_window_font_loaded = !!(x)
 #define WM_DELETES_WINDOW(fw)   ((fw)->flags.does_wm_delete_window)
 #define SET_WM_DELETES_WINDOW(fw,x) \
           (fw)->flags.does_wm_delete_window = !!(x)

@@ -1,3 +1,59 @@
+2000-01-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* sample.fvwmrc/decor_examples:
+	* sample.fvwmrc/system.fvwm2rc-sample-95:
+	* sample.fvwmrc/system.fvwm2rc-sample-2:
+	* sample.fvwmrc/system.fvwm2rc-sample-1:
+	* sample.fvwmrc/system.fvwm2rc:
+	* sample.fvwmrc/new-features:
+	use new styles Font, IconFont and Hilight...
+
+	* fvwm/menus.c (UpdateMenuStyle):
+	(NewMenuStyle):
+	use new LoadFvwmFont library function instead of I18N_MB ifdef
+
+	* libs/GetFontSet.c:
+	removed file (merged with GetFont.c)
+
+	* fvwm/*.c:
+	include fvwmlib.h before fvwm.h
+	* fvwm/fvwm.h (MyFont):
+	struct moved to fvwmlib.h
+
+	* fvwm/window_flags.h:
+	* fvwm/focus.c (WarpOn):
+	(FocusOn):
+	* fvwm/icons.h (ICON_HEIGHT):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/icons.c (CreateIconWindow):
+	(CreateIconWindow):
+	(RedoIconName):
+	(Iconify):
+	* fvwm/builtins.c (ApplyDefaultFontAndColors):
+	(do_title_style):
+	(ApplyIconFont):
+	(LoadIconFont):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/update.c (flush_window_updates):
+	(apply_window_updates):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/style.c (merge_styles):
+	(free_style):
+	(ProcessNewStyle):
+	(check_window_style_change):
+	new Style 'IconFont' replaces old IconFont command
+
+	* fvwm/borders.c (RedrawTitle):
+	fixed I18N_MB reference to removed WindowFont
+
+	* fvwm/builtins.c (do_title_style):
+	removed old code
+
+	* fvwm/session.h (sm_fd):
+	fixed typo: sm_id -> sm_fd
+	* fvwm/session.c (setRealStateFilename):
+	fixed screwed up macro
+
 2000-01-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c:

@@ -7,16 +7,15 @@ EdgeResistance 250 10
 EdgeScroll 100 100
 ClickTime 750
 
-# make sure these fonts exist on your system:
-IconFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
-
 DeskTopSize 2x2
 MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-* fvwm
 
 ColormapFocus FollowsMouse
 
 # default Styles:
+# make sure these fonts exist on your system:
 Style *           Font -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
+Style *           IconFont -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
 Style *           HilightFore black, HilightBack palevioletred
 Style *           BorderWidth 7, HandleWidth 7
 Style *           Icon unknown1.xpm, Color lightgrey/dimgrey

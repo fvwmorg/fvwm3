@@ -26,6 +26,8 @@
 #define _DEBUG_
 
 #include "config.h"
+
+#include "libs/fvwmlib.h"
 #include "fvwm.h"
 #include <stdio.h>
 
