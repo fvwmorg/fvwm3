@@ -101,6 +101,7 @@ The currently recognized fvwm 2.6 commands:
   None                  - Perform command if no window matches conditions
   Nop                   - Do nothing (used internally)
   NoWindow              - Prefix that runs a command without a window context
+  On                    - Execute command if conditions are met
   OpaqueMoveSize        - Set maximum size window fvwm should move opaquely
   Pick                  - Prefix to force a window context, prompted if needed
   PipeRead              - Exec system command interpret output as fvwm commands
