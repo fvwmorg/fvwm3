@@ -35,7 +35,13 @@
 #include "virtual.h"
 #include "gnome.h"
 
+#define DV_PATCH
 /* ----------------------------- stack ring code --------------------------- */
+
+#ifdef DV_PATCH
+static void RaiseOrLowerWindow(
+  FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool adding_window);
+#endif
 
 /* Remove a window from the stack ring */
 void remove_window_from_stack_ring(FvwmWindow *t)
@@ -76,11 +82,19 @@ Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
   /* RaiseWindow/LowerWindow will put the window in its layer */
   if (do_lower)
   {
+#ifndef DV_PATCH
     LowerWindow(t);
+#else
+    RaiseOrLowerWindow(t, True, False, True);
+#endif
   }
   else
   {
+#ifndef DV_PATCH
     RaiseWindow(t);
+#else
+    RaiseOrLowerWindow(t, False, False, True);
+#endif
   }
   return True;
 }
@@ -213,8 +227,8 @@ static void raise_over_unmanaged(FvwmWindow *t)
 }
 
 
-static Bool must_move_transients(FvwmWindow *t, Bool do_lower,
-				 Bool *found_transient)
+static Bool must_move_transients(
+  FvwmWindow *t, Bool do_lower, Bool *found_transient)
 {
   *found_transient = False;
 
@@ -248,7 +262,10 @@ static Bool must_move_transients(FvwmWindow *t, Bool do_lower,
 	*found_transient = True;
 
         /* transients are not allowed below main in the same layer */
-        if ( !scanning_above_window ) return True;
+        if ( !scanning_above_window )
+        {
+          return True;
+        }
       }
       else if ((scanning_above_window && !do_lower) ||
 	       (*found_transient && do_lower))
@@ -264,8 +281,13 @@ static Bool must_move_transients(FvwmWindow *t, Bool do_lower,
   return False;
 }
 
+#ifndef DV_PATCH
 static void RaiseOrLowerWindow(
   FvwmWindow *t, Bool do_lower, Bool allow_recursion)
+#else
+static void RaiseOrLowerWindow(
+  FvwmWindow *t, Bool do_lower, Bool allow_recursion, Bool adding_window)
+#endif
 {
   FvwmWindow *s, *r, *t2, *next, tmp_r;
   unsigned int flags;
@@ -301,7 +323,11 @@ static void RaiseOrLowerWindow(
           if ((!do_lower && DO_RAISE_TRANSIENT(t2)) ||
               (do_lower && DO_LOWER_TRANSIENT(t2))  )
           {
+#ifndef DV_PATCH
               RaiseOrLowerWindow(t2,do_lower,False);
+#else
+              RaiseOrLowerWindow(t2,do_lower,False,False);
+#endif
               return;
           }
         }
@@ -338,6 +364,13 @@ static void RaiseOrLowerWindow(
       do_move_transients = True;
     }
   }
+
+#ifdef DV_PATCH
+  if (adding_window)
+  {
+    no_movement = False;
+  }
+#endif
 
   if ( ! no_movement )
   {
@@ -529,13 +562,21 @@ static void RaiseOrLowerWindow(
 */
 void RaiseWindow(FvwmWindow *t)
 {
+#ifndef DV_PATCH
   RaiseOrLowerWindow(t, False, True);
+#else
+  RaiseOrLowerWindow(t, False, True, False);
+#endif
   return;
 }
 
 void LowerWindow(FvwmWindow *t)
 {
+#ifndef DV_PATCH
   RaiseOrLowerWindow(t, True, True);
+#else
+  RaiseOrLowerWindow(t, True, True, False);
+#endif
   return;
 }
 
