@@ -11,6 +11,7 @@
 #include "parse.h"
 #include "screen.h"
 #include "module.h"
+#include <X11/keysym.h>
 
 struct charstring
 {
@@ -118,8 +119,11 @@ void ParseBindEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int button,i,min,max;
   int n1=0,n2=0,n3=0;
   KeySym keysym;
+  KeySym tkeysym;
   int contexts;
   int mods;
+  int maxmods;
+  int m;
 
   /* tline points after the key word "Mouse" or "Key" */
   ptr = GetNextToken(tline, &token);
@@ -228,32 +232,40 @@ void ParseBindEntry(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   }
 
   /*
-  ** why wasn't XKeysymToKeycode used instead of this for loop?
-  ** domivogt (18-Dec-1998): because multiple key can be bound to the same
-  ** key symbol?
+  ** Unfortunately a keycode can be bound to multiple keysyms and a keysym can
+  ** be bound to multiple keycodes. Thus we have to check every keycode with
+  ** any single modifier.
   */
   if (fKey)
     {
       XDisplayKeycodes(dpy, &min, &max);
+      maxmods = 8;
     }
   else
     {
       min = button;
       max = button;
+      maxmods = 0;
     }
   for (i=min; i<=max; i++)
-    if (!fKey || XKeycodeToKeysym(dpy, i, 0) == keysym)
-    {
-      temp = Scr.AllBindings;
-      Scr.AllBindings  = (Binding *)safemalloc(sizeof(Binding));
-      Scr.AllBindings->IsMouse = !fKey;
-      Scr.AllBindings->Button_Key = i;
-      Scr.AllBindings->key_name = fKey ? stripcpy(key) : NULL;
-      Scr.AllBindings->Context = contexts;
-      Scr.AllBindings->Modifier = mods;
-      Scr.AllBindings->Action = stripcpy(action);
-      Scr.AllBindings->NextBinding = temp;
-    }
+  {
+    /* If this is a mouse binding we'll fall through the for loop (maxmods is
+     * zero) and the if condition is always true (fKey is zero). Since min ==
+     * max == button there is no loop at all is case of a mouse binding. */
+    for (m = 0, tkeysym = XK_Left; m <= maxmods && tkeysym != NoSymbol; m++)
+      if (!fKey || (tkeysym = XKeycodeToKeysym(dpy, i, m)) == keysym)
+      {
+	temp = Scr.AllBindings;
+	Scr.AllBindings = (Binding *)safemalloc(sizeof(Binding));
+	Scr.AllBindings->IsMouse = !fKey;
+	Scr.AllBindings->Button_Key = i;
+	Scr.AllBindings->key_name = fKey ? stripcpy(key) : NULL;
+	Scr.AllBindings->Context = contexts;
+	Scr.AllBindings->Modifier = mods;
+	Scr.AllBindings->Action = stripcpy(action);
+	Scr.AllBindings->NextBinding = temp;
+      }
+  }
   return;
 }
 

@@ -1,5 +1,7 @@
 1999-02-12  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/bindings.c (ParseBindEntry): fixed key binding bug
+
 	* libs/Module.c (SendText): applied patch by Adam Rice to make fvwm2
 	work with 2.2.x Linux kernels (trivial patch).
 
