@@ -776,14 +776,14 @@ int ParseDirectionArgument(
 	int rc;
 	char *next;
 	char *optlist[] = {
-		"North",     "Top",         "Up",
-		"East",      "Right",       "Right",
-		"South",     "Bottom",      "Down",
-		"West",      "Left",        "Left",
-		"NorthEast", "TopRight"     "UpRight",
-		"SouthEast", "BottomRight", "DownRight",
-		"SouthWest", "BottomLeft"   "DownLeft",
-		"NorthWest", "TopLeft",     "UpLeft",
+		"N",  "North",     "Top",         "Up",
+		"E",  "East",      "Right",       "Right",
+		"S",  "South",     "Bottom",      "Down",
+		"W",  "West",      "Left",        "Left",
+		"NE", "NorthEast", "TopRight"     "UpRight",
+		"SE", "SouthEast", "BottomRight", "DownRight",
+		"SW", "SouthWest", "BottomLeft"   "DownLeft",
+		"NW", "NorthWest", "TopLeft",     "UpLeft",
 		NULL
 	};
 
@@ -796,7 +796,7 @@ int ParseDirectionArgument(
 	}
 	else
 	{
-		rc = index / 3;
+		rc = index / 4;
 	}
 	if (ret_action)
 	{
