@@ -248,7 +248,7 @@ uninstall-local: uninstall-local-@USE_NLS@
 uninstall-local-no:
 uninstall-local-yes:
 	catalogs='$(CATALOGS)'; \
-	@all_domain='$(ALL_DOMAIN)'
+	@all_domain='$(ALL_DOMAINS)'
 	for dom in $$all_domain; do
 	  for cat in $$catalogs; do \
 	    cat=`basename $$cat`; \

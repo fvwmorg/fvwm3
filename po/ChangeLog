@@ -2,6 +2,8 @@
 
 	* Makefile.am:
 	fixed (?) install and uninstall rules
+	(uninstall-local-yes):
+	use ALL_DOMAINS instead of undefined ALL_DOMAIN
 
 2002-11-28  olicha  <olivier.chapuis@free.fr>
 
