@@ -1,5 +1,8 @@
 2001-09-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* configure.in:
+	changed version to 2.5.0
+
 	* Makefile.am (distcheck2):
 	build distcheck before dist2; save a few seconds if the build fails
 
