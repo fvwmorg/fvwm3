@@ -1783,11 +1783,13 @@ void CMD_Style(F_CMD_ARGS)
         {
 	  found = True;
 	  *val = -1;
-	  GetIntegerArguments(rest, NULL, val, 1);
-	  if(*val < 0)
+	  if (GetIntegerArguments(rest, NULL, val, 1) && *val < 0)
 	  {
 	    fvwm_msg(ERR, "CMD_Style",
-		     "Layer must be positive or zero." );
+	      "Layer must be positive or zero.");
+	  }
+	  if (*val < 0)
+	  {
 	    SSET_LAYER(*ptmpstyle, -9);
 	    /* mark layer unset */
 	    ptmpstyle->flags.use_layer = 0;
@@ -2598,7 +2600,7 @@ void CMD_Style(F_CMD_ARGS)
 
     if (found == False)
     {
-      fvwm_msg(ERR,"CMD_Style", "bad style command: %s", option);
+      fvwm_msg(ERR, "CMD_Style", "Bad style option: %s", option);
       /* Can't return here since all malloced memory will be lost. Ignore rest
        * of line instead. */
 

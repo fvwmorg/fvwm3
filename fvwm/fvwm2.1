@@ -5063,8 +5063,9 @@ The default is
 .IR RecaptureIgnoresStartsOnPage .
 
 .I Layer
-accepts one a argument: a non-negative integer. This is the
-layer the window is put in.
+accepts one optional argument: a non-negative integer.  This is the
+layer the window is put in.  If no argument is given, any previously
+set value is deleted and the default layer is implied.
 
 .I StaysOnTop
 puts the window in the top layer.  This layer can be changed
@@ -5079,7 +5080,7 @@ the built-in command
 the default is 4.
 
 .I StaysOnBottom
-puts the window in the bottom layer. This layer can be changed
+puts the window in the bottom layer.  This layer can be changed
 by the built-in command
 .BR DefaultLayers ;
 the default is 2.
