@@ -183,62 +183,109 @@ static void apply_window_updates(
 		setup_window_font(t, pstyle, flags->do_update_window_font);
 		flags->do_redecorate = True;
 	}
-	if (flags->do_redecorate ||
-	    (IS_TRANSIENT(t) && flags->do_redecorate_transient))
+	if (flags->do_redecorate || flags->do_update_title_dir)
 	{
+		size_borders b_old;
+		size_borders b_new;
+		int dw = 0;
+		int dh = 0;
 		rectangle naked_g;
 		rectangle *new_g;
 
-		if (!is_style_initialised)
+		if (flags->do_redecorate)
 		{
-			init_style(&old_t, t, pstyle, &buttons);
-			is_style_initialised = True;
+			if (!is_style_initialised)
+			{
+				init_style(&old_t, t, pstyle, &buttons);
+				is_style_initialised = True;
+			}
+
+			/* redecorate */
+			change_auxiliary_windows(t, buttons);
+
+			/* calculate the new offsets */
+			/* naked_g: geometry without decor */
+			gravity_get_naked_geometry(
+				old_t.hints.win_gravity, &old_t, &naked_g,
+				&t->normal_g);
+			/* gravity without decor */
+			gravity_translate_to_northwest_geometry_no_bw(
+				old_t.hints.win_gravity, &old_t, &naked_g,
+				&naked_g);
+			/* set normal_g with the decor */
+			gravity_add_decoration(
+				old_t.hints.win_gravity, t, &t->normal_g,
+				&naked_g);
+		}
+		if (flags->do_update_title_dir)
+		{
+			/* new border sizes */
+			get_window_borders(t, &b_old);
+			SET_TITLE_DIR(t, STITLE_DIR(pstyle->flags));
+			setup_title_geometry(t, pstyle);
+			get_window_borders(t, &b_new);
+
+			/* resizing */
+			dw = b_new.total_size.width - b_old.total_size.width;
+			dh = b_new.total_size.height - b_old.total_size.height;
+			gravity_resize(
+				t->hints.win_gravity, &t->normal_g, dw, dh);
+			gravity_constrain_size(
+				t->hints.win_gravity, t, &t->normal_g, 0);
 		}
 
-		/* redecorate */
-		change_auxiliary_windows(t, buttons);
-
-		/* calculate the new offsets */
-		gravity_get_naked_geometry(
-			old_t.hints.win_gravity, &old_t, &naked_g,
-			&t->normal_g);
-		gravity_translate_to_northwest_geometry_no_bw(
-			old_t.hints.win_gravity, &old_t, &naked_g, &naked_g);
-		gravity_add_decoration(
-			old_t.hints.win_gravity, t, &t->normal_g, &naked_g);
 		if (IS_MAXIMIZED(t))
 		{
-			int off_x = old_t.normal_g.x - old_t.max_g.x;
-			int off_y = old_t.normal_g.y - old_t.max_g.y;
-			int new_off_x;
-			int new_off_y;
+			if (flags->do_redecorate)
+			{
+				int off_x = old_t.normal_g.x - old_t.max_g.x;
+				int off_y = old_t.normal_g.y - old_t.max_g.y;
+				int new_off_x;
+				int new_off_y;
 
-			/* maximized windows are always considered to have
-			 * NorthWestGravity */
-			gravity_get_naked_geometry(
-				NorthWestGravity, &old_t, &naked_g, &t->max_g);
-			gravity_translate_to_northwest_geometry_no_bw(
-				NorthWestGravity, &old_t, &naked_g, &naked_g);
-			gravity_add_decoration(
-				NorthWestGravity, t, &t->max_g, &naked_g);
+				/* maximized windows are always considered to
+				 * have NorthWestGravity */
+				gravity_get_naked_geometry(
+					NorthWestGravity, &old_t, &naked_g,
+					&t->max_g);
+				gravity_translate_to_northwest_geometry_no_bw(
+					NorthWestGravity, &old_t, &naked_g,
+					&naked_g);
+				gravity_add_decoration(
+					NorthWestGravity, t, &t->max_g,
+					&naked_g);
+				/* prevent random paging when unmaximizing after
+				 * e.g.the border width has changed */
+				new_off_x = t->normal_g.x - t->max_g.x;
+				new_off_y = t->normal_g.y - t->max_g.y;
+				t->max_offset.x += new_off_x - off_x;
+				t->max_offset.y += new_off_y - off_y;
+			}
+			if (flags->do_update_title_dir)
+			{
+				frame_g = t->max_g;
+				gravity_resize(
+					t->hints.win_gravity, &t->max_g, dw, dh);
+				gravity_constrain_size(
+					t->hints.win_gravity, t, &t->max_g,
+					CS_UPDATE_MAX_DEFECT);
+			}
 			new_g = &t->max_g;
-			/* prevent random paging when unmaximizing after e.g.
-			 * the border width has changed */
-			new_off_x = t->normal_g.x - t->max_g.x;
-			new_off_y = t->normal_g.y - t->max_g.y;
-			t->max_offset.x += new_off_x - off_x;
-			t->max_offset.y += new_off_y - off_y;
 		}
 		else
 		{
 			new_g = &t->normal_g;
 		}
-		get_relative_geometry(&frame_g, new_g);
 		if (IS_SHADED(t))
 		{
+			get_unshaded_geometry(t, new_g);
 			get_shaded_geometry(t, &frame_g, new_g);
 		}
-		flags->do_setup_frame = True;
+		else
+		{
+			get_relative_geometry(&frame_g, new_g);
+		}
+ 		flags->do_setup_frame = True;
 		flags->do_redraw_decoration = True;
 	}
 	if (flags->do_update_title_text_dir)
@@ -249,7 +296,7 @@ static void apply_window_updates(
                 }
 		flags->do_redraw_decoration = True;
 	}
-	if (flags->do_update_title_dir)
+	if (0 && flags->do_update_title_dir)
 	{
 		size_borders b_old;
 		size_borders b_new;

@@ -1,5 +1,8 @@
 2002-06-06  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/update.c (apply_window_updates):
+	Fixed the position of shaded windows after certain style update
+
 	* acinclude.m4:
 	Fixed some options names
 
