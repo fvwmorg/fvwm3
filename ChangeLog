@@ -1,3 +1,9 @@
+2003-12-16  Marcus Lundblad  <ml@update.uu.se>
+
+	* fvwm/Flocale.c (FlocaleEncodeString)
+	(FlocaleDrawUnderline):
+	Fixed crash when there's no Iconv support
+	
 2003-12-16  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/functions.h:

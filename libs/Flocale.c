@@ -415,6 +415,7 @@ char *FlocaleEncodeString(
 {
 	char *str1, *str2, *str3;
 	int len1 = len, len2;
+	int i;
 	Bool do_iconv = True;
 	const char *bidi_charset;
 
@@ -491,6 +492,26 @@ char *FlocaleEncodeString(
 	{
 	        str2 = str1;
 		len1 = len;
+		/* initialise array with composing characters (empty) */
+		if(comb_chars != NULL && *comb_chars == NULL)
+		{
+			*comb_chars = (superimpose_char_t *)
+				safemalloc(sizeof(superimpose_char_t));
+			(*comb_chars)[0].position = -1;
+ 			(*comb_chars)[0].c.byte1 = 0;
+ 			(*comb_chars)[0].c.byte2 = 0;
+		}
+				
+		/* initialise logic to visual mapping here if that is demanded
+		   (this is default when no combining has been done (1-to-1))
+		*/
+		if(l_to_v != NULL && *l_to_v == NULL)
+		{
+			*l_to_v = (int*)safemalloc((len + 1) * sizeof(int));
+			for(i = 0 ; i < len ; i++)
+				(*l_to_v)[i] = i;
+			(*l_to_v)[len] = -1;
+		}
 	}
 
 	if (FlocaleGetBidiCharset(dpy, flf->str_fc) != NULL &&
@@ -2093,8 +2114,13 @@ void FlocaleDrawUnderline(
 	/* No shadow */
 	XDrawLine(dpy, fws->win, fws->gc, x_s, y, x_e, y);
 
-	free(fws->e_str);
-	fws->e_str = NULL;
+	/* free encoded string if it isn't the same as input string */
+	if(fws->e_str != fws->str)
+	{
+		free(fws->e_str);
+		fws->e_str = NULL;
+	}
+	
 	if(fws->str2b != NULL)
 	{
 		free(fws->str2b);
