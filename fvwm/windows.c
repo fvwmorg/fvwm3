@@ -292,7 +292,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           tname[0]=0;
           if(t->flags & ICONIFIED)
             strcpy(tname, "(");
-          sprintf(loc,"%d:",t->Desk);
+          sprintf(loc,"%d(%d):",t->Desk, t->layer);
           strcat(tname,loc);
 
           dheight = t->frame_height - t->title_height - 2*t->boundary_width;
