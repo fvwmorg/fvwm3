@@ -488,6 +488,13 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
       unsigned int num;
       Bool found = False;
 
+
+      /*
+          RBW - 09/20/1999. I find that trying to raise unmanaged windows
+          causes problems with some apps. If this seems to work well for
+          everyone, I'll remove the #if 0.
+      */
+#if 0
       /* get *all* toplevels (even including override_redirects) */
       XQueryTree(dpy, Scr.Root, &junk, &junk, &tops, &num);
 
@@ -500,6 +507,10 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
 	  XRaiseWindow (dpy, tops[i]);
       }
       XFree (tops);
+#endif
+      for (t2 = t; t2 != &Scr.FvwmRoot; t2 = t2->stack_prev)  {
+        XRaiseWindow (dpy, t2->frame);
+        }
     }
   }
 }

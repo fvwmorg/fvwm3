@@ -4,6 +4,9 @@
 	decoration clicks for ClicToFocusDoesntRaise. This causes double
 	raises in a lot of configurations, and seems counter to the sense
 	of ClickToFocusDoesntRaise.
+	*  fvwm/stack.c (inner_RaiseOrLowerWindow): Changed the Exceed
+	Raise Hack not to raise unmanaged windows; this caused problems
+	with some apps.
 
 1999-09-21  Dominik Vogt  <dominik_vogt@gmx.de>
 
