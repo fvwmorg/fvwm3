@@ -49,6 +49,7 @@
 #define MENU_IS_DOWN  0x08
 
 #include <libs/fvwmlib.h>
+#include "fvwm.h"
 
 typedef enum {
     /* menu types */
@@ -220,14 +221,6 @@ typedef struct MenuRoot
 } MenuRoot;
 /* don't forget to initialise new members in NewMenuRoot()! */
 
-typedef struct MenuGlobals {
-    MenuRoot *all;
-    struct MenuStyle *DefaultStyle;
-    struct MenuStyle *LastStyle;
-    int PopupDelay10ms;
-    int DoubleClickTime;
-} MenuGlobals;
-
 typedef struct
 {
   int x;                  /* suggested x position */
@@ -281,6 +274,22 @@ typedef enum {
     MENU_NEWITEM
 } MenuStatus;
 
+
+typedef struct MenuInfo
+{
+  MenuRoot *all;
+  struct MenuStyle *DefaultStyle;
+  struct MenuStyle *LastStyle;
+  int PopupDelay10ms;
+  int DoubleClickTime;
+  struct
+  {
+    unsigned animated_menus : 1;
+  } flags;
+} MenuInfo;
+
+extern MenuInfo Menus;
+
 #define IS_MENU_RETURN(x) ((x)>=MENU_DONE && (x)<=MENU_ABORTED_BUTTON)
 #define IS_MENU_BUTTON(x) ((x)==MENU_DONE_BUTTON || (x)==MENU_ABORTED_BUTTON)
 #define MENU_ADD_BUTTON(x) ((x)==MENU_DONE || (x)==MENU_ABORTED?(x)+1:(x))
@@ -290,6 +299,25 @@ MenuRoot *FollowMenuContinuations(MenuRoot *mr,MenuRoot **pmrPrior);
 void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
 			  Bool fWarpPointerToo, int cusDelay,
 			  float *ppctMovement );
+MenuRoot *NewMenuRoot(char *name);
+void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
+void MakeMenu(MenuRoot *);
+Bool PopUpMenu(MenuRoot *, int, int);
+MenuStatus do_menu (MenuRoot *menu,MenuRoot *menuPrior,
+		    MenuItem **pmiExecuteAction, int cmenuDeep, Bool fSticks,
+		    XEvent *eventp, MenuOptions *pops);
+MenuRoot *FindPopup(char *popup_name);
+char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
+		     MenuItem *mi, MenuOptions *pops);
+void DestroyMenu(MenuRoot *mr);
+void MakeMenus(void);
+void add_item_to_menu(F_CMD_ARGS);
+void destroy_menu(F_CMD_ARGS);
+void ChangeMenuStyle(F_CMD_ARGS);
+void DestroyMenuStyle(F_CMD_ARGS);
+void SetMenuStyle(F_CMD_ARGS);
+void UpdateAllMenuStyles(void);
+
 
 #endif /* _MENUS_ */
 

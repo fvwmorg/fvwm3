@@ -36,7 +36,6 @@
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
 #include "misc.h"
-#include "menus.h"
 #include "functions.h"
 
 #define SIZE_HINDENT 5
@@ -81,6 +80,15 @@ typedef struct
 } PanFrame;
 #endif
 
+
+typedef enum {
+  ADDED_NONE = 0,
+  ADDED_MENU,
+#ifdef USEDECOR
+  ADDED_DECOR,
+#endif
+  ADDED_FUNCTION
+} last_added_item_type;
 
 typedef enum {
     /* button types */
@@ -255,7 +263,6 @@ typedef struct ScreenInfo
   int OnTopLayer;
   int StaysPutLayer;
 
-  MenuGlobals menus;
   FvwmFunction *functions;
 
   MyFont StdFont;     	/* font structure */
@@ -351,8 +358,13 @@ typedef struct ScreenInfo
     unsigned windows_captured : 1;
     unsigned edge_wrap_x : 1;
     unsigned edge_wrap_y : 1;
-    unsigned animated_menus : 1;
   } flags;
+
+  struct
+  {
+    last_added_item_type type;
+    void *item;
+  } last_added_item;
 } ScreenInfo;
 
 /*

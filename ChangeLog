@@ -1,3 +1,136 @@
+1999-04-04  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* ------ end of my changes to move all menu code to menus.c  ------
+
+	* fvwm/menus.h (MenuGlobals): strunct merged into MenuInfo
+
+	* fvwm/fvwm.c (InitVariables): use new MenuInfo struct
+
+	* fvwm/menus.h: moved menu specific stuff from ScreenInfo struct to new
+	MenuInfo struct
+
+	* fvwm/screen.h:
+	* fvwm/virtual.c:
+	* fvwm/style.c:
+	* fvwm/read.c:
+	* fvwm/placement.c:
+	* fvwm/move.c:
+	* fvwm/module.c:
+	* fvwm/modconf.c:
+	* fvwm/icccm2.c:
+	* fvwm/fvwm.c:
+	* fvwm/events.c:
+	* fvwm/focus.c:
+	* fvwm/decorations.c:
+	* fvwm/colors.c:
+	removed '#include "menus.h"'
+
+	* fvwm/misc.h (F_CMD_ARGS): moved macro to fvwm.h so that misc.h does
+	not have to be included
+
+	* fvwm/misc.c (GetOneMenuPositionArgument):
+	(GetMenuOptions): moved to menus.c
+
+	* fvwm/misc.h: moved all menu related stuff to menus.h
+
+	* fvwm/builtins.c (add_another_item): use new function
+	add_another_menu_item
+
+	* fvwm/menus.c (add_another_menu_item): new function
+
+	* fvwm/misc.h:
+	* fvwm/misc.c (set_last_added_item): new function
+
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/screen.h (ScreenInfo):
+
+	* fvwm/menus.c (SetMenuCursor): (new function)
+
+	* fvwm/builtins.c (CursorStyle):
+	* fvwm/builtins.c (ApplyDefaultFontAndColors):
+	moved menu functionality to menus.c
+
+	* fvwm/builtins.c (ChangeMenuStyle):
+	(SetMenuStyle):
+	(OldMenuStyle):
+	(NewMenuStyle):
+	(GetMenuStyleIndex):
+	(UpdateMenuStyle):
+	(DestroyMenuStyle):
+	(FreeMenuStyle):
+	(FindMenuStyle):
+	(menu_func):
+	(popup_func):
+	(staysup_func):
+	(ReadMenuFace):
+	(FreeMenuFace):
+	(destroy_menu):
+	(add_item_to_menu):
+	moved to menus.c
+
+	* ------ begin of my changes to move all menu code to menus.c  ------
+
+	* fvwm/builtins.c (Recapture): "window" option allows to recapture a
+	single window
+
+	* fvwm/fvwm.c (CaptureAllWindows):
+	(CaptureOneWindow): Moved code to recapture a single window into
+	separate function
+
+	* fvwm/resize.c (resize_window): enlarged warp area in windows to 1/7
+	of windows's size
+
+	* vms/config.h:
+	* configure.in:
+	* fvwm/menus.c (MakeMenu): removed SAVEUNDERS option
+
+	* vms/config.h:
+	* configure.in: removed windowshade option
+
+	* fvwm/session.c: reindented file
+
+	* fvwm/session.c:
+	* fvwm/resize.c (resize_window):
+	(ConstrainSize):
+	* fvwm/move.c (AnimatedMoveAnyWindow):
+	(moveLoop):
+	* fvwm/misc.h:
+	* fvwm/gnome.c (GNOME_GetHintState):
+	(GNOME_SetHints):
+	* fvwm/fvwm.h:
+	* fvwm/functions.c (func_config):
+	* fvwm/events.c (HandleConfigureRequest):
+	* fvwm/builtins.c:
+	(Maximize):
+	(WindowShade):
+	(setShadeAnim):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/borders.c (SetBorder):
+	(SetupFrame):
+	removed ifdefs for WINDOWSHADE
+
+1999-04-03  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm.c (main): moved DBUG message to correct place
+
+	* fvwm/fvwm2.1 (Desk): renamed command to 'GotoDesk'. Old name is still
+	supported.
+
+	* fvwm/misc.h: add new functions, sorted virtual.c entries
+
+	* fvwm/builtins.c (stick_function): use do_move_window_to_desk to fix
+	'Stick' function with desk numbers (bug #274)
+
+	* fvwm/virtual.c (do_move_window_to_desk):
+	(move_window_to_desk): move some code to do_... function
+
+	* fvwm/functions.c (func_config): GotoDesk is a synonym for Desk
+
+	* fvwm/parse.h:
+	* fvwm/functions.c (func_config):
+	* fvwm/virtual.c (changeWindowsDesk): renamed obsolete function to new
+	command name 'move_window_to_desk'
+
 Sun Apr  4 04:04:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/Makefile.am (fvwm2_SOURCES): add `session.h'
@@ -7,7 +140,7 @@ Sun Apr  4 04:04:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 1999-04-04  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/fvwm.c (Done): use the session management functions
-	to save state to $HOME/.fvwm_restart and add 
+	to save state to $HOME/.fvwm_restart and add
 	"-restore $HOME/.fvwm_restart" to the command exec'd for
 	'Restart fvwm2'.
 
@@ -25,7 +158,7 @@ Sun Apr  4 04:04:06 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* NEWS:
 	* fvwm/fvwm2.1: document the new Restart functionality.
-	
+
 Sat Apr  3 14:12:26 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/Parse.c (SkipNTokens): removed unused variable.

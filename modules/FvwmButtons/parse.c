@@ -834,8 +834,23 @@ void match_string(button_info **uberb,char *s)
 void ParseConfigLine(button_info **ubb,char *s)
 {
   button_info *ub=*ubb;
-  char *opts[]={"geometry","font","padding","columns","rows","back","fore",
-		  "frame","file","pixmap","panel","boxsize",NULL};
+  char *opts[]={
+    "geometry",
+    "font",
+    "padding",
+    "columns",
+    "rows",
+    "back",
+    "fore",
+    "frame",
+    "file",
+    "pixmap",
+    "panel",
+    "boxsize",
+    "closeonselect",
+    "stayuponselect",
+    NULL
+  };
   int i,j,k;
 
   switch(GetTokenIndex(s,opts,-1,&s))
@@ -923,6 +938,14 @@ void ParseConfigLine(button_info **ubb,char *s)
       break;
     case 11: /* BoxSize */
       ParseBoxSize(&s, &ub->c->flags);
+      break;
+    case 12: /* CloseOnSelect */
+      CurrentPanel->flags.close_on_select = 1;
+      CurrentPanel->flags.stay_up_on_select = 0;
+      break;
+    case 13: /* StayUpOnSelect */
+      CurrentPanel->flags.close_on_select = 0;
+      CurrentPanel->flags.stay_up_on_select = 1;
       break;
     default:
       s = trimleft(s);

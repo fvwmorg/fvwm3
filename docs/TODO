@@ -12,12 +12,14 @@ too...
 
 Cleanups:
 
-  - Reindent the code and implement coding conventions(minimal).
+  - Reindent the code and implement coding conventions (minimal).
   - Modules should be installed with 'install-exec', rather than
     'install-data' target.  This requires putting 'exec' in the
     automake variable for the module directory; i.e. moduledir -->
     moduleexecdir?
   - Make fvwmlib a shared lib?
+  - clean up code duplication (esp in modules) - more stuff in
+    libfvwm2.a, plus perhaps a second module lib?
 
 ----------------------------------------------------------------------
 
@@ -29,8 +31,6 @@ Administration:
 ----------------------------------------------------------------------
 
 Doc cleanups:
-
-  - Add to FAQ
 
 ----------------------------------------------------------------------
 
@@ -48,8 +48,6 @@ Bugfixes:
   - Fix Restart to not pass original (fvwm specific) options to other wm's
   - Run profiling on FVWM to see if I can speed it up any more
   - Try to decrease memory usage a little more
-  - clean up code duplication (esp in modules) - more stuff in
-    libfvwm2.a, plus perhaps a second module lib?
   - Change Motion vs Click vs DoubleClick to be calculated via a
     MotionThreshold and ClickTime:
         MotionThreshold exceeded -> Motion
@@ -61,8 +59,6 @@ Bugfixes:
     (still unfixed on 28-Nov-1998)
   - Colormaps and xlock -install -mode blank (& swirl) interaction still
     isn't 100% correct?
-  - bring back 'TogglePage'?
-  - Setting keys via FvwmConsole or Read requires Recapture to take effect?
   - System Modal dialogs bug - popup menus shouldn't be allowed??  I think
     this is ok, actually...
   - Fix FvwmDeskTopScale size calculation
@@ -84,19 +80,11 @@ New stuff:
 
   - Private colormap option for menus?
 
-  - Recapture, one window only option
-
   - Access to certain window attribs from .fvwm2rc funcs, and
     simple if/else capabilities (or perhaps a module to do so)??
   - Simple static variables for .fvwm2rc functions (for toggles, etc)??
 
   - Add StayOnBottom style?
-
-  - Add ClickToFocusDontPassClick style (so initial click inside
-    window doesn't get passed to the app, just changes focus).
-  - Add ClickToFocusNoInitialFocus so windows don't get the focus when
-    they pop up.
-  - Should the previous be parms to ClickToFocus instead of styles?
 
   - Add NeverFocus style?
   - Make sure fvwm handles all 4 focus states from the ICCCM (I don't
@@ -122,7 +110,8 @@ New stuff:
   - A module that just has buttons for the active desktops, like desktop
     switcher in dtwm (COSE).  Could be munged into FvwmPager.
   - See if it's possible to drop windows onto the pager ala olvwm?
-    Don't really think it is.
+    (domivogt (4-Apr-199): there has been a patch for 2.0.46, hopefully
+    I can convince the author to update it.)
   - Add option to not show sticky windows in pager.  Perhaps also add
     ability to filter out windows based on name/class/resource?
 
@@ -142,13 +131,12 @@ New stuff:
   - Fix line spacing in FvwmForm for lines that have only text (no buttons)
     so that FvwmForm can be used as a "Help" form.
 
-  - Add to module commincations to pass titlebar & button window ids to
+  - Add to module communications to pass titlebar & button window ids to
     allow modules to muck with those windows (for animation, or whatever)?
 
   - Mouse button chording?
 
   - Add better overall icon handling options?
-    Make an optional global free icon placement grid?
 
   - More control over icon appearance (non 3D, fg/bg colors, constant
     size, gradients, etc)?
@@ -180,8 +168,6 @@ New stuff:
 
   - Add option for Prev/Next function to 'wrap' at ends of list?
 
-  - Ressurrect OpaqueResize (as a style option)
-
   - Add twm SqeezeTitle functionality to TitleStyle stuff & merge into
     Style command, perhaps???
 
@@ -199,14 +185,12 @@ New stuff:
 
   - Allow Resize to have units of "what the window resizes by"
   - Bug in:
-        AddToFunc resize-and-move "I" resize 100 100
-        + "I" move 100 300
+        AddToFunc resize-and-move I resize 100 100
+        + I move 100 300
 
   - ToggleButtonStyle (to keep pushed in)?
   - Allow bitmap/mask files to define buttons as well?
     (Better: new alternate def like hl(x1,y1,x2,y2) sh(x1,y1,x2,y2))
-
-  - Make parm to Restart optional (to just restart current if not specified)
 
   - Add a WaitForExec to force waiting for the last Exec command to
     finish, or an ExecAndWait function that doesn't return until
@@ -283,9 +267,6 @@ typedef struct FvwmWindow
 ----------------------
 Bob Woodside's To-Do's
 ----------------------
-
-  - investigate re-implementing the 2.0.46 Animated Windowshade patch
-    using the module interface, like FvwmAnimate does for iconification
 
   - merge (well, probably re-implement) my 2.0.46 patch to cause icon
     positions to be remembered across a Restart

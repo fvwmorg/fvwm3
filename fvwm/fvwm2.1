@@ -284,14 +284,14 @@ window-manager to give them the keyboard focus anyway, so fvwm2
 provides a window-style, "Lenience", which will allow fvwm2 to overlook
 this ICCCM rule.
 
-The differences between ICCCM 1.1 and 2.0 include the ability 
+The differences between ICCCM 1.1 and 2.0 include the ability
 to "take over" from a running ICCCM 2.0 compliant window manager; thus
 .EX
 fvwm2; vi .fvwm2rc; fvwm2 -replace
 .EE
-will resemble the Restart command. It is not exactly the same as the 
-Restart command, since killing the previously running wm may terminate 
-your X session, if the wm was started as the last client in your .Xclients 
+will resemble the Restart command. It is not exactly the same as the
+Restart command, since killing the previously running wm may terminate
+your X session, if the wm was started as the last client in your .Xclients
 file.
 
 Further additions are support for client-side colormap installation (see the
@@ -1188,33 +1188,7 @@ causing the application to exit.
 
 
 .IP "Desk \fIarg1\fP [ \fIarg2\fP ] [ \fImin max\fP ]"
-Switches the current viewport to another desktop (workspace, room).
-
-The command takes 1, 2, 3, or 4 arguments. A single argument is
-interpreted as a relative desk number. Two arguments are understood
-as a relative and an absolute desk number. Three arguments specify
-a relative desk and the minimum and maximum of the allowable range.
-Four arguments specify the relative, absolute, minimum and maximum
-values. (Desktop numbers can be negative.)
-
-If \fIarg1\fP is non zero then the next desktop number will be the
-current desktop number plus \fIarg1\fP.
-
-If \fIarg1\fP is zero then the new desktop number will be \fIarg2\fP.
-(If \fIarg2\fP is not present, then the command has no effect.)
-
-If \fImin\fP and \fImax\fP are given, the new desktop number will
-be no smaller than min and no bigger than max. Values out of this
-range are truncated (if you gave an absolute desk number) or wrapped
-around (if you gave a relative desk number).
-
-The syntax is the same as for \fIMoveToDesk\fP, which moves a window
-to a different desktop.
-
-The number of active desktops is determined dynamically.  Only
-desktops which contain windows or are currently being displayed are
-active.  Desktop numbers must be between 2147483647 and -2147483648
-(is that enough?).
+This command has been renamed. Please see \fIGotoDesk\fP command.
 
 
 .IP "DeskTopSize \fIHorizontal\fPx\fIVertical\fP"
@@ -1468,6 +1442,37 @@ allows this to happen anyway. The option has no effect if SkipMapping is
 not in effect, because fvwm2 will switch to the proper desk/page to perform
 interactive placement. The default is ActivePlacementHonorsStartsOnPage,
 which matches the way StartsOnDesk handled the situation.
+
+
+.IP "GotoDesk \fIarg1\fP [ \fIarg2\fP ] [ \fImin max\fP ]"
+Switches the current viewport to another desktop (workspace, room).
+
+The command takes 1, 2, 3, or 4 arguments. A single argument is
+interpreted as a relative desk number. Two arguments are understood
+as a relative and an absolute desk number. Three arguments specify
+a relative desk and the minimum and maximum of the allowable range.
+Four arguments specify the relative, absolute, minimum and maximum
+values. (Desktop numbers can be negative.)
+
+If \fIarg1\fP is non zero then the next desktop number will be the
+current desktop number plus \fIarg1\fP.
+
+If \fIarg1\fP is zero then the new desktop number will be \fIarg2\fP.
+(If \fIarg2\fP is not present, then the command has no effect.)
+
+If \fImin\fP and \fImax\fP are given, the new desktop number will
+be no smaller than min and no bigger than max. Values out of this
+range are truncated (if you gave an absolute desk number) or wrapped
+around (if you gave a relative desk number).
+
+The syntax is the same as for \fIMoveToDesk\fP, which moves a window
+to a different desktop.
+
+The number of active desktops is determined dynamically.  Only
+desktops which contain windows or are currently being displayed are
+active.  Desktop numbers must be between 2147483647 and -2147483648
+(is that enough?).
+
 
 .IP "GotoPage \fIx y\fP"
 Moves the desktop viewport to page (x,y).  The upper left page is
@@ -2410,10 +2415,11 @@ If the option following the filename is "Quiet", no message is
 produced if the file is not found.
 
 
-.IP "Recapture"
+.IP "Recapture [ \fIWindow\fP ]"
 Causes fvwm2 to recapture all of its windows.  This ensures that the
 latest style parameters will be used.  The recapture operation is
-visually disturbing.
+visually disturbing.  With the optional string "Window" only the window
+with the focus is recaptured.
 
 
 .IP "Refresh"

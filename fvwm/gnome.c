@@ -7,7 +7,7 @@
 /* your WM GNOME compiant                                */
 /*                                                       */
 /* written by Raster                                     */
-/* adapted for FVWM by Jay Painter <jpaint@gnu.org>      */ 
+/* adapted for FVWM by Jay Painter <jpaint@gnu.org>      */
 /*********************************************************/
 #include "config.h"
 #ifdef GNOME
@@ -252,7 +252,7 @@ AtomGet(Window win, Atom to_get, Atom type, int *size)
   int                 format_ret;
   long                length;
   void               *data;
-  
+
   retval = NULL;
   length = 0x7fffffff;
   XGetWindowProperty(dpy, win, to_get, 0,
@@ -333,11 +333,9 @@ GNOME_GetHintState(FvwmWindow *fwin)
       if (*retval & WIN_STATE_STICKY)
 	fwin->flags |= STICKY;
 
-#ifdef WINDOWSHADE
       if (*retval & WIN_STATE_SHADED)
 	fwin->buttons |= WSHADE;
-#endif /* WINDOWSHADE */
-      
+
       free(retval);
     }
 }
@@ -348,7 +346,7 @@ GNOME_GetHintAppState(FvwmWindow *fwin)
   Atom atom_get;
   unsigned char *retval;
   int size;
-  
+
   /* have nothing interesting to do with an app state (lamp) right now */
   atom_get = XInternAtom(dpy, XA_WIN_APP_STATE, False);
   retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
@@ -365,7 +363,7 @@ GNOME_GetHintDesktop(FvwmWindow *fwin)
   unsigned char *retval;
   int size;
   int *desk;
-  
+
   atom_get = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
   retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
   if (retval)
@@ -385,7 +383,7 @@ GNOME_GetHint(FvwmWindow *fwin)
   Atom atom_get;
   int *retval;
   int size;
-  
+
   atom_get = XInternAtom(dpy, XA_WIN_HINTS, False);
   retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
   if (retval)
@@ -398,7 +396,7 @@ GNOME_GetHint(FvwmWindow *fwin)
       if (*retval & WIN_HINTS_SKIP_FOCUS);
       if (*retval & WIN_HINTS_FOCUS_ON_CLICK);
       /* if (*retval & WIN_HINTS_DO_NOT_COVER);*/
-     
+
       free(retval);
     }
 }
@@ -408,18 +406,16 @@ GNOME_SetHints(FvwmWindow *fwin)
 {
   Atom atom_set;
   int val;
-  
+
   atom_set = XInternAtom(dpy, XA_WIN_STATE, False);
   val = 0;
-  
+
   if (fwin->flags & STICKY)
     val |= WIN_STATE_STICKY;
-  
-#ifdef WINDOWSHADE
+
   if (fwin->buttons & WSHADE)
     val |= WIN_STATE_SHADED;
-#endif
-  
+
   XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,
 		  PropModeReplace, (unsigned char *)&val, 1);
 }
@@ -485,12 +481,12 @@ GNOME_SetAreaCount()
 {
   Atom atom_set;
   CARD32 val[2];
-  
+
   atom_set = XInternAtom(dpy, XA_WIN_AREA_COUNT, False);
-  
+
   val[0] = (Scr.VxMax + Scr.MyDisplayWidth) / Scr.MyDisplayWidth;
   val[1] = (Scr.VyMax + Scr.MyDisplayHeight) / Scr.MyDisplayHeight;
-  
+
   XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
 		  (unsigned char *)val, 2);
 }
@@ -504,12 +500,12 @@ GNOME_SetCurrentArea()
 {
   Atom atom_set;
   CARD32 val[2];
-  
+
   atom_set = XInternAtom(dpy, XA_WIN_AREA, False);
-  
+
   val[0] = Scr.Vx / Scr.MyDisplayWidth;
   val[1] = Scr.Vy / Scr.MyDisplayHeight;
-  
+
   XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
 		  (unsigned char *)val, 2);
 }
@@ -521,7 +517,7 @@ GNOME_SetDeskCount()
 {
   Atom atom_set;
   CARD32 val;
-  
+
   atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_COUNT, False);
   val = 1;
   XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
@@ -535,7 +531,7 @@ GNOME_SetCurrentDesk()
 {
   Atom atom_set;
   CARD32 val;
-  
+
   atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE, False);
   val = (CARD32) Scr.CurrentDesk;
   XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
@@ -552,11 +548,11 @@ GNOME_SetDeskNames()
   XTextProperty text;
   char *names[1];
   int i;
-  
+
   atom_set = XInternAtom(dpy, XA_WIN_WORKSPACE_NAMES, False);
-  
+
   names[0] = "GNOME Desktop";
-  
+
   if (XStringListToTextProperty(names, 1, &text))
     {
       XSetTextProperty(dpy, Scr.Root, &text, atom_set);
@@ -572,9 +568,9 @@ GNOME_SetClientList()
   Window wl[256];
   int i = 0;
   FvwmWindow *t;
-  
+
   atom_set = XInternAtom(dpy, XA_WIN_CLIENT_LIST, False);
-  
+
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
       if (!(t->flags & WINDOWLISTSKIP))
@@ -582,15 +578,15 @@ GNOME_SetClientList()
 	  wl[i++] = t->w;
 	}
     }
-  
+
   if (i > 0)
     {
-      XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, 
+      XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
 		      PropModeReplace, (unsigned char *)wl, i);
     }
   else
     {
-      XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, 
+      XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32,
 		      PropModeReplace, (unsigned char *)NULL, 0);
     }
 }
@@ -603,7 +599,7 @@ GNOME_Init()
   Atom atom_set, list[11];
   CARD32 val;
   Window win;
-  
+
 
   atom_set = XInternAtom(dpy, XA_WIN_PROTOCOLS, False);
 
@@ -622,7 +618,7 @@ GNOME_Init()
   list[i++] = XInternAtom(dpy, XA_WIN_WORKSPACE_NAMES, False);
   list[i++] = XInternAtom(dpy, XA_WIN_CLIENT_LIST, False);
   list[i++] = XInternAtom(dpy, XA_WIN_DESKTOP_BUTTON_PROXY, False);
-  
+
   XChangeProperty(dpy, Scr.Root, atom_set, XA_ATOM, 32, PropModeReplace,
 		  (unsigned char *)list, i);
 
@@ -630,11 +626,11 @@ GNOME_Init()
   /* create a window which is a child of the root window and set the
    * XA_WIN_SUPPORTING_WM_CHECK property on it, and also set the
    * same property on the root window with the window ID of of the
-   * window we just created 
+   * window we just created
    */
   win = XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, 0,
 		      InputOnly, CopyFromParent, 0, NULL);
-  
+
   atom_set = XInternAtom(dpy, XA_WIN_SUPPORTING_WM_CHECK, False);
   val = win;
   XChangeProperty(dpy, Scr.Root, atom_set, XA_CARDINAL, 32, PropModeReplace,
@@ -646,10 +642,10 @@ GNOME_Init()
   /* create a window which is the child of the root window for proxying
    * root window clicks
    */
-    
+
   __button_proxy = XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, 0,
 				 InputOnly, CopyFromParent, 0, NULL);
-  
+
   atom_set = XInternAtom(dpy, XA_WIN_DESKTOP_BUTTON_PROXY, False);
   val = __button_proxy;
 
@@ -710,7 +706,7 @@ GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev)
       XChangeProperty(dpy, fwin->w, a, XA_CARDINAL, 32,
 		      PropModeReplace,
 		      (unsigned char *)(&(ev->xclient.data.l[0])), 1);
-      
+
       /* need to restack the windows */
       return 1;
     }

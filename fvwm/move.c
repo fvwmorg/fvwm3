@@ -20,7 +20,6 @@
 #include <unistd.h>
 #include <X11/keysym.h>
 #include "fvwm.h"
-#include "menus.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
@@ -83,11 +82,7 @@ void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
       XWarpPointer(dpy,None,Scr.Root,0,0,0,0,
 		   pointerX,pointerY);
     }
-    if (tmp_win
-#ifdef WINDOWSHADE
-        && !(tmp_win->buttons & WSHADE)
-#endif
-)
+    if (tmp_win && !(tmp_win->buttons & WSHADE))
     {
       /* send configure notify event for windows that care about their
        * location */
@@ -740,11 +735,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
 
 	}
-      if (opaque_move && !(tmp_win->flags & ICONIFIED)
-#ifdef WINDOWSHADE
-           && !(tmp_win->buttons & WSHADE)
-#endif
-          )
+      if (opaque_move && !(tmp_win->flags & ICONIFIED) &&
+	  !(tmp_win->buttons & WSHADE))
         {
 	  /* send configure notify event for windows that care about their
 	   * location */

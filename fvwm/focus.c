@@ -19,7 +19,6 @@
 #include <string.h>
 
 #include "fvwm.h"
-#include "menus.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"

@@ -19,22 +19,22 @@ extern int master_pid;
 
 
 typedef struct _match
-  {
-    unsigned long      win;
-    char               *client_id;
-    char               *res_name;
-    char               *res_class;
-    char               *window_role;
-    char               *wm_name;
-    int                wm_command_count;
-    char               **wm_command;
-    int                 x, y, w, h, icon_x, icon_y;
-    int                 x_max, y_max, w_max, h_max;
-    int                 desktop;
-    int                 layer;
-    int                 used;
-    int                 shaded, name_changed;
-    unsigned long       flags;
+{
+  unsigned long      win;
+  char               *client_id;
+  char               *res_name;
+  char               *res_class;
+  char               *window_role;
+  char               *wm_name;
+  int                wm_command_count;
+  char               **wm_command;
+  int                 x, y, w, h, icon_x, icon_y;
+  int                 x_max, y_max, w_max, h_max;
+  int                 desktop;
+  int                 layer;
+  int                 used;
+  int                 shaded, name_changed;
+  unsigned long       flags;
 }
 Match;
 
@@ -58,12 +58,12 @@ char *duplicate(char *s)
 }
 
 /*
-   It is a bit ugly to have a separate file format for
-   config files and session save files. The proper way
-   to do this may be to extend the config file format
-   to allow the specification of everything we need
-   to save here. Then the option "-restore xyz" could
-   be replaced by "-f xyz".
+ * It is a bit ugly to have a separate file format for
+ * config files and session save files. The proper way
+ * to do this may be to extend the config file format
+ * to allow the specification of everything we need
+ * to save here. Then the option "-restore xyz" could
+ * be replaced by "-f xyz".
  */
 int
 SaveGlobalState(FILE *f)
@@ -95,134 +95,133 @@ SaveGlobalState(FILE *f)
 void
 LoadGlobalState(char *filename)
 {
-   FILE               *f;
-   char                s[4096], s1[4096];
-   int i1, i2, i3, i4, i5, i6, i7, i8, i9;
+  FILE               *f;
+  char                s[4096], s1[4096];
+  int i1, i2, i3, i4, i5, i6, i7, i8, i9;
 
-   f = fopen(filename, "r");
-   if (f)
-     {
-       while (fgets(s, sizeof(s), f))
-	 {
-           i1 = 0; i2 = 0; i3 = 0; i4 = 0; i5 = 0; i6 = 0;
-           i7 = 0; i8 = 0;
-	   sscanf(s, "%4000s", s1);
-	   if (!strcmp(s1, "[DESKTOP]"))
-             {
-	       sscanf(s, "%*s %i", &i1);
-               changeDesks(i1);
-             }
-           else if (!strcmp(s1, "[VIEWPORT]"))
-             {
-               sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
-               Scr.VxMax = i3;
-               Scr.VyMax = i4;
-               MoveViewport(i1, i2, True);
-             }
-           else if (!strcmp(s1, "[SCROLL]"))
-             {
-               sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5,
-		      &i6);
-               Scr.EdgeScrollX = i1;
-               Scr.EdgeScrollY = i2;
-               Scr.ScrollResistance = i3;
-               Scr.MoveResistance = i4;
-               if (i5) Scr.flags.edge_wrap_x = 1;
-               else Scr.flags.edge_wrap_x = 0;
-               if (i6) Scr.flags.edge_wrap_y = 1;
-               else Scr.flags.edge_wrap_y = 0;
-             }
-           else if (!strcmp(s1, "[SNAP]"))
-             {
-               sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
-               Scr.SnapAttraction = i1;
-               Scr.SnapMode = i2;
-               Scr.SnapGridX = i3;
-               Scr.SnapGridY = i4;
-             }
-           else if (!strcmp(s1, "[MISC]"))
-             {
-               sscanf(s, "%*s %i %i %i %i %i %i %i %i %i", &i1, &i2, &i3, &i4,
-                      &i5, &i6, &i7, &i8, &i9);
-               Scr.ClickTime = i1;
-               Scr.ColormapFocus = i2;
-               Scr.ColorLimit = i3;
-               Scr.go.SmartPlacementIsClever = i4;
-               Scr.go.ClickToFocusPassesClick = i5;
-               Scr.go.ClickToFocusRaises = i6;
-               Scr.go.MouseFocusClickRaises = i7;
-               Scr.go.StipledTitles = i8;
-               Scr.go.WindowShadeScrolls = i9;
-             }
-           else if (!strcmp(s1, "[STYLE]"))
-             {
-               sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5, &i6);
-               Scr.go.ModifyUSP = i1;
-               Scr.go.CaptureHonorsStartsOnPage = i2;
-               Scr.go.RecaptureHonorsStartsOnPage = i3;
-               Scr.go.ActivePlacementHonorsStartsOnPage = i4;
-               Scr.gs.EmulateMWM = i5;
-               Scr.gs.EmulateWIN = i6;
-             }
-         }
+  f = fopen(filename, "r");
+  if (f)
+    {
+      while (fgets(s, sizeof(s), f))
+	{
+	  i1 = 0; i2 = 0; i3 = 0; i4 = 0; i5 = 0; i6 = 0;
+	  i7 = 0; i8 = 0;
+	  sscanf(s, "%4000s", s1);
+	  if (!strcmp(s1, "[DESKTOP]"))
+	    {
+	      sscanf(s, "%*s %i", &i1);
+	      changeDesks(i1);
+	    }
+	  else if (!strcmp(s1, "[VIEWPORT]"))
+	    {
+	      sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
+	      Scr.VxMax = i3;
+	      Scr.VyMax = i4;
+	      MoveViewport(i1, i2, True);
+	    }
+	  else if (!strcmp(s1, "[SCROLL]"))
+	    {
+	      sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5,
+		     &i6);
+	      Scr.EdgeScrollX = i1;
+	      Scr.EdgeScrollY = i2;
+	      Scr.ScrollResistance = i3;
+	      Scr.MoveResistance = i4;
+	      if (i5)
+		Scr.flags.edge_wrap_x = 1;
+	      else
+		Scr.flags.edge_wrap_x = 0;
+	      if (i6)
+		Scr.flags.edge_wrap_y = 1;
+	      else
+		Scr.flags.edge_wrap_y = 0;
+	    }
+	  else if (!strcmp(s1, "[SNAP]"))
+	    {
+	      sscanf(s, "%*s %i %i %i %i", &i1, &i2, &i3, &i4);
+	      Scr.SnapAttraction = i1;
+	      Scr.SnapMode = i2;
+	      Scr.SnapGridX = i3;
+	      Scr.SnapGridY = i4;
+	    }
+	  else if (!strcmp(s1, "[MISC]"))
+	    {
+	      sscanf(s, "%*s %i %i %i %i %i %i %i %i %i", &i1, &i2, &i3, &i4,
+		     &i5, &i6, &i7, &i8, &i9);
+	      Scr.ClickTime = i1;
+	      Scr.ColormapFocus = i2;
+	      Scr.ColorLimit = i3;
+	      Scr.go.SmartPlacementIsClever = i4;
+	      Scr.go.ClickToFocusPassesClick = i5;
+	      Scr.go.ClickToFocusRaises = i6;
+	      Scr.go.MouseFocusClickRaises = i7;
+	      Scr.go.StipledTitles = i8;
+	      Scr.go.WindowShadeScrolls = i9;
+	    }
+	  else if (!strcmp(s1, "[STYLE]"))
+	    {
+	      sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5, &i6);
+	      Scr.go.ModifyUSP = i1;
+	      Scr.go.CaptureHonorsStartsOnPage = i2;
+	      Scr.go.RecaptureHonorsStartsOnPage = i3;
+	      Scr.go.ActivePlacementHonorsStartsOnPage = i4;
+	      Scr.gs.EmulateMWM = i5;
+	      Scr.gs.EmulateWIN = i6;
+	    }
+	}
       fclose(f);
-   }
+    }
 }
 
 char *
-GetWindowRole (window)
-
-     Window window;
-
+GetWindowRole(Window window)
 {
   XTextProperty tp;
 
-    if (XGetTextProperty (dpy, window, &tp, _XA_WM_WINDOW_ROLE))
+  if (XGetTextProperty (dpy, window, &tp, _XA_WM_WINDOW_ROLE))
     {
-	if (tp.encoding == XA_STRING && tp.format == 8 && tp.nitems != 0)
-	    return ((char *) tp.value);
+      if (tp.encoding == XA_STRING && tp.format == 8 && tp.nitems != 0)
+	return ((char *) tp.value);
     }
 
-    return NULL;
+  return NULL;
 }
 
 char *
-GetClientID (window)
-
-     Window window;
-
+GetClientID(Window window)
 {
   char *client_id = NULL;
   Window client_leader;
-    XTextProperty tp;
-    Atom actual_type;
-    int actual_format;
-    unsigned long nitems;
-    unsigned long bytes_after;
-    unsigned char *prop = NULL;
+  XTextProperty tp;
+  Atom actual_type;
+  int actual_format;
+  unsigned long nitems;
+  unsigned long bytes_after;
+  unsigned char *prop = NULL;
 
-    if (XGetWindowProperty (dpy, window, _XA_WM_CLIENT_LEADER,
-	0L, 1L, False, AnyPropertyType,	&actual_type, &actual_format,
-	&nitems, &bytes_after, &prop) == Success)
+  if (XGetWindowProperty(dpy, window, _XA_WM_CLIENT_LEADER,
+			 0L, 1L, False, AnyPropertyType, &actual_type,
+			 &actual_format, &nitems, &bytes_after, &prop)
+      == Success)
     {
-	if (actual_type == XA_WINDOW && actual_format == 32 &&
-	    nitems == 1 && bytes_after == 0)
+      if (actual_type == XA_WINDOW && actual_format == 32 &&
+	  nitems == 1 && bytes_after == 0)
 	{
-	    client_leader = *((Window *) prop);
+	  client_leader = *((Window *) prop);
 
-	    if (XGetTextProperty (dpy, client_leader, &tp, _XA_SM_CLIENT_ID))
+	  if (XGetTextProperty (dpy, client_leader, &tp, _XA_SM_CLIENT_ID))
 	    {
-		if (tp.encoding == XA_STRING &&
-		    tp.format == 8 && tp.nitems != 0)
-		    client_id = (char *) tp.value;
+	      if (tp.encoding == XA_STRING &&
+		  tp.format == 8 && tp.nitems != 0)
+		client_id = (char *) tp.value;
 	    }
 	}
 
-	if (prop)
-	    XFree (prop);
+      if (prop)
+	XFree (prop);
     }
 
-    return client_id;
+  return client_id;
 }
 
 int
@@ -232,10 +231,11 @@ SaveWindowStates(FILE *f)
   char *window_role;
   char **wm_command;
   int wm_command_count;
-  FvwmWindow              *ewin;
-  int                 i;
+  FvwmWindow *ewin;
+  int i;
 
-  for (ewin=Scr.FvwmRoot.stack_next; ewin!=&Scr.FvwmRoot; ewin=ewin->stack_next)
+  for (ewin = Scr.FvwmRoot.stack_next; ewin != &Scr.FvwmRoot;
+       ewin = ewin->stack_next)
     {
       fprintf(f, "[CLIENT] %lx\n", ewin->w);
 
@@ -268,19 +268,19 @@ SaveWindowStates(FILE *f)
 	  if (wm_command && (wm_command_count > 0))
 	    {
 	      fprintf(f, "  [WM_COMMAND] %i", wm_command_count);
-		for (i = 0; i < wm_command_count; i++)
-		  fprintf(f, " %s", wm_command[i]);
+	      for (i = 0; i < wm_command_count; i++)
+		fprintf(f, " %s", wm_command[i]);
 	      fprintf(f, "\n");
 	      XFreeStringList (wm_command);
 	    }
 	} /* !window_role */
 
       fprintf(f, "  [GEOMETRY] %i %i %i %i %i %i %i %i %i %i\n",
-	      ewin->orig_x, 
+	      ewin->orig_x,
               ewin->orig_y,
 	      ewin->orig_wd - 2*ewin->boundary_width ,
 	      ewin->orig_ht - 2*ewin->boundary_width - ewin->title_height,
-	      ewin->frame_x + Scr.Vx, 
+	      ewin->frame_x + Scr.Vx,
               ewin->frame_y + Scr.Vy,
               ewin->frame_width,
               ewin->maximized_ht,
@@ -289,12 +289,7 @@ SaveWindowStates(FILE *f)
       fprintf(f, "  [DESK] %i\n", ewin->Desk);
       fprintf(f, "  [LAYER] %i\n", ewin->layer);
       fprintf(f, "  [FLAGS] %lu %i %i\n", ewin->flags,
-#ifdef WINDOWSHADE
-	      !!(ewin->buttons & WSHADE),
-#else
-              0,
-#endif
-ewin->tmpflags.NameChanged);
+	      !!(ewin->buttons & WSHADE), ewin->tmpflags.NameChanged);
     }
   return 1;
 }
@@ -307,116 +302,116 @@ LoadWindowStates(char *filename)
   int i, pos;
   unsigned long w;
 
-   f = fopen(filename, "r");
-   if (f)
-     {
-       while (fgets(s, sizeof(s), f))
-	 {
-	   sscanf(s, "%4000s", s1);
-	   if (!strcmp(s1, "[CLIENT]"))
-	     {
-	       sscanf(s, "%*s %lx", &w);
-	       num_match++;
-	       matches = realloc(matches, sizeof(Match) * num_match);
-               matches[num_match - 1].win = w;
-	       matches[num_match - 1].client_id = NULL;
-	       matches[num_match - 1].res_name = NULL;
-	       matches[num_match - 1].res_class = NULL;
-	       matches[num_match - 1].window_role = NULL;
-	       matches[num_match - 1].wm_name = NULL;
-	       matches[num_match - 1].wm_command_count = 0;
-	       matches[num_match - 1].wm_command = NULL;
-               matches[num_match - 1].x = 0;
-               matches[num_match - 1].y = 0;
-               matches[num_match - 1].w = 100;
-               matches[num_match - 1].h = 100;
-               matches[num_match - 1].x_max = 0;
-               matches[num_match - 1].y_max = 0;
-               matches[num_match - 1].w_max = Scr.MyDisplayWidth;
-               matches[num_match - 1].h_max = Scr.MyDisplayHeight;
-               matches[num_match - 1].icon_x = 0;
-               matches[num_match - 1].icon_y = 0;
-               matches[num_match - 1].desktop = 0;
-               matches[num_match - 1].layer = 0;
-               matches[num_match - 1].shaded = 0;
-               matches[num_match - 1].name_changed = 0;
-               matches[num_match - 1].flags = 0;
-               matches[num_match - 1].used = 0;
-             }
-           else if (!strcmp(s1, "[GEOMETRY]"))
-             {
-	       sscanf(s, "%*s %i %i %i %i %i %i %i %i %i %i",
-		      &(matches[num_match - 1].x),
-		      &(matches[num_match - 1].y),
-		      &(matches[num_match - 1].w),
-		      &(matches[num_match - 1].h),
-		      &(matches[num_match - 1].x_max),
-		      &(matches[num_match - 1].y_max),
-		      &(matches[num_match - 1].w_max),
-		      &(matches[num_match - 1].h_max),
-		      &(matches[num_match - 1].icon_x),
-		      &(matches[num_match - 1].icon_y));
-             }
-           else if (!strcmp(s1, "[DESK]"))
-             {
-               sscanf(s, "%*s %i",
-		      &(matches[num_match - 1].desktop));
-             }
-           else if (!strcmp(s1, "[LAYER]"))
-             {
-               sscanf(s, "%*s %i",
-		      &(matches[num_match - 1].layer));
-             }
-           else if (!strcmp(s1, "[FLAGS]"))
-             {
-               sscanf(s, "%*s %lu %i %i",
-		      &(matches[num_match - 1].flags),
-		      &(matches[num_match - 1].shaded),
-		      &(matches[num_match - 1].name_changed)
-		      );
-	     }
-	   else if (!strcmp(s1, "[CLIENT_ID]"))
-	     {
-	       sscanf(s, "%*s %4000s", s1);
-	       matches[num_match - 1].client_id = duplicate(s1);
-	     }
-	   else if (!strcmp(s1, "[WINDOW_ROLE]"))
-	     {
-	       sscanf(s, "%*s %4000s", s1);
-	       matches[num_match - 1].window_role = duplicate(s1);
-	     }
-	   else if (!strcmp(s1, "[RES_NAME]"))
-	     {
-	       sscanf(s, "%*s %4000s", s1);
-	       matches[num_match - 1].res_name = duplicate(s1);
-	     }
-	   else if (!strcmp(s1, "[RES_CLASS]"))
-	     {
-	       sscanf(s, "%*s %4000s", s1);
-	       matches[num_match - 1].res_class = duplicate(s1);
-	     }
-	   else if (!strcmp(s1, "[WM_NAME]"))
-	     {
-	       sscanf(s, "%*s %4000s", s1);
-	       matches[num_match - 1].wm_name = duplicate(s1);
-	     }
-	   else if (!strcmp(s1, "[WM_COMMAND]"))
-	     {
-	       sscanf(s, "%*s %i", &matches[num_match - 1].wm_command_count);
-	       matches[num_match - 1].wm_command =
-		 (char **) malloc (matches[num_match - 1].wm_command_count *
-				   sizeof (char *));
-	       pos = 0;
-	       for (i = 0; i < matches[num_match - 1].wm_command_count; i++)
-		 {
-		   sscanf (s+pos, "%s%n", s1, &pos);
-		   matches[num_match - 1].wm_command[i] = duplicate (s1);
-		 }
-	     }
+  f = fopen(filename, "r");
+  if (f)
+    {
+      while (fgets(s, sizeof(s), f))
+	{
+	  sscanf(s, "%4000s", s1);
+	  if (!strcmp(s1, "[CLIENT]"))
+	    {
+	      sscanf(s, "%*s %lx", &w);
+	      num_match++;
+	      matches = realloc(matches, sizeof(Match) * num_match);
+	      matches[num_match - 1].win = w;
+	      matches[num_match - 1].client_id = NULL;
+	      matches[num_match - 1].res_name = NULL;
+	      matches[num_match - 1].res_class = NULL;
+	      matches[num_match - 1].window_role = NULL;
+	      matches[num_match - 1].wm_name = NULL;
+	      matches[num_match - 1].wm_command_count = 0;
+	      matches[num_match - 1].wm_command = NULL;
+	      matches[num_match - 1].x = 0;
+	      matches[num_match - 1].y = 0;
+	      matches[num_match - 1].w = 100;
+	      matches[num_match - 1].h = 100;
+	      matches[num_match - 1].x_max = 0;
+	      matches[num_match - 1].y_max = 0;
+	      matches[num_match - 1].w_max = Scr.MyDisplayWidth;
+	      matches[num_match - 1].h_max = Scr.MyDisplayHeight;
+	      matches[num_match - 1].icon_x = 0;
+	      matches[num_match - 1].icon_y = 0;
+	      matches[num_match - 1].desktop = 0;
+	      matches[num_match - 1].layer = 0;
+	      matches[num_match - 1].shaded = 0;
+	      matches[num_match - 1].name_changed = 0;
+	      matches[num_match - 1].flags = 0;
+	      matches[num_match - 1].used = 0;
+	    }
+	  else if (!strcmp(s1, "[GEOMETRY]"))
+	    {
+	      sscanf(s, "%*s %i %i %i %i %i %i %i %i %i %i",
+		     &(matches[num_match - 1].x),
+		     &(matches[num_match - 1].y),
+		     &(matches[num_match - 1].w),
+		     &(matches[num_match - 1].h),
+		     &(matches[num_match - 1].x_max),
+		     &(matches[num_match - 1].y_max),
+		     &(matches[num_match - 1].w_max),
+		     &(matches[num_match - 1].h_max),
+		     &(matches[num_match - 1].icon_x),
+		     &(matches[num_match - 1].icon_y));
+	    }
+	  else if (!strcmp(s1, "[DESK]"))
+	    {
+	      sscanf(s, "%*s %i",
+		     &(matches[num_match - 1].desktop));
+	    }
+	  else if (!strcmp(s1, "[LAYER]"))
+	    {
+	      sscanf(s, "%*s %i",
+		     &(matches[num_match - 1].layer));
+	    }
+	  else if (!strcmp(s1, "[FLAGS]"))
+	    {
+	      sscanf(s, "%*s %lu %i %i",
+		     &(matches[num_match - 1].flags),
+		     &(matches[num_match - 1].shaded),
+		     &(matches[num_match - 1].name_changed)
+		);
+	    }
+	  else if (!strcmp(s1, "[CLIENT_ID]"))
+	    {
+	      sscanf(s, "%*s %4000s", s1);
+	      matches[num_match - 1].client_id = duplicate(s1);
+	    }
+	  else if (!strcmp(s1, "[WINDOW_ROLE]"))
+	    {
+	      sscanf(s, "%*s %4000s", s1);
+	      matches[num_match - 1].window_role = duplicate(s1);
+	    }
+	  else if (!strcmp(s1, "[RES_NAME]"))
+	    {
+	      sscanf(s, "%*s %4000s", s1);
+	      matches[num_match - 1].res_name = duplicate(s1);
+	    }
+	  else if (!strcmp(s1, "[RES_CLASS]"))
+	    {
+	      sscanf(s, "%*s %4000s", s1);
+	      matches[num_match - 1].res_class = duplicate(s1);
+	    }
+	  else if (!strcmp(s1, "[WM_NAME]"))
+	    {
+	      sscanf(s, "%*s %4000s", s1);
+	      matches[num_match - 1].wm_name = duplicate(s1);
+	    }
+	  else if (!strcmp(s1, "[WM_COMMAND]"))
+	    {
+	      sscanf(s, "%*s %i", &matches[num_match - 1].wm_command_count);
+	      matches[num_match - 1].wm_command =
+		(char **) malloc (matches[num_match - 1].wm_command_count *
+				  sizeof (char *));
+	      pos = 0;
+	      for (i = 0; i < matches[num_match - 1].wm_command_count; i++)
+		{
+		  sscanf (s+pos, "%s%n", s1, &pos);
+		  matches[num_match - 1].wm_command[i] = duplicate (s1);
+		}
+	    }
 
-	 }
-       fclose(f);
-     }
+	}
+      fclose(f);
+    }
 }
 
 /* This complicated logic is from twm, where it is explained */
@@ -511,114 +506,114 @@ Bool matchWin(FvwmWindow *w, Match *m)
 static int
 my_modulo (int x, int m)
 {
-   return (x < 0) ? (m + (x % m)) : (x % m); 
+  return (x < 0) ? (m + (x % m)) : (x % m);
 }
 
 /*
-   This routine (potentially) changes the flags STARTICONIC,
-   MAXIMIZED, WSHADE and STICKY and the Desk and
-   attr.x, .y, .width, .height entries. It also changes the
-   stack_before pointer to return information about the
-   desired stacking order. It expects the stacking order
-   to be set up correctly beforehand!
- */
+  This routine (potentially) changes the flags STARTICONIC,
+  MAXIMIZED, WSHADE and STICKY and the Desk and
+  attr.x, .y, .width, .height entries. It also changes the
+  stack_before pointer to return information about the
+  desired stacking order. It expects the stacking order
+  to be set up correctly beforehand!
+*/
 void
 MatchWinToSM(FvwmWindow *ewin,
              int *x_max, int *y_max, int *w_max, int *h_max,
              int *do_shade, int *do_max)
 {
-   int                 i, j;
-   FvwmWindow *t;
+  int                 i, j;
+  FvwmWindow *t;
 
-   *do_shade = 0;
-   *do_max = 0;
-   for (i = 0; i < num_match; i++)
-     {
-       if (!matches[i].used && matchWin(ewin, &matches[i]))
-	     {
+  *do_shade = 0;
+  *do_max = 0;
+  for (i = 0; i < num_match; i++)
+    {
+      if (!matches[i].used && matchWin(ewin, &matches[i]))
+	{
 
-	       matches[i].used = 1;
-               *do_shade = matches[i].shaded;
-               *do_max = !!(matches[i].flags & MAXIMIZED);
-	       if (matches[i].flags & ICONIFIED) {
-                 /*
-                    ICON_MOVED is necessary to make fvwm use icon_[xy]_loc
-                    for icon placement
-                 */
-                 ewin->flags |= STARTICONIC|ICON_MOVED;
-               } else {
-                 ewin->flags &= ~STARTICONIC;
-               }
+	  matches[i].used = 1;
+	  *do_shade = matches[i].shaded;
+	  *do_max = !!(matches[i].flags & MAXIMIZED);
+	  if (matches[i].flags & ICONIFIED) {
+	    /*
+	      ICON_MOVED is necessary to make fvwm use icon_[xy]_loc
+	      for icon placement
+	    */
+	    ewin->flags |= STARTICONIC|ICON_MOVED;
+	  } else {
+	    ewin->flags &= ~STARTICONIC;
+	  }
 #define FLAG(x) if(matches[i].flags&x) ewin->flags|=x; else ewin->flags&=~x
-               FLAG(WINDOWLISTSKIP);
-               FLAG(SUPPRESSICON);
-               FLAG(NOICON_TITLE);
-               FLAG(Lenience);
-               FLAG(StickyIcon);
-               FLAG(CirculateSkipIcon);
-               FLAG(CirculateSkip);
-               FLAG(ClickToFocus);
-               FLAG(SloppyFocus);
+	  FLAG(WINDOWLISTSKIP);
+	  FLAG(SUPPRESSICON);
+	  FLAG(NOICON_TITLE);
+	  FLAG(Lenience);
+	  FLAG(StickyIcon);
+	  FLAG(CirculateSkipIcon);
+	  FLAG(CirculateSkip);
+	  FLAG(ClickToFocus);
+	  FLAG(SloppyFocus);
 #undef FLAG
-               ewin->name = matches[i].wm_name;
-               ewin->tmpflags.NameChanged = matches[i].name_changed;
-               /* this doesn't work very well if Vx/Vy is not on
-                  a page boundary */
-               ewin->attr.x = matches[i].x - Scr.Vx;
-               ewin->attr.y = matches[i].y - Scr.Vy;
+	  ewin->name = matches[i].wm_name;
+	  ewin->tmpflags.NameChanged = matches[i].name_changed;
+	  /* this doesn't work very well if Vx/Vy is not on
+	     a page boundary */
+	  ewin->attr.x = matches[i].x - Scr.Vx;
+	  ewin->attr.y = matches[i].y - Scr.Vy;
 
-               *x_max = matches[i].x_max - Scr.Vx;
-               *y_max = matches[i].y_max - Scr.Vy;
-               *w_max = matches[i].w_max;
-               *h_max = matches[i].h_max;
+	  *x_max = matches[i].x_max - Scr.Vx;
+	  *y_max = matches[i].y_max - Scr.Vy;
+	  *w_max = matches[i].w_max;
+	  *h_max = matches[i].h_max;
 
-	       if (matches[i].flags & STICKY) {
-                 ewin->flags |= STICKY;
-                 /* force sticky windows on screen */
-                 ewin->attr.x = my_modulo (ewin->attr.x, Scr.MyDisplayWidth);
-                 ewin->attr.y = my_modulo (ewin->attr.y, Scr.MyDisplayHeight);
-                 *x_max = my_modulo (*x_max, Scr.MyDisplayWidth);
-                 *y_max = my_modulo (*y_max, Scr.MyDisplayHeight);
-	       } else {
-                 ewin->flags &= ~STICKY;
-		 ewin->Desk = matches[i].desktop;
-               }
+	  if (matches[i].flags & STICKY) {
+	    ewin->flags |= STICKY;
+	    /* force sticky windows on screen */
+	    ewin->attr.x = my_modulo (ewin->attr.x, Scr.MyDisplayWidth);
+	    ewin->attr.y = my_modulo (ewin->attr.y, Scr.MyDisplayHeight);
+	    *x_max = my_modulo (*x_max, Scr.MyDisplayWidth);
+	    *y_max = my_modulo (*y_max, Scr.MyDisplayHeight);
+	  } else {
+	    ewin->flags &= ~STICKY;
+	    ewin->Desk = matches[i].desktop;
+	  }
 
-               ewin->layer = matches[i].layer;
+	  ewin->layer = matches[i].layer;
 
-               ewin->attr.width = matches[i].w;
-               ewin->attr.height = matches[i].h;
+	  ewin->attr.width = matches[i].w;
+	  ewin->attr.height = matches[i].h;
 
-               /* this is not enough to fight fvwms attempts to
-                  put icons on the current page */
-               ewin->icon_x_loc = matches[i].icon_x - Scr.Vx;
-               ewin->icon_y_loc = matches[i].icon_y - Scr.Vy;
+	  /* this is not enough to fight fvwms attempts to
+	     put icons on the current page */
+	  ewin->icon_x_loc = matches[i].icon_x - Scr.Vx;
+	  ewin->icon_y_loc = matches[i].icon_y - Scr.Vy;
 
-               /* Find the window to stack this one below. */
+	  /* Find the window to stack this one below. */
 
-               for (j = i-1; j >= 0; j--) {
+	  for (j = i-1; j >= 0; j--) {
 
-                 /* matches are sorted in stacking order */
+	    /* matches are sorted in stacking order */
 
-                 if (matches[j].used) {
+	    if (matches[j].used) {
 
-                   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) {
-                     if (matchWin(t, &matches[j])) {
-                       ewin->stack_next->stack_prev = ewin->stack_prev;
-                       ewin->stack_prev->stack_next = ewin->stack_next;
+	      for (t = Scr.FvwmRoot.next; t != NULL; t = t->next) {
+		if (matchWin(t, &matches[j])) {
+		  ewin->stack_next->stack_prev = ewin->stack_prev;
+		  ewin->stack_prev->stack_next = ewin->stack_next;
 
-                       ewin->stack_prev = t;
-                       ewin->stack_next = t->stack_next;
-                       ewin->stack_prev->stack_next = ewin;
-                       ewin->stack_next->stack_prev = ewin;
-                       return;
-                     }
-                   }
-                 }
-               }
-	       return;
-	     }
-	 }
+		  ewin->stack_prev = t;
+		  ewin->stack_next = t->stack_next;
+		  ewin->stack_prev->stack_next = ewin;
+		  ewin->stack_next->stack_prev = ewin;
+		  return;
+		}
+	      }
+	    }
+	  }
+	  return;
+	}
+    }
 }
 
 #ifdef SESSION
@@ -676,7 +671,7 @@ callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
       SmcSetProperties (sm_conn, 3, props);
 
       first_time = 0;
-  }
+    }
 
   path = getenv ("SM_SAVE_DIR");
   if (!path)
@@ -782,12 +777,12 @@ callback_save_yourself(SmcConn sm_conn, SmPointer client_data,
 static void
 callback_die(SmcConn sm_conn, SmPointer client_data)
 {
-   SmcCloseConnection(sm_conn, 0, NULL);
-   sm_fd = -1;
+  SmcCloseConnection(sm_conn, 0, NULL);
+  sm_fd = -1;
 
-   if (master_pid != getpid())
-      kill(master_pid, SIGTERM);
-   Done(0, NULL);
+  if (master_pid != getpid())
+    kill(master_pid, SIGTERM);
+  Done(0, NULL);
 }
 
 static void
@@ -839,13 +834,13 @@ SessionInit(char *previous_client_id)
   if (!sm_conn)
     {
       /*
-         Don't annoy users which don't use a session manager
-       */
+	Don't annoy users which don't use a session manager
+      */
       if (previous_client_id)
         {
-           fvwm_msg(ERR, "SessionInit",
-	            "While connecting to session manager:\n%s.",
-                     error_string_ret);
+	  fvwm_msg(ERR, "SessionInit",
+		   "While connecting to session manager:\n%s.",
+		   error_string_ret);
         }
       sm_fd = -1;
     }
@@ -858,18 +853,18 @@ SessionInit(char *previous_client_id)
 void
 ProcessICEMsgs(void)
 {
-   IceProcessMessagesStatus status;
+  IceProcessMessagesStatus status;
 
-   if (sm_fd < 0)
-      return;
-   status = IceProcessMessages(SmcGetIceConnection(sm_conn), NULL, NULL);
-   if (status == IceProcessMessagesIOError)
-     {
-        fvwm_msg(ERR, "ProcessICEMSGS",
-                 "Connection to session manager lost\n");
-	sm_conn = NULL;
-	sm_fd = -1;
-     }
+  if (sm_fd < 0)
+    return;
+  status = IceProcessMessages(SmcGetIceConnection(sm_conn), NULL, NULL);
+  if (status == IceProcessMessagesIOError)
+    {
+      fvwm_msg(ERR, "ProcessICEMSGS",
+	       "Connection to session manager lost\n");
+      sm_conn = NULL;
+      sm_fd = -1;
+    }
 }
 
 /* the following is taken from xsm */
@@ -879,23 +874,23 @@ static IceIOErrorHandler prev_handler;
 void
 MyIoErrorHandler (ice_conn)
 
-IceConn ice_conn;
+  IceConn ice_conn;
 
 {
-    if (prev_handler)
-        (*prev_handler) (ice_conn);
+  if (prev_handler)
+    (*prev_handler) (ice_conn);
 }
 
 static void
 InstallIOErrorHandler ()
 
 {
-    IceIOErrorHandler default_handler;
+  IceIOErrorHandler default_handler;
 
-    prev_handler = IceSetIOErrorHandler (NULL);
-    default_handler = IceSetIOErrorHandler (MyIoErrorHandler);
-    if (prev_handler == default_handler)
-        prev_handler = NULL;
+  prev_handler = IceSetIOErrorHandler (NULL);
+  default_handler = IceSetIOErrorHandler (MyIoErrorHandler);
+  if (prev_handler == default_handler)
+    prev_handler = NULL;
 }
 
 

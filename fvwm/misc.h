@@ -4,7 +4,6 @@
 #include <ctype.h>
 #include "defaults.h"
 #include "functions.h"
-#include "menus.h"
 #include <libs/fvwmlib.h>
 
 
@@ -184,7 +183,6 @@ extern void       SetTitleBar(FvwmWindow *, Bool,Bool);
 extern void       RestoreWithdrawnLocation(FvwmWindow *, Bool);
 extern void       Destroy(FvwmWindow *);
 extern void       GetGravityOffsets (FvwmWindow *, int *, int *);
-extern void       MoveViewport(int newx, int newy,Bool);
 extern FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin);
 extern int        MappedNotOverride(Window w);
 extern void       GrabButtons(FvwmWindow *);
@@ -201,18 +199,14 @@ extern void       DrawIconWindow(FvwmWindow *);
 extern void       CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y);
 
 void Maximize(F_CMD_ARGS);
-#ifdef  WINDOWSHADE
 void WindowShade(F_CMD_ARGS);
 void setShadeAnim(F_CMD_ARGS);
-#endif
 
 extern void       RaiseWindow(FvwmWindow *t);
 extern void       LowerWindow(FvwmWindow *t);
 extern Bool       GrabEm(int);
 extern void       UngrabEm(void);
-extern MenuRoot   *NewMenuRoot(char *name);
-extern void       AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
-extern void       MakeMenu(MenuRoot *);
+extern void       CaptureOneWindow(FvwmWindow *fw, Window window);
 extern void       CaptureAllWindows(void);
 extern void       SetTimer(int);
 extern int        flush_expose(Window w);
@@ -239,7 +233,6 @@ extern void       RaiseThisWindow(int);
 extern int        GetContext(FvwmWindow *, XEvent *, Window *dummy);
 extern void       ConstrainSize (FvwmWindow *, int *, int *, Bool roundUp,
 				 int xmotion, int ymotion);
-extern Bool       HandlePaging(int, int, int *, int *, int *, int *,Bool,Bool);
 extern void       SetShape(FvwmWindow *, int);
 extern void       AutoPlace(FvwmWindow *);
 void executeModule(F_CMD_ARGS);
@@ -272,7 +265,6 @@ RETSIGTYPE DeadPipe(int nonsense);
 void GetMwmHints(FvwmWindow *t);
 void GetOlHints(FvwmWindow *t);
 void SelectDecor(FvwmWindow *, unsigned long, int,int);
-extern Bool PopUpMenu(MenuRoot *, int, int);
 void SetBorder (FvwmWindow *, Bool,Bool,Bool, Window);
 void move_window(F_CMD_ARGS);
 void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -297,14 +289,9 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long flags,
                  int Desk, int PageX, int PageY);
 void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);
 
-MenuStatus do_menu (MenuRoot *menu,MenuRoot *menuPrior,
-		    MenuItem **pmiExecuteAction, int cmenuDeep, Bool fSticks,
-		    XEvent *eventp, MenuOptions *pops);
 int check_if_function_allowed(int function, FvwmWindow *t,
 			      Bool override_allowed, char *menu_string);
 void ReInstallActiveColormap(void);
-
-void ParsePopupEntry(char *,FILE *, char **, int *);
 
 /* --- bindings.c --- */
 void key_binding(F_CMD_ARGS);
@@ -344,24 +331,16 @@ void SetColorLimit(F_CMD_ARGS);
 void MapIt(FvwmWindow *t);
 void UnmapIt(FvwmWindow *t);
 void do_save(void);
-void checkPanFrames(void);
-void raisePanFrames(void);
-void initPanFrames(void);
 Bool StashEventTime (XEvent *ev);
 int My_XNextEvent(Display *dpy, XEvent *event);
 void FlushQueue(int Module);
 void QuickRestart(void);
-void AddFuncKey (char *, int, int, int, char *, int, int, MenuRoot *,
-		 char , char);
 char *GetNextPtr(char *ptr);
 
 void InteractiveMove(Window *w, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
 		     XEvent *eventp);
 
-MenuRoot *FindPopup(char *popup_name);
-
 void Bell(F_CMD_ARGS);
-void scroll(F_CMD_ARGS);
 void movecursor(F_CMD_ARGS);
 void PlaceAgain_func(F_CMD_ARGS);
 void iconify_function(F_CMD_ARGS);
@@ -377,22 +356,28 @@ void refresh_function(F_CMD_ARGS);
 void refresh_win_function(F_CMD_ARGS);
 void stick_function(F_CMD_ARGS);
 
+/* --- virtual.c --- */
 void setEdgeThickness(F_CMD_ARGS);
+Bool HandlePaging(int, int, int *, int *, int *, int *,Bool,Bool);
+void checkPanFrames(void);
+void raisePanFrames(void);
+void initPanFrames(void);
+void MoveViewport(int newx, int newy,Bool);
 void changeDesks_func(F_CMD_ARGS);
 void changeDesks(int desk);
-void changeWindowsDesk(F_CMD_ARGS);
+void do_move_window_to_desk(FvwmWindow *tmp_win, int desk);
+void move_window_to_desk(F_CMD_ARGS);
+void scroll(F_CMD_ARGS);
+Bool get_page_arguments(char *action, int *page_x, int *page_y);
+void goto_page_func(F_CMD_ARGS);
+/* --- end of virtual.c --- */
 
 int GetMoveArguments(char *action, int x, int y, int w, int h,
                      int *pfinalX, int *pfinalY, Bool *fWarp);
-char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
-		     MenuItem *mi, MenuOptions *pops);
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
 int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
 		    int *val2_unit);
-
-void goto_page_func(F_CMD_ARGS);
-Bool get_page_arguments(char *action, int *page_x, int *page_y);
 
 void wait_func(F_CMD_ARGS);
 void flip_focus_func(F_CMD_ARGS);
@@ -410,7 +395,6 @@ void Nop_func(F_CMD_ARGS);
 void SetGlobalOptions(F_CMD_ARGS);
 void Emulate(F_CMD_ARGS);
 void set_mask_function(F_CMD_ARGS);
-void DestroyMenu(MenuRoot *mr);
 Pixel GetColor(char *);
 void FreeColors(Pixel *pixels, int n);
 #ifdef GRADIENT_BUTTONS
@@ -420,13 +404,8 @@ Pixel *AllocNonlinearGradient(char *s_colors[], int clen[],
 #endif
 void bad_binding(int num);
 void nocolor(char *note, char *name);
-void MakeMenus(void);
-void GetMenuXPMFile(char *name, MenuItem *it);
-void GetMenuBitmapFile(char *name, MenuItem *it);
 
-void add_item_to_menu(F_CMD_ARGS);
 void destroy_fvwmfunc(F_CMD_ARGS);
-void destroy_menu(F_CMD_ARGS);
 void ModuleConfig(F_CMD_ARGS);
 void add_another_item(F_CMD_ARGS);
 void add_item_to_func(F_CMD_ARGS);
@@ -436,9 +415,6 @@ void iconPath_function(F_CMD_ARGS);
 void pixmapPath_function(F_CMD_ARGS);
 void ProcessNewStyle(F_CMD_ARGS);
 void SetHiColor(F_CMD_ARGS);
-void SetMenuColor(F_CMD_ARGS);
-void ChangeMenuStyle(F_CMD_ARGS);
-void DestroyMenuStyle(F_CMD_ARGS);
 void SetDefaultColors(F_CMD_ARGS);
 void LoadDefaultFont(F_CMD_ARGS);
 void LoadIconFont(F_CMD_ARGS);
@@ -446,7 +422,6 @@ void LoadWindowFont(F_CMD_ARGS);
 #ifdef BORDERSTYLE
 void SetBorderStyle(F_CMD_ARGS);
 #endif
-void SetMenuStyle(F_CMD_ARGS);
 void SetTitleStyle(F_CMD_ARGS);
 #ifdef MULTISTYLE
 void AddTitleStyle(F_CMD_ARGS);
@@ -527,6 +502,8 @@ void GNOME_SetAreaCount();
 void GNOME_SetCurrentArea();
 void GNOME_SetCurrentDesk();
 void GNOME_SetClientList();
+
+void set_last_added_item(last_added_item_type type, void *item);
 
 #endif /* GNOME */
 

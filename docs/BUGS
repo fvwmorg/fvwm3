@@ -12,7 +12,6 @@ from our home page.
  - No geometry can be specified for FvwmButtons panels.
  - Running fvwm2 on an XNest X server does not work well.
  - FvwmSave and FvwmSaveDesk are not up to date.
- - The fvwm_convert script is not up to date.
  - xscreensaver may not be able to allocate a private colormap
  - FvwmButtons and possibly other modules may survive shutdown of the X
    server.
@@ -20,8 +19,6 @@ from our home page.
    the manpage.
  - DestroyMenu/DestroyFunc causes a coredump if a function/menu destroys
    itself.
- - Maximize does not work well when applied to a window that is not on
-   the current page.
  - A piperead command may hang if used in .fvwm2rc (if the pipe is never
    closed).
  - StartsOnPage does not work as expected? Please read the manpage carefully.

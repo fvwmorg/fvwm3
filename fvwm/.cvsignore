@@ -2,3 +2,4 @@ Makefile
 Makefile.in
 .deps
 fvwm2
+.gdb_history

@@ -27,7 +27,7 @@
 #define CoerceEnterNotifyOnCurrentWindow \
         CoerceEnterNotifyOnCurrentWind          /* - Nname too long, exceeds 31 characters. - */
 
-#define __attribute__(toto) 
+#define __attribute__(toto)
 
 #undef DEBUG_EVENTS                             /* --- Define to trace My_XNextEvent and DispatchEvent in events.c --- */
 #define DEBUG_MODULES                           /* --- Define to trace modules launching --- */
@@ -49,11 +49,6 @@
 
 /* Define to disable motif applications ability to have modal dialogs. Use with care.  */
 #undef MODALITY_IS_EVIL
-
-/* Tells the WM not to request save unders for pop-up menus. A quick test using monochrome X11 shows that save
- * unders cost about 4Kbytes RAM, but saves a lot of window redraws if you have windows that take a while
- * to refresh. For xcolor, I assume the cost is more like 4Kbytesx8 = 32kbytes (256 color).  */
-#define NO_SAVEUNDERS
 
 /* Define if you want the Shaped window extensions.
  * Shaped window extensions seem to increase the window managers RSS by about 60 Kbytes. They provide for leaving a title-bar
@@ -110,10 +105,6 @@
  * There is a slight memory penalty for each additionally defined decor.  */
 #define USEDECOR
 
-/* Enables the WindowShade function.  This function "rolls" the window up so only the title-bar remains.  See the man page entry
- * for "WindowShade" for more information.  */
-#define WINDOWSHADE
-
 /* Enables session management functionality. */
 #undef SESSION
 
@@ -142,7 +133,7 @@
 #undef WORRY_ABOUT_MISSED_XEVENTS
 
 /* Define if the X11 ConnectionNumber is actually a file descriptor. */
-#undef HAVE_X11_FD 
+#undef HAVE_X11_FD
 
 /* Define if fork() has unix semantics.  On VMS, no child process is created
    until after a successful exec(). */
@@ -169,7 +160,7 @@
 /*
 #define inline __inline
 */
-#define inline 
+#define inline
 
 /* Define if on MINIX.  */
 #undef _MINIX

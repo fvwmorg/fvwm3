@@ -44,6 +44,9 @@
 
 #include <libs/Picture.h>
 
+#define F_CMD_ARGS XEvent *eventp,Window w,FvwmWindow *tmp_win,\
+unsigned long context,char *action, int *Module
+
 #ifndef WithdrawnState
 #define WithdrawnState 0
 #endif
@@ -354,12 +357,9 @@ typedef struct WindowConditionMask {
 #define BUTTON8   128
 #define BUTTON9   256
 #define BUTTON10  512
-
-#ifdef WINDOWSHADE
 /* we're sticking this at the end of the buttons window member
    since we don't want to use up any more flag bits */
 #define WSHADE	(1<<31)
-#endif
 
 #include <stdlib.h>
 extern void Reborder(void);

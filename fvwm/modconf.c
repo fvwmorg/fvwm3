@@ -32,7 +32,6 @@
 #include <sys/socket.h>
 
 #include "fvwm.h"
-#include "menus.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
@@ -170,7 +169,7 @@ void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     SendName(*Module,M_CONFIG_INFO,0,0,0,message);
     free(message);
   }
-#ifdef XPM 
+#ifdef XPM
   {
     sprintf(msg2,"ColorLimit %d\n",Scr.ColorLimit);
     SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);

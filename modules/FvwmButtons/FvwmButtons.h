@@ -155,8 +155,15 @@ struct button_info_struct
 };
 
 struct panel_info_struct
-{ button_info  *uber;      /* panel */
+{
+  button_info  *uber;      /* panel */
   panel_info   *next;
+  struct
+  {
+    /* we need two flags since both flags zero is a valid state as well */
+    unsigned close_on_select;
+    unsigned stay_up_on_select;
+  } flags;
 };
 
 #include "button.h"

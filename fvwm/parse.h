@@ -34,7 +34,7 @@ enum {
     F_FUNCTION,
     F_MODULE = 15,
     F_DESK,
-    F_CHANGE_WINDOWS_DESK,
+    F_MOVE_TO_DESK,
     F_EXEC,
     F_POPUP,
     F_WAIT,

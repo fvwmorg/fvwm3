@@ -1,3 +1,17 @@
+1999-04-04  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmM4/FvwmM4.c (m4_defs):
+	* FvwmCpp/FvwmCpp.c (cpp_defs): removed SAVEUNDERS ifdef
+
+1999-04-03  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/parse.c (ParseConfigLine):
+	* FvwmButtons/FvwmButtons.h (struct panel_info_struct):
+	* FvwmButtons/FvwmButtons.c (Slide):
+	(Loop): CloseOnSelect and StayUpOnSelect allow to configure if a panel
+	closes when something is selected therein (in response to bug report
+	#101). Some cleanup.
+
 Sun Apr  4 03:42:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmWinList/FvwmWinList.c: removed some includes.
@@ -5,7 +19,7 @@ Sun Apr  4 03:42:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmWinList/FvwmWinList.h: move X11 includes from FvwmWinList.c
 	into this file; protect against multiple inclusion.
 
-	* FvwmWinList/List.c: 
+	* FvwmWinList/List.c:
 	* FvwmWinList/ButtonArray.c: include FvwmWinList.h for
 	ConsoleMessage() prototype.
 
@@ -14,7 +28,7 @@ Sun Apr  4 03:42:35 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmWinList/ButtonArray.h: add prototype for UpdateButtonDesk
 	and RadioButton.
 
-	* FvwmWinList/List.c (PrintList): 
+	* FvwmWinList/List.c (PrintList):
 	* FvwmWinList/FvwmWinList.c (ErrorHandler): make string format
 	agree with argument.
 
@@ -32,12 +46,12 @@ Sat Apr  3 15:32:40 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	`ystep', `wstep', and `hstep'.
 
 	* FvwmButtons/FvwmButtons.c (Slide): initialize variables `w' and
-	`h'. 
+	`h'.
 
 Sat Apr  3 15:12:50 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmAnimate/ChangeLog:
-	* FvwmEvent/ChangeLog: removed erroneously-created files.  
+	* FvwmEvent/ChangeLog: removed erroneously-created files.
 	Entries folded into this ChangeLog.
 
 Sat Apr  3 14:34:28 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
@@ -47,11 +61,11 @@ Sat Apr  3 14:34:28 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmScript/types.h: add prototype for yylex().
 
-	* FvwmScript/Instructions.c (ReceivFromScript): 
+	* FvwmScript/Instructions.c (ReceivFromScript):
 	* FvwmScript/Widgets/List.c (DrawCellule): reformat and insert
 	braces to avoid ambiguous `else'.
 
-	* FvwmScript/Widgets/CheckBox.c (EvtMouseCheckBox): 
+	* FvwmScript/Widgets/CheckBox.c (EvtMouseCheckBox):
 	* FvwmPager/x_pager.c (MapBalloonWindow): initialize variables to
 	placate gcc -Wall.
 
@@ -66,7 +80,7 @@ Sat Apr  3 14:34:28 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmIconMan/xmanager.c: removed COMPILE_STANDALONE nonsense
 	around include fvwm.h.
 
-	* FvwmIconMan/x.c: 
+	* FvwmIconMan/x.c:
 	* FvwmIconMan/winlist.c (check_win_complete): fix debugging printf
 	arguments.
 
@@ -76,7 +90,7 @@ Sat Apr  3 14:34:28 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmIconMan/readconfig.c (ParseKeyEntry): initialize variables
 	`actionstring' and `keystring'.
 
-	* FvwmIconMan/readconfig.c (ParseMouseEntry): 
+	* FvwmIconMan/readconfig.c (ParseMouseEntry):
 	* FvwmIconMan/readconfig.c (ParseKeyEntry): cast Action to char*
 	for debugging printf.
 
@@ -585,7 +599,7 @@ Thu Mar  4 00:39:15 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmEvent/Makefile.am (FvwmEvent_SOURCES: Remove Parse.c and
 	Parse.h, use the corresponding functions from libs/ModParse.c.
-	
+
 Sun Feb 28 11:49:24 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* FvwmWinList/ButtonArray.h:
@@ -1622,4 +1636,4 @@ Mon Nov  9 18:56:50 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* FvwmAnimate/FvwmAnimate.c: Fixed bug where AnimateResizeLine was
 	drawing 5 segments when it only wanted 4.
 
-	
+

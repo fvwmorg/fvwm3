@@ -1,3 +1,9 @@
+1999-04-04  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* TODO: updated
+
+	* BUGS: updated
+
 Sun Apr  4 03:03:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* DEVELOPERS: a couple of rewordings, especially about autoreconf
@@ -6,7 +12,7 @@ Sun Apr  4 03:03:22 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* cvs.html: add link to daily snapshots, a note about `cvs -q', a
 	note about autoREconf, and that you can rename checked-out
 	directories.  Also fixed HTML coding bugs: <h2> and <a> tags were
-	interdigitized. 
+	interdigitized.
 
 1999-03-28  Dominik Vogt  <dominik_vogt@gmx.de>
 

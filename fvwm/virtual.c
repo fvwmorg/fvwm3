@@ -7,7 +7,6 @@
 #include <unistd.h>
 
 #include "fvwm.h"
-#include "menus.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
@@ -36,6 +35,99 @@ static int edge_thickness = 2;
 static int last_edge_thickness = 2;
 static unsigned int prev_page_x = 0;
 static unsigned int prev_page_y = 0;
+
+/**************************************************************************
+ *
+ * Parse arguments for "Desk" and "MoveToDesk" (formerly "WindowsDesk"):
+ *
+ * (nil)       : desk number = current desk
+ * n           : desk number = current desk + n
+ * 0 n         : desk number = n
+ * n x         : desk number = current desk + n
+ * 0 n min max : desk number = n, but limit to min/max
+ * n min max   : desk number = current desk + n, but wrap around at desk #min
+ *               or desk #max
+ * n x min max : desk number = current desk + n, but wrap around at desk #min
+ *               or desk #max
+ *
+ * The current desk number is returned if not enough parameters could be
+ * read (or if action is empty).
+ *
+ **************************************************************************/
+static int GetDeskNumber(char *action)
+{
+  int n;
+  int m;
+  int desk;
+  int val[4];
+  int min, max;
+
+  n = GetIntegerArguments(action, NULL, &(val[0]), 4);
+  if (n <= 0)
+    return Scr.CurrentDesk;
+  if (n == 1)
+    return Scr.CurrentDesk + val[0];
+
+  desk = Scr.CurrentDesk;
+  m = 0;
+
+  if (val[0] == 0)
+    {
+      /* absolute desk number */
+      desk = val[1];
+    }
+  else
+    {
+      /* relative desk number */
+      desk += val[0];
+    }
+
+  if (n == 3)
+    {
+      m = 1;
+    }
+  if (n == 4)
+    {
+      m = 2;
+    }
+
+
+  if (n > 2)
+    {
+      /* handle limits */
+      if (val[m] <= val[m+1])
+	{
+	  min = val[m];
+	  max = val[m+1];
+	}
+      else
+	{
+          /*  min > max is nonsense, so swap 'em.  */
+	  min = val[m+1];
+	  max = val[m];
+	}
+      if (desk < min)
+	{
+          /*  Relative move outside of range, wrap around.  */
+	  if (val[0] < 0)
+	    desk = max;
+	  else
+	    desk = min;
+	}
+      else if (desk > max)
+	{
+          /*  Relative move outside of range, wrap around.  */
+	  if (val[0] > 0)
+	    desk = min;
+	  else
+	    desk = max;
+	}
+    }
+
+  return desk;
+}
+
+
 
 void setEdgeThickness(F_CMD_ARGS)
 {
@@ -621,97 +713,6 @@ void MoveViewport(int newx, int newy, Bool grab)
 
 /**************************************************************************
  *
- * Parse arguments for "Desk" and "MoveToDesk" (formerly "WindowsDesk"):
- *
- * (nil)       : desk number = current desk
- * n           : desk number = current desk + n
- * 0 n         : desk number = n
- * n x         : desk number = current desk + n
- * 0 n min max : desk number = n, but limit to min/max
- * n min max   : desk number = current desk + n, but wrap around at desk #min
- *               or desk #max
- * n x min max : desk number = current desk + n, but wrap around at desk #min
- *               or desk #max
- *
- * The current desk number is returned if not enough parameters could be
- * read (or if action is empty).
- *
- **************************************************************************/
-int GetDeskNumber(char *action)
-{
-  int n;
-  int m;
-  int desk;
-  int val[4];
-  int min, max;
-
-  n = GetIntegerArguments(action, NULL, &(val[0]), 4);
-  if (n <= 0)
-    return Scr.CurrentDesk;
-  if (n == 1)
-    return Scr.CurrentDesk + val[0];
-
-  desk = Scr.CurrentDesk;
-  m = 0;
-
-  if (val[0] == 0)
-    {
-      /* absolute desk number */
-      desk = val[1];
-    }
-  else
-    {
-      /* relative desk number */
-      desk += val[0];
-    }
-
-  if (n == 3)
-    {
-      m = 1;
-    }
-  if (n == 4)
-    {
-      m = 2;
-    }
-
-
-  if (n > 2)
-    {
-      /* handle limits */
-      if (val[m] <= val[m+1])
-	{
-	  min = val[m];
-	  max = val[m+1];
-	}
-      else
-	{
-          /*  min > max is nonsense, so swap 'em.  */
-	  min = val[m+1];
-	  max = val[m];
-	}
-      if (desk < min)
-	{
-          /*  Relative move outside of range, wrap around.  */
-	  if (val[0] < 0)
-	    desk = max;
-	  else
-	    desk = min;
-	}
-      else if (desk > max)
-	{
-          /*  Relative move outside of range, wrap around.  */
-	  if (val[0] > 0)
-	    desk = min;
-	  else
-	    desk = max;
-	}
-    }
-
-  return desk;
-}
-
-/**************************************************************************
- *
  * Move to a new desktop
  *
  *************************************************************************/
@@ -827,18 +828,9 @@ void changeDesks(int desk)
  * Move a window to a new desktop
  *
  *************************************************************************/
-void changeWindowsDesk(F_CMD_ARGS)
+void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
 {
-  int desk;
-
-  if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
-    return;
-
   if(tmp_win == NULL)
-    return;
-
-  desk = GetDeskNumber(action);
-  if(desk == tmp_win->Desk)
     return;
 
   /*
@@ -863,9 +855,21 @@ void changeWindowsDesk(F_CMD_ARGS)
 	}
       else
 	tmp_win->Desk = desk;
-
+      BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
     }
-  BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
+}
+
+/* function with parsing of command line */
+void move_window_to_desk(F_CMD_ARGS)
+{
+  int desk;
+
+  if (DeferExecution(eventp,&w,&tmp_win,&context,SELECT,ButtonRelease))
+    return;
+  desk = GetDeskNumber(action);
+  if(desk == tmp_win->Desk)
+    return;
+  do_move_window_to_desk(tmp_win, desk);
 }
 
 

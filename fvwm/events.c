@@ -55,7 +55,6 @@
 
 #include "fvwm.h"
 #include <X11/Xatom.h>
-#include "menus.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
@@ -155,6 +154,7 @@ void DispatchEvent()
 
   StashEventTime(&Event);
 
+  XFlush(dpy);
   if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &Tmp_win) == XCNOENT)
     Tmp_win = NULL;
   last_event_type = Event.type;
@@ -786,7 +786,7 @@ void HandleMapRequest()
   if (fFvwmInStartup)
    {
       /* Just map the damn thing, decorations are added later
-       in CaptureAllWindows. */
+       * in CaptureAllWindows. */
       XMapWindow (dpy, Event.xmaprequest.window);
       return;
    }
@@ -1575,16 +1575,13 @@ void HandleConfigureRequest()
    * requested client window height plus any title bar slop.
    */
   ConstrainSize(Tmp_win, &width, &height, False, 0, 0);
-#ifdef WINDOWSHADE
   if (Tmp_win->buttons & WSHADE)
     {
       /* for shaded windows, allow resizing, but keep it shaded */
-      SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_height,sendEvent, False);
+      SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_height,sendEvent,False);
       Tmp_win->orig_ht = height;
     }
-  else
-#endif
-  if (!(Tmp_win->flags & MAXIMIZED))
+  else if (!(Tmp_win->flags & MAXIMIZED))
     {
       /* dont allow clients to resize maximized windows */
       SetupFrame (Tmp_win, x, y, width, height, sendEvent, False);
@@ -1680,7 +1677,11 @@ int My_XNextEvent(Display *dpy, XEvent *event)
     for(i=0;i<npipes;i++)
       if (FD_ISSET(i, &init_fdset))
         break;
+#if 0
     if (i == npipes) {
+#else
+    if (i == npipes || writePipes[i+1] == 0) {
+#endif
       DBUG("My_XNextEvent", "Starting up after command lines modules\n");
       StartupStuff();
       timeoutP = NULL; /* set an infinite timeout to stop ticking */

@@ -22,16 +22,20 @@
 
 #include "fvwm.h"
 #include "functions.h"
+#include "menus.h"
 #include "misc.h"
 #include "parse.h"
 #include "screen.h"
 #include "module.h"
 
 
-static char *last_function = NULL;
-static char *last_complex_function = NULL;
-static char *last_builtin_function = NULL;
-static char *last_module = NULL;
+static char *repeat_last_function = NULL;
+static char *repeat_last_complex_function = NULL;
+static char *repeat_last_builtin_function = NULL;
+static char *repeat_last_top_function = NULL;
+static char *repeat_last_module = NULL;
+static char *repeat_last_menu = NULL;
+static FvwmWindow *repeat_last_fvwm_window = NULL;
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
@@ -127,6 +131,7 @@ static struct functions func_config[] =
 #ifdef GNOME
   {"GNOMEBUTTON",  GNOME_ButtonFunc, F_MOUSE,               FUNC_NO_WINDOW},
 #endif /* GNOME */
+  {"GOTODESK",     changeDesks_func, F_DESK,                FUNC_NO_WINDOW},
   {"GOTOPAGE",     goto_page_func,   F_GOTO_PAGE,           FUNC_NO_WINDOW},
   {"HILIGHTCOLOR", SetHiColor,       F_HICOLOR,             FUNC_NO_WINDOW},
   {"ICONFONT",     LoadIconFont,     F_ICONFONT,            FUNC_NO_WINDOW},
@@ -145,7 +150,7 @@ static struct functions func_config[] =
   {"MODULEPATH",   setModulePath,    F_MODULE_PATH,         FUNC_NO_WINDOW},
   {"MOUSE",        mouse_binding,    F_MOUSE,               FUNC_NO_WINDOW},
   {"MOVE",         move_window,      F_MOVE,                FUNC_NEEDS_WINDOW},
-  {"MOVETODESK",   changeWindowsDesk,F_CHANGE_WINDOWS_DESK, FUNC_NEEDS_WINDOW},
+  {"MOVETODESK",   move_window_to_desk,F_MOVE_TO_DESK,      FUNC_NEEDS_WINDOW},
   {"MOVETOPAGE",   move_window_to_page,F_MOVE_TO_PAGE,      FUNC_NEEDS_WINDOW},
   {"NEXT",         NextFunc,         F_NEXT,                FUNC_NO_WINDOW},
   {"NONE",         NoneFunc,         F_NONE,                FUNC_NO_WINDOW},
@@ -191,10 +196,8 @@ static struct functions func_config[] =
 /*
   {"WINDOWSDESK",  changeWindowsDesk,F_CHANGE_WINDOWS_DESK, FUNC_NEEDS_WINDOW},
 */
-#ifdef WINDOWSHADE
   {"WINDOWSHADE",  WindowShade,      F_WINDOW_SHADE,        FUNC_NEEDS_WINDOW},
   {"WINDOWSHADEANIMATE",setShadeAnim,F_SHADE_ANIMATE,       FUNC_NO_WINDOW},
-#endif /* WINDOWSHADE */
   {"XORPIXMAP",    SetXORPixmap,     F_XOR,                 FUNC_NO_WINDOW},
   {"XORVALUE",     SetXOR,           F_XOR,                 FUNC_NO_WINDOW},
   {"",0,0,0}
@@ -397,7 +400,7 @@ static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d, Bool may_time_out)
  *	ExecuteFunction - execute a fvwm built in function
  *
  *  Inputs:
- *	Action	- the menu action to execute
+ *	Action	- the action to execute
  *	tmp_win	- the fvwm window structure
  *	eventp	- pointer to the event that caused the function
  *	context - the context in which the button was pressed
@@ -505,8 +508,8 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   if (bif)
     {
       matched = TRUE;
-      update_last_string(&last_builtin_function, &last_function, expaction,
-		         no_store);
+      update_last_string(&repeat_last_builtin_function, &repeat_last_function,
+			 expaction, no_store);
       bif->action(eventp,w,tmp_win,context,action,&Module);
     }
 
@@ -517,13 +520,13 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
       ComplexFunction2(eventp,w,tmp_win,context,taction, &Module, &desperate);
       if(desperate)
 	{
-	  update_last_string(&last_module, &last_function, expaction,
-			     no_store);
+	  update_last_string(&repeat_last_module, &repeat_last_function,
+			     expaction, no_store);
 	  executeModule(eventp,w,tmp_win,context,taction, &Module);
 	}
       else
-	update_last_string(&last_complex_function, &last_function,
-			   expaction, no_store);
+	update_last_string(&repeat_last_complex_function,
+			   &repeat_last_function, expaction, no_store);
     }
 
   /* Only wait for an all-buttons-up condition after calls from
@@ -1024,21 +1027,23 @@ void repeat_function(F_CMD_ARGS)
   switch (index)
   {
   case 1: /* complex */
-fprintf(stderr,"repeating complex %s\n",last_complex_function);
-    ExecuteFunction(last_complex_function, tmp_win, eventp, context, *Module);
+fprintf(stderr,"repeating complex %s\n",repeat_last_complex_function);
+    ExecuteFunction(repeat_last_complex_function, tmp_win, eventp, context,
+		    *Module);
     break;
   case 2: /* builtin */
-fprintf(stderr,"repeating builtin %s\n",last_builtin_function);
-    ExecuteFunction(last_builtin_function, tmp_win, eventp, context, *Module);
+fprintf(stderr,"repeating builtin %s\n",repeat_last_builtin_function);
+    ExecuteFunction(repeat_last_builtin_function, tmp_win, eventp, context,
+		    *Module);
     break;
   case 3: /* module */
-fprintf(stderr,"repeating module %s\n",last_module);
-    ExecuteFunction(last_module, tmp_win, eventp, context, *Module);
+fprintf(stderr,"repeating module %s\n",repeat_last_module);
+    ExecuteFunction(repeat_last_module, tmp_win, eventp, context, *Module);
     break;
   case 0: /* function */
   default:
-fprintf(stderr,"repeating %s\n",last_function);
-    ExecuteFunction(last_function, tmp_win, eventp, context, *Module);
+fprintf(stderr,"repeating %s\n",repeat_last_function);
+    ExecuteFunction(repeat_last_function, tmp_win, eventp, context, *Module);
     break;
   }
 }

@@ -1,6 +1,9 @@
 Changes in alpha release 2.3.0 (February 1999)
 
-* 'Restart fvwm2' preserves almost all per-window using the file 
+* 'GotoDesk' command replaces former command 'Desk' (the old name is still
+  supported.
+
+* 'Restart fvwm2' preserves almost all per-window using the file
   $HOME/.fvwm_restart.
 
 * #define PICK_TRUECOLOR will make fvwm use the best TrueColor Visual.  This is
@@ -9,7 +12,7 @@ Changes in alpha release 2.3.0 (February 1999)
   that supports both 8 bit and 24 bit TrueColor)
 
 * New command line argument -replace. fvwm will try to "take over"
-  from a running wm only if it is given. 
+  from a running wm only if it is given.
 
 * ImagePath and ModulePath commands will now expand '+' to be the
   previous value of the path.
@@ -18,7 +21,7 @@ Changes in alpha release 2.3.0 (February 1999)
   before this change.
 
 * Unmaximizing keeps windows on the same page.
- 
+
 * Maximize can now expand until some other window is found to fully utilize
   available screen space.
 
@@ -45,7 +48,7 @@ Changes in alpha release 2.3.0 (February 1999)
   This helps if you want to use the same configuration on more than one
   display depth.  ColorLimit defaults to ON if display depth is 8 bits
   or less.  This should help new users.
-  
+
 * Maximize can now expand until some other window is found to fully utilize
   available screen space.
 

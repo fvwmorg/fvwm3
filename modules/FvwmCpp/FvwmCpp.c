@@ -336,10 +336,6 @@ static char *cpp_defs(Display *display, const char *host, char *cpp_options, cha
 
     strcat(options, "Cpp ");
 
-#ifdef	NO_SAVEUNDERS
-    strcat(options, "NO_SAVEUNDERS ");
-#endif
-
     fputs(MkDef("OPTIONS", options), tmpf);
 
     fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);

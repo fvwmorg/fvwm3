@@ -859,14 +859,14 @@ void Loop(void)
 		if(strncasecmp(act,"Exec",4)==0)
 		  {
 		    /* close current subpanel */
-		    if (PanelIndex != MainPanel)
+		    if (PanelIndex != MainPanel &&
+			!PanelIndex->flags.stay_up_on_select)
 		      Slide(PanelIndex, NULL);
 
 		    /* Look for Exec "identifier", in which case the button
 		       stays down until window "identifier" materializes */
 		    i=4;
-		    while(act[i]!=0 && act[i]!='"' &&
-			  isspace(act[i]))
+		    while(isspace(act[i]))
 		      i++;
 		    if(act[i] == '"')
 		      {
@@ -893,17 +893,22 @@ void Loop(void)
 		    strcat(tmp,&act[i2]);
 		    MySendText(fd,tmp,0);
 		    free(tmp);
-		  }
+		  } /* exec */
 		else if(strncasecmp(act,"DumpButtons",11)==0)
 		  DumpButtons(UberButton);
 		else if(strncasecmp(act,"SaveButtons",11)==0)
 		  SaveButtons(UberButton);
-		else if(strncasecmp(act,"panel",5))
+		else if(strncasecmp(act,"panel",5) != 0)
 		  MySendText(fd,act,0);
-	      }
+		if(strncasecmp(act,"panel",5) != 0 &&
+		   PanelIndex != MainPanel &&
+		   PanelIndex->flags.close_on_select)
+		  Slide(PanelIndex, NULL);
+	      } /* act */
 
             /* recover the old record */
-            UberButton = CurrentPanel->uber; /* the panel, the button pressed */
+	    /* the panel, the button pressed */
+            UberButton = CurrentPanel->uber;
             MyWindow   = UberButton->IconWinParent;
 
 	    b=CurrentButton;
@@ -1843,7 +1848,7 @@ void swallow(unsigned long *body)
 
 #define PanelPopUpStep 32
 
-panel_info *seekpanel (button_info *b)
+panel_info *seekpanel(button_info *b)
 {
   panel_info *PanelIndex = MainPanel->next; /* skip the main panel */
 
@@ -1853,7 +1858,7 @@ panel_info *seekpanel (button_info *b)
   return PanelIndex;
 }
 
-void Slide (panel_info *p, button_info *b)
+void Slide(panel_info *p, button_info *b)
 {
   Window PanelWin;
   Window root;
@@ -1917,7 +1922,7 @@ void Slide (panel_info *p, button_info *b)
     XUnmapWindow(Dpy, PanelWin);
     p->uber->swallow = 0;
   }
-  else
+  else if (b != NULL)
   {
     /* hidden ---> shown */
     int ix = buttonXPos(b, b->n);  /* button in the CurrentPanel */

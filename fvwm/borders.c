@@ -102,9 +102,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   int borderflags;
 #endif /* BORDERSTYLE */
   int rwidth; /* relief width */
-#ifdef WINDOWSHADE
   Bool shaded;
-#endif
 
   if(!t)
     return;
@@ -186,9 +184,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   /* MWMBorder style means thin 3d effects */
   rwidth = ((t->flags & MWMBorders) ? 1 : 2);
 
-#ifdef WINDOWSHADE
   shaded =  t->buttons & WSHADE;
-#endif
 
   if(t->flags & ICONIFIED)
   {
@@ -411,11 +407,10 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
            && t->boundary_width > 2)
         {
           int height = t->frame_height - (t->boundary_width * 2 ) + 1;
-#ifdef WINDOWSHADE
           /* Inset for shaded windows goes to the bottom */
           if (shaded) height += t->boundary_width;
-#endif
-          /* draw a single pixel band for MWMBorders and the top FvwmBorder line */
+          /* draw a single pixel band for MWMBorders and the top FvwmBorder
+	   * line */
           RelieveRectangle(dpy, t->frame,
                            t->boundary_width - 1, t->boundary_width - 1,
                            t->frame_width - (t->boundary_width * 2 ) + 1,
@@ -484,16 +479,15 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
             marks[i].x2 = marks[i].x1 = t->frame_width - t->corner_width + j;
             marks[i].y2 = (marks[i].y1 = 1 + j) + tlength;
             i++;
-#ifdef WINDOWSHADE
             if (!shaded)
-#endif
-            { /* bot left */
+            {
+	      /* bot left */
               marks[i].x2 = marks[i].x1 = t->corner_width + j;
-              marks[i].y2 = (marks[i].y1 = t->frame_height - badjust) - blength;
+              marks[i].y2 = (marks[i].y1 = t->frame_height - badjust) -blength;
               i++;
               /* bot right */
               marks[i].x2 = marks[i].x1 = t->frame_width - t->corner_width + j;
-              marks[i].y2 = (marks[i].y1 = t->frame_height - badjust) - blength;
+              marks[i].y2 = (marks[i].y1 = t->frame_height - badjust) -blength;
               i++;
               /* left top */
               marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
@@ -501,7 +495,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
               i++;
               /* left bot */
               marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
-              marks[i].y2 = marks[i].y1 = t->frame_height - t->corner_width + j;
+              marks[i].y2 = marks[i].y1 = t->frame_height - t->corner_width +j;
               i++;
               /* right top */
               marks[i].x2 = (marks[i].x1 = t->frame_width - badjust) - blength;
@@ -509,23 +503,22 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
               i++;
               /* right bot */
               marks[i].x2 = (marks[i].x1 = t->frame_width - badjust) - blength;
-              marks[i].y2 = marks[i].y1 = t->frame_height - t->corner_width + j;
+              marks[i].y2 = marks[i].y1 = t->frame_height - t->corner_width +j;
               i++;
             }
             XDrawSegments(dpy, t->frame, rgc, marks, i);
 
             /* shadow marks, reuse the array assuming XDraw doesn't trash it */
             i = 0;
-            j += j + 1; /* yuck, but j goes 0->1 in the first pass, 1->3 in 2nd */
+	    /* yuck, but j goes 0->1 in the first pass, 1->3 in 2nd */
+            j += j + 1;
             /* top left */
             marks[i].x2 = (marks[i].x1 -= j);
             i++;
             /* top right */
             marks[i].x2 = (marks[i].x1 -= j);
             i++;
-#ifdef WINDOWSHADE
             if (!shaded)
-#endif
             { /* bot left */
               marks[i].x2 = (marks[i].x1 -= j);
               i++;
@@ -1011,9 +1004,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
   int cx,cy,i;
   Bool Resized = False, Moved = False;
   int xwidth,ywidth,left,right;
-#ifdef WINDOWSHADE
   int shaded = tmp_win->buttons & WSHADE;
-#endif
 
 #ifdef FVWM_DEBUG_MSGS
   fvwm_msg(DBG,"SetupFrame",
@@ -1028,9 +1019,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
     tmp_win->orig_x = x + Scr.Vx;
     tmp_win->orig_y = y + Scr.Vy;
     tmp_win->orig_wd = w;
-#ifdef WINDOWSHADE
     if (!shaded)
-#endif
       tmp_win->orig_ht = h;
   }
 
@@ -1124,11 +1113,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
 
       if(w < 2*tmp_win->corner_width)
         tmp_win->corner_width = w/3;
-      if((h < 2*tmp_win->corner_width)
-#ifdef WINDOWSHADE
-        &&!shaded
-#endif
-         )
+      if((h < 2*tmp_win->corner_width) && (!shaded))
         tmp_win->corner_width = h/3;
       xwidth = w - 2*tmp_win->corner_width;
       ywidth = h - 2*tmp_win->corner_width;
@@ -1169,9 +1154,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
           xwc.width = tmp_win->boundary_width;
           xwc.height = ywidth;
         }
-#ifdef WINDOWSHADE
         if (!shaded||(i!=2))
-#endif
           XConfigureWindow(dpy, tmp_win->sides[i], xwcm, &xwc);
       }
 
@@ -1190,9 +1173,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
         else
           xwc.y = 0;
 
-#ifdef WINDOWSHADE
 	if (!shaded||(i==0)||(i==1))
-#endif
 	    XConfigureWindow(dpy, tmp_win->corners[i], xwcm, &xwc);
       }
 
@@ -1204,16 +1185,11 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
   cx = tmp_win->boundary_width;
   cy = tmp_win->title_height + tmp_win->boundary_width;
 
-#ifdef WINDOWSHADE
   if (!shaded) {
-#endif
-      XResizeWindow(dpy, tmp_win->w, tmp_win->attr.width,
-		    tmp_win->attr.height);
-      XMoveResizeWindow(dpy, tmp_win->Parent, cx,cy,
-                        tmp_win->attr.width, tmp_win->attr.height);
-#ifdef WINDOWSHADE
+    XResizeWindow(dpy, tmp_win->w, tmp_win->attr.width, tmp_win->attr.height);
+    XMoveResizeWindow(dpy, tmp_win->Parent, cx,cy, tmp_win->attr.width,
+		      tmp_win->attr.height);
   }
-#endif
 
   /*
    * fix up frame and assign size/location values in tmp_win
@@ -1242,11 +1218,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
   }
 #endif /* SHAPE */
   XSync(dpy,0);
-  if (sendEvent
-#ifdef WINDOWSHADE
-      && !shaded
-#endif
-      )
+  if (sendEvent && !shaded)
   {
     client_event.type = ConfigureNotify;
     client_event.xconfigure.display = dpy;

@@ -697,11 +697,9 @@ valuemask = tvaluemask;
       tmp_win->orig_y = tmp_win->orig_y % Scr.MyDisplayHeight;
   }
 
-#ifdef WINDOWSHADE
   if (do_shade) {
     WindowShade(&Event, tmp_win->w, tmp_win, C_WINDOW, "", 0);
   }
-#endif /* WINDOWSHADE */
   /* wait until the window is iconified and the icon window is mapped
    * before creating the icon window
    */

@@ -54,6 +54,7 @@ static char sccsid[] __attribute__((__unused__))
 int master_pid;			/* process number of 1st fvwm process */
 
 ScreenInfo Scr;		        /* structures for the screen */
+MenuInfo Menus;                 /* structures for menus */
 Display *dpy;			/* which display are we talking to */
 
 Window BlackoutWin=None;        /* window to hide window captures */
@@ -425,7 +426,7 @@ int main(int argc, char **argv)
      * or visualId but I think the only people who want it want this */
     XVisualInfo template, *vizinfo;
     int total, i;
-    
+
     /* grab a TrueColor visual */
     Scr.depth = 0;
     template.screen = Scr.screen;
@@ -598,8 +599,6 @@ int main(int argc, char **argv)
   UnBlackoutScreen(); /* if we need to remove blackout window */
   CoerceEnterNotifyOnCurrentWindow();
 
-  DBUG("main","Entering HandleEvents loop...");
-
 #ifdef SESSION
   SessionInit(client_id);
 #endif
@@ -607,6 +606,8 @@ int main(int argc, char **argv)
 #ifdef GNOME
   GNOME_Init();
 #endif
+
+  DBUG("main","Entering HandleEvents loop...");
 
   HandleEvents();
   switch( fvwmRunState )
@@ -674,24 +675,59 @@ void StartupStuff(void)
 /***********************************************************************
  *
  *  Procedure:
+ *      CaptureOneWindow
  *      CaptureAllWindows
  *
- *   Decorates all windows at start-up and during recaptures
+ *   Decorates windows at start-up and during recaptures
  *
  ***********************************************************************/
+
+void CaptureOneWindow(FvwmWindow *fw, Window window)
+{
+  Window w;
+  Atom atype;
+  int aformat;
+  unsigned long nitems, bytes_remain;
+  unsigned char *prop;
+  unsigned long data[1];
+
+  if(XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw)!=XCNOENT)
+  {
+    isIconicState = DontCareState;
+    if(XGetWindowProperty(dpy, fw->w, _XA_WM_STATE, 0L, 3L, False,
+			  _XA_WM_STATE, &atype, &aformat, &nitems,
+			  &bytes_remain, &prop) == Success)
+    {
+      if(prop != NULL)
+      {
+	isIconicState = *(long *)prop;
+	XFree(prop);
+      }
+    }
+    data[0] = (unsigned long)fw->Desk;
+    XChangeProperty(dpy, fw->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
+		    PropModeReplace, (unsigned char *) data, 1);
+
+    XSelectInput(dpy, fw->w, 0);
+    w = fw->w;
+    XUnmapWindow(dpy,fw->frame);
+    XUnmapWindow(dpy,w);
+    RestoreWithdrawnLocation (fw,True);
+    fw->tmpflags.ReuseDestroyed = True;  /* RBW - 1999/03/20 */
+    Destroy(fw);
+    Event.xmaprequest.window = w;
+    HandleMapRequestKeepRaised(BlackoutWin, fw);
+    return;
+  }
+}
 
 void CaptureAllWindows(void)
 {
   int i,j;
   unsigned int nchildren;
   Window root, parent, *children;
-   FvwmWindow *tmp,*next;		/* temp fvwm window structure */
+  FvwmWindow *tmp,*next;		/* temp fvwm window structure */
   Window w;
-  unsigned long data[1];
-  unsigned char *prop;
-  Atom atype;
-  int aformat;
-  unsigned long nitems, bytes_remain;
 
   MyXGrabServer(dpy);
 
@@ -750,37 +786,9 @@ void CaptureAllWindows(void)
     tmp = Scr.FvwmRoot.next;
     for(i=0;i<nchildren;i++)
     {
-      if(XFindContext(dpy, children[i], FvwmContext,
-                      (caddr_t *)&tmp)!=XCNOENT)
-      {
-        isIconicState = DontCareState;
-        if(XGetWindowProperty(dpy,tmp->w,_XA_WM_STATE,0L,3L,False,
-                              _XA_WM_STATE,
-                              &atype,&aformat,&nitems,&bytes_remain,&prop)==
-           Success)
-        {
-          if(prop != NULL)
-          {
-            isIconicState = *(long *)prop;
-            XFree(prop);
-          }
-        }
-        next = tmp->next;
-        data[0] = (unsigned long) tmp->Desk;
-        XChangeProperty (dpy, tmp->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
-                         PropModeReplace, (unsigned char *) data, 1);
-
-        XSelectInput(dpy, tmp->w, 0);
-        w = tmp->w;
-        XUnmapWindow(dpy,tmp->frame);
-        XUnmapWindow(dpy,w);
-        RestoreWithdrawnLocation (tmp,True);
-        tmp->tmpflags.ReuseDestroyed = True;  /* RBW - 1999/03/20 */
-        Destroy(tmp);
-        Event.xmaprequest.window = w;
-        HandleMapRequestKeepRaised(BlackoutWin, tmp);
-        tmp = next;
-      }
+      next = tmp->next;
+      CaptureOneWindow(tmp, children[i]);
+      tmp = next;
     }
   }
 
@@ -1392,11 +1400,13 @@ void InitVariables(void)
 
   Scr.functions = NULL;
 
-  Scr.menus.all = NULL;
-  Scr.menus.DefaultStyle = NULL;
-  Scr.menus.LastStyle = NULL;
-  Scr.menus.PopupDelay10ms = DEFAULT_POPUP_DELAY;
-  Scr.menus.DoubleClickTime = DEFAULT_MENU_CLICKTIME;
+  Menus.all = NULL;
+  Menus.DefaultStyle = NULL;
+  Menus.LastStyle = NULL;
+  Menus.PopupDelay10ms = DEFAULT_POPUP_DELAY;
+  Menus.DoubleClickTime = DEFAULT_MENU_CLICKTIME;
+  memset(&Menus.flags, 0, sizeof(Menus.flags));
+  Scr.last_added_item.type = ADDED_NONE;
 
   Scr.DefaultIcon = NULL;
 
@@ -1420,7 +1430,8 @@ void InitVariables(void)
   CreateGCs();
 
   if (Scr.depth <= 8) {               /* if the color is limited */
-    Scr.ColorLimit = 255;               /* a number > than the builtin table! */
+    /* a number > than the builtin table! */
+    Scr.ColorLimit = 255;
   }
   Scr.FvwmRoot.w = Scr.Root;
   Scr.FvwmRoot.next = 0;

@@ -365,10 +365,6 @@ static char *m4_defs(Display *display, const char *host, char *m4_options, char 
 
   strcat(options, "M4 ");
 
-#ifdef	NO_SAVEUNDERS
-  strcat(options, "NO_SAVEUNDERS ");
-#endif
-
   fputs(MkDef("OPTIONS", options), tmpf);
 
   fputs(MkDef("FVWM_MODULEDIR", FVWM_MODULEDIR), tmpf);

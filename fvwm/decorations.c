@@ -44,7 +44,6 @@
 #include "misc.h"
 #include "screen.h"
 #include "parse.h"
-#include "menus.h"
 #include "lang-strings.h"
 
 

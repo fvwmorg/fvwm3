@@ -100,7 +100,6 @@ void resize_window(F_CMD_ARGS)
       /* size will be less or equal to requested */
       ConstrainSize (tmp_win, &drag->width, &drag->height, False, xmotion,
 		     ymotion);
-#ifdef WINDOWSHADE
       if (tmp_win->buttons & WSHADE)
 	{
 	  tmp_win->orig_wd = drag->width;
@@ -109,9 +108,8 @@ void resize_window(F_CMD_ARGS)
 		      drag->width, tmp_win->frame_height,FALSE,False);
 	}
       else
-#endif
-      SetupFrame (tmp_win, tmp_win->frame_x,
-		  tmp_win->frame_y ,drag->width, drag->height,FALSE,False);
+	SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y, drag->width,
+		    drag->height,FALSE,False);
       SetBorder(tmp_win,True,True,True,None);
 
       ResizeWindow = None;
@@ -135,7 +133,6 @@ void resize_window(F_CMD_ARGS)
   Scr.flags.edge_wrap_x = 0;
   Scr.flags.edge_wrap_y = 0;
 
-#ifdef WINDOWSHADE
   if (tmp_win->buttons & WSHADE)
     {
       drag->x = tmp_win->frame_x;
@@ -147,10 +144,9 @@ void resize_window(F_CMD_ARGS)
         drag->height = tmp_win->orig_ht;
     }
   else
-#endif
-  XGetGeometry(dpy, (Drawable) ResizeWindow, &JunkRoot,
-	       &drag->x, &drag->y, (unsigned int *)&drag->width,
-	       (unsigned int *)&drag->height, &JunkBW,&JunkDepth);
+    XGetGeometry(dpy, (Drawable) ResizeWindow, &JunkRoot,
+		 &drag->x, &drag->y, (unsigned int *)&drag->width,
+		 (unsigned int *)&drag->height, &JunkBW,&JunkDepth);
 
   orig->x = drag->x;
   orig->y = drag->y;
@@ -204,14 +200,14 @@ void resize_window(F_CMD_ARGS)
       int tx;
       int ty;
 
-      tx = orig->width / 20 - 1;
+      tx = orig->width / 7 - 1;
       if (tx < 20)
       {
 	tx = orig->width / 4 - 1;
 	if (tx > 20)
 	  tx = 20;
       }
-      ty = orig->height / 20 - 1;
+      ty = orig->height / 7 - 1;
       if (ty < 20)
       {
 	ty = orig->height / 4 - 1;
@@ -427,7 +423,6 @@ void resize_window(F_CMD_ARGS)
       /* size will be >= to requested */
       ConstrainSize (tmp_win, &drag->width, &drag->height, True, xmotion,
 		     ymotion);
-#ifdef WINDOWSHADE
        if (tmp_win->buttons & WSHADE)
        {
          SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,
@@ -435,9 +430,8 @@ void resize_window(F_CMD_ARGS)
          tmp_win->orig_ht = drag->height;
        }
       else
-#endif
-      SetupFrame (tmp_win, drag->x,
-		  drag->y, drag->width, drag->height,FALSE, False);
+	SetupFrame (tmp_win, drag->x, drag->y, drag->width, drag->height,
+		    FALSE, False);
     }
   UninstallRootColormap();
   ResizeWindow = None;
@@ -733,10 +727,8 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp,
     *widthp = dwidth + 2*tmp_win->boundary_width;
     *heightp = dheight + tmp_win->title_height + 2*tmp_win->boundary_width;
 #if 0
-#ifdef WINDOWSHADE
     if (tmp_win->buttons & WSHADE)
       *heightp = tmp_win->title_height + tmp_win->boundary_width;
-#endif
 #endif
 
     return;

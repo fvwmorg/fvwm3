@@ -59,6 +59,11 @@ all buttons have a chance to fit. The number of columns is increased to at
 least the width of the widest button and new rows are added until all buttons
 can be placed. For best tolerance of configuration of errors use the
 smart option.
+.IP "*FvwmButtonsCloseOnSelect\fP"
+This option is only valid for panels.  Calling any action within a panel closes
+the panel.  With the opposite option \fIStayUpOnSelect\fP the panel never
+closes when pressing anything inside it.  The default is to close the panel
+if the action executed begins with 'Exec'.
 .IP "*FvwmButtonsColumns \fIcolumns\fP"
 Specifies the number of columns of buttons to be created. If unspecified,
 the number of columns will be set to the number of buttons requested,
@@ -103,6 +108,8 @@ background.
 .IP "*FvwmButtonsRows \fIrows\fP"
 Specifies the number of rows of buttons to be created. If unspecified,
 2 rows will be used.
+.IP "*FvwmButtonsStayUpOnSelect\fP"
+See \f*FvwmButtonsCloseOnSelect\fP.
 .IP "*FvwmButtons(\fIoptions\fP) [\fItitle icon command\fP]"
 Specifies the contents of a button in the buttonbox.
 The following \fIoptions\fP, separated by commas or whitespace, can be

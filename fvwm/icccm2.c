@@ -7,7 +7,6 @@
 #include <string.h>
 #include <unistd.h>
 #include "fvwm.h"
-#include "menus.h"
 #include "misc.h"
 #include "screen.h"
 #include "parse.h"
@@ -32,7 +31,7 @@ Atom conversion_targets[MAX_TARGETS];
 
 long icccm_version[] = { 2, 0 };
 
-void 
+void
 SetupICCCM2 (Bool replace_wm)
 {
   Window running_wm_win;
@@ -65,15 +64,15 @@ SetupICCCM2 (Bool replace_wm)
        Thus we wait until it destroys running_wm_win. */
     attr.event_mask = StructureNotifyMask;
     XChangeWindowAttributes (dpy, running_wm_win, CWEventMask, &attr);
-  } 
+  }
 
   /* add PropChange to NoFocusWin events */
   attr.event_mask = PropertyChangeMask;
   XChangeWindowAttributes (dpy, Scr.NoFocusWin, CWEventMask, &attr);
 
   /* We are not yet in the event loop, thus lastTimestamp will not
-     be ready. Have to get a timestamp manually by provoking a 
-     PropertyNotify. */ 
+     be ready. Have to get a timestamp manually by provoking a
+     PropertyNotify. */
   XChangeProperty (dpy, Scr.NoFocusWin, XA_WM_CLASS, XA_STRING, 8,
 		   PropModeAppend, NULL, 0);
   XWindowEvent (dpy, Scr.NoFocusWin, PropertyChangeMask, &xev);
@@ -86,8 +85,8 @@ SetupICCCM2 (Bool replace_wm)
   if (XGetSelectionOwner (dpy, _XA_WIN_SX) != Scr.NoFocusWin) {
     fvwm_msg (ERR, "SetupICCCM2", "failed to acquire selection ownership");
     exit (1);
-  } 
- 
+  }
+
   /* Announce ourself as the new wm */
   ev.type = ClientMessage;
   ev.window = Scr.Root;
@@ -96,7 +95,7 @@ SetupICCCM2 (Bool replace_wm)
   ev.data.l[0] = managing_since;
   ev.data.l[1] = _XA_WIN_SX;
   XSendEvent (dpy, Scr.Root, False, StructureNotifyMask, (XEvent*)&ev);
- 
+
   if (running_wm_win != None) {
     /* Wait for the old wm to finish. */
     /* FIXME: need a timeout here. */
@@ -114,7 +113,7 @@ SetupICCCM2 (Bool replace_wm)
 /* We must make sure that we have released SubstructureRedirect
    before we destroy manager_win, so that another wm can start
    successfully. */
-void 
+void
 CloseICCCM2 ()
 {
   DBUG("CloseICCCM2", "good luck, new wm");
@@ -127,29 +126,29 @@ static Bool
 convertProperty (Window w, Atom target, Atom property)
 {
   if (target == _XA_TARGETS)
-    XChangeProperty (dpy, w, property, 
-		     XA_ATOM, 32, PropModeReplace, 
-		     (unsigned char *)conversion_targets, MAX_TARGETS); 
+    XChangeProperty (dpy, w, property,
+		     XA_ATOM, 32, PropModeReplace,
+		     (unsigned char *)conversion_targets, MAX_TARGETS);
   else if (target == _XA_TIMESTAMP)
-    XChangeProperty (dpy, w, property, 
-		     XA_INTEGER, 32, PropModeReplace, 
-		     (unsigned char *)&managing_since, 1); 
+    XChangeProperty (dpy, w, property,
+		     XA_INTEGER, 32, PropModeReplace,
+		     (unsigned char *)&managing_since, 1);
   else if (target == _XA_VERSION)
-    XChangeProperty (dpy, w, property, 
-		     XA_INTEGER, 32, PropModeReplace, 
-		     (unsigned char *)icccm_version, 2); 
+    XChangeProperty (dpy, w, property,
+		     XA_INTEGER, 32, PropModeReplace,
+		     (unsigned char *)icccm_version, 2);
   else return False;
 
   /* FIXME: This is ugly. We should rather select for
      PropertyNotify on the window, return to the main loop,
-     and send the SelectionNotify once we are sure the property 
-     has arrived. Problem: this needs a list of pending 
+     and send the SelectionNotify once we are sure the property
+     has arrived. Problem: this needs a list of pending
      SelectionNotifys. */
   XSync (dpy, 0);
   return True;
 }
 
-void 
+void
 HandleSelectionRequest ()
 {
   Atom type, *adata;
@@ -176,25 +175,25 @@ HandleSelectionRequest ()
 	 meet multiple requests with a length > 8 */
       adata = (Atom*)data;
       for (i = 0; i < num; i += 2) {
-	if (!convertProperty(ev.requestor, adata[i], adata[i+1])) 
+	if (!convertProperty(ev.requestor, adata[i], adata[i+1]))
 	  adata[i+1] = None;
       }
-      XChangeProperty (dpy, ev.requestor, ev.property, _XA_ATOM_PAIR, 
+      XChangeProperty (dpy, ev.requestor, ev.property, _XA_ATOM_PAIR,
 		       32, PropModeReplace, data, num);
       XFree (data);
     }
   } else {
     if (ev.property == None) ev.property = ev.target;
-    if (convertProperty (ev.requestor, ev.target, ev.property)) 
+    if (convertProperty (ev.requestor, ev.target, ev.property))
       reply.property = ev.property;
   }
 
   XSync (dpy, 0);
-  XSendEvent (dpy, ev.requestor, False, 0L, (XEvent*)&reply);    
+  XSendEvent (dpy, ev.requestor, False, 0L, (XEvent*)&reply);
 }
 
 /* If another wm is requesting ownership of the selection,
-   we receive a SelectionClear event. In that case, we have to 
+   we receive a SelectionClear event. In that case, we have to
    release all resources and destroy manager_win. Done() calls
    CloseICCCM2() after undecorating all windows. */
 void
