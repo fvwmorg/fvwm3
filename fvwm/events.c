@@ -1198,13 +1198,13 @@ void HandleUnmapNotify(void)
    */
   weMustUnmap = 0;
   if (!Tmp_win)
-    {
-      Event.xany.window = Event.xunmap.window;
-      weMustUnmap = 1;
-      if (XFindContext(dpy, Event.xany.window,
-		       FvwmContext, (caddr_t *)&Tmp_win) == XCNOENT)
-	Tmp_win = NULL;
-    }
+  {
+    Event.xany.window = Event.xunmap.window;
+    weMustUnmap = 1;
+    if (XFindContext(dpy, Event.xany.window,
+		     FvwmContext, (caddr_t *)&Tmp_win) == XCNOENT)
+      Tmp_win = NULL;
+  }
 
   if(!Tmp_win)
     return;
@@ -2591,10 +2591,10 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   if (e->type == KeyPress && e->xkey.window == t->frame &&
       e->xkey.subwindow == t->decor_w)
   {
-    /* We can't get keyboard events on the decor_w directly beacause it is a
-     * sibling of the parent window which gets all keyboard input. So we have to
-     * grab keys on the frame and then translate the coordinates to find out in
-     * which subwindow of the decor_w the event occured. */
+    /* We can't get keyboard events on the decor_w directly because it is a
+     * sibling of the parent window which gets all keyboard input. So we have
+     * to grab keys on the frame and then translate the coordinates to find out
+     * in which subwindow of the decor_w the event occured. */
     e->xkey.window = e->xkey.subwindow;
     XTranslateCoordinates(dpy, t->frame, t->decor_w, e->xkey.x, e->xkey.y,
 			  &JunkX, &JunkY, &(e->xkey.subwindow));
@@ -2606,10 +2606,10 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
   if (e->type == KeyPress && e->xkey.window == t->frame &&
       e->xkey.subwindow == t->decor_w)
   {
-    /* We can't get keyboard events on the decor_w directly beacause it is a
-     * sibling of the parent window which gets all keyboard input. So we have to
-     * grab keys on the frame and then translate the coordinates to find out in
-     * which subwindow of the decor_w the event occured. */
+    /* We can't get keyboard events on the decor_w directly because it is a
+     * sibling of the parent window which gets all keyboard input. So we have
+     * to grab keys on the frame and then translate the coordinates to find out
+     * in which subwindow of the decor_w the event occured. */
     e->xkey.window = e->xkey.subwindow;
     XTranslateCoordinates(dpy, t->frame, t->decor_w, e->xkey.x, e->xkey.y,
 			  &JunkX, &JunkY, &(e->xkey.subwindow));

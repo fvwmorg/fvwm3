@@ -1,6 +1,8 @@
 # All tests are defined as functions, added to a menu and added to
 # the function that can run all tests.
 
+
+
 # Destroy/AddTo in 1 line:
 DestroyFunc CreateFunc
 AddToFunc CreateFunc
@@ -13,7 +15,7 @@ CreateFunc Log
 
 CreateFunc RootTail
  + I Exec xsetroot -solid black
- + I Exec root-tail -g 80x40+300+0 -color red -font lucidasanstypewriter-12 ~/.X.err
+ + I Exec root-tail -g 80x50+300+0 -color red -font lucidasanstypewriter-12 ~/.X.err
 
 # Init TestMenu and all tests function TestFunc:
 DestroyMenu TestMenu
@@ -329,9 +331,9 @@ AddToFunc ConfigDestroyModuleConfig-Func
 
 AddTest "Test FvwmBanner" FvwmBanner-Func
 AddToFunc FvwmBanner-Func
- + I *FvwmBannerTimeout 9182743120348908713204
- + I *FvwmBannerTimeout 1000
  + I *FvwmBannerTimeout 10
+ + I *FvwmBannerTimeout 1000
+ + I *FvwmBannerTimeout 9182743120348908713204
  + I Module
  + I Module
  + I Module FvwmBanner
@@ -1682,7 +1684,7 @@ AddToFunc ModulePath-Func
  + I ModulePath
  + I ModulePath $HOME/bin/fvwm2:/usr/local/libexec/fvwm/2.3.22:/opt/public/src/fvwm/2.3.22
 
-AddTesty "Test Cleanup" Cleanup-Func
+AddTest "Test Cleanup" Cleanup-Func
 AddToFunc Cleanup-Func
  + I All (window1) destroy
  + I All (window2) destroy
@@ -1696,6 +1698,11 @@ AddToFunc Cleanup-Func
 
 # Now Display the tests:
 AddToFunc InitFunction
+ + I ImagePath /tmp
+ + I mouse 1 1 a close
+ + I mouse 1 t a move
+ + I mouse 2 t a lower
+ + I mouse 3 t a raiselower
  + I Menu TestMenu
 # ... and bind it to a button
 Mouse 1 r a Menu TestMenu

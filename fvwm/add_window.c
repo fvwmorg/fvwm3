@@ -936,7 +936,6 @@ void destroy_auxiliary_windows(FvwmWindow *tmp_win,
   if (destroy_frame_and_parent)
   {
     XDestroyWindow(dpy, tmp_win->frame);
-    tmp_win->frame = None;
     XDeleteContext(dpy, tmp_win->frame, FvwmContext);
     XDeleteContext(dpy, tmp_win->decor_w, FvwmContext);
     XDeleteContext(dpy, tmp_win->Parent, FvwmContext);
@@ -1039,7 +1038,9 @@ void destroy_icon(FvwmWindow *tmp_win)
   if((IS_ICON_OURS(tmp_win))&&(tmp_win->icon_pixmap_w != None))
     XDestroyWindow(dpy, tmp_win->icon_pixmap_w);
   if(tmp_win->icon_pixmap_w != None)
+  {
     XDeleteContext(dpy, tmp_win->icon_pixmap_w, FvwmContext);
+  }
   tmp_win->icon_pixmap_w = None;
   tmp_win->iconPixmap = None;
   tmp_win->icon_maskPixmap = None;

@@ -1,3 +1,8 @@
+2000-12-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c (destroy_auxiliary_windows):
+	core dump fix
+
 2000-12-05  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/purify/purify.fvwm2rc: Fix step logging.
