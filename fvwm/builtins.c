@@ -853,10 +853,10 @@ void SetHiColor(F_CMD_ARGS)
   {
     fvwm_msg(
       ERR, "SetHiColor",
-      "Decors do not support the HilighColor command anymore.\n"
-      "    Please use 'Style <stylename> HilightFore <forecolor>' and\n"
-      "    'Style <stylename> HilightBack <backcolor>' instead.\n"
-      "    Sorry for the inconvenience.");
+      "Decors do not support the HilighColor command anymore."
+      " Please use 'Style <stylename> HilightFore <forecolor>' and"
+      " 'Style <stylename> HilightBack <backcolor>' instead."
+      " Sorry for the inconvenience.");
     return;
   }
 #endif
@@ -884,9 +884,9 @@ void SetHiColorset(F_CMD_ARGS)
   {
     fvwm_msg(
       ERR, "SetHiColorset",
-      "Decors do not support the HilightColorset command anymore.\n"
-      "    Please use 'Style <stylename> HilightColorset <colorset>' instead.\n"
-      "    Sorry for the inconvenience.");
+      "Decors do not support the HilightColorset command anymore."
+      " Please use 'Style <stylename> HilightColorset <colorset>' instead."
+      " Sorry for the inconvenience.");
     return;
   }
 #endif
@@ -1172,9 +1172,9 @@ void LoadIconFont(F_CMD_ARGS)
   {
     fvwm_msg(
       ERR, "LoadIconFont",
-      "Decors do not support the IconFont command anymore.\n"
-      "    Please use 'Style <stylename> IconFont <fontname>' instead.\n"
-      "    Sorry for the inconvenience.");
+      "Decors do not support the IconFont command anymore."
+      " Please use 'Style <stylename> IconFont <fontname>' instead."
+      " Sorry for the inconvenience.");
     return;
   }
 #endif
@@ -1196,9 +1196,9 @@ void LoadWindowFont(F_CMD_ARGS)
   {
     fvwm_msg(
       ERR, "LoadWindowFont",
-      "Decors do not support the WindowFont command anymore.\n"
-      "    Please use 'Style <stylename> Font <fontname>' instead.\n"
-      "    Sorry for the inconvenience.");
+      "Decors do not support the WindowFont command anymore."
+      " Please use 'Style <stylename> Font <fontname>' instead."
+      " Sorry for the inconvenience.");
     return;
   }
 #endif
@@ -1823,11 +1823,6 @@ void InitFvwmDecor(FvwmDecor *decor)
 #ifdef USEDECOR
     decor->tag = NULL;
     decor->next = NULL;
-
-    if (decor != &Scr.DefaultDecor)
-    {
-      AddToDecor(decor, "WindowFont fixed");
-    }
 #endif
 
     /* initialize title-bar button styles */

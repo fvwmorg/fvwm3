@@ -1,5 +1,8 @@
 2000-01-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/builtins.c (InitFvwmDecor):
+	removed default call to 'WindowFont' in decors
+
 	* fvwm/events.c (HandleEnterNotify):
 	Fixed a focus problem with Motif applications and ClickToFocus (#535)
 
