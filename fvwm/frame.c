@@ -512,25 +512,26 @@ static void frame_set_decor_gravities(
 	FvwmWindow *fw, frame_decor_gravities_type *grav)
 {
 	int valuemask;
-	int valuemask2;
 	XSetWindowAttributes xcwa;
 	int i;
 
 	/* using bit gravity can reduce redrawing dramatically */
-	valuemask = CWWinGravity;
-	valuemask2 = CWWinGravity | CWBitGravity;
+	valuemask = CWWinGravity | CWBitGravity;
 	xcwa.win_gravity = grav->client_grav;
 	xcwa.bit_gravity = grav->client_grav;
 	XChangeWindowAttributes(dpy, FW_W(fw), valuemask, &xcwa);
 	xcwa.win_gravity = grav->parent_grav;
+	xcwa.bit_gravity = grav->parent_grav;
 	XChangeWindowAttributes(dpy, FW_W_PARENT(fw), valuemask, &xcwa);
 	if (!HAS_TITLE(fw))
 	{
 		return;
 	}
 	xcwa.win_gravity = grav->title_grav;
+	xcwa.bit_gravity = grav->title_grav;
 	XChangeWindowAttributes(dpy, FW_W_TITLE(fw), valuemask, &xcwa);
 	xcwa.win_gravity = grav->lbutton_grav;
+	xcwa.bit_gravity = grav->lbutton_grav;
 	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
 	{
 		if (FW_W_BUTTON(fw, i))
