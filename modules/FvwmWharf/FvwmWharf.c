@@ -2311,7 +2311,6 @@ void swallow(unsigned long *body)
   int button,i,j;
   long supplied;
 
-sleep(60);
   for(i=0;i<num_rows;i++)
   {
     for(j=0;j<num_columns; j++)
