@@ -111,6 +111,7 @@ XErrorHandler FvwmErrorHandler(Display *, XErrorEvent *);
 extern Bool is_transient;
 extern Bool do_ignore_next_button_release;
 extern Bool use_dashed_separators;
+extern Bool use_no_separators;
 
 
 /* assorted gray bitmaps for decorative borders */
@@ -1319,7 +1320,7 @@ void DrawGrid(int i, int erase)
   int MaxW,MaxH;
   char str[15], *ptr;
 
-  if((i < 0 ) ||(i >= ndesks))
+  if((i < 0 ) || (i >= ndesks) || (use_no_separators))
     return;
 
   MaxW = (Scr.VxMax + Scr.MyDisplayWidth);
@@ -1398,6 +1399,9 @@ void DrawIconGrid(int erase)
   int y, y1, y2, x, x1, x2,w,h,n,m,n1,m1;
   int MaxW,MaxH;
   int i;
+
+  if (use_no_separators)
+    return;
 
   MaxW = (Scr.VxMax + Scr.MyDisplayWidth);
   MaxH = Scr.VyMax + Scr.MyDisplayHeight;

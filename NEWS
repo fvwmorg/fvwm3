@@ -15,7 +15,7 @@ Changes in beta release 2.3.10
 
 * New options for the WindowList command: UseListSkip and OnlySkipList.
 
-* New FvwmPager option SolidSeparators
+* New FvwmPager options SolidSeparators and NoSeparators.
 
 Changes in beta release 2.3.9 (October 1999)
 
