@@ -1,9 +1,17 @@
-Note, the changes for the last STABLE release start with release 2.4.16
+Note, the changes for the last STABLE release start with release
+2.4.16.
 
 -------------------------------------------------------------------
 
 Changes in development release 2.5.8 (not released yet)
 
+* Renamed the Cond command to TestRc, and the On command to Test.
+  Removed the CondCase command.  Use "TestRc KeepRc" instead.
+
+* The Break command can be told the number of nested function
+  levels to break out of.  Break now has a return code of -2
+  ("Break").  With the new KeepRc it does not change the return
+  code of the last command.
 
 -------------------------------------------------------------------
 

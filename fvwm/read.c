@@ -120,7 +120,7 @@ const char *get_current_read_dir(void)
  * Read and execute each line from stream.
  **/
 void run_command_stream(
-	fvwm_cond_func_rc *cond_rc, FILE *f, const exec_context_t *exc)
+	cond_rc_t *cond_rc, FILE *f, const exec_context_t *exc)
 {
 	char *tline;
 	char line[1024];

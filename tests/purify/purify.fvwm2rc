@@ -2695,14 +2695,14 @@ AddToFunc UnsetEnv-Func
 
 # FIXME: Break
 
-# CondCase Cond tested with the conditional cmds
+# TestRc KeepRc tested with the conditional cmds
 
 DestroyFunc CurrentEchoFunc
 AddToFunc CurrentEchoFunc
 + I Current ($*) Nop
-+ I CondCase (Match) Echo Current ($*) Match
-+ I CondCase (NoMatch) Echo Current ($*) NoMatch
-+ I CondCase (Error) Echo Current ($*) Error
++ I TestRc KeepRc (Match) Echo Current ($*) Match
++ I TestRc KeepRc (NoMatch) Echo Current ($*) NoMatch
++ I TestRc KeepRc (Error) Echo Current ($*) Error
 
 # Need lots more conditions, (visible/iconic, etc.)
 AddTest "Test Current" Current-Func
@@ -2864,9 +2864,9 @@ AddToFunc Current-Func
 DestroyFunc DirectionEchoFunc
 AddToFunc DirectionEchoFunc
 + I Direction $* Nop
-+ I CondCase (Match) Echo Direction ($*) Match
-+ I CondCase (NoMatch) Echo Direction ($*) NoMatch
-+ I Cond (Error) Echo Direction ($*) Error
++ I TestRc KeepRc (Match) Echo Direction ($*) Match
++ I TestRc KeepRc (NoMatch) Echo Direction ($*) NoMatch
++ I TestRc (Error) Echo Direction ($*) Error
 
 AddTest "Test Direction" Direction-Func
 AddToFunc Direction-Func
@@ -2909,9 +2909,9 @@ AddToFunc Direction-Func
 DestroyFunc NextEchoFunc
 AddToFunc NextEchoFunc
 + I Next ($*) Nop
-+ I CondCase (Match) Echo Next ($*) Match: $[w.name]
-+ I CondCase (NoMatch) Echo Next ($*) NoMatch
-+ I CondCase (Error) Echo Next ($*) Error
++ I TestRc KeepRc (Match) Echo Next ($*) Match: $[w.name]
++ I TestRc KeepRc (NoMatch) Echo Next ($*) NoMatch
++ I TestRc KeepRc (Error) Echo Next ($*) Error
 
 # Need more conditions like Current, with exceptions, see man page.
 AddTest "Test Next" Next-Func
@@ -2938,9 +2938,9 @@ AddToFunc Next-Func
 DestroyFunc NoneEchoFunc
 AddToFunc NoneEchoFunc
 + I None ($*) Nop
-+ I CondCase (Match) Echo None ($*) Match
-+ I CondCase (NoMatch) Echo None ($*) NoMatch
-+ I CondCase (Error) Echo None ($*) NoMatch
++ I TestRc KeepRc (Match) Echo None ($*) Match
++ I TestRc KeepRc (NoMatch) Echo None ($*) NoMatch
++ I TestRc KeepRc (Error) Echo None ($*) NoMatch
 
 # Needs more conditions like Current
 AddTest "Test None" None-Func
@@ -3154,89 +3154,89 @@ AddToFunc WindowId-Func
 
 # FIXME: NoWindow
 
-AddTest "Test On" On-Func
-AddToFunc On-Func
-+ I On (Version 2.5.*) Echo 2.5.x detected
-+ I Cond (NoMatch) On (!Version 2.6.*) Echo Future version
-+ I Cond (NoMatch) Echo 2.6.x is detected
-+ I On (!Version 2.4.*) Echo Not runing 2.4.x
-+ I On (Version) Nop
-+ I Cond (Match) Echo (Version) -> match
-+ I Cond (Match) Echo (Version) -> nomatch
-+ I Cond (Match) Echo (Version) -> error
-+ I On (!Init) Echo not at init
-+ I On (!Start) Echo not at start
-+ I On (!ReStart) Echo not at restart
-+ I On (!quit) Echo not at quit
-+ I On (!exit) Echo not at exit
-+ I On (Init) Echo At init -- error
-+ I Cond (NoMatch) Echo relly not at init
-+ I On (Start) Echo At start -- error
-+ I Cond (NoMatch) Echo relly not at start
-+ I On (ReStart) Echo At restart -- error
-+ I Cond (NoMatch) Echo relly not at restart
-+ I On (Exit) Echo At exit -- error
-+ I Cond (NoMatch) Echo relly not at exit
-+ I On (Quit) Echo At quit -- error
-+ I Cond (NoMatch) Echo relly not at quit
+AddTest "Test Test" Test-Func
+AddToFunc Test-Func
++ I Test (Version 2.5.*) Echo 2.5.x detected
++ I TestRc (NoMatch) Test (!Version 2.6.*) Echo Future version
++ I TestRc (NoMatch) Echo 2.6.x is detected
++ I Test (!Version 2.4.*) Echo Not runing 2.4.x
++ I Test (Version) Nop
++ I TestRc (Match) Echo (Version) -> match
++ I TestRc (Match) Echo (Version) -> nomatch
++ I TestRc (Match) Echo (Version) -> error
++ I Test (!Init) Echo not at init
++ I Test (!Start) Echo not at start
++ I Test (!ReStart) Echo not at restart
++ I Test (!quit) Echo not at quit
++ I Test (!exit) Echo not at exit
++ I Test (Init) Echo At init -- error
++ I TestRc (NoMatch) Echo relly not at init
++ I Test (Start) Echo At start -- error
++ I TestRc (NoMatch) Echo relly not at start
++ I Test (ReStart) Echo At restart -- error
++ I TestRc (NoMatch) Echo relly not at restart
++ I Test (Exit) Echo At exit -- error
++ I TestRc (NoMatch) Echo relly not at exit
++ I Test (Quit) Echo At quit -- error
++ I TestRc (NoMatch) Echo relly not at quit
 #
-+ I On (x xterm) Echo xterm is in path
-+ I Cond (NoMatch) Echo xterm is not in path
-+ I On (x plouf) Echo plouf is in path
-+ I Cond (NoMatch) Echo plouf is not in path
-+ I On (x $[HOME]/.fvwm) Echo $[HOME]/.fvwm is traversable
-+ I On (!x $[HOME]/.uuuuuuuuuuu) Echo $[HOME]/.uuuuuuuuuu is not traversable
-+ I On (x) Echo On (x) True error (NoMatch)
-+ I Cond (NoMatch) Echo  On (x) True error (Match)
-+ I Cond (Error) Echo  On (x) gives error
-+ I On (x          ) Echo On (x) True error (NoMatch)
-+ I Cond (NoMatch) Echo  On (x) True error (Match)
-+ I Cond (Error) Echo  On (x) gives error
++ I Test (x xterm) Echo xterm is in path
++ I TestRc (NoMatch) Echo xterm is not in path
++ I Test (x plouf) Echo plouf is in path
++ I TestRc (NoMatch) Echo plouf is not in path
++ I Test (x $[HOME]/.fvwm) Echo $[HOME]/.fvwm is traversable
++ I Test (!x $[HOME]/.uuuuuuuuuuu) Echo $[HOME]/.uuuuuuuuuu is not traversable
++ I Test (x) Echo Test (x) True error (NoMatch)
++ I TestRc (NoMatch) Echo  Test (x) True error (Match)
++ I TestRc (Error) Echo  Test (x) gives error
++ I Test (x          ) Echo Test (x) True error (NoMatch)
++ I TestRc (NoMatch) Echo  Test (x) True error (Match)
++ I TestRc (Error) Echo  Test (x) gives error
 #
-+ I On (r /root) Echo Outch /root is readable
-+ I On (!r $[HOME]) Echo Outch $[HOME] is not readable
-+ I On (r) Echo On (r) True error (NoMatch)
-+ I Cond (NoMatch) Echo  On (r) True error (Match)
-+ I Cond (Error) Echo  On (r) gives error
-+ I On (r          ) Echo On (r) True error (NoMatch)
-+ I Cond (NoMatch) Echo  On (r) True error (Match)
-+ I Cond (Error) Echo  On (r      ) gives error
++ I Test (r /root) Echo Outch /root is readable
++ I Test (!r $[HOME]) Echo Outch $[HOME] is not readable
++ I Test (r) Echo Test (r) True error (NoMatch)
++ I TestRc (NoMatch) Echo  Test (r) True error (Match)
++ I TestRc (Error) Echo  Test (r) gives error
++ I Test (r          ) Echo Test (r) True error (NoMatch)
++ I TestRc (NoMatch) Echo  Test (r) True error (Match)
++ I TestRc (Error) Echo  Test (r      ) gives error
 #
-+ I On (w /root) Echo Outch /root is writable
-+ I On (!w $[HOME]) Echo Outch $[HOME] is not writable
-+ I On (w) Echo On (r) True error (NoMatch)
-+ I Cond (NoMatch) Echo  On (w) True error (Match)
-+ I Cond (Error) Echo  On (w) gives error
-+ I On (w          ) Echo On (w) True error (NoMatch)
-+ I Cond (NoMatch) Echo  On (w) True error (Match)
-+ I Cond (Error) Echo  On (w         ) gives error
++ I Test (w /root) Echo Outch /root is writable
++ I Test (!w $[HOME]) Echo Outch $[HOME] is not writable
++ I Test (w) Echo Test (r) True error (NoMatch)
++ I TestRc (NoMatch) Echo  Test (w) True error (Match)
++ I TestRc (Error) Echo  Test (w) gives error
++ I Test (w          ) Echo Test (w) True error (NoMatch)
++ I TestRc (NoMatch) Echo  Test (w) True error (Match)
++ I TestRc (Error) Echo  Test (w         ) gives error
 #
-+ I On (!f $[HOME]) Echo Outch $[HOME] is does not exist
-+ I On (f $[HOME]/uuuuuuuuuu) Echo Outch $[HOME]/uuuuuuuuuuu exists
-+ I On (f) Echo On (r) True error (NoMatch)
-+ I Cond (NoMatch) Echo  On (f) True error (Match)
-+ I Cond (Error) Echo  On (f) gives error
-+ I On (f          ) Echo On (f) True error (NoMatch)
-+ I Cond (NoMatch) Echo  On (f) True error (Match)
-+ I Cond (Error) Echo  On (f         ) gives error
++ I Test (!f $[HOME]) Echo Outch $[HOME] is does not exist
++ I Test (f $[HOME]/uuuuuuuuuu) Echo Outch $[HOME]/uuuuuuuuuuu exists
++ I Test (f) Echo Test (r) True error (NoMatch)
++ I TestRc (NoMatch) Echo  Test (f) True error (Match)
++ I TestRc (Error) Echo  Test (f) gives error
++ I Test (f          ) Echo Test (f) True error (NoMatch)
++ I TestRc (NoMatch) Echo  Test (f) True error (Match)
++ I TestRc (Error) Echo  Test (f         ) gives error
 #
-+ I On (i test.png) Echo  test.png is in imagepath
-+ I Cond (NoMatch) Echo  test.png is not in path
-+ I Cond (Error) Echo On (i test.png) true error
-+ I On (i plouf) Echo plouf is in imagepath
-+ I Cond (NoMatch) Echo plouf is not in path
-+ I On (i /tmp/test.png) Echo /tmp/test.png is in imagepath
-+ I Cond (NoMatch) Echo  /tmp/test.png is not in imagepath -- true error?
-+ I Cond (Error) Echo On (i /tmp/test.png) true error
-+ I On (i /tmp/uuuu) Echo /tmp/uuuu is in imagepath
-+ I Cond (NoMatch) Echo  /tmp/uuuu is not in imagepath
-+ I Cond (Error) Echo On (i /tmp/uuuu) true error
-+ I On (i) Echo On (i) True error (NoMatch)
-+ I Cond (NoMatch) Echo  On (i) True error (Match)
-+ I Cond (Error) Echo  On (i) gives error
-+ I On (i          ) Echo On (i) True error (NoMatch)
-+ I Cond (NoMatch) Echo  On (i) True error (Match)
-+ I Cond (Error) Echo  On (i) gives error
++ I Test (i test.png) Echo  test.png is in imagepath
++ I TestRc (NoMatch) Echo  test.png is not in path
++ I TestRc (Error) Echo Test (i test.png) true error
++ I Test (i plouf) Echo plouf is in imagepath
++ I TestRc (NoMatch) Echo plouf is not in path
++ I Test (i /tmp/test.png) Echo /tmp/test.png is in imagepath
++ I TestRc (NoMatch) Echo  /tmp/test.png is not in imagepath -- true error?
++ I TestRc (Error) Echo Test (i /tmp/test.png) true error
++ I Test (i /tmp/uuuu) Echo /tmp/uuuu is in imagepath
++ I TestRc (NoMatch) Echo  /tmp/uuuu is not in imagepath
++ I TestRc (Error) Echo Test (i /tmp/uuuu) true error
++ I Test (i) Echo Test (i) True error (NoMatch)
++ I TestRc (NoMatch) Echo  Test (i) True error (Match)
++ I TestRc (Error) Echo  Test (i) gives error
++ I Test (i          ) Echo Test (i) True error (NoMatch)
++ I TestRc (NoMatch) Echo  Test (i) True error (Match)
++ I TestRc (Error) Echo  Test (i) gives error
 
 AddTest "Test ModuleConfig" ModuleConfig-Func
 AddToFunc ModuleConfig-Func

@@ -17,6 +17,6 @@
 
 char *expand_vars(
 	char *input, char *arguments[], FvwmWindow *fw, Bool addto, Bool ismod,
-	fvwm_cond_func_rc *cond_rc);
+	cond_rc_t *cond_rc);
 
 #endif /* EXPAND_H */

@@ -169,11 +169,10 @@ static void execute_obj_func(void *object, void *args)
 	if (obj->command != NULL)
 	{
 		/* execute the command */
-		fvwm_cond_func_rc cond_rc;
+		cond_rc_t cond_rc;
 		const exec_context_t *exc;
 		exec_context_changes_t ecc;
-		exec_context_change_mask_t mask =
-			ECC_TYPE | ECC_WCONTEXT;
+		exec_context_change_mask_t mask = ECC_TYPE | ECC_WCONTEXT;
 
 		ecc.type = EXCT_SCHEDULE;
 		ecc.w.wcontext = C_ROOT;

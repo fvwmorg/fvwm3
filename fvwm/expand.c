@@ -177,8 +177,7 @@ enum
 /* ---------------------------- local functions ----------------------------- */
 
 static signed int expand_vars_extended(
-	char *var_name, char *output, FvwmWindow *fw,
-	fvwm_cond_func_rc *cond_rc)
+	char *var_name, char *output, FvwmWindow *fw, cond_rc_t *cond_rc)
 {
 	char *s;
 	char *rest;
@@ -563,12 +562,12 @@ static signed int expand_vars_extended(
 		{
 			return -1;
 		}
-		switch (*cond_rc)
+		switch (cond_rc->rc)
 		{
 		case COND_RC_OK:
 		case COND_RC_NO_MATCH:
 		case COND_RC_ERROR:
-			val = (int)(*cond_rc);
+			val = (int)(cond_rc->rc);
 			break;
 		default:
 			return -1;
@@ -656,7 +655,7 @@ static signed int expand_vars_extended(
 
 char *expand_vars(
 	char *input, char *arguments[], FvwmWindow *fw, Bool addto, Bool ismod,
-	fvwm_cond_func_rc *cond_rc)
+	cond_rc_t *cond_rc)
 {
 	int l, i, l2, n, k, j, m;
 	int xlen;

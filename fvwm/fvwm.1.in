@@ -9336,7 +9336,7 @@ conditions are met.  Most conditional commands work on windows,
 like
 .BR Next ", " ThisWindow " or " All .
 There is one conditional command
-.B On
+.B Test
 that works on global conditions unrelated to windows.  The syntax
 of the conditions is described below.  For readability, the list
 of conditions is located at the end of this section.
@@ -9347,17 +9347,17 @@ All commands in this
 section (unless specifically stated for the command) also have a
 return code that can be 1 (if the condition was met) or 0 (if the
 condition was not met).  Some commands may return -1 which means
-that an error occurred and the return code is useless. The return
-code is used by the commands
-.B Cond
-and
-.BR CondCase .
-Please refer to the commands' description for examples.  The
-return code can also be accessed through the variable
+that an error occurred and the return code is useless.  The
+.B Break
+command returns -2.  The return
+code is used by the
+.B TestRc
+command.  Please refer to the commands' description for examples.
+The return code can also be accessed through the variable
 .IR $[cond.rc] .
-The default return code for non conditional commands is 0.
-Important note: Return codes are only defined inside functions
-created with the
+Non conditional commands do not modify the return code of the last
+conditional command.  Important note:  return codes are only
+defined inside functions created with the
 .B AddToFunc
 command and are not inherited by sub functions.
 
@@ -9402,52 +9402,27 @@ exists.  The command is run in the context of the root window.
 .RB "See " Conditions " section below for a list of contitions."
 
 .TP
-.BI "Break"
+.BI "Break [KeepRc] [levels]"
 If the break command is used in a function, function execution is
 terminated immediately.  Further commands of the function are not
-processed.  The
+processed.  Normally, all nested invocations of complex functions
+are left.  An optional integer number
+.I levels
+may be given to break out of the given number of nested function
+and continue execution of a higher level function.  When called
+with the option
+.IR KeepRc ,
+the
 .B Break
-command does not have a return code.  Example:
+command does not change the return code of the previous
+conditional command.  Otherwise it returns -2.  Example:
 .EX
 AddToFunc PickWindowRaiseAndDeiconify
 + I Pick
-+ I Cond (Error) Break
++ I TestRc (Error) Break
 + I Raise
 + I Iconify off
 .EE
-
-.TP
-.BI "Cond [([!]" returncode ")] " command
-Performs
-.I command
-if the last conditional command returned the value
-.IR returncode .
-Instead of the numeric values 0 (no match), 1 (match) and -1
-(error), the symbolic names "NoMatch", "Match" and "Error" can be
-used.  If no
-.I returncode
-is given, the default 0 is assumed.  If the return code is
-prefixed with '!', the command is executed if
-.I returncode
-does not match the value returned by the conditional command.
-.B Cond
-command can only be used inside functions.  If the
-.I command
-is another conditional command, the previous return code is
-replaced by the new one.  Example:
-.EX
-AddToFunc ToggleXterm
-+ I Any (my_xtermwindow) Close
-+ I Cond (NoMatch) Exec xterm -T my_xtermwindow
-.EE
-
-.TP
-.BI "CondCase [(" returncode ")] " command
-works exactly like
-.B Cond
-except that the return code is not replaced by the return code of
-the
-.IR command.
 
 .TP
 .BI "Current [(" conditions ")] " command
@@ -9530,54 +9505,6 @@ but removes the window context if any.  This is not really a
 conditional command, but a prefix that may be useful in menu items
 that should operate without a window even if such menu is bound to
 window decorations.
-
-.TP
-.BI "On [(" on-conditions ")] " command
-Performs
-.I command
-if the all
-.I on-conditions
-are satisfied.  The
-.I on-conditions
-are a list of keywords with possible arguments from the list below
-and are separated by commas or whitespace.  They include
-.IR "Version pattern" ,
-.IR Start ,
-.IR Init ,
-.IR Restart ,
-.IR Exit ,
-.IR Quit and
-.IR ToRestart .
-An on-condition prefixed with "!" is reverted.
-
-The
-.I "Version pattern"
-on-condition is fulfilled if the pattern matches the version
-number of the fvwm executable.  The wildcards '*' (any number of
-random characters) and '?' (one random character) may be used in
-the pattern.  The
-.I Start
-on-condition is the same as either
-.IR Init " or " Restart .
-It is only true on startup or restart prior and during
-.B StartFunction
-execution.
-The
-.I Exit
-on-condition is the same as either
-.IR Quit " or " ToRestart .
-It is only valid on shutdown during
-.B ExitFunction
-function execution.
-Example:
-.EX
-AddToFunc StartFunction I On (Init) Exec exec xterm
-
-AddToFunc VerifyVersion
-+ I On (Version 2.5.*) Echo 2.5.x detected
-+ I Cond (NoMatch) On (!Version 2.6.*) Echo Future version
-+ I Cond (NoMatch) Echo 2.6.x is detected
-.EE
 
 .TP
 .BI "Pick [(" conditions ")] " command
@@ -9672,6 +9599,81 @@ given.
 .RB "See " Conditions " section below for a list of contitions."
 
 .TP
+.BI "Test [(" on-conditions ")] " command
+Performs
+.I command
+if the all
+.I on-conditions
+are satisfied.  The
+.I on-conditions
+are a list of keywords with possible arguments from the list below
+and are separated by commas or whitespace.  They include
+.IR "Version pattern" ,
+.IR Start ,
+.IR Init ,
+.IR Restart ,
+.IR Exit ,
+.IR Quit and
+.IR ToRestart .
+An on-condition prefixed with "!" is reverted.
+
+The
+.I "Version pattern"
+on-condition is fulfilled if the pattern matches the version
+number of the fvwm executable.  The wildcards '*' (any number of
+random characters) and '?' (one random character) may be used in
+the pattern.  The
+.I Start
+on-condition is the same as either
+.IR Init " or " Restart .
+It is only true on startup or restart prior and during
+.B StartFunction
+execution.
+The
+.I Exit
+on-condition is the same as either
+.IR Quit " or " ToRestart .
+It is only valid on shutdown during
+.B ExitFunction
+function execution.
+Example:
+.EX
+AddToFunc StartFunction I Test (Init) Exec exec xterm
+
+AddToFunc VerifyVersion
++ I Test (Version 2.5.*) Echo 2.5.x detected
++ I TestRc (NoMatch) Test (!Version 2.6.*) Echo Future version
++ I TestRc (NoMatch) Echo 2.6.x is detected
+.EE
+
+.TP
+.BI "TestRc [KeepRc] [([!]" returncode ")] " command
+Performs
+.I command
+if the last conditional command returned the value
+.IR returncode .
+Instead of the numeric values 0 (no match), 1 (match), -1 (error),
+and -2 (break) the symbolic names "NoMatch", "Match", "Error" and
+"Break" can be used.  If no
+.I returncode
+is given, the default 0 is assumed.  If the return code is
+prefixed with '!', the command is executed if
+.I returncode
+does not match the value returned by the conditional command.
+.B TestRc
+command can only be used inside functions.  If the
+.I command
+is another conditional command, the previous return code is
+replaced by the new one unless the
+.I KeepRc
+option was given.  Example:
+.EX
+AddToFunc ToggleXterm
++ I Any (my_xtermwindow) Close
++ I TestRc (NoMatch) Exec xterm -T my_xtermwindow
+.EE
+
+.TP
 .BI "ThisWindow [(" conditions ")] " command
 .B ThisWindow
 executes the specified
@@ -9680,7 +9682,7 @@ in the context of the current operand window.  If there is no
 operand window (it is invoked in the root window), the command is
 ignored.
 .B ThisWindow
-is newver interactive.  The command is executed only if the given
+is never interactive.  The command is executed only if the given
 .I conditions
 are met.  It returns -1 if used outside a window context.
 .RB "See " Conditions " section below for a list of contitions."
@@ -10270,7 +10272,7 @@ If you need a native restart, we suggest only to use
 .B Restart
 command without parameters unless there is a reason not to.  If you
 still use an old command 'Restart fvwm2' that was correct in 2.2.x,
-all current command line arguments are lost.  On Restart without
+all current command line arguments are lost.  On a restart without
 parameters or with --pass-args, they are preserved.  Here are some
 cases when 'Restart fvwm2' or 'Restart fvwm' cause troubles:
 .EX

@@ -165,18 +165,6 @@ $TIME = 1054875383;
 		descr => q{Manage colors used like fg, bg, image bg, gradient bg},
 	},
 	{
-		name => 'Cond',
-		cursor => '',
-		window => 0,
-		descr => q{Conditional switch (may be changed)},
-	},
-	{
-		name => 'CondCase',
-		cursor => '',
-		window => 0,
-		descr => q{Conditional switch (may be changed)},
-	},
-	{
 		name => 'CopyMenuStyle',
 		cursor => '',
 		window => 0,
@@ -621,12 +609,6 @@ $TIME = 1054875383;
 		descr => q{Prefix that runs a command without a window context},
 	},
 	{
-		name => 'On',
-		cursor => '',
-		window => 0,
-		descr => q{Execute command if conditions are met},
-	},
-	{
 		name => 'OpaqueMoveSize',
 		cursor => '',
 		window => 0,
@@ -943,6 +925,18 @@ $TIME = 1054875383;
 		cursor => '',
 		window => 0,
 		descr => q{Convert a menu to a window, for use as a menu command},
+	},
+	{
+		name => 'Test',
+		cursor => '',
+		window => 0,
+		descr => q{Execute command if conditions are met},
+	},
+	{
+		name => 'TestRc',
+		cursor => '',
+		window => 0,
+		descr => q{Conditional switch (may be changed)},
 	},
 	{
 		name => 'ThisWindow',

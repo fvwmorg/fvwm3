@@ -1,3 +1,47 @@
+2003-06-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (__run_complex_function_items):
+	* fvwm/conditional.c (CMD_Break):
+	(__rc_matches_rcstring_consume):
+	new options KeepRc and "levels" to the Break command
+	Break takes the number of function levels to break out of as an argument
+	When called with the option KeepRc
+
+	* fvwm/expand.c (expand_vars_extended):
+	* fvwm/conditional.c (circulate_cmd):
+	(select_cmd):
+	(direction_cmd):
+	(__rc_matches_rcstring_consume):
+	(CMD_All):
+	(CMD_WindowId):
+	(CMD_TestRc):
+	(CMD_Test):
+	* fvwm/read.c:
+	* fvwm/read.h:
+	* fvwm/functions.h:
+	* fvwm/functions.c:
+	(__run_complex_function_items):
+	(execute_complex_function):
+	* fvwm/expand.h:
+	* fvwm/expand.c:
+	* fvwm/fvwm.h:
+	* fvwm/conditional.c:
+	renamed fvwm_cond_func_rc by cond_rc_t
+	made a type a struct
+	added a member to indicate the number of function levels to break out of
+
+	* fvwm/functable.c (func_table):
+	* fvwm/conditional.c (CMD_TestRc):
+	replaced conditional commands:
+		Cond -> TestRc
+		CondCase -> TestRc KeepRc
+		On -> Test
+	(__rc_matches_rcstring_consume):
+	new function
+
+	* fvwm/conditional.c (CMD_CondCase):
+	fixed the CondCase command
+
 2003-06-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* configure.in:

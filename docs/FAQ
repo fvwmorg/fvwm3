@@ -2566,13 +2566,13 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
     not use precious desktop space.  It is possible to write some
     small functions in fvwm that can hide any window you like:
 
-    fvwm-2.5.7 or later:
+    fvwm-2.5.8 or later:
 
       # The autohiding functions
       AddToFunc autohide
       + I ThisWindow ($0) Deschedule $[w.id]
       + I ThisWindow ($0) ThisWindow (shaded) WindowShade off
-      + I Cond (!Match) All ($0, !shaded) autohide_hide $1 $2
+      + I TestRc (!Match) All ($0, !shaded) autohide_hide $1 $2
 
       AddToFunc autohide_hide
       + I Schedule $0 $[w.id] WindowShade $1

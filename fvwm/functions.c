@@ -14,19 +14,15 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
-/****************************************************************************
- * This module is all original code
+/* This module is all original code
  * by Rob Nation
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
- *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ *     copyright remains in the source code and all documentation */
 
-/***********************************************************************
- *
+/*
  * fvwm built-in functions and complex functions
- *
- ***********************************************************************/
+ */
 
 /* ---------------------------- included header files ----------------------- */
 
@@ -97,7 +93,7 @@ typedef enum
 /* ---------------------------- forward declarations ------------------------ */
 
 static void execute_complex_function(
-	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	Bool *desperate);
 
 /* ---------------------------- local variables ----------------------------- */
@@ -121,16 +117,13 @@ static int __context_has_window(
 	return 0;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      DeferExecution - defer the execution of a function to the
- *          next button press if the context is C_ROOT
+/*
+ * Defer the execution of a function to the next button press if the context is
+ * C_ROOT
  *
  *  Inputs:
  *      cursor  - the cursor to display while waiting
- *
- ***********************************************************************/
+ */
 static Bool DeferExecution(
 	exec_context_changes_t *ret_ecc, exec_context_change_mask_t *ret_mask,
 	cursor_t cursor, int trigger_evtype, int do_allow_unmanaged)
@@ -369,7 +362,7 @@ static const func_type *find_builtin_function(char *func)
 }
 
 static void __execute_function(
-	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	FUNC_FLAGS_TYPE exec_flags, char *args[])
 {
 	static unsigned int func_depth = 0;
@@ -385,11 +378,10 @@ static void __execute_function(
 	Bool set_silent;
 	Bool must_free_string = False;
 	Bool must_free_function = False;
-	fvwm_cond_func_rc dummy_rc;
+	cond_rc_t dummy_rc;
 
 	if (!action)
 	{
-		/* impossibly short command */
 		return;
 	}
 	/* ignore whitespace at the beginning of all config lines */
@@ -715,13 +707,11 @@ static FvwmFunction *find_complex_function(const char *function_name)
 
 }
 
-/*****************************************************************************
- *
+/*
  * Builtin which determines if the button press was a click or double click...
  * Waits Scr.ClickTime, or until it is evident that the user is not
  * clicking, but is moving the cursor
- *
- ****************************************************************************/
+ */
 static cfunc_action_type CheckActionType(
 	int x, int y, XEvent *d, Bool may_time_out, Bool is_button_pressed)
 {
@@ -802,14 +792,14 @@ static cfunc_action_type CheckActionType(
 }
 
 static void __run_complex_function_items(
-	fvwm_cond_func_rc *cond_func_rc, char cond, FvwmFunction *func,
+	cond_rc_t *cond_func_rc, char cond, FvwmFunction *func,
 	const exec_context_t *exc, char *args[])
 {
 	char c;
 	FunctionItem *fi;
 
 	for (fi = func->first_item;
-	     fi != NULL && *cond_func_rc != COND_RC_BREAK; )
+	     fi != NULL && cond_func_rc->break_levels != 0; )
 	{
 		/* make lower case */
 		c = fi->condition;
@@ -829,8 +819,8 @@ static void __run_complex_function_items(
 	return;
 }
 
-static void cf_cleanup(
-	unsigned int *depth, char **arguments)
+static void __cf_cleanup(
+	unsigned int *depth, char **arguments, cond_rc_t *cond_func_rc)
 {
 	int i;
 
@@ -846,15 +836,19 @@ static void cf_cleanup(
 			free(arguments[i]);
 		}
 	}
+	if (cond_func_rc->break_levels > 0)
+	{
+		cond_func_rc->break_levels--;
+	}
 
 	return;
 }
 
 static void execute_complex_function(
-	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	Bool *desperate)
 {
-	fvwm_cond_func_rc cond_func_rc = COND_RC_OK;
+	cond_rc_t cond_func_rc;
 	cfunc_action_type type = CF_MOTION;
 	char c;
 	FunctionItem *fi;
@@ -877,6 +871,8 @@ static void execute_complex_function(
 	int trigger_evtype;
 	XEvent *te;
 
+	memset(&cond_func_rc, 0, sizeof(cond_func_rc));
+	cond_func_rc.rc = COND_RC_OK;
 	mask = 0;
 	d.type = 0;
 	ecc.w.fw = exc->w.fw;
@@ -967,7 +963,7 @@ static void execute_complex_function(
 			    do_allow_unmanaged_immediate))
 		{
 			func->use_depth--;
-			cf_cleanup(&depth, arguments);
+			__cf_cleanup(&depth, arguments, &cond_func_rc);
 			return;
 		}
 		NeedsTarget = False;
@@ -985,14 +981,15 @@ static void execute_complex_function(
 	{
 		func->use_depth--;
 		XBell(dpy, 0);
-		cf_cleanup(&depth, arguments);
+		__cf_cleanup(&depth, arguments, &cond_func_rc);
 		return;
 	}
 	exc2 = exc_clone_context(exc, &ecc, mask);
 	__run_complex_function_items(
 		&cond_func_rc, CF_IMMEDIATE, func, exc2, arguments);
 	exc_destroy_context(exc2);
-	for (fi = func->first_item; fi != NULL && cond_func_rc != COND_RC_BREAK;
+	for (fi = func->first_item;
+	     fi != NULL && cond_func_rc.break_levels != 0;
 	     fi = fi->next_item)
 	{
 		/* c is already lowercase here */
@@ -1015,10 +1012,10 @@ static void execute_complex_function(
 		}
 	}
 
-	if (!Persist || cond_func_rc == COND_RC_BREAK)
+	if (!Persist || cond_func_rc.break_levels != 0)
 	{
 		func->use_depth--;
-		cf_cleanup(&depth, arguments);
+		__cf_cleanup(&depth, arguments, &cond_func_rc);
 		UngrabEm(GRAB_NORMAL);
 		return;
 	}
@@ -1032,7 +1029,7 @@ static void execute_complex_function(
 			    do_allow_unmanaged))
 		{
 			func->use_depth--;
-			cf_cleanup(&depth, arguments);
+			__cf_cleanup(&depth, arguments, &cond_func_rc);
 			UngrabEm(GRAB_NORMAL);
 			return;
 		}
@@ -1117,24 +1114,15 @@ static void execute_complex_function(
 	exc_destroy_context(exc2);
 	/* This is the right place to ungrab the pointer (see comment above). */
 	func->use_depth--;
-	cf_cleanup(&depth, arguments);
+	__cf_cleanup(&depth, arguments, &cond_func_rc);
 	UngrabEm(GRAB_NORMAL);
 
 	return;
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      NewFunction - create a new FvwmFunction
- *
- *  Returned Value:
- *      (FvwmFunction *)
- *
- *  Inputs:
- *      name    - the name of the function
- *
- ***********************************************************************/
+/*
+ * create a new FvwmFunction
+ */
 static FvwmFunction *NewFvwmFunction(const char *name)
 {
 	FvwmFunction *tmp;
@@ -1149,7 +1137,6 @@ static FvwmFunction *NewFvwmFunction(const char *name)
 
 	return tmp;
 }
-
 
 static void DestroyFunction(FvwmFunction *func)
 {
@@ -1222,7 +1209,7 @@ Bool functions_is_complex_function(const char *function_name)
 }
 
 void execute_function(
-	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	FUNC_FLAGS_TYPE exec_flags)
 {
 	__execute_function(cond_rc, exc, action, exec_flags, NULL);
@@ -1231,7 +1218,7 @@ void execute_function(
 }
 
 void execute_function_override_wcontext(
-	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	FUNC_FLAGS_TYPE exec_flags, int wcontext)
 {
 	const exec_context_t *exc2;
@@ -1246,7 +1233,7 @@ void execute_function_override_wcontext(
 }
 
 void execute_function_override_window(
-	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	FUNC_FLAGS_TYPE exec_flags, FvwmWindow *fw)
 {
 	const exec_context_t *exc2;
@@ -1334,16 +1321,13 @@ void find_func_type(char *action, short *func_type, unsigned char *flags)
 }
 
 
-/***********************************************************************
- *
- *  Procedure:
- *      AddToFunction - add an item to a FvwmFunction
+/*
+ *  add an item to a FvwmFunction
  *
  *  Inputs:
  *      func      - pointer to the FvwmFunction to add the item
  *      action    - the definition string from the config line
- *
- ***********************************************************************/
+ */
 void AddToFunction(FvwmFunction *func, char *action)
 {
 	FunctionItem *tmp;

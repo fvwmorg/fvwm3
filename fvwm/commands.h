@@ -138,6 +138,8 @@ enum
 	STROKE_ARG(F_STROKE_FUNC)
 	F_STYLE,
 	F_TEARMENUOFF,
+	F_TEST_,
+	F_TESTRC,
 	F_THISWINDOW,
 	F_TITLE,
 	F_TITLESTYLE,
@@ -235,8 +237,6 @@ void CMD_Close(F_CMD_ARGS);
 void CMD_ColorLimit(F_CMD_ARGS);
 void CMD_ColormapFocus(F_CMD_ARGS);
 void CMD_Colorset(F_CMD_ARGS);
-void CMD_Cond(F_CMD_ARGS);
-void CMD_CondCase(F_CMD_ARGS);
 void CMD_CopyMenuStyle(F_CMD_ARGS);
 void CMD_Current(F_CMD_ARGS);
 void CMD_CursorMove(F_CMD_ARGS);
@@ -313,7 +313,6 @@ void CMD_Next(F_CMD_ARGS);
 void CMD_None(F_CMD_ARGS);
 void CMD_Nop(F_CMD_ARGS);
 void CMD_NoWindow(F_CMD_ARGS);
-void CMD_On(F_CMD_ARGS);
 void CMD_OpaqueMoveSize(F_CMD_ARGS);
 void CMD_Pick(F_CMD_ARGS);
 void CMD_PipeRead(F_CMD_ARGS);
@@ -369,6 +368,8 @@ void CMD_StrokeFunc(F_CMD_ARGS);
 #endif /* HAVE_STROKE */
 void CMD_Style(F_CMD_ARGS);
 void CMD_TearMenuOff(F_CMD_ARGS);
+void CMD_Test(F_CMD_ARGS);
+void CMD_TestRc(F_CMD_ARGS);
 void CMD_ThisWindow(F_CMD_ARGS);
 void CMD_Title(F_CMD_ARGS);
 void CMD_TitleStyle(F_CMD_ARGS);

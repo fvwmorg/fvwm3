@@ -144,12 +144,6 @@ const func_type func_table[] =
 	CMD_ENT("colorset", CMD_Colorset, F_NOP, 0, 0),
 	/* - Manage colors used like fg, bg, image bg, gradient bg */
 
-	CMD_ENT("cond", CMD_Cond, F_COND, 0, 0),
-	/* - Conditional switch (may be changed) */
-
-	CMD_ENT("condcase", CMD_CondCase, F_CONDCASE, 0, 0),
-	/* - Conditional switch (may be changed) */
-
 	CMD_ENT("copymenustyle", CMD_CopyMenuStyle, F_COPY_MENU_STYLE, 0, 0),
 	/* - Copy the existing menu style to new or existing one */
 
@@ -393,9 +387,6 @@ const func_type func_table[] =
 	CMD_ENT("nowindow", CMD_NoWindow, F_NOP, 0, 0),
 	/* - Prefix that runs a command without a window context */
 
-	CMD_ENT("on", CMD_On, F_NOP, 0, 0),
-	/* - Execute command if conditions are met */
-
 	CMD_ENT("opaquemovesize", CMD_OpaqueMoveSize, F_OPAQUE, 0, 0),
 	/* - Set maximum size window fvwm should move opaquely */
 
@@ -576,6 +567,12 @@ const func_type func_table[] =
 
 	CMD_ENT("tearmenuoff", CMD_TearMenuOff, F_TEARMENUOFF, 0, 0),
 	/* - Convert a menu to a window, for use as a menu command */
+
+	CMD_ENT("test", CMD_Test, F_TEST_, 0, 0),
+	/* - Execute command if conditions are met */
+
+	CMD_ENT("testrc", CMD_TestRc, F_TESTRC, 0, 0),
+	/* - Conditional switch (may be changed) */
 
 	CMD_ENT("thiswindow", CMD_ThisWindow, F_THISWINDOW, 0, 0),
 	/* - Operate on the context window if it meets conditions */

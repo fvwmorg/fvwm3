@@ -86,7 +86,7 @@
 
 /* Macro for args passed to fvwm commands... */
 #define F_CMD_ARGS \
-	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action
+	cond_rc_t *cond_rc, const exec_context_t *exc, char *action
 #define F_PASS_ARGS cond_rc, exc, action
 #define FUNC_FLAGS_TYPE unsigned char
 
@@ -181,7 +181,13 @@ typedef enum
 	COND_RC_ERROR = -1,
 	COND_RC_NO_MATCH = 0,
 	COND_RC_OK = 1
-} fvwm_cond_func_rc;
+} cond_rc_enum;
+
+typedef struct
+{
+	cond_rc_enum rc;
+	int break_levels;
+} cond_rc_t;
 
 /*
   For 1 style statement, there can be any number of IconBoxes.

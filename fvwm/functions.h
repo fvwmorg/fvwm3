@@ -64,13 +64,13 @@ void find_func_type(
 Bool functions_is_complex_function(
 	const char *function_name);
 void execute_function(
-	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	FUNC_FLAGS_TYPE exec_flags);
 void execute_function_override_wcontext(
-	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	FUNC_FLAGS_TYPE exec_flags, int wcontext);
 void execute_function_override_window(
-	fvwm_cond_func_rc *cond_rc, const exec_context_t *exc, char *action,
+	cond_rc_t *cond_rc, const exec_context_t *exc, char *action,
 	FUNC_FLAGS_TYPE exec_flags, FvwmWindow *fw);
 
 #endif /* FUNCTIONS_H */

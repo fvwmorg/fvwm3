@@ -26,8 +26,6 @@ The recognized commands for fvwm 2.5.6 (from cvs) as of 12-Jan-2003:
   ColorLimit            - Set limit on colors used (obsolete)
   ColormapFocus         - Change the colormap behaviour for low-depth X servers
   Colorset              - Manage colors used like fg, bg, image bg, gradient bg
-  Cond                  - Conditional switch (may be changed)
-  CondCase              - Conditional switch (may be changed)
   CopyMenuStyle         - Copy the existing menu style to new or existing one
   Current               - Operate on the currently focused window
   CursorMove            - Move the cursor pointer non interactively
@@ -102,7 +100,6 @@ The recognized commands for fvwm 2.5.6 (from cvs) as of 12-Jan-2003:
   None                  - Perform command if no window matches conditions
   Nop                   - Do nothing (used internally)
   NoWindow              - Prefix that runs a command without a window context
-  On                    - Execute command if conditions are met
   OpaqueMoveSize        - Set maximum size window fvwm should move opaquely
   Pick                  - Prefix to force a window context, prompted if needed
   PipeRead              - Exec system command interpret output as fvwm commands
@@ -156,6 +153,8 @@ The recognized commands for fvwm 2.5.6 (from cvs) as of 12-Jan-2003:
   StrokeFunc            - Record stroke and execute corresponding stroke action
   Style                 - Set attributes of windows that match a pattern
   TearMenuOff           - Convert a menu to a window, for use as a menu command
+  Test                  - Execute command if conditions are met
+  TestRc                - Conditional switch
   ThisWindow            - Operate on the context window if it meets conditions
   Title                 - Insert title into a menu
   TitleStyle            - Control window title
