@@ -144,7 +144,7 @@ int main(int argc, char **argv)
   while(1)
   {
     char raise_window_now;
-    char have_new_window = 0;
+    static char have_new_window = 0;
 
     FD_ZERO(&in_fdset);
     FD_SET(fd[1],&in_fdset);
