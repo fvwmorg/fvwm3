@@ -3337,10 +3337,11 @@ second argument.
 The second is either the numeric value of the cursor as defined in
 the include file
 .I X11/cursorfont.h
-or its name (without the XC_ prefix) or the name of an xpm file
-containing a pixmap of depth 1 with a mask and an optional
-hot-spot (if no hot-spot is defined, the hot-spot is placed in the
-center of the image).  Furthermore the name can be
+or its name (without the XC_ prefix).
+Alternativelly the xpm file name may be specified.  This xpm file
+should contain a pixmap using 3 colors (None, black, white) and
+an optional hot-spot.  If no hot-spot is defined, the hot-spot is
+placed in the center of the image.  Furthermore the name can be
 .I None
 (no cursor) or
 .I Tiny
@@ -3351,12 +3352,41 @@ CursorStyle DESTROY 56
 CursorStyle DESTROY gumby
 
 CursorStyle TOP_LEFT topl.xpm
-CursorStyle ROOT hand1 yellow black
+CursorStyle ROOT nice_arrow.xpm yellow black
 .EE
 The optional
 .IR fg " and " bg
 arguments specify the foreground and background colors for the
 cursor, defaulting to black and white.
+
+Here is an example pixmap file
+.IR nice_arrow.xpm :
+.EX
+/* XPM */
+static char *nice_arrow_xpm[] = {
+/* width height num_colors chars_per_pixel hotspot */
+"    14    14        3            1          1 1",
+/* colors */
+"  c None",
+". c black",
+"# c white",
+/* pixels */
+"...           ",
+".##..         ",
+".####..       ",
+" .#####..     ",
+" .#######..   ",
+"  .########.. ",
+"  .##########.",
+"   .#######.. ",
+"   .######.   ",
+"    .######.  ",
+"    .###.###. ",
+"     .#. .###.",
+"     .#.  .#. ",
+"      .    .  ",
+};
+.EE
 
 .TP
 .BI "DefaultColors [" "foreground background" "]"
