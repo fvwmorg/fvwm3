@@ -481,13 +481,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	hints.max_width   = win_width;
 	XSetWMNormalHints(dpy,win,&hints);
 
- 	if (!AutoHide)
-	{
-	  XResizeWindow(dpy, win, win_width, win_height);
-	  if (AutoStick) WarpTaskBar(win_y);
-	}
-	else
+ 	if (AutoStick)
 	  XMoveResizeWindow(dpy, win, win_x, win_y, win_width, win_height);
+	else
+	  XResizeWindow(dpy, win, win_width, win_height);
 
 	UpdateArray(&buttons, -1, -1,
 		    win_width - stwin_width - 8 - StartButtonWidth -10,-1, -1);
@@ -692,29 +689,11 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     RedrawWindow(redraw);
 }
 
-
-/* #define DEBUG_DESKONLY */
-
 void redraw_buttons()
 {
   Item *item;
 
-#ifdef DEBUG_DESKONLY
-  /* print buttons.count, buttons.tw here */
-  fprintf(stderr,"Beginning of redraw_buttons()\n");
-  fprintf(stderr,"-----------------------------\n\n");
-  fprintf(stderr,"buttons.count = %i \t ",buttons.count);
-  fprintf(stderr,"buttons.tw = %i\n",buttons.tw);
-
-  fprintf(stderr,"Starting to remove old buttons...\n");
-#endif
   FreeAllButtons(&buttons);
-
-#ifdef DEBUG_DESKONLY
-  /* print buttons.count, buttons.tw here */
-  fprintf(stderr,"\nEnd of removing old buttons...\n\n");
-  fprintf(stderr,"Starting to add new desk buttons...\n");
-#endif
 
   for (item=windows.head; item; item=item->next)
   {
@@ -722,26 +701,10 @@ void redraw_buttons()
     {
       AddButton(&buttons, item->name, &(item->p), BUTTON_UP, item->count,
 		(item->tb_flags & F_ICONIFIED) ? 1 : 0);
-#ifdef DEBUG_DESKONLY
-      /* print buttons.count, buttons.tw here */
-      fprintf(stderr,"buttons.count = %i \t ",buttons.count);
-      fprintf(stderr,"buttons.tw = %i\n",buttons.tw);
-#endif
     }
   }
 
-#ifdef DEBUG_DESKONLY
-  /* print buttons.count, buttons.tw here */
-  fprintf(stderr,"\nBefore RedrawWindow()...\n");
-#endif
-
   RedrawWindow(1);
-
-#ifdef DEBUG_DESKONLY
-  fprintf(stderr,"\nAfter RedrawWindow()...\n");
-  fprintf(stderr,"buttons.count = %i \t ",buttons.count);
-  fprintf(stderr,"buttons.tw = %i\n",buttons.tw);
-#endif
 }
 
 

@@ -1,3 +1,9 @@
+1999-12-12  olicha   <olivier.chapuis@free.fr>
+
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	(redraw_buttons):
+	Some clean up
+
 1999-12-10  Hippo
 
 	* FvwmIconBox/FvwmIconBox.c: fixed loss of shaped Netscape Mail icon.
