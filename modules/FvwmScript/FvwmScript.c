@@ -21,6 +21,7 @@
 
 #include "types.h"
 #include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include "libs/fvwmsignal.h"
 #include "libs/Picture.h"
 
@@ -255,6 +256,9 @@ void ParseOptions(void)
 	save_color_limit = atoi(&tline[10]);
       else if (strncasecmp(tline,"Colorset",8) == 0)
 	LoadColorset(&tline[8]);
+      else if (strncasecmp(tline, XINERAMA_CONFIG_STRING,
+			   strlen(XINERAMA_CONFIG_STRING)) == 0)
+	XineramaSupportConfigureModule(tline + strlen(XINERAMA_CONFIG_STRING));
     }
 
     GetConfigLine(fd,&tline);
@@ -294,6 +298,7 @@ void Xinit(int IsFather)
   }
   screen=DefaultScreen(dpy);
   InitPictureCMap(dpy);
+  XineramaSupportInit(dpy);
   AllocColorset(0);
   XSetErrorHandler(myErrorHandler);
 
@@ -310,7 +315,8 @@ void Xinit(int IsFather)
       i++;
       myatom=XInternAtom(dpy,name,False);
     }
-    while (XGetSelectionOwner(dpy,myatom)!=None);
+    while (XGetSelectionOwner(dpy,myatom)!=None)
+      ;
     x11base->TabScriptId[1]=name;
     x11base->TabScriptId[0]=NULL;
   }
@@ -486,14 +492,19 @@ void BuildGUI(int IsFather)
 
   x11base->icon=scriptprop->icon;
 
-  x11base->size.x=scriptprop->x;
-  x11base->size.y=scriptprop->y;
+  {
+    int sx;
+    int sy;
+
+    XineramaSupportGetCurrent00(NULL, &sx, &sy);
+    x11base->size.x = scriptprop->x + sx;
+    x11base->size.y = scriptprop->y + sy;
+  }
   x11base->size.width=scriptprop->width;
   x11base->size.height=scriptprop->height;
   x11base->title=scriptprop->titlewin;
 
-  /* Initialisation du serveur X et de la fenetre */
-  Xinit(IsFather);
+  /* Initialisation de la fenetre */
   OpenWindow();
 
   /* Parcour de tous les objets graphiques */
@@ -859,8 +870,13 @@ void MainLoop (void)
 				  x11base->gc, True);
 	    }
 	  }
-	  if (token) free(token);
-	} else
+	  else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
+	    XineramaSupportConfigureModule(line);
+	  }
+	  if (token)
+	    free(token);
+	}
+	else
 	  for (i=0; i<nbobj; i++)
 	    tabxobj[i]->ProcessMsg(tabxobj[i], packet->type, packet->body);
       }
@@ -965,13 +981,17 @@ int main (int argc, char **argv)
   x11base->hilicolor=safestrdup("grey100");
   x11base->colorset = -1;
 
+  /* Initialisation du serveur X et de la fenetre */
+  Xinit(IsFather);
+
   ParseOptions();
 
   SendText(fd,"Send_WindowList",0);
 
   ReadConfig(ScriptName);	/* Lecture et analyse du script */
 
-  InitCom();			/* Fonction d'initialisation de TabCom et TabFunc   */
+  /* Fonction d'initialisation de TabCom et TabFunc   */
+  InitCom();
 
 #ifdef HAVE_SIGACTION
   {
@@ -1017,7 +1037,8 @@ int main (int argc, char **argv)
 #endif
 #endif
 
-  BuildGUI(IsFather);			/* Construction des boutons et de la fenetre */
+  /* Construction des boutons et de la fenetre */
+  BuildGUI(IsFather);
 
   ReadFvwmScriptArg(argc,argv,IsFather);
 

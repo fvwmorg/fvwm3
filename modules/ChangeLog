@@ -1,4 +1,19 @@
-2001-08-06  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmScroll/GrabWindow.c:
+	* FvwmScroll/FvwmScroll.c:
+	reindented
+
+	* FvwmRearrange/FvwmRearrange.c (main):
+	(is_suitable_window):
+	(parse_args):
+	* FvwmScript/FvwmScript.c (Xinit):
+	(ParseOptions):
+	(MainLoop):
+	* FvwmIdent/FvwmIdent.c (main):
+	(MakeList):
+	(list_end):
+	added full Xinerama support
 
 	* FvwmTaskBar/FvwmTaskBar.c:
 	fixed mouse button grabbing

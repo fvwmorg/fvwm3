@@ -44,6 +44,7 @@
 #include <X11/Xlib.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include "libs/Module.h"
 #include "fvwm/fvwm.h"
 #include "libs/vpacket.h"
@@ -57,6 +58,7 @@ typedef struct window_item {
 
 /* vars */
 Display *dpy;
+int dx, dy;
 int dwidth, dheight;
 char *argv0;
 int fd[2];
@@ -141,11 +143,11 @@ int is_suitable_window(unsigned long *body)
   if (IS_ICONIFIED(cfgpacket))
     return 0;
 
-  if (!desk) {
+  if (!desk)
+  {
     int x = (int)cfgpacket->frame_x, y = (int)cfgpacket->frame_y;
     int w = (int)cfgpacket->frame_width, h = (int)cfgpacket->frame_height;
-    if (!((x < dwidth) && (y < dheight)
-	  && (x + w > 0) && (y + h > 0)))
+    if (x >= dx + dwidth || y >= dy + dheight || x + w <= dx || y + h <= dy)
       return 0;
   }
 
@@ -458,33 +460,17 @@ void parse_args(char *s, int argc, char *argv[], int argi)
       }
     }
   }
+  ofsx += dx;
+  ofsy += dy;
+  maxx += dx;
+  maxy += dy;
 }
-
-#ifdef USERC
-int parse_line(char *s, char ***args)
-{
-  int count = 0, i = 0;
-  char *arg_save[48];
-  strtok(s, " ");
-  while ((s = strtok(NULL, " ")))
-    arg_save[count++] = s;
-  *args = (char **)safemalloc(sizeof( char * ) * count);
-  for (; i < count; ++i)
-    (*args)[i] = arg_save[i];
-  return count;
-}
-
-#endif /* USERC */
-
-
 
 int main(int argc, char *argv[])
 {
-#ifdef USERC
   char match[128];
-  int config_line_count, len;
+  int len;
   char *config_line;
-#endif
   int scr;
 
   console = fopen("/dev/console","w");
@@ -511,33 +497,29 @@ int main(int argc, char *argv[])
 	    XDisplayName(NULL));
     exit(-1);
   }
+sleep(10);
   signal (SIGPIPE, DeadPipe);
 
+  XineramaSupportInit(dpy);
   scr = DefaultScreen(dpy);
-  dwidth = DisplayWidth(dpy, scr);
-  dheight = DisplayHeight(dpy, scr);
   fd_width = GetFdWidth();
 
-#ifdef USERC
   strcpy(match, "*");
   strcat(match, argv0);
   len = strlen(match);
   InitGetConfigLine(fd,match);
   GetConfigLine(fd, &config_line);
-  while (config_line != NULL) {
-    if (strncmp(match,config_line,len)==0) {
-      char **args = NULL;
-      int cllen = strlen(config_line);
-      if (config_line[cllen - 1] == '\n')
-	config_line[cllen - 1] = 0;
-      config_line_count = parse_line(config_line, &args);
-      parse_args("config args",
-		 config_line_count, args, 0);
-      free(args);
+  while (config_line != NULL)
+  {
+    if (strncasecmp(config_line, XINERAMA_CONFIG_STRING,
+		    strlen(XINERAMA_CONFIG_STRING)) == 0)
+    {
+      XineramaSupportConfigureModule(
+	config_line + strlen(XINERAMA_CONFIG_STRING));
     }
     GetConfigLine(fd, &config_line);
   }
-#endif /* USERC */
+  XineramaSupportGetCurrentScrRect(NULL, &dx, &dy, &dwidth, &dheight);
 
   if (strcmp(argv0, "FvwmCascade") &&
       (!strcmp(argv0, "FvwmTile") ||
@@ -557,8 +539,10 @@ int main(int argc, char *argv[])
 		 M_END_WINDOWLIST);
 
   if (FvwmTile) {
-    if (!maxx) maxx = dwidth;
-    if (!maxy) maxy = dheight;
+    if (maxx == dx)
+      maxx = dx + dwidth;
+    if (maxy == dy)
+      maxy = dy + dheight;
   }
 
   SendInfo(fd,"Send_WindowList",0);

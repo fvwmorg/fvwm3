@@ -53,6 +53,8 @@
 #define MAX(A,B) ((A)>(B)? (A):(B))
 #endif
 
+static rectangle screen_g;
+
 /*  RBW - 11/02/1998  */
 static int get_next_x(FvwmWindow *t, int x, int y, int pdeltax, int pdeltay,
 		      int use_percent);
@@ -540,7 +542,7 @@ Bool PlaceWindow(
       fvwm_msg(WARN, "PlaceWindow",
 	       "illegal style combination used: StartsOnPage/StartsOnDesk"
 	       " and SkipMapping don't work with ManualPlacement and"
-	       " TileeManualPlacement. Putting window on current page,"
+	       " TileManualPlacement. Putting window on current page,"
 	       " please use an other placement style or"
 	       " ActivePlacementHonorsStartsOnPage.");
     }

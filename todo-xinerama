@@ -19,6 +19,8 @@ Possible things to do for perfect(?) Xinerama support:
     i) FvwmDragWell
     j) FvwmWharf
     k) FvwmIconBox
+    l) FvwmScript
+    m) FvwmIdent
  6) Commands and styles:
     a) EdgeResistance
     b) Move/Resize/Resizemove
@@ -47,7 +49,7 @@ Possible things to do for perfect(?) Xinerama support:
 Minimal set of Xinerama features:
 ---------------------------------
 
-1b, 2b, 3a, 3b, 3c, 4a, 5a, 5e (placement only), 6d, 7a, 8b
+1b, 2b, 3 a b c, 4a, 5 a e (placement only), 6d, 7a, 8b
 
 Still to do:
 ------------
@@ -59,19 +61,11 @@ Still to do:
 
 Optional to do:
 ---------------
-1a
-2a
-5b
-5d
-5e
-6b
-6f
-6h
-6i
-6k
-8a
-8c
-8d
+1 a
+2 a
+5 b e
+6 b f h i k
+8 a c d
 
 Already done:
 -------------
@@ -81,22 +75,12 @@ Already done:
     c) Adapt position hints to Xinerama screens
  4) Geometry window:
     a) Place on proper Xinerama screen
-5a
-5c
-5f
-5g
-5h
-5i
-5j
-5k
-6a
-6c
-6g
-6j
+5 a c d f g h i j k l m
+6 a c g j
  7) Control:
     a) Enable and Disable Xinerama on the fly (including modules)
-8b
+8 b
 
 Not to be done:
 ---------------
-6e (not useful, EdgeResistance is good enough)
+6 e (not useful, EdgeResistance is good enough)

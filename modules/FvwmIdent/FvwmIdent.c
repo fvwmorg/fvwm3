@@ -50,6 +50,8 @@
 #include <X11/Xlocale.h>
 #endif
 
+#include "libs/fvwmlib.h"
+#include "libs/XineramaSupport.h"
 #include "libs/Module.h"
 #include "libs/Picture.h"
 #include "libs/Colorset.h"
@@ -72,7 +74,6 @@ static XFontSet fontset;
 
 static int screen;
 static int x_fd;
-static int ScreenWidth, ScreenHeight;
 
 static char *yes = "Yes";
 static char *no = "No";
@@ -203,11 +204,9 @@ int main(int argc, char **argv)
   Root = RootWindow(dpy, screen);
 
   InitPictureCMap(dpy);
+  XineramaSupportInit(dpy);
   /* prevent core dumps if fvwm doesn't provide any colorsets */
   AllocColorset(0);
-
-  ScreenHeight = DisplayHeight(dpy,screen);
-  ScreenWidth = DisplayWidth(dpy,screen);
 
   SetMessageMask(fd, M_CONFIGURE_WINDOW | M_WINDOW_NAME | M_ICON_NAME
                  | M_RES_CLASS | M_RES_NAME | M_END_WINDOWLIST | M_CONFIG_INFO
@@ -237,6 +236,10 @@ int main(int argc, char **argv)
       }
       else if(strncasecmp(tline, "Colorset", 8) == 0){
         LoadColorset(&tline[8]);
+      }
+      else if(strncasecmp(tline, XINERAMA_CONFIG_STRING,
+			  strlen(XINERAMA_CONFIG_STRING)) == 0){
+	XineramaSupportConfigureModule(tline + strlen(XINERAMA_CONFIG_STRING));
       }
     }
     GetConfigLine(fd,&tline);
@@ -429,9 +432,6 @@ void list_end(void)
   unsigned long gcm;
   int lmax,height;
   XEvent Event;
-  Window JunkRoot, JunkChild;
-  int JunkX, JunkY;
-  unsigned int JunkMask;
   int x,y;
   XSetWindowAttributes attributes;
   int is_key_pressed = 0;
@@ -490,27 +490,41 @@ void list_end(void)
   mysizehints.min_width = mysizehints.width;
   mysizehints.max_height = mysizehints.height;
   mysizehints.max_width = mysizehints.width;
-  XQueryPointer( dpy, Root, &JunkRoot, &JunkChild,
-		&x, &y, &JunkX, &JunkY, &JunkMask);
   mysizehints.win_gravity = NorthWestGravity;
-
-  if ((y+height+100)>ScreenHeight)
   {
-    y = ScreenHeight - height - 10;
-    mysizehints.win_gravity = SouthWestGravity;
-  }
+    int sx;
+    int sy;
+    int sw;
+    int sh;
+    Window JunkW;
+    int JunkC;
+    unsigned int JunkM;
 
-  if ((x+lmax+100)>ScreenWidth)
-  {
-    x = ScreenWidth - lmax - 10;
-    if((y+height+100)>ScreenHeight)
-      mysizehints.win_gravity = SouthEastGravity;
-    else
-      mysizehints.win_gravity = NorthEastGravity;
+    if (!XQueryPointer(
+	  dpy, Root, &JunkW, &JunkW, &x, &y, &JunkC, &JunkC, &JunkM))
+    {
+      x = 0;
+      y = 0;
+    }
+
+    XineramaSupportGetCurrentScrRect(NULL, &sx, &sy, &sw, &sh);
+    XineramaSupportGetScrRect(x, y, &sx, &sy, &sw, &sh);
+    if (y + height + 100 > sy + sh)
+    {
+      y = sy + sh - height - 10;
+      mysizehints.win_gravity = SouthWestGravity;
+    }
+    if (x + lmax + 100 > sx + sw)
+    {
+      x = sx + sw - lmax - 10;
+      if (mysizehints.win_gravity == SouthWestGravity)
+	mysizehints.win_gravity = SouthEastGravity;
+      else
+	mysizehints.win_gravity = NorthEastGravity;
+    }
   }
   mysizehints.x = x;
   mysizehints.y = y;
-
 
   if (Pdepth < 2)
   {
@@ -674,6 +688,9 @@ void list_end(void)
 	      mw_events &= ~StructureNotifyMask;
 	    XSelectInput(dpy, main_win, mw_events);
 	  }
+	}
+	else if (StrEquals(token, XINERAMA_CONFIG_STRING)) {
+	  XineramaSupportConfigureModule(tline);
 	}
 	free(token);
       }
@@ -871,13 +888,13 @@ void MakeList(void)
   x1 = target.frame_x;
   if(x1 < 0)
     x1 = 0;
-  x2 = ScreenWidth - x1 - target.frame_w;
+  x2 = DisplayWidth(dpy,screen) - x1 - target.frame_w;
   if(x2 < 0)
     x2 = 0;
   y1 = target.frame_y;
   if(y1 < 0)
     y1 = 0;
-  y2 = ScreenHeight - y1 -  target.frame_h;
+  y2 = DisplayHeight(dpy,screen) - y1 -  target.frame_h;
     if(y2 < 0)
     y2 = 0;
   width = (width - target.base_w)/target.width_inc;
