@@ -352,7 +352,7 @@ void HandleFocusIn(void)
                           Scr.DefaultDecor.HiColors.back);
 	  if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
 	    {
-	      if((Scr.Hilite)&&(!(Scr.Hilite->flags & ICONIFIED)))
+	      if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
 		{
 		  InstallWindowColormaps(Scr.Hilite);
 		}
@@ -373,7 +373,7 @@ void HandleFocusIn(void)
                       GetDecor(Tmp_win,HiColors.back));
       if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
 	{
-	  if((Scr.Hilite)&&(!(Scr.Hilite->flags & ICONIFIED)))
+	  if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
 	    {
 	      InstallWindowColormaps(Scr.Hilite);
 	    }
@@ -477,12 +477,12 @@ void HandlePropertyNotify(void)
       {
         if(XGetTransientForHint(dpy, Tmp_win->w, &Tmp_win->transientfor))
         {
-           Tmp_win->flags |= TRANSIENT;
-           RaiseWindow(Tmp_win);
+	  SET_TRANSIENT(Tmp_win, 1);
+	  RaiseWindow(Tmp_win);
         }
         else
         {
-           Tmp_win->flags &= ~TRANSIENT;
+	  SET_TRANSIENT(Tmp_win, 0);
         }
       }
       break;
@@ -495,7 +495,7 @@ void HandlePropertyNotify(void)
 
       Tmp_win->name = (char *)text_prop.value;
 #ifdef SESSION
-      Tmp_win->tmpflags.NameChanged = 1;
+      SET_NAME_CHANGED(Tmp_win, 1);
 #endif
       if (Tmp_win->name == NULL)
         Tmp_win->name = NoName;
@@ -503,7 +503,7 @@ void HandlePropertyNotify(void)
 		    (unsigned long)Tmp_win,Tmp_win->name);
 
       /* fix the name in the title bar */
-      if(!(Tmp_win->flags & ICONIFIED))
+      if(!IS_ICONIFIED(Tmp_win))
 	SetTitleBar(Tmp_win,(Scr.Hilite==Tmp_win),True);
 
       /*
@@ -549,13 +549,13 @@ void HandlePropertyNotify(void)
 	{
 	  if(Tmp_win->icon_bitmap_file == Scr.DefaultIcon)
 	    Tmp_win->icon_bitmap_file = NULL;
-	  if (!(Tmp_win->flags & SUPPRESSICON) ||
+	  if (!IS_ICON_SUPPRESSED(Tmp_win) ||
 	      (Tmp_win->wmhints->flags & IconWindowHint))
 	    {
 	      if (Tmp_win->icon_w)
 		XDestroyWindow(dpy,Tmp_win->icon_w);
 	      XDeleteContext(dpy, Tmp_win->icon_w, FvwmContext);
-	      if(Tmp_win->flags & ICON_OURS)
+	      if(IS_ICON_OURS(Tmp_win))
 		{
 		  if(Tmp_win->icon_pixmap_w != None)
 		    {
@@ -569,10 +569,10 @@ void HandlePropertyNotify(void)
 	  Tmp_win->icon_w = None;
 	  Tmp_win->icon_pixmap_w = None;
 	  Tmp_win->iconPixmap = (Window)NULL;
-	  if(Tmp_win->flags & ICONIFIED)
+	  if(IS_ICONIFIED(Tmp_win))
 	    {
-	      Tmp_win->flags &= ~ICONIFIED;
-	      Tmp_win->flags &= ~ICON_UNMAPPED;
+	      SET_ICONIFIED(Tmp_win, 0);
+	      SET_ICON_UNMAPPED(Tmp_win, 0);
 	      CreateIconWindow(Tmp_win,
 			       Tmp_win->icon_x_loc,Tmp_win->icon_y_loc);
 	      BroadcastPacket(M_ICONIFY, 7,
@@ -582,7 +582,7 @@ void HandlePropertyNotify(void)
 			      Tmp_win->icon_w_width, Tmp_win->icon_w_height);
 	      BroadcastConfig(M_CONFIGURE_WINDOW, Tmp_win);
 
-	      if (!(Tmp_win->flags & SUPPRESSICON))
+	      if (!IS_ICON_SUPPRESSED(Tmp_win))
 		{
 		  LowerWindow(Tmp_win);
 		  AutoPlace(Tmp_win);
@@ -594,7 +594,7 @@ void HandlePropertyNotify(void)
 			XMapWindow(dpy, Tmp_win->icon_pixmap_w);
 		    }
 		}
-	      Tmp_win->flags |= ICONIFIED;
+	      SET_ICONIFIED(Tmp_win, 1);
 	      DrawIconWindow(Tmp_win);
 	    }
 	}
@@ -648,7 +648,7 @@ void HandlePropertyNotify(void)
 	}
       else if(Event.xproperty.atom == _XA_WM_STATE)
 	{
-	  if((Tmp_win != NULL)&&(Tmp_win->flags & ClickToFocus)
+	  if((Tmp_win != NULL)&&(HAS_CLICK_FOCUS(Tmp_win))
 	     &&(Tmp_win == Scr.Focus))
 	    {
               if (OnThisPage)
@@ -685,7 +685,7 @@ void HandleClientMessage(void)
 
   if ((Event.xclient.message_type == _XA_WM_CHANGE_STATE)&&
       (Tmp_win)&&(Event.xclient.data.l[0]==IconicState)&&
-      !(Tmp_win->flags & ICONIFIED))
+      !IS_ICONIFIED(Tmp_win))
   {
     XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
                    &(button.xmotion.x_root),
@@ -818,7 +818,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
     XFlush(dpy);
 
   /* If the window has never been mapped before ... */
-  if(!Tmp_win || (Tmp_win && Tmp_win->tmpflags.ReuseDestroyed))
+  if(!Tmp_win || (Tmp_win && DO_REUSE_DESTROYED(Tmp_win)))
     {
       /* Add decorations. */
       Tmp_win = AddWindow(Event.xany.window, ReuseWin);
@@ -843,7 +843,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
   if(KeepRaised != None)
     XRaiseWindow(dpy,KeepRaised);
   /* If it's not merely iconified, and we have hints, use them. */
-  if (!(Tmp_win->flags & ICONIFIED))
+  if (!IS_ICONIFIED(Tmp_win))
     {
       int state;
 
@@ -852,7 +852,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
       else
 	state = NormalState;
 
-      if(Tmp_win->flags & STARTICONIC)
+      if(DO_START_ICONIC(Tmp_win))
 	state = IconicState;
 
       if(isIconicState != DontCareState)
@@ -869,7 +869,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
 	    {
 	      XMapWindow(dpy, Tmp_win->w);
 	      XMapWindow(dpy, Tmp_win->frame);
-	      Tmp_win->flags |= MAP_PENDING;
+	      SET_MAP_PENDING(Tmp_win, 1);
 	      SetMapStateProp(Tmp_win, NormalState);
 #if 0
 	      /* domivogt (21-mar-1999): several people complained about
@@ -879,7 +879,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
 	      if((Tmp_win->flags & ClickToFocus)&&
 		 ((!Scr.Focus)||(Scr.Focus->flags & ClickToFocus)))
 #else
-	      if((Tmp_win->flags & GRAB_FOCUS)||(!Scr.Focus))
+	      if((DO_GRAB_FOCUS(Tmp_win))||(!Scr.Focus))
 #endif
 		{
                   if (OnThisPage)
@@ -920,7 +920,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
 #ifdef SESSION
   /* just to be on the safe side, we make sure that STARTICONIC
      can only influence the initial transition from withdrawn state */
-  Tmp_win->flags &= ~STARTICONIC;
+  SET_DO_START_ICONIC(Tmp_win, 0);
 #endif
 
 #ifdef GNOME
@@ -990,7 +990,7 @@ void HandleMapNotify(void)
       XMapWindow(dpy, Tmp_win->frame);
     }
 
-  if(Tmp_win->flags & ICONIFIED)
+  if(IS_ICONIFIED(Tmp_win))
     BroadcastPacket(M_DEICONIFY, 3,
                     Tmp_win->w, Tmp_win->frame, (unsigned long)Tmp_win);
   else
@@ -1005,7 +1005,7 @@ void HandleMapNotify(void)
   if((Tmp_win->flags & ClickToFocus)&&
      ((!Scr.Focus)||(Scr.Focus->flags & ClickToFocus)))
 #else
-  if((Tmp_win->flags & GRAB_FOCUS)||(!Scr.Focus))
+  if((DO_GRAB_FOCUS(Tmp_win))||(!Scr.Focus))
 #endif
     {
       if (OnThisPage)
@@ -1013,17 +1013,17 @@ void HandleMapNotify(void)
           SetFocus(Tmp_win->w,Tmp_win,1);
         }
     }
-  if((!(Tmp_win->flags &(BORDER|TITLE)))&&(Tmp_win->boundary_width <2))
+  if((!(HAS_BORDER(Tmp_win)|HAS_TITLE(Tmp_win)))&&(Tmp_win->boundary_width <2))
     {
       SetBorder(Tmp_win,False,True,True,Tmp_win->frame);
     }
   XSync(dpy,0);
   MyXUngrabServer (dpy);
   XFlush (dpy);
-  Tmp_win->flags |= MAPPED;
-  Tmp_win->flags &= ~MAP_PENDING;
-  Tmp_win->flags &= ~ICONIFIED;
-  Tmp_win->flags &= ~ICON_UNMAPPED;
+  SET_MAPPED(Tmp_win, 1);
+  SET_MAP_PENDING(Tmp_win, 0);
+  SET_ICONIFIED(Tmp_win, 0);
+  SET_ICON_UNMAPPED(Tmp_win, 0);
 }
 
 
@@ -1082,7 +1082,7 @@ void HandleUnmapNotify(void)
   if(Scr.PreviousFocus == Tmp_win)
     Scr.PreviousFocus = NULL;
 
-  if((Tmp_win == Scr.Focus)&&(Tmp_win->flags & ClickToFocus))
+  if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
     {
       if(Tmp_win->next)
 	{
@@ -1101,7 +1101,7 @@ void HandleUnmapNotify(void)
   if(Tmp_win == colormap_win)
     colormap_win = NULL;
 
-  if ((!(Tmp_win->flags & MAPPED)&&!(Tmp_win->flags&ICONIFIED)))
+  if (!IS_MAPPED(Tmp_win) && !IS_ICONIFIED(Tmp_win))
     {
       return;
     }
@@ -1136,7 +1136,7 @@ void HandleUnmapNotify(void)
 	{
 	  if (Tmp_win->old_bw)
 	    XSetWindowBorderWidth (dpy, Event.xunmap.window, Tmp_win->old_bw);
-	  if((!(Tmp_win->flags & SUPPRESSICON))&&
+	  if((!IS_ICON_SUPPRESSED(Tmp_win))&&
 	     (Tmp_win->wmhints && (Tmp_win->wmhints->flags & IconWindowHint)))
 	    XUnmapWindow (dpy, Tmp_win->wmhints->icon_window);
 	}
@@ -1182,7 +1182,7 @@ void HandleButtonPress(void)
   DBUG("HandleButtonPress","Routine Entered");
 
   /* click to focus stuff goes here */
-  if((Tmp_win)&&(Tmp_win->flags & ClickToFocus)&&(Tmp_win != Scr.Ungrabbed))
+  if((Tmp_win)&&(HAS_CLICK_FOCUS(Tmp_win))&&(Tmp_win != Scr.Ungrabbed))
   {
     SetFocus(Tmp_win->w,Tmp_win,1);
     if (Scr.go.ClickToFocusRaises ||
@@ -1194,7 +1194,7 @@ void HandleButtonPress(void)
       RaiseWindow(Tmp_win);
     }
 
-    if(!(Tmp_win->flags & ICONIFIED))
+    if(!IS_ICONIFIED(Tmp_win))
     {
       XSync(dpy,0);
       /* pass click event to just clicked to focus window? Do not swallow the
@@ -1207,7 +1207,7 @@ void HandleButtonPress(void)
       return;
     }
   }
-  else if ((Tmp_win) && !(Tmp_win->flags & ClickToFocus) &&
+  else if ((Tmp_win) && !(HAS_CLICK_FOCUS(Tmp_win)) &&
            (Event.xbutton.window == Tmp_win->frame) &&
 	   Scr.go.MouseFocusClickRaises)
   {
@@ -1306,8 +1306,7 @@ void HandleEnterNotify(void)
   /* multi screen? */
   if (Event.xany.window == Scr.Root)
   {
-    if (!Scr.Focus || (!(Scr.Focus->flags&ClickToFocus)&&
-                       !(Scr.Focus->flags&SloppyFocus)))
+    if (!Scr.Focus || HAS_MOUSE_FOCUS(Scr.Focus))
     {
       SetFocus(Scr.NoFocusWin,NULL,1);
     }
@@ -1322,13 +1321,13 @@ void HandleEnterNotify(void)
   if (!Tmp_win)
     return;
 
-  if(!(Tmp_win->flags & ClickToFocus))
+  if(!HAS_CLICK_FOCUS(Tmp_win))
     {
       SetFocus(Tmp_win->w,Tmp_win,1);
     }
   if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
   {
-    if((!(Tmp_win->flags & ICONIFIED))&&(Event.xany.window == Tmp_win->w))
+    if((!IS_ICONIFIED(Tmp_win))&&(Event.xany.window == Tmp_win->w))
       InstallWindowColormaps(Tmp_win);
     else
       InstallWindowColormaps(NULL);
@@ -1420,7 +1419,7 @@ void HandleConfigureRequest(void)
       Tmp_win->icon_x_loc = cre->x +
         (Tmp_win->icon_w_width - Tmp_win->icon_p_width)/2;
       Tmp_win->icon_y_loc = cre->y - Tmp_win->icon_p_height;
-      if(!(Tmp_win->flags & ICON_UNMAPPED))
+      if(!IS_ICON_UNMAPPED(Tmp_win))
         BroadcastPacket(M_ICON_LOCATION, 7,
                         Tmp_win->w, Tmp_win->frame,
                         (unsigned long)Tmp_win,
@@ -1577,13 +1576,13 @@ void HandleConfigureRequest(void)
    * requested client window height plus any title bar slop.
    */
   ConstrainSize(Tmp_win, &width, &height, False, 0, 0);
-  if (Tmp_win->buttons & WSHADE)
+  if (IS_SHADED(Tmp_win))
     {
       /* for shaded windows, allow resizing, but keep it shaded */
       SetupFrame (Tmp_win, x, y, width, Tmp_win->frame_height,sendEvent,False);
       Tmp_win->orig_ht = height;
     }
-  else if (!(Tmp_win->flags & MAXIMIZED))
+  else if (!IS_MAXIMIZED(Tmp_win))
     {
       /* dont allow clients to resize maximized windows */
       SetupFrame (Tmp_win, x, y, width, height, sendEvent, False);
@@ -1631,9 +1630,9 @@ void HandleVisibilityNotify(void)
   if(Tmp_win && Tmp_win->frame == last_event_window)
     {
       if(vevent->state == VisibilityUnobscured)
-	Tmp_win->flags |= VISIBLE;
+	SET_VISIBLE(Tmp_win, 1);
       else
-	Tmp_win->flags &= ~VISIBLE;
+	SET_VISIBLE(Tmp_win, 0);
     }
 }
 
@@ -1777,7 +1776,7 @@ void  ResyncFvwmStackRing (void)
     {
       for (t1 = Scr.FvwmRoot.next; t1 != NULL; t1 = t1->next)
 	{
-          if (t1->flags & ICONIFIED && (!(t1->flags & SUPPRESSICON)))
+          if (IS_ICONIFIED(t1) && !IS_ICON_SUPPRESSED(t1))
             {
 	      if (t1->icon_w == children[i])
 	        {

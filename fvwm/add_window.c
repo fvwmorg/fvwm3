@@ -42,8 +42,8 @@
 #include <string.h>
 #include <stdlib.h>
 #include "fvwm.h"
-#include <X11/Xatom.h>
 #include "style.h"
+#include <X11/Xatom.h>
 #include "screen.h"
 #include "misc.h"
 #include "bindings.h"
@@ -92,7 +92,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #endif
   unsigned long valuemask_save = 0;
   XSetWindowAttributes attributes;	/* attributes for create windows */
-  name_list styles;                     /* area for merged styles */
+  window_style style;                     /* area for merged styles */
   int i,width,height;
   int a,b;
 /*  RBW - 11/02/1998  */
@@ -136,10 +136,11 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       memset(tmp_win, '\0', sizeof(FvwmWindow));
     }
 
-  tmp_win->flags = 0;
-  tmp_win->tmpflags.ViewportMoved = 0;
-  tmp_win->tmpflags.IconifiedByParent = 0;
-  tmp_win->tmpflags.NameChanged = 0;
+  memset(&(tmp_win->gsfr_flags), 0, sizeof(window_flags));
+  //  tmp_win->flags = 0;
+  //  tmp_win->tmpflags.ViewportMoved = 0;
+  //  tmp_win->tmpflags.IconifiedByParent = 0;
+  //  tmp_win->tmpflags.NameChanged = 0;
   tmp_win->w = w;
 
   tmp_win->cmap_windows = (Window *)NULL;
@@ -182,10 +183,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   tmp_win->wmhints = XGetWMHints(dpy, tmp_win->w);
 
-  if(XGetTransientForHint(dpy, tmp_win->w,  &tmp_win->transientfor))
-    tmp_win->flags |= TRANSIENT;
-  else
-    tmp_win->flags &= ~TRANSIENT;
+  SET_TRANSIENT(tmp_win, !!XGetTransientForHint(dpy, tmp_win->w,
+						&tmp_win->transientfor));
 
   tmp_win->old_bw = tmp_win->attr.border_width;
 
@@ -211,23 +210,25 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
    *  decorate anyway
    */
   /*  Assume that we'll decorate */
-  tmp_win->flags |= BORDER;
-  tmp_win->flags |= TITLE;
+  SET_HAS_BORDER(tmp_win, 1);
+  SET_HAS_TITLE(tmp_win, 1);
 
-  LookInList(tmp_win, &styles);         /* get merged styles */
+  /* get merged styles */
+  lookup_style(tmp_win, &style);
 
-  tmp_win->IconBoxes = styles.IconBoxes; /* copy iconboxes ptr (if any) */
-  tmp_win->buttons = styles.on_buttons; /* on and off buttons combined. */
+  tmp_win->IconBoxes = style.IconBoxes; /* copy iconboxes ptr (if any) */
+  tmp_win->buttons = style.on_buttons;  /* on and off buttons combined. */
   /* FIXME: shouldn't transients inherit the layer ? */
-  tmp_win->layer = styles.layer;
+  tmp_win->default_layer = style.layer;
+  tmp_win->layer = style.layer;
 
 #ifdef USEDECOR
   /* search for a UseDecor tag in the Style */
   tmp_win->fl = NULL;
-  if (styles.Decor != NULL) {
+  if (style.decor_name != NULL) {
       FvwmDecor *fl = &Scr.DefaultDecor;
       for (; fl; fl = fl->next)
-	  if (strcasecmp(styles.Decor,fl->tag)==0) {
+	  if (strcasecmp(style.decor_name, fl->tag) == 0) {
 	      tmp_win->fl = fl;
 	      break;
 	  }
@@ -241,7 +242,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   GetMwmHints(tmp_win);
   GetOlHints(tmp_win);
 
-  SelectDecor(tmp_win,styles.on_flags,styles.border_width,styles.resize_width);
+  SelectDecor(tmp_win, &(style.flags), style.border_width, style.handle_width);
 
 #ifdef GNOME
   /* set GNOME window hints & FVWM flags translated from those hints */
@@ -254,12 +255,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     tmp_win->boundary_width = 0;
 #endif /* SHAPE */
 
-  tmp_win->flags |= styles.on_flags & ALL_COMMON_FLAGS;
+  memcpy(&(tmp_win->gsfr_flags), &(style.flags), sizeof(common_flags_type));
   /* find a suitable icon pixmap */
-  if(styles.on_flags & ICON_FLAG)
+  if(style.flags.has_icon)
     {
       /* an icon was specified */
-      tmp_win->icon_bitmap_file = styles.value;
+      tmp_win->icon_bitmap_file = style.icon_name;
     }
   else if((tmp_win->wmhints)
 	  &&(tmp_win->wmhints->flags & (IconWindowHint|IconPixmapHint)))
@@ -274,8 +275,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     }
 
 #ifdef MINI_ICONS
-  if (styles.on_flags & MINIICON_FLAG) {
-    tmp_win->mini_pixmap_file = styles.mini_value;
+  if (style.flags.has_mini_icon) {
+    tmp_win->mini_pixmap_file = style.mini_icon_name;
   }
   else {
     tmp_win->mini_pixmap_file = NULL;
@@ -300,14 +301,14 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       status = XrmGetResource (db, "fvwm.desk", "Fvwm.Desk",
                                &str_type, &rm_value);
       if ((status == True) && (rm_value.size != 0)) {
-          styles.Desk = atoi(rm_value.addr);
+          style.start_desk = atoi(rm_value.addr);
           /*  RBW - 11/20/1998  */
-          if (styles.Desk > -1)
+          if (style.start_desk > -1)
             {
-              styles.Desk++;
+              style.start_desk++;
             }
           /**/
-	  styles.on_flags |= STARTSONDESK_FLAG;
+	  style.flags.use_start_on_desk = 1;
       }
 /*  RBW - 11/02/1998  */
 /*  RBW - 11/20/1998 - allow desk or page specs of -1 to work.  */
@@ -321,23 +322,23 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
             {
             case 1:
               {
-                styles.on_flags |= STARTSONDESK_FLAG;
-                styles.Desk     =  (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
+		style.flags.use_start_on_desk = 1;
+                style.start_desk =  (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
                 break;
               }
             case 2:
               {
-                styles.on_flags |= STARTSONDESK_FLAG;
-                styles.PageX    =  (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
-                styles.PageY    =  (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
+		style.flags.use_start_on_desk = 1;
+                style.start_page_x = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
+                style.start_page_y = (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
                 break;
               }
             case 3:
               {
-                styles.on_flags |= STARTSONDESK_FLAG;
-                styles.Desk     =  (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
-                styles.PageX    =  (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
-                styles.PageY    =  (tmpno3 > -1) ? tmpno3 + 1 : tmpno3;
+		style.flags.use_start_on_desk = 1;
+                style.start_desk = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
+                style.start_page_x = (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
+                style.start_page_y = (tmpno3 > -1) ? tmpno3 + 1 : tmpno3;
                 break;
               }
             default:
@@ -352,8 +353,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
 
 /*  RBW - 11/02/1998  */
-  if(!PlaceWindow(tmp_win, styles.on_flags, styles.Desk, styles.PageX,
-		  styles.PageY))
+  if(!PlaceWindow(tmp_win, &(style.flags), style.start_desk,
+		  style.start_page_x, style.start_page_y))
     return NULL;
 
   /*
@@ -379,28 +380,28 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   if(tmp_win->icon_name==(char *)NULL)
     tmp_win->icon_name = tmp_win->name;
 
-  tmp_win->flags &= ~ICONIFIED;
-  tmp_win->flags &= ~ICON_UNMAPPED;
-  tmp_win->flags &= ~MAXIMIZED;
+  SET_ICONIFIED(tmp_win, 0);
+  SET_ICON_UNMAPPED(tmp_win, 0);
+  SET_MAXIMIZED(tmp_win, 0);
 
   tmp_win->TextPixel = Scr.StdColors.fore;
   tmp_win->ReliefPixel = Scr.StdRelief.fore;
   tmp_win->ShadowPixel = Scr.StdRelief.back;
   tmp_win->BackPixel = Scr.StdColors.back;
 
-  if(styles.ForeColor != NULL) {
+  if(style.fore_color_name != NULL) {
     XColor color;
 
-    if((XParseColor (dpy, PictureCMap, styles.ForeColor, &color))
+    if((XParseColor (dpy, PictureCMap, style.fore_color_name, &color))
        &&(XAllocColor (dpy, PictureCMap, &color)))
       {
         tmp_win->TextPixel = color.pixel;
       }
   }
-  if(styles.BackColor != NULL) {
+  if(style.back_color_name != NULL) {
     XColor color;
 
-    if((XParseColor (dpy, PictureCMap, styles.BackColor, &color))
+    if((XParseColor (dpy, PictureCMap, style.back_color_name, &color))
        &&(XAllocColor (dpy, PictureCMap, &color)))
 
       {
@@ -458,7 +459,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   /* mono screens use a stipple pixmap to get greys */
   if(Scr.depth < 2) {
     valuemask_save = CWBackPixmap;
-    if(tmp_win->flags & STICKY)
+    if(IS_STICKY(tmp_win))
       attributes.background_pixmap = Scr.sticky_gray_pixmap;
     else
       attributes.background_pixmap = Scr.light_gray_pixmap;
@@ -506,7 +507,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
 			   | EnterWindowMask | LeaveWindowMask | ExposureMask);
 
-  if (tmp_win->flags & TITLE) {
+  if (HAS_TITLE(tmp_win)) {
     tmp_win->title_x = tmp_win->boundary_width + tmp_win->title_height + 1;
     tmp_win->title_y = tmp_win->boundary_width;
     attributes.cursor = Scr.FvwmCursors[TITLE_CURSOR];
@@ -521,10 +522,12 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
         if (TexturePixmap
 	    && GetDecor(tmp_win,left_buttons[i].flags) & UseBorderStyle) {
-	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixmap|
+	    CWEventMask;
 	  attributes.background_pixmap = TexturePixmap;
         } else {
-	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixmap|CWEventMask;
+	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixmap|
+	    CWEventMask;
           attributes.background_pixmap = TexturePixmapSave;
         }
 #endif
@@ -568,7 +571,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   valuemask = CWCursor | CWEventMask;
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
 			   | EnterWindowMask | LeaveWindowMask);
-  if(tmp_win->flags & BORDER) {
+  if(HAS_BORDER(tmp_win)) {
     /* Just dump the windows any old place and let SetupFrame take
      * care of the mess */
     for(i=0;i<4;i++) {
@@ -580,7 +583,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 					   DefaultVisual(dpy, Scr.screen),
 					   valuemask, &attributes);
       XLowerWindow(dpy, tmp_win->corners[i]);
-      
+
       attributes.cursor = Scr.FvwmCursors[TOP+i];
       tmp_win->sides[i] = XCreateWindow (dpy, tmp_win->frame, 0, 0,
 					 tmp_win->boundary_width,
@@ -605,7 +608,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 				   + tmp_win->title_height,
 				   (tmp_win->frame_width
 				   - 2 * tmp_win->boundary_width),
-				   (tmp_win->frame_height 
+				   (tmp_win->frame_height
 				   - 2 * tmp_win->boundary_width
 				   - tmp_win->title_height), 0, CopyFromParent,
 				   InputOutput, CopyFromParent, valuemask,
@@ -643,8 +646,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
    * WithdrawnState in HandleUnmapNotify.  Map state gets set correctly
    * again in HandleMapNotify.
    */
-  tmp_win->flags &= ~MAPPED;
-  width =  tmp_win->frame_width;
+  SET_MAPPED(tmp_win, 0);
+  width = tmp_win->frame_width;
   tmp_win->frame_width = 0;
   height = tmp_win->frame_height;
   tmp_win->frame_height = 0;
@@ -654,7 +657,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 
   if (do_maximize) {
     /* This is essentially Maximize, only we want the given dimensions */
-    tmp_win->flags |= MAXIMIZED;
+    SET_MAXIMIZED(tmp_win, 1);
     ConstrainSize (tmp_win, &w_max, &h_max, False, 0, 0);
     tmp_win->maximized_ht = h_max;
     SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE, False);
@@ -682,7 +685,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);
   XSaveContext(dpy, tmp_win->frame, FvwmContext, (caddr_t) tmp_win);
   XSaveContext(dpy, tmp_win->Parent, FvwmContext, (caddr_t) tmp_win);
-  if (tmp_win->flags & TITLE)
+  if (HAS_TITLE(tmp_win))
     {
       XSaveContext(dpy, tmp_win->title_w, FvwmContext, (caddr_t) tmp_win);
       for(i=0;i<Scr.nr_left_buttons;i++)
@@ -692,7 +695,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 	  XSaveContext(dpy, tmp_win->right_w[i], FvwmContext,
 		       (caddr_t) tmp_win);
     }
-  if (tmp_win->flags & BORDER)
+  if (HAS_BORDER(tmp_win))
     {
       for(i=0;i<4;i++)
 	{
@@ -702,13 +705,13 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     }
   if (tmp_win->stack_prev == &Scr.FvwmRoot) {
     /* RaiseWindow/LowerWindow will put the window in its layer */
-    if (styles.tmpflags.starts_lowered)
+    if (style.flags.do_start_lowered)
       {
-	LowerWindow (tmp_win);
+	LowerWindow(tmp_win);
       }
     else
       {
-	RaiseWindow (tmp_win);
+	RaiseWindow(tmp_win);
       }
   } else {
     XWindowChanges xwc;
@@ -724,7 +727,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 			&a,&b,&JunkChild);
   tmp_win->xdiff -= a;
   tmp_win->ydiff -= b;
-  if((tmp_win->flags & ClickToFocus) || Scr.go.MouseFocusClickRaises)
+  if(HAS_CLICK_FOCUS(tmp_win) || Scr.go.MouseFocusClickRaises)
     {
      /* need to grab all buttons for window that we are about to
       * unhighlight */
@@ -817,7 +820,6 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
  ***********************************************************************/
 void FetchWmProtocols (FvwmWindow *tmp)
 {
-  unsigned long flags = 0L;
   Atom *protocols = NULL, *ap;
   int i, n;
   Atom atype;
@@ -831,10 +833,13 @@ void FetchWmProtocols (FvwmWindow *tmp)
     {
       for (i = 0, ap = protocols; i < n; i++, ap++)
 	{
-	  if (*ap == (Atom)_XA_WM_TAKE_FOCUS) flags |= DoesWmTakeFocus;
-	  if (*ap == (Atom)_XA_WM_DELETE_WINDOW) flags |= DoesWmDeleteWindow;
+	  if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
+	    SET_WM_TAKES_FOCUS(tmp, 1);
+	  if (*ap == (Atom)_XA_WM_DELETE_WINDOW)
+	    SET_WM_DELETES_WINDOW(tmp, 1);
 	}
-      if (protocols) XFree ((char *) protocols);
+      if (protocols)
+	XFree((char *)protocols);
     }
   else
     {
@@ -847,13 +852,15 @@ void FetchWmProtocols (FvwmWindow *tmp)
 	{
 	  for (i = 0, ap = protocols; i < nitems; i++, ap++)
 	    {
-	      if (*ap == (Atom)_XA_WM_TAKE_FOCUS) flags |= DoesWmTakeFocus;
-	      if (*ap == (Atom)_XA_WM_DELETE_WINDOW) flags |= DoesWmDeleteWindow;
+	      if (*ap == (Atom)_XA_WM_TAKE_FOCUS)
+		SET_WM_TAKES_FOCUS(tmp, 1);
+	      if (*ap == (Atom)_XA_WM_DELETE_WINDOW)
+		SET_WM_DELETES_WINDOW(tmp, 1);
 	    }
-	  if (protocols) XFree ((char *) protocols);
+	  if (protocols)
+	    XFree((char *)protocols);
 	}
     }
-  tmp->flags |= flags;
   return;
 }
 

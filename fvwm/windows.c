@@ -258,19 +258,19 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
       t = windowList[ii];
       if(((t->Desk == next_desk) || (flags & NO_DESK_SORT)) &&
-         (!(t->flags & WINDOWLISTSKIP)))
+         (!(DO_SKIP_WINDOW_LIST(t))))
       {
-        if (!(flags & SHOW_ICONIC) && (t->flags & ICONIFIED))
+        if (!(flags & SHOW_ICONIC) && (IS_ICONIFIED(t)))
           continue; /* don't want icons - skip */
-        if (!(flags & SHOW_STICKY) && (t->flags & STICKY))
+        if (!(flags & SHOW_STICKY) && (IS_STICKY(t)))
           continue; /* don't want sticky ones - skip */
         if (!(flags & SHOW_NORMAL) &&
-            !((t->flags & ICONIFIED) || (t->flags & STICKY)))
+            !((IS_ICONIFIED(t)) || (IS_STICKY(t))))
           continue; /* don't want "normal" ones - skip */
         if ((t->layer < low_layer) || (t->layer > high_layer))
           continue;  /* don't want this layer */
 
-        /* add separator between desks when geometry shown but not at the top */
+        /* add separator between desks when geometry shown but not at the top*/
         if (t->Desk != last_desk_displayed)
         {
           if (last_desk_displayed != INT_MIN)
@@ -290,7 +290,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         if (flags & SHOW_GEOMETRY)
         {
           tname[0]=0;
-          if(t->flags & ICONIFIED)
+          if(IS_ICONIFIED(t))
             strcpy(tname, "(");
           sprintf(loc,"%d(%d):",t->Desk, t->layer);
           strcat(tname,loc);
@@ -319,9 +319,9 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
             sprintf(loc,"%d",t->frame_y);
           strcat(tname, loc);
 
-          if (t->flags & STICKY)
+          if (IS_STICKY(t))
             strcat(tname, " S");
-          if (t->flags & ICONIFIED)
+          if (IS_ICONIFIED(t))
             strcat(tname, ")");
           strcat(t_hot,"\t");
           strcat(t_hot,tname);

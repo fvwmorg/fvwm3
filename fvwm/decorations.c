@@ -39,6 +39,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "fvwm.h"
+#include "style.h"
 #include <X11/Xatom.h>
 #include <X11/Xproto.h>
 #include "misc.h"
@@ -157,8 +158,9 @@ void GetOlHints(FvwmWindow *t)
   t->ol_hints = OL_DECOR_ALL;
 
   if (XGetWindowProperty (dpy, t->w, _XA_OL_WIN_ATTR, 0L, 20L, False,
-                          _XA_OL_WIN_ATTR, &actual_type, &actual_format, &nitems,
-                          &bytesafter,(unsigned char **)&hints)==Success)
+                          _XA_OL_WIN_ATTR, &actual_type, &actual_format,
+			  &nitems, &bytesafter,
+			  (unsigned char **)&hints)==Success)
     {
       if (nitems > 0)
         {
@@ -236,17 +238,17 @@ void GetOlHints(FvwmWindow *t)
  * accordingly
  *
  *****************************************************************************/
-void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
-		 int resize_width)
+void SelectDecor(FvwmWindow *t, style_flags *sflags, int border_width,
+		 int handle_width)
 {
   int decor,i;
   PropMwmHints *prop;
 
-  if(!(tflags & BW_FLAG))
+  if(!SHAS_BORDER_WIDTH(sflags))
     border_width = Scr.NoBoundaryWidth;
 
-  if(!(tflags & NOBW_FLAG))
-    resize_width = Scr.BoundaryWidth;
+  if(!SHAS_HANDLE_WIDTH(sflags))
+    handle_width = Scr.BoundaryWidth;
 
   for(i=0;i<5;i++)
     {
@@ -259,10 +261,10 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
   if(t->mwm_hints)
     {
       prop = (PropMwmHints *)t->mwm_hints;
-      if(tflags & MWM_DECOR_FLAG)
+      if(SHAS_MWM_DECOR(sflags))
 	if(prop->flags & MWM_HINTS_DECORATIONS)
 	  decor = prop->decorations;
-      if(tflags & MWM_FUNCTIONS_FLAG)
+      if(SHAS_MWM_FUNCTIONS(sflags))
 	if(prop->flags & MWM_HINTS_FUNCTIONS)
 	  t->functions = prop->functions;
     }
@@ -278,7 +280,7 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
       t->functions = (MWM_FUNC_RESIZE | MWM_FUNC_MOVE | MWM_FUNC_MINIMIZE |
 		   MWM_FUNC_MAXIMIZE | MWM_FUNC_CLOSE) & (~(t->functions));
     }
-  if((tflags & MWM_FUNCTIONS_FLAG) && (t->flags & TRANSIENT))
+  if(SHAS_MWM_FUNCTIONS(sflags) || IS_TRANSIENT(t))
     {
       t->functions &= ~(MWM_FUNC_MAXIMIZE|MWM_FUNC_MINIMIZE);
     }
@@ -294,7 +296,7 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
     }
 
   /* now remove any functions specified in the OL hints */
-  if (tflags & OL_DECOR_FLAG)
+  if (SHAS_OL_DECOR(sflags))
     {
       if (!(t->ol_hints & OL_DECOR_CLOSE))
         t->functions &= ~MWM_FUNC_MINIMIZE;
@@ -304,7 +306,7 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
         t->functions &= ~(MWM_DECOR_MENU | MWM_FUNC_MINIMIZE |
                           MWM_FUNC_MAXIMIZE | MWM_DECOR_TITLE);
       if (!(t->ol_hints & OL_DECOR_ICON_NAME))
-	t->flags |= NOICON_TITLE;
+	SET_HAS_NO_ICON_TITLE(t, 1);
     }
 
   /* Now I have the un-altered decor and functions, but with the
@@ -326,15 +328,15 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
 
   /* Selected the mwm-decor field, now trim down, based on
    * .fvwmrc entries */
-  if ((tflags & NOTITLE_FLAG)||
-      ((!(tflags & DECORATE_TRANSIENT_FLAG)) && (t->flags & TRANSIENT)))
+  if (SHAS_NO_TITLE(sflags) ||
+      (!SDO_DECORATE_TRANSIENT(sflags) && IS_TRANSIENT(t)))
     decor &= ~MWM_DECOR_TITLE;
 
-  if ((tflags & NOBORDER_FLAG)||
-      ((!(tflags&DECORATE_TRANSIENT_FLAG)) && (t->flags & TRANSIENT)))
+  if (SHAS_NO_BORDER(sflags) ||
+      (!SDO_DECORATE_TRANSIENT(sflags) && IS_TRANSIENT(t)))
     decor &= ~MWM_DECOR_RESIZEH;
 
-  if((tflags & MWM_DECOR_FLAG) && (t->flags & TRANSIENT))
+  if(SHAS_MWM_DECOR(sflags) && IS_TRANSIENT(t))
     {
       decor &= ~(MWM_DECOR_MAXIMIZE|MWM_DECOR_MINIMIZE);
     }
@@ -347,13 +349,9 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
   }
 #endif
   /* Assume no decorations, and build up */
-  t->flags &= ~(BORDER|TITLE);
-  if(tflags & MWM_BORDER_FLAG)
-    t->flags |= MWMBorders;
-  if(tflags & MWM_BUTTON_FLAG)
-    t->flags |= MWMButtons;
-  if(tflags & MWM_OVERRIDE_FLAG)
-    t->flags |= HintOverride;
+  SET_HAS_TITLE(t, 0);
+  SET_HAS_BORDER(t, 0);
+
   t->boundary_width = 0;
   t->corner_width = 0;
   t->title_height = 0;
@@ -368,15 +366,15 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
     {
       /*  A title barm with no buttons in it
        * window gets a 1 pixel wide black border. */
-      t->flags |= TITLE;
+      SET_HAS_TITLE(t, 1);
       t->title_height = GetDecor(t,TitleHeight);
     }
   if(decor & MWM_DECOR_RESIZEH)
     {
       /* A wide border, with corner tiles is desplayed
        * (10 pixels - 2 relief, 2 shadow) */
-      t->flags |= BORDER;
-      t->boundary_width = resize_width;
+      SET_HAS_BORDER(t, 1);
+      t->boundary_width = handle_width;
       t->corner_width = GetDecor(t,TitleHeight) + t->boundary_width;
     }
   if(!(decor & MWM_DECOR_MENU))
@@ -443,10 +441,10 @@ void SelectDecor(FvwmWindow *t, unsigned long tflags, int border_width,
       t->nr_right_buttons--;
 
   if(t->boundary_width <= 0)
-    t->boundary_width = 0;
-
-  if(t->boundary_width == 0)
-    t->flags &= ~BORDER;
+    {
+      t->boundary_width = 0;
+      SET_HAS_BORDER(t, 0);
+    }
 }
 
 /*
@@ -460,13 +458,13 @@ int check_if_function_allowed(int function, FvwmWindow *t,
   if (!t)
     return 1;
 
-  if (override_allowed && t->flags & HintOverride)
+  if (override_allowed && HAS_MWM_OVERRIDE_HINTS(t))
     return 1;
 
   switch(function)
   {
     case F_DELETE:
-      if (!(t->flags & DoesWmDeleteWindow))
+      if (!WM_DELETES_WINDOW(t))
 	return 0;
       /* fall through to close clause */
     case F_CLOSE:
@@ -482,7 +480,7 @@ int check_if_function_allowed(int function, FvwmWindow *t,
 	return 0;
       break;
     case F_ICONIFY:
-      if ((!(t->flags & ICONIFIED))&&
+      if ((!IS_ICONIFIED(t))&&
 	  (!(t->functions & MWM_FUNC_MINIMIZE)))
 	return 0;
       break;
@@ -513,7 +511,7 @@ int check_if_function_allowed(int function, FvwmWindow *t,
 	   (StrEquals(menu_string,RESIZE_STRING2)))
 	  return 0;
 	if((!(t->functions & MWM_FUNC_MINIMIZE))&&
-	   (!(t->flags & ICONIFIED))&&
+	   (!IS_ICONIFIED(t))&&
 	   (StrEquals(menu_string,MINIMIZE_STRING)))
 	  return 0;
 	if((!(t->functions & MWM_FUNC_MINIMIZE))&&

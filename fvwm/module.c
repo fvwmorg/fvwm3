@@ -490,7 +490,7 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
             (_t)->frame_width,\
             (_t)->frame_height,\
             (_t)->Desk,\
-            (_t)->flags,\
+            (_t)->gsfr_flags,\
             (_t)->title_height,\
             (_t)->boundary_width,\
             ((_t)->hints.flags & PBaseSize) ? (_t)->hints.base_width : 0,\
@@ -843,13 +843,13 @@ void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  SendName(*Module,M_RES_NAME,t->w,t->frame,
 		   (unsigned long)t,t->class.res_name);
 
-	  if((t->flags & ICONIFIED)&&(!(t->flags & ICON_UNMAPPED)))
+	  if((IS_ICONIFIED(t))&&(!IS_ICON_UNMAPPED(t)))
 	    SendPacket(*Module, M_ICONIFY, 7, t->w, t->frame,
 		       (unsigned long)t,
 		       t->icon_x_loc, t->icon_y_loc,
 		       t->icon_w_width, t->icon_w_height+t->icon_p_height);
 
-	  if((t->flags & ICONIFIED) && (t->flags & ICON_UNMAPPED))
+	  if((IS_ICONIFIED(t))&&(IS_ICON_UNMAPPED(t)))
 	    SendPacket(*Module, M_ICONIFY, 7, t->w, t->frame,
 		       (unsigned long)t,
                        0, 0, 0, 0);

@@ -55,14 +55,14 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
   unsigned long valuemask;		/* mask for create windows */
   XSetWindowAttributes attributes;	/* attributes for create windows */
 
-  tmp_win->flags |= ICON_OURS;
-  tmp_win->flags &= ~PIXMAP_OURS;
-  tmp_win->flags &= ~SHAPED_ICON;
+  SET_ICON_OURS(tmp_win, 1);
+  SET_PIXMAP_OURS(tmp_win, 0);
+  SET_ICON_SHAPED(tmp_win, 0);
   tmp_win->icon_pixmap_w = None;
   tmp_win->iconPixmap = None;
   tmp_win->iconDepth = 0;
 
-  if(tmp_win->flags & SUPPRESSICON)
+  if(IS_ICON_SUPPRESSED(tmp_win))
     return;
 
   /* First, see if it was specified in the .fvwmrc */
@@ -91,7 +91,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
     GetIconBitmap(tmp_win);
 
   /* figure out the icon window size */
-  if (!(tmp_win->flags & NOICON_TITLE)||(tmp_win->icon_p_height == 0))
+  if (!(HAS_NO_ICON_TITLE(tmp_win))||(tmp_win->icon_p_height == 0))
     {
       tmp_win->icon_t_width = XTextWidth(Scr.IconFont.font,
 					 tmp_win->icon_name,
@@ -103,7 +103,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
       tmp_win->icon_t_width = 0;
       tmp_win->icon_w_height = 0;
     }
-  if((tmp_win->flags & ICON_OURS)&&(tmp_win->icon_p_height >0))
+  if((IS_ICON_OURS(tmp_win))&&(tmp_win->icon_p_height >0))
     {
       tmp_win->icon_p_width += 4;
       tmp_win->icon_p_height +=4;
@@ -141,13 +141,13 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 			   VisibilityChangeMask |
 			   ExposureMask | KeyPressMask|EnterWindowMask |
 			   FocusChangeMask );
-  if (!(tmp_win->flags & NOICON_TITLE)||(tmp_win->icon_p_height == 0))
+  if (!(HAS_NO_ICON_TITLE(tmp_win))||(tmp_win->icon_p_height == 0))
     tmp_win->icon_w =
       XCreateWindow(dpy, Scr.Root, final_x, final_y+tmp_win->icon_p_height,
                     tmp_win->icon_w_width, tmp_win->icon_w_height,0,Scr.depth,
                     InputOutput,Scr.viz,valuemask,&attributes);
 
-  if((tmp_win->flags & ICON_OURS)&&(tmp_win->icon_p_width>0)&&
+  if((IS_ICON_OURS(tmp_win))&&(tmp_win->icon_p_width>0)&&
      (tmp_win->icon_p_height>0))
     {
       tmp_win->icon_pixmap_w =
@@ -170,7 +170,7 @@ void CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y)
 
 #ifdef XPM
 #ifdef SHAPE
-  if (ShapesSupported && (tmp_win->flags & SHAPED_ICON))
+  if (ShapesSupported && IS_ICON_SHAPED(tmp_win))
     {
       XShapeCombineMask(dpy, tmp_win->icon_pixmap_w, ShapeBounding,2, 2,
 			tmp_win->icon_maskPixmap, ShapeSet);
@@ -230,7 +230,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
   Pixel TextColor,BackColor;
   int x;
 
-  if(Tmp_win->flags & SUPPRESSICON)
+  if(IS_ICON_SUPPRESSED(Tmp_win))
     return;
 
   if(Tmp_win->icon_w != None)
@@ -301,7 +301,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
       BackColor = Tmp_win->BackPixel;
 
     }
-  if((Tmp_win->flags & ICON_OURS)&&(Tmp_win->icon_pixmap_w != None))
+  if((IS_ICON_OURS(Tmp_win))&&(Tmp_win->icon_pixmap_w != None))
     XSetWindowBackground(dpy,Tmp_win->icon_pixmap_w,
 			 BackColor);
   if(Tmp_win->icon_w != None)
@@ -323,7 +323,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
       XClearWindow(dpy,Tmp_win->icon_w);
     }
 
-  if((Tmp_win->iconPixmap != None)&&(!(Tmp_win->flags & SHAPED_ICON)))
+  if((Tmp_win->iconPixmap != None)&&(!(IS_ICON_SHAPED(Tmp_win))))
     RelieveRectangle(dpy,Tmp_win->icon_pixmap_w,0,0,
 	             Tmp_win->icon_p_width - 1, Tmp_win->icon_p_height - 1,
 	             Relief,Shadow,2);
@@ -367,7 +367,7 @@ void DrawIconWindow(FvwmWindow *Tmp_win)
 void RedoIconName(FvwmWindow *Tmp_win)
 {
 
-  if(Tmp_win->flags & SUPPRESSICON)
+  if(IS_ICON_SUPPRESSED(Tmp_win))
     return;
 
   if (Tmp_win->icon_w == (int)NULL)
@@ -376,7 +376,7 @@ void RedoIconName(FvwmWindow *Tmp_win)
   Tmp_win->icon_t_width = XTextWidth(Scr.IconFont.font,Tmp_win->icon_name,
 				     strlen(Tmp_win->icon_name));
   /* clear the icon window, and trigger a re-draw via an expose event */
-  if (Tmp_win->flags & ICONIFIED)
+  if (IS_ICONIFIED(Tmp_win))
     XClearArea(dpy, Tmp_win->icon_w, 0, 0, 0, 0, True);
   return;
 }
@@ -402,7 +402,7 @@ void AutoPlace(FvwmWindow *t)
 
   /* New! Put icon in same page as the center of the window */
   /* Not a good idea for StickyIcons */
-  if((t->flags & StickyIcon)||(t->flags & STICKY))
+  if((IS_ICON_STICKY(t))||(IS_STICKY(t)))
     {
       base_x = 0;
       base_y = 0;
@@ -422,7 +422,7 @@ void AutoPlace(FvwmWindow *t)
       base_y=((t->frame_y+Scr.Vy+(t->frame_height>>1))/Scr.MyDisplayHeight)*
 	Scr.MyDisplayHeight - Scr.Vy;
     }
-  if(t->flags & ICON_MOVED)
+  if(IS_ICON_MOVED(t))
     {
       /* just make sure the icon is on this screen */
       t->icon_x_loc = t->icon_x_loc % Scr.MyDisplayWidth + base_x;
@@ -564,9 +564,9 @@ void AutoPlace(FvwmWindow *t)
           while((test_window != (FvwmWindow *)0)
                 &&(loc_ok == True)) { /* test overlap */
             if(test_window->Desk == t->Desk) {
-              if((test_window->flags&ICONIFIED) &&
-                 (!(test_window->flags&TRANSIENT) ||
-		  !test_window->tmpflags.IconifiedByParent) &&
+              if((IS_ICONIFIED(test_window)) &&
+                 (!IS_TRANSIENT(test_window) ||
+		  !IS_ICONIFIED_BY_PARENT(test_window)) &&
                  (test_window->icon_w||test_window->icon_pixmap_w) &&
                  (test_window != t)) {
                 tw=test_window->icon_p_width;
@@ -680,12 +680,12 @@ static void GetXPMFile(FvwmWindow *tmp_win)
   }
   tmp_win->icon_p_width = my_image.width;
   tmp_win->icon_p_height = my_image.height;
-  tmp_win->flags |= PIXMAP_OURS;
+  SET_PIXMAP_OURS(tmp_win, 1);
   tmp_win->iconDepth = Scr.depth;
 
 #ifdef SHAPE
   if (ShapesSupported && tmp_win->icon_maskPixmap)
-    tmp_win->flags |= SHAPED_ICON;
+    SET_ICON_SHAPED(tmp_win, 1);
 #endif
 
   XpmFreeXpmImage(&my_image);
@@ -723,7 +723,7 @@ void GetIconWindow(FvwmWindow *tmp_win)
   {
     if (tmp_win->wmhints->flags & IconMaskHint)
     {
-      tmp_win->flags |= SHAPED_ICON;
+      SET_ICON_SHAPED(tmp_win, 1);
       tmp_win->icon_maskPixmap = tmp_win->wmhints->icon_mask;
     }
   }
@@ -731,7 +731,7 @@ void GetIconWindow(FvwmWindow *tmp_win)
   /* Make sure that the window is a child of the root window ! */
   /* Olwais screws this up, maybe others do too! */
   XReparentWindow(dpy, tmp_win->icon_pixmap_w, Scr.Root, 0,0);
-  tmp_win->flags &= ~ICON_OURS;
+  SET_ICON_OURS(tmp_win, 0);
 }
 
 
@@ -754,7 +754,7 @@ void GetIconBitmap(FvwmWindow *tmp_win)
   {
     if (tmp_win->wmhints->flags & IconMaskHint)
     {
-      tmp_win->flags |= SHAPED_ICON;
+      SET_ICON_SHAPED(tmp_win, 1);
       tmp_win->icon_maskPixmap = tmp_win->wmhints->icon_mask;
     }
   }
@@ -781,10 +781,10 @@ void DeIconify(FvwmWindow *tmp_win)
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
       if ((t == tmp_win)||
-	  ((t->flags & TRANSIENT) &&(t->transientfor == tmp_win->w)))
+	  ((IS_TRANSIENT(t)) && (t->transientfor == tmp_win->w)))
 	{
-	  t->flags |= MAPPED;
-	  t->tmpflags.IconifiedByParent = 0;
+	  SET_MAPPED(t, 1);
+	  SET_ICONIFIED_BY_PARENT(t, 0);
 	  if(Scr.Hilite == t)
 	    SetBorder (t, False,True,True,None);
 
@@ -807,18 +807,19 @@ void DeIconify(FvwmWindow *tmp_win)
                             t->w, t->frame,
                             (unsigned long)t,
                             t->icon_x_loc, t->icon_y_loc,
-                            t->icon_p_width, t->icon_p_height+t->icon_w_height);
+                            t->icon_p_width,
+			    t->icon_p_height+t->icon_w_height);
           /* End AS */
 	  XMapWindow(dpy, t->w);
 	  if(t->Desk == Scr.CurrentDesk)
 	    {
 	      XMapWindow(dpy, t->frame);
-	      t->flags |= MAP_PENDING;
+	      SET_MAP_PENDING(t, 1);
 	    }
 	  XMapWindow(dpy, t->Parent);
 	  SetMapStateProp(t, NormalState);
-	  t->flags &= ~ICONIFIED;
-	  t->flags &= ~ICON_UNMAPPED;
+	  SET_ICONIFIED(t, 0);
+	  SET_ICON_UNMAPPED(t, 0);
 	  /* Need to make sure the border is colored correctly,
 	   * in case it was stuck or unstuck while iconified. */
 	  tmp = Scr.Hilite;
@@ -831,7 +832,7 @@ void DeIconify(FvwmWindow *tmp_win)
 
   RaiseWindow(tmp_win); /* moved dje */
 
-  if(tmp_win->flags & ClickToFocus)
+  if(HAS_CLICK_FOCUS(tmp_win))
     FocusOn(tmp_win,TRUE);
 
   return;
@@ -854,8 +855,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   XGetWindowAttributes(dpy, tmp_win->w, &winattrs);
   eventMask = winattrs.your_event_mask;
 
-  if((tmp_win == Scr.Hilite)&&
-     (tmp_win->flags & ClickToFocus)&&(tmp_win->next))
+  if((tmp_win == Scr.Hilite)&&(HAS_CLICK_FOCUS(tmp_win))&&(tmp_win->next))
     {
       SetFocus(tmp_win->next->w,tmp_win->next,1);
     }
@@ -864,14 +864,13 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   /* iconify transients first */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
-      if ((t==tmp_win)||
-	  ((t->flags & TRANSIENT) && (t->transientfor == tmp_win->w)))
+      if ((t==tmp_win)||((IS_TRANSIENT(t)) && (t->transientfor == tmp_win->w)))
 	{
 	  /*
 	   * Prevent the receipt of an UnmapNotify, since that would
 	   * cause a transition to the Withdrawn state.
 	   */
-	  t->flags &= ~MAPPED;
+	  SET_MAPPED(t, 0);
 	  XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
           XUnmapWindow(dpy, t->w);
           XSelectInput(dpy, t->w, eventMask);
@@ -886,8 +885,9 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 	  SetBorder (t, False,False,False,None);
 	  if(t != tmp_win)
 	    {
-	      t->flags |= ICONIFIED|ICON_UNMAPPED;
-	      t->tmpflags.IconifiedByParent = 1;
+	      SET_ICONIFIED(t, 1);
+	      SET_ICON_UNMAPPED(t, 1);
+	      SET_ICONIFIED_BY_PARENT(t, 1);
 
 	      BroadcastPacket(M_ICONIFY, 7,
                               t->w, t->frame,
@@ -900,7 +900,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
 	} /* if */
     } /* for */
   if (tmp_win->icon_w == None) {
-    if(tmp_win->flags & ICON_MOVED)
+    if(IS_ICON_MOVED(tmp_win))
       CreateIconWindow(tmp_win,tmp_win->icon_x_loc,tmp_win->icon_y_loc);
     else
 	CreateIconWindow(tmp_win, def_x, def_y);
@@ -916,13 +916,12 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   }
 
 #ifdef SESSION
-  if (!((tmp_win->flags & STARTICONIC) &&
-     (tmp_win->flags & ICON_MOVED)))
+  if (!(DO_START_ICONIC(tmp_win) && IS_ICON_MOVED(tmp_win)))
 #endif
   AutoPlace(tmp_win);
 
-  tmp_win->flags |= ICONIFIED;
-  tmp_win->flags &= ~ICON_UNMAPPED;
+  SET_ICONIFIED(tmp_win, 1);
+  SET_ICON_UNMAPPED(tmp_win, 0);
   BroadcastPacket(M_ICONIFY, 11,
                   tmp_win->w, tmp_win->frame,
                   (unsigned long)tmp_win,
@@ -937,8 +936,7 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
 
 #ifdef SESSION
-  if (!((tmp_win->flags & STARTICONIC) &&
-     (tmp_win->flags & ICON_MOVED)))
+  if (!(DO_START_ICONIC(tmp_win) && IS_ICON_MOVED(tmp_win)))
 #endif
   LowerWindow(tmp_win);
   if(tmp_win->Desk == Scr.CurrentDesk)
@@ -949,13 +947,13 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
       if(tmp_win->icon_pixmap_w != None)
 	XMapWindow(dpy, tmp_win->icon_pixmap_w);
     }
-  if((tmp_win->flags & ClickToFocus)||(tmp_win->flags & SloppyFocus))
+  if(HAS_CLICK_FOCUS(tmp_win) || HAS_SLOPPY_FOCUS(tmp_win))
     {
       if (tmp_win == Scr.Focus)
 	{
 	  if(Scr.PreviousFocus == Scr.Focus)
 	    Scr.PreviousFocus = NULL;
-	  if((tmp_win->flags & ClickToFocus)&&(tmp_win->next))
+	  if(HAS_CLICK_FOCUS(tmp_win) && tmp_win->next)
 	    SetFocus(tmp_win->next->w, tmp_win->next,1);
 	  else
 	    {

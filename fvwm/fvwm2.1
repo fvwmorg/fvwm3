@@ -1606,11 +1606,18 @@ Causes the module which was invoked with name \fIname\fP to be killed.
 \fIname\fP may include wild-cards.
 
 
-.IP "Layer \fIarg1\fP [ \fIarg2\fP ]"
-puts the current window in a new layer. The arguments are interpreted
-in the same way as the arguments to the Desk command. As a special case,
-Layer 0 -1 puts the window in its "default" layer, ie the layer it was
-initially in.
+.IP "Layer [ [ \fIarg1\fP|\fIdefault\fP [ \fIarg2\fP ]"
+Puts the current window in a new layer.
+
+If \fIarg1\fP is non zero then the next layer will be the
+current layer number plus \fIarg1\fP.
+
+If \fIarg1\fP is zero then the new layer will be \fIarg2\fP.
+(If \fIarg2\fP is not present, then the command has no effect.)
+
+As a special case, 'Layer deafult' puts the window in its default
+layer, i.e. the layer it was initially in. The same happes if no
+or invalid arguments are specified.
 
 
 .IP "Lower"

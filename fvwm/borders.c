@@ -135,10 +135,10 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #endif
 
     /* set the keyboard focus */
-    if((Mapped)&&(t->flags&MAPPED)&&(Scr.Hilite != t))
+    if((Mapped)&&IS_MAPPED(t)&&(Scr.Hilite != t))
       w = t->w;
-    else if((t->flags&ICONIFIED)&&
-            (Scr.Hilite !=t)&&(!(t->flags &SUPPRESSICON)))
+    else if(IS_ICONIFIED(t)&&
+            (Scr.Hilite !=t)&&(!IS_ICON_SUPPRESSED(t)))
       w = t->icon_w;
     Scr.Hilite = t;
 
@@ -168,7 +168,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 
     TextColor =t->TextPixel;
     BackPixmap = Scr.light_gray_pixmap;
-    if(t->flags & STICKY)
+    if(IS_STICKY(t))
       BackPixmap = Scr.sticky_gray_pixmap;
     BackColor = t->BackPixel;
     Globalgcv.foreground = t->ReliefPixel;
@@ -182,11 +182,11 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   }
 
   /* MWMBorder style means thin 3d effects */
-  rwidth = ((t->flags & MWMBorders) ? 1 : 2);
+  rwidth = (HAS_MWM_BORDER(t) ? 1 : 2);
 
-  shaded =  t->buttons & WSHADE;
+  shaded = IS_SHADED(t);
 
-  if(t->flags & ICONIFIED)
+  if(IS_ICONIFIED(t))
   {
     DrawIconWindow(t);
     return;
@@ -226,7 +226,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 #endif
   }
 
-  if(t->flags & TITLE)
+  if(HAS_TITLE(t))
   {
     ChangeWindowColor(t->title_w,valuemask);
     for(i=0;i<Scr.nr_left_buttons;++i)
@@ -381,7 +381,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
       GC rgc,sgc;
 
       /* change this after GSFR, won't depend on MWMButtons */
-      if(!(t->flags & MWMButtons)&&(PressedW == t->frame)) {
+      if(!HAS_MWM_BUTTONS(t)&&(PressedW == t->frame)) {
         sgc=ReliefGC;
         rgc=ShadowGC;
       } else {
@@ -415,9 +415,9 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
                            t->boundary_width - 1, t->boundary_width - 1,
                            t->frame_width - (t->boundary_width * 2 ) + 1,
                            height,
-                           sgc, (t->flags & MWMBorders) ? rgc : sgc, 1);
+                           sgc, HAS_MWM_BORDER(t) ? rgc : sgc, 1);
           /* draw the rest of FvwmBorder Inset */
-          if (!(t->flags & MWMBorders))
+          if (!HAS_MWM_BORDER(t))
             RelieveRectangle(dpy, t->frame,
                              t->boundary_width - 2, t->boundary_width - 2,
                              t->frame_width - (t->boundary_width * 2) + 4,
@@ -426,7 +426,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
         }
 
         /* draw the outside relief */
-        if (t->flags & MWMBorders)
+        if (HAS_MWM_BORDER(t))
           RelieveRectangle(dpy, t->frame,
                            0, 0, t->frame_width - 1, t->frame_height - 1,
                            rgc, sgc, 2);
@@ -440,7 +440,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
         }
 
         /* draw the handles as eight marks rectangles around the border */
-        if ((t->flags & BORDER) && (t->boundary_width > 2))
+        if (HAS_BORDER(t) && (t->boundary_width > 2))
 #ifdef BORDERSTYLE
         if (!(borderflags & HiddenHandles))
 #endif
@@ -549,7 +549,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
         /* undocumented dependancy on MWMbuttons !!!
            MWMButtons style makes the border undepressable */
         /* GSFR candidate */
-        if((t->flags & BORDER) && !(t->flags & MWMButtons)) {
+        if(HAS_BORDER(t) && !HAS_MWM_BUTTONS(t)) {
           if (PressedW == t->sides[0]) { /* top */
             RelieveRectangle(dpy, t->frame,
                              t->corner_width, 1,
@@ -558,13 +558,15 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->sides[1]) { /* right */
             RelieveRectangle(dpy, t->frame,
-                             t->frame_width - t->boundary_width + rwidth - 1, t->corner_width,
+                             t->frame_width - t->boundary_width + rwidth - 1,
+			     t->corner_width,
                              t->boundary_width - 2,
                              t->frame_height - 2 * t->corner_width - 1,
                              sgc, rgc, rwidth);
           } else if (PressedW == t->sides[2]) { /* bottom */
             RelieveRectangle(dpy, t->frame,
-                             t->corner_width, t->frame_height - t->boundary_width + rwidth - 1,
+                             t->corner_width,
+			     t->frame_height - t->boundary_width + rwidth - 1,
                              t->frame_width - 2 * t->corner_width - 1,
                              t->boundary_width - 2,
                              sgc, rgc, rwidth);
@@ -636,139 +638,139 @@ void DrawButton(FvwmWindow *t, Window win, int w, int h,
 		ButtonFace *bf, GC ReliefGC, GC ShadowGC,
 		Boolean inverted, int stateflags)
 {
-    register int type = bf->style & ButtonFaceTypeMask;
+  register int type = bf->style & ButtonFaceTypeMask;
 #ifdef PIXMAP_BUTTONS
-    Picture *p;
-    int border = 0;
-    int width, height, x, y;
+  Picture *p;
+  int border = 0;
+  int width, height, x, y;
 #endif
 
-    switch (type)
+  switch (type)
     {
     case SimpleButton:
-	break;
+      break;
 
     case SolidButton:
-	XSetWindowBackground(dpy, win, bf->u.back);
-	flush_expose(win);
-	XClearWindow(dpy,win);
-	break;
+      XSetWindowBackground(dpy, win, bf->u.back);
+      flush_expose(win);
+      XClearWindow(dpy,win);
+      break;
 
 #ifdef VECTOR_BUTTONS
     case VectorButton:
-	if((t->flags & MWMButtons) &&
-	   ((stateflags & MWMDecorMaximize && t->flags & MAXIMIZED) ||
-	    (stateflags & MWMDecorShade && t->buttons & WSHADE)))
-	    DrawLinePattern(win,
-			    ShadowGC, ReliefGC,
-			    &bf->vector,
-			    w, h);
-	else
-	    DrawLinePattern(win,
-			    ReliefGC, ShadowGC,
-			    &bf->vector,
-			    w, h);
-	break;
+      if(HAS_MWM_BUTTONS(t) &&
+	 ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
+	  (stateflags & MWMDecorShade && IS_SHADED(t))))
+	DrawLinePattern(win, ShadowGC, ReliefGC, &bf->vector, w, h);
+      else
+	DrawLinePattern(win, ReliefGC, ShadowGC, &bf->vector, w, h);
+      break;
 #endif /* VECTOR_BUTTONS */
 
 #ifdef PIXMAP_BUTTONS
 #ifdef MINI_ICONS
     case MiniIconButton:
     case PixmapButton:
-	if (type == PixmapButton)
-	    p = bf->u.p;
-	else {
-	    if (!t->mini_icon)
-		break;
-	    p = t->mini_icon;
-	}
+      if (type == PixmapButton)
+	p = bf->u.p;
+      else {
+	if (!t->mini_icon)
+	  break;
+	p = t->mini_icon;
+      }
 #else
     case PixmapButton:
-	p = bf->u.p;
+      p = bf->u.p;
 #endif /* MINI_ICONS */
-	if (bf->style & FlatButton)
-	    border = 0;
-	else
-	    border = t->flags & MWMBorders ? 1 : 2;
-	width = w - border * 2; height = h - border * 2;
+      if (bf->style & FlatButton)
+	border = 0;
+      else
+	border = HAS_MWM_BORDER(t) ? 1 : 2;
+      width = w - border * 2; height = h - border * 2;
 
+      x = border;
+      if (bf->style&HOffCenter) {
+	if (bf->style&HRight)
+	  x += (int)(width - p->width);
+      } else
+	x += (int)(width - p->width) / 2;
+
+      y = border;
+      if (bf->style&VOffCenter) {
+	if (bf->style&VBottom)
+	  y += (int)(height - p->height);
+      } else
+	y += (int)(height - p->height) / 2;
+
+      if (x < border)
 	x = border;
-	if (bf->style&HOffCenter) {
-	    if (bf->style&HRight)
-		x += (int)(width - p->width);
-	} else
-	    x += (int)(width - p->width) / 2;
-
+      if (y < border)
 	y = border;
-	if (bf->style&VOffCenter) {
-	    if (bf->style&VBottom)
-		y += (int)(height - p->height);
-	} else
-	    y += (int)(height - p->height) / 2;
+      if (width > p->width)
+	width = p->width;
+      if (height > p->height)
+	height = p->height;
+      if (width > w - x - border)
+	width = w - x - border;
+      if (height > h - y - border)
+	height = h - y - border;
 
-	if (x < border) x = border;
-	if (y < border) y = border;
-	if (width > p->width) width = p->width;
-	if (height > p->height) height = p->height;
-	if (width > w - x - border) width = w - x - border;
-	if (height > h - y - border) height = h - y - border;
+      XSetClipMask(dpy, Scr.TransMaskGC, p->mask);
+      XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
+      XCopyArea(dpy, p->picture, win, Scr.TransMaskGC,
+		0, 0, width, height, x, y);
+      break;
 
-	XSetClipMask(dpy, Scr.TransMaskGC, p->mask);
-	XSetClipOrigin(dpy, Scr.TransMaskGC, x, y);
-	XCopyArea(dpy, p->picture, win, Scr.TransMaskGC,
-		  0, 0, width, height, x, y);
-	break;
-
-   case TiledPixmapButton:
-	XSetWindowBackgroundPixmap(dpy, win, bf->u.p->picture);
-	flush_expose(win);
-	XClearWindow(dpy,win);
-	break;
+    case TiledPixmapButton:
+      XSetWindowBackgroundPixmap(dpy, win, bf->u.p->picture);
+      flush_expose(win);
+      XClearWindow(dpy,win);
+      break;
 #endif /* PIXMAP_BUTTONS */
 
 #ifdef GRADIENT_BUTTONS
     case HGradButton:
     case VGradButton:
     {
-	XRectangle bounds;
-	bounds.x = bounds.y = 0;
-	bounds.width = w;
-	bounds.height = h;
-	flush_expose(win);
+      XRectangle bounds;
+      bounds.x = bounds.y = 0;
+      bounds.width = w;
+      bounds.height = h;
+      flush_expose(win);
 
 #ifdef PIXMAP_BUTTONS
-	XSetClipMask(dpy, Scr.TransMaskGC, None);
+      XSetClipMask(dpy, Scr.TransMaskGC, None);
 #endif
-	if (type == HGradButton) {
-	    register int i = 0, dw = bounds.width
-		/ bf->u.grad.npixels + 1;
-	    while (i < bf->u.grad.npixels)
-	    {
-		unsigned short x = i * bounds.width / bf->u.grad.npixels;
-		XSetForeground(dpy, Scr.TransMaskGC, bf->u.grad.pixels[ i++ ]);
-		XFillRectangle(dpy, win, Scr.TransMaskGC,
-			       bounds.x + x, bounds.y,
-			       dw, bounds.height);
-	    }
-	} else {
-	    register int i = 0, dh = bounds.height
-		/ bf->u.grad.npixels + 1;
-	    while (i < bf->u.grad.npixels)
-	    {
-		unsigned short y = i * bounds.height / bf->u.grad.npixels;
-		XSetForeground(dpy, Scr.TransMaskGC, bf->u.grad.pixels[ i++ ]);
-		XFillRectangle(dpy, win, Scr.TransMaskGC,
-			       bounds.x, bounds.y + y,
-			       bounds.width, dh);
-	    }
-	}
+      if (type == HGradButton) {
+	register int i = 0, dw = bounds.width
+	  / bf->u.grad.npixels + 1;
+	while (i < bf->u.grad.npixels)
+	  {
+	    unsigned short x = i * bounds.width / bf->u.grad.npixels;
+	    XSetForeground(dpy, Scr.TransMaskGC, bf->u.grad.pixels[ i++ ]);
+	    XFillRectangle(dpy, win, Scr.TransMaskGC,
+			   bounds.x + x, bounds.y,
+			   dw, bounds.height);
+	  }
+      } else {
+	register int i = 0, dh = bounds.height
+	  / bf->u.grad.npixels + 1;
+	while (i < bf->u.grad.npixels)
+	  {
+	    unsigned short y = i * bounds.height / bf->u.grad.npixels;
+	    XSetForeground(dpy, Scr.TransMaskGC, bf->u.grad.pixels[ i++ ]);
+	    XFillRectangle(dpy, win, Scr.TransMaskGC,
+			   bounds.x, bounds.y + y,
+			   bounds.width, dh);
+	  }
+      }
     }
     break;
 #endif /* GRADIENT_BUTTONS */
 
     default:
-	fvwm_msg(ERR,"DrawButton","unknown button type");
-	break;
+      fvwm_msg(ERR,"DrawButton","unknown button type");
+      break;
     }
 }
 
@@ -789,10 +791,10 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 
   if(!t)
     return;
-  if(!(t->flags & TITLE))
+  if(!HAS_TITLE(t))
     return;
 
-  rwidth = (t->flags & MWMBorders) ? 1 : 2;
+  rwidth = (HAS_MWM_BORDER(t)) ? 1 : 2;
 
   if (onoroff)
   {
@@ -924,7 +926,7 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
                      t->name, strlen(t->name));
   }
   /* now, draw lines in title bar if it's a sticky window */
-  if(t->flags & STICKY || Scr.go.StipledTitles)
+  if(IS_STICKY(t) || Scr.go.StipledTitles)
   {
     /* an odd number of lines every 4 pixels */
     int num = (int)(t->title_height/8) * 2 - 1;
@@ -1004,7 +1006,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
   int cx,cy,i;
   Bool Resized = False, Moved = False;
   int xwidth,ywidth,left,right;
-  int shaded = tmp_win->buttons & WSHADE;
+  int shaded = IS_SHADED(tmp_win);
 
 #ifdef FVWM_DEBUG_MSGS
   fvwm_msg(DBG,"SetupFrame",
@@ -1013,7 +1015,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
 #endif
 
   /* if windows is not being maximized, save size in case of maximization */
-  if (!(tmp_win->flags & MAXIMIZED))
+  if (!IS_MAXIMIZED(tmp_win))
   {
     /* store orig values in absolute coords */
     tmp_win->orig_x = x + Scr.Vx;
@@ -1041,7 +1043,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
     left = tmp_win->nr_left_buttons;
     right = tmp_win->nr_right_buttons;
 
-    if (tmp_win->flags & TITLE)
+    if (HAS_TITLE(tmp_win))
       tmp_win->title_height = GetDecor(tmp_win,TitleHeight);
 
     tmp_win->title_width = w - (left + right) * tmp_win->title_height
@@ -1051,7 +1053,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
     if(tmp_win->title_width < 1)
       tmp_win->title_width = 1;
 
-    if (tmp_win->flags & TITLE)
+    if (HAS_TITLE(tmp_win))
     {
       xwcm = CWWidth | CWX | CWY | CWHeight;
       tmp_win->title_x = tmp_win->boundary_width+
@@ -1106,7 +1108,7 @@ void SetupFrame(FvwmWindow *tmp_win,int x,int y,int w,int h,Bool sendEvent,
       }
     }
 
-    if(tmp_win->flags & BORDER)
+    if(HAS_BORDER(tmp_win))
     {
       tmp_win->corner_width = GetDecor(tmp_win,TitleHeight) +
         tmp_win->boundary_width ;

@@ -66,7 +66,7 @@ void FocusOn(FvwmWindow *t,Bool FocusByMouse)
   }
 
 #ifndef NON_VIRTUAL
-  if(t->flags & ICONIFIED)
+  if(IS_ICONIFIED(t))
   {
     cx = t->icon_xl_loc + t->icon_w_width/2;
     cy = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2;
@@ -83,7 +83,7 @@ void FocusOn(FvwmWindow *t,Bool FocusByMouse)
   MoveViewport(dx,dy,True);
 #endif
 
-  if(t->flags & ICONIFIED)
+  if(IS_ICONIFIED(t))
   {
     x = t->icon_xl_loc + t->icon_w_width/2;
     y = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2;
@@ -106,7 +106,7 @@ void FocusOn(FvwmWindow *t,Bool FocusByMouse)
      (t->frame_x >Scr.MyDisplayWidth)||(t->frame_y>Scr.MyDisplayHeight))
   {
     SetupFrame(t,0,0,t->frame_width, t->frame_height,False,False);
-    if(!(t->flags & ClickToFocus))
+    if(!HAS_CLICK_FOCUS(t))
       XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, 2,2);
   }
   UngrabEm();
@@ -128,7 +128,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
 #endif
   int x,y;
 
-  if(t == (FvwmWindow *)0 || (t->flags & ICONIFIED && t->icon_w == None))
+  if(t == (FvwmWindow *)0 || (IS_ICONIFIED(t) && t->icon_w == None))
     return;
 
   if(t->Desk != Scr.CurrentDesk)
@@ -137,7 +137,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
   }
 
 #ifndef NON_VIRTUAL
-  if(t->flags & ICONIFIED)
+  if(IS_ICONIFIED(t))
   {
     cx = t->icon_xl_loc + t->icon_w_width/2;
     cy = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2;
@@ -154,7 +154,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
   MoveViewport(dx,dy,True);
 #endif
 
-  if(t->flags & ICONIFIED)
+  if(IS_ICONIFIED(t))
   {
     x = t->icon_xl_loc + t->icon_w_width/2;
     y = t->icon_y_loc + t->icon_p_height + ICON_HEIGHT/2;
@@ -221,8 +221,8 @@ void Maximize(F_CMD_ARGS)
     return;
   }
   toggle = ParseToggleArgument(action, &action, -1, 0);
-  if (((toggle == 1) && (tmp_win->flags & MAXIMIZED)) ||
-      ((toggle == 0) && !(tmp_win->flags & MAXIMIZED)))
+  if ((toggle == 1 && IS_MAXIMIZED(tmp_win)) ||
+      (toggle == 0 && !IS_MAXIMIZED(tmp_win)))
     return;
 
   /* parse first parameter */
@@ -255,9 +255,9 @@ void Maximize(F_CMD_ARGS)
       val2_unit = Scr.MyDisplayHeight;
     }
 
-  if (tmp_win->flags & MAXIMIZED)
+  if (IS_MAXIMIZED(tmp_win))
   {
-    tmp_win->flags &= ~MAXIMIZED;
+    SET_MAXIMIZED(tmp_win, 0);
     /* Unmaximizing is slightly tricky since we want the window to
      * stay on the same page, even if we have moved to a different page
      * in the meantime. the orig values are absolute! */
@@ -280,7 +280,7 @@ void Maximize(F_CMD_ARGS)
 	new_y = tmp_win->orig_y - Scr.Vy;
       }
     new_width = tmp_win->orig_wd;
-    if (tmp_win->buttons & WSHADE)
+    if (IS_SHADED(tmp_win))
       new_height = tmp_win->title_height + tmp_win->boundary_width;
     else
       new_height = tmp_win->orig_ht;
@@ -289,7 +289,7 @@ void Maximize(F_CMD_ARGS)
   }
   else
   {
-    if (tmp_win->buttons & WSHADE)
+    if (IS_SHADED(tmp_win))
       new_height = tmp_win->orig_ht;
     else
       new_height = tmp_win->frame_height;
@@ -326,10 +326,10 @@ void Maximize(F_CMD_ARGS)
       new_height = Scr.MyDisplayHeight-2;
       new_width = Scr.MyDisplayWidth-2;
     }
-    tmp_win->flags |= MAXIMIZED;
+    SET_MAXIMIZED(tmp_win, 1);
     ConstrainSize (tmp_win, &new_width, &new_height, False, 0, 0);
     tmp_win->maximized_ht = new_height;
-    if (tmp_win->buttons & WSHADE)
+    if (IS_SHADED(tmp_win))
       new_height = tmp_win->frame_height;
     SetupFrame(tmp_win,new_x,new_y,new_width,new_height,TRUE,False);
     /*   SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);*/
@@ -353,11 +353,11 @@ void MaximizeHeight(FvwmWindow *win, int win_width, int win_x, int *win_height,
 
   for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
     if ((cwin == win) ||
-	((cwin->Desk != win->Desk) && (!(cwin->flags & STICKY)))) {
+	((cwin->Desk != win->Desk) && (!IS_STICKY(cwin)))) {
       continue;
     }
-    if (cwin->flags & ICONIFIED) {
-      if(cwin->icon_w == None || cwin->flags & ICON_UNMAPPED)
+    if (IS_ICONIFIED(cwin)) {
+      if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
 	continue;
       x21 = cwin->icon_x_loc;
       y21 = cwin->icon_y_loc;
@@ -400,11 +400,11 @@ void MaximizeWidth(FvwmWindow *win, int *win_width, int *win_x, int win_height,
 
   for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
     if ((cwin == win) ||
-	((cwin->Desk != win->Desk) && (!(cwin->flags & STICKY)))) {
+	((cwin->Desk != win->Desk) && (!IS_STICKY(cwin)))) {
       continue;
     }
-    if (cwin->flags & ICONIFIED) {
-      if(cwin->icon_w == None || cwin->flags & ICON_UNMAPPED)
+    if (IS_ICONIFIED(cwin)) {
+      if(cwin->icon_w == None || IS_ICON_UNMAPPED(cwin))
 	continue;
       x21 = cwin->icon_x_loc;
       y21 = cwin->icon_y_loc;
@@ -458,7 +458,7 @@ void WindowShade(F_CMD_ARGS)
   if (tmp_win == NULL)
     return;
 
-  if (!(tmp_win->flags & TITLE)) {
+  if (!HAS_TITLE(tmp_win)) {
     XBell(dpy, 0);
     return;
   }
@@ -477,7 +477,7 @@ void WindowShade(F_CMD_ARGS)
     }
   }
   if (toggle == -1)
-    toggle = (tmp_win->buttons & WSHADE) ? 0 : 1;
+    toggle = (IS_SHADED(tmp_win)) ? 0 : 1;
 
   /* calcuate the step size */
   if (shade_anim_steps > 0)
@@ -487,13 +487,13 @@ void WindowShade(F_CMD_ARGS)
   if (step <= 0)  /* We don't want an endless loop, do we? */
     step = 1;
 
-  if ((tmp_win->buttons & WSHADE) && toggle == 0)
+  if ((IS_SHADED(tmp_win)) && toggle == 0)
   {
     /* unshade window */
-    tmp_win->buttons &= ~WSHADE;
+    SET_SHADED(tmp_win, 0);
     new_x = tmp_win->frame_x;
     new_y = tmp_win->frame_y;
-    if (tmp_win->flags & MAXIMIZED)
+    if (IS_MAXIMIZED(tmp_win))
       new_height = tmp_win->maximized_ht;
     else
       new_height = tmp_win->orig_ht;
@@ -534,19 +534,19 @@ void WindowShade(F_CMD_ARGS)
     BroadcastPacket(M_DEWINDOWSHADE, 3, tmp_win->w, tmp_win->frame,
                     (unsigned long)tmp_win);
   }
-  else if (!(tmp_win->buttons & WSHADE) && toggle == 1)
+  else if (!IS_SHADED(tmp_win) && toggle == 1)
   {
-  /* shade window */
-  tmp_win->buttons |= WSHADE;
+    /* shade window */
+    SET_SHADED(tmp_win, 1);
 
-  if (shade_anim_steps != 0) {
-    XLowerWindow(dpy, tmp_win->w);
-    h = tmp_win->frame_height;
-    y = 0;
-    old_h = tmp_win->frame_height;
-    while (h > tmp_win->title_height+tmp_win->boundary_width) {
-      if (Scr.go.WindowShadeScrolls)
-        XMoveWindow(dpy, tmp_win->w, 0, y);
+    if (shade_anim_steps != 0) {
+      XLowerWindow(dpy, tmp_win->w);
+      h = tmp_win->frame_height;
+      y = 0;
+      old_h = tmp_win->frame_height;
+      while (h > tmp_win->title_height+tmp_win->boundary_width) {
+	if (Scr.go.WindowShadeScrolls)
+	  XMoveWindow(dpy, tmp_win->w, 0, y);
         XResizeWindow(dpy, tmp_win->frame, tmp_win->frame_width, h);
         XResizeWindow(dpy, tmp_win->Parent,
                       tmp_win->frame_width - 2 * tmp_win->boundary_width,
@@ -554,7 +554,7 @@ void WindowShade(F_CMD_ARGS)
                           - tmp_win->title_height, 1));
         tmp_win->frame_height = h;
         /* way too flickery
-        SetBorder(tmp_win, tmp_win == Scr.Hilite, True, True, tmp_win->frame);
+	SetBorder(tmp_win, tmp_win == Scr.Hilite, True, True, tmp_win->frame);
         */
         BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
         FlushOutputQueues();
@@ -777,9 +777,9 @@ void iconify_function(F_CMD_ARGS)
       }
   }
   if (toggle == -1)
-    toggle = (tmp_win->flags & ICONIFIED) ? 0 : 1;
+    toggle = (IS_ICONIFIED(tmp_win)) ? 0 : 1;
 
-  if (tmp_win->flags & ICONIFIED)
+  if (IS_ICONIFIED(tmp_win))
   {
     if (toggle == 0)
       DeIconify(tmp_win);
@@ -844,7 +844,7 @@ void delete_function(F_CMD_ARGS)
     return;
   }
 
-  if (tmp_win->flags & DoesWmDeleteWindow)
+  if (WM_DELETES_WINDOW(tmp_win))
   {
     send_clientmessage (dpy, tmp_win->w, _XA_WM_DELETE_WINDOW, CurrentTime);
     return;
@@ -865,7 +865,7 @@ void close_function(F_CMD_ARGS)
     return;
   }
 
-  if (tmp_win->flags & DoesWmDeleteWindow)
+  if (WM_DELETES_WINDOW(tmp_win))
   {
     send_clientmessage (dpy, tmp_win->w, _XA_WM_DELETE_WINDOW, CurrentTime);
     return;
@@ -1011,23 +1011,23 @@ void stick_function(F_CMD_ARGS)
     return;
 
   toggle = ParseToggleArgument(action, &action, -1, 0);
-  if ((toggle == 1 && (tmp_win->flags & STICKY)) ||
-      (toggle == 0 && !(tmp_win->flags & STICKY)))
+  if ((toggle == 1 && IS_STICKY(tmp_win)) ||
+      (toggle == 0 && !IS_STICKY(tmp_win)))
     return;
 
-  if(tmp_win->flags & STICKY)
+  if(IS_STICKY(tmp_win))
   {
-    tmp_win->flags &= ~STICKY;
+    SET_STICKY(tmp_win, 0);
   }
   else
   {
     if (tmp_win->Desk != Scr.CurrentDesk)
       do_move_window_to_desk(tmp_win, Scr.CurrentDesk);
-    tmp_win->flags |= STICKY;
+    SET_STICKY(tmp_win, 1);
     move_window_doit(eventp, w, tmp_win, context, "", Module, FALSE, TRUE);
     /* move_window_doit resets the STICKY flag, so we must set it after the
      * call! */
-    tmp_win->flags |= STICKY;
+    SET_STICKY(tmp_win, 1);
   }
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
   SetTitleBar(tmp_win,(Scr.Hilite==tmp_win),True);
@@ -1138,8 +1138,7 @@ void raiselower_func(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
 
-  if((tmp_win == Scr.LastWindowRaised)||
-     (tmp_win->flags & VISIBLE))
+  if(tmp_win == Scr.LastWindowRaised || IS_VISIBLE(tmp_win))
   {
     LowerWindow(tmp_win);
   }
@@ -1883,7 +1882,7 @@ void SetTitleStyle(F_CMD_ARGS)
 	    hi = Scr.Hilite;
 	    while(tmp)
 	    {
-		if (!(tmp->flags & TITLE)
+		if (!HAS_TITLE(tmp)
 #ifdef USEDECOR
 		    || (tmp->fl != fl)
 #endif
@@ -2078,7 +2077,7 @@ static void ApplyIconFont(void)
   {
     RedoIconName(tmp);
 
-    if(tmp->flags& ICONIFIED)
+    if(IS_ICONIFIED(tmp))
     {
       DrawIconWindow(tmp);
     }
@@ -2122,7 +2121,8 @@ void LoadIconFont(F_CMD_ARGS)
 
 static void ApplyWindowFont(FvwmDecor *fl)
 {
-  FvwmWindow *tmp,*hi;
+  FvwmWindow *tmp;
+  FvwmWindow *hi;
   int x,y,w,h,extra_height;
 
   fl->WindowFont.height =
@@ -2136,7 +2136,7 @@ static void ApplyWindowFont(FvwmDecor *fl)
   hi = Scr.Hilite;
   while(tmp)
   {
-    if (!(tmp->flags & TITLE)
+    if (!HAS_TITLE(tmp)
 #ifdef USEDECOR
 	|| (tmp->fl != fl)
 #endif
@@ -2778,7 +2778,7 @@ void ChangeDecor(F_CMD_ARGS)
     }
     old_height = tmp_win->fl->TitleHeight;
     tmp_win->fl = found;
-    extra_height = (tmp_win->flags & TITLE) ?
+    extra_height = (HAS_TITLE(tmp_win)) ?
       (old_height - tmp_win->fl->TitleHeight) : 0;
     x = tmp_win->frame_x;
     y = tmp_win->frame_y;
@@ -3253,7 +3253,7 @@ char *CreateFlagString(char *string, char **restptr)
     length = 0;
     while (*c != closeopt) {
       if (*c == 0) {
-	fvwm_msg(ERR, "CreateConditionMask",
+	fvwm_msg(ERR, "CreateFlagString",
 		 "Conditionals require closing parenthesis");
 	*restptr = NULL;
 	return NULL;
@@ -3285,24 +3285,16 @@ char *CreateFlagString(char *string, char **restptr)
  **********************************************************************/
 void FreeConditionMask(WindowConditionMask *mask)
 {
-  if (mask->needsName)
+  if (mask->my_flags.needs_name)
     free(mask->name);
-  else if (mask->needsNotName)
+  else if (mask->my_flags.needs_not_name)
     free(mask->name - 1);
 }
 
 /* Assign the default values for the window mask */
 void DefaultConditionMask(WindowConditionMask *mask)
 {
-  mask->name = NULL;
-  mask->needsCurrentDesk = 0;
-  mask->needsCurrentPage = 0;
-  mask->needsName = 0;
-  mask->needsNotName = 0;
-  mask->useCirculateHit = 0;
-  mask->useCirculateHitIcon = 0;
-  mask->onFlags = 0;
-  mask->offFlags = 0;
+  memset(mask, 0, sizeof(WindowConditionMask));
   mask->layer = -2; /* -2  means no layer condition, -1 means current */
 }
 
@@ -3326,39 +3318,69 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
   while (condition)
   {
     if (StrEquals(condition,"Iconic"))
-      mask->onFlags |= ICONIFIED;
+      {
+	SET_ICONIFIED(mask, 1);
+	SETM_ICONIFIED(mask, 1);
+      }
     else if(StrEquals(condition,"!Iconic"))
-      mask->offFlags |= ICONIFIED;
+      {
+	SET_ICONIFIED(mask, 0);
+	SETM_ICONIFIED(mask, 1);
+      }
     else if(StrEquals(condition,"Visible"))
-      mask->onFlags |= VISIBLE;
+      {
+	SET_VISIBLE(mask, 1);
+	SETM_VISIBLE(mask, 1);
+      }
     else if(StrEquals(condition,"!Visible"))
-      mask->offFlags |= VISIBLE;
+      {
+	SET_VISIBLE(mask, 0);
+	SETM_VISIBLE(mask, 1);
+      }
     else if(StrEquals(condition,"Sticky"))
-      mask->onFlags |= STICKY;
+      {
+	SET_STICKY(mask, 1);
+	SETM_STICKY(mask, 1);
+      }
     else if(StrEquals(condition,"!Sticky"))
-      mask->offFlags |= STICKY;
+      {
+	SET_STICKY(mask, 0);
+	SETM_STICKY(mask, 1);
+      }
     else if(StrEquals(condition,"Maximized"))
-      mask->onFlags |= MAXIMIZED;
+      {
+	SET_MAXIMIZED(mask, 1);
+	SETM_MAXIMIZED(mask, 1);
+      }
     else if(StrEquals(condition,"!Maximized"))
-      mask->offFlags |= MAXIMIZED;
+      {
+	SET_MAXIMIZED(mask, 0);
+	SETM_MAXIMIZED(mask, 1);
+      }
     else if(StrEquals(condition,"Transient"))
-      mask->onFlags |= TRANSIENT;
+      {
+	SET_TRANSIENT(mask, 1);
+	SETM_TRANSIENT(mask, 1);
+      }
     else if(StrEquals(condition,"!Transient"))
-      mask->offFlags |= TRANSIENT;
+      {
+	SET_TRANSIENT(mask, 0);
+	SETM_TRANSIENT(mask, 1);
+      }
     else if(StrEquals(condition,"CurrentDesk"))
-      mask->needsCurrentDesk = 1;
+      mask->my_flags.needs_current_desk = 1;
     else if(StrEquals(condition,"CurrentPage"))
     {
-      mask->needsCurrentDesk = 1;
-      mask->needsCurrentPage = 1;
+      mask->my_flags.needs_current_desk = 1;
+      mask->my_flags.needs_current_page = 1;
     }
     else if(StrEquals(condition,"CurrentPageAnyDesk") ||
 	    StrEquals(condition,"CurrentScreen"))
-      mask->needsCurrentPage = 1;
+      mask->my_flags.needs_current_page = 1;
     else if(StrEquals(condition,"CirculateHit"))
-      mask->useCirculateHit = 1;
+      mask->my_flags.use_circulate_hit = 1;
     else if(StrEquals(condition,"CirculateHitIcon"))
-      mask->useCirculateHitIcon = 1;
+      mask->my_flags.use_circulate_hit_icon = 1;
     else if (StrEquals(condition, "Layer"))
     {
        if (sscanf(tmp,"%d",&mask->layer))
@@ -3372,18 +3394,18 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
           mask->layer = -1; /* needs current layer */
        }
     }
-    else if(!mask->needsName && !mask->needsNotName)
+    else if(!mask->my_flags.needs_name && !mask->my_flags.needs_not_name)
     {
       /* only 1st name to avoid mem leak */
       mask->name = condition;
       condition = NULL;
       if (mask->name[0] == '!')
       {
-	mask->needsNotName = 1;
+	mask->my_flags.needs_not_name = 1;
 	mask->name++;
       }
       else
-	mask->needsName = 1;
+	mask->my_flags.needs_name = 1;
     }
 
     if (prev_condition)
@@ -3409,32 +3431,38 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
   Bool fMatchesResource;
   Bool fMatches;
 
+  if (cmp_masked_flags(&(fw->gsfr_flags), &(mask->gsfr_flags),
+		       &(mask->gsfr_flag_mask), sizeof(fw->gsfr_flags)) != 0)
+    return 0;
+
+  /*
   if ((mask->onFlags & fw->flags) != mask->onFlags)
     return 0;
 
   if ((mask->offFlags & fw->flags) != 0)
     return 0;
+  */
 
-  if (!mask->useCirculateHit && (fw->flags & CirculateSkip))
+  if (!mask->my_flags.use_circulate_hit && DO_SKIP_CIRCULATE(fw))
     return 0;
 
   /* This logic looks terribly wrong to me, but it was this way before so I
    * did not change it (domivogt (24-Dec-1998)) */
-  if (!mask->useCirculateHitIcon && fw->flags & ICONIFIED &&
-      fw->flags & CirculateSkipIcon)
+  if (!DO_SKIP_ICON_CIRCULATE(mask) && IS_ICONIFIED(fw) &&
+      DO_SKIP_ICON_CIRCULATE(fw))
     return 0;
 
-  if (fw->flags & ICONIFIED && fw->flags & TRANSIENT &&
-      fw->tmpflags.IconifiedByParent)
+  if (IS_ICONIFIED(fw) && IS_TRANSIENT(fw) && IS_ICONIFIED_BY_PARENT(fw))
     return 0;
 
-  if (mask->needsCurrentDesk && fw->Desk != Scr.CurrentDesk)
+  if (mask->my_flags.needs_current_desk && fw->Desk != Scr.CurrentDesk)
     return 0;
 
-  if (mask->needsCurrentPage && !(fw->frame_x < Scr.MyDisplayWidth &&
-				  fw->frame_y < Scr.MyDisplayHeight &&
-				  fw->frame_x + fw->frame_width > 0 &&
-				  fw->frame_y + fw->frame_height > 0))
+  if (mask->my_flags.needs_current_page &&
+      !(fw->frame_x < Scr.MyDisplayWidth &&
+	fw->frame_y < Scr.MyDisplayHeight &&
+	fw->frame_x + fw->frame_width > 0 &&
+	fw->frame_y + fw->frame_height > 0))
     return 0;
 
   /* Yes, I know this could be shorter, but it's hard to understand then */
@@ -3447,10 +3475,10 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
   fMatches = (fMatchesName || fMatchesIconName || fMatchesClass ||
 	      fMatchesResource);
 
-  if (mask->needsName && !fMatches)
+  if (mask->my_flags.needs_name && !fMatches)
     return 0;
 
-  if (mask->needsNotName && fMatches)
+  if (mask->my_flags.needs_not_name && fMatches)
     return 0;
 
   if ((mask->layer == -1) && (fw->layer != Scr.Focus->layer))
@@ -3480,8 +3508,8 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
   flags = CreateFlagString(action, restofline);
   DefaultConditionMask(&mask);
   if (Direction == 0) { /* override for Current [] */
-    mask.useCirculateHit = 1;
-    mask.useCirculateHitIcon = 1;
+    mask.my_flags.use_circulate_hit = 1;
+    mask.my_flags.use_circulate_hit_icon = 1;
   }
   CreateConditionMask(flags, &mask);
   if (flags)
@@ -3606,8 +3634,8 @@ void AllFunc(F_CMD_ARGS)
   flags = CreateFlagString(action, &restofline);
   DefaultConditionMask(&mask);
   CreateConditionMask(flags, &mask);
-  mask.useCirculateHit = 1;
-  mask.useCirculateHitIcon = 1;
+  mask.my_flags.use_circulate_hit = 1;
+  mask.my_flags.use_circulate_hit_icon = 1;
 
   num = 0;
   for (t = Scr.FvwmRoot.next; t; t = t->next)
@@ -3637,7 +3665,7 @@ void AllFunc(F_CMD_ARGS)
 
 static void GetDirectionReference(FvwmWindow *w, int *x, int *y)
 {
-  if ((w->flags & ICONIFIED) != 0)
+  if (IS_ICONIFIED(w))
   {
     *x = w->icon_x_loc + w->icon_w_width / 2;
     *y = w->icon_y_loc + w->icon_w_height / 2;
@@ -3816,8 +3844,8 @@ void WindowIdFunc(F_CMD_ARGS)
     DefaultConditionMask(&mask);
 
     /* override for Current [] */
-    mask.useCirculateHit = True;
-    mask.useCirculateHitIcon = True;
+    mask.my_flags.use_circulate_hit = 1;
+    mask.my_flags.use_circulate_hit_icon = 1;
 
     CreateConditionMask(flags, &mask);
     free(flags);
@@ -4140,7 +4168,7 @@ void change_layer(F_CMD_ARGS)
 {
   int n, layer, val[2];
   FvwmWindow *t2, *next;
-  name_list styles;
+  char *token;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
@@ -4148,23 +4176,29 @@ void change_layer(F_CMD_ARGS)
   if(tmp_win == NULL)
     return;
 
-  n = GetIntegerArguments(action, NULL, val, 2);
-
-  layer = tmp_win->layer;
-  if ((n == 1) ||
-      ((n == 2) && (val[0] != 0)))
+  token = PeekToken(action, NULL);
+  if (StrEquals("default", token))
     {
-      layer += val[0];
-    }
-  else if ((n == 2) && (val[1] >= 0))
-    {
-      layer = val[1];
+      layer = tmp_win->default_layer;
     }
   else
     {
-      /* a hack: Layer 0 -1 goes back to the "default" layer */
-      LookInList (tmp_win, &styles);
-      layer = styles.layer;
+      n = GetIntegerArguments(action, NULL, val, 2);
+
+      layer = tmp_win->layer;
+      if ((n == 1) ||
+	  ((n == 2) && (val[0] != 0)))
+	{
+	  layer += val[0];
+	}
+      else if ((n == 2) && (val[1] >= 0))
+	{
+	  layer = val[1];
+	}
+      else
+	{
+	  layer = tmp_win->default_layer;
+	}
     }
 
   if (layer < 0)
@@ -4184,7 +4218,7 @@ void change_layer(F_CMD_ARGS)
       for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
 	{
 	  next = t2->stack_next;
-	  if ((t2->flags & TRANSIENT) &&
+	  if ((IS_TRANSIENT(t2)) &&
 	      (t2->transientfor == tmp_win->w) &&
 	      (t2 != tmp_win) &&
 	      (t2->layer >= tmp_win->layer) &&

@@ -4233,9 +4233,13 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     if (StrEquals(tok, "context")) {
       if (mi && mi->mr) context_window = mi->mr->w;
       else if (tmp_win) {
-	if (tmp_win->flags & ICONIFIED) context_window=tmp_win->icon_pixmap_w;
-	else context_window = tmp_win->frame;
-      } else context_window = w;
+	if (IS_ICONIFIED(tmp_win))
+	  context_window=tmp_win->icon_pixmap_w;
+	else
+	  context_window = tmp_win->frame;
+      }
+      else
+	context_window = w;
       pops->pos_hints.fRelative = TRUE;
     } else if (StrEquals(tok,"menu")) {
       if (mi && mi->mr) context_window = mi->mr->w;
@@ -4252,8 +4256,10 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       if (tmp_win) context_window = tmp_win->w;
     } else if (StrEquals(tok,"title")) {
       if (tmp_win) {
-	if (tmp_win->flags & ICONIFIED) context_window = tmp_win->icon_w;
-	else context_window = tmp_win->title_w;
+	if (IS_ICONIFIED(tmp_win))
+	  context_window = tmp_win->icon_w;
+	else
+	  context_window = tmp_win->title_w;
       }
     } else if (strncasecmp(tok,"button",6) == 0) {
       if (sscanf(&(tok[6]),"%d",&button) != 1 ||

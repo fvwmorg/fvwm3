@@ -44,6 +44,8 @@
 
 #include <libs/Picture.h>
 
+#include "gsfr.h"
+
 #define F_CMD_ARGS XEvent *eventp,Window w,FvwmWindow *tmp_win,\
 unsigned long context,char *action, int *Module
 
@@ -113,7 +115,113 @@ typedef struct icon_boxes_struct {
 #define ICONFILLHRZ (1<<2)
 } icon_boxes;
 
-#include "gsfr.h"
+typedef struct
+{
+  /* common flags (former flags in bits 0-12) */
+  unsigned do_circulate_skip : 1; /* was circulateskip */
+  unsigned do_circulate_skip_icon : 1;
+  unsigned do_grab_focus_when_created : 1; /* was grab_focus */
+  unsigned do_show_on_map : 1; /* was show_mapping */
+  unsigned do_start_iconic : 1;
+  unsigned do_window_list_skip : 1; /* was listskip */
+#define FOCUS_MOUSE   0x0
+#define FOCUS_CLICK   0x1
+#define FOCUS_SLOPPY  0x2
+#define FOCUS_MASK    0x3
+  unsigned focus_mode : 2; /* was click_focus/sloppy_focus */
+  unsigned has_mwm_border : 1; /* MWM_BORDER_FLAG */
+  unsigned has_mwm_buttons : 1; /* MWM_BUTTON_FLAG */
+  unsigned has_mwm_override : 1; /* MWM_OVERRIDE_FLAG */
+  unsigned has_no_icon_title : 1; /* was noicon_title */
+  unsigned is_icon_sticky : 1; /* was sticky_icon */
+  unsigned is_icon_suppressed : 1; /* was suppressicon */
+  unsigned is_lenient : 1; /* lenience */
+  unsigned is_sticky : 1; /* was sticky */
+} common_flags_type;
+
+typedef struct
+{
+  common_flags_type common;
+  unsigned does_wm_delete_window : 1; /* DoesWmDeleteWindow */
+  unsigned does_wm_take_focus : 1; /* DoesWmTakeFocus */
+  unsigned do_reuse_destroyed : 1;   /* Reuse this struct, don't free it,
+				      * when destroying/recapturing window. */
+  unsigned has_border : 1; /* BORDER */ /* Is this decorated with border*/
+  unsigned has_title : 1; /* TITLE */ /* Is this decorated with title */
+  unsigned is_mapped : 1; /* MAPPED */ /* is it mapped? */
+  unsigned is_iconified : 1; /* ICONIFIED */ /* is it an icon now? */
+  unsigned is_iconified_by_parent : 1; /* To prevent iconified transients in a parent
+					* icon from counting for Next */
+  unsigned is_icon_ours : 1; /* ICON_OURS */ /* is the icon window supplied by the app? */
+  unsigned is_icon_shaped : 1; /* SHAPED_ICON */ /* is the icon shaped? */
+  unsigned is_icon_moved : 1; /* ICON_MOVED */ /* has the icon been moved by the user? */
+  unsigned is_icon_unmapped : 1; /* ICON_UNMAPPED */ /* was the icon unmapped, even though the window is still iconified (Transients) */
+  unsigned is_map_pending : 1; /* MAP_PENDING */ /* Sent an XMapWindow, but didn't receive a MapNotify yet.*/
+  unsigned is_maximized : 1; /* MAXIMIZED */ /* is the window maximized? */
+  unsigned is_name_changed : 1; /* Set if the client changes its WM_NAME.
+				 * The source of twm contains an explanation
+				 * why we need this information. */
+  unsigned is_pixmap_ours : 1; /* PIXMAP_OURS */ /* is the icon pixmap ours to free? */
+  unsigned is_transient : 1; /* TRANSIENT */ /* is it a transient window? */
+  unsigned is_viewport_moved : 1; /* To prevent double move in MoveViewport.*/
+  unsigned is_visible : 1; /* VISIBLE */ /* is the window fully visible */
+  unsigned is_window_being_moved_opaque : 1;
+  unsigned is_window_shaded : 1;
+} window_flags;
+
+/* only style.c and add_window.c are allowed to access this struct!! */
+typedef struct
+{
+  common_flags_type common;
+  unsigned do_decorate_transient : 1; /* DECORATE_TRANSIENT_FLAG */
+  unsigned do_place_random : 1; /* RANDOM_PLACE_FLAG */
+  unsigned do_place_smart : 1; /* SMART_PLACE_FLAG */
+  unsigned do_start_lowered : 1; /* starts_lowered */
+  unsigned has_border_width : 1; /* BW_FLAG */
+  unsigned has_color_back : 1; /* BACK_COLOR_FLAG */
+  unsigned has_color_fore : 1; /* FORE_COLOR_FLAG */
+  unsigned has_handle_width : 1; /* NOBW_FLAG */
+  unsigned has_icon : 1; /* ICON_FLAG */
+#ifdef MINI_ICONS
+  unsigned has_mini_icon : 1; /* MINIICON_FLAG */
+#endif
+  unsigned has_mwm_decor : 1; /* MWM_DECOR_FLAG */
+  unsigned has_mwm_functions : 1; /* MWM_FUNCTIONS_FLAG */
+  unsigned has_no_border : 1; /* NOBORDER_FLAG */
+  unsigned use_no_pposition : 1; /* NO_PPOSITION_FLAG */
+  unsigned has_no_title : 1; /* NOTITLE_FLAG */
+  unsigned has_ol_decor : 1; /* OL_DECOR_FLAG */
+  unsigned use_layer : 1; /* has_layer */ /* has layer been set explicitly ? */
+  unsigned use_start_raised_lowered : 1; /* has_starts_lowered */ /* has starts_lowered been set ? */
+  unsigned use_start_on_desk : 1; /* STARTSONDESK_FLAG */
+} style_flags;
+
+/* only style.c and add_window.c are allowed to access this struct!! */
+typedef struct window_style
+{
+  struct window_style *next;
+  char *name;		  	   /* the name of the window */
+  char *icon_name; /* value */               /* icon name */
+#ifdef MINI_ICONS
+  char *mini_icon_name; /* mini_value */               /* mini icon name */
+#endif
+#ifdef USEDECOR
+  char *decor_name; /* Decor */
+#endif
+  char *fore_color_name; /* ForeColor */
+  char *back_color_name; /* BackColor */
+  style_flags flags;
+  style_flags flag_mask;
+  unsigned long on_buttons;
+  unsigned long off_buttons;
+  int border_width;
+  int layer;
+  int handle_width; /* resize_width */
+  int start_desk; /* Desk */
+  int start_page_x; /* PageX */
+  int start_page_y; /* PageY */
+  icon_boxes *IconBoxes;                /* pointer to iconbox(s) */
+} window_style;
 
 /* for each window that is on the display, one of these structures
  * is allocated and linked into a list
@@ -181,27 +289,8 @@ typedef struct FvwmWindow
     int DeIconifyDesk;          /* Desk to deiconify to, for StubbornIcons */
     Window transientfor;
 
-#ifdef GSFR
     window_flags gsfr_flags;
-    window_style *style;
-#else /* !GSFR */
-    unsigned long flags;
-/*
-    RBW - 11/13/1998 - new flags to supplement the flags word, implemented
-    as named bit fields.
-*/
-    struct {
-      unsigned ViewportMoved : 1; /* To prevent double move in MoveViewport. */
-      unsigned IconifiedByParent : 1; /* To prevent iconified transients in a
-				       * parent icon from counting for Next */
-      unsigned ReuseDestroyed : 1;    /* Reuse this struct, don't free it, when
-                                           destroying/recapturing window. */
-      unsigned window_being_moved_opaque : 1;
-      unsigned NameChanged : 1; /* Set if the client changes its WM_NAME.
-				   The source of twm contains an explanation
-				   why we need this information. */
-    } tmpflags;
-#endif /* GSFR */
+    window_style style;
 
 #ifdef MINI_ICONS
     char *mini_pixmap_file;
@@ -229,22 +318,26 @@ typedef struct FvwmWindow
     unsigned long buttons;
     icon_boxes *IconBoxes;              /* zero or more iconboxes */
 
+    int default_layer;
     int layer;
 
 } FvwmWindow;
 
 /* Window mask for Circulate and Direction functions */
 typedef struct WindowConditionMask {
-  Bool needsCurrentDesk;
-  Bool needsCurrentPage;
-  Bool needsName;
-  Bool needsNotName;
-  Bool useCirculateHit;
-  Bool useCirculateHitIcon;
-  Bool useCirculateSkip;
-  Bool useCirculateSkipIcon;
-  unsigned long onFlags;
-  unsigned long offFlags;
+  struct
+  {
+    unsigned needs_current_desk : 1;
+    unsigned needs_current_page : 1;
+    unsigned needs_name : 1;
+    unsigned needs_not_name : 1;
+    unsigned use_circulate_hit : 1;
+    unsigned use_circulate_hit_icon : 1;
+    unsigned use_circulate_skip : 1;
+    unsigned use_circulate_skip_icon : 1;
+  } my_flags;
+  window_flags gsfr_flags;
+  window_flags gsfr_flag_mask;
   char *name;
   int layer;
 } WindowConditionMask;
@@ -307,12 +400,6 @@ typedef struct WindowConditionMask {
 #define BUTTON8   128
 #define BUTTON9   256
 #define BUTTON10  512
-#ifdef GSFR
-#else
-/* we're sticking this at the end of the buttons window member
-   since we don't want to use up any more flag bits */
-#define WSHADE	(1<<31)
-#endif /* GSFR */
 
 #include <stdlib.h>
 extern void Reborder(void);

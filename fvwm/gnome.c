@@ -10,6 +10,7 @@
 /* adapted for FVWM by Jay Painter <jpaint@gnu.org>      */
 /*********************************************************/
 #include "config.h"
+
 #ifdef GNOME
 
 #include <stdio.h>
@@ -331,10 +332,10 @@ GNOME_GetHintState(FvwmWindow *fwin)
   if (retval)
     {
       if (*retval & WIN_STATE_STICKY)
-	fwin->flags |= STICKY;
+	SET_STICKY(fwin, 1);
 
       if (*retval & WIN_STATE_SHADED)
-	fwin->buttons |= WSHADE;
+	SET_SHADED(fwin, 1);
 
       free(retval);
     }
@@ -389,12 +390,15 @@ GNOME_GetHint(FvwmWindow *fwin)
   if (retval)
     {
       if (*retval & WIN_HINTS_SKIP_WINLIST)
-	fwin->flags |= WINDOWLISTSKIP;
+	SET_DO_SKIP_WINDOW_LIST(fwin, 1);
 
       /* XXX: unimplimented */
-      if (*retval & WIN_HINTS_SKIP_TASKBAR);
-      if (*retval & WIN_HINTS_SKIP_FOCUS);
-      if (*retval & WIN_HINTS_FOCUS_ON_CLICK);
+      if (*retval & WIN_HINTS_SKIP_TASKBAR)
+	;
+      if (*retval & WIN_HINTS_SKIP_FOCUS)
+	;
+      if (*retval & WIN_HINTS_FOCUS_ON_CLICK)
+	;
       /* if (*retval & WIN_HINTS_DO_NOT_COVER);*/
 
       free(retval);
@@ -410,10 +414,10 @@ GNOME_SetHints(FvwmWindow *fwin)
   atom_set = XInternAtom(dpy, XA_WIN_STATE, False);
   val = 0;
 
-  if (fwin->flags & STICKY)
+  if (IS_STICKY(fwin))
     val |= WIN_STATE_STICKY;
 
-  if (fwin->buttons & WSHADE)
+  if (IS_SHADED(fwin))
     val |= WIN_STATE_SHADED;
 
   XChangeProperty(dpy, fwin->w, atom_set, XA_CARDINAL, 32,
@@ -573,7 +577,7 @@ GNOME_SetClientList(void)
 
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
-      if (!(t->flags & WINDOWLISTSKIP))
+      if (!DO_SKIP_WINDOW_LIST(t))
 	{
 	  wl[i++] = t->w;
 	}
@@ -741,6 +745,4 @@ GNOME_ButtonFunc(XEvent *eventp, Window w, FvwmWindow *fwin,
   GNOME_ProxyButtonEvent(eventp);
 }
 
-
 #endif /* GNOME */
-

@@ -17,107 +17,57 @@
 #define _STYLE_
 
 #include "fvwm.h"
-#include "gsfr.h"
 
-typedef struct name_list_struct
-{
-  struct name_list_struct *next;   /* pointer to the next name */
-  char *name;		  	   /* the name of the window */
+/* access to the common flags of a window */
+/* call these with a pointer to a style_flags struct */
+#define SDO_SKIP_CIRCULATE(s)        ((s)->common.do_circulate_skip)
+#define SDO_SKIP_CIRCULATE_ICON(s)   ((s)->common.circulate_skip_icon)
+#define SDO_SHOW_ON_MAP(s)           ((s)->common.do_show_on_map)
+#define SDO_SKIP_WINDOW_LIST(s)      ((s)->common.do_window_list_skip)
+#define SDO_START_ICONIC(s)          ((s)->common.do_start_iconic)
+#define SIS_ICON_STICKY(s)           ((s)->common.is_icon_sticky)
+#define SIS_ICON_SUPPRESSED(s)       ((s)->common.is_icon_suppressed)
+#define SIS_LENIENT(s)               ((s)->common.is_lenient)
+#define SIS_STICKY(s)                ((s)->common.is_sticky)
+#define SHAS_CLICK_FOCUS(s)          \
+          ((s)->common.focus_mode == FOCUS_CLICK)
+#define SHAS_MOUSE_FOCUS(s)          \
+          ((s)->common.focus_mode == FOCUS_MOUSE)
+#define SHAS_SLOPPY_FOCUS(s)         \
+          ((s)->common.focus_mode == FOCUS_SLOPPY)
+#define SHAS_NO_ICON_TITLE(s)        ((s)->common.has_no_icon_title)
+#define SHAS_MWM_BORDER(s)           ((s)->common.has_mwm_border)
+#define SHAS_MWM_BUTTONS(s)          ((s)->common.has_mwm_buttons)
+#define SHAS_MWM_OVERRIDE_HINTS(s)   ((s)->common.has_mwm_override)
 
-/*
- * definitely only part of the style
- */
-
-#ifndef GSFR
-  char *value;                     /* icon name */
+/* access to the special flags of a style */
+/* call these with a pointer to a style_flags struct */
+#define SDO_DECORATE_TRANSIENT(s)    ((s)->do_decorate_transient)
+#define SDO_PLACE_RANDOM(s)          ((s)->do_place_random)
+#define SDO_PLACE_SMART(s)           ((s)->do_place_smart)
+#define SDO_START_LOWERED(s)         ((s)->do_start_lowered)
+#define SHAS_BORDER_WIDTH(s)         ((s)->has_border_width)
+#define SHAS_COLOR_BACK(s)           ((s)->has_color_back)
+#define SHAS_COLOR_FORE(s)           ((s)->has_color_fore)
+#define SHAS_HANDLE_WIDTH(s)         ((s)->has_handle_width)
+#define SHAS_ICON(s)                 ((s)->has_icon)
 #ifdef MINI_ICONS
-  char *mini_value;                /* mini icon name */
+#define SHAS_MINI_ICON(s)            ((s)->has_mini_icon)
 #endif
-#ifdef USEDECOR
-  char *Decor;
-#endif
+#define SHAS_MWM_DECOR(s)            ((s)->has_mwm_decor)
+#define SHAS_MWM_FUNCTIONS(s)        ((s)->has_mwm_functions)
+#define SHAS_NO_BORDER(s)            ((s)->has_no_border)
+#define SHAS_NO_TITLE(s)             ((s)->has_no_title)
+#define SHAS_OL_DECOR(s)             ((s)->has_ol_decor)
+#define SUSE_LAYER(s)                ((s)->use_layer)
+#define SUSE_NO_PPOSITION(s)         ((s)->use_no_pposition)
+#define SUSE_START_RAISED_LOWERED(s) ((s)->use_start_raised_lowered)
+#define SUSE_START_ON_DESK(s)        ((s)->use_start_on_desk)
 
-  int Desk;                        /* Desktop number */
-/* RBW - 11/02/1998 - page x,y numbers */
-  int PageX;
-  int PageY;
-/**/
-  unsigned long on_flags;
-  unsigned long off_flags;
-  unsigned long on_buttons;
-  unsigned long off_buttons;
-  char *ForeColor;
-  char *BackColor;
-  int layer;
-  struct {
-    unsigned has_layer : 1; /* has layer been set explicitly ? */
-    unsigned starts_lowered : 1;
-    unsigned has_starts_lowered : 1; /* has starts_lowered been set ? */
-  } tmpflags;
-  icon_boxes *IconBoxes;                /* pointer to iconbox(s) */
-  int border_width;
-  int resize_width;
-#endif
-} name_list;
-
-typedef struct
-{
-  common_flags_type common_flags;
-  unsigned bw : 1; /* BW_FLAG */
-  unsigned nobw : 1; /* NOBW_FLAG */
-  unsigned color_fore : 1; /* FORE_COLOR_FLAG */
-  unsigned color_back : 1; /* BACK_COLOR_FLAG */
-  unsigned decorate_transient : 1; /* DECORATE_TRANSIENT_FLAG */
-  unsigned grab_focus_when_created : 1; /* was grab_focus */
-  unsigned has_no_title : 1; /* NOTITLE_FLAG */
-  unsigned has_no_border : 1; /* NOBORDER_FLAG */
-  unsigned has_icon : 1; /* ICON_FLAG */
-#ifdef MINI_ICONS
-  unsigned mini_icon : 1; /* MINIICON_FLAG */
-#endif
-  unsigned mwm_button : 1; /* MWM_BUTTON_FLAG */
-  unsigned mwm_decor : 1; /* MWM_DECOR_FLAG */
-  unsigned mwm_functions : 1; /* MWM_FUNCTIONS_FLAG */
-  unsigned mwm_override : 1; /* MWM_OVERRIDE_FLAG */
-  unsigned mwm_border : 1; /* MWM_BORDER_FLAG */
-  unsigned no_pposition : 1; /* NO_PPOSITION_FLAG */
-  unsigned ol_decor : 1; /* OL_DECOR_FLAG */
-  unsigned place_random : 1; /* RANDOM_PLACE_FLAG */
-  unsigned place_smart : 1; /* SMART_PLACE_FLAG */
-  unsigned start_lowered : 1; /* starts_lowered */
-  unsigned use_start_lowered : 1; /* has_starts_lowered */ /* has starts_lowered been set ? */
-  unsigned use_start_on_desk : 1; /* STARTSONDESK_FLAG */
-  unsigned use_layer : 1; /* has_layer */ /* has layer been set explicitly ? */
-} style_flags;
-
-typedef struct
-{
-  style_flags on_flags;
-  style_flags off_flags;
-  unsigned long on_buttons;
-  unsigned long off_buttons;
-  int border_width;
-  int layer;
-  int handle_width; /* resize_width */
-  int start_desk; /* Desk */
-  int start_page_x; /* PageX */
-  int start_page_y; /* PageY */
-  char *ForeColor;
-  char *BackColor;
-  char *icon_name; /* value */               /* icon name */
-#ifdef MINI_ICONS
-  char *mini_icon_name; /* mini_value */               /* mini icon name */
-#endif
-#ifdef USEDECOR
-  char *decor_name; /* Decor */
-#endif
-  icon_boxes *IconBoxes;                /* pointer to iconbox(s) */
-} window_style;
-
-
-
+/* function prototypes */
 void ProcessNewStyle(F_CMD_ARGS);
-void LookInList(FvwmWindow *tmp_win, name_list *styles);
-void merge_styles(name_list *, name_list *);
+void lookup_style(FvwmWindow *tmp_win, window_style *styles);
+void merge_styles(window_style *, window_style *);
+int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len);
 
 #endif /* _STYLE_ */

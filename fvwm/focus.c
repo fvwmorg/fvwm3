@@ -92,7 +92,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
 		    &JunkX, &JunkY, &JunkX, &JunkY, &JunkMask);
       if(JunkRoot != Scr.Root)
 	{
-	  if((Scr.Ungrabbed != NULL)&&(Scr.Ungrabbed->flags & ClickToFocus))
+	  if((Scr.Ungrabbed != NULL)&&(HAS_CLICK_FOCUS(Scr.Ungrabbed)))
 	    {
 	      /* Need to grab buttons for focus window */
 	      XSync(dpy,0);
@@ -139,8 +139,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
       w = Scr.NoFocusWin;
     }
 
-  if((Scr.Ungrabbed != NULL)&&
-     (Scr.Ungrabbed->flags & ClickToFocus)
+  if((Scr.Ungrabbed != NULL)&&(HAS_CLICK_FOCUS(Scr.Ungrabbed))
      && (Scr.Ungrabbed != Fw))
     {
       /* need to grab all buttons for window that we are about to
@@ -155,7 +154,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
     }
   /* if we do click to focus, remove the grab on mouse events that
    * was made to detect the focus change */
-  if((Fw != NULL)&&(Fw->flags&ClickToFocus))
+  if((Fw != NULL)&&(HAS_CLICK_FOCUS(Fw)))
     {
       for(i=0;i<3;i++)
 	if(Scr.buttons2grab & (1<<i))
@@ -170,7 +169,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
   if((Fw)&&(Fw->flags & ICONIFIED)&&(Fw->icon_w))
     w= Fw->icon_w;
 */
-  if((Fw)&&(Fw->flags & ICONIFIED))
+  if((Fw)&&(IS_ICONIFIED(Fw)))
     {
       if (Fw->icon_w)
         {
@@ -182,7 +181,7 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
         }
     }
 
-  if((Fw)&&(Fw->flags & Lenience))
+  if((Fw)&&(IS_LENIENT(Fw)))
     {
       XSetInputFocus (dpy, w, RevertToParent, lastTimestamp);
       Scr.Focus = Fw;
@@ -208,8 +207,8 @@ void SetFocus(Window w, FvwmWindow *Fw, Bool FocusByMouse)
     }
 
 
-  if ((Fw)&&(Fw->flags & DoesWmTakeFocus))
-    send_clientmessage (dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
+  if ((Fw)&&(WM_TAKES_FOCUS(Fw)))
+    send_clientmessage(dpy, w, _XA_WM_TAKE_FOCUS, lastTimestamp);
 
   XSync(dpy,0);
 

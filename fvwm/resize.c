@@ -83,11 +83,11 @@ void resize_window(F_CMD_ARGS)
     }
   n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
 
-  was_maximized = !!(tmp_win->flags & MAXIMIZED);
-  tmp_win->flags &= ~MAXIMIZED;
+  was_maximized = IS_MAXIMIZED(tmp_win);
+  SET_MAXIMIZED(tmp_win, 0);
 
   /* can't resize icons */
-  if(tmp_win->flags & ICONIFIED)
+  if(IS_ICONIFIED(tmp_win))
     return;
 
   if(n == 2)
@@ -100,7 +100,7 @@ void resize_window(F_CMD_ARGS)
       /* size will be less or equal to requested */
       ConstrainSize (tmp_win, &drag->width, &drag->height, False, xmotion,
 		     ymotion);
-      if (tmp_win->buttons & WSHADE)
+      if (IS_SHADED(tmp_win))
 	{
 	  tmp_win->orig_wd = drag->width;
 	  tmp_win->orig_ht = drag->height;
@@ -133,7 +133,7 @@ void resize_window(F_CMD_ARGS)
   Scr.flags.edge_wrap_x = 0;
   Scr.flags.edge_wrap_y = 0;
 
-  if (tmp_win->buttons & WSHADE)
+  if (IS_SHADED(tmp_win))
     {
       drag->x = tmp_win->frame_x;
       drag->y = tmp_win->frame_y;
@@ -423,7 +423,7 @@ void resize_window(F_CMD_ARGS)
       /* size will be >= to requested */
       ConstrainSize (tmp_win, &drag->width, &drag->height, True, xmotion,
 		     ymotion);
-       if (tmp_win->buttons & WSHADE)
+       if (IS_SHADED(tmp_win))
        {
          SetupFrame (tmp_win, tmp_win->frame_x, tmp_win->frame_y,
                      drag->width, tmp_win->frame_height, FALSE, False);
@@ -727,7 +727,7 @@ void ConstrainSize (FvwmWindow *tmp_win, int *widthp, int *heightp,
     *widthp = dwidth + 2*tmp_win->boundary_width;
     *heightp = dheight + tmp_win->title_height + 2*tmp_win->boundary_width;
 #if 0
-    if (tmp_win->buttons & WSHADE)
+    if (is_SHADED(tmp_win))
       *heightp = tmp_win->title_height + tmp_win->boundary_width;
 #endif
 

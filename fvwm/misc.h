@@ -34,48 +34,6 @@ struct config
   int *arg2;
 };
 
-#ifndef GSFR
-/* values for name_list flags */
-/* The first 13 items are mapped directly into the FvwmWindow structures
- * flag value, so they MUST correspond to the first 13 entries in fvwm.h */
-#define START_ICONIC_FLAG    (1<<0)
-#define GRAB_FOCUS           (1<<1)
-#define STICKY_FLAG          (1<<2)
-#define LISTSKIP_FLAG        (1<<3)
-#define SUPPRESSICON_FLAG    (1<<4)
-#define NOICON_TITLE_FLAG    (1<<5)
-#define LENIENCE_FLAG        (1<<6)
-#define STICKY_ICON_FLAG     (1<<7)
-#define CIRCULATE_SKIP_ICON_FLAG  (1<<8)
-#define CIRCULATESKIP_FLAG   (1<<9)
-#define CLICK_FOCUS_FLAG     (1<<10)
-#define SLOPPY_FOCUS_FLAG    (1<<11)
-#define SHOW_MAPPING         (1<<12)
-
-#define NOTITLE_FLAG         (1<<13)
-#define NOBORDER_FLAG        (1<<14)
-#define ICON_FLAG            (1<<15)
-#define STARTSONDESK_FLAG    (1<<16)
-#define BW_FLAG              (1<<17)
-#define NOBW_FLAG            (1<<18)
-#define FORE_COLOR_FLAG      (1<<19)
-#define BACK_COLOR_FLAG      (1<<20)
-#define RANDOM_PLACE_FLAG    (1<<21)
-#define SMART_PLACE_FLAG     (1<<22)
-#define MWM_BUTTON_FLAG      (1<<23)
-#define MWM_DECOR_FLAG       (1<<24)
-#define MWM_FUNCTIONS_FLAG   (1<<25)
-#define MWM_OVERRIDE_FLAG    (1<<26)
-#define MWM_BORDER_FLAG      (1<<27)
-#define DECORATE_TRANSIENT_FLAG (1<<28)
-#define NO_PPOSITION_FLAG    (1<<29)
-#define OL_DECOR_FLAG        (1<<30)
-
-#ifdef MINI_ICONS
-#define MINIICON_FLAG        (1<<31)
-#endif
-#endif /* GSFR */
-
 /* some fancy font handling stuff */
 #define NewFontAndColor(newfont,color,backcolor) {\
    Globalgcv.font = newfont;\
@@ -215,7 +173,7 @@ void SendStrToModule(F_CMD_ARGS);
 RETSIGTYPE DeadPipe(int nonsense);
 void GetMwmHints(FvwmWindow *t);
 void GetOlHints(FvwmWindow *t);
-void SelectDecor(FvwmWindow *, unsigned long, int,int);
+void SelectDecor(FvwmWindow *, style_flags *, int,int);
 void SetBorder (FvwmWindow *, Bool,Bool,Bool, Window);
 void move_window(F_CMD_ARGS);
 void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -236,8 +194,8 @@ void WaitForButtonsUp(void);
 void FocusOn(FvwmWindow *t,Bool FocusByMouse);
 void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit);
 /*  RBW - 11/02/1998  */
-Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long flags,
-                 int Desk, int PageX, int PageY);
+Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflag, int Desk, int PageX,
+		 int PageY);
 void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);
 
 int check_if_function_allowed(int function, FvwmWindow *t,

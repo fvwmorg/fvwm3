@@ -110,7 +110,7 @@ void Destroy(FvwmWindow *Tmp_win)
   if(ButtonWindow == Tmp_win)
     ButtonWindow = NULL;
 
-  if((Tmp_win == Scr.Focus)&&(Tmp_win->flags & ClickToFocus))
+  if((Tmp_win == Scr.Focus)&&(HAS_CLICK_FOCUS(Tmp_win)))
     {
       if(Tmp_win->next)
 	{
@@ -143,7 +143,7 @@ void Destroy(FvwmWindow *Tmp_win)
 
   XDeleteContext(dpy, Tmp_win->w, FvwmContext);
 
-  if ((Tmp_win->icon_w)&&(Tmp_win->flags & PIXMAP_OURS))
+  if ((Tmp_win->icon_w)&&(IS_PIXMAP_OURS(Tmp_win)))
     {
       XFreePixmap(dpy, Tmp_win->iconPixmap);
       XFreePixmap(dpy, Tmp_win->icon_maskPixmap);
@@ -161,12 +161,12 @@ void Destroy(FvwmWindow *Tmp_win)
       XDestroyWindow(dpy, Tmp_win->icon_w);
       XDeleteContext(dpy, Tmp_win->icon_w, FvwmContext);
     }
-  if((Tmp_win->flags &ICON_OURS)&&(Tmp_win->icon_pixmap_w != None))
+  if((IS_ICON_OURS(Tmp_win))&&(Tmp_win->icon_pixmap_w != None))
     XDestroyWindow(dpy, Tmp_win->icon_pixmap_w);
   if(Tmp_win->icon_pixmap_w != None)
     XDeleteContext(dpy, Tmp_win->icon_pixmap_w, FvwmContext);
 
-  if (Tmp_win->flags & TITLE)
+  if (HAS_TITLE(Tmp_win))
     {
       XDeleteContext(dpy, Tmp_win->title_w, FvwmContext);
       for(i=0;i<Scr.nr_left_buttons;i++)
@@ -175,7 +175,7 @@ void Destroy(FvwmWindow *Tmp_win)
 	if(Tmp_win->right_w[i] != None)
 	  XDeleteContext(dpy, Tmp_win->right_w[i], FvwmContext);
     }
-  if (Tmp_win->flags & BORDER)
+  if (HAS_BORDER(Tmp_win))
     {
       for(i=0;i<4;i++)
 	XDeleteContext(dpy, Tmp_win->sides[i], FvwmContext);
@@ -205,7 +205,7 @@ void Destroy(FvwmWindow *Tmp_win)
     XFree((void *)Tmp_win->cmap_windows);
 
   /*  Recapture reuses this struct, so don't free it.  */
-  if (! Tmp_win->tmpflags.ReuseDestroyed)
+  if (!DO_REUSE_DESTROYED(Tmp_win))
     {
       free((char *)Tmp_win);
     }
@@ -305,7 +305,7 @@ void RestoreWithdrawnLocation (FvwmWindow *tmp,Bool restart)
 	}
       XReparentWindow (dpy, tmp->w,Scr.Root,xwc.x,xwc.y);
 
-      if((tmp->flags & ICONIFIED)&&(!(tmp->flags & SUPPRESSICON)))
+      if(IS_ICONIFIED(tmp) && !IS_ICON_SUPPRESSED(tmp))
 	{
 	  if (tmp->icon_w)
 	    XUnmapWindow(dpy, tmp->icon_w);
@@ -586,14 +586,14 @@ void UnmapIt(FvwmWindow *t)
   XGetWindowAttributes(dpy, t->w, &winattrs);
   eventMask = winattrs.your_event_mask;
   XSelectInput(dpy, t->w, eventMask & ~StructureNotifyMask);
-  if(t->flags & ICONIFIED)
+  if(IS_ICONIFIED(t))
     {
       if(t->icon_pixmap_w != None)
 	XUnmapWindow(dpy,t->icon_pixmap_w);
       if(t->icon_w != None)
 	XUnmapWindow(dpy,t->icon_w);
     }
-  else if(t->flags & (MAPPED|MAP_PENDING))
+  else if(IS_MAPPED(t) || IS_MAP_PENDING(t))
     {
       XUnmapWindow(dpy,t->frame);
     }
@@ -607,17 +607,17 @@ void UnmapIt(FvwmWindow *t)
  *************************************************************************/
 void MapIt(FvwmWindow *t)
 {
-  if(t->flags & ICONIFIED)
+  if(IS_ICONIFIED(t))
     {
       if(t->icon_pixmap_w != None)
 	XMapWindow(dpy,t->icon_pixmap_w);
       if(t->icon_w != None)
 	XMapWindow(dpy,t->icon_w);
     }
-  else if(t->flags & MAPPED)
+  else if(IS_MAPPED(t))
     {
       XMapWindow(dpy,t->frame);
-      t->flags |= MAP_PENDING;
+      SET_MAP_PENDING(t, 1);
       XMapWindow(dpy, t->Parent);
    }
 }
@@ -689,7 +689,7 @@ void RaiseWindow(FvwmWindow *t)
   t->stack_next->stack_prev = t->stack_prev;
 
   count = 1;
-  if ((t->flags & ICONIFIED) && (!(t->flags & SUPPRESSICON)))
+  if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
     {
       count += 2;
     }
@@ -701,13 +701,12 @@ void RaiseWindow(FvwmWindow *t)
   for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
     {
       next = t2->stack_next;
-      if ((t2->flags & TRANSIENT) &&
-          (t2->transientfor == t->w) &&
-          (t2->layer == t->layer))
+      if ((IS_TRANSIENT(t2)) && (t2->transientfor == t->w) &&
+	  (t2->layer == t->layer))
         {
           /* t2 is a transient to raise */
           count++;
-          if ((t2->flags & ICONIFIED) && (!(t2->flags & SUPPRESSICON)))
+          if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
             {
 	      count += 2;
             }
@@ -759,7 +758,7 @@ void RaiseWindow(FvwmWindow *t)
 	break;
       }
       wins[i++] = t2->frame;
-      if ((t2->flags & ICONIFIED) && (!(t2->flags & SUPPRESSICON)))
+      if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
 	{
 	  if(t2->icon_w != None)
 	    wins[i++] = t2->icon_w;
@@ -859,7 +858,7 @@ void LowerWindow(FvwmWindow *t)
 
   XConfigureWindow(dpy, t->frame, flags, &changes);
 
-  if((t->flags & ICONIFIED)&&(!(t->flags & SUPPRESSICON)))
+  if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
     {
       if (t->icon_w != None)
 	XConfigureWindow(dpy, t->icon_w, flags, &changes);

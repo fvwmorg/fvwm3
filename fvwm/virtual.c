@@ -595,16 +595,16 @@ void MoveViewport(int newx, int newy, Bool grab)
 	    tyb = t->frame_y + t->frame_height;
 	    if ((txr >= PageLeft && txl <= PageRight
 	        && tyb >= PageTop && tyt <= PageBottom)
-	        && ! t->tmpflags.ViewportMoved
-		&& ! t->tmpflags.window_being_moved_opaque)
+	        && !IS_VIEWPORT_MOVED(t)
+		&& !IS_WINDOW_BEING_MOVED_OPAQUE(t))
 	      {
-                t->tmpflags.ViewportMoved = True;    /*  Block double move.  */
+		SET_VIEWPORT_MOVED(t, 1); /*  Block double move.  */
 	        /* If the window is iconified, and sticky Icons is set,
 	         * then the window should essentially be sticky */
-	        if(!((t->flags & ICONIFIED)&&(t->flags & StickyIcon)) &&
-	           (!(t->flags & STICKY)))
+	        if(!((IS_ICONIFIED(t))&&(IS_ICON_STICKY(t))) &&
+	           (!(IS_STICKY(t))))
 	          {
-                    if(!(t->flags & StickyIcon))
+                    if(!(IS_ICON_STICKY(t)))
 	             {
 	               t->icon_x_loc += deltax;
 		       t->icon_xl_loc += deltax;
@@ -615,7 +615,7 @@ void MoveViewport(int newx, int newy, Bool grab)
                        if(t->icon_w != None)
                          XMoveWindow(dpy,t->icon_w,t->icon_x_loc,
                                 t->icon_y_loc+t->icon_p_height);
-		       if(!(t->flags &ICON_UNMAPPED))
+		       if(!(IS_ICON_UNMAPPED(t)))
                         {
 		         BroadcastPacket(M_ICON_LOCATION, 7,
                                          t->w, t->frame,
@@ -643,16 +643,16 @@ void MoveViewport(int newx, int newy, Bool grab)
             tyb = t1->frame_y + t1->frame_height;
             if (! (txr >= PageLeft && txl <= PageRight
                 && tyb >= PageTop && tyt <= PageBottom)
-                && ! t1->tmpflags.ViewportMoved
-		&& ! t1->tmpflags.window_being_moved_opaque)
+                && !IS_VIEWPORT_MOVED(t1)
+		&& !IS_WINDOW_BEING_MOVED_OPAQUE(t1))
 	      {
-		t1->tmpflags.ViewportMoved = True; /* Block double move.*/
+		SET_VIEWPORT_MOVED(t1, 1); /* Block double move.*/
 		/* If the window is iconified, and sticky Icons is set,
 		 * then the window should essentially be sticky */
-		if(!((t1->flags & ICONIFIED)&&(t1->flags & StickyIcon)) &&
-		   (!(t1->flags & STICKY)))
+		if(!(IS_ICONIFIED(t1) && IS_ICON_STICKY(t1)) &&
+		   (!IS_STICKY(t1)))
 		  {
-		    if(!(t1->flags & StickyIcon))
+		    if(!IS_ICON_STICKY(t1))
 		      {
 			t1->icon_x_loc += deltax;
 			t1->icon_xl_loc += deltax;
@@ -664,7 +664,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 			if(t1->icon_w != None)
 			  XMoveWindow(dpy,t1->icon_w,t1->icon_x_loc,
 				      t1->icon_y_loc+t1->icon_p_height);
-			if(!(t1->flags &ICON_UNMAPPED))
+			if(!IS_ICON_UNMAPPED(t1))
 			  {
 			    BroadcastPacket(M_ICON_LOCATION, 7,
 					    t1->w, t1->frame,
@@ -686,13 +686,13 @@ void MoveViewport(int newx, int newy, Bool grab)
       }
       for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
 	{
-          t->tmpflags.ViewportMoved = False; /* Clear double move blocker. */
+	  SET_VIEWPORT_MOVED(t, 0); /* Clear double move blocker. */
 	  /* If its an icon, and its sticking, autoplace it so
 	   * that it doesn't wind up on top a a stationary
 	   * icon */
-	  if(((t->flags & STICKY)||(t->flags & StickyIcon))&&
-	     (t->flags & ICONIFIED)&&(!(t->flags & ICON_MOVED))&&
-	     (!(t->flags & ICON_UNMAPPED)))
+	  if((IS_STICKY(t) || IS_ICON_STICKY(t)) &&
+	     IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
+	     !IS_ICON_UNMAPPED(t))
 	    AutoPlace(t);
 	}
 
@@ -748,8 +748,8 @@ void changeDesks(int desk)
     {
       if (t != &Scr.FvwmRoot)
         {
-              if(!((t->flags & ICONIFIED)&&(t->flags & StickyIcon)) &&
-  	        (!(t->flags & STICKY))&&(!(t->flags & ICON_UNMAPPED)))
+              if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
+		 !IS_STICKY(t) && !IS_ICON_UNMAPPED(t))
                  {
 	          if(t->Desk == Scr.CurrentDesk)
 	           {
@@ -778,8 +778,8 @@ void changeDesks(int desk)
       if (t1 != &Scr.FvwmRoot)
         {
              /* Only change mapping for non-sticky windows */
-             if(!((t1->flags & ICONIFIED)&&(t1->flags & StickyIcon)) &&
-	        (!(t1->flags & STICKY))&&(!(t1->flags & ICON_UNMAPPED)))
+             if(!(IS_ICONIFIED(t1) && IS_ICON_STICKY(t1)) &&
+	        !(IS_STICKY(t1)) && !IS_ICON_UNMAPPED(t1))
 	      {
 	       if(t1->Desk == oldDesk)
 	        {
@@ -801,13 +801,13 @@ void changeDesks(int desk)
       /* If its an icon, and its sticking, autoplace it so
        * that it doesn't wind up on top a a stationary
        * icon */
-      if(((t->flags & STICKY)||(t->flags & StickyIcon))&&
-	 (t->flags & ICONIFIED)&&(!(t->flags & ICON_MOVED))&&
-	 (!(t->flags & ICON_UNMAPPED)))
+      if((IS_STICKY(t) || IS_ICON_STICKY(t)) &&
+	 IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
+	 !IS_ICON_UNMAPPED(t))
 	AutoPlace(t);
     }
 
-  if((FocusWin)&&(FocusWin->flags & ClickToFocus))
+  if((FocusWin)&&(HAS_CLICK_FOCUS(FocusWin)))
 #ifndef NO_REMEMBER_FOCUS
     SetFocus(FocusWin->w, FocusWin,0);
   /* OK, someone beat me up, but I don't like this. If you are a predominantly
@@ -837,8 +837,8 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
     Set the window's desktop, and map or unmap it as needed.
   */
   /* Only change mapping for non-sticky windows */
-  if(!((tmp_win->flags & ICONIFIED)&&(tmp_win->flags & StickyIcon)) &&
-     (!(tmp_win->flags & STICKY))&&(!(tmp_win->flags & ICON_UNMAPPED)))
+  if(!( IS_ICONIFIED(tmp_win) && IS_ICON_STICKY(tmp_win)) &&
+     !IS_STICKY(tmp_win) && !IS_ICON_UNMAPPED(tmp_win))
     {
       if(tmp_win->Desk == Scr.CurrentDesk)
 	{
@@ -849,7 +849,7 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
 	{
 	  tmp_win->Desk = desk;
 	  /* If its an icon, auto-place it */
-	  if(tmp_win->flags & ICONIFIED)
+	  if(IS_ICONIFIED(tmp_win))
 	    AutoPlace(tmp_win);
 	  MapIt(tmp_win);
 	}

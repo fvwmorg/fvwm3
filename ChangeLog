@@ -1,4 +1,37 @@
+1999-04-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
 1999-04-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/builtins.c (change_layer): modified the syntax of the 'Layer'
+	command. 'Layer 0 -1' should no longer be used. Use 'Layer default' or
+	simply 'Layer' instead.
+
+	* fvwm/gnome.c:
+	* fvwm/virtual.c:
+	* fvwm/session.c:
+	* fvwm/resize.c:
+	* fvwm/placement.c:
+	* fvwm/move.c:
+	* fvwm/module.c:
+	* fvwm/misc.c:
+	* fvwm/menus.c:
+	* fvwm/icons.c:
+	* fvwm/fvwm.c:
+	* fvwm/focus.c:
+	* fvwm/events.c:
+	* fvwm/decorations.c:
+	* fvwm/builtins.c:
+	* fvwm/borders.c:
+	* fvwm/add_window.c:
+	* fvwm/style.h:
+	* fvwm/style.c:
+	main GSFR work done
+
+	* fvwm/misc.h:
+	* fvwm/style.h:
+	* fvwm/fvwm.h: activated GSFR defines
+
+	* ------ begin of great-style-flag-rewrite ------
 
 	* fvwm/style.c: reversed weird logic of off_flags meaning 'flag has
 	been turned on'

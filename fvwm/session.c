@@ -33,8 +33,7 @@ typedef struct _match
   int                 desktop;
   int                 layer;
   int                 used;
-  int                 shaded, name_changed;
-  unsigned long       flags;
+  window_flags        gsfr_flags;
 }
 Match;
 
@@ -288,8 +287,10 @@ SaveWindowStates(FILE *f)
 	      ewin->icon_y_loc + Scr.Vy);
       fprintf(f, "  [DESK] %i\n", ewin->Desk);
       fprintf(f, "  [LAYER] %i\n", ewin->layer);
-      fprintf(f, "  [FLAGS] %lu %i %i\n", ewin->flags,
-	      !!(ewin->buttons & WSHADE), ewin->tmpflags.NameChanged);
+      fprintf(f, "  [FLAGS] ", ewin->gsfr_flags);
+      for (i = 0; i < sizeof(window_flags); i++)
+	fprintf(f, "%02x", ((char *)&(ewin->gsfr_flags))[i]);
+      fprintf(f, "\n");
     }
   return 1;
 }
@@ -332,9 +333,8 @@ LoadWindowStates(char *filename)
 	      matches[num_match - 1].icon_y = 0;
 	      matches[num_match - 1].desktop = 0;
 	      matches[num_match - 1].layer = 0;
-	      matches[num_match - 1].shaded = 0;
-	      matches[num_match - 1].name_changed = 0;
-	      matches[num_match - 1].flags = 0;
+	      memset(&(matches[num_match - 1].gsfr_flags), 0,
+		     sizeof(window_flags));
 	      matches[num_match - 1].used = 0;
 	    }
 	  else if (!strcmp(s1, "[GEOMETRY]"))
@@ -363,11 +363,16 @@ LoadWindowStates(char *filename)
 	    }
 	  else if (!strcmp(s1, "[FLAGS]"))
 	    {
-	      sscanf(s, "%*s %lu %i %i",
-		     &(matches[num_match - 1].flags),
-		     &(matches[num_match - 1].shaded),
-		     &(matches[num_match - 1].name_changed)
-		);
+	      char *ts = s;
+
+	      while (*ts != ' ')
+		ts++;
+	      for (i = 0; i < sizeof(window_flags); i++)
+		{
+		  sscanf(ts, "%02x",
+			 &(((char *)&(matches[num_match - 1]))[i]));
+		  ts += 2;
+		}
 	    }
 	  else if (!strcmp(s1, "[CLIENT_ID]"))
 	    {
@@ -457,9 +462,8 @@ Bool matchWin(FvwmWindow *w, Match *m)
 
 	  if (xstreq(w->class.res_name, m->res_name) &&
 	      xstreq(w->class.res_class, m->res_class) &&
-	      (m->name_changed ||
-               w->tmpflags.NameChanged ||
-               xstreq(w->name, m->wm_name)))
+	      (IS_NAME_CHANGED(m) || IS_NAME_CHANGED(w) ||
+	       xstreq(w->name, m->wm_name)))
             {
               if (client_id)
                 {
@@ -532,30 +536,28 @@ MatchWinToSM(FvwmWindow *ewin,
 	{
 
 	  matches[i].used = 1;
-	  *do_shade = matches[i].shaded;
-	  *do_max = !!(matches[i].flags & MAXIMIZED);
-	  if (matches[i].flags & ICONIFIED) {
+	  *do_shade = IS_SHADED(&(matches[i]));
+	  *do_max = IS_MAXIMIZED(&(matches[i]));
+	  if (IS_ICONIFIED(&(matches[i]))) {
 	    /*
 	      ICON_MOVED is necessary to make fvwm use icon_[xy]_loc
 	      for icon placement
 	    */
-	    ewin->flags |= STARTICONIC|ICON_MOVED;
+	    SET_DO_START_ICONIC(ewin, 1);
+	    SET_ICON_MOVED(ewin, 1);
 	  } else {
-	    ewin->flags &= ~STARTICONIC;
+	    SET_DO_START_ICONIC(ewin, 1);
 	  }
-#define FLAG(x) if(matches[i].flags&x) ewin->flags|=x; else ewin->flags&=~x
-	  FLAG(WINDOWLISTSKIP);
-	  FLAG(SUPPRESSICON);
-	  FLAG(NOICON_TITLE);
-	  FLAG(Lenience);
-	  FLAG(StickyIcon);
-	  FLAG(CirculateSkipIcon);
-	  FLAG(CirculateSkip);
-	  FLAG(ClickToFocus);
-	  FLAG(SloppyFocus);
-#undef FLAG
+	  SET_DO_SKIP_WINDOW_LIST(ewin, DO_SKIP_WINDOW_LIST(&(matches[i])));
+	  SET_ICON_SUPPRESSED(ewin, IS_ICON_SUPPRESSED(&(matches[i])));
+	  SET_HAS_NO_ICON_TITLE(ewin, HAS_NO_ICON_TITLE(&(matches[i])));
+	  SET_LENIENT(ewin, IS_LENIENT(&(matches[i])));
+	  SET_ICON_STICKY(ewin, IS_ICON_STICKY(&(matches[i])));
+	  SET_DO_SKIP_ICON_CIRCULATE(ewin,
+				     DO_SKIP_ICON_CIRCULATE(&(matches[i])));
+	  SET_DO_SKIP_CIRCULATE(ewin, DO_SKIP_CIRCULATE(&(matches[i])));
+	  SET_FOCUS_MODE(ewin, GET_FOCUS_MODE(&(matches[i])));
 	  ewin->name = matches[i].wm_name;
-	  ewin->tmpflags.NameChanged = matches[i].name_changed;
 	  /* this doesn't work very well if Vx/Vy is not on
 	     a page boundary */
 	  ewin->attr.x = matches[i].x - Scr.Vx;
@@ -566,15 +568,15 @@ MatchWinToSM(FvwmWindow *ewin,
 	  *w_max = matches[i].w_max;
 	  *h_max = matches[i].h_max;
 
-	  if (matches[i].flags & STICKY) {
-	    ewin->flags |= STICKY;
+	  if (IS_STICKY(&(matches[i]))) {
+	    SET_STICKY(ewin, 1);
 	    /* force sticky windows on screen */
 	    ewin->attr.x = my_modulo (ewin->attr.x, Scr.MyDisplayWidth);
 	    ewin->attr.y = my_modulo (ewin->attr.y, Scr.MyDisplayHeight);
 	    *x_max = my_modulo (*x_max, Scr.MyDisplayWidth);
 	    *y_max = my_modulo (*y_max, Scr.MyDisplayHeight);
 	  } else {
-	    ewin->flags &= ~STICKY;
+	    SET_STICKY(ewin, 0);
 	    ewin->Desk = matches[i].desktop;
 	  }
 

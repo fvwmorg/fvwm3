@@ -733,7 +733,7 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
     XUnmapWindow(dpy,fw->frame);
     XUnmapWindow(dpy,w);
     RestoreWithdrawnLocation (fw,True);
-    fw->tmpflags.ReuseDestroyed = True;  /* RBW - 1999/03/20 */
+    SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
     Destroy(fw);
     Event.xmaprequest.window = w;
     HandleMapRequestKeepRaised(BlackoutWin, fw);

@@ -82,7 +82,7 @@ void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
       XWarpPointer(dpy,None,Scr.Root,0,0,0,0,
 		   pointerX,pointerY);
     }
-    if (tmp_win && !(tmp_win->buttons & WSHADE))
+    if (tmp_win && !IS_SHADED(tmp_win))
     {
       /* send configure notify event for windows that care about their
        * location */
@@ -181,7 +181,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
 
   /* gotta have a window */
   w = tmp_win->frame;
-  if(tmp_win->flags & ICONIFIED)
+  if(IS_ICONIFIED(tmp_win))
     {
       if(tmp_win->icon_pixmap_w != None)
 	{
@@ -201,7 +201,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
       FinalY = y % Scr.MyDisplayHeight;
       if (get_page_arguments(action, &page_x, &page_y))
 	{
-	  tmp_win->flags &= ~STICKY;
+	  SET_STICKY(tmp_win, 0);
 	  FinalX += page_x - Scr.Vx;
 	  FinalY += page_y - Scr.Vy;
 	}
@@ -225,7 +225,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
   }
   else /* icon window */
     {
-      tmp_win->flags |= ICON_MOVED;
+      SET_ICON_MOVED(tmp_win, 1);
       tmp_win->icon_x_loc = FinalX ;
       tmp_win->icon_xl_loc = FinalX -
 	    (tmp_win->icon_w_width - tmp_win->icon_p_width)/2;
@@ -309,7 +309,7 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
   nyt = -1;
   self.x = *px;
   self.y = *py;
-  if(tmp_win->flags&ICONIFIED)
+  if(IS_ICONIFIED(tmp_win))
     {
       self.w = Width;
       self.h = Height;
@@ -327,22 +327,31 @@ static void DoSnapAttract(FvwmWindow *tmp_win, int Width, int Height,
 	}
       if(Scr.SnapMode == 1)  /* SameType */
 	{
-	  if( (tmp->flags&ICONIFIED) != (tmp_win->flags&ICONIFIED) )
-	    { tmp = tmp->next; continue; }
+	  if( IS_ICONIFIED(tmp) != IS_ICONIFIED(tmp_win))
+	    {
+	      tmp = tmp->next;
+	      continue;
+	    }
 	}
       if(Scr.SnapMode == 2)  /* Icons */
 	{
-	  if( !(tmp->flags&ICONIFIED) || !(tmp_win->flags&ICONIFIED) )
-	    { tmp = tmp->next; continue; }
+	  if( !IS_ICONIFIED(tmp) || !IS_ICONIFIED(tmp_win))
+	    {
+	      tmp = tmp->next;
+	      continue;
+	    }
 	}
       if(Scr.SnapMode == 3)  /* Windows */
 	{
-	  if( (tmp->flags&ICONIFIED) || (tmp_win->flags&ICONIFIED) )
-	    { tmp = tmp->next; continue; }
+	  if( IS_ICONIFIED(tmp) || IS_ICONIFIED(tmp_win))
+	    {
+	      tmp = tmp->next;
+	      continue;
+	    }
 	}
       if (tmp_win != tmp && (tmp_win->Desk == tmp->Desk))
 	{
-	  if(tmp->flags&ICONIFIED)
+	  if(IS_ICONIFIED(tmp))
 	    {
 	      if(tmp->icon_p_height > 0)
 		{
@@ -531,7 +540,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   /* make a copy of the tmp_win structure for sending to the pager */
   memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
   /* prevent flicker when paging */
-  tmp_win->tmpflags.window_being_moved_opaque = opaque_move;
+  SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, opaque_move);
 
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
 		&JunkX, &JunkY, &button_mask);
@@ -687,7 +696,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 		MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
 	      else
 		{
-		  if (tmp_win->flags & ICONIFIED)
+		  if (IS_ICONIFIED(tmp_win))
 		    {
 		      tmp_win->icon_x_loc = xl ;
 		      tmp_win->icon_xl_loc = xl -
@@ -735,8 +744,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    MoveOutline(Scr.Root, xl, yt, Width - 1, Height - 1);
 
 	}
-      if (opaque_move && !(tmp_win->flags & ICONIFIED) &&
-	  !(tmp_win->buttons & WSHADE))
+      if (opaque_move && !IS_ICONIFIED(tmp_win) && !IS_SHADED(tmp_win))
         {
 	  /* send configure notify event for windows that care about their
 	   * location */
@@ -775,7 +783,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     /* Don't wait for buttons to come up when user is placing a new window
      * and wants to resize it. */
     WaitForButtonsUp();
-  tmp_win->tmpflags.window_being_moved_opaque = 0;
+  SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, 0);
 }
 
 /***********************************************************************
@@ -972,7 +980,7 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
   else
     MyXGrabServer(dpy);
 
-  if((!opaque_move)&&(tmp_win->flags & ICONIFIED))
+  if((!opaque_move)&&(IS_ICONIFIED(tmp_win)))
     XUnmapWindow(dpy,w);
 
   XOffset = origDragX - DragX;
