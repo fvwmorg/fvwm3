@@ -92,7 +92,6 @@ Bool DoingCommandLine = False;	/* Set True before each cmd line arg */
 static char *config_commands[MAX_CFG_CMDS];
 static int num_config_commands=0;
 
-
 int FvwmErrorHandler(Display *, XErrorEvent *);
 int CatchFatal(Display *);
 int CatchRedirectError(Display *, XErrorEvent *);
@@ -102,8 +101,8 @@ void SaveDesktopState(void);
 void SetMWM_INFO(Window window);
 void SetRCDefaults(void);
 void StartupStuff(void);
-
-int parseCommandArgs(const char *cmd, char **argv, int maxv, const char **err);
+static int parseCommandArgs(
+  const char *command, char **argv, int maxArgc, const char **errorMsg);
 
 XContext FvwmContext;		/* context for fvwm windows */
 XContext MenuContext;		/* context for fvwm menus */
@@ -567,7 +566,8 @@ int main(int argc, char **argv)
     }
   }
 
-  restart_restore_filename = strdup(CatString2(user_home_dir, "/.fvwm_restart"));
+  restart_restore_filename =
+    strdup(CatString2(user_home_dir, "/.fvwm_restart"));
   if (!restore_filename && Restarting)
     restore_filename = restart_restore_filename;
 
@@ -1727,6 +1727,7 @@ RETSIGTYPE SigDone(int sig)
 /* if restart is true, command must not be NULL... */
 void Done(int restart, char *command)
 {
+  Bool do_preserve_state = True;
 /* migo - delete
   FvwmFunction *func;
 */
@@ -1754,9 +1755,10 @@ void Done(int restart, char *command)
   /* Close all my pipes */
   ClosePipes();
 
-  if (! restart)  {
-    Reborder ();
-    }
+  if (!restart)
+  {
+    Reborder();
+  }
 
   CloseICCCM2();
 
@@ -1764,11 +1766,28 @@ void Done(int restart, char *command)
   {
     SaveDesktopState();
 
-    if (command) while (isspace(command[0])) command++;
-    if (command[0] == '\0') command = NULL; /* native restart */
+    if (command)
+    {
+      while (isspace(command[0]))
+	command++;
+    }
+    if (command[0] == '\0')
+      command = NULL; /* native restart */
 
-    /* won't return under SM on Restart without parameters */
-    RestartInSession(restart_restore_filename, command == NULL);
+    if (command)
+    {
+      char *token;
+      char *next;
+
+      if (StrEquals(PeekToken(command, NULL), "--dont-preserve-state"))
+      {
+	do_preserve_state = False;
+	command = NULL;
+      }
+    }
+    if (do_preserve_state)
+      /* won't return under SM on Restart without parameters */
+      RestartInSession(restart_restore_filename, command == NULL);
 
     /*
       RBW - 06/08/1999 - without this, windows will wander to other pages on
@@ -1812,7 +1831,8 @@ void Done(int restart, char *command)
           my_argv[i] = NULL;
 
           execvp(my_argv[0], my_argv);
-          fvwm_msg(ERR, "Done", "Call of '%s' failed! (restarting '%s' instead)",
+          fvwm_msg(ERR, "Done",
+		   "Call of '%s' failed! (restarting '%s' instead)",
             my_argv[0], g_argv[0]);
           perror("  system error description");
         }
@@ -1997,10 +2017,11 @@ void UnBlackoutScreen(void)
  * on the next function call. This can be changed using dynamic allocation,
  * in this case the caller must free the string pointed by argv[0].
  */
-int parseCommandArgs(const char *command, char **argv, int maxArgc, const char **errorMsg)
+static int parseCommandArgs(
+  const char *command, char **argv, int maxArgc, const char **errorMsg)
 {
   /* It is impossible to guess the exact length because of expanding */
-  #define MAX_TOTAL_ARG_LEN 256
+#define MAX_TOTAL_ARG_LEN 256
   /* char *argString = safemalloc(MAX_TOTAL_ARG_LEN); */
   static char argString[MAX_TOTAL_ARG_LEN];
   int totalArgLen = 0;
@@ -2052,22 +2073,37 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
         if (addArgChar(popChar) == '\0') break;
       }
     }
-    if (*(aptr-1) == '\0') { *errorMsg = "Unexpected last backslash"; errorCode = -2; break; }
-    if (errorCode) break;
+    if (*(aptr-1) == '\0')
+    {
+      *errorMsg = "Unexpected last backslash";
+      errorCode = -2;
+      break;
+    }
+    if (errorCode)
+      break;
     if (theChar == '~' || theChar == '$' || !canAddArgChar)
-      { *errorMsg = "The command is too long"; errorCode = -argc - 100; break; }
-    if (sQuote) { *errorMsg = "No closing double quote"; errorCode = -4; break; }
+    {
+      *errorMsg = "The command is too long";
+      errorCode = -argc - 100;
+      break;
+    }
+    if (sQuote)
+    {
+      *errorMsg = "No closing double quote";
+      errorCode = -4;
+      break;
+    }
     addArgChar('\0');
   }
 
-  #undef theChar
-  #undef advChar
-  #undef topChar
-  #undef popChar
-  #undef canAddArgChar
-  #undef addArgChar
-  #undef canAddArgStr
-  #undef addArgStr
+#undef theChar
+#undef advChar
+#undef topChar
+#undef popChar
+#undef canAddArgChar
+#undef addArgChar
+#undef canAddArgStr
+#undef addArgStr
   argv[argc] = NULL;
   if (argc == 0 && !errorCode) *errorMsg = "Void command";
   return errorCode? errorCode: argc;

@@ -1000,8 +1000,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
       if(DO_START_ICONIC(Tmp_win))
 	state = IconicState;
 
-      if(isIconicState != DontCareState)
-	state = isIconicState;
+      if(isIconicState == IconicState)
+	state = IconicState;
 
       MyXGrabServer(dpy);
       switch (state)
@@ -1058,6 +1058,9 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
   /* Just to be on the safe side, we make sure that STARTICONIC
      can only influence the initial transition from withdrawn state. */
   SET_DO_START_ICONIC(Tmp_win, 0);
+
+  /* Clean out the global so that it isn't used on additional map events. */
+  isIconicState = DontCareState;
 
 #ifdef GNOME
   GNOME_SetClientList();

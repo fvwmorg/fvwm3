@@ -1,3 +1,22 @@
+1999-07-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/session.c (my_modulo): removed 'buggy' function
+	(MatchWinToSM): fixed restart placement of sticky windows partially
+	off screen
+
+	* fvwm/builtins.c (MaximizeHeight):
+	(MaximizeWidth): use fixed version of truncate_to_multiple
+
+	* fvwm/misc.c (truncate_to_multiple): fixed off-by-one bug
+
+	* fvwm/fvwm.c (Done): added '--dont-preserve-state' option to allow
+	restarting a fresh fvwm2 without having to specify the call options
+
+	* fvwm/events.c (HandleMapRequestKeepRaised): fixed another problem
+	with recapture/iconidief emacs frames. Emacs sends two MapRequest
+	events. The second iconifies the emacs frame again without removing
+	the fvwm frame.
+
 1999-07-07  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c: menu menu styles VerticalItemSpacing and

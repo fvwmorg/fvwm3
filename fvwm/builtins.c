@@ -120,11 +120,7 @@ static void MaximizeHeight(FvwmWindow *win, int win_width, int win_x,
   y11 = *win_y;            /* Start y */
   x12 = x11 + win_width;   /* End x   */
   y12 = y11 + *win_height; /* End y   */
-  if (y11 >= 0)
-    new_y1 = (y11 / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
-  else
-    new_y1 = ((y11 + 1) / Scr.MyDisplayHeight) * Scr.MyDisplayHeight -
-      Scr.MyDisplayHeight;
+  new_y1 = truncate_to_multiple(y11, Scr.MyDisplayHeight);
   new_y2 = new_y1 + Scr.MyDisplayHeight;
 
   for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {
@@ -179,11 +175,7 @@ static void MaximizeWidth(FvwmWindow *win, int *win_width, int *win_x,
   y11 = win_y;             /* Start y */
   x12 = x11 + *win_width;  /* End x   */
   y12 = y11 + win_height;  /* End y   */
-  if (x11 >= 0)
-    new_x1 = (x11 / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
-  else
-    new_x1 = ((x11 + 1) / Scr.MyDisplayWidth) * Scr.MyDisplayWidth -
-      Scr.MyDisplayWidth;
+  new_x1 = truncate_to_multiple(x11, Scr.MyDisplayWidth);
   new_x2 = new_x1 + Scr.MyDisplayWidth;
 
   for (cwin = Scr.FvwmRoot.next; cwin; cwin = cwin->next) {

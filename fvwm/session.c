@@ -200,7 +200,8 @@ LoadGlobalState(char *filename)
 		  }
 		else if (!strcmp(s1, "[MISC]"))
 		  {
-		    sscanf(s, "%*s %i %i %i %i %i %i %i %i %i", &i1, &i2, &i3, &i4,
+		    sscanf(s, "%*s %i %i %i %i %i %i %i %i %i",
+			   &i1, &i2, &i3, &i4,
 			   &i5, &i6, &i7, &i8, &i9);
 		    Scr.ClickTime = i1;
 		    Scr.ColormapFocus = i2;
@@ -214,7 +215,8 @@ LoadGlobalState(char *filename)
 		  }
 		else if (!strcmp(s1, "[STYLE]"))
 		  {
-		    sscanf(s, "%*s %i %i %i %i %i %i", &i1, &i2, &i3, &i4, &i5, &i6);
+		    sscanf(s, "%*s %i %i %i %i %i %i",
+			   &i1, &i2, &i3, &i4, &i5, &i6);
 		    Scr.go.ModifyUSP = i1;
 		    Scr.go.CaptureHonorsStartsOnPage = i2;
 		    Scr.go.RecaptureHonorsStartsOnPage = i3;
@@ -574,13 +576,6 @@ static Bool matchWin(FvwmWindow *w, Match *m)
   return found;
 }
 
-static int
-my_modulo (int x, int m)
-{
-  int res = x % m;
-  return res < 0? m + res: res;
-}
-
 /*
   This routine (potentially) changes the flags STARTICONIC,
   MAXIMIZED, WSHADE and STICKY and the Desk and
@@ -636,28 +631,45 @@ MatchWinToSM(FvwmWindow *ewin,
 	  ewin->attr.x = matches[i].x - Scr.Vx;
 	  ewin->attr.y = matches[i].y - Scr.Vy;
 
+	  ewin->attr.width = matches[i].w;
+	  ewin->attr.height = matches[i].h;
+
 	  *x_max = matches[i].x_max - Scr.Vx;
 	  *y_max = matches[i].y_max - Scr.Vy;
 	  *w_max = matches[i].w_max;
 	  *h_max = matches[i].h_max;
 
 	  if (IS_STICKY(&(matches[i]))) {
+	    rectangle r;
+	    r.x = ewin->attr.x;
+	    r.y = ewin->attr.y;
+	    r.width = ewin->attr.width;
+	    r.height = ewin->attr.height;
+
 	    SET_STICKY(ewin, 1);
 	    /* force sticky windows on screen */
 	    /* migo - 28/Jun/1999 - ewin->old_bw will be added in AddWindow */
-	    ewin->attr.x = my_modulo (ewin->attr.x + ewin->old_bw, Scr.MyDisplayWidth)  - ewin->old_bw;
-	    ewin->attr.y = my_modulo (ewin->attr.y + ewin->old_bw, Scr.MyDisplayHeight) - ewin->old_bw;
-	    *x_max = my_modulo (*x_max, Scr.MyDisplayWidth);
-	    *y_max = my_modulo (*y_max, Scr.MyDisplayHeight);
+	    /* domivogt (08-Jul-1999): but not if the window is already
+	     * visible! */
+	    if (!IsRectangleOnThisPage(&r, Scr.CurrentDesk))
+	    {
+fprintf(stderr,"before truncate: x=%d, y=%d\n",ewin->attr.x,ewin->attr.y);
+	      ewin->attr.x -=
+		truncate_to_multiple(ewin->attr.x, Scr.MyDisplayWidth);
+	      ewin->attr.y -=
+		truncate_to_multiple(ewin->attr.y, Scr.MyDisplayHeight);
+fprintf(stderr,"after truncate: x=%d, y=%d\n",ewin->attr.x,ewin->attr.y);
+	      *x_max -=
+		truncate_to_multiple(*x_max, Scr.MyDisplayWidth);
+	      *y_max -=
+		truncate_to_multiple(*y_max, Scr.MyDisplayHeight);
+	    }
 	  } else {
 	    SET_STICKY(ewin, 0);
 	    ewin->Desk = matches[i].desktop;
 	  }
 
 	  set_layer(ewin, matches[i].layer);
-
-	  ewin->attr.width = matches[i].w;
-	  ewin->attr.height = matches[i].h;
 
 	  /* this is not enough to fight fvwms attempts to
 	     put icons on the current page */

@@ -2895,6 +2895,11 @@ Key F1 R N Restart xterm -n '"X console"' \\
 Restart command without parameters preserves most per-window state by
 writing it to a file named .fvwm_restart in the user's home directory.
 
+.IP "Restart --dont-preserve-state"
+Runs the same command that was used to start fvwm initially like Restart
+without any parameters would do, but it does not save any window states
+over the restart.
+
 .IP "Restart --pass-args \fIWindowManagerName\fP"
 The same as 'Restart' without parameters but the name for a window manager
 is replaced with the specified \fIWindowManagerName\fP and original arguments

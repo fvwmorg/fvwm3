@@ -1,3 +1,13 @@
+Changes in beta release 2.3.6 (July 1999)
+
+* The Restart function has been partially rewritten. If you were using
+  'Restart' without any parameters and wonder why changes in your configuration
+  file are not used during a restart you should use
+  'Restart --dont-preserve-state' instead.
+
+* New menu styles VerticalItemSpacing and VerticalTitleSpacing allow control
+  over the height of menu items and titles.
+
 Changes in beta release 2.3.5 (July 1999)
 
 * New special functions Session{Init|Restart|Exit}Function are called instead
@@ -8,7 +18,7 @@ Changes in beta release 2.3.5 (July 1999)
 * Fvwm web files are now in a separate CVS tree.
 
 * All modules except FvwmScript and FvwmGTK share fvwm's visual.
- 
+
 * The behaviour of the Raised and Visible flags for Next, Circulate, ...
   commands has been changed. They now do what their names suggest, i.e.
   visible = partially visible and raised = fully visible.

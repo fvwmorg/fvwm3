@@ -757,7 +757,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
    */
   tmp_win->icon_w = None;
   GrabAllWindowButtons(dpy, tmp_win->frame, Scr.AllBindings, C_WINDOW,
-		       GetUnusedModifiers(), Scr.FvwmCursors[CRS_DEFAULT], True);
+		       GetUnusedModifiers(), Scr.FvwmCursors[CRS_DEFAULT],
+		       True);
   GrabAllWindowKeys(dpy, tmp_win->frame, Scr.AllBindings,
 		    C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
 		    GetUnusedModifiers(), True);
@@ -1177,5 +1178,3 @@ void GetWindowSizeHints(FvwmWindow *tmp)
                 orig_hints.win_gravity);
     }
 }
-
-
