@@ -1640,25 +1640,7 @@ static void draw_button(WinManager *man, int button, int force)
 		{
 			ConsoleDebug (X11, "\tDrawing background\n");
 			draw_button_background(man, bounding, button_state);
-			cleared_button = 1
-;
-			if (!PictureUseBWOnly())
-			{
-				get_gcs(
-					man, button_state, win->iconified,
-					&context1, &context2);
-				draw_relief(
-					man, button_state, &g, context1,
-					context2);
-			}
-			else if (button_state & SELECT_CONTEXT)
-			{
-				XDrawRectangle (
-					theDisplay, man->theWindow,
-					man->hiContext[button_state],
-					g.button_x + 2, g.button_y + 1,
-					g.button_w - 4, g.button_h - 2);
-			}
+			cleared_button = 1;
 		}
 		if (clear_old_pic)
 		{
@@ -1685,6 +1667,29 @@ static void draw_button(WinManager *man, int button, int force)
 			iconify_box(
 				man, win, button, &g, win->iconified,
 				button_state, cleared_button, bounding);
+		}
+		/* Draw reliefs after icon since the icon might overlay
+		   part of it. */
+		if (draw_background)
+		{
+			ConsoleDebug (X11, "\tDrawing reliefs\n");
+			if (!PictureUseBWOnly())
+			{
+				get_gcs(
+					man, button_state, win->iconified,
+					&context1, &context2);
+				draw_relief(
+					man, button_state, &g, context1,
+					context2);
+			}
+			else if (button_state & SELECT_CONTEXT)
+			{
+				XDrawRectangle (
+					theDisplay, man->theWindow,
+					man->hiContext[button_state],
+					g.button_x + 2, g.button_y + 1,
+					g.button_w - 4, g.button_h - 2);
+			}
 		}
 		if (draw_string)
 		{
