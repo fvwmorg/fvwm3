@@ -2,6 +2,9 @@
 
 	* libs/Parse.c (GetSuffixedIntegerArguments): Correctly initialize
 	"suffixes" variable to correct a UMR detected by Purify.
+	(DoPeekToken): Made tmptok static since its address is being returned.
+	This is probably not the right way to fix this.
+	(GetSuffixedIntegerArguments): Remove extra code from suffixlist change.
 
 1999-03-23  Tomas Ogren  <stric@ing.umu.se>
 

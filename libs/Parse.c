@@ -170,7 +170,7 @@ char *DoPeekToken(char *indata, char **token, char *spaces, char *delims,
   char *end;
   int snum;
   int dnum;
-  char tmptok[MAX_TOKEN_LENGTH];
+  static char tmptok[MAX_TOKEN_LENGTH];
 
   snum = (spaces) ? strlen(spaces) : 0;
   dnum = (delims) ? strlen(delims) : 0;
@@ -364,7 +364,6 @@ int GetSuffixedIntegerArguments(char *action, char **ret_action, int retvals[],
     suffixes = strlen(suffixlist);      /* save its length */
   }
 
-  suffixes = (suffixlist != NULL) ? strlen(suffixlist) : 0;
   for (i = 0; i < num && action; i++)
   {
     action = GetNextToken(action, &token);
