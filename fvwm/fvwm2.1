@@ -5383,64 +5383,99 @@ difficult but not impossible.  See also
 .BR EdgeThickness .
 
 .TP
-.B "EdgeScroll" "\fIhorizontal vertical\fP"
+.BI "EdgeScroll " horizontal "[p] " vertical "[p]"
 Specifies the percentage of a page to scroll when the cursor hits the
-edge of a page.  A trailing 'p' changes the interpretation to mean "pixels".
-If you don't want any paging or scrolling when you hit the edge of a
-page include "EdgeScroll 0 0" in your
+edge of a page.  A trailing
+.RI ' p '
+changes the interpretation to mean pixels.  If you don't want any
+paging or scrolling when you hit the edge of a page include
+.EX
+EdgeScroll 0 0
+.EE
+in your
 .I .fvwm2rc
-file, or possibly better, set the EdgeThickness to zero.
-See the EdgeThickness command. If you want whole
-pages, use "EdgeScroll 100 100".  Both horizontal and vertical should
-be positive numbers.
+file, or possibly better, set the
+.B EdgeThickness
+to zero.  See the
+.B EdgeThickness
+command. If you want whole pages, use
+.EX
+EdgeScroll 100 100
+.EE
+Both
+.IR horizontal " and " vertical
+should be positive numbers.
 
-If the horizontal and vertical percentages are multiplied by 1000 then
-scrolling will wrap around at the edge of the desktop.  If "EdgeScroll
-100000 100000" is used fvwm will scroll by whole pages, wrapping
-around at the edge of the desktop.
+If the
+.IR horizontal " and " vertical
+percentages are multiplied by 1000 then scrolling will wrap
+around at the edge of the desktop.  If
+.EX
+EdgeScroll 100000 100000
+.EE
+is used fvwm will scroll by whole pages, wrapping around at the
+edge of the desktop.
 
 .TP
-.B "EdgeThickness" "\fI0\fP|\fI1\fP|\fI2\fP"
+.BI "EdgeThickness " 0 | 1 | 2
 This is the width or height of the invisible window that fvwm creates
 on the edges of the screen that are used for the edge scrolling feature.
 
-A value of  zero completely disables  mouse edge scrolling, even while
-dragging a window.
+A value of
+.I 0
+completely disables mouse edge scrolling, even while dragging a window.
 
-1 gives the  smallest pan frames,  which seem to  work best  except on
+.I 1
+gives the smallest pan frames, which seem to work best except on
 some servers.
 
-2 is the default.
+.I 2
+is the default.
 
-Pan frames of 1 or 2 pixels can sometimes be confusing, for example,
-if you drag a window over the edge of the screen, so that it straddles
-a pan frame, clicks on the window, near the edge of the screen are
-treated as clicks on the root window.
+Pan frames of
+.IR 1 " or " 2
+pixels can sometimes be confusing, for example, if you drag a window
+over the edge of the screen, so that it straddles a pan frame,
+clicks on the window, near the edge of the screen are treated as
+clicks on the root window.
 
 .TP
-.B "GotoDesk" "\fIarg1\fP [\fIarg2\fP] [\fImin max\fP]"
+.BI "GotoDesk " arg1 " [" arg2 "] [" "min max" "]"
 Switches the current viewport to another desktop (workspace, room).
 
-The command takes 1, 2, 3, or 4 arguments. A single argument is
-interpreted as a relative desk number. Two arguments are understood
-as a relative and an absolute desk number. Three arguments specify
+The command takes 1, 2, 3, or 4 arguments.  A single argument
+is interpreted as a relative desk number.  Two arguments are understood
+as a relative and an absolute desk number.  Three arguments specify
 a relative desk and the minimum and maximum of the allowable range.
 Four arguments specify the relative, absolute, minimum and maximum
-values. (Desktop numbers can be negative.)
+values.  (Desktop numbers can be negative.)
 
-If \fIarg1\fP is non zero then the next desktop number will be the
-current desktop number plus \fIarg1\fP.
+If
+.I arg1
+is non zero then the next desktop number will be the current
+desktop number plus
+.IR arg1 .
 
-If \fIarg1\fP is zero then the new desktop number will be \fIarg2\fP.
-(If \fIarg2\fP is not present, then the command has no effect.)
+If
+.I arg1
+is zero then the new desktop number will be
+.IR arg2 .
+(If
+.I arg2
+is not present, then the command has no effect.)
 
-If \fImin\fP and \fImax\fP are given, the new desktop number will
-be no smaller than min and no bigger than max. Values out of this
-range are truncated (if you gave an absolute desk number) or wrapped
-around (if you gave a relative desk number).
+If
+.IR min " and " max
+are given, the new desktop number will be no smaller than
+.I min
+and no bigger than
+.IR max .
+Values out of this range are truncated (if you gave an absolute
+desk number) or wrapped around (if you gave a relative desk number).
 
-The syntax is the same as for \fIMoveToDesk\fP, which moves a window
-to a different desktop.
+The syntax is the same as for
+.BR MoveToDesk ,
+which moves a window to a different desktop.
 
 The number of active desktops is determined dynamically.  Only
 desktops which contain windows or are currently being displayed are
@@ -5448,15 +5483,21 @@ active.  Desktop numbers must be between 2147483647 and -2147483648
 (is that enough?).
 
 .TP
-.B "GotoPage" "\fIx y\fP"
+.BI "GotoPage  " x "[p] " y "[p]"
 Moves the desktop viewport to page (x,y).  The upper left page is
 (0,0), the upper right is (M,0), where M is one less than the current
-number of horizontal pages specified in the DeskTopSize command.  The
-lower left page is (0,N), and the lower right page is (M,N), where N
-is the desktop's vertical size as specified in the DeskTopSize
+number of horizontal pages specified in the
+.B DeskTopSize
+command.  The lower left page is (0,N), and the lower right page
+is (M,N), where N is the desktop's vertical size as specified in the
+.B DeskTopSize
 command.  To switch to a page relative to the current one add a
-trailing 'p' after any or both numerical arguments.  To go to
-last visited page use \fIprev\fP as the first argument.  The GotoPage
+trailing
+.RI ' p '
+after any or both numerical arguments.  To go to last visited page use
+.I prev
+as the first argument.  The
+.B GotoPage
 function should not be used in a pop-up menu.
 
 Examples:
@@ -5475,54 +5516,87 @@ GotoPage +2p -1p
 .EE
 
 .TP
-.B "Scroll" "\fIhorizonal vertical\fP"
-Scrolls the virtual desktop's viewport by \fIhorizontal\fP pages in
-the x-direction and \fIvertical\fP pages in the y-direction.  Either
-or both entries may be negative.  Both horizontal and vertical values
-are expressed in percent of pages, so "Scroll 100 100" means to scroll
-down and left by one full page.  "Scroll 50 25" means to scroll left
-half a page and down a quarter of a page.  The scroll function should
-not be called from pop-up menus. Normally, scrolling stops at the edge
-of the desktop.
+.BI "Scroll " horizonal "[p] " vertical "[p]"
+Scrolls the virtual desktop's viewport by
+.I horizontal
+pages in the x-direction and
+.I vertical
+pages in the y-direction.  Either or both entries may be negative.  Both
+.IR horizontal " and " vertical
+values are expressed in percent of pages, so
+.EX
+Scroll 100 100
+.EE
+means to scroll down and left by one full page.
+.EX
+Scroll 50 25
+.EE
+means to scroll left half a page and down a quarter of a page.  The
+.B Scroll
+function should not be called from pop-up menus.  Normally, scrolling
+stops at the edge of the desktop.
 
-If the horizontal and vertical percentages are multiplied by 1000 then
-scrolling will wrap around at the edge of the desktop.  If "Scroll
-100000 0" is executed over and over fvwm will move to the next
-desktop page on each execution and will wrap around at the edge of the
-desktop, so that every page is hit in turn.
+If the
+.IR horizontal " and " vertical
+percentages are multiplied by 1000 then scrolling will wrap around
+at the edge of the desktop.  If
+.EX
+Scroll 100000 0
+.EE
+is executed over and over fvwm will move to the next desktop page
+on each execution and will wrap around at the edge of the desktop,
+so that every page is hit in turn.
 
-If the letter 'p' is appended to each coordinate (horizontal and/or
-vertical), then the scroll amount will be measured in pixels.
+If the letter
+.RI ' p '
+is appended to each coordinate
+.RI ( horizontal " and/or " vertical ),
+then the scroll amount will be measured in pixels.
 
 
 .SS COMMANDS FOR USER FUNCTIONS AND SHELL COMMANDS
 
 .TP
-.B "AddToFunc" "[\fIname\fP [\fItrigger\fP \fIaction\fP]]"
-Begins or add to a function definition.  Here's an example:
+.B "AddToFunc [" name " [" I | M | C | H | D action "]]"
+Begins or adds to a function definition.  Here's an example:
 .EX
 AddToFunc Move-or-Raise I Raise
  + M Move
  + D Lower
 .EE
-The function name is Move-or-Raise, and could be invoked from a menu
+The function name is "Move-or-Raise", and could be invoked from a menu
 or a mouse binding or key binding:
 .EX
 Mouse 1 TS A Move-or-Raise
 .EE
-The quoted portion of the function tells what kind of action will
-trigger the command which follows it.  'I' stands for Immediate, and is
-executed as soon as the function is invoked.  'M' stands for Motion, i.e.
-if the user starts moving the mouse.  'C' stands for Click, i.e., if the
-user presses and releases the mouse.  'H' stands for Hold, i.e. if the
-user presses a mouse button and holds it down for more that ClickTime
-milliseconds.  'D' stands for double-click. The action 'I' will cause
-an action to be performed on the button-press, if the function is
-invoked with prior knowledge of which window to act on.
+The letter before the
+.I action
+tells what kind of action will trigger the command which follows it.
+.RI ' I '
+stands for "Immediate", and is executed as soon as the function is
+invoked.
+.RI ' M '
+stands for "Motion", i.e. if the user starts moving the mouse.
+.RI ' C '
+stands for "Click", i.e., if the user presses and releases the mouse.
+.RI ' H '
+stands for "Hold", i.e. if the user presses a mouse button and holds
+it down for more than
+.B ClickTime
+milliseconds.
+.RI ' D '
+stands for "Double-click".
+The action
+.RI ' I '
+will cause an action to be performed on the button-press,
+if the function is invoked with prior knowledge of which window
+to act on.
 
 There is a number of predefined symbols that are replaced by
 certain values if they appear on the command line.  Please
-refer to the \fICOMMAND LINE PARAMETER EXPANSION\fP section for details.
+refer to the
+.B COMMAND LINE PARAMETER EXPANSION
+section for details.
 
 Examples:
 
@@ -5531,7 +5605,7 @@ If you call
 Key F10 R A Function MailFunction \\
   xmh "-font fixed"
 .EE
-and MailFunction is
+and "MailFunction" is
 
 .EX
 AddToFunc MailFunction
@@ -5543,25 +5617,26 @@ Then the last line of the function becomes
 .EX
  + I None (xmh) Exec exec xmh -font fixed
 .EE
-The expansion is performed as the function is executed, so you can use the
-same function with all sorts of different arguments.  You could use
+The expansion is performed as the function is executed, so you can
+use the same function with all sorts of different arguments.  You
+could use
 .EX
 Key F11 R A Function MailFunction \\
   zmail "-bg pink"
 .EE
 in the same
 .IR .fvwm2rc ,
-if you wanted.  An example of using $w is:
+if you wanted.  An example of using "$w" is:
 .EX
 AddToFunc PrintFunction
  + I Raise
  + I Exec xdpr -id $w
 .EE
-Note that $$ is expanded to $.
+Note that "$$" is expanded to '$'.
 
-Another example: bind right mouse button within the window button number 6
-(this is a minimize button for the win95 theme) to iconify all windows of
-the same resource:
+Another example: bind right mouse button within the window button
+number 6 (this is a minimize button for the win95 theme) to iconify
+all windows of the same resource:
 .EX
 AddToFunc FuncIconifySameResource "I" \\
   All ($r) Iconify on
@@ -5569,93 +5644,122 @@ Mouse 3 6 A FuncIconifySameResource
 .EE
 
 .TP
-.B "Beep"
+.BI "Beep"
 As might be expected, this makes the terminal beep.
 
 .TP
-.B "DestroyFunc" "\fIfunction\fP"
+.BI "DestroyFunc " function
 Deletes a function, so that subsequent references to it are no longer
-valid.  You can use this to change the contents of a function during an
-fvwm session.  The function can be rebuilt using AddToFunc.
+valid.  You can use this to change the contents of a function during a
+fvwm session.  The function can be rebuilt using
+.BR AddToFunc .
 .EX
 DestroyFunc PrintFunction
 .EE
 
 .TP
-.B "Echo" "\fIstring\fP"
-Prints a message to stderr.  Potentially useful for debugging things
-in your
+.BI "Echo " string
+Prints a message to
+.IR stderr .
+Potentially useful for debugging things in your
 .IR .fvwm2rc .
 .EX
 Echo Beginning style definitions...
 .EE
 
 .TP
-.B "Exec" "\fIcommand\fP"
-Executes \fIcommand\fP.  You should not use an ampersand ``&'' at the
-end of the command.  You probably want to use an additional ``exec'' at
-the beginning of \fIcommand\fP.  Without that, the shell that fvwm
-invokes to run your command will stay until the command exits.  In
-effect, you'll have twice as many processes running as you need.
-Note that some shells are smart enough to avoid this, but it never hurts
-to include the ``exec'' anyway.
+.BI "Exec " command
+Executes
+.IR command .
+You should not use an ampersand '&' at the end of the command.
+You probably want to use an additional "exec" at the beginning
+of
+.IR command .
+Without that, the shell that fvwm invokes to run your command will
+stay until the command exits.  In effect, you'll have twice as
+many processes running as you need.  Note that some shells are
+smart enough to avoid this, but it never hurts to include the
+"exec" anyway.
 
-The following example binds function key F1 in the root window, with
-no modifiers, to the exec function.  The program rxvt will be started
-with an assortment of options.
+The following example binds function key
+.SM F1
+in the root window, with no modifiers, to the exec function.
+The program rxvt will be started with an assortment of options.
 .EX
 Key F1 R N Exec exec rxvt -fg yellow -bg blue \\
   -e /bin/tcsh
 .EE
 
-Note that this function doesn't wait for \fIcommand\fP to complete, so
-things like:
+Note that this function doesn't wait for
+.I command
+to complete, so things like:
 .EX
 Exec "echo AddToMenu ... > /tmp/file"
 Read /tmp/file
 .EE
-won't work reliably.
+do not work reliably.
 
 .TP
-.B "ExecUseShell" "[\fIshell\fP]"
-Makes the Exec command use the specified shell, or the value of the
-$SHELL environment variable if no shell is specified, instead of the
-default Bourne shell (/bin/sh).
+.B "ExecUseShell [" shell "]"
+Makes the
+.B Exec
+command use the specified shell, or the value of the
+.I $SHELL
+environment variable if no shell is specified, instead of the
+default Bourne shell
+.RI ( /bin/sh ).
 .EX
 ExecUseShell
 ExecUseShell /usr/local/bin/tcsh
 .EE
 
 .TP
-.B "Function" "\fIFunctionName\fP"
+.BI "Function " FunctionName
 Used to bind a previously defined function to a key or mouse button.
-
 The following example binds mouse button 1 to a function called
 "Move-or-Raise", whose definition was provided as an example earlier
-in this man page.  After performing this binding fvwm will
-execute to move-or-raise function whenever button 1 is pressed in a
-window title-bar.
+in this man page.  After performing this binding fvwm will execute
+the "move-or-raise" function whenever button 1 is pressed in a
+window's title-bar.
 .EX
 Mouse 1 T A Function Move-or-Raise
 .EE
-The keyword "Function" may be omitted if "FunctionName" does not
-coincide with an fvwm built-in function name
+The keyword
+.B Function
+may be omitted if
+.I FunctionName
+does not coincide with a fvwm built-in function name
 
 .TP
 .B "Nop"
 Does nothing.  This is used to insert a blank line or separator in a
-menu.  If the menu item specification is Nop " ", then a blank line is
-inserted.  If it looks like Nop "", then a separator line is inserted.
-Can also be used as the double-click action for Menu.
+menu.  If the menu item specification is
+.EX
+Nop " "
+.EE
+then a blank line is inserted.  If it looks like
+.EX Nop ""
+.EE
+then a separator line is inserted.  Can also be used as the
+double-click action for
+.BR Menu " or " Popup .
 
 .TP
-.B "PipeRead" "\fIcommand\fP [\fI quiet \fP]"
-Causes fvwm to read commands from the output of the \fIcommand\fP.
-This command is executed by /bin/sh as if you typed it on the command
-line.  If the command consists of more than one word it must be quoted.
-Useful for building up dynamic menu entries based on a
-directories contents, for example.  If the keyword "Quiet" follows the
-command no message is produced if the command is not found.
+.B "PipeRead " command " [" quiet "]"
+Causes fvwm to read commands from the output of the
+.IR command .
+This
+.I command
+is executed by
+.I /bin/sh
+as if you typed it on the command line.  If the command consists
+of more than one word it must be quoted.  Useful for building up
+dynamic menu entries based on a directories contents, for example.
+If the keyword
+.I Quiet
+follows the command no message is produced if the
+.I command
+is not found.
 
 Example:
 .EX
@@ -5665,38 +5769,62 @@ PipeRead 'for i in $HOME;
 .EE
 
 .TP
-.B "Read" "\fIfilename\fP [\fI quiet \fP]"
-Causes fvwm to read commands from the file named \fIfilename\fP.
-If the keyword "Quiet" follows the command no message is produced
-if the file is not found.  If the file name does not begin with a
-slash, fvwm looks in the users configuration directory, then the
-system configuration directory.
-
-The users configuration directory is $HOME.  $HOME can be overridden
-by exporting FVWM_USERHOME set to a directory.
+.BI "Read " filename " [" quiet "]"
+Causes fvwm to read commands from the file named
+.IR filename .
+If the keyword
+.I Quiet
+follows the command no message is produced if the file is not
+found.  If the file name does not begin with a slash ('/'), fvwm
+looks in the user's configuration directory, then the system
+configuration directory.  The users configuration directory is
+.IR $HOME .
+.I $HOME
+can be overridden by exporting
+.I FVWM_USERHOME
+set to a directory.
 
 .TP
-.B "SetEnv" "\fIvarname stringvalue\fP"
+.BI "SetEnv " "variable value"
 Set an environment variable to a new value, similar to shell's export
-or setenv command.  The variable and its value are inherited by processes
-started directly by fvwm.  This can be especially useful in conjunction
-with the FvwmM4 module; e.g.  "SetEnv height HEIGHT" will make the FvwmM4-set
-variable "HEIGHT" usable by processes started by fvwm as the environment
-variable "$height".  If \fIstringvalue\fP includes whitespace, you should
-enclose it in quotes.
+or setenv command.  The
+.I variable
+and its
+.I value
+are inherited by processes started directly by fvwm.  This can
+be especially useful in conjunction with the
+.B FvwmM4
+module; e.g.
+.EX
+SetEnv height HEIGHT
+.EE
+will make the FvwmM4-set variable
+.I HEIGHT
+usable by processes started by fvwm as the environment
+variable
+.IR $HEIGHT .
+If
+.I value
+includes whitespace, you should enclose it in quotes.
 
 .TP
-.B "Silent" "\fIcommand\fP"
-A number of builtin functions require a window to operate on. If no
+.B "Silent " command
+A number of built in functions require a window to operate on.  If no
 window was selected when such a function is invoked the user is asked
-to select a window. Sometimes this behavior is unwanted, for example
+to select a window.  Sometimes this behavior is unwanted, for example
 if the function was called by a module and the window that was
-selected at first does not exist anymore. You can prevent this by
-putting \fISilent\fP in front of the \fIcommand\fP. If a function that needs
-a window is called with \fISilent\fP without a window selected, it simply
-returns without doing anything. If \fISilent\fP is used on a user defined
-function it affects all function and sub function calls until the
-original function exits.
+selected at first does not exist anymore.  You can prevent this by
+putting
+.B Silent
+in front of the fvwm
+.IR command .
+If a function that needs a window is called with
+.B Silent
+without a window selected, it simply returns without doing anything.
+If
+.B Silent
+is used on a user defined function it affects all function and sub
+function calls until the original function exits.
 
 Examples:
 .EX
@@ -5705,11 +5833,13 @@ Silent User_defined_function
 .EE
 
 .TP
-.B "Wait" "\fIname\fP"
+.BI "Wait " windowname
 This built-in is intended to be used in fvwm functions only.  It
-causes execution of a function to pause until a new window name
-\fIname\fP appears. Fvwm remains fully functional during a wait.
-This is particularly useful in the InitFunction if you are trying to
+causes execution of a function to pause until a new window with the
+title
+.I windowname
+appears. Fvwm remains fully functional during a wait.  This is
+particularly useful in the "InitFunction" if you are trying to
 start windows on specific desktops:
 .EX
 AddToFunc InitFunction
@@ -5725,31 +5855,52 @@ The above function starts an xterm on the current desk, waits for it
 to map itself, then switches to desk 2 and starts an xmh.  After the
 xmh window appears control moves to desk 0.
 
-You can escape from a Wait pause by using Ctrl-Alt-Escape (where Alt is
-the first modifier). To redefine this key sequence see the \fIEscapeFunc\fP
+You can escape from a
+.B Wait pause by pressing
+.SM Ctrl-Alt-Escape
+(where
+.SM Alt
+is the first modifier).  To redefine this key sequence see the
+.B EscapeFunc
 command.
 
 
 .SS CONDITIONAL COMMANDS
 
 .TP
-.B "All" "[ (\fIconditions\fP) ] \fIcommand\fP"
-Execute \fIcommand\fP on all windows meeting the conditions.
-Conditions are used exactly as with the Current command.
+.BI "All [(" conditions ")] " command
+Execute.
+.I command
+on all windows meeting the conditions.
+.I Conditions
+are used exactly as with the
+.B Current
+command.
 
 .TP
-.B "Current" "[ (\fIconditions\fP) ] \fIcommand\fP"
-Performs \fIcommand\fP on the current window if it satisfies all
-\fIconditions\fP.  Conditions include "Iconic", "!Iconic", "Visible",
-"!Visible", "Raised", "!Raised", "Layer [n]", "Sticky", "!Sticky",
-"Maximized", "!Maximized", "Shaded", "!Shaded", "Transient", "!Transient",
+.BI "Current [(" conditions ")] " command
+Performs
+.I command
+on the current window if it satisfies all
+.IR conditions .
+Conditions include
+"Iconic", "!Iconic",
+"Visible", "!Visible",
+"Raised", "!Raised",
+"Layer [n]",
+"Sticky", "!Sticky",
+"Maximized", "!Maximized",
+"Shaded", "!Shaded",
+"Transient", "!Transient",
 "CurrentDesk", "CurrentPage", and "CurrentPageAnyDesk".
-In addition, the condition may include one window name to match to.
-The window name may include
-the wildcards * and ?.  The window name, icon name, class, and
-resource will be considered when attempting to find a match.  The
-window name can begin with ! which will prevent \fIcommand\fP if any
-of the window name, icon name, class or resource match.
+In addition, the
+.I condition
+may include one window name to match to.  The window name may
+include the wildcards '*' and '?'.  The window name, icon name,
+class, and resource will be considered when attempting to find
+a match.  The window name can begin with '!' which will prevent
+.I command
+if any of the window name, icon name, class or resource match.
 
 The argument of the "Layer" condition defaults to the layer of the
 focus window.
@@ -5759,65 +5910,110 @@ enclosed in brackets instead of parentheses (this is still supported
 for backwards compatibility).
 
 .TP
-.B "Direction" "\fIdirection\fP [ (\fIconditions\fP) ] \fIcommand\fP"
-Performs \fIcommand\fP (typically Focus) on a window in the given
-direction which satisfies all \fIconditions\fP.  Conditions are the same
-as for \fICurrent\fP. The \fIdirection\fP may be one of North, Northeast,
-East, Southeast, South, Southwest, West and Northwest. Which window
-Direction selects depends on angle and distance between the center points
-of the windows. Closer windows are considered a better match than
+.BI "Direction " direction " [(" conditions ")] " command
+Performs
+.I command
+(typically
+.BR Focus )
+on a window in the given direction which satisfies all
+.IR conditions .
+Conditions are the same as for
+.BR Current .
+The
+.I direction
+may be one of "North", "Northeast", "East", "Southeast", "South",
+"Southwest", "West" and "Northwest".  Which window
+.B Direction
+selects depends on angle and distance between the center points
+of the windows.  Closer windows are considered a better match than
 those farther away.
 
 .TP
-.B "Next" "[ (\fIconditions\fP) ] \fIcommand\fP"
-Performs \fIcommand\fP (typically Focus) on the next window which
-satisfies all \fIconditions\fP.  Conditions are the same as for \fICurrent\fP
-with the addition of CirculateHit which overrides the CirculateSkip style
-attribute, CirculateHitIcon which overrides the CirculateSkipIcon style
-attribute for iconified windows and CirculateHitShaded which does the
-same for shaded windows.
+.BI "Next [(" conditions ")] " command
+Performs
+.I command
+(typically
+.BR Focus )
+on the next window which satisfies all
+.IR conditions .
+Conditions are the same as for
+.B Current
+with the addition of "CirculateHit" which overrides the
+.IB CirculateSkip Style
+attribute, "CirculateHitIcon" which overrides the
+.IB CirculateSkipIcon Style
+attribute for iconified windows and "CirculateHitShaded" which
+does the same for shaded windows.
 
 .TP
-.B "None" "[ (\fIconditions\fP) ] \fIcommand\fP"
-Performs \fIcommand\fP if no window which satisfies all
-\fIconditions\fP exists.  Conditions are the same as for \fINext\fP.
+.B "None [(" conditions ")] " command
+Performs
+.I command
+if no window which satisfies all
+.I conditions
+exists.  Conditions are the same as for
+.BR Next .
 
 .TP
-.B "Pick" "[ (\fIconditions\fP) ] \fIcommand\fP"
-Pick works like Function if invoked in the context of a window. If
-invoked in root context, it first asks the user to pick a window and
-then executes the command in the context of that window. This avoids
-annoying multiple selections with complex functions.  The command is
-executed only if the given \fIConditions\fP are met.  The Conditions
-are the same as for \fINext\fP.
+.BI "Pick [(" conditions ")] " command
+.B Pick
+works like
+.B Function
+if invoked in the context of a window.  If invoked in the root
+window, it first asks the user to pick a window and then executes
+the
+.I command
+in the context of that window.  This avoids annoying multiple
+selections with complex functions.  The command is executed only
+if the given
+.I conditions
+are met.  The Conditions are the same as for
+.BR Next .
 
 .TP
-.B "Prev" "[ (\fIconditions\fP) ] \fIcommand\fP"
-Performs \fIcommand\fP (typically Focus) on the previous window which
-satisfies all \fIconditions\fP.  Conditions are the same as for \fINext\fP.
+.BI "Prev [(" conditions ")] " command
+Performs
+.I command
+(typically
+.BR Focus )
+on the previous window which satisfies all
+.IR conditions .
+Conditions are the same as for
+.BR Next .
 
 .TP
-.B "WindowId" "\fIid [ (\fIconditions\fP) ] func\fP"
-The WindowId function is similar to the Next and Prev functions, except
-that it looks for a specific window \fIid\fP and runs the specified
-\fIfunc\fP on it. The optional \fIconditions\fP are the same as for
-\fICurrent\fP.
+.B "WindowId " id " [(" conditions ")] " function
+The
+.B WindowId
+function is similar to the
+.BR Next " and " Prev
+functions, except that it looks for a specific window
+.I id
+and runs the specified
+.I function
+on it.  The optional
+.I conditions
+are the same as for
+.BR Current .
 .EX
 WindowId 0x34567890 Raise
 WindowId 0x34567890 WarpToWindow 50 50
 WindowId $0 (Silly_Popup) Delete
 .EE
-Mostly this is useful for functions used with the WindowList builtin,
-or for selective processing of FvwmEvent calls (as in the last example).
+Mostly this is useful for functions used with the
+.B WindowList
+built-in, or for selective processing of
+.B FvwmEvent
+calls (as in the last example).
 
 
 .SS MODULE COMMANDS
 
 .TP
-.B "DestroyModuleConfig" "\fImodule\fP"
+.BI "DestroyModuleConfig " module
 Deletes module configuration entries, so that new configuration lines
 may be entered instead.  You can use this to change the the way a
-module runs during an fvwm session without restarting.  Wildcards can
+module runs during a fvwm session without restarting.  Wildcards can
 be used for portions of the name as well.
 .EX
 DestroyModuleConfig FvwmFormFore
@@ -5825,52 +6021,85 @@ DestroyModuleConfig FvwmButtons*
 .EE
 
 .TP
-.B "KillModule" "\fIname\fP"
-Causes the module which was invoked with name \fIname\fP to be killed.
-\fIname\fP may include wild-cards.
+.B "KillModule " module
+Causes the module which was invoked with name
+.I module
+to be killed.
+.I name
+may include wildcards.
 
 .TP
-.B "Module" "\fIModuleName\fP"
+.B "Module " modulename
 Specifies a module which should be spawned during initialization.  At
 the current time the available modules (included with fvwm) are
-FvwmAnimate (fancy animation of (de)iconification) FvwmAudio (makes
-sounds to go with window manager actions), FvwmAuto
-(an auto raise module), FvwmBacker (to change the background when you
-change desktops), FvwmBanner (to display a spiffy XPM), FvwmButtons
-(brings up a customizable tool bar), FvwmCpp (to preprocess your
+.B FvwmAnimate (produces animation effects when a window is
+iconified or de-iconifed).
+.B FvwmAudio
+(makes sounds to go with window manager actions),
+.B FvwmAuto
+(an auto raise module),
+.B FvwmBacker
+(to change the background when you change desktops),
+.B FvwmBanner
+(to display a spiffy XPM),
+.B FvwmButtons
+(brings up a customizable tool bar),
+.B FvwmCpp (to preprocess your
 .I .fvwm2rc
-with cpp), FvwmEvent (trigger various actions by events), FvwmForm
-(to bring up dialogs), FvwmIconBox (like the mwm IconBox), FvwmIconMan
-(like the twm icon manager), FvwmIdent (to get window info), FvwmM4
+with cpp),
+.B FvwmEvent (trigger various actions by events),
+.B FvwmForm
+(to bring up dialogs),
+.B FvwmIconBox (like the mwm IconBox),
+.B FvwmIconMan
+(like the twm icon manager),
+.B FvwmIdent (to get window info),
+.B FvwmM4
 (to preprocess your
 .I .fvwm2rc
-with m4), FvwmPager (a mini version of
-the desktop), FvwmSave (saves the desktop state in .xinitrc style),
-FvwmSaveDesk (saves the desktop state in fvwm commands), FvwmScroll
+with m4),
+.B FvwmPager
+(a mini version of the desktop),
+.B FvwmSave
+(saves the desktop state in .xinitrc style),
+.B FvwmSaveDesk
+(saves the desktop state in fvwm commands),
+.B FvwmScroll
 (puts scrollbars on any window),
-FvwmWinList (a window list), FvwmAnimate (produces
-animation effects when a window is iconified or de-iconifed).
-.\" Note: The "Optional Module Name" description is missing.
-These modules have their own man pages.  There are other modules out
-on there as well.
+.B FvwmTaskBar
+(a Windows like task bar),
+.B FvwmWinList
+(a window list).
+These modules have their own man pages.  There are other modules
+out on there as well.
 
-Modules can be short lived transient programs or, like FvwmButtons,
+Modules can be short lived transient programs or, like
+.BR FvwmButtons ,
 can remain for the duration of the X session.  Modules will be
 terminated by the window manager prior to restarts and quits, if
 possible.  See the introductory section on modules.  The keyword
-"module" may be omitted if \fIModuleName\fP is distinct from all
-built-in and function names.
+.B Mmodule
+may be omitted if
+.I modulename
+is distinct from all built-in and function names.
 
 .TP
-.B "ModulePath \fIpath\fP"
+.BI "ModulePath " path
 Specifies a colon separated list of directories in which to search for
 modules.  To find a module, fvwm searches each directory in turn
 and uses the first file found.  Directory names on the list do not
 need trailing slashes.
 
-The ModulePath may contain environment variables such as $HOME (or
-${HOME}).  Further, a '+' in the path is expanded to the previous
-value of the path, allowing easy appending or prepending to the path.
+The
+.BI ModulePath
+may contain environment variables such as
+.IR $HOME " (or " ${HOME} ).
+Further, a '+' in the
+.I path
+is expanded to the previous value of the
+.IR path ,
+allowing easy appending or prepending to the
+.IR path .
 
 For example:
 .EX
@@ -5878,65 +6107,86 @@ ModulePath ${HOME}/lib/fvwm/modules:+
 .EE
 
 The directory containing the standard modules is available via the
-environment variable $FVWM_MODULEDIR.
+environment variable
+.IR $FVWM_MODULEDIR .
 
 .TP
-.B "ModuleSynchronous" "[\fIExpect string\fP] [\fITimeout seconds\fP] \fIModuleName\fP"
-The \fIModuleSynchronous\fP command is very similar to \fIModule\fP.
+.BI "ModuleSynchronous  [" "Expect string" "] [" "Timeout secs" "] " modulename
+The
+.B ModuleSynchronous
+command is very similar to
+.BI Module .
 Fvwm stops processing any commands and user input until the module
-sends a string beginning with "FINISHED_STARTUP" back to fvwm. If
-the optional \fITimeout\fP is given fvwm gives up if the module sent
-no input back to fvwm for \fIsec\fP seconds. If the \fIExpect\fP
-option is given, fvwm waits for the given \fIstring\fP instead.
-\fIModuleSynchronous\fP should only be used during fvwm startup to
-enforce the order in which modules are started. This command is
-intended for use with the \fIFvwmTheme\fP module since the
-configuration must be in place before any other modules are started.
+sends a string beginning with "FINISHED_STARTUP" back to fvwm.  If
+the optional
+.I Timeout
+is given fvwm gives up if the module sent no input back to fvwm
+for
+.I secs
+seconds.  If the
+.I Expect
+option is given, fvwm waits for the given
+.I string
+instead.
+.B ModuleSynchronous
+should only be used during fvwm startup to enforce the order in
+which modules are started.  This command is intended for use
+with the
+.B FvwmTheme
+module since the configuration must be in place before any other
+modules are started.
 
 Warning: It is quite easy to hang fvwm with this command, even if
-a timeout is given. Be extra careful to choose the string to wait.
+a timeout is given.  Be extra careful choosing the string to wait for.
 Although all modules in the fvwm distribution send back the
 "FINISHED_STARTUP" string once they have properly started up,
-this may not be the case for third party modules. Moreover,
-you can try to escape from a locked ModuleSynchronous command by using
-the key sequence Ctrl-Alt-Escape (see the \fIEscapeFunc\fP).
+this may not be the case for third party modules.  Moreover,
+you can try to escape from a locked
+.B ModuleSynchronous
+command by using the key sequence
+.SM Ctrl-Alt-Escape
+(see the
+.BR EscapeFunc ).
 
 .TP
-.B "SendToModule" "\fImodulename string\fP"
+.BI "SendToModule " "modulename string"
 Sends an arbitrary string (no quotes required) to all modules matching
-\fImodulename\fP, which may contain wildcards.  This only makes sense
-if the module is set up to understand and deal with these strings
-though...  Can be used for module to module communication, or
-implementation of more complex commands in modules.
+.IR modulename ,
+which may contain wildcards.  This only makes sense if the module
+is set up to understand and deal with these strings though.
+Can be used for module to module communication, or implementation
+of more complex commands in modules.
 
 
 .SS QUIT, RESTART AND SESSION MANAGEMENT COMMANDS
 
 .TP
-.B "Quit"
+.BI "Quit"
 Exits fvwm, generally causing X to exit too.
 
 .TP
-.B "QuitScreen"
+.BI "QuitScreen"
 Causes fvwm to stop managing the screen on which the command was issued.
 
 .TP
-.B "QuitSession"
-Causes a session manager (if any) to shutdown the session.
-
-This command does not work for xsm, it seems that xsm didn't implement this
-functionality. Use unix signals to manage xsm remotely.
+.BI "QuitSession"
+Causes a session manager (if any) to shutdown the session.  This
+command does not work for xsm, it seems that xsm does not implement
+this functionality.  Use  unix signals to manage xsm remotely.
 
 .TP
-.B "Restart" "[\fIWindowManagerName\fP [\fIparams\fP]]"
-Causes fvwm to restart itself if \fIWindowManagerName\fP is
-left blank, or to switch to an alternate window manager (or other fvwm
-version) if \fIWindowManagerName\fP is specified.  If the window
-manager is not in your default search path, then you should use the
-full path name for \fIWindowManagerName\fP.
+.BI "Restart [" WindowManagerName " [" params "]]"
+Causes fvwm to restart itself if
+.I WindowManagerName
+is left blank, or to switch to an alternate window manager
+(or other fvwm version) if
+.I WindowManagerName
+is specified.  If the window manager is not in your default search
+path, then you should use the full path name for
+.IR WindowManagerName .
 
-This command should not have a trailing ampersand. The command can have
-optional parameters with simple shell-like syntax. You can use
+This command should not have a trailing ampersand.  The command can
+have optional parameters with simple shell-like syntax.  You can use
 .I ~
 (will be expanded to user home directory) and environmental variables
 .IR $VAR " or " ${VAR} .
@@ -5951,38 +6201,45 @@ Key F1 R N Restart xterm -n '"X console"' \\
 .EE
 
 .TP
-.B "Restart" "--pass-args \fIWindowManagerName\fP"
-The same as 'Restart' without parameters but the name for a window manager
-is replaced with the specified \fIWindowManagerName\fP and original arguments
-are preserved.
+.BI "Restart " "--pass-args WindowManagerName"
+The same as
+.B Restart
+without parameters but the name for a window manager is replaced
+with the specified
+.I WindowManagerName
+and original arguments are preserved.
 
-This command is useful if you use initial arguments (like "-cmd FvwmCpp")
-and want to switch to another fvwm version without losing the initial
-arguments.
+This command is useful if you use initial arguments like
+.EX
+.BI -cmd FvwmCpp
+.EE
+and want to switch to another fvwm version without losing the
+initial arguments.
 
 .TP
-.B "Restart" "--dont-preserve-state [\fIother-params\fP]"
-The same as 'Restart [other-params]', but it does not save any window states
-over the restart.
+.BI "Restart " --dont-preserve-state " [" other-params "]"
+The same as
+.EX
+Restart [other-params]
+.EE
+but it does not save any window states over the restart.
 
-Without this option, Restart command preserves most per-window state
-by writing it to a file named
+Without this option,
+.B Restart preserves most per-window state by writing it to a file named
 .I .fs-restart
 in the user's home directory.
 
 .TP
-.B "SaveSession"
-Causes a session manager (if any) to save the session.
-
-This command does not work for xsm, it seems that xsm didn't implement this
-functionality. Use unix signals to manage xsm remotely.
+.BI "SaveSession"
+Causes a session manager (if any) to save the session.  This command
+does not work for xsm, it seems that xsm does not implement this
+functionality.  Use unix signals to manage xsm remotely.
 
 .TP
-.B "SaveQuitSession"
+.BI "SaveQuitSession"
 Causes a session manager (if any) to save and then shutdown the session.
-
-This command does not work for xsm, it seems that xsm didn't implement this
-functionality. Use unix signals to manage xsm remotely.
+This command does not work for xsm, it seems that xsm does not implement
+this functionality.  Use unix signals to manage xsm remotely.
 
 
 .SS COLOR GRADIENTS
@@ -5990,20 +6247,32 @@ functionality. Use unix signals to manage xsm remotely.
 A color gradient is a background that changes its color gradually
 from one hue to a different one.  Color gradients can be used by
 various commands and modules of fvwm.  There are eight types of
-gradients: HGradient is a horizontal gradient; VGradient is vertical;
-DGradient is diagonal from top left to bottom right; BGradient is
-backwards diagonal from bottom left to top right; SGradient is
-concentric squares; CGradient is con-centric circles; RGradient is
-a radar like pattern and YGradient is a Yin Yang style (but without
-the dots).
+gradients:
+.B HGradient
+is a horizontal gradient,
+.B VGradient
+is vertical,
+.B DGradient
+is diagonal from top left to bottom right,
+.B BGradient
+is backwards diagonal from bottom left to top right,
+.B SGradient
+is concentric squares,
+.B CGradient
+is con-centric circles,
+.B RGradient
+is a radar like pattern and
+.B YGradient
+is a Yin Yang style (but without the dots).
 
 The color gradient syntax has two forms:
 
 .TP
-.B "?Gradient" "\fIcolors start-color end-color\fP"
+.BI "?Gradient " "colors start-color end-color"
 This form specifies a linear gradient.  The arguments denote the
-total number of \fIcolors\fP to allocate (between 2 and 1000), the
-initial color and the final color.
+total number of
+.I colors
+to allocate (between 2 and 1000), the initial color and the final color.
 
 Example:
 .EX
@@ -6011,15 +6280,21 @@ TitleStyle VGradient 20 rgb:b8/ce/bc rgb:5b/85/d0
 .EE
 
 .TP
-.B "?Gradient" "\fIcolors segments color length color\fP [\fIlength color\fP] ..."
+.BI "?Gradient " "colors segments color length color" " [" "length color" "] ..."
 The second form specifies a nonlinear gradient.  The arguments are:
-the total number of \fIcolors\fP to allocate (between 2 and 1000),
-then the number of \fIsegments\fP.  For each segment, specify the
-starting \fIcolor\fP, a relative \fIlength\fP, then the ending
-color.  Each subsequent segment begins with the second color of
-the last segment.  The lengths may be any non-negative integers.
-The length of one segment divided by the sum of all segment's lengths
-is the fraction of the colors that are used for the segment.
+the total number of
+.I colors
+to allocate (between 2 and 1000), then the number of
+.IR segments .
+For each segment, specify the starting
+.IR color ,
+a relative
+.IR length ,
+then the ending color.  Each subsequent segment begins with the
+second color of the last segment.  The lengths may be any
+non-negative integers.  The length of one segment divided by the
+sum of all segment's lengths is the fraction of the colors that
+are used for the segment.
 .in -2
 
 Examples:
