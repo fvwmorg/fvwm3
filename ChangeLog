@@ -1,7 +1,12 @@
+2003-07-23  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/events.c (__cr_detect_icccm_move):
+	disable motion method detection for shaped windows
+
 2003-07-21  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/add_window.c (setup_window_structure):
-	* fvwm/session.c (MatchWinToSM): 
+	* fvwm/session.c (MatchWinToSM):
 	Preserve is_name_changed window_flags within restart, session loading
 	and recapture
 
@@ -11,21 +16,21 @@
 	fixed _NET_WM_NAME for our ewmh WM_CHECK window
 
 	* fvwm/fvwm.c (InternUsefulAtoms):
-	* fvwm/externs.h: 
+	* fvwm/externs.h:
 	* fvwm/session.c (GetWindowRole):
 	Some applications use WINDOW_ROLE and not WM_WINDOW_ROLE
-	
+
 	* fvwm/session.c (GetClientID):
 	Better determination of the CLIENT_LEADER
 
 	* fvwm/session.c (setSmProperties):
 	Set the CloneCommand for gnome-session editor (the sm spec says this
 	properties is required). Removed the commented XSM ifdef.
-	
+
 	* fvwm/session.c (matchWin):
-	(SaveWindowStates): 
+	(SaveWindowStates):
 	Consider client only if it has a client id or a wm command.
-	Removed the "two entries" session previous commit 
+	Removed the "two entries" session previous commit
 
 2003-07-16  olicha  <olivier.chapuis@free.fr>
 
@@ -97,41 +102,41 @@
 	* libs/Flocale.c (FlocaleDrawString):
 	(FlocaleRotatedDrawString):
 	removed some code duplication
-	
+
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
-	* libs/CombineChars.c (combclass_table): 
+	* libs/CombineChars.c (combclass_table):
 	(CombineChars):
 	fixed supporting drawing marks superimposed that are in a combining
 	class
-	
+
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
-	* libs/Flocale.c (FlocaleRotateDrawString): 
+	* libs/Flocale.c (FlocaleRotateDrawString):
 	(FlocaleDrawString)
 	fixed core dump when composing characters can't be converted to
 	locale charset
 
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
-	* AUTHORS: 
+	* AUTHORS:
 	updated
-	
+
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
-	* todo-2.6 (todo): 
+	* todo-2.6 (todo):
 	updated summary
 
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
-	* NEWS: 
-        updated with reagrds to combing characters	
-	
+	* NEWS:
+        updated with reagrds to combing characters
+
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
 	* todo-2.6
 	closed B.8
-	
+
 2003-07-09  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/Flocale.c (FlocaleEncodeString):
@@ -141,7 +146,7 @@
 	(FlocaleDrawUnderline):
 	fixed rendering combining characters using Unicode font in a
 	non-UTF-8 locale
-	
+
 2003-07-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm.1.in:

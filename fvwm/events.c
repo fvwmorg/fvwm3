@@ -537,6 +537,21 @@ fprintf(stderr,"_cdim: --- already detected (pid %d) 0x%08x '%s'\n", HAS_EWMH_WM
 #endif
 		return;
 	}
+	if (FShapesSupported && fw->wShaped)
+	{
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"_cdim: --- shaped window 0x%08x '%s'\n", (int)fw, fw->visible_name);
+#endif
+		/* no detection for shaped windows */
+		return;
+	}
+	if (fw->hints.win_gravity == StaticGravity)
+	{
+#ifdef CR_DETECT_MOTION_METHOD_DEBUG
+fprintf(stderr,"_cdim: --- using StaticGravity 0x%08x '%s'\n", (int)fw, fw->visible_name);
+#endif
+		return;
+	}
 	if (fw->hints.win_gravity == StaticGravity)
 	{
 #ifdef CR_DETECT_MOTION_METHOD_DEBUG
