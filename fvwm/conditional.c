@@ -573,7 +573,11 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			mask->my_flags.needs_current_page = on;
 			mask->my_flags.do_check_page = 1;
 		}
-		else if (StrEquals(cond,"CurrentGlobbalPageAnyDesk"))
+		else if (StrEquals(cond,"AnyScreen"))
+		{
+			mask->my_flags.do_not_check_screen = on;
+		}
+		else if (StrEquals(cond,"CurrentGlobalPageAnyDesk"))
 		{
 			mask->my_flags.needs_current_global_page = on;
 			mask->my_flags.do_check_global_page = 1;
@@ -629,7 +633,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 			mask->my_flags.needs_same_layer = on;
 		}
 		else
-		{ 
+		{
 			struct name_condition *pp;
 			struct namelist *p;
 			char *condp;
@@ -788,7 +792,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	if (mask->my_flags.do_check_page ||
 	    mask->my_flags.do_check_desk_and_page)
 	{
-		if (FScreenIsEnabled())
+		if (FScreenIsEnabled() && !mask->my_flags.do_not_check_screen)
 		{
 			is_on_page = !!FScreenIsRectangleOnScreen(
 				NULL, FSCREEN_CURRENT, &(fw->frame_g));

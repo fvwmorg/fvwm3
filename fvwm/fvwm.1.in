@@ -7001,7 +7001,7 @@ below in your configuration file:
 .EX
 AddToFunc DeiconifyAndRearrange
  + C Iconify off
- + C All (CurrentPage Iconic) PlaceAgain Icon
+ + C All (CurrentPage, Iconic) PlaceAgain Icon
 .EE
 And then replace all places where you call the
 .B Iconify
@@ -10435,6 +10435,7 @@ directly in front of its name.
 .IR CurrentPage ,
 .IR CurrentPageAnyDesk ,
 .IR CurrentScreen ,
+.IR AnyScreen ,
 .IR FixedSize ,
 .IR Focused ,
 .IR HasHandles ,
@@ -10530,11 +10531,24 @@ activates the
 condition.
 
 The
-.IR CurrentPageAnyDesk " and " CurrentScreen
+.IR CurrentPageAnyDesk " and " CurrentScrene
 conditions matche only windows that are on the current page of any
 desk.  If Xinerama support is enabled, they only match windows
 that are at least partially on the Xinerama screen containing the
 mouse pointer.
+
+With the
+.I AnyScreen
+condition used together with any of the
+.I Current...
+conditions, windows that do not intersect the Xinerama screen
+containing the mouse pointer are considered for a match too.  For
+example:
+.EX
+# Focus next window on current page,
+# regardless of Xinerama screen
+Next (CurrentPage, AnyScreen) Focus
+.EE
 
 The
 .I FixedSize

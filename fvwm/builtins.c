@@ -3842,8 +3842,8 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 					return;
 				}
 
-				// Do *NOT* use FvwmStringToKeysym() as it is
-				// case insensitive.
+				/* Do *NOT* use FvwmStringToKeysym() as it is
+				 * case insensitive. */
 				keysym = XStringToKeysym(key);
 				if (keysym == NoSymbol)
 				{
@@ -3890,11 +3890,15 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 				e.xbutton.button = val;
 				e.xbutton.state = mask;
 				e.xbutton.same_screen = (Scr.Root == root);
-				/* SS: I think this mask handling code is buggy.
+				/* SS: I think this mask handling code is
+				 * buggy.
 				 * The value of <mask> is overridden during a
 				 * "wait" operation. Also why are we only using
 				 * Button1Mask? What if the user has requested
 				 * a FakeClick using some other button? */
+				/* DV: Button1Mask is actually a bit.  Shifting
+				 * it by (val -1) bits to the left gives
+				 * Button2Mask, Button3Mask etc. */
 				if (do_unset)
 				{
 					mask &= ~(Button1Mask << (val - 1));

@@ -455,18 +455,18 @@ static int ParseBinding(
 		is_pass_thru = actionIsPassThru(action);
 		if (is_pass_thru)
 		{
-		    // pass-through actions indicate that the event be
-		    // allowed to pass through to the underlying window.
-		    if (windowName == NULL)
-		    {
-			    // It doesn't make sense to have a pass-through
-			    // action on global bindings.
-			    if (!is_silent)
-				    fvwm_msg(ERR, "ParseBinding",
-					    "Illegal action for global "
-					    "binding: %s", tline);
-			    return 0;
-		    }
+			/* pass-through actions indicate that the event be
+			 * allowed to pass through to the underlying window. */
+			if (windowName == NULL)
+			{
+				/* It doesn't make sense to have a pass-through
+				 * action on global bindings. */
+				if (!is_silent)
+					fvwm_msg(ERR, "ParseBinding",
+						 "Illegal action for global "
+						 "binding: %s", tline);
+				return 0;
+			}
 		}
 	}
 	/* see if it is an unbind request */

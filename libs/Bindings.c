@@ -255,7 +255,8 @@ int AddBinding(
 				(*pblist)->Action2 =
 					(action2) ? stripcpy(action2) : NULL;
 				(*pblist)->windowName =
-					windowName ? stripcpy(windowName) : NULL;
+					windowName ? stripcpy(windowName) :
+					NULL;
 				(*pblist)->NextBinding = temp;
 				bound_mask |= bind_mask;
 				count++;
@@ -300,8 +301,8 @@ static Bool replacesBinding(Binding *b1, Binding *b2)
 	}
 	else if (b1->windowName || b2->windowName)
 	{
-		/* 1 binding is window-specific, the other is global - no need to
-		 * replace this binding. */
+		/* 1 binding is window-specific, the other is global - no need
+		 * to replace this binding. */
 		return False;
 	}
 
@@ -319,17 +320,16 @@ static Bool replacesBinding(Binding *b1, Binding *b2)
 }
 
 /*
- *
  *  Does exactly the opposite of AddBinding: It removes the bindings that
  *  AddBinding would have added to the *pblist_src and collects them in the
  *  *pblist_dest.  This can be used to remove a binding completely from the
  *  list.  The bindings still have to be freed.
- *
  */
 void CollectBindingList(
 	Display *dpy, Binding **pblist_src, Binding **pblist_dest,
 	binding_t type, STROKE_ARG(void *stroke)
-	int button, KeySym keysym, int modifiers, int contexts, char *windowName)
+	int button, KeySym keysym, int modifiers, int contexts,
+	char *windowName)
 {
 	Binding *tmplist = NULL;
 	Binding *btmp;
@@ -340,7 +340,8 @@ void CollectBindingList(
 	/* generate a private list of bindings to be removed */
 	AddBinding(
 		dpy, &tmplist, type, STROKE_ARG(stroke)
-		button, keysym, NULL, modifiers, contexts, NULL, NULL, windowName);
+		button, keysym, NULL, modifiers, contexts, NULL, NULL,
+		windowName);
 	/* now find equivalent bindings in the given binding list and move
 	 * them to the new clist */
 	for (bold = *pblist_src, oldprev = NULL; bold != NULL;
@@ -388,8 +389,8 @@ Bool bindingAppliesToWindow(Binding *binding, const XClassHint *winClass,
 		return True;
 
 	if (matchWildcards(binding->windowName, winName) == TRUE ||
-		matchWildcards(binding->windowName, winClass->res_name) == TRUE ||
-		matchWildcards(binding->windowName, winClass->res_class) == TRUE)
+	    matchWildcards(binding->windowName, winClass->res_name) == TRUE ||
+	    matchWildcards(binding->windowName, winClass->res_class) == TRUE)
 	{
 		return True;
 	}
@@ -400,7 +401,7 @@ Bool __compare_binding(
 	Binding *b, STROKE_ARG(char *stroke)
 	int button_keycode, unsigned int modifier, unsigned int used_modifiers,
 	int Context, binding_t type, const XClassHint *winClass,
-    const char *winName)
+	const char *winName)
 {
 	if (b->type != type || !(b->Context & Context))
 	{
@@ -437,19 +438,19 @@ Bool __compare_binding(
 	return True;
 }
 
-// actionIsPassThru() - returns true if the action indicates that the
-// binding should be ignored by FVWM & passed through to the underlying
-// window.
-// Note: it is only meaningful to check for pass-thru actions on
-// window-specific bindings.
+/* actionIsPassThru() - returns true if the action indicates that the
+ * binding should be ignored by FVWM & passed through to the underlying
+ * window.
+ * Note: it is only meaningful to check for pass-thru actions on
+ * window-specific bindings. */
 Bool actionIsPassThru (const char *action)
 {
-	// action should never be NULL.
+	/* action should never be NULL. */
 	return (strncmp(action, "--", 2) == 0);
 }
 
-// Check if something is bound to a key or button press and return the action
-// to be executed or NULL if not.
+/* Check if something is bound to a key or button press and return the action
+ * to be executed or NULL if not. */
 void *CheckBinding(
 	Binding *blist, STROKE_ARG(char *stroke)
 	int button_keycode, unsigned int modifier,unsigned int dead_modifiers,
@@ -463,9 +464,9 @@ void *CheckBinding(
 	modifier &= (used_modifiers & ALL_MODIFIERS);
 	for (b = blist; b != NULL; b = b->NextBinding)
 	{
-		if (__compare_binding(
-				b, STROKE_ARG(stroke) button_keycode, modifier,
-			    used_modifiers, Context, type, winClass, winName) == True)
+	if (__compare_binding(
+		    b, STROKE_ARG(stroke) button_keycode, modifier,
+		    used_modifiers, Context, type, winClass, winName) == True)
 		{
 			/* If this is a global binding, keep searching <blist>
 			 * in the hope of finding a window-specific binding.
@@ -477,7 +478,9 @@ void *CheckBinding(
 				if (b->windowName)
 				{
 					if (actionIsPassThru(action))
+					{
 						action = NULL;
+					}
 					break;
 				}
 			}
@@ -503,7 +506,8 @@ void *CheckTwoBindings(
 	{
 		if (__compare_binding(
 			    b, STROKE_ARG(stroke) button_keycode, modifier,
-			    used_modifiers, Context, type, winClass, winName) == True)
+			    used_modifiers, Context, type, winClass, winName)
+		    == True)
 		{
 			if (action == NULL || b->windowName)
 			{
@@ -519,7 +523,8 @@ void *CheckTwoBindings(
 		}
 		if (__compare_binding(
 			    b, STROKE_ARG(stroke) button_keycode, modifier,
-			    used_modifiers, Context2, type2, winClass2, winName2) == True)
+			    used_modifiers, Context2, type2, winClass2,
+			    winName2) == True)
 		{
 			if (action == NULL || b->windowName)
 			{

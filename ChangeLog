@@ -1,3 +1,15 @@
+2004-07-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.h:
+	* fvwm/conditional.c (CreateConditionMask):
+	renamed CurrentGlobbalPageAnyDesk to CurrentGlobalPageAnyDesk
+	new condition AnyScreen
+
+	* libs/Bindings.c:
+	* fvwm/builtins.c (__fake_event):
+	* fvwm/bindings.c (ParseBinding):
+	removed C++ comments
+
 2004-07-15  Scott Smedley  <scottie7@tpg.com.au>
 
 	* NEWS:
