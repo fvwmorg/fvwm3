@@ -652,12 +652,22 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
 
 static void Exec (int NbArg,long *TabArg)
 {
- int leng;
+ int leng = 0;
  char *execstr;
  char *tempstr;
  int i;
 
- execstr=(char*)calloc(1,256);
+ for (i=0;i<NbArg;i++) 
+   leng += strlen(CalcArg(TabArg,&i));
+ 
+
+ if (leng > 998) 
+ {
+   fprintf(stderr,"[FvwmScript]: too long command %i chars max 998\n", leng);
+   return;
+ }
+   
+ execstr=(char*)calloc(1,leng);
  for (i=0;i<NbArg;i++)
  {
   tempstr=CalcArg(TabArg,&i);
@@ -671,7 +681,6 @@ static void Exec (int NbArg,long *TabArg)
  write(fd[0], execstr, leng);
  leng = 1;
  write(fd[0], &leng, sizeof(int));
-
 
  free(execstr);
 }

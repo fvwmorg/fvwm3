@@ -1,3 +1,9 @@
+2000-03-24  olicha	<olivier.chapuis@free.fr>
+
+	* FvwmScript/Instructions.c (Exec):
+	Fixed core dump with Do instruction with > 256 chars.
+	Extended the above limit to 998 (as fvwm)
+	
 2000-03-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmAnimate/FvwmAnimate.c:
