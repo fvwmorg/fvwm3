@@ -2874,37 +2874,37 @@ static Bool __resize_window(F_CMD_ARGS)
 	while (!finished && bad_window != FW_W(fw))
 	{
 		int rc = 0;
+		XEvent ev;
 
 		/* block until there is an interesting event */
-		while (rc != -1 &&
-		       (!FCheckMaskEvent(dpy, evmask, &Event)))
+		while (rc != -1 && !FCheckMaskEvent(dpy, evmask, &ev))
 		{
 			rc = HandlePaging(
-				&Event, Scr.EdgeScrollX, Scr.EdgeScrollY, &x,
+				&ev, Scr.EdgeScrollX, Scr.EdgeScrollY, &x,
 				&y, &delta_x, &delta_y, False, False, True);
 			if (rc == 1)
 			{
 				/* Fake an event to force window reposition */
-				Event.type = MotionNotify;
-				Event.xmotion.time = fev_get_evtime();
+				ev.type = MotionNotify;
+				ev.xmotion.time = fev_get_evtime();
 				fForceRedraw = True;
 				break;
 			}
 		}
 		if (rc == -1)
 		{
-			FMaskEvent(dpy, evmask, &Event);
+			FMaskEvent(dpy, evmask, &ev);
 		}
-		if (Event.type == MotionNotify)
+		if (ev.type == MotionNotify)
 		{
 			/* discard any extra motion events before a release */
 			while (FCheckMaskEvent(
 				       dpy, ButtonMotionMask |
 				       PointerMotionMask | ButtonReleaseMask |
-				       ButtonPressMask, &Event))
+				       ButtonPressMask, &ev))
 			{
-				if (Event.type == ButtonRelease ||
-				    Event.type == ButtonPress)
+				if (ev.type == ButtonRelease ||
+				    ev.type == ButtonPress)
 				{
 					break;
 				}
@@ -2914,17 +2914,16 @@ static Bool __resize_window(F_CMD_ARGS)
 		is_done = False;
 		/* Handle a limited number of key press events to allow
 		 * mouseless operation */
-		if (Event.type == KeyPress)
+		if (ev.type == KeyPress)
 		{
-			Keyboard_shortcuts(
-				&Event, fw, NULL, NULL, ButtonRelease);
+			Keyboard_shortcuts(&ev, fw, NULL, NULL, ButtonRelease);
 		}
-		switch (Event.type)
+		switch (ev.type)
 		{
 		case ButtonPress:
 			is_done = True;
-			if (Event.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
-			    ((Button1Mask << (Event.xbutton.button - 1)) &
+			if (ev.xbutton.button <= NUMBER_OF_MOUSE_BUTTONS &&
+			    ((Button1Mask << (ev.xbutton.button - 1)) &
 			     button_mask))
 			{
 				/* No new button was pressed, just a delayed
@@ -2936,13 +2935,13 @@ static Bool __resize_window(F_CMD_ARGS)
 			 *    another button was pressed during the operation
 			 *  - no button was started at the beginning and any
 			 *    button except button 1 was pressed. */
-			if (button_mask || (Event.xbutton.button != 1))
+			if (button_mask || (ev.xbutton.button != 1))
 			{
 				fButtonAbort = True;
 			}
 		case KeyPress:
 			/* simple code to bag out of move - CKH */
-			if (XLookupKeysym(&(Event.xkey),0) == XK_Escape ||
+			if (XLookupKeysym(&ev.xkey, 0) == XK_Escape ||
 			    fButtonAbort)
 			{
 				is_aborted = True;
@@ -2978,14 +2977,14 @@ static Bool __resize_window(F_CMD_ARGS)
 			break;
 
 		case MotionNotify:
-			if (Event.xmotion.same_screen == False)
+			if (ev.xmotion.same_screen == False)
 			{
 				continue;
 			}
 			if (!fForceRedraw)
 			{
-				x = Event.xmotion.x_root;
-				y = Event.xmotion.y_root;
+				x = ev.xmotion.x_root;
+				y = ev.xmotion.y_root;
 				/* resize before paging request to prevent
 				 * resize from lagging * mouse - mab */
 				DoResize(
@@ -2993,9 +2992,9 @@ static Bool __resize_window(F_CMD_ARGS)
 					&ymotion, do_resize_opaque);
 				/* need to move the viewport */
 				HandlePaging(
-					&Event, Scr.EdgeScrollX,
-					Scr.EdgeScrollY, &x, &y, &delta_x,
-					&delta_y, False, False, False);
+					&ev, Scr.EdgeScrollX, Scr.EdgeScrollY,
+					&x, &y, &delta_x, &delta_y, False,
+					False, False);
 			}
 			/* redraw outline if we paged - mab */
 			if (delta_x != 0 || delta_y != 0)
@@ -3013,7 +3012,7 @@ static Bool __resize_window(F_CMD_ARGS)
 			is_done = True;
 
 		case PropertyNotify:
-			ea.e = *eventp;
+			ea.e = ev;
 			HandlePropertyNotify(&ea);
 			break;
 
@@ -3026,7 +3025,7 @@ static Bool __resize_window(F_CMD_ARGS)
 				/* must undraw the rubber band in case the
 				 * event causes some drawing */
 				switch_move_resize_grid(False);
-			dispatch_event(&Event, False);
+			dispatch_event(&ev, False);
 			if (!do_resize_opaque)
 			{
 				draw_move_resize_grid(

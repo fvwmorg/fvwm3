@@ -113,7 +113,8 @@ int fev_get_evtype__remove_me(void)
 void fev_fake_event(XEvent *ev)
 {
 	fev_event = *ev;
-	fev_update_last_timestamp(ev);
+	/* don't update the last timestamp here; the triggering event has
+	 * already done this */
 
 	return;
 }
