@@ -10,7 +10,7 @@ man_MANS = FvwmForm.1
 ## This provides compatibility.
 module_SCRIPTS = FvwmTalk
 
-FvwmTalk: ../../config.h
+FvwmTalk: ../../config.h Makefile
 	echo "#!/bin/sh" > $@
 	echo exec ${moduledir}/FvwmForm '$$@' FvwmForm-Talk>> $@
 
@@ -48,7 +48,7 @@ LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS)  \
 
 INCLUDES = -I$(top_srcdir) $(X_CFLAGS) $(xpm_CFLAGS)
 
-FvwmForm-Setup: FvwmForm-Setup.in
+FvwmForm-Setup: FvwmForm-Setup.in Makefile
 	rm -f $@
 	sed -e 's,xFVWM_DATADIRx,$(FVWM_DATADIR),' $(top_srcdir)/modules/FvwmForm/FvwmForm-Setup.in > $@-t
 	mv $@-t $@

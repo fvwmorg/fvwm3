@@ -8,13 +8,13 @@ module_PROGRAMS = FvwmRearrange
 ## Remove from fvwm distribution no later than October, 1999.
 module_SCRIPTS = FvwmCascade FvwmTile
 
-FvwmCascade: ../../config.h
+FvwmCascade: ../../config.h Makefile
 	echo "#!/bin/sh" > $@
 	echo 'modargs="$$1 $$2 $$3 $$4 $$5"' >> $@
 	echo 'shift;shift;shift;shift;shift' >> $@
 	echo exec ${moduledir}'/FvwmRearrange $$modargs -cascade $$@' >> $@
 
-FvwmTile: ../../config.h
+FvwmTile: ../../config.h Makefile
 	echo "#!/bin/sh" > $@
 	echo 'modargs="$$1 $$2 $$3 $$4 $$5"' >> $@
 	echo 'shift;shift;shift;shift;shift' >> $@

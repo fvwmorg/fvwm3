@@ -9,7 +9,7 @@ FvwmEvent_SOURCES = FvwmEvent.c
 FvwmEvent_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 # This module behaves like the old FvwmAudio when invoked with that name.
-install-exec-local: ../../config.h
+install-exec-local: ../../config.h Makefile
 	$(mkinstalldirs) $(DESTDIR)$(moduleexecdir)
 	rm -f $(DESTDIR)$(moduleexecdir)/FvwmAudio
 	@_fe=`echo FvwmEvent|sed 's/$(EXEEXT)$$//'|sed '$(transform)'|sed 's/$$/$(EXEEXT)/'`; \

@@ -2,18 +2,20 @@
 
 configdir = @FVWM_DATADIR@
 
-config_DATA = \
+common_samples = \
 	FvwmScript-BaseConfig FvwmScript-BellSetup FvwmScript-Buttons \
 	FvwmScript-Colorset FvwmScript-Date FvwmScript-FileBrowser \
 	FvwmScript-Find FvwmScript-KeyboardSetup FvwmScript-PointerSetup \
 	FvwmScript-Quit FvwmScript-ScreenDump FvwmScript-ScreenSetup \
-	FvwmScript-Setup95 FvwmScript-WidgetDemo fvwm-script-setup95.pl
+	FvwmScript-WidgetDemo fvwm-script-setup95.pl
 
-EXTRA_DIST = $(config_DATA) \
+config_DATA = $(common_samples) FvwmScript-Setup95
+
+EXTRA_DIST = $(common_samples) \
 	TerminalSettings.fss UpdateFvwm2TermMenu system.fvwmrc \
 	FvwmScript-Setup95.in
 
-FvwmScript-Setup95: FvwmScript-Setup95.in
+FvwmScript-Setup95: FvwmScript-Setup95.in Makefile
 	rm -f $@
 	sed -e 's,xFVWM_DATADIRx,$(FVWM_DATADIR),' -e 's,xPERLx,$(PERL),' -e 's,xFVWM_IMAGEPATHx,$(FVWM_IMAGEPATH),' $(top_srcdir)/modules/FvwmScript/Scripts/FvwmScript-Setup95.in > $@-t
 	mv $@-t $@

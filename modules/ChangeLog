@@ -1,3 +1,18 @@
+2001-07-03  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmScript/Scripts/Makefile.am:
+	don't include FvwmScript-Setup95 to DIST
+
+	* FvwmEvent/Makefile.am:
+	* FvwmForm/Makefile.am:
+	* FvwmRearrange/Makefile.am:
+	* FvwmScript/Scripts/Makefile.am:
+	When creating FvwmAudio, FvwmTalk, FvwmForm-Setup, FvwmCascade,
+	FvwmTile, FvwmScript-Setup95 add dependency of Makefile, so
+	these files are rebuilt when prefix is changed.
+	Note that dependency of ../../config.h is not good, config.h is not
+	touched by configure if only prefix is changed.
+
 2001-06-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmButtons/FvwmButtons.1 (Example):
