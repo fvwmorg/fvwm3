@@ -477,7 +477,7 @@ HandleUnusualStackmodes(unsigned int stack_mode, FvwmWindow *r, Window rw,
     to determine exactly where they ended up in the stacking order.
     - Based on code from Matthias Clasen.
 */
-void  ResyncFvwmStackRing (void)
+void ResyncFvwmStackRing (void)
 {
   Window root, parent, *children;
   unsigned int nchildren, i;
@@ -624,7 +624,17 @@ new_layer (FvwmWindow *tmp_win, int layer)
   if (layer < tmp_win->layer)
     {
       tmp_win->layer = layer;
-      RaiseWindow(tmp_win);
+      /* temporary fix; new transient handling code assumes the layers are
+       * properly arranged when inner_RaiseOrLowerWindow() is called. */
+      ResyncFvwmStackRing();
+      /* domivogt (9-Sep-1999): this was RaiseWindow before. The intent may
+       * have been good (put the window on top of the new lower layer), but it
+       * doesn't work with applications like the gnome panel that use the layer
+       * hint as a poor man's raise/lower, i.e. if panel is on the top level
+       * and requests to be lowered to the normal level it stays on top of all
+       * normal windows. This is not what intended to do with lowering
+       * itself. */
+      LowerWindow(tmp_win);
     }
   else if (layer > tmp_win->layer)
     {
@@ -646,7 +656,10 @@ new_layer (FvwmWindow *tmp_win, int layer)
 	    }
 	}
       tmp_win->layer = layer;
-      LowerWindow(tmp_win);
+      /* see comment above */
+      ResyncFvwmStackRing();
+      /* see comment above */
+      RaiseWindow(tmp_win);
     }
 
 #ifdef GNOME

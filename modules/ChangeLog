@@ -1,3 +1,24 @@
+1999-09-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (HandlePanelPress): mape sure the panel is
+	mapped on the current page
+
+	* FvwmBacker/FvwmBacker.c (set_desk_background):
+	* FvwmBacker/FvwmBacker.c (ProcessMessage):
+	* FvwmBacker/FvwmBacker.c (ParseConfig): added colorset support
+
+	* FvwmBacker/FvwmBacker.c (AddCommand): fixed uninitialised variable
+
+	* FvwmBacker/Makefile.am (LDADD): add -lm
+
+	* FvwmBacker/FvwmBacker.c: reindented
+
+	* FvwmWharf/FvwmWharf.c (DeadPipe):
+	(CreateWindow): Wharf can be shut down with 'close' too.
+
+	* FvwmButtons/FvwmButtons.c (Loop): added accidentally removed handler
+	for ClientMessage.
+
 1999-09-08  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/FvwmForm.c: initialize colorset to -1.  Avoid core dump
@@ -16,8 +37,8 @@ Mon Sep  6 10:32:54 1999  DanEspen  <dje@blue>
 
 1999-09-07  Dan Espen  <dane@mk.telcordia.com>
 
-	* FvwmForm/Makefile.am (FormFvwmSetup.): This time remove $< in such a way
-	that makes in a parallel directory still work.
+	* FvwmForm/Makefile.am (FormFvwmSetup.): This time remove $< in such a
+	way that makes in a parallel directory still work.
 
 1999-09-06  Hippo
 

@@ -169,7 +169,7 @@ struct folder_info Folders[FOLDER_ARRAY_LN];
 
 char *imagePath = NULL;
 
-static Atom wm_del_win;
+static Atom _XA_WM_DEL_WIN;
 Atom _XA_WM_PROTOCOLS;
 Atom _XA_WM_NAME;
 #ifdef ENABLE_DND
@@ -668,9 +668,14 @@ void Loop(void)
       case LeaveNotify:
 	CancelPush = 1;
 	break;
-#ifdef ENABLE_DND
       case ClientMessage:
-	if (Event.xclient.message_type==DndProtocol) {
+	if(Event.xclient.format == 32 &&
+	   Event.xclient.data.l[0]==_XA_WM_DEL_WIN)
+	{
+	  DeadPipe(1);
+	}
+#ifdef ENABLE_DND
+	else if (Event.xclient.message_type==DndProtocol) {
 	  unsigned long  dummy_r,size;
 	  Atom dummy_a;
 	  int dummy_f;
@@ -833,37 +838,6 @@ void Loop(void)
 	}
 	break;
 
-	/*
-	  case ClientMessage:
-	  if ((Event.xclient.format==32) &&
-	  (Event.xclient.data.l[0]==wm_del_win))
-	  {
-	  DeadPipe(1);
-	  }
-	  break;
-	  case PropertyNotify:
-	  if (Pushed)
-	  break;
-	  for(i=0;i<num_rows;i++)
-	  for(j=0;j<num_columns; j++)
-	  {
-	  button = i*num_columns + j;
-	  if(((Buttons[button].swallow == 3)||
-	  (Buttons[button.swallow == 4))&&
-	  (Event.xany.window == Buttons[button].IconWin)&&
-	  (Event.xproperty.atom == XA_WM_NAME))
-	  {
-	  XFetchName(dpy, Buttons[button].IconWin, &temp);
-	  if(strcmp(Buttons[button].title,"-")!=0)
-	  CopyString(&Buttons[button].title, temp);
-	  XFree(temp);
-	  XClearArea(dpy,main_win,j*BUTTONWIDTH,
-	  i*BUTTONHEIGHT, BUTTONWIDTH,BUTTONHEIGHT,0);
-	  RedrawWindow(&main_win,0, button, num_rows, num_columns);
-	  }
-	  }
-	  break;
-	*/
       default:
 	break;
       }
@@ -1408,7 +1382,7 @@ void CreateWindow(void)
   int first_avail_button,i;
   XSetWindowAttributes attr;
 
-  wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
+  _XA_WM_DEL_WIN = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   _XA_WM_PROTOCOLS = XInternAtom (dpy, "WM_PROTOCOLS", False);
 
   /* Allow for multi-width/height buttons */
@@ -1507,7 +1481,7 @@ void CreateWindow(void)
     XSelectInput(dpy, Folders[i].win, MW_EVENTS);
   }
 
-  XSetWMProtocols(dpy,main_win,&wm_del_win,1);
+  XSetWMProtocols(dpy,main_win, &_XA_WM_DEL_WIN, 1);
 
   XSetWMNormalHints(dpy,main_win,&mysizehints);
 
@@ -1539,7 +1513,7 @@ void DeadPipe(int nonsense)
       if(((Buttons[button].swallow == 3)||(Buttons[button].swallow == 4))&&
 	 (Buttons[button].module == 0))
       {
-	my_send_clientmessage(Buttons[button].IconWin,wm_del_win,
+	my_send_clientmessage(Buttons[button].IconWin, _XA_WM_DEL_WIN,
 			      CurrentTime);
 	XSync(dpy,0);
       }

@@ -50,26 +50,31 @@
 #include <sys/bsdtypes.h> /* Saul */
 #endif /* Saul */
 
+#include <X11/Xlib.h>
+#include <X11/Intrinsic.h>
+
 #include "libs/Module.h"
+#include "libs/Colorset.h"
 #include "FvwmBacker.h"
 #include "Mallocs.h"
 
-#include <X11/Xlib.h>
-
-unsigned long GetColor(char *color);
+unsigned long BackerGetColor(char *color);
 
 typedef struct
 {
   int type; /* The command type.
 	     * -1 = no command.
 	     *  0 = command to be spawned
-	     *  1 = a solid color to be set */
+	     *  1 = a solid color to be set
+	     *  2 = use background from colorset */
   char*	cmdStr; /* The command string (Type 0)   */
   unsigned long solidColor; /* A solid color after X parsing (Type 1) */
+  int colorset; /* the colorset to be used */
 } Command;
 
 Command *commands;
 int DeskCount=0;
+int current_desk = 0;
 
 int Fvwm_fd[2];
 int fd_width;
@@ -91,8 +96,8 @@ FILE*	logFile;
 
 int main(int argc, char **argv)
 {
-char *temp, *s;
-	char*	displayName = NULL;
+  char *temp, *s;
+  char* displayName = NULL;
 
   commands=NULL;
 
@@ -104,10 +109,11 @@ char *temp, *s;
 
   Module=temp;
 
-  if((argc != 6)&&(argc != 7)) {
-    fprintf(stderr,"%s Version %s should only be executed by fvwm!\n",Module,
-      VERSION);
-   exit(1);
+  if((argc != 6)&&(argc != 7))
+  {
+    fprintf(stderr, "%s Version %s should only be executed by fvwm!\n", Module,
+	    VERSION);
+    exit(1);
   }
 
   Fvwm_fd[0] = atoi(argv[1]);
@@ -115,21 +121,24 @@ char *temp, *s;
 
   /* Grab the X display information now. */
 
-	dpy = XOpenDisplay(displayName);
-	if (!dpy)
-	{
-		fprintf(stderr, "%s:  unable to open display '%s'\n",
-			Module, XDisplayName (displayName));
-		exit (2);
-	}
-	screen = DefaultScreen(dpy);
-	root = RootWindow(dpy, screen);
+  dpy = XOpenDisplay(displayName);
+  if (!dpy)
+  {
+    fprintf(stderr, "%s:  unable to open display '%s'\n",
+	    Module, XDisplayName (displayName));
+    exit (2);
+  }
+  screen = DefaultScreen(dpy);
+  root = RootWindow(dpy, screen);
 
-	/* Open a log file if necessary */
-#	ifdef LOGFILE
-		logFile = fopen(LOGFILE,"a");
-		fprintf(logFile,"Initialising FvwmBacker\n");
-#	endif
+  /* allocate default colorset */
+  AllocColorset(0);
+
+  /* Open a log file if necessary */
+#ifdef LOGFILE
+  logFile = fopen(LOGFILE,"a");
+  fprintf(logFile,"Initialising FvwmBacker\n");
+#endif
 
   signal (SIGPIPE, DeadPipe);
 
@@ -138,7 +147,8 @@ char *temp, *s;
 
   fd_width = GetFdWidth();
 
-  SetMessageMask(Fvwm_fd,M_NEW_DESK|M_CONFIG_INFO|M_END_CONFIG_INFO);
+  SetMessageMask(Fvwm_fd,
+		 M_NEW_DESK|M_CONFIG_INFO|M_END_CONFIG_INFO|M_SENDCONFIG);
 
   /*
   ** we really only want the current desk, and window list sends it
@@ -157,28 +167,61 @@ char *temp, *s;
 
 /******************************************************************************
   EndLessLoop -  Read until we get killed, blocking when can't read
+    Originally Loop() from FvwmIdent:
+      Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
 void EndLessLoop()
 {
-  while(1) {
+  while(1)
+ {
     ReadFvwmPipe();
   }
 }
 
 /******************************************************************************
   ReadFvwmPipe - Read a single message from the pipe from Fvwm
-    Originally Loop() from FvwmIdent:
-      Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
 void ReadFvwmPipe()
 {
-    FvwmPacket* packet = ReadFvwmPacket(Fvwm_fd[1]);
-    if ( packet == NULL )
-	exit(0);
-    else
-	ProcessMessage( packet->type, packet->body );
+  FvwmPacket* packet = ReadFvwmPacket(Fvwm_fd[1]);
+  if ( packet == NULL )
+    exit(0);
+  else
+    ProcessMessage( packet->type, packet->body );
 }
 
+
+void set_desk_background(int desk)
+{
+  switch (commands[desk].type)
+  {
+  case 1:
+    /* Process a solid color request */
+    XSetWindowBackground(dpy, root, commands[desk].solidColor);
+    XClearWindow(dpy, root);
+    XFlush(dpy);
+#ifdef LOGFILE
+    fprintf(logFile,"Color set.\n");
+    fflush(logFile);
+#endif
+    break;
+  case 2:
+    SetWindowBackground(
+      dpy, root, DisplayWidth(dpy, screen), DisplayHeight(dpy, screen),
+      &Colorset[commands[desk].colorset % nColorsets],
+      DefaultDepth(dpy, screen), DefaultGC(dpy, screen));
+    XFlush(dpy);
+    break;
+  case 0:
+  case -1:
+  default:
+    if(commands[desk].cmdStr != NULL)
+    {
+      SendFvwmPipe(commands[desk].cmdStr, (unsigned long)0);
+    }
+    break;
+  } /* switch */
+}
 
 /******************************************************************************
   ProcessMessage - Process the message coming from Fvwm
@@ -187,52 +230,52 @@ void ReadFvwmPipe()
 ******************************************************************************/
 void ProcessMessage(unsigned long type,unsigned long *body)
 {
-  if (type==M_NEW_DESK)
+  char *tline;
+  int colorset = -1;
+
+  switch (type)
+  {
+  case M_CONFIG_INFO:
+    tline = (char*)&(body[3]);
+    if (strncasecmp(tline, "colorset", 8) == 0)
     {
-      if (body[0]>DeskCount || commands[body[0]].type == -1)
-	{
-	  return;
-	}
-#ifdef LOGFILE
-      fprintf(logFile,"Desk: %d\n",body[0]);
-      fprintf(logFile,"Command type: %d\n",commands[body[0]].type);
-      if (commands[body[0]].type == 0)
-	fprintf(logFile,"Command String: %s\n",commands[body[0]].cmdStr);
-      else if (commands[body[0]].type == 1)
-	fprintf(logFile,"Color Number: %d\n",commands[body[0]].solidColor);
-      else if (commands[body[0]].type == -1)
-	fprintf(logFile,"No Command\n");
-      else
-	{
-	  fprintf(logFile,"Illegal command type !\n");
-	  exit(1);
-	}
-      fflush(logFile);
-#	endif
-
-
-      if (commands[body[0]].type == 1)
-	{
-	  /* Process a solid color request */
-
-	  XSetWindowBackground(dpy, root, commands[body[0]].solidColor);
-	  XClearWindow(dpy, root);
-	  XFlush(dpy);
-
-#		ifdef LOGFILE
-	  fprintf(logFile,"Color set.\n");
-	  fflush(logFile);
-#		endif
-	}
-      else if(commands[body[0]].cmdStr != NULL)
-	{
-#if 0
-	  system(commands[body[0]].cmdStr);
-#else     /* much more useful: */
-          SendFvwmPipe(commands[body[0]].cmdStr, (unsigned long)0);
-#endif
-	}
+      colorset = LoadColorset(tline + 8);
+      if (commands[current_desk].colorset == colorset)
+      {
+	set_desk_background(current_desk);
+      }
     }
+    break;
+
+  case M_NEW_DESK:
+    if (body[0]>DeskCount || commands[body[0]].type == -1)
+    {
+      return;
+    }
+#ifdef LOGFILE
+    fprintf(logFile,"Desk: %d\n",body[0]);
+    fprintf(logFile,"Command type: %d\n",commands[body[0]].type);
+    if (commands[body[0]].type == 0)
+      fprintf(logFile,"Command String: %s\n",commands[body[0]].cmdStr);
+    else if (commands[body[0]].type == 1)
+      fprintf(logFile,"Color Number: %d\n",commands[body[0]].solidColor);
+    else if (commands[body[0]].type == -1)
+      fprintf(logFile,"No Command\n");
+    else if (commands[body[0]].type == 2)
+      fprintf(logFile,"Use Colorset %d\n",commands[body[0]].colorset);
+    else
+    {
+      fprintf(logFile,"Illegal command type !\n");
+      exit(1);
+    }
+    fflush(logFile);
+#endif
+    set_desk_background(body[0]);
+    current_desk = body[0];
+    break;
+  default:
+    break;
+  } /* switch */
 }
 
 /******************************************************************************
@@ -242,13 +285,15 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 ******************************************************************************/
 void SendFvwmPipe(char *message,unsigned long window)
 {
-int w;
-char *hold,*temp,*temp_msg;
+  int w;
+  char *hold,*temp,*temp_msg;
   hold=message;
 
-  while(1) {
+  while(1)
+  {
     temp=strchr(hold,',');
-    if (temp!=NULL) {
+    if (temp!=NULL)
+    {
       temp_msg=malloc(temp-hold+1);
       strncpy(temp_msg,hold,(temp-hold));
       temp_msg[(temp-hold)]='\0';
@@ -295,35 +340,44 @@ void ParseConfig()
   InitGetConfigLine(Fvwm_fd,line2);
   GetConfigLine(Fvwm_fd,&tline);
 
-    while(tline != (char *)0)
-      {
-	if(strlen(tline)>1)
-	  {
-	    if(strncasecmp(tline,line2,strlen(line2))==0)
-	      AddCommand(&tline[strlen(line2)]);
-	  }
-	GetConfigLine(Fvwm_fd,&tline);
-      }
+  while(tline != (char *)0)
+  {
+    if(strlen(tline)>1)
+    {
+      if(strncasecmp(tline,line2,strlen(line2))==0)
+	AddCommand(&tline[strlen(line2)]);
+      else if (strncasecmp(tline, "colorset", 8) == 0)
+	LoadColorset(tline + 8);
+    }
+    GetConfigLine(Fvwm_fd,&tline);
+  }
 }
 
 /******************************************************************************
-AddCommand - Add a command to the correct spot on the dynamic array.
+  AddCommand - Add a command to the correct spot on the dynamic array.
 ******************************************************************************/
 void AddCommand(char *string)
 {
-char *temp;
-int num;
+  char *temp;
+  int num = 0;
+
   temp=string;
-  while(isspace((unsigned char)*temp)) temp++;
+  while(isspace((unsigned char)*temp))
+    temp++;
   num=atoi(temp);
-  while(!isspace((unsigned char)*temp)) temp++;
-  while(isspace((unsigned char)*temp)) temp++;
-  if (DeskCount<1) {
+  while(!isspace((unsigned char)*temp))
+    temp++;
+  while(isspace((unsigned char)*temp))
+    temp++;
+  if (DeskCount<1)
+  {
     commands=(Command*)safemalloc((num+1)*sizeof(Command));
     while(DeskCount<num+1) commands[DeskCount++].type= -1;
   }
-  else {
-    if (num+1>DeskCount) {
+  else
+  {
+    if (num+1>DeskCount)
+    {
       commands=(Command*)realloc(commands,(num+1)*sizeof(Command));
       while(DeskCount<num+1) commands[DeskCount++].type= -1;
     }
@@ -331,41 +385,48 @@ int num;
 /*  commands[num]=(Command*)safemalloc(sizeof(Command));
 */
 
-    /* Now check the type of command... */
-    /* strcpy(commands[num],temp);*/
+  /* Now check the type of command... */
+  /* strcpy(commands[num],temp);*/
 
-	if (strncmp(temp,"-solid",6)==0)
-	{
-		char* color;
-		char* tmp;
-		/* Process a solid color request */
+  if (strncasecmp(temp,"-solid",6)==0)
+  {
+    char* color;
+    char* tmp;
+    /* Process a solid color request */
 
-		color = &temp[7];
-		while (isspace((unsigned char)*color))
-			color++;
-		tmp= color;
-		while (!isspace((unsigned char)*tmp))
-			tmp++;
-		*tmp = 0;
-		commands[num].type = 1;
-		commands[num].solidColor = (!color || !*color) ?
-		  BlackPixel(dpy, screen) :
-		  GetColor(color);
+    color = &temp[7];
+    while (isspace((unsigned char)*color))
+      color++;
+    tmp= color;
+    while (!isspace((unsigned char)*tmp))
+      tmp++;
+    *tmp = 0;
+    commands[num].type = 1;
+    commands[num].solidColor = (!color || !*color) ?
+      BlackPixel(dpy, screen) :
+      BackerGetColor(color);
 #ifdef LOGFILE
-		fprintf(logFile,"Adding color: %s as number %d to desk %d\n",
-			color,commands[num].solidColor, num);
-		fflush(logFile);
+    fprintf(logFile,"Adding color: %s as number %d to desk %d\n",
+	    color,commands[num].solidColor, num);
+    fflush(logFile);
 #endif
-	}
-	else
-	{
+  }
+  else if (strncasecmp(temp, "colorset", 8) == 0)
+  {
+    if (sscanf(temp + 8, "%d", &commands[num].colorset) < 1)
+    {
+      commands[num].colorset = 0;
+    }
+    commands[num].type = 2;
+  }
+  else
+  {
 #ifdef LOGFILE
-		fprintf(logFile,"Adding command: %s to desk %d\n",temp, num);
-		fflush(logFile);
+    fprintf(logFile,"Adding command: %s to desk %d\n",temp, num);
+    fflush(logFile);
 #endif
-		commands[num].type = 0;
-		commands[num].cmdStr = (char *)safemalloc(strlen(temp)+1);
-		strcpy(commands[num].cmdStr,temp);
-	}
-
+    commands[num].type = 0;
+    commands[num].cmdStr = (char *)safemalloc(strlen(temp)+1);
+    strcpy(commands[num].cmdStr,temp);
+  }
 }

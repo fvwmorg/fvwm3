@@ -20,7 +20,7 @@ extern Display *dpy;
 extern int screen;
 extern char *Module;
 
-unsigned long GetColor(char *name)
+unsigned long BackerGetColor(char *name)
 {
   XColor color;
 

@@ -178,6 +178,7 @@ void merge_styles(window_style *merged_style, window_style *add_style)
   return;
 }
 
+
 static void add_style_to_list(window_style *new_style)
 {
   window_style *nptr;
@@ -200,6 +201,77 @@ static void add_style_to_list(window_style *new_style)
     all_styles = nptr;
   last_style_in_list = nptr;
 } /* end function */
+
+
+#define SAFEFREE( p )  {if (p)  free(p);}
+
+static void remove_all_of_style_from_list(char *style_ref)
+{
+  window_style *nptr = all_styles, *lptr = NULL;
+
+  /* loop though styles */
+  while (nptr)
+  {
+    /* Check if it's to be wiped */
+    if (!strcmp( nptr->name, style_ref ))
+    {
+      window_style *tmp_ptr = nptr;
+
+      /* Reset nptr now */
+      nptr = nptr->next;
+
+      /* Is it the first one? */
+      if (NULL == lptr)
+      {
+        /* Yup - reset all_styles */
+        all_styles = nptr;
+      }
+      else
+      {
+        /* Middle of list */
+        lptr->next = nptr;
+      }
+
+      /* Free contents of style */
+      SAFEFREE( tmp_ptr->name );
+      SAFEFREE( tmp_ptr->back_color_name );
+      SAFEFREE( tmp_ptr->fore_color_name );
+      SAFEFREE( tmp_ptr->mini_icon_name );
+      SAFEFREE( tmp_ptr->decor_name );
+      SAFEFREE( tmp_ptr->icon_name );
+
+      /* Free style */
+      free( tmp_ptr );
+    }
+    else
+    {
+      /* No match - move on */
+      lptr = nptr;
+      nptr = nptr->next;
+    }
+  }
+
+} /* end function */
+
+
+/* Remove a style. */
+void ProcessDestroyStyle( XEvent *eventp, Window w, FvwmWindow *tmp_win,
+                          unsigned long context,char *action, int *Module )
+{
+  char *name;
+
+  /* parse style name */
+  action = GetNextToken(action, &name);
+
+  /* in case there was no argument! */
+  if(name == NULL)
+    return;
+
+  /* Do it */
+  remove_all_of_style_from_list( name );
+  free( name );
+}
+
 
 /***********************************************************************
  *
@@ -282,7 +354,7 @@ int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len)
 /* Process a style command.  First built up in a temp area.
    If valid, added to the list in a malloced area. */
 void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
-		     unsigned long context, char *action, int *Module)
+                     unsigned long context,char *action, int *Module )
 {
   char *line;
   char *option;
@@ -316,9 +388,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
     return;
   if(action == NULL)
     {
-#if 0
       free(tmpstyle.name);
-#endif
       return;
     }
   while (isspace((unsigned char)*action))
@@ -333,9 +403,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
     token = PeekToken(option, &rest);
     if (!token)
     {
-#if 0
       free(option);
-#endif
       break;
     }
 
@@ -343,6 +411,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
      * case, and use strcmp, but there aren't many caseless compares
      * because of this "switch" on the first letter. */
     found = False;
+
     switch (tolower(token[0]))
     {
       case 'a':
@@ -617,7 +686,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         }
         else if(StrEquals(token, "IconBox"))
         {
-          icon_boxes *IconBoxes = 0;
+          icon_boxes *IconBoxes = NULL;
 
 	  found = True;
           IconBoxes = (icon_boxes *)safemalloc(sizeof(icon_boxes));
@@ -679,9 +748,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
                 "IconBox requires 4 numbers or geometry! Invalid string <%s>.",
                          token);
 		/* Drop the box */
-#if 0
                 free(IconBoxes);
-#endif
 		/* forget about it */
                 IconBoxes = 0;
               } else {
@@ -713,9 +780,7 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
                        "IconBox requires 4 numbers or geometry! Too long (%d).",
                        l);
 	      /* Drop the box */
-#if 0
               free(IconBoxes);
-#endif
 	      /* forget about it */
               IconBoxes = 0;
             } /* end word found, not too long */
@@ -1363,10 +1428,14 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
       fvwm_msg(ERR,"ProcessNewStyle", "bad style command: %s", option);
       /* Can't return here since all malloced memory will be lost. Ignore rest
        * of line instead. */
-#if 0
+
+      /* No, I think we /can/ return here.
+       * In fact, /not/ bombing out leaves a half-done style in the list!
+       * N.Bird 07-Sep-1999
+       */
+      free(tmpstyle.name);
       free(option);
-#endif
-      break;
+      return;
     }
     free(option);
   } /* end while still stuff on command */

@@ -1026,6 +1026,14 @@ void Loop(void)
 	  RedrawButton(b,0);
 	break;
 
+      case ClientMessage:
+	if(Event.xclient.format == 32 &&
+	   Event.xclient.data.l[0]==_XA_WM_DEL_WIN)
+	{
+	  DeadPipe(1);
+	}
+	break;
+
       case PropertyNotify:
 	if(Event.xany.window==None)
 	  break;
@@ -1457,6 +1465,7 @@ static void HandlePanelPress(button_info *b)
   long supplied;
   Bool is_mapped;
   XWindowAttributes xwa;
+  char cmd[64];
 
   XGetWindowAttributes(Dpy, b->IconWin, &xwa);
   is_mapped = (xwa.map_state == IsViewable);
@@ -1503,6 +1512,9 @@ static void HandlePanelPress(button_info *b)
     XMoveResizeWindow(Dpy, b->IconWin, x1, y1, w1, h1);
     XMapWindow(Dpy, b->IconWin);
   }
+  /* make sure the window maps on the current desk */
+  sprintf(cmd, "Silent WindowId 0x%08x MoveToDesk 0", (int)b->IconWin);
+  SendInfo(fd, cmd, b->IconWin);
   SlideWindow(Dpy, b->IconWin,
 	      x1, y1, w1, h1,
 	      x2, y2, w2, h2,

@@ -1,3 +1,20 @@
+1999-09-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/stack.c (new_layer): fixed some problems in stack ring with
+	layer hints; one of the fixes is a temporary fix for a problem
+	introduced by the latest transient handling patch
+
+	* fvwm/fvwm.c (CaptureOneWindow): make sure the GNOME hints are set
+	before a recapture.
+
+	* fvwm/builtins.c (stick_function): fixed a bug with stick + unstick +
+	movetopage + gnome + recapture :-)
+
+1999-09-08  Neil Bird  <neil.bird@rdel.co.uk>
+
+	* fvwm/{functions.c,functions.h,fvwm2.1,style.c,style.h}:
+	Add DestroyStyle command, and [try to] remove Style memory leaks.
+
 1999-09-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1: applied patch for GnomeButton command by Eric

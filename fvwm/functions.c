@@ -148,6 +148,7 @@ static const struct functions func_config[] =
   {"destroymenu",  destroy_menu,     F_DESTROY_MENU,        0},
   {"destroymenustyle", DestroyMenuStyle, F_DESTROY_MENUSTYLE,0},
   {"destroymoduleconfig", DestroyModConfig, F_DESTROY_MOD,  0},
+  {"destroystyle", ProcessDestroyStyle,  F_DESTROY_STYLE,   0},
   {"direction",    DirectionFunc,    F_DIRECTION,           0},
   {"echo",         echo_func,        F_ECHO,                0},
   {"edgeresistance",SetEdgeResistance,F_EDGE_RES,           0},

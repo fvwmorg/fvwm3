@@ -101,6 +101,7 @@
 
 /* function prototypes */
 void ProcessNewStyle(F_CMD_ARGS);
+void ProcessDestroyStyle(F_CMD_ARGS);
 void lookup_style(FvwmWindow *tmp_win, window_style *styles);
 void merge_styles(window_style *, window_style *);
 int cmp_masked_flags(void *flags1, void *flags2, void *mask, int len);

@@ -1140,29 +1140,29 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
     return;
 
   /*
-    Set the window's desktop, and map or unmap it as needed.
-  */
+   * Set the window's desktop, and map or unmap it as needed.
+   */
   /* Only change mapping for non-sticky windows */
-  if(!( IS_ICONIFIED(tmp_win) && IS_ICON_STICKY(tmp_win)) &&
-     !IS_STICKY(tmp_win) && !IS_ICON_UNMAPPED(tmp_win))
+  if(!(IS_ICONIFIED(tmp_win) && IS_ICON_STICKY(tmp_win)) &&
+     !IS_STICKY(tmp_win) /*&& !IS_ICON_UNMAPPED(tmp_win)*/)
+  {
+    if(tmp_win->Desk == Scr.CurrentDesk)
     {
-      if(tmp_win->Desk == Scr.CurrentDesk)
-	{
-	  tmp_win->Desk = desk;
-	  UnmapIt(tmp_win);
-	}
-      else if(desk == Scr.CurrentDesk)
-	{
-	  tmp_win->Desk = desk;
-	  /* If its an icon, auto-place it */
-	  if(IS_ICONIFIED(tmp_win))
-	    AutoPlaceIcon(tmp_win);
-	  MapIt(tmp_win);
-	}
-      else
-	tmp_win->Desk = desk;
-      BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
+      tmp_win->Desk = desk;
+      UnmapIt(tmp_win);
     }
+    else if(desk == Scr.CurrentDesk)
+    {
+      tmp_win->Desk = desk;
+      /* If its an icon, auto-place it */
+      if(IS_ICONIFIED(tmp_win))
+	AutoPlaceIcon(tmp_win);
+      MapIt(tmp_win);
+    }
+    else
+      tmp_win->Desk = desk;
+    BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
+  }
 #ifdef GNOME
   GNOME_SetDeskCount();
   GNOME_SetDesk(tmp_win);

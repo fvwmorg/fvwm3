@@ -808,6 +808,11 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
     XChangeProperty (dpy, fw->w, _XA_WM_DESKTOP, _XA_WM_DESKTOP, 32,
                      PropModeReplace, (unsigned char *) data, 1);
 
+#if GNOME
+    GNOME_SetHints(fw);
+    GNOME_SetDesk(fw);
+    GNOME_SetLayer(fw);
+#endif
 
     XSelectInput(dpy, fw->w, 0);
     w = fw->w;

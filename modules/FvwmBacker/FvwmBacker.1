@@ -38,15 +38,20 @@ option of FVWM for it to be executed by FVWM.
 .SH CONFIGURATION OPTIONS
 The following is the only supported option at present:
 
-.IP "*FvwmBackerDesk \fIDeskNumber command\fP"
+.IP "*FvwmBackerDesk \fIDeskNumber command | -solid color | colorset n\fP"
 Specifies the \fIcommand\fP to execute when the specified
 \fIDeskNumber\fP becomes active.
 
-If the command begins with \fI-solid\fP FvwmBacker uses the next
+If the next word is \fI-solid\fP FvwmBacker uses the next
 argument as a color in the X database and sets the background to that
 color without generating a system call to xsetroot (only single word
-color names may be used).  Otherwise the command is sent to fvwm to
-execute.
+color names may be used).
+
+If the next word is \fIcolorset\fP FvwmBacker uses the background
+specified in colorset \fIn\fP for the given desk.  Please refer to
+the man page of the FvwmTheme module for details about colorsets.
+
+Otherwise the command is sent to fvwm to execute.
 
 .SH SAMPLE CONFIGURATION
 The following are excepts from an .fvwm2rc file which describe

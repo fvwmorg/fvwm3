@@ -3,7 +3,7 @@ Changes in beta release 2.3.8 (September? 1999)
 * New command BugOpts allows to enable various former bug fixing compile
   time options to be changed at run time.
 
-* FvwmWharf supports colorsets.
+* FvwmWharf and FvwmBacker support colorsets.
 
 * A new special fvwm function StartFunction is introduced. It is supposed to
   be used to start modules and for other start commands. This function is
