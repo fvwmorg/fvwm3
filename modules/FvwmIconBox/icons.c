@@ -252,7 +252,7 @@ void GetIconFromFile(struct icon_info *item)
 	item->icon_w = 0;
 	item->icon_h = 0;
 	if (!PImageLoadPixmapFromFile(
-		dpy, Root, path, &item->iconPixmap,
+		dpy, main_win, path, &item->iconPixmap,
 		&item->icon_maskPixmap,
 		&item->icon_alphaPixmap, &item->icon_w, &item->icon_h,
 		&item->icon_depth, 0, NULL, fpa))

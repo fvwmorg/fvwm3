@@ -394,7 +394,7 @@ void LoadIcon(struct XObj *xobj)
 		return;
 	}
 	if (!PImageLoadPixmapFromFile(
-		dpy, x11base->root, path, &xobj->iconPixmap,
+		dpy, x11base->win, path, &xobj->iconPixmap,
 		&xobj->icon_maskPixmap, &xobj->icon_alphaPixmap, &xobj->icon_w,
 		&xobj->icon_h, &depth, &xobj->nalloc_pixels, &xobj->alloc_pixels,
 		fpa))
