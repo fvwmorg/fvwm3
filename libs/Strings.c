@@ -16,14 +16,12 @@
 /*
 ** Strings.c: various routines for dealing with strings
 */
+#include "config.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <ctype.h>
 
 #include "Strings.h"
-#include "fvwmlib.h" /* for safemalloc */
+#include "safemalloc.h"
 
 
 #define CHUNK_SIZE 256
@@ -134,5 +132,13 @@ int StrEquals( const char *s1, const char *s2 )
 {
     if (s1 == NULL && s2 == NULL) return 1;
     if (s1 == NULL || s2 == NULL) return 0;
-    return (strcasecmp(s1,s2)==0);
+    return strcasecmp(s1,s2) == 0;
+}
+
+
+int StrHasPrefix( const char* string, const char* prefix )
+{
+    if ( prefix == NULL ) return 1;
+    if ( string == NULL ) return 0;
+    return strncasecmp( string, prefix, strlen(prefix) ) == 0;
 }

@@ -43,6 +43,7 @@ int GetFdWidth(void)
 #endif
 }
 
+
 /* return a string indicating the OS type (i.e. "Linux", "SINIX-D", ... ) */
 int getostype(char *buf, int max)
 {

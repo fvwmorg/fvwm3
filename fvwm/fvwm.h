@@ -125,9 +125,6 @@ typedef struct ColorPair
   Pixel back;
 } ColorPair;
 
-#ifdef MINI_ICONS
-#include <libs/fvwmlib.h>
-#endif
 
 #ifdef USEDECOR
 struct FvwmDecor;		/* definition in screen.h */
@@ -449,7 +446,7 @@ typedef struct WindowConditionMask {
 #define BUTTON9   256
 #define BUTTON10  512
 
-#include <stdlib.h>
+
 extern void Reborder(void);
 RETSIGTYPE SigDone(int);
 RETSIGTYPE Restart(int nonsense);

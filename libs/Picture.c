@@ -86,6 +86,8 @@ void InitPictureCMap(Display *dpy,Window Root)
   PictureCMap = root_attr.colormap;
   PictureDepth = root_attr.depth;
 }
+
+
 /* This is an alternative used by modules that have got the information
  * from the Default_Graphics config line sent by fvwm */
 void SavePictureCMap(Display *dpy, Visual *viz, Colormap cmap, int depth)
@@ -127,9 +129,6 @@ char* findImageFile( const char* icon, const char* pathlist, int type )
 
     return searchPath( pathlist, icon, ".gz", type );
 }
-
-
-
 
 
 Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
@@ -189,17 +188,19 @@ Picture *LoadPicture(Display *dpy,Window Root,char *path, int color_limit)
 Picture *GetPicture(Display *dpy, Window Root,
 		    char *ImagePath, char *name, int color_limit)
 {
-  char *path;
-  Picture *p;
+    char *path = findImageFile( name, ImagePath, R_OK );
+    Picture *p;
 
+    if ( path == NULL )
+	return NULL;
 
-  if( !(path=findImageFile(name,ImagePath,R_OK)) )
-      return NULL;
-  p = LoadPicture(dpy,Root,path, color_limit);
-  if (!p)
-      free(path);
-  return p;
+    p = LoadPicture( dpy, Root, path, color_limit );
+    if ( p == NULL )
+	free(path);
+
+    return p;
 }
+
 
 Picture *CachePicture(Display *dpy, Window Root,
 		      char *ImagePath, char *name, int color_limit)

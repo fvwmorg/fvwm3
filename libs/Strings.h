@@ -37,4 +37,10 @@ char *stripcpy( const char *source );
 int StrEquals( const char *s1, const char *s2 );
 
 
+/**
+ * Return TRUE if the string has the given prefix.  Case is ignored.
+ **/
+int StrHasPrefix( const char* string, const char* prefix );
+
+
 #endif

@@ -19,6 +19,9 @@
 ** Module.c: code for modules to communicate with fvwm
 */
 
+#include <X11/X.h>
+
+
 /**
  * FVWM sends packets of this type to modules.
  **/
@@ -137,6 +140,29 @@ void InitGetConfigLine(int *fd, char *match);
  * no more lines to be had. "line" is a pointer to a char *.
  **/
 void GetConfigLine(int *fd, char **line);
+
+
+/**
+ * Parse the command line arguments given to the module by FVWM.
+ * Input is the argc & argv from main(), and a flag to indicate
+ * if we accept a module alias as argument #6.
+ *
+ * Returns a pointer to a ModuleArgs structure, or NULL if something
+ * is not kosher.  The returned memory is a static buffer.
+ **/
+
+typedef struct {
+    char* name;                /* module name */
+    int to_fvwm;               /* file descriptor to send info back to FVWM */
+    int from_fvwm;             /* file descriptor to read packets from FVWM */
+    Window window;             /* window context of module */
+    unsigned long decoration;  /* decoration context of module */
+    int user_argc;             /* number of user-specified arguments */
+    char** user_argv;          /* vector of user-specified arguments */
+} ModuleArgs;
+    
+
+ModuleArgs* ParseModuleArgs( int argc, char* argv[], int use_arg6_as_alias );
 
 
 #endif

@@ -22,6 +22,8 @@
 #include "repeat.h"
 #include "functions.h"
 #include "parse.h"
+#include "libs/Parse.h"
+
 
 /* If non-zero we are already repeating a function, so don't record the
  * command again. */

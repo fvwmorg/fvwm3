@@ -16,6 +16,7 @@
 #ifndef Picture_H
 #define Picture_H
 
+
 typedef struct PictureThing
 {
     struct PictureThing *next;
@@ -33,19 +34,25 @@ extern Colormap PictureCMap;
 extern unsigned int PictureDepth;
 extern Display *PictureSaveDisplay;     /* Save area for display pointer */
 
+
 /* This routine called during fvwm and some modules initialization */
 void InitPictureCMap(Display *dpy, Window Root);
+
+
 /* This is an alternative used by modules that have got the information
  * from the Default_Graphics config line sent by fvwm */
 void SavePictureCMap(Display *dpy, Visual *viz, Colormap cmap, int depth);
 
+
 /** Returns current setting of the image path **/
 char* GetImagePath( void );
+
 
 /** Sets image path to newpath.  Environment variables are expanded, and '+'
     is expanded to previous value of imagepath.  The new path is in
     newly-allocated memory, so newpath may be freed or re-used.  **/
 void SetImagePath( const char* newpath );
+
 
 /** Search for file along pathlist.  If pathlist is NULL, will use the current
     imagepath setting.  If filename is not found, but filename.gz is found,
@@ -56,8 +63,13 @@ char* findImageFile( const char* filename, const char* pathlist, int mode );
 
 /** Manipulating Pictures **/
 
+/**
+ * Load the given picture file.  If XPM is enabled, will try first to load
+ * as pixmap file.  If no XPM file found (or XPM not enabled) will try to
+ * load as bitmap.
+ **/
 Picture* LoadPicture( Display* dpy, Window Root,
-		      char *picturePath, int color_limit);
+		      char *pictureFileName, int color_limit);
 
 /**
  * For GetPicture() and CachePicture(), setting ImagePath to

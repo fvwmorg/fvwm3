@@ -141,6 +141,9 @@ void setPath( char** p_path, const char* newpath, int free_old_path );
  * has read, write and execute permissions, respectively.  F_OK just requests
  * checking for the existence of the file.
  *
+ * Returns: full pathname of sought-after file, or NULL.  The return value
+ *          points to allocated memory that the caller must free.
+ *
  **/
 char* searchPath( const char* path, const char* filename,
 		  const char* suffix, int type );

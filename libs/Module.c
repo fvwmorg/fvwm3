@@ -176,3 +176,54 @@ void GetConfigLine(int *fd, char **tline)
     }
 }
 
+
+ModuleArgs* ParseModuleArgs( int argc, char* argv[], int use_arg6_as_alias ) 
+{
+    static ModuleArgs ma;
+
+    /* Need at least six arguments:
+       [0] name of executable
+       [1] file descriptor of module->FVWM pipe (write end)
+       [2] file descriptor of FVWM->module pipe (read end)
+       [3] pathname of last config file read (ignored -- use Send_ConfigInfo)
+       [4] application window context
+       [5] window decoration context
+       
+       Optionally (left column used if use_arg6_as_alias is true):
+       [6] alias       or  user argument 0
+       [7] user arg 0  or  user arg 1
+       ...
+    */
+    if ( argc < 6 ) return NULL;
+
+    /* Module name is (last component of) argv[0] or possibly an alias
+       passed on the command line. */
+    if ( use_arg6_as_alias && argc >= 7 ) {
+	ma.name = argv[6];
+	ma.user_argc = argc - 7;
+	ma.user_argv = &(argv[7]);
+    } else {
+	char* p = strrchr( argv[0], '/' );
+	if ( p == NULL )
+	    ma.name = argv[0];
+	else
+	    ma.name = ++p;
+	ma.user_argc = argc - 6;
+	ma.user_argv = &(argv[6]);
+    }
+
+    if ( ma.user_argc == 0 )
+	ma.user_argv = NULL;
+
+    /* File descriptors for the pipes */
+    ma.to_fvwm = atoi( argv[1] );
+    ma.from_fvwm = atoi( argv[2] );
+
+    /* Ignore argv[3] */
+
+    /* These two are generated as long hex strings */
+    ma.window = strtoul( argv[4], NULL, 16 );
+    ma.decoration = strtoul( argv[5], NULL, 16 );
+
+    return &ma;
+}

@@ -16,10 +16,8 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
 #include <string.h>
 #include <ctype.h>
-#include <unistd.h>
 
 #include "fvwm.h"
 #include "icons.h"

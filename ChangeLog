@@ -1,18 +1,47 @@
+Sun Jun  6 21:12:39 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/Module.c:
+	* libs/Module.h: new function ParseModuleArgs.
+
+	* libs/Strings.c:
+	* libs/Strings.h: new function StrHasPrefix.
+
+	* fvwm/repeat.c: include libs/Parse.h.
+
+	* libs/Picture.c:
+	* libs/Picture.h: 
+	* libs/System.c:
+	* libs/fvwmlib.h:
+	* fvwm/fvwm.h:
+	* fvwm/virtual.c: tidying up.
+
 1999-06-05  Ke Huang <kh6@cec.wustl.edu>
-   * acconfig.h: added HAVE_STROKE
-   * configure.in: added check for libstroke
-   * fvwm/Makefile.am: added stroke_LIBS and stroke_CFLAGS
-   * fvwm/bindings.c: added stroke_binding, and ifdefs for ParseBinding()
-   * fvwm/bindings.h: added prototypes for strokes
-   * fvwm/events.c: added HandleMotionNotify and HandleButtonRelease
-   * fvwm/events.h: added prototypes
-   * fvwm/functions.c: added stroke command
-   * fvwm/fvwm.c: added MotionMasks for X.
-   * fvwm/parse.h: added F_STROKE
-   * libs/Bindings.c: new prototypes for AddBinding, RemoveBinding, and
-                      CheckBinding
-   * libs/fvwmlib.h: new prototypes, and new defines for BindingType and
-                     Binding struct.
+
+	* acconfig.h: added HAVE_STROKE
+
+	* configure.in: added check for libstroke
+   
+	* fvwm/Makefile.am: added stroke_LIBS and stroke_CFLAGS
+   
+	* fvwm/bindings.c: added stroke_binding, and ifdefs for ParseBinding()
+   
+	* fvwm/bindings.h: added prototypes for strokes
+   
+	* fvwm/events.c: added HandleMotionNotify and HandleButtonRelease
+   
+	* fvwm/events.h: added prototypes
+   
+	* fvwm/functions.c: added stroke command
+   
+	* fvwm/fvwm.c: added MotionMasks for X.
+   
+	* fvwm/parse.h: added F_STROKE
+   
+	* libs/Bindings.c: new prototypes for AddBinding, RemoveBinding,
+ 	and CheckBinding
+   
+	* libs/fvwmlib.h: new prototypes, and new defines for BindingType
+ 	and Binding struct.
 
 1999-06-06  Dominik Vogt  <dominik_vogt@gmx.de>
 
@@ -348,7 +377,6 @@ Mon May 24 17:45:34 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 1999-05-24  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
->>>>>>> 1.456
 	* fvwm/fvwm.c (Done): call RestartInSession if command is
 	empty or contains "fvwm". Remove unnecessary "if (command)"
 	statements, since Done is never called as Done (1, NULL).
