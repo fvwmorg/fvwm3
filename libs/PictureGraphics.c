@@ -1159,11 +1159,11 @@ Pixmap PGraphicsCreateTransprency(
 	XID root;
 	int dummy, sx, sy, sw, sh;
 	int gx = x, gy = y, gh = height, gw = width;
-	int old_backing_store;
+	int old_backing_store = -1;
 
-	old_backing_store = FSetBackingStore(dpy, win, Always);
 	if (parent_relative)
 	{
+		old_backing_store = FSetBackingStore(dpy, win, Always);
 		XSetWindowBackgroundPixmap(dpy, win, ParentRelative);
 		XClearArea(dpy, win, x, y, width, height, False);
 		XSync(dpy, False);
@@ -1200,7 +1200,7 @@ Pixmap PGraphicsCreateTransprency(
 		gy = gy - sy;
 		gh = height + sy;
 		sy = 0;
-		if (gw <= 0)
+		if (gh <= 0)
 		{
 			goto bail;
 		}
@@ -1278,7 +1278,72 @@ void PGraphicsTintRectangle(
 		}
 	}
 }
-	
+
+Pixmap PGraphicsCreateTranslucent(
+	Display *dpy, Window win, FvwmRenderAttributes *fra, GC gc,
+	int x, int y, int width, int height)
+{
+	Pixmap r = None;
+	int gx = x, gy = y, gh = height, gw = width;
+
+	if (x >= DisplayWidth(dpy, DefaultScreen(dpy)))
+	{
+		goto bail;
+	}
+	if (y >= DisplayHeight(dpy, DefaultScreen(dpy)))
+	{
+		goto bail;
+	}
+	if (x < 0)
+	{
+		gx = 0;
+		gw = width + x;
+		if (gw <= 0)
+		{
+			goto bail;
+		}
+	}
+	if (y < 0)
+	{
+		gy = 0;
+		gh = gh+y;
+		if (gh <= 0)
+		{
+			goto bail;
+		}
+	}
+	if (gx + gw > DisplayWidth(dpy, DefaultScreen(dpy)))
+	{
+		gw = DisplayWidth(dpy, DefaultScreen(dpy)) - gx;
+	}
+	if (gy + gh > DisplayHeight(dpy, DefaultScreen(dpy)))
+	{
+		gh = DisplayHeight(dpy, DefaultScreen(dpy)) - gy;
+	}
+	if (XRenderSupport && FRenderGetExtensionSupported())
+	{
+		r = XCreatePixmap(dpy, win, width, height, Pdepth);
+		if (FRenderRender(
+			dpy, win, DefaultRootWindow(dpy), None, None, Pdepth,
+			100, 0, 50, r, gc, None,
+			gx, gy, gw, gh, 0, 0, gw, gh, False))
+		{
+			goto bail;
+		}
+		XFreePixmap(dpy, r);
+	}
+#if 0
+	r = PCreateRenderPixmap(
+		dpy, win, ParentRelative, None, None, Pdepth, 100, fra->tint,
+		fra->tint_percent,
+		True, win,
+		gc, None, None, gx, gy, gw, gh, gx, gy, gw, gh,
+		False, &dummy, &dummy, &dummy, &dp);
+#endif
+ bail:
+	return r;
+}
+
 /* never tested and used ! */
 Pixmap PGraphicsCreateDitherPixmap(
 	Display *dpy, Window win, Drawable src, Pixmap mask, int depth, GC gc,

@@ -312,10 +312,10 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
 	  fra.mask = FRAM_DEST_IS_A_WINDOW | FRAM_HAVE_TINT;
 	  fra.tint = colorset->tint;
 	  fra.tint_percent = colorset->tint_percent;
-	  /*XGrabServer(dpy);*/
+	  XGrabServer(dpy);
 	  pixmap = PGraphicsCreateTransprency(
 		  dpy, win, &fra, gc, 0, 0, width, height, True);
-	  /*XUngrabServer(dpy);*/
+	  XUngrabServer(dpy);
 	  if (pixmap == None)
 	  {
 		  return ParentRelative;

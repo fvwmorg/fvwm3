@@ -184,6 +184,7 @@ int FRenderRender(
 	Pixmap pixmap_copy = None, alpha_copy = None;
 	FRenderPicture alpha_picture = None, mask_picture = None;
 	FRenderPicture dest_picture = None, src_picture = None;
+	FRenderPicture root_picture = None;
 	FRenderPictureAttributes  pa, e_pa;
 	unsigned long pam = 0;
 	int alpha_x = src_x, alpha_y = src_y, rv = 0;
@@ -230,8 +231,7 @@ int FRenderRender(
 		src_x = src_y = 0;
 	}
 
-	pam = FRenderCPRepeat|FRenderCPGraphicsExposure;
-	pa.graphics_exposures = True;
+	pam = FRenderCPRepeat;
 	if (do_repeat)
 	{
 		pa.repeat = True;
@@ -240,8 +240,29 @@ int FRenderRender(
 	{
 		pa.repeat = False;
 	}
+	if (pixmap == DefaultRootWindow(dpy))
+	{
+		pam |= FRenderCPSubwindowMode;
+		pa.subwindow_mode = IncludeInferiors;
+		pixmap_copy = XCreatePixmap(dpy, win, src_w, src_h, Pdepth);
+		src_picture = FRenderCreatePicture(
+				dpy, pixmap_copy, PFrenderVisualFormat,
+				pam, &pa);
+		root_picture = FRenderCreatePicture(
+				dpy, DefaultRootWindow(dpy),
+				PFrenderVisualFormat, pam, &pa);
+		FRenderComposite(dpy,
+				 FRenderPictOpOver,
+				 root_picture,
+				 0,
+				 src_picture,
+				 src_x, src_y, 0, 0,
+				 0, 0, src_w, src_h);
+		src_x = src_y = 0;
+		pam &= ~FRenderCPSubwindowMode;
+	}
 
-	if (tint_percent <= 0 && (pixmap_copy || pixmap) &&
+	if (!src_picture && tint_percent <= 0 && (pixmap_copy || pixmap) &&
 	    pixmap != ParentRelative)
 	{
 		src_picture = FRenderCreatePicture(
@@ -296,6 +317,7 @@ int FRenderRender(
 			win = RootWindow(dpy, DefaultScreen(dpy));
 		}
 		
+
 		if (pixmap_copy == None && pixmap)
 		{
 			if (gc == None)
@@ -314,7 +336,8 @@ int FRenderRender(
 					src_x, src_y, src_w, src_h, 0, 0);
 			}
 		}
-		if (pixmap_copy)
+
+		if (pixmap_copy && !src_picture)
 		{
 			src_picture = FRenderCreatePicture(
 				dpy, pixmap_copy, PFrenderVisualFormat,
@@ -466,7 +489,7 @@ int FRenderRender(
 	}
 
 	dest_picture = FRenderCreatePicture(
-		dpy, d, PFrenderVisualFormat, FRenderCPGraphicsExposure, &pa);
+		dpy, d, PFrenderVisualFormat, 0, &pa);
 
 	if (dest_picture)
 	{
@@ -496,6 +519,10 @@ int FRenderRender(
 	if (mask_picture)
 	{
 		FRenderFreePicture(dpy, mask_picture);
+	}
+	if (root_picture)
+	{
+		FRenderFreePicture(dpy, root_picture);
 	}
 	if (alpha_copy)
 	{

@@ -1404,14 +1404,9 @@ void list_property_change(unsigned long *body)
   if (body[0] == MX_PROPERTY_CHANGE_BACKGROUND)
   {
 
-    if (default_pixmap == ParentRelative &&
-	((!Swallowed && body[2] == 0) || (Swallowed && body[2] == Scr.Pager_w)))
+    if (((!Swallowed && body[2] == 0) || (Swallowed && body[2] == Scr.Pager_w)))
     {
-      ReConfigure();
-    }
-    if (BalloonView != None)
-    {
-      XClearArea(dpy, Scr.balloon_w, 0, 0, 0, 0, True);
+	    update_transparent_windows();
     }
   }
   else if  (body[0] == MX_PROPERTY_CHANGE_SWALLOW && body[2] == Scr.Pager_w)

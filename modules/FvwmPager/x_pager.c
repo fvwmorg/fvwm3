@@ -266,6 +266,7 @@ void initialize_viz_pager(void)
     default_pixmap = ParentRelative;
 }
 
+/* see also change colorset */
 void draw_desk_background(int i, int page_w, int page_h)
 {
 	if (Desks[i].colorset > -1)
@@ -280,12 +281,26 @@ void draw_desk_background(int i, int page_w, int page_h)
 			dpy, Desks[i].DashedGC,Colorset[Desks[i].colorset].fg);
 		if (uselabel)
 		{
-			SetWindowBackground(
-				dpy, Desks[i].title_w, desk_w, desk_h + label_h,
-				&Colorset[Desks[i].colorset], Pdepth,
-				Scr.NormalGC, True);
+			if (CSET_IS_TRANSPARENT(Desks[i].colorset))
+			{
+					SetWindowBackground(
+						dpy, Desks[i].title_w,
+						desk_w, label_h,
+						&Colorset[Desks[i].colorset],
+						Pdepth,
+						Scr.NormalGC, True);
+			}
+			else
+			{
+				SetWindowBackground(
+					dpy, Desks[i].title_w, desk_w,
+					desk_h + label_h,
+					&Colorset[Desks[i].colorset], Pdepth,
+					Scr.NormalGC, True);
+			}
 		}
-		if (label_h != 0 && uselabel && !LabelsBelow)
+		if (label_h != 0 && uselabel && !LabelsBelow &&
+		    !CSET_IS_TRANSPARENT(Desks[i].colorset))
 		{
 			SetWindowBackgroundWithOffset(
 				dpy, Desks[i].w, 0, -label_h, desk_w,
@@ -294,10 +309,21 @@ void draw_desk_background(int i, int page_w, int page_h)
 		}
 		else
 		{
-			SetWindowBackground(
-				dpy, Desks[i].w, desk_w, desk_h + label_h,
-				&Colorset[Desks[i].colorset], Pdepth,
-				Scr.NormalGC, True);
+			if (CSET_IS_TRANSPARENT(Desks[i].colorset))
+			{
+				SetWindowBackground(
+					dpy, Desks[i].w, desk_w, desk_h,
+					&Colorset[Desks[i].colorset], Pdepth,
+					Scr.NormalGC, True);
+			}
+			else
+			{
+				SetWindowBackground(
+					dpy, Desks[i].w, desk_w,
+					desk_h + label_h,
+					&Colorset[Desks[i].colorset],
+					Pdepth, Scr.NormalGC, True);
+			}
 		}
 	}
 	if (Desks[i].highcolorset > -1)
@@ -808,7 +834,7 @@ void initialize_pager(void)
     }
 
     Desks[i].w = XCreateWindow(
-      dpy, Desks[i].title_w, x - 1, LabelsBelow ? -1 : label_h - 1, w, desk_h,
+	    dpy, Desks[i].title_w, x - 1, LabelsBelow ? -1 : label_h - 1, w, desk_h,
       1, CopyFromParent, InputOutput, CopyFromParent, valuemask, &attributes);
 
     if (HilightDesks)
@@ -1282,7 +1308,11 @@ void ReConfigure(void)
 	  dpy,Desks[i].w, -1, (LabelsBelow) ? -1 : label_h - 1, desk_w,desk_h);
 	if (!is_size_changed)
 	{
-	  continue;
+		if (CSET_IS_TRANSPARENT(Desks[i].colorset))
+		{
+			draw_desk_background(i, w, h);
+		}
+		continue;
 	}
 	if (HilightDesks)
 	{
@@ -1299,9 +1329,75 @@ void ReConfigure(void)
   ReConfigureAll();
 }
 
+/****************************************************************************
+ *
+ * Respond to a background change
+ *
+ ****************************************************************************/
+void update_transparent_windows(void)
+{
+	int i,j,k,cset;
+	int n,m,w,h;
+	PagerWindow *t;
+
+	n = Scr.VxMax / Scr.MyDisplayWidth;
+	m = Scr.VyMax / Scr.MyDisplayHeight;
+	w = (desk_w - n)/(n+1);
+	h = (desk_h - m)/(m+1);
+
+	for(k=0;k<Rows;k++)
+	{
+		for(j=0;j<Columns;j++)
+		{
+			i = k*Columns+j;
+			if (i < ndesks)
+			{
+				if (CSET_IS_TRANSPARENT(Desks[i].colorset))
+				{
+					draw_desk_background(i, w, h);
+				}
+			}
+		}
+	}
+	/* subordinate windows */
+	t = Start;
+	for(t = Start; t != NULL; t = t->next)
+	{
+		cset = (t != FocusWin) ? windowcolorset : activecolorset;
+		if (!CSET_IS_TRANSPARENT(cset))
+		{
+			continue;
+		}
+		if (t->PagerView != None)
+		{
+			SetWindowBackground(
+				dpy, t->PagerView, t->pager_view_width,
+				t->pager_view_height,
+				&Colorset[cset], Pdepth, Scr.NormalGC, True);
+		}
+		if (Scr.CurrentDesk == t->desk && t->IconView)
+		{
+			SetWindowBackground(
+				dpy, t->IconView, t->icon_view_width,
+				t->icon_view_height,
+				&Colorset[cset], Pdepth, Scr.NormalGC, True);
+		}
+	}
+
+	/* ballon */
+	if (BalloonView != None)
+	{
+		cset = Desks[Scr.balloon_desk].ballooncolorset;
+		if (CSET_IS_TRANSPARENT(cset))
+		{
+			XClearArea(dpy, Scr.balloon_w, 0, 0, 0, 0, True);
+		}
+	}
+}
+
 void MovePage(Bool is_new_desk)
 {
-  int n1,m1,x,y,n,m,i;
+  int n1,m1,x,y,n,m,i,w,h;
   XTextProperty name;
   char str[100],*sptr;
   static int icon_desk_shown = -1000;
@@ -1314,6 +1410,9 @@ void MovePage(Bool is_new_desk)
 
   x = (desk_w - n) * Scr.Vx / Scr.VWidth + n1;
   y = (desk_h - m) * Scr.Vy / Scr.VHeight + m1;
+  w = (desk_w - n)/(n+1);
+  h = (desk_h - m)/(m+1);
+
   for(i=0;i<ndesks;i++)
   {
     if (HilightDesks)
@@ -1322,9 +1421,13 @@ void MovePage(Bool is_new_desk)
       {
 	XMoveWindow(dpy, Desks[i].CPagerWin, x,y);
 	XLowerWindow(dpy,Desks[i].CPagerWin);
-	if (Desks[i].highcolorset > -1 &&
-	    Colorset[Desks[i].highcolorset].pixmap == ParentRelative)
-	  XClearWindow(dpy, Desks[i].CPagerWin);
+	if (CSET_IS_TRANSPARENT(Desks[i].highcolorset))
+	{
+		SetWindowBackground(
+			dpy, Desks[i].CPagerWin, w, h,
+			&Colorset[Desks[i].highcolorset], Pdepth,
+			Scr.NormalGC, True);
+	}
       }
       else
       {
@@ -1730,8 +1833,7 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
     if (size_changed)
       XResizeWindow(dpy, t->PagerView, w, h);
     cset = (t != FocusWin) ? windowcolorset : activecolorset;
-    if (cset > -1 &&
-	(size_changed || Colorset[cset].pixmap == ParentRelative))
+    if (cset > -1 && (size_changed || CSET_IS_TRANSPARENT(cset)))
     {
       SetWindowBackground(
 	dpy, t->PagerView, t->pager_view_width, t->pager_view_height,
@@ -1757,8 +1859,7 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
 
     XMoveResizeWindow(dpy,t->IconView,x,y,w,h);
     cset = (t != FocusWin) ? windowcolorset : activecolorset;
-    if (cset > -1 &&
-	(size_changed || Colorset[cset].pixmap == ParentRelative))
+    if (cset > -1 && (size_changed || CSET_IS_TRANSPARENT(cset)))
     {
       SetWindowBackground(
 	dpy, t->IconView, t->icon_view_width, t->icon_view_height,
@@ -1805,8 +1906,7 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
 
       XMoveResizeWindow(dpy, t->PagerView, x, y, w, h);
       cset = (t != FocusWin) ? windowcolorset : activecolorset;
-      if (cset > -1 &&
-	  (size_changed || Colorset[cset].pixmap == ParentRelative))
+      if (cset > -1 && (size_changed || CSET_IS_TRANSPARENT(cset)))
       {
 	SetWindowBackground(
 	  dpy, t->PagerView, t->pager_view_width, t->pager_view_height,
@@ -1834,8 +1934,7 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
 
     XMoveResizeWindow(dpy, t->IconView, x, y, w, h);
     cset = (t != FocusWin) ? windowcolorset : activecolorset;
-    if (cset > -1 &&
-	(size_changed || Colorset[windowcolorset].pixmap == ParentRelative))
+    if (cset > -1 && (size_changed || CSET_IS_TRANSPARENT(cset)))
     {
       SetWindowBackground(
 	dpy, t->IconView, t->icon_view_width, t->icon_view_height,
@@ -2932,6 +3031,7 @@ static void set_window_colorset_background(
   return;
 }
 
+/* should be in sync with  draw_desk_background */
 void change_colorset(int colorset)
 {
   int i;
@@ -2975,7 +3075,8 @@ void change_colorset(int colorset)
 	  dpy, Desks[i].title_w, desk_w, desk_h + label_h, &Colorset[colorset],
 	  Pdepth, Scr.NormalGC, True);
       }
-      if (label_h != 0 && uselabel && !LabelsBelow)
+      if (label_h != 0 && uselabel && !LabelsBelow &&
+	  !CSET_IS_TRANSPARENT_PR(Desks[i].colorset))
       {
 	SetWindowBackgroundWithOffset(
 	  dpy, Desks[i].w, 0, -label_h, desk_w, desk_h + label_h,
