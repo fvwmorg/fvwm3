@@ -1,3 +1,10 @@
+2000-10-29  Dan Espen  <dane@mk.telcordia.com>
+
+	* todo-2.4: Added "GlobalOpts" issues to todo list.
+	164) Update ANNOUNCE to identify GlobalOpts as a compatiblity issue
+	165) Update fvwm24_convert.in to handle GlobalOpts
+	166) Update purify test scripts with fvwm24_convert
+
 2000-10-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/style.c:
