@@ -1,3 +1,7 @@
+2002-03-03  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/fvwm2.1: Fixes to the font section.
+
 2002-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/conditional.c (CMD_WindowId):
