@@ -704,12 +704,17 @@ Bool PlaceWindow(
   {
     use_wm_placement = False;
   }
+#if 0
+  /* DV (30-Dec-2000): Why? With this code, new windows that are started iconic
+   * will always be created where the application wishes.  Instead we should
+   * use the normal placement algorithm. Right? */
   else if (!((!(tmp_win->wmhints && (tmp_win->wmhints->flags & StateHint) &&
                 tmp_win->wmhints->initial_state == IconicState))
              || HonorStartsOnPage))
   {
     use_wm_placement = False;
   }
+#endif
 
   if (use_wm_placement)
   {

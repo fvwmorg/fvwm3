@@ -591,7 +591,6 @@ void list_add(unsigned long *body)
   (*prev)->x = cfgpacket->frame_x;
   (*prev)->y = cfgpacket->frame_y;
   (*prev)->width = cfgpacket->frame_width;
-fprintf(stderr,"la: width := %d (%s)\n",(*prev)->width, (*prev)->window_name);
   (*prev)->height = cfgpacket->frame_height;
   (*prev)->desk = cfgpacket->desk;
   memcpy(&((*prev)->flags), &(cfgpacket->flags), sizeof(cfgpacket->flags));
@@ -664,7 +663,6 @@ void list_configure(unsigned long *body)
     t->x = t->icon_x;
     t->y = t->icon_y;
     t->width = t->icon_width;
-fprintf(stderr,"lc1: width := %d (%s)\n",t->width, t->window_name);
     t->height = t->icon_height;
     if(IS_ICON_SUPPRESSED(t))
     {
@@ -677,7 +675,6 @@ fprintf(stderr,"lc1: width := %d (%s)\n",t->width, t->window_name);
     t->x = t->frame_x;
     t->y = t->frame_y;
     t->width = t->frame_width;
-fprintf(stderr,"lc2: width := %d (%s)\n",t->width, t->window_name);
     t->height = t->frame_height;
   }
   if(t->desk != cfgpacket->desk)
@@ -1039,7 +1036,6 @@ void list_iconify(unsigned long *body)
 	t->y = t->icon_y;
       }
       t->width = t->icon_width;
-fprintf(stderr,"li: width := %d (%s)\n",t->width, t->window_name);
       t->height = t->icon_height;
 
       /* if iconifying main pager window turn balloons on or off */
@@ -1083,7 +1079,6 @@ void list_deiconify(unsigned long *body)
       t->x = body[7];
       t->y = body[8];
       t->width = body[9];
-fprintf(stderr,"ld: width := %d (%s)\n",t->width, t->window_name);
       t->height = body[10];
 
       /* if deiconifying main pager window turn balloons on or off */

@@ -988,7 +988,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 	isIconifiedByParent = False;
 	SET_ICONIFIED_BY_PARENT(Tmp_win, 1);
       }
-      if (Tmp_win->wmhints)
+      if (USE_ICON_POSITION_HINT(Tmp_win) && Tmp_win->wmhints)
       {
 	Iconify(Tmp_win, Tmp_win->wmhints->icon_x,
 		Tmp_win->wmhints->icon_y);

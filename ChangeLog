@@ -1,7 +1,12 @@
 2000-12-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/placement.c (PlaceWindow):
+	use normal placement algorithm when creating iconic windows
+
 	* fvwm/events.c (HandlePropertyNotify):
 	removed xemacs race condition hack
+	(HandleMapRequestKeepRaised):
+	icon position hint fix
 
 	* fvwm/focus.c (FocusOn):
 	fixed focus problems when trying to give focus to a window on a
