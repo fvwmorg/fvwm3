@@ -331,7 +331,10 @@ static int myCursorNameToIndex (char *cursor_name)
 void CMD_CursorStyle(F_CMD_ARGS)
 {
   char *cname=NULL, *newcursor=NULL;
-  char *errpos = NULL, *path = NULL;
+  char *errpos = NULL;
+#ifdef XPM
+  char *path = NULL;
+#endif
   char *fore = NULL, *back = NULL;
   XColor colors[2];
   int index,nc,i,my_nc;

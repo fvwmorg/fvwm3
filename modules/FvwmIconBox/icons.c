@@ -395,10 +395,12 @@ Bool GetBackPixmap(void)
 #ifdef XPM
   XpmAttributes xpm_attributes;
   XpmImage my_image;
+  Pixmap maskPixmap;
+  int rc;
 #endif
   char *path = NULL;
-  Pixmap tmp_bitmap, maskPixmap;
-  int x, y, w=0, h=0, rc;
+  Pixmap tmp_bitmap;
+  int x, y, w=0, h=0;
 
   if (IconwinPixmapFile == NULL)
     return False;
@@ -432,8 +434,8 @@ Bool GetBackPixmap(void)
       xpm_attributes.colormap = Pcmap;
       xpm_attributes.depth = Pdepth;
       xpm_attributes.closeness = 40000;    /* same closeness used elsewhere */
-      xpm_attributes.valuemask = XpmVisual | XpmColormap | XpmDepth | XpmCloseness
-			     | XpmReturnPixels;
+      xpm_attributes.valuemask =
+	XpmVisual | XpmColormap | XpmDepth | XpmCloseness | XpmReturnPixels;
       rc = XpmCreatePixmapFromXpmImage(dpy, main_win, &my_image,
                                        &IconwinPixmap,
                                        &maskPixmap,

@@ -67,7 +67,9 @@
 
 static int do_all_iconboxes(FvwmWindow *t, icon_boxes **icon_boxes_ptr);
 static void GetBitmapFile(FvwmWindow *tmp_win);
+#ifdef XPM
 static void GetXPMFile(FvwmWindow *tmp_win);
+#endif
 
 /****************************************************************************
  *
@@ -1084,9 +1086,9 @@ static void GetBitmapFile(FvwmWindow *tmp_win)
  * Looks for a color XPM icon file
  *
  ****************************************************************************/
+#ifdef XPM
 static void GetXPMFile(FvwmWindow *tmp_win)
 {
-#ifdef XPM
   XpmAttributes xpm_attributes;
   char *path = NULL;
   XpmImage my_image;
@@ -1135,8 +1137,8 @@ static void GetXPMFile(FvwmWindow *tmp_win)
 
   XpmFreeXpmImage(&my_image);
 
-#endif /* XPM */
 }
+#endif /* XPM */
 
 /****************************************************************************
  *

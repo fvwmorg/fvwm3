@@ -118,7 +118,9 @@ void ConfigureIconWindow(int button,int row, int column)
 {
 #ifndef NO_ICONS
   int x,y, w, h;
+#ifdef XPM
   int xoff,yoff;
+#endif
   int i;
 
   if (Buttons[button].completeIcon != None)
@@ -228,47 +230,52 @@ int GetXPMFile(int button,int ico)
   XpmAttributes xpm_attributes;
   char *path = NULL;
 
-    path = findImageFile(Buttons[button].icons[ico].file, imagePath,R_OK);
-    if(path == NULL) return 0;
-    xpm_attributes.colormap = Pcmap;
-    xpm_attributes.visual = Pvisual;
-    xpm_attributes.depth = Pdepth;
-    xpm_attributes.closeness = 40000;
-    xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmColormap
-			       | XpmVisual | XpmDepth |XpmCloseness;
-    if(XpmReadFileToPixmap(dpy, main_win, path,
-			   &Buttons[button].icons[ico].icon,
-			   &Buttons[button].icons[ico].mask,
-			   &xpm_attributes) == XpmSuccess)
-    {
-	Buttons[button].icons[ico].w = xpm_attributes.width;
-	Buttons[button].icons[ico].h = xpm_attributes.height;
-	Buttons[button].icons[ico].depth = Pdepth;
-	free(path);
-    } else {
-	free(path);
-	Buttons[button].icons[ico].icon=None;
-	return 0;
-    }
-  if (button==BACK_BUTTON) {
-      BUTTONWIDTH = xpm_attributes.width;
-      BUTTONHEIGHT = xpm_attributes.height;
-      if (ForceSize && (BUTTONWIDTH > 64 || BUTTONHEIGHT > 64)) {
-	  Pixmap resized;
+  path = findImageFile(Buttons[button].icons[ico].file, imagePath,R_OK);
+  if(path == NULL)
+    return 0;
+  xpm_attributes.colormap = Pcmap;
+  xpm_attributes.visual = Pvisual;
+  xpm_attributes.depth = Pdepth;
+  xpm_attributes.closeness = 40000;
+  xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmColormap
+    | XpmVisual | XpmDepth |XpmCloseness;
+  if(XpmReadFileToPixmap(dpy, main_win, path,
+			 &Buttons[button].icons[ico].icon,
+			 &Buttons[button].icons[ico].mask,
+			 &xpm_attributes) == XpmSuccess)
+  {
+    Buttons[button].icons[ico].w = xpm_attributes.width;
+    Buttons[button].icons[ico].h = xpm_attributes.height;
+    Buttons[button].icons[ico].depth = Pdepth;
+    free(path);
+  }
+  else
+  {
+    free(path);
+    Buttons[button].icons[ico].icon=None;
+    return 0;
+  }
+  if (button==BACK_BUTTON)
+  {
+    BUTTONWIDTH = xpm_attributes.width;
+    BUTTONHEIGHT = xpm_attributes.height;
+    if (ForceSize && (BUTTONWIDTH > 64 || BUTTONHEIGHT > 64)) {
+      Pixmap resized;
 
-	  BUTTONWIDTH = 64;
-	  BUTTONHEIGHT = 64;
-	  resized = XCreatePixmap(dpy, main_win, 64, 64, Pdepth);
-	  XCopyArea(dpy, Buttons[button].icons[ico].icon,
-		    resized, NormalGC, 0, 0, 64, 64, 0, 0);
-	  XFreePixmap(dpy, Buttons[button].icons[ico].icon);
-	  Buttons[button].icons[ico].icon = resized;
-      }
-      DrawOutline(Buttons[button].icons[ico].icon,BUTTONWIDTH,BUTTONHEIGHT);
+      BUTTONWIDTH = 64;
+      BUTTONHEIGHT = 64;
+      resized = XCreatePixmap(dpy, main_win, 64, 64, Pdepth);
+      XCopyArea(dpy, Buttons[button].icons[ico].icon,
+		resized, NormalGC, 0, 0, 64, 64, 0, 0);
+      XFreePixmap(dpy, Buttons[button].icons[ico].icon);
+      Buttons[button].icons[ico].icon = resized;
+    }
+    DrawOutline(Buttons[button].icons[ico].icon,BUTTONWIDTH,BUTTONHEIGHT);
   }
   return 1;
 #endif /* XPM */
 #endif
+  return 0;
 }
 
 /****************************************************************************
@@ -290,22 +297,24 @@ int GetXPMData(int button, char **data)
   xpm_attributes.valuemask = XpmSize | XpmReturnPixels | XpmColormap
 			     | XpmVisual | XpmDepth;
   if(XpmCreatePixmapFromData(dpy, main_win, data,
-			 &Buttons[button].icons[0].icon,
-			 &Buttons[button].icons[0].mask,
-			 &xpm_attributes) == XpmSuccess)
-    {
-      BUTTONWIDTH = Buttons[button].icons[0].w = xpm_attributes.width;
-      BUTTONHEIGHT = Buttons[button].icons[0].h = xpm_attributes.height;
-      Buttons[button].icons[0].depth = Pdepth;
-    }
-   else {
-       return 0;
-   }
-    DrawOutline(Buttons[button].icons[0].icon,BUTTONWIDTH,BUTTONHEIGHT);
+			     &Buttons[button].icons[0].icon,
+			     &Buttons[button].icons[0].mask,
+			     &xpm_attributes) == XpmSuccess)
+  {
+    BUTTONWIDTH = Buttons[button].icons[0].w = xpm_attributes.width;
+    BUTTONHEIGHT = Buttons[button].icons[0].h = xpm_attributes.height;
+    Buttons[button].icons[0].depth = Pdepth;
+  }
+  else
+  {
+    return 0;
+  }
+  DrawOutline(Buttons[button].icons[0].icon,BUTTONWIDTH,BUTTONHEIGHT);
 
-    return 1;
+  return 1;
 #endif /* XPM */
 #endif
+  return 0;
 }
 
 /*******************************************************************

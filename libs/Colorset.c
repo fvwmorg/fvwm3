@@ -134,7 +134,9 @@ void SetWindowBackground(Display *dpy, Window win, int width, int height,
 			 Bool clear_area)
 {
   Pixmap pixmap = None;
+#ifdef SHAPE
   Pixmap mask = None;
+#endif
   XID junk;
 
   if (0 == width || 0 == height)

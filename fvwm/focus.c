@@ -624,9 +624,10 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
       or to ungrab and none is grabbed, then we've nothing to do.
   */
   if ((!is_focused && grab_buttons == tmp_win->grabbed_buttons) ||
-     (is_focused && (tmp_win->grabbed_buttons & grab_buttons == 0)))  {
+     (is_focused && ((tmp_win->grabbed_buttons & grab_buttons) == 0)))
+  {
     return;
-    }
+  }
 
   {
     Bool do_grab;
@@ -636,11 +637,14 @@ void focus_grab_buttons(FvwmWindow *tmp_win, Bool is_focused)
     for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
     {
       /*  RBW - Set flag for grab or ungrab according to how we were called. */
-      if (!is_focused)  {
+      if (!is_focused)
+      {
         do_grab = !!(grab_buttons & (1 << i));
-        }  else  {
+      }
+      else
+      {
         do_grab = !(grab_buttons & (1 << i));
-        }
+      }
 
       {
 	register unsigned int mods;

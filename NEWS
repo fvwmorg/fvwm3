@@ -80,6 +80,9 @@ Changes in beta release 2.4.1 (not released yet)
 
 * Fixed handling of parentheses in FvwmButtons button actions.
 
+* Work around a key binding problem with keys that generate the same
+  symbol with more than one key code (e.g. shift-F1 = F11).
+
 _+_A NAME="2.4.0"_-_
 Changes in stable release 2.4.0 (1-Jul-2001)
 _+_/A_-_

@@ -284,6 +284,35 @@ int AddBinding(Display *dpy, Binding **pblist, BindingType type,
 	  STROKE_CODE(type == STROKE_BINDING ||)
 	  (tkeysym = XKeycodeToKeysym(dpy, i, m)) == keysym)
       {
+	unsigned int add_modifiers = 0;
+
+	switch (m)
+	{
+	case 0:
+	  /* key generates the key sym with no modifiers depressed - bind it */
+	  break;
+	case 1:
+	  /* key generates the key sym with shift depressed */
+	  if (modifiers != AnyModifier)
+	  {
+	    add_modifiers = ShiftMask;
+	  }
+	  break;
+	case 2:
+	  /* key generates the key sym with caps-lock depressed */
+	  if (modifiers != AnyModifier)
+	  {
+	    add_modifiers = LockMask;
+	  }
+	  break;
+	default:
+	  /* key generates the key sym with unknown modifiers depressed -
+	  * can't map that to specific modifiers - trat as no modifiers */
+	  break;
+	}
+	if (i == 1)
+	{
+	}
 	temp = *pblist;
 	(*pblist) = (Binding *)safemalloc(sizeof(Binding));
 	(*pblist)->type = type;
@@ -295,7 +324,7 @@ int AddBinding(Display *dpy, Binding **pblist, BindingType type,
 	else
 	  (*pblist)->key_name = NULL;
 	(*pblist)->Context = contexts;
-	(*pblist)->Modifier = modifiers;
+	(*pblist)->Modifier = modifiers | add_modifiers;
 	(*pblist)->Action = (action) ? stripcpy(action) : NULL;
 	(*pblist)->Action2 = (action2) ? stripcpy(action2) : NULL;
 	(*pblist)->NextBinding = temp;

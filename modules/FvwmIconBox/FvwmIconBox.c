@@ -1693,9 +1693,10 @@ void ParseOptions(void)
 	LoadColorset(&tline[8]);
       }
       else if (strncasecmp(tline, XINERAMA_CONFIG_STRING,
-			   strlen(XINERAMA_CONFIG_STRING)) == 0)
+			   sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
       {
-	XineramaSupportConfigureModule(tline + strlen(XINERAMA_CONFIG_STRING));
+	XineramaSupportConfigureModule(
+	  tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
       }
       else if (strncasecmp(
 		 tline,CatString3("*",MyName,"Colorset"),Clength+9)==0)

@@ -141,7 +141,9 @@ static void HandlePanelPress(button_info *b);
 
 Display *Dpy;
 Window Root;
+#ifdef SHAPE
 static GC trans_gc = NULL;
+#endif
 Window MyWindow;
 char *MyName;
 static int screen;

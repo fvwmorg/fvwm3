@@ -163,11 +163,13 @@ static int index_to_col (WinManager *man, int index)
   return col;
 }
 
+#ifdef SHAPE
 static int rects_equal (XRectangle *x, XRectangle *y)
 {
   return (x->x == y->x) && (x->y == y->y) && (x->width == y->width) &&
     (x->height == y->height);
 }
+#endif
 
 static int top_y_coord (WinManager *man)
 {

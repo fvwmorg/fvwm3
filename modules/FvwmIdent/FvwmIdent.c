@@ -238,8 +238,9 @@ int main(int argc, char **argv)
         LoadColorset(&tline[8]);
       }
       else if(strncasecmp(tline, XINERAMA_CONFIG_STRING,
-			  strlen(XINERAMA_CONFIG_STRING)) == 0){
-	XineramaSupportConfigureModule(tline + strlen(XINERAMA_CONFIG_STRING));
+			  sizeof(XINERAMA_CONFIG_STRING) - 1) == 0){
+	XineramaSupportConfigureModule(
+	  tline + sizeof(XINERAMA_CONFIG_STRING) - 1);
       }
     }
     GetConfigLine(fd,&tline);

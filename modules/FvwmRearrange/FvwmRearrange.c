@@ -497,7 +497,6 @@ int main(int argc, char *argv[])
 	    XDisplayName(NULL));
     exit(-1);
   }
-sleep(10);
   signal (SIGPIPE, DeadPipe);
 
   XineramaSupportInit(dpy);
@@ -512,10 +511,10 @@ sleep(10);
   while (config_line != NULL)
   {
     if (strncasecmp(config_line, XINERAMA_CONFIG_STRING,
-		    strlen(XINERAMA_CONFIG_STRING)) == 0)
+		    sizeof(XINERAMA_CONFIG_STRING) - 1) == 0)
     {
       XineramaSupportConfigureModule(
-	config_line + strlen(XINERAMA_CONFIG_STRING));
+	config_line + sizeof(XINERAMA_CONFIG_STRING) - 1);
     }
     GetConfigLine(fd, &config_line);
   }
