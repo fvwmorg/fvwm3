@@ -265,7 +265,7 @@ fprintf(stderr,"*** div %d,, c.red %d, c.green %d, c.blue %d, t %f, g %f, b %f, 
     c.green = (unsigned short)((int)(g + dg / (float)div * (float)i + 0.5));
     c.blue  = (unsigned short)((int)(b + db / (float)div * (float)i + 0.5));
 #if DEBUG_ALG
-fprintf(stderr, "*** %i: c.red %d, c.green %d, c.blue %d\n", i, (int)c.red, (int)c.green, (int)c.blue);
+fprintf(stderr,"*** %d: div %d,, c.red %d, c.green %d, c.blue %d, t %f, g %f, b %f, dr %f, dg %f, db %f\n", i, div, (int)c.red, (int)c.green, (int)c.blue, r, g, b, dr, dg, db);
 #endif
     if (!XAllocColor(Pdpy, Pcmap, &c))
     {
