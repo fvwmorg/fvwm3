@@ -180,6 +180,7 @@ unsigned long Globalgcm;
 /* ---------------------------- local functions ----------------------------- */
 
 /*!!!remove*/
+#if 0
 static void print_g(char *text, rectangle *g)
 {
 	if (g == NULL)
@@ -194,6 +195,7 @@ static void print_g(char *text, rectangle *g)
 			g->x, g->x + g->width - 1, g->y, g->y + g->height - 1);
 	}
 }
+#endif
 
 /****************************************************************************
  *
@@ -1927,7 +1929,6 @@ static void border_draw_one_border_part(
 	p = border_create_decor_pixmap(cd, &part_g);
 	/* set the background tile */
 	border_get_border_background(&bg, cd);
-print_g("filling:", &part_g);
 	border_fill_pixmap_background(p, &part_g, &bg);
 	/* draw the relief over the background */
 	if (!br->relief.is_flat)
