@@ -1480,9 +1480,10 @@ Key Help R A Popup MenuFvwmRoot
 Key F1 R A Popup MenuFvwmRoot
 Key Tab A M WindowList Root c c NoDeskSort
 Key Escape A MC EscapeFunc
-Mouse 0 R N Menu MenuFvwmRoot
-Mouse 1 TS A FuncFvwmRaiseLowerX Move
-Mouse 1 F  A FuncFvwmRaiseLowerX Resize
+Mouse 1 R A Menu MenuFvwmRoot
+Mouse 1 T   A FuncFvwmRaiseLowerX Move
+Mouse 1 FS  A FuncFvwmRaiseLowerX Resize
+Mouse 2 FST A FuncFvwmRaiseLowerX Move
 AddToFunc FuncFvwmRaiseLowerX
 + I Raise
 + M $0

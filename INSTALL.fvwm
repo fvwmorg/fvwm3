@@ -135,7 +135,8 @@ The sections below explain these options.
   Line shown by configure              Feature name  ./configure options
 ---------------------------------------------------------------------------
   With Asian bi-direct. text support?  bidi          --disable-bidi
-  With GTK+ required for FvwmGtk?      gtk           --with-gtk
+  With Gettext Native Lang Support     gettext       --with-intl-*
+  With GTK+ required for FvwmGtk?      gtk           --with-gtk-*
   With GDK image support in FvwmGtk?   gdk-imlib     --with-imlib-*
   With GNOME libs support in FvwmGtk?  gnome-libs    --with-gnome
   With PNG image support?              png           --with-png-*
@@ -162,11 +163,19 @@ It is safe *not* to compile in the following features:
 Optional libraries used by FVWM
 ===============================
 
-FVWM can optionally be compiled to use the following libraries: Xpm, png,
-rplay, readline, LibStroke.  By default, these are probed for, and used
-if found. If you want to use any of them, install the library before
-configuring FVWM. It is possible to explicitly tell configure to skip
-autoprobing of a given library and disable it.
+FVWM can optionally be compiled to use the following libraries:
+
+	xpm         (XPM image format)
+	png         (PNG image format)
+	rplay       (RPlay audio)
+	readline    (Command line editing using readline)
+	stroke      (Mouse strokes)
+	intl        (Internationalization and localization using gettext)
+
+By default, these are probed for, and used if found. If you want to use
+any of them, install the library before configuring FVWM. It is possible
+to explicitly tell configure to skip autoprobing of a given library and
+disable it (see below).
 
 Xpm allows the use of coloured icons.  See the Xpm web page at
 http://www.inria.fr/koala/lehors/xpm.html for all the latest info and
@@ -200,22 +209,27 @@ LibStroke allows interpretation by fvwm of mouse strokes (i.e., motions
 of the mouse). For more informations see the  LibStroke web page at
 http://www.etla.net/~willey/projects/libstroke/ and the fvwm man page.
 
+Gettext is included in glibc, so it may be a part of your system.
+Alternativelly, there is GNU gettext package available at
+http://www.gnu.org/software/gettext/.
+
 If configure doesn't do the right thing, try one or more of the
 following flags (examples assume library is named "foo"):
 
-  --without-foo-library    to disable probing for libfoo
-  --with-foo-library=FILE  to specify the library filename
-  --with-foo-library=DIR   to specify directory containing libfoo
-  --with-foo-includes=DIR  to specify include directory for libfoo's headers
+	--without-foo-library    to disable probing for libfoo
+	--with-foo-library=FILE  to specify the library filename
+	--with-foo-library=DIR   to specify directory containing libfoo
+	--with-foo-includes=DIR  to specify include directory for headers
 
 The desired include directory is the one in which the following header
 may be found:
 
-  xpm         X11/xpm.h
-  png         png.h (zlib.h)
-  readline    readline/readline.h
-  rplay       rplay.h
-  stroke      stroke.h
+	xpm         X11/xpm.h
+	png         png.h (zlib.h)
+	readline    readline/readline.h
+	rplay       rplay.h
+	stroke      stroke.h
+	intl        libintl.h
 
 Only one version of the --with-foo-library flag may be specified.
 
@@ -232,10 +246,14 @@ support compiled into FvwmGtk (which is autoprobed and used if passed).
 
 To disable autoprobing of GTK+, Imlib and GNOME libraries, use:
 
-  --disable-gtktest --disable-imlibtest --without-gnome
+	--disable-gtktest --disable-imlibtest --without-gnome
 
 This does not turn GTK+ and Imlib support off, instead, one part of the
 checking, precisely compilation, is quietly considered to be passed.
+To disable GTK+ and Imlib support even if the corresponding libraries
+are installed, try this solution:
+
+	--with-gtk-prefix=/no/dir --with-imlib-prefix=/no/dir
 
 Run './configure --help' for more information about configure options.
 
@@ -343,7 +361,7 @@ anti-aliased rendering at runing time.  This option disables Xft
 support completely.
 
 
-  --disable-xrender      disable Xrender alpha-blend rendering
+  --disable-xrender             disable Xrender alpha-blend rendering
   ~~~~~~~~~~~~~~~~~
 
 FVWM uses the Xrender library for alpha-blend rendering and tinting. This

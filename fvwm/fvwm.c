@@ -1394,7 +1394,7 @@ static void SetRCDefaults(void)
 			_("Exit FVWM"),
 			"\" Quit"
 		},
-		{ "Mouse 0 R N Menu MenuFvwmRoot", "", "" },
+		{ "Mouse 1 R A Menu MenuFvwmRoot", "", "" },
 		{ "Read "FVWM_DATADIR"/ConfigFvwmDefaults", "", "" },
 		{ NULL, NULL, NULL }
 	};
