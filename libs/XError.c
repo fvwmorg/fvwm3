@@ -29,10 +29,13 @@ void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 {
   char msg[256];
 
+#if 0
+  /* can't call this from within an error handler! */
   XGetErrorText(dpy, error->error_code, msg, sizeof(msg));
+#endif
 
   fprintf(stderr,"%s: Cause of next X Error.\n", MyName);
-  fprintf(stderr, "   Error: %d (%s)\n", error->error_code, msg);
+  fprintf(stderr, "   Error: %d\n", error->error_code);
   fprintf(stderr, "   Major opcode of failed request:  %d (%s)\n",
 	  error->request_code, request_name(error->request_code));
   fprintf(stderr, "   Minor opcode of failed request:  %d \n",
