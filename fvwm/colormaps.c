@@ -212,7 +212,7 @@ void InstallWindowColormaps (FvwmWindow *tmp)
  *	   Enter or Leave Notify events are queued, indicating some
  *	   other colormap list would potentially be loaded anyway.
  ***********************************************************************/
-void InstallRootColormap()
+void InstallRootColormap(void)
 {
   FvwmWindow *tmp;
   if (Scr.root_pushes == 0)
@@ -231,7 +231,7 @@ void InstallRootColormap()
  * If we peel off the last layer, re-install th e application colormap
  *
  ***************************************************************************/
-void UninstallRootColormap()
+void UninstallRootColormap(void)
 {
   if (Scr.root_pushes)
     Scr.root_pushes--;

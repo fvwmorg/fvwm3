@@ -788,7 +788,7 @@ void FlushQueue(int module)
     }
 }
 
-void FlushOutputQueues()
+void FlushOutputQueues(void)
 {
   int i;
 

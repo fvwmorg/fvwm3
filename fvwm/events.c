@@ -146,7 +146,7 @@ void InitEventHandlerJumpTable(void)
  *	DispatchEvent - handle a single X event stored in global var Event
  *
  ************************************************************************/
-void DispatchEvent()
+void DispatchEvent(void)
 {
   Window w = Event.xany.window;
 
@@ -184,7 +184,7 @@ void DispatchEvent()
  *	HandleEvents - handle X events
  *
  ************************************************************************/
-void HandleEvents()
+void HandleEvents(void)
 {
   /*
    * TEMPORARY declaration: this variable should really be
@@ -318,7 +318,7 @@ int GetContext(FvwmWindow *t, XEvent *e, Window *w)
  *
  ************************************************************************/
 extern Bool lastFocusType;
-void HandleFocusIn()
+void HandleFocusIn(void)
 {
   XEvent d;
   Window w;
@@ -389,7 +389,7 @@ void HandleFocusIn()
  *	HandleKeyPress - key press event handler
  *
  ************************************************************************/
-void HandleKeyPress()
+void HandleKeyPress(void)
 {
   char *action;
 
@@ -441,7 +441,7 @@ void HandleKeyPress()
 #define MAX_NAME_LEN 200L		/* truncate to this many */
 #define MAX_ICON_NAME_LEN 200L		/* ditto */
 
-void HandlePropertyNotify()
+void HandlePropertyNotify(void)
 {
   XTextProperty text_prop;
   Boolean       OnThisPage    =  False;
@@ -667,7 +667,7 @@ void HandlePropertyNotify()
  *	HandleClientMessage - client message event handler
  *
  ************************************************************************/
-void HandleClientMessage()
+void HandleClientMessage(void)
 {
   XEvent button;
 
@@ -729,7 +729,7 @@ void HandleClientMessage()
  *	HandleExpose - expose event handler
  *
  ***********************************************************************/
-void HandleExpose()
+void HandleExpose(void)
 {
   if (Event.xexpose.count != 0)
     return;
@@ -759,7 +759,7 @@ void HandleExpose()
  *	HandleDestroyNotify - DestroyNotify event handler
  *
  ***********************************************************************/
-void HandleDestroyNotify()
+void HandleDestroyNotify(void)
 {
   DBUG("HandleDestroyNotify","Routine Entered");
 
@@ -779,7 +779,7 @@ void HandleDestroyNotify()
  *	HandleMapRequest - MapRequest event handler
  *
  ************************************************************************/
-void HandleMapRequest()
+void HandleMapRequest(void)
 {
   DBUG("HandleMapRequest","Routine Entered");
 
@@ -933,7 +933,7 @@ void HandleMapRequestKeepRaised(Window KeepRaised,  FvwmWindow  *ReuseWin)
  *	HandleMapNotify - MapNotify event handler
  *
  ***********************************************************************/
-void HandleMapNotify()
+void HandleMapNotify(void)
 {
   Boolean       OnThisPage    =  False;
 
@@ -1031,7 +1031,7 @@ void HandleMapNotify()
  *	HandleUnmapNotify - UnmapNotify event handler
  *
  ************************************************************************/
-void HandleUnmapNotify()
+void HandleUnmapNotify(void)
 {
   int dstx, dsty;
   Window dumwin;
@@ -1171,7 +1171,7 @@ void HandleUnmapNotify()
  *	HandleButtonPress - ButtonPress event handler
  *
  ***********************************************************************/
-void HandleButtonPress()
+void HandleButtonPress(void)
 {
   int LocalContext;
   char *action;
@@ -1262,7 +1262,7 @@ void HandleButtonPress()
  *	HandleEnterNotify - EnterNotify event handler
  *
  ************************************************************************/
-void HandleEnterNotify()
+void HandleEnterNotify(void)
 {
   XEnterWindowEvent *ewp = &Event.xcrossing;
   XEvent d;
@@ -1341,7 +1341,7 @@ void HandleEnterNotify()
  *	HandleLeaveNotify - LeaveNotify event handler
  *
  ************************************************************************/
-void HandleLeaveNotify()
+void HandleLeaveNotify(void)
 {
   DBUG("HandleLeaveNotify","Routine Entered");
 
@@ -1373,7 +1373,7 @@ void HandleLeaveNotify()
  *	HandleConfigureRequest - ConfigureRequest event handler
  *
  ************************************************************************/
-void HandleConfigureRequest()
+void HandleConfigureRequest(void)
 {
   XWindowChanges xwc;
   unsigned long xwcm;
@@ -1620,7 +1620,7 @@ void HandleShapeNotify (void)
  *      use in the RaiseLower function and the OnTop type windows.
  *
  ************************************************************************/
-void HandleVisibilityNotify()
+void HandleVisibilityNotify(void)
 {
   XVisibilityEvent *vevent = (XVisibilityEvent *) &Event;
 

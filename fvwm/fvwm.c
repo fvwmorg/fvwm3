@@ -822,7 +822,7 @@ void CaptureAllWindows(void)
 **
 ** Sets some initial style values & such
 */
-void SetRCDefaults()
+void SetRCDefaults(void)
 {
   /* set up default colors, fonts, etc */
   char *defaults[] = {
@@ -1751,7 +1751,7 @@ void usage(void)
  * Save Desktop State
  *
  ****************************************************************************/
-void SaveDesktopState()
+void SaveDesktopState(void)
 {
   FvwmWindow *t;
   unsigned long data[1];
@@ -1790,7 +1790,7 @@ void SetMWM_INFO(Window window)
 #endif
 }
 
-void BlackoutScreen()
+void BlackoutScreen(void)
 {
   XSetWindowAttributes attributes;
   unsigned long valuemask;
@@ -1813,7 +1813,7 @@ void BlackoutScreen()
   }
 } /* BlackoutScreen */
 
-void UnBlackoutScreen()
+void UnBlackoutScreen(void)
 {
   if (Blackout && (BlackoutWin != None) && !debugging)
   {

@@ -467,7 +467,7 @@ void raisePanFrames(void)
  * Creates the windows for edge-scrolling
  *
  ****************************************************************************/
-void initPanFrames()
+void initPanFrames(void)
 {
   XSetWindowAttributes attributes;    /* attributes for create */
   unsigned long valuemask;

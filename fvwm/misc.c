@@ -475,7 +475,7 @@ int GetMoveArguments(char *action, int x, int y, int w, int h,
  * Discard superflous button events during this wait period.
  *
  ***************************************************************************/
-void WaitForButtonsUp()
+void WaitForButtonsUp(void)
 {
   Bool AllUp = False;
   XEvent JunkEvent;
@@ -548,7 +548,7 @@ Bool GrabEm(int cursor)
  * UnGrab the pointer and keyboard
  *
  ****************************************************************************/
-void UngrabEm()
+void UngrabEm(void)
 {
   Window w;
 
@@ -954,7 +954,7 @@ void fvwm_msg(int type,char *id,char *msg,...)
  * window is not click_to_focus;  I think that
  * that behaviour is correct and desirable. --11/08/97 gjb */
 void
-CoerceEnterNotifyOnCurrentWindow()
+CoerceEnterNotifyOnCurrentWindow(void)
 {
   extern FvwmWindow *Tmp_win; /* from events.c */
   Window child, root;

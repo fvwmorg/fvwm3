@@ -114,7 +114,7 @@ SetupICCCM2 (Bool replace_wm)
    before we destroy manager_win, so that another wm can start
    successfully. */
 void
-CloseICCCM2 ()
+CloseICCCM2 (void)
 {
   DBUG("CloseICCCM2", "good luck, new wm");
   XSelectInput(dpy, Scr.Root, 0 );
@@ -149,7 +149,7 @@ convertProperty (Window w, Atom target, Atom property)
 }
 
 void
-HandleSelectionRequest ()
+HandleSelectionRequest (void)
 {
   Atom type, *adata;
   int i, format;
@@ -197,7 +197,7 @@ HandleSelectionRequest ()
    release all resources and destroy manager_win. Done() calls
    CloseICCCM2() after undecorating all windows. */
 void
-HandleSelectionClear ()
+HandleSelectionClear (void)
 {
   DBUG("HandleSelectionClear", "I lost my selection!");
   Done(0, NULL);

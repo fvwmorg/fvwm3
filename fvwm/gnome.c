@@ -477,7 +477,7 @@ GNOME_SetDesk(FvwmWindow *fwin)
 
 /* sets the virtual desktop grid properties */
 void
-GNOME_SetAreaCount()
+GNOME_SetAreaCount(void)
 {
   Atom atom_set;
   CARD32 val[2];
@@ -496,7 +496,7 @@ GNOME_SetAreaCount()
  * location
  */
 void
-GNOME_SetCurrentArea()
+GNOME_SetCurrentArea(void)
 {
   Atom atom_set;
   CARD32 val[2];
@@ -513,7 +513,7 @@ GNOME_SetCurrentArea()
 
 /* XXX: this function is hard-coded to one desktop! -JMP */
 void
-GNOME_SetDeskCount()
+GNOME_SetDeskCount(void)
 {
   Atom atom_set;
   CARD32 val;
@@ -527,7 +527,7 @@ GNOME_SetDeskCount()
 
 /* XXX: this function is hard-coded to one! -JMP */
 void
-GNOME_SetCurrentDesk()
+GNOME_SetCurrentDesk(void)
 {
   Atom atom_set;
   CARD32 val;
@@ -542,7 +542,7 @@ GNOME_SetCurrentDesk()
 
 /* sets the names assigned to the desktops */
 void
-GNOME_SetDeskNames()
+GNOME_SetDeskNames(void)
 {
   Atom atom_set;
   XTextProperty text;
@@ -562,7 +562,7 @@ GNOME_SetDeskNames()
 
 
 void
-GNOME_SetClientList()
+GNOME_SetClientList(void)
 {
   Atom atom_set;
   Window wl[256];
@@ -593,7 +593,7 @@ GNOME_SetClientList()
 
 
 void
-GNOME_Init()
+GNOME_Init(void)
 {
   int i;
   Atom atom_set, list[11];

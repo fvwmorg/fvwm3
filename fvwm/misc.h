@@ -459,7 +459,7 @@ void DestroyModConfig(F_CMD_ARGS);
 void AddModConfig(F_CMD_ARGS);
 void SetEnv(F_CMD_ARGS);
 
-void CoerceEnterNotifyOnCurrentWindow();
+void CoerceEnterNotifyOnCurrentWindow(void);
 
 void change_layer(F_CMD_ARGS);
 void SetDefaultLayers(F_CMD_ARGS);
@@ -486,7 +486,7 @@ void LoadGlobalState(char *filename);
 /* GNOME window manager hints support */
 
 /* initalization */
-void GNOME_Init();
+void GNOME_Init(void);
 
 /* client messages; setting hints on a window comes through this mechanism */
 int  GNOME_ProcessClientMessage(FvwmWindow *fwin, XEvent *ev);
@@ -507,10 +507,10 @@ void GNOME_GetHints(FvwmWindow *fwin);
 void GNOME_SetHints(FvwmWindow *fwin);
 
 /* update public window manager information */
-void GNOME_SetAreaCount();
-void GNOME_SetCurrentArea();
-void GNOME_SetCurrentDesk();
-void GNOME_SetClientList();
+void GNOME_SetAreaCount(void);
+void GNOME_SetCurrentArea(void);
+void GNOME_SetCurrentDesk(void);
+void GNOME_SetClientList(void);
 
 #endif /* GNOME */
 

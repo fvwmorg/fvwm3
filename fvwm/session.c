@@ -801,7 +801,7 @@ callback_shutdown_cancelled(SmcConn sm_conn, SmPointer client_data)
     }
 }
 
-static void InstallIOErrorHandler();
+static void InstallIOErrorHandler(void);
 
 SmcConn sm_conn = NULL;
 
@@ -882,7 +882,7 @@ MyIoErrorHandler (ice_conn)
 }
 
 static void
-InstallIOErrorHandler ()
+InstallIOErrorHandler (void)
 
 {
   IceIOErrorHandler default_handler;

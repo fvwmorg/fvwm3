@@ -1,5 +1,10 @@
 1999-04-05  Tomas Ogren  <stric@ing.umu.se>
 
+	* fvwm/{colormaps.c,events.c,fvwm.c,gnome.c,icccm2.c,misc.c,misc.h,module.c,module.h,session.c,virtual.c}:
+	Misc function prototype fixes to make MIPSpro cc -fullwarn happy.
+
+1999-04-05  Tomas Ogren  <stric@ing.umu.se>
+
 	* fvwm/borders.c: #endif FOO -> #endif /* FOO */
 	* fvwm/screen.h, fvwm/misc.h: Moved the last_added_item_type from
 	screen.h to misc.h since that's where it's mostly used, and because
