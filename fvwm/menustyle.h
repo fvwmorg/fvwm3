@@ -35,8 +35,10 @@
 /* look */
 #define ST_FACE(s)                    ((s)->look.face)
 #define MST_FACE(m)                   ((m)->s->ms->look.face)
-#define ST_DO_HILIGHT(s)              ((s)->look.flags.do_hilight)
-#define MST_DO_HILIGHT(m)             ((m)->s->ms->look.flags.do_hilight)
+#define ST_DO_HILIGHT_BACK(s)              ((s)->look.flags.do_hilight_back)
+#define MST_DO_HILIGHT_BACK(m)             ((m)->s->ms->look.flags.do_hilight_back)
+#define ST_DO_HILIGHT_FORE(s)              ((s)->look.flags.do_hilight_fore)
+#define MST_DO_HILIGHT_FORE(m)             ((m)->s->ms->look.flags.do_hilight_fore)
 #define ST_HAS_ACTIVE_FORE(s)         ((s)->look.flags.has_active_fore)
 #define MST_HAS_ACTIVE_FORE(m)        ((m)->s->ms->look.flags.has_active_fore)
 #define ST_HAS_ACTIVE_BACK(s)         ((s)->look.flags.has_active_back)
@@ -219,7 +221,8 @@ typedef struct MenuLook
 	MenuFace face;
 	struct
 	{
-		unsigned do_hilight : 1;
+		unsigned do_hilight_back : 1;
+		unsigned do_hilight_fore : 1;
 		unsigned has_active_fore : 1;
 		unsigned has_active_back : 1;
 		unsigned has_stipple_fore : 1;

@@ -71,6 +71,9 @@ Changes in *experimental* release 2.5.4 (not released yet)
 * FvwmIconMan options PlainColorset, IconColorset, FocusColorset
   and SelectColorset are now strictly respected.
 
+* The HilightBack and ActiveFore menu styles are independent of
+  each other.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.3 (25-Aug-2002)

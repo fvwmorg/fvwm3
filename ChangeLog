@@ -1,13 +1,25 @@
+2002-10-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menuitem.c (menuitem_paint):
+	* fvwm/menustyle.c (menustyle_parse_style):
+	(menustyle_parse_style):
+	(CMD_CopyMenuStyle):
+	(menustyle_update):
+	(menustyle_free):
+	* fvwm/menus.c (repaint_transparent_menu):
+	* fvwm/menustyle.h:
+	HilightBack and ActiveFore are now independent
+
 2002-10-18  olicha  <olivier.chapuis@free.fr>
 
 	* libs/PictureUtils.c (get_color_index):
 	(create_mapping_table):
 	(PictureAllocColorTable):
 	Use a new distance and method for color approximation. Use 68 colors
-	for the default under depth 8. I am happy with this, should use a similar
-	distance method for dithering
+	for the default under depth 8. I am happy with this, should use a
+	similar distance method for dithering
 
-	* libs/PictureUtils.c (alloc_color_dynamic_no_limit): 
+	* libs/PictureUtils.c (alloc_color_dynamic_no_limit):
 	(PictureAllocColorTable):
 	(PictureDitherByDefault):
 	(PictureUseBWOnly):

@@ -471,12 +471,12 @@ void menustyle_update(MenuStyle *ms)
 	ST_IS_UPDATED(ms) = 1;
 
 	/* calculate colors based on foreground */
-	if (!ST_HAS_ACTIVE_FORE(ms))
+	if (!ST_DO_HILIGHT_FORE(ms) || !ST_HAS_ACTIVE_FORE(ms))
 	{
 		ST_MENU_ACTIVE_COLORS(ms).fore = ST_MENU_COLORS(ms).fore;
 	}
 	/* calculate colors based on background */
-	if (!ST_HAS_ACTIVE_BACK(ms))
+	if (!ST_DO_HILIGHT_BACK(ms) || !ST_HAS_ACTIVE_BACK(ms))
 	{
 		ST_MENU_ACTIVE_COLORS(ms).back = ST_MENU_COLORS(ms).back;
 	}
@@ -521,23 +521,33 @@ void menustyle_update(MenuStyle *ms)
 		active_relief_fore = ST_MENU_RELIEF_COLORS(ms).fore;
 		active_relief_back = ST_MENU_RELIEF_COLORS(ms).back;
 	}
-	if (ST_HAS_ACTIVE_CSET(ms))
+	if (!ST_DO_HILIGHT_FORE(ms))
+	{
+		active_fore = menu_fore;
+	}
+	else if (ST_HAS_ACTIVE_CSET(ms))
 	{
 		active_fore = active_cs->fg;
+	}
+	else
+	{
+		active_fore = (ST_HAS_ACTIVE_FORE(ms)) ?
+			ST_MENU_ACTIVE_COLORS(ms).fore : menu_fore;
+	}
+	if (!ST_DO_HILIGHT_BACK(ms))
+	{
+		active_back = menu_back;
+	}
+	else if (ST_HAS_ACTIVE_CSET(ms))
+	{
 		active_back = active_cs->bg;
 		active_relief_fore = active_cs->hilite;
 		active_relief_back = active_cs->shadow;
 	}
 	else
 	{
-		active_fore = (ST_HAS_ACTIVE_FORE(ms)) ?
-			ST_MENU_ACTIVE_COLORS(ms).fore : menu_fore;
 		active_back = (ST_HAS_ACTIVE_BACK(ms)) ?
 			ST_MENU_ACTIVE_COLORS(ms).back : menu_back;
-	}
-	if (ST_USING_DEFAULT_FONT(ms))
-	{
-		ST_PSTDFONT(ms) = Scr.DefaultFont;
 	}
 
 	/* make GC's */
@@ -784,7 +794,6 @@ void menustyle_parse_style(F_CMD_ARGS)
 				ST_TITLE_UNDERLINES(tmpms) = 1;
 				ST_HAS_LONG_SEPARATORS(tmpms) = 0;
 				ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
-				ST_DO_HILIGHT(tmpms) = 0;
 			}
 			else if (i == 1)
 			{
@@ -798,7 +807,6 @@ void menustyle_parse_style(F_CMD_ARGS)
 				ST_TITLE_UNDERLINES(tmpms) = 2;
 				ST_HAS_LONG_SEPARATORS(tmpms) = 1;
 				ST_HAS_TRIANGLE_RELIEF(tmpms) = 1;
-				ST_DO_HILIGHT(tmpms) = 0;
 			}
 			else /* i == 2 */
 			{
@@ -812,10 +820,11 @@ void menustyle_parse_style(F_CMD_ARGS)
 				ST_TITLE_UNDERLINES(tmpms) = 1;
 				ST_HAS_LONG_SEPARATORS(tmpms) = 0;
 				ST_HAS_TRIANGLE_RELIEF(tmpms) = 0;
-				ST_DO_HILIGHT(tmpms) = 1;
 			}
 
 			/* common settings */
+			ST_DO_HILIGHT_FORE(tmpms) = 1;
+			ST_DO_HILIGHT_BACK(tmpms) = 1;
 			ST_BORDER_WIDTH(tmpms) = DEFAULT_MENU_BORDER_WIDTH;
 			ST_ACTIVE_AREA_PERCENT(tmpms) =
 				DEFAULT_MENU_POPUP_NOW_RATIO;
@@ -924,12 +933,12 @@ void menustyle_parse_style(F_CMD_ARGS)
 					GetColor(arg1);
 				ST_HAS_ACTIVE_BACK(tmpms) = 1;
 			}
-			ST_DO_HILIGHT(tmpms) = 1;
+			ST_DO_HILIGHT_BACK(tmpms) = 1;
 			has_gc_changed = True;
 			break;
 
 		case 7: /* HilightBackOff */
-			ST_DO_HILIGHT(tmpms) = 0;
+			ST_DO_HILIGHT_BACK(tmpms) = 0;
 			has_gc_changed = True;
 			break;
 
@@ -942,6 +951,7 @@ void menustyle_parse_style(F_CMD_ARGS)
 			}
 			if (arg1 == NULL)
 			{
+
 				ST_HAS_ACTIVE_FORE(tmpms) = 0;
 			}
 			else
@@ -950,11 +960,12 @@ void menustyle_parse_style(F_CMD_ARGS)
 					GetColor(arg1);
 				ST_HAS_ACTIVE_FORE(tmpms) = 1;
 			}
+			ST_DO_HILIGHT_FORE(tmpms) = 1;
 			has_gc_changed = True;
 			break;
 
 		case 9: /* ActiveForeOff */
-			ST_HAS_ACTIVE_FORE(tmpms) = 0;
+			ST_DO_HILIGHT_FORE(tmpms) = 0;
 			has_gc_changed = True;
 			break;
 
@@ -1482,8 +1493,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		memcpy(&ST_MENU_ACTIVE_COLORS(destms).back,
 		       &ST_MENU_ACTIVE_COLORS(origms).back, sizeof(Pixel));
 	}
-
-	ST_DO_HILIGHT(destms) = ST_DO_HILIGHT(origms);
+	ST_DO_HILIGHT_BACK(destms) = ST_DO_HILIGHT_BACK(origms);
 
 	/* ActiveFore */
 	if (ST_HAS_ACTIVE_FORE(destms))
@@ -1496,6 +1506,7 @@ void CMD_CopyMenuStyle(F_CMD_ARGS)
 		memcpy(&ST_MENU_ACTIVE_COLORS(destms).fore,
 		       &ST_MENU_ACTIVE_COLORS(origms).fore, sizeof(Pixel));
 	}
+	ST_DO_HILIGHT_FORE(destms) = ST_DO_HILIGHT_FORE(origms);
 
 	/* Hilight3D */
 	ST_RELIEF_THICKNESS(destms) = ST_RELIEF_THICKNESS(origms);

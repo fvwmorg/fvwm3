@@ -2426,7 +2426,8 @@ style menus never overlap the parent menu.
 
 .I Fvwm
 style is equivalent to HilightBackOff, Hilight3DThin,
-ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset 0 67,
+ActiveFore, ActiveBack,
+AnimationOff, Font, MenuFace, PopupOffset 0 67,
 TitleWarp, TitleUnderlines1, SeparatorsShort, TrianglesRelief,
 PopupDelayed, PopdownDelayed, PopupAsSubmenu, HoldSubmenus,
 SubmenusRight, BorderWidth 2, AutomaticHotkeysOff,
@@ -2434,14 +2435,16 @@ PopupActiveArea 75.
 
 .I Mwm
 style is equivalent to HilightBackOff, Hilight3DThick,
-ActiveForeOff, AnimationOff, Font, MenuFace, PopupOffset -3 100,
+ActiveFore, ActiveBack,
+AnimationOff, Font, MenuFace, PopupOffset -3 100,
 TitleWarpOff, TitleUnderlines2, SeparatorsLong, TrianglesRelief,
 PopupImmediately, PopdownDelayed, PopupAsSubmenu, HoldSubmenus,
 SubmenusRight, BorderWidth 2, AutomaticHotkeysOff,
 PopupActiveArea 75.
 
 .I Win
-style is equivalent to HilightBack, Hilight3DOff, ActiveForeOff,
+style is equivalent to HilightBack, Hilight3DOff, ActiveFore,
+ActiveBack,
 AnimationOff, Font, MenuFace, PopupOffset -5 100, TitleWarpOff,
 TitleUnderlines1, SeparatorsShort, TrianglesSolid,
 PopupImmediately, PopdownDelayed, PopupAsSubmenu, RemoveSubmenus,
@@ -2471,15 +2474,23 @@ off.  A specific background color may be used by providing the
 color name as an argument to
 .IR HilightBack .
 If you use this option without an argument the color is based on
-the menu's background color.
+the menu's background color.  The
+.I ActiveColorset
+option overrides the specified color.
+
 
 .I ActiveFore " and " ActiveForeOff
 switch hilighting the foreground of the selected menu item on and
 off.  A specific foreground color may be used by providing the
 color name as an argument to
 .IR ActiveFore .
-Omitting the color name has the same effect as using
-.IR ActiveForeOff .
+Omitting the color turns hilighting on when an
+.I ActiveColorset
+is used.
+.I ActiveForeOff
+turns off hilighting the foreground completely.  The
+.I ActiveColorset
+option overrides the specified color.
 
 .I MenuColorset
 controls if a colorset is used instead of the
@@ -2513,7 +2524,10 @@ command (to turn on background hilighting you have to use the
 .I HilightBack
 menu style too).  If specified, the hilight and shadow colors
 from the colorset are used too.  The pixmap and shape mask from
-the colorset are not used.
+the colorset are not used.  Hilighting the background or
+foreground can be turned off individually with the
+.IR ActiveForeOff " or " HilightBackOff
+menu styles.
 
 .I GreyedColorset
 works exactly like

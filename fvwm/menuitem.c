@@ -322,6 +322,7 @@ void menuitem_paint(
 	GC ReliefGC;
 	GC on_gc;
 	GC off_gc;
+	GC text_gc;
 	int on_cs = -1, off_cs = -1;
 	FvwmRenderAttributes fra;
 	/*Pixel fg, fgsh;*/
@@ -357,7 +358,6 @@ void menuitem_paint(
 	if (MI_PICTURE(mi))
 	{
 		text_y += MI_PICTURE(mi)->height;
-		
 	}
 	for (i = 0; i < MAX_MENU_ITEM_MINI_ICONS; i++)
 	{
@@ -397,7 +397,8 @@ void menuitem_paint(
 	/* Hilight or clear the background. */
 	lit_x_start = -1;
 	lit_x_end = -1;
-	if (is_item_selected && ST_DO_HILIGHT(ms))
+	if (is_item_selected &&
+	    (ST_DO_HILIGHT_BACK(ms) || ST_DO_HILIGHT_FORE(ms)))
 	{
 		/* Hilight the background. */
 		if (MDIM_HILIGHT_WIDTH(*dim) - 2 * relief_thickness > 0)
@@ -416,7 +417,8 @@ void menuitem_paint(
 		}
 	}
 	else if ((MI_WAS_DESELECTED(mi) &&
-		  (relief_thickness > 0 || ST_DO_HILIGHT(ms)) &&
+		  (relief_thickness > 0 ||
+		   ST_DO_HILIGHT_BACK(ms) || ST_DO_HILIGHT_FORE(ms)) &&
 		  (ST_FACE(ms).type != GradientMenu || ST_HAS_MENU_CSET(ms))))
 	{
 		/* we clear if xft_clear and !ST_HAS_MENU_CSET(ms) as the
@@ -576,8 +578,9 @@ void menuitem_paint(
 		{
 			on_cs = ST_CSET_ACTIVE(ms);
 		}
-		if (ST_DO_HILIGHT(ms) && !ST_HAS_ACTIVE_FORE(ms) &&
-		    !ST_HAS_ACTIVE_CSET(ms) && is_item_selected)
+		text_gc = on_gc;
+		if (ST_DO_HILIGHT_BACK(ms) && !ST_DO_HILIGHT_FORE(ms) &&
+		    is_item_selected)
 		{
 			/* Use a lighter color for highlighted windows menu
 			 * items if the background is hilighted */
@@ -602,6 +605,7 @@ void menuitem_paint(
 
 		off_gc = on_gc;
 		off_cs = on_cs;
+		text_gc = on_gc;
 	}
 	if (!is_item_selected)
 	{
@@ -649,7 +653,7 @@ void menuitem_paint(
 			    MI_LABEL_OFFSET(mi)[i] < lit_x_end)
 			{
 				/* label is in hilighted area */
-				fws->gc = on_gc;
+				fws->gc = text_gc;
 				if (on_cs >= 0)
 				{
 					fws->colorset = &Colorset[on_cs];
@@ -801,7 +805,7 @@ void menuitem_paint(
 				draw_picture = False;
 			}
 		}
-		
+
 		if (draw_picture)
 		{
 			if (!item_cleared && (MI_PICTURE(mi)->alpha != None ||
@@ -892,7 +896,7 @@ void menuitem_paint(
 					Colorset[tmp_cs].icon_alpha < 100)))
 				{
 					clear_menu_item_background(
-						mpip, 
+						mpip,
 						b.x, b.y, b.width, b.height);
 				}
 				PGraphicsRenderPicture(

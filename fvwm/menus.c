@@ -6550,7 +6550,7 @@ void repaint_transparent_menu(
 	/* redraw the background of non active item */
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
-		if (mi == MR_SELECTED_ITEM(mr) && MST_DO_HILIGHT(mr))
+		if (mi == MR_SELECTED_ITEM(mr) && MST_DO_HILIGHT_BACK(mr))
 		{
 			int left;
 
@@ -6591,7 +6591,7 @@ void repaint_transparent_menu(
 	get_menu_paint_item_parameters(&mpip, mr, NULL, prtm->fw, NULL, True);
 	for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
 	{
-		if (mi == MR_SELECTED_ITEM(mr) && MST_DO_HILIGHT(mr) &&
+		if (mi == MR_SELECTED_ITEM(mr) && MST_DO_HILIGHT_BACK(mr) &&
 		    !CSET_IS_TRANSPARENT_PR_TINT(ST_CSET_MENU(ms)))
 		{
 			continue;
