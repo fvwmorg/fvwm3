@@ -1,3 +1,7 @@
+1999-04-27  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1: Added hint at IgnoreModifiers default.
+
 1999-04-27  Hippo
 
 	* libs/ModGraph.{h,c}: Added GPL copyright, added SetWindowBackground()
