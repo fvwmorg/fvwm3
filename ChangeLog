@@ -1,3 +1,12 @@
+2003-09-24  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.1.in:
+	* fvwm/conditional.c (CreateConditionMask):
+	(MatchesConditionMask):
+	(CreateConditionMask):
+	* fvwm/fvwm.h (WindowConditionMask):
+	!CurrentPage, !CurrentDesk, !Layer ... now work as they should
+
 2003-09-23  olicha  <olivier.chapuis@free.fr>
 
 	* libs/FImage.c (FShmInit):

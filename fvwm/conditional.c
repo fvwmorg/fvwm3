@@ -531,25 +531,28 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		else if (StrEquals(cond,"CurrentDesk"))
 		{
 			mask->my_flags.needs_current_desk = on;
+			mask->my_flags.do_check_desk = 1;
 		}
 		else if (StrEquals(cond,"CurrentPage"))
 		{
-			mask->my_flags.needs_current_desk = on;
-			mask->my_flags.needs_current_page = on;
+			mask->my_flags.needs_current_desk_and_page = on;
+			mask->my_flags.do_check_desk_and_page = 1;
 		}
 		else if (StrEquals(cond,"CurrentGlobalPage"))
 		{
-			mask->my_flags.needs_current_desk = on;
-			mask->my_flags.needs_current_global_page = on;
+			mask->my_flags.needs_current_desk_and_global_page = on;
+			mask->my_flags.do_check_desk_and_global_page = 1;
 		}
 		else if (StrEquals(cond,"CurrentPageAnyDesk") ||
 			 StrEquals(cond,"CurrentScreen"))
 		{
 			mask->my_flags.needs_current_page = on;
+			mask->my_flags.do_check_page = 1;
 		}
 		else if (StrEquals(cond,"CurrentGlobbalPageAnyDesk"))
 		{
 			mask->my_flags.needs_current_global_page = on;
+			mask->my_flags.do_check_global_page = 1;
 		}
 		else if (StrEquals(cond,"CirculateHit"))
 		{
@@ -584,11 +587,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 		}
 		else if (StrEquals(condition, "Layer"))
 		{
-			if (on == 0)
-			{
-				mask->layer = -2;
-			}
-			else if (sscanf(tmp, "%d", &mask->layer))
+			if (sscanf(tmp, "%d", &mask->layer))
 			{
 				free(condition);
 				tmp = GetNextToken (tmp, &condition);
@@ -603,6 +602,7 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
 				/* needs current layer */
 				mask->layer = -1;
 			}
+			mask->my_flags.needs_same_layer = on;
 		}
 		else if (!mask->my_flags.needs_name &&
 			 !mask->my_flags.needs_not_name)
@@ -644,11 +644,14 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
  */
 Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 {
-	Bool fMatchesName;
-	Bool fMatchesIconName;
-	Bool fMatchesClass;
-	Bool fMatchesResource;
-	Bool fMatches;
+	int does_name_match;
+	int does_icon_name_match;
+	int does_class_match;
+	int does_resource_match;
+	int does_match;
+	int is_on_desk;
+	int is_on_page;
+	int is_on_global_page;
 	FvwmWindow *sf = get_focus_window();
 
 	/* match FixedSize conditional */
@@ -668,7 +671,6 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	        return False;
         }
         SETM_SIZE_FIXED(mask, 0);
-
 	if (IS_UNICONIFIABLE(mask) &&
 	    mask->flag_mask.common.s.is_uniconifiable &&
 	    is_function_allowed(F_ICONIFY,NULL,fw,True,False))
@@ -682,7 +684,6 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	        return False;
 	}
 	SETM_IS_UNICONIFIABLE(mask, 0);
-
 	if (IS_UNMAXIMIZABLE(mask) &&
 	    mask->flag_mask.common.s.is_unmaximizable &&
 	    is_function_allowed(F_MAXIMIZE,NULL,fw,True,False))
@@ -696,7 +697,6 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	        return False;
 	}
 	SETM_IS_UNMAXIMIZABLE(mask, 0);
-
 	if (IS_UNCLOSABLE(mask) &&
 	    mask->flag_mask.common.s.is_unclosable &&
 	    (is_function_allowed(F_CLOSE,NULL,fw,True,False) ||
@@ -714,13 +714,11 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	        return False;
 	}
 	SETM_IS_UNCLOSABLE(mask, 0);
-
 	if (!blockcmpmask((char *)&(fw->flags), (char *)&(mask->flags),
 			  (char *)&(mask->flag_mask), sizeof(fw->flags)))
 	{
 		return False;
 	}
-
 	if (!mask->my_flags.use_circulate_hit && DO_SKIP_CIRCULATE(fw))
 	{
 		return False;
@@ -739,32 +737,77 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 	{
 		return False;
 	}
-	if (mask->my_flags.needs_current_desk && fw->Desk != Scr.CurrentDesk)
+
+	/* desk and page matching */
+/*!!!*/fprintf(stderr,"MCM %s\n", fw->visible_name);
+	is_on_desk = 1;
+	if (mask->my_flags.do_check_desk ||
+	    mask->my_flags.do_check_desk_and_page ||
+	    mask->my_flags.do_check_desk_and_global_page)
 	{
-		return False;
+		is_on_desk = (fw->Desk == Scr.CurrentDesk);
 	}
-	if (mask->my_flags.needs_current_page)
+	is_on_page = 1;
+	if (mask->my_flags.do_check_page ||
+	    mask->my_flags.do_check_desk_and_page)
 	{
 		if (FScreenIsEnabled())
 		{
-			if (!FScreenIsRectangleOnScreen(
-				    NULL, FSCREEN_CURRENT, &(fw->frame_g)))
-			{
-				return False;
-			}
+			is_on_page = !!FScreenIsRectangleOnScreen(
+				NULL, FSCREEN_CURRENT, &(fw->frame_g));
 		}
 		else
 		{
-			if (!IsRectangleOnThisPage(
-				    &(fw->frame_g), Scr.CurrentDesk))
-			{
-				return False;
-			}
+			is_on_page = !!IsRectangleOnThisPage(
+				&(fw->frame_g), Scr.CurrentDesk);
 		}
 	}
-	else if (mask->my_flags.needs_current_global_page)
+	is_on_global_page = 1;
+	if (mask->my_flags.do_check_global_page ||
+	    mask->my_flags.do_check_desk_and_global_page)
 	{
-		if (!IsRectangleOnThisPage(&(fw->frame_g), Scr.CurrentDesk))
+		is_on_global_page = !!IsRectangleOnThisPage(
+			&(fw->frame_g), Scr.CurrentDesk);
+	}
+
+	if (mask->my_flags.do_check_desk_and_page)
+	{
+		int is_on_desk_and_page;
+
+		is_on_desk_and_page = (is_on_desk && is_on_page);
+		if (mask->my_flags.needs_current_desk_and_page !=
+		    is_on_desk_and_page)
+		{
+			return False;
+		}
+	}
+	else if (mask->my_flags.do_check_desk_and_global_page)
+	{
+		int is_on_desk_and_global_page;
+
+		is_on_desk_and_global_page = (is_on_desk && is_on_global_page);
+		if (mask->my_flags.needs_current_desk_and_global_page !=
+		    is_on_desk_and_global_page)
+		{
+			return False;
+		}
+	}
+	if (mask->my_flags.do_check_desk &&
+	    mask->my_flags.needs_current_desk != is_on_desk)
+	{
+		return False;
+	}
+	if (mask->my_flags.do_check_page)
+	{
+		if (mask->my_flags.needs_current_page != is_on_page)
+		{
+			return False;
+		}
+	}
+	else if (mask->my_flags.do_check_global_page)
+	{
+		if (mask->my_flags.needs_current_global_page !=
+		    is_on_global_page)
 		{
 			return False;
 		}
@@ -772,30 +815,44 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 
 	/* Yes, I know this could be shorter, but it's hard to understand then
 	 */
-	fMatchesName = matchWildcards(mask->name, fw->name.name);
-	fMatchesIconName = matchWildcards(mask->name, fw->icon_name.name);
-	fMatchesClass = (fw->class.res_class &&
-			 matchWildcards(mask->name,fw->class.res_class));
-	fMatchesResource = (fw->class.res_name &&
-			    matchWildcards(mask->name, fw->class.res_name));
-	fMatches = (fMatchesName || fMatchesIconName || fMatchesClass ||
-		    fMatchesResource);
+	does_name_match = matchWildcards(mask->name, fw->name.name);
+	does_icon_name_match = matchWildcards(mask->name, fw->icon_name.name);
+	does_class_match =
+		(fw->class.res_class && matchWildcards(
+			mask->name,fw->class.res_class));
+	does_resource_match =
+		(fw->class.res_name && matchWildcards(
+			mask->name, fw->class.res_name));
+	does_match =
+		(does_name_match || does_icon_name_match || does_class_match ||
+		 does_resource_match);
+	if (mask->my_flags.needs_name && !does_match)
+	{
+		return False;
+	}
+	if (mask->my_flags.needs_not_name && does_match)
+	{
+		return False;
+	}
+	if (mask->layer == -1 && sf)
+	{
+		int is_same_layer;
 
-	if (mask->my_flags.needs_name && !fMatches)
-	{
-		return False;
+		is_same_layer = (fw->layer == sf->layer);
+		if (mask->my_flags.needs_same_layer != is_same_layer)
+		{
+			return False;
+		}
 	}
-	if (mask->my_flags.needs_not_name && fMatches)
+	if (mask->layer >= 0)
 	{
-		return False;
-	}
-	if ((mask->layer == -1) && (sf) && (fw->layer != sf->layer))
-	{
-		return False;
-	}
-	if ((mask->layer >= 0) && (fw->layer != mask->layer))
-	{
-		return False;
+		int is_same_layer;
+
+		is_same_layer = (fw->layer == mask->layer);
+		if (mask->my_flags.needs_same_layer != is_same_layer)
+		{
+			return False;
+		}
 	}
 	if (GET_USER_STATES(mask) !=
 	    (mask->flag_mask.user_states & GET_USER_STATES(fw)))

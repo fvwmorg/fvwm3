@@ -10032,10 +10032,7 @@ match.  The window name can begin with '!' which prevents
 if any of the window name, icon name, class or resource match.
 
 Any condition can be negated by using a an exclamation mark ('!')
-directly in front of its name.  For the options beginning with
-"!Current" and "!Layer", this simply turns off the opposite
-option.  For example, "!CurrentPage" allows all windows to match
-not just those that are not on the current page.
+directly in front of its name.
 
 .IR AcceptsFocus ,
 .IR CirculateHit ,

@@ -36,6 +36,8 @@ Changes in development release 2.5.8 (not released yet)
 * New commands WindowStyle and DestroyWindowStyle for per window
   styles
 
+* The conditions !Current... and !Layer now work as expected.
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.7 (30-May-2003)
@@ -275,7 +277,7 @@ Changes in alpha release 2.5.3 (25-Aug-2002)
 
 * Fixed interaction bug between CascadePlacement and StartsOnPage:
   if the target page was at a negative x or y page displacement
-  from the current view port, the window would be placed on the
+  from the current viewport, the window would be placed on the
   wrong page.
 
 * New Style option IconSize for restricting icon sizes.
