@@ -1033,11 +1033,12 @@ void RaiseWindow(FvwmWindow *t)
 
   free (wins);
 
-  /* This should be unnecessary, since we never
-     do an unguarded XRaiseWindow */
   raisePanFrames();
 
-#ifdef EXCEED_HACK
+  /* 
+     The following is a hack to raise X windows over NT windows when
+     operating under the Hummingbird Exceed X server.
+   */ 
   if (strcmp (ServerVendor (dpy), "Hummingbird Communications Ltd.") == 0)
     {
       Window junk;
@@ -1056,7 +1057,6 @@ void RaiseWindow(FvwmWindow *t)
       
       XFree (tops);
     }
-#endif
 }
 
 

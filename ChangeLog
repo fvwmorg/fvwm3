@@ -1,3 +1,10 @@
+1999-04-02  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* configure.in: 
+	* acconfig.h:  
+	* fvwm/misc.c (RaiseWindow): Remove EXCEED_HACK, always compile
+	the hack.
+
 1999-04-01  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/resize.c (resize_window): experimental patch: warp pointer to
