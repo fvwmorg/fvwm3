@@ -1340,9 +1340,10 @@ static void MenuInteraction(
     unsigned do_menu : 1;
     unsigned do_recycle_event : 1;
     unsigned has_mouse_moved : 1;
+    unsigned is_motion_faked : 1;
+    unsigned is_popped_up_by_timeout : 1;
     unsigned is_motion_first : 1;
     unsigned is_release_first : 1;
-    unsigned is_motion_faked : 1;
     unsigned is_submenu_mapped : 1;
   } flags;
   /* Can't make this a member of the flags as we have to take its address. */
@@ -1368,6 +1369,7 @@ static void MenuInteraction(
     flags.is_key_press = False;
     if (flags.do_recycle_event)
     {
+      flags.is_popped_up_by_timeout = False;
       flags.do_recycle_event = 0;
       if (pmp->menu != pmret->menu)
       {
@@ -1393,39 +1395,46 @@ static void MenuInteraction(
 	Event.xmotion.time = lastTimestamp;
 	flags.is_motion_faked = True;
 	flags.do_force_reposition = False;
+	flags.is_popped_up_by_timeout = False;
       }
       else if (!XCheckMaskEvent(dpy,ExposureMask,&Event))
       {
 	/* handle exposure events first */
-	  if (Menus.PopupDelay10ms > 0)
+	if (Menus.PopupDelay10ms > 0 && !flags.is_popped_up_by_timeout)
+	{
+	  while (!XPending(dpy) ||
+		 !XCheckMaskEvent(
+		   dpy, ButtonPressMask|ButtonReleaseMask|ExposureMask|
+		   KeyPressMask|VisibilityChangeMask|ButtonMotionMask,
+		   &Event))
 	  {
-	    while (XCheckMaskEvent(dpy,
-				   ButtonPressMask|ButtonReleaseMask|
-				   ExposureMask|KeyPressMask|
-				   VisibilityChangeMask|ButtonMotionMask,
-				   &Event) == False)
+	    usleep(10000 /* 10 ms*/);
+	    if (c10msDelays++ == Menus.PopupDelay10ms)
 	    {
-	      usleep(10000 /* 10 ms*/);
-	      if (c10msDelays++ == Menus.PopupDelay10ms)
-	      {
-		DBUG("MenuInteraction","Faking motion");
-		/* fake a motion event, and set flags.do_popup_now */
-		Event.type = MotionNotify;
-		Event.xmotion.time = lastTimestamp;
-		flags.is_motion_faked = True;
-		flags.do_popup_now = True;
-		break;
-	      }
+	      DBUG("MenuInteraction","Faking motion");
+	      /* fake a motion event, and set flags.do_popup_now */
+	      Event.type = MotionNotify;
+	      Event.xmotion.time = lastTimestamp;
+	      flags.is_motion_faked = True;
+	      flags.is_popped_up_by_timeout = True;
+	      flags.do_popup_now = True;
+	      break;
 	    }
 	  }
-	  else
-	  {
-	    /* block until there is an event */
-	    XMaskEvent(dpy,
-		       ButtonPressMask|ButtonReleaseMask|ExposureMask |
-		       KeyPressMask|VisibilityChangeMask|ButtonMotionMask,
-		       &Event);
-	  }
+	}
+	else
+	{
+	  /* block until there is an event */
+	  XMaskEvent(dpy,
+		     ButtonPressMask|ButtonReleaseMask|ExposureMask |
+		     KeyPressMask|VisibilityChangeMask|ButtonMotionMask,
+		     &Event);
+	  flags.is_popped_up_by_timeout = False;
+	}
+      }
+      else
+      {
+	flags.is_popped_up_by_timeout = False;
       }
     } /* !flags.do_recycle_event */
 

@@ -1,3 +1,8 @@
+2000-01-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c:
+	some safety fixes w/ balloon labels
+
 2000-01-14  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTheme/FvwmTheme.c (parse_colorset):

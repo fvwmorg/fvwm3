@@ -99,6 +99,7 @@ static void apply_window_updates(
 
   if (flags->do_update_window_font || flags->do_update_window_font_height)
   {
+fprintf(stderr,"1\n");
     if (!is_style_initialised)
     {
       init_style(&old_t, t, pstyle, &buttons);
@@ -215,6 +216,7 @@ static void apply_window_updates(
   }
   if (flags->do_update_icon_font)
   {
+fprintf(stderr,"2\n");
     if (!is_style_initialised)
     {
       init_style(&old_t, t, pstyle, &buttons);
@@ -226,10 +228,12 @@ static void apply_window_updates(
   }
   if (flags->do_update_icon_boxes)
   {
+fprintf(stderr,"3\n");
     change_icon_boxes(t, pstyle);
   }
   if (flags->do_update_icon)
   {
+fprintf(stderr,"4\n");
     change_icon(t, pstyle);
     if (IS_ICONIFIED(t))
     {
@@ -240,6 +244,7 @@ static void apply_window_updates(
   }
   if (flags->do_update_icon_title)
   {
+fprintf(stderr,"5\n");
     RedoIconName(t);
     if (IS_ICONIFIED(t))
       DrawIconWindow(t);
@@ -287,6 +292,7 @@ void flush_window_updates(void)
   MyXGrabServer(dpy);
   XSync(dpy,0);
 
+fprintf(stderr,"flushing updates\n");
   /* This is necessary in case the focus policy changes. With ClickToFocus some
    * buttons have to be grabbed/ungrabbed. */
   focus_fw = Scr.Focus;

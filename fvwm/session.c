@@ -35,6 +35,7 @@
 #include "misc.h"
 #include "screen.h"
 #include "session.h"
+#include "module_interface.h"
 #include "stack.h"
 #include "icccm2.h"
 #include "virtual.h"
@@ -816,6 +817,9 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
 #ifdef FVWM_DEBUG_MSGS
     fprintf(stderr, "[FVWM]: Exiting, now SM must restart us.\n");
 #endif
+    /* Close all my pipes */
+    ClosePipes();
+
     exit(0); /* let the SM restart us */
   }
 #endif

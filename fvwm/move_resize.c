@@ -577,6 +577,10 @@ static void DoSnapAttract(
   self.y = *py;
   self.width = Width;
   self.height = Height;
+  if (IS_ICONIFIED(tmp_win) && !HAS_NO_ICON_TITLE(tmp_win))
+  {
+    self.height += tmp_win->icon_g.height;
+  }
   while(Scr.SnapAttraction >= 0 && tmp)
   {
     switch (Scr.SnapMode)
@@ -623,6 +627,10 @@ static void DoSnapAttract(
 	}
 	other.x = tmp->icon_g.x;
 	other.y = tmp->icon_g.y;
+	if (!HAS_NO_ICON_TITLE(tmp))
+	{
+	  other.height += tmp->icon_g.height;
+	}
       }
       else
       {

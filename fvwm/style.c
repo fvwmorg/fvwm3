@@ -2041,11 +2041,13 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
   if(StrEquals(SGET_NAME(*ptmpstyle), "*"))
   {
     if(ptmpstyle->flags.has_icon == 1)
+    {
       Scr.DefaultIcon = SGET_ICON_NAME(*ptmpstyle);
-    ptmpstyle->flags.has_icon = 0;
-    ptmpstyle->flag_mask.has_icon = 0;
-    ptmpstyle->change_mask.has_icon = 1;
-    SSET_ICON_NAME(*ptmpstyle, NULL);
+      ptmpstyle->flags.has_icon = 0;
+      ptmpstyle->flag_mask.has_icon = 0;
+      ptmpstyle->change_mask.has_icon = 1;
+      SSET_ICON_NAME(*ptmpstyle, NULL);
+    }
   }
   /* add temp name list to list */
   add_style_to_list(ptmpstyle);
@@ -2169,8 +2171,9 @@ void check_window_style_change(
    * icon_override
    */
   if (ret_style->change_mask.has_icon ||
-      ret_style->change_mask.icon_override )
+      ret_style->change_mask.icon_override)
   {
+    flags->do_update_icon_font = True;
     flags->do_update_icon = True;
   }
 

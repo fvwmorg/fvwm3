@@ -1,3 +1,26 @@
+2000-01-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (MenuInteraction):
+	eliminate network traffic in idle menus
+
+	* fvwm/style.c (ProcessNewStyle):
+	fixed unnecessary icon update when style '*' is changed
+
+2000-01-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c (check_window_style_change):
+	fixed coredump when changind style 'NoIcon' to 'Icon' [the font was not
+	updated]
+
+	* fvwm/fvwm.c (Done):
+	* fvwm/session.c (RestartInSession):
+	call CLosePipes() after CloseICCCM2() because otherwise fvwm might
+	ignore map requests while it still has substructureredirect selected on
+	the root window ==> windows end up in nirvana
+
+	* fvwm/move_resize.c (DoSnapAttract):
+	fixed snapping icons with titles to other icons
+
 1999-01-14  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/System.c (setPath): fixed expanding '+' not at the end

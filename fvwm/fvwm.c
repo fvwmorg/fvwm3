@@ -1672,9 +1672,6 @@ void Done(int restart, char *command)
     free(action);
   }
 
-  /* Close all my pipes */
-  ClosePipes();
-
   if (!restart)
   {
     Reborder();
@@ -1777,6 +1774,16 @@ void Done(int restart, char *command)
     CloseICCCM2();
     XCloseDisplay(dpy);
   }
+
+  /* Close all my pipes */
+  /* domivogt (15-Jan-2000): This must be done after calling CloseICCCM2()!
+   * Otherwise fvwm ignores map requests while it still has
+   * SubstructureRedirect selected on the root window ==> windows end up in
+   * nirvana. This explicitly happened with windows unswallowed by FvwmButtons.
+   */
+
+  ClosePipes();
+
   exit(0);
 }
 

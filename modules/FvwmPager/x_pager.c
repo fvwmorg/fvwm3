@@ -2611,10 +2611,13 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
     return;
 #endif
 
-  { /* calculate window width to accommodate string */
-    window_changes.width = 4 + XTextWidth(Desks[i].balloon.font,
-					  Desks[i].balloon.label,
-                                          strlen(Desks[i].balloon.label));
+  /* calculate window width to accommodate string */
+  window_changes.width = 4;
+  if (*Desks[i].balloon.label)
+  {
+    window_changes.width +=
+      XTextWidth(Desks[i].balloon.font,	Desks[i].balloon.label,
+		 strlen(Desks[i].balloon.label));
   }
 
   /* get x and y coords relative to pager window */
@@ -2690,7 +2693,7 @@ static void InsertExpand(char **dest, char *s)
   int len;
   char *tmp = *dest;
 
-  if (s == 0)
+  if (!s || !*s)
     return;
   len = strlen(*dest) + strlen(s) + 1;
   *dest = (char *)safemalloc(len);

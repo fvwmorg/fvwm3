@@ -149,7 +149,6 @@ typedef struct
   Pixel shadow;
 } color_quad;
 
-
 #ifdef USEDECOR
 struct FvwmDecor;		/* definition in screen.h */
 #endif
@@ -237,6 +236,26 @@ typedef struct
   unsigned is_window_shaded : 1;
 } window_flags;
 
+/* Window mask for Circulate and Direction functions */
+typedef struct WindowConditionMask
+{
+  struct
+  {
+    unsigned needs_current_desk : 1;
+    unsigned needs_current_page : 1;
+    unsigned needs_name : 1;
+    unsigned needs_not_name : 1;
+    unsigned use_circulate_hit : 1;
+    unsigned use_circulate_hit_icon : 1;
+    unsigned use_circulate_skip : 1;
+    unsigned use_circulate_skip_icon : 1;
+  } my_flags;
+  window_flags flags;
+  window_flags flag_mask;
+  char *name;
+  int layer;
+} WindowConditionMask;
+
 /* only style.c and add_window.c are allowed to access this struct!! */
 typedef struct
 {
@@ -264,6 +283,9 @@ typedef struct
   unsigned has_no_border : 1;
   unsigned has_no_title : 1;
   unsigned has_ol_decor : 1;
+#if 0
+  unsigned has_condition_mask : 1;
+#endif
   unsigned is_button_disabled : 10;
   unsigned use_backing_store : 1;
   unsigned use_colorset : 1;
@@ -287,6 +309,9 @@ typedef struct window_style
 {
   struct window_style *next;
   char *name;
+#if 0
+  WindowConditionMask *condition_mask;
+#endif
   char *icon_name;
 #ifdef MINI_ICONS
   char *mini_icon_name;
@@ -413,52 +438,25 @@ typedef struct FvwmWindow
   int max_window_height;
 } FvwmWindow;
 
-/* Window mask for Circulate and Direction functions */
-typedef struct WindowConditionMask {
-  struct
-  {
-    unsigned needs_current_desk : 1;
-    unsigned needs_current_page : 1;
-    unsigned needs_name : 1;
-    unsigned needs_not_name : 1;
-    unsigned use_circulate_hit : 1;
-    unsigned use_circulate_hit_icon : 1;
-    unsigned use_circulate_skip : 1;
-    unsigned use_circulate_skip_icon : 1;
-  } my_flags;
-  window_flags flags;
-  window_flags flag_mask;
-  char *name;
-  int layer;
-} WindowConditionMask;
-
 RETSIGTYPE SigDone(int);
 RETSIGTYPE Restart(int nonsense);
 extern void Done(int, char *) __attribute__((__noreturn__));
 extern void setInitFunctionName(int n, const char *name);
 extern const char *getInitFunctionName(int n);
-
 extern void CaptureOneWindow(FvwmWindow *fw, Window window);
 extern void CaptureAllWindows(void);
 
 extern int master_pid;
-
 extern Display *dpy;
-
 extern XContext FvwmContext;
-
 extern Bool fFvwmInStartup;
 extern Bool DoingCommandLine;
-
 extern int GrabPointerState;
-
 extern Boolean ShapesSupported;
-
 extern Window JunkRoot, JunkChild;
 extern int JunkX, JunkY;
 extern unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 extern char *user_home_dir;
-
 extern Atom _XA_MIT_PRIORITY_COLORS;
 extern Atom _XA_WM_CHANGE_STATE;
 extern Atom _XA_WM_STATE;
@@ -480,11 +478,9 @@ extern Atom _XA_OL_DECOR_CLOSE;
 extern Atom _XA_OL_DECOR_RESIZE;
 extern Atom _XA_OL_DECOR_HEADER;
 extern Atom _XA_OL_DECOR_ICON_NAME;
-
 extern Atom _XA_WM_WINDOW_ROLE;
 extern Atom _XA_WM_CLIENT_LEADER;
 extern Atom _XA_SM_CLIENT_ID;
-
 extern Atom _XA_WIN_SX;
 extern Atom _XA_MANAGER;
 extern Atom _XA_ATOM_PAIR;
