@@ -104,14 +104,7 @@ static void remove_ids_from_schedule_queue(
 	}
 
 	return;
-
-
-
-
-
-
 }
-
 
 static void add_to_schedule_queue(
 	Window window, char *command, Time time_to_execute, int *pid)
@@ -309,15 +302,12 @@ void CMD_Schedule(F_CMD_ARGS)
 		pid = NULL;
 	}
 	/* get the time to execute */
-	if (ms > 0)
-	{
-		current_time = get_server_time();
-		time = current_time + (Time)ms;
-	}
-	else
-	{
-		time = CurrentTime;
-	}
+        if (ms < 0)
+        {
+                ms = 0;
+        }
+        current_time = get_server_time();
+        time = current_time + (Time)ms;
 	/* get the window to operate on */
 	if (tmp_win != NULL)
 	{
