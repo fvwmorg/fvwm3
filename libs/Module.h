@@ -39,6 +39,12 @@ typedef struct {
 					  FvwmPacketBodySize to get size */
 } FvwmPacket;
 
+typedef struct
+{
+	Window w;
+	Window frame;
+	void *fvwmwin;
+} FvwmWinPacketBodyHeader;
 
 /*
  * If you modify constants here, please regenerate Constants.pm in perllib.

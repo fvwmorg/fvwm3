@@ -1,24 +1,27 @@
-/**
-    This module, FvwmProxy, is an original work by Jason Weber.
+/* -*-c-*- */
+/* This module, FvwmProxy, is an original work by Jason Weber.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 
-    Copyright 2002, Jason Weber.  No guarantees or warrantees or anything
-    are provided or implied in any way whatsoever.  Use this program at
-    your own risk.
-
-    Interim License: Until this code reaches acceptable maturity,
-    its use is limited to evaluation only.  This code may not
-    be redistribuited until further notice.
-
-    If and when this software is officially merged into Fvwm project,
-    it will likely adopt the licensing terms therein.
-*/
-
-// vim:ts=8:shiftwidth=8:
+/* vim:ts=8:shiftwidth=8: */
 
 #ifndef FvwmProxy_h
 #define FvwmProxy_h
 
-//* TODO check what headers we really need
+/* TODO check what headers we really need */
 #include <stdio.h>
 #include <signal.h>
 #include <fcntl.h>
@@ -57,6 +60,7 @@ typedef struct sProxyWindow
 	Window			window;
 	int			x,y;
 	int			w,h;
+	int			desk;
 	Window			proxy;
 	int			proxyx,proxyy;
 	int			proxyw,proxyh;
@@ -64,7 +68,12 @@ typedef struct sProxyWindow
 	char			*name;
 	char			*iconname;
 	struct sProxyWindow	*next;
+	struct
+	{
+		unsigned is_shown : 1;
+		unsigned is_iconified : 1;
+	} flags;
 } ProxyWindow;
 
 
-#endif	// FvwmProxy_h
+#endif	/* FvwmProxy_h */
