@@ -1,3 +1,17 @@
+2000-01-18 olicha	<olivier.chapuis@free.fr>
+ 	
+	* fvwm/builtins.c (wait_func, recapture):
+	* fvwm/cursor.{c,h} (setBusyCursor):
+	* fvwm/function.{c,h}:
+	* fvwm/fvwm.{c,h} (StartupStuff, InitVariables):
+	* fvwm/menus.c (MenuInteraction, pop_menu_up):
+	* fvwm/misc.{c,h} (GrabEm, UngrabEm):
+	* fvwm/module_interface.c (ExecuteModuleSync):
+	* fvwm/module_interface.c (ExecuteModuleSync):
+	* fvwm/read.c (cursor_control, ReadFile, PipeRead):
+	* fvwm/screen.h (ScreenInfo):
+	Do so that we can disable the "Busy Cursor" patch
+	
 2000-01-18  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/functions.c (execute_complex_function):

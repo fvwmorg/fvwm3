@@ -7,6 +7,9 @@
 /* define if GNOME WM hints are enabled */
 #undef GNOME
 
+/* define if Busy Cursor patch is enabled */
+#undef BUSYCURSOR
+
 /* Where to search for images.  */
 #undef FVWM_IMAGEPATH
 

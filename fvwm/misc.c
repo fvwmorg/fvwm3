@@ -171,23 +171,28 @@ Bool GrabEm(int cursor, int grab_context)
   Window grab_win;
   unsigned int mask;
 
+#ifdef BUSYCURSOR
   /* menus.c control itself its busy stuff. No busy stuff at start up.
    * Only one busy grab */
   if ( ((GrabPointerState & (GRAB_MENU | GRAB_STARTUP))
 	                 && (grab_context & GRAB_BUSY)) ||
        ((GrabPointerState & GRAB_BUSY) && (grab_context & GRAB_BUSY)) )
     return False;
+#endif
 
   XSync(dpy,0);
   /* move the keyboard focus prior to grabbing the pointer to
    * eliminate the enterNotify and exitNotify events that go
    * to the windows. But GRAB_BUSY. */
+#ifdef BUSYCURSOR
   if (grab_context != GRAB_BUSY)
   {
+#endif
     if(Scr.PreviousFocus == NULL)
       Scr.PreviousFocus = Scr.Focus;
     SetFocus(Scr.NoFocusWin,NULL,0);
     grab_win = Scr.Root;
+#ifdef BUSYCURSOR
   }
   else
   {
@@ -196,6 +201,7 @@ Bool GrabEm(int cursor, int grab_context)
     else
       grab_win = Scr.Root;
   }
+#endif
   mask = ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask
     | EnterWindowMask | LeaveWindowMask;
   while((i < 500)&&
@@ -216,7 +222,9 @@ Bool GrabEm(int cursor, int grab_context)
     {
       return False;
     }
+#ifdef BUSYCURSOR
   GrabPointerState |= grab_context;
+#endif
   return True;
 }
 
@@ -230,10 +238,31 @@ void UngrabEm(int ungrab_context)
 {
   Window w;
 
+#ifdef BUSYCURSOR  
+  /* menus.c control itself regarbing */
+  if ((GrabPointerState & GRAB_MENU) && !(ungrab_context & GRAB_MENU))
+  {
+    GrabPointerState = (GrabPointerState & ~ungrab_context) | GRAB_BUSYMENU;
+    return;
+  }
+  /* see if we need to regrab */
+  if ((GrabPointerState & GRAB_BUSY) && !(ungrab_context & GRAB_BUSY))
+  {
+    GrabPointerState &= ~ungrab_context & ~GRAB_BUSY;
+    GrabEm(CRS_WAIT, GRAB_BUSY);
+    return;
+  }
+#endif
+
   XSync(dpy,0);
   XUngrabPointer(dpy,CurrentTime);
 
+#ifdef BUSYCURSOR
+  GrabPointerState &= ~ungrab_context;
+  if(Scr.PreviousFocus != NULL && !(GRAB_BUSY & ungrab_context))
+#else
   if(Scr.PreviousFocus != NULL)
+#endif
     {
       w = Scr.PreviousFocus->w;
 

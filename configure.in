@@ -31,6 +31,7 @@ dnl smr_SWITCH(multistyle, stacked button styles, on, MULTISTYLE)
 smr_SWITCH(shape, shape extensions, on, SHAPE)
 dnl smr_SWITCH(usedecor, UseDecor style option, on, USEDECOR)
 smr_SWITCH(gnome, GNOME Window Manager Hints, off, GNOME)
+smr_SWITCH(busy-cursor, Busy Cursor Patch, on, BUSYCURSOR)
 
 dnl FIXME: default value should be derived from computed path to X
 dnl includes.  Actually, this should probably not appear in configure

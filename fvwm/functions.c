@@ -117,7 +117,9 @@ static const func_type func_config[] =
   {"beep",         Bell,             F_BEEP,                 0},
   {"borderstyle",  SetBorderStyle,   F_BORDERSTYLE,          0},
   {"bugopts",      SetBugOptions,    F_BUG_OPTS,             0},
+#ifdef BUSYCURSOR  
   {"busycursor",   setBusyCursor,    F_BUSY_CURSOR,          0},
+#endif 
   {"buttonstate",  cmd_button_state, F_BUTTON_STATE,         0},
   {"buttonstyle",  ButtonStyle,      F_BUTTON_STYLE,         0},
 #ifdef USEDECOR

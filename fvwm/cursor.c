@@ -529,6 +529,7 @@ void CursorStyle(F_CMD_ARGS)
     SafeDefineCursor(Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
 }
 
+#ifdef BUSYCURSOR
 /***********************************************************************
  *
  *  builtin function: (set)BusyCursor
@@ -605,4 +606,4 @@ void setBusyCursor(F_CMD_ARGS)
     }
   }
 }
-
+#endif

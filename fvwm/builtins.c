@@ -689,18 +689,22 @@ void refresh_win_function(F_CMD_ARGS)
 void wait_func(F_CMD_ARGS)
 {
   Bool done = False;
+#ifdef BUSYCURSOR
   Bool redefine_cursor = False;
+#endif
   char *escape;
   Window nonewin = None;
   extern FvwmWindow *Tmp_win;
 
   while(!done)
   {
+#ifdef BUSYCURSOR
     if (BUSY_WAIT & Scr.BusyCursor)
     {
       XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_WAIT]);
       redefine_cursor = True;
     }
+#endif
     if(My_XNextEvent(dpy, &Event))
     {
       DispatchEvent(False);
@@ -731,8 +735,10 @@ void wait_func(F_CMD_ARGS)
       }
     }
   }
+#ifdef BUSYCURSOR
   if (redefine_cursor)
     XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
+#endif
 }
 
 void quit_func(F_CMD_ARGS)
@@ -2266,15 +2272,20 @@ void SetEnv(F_CMD_ARGS)
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
   XEvent event;
+#ifdef BUSYCURSOR
   Bool need_ungrab = False;
+#endif
 
   if (fSingle)
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
       return;
-
+#ifdef BUSYCURSOR
   if (BUSY_RECAPTURE & Scr.BusyCursor)
     if (GrabEm(CRS_WAIT, GRAB_BUSY))
       need_ungrab = True;
+#else
+  GrabEm(CRS_WAIT, GRAB_BUSY);
+#endif
   MyXGrabServer(dpy);
   XSync(dpy,0);
   if (fSingle)
@@ -2290,7 +2301,9 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
 			 &event) != False)
     ;
   MyXUngrabServer(dpy);
+#ifdef BUSYCURSOR
   if (need_ungrab)
+#endif
     UngrabEm(GRAB_BUSY);
   XSync(dpy, 0);
 }
@@ -2776,7 +2789,7 @@ void strokeFunc(F_CMD_ARGS)
 
   while (!finished && !abort)
   {
-    /* block until there is an event EnterWindowMask | LeaveWindowMask*/
+    /* block until there is an event */
     XMaskEvent(dpy,  ButtonPressMask | ButtonReleaseMask | KeyPressMask |
 	       KeyReleaseMask | ButtonMotionMask | PointerMotionMask, eventp);
     /* Records the time */

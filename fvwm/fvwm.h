@@ -451,7 +451,9 @@ extern Display *dpy;
 extern XContext FvwmContext;
 extern Bool fFvwmInStartup;
 extern Bool DoingCommandLine;
+#ifdef BUSYCURSOR
 extern int GrabPointerState;
+#endif
 extern Boolean ShapesSupported;
 extern Window JunkRoot, JunkChild;
 extern int JunkX, JunkY;
