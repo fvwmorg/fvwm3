@@ -1490,6 +1490,27 @@ void read_in_resources()
        ConsoleDebug(CONFIG, "Setting showtransient to: %d\n", i);
        SET_MANAGER(manager, showtransient, i);
       }
+      else if( !strcasecmp(option1, "showonlyfocused")) {
+	p = read_next_cmd(READ_ARG);
+	if (!p) {
+	 ConsoleMessage("Bad line: %s\n", current_line);
+	 ConsoleMessage("Need argument to showonlyfocused\n");
+	 continue;
+	}
+	if (!strcasecmp(p, "true")) {
+	  i = 1;
+	}
+	else if (!strcasecmp(p, "false")) {
+	  i = 0;
+	}
+	else {
+	  ConsoleMessage("Bad line: %s\n", current_line);
+	  ConsoleMessage("What is this: %s?\n", p);
+	  continue;
+	}
+	ConsoleMessage("Show only focused to: %d\n", i);
+	SET_MANAGER( manager, showonlyfocused, i);
+      }
       else if (!strcasecmp(option1, "showonlyicons")) {
        p = read_next_cmd(READ_ARG);
        if (!p) {

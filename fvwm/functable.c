@@ -228,6 +228,9 @@ const func_t func_table[] =
 	CMD_ENT("edgecommand", CMD_EdgeCommand, F_EDGE_COMMAND, 0, 0),
 	/* - Bind one or another screen edge to an fvwm action */
 
+	CMD_ENT("edgeleavecommand", CMD_EdgeLeaveCommand, F_EDGE_LEAVE_COMMAND, 0, 0),
+	/* - Bind one or another screen edge to an fvwm action */
+
 	CMD_ENT("edgeresistance", CMD_EdgeResistance, F_EDGE_RES, 0, 0),
 	/* - Control viewport scrolling and window move over edge */
 

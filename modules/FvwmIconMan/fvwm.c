@@ -273,6 +273,11 @@ static void focus_change(FvwmPacketBody *body)
 	ConsoleDebug(FVWM, "Focus Change\n");
 	ConsoleDebug(FVWM, "\tID: %ld\n", app_id);
 
+	if (fvwm_focus_win &&
+	    fvwm_focus_win->button &&
+	    fvwm_focus_win->manager->showonlyfocused) 
+	  delete_windows_button(fvwm_focus_win);
+
 	if (fvwm_focus_win && win != fvwm_focus_win)
 	{
 		del_win_state(fvwm_focus_win, FOCUS_CONTEXT);
@@ -293,6 +298,8 @@ static void focus_change(FvwmPacketBody *body)
 		win->manager->focus_button = win->button;
 	}
 	add_win_state(win, FOCUS_CONTEXT);
+
+	check_in_window(win);
 
 	globals.focus_win = win;
 	fvwm_focus_win = win;

@@ -5,6 +5,14 @@ Note, the changes for the last STABLE release start with release
 
 Changes in alpha release 2.5.12 (not released yet)
 
+* New commands:
+
+   - EdgeLeaveCommand
+
+* New module features:
+
+   - FvwmIconMan: ShowOnlyFocused option.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.11 (30-Sep-2004)

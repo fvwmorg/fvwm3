@@ -805,19 +805,19 @@ void checkPanFrames(void)
 	/* correct the unmap variables if pan frame commands are set */
 	if (edge_thickness != 0)
 	{
-		if (Scr.PanFrameLeft.command != NULL)
+		if (Scr.PanFrameLeft.command != NULL || Scr.PanFrameLeft.command_leave != NULL)
 		{
 			do_unmap_l = False;
 		}
-		if (Scr.PanFrameRight.command != NULL)
+		if (Scr.PanFrameRight.command != NULL || Scr.PanFrameRight.command_leave != NULL)
 		{
 			do_unmap_r = False;
 		}
-		if (Scr.PanFrameBottom.command != NULL)
+		if (Scr.PanFrameBottom.command != NULL || Scr.PanFrameBottom.command_leave != NULL)
 		{
 			do_unmap_b = False;
 		}
-		if (Scr.PanFrameTop.command != NULL)
+		if (Scr.PanFrameTop.command != NULL || Scr.PanFrameTop.command_leave != NULL)
 		{
 			do_unmap_t = False;
 		}
@@ -1590,6 +1590,111 @@ void CMD_EdgeCommand(F_CMD_ARGS)
 			/* not a proper direction */
 			fvwm_msg(ERR, "EdgeCommand",
 				 "EdgeCommand [direction [function]]");
+		}
+	}
+
+	/* maybe something has changed so we adapt the pan frames */
+	checkPanFrames();
+
+	return;
+}
+
+/* EdgeLeaveCommand - binds a function to a pan frame Leave event */
+void CMD_EdgeLeaveCommand(F_CMD_ARGS)
+{
+	direction_t direction;
+	char * command;
+
+	/* get the direction */
+	direction = gravity_parse_dir_argument(action, &action, DIR_NONE);
+
+	if (direction >= 0 && direction <= DIR_MAJOR_MASK)
+	{
+
+		/* check if the command does contain at least one token */
+		command = safestrdup(action);
+		if (PeekToken(action , &action) == NULL)
+		{
+			/* the command does not contain a token so
+			   the command of this edge is removed */
+			free(command);
+			command = NULL;
+		}
+		/* assign command to the edge(s) */
+		if (direction == DIR_N)
+		{
+			if (Scr.PanFrameTop.command_leave != NULL)
+			{
+				free(Scr.PanFrameTop.command_leave);
+			}
+			Scr.PanFrameTop.command_leave = command;
+		}
+		else if (direction == DIR_S)
+		{
+			if (Scr.PanFrameBottom.command_leave != NULL)
+			{
+				free(Scr.PanFrameBottom.command_leave);
+			}
+			Scr.PanFrameBottom.command_leave = command;
+		}
+		else if (direction == DIR_W)
+		{
+			if (Scr.PanFrameLeft.command_leave != NULL)
+			{
+				free(Scr.PanFrameLeft.command_leave);
+			}
+			Scr.PanFrameLeft.command_leave = command;
+		}
+		else if (direction == DIR_E)
+		{
+			if (Scr.PanFrameRight.command_leave != NULL)
+			{
+				free(Scr.PanFrameRight.command_leave);
+			}
+			Scr.PanFrameRight.command_leave = command;
+		}
+		else
+		{
+			/* this should never happen */
+			fvwm_msg(ERR, "EdgeLeaveCommand",
+				 "Internal error in CMD_EdgeLeaveCommand");
+		}
+
+	}
+	else
+	{
+
+		/* check if the argument does contain at least one token */
+		if (PeekToken(action , &action) == NULL)
+		{
+			/* Just plain EdgeLeaveCommand, so all edge commands are
+			 * removed */
+			if (Scr.PanFrameTop.command_leave != NULL)
+			{
+				free(Scr.PanFrameTop.command_leave);
+				Scr.PanFrameTop.command_leave = NULL;
+			}
+			if (Scr.PanFrameBottom.command_leave != NULL)
+			{
+				free(Scr.PanFrameBottom.command_leave);
+				Scr.PanFrameBottom.command_leave = NULL;
+			}
+			if (Scr.PanFrameLeft.command_leave != NULL)
+			{
+				free(Scr.PanFrameLeft.command_leave);
+				Scr.PanFrameLeft.command_leave = NULL;
+			}
+			if (Scr.PanFrameRight.command_leave != NULL)
+			{
+				free(Scr.PanFrameRight.command_leave);
+				Scr.PanFrameRight.command_leave = NULL;
+			}
+		}
+		else
+		{
+			/* not a proper direction */
+			fvwm_msg(ERR, "EdgeLeaveCommand",
+				 "EdgeLeaveCommand [direction [function]]");
 		}
 	}
 

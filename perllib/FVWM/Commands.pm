@@ -315,6 +315,12 @@ $TIME = 1067046743;
 		descr => q{Bind one or another screen edge to an fvwm action},
 	},
 	{
+		name => 'EdgeLeaveCommand',
+		cursor => '',
+		window => 0,
+		descr => q{Bind one or another screen edge to an fvwm action},
+	},
+	{
 		name => 'EdgeResistance',
 		cursor => '',
 		window => 0,

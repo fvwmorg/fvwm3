@@ -1208,6 +1208,11 @@ static void InitVariables(void)
 	Scr.PanFrameBottom.command = NULL;
 	Scr.PanFrameRight.command  = NULL;
 	Scr.PanFrameLeft.command   = NULL;
+	/* EdgeLeaveCommands - no edge leave commands by default */
+	Scr.PanFrameTop.command_leave    = NULL;
+	Scr.PanFrameBottom.command_leave = NULL;
+	Scr.PanFrameRight.command_leave  = NULL;
+	Scr.PanFrameLeft.command_leave   = NULL;
 	Scr.flags.is_pointer_on_this_screen = !!FQueryPointer(
 		dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &JunkX,
 		&JunkY, &JunkMask);

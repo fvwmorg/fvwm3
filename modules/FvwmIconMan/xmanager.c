@@ -1482,6 +1482,9 @@ void check_in_window(WinData *win)
     in_viewport = win_in_viewport(win);
     if (win->manager->usewinlist && DO_SKIP_WINDOW_LIST(win))
       in_viewport = 0;
+    if ((win->manager->showonlyfocused && win->state != FOCUS_CONTEXT) &&
+	(win->manager->showonlyfocused && win->state != FOCUS_SELECT_CONTEXT)) 
+	in_viewport = 0;
     if (win->button == NULL && in_viewport && is_state_selected) {
       insert_windows_button(win);
       if (win->manager->window_up == 0 && globals.got_window_list)

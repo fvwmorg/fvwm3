@@ -5846,6 +5846,39 @@ border virtual pages.  If a screen edge has a command bound to it,
 the pan frame is always created on that edge.
 
 .TP
+.BI "EdgeLeaveCommand [" direction " [" Function "]]"
+Binds a specified fvwm command
+.I Function
+to an edge of the screen. Direction may be one of
+"North", "Top", "West", "Left", "South", "Bottom", "Right"
+and "East". If
+.I Function
+is omitted the binding for this edge is removed. If EdgeLeaveCommand is
+called without any arguments all edge bindings are removed.
+
+.I Function
+is executed when the mouse pointer
+leaves the invisible pan frames that surround the visible screen.
+The binding works only if
+.I EdgeThickness
+is set to a value greater than 0.
+If a function is bound to an edge, scrolling specified by
+.I EdgeScroll
+is disabled for this edge.
+It is possible to bind a function only to some edges
+and use the other edges for scrolling.
+This command is intended to raise or lower certain windows
+when the mouse pointer leaves an edge.
+.I FvwmAuto
+can be used get a delay when raising or lowering windows.
+See example for 
+.I EdgeCommand
+.EE
+Normally, the invisible pan frames are only on the screen edges that
+border virtual pages.  If a screen edge has a command bound to it,
+the pan frame is always created on that edge.
+
+.TP
 .BI "GnomeButton"
 Used in conjunction with
 .B Mouse

@@ -2510,6 +2510,41 @@ ENTER_DBG((stderr, "ln: *** lgw = 0x%08x\n", (int)fw));
 		DrawIconWindow(fw, True, False, False, False, NULL);
 	}
 
+	/* An LeaveEvent in one of the PanFrameWindows activates
+	   an EdgeLeaveCommand. */
+	if (is_pan_frame(te->xcrossing.window))
+	{
+		char *edge_command_leave = NULL;
+
+		/* check for edge commands */
+		if (te->xcrossing.window == Scr.PanFrameTop.win)
+		{
+			edge_command_leave = Scr.PanFrameTop.command_leave;
+		}
+		else if (te->xcrossing.window == Scr.PanFrameBottom.win)
+		{
+			edge_command_leave = Scr.PanFrameBottom.command_leave;
+		}
+		else if (te->xcrossing.window == Scr.PanFrameLeft.win)
+		{
+			edge_command_leave = Scr.PanFrameLeft.command_leave;
+		}
+		else if (te->xcrossing.window == Scr.PanFrameRight.win)
+		{
+			edge_command_leave = Scr.PanFrameRight.command_leave;
+		}
+		if (edge_command_leave && te->xcrossing.mode == NotifyUngrab &&
+		    te->xcrossing.detail == NotifyAncestor)
+		{
+			/* nothing */
+		}
+		else if (edge_command_leave)
+		{
+			execute_function(NULL, ea->exc, edge_command_leave, 0);
+		}
+	}
+
+	
 	/* If we leave the root window, then we're really moving
 	 * another screen on a multiple screen display, and we
 	 * need to de-focus and unhighlight to make sure that we

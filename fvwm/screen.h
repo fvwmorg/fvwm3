@@ -82,6 +82,8 @@ typedef struct
 	int isMapped;
 	/* command which is executed when the pan frame is entered */
 	char *command;
+	/* command which is executed when the pan frame is left*/
+	char *command_leave;
 } PanFrame;
 
 typedef enum

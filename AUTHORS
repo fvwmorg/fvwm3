@@ -2,6 +2,13 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Rafal Bisingier:
+WindowLayer and Layers options to the Maximize command.
+EdgeLeaveCommand
+
+George Potapov:
+ShowOnlyFocused option for FvwmIconMan.
+
 Jim C. Brown:
 MailDir option in FvwmTaskBar.
 
@@ -10,9 +17,6 @@ Extend conditionals to handle multiple window names.
 
 Funda Wang:
 Chinese translations.
-
-Rafal Bisingier:
-WindowLayer and Layers options to the Maximize command.
 
 Anton Kazennikov:
 Menu navigation patch.

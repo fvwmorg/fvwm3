@@ -53,6 +53,7 @@ enum
 	F_DFLT_LAYERS,
 	F_DIRECTION,
 	F_EDGE_COMMAND,
+	F_EDGE_LEAVE_COMMAND,
 	F_EDGE_RES,
 	F_EDGE_SCROLL,
 	F_EMULATE,
@@ -259,6 +260,7 @@ P(Direction);
 P(Dummy);
 P(Echo);
 P(EdgeCommand);
+P(EdgeLeaveCommand);
 P(EdgeResistance);
 P(EdgeScroll);
 P(EdgeThickness);

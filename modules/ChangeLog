@@ -1,3 +1,12 @@
+2004-09-30  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/xmanager.c (check_in_window):
+	* FvwmIconMan/readconfig.c (read_in_resources):
+	* FvwmIconMan/fvwm.c (focus_change):
+	* FvwmIconMan/globals.c (init_win_manager):
+	* FvwmIconMan/FvwmIconMan.h:
+	applied ShowOnlyFocused patch by George Potapov
+
 2004-09-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (ReConfigureIcons):
