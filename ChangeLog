@@ -2,6 +2,9 @@
 
 	* fvwm/move_resize.c (moveLoop):
 	removed debug code
+	(MoveOutline):
+	(get_outline_rects):
+	reactivated wire frame interleaving to reduce flickering
 
 	* libs/defaults.h:
 	* fvwm/menus.c (paint_menu):

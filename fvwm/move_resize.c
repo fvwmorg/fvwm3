@@ -2542,7 +2542,8 @@ static void DisplaySize(FvwmWindow *tmp_win, int width, int height, Bool Init,
  *	height	    - the height of the rectangle
  *
  ***********************************************************************/
-int get_outline_rects(XRectangle *rects, int x, int y, int width, int height)
+static int get_outline_rects(
+  XRectangle *rects, int x, int y, int width, int height)
 {
   int i;
   int n;
@@ -2566,29 +2567,29 @@ int get_outline_rects(XRectangle *rects, int x, int y, int width, int height)
 
   for (i = 0; i < n; i++)
   {
-    rects[i].x = x + i;
-    rects[i].y = y + i;
-    rects[i].width = width - (i << 1);
-    rects[i].height = height - (i << 1);
+    rects[i+i].x = x + i;
+    rects[i+i].y = y + i;
+    rects[i+i].width = width - (i << 1);
+    rects[i+i].height = height - (i << 1);
   }
   if (width - (n << 1) >= 5 && height - (n << 1) >= 5)
   {
     if (width - (n << 1) >= 10)
     {
       int off = (width - (n << 1)) / 3 + n;
-      rects[i].x = x + off;
-      rects[i].y = y + n;
-      rects[i].width = width - (off << 1);
-      rects[i].height = height - (n << 1);
+      rects[i+i].x = x + off;
+      rects[i+i].y = y + n;
+      rects[i+i].width = width - (off << 1);
+      rects[i+i].height = height - (n << 1);
       i++;
     }
     if (height - (n << 1) >= 10)
     {
       int off = (height - (n << 1)) / 3 + n;
-      rects[i].x = x + n;
-      rects[i].y = y + off;
-      rects[i].width = width - (n << 1);
-      rects[i].height = height - (off << 1);
+      rects[i+i].x = x + n;
+      rects[i+i].y = y + off;
+      rects[i+i].width = width - (n << 1);
+      rects[i+i].height = height - (off << 1);
       i++;
     }
   }
@@ -2608,21 +2609,22 @@ void MoveOutline(int x, int  y, int  width, int height)
   if (x == lastx && y == lasty && width == lastWidth && height == lastHeight)
     return;
 
+  memset(rects, 0, 10 * sizeof(XRectangle));
   /* place the resize rectangle into the array of rectangles */
   /* interleave them for best visual look */
   /* draw the new one, if any */
   if (width || height)
   {
-    nrects += get_outline_rects(&(rects[nrects]), x, y, width, height);
+    nrects += get_outline_rects(&(rects[0]), x, y, width, height);
   }
   if (lastWidth || lastHeight)
   {
     nrects +=
-      get_outline_rects(&(rects[nrects]), lastx, lasty, lastWidth, lastHeight);
+      get_outline_rects(&(rects[1]), lastx, lasty, lastWidth, lastHeight);
   }
   if (nrects > 0)
   {
-    XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, nrects);
+    XDrawRectangles(dpy, Scr.Root, Scr.XorGC, rects, 10);
     XSync(dpy, 0);
   }
   lastx = x;
