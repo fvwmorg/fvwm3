@@ -43,6 +43,8 @@ char **pipeName;
 unsigned long *PipeMask;
 struct queue_buff_struct **pipeQueue;
 
+extern fd_set init_fdset;
+
 inline int PositiveWrite(int module, unsigned long *ptr, int size);
 void DeleteQueueBuff(int module);
 void AddToQueue(int module, unsigned long *ptr, int size, int done);
@@ -70,6 +72,8 @@ void initModules(void)
       pipeQueue[i] = (struct queue_buff_struct *)NULL;
       pipeName[i] = NULL;
     }
+  DBUG("initModules", "Zeroing init module array\n");
+  FD_ZERO(&init_fdset);
 }
 
 void ClosePipes(void)
@@ -216,6 +220,11 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       PipeMask[i] = MAX_MASK;
       free(arg1);
       pipeQueue[i] = NULL;
+      if (fFvwmInStartup) {
+        /* add to the list of command line modules */
+        DBUG("executeModule", "starting commandline module\n");
+        FD_SET(i, &init_fdset);
+      }
 
       /* make the PositiveWrite pipe non-blocking. Don't want to jam up
 	 fvwm because of an uncooperative module */
@@ -383,6 +392,12 @@ void KillModule(int channel, int place)
       free(pipeName[channel]);
       pipeName[channel] = NULL;
     }
+
+  if (fFvwmInStartup) {
+    /* remove from list of command line modules */
+    DBUG("killModule", "ending command line module\n");
+    FD_CLR(channel, &init_fdset);
+  }
 
   return;
 }

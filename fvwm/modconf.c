@@ -55,7 +55,6 @@ struct moduleInfoList
 struct moduleInfoList *modlistroot = NULL;
 
 void AddToModList(char *tline);         /* prototypes */
-extern void StartupStuff(void);
 
 
 /*

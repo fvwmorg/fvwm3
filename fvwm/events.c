@@ -69,6 +69,9 @@ unsigned int mods_used = (ShiftMask | ControlMask | Mod1Mask |
 extern int menuFromFrameOrWindowOrTitlebar;
 
 extern Boolean debugging;
+extern Bool fFvwmInStartup;
+
+extern void StartupStuff(void);
 
 int Context = C_NO_CONTEXT;	/* current button press context */
 int Button = 0;
@@ -1524,15 +1527,21 @@ void HandleVisibilityNotify()
 
 /***************************************************************************
  *
- * Waits for next X event, or for an auto-raise timeout.
+ * Waits for next X or module event, fires off startup routines when startup
+ * modules have finished or after a timeout if the user has specified a
+ * command line module that doesn't quit or gets stuck.
  *
  ****************************************************************************/
+fd_set init_fdset;
+
 int My_XNextEvent(Display *dpy, XEvent *event)
 {
   extern int fd_width, x_fd;
   fd_set in_fdset, out_fdset;
   Window targetWindow;
   int i;
+  static struct timeval timeout = {42, 0};
+  static struct timeval *timeoutP = &timeout;
 
   DBUG("My_XNextEvent","Routine Entered");
 
@@ -1553,6 +1562,18 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   /* If we get to here, then there are no X events waiting to be processed.
    * Just take a moment to check for dead children. */
   ReapChildren();
+
+  /* check for termination of all startup modules */
+  if (fFvwmInStartup) {
+    for(i=0;i<npipes;i++)
+      if (FD_ISSET(i, &init_fdset))
+        break;
+    if (i == npipes) {
+      DBUG("My_XNextEvent", "Starting up after command lines modules\n");
+      StartupStuff();
+      timeoutP = NULL; /* set an infinite timeout to stop ticking */
+    }
+  }  
 
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
@@ -1575,7 +1596,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
              SELECT_TYPE_ARG234 &in_fdset,
              SELECT_TYPE_ARG234 &out_fdset,
              SELECT_TYPE_ARG234 0,
-             SELECT_TYPE_ARG5   NULL) > 0)
+             SELECT_TYPE_ARG5   timeoutP) > 0)
   {
 
   /* Check for module input. */
@@ -1606,7 +1627,16 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	    }
 	}
     } /* for */
+  } else {
+  /* select has timed out, things must have calmed down so let's decorate */
+    if (fFvwmInStartup) {
+      fvwm_msg(ERR, "My_XNextEvent",
+               "Some command line modules have not quit, Starting up after timeout.\n");
+      StartupStuff();
+      timeoutP = NULL; /* set an infinite timeout to stop ticking */
   }
+  }
+
   DBUG("My_XNextEvent","leaving My_XNextEvent");
   return 0;
 }

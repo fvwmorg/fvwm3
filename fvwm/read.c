@@ -38,8 +38,6 @@ static int last_read_failed=0;
 static const char *read_system_rc_cmd="Read system"FVWMRC;
 
 
-extern void StartupStuff(void);
-
 /*
  * func to do actual read/piperead work
  * Arg 1 is file name to read.
@@ -205,15 +203,6 @@ void ReadFile(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     fvwm_msg(INFO,"Read","trying to read system rc file");
     ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1);
   }
-
-  if (this_read == 0)
-  {
-    if (debugging)
-    {
-      fvwm_msg(DBG,"ReadFile","about to call startup functions");
-    }
-    StartupStuff();
-  }
 }
 
 void PipeRead(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
@@ -232,15 +221,6 @@ void PipeRead(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   {
     fvwm_msg(INFO,"PipeRead","trying to read system rc file");
     ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1);
-  }
-
-  if (this_read == 0)
-  {
-    if (debugging)
-    {
-      fvwm_msg(DBG,"PipeRead","about to call startup functions");
-    }
-    StartupStuff();
   }
 }
 
