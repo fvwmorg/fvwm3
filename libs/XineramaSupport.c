@@ -87,7 +87,7 @@ typedef struct
 #endif
 
 #ifndef DEBUG_PRINTS
-#define DEBUG_PRINTS 1
+/* #define DEBUG_PRINTS 1 */
 #endif
 
 enum
