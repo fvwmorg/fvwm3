@@ -984,6 +984,10 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
 #if 0
 	/* nope, this is forbidden by the ICCCM */
 	XMapWindow(dpy, Tmp_win->w);
+#else
+	/* Since we will not get a MapNotify, set the IS_MAPPED flag manually.
+	 */
+	SET_MAPPED(Tmp_win, 1);
 #endif
 	SetMapStateProp(Tmp_win, NormalState);
       }
