@@ -204,7 +204,7 @@ truncate_to_multiple (int x, int m)
 void Maximize(F_CMD_ARGS)
 {
   int new_width, new_height,new_x,new_y;
-  int page_x, page_y, dummx, dummy;
+  int page_x, page_y;
   int val1, val2, val1_unit, val2_unit;
   int toggle;
   char *token;
@@ -1580,7 +1580,7 @@ void imagePath_function(F_CMD_ARGS)
 
 /** Prepend rather than replace the image path.  
     Used for obsolete PixmapPath and IconPath **/
-static obsolete_imagepaths( const char* pre_path )
+static void obsolete_imagepaths( const char* pre_path )
 {
     char* tmp = stripcpy( pre_path );
     char* path = alloca( strlen( tmp ) + strlen( GetImagePath() ) + 2 );

@@ -43,7 +43,6 @@ struct queue_buff_struct **pipeQueue;
 
 extern fd_set init_fdset;
 
-inline int PositiveWrite(int module, unsigned long *ptr, int size);
 void DeleteQueueBuff(int module);
 void AddToQueue(int module, unsigned long *ptr, int size, int done);
 

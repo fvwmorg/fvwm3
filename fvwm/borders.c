@@ -85,7 +85,7 @@ unsigned long Globalgcm;
 void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 		Window expose_win)
 {
-  int i, x, y;
+  int i;
   GC ReliefGC,ShadowGC;
   Pixel BackColor;
   Pixmap BackPixmap,TextColor;

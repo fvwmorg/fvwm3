@@ -45,7 +45,8 @@
 
 
 #ifndef lint
-static char sccsid[] = "@(#)fvwm.c " VERSION " " __DATE__ " fvwm";
+static char sccsid[] __attribute__((__unused__))
+    = "@(#)fvwm.c " VERSION " " __DATE__ " fvwm";
 #endif
 
 int master_pid;			/* process number of 1st fvwm process */

@@ -95,8 +95,6 @@ unsigned int GetUnusedModifiers(void)
 void ignore_modifiers(F_CMD_ARGS)
 {
   char *token;
-  char *tmp;
-  char c;
 
   mods_unused = 0;
   GetNextToken(action, &token);

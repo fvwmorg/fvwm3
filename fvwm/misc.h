@@ -219,6 +219,7 @@ extern void       SetTimer(int);
 extern int        flush_expose(Window w);
 void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
 		     unsigned long context, int Module);
+void AddToFunction(FvwmFunction *func, char *action);
 void do_windowList(F_CMD_ARGS);
 extern void       RaiseThisWindow(int);
 extern int        GetContext(FvwmWindow *, XEvent *, Window *dummy);

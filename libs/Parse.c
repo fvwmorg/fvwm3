@@ -235,7 +235,7 @@ void NukeToken(char **pstr)
   char *temp = NULL;
 
   next = GetNextToken(*pstr, &tok);
-  if (next != NULL);
+  if (next != NULL)
     temp = strdup(next);
   if (pstr && *pstr)
     free(*pstr);

@@ -1,3 +1,23 @@
+Sun Mar 28 22:09:12 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* libs/Parse.c (NukeToken): removed errant semicolon.
+
+	* fvwm/module.h: prototyped PositiveWrite.
+
+	* fvwm/fvwm.c: added `unused' attribute to sccsid to quiet gcc
+	-Wall.
+
+	* fvwm/virtual.c (get_page_arguments): 
+	* fvwm/builtins.c (Maximize): 
+	* fvwm/borders.c (SetBorder): 
+	* fvwm/bindings.c (ignore_modifiers): 
+	* libs/Bindings.c (GrabWindowButton): removed unused variables.
+
+	* libs/fvwmlib.h: add prototype for GrabAllWindowButtons.
+
+	* libs/Bindings.c (find_context): rewrote since variable `tmp1'
+	was used uninitialized.
+
 Sun Mar 28 17:56:27 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* libs/Picture.c: removed $Id from comment; avoids unnecessary

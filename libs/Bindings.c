@@ -67,43 +67,40 @@ static struct charstring key_modifiers[]=
  * true/false values (bits)
  *
  ****************************************************************************/
-static Bool find_context(char *string, int *output, struct charstring *table)
+static Bool find_context( const char *string, int *output, 
+			  struct charstring *table )
 {
-  int i=0,j=0;
-  Bool matched;
-  char tmp1;
-  Bool error = False;
+    int i;
+    int len = strlen( string );
+    Bool error = False;
 
-  *output=0;
-  i=0;
-  while(i<strlen(string))
-  {
-    j=0;
-    matched = FALSE;
-    while((!matched)&&(table[j].key != 0))
-    {
-      /* in some BSD implementations, tolower(c) is not defined
-       * unless isupper(c) is true */
-      tmp1=string[i];
-      if(isupper(tmp1))
-        tmp1=tolower(tmp1);
-      /* end of ugly BSD patch */
+    *output=0;
 
-      if(tmp1 == table[j].key)
-      {
-        *output |= table[j].value;
-        matched = TRUE;
-      }
-      j++;
+    for ( i = 0; i < len; ++i ) {
+	int j = 0, matched = 0;
+	char c = string[i];
+
+	/* The following comment strikes me as unlikely, but I leave it (and
+	   the code) intact.  -- Steve Robbins, 28-mar-1999 */
+	/* in some BSD implementations, tolower(c) is not defined
+	 * unless isupper(c) is true */
+	if ( isupper(c) )
+	    c = tolower( c );
+
+	while ( table[j].key != 0 ) {
+	    if ( table[j].key == c ) {
+		*output |= table[j].value;
+		matched = 1;
+		break;
+	    }
+	    ++j;
+	}
+	if (!matched) {
+	    fprintf( stderr, "find_context: bad context or modifier %c\n", c );
+	    error = True;
+	}
     }
-    if(!matched)
-    {
-      fprintf(stderr,"find_context: bad context or modifier %c\n", tmp1);
-      error = True;
-    }
-    i++;
-  }
-  return error;
+    return error;
 }
 
 /* Converts the input string into a mask with bits for the contexts */
@@ -479,8 +476,6 @@ void GrabWindowButton(Display *dpy, Window w, Binding *binding,
 		      unsigned int contexts, unsigned int dead_modifiers,
 		      Cursor cursor, Bool fGrab)
 {
-  Binding *b;
-
   if (binding->Action == NULL)
     return;
 

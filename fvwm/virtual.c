@@ -919,12 +919,10 @@ Bool get_page_arguments(char *action, int *page_x, int *page_y)
 {
   int val[2];
   int suffix[2];
-  int n;
   char *token;
   char *taction;
   Bool xwrap = False;
   Bool ywrap = False;
-  Bool wrapped;
 
   taction = GetNextToken(action, &token);
   if (token == NULL)
