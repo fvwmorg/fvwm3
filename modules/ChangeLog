@@ -1,3 +1,11 @@
+2001-07-17  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/Instruction.c (ChangeFont):
+	Fixed a core dump when changing multibyte font and loading fail
+
+	* FvwmScript/Widget/TextField.c:
+	Translate the comments into "English"
+
 2001-07-17  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmIconBox/FvwmIconBox.c: Send size of module message using a long.

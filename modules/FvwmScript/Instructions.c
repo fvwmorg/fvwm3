@@ -865,16 +865,14 @@ static void ChangeFont (int NbArg,long *TabArg)
  /* Hmm.. Fontset is not freed. However, original alogrithm does not consider
   * the situation of font-loading-falure.
   */
- if ((tabxobj[IdItem]->xfontset = XCreateFontSet(dpy, tabxobj[IdItem]->font, &ml, &mc, &ds)) == NULL)
-  {
-   fprintf(stderr,"Can't load fontset %s\n",tabxobj[IdItem]->font);
-  }
- else
- {
-  XFontsOfFontSet(tabxobj[IdItem]->xfontset, &fs_list, &ml);
-  tabxobj[IdItem]->xfont = fs_list[0];
-  XSetFont(dpy,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
+ if ((tabxobj[IdItem]->xfontset=GetFontSetOrFixed(dpy,tabxobj[IdItem]->font)) 
+     == NULL) {
+     fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
+     exit(1);
  }
+ XFontsOfFontSet(tabxobj[IdItem]->xfontset, &fs_list, &ml);
+ tabxobj[IdItem]->xfont = fs_list[0];
+ XSetFont(dpy,tabxobj[IdItem]->gc,tabxobj[IdItem]->xfont->fid);
 #else
  if ((xfont=XLoadQueryFont(dpy,tabxobj[IdItem]->font))==NULL)
   {
