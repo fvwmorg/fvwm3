@@ -38,7 +38,6 @@
 #include "libs/fvwmlib.h"
 #include "libs/Module.h"
 #include "libs/Picture.h"
-#define FVWMTHEME_PRIVATE
 #include "libs/Colorset.h"
 
 /* Globals */
@@ -837,7 +836,8 @@ static void parse_colorset(char *line)
 /* SendToMessage options */
 static char *message_options[] = {"Colorset", NULL};
 
-static void parse_message_line(char *line) {
+static void parse_message_line(char *line)
+{
   char *rest;
 
   switch(GetTokenIndex(line, message_options, -1, &rest)) {
@@ -847,7 +847,8 @@ static void parse_message_line(char *line) {
   }
 }
 
-static void parse_config(void) {
+static void parse_config(void)
+{
   char *line;
 
   /* prepare the tokenizer array, [0,1] are ImagePath and ColorLimit */

@@ -1036,6 +1036,8 @@ void HandleColorset(F_CMD_ARGS)
   char *token;
 
   token = PeekToken(action, NULL);
+  if (token == NULL)
+    return;
   ret = sscanf(token, "%x", &n);
 
   if ((ret == 0) || (n < 0))

@@ -1,5 +1,18 @@
 1999-10-01  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* libs/Colorset.c (DumpColorset):
+	(LoadColorsetConditional):
+	coredump fix - must send out 'mask' and 'color_flags' to the modules in
+	case a second FvwmTheme is running
+
+	* libs/Colorset.c (LoadColorset): free hilite/shadow if changed
+	(LoadColorset): coredump fix
+
+	* fvwm/move_resize.c (resize_window): send config to pager during
+	opaque resize
+
+	* fvwm/builtins.c (HandleColorset): fixed coredump
+
 	* fvwm/style.c: (merge_styles):
 	fixed several bugs in style preference (with 'Style * Icon ...' before
 	'Style xterm NoIcon', the 'Icon' style would have won.)

@@ -1056,7 +1056,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	tmp_win_copy.frame_g.x = xl;
 	tmp_win_copy.frame_g.y = yt;
       }
-      /* only do this with opaque moves, (e.g. the server is not grabbed) */
+      /* only do this with opaque moves, (i.e. the server is not grabbed) */
       BroadcastConfig(M_CONFIGURE_WINDOW, &tmp_win_copy);
       FlushOutputQueues();
     }
@@ -1788,6 +1788,16 @@ void resize_window(F_CMD_ARGS)
       DispatchEvent(False);
       if (!do_resize_opaque)
 	MoveOutline(drag->x, drag->y, drag->width - 1, drag->height - 1);
+    }
+    else
+    {
+      if (do_resize_opaque)
+      {
+	/* only do this with opaque resizes, (i.e. the server is not grabbed)
+	 */
+	BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
+	FlushOutputQueues();
+      }
     }
   }
 

@@ -35,12 +35,10 @@ typedef struct {
   unsigned int shape_width : 12;
   unsigned int shape_height : 12;
   unsigned int shape_type : 2;
-  /* everything below here is used internally by FvwmTheme only and is not sent
-   * out to fvwm or the modules */
-#ifdef FVWMTHEME_PRIVATE
+  /* Everything below here is used internally by FvwmTheme only. It must still
+   * be sent out to the modules in case a second FvwmTheme is running. */
   Pixmap mask;
   unsigned int color_flags : 6;
-#endif
 } colorset_struct;
 
 #define PIXMAP_TILED 0
