@@ -196,6 +196,11 @@ static void DrawLinePattern(
 
 	for (i = 1; i < coords->num; ++i)
 	{
+		if (coords->line_style == 4)
+		{
+			/* don't draw a line */
+			continue;
+		}
 		XDrawLine(
 			dpy, win,
 			  (coords->use_fgbg & (1 << i))

@@ -1,4 +1,19 @@
+2002-03-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (resize_window):
+	fixed aboting of a opaque resize w/ maximized windows
+
 2002-03-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm2.1:
+	* fvwm/builtins.c (ReadDecorFace):
+	* fvwm/borders.c (DrawLinePattern):
+	implemented transparent drawing color in vector buttons: C == 4
+
+	* libs/defaults.h (MAX_TITLE_BUTTON_VECTOR_LINES):
+	* fvwm/builtins.c (ReadDecorFace):
+	increased allowed number of lines in a vector button to 10000 and moved
+	the definition to defaults.h
 
 	* fvwm/virtual.c (MoveViewport):
 	don't send useless M_NEW_PAGE packets

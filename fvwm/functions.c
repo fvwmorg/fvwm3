@@ -1967,6 +1967,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate)
 	w = FW_W_FRAME(fw);
       else
 	w = None;
+fprintf(stderr,"I: %s\n", fi->action);
       old_execute_function(
 	&cond_func_rc, fi->action, fw, eventp, context, -1, 0, arguments);
       break;

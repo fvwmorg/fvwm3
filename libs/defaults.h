@@ -181,6 +181,8 @@
 #define WINDOW_TITLE_TO_STICK_GAP     4 /* pixels */
 /* gap between border of title window and text */
 #define WINDOW_TITLE_TEXT_OFFSET     10 /* pixels */
+/* maximum number of segemnts in a vector button */
+#define MAX_TITLE_BUTTON_VECTOR_LINES 10000
 
 /*** window placement (MinOverlap(Percent)Placement) ***/
 /** Now these values are configurable by using styles **/

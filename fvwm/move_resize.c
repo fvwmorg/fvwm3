@@ -2649,6 +2649,11 @@ static Bool resize_window(F_CMD_ARGS)
 	  XWarpPointer(dpy, None, Scr.Root, 0, 0, 0, 0, stashed_x,
 		       stashed_y);
 	}
+	if (was_maximized)
+	{
+	  /* since we aborted the resize, the window is still maximized */
+	  SET_MAXIMIZED(fw, 1);
+	}
 	if (do_resize_opaque)
 	{
 	  DoResize(
@@ -2749,8 +2754,6 @@ static Bool resize_window(F_CMD_ARGS)
   }
   if (is_aborted && was_maximized)
   {
-    /* since we aborted the resize, the window is still maximized */
-    SET_MAXIMIZED(fw, 1);
     /* force redraw */
     DrawDecorations(
       fw, PART_BUTTONS, (fw == Scr.Hilite), True, None, CLEAR_ALL);

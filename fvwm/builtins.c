@@ -1088,7 +1088,8 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			} else
 				num = sscanf(style,"%d",&num_coords);
 
-			if ((num != 1)||(num_coords>32)||(num_coords<2))
+			if (num != 1 || num_coords<2 ||
+			    num_coords > MAX_TITLE_BUTTON_VECTOR_LINES)
 			{
 				if (verbose)
 				{
@@ -1134,6 +1135,11 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 				if (line_style >= 2)
 				{
 					vc->use_fgbg |= (1 << i);
+				}
+				if (line_style == 4)
+				{
+					/* transparent */
+					vc->line_style = 4;
 				}
 				s += offset;
 			}
