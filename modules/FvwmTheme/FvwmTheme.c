@@ -174,7 +174,8 @@ static void parse_config_line(char *line)
 {
   char *rest;
 
-  switch(GetTokenIndex(line, config_options, -1, &rest)) {
+  switch(GetTokenIndex(line, config_options, -1, &rest))
+  {
   case 0: /* ImagePath */
     SetImagePath(rest);
     break;

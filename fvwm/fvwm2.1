@@ -114,7 +114,7 @@ option. Normally, fvwm will attempt to start up on all screens
 of a multi-screen display.
 .IP "\fB-version\fP"
 Print the version of fvwm to stderr. Also print configuration informations:
-says if fvwm has been compiled with readline, rplay, stroke, xpm, imlib or 
+says if fvwm has been compiled with readline, rplay, stroke, xpm, imlib or
 gnome support.
 .IP "\fB-visual\fP \fIvisual class\fP"
 Causes fvwm to use \fIvisual class\fP for the window borders and menus.
@@ -504,6 +504,7 @@ Key Tab A M -
 .EE
 
 .SH BUILT IN COMMANDS
+
 Fvwm supports a set of built-in functions which can be bound to
 keyboard or mouse buttons.  If fvwm expects to find a built-in function
 in a command, but fails, it will check to see if the specified command
@@ -517,15 +518,144 @@ look for a user-defined complex function called "HelpMe".  If no such
 user defined function exists, Fvwm will try to execute a module called
 "HelpMe".
 
-In previous versions of fvwm, quoting was critical and irrational in
-the .fvwm2rc file.  As of fvwm version 2, most of this has been cleared up.
+.SS QUOTING
+
 Quotes are required only when needed to make fvwm consider two or more
 words to be a single argument.  Unnecessary quoting is allowed.  If you
 want a quote character in your text, you must escape it by using the
 backslash character.  For example, if you have a pop-up menu called
 Window-Ops, then you don't need quotes: Popup Window-Ops, but if you
 replace the dash with a space, then you need quotes: Popup "Window
-Ops".
+Ops".  The supported quoting characters are double quotes, single
+quotes and reverse single quotes.  All three kinds of quotes are
+treated in the same way.  Single characters can be quoted with a
+preceding backslash.  Quoting single characters works even inside
+other kinds of quotes.
+
+.SS COMMAND LINE PARAMETER EXPANSION
+
+Whenever a fvwm command line is executed, fvwm performs parameter
+expansion.  A parameter is a '$' followed by a single letter or
+a word enclosed in braces.  If fvwm encounters an unquoted
+parameter on the command line it expands it to a string indicated
+by the parameter name.  Unknown parameters are left untouched.
+Parameter expansion is performed before quoting.  To quote a
+'$' use '$$'.  Note that module configuration lines (i.e. lines
+beginning with '*') are not subject to parameter expansion.  The
+parameters known by fvwm are:
+
+.in +.5i
+$$
+.in +.3i
+A literal '$'.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$c
+.in +.3i
+The window's resource class name or '$c' if no window is
+associated with the command.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$d
+.in +.3i
+The current desk number.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$n
+.in +.3i
+The window's name or '$n' if no window is
+associated with the command.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$r
+.in +.3i
+The window's resource name or '$r' if no window is
+associated with the command.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$v
+.in +.3i
+The first line printed by the -version command line option.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$w
+.in +.3i
+The window-id (expressed in hex, e.g. 0x10023c) of the
+window the command was called for or '$w' if no window is
+associated with the command.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$x
+.in +.3i
+The x coordinate of the current viewport.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$y
+.in +.3i
+The y coordinate of the current viewport.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$0 to $9
+.in +.3i
+The positional parameters given to a complex function
+(a function that has been defined with the \fIAddToFunc\fP
+command).  $0 is replaced with the first parameter, $1 with the
+second parameter and so on.  If the corresponding parameter
+is undefined, the '$#' is deleted from the command line.
+.in -.3i
+.in -.5i
+
+.in +.5i
+$[fg.cs<n>]
+.in -.5i
+.in +.5i
+$[bg.cs<n>]
+.in -.5i
+.in +.5i
+$[hilight.cs<n>]
+.in -.5i
+.in +.5i
+$[shadow.cs<n>]
+.in +.3i
+These class of parameters is replaced with the name of
+the foreground (fg), background (bg), hilight (hilight) or
+shadow (shadow) color that is defined in colorset <n> (replace
+<n> with zero or a positive integer).  For example $[fg.cs3]
+is expanded to the name of the foreground color of colorset 3
+(in rgb:rrrr/gggg/bbbb form).  Please refer to the man page
+of the \fIFvwmTheme\fP module for details about colorsets.
+Note that although other parameters cannot be used in module
+configuration lines, is is possible to use this class of
+parameters.  They can be used whereever a module expects a
+color name.  Since the FvwmTheme module is not running when
+fvwm first passes through its configuration file, you may not
+get the desired results if you use this in commands like
+'HilightColor $[fg.cs0] $[bg.cs0]'.
+.in -.3i
+.in -.5i
+
+Some examples can be found in the description of the
+\fIAddToFunc\fP command.
+
+.SS THE LIST OF BUILTIN COMMANDS
 
 The commands descriptions below are grouped together in the
 following sections.  The sections are hopefully sorted in
@@ -1413,8 +1543,8 @@ AddToMenu RootMenu "Root Menu" Title
  + "Fvwm Modules"      Popup Module-Popup
  + "Fvwm Window Ops"   Popup Window-Ops
  + ""                  Nop
- + "Previous Focus"    Prev [*] Focus
- + "Next Focus"        Next [*] Focus
+ + "Previous Focus"    Prev (*) Focus
+ + "Next Focus"        Next (*) Focus
  + ""                  Nop
  + "Refresh screen"    Refresh
  + "Recapture screen"  Recapture
@@ -3308,7 +3438,7 @@ transients are usually popups that you want to appear in your visible
 viewport; but occasionally an application will use a transient for something
 like a startup window that needs to be coerced into place.
 
-\fIActivePlacementIgnoresStartsOnPage\fP suppresses StartsOnPage or 
+\fIActivePlacementIgnoresStartsOnPage\fP suppresses StartsOnPage or
 StartsOnDesk placement in the event that both ActivePlacement and SkipMapping
 are in effect when a window is created. This prevents you from interactively
 placing a window and then wondering where it disappeared to, because it got
@@ -3821,16 +3951,13 @@ milliseconds.  "D" stands for double-click. The action "I" will cause
 an action to be performed on the button-press, if the function is
 invoked with prior knowledge of which window to act on.
 
-The special symbols $d, $w, $c, $r, $n, $v, $x, $y and $0 through $9 are available
-in the ComplexFunctions or Macros, or whatever you want to call them.
-Within a macro, $w is expanded to the window-id (expressed in
-hex, i.e. 0x10023c) of the window for which the macro was called, $x and $y
-are expanded to the current coordinates of the viewport
-and $d is expanded to the current desk number.
-$c, $r, $n are expanded to the window resource class, resource name
-and window name respectively.
-$v expands to the first line printed by the -version command line option.
-$0 through $9 are the arguments to the macro, so if you call
+There is a number of predefined symbols that are replaced by
+certain values if they appear on the command line.  Please
+refer to the \fICOMMAND LINE PARAMETER EXPANSION\fP section for details.
+
+Examples:
+
+If you call
 .EX
 Key F10 R A Function MailFunction \\
   xmh "-font fixed"
@@ -3839,13 +3966,13 @@ and MailFunction is
 
 .EX
 AddToFunc MailFunction
- + I Next [$0] Iconify off
- + I Next [$0] focus
- + I None [$0] Exec exec $0 $1
+ + I Next ($0) Iconify off
+ + I Next ($0) focus
+ + I None ($0) Exec exec $0 $1
 .EE
 Then the last line of the function becomes
 .EX
- + I None [xmh] Exec exec xmh -font fixed
+ + I None (xmh) Exec exec xmh -font fixed
 .EE
 The expansion is performed as the function is executed, so you can use the
 same function with all sorts of different arguments.  You could use
@@ -3866,7 +3993,7 @@ Another example: bind right mouse button within the window button number 6
 the same resource:
 .EX
 AddToFunc FuncIconifySameResource "I" \\
-  All [$r] Iconify on
+  All ($r) Iconify on
 Mouse 3 6 A FuncIconifySameResource
 .EE
 

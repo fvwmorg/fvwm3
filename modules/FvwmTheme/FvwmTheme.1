@@ -27,16 +27,17 @@ FvwmTheme must be spawned as a module by fvwm.
 It is important that FvwmTheme is invoked before any other modules
 that use the color sets provided by FvwmTheme.  Thus FvwmTheme has
 to be invoked with the 'ModuleSynchronous' command by inserting the
-line 'ModuleSynchronous Timeout 5 FvwmTheme' in the .fvwm2rc file.
-This can be placed on a line by itself, if FvwmTheme is to be
-spawned during fvwm's initialization.  It can be started from fvwm's
-StartFunction too and should then be the first command executed.
-Invoking FvwmTheme later may not work properly
-and can cause excessive redrawind of already running modules.
-Fvwm will search the directory specified in the ModulePath
-configuration option to attempt to locate FvwmTheme. It is pointless
-to run more than one FvwmTheme so there is no provision for using an
-alias name.
+line 'ModuleSynchronous Timeout 5 FvwmTheme' in the .fvwm2rc file
+right after the \fIModulePath\fP and \fIImagePath\fP have been defined.
+Invoking FvwmTheme from the \fIInitFunction\fP, \fIStartFunction\fP
+or\fIRestartFunction\fP or later may not work properly and can
+cause excessive redrawing of already running modules.  It is important
+that the configuration lines for FvwmTheme appear in the configuration
+file before FvwmTheme is started.  You can find a proper sample
+fvwm setup at the end of this document.  Fvwm will search the
+directory specified in the ModulePath configuration option to attempt
+to locate FvwmTheme.  It is pointless to run more than one FvwmTheme
+so there is no provision for using an alias name.
 
 .SH CONFIGURATION OPTIONS
 FvwmTheme supports some configuration options.
@@ -127,39 +128,179 @@ The syntax is the same as the configuration option.
 
 .SH EXAMPLES
 
-  *FvwmThemeColorset 3 fg wheat, bg navy
+.in +.3i
+*FvwmThemeColorset 3 fg wheat, bg navy
+.in -.3i
 
 If necessary this will create colorsets 0, 1, 2 and 3 and then change colorset
 3 to have a foreground of wheat, a background of navy.
 
-  *FvwmThemeColorset 3 bg "navy blue"
+.in +.3i
+*FvwmThemeColorset 3 bg "navy blue"
+.in -.3i
 
-Will change the background color of colorset 3 to navy blue. The foreground and
+will change the background color of colorset 3 to navy blue. The foreground and
 pixmap will be unchanged.
 
-  *FvwmThemeColorset 3 AspectPixmap large_murky_dungeon.xpm
+.in +.3i
+*FvwmThemeColorset 3 AspectPixmap \\
+  large_murky_dungeon.xpm
+.in -.3i
 
-Will cause depression
+will cause depression
 
-  *FvwmThemeColorset 3 bg Average
+.in +.3i
+*FvwmThemeColorset 3 bg Average
+.in -.3i
 
-Will set the backgriund color and the relief colors to match the background
+will set the background color and the relief colors to match the background
 pixmap.
 
-  *FvwmThemeColorset 3 YGradient 200 3 blue 1000 navy 1 blue 1000 navy
+.in +.3i
+*FvwmThemeColorset 3 YGradient 200 3 \\
+  blue 1000 navy 1 blue 1000 navy
+.in -.3i
 
 will add a Yin Yang gradient background pixmap to colorset 3.  If the
 background is set to average it will be recomputed as will the foreground
 if that is set to contrast.
 
-  #!/bin/sh
-  FvwmCommand "SendToModule FvwmTheme Colorset 7 fg navy, bg gray"
-  while true
-  do
-    FvwmCommand "SendToModule FvwmTheme Colorset 7 fg gray"
-    sleep 1
-    FvwmCommand "SendToModule FvwmTheme Colorset 7 fg navy"
-    sleep 1
-  done
+.EX
+ #!/bin/sh
+ FvwmCommand "SendToModule FvwmTheme Colorset 7
+   fg navy, bg gray"
+ while true
+ do
+   FvwmCommand "SendToModule FvwmTheme Colorset 7
+     fg gray"
+   sleep 1
+   FvwmCommand "SendToModule FvwmTheme Colorset 7
+     fg navy"
+   sleep 1
+ done
+.EE
 
 will make colorset 7 blink if used with the *FvwmThemeReadWriteColors option.
+
+The color names used in color sets can be substituted in any fvwm
+command.  Please refer to the \fICOMMAND LINE PARAMETER EXPANSION\fP
+section in the fvwm2 man page and the example below for a description.
+
+.SH SAMPLE FVWM CONFIGURATION
+
+Below you can find a fvwm configuration file that demonstrates the
+use of the FvwmTheme module.  The order in which FvwmTheme and the
+other modules are configured and started is important.
+
+.EX
+ # fvwm paths
+ ModulePath <put your module path here>
+ ImagePath <put your image path here>
+
+ #
+ # FvwmTheme
+ #
+ # The FvwmTheme setup must be first in the config file,
+ # right after the paths are set.
+ #
+ # Instead of the *FvwmThemeColorset... lines below you
+ # could read in a file with these commands.  So to change
+ # your color scheme you can simply copy a different file
+ # over your palette file and restart fvwm:
+ #
+ # Read /home/my_user_name/.fvwm2_palette
+ #
+
+ # 0 = Default colours
+ # 1 = Inactive windows
+ # 2 = Active windows
+ # 3 = Inactive menu entry and menu background
+ # 4 = Active menu entry
+ # 5 = greyed out menu entry (only bg used)
+ # 6 = module foreground and background
+ # 7 = hilight colours
+ *FvwmThemeColorset 0 fg black, bg rgb:b4/aa/94
+ *FvwmThemeColorset 1 fg black, bg rgb:a1/b2/c8
+ *FvwmThemeColorset 2 fg black, bg rgb:da/9a/68
+ *FvwmThemeColorset 3 fg black, bg rgb:b4/aa/94, \\
+   VGradient 100 dtcolour5 rgb:b4/aa/94
+ *FvwmThemeColorset 4 fg black, bg rgb:b4/aa/94
+ *FvwmThemeColorset 5 fg rgb:d2/bf/a8, \\
+   bg rgb:b4/aa/94
+ *FvwmThemeColorset 6 fg black, bg rgb:b4/aa/94, \\
+   VGradient 100 dtcolour5 rgb:b4/aa/94
+ *FvwmThemeColorset 7 fg black, bg rgb:94/ab/bf
+
+ # run FvwmTheme before anything else is done
+ ModuleSynchronous Timeout 5 FvwmTheme
+
+ #
+ # general setup
+ #
+ Style * ForeColor $[fg.cs1]
+ Style * BackColor $[bg.cs1]
+ HilightColor $[fg.cs2] $[bg.cs2]
+ MenuStyle * MenuColorset 3
+ MenuStyle * ActiveColorset 4
+ MenuStyle * GreyedColorset 5
+
+ #
+ # Applications
+ #
+ AddToFunc InitFunction
+ + I Exec exec xterm -fg $[fg.cs0] -bg $[bg.cs0]
+
+ #
+ # module setup
+ #
+
+ # ... more FvwmPager config lines ...
+ *FvwmPagerColorset * 6
+ *FvwmPagerBalloonColorset * 6
+ *FvwmPagerHilightColorset * 7
+ *FvwmPagerWindowColorsets 1 2
+
+ # ... more FvwmIconMan config lines ...
+ *FvwmIconMan*Colorset 6
+ *FvwmIconMan*FocusColorset 2
+ *FvwmIconMan*FocusAndSelectColorset 2
+ *FvwmIconMan*PlainColorset 6
+ *FvwmIconMan*SelectColorset 6
+ *FvwmIconMan*TitleColorset 6
+
+ # ... more FvwmButtons config lines ...
+ *FvwmButtonsFore     $[fg.cs6]
+ *FvwmButtonsBack     $[bg.cs6]
+ *FvwmButtonsColorset 6
+ # sample button passing color to xterm
+ *FvwmButtons(Title xterm, \\
+   Action "Exec exec xterm -fg $[fg.cs6] -bg[bg.cs6")
+
+ # ... more FvwmWharf config lines ...
+ *FvwmWharfColorset 6
+
+ # ... more FvwmIdent config lines ...
+ *FvwmIdentColorset 6
+
+ # ... more FvwmWinList config lines ...
+ *FvwmWinListColorset      1
+ *FvwmWinListFocusColorset 2
+ *FvwmWinListIconColorset  1
+
+ # ... more FvwmTaskBar config lines ...
+ *FvwmTaskBarColorset     6
+ *FvwmTaskBarIconColorset 6
+ *FvwmTaskBarTipsColorset 0
+.EE
+
+.SH BUGS
+
+Initialisation of fvwm, FvwmTheme and the other modules is tricky.
+Please pay close attention to the text in the \fIINVOCATION\fP
+section.  The example above demonstrates the proper way to get a
+FvwmTheme setup running.
+
+.SH AUTHOR
+
+Prefers to remain anonymous.
+With help from Brad Giaccio and Dominik Vogt.

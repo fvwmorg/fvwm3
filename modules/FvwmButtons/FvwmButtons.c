@@ -1079,13 +1079,13 @@ void Loop(void)
 	      }
 	    }
 	  } /* act */
-	  if (act != NULL)
-	  {
-	    free(act);
-	    act = NULL;
-	  }
 	} /* !panel */
 
+	if (act != NULL)
+	{
+	  free(act);
+	  act = NULL;
+	}
 	b=CurrentButton;
 	CurrentButton=NULL;
 	if(b)
@@ -1188,7 +1188,6 @@ void Loop(void)
 		b->flags |= (b_Panel | b_Hangon);
 		b->newflags.panel_mapped = 0;
 	      }
-
 	      p = expand_action(b->spawn, NULL);
 	      if (p)
 	      {
@@ -2106,7 +2105,7 @@ void SpawnSome(void)
 void change_swallowed_window_colorset(button_info *b, Bool do_clear)
 {
   Window w = SwallowedWindow(b);
-  Window *children;
+  Window *children = None;
   int nchildren;
 
   nchildren = GetEqualSizeChildren(

@@ -1321,9 +1321,8 @@ char *expand_action(char *in_action, button_info *b)
   extern int dpw;
   extern int dph;
 
-
   /* create a temporary storage for expanding */
-  action = (char *)safemalloc(MAX_MODULE_INPUT_TEXT_LEN);
+  action = (char *)malloc(MAX_MODULE_INPUT_TEXT_LEN);
   if (!action)
   {
     /* could not alloc memory */

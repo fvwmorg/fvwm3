@@ -255,3 +255,37 @@ Pixel GetShadow(Pixel background) {
 Pixel GetHilite(Pixel background) {
   return adjust_pixel_brightness(background, BRIGHTNESS_FACTOR);
 }
+
+/* This function converts the colour stored in a colorcell (pixel) into the
+ * string representation of a colour.  The output is printed at the
+ * address 'output'.  It is either in rgb format ("rgb:rrrr/gggg/bbbb") if
+ * use_hash is False or in hash notation ("#rrrrggggbbbb") if use_hash is true.
+ * The return value is the number of characters used by the string.  The
+ * rgb values of the output are undefined if the colorcell is invalid.  The
+ * memory area pointed at by 'output' must be at least 64 bytes (in case of
+ * future extensions and multibyte characters).*/
+int pixel_to_color_string(
+  Display *dpy, Colormap cmap, Pixel pixel, char *output, Bool use_hash)
+{
+  XColor color;
+  int n;
+
+  color.pixel = pixel;
+  color.red = 0;
+  color.green = 0;
+  color.blue = 0;
+
+  XQueryColor(dpy, cmap, &color);
+  if (!use_hash)
+  {
+    sprintf(output, "rgb:%04x/%04x/%04x%n", (int)color.red, (int)color.green,
+	    (int)color.blue, &n);
+  }
+  else
+  {
+    sprintf(output, "#%04x%04x%04x%n", (int)color.red, (int)color.green,
+	    (int)color.blue, &n);
+  }
+
+  return n;
+}

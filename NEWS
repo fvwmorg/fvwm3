@@ -1,5 +1,10 @@
 Changes in beta release 2.3.9
 
+* Color names from colorsets can be used in fvwm command ($[fg.cs<n>],
+  $[bg.cs<n>], $[hilite.cs<n>] and $[shadow.cs<n>]).
+
+* FvwmScript supports colorsets.
+
 * FvwmTaskBar supports colorsets with the options Colorset, IconColorset and
   TipsColorset.
 

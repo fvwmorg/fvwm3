@@ -1,3 +1,20 @@
+1999-10-03  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/fvwm2.1: rewrote section about command line parameter expansion
+
+	* libs/Picture.c (GetColor): handles colour set colour names
+
+	* fvwm/move_resize.c (moveLoop): Switch back to original page when
+	aborting a window move
+
+	* libs/ColorUtils.c (pixel_to_color_string):
+	* fvwm/functions.c (expand_extended_var):
+	(expand):
+	Colours from colorsets can be used on the command line: $[fg.cs#],
+ 	$[bg.cs#], $[hilight.cs#], $[shadow.cs#] are replaced by the
+	corresponding colour from colour set '#'.
+	Fixed coredump with $v.
+
 1999-10-02  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/events.c (HandlePropertyNotify): limits names of icons/windows

@@ -234,7 +234,7 @@ char *PeekToken(char *indata, char **outdata)
 /**** SMR: Defined but not used -- is this for the future or a relic of the
  **** past? ****/
 /* domivogt (27-Jun-1999): It's intended for future use. I have no problem
- * commentinc it out if it's not used. */
+ * commenting it out if it's not used. */
 
 /* Tries to seek up to n tokens in indata. Returns the number of tokens
  * actually found (up to a maximum of n). */

@@ -35,7 +35,10 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <X11/Xlib.h>
 #include <X11/keysym.h>
+#include <X11/Intrinsic.h>
+#include "libs/Colorset.h"
 #include "fvwm.h"
 #include "events.h"
 #include "style.h"
@@ -285,12 +288,68 @@ static const struct functions *FindBuiltinFunction(char *func)
   return ret_func;
 }
 
+static char *function_vars[] =
+{
+  "fg.cs",
+  "bg.cs",
+  "hilight.cs",
+  "shadow.cs",
+  NULL
+};
+
+static int expand_extended_var(char *var_name, char *output)
+{
+  char *rest;
+  char dummy[64];
+  char *target = (output) ? output : dummy;
+  int cs = -1;
+  int n;
+  int i;
+  Pixel pixel = 0;
+
+  switch ((i = GetTokenIndex(var_name, function_vars, -1, &rest)))
+  {
+  case 0:
+  case 1:
+  case 2:
+  case 3:
+    if (!isdigit(*rest) || (*rest == '0' && *(rest + 1) != 0))
+      /* not a non-negative integer without leading zeros */
+      return 0;
+    if (sscanf(rest, "%d%n", &cs, &n) < 1)
+      return 0;
+    if (*(rest + n) != 0)
+      /* trailing characters */
+      return 0;
+    switch (i)
+    {
+    case 0:
+      pixel = Colorset[cs % nColorsets].fg;
+      break;
+    case 1:
+      pixel = Colorset[cs % nColorsets].bg;
+      break;
+    case 2:
+      pixel = Colorset[cs % nColorsets].hilite;
+      break;
+    case 3:
+      pixel = Colorset[cs % nColorsets].shadow;
+      break;
+    }
+    return pixel_to_color_string(dpy, Pcmap, pixel, target, False);
+  default:
+    /* unknown variable */
+    return 0;
+  }
+}
 
 static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
 {
-  int l,i,l2,n,k,j;
+  int l,i,l2,n,k,j,m;
+  int xlen;
   char *out;
   int addto = 0; /*special cas if doing addtofunc */
+  char *var;
 
   l = strlen(input);
   l2 = l;
@@ -303,181 +362,235 @@ static char *expand(char *input, char *arguments[], FvwmWindow *tmp_win)
   /* Calculate best guess at length of expanded string */
   i=0;
   while(i<l)
+  {
+    if(input[i] == '$')
     {
-      if(input[i] == '$')
+      switch (input[i+1])
+      {
+      case '[':
+	/* extended variables */
+	var = &input[i+2];
+	m = i + 2;
+	while (m < l && input[m] != ']' && !isspace(input[m]) && input[m])
+	  m++;
+	if (input[m] == ']')
 	{
-	  switch (input[i+1])
-	    {
-	    case '0':
-	    case '1':
-	    case '2':
-	    case '3':
-	    case '4':
-	    case '5':
-	    case '6':
-	    case '7':
-	    case '8':
-	    case '9':
-	      n = input[i+1] - '0';
-	      if(arguments[n] != NULL)
-		{
-		  l2 += strlen(arguments[n])-2;
-		  i++;
-		}
-	      break;
-	    case 'w':
-	    case 'd':
-	    case 'x':
-	    case 'y':
-	      l2 += 16;
-	      i++;
-	      break;
-	    case 'c':
-	      if (tmp_win && tmp_win->class.res_class &&
-		  tmp_win->class.res_class[0])
-		{
-		  l2 += strlen(tmp_win->class.res_class) + 2;
-		}
-	      break;
-	    case 'r':
-	      if (tmp_win && tmp_win->class.res_name &&
-		  tmp_win->class.res_name[0])
-		{
-		  l2 += strlen(tmp_win->class.res_name) + 2;
-		}
-	      break;
-	    case 'n':
-	      if (tmp_win && tmp_win->name && tmp_win->name[0])
-		{
-		  l2 += strlen(tmp_win->name) + 2;
-		}
-	      break;
-	    }
+	  input[m] = 0;
+	  /* handle variable name */
+	  k = strlen(var);
+	  xlen = expand_extended_var(var, NULL);
+	  input[m] = ']';
+	  if (xlen > 0)
+	  {
+	    l2 += xlen - k + 2;
+	    i += k + 2;
+	  }
 	}
-      i++;
+	break;
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+	n = input[i+1] - '0';
+	if(arguments[n] != NULL)
+	{
+	  l2 += strlen(arguments[n])-2;
+	  i++;
+	}
+	break;
+      case 'w':
+      case 'd':
+      case 'x':
+      case 'y':
+	l2 += 16;
+	i++;
+	break;
+      case 'c':
+	if (tmp_win && tmp_win->class.res_class &&
+	    tmp_win->class.res_class[0])
+	{
+	  l2 += strlen(tmp_win->class.res_class) + 2;
+	}
+	break;
+      case 'r':
+	if (tmp_win && tmp_win->class.res_name &&
+	    tmp_win->class.res_name[0])
+	{
+	  l2 += strlen(tmp_win->class.res_name) + 2;
+	}
+	break;
+      case 'n':
+	if (tmp_win && tmp_win->name && tmp_win->name[0])
+	{
+	  l2 += strlen(tmp_win->name) + 2;
+	}
+	break;
+      case 'v':
+	if (Fvwm_VersionInfo)
+	{
+	  l2 += strlen(Fvwm_VersionInfo) + 2;
+	}
+	break;
+      }
     }
+    i++;
+  }
 
   /* Actually create expanded string */
   i=0;
   out = safemalloc(l2+1);
   j=0;
   while(i<l)
+  {
+    if(input[i] == '$')
     {
-      if(input[i] == '$')
+      switch (input[i+1])
+      {
+      case '[':
+	/* extended variables */
+	var = &input[i+2];
+	m = i + 2;
+	while (m < l && input[m] != ']' && !isspace(input[m]) && input[m])
+	  m++;
+	if (input[m] == ']')
 	{
-	  switch (input[i+1])
-	    {
-	    case '0':
-	    case '1':
-	    case '2':
-	    case '3':
-	    case '4':
-	    case '5':
-	    case '6':
-	    case '7':
-	    case '8':
-	    case '9':
-	      n = input[i+1] - '0';
-	      if(arguments[n] != NULL)
-		{
-		  for(k=0;arguments[n][k];k++)
-		    out[j++] = arguments[n][k];
-		  i++;
-		}
-	      else if (addto == 1)
-		{
-		  out[j++] = '$';
-		}
-	      else
-		{
-		  i++;
-		  if (isspace(input[i+1]))
-		    i++; /*eliminates extra white space*/
-		}
-	      break;
-	    case 'w':
-	      if(tmp_win)
-		sprintf(&out[j],"0x%x",(unsigned int)tmp_win->w);
-	      else
-		sprintf(&out[j],"$w");
-	      j += strlen(&out[j]);
-	      i++;
-	      break;
-	    case 'd':
-	      sprintf(&out[j], "%d", Scr.CurrentDesk);
-	      j += strlen(&out[j]);
-	      i++;
-	      break;
-	    case 'x':
-	      sprintf(&out[j], "%d", Scr.Vx);
-	      j += strlen(&out[j]);
-	      i++;
-	      break;
-	    case 'v':
-	      sprintf(&out[j], "%s", Fvwm_VersionInfo);
-	      i++;
-	      break;
-	    case 'y':
-	      sprintf(&out[j], "%d", Scr.Vy);
-	      i++;
-	      break;
-	    case 'c':
-	      if (tmp_win && tmp_win->class.res_class &&
-		  tmp_win->class.res_class[0])
-		{
-		  out[j++] = '\'';
-		  for(k=0;tmp_win->class.res_class[k];k++)
-		    out[j++] = tmp_win->class.res_class[k];
-		  out[j++] = '\'';
-		  i++;
-		}
-	      else
-		{
-		  out[j++] = '$';
-		}
-	      break;
-	    case 'r':
-	      if (tmp_win && tmp_win->class.res_name &&
-		  tmp_win->class.res_name[0])
-		{
-		  out[j++] = '\'';
-		  for(k=0;tmp_win->class.res_name[k];k++)
-		    out[j++] = tmp_win->class.res_name[k];
-		  out[j++] = '\'';
-		  i++;
-		}
-	      else
-		{
-		  out[j++] = '$';
-		}
-	      break;
-	    case 'n':
-	      if (tmp_win && tmp_win->name && tmp_win->name[0])
-		{
-		  out[j++] = '\'';
-		  for(k=0;tmp_win->name[k];k++)
-		    out[j++] = tmp_win->name[k];
-		  out[j++] = '\'';
-		  i++;
-		}
-	      else
-		{
-		  out[j++] = '$';
-		}
-	      break;
-	    case '$':
-	      out[j++] = '$';
-	      i++;
-	      break;
-	    default:
-	      out[j++] = input[i];
-	      break;
-	    } /* switch */
-	} /* if '$' */
-      else
+	  input[m] = 0;
+	  /* handle variable name */
+	  k = strlen(var);
+	  xlen = expand_extended_var(var, &out[j]);
+	  input[m] = ']';
+	  if (xlen > 0)
+	  {
+	    j += xlen;
+	    i += k + 2;
+	  }
+	  else
+	  {
+	    out[j++] = input[i];
+	  }
+	}
+	else
+	{
+	  out[j++] = input[i];
+	}
+	break;
+      case '0':
+      case '1':
+      case '2':
+      case '3':
+      case '4':
+      case '5':
+      case '6':
+      case '7':
+      case '8':
+      case '9':
+	n = input[i+1] - '0';
+	if(arguments[n] != NULL)
+	{
+	  for(k=0;arguments[n][k];k++)
+	    out[j++] = arguments[n][k];
+	  i++;
+	}
+	else if (addto == 1)
+	{
+	  out[j++] = '$';
+	}
+	else
+	{
+	  i++;
+	  if (isspace(input[i+1]))
+	    i++; /*eliminates extra white space*/
+	}
+	break;
+      case 'w':
+	if(tmp_win)
+	  sprintf(&out[j],"0x%x",(unsigned int)tmp_win->w);
+	else
+	  sprintf(&out[j],"$w");
+	j += strlen(&out[j]);
+	i++;
+	break;
+      case 'd':
+	sprintf(&out[j], "%d", Scr.CurrentDesk);
+	j += strlen(&out[j]);
+	i++;
+	break;
+      case 'x':
+	sprintf(&out[j], "%d", Scr.Vx);
+	j += strlen(&out[j]);
+	i++;
+	break;
+      case 'y':
+	sprintf(&out[j], "%d", Scr.Vy);
+	i++;
+	break;
+      case 'c':
+	if (tmp_win && tmp_win->class.res_class &&
+	    tmp_win->class.res_class[0])
+	{
+	  out[j++] = '\'';
+	  for(k=0;tmp_win->class.res_class[k];k++)
+	    out[j++] = tmp_win->class.res_class[k];
+	  out[j++] = '\'';
+	  i++;
+	}
+	else
+	{
+	  out[j++] = '$';
+	}
+	break;
+      case 'r':
+	if (tmp_win && tmp_win->class.res_name &&
+	    tmp_win->class.res_name[0])
+	{
+	  out[j++] = '\'';
+	  for(k=0;tmp_win->class.res_name[k];k++)
+	    out[j++] = tmp_win->class.res_name[k];
+	  out[j++] = '\'';
+	  i++;
+	}
+	else
+	{
+	  out[j++] = '$';
+	}
+	break;
+      case 'n':
+	if (tmp_win && tmp_win->name && tmp_win->name[0])
+	{
+	  out[j++] = '\'';
+	  for(k=0;tmp_win->name[k];k++)
+	    out[j++] = tmp_win->name[k];
+	  out[j++] = '\'';
+	  i++;
+	}
+	else
+	{
+	  out[j++] = '$';
+	}
+	break;
+      case 'v':
+	sprintf(&out[j], "%s", (Fvwm_VersionInfo) ? Fvwm_VersionInfo : "");
+	i++;
+	break;
+      case '$':
+	out[j++] = '$';
+	i++;
+	break;
+      default:
 	out[j++] = input[i];
-      i++;
-    }
+	break;
+      } /* switch */
+    } /* if '$' */
+    else
+      out[j++] = input[i];
+    i++;
+  }
   out[j] = 0;
   return out;
 }

@@ -761,12 +761,15 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 {
   Bool finished = False;
   Bool done;
+  Bool aborted = False;
   int xl,xl2,yt,yt2,delta_x,delta_y,paged;
   unsigned int button_mask = 0;
   FvwmWindow tmp_win_copy;
   int dx = Scr.EdgeScrollX ? Scr.EdgeScrollX : Scr.MyDisplayWidth;
   int dy = Scr.EdgeScrollY ? Scr.EdgeScrollY : Scr.MyDisplayHeight;
   int count;
+  int vx = Scr.Vx;
+  int vy = Scr.Vy;
 
   /* make a copy of the tmp_win structure for sending to the pager */
   memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
@@ -886,7 +889,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	/* Abort the move if
 	 *  - the move started with a pressed button and another button
 	 *    was pressed during the operation
-	 *  - no button was started at the beginning and any button
+	 *  - no button was pressed at the beginning and any button
 	 *    except button 1 was pressed. */
 	if (button_mask || (Event.xbutton.button != 1))
 	{
@@ -902,6 +905,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    *FinalX = tmp_win->icon_x_loc;
 	    *FinalY = tmp_win->icon_y_loc;
 	  }
+	  aborted = 1;
 	  finished = TRUE;
 	}
 	done = TRUE;
@@ -1062,6 +1066,13 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     }
   } /* while (!finished) */
 
+  if (aborted)
+  {
+    if (vx != Scr.Vx || vy != Scr.Vy)
+    {
+      MoveViewport(vx, vy, False);
+    }
+  }
   if (!NeedToResizeToo)
     /* Don't wait for buttons to come up when user is placing a new window
      * and wants to resize it. */

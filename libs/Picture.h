@@ -92,4 +92,6 @@ void color_reduce_pixmap(XpmImage* image, int colourLimit);
 
 #endif
 
+Pixel GetSimpleColor(char *name);
+/* handles colorset color names too */
 Pixel GetColor(char *name);

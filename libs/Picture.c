@@ -56,7 +56,9 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/Intrinsic.h>
 
+#include "Colorset.h"
 #include <fvwmlib.h>
 #include <Picture.h>
 
@@ -115,7 +117,7 @@ void UseDefaultVisual(void)
 
   Pvisual = DefaultVisual(Pdpy, screen);
   Pdepth = DefaultDepth(Pdpy, screen);
-  Pcmap = DefaultColormap(Pdpy, screen);  
+  Pcmap = DefaultColormap(Pdpy, screen);
 }
 
 void UseFvwmVisual(void)
@@ -487,13 +489,63 @@ static double c400_distance(XColor *target_ptr, XColor *base_ptr)
 }
 #endif /* XPM */
 
-Pixel GetColor(char *name)
+Pixel GetSimpleColor(char *name)
 {
   XColor color;
   color.pixel = 0;
-   if (!XParseColor (Pdpy, Pcmap, name, &color))
-     fprintf(stderr, "Cannot parse color %s\n", name);
-   else if(!XAllocColor (Pdpy, Pcmap, &color))
-     fprintf(stderr, "Cannot alloc color %s\n", name);
+
+  if (!XParseColor (Pdpy, Pcmap, name, &color))
+    fprintf(stderr, "Cannot parse color %s\n", name);
+  else if(!XAllocColor (Pdpy, Pcmap, &color))
+    fprintf(stderr, "Cannot alloc color %s\n", name);
   return color.pixel;
+}
+static char *colorset_names[] =
+{
+  "$[fg.cs",
+  "$[bg.cs",
+  "$[hilight.cs",
+  "$[shadow.cs",
+  NULL
+};
+
+Pixel GetColor(char *name)
+{
+  int i;
+  int n;
+  int cs;
+  char *rest;
+  XColor color;
+  color.pixel = 0;
+
+  switch ((i = GetTokenIndex(name, colorset_names, -1, &rest)))
+  {
+  case 0:
+  case 1:
+  case 2:
+  case 3:
+    if (!isdigit(*rest) || (*rest == '0' && *(rest + 1) != 0))
+      /* not a non-negative integer without leading zeros */
+      return 0;
+    if (sscanf(rest, "%d]%n", &cs, &n) < 1)
+      return 0;
+    if (*(rest + n) != 0)
+      /* trailing characters */
+      return 0;
+    switch (i)
+    {
+    case 0:
+      return Colorset[cs % nColorsets].fg;
+    case 1:
+      return Colorset[cs % nColorsets].bg;
+    case 2:
+      return Colorset[cs % nColorsets].hilite;
+    case 3:
+      return Colorset[cs % nColorsets].shadow;
+    }
+  default:
+    break;
+  }
+
+  return GetSimpleColor(name);
 }

@@ -1,8 +1,24 @@
+1999-10-03  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTheme/FvwmTheme.1: add description of colour set command line
+	parameters
+	added extensive example
+
+	* FvwmTaskBar/FvwmTaskBar.1: documented colorset support
+
+	* FvwmM4/Makefile.am (LDADD):
+	* FvwmCpp/Makefile.am (LDADD):
+	* FvwmBanner/Makefile.am (LDADD):
+	link with -lm; necessary to include libs/Picture.h but doesn't make the
+	binary larger
+
 1999-10-02  Chris Rankin  <rankinc@zipworld.com.au>
 
-	* FvwmCommand/FvwmCommand.c : first attempt at cleaning up the signal handling
+	* FvwmCommand/FvwmCommand.c : first attempt at cleaning up the signal
+	handling
 	* FvwmCommand/FvwmCommand.h : removed redundant headers
-	* FvwmCommand/FvwmCommandS.c : first attempt at cleaning up the signal handling
+	* FvwmCommand/FvwmCommandS.c : first attempt at cleaning up the signal
+	handling
 
 1999-10-02  Dominik Vogt  <dominik_vogt@gmx.de>
 
