@@ -453,7 +453,13 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'd':
-        if(StrEquals(token, "DecorateTransient"))
+        if(StrEquals(token, "DepressableBorder"))
+	  {
+	  found = True;
+          tmpstyle.flags.common.has_depressable_border = 1;
+          tmpstyle.flag_mask.common.has_depressable_border = 1;
+	  }
+        else if(StrEquals(token, "DecorateTransient"))
         {
 	  found = True;
           tmpstyle.flags.do_decorate_transient = 1;
@@ -471,7 +477,13 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
         break;
 
       case 'f':
-        if(StrEquals(token, "FixedPosition"))
+        if(StrEquals(token, "FirmBorder"))
+	  {
+	  found = True;
+          tmpstyle.flags.common.has_depressable_border = 0;
+          tmpstyle.flag_mask.common.has_depressable_border = 1;
+	  }
+        else if(StrEquals(token, "FixedPosition"))
 	  {
 	    found = True;
             tmpstyle.flags.common.is_fixed = 1;

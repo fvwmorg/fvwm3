@@ -1,3 +1,16 @@
+1999-05-18  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/fvwm.h (common_flags_type): new member has_depressable_border.
+
+	* fvwm/window_flags.h (HAS_DEPRESSABLE_BORDER): accessor macro.
+	
+	* fvwm/style.c (ProcessNewStyle): new styles
+	DepressableBorder/FirmBorder to set has_depressable_border.
+
+	* fvwm/borders.c (SetBorder): remove undocumented dependency of
+	border depressability on has_mwm_buttons. Use
+	has_depressable_border instead.
+
 Tue May 18 12:44:11 1999  Steve ROBBINS  <stever@bic.mni.mcgill.ca>
 
 	* acinclude.m4: AC_FUNC_SELECT may fail on certain AIX machines;

@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.2 (April 1999)
 
+* New style DepressableBorder/FirmBorder to influence the appearance
+  of the window border under button presses.
+
 * The MoveThreshold command lets the user fine tune the threshold when a click
   becomes a move.
 

@@ -413,8 +413,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     {
       GC rgc,sgc;
 
-      /* change this after GSFR, won't depend on MWMButtons */
-      if(!HAS_MWM_BUTTONS(t)&&(PressedW == t->frame)) {
+      if(HAS_DEPRESSABLE_BORDER(t)&&(PressedW == t->frame)) {
         sgc=ReliefGC;
         rgc=ShadowGC;
       } else {
@@ -581,10 +580,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
         /* now draw the pressed in part on top */
         /* a bit hacky to draw twice but you should see the code it replaces
            never mind the esoterics, feel the thin-ness */
-        /* undocumented dependancy on MWMbuttons !!!
-           MWMButtons style makes the border undepressable */
-        /* GSFR candidate */
-        if(HAS_BORDER(t) && !HAS_MWM_BUTTONS(t)) {
+        if(HAS_BORDER(t) && HAS_DEPRESSABLE_BORDER(t)) {
           if (PressedW == t->sides[0]) { /* top */
             RelieveRectangle(dpy, t->frame,
                              t->corner_width, 1,

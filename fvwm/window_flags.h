@@ -91,6 +91,7 @@
                                ((fw)->flags.common.is_fixed)
 #define SET_FIXED(fw,x)        (fw)->flags.common.is_fixed = !!(x)
 #define SETM_FIXED(fw,x)       (fw)->flag_mask.common.is_fixed = !!(x)
+#define HAS_DEPRESSABLE_BORDER(fw) ((fw)->flags.common.has_depressable_border)
 
 
 /* access to the special flags of a window */
