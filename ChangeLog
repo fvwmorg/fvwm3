@@ -1,3 +1,9 @@
+2005-01-08  Olivier Chapuis  <olivier.chapuis@free.fr>
+
+	* fvwm/move_resize.c (GetOnePositionArgument):
+	Fixed a one pixel bug in the Move and AnimatedMove commands by rounding
+	float values to neast int
+	
 2005-01-06  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* AUTHORS:
