@@ -1,3 +1,10 @@
+2003-07-14  Marcus Lundblad  <ml@update.uu.se>
+
+	* libs/Flocale.c (FlocaleDrawString):
+	* libs/FBidi.c (FBidiConvert):
+	fixed drawing of combining characters in the case where a string
+	consists of only combining characters
+
 2003-07-13  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/CombineChars.c (CombineChars):

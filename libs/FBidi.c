@@ -95,17 +95,6 @@ char *FBidiConvert(
 	fribidi_log2vis(
 		logical_unicode_str, str_len, &pbase_dir,
 		visual_unicode_str, pos_l_to_v, NULL, NULL);
-	/* re-order combining characters */
-	if (comb_chars != NULL)
-	{
-		for(i = 0 ; 
-		    comb_chars[i].c.byte1 != 0 || comb_chars[i].c.byte2 != 0 ;
-		    i++)
-		{
-		        comb_chars[i].position =
-				pos_l_to_v[comb_chars[i].position];
-		}
-	}
 
 	/* remap mapping from logical to visual to "compensate" for BIDI */
 	if(l_to_v != NULL)
@@ -131,6 +120,18 @@ char *FBidiConvert(
 			l_to_v[i] = l_to_v_temp[i];
 		}
 		free(l_to_v_temp);
+		/* re-order combining characters */
+		if (comb_chars != NULL)
+		{
+			for(i = 0 ; 
+			    comb_chars[i].c.byte1 != 0 || 
+			    comb_chars[i].c.byte2 != 0 ;
+			    i++)
+			{
+				comb_chars[i].position =
+					l_to_v[comb_chars[i].position];
+			}
+		}
 	}
 	free(pos_l_to_v);
 

@@ -1818,8 +1818,16 @@ void FlocaleDrawString(
 		   but there for clarity, 
 		   ending at 0 is what's expected in a correct
 		   string */
-		pixel_pos = (int *)safemalloc(char_len * sizeof(int));
+		pixel_pos = (int *)safemalloc((char_len != 0 ? char_len : 1)
+					      * sizeof(int));
 		
+		/* if there is 0 bytes in the encoded string, there might
+		   still be combining character to draw (at position 0) */
+		if(char_len == 0)
+		{
+			pixel_pos[0] = 0;
+		}
+
 		for(i = 0, curr_pixel_pos = 0 ; 
 		    i < char_len ; 
 		    i++, curr_str += curr_len)
@@ -2079,6 +2087,7 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	int result = 0;
 	char *tmp_str;
 	int new_l,do_free;
+	superimpose_char_t *comb_chars;
 
 	if (!str || sl == 0)
 		return 0;
@@ -2090,9 +2099,18 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	}
 	/* FIXME */
 	tmp_str = FlocaleEncodeString(
-		Pdpy, flf, str, &do_free, sl, &new_l, NULL, NULL, NULL);
-	if (FftSupport && flf->fftf.fftfont != NULL)
+		     Pdpy, flf, str, &do_free, sl, &new_l, NULL, &comb_chars, 
+		     NULL);
+	/* if we get zero-length, check to to see if there if there's any
+	   combining chars, if so use an imagninary space as a 
+	   "base character" */
+	if (strlen(tmp_str) == 0 && 
+	    (comb_chars[0].c.byte1 != 0 || comb_chars[0].c.byte2 != 0))
 	{
+		result = FlocaleTextWidth(flf, " ", 1);
+	}
+	else if (FftSupport && flf->fftf.fftfont != NULL)
+		     {
 		result = FftTextWidth(flf, tmp_str, new_l);
 	}
 	else if (flf->fontset != None)
@@ -2127,7 +2145,8 @@ int FlocaleTextWidth(FlocaleFont *flf, char *str, int sl)
 	{
 		free(tmp_str);
 	}
-
+	free(comb_chars);
+	
 	return result + ((result != 0)? FLF_SHADOW_WIDTH(flf):0);
 }
 
