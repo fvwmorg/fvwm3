@@ -36,6 +36,7 @@
 static void UnmapDesk(int desk, Bool grab);
 static void MapDesk(int desk, Bool grab);
 
+
 /*
  * dje 12/19/98
  *
@@ -1113,21 +1114,18 @@ void gotoDeskAndPage_func(F_CMD_ARGS)
 
   if (GetIntegerArguments(action, NULL, val, 3) != 3)
     return;
-  is_new_desk = (Scr.CurrentDesk != val[0]);
 
-/* MyXGrabServer(dpy); */
+  is_new_desk = (Scr.CurrentDesk != val[0]);
   if (is_new_desk)
   {
     UnmapDesk(Scr.CurrentDesk, True);
   }
-  MoveViewport((val[1] * Scr.MyDisplayWidth), (val[2] * Scr.MyDisplayHeight),
-               True);
+  MoveViewport(val[1] * Scr.MyDisplayWidth, val[2] * Scr.MyDisplayHeight, True);
   if (is_new_desk)
   {
     Scr.CurrentDesk = val[0];
     MapDesk(val[0], True);
   }
-  /* MyXUngrabServer(dpy); */
   BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
 
 #ifdef GNOME

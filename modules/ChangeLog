@@ -1,3 +1,8 @@
+1999-12-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/FvwmPager.c (list_new_page):
+	tried to fix M_NEW_PAGE packets in pager
+
 1999-12-07  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/FvwmForm.c: You can save and  use the previous setting
