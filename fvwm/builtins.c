@@ -639,6 +639,28 @@ void movecursor(F_CMD_ARGS)
 }
 
 
+void PlaceAgain_func(F_CMD_ARGS)
+{
+  int x,y;
+  char *token;
+  
+  if (DeferExecution(eventp, &w, &tmp_win, &context, SELECT, ButtonRelease))
+    return;
+    
+  /* Find new position for window */
+  SmartPlacement(tmp_win,tmp_win->frame_width,tmp_win->frame_height, &x, &y, 0,0);
+
+  /* Possibly animate the movement */
+  GetNextToken(action, &token);
+  if(token!=NULL && StrEquals("ANIM", token))
+    AnimatedMoveOfWindow(tmp_win->frame, -1, -1, x, y, FALSE, -1, NULL);
+
+  SetupFrame(tmp_win,x,y,tmp_win->frame_width, tmp_win->frame_height, FALSE);
+                 
+  return;
+}
+
+ 
 void iconify_function(F_CMD_ARGS)
 {
   int toggle;

@@ -1,5 +1,7 @@
 Changes in alpha release 2.3.0 (February 1999)
 
+* New function PlaceAgain: moves a window to where it would be placed.
+
 * New module FvwmGtk. It implements menus, dialogs and window-lists 
   using the GTK toolkit.
 

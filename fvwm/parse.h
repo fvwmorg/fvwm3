@@ -124,6 +124,7 @@ enum {
     F_WINDOW_SHADE,
     F_COLOR_LIMIT,
     F_ANIMATED_MOVE,
+    F_PLACEAGAIN,
 
     F_END_OF_LIST = 999,
 

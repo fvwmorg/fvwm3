@@ -1,3 +1,9 @@
+16th Mar 1999  Hippo
+
+	* fvwm/builtins.c,functions.c,misc.h,parse.h: applied Replace patch from
+	Trent Piepho <xyzzy@u.washington.edu> first posted in Nov 1996. Changed
+	the name to PlaceAgain to avoid confusion.
+
 Mon Mar 15 22:17:04 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/fvwm.c (SetRCDefaults): add "Exec xterm" to builtin menu.

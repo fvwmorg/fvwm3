@@ -340,6 +340,7 @@ MenuRoot *FindPopup(char *popup_name);
 void Bell(F_CMD_ARGS);
 void scroll(F_CMD_ARGS);
 void movecursor(F_CMD_ARGS);
+void PlaceAgain_func(F_CMD_ARGS);
 void iconify_function(F_CMD_ARGS);
 void raise_function(F_CMD_ARGS);
 void lower_function(F_CMD_ARGS);
