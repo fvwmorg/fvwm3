@@ -67,6 +67,7 @@ FVWMSCRIPT = @FVWMSCRIPT@
 FVWM_CONFIGDIR = @FVWM_CONFIGDIR@
 FVWM_CPP = @FVWM_CPP@
 FVWM_MODULEDIR = @FVWM_MODULEDIR@
+LEX = @LEX@
 LIBOBJS = @LIBOBJS@
 LN_S = @LN_S@
 MAKEINFO = @MAKEINFO@
@@ -74,6 +75,7 @@ PACKAGE = @PACKAGE@
 RANLIB = @RANLIB@
 VERSION = @VERSION@
 XPMROOT = @XPMROOT@
+YACC = @YACC@
 readline_CFLAGS = @readline_CFLAGS@
 readline_LIBS = @readline_LIBS@
 rplay_CFLAGS = @rplay_CFLAGS@
@@ -87,13 +89,16 @@ SUBDIRS = Scripts Widgets
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmScript
 
-FvwmScript_SOURCES = FvwmScript.c Instructions.c lex.yy.c libyywrap.c \
-	types.h y.tab.c y.tab.h
+FvwmScript_SOURCES = FvwmScript.c Instructions.c libyywrap.c \
+	script.y scanner.l types.h
 FvwmScript_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
+YFLAGS = -d
+#scanner.o: script.h
+
 man_MANS = FvwmScript.1
-EXTRA_DIST = $(man_MANS) BUGS \
-	   Compiler/bisonin Compiler/compilation Compiler/lexin
+EXTRA_DIST = $(man_MANS) BUGS
+#	   Compiler/bisonin Compiler/compilation Compiler/lexin
 
 LDADD = Widgets/libWidgets.a -L$(top_builddir)/libs -lfvwm \
 	$(xpm_LIBS) $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
@@ -112,10 +117,12 @@ X_CFLAGS = @X_CFLAGS@
 X_LIBS = @X_LIBS@
 X_EXTRA_LIBS = @X_EXTRA_LIBS@
 X_PRE_LIBS = @X_PRE_LIBS@
-FvwmScript_OBJECTS =  FvwmScript.o Instructions.o lex.yy.o libyywrap.o \
-y.tab.o
+FvwmScript_OBJECTS =  FvwmScript.o Instructions.o libyywrap.o script.o \
+scanner.o
 FvwmScript_LDADD = $(LDADD)
 FvwmScript_LDFLAGS = 
+LEX_OUTPUT_ROOT = @LEX_OUTPUT_ROOT@
+LEXLIB = @LEXLIB@
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LINK = $(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -123,22 +130,22 @@ man1dir = $(mandir)/man1
 MANS = $(man_MANS)
 
 NROFF = nroff
-DIST_COMMON =  INSTALL Makefile.am Makefile.in TODO
+DIST_COMMON =  INSTALL Makefile.am Makefile.in TODO scanner.c script.c
 
 
 DISTFILES = $(DIST_COMMON) $(SOURCES) $(HEADERS) $(TEXINFOS) $(EXTRA_DIST)
 
 TAR = tar
 GZIP = --best
-DEP_FILES =  .deps/FvwmScript.P .deps/Instructions.P .deps/lex.yy.P \
-.deps/libyywrap.P .deps/y.tab.P
+DEP_FILES =  .deps/FvwmScript.P .deps/Instructions.P .deps/libyywrap.P \
+.deps/scanner.P .deps/script.P
 SOURCES = $(FvwmScript_SOURCES)
 OBJECTS = $(FvwmScript_OBJECTS)
 
 all: all-recursive all-am
 
 .SUFFIXES:
-.SUFFIXES: .S .c .o .s
+.SUFFIXES: .S .c .l .o .s .y
 $(srcdir)/Makefile.in: Makefile.am $(top_srcdir)/configure.in $(ACLOCAL_M4)
 	cd $(top_srcdir) && $(AUTOMAKE) --gnu extras/FvwmScript/Makefile
 
@@ -191,6 +198,15 @@ maintainer-clean-compile:
 FvwmScript: $(FvwmScript_OBJECTS) $(FvwmScript_DEPENDENCIES)
 	@rm -f FvwmScript
 	$(LINK) $(FvwmScript_LDFLAGS) $(FvwmScript_OBJECTS) $(FvwmScript_LDADD) $(LIBS)
+.y.c:
+	$(YACC) $(AM_YFLAGS) $(YFLAGS) $< && mv y.tab.c $*.c
+	if test -f y.tab.h; then \
+	if cmp -s y.tab.h $*.h; then rm -f y.tab.h; else mv y.tab.h $*.h; fi; \
+	else :; fi
+script.h: script.c
+
+.l.c:
+	$(LEX) $(AM_LFLAGS) $(LFLAGS) $< && mv $(LEX_OUTPUT_ROOT).c $@
 
 install-man1:
 	$(mkinstalldirs) $(DESTDIR)$(man1dir)
@@ -306,7 +322,6 @@ distdir: $(DISTFILES)
 	distdir=`cd $(distdir) && pwd`; \
 	cd $(top_srcdir) \
 	  && $(AUTOMAKE) --include-deps --build-dir=$$here --srcdir-name=$(top_srcdir) --output-dir=$$top_distdir --gnu extras/FvwmScript/Makefile
-	$(mkinstalldirs) $(distdir)/Compiler
 	@for file in $(DISTFILES); do \
 	  d=$(srcdir); \
 	  test -f $(distdir)/$$file \
@@ -382,6 +397,7 @@ distclean-generic:
 	-rm -f config.cache config.log stamp-h stamp-h[0-9]*
 
 maintainer-clean-generic:
+	-test -z "scripthscriptcscannerl" || rm -f scripth scriptc scannerl
 mostlyclean-am:  mostlyclean-modulePROGRAMS mostlyclean-compile \
 		mostlyclean-tags mostlyclean-depend mostlyclean-generic
 

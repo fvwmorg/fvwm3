@@ -1,3 +1,9 @@
+Tue Nov 10 08:44:34 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmScript: Copied the yacc & lex source files from the Compiler
+	subdirectory, and changed the makefile to build the .c and .h
+	files from scanner.l and script.y.
+
 Mon Nov  9 18:56:50 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* Makefile.am (SUBDIRS): Removed fvwmperl, since this version is

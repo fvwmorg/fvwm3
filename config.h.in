@@ -158,6 +158,9 @@
 /* Define if the X Window System is missing or not being used.  */
 #undef X_DISPLAY_MISSING
 
+/* Define if lex declares yytext as a char * by default, not a char[].  */
+#undef YYTEXT_POINTER
+
 /*
 ** if you would like to see lots of debug messages from fvwm, for debugging
 ** purposes, uncomment the next line
