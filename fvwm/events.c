@@ -1953,8 +1953,14 @@ void __handle_key_event(const evh_args_t *ea, Bool is_release)
 
 	/* Check if there is something bound to the key */
 	sf = get_focus_window();
-	context2 = (sf != NULL && sf != ea->exc->w.fw) ?
-		C_WINDOW : ea->exc->w.wcontext;
+	if (sf != NULL && sf != ea->exc->w.fw)
+	{
+		context2 = C_WINDOW | C_IGNORE_ALL;
+	}
+	else
+	{
+		context2 = ea->exc->w.wcontext;
+	}
 	if (is_release == False)
 	{
 		if (CheckTwoBindings(
@@ -1983,15 +1989,15 @@ void __handle_key_event(const evh_args_t *ea, Bool is_release)
 		exec_context_changes_t ecc;
 
 		exc = ea->exc;
-		if (is_second_binding == True)
+		if (is_second_binding == False)
 		{
 			ecc.w.fw = sf;
-			ecc.w.wcontext = C_WINDOW;
+			ecc.w.wcontext = context2;
 			exc = exc_clone_context(
 				ea->exc, &ecc, ECC_FW | ECC_WCONTEXT);
 		}
 		execute_function(NULL, exc, action, 0);
-		if (is_second_binding == True)
+		if (is_second_binding == False)
 		{
 			exc_destroy_context(exc);
 		}
