@@ -270,7 +270,7 @@ static void menustyle_parse_old_style(F_CMD_ARGS)
 	}
 	else
 	{
-		buffer = (char *)safemalloc(strlen(action) + 100);
+		buffer = (char *)alloca(strlen(action) + 100);
 		sprintf(buffer,
 			"* \"%s\", Foreground \"%s\", Background \"%s\", "
 			"Greyed \"%s\", Font \"%s\", \"%s\"",
@@ -279,21 +279,32 @@ static void menustyle_parse_old_style(F_CMD_ARGS)
 			"Animation" : "AnimationOff");
 		action = buffer;
 		menustyle_parse_style(F_PASS_ARGS);
-		free(buffer);
 	}
 
 	if (fore)
+        {
 		free(fore);
+        }
 	if (back)
+        {
 		free(back);
+        }
 	if (stipple)
+        {
 		free(stipple);
+        }
 	if (font)
+        {
 		free(font);
+        }
 	if (style)
+        {
 		free(style);
+        }
 	if (animated)
+        {
 		free(animated);
+        }
 
 	return;
 }

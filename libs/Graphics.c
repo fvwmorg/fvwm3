@@ -72,7 +72,7 @@ static void do_relieve_rectangle(
 		}
 		return;
 	}
-	seg = (XSegment*)safemalloc(sizeof(XSegment) * line_width);
+	seg = (XSegment*)alloca(sizeof(XSegment) * line_width);
 	/* left side, from 0 to the lesser of line_width & just over half w */
 	for (i = 0; (i < line_width) && (i <= w / 2); i++) {
 		seg[i].x1 = x+i; seg[i].y1 = y+i+a;
@@ -97,7 +97,6 @@ static void do_relieve_rectangle(
 		seg[i].x2 = x+i+1-a; seg[i].y2 = y+i;
 	}
 	XDrawSegments(dpy, d, ReliefGC, seg, i);
-	free(seg);
 
 	return;
 }

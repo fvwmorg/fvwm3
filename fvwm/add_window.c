@@ -376,8 +376,6 @@ static Bool setup_window_structure(
 	FvwmWindow save_state;
 	FvwmWindow *savewin = NULL;
 
-	memset(&save_state, '\0', sizeof(FvwmWindow));
-
 	/*
 	  Allocate space for the FvwmWindow struct, or reuse an
 	  old one (on Recapture).
@@ -385,10 +383,6 @@ static Bool setup_window_structure(
 	if (ReuseWin == NULL)
 	{
 		*pfw = (FvwmWindow *)safemalloc(sizeof(FvwmWindow));
-		if (*pfw == (FvwmWindow *)0)
-		{
-			return False;
-		}
 	}
 	else
 	{

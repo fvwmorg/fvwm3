@@ -2,6 +2,9 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Dave Trollope:
+Memroy management clean up patches.
+
 Daniel Henninger:
 Timeout feature in FvwmForm.
 
@@ -155,7 +158,7 @@ BackingStore/BackingStoreOff and SaveUnder/SaveUnderOff, more WindowList
 enhancements, look of sticky icons, WindowList menu style, PointerKey command,
 several FvwmTheme options, FvwmTheme parsing, styles Font and IconFont,
 introduced the decor_w, smooth window shading, smooth (well, sort of) opaque
-resizing, many many more bugfixes.
+resizing, many many more bugfixes. Lost motivation to continue this list.
 
 A.J. Weber:
 SnapAttraction patch.

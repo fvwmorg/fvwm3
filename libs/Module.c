@@ -164,14 +164,13 @@ void SendFvwmPipe(int *fd, const char *message, unsigned long window)
 
   while ( (temp = strchr(hold, ',')) != NULL )
   {
-    char *temp_msg = (char*)safemalloc(temp - hold + 1);
+    char *temp_msg = (char*)alloca(temp - hold + 1);
 
     strncpy(temp_msg, hold, (temp - hold));
     temp_msg[(temp - hold)] = '\0';
     hold = temp + 1;
 
     SendText(fd, temp_msg, window);
-    free(temp_msg);
   } /* while */
 
   /*
