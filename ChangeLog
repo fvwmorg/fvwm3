@@ -1,14 +1,20 @@
+1999-04-11  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/add_window.c (AddWindow): initialise tmp_win when malloc'd
+
+	* fvwm/style.c: fixed IconFill style
+
 1999-04-11  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/add_window.c (AddWindow): Make sure tmp_win->icon_name 
+	* fvwm/add_window.c (AddWindow): Make sure tmp_win->icon_name
 	gets initialized before being used.
 
 1999-04-10  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/gsfr.h (SET_FOCUS_MODE): 
+	* fvwm/gsfr.h (SET_FOCUS_MODE):
 	(SETM_FOCUS_MODE): don't use !! for non-booleans.
-	
-	* fvwm/session.c (LoadWindowStates): 
+
+	* fvwm/session.c (LoadWindowStates):
 	(SaveWindowStates): fix loading and saving of window flags.
 
 1999-04-09  Dominik Vogt  <dominik_vogt@gmx.de>

@@ -148,16 +148,15 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   else
     {
       tmp_win = ReuseWin;
-      /*
-          RBW - 1999/03/20 - modify this when we implement the preserving of
-          various states across a Restart. The Destroy function in misc.c may
-          also need tweaking, depending on what you want to preserve.
-          For now, just zap any old information.
-      */
-      memset(tmp_win, '\0', sizeof(FvwmWindow));
     }
 
-  memset(&(tmp_win->gsfr_flags), 0, sizeof(window_flags));
+  /*
+    RBW - 1999/03/20 - modify this when we implement the preserving of
+    various states across a Restart. The Destroy function in misc.c may
+    also need tweaking, depending on what you want to preserve.
+    For now, just zap any old information.
+  */
+  memset(tmp_win, '\0', sizeof(FvwmWindow));
   tmp_win->w = w;
 
   tmp_win->cmap_windows = (Window *)NULL;

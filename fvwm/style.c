@@ -62,21 +62,20 @@ static int Get_TBLR(char *token, unsigned char *IconFill) {
       StrEquals(token, "BOTTOM"))
   {
     /* turn on bottom and verical */
-    *IconFill |= ICONFILLBOT;
-    *IconFill |= ICONFILLHRZ;
+    *IconFill = ICONFILLBOT | ICONFILLHRZ;
   }
   else if (StrEquals(token, "T") ||
 	   StrEquals(token, "TOP"))
   {
     /* turn on vertical */
-    *IconFill |= ICONFILLHRZ;
+    *IconFill = ICONFILLHRZ;
   }
   else if (StrEquals(token, "R") ||
 	   StrEquals(token, "RGT") ||
 	   StrEquals(token, "RIGHT"))
   {
     /* turn on right bit */
-    *IconFill |= ICONFILLRGT;
+    *IconFill = ICONFILLRGT;
   }
   else if (StrEquals(token, "L") ||
 	   StrEquals(token, "LFT") ||
