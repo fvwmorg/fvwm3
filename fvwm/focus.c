@@ -708,54 +708,26 @@ static void __activate_window_by_command(
 static void __focus_grab_one_button(
 	FvwmWindow *fw, int button, int grab_buttons)
 {
-	register Bool do_grab;
-	register unsigned int mods;
-	register unsigned int max = GetUnusedModifiers();
-	register unsigned int living_modifiers = ~max;
+	Bool do_grab;
 
-#if 0
-	/* RBW - Set flag for grab or ungrab according to how we were called. */
-	if (!is_focused)
-	{
-		do_grab = !!(grab_buttons & (1 << button));
-	}
-	else
-	{
-		do_grab = !(grab_buttons & (1 << button));
-	}
-#else
-	if ((grab_buttons & (1 << button)) ==
-	    (fw->grabbed_buttons & (1 << button)))
+	do_grab = (grab_buttons & (1 << button));
+	if ((do_grab & (1 << button)) == (fw->grabbed_buttons & (1 << button)))
 	{
 		return;
 	}
-	do_grab = !!(grab_buttons & (1 << button));
-#endif
-
-	/* handle all bindings for the dead modifiers */
-	for (mods = 0; mods <= max; mods++)
+	if (do_grab)
 	{
-		/* Since mods starts with 1 we don't need to test if
-		 * mods contains a dead modifier. Otherwise both, dead
-		 * and living modifiers would be zero ==> mods == 0 */
-		if (mods & living_modifiers)
-		{
-			continue;
-		}
-		if (do_grab)
-		{
-			XGrabButton(
-				dpy, button + 1, mods, FW_W_PARENT(fw), True,
-				ButtonPressMask, GrabModeSync, GrabModeAsync,
-				None, None);
-			/* Set window flags accordingly as we grab or ungrab. */
-			fw->grabbed_buttons |= (1 << button);
-		}
-		else
-		{
-			XUngrabButton(dpy, button + 1, mods, FW_W_PARENT(fw));
-			fw->grabbed_buttons &= ~(1 << button);
-		}
+		XGrabButton(
+			dpy, button + 1, AnyModifier, FW_W_PARENT(fw), True,
+			ButtonPressMask, GrabModeSync, GrabModeAsync, None,
+			None);
+		/* Set window flags accordingly as we grab or ungrab. */
+		fw->grabbed_buttons |= (1 << button);
+	}
+	else
+	{
+		XUngrabButton(dpy, button + 1, AnyModifier, FW_W_PARENT(fw));
+		fw->grabbed_buttons &= ~(1 << button);
 	}
 
 	return;
@@ -879,17 +851,18 @@ Bool focus_query_close_release_focus(const FvwmWindow *fw)
 	return False;
 }
 
-static void _focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
+static void __focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 {
 	int i;
 	Bool do_grab_window = False;
-	int grab_buttons = Scr.buttons2grab;
+	int grab_buttons;
 
 	if (fw == NULL || IS_SCHEDULED_FOR_DESTROY(fw))
 	{
 		/* It's pointless to grab buttons on dying windows */
 		return;
 	}
+	grab_buttons = Scr.buttons2grab;
 	do_grab_window = focus_query_grab_buttons(fw, client_entered);
 	if (do_grab_window == True)
 	{
@@ -901,7 +874,7 @@ static void _focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 		for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
 		{
 			__focus_grab_one_button(fw, i, grab_buttons);
-		} /* for */
+		}
 		MyXUngrabServer (dpy);
 	}
 
@@ -910,12 +883,12 @@ static void _focus_grab_buttons(FvwmWindow *fw, Bool client_entered)
 
 void focus_grab_buttons(FvwmWindow *fw)
 {
-        return _focus_grab_buttons(fw, False);
+        return __focus_grab_buttons(fw, False);
 }
 
 void focus_grab_buttons_client_entered(FvwmWindow *fw)
 {
-        return _focus_grab_buttons(fw, True);
+        return __focus_grab_buttons(fw, True);
 }
 
 void focus_grab_buttons_on_layer(int layer)

@@ -265,8 +265,11 @@ Bool FCheckIfEvent(
 	Bool rc;
 
 	rc = XCheckIfEvent(display, &fev_event, predicate, arg);
-	*event_return = fev_event;
-	fev_update_last_timestamp(event_return);
+	if (rc == True)
+	{
+		*event_return = fev_event;
+		fev_update_last_timestamp(event_return);
+	}
 
 	return rc;
 }
@@ -277,8 +280,11 @@ Bool FCheckMaskEvent(
 	Bool rc;
 
 	rc = XCheckMaskEvent(display, event_mask, &fev_event);
-	*event_return = fev_event;
-	fev_update_last_timestamp(event_return);
+	if (rc == True)
+	{
+		*event_return = fev_event;
+		fev_update_last_timestamp(event_return);
+	}
 
 	return rc;
 }
@@ -289,8 +295,11 @@ Bool FCheckTypedEvent(
 	Bool rc;
 
 	rc = XCheckTypedEvent(display, event_type, &fev_event);
-	*event_return = fev_event;
-	fev_update_last_timestamp(event_return);
+	if (rc == True)
+	{
+		*event_return = fev_event;
+		fev_update_last_timestamp(event_return);
+	}
 
 	return rc;
 }
@@ -301,8 +310,11 @@ Bool FCheckTypedWindowEvent(
 	Bool rc;
 
 	rc = XCheckTypedWindowEvent(display, w, event_type, &fev_event);
-	*event_return = fev_event;
-	fev_update_last_timestamp(event_return);
+	if (rc == True)
+	{
+		*event_return = fev_event;
+		fev_update_last_timestamp(event_return);
+	}
 
 	return rc;
 }
@@ -313,8 +325,11 @@ Bool FCheckWindowEvent(
 	Bool rc;
 
 	rc = XCheckWindowEvent(display, w, event_mask, &fev_event);
-	*event_return = fev_event;
-	fev_update_last_timestamp(event_return);
+	if (rc == True)
+	{
+		*event_return = fev_event;
+		fev_update_last_timestamp(event_return);
+	}
 
 	return rc;
 }

@@ -25,6 +25,8 @@
 
 /* ---------------------------- global definitions -------------------------- */
 
+#define FPOL_ANY_MODIFIER 0xff
+
 /* ---------------------------- access macros ------------------------------- */
 
 #define FP_DO_RAISE_FOCUSED_CLICK(fp) \

@@ -429,7 +429,9 @@ static void __handle_focus_raise_click(
 		/* wrong button, handle click normally */
 		return;
 	}
-	else if (MaskUsedModifiers(
+	else if (FP_USE_MODIFIERS(FW_FOCUS_POLICY(exc->w.fw)) !=
+		 FPOL_ANY_MODIFIER &&
+		 MaskUsedModifiers(
 			 FP_USE_MODIFIERS(FW_FOCUS_POLICY(exc->w.fw))) !=
 		 MaskUsedModifiers(exc->x.etrigger->xbutton.state))
 	{
@@ -2212,7 +2214,7 @@ void HandleMapRequestKeepRaised(
 		memset(&win_opts_bak, 0, sizeof(win_opts_bak));
 		win_opts = &win_opts_bak;
 	}
-	ew = ea->exc->x.etrigger->xmaprequest.window;
+	ew = ea->exc->w.w;
 	if (ReuseWin == NULL)
 	{
 		if (XFindContext(dpy, ew, FvwmContext, (caddr_t *)&fw) ==

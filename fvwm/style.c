@@ -1197,10 +1197,13 @@ static Bool style_parse_focus_policy_style(
 		{
 			val = DEF_FP_MODIFIERS;
 		}
+		if (val & AnyModifier)
+		{
+			val = FPOL_ANY_MODIFIER;
+		}
 		FPS_MODIFIERS(*f, val);
 		FPS_MODIFIERS(*m, 0xffffffff);
 		FPS_MODIFIERS(*c, 0xffffffff);
-		/*!!!*/
 		break;
 	case 3:
 		/* ClickRaisesFocused */

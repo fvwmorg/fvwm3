@@ -4535,6 +4535,7 @@ static mloop_ret_code_t __mloop_get_event(
 				e.xkey.x_root = 0;
 				e.xkey.y_root = 0;
 			}
+			fev_fake_event(&e);
 			med->mi = MR_SELECTED_ITEM(pmp->menu);
 		}
 	} /* in->mif.do_recycle_event */
@@ -4554,6 +4555,7 @@ static mloop_ret_code_t __mloop_get_event(
 			in->mif.is_motion_faked = True;
 			in->mif.do_force_reposition = False;
 			in->mif.is_popped_up_by_timeout = False;
+			fev_fake_event(&e);
 		}
 		else if (!FCheckMaskEvent(dpy, ExposureMask, &e))
 		{
@@ -4601,10 +4603,10 @@ static mloop_ret_code_t __mloop_get_event(
 			       dpy, ButtonMotionMask | ButtonReleaseMask,
 			       &e) && (e.type != ButtonRelease))
 		{
+
 			/* nop */
 		}
 	}
-	fev_fake_event(&e);
 
 	return MENU_MLOOP_RET_NORMAL;
 }
@@ -4628,7 +4630,6 @@ static mloop_ret_code_t __mloop_handle_event(
 			in->mif.is_release_first = True;
 			pmp->flags.is_sticky = False;
 			return MENU_MLOOP_RET_LOOP;
-			/* break; */
 		}
 		if (med->mi != NULL)
 		{
@@ -6038,7 +6039,10 @@ static void menu_tear_off(MenuRoot *mr_to_copy)
 	fev_fake_event(&ev);
 	ecc.type = EXCT_NULL;
 	ecc.x.etrigger = &ev;
-	ea.exc = exc_create_context(&ecc, ECC_TYPE | ECC_ETRIGGER);
+	ecc.w.w = MR_WINDOW(mr);
+	ecc.w.wcontext = C_ROOT;
+	ea.exc = exc_create_context(
+		&ecc, ECC_TYPE | ECC_ETRIGGER | ECC_W | ECC_WCONTEXT);
 	HandleMapRequestKeepRaised(&ea, None, NULL, &win_opts);
 	exc_destroy_context(ea.exc);
 

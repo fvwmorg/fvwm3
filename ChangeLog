@@ -1,5 +1,33 @@
 2002-09-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/focus.c (_focus_grab_buttons):
+	(__focus_grab_buttons):
+	renamed
+	(__focus_grab_one_button):
+	grab all modifier combinations on client windows by default if
+	necessary; this saves a lot of traffic but may grab unnecessary
+	modifiers with mouse bindings on the client window
+
+	* fvwm/fvwm.1:
+	* libs/defaults.h (DEF_FP_MODIFIERS):
+	* fvwm/events.c (__handle_focus_raise_click):
+	* fvwm/style.c (style_parse_focus_policy_style):
+	* fvwm/focus_policy.h (FPOL_ANY_MODIFIER_MASK):
+	default is now to use any modifiers for clicktofocus/raise purposes
+
+	* fvwm/menus.c (__mloop_get_event):
+	fixed menu hang
+	(menu_tear_off):
+	fixed tear off menus
+
+	* libs/FEvent.c (FCheckIfEvent):
+	(FCheckMaskEvent):
+	(FCheckTypedEvent):
+	(FCheckTypedWindowEvent):
+	(FCheckWindowEvent):
+	fixed FCheck...Event functions thus fixing Menu command behaving like
+	Popup
+
 	* fvwm/move_resize.c (InteractiveMove):
 	fixed offset between pointer and window when dragging
 

@@ -322,7 +322,7 @@
 #define DEF_FP_MOUSE_BUTTONS ( \
 	((1 << 0) | (1 << 1) | (1 << 2)) & \
 	((1 << NUMBER_OF_MOUSE_BUTTONS) - 1))
-#define DEF_FP_MODIFIERS			0
+#define DEF_FP_MODIFIERS		     0xff
 #define DEF_FP_PASS_FOCUS_CLICK			1
 #define DEF_FP_PASS_RAISE_CLICK			1
 #define DEF_FP_IGNORE_FOCUS_CLICK_MOTION	0
