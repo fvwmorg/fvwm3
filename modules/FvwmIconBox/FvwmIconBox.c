@@ -1807,7 +1807,7 @@ void ParseOptions(void)
       }
       else if (strncasecmp(tline,CatString3("*",MyName,"Font"),Clength+5)==0)
       {
-	CopyString(&font_string,&tline[Clength+5]);
+	CopyStringWithQuotes(&font_string,&tline[Clength+5]);
       }
       else if (strncasecmp(
 		 tline,CatString3("*",MyName,"IconFore"),Clength+9)==0)

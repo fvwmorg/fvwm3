@@ -627,8 +627,8 @@ ParseConfigLine(char *tline)
     return;
 
   if (strlen(tline) > 1) {
-    if (strncasecmp(tline, CatString3(Module, "Font", ""), Clength + 4)	== 0)
-      CopyString(&font_string, &tline[Clength + 4]);
+    if (strncasecmp(tline, CatString3(Module, "Font", ""), Clength + 4) == 0)
+      CopyStringWithQuotes(&font_string, &tline[Clength + 4]);
     else if (strncasecmp(tline, CatString3(Module, "Fore", ""), Clength + 4)
 	     == 0) {
       CopyString(&ForeColor[0], &tline[Clength + 4]);

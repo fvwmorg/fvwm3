@@ -531,21 +531,21 @@ static void ct_Font(char *cp)
 {
   if (font_names[f_text])
     free(font_names[f_text]);
-  font_names[f_text] = safestrdup(cp);
+  CopyStringWithQuotes(&font_names[f_text], cp);
   myfprintf((stderr, "Font: %s\n", font_names[f_text]));
 }
 static void ct_TimeoutFont(char *cp)
 {
   if (font_names[f_timeout])
     free(font_names[f_timeout]);
-  font_names[f_timeout] = safestrdup(cp);
+  CopyStringWithQuotes(&font_names[f_timeout], cp);
   myfprintf((stderr, "TimeoutFont: %s\n", font_names[f_timeout]));
 }
 static void ct_ButtonFont(char *cp)
 {
   if (font_names[f_button])
     free(font_names[f_button]);
-  font_names[f_button] = safestrdup(cp);
+  CopyStringWithQuotes(&font_names[f_button], cp);
   myfprintf((stderr, "ButtonFont: %s\n", font_names[f_button]));
 }
 static void ct_ButtonInPointer(char *cp)
@@ -572,7 +572,7 @@ static void ct_InputFont(char *cp)
 {
   if (font_names[f_input])
     free(font_names[f_input]);
-  font_names[f_input] = safestrdup(cp);
+  CopyStringWithQuotes(&font_names[f_input], cp);
   myfprintf((stderr, "InputFont: %s\n", font_names[f_input]));
 }
 static void ct_InputPointer(char *cp)

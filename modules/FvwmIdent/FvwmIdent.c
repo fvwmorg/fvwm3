@@ -239,7 +239,7 @@ int main(int argc, char **argv)
       tline += Clength;
       if (strncasecmp(tline, "Font", 4) == 0)
       {
-        CopyString(&font_string, &tline[4]);
+        CopyStringWithQuotes(&font_string, &tline[4]);
       }
       else if (strncasecmp(tline, "Fore", 4) == 0)
       {
