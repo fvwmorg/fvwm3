@@ -127,11 +127,19 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
 
 	memset(&mp, 0, sizeof(mp));
 	mp.menu = menu;
-	fw2 = (fw != None) ? fw : Fw;
+	if (Module >= 0)
+	{
+		fw2 = NULL;
+		tc = C_ROOT;
+	}
+	else
+	{
+		fw2 = (fw != None) ? fw : Fw;
+		tc = context;
+	}
 	mp.pfw = &fw2;
-	MR_IS_TEAR_OFF_MENU(menu) = 0;
-	tc = context;
 	mp.pcontext = &tc;
+	MR_IS_TEAR_OFF_MENU(menu) = 0;
 	mp.flags.has_default_action = (action != NULL);
 	mp.flags.is_sticky = fStaysUp;
 	mp.flags.is_submenu = False;

@@ -746,7 +746,7 @@ void ExecuteModuleCommand(Window w, int module, char *text)
 	}
 	Event.xbutton.x = 0;
 	Event.xbutton.y = 0;
-	context = GetContext(fw,&Event,&w);
+	context = GetContext(fw, &Event, &w);
 	old_execute_function(NULL, text, fw, &Event, context, module, 0, NULL);
 
 	return;

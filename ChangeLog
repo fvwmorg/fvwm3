@@ -1,5 +1,8 @@
 2002-07-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/menucmd.c (menu_func):
+	fixed context window of menus invoked by a module
+
 	* libs/vpacket.h (ConfigWinPacket):
 	* fvwm/module_interface.c (CONFIGARGSNEW):
 	* fvwm/fvwm.h (FvwmWindow):
