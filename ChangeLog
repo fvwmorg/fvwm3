@@ -1,3 +1,8 @@
+2001-01-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/borders.c (DrawButton):
+	Fixed clipping bug in tiled pixmap buttons
+
 2001-01-12  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/menu.c (CopyMenuStyle):
@@ -8,12 +13,12 @@
 	* NEWS:
 	New function and config command CopyMenuStyle which copy a menu style
 	to an other one.
-	
+
 2001-01-11  Dan Espen  <dane@mk.telcordia.com>
 
 	* tests/purify/purify.fvwm2rc: More tests.
 
-2000-01-09  Dominik Vogt  <dominik.vogt@gmx.de>
+2001-01-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (MenuInteraction):
 	tried to fix core dump w/ windowlist
@@ -23,7 +28,7 @@
 	Changed item hilighting with popdown delays at cost of the drawing speed
 	of overlapping B/D gradient sub menus
 
-2000-01-09  Mikhael Goikhman  <migo@homemail.com>
+2001-01-09  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.c (main):
 	allocate g_argv and add -s to it when dual head is detected;

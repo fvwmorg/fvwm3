@@ -255,8 +255,8 @@ static void DrawButton(FvwmWindow *t, Window win, int w, int h,
 	{
 	  for (xi = border; xi < width; xi += p->width)
 	  {
-	    int lw = width - x - p->width;
-	    int lh = height - y - p->height;
+	    int lw = width - xi - 0*p->width;
+	    int lh = height - yi - 0*p->height;
 
 	    if (lw > p->width)
 	      lw = p->width;
