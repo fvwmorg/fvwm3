@@ -9,7 +9,7 @@ FVWM_MODULESUBDIR=/${PACKAGE}/${VERSION}
 FVWM_DATASUBDIR=/${PACKAGE}
 
 AC_ARG_ENABLE(package-subdirs,
-  [  --disable-package-subdirs  don't create subdirs for modules and data],
+  [  --disable-package-subdirs  do not create subdirs for modules and data],
   [if test $enableval = no; then FVWM_MODULESUBDIR=""; FVWM_DATASUBDIR=""; fi],
   [])
 
@@ -35,10 +35,9 @@ AC_ARG_ENABLE(efence,
   [ac_cv_efence="$enableval"],
   [ac_cv_efence="no"])
 
-smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
 smr_SWITCH(command-log, command logging, off, FVWM_COMMAND_LOG)
+smr_SWITCH(debug-msgs, debugging messages, off, FVWM_DEBUG_MSGS)
 smr_SWITCH(multibyte, multibyte character support (experimental), off, I18N_MB)
-smr_SWITCH(shape, shape extensions, on, SHAPE)
 dnl dummy: smr_SWITCH(sm, dummy for test script, on, SESSION)
 
 AC_ARG_ENABLE(kanji,
@@ -137,9 +136,32 @@ dnl These are put up front so that if they are requested, but
 dnl configure fails to find them, we fail early.
 
 
+dnl ********* shape extension
+dnl smr_SWITCH(shape, shape extensions, on, SHAPE)
+AC_ARG_ENABLE(shape,
+  [  --disable-shape          disable shaped window support],
+  [ if test "$enableval" = yes; then
+    with_shape="yes, check"
+  else
+    with_shape="no"
+    problem_shape=": Explicitly disabled"
+  fi ],
+  [ with_shape="not specified, check" ]
+)
+
+if test "$with_shape" != "no"; then
+  $UNSET ac_cv_lib_Xext_XShapeQueryExtension
+  AC_CHECK_LIB(Xext, XShapeQueryExtension,
+               with_shape=yes; AC_DEFINE(SHAPE),
+               with_shape=no;
+               problem_shape=": Failed to detect Shape extension",
+               [$X_LIBS $X_PRE_LIBS -lX11 $X_EXTRA_LIBS])
+fi
+
+
 dnl ********* xinerama
 AC_ARG_ENABLE(xinerama,
-  [  --disable-xinerama      disable Xinerama support],
+  [  --disable-xinerama       disable Xinerama multi screen support],
   [ if test "$enableval" = yes; then
     with_xinerama="yes, check"
   else
@@ -148,16 +170,26 @@ AC_ARG_ENABLE(xinerama,
   fi ],
   [ with_xinerama="not specified, check" ]
 )
+
 if test "$with_xinerama" != "no"; then
+  $UNSET ac_cv_lib_Xinerama_XineramaIsActive
   AC_CHECK_LIB(Xinerama, XineramaIsActive,
-               XINERAMA_CPPFLAGS=-DHAS_XINERAMA XINERAMA_LIBS=-lXinerama
-               with_xinerama=yes,
+               with_xinerama=yes; AC_DEFINE(XINERAMA),
                with_xinerama=no;
                problem_xinerama=": Failed to detect libXinerama",
                [$X_LIBS $X_PRE_LIBS -lXext -lX11 $X_EXTRA_LIBS])
 fi
-AC_SUBST(XINERAMA_CPPFLAGS)
-AC_SUBST(XINERAMA_LIBS)
+AC_SUBST(Xinerama_LIBS)
+AC_SUBST(Xinerama_CFLAGS)
+
+dnl ********* xinerama-emulation
+smr_SWITCH(xinerama-emulation, Xinerama emulation on one screen, off,
+           USE_XINERAMA_EMULATION)
+if test "$enable_xinerama_emulation" = yes; then
+  with_xinerama_emulation=yes
+else
+  with_xinerama_emulation=no
+fi
 
 
 dnl ********* xpm
@@ -585,16 +617,20 @@ FVWM Configuration:
   Modules:     $my_moddir
   Data files:  $my_datdir
 
-  Have ReadLine support?             $with_readline$problem_readline
-  Have RPlay support in FvwmEvent?   $with_rplay$problem_rplay
-  Have Stroke support?               $with_stroke$problem_stroke
-  Have XPM support?                  $with_xpm$problem_xpm
-  Have GNOME Window Manager support? $with_gnomewm$problem_gnomewm
-  Have Session Management support?   $with_sm$problem_sm
-  Have GTK support for FvwmGtk?      $with_gtk$problem_gtk$fvwmgtk_msg
-  Have Multibyte support?            $with_multibyte$problem_multibyte
-  Have Xinerama support?             $with_xinerama$problem_xinerama
+  With GNOME Window Manager support? $with_gnomewm$problem_gnomewm
+  With GTK support for FvwmGtk?      $with_gtk$problem_gtk$fvwmgtk_msg
+  With ReadLine support?             $with_readline$problem_readline
+  With RPlay support in FvwmEvent?   $with_rplay$problem_rplay
+  With Shaped window support         $with_shape$problem_shape
+  With Session Management support?   $with_sm$problem_sm
+  With Stroke support?               $with_stroke$problem_stroke
+  With Xinerama support?             $with_xinerama$problem_xinerama
+  With XPM support?                  $with_xpm$problem_xpm
+  With Multibyte support?            $with_multibyte$problem_multibyte
 "
+case "$with_xinerama_emulation" in
+  yes) echo "  Xinerama emulation enabled." ;;
+esac
 case "$ac_cv_dmalloc" in
   yes) echo "  DMALLOC heap debugging library enabled." ;;
 esac

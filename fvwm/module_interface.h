@@ -84,6 +84,7 @@ void BroadcastMiniIcon(unsigned long event_type,
 		       unsigned long data7, unsigned long data8,
 		       const char *name);
 void BroadcastColorset(int n);
+void BroadcastConfigInfoString(char *string);
 void SendPacket(int channel, unsigned long event_type,
                 unsigned long num_datum, ...);
 void SendConfig(int Module, unsigned long event_type, const FvwmWindow *t);

@@ -104,6 +104,7 @@
 #include <signal.h>
 #include <sys/wait.h>
 #include <sys/time.h>
+#include <time.h>
 #include <ctype.h>
 
 #ifdef DEBUG

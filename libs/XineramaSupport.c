@@ -47,14 +47,22 @@
  *
  *   Using real Xinerama screens info may be switched on/off "on the
  *   fly" by calling XineramaSupportSetState(0=off/else=on).
+ *
+ *   Modules with Xinerama support should listen to the XineramaEnable
+ *   and XineramaDisable strings coming over the module pipe as
+ *   M_CONFIG_INFO packets and call XineramaSupportEnable() or
+ *   XineramaSupportDisable in response.
+ *
  *********************************************************************/
+
+#include "config.h"
 
 #include <stdlib.h>
 #include <stdio.h>
-#include "XineramaSupport.h"
 #include "safemalloc.h"
 
-#ifdef HAS_XINERAMA
+#include "XineramaSupport.h"
+#ifdef HAVE_XINERAMA
 #include <X11/extensions/Xinerama.h>
 #else
 typedef struct
@@ -65,10 +73,6 @@ typedef struct
   short width;
   short height;
 } XineramaScreenInfo;
-#endif
-
-#ifndef DO_MALLOC
-#define DO_MALLOC malloc
 #endif
 
 static Display            *disp              = NULL;
@@ -99,18 +103,70 @@ static void XineramaSupportSetState(Bool onoff)
 void XineramaSupportInit(Display *dpy)
 {
   static Bool is_initialised = False;
-#ifdef HAS_XINERAMA
-  XineramaScreenInfo *info;
-  int count;
+#ifdef HAVE_XINERAMA
+  int dummy_rc;
 #endif
 
   if (is_initialised)
     return;
   is_initialised = True;
   disp = dpy;
-#ifdef HAS_XINERAMA
-  if (XineramaIsActive(disp))
+#ifdef USE_XINERAMA_EMULATION
+  if (True)
   {
+    int count;
+    int w;
+    int h;
+    int ws;
+
+    /* xinerama emulation simulates xinerama on a single screen:
+     *
+     * actual screen
+     * +---------------------+--------------+
+     * |                     |              |
+     * |                     |              |
+     * |                     |              |
+     * |                     |  simulated   |
+     * |                     |  screen 2    |
+     * |  simulated screen 1 |              |
+     * |                     |              |
+     * |                     |              |
+     * |                     |              |
+     * |                     |              |
+     * +---------------------+              |
+     * |   blank area        |              |
+     * |                     |              |
+     * +---------------------+--------------+
+     */
+    count = 2;
+    total_screens = count;
+    numscreens = (is_xinerama_disabled) ? 0 : count;
+    screens = (XineramaScreenInfo *)
+      safemalloc(sizeof(XineramaScreenInfo) * (1 + count));
+    /* calculate the faked sub screen dimensions */
+    w = DisplayWidth(disp, DefaultScreen(disp));
+    ws = 3 * w / 5;
+    h = DisplayHeight(disp, DefaultScreen(disp));
+    screens[1].screen_number = 0;
+    screens[1].x_org         = 0;
+    screens[1].y_org         = 0;
+    screens[1].width         = ws;
+    screens[1].height        = 7 * h / 8;
+    screens[2].screen_number = 1;
+    screens[2].x_org         = ws;
+    screens[2].y_org         = 0;
+    screens[2].width         = w - ws;
+    screens[2].height        = h;
+  }
+  else
+#endif
+#ifdef HAVE_XINERAMA
+  if (XineramaQueryExtension(disp, &dummy_rc, &dummy_rc) &&
+      XineramaIsActive(disp))
+  {
+    int count;
+    XineramaScreenInfo *info;
+
     info = XineramaQueryScreens(disp, &count);
     total_screens = count;
     numscreens = (is_xinerama_disabled) ? 0 : count;

@@ -1,3 +1,23 @@
+2001-07-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/XineramaSupport.c (XineramaSupportInit):
+	added xinerama emulation for developers
+
+	* fvwm/virtual.c (CMD_XineramaEnable):
+	(CMD_XineramaDisable):
+	* fvwm/module_interface.c (BroadcastConfigInfoString):
+	added function to communicate Xinerama on/off to modules
+
+	* fvwm/module_interface.c:
+	include time.h to fix warning
+	* libs/XineramaSupport.c:
+	* fvwm/fvwm.c (setVersionInfo):
+	* fvwm/Makefile.am:
+	* configure.in:
+	* acconfig.h:
+	cleanded up xinerama detection
+	added shape detection
+
 2001-07-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/fvwm2.1:

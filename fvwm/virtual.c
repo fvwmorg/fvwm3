@@ -339,11 +339,13 @@ void CMD_EdgeResistance(F_CMD_ARGS)
 void CMD_XineramaDisable(F_CMD_ARGS)
 {
   XineramaSupportDisable();
+  BroadcastConfigInfoString("XineramaDisable");
 }
 
 void CMD_XineramaEnable(F_CMD_ARGS)
 {
   XineramaSupportEnable();
+  BroadcastConfigInfoString("XineramaEnable");
 }
 
 

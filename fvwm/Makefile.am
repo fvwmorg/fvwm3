@@ -28,7 +28,7 @@ fvwm2_SOURCES = add_window.h bindings.h borders.h builtins.h colormaps.h \
 fvwm2_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = -L$(top_builddir)/libs $(X_LIBS) -lfvwm $(xpm_LIBS) $(stroke_LIBS)\
-	$(X_PRE_LIBS) $(XINERAMA_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
+	$(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 $(X_EXTRA_LIBS) -lm
 
 INCLUDES = -I$(top_srcdir) -I$(top_srcdir)/libs $(xpm_CFLAGS) $(stroke_CFLAGS)\
 	$(X_CFLAGS)

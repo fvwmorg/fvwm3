@@ -16,6 +16,12 @@
 /* Define if rplay library is used.  */
 #undef HAVE_RPLAY
 
+/* Define if Xinerama should be emulated on a single screen. */
+#undef USE_XINERAMA_EMULATION
+
+/* Define if Xinerama library is used. */
+#undef HAVE_XINERAMA
+
 /* Define if stroke library is used. */
 #undef HAVE_STROKE
 

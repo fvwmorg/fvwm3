@@ -15,6 +15,7 @@
 
 #include "types.h"
 #include "libs/fvwmsignal.h"
+#include <time.h>
 
 extern int fd[2];
 extern Window ref;
@@ -865,7 +866,7 @@ static void ChangeFont (int NbArg,long *TabArg)
  /* Hmm.. Fontset is not freed. However, original alogrithm does not consider
   * the situation of font-loading-falure.
   */
- if ((tabxobj[IdItem]->xfontset=GetFontSetOrFixed(dpy,tabxobj[IdItem]->font)) 
+ if ((tabxobj[IdItem]->xfontset=GetFontSetOrFixed(dpy,tabxobj[IdItem]->font))
      == NULL) {
      fprintf(stderr, "FvwmScript: Couldn't load font. Exiting!\n");
      exit(1);

@@ -1954,13 +1954,16 @@ static void setVersionInfo(void)
 #ifdef GNOME
   strcat(support_str, " GNOME WM hints,");
 #endif
+#ifdef SHAPE
+  strcat(support_str, " Shape,");
+#endif
 #ifdef SESSION
   strcat(support_str, " SM,");
 #endif
 #ifdef I18N_MB
   strcat(support_str, " Multibyte,");
 #endif
-#ifdef HAS_XINERAMA
+#ifdef HAVE_XINERAMA
   strcat(support_str, " Xinerama,");
 #endif
 

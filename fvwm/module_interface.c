@@ -31,12 +31,14 @@
 #include <stdio.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <time.h>
 
 #ifdef HAVE_FCNTL_H
 #include <fcntl.h>
 #endif
 
 #include "libs/fvwmlib.h"
+#include "libs/Colorset.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -48,7 +50,6 @@
 #include "read.h"
 #include "events.h"
 #include "fvwmsignal.h"
-#include "libs/Colorset.h"
 
 /*
  * Use POSIX behaviour if we can, otherwise use SysV instead
@@ -1198,6 +1199,22 @@ void BroadcastColorset(int n)
     /* just a quick check to save us lots of overhead */
     if (pipeOn[i] >= 0)
       SendName(i, M_CONFIG_INFO, 0, 0, 0, buf);
+  }
+}
+
+
+/**********************************************************************
+ * Broadcasts a string to all modules as M_CONFIG_INFO.
+ **********************************************************************/
+void BroadcastConfigInfoString(char *string)
+{
+  int i;
+
+  for (i = 0; i < npipes; i++)
+  {
+    /* just a quick check to save us lots of overhead */
+    if (pipeOn[i] >= 0)
+      SendName(i, M_CONFIG_INFO, 0, 0, 0, string);
   }
 }
 
