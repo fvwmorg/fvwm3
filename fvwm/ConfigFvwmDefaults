@@ -30,7 +30,7 @@ Key Tab A M WindowList Root c c NoDeskSort
 # Default styles
 Style * GrabFocusTransient, LowerTransient, RaiseTransient, StackTransientParent
 Style * RandomPlacement, SmartPlacement, Title, MouseFocus, GrabFocusOff
-Style * NoIconPosition
+Style * UseIconPosition
 # Basic Mouse controls:
 Mouse 1 TS A FuncFvwmRaiseLowerX Move
 Mouse 1 F  A FuncFvwmRaiseLowerX Resize

@@ -1,5 +1,8 @@
 2000-12-06  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/ConfigFvwmDefaults:
+	back to default: UseIconPosition
+
 	* fvwm/icons.c (do_all_iconboxes):
 	fixed default icon box dimension - this accidentally swapped width and
 	height of the screen

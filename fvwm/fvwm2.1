@@ -4179,7 +4179,7 @@ is a comma separated list containing one or more of the keywords
 .IR UseDecor ,
 .IR UseStyle ,
 .IR NoPPosition " / " UsePPosition ,
-.IR NoIconPosition " / " UseIconPosition ,
+.IR UseIconPosition " / " NoIconPosition ,
 .IR Lenience " / " NoLenience ,
 .IR ClickToFocus " / " SloppyFocus " /"
 .IR MouseFocus | FocusFollowsMouse " / " NeverFocus ,
@@ -4657,11 +4657,9 @@ required for some applications, but if you don't have one of
 those its a real headache.  Many programs set this field to something
 obnoxious like 0,0 (upper left corner).
 
-.I UseIconPosition
-instructs fvwm to honor the program specified icon position
-(IconPosition hint) when iconifying the window.  Very few applications
-provide this hint and if they do it is almost always undesirable to
-honor this hint.  So this style is best left off (default).
+.I NoIconPosition
+instructs fvwm to ignore the program specified icon position
+(IconPosition hint) when iconifying the window.
 
 With
 .I ActivePlacement
