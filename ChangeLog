@@ -1,3 +1,10 @@
+2001-12-31  olicha  <olivier.chapuis@free.fr> 
+
+	* fvwm/ewmh_events.c (ewmh_WMStateModal): 
+	Removed some code which try to raise ewmh modal window over
+	its transientfor window; this seems not possible without a new style
+	or a bad hack in stack.c
+	
 2001-12-30  Dan Espen  <dane@mk.telcordia.com>
 
 	* libs/GetFont.c (GetFontSetOrFixed): Cleanup the message about the
