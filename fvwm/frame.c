@@ -1143,7 +1143,7 @@ static void frame_move_resize_step(
 	/* draw the border and the titlebar */
 	draw_decorations_with_geom(
 		fw, PART_ALL, (mra->w_with_focus != None) ? True : False,
-		do_force, CLEAR_NONE, &mra->current_g, &mra->next_g);
+		do_force, CLEAR_BUTTONS, &mra->current_g, &mra->next_g);
 	/* setup the client and the parent windows */
 	w = mra->next_g.width - mra->b_g.total_size.width;
 	if (w < 1)
@@ -1202,6 +1202,7 @@ void frame_move_resize(
 	FvwmWindow *fw, frame_move_resize_args mr_args)
 {
 	mr_args_internal *mra;
+	Bool is_grabbed;
 	int i;
 
 	mra = (mr_args_internal *)mr_args;
@@ -1209,41 +1210,22 @@ void frame_move_resize(
 	print_g("start", &mra->start_g);
 	print_g("end  ", &mra->end_g);
 #endif
+	/* freeze the cursor shape; otherwise it may flash to a different shape
+	 * during the animation */
+	is_grabbed = GrabEm(0, GRAB_FREEZE_CURSOR);
 	/* animation */
 	for (i = 1; i <= mra->anim_steps; i++, frame_next_move_resize_args(mra))
 	{
 		mra->current_step = i;
 		frame_move_resize_step(fw, mra);
 	}
+	if (is_grabbed == True)
+	{
+		UngrabEm(GRAB_FREEZE_CURSOR);
+	}
 	/* clean up */
 	fw->frame_g = mra->end_g;
 	update_absolute_geometry(fw);
-#if 1
-	/*!!! necessary? */
-	if (mra->delta_g.width != 0 || mra->delta_g.height != 0 ||
-	    mra->mode != FRAME_MR_OPAQUE)
-	{
-		DrawDecorations(
-			fw, PART_BUTTONS, (mra->w_with_focus != None), True,
-			None, CLEAR_NONE);
-	}
-#endif
-#if 0
-	/* prepare a shape window if necessary */
-	static Window shape_w = None;
-	if (FShapesSupported && shape_w == None && fw->wShaped)
-	{
-		XSetWindowAttributes attributes;
-		unsigned long valuemask;
-
-		valuemask = CWOverrideRedirect;
-		attributes.override_redirect = True;
-		shape_w = XCreateWindow(
-			dpy, Scr.Root, -32768, -32768, 1, 1, 0, CopyFromParent,
-			(unsigned int)CopyFromParent, CopyFromParent,
-			valuemask, &attributes);
-	}
-#endif
 
 	return;
 }
@@ -1780,5 +1762,21 @@ void frame_setup_shape(FvwmWindow *fw, int w, int h)
 				FOCUS_SET(FW_W(fw));
 			}
 		}
+	}
+#endif
+#if 0
+	/* prepare a shape window if necessary */
+	static Window shape_w = None;
+	if (FShapesSupported && shape_w == None && fw->wShaped)
+	{
+		XSetWindowAttributes attributes;
+		unsigned long valuemask;
+
+		valuemask = CWOverrideRedirect;
+		attributes.override_redirect = True;
+		shape_w = XCreateWindow(
+			dpy, Scr.Root, -32768, -32768, 1, 1, 0, CopyFromParent,
+			(unsigned int)CopyFromParent, CopyFromParent,
+			valuemask, &attributes);
 	}
 #endif

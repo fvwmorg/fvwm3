@@ -104,6 +104,7 @@ Bool GrabEm(int cursor, int grab_context)
   int val = 0;
   int rep;
   Window grab_win;
+  extern Window PressedW;
 
   if (grab_context <= GRAB_STARTUP || grab_context >= GRAB_MAXVAL)
   {
@@ -121,6 +122,10 @@ Bool GrabEm(int cursor, int grab_context)
 
   if (grab_count[GRAB_ALL] > grab_count[GRAB_PASSIVE])
   {
+    if (grab_context == GRAB_FREEZE_CURSOR)
+    {
+      return True;
+    }
     /* already grabbed, just change the grab cursor */
     grab_count[grab_context]++;
     grab_count[GRAB_ALL]++;
@@ -147,6 +152,10 @@ Bool GrabEm(int cursor, int grab_context)
   case GRAB_PASSIVE:
     /* cannot happen */
     return False;
+  case GRAB_FREEZE_CURSOR:
+    grab_win = (PressedW == None) ? Scr.Root : PressedW;
+    rep = 2;
+    break;
   default:
     grab_win = Scr.Root;
     rep = NUMBER_OF_GRAB_ATTEMPTS;
@@ -157,7 +166,8 @@ Bool GrabEm(int cursor, int grab_context)
   while((i < rep)&&
 	(val = XGrabPointer(
 	  dpy, grab_win, True, GRAB_EVMASK, GrabModeAsync, GrabModeAsync,
-	  None, Scr.FvwmCursors[cursor], CurrentTime) != GrabSuccess))
+	  None, (grab_context == GRAB_FREEZE_CURSOR) ?
+	  None : Scr.FvwmCursors[cursor], CurrentTime) != GrabSuccess))
   {
     switch (val)
     {
@@ -173,8 +183,15 @@ Bool GrabEm(int cursor, int grab_context)
     default:
       /* If you go too fast, other windows may not get a change to release
        * any grab that they have. */
-      usleep(1000 * TIME_BETWEEN_GRAB_ATTEMPTS);
+      if (grab_context == GRAB_FREEZE_CURSOR)
+      {
+	break;
+      }
       i++;
+      if (i < rep)
+      {
+	usleep(1000 * TIME_BETWEEN_GRAB_ATTEMPTS);
+      }
       break;
     }
   }

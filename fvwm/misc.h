@@ -24,7 +24,9 @@
 #define GRAB_BUSYMENU 5       /* Allows menus.c to regrab the cursor */
 #define GRAB_PASSIVE  6       /* Override of passive grab, only prevents grab
 			       * to be released too early */
-#define GRAB_MAXVAL   7       /* last GRAB macro + 1 */
+#define GRAB_FREEZE_CURSOR 7  /* Freeze the cursor shape if a window is
+			       * pressed. */
+#define GRAB_MAXVAL   8       /* last GRAB macro + 1 */
 
 
 /* Start of function prototype area. */

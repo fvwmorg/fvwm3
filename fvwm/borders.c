@@ -2306,11 +2306,11 @@ static void border_draw_one_button(
 	border_set_button_pixmap(fw, td, button, p);
 	/* apply the pixmap and destroy it */
 	border_set_part_background(FW_W_BUTTON(fw, button), p);
+	XFreePixmap(dpy, p);
 	if ((td->tbstate.clear_bmask & (1 << button)) != 0)
 	{
 		XClearWindow(dpy, FW_W_BUTTON(fw, button));
 	}
-	XFreePixmap(dpy, p);
 
 	return;
 }
@@ -2375,6 +2375,7 @@ static window_parts border_get_titlebar_descr(
 	{
 		ret_td->tbstate.pressed_bmask = 0;
 	}
+
 	if ((clear_parts & CLEAR_BUTTONS) != CLEAR_NONE)
 	{
 		ret_td->tbstate.clear_bmask = ~0;

@@ -1,3 +1,10 @@
+2002-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/frame.c (frame_move_resize):
+	* fvwm/misc.c (GrabEm):
+	fixed the cursor shape during resizing
+	fixed button looks in small windows
+
 2002-03-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/FBidi.{c,h}:
