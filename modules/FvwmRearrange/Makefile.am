@@ -1,12 +1,29 @@
+## This is a -*- Makefile -*-
 ## Process this file with automake to create Makefile.in
 
 moduledir = @FVWM_MODULEDIR@
-module_PROGRAMS = FvwmRearrange
+module_PROGRAMS = FvwmRearrange 
+
+## We use _SCRIPTS because it is the easiest way to get them installed with the
+## executable bit set.  Using _PROGRAMS ran into trouble because automake
+## insisted on creating compile & link rules for them.
+module_SCRIPTS = FvwmCascade FvwmTile
+FvwmCascade FvwmTile: FvwmRearrange
+	$(LN_S) $< $@
+
 man_MANS = FvwmRearrange.1 FvwmTile.1 FvwmCascade.1
-EXTRA_DIST = $(man_MANS)
+FvwmTile.1 FvwmCascade.1: FvwmRearrange.1
+	$(LN_S) $< $@
+
+EXTRA_DIST = FvwmRearrange.1
 
 FvwmRearrange_SOURCES = FvwmRearrange.c
+#FvwmCascade_SOURCES =
+#FvwmTile_SOURCES =
+
 FvwmRearrange_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+#FvwmCascade_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+#FvwmTile_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm

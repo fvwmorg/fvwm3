@@ -116,17 +116,11 @@
 /* Define to empty if the keyword does not work.  */
 #undef const
 
-/* Define if you don't have vprintf but do have _doprnt.  */
-#undef HAVE_DOPRNT
-
 /* Define if you have the strftime function.  */
 #undef HAVE_STRFTIME
 
 /* Define if you have <sys/wait.h> that is POSIX.1 compatible.  */
 #undef HAVE_SYS_WAIT_H
-
-/* Define if you have the vprintf function.  */
-#undef HAVE_VPRINTF
 
 /* Define as __inline if that's what the C compiler calls it.  */
 #undef inline
@@ -262,6 +256,9 @@
 
 /* Define if you have the <memory.h> header file.  */
 #undef HAVE_MEMORY_H
+
+/* Define if you have the <stdarg.h> header file.  */
+#undef HAVE_STDARG_H
 
 /* Define if you have the <stdlib.h> header file.  */
 #undef HAVE_STDLIB_H

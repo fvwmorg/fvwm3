@@ -82,15 +82,16 @@ socket_LIBS = @socket_LIBS@
 xpm_CFLAGS = @xpm_CFLAGS@
 xpm_LIBS = @xpm_LIBS@
 
-EXTRA_DIST = color_combos error_codes fvwm-2.xx.lsm fvwm.lsm \
-	   m4_hacks black-stone1.jpg fvwm.gif \
-	   txt2html.sh $(HTML)
+EXTRA_DIST = color_combos error_codes fvwm-2.xx.lsm fvwm.lsm	\
+	m4_hacks black-stone1.jpg fvwm.gif			\
+	run_man2html.sh txt2html.sh $(HTML)
 
-HTML = docs.html download.html features.html ftp.html index.html \
-     links.html mailinglist.html mod_changes.html mod_concept.html \
-     mod_f2m_communication.html mod_initialization.html \
-     mod_m2f_communication.html mod_security.html modules.html \
-     version.html
+HTML = cvs.html docs.html download.html features.html ftp.html index.html \
+	links.html mailinglist.html man-pages.html			  \
+	mod_changes.html mod_concept.html				  \
+	mod_f2m_communication.html mod_initialization.html		  \
+	mod_m2f_communication.html mod_security.html modules.html	  \
+	version.html
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 

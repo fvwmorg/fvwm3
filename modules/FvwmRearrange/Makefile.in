@@ -83,12 +83,21 @@ xpm_CFLAGS = @xpm_CFLAGS@
 xpm_LIBS = @xpm_LIBS@
 
 moduledir = @FVWM_MODULEDIR@
-module_PROGRAMS = FvwmRearrange
-man_MANS = FvwmRearrange.1
-EXTRA_DIST = $(man_MANS)
+module_PROGRAMS = FvwmRearrange 
+
+module_SCRIPTS = FvwmCascade FvwmTile
+
+man_MANS = FvwmRearrange.1 FvwmTile.1 FvwmCascade.1
+
+EXTRA_DIST = FvwmRearrange.1
 
 FvwmRearrange_SOURCES = FvwmRearrange.c
+#FvwmCascade_SOURCES =
+#FvwmTile_SOURCES =
+
 FvwmRearrange_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+#FvwmCascade_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
+#FvwmTile_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS)  \
     $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
@@ -111,6 +120,8 @@ X_PRE_LIBS = @X_PRE_LIBS@
 FvwmRearrange_OBJECTS =  FvwmRearrange.o
 FvwmRearrange_LDADD = $(LDADD)
 FvwmRearrange_LDFLAGS = 
+SCRIPTS =  $(module_SCRIPTS)
+
 CFLAGS = @CFLAGS@
 COMPILE = $(CC) $(DEFS) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
 LINK = $(CC) $(AM_CFLAGS) $(CFLAGS) $(LDFLAGS) -o $@
@@ -129,7 +140,7 @@ DEP_FILES =  .deps/FvwmRearrange.P
 SOURCES = $(FvwmRearrange_SOURCES)
 OBJECTS = $(FvwmRearrange_OBJECTS)
 
-all: Makefile $(PROGRAMS) $(MANS)
+all: Makefile $(PROGRAMS) $(SCRIPTS) $(MANS)
 
 .SUFFIXES:
 .SUFFIXES: .S .c .o .s
@@ -185,6 +196,25 @@ maintainer-clean-compile:
 FvwmRearrange: $(FvwmRearrange_OBJECTS) $(FvwmRearrange_DEPENDENCIES)
 	@rm -f FvwmRearrange
 	$(LINK) $(FvwmRearrange_LDFLAGS) $(FvwmRearrange_OBJECTS) $(FvwmRearrange_LDADD) $(LIBS)
+
+install-moduleSCRIPTS: $(module_SCRIPTS)
+	@$(NORMAL_INSTALL)
+	$(mkinstalldirs) $(DESTDIR)$(moduledir)
+	@list='$(module_SCRIPTS)'; for p in $$list; do \
+	  if test -f $$p; then \
+	    echo " $(INSTALL_SCRIPT) $$p $(DESTDIR)$(moduledir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $$p $(DESTDIR)$(moduledir)/`echo $$p|sed '$(transform)'`; \
+	  else if test -f $(srcdir)/$$p; then \
+	    echo " $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(moduledir)/`echo $$p|sed '$(transform)'`"; \
+	    $(INSTALL_SCRIPT) $(srcdir)/$$p $(DESTDIR)$(moduledir)/`echo $$p|sed '$(transform)'`; \
+	  else :; fi; fi; \
+	done
+
+uninstall-moduleSCRIPTS:
+	@$(NORMAL_UNINSTALL)
+	list='$(module_SCRIPTS)'; for p in $$list; do \
+	  rm -f $(DESTDIR)$(moduledir)/`echo $$p|sed '$(transform)'`; \
+	done
 
 install-man1:
 	$(mkinstalldirs) $(DESTDIR)$(man1dir)
@@ -297,18 +327,19 @@ installcheck:
 install-exec: 
 	@$(NORMAL_INSTALL)
 
-install-data: install-modulePROGRAMS install-man
+install-data: install-modulePROGRAMS install-moduleSCRIPTS install-man
 	@$(NORMAL_INSTALL)
 
 install: install-exec install-data all
 	@:
 
-uninstall: uninstall-modulePROGRAMS uninstall-man
+uninstall: uninstall-modulePROGRAMS uninstall-moduleSCRIPTS uninstall-man
 
 install-strip:
 	$(MAKE) $(AM_MAKEFLAGS) INSTALL_PROGRAM='$(INSTALL_PROGRAM) -s' INSTALL_SCRIPT='$(INSTALL_PROGRAM)' install
 installdirs:
-	$(mkinstalldirs)  $(DESTDIR)$(moduledir) $(DESTDIR)$(mandir)/man1
+	$(mkinstalldirs)  $(DESTDIR)$(moduledir) $(DESTDIR)$(moduledir) \
+		$(DESTDIR)$(mandir)/man1
 
 
 mostlyclean-generic:
@@ -340,7 +371,8 @@ maintainer-clean:  maintainer-clean-modulePROGRAMS \
 .PHONY: mostlyclean-modulePROGRAMS distclean-modulePROGRAMS \
 clean-modulePROGRAMS maintainer-clean-modulePROGRAMS \
 uninstall-modulePROGRAMS install-modulePROGRAMS mostlyclean-compile \
-distclean-compile clean-compile maintainer-clean-compile install-man1 \
+distclean-compile clean-compile maintainer-clean-compile \
+uninstall-moduleSCRIPTS install-moduleSCRIPTS install-man1 \
 uninstall-man1 install-man uninstall-man tags mostlyclean-tags \
 distclean-tags clean-tags maintainer-clean-tags distdir \
 mostlyclean-depend distclean-depend clean-depend \
@@ -349,6 +381,10 @@ install uninstall all installdirs mostlyclean-generic distclean-generic \
 clean-generic maintainer-clean-generic clean mostlyclean distclean \
 maintainer-clean
 
+FvwmCascade FvwmTile: FvwmRearrange
+	$(LN_S) $< $@
+FvwmTile.1 FvwmCascade.1: FvwmRearrange.1
+	$(LN_S) $< $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

@@ -83,9 +83,10 @@ xpm_CFLAGS = @xpm_CFLAGS@
 xpm_LIBS = @xpm_LIBS@
 
 SUBDIRS = FvwmAnimate FvwmAudio FvwmAuto FvwmBacker @FVWMBANNER@ FvwmButtons \
-	FvwmCascade FvwmCpp FvwmEvent FvwmForm FvwmIconBox FvwmIconMan \
-	FvwmIdent FvwmM4 FvwmPager FvwmSave FvwmSaveDesk FvwmScroll \
-	FvwmTalk FvwmTile FvwmWinList
+	FvwmCpp FvwmEvent FvwmForm FvwmIconBox FvwmIconMan \
+	FvwmIdent FvwmM4 FvwmPager FvwmRearrange \
+	FvwmSave FvwmSaveDesk FvwmScroll \
+	FvwmTalk FvwmWinList
 
 EXTRA_SUBDIRS = FvwmBanner
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs

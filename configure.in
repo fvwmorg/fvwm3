@@ -66,6 +66,27 @@ dnl Help finding POSIX functions on some systems
 AC_ISC_POSIX
 AC_MINIX
 
+dnl Check for REQUIRED headers and functions before going any
+dnl further.
+
+dnl The module interface uses variadic functions for message passing.
+AC_CHECK_HEADERS(stdarg.h)
+AC_CHECK_FUNCS(vfprintf)
+if test $ac_cv_header_stdarg_h = no -o \
+	$ac_cv_func_vfprintf = no; then
+     AC_MSG_ERROR(stdarg.h and vfprintf required.)
+fi
+
+dnl For reaping children, fvwm needs either waitpid() or wait3()
+dnl Some extra modules may need wait4() too
+AC_CHECK_FUNCS(waitpid)
+if test $ac_cv_func_waitpid = no; then
+    AC_CHECK_FUNCS(wait3 wait4)
+    if test $ac_cv_func_wait3 = no; then
+        AC_MSG_ERROR(Either waitpid or wait3 function is required)
+    fi
+fi
+
 dnl Make the C++ compiler optional, for it is only used in a
 dnl module, not for the main code.
 AC_ARG_WITH(cxx,
@@ -153,26 +174,16 @@ dnl AC_STRUCT_TM
 dnl Checks for library functions.
 AC_TYPE_SIGNAL
 AC_FUNC_STRFTIME
-AC_FUNC_VPRINTF
 AC_CHECK_FUNCS(gettimeofday mkfifo putenv select setvbuf socket waitpid)
 AC_CHECK_FUNCS(strdup strstr strtol memmove memcpy strchr sysconf uname div)
-AC_CHECK_FUNCS(vfprintf)
 
 if test $ac_cv_func_setvbuf = yes; then
    AC_FUNC_SETVBUF_REVERSED
 fi
 
+dnl Check for standard functions that we have replacements for.
 AC_REPLACE_FUNCS(gethostname strcasecmp strncasecmp strerror usleep)
 AC_SUBST(LIBOBJS)
-
-dnl For reaping children, fvwm needs either waitpid() or wait3()
-dnl Some extra modules may need wait4() too
-if test $ac_cv_func_waitpid = no; then
-    AC_CHECK_FUNCS(wait3 wait4)
-    if test $ac_cv_func_wait3 = no; then
-	AC_MSG_ERROR(Either waitpid or wait3 function is required)
-    fi
-fi
 
 dnl According to Dan Espen <dane@mk.bellcore.com>, solaris needs
 dnl -lsocket to find socket routines.  The logic below mimics that found
@@ -184,27 +195,40 @@ fi
 AC_SUBST(socket_LIBS)
 
 AC_OUTPUT(Makefile libs/Makefile fvwm/Makefile modules/Makefile
-modules/FvwmM4/Makefile modules/FvwmBanner/Makefile
-modules/FvwmCpp/Makefile modules/FvwmForm/Makefile
-modules/FvwmEvent/Makefile modules/FvwmAnimate/Makefile
-modules/FvwmSave/Makefile modules/FvwmIdent/Makefile
-modules/FvwmPager/Makefile modules/FvwmWinList/Makefile
-modules/FvwmScroll/Makefile modules/FvwmBacker/Makefile
-modules/FvwmTalk/Makefile modules/FvwmAudio/Makefile
-modules/FvwmIconBox/Makefile modules/FvwmSaveDesk/Makefile
-modules/FvwmAuto/Makefile modules/FvwmButtons/Makefile
-modules/FvwmIconMan/Makefile modules/FvwmCascade/Makefile
-modules/FvwmTile/Makefile
-docs/Makefile icons/Makefile sample.fvwmrc/Makefile
-extras/Makefile textures/Makefile
-extras/FvwmCommand/Makefile extras/FvwmConfig/Makefile
-extras/FvwmConsole/Makefile extras/FvwmDebug/Makefile
-extras/FvwmGoodStuff/Makefile extras/FvwmPipe/Makefile
+extras/Makefile utils/Makefile xpmroot/Makefile docs/Makefile
+icons/Makefile sample.fvwmrc/Makefile
+dnl
+modules/FvwmAnimate/Makefile
+modules/FvwmAudio/Makefile
+modules/FvwmAuto/Makefile 
+modules/FvwmBacker/Makefile
+modules/FvwmBanner/Makefile
+modules/FvwmButtons/Makefile
+modules/FvwmCpp/Makefile 
+modules/FvwmEvent/Makefile 
+modules/FvwmForm/Makefile
+modules/FvwmIconBox/Makefile 
+modules/FvwmIconMan/Makefile 
+modules/FvwmIdent/Makefile
+modules/FvwmM4/Makefile 
+modules/FvwmPager/Makefile 
+modules/FvwmRearrange/Makefile
+modules/FvwmSave/Makefile 
+modules/FvwmSaveDesk/Makefile
+modules/FvwmScroll/Makefile 
+modules/FvwmTalk/Makefile 
+modules/FvwmWinList/Makefile
+dnl
+extras/FvwmCommand/Makefile 
+extras/FvwmConfig/Makefile
+extras/FvwmConsole/Makefile 
+extras/FvwmDebug/Makefile
+extras/FvwmGoodStuff/Makefile 
+extras/FvwmPipe/Makefile
 extras/FvwmScript/Makefile
 extras/FvwmScript/Scripts/Makefile
 extras/FvwmScript/Scripts/some_nice_icons/Makefile
 extras/FvwmScript/Widgets/Makefile
 extras/FvwmTaskBar/Makefile
-extras/FvwmWharf/Makefile extras/fvwmperl/Makefile
-extras/fvwmpython/Makefile
-utils/Makefile xpmroot/Makefile)
+extras/FvwmWharf/Makefile 
+)

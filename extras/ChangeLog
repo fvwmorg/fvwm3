@@ -1,3 +1,9 @@
+Mon Nov  9 18:56:50 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* Makefile.am (SUBDIRS): Removed fvwmperl, since this version is
+	known to be obsolete.  Removed fvwmpython on suspicion of being
+	obsolete.
+
 1998-11-06  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmWharf/Makefile.am (FvwmWharf_DEPENDENCIES):

@@ -12,7 +12,6 @@
 	memory leak. The manpage doesn't say that the name storage must be
 	free'd, but it does not coredump and is hinted at by other manpages(?)
 
-
 1998-11-09  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/parse.c (seekright): switched to new syntax of
@@ -24,6 +23,10 @@
 	* libs/Parse.c (DoGetNextToken): Added parameter to return the
 	character that ended the string.
 	
+Mon Nov  9 18:51:19 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* Makefile.am (EXTRA_SUBDIRS): Removed textures from list of SUBDIRS.
+
 1998-11-09  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/move.c: Applied the bugfix for the move-lagging-behind

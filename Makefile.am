@@ -4,7 +4,7 @@
 AUTOMAKE_OPTIONS = 1.3b
 
 SUBDIRS = libs fvwm modules @EXTRA_MODULES@ utils xpmroot \
-	docs icons sample.fvwmrc textures
+	docs icons sample.fvwmrc
 EXTRA_SUBDIRS = extras
 
 EXTRA_DIST = BUGS DEVELOPERS FAQ INSTALL.fvwm

@@ -1,3 +1,14 @@
+Tue Nov 10 07:14:40 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmRearrange/Makefile.am: Arranged the makefile to build
+	FvwmRearrange; also makes links with names FvwmCascade and
+	FvwmTile. 
+
+Tue Nov 10 07:13:07 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* Makefile.am: Removed FvwmCascade and FvwmTile; both have been
+	replaced by FvwmRearrange.
+
 1998-11-10  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmButtons/parse.c (seekright): switched to new syntax of
