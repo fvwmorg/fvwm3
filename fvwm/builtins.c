@@ -3916,7 +3916,6 @@ static void __fake_event(F_CMD_ARGS, FakeEventType type)
 				add_mask = (do_unset) ?
 					KeyReleaseMask : KeyPressMask;
 			}
-/*!!!*/fprintf(stderr,"fse: to 0x%08x\n", (int)w);
 			FSendEvent(dpy, w, True,
 				SubstructureNotifyMask | add_mask, &e);
 			XFlush(dpy);
