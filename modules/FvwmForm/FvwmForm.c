@@ -654,16 +654,7 @@ static void ct_Input(char *cp) {
   item->input.init_value = "";          /* init */
   if (*cp == '\"') {
     item->input.init_value = CopyQuotedString(++cp);
-#if 0
-    /* does this have any value? dje */
-  } else if (*cp == '$') {              /* if environment var */
-    item->input.init_value = getenv(++cp); /* get its value */
-    if (item->input.init_value == NULL) { /* if env var not set */
-      myfprintf((stderr,"Bad Envir var = %s\n",cp));
-      item->input.init_value = "";      /* its blank */
-    } /* end var not set */
-#endif
-  } /* end env var */
+  }
   item->input.blanks = (char *)safemalloc(item->input.size);
   for (j = 0; j < item->input.size; j++)
     item->input.blanks[j] = ' ';
@@ -1344,21 +1335,25 @@ void DoCommand (Item *cmd)
   /* post-command */
   if (CF.last_error) {                  /* if form has last_error field */
     memset(CF.last_error->text.value, ' ', CF.last_error->text.n); /* clear */
-    RedrawText(CF.last_error);          /* update display */
+    /* To do this more elegantly, the window resize logic should recalculate
+       size_x for the Message as the window resizes.  Right now, just clear
+       a nice wide area. dje */
+    XClearArea(dpy,CF.frame,
+               CF.last_error->header.pos_x,
+               CF.last_error->header.pos_y,
+               /* CF.last_error->header.size_x, */
+               2000,
+               CF.last_error->header.size_y, False);
   } /* end form has last_error field */
   if (cmd->button.key == IB_QUIT) {
     if (CF.grab_server)
       XUngrabServer(dpy);
     /* This is a temporary bug workaround for the pipe drainage problem */
-#if 1
     SendText(Channel,"KillMe", ref);    /* let commands complete */
     /* Note how the window is withdrawn, but execution continues until
        the KillMe command catches up with this module...
        Should not be a problem, there shouldn't be any more commands
        coming into FvwmForm.  dje */
-#else
-    exit(0);
-#endif
   }
   if (cmd->button.key == IB_RESTART) {
     Restart();
@@ -1515,22 +1510,11 @@ static void ParseActiveMessage(char *); /* proto */
 /* read something from Fvwm */
 static void ReadFvwm () {
 
-#if 1
     FvwmPacket* packet = ReadFvwmPacket(Channel[1]);
     if ( packet == NULL )
 	exit(0);
     else
 	process_message( packet->type, packet->body );
-#else
-  int n;
-  static char buffer[32];
-  n = read(Channel[1], buffer, 32);
-  if (n == 0) {                         /* came here on select, 0 is end */
-    if (CF.grab_server)
-      XUngrabServer(dpy);
-    exit(0);
-  }
-#endif
 }
 static void process_message(unsigned long type, unsigned long *body) {
   switch (type) {
