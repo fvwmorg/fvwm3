@@ -1055,7 +1055,7 @@ A: The built in command WindowList provides a very close approximation
    go directly to the window.
    
    The menu invoked with the above line will show all windows in
-   most-recently-focused (MRF) order unless you have used the Focus
+   most recently focused order unless you have used the Focus
    command (see the next question). It shows each windows name and
    geometry with some extra flags to indicate Sticky, OnTop and
    iconified windows.
@@ -1094,20 +1094,21 @@ A: The built in command WindowList provides a very close approximation
 A: Both of these commands change the keyboard focus to the target
    window. They differ only in the way they affect the internally held
    list of windows. This list is used by the Next, Prev and WindowList
-   commands. The list is normally sorted in MRF order with new windows
-   being added to the end. The FlipFocus command plucks the target
-   window from the list and inserts it at the beginning, The Focus
-   command rotates the list around until the target window is at the
-   beginning. The behaviour of FlipFocus is also used when changing
+   commands. The list is normally sorted in most recently focused order
+   with new windows being added to the end. The FlipFocus command plucks
+   the target window from the list and inserts it at the beginning, The
+   Focus command rotates the list around until the target window is at
+   the beginning. The behaviour of FlipFocus is also used when changing
    focus with the mouse and the automatic focus changing when using
    ClickToFocus style.
    
-   If you never use the Focus command the list will remain in MRF order.
-   If you do use the Focus command the list will gradually get back to
-   MRF order as you use FlipFocus.
+   If you never use the Focus command the list will remain in most
+   recently focused order. If you do use the Focus command the list will
+   gradually get back to most recently focused order as you use
+   FlipFocus.
    
-   The Focus command is very useful in conjunction with the Next and Prev
-   commands. e.g.
+   The Focus command is very useful in conjunction with the Next and
+   Prev commands. e.g.
 
       Key KP_Add A M Next (CurrentDesk !Iconic) Focus
       Key KP_Subtract A M Prev (CurrentDesk !Iconic) Focus
