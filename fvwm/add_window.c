@@ -423,25 +423,24 @@ void setup_style_and_decor(
 
 #ifdef USEDECOR
   /* search for a UseDecor tag in the style */
-  if (tmp_win->decor == NULL)
+#if 0
+  if (SGET_DECOR_NAME(*pstyle) != NULL)
+#endif
   {
-    if (SGET_DECOR_NAME(*pstyle) != NULL)
-    {
-      FvwmDecor *decor = &Scr.DefaultDecor;
+    FvwmDecor *decor = &Scr.DefaultDecor;
 
-      for (; decor; decor = decor->next)
+    for (; decor; decor = decor->next)
+    {
+      if (StrEquals(SGET_DECOR_NAME(*pstyle), decor->tag))
       {
-	if (StrEquals(SGET_DECOR_NAME(*pstyle), decor->tag))
-	{
-	  tmp_win->decor = decor;
-	  break;
-	}
+	tmp_win->decor = decor;
+	break;
       }
     }
-    if (tmp_win->decor == NULL)
-    {
-      tmp_win->decor = &Scr.DefaultDecor;
-    }
+  }
+  if (tmp_win->decor == NULL)
+  {
+    tmp_win->decor = &Scr.DefaultDecor;
   }
 #endif
 

@@ -2270,7 +2270,7 @@ void MoveWindow(XEvent *Event)
 
     if((NewDesk >= 0)&&(NewDesk < ndesks))
     {
-      XReparentWindow(dpy, t->PagerView, Desks[NewDesk].w,x,y);
+      XReparentWindow(dpy, t->PagerView, Desks[NewDesk].w,x2,y2);
       t->desk = NewDesk;
       XClearArea(dpy, t->PagerView, 0, 0, 0, 0, True);
       if(moved)
@@ -2281,8 +2281,10 @@ void MoveWindow(XEvent *Event)
 	}
 	else
 	{
-	  XMoveWindow(dpy,t->w,x+t->border_width,
-		      y+t->title_height+t->border_width);
+	  char buf[64];
+	  sprintf(buf, "Silent Move %dp %dp", x+t->border_width,
+		  y+t->title_height+t->border_width);
+	  SendInfo(fd, buf, t->w);
 	}
 	XSync(dpy,0);
       }

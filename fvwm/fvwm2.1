@@ -5195,11 +5195,9 @@ style switches back to the default behaviour.
 .I UseDecor
 accepts one argument: the name of a decor created with
 .BR AddToDecor .
-If
-.I UseDecor
-is not specified, the "Default" decor is used.  Windows do not
-actually contain decors, but are always assigned to one.  If
-the decor is later modified with
+If no decor name is specified, the "Default" decor is used.
+Windows do not actually contain decors, but are always assigned
+to one.  If the decor is later modified with
 .BR AddToDecor ,
 the changes are visible for all windows which are assigned
 to it.  The decor for a window can be reassigned with
