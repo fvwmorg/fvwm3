@@ -846,7 +846,7 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
       if (MI_HAS_HOTKEY(mi) && !MI_IS_TITLE(mi) &&
 	  (!MI_IS_HOTKEY_AUTOMATIC(mi) || MST_USE_AUTOMATIC_HOTKEYS(mr)))
       {
-	key = (MI_LABEL(mi)[MI_HOTKEY_COLUMN(mi)])[MI_HOTKEY_COFFSET(mi)];
+	key = (MI_LABEL(mi)[(int)MI_HOTKEY_COLUMN(mi)])[MI_HOTKEY_COFFSET(mi)];
 	key = tolower(key);
 	if ( ikeychar == key )
 	{
@@ -4094,7 +4094,6 @@ static void scanForHotkeys(MenuItem *it, int column)
       }
       else
       {
-	char ch = txt[1];
 	/* It's a hot key marker - work out the offset value */
 	MI_HOTKEY_COFFSET(it) = txt - start;
 	MI_HOTKEY_COLUMN(it) = column;

@@ -1,3 +1,8 @@
+1999-06-13  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmTaskBar/ButtonArray.c (RemoveButton): fixed coredump when
+	deleting the last button in list.
+
 1999-06-14  Dominik Vogt  <domivotdomivogt@bvstp038.bbn.hp.com>
 
 	* FvwmPager/x_pager.c (DispatchEvent): 
@@ -34,7 +39,7 @@ Sat May 29 13:38:03 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	* modules/FvwmPager/FvwmPager.c:
 	* modules/FvwmPager/FvwmPager.h:
 	* modules/FvwmRearrange/FvwmRearrange.c:
-	* modules/FvwmSave/FvwmSave.c: 
+	* modules/FvwmSave/FvwmSave.c:
 	* modules/FvwmSaveDesk/FvwmSaveDesk.c:
 	* modules/FvwmScript/FvwmScript.c:
 	* modules/FvwmTaskBar/FvwmTaskBar.c:
@@ -347,6 +352,7 @@ Wed May  5 23:51:00 1999  DanEspen  <dje@blue>
 	cleaned up and fixed FvwmAudio compatbility fix
 
 1999-05-02  Michael Han  <mikehan@best.com>
+
 	* FvwmEvent/FvwmEvent.c: changes to main(), config(), and
 	execute_event() for FvwmAudio compatability, namely the
 	PlayCmd and Dir commands.

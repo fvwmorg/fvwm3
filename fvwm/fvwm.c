@@ -1975,7 +1975,7 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
   char *aptr = argString;
   const char *cptr = command;
   #define theChar (*cptr)
-  #define advChar (*(cptr++))
+  #define advChar (cptr++)
   #define topChar (*cptr     == '\\'? *(cptr+1): *cptr)
   #define popChar (*(cptr++) == '\\'? *(cptr++): *(cptr-1))
   #define isSpace (theChar == ' ' || theChar == '\t' || theChar == '\n')
@@ -2004,7 +2004,8 @@ int parseCommandArgs(const char *command, char **argv, int maxArgc, const char *
         else { *errorMsg = "No closing single quote"; errorCode = -3; break; }
       } else if (theChar == '$') {
         /* Not implemented yet */
-        addArgChar(advChar);
+        addArgChar(theChar);
+        advChar;
       } else {
         if (addArgChar(popChar) == '\0') break;
       }

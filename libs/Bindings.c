@@ -135,13 +135,11 @@ Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask)
 ** for mouse binding lines though, like when context is a title bar button).
 ** Specify either button or keysym, depending on type.
 */
+void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
 #ifdef HAVE_STROKE
-void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
-		   int stroke, int button, KeySym keysym, int modifiers, int contexts)
-#else
-void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
-		   int button, KeySym keysym, int modifiers, int contexts)
+		   int stroke,
 #endif /* HAVE_STROKE */
+		   int button, KeySym keysym, int modifiers, int contexts)
 {
   Binding *temp=*pblist, *temp2, *prev=NULL;
   KeyCode keycode = 0;
@@ -154,18 +152,17 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
     temp2 = temp->NextBinding;
     if (temp->type == type)
     {
+      if (((type == KEY_BINDING &&
+	    temp->Button_Key == keycode) ||
 #ifdef HAVE_STROKE
-	  if ((((type == STROKE_BINDING)&&(temp->Button_Key == button)&&
-		    (temp->Stroke_Seq == stroke)) ||
-		   ((type == KEY_BINDING)&&(temp->Button_Key == keycode)) || 
-		   ((type == MOUSE_BINDING)&&(temp->Button_Key == button)) ) &&
-		  (temp->Context == contexts) &&
-		  (temp->Modifier == modifiers))
-#else
-      if ((temp->Button_Key == (type == MOUSE_BINDING ? button : keycode)) &&
-          (temp->Context == contexts) &&
-          (temp->Modifier == modifiers))
+	   (type == STROKE_BINDING &&
+	    temp->Button_Key == button &&
+	    temp->Stroke_Seq == stroke) ||
 #endif /* HAVE_STROKE */
+	   (type == MOUSE_BINDING &&
+	    temp->Button_Key == button)) &&
+	  (temp->Context == contexts) &&
+	  (temp->Modifier == modifiers))
       {
         /* we found it, remove it from list */
         if (prev) /* middle of list */
@@ -202,15 +199,12 @@ void RemoveBinding(Display *dpy, Binding **pblist, BindingType type,
  *  memory and has to be freed by the caller.
  *
  ****************************************************************************/
+Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
 #ifdef HAVE_STROKE
-Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
-		    int stroke, int button, KeySym keysym, char *key_name, 
-			int modifiers, int contexts, void *action, void *action2)
-#else
-Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
-		    int button, KeySym keysym, char *key_name, int modifiers,
-		    int contexts, void *action, void *action2)
+		    int stroke,
 #endif /* HAVE_STROKE */
+		    int button, KeySym keysym, char *key_name,
+		    int modifiers, int contexts, void *action, void *action2)
 {
   int i;
   int min;
@@ -243,6 +237,9 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
      * max == button there is no loop at all is case of a mouse binding. */
     for (m = 0, tkeysym = XK_Left; m <= maxmods && tkeysym != NoSymbol; m++)
       if (type == MOUSE_BINDING ||
+#ifdef HAVE_STROKE
+	  type == STROKE_BINDING ||
+#endif
 	  (tkeysym = XKeycodeToKeysym(dpy, i, m)) == keysym)
       {
         /* If the modifier (m) doesn't change the keys value,
@@ -256,7 +253,11 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
             (*pblist)->Modifier == modifiers &&
             ((type == KEY_BINDING && strcmp((*pblist)->key_name,key_name) == 0)
              ||
-             (type == MOUSE_BINDING && (*pblist)->key_name == NULL)) &&
+             ((type == MOUSE_BINDING
+#ifdef HAVE_STROKE
+	       || type == STROKE_BINDING
+#endif
+	       ) &&(*pblist)->key_name == NULL)) &&
             (*pblist)->Action == action &&
             (*pblist)->Action2 == action2) {
           continue;
@@ -285,14 +286,13 @@ Binding *AddBinding(Display *dpy, Binding **pblist, BindingType type,
 
 /* Check if something is bound to a key or button press and return the action
  * to be executed or NULL if not. */
+void *CheckBinding(Binding *blist,
 #ifdef HAVE_STROKE
-void *CheckBinding(Binding *blist, int stroke, int button_keycode, 
-		   unsigned int modifier,unsigned int dead_modifiers, 
-		   int Context, BindingType type)
-#else
-void *CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
-		   unsigned int dead_modifiers, int Context, BindingType type)
+		   int stroke,
 #endif /* HAVE_STROKE */
+		   int button_keycode,
+		   unsigned int modifier,unsigned int dead_modifiers,
+		   int Context, BindingType type)
 {
   Binding *b;
   unsigned int used_modifiers = ~dead_modifiers;
@@ -301,12 +301,11 @@ void *CheckBinding(Binding *blist, int button_keycode, unsigned int modifier,
 
   for (b = blist; b != NULL; b = b->NextBinding)
     {
+      if ((
+	   ((type == MOUSE_BINDING || type == KEY_BINDING) &&
+	    b->Button_Key == button_keycode) ||
 #ifdef HAVE_STROKE
-      if ((((b->Button_Key == button_keycode) && (type != STROKE_BINDING)) ||
-	   ((type == STROKE_BINDING) && (b->Stroke_Seq == stroke) && 
-		(b->Button_Key == button_keycode)) ||
-#else
-      if ((b->Button_Key == button_keycode ||
+	   (type == STROKE_BINDING && b->Stroke_Seq == stroke) ||
 #endif /* HAVE_STROKE */
 	   (type == MOUSE_BINDING && b->Button_Key == 0))
 	  && (((b->Modifier & used_modifiers) == modifier) ||
@@ -405,12 +404,12 @@ static void GrabWindowButton(Display *dpy, Window w, Binding *binding,
   dead_modifiers &= ~(binding->Modifier & dead_modifiers); /* dje */
 #endif
 
+  if((binding->Context & contexts) &&
+     ((binding->type == MOUSE_BINDING)
 #ifdef HAVE_STROKE
-  if((binding->Context & contexts) && 
-	 ((binding->type == MOUSE_BINDING) || (binding->type == STROKE_BINDING)))
-#else /* NO STROKE */
-  if((binding->Context & contexts) && (binding->type == MOUSE_BINDING))
+       || (binding->type == STROKE_BINDING)
 #endif /* HAVE_STROKE */
+       ))
     {
       int bmin = 1;
       int bmax = 3;
@@ -480,6 +479,9 @@ void GrabAllWindowKeysAndButtons(Display *dpy, Window w, Binding *blist,
       switch (blist->type)
       {
       case MOUSE_BINDING:
+#ifdef HAVE_STROKE
+      case STROKE_BINDING:
+#endif
 	GrabWindowButton(dpy, w, blist, contexts, dead_modifiers, cursor,
 			 fGrab);
 	break;

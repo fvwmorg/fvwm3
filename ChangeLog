@@ -1,3 +1,10 @@
+1999-06-13  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* libs/fvwmlib.h:
+	* libs/Bindings.c (GrabAllWindowKeysAndButtons): small fix for strokes
+	support.
+	Simplified STROKES patch (less #ifdefs)
+
 1999-06-14  Dominik Vogt  <domivotdomivogt@bvstp038.bbn.hp.com>
 
 	* fvwm/menus.c (pop_menu_up): 
