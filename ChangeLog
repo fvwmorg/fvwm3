@@ -1,3 +1,9 @@
+1998-11-12  Dan Espen  <dane@mk.bellcore.com>
+
+	* Under the sample.fvwmrc directory, removed everything in the
+	BradyMontz directory.  This kind of "theme" stuff will be distributed
+	separatly.
+
 1998-11-12  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* fvwm/misc.c (free_window_names): simplified code
