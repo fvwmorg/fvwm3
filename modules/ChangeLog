@@ -1,3 +1,8 @@
+2004-12-08  Dan Espen  <dane@mk.telcordia.com>
+
+	* FvwmIconMan/FvwmIconMan.1.in: lang check.
+	Still needs clarification.
+
 2004-12-02  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* FvwmIconMan/xmanager.h:

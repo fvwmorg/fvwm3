@@ -7932,13 +7932,11 @@ style.
 .I EWMHNoMiniIconOverride
 restores the default.
 
-.\"needs_lang_check
 .I EWMHUseStackingOrderHints
-causes fvwm to use EWMH hints and respects implicit EWMH rules which change
+causes fvwm to use EWMH hints and respect EWMH hints which change
 the window layer.
 .I EWMHIgnoreStackingOrderHints
-causes fvwm to ignore such hints.
-.\"end_needs_lang_check
+causes fvwm to ignore EWMH layer hints.
 
 An application can ask for some reserved space on the desktop by a
 hint.  In the EWMH terminology such a hint is called a strut and
