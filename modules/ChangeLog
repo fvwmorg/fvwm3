@@ -1,3 +1,15 @@
+2000-01-12  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/xmanager.c:
+	don't draw empty titles oon empty managers
+	(clear_empty_region):
+	(draw_button):
+	icon man honours transparent colour set backgrounds
+
+	* FvwmPager/FvwmPager.c (list_new_desk):
+	* FvwmPager/x_pager.c:
+	make pager work with FvwmTheme's 'Transparent' option
+
 2000-01-09  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmTheme/FvwmTheme.c:

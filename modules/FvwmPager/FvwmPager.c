@@ -888,15 +888,13 @@ void list_new_desk(unsigned long *body)
     if (item->next != NULL && item->next->Dcolor != NULL)
     {
       CopyString(&Desks[0].Dcolor, item->next->Dcolor);
-      XSetWindowBackground(dpy, Desks[0].title_w,
-			   GetColor(Desks[0].Dcolor));
     }
     else
     {
       CopyString(&Desks[0].Dcolor, PagerBack);
-      XSetWindowBackground(dpy, Desks[0].title_w,
-			   GetColor(Desks[0].Dcolor));
     }
+    if (change_cs < 0 || Colorset[change_cs].pixmap != ParentRelative)
+      XSetWindowBackground(dpy, Desks[0].title_w, GetColor(Desks[0].Dcolor));
 
     /* update the colour sets for the desk */
     if (change_ballooncs < 0)

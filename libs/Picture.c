@@ -403,7 +403,6 @@ void color_reduce_pixmap(XpmImage *image,int color_limit)
   int i;
   XpmColor *color_table_ptr;
   static char base_init = 'n';
-  Bool do_free;
 
   if (color_limit > 0) {                /* If colors to be limited */
     if (base_init == 'n') {             /* if base table not created yet */

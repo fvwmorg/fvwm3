@@ -330,7 +330,7 @@ void xevent_loop (void)
 		    man->geometry.x, man->geometry.y,
 		    man->geometry.width, man->geometry.height);
         if (man->colorsets[DEFAULT] != -1) {
-	  if (man->pixmap[DEFAULT])
+	  if (man->pixmap[DEFAULT] && man->pixmap[DEFAULT] != ParentRelative)
 	    XFreePixmap(theDisplay, man->pixmap[DEFAULT]);
 	  if (Colorset[man->colorsets[DEFAULT]].pixmap) {
 	    man->pixmap[DEFAULT] =
@@ -784,8 +784,13 @@ void create_manager_window (int man_id)
   XSizeHints sizehints;
   XGCValues gcval;
   unsigned long gcmask = 0;
+#if 0
   unsigned long winattrmask = CWBackPixel | CWBorderPixel | CWEventMask |
     CWBackingStore | CWBitGravity | CWColormap;
+#else
+  unsigned long winattrmask = CWBackPixmap | CWBorderPixel | CWEventMask |
+    CWBackingStore | CWBitGravity | CWColormap;
+#endif
   XSetWindowAttributes winattr;
   unsigned int line_width = 1;
   int line_style = LineSolid;
@@ -840,7 +845,11 @@ void create_manager_window (int man_id)
   ConsoleDebug (X11, "gravity: %d %d\n", sizehints.win_gravity, man->gravity);
 
 
+#if 0
   winattr.background_pixel = man->backcolor[DEFAULT];
+#else
+  winattr.background_pixmap = ParentRelative;
+#endif
   winattr.border_pixel = man->forecolor[DEFAULT];
   winattr.backing_store = WhenMapped;
   winattr.bit_gravity = man->gravity;
@@ -907,7 +916,7 @@ void create_manager_window (int man_id)
       man->shadowContext[i] = XCreateGC (theDisplay, man->theWindow,
 						     gcmask, &gcval);
     }
-    if (man->pixmap[i])
+    if (man->pixmap[i] && man->pixmap[i] != ParentRelative)
       XFreePixmap(theDisplay, man->pixmap[i]);
     if (Colorset[man->colorsets[i]].pixmap) {
       man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
@@ -990,6 +999,7 @@ void change_colorset(int color)
         man->shadowcolor[i] = Colorset[man->colorsets[i]].shadow;
         man->hicolor[i] = Colorset[man->colorsets[i]].hilite;
 
+#if 0
         if (i == DEFAULT)
         {
           XSetWindowBackground(theDisplay, man->theWindow,
@@ -997,6 +1007,7 @@ void change_colorset(int color)
           XSetWindowBorder(theDisplay, man->theWindow,
                            man->forecolor[DEFAULT]);
         }
+#endif
 	if (!man->backContext[i] || !man->hiContext[i] ||
 	    !man->flatContext[i] || !man->reliefContext[i] ||
 	    !man->shadowContext[i])
@@ -1019,7 +1030,7 @@ void change_colorset(int color)
 	    theDisplay, man->shadowContext[i], man->shadowcolor[i]);
         }
 
-        if (man->pixmap[i])
+        if (man->pixmap[i] && man->pixmap[i] != ParentRelative)
           XFreePixmap(theDisplay, man->pixmap[i]);
         if (Colorset[man->colorsets[i]].pixmap) {
           man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,

@@ -1,3 +1,13 @@
+2000-01-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Picture.c (color_reduce_pixmap):
+	-Wall fix
+
+	* fvwm/borders.c (RedrawBorder):
+	(SetupFrame):
+	* fvwm/fvwm.h (FvwmWindow):
+	fixed handle marks on small windows
+
 2000-01-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/borders.c (SetupFrame):

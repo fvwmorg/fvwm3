@@ -354,7 +354,8 @@ typedef struct FvwmWindow
 #endif
 
   int boundary_width;
-  int corner_width;
+  short corner_width;
+  short visual_corner_width;
 
   rectangle title_g;
   rectangle icon_g;           /* geometry of the icon window */

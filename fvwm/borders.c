@@ -536,19 +536,19 @@ static void RedrawBorder(
       i = 0;
 
       /* top left */
-      marks[i].x2 = marks[i].x1 = t->corner_width + j;
+      marks[i].x2 = marks[i].x1 = t->visual_corner_width + j;
       marks[i].y2 = (marks[i].y1 = 1 + j) + tlength;
       i++;
       /* top right */
-      marks[i].x2 = marks[i].x1 = t->frame_g.width - t->corner_width + j;
+      marks[i].x2 = marks[i].x1 = t->frame_g.width - t->visual_corner_width + j;
       marks[i].y2 = (marks[i].y1 = 1 + j) + tlength;
       i++;
       /* bot left */
-      marks[i].x2 = marks[i].x1 = t->corner_width + j;
+      marks[i].x2 = marks[i].x1 = t->visual_corner_width + j;
       marks[i].y2 = (marks[i].y1 = t->frame_g.height-badjust)-blength;
       i++;
       /* bot right */
-      marks[i].x2 = marks[i].x1 = t->frame_g.width - t->corner_width+j;
+      marks[i].x2 = marks[i].x1 = t->frame_g.width - t->visual_corner_width+j;
       marks[i].y2 = (marks[i].y1 = t->frame_g.height-badjust)-blength;
       i++;
 
@@ -556,19 +556,19 @@ static void RedrawBorder(
       {
 	/* left top */
 	marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
-	marks[i].y2 = marks[i].y1 = t->corner_width + j;
+	marks[i].y2 = marks[i].y1 = t->visual_corner_width + j;
 	i++;
 	/* left bot */
 	marks[i].x2 = (marks[i].x1 = 1 + j) + tlength;
-	marks[i].y2 = marks[i].y1 = t->frame_g.height-t->corner_width+j;
+	marks[i].y2 = marks[i].y1 = t->frame_g.height-t->visual_corner_width+j;
 	i++;
 	/* right top */
 	marks[i].x2 = (marks[i].x1 = t->frame_g.width-badjust) - blength;
-	marks[i].y2 = marks[i].y1 = t->corner_width + j;
+	marks[i].y2 = marks[i].y1 = t->visual_corner_width + j;
 	i++;
 	/* right bot */
 	marks[i].x2 = (marks[i].x1 = t->frame_g.width-badjust) - blength;
-	marks[i].y2 = marks[i].y1 = t->frame_g.height-t->corner_width +j;
+	marks[i].y2 = marks[i].y1 = t->frame_g.height-t->visual_corner_width +j;
 	i++;
       }
 
@@ -624,9 +624,9 @@ static void RedrawBorder(
     if (PressedW == t->sides[0])
     {
       /* top */
-      r.x = t->corner_width;
+      r.x = t->visual_corner_width;
       r.y = 1;
-      r.width = t->frame_g.width - 2 * t->corner_width;
+      r.width = t->frame_g.width - 2 * t->visual_corner_width;
       r.height = t->boundary_width - 1;
       is_pressed = True;
     }
@@ -635,17 +635,17 @@ static void RedrawBorder(
     {
       /* right */
       r.x = t->frame_g.width - t->boundary_width;
-      r.y = t->corner_width;
+      r.y = t->visual_corner_width;
       r.width = t->boundary_width - 1;
-      r.height = t->frame_g.height - 2 * t->corner_width;
+      r.height = t->frame_g.height - 2 * t->visual_corner_width;
       is_pressed = True;
     }
     else if (PressedW == t->sides[2])
     {
       /* bottom */
-      r.x = t->corner_width;
+      r.x = t->visual_corner_width;
       r.y = t->frame_g.height - t->boundary_width;
-      r.width = t->frame_g.width - 2 * t->corner_width;
+      r.width = t->frame_g.width - 2 * t->visual_corner_width;
       r.height = t->boundary_width - 1;
       is_pressed = True;
     }
@@ -653,9 +653,9 @@ static void RedrawBorder(
     {
       /* left */
       r.x = 1;
-      r.y = t->corner_width;
+      r.y = t->visual_corner_width;
       r.width = t->boundary_width - 1;
-      r.height = t->frame_g.height - 2 * t->corner_width;
+      r.height = t->frame_g.height - 2 * t->visual_corner_width;
       is_pressed = True;
     }
     else if (PressedW == t->corners[0])
@@ -663,35 +663,35 @@ static void RedrawBorder(
       /* top left */
       r.x = 1;
       r.y = 1;
-      r.width = t->corner_width - 1;
-      r.height = t->corner_width - 1;
+      r.width = t->visual_corner_width - 1;
+      r.height = t->visual_corner_width - 1;
       is_pressed = True;
     }
     else if (PressedW == t->corners[1])
     {
       /* top right */
-      r.x = t->frame_g.width - t->corner_width;
+      r.x = t->frame_g.width - t->visual_corner_width;
       r.y = 1;
-      r.width = t->corner_width - 1;
-      r.height = t->corner_width - 1;
+      r.width = t->visual_corner_width - 1;
+      r.height = t->visual_corner_width - 1;
       is_pressed = True;
     }
     else if (PressedW == t->corners[2])
     {
       /* bottom left */
       r.x = 1;
-      r.y = t->frame_g.height - t->corner_width;
-      r.width = t->corner_width - 1;
-      r.height = t->corner_width - 1;
+      r.y = t->frame_g.height - t->visual_corner_width;
+      r.width = t->visual_corner_width - 1;
+      r.height = t->visual_corner_width - 1;
       is_pressed = True;
     }
     else if (PressedW == t->corners[3])
     {
       /* bottom right */
-      r.x = t->frame_g.width - t->corner_width;
-      r.y = t->frame_g.height - t->corner_width;
-      r.width = t->corner_width - 1;
-      r.height = t->corner_width - 1;
+      r.x = t->frame_g.width - t->visual_corner_width;
+      r.y = t->frame_g.height - t->visual_corner_width;
+      r.width = t->visual_corner_width - 1;
+      r.height = t->visual_corner_width - 1;
       is_pressed = True;
     }
     else if (PressedW == t->decor_w || PressedW == t->frame)
@@ -1467,15 +1467,14 @@ void SetupFrame(
     if(HAS_BORDER(tmp_win))
     {
       int add;
-      int corner_width;
 
-      corner_width = tmp_win->corner_width;
+      tmp_win->visual_corner_width = tmp_win->corner_width;
       if(w < 2*tmp_win->corner_width)
-        corner_width = w / 3;
+        tmp_win->visual_corner_width = w / 3;
       if (h < 2*tmp_win->corner_width && !shaded)
-        corner_width = h / 3;
-      xwidth = w - 2 * corner_width;
-      ywidth = h - 2 * corner_width;
+        tmp_win->visual_corner_width = h / 3;
+      xwidth = w - 2 * tmp_win->visual_corner_width;
+      ywidth = h - 2 * tmp_win->visual_corner_width;
       xwcm = CWWidth | CWHeight | CWX | CWY;
       if(xwidth<2)
         xwidth = 2;
@@ -1483,14 +1482,14 @@ void SetupFrame(
         ywidth = 2;
 
       if (IS_SHADED(tmp_win))
-	add = corner_width / 3;
+	add = tmp_win->visual_corner_width / 3;
       else
 	add = 0;
       for(i = 0; i < 4; i++)
       {
         if(i==0)
         {
-          xwc.x = corner_width;
+          xwc.x = tmp_win->visual_corner_width;
           xwc.y = 0;
           xwc.height = tmp_win->boundary_width;
           xwc.width = xwidth;
@@ -1498,7 +1497,7 @@ void SetupFrame(
         else if (i==1)
         {
 	  xwc.x = w - tmp_win->boundary_width;
-          xwc.y = corner_width;
+          xwc.y = tmp_win->visual_corner_width;
 	  if (IS_SHADED(tmp_win))
 	  {
 	    xwc.y /= 3;
@@ -1513,7 +1512,7 @@ void SetupFrame(
         }
         else if(i==2)
         {
-          xwc.x = corner_width;
+          xwc.x = tmp_win->visual_corner_width;
           xwc.y = h - tmp_win->boundary_width;
           xwc.height = tmp_win->boundary_width;
           xwc.width = xwidth;
@@ -1521,7 +1520,7 @@ void SetupFrame(
         else
         {
 	  xwc.x = 0;
-          xwc.y = corner_width;
+          xwc.y = tmp_win->visual_corner_width;
 	  if (IS_SHADED(tmp_win))
 	  {
 	    xwc.y /= 3;
@@ -1537,17 +1536,17 @@ void SetupFrame(
       }
 
       xwcm = CWX|CWY|CWWidth|CWHeight;
-      xwc.width = corner_width;
-      xwc.height = corner_width;
+      xwc.width = tmp_win->visual_corner_width;
+      xwc.height = tmp_win->visual_corner_width;
       for(i = 0; i < 4; i++)
       {
         if (i & 0x1)
-          xwc.x = w - corner_width;
+          xwc.x = w - tmp_win->visual_corner_width;
         else
           xwc.x = 0;
 
         if (i & 0x2)
-          xwc.y = h - corner_width + add;
+          xwc.y = h - tmp_win->visual_corner_width + add;
         else
           xwc.y = -add;
 

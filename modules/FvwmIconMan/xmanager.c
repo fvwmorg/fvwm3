@@ -813,14 +813,22 @@ static void clear_empty_region (WinManager *man)
     num_rects++;
   }
 
-
   ConsoleDebug (X11, "Clearing: %d: (%d, %d, %d, %d) + (%d, %d, %d, %d)\n",
 		num_rects,
 		rects[0].x, rects[0].y, rects[0].width, rects[0].height,
 		rects[1].x, rects[1].y, rects[1].width, rects[1].height);
 
+#if 0
   XFillRectangles (theDisplay, man->theWindow,
 		   man->backContext[DEFAULT], rects, num_rects);
+#else
+  for(n=0; n < num_rects; n++)
+  {
+    XClearArea(
+      theDisplay, man->theWindow, rects[n].x, rects[n].y, rects[n].width,
+      rects[n].height, False);
+  }
+#endif
 }
 
 void set_shape (WinManager *man)
@@ -1343,9 +1351,18 @@ static void draw_button (WinManager *man, int button, int force)
     }
     if (draw_background) {
       ConsoleDebug (X11, "\tDrawing background\n");
-      XFillRectangle (theDisplay, man->theWindow,
-		      man->backContext[button_state], g.button_x,
-		      g.button_y, g.button_w, g.button_h);
+      if (man->colorsets[button_state] >= 0 &&
+          Colorset[man->colorsets[button_state]].pixmap == ParentRelative)
+      {
+        XClearArea(theDisplay, man->theWindow, g.button_x, g.button_y,
+                   g.button_w, g.button_h, False);
+      }
+      else
+      {
+        XFillRectangle(theDisplay, man->theWindow,
+                       man->backContext[button_state], g.button_x,
+                       g.button_y, g.button_w, g.button_h);
+      }
       cleared_button = 1;
 
       if (Pdepth > 2) {
@@ -1415,12 +1432,14 @@ static void draw_empty_manager (WinManager *man)
   GC context1, context2;
   int state = TITLE_CONTEXT;
   ButtonGeometry g;
+  int len = strlen (man->titlename);
 
   ConsoleDebug (X11, "draw_empty_manager\n");
   get_title_geometry (man, &g);
 
-  XFillRectangle (theDisplay, man->theWindow, man->backContext[state],
-		  g.button_x, g.button_y, g.button_w, g.button_h);
+  if (len > 0)
+    XFillRectangle (theDisplay, man->theWindow, man->backContext[state],
+                    g.button_x, g.button_y, g.button_w, g.button_h);
   if (Pdepth > 2) {
     get_gcs (man, state, 0, &context1, &context2);
     draw_relief (man, state, &g, context1, context2);
@@ -1433,7 +1452,7 @@ static void draw_empty_manager (WinManager *man)
 #else
   XDrawString (theDisplay, man->theWindow, man->hiContext[state],
 #endif
-	       g.text_x, g.text_base, man->titlename, strlen (man->titlename));
+	       g.text_x, g.text_base, man->titlename, len);
   XSetClipMask (theDisplay, man->hiContext[state], None);
 }
 

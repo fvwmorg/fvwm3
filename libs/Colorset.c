@@ -187,7 +187,7 @@ Pixmap CreateBackgroundPixmap(Display *dpy, Window win, int width, int height,
   Bool cs_stretch_x;
   Bool cs_stretch_y;
 
-  if (colorset->pixmap == ParentRelative)
+  if (colorset->pixmap == ParentRelative && !is_shape_mask)
   {
     return ParentRelative;
   }
@@ -322,6 +322,7 @@ void SetRectangleBackground(
 
   if (colorset->pixmap == ParentRelative)
   {
+    XClearArea(dpy, win, x, y, width, height, False);
     /* don't do anything */
     return;
   }

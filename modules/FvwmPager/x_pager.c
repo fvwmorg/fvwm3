@@ -148,12 +148,12 @@ void initialize_viz_pager(void)
     Scr.Pager_w = Scr.Root;
     Scr.NormalGC = DefaultGC(dpy, Scr.screen);
   } else {
-    attr.background_pixel = 0;
+    attr.background_pixmap = ParentRelative;
     attr.border_pixel = 0;
     attr.colormap = Pcmap;
     Scr.Pager_w = XCreateWindow(dpy, Scr.Root, -10, -10, 10, 10, 0, Pdepth,
 				InputOutput, Pvisual,
-				CWBackPixel|CWBorderPixel|CWColormap,&attr);
+				CWBackPixmap|CWBorderPixel|CWColormap,&attr);
     Scr.NormalGC = XCreateGC(dpy, Scr.Pager_w, 0, &xgcv);
   }
   xgcv.plane_mask = AllPlanes;
@@ -419,8 +419,8 @@ void initialize_pager(void)
   if(usposition)
     sizehints.flags |= USPosition;
 
-  valuemask = (CWBackPixel | CWBorderPixel | CWColormap | CWEventMask);
-  attributes.background_pixel = back_pix;
+  valuemask = (CWBackPixmap | CWBorderPixel | CWColormap | CWEventMask);
+  attributes.background_pixmap = ParentRelative;
   attributes.border_pixel = fore_pix;
   attributes.colormap = Pcmap;
   attributes.event_mask = (StructureNotifyMask);
@@ -567,11 +567,20 @@ void initialize_pager(void)
     Desks[i].DashedGC = XCreateGC(dpy, Scr.Pager_w,
 				  GCForeground | GCLineStyle, &gcv);
 
-    valuemask = (CWBackPixel | CWBorderPixel | CWColormap | CWEventMask);
+    valuemask = (CWBorderPixel | CWColormap | CWEventMask);
 
-    attributes.background_pixel = (Desks[i].colorset < 0) ?
-      (Desks[i].Dcolor ? GetColor(Desks[i].Dcolor) : back_pix)
-      : Colorset[Desks[i].colorset].bg;
+    if (Desks[i].colorset >= 0 && Colorset[Desks[i].colorset].pixmap)
+    {
+        valuemask |= CWBackPixmap;
+        attributes.background_pixmap = Colorset[Desks[i].colorset].pixmap;
+    }
+    else
+    {
+        valuemask |= CWBackPixel;
+        attributes.background_pixel = (Desks[i].colorset < 0) ?
+            (Desks[i].Dcolor ? GetColor(Desks[i].Dcolor) : back_pix)
+            : Colorset[Desks[i].colorset].bg;
+    }
 
     attributes.border_pixel = (Desks[i].colorset < 0) ? fore_pix
       : Colorset[Desks[i].colorset].fg;
@@ -614,16 +623,15 @@ void initialize_pager(void)
 	: Colorset[Desks[i].colorset].bg;
     }
 
-
     Desks[i].w = XCreateWindow(dpy, Desks[i].title_w, x, y, w, desk_h, 1,
 			       CopyFromParent, InputOutput, CopyFromParent,
 			       valuemask, &attributes);
     if (Desks[i].colorset > -1 &&
 	Colorset[Desks[i].colorset].pixmap)
     {
-      SetWindowBackground(dpy, Desks[i].w, w, desk_h,
-			  &Colorset[Desks[i].colorset],
-			  Pdepth, Scr.NormalGC, True);
+      SetWindowBackground(
+          dpy, Desks[i].w, w, desk_h, &Colorset[Desks[i].colorset], Pdepth,
+          Scr.NormalGC, True);
     }
 
 
@@ -660,9 +668,9 @@ void initialize_pager(void)
       if (Desks[i].highcolorset > -1 &&
 	  Colorset[Desks[i].highcolorset].pixmap)
       {
-	SetWindowBackground(dpy, Desks[i].CPagerWin, w, h,
-			    &Colorset[Desks[i].highcolorset],
-			    Pdepth, Scr.NormalGC, True);
+	SetWindowBackground(
+            dpy, Desks[i].CPagerWin, w, h, &Colorset[Desks[i].highcolorset],
+            Pdepth, Scr.NormalGC, True);
       }
       XMapRaised(dpy,Desks[i].CPagerWin);
     }
@@ -1166,9 +1174,9 @@ void ReConfigure(void)
         if (Desks[i].colorset > -1 &&
             Colorset[Desks[i].colorset].pixmap)
         {
-          SetWindowBackground(dpy, Desks[i].w, desk_w, desk_h,
-			      &Colorset[Desks[i].colorset],
-			      Pdepth, Scr.NormalGC, True);
+          SetWindowBackground(
+              dpy, Desks[i].w, desk_w, desk_h, &Colorset[Desks[i].colorset],
+              Pdepth, Scr.NormalGC, True);
 	}
 	if (HilightDesks)
 	{
@@ -1179,9 +1187,9 @@ void ReConfigure(void)
 	  if (Desks[i].highcolorset > -1 &&
 	      Colorset[Desks[i].highcolorset].pixmap)
 	  {
-	    SetWindowBackground(dpy, Desks[i].CPagerWin, w, h,
-				&Colorset[Desks[i].highcolorset],
-				Pdepth, Scr.NormalGC, True);
+	    SetWindowBackground(
+                dpy, Desks[i].CPagerWin, w, h, &Colorset[Desks[i].highcolorset],
+                Pdepth, Scr.NormalGC, True);
 	  }
 	}
 
@@ -1419,8 +1427,8 @@ void DrawIconGrid(int erase)
     else
     {
       if (Desks[tmp].bgPixmap)
-	XSetWindowBackgroundPixmap(dpy,
-				   icon_win,Desks[tmp].bgPixmap->picture);
+	XSetWindowBackgroundPixmap(
+            dpy, icon_win,Desks[tmp].bgPixmap->picture);
       else if (Desks[tmp].Dcolor)
 	XSetWindowBackground(dpy, icon_win, GetColor(Desks[tmp].Dcolor));
       else if (PixmapBack)
@@ -2776,6 +2784,7 @@ void change_colorset(int colorset)
   if (colorset < 0)
     return;
 
+  XSetWindowBackgroundPixmap(dpy, Scr.Pager_w, ParentRelative);
   for(i=0;i<ndesks;i++)
   {
     if (Desks[i].highcolorset == colorset)
@@ -2795,10 +2804,8 @@ void change_colorset(int colorset)
 
     if (Desks[i].colorset == colorset)
     {
-      attributes.background_pixel = Colorset[colorset].bg;
       attributes.border_pixel = Colorset[colorset].fg;
-      XChangeWindowAttributes(dpy,Desks[i].title_w, CWBackPixel | CWBorderPixel,
-			      &attributes);
+      XSetWindowBackgroundPixmap(dpy, Desks[i].title_w, ParentRelative);
       XClearArea(dpy, Desks[i].title_w, 0, 0, 0, 0, True);
       XChangeWindowAttributes(dpy,Desks[i].w, CWBorderPixel, &attributes);
       SetWindowBackground(dpy, Desks[i].w, 0, 0,
@@ -2865,5 +2872,4 @@ void change_colorset(int colorset)
 			  True);
     }
   }
-
 }
