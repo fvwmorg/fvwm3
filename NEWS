@@ -14,6 +14,8 @@ Changes in beta release 2.4.1 (not released yet)
 
 * Enhancements in fvwm-menu-headlines and support for 10 more sites.
 
+* Color enhancements in button vectors: @2 is bg color, @3 is fg color.
+
 * Improved detection of the Shape library.
 
 * Fixed bug that caused transient windows to be buried below their

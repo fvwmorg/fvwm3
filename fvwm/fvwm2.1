@@ -5918,11 +5918,26 @@ color is not affected.  The color should be specified as a single
 argument.  This style is fully destructive.
 
 The
-.I Vector
+.I "Vector num"
+.IR X x Y @ C " ..."
 style draws a line pattern.  Since this is a standard button style,
 the keyword
 .I Vector
-is optional.  The specification is a little cumbersome:
+is optional,
+.I num
+is a number of point specifications of the form
+.IR X x Y @ C .
+.IR X " and " Y
+are point coordinates inside the button, given in percents
+(from 0 to 100).
+.I C
+specifies a line color (0 - the shadow color, 1 - the highlight color,
+2 - the background color, 3 - the foreground color).
+The first point color is not used.
+You can use up to 32 points in a line pattern.
+This style is partially destructive.
+
+The specification is a little cumbersome:
 .EX
 ButtonStyle 2 Vector 4 50x30@1 70x70@0 \\
   30x70@0 50x30@1
@@ -5931,9 +5946,16 @@ then the button 2 decoration uses a 4-point pattern consisting of
 a line from (x=50,y=30) to (70,70) in the shadow color (@0), and
 then to (30,70) in the shadow color, and finally to (50,30) in the
 highlight color (@1).  Is that too confusing?  See the fvwm web
-pages for a few examples.  You can use up to 32 points in a line
-pattern. This style is partially destructive.
+pages for some examples with screenshots.
 
+A more complex example of
+.IR Vector :
+.EX
+ButtonStyle 8 Vector 10 45x65@2 45x75@3 20x75@3 20x50@3 \\
+  35x50@3 35x65@1 35x25@1 75x25@1 75x65@0 35x65@0
+ButtonStyle 0 Vector 10 45x65@2 45x75@0 20x75@0 20x50@1 \\
+  45x50@1 45x65@0 75x65@3 75x25@3 35x25@3 35x47@3
+.EE
 The
 .I ?Gradient
 styles denote color gradients.  Fill in the question mark with any

@@ -1425,6 +1425,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 
       vc->num = num_coords;
       vc->line_style = 0;
+      vc->use_fgbg = 0;
       vc->x = (int *) safemalloc (sizeof (int) * num_coords);
       vc->y = (int *) safemalloc (sizeof (int) * num_coords);
 
@@ -1447,9 +1448,13 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 	  vc->y = NULL;
 	  return False;
 	}
-	if (line_style)
+	if (line_style % 2)
 	{
 	  vc->line_style |= (1 << i);
+	}
+	if (line_style >= 2)
+	{
+	  vc->use_fgbg |= (1 << i);
 	}
 	s += offset;
       }

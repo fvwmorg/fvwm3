@@ -156,14 +156,30 @@ static void change_window_background(
  *
  ****************************************************************************/
 static void DrawLinePattern(
-  Window win, GC ReliefGC, GC ShadowGC, struct vector_coords *coords, int w,
-  int h)
+  Window win, GC ReliefGC, GC ShadowGC, Pixel fore_color, Pixel back_color,
+  struct vector_coords *coords, int w, int h)
 {
   int i;
+
+  /* It is rare, so evaluate this only when needed */
+  GC fore_GC = NULL, back_GC = NULL;
+  if (coords->use_fgbg)
+  {
+    Globalgcv.foreground = fore_color;
+    Globalgcm = GCForeground;
+    XChangeGC(dpy, Scr.ScratchGC3, Globalgcm, &Globalgcv);
+    fore_GC = Scr.ScratchGC3;
+    Globalgcv.foreground = back_color;
+    XChangeGC(dpy, Scr.ScratchGC4, Globalgcm, &Globalgcv);
+    back_GC = Scr.ScratchGC4;
+  }
+
   for (i = 1; i < coords->num; ++i)
   {
       XDrawLine(dpy,win,
-		(coords->line_style & (1 << i))  ? ReliefGC : ShadowGC,
+		(coords->use_fgbg & (1 << i))
+		  ? (coords->line_style & (1 << i)) ? fore_GC : back_GC
+		  : (coords->line_style & (1 << i)) ? ReliefGC : ShadowGC,
 		w * coords->x[i-1]/100,
 		h * coords->y[i-1]/100,
 		w * coords->x[i]/100,
@@ -209,8 +225,9 @@ static void clip_button_pixmap(
  ****************************************************************************/
 static void DrawButton(
   FvwmWindow *t, Window win, int w, int h, DecorFace *df, GC ReliefGC,
-  GC ShadowGC, Bool is_lowest, mwm_flags stateflags, int left1right0,
-  XRectangle *rclip, Pixmap *pbutton_background_pixmap)
+  GC ShadowGC, Pixel fore_color, Pixel back_color, Bool is_lowest,
+  mwm_flags stateflags, int left1right0, XRectangle *rclip,
+  Pixmap *pbutton_background_pixmap)
 {
   register DecorFaceType type = DFS_FACE_TYPE(df->style);
   Picture *p;
@@ -243,11 +260,13 @@ static void DrawButton(
 	(stateflags & MWM_DECOR_SHADE && IS_SHADED(t)) ||
 	(stateflags & MWM_DECOR_STICK && IS_STICKY(t))))
     {
-      DrawLinePattern(win, ShadowGC, ReliefGC, &df->u.vector, w, h);
+      DrawLinePattern(win, ShadowGC, ReliefGC, fore_color, back_color,
+        &df->u.vector, w, h);
     }
     else
     {
-      DrawLinePattern(win, ReliefGC, ShadowGC, &df->u.vector, w, h);
+      DrawLinePattern(win, ReliefGC, ShadowGC, fore_color, back_color,
+        &df->u.vector, w, h);
     }
     break;
 
@@ -425,7 +444,7 @@ static void DrawButton(
   break;
 
   default:
-    fvwm_msg(ERR,"DrawButton","unknown button type");
+    fvwm_msg(ERR, "DrawButton", "unknown button type");
     break;
   }
 
@@ -1079,7 +1098,8 @@ static void RedrawButtons(
 #endif
 	  {
 	    DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
-		       tsdf, cd->relief_gc, cd->shadow_gc, is_lowest,
+		       tsdf, cd->relief_gc, cd->shadow_gc,
+		       cd->fore_color, cd->back_color, is_lowest,
 		       TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), 1, NULL,
 		       pass_bg_pixmap);
 	    is_lowest = False;
@@ -1091,7 +1111,8 @@ static void RedrawButtons(
 #endif
 	{
 	  DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
-		     df, cd->relief_gc, cd->shadow_gc, is_lowest,
+		     df, cd->relief_gc, cd->shadow_gc,
+		     cd->fore_color, cd->back_color, is_lowest,
 		     TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])), 1, NULL,
 		     pass_bg_pixmap);
 	  is_lowest = False;
@@ -1266,7 +1287,8 @@ static void RedrawTitle(
       {
 	DrawButton(
 	  t, t->title_w, t->title_g.width, t->title_g.height, df, sgc,
-	  rgc, is_lowest, 0, 1, rclip, pass_bg_pixmap);
+	  rgc, cd->fore_color, cd->back_color, is_lowest, 0, 1, rclip,
+          pass_bg_pixmap);
 	is_lowest = False;
       }
     }
@@ -1278,7 +1300,8 @@ static void RedrawTitle(
       {
 	DrawButton(
 	  t, t->title_w, t->title_g.width, t->title_g.height, df, rgc,
-	  sgc, is_lowest, 0, 1, rclip, pass_bg_pixmap);
+	  sgc, cd->fore_color, cd->back_color, is_lowest, 0, 1, rclip,
+          pass_bg_pixmap);
 	is_lowest = False;
       }
     }
@@ -1493,7 +1516,7 @@ static void get_common_decorations(
   {
     Globalgcv.foreground = draw_colors->hilight;
     Globalgcm = GCForeground;
-    XChangeGC(dpy,Scr.ScratchGC1,Globalgcm,&Globalgcv);
+    XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
     cd->relief_gc = Scr.ScratchGC1;
     Globalgcv.foreground = draw_colors->shadow;
     XChangeGC(dpy, Scr.ScratchGC2, Globalgcm, &Globalgcv);

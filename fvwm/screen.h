@@ -136,6 +136,7 @@ typedef struct DecorFace
       int *x;
       int *y;
       unsigned long line_style;
+      unsigned long use_fgbg;
     } vector;
   } u;
 
@@ -286,6 +287,8 @@ typedef struct ScreenInfo
   GC XorGC;			/* GC to draw lines for move and resize */
   GC ScratchGC1;
   GC ScratchGC2;
+  GC ScratchGC3;
+  GC ScratchGC4;
   GC TitleGC;
   int SizeStringWidth;	        /* minimum width of size window */
 
