@@ -1226,48 +1226,49 @@ static void InitVariables(void)
 
 static void usage(int is_verbose)
 {
-	fprintf(stderr, "%s (%s): usage: %s", PACKAGE, VERSION, g_argv[0]);
+	fprintf(stderr, "usage: %s", g_argv[0]);
 	fprintf(stderr,
 		" [-d display]"
-		" [-D]"
 		" [-f cfgfile]"
 		" [-c cmd]"
 		" [-s]"
-		" [-V]"
-		" [-h | -?]"
-		" [-r]"
-		" [-i client-id]"
-		" [-F sm_file]"
 		" [-I vis-id | -C vis-class]"
 		" [-l colors"
-		" [-L]"
-		" [-A]"
-		" [-S]"
-		" [-N]]"
+		" [-L|A|S|N] ...]"
+		" [-r]"
+		" [OTHER OPTIONS] ..."
 		"\n");
 	if (!is_verbose)
 	{
+		fprintf(
+			stderr, "Try '%s --help' for more information.\n",
+			g_argv[0]);
 		return;
 	}
 	fprintf(stderr,
+		" -A:           allocate palette\n"
+		" -c cmd:       preprocess configuration file with <cmd>\n"
+		" -C vis-class: use visual class <vis-class>\n"
 		" -d display:   run fvwm on <display>\n"
 		" -D:           enable debug oputput\n"
 		" -f cfgfile:   read configuration from <cfgfile>\n"
-		" -c cmd:       preprocess configuration file with <cmd>\n"
-		" -s:           manage a single screen\n"
-		" -V:           print version info\n"
-		" -h, -?:       print this help message\n"
-		" -r:           replace running window manager\n"
-		" -i client-id: used internally for session management\n"
 		" -F file:      used internally for session management\n"
+		" -h, -?:       print this help message\n"
+		" -i client-id: used internally for session management\n"
 		" -I vis-id:    use visual <vis-id>\n"
-		" -C vis-class: use visual class <vis-class>\n"
 		" -l colors:    try to use no more than <colors> colors\n"
 		" -L:           strict color limit\n"
-		" -A:           allocate palette\n"
-		" -S:           static palette\n"
 		" -N:           named palette\n"
+		" -r:           replace running window manager\n"
+		" -s:           manage a single screen\n"
+		" -S:           static palette\n"
+		" -V:           print version information\n"
 		);
+		fprintf(
+			stderr, "Try 'man %s' for more information.\n",
+		        PACKAGE);
+
+		return;
 }
 
 static void setVersionInfo(void)
@@ -1945,7 +1946,7 @@ int main(int argc, char **argv)
 		else
 		{
 			usage(0);
-			fprintf(stderr, "unknown option '%s'\n", argv[i]);
+			fprintf(stderr, "invalid option -- %s\n", argv[i]);
 			exit(1);
 		}
 	}
