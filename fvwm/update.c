@@ -362,3 +362,13 @@ void flush_window_updates(void)
 
   return;
 }
+
+void update_styles_func(F_CMD_ARGS)
+{
+  if (Scr.flags.do_need_window_update)
+  {
+    flush_window_updates();
+  }
+
+  return;
+}

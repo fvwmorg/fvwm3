@@ -242,6 +242,7 @@ static const func_type func_config[] =
   {"title",        Nop_func,         F_TITLE,                0},
   {"titlestyle",   SetTitleStyle,    F_TITLESTYLE,           FUNC_DECOR},
   {"updatedecor",  UpdateDecor,      F_UPDATE_DECOR,         0},
+  {"updatestyles", update_styles_func,F_UPDATE_STYLES,       0},
   {"wait",         wait_func,        F_WAIT,                 0},
   {"warptowindow", warp_func,        F_WARP,                 FUNC_NEEDS_WINDOW},
   {"windowfont",   LoadWindowFont,   F_WINDOWFONT,           0},

@@ -3,6 +3,9 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.19 (not released yet)
 
+* New command UpdateStyles forces an immediate style update, even
+  within a complex function.
+
 * Implemented '$*' in complex functions.  This works like in a
   shell and is replaced by all arguments of a function.
 

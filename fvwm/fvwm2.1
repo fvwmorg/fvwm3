@@ -863,7 +863,7 @@ no user interaction or module input is pending.  Specifically, new
 options that are set in a function are not applied until after the
 function has completed.  This can sometimes lead to unwanted effects.
 To force that all pending changes are applied immediately, use the
-.BR Refresh " or " RefreshWindow
+.BR UpdateStyles ", " Refresh " or " RefreshWindow
 commands.
 
 .SS QUOTING
@@ -3607,16 +3607,16 @@ command above.
 .TP
 .BI "Refresh"
 Causes all windows on the screen to redraw themselves.
-All pending updates of window redraws are applied if necessary.
-E.g. if
+All pending updates of all windows' styles and looks are applied
+immediately.  E.g. if
 .BR Style " or " TitleStyle
 commands were issued inside a fvwm function.
 
 .TP
 .BI "RefreshWindow"
 Causes the chosen window to redraw itself.
-All pending updates of window redraws are applied if necessary.
-E.g. if
+All pending updates of the window's style and looks are applied
+immediately.  E.g. if
 .BR Style " or " TitleStyle
 commands were issued inside a fvwm function.
 
@@ -4028,6 +4028,13 @@ option is enabled.
 
 
 .SS THE STYLE COMMAND (CONTROLLING WINDOW STYLES)
+
+.TP
+.BI "UpdateStyles"
+All pending updates of all windows' styles and looks are applied
+immediately.  E.g. if
+.BR Style " or " TitleStyle
+commands were issued inside a fvwm function.
 
 .TP
 .BI "Style " "stylename options"

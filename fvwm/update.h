@@ -41,5 +41,6 @@ typedef struct
 
 void apply_decor_change(FvwmWindow *tmp_win);
 void flush_window_updates(void);
+void update_styles_func(F_CMD_ARGS);
 
 #endif /* _UPDATE_ */
