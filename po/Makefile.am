@@ -205,8 +205,8 @@ installdirs-data-local-no:
 installdirs-data-local-yes:
 	$(mkinstalldirs) $(DESTDIR)$(datadir)
 	@catalogs='$(CATALOGS)'; \
-	@all_domain='$(ALL_DOMAINS)' \
-	for dom in $$all_domains; do \
+	all_domains='$(ALL_DOMAINS)'; \
+	for dom in $$all_domainss; do \
 	  for cat in $$catalogs; do \
 	    cat=`basename $$cat`; \
 	    lang=`echo $$cat | sed -e 's/\.gmo$$//'`; \
@@ -248,8 +248,8 @@ uninstall-local: uninstall-local-@USE_NLS@
 uninstall-local-no:
 uninstall-local-yes:
 	catalogs='$(CATALOGS)'; \
-	@all_domain='$(ALL_DOMAINS)' \
-	for dom in $$all_domain; do \
+	all_domains='$(ALL_DOMAINS)'; \
+	for dom in $$all_domains; do \
 	  for cat in $$catalogs; do \
 	    cat=`basename $$cat`; \
 	    lang=`echo $@ | sed -e 's/\.gmo$$//'`; \
