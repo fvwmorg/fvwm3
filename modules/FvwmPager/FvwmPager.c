@@ -114,7 +114,7 @@ char *BalloonFont = NULL;
 char *BalloonBorderColor = NULL;
 char *BalloonFormatString = NULL;
 int BalloonBorderWidth = 1;
-int BalloonYOffset = 2;
+int BalloonYOffset = 3;
 Window BalloonView = None;
 
 int window_w=0, window_h=0, window_x=0, window_y=0;

@@ -1,7 +1,9 @@
-Note, the changes for the last OFFICIAL release start with release
+Note, the changes for the last STABLE release start with release
 _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
-Changes in beta release 2.3.17 (not released yet)
+Changes in beta release 2.3.18 (not released yet)
+
+Changes in beta release 2.3.17 (May 2000)
 
 * Mouse button 3 can no longer be used to cancel interactive window
   movement.
@@ -9,7 +11,7 @@ Changes in beta release 2.3.17 (not released yet)
 * The commands Refresh and RefreshWindow apply all outstanding visual
   changes of a window.
 
-* New options GroUp, GrowDown, GrowLeft, GrowRight to the Maximize
+* New options GrowUp, GrowDown, GrowLeft, GrowRight to the Maximize
   command.
 
 * New command ResizeMove combined Move and Resize commands.

@@ -1,3 +1,10 @@
+2000-05-14  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm2.1 (Style): removed a wrong sentence stated that Style
+	commands based on name override those based on class and resource.
+	* NEWS: s/GroUp/GrowUp/; increased to 2.3.18
+	* ChangeLog: some clean up in number of entries
+
 2000-05-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Module.h:
@@ -45,16 +52,6 @@
 2000-05-11  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* configure.in: changed version to 2.3.17
-
-2000-05-10  Michael Han  <mikehan@best.com
-
-	* modules/FvwmDebug/FvwmDebug.1:
-	* modules/FvwmDebug/FvwmDebug.h:
-	* modules/FvwmDebug/FvwmDebug.c:
-	FvwmDebug now has -v flag for optional flag output
-	FvwmDebug now directs to arbitrary files
-	FvwmDebug reads add/configure packets by casting to ConfigWinPacket
-	Lots of cleanup in FvwmDebug, reducing the number of functions
 
 2000-05-10  Paul D. Smith  <psmith@gnu.org>
 
@@ -198,7 +195,7 @@
 	(ExecuteFunction):
 	fixed expansion of complex function arguments
 
-2000-05-04  Mikhael Goikhman  migo@homemail.com
+2000-05-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in: added GNOME support info,
 	$with_gnome is now awailable for auto-generated stuff.
@@ -378,7 +375,7 @@
 	* fvwm/fvwm2.1:
 	fixed typo
 
-2000-04-26  Mikhael Goikhman  migo@homemail.com
+2000-04-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS, configure.in, fvwm/Makefile.am, fvwm/externs.h, fvwm/fvwm.c,
 	* fvwm/fvwm2.1, fvwm/module_interface.c, fvwm/read.c, fvwm/read.h,
@@ -392,7 +389,7 @@
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
 	Fixed some miss prints
 
-2000-04-23  Mikhael Goikhman  migo@homemail.com
+2000-04-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/menus.c (paint_item):
 	Fixed non-first menu titles for different relief heights.
@@ -406,11 +403,11 @@
 	workaround for pager problem: after switching desks, all sticky windows
 	migrate to the top of the stacking order in the pager
 
-2000-04-23  Mikhael Goikhman  migo@homemail.com
+2000-04-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/Target.c (fvwmlib_get_target_window): patch from Michael Han
 
-2000-04-22  Mikhael Goikhman  migo@homemail.com
+2000-04-22  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/windowlist.c (do_windowList): don't free Function before
 	the last menu entry is added
@@ -499,7 +496,7 @@
 2000-04-11  olicha  <olivier.chapuis@free.fr>
 
 	* style.c (merge_styles, ProcessNewStyle, check_window_style_change
-        update_style_colorset, update_window_color_style,
+	update_style_colorset, update_window_color_style,
 	update_window_color_hi_style):
 	* style.h:
 	* fvwm.h:
@@ -1036,7 +1033,7 @@
 	* fvwm/fvwm.h:
 	fixed 'hollow' windows when iconifying thrice in a function
 
-2000-01-26 olicha  <olivier.chapuis@free.fr>
+2000-01-26  olicha  <olivier.chapuis@free.fr>
 	* fvwm/screen.h: a "-Wall" fix to BUSYCURSOR ifdef
 	* libs/WinMagic.c: corrected a missprint
 
@@ -1102,7 +1099,7 @@
 
 	* libs/ColorUtils.c: Removed the color cache
 
-2000-01-18 olicha  <olivier.chapuis@free.fr>
+2000-01-18  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/builtins.c (wait_func, recapture):
 	* fvwm/cursor.{c,h} (setBusyCursor):
@@ -1962,10 +1959,10 @@
 
 1999-11-30  Dominik Vogt  <dominik.vogt@gmx.de>
 
-        * fvwm/borders.c (RedrawBorder):
-        * fvwm/events.c (HandleButtonPress):
-        fixed depressed borders without handles
-        * fvwm/borders.c (RedrawBorder):
+	* fvwm/borders.c (RedrawBorder):
+	* fvwm/events.c (HandleButtonPress):
+	fixed depressed borders without handles
+	* fvwm/borders.c (RedrawBorder):
 	(draw_frame_relief):
 	improved drawing of thin borders
 
@@ -2164,10 +2161,10 @@
 
 1999-11-23  Hippo
 
-        * Fvwm/add_window.c: chnaged order of message when a window
-        is created so that FvwmIconBox gets the correct icon. M_ICON_FILE
-        is sent before M_RES_NAME & M_RES_CLASS
-        * libs/Xerror.c: added error code names
+	* Fvwm/add_window.c: chnaged order of message when a window
+	is created so that FvwmIconBox gets the correct icon. M_ICON_FILE
+	is sent before M_RES_NAME & M_RES_CLASS
+	* libs/Xerror.c: added error code names
 
 1999-11-22  Dominik Vogt  <dominik.vogt@gmx.de>
 
@@ -2313,7 +2310,7 @@
 
 	* fvwm/fvwm2.1: Minor adjustment to man page.
 
-1999-11-16 olicha   <olivier.chapuis@free.fr>
+1999-11-16  olicha   <olivier.chapuis@free.fr>
 
 	* fvwm/event.c (HandleButtonRelease):
 	* fvwm/fvwm2.1:
@@ -2446,7 +2443,7 @@
 	* fvwm/events.c:
 	fixed a subtle bug with clicktofocus/grabfocusoff
 
-1999-11-12 olicha  <olivier.chapuis@free.fr>
+1999-11-12  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/module_interface.c (PoistiveWrite):
 	* fvwm/module_interface.h (MAX_MASK):
@@ -2493,7 +2490,7 @@
 	* fvwm/add_window.c (AddWindow):
 	fixed handling of border width during window placement
 
-1999-11-11 olicha  <olivier.chapuis@free.fr>
+1999-11-11  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/module_interface.{c,h} (initModules):
 	(do_execute_module):
@@ -2504,7 +2501,7 @@
 	Implemented a synchronous mask that lists the messages that fvwm
 	will treat as synchronous. See FvwmWinList for an example.
 
-1999-11-11 olicha  <olivier.chapuis@free.fr>
+1999-11-11  olicha  <olivier.chapuis@free.fr>
 
 	* NEWS: New builtin function StrokeFunc
 	* fvwm/builtins.{c,h} (strokeFunc): New builtin function StrokeFunc
@@ -2515,7 +2512,7 @@
 
 1999-11-11  Dan Espen  <dane@mk.telcordia.com>
 
-	* fvwm/fvwm2.1 (http): Rewording in Cursorstyle and StrokeFunc.
+	* fvwm/fvwm2.1 (http): Rewording in CursorStyle and StrokeFunc.
 
 1999-11-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
@@ -2561,7 +2558,7 @@
 	* fvwm/style.c (ProcessNewStyle):
 	fixed height in MaxWindowSize style
 
-1999-11-04  Mikhael Goikhman  migo@homemail.com
+1999-11-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/cursor.c (CursorStyle): don't reset the root cursor
 	on CursorStyle "non-root"
@@ -2596,14 +2593,14 @@
 
 	* fvwm/fvwm2.1: clarified default action with "Menu" and "Popup"
 
-1999-11-01  Mikhael Goikhman  migo@homemail.com
+1999-11-01  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS: a note about the new default root cursor
 	* fvwm/fvwm2.1:
 	* fvwm/cursor.c (setBusyCursor):
 	'BusyCursor *' addition by Ben Winslow, some clean up.
 
-1999-10-30  Olivier Chapuis  olivier.chapuis@free.fr
+1999-10-30  Olivier Chapuis  <olivier.chapuis@free.fr>
 
 	* NEWS: BusyCursor, EscapeFunc and CursorStyle.
 	* fvwm/ConfigFvwmDefaults: add the binding Key Escape A MC EscapeFunc
@@ -3493,9 +3490,9 @@ Wed Sep 15 20:44:57 1999  DanEspen  <dje@blue>
 1999-08-29 Chris Rankin
 
 	* fvwm/menus.c: Wall fixes (one unused variable, brackets around
-      boolean expressions and removed a "*" from a pointer operation)
+	boolean expressions and removed a "*" from a pointer operation)
 	* libs/Graphics.c: Wall fixes (CreateStretchPixmap returns None
-      if the validation fails, rather than nothing at all).
+	if the validation fails, rather than nothing at all).
 
 1999-08-27 Hippo
 
@@ -4578,12 +4575,12 @@ Sun Jul 11 11:16:15 1999  DanEspen  <dje@blue>
 
 1999-06-25  Chris Rankin  <rankinc@zipworld.com.au>
 
-    * modules/FvwmTaskBar.c: New signal handling (fvwmsignal.o)
-                             ShutMeDown() is now an exit-procedure
-    * modules/ButtonArray.c: Fixed linked-list problem in RemoveButton()
-    * modules/Mallocs.c:     Fixed implementation of saferealloc()
-    * modules/Mallocs.h:     Removed duplicate declaration of safemalloc()
-                             (Added "libs/safemalloc.h" to affected .c files)
+	* modules/FvwmTaskBar.c: New signal handling (fvwmsignal.o)
+	                         ShutMeDown() is now an exit-procedure
+	* modules/ButtonArray.c: Fixed linked-list problem in RemoveButton()
+	* modules/Mallocs.c:     Fixed implementation of saferealloc()
+	* modules/Mallocs.h:     Removed duplicate declaration of safemalloc()
+	                         (Added "libs/safemalloc.h" to affected .c files)
 
 1999-06-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
@@ -5156,17 +5153,17 @@ Sat May 29 13:35:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 1999-05-28  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/add_window.c (AddWindow): Preserve the desk setting when re-
-        using an FvwmWindow struct, to keep Recapture from losing track of
-        which desk a window is on.
+	using an FvwmWindow struct, to keep Recapture from losing track of
+	which desk a window is on.
 
-        * fvwm/fvwm.c (CaptureAllWindows): Restored the old XFindContext check
-        of each window, and removed the attempt to follow the FvwmWindow chain
-        (which gets modified with each call to CaptureOneWindow). This fixes
-        a random failure to set styles and desk correctly during a Recapture.
+	* fvwm/fvwm.c (CaptureAllWindows): Restored the old XFindContext check
+	of each window, and removed the attempt to follow the FvwmWindow chain
+	(which gets modified with each call to CaptureOneWindow). This fixes
+	a random failure to set styles and desk correctly during a Recapture.
 
-        * fvwm/placement.c (PlaceWindow): Bypass all the "which desk to start
-        on" logic during initial Capture or Recapture, so the saved desk will
-        be used.
+	* fvwm/placement.c (PlaceWindow): Bypass all the "which desk to start
+	on" logic during initial Capture or Recapture, so the saved desk will
+	be used.
 
 1999-05-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
@@ -5980,14 +5977,14 @@ Sat May  1 01:42:02 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 	We do the following now:
 
 	1) Change the current state in .fvwm_restart
-           and add a pointer to the previous session save file
+	   and add a pointer to the previous session save file
 	   to .fvwm_restart.
 	2) Change the SmRestartCommand and SmDiscardCommand
 	   to refer to .fvwm_restart and change the SmRestartStyleHint
-           to Immediately.
-        3) Exit, the SM starts us again, restoring the current state
-           from .fvwm_restart
-        4) The new fvwm finds the pointer to the session save file
+	   to Immediately.
+	3) Exit, the SM starts us again, restoring the current state
+	   from .fvwm_restart
+	4) The new fvwm finds the pointer to the session save file
 	   and changes the SM properties back to their previous values.
 
 1999-04-29  Hippo
@@ -8355,7 +8352,7 @@ Tue Mar  9 18:00:22 1999  Steve ROBBINS  <stever@osric.bic.mni.mcgill.ca>
 	(matchWin):
 	(SessionInit):
 	* fvwm/icccm2.c (SetupICCCM2): fix -Wall trivia. Change
-        some fvwm_msg(DBG...) to DBUG(...)
+	some fvwm_msg(DBG...) to DBUG(...)
 
 	* fvwm/events.c (XUrgencyHint): define it if it isn't already.
 
@@ -8525,7 +8522,7 @@ Wed Mar  3 21:05:11 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/builtins.c (Maximize):
 	(WindowShade): allow shading maximized/maximizing shaded windows.
-        * fvwm/fvwm.h (FvwmWindow): new field maximized_ht.
+	* fvwm/fvwm.h (FvwmWindow): new field maximized_ht.
 	* fvwm/add_window.c (AddWindow): initialize maximized_ht.
 	* fvwm/session.c (SaveWindowStates): save the correct maximized
 	size for shaded windows.

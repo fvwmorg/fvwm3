@@ -3987,13 +3987,9 @@ the window manager default styles.
 .I stylename
 can be a window's name, class, or resource string.  It may contain
 the wildcards '*' and '?', which are matched in the usual Unix
-filename manner.  They are searched in the reverse order stated,
-so that
-.B Style
-commands based on the name override or augment those based on the
-class, which override or augment those based on the resource string.
+filename manner.  They are searched in the reverse order stated.
 When two conflicting styles apply to the same window, the style
-that was changed las wins.
+that was changed last wins.
 
 Note: windows that have no name (WM_NAME) are given a name of
 "Untitled", and windows that don't have a class (WM_CLASS, res_class)

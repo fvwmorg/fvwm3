@@ -98,7 +98,7 @@ if [ $IS_RELEASE = 0 ] ; then
   echo " . Notify fvwm-owner@fvwm.org of the upload"
 else
   echo tagging CVS source
-  cvs tag version-$VRELEASE_$VMAJOR_VMINOR || err_exit 13
+  cvs tag version-${VRELEASE}_${VMAJOR}_$VMINOR || err_exit 13
   echo increasing version number in configure.in
   NCFG="configure.in.$RANDOM"
   touch $NCFG || err_exit 17

@@ -333,10 +333,11 @@ The balloon window is positioned to be horizontally centered against
 the pager window it is describing. The vertical position may be
 set as an offset. Negative offsets of \fI-n\fP are placed \fIn\fP
 pixels above the pager window, positive offsets of \fI+n\fP are placed
-\fIn\fP pixels below. Offsets of 0 are not permitted, as this would permit
-direct transit from pager window to balloon window, causing an event
-loop. Defaults to +2. The offset will change sign automatically, as needed,
-to keep the balloon on the screen.
+\fIn\fP pixels below. Offsets of -1 and 1 represent the balloon window
+close to the original window without a gap. Offsets of 0 are not permitted,
+as this would permit direct transit from pager window to balloon window,
+causing an event loop. Defaults to +3. The offset will change sign
+automatically, as needed, to keep the balloon on the screen.
 
 .IP "*FvwmPagerBalloonStringFormat \fTformat\fP"
 The same as \fI*FvwmPagerWindowLabelFormat\fP, it just specifies the string to

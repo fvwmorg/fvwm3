@@ -764,9 +764,9 @@ void initialize_pager(void)
       else {
 	fprintf(stderr,
 		"%s: Warning:"
-		" you're not allowed BalloonYOffset 0; defaulting to +2\n",
+		" you're not allowed BalloonYOffset 0; defaulting to +3\n",
 		MyName);
-	Desks[i].balloon.yoffset = 2;
+	Desks[i].balloon.yoffset = 3;
       }
 
       /* now create the window */
@@ -2689,9 +2689,9 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
   x = (view_width / 2) - (window_changes.width / 2) - Desks[i].balloon.border;
 
   if ( Desks[i].balloon.yoffset > 0 )
-    y = view_height + Desks[i].balloon.yoffset;
+    y = view_height + Desks[i].balloon.yoffset - 1;
   else
-    y = Desks[i].balloon.yoffset - Desks[i].balloon.height -
+    y = Desks[i].balloon.yoffset - Desks[i].balloon.height + 1 -
       (2 * Desks[i].balloon.border);
 
 
@@ -2706,7 +2706,7 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
 
   /* too close to top ... make yoffset +ve */
   if ( window_changes.y < 2 ) {
-    y = - Desks[i].balloon.yoffset + view_height;
+    y = - Desks[i].balloon.yoffset - 1 + view_height;
     XTranslateCoordinates(dpy, view, Scr.Root, x, y,
 			  &window_changes.x, &window_changes.y, &dummy);
   }
@@ -2714,7 +2714,7 @@ void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
   /* too close to bottom ... make yoffset -ve */
   else if ( window_changes.y + Desks[i].balloon.height >
 	    Scr.MyDisplayHeight - (2 * Desks[i].balloon.border) - 2 ) {
-    y = - Desks[i].balloon.yoffset - Desks[i].balloon.height -
+    y = - Desks[i].balloon.yoffset + 1 - Desks[i].balloon.height -
 
       (2 * Desks[i].balloon.border);
     XTranslateCoordinates(dpy, view, Scr.Root, x, y,

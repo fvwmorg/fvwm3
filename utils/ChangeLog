@@ -1,11 +1,16 @@
-2000-05-04  Mikhael Goikhman  migo@homemail.com
+2000-05-14  Mikhael Goikhman  <migo@homemail.com>
+
+	* make_fvwmdist.sh:
+	s/$VRELEASE_$VMAJOR_VMINOR/${VRELEASE}_${VMAJOR}_$VMINOR/
+
+2000-05-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* Makefile.am, fvwmbun.sh.in:
 	fixed minor info bug, small rearrangings
 	* fvwm-config.in:
 	added gnome support query
 
-2000-04-26  Mikhael Goikhman  migo@homemail.com
+2000-04-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-config.in, fvwmbug.sh.in:
 	Changes in defaults of FVWM_DATADIR & FVWM_USERDIR;
