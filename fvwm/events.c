@@ -1148,6 +1148,7 @@ void HandleUnmapNotify()
 void HandleButtonPress()
 {
   int LocalContext;
+  Window OldPressedW;
 
   DBUG("HandleButtonPress","Routine Entered");
 
@@ -1206,12 +1207,7 @@ void HandleButtonPress()
   else if ((Context & C_LALL) || (Context & C_RALL))
     SetBorder(Tmp_win, (Scr.Hilite == Tmp_win), True, True, PressedW);
   else
-<<<<<<< events.c
-    SetBorder(Tmp_win,(Scr.Hilite == Tmp_win),True,True,
-	      Tmp_win ? Tmp_win->frame : 0);
-=======
     SetBorder(Tmp_win, (Scr.Hilite == Tmp_win), True, True, None);
->>>>>>> 1.50
 
   ButtonWindow = Tmp_win;
 
@@ -1222,17 +1218,11 @@ void HandleButtonPress()
   PressedW = None;
   if(LocalContext == C_TITLE)
     SetTitleBar(ButtonWindow,(Scr.Hilite==ButtonWindow),False);
-<<<<<<< events.c
   else if ((Context & C_LALL) || (Context & C_RALL))
     SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,OldPressedW);
   else
     SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,
 	      Tmp_win ? Tmp_win->frame : 0);
-=======
-  else
-    SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,None);
-
->>>>>>> 1.50
   ButtonWindow = NULL;
 }
 
