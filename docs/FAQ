@@ -1945,7 +1945,7 @@ A: Please do not report any 'bugs' related to XMMS in the fvwm bug
         - First of all: use our bug tracking system! You will find
           a link to it on our main web page (see Q1.3).  If for some
           reason the bug tracking system doesn't work for you, please
-          use the fvwmbug.sh shell script that comes with fvwm.
+          use the fvwm-bug shell script that comes with fvwm.
         - Describe the problem as best you can, preferably with
           suggestions on how to reproduce it easily
         - If applicable, include information from:

@@ -1,3 +1,13 @@
+2004-05-23  Mikhael Goikhman  <migo@homemail.com>
+
+	* po/FvwmScript.zh_CN.gmo:
+	* po/FvwmScript.zh_CN.po:
+	* po/FvwmTaskBar.zh_CN.gmo:
+	* po/FvwmTaskBar.zh_CN.po:
+	* po/fvwm.zh_CN.gmo:
+	* po/fvwm.zh_CN.po:
+	added Chinese translations by Funda Wang
+
 2003-10-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm.sv_SE.po:

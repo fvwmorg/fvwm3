@@ -1,0 +1,31 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR fvwm workers
+# This file is distributed under the same license as the PACKAGE package.
+# Funda Wang <fundawang@linux.net.cn>, 2004.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: FvwmTaskBar\n"
+"POT-Creation-Date: 2003-04-11 12:43+0200\n"
+"PO-Revision-Date: 2004-05-22 16:17+0800\n"
+"Last-Translator: Funda Wang <fundawang@linux.net.cn>\n"
+"Language-Team: zh_CN <i18n-translation@lists.linux.net.cn>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../modules/FvwmTaskBar/Goodies.c:462
+msgid "No new mail"
+msgstr "无新邮件"
+
+#: ../modules/FvwmTaskBar/Goodies.c:466
+msgid "You have new mail"
+msgstr "您有新邮件"
+
+#: ../modules/FvwmTaskBar/Goodies.c:470
+msgid "You have mail"
+msgstr "您有邮件"
+
+#: ../modules/FvwmTaskBar/FvwmTaskBar.c:1320
+msgid "Click here to start"
+msgstr "点击此处开始"

@@ -1,0 +1,317 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR fvwm workers
+# This file is distributed under the same license as the PACKAGE package.
+# Funda Wang <fundawang@linux.net.cn>, 2004.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: fvwm\n"
+"POT-Creation-Date: 2002-11-28 14:23+0100\n"
+"PO-Revision-Date: 2004-05-22 16:12+0800\n"
+"Last-Translator: Funda Wang <fundawang@linux.net.cn>\n"
+"Language-Team: zh_CN <i18n-translation@lists.linux.net.cn>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../fvwm/fvwm.c:1362
+msgid "Builtin Menu"
+msgstr "内建菜单"
+
+#: ../fvwm/fvwm.c:1365
+msgid "Setup Form"
+msgstr "设置表单"
+
+#: ../fvwm/fvwm.c:1368
+msgid "Setup 95 Script"
+msgstr "设置 95 脚本"
+
+#: ../fvwm/fvwm.c:1371
+msgid "Issue FVWM commands"
+msgstr "执行 FVWM 命令"
+
+#: ../fvwm/fvwm.c:1374
+msgid "Restart FVWM"
+msgstr "重新启动 FVWM"
+
+#: ../fvwm/fvwm.c:1375
+msgid "Exit FVWM"
+msgstr "退出 FVWM"
+
+#: ../fvwm/expand.c:255 ../fvwm/virtual.c:2042
+msgid "Desk"
+msgstr "桌面"
+
+#: ../fvwm/windowlist.c:94 ../fvwm/windowlist.c:100 ../fvwm/windowlist.c:107
+msgid "\tGeometry"
+msgstr "\t几何"
+
+#: ../fvwm/windowlist.c:105
+#, c-format
+msgid "Desk: %d%s"
+msgstr "桌面：%d%s"
+
+#. ./fvwm/ConfigFvwmSetup: line 91
+msgid "Root Menu"
+msgstr "根菜单"
+
+#. ./fvwm/ConfigFvwmSetup: line 95
+msgid "Remote Logins"
+msgstr "远程登录"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 97
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 109
+msgid "Utilities"
+msgstr "实用工具"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 99
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 194
+msgid "Fvwm Modules"
+msgstr "Fvwm 模块"
+
+#. ./fvwm/ConfigFvwmSetup: line 100
+msgid "Fvwm Window Ops"
+msgstr "Fvwm 窗口操作"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 101
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 124
+msgid "Fvwm Config Ops"
+msgstr "Fvwm 配置操作"
+
+#. ./fvwm/ConfigFvwmSetup: line 103
+msgid "Refresh Screen"
+msgstr "刷新屏幕"
+
+#. ./fvwm/ConfigFvwmSetup: line 104
+msgid "Recapture Screen"
+msgstr "重新抓取屏幕"
+
+#. ./fvwm/ConfigFvwmSetup: line 106
+msgid "Exit Fvwm"
+msgstr "退出 Fvwm"
+
+#. ./fvwm/ConfigFvwmSetup: line 121
+msgid "Reset X defaults"
+msgstr "重置 X 默认值"
+
+#. ./fvwm/ConfigFvwmSetup: line 125
+msgid "Sloppy Focus"
+msgstr "粘性置焦"
+
+#. ./fvwm/ConfigFvwmSetup: line 126
+msgid "Click To Focus"
+msgstr "单击置焦"
+
+#. ./fvwm/ConfigFvwmSetup: line 127
+msgid "Focus Follows Mouse"
+msgstr "焦点跟随鼠标"
+
+#. ./fvwm/ConfigFvwmSetup: line 129
+msgid "Colormap Follows Mouse"
+msgstr "颜色图跟随鼠标"
+
+#. ./fvwm/ConfigFvwmSetup: line 130
+msgid "Colormap Follows Focus"
+msgstr "颜色图跟随焦点"
+
+#. ./fvwm/ConfigFvwmSetup: line 132
+msgid "Full Paging ON"
+msgstr ""
+
+#. ./fvwm/ConfigFvwmSetup: line 133
+msgid "All Paging OFF"
+msgstr ""
+
+#. ./fvwm/ConfigFvwmSetup: line 134
+msgid "Horizontal Paging Only"
+msgstr ""
+
+#. ./fvwm/ConfigFvwmSetup: line 135
+msgid "Vertical Paging Only"
+msgstr ""
+
+#. ./fvwm/ConfigFvwmSetup: line 136
+msgid "Partial Paging"
+msgstr ""
+
+#. ./fvwm/ConfigFvwmSetup: line 137
+msgid "Full Paging && Edge Wrap"
+msgstr ""
+
+#. ./fvwm/ConfigFvwmSetup: line 144
+msgid "&Move"
+msgstr "移动(&M)"
+
+#. ./fvwm/ConfigFvwmSetup: line 145
+msgid "&Resize"
+msgstr "大小(&R)"
+
+#. ./fvwm/ConfigFvwmSetup: line 146
+msgid "R&aise"
+msgstr "升起(&A)"
+
+#. ./fvwm/ConfigFvwmSetup: line 147
+msgid "&Lower"
+msgstr "降低(&L)"
+
+#. ./fvwm/ConfigFvwmSetup: line 148
+msgid "(De)&Iconify"
+msgstr "最小化(&I)"
+
+#. ./fvwm/ConfigFvwmSetup: line 149
+msgid "(Un)&Stick"
+msgstr "置顶(&S)"
+
+#. ./fvwm/ConfigFvwmSetup: line 150
+msgid "(Un)Ma&ximize"
+msgstr "最大化(&X)"
+
+#. ./fvwm/ConfigFvwmSetup: line 152
+msgid "&Delete"
+msgstr "删除(&D)"
+
+#. ./fvwm/ConfigFvwmSetup: line 153
+msgid "&Close"
+msgstr "关闭(&C)"
+
+#. ./fvwm/ConfigFvwmSetup: line 154
+msgid "Destroy"
+msgstr "摧毁"
+
+#. ./fvwm/ConfigFvwmSetup: line 161
+msgid "Window Ops"
+msgstr "窗口操作"
+
+#. ./fvwm/ConfigFvwmSetup: line 163
+msgid "Re&fresh Window"
+msgstr "刷新窗口(&F)"
+
+#. ./fvwm/ConfigFvwmSetup: line 172
+msgid "Print"
+msgstr "打印"
+
+#. ./fvwm/ConfigFvwmSetup: line 173
+msgid "Print Re&verse"
+msgstr "翻转打印(&V)"
+
+#. ./fvwm/ConfigFvwmSetup: line 195
+msgid "Control Animation"
+msgstr "控制动画"
+
+#. ./fvwm/ConfigFvwmSetup: line 204
+msgid "desks"
+msgstr "桌面"
+
+#. ./fvwm/ConfigFvwmSetup: line 210
+msgid "Stop Module Menu"
+msgstr "停止模块菜单"
+
+#. ./fvwm/ConfigFvwmSetup: line 213
+msgid "Stop Fvwm Modules"
+msgstr "停止 Fvwm 模块"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 214
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 215
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 216
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 217
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 218
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 219
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 220
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 221
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 222
+msgid "Stop"
+msgstr "停止"
+
+#. ./fvwm/ConfigFvwmSetup: line 241
+msgid "Really Quit Fvwm?"
+msgstr "真的要退出 Fvwm 吗？"
+
+#. ./fvwm/ConfigFvwmSetup: line 242
+msgid "Yes, Really Quit"
+msgstr "是的，真的退出"
+
+#. ./fvwm/ConfigFvwmSetup: line 244
+msgid "Restart"
+msgstr "重新启动"
+
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 246
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 247
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 248
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 249
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 250
+#. #-#-#-#-#  duplicate  #-#-#-#-#
+#. ./fvwm/ConfigFvwmSetup: line 251
+msgid "Start"
+msgstr "开始"
+
+#. ./fvwm/ConfigFvwmSetup: line 253
+msgid "Just an Xterm"
+msgstr "只是 Xterm"
+
+#. ./fvwm/ConfigFvwmSetup: line 255
+msgid "No, Don't Quit"
+msgstr "不，不要退出"
+
+#. ./modules/FvwmForm/FvwmForm-Setup.in: line 8
+msgid "fvwm - Create Configuration"
+msgstr "fvwm - 创建配置"
+
+#. ./modules/FvwmForm/FvwmForm-Setup.in: line 13
+msgid "Use this form to create your fvwm2rc configuration file."
+msgstr "使用此表单创建您自己的 fvwm2rc 配置文件。"
+
+#. ./modules/FvwmForm/FvwmForm-Setup.in: line 15
+msgid "The file created is ~/.fvwm/.fvwm2rc or $FVWM_USERDIR/.fvwm2rc."
+msgstr "创建的文件是 ~/.fvwm/.fvwm2rc 或 $FVWM_USERDIR/.fvwm2rc。"
+
+#. ./modules/FvwmForm/FvwmForm-Setup.in: line 19
+msgid "After creation, the fvwm2rc file can then be changed with any"
+msgstr "创建之后，fvwm2rc 文件就可以用您喜欢的任何"
+
+#. ./modules/FvwmForm/FvwmForm-Setup.in: line 21
+msgid "editor to suit your own needs."
+msgstr "文本编辑器进行更改。"
+
+#. ./modules/FvwmForm/FvwmForm-Setup.in: line 26
+msgid "Create a starting .fvwm2rc file"
+msgstr "创建初始的 .fvwm2rc 文件"
+
+#. ./modules/FvwmForm/FvwmForm-Setup.in: line 30
+msgid "These files are optional.  Select the modules you want to customize."
+msgstr "这些文件是可选的。请选择您想要自定义的模块。"
+
+#. ./modules/FvwmForm/FvwmForm-Setup.in: line 32
+msgid "You can always copy them later."
+msgstr "您当然可以稍后再复制。"
+
+#. ./modules/FvwmForm/FvwmForm-Setup.in: line 53
+msgid "Return - Dismiss"
+msgstr "返回 - 丢弃"
+
+#. ./modules/FvwmForm/FvwmForm-Setup.in: line 55
+msgid "Copy Config File(s)"
+msgstr "复制配置文件"
+
+#. ./modules/FvwmForm/FvwmForm-Setup.in: line 66
+msgid "Restart fvwm"
+msgstr "重新启动 fvwm"
