@@ -525,6 +525,7 @@ typedef struct
 	unsigned has_handle_width : 1;
 	unsigned has_icon : 1;
 	unsigned has_icon_boxes : 1;
+	unsigned has_icon_size_limits : 1;
 	unsigned has_max_window_size : 1;
 	unsigned has_window_shade_steps : 1;
 	unsigned has_mini_icon : 1;
@@ -576,6 +577,10 @@ typedef struct window_style
 #ifdef USEDECOR
 	char *decor_name;
 #endif
+	unsigned char min_icon_width;
+	unsigned char max_icon_width;
+	unsigned char min_icon_height;
+	unsigned char max_icon_height;
 	char *icon_font;
 	char *window_font;
 	char *fore_color_name;
@@ -764,6 +769,10 @@ typedef struct FvwmWindow
 
 	int default_layer;
 	int layer;
+	unsigned char min_icon_width;
+	unsigned char max_icon_width;
+	unsigned char min_icon_height;
+	unsigned char max_icon_height;
 	int max_window_width;
 	int max_window_height;
 	int shade_anim_steps;

@@ -1057,6 +1057,28 @@ void setup_frame_size_limits(FvwmWindow *fw, window_style *pstyle)
 	return;
 }
 
+/*
+ * Copy icon size limits from window_style structure to FvwmWindow
+ * structure.
+ */
+void setup_icon_size_limits(FvwmWindow *fw, window_style *pstyle)
+{
+	if (SHAS_ICON_SIZE_LIMITS(&pstyle->flags))
+	{
+		fw->min_icon_width = SGET_MIN_ICON_WIDTH(*pstyle);
+		fw->min_icon_height = SGET_MIN_ICON_HEIGHT(*pstyle);
+		fw->max_icon_width = SGET_MAX_ICON_WIDTH(*pstyle);
+		fw->max_icon_height = SGET_MAX_ICON_HEIGHT(*pstyle);
+	}
+	else
+	{
+		fw->min_icon_width = MIN_ALLOWABLE_ICON_DIMENSION;
+		fw->min_icon_height = MIN_ALLOWABLE_ICON_DIMENSION;
+		fw->max_icon_width = MAX_ALLOWABLE_ICON_DIMENSION;
+		fw->max_icon_height = MAX_ALLOWABLE_ICON_DIMENSION;
+	}
+}
+
 Bool setup_window_placement(
 	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
 	initial_window_options_type *win_opts)
@@ -2074,6 +2096,9 @@ FvwmWindow *AddWindow(
 
 	/****** border width ******/
 	XSetWindowBorderWidth(dpy, FW_W(fw), 0);
+
+	/****** icon size limits ******/
+	setup_icon_size_limits(fw, &style);
 
 	/***** placement penalities *****/
 	setup_placement_penalty(fw, &style);

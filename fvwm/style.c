@@ -446,6 +446,13 @@ static void merge_styles(
 	{
 		SSET_HANDLE_WIDTH(*merged_style, SGET_HANDLE_WIDTH(*add_style));
 	}
+	if (add_style->flags.has_icon_size_limits)
+	{
+		SSET_MIN_ICON_WIDTH(*merged_style, SGET_MIN_ICON_WIDTH(*add_style));
+		SSET_MIN_ICON_HEIGHT(*merged_style, SGET_MIN_ICON_HEIGHT(*add_style));
+		SSET_MAX_ICON_WIDTH(*merged_style, SGET_MAX_ICON_WIDTH(*add_style));
+		SSET_MAX_ICON_HEIGHT(*merged_style, SGET_MAX_ICON_HEIGHT(*add_style));
+	}
 	if (add_style->flags.has_max_window_size)
 	{
 		SSET_MAX_WINDOW_WIDTH(
@@ -1686,6 +1693,76 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  SFSET_HAS_NO_ICON_TITLE(*ptmpstyle, 0);
 	  SMSET_HAS_NO_ICON_TITLE(*ptmpstyle, 1);
 	  SCSET_HAS_NO_ICON_TITLE(*ptmpstyle, 1);
+	}
+	else if (StrEquals(token, "IconSize"))
+	{
+	  int vals[4];
+	  int i;
+	  found = True;
+
+	  switch (GetIntegerArguments(rest, &rest, vals, 4))
+	  {
+
+	  default:
+	    fvwm_msg(ERR, "CMD_Style",
+	      "IconSize requires exactly 0, 2 or 4 numerical arguments");
+	    break;
+
+	  /* No break is intentional */
+	  case 0:
+	    /* No arguments results in default values */
+	    vals[0] = vals[1] = UNSPECIFIED_ICON_DIMENSION;
+
+	  /* No break is intentional */
+	  case 2:
+	    /* Max and min values are the same */
+	    vals[2] = vals[0];
+	    vals[3] = vals[1];
+
+	  case 4:
+	    /* Validate values */
+	    for(i = 0; i < 4; i++)
+	    {
+	      int use_default = 0;
+
+	      if (vals[i] != UNSPECIFIED_ICON_DIMENSION &&
+		  (vals[i] < MIN_ALLOWABLE_ICON_DIMENSION ||
+	           vals[i] > MAX_ALLOWABLE_ICON_DIMENSION))
+	      {
+	        fvwm_msg(ERR, "CMD_Style",
+	          "IconSize dimension (%d) not in valid range (%d-%d)",
+	          vals[i], MIN_ALLOWABLE_ICON_DIMENSION,
+	          MAX_ALLOWABLE_ICON_DIMENSION);
+
+	        use_default = 1;
+	      }
+
+	      /* User requests default value for this dimension */
+	      else if (vals[i] == UNSPECIFIED_ICON_DIMENSION)
+	      {
+	        use_default = 1;
+	      }
+
+	      if (use_default)
+	      {
+	        /* Set default value for this dimension.  The
+	         * first two indexes refer to min values, the
+	         * latter two to max values. */
+	        vals[i] = i < 2 ? MIN_ALLOWABLE_ICON_DIMENSION :
+	          MAX_ALLOWABLE_ICON_DIMENSION;
+	      }
+	    }
+
+	    SSET_MIN_ICON_WIDTH(*ptmpstyle, vals[0]);
+	    SSET_MIN_ICON_HEIGHT(*ptmpstyle, vals[1]);
+	    SSET_MAX_ICON_WIDTH(*ptmpstyle, vals[2]);
+	    SSET_MAX_ICON_HEIGHT(*ptmpstyle, vals[3]);
+
+	    ptmpstyle->flags.has_icon_size_limits = 1;
+	    ptmpstyle->flag_mask.has_icon_size_limits = 1;
+	    ptmpstyle->change_mask.has_icon_size_limits = 1;
+	    break;
+	  }
 	}
 	else if (StrEquals(token, "IconBox"))
 	{

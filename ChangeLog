@@ -1,3 +1,16 @@
+2002-06-24  Steve Talley  <stephen.talley@sun.com>
+
+	* fvwm/add_window.c:
+	* fvwm/add_window.h:
+	* fvwm/fvwm.1:
+	* fvwm/fvwm.h:
+	* fvwm/icons.c:
+	* fvwm/icons.h:
+	* fvwm/style.c:
+	* fvwm/style.h:
+	* libs/defaults.h:
+	New Style option IconSize
+
 2002-06-24  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS, configure.in:

@@ -57,6 +57,8 @@ void setup_frame_geometry(
 	FvwmWindow *fw);
 void setup_frame_size_limits(
 	FvwmWindow *fw, window_style *pstyle);
+void setup_icon_size_limits(
+	FvwmWindow *fw, window_style *pstyle);
 void increase_icon_hint_count(
 	FvwmWindow *fw);
 void change_icon(

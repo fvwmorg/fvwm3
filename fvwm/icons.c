@@ -254,6 +254,108 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
       break;
     }
   }
+
+  /* Resize icon if necessary */
+  if ((IS_ICON_OURS(fw)) &&
+    fw->icon_g.picture_w_g.height > 0 && fw->icon_g.picture_w_g.height > 0)
+  {
+    unsigned int newWidth = fw->icon_g.picture_w_g.width;
+    unsigned int newHeight = fw->icon_g.picture_w_g.height;
+    Boolean resize = False;
+
+    if(newWidth < fw->min_icon_width) {
+      newWidth = fw->min_icon_width;
+      resize = True;
+    } else
+
+    if(newWidth > fw->max_icon_width) {
+      newWidth = fw->max_icon_width;
+      resize = True;
+    }
+
+    if(newHeight < fw->min_icon_height) {
+      newHeight = fw->min_icon_height;
+      resize = True;
+    } else
+
+    if(newHeight > fw->max_icon_height) {
+      newHeight = fw->max_icon_height;
+      resize = True;
+    }
+
+    if(resize) {
+      ICON_DBG((stderr,"ciw: Changing icon (%s) from %dx%d to %dx%d\n",
+        fw->name,
+        fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
+        newWidth, newHeight));
+
+      /* Resize the icon Pixmap */
+      SetIconPixmapSize(&(fw->iconPixmap),
+        fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
+        fw->iconDepth, newWidth, newHeight,
+        (IS_PIXMAP_OURS(fw)));
+
+      /* Resize the icon mask Pixmap if one was defined */
+      if(fw->icon_maskPixmap) {
+        SetIconPixmapSize(&(fw->icon_maskPixmap),
+          fw->icon_g.picture_w_g.width, fw->icon_g.picture_w_g.height,
+          1, newWidth, newHeight, (IS_PIXMAP_OURS(fw)));
+      }
+
+      /* Set the new dimensions of the icon window */
+      fw->icon_g.picture_w_g.width = newWidth;
+      fw->icon_g.picture_w_g.height = newHeight;
+    }
+  }
+}
+
+/****************************************************************************
+ *
+ * Resizes the given icon Pixmap.
+ *
+ ****************************************************************************/
+void SetIconPixmapSize(
+	Pixmap *icon, unsigned int width, unsigned int height,
+	unsigned int depth, unsigned int newWidth, unsigned int newHeight,
+	unsigned int freeOldPixmap)
+{
+	Pixmap oldPixmap;
+	GC gc;
+	XGCValues gc_init;
+
+	/* Check for invalid dimensions */
+	if (newWidth == 0 || newHeight == 0)
+	{
+		return;
+	}
+
+	/* Save the existing Pixmap */
+	oldPixmap = *icon;
+
+	/* Create a new Pixmap with the new dimensions */
+	*icon = XCreatePixmap(dpy, oldPixmap, newWidth, newHeight, depth);
+
+	/* Zero out new Pixmap */
+	gc = XCreateGC(dpy, *icon, 0, &gc_init);
+	XSetForeground(dpy, gc, 0);
+	XFillRectangle(dpy, *icon, gc, 0, 0, newWidth, newHeight);
+
+	/*
+	 * Copy old Pixmap onto new.  Center horizontally.  Center
+	 * vertically if the new height is smaller than the old.
+	 * Otherwise, place the icon on the bottom, along the title bar.
+	 */
+	XCopyArea(
+		dpy, oldPixmap, *icon, gc, 0, 0, width, height,
+		(newWidth - width) / 2, newHeight > height ?
+		newHeight - height : (newHeight - height) / 2);
+
+	XFreeGC(dpy, gc);
+
+	if (freeOldPixmap)
+	{
+		XFreePixmap(dpy, oldPixmap);
+	}
 }
 
 /****************************************************************************

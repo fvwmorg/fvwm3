@@ -152,6 +152,12 @@
 #define DEFAULT_MIN_MAX_WINDOW_HEIGHT	 100 /* pixels */
 #define DEFAULT_MAX_MAX_WINDOW_WIDTH   32767 /* pixels */
 #define DEFAULT_MAX_MAX_WINDOW_HEIGHT  32767 /* pixels */
+
+/*** icon geometry ***/
+#define UNSPECIFIED_ICON_DIMENSION        -1
+#define MIN_ALLOWABLE_ICON_DIMENSION       0 /* pixels */
+#define MAX_ALLOWABLE_ICON_DIMENSION     255 /* pixels */
+
 /* this value is used in a bugfix */
 #define WINDOW_FREAKED_OUT_SIZE	       65500 /* pixels */
 

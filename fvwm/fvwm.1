@@ -61,7 +61,7 @@
 .if t .sp .5
 ..
 .ta .3i .6i .9i 1.2i 1.5i 1.8i
-.TH FVWM 1 "24 Juny 2002" FVWM "FVWM 2.5.2"
+.TH FVWM 1 "24 June 2002" FVWM "FVWM 2.5.2"
 .UC
 .SH NAME
 
@@ -452,7 +452,7 @@ or only one screen is used, the screen bit is ignored.
 Style * IconBox 64x300-0-0@p
 .EE
 
-Xinerama support can be configured to use a primary screen.  Fwvm
+Xinerama support can be configured to use a primary screen.  Fvwm
 can be configured to place new windows and icons on this screen.
 The primary screen is screen 0 by default but can be changed with
 the
@@ -1034,7 +1034,7 @@ xft:Verdana:pixelsize=14;-adobe-courier-bold-r-normal--14-*
 .EE
 then, if either loading the Xft font fails or fvwm has no Xft support,
 fvwm loads the font "-adobe-courier-bold-r-normal--14-*". This
-allows for writting portable configuration files.
+allows for writing portable configuration files.
 
 .SH FONT AND STRING ENCODING
 
@@ -1459,7 +1459,7 @@ AddToFunc PrintDeskNumber
 + I Echo $$d $[page.nx] $c
 .EE
 
-Note: If this funtion is called outside a window context, it will
+Note: If this function is called outside a window context, it will
 print "$c" instead of the class name.  It is usually not enough to
 have the pointer over a window to have a context window.  To force
 using the window with the focus, the
@@ -1656,7 +1656,7 @@ $[pointer.cx]
 $[pointer.cy]
 .in +.3i
 These return the position of the pointer in the client portion of
-th eselected window.  If the pointer is not on the screen, the
+the selected window.  If the pointer is not on the screen, the
 window is shaded or iconified or no window is selected, these
 variables are not expanded.
 
@@ -2601,7 +2601,7 @@ percent of the parent menu's width to the right or left.
 requires an integer value between 51 and 100.  Normally, when the
 pointer is over a menu item with a sub menu and the pointer enters
 the area that starts at 75% of the menu width, the sub menu is
-shown immediately.  This percantage can be changed with
+shown immediately.  This percentage can be changed with
 .IR PopupActiveArea .
 Setting this value to 100 disables this kind of automatic popups
 altogether.  The default value is restored if no or an illegal
@@ -2685,7 +2685,7 @@ selected.  This is intended for
 .B WindowList
 navigation.  The key name is a standard X11 key name as defined in
 .IR /usr/include/X11/keysymdef.h ,
-with the leading "XK_" omitted.  To disable this behaviour, omit
+with the leading "XK_" omitted.  To disable this behavior, omit
 the key name.
 
 Note: Some X servers do not support KeyRelease events.
@@ -3720,7 +3720,7 @@ may be given.  This id can be used with the
 .B Deschedule
 command to remove the scheduled command before it is executed.  If
 no id is given, fvwm uses negative id numbers, starting with -1
-and descreasing by one with each use of the
+and decreasing by one with each use of the
 .B Schedule
 command.
 Note that the
@@ -3911,7 +3911,7 @@ With the
 .I CurrentAtEnd
 option the currently focused window (if any) is shown at the bottom
 of the list.  This is mostly intended for simulating the Alt-Tab
-behaviour in another GUI.
+behavior in another GUI.
 
 .I IconifiedAtEnd
 makes iconified windows be moved to the end of the list.  This is also
@@ -4813,7 +4813,7 @@ also to the options
 .IR WindowShadeAlwaysLazy " and " WindowShadeBusy .
 option of the
 .B Style
-command.  Exmaples:
+command.  Examples:
 .EX
 Style * WindowShadeShrinks, WindowShadeSteps 20, WindowShadeLazy
 Mouse 1 S - WindowShade North
@@ -4888,7 +4888,7 @@ IgnoreModifiers L25
 .EE
 If the
 .I Modifiers
-arggument is the string "default", fvwm reverts back to the
+argument is the string "default", fvwm reverts back to the
 default value "L".
 
 .I Important Note:
@@ -5034,7 +5034,7 @@ describes where the binding applies.  Valid contexts are 'R' for
 the root window, 'W' for an application window, 'D' for a desktop
 application (as kdesktop or Nautilus desktop), 'T' for a window
 title-bar, 'S' for a window side, top, or bottom bar, '[', ']',
-\'-' and '_' for the left, rigth, top or bottom side only, 'F' for
+\'-' and '_' for the left, right, top or bottom side only, 'F' for
 a window frame (the corners), '<', '^', '>' and 'v' for the top
 left, top right, bottom right or bottom left corner, 'I' for an
 Icon window, or '0' through '9' for title-bar buttons, or any
@@ -5333,7 +5333,7 @@ following keywords.  Each group of style names is separated by
 slashes ('/').  The last style in these groups is the default.
 .IR BorderWidth ", " HandleWidth ,
 .IR NoIcon " / " Icon ", " MiniIcon ,
-.IR IconBox ", " IconGrid ", " IconFill ,
+.IR IconBox ", " IconGrid ", " IconFill ", " IconSize ,
 .IR NoTitle " / " Title ,
 .IR TitleAtBottom " / " TitleAtLeft " / " TitleAtRight " / " TitleAtTop ,
 .IR LeftTitleRotatedCW " / " LeftTitleRotatedCCW,
@@ -5556,7 +5556,7 @@ is used, and with
 .IR RightTitleRotatedCCW " if " TitleAtRight
 is used.  The defaults can be restored with
 .IR LeftTitleRotatedCCW " and " RightTitleRotatedCW .
-A normal horisontal text may be rotated as well with
+A normal horizontal text may be rotated as well with
 .IR TopTitleRotated " if " TitleAtTop
 is used, and with
 .IR BottomTitleRotated " if " TitleAtBottom
@@ -5574,7 +5574,7 @@ reverts back to normal titles.
 
 .I Color
 takes two arguments.  The first is the window-label text color and
-the second is the window decoration's normal background color. The
+the second is the window decorations normal background color. The
 two colors are separated with a slash.  If the use of a slash
 causes problems then the separate
 .IR ForeColor " and " BackColor
@@ -5800,7 +5800,7 @@ the screen.
 Perhaps it is easier to use is an X11
 geometry string though:
 .EX
-IconBox IconBox 1000x70-1-1
+IconBox 1000x70-1-1
 .EE
 places an 1000 by 70 pixel icon box on the bottom of the screen
 starting in the lower right  hand corner of the screen.
@@ -5881,8 +5881,9 @@ using the
 values for the icon grid, looking for a free space. The default
 grid is 3 by 3 pixels which gives a tightly packed appearance. To
 get a more regular appearance use a grid larger than your largest
-icon. Currently there is no way to clip an icon to a maximum
-size. An
+icon. Use the
+.I IconSize
+definition to clip an icon to a maximum size. An
 .I IconGrid
 definition must follow the
 .B IconBox
@@ -5913,6 +5914,42 @@ definition that it applies to:
 .EX
 Style * IconBox -80x240-1-1, IconFill b r
 .EE
+.I IconSize
+sets limits on the size of an icon image.  Both user-provided
+and application-provided icon images are affected.
+.EX
+.RI IconSize " [ " width " " height " [ " maxwidth " " maxheight " ] ]"
+.EE
+All arguments are measured in pixels.  When all four arguments are
+passed to
+.I IconSize,
+.I width
+and
+.I height
+represent the minimum size of an icon, and
+.I maxwidth
+and
+.I maxheight
+represent the maximum size of an icon.  Icon images that are smaller
+than the minimum size are padded.  Icon images that are bigger than
+the maximum size are clipped.
+
+If only two arguments are passed to
+.I IconSize,
+.I width
+and
+.I height
+represent the absolute size of an icon.  Icons covered by this style
+will be padded or clipped to achieve the given size.
+
+If no arguments are specified, the default values are used for each
+dimension.  This effectively places no limits on the size of an icon.
+
+The value of "-1" can be used in place of any of the arguments to
+specify the default value for that dimension.
+
+Note that application-provided icon windows are not affected.
+
 .I MiniIcon
 specifies a pixmap to use as the miniature icon for the
 window. This miniature icon can be drawn in a title-bar button
@@ -6012,7 +6049,7 @@ windows.  To allow this kind of actions, use the
 .IR VariablePPosition " or " VariablePSize
 style.  These styles may sometimes affect the initial placement
 and dimensions of new windows (depending on the application).  If
-windows are created at strange places, try eihter the
+windows are created at strange places, try either the
 .IR VariablePPosition " or " NoPPosition
 styles.  The
 .I FixedPSize
@@ -6043,7 +6080,7 @@ With
 all windows in the same window group are iconified at once when
 group leader is iconified.  The default is
 .IR IconifyWindowGroupsOff ,
-which disables this behaviour.  Although a number of applications
+which disables this behavior.  Although a number of applications
 use the window group hint, it is rarely used in a proper way, so
 it is probably best to use
 .I IconifyWindowGroups
@@ -6420,7 +6457,7 @@ mapped initially (useful with
 .I KeepWindowGroupsOnDesk
 makes new windows that have the window group hint set appear on
 the same desk as the other windows of the same group.  Since this
-bevhaviour may be confusing, the default setting is
+behavior may be confusing, the default setting is
 .IR ScatterWindowGroups .
 The window group hint is ignored when placing windows in this
 case.
@@ -6515,7 +6552,7 @@ By default, if an application provides an ewmh icon hint of small
 size (i.e., height and width less than or equal to 22), then fvwm
 uses this icon as its mini icon.
 .I EWMHMiniIconOverride
-instructs fvwm to ignore emwh icons and to use the mini icon
+instructs fvwm to ignore ewmh icons and to use the mini icon
 provided by the
 .I MiniIcon
 style.
@@ -6646,7 +6683,7 @@ applications that try to be more clever than the user and use
 GNOME hints to force the window manager to ignore the user's
 preferences.  The
 .I GNOMEUseHints
-style switches back to the default behaviour.
+style switches back to the default behavior.
 
 .I UseDecor
 accepts one argument: the name of a decor created with
@@ -7125,7 +7162,7 @@ inhibits the relief pattern from being drawn.
 
 .I UseTitleStyle
 causes the given button state to render the current title style
-before rendering the button's own styles.  The
+before rendering the buttons own styles.  The
 .IR Raised ", " Flat " and " Sunk
 .B TitleStyle
 flags are ignored since they are redundant in this context.
@@ -7929,7 +7966,7 @@ Style * StartsOnScreen p
 The primary screen is used in some of the modules and for the
 default icon box too.  Any number that is zero or more is taken as
 the primary screen's number.  Instead, the letter 'c' indicates to
-use the curent screen (containing the pointer) whenever the
+use the current screen (containing the pointer) whenever the
 primary screen is used.  This may be very confusing under some
 circumstances.  With
 \'g', the global screen is used as the primary screen, effectively
@@ -8018,7 +8055,7 @@ The
 .I name
 must not contain embedded whitespace.  No guarantees are made
 whether function names with embedded whitespace work or not.  This
-behaviour may also change in the future without further notice.
+behavior may also change in the future without further notice.
 The letter before the
 .I action
 tells what kind of action triggers the command which follows it.
@@ -8303,13 +8340,13 @@ is with binding commands
 this disables error messages.
 
 .B Silent
-also disables the error message for non-existant commands.
+also disables the error message for non-existent commands.
 
 Examples:
 .EX
 Silent Move 0 0
 Silent User_defined_function
-# don't complain on keabords without "Help" key
+# don't complain on keyboards without "Help" key
 Silent Key Help R A Popup HelpMenu
 .EE
 
@@ -8364,7 +8401,7 @@ command) in this section also have a return code that can be 1
 (if a window matching all conditions was found) or 0 (if no such
 window was found)the condition was not met).  A few commands
 deviate slightly from this scheme or can even return -1 which
-means that an error occured and the return code is useless.
+means that an error occurred and the return code is useless.
 The return code is used by the commands
 .B Cond
 and
@@ -8781,7 +8818,7 @@ Module FvwmForm MyForm
 At the current time the available modules (included with fvwm) are
 .B FvwmAnimate
 (produces animation effects when a window is iconified or
-de-iconifed),
+de-iconified),
 .B FvwmAudio
 (makes sounds to go with window manager actions),
 .B FvwmAuto
@@ -9138,7 +9175,7 @@ a relative
 then the ending color.  Each subsequent segment begins with the
 second color of the last segment.  The lengths may be any
 non-negative integers.  The length of one segment divided by the
-sum of all segment's lengths is the fraction of the colors that
+sum of all segments lengths is the fraction of the colors that
 are used for the segment.
 .in -2
 
