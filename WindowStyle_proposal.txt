@@ -1,0 +1,162 @@
+(Feel free to change this file as things get done)
+
+Proposal for changing the way styles are done enabling per window styles
+========================================================================
+
+The final objective of this proposal is to have a WindowStyle command 
+that understands all the current Style command options but operates on a 
+single window.
+
+Minor objectives are:
+*) Remove the style list management and replace it by reusing the 
+function list managemnt code (some additions will have to be provided to 
+allow removing lines from a function)
+*) Simplify some commands (e.g. Sticky) to be a wrapper to a WindowStyle 
+command
+
+WindowStyle Command usage:
+WindowStyle <flag> <setting>
+<setting> is On/Off, True/False, for on/off flags
+<setting> is number for numeric flags
+<setting> is a string for all other types of flag
+Not supplying setting is equivalenbt to "True" for binary flags, 0 for 
+numeric flags, "" for others.
+
+on/off flags: Icon, Title, TitleAtTop, StippledTitle, ResizeHandles, 
+WindowList, CirculateSkip, Sticky, StartIconic etc.
+
+numeric flags: BorderWidth, StartOnDesk, StartsOnPage etc.
+
+string flags: IconFile, MiniIconFile etc.
+
+(Note that these aren't exact copies of the style flags e.g "Style 
+Slippery" is "WindowStyle Sticky Off". This should make it easier to 
+write the WindowStyle command at the expense of complication the final 
+Style command replacement)
+
+Doing all this in one go will probably introduce a lot of bugs for a 
+long time so I'm proposing a step by step approach to make it less 
+traumatic:
+
+*) Fill out the above usage so we can agree on the complete syntax 
+before we start coding
+
+*) Create a new style flag: X with on/off states.
+
+*) Modify FvwmIdent to show the X flag. (or make it visible on the title 
+somehow)
+
+*) Write a WindowStyle command that only takes two args: X On/Off that 
+sets/clears the X flag on the current window.
+
+*) Test it with "Pick WindowStyle X On" and "All WindowStyle X Off"
+
+*) Write a SetOneStyle command that is effectively
+   AddToFunc SetOneStyle
+   + I AddToFunc StyleFunction I WindowId $w ($0) WindowStyle $1 $2
+   + I All StyleFunction
+
+*) Test it with "SetOneStyle <style-pattern> X On" etc
+
+*) Write a DumpFunction command to print out StyleFunction
+
+*) Make sure StyleFunction looks like:
+   + I WindowId $w (<style pattern>) WindowStyle X On
+
+*) Rename the Style command to OldStyle
+
+*) Write a new Style command:
+   if ($2 != "X") {
+     OldStyle $*
+   } else {
+     SetOneStyle $*
+   }
+
+*) Check that "Style <pattern> X On/Off" updates the X flag
+
+*) At the point where styles are applied to new windows add a call to 
+StyleFunction tmp_win pointing to the new window.
+
+*) Test that new windows get the correct setting of the X flag.
+
+*) Modify the SetOneStyle command so that it deletes the appropriate 
+lines from StyleFunction before adding to it.  Appropriate means any 
+lines that affect this flag with patterns that are the same or a subset 
+of the calling pattern.
+
+*) Check that StyleFunction behaves as it should. Repeated identical 
+Style commands should leave StyleFunction unchanged. It should never 
+have duplicate lines. Any flag should only be mentioned once per 
+pattern. Patterns for the same flag should get more specific, they 
+should never get less specific.
+
+*) Modify DestroyStyle to be:
+   if ($2 != "X") {
+     OldDestroyStyle $*
+   } else {
+     DestroyFromStyleFunction $*
+   }
+DestroyFromStyleFunction should share code with SetOneStyle to delete 
+the appropriate lines from StyleFunction.
+
+*) Check DestroyStyle modifies StyleFunction correctly with various 
+sub/superset patterns.
+
+*) Repeat the above for the Sticky flag. WindowStyle Sticky should not 
+do the redraw, it should set the sticky flag and the flag to show that 
+UpdateStyles should do the redraw if necessary. (just like the OldStyle 
+command does)
+
+*) Check that a sequence of sticky/on-off in a function don't cause 
+multiple redraws, should be zero or one.
+
+*) Rewrite the Stick command to call WindowStyle.
+
+*) Rewrite the Style command to handle comma seperated lists:
+   pattern = $1
+   for (flag, setting) in remaining args {
+     if (flag != Sticky) {
+       Oldstyle pattern flag setting
+     } else {
+       SetOneStyle pattern flag setting
+     }
+   }
+
+*) Check existing config files behave the same.
+
+*) Repeat for a numeric style flag e.g. BorderWidth
+
+*) repeat for a string style flag e.g. MiniIcon
+
+*) Repeat for all the other style flags. Sounds simple but will make the 
+OldStyle/SetOneStyle test very big until it's all over. This is the 
+tedious, soul-destroying part. Hopefully we can take it in turns. Is it 
+possible to arrange the files so that several flags can be worked on by 
+different people without too many CVS conflicts?
+
+*) Remove the OldStyle and OldDestroyStyle commands. DestroyStyle shoudl 
+just be:
+   DestroyFromStleFunction $*
+Style should just be:
+   pattern = $1
+   for (flag, setting) in remaining args {
+     SetOneStyle pattern flag setting
+   }
+
+*) Document each new arg that WindowStyle understands
+
+*) Rewrite a whole bunch of commands to just call WindowStyle e.g. 
+Shade, Iconify, Layer. Document these as "to be deleted in the future".
+
+*) Change the style pattern syntax to allow type=pattern where type is 
+one of name/icon/class/resource. I'm not sure what to do about "Style 
+Class=*" followed by "Style *" or vice versa, any ideas? Maybe "Style *" 
+should produce four "Style type=*" commands?
+
+*) Change AddTo/DestroyFunc to treat StyleFunction as readonly so users 
+can't trash it (have to use the Style command to change StyleFunction)
+
+*) Remove all trace of the X flag
+
+*) Change the name of StyleFunction to some obscure unlikely name 
+(optional)
