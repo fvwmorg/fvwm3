@@ -72,10 +72,9 @@ static XColor xcol;
 static unsigned long color;             /* color for animation */
 static XGCValues gcv;
 static int animate_none = 0;            /* count bypassed animations */
-static char stop_recvd = 'n';           /* got stop command */
-static char prior_color = 'n';          /* in case color changes */
-static char running = 'n';              /* whether we are initiialized or not */
-static char custom_recvd = 'n';         /* got custom command */
+static Bool stop_recvd = False;         /* got stop command */
+static Bool running = False;            /* whether we are initiialized or not */
+static Bool custom_recvd = False;       /* got custom command */
 
 /* here is the old double parens trick. */
 /* #define DEBUG */
@@ -710,7 +709,7 @@ int main(int argc, char **argv) {
   CreateDrawGC();			/* create initial GC if necc. */
   SendText(Channel,"Nop",0);
   DefineMe();
-  running = 'y';                        /* out of initialization phase */
+  running = True;                       /* out of initialization phase */
   SendFinishedStartupNotification(Channel); /* tell fvwm we're running */
   Loop();                               /* start running */
   exit (0);                             /* Never gets here! */
@@ -836,8 +835,8 @@ static void Loop() {
     myfprintf((stderr,"Sending unlock\n"));
     SendInfo(Channel, "UNLOCK 1\n", 0); /* fvwm can continue now! */
     if ((Animate.resize == AnimateResizeNone  /* If no animation desired */
-        && animate_none >= 1)           /* and 1 animation(s) */
-        || (stop_recvd == 'y')) {       /* or stop cmd */
+        && animate_none >= 1)		/* and 1 animation(s) */
+        || stop_recvd) {		/* or stop cmd */
       /* This still isn't perfect, if the user turns off animation,
          they would expect the menu to change on the spot.
          On the otherhand, the menu shouldn't change if the module is
@@ -848,14 +847,14 @@ static void Loop() {
       */
       StopCmd();                        /* update menu */
       myfprintf((stderr,"Exiting, animate none count %d, stop recvd %c\n",
-                 animate_none, (int)stop_recvd));
+                 animate_none, stop_recvd ? 'y' : 'n'));
       exit (0);                         /* and stop */
     } /* end stopping */
     /* The execution of the custom command has to be delayed,
        because we first had to send the UNLOCK response.
     */
-    if (custom_recvd == 'y') {
-      custom_recvd = 'n';
+    if (custom_recvd) {
+      custom_recvd = False;
       DefineForm();
       CMD1X("Module FvwmForm Form%s");
     }
@@ -933,16 +932,16 @@ void ParseConfigLine(char *buf) {
 
       switch (e - (char**)table) {
       case Stop_arg:                    /* Stop command */
-        if (running == 'y') {           /* if not a stored command */
-          stop_recvd = 'y';             /* remember to stop */
+        if (running) {                  /* if not a stored command */
+          stop_recvd = True;            /* remember to stop */
         }
         break;
       case Save_arg:                    /* Save command */
         SaveConfig();
         break;
       case Custom_arg:                  /* Custom command */
-        if (running == 'y') {           /* if not a stored command */
-          custom_recvd = 'y';           /* remember someone asked */
+        if (running) {                  /* if not a stored command */
+          custom_recvd = True;          /* remember someone asked */
         }
         break;
       case Color_arg:                   /* Color */
@@ -1014,25 +1013,14 @@ static void CreateDrawGC() {
   if (gc != NULL) {
     XFreeGC(dpy,gc);                /* free old GC */
   }
-  if (prior_color == 'y') {             /* if there was a previous color */
-    /*
-     * Prior color  if allocated is always freed.   Don't worry about the
-     * fact that the color may not have changed.
-     */
-    XFreeColors(dpy, DefaultColormap(dpy,scr),
-                &xcol.pixel,
-                1,                      /* # of pixels */
-                0);                     /* # of planes */
-    prior_color = 'n';                  /* no more prior color */
-  }
-
   color = (BlackPixel(dpy,scr) ^ WhitePixel(dpy,scr));  /* From builtins.c: */
   gcv.function = GXxor;                 /* default is to xor the lines */
   if (Animate.color) {                  /* if color called for */
     if (XParseColor(dpy,DefaultColormap(dpy,scr),Animate.color, &xcol)) {
       if (XAllocColor(dpy, DefaultColormap(dpy,scr), &xcol)) {
-        prior_color = 'y';              /* remember to free it */
         color = xcol.pixel;
+        /* free it now, only interested in the pixel */
+	XFreeColors(dpy, DefaultColormap(dpy,scr), &xcol.pixel, 1, 0);
         /*         gcv.function = GXequiv;  Afterstep used this. */
       } else {
         fprintf(stderr,"%s: could not allocate color '%s'\n",
