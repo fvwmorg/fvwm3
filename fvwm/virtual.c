@@ -207,18 +207,19 @@ static void unmap_window(FvwmWindow *t)
 static void map_window(FvwmWindow *t)
 {
   if(IS_ICONIFIED(t))
-    {
-      if(t->icon_pixmap_w != None)
-	XMapWindow(dpy,t->icon_pixmap_w);
-      if(t->icon_w != None)
-	XMapWindow(dpy,t->icon_w);
-    }
+  {
+    if(t->icon_pixmap_w != None)
+      XMapWindow(dpy,t->icon_pixmap_w);
+    if(t->icon_w != None)
+      XMapWindow(dpy,t->icon_w);
+  }
   else if(IS_MAPPED(t))
-    {
-      XMapWindow(dpy,t->frame);
-      XMapWindow(dpy, t->Parent);
-      XMapWindow(dpy, t->decor_w);
-   }
+  {
+    XMapWindow(dpy, t->frame);
+    XMapWindow(dpy, t->Parent);
+    XMapWindow(dpy, t->decor_w);
+    XMapWindow(dpy, t->w);
+  }
 }
 
 

@@ -1,5 +1,8 @@
 2000-11-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/virtual.c (map_window):
+	"finished" ICCCM fix
+
 	* fvwm/events.c (HandleMapRequestKeepRaised):
 	workaround for buggy transientfor hint
 
