@@ -43,4 +43,5 @@ void RelieveWindowGC(Display *dpy, Window win, int x,int y,int w,int h,
     seg[i].x2 = x+i;   seg[i].y2 = y+i;
   }
   XDrawSegments(dpy, win, ReliefGC, seg, i);
+  free(seg);
 }
