@@ -22,7 +22,7 @@
 2001-08-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmScroll/GrabWindow.c:
-	* FvwmScroll/FvwmScroll.c:
+	* FvwmScroll/FvwmScroll.c:<
 	reindented
 
 	* FvwmRearrange/FvwmRearrange.c (main):
