@@ -569,7 +569,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
       if (w_title_w <= tmp_win->icon_g.picture_w_g.width)
       {
 	/* the expanded title is smaller, so do not expand at all */
-	is_expanded = 0;
+	is_expanded = 1;
 	w_stipple = 0;
 	use_unexpanded_size = 1;
       }

@@ -1,5 +1,8 @@
 2002-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/icons.c (DrawIconWindow):
+	raise the icon title even if it's too small to be expanded
+
 	* fvwm/conditional.c (CMD_Cond):
 	Fixed it the right way this time
 	(CMD_Any):
