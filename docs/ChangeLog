@@ -1,3 +1,8 @@
+1999-02-18  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* FAQ: restructured FAQ and incorporated configuration-hints file
+	* configuration-hints: file removed
+
 1999-02-15  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* configuration-hints: Added new file.
