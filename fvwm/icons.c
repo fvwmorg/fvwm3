@@ -855,12 +855,12 @@ void GetIconBitmap(FvwmWindow *tmp_win)
     fvwm_msg(ERR, "GetIconBitmap", "Bad client icon pixmap depth %d", depth);
     return;
   }
-  
+
   tmp_win->iconPixmap = tmp_win->wmhints->icon_pixmap;
   tmp_win->icon_p_width = width;
   tmp_win->icon_p_height = height;
   tmp_win->iconDepth = depth;
-  
+
 #ifdef SHAPE
   if (ShapesSupported)
   {
@@ -907,7 +907,6 @@ void DeIconify(FvwmWindow *tmp_win)
             XUnmapWindow(dpy, t->icon_pixmap_w);
 	  if (t->icon_w)
 	    XUnmapWindow(dpy, t->icon_w);
-          XFlush(dpy);
           if (t == tmp_win)
 	    BroadcastPacket(M_DEICONIFY, 11,
                             t->w, t->frame,
@@ -923,6 +922,7 @@ void DeIconify(FvwmWindow *tmp_win)
                             t->icon_x_loc, t->icon_y_loc,
                             t->icon_p_width,
 			    t->icon_p_height+t->icon_w_height);
+          XFlush(dpy);
           /* End AS */
 	  XMapWindow(dpy, t->w);
 	  if(t->Desk == Scr.CurrentDesk)

@@ -172,7 +172,7 @@ void InitEventHandlerJumpTable(void)
 #endif /* MOUSE_DROPPINGS */
 #endif /* HAVE_STROKE */
 #endif /* HAVE_STROKE */
-	
+
 }
 
 /***********************************************************************
@@ -1301,40 +1301,40 @@ void HandleButtonRelease()
    unsigned int modifier;
    int stroke;
    char *action;
- 
+
    DBUG("HandleButtonRelease","Routine Entered");
-  
+
    send_motion = FALSE;
-   stroke_trans (sequence); 
+   stroke_trans (sequence);
    stroke=atoi(sequence);
 /* DEBUG printfs
        if (stroke_trans (sequence) == TRUE)
-         printf ("Translation succeeded: "); 
+         printf ("Translation succeeded: ");
        else
          printf ("Translation failed: ");
        printf ("Sequence=\"%s\"\n",sequence);
        printf ("Stroke=\"%d\"\n",stroke);
 */
- 
+
    DBUG("HandleButtonRelease",sequence);
-   
+
    Context = GetContext(Tmp_win,&Event, &PressedW);
 
    /* We currently ignore all modifiers, and contexts, too... */
    /*  modifier = (Event.xbutton.state & mods_used); */
- 
+
    /* need to search for an appropriate stroke binding */
    action = CheckBinding(Scr.AllBindings, stroke, Event.xbutton.button,
 		    Event.xbutton.state, GetUnusedModifiers(), Context,
 			STROKE_BINDING);
    /* got a match, now process it */
-/* DEBUG printfs 
+/* DEBUG printfs
    printf ("action is %p\n", action);
 */
    if (action != NULL)
      ExecuteFunction(action,Tmp_win, &Event,Context,-1, EXPAND_COMMAND);
 }
- 
+
 /***********************************************************************
  *
  *  Procedure:
@@ -1348,7 +1348,7 @@ void HandleMotionNotify()
   if (send_motion == TRUE)
     stroke_record (Event.xmotion.x,Event.xmotion.y);
 }
-		
+
 #endif /* HAVE_STROKE */
 
 /***********************************************************************
@@ -1430,7 +1430,7 @@ void HandleEnterNotify(void)
   if (IS_ICONIFIED(Tmp_win) && (ewp->mode == NotifyNormal))
     {
       SET_ICON_ENTERED(Tmp_win,1);
-      DrawIconWindow (Tmp_win);
+      DrawIconWindow(Tmp_win);
     }
 
   return;
@@ -1586,7 +1586,7 @@ void HandleConfigureRequest(void)
     {
       height = Tmp_win->orig_g.height;
     }
-  else 
+  else
     {
       height = Tmp_win->frame_g.height;
     }
@@ -1628,7 +1628,13 @@ void HandleConfigureRequest(void)
 		  False);
       Tmp_win->orig_g.height = height;
     }
-  else if (!IS_MAXIMIZED(Tmp_win))
+#if 0
+  /* domivogt (22-Jun-1999): And what about modules? Perhaps they want to move
+   * or resize maximized windows. We can't simply dump the event here. */
+  else if (!IS_MAXIMIZED(Tmp_win) || )
+#else
+  else
+#endif
     {
       if (width != Tmp_win->frame_g.width || height != Tmp_win->frame_g.height)
 	{
@@ -1740,7 +1746,7 @@ void HandleConfigureRequest(void)
 	  BroadcastRestack (Tmp_win->stack_prev, Tmp_win->stack_next);
 	}
     }
-  
+
   if (sendEvent)
     {
       XEvent client_event;
@@ -1748,17 +1754,17 @@ void HandleConfigureRequest(void)
       client_event.xconfigure.display = dpy;
       client_event.xconfigure.event = Tmp_win->w;
       client_event.xconfigure.window = Tmp_win->w;
-      
+
       client_event.xconfigure.x = Tmp_win->frame_g.x + Tmp_win->boundary_width;
       client_event.xconfigure.y = Tmp_win->frame_g.y + Tmp_win->title_g.height+
 	Tmp_win->boundary_width;
       client_event.xconfigure.width = width-2*Tmp_win->boundary_width;
       client_event.xconfigure.height = height-2*Tmp_win->boundary_width -
 	Tmp_win->title_g.height;
-      
+
       client_event.xconfigure.border_width = cre->border_width;
-      /* Real ConfigureNotify events say we're above title window, so ... 
-         what if we don't have a title ????? 
+      /* Real ConfigureNotify events say we're above title window, so ...
+         what if we don't have a title ?????
          Doesn't really matter since the ICCCM demands that above field
          of ConfigureNotify events be ignored by clients. */
       client_event.xconfigure.above = Tmp_win->frame;
@@ -1767,7 +1773,7 @@ void HandleConfigureRequest(void)
       XSendEvent(dpy, Tmp_win->w, False, StructureNotifyMask, &client_event);
 
 #if 1
-      /* This is for buggy tk, which waits for the real ConfigureNotify 
+      /* This is for buggy tk, which waits for the real ConfigureNotify
 	 on frame instead of the synthetic one on w. The geometry data
          in the event will not be correct for the frame, but tk doesn't
 	 look at that data anyway. */

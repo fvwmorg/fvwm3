@@ -332,6 +332,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
 
   if (w == tmp_win->frame)
   {
+fprintf(stderr,"moved frame\n");
     if (fAnimated) {
       AnimatedMoveFvwmWindow(tmp_win,w,-1,-1,FinalX,FinalY,fWarp,-1,NULL);
     }
@@ -342,6 +343,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
   }
   else /* icon window */
     {
+fprintf(stderr,"moved icon\n");
       SET_ICON_MOVED(tmp_win, 1);
       tmp_win->icon_x_loc = FinalX ;
       tmp_win->icon_xl_loc = FinalX -
@@ -711,8 +713,16 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    {
 	      if(!opaque_move)
 		MoveOutline(Scr.Root, 0, 0, 0, 0);
-	      *FinalX = tmp_win->frame_g.x;
-	      *FinalY = tmp_win->frame_g.y;
+	      if (!IS_ICONIFIED(tmp_win))
+	      {
+		*FinalX = tmp_win->frame_g.x;
+		*FinalY = tmp_win->frame_g.y;
+	      }
+	      else
+	      {
+		*FinalX = tmp_win->icon_x_loc;
+		*FinalY = tmp_win->icon_y_loc;
+	      }
 	      finished = TRUE;
 	    }
 	  done = TRUE;
@@ -747,8 +757,16 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 		{
 		  if(!opaque_move)
 		    MoveOutline(Scr.Root, 0, 0, 0, 0);
-		  *FinalX = tmp_win->frame_g.x;
-		  *FinalY = tmp_win->frame_g.y;
+		  if (!IS_ICONIFIED(tmp_win))
+		  {
+		    *FinalX = tmp_win->frame_g.x;
+		    *FinalY = tmp_win->frame_g.y;
+		  }
+		  else
+		  {
+		    *FinalX = tmp_win->icon_x_loc;
+		    *FinalY = tmp_win->icon_y_loc;
+		  }
 		  finished = TRUE;
 		}
 	      done = TRUE;
@@ -899,8 +917,11 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 #endif
 	}
       if(opaque_move) { /* no point in doing this if server grabbed */
-        tmp_win_copy.frame_g.x = xl;
-        tmp_win_copy.frame_g.y = yt;
+	if (!IS_ICONIFIED(tmp_win))
+	{
+	  tmp_win_copy.frame_g.x = xl;
+	  tmp_win_copy.frame_g.y = yt;
+	}
         BroadcastConfig(M_CONFIGURE_WINDOW, &tmp_win_copy);
         FlushOutputQueues();
       }

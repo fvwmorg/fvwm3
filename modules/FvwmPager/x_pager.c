@@ -1678,8 +1678,7 @@ void MoveWindow(XEvent *Event)
 	  XTranslateCoordinates(dpy, Event->xany.window, Scr.Pager_w,
 				Event->xbutton.x, Event->xbutton.y, &x, &y,
 				&dumwin);
-	  XMoveWindow(dpy,t->PagerView, x - (x1),
-		      y - (y1));
+	  XMoveWindow(dpy,t->PagerView, x - x1, y - y1);
 	  finished = 1;
 	}
       else if (Event->type == Expose)

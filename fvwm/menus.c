@@ -85,8 +85,8 @@
 #define MAX_ITEM_LABELS              3
 
 /* Default item formats for left and right submenus. */
-#define DEFAULT_ITEM_FORMAT          "%.4s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
-#define DEFAULT_LEFT_ITEM_FORMAT     "%.1|%3.2<%5i%5l%5l%5r%5i%1|%4s"
+#define DEFAULT_ITEM_FORMAT          "%.s%.1|%.5i%.5l%.5l%.5r%.5i%2.3>%1|"
+#define DEFAULT_LEFT_ITEM_FORMAT     "%.1|%3.2<%5i%5l%5l%5r%5i%1|%s"
 
 #define GRADIENT_PIXMAP_THICKNESS    5
 
@@ -1216,8 +1216,14 @@ static MenuStatus MenuInteraction(
       {
 	goto DO_RETURN;
       }
+      if (retval == MENU_NEWITEM && mrMi == NULL)
+      {
+	/* Set the MenuRoot of the current item in case we have just warped to
+	 * the menu from the void. */
+	mrMi = pmp->menu;
+      }
       /* now warp to the new menu-item, if any */
-      if (mi && (mi != find_entry(NULL, &tmrMi) || pmp->menu != tmrMi))
+      if (mi && (pmp->menu != tmrMi || mi != find_entry(NULL, &tmrMi)))
       {
 	if (tmrMi == NULL)
 	  tmrMi = pmp->menu;

@@ -1,3 +1,14 @@
+1999-06-22  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/move_resize.c (moveLoop): fixed moving icons (didn't communicate
+	to modules correctly).
+
+	* fvwm/events.c (HandleConfigureRequest): fixed bug in ConfigureNotify
+	handler: modules couldn't reconfigure maximized windows
+
+	* fvwm/menus.c (DEFAULT_ITEM_FORMAT): Removed the gap between side pic
+	and menu entry.
+
 1999-06-21  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/envvar.h:
@@ -5,7 +16,7 @@
 	(getEnv): added parameter
 	(envExpand, envDupExpand): removed dirty hack using 'save'
 
-	* fvwm/fvwm2.1 (Restart): 
+	* fvwm/fvwm2.1 (Restart):
 	* fvwm/fvwm.c (parseCommandArgs): added expanding of ${VAR} and ~.
 
 1999-06-21  Dan Espen  <dane@mk.bellcore.com>
@@ -30,7 +41,7 @@
 
 1999-06-19  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/fvwm.c (main): 
+	* fvwm/fvwm.c (main):
 	(StartupStuff): Grab the pointer during startup with cursor XC_watch.
 
 1999-06-19  Mikhael Goikhman  <migo@homemail.com>
