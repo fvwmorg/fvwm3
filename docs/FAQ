@@ -2878,6 +2878,9 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
    ThisWindow may be removed, it is only needed to avoid errors when
    CenterWindow is called without a window context.
 
+   With fvwm release 2.5.11, you can place windows in the center of
+   the screen using "Style X CenterPlacement".
+
 ----------------------------------------------------------------------
 
 7.15  Hiding the mouse pointer.
