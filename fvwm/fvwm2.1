@@ -4674,7 +4674,10 @@ is a comma separated list containing one or more of the keywords
 .IR Opacity " / " ParentalRelativity ,
 .IR SaveUnder " / " SaveUnderOff ,
 .IR WindowShadeShrinks " / " WindowShadeScrolls ,
-.IR WindowShadeSteps.
+.IR WindowShadeSteps ,
+.IR EWMHDonateIcon " / " EWMHDontDonateIcon ,
+.IR EWMHDonateMiniIcon " / " EWMHDontDonateMiniIcon ,
+.IR EWMHMiniIconOverride " / " EWMHNoMiniIconOverride .
 
 .\" +++++++++++++++ general notes
 In the above list some options are listed as
@@ -4873,9 +4876,10 @@ style.
 .B Icons, shading, maximizing, movement, resizing
 .I Icon
 takes an (optional) unquoted string argument which is the icon
-bitmap or pixmap to use.  Icons specified this way override pixmap
-icons, but not icon windows, provided by the client in the
-application (with the WM_HINTS property).  The
+bitmap or pixmap to use. Icons specified this way override pixmap
+icons, but not icon windows neither ewmh icon, provided by the client in the
+application (with the WM_HINTS property or with the ewmh _NET_WM_ICON
+property).  The
 .I IconOverride
 style changes the behavior to override any client-provided icons;
 the
@@ -5511,6 +5515,35 @@ Style * RaiseTransient
 Style * LowerTransient
 Style * StackTransientParent
 .EE
+
+.\" +++++++++++++++ Extanded WM Hints styles
+.TP
+.B Extanded Window Manager Hints Styles
+.I EWMHDonateIcon
+instructs fvwm to set the application ewmh icon hint with the icon that
+is used by fvwm if the application does not provide such hint
+(and if the icon used by fvwm is not an icon window).
+.I EWMHDonateMiniIcon
+does the same thing for mini icons. These allow
+compliant pager, taskbar, iconbox ...etc to display the same (mini) icons
+than fvwm. Note that on some hardware (e.g., 8-bits display) these styles
+can slow down windows mapping and that in general only one of
+these styles is needed by a compliant application.
+.I EWMHDontDonateIcon
+and
+.I EWMHDontDonateMiniIcon
+restore the defaults which are to do not set any ewmh (mini) icons hints.
+
+By default, if an application provide an ewmh icon hint of small size
+(i.e., of height and width lest or equal to 22), then fvwm uses this
+icon as its mini icon.
+.I EWMHMiniIconOverride
+instructs fvwm to ignore these icons and to only use the mini icon
+provided by the
+.I MiniIcon
+style.
+.I EWMHNoMiniIconOverride
+restores the default.
 
 .\" +++++++++++++++ miscellaneous
 .TP

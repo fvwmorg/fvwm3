@@ -1,5 +1,10 @@
 2001-11-24  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/fvwm2.1:
+	Documented the previous ewmh style in a new Style subsection
+
+2001-11-24  olicha  <olivier.chapuis@free.fr>
+
 	* fvwm/add_window (setup_icon):
 	(setup_window_structure):
 	* fvwm/events.c (HandlePropertyNotify):
