@@ -582,13 +582,13 @@ ant_ctr %d\n",
       if (ants==0) {
         XGrabServer(dpy);
       }
-      XDrawSegments(dpy, root, DrawGC, BEG.seg, 5);
+      XDrawSegments(dpy, root, DrawGC, BEG.seg, 4);
       XFlush(dpy);
       if (ant_ctr == 0) {               /* only pause on draw cycle */
         sleep_a_little(Animate.delay*1000);
       }
       if (ants==0) {
-        XDrawSegments(dpy, root, DrawGC, BEG.seg, 5);
+        XDrawSegments(dpy, root, DrawGC, BEG.seg, 4);
         XUngrabServer(dpy);
       }
       for (j=0;j<4;j++) {                 /* all 4 lines segs */
