@@ -1,0 +1,50 @@
+.\" t
+.\" @(#)FvwmProxy.1
+.TH FvwmProxy 1 "20021014"
+.UC
+.SH NAME
+FvwmProxy \- the FVWM Proxy module
+.SH SYNOPSIS
+FvwmProxy is spawned by fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+The FvwmProxy allows the user to locate and control windows obscured
+by other windows by using small non-overlapping proxy windows.
+The current capabilites include raising and lowering the proxied windows.
+
+Holding the Alt key activates the proxy windows.
+Proxy windows are always on top and try to center on the regular
+window they proxy.
+A simple collision algorithm tweaks the positions of the proxy windows
+to prevent them from overlapping.
+Pressing the left or right mouse buttons on a proxy window
+raises or lowers the assiciated proxied window respectively.
+
+.SH COPYRIGHTS
+The FvwmProxy program is original work by Jason Weber.
+
+Copyright 2002, Jason Weber. No guarantees or warranties or anything
+are provided or implied in any way whatsoever. Use this program at your
+own risk.
+
+.SH INITIALIZATION
+
+
+.SH INVOCATION
+FvwmProxy can be invoked by inserting the line 'Module FvwmProxy' in
+the .fvwm2rc file. This can be placed on a line by itself, if FvwmProxy
+is to be spawned during fvwm's initialization, or can be bound to a
+menu or mouse button or keystroke to invoke it later. Fvwm will search
+directory specified in the ModulePath configuration option to attempt
+to locate FvwmProxy.
+
+You may optionally use the following arguments when invoking FvwmProxy:
+
+.IP none yet
+TBD
+
+.SH CONFIGURATION OPTIONS
+There are no configuration options at this time.
+
+.SH AUTHOR
+Jason Weber

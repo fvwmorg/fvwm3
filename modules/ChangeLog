@@ -1,3 +1,11 @@
+2002-10-29  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmProxy/Makefile.am (EXTRA_DIST):
+	removed ConfigFvwmProxy
+	* Makefile.am (SUBDIRS):
+	* FvwmProxy:
+	added FvwmProxy module
+
 2002-10-23  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmConsole/FvwmConsole.1: Rework synopsis.
