@@ -567,7 +567,6 @@ void FlocaleCharsetInit(Display *dpy, const char *module)
 		FLC_DEBUG_GET_X_CHARSET(FLCLocaleCharset),
 		FLC_DEBUG_GET_BIDI_CHARSET (FLCLocaleCharset));      
 #endif
-	
 }
 
 void FlocaleCharsetSetFlocaleCharset(
@@ -810,3 +809,48 @@ FlocaleCharset *FlocaleCharsetGetEUCJPCharset(void)
 	fc = FlocaleCharsetOfXCharset("EUC-JP");
 	return fc;
 }
+
+Bool FlocaleCharsetIsCharsetXLocale(Display *dpy, char *charset, char *module)
+{
+#ifdef HAVE_XOUTPUT_METHOD
+	int i;
+
+	FlocaleCharsetInit(dpy, module);
+	if (FLCXOMCharsetList_num > 0)
+	{
+		for(i = 0; i <  FLCXOMCharsetList_num; i++)
+		{
+			if (StrEquals(
+				    FLC_DEBUG_GET_X_CHARSET(
+					    FLCXOMCharsetList[i]),
+				    charset))
+			{
+				return True;
+			}
+		}
+	}
+	return False;
+#else
+	return True; /* Hum */
+#endif
+}
+
+void FlocaleCharsetPrintXOMInfo()
+{
+#ifdef HAVE_XOUTPUT_METHOD
+	int i;
+
+	fprintf(stderr,"  XOM Charsets: ");
+	if (FLCXOMCharsetList_num > 0)
+	{
+		for(i = 0; i <  FLCXOMCharsetList_num; i++)
+		{
+			fprintf(
+				stderr, "%s ",
+				FLC_DEBUG_GET_X_CHARSET(FLCXOMCharsetList[i]));
+		}
+	}
+	fprintf(stderr,"\n");
+#endif
+}
+

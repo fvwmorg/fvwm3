@@ -76,5 +76,7 @@ FlocaleCharset *FlocaleCharsetGetLocaleCharset(void);
 FlocaleCharset *FlocaleCharsetGetUnknownCharset(void);
 const char *FlocaleGetBidiCharset(Display *dpy, FlocaleCharset *fc);
 FlocaleCharset *FlocaleCharsetGetEUCJPCharset(void);
+Bool FlocaleCharsetIsCharsetXLocale(Display *dpy, char *charset, char *module);
+void FlocaleCharsetPrintXOMInfo(void);
 
 #endif /* FLOCALE_CHARSET_H */

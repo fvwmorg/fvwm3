@@ -1,3 +1,16 @@
+2003-04-10  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.c (FlocaleGetFullNameOfFontStruct):
+	(FlocaleGetCharsetOfFontStruct):
+	(FlocaleGetCharsetFromName):
+	(FlocaleFixNameForFontSet):
+	(FlocaleGetFontSet):
+	(FlocalePrintLocaleInfo):
+	* libs/FlocaleCharset.h:
+	* libs/FlocaleCharset.c (FlocaleCharsetIsCharsetXLocale):
+	(FlocaleCharsetPrintXOMInfo):
+	Load a FontSet only when this is reasonable. Finished PrintInfo locale 2
+	
 2003-04-08  olicha  <olivier.chapuis@free.fr>
 
 	* libs/defaults.h (FLOCALE_MB_FALLBACK_FONT):

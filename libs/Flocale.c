@@ -647,6 +647,136 @@ void FlocaleRotateDrawString(
 }
 
 /* ***************************************************************************
+ * Fonts info and checking
+ * ***************************************************************************/
+
+static
+char *FlocaleGetFullNameOfFontStruct(Display *dpy, XFontStruct *font)
+{
+	char *full_name = NULL;
+	unsigned long value;
+
+	if (XGetFontProperty(font, XA_FONT, &value))
+	{
+		full_name = XGetAtomName(dpy, value);
+	}
+	return full_name;
+}
+
+static
+char *FlocaleGetCharsetOfFontStruct(Display *dpy, XFontStruct *font)
+{
+	int i = 0;
+	int count = 0;
+	char *charset = NULL;
+	char *full_name;
+
+	full_name = FlocaleGetFullNameOfFontStruct(dpy, font);
+	if (full_name == NULL)
+	{
+		return NULL;
+	}
+	while(full_name[i] != '\0' && count < 13)
+	{
+		if (full_name[i] == '-')
+		{
+			count++;
+		}
+		i++;
+	}
+	
+	if (count != 13)
+	{
+		return NULL;
+	}
+	CopyString(&charset, full_name+i);
+	XFree(full_name);
+	return charset;
+}
+
+static
+char *FlocaleGetCharsetFromName(char *name)
+{
+	int l,i,e;
+	char *charset;
+
+	l = strlen(name);
+	i = l-1;
+	while(i >= 0 && name[i] != '-')
+	{
+		i--;
+	}
+	if (i == 0 || i == l-1)
+	{
+		return NULL;
+	}
+	i--;
+	e = i;
+	while(i >= 0 && name[i] != '-')
+	{
+		i--;
+	}
+	if (i <= 0 || e == i)
+	{
+		return NULL;
+	}
+	CopyString(&charset, name + i + 1);
+	return charset;
+}
+
+/* return NULL if it is not reasonable to load a FontSet.
+ * Currently return name if it is reasonable to load a FontSet, but in the
+ * future we may want to transform name for faster FontSet loading */
+static
+char *FlocaleFixNameForFontSet(Display *dpy, char *name, char *module)
+{
+	char *new_name;
+	char *charset;
+	XFontStruct *test_font = NULL;
+
+	if (!name)
+	{
+		return NULL;
+	}
+
+	new_name = name;
+
+	if (strchr(name, ','))
+	{
+		/* tmp, do not handle "," separated list */
+		return name;
+	}
+	charset = FlocaleGetCharsetFromName(name);
+	if (charset == NULL && !strchr(name, '*') && !strchr(name, '?'))
+	{
+		/* probably a font alias! */
+		if ((test_font = XLoadQueryFont(dpy, name)))
+		{
+			charset = FlocaleGetCharsetOfFontStruct(dpy, test_font);
+			XFreeFont(dpy, test_font);
+		}
+	}
+	if (charset != NULL)
+	{
+		if (!strchr(charset, '*') && !strchr(charset, '?') &&
+		    !FlocaleCharsetIsCharsetXLocale(dpy, charset, module))
+		{
+			/* if the charset is fully specified and do not match
+			 * one of the X locale charset */
+			new_name = NULL;
+#if 0
+			fprintf(stderr,"[%s][FlocaleGetFontSet]: WARNING -- "
+				"Use of a non X locale charset '%s' when "
+				"loading font: %s\n",
+				(module)? module:"fvwmlibs", charset, name);
+#endif
+		}
+		free(charset);
+	}
+	return new_name;
+}
+
+/* ***************************************************************************
  * Fonts loading
  * ***************************************************************************/
 
@@ -692,13 +822,27 @@ FlocaleFont *FlocaleGetFontSet(
 	int mc,i;
 	char *ds;
 	XFontSetExtents *fset_extents;
-	char *fn, *hints = NULL;
+	char *fn, *hints = NULL, *fn_fixed = NULL;
 
 	hints = GetQuotedString(fontname, &fn, "/", NULL, NULL, NULL);
-	if (!(fontset = XCreateFontSet(dpy, fn, &ml, &mc, &ds)))
+	if (fn && !(fn_fixed = FlocaleFixNameForFontSet(dpy, fn, module)))
 	{
 		if (fn != NULL)
+		{
 			free(fn);
+		}
+		return NULL;
+	}
+	if (!(fontset = XCreateFontSet(dpy, fn_fixed, &ml, &mc, &ds)))
+	{
+		if (fn_fixed && fn_fixed != fn)
+		{
+			free(fn_fixed);
+		}
+		if (fn != NULL)
+		{
+			free(fn);
+		}
 		return NULL;
 	}
 
@@ -740,8 +884,14 @@ FlocaleFont *FlocaleGetFontSet(
 	flf->descent = fset_extents->max_ink_extent.height +
 		fset_extents->max_ink_extent.y;
 	flf->max_char_width = fset_extents->max_ink_extent.width;
+	if (fn_fixed && fn_fixed != fn)
+	{
+		free(fn_fixed);
+	}
 	if (fn != NULL)
+	{
 		free(fn);
+	}
 
 	return flf;
 }
@@ -1678,6 +1828,7 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 		(cs->iconv_index >= 0)?
 		cs->locale[cs->iconv_index]:"Not defined",
 		(cs->bidi)? "Yes":"No");
+	FlocaleCharsetPrintXOMInfo();
 	while (flf)
 	{
 		count++;
@@ -1699,7 +1850,7 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 			fprintf(stderr,"      Type: ");
 			if (flf->font)
 			{
-				fprintf(stderr,"FontStuct\n");
+				fprintf(stderr,"FontStruct\n");
 			}
 			else if (flf->fontset)
 			{
@@ -1729,11 +1880,11 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 					FftFontType *fftf;
 
 					fftf = &flf->fftf;
-					fprintf(stderr, "   Xft info:\n"
-						"     - Vertical font:");
+					fprintf(stderr, "    Xft info:\n"
+						"      - Vertical font:");
 					FftPrintPatternInfo(
 						fftf->fftfont, False);
-					fprintf(stderr, "     "
+					fprintf(stderr, "      "
 						"- Rotated font 90:");
 					if (fftf->fftfont_rotated_90)
 						FftPrintPatternInfo(
@@ -1742,7 +1893,7 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 							True);
 					else
 						fprintf(stderr, " None\n");
-					fprintf(stderr, "     "
+					fprintf(stderr, "      "
 						"- Rotated font 270:");
 					if (fftf->fftfont_rotated_270)
 						FftPrintPatternInfo(
@@ -1751,7 +1902,7 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 							True);
 					else
 						fprintf(stderr, " None\n");
-					fprintf(stderr, "     "
+					fprintf(stderr, "      "
 						"- Rotated font 180:");
 					if (fftf->fftfont_rotated_180)
 						FftPrintPatternInfo(
@@ -1760,6 +1911,39 @@ void FlocalePrintLocaleInfo(Display *dpy, int verbose)
 							True);
 					else
 						fprintf(stderr, " None\n");
+				}
+				else if (flf->font != NULL)
+				{
+					char *full_name;
+
+					full_name =
+						FlocaleGetFullNameOfFontStruct(
+							dpy, flf->font);
+					fprintf(stderr, "    X info:\n"
+						"      %s\n",
+						(full_name)? full_name:"?");
+					if (full_name != NULL)
+					{
+						XFree(full_name);
+					}
+				}
+				else if (flf->fontset != NULL)
+				{
+					int n,i;
+					XFontStruct **font_struct_list;
+					char **font_name_list;
+
+					fprintf(stderr, "    X info:\n");
+					n = XFontsOfFontSet(
+						flf->fontset,
+						&font_struct_list,
+						&font_name_list);
+					for(i = 0; i < n; i++)
+					{
+						fprintf(stderr,
+							"      %s\n",
+							font_name_list[i]);
+					}
 				}
 			}
 			count++;
