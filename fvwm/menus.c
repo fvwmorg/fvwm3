@@ -1982,6 +1982,13 @@ static void MenuInteraction(
       flags.do_menu = False;
       flags.is_submenu_mapped = False;
 
+      if (!mrPopup && mrPopdown && mi == MR_PARENT_ITEM(mrPopdown))
+      {
+	      /* We're again on the item that we left before.  Deschedule
+	       * popping it down. */
+	      mrPopup = mrPopdown;
+	      mrPopdown = NULL;
+      }
       if (mrMi == mrPopup)
       {
 	/* must make current popup menu a real menu */
@@ -3404,7 +3411,7 @@ static void select_menu_item(
 				XCopyArea(
 					dpy, MR_STORED_ITEM(mr).stored,
 					MR_WINDOW(mr), MST_MENU_GC(mr), 0, 0,
-					  MR_STORED_ITEM(mr).width,
+					MR_STORED_ITEM(mr).width,
 					MR_STORED_ITEM(mr).height,
 					MST_BORDER_WIDTH(mr),
 					MR_STORED_ITEM(mr).y);
@@ -3419,9 +3426,7 @@ static void select_menu_item(
 				MR_STORED_ITEM(mr).height = 0;
 				MR_STORED_ITEM(mr).y = 0;
 			}
-			else if (select == False &&
-				 (MST_FACE(mr).gradient_type == D_GRADIENT ||
-				  MST_FACE(mr).gradient_type == B_GRADIENT))
+			else if (select == False)
 			{
 				XEvent e;
 				FvwmPicture *sidePic = NULL;
@@ -3433,7 +3438,7 @@ static void select_menu_item(
 					MST_BORDER_WIDTH(mr);
 				e.xexpose.height = MI_HEIGHT(mi) +
 					(MI_IS_SELECTABLE(mi) ?
-					 MST_RELIEF_THICKNESS(mr) : 0);;
+					 MST_RELIEF_THICKNESS(mr) : 0);
 				if (MR_SIDEPIC(mr))
 				{
 					sidePic = MR_SIDEPIC(mr);
@@ -3459,8 +3464,10 @@ static void select_menu_item(
 			if (MR_STORED_ITEM(mr).width != 0)
 			{
 				if (MR_STORED_ITEM(mr).stored != None)
+				{
 					XFreePixmap(
 						dpy, MR_STORED_ITEM(mr).stored);
+				}
 				MR_STORED_ITEM(mr).stored = None;
 				MR_STORED_ITEM(mr).width = 0;
 				MR_STORED_ITEM(mr).height = 0;
@@ -3777,6 +3784,7 @@ static void paint_menu_gradient_background(
 	XGCValues gcv;
 	unsigned long gcm = GCLineWidth;
 	int switcher = -1;
+	Bool do_clear = False;
 
 	gcv.line_width = 1;
 	bounds.x = bw;
@@ -3819,7 +3827,7 @@ static void paint_menu_gradient_background(
 			XFreePixmap(dpy,pmap);
 			MR_IS_BACKGROUND_SET(mr) = True;
 		}
-		XClearWindow(dpy, MR_WINDOW(mr));
+		do_clear = True;
 		break;
 	case V_GRADIENT:
 		if (MR_IS_BACKGROUND_SET(mr) == False)
@@ -3864,7 +3872,7 @@ static void paint_menu_gradient_background(
 			XFreePixmap(dpy,pmap);
 			MR_IS_BACKGROUND_SET(mr) = True;
 		}
-		XClearWindow(dpy, MR_WINDOW(mr));
+		do_clear = True;
 		break;
 	case D_GRADIENT:
 	case B_GRADIENT:
@@ -3967,8 +3975,22 @@ static void paint_menu_gradient_background(
 			XFreePixmap(dpy, pmap);
 			MR_IS_BACKGROUND_SET(mr) = True;
 		}
-		XClearWindow(dpy, MR_WINDOW(mr));
+		do_clear = True;
 		break;
+	}
+	if (do_clear == True)
+	{
+		if (pevent == NULL)
+		{
+			XClearWindow(dpy, MR_WINDOW(mr));
+		}
+		else
+		{
+			XClearArea(
+				dpy, MR_WINDOW(mr), pevent->xexpose.x,
+				pevent->xexpose.y, pevent->xexpose.width,
+				pevent->xexpose.height, False);
+		}
 	}
 
 	return;
@@ -4132,10 +4154,7 @@ static void paint_menu(
 	{
 		/* be smart about handling the expose, redraw only the entries
 		 * that we need to */
-		if ((MST_FACE(mr).type != SolidMenu &&
-		     MST_FACE(mr).type != SimpleMenu &&
-		     !MST_HAS_MENU_CSET(mr)) ||
-		    pevent == NULL ||
+		if (pevent == NULL ||
 		    (pevent->xexpose.y < (MI_Y_OFFSET(mi) + MI_HEIGHT(mi)) &&
 		     (pevent->xexpose.y + pevent->xexpose.height) >
 		     MI_Y_OFFSET(mi)))

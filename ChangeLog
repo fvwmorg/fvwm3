@@ -1,3 +1,11 @@
+2002-08-13  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (select_menu_item):
+	(paint_menu_gradient_background):
+	fixed a redrawing problem with H/Vgradient menu faces
+	(MenuInteraction):
+	fixed a minor problem w/ entering submenus via keyboard
+
 2002-08-12  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/move_resize.c (CMD_ResizeMove):
