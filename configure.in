@@ -13,9 +13,9 @@ AC_ARG_ENABLE(package-subdirs,
   [if test $enableval = no; then FVWM_MODULESUBDIR=""; FVWM_DATASUBDIR=""; fi],
   [])
 
-FVWM_MODULEDIR='${libexecdir}'$FVWM_MODULESUBDIR
-FVWM_DATADIR='${datadir}'$FVWM_DATASUBDIR
-FVWM_PERLLIBDIR='${datadir}'$FVWM_DATASUBDIR/perllib
+FVWM_MODULEDIR='${libexecdir}'"$FVWM_MODULESUBDIR"
+FVWM_DATADIR='${datadir}'"$FVWM_DATASUBDIR"
+FVWM_PERLLIBDIR='${datadir}'"$FVWM_DATASUBDIR/perllib"
 FVWM_CONFDIR='${sysconfdir}'dnl used _only_ to search for system.fvwm2rc
 
 AC_SUBST(FVWM_MODULEDIR)
