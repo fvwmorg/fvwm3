@@ -2,7 +2,7 @@
                    FVWM Frequently Asked Questions
 ======================================================================
 
-last updated 12/07/98 as of beta release 2.1.4.
+last updated 15/01/99 as of beta release 2.1.8.
 
 INDEX
 
@@ -30,8 +30,9 @@ INDEX
            include file X11/xpm.h.  Why is that?
        14) I'm trying to compile FVWM under SunOS using cc, but the compiler
            is having lots of problems.  What gives?
-       15) Why does the screen go blank at startup and during Recaptures now
-           when it didn't in FVWM 1.xx?
+
+       15) (Question gone)
+
        16) I'd really like to see neat feature XYZ in FVWM.
            Wouldn't that be cool?  I even have a patch.  When can it
            be added?
@@ -113,9 +114,9 @@ A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
    have several potential answers:
 
      Feeble, Fabulous, Famous, Fast, Foobar, Fantastic, Flexible,
-     F!@#$%, FVWM (the GNU recursive approach), Free, Final, Funky,
-     Fred's (who the heck is Fred?), Freakin', Father-of-all, Feivel
-     (the mouse from "An American Tail"), etc.
+     F!@#$%, Flashy, FVWM (the GNU recursive approach), Free, Final,
+     Funky, Fred's (who the heck is Fred?), Freakin', Flawed,
+     Father-of-all, Feivel (the mouse from "An American Tail"), etc.
 
    Just pick your favorite (hey, there's another one!), which will of
    course change depending on your mood and whether or not you've run
@@ -123,8 +124,8 @@ A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
    although I often use F!@#$% or Freakin' while debugging...
 
    Recently 'Feline' is becoming popular. Perhaps this has something
-   to do with the discovery that at least four of the six core
-   developers have cats (averaging 1.17 cats)? Miaow.
+   to do with the discovery that four of the six core developers have
+   cats (averaging 1.17 cats)? Miaow.
 
 ----------------------------------------------------------------------
 
@@ -140,13 +141,15 @@ A: New main distribution site (official + beta code):
                 ftp://sunsite.unc.edu/pub/Linux/X11/window-managers/
                 ftp://ftp.cs.columbia.edu/pub/cheah/
 
-            Overseas:
+            Europe:
                 ftp://unix.hensa.ac.uk/pub/walnut.creek/FreeBSD/incoming/
                 ftp://ftp.jussieu.fr/pub/X11/fvwm/
                 ftp://ftp.loria.fr/pub/unix/fvwm/
 
    BTW, 1.24r was the last released version of the 1.xx series and the
-   first official release of 2.xx will be 2.2.0.
+   first official release of 2.xx will be 2.2. After that an odd second
+   digit denote development releases and even numbers denote officially
+   stable releases.
 
 ----------------------------------------------------------------------
 
@@ -245,6 +248,8 @@ A: A lot.  To name a few general ones:
         - M4 preprocessing is no longer part of the fvwm exec, but
           rather has been moved to a module.  There is also a module
           to use cpp too.  See the FvwmM4 and FvwmCpp man pages.
+
+   Be sure to check the NEWS file for new or changed features too.
 
 ----------------------------------------------------------------------
 
@@ -457,9 +462,7 @@ A: GoodStuff was renamed to FvwmButtons.  Same module, new name (that
 10) I'm using FvwmButtons (or GoodStuff in 1.xx), and sometimes the
     buttons stay depressed, and other times they don't.  Why is that?
 
-A: This may be the biggest RTFM answerable question that we get on the
-   mailing list (at one time anyways)!  But, since it is always asked
-   anyways, I'll put it here.  From the FvwmButtons man page:
+A: From the FvwmButtons man page:
 
        If command is an fvwm Exec command, then the button
        will remain pushed in until a window whose name or
@@ -479,6 +482,7 @@ A: This may be the biggest RTFM answerable question that we get on the
 A: It was actually part of the M4 preprocessing (see above).  You can
    use the 'Read' builtin to get the same effect, or use the M4
    module.
+
 ----------------------------------------------------------------------
 
 12) I really like the horizontal bars that appear on the title bars of
@@ -511,27 +515,6 @@ A: You need to have the Xpm (X Pixmap) library on your system.  You
 
 A: cc under SunOS is not an ANSI C compiler.  Try using acc or gcc
    instead.
-
-----------------------------------------------------------------------
-
-15) Why does the screen go blank at startup and during Recaptures now
-    when it didn't in FVWM 1.xx?
-
-A: Rob put it in there for the following reason:
-
-   Rob> Actually, I thought that this would make things happen more
-   Rob> quickly/smoothly.  While fvwm is adding borders, it keeps
-   Rob> raising and lowering and reparenting windows, which means that
-   Rob> they get lots of expose events, and they redraw a lot, many
-   Rob> times unnecessarily, because they soon get hidden again. I
-   Rob> thought that the single black window covering everything would
-   Rob> keep these windows from getting unneeded expose events, and
-   Rob> minimize redraws.
-
-   Which makes a lot of sense.
-
-   BTW, I've shut it off by default now.  Use the command line option
-   -blackout to enable it.
 
 ----------------------------------------------------------------------
 
@@ -603,24 +586,24 @@ A: From Jon Mountjoy, one of FVWM's users:
 
      His Example:
 
-     /* Function keys on Sun Keyboard on Top Row*/
-     Key F1          A       N       Exec me(netscape) &
-     Key F2          A       N       Exec me(netscape -install) &
-     Key F5          A       N       Exec makex(Adder)
-     Key F6          A       N       Exec makex(Lambda)
-     Key F7          A       N       Exec makex(Castor)
-     Key F8          A       N       Exec xterm -T Local &
-     /*  Keys on the function keypad on the Left of the Sun Keyboard:
-         F11 = Stop, F12 = Again, ..., F20 = Cut
-     */
-     Key F11         AWF      N       Next [!iconic CurrentScreen CurrentDesk] Focus
-     Key F12         AWF      N       Prev [!iconic CurrentScreen CurrentDesk] Focus
-     Key F13         WF       N       Maximize     100 100
-     Key F15         WF       N       RaiseLower ""
-     Key F17         WIF      N       Iconify ""
-     Key F18         WF       N       Stick ""
-     Key F20         WIF      N       Delete ""
-     Key Help        AWF      N       Iconify ""
+     # Function keys on Sun Keyboard on Top Row
+     Key F1     A     N       Exec me(netscape) &
+     Key F2     A     N       Exec me(netscape -install) &
+     Key F5     A     N       Exec makex(Adder)
+     Key F6     A     N       Exec makex(Lambda)
+     Key F7     A     N       Exec makex(Castor)
+     Key F8     A     N       Exec xterm -T Local &
+
+     # Keys on the function keypad on the Left of the Sun Keyboard:
+     # F11 = Stop, F12 = Again, ..., F20 = Cut
+     Key F11    AWF   N       Next [!iconic CurrentScreen CurrentDesk] Focus
+     Key F12    AWF   N       Prev [!iconic CurrentScreen CurrentDesk] Focus
+     Key F13    WF    N       Maximize     100 100
+     Key F15    WF    N       RaiseLower ""
+     Key F17    WIF   N       Iconify ""
+     Key F18    WF    N       Stick ""
+     Key F20    WIF   N       Delete ""
+     Key Help   AWF   N       Iconify ""
 
    A more general solution is to use xev (usually distributed w/ X11)
    or xkeykaps (an X11 interface to xmodmap written by Jamie Zawinski,
@@ -661,9 +644,19 @@ A: This is not our primary mission, but we think fvwm2 does a pretty
 
 A: Creating a patch -
 
-        1) Copy the originial source file(s) to the same name with the
+        1) Update the ChangeLog file. If you use (x)emacs, move the
+           cursor into the function you changed and hit <ctrl>-4 a.
+           This will generate an empty ChangeLog entry in the right
+           file (there are several ChangeLogs). Add a description of
+           what you did. Repeat this for all changed functions or
+           files (for changes outside of funtions). You should update
+           the AUTHORS and NEWS files too if appropriate.
+           Please take the time to add the ChangeLog entries, it makes
+           our work a lot easier.
+        2) Copy the originial file(s) to the same name with the
            additional extension of .orig (or something like that).
-        2) Then run diff with either the -c (context) or -u (unified)
+           Don't forget the ChangeLog.
+        3) Then run diff with either the -c (context) or -u (unified)
            switch on the sets of files, with the .orig file FIRST.  I
            prefer unifified diff's because they are smaller, but
            sometimes they aren't as readable (and some diff versions
@@ -675,10 +668,11 @@ A: Creating a patch -
    Submitting a patch -
 
         Just mail it to the fvwm or fvwm-workers mailing list, is the
-        best way I guess (or perhaps even better would be to place it
-        on a web page and email the URL to the mailing list,
-        especially if the patch is sizeable).  Oh, and be sure to read
-        the last paragraph of #16 above...
+        best way I guess. If your patch is large you should compress
+        it (preferrably with gzip). Should it still be larger than
+        25k you might want to to place it on a web page and email thei
+        URL to the mailing list or ask on the fvwm-workers list first.
+        Oh, and be sure to read the last paragraph of #16 above...
 
    Applying a patch -
 
@@ -824,7 +818,7 @@ A: The error message usually looks something like this:
 
 ----------------------------------------------------------------------
 
-32) I'm want to use FVWM, but I don't have root access on my machine.
+32) I want to use FVWM, but I don't have root access on my machine.
     Can I still install and run it?
 
 A: Oh yes.  FVWM doesn't need to be "properly" installed by root to be
@@ -886,11 +880,11 @@ A: You can do this, but it's not obvious how.  The button presses
    you put a title on the button, you can assign actions to that.
    Here's an example that someone sent to the mailing list once:
 
-   *FvwmButtons(1x4        \
-     Title           'System Info' \
-     Swallow         "xload" 'Exec xload' \
-     Action(Mouse 1) 'Exec xosview -cua0 -net 200 -ul -l -geometry 325x325' \
-     Action(Mouse 2) 'Exec xcpustate -interval 1 -bg "#a4978e" -fg black' \
+   *FvwmButtons(1x4,       \
+     Title,          'System Info' \
+     Swallow,        "xload" 'Exec xload' \
+     Action(Mouse 1) 'Exec xosview -cua0 -net 200 -ul -l -geometry 325x325', \
+     Action(Mouse 2) 'Exec xcpustate -interval 1 -bg "#a4978e" -fg black', \
      Action(Mouse 3) 'Exec rxvt -fg "khaki" -bg "dark olive green" \
                            -fat -n top -T Top -7 -e top' )
 
@@ -928,7 +922,7 @@ A: Sure - here's one from Graeme McCaffery:
 
      In this case I run fvwm from a shell script so that library
      variables etc are set properly for everyone.  The waitWmTimeout
-     tells the seesion manager how long to wait until it starts the
+     tells the session manager how long to wait until it starts the
      window manager. I've set it to 1 second. By default it's 60 secs.
 
      Finally you have to quit with

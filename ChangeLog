@@ -1,3 +1,10 @@
+1999-01-15  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* fvwm/fvwm2.1: marked -blackout option as obsolete
+	moved copyright notice to COPYING file
+
+	* FAQ: updated/removed some questions and fixed some typos
+
 1999-01-14  Tim Phipps <tim@quadrics.com>
 
 	* Added alt-tab explanation to FAQ
