@@ -1,0 +1,42 @@
+#! /bin/sh
+#
+# UpdateFvwm2TermMenu
+#
+# Eddy J. Gurney
+# <eddy@ans.net>
+#
+# Script to handle updating of .fvwm2-term-file
+# (Meant to be called from FvwmScript scripts...)
+
+if [ $# -lt 8 ]
+then
+    echo $0': Incorrect number of parameters!'
+    exit
+fi
+
+menuName=$1
+terminal=$2
+foreColor=$3
+backColor=$4
+font=$5
+boldFont=$6
+title=$7
+geometry=$8
+options=$9
+# stupid sh can't handle more than 9 parameters!
+shift 9
+remoteCmd=$1
+
+if [ -r $HOME/.fvwm2-term-menu ]
+then
+    mv $HOME/.fvwm2-term-menu $HOME/.fvwm2-term-menu~
+    egrep -v -i '^AddToMenu[ 	]+Terms[ 	]+"'"$menuName"'"[ 	]+'
+$HOME/.fvwm2-term-menu~ > $HOME/.fvwm2-term-menu
+fi
+
+echo 'AddToMenu Terms "'$menuName'" Exec '$terminal' -fg '$foreColor' -bg
+'$backColor' -fn "'$font'" -fb "'$boldFont'" -T "'$title'" -n "'$title'"
+-geometry '$geometry' '$options' '$remoteCmd >> $HOME/.fvwm2-term-menu
+
+sort -o .fvwm2-term-menu .fvwm2-term-menu
+

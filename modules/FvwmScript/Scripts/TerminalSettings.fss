@@ -1,0 +1,2006 @@
+# TerminalSettings.fss
+#
+# FvwmScript to set up and save terminal (xterm) settings
+#
+# Eddy J. Gurney
+# <eddy@ans.net>
+#
+
+WindowTitle	{Terminal Settings}
+WindowSize	460 400
+WindowPosition	400 400
+ForeColor	{Black}
+BackColor	{rgb:ae/b2/c3}
+ShadowColor	{rgb:92/96/a6}
+HilightColor	{White}
+# A very small default font, since we want small color push buttons w/ no title
+Font		5x7
+
+Init
+ Begin
+  WarpPointer	3
+  Set $CustColor = {rgb:ae/b2/c3}
+#If you change these, also change the defaults for Widgets 56/57
+  Set $ForeColor = {Black}
+  Set $BackColor = {AntiqueWhite}
+  Set $ForeSelected = 0
+  Set $Font = {6x13}
+  Set $BoldFont = {6x13bold}
+  Set $options = {}
+  Set $remoteCmd = {}
+  Set $geometry = {}
+ End
+
+Widget 3
+Property
+ Size 20 20
+ Position 20 20
+ Type PushButton
+ BackColor {White}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {White}
+    End
+   Else
+    Begin
+     Set $BackColor = {White}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 4
+Property
+ Size 20 20
+ Position 45 20
+ Type PushButton
+ BackColor {RosyBrown2}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {RosyBrown2}
+    End
+   Else
+    Begin
+     Set $BackColor = {RosyBrown2}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 5
+Property
+ Size 20 20
+ Position 70 20
+ Type PushButton
+ BackColor {HotPink}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {HotPink}
+    End
+   Else
+    Begin
+     Set $BackColor = {HotPink}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 6
+Property
+ Size 20 20
+ Position 95 20
+ Type PushButton
+ BackColor {VioletRed}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {VioletRed}
+    End
+   Else
+    Begin
+     Set $BackColor = {VioletRed}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 7
+Property
+ Size 20 20
+ Position 120 20
+ Type PushButton
+ BackColor {Red}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Red}
+    End
+   Else
+    Begin
+     Set $BackColor = {Red}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 8
+Property
+ Size 20 20
+ Position 145 20
+ Type PushButton
+ BackColor {Brown}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Brown}
+    End
+   Else
+    Begin
+     Set $BackColor = {Brown}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 9
+Property
+ Size 20 20
+ Position 170 20
+ Type PushButton
+ BackColor {RosyBrown4}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {RosyBrown4}
+    End
+   Else
+    Begin
+     Set $BackColor = {RosyBrown4}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 10
+Property
+ Size 20 20
+ Position 195 20
+ Type PushButton
+ BackColor {Tan}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Tan}
+    End
+   Else
+    Begin
+     Set $BackColor = {Tan}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 11
+Property
+ Size 20 20
+ Position 220 20
+ Type PushButton
+ BackColor {Wheat}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Wheat}
+    End
+   Else
+    Begin
+     Set $BackColor = {Wheat}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 12
+Property
+ Size 20 20
+ Position 245 20
+ Type PushButton
+ BackColor {AntiqueWhite}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {AntiqueWhite}
+    End
+   Else
+    Begin
+     Set $BackColor = {AntiqueWhite}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 13
+Property
+ Size 20 20
+ Position 270 20
+ Type PushButton
+ BackColor {GoldenRod}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Goldenrod}
+    End
+   Else
+    Begin
+     Set $BackColor = {Goldenrod}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 14
+Property
+ Size 20 20
+ Position 295 20
+ Type PushButton
+ BackColor {Orange}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Orange}
+    End
+   Else
+    Begin
+     Set $BackColor = {Orange}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 15
+Property
+ Size 20 20
+ Position 320 20
+ Type PushButton
+ BackColor {Gold}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Gold}
+    End
+   Else
+    Begin
+     Set $BackColor = {Gold}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 16
+Property
+ Size 20 20
+ Position 345 20
+ Type PushButton
+ BackColor {Yellow}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Yellow}
+    End
+   Else
+    Begin
+     Set $BackColor = {Yellow}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 17
+Property
+ Size 20 20
+ Position 370 20
+ Type PushButton
+ BackColor {Green}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Green}
+    End
+   Else
+    Begin
+     Set $BackColor = {Green}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 18
+Property
+ Size 20 20
+ Position 395 20
+ Type PushButton
+ BackColor {LimeGreen}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {LimeGreen}
+    End
+   Else
+    Begin
+     Set $BackColor = {LimeGreen}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 19
+Property
+ Size 20 20
+ Position 420 20
+ Type PushButton
+ BackColor {MediumAquaMarine}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {MediumAquaMarine}
+    End
+   Else
+    Begin
+     Set $BackColor = {MediumAquaMarine}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 20
+Property
+ Size 20 20
+ Position 20 45
+ Type PushButton
+ BackColor {SeaGreen}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {SeaGreen}
+    End
+   Else
+    Begin
+     Set $BackColor = {SeaGreen}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 21
+Property
+ Size 20 20
+ Position 45 45
+ Type PushButton
+ BackColor {OliveDrab}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {OliveDrab}
+    End
+   Else
+    Begin
+     Set $BackColor = {OliveDrab}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 22
+Property
+ Size 20 20
+ Position 70 45
+ Type PushButton
+ BackColor {DarkOliveGreen}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {DarkOliveGreen}
+    End
+   Else
+    Begin
+     Set $BackColor = {DarkOliveGreen}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 23
+Property
+ Size 20 20
+ Position 95 45
+ Type PushButton
+ BackColor {LightCyan4}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {LightCyan4}
+    End
+   Else
+    Begin
+     Set $BackColor = {LightCyan4}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 24
+Property
+ Size 20 20
+ Position 120 45
+ Type PushButton
+ BackColor {CadetBlue}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {CadetBlue}
+    End
+   Else
+    Begin
+     Set $BackColor = {CadetBlue}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 25
+Property
+ Size 20 20
+ Position 145 45
+ Type PushButton
+ BackColor {Aquamarine}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Aquamarine}
+    End
+   Else
+    Begin
+     Set $BackColor = {Aquamarine}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 26
+Property
+ Size 20 20
+ Position 170 45
+ Type PushButton
+ BackColor {Turquoise}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Turquoise}
+    End
+   Else
+    Begin
+     Set $BackColor = {Turquoise}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 27
+Property
+ Size 20 20
+ Position 195 45
+ Type PushButton
+ BackColor {Cyan}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Cyan}
+    End
+   Else
+    Begin
+     Set $BackColor = {Cyan}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 28
+Property
+ Size 20 20
+ Position 220 45
+ Type PushButton
+ BackColor {LightCyan2}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {LightCyan2}
+    End
+   Else
+    Begin
+     Set $BackColor = {LightCyan2}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 29
+Property
+ Size 20 20
+ Position 245 45
+ Type PushButton
+ BackColor {LightSteelBlue1}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {LightSteelBlue1}
+    End
+   Else
+    Begin
+     Set $BackColor = {LightSteelBlue1}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 30
+Property
+ Size 20 20
+ Position 270 45
+ Type PushButton
+ BackColor {LightSteelBlue2}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {LightSteelBlue2}
+    End
+   Else
+    Begin
+     Set $BackColor = {LightSteelBlue2}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 31
+Property
+ Size 20 20
+ Position 295 45
+ Type PushButton
+ BackColor {LightSteelBlue4}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {LightSteelBlue4}
+    End
+   Else
+    Begin
+     Set $BackColor = {LightSteelBlue4}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 32
+Property
+ Size 20 20
+ Position 320 45
+ Type PushButton
+ BackColor {SteelBlue}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {SteelBlue}
+    End
+   Else
+    Begin
+     Set $BackColor = {SteelBlue}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 33
+Property
+ Size 20 20
+ Position 345 45
+ Type PushButton
+ BackColor {SkyBlue4}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {SkyBlue4}
+    End
+   Else
+    Begin
+     Set $BackColor = {SkyBlue4}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 34
+Property
+ Size 20 20
+ Position 370 45
+ Type PushButton
+ BackColor {SkyBlue3}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {SkyBlue3}
+    End
+   Else
+    Begin
+     Set $BackColor = {SkyBlue3}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 35
+Property
+ Size 20 20
+ Position 395 45
+ Type PushButton
+ BackColor {SkyBlue2}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {SkyBlue2}
+    End
+   Else
+    Begin
+     Set $BackColor = {SkyBlue2}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 36
+Property
+ Size 20 20
+ Position 420 45
+ Type PushButton
+ BackColor {SkyBlue1}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {SkyBlue1}
+    End
+   Else
+    Begin
+     Set $BackColor = {SkyBlue1}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 37
+Property
+ Size 20 20
+ Position 20 70
+ Type PushButton
+ BackColor {Blue}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Blue}
+    End
+   Else
+    Begin
+     Set $BackColor = {Blue}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 38
+Property
+ Size 20 20
+ Position 45 70
+ Type PushButton
+ BackColor {Navy}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Navy}
+    End
+   Else
+    Begin
+     Set $BackColor = {Navy}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 39
+Property
+ Size 20 20
+ Position 70 70
+ Type PushButton
+ BackColor {Purple}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Purple}
+    End
+   Else
+    Begin
+     Set $BackColor = {Purple}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 40
+Property
+ Size 20 20
+ Position 95 70
+ Type PushButton
+ BackColor {Magenta}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Magenta}
+    End
+   Else
+    Begin
+     Set $BackColor = {Magenta}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 41
+Property
+ Size 20 20
+ Position 120 70
+ Type PushButton
+ BackColor {Violet}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Violet}
+    End
+   Else
+    Begin
+     Set $BackColor = {Violet}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 42
+Property
+ Size 20 20
+ Position 145 70
+ Type PushButton
+ BackColor {Plum}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Plum}
+    End
+   Else
+    Begin
+     Set $BackColor = {Plum}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 43
+Property
+ Size 20 20
+ Position 170 70
+ Type PushButton
+ BackColor {grey90}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {grey90}
+    End
+   Else
+    Begin
+     Set $BackColor = {grey90}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 44
+Property
+ Size 20 20
+ Position 195 70
+ Type PushButton
+ BackColor {grey83}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {grey83}
+    End
+   Else
+    Begin
+     Set $BackColor = {grey83}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 45
+Property
+ Size 20 20
+ Position 220 70
+ Type PushButton
+ BackColor {grey75}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {grey75}
+    End
+   Else
+    Begin
+     Set $BackColor = {grey75}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 46
+Property
+ Size 20 20
+ Position 245 70
+ Type PushButton
+ BackColor {grey65}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {grey65}
+    End
+   Else
+    Begin
+     Set $BackColor = {grey65}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 47
+Property
+ Size 20 20
+ Position 270 70
+ Type PushButton
+ BackColor {grey50}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {grey50}
+    End
+   Else
+    Begin
+     Set $BackColor = {grey50}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 48
+Property
+ Size 20 20
+ Position 295 70
+ Type PushButton
+ BackColor {grey40}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {grey40}
+    End
+   Else
+    Begin
+     Set $BackColor = {grey40}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 49
+Property
+ Size 20 20
+ Position 320 70
+ Type PushButton
+ BackColor {grey35}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {grey35}
+    End
+   Else
+    Begin
+     Set $BackColor = {grey35}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 50
+Property
+ Size 20 20
+ Position 345 70
+ Type PushButton
+ BackColor {grey25}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {grey25}
+    End
+   Else
+    Begin
+     Set $BackColor = {grey25}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 51
+Property
+ Size 20 20
+ Position 370 70
+ Type PushButton
+ BackColor {Black}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = {Black}
+    End
+   Else
+    Begin
+     Set $BackColor = {Black}
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 52
+Property
+ Size 20 20
+ Position 420 70
+ Type PushButton
+#If you change this, change the "Value" entries for 53/55/57!
+ BackColor {rgb:ae/b2/c3}
+Main
+ Case message of
+  UserAction :
+  Begin
+   If $ForeSelected == 1 Then
+    Begin
+     Set $ForeColor = $CustColor
+    End
+   Else
+    Begin
+     Set $BackColor = $CustColor
+    End
+   ChangeForeColor 60 $ForeColor
+   ChangeBackColor 60 $BackColor
+  End
+End
+
+Widget 53
+Property
+ Size 128 1
+ Position 20 95
+ Type HScrollBar
+ Value 174
+ MinValue 0
+ MaxValue 255
+ Font lucidasans-10
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $CustColor = {rgb:} (NumToHex (GetValue 53) 2) {/} (NumToHex (GetValue
+55) 2) {/} (NumToHex (GetValue 57) 2)
+   ChangeBackColor 52 $CustColor
+  End
+End
+
+Widget 54
+Property
+ Size 1 1
+ Position 72 134
+ Type ItemDraw
+ Font lucidasans-10
+ Title {Red}
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 55
+Property
+ Size 128 1
+ Position 165 95
+ Type HScrollBar
+ Value 178
+ MinValue 0
+ MaxValue 255
+ Font lucidasans-10
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $CustColor = {rgb:} (NumToHex (GetValue 53) 2) {/} (NumToHex (GetValue
+55) 2) {/} (NumToHex (GetValue 57) 2)
+   ChangeBackColor 52 $CustColor
+  End
+End
+
+Widget 56
+Property
+ Size 1 1
+ Position 210 134
+ Type ItemDraw
+ Font lucidasans-10
+ Title {Green}
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 57
+Property
+ Size 128 1
+ Position 310 95
+ Type HScrollBar
+ Value 195
+ MinValue 0
+ MaxValue 255
+ Font lucidasans-10
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $CustColor = {rgb:} (NumToHex (GetValue 53) 2) {/} (NumToHex (GetValue
+55) 2) {/} (NumToHex (GetValue 57) 2)
+   ChangeBackColor 52 $CustColor
+  End
+End
+
+Widget 58
+Property
+ Size 1 1
+ Position 360 134
+ Type ItemDraw
+ Font lucidasans-10
+ Title {Blue}
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 60
+Property
+ Size 260 30
+ Position 175 152
+ Type ItemDraw
+#If you change these, also change the defaults in "Init" above
+ ForeColor {Black}
+ BackColor {AntiqueWhite}
+ Font 6x13
+ MinValue -1
+ MaxValue -1
+ Title {The quick BROWN fox! O0l1S5}
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 61
+Property
+ Size 50 30
+ Position 25 150
+ Type RadioButton
+ Title {Background color}
+ Font LucidaSans-Bold-12
+ Value 1
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $ForeSelected = 0
+   ChangeValue 62 0
+  End
+End
+
+Widget 62
+Property
+ Size 50 30
+ Position 25 165
+ Type RadioButton
+ Title {Foreground color}
+ Font LucidaSans-Bold-12
+ Value 0
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $ForeSelected = 1
+   ChangeValue 61 0
+  End
+End
+
+Widget 63
+Property
+ Size 50 30
+ Position 20 210
+ Type RadioButton
+ Title {6x13}
+ Font 6x13bold
+ Value 1
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $Font = {6x13}
+   Set $BoldFont = {6x13bold}
+   ChangeFont 60 $Font
+   ChangeValue 64 0
+   ChangeValue 65 0
+   ChangeValue 66 0
+   ChangeValue 67 0
+   ChangeValue 68 0
+   ChangeValue 69 0
+   ChangeValue 70 0
+  End
+End
+
+Widget 64
+Property
+ Size 50 30
+ Position 20 226
+ Type RadioButton
+ Title {7x13}
+ Font 7x13bold
+ Value 0
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $Font = {7x13}
+   Set $BoldFont = {7x13bold}
+   ChangeFont 60 $Font
+   ChangeValue 63 0
+   ChangeValue 65 0
+   ChangeValue 66 0
+   ChangeValue 67 0
+   ChangeValue 68 0
+   ChangeValue 69 0
+   ChangeValue 70 0
+  End
+End
+
+Widget 65
+Property
+ Size 50 30
+ Position 20 242
+ Type RadioButton
+ Title {7x14}
+ Font 7x14bold
+ Value 0
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $Font = {7x14}
+   Set $BoldFont = {7x14bold}
+   ChangeFont 60 $Font
+   ChangeValue 63 0
+   ChangeValue 64 0
+   ChangeValue 66 0
+   ChangeValue 67 0
+   ChangeValue 68 0
+   ChangeValue 69 0
+   ChangeValue 70 0
+  End
+End
+
+Widget 66
+Property
+ Size 50 30
+ Position 20 258
+ Type RadioButton
+ Title {8x13}
+ Font 8x13bold
+ Value 0
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $Font = {8x13}
+   Set $BoldFont = {8x13bold}
+   ChangeFont 60 $Font
+   ChangeValue 63 0
+   ChangeValue 64 0
+   ChangeValue 65 0
+   ChangeValue 67 0
+   ChangeValue 68 0
+   ChangeValue 69 0
+   ChangeValue 70 0
+  End
+End
+
+Widget 67
+Property
+ Size 50 30
+ Position 20 274
+ Type RadioButton
+ Title {9x15}
+ Font 9x15bold
+ Value 0
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $Font = {9x15}
+   Set $BoldFont = {9x15bold}
+   ChangeFont 60 $Font
+   ChangeValue 63 0
+   ChangeValue 64 0
+   ChangeValue 65 0
+   ChangeValue 65 0
+   ChangeValue 68 0
+   ChangeValue 69 0
+   ChangeValue 70 0
+  End
+End
+
+Widget 68
+Property
+ Size 50 30
+ Position 20 299
+ Type RadioButton
+ Title {LST-10}
+ Font lucidasanstypewriter-bold-10
+ Value 0
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $Font = {lucidasanstypewriter-10}
+   Set $BoldFont = {lucidasanstypewriter-bold-10}
+   ChangeFont 60 $Font
+   ChangeValue 63 0
+   ChangeValue 64 0
+   ChangeValue 65 0
+   ChangeValue 66 0
+   ChangeValue 67 0
+   ChangeValue 69 0
+   ChangeValue 70 0
+  End
+End
+
+Widget 69
+Property
+ Size 50 30
+ Position 20 315
+ Type RadioButton
+ Title {LST-12}
+ Font lucidasanstypewriter-bold-12
+ Value 0
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $Font = {lucidasanstypewriter-12}
+   Set $BoldFont = {lucidasanstypewriter-bold-12}
+   ChangeFont 60 $Font
+   ChangeValue 63 0
+   ChangeValue 64 0
+   ChangeValue 65 0
+   ChangeValue 66 0
+   ChangeValue 67 0
+   ChangeValue 68 0
+   ChangeValue 70 0
+  End
+End
+
+Widget 70
+Property
+ Size 50 30
+ Position 20 330
+ Type RadioButton
+ Title {LST-14}
+ Font lucidasanstypewriter-bold-14
+ Value 0
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $Font = {lucidasanstypewriter-14}
+   Set $BoldFont = {lucidasanstypewriter-bold-14}
+   ChangeFont 60 $Font
+   ChangeValue 63 0
+   ChangeValue 64 0
+   ChangeValue 65 0
+   ChangeValue 66 0
+   ChangeValue 67 0
+   ChangeValue 68 0
+   ChangeValue 69 0
+  End
+End
+
+Widget 71
+Property
+ Size 1 1
+ Position 120 215
+ Type ItemDraw
+ Title {Window title:}
+ Font LucidaSans-Bold-12
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 72
+Property
+ Size 220 35
+ Position 220 208
+ Type TextField
+# This font doesn't exhibit weird drawing problems in the edit field
+ Font -adobe-helvetica-bold-r-*-*-12-*
+ Title {xterm}
+ Value 255
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 73
+Property
+ Size 1 1
+ Position 120 294
+ Type ItemDraw
+ Title {Host:}
+ Font LucidaSans-Bold-12
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 74
+Property
+ Size 145 35
+ Position 160 287
+ Type TextField
+# This font doesn't exhibit weird drawing problems in the edit field
+ Font -adobe-helvetica-bold-r-*-*-12-*
+ Title {}
+ Value 255
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 75
+Property
+ Size 1 1
+ Position 310 294
+ Type ItemDraw
+ Title {User:}
+ Font LucidaSans-Bold-12
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 76
+Property
+ Size 90 35
+ Position 350 287
+ Type TextField
+# This font doesn't exhibit weird drawing problems in the edit field
+ Font -adobe-helvetica-bold-r-*-*-12-*
+ Title {}
+ Value 255
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 77
+Property
+ Size 1 1
+ Position 120 324
+ Type ItemDraw
+ Title {Program:}
+ Font LucidaSans-Bold-12
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 78
+Property
+ Size 250 35
+ Position 190 317
+ Type TextField
+# This font doesn't exhibit weird drawing problems in the edit field
+ Font -adobe-helvetica-bold-r-*-*-12-*
+ Title {}
+ Value 255
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 79
+Property
+ Size 170 35
+ Position 140 365
+ Type TextField
+# This font doesn't exhibit weird drawing problems in the edit field
+ Font -adobe-helvetica-bold-r-*-*-12-*
+ Title {}
+ Value 255
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 80
+Property
+ Size 1 1
+ Position 120 244
+ Type ItemDraw
+ Title {Cols:}
+ Font LucidaSans-Bold-12
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 81
+Property
+ Size 40 30
+ Position 165 237
+ Type TextField
+# This font doesn't exhibit weird drawing problems in the edit field
+ Font -adobe-helvetica-bold-r-*-*-12-*
+ Title {80}
+ Value 255
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 82
+Property
+ Size 1 1
+ Position 210 244
+ Type ItemDraw
+ Title {Rows:}
+ Font LucidaSans-Bold-12
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 83
+Property
+ Size 40 30
+ Position 255 237
+ Type TextField
+# This font doesn't exhibit weird drawing problems in the edit field
+ Font -adobe-helvetica-bold-r-*-*-12-*
+ Title {25}
+ Value 255
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 84
+Property
+ Size 50 30
+ Position 310 235
+ Type CheckBox
+ Title {No scroll bars}
+ Font LucidaSans-Bold-12
+ Value 0
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 85
+Property
+ Size 50 30
+ Position 310 251
+ Type CheckBox
+ Title {Start iconic}
+ Font LucidaSans-Bold-12
+ Value 0
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 87
+Property
+ Size		50 25
+ Position	390 365
+ Type		PushButton
+ Font		LucidaSans-Bold-12
+ Title		{Cancel}
+Main
+ Case message of
+  UserAction :
+  Begin
+   Quit
+  End
+End
+
+Widget 88
+Property
+ Size		50 25
+ Position	330 365
+ Type		PushButton
+ Font		LucidaSans-Bold-12
+ Title		{Open}
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $options = {}
+   If (GetValue 84) == 1 Then
+    Begin
+     Set $options = $options {+sb }
+    End
+
+   If (GetValue 85) == 1 Then
+    Begin
+     Set $options = $options {-iconic }
+    End
+
+   If (GetTitle 74) == {} Then
+    Begin
+     Set $remoteCmd = {}
+    End
+   Else
+    Begin
+     Set $remoteCmd = {-e krsh } (GetTitle 74)
+     If (GetTitle 76) == {} Then
+      Begin
+      End
+     Else
+      Begin
+       Set $remoteCmd = $remoteCmd { -l } (GetTitle 76)
+      End
+     If (GetTitle 78) == {} Then
+      Begin
+      End
+     Else
+      Begin
+       Set $remoteCmd = $remoteCmd { '} (GetTitle 78) {'}
+      End
+    End
+
+   Set $geometry = (GetTitle 81) {x} (GetTitle 83)
+
+   Do {Exec xterm -fg } $ForeColor { -bg } $BackColor { -fn } $Font { -fb }
+$BoldFont { -T "} (GetTitle 72) {" -n "} (GetTitle 72) {" -geometry } $geometry
+{ } $options { } $remoteCmd { &}
+
+   Quit
+  End
+End
+
+Widget 89
+Property
+ Size		50 25
+ Position	10 365
+ Type		PushButton
+ Font		LucidaSans-Bold-12
+ Title		{Add to menu as:}
+Main
+ Case message of
+  UserAction :
+  Begin
+   Set $options = {}
+   If (GetValue 84) == 1 Then
+    Begin
+     Set $options = $options {+sb }
+    End
+
+   If (GetValue 85) == 1 Then
+    Begin
+     Set $options = $options {-iconic }
+    End
+
+   If (GetTitle 74) == {} Then
+    Begin
+     Set $remoteCmd = {}
+    End
+   Else
+    Begin
+     Set $remoteCmd = {-e krsh } (GetTitle 74)
+     If (GetTitle 76) == {} Then
+      Begin
+      End
+     Else
+      Begin
+       Set $remoteCmd = $remoteCmd { -l } (GetTitle 76)
+      End
+     If (GetTitle 78) == {} Then
+      Begin
+      End
+     Else
+      Begin
+       Set $remoteCmd = $remoteCmd { '} (GetTitle 78) {'}
+      End
+    End
+
+   Set $geometry = (GetTitle 81) {x} (GetTitle 83)
+
+   Do {Exec UpdateFvwm2TermMenu "} (GetTitle 79) {" xterm } $ForeColor { }
+$BackColor { } $Font { } $BoldFont { "} (GetTitle 72) {" } $geometry { "}
+$options {" "} $remoteCmd {" &}
+   Do {AddToMenu Terms "} (GetTitle 79) {" Exec xterm -fg } $ForeColor { -bg }
+$BackColor { -fn } $Font { -fb } $BoldFont { -T "} (GetTitle 72) {" -n "}
+(GetTitle 72) {" -geometry } $geometry { } $options { } $remoteCmd
+#This doesn't work... Bummer
+#  ChangeTitle 79 {}
+  End
+End
+
+Widget 90
+Property
+ Size 440 180
+ Position 10 10
+ Type Rectangle
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 91
+Property
+ Size 1 1
+ Position 15 5
+ Type ItemDraw
+ Font lucidasans-12
+ Title {Colors}
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 92
+Property
+ Size 90 152
+ Position 10 200
+ Type Rectangle
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 93
+Property
+ Size 1 1
+ Position 15 195
+ Type ItemDraw
+ Font lucidasans-12
+ Title {Font}
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 94
+Property
+ Size 340 75
+ Position 110 277
+ Type Rectangle
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 95
+Property
+ Size 1 1
+ Position 115 272
+ Type ItemDraw
+ Font lucidasans-12
+ Title {Remote}
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 96
+Property
+ Size 340 70
+ Position 110 200
+ Type Rectangle
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 97
+Property
+ Size 1 1
+ Position 115 195
+ Type ItemDraw
+ Font lucidasans-12
+ Title {Options}
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
+Widget 99
+Property
+ Size 265 35
+ Position 172 149
+ Type Rectangle
+Main
+ Case message of
+  UserAction :
+  Begin
+  End
+End
+
