@@ -290,7 +290,6 @@ static void parse_pixmap(Window win, GC gc, colorset_struct *cs, int i,
 		fvwm_msg(ERR, name, "can't load picture %s", token);
 		return;
 	}
-	/* don't try to be smart with bitmaps */
 	if (cs->picture->depth != Pdepth)
 	{
 		*pixmap_is_a_bitmap = True;
@@ -416,7 +415,7 @@ static void parse_shape(Window win, colorset_struct *cs, int i, char *args,
 }
 
 static void parse_tint(Window win, GC gc, colorset_struct *cs, int i, char *args,
-		       char *tint, int *has_tint_changed,
+		       char **tint, int *has_tint_changed,
 		       int *has_pixmap_changed)
 {
 	char *rest;
@@ -426,7 +425,7 @@ static void parse_tint(Window win, GC gc, colorset_struct *cs, int i, char *args
 	if (!XRenderSupport)
 		return;
 
-	rest = get_simple_color(args, &tint, cs, TINT_SUPPLIED, 0, NULL);
+	rest = get_simple_color(args, tint, cs, TINT_SUPPLIED, 0, NULL);
 	if (!GetIntegerArguments(rest, NULL, &tint_percent, 1))
 	{
 		fvwm_msg(WARN, name,
@@ -600,7 +599,8 @@ void parse_colorset(int n, char *line)
 			break;
 		case 21: /* Tint */
 		case 22: /* TintMask */
-			parse_tint(win, gc, cs, i, args, tint, &has_tint_changed,
+			parse_tint(win, gc, cs, i, args, &tint,
+				   &has_tint_changed,
 				   &has_pixmap_changed);
 			break;
 		case 23: /* NoTint */
@@ -608,7 +608,9 @@ void parse_colorset(int n, char *line)
 			/* restore the pixmap */
 			if (cs->picture != None && cs->pixmap)
 			{
+				XSetClipMask(dpy, gc, cs->picture->mask);
 				reset_cs_pixmap(cs, gc);
+				XSetClipMask(dpy, gc, None);
 			}
 			cs->tint_percent = -1;
 			cs->color_flags &= ~TINT_SUPPLIED;
@@ -660,8 +662,9 @@ void parse_colorset(int n, char *line)
 	{
 		Bool do_set_default_background = False;
 
-		if ((cs->color_flags & BG_AVERAGE) && cs->pixmap != None &&
-			cs->pixmap != ParentRelative && !pixmap_is_a_bitmap)
+		if ((cs->color_flags & BG_AVERAGE) &&
+		    cs->picture->picture != None &&
+		    cs->pixmap != ParentRelative && !pixmap_is_a_bitmap)
 		{
 			/* calculate average background color */
 			XColor *colors;
@@ -675,7 +678,8 @@ void parse_colorset(int n, char *line)
 				cs->width * cs->height * sizeof(XColor));
 			/* get the pixmap and mask into an image */
 			image = XGetImage(
-				dpy, cs->pixmap, 0, 0, cs->width, cs->height,
+				dpy, cs->picture->picture,
+				0, 0, cs->width, cs->height,
 				AllPlanes, ZPixmap);
 			if (cs->mask != None)
 				mask_image = XGetImage(
@@ -974,6 +978,9 @@ void parse_colorset(int n, char *line)
 		}
 		else
 		{
+			XFillRectangle(
+				dpy, cs->pixmap, gc,
+				0, 0, cs->width, cs->height);
 			XSetClipMask(dpy, gc, cs->picture->mask);
 			reset_cs_pixmap(cs, gc);	
 		}
