@@ -1782,6 +1782,14 @@ void HandleLeaveNotify(void)
 void HandleConfigureRequest(void)
 {
   rectangle new_g;
+  int dx;
+  int dy;
+  int dw;
+  int dh;
+  int constr_w;
+  int constr_h;
+  int oldnew_w;
+  int oldnew_h;
   XWindowChanges xwc;
   unsigned long xwcm;
   XConfigureRequestEvent *cre = &Event.xconfigurerequest;
@@ -1874,24 +1882,16 @@ void HandleConfigureRequest(void)
   if (cre->window == Tmp_win->w)
   {
 #if 0
-fprintf(stderr, "cre: x=%d(%d), y=%d(%d), w=%d(%d), h=%d(%d)\n",
         cre->x, (cre->value_mask & CWX),
         cre->y, (cre->value_mask & CWY),
         cre->width, (cre->value_mask & CWWidth),
         cre->height, (cre->value_mask & CWHeight));
 #endif
     /* Don't modify frame_XXX fields before calling SetupWindow! */
-    new_g.x = Tmp_win->frame_g.x;
-    new_g.y = Tmp_win->frame_g.y;
-    new_g.width = Tmp_win->frame_g.width;
-    if (IS_SHADED(Tmp_win))
-    {
-      new_g.height = Tmp_win->normal_g.height;
-    }
-    else
-    {
-      new_g.height = Tmp_win->frame_g.height;
-    }
+    dx = 0;
+    dy = 0;
+    dw = 0;
+    dh = 0;
 
     /* for restoring */
     if (cre->value_mask & CWBorderWidth)
@@ -1901,27 +1901,26 @@ fprintf(stderr, "cre: x=%d(%d), y=%d(%d), w=%d(%d), h=%d(%d)\n",
     /* override even if border change */
 
     if (cre->value_mask & CWX)
-      new_g.x = cre->x - Tmp_win->boundary_width;
+      dx = cre->x - Tmp_win->frame_g.x;
     if (cre->value_mask & CWY)
-      new_g.y = cre->y - Tmp_win->boundary_width -
-	((HAS_BOTTOM_TITLE(Tmp_win)) ? 0 : Tmp_win->title_g.height);
+      dy = cre->y - Tmp_win->frame_g.y;
     if (cre->value_mask & CWWidth)
-      new_g.width = cre->width + 2*Tmp_win->boundary_width;
+      dw = cre->width - (Tmp_win->frame_g.width - 2 * Tmp_win->boundary_width);
 
     if (cre->value_mask & CWHeight)
     {
       if (cre->height < (WINDOW_FREAKED_OUT_HEIGHT - Tmp_win->title_g.height -
 			 2 * Tmp_win->boundary_width))
       {
-	new_g.height =
-	  cre->height+Tmp_win->title_g.height+2*Tmp_win->boundary_width;
+	dh = cre->height - (Tmp_win->frame_g.height -
+			    2 * Tmp_win->boundary_width -
+			    Tmp_win->title_g.height);
       }
       else
       {
 	/* patch to ignore height changes to astronomically large windows
 	 * (needed for XEmacs 20.4); don't care if the window is shaded here -
 	 * we won't use 'height' in this case anyway */
-	new_g.height = Tmp_win->frame_g.height;
 	/* inform the buggy app about the size that *we* want */
 	do_send_event = True;
       }
@@ -1934,10 +1933,45 @@ fprintf(stderr, "cre: x=%d(%d), y=%d(%d), w=%d(%d), h=%d(%d)\n",
      * requested client window width; the inner height is the same as the
      * requested client window height plus any title bar slop.
      */
-    gravity_constrain_size(Tmp_win->hints.win_gravity, Tmp_win, &new_g);
+    new_g = Tmp_win->frame_g;
+    if (IS_SHADED(Tmp_win))
+      new_g.height = Tmp_win->normal_g.height;
+    oldnew_w = new_g.width + dw;
+    oldnew_h = new_g.height + dh;
+    constr_w = oldnew_w;
+    constr_h = oldnew_h;
+    constrain_size(Tmp_win, &constr_w, &constr_h, 0, 0, False);
+    dw += (constr_w - oldnew_w);
+    dh += (constr_h - oldnew_h);
+    if (dx && dw)
+    {
+      new_g.x = Tmp_win->frame_g.x + dx;
+      new_g.width = Tmp_win->frame_g.width + dw;
+    }
+    else if (dx && !dw)
+    {
+      new_g.x = Tmp_win->frame_g.x + dx;
+    }
+    else if (!dx && dw)
+    {
+      gravity_resize(Tmp_win->hints.win_gravity, &new_g, dw, 0);
+    }
+    if (dy && dh)
+    {
+      new_g.y = Tmp_win->frame_g.y + dy;
+      new_g.height = Tmp_win->frame_g.height + dh;
+    }
+    else if (dy && !dh)
+    {
+      new_g.y = Tmp_win->frame_g.y + dy;
+    }
+    else if (!dy && dh)
+    {
+      gravity_resize(Tmp_win->hints.win_gravity, &new_g, 0, dh);
+    }
+
     /* dont allow clients to resize maximized windows */
-    if (!IS_MAXIMIZED(Tmp_win) || (new_g.width == Tmp_win->frame_g.width &&
-				   new_g.height == Tmp_win->frame_g.height))
+    if (!IS_MAXIMIZED(Tmp_win) || (!dw && !dh))
     {
       if (IS_SHADED(Tmp_win))
 	get_shaded_geometry(Tmp_win, &new_g, &new_g);

@@ -1,3 +1,9 @@
+2000-01-07  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (GetPanelGeometry):
+	(HandlePanelPress):
+	adapted to new fvwm ConfigureRequest code
+
 2000-01-06  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* FvwmAuto/FvwmAuto.c: Upgraded signal handling to use fvwmsignal.o
@@ -14,11 +20,11 @@
 
 	* FvwmScript/Scripts/ScriptFvwmQuit
 	Fixed restart in ScriptFvwmQuit
-	
+
 2000-01-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/x.c (X_init_manager):
-	allow the buttongeometry option to reduce the button height to a 
+	allow the buttongeometry option to reduce the button height to a
 	minimum of the font height
 
 2000-01-04  olicha <olivier.chapuis@free.fr>

@@ -493,6 +493,8 @@ void RedoIconName(FvwmWindow *tmp_win)
 				     strlen(tmp_win->icon_name));
   /* clear the icon window, and trigger a re-draw via an expose event */
   if (IS_ICONIFIED(tmp_win))
+    DrawIconWindow(tmp_win);
+  if (IS_ICONIFIED(tmp_win))
     XClearArea(dpy, tmp_win->icon_w, 0, 0, 0, 0, True);
   return;
 }
