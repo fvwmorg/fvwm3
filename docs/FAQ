@@ -1,4 +1,4 @@
-======================================================================
+=====================================================================
                    FVWM Frequently Asked Questions
 ======================================================================
 
@@ -386,6 +386,11 @@ A: Sure - here's one from Graeme McCaffery:
      Now you can happily use CDE programs and fvwm.
    -----
 
+     On the other hand, here is a link to a web page that describes how to
+     add multiple window managers to the CDE login menu:
+
+       _+_A HREF="http://twirl.mcc.ac.uk/~zzassgl/wm.html"_=_CDE login_+_/A_-_
+     
 ----------------------------------------------------------------------
 
 2.3  I'm trying to compile FVWM under SunOS using cc, but the compiler
