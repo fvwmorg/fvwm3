@@ -1,3 +1,8 @@
+1999-01-22  Paul D. Smith  <psmith@gnu.org>
+
+	* FvwmWinList/Mallocs.c (UpdateString): Increment the length, not
+	the pointer.
+
 1999-01-17  Chris Rankin  <rankinc@bellsouth.net>
 
 	* FvwmWinList/ButtonArray.c (UpdateButton): Use saferealloc().

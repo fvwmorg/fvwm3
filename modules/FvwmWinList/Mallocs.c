@@ -1,4 +1,4 @@
-/* FvwmWinList Module for Fvwm. 
+/* FvwmWinList Module for Fvwm.
  *
  *  Copyright 1994,  Mike Finger (mfinger@mermaid.micro.umn.edu or
  *                               Mike_Finger@atk.com)
@@ -51,7 +51,7 @@ char *newptr;
 void UpdateString(char **string,const char *value)
 {
   if (value==NULL) return;
-  *string = saferealloc(*string,strlen(value+1));
+  *string = saferealloc(*string,strlen(value)+1);
   strcpy(*string,value);
 }
 
