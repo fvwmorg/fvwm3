@@ -2983,8 +2983,8 @@ relative to its current position, add the
 value.  To move the window to a position relative to the
 current location of the pointer, add the
 .RI ' m '
-(for "mouse") prefix.  To leave either coordinate unchanged, a
-'-' can be specified in place of
+(for "mouse") prefix.  To leave either coordinate unchanged,
+"keep" can be specified in place of
 .IR x " or " y .
 
 Simple Examples:
@@ -3018,23 +3018,6 @@ Move m+0 m+0
 See also the
 .B AnimatedMove
 command above.
-
-.TP
-.BI "MoveResize " "width height x y" " [" Warp "]"
-This command does the same as the
-.BR Move " and " Resize
-commands, but in a single call which is less visually disturbing.
-The arguments
-.IR width ", " height ", " x ", " y " and " Warp
-have the same meaning as in the
-.BR Move " and " Resize
-commands (including all prefixes and suffixes).
-
-Example:
-.EX
-# Move the window to the top left corner
-MoveResize w+0 -10p 0 -20p
-.EE
 
 .TP
 .BI "MoveToDesk " prev " | " arg1 " [" arg2 "] [" "min max" "]"
@@ -3206,7 +3189,7 @@ to make a terminal window just big enough for 80x24 characters.
 Both,
 .IR width " and " height
 can be negative.  In this case the new size will be the screen
-size minus the given value.  If either value is zero, the
+size minus the given value.  If either value is "keep", the
 corresponding dimension of the window is left untouched.
 
 An alternate syntax is used if the keyword
@@ -3219,6 +3202,31 @@ the window.  They are interpreted exactly like the
 arguments of the
 .B Move
 command.
+
+.TP
+.BI "ResizeMove " "resize-arguments move-arguments"
+This command does the same as the
+.BR Resize " and " Move
+commands, but in a single call which is less visually disturbing.
+The
+.I resize-arguments
+are exactly the same arguments as for the
+.B Resize
+command and the
+.I move-arguments
+are exactly the same arguments as for the
+.B Move
+command except the
+.I pointer
+option which is not supported by the
+.B ResizeMove
+command.
+
+Example:
+.EX
+# Move the window to the top left corner
+ResizeMove w+0 -10p 0 -20p
+.EE
 
 .TP
 .BI "SetAnimation " milliseconds-delay " [" fractions-to-move-list "]"
@@ -4626,7 +4634,7 @@ AddToFunc StartFunction
 
 AddToFunc GrowDownFunc
 + I windowid $0 (MovedButton3) \\
-  Resize bottomright - -0p
+  Resize bottomright keep -0p
 .EE
 Now, whenever a window with the name or class "XTerm" is created
 and the user presses button 3 to finish initial placement, the

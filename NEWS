@@ -3,19 +3,22 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.17 (not released yet)
 
+* Mouse button 3 can no longer be used to cancel interactive window
+  movement.
+
 * The commands Refresh and RefreshWindow apply all outstanding visual
   changes of a window.
 
 * New options GroUp, GrowDown, GrowLeft, GrowRight to the Maximize
   command.
 
-* New command MoveResize combined Move and Resize commands.
+* New command ResizeMove combined Move and Resize commands.
 
-* New options '-' to Move command to leave either coordinate unchanged.
+* New options "keep" to Move command to leave either coordinate unchanged.
 
 * New options "bottomright" and "br" to Resize command.
 
-* Resize command can take negative arguments.  A zero argument leaves
+* Resize command can take negative arguments.  A "keep" argument leaves
   the corresponding dimension untouched.
 
 * New condition "MovedButton3" that is true if the last interactive

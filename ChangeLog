@@ -1,3 +1,29 @@
+2000-05-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/move_resize.c (moveLoop):
+	(InteractiveMove):
+	(resize_window):
+	fixed opaque resize w/ active placement
+	removed AddWindow argument from moveLoop(): this can be checked via
+	IS_MAPPED()
+
+	* fvwm/window_flags.h:
+	* fvwm/move_resize.h:
+	* fvwm/fvwm.h:
+	* fvwm/functions.h:
+	* fvwm/conditional.c:
+	* fvwm/move_resize.c:
+	removed POST_24_FEATURES ifdef
+
+	* fvwm/move_resize.c (resize_move_window):
+	renamed moveresize command to resizemove
+
+	* fvwm/move_resize.c (GetMoveArguments):
+	replaced "-" Move argument with "keep"
+	(GetResizeArguments):
+	replaced "0" Resize argument with "keep"
+
 2000-05-03  Michael Han  <mikehan@best.com>
 
 	* FvwmCommand.h:

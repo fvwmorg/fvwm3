@@ -751,7 +751,7 @@ Bool PlaceWindow(
 
           XMapRaised(dpy,Scr.SizeWindow);
 	  if (moveLoop(
-	    tmp_win, 0, 0, DragWidth, DragHeight, &xl, &yt, False, True))
+	    tmp_win, 0, 0, DragWidth, DragHeight, &xl, &yt, False))
 	  {
 	    /* resize too */
 	    rc = True;

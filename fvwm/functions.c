@@ -193,9 +193,6 @@ static const func_type func_config[] =
   {"moduletimeout", setModuleTimeout, F_NOP,                 0},
   {"mouse",        mouse_binding,    F_MOUSE,                0},
   {"move",         move_window,      F_MOVE,                 FUNC_NEEDS_WINDOW},
-#ifdef POST_24_FEATURES
-  {"moveresize",   move_resize_window,F_MOVERESIZE,          FUNC_NEEDS_WINDOW},
-#endif
   {"movesmoothness",SetMoveSmoothness,F_MOVE_SMOOTHNESS,     0},
   {"movethreshold",SetMoveThreshold, F_MOVE_THRESHOLD,       0},
   {"movetodesk",   move_window_to_desk,F_MOVE_TO_DESK,       FUNC_NEEDS_WINDOW},
@@ -223,6 +220,7 @@ static const func_type func_config[] =
   {"refreshwindow",refresh_win_function, F_REFRESH,          FUNC_NEEDS_WINDOW},
   {PRE_REPEAT,     repeat_function,  F_REPEAT,               FUNC_DONT_REPEAT},
   {"resize",       resize_window,    F_RESIZE,               FUNC_NEEDS_WINDOW},
+  {"resizemove",   resize_move_window,F_RESIZEMOVE,          FUNC_NEEDS_WINDOW},
   {"restart",      restart_function, F_RESTART,              0},
   {"savequitsession",saveQuitSession_func,F_SAVE_QUIT_SESSION,0},
   {"savesession",  saveSession_func, F_SAVE_SESSION,         0},

@@ -1,4 +1,3 @@
-#define POST_24_FEATURES 1
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
@@ -238,9 +237,7 @@ typedef struct
 				 * why we need this information. */
   unsigned is_partially_visible : 1; /* is the window partially visible */
   unsigned is_pixmap_ours : 1; /* is the icon pixmap ours to free? */
-#ifdef POST_24_FEATURES
   unsigned is_placed_wb3 : 1;
-#endif
   unsigned is_size_inc_set : 1;
   unsigned is_transient : 1; /* is it a transient window? */
   unsigned is_window_drawn_once : 1;

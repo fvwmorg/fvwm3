@@ -214,11 +214,9 @@
 #define IS_PIXMAP_OURS(fw)     ((fw)->flags.is_pixmap_ours)
 #define SET_PIXMAP_OURS(fw,x)  (fw)->flags.is_pixmap_ours = !!(x)
 #define SETM_PIXMAP_OURS(fw,x) (fw)->flag_mask.is_pixmap_ours = !!(x)
-#ifdef POST_24_FEATURES
 #define IS_PLACED_WB3(fw)      ((fw)->flags.is_placed_wb3)
 #define SET_PLACED_WB3(fw,x)   (fw)->flags.is_placed_wb3 = !!(x)
 #define SETM_PLACED_WB3(fw,x)  (fw)->flag_mask.is_placed_wb3 = !!(x)
-#endif
 #define IS_SHADED(fw)          ((fw)->flags.is_window_shaded)
 #define SET_SHADED(fw,x)       (fw)->flags.is_window_shaded = !!(x)
 #define SETM_SHADED(fw,x)      (fw)->flag_mask.is_window_shaded = !!(x)

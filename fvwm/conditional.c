@@ -156,7 +156,6 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       SET_PARTIALLY_VISIBLE(mask, 0);
       SETM_PARTIALLY_VISIBLE(mask, 1);
     }
-#ifdef POST_24_FEATURES
     else if(StrEquals(condition,"MovedButton3"))
     {
       SET_PLACED_WB3(mask, 1);
@@ -167,7 +166,6 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       SET_PLACED_WB3(mask, 0);
       SETM_PLACED_WB3(mask, 1);
     }
-#endif
     else if(StrEquals(condition,"Raised"))
     {
       SET_FULLY_VISIBLE(mask, 1);

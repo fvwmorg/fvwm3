@@ -1,4 +1,4 @@
-#/* This program is free software; you can redistribute it and/or modify
+/* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation; either version 2 of the License, or
  * (at your option) any later version.
@@ -23,11 +23,10 @@ void AnimatedMoveOfWindow(
 void AnimatedMoveFvwmWindow(
   FvwmWindow *tmp_win, Window w, int startX, int startY, int endX, int endY,
   Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);
-int moveLoop(FvwmWindow *,int,int,int,int,int *,int *,Bool,Bool);
+Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
+	      int Height, int *FinalX, int *FinalY,Bool do_move_opaque);
 void move_window(F_CMD_ARGS);
-#ifdef POST_24_FEATURES
-void move_resize_window(F_CMD_ARGS);
-#endif
+void resize_move_window(F_CMD_ARGS);
 void move_window_doit(
   XEvent *eventp,Window w,FvwmWindow *tmp_win, unsigned long context,
   char *action,int* Module, Bool do_animate, Bool do_move_to_page);
