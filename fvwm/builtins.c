@@ -30,6 +30,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/fvwmsignal.h"
+#include "libs/FShape.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "libs/Colorset.h"
@@ -118,17 +119,34 @@ void CMD_WindowShade(F_CMD_ARGS)
   int move_parent_too = False;
   rectangle frame_g;
   rectangle parent_g;
+  rectangle shape_g;
   rectangle diff;
   rectangle pdiff;
+  rectangle sdiff;
   rectangle big_g;
   rectangle small_g;
   Bool do_scroll;
   FvwmWindow *sf;
+  static Window shape_w = None;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
     return;
   if (tmp_win == NULL || IS_ICONIFIED(tmp_win))
     return;
+
+#ifdef SHAPE
+  if (shape_w == None && FShapesSupported && tmp_win->wShaped)
+  {
+    XSetWindowAttributes attributes;
+    unsigned long valuemask;
+
+    valuemask = CWOverrideRedirect;
+    attributes.override_redirect = True;
+    shape_w = XCreateWindow(
+      dpy, Scr.Root, -32768, -32768, 1, 1, 0, CopyFromParent,
+      (unsigned int) CopyFromParent, CopyFromParent, valuemask, &attributes);
+  }
+#endif
 
   sf = get_focus_window();
   /* parse arguments */
@@ -200,6 +218,20 @@ void CMD_WindowShade(F_CMD_ARGS)
       pdiff.y = 0;
       pdiff.width = 0;
       pdiff.height = step;
+      if (client_grav == SouthEastGravity)
+      {
+	shape_g.x = bwl;
+	shape_g.y = bht - ch;
+	sdiff.x = 0;
+	sdiff.y = step;
+      }
+      else
+      {
+	shape_g.x = bwl;
+	shape_g.y = bht;
+	sdiff.x = 0;
+	sdiff.y = 0;
+      }
       diff.x = 0;
       diff.y = HAS_BOTTOM_TITLE(tmp_win) ? -step : 0;
       diff.width = 0;
@@ -231,19 +263,58 @@ void CMD_WindowShade(F_CMD_ARGS)
 	parent_g.y += pdiff.y;
 	parent_g.width += pdiff.width;
 	parent_g.height += pdiff.height;
+	shape_g.x += sdiff.x;
+	shape_g.y += sdiff.y;
 	frame_g.x += diff.x;
 	frame_g.y += diff.y;
 	frame_g.width += diff.width;
 	frame_g.height += diff.height;
+#ifdef SHAPE
+	if (FShapesSupported && tmp_win->wShaped && shape_w)
+	{
+	  FShapeCombineShape(
+	    dpy, shape_w, FShapeBounding, shape_g.x, shape_g.y, tmp_win->w,
+	    FShapeBounding, FShapeSet);
+	  if (tmp_win->title_w)
+	  {
+	    XRectangle rect;
+
+	    /* windows w/ titles */
+	    rect.x = bwl;
+	    rect.y = (HAS_BOTTOM_TITLE(tmp_win)) ? frame_g.height - bhb : 0;
+	    rect.width = frame_g.width - bw;
+	    rect.height = tmp_win->title_g.height;
+	    FShapeCombineRectangles(
+	      dpy, shape_w, FShapeBounding, 0, 0, &rect, 1, FShapeUnion,
+	      Unsorted);
+	  }
+	}
+#endif
 	if (move_parent_too)
+	{
+	  if (FShapesSupported && tmp_win->wShaped && shape_w)
+	  {
+	    FShapeCombineShape(
+	      dpy, tmp_win->frame, FShapeBounding, 0, 0, shape_w,
+	      FShapeBounding, FShapeUnion);
+	  }
 	  XMoveResizeWindow(
 	    dpy, tmp_win->Parent, parent_g.x, parent_g.y, parent_g.width,
 	    parent_g.height);
+	}
 	else
+	{
 	  XResizeWindow(dpy, tmp_win->Parent, parent_g.width, parent_g.height);
+	}
 	XMoveResizeWindow(
 	  dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
 	  frame_g.height);
+	if (FShapesSupported && tmp_win->wShaped && shape_w)
+	{
+	  FShapeCombineShape(
+	    dpy, tmp_win->frame, FShapeBounding, 0, 0, shape_w, FShapeBounding,
+	    FShapeSet);
+	}
         FlushAllMessageQueues();
         XSync(dpy, 0);
       }
@@ -301,6 +372,14 @@ void CMD_WindowShade(F_CMD_ARGS)
     /* shade window */
     SET_SHADED(tmp_win, 1);
     get_shaded_geometry(tmp_win, &small_g, &big_g);
+    if (small_g.width < 1)
+    {
+      small_g.width = 1;
+    }
+    if (small_g.height < 1)
+    {
+      small_g.height = 1;
+    }
     if (tmp_win->shade_anim_steps != 0)
     {
       parent_g.x = bwl;
@@ -311,6 +390,9 @@ void CMD_WindowShade(F_CMD_ARGS)
       pdiff.y = 0;
       pdiff.width = 0;
       pdiff.height = -step;
+      shape_g = parent_g;
+      sdiff.x = 0;
+      sdiff.y = (client_grav == SouthEastGravity) ? -step : 0;
       diff.x = 0;
       diff.y = HAS_BOTTOM_TITLE(tmp_win) ? step : 0;
       diff.width = 0;
@@ -322,12 +404,41 @@ void CMD_WindowShade(F_CMD_ARGS)
 	parent_g.y += pdiff.y;
 	parent_g.width += pdiff.width;
 	parent_g.height += pdiff.height;
+	shape_g.x += sdiff.x;
+	shape_g.y += sdiff.y;
 	frame_g.x += diff.x;
 	frame_g.y += diff.y;
 	frame_g.width += diff.width;
 	frame_g.height += diff.height;
+#ifdef SHAPE
+	if (FShapesSupported && tmp_win->wShaped && shape_w)
+	{
+	  FShapeCombineShape(
+	    dpy, shape_w, FShapeBounding, shape_g.x, shape_g.y, tmp_win->w,
+	    FShapeBounding, FShapeSet);
+	  if (tmp_win->title_w)
+	  {
+	    XRectangle rect;
+
+	    /* windows w/ titles */
+	    rect.x = bwl;
+	    rect.y = (HAS_BOTTOM_TITLE(tmp_win)) ? frame_g.height - bhb : 0;
+	    rect.width = big_g.width - bw;
+	    rect.height = tmp_win->title_g.height;
+	    FShapeCombineRectangles(
+	      dpy, shape_w, FShapeBounding, 0, 0, &rect, 1, FShapeUnion,
+	      Unsorted);
+	  }
+	}
+#endif
 	if (move_parent_too)
 	{
+	  if (FShapesSupported && tmp_win->wShaped && shape_w)
+	  {
+	    FShapeCombineShape(
+	      dpy, tmp_win->frame, FShapeBounding, 0, 0, shape_w,
+	      FShapeBounding, FShapeUnion);
+	  }
 	  XMoveResizeWindow(
 	    dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
 	    frame_g.height);
@@ -341,6 +452,12 @@ void CMD_WindowShade(F_CMD_ARGS)
 	  XMoveResizeWindow(
 	    dpy, tmp_win->frame, frame_g.x, frame_g.y, frame_g.width,
 	    frame_g.height);
+	}
+	if (FShapesSupported && tmp_win->wShaped && shape_w)
+	{
+	  FShapeCombineShape(
+	    dpy, tmp_win->frame, FShapeBounding, 0, 0, shape_w, FShapeBounding,
+	    FShapeSet);
 	}
         FlushAllMessageQueues();
         XSync(dpy, 0);

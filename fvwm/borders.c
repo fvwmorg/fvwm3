@@ -1756,6 +1756,14 @@ void SetupFrame(
            x, y, w, h);
 #endif
 
+  if (w < 1)
+  {
+    w = 1;
+  }
+  if (h < 1)
+  {
+    h = 1;
+  }
   if (w != tmp_win->frame_g.width || h != tmp_win->frame_g.height)
     is_resized = True;
   if (x != tmp_win->frame_g.x || y != tmp_win->frame_g.y)
@@ -2009,12 +2017,9 @@ void SetupFrame(
    */
 
 #ifdef SHAPE
-  if (ShapesSupported)
+  if (tmp_win->wShaped && is_resized && ShapesSupported)
   {
-    if (is_resized && tmp_win->wShaped)
-    {
-      SetShape(tmp_win, w);
-    }
+    SetShape(tmp_win, w);
   }
 #endif /* SHAPE */
 

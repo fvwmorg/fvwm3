@@ -40,6 +40,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/FShape.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -548,6 +549,7 @@ int main(int argc, char **argv)
 #ifdef SHAPE
   ShapesSupported = XShapeQueryExtension(dpy, &ShapeEventBase, &ShapeErrorBase);
 #endif /* SHAPE */
+  FShapeInit(dpy);
   Scr.pscreen = XScreenOfDisplay(dpy, Scr.screen);
   Scr.use_backing_store = DoesBackingStore(Scr.pscreen);
   Scr.flags.do_save_under = DoesSaveUnders(Scr.pscreen);

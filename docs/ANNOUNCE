@@ -12,6 +12,7 @@ fvwm, would like to express their sympathies to those affected:
   Anders Roos
   André Bonhôte
   Andrew Haninger
+  An Thi-Nguyen Le
   Ben Hollingsworth
   Bob Woodside
   Bo Jensen
@@ -25,6 +26,7 @@ fvwm, would like to express their sympathies to those affected:
   David Koo
   David Weinehall
   Denis Perelyubskiy
+  Dmitry Yu. Bolkhovityanov
   Dominik Vogt
   Elmar Damrau
   Erik Steffl
@@ -46,6 +48,7 @@ fvwm, would like to express their sympathies to those affected:
   Marcus Lundblad
   Mathias Megyei
   Michael Kirby
+  Olivier Chapuis
   Paul D. Smith
   Pavel Riha
   Peter Bak Nielsen
@@ -222,3 +225,6 @@ Bug fixes:
 
 ** Fixed compatibility of the FvwmM4 modules on platforms that have
    a System V implementation of m4 (Solaris 2.6).
+
+** Fixed shading/unshading shaped windows and windows without title
+   and border.

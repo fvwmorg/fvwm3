@@ -1,5 +1,15 @@
 2001-09-13  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/fvwm.c (main):
+	* libs/FShape.c:
+	* libs/FShape.h:
+	new library for X shape encapsulation
+
+	* fvwm/builtins.c (CMD_WindowShade):
+	* fvwm/borders.c (SetupFrame):
+	fixed shading of windows without title and border
+	fixed shading of shaped windows; fixes bug #732
+
 	* fvwm/builtins.c (CMD_SetEnv):
 	calling SetEnv without a value is the same as UnsetEnv
 

@@ -1,5 +1,5 @@
-#ifndef __XINERAMA_SUPPORT_H
-#define __XINERAMA_SUPPORT_H
+#ifndef FVWMLIB_FSCRREN_H
+#define FVWMLIB_FSCRREN_H
 
 /* needs X11/Xlib.h and X11/Xutil.h */
 
@@ -74,4 +74,4 @@ int  FScreenGetRandrEventType(void);
 Bool FScreenHandleRandrEvent(
   XEvent *event, int *old_w, int *old_h, int *new_w, int *new_h);
 
-#endif /* __XINERAMA_SUPPORT_H */
+#endif /* FVWMLIB_FSCRREN_H */
