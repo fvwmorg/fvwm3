@@ -492,5 +492,3 @@ AddToFunc ChangeDefaultFocus I Style * $0
 # to change banner pixmap
 #*FvwmBannerPixmap fvwm3.xpm
 #*FvwmBannerTimeout 2
-
-AddToFunc InitFunction I Module /home/luthien/bin/FvwmConsole
