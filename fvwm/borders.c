@@ -129,6 +129,8 @@ typedef struct
 	XSetWindowAttributes attributes;
 	unsigned long valuemask;
 	Pixmap texture_pixmap;
+	int texture_pixmap_width;
+	int texture_pixmap_height;
 	XSetWindowAttributes notex_attributes;
 	unsigned long notex_valuemask;
 	dynamic_common_decorations dynamic_cd;
@@ -335,6 +337,10 @@ static void get_common_decorations(
 		{
 			cd->texture_pixmap = GetDecor(
 				t, BorderStyle.active.u.p->picture);
+			cd->texture_pixmap_width = GetDecor(
+				t, BorderStyle.active.u.p->width);
+			cd->texture_pixmap_height = GetDecor(
+				t, BorderStyle.active.u.p->height);
 		}
 		else if (DFS_FACE_TYPE(df->style) == ColorsetButton)
 		{
@@ -360,6 +366,10 @@ static void get_common_decorations(
 		{
 			cd->texture_pixmap = GetDecor(
 				t, BorderStyle.inactive.u.p->picture);
+			cd->texture_pixmap_width = GetDecor(
+				t, BorderStyle.inactive.u.p->width);
+			cd->texture_pixmap_height = GetDecor(
+				t, BorderStyle.inactive.u.p->height);
 		}
 		else if (DFS_FACE_TYPE(df->style) == ColorsetButton)
 		{
@@ -1443,6 +1453,8 @@ static void border_get_border_background(
 	{
 		bg->flags.use_pixmap = 1;
 		bg->pixmap.p = cd->texture_pixmap;
+		bg->pixmap.g.width = cd->texture_pixmap_width;
+		bg->pixmap.g.height = cd->texture_pixmap_height;
 		bg->pixmap.shape = None;
 		bg->pixmap.alpha = None;
 		bg->pixmap.depth = Pdepth;
@@ -1485,6 +1497,8 @@ static void border_get_border_background(
 			xgcv.fill_style = FillSolid;
 			XChangeGC(dpy, Scr.BordersGC, GCFillStyle, &xgcv);
 		}
+		bg->pixmap.g.width = part_g->width;
+		bg->pixmap.g.height = part_g->height;
 		bg->flags.use_pixmap = 1;
 		bg->pixmap.shape = None;
 		bg->pixmap.alpha = None;

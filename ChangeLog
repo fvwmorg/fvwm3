@@ -1,3 +1,8 @@
+2003-02-06  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/borders.c (get_common_decorations):
+	(border_get_border_background):
+
 2003-02-05  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/builtins.c (CMD_Exec): Use STDIN_FILENO instead of a zero.
