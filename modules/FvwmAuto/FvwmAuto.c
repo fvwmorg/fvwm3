@@ -59,7 +59,6 @@
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 
-
 /***********************************************************************
  *
  *  Procedure:
@@ -203,7 +202,7 @@ fprintf(stderr,"its a new window\n");
 	  raise_window_now = raise_immediately;
 	}
 #ifdef DEBUG
-else fprintf(stderr,"no new wondow\n");
+else fprintf(stderr,"no new window\n");
 #endif
 	break;
       case M_RAISE_WINDOW:
@@ -246,6 +245,7 @@ fprintf(stderr,"raising 0x%x\n", focus_win);
       {
 	/* if focus_win isn't the root */
 	SendInfo(fd,enter_fn,focus_win);
+	raised_win = focus_win;
       }
       /* switch to wait mode again */
       last_win = focus_win;
