@@ -1,3 +1,8 @@
+1999-04-13  Dan Espen  <dane@mk.bellcore.com>
+
+	* fvwm/fvwm2.1 (Examples): fix description of IconFill default
+	direction.
+
 1999-04-13  Hippo
 
 	* fvwm/fvwm{.c,2.1}: implemented -visual and -visualId options.
