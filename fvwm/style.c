@@ -1569,6 +1569,7 @@ void CMD_Style(F_CMD_ARGS)
 	    int l;
 	    unsigned int width;
 	    unsigned int height;
+            int screen;
 	    /* read in 1 word w/o advancing */
 	    token = PeekToken(rest, NULL);
 	    if (!token)
@@ -1576,9 +1577,9 @@ void CMD_Style(F_CMD_ARGS)
 	    l = strlen(token);
 	    if (l > 0 && l < 24) {
 	      /* if word found, not too long */
-              geom_flags = XineramaSupportParseGeometry(
+              geom_flags = XineramaSupportParseGeometryWithScreen(
 		token, &IconBoxes->IconBox[0], &IconBoxes->IconBox[1],
-		&width, &height);
+		&width, &height,&IconBoxes->IconScreen);
               if (width == 0) {
 		/* zero width is invalid */
                 fvwm_msg(ERR,"CMD_Style",

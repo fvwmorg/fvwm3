@@ -139,6 +139,7 @@ typedef struct icon_boxes_struct
   struct icon_boxes_struct *next;       /* next icon_boxes or zero */
   unsigned int use_count;
   int IconBox[4];                       /* x/y x/y for iconbox */
+  int IconScreen;                       /* Xinerama screen */
   short IconGrid[2];                    /* x incr, y incr */
   char IconSign[4];                     /* because of -0, need to save */
   unsigned is_orphan : 1;
