@@ -1,0 +1,128 @@
+.\" t
+.\" @(#)FvwmAudio.1	3/28/94
+.TH FvwmAudio 1.0 "Mar 28 1994"
+.UC
+.SH NAME
+\fBFvwmAudio\fP \- the FVWM Audio module
+.SH NOTICE
+\fBFvwmAudio\fP has been superceded by \fBFvwnEvent\fP and is no longer 
+supported. Please start using \fBFvwmEvent\fP as soon as possible.
+.sp
+.SH SYNOPSIS
+\fBFvwmAudio\fP is spawned by \fBfvwm\fP, so no command line invocation will 
+work.  From within the \fI.fvwmrc\fP file, \fBFvwmAudio\fP is spawned as 
+follows:
+.nf
+.sp
+Module FvwmAudio 
+.sp
+.fi
+or from within an fvwm pop-up menu:
+.nf
+.sp
+AddToMenu Module-Popup "Modules"      Title
++                      "Audio"        Module FvwmAudio
++                      "Auto"         Module FvwmAuto 200
++                      "Buttons"      Module FvwmButtons
++                      "Ident"        Module FvwmIdent
++                      "Banner"       Module FvwmBanner
++                      "Pager"        Module FvwmPager 0 3
+.sp
+.fi
+.SH DESCRIPTION
+The \fBFvwmAudio\fP module communicates with the Fvwm window manager
+to bind audio sounds to window manager actions.  Different audio
+queues may be assigned to any window manager action.  \fBFvwmAudio\fP
+can be used with any independent audio player, and therefore requires
+no special audio library APIs of its own.  Simple in its design, it
+merely binds the audio filenames to particular actions and forks off
+the audio player program with the appropriate filename when that
+action occurs.
+
+\fBFvwmAudio\fP can also have builtin support for the rplay library.
+
+.SH CONFIGURATION OPTIONS
+\fBFvwmAudio\fP reads the same \fI.fvwm2rc\fP file as \fBfvwm(1)\fP
+reads when it starts up, and looks for certain configuration options:
+
+.IP "*FvwmAudioPlayCmd \fI/usr/bin/X11/demos/auplay\fP"
+This determines the independent audio player program that will
+actually play the sounds.  If the play command is set to
+\fIbuiltin-rplay\fP then the builtin rplay support will be used.  For
+example:
+.sp
+*FvwmAudioPlayCmd \fIbuiltin-rplay\fP
+
+.IP "*FvwmAudioDir \fI/usr/lib/sounds\fP"
+Specifies the directory to look for the audio files.  This option is
+ignored when rplay is used.
+
+.IP "*FvwmAudioDelay \fI5\fP"
+Specifies that sound events will only be played if they occur at least
+5 seconds after the previous event.  Sounds events that occur during
+the delay period are ignored.  This option is useful if you don't want
+several sounds playing at the same time.  The default delay is 0 which
+disables the audio delay.
+
+.IP "*FvwmAudioRplayHost \fIhostname\fP"
+Specifies what host the sounds will play on.  The \fIhostname\fP can
+also be an environment variable such as $HOSTDISPLAY.  This option is
+only valid with builtin rplay support.
+
+.IP "*FvwmAudioRplayPriority \fI0\fP"
+Specifies what priority will be assigned to the sounds when they are
+played.  This option is only valid with builtin rplay support.
+
+.IP "*FvwmAudioRplayVolume \fI127\fP"
+Specifies what volume will be assigned to the sounds when they are
+played.  This option is only valid with builtin rplay support.
+
+.IP "*FvwmAudio \fIwindow-manager_action audio_filename\fP"
+Binds particular window manager actions to sound queues.
+.nf
+.sp
+*FvwmAudio startup TaDa.au
+*FvwmAudio shutdown Elvis_Left.au
+*FvwmAudio unknown doh.au
+*FvwmAudio add_window drip.au
+*FvwmAudio raise_window swoosh.au
+*FvwmAudio lower_window swoosh.au
+*FvwmAudio focus_change boing.au
+*FvwmAudio destroy_window explosion.au
+*FvwmAudio iconify ploop.au
+*FvwmAudio deiconify ploop.au
+*FvwmAudio toggle_paging fwop.au
+*FvwmAudio new_page beam_trek.au
+*FvwmAudio new_desk beam_trek.au
+*FvwmAudio configure_window huh.au
+*FvwmAudio window_name beep.au
+*FvwmAudio icon_name beep.au
+*FvwmAudio res_class beep.au
+*FvwmAudio res_name beep.au
+*FvwmAudio end_windowlist twang.au
+.sp
+.fi
+.SH INVOCATION
+The invocation method was shown in the synopsis section. No command
+line invocation is possible. \fBFvwmAudio\fP must be invoked by the
+\fBfvwm\fP window manager.
+.sp
+.SH BUGS
+It's REALLY noisy when fvwm starts and restarts.
+.sp
+.SH COPYRIGHTS
+This module is heavily based on a similar Fvwm module called
+\fBFvwmSound\fP by Mark Boyns. \fBFvwmAudio\fP simply takes Mark's
+original program and extends it to make it generic enough to work with
+any audio player. The concept for interfacing this module to the
+Window Manager, is original work by Robert Nation.
+
+Copyright 1994, Mark Boyns and Mark Scott.  No guarantees or
+warranties or anything are provided or implied in any way whatsoever.
+Use this program at your own risk.  Permission to use this program for
+any purpose is given, as long as the copyright is kept intact.
+.sp
+.SH AUTHORS
+Mark Boyns (\fIboyns@sdsu.edu\fP)
+.sp
+Mark Scott (\fImscott@mcd.mot.com\fP)

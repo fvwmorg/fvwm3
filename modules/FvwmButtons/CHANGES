@@ -1,0 +1,387 @@
+
+Changed since FvwmButtons-200396b
+
+ * 200396: Updated TODO file some.
+
+ * 210396: Fixed Desk buttons that didn't hang correctly.
+
+ * 280396: Chuck: Fixed some problems with macro definitions  min,max and abs
+   on AIX
+
+ * 280396: Think I fixed the problem that made windows get huge on machines
+   with non-cleaning mallocs (AIXs) when no global Frame was specified.
+
+ * 280396: Somehow the string "*blabla" should have _2_ chars more allocated
+   than "blabla" or the parser would choke and die on some ELF linux system..
+   Thanks to Dirk Vangestel for this.
+
+Changed since FvwmButtons-200396
+
+ * 200396: Hups, seems I introduced a little bug that made it reluctant to 
+   swallow some windows, particularly shaped ones... Should be back to normal
+   now.
+
+ * 200396: Thanks to Romano again for saving my ass - I managed to remove
+   the initialization of b->flags, creating major disasters on startup.
+
+Changed since FvwmButtons-130396
+
+ * 130396: Did lots and lots of things, actually had pixmaps for backgrounds
+   working, and had started a complete restructuring of the source (again)
+   Then the disk crashed. Good. Happy.
+
+ * 140396: Fixed real inheritance of swallow flags.
+
+ * 140396: Fixed bug which dumped core if Desk buttons were present.
+
+ * 140396: Check before redrawing background/padding if it's needed.
+
+ * 140396: Gave bitmaps the correct background color.
+
+ * 180396: On slow systems, when using the UseOld flag on several buttons,
+   it could spawn several copies of each program. Now only spawns after 
+   _first_ M_END_WINDOWLIST, not every one.
+   Also made it honor inherited UseOld flags and not spawn on startup.
+
+ * 180396: Some editing... does every cpp understand '#    ifdef A' ?
+
+ * 180396: Removed a couple of calls to buttonJustify in draw.c..
+
+ * 190396: Made the parser properly use tolower() when comparing, preparing for
+   i18n to LC_CTYPE... 
+
+ * 200396: Updated somewhat to work with latest fvwmlib picture patch of mine.
+
+ * 200396: Again changed the resource name and class, now it is (in ICCCM
+   compliance) the invoking name and FvwmButtons, respectively.
+
+ * 200396: Now also does shaped bitmaps w/o xpm library. You won't notice
+   until the background pixmaps are done though. Also fixed a memory leak 
+   where the temporary pixmap made for a bitmap was not deleted.
+
+ * 200396: Now uses the picture caching introduced with the fvwmlib patch
+   mentioned above. This patch btw also applies to fvwm menus, could save
+   major amounts of memory (say 50 equal 16x16 pixmaps - you save 49 times
+   512 bytes for just the pixmaps and the masks (assuming 8bit display),
+   plus some overhead. Not to mention it should start much faster!
+
+ * 200396: Now uses XTranslateCoordinates instead of XQueryTree to find 
+   real coords when swallowing a window.
+
+Changed since FvwmButtons-120396
+
+ * 120396: Now properly avoids modifying icons on monochrome displays. This
+   used to ruin xpm's mono settings. A patch for the Picture code in fvwmlib
+   is also needed, get my fvwm-picture-pl2.patch, and also fvwm-menus.patch
+   which will fix the same problem for fvwm menus.
+
+ * 130396: Fixed two typos on the man page, thanks to Brandon for noticing.
+
+ * 130396: Improved parser to ignore leading spaces in buttonrc files, and
+   to accept any amount of whitespace between *FvwmButtons and (...) in
+   .fvwm[2]rc. Thanks to Alan for pointing this weakness out.
+
+ * 130396: The main call to XCreateSimpleWindow would give random x,y coords
+   unless given a geometry, perhaps that is allowable when using a WM, but not
+   without. This is now fixed.
+
+ * 130396: Now uses XSetWMProperty instead of XmbSetWMProperty, to please
+   those stuck with X11R4. Thanks to Angiolini Giorgio for the information.
+
+ * 130396: Fixed parser to cope with Exec something, i.e. without the ""
+   empty hangon notifier. It used to garb this up, trying to do Exec mething.
+   Fixed man page to reflect the change.
+
+Changed since FvwmButtons-110396b
+
+ * 120396: Added lots of debug information for swallow/unswallow. Finally did
+   it all properly when exiting, no more X Errors when restarting fvwm from
+   FvwmButtons :-) FvwmButtons grabs the server, and goes through the 
+   pending eventlist to decide which windows have been destroyed by fvwm
+   already before deciding to kill,close or reparent. Or ignore. After all
+   children are handled, ther server is ungrabbed.
+
+ * 120396: Added some debugging output for events and fvwm communication.
+   Now uses only SendText instead of both SendInfo and SendText (duplicates).
+
+ * 120396: Fixed the position detection routine for buttonpresses, should now
+   be a little more accurate.
+
+ * 120396: Fixed stupid negated #ifdef that tried to use the XPM color loading
+   if you didn't have it, and not if you did.
+
+ * 120396: Finally! Removed the superfluous XFree that had made FvwmButtons
+   unusable to many people! Thanks, thanks and many more thanks to Romano
+   Giannetti for tracing down this stupid bug! I mean, the variable it freed
+   wan't even used! Romano is hereby awarded the title "Bugslayer" for this
+   outstanding feat. Applause!
+
+ * 120396: Added some more starting debug info that should be unneeded after
+   the above fix.
+
+ * 120396: Turned _off_ most debug options by default. Moved them to the 
+   header file.
+
+ * 120396: Cleaned up a few unused variables. Added #include <ctype.h> to
+   parse.c, after advice from Romano.
+
+Changed since FvwmButtons-110396
+
+ * 110396: Fixed bug where, if Respawn was specified by a container, and a
+   button had specifed NoRespawn, it would still respawn. Or the opposite
+   situation, Respawn locally and NoRespawn higher up, would cause NoRespawn.
+
+ * 110396: Fixed bug where x padding would be set equal to y padding if no
+   padding was specified for a button. 
+
+ * 110396: Wrote a file INSTALL and a samplebuttonrc file.
+
+ * 110396: Fixed bug where containers would get padding and information from
+   parents on redraw, when they were not supposed to.
+
+ * 110396: Fixed bug where icons left of title would not be clipped properly
+   when the button was sized too small.
+
+ * 110396: Added error messages telling when a font could not be loaded.
+
+ * 110396: Turned on lots of starting info by default (turn it off by
+   commenting out the defines in FvwmButtons.c) which will hopefully help
+   people understand what is going on when it dumps core on them.
+
+ * 110396: Fixed bug where bitmaps would get drawn with current background
+   instead of the one given for the button.
+
+ * 110396: Fixed ShuffleButtons to reduce the number of rows if there are
+   too many of them. This should correctly handle single buttons without
+   giving rows or columns options.
+
+ * 110396: FvwmButtons will now not create windows less than 16x16 pixels,
+   in case you have not provided a geometry or any buttons from which 
+   FvwmButtons can calculate a unit buttonsize.
+
+Changed since FvwmButtons-080396
+
+ * 090396: Parser now accepts escaped quoting characters in quote. Only the 
+   current quoting character is unescaped while parsing, i.e:
+     Action `Exec emacs \`xcb -p 1\` -title \"hello\"`
+   would give 
+     Exec emacs `xcb -p 1` -title \"hello\"
+   Also, the string "\\"" would be read to \", as only the sequence \q will
+   be collapsed, where q is the quoting character.
+   Thanks to Emiel Witteman <ewittema@wi.leidenuniv.nl> for pointing out the
+   necessity of this improvement.
+
+ * 090396: Rewrote flag handling, now you can specify title flags and swallow
+   flags in the container part, like Container(Title(Left,Side)) and that will
+   count for all subbuttons. This also goes for all the swallowing flags, and
+   these negatives have been introduced: Kill, Hints, NoRespawn, NoOld, 
+   NoTitle. All this is yet not fully tested.
+   There is no negative for Title(Side) because this is a Hack! (see README)
+
+ * 090396: Made a patch to fvwm-2.0.41 that allows any module to pop up a real
+   Popup menu! Just use it as a regular command - it's like a dream.
+
+ * 090396: Changed ResourceName to "FvwmButtons" and ResourceClass to 
+   "FvwmModule", regardless of what name the module is given at runtime.
+
+ * 090396: Split up source some more, mostly to ease maintenance and get 
+   faster recompiles.
+
+ * 090396: Took a shot at the exposure handler, relaxed the updating a little,
+   now there is _much_ less flashing when redrawing, and it only redraw parts
+   that are part of the expose.
+
+ * 090396: Moderated ending efforts to WM_DELETE_WINDOW instead of KillClient.
+   However some programs don't understand that, so remodeled Kill,NoKill flags
+   to decide if KillClient should be used. The old Kill,NoKill are now 
+   Close,NoClose.
+
+ * 090396: Updated the man page somewhat on the flag changes.
+
+ * 090396: Rewrote icon handling to use fvwmlib's Picture routines, the same
+   that are used for fvwm's menus. Made a patch to fix bitmap searching for 
+   this.
+
+ * 090396: Tidied away all the colorcloseness settings, it's the same level
+   as the other xpm stuff used so no extra checking needs be done.
+
+ * 090396: Fixed bitmap icons, which converted from 1 to X planes each time
+   they were drawn, bummer.
+
+ * 090396: Actually fixed most problems with resizing to a very small size.
+   Swallowed windows might still give you X Errors though, if they don't like
+   being 1x1.
+
+ * 110396: Added config option  *FvwmButtonsFile string  which will read the
+   config from the file "string" instead. Also, this can be given as an
+   argument starting with:  FvwmButtons FvwmTesting string
+   This config file is the same as in .fvwm[2]rc, but you don't put
+   *FvwmButtons in front of all the lines.
+   The filename will have to be given with full path or be relative to the
+   dir you started fvwm in. No preprocessor is available, but it does '#'
+   comments and linecontinuation.
+
+Changed since FvwmButtons-070396
+
+ * 080396: Now _really_ works with common PixmapPath and IconPath. I have even
+   tested it this time :-)
+
+ * 080396: Rewrote swallowing: If a window disappears between M_WINDOW_NAME etc
+   and M_MAP, it is assumed crashed, no further action. But if the window 
+   simply has gotten another parent, we assume some other swallower got to it
+   before us, so we release our hold and give a new Send_Windowlist to find
+   another fitting window, and if that fails, spawns one ourself.
+   Still, best to avoid competition about windows to be swallowed, use 
+   different titles. It still easily fails if it processes an out of date
+   windowlist.
+
+ * 080396: Put in some more debugging output, controlled by the defines in
+   the head of FvwmButtons.c.
+
+ * 080396: Now, when quitting FvwmButtons, it checks to see if a window still
+   exists before trying to kill it or unswallow it.
+
+ * 080396: Added Size w h command, assures a button get at least this large.
+   Great for buttonboxes with only swallowed windows.
+
+ * 080396: Man page: Added Size description, replaced some "frame"s with
+   "relief" (Maybe the option should be changed also?), added a subsection
+   on how initial buttonsizes are calculated, changed #908090 to rgb:90/80/90
+   to conform to X standards, and wrote a blurb saying so, and what to
+   consider when using the older # method.
+ 
+ * 080396: Fixed redrawing buttons - now the container padding is cleared
+   correctly also when resized to mismatching sizes.
+
+ * 080396: FvwmButtons now allocates only one graphic context instead of 3.
+   Shadow of buttons are now longer handled specially for monochrome screens.
+
+ * 080396: Hacked an option to the Title command, Title(Side) now stacks
+   Icon and Title side by side. It also left justifies the icon automatically.
+   Between the icon and title there is the horizontal padding space.
+   Added it to the man page.
+
+Changed since FvwmButtons-060396
+
+ * 060396: Made if startable as "Module FvwmButtons SomeButtons", or even
+   "FvwmButtons SomeButtons", which will name it SomeButton and does away
+   with silly softlinks.
+
+ * 060396: Fixed the close color allocation via Xpm to work with xpm versions
+   back to 3.2b, which was released october 92. There was really no need of
+   using features from 3.4g.
+
+ * 060396: Rewrote font loading, for no particular reason.
+
+ * 070396: Did some work on individual color settings, now Fore and Back can
+   be set in buttons and in containers. 
+
+ * 070396: Take back suggestion that ConfigureNotify is autofollowed by
+   Expose, not true when no subwindows. Now ConfigureNotify Resize does a
+   full redraw.
+ 
+ * 070396: Fixed Right option of strings, which was broken. For instance,
+   when used, title became left justified. Also it was a little confused
+   about which font to use where.
+
+ * 070396: Update man page to specify Back and Fore colors and mention 
+   argument namechange. (I.e FvwmButtons AnotherName invocation.)
+
+Changed since FvwmButtons-040396
+
+ * 060396: Removed a bug that would choke on buttons with "Desk xxxx" commands
+   on them. Thanks to Robert Tarrall <tarrall@plutus.colorado.edu>.
+
+ * 060396: Color-closeness behaviour has been disabled by default, as it 
+   requires xpm-3.4g or newer. Several people had trouble with this. It now
+   avoids this code if your xpm include is too old.
+
+ * 060396: Removed bug that made it ignore an xpm when it was in the same
+   directory searched for bitmaps.
+
+ * 060396: Now sets Class and Resource to FvwmButtons (or bound name) instead
+   of NoClass, NoResource. Code copied from FvwmTalk.
+
+ * 060396: Parser no longer accepts '(' and ')' as quoting characters, those
+   are reserved for optional parameters. String quotation characters available
+   are "string", 'string' and `string`, the last one should be used if you 
+   want preprocessors to get inside.
+
+ * 060396: Some general cleanup of unused variables and unclean typing. Got a
+   little shocked when I saw what good ol' -Wall came up with. 
+
+ * 060396: Changed Action syntax, removed Mouse syntax. Mouse # command shall
+   now be given as Action(Mouse #) command. Future extensions of this will be
+     Action(Mouse # [Click|DoubleClick|Move [N|S|E|W]]) command and
+     Action(Key code [moderators]) command.
+
+ * 060396: Fixed line continuation in the man page, thanks to Romano Giannetti
+   <romano@iet.unipi.it> for pointing it out.
+
+ * 060396: Swallow changes! There is a new flag UseTitle, which must be used
+   if you want the button to get the window title as it's title. It will no
+   longer automatically overwrite. This is not backwards compatible though.
+   Also there is a change of syntax, all swallow flags must now be given with
+   the swallow command, like:
+     Swallow(NoHints, NoKill, Respawn, UseOld, UseTitle) Hangon Command
+
+ * 060396: When NoKill is set, windows are unswallowed to their original 
+   geometry (x,y,width,height,borderwidth). Nice in conjunction with UseOld.
+   Note: If you experience _systematic_, _reproducable_ errors with NoKill,
+   UseOld, Respawn etc, do not hesitate to report! There are some dustdragons
+   around.
+
+ * 060396: Frame now accepts a negative parameter, this causes the frame to
+   be inverted for all purposes. Pushing an inverse button makes it stand out
+   etc. This duplicates the excellent Variable Relief patch by Gregory
+   Lauckhart <gregl@cs.washington.edu>
+
+ * 060396: Did some real updating of the manual page. Even wrote a section
+   on the arranging algorithm!
+
+ * 060396: Put in justification of titles, the syntax is now
+   "Title[(Left|Right|Center)] string". If the title is too long its tail is
+   cut off, unless it is Right justified - then its head goes.
+   Now only stacking order is missing before we have it emulate menus with
+   icons :-)
+
+ * 060396: Fixed code that stores geometry of a swallowed window, now it 
+   really unswallows to same place. Hint: XQueryTree()....
+
+ * 060396: Finally got rid of the annoying problem that swallowed programs
+   sometimes managed put a border on themselves after being positioned.
+   ResizeRedirectMask to dead ears is like plucking the legs of an insect...
+
+ * 060396: Added option NoSize, which will make the initial size estimate
+   skip that button when calculating sizes. A very long title or an almost
+   right size icon could ruin you whole setup without it.
+
+Changed since FvwmButtons-020396
+
+ * 030396: Fixed the positioning of large windows, which was thoroughly
+   unusable due to a "bug" in button_belongs_to(). Rewrite touched a little
+   on ShuffleButtons() too.
+
+ * 040396: Fixed bug that made FvwmButtons crash with BUG: Illegal iconwindow
+   if an icon failed to load for some reason.
+
+ * 040396: Added better error messages for GetXPMFile(), also told Xpm to use
+   whatever closest colors available if not able to allocate exact ones.
+
+ * 040396: Made it allocate colors through a call to XpmCreateImageFromData()
+   to gain from its color closeness algorithms, which gets close colors if no
+   space is left in the colormap. Better than crashing :-) Should put all the
+   calls together to make it in one go...
+   But what to do when not using Xpm?
+
+ * 040396: Fixed bug that messed up icon_w and icon_h when failing to load a
+   bitmap, which messed up buttonsizes and made a BadValue when creating the
+   main window.
+
+ * 040396: Fixed bug, when a font failed in a subcontainer, it would copy it's
+   parents personal font instead of it's public font, probably just a garbage
+   pointer. If any subbuttons had titles, it would foul up as above.
+
+ * 040396: Actually, it seems it was this: when a button with both icon and
+   title failed to load it's icon, icon_w and icon_h was never initialized,
+   but used to calculate button size.

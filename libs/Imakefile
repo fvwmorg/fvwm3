@@ -1,0 +1,44 @@
+/* 
+ * Imakefile for fvwm 2.0 -- libfvwm2.a
+ */
+
+#include "../Fvwm.tmpl"
+
+SRCS = \
+	ClientMsg.c \
+	GetFont.c \
+	Grab.c \
+	Module.c \
+	Parse.c \
+	Picture.c \
+	Strings.c \
+	System.c \
+	envvar.c \
+	safemalloc.c \
+	sleep.c \
+	wild.c
+
+OBJS = \
+	ClientMsg.o \
+	GetFont.o \
+	Grab.o \
+	Module.o \
+	Parse.o \
+	Picture.o \
+	Strings.o \
+	System.o \
+	envvar.o \
+	safemalloc.o \
+	sleep.o \
+	wild.o
+
+NormalLibraryTarget($(LIB), $(OBJS))
+
+#if InstallLibs
+InstallLibrary($(LIB),$(FVWMLIBDIR))
+#else
+install:: lib$(LIB).a
+#endif
+
+DependTarget()
+

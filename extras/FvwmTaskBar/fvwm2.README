@@ -1,0 +1,2 @@
+Make sure you applied the MiniIcon support, added #define MINI_ICONS to
+fvwm.tmpl. Do a MakeMakefiles and recompiled everything.

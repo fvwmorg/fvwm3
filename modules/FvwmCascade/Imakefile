@@ -1,0 +1,16 @@
+/* 
+ * Imakefile for fvwm 2 -- FvwmCascade
+ */
+
+FVWM_SRCDIR = ../..
+#include "../../Fvwm.tmpl"
+
+XCOMM -DUSERC  -- use fvwm2 rc file as well as command args
+EXTRA_DEFINES = -DUSERC
+
+SRCS = FvwmCascade.c
+OBJS = FvwmCascade.o
+
+LOCAL_LIBRARIES = $(FVWM_LIBS) $(XLIB)
+
+FvwmModuleTarget(FvwmCascade)

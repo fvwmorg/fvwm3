@@ -1,0 +1,212 @@
+			     fvwmmod.pl 1.3
+			     ==============
+
+		by Dan Astoorian <djast@utopia.csas.com>
+
+
+Q: What is fvwmmod.pl?
+
+A: fvwmmod.pl is not a single module.  It is a set of Perl definitions
+   and subroutines designed to facilitate writing FVWM modules in Perl.
+
+
+Q: Why write modules in Perl?
+
+A: Perl is a powerful, versatile, and increasingly popular language.
+
+   There is also an extension to Perl 5 for John Ousterhout's Tk library
+   which makes it much easier to create modules with a consistent user
+   interface than the equivalent implementation in C using one of the X
+   toolkits.
+
+
+Q: What versions of FVWM and Perl should I use with fvwmmod.pl?
+
+A: fvwmmod.pl was initially developed under Perl 4.036, and does not
+   depend on any Perl5-specific features; it should work with any
+   version of Perl from 4.0 upwards.  It was designed for use with
+   FVWM2, and as written will not work with version 1 of FVWM.
+
+
+Q: How do I use fvwmmod.pl?
+
+A: To use fvwmmod.pl's definitions in your Perl program, use Perl's "require"
+   operator.  Make sure that you have installed fvwmmod.pl somewhere in
+   Perl's @INC path (or supply the complete pathname to "require").
+
+   fvwmmod.pl provides the following subroutines, which are explained in
+   greater detail later in this document:
+       &InitModule		- initializes the module
+       &SendInfo		- send a packet to FVWM
+       &AddHandler		- register a packet handler
+       &DeleteHandler		- unregister a packet handler
+       &ClearAllHandlers	- unregister all packet handlers
+       &EventLoop		- enter event loop
+       &ReadPacket		- manually accept an FVWM packet
+       &EndModule		- close communications with FVWM
+
+   A typical Perl module will call &InitModule, register handlers for
+   various packet types, and then invoke &EventLoop, which will receive
+   packets from FVWM and invoke all handlers which have been registered
+   for that packet type.
+
+
+Q: Huh? Could you say that again, only slower, and in English?
+
+A: An example should be instructive.  The following is a complete (but
+   minimal) Perl module for FVWM which simply lists all windows:
+
+       #!/usr/bin/perl
+       # Set the above to wherever your perl interpreter is.  (Duh.)
+
+       # MiniPerl - small, instructive example of a fvwm module implemented
+       # in Perl.
+       # (c)1996 Dan Astoorian <djast@utopia.csas.com>
+
+       # Note: This requires fvwmmod.pl installed in your @INC path:
+       require 'fvwmmod.pl';
+
+       ($winId, $context, @args) = &InitModule;
+
+       # Register the event handlers
+       &AddHandler($M_WINDOW_NAME, 'showwin');
+       &AddHandler($M_END_WINDOWLIST, 'cleanup');
+
+       print "---start of window list---\n";
+       # Ask FVWM to send us its list of windows
+       &SendInfo(0, "Send_WindowList");
+
+       # Enter the main loop
+       &EventLoop;
+
+       # We're done; clean up.
+       &EndModule;
+
+       sub showwin {
+	   ($type, $id, $frameid, $ptr, $name) = @_;
+	   printf("Window ID %8lx: %s\n", $id, $name);
+	   # return one, to signal we want the event loop to continue
+	   1;
+       }
+       sub cleanup {
+	   print "--- end of window list ---\n";
+	   # return zero, to signal we want the event loop to exit now
+	   0;
+       }
+
+   For a more comprehensive example, see FvwmDebug.pl, the fvwmmod.pl
+   implementation of the FvwmDebug module (with a few enhancements over
+   the original C implementation).  For a detailed example using the Tk
+   extension to Perl, see console.pl.
+
+
+Q: How do you initialize a Perl module?
+
+A: The &InitModule routine sets up the Perl program as an FVWM module,
+   using the parameters passed to the script by FVWM on the command line
+   (i.e., in @ARGV).  It also signals FVWM that it may send packets to
+   the module.
+
+   If an optional argument is given to &InitModule, it will be used to
+   select the type of packets the module is willing to receive from
+   FVWM.  Packet types are defined by variables beginning with "$M_";
+   there is one for each packet type defined in fvwm/module.h.  A packet
+   type set consists of some set of these constants OR'd together.
+
+   &InitModule returns a list, consisting of the window ID from which
+   the module was invoked; the context in which it was invoked (values
+   for which are defined in variables starting with "$C_"); and the list
+   of arguments passed to the module (typically the part of the Module
+   command from your .fvwm2rc file following the actual module name).
+
+
+Q: How do you send commands to FVWM?
+
+A: With the &SendInfo subroutine.  The arguments to &SendInfo are:
+    - the window the command is to be relative to (0 for no window);
+    - the command to be sent;
+    - optionally, if a third argument is zero, fvwmmod.pl will include a
+      flag telling FVWM that the module is not going to continue
+      running.  You generally don't need to do this, as fvwmmod.pl will
+      send this signal when you call &EndModule.
+
+
+Q: What is a packet handler?
+
+A: A handler is simply a Perl subroutine which is invoked by the event
+   loop whenever a packet arrives and needs to be processed. 
+
+   Handlers are registered via &AddHandler, as follows:
+       $handler = &AddHandler ( $types, 'subroutine' );
+
+   The first argument to &AddHandler is the set of packet types for
+   which the handler should be invoked.  See section 1.4 above for how
+   to construct a set of packet types.
+
+   The second argument is the name of the subroutine to be called when
+   such a packet arrives.
+
+   &AddHandler returns a unique numeric value which identifies the
+   instance of the newly registered handler.  This value only needs to
+   be saved if the module wants to unregister the handler later with
+   &DeleteHandler.  If the subroutine doesn't exist, &AddHandler returns
+   0.
+
+   Note that you may register more than one handler for the same packet
+   type; the event loop will call all registered handlers for the packet
+   type in the order in which they were registered.
+
+   Furthermore, the same handler may be registered for more than one
+   packet type, or even multiple times for the same packet type.
+   Registering a handler with &AddHandler never replaces any existing
+   registrations for the routine or packet type.
+
+   Handlers can be unregistered via &DeleteHandler:
+       $status = &DeleteHandler ( $handlerId );
+
+   The argument to &DeleteHandler is the instance identifier returned by
+   the &AddHandler subroutine when the handler was registered.  The
+   return value is 1 if the handler was deleted, or 0 if no handler with
+   the given ID was registered.
+
+   A handler should return a value of 1, unless it wants &EventLoop to
+   terminate, in which case it should return 0.
+
+   The arguments to a handler depend on the type of packet received.
+   The first argument to any handler is always the type of packet
+   received, which will be exactly one of the $M_... constants.  If you
+   wanted to, you could have only one handler which handled all packet
+   types, and used the first argument to decide how to interpret the
+   packet; however, in most cases it is more intuitive to register
+   separate handlers for each packet type except where the processing is
+   similar for more than one packet type.
+
+
+Q: What arguments are passed to the packet handlers?
+
+A: FVWM packet types are documented in docs/modules.tex.
+
+   fvwmmod.pl packet handlers are passed a list consisting of the packet
+   type followed by each of the values passed in the packet body.  (The
+   packet header is not passed to the handler.)  There is one exception
+   to this rule: for $M_ERROR and $M_CONFIG_INFO packets, only the
+   packet type and the text field is passed; the three zeroes which
+   precede it are discarded.
+
+   The FvwmDebug.pl module contains handlers for all packet types; you
+   can use this (in conjunction with modules.tex) to determine the
+   arguments for any given handler type.
+
+
+Q: It doesn't work the way I expect it to, or it doesn't make use of
+   an FVWM2 feature that modules in other languages can.  Who do I complain
+   to?
+
+A: For questions, comments, bug reports, feature requests, documentation
+   corrections, or anything else related to fvwmmod.pl, send e-mail to
+   the author and current maintainer of fvwmmod.pl:
+      Dan Astoorian <djast@utopia.csas.com>
+   
+   Please also send me any modules you have written using fvwmmod.pl
+   which you would like to see distributed with it.
+

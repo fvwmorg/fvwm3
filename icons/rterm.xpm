@@ -1,0 +1,50 @@
+/* XPM */
+/*****************************************************************************/
+/**       This pixmap is kindly offered by Ion Cionca - 1992 -              **/
+/**       Swiss Federal Institute of Technology                             **/
+/**       Central Computing Service                                         **/
+/*****************************************************************************/
+static char * image_name [] = {
+/**/
+"44 34 6 1",
+/**/
+" 	s mask	c none",
+"X	c gray85",
+"o	c gray50",
+"+	c #326565",
+"@	c white",
+"#	c black",
+"      XXXXXXXXXXXXXXXXXXXXXXXXXXX           ",
+"     XXXXXXXXXXXXXXXXXXXXXXXXXXXXX          ",
+"    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXoo        ",
+"    XXXX++++++++++++++++++++++XXXXoo        ",
+"    XXX++++++++++++++++++++++++XXXooo       ",
+"    XXX++@@+@++@+@@@@++@+++++++XXXooo       ",
+"    XXX++++++++++++++++++++++++XXXoooo      ",
+"    XXX++@@@@+@@+@@@+++++++++++XXXoooo      ",
+"    XXX++++++++++++++++++++++++XXXooooo     ",
+"    XXX++@@@@@@@@@@+@@@@@++++++XXXooooo     ",
+"    XXX++++++++++++++++++++++++XXXooooo     ",
+"    XXX++@@@+@@@@+@@++@@@++++++XXXooooo     ",
+"    XXX++++++++++++++++++++++++XXXooooo     ",
+"    XXX++@+++++++++++++++++++++XXXooooo     ",
+"    XXX++++++++++++++++++++++++XXXooooo     ",
+"    XXX++@@@@+@+@@@+@++++++++++XXXooooo     ",
+"    XXX++++++++++++++++++++++++XXXooooo     ",
+"    XXX++@+@@@@++++++++++++++++XXXooooo     ",
+"    XXXX++++++++++++++++++++++XXXXoooo      ",
+"     XXXXXXXXXXXXXXXXXXXXXXXXXXXXXooo       ",
+"      XXXXXXXXXXXXXXXXXXXXXXXXXXXooo        ",
+"        oooooooooooooooooooooooooXXXoo      ",
+"         XXXXXXXXXXXXXXXXXXXXXXXXXXooo      ",
+"        oooooooooooooooooooooooooooooo      ",
+"      oXXXXXXXXXXXXXXXXXXXXXXXXXXXooooXX XX ",
+"      oXXXXXXXXXXXXXXXXXX#######XXoooo  X  X",
+"    oooooooooooooooooooooooooooXXXooo     X ",
+"   oXXXXXXXXXXXXXXXXXXXXXXXXXXooooo      X  ",
+"  oXXXXXXXXXXXXXXXXXXXXXXXXXXoo      oooooo ",
+"  oXX@@@@@@@@@@@@@@@@@@@XXXXXoo   oooooXXXo ",
+" oXXXXXXXXXXXXXXXXXXXXXXXXXXoo   ooXXXooXXo ",
+"oXX@@@@@@@@@@@@@@@@@@@@XXXXoo    oXXXXXXXo  ",
+"XXXXXXXXXXXXXXXXXXXXXXXXXXoo     oXXXXXoo   ",
+"ooooooooooooooooooooooooooo      ooooooo    "};

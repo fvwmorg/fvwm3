@@ -1,0 +1,531 @@
+# Brady Montz's fvwm2rc after being run through m4.
+# If you just try to use this fvwm2rc, it's likely some things won't work. 
+# To get the best results, please read the README included with this file.
+
+# You will have to set ModulePath, IconPath, and PixmapPath
+# You have to change all occurences of /home/bradym/init/fvwm/roots
+#  to point to the correct directory.
+# You have to have the bin directory containing my funny executables in your
+#  path.
+
+# So, if you unpacked the fvwm source code into ~/tmp/fvwm-2.0.47, then
+# you need to have ~/tmp/fvwm-2.0.47/sample.fvwmrc/BradyMontz/icons in 
+# your IconPath and PixmapPath,
+# ~/tmp/fvwm-2.0.47/sample.fvwmrc/BradyMontz/bin in your $PATH, and
+# change /home/bradym/init/fvwm/roots to 
+# ~/tmp/fvwm-2.0.47/sample.fvwmrc/BradyMontz/roots
+
+HilightColor   #e0e0e0 brown
+
+WindowFont		-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
+
+ClickTime 50
+
+OpaqueMoveSize 75
+
+EdgeScroll 0 0
+
+EdgeResistance 10000 100
+
+DeskTopSize 2x2
+
+XOrValue 65535
+  
+ModulePath /home/bradym/src/FvwmIconMan:/usr/local/X11R6/lib/fvwm2
+IconPath   /usr/local/X11/include/X11/pixmaps:/home/bradym/init/fvwm/icons
+PixmapPath /usr/local/X11/include/X11/pixmaps:/home/bradym/init/fvwm/icons:/usr/local/icons
+  
+MenuStyle white steelblue slategrey -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-* fvwm
+
+Style "UtilStyle"  NoTitle, NoHandles, Sticky, WindowListSkip, ClickToFocus
+Style "FvwmBase"   Icon toolbox.xpm, NoTitle, HandleWidth 5, Handles,                          Sticky, WindowListSkip, BorderWidth 5, ClickToFocus,                        BackColor steelblue
+
+Style "*"          IconBox 0 0 200 400, ActivePlacement, DumbPlacement
+Style "*"          SloppyFocus, BorderWidth 5, HandleWidth 5, NoIcon
+Style "*"          Color white/steelblue
+
+Style "*"	   MiniIcon mini-bx2.xpm
+Style "xterm"      MiniIcon mini-term.xpm
+Style "Emacs"      MiniIcon mini-doc.xpm
+Style "Netscape"   MiniIcon mini-nscape.xpm
+Style "XMcd"       MiniIcon mini-cdlabel.xpm
+
+Style "FvwmButtons"	UseStyle FvwmBase, NoHandles
+
+
+Style "FvwmIconMan"	NoTitle, Sticky, WindowListSkip, BorderWidth 0, HandleWidth 0
+
+
+Style "FvwmIdent"	UseStyle FvwmBase
+Style "*biff"		UseStyle FvwmBase
+Style "Dctrl"		Sticky
+
+Style "XVroot"     ClickToFocus
+Style "DctrlIcon"  SmartPlacement
+Style "xclock"     UseStyle UtilStyle
+Style "xdaliclock" UseStyle UtilStyle
+Style "xmeter"     UseStyle UtilStyle
+Style "procmeter"  UseStyle UtilStyle
+Style "perfmeter"  UseStyle UtilStyle
+Style "xconsole"   Sticky
+Style "hpterm"     Sticky
+Style "xcalc"      NoIconTitle, Sticky
+Style "xcb"	   Sticky
+Style "xpaste"	   Sticky
+Style "XMcd"       Sticky, Lenience, DecorateTransient
+Style "NetHack"    SmartPlacement, RandomPlacement
+
+TitleStyle LeftJustified
+
+ButtonStyle    1 MiniIcon 
+
+ButtonStyle    6 ActiveUp Pixmap mini-horiz.up.xpm -- flat
+AddButtonStyle 6 Inactive Pixmap mini-horiz.up.xpm -- flat
+AddButtonStyle 6 ActiveDown Pixmap mini-horiz.down.xpm -- flat
+
+ButtonStyle    4 ActiveUp Pixmap mini-vert.up.xpm -- flat
+AddButtonStyle 4 Inactive Pixmap mini-vert.up.xpm -- flat
+AddButtonStyle 4 ActiveDown Pixmap mini-vert.down.xpm -- flat
+
+ButtonStyle    2 ActiveUp Pixmap mini-iconify.up.xpm -- flat
+ButtonStyle    2 Inactive Pixmap mini-iconify.up.xpm -- flat
+AddButtonStyle 2 ActiveDown Pixmap mini-iconify.down.xpm -- flat
+
+AddToFunc "InitFunction" "I" Module FvwmIconMan
++	                 "I" Module FvwmButtons
+
++                        "I" Exec exec xterm -geometry +0-344 & 
++                        "I" Wait xterm
++                        "I" Exec exec xterm -geometry +0-0 & 
++                        "I" Wait xterm
++                        "I" Exec exec xterm -geometry 80x48-0-0 &
++                        "I" Wait xterm
++			 "I" Exec exec ical -iconic &
+
++                        "I" Exec exec xconsole -geometry +0+0 -iconic &
++                        "I" Exec exec dctrl -iconic -fifo /var/log/diald.ctl -dstatus -tload -pqueue &
++                        "I" Exec exec randexec /home/bradym/init/fvwm/roots "/usr/X11R6/bin/xv -q -root" & 
++                        "I" Exec exec xemacs -name XEmacs -iconic &
+
+
+
+AddToFunc "RestartFunction" 
++	"I" Module FvwmIconMan
++	"I" Module FvwmButtons
+
+AddToFunc "Piston" "I" Desk 0 2
++	"I" Exec xterm -T burro -geometry -0-0 -e rlogin burro &
++	"I" Wait xterm
++	"I" Exec xterm -T burro -geometry -0-390 -e rlogin burro &
++	"I" Wait xterm
++	"I" Desk 0 0
+
+AddToFunc "Move-or-Raise" "M" Move
++	"C" Raise
+
+AddToFunc "maximize_func" "M" Maximize 0 100
++	"C" Maximize 0 80
++	"D" Maximize 100 100
+
+AddToFunc "Move-or-Lower" "M" Move
++	"M" Lower
++	"C" Lower
++	"D" RaiseLower
+
+AddToFunc "Move-or-Iconify" "M" Move
++	"C" Iconify
+
+AddToFunc "Resize-or-Raise" "M" Resize
++	"C" Raise
+
+AddToFunc "Resize-or-Lower" "M" Resize
++	"C" Lower
+
+AddToFunc "iconify-win" "I" Next [CurrentPage !iconic $0] Iconify 1
+
+AddToFunc "goto-win" "I" Next [CurrentPage !iconic $0] WarpToWindow 50 5
+
+AddToMenu "M4Vars" "M4 Vars" Title
++       "BITS_PER_RGB=BITS_PER_RGB" Nop
++       "CLASS=CLASS" Nop
++       "CLIENTHOST=CLIENTHOST" Nop
++       "COLOR=COLOR" Nop
++       "FVWMDIR=FVWMDIR" Nop
++       "FVWM_VERSION=FVWM_VERSION" Nop
++       "HEIGHT=HEIGHT" Nop
++       "HOME=HOME" Nop
++       "HOSTNAME=HOSTNAME" Nop
++       "OPTIONS=OPTIONS" Nop
++       "OSTYPE=OSTYPE" Nop
++       "PLANES=PLANES" Nop
++       "RELEASE=RELEASE" Nop
++       "REVISION=REVISION" Nop
++       "SERVERHOST=SERVERHOST" Nop
++       "TWM_TYPE=TWM_TYPE" Nop
++       "USER=USER" Nop
++       "VENDOR=VENDOR" Nop
++       "VERSION=VERSION" Nop
++       "WIDTH=WIDTH" Nop
++       "X_RESOLUTION=X_RESOLUTION" Nop
++       "Y_RESOLUTION=Y_RESOLUTION" Nop
+
+AddToMenu "OSFMachines" "OSF1" Title
++	"benguiat"       Exec exec xterm -T ben -e rlogin ben &
++	"burro"          Exec exec xterm -T burro -e rlogin burro &
+
+AddToMenu "SolarisMachines" "Solaris" Title
++	"bas"            Exec exec xterm -T baskerville -e rlogin bas &
++	"lectura"        Exec exec xterm -T lectura -e rlogin lec &
+
+AddToMenu "LinuxAlphaMachines" "Linux Alphas" Title
++	"al01"           Exec exec xterm -T al01 -e ssh al01 &
++	"al02"           Exec exec xterm -T al02 -e ssh al02 &
++	"al03"           Exec exec xterm -T al03 -e ssh al03 &
++	"al04"           Exec exec xterm -T al04 -e ssh al04 &
++	"al05"           Exec exec xterm -T al05 -e ssh al05 &
++	"al06"           Exec exec xterm -T al06 -e ssh al06 &
++	"al07"           Exec exec xterm -T al07 -e ssh al07 &
++	"brokaw"         Exec exec xterm -T brokaw -e ssh bro &
++	"chung"          Exec exec xterm -T chung -e ssh chung &
++	"huntley"        Exec exec xterm -T huntley -e ssh huntley &
++	"koppel"         Exec exec xterm -T koppel -e ssh koppel &
++	"murrow"         Exec exec xterm -T murrow -e ssh murrow &
++	"swayze"         Exec exec xterm -T swayze -e ssh swayze &
+
+AddToMenu "LinuxIntelMachines" "Linux Pentiums" Title
++	"pe01"		Exec exec xterm -T pe01 -e ssh pe01 &
++	"pe02"		Exec exec xterm -T pe02 -e ssh pe02 &
++	"pe03"		Exec exec xterm -T pe03 -e ssh pe03 &
++	"pe04"		Exec exec xterm -T pe04 -e ssh pe04 &
++	"pe05"		Exec exec xterm -T pe05 -e ssh pe05 &
++	"pe06"		Exec exec xterm -T pe06 -e ssh pe06 &
++	"pe07"		Exec exec xterm -T pe07 -e ssh pe07 &
++	"pe08"		Exec exec xterm -T pe08 -e ssh pe08 &
+
+AddToMenu "CaltechMachines" "Caltech" Title
++	"alumni" Exec exec xterm -T alumni -e rlogin alumni.caltech.edu &
++	"ugcs"   Exec exec xterm -T ugcs -e rlogin to.ugcs.caltech.edu &
+
+
+
+
+AddToMenu "Machines" "Computers" Title
++	"big-local"   Exec exec xterm -geometry 80x50 &
++	"small-local" Exec exec xterm -geometry 80x24 &
++	"tina"        Exec exec xterm -e ssh -x loc -l tinam -c none &
++	""            Nop
++	"helvetica"   Exec exec xterm -T helvetica -e ssh hel &
++	"sabio"       Exec exec xterm -T sabio -e telnet sabio &
++	""            Nop
++	"Caltech"     Popup CaltechMachines
++	"OSF1"        Popup OsfMachines
++	"Linux/Alpha" Popup LinuxAlphaMachines
++	"Linux/Intel" Popup LinuxIntelMachines
++	"Solaris"     Popup SolarisMachines
+
+
+
+AddToMenu "Desktop" "Go to desktop" Title
++	"&Misc F1"       Desk 0 0
+
+AddToMenu "Quit-Verify" "Really Quit Fvwm?" Title
++	"Yes, Really Quit"       Quit
++	""                       Nop
++	"Restart with fvwm 1.24" Restart fvwm_init
++	"Restart with fvwm95"    Restart fvwm95-2
++	""                       Nop
++	"No"                     Nop
+
+AddToMenu "Logout-Verify" "Really Logout?" Title
++	"Yes, Logout"    Exec exec kill -9 $EXIT
++	""               Nop
++	"No"             Nop
+
+AddToMenu "Control" "Control Center" Title
++	"Icon Manager"   Module FvwmIconMan
++	"Icon Box"       Module FvwmIconBox
++	"Fvwm Talk"      Module FvwmTalk
++	"FvwmDebug"      Module FvwmDebug
++	"Save Desktop"   Module FvwmSaveDesk
++	"Add scrollbars" Module FvwmScroll
++	"Window List"    Module FvwmWinList
++	"" Nop
++	"Decors" 	Popup Decors
++	"Desktops"       Popup Desktop
++       "M4 Variables"   Popup M4Vars
++	""               Nop
+
++	"Background"  Exec exec randexec /home/bradym/init/fvwm/roots "/usr/X11R6/bin/xv -q -root" & 
+
++	"Gray"           Exec exec xsetroot -solid grey
++	""               Nop
++	"Restart fvwm2"  Restart fvwm2
++	"Exit fvwm"      Popup Quit-Verify
++	""               Nop
++	"Logout"         Popup Logout-Verify
+
+AddToMenu "WindowOps" "Window Ops" Title
++	"Refresh Screen" Refresh
++	"Move" Move
++	"Resize" Resize
++	"Raise" Raise
++	"Lower" Lower
++	"Ident" Module FvwmIdent
++	"(De)Iconify" Iconify
++	"(Un)Stick" Stick
++	"(Un)Maximize" Maximize 0 100
++	"" Nop
++	"Destroy" Destroy
++	"Close" Close
+
+# This creates a motif-ish sticky menu for the title-bar window-ops
+# pop-up
+
+# Menu acts like normal twm menu if you just hold the button down,
+# but if you click instead, the menu stays up, motif style
+
+AddToFunc "window_ops_func" "C" Menu WindowOps Nop
++	"M" PopUp WindowOps
++	"D" Close
+
+
+#    Button    Context Mods     Function
+
+Mouse 1         R       N       Popup WindowOps
+Mouse 2         R       N       Popup Machines
+Mouse 3         R       N       Popup Control
+
+Mouse 1		A	3	Popup WindowOps
+Mouse 2		A	3	Popup Machines
+Mouse 3		A	3	Popup Control
+
+Mouse 3		R	M	Module FvwmIconMan Transient
+Mouse 3		A	3M	Module FvwmIconMan Transient
+Mouse 2		R	M	Module FvwmWinList Transient
+Mouse 2		A	3M	Module FvwmWinList Transient
+Mouse 1		R	M	WindowList 2
+Mouse 1		A	3M	WindowList 2
+
+
+# Title bar functions
+
+
+Mouse 0		1    	A      	Function "window_ops_func"
+Mouse 0         2       A       Iconify
+Mouse 0         4       A       Maximize 0 100
+Mouse 0         6       A       Maximize 100 0
+
+# The window frame
+
+Mouse 1		FS	A	Raise
+Mouse 2         FS      A       Resize
+Mouse 3         FS      A       Lower
+
+Mouse 1		T	A	Raise
+Mouse 2         T       A       Function "Move-or-Iconify"
+Mouse 3         T       A       Lower
+
+# The window's icon
+
+Mouse 1		I	A	Iconify
+Mouse 2		I	A	Iconify
+Mouse 3         I       A       Module "FvwmIdent" FvwmIdent
+
+# Inside of the window
+
+Mouse 1         WI      M       Raise
+Mouse 2         WI      M       Function "Move-or-Iconify"
+Mouse 3         WI      M       Lower
+
+# Keyboard shortcuts
+
+Key Left	A	M	Scroll -100 0
+Key KP_4	A	M	Scroll -100 0
+Key Right	A	M	Scroll +100 +0
+Key KP_6	A	M	Scroll +100 +0
+Key Up		A	M	Scroll +0   -100
+Key KP_8	A	M	Scroll +0   -100
+Key Down	A	M	Scroll +0   +100
+Key KP_2	A	M	Scroll +0   +100
+
+Key KP_7        A       M       GotoPage 0 0
+Key KP_9        A       M       GotoPage 1 0
+Key KP_1        A       M       GotoPage 0 1
+Key KP_3        A       M       GotoPage 1 1
+
+Key Home        A       M       GotoPage 0 0
+Key Page_Up     A       M       GotoPage 1 0
+Key End         A       M       GotoPage 0 1
+Key Page_Down   A       M       GotoPage 1 1
+
+
+Key F10		A	N	Exec diald-up 
+Key F11		A	N	Exec diald-down
+
+
+Key F12		A	N	Exec exec myxlock &
+
+Key F20		A	N	Popup WindowOps
+
+Key l           A       CMS     Exec exec myxlock &
+
+
+
+Key Pause	A	N	iconify-win XVroot
+
+# Key F8 A N SendToModule FvwmIconMan bif select Select, bif focus Focus, gotomanager 0, select, sendcommand WarpToWindow, ret, label Focus, gotobutton focus, select, sendcommand WarpToWindow, ret, label Select, gotobutton prev, select, sendcommand WarpToWindow
+# Key F9 A N SendToModule FvwmIconMan bif select Select, bif focus Focus, gotomanager 0, select, sendcommand WarpToWindow, ret, label Focus, gotobutton focus, select, sendcommand WarpToWindow, ret, label Select, gotobutton next, select, sendcommand WarpToWindow
+# Key F8 A N SendToModule FvwmIconMan bif select 9, bif focus 4, gotomanager 0, select, sendcommand WarpToWindow, ret, gotobutton focus, select, sendcommand WarpToWindow, ret, gotobutton prev, select, sendcommand WarpToWindow
+# Key F9 A N SendToModule FvwmIconMan bif select 9, bif focus 4, gotomanager 0, select, sendcommand WarpToWindow, ret, gotobutton focus, select, sendcommand WarpToWindow, ret, gotobutton next, select, sendcommand WarpToWindow
+Key F9 A N SendToModule FvwmIconMan refresh
+
+############################################################
+*FvwmIconBoxIconBack    #cfcfcf
+*FvwmIconBoxIconHiFore  black
+*FvwmIconBoxIconHiBack  LightSkyBlue
+*FvwmIconBoxBack        #5f9ea0
+#*FvwmIconBoxFore       blue
+*FvwmIconBoxGeometry    5x1+0+0
+*FvwmIconBoxMaxIconSize 64x0
+*FvwmIconBoxFont        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+*FvwmIconBoxSortIcons   IconName
+*FvwmIconBoxPadding     4
+*FvwmIconBoxLines       10
+*FvwmIconBoxSBWidth     11
+*FvwmIconBoxPlacement   Left Top
+*FvwmIconBoxPixmap      fvwm.xpm
+#*FvwmIconBoxHideSC Horizontal
+*FvwmIconBoxSetWMIconSize
+*FvwmIconBoxHilightFocusWin
+#*FvwmIconBoxResolution          Desk
+*FvwmIconBoxMouse       1       Click           RaiseLower
+*FvwmIconBoxMouse       1       DoubleClick     Iconify
+*FvwmIconBoxMouse       2       Click           Iconify -1, Focus
+*FvwmIconBoxMouse       3       Click           Module FvwmIdent
+*FvwmIconBoxKey         r       RaiseLower
+*FvwmIconBoxKey         space   Iconify*FvwmIconBoxKey         d       Close
+*FvwmIconBoxKey         n       Next
+*FvwmIconBoxKey         p       Prev
+*FvwmIconBoxKey         h       Left
+*FvwmIconBoxKey         j       Down
+*FvwmIconBoxKey         k       Up
+*FvwmIconBoxKey         l       Right
+
+
+#                       FvwmButtons button-bar
+
+*FvwmButtonsFore white
+*FvwmButtonsBack steelblue
+*FvwmButtonsGeometry -0+0
+*FvwmButtonsRows 1
+*FvwmButtonsPadding 0 0
+*FvwmButtonsFont -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+
+*FvwmButtons(3x1, Container(Rows 2))
+*FvwmButtons(Icon xterm2.xpm, Action `Exec "xterm" xterm &`)
+*FvwmButtons(Icon dec.xpm, Action `Exec "xterm" xterm -e ssh al06 &`)
+*FvwmButtons(Icon netscape5.xpm, Action `Exec "Netscape" netscape &`)
+*FvwmButtons(Icon xterm3.xpm, Action `Exec "xterm" xterm -geometry 80x48 &`)
+*FvwmButtons(Icon paste.xpm, Action `Exec "xpaste" xpaste &`)
+*FvwmButtons(Icon gnu2.xpm, Action `Exec "emacs" xemacs -name XEmacs &`)
+*FvwmButtons(End)
+
+*FvwmButtons(Swallow (Kill) "XBiff" `Exec xbiff -geometry +0+0 -bg steelblue -file $MAIL &`)
+
+
+*FvwmButtons(5x1, Frame 1 0, Size 250 70,                                   	Swallow (Kill) "ProcMeter"                                          	`Exec procmeter -geometry +0+0 -update 3 -horizontal cpu load spkt-rx spkt-tx &`)
+
+
+*FvwmButtons(2x1, Frame 1 0, Swallow "FvwmPager" `FvwmPager 0 0`)
+
+*FvwmButtons(2x1, Frame 1 0, Swallow (Kill) "xdaliclock"                    	`Exec runclock -geometry +0+0 -memory high &`)
+
+# FvwmIdent
+
+*FvwmIdentBack steelblue
+*FvwmIdentFore white
+*FvwmIdentFont -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+
+# Pager
+
+*FvwmPagerBack Black
+*FvwmPagerFore White
+
+*FvwmPagerFont None
+
+*FvwmPagerHilight #908090 
+*FvwmPagerGeometry +0-80
+*FvwmPagerIconGeometry +0-102
+*FvwmPagerLabel 0 Misc
+*FvwmPagerSmallFont 5x8
+*FvwmPagerMiniIcons
+*FvwmPagerBalloons all
+
+# Window List
+
+*FvwmWinListBack Black
+*FvwmWinListFore White
+*FvwmWinListFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmWinListAction Click1 Iconify 
+*FvwmWinListAction Click2 Iconify
+*FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
+*FvwmWinListUseSkipList
+*FvwmWinListGeometry -0-1
+                                      
+# Icon Manager
+
+
+*FvwmIconMan*numManagers 2
+
+*FvwmIconMan*background  steelblue
+*FvwmIconMan*foreground  white
+
+*FvwmIconMan*font        7x13
+*FvwmIconMan*usewinlist  true
+
+*FvwmIconMan*drawicons   true
+*FvwmIconMan*shape	true
+
+*FvwmIconMan*action	Mouse	1 N sendcommand Iconify, sendcommand Focus
+*FvwmIconMan*action	Mouse	2 N sendcommand WarpToWindow
+*FvwmIconMan*action	Mouse	3 N sendcommand "Module FvwmIdent FvwmIdent"
+
+*FvwmIconMan*action	Key	space N sendcommand Iconify
+*FvwmIconMan*action	Key	Left N gotobutton Left, select
+*FvwmIconMan*action	Key	Right N gotobutton Right, select
+*FvwmIconMan*action	Key	Left S gotobutton Prev, select
+*FvwmIconMan*action	Key	Right S gotobutton Next, select
+*FvwmIconMan*action	Key	Down N gotobutton Down, select
+*FvwmIconMan*action	Key	Up N gotobutton Up, select
+*FvwmIconMan*action	Key	Left C gotomanager Prev, select
+*FvwmIconMan*action	Key	Right C gotomanager Next, select
+*FvwmIconMan*action	Key	p	N printdebug
+*FvwmIconMan*action	Key	q	N quit
+
+*FvwmIconMan*action	Select	sendcommand "Focus"
+
+*FvwmIconMan*followfocus true
+*FvwmIconMan*sort	 namewithcase
+
+*FvwmIconMan*plainbutton 	up white steelblue
+*FvwmIconMan*selectbutton       down white steelblue
+*FvwmIconMan*focusbutton        up white brown
+*FvwmIconMan*focusandselectButton down white brown
+*FvwmIconMan*titleButton	raisededge white steelblue
+
+*FvwmIconMan*1*title      "Emacs windows"
+*FvwmIconMan*1*iconname   "FvwmIconMan: Emacs"
+*FvwmIconMan*1*format     "%i"
+*FvwmIconMan*1*show       class=Emacs
+
+*FvwmIconMan*2*title      "All windows"
+*FvwmIconMan*2*iconname   "FvwmIconMan: all"
+*FvwmIconMan*2*format     "%i"
+*FvwmIconMan*2*dontshow   icon=Untitled
+
+*FvwmIconMan*buttongeometry 180x0
+*FvwmIconMan*1*managergeometry   1x0-360+82
+*FvwmIconMan*2*managergeometry   2x4-0+82
+
+
+

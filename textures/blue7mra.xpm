@@ -1,0 +1,86 @@
+/* XPM */
+static char *blue7mra[] = {
+/* width height num_colors chars_per_pixel */
+"    64    64       14            1",
+/* colors */
+". c #000048",
+"# c #002348",
+"a c #002348",
+"b c #00236c",
+"c c #00236c",
+"d c #00236c",
+"e c #002391",
+"f c #002391",
+"g c #0023b5",
+"h c #0048b5",
+"i c #0048b5",
+"j c #0048da",
+"k c #0048da",
+"l c #0048da",
+/* pixels */
+"dcbfeedbbcdefeeedcdfc#bca#adfggdbbcee###...###effdbabhjeccb###ac",
+"debcdefca#bddddeeecccba#bccdeeffedabeecb#..#abdghdb##chfdcdb#abb",
+"#cdbcdefb#acddcbcdecbcbabccdgecdeffbbeggda##abdfgfddcacfeccdbbcb",
+"b#abbbcdfcabdddccbcedddcbcddffdcdhigbcfhfdaba#aeeffefdabebacdcbd",
+"dbbbaaccdecbdedddcbdfeedccccddefeghedcdfggdb#.#dffecddb#bd##bb#a",
+"bcbabaabdefdddeeedcdegfedcbbddceffffecbdeffgc#bcgifcbbba#ab####a",
+"abb#abbabdeeeeddeeddeggffecbcdcbefefhfbbcdefgdabejjfcb####a###aa",
+"cbbbaabcbbdefgeegfeeffggffebbdb#bdefggd#acdcdfcadhgfeec####a###b",
+"bbbbb#abcabdeefghffeffggfffcacabbccdegfaacdccfgbbefgggedbaabcb#a",
+"bbba###abcabddegffgeffegfefc#aabedcbcddaabcdbdhgddgifeeecbccccba",
+"cccb####acbbceffgeefgfefgefea###dfgfdba###bdb#dfeegfdddddcbbbdcc",
+"cdddccca#bdc#adhgeeffffeeeefdaba#ceffebbbabcc#bdffffedccddbbbcdd",
+"dcdfeeeebbfhdaacfggfeffffedeeccba#bdeeddedcbddcejgggiifdcdcaabdd",
+"dbbdddglfcfkjgdccdffgfeffedddcbbccceeeddefdbcdccfjjfgkkgdccbbbbd",
+"baaccbdihddgjjhfb#acfeefgeddebaacddffeeefigcaaa#befddfggfcbbacca",
+"aa##aa#cfdcefghgdbbacddegeddedbaadeeeddgijjfc####acbabdefebaabec",
+"dcca##.#cdcdefggdcdcbdddeeeddec##cedeedgkhihea#bccbbaaadeedbbacf",
+"effgebabaaacdeggedddccdddeeeeedb##cdceffigffgebbcbcdddbadggdaabc",
+"dfhffeefdbbbaadefecddacdeedffeecaacdcdfeefefgfeca##dgeedbcfebbbc",
+"dfgdbcdfgfedbabcddccdabeffddegfdbbdefffddegifddb###cfeeeecbccbcc",
+"efgfca#abcdeefecbbcbcbadeffcdffecacggeeedcdeid##abbcfeddefcaaabc",
+"bdfffd##abbbehggec##bcaceffdceffecadefecdca#ceda#abacfeefhgb#aa#",
+"aadefgd##aaacggfggdaabbaefffeeeefecbdgebab#.aaddbbbaacfggeeda#cb",
+"fbadddfecaa##djjjkid#ab#beffffeeffdbaeedbaa####dfdcba#dfgecdb#df",
+"gfcbccdeeb##.#cgjjkhcabbaceffggeeeebacefca#a####egfcbabdeedddbbf",
+"fgfdbbbdfgdaa##beiigebabbbcddfggghfc#affdbaa##.#bfhgdbbcddccedac",
+"efegdbbaceeedbbbcefffdbabbbcbcefggfeaacefdb##..#addfgdcbbbabbca#",
+"cfeefedcbceghfeddeeeedcbbbabcccdeeefdcadeed#..##accbdffdb#bb####",
+"dgfdefffcbdfgffffffddcb#aa#acccddefgfcaadijc.#abbdeddgkfccefcaac",
+"dggefhjiebbeeeedefgfeca#acbbbbccccfhfccbadgfcba#ceeeefeb##cecabc",
+"cdffghffecaceedcbdfggdc#bedcbbbbbbcfecccaabefd#.aedcddb#aa#ddabb",
+"cdefefffgecbceedcbdhkfdcbcecbdcaaabddba###adfjc##cedcba#dgbbdc#a",
+"cdfffggggfdbabegedcehgedbaccacdcbcccc######begfca#egecb#bhgcbdbb",
+"bdefhigeeedbaaaeggedefedcbacaacdcbceec#aca##adeedcejgcb##fkgda#a",
+"aceeffffeedbbcbdfgeddefedabcb##becbdeeb#dfcabcdeefggeb##afhfgdba",
+"dbcedddeffecbddefeddddeeebacdc##dfcbdefcadedcccdgiedc##cdhhddeee",
+"fdbcddcccfifbcdeeeeeddefge#acedabgfa#befcaccddcehfeddb#bfjhedcdf",
+"dedbccdcabghcbccegfeefgfghda#acdbdfc###cdaabdedegffffeb#bhgeeddc",
+"cdedbaadb#beca#adhgffgggeggdb##acceda##abbaabeebdfghhfdb#efddeed",
+"dbefdcbbbbbbbbbadfffffgggifccc##bddbaaaabba##cda#dededccbceedcde",
+"dcceeeecbbb#adeddeffhffgihda#aa#afgdaba#bdb##becabccbbaabacffdcd",
+"fdcdddffdbbbacffdegfhggggfea.#a#afkfdb##aefcacgiedddcb##a##ceede",
+"ffeedbcddcccaadfffgggfefgfeb###bacfeedaaacffdefggggggeb##aabbdff",
+"dcefcabbbbbbaabdefffffddffda###bbbdeegffdcfigifccffgiifbbbbbb#cf",
+"dbcgdacdcca#bcbcegfeegfcdea#cc##aacggggffgfhijgdbbdffffecbbbba#c",
+"b##cfbacddcbbbcabffffggddc#bfgeb##dffedeegighhhfcccdeeeeddb#abaa",
+"b###ccabcbbcbabaacegfeedddbahfeecacgfdcefdfhggifcccbbcdeeddbaabc",
+"db###bbcddbccb#aabdffeeeeedadfddfddgjfcaffceefgebbccabcefddcbabc",
+"ddcbb#aceedbcbababdffffeeffc#eedghefjjd#aeeefggecbcdcbadfdccbcbc",
+"fedddcb#beeb#aabcceifddeeffeaaeggffggjeaacdefffgfdceecacedcbadfe",
+"feeffeedbaba#bbbdeggfdcdeeded#afefhgfgebccabcccdefeeigcbefccabgg",
+"edffgfeeedbacdddefddddcabcbcfc#bcdeffeecbdbaccbbbefgifecegccdach",
+"geffefeefeedddffhfaabccbaaa#cgcbabdfededcba#deda#bbefeeeefbbdcad",
+"eggfddeeddcddcdfifbaaabbaa###deaaaadffedbaa#bdebaaabdedggecaccbb",
+"bdeedccbabbbbbbcefeba##abba##afd##acffeecabbbcddaabbadefffdbaaba",
+"abdfeddcaaccaabbbceeb##abcb#.#deaabcddeecbbdddeecbbccbdeeeec#aaa",
+"b##ceddcaaddccccbabdecbbbcddcbbedbbceeefecbbceggecbcbacdgeegccaa",
+"ac##abca#deeeeefgfcbefdcdddefeefdaadffeeeeeda#cefdbcbacdfgfgfec#",
+"acc###aaadedeeefeeecadffeeeedbddbbbefddcceggd#acggcbbaabcegfggec",
+"b#cdb##bbbdecddccbdfdacgeeefdaabcccfedddceecfda#didbbcabbceeeeed",
+"b#cefdbbcccdffedcabdeeacedfiebbcefegfccddfiddedaaeebaaabbcdedddd",
+"bbcefeeeefdbddeeecbcefdbcceffdbaejgjgb##aefeeedc#bedbbaaabcddcdd",
+"bcededdefggebbbbdeddeeedaacdeec#ahkgeb#..#dddefdcbcdddca##acdccd",
+"ccdeeecbdeffedcbbdefedfeb.#dffda#cgfc##...#aabgeecbcdfeb#aa##bcd"
+};
+SIMPLE  =                    T                                                  BITPIX  =                    8                                                  NAXIS   =                    2                                                  NAXIS1  =                   64                                                  NAXIS2  =                   64                                                  HISTORY Written by XV 3.10a                                                     END                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             """((("""(((("""""((("((""((""-(""-((""""((""""""("(""((--("""""(""((("""(("@F-(""""((""""""""""""""""(((((((""""((("""((""""(((""(F-F-"((((("""(""""""""""""(("""""""(((""""(("("(@("""(((-(""""(@""("(("""""(""""""""""""("""""""(""-(((("""""((""""(("(""@"""""""(((((""""("(((((((""(((((("""""""((""""(--""--"""""(-(--("""""((((((-(""(("""""(((((""(((((((""((""""""(-(-(("""(""""""""""""(""""""""""(""""(((((""""(--(""""""-((-""""(("""""""""(("""""(""""((""""""(("""""""(((("""(("""""""""""((("""(""((((""""""""""(((("""(--(""(("""""""(@(""""("(((""""("""("--("""""-(((((((((("""((@("""""-""""(("(""""("""((((((("""""("((-((((""""""(("""""""""(""""((((("""""""""((-@(("(-""""@((((((("""""""(--("""(("("(((@-(-(""""""""((((@-""(("""--((""""""((""""(@(""((((((--((--F(""((((-(""((""(""""((""""""(("""""""(((((((("(("-@((FF"((((--("""""""(""""""""""""""""""""(((((((""(""(""-F("(("(((-(""""""(("""""""""""""""""(-(((""""@(((""-(""(("(@--@("""""""(("""""""(""""""""""((((--""""(-(""((("((-@-@@@(""""(((("""""""-"""""""""(-(((-(""("""----((-(@@F-""""(((((""""""""(("""""""""((((((""(("""""((-((""(@-@(""((-@@("""""""((((("""""""""(((---(((-(("""(((""(("((------(""""((("""""(("""""(("(-(@----(((F(""((""-@(""""""(("("""(((("""""(""(((@((-@@"(-""""""(""""""""(("""""((""""""""""""(((((---@(""""""""""""("("""""(("""(""("""""(""@-((---(--""""(""""((""(-@@(""((""((""("""""""-@""""(-((((-(-@"""""("""""("(-(((((""@-(("""(""""""""(@("""(((((""((-("(""-("((""""""(@((""""(F@("""("""("""((((""""(((""""((("""""("""((""("""""-@(""""@@""((("((((((((""""""(-(""((("""""("""((""(""""(((--("(@(-""""((@@-(((""(--("((("""""""""(("""((""(F-""(F-"""(((----("""(-(""(@-("""""""""""""(-("(-("""@-"""""""((((((-("""((""""@F(""""("""""""""(F""(""""-""""""((-@(((""((""""(--"""("""""""""((""""(("(""""""""""--((@F@(""(((("((-((""""""""""(@(""""-("""((((((""(""""-("(((("""(-(((((("""""""""((-(""@F""""(""-F(""(("""(((((""""(-@((""((((""""""""""(((("""(("""""((""""(((-""""((("""""((((""""""""((--(("((""""(-""""""""(-("""""(-""(@@-("""""""(---@("(("""(@-""""""""(""-("""""((""-FFF@""""(((--((((""(("(-(""""(("""""((""""((""FFFF@"""(((((((((""(("""(""""(-(""""("((-""--(--"""(((((((((("""-(""""""""(--(("""""(((""""(@--(""""(((""((((""(((""""("""((((@-"((-(""""((((""""""""(((""(((""--((("""(@""""((""((""""(-""""(-((""""""""""(((""(-(""""((((""(-@(""""(((((""""""""(@((((("""""((("""""(("(((("""""((((((-((""-(("""((""""(((-(""""(--(""""""""((((("""""(((@-((-(""""""""""--""""""""""((--""""""""(((""(""("(("-F@@@(""""""((""""("(""((-@-""""""(-(""("""(((""-@FF("""""(((""(""""""@@""-FF@(""((((-(""(""""((((((@-""((""(--("""""""""""-F("(FF-""""((-((((("""""""""(((""((""""""(FF(-FF-"""""""""""(((((""(@""(--((((((("(("""""((""(""""""(F---@@(""""""""""""""""""@-((((((((((("""((((""""""""((((("""""""""""""""""""(((-(((-(((-((("(-(""""""(((-(""""""""""""""""""""(-((-((((-(((""("""""""""""@-""-@((((""""""""""""""""(((-@(((((--((("""""""(-(""""(-""((---(""""""""""""""((-((-(((((--(((""""""((--"""""(""@-(((""""""""((((""((""(--(((""""""((((@(""""((-""(FF(""""""""(("""((("""(-(("""""""(((((("""(((-"""-@(""""""""""""("""(""""""((("""""""(((-@("""(--"""(((""""""""""""""("""""""""(""""""""(("""@@-""(@(""((((((""("""""""""""((""""""""(""""""""-(""(((""(--"""(-(""""((""""""""("""((""""""(((""""""""(((((""((""""-@"""@("""""""""((("""""((((("""(""""(--""""((((("""@F(""""                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                

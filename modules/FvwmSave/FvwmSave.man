@@ -1,0 +1,64 @@
+.\" t
+.\" @(#)FvwmSave.1	1/28/94
+.TH FvwmSave 1.20 "Jan 28 1994"
+.UC
+.SH NAME
+FvwmSave \- the FVWM desktop-layout saving module
+.SH SYNOPSIS
+FvwmSave is spawned by fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+When called, this module will attempt to save your current desktop
+layout into a file called new.xinitrc. Ideally, this file will look just 
+like .xinitrc, but in reality, you will have to edit it to get a 
+useable configuration, so be sure to keep a backup of your old .xinitrc.
+ 
+Your applications must supply certain hints to the X window system.
+Emacs, for example, does not, so FvwmSave can't get any
+information from it.  
+ 
+Also, FvwmSave assumes that certain command line options are
+globally accepted by applications, which may not be the case.
+
+.SH COPYRIGHTS
+The NoClutter program, and the concept for
+interfacing this module to the Window Manager, are all original work
+by Robert Nation
+
+Copyright 1994, Robert Nation. No guarantees or warranties or anything
+are provided or implied in any way whatsoever. Use this program at your
+own risk. Permission to use this program for any purpose is given,
+as long as the copyright is kept intact. 
+
+
+.SH INITIALIZATION
+During initialization, \fINoClutter\fP will eventually search a 
+configuration file which describes the time-outs and actions to take.
+The configuration file is the same file that fvwm used during initialization.
+
+If the NoClutter executable is linked to another name, ie ln -s
+NoClutter OtherClutter, then another module called OtherClutter can be
+started, with a completely different configuration than NoClutter,
+simply by changing the keyword  NoClutter to OtherClutter. This way multiple
+clutter-reduction programs can be used.
+
+.SH INVOCATION
+NoClutter can be invoked by inserting the line 'Module NoClutter' in
+the .fvwmrc file. This can be placed on a line by itself, if NoClutter
+is to be spawned during fvwm's initialization, or can be bound to a
+menu or mouse button or keystroke to invoke it later. Fvwm will search
+directory specified in the ModulePath configuration option to attempt
+to locate NoClutter.
+
+.SH CONFIGURATION OPTIONS
+NoClutter reads the same .fvwmrc file as fvwm reads when it starts up,
+and looks for lines similar to "*NoClutter 3600 Iconify". The format
+of these lines is "*NoClutter [time] [command]", where command is any
+fvwm built-in command, and time is the time in seconds between when a
+window looses focus and when the command is executed. At most 3
+actions can be specified.
+
+
+.SH AUTHOR
+Robert Nation and Mr. Per Persson
+<pp@solace.mh.se> (Omnion on IRC)

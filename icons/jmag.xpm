@@ -1,0 +1,29 @@
+/* XPM */
+static char * jmag_xpm[] = {
+/**/
+"16 16 7 1",
+/**/
+" 	s None	c None",
+".	c gray45",
+"X	c gray30",
+"o	c gray70",
+"O	c steelblue1",
+"+	c black",
+"@	c blue",
+/*÷dÄ¬÷dÇ\*/
+"                ",
+"      .XXXXX.   ",
+"     XXoO++oXX  ",
+"    .X+++OOO+X. ",
+"    Xo+++OOO+oX ",
+"    X@+++OOO++X ",
+"    X+OOO+++OOX ",
+"    X+OOO+++O@X ",
+"    XoOOO+++OoX ",
+"   .XX+++OOO+X. ",
+"  .XXXXo+O@oXX  ",
+"..XX. .XXXXX.   ",
+"XXX             ",
+"X.              ",
+"                ",
+"                "};

@@ -1,0 +1,20 @@
+/* XPM */
+static char * mini_maximize_horiz_xpm[] = {
+"14 14 3 1 0 0",
+" 	s None	c None",
+".	c black",
+"X	c green",
+"              ",
+"              ",
+"   .      .   ",
+"  .X      X.  ",
+" .XX      XX. ",
+"..X........X..",
+".XXXXXXXXXXXX.",
+"..X........X..",
+" .XX      XX. ",
+"  .X      X.  ",
+"   .      .   ",
+"              ",
+"              ",
+"              "};

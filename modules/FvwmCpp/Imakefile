@@ -1,0 +1,21 @@
+/* 
+ * Imakefile for fvwm 2.0 -- FvwmCpp
+ */
+
+FVWM_SRCDIR = ../..
+#include "../../Fvwm.tmpl"
+
+SRCS = FvwmCpp.c
+OBJS = FvwmCpp.o
+
+ LOCAL_LIBRARIES = $(FVWM_LIBS) $(XLIB)
+
+FvwmModuleTarget(FvwmCpp)
+
+#ifndef CppProgram
+PATH_DEFINES = -DFVWMDIR=\"$(FVWMDIR)\" -DFVWM_CPP=\"CppCmd\"
+#else
+PATH_DEFINES = -DFVWMDIR=\"$(FVWMDIR)\" -DFVWM_CPP=\"CppProgram\"
+#endif
+
+SpecialObjectRule(FvwmCpp.o, $(FVWM_SRCDIR)/Fvwm.tmpl FvwmCpp.c, $(PATH_DEFINES))

@@ -1,0 +1,17 @@
+###################
+# Pop up the window list on click and hold of mouse button 3
+
+Mouse 3		R    	A      	Module "FvwmWinList" FvwmWinList Transient
+
+########################## Window-Lister ###############################
+*FvwmWinListBack DarkOliveGreen
+*FvwmWinListFore PaleGoldenRod
+*FvwmWinListFont -*-new century schoolbook-bold-r-*-*-*-120-*-*-*-*-*-*
+*FvwmWinListAction Click1 Focus,Iconify -1,Focus
+*FvwmWinListAction Click2 Iconify
+*FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
+*FvwmWinListUseSkipList
+*FvwmWinListUseIconNames
+*FvwmWinListGeometry -50-85
+# I like it achored
+#*FvwmWinListNoAnchor

@@ -1,0 +1,94 @@
+.\" t
+.\" @(#)FvwmCascade.1  11/27/96
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.TH FvwmCascade 1 "November 27, 1996" "FvwmCascade 1.0" "FvwmCascade 1.0"
+.UC
+.SH NAME
+FvwmCascade \- layer FVWM windows
+.SH SYNOPSIS
+FvwmCascade is spawned by fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+This module attempts to cascade windows on the current screen
+subject to certain constraints.  Layering is performed so consecutive
+windows will have their window titles visible underneath the previous.
+
+.SH INVOCATION
+FvwmCascade is best invoked from a menu, popup or button.  There are a
+number of command line options which can be used to constrain the
+layering.  These are described below.  As an example case, one could
+call FvwmCascade with the following arguments:
+.EX
+FvwmCascade \-resize 10 2 80 70
+.EE
+
+This invocation will cascade windows starting 10 by 2 percent into and
+down the screen.  Windows will be constrained to 80 by 70 percent of
+the screen dimensions.  Since the \fIresize\fP is also specified,
+windows will be resized to the given constrained width and height.
+
+Command-line arguments passed to FvwmCascade are described here.
+.IP \-a
+Causes \fIall\fP window styles to be affected, even ones with the
+WindowListSkip style.
+.IP \-desk
+Causes all windows on the desk to be cascaded instead of the current
+screen only.
+.IP \-flatx
+Inhibits border width increment.
+.IP \-flaty
+Inhibits border height increment.
+.IP "\-incx \fIarg\fP"
+Specifies a horizontal increment which is successively added to
+cascaded windows.  \fIarg\fP is a percentage of screen width, or pixel
+value if a \fIp\fP is suffixed.  Default is zero.
+.IP "\-incy \fIarg\fP"
+Specifies a vertical increment which is successively added to cascaded
+windows.  \fIarg\fP is a percentage of screen height, or pixel value
+if a \fIp\fP is suffixed.  Default is zero.
+.IP \-m
+Causes maximized windows to also be affected (implied by \-all).
+.IP \-noraise
+Inhibits window raising, leaving the depth ordering intact.
+.IP \-nostretch
+Inhibits window expansion when using the \-resize option.  Windows
+will only shrink to fit the maximal width and height (if given).
+.IP \-r
+Reverses the window sequence.
+.IP \-s
+Causes sticky windows to also be affected (implied by \-all).
+.IP \-resize
+Forces all windows to resize to the constrained width and height (if
+given).
+.IP \-t
+Causes transient windows to also be affected (implied by \-all).
+.IP \-u
+Causes untitled windows to also be affected (implied by \-all).
+
+Up to four numbers can be placed on the command line that are not
+switches.  The first pair specify an x and y offset to start the first
+window (default is 0, 0).  The second pair specify a maximal width and
+height for the layered windows.  If an affected window exceeds either
+this width or height, it is resized to the maximal width or height.
+If each number is suffixed with the letter p, then it is taken to be a
+pixel value, otherwise it is interpreted as a screen percentage.
+Specifying zero for any parameter is equivalent to not specifying it.
+
+.SH BUGS
+It is probably not a good idea to delete windows while windows are
+being cascaded.
+
+.SH AUTHOR
+Andrew Veliath

@@ -1,0 +1,23 @@
+/* XPM */
+static char *letter[] = {
+/* width height ncolors chars_per_pixel */
+"14 10 5 1",
+/* colors */
+"@ c #000000",
+"a c #808000",
+"d c #C0C000",
+". c #FFFFFF",
+": c #FFFF00",
+/* pixels */
+"aaaaaaaaaaaaaa",
+"ad..........d@",
+"a.a::::::::ad@",
+"a.:a::::::a:d@",
+"a.::a::::a::d@",
+"a.::da::ad::d@",
+"a.:d::aa::d:d@",
+"a.d::::::::dd@",
+"adddddddddddd@",
+"a@@@@@@@@@@@@@"
+};
+

@@ -1,0 +1,48 @@
+/*
+ * Imakefile for fvwm 2.0 -- FvwmScript
+ *
+ * The procedure is: xmkmf; make Makefiles; make all
+ *		make install; make install.man
+ */
+
+
+#define IHaveSubdirs
+
+#define PassCDebugFlags 'CDEBUGFLAGS=$(CDEBUGFLAGS)'
+
+/*CDEBUGFLAGS = -O2 -m486 --bounds-checking -g -Wall --no-builtin -DDEBUG*/
+
+BUILDSUBDIRS = Widgets
+SAMPLESUBDIRS = Scripts Scripts/some_nice_icons
+
+SUBDIRS = $(BUILDSUBDIRS) $(SAMPLESUBDIRS)
+
+MakeSubdirs($(SUBDIRS))
+
+DependSubdirs($(BUILDSUBDIRS))
+
+FVWM_SRCDIR = ../..
+#include "../../Fvwm.tmpl"
+
+SRCS = libyywrap.c lex.yy.c y.tab.c Instructions.c FvwmScript.c
+
+OBJS = libyywrap.o lex.yy.o y.tab.o Instructions.o FvwmScript.o
+
+LOCAL_LIBRARIES = $(FVWM_LIBS) $(XLIB) ./Widgets/libWidgets.a
+
+FvwmModuleTarget(FvwmScript)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,282 @@
+======================================================================
+                       TO-DO list for fvwm 2.xx
+======================================================================
+
+Please note that not everything on this list will be done, in
+particular the ones that end in '?' which are really just meant to be
+'think about this and perhaps investigate'.  But they are things that
+I didn't want to lose track of.  It may periodically get out of date
+too...
+
+----------------------------------------------------------------------
+
+Doc cleanups:
+
+  - Add to FAQ
+  - Update disclaimers?
+
+----------------------------------------------------------------------
+
+Old Patches:
+
+  - Safer config file reading patch?
+
+----------------------------------------------------------------------
+
+Bugfixes:
+
+  - Change flags implementation to allow adding more Styles easily
+    (bitfields?) - THE GREAT STYLE FLAG REWRITE (GSFR)
+  - Fix Restart to not pass original (fvwm specific) options to other wm's
+  - Run profiling on FVWM to see if I can speed it up any more
+  - Try to decrease memory usage a little more
+  - clean up code duplication (esp in modules) - more stuff in
+    libfvwm2.a, plus perhaps a second module lib?
+  - Change Motion vs Click vs DoubleClick to be calculated via a
+    MotionThreshold and ClickTime:
+        MotionThreshold exceeded -> Motion
+        MotionThreshold not exceeded & ClickTime exceeded -> Click
+        MotionThreshold not exceeded & ClickTime not exceeded -> DoubleClick
+  - Make transient FvwmWinList reposition itself & pointer if popped up
+    off the screen (like built in menus)
+  - If programs raise their own windows (XEmacs 'other-frame', for example)
+    new stacking order isn't communicated to fvwm
+  - RaiseLower doesn't work if only titlebar is obscured
+  - Maximize XTerm, change font, UnMaximize, XTerm goes to wrong window size
+  - Colormaps and xlock -install -mode blank (& swirl) interaction still
+    isn't 100% correct?
+  - bring back 'TogglePage'?
+  - Setting Key's via FvwmTalk or Read requires Recapture to take effect?
+  - Popup menus require button press AND mouse movement to appear???
+  - Builtin winlist (and other menus) has extra keystrokes or mouse
+    movement needed sometimes
+  - System Modal dialogs bug - popup menus shouldn't be allowed??  I think
+    this is ok, actually...
+  - Fix FvwmDeskTopScale size calculation
+  - Need to fix to work correctly under 24bit (TrueColor) displays
+  - Esc during moves, etc can result in windows being "lost" off desktop
+  - Should also have way to make windows off desktop be recovered easier
+  - Transients of transients don't get raised correctly sometimes?
+
+----------------------------------------------------------------------
+
+New stuff:
+
+  - Pin up menus?
+  - Multi column menus? (for LONG lists)  Or scrolling menus?
+
+  - Private colormap option for menus?
+  - Reduce number of colors used in xpms included
+  - Reduced (limit Xpm choices) color set
+
+  - Recapture, one window only option
+
+  - Access to certain window attribs from .fvwm2rc funcs, and
+    simple if/else capabilities (or perhaps a module to do so)??
+  - Simple static variables for .fvwm2rc functions (for toggles, etc)??
+  - Add $d variable for functions to get desktop number?
+
+  - Add StayOnBottom style?
+
+  - Add ClickToFocusDontPassClick style (so initial click inside
+    window doesn't get passed to the app, just changes focus).
+  - Add ClickToFocusDontRaise style (so clicks in window don't
+    automatically raise the window when giving it focus).  Note - this
+    behavior currently exists if you compile with CLICKY_MODE_1
+    defined, I believe.
+  - Add ClickToFocusNoInitialFocus so windows don't get the focus when
+    they pop up.
+  - Should the previous be parms to ClickToFocus instead of styles?
+
+  - Add NeverFocus style?
+  - Make sure fvwm handles all 4 focus states from the ICCCM (I don't
+    think it handles a certain one of them 100% correctly).
+
+  - Resurrect StubbornPlacement style
+  - Add StickyOnDesk <number> style, to allow stickyness on certain
+    desks only, or perhaps a StaysOnDesk <num> style, to replace
+    StartsOnDesk and work with the Sticky attribute, I'm not sure...
+    Either way, multiple values need to be allowed
+  - Need to indicate sticky icons somehow, and perhaps sticky windows
+    that don't have a titlebar.  I'd like to bring back the different
+    color for the sticky windows as an option, if I can do it cleanly.
+    Perhaps a special Decor now?
+
+  - Function to simulate button presses, to go with CursorMove?  Might
+    not be possible since many apps ignore SYNTHETIC events...
+
+  - Switch from Imake to GNU autoconf?
+
+  - Easy module name changes from .fvwm2rc (either using changes in
+    module exec code & rc parser, or in modules themselves)
+
+  - Improved FvwmPager (add/rename desktops on fly)
+  - Make pager have option to show current working desk (not just in icon)
+  - A module that just has buttons for the active desktops, like desktop
+    switcher in dtwm (COSE).  Could be munged into FvwmPager.
+  - See if it's possible to drop windows onto the pager ala olvwm?
+    Don't really think it is.
+  - Add option to not show sticky windows in pager.  Perhaps also add
+    ability to filter out windows based on name/class/resource?
+
+  - "Captive" fvwm (ala ctwm)?
+
+  - Allow size geometry specs for FvwmButtons & perhaps other modules
+    (Pager).
+
+  - FvwmAuto additions for AutoLower & per window config (requires keywds?)
+  - Module to X Select window Name, Class, Resource, ID, etc...??
+  - FvwmMsgLog module to pop up a log of fvwm error msgs?
+
+  - Support for passwords in FvwmForm
+  - Support for cut & paste in FvwmForm text fields (paste at least)
+  - Add simple history mechanism for FvwmForm text fields?
+  - Make FvwmForm have Resource & Class values
+
+  - Add to module commincations to pass titlebar & button window ids to
+    allow modules to muck with those windows (for animation, or whatever)?
+
+  - Mouse button chording?
+
+  - Add better overall icon handling options?
+    Make an optional global free icon placement grid?
+
+  - More controll over icon appearance (non 3D, fg/bg colors, constant
+    size, gradients, etc)?
+
+  - Add StartsOnPage x y or something similiar to compliment
+    StartsOnDesk (and add X resource FvwmPage which will be analogous
+    to the Desk X resource, which I think should be renamed to
+    FvwmDesk)
+
+  - Implement (or at least investigate) dynamic loading of functions
+    on systems that support it?  
+        AIX - load
+        Linux - dld (gnu) or dlopen (ELF)
+        SunOS, Solaris, OSF - dlopen
+        HP-UX - shl_*
+    I don't know how much of a win this is over modules though.  Less
+    portable.  Could be useful for changing border and menu styles or
+    adding complex functions to the rc language dynamically.
+      (Actually, this might be a big win for some modules, like the
+      pager, autoraise, and the preprocessor modules - it would
+      eliminate time delays in socket comm.  Idea - dynloaded modules
+      add hook functions that module comm functions invoke.  Gives
+      modules greater access to fvwm internals, although generic
+      functions should be provided to actually access them.  Both
+      types of modules, socket & dyn, could be supported
+      simultaneously?)
+
+  - Improve modules communications interface (collect the code, make it
+    more intuitive, provide more generic interface to it, etc)
+
+  - A WindowGravity option that controlls placement direction choices
+    for SmartPlacement (and perhaps RandomPlacement)?  Perhaps make it
+    a Style option??
+
+  - Add option for Prev/Next function to 'wrap' at ends of list?
+
+  - Ressurrect OpaqueResize (as a style option)
+
+  - Add twm SqeezeTitle functionality to TitleStyle stuff & merge into
+    Style command, perhaps???
+
+  - Make WindowsDesk able to operate relative to the current desk
+    (like the Desk command)
+
+  - Allow neg vals for Maximize to indicate from bottom/right of screen
+  - Allow neg vals for Move to indicate from bottom/right of screen
+
+  - Investigate impact of adding 'zoom' lines on (de)iconify ala olvwm???
+    Perhaps could be done as a module?
+
+  - Add way to set keyword/value pairs to windows (via Atoms?) as a
+    way for giving extra info to modules through style commands?
+
+  - Make GetConfigLine be more intelligent, to filter out what gets
+    sent (for instance, pass module prefix to look for) and be able to
+    ask for PixmapPath, etc instead of sending those w/ all the config
+    info, so only the modules that need it could ask for it.
+
+  - Go to just one IconPath instead of PixmapPath too?
+
+  - Allow Resize to have units of "what the window resizes by"
+  - Bug in:
+        AddToFunc resize-and-move "I" resize 100 100
+        + "I" move 100 300
+
+  - ToggleButtonStyle (to keep pushed in)?
+  - Allow bitmap/mask files to define buttons as well?
+    (Better: new alternate def like hl(x1,y1,x2,y2) sh(x1,y1,x2,y2))
+
+  - Make parm to Restart optional (to just restart current if not specified)
+
+  - Add a WaitForExec to force waiting for the last Exec command to
+    finish, or an ExecAndWait function that doesn't return until
+    command is finished (perhaps call it 'System', to match the C function)
+
+  - Make fvwm look at gravity when moving windows when reparenting, to
+    change corner that gets "anchored" so windows w/ neg offsets are
+    still placed correctly when bordered initially
+
+  - Investigate internationalization issues (handling of compound
+    text, messages placed in a message catalog, etc) to see if they
+    should be added at some point.
+
+  - Allow env var to specify an additional read directory ($FVWMRCDIR
+    or $FVWMHOME or something similiar)?
+
+  - Add way to specify max (& min?) desk number, and make desk change
+    functions wrap at bounds?
+
+  - New module combining aspects of FvwmButtons, FvwmScript, FvwmForm,
+    and Wharf to make one super module?  (FvwmGUI or something like that?)
+
+----------------------------------------------------------------------
+
+My ideas for the GSFR:
+
+Basically, I'd like to replace the current shifted bit masks over the
+'unsigned long flags' variable in the FvwmWindow structure with a
+union of an array of unsigned ints and a bunch of bitfields.  Roughly
+like so:
+
+/********************************/
+typedef struct FvwmWindow
+{
+  ...
+  union flags
+  {
+    unsigned int allflags[NUM_INTS_FOR_FLAGS];
+    struct f
+    {
+      unsigned int StartIconic:1;
+      unsigned int OnTop:1;
+      unsigned int Sticky:1;
+      unsigned int StickyIcon:1;
+      unsigned int SuppressIcon:1;
+      unsigned int NoIconTitle:1;
+      unsigned int Lenience:1;
+      unsigned int WindowListSkip:1;
+      unsigned int CirculateSkip:1;
+      unsigned int CirculateSkipIcon:1;
+      unsigned int FocusPolicy:2; /* MOUSE, SLOPPY, CLICK, NEVER */
+      unsigned int ShowOnMap:1;
+      unsigned int Border:1;
+      unsigned int Title:1;
+      unsigned int Mapped:1;
+      unsigned int Iconified:1;
+      unsigned int Transient:1;
+      unsigned int Raised:1;
+      unsigned int Visible:1;
+      unsigned int IconOurs:1;
+      unsigned int PixmapOurs:1;
+      unsigned int ShapedIcon:1;
+      unsigned int Maximized:1;
+    } f;
+  } flags;
+
+} FvwmWindow;
+/********************************/
+
+ 

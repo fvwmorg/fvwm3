@@ -1,0 +1,42 @@
+OPTIONS  = 
+CC       = gcc
+CFLAGS   =
+C++      = g++
+C++FLAGS =
+
+MANDIR   = /usr/fvwm/man/man1
+
+SRC_C    = dead.c
+SRC_CC   = WinBase.C \
+	   FvwmConfig.C \
+	   WinButton.C \
+	   WinText.C \
+	   WinRadioButton.C \
+	   WinInput.C \
+	   WinSlider.C \
+	   WinColorSelector.C
+
+OBJ      = $(SRC_CC:.C=.o) $(SRC_C:.c=.o)
+SRC      = $(SRC_CC) $(SRC_C)
+
+FvwmConfig:	$(OBJ)
+	$(C++) $(CFLAGS) $(OPTIONS) -o $@ $(OBJ) -L../../libs -lfvwm2 -lX11 -lm
+
+install:	FvwmConfig
+	$(INSTALL) -m 0755 -f $(MANDIR) FvwmConfig
+
+install.man:	FvwmConfig.man
+	$(INSTALL) -m 0444 -f $(MANDIR) FvwmConfig.man
+
+clean:
+	rm -f *~ *.o core a.out \#*\# parse
+
+.C.o:
+	$(C++) $(C++FLAGS) $(OPTIONS) -o $*.o -c $*.C
+
+
+.c.o:
+	$(CC)  $(CFLAGS) $(OPTIONS) -o $*.o -c $*.c
+
+
+

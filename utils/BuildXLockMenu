@@ -1,0 +1,40 @@
+#!/afs/eda/u/hines/bin/perl
+#!/bin/perl
+#
+# Author: Charles K. Hines
+#
+# Description:
+#   A simple perl script which parses xlock's output to build an fvwm 2.xx
+#   menu definition of all of xlock's modes.
+#
+
+$start = 0;
+
+open(XL,"xlock -h 2>&1 |") || die "couldn't run xlock";
+
+print "DestroyMenu XLockMenu\n";
+print "AddToMenu XLockMenu \"XLock Modes\" Title\n";
+
+while (<XL>)
+{
+  chomp;
+  
+  /where mode is one of:/ && do
+  {
+    $start = 1;
+    next;
+  };
+  if ($start && $_)
+  {
+    @foo = split;
+    $mode = $foo[0];
+    $_ = $mode;
+    /^-.*/ && next;
+    shift @foo;
+    printf "+ \"%-10s %-35s Exec xlock -mode $mode\n",$mode,"(@foo)\"";
+  }
+}
+
+close XL;
+
+#print "Beep\n";

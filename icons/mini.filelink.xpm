@@ -1,0 +1,23 @@
+/* XPM */
+static char * mini_filelink_xpm[] = {
+"16 16 4 1",
+" 	c None",
+".	c black",
+"X	c gray50",
+"o	c white",
+"    .......     ",
+"    .XXXXXX.    ",
+"  .......XXX.   ",
+"  .ooooo..XXX.  ",
+"  .ooooo.o.XX.  ",
+"  .ooooo....X.  ",
+"  .oooooooo.X.  ",
+"  .oooooooo.X.  ",
+"  .oooooooo.X.  ",
+"  .oooooooo.X.  ",
+"  .oooooooo.X.  ",
+"  .oooooooo.X.  ",
+"  .oooooooo.X.  ",
+"  .oooooooo...  ",
+"  .oooooooo.    ",
+"  ..........    "};

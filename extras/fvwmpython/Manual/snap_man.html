@@ -1,0 +1,48 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Snap.py Manpage</title>
+  </head>
+
+  <body>
+      <h1>Snap.py Manpage</h1>
+
+<tt>Snap.py</tt>
+is a very simple module that uses
+<a href="fvwm_man.html" target="_self">Fvwm.py</a>.  Snap will
+<em>snap</em> a window to a predetermined location and size on the
+current desktop.  I use this to quickly move my various
+<a href="http://www.xemacs.org/">XEmacs</a> windows around on my
+screen.
+
+<h2>Synopsis</h2>
+
+Snap looks for configuration lines in your <tt>fvmwrc</tt> file of the
+following form:
+
+<blockquote>
+    *Snap &lt;string&gt; X Y WIDTH HEIGHT
+</blockquote>
+
+<p>
+where &lt;string&gt; is a unique `snap name'.  You can then call the
+<tt>Snap.py</tt> module from your <tt>fvwmrc</tt> file, passing it a
+`snap name' and the window will be moved and resized to the specified
+location.
+
+<h2>Bugs</h2>
+
+<tt>Snap.py</tt> should really run as a persistent module, instead of
+firing up anew at each invocation.  At the time it was written though,
+the Fvwm <tt>SendToModule</tt> command didn't exist.
+
+      <hr>
+      <address><a href="mailto:bwarsaw@python.org">
+      Barry A. Warsaw</a></address>
+<!-- Created: Fri Aug  9 15:37:04 EDT 1996 -->
+<!-- hhmts start -->
+Last modified: Thu Dec  5 19:32:06 EST 
+<!-- hhmts end -->
+<br>&copy; 1996 Barry A. Warsaw
+  </body>
+</html>

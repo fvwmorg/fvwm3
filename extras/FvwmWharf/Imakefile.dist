@@ -1,0 +1,37 @@
+/* Imakefile for Wharf and GoodStuff                                  */
+/* Thu Aug  5 11:21:36 MET DST 1993, mj@dfv.rwth-aachen.de            */
+
+/* setup is done entirely in configuration.h now!                     */
+/* You should need to do much in here, excpt maybe add libraries      */
+
+/* I need to get the #define XPM from configuration.h if its in there,*/
+/* so that I can tell if I should include -lXpm                       */
+#include <../../configure.h>
+
+#ifdef XPM
+XPMLIB = XPMLIBRARY
+#endif
+
+DEPLIBS = $(DEPXLIB)  ../../libs/libfvwm2.a   
+
+#ifdef AlphaArchitecture
+LOCAL_LIBRARIES = $(XPMLIB) $(XLIB) -ldnet_stub -L../../libs -lfvwm2
+#else
+LOCAL_LIBRARIES = $(XPMLIB) $(XLIB) -L../../libs  -lfvwm2
+#endif
+
+EXTRA_INCLUDES = -I.
+
+/* these defines may be removed, if you don't want some feature */
+
+EXTRA_DEFINES =
+#-DENABLE_DND -DENABLE_SOUND 
+
+LINTLIBS = $(LINTXLIB)
+
+SRCS = FvwmWharf.c icons.c stepgfx.c
+OBJS = FvwmWharf.o icons.o stepgfx.o
+
+
+ComplexProgramTarget(FvwmWharf)
+

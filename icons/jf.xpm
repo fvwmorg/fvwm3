@@ -1,0 +1,23 @@
+/* XPM */
+static char * jf_xpm[] = {
+"16 16 4 1",
+" 	s None	c None",
+".	c white",
+"X	c steelblue1",
+"o	c black",
+"                ",
+"                ",
+"   ..........X  ",
+"   .XXXXXXXXXo  ",
+"   .XXXXXXXXXo  ",
+"   .XXoooooooo  ",
+"   .XXo         ",
+"   .XXX...X     ",
+"   .XXXXXXo     ",
+"   .XXXXXXo     ",
+"   .XXooooo     ",
+"   .XXo         ",
+"   .XXo         ",
+"   .XXo         ",
+"   oooo         ",
+"                "};

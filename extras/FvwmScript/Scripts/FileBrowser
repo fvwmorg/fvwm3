@@ -1,0 +1,258 @@
+WindowTitle {File Browser}
+WindowSize 360 340		# Taille
+WindowPosition 191 50		# Position
+ForeColor	{black}
+BackColor	{grey85}
+ShadowColor	{grey55}
+HilightColor	{grey100}
+Font		-adobe-helvetica-bold-r-*-*-12-*
+
+Init
+ Begin
+  Set $PWD=(GetScriptArgument 1)
+  Set $POS=50
+  Set $LOOP=1
+  While $LOOP==1 Do
+  Begin
+   If (StrCopy $PWD $POS $POS)=={/} Then
+    Set $LOOP=0
+   If $POS==0 Then
+    Set $LOOP=0
+   Set $POS=(Add $POS -1)
+  End
+  Set $PWD=(StrCopy $PWD 1 $POS)
+  Set $CMD2={bash -c "cd;cd } $PWD {; pwd"}
+  Set $PWD=(GetOutput $CMD2 0 0)
+  Do {Exec echo } $PWD
+  Set $OPT={ }
+  Set $CMD={bash -c "cd } $PWD {; ls} $OPT {-1 -F"}
+  Set $LS=(GetOutput $CMD 1 -1)
+  Set $ID=2
+  While (GetOutput $CMD $ID -1) <> {} Do
+  Begin
+   Set $LS=$LS {|} (GetOutput $CMD $ID -1)
+   Set $ID=(Add $ID 1)
+  End
+  ChangeTitle 7 $LS
+  ChangeTitle 5 $PWD
+  ChangeTitle 9 {}
+ End
+
+Widget 1
+Property
+ Size 50 30
+ Position 190 300
+ Type PushButton
+ Title {OK}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   SendToScript (GetScriptFather) $PWD {/} (GetTitle 9)
+   Quit
+  End
+End
+
+Widget 2
+Property
+ Size 50 30
+ Position 280 300
+ Type PushButton
+ Title {Cancel}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Quit
+  End
+End
+
+Widget 3
+Property
+ Position 10 10
+ Size 340 280
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 4
+Property
+ Position 20 42
+ Type ItemDraw
+ Title {Path:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 5
+Property
+ Position 65 42
+ Size 270 0
+ Type ItemDraw
+ Title {*}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 10
+Property
+ Position 60 40
+ Size 279 20
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 6
+Property
+ Position 21 67
+ Size 50 18
+ Icon up.xpm
+ Type PushButton
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $CMD={bash -c "cd } $PWD {/..; pwd"}
+   Set $PWD=(GetOutput $CMD 0 0)
+   Set $CMD={bash -c "cd } $PWD {; ls} $OPT {-1 -F"}
+   Set $LS=(GetOutput $CMD 1 -1)
+   Set $ID=2
+   While (GetOutput $CMD $ID -1) <> {} Do
+   Begin
+    Set $LS=$LS {|} (GetOutput $CMD $ID -1)
+    Set $ID=(Add $ID 1)
+   End
+   ChangeTitle 7 $LS
+   ChangeTitle 5 $PWD
+   ChangeTitle 9 {}
+  End
+End
+
+Widget 11
+Property
+ Position 91 67
+ Size 50 18
+ Icon home.xpm
+ Type PushButton
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $PWD={~}
+   Set $CMD={bash -c "cd } $PWD {; ls} $OPT {-1 -F"}
+   Set $LS=(GetOutput $CMD 1 -1)
+   Set $ID=2
+   While (GetOutput $CMD $ID -1) <> {} Do
+   Begin
+    Set $LS=$LS {|} (GetOutput $CMD $ID -1)
+    Set $ID=(Add $ID 1)
+   End
+   ChangeTitle 7 $LS
+   ChangeTitle 5 $PWD
+   ChangeTitle 9 {}
+  End
+End
+
+Widget 12
+Property
+ Position 180 72
+ Type CheckBox
+ Title { Show hidden files}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 12) == 1 Then
+    Set $OPT={ -A }
+   Else
+    Set $OPT={ }
+   Set $CMD={bash -c "cd } $PWD {; ls} $OPT {-1 -F"}
+   Set $LS=(GetOutput $CMD 1 -1)
+   Set $ID=2
+   While (GetOutput $CMD $ID -1) <> {} Do
+   Begin
+    Set $LS=$LS {|} (GetOutput $CMD $ID -1)
+    Set $ID=(Add $ID 1)
+   End
+   ChangeTitle 7 $LS
+   ChangeTitle 5 $PWD
+   ChangeTitle 9 {}  
+  End
+End
+
+Widget 7
+Property
+ Position 20 100
+ Size 320 115
+ Type List
+ Title {}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $CMD3={bash -c "cd } $PWD {; ls} $OPT {-1"}
+   Set $PWD2=$PWD {/} (GetOutput $CMD3 (GetValue 7) -1)
+   Set $CMD2={bash -c "cd } $PWD {;cd } $PWD2 {; pwd"}
+   Set $PWD2=(GetOutput $CMD2 0 0)
+   If $PWD2 <> $PWD Then
+   Begin
+    Set $PWD = $PWD2
+    Set $CMD={bash -c "cd } $PWD {; ls} $OPT {-1 -F"}
+    Set $LS=(GetOutput $CMD 1 -1)
+    Set $ID=2
+    While (GetOutput $CMD $ID -1) <> {} Do
+    Begin
+     Set $LS=$LS {|} (GetOutput $CMD $ID -1)
+     Set $ID=(Add $ID 1)
+    End
+    ChangeTitle 7 $LS
+    ChangeTitle 5 $PWD
+    ChangeTitle 9 {}
+   End
+   Else
+   Begin
+    ChangeTitle 9 (GetOutput $CMD3 (GetValue 7) -1)
+   End
+  End
+End
+
+Widget 8
+Property
+ Position 20 220
+ Type ItemDraw
+ Title {Selected file:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 9
+Property
+ Position 20 240
+ Size 320 20
+ Type TextField
+ Title {}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+

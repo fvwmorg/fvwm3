@@ -1,0 +1,200 @@
+#---------------------------------------------------------------------
+#   Decor contributions and ideas (you probably will have to modify
+#   to actually be able to use...)
+#---------------------------------------------------------------------
+
+#---------------------------------------------------------------------
+# example #1, from lar3ry gensch
+#---------------------------------------------------------------------
+ 
+##########################################################################
+# FVWM Look and Feel Code (Mostly Decors)
+#========================================================================#
+#
+
+##########################################################################
+# Function:	Disable ALL buttons 
+#		(This needs to be called when resetting between Win95's
+#		4-button title bar to MWM's 3-button title bar)
+#========================================================================#
+
+DestroyFunc	"RemoveAllButtons"
+AddToFunc	"RemoveAllButtons"
++ "I"	Style "*"	NoButton 0, NoButton 1, NoButton 2, NoButton 3, \
+			NoButton 4, NoButton 5, NoButton 6, NoButton 7, \
+			NoButton 8, NoButton 9
+
+##########################################################################
+# Function:	Replace "placeholder"
+#		(You will need this function if you haven't made the
+#		patch to add the "Replace" builtin into fvwm-2.0.44 --
+#		Simply uncomment the three lines below)
+#========================================================================#
+
+#DestroyFunc	"Replace"
+#AddToFunc	"Replace"	Nop
+#+ "I"	Nop
+
+##########################################################################
+# Win95 Look and Feel
+#========================================================================#
+
+DestroyDecor	Win95
+AddToDecor	Win95
++	TitleStyle	LeftJustified ActiveUp (Solid Navy -- flat) \
+			ActiveDown (Solid Navy -- flat) \
+			Inactive (Solid grey51 -- flat)
++	ButtonStyle 1	MiniIcon -- UseTitleStyle flat
++       ButtonStyle 2   Pixmap mini.winXX-close.xpm -- UseTitleStyle flat
++       ButtonStyle 4   Pixmap mini.winXX-maximize.xpm -- UseTitleStyle flat
++       ButtonStyle 6   Pixmap mini.winXX-minimize.xpm -- UseTitleStyle flat
++	BorderStyle	Active -- HiddenHandles NoInset
++	BorderStyle	Inactive -- HiddenHandles NoInset
++	WindowFont	-adobe-helvetica-bold-r-*-120-*
++	HilightColor	white grey60
+
+DestroyFunc	DecorWin95
+AddToFunc	DecorWin95
++ "I"	RemoveAllButtons
++ "I"	Style "*"	UseDecor Win95, ForeColor Black
++ "I"	Style "*"	Button 1, Button 2, Button 4, Button 6
++ "I"	MenuStyle	Black grey75 grey40 -adobe-helvetica-medium-r-*-120-* mwm
++ "I"	Mouse 0	1 N	Menu Window-Ops Close
++ "I"	Mouse 0	2 N	Close
++ "I"	Mouse 0	4 N	Maximize
++ "I"	Mouse 0	6 N	Iconify
++ "I"	Mouse 3	6 N	Replace
+
+AddToFunc	DecorWin95
++ "I"	Exec		xsetroot -solid cyan4
++ "I"	Recapture
+
+#=========
+# mwm
+#=========
+
+DestroyDecor	Mwm
+AddToDecor	Mwm
++	TitleStyle	Centered
++	TitleStyle	ActiveUp (Solid cyan4 -- Raised) \
+			ActiveDown (Solid cyan4 -- flat) \
+			Inactive (Solid grey51 -- Raised)
++	ButtonStyle	Reset
++	ButtonStyle	All -- UseTitleStyle
++	ButtonStyle 2	5  25x25@1 25x75@1 75x75@0 75x25@0 25x25@1
++	ButtonStyle 4	5  45x45@1 55x45@1 55x55@0 45x55@0 45x45@1
++	WindowFont	-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*
++	HilightColor	white cyan4
+
+DestroyFunc	DecorMwm
+AddToFunc	DecorMwm
++ "I"	RemoveAllButtons
++ "I"	Style "*"	UseDecor Mwm, ForeColor Black
++ "I"	Style "*"	Button 1, Button 2, Button 4
++ "I"	MenuStyle	Black grey75 grey40 -adobe-helvetica-medium-r-*-120-* mwm
++ "I"	Exec		xsetroot -solid grey
++ "I"	Recapture
++ "I"	Mouse 0	1 N	Menu Window-Ops Close
++ "I"	Mouse 0	2 N	Maximize
++ "I"	Mouse 0	4 N	Iconify
++ "I"	Mouse 3	4 N	Replace
+
+DestroyMenu	DecorMenu
+AddToMenu	DecorMenu
++	"Decors"	Title
++	"MWM"		DecorMwm
++	"Win95"		DecorWin95
+
+#---------------------------------------------------------------------
+# example #2, from Martin Cartwright
+#---------------------------------------------------------------------
+
+############   Decor statements  #################
+AddToDecor sticky
++ ButtonStyle   1 8 35x15@1 20x50@1 40x50@0 30x80@1 75x40@0 50x40@1 75x15@0 35x15@1
++ ButtonStyle   3 16 60x40@1 60x80@0 15x80@0 15x40@1 60x40@1 40x40@1 40x25@1 75x25@1 75x60@0 60x60@0 75x60@0 75x40@0 85x40@0 85x15@0 60x15@1 60x25@1
++ ButtonStyle   5 11 80x15@1 45x15@1 55x25@1 25x55@1 15x45@1 15x80@1 50x80@0 40x70@0 70x40@0 80x50@0 80x15@0
++ ButtonStyle   All -- UseTitleStyle
++ BorderStyle   Simple -- HiddenHandles NoInset
++ TitleStyle    -- flat
++ AddTitleStyle HGradient 24 2 #0000ff 50 #000000 50 #0000ff 
++ HilightColor  white #00008f
++ WindowFont    -b&h-lucida-bold-r-normal-*-*-180-*-*-p-*-iso8859-*
+
+
+AddToDecor terms
++ ButtonStyle    All ActiveUp   VGradient 16 2 #440000 50 #ff0000 50 #440000
++ ButtonStyle    All ActiveDown VGradient 16 2 #440000 50 #ff0000 50 #440000
++ ButtonStyle    All Inactive   VGradient 16 2 #ff0000 50 #440000 50 #ff0000
++ AddButtonStyle 1 Vector 8  35x15@1 20x50@1 40x50@0 30x80@1 75x40@0 50x40@1 75x15@0 35x15@1
++ AddButtonStyle 3 Vector 16 60x40@1 60x80@0 15x80@0 15x40@1 60x40@1 40x40@1 40x25@1 75x25@1 75x60@0 60x60@0 75x60@0 75x40@0 85x40@0 85x15@0 60x15@1 60x25@1
++ AddButtonStyle 5 Vector 11 80x15@1 45x15@1 55x25@1 25x55@1 15x45@1 15x80@1 50x80@0 40x70@0 70x40@0 80x50@0 80x15@0
++ BorderStyle    Active         TiledPixmap /home11/imc/icons/backdrops/red5mrb.xpm
++ BorderStyle    Inactive       TiledPixmap /home11/imc/icons/backdrops/red5mra.xpm
++ TitleStyle     Raised 
++ AddTitleStyle  ActiveUp       HGradient 64 4 #ff0000 25 #440000 25 #440000 25 #440000 25 #ff0000
++ AddTitleStyle  ActiveDown     HGradient 64 4 #ff0000 25 #440000 25 #440000 25 #440000 25 #ff0000
++ AddTitleStyle  Inactive       HGradient 64 4 #000000 25 #880000 25 #880000 25 #880000 25 #000000
++ HilightColor   white firebrick
++ WindowFont     -b&h-lucida-bold-r-normal-*-*-180-*-*-p-*-iso8859-*
+
+AddToFunc Change-Stick           "I" Stick
++                                "I" ChangeDecor "sticky"
+
+AddToFunc Un-Change-Stick        "I" Stick
++                                "I" ChangeDecor "Default"
+
+AddToMenu Window-Ops2   "Move"%mov_mico.xpm%            Move-or-Raise
++                       "Resize"%res_mico.xpm%          Resize-or-Raise
++                       "Raise"%rai_mico.xpm%           Raise           
++                       "Lower"%low_mico.xpm%           Lower           
++                       "Iconify"%ify_mico.xpm%         Iconify         
++                       "Shade-ify"%sha_mico.xpm%       WindowShade
++                       "Stick"                         Change-Stick
++                       "Unstick"                       Un-Change-Stick
++                       ""                              Nop             
++                       "Close"                         Close           
++                       "Kill (!)"%skull.xpm%           Destroy         
++                       ""                              Nop             
++                       "Print"%printer2_small.xpm%     PrintFunction
+
+#---------------------------------------------------------------------
+# example #3, from Paul D. Smith
+#---------------------------------------------------------------------
+
+  ### Standard Window Configuration
+
+  AddToDecor Standard
+  +       HilightColor    Black DeepSkyBlue
+  +       WindowFont      -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
+  +       ButtonStyle 1   ActiveUp (Pixmap fvwm2/mini.destroy.xpm) \
+                          ActiveDown (Pixmap fvwm95/mini-exp.xpm) \
+                          Inactive (Pixmap fvwm2/mini.destroy-alt.xpm)
+  +       ButtonStyle 2   Pixmap fvwm2/mini.maximize-vert.xpm
+  +       ButtonStyle 4   MiniIcon
+
+  Style Standard  UseDecor Standard, \
+                  BorderWidth 5, Color LightSkyBlue2/RoyalBlue4, \
+                  DecorateTransient, HintOverride, \
+                  Icon fvwm2/default.xpm, MiniIcon fvwm2/jball.xpm, \
+                  StickyIcon, IconBox 3 -20 -1 -1, \
+                  RandomPlacement, SmartPlacement, \
+                  MWMDecor, MWMFunctions
+
+  Style Naked     WindowListSkip, Sticky, NoTitle, NoHandles, BorderWidth 0
+
+
+  ### Application-specific decoration styles and window options
+
+  Style "*"           UseStyle Standard
+
+  # FVWM Modules
+
+  Style "Fvwm*"       UseStyle Naked
+  Style "FvwmTalk"    WindowListHit,  Slippery, Title, BorderWidth 5
+  Style "FvwmConsole" WindowListHit,  Slippery, Title, BorderWidth 5
+
+#---------------------------------------------------------------------
+#---------------------------------------------------------------------
+#---------------------------------------------------------------------
+

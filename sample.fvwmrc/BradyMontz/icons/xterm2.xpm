@@ -1,0 +1,37 @@
+/* XPM */
+static char *xterm2[] = {
+/* width height num_colors chars_per_pixel */
+"    23 23        7            1",
+/* colors */
+". c #000000",
+"# c None",
+"a c #51445144FFFF",
+"b c #bebebe",
+"c c #d3d3d3",
+"d c #f81440",
+"e c #ffffff",
+/* pixels */
+"####..eeeeeeeeeeee.####",
+"##..eeeeeeeeeeeeeeee.##",
+"##.eeeeeeeeeeeeeeeee.##",
+"##.e...............e.##",
+"##.e.aaaaaaaaaaaaa.e.##",
+"##.e.addddaaaaaada.e.##",
+"##.e.aaddddaaaadaa.e.##",
+"##.e.aaaddddaadaaa.e.##",
+"##.e.aaaadddadaaaa.e.##",
+"##.e.aaaaadaddaaaa.e.##",
+"##.e.aaaadaddddaaa.e.##",
+"##.e.aaadaaaddddaa.e.##",
+"##.e.aadaaaaadddda.e.##",
+"##.e.aaaaaaaaaaaaa.e.##",
+"##.e.eeeeeeeeeeeeeee.##",
+"##.eeeeeeeeeeeeeeeee.##",
+"###eee...........eeee##",
+"###......bbbbbb.....###",
+"##.ee.........eeeeeee##",
+"#.ee...........eecceee#",
+".ee...cccccccc..eecceee",
+".ccccccccccccccccccccc.",
+".......................",
+};

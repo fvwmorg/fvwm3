@@ -1,0 +1,18 @@
+
+This is FvwmForm 1.0a.  You should find the following files:
+
+README 		this file.
+Changes		changes log.
+FvwmForm.c	source code.
+Makefile	make file for my environment (at Princeton, SunOS 4.1.3).
+FvwmForm.1	man page, in nroff format.
+
+You may need to change Makefile slightly for your environment.  Also,
+I do not have access to many different platforms to test this program, 
+so you may need to adjust other things too.
+
+Thank you for using FvwmForm.  Please report bugs to me.
+
+
+Tom Feng
+ztfeng@math.princeton.edu

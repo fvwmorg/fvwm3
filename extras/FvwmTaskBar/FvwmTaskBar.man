@@ -1,0 +1,239 @@
+.\" t
+.\" @(#)FvwmTaskBar.1	6/30/96
+.TH FvwmTaskBar 2.6 "June 30th, 1996"
+.UC
+.SH NAME
+FvwmTaskBar \- the FVWM taskbar module
+.SH SYNOPSIS
+FvwmTaskBar is spawned by FVWM, so no command line invocation will work.
+
+.SH DESCRIPTION
+The FvwmTaskBar module provides a taskbar made up of buttons arranged by
+rows, each corresponding to a window that FVWM is managing.
+Clicking on first button gives focus to the corresponding toplevel window;
+clicking on the middle button will hide a toplevel window; third mouse button
+is reserved for a future extension (context menu).
+Like the other modules, FvwmTaskBar only works when fvwm is used as the
+window manager. 
+
+When started, the taskbar shows up as a single row of buttons filling the
+full width of the screen, but during the work can be resized to accomodate
+up to 8 rows. In adition, if the AutoStick option is used, the taskbar
+will autoposition itself at the top or bottom of the screen, and can be
+dragged from one position to another with a normal move operation. 
+
+The first button of the taskbar, labelled "Start" sends a "Popup
+StartMenu" command to the FVWM, which can be used to pop-up a
+general-purpose menu when the button is pressed. 
+
+The FvwmTaskBar also displays at the right side a window showing the
+current time and the built-in incoming mail indicator. 
+
+.SH COPYRIGHTS
+The FvwmTaskBar module is derivated from Mike Finger's FvwmWinList.
+
+Copyright 1994, Mike Finger. The author makes no guarantees or warranties of
+any kind about the use of this module.  Use this modules at your own risk.
+You may freely use this module or any portion of it for any purpose as long
+as the copyright is kept intact. 
+
+.SH INITIALIZATION
+During initialization, \fIFvwmTaskBar\fP will scan the same configuration
+file that FVWM used during startup to find the options that pertain to it. 
+These options are discussed in a later section. 
+
+.SH INVOCATION
+FvwmTaskBar can be invoked by fvwm during initialization by inserting the
+line 'Module FvwmTaskBar' in the .fvwmrc file. 
+
+FvwmTaskBar must reside in a directory that is listed in the ModulePath 
+option of FVWM for it to be executed by FVWM.
+
+.SH CONFIGURATION OPTIONS
+The following options can be placed in the .fvwmrc file
+
+.IP "*FvwmTaskBarGeometry \fI{+-}<X>x{+-}<Y>\fP"
+Specifies the location and gravity of the FvwmTaskBar window.  At the
+current version, size is not supported and the taskbar will resize itself
+to fill the full witdh of the screen. If the AutoStick option is also
+specified, the module will automatically "stick" to the top or the bottom
+of the screen, whichever is closest to the geometry specification. 
+
+.IP "*FvwmTaskBarFont \fIfont\fP"
+Specifies the default font to be used for labeling the buttons, when they 
+are not depressed. If not specified, fixed font is assumed.
+
+.IP "*FvwmTaskBarSelFont \fIfont\fP"
+Specifies the font to be used for the depressed buttons. Note that the 
+Start button will use always this font even if is not pressed. If this 
+option is not specified, the default font is used instead.
+
+.IP "*FvwmTaskBarStatusFont \fIfont\fP"
+Specifies the font to be used for the clock and tip windows. If this 
+option is not specified, fixed font is used.
+
+.IP "*FvwmTaskBarFore \fIcolor\fP"
+Specifies the color to use for the button names.
+
+.IP "*FvwmTaskBarBack \fIcolor\fP"
+Specifies the background color for the bar and buttons.
+
+.IP "*FvwmTaskBarTipsFore \fIcolor\fP"
+Specifies the color to be used for the text in the tips windows.
+
+.IP "*FvwmTaskBarTipsBack \fIcolor\fP"
+Specifies the background color for the tips windows.
+
+.IP "*FvwmTaskBarGeometry \fIgeometry\fP"
+This option specifies the geometry of the window (only the Y coordinate is
+useful)
+
+.IP "*FvwmTaskBarAutoStick"
+This option causes the taskbar to "stick" either to the top or bottom 
+of the screen, whichever is closest to the initial window placement. Any 
+further move operation is also subject to that behaviour.
+
+.IP "*FvwmTaskBarAutoHide"
+This option causes the taskbar to disappear leaving a narrow strip at the
+bottom of the screen, and reappears only when the mouse is moved to that
+strip. This option automatically enables AutoStick.
+
+.IP "*FvwmTaskBarUseSkipList"
+Tells FvwmTaskBar to not show the windows that are listed on a WindowListSkip
+line in the configuration file.
+
+.IP "*FvwmTaskBarUseIconNames"
+Tells FvwmTaskBar to use the icon name of the window instead of the full 
+window name.  This is useful to keep the width of the buttons small.
+
+.IP "*FvwmTaskBarShowTransients"
+Tells FvwmTaskBar to show the application transient windows also. By default
+they are not shown.
+
+.IP "*FvwmTaskBarAction \fIaction response[,response...]\fP"
+Tells FvwmTaskBar to do \fIresponse\fP when \fIaction\fP is done.  The
+currently supported \fIaction\fPs are: Click1, Click2, Click3.  The currently
+supported \fIresponse\fPs are any fvwm built-in commands, including modules
+and functions.
+The configuration example below shows the default values.
+
+.IP "*FvwmTaskBarButtonWidth \fIwidth\fP"
+Indicates the maximum width that window buttons should reach.
+(the minimum is hardcoded at 32).
+
+.IP "*FvwmTaskBarHighlightFocus"
+If the mouse pointer is over the taskbar, the window under the current 
+button is active. This behavior is like the TVTWM Icon Manager or 
+FvwmIconMan. \fINote:\fP If you use this option combined with FollowMouse 
+focus style, you'll want the taskbar to be ClickToFocus.
+
+.IP "*FvwmTaskBarShowTips"
+Enables the tips windows (by default disabled).
+
+.SH ""
+
+The following options deal more specifically with the status indicators 
+displayed at the rigth of the taskbar.
+
+.IP "*FvwmTaskBarClockFormat \fIformat-string\fP"
+This option specifies the time format for the digital clock.
+It is a \fIstfrtime(3)\fP compatible format string.
+By default it is "%R".
+
+.IP "*FvwmTaskBarUpdateInterval \fIseconds\fP"
+Specifies how often the clock display should be refreshed, so that times of 
+the form HH:MM:SS can be used. By default 60 seconds.
+
+.IP "*FvwmTaskBarBellVolume \fIvolume\fP"
+This sets the volume of the bell when mail is detected.
+It is a value between 0 (no bell) and 100 (maximum volume).
+By default it is set to 20.
+
+.IP "*FvwmTaskBarMailBox \fIpath\fP"
+This option intructs the module to look for mail at the specified place
+It is a full pathname to the user's mailbox.
+By default it is \fI/var/spool/mail/$USER_LOGIN\fP.
+A value of 'None' instructs the module not to have a mail indicator.
+
+.IP "*FvwmTaskBarMailCommand \fIcommand\fP"
+Specifies a \fIfvwm95\fP command to be executed when double-clicking
+on the mail icon.
+
+.IP "*FvwmTaskBarIgnoreOldMail"
+If set, draw no bitmap if there is no new mail.
+
+.SH ""
+The following options deal with the Start button at the left of the taskbar:
+
+.IP "*FvwmTaskBarStartName \fIstring\fP"
+This option specifies the string displayed in the Start button.
+('Start' by default).
+
+.IP "*FvwmTaskBarStartMenu \fIstring\fP"
+This option specifies the popup to invoke when the start button is pressed.
+('StartMenu' by default). The module send a 'Popup StartMenu' command to
+the fvwm window manager.
+
+.IP "*FvwmTaskBarStartIcon \fIicon-name\fP"
+This option specifies the name of the icon to display at the left of the Start
+button.
+
+.SH SAMPLE CONFIGURATION
+The following are excepts from a .fvwm2rc95 file which describe FvwmTaskBar
+initialization commands:
+
+.nf
+.sp
+#
+# Start the taskbar on fvwm startup and restart
+#
+
+AddToFunc "InitFunction" "I" Module FvwmTaskBar
+
+AddToFunc "RestartFunction" "I" Module FvwmTaskBar
+
+#
+# Set the style for the taskbar window, keep always on top of another
+# windows
+#
+
+Style "FvwmTaskBar" NoTitle,BorderWidth 4, HandleWidth 4,Sticky,
+StaysOnTop,WindowSkipList,CirculateSkip
+
+#------------------------------------ taskbar
+*FvwmTaskBarBack #c3c3c3
+*FvwmTaskBarFore black
+*FvwmTaskBarTipsBack bisque
+*FvwmTaskBarTipsFore black
+*FvwmTaskBarGeometry +0-1
+*FvwmTaskBarFont -adobe-helvetica-medium-r-*-*-14-*-*-*-*-*-*-*
+*FvwmTaskBarSelFont -adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-*-*
+*FvwmTaskBarStatusFont fixed
+
+*FvwmTaskBarAction Click1 Iconify -1, Raise
+*FvwmTaskBarAction Click2 Iconify +1, Lower
+*FvwmTaskBarAction Click3 Iconify -1, Raise
+
+*FvwmTaskBarUseSkipList
+*FvwmTaskBarUseIconNames
+*FvwmTaskBarAutoStick
+*FvwmTaskBarShowTips
+
+*FvwmTaskBarButtonWidth 180
+*FvwmTaskBarBellVolume 20
+*FvwmTaskBarMailBox /var/spool/mail/
+*FvwmTaskBarMailCommand Exec xterm -e mail
+*FvwmTaskBarClockFormat %I:%M %p
+
+*FvwmTaskBarStartName Start
+*FvwmTaskBarStartMenu StartMenu
+*FvwmTaskBarStartIcon mini-exp.xpm
+
+.sp
+.fi
+
+.SH BUGS
+At present the \fIFvwmTaskBar\fP works only with \fIfvwm95-2\fP.
+
+.SH AUTHOR
+David Barth (barth@di.epfl.ch)

@@ -1,0 +1,45 @@
+
+These bugs are not fixed, if you think you can help, do so.
+
+Known bugs as of FvwmButtons-200396b:
+ 
+ * Chuck says it doesn't redraw correctly on resizes on AIX; it requires
+   full expose to do this..? Could this be a problem with the X server?
+
+Known bugs as of FvwmButtons-080396:
+
+ * Another problem with swallowing is when two FvwmButtons decides to swallow
+   the same window, only one succeeds. Morale: modify the titles of programs
+   you start to be swallowed... One simple way to try to see this error is
+   to fire up two copies of the same FvwmButtons at the same time. 
+   There is a define on top of FvwmButtons.c you can uncomment to get some
+   debug on this; DEBUG_HANGON.
+   There has also been reported problems with buttons hanging forever after
+   being pressed, this might be related.
+
+ * When you make the buttonbox small enough (= very small, less than 1x1
+   pixel inside relief and padding) it exits. Should make it silently suffer
+   with grace instead. Update: actually this is a problem with the swallowed
+   windows, some crash when made 1x1. Otherwise the rest is fixed.
+
+Known bugs as of FvwmButtons-070396:
+
+ * Action commands are supposed to work also on swallowed windows, but there
+   is a problem with X. After reparenting, XSelectInput is called with a mask
+   including ButtonPressMask|ButtonReleaseMask, but evidently no buttonpresses
+   are received, even though the program (like xload) doesn't use them for
+   itself. So where is the bottleneck? Send the solution if you got it.
+   OK, so I need to do SubstructureRedirectMask, and shuffle all the events
+   onwards... really? No better way? Mmm.. 
+
+Known bugs as of FvwmButtons-040396:
+
+ * There are still some problems related to swallowed windows, but I haven't
+   found a reliable way to reproduce them. What probably happens is that a
+   window is created, FvwmButtons gets its name and desides to swallow it, it
+   is mapped, but before it gets swallowed it fails, thus the reparent code
+   does a BadWindow. 
+
+ * When you kill many swallowed windows quickly, FvwmButtons crashes probably
+   because after gracefully removing one of it's children it tries to redraw
+   some other before handling more destroy_requests.

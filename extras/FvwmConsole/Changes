@@ -1,0 +1,15 @@
+Changes on FvwmConsole 1.1
+
+1. Fixed the bug that didn't allocate enough memory for the child
+   process arguments.
+
+2. Get module configuration from Fvwm and pass them to the
+   client.
+
+Changes on FvwmConsoleC.pl 1.1
+
+1. Added substitution and other editing functions.
+
+2. Keybindings can be configured through module configuration.
+
+3. Runs on Linux. Corrected stty arguments.

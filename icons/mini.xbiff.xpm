@@ -1,0 +1,22 @@
+/* XPM */
+static char * mini_xbiff_xpm[] = {
+"14 14 5 1 0 0",
+" 	c black",
+".	c blue",
+"X	c red",
+"o	c white",
+"O	c None",
+"  ......XXXXXX",
+"  ......oooooo",
+"  ......XXXXXX",
+"  ......oooooo",
+"  ......XXXXXX",
+"  oooooooooooo",
+"  XXXXXXXXXXXX",
+"  oooooooooooo",
+"  XXXXXXXXXXXX",
+"  OOOOOOOOOOOO",
+"  OOOOOOOOOOOO",
+"  OOOOOOOOOOOO",
+"  OOOOOOOOOOOO",
+"  OOOOOOOOOOOO"};

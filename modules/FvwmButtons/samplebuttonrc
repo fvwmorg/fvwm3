@@ -1,0 +1,18 @@
+Back bisque3
+(Frame 2 Padding 2 2 Container(Rows 2 Frame 1 Padding 10 0 Swallow(Respawn)))
+(NoSize Title Close, Icon bomb.xpm, Action Close)
+(Title Resize Back bisque4 Action Resize)
+(Frame 2 Padding 2 2 NoSize Container(Back red Title(left,side) Fore yellow \
+  	Columns 1 Padding 4 2 Frame 2 Font -*-helvetica-*-r-*-*-14-*))
+(Icon jball.xpm Title Dump Action DumpButtons)
+(Icon jball.xpm Title Save Action SaveButtons)
+(End)
+(3x1 Back darkolivegreen Fore white Frame 2 Padding 2 2 \
+	Container(Rows 1 Frame -2 Padding 1 1 Back darkolivegreen))
+(Swallow(Respawn NoHints) xclock \
+	`Exec exec xclock -bg darkolivegreen -padding 0 -geometry +2000-0`)
+(2x1 Title(Side,Right) Mail Fore white Swallow(NoClose,UseOld,NoRespawn,\
+	NoHints) xbiff `Exec exec xbiff -bg darkolivegreen -geometry +200+200`)
+(Action Beep Title Beep Icon Down Fore yellow Frame 2 Back seagreen)
+(End)
+(End)

@@ -1,0 +1,99 @@
+.\" t
+.\" @(#)FvwmSaveDesk.1	6/6/96
+.TH FvwmSaveDesk 2.0 "Jul 6 1996"
+.UC
+.SH NAME
+FvwmSaveDesk \- another FVWM desktop-layout saving module
+.SH SYNOPSIS
+FvwmSaveDesk is spawned by fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+The Fvwm2 can be compiled so that you can run both version concurently.
+Therefor the filenames must be different. I compiled Fvwm with this option.
+Two file will be used in this documentation:
+.I .fvwm2rc (.fvwmrc)
+and
+.I .fvwm2desk (.fvwmdesk)
+
+When called, this module will attempt to save your current desktop
+layout as a definition of extra lines for the function InitFunction
+into the file
+.I .fvwm2desk
+in your home directory. As explain in the other documation, this
+function is called at startup of fvwm2.
+You have to include this file in
+.I .fvwm2rc
+after the definition of the Function Initfunction.
+You can do this by using the module
+.I FvwmM4
+or 
+.I FvwmCpp.
+
+Your applications must supply certain hints to the X window system.
+.I Emacs
+and
+.I Netscape
+, for example, does not, so FvwmSaveDesk can't get any
+information from it.  
+ 
+Also, FvwmSaveDesk assumes that certain command line options are
+globally accepted by applications, which may not be the case.
+
+.SH SETUP USING FVWMM4 MODULE
+The M4 Macro processor substitutes its macros even in the middle of a 
+word. Because of that you may have problems with predefined macros
+such as include or define. To avoid this the GNU M4 has an extra
+option to prefix all builtins with 'm4_'. FvwmM4 can be called with
+option -m4-prefix and then will provide the option -P to M4.
+I personally use the FvwmM4 module this way.
+
+fvwm2 -f "FvwmM4 -m4-prefix -m4opt -I$HOME $HOME/.fvwm2rc"
+
+Simply add the following line to the end of .fvwm2rc:
+
+m4_include(`.fvwm2desk') .
+
+.SH SETUP USING FVWMCPP MODULE
+With the FVWMCPP you may have the problem that the preprocessor
+directives starts with the comment charakter '#' and will
+complain about unknown directives, if you have comments in your .fvwm2rc.
+
+fvwm2 -f "FvwmCpp -C-I$HOME $HOME/.fvwm2rc"
+
+Simply add the following line to the end of .fvwm2rc:
+
+#include ".fvwm2desk"
+
+.SH INVOCATION
+FvwmSaveDesk can be invoked by adding it to a menu or binding it to a 
+mouse button or keystoke in
+the 
+.I .fvwm2rc
+file.
+Fvwm2 will search directory specified in the ModulePath
+configuration option to locate FvwmSaveDesk.
+
+To insert it to a menu, add the line
+
++	"Save Desktop" Module FvwmSaveDesk
+
+to the menu defintion.
+I thing binding it to a mouse button is not very useful, but you can
+do that, by adding for example this line.
+
+Mouse 3		R	CS	Module FvwmSaveDesk
+
+Than FvwmSaveDesk will be called if you hit the right mouse button
+on the root window while holding the shift and control button down.
+
+You can bind FvwmSaveDesk to a function key F10 for example you have
+to insert the following line:
+
+Key	F10	A	Module FvwmSaveDesk
+
+I personally add it as a Button to the module FvwmButtons:
+
+*FvwmButtons SaveDesc desk.xpm   Module FvwmSaveDesk
+
+.SH AUTHOR
+Carsten Paeth (calle@calle.in-berlin.de)

@@ -1,0 +1,61 @@
+Features :
+
+ * a start button linked to a user-defined menu in the .fvwm2rc configuration
+   file
+
+ * an array of buttons representing the active application windows : the
+   focused one corresponds to the depressed buton.
+
+ * digital clock and mail indicator
+
+ * support for pixmaps in the buttons
+
+Thanks to :
+Brian Wellington <bwelling@Glue.umd.edu>
+Georg Hager <georg.hager@btp3x3.phy.uni-bayreuth.de>
+Andreas Klemm <andreas@knobel.gun.de>
+Michael A. Kazda <kazda@infomine.net>
+Hector Peraza <peraza@mitac11.uia.ac.be>
+Henry R. McTague <mctague@mctague.mv.com>
+andrew (a.b.) atrens <atrens@bnr.ca>
+William E. Roadcap <roadcapw@cfw.com>
+
+Options :
+
+FvwmTaskBarFont  : default font for the buttons
+ "" SelFont:     : font for the depressed buttons (the Start button uses
+                   always SelFont even if depressed)
+ "" Fore & Back  : fore and back colors
+ "" Geometry     : window geometry (only Y coordinate is usefull)
+ "" Action	 : binds action to mouse buttons.
+ "" AutoStick    : the bar automatically sticks to the top or bottom of the 
+                   screen
+ "" UseSkipList  : only lists windows that are not in the SkipList definition
+ "" UseIconNames : use preferably the icon name instead of the full window
+                   title for button label
+ "" SwallowModule: same as in FvwmButtons (or GoodStuff), however, the support
+                   is limited and resizing is awfull.
+ "" ButtonWidth  : maximum button width (min = 32)
+ "" ClockFormat  : strftime string format for the digital clock
+ "" BellVolume   : volume of the bell rung for mail
+ "" MailBox      : mailbox path (by default /var/spool/mail/$login_name
+		   (site administrator should consider changing DEFAULT_MAIL_PATH
+		    in Goodies.h if it does not reflect their system's default)
+		   A value of 'None' indicates not to check for mail.
+ "" StartName    : label for the start button
+ "" StartMenu    : fvwm popup menu to be activated when the start button
+                   is pressed
+ "" StartIcon    : pixmap for the start button
+
+...and more (see the man pages!!!)
+
+A word about the pixmaps size: the current version only centers them on
+the button, neither button resize nor pixmap resize is made if the icon is
+bigger than the default button size. For the font size I'm using (12pts)
+the maximum height is about 16 pixels. 
+
+This module is based on the FvwmWinList module + win95look
+(see copyrights in source files) 
+
+--
+D.Barth <barth@di.epfl.ch) 

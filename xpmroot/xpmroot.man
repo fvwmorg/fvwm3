@@ -1,0 +1,16 @@
+'\" t
+.\" @(#)xpmroot.1	1.01 8/10/93
+.TH XPMROOT 1.01 "13 August 1993"
+.UC
+.SH NAME
+xpmroot \- Sets the root window of the current X display to an Xpm pixmap
+.SH SYNOPSIS
+\fBxpmroot\fP \fIfile\fP
+.SH DESCRIPTION
+\fIxpmroot\fP reads the Xpm file specified in the command line
+and displays it in the root window.
+.SH BUGS
+Repeated use of xpmroot with different xpm pixmaps will use up slots in
+your color table pretty darn fast.
+.SH AUTHOR
+Rob Nation

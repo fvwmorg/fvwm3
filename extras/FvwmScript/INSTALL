@@ -1,0 +1,11 @@
+
+How to install FvwmScript in the fvwm-2.0.45 tree.
+
+1) Untar the distribution inside fvwm-2.0.45/modules/FvwmButtons
+
+3) In that directory, type
+	xmkmf; make Makefiles; make install
+This will install FvwmScript and script examples in the module directory.
+You can copy the file FvwmScript/Scripts/system.fvwmrc to ~/.fvwmrc.
+This is an example of the Fvwm configuration file. This one is necessary
+for using the script "DeskSetup".

@@ -1,0 +1,30 @@
+/* XPM */
+static char * jcalc_xpm[] = {
+/**/
+"16 16 8 1",
+/**/
+" 	s None	c None",
+".	c gray60",
+"X	c gray55",
+"o	c gray45",
+"O	c gray30",
+"+	c black",
+"@	c gray85",
+"#	c gray70",
+/*÷dÄ¬÷dÇ\*/
+"                ",
+"                ",
+"  ..........X   ",
+"  .oooooooooO   ",
+"  .o+++++++oO   ",
+"  .o+++++++oO   ",
+"  .oooooooooO   ",
+"  .o@@@#@o@oO   ",
+"  .oooooooooO   ",
+"  .o@#@#@o@oO   ",
+"  .ooooooo#oO   ",
+"  .o@#@#@o@oO   ",
+"  .oooooooooO   ",
+"  .o@o@o@o@oO   ",
+"  .oooooooooO   ",
+"  XOOOOOOOOOO   "};

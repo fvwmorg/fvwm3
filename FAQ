@@ -1,0 +1,1093 @@
+======================================================================
+                   FVWM Frequently Asked Questions
+======================================================================
+
+INDEX
+
+        1) What does FVWM stand for?
+        2) Where do I find the current versions of fvwm?
+        3) Any WWW Sites about FVWM?
+        4) Where do I ask questions about FVWM?
+        5) What are the differences between FVWM 1.xx and 2.xx?
+        6) My .fvwmrc from version 1.xx no longer works.  What do I do?
+        7) I have a window that is behaving unexpectedly under FVWM, but just
+           fine under (whatever other window manager), or I have just some
+           random bug.  What do I do?
+        8) What's the relative memory usage for the various window managers
+           out there?
+        9) I used to use GoodStuff in FVWM 1.xx, but it's not in the 2.xx
+           distribution.  What do I use now?
+       10) I'm using FvwmButtons (or GoodStuff in 1.xx), and sometimes the
+           buttons stay depressed, and other times they don't.  Why is that?
+       11) What happened to the FVWM 1.xx 'include' command?
+       12) I really like the horizontal bars that appear on the title bars of
+           sticky windows.  Can I get those on other windows as well?
+       13) I'm trying to build FVWM, but the linker is complaining
+           about missing functions like 'XpmReadFileToPixmap' or not
+           being able to find libXpm or the compiler can't find the
+           include file X11/xpm.h.  Why is that?
+       14) I'm trying to compile FVWM under SunOS using cc, but the compiler
+           is having lots of problems.  What gives?
+       15) Why does the screen go blank at startup and during Recaptures now
+           when it didn't in FVWM 1.xx?
+       16) I'd really like to see neat feature XYZ in FVWM.
+           Wouldn't that be cool?  I even have a patch.  When can it
+           be added?
+       17) I know this question doesn't have to do with FVWM, but what
+           happened to to rxvt and rclock which Rob Nation used to
+           support?  Where can I find them now?
+       18) Where can I get more XPMs for icons?
+       19) How do I set the Sun keyboard key xxxx to an FVWM command?
+           Or more generally, I'm having problems defining key
+           bindings for FVWM - what can I do?
+       20) I clicked on a program's Motif menubar and the menu pops up
+           then dissappears.  What gives?
+       21) I heard about this FvwmFileMgr module.  Where can I find it?
+       22) I'd really like {NeXT, Win95, etc} look and feel.  Are you
+           going to support that?
+       23) Imake didn't come with my machine.  How do I build FVWM?
+       24) How do I create/submit/apply patches?
+       25) I'd like to bind a key to paste/use the current selection,
+           how can I do that?
+       26) You can bind mouse movements to keystrokes, how about mouse
+           presses?
+       27) What exactly is the differenct between a DESK, a PAGE, and
+           the SCREEN?
+       28) Why the rename of the various files (fvwm2, .fvwm2rc,
+           fvwm2.man)?
+       29) Every time I update my install, my currently running fvwm
+           session dies.  Why is that?
+       30) Will FVWM ever support a separate colormap for each desktop?
+       31) I try to run some program under FVWM, but it dies with an
+           X11 error like BadAccess.  The same program works just fine
+           under MWM or OLWM.  What's going on?
+       32) I'm want to use FVWM, but I don't have root access on my
+           machine.  Can I still install and run it?
+       33) I'm compiling under SunOS/Solaris with gcc, but it's
+           complaining that "Language 'F' is unknown".  What's the
+           problem?
+       34) When will fvwm release X.Y.Z be ready?
+       35) I'm a sysadmin, and if I wanted to force fvwm to read a
+           system rc file and then the user's rc file, how would I do
+           that?
+       36) I'm a sysadmin, and if I wanted fvwm to look for all of
+           it's rc files in a hidden directory, say ~/.fvwm, much like
+           CDE does, how could I do that?
+       37) When trying to install under Solaris, I'm getting errors.
+           Why?
+       38) When having FvwmButtons swallow an app, is it possible to
+           have button presses assigned to actions as well?  For
+           instance, I'd like to swallow xload and have a button press
+           pop up an xterm, or swallow xbiff and have a button press
+           bring up the list of messages.
+       39) I'm trying to use fvwm under CDE/COSE, but encountering
+           difficulties.  Any suggestions?
+       40) How do I capture the output (eg errors) of fvwm?
+       41) Linux XF86 virtual screen size & fvwm interaction...
+       42) Why do NumLock and CapsLock interfere with ClickToFocus
+           and/or my mouse bindings?
+       43) I'm seeing odd things when trying to preprocess files with
+           the FvwmM4/Cpp module...
+
+======================================================================
+
+
+1) What does FVWM stand for?
+
+A: "Fill_in_the_blank_with_whatever_f_word_you_like_at_the_time
+   Virtual Window Manager".  Rob Nation (the original Author of FVWM)
+   doesn't really remember what the F stood for origninally, so we
+   have several potential answers:
+
+     Feeble, Fabulous, Famous, Fast, Foobar, Fantastic, Flexible,
+     F!@#$%, FVWM (the GNU recursive approach), Free, Final, Funky,
+     Fred's (who the heck is Fred?), Freakin', Father-of-all, Feivel
+     (the mouse from "An American Tail"), etc.
+
+   Just pick your favorite (hey, there's another one!), which will of
+   course change depending on your mood and whether or not you've run
+   across any bugs recently.  I prefer Fabulous or Fantastic myself,
+   although I often use F!@#$% or Freakin' while debugging...
+
+----------------------------------------------------------------------
+
+2) Where do I find the current versions of fvwm?
+
+A: New main distribution site (official + beta code):
+
+                ftp://ftp.hpc.uh.edu/pub/fvwm
+
+   Alternate sites:
+
+            USA:
+                ftp://sunsite.unc.edu/pub/Linux/X11/window-managers/
+                ftp://ftp.cs.columbia.edu/pub/cheah/
+
+            Overseas:
+                ftp://unix.hensa.ac.uk/pub/walnut.creek/FreeBSD/incoming/
+                ftp://ftp.jussieu.fr/pub/X11/fvwm/
+                ftp://ftp.loria.fr/pub/unix/fvwm/
+
+   BTW, 1.24r was the last released version of the 1.xx series and the
+   first official release of 2.xx will be 2.2.0.
+
+----------------------------------------------------------------------
+
+3) Any WWW Sites about FVWM?
+
+A: Yup.  The official site is currently:
+
+        http://www.hpc.uh.edu/fvwm/
+
+   And there are others.  Try the following (note - the first one has
+   changed recently):
+
+        http://www.cs.hmc.edu/~tkelly/docs/proj/fvwm.html
+        http://www.cobaltgroup.com/~roland/fvwm/
+        http://xenon.chem.uidaho.edu/~fvwm/
+        http://namu19.gwdg.de/fvwm/fvwm.html
+        http://mars.superlink.net/user/ekahler/fvwm.html
+
+   There are pointers to all of these (and maybe more) from the
+   official fvwm WWW site.
+
+   Here's an FVWM related one, for 'The Dotfile Generator' which can
+   be used to create and customize .fvwmrc/.fvwm2rc files (and .emacs
+   and .tcshrc files too).  Some people have found it a handy tool:
+
+        http://www.imada.ou.dk/~blackie/dotfile/
+
+   Here' another related one for TKGoodStuff, which can be compiled to
+   be an FVWM module (and is based on the idea of GoodStuff or
+   FvwmButtons) but can be used with any window manager:
+
+        http://www-personal.umich.edu/~markcrim/tkgoodstuff/
+
+----------------------------------------------------------------------
+
+4) Where do I ask questions about FVWM?
+
+A: If your local FVWM maintainer can't help you, then the newsgroup
+   comp.windows.x.apps is a good place, but the fvwm mailing list is
+   usually better.  The new FVWM discussion mailing list address is:
+
+                           fvwm@hpc.uh.edu
+
+   And there is an announce mailing list as well:
+
+                       fvwm-announce@hpc.uh.edu
+
+   They are maintained by Jason Tibbitts, and are Majordomo based
+   mailing lists.  To subscribe to the list, send "subscribe fvwm" in
+   the body of a message to majordomo@hpc.uh.edu.  To unsubscribe from
+   the list, send "unsubscribe fvwm" in the body of a message to
+   majordomo@hpc.uh.edu.  To report problems, send mail to
+   fvwm-owner@hpc.uh.edu.
+
+   Here's the list descriptions and instructions directly from Jason:
+
+   =================================================================
+   (fvwm)
+
+   Description
+   -----------
+
+   This list is for discussion relating to the FVWM window manager,
+   which is intended to have a small memory footprint and a rich
+   feature set, be extremely customizable and extendable and have a
+   high degree of Motif mwm compatibility.  All relevant discussion is
+   encouraged.  Posting of binaries or irrelevant discussion is
+   strongly frowned upon.  Posting of short patches (less than 200
+   lines) is acceptable, but all patches should be sent to the FVWM
+   maintainer for inspection and possible inclusion in the
+   distribution.  The current maintainer is:
+
+   Brady Montz <bradym@cs.arizona.edu>  	
+
+
+   Instructions
+   ------------
+
+   To send a message to the list, mail to fvwm@hpc.uh.edu.  For help
+   on dealing with the mailing list software (for getting the archives
+   or other files which may be made available) send the message "help"
+   to majordomo@hpc.uh.edu.  If you have problems with the mailing
+   list itself and need to talk to a human, send mail to
+   fvwm-owner@hpc.uh.edu.  This address is for mailing list issues
+   only; reports on the FVWM software will be sent to /dev/null.
+
+   Archives of previous messages are available; to get them send the
+   above mentioned help message and investigate the "index" and "get"
+   commands or ftp them from ftp.hpc.uh.edu in /pub/fvwm/list-archive.
+
+
+   (fvwm-announce)
+
+   This list is for announcements relating to the FVWM window manager,
+   which is intended to have a small memory footprint and a rich
+   feature set, be extremely customizable and extendable and have a
+   high degree of Motif mwm compatibility.
+
+   Replies to messages from this list are set by default to go the
+   FVWM discussion list, fvwm@hpc.uh.edu.
+
+   The current FVWM distribution is available for ftp at
+   ftp.hpc.uh.edu in /pub/fvwm.
+   =================================================================
+
+----------------------------------------------------------------------
+
+5) What are the differences between FVWM 1.xx and 2.xx?
+
+A: A lot.  To name a few general ones:
+        - Bugfixes.  1.xx is not worked on at all any more.
+        - Better rc file format.  No longer order dependent.
+        - More flexible and powerful.  For example, many previously
+          global options now operate on a per window group level
+          instead.
+        - More and better modules.
+        - OpaqueResize is gone (fear not, it may come back).
+        - M4 preprocessing is no longer part of the fvwm exec, but
+          rather has been moved to a module.  There is also a module
+          to use cpp too.  See the FvwmM4 and FvwmCpp man pages.
+
+----------------------------------------------------------------------
+
+6) My .fvwmrc from version 1.xx no longer works.  What do I do?
+
+A: Start with a new one or convert your old one.  This can be done by
+   hand or with a little help from the 'conversion_script' in the
+   sample.fvwmrc directory.
+
+   And here is a list of rc file command changes compiled by Makoto
+   'MAR_kun' MATSUSHITA <matusita@ics.es.osaka-u.ac.jp>.  It may or
+   may not be 100% accurate or complete, especially as changes evolve,
+   but it's a good start.
+
+   ** Fvwm-1.xx commands **                   ** Fvwm-2.xx equiv **
+
+   AppsBackingStore                           (obsoleted)
+   AutoRaise delay                            (obsoleted, use FvwmAuto)
+   BackingStore                               (obsoleted)
+   BoundaryWidth Width                        Style (BorderWidth width)
+   ButtonStyle button# WidthxHeight           <-
+   CenterOnCirculate                          (obsoleted)
+   CirculateSkip windowname                   Style (CirculateSkip)
+   CirculateSkipIcons                         Style (CirculateSkipIcon)
+   ClickTime delay                            <-
+   ClickToFocus                               Style (ClickToFocus)
+   Cursor  cursor_num cursor_type             (obsoleted)
+   DecorateTransients                         Style (DecorateTransient)
+   DeskTopScale Scale                         (obsoleted, use FvwmPager)
+   DeskTopSize HorizontalxVertical            <-
+   DontMoveOff                                (obsoleted)
+   EdgeResistance scrolling moving            <-
+   EdgeScroll horizontal vertical             <-
+   Font fontname                              MenuStyle (arg4)
+   Function FunctionName                      AddToFunc (not compatible)
+   HiBackColor colorname                      HilightColor (arg1)
+   HiForeColor colorname                      HilightColor (arg2)
+   Icon windowname bitmap-file                Style (Icon iconname-file)
+   IconBox left top right bottom              Style (IconBox l t r b)
+   IconFont fontname                          <-
+   IconPath path                              <-
+   Key keyname Context Modifiers Function     <-
+   Lenience                                   Style (Lenience)
+   MenuBackColor colorname                    MenuStyle (arg2)
+   MenuForeColor colorname                    MenuStyle (arg1)
+   MenuStippleColor colorname                 MenuStyle (arg3)
+   Module ModuleName                          <-
+   ModulePath path                            <-
+   Mouse Button Context Modifiers Function    <-
+   MWMBorders                                 Style (MWMBorder)
+   MWMButtons                                 Style (MWMButtons)
+   MWMDecorHints                              Style (MWMDecor)
+   MWMFunctionHints                           Style (MWMFunctions)
+   MWMHintOverride                            Style (HintOverride)
+   MWMMenus                                   MenuStyle (arg5)
+   NoBorder windowname                        Style (NoBorder)
+   NoBoundaryWidth Width                      Style (HandleWidth width)
+   NoPPosition                                Style (NoPPosition)
+   NoTitle windowname                         Style (NoTitle)
+   OpaqueMove percentage                      OpaqueMoveSize percentage
+   OpaqueResize                               (obsoleted, use FvwmPager)
+   Pager  X_Location Y_Location               (obsoleted, use FvwmPager)
+   PagerForeColor colorname                   (obsoleted, use FvwmPager)
+   PagerBackColor colorname                   (obsoleted, use FvwmPager)
+   PagerFont fontname                         (obsoleted, use FvwmPager)
+   PagingDefault pagingdefaultvalue           (obsoleted)
+   PixmapPath path                            <-
+   Popup PopupName                            AddToMenu (not compatible)
+   RandomPlacement                            Style (RandomPlacement)
+   SaveUnders                                 (obsoleted)
+   SloppyFocus                                Style (SloppyFocus)
+   SmartPlacement                             Style (SmartPlacement)
+   StartsOnDesk windowname desk-number        Style (StartsOnDesk desk-number)
+   StaysOnTop windowname                      Style (StaysOnTop)
+   StdBackColor colorname                     Style (BackColor color)
+   StdForeColor colorname                     Style (ForeColor color)
+   StickyBackColor colorname                  (obsoleted)
+   StickyForeColor colorname                  (obsoleted)
+   Sticky windowname                          Style (Sticky)
+   StickyIcons                                Style (StickyIcon)
+   StubbornIcons                              (obsoleted)
+   StubbornIconPlacement                      (obsoleted)
+   StubbornPlacement                          (obsoleted)
+   Style windowname options                   <-
+   SuppressIcons                              Style (NoIcon)
+   WindowFont fontname                        <-
+   WindowListSkip windowname                  Style (WindowListSkip)
+   XORvalue number                            <-
+
+   ** fvwm-1 built-in functions ***
+
+   Beep                                       <-
+   CirculateDown [ name window_name ]         Next (not compatible)
+   CirculateUp [ name window_name ]           Prev (not compatible)
+   Close                                      <-
+   CursorMove horizonal vertical              <-
+   Delete                                     <-
+   Desk arg1 arg2                             <-
+   Destroy                                    <-
+   Exec name command                          <-
+   Focus                                      <-
+   Function                                   <-
+   GotoPage  x y                              <-
+   Iconify [ value ]                          <-
+   Lower                                      <-
+   Maximize [  horizontal vertical ]          <-
+   Module name ModuleName                     Module ModuleName
+   Move [ x y ]                               <-
+   Nop                                        <-
+   Popup                                      <-
+   Quit                                       <-
+   Raise                                      <-
+   RaiseLower                                 <-
+   Refresh                                    <-
+   Resize [ x y ]                             <-
+   Restart  name WindowManagerName            <-
+   Stick                                      <-
+   Scroll horizonal vertical                  <-
+   Title                                      <-
+   TogglePage                                 (obsoleted)
+   Wait name                                  <-
+   Warp [ name window_name ]                  Next or Prev (not compatible)
+   WindowsDesk new_desk                       <-
+   WindowList arg1 arg2                       <-
+
+   *** New in fvwm-2 **
+
+   Destroy
+   DestroyMenu
+   KillModule
+   Menu menu-name double-click-action
+   Next [conditions] command
+   None [arguments] command
+   Prev [conditions] command
+   Read filename
+   Recapture
+   +
+
+----------------------------------------------------------------------
+
+7) I have a window that is behaving unexpectedly under FVWM, but just
+   fine under (whatever other window manager), or I have just some
+   random bug.  What do I do?
+
+A: First, check your rc file and your .Xdefaults to make sure that
+   something blatantly obvious in there isn't causing the problem,
+   plus *PLEASE PLEASE PLEASE* check the FAQ, BUGS, TO-DO, and man
+   pages (i.e. RTFM).  Perhaps even the official WWW page and the
+   mailing list archives (which have a search facility) stored there.
+
+   If you still can't figure it out, send a DETAILED description of
+   the problem to the FVWM mailing list.  By detailed I mean more than
+   just "my window isn't behaving right" or "I found a bug":
+
+        - Describe the problem as best you can, preferrably with
+          suggestions on how to reproduce it easily
+        - If applicable, include information from:
+                xwininfo (preferably w/ the -all option)
+                xprop
+                FvwmIdent
+                xdpyinfo (maybe)
+        - What OS & version you are running under
+        - What version of X11 are you running under, and is it an MIT
+          server or a vendor specific server (ex the OpenWindow X
+          server under SunOS)
+        - What exact version of FVWM you are running (note that this
+          is a number like 2.0.43, not 2.4, and the distinction is
+          rather important)
+        - How was FVWM compiled (compiler & version, options, etc)
+        - What settings to you have in your .fvwm2rc that may be
+          pertinent
+
+----------------------------------------------------------------------
+
+8) What's the relative memory usage for the various window managers
+   out there?
+
+A: Here's a little table comparing some of them.  It was done on an
+   AIX based IBM RS6000 model 355 using the same number of windows (3)
+   and XSession to switch between the window managers, and I used
+   'top' to show the values:
+
+      SIZE   RES
+      545K  652K fvwm2 (fvwm 2.0.35)
+      457K  528K fvwm  (fvwm 1.24rb)
+      856K  960K ctwm  (ctwm 3.2p1)
+     1004K 1156K mwm   (mwm 1.2)
+      543K  632K twm   (???)
+      263K  328K aixwm (a simple ugly window manager included w/ aix)
+
+----------------------------------------------------------------------
+
+9) I used to use GoodStuff in FVWM 1.xx, but it's not in the 2.xx
+   distribution.  What do I use now?
+
+A: GoodStuff was renamed to FvwmButtons.  Same module, new name (that
+   fits in with the other modules naming convention).
+
+----------------------------------------------------------------------
+
+10) I'm using FvwmButtons (or GoodStuff in 1.xx), and sometimes the
+    buttons stay depressed, and other times they don't.  Why is that?
+
+A: This may be the biggest RTFM answerable question that we get on the
+   mailing list (at one time anyways)!  But, since it is always asked
+   anyways, I'll put it here.  From the FvwmButtons man page:
+
+       If command is an fvwm Exec command, then the button
+       will remain pushed in until a window whose name or
+       class matches the qouted portion of the command is
+       encountered. This is intended to provide visual
+       feedback to the user that the action he has requested
+       will be performed. If the qouted portion contains no
+       characters, then the button will pop out immediately.
+       Note that users can continue pressing the button, and
+       re-executing the command, even when it looks "pressed
+       in."
+
+----------------------------------------------------------------------
+
+11) What happened to the FVWM 1.xx 'include' command?
+
+A: It was actually part of the M4 preprocessing (see above).  You can
+   use the 'Read' builtin to get the same effect, or use the M4
+   module.
+
+----------------------------------------------------------------------
+
+12) I really like the horizontal bars that appear on the title bars of
+    sticky windows.  Can I get those on other windows as well?
+
+A: Yes. Put the line "GlobalOpts StipledTitles" in your .fvwm2rc.
+
+----------------------------------------------------------------------
+
+13) I'm trying to build FVWM, but the linker is complaining about
+    missing functions like 'XpmReadFileToPixmap' or not being able to
+    find libXpm or the compiler can't find the include file X11/xpm.h.
+    Why is that?
+
+A: You need to have the Xpm (X Pixmap) library on your system.  You
+   can find the source for it at ftp.x.org in /contrib/libraries (or
+   at its home page http://www.inria.fr/koala/lehors/xpm.html) to
+   compile and install it by hand, or you can find some "standard"
+   distribution for your particular flavor of OS and install that.  Or
+   you can compile fvwm without Xpm support (see the configure.h file)
+   and lose out on all the pretty color icons.
+
+----------------------------------------------------------------------
+
+14) I'm trying to compile FVWM under SunOS using cc, but the compiler
+    is having lots of problems.  What gives?
+
+A: cc under SunOS is not an ANSI C compiler.  Try using acc or gcc
+   instead.
+
+----------------------------------------------------------------------
+
+15) Why does the screen go blank at startup and during Recaptures now
+    when it didn't in FVWM 1.xx?
+
+A: Rob put it in there for the following reason:
+
+   Rob> Actually, I thought that this would make things happen more
+   Rob> quickly/smoothly.  While fvwm is adding borders, it keeps
+   Rob> raising and lowering and reparenting windows, which means that
+   Rob> they get lots of expose events, and they redraw a lot, many
+   Rob> times unnecessarily, because they soon get hidden again. I
+   Rob> thought that the single black window covering everything would
+   Rob> keep these windows from getting unneede expose events, and
+   Rob> minimize redraws.
+
+   Which makes a lot of sense.
+
+   BTW, I've shut it off by default now.  Use the command line option
+   -blackout to enable it.
+
+----------------------------------------------------------------------
+
+16) I'd really like to see neat feature XYZ in FVWM.  Wouldn't
+    that be cool?  I even have a patch.  When can it be added?
+
+A: People are always requesting or suggestion new features (many of
+   which are great ideas and where a lot of the current features came
+   from).  One of the more common ones for example is Windows 95 look
+   and feel (although since this was first written, that particular
+   feature has actually been indirectly implemented via several
+   appearance effecting features).
+
+   I'd like to make a statement about this.  FVWM is supposed to be
+   small, fast, powerful, and flexible, and sometimes tradeoffs have
+   to be made here.  The module interface helps here, as a lot of
+   features that not everyone wants or needs don't have to be in the
+   main module consuming resources for those people that don't want or
+   need them.
+
+   So if you have a suggestion (or a patch), please think of a way to
+   make it as small and generic as possible if you feel it belongs in
+   the main module.  Also, take a look in the TO-DO list and see if it
+   isn't already in there.
+
+   Bear in mind that I make no guarantees that I'll add any requested
+   feature or apply any submitted patches to the official version, but
+   please don't let this dissuade you from submitting them.  I like to
+   get new ideas and I'm always curious to see how someone would
+   implement a given feature, even if I never plan to put it in fvwm.
+   Also, I may choose to reimplement any patches submitted, which may
+   change the syntax, functionality, etc.  Please don't take offense
+   from that, as I mean no offense and I generally have a good reason
+   (at least by my way of thinking) for my actions...
+
+----------------------------------------------------------------------
+
+17) I know this question doesn't have to do with FVWM, but what
+    happened to to rxvt and rclock which Rob Nation used to support?
+    Where can I find them now?
+
+A: This has come up a few times, so I thought I'd put it here too.
+   I believe that the new official home for rxvt is:
+
+               http://babayaga.math.fu-berlin.de/~rxvt/
+
+   and rclock can be found in that rxvt distribution as well.
+
+----------------------------------------------------------------------
+
+18) Where can I get more XPMs for icons?
+
+A: If you want more color icons, grab the ones out of the ctwm
+   distribution (also at ftp.x.org) which has a lot of nice ones.  You
+   can also find more in other distributions at ftp.x.org, and at
+   http://www.sct.gu.edu.au/~anthony/icons/ (which has a lot, I
+   believe).
+
+----------------------------------------------------------------------
+
+19) How do I set the Sun keyboard key xxxx to an FVWM command?  Or
+    more generally, I'm having problems defining key bindings for FVWM
+    - what can I do?
+
+A: From Jon Mountjoy, one of FVWM's users:
+     - Function keys on Sun Keyboard on Top Row are F1 - F8
+     - Keys on the function keypad on the Left of the Sun Keyboard
+       are F11 == Stop, F12 == Again, ..., F20 == Cut
+
+     His Example:
+
+     /* Function keys on Sun Keyboard on Top Row*/
+     Key F1          A       N       Exec me(netscape) &
+     Key F2          A       N       Exec me(netscape -install) &
+     Key F5          A       N       Exec makex(Adder)
+     Key F6          A       N       Exec makex(Lambda)
+     Key F7          A       N       Exec makex(Castor)
+     Key F8          A       N       Exec xterm -T Local &
+     /*  Keys on the function keypad on the Left of the Sun Keyboard:
+         F11 = Stop, F12 = Again, ..., F20 = Cut
+     */
+     Key F11         AWF      N       Next [!iconic CurrentScreen CurrentDesk] Focus
+     Key F12         AWF      N       Prev [!iconic CurrentScreen CurrentDesk] Focus
+     Key F13         WF       N       Maximize     100 100
+     Key F15         WF       N       RaiseLower ""
+     Key F17         WIF      N       Iconify ""
+     Key F18         WF       N       Stick ""
+     Key F20         WIF      N       Delete ""
+     Key Help        AWF      N       Iconify ""
+
+   A more general solution is to use xev (usually distributed w/ X11)
+   or xkeykaps (an X11 interface to xmodmap written by Jamie Zawinski,
+   available from ftp.x.org) to find out what the keysym for whatever
+   key you want REALLY is, and use that for binding fvwm commands.
+
+----------------------------------------------------------------------
+
+20) I clicked on a program's Motif menubar (with click to focus or
+    stays on top set) and the menu pops up then dissappears.  What
+    gives?
+
+A: Known problem.  The window is being raised over the
+   override_redirect window that is being used to display the menu.
+   Be sure the window is raised before you click on the menubar.  I
+   don't know if there is really anything I can do to help this.
+
+----------------------------------------------------------------------
+
+21) I heard about this FvwmFileMgr module.  Where can I find it?
+
+A: The FvwmFileMgr module dissappeared because a file manager doesn't
+   need to be integrated with a window manager and something like xfm
+   does a much better job.  I recommend you pick that up instead (from
+   ftp.x.org or your favorite mirror).
+
+----------------------------------------------------------------------
+
+22) I'd really like {OpenWindows, NeXT, Win95, Mac, etc} look and
+    feel.  Are you going to support that?
+
+A: Nope!  Generically applicable features might appear, but no work
+   will be specifically added to FVWM just to make it look or feel
+   specifically like another window manager or window manager like
+   product.  Future enhancements may appear that allow you to alter
+   the appearance to get similiar to other window managers though.
+
+----------------------------------------------------------------------
+
+23) Imake didn't come with my machine.  How do I build FVWM?
+
+A: This is a problem with some IBM AIX and HP HP-UX installations.
+   You really have to have Imake currently to build FVWM.  So, you'll
+   either have to find out how to install Imake from your install
+   media (it does come on the AIX install media), or get it from from
+   MIT and install it yourself, or wait until I convert over to using
+   GNU's AutoConf, which I would like to do someday...
+
+   Also checkout the following URL:
+
+            http://www.primate.wisc.edu/software/imake-stuff/
+
+   which contains lots of Imake info, hints, tips, fixes, etc.
+
+   For HPs, the following note was sent to the FVWM mailing list that
+   may be helpfull:
+
+   ============================================================
+
+   >>   I've been using and compiling fvwm on HP-UX since version
+   >>   0.99 something.  I've always used HP's C compiler and make.
+   >>   I can't remember when was the last time it didn't compile out
+   >>   of the box.
+   >
+   > What do you do for imake?
+   >
+
+     (-: Not an official HP response or advertisement :-)
+
+     Imake used to be available on a HP ftp server accessible from
+     the "outside" (hpcvaaz.cv.hp.com).  The current imake I have,
+     may or not have been obtained there, as I've installed a few
+     different versions from a few different (HP) places, some that
+     work on my system, some that don't, that I've lost track.
+
+     Same goes for Xaw and Xmu, which along with imake, HP doesn't
+     ship on 9.0x, and rather points to public sites.  This may have
+     changed at 10.x, but I'm not sure what the "official line" is.
+     A good place to get HP-UX stuff is at the archives maintained by
+     the University of Liverpool, which are mirrored at the
+     University of Wisconsin, and a few other places,
+     http://hpux.cae.wisc.edu, http://hpux.csc.liv.ac.uk, etc.
+
+
+   > My HPUX 9.03 doesn't have it, I had to install X11R5. Is this
+   > normal for HPUX?
+
+     X11R5 development is probably an optional product, as is the
+     "real C" compiler, for example.  X11R5 run time libraries is
+     probably part of the core HP-UX, as is the brain dead C compiler
+     used to regen the kernel.
+   ============================================================
+
+----------------------------------------------------------------------
+
+24) How do I create/submit/apply patches?
+
+A: Creating a patch -
+
+        1) Copy the originial source file(s) to the same name with the
+           additional extension of .orig (or something like that).
+        2) Then run diff with either the -c (context) or -u (unified)
+           switch on the sets of files, with the .orig file FIRST.  I
+           prefer unifified diff's because they are smaller, but
+           sometimes they aren't as readable (and some diff versions
+           don't support unified diffs), so either context or unified
+           diffs are fine (but please, no "plain" diffs).
+
+        ex: cp fvwm.c fvwm.c.orig ; <edit> ; diff -u fvwm.c.orig fvwm.c
+
+   Submitting a patch -
+
+        Just mail it to the fvwm or fvwm-workers mailing list, is the
+        best way I guess (or perhaps even better would be to place it
+        on a web page and email the URL to the mailing list,
+        especially if the patch is sizeable).  Oh, and be sure to read
+        the last paragraph of #16 above...
+
+   Applying a patch -
+
+        Get a copy of the program 'patch' from your favorite source,
+        such as prep.ai.mit.edu in /pub/gnu, compile it, and then
+        follow it's directions (generally just cd into the appropriate
+        directory and run 'patch < patchfile').
+
+----------------------------------------------------------------------
+
+25) I'd like to bind a key to paste/use the current selection, how can
+    I do that?
+
+A: You can't directly with fvwm, but there may be a solution that is
+   more generally applicable - use the program 'xcb' available at
+   ftp.x.org in /contrib/utilities or from your favorite mirror.  It
+   could probably be used to get the desired effect or close to it.
+   This is most useful for running programs and passing the selection
+   to them (eg - invoke your favorite browser with the current
+   selection as the URL).  To get a semi-generic paste facility to
+   work, you'll probably need to use 'xse' (see #26 below).  If anyone
+   comes up with a good example of this, please send it to the fvwm
+   mailing list for inclusion here.
+
+----------------------------------------------------------------------
+
+26) You can bind mouse movements to keystrokes, how about mouse
+    presses?
+
+A: Hm.  This one is a little tougher.  It could be done, but many
+   programs ignore synthetic events, which is what would be generated.
+   In X11R6.1 there is an extension (called XKBD?) which can do this,
+   but I don't want to code to anything specific to one of the newer
+   X11 versions like this.  You could try using Xse, which is a
+   program to interface to XSendEvent, available at ftp.x.org.  It
+   could probably be used in a smiliar manner to xcb above (or in
+   conjunction with it).  If anyone comes up with good examples for
+   this, please send it to the fvwm mailing list for inclusion here.
+
+----------------------------------------------------------------------
+
+27) What exactly is the differenct between a DESK, a PAGE, and the
+    SCREEN?
+
+A: Our naming convention is sometimes a source of confusion, and when
+   discussing problems and the like it's good to maintain a consistent
+   meaning.  To illustrate how features of fvwm should be referred to
+   - fvwm has multiple disjoint DESKTOPS, each of which is comprised
+   of M by N PAGES, which are each the size of the physical SCREEN.
+   The physical SCREEN acts as a viewport over one of the PAGES of the
+   current DESK.  Here's a picture to clarify (also, take a look at
+   the FvwmPager module):
+
+             Desk 0                     Desk 1
+     +----------+----------+    +----------+----------+
+     |          |          |    |          |          |
+     | Page 0 0 | Page 1 0 |    |          |          |
+     |          |          |    |          |          |
+     |          |          |    |          |          |
+     +----------+----------+    +----------+----------+
+     |+--------+|          |    |          |          |
+     ||Page 0 1|| Page 1 1 |    |          |          |
+     ||        ||          |    |          |          |
+     |+--------+|          |    |          |          |
+     +----------+----------+    +----------+----------+
+
+   It shows two 2 x 2 DESKTOPS.  If the current DESK were number 0,
+   and the current PAGE were 0 1, the SCREEN would show only the
+   windows located there, plus any sticky ones.
+
+----------------------------------------------------------------------
+
+28) Why the rename of the various files (fvwm2, .fvwm2rc, fvwm2.man)?
+
+A: Some people find this annoying, but let me say that I did that for
+   several reasons:
+
+        - so both 1.xx and 2.xx can be installed for use, in case some
+          people at the same site would rather stay at 1.xx
+        - fvwm2 coredumps usually if it tries to read in a 1.xx rc
+          file because the syntax is pretty different and completely
+          incompatable
+        - when people ask questions, if they explicitly mention their
+          .fvwm2rc file I know that they are running one of the 2.xx
+          versions, since they rarely mention exactly what version
+          they are running.
+
+   BTW - If you want to compile it as just 'fvwm' and all that, there
+   is an option for that in the Fvwm.tmpl file.
+
+----------------------------------------------------------------------
+
+29) Every time I update my install, my currently running fvwm session
+    dies.  Why is that?
+
+A: Many OSes swap the program from memory via the image on the disk,
+   and if you overwrite it, and then the current one tries to swap
+   something back into memory before you restart, it'll core dump.  To
+   avoid this, rename your old execs or move them to some other
+   directory.  The 'mv' command preserves the inode so it won't
+   coredump, but then when you restart fvwm it'll pick up the new
+   copy.
+
+----------------------------------------------------------------------
+
+30) Will FVWM ever support a separate colormap for each desktop?
+
+A: Doubtful, althougth I'd like to see it too.  I believe that it'd be
+   possible to change the default colormap whenever you switch desks,
+   which would give programs started when that desk is active that
+   colormap, how would you deal with windows being moved across desks?
+
+   Plus fvwm itself needs certain colormap entries for all of it's
+   drawing (borders, menus, etc), so these colors would have to be
+   pre-allocated in all of the colormaps, or something like that.
+
+   While this all *might* be technically possible, I don't feel that
+   it's really feasable right now (too much code bloat and
+   complexity), especially since most color hog programs (ie Netscape)
+   allow you to have them install private colormaps.
+
+   I may explore this a little at some point in the future though.
+
+----------------------------------------------------------------------
+
+31) I try to run some program under FVWM, but it dies with an X11
+    error like BadAccess.  The same program works just fine under MWM
+    or OLWM.  What's going on?
+
+A: The error message usually looks something like this:
+
+        X Error of failed request:  BadAccess (attempt to access private
+        resource denied)
+         Major opcode of failed request:  28 (X_GrabButton)
+         Serial number of failed request:  1595
+         Current serial number in output stream:  1596
+
+   Well, this is telling you that there is a conflict in key/button
+   assignments.  In your .fvwm2rc you have bound some key/button that
+   this program really wants to bind to an action, but it can't since
+   FVWM has already done so (but you weren't doing it in the rc file
+   for your previous window manager).  Figure out what the offending
+   key binding is and remove it from your .fvwm2rc, or temporarily via
+   FvwmTalk by removing the FVWM binding (see the man page for the Key
+   & Mouse commands).
+
+----------------------------------------------------------------------
+
+32) I'm want to use FVWM, but I don't have root access on my machine.
+    Can I still install and run it?
+
+A: Oh yes.  FVWM doesn't need to be "properly" installed by root to be
+   run.  All you really have to do is copy the binaries to one of your
+   local directories to run it out of and make sure that the paths in
+   your ~/.fvwm2rc file are correct.
+
+----------------------------------------------------------------------
+
+33) I'm compiling under SunOS/Solaris with gcc, but it's complaining
+    that "Language 'F' is unknown".  What's the problem?
+
+A: Your Imake setup is not right for using gcc.  It's trying to use
+   some flags for the native compilers that gcc interprets
+   differently.  Get your system admin to "fix" your setup for use
+   with gcc, or try using the FvwmCompiler and FvwmCompilerFlags
+   defines in the Fvwm.tmpl file to get it to work for you.
+
+   Also, check out the URL mentioned in #23 above - I believe there is
+   a fix for this located there.
+
+----------------------------------------------------------------------
+
+34) When will fvwm release X.Y.Z be ready?
+
+A: This is always a difficult question to answer.  I work on fvwm at
+   home in my rather nebulous and semi-mythical "spare time", therefore
+   I usually can't provide an exact answer for this, since my time
+   estimates for it are often wrong/changing.
+
+   "Real Soon Now" is one of my favorite responses when they are
+   getting close, but then, who is to say what "close" means? :)
+
+   Never fear though, as they will keep coming...  I do try to post
+   periodic status reports to the mailing lists, so you could search
+   the archives at any point in time to see if I've made any reports
+   lately.
+
+----------------------------------------------------------------------
+
+35) I'm a sysadmin, and if I wanted to force fvwm to read a system rc
+    file and then the user's rc file, how would I do that?
+
+A: Well, you could probably do something like these:
+
+        - have the first line of everyone's .fvwm2rc be 'Read
+          global.fvwm2rc' and have global.fvwm2rc reside in your
+          defined FvwmDir (in Fvwm.tmpl).
+        - change FvwmRc (in Fvwm.tmpl) to be something odd, like
+          .FVWM2RC, but don't tell anyone, then put a .FVWM2RC in the
+          FvwmDir and have the last line of it be 'Read .fvwm2rc'.
+          ~/.FVWM2RC wouldn't be found so it would look for the system
+          one, which would then load the user's one.
+
+   and I'm sure there are more ways.
+
+----------------------------------------------------------------------
+
+36) I'm a sysadmin, and if I wanted fvwm to look for all of it's rc
+    files in a hidden directory, say ~/.fvwm, much like CDE does, how
+    could I do that?
+
+A: This could be probably done similarily to #35 above.  The system rc
+   file in the FvwmDir could do something like:
+
+        Read .fvwm/Init
+        Read .fvwm/Decors
+        Read .fvwm/Styles
+        Read .fvwm/Functions
+        Read .fvwm/Menus
+        Read .fvwm/Keys
+        Read .fvwm/Modules
+
+   or whatever breakdown you deemed appropriate, and you would have
+   default versions of these in {FvwmDir}/.fvwm/ that it could find in
+   case the user was missing one of them.
+
+----------------------------------------------------------------------
+
+37) When trying to install under Solaris, I'm getting errors.  Why?
+
+A: You need to use a certain version of 'install', specifically the
+   one in /usr/ucb.  Make sure that /usr/ucb is in your path ahead of
+   the openwindows bin directory (and in front of /etc and /usr/sbin).
+
+----------------------------------------------------------------------
+
+38) When having FvwmButtons swallow an app, is it possible to have
+    button presses assigned to actions as well?  For instance, I'd
+    like to swallow xload and have a button press pop up an xterm, or
+    swallow xbiff and have a button press bring up the list of
+    messages.
+
+A: You can do this, but it's not obvious how.  The button presses
+   normally get passed through to the swallowed application, but if
+   you put a title on the button, you can assign actions to that.
+   Here's an example that someone sent to the mailing list once:
+
+   *FvwmButtons(1x4        \
+     Title           'System Info' \
+     Swallow         "xload" 'Exec xload' \
+     Action(Mouse 1) 'Exec xosview -cua0 -net 200 -ul -l -geometry 325x325' \
+     Action(Mouse 2) 'Exec xcpustate -interval 1 -bg "#a4978e" -fg black' \
+     Action(Mouse 3) 'Exec rxvt -fg "khaki" -bg "dark olive green" \
+                           -fat -n top -T Top -7 -e top' )
+
+   And you could come up with something similar for xbiff (untested):
+
+   *FvwmButtons(1x2 \
+     Title 'Check Mail' Swallow "xbiff" 'Exec xbiff' \
+     Action(Mouse 1) 'Exec from | xmessage -file -' )
+
+   plus you could bind another button (say Mouse 3) to run your
+   mail program.
+
+   Sometime in the future I'll probably try and fix it so that you can
+   actually assign a button press over the app itself...
+
+----------------------------------------------------------------------
+
+39) I'm trying to use fvwm under CDE/COSE, but encountering
+    difficulties.  Any suggestions?
+
+A: Sure - here's one from Graeme McCaffery:
+
+   -----
+     finally I have found out how to run fvwm properly from cde 8-))
+     (thanks to Lars Sodergren)
+
+     first set your home session in Dtwm. that usually is an empty
+     session, though you could have the cde session manager remember
+     what your desktop was like instead of FvwmSaveDesk etc..
+
+     then you have to set two resources in .Xdefaults:
+
+     *wmStartupCommand: /home/orion/spxgm/bin/Fvwm
+     *waitWmTimeout: 1
+
+     in this case I run fvwm from a shell script so that library
+     variables etc are set properly for everyone.  the waitWmTimeout
+     tells the seesion manager how long to wait until it starts the
+     window manager. I've set it to 1 second. by default it's 60 secs
+
+     finally you have to quit with
+
+     /usr/dt/bin/dtaction ExitSession  (or whatever your path is for dtaction)
+
+     now you can happily use cde programs and fvwm.
+   -----
+
+----------------------------------------------------------------------
+
+40) How do I capture the output (eg errors) of fvwm?
+
+A: A couple of different ideas spring to mind:
+        - XSession, which is handy for other reasons
+        - FvwmTalk will show them
+        - pipe the output of fvwm to something like 'notifier' when
+          invoking it
+        - XConsole (or xterm/rxvt -C) might catch them, depending on
+          your X11 setup
+
+----------------------------------------------------------------------
+
+41) Linux XF86 virtual screen size & fvwm interaction...
+
+A: Turn off the Linux Virtual Screen stuff in your XF86Config file if
+   you don't like it...
+
+----------------------------------------------------------------------
+
+42) Why do NumLock and CapsLock interfere with ClickToFocus and/or my
+    mouse bindings?
+
+A: Because they are treated as modifiers.
+
+----------------------------------------------------------------------
+
+43) I'm seeing odd things when trying to preprocess files with the
+    FvwmM4/Cpp module...
+
+A: Yup, I imagine that you might be.  Things like the InitFunction not
+   being called or windows that were running before FVWM started not
+   getting their Borders & Style options set, etc.
+
+   The reason for all this is because of the fact that FvwmM4 is a
+   module.  Fvwm won't be looking at the commands comming back from
+   the module until after it hits the mainloop of the code, AFTER the
+   startup is all done and it's already tried to execute the
+   InitFunction.
+
+   So, some solutions I've been thinking about:
+
+        - Create an exec or script that will invoke whatever
+          preprocessor you want appropriately and run that via
+          PipeRead.  All those default macros in the M4/Cpp modules
+          would need to become FVWM_* env vars, defined by fvwm and
+          used by the exec/script to pass them on as macros to the
+          preprocessor.
+        - I have a new dynamic loading module interface in mind that
+          would take care of this (among many other things), but that
+          won't happen for a while...
+        - As a simple temporary fix, FvwmM4/Cpp could send a
+          'Recapture' command back as the last thing done, plus
+          optionally an 'InitFunction' call (but that should be based
+          on a command line option).
+
+
+
+----------------------------------------------------------------------

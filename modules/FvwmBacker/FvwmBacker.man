@@ -1,0 +1,72 @@
+.\" t
+.\" @(#)FvwmBacker.1	11/8/94
+.TH FvwmBacker 0.1 "September 8th, 1994"
+.UC
+.SH NAME
+FvwmBacker \- the FVWM background changer module
+.SH SYNOPSIS
+FvwmBacker is spawned by fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+
+The FvwmBacker module provides functionality to change the background
+when changing desktops.  Any command can be executed to change the
+backgrounds.  Actually, any arbitrary command can be sent to fvwm to
+execute, so you could also do things such as changing window border
+colors, etc.
+
+.SH COPYRIGHTS
+The FvwmBacker module is the original work of Mike Finger.
+
+Copyright 1994, Mike Finger. The author makes no guarantees or
+warranties of any kind about the use of this module.  Use this modules
+at your own risk.  You may freely use this module or any portion of it
+for any purpose as long as the copyright is kept intact.
+
+.SH INITIALIZATION
+During initialization, \fIFvwmBacker\fP will scan the same
+configuration file that FVWM used during startup to find the options
+that pertain to it.  These options are discussed in a later section.
+
+.SH INVOCATION
+FvwmBacker can be invoked by fvwm during initialization by inserting
+the line 'Module FvwmBacker' in the .fvwm2rc file.
+
+FvwmBacker must reside in a directory that is listed in the ModulePath
+option of FVWM for it to be executed by FVWM.
+
+.SH CONFIGURATION OPTIONS
+The following is the only supported option at present:
+
+.IP "*FvwmBackerDesk \fIDeskNumber command\fP"
+Specifies the \fIcommand\fP to execute when the specified
+\fIDeskNumber\fP becomes active.
+
+If the command begins with \fI-solid\fP FvwmBacker uses the next
+argument as a color in the X database and sets the background to that
+color without generating a system call to xsetroot (only single word
+color names may be used).  Otherwise the command is sent to fvwm to
+execute.
+
+.SH SAMPLE CONFIGURATION
+The following are excepts from an .fvwm2rc file which describe
+FvwmBacker initialization commands:
+
+.nf
+.sp
+####
+# Set Up Backgrounds for different desktops.
+####
+*FvwmBackerDesk 0 -solid steelblue
+*FvwmBackerDesk 1 -solid midnightblue
+*FvwmBackerDesk 2 -solid yellow
+*FvwmBackerDesk 3 Exec xpmroot /usr/include/X11/pixmaps/background2.xpm
+.sp
+.fi
+
+.SH AUTHOR
+Mike Finger (mfinger@mermaid.micro.umn.edu)
+            (Mike_Finger@atk.com)
+            (doodman on IRC, check the #linux channel)
+.SH Modified by
+Andrew Davison (davison@cs.monash.edu.au)

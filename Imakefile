@@ -1,0 +1,56 @@
+/*
+ * Imakefile for fvwm 2.0 -- Top
+ *
+ * The procedure is: xmkmf; make Makefiles; make all
+ *		make install; make install.man
+ */
+
+FVWM_SRCDIR = .
+#include "Fvwm.tmpl"
+
+#define IHaveSubdirs
+
+BUILDSUBDIRS = \
+	  libs \
+  	  fvwm \
+	  modules/FvwmAudio \
+          modules/FvwmAuto \
+          modules/FvwmBacker \
+          modules/FvwmButtons \
+          modules/FvwmCascade \
+          modules/FvwmCpp \
+          modules/FvwmEvent \
+	  modules/FvwmForm \
+          modules/FvwmIconBox \
+          modules/FvwmIconMan \
+          modules/FvwmIdent \
+          modules/FvwmM4 \
+          modules/FvwmPager \
+          modules/FvwmSave \
+          modules/FvwmSaveDesk \
+          modules/FvwmScroll \
+          modules/FvwmTalk \
+          modules/FvwmTile \
+          modules/FvwmWinList
+
+SAMPLESUBDIRS = \
+	  utils \
+	  sample.fvwmrc
+
+#if HasXpm
+XPMSUBDIRS = xpmroot modules/FvwmBanner 
+#endif
+
+SUBDIRS = $(BUILDSUBDIRS) $(XPMSUBDIRS) $(SAMPLESUBDIRS)
+
+/* 
+ * This allows you to override the value of CDEBUGFLAGS in the Makefiles
+ * in the tree. Then you can do "make all CDEBUGFLAGS=-g", for example.
+ */
+#define PassCDebugFlags 'CDEBUGFLAGS=$(CDEBUGFLAGS)'
+
+MakeSubdirs($(SUBDIRS))
+
+DependSubdirs($(BUILDSUBDIRS) $(XPMSUBDIRS))
+
+

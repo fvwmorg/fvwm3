@@ -1,0 +1,23 @@
+/*
+ * Imakefile for FvwmScript 3.1
+ */
+
+FVWM_SRCDIR = ..
+#include "../../../Fvwm.tmpl"
+
+NullMake()
+
+InstallNonExecFile(system.fvwmrc,$(FVWMDIR))
+InstallNonExecFile(BellSetup,$(FVWMDIR))
+InstallNonExecFile(Buttons,$(FVWMDIR))
+InstallNonExecFile(ChooseColor,$(FVWMDIR))
+InstallNonExecFile(Date,$(FVWMDIR))
+InstallNonExecFile(DeskSetup,$(FVWMDIR))
+InstallNonExecFile(KeyboardSetup,$(FVWMDIR))
+InstallNonExecFile(MenuSetup,$(FVWMDIR))
+InstallNonExecFile(ChooseColor,$(FVWMDIR))
+InstallNonExecFile(PointerSetup,$(FVWMDIR))
+InstallNonExecFile(Quit,$(FVWMDIR))
+InstallNonExecFile(ScreenDump,$(FVWMDIR))
+InstallNonExecFile(ScreenSetup,$(FVWMDIR))
+

@@ -1,0 +1,191 @@
+WindowTitle {Pointer}
+WindowSize 320 290		# Taille
+WindowPosition 191 50		# Position
+ForeColor	{black}
+BackColor	{grey85}
+ShadowColor	{grey55}
+HilightColor	{grey100}
+Font		-adobe-helvetica-bold-r-*-*-12-*
+
+Init
+ Begin
+  WarpPointer 2
+  Set $tmp=(GetOutput {xset -q} 9 2)
+  Set $pos=1
+  While (StrCopy $tmp $pos $pos)<>{/} Do
+   Set $pos=(Add $pos 1)
+  Set $pos=(Add $pos -1)
+  
+  ChangeValue 6 (Div (Mult (StrCopy $tmp 1 $pos) 20) (StrCopy $tmp (Add $pos 2) 256))
+  ChangeTitle 8 (GetOutput {xset -q} 9 4)
+ End
+ 
+Widget 1
+Property
+ Size 50 30
+ Position 70 230
+ Type PushButton
+ Title {Apply}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do {Exec xset m } (GetValue 6) {/20 } (GetTitle 8)
+   If (GetValue 4) == 1 Then
+    Do {Exec xmodmap -e "pointer = 1 2 3"}
+   Else
+    Do {Exec xmodmap -e "pointer = 3 2 1"}
+  End
+End
+
+Widget 2
+Property
+ Size 50 30
+ Position 160 230
+ Type PushButton
+ Title {OK}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do {Exec xset m } (GetValue 6) {/20 } (GetTitle 8)
+   WriteToFile .xinitrc-fvwm {xset m } (GetValue 6) {/20 } (GetTitle 8)
+   If (GetValue 4) == 1 Then
+   Begin
+    Do {Exec xmodmap -e "pointer = 1 2 3"}
+    WriteToFile .xinitrc-fvwm {xmodmap -e "pointer = 1 2 3"}
+   End
+   Else
+   Begin
+    Do {Exec xmodmap -e "pointer = 3 2 1"}
+    WriteToFile .xinitrc-fvwm {xmodmap -e "pointer = 3 2 1"}
+   End
+   Quit
+  End
+End
+
+Widget 3
+Property
+ Size 50 30
+ Position 250 230
+ Type PushButton
+ Title {Cancel}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Quit
+  End
+End
+
+Widget 4
+Property
+ Position 150 140
+ Type PopupMenu
+ Title {Right-handed user|Left-handed user}
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 5
+Property
+ Position 20 145
+ Type ItemDraw
+ Title {Mouse configuration:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 6
+Property
+ Size 188 1
+ Position 110 25
+ MinValue 5
+ MaxValue 100
+ Type HScrollBar
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 7
+Property
+ Position 20 45
+ Type ItemDraw
+ Title {Acceleration:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 8
+Property
+ Size 60 1
+ Position 150 90
+ Type TextField
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 9
+Property
+ Size 110 1
+ Position 20 95
+ Type ItemDraw
+ Title {Threshold (pixels):}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 10
+Property
+ Size 300 190
+ Position 10 10
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 11
+Property
+ Position 15 3
+ Type ItemDraw
+ Title {Pointer}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+
+
+
+
+
+
+
+
+
+

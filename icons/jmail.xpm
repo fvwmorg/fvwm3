@@ -1,0 +1,23 @@
+/* XPM */
+static char * jmail_xpm[] = {
+"16 16 4 1",
+" 	s None	c None",
+".	c gray85",
+"X	c white",
+"o	c gray60",
+"                ",
+"                ",
+"                ",
+"                ",
+"                ",
+" .XXXXXXXXXXX.  ",
+" XoXXXXXXXXXoX  ",
+" XXoXXXXXXXoXX  ",
+" XXXoXXXXXoXXX  ",
+" XXX.oXXXo.XXX  ",
+" XXXo.oXo.oXXX  ",
+" XXoXXXoXXXoXX  ",
+" XoXXXXXXXXXoX  ",
+" .XXXXXXXXXXX.  ",
+"                ",
+"                "};

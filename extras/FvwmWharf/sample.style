@@ -1,0 +1,41 @@
+
+
+# Animate Wharf's folders
+
+*FvwmWharfAnimate
+*FvwmWharfAnimateMain
+*FvwmWharfGeometry	+0+0
+*FvwmWharfColumns	1 
+*FvwmWharfTextureType	2
+*FvwmWharfMaxColors	10
+*FvwmWharfBgColor	black
+*FvwmWharfTextureColor	darkgrey white
+
+
+
+# Create a pullout "Folder" as the first button on Wharf
+
+
+*FvwmWharf AfterStep fvwm3.xpm Folder
+*FvwmWharf Shutdown  shutdown-label.xpm  Quit
+*FvwmWharf xlock KeysOnChain-label.xpm Exec xlock
+*FvwmWharf ~Folders
+*FvwmWharf xterm terminal.xpm Exec xterm
+*FvwmWharf Machines machines.xpm Folder
+*FvwmWharf Wumpus wumpus.xpm Exec xterm -cn -T Wumpus -n Wumpus -e ssh wumpus
+*FvwmWharf Wyrm wyrm.xpm Exec xterm -cn -T Wyrm -n Wyrm -e ssh wyrm
+*FvwmWharf Gryphon gryphon.xpm Exec xterm -cn -T Gryphon -n Gryphon -e ssh gryphon
+*FvwmWharf Wraith wraith.xpm Exec xterm -cn -T Wraith -n Wraith -e ssh wraith
+*FvwmWharf Banshee banshee.xpm Exec xterm -cn -T Banshee -n Banshee -e ssh banshee
+*FvwmWharf Library library.xpm Exec xterm -cn -T Library -n Library -e /usr/bin/rlogin -l library library
+*FvwmWharf Rlogin rlogin.xpm Module Rlogin
+*FvwmWharf ~Folders
+*FvwmWharf Applications tools-label.xpm Folder
+*FvwmWharf Netscape netscape-label.xpm Exec netscape
+*FvwmWharf Answerbook answerbook.xpm Exec answerbook
+*FvwmWharf ~Folders
+*FvwmWharf MyStuff Wizard-label.xpm Folder
+*FvwmWharf Workman cdrom.xpm Exec workman.sh -Wl workman -WL workman -Wp 880 680 -WP 1215 960 -Wi
+*FvwmWharf Hotjava hotjava2.xpm Exec hotjava
+*FvwmWharf Todo todo.xpm Exec xvdtl
+*FvwmWharf ~Folders

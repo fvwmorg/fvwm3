@@ -1,0 +1,14 @@
+/* 
+ * Imakefile for fvwm 2.0 -- FvwmForm
+ */
+
+FVWM_SRCDIR = ../..
+#include "../../Fvwm.tmpl"
+
+SRCS = FvwmForm.c
+OBJS = FvwmForm.o
+
+LOCAL_LIBRARIES = $(FVWM_LIBS) $(XLIB)
+
+FvwmModuleTarget(FvwmForm)
+

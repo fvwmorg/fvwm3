@@ -1,0 +1,27 @@
+/* XPM */
+static char *weave-red_xpm[] = {
+/* width height ncolors chars_per_pixel */
+"16 16 4 1",
+/* colors */
+"` c #000000",
+"a c #C0C0C0",
+"b c #808080",
+"c c #C80000",
+/* pixels */
+"`````````````cbc",
+"`````ccc`````cbc",
+"`````cbc`````cbc",
+"`````cbc`````ccc",
+"`````cbc````````",
+"cccc`cac`ccccccc",
+"bbbc`cac`cbbbaaa",
+"cccc`cac`ccccccc",
+"`````cbc````````",
+"`````cbc`````ccc",
+"`````cbc`````cbc",
+"`````ccc`````cbc",
+"`````````````cbc",
+"`ccccccccccc`cac",
+"`cbbbaaabbbc`cac",
+"`ccccccccccc`cac"
+};

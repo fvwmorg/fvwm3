@@ -1,0 +1,20 @@
+/* 
+ * Imakefile for fvwm 2.0 -- FvwmBanner
+ */
+
+FVWM_SRCDIR = ../..
+#include "../../Fvwm.tmpl"
+
+#if HasXpm
+SRCS = FvwmWharf.c icons.c stepgfx.c
+OBJS = FvwmWharf.o icons.o stepgfx.o
+
+LOCAL_LIBRARIES = $(FVWM_LIBS) $(XLIB)
+
+FvwmModuleTarget(FvwmWharf)
+#endif
+
+
+
+
+

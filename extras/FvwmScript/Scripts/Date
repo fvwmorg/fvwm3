@@ -1,0 +1,416 @@
+WindowTitle {Date}
+WindowSize 360 330		# Taille
+WindowPosition 191 50		# Position
+ForeColor	{black}
+BackColor	{grey85}
+ShadowColor	{grey55}
+HilightColor	{grey100}
+Font		-adobe-helvetica-bold-r-*-*-12-*
+
+Init
+ Begin
+  WarpPointer 1
+  Set $NHour=(GetOutput {date '+%d %m %Y %H %M'} 1 4)
+  ChangeValue 10 $NHour
+  ChangeTitle 8 $NHour
+  
+  Set $NMinu=(GetOutput {date '+%d %m %Y %H %M'} 1 5)
+  ChangeValue 14 $NMinu
+  ChangeTitle 12 $NMinu
+  
+  Set $Day=(GetOutput {date '+%d %m %Y %H %M'} 1 1)
+  ChangeValue 20 $Day
+  ChangeTitle 18 $Day
+
+  Set $Year=(GetOutput {date '+%d %m %Y %H %M'} 1 3)
+  ChangeValue 24 $Year
+  ChangeTitle 22 $Year
+  
+  Set $Month=(GetOutput {date '+%d %m %Y %H %M'} 1 2)
+  ChangeValue 26 $Month
+
+  Set $MaxDay=31
+  Set $cmd={date --date '} $Month {/} $MaxDay {/} $Year {' +%d}
+  While (GetOutput $cmd 1 1)=={} Do
+  Begin
+   Set $MaxDay=(Add $MaxDay -1)
+   Set $cmd={date --date '} $Month {/} $MaxDay {/} $Year {' +%d}
+  End
+  ChangeMaxValue 20 $MaxDay
+
+ End
+ 
+Widget 1
+Property
+ Size 50 30
+ Position 190 280
+ Type PushButton
+ Title {OK}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do {Exec date -s '} $NHour {:} $NMinu { } $Month {/} $Day {/} $Year{'}
+   Quit
+  End
+End
+
+Widget 2
+Property
+ Size 50 30
+ Position 280 280
+ Type PushButton
+ Title {Cancel}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do {Exec xset s } $TimeOut
+   Quit
+  End
+End
+
+Widget 3
+Property
+ Size 340 130
+ Position 10 10
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 4
+Property
+ Position 15 2
+ Type ItemDraw
+ Title {Time}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 5
+Property
+ Size 80 80
+ Position 240 35
+ Type SwallowExec
+ Title {xclock}
+ SwallowExec {exec xclock -analog -padding 0 -geometry 70x56-1500-1500 -fg MidnightBlue -hd Blue -hl Blue -bg Grey85 -update 1 &}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 6
+Property
+ Size 100 100
+ Position 230 25
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 7
+Property
+ Position 35 40
+ Type ItemDraw
+ Title {Hours:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 8
+Property
+ Position 100 40
+ Type ItemDraw
+ Title {00}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 9
+Property
+ Size 26 26
+ Position 95 35
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 10
+Property
+ Position 125 32
+ Type MiniScroll
+ Value 15
+ MaxValue 23
+ MinValue 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $NHour=(GetValue 10)
+   If $NHour<10 Then
+    Set $NHour=0 $NHour
+   ChangeTitle 8 $NHour
+  End
+End
+
+Widget 11
+Property
+ Position 35 90
+ Type ItemDraw
+ Title {Minutes:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 12
+Property
+ Position 100 90
+ Type ItemDraw
+ Title {00}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 13
+Property
+ Size 26 26
+ Position 95 85
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 14
+Property
+ Position 125 82
+ Type MiniScroll
+ Value 15
+ MaxValue 59
+ MinValue 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $NMinu=(GetValue 14)
+   If $NMinu<10 Then
+    Set $NMinu=0 $NMinu
+   ChangeTitle 12 $NMinu
+  End
+End
+
+Widget 15
+Property
+ Size 340 110
+ Position 10 155
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 16
+Property
+ Position 15 147
+ Type ItemDraw
+ Title {Date}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 17
+Property
+ Position 30 180
+ Type ItemDraw
+ Title {Day:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 18
+Property
+ Position 80 180
+ Type ItemDraw
+ Title {00}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 19
+Property
+ Size 26 26
+ Position 75 175
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 20
+Property
+ Position 105 172
+ Type MiniScroll
+ Value 1
+ MaxValue 1
+ MinValue 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $Day=(GetValue 20)
+   If $Day<10 Then
+    Set $Day=0 $Day
+   ChangeTitle 18 $Day
+  End
+End
+
+Widget 21
+Property
+ Position 200 180
+ Type ItemDraw
+ Title {Year:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 22
+Property
+ Position 250 180
+ Type ItemDraw
+ Title {1996}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 23
+Property
+ Size 41 26
+ Position 245 175
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 24
+Property
+ Position 290 172
+ Type MiniScroll
+ Value 1996
+ MaxValue 1999
+ MinValue 1970
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $Year=(GetValue 24)
+   ChangeTitle 22 $Year
+   Set $MaxDay=31
+   Set $cmd={date --date '} $Month {/} $MaxDay {/} $Year {' +%d}
+   While (GetOutput $cmd 1 1)=={} Do
+   Begin
+    Set $MaxDay=(Add $MaxDay -1)
+    Set $cmd={date --date '} $Month {/} $MaxDay {/} $Year {' +%d}
+   End
+   ChangeMaxValue 20 $MaxDay
+   Set $Day=(GetValue 20)
+   If $Day<10 Then
+    Set $Day=0 $Day
+   ChangeTitle 18 $Day
+  End
+End
+
+Widget 25
+Property
+ Position 30 225
+ Type ItemDraw
+ Title {Month:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 26
+Property
+ Position 100 220
+ Type PopupMenu
+ Title {January|February|March|April|May|June|July|August|September|October|November|December}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $Month=(GetValue 26)
+   If $Month<10 Then
+    Set $Month=0 $Month
+   Set $MaxDay=31
+   Set $cmd={date --date '} $Month {/} $MaxDay {/} $Year {' +%d}
+   While (GetOutput $cmd 1 1)=={} Do
+   Begin
+    Set $MaxDay=(Add $MaxDay -1)
+    Set $cmd={date --date '} $Month {/} $MaxDay {/} $Year {' +%d}
+   End
+   ChangeMaxValue 20 $MaxDay
+   Set $Day=(GetValue 20)
+   If $Day<10 Then
+    Set $Day=0 $Day
+   ChangeTitle 18 $Day
+  End
+End
+
+
+
+
+
+

@@ -1,0 +1,40 @@
+.\" t
+.\" @(#)FvwmBanner.1	1/12/94
+.TH FvwmBanner 1.20 "Jan 28, 1994"
+.UC
+.SH NAME
+FvwmBanner \- the FVWM Banner
+.SH SYNOPSIS
+FvwmBanner is intended to be spawned by fvwm.
+
+.SH DESCRIPTION
+The FvwmInitBanner displays an Fvwm Logo in the center of the screen
+for 3 seconds.
+
+.SH COPYRIGHTS
+None.
+
+.SH INITIALIZATION
+Nothing interesting.
+
+.SH INVOCATION
+FvwmBanner can be invoked by binding the action 'Module FvwmBanner' to
+a menu or key-stroke in the .fvwmrc file.  Fvwm will search directory
+specified in the ModulePath configuration option to attempt to locate
+FvwmBanner. Although nothing keeps you from launching FvwmBanner at
+start-up time, you probably don't want to.  You can also give it an
+optional file parameter, like 'FvwmBanner doomface.xpm' or spcify an
+alternate default pixmap via configuration options.
+
+.SH CONFIGURATION OPTIONS
+
+.IP "*FvwmBannerPixmap \fIfile\fP"
+Tells the module to display \fIfile\fP instead of the built in pixmap.
+
+.IP "*FvwmBannerTimeout \fIsec\fP"
+Tells the module to display for \fIsec\fP seconds instead of default of 3.
+
+
+.SH AUTHOR
+Robert Nation 
+

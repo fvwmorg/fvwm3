@@ -1,0 +1,28 @@
+/*
+ * Imakefile for fvwm 2.0 -- FvwmConfig
+ */
+
+FVWM_SRCDIR = ../..
+#include "../../Fvwm.tmpl"
+
+#if HasXpm
+
+SRCS =  dead.c WinBase.C FvwmConfig.C WinButton.C \
+        WinText.C WinRadioButton.C WinInput.C WinSlider.C \
+        WinColorSelector.C
+OBJS =  dead.o WinBase.o FvwmConfig.o WinButton.o \
+        WinText.o WinRadioButton.o WinInput.o WinSlider.o \
+        WinColorSelector.o
+
+LOCAL_LIBRARIES = $(FVWM_LIBS) $(XLIB)
+
+#if ProjectX > 5
+FvwmComplexCplusplusProgramTarget(FvwmConfig)
+#else
+all::
+        @echo X11 Release is less than 6!
+        @echo Edit Makefile.std in fvwm/modules/FvwmConfig to build.
+#endif
+
+#endif             
+

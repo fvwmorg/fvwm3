@@ -1,0 +1,230 @@
+*** fvwm-2.0.46/fvwm/events.c.orig	Thu Aug  7 11:14:22 1997
+--- fvwm-2.0.46/fvwm/events.c	Tue Aug 26 18:07:06 1997
+***************
+*** 203,211 ****
+     * window where the event occured */
+    if((e->type == KeyPress)&&(e->xkey.subwindow != None))
+      *w = e->xkey.subwindow;
+!
+!   if((e->type == ButtonPress)&&(e->xbutton.subwindow != None)&&
+!      ((e->xbutton.subwindow == t->w)||(e->xbutton.subwindow == t->Parent)))
+      *w = e->xbutton.subwindow;
+
+    if (*w == Scr.Root)
+--- 203,214 ----
+     * window where the event occured */
+    if((e->type == KeyPress)&&(e->xkey.subwindow != None))
+      *w = e->xkey.subwindow;
+!
+!     /* Q: are these subwindow checks necessary? */
+!   if((e->type == ButtonPress)&&(e->xbutton.subwindow != None)
+! /*    &&((e->xbutton.subwindow == t->w)||(e->xbutton.subwindow == t->Parent)||
+!       (e->xbutton.subwindow == t->title_w))*/
+!     )
+      *w = e->xbutton.subwindow;
+
+    if (*w == Scr.Root)
+***************
+*** 968,1035 ****
+
+    DBUG("HandleButtonPress","Routine Entered");
+
+!   /* click to focus stuff goes here */
+!   if((Tmp_win)&&(Tmp_win->flags & ClickToFocus)&&(Tmp_win != Scr.Ungrabbed) &&
+!      ((Event.xbutton.state&
+!        (ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask)) == 0))
+    {
+!     if(Tmp_win)
+      {
+!       SetFocus(Tmp_win->w,Tmp_win,1);
+  /* #ifdef CLICKY_MODE_1 */
+!       if (Scr.ClickToFocusRaises ||
+!           ((Event.xany.window != Tmp_win->w)&&
+!            (Event.xbutton.subwindow != Tmp_win->w)&&
+!            (Event.xany.window != Tmp_win->Parent)&&
+!            (Event.xbutton.subwindow != Tmp_win->Parent)))
+  /* #endif */
+!       {
+!         RaiseWindow(Tmp_win);
+!       }
+
+!       KeepOnTop();
+
+        /* Why is this here? Seems to cause breakage with
+         * non-focusing windows! */
+!       if(!(Tmp_win->flags & ICONIFIED))
+!       {
+          XSync(dpy,0);
+!         /* pass click event to just clicked to focus window? */
+!         if (Scr.ClickToFocusPassesClick)
+!           XAllowEvents(dpy,ReplayPointer,CurrentTime);
+!         else /* don't pass click to just focused window */
+!           XAllowEvents(dpy,AsyncPointer,CurrentTime);
+          XSync(dpy,0);
+          return;
+-       }
+-
+      }
+    }
+-   else if ((Tmp_win) && !(Tmp_win->flags & ClickToFocus) &&
+-            (Event.xbutton.window == Tmp_win->frame) &&
+-           Scr.MouseFocusClickRaises)
+-   {
+-     if (Tmp_win != Scr.LastWindowRaised &&
+-         (Event.xbutton.state &
+-          (ControlMask|Mod1Mask|Mod2Mask|Mod3Mask|Mod4Mask|Mod5Mask)) == 0 &&
+-         GetContext(Tmp_win,&Event, &PressedW) == C_WINDOW)
+-     {
+-       RaiseWindow(Tmp_win);
+-       KeepOnTop();
+-     }
+-     XSync(dpy,0);
+-     XAllowEvents(dpy,ReplayPointer,CurrentTime);
+-     XSync(dpy,0);
+-     return;
+-   }
+
+-   XSync(dpy,0);
+-   XAllowEvents(dpy,ReplayPointer,CurrentTime);
+-   XSync(dpy,0);
+-
+-   Context = GetContext(Tmp_win,&Event, &PressedW);
+-   LocalContext = Context;
+-   x= PressedW;
+    if(Context == C_TITLE)
+      SetTitleBar(Tmp_win,(Scr.Hilite == Tmp_win),False);
+    else
+--- 971,1061 ----
+
+    DBUG("HandleButtonPress","Routine Entered");
+
+!   /*
+!    * First, look for button bindings.
+!    */
+!   Context = GetContext(Tmp_win,&Event, &PressedW);
+!   LocalContext = Context;
+!   x= PressedW;
+!
+!   /* we have to execute a function or pop up a menu
+!    */
+!
+!   modifier = (Event.xbutton.state & mods_used);
+!   /* need to search for an appropriate mouse binding */
+!   for (MouseEntry = Scr.AllBindings; MouseEntry != NULL;
+!        MouseEntry= MouseEntry->NextBinding)
+    {
+!     if(((MouseEntry->Button_Key == Event.xbutton.button)||
+!         (MouseEntry->Button_Key == 0))&&
+!        (MouseEntry->Context & Context)&&
+!        ((MouseEntry->Modifier == AnyModifier)||
+!         (MouseEntry->Modifier == (modifier& (~LockMask))))&&
+!        (MouseEntry->IsMouse == 1))
+      {
+!       /* got a match ... save it and exit loop */
+!       break;
+!     }
+!   }
+!
+!   /*
+!    * do no click to focus if a mouse function was found
+!    */
+!   if (MouseEntry == NULL) {
+!     /* click to focus stuff goes here */
+!     /* any modifier is acceptable for click-to-focus */
+!     if((Tmp_win)&&(Tmp_win->flags & ClickToFocus)&&(Tmp_win != Scr.Ungrabbed))
+!     {
+!       if(Tmp_win)
+!       {
+!         SetFocus(Tmp_win->w,Tmp_win,1);
+  /* #ifdef CLICKY_MODE_1 */
+!           if (Scr.ClickToFocusRaises ||
+!               ((Event.xany.window != Tmp_win->w)&&
+!                (Event.xbutton.subwindow != Tmp_win->w)&&
+!                (Event.xany.window != Tmp_win->Parent)&&
+!                (Event.xbutton.subwindow != Tmp_win->Parent)))
+  /* #endif */
+!           {
+!             RaiseWindow(Tmp_win);
+!           }
+
+!           KeepOnTop();
+
+        /* Why is this here? Seems to cause breakage with
+         * non-focusing windows! */
+!           if(!(Tmp_win->flags & ICONIFIED))
+!           {
+!             XSync(dpy,0);
+!               /* pass click event to just clicked to focus window? */
+!               if (Scr.ClickToFocusPassesClick)
+!                 XAllowEvents(dpy,ReplayPointer,CurrentTime);
+!               else /* don't pass click to just focused window */
+!                 XAllowEvents(dpy,AsyncPointer,CurrentTime);
+!               XSync(dpy,0);
+!               return;
+!           }
+!
+!       }
+!     }
+!     else if ((Tmp_win) && !(Tmp_win->flags & ClickToFocus) &&
+!              (Event.xbutton.window == Tmp_win->frame) &&
+!              Scr.MouseFocusClickRaises)
+!     {
+!         /* click-to-raise. Again, ignore any modifiers. */
+!         if (Tmp_win != Scr.LastWindowRaised &&
+!             GetContext(Tmp_win,&Event, &PressedW) == C_WINDOW)
+!         {
+!             RaiseWindow(Tmp_win);
+!             KeepOnTop();
+!         }
+          XSync(dpy,0);
+!         XAllowEvents(dpy,ReplayPointer,CurrentTime);
+          XSync(dpy,0);
+          return;
+      }
+    }
+
+    if(Context == C_TITLE)
+      SetTitleBar(Tmp_win,(Scr.Hilite == Tmp_win),False);
+    else
+***************
+*** 1037,1062 ****
+
+    ButtonWindow = Tmp_win;
+
+!   /* we have to execute a function or pop up a menu
+!    */
+!
+!   modifier = (Event.xbutton.state & mods_used);
+!   /* need to search for an appropriate mouse binding */
+!   for (MouseEntry = Scr.AllBindings; MouseEntry != NULL;
+!        MouseEntry= MouseEntry->NextBinding)
+!   {
+!     if(((MouseEntry->Button_Key == Event.xbutton.button)||
+!         (MouseEntry->Button_Key == 0))&&
+!        (MouseEntry->Context & Context)&&
+!        ((MouseEntry->Modifier == AnyModifier)||
+!         (MouseEntry->Modifier == (modifier& (~LockMask))))&&
+!        (MouseEntry->IsMouse == 1))
+!     {
+!       /* got a match, now process it */
+        ExecuteFunction(MouseEntry->Action,Tmp_win, &Event,Context,-1);
+!       break;
+!     }
+!   }
+    PressedW = None;
+    if(LocalContext!=C_TITLE)
+      SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,x);
+--- 1063,1075 ----
+
+    ButtonWindow = Tmp_win;
+
+!   XSync(dpy,0);
+!   XAllowEvents(dpy,ReplayPointer,CurrentTime);
+!   XSync(dpy,0);
+!
+!   if (MouseEntry != NULL)
+        ExecuteFunction(MouseEntry->Action,Tmp_win, &Event,Context,-1);
+!
+    PressedW = None;
+    if(LocalContext!=C_TITLE)
+      SetBorder(ButtonWindow,(Scr.Hilite == ButtonWindow),True,True,x);

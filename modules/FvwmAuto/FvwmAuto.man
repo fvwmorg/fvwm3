@@ -1,0 +1,60 @@
+.\" t
+.\" @(#)FvwmAuto.1	12/1/94
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.ta .3i .6i .9i 1.2i 1.5i 1.8i
+.TH FvwmAuto 2.1 "Dec 1, 1994"
+.UC
+.SH NAME
+\fIFvwmAuto\fP \- the FVWM auto-raise module
+.SH SYNOPSIS
+\fIFvwmAuto\fP is spawned by fvwm, so no command line invocation will work.
+The correct syntax is:
+.nf
+.EX
+Module FvwmAuto Timeout [EnterCommand [LeaveCommand]]
+.sp
+AddToMenu Modules "Modules"      Title
++                 "Audio"        Module FvwmAudio
++                 "Auto"         Module FvwmAuto 300 raise lower
++                 "Buttons"      Module FvwmButtons
++                 "Ident"        Module FvwmIdent
++                 "Banner"       Module FvwmBanner
++                 "Pager"        Module FvwmPager 0 3
+.EE
+.fi             
+The \fITimeout\fP argument is required. It specifies how long a window must
+retain the keyboard input focus before the command is executed. The
+delay is measured in milliseconds, and any integer 0 or greater is
+acceptable.
+
+\fIEnterCommand\fP and \fILeaveCommand\fP are optional.
+\fIEnterCommand\fP is executed \fITimeout\fP milliseconds after a
+window gets the input focus, \fILeaveCommand\fP is executed
+\fITimeout\fP milliseconds after the window has lost focus.
+
+"Raise" is the default for \fIEnterCommand\fP, but any fvwm2 function
+is allowed. I would not use "Close" or "Destroy" with a low timeout,
+though.
+The \fILeaveCommand\fP can be handy for a tidy desktop. Experiment with:
+.nf
+.EX
+Module FvwmAuto 0 Nop Lower
+Module FvwmAuto 0 Nop Iconify
+.EE
+.SH AUTHOR
+.nf
+FvwmAuto just appeared one day, nobody knows how.
+FvwmAuto was simply rewritten 09/96, nobody knows by whom.
+

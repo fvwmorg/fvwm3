@@ -1,0 +1,56 @@
+#!/bin/sh
+
+cd $HOME
+
+if [ "$ARCH" = "" ]
+then
+  ARCH=unknown
+  echo "ARCH unknown"
+fi
+
+if [ "$UNAME" = "" ]
+then
+  UNAME=unknown
+  echo "UNAME unknown"
+fi
+
+if [ "$1" = "noinit" ]
+then
+  NOINIT="-m4opt -DNOINIT"
+fi
+
+if [ $UNAME = "SunOS" ]
+then
+  FVWMM4=/opt/unsupported/lib/fvwm2/FvwmM4
+elif [ $UNAME = "HPUX" ]
+then
+  FVWMM4=/usr/local/lib/fvwm2/FvwmM4
+elif [ $UNAME = "Linux" ]
+then
+  if [ $ARCH = "i586" ]
+  then
+    FVWMM4=/usr/local/X11R6/lib/fvwm2/FvwmM4
+  else
+    FVWMM4=/usr/local/lib/fvwm2/FvwmM4
+  fi
+elif [ $UNAME = "OSF1" ]
+then
+  FVWMM4=$HOME/bin/$ARCH.$SYSTEM/modules2/FvwmM4
+fi
+
+echo $PATH > $HOME/.fvwm-output
+
+fvwm2 -cmd "$FVWMM4 -m4-squote \{ -m4-equote \} -m4opt -DUNAME=$UNAME -m4opt -DARCH=$ARCH $NOINIT $HOME/init/fvwm/fvwm2rc" 2> $HOME/.fvwm-errors >> $HOME/.fvwm-output
+# fvwm2 -cmd "$FVWMM4 -m4-squote \{ -m4-equote \} -m4opt -DUNAME=$UNAME -m4opt -DARCH=$ARCH $NOINIT $HOME/init/fvwm/example.fvwm2rc" 2> $HOME/.fvwm-errors >> $HOME/.fvwm-output
+
+
+if [ -f $HOME/.fvwm-errors ]
+then
+        mv $HOME/.fvwm-errors $HOME/.fvwm-errors.old
+fi
+
+if [ -f $HOME/.fvwm-output ]
+then
+        mv $HOME/.fvwm-output $HOME/.fvwm-output.old
+fi
+

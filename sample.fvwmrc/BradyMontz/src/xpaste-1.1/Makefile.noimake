@@ -1,0 +1,46 @@
+CC = cc 
+INCLUDEDIRS = -I/local/include
+LIBRARIES = -lXaw -lXmu -lXt -lX11 -lsocket
+LDFLAGS = -L/local/lib/X11 -R/local/lib/X11
+DEFS = 
+CFLAGS = $(DEFS) -g $(INCLUDEDIRS)
+LINTFLAGS = $(DEFS) -ha $(INCLUDEDIRS) 
+INSTALL = /usr/ucb/install 
+BINDIR = /local/bin/X11
+MANDIR = /local/man/manx
+APPLDEFLDIR = /local/share/X11/app-defaults
+XMODE = 755
+MODE = 644
+OWNER = root 
+GROUP = staff
+RM = /bin/rm -rf
+
+#
+# End of user-configurable options
+#
+SRCS = xpaste.c Xju.c 
+OBJS = $(SRCS:.c=.o)
+
+all:: xpaste
+
+xpaste: $(OBJS) 
+	$(RM) $@
+	$(CC) $(LDFLAGS) -o $@ $(OBJS) $(LIBRARIES)
+lint:
+	lint $(LINTFLAGS) $(SRCS)
+lintport:
+	lint -p $(LINTFLAGS) $(SRCS)
+clean:
+	rm -f $(OBJS) xpaste
+depend:
+	makedepend -- $(CFLAGS) -- $(SRCS)
+
+install: xpaste
+	$(INSTALL) -m $(XMODE) -o $(OWNER) -g $(GROUP) xpaste $(BINDIR) 
+	$(INSTALL) -m $(MODE) -o $(OWNER) -g $(GROUP) XPaste.ad $(APPLDEFLDIR) 
+
+install.man: xpaste.1
+	$(INSTALL) -m 644 xpaste.1 $(MANDIR)
+
+# DO NOT DELETE THIS LINE -- make depend depends on it.
+xpaste.o: patchlevel.h

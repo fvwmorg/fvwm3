@@ -1,0 +1,44 @@
+.\" t
+.\" @(#)FvwmDebug.1	1/28/94
+.TH FvwmDebug 1.20 "Jan 28 1994"
+.UC
+.SH NAME
+FvwmDebug \- the FVWM module debugger
+.SH SYNOPSIS
+FvwmDebug is spawned by fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+The FvwmDebug captures the stream of module packets coming from
+fvwm, and displays them on stderr.
+
+.SH COPYRIGHTS
+The FvwmDebug program, and the concept for
+interfacing this module to the Window Manager, are all original work
+by Robert Nation
+
+Copyright 1994, Robert Nation. No guarantees or warranties or anything
+are provided or implied in any way whatsoever. Use this program at your
+own risk. Permission to use this program for any purpose is given,
+as long as the copyright is kept intact. 
+
+
+.SH INITIALIZATION
+During initialization, the FvwmDebug requests that fvwm dump a
+complete window list into its pipe. These packets are terminated with
+and "end Send_WindowList" message.
+
+.SH INVOCATION
+FvwmDebug can be invoked by inserting the line 'Module FvwmDebug' in
+the .fvwmrc file. This can be placed on a line by itself, if FvwmDebug
+is to be spawned during fvwm's initialization, or can be bound to a
+menu or mouse button or keystroke to invoke it later. Fvwm will search
+directory specified in the ModulePath configuration option to attempt
+to locate FvwmDebug.
+
+.SH CONFIGURATION OPTIONS
+There are no configuration options.
+
+
+.SH AUTHOR
+Robert Nation 
+

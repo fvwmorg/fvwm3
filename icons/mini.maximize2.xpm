@@ -1,0 +1,20 @@
+/* XPM */
+static char * mini_maximize_xpm[] = {
+"14 14 3 1 0 0",
+" 	c None",
+".	c magenta",
+"X	c green",
+"      ..      ",
+"     ....     ",
+"   X......X   ",
+"  XX. .. .XX  ",
+" XX   ..   XX ",
+"XXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXX",
+"XXXXXXXXXXXXXX",
+" XX   ..   XX ",
+"  XX. .. .XX  ",
+"   X......X   ",
+"     ....     ",
+"      ..      ",
+"              "};

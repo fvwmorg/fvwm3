@@ -1,0 +1,160 @@
+.\" t
+.\" @(#)FvwmWinList.1	1995.5.27
+.TH FvwmWinList 0.4h "May 27th, 1995"
+.UC
+.SH NAME
+FvwmWinList \- the FVWM window list module
+.SH SYNOPSIS
+FvwmWinList is spawned by fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+The FvwmWinList module provides a widow list made up of buttons, each
+corresponding to a window that FVWM is managing.  Clicking on the buttons
+with any of the three mouse buttons will either do a default action or
+can be user configured.  Like the other modules, FvwmWinList only works
+when fvwm is used as the window manager.
+
+.SH COPYRIGHTS
+The FvwmWinList module is the original work of Mike Finger.
+
+Copyright 1994, Mike Finger. The author makes no guarantees or warranties of
+any kind about the use of this module.  Use this modules at your own risk.
+You may freely use this module or any portion of it for any purpose as long
+as the copyright is kept intact. 
+
+.SH INITIALIZATION
+During initialization, \fIFvwmWinList\fP will scan the same configuration file
+that FVWM used during startup to find the options that pertain to it.  These
+options are discussed in a later section.
+
+.SH INVOCATION
+FvwmWinList can be invoked by fvwm during initialization by inserting the
+line 'Module FvwmWinList' in the .fvwmrc file.
+
+FvwmWinList can also be bound to a keystroke, mouse button, or menu option to
+be invoked later, in this case using 'Transient' as an argument will cause
+FvwmWinList to resemble the built in window list.
+
+FvwmWinList must reside in a directory that is listed in the ModulePath option
+of FVWM for it to be executed by FVWM.
+
+.SH CONFIGURATION OPTIONS
+The following options can be placed in the .fvwmrc file
+
+.IP "*FvwmWinListGeometry \fI{+-}<X>x{+-}<Y>\fP"
+Specifies the location and gravity of the FvwmWinList window.  At the current
+time, size is not supported and FvwmWinList will resize itself as buttons are
+added.  If the NoAnchor option is not specified then the windows gravity
+corner will be anchored, and the window will grow in the opposite direction.
+(i.e. If the geometry is specified -5-5, that is SoutEastGravity.  This will
+cause the window to draw up and to the left as windows are added)
+
+.IP "*FvwmWinListFont \fIfont\fP"
+Specifies the font to be used for labeling the buttons.
+
+.IP "*FvwmWinListFore \fIcolor\fP"
+Specifies the color to use for the button names.
+
+.IP "*FvwmWinListBack \fIcolor\fP"
+Specifies the color for the buttons.
+
+.IP "*FvwmWinListFocusFore \fIcolor\fP"
+Specifies the color to use for the button names for the window that
+has the input focus. If omitted, the color from \fBFvwmWinListFore\fP
+is used.
+
+.IP "*FvwmWinListFocusBack \fIcolor\fP"
+Specifies the color to use for the button for the window that
+has the input focus. If omitted, the color from \fBFvwmWinListBack\fP
+is used.
+
+.IP "*FvwmWinListIconFore \fIcolor\fP"
+Specifies the color to use for the button names for windows that
+are iconified. If omitted, the color from \fBFvwmWinListFore\fP
+is used.
+
+.IP "*FvwmWinListFocusBack \fIcolor\fP"
+Specifies the color to use for the button for windows that
+are iconified. If omitted, the color from \fBFvwmWinListBack\fP
+is used.
+
+.IP "*FvwmWinListUseSkipList
+Tells FvwmWinList to not show the windows that are listed on a WindowListSkip
+line if the configuration file.
+
+.IP "*FvwmWinListNoAnchor
+By default, FvwmWinList will anchor the gravity corner so the window will grow
+in the opposite direction.  This undoes that option.
+
+.IP "*FvwmWinListUseIconNames
+Tells FvwmWinList to use the icon name of the window instead of the full window
+name.  This is useful to keep the width of the window small.
+
+.IP "*FvwmWinListLeftJustify
+By default, FvwmWinList will center the icon text in the icon.  This option
+causes it to be justified flush with the left edge of the icon.
+
+.IP "*FvwmWinListMinWidth \fIwidth\fP"
+.IP "*FvwmWinListMaxWidth \fIwidth\fP"
+Specify the minimum and maximum widths that the buttons will shrink or grow
+to.  The buttons will normally size to fit the longest name, but certain
+applications produce icon titles that can easily fill the screen.  Setting
+these parameters constrains the size of the buttons to be between the two
+values.  Setting them identically will fix the size of the buttons.
+Setting Max < Min will have unpredictable results.
+
+.IP "*FvwmWinListTruncateLeft"
+If names get truncated because of the setting of \fBFvwmWinListMaxWidth\fP,
+they will normally get truncated on the right, so only the start of the names
+are visible. Setting this resource will cause them to get truncated on the left,
+so that the end of names are visible. This is useful when the window title
+contains a directory and file name, for example.
+
+.IP "*FvwmWinListTruncateRight"
+This is the inverse of \fBFvwmWinListTruncateLeft\fP; it is the default
+action. It is provided for completeness.
+
+.IP "*FvwmWinListAction \fIaction response[,reponse...]\fP"
+Tells FvwmWinList to do \fIresponse\fP when \fIaction\fP is done.  The
+currently supported \fIaction\fPs are: Click1, Click2, Click3.  The currently
+supported \fIresponse\fPs are any fvwm built-in commands, including modules
+and functions.
+
+.SH SAMPLE CONFIGURATION
+The following are excepts from a .fvwmrc file which describe FvwmWinList
+initialization commands:
+
+.nf
+.sp
+########
+# Pop up the window list in tranient mode on button 3 press & hold
+
+Mouse 3   R   A   Module "FvwmWinList" FvwmWinList Transient
+
+########################## Window-Lister ###############################
+*FvwmWinListBack DarkOliveGreen
+*FvwmWinListFore PaleGoldenRod
+*FvwmWinListFont -*-new century schoolbook-bold-r-*-*-*-120-*-*-*-*-*-*
+*FvwmWinListAction Click1 Iconify -1,Raise
+*FvwmWinListAction Click2 Iconify
+*FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
+*FvwmWinListUseSkipList
+*FvwmWinListUseIconNames
+*FvwmWinListGeometry -50-85
+*FvwmWinListMinWidth 70
+*FvwmWinListMaxWidth 120
+# I prefer the text centered
+#*FvwmWinListLeftJustify
+# I like it achored
+#*FvwmWinListNoAnchor
+
+.sp
+.fi
+
+.SH AUTHOR
+Mike Finger (mfinger@mermaid.micro.umn.edu)
+            (Mike_Finger@atk.com)
+            (doodman on IRC, check the #linux channel)
+Various Patches by
+   John Heidemann <johnh@ficus.CS.UCLA.EDU> and
+   Jason L Tibbitts <tibbs@tcamc.uh.edu>.

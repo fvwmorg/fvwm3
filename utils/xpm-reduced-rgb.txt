@@ -1,0 +1,40 @@
+255 187 255		plum1
+255 218 185		PeachPuff
+230 230 250		lavender
+255 255 255		white
+  0   0   0		black
+190 190 190		grey
+  0   0 128		NavyBlue
+100 149 237		CornflowerBlue
+  0   0 205		MediumBlue
+  0   0 255		blue
+ 30 144 255		DodgerBlue
+ 70 130 180		SteelBlue
+173 216 230		LightBlue
+ 64 224 208		turquoise
+  0 255 255		cyan
+ 95 158 160		CadetBlue
+127 255 212		aquamarine
+127 255   0		chartreuse
+154 205  50		YellowGreen
+ 34 139  34		ForestGreen
+255 255   0		yellow
+245 222 179		wheat
+165  42  42		brown
+255 165   0		orange
+255   0   0		red
+205   0   0		red3
+139   0   0		red4
+255 105 180		HotPink
+255 192 203		pink
+176  48  96		maroon
+255   0 255		magenta
+238 130 238		violet
+221 160 221		plum
+218 112 214		orchid
+160  32 240		purple
+120 120 120 		gray47
+161 161 161 		gray63
+222 222 222 		gray87
+240 240 240 		gray94
+  0 255   0		green

@@ -1,0 +1,11 @@
+flex Compiler/lexin
+yacc -d Compiler/bisonin
+gcc y.tab.c lex.yy.c -ll
+
+A ajouter a la fin de  y.tab.c
+
+int yyerror(char *errmsg)
+{
+ fprintf(stderr, "%s\n",errmsg);
+ return 0;
+}

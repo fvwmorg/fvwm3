@@ -1,0 +1,71 @@
+Mini XPM icon package (for fvwm).
+Version 1
+Free (F) by Ludvig A. Norin 1995
+emph@ludd.luth.se
+
+
+This package contains 14x14 pixel icons
+for use with the FVWM 2.x distribution.
+The icons might of course be used in just
+about any other purpose you can think of,
+but since FVWM is such a great wm, I
+really suggest that you use them in it,
+rather than putting them in your private
+.JPG/.GIF pictures just for the fun of it.
+
+The icons are small enough to give the
+FVWM menus a spiffy outlook. The icons
+are optimized to use as few colors as
+possible, and they will totally occypy
+14 entrys of the colormap.
+
+These files are included with this package:
+
+mini.audiovol.xpm - For audiocontrol programs
+mini.destroy.xpm  - For the 'destroy' command
+mini.excl.xpm     - I use this in the 'Exit fvwm ->'
+                    menu entry.
+mini.exit.xpm     - For the 'close' command
+mini.fvwm.xpm     - For the FVWM modules
+mini.lower.xpm    - For the 'lower' command
+mini.move.xpm     - For the 'move' command
+mini.netscape.xpm - For Netscape Navigator (poor)
+mini.raise.xpm    - For the 'raise' command
+mini.resize.xpm   - For the 'resize' command
+mini.xarchie.xpm  - For the Xarchie application (poor) 
+mini.xboing.xpm   - For the Xboing game (poor)
+mini.xlock.xpm    - For XLock
+mini.xpm          - 14x14 pixels XPM template
+mini.zircon.xpm   - For the Zircon application
+README            - You guess!
+
+I am right now too busy to create any more icons,
+although I would like to have icons for several
+applications. If you (YOU!) feel like being artistic,
+you can view the icons with a plain text editor to
+find out how the XPM format works, and then use the
+template to create your own. You might then uuencode
+them and mail them to me, and I will include them in
+this package. (If I like them). Note that it's important
+to use as few colors as possible, and prefferably those
+that are already used in the other icons. Personally,
+I feel it importand to keep the size down to 14x14, even
+though the x axis (the width) migh be extended if 
+required (like in mini.exit.xpm).
+
+It would be nice to have icons for, among others, these
+applications/functions:
+
+(De)Iconify
+Refresh Screen
+Xv (A picture viewer)
+Knews (a news reader for X)
+MirrorMagic (a game)
+Emacs (Great invention.)
+Xterm
+
+
+Hope you like'em;
+Sincerly,
+Ludvig A. Norin
+emph@ludd.luth.se

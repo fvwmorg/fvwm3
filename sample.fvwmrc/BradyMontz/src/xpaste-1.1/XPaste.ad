@@ -1,0 +1,5 @@
+xpaste*font:	9x13
+xpaste*text.Translations: #override\n\
+<Btn2Down>:startpan()\n\
+<Btn2Motion>:pan()\n\
+<Btn2Up>:endpan()\n

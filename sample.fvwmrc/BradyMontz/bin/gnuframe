@@ -1,0 +1,18 @@
+#!/bin/sh
+
+if [ "$DISPLAY" = "" ]
+then
+  echo "Need a display"
+  exit
+fi
+
+
+if [ $# -ge 1 ]
+then
+  echo "Running $1 on $DISPLAY"
+  echo gnudoit "(my-eval-in-other-frame \"$1\" \"$DISPLAY\")"
+  gnudoit "(my-eval-in-other-frame \"$1\" \"$DISPLAY\")"
+else
+  echo "Starting xemacs frame on $DISPLAY"
+  gnudoit "(make-frame-on-display \"$DISPLAY\")"
+fi

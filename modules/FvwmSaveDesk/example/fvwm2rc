@@ -1,0 +1,372 @@
+
+ModulePath /usr/lib/X11/fvwm2
+PixmapPath	     /usr/include/X11/pixmaps
+IconPath	     /usr/include/X11/bitmaps
+
+DeskTopSize 1x1
+EdgeScroll 0 0
+EdgeResistance 250 50
+
+WindowFont		fixed
+IconFont		fixed
+
+HilightColor   Black DarkTurquoise
+
+
+MenuStyle   Black DarkTurquoise DeepSkyBlue fixed mwm
+Style "*" MWMButtons
+Style "*" MWMBorders
+Style "*" MWMDecor
+Style "*" MWMFunctions
+Style "*" DecorateTransient
+# IconBox left screen side top towards down
+#Style "*" IconBox -80 105 -1 -240
+# IconBox at the top of pager
+Style "*" IconBox -385 -240 -1 -140
+Style "*" RandomPlacement
+Style "*" SmartPlacement
+Style "*" BorderWidth 4, HandleWidth 7, Icon unknown1.xpm
+Style "*" ForeColor Black
+Style "*" BackColor grey
+Style "*"           SloppyFocus
+
+# 1 3 5 7 9    0 8 6 4 2
+# Button 1 is WindowMenu/Close
+# Button 4 is Iconify Buuton
+# Button 2 is Maximize/Minimize Button
+
+ButtonStyle 1 5 45x45@1 55x45@1 55x55@0 45x55@0 45x45@1 # Dot
+ButtonStyle 2 5 25x25@1 25x75@1 75x75@0 75x25@0 25x25@1 # Big Box
+ButtonStyle 4 4 50x65@1 35x35@1 65x35@1 50x65@0 # small down triangle
+
+#ButtonStyle * 4 50x35@1 65x65@0 35x65@0 50x35@1 # Small up Triangle
+#ButtonStyle * 4 50x65@1 35x35@1 65x35@1 50x65@0 # Small down Triangle
+#ButtonStyle * 4 50x25@1 75x75@0 25x75@0 50x25@1 # Large up Triangle
+#ButtonStyle * 4 50x75@1 25x25@1 75x25@1 50x75@0 # Large down Triangle
+
+#ButtonStyle * 5 25x25@1 25x75@1 75x75@0 75x25@0 25x25@1 # Big Box
+#ButtonStyle * 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1 # Little Box
+#ButtonStyle * 5 40x25@1 60x25@1 60x75@0 40x75@0 40x25@1 # Tall Box
+#ButtonStyle * 5 45x45@1 55x45@1 55x55@0 45x55@0 45x45@1 # Dot
+
+
+Style "Fvwm*"      NoTitle, NoHandles, Sticky, WindowListSkip,BorderWidth 0
+Style "Fvwm Pager" BorderWidth 4
+Style "FvwmPager"  BorderWidth 4
+Style "FvwmBanner" StaysOnTop
+Style "FvwmButtons"  NoTitle, NoHandles, Sticky, WindowListSkip,BorderWidth 4
+Style "*lock"      NoTitle, NoHandles, Sticky, WindowListSkip
+Style "xload"      NoTitle, NoHandles, Sticky, WindowListSkip
+Style "xbiff"      NoTitle,            Sticky, WindowListSkip
+Style "Maker"      StartsOnDesk 1
+Style "matlab"     StartsOnDesk 3
+Style "signal"     StartsOnDesk 3 
+Style "rxvt"       Icon  term.xpm
+Style "xterm"      Icon xterm.xpm, Color black/grey
+Style "Appointment" Icon datebook.xpm
+Style "xcalc"      Icon xcalc.xpm
+Style "xbiff"      Icon mail1.xpm
+Style "xmh"        Icon mail1.xpm, StartsOnDesk 2
+Style "xman"	   Icon xman.xpm
+Style "xvgr"	   Icon graphs.xpm
+Style "matlab"	   Icon math4.xpm
+Style "xmag"	   Icon mag_glass.xpm
+Style "xgraph"	   Icon graphs.xpm
+Style "FvwmButtons"  Icon toolbox.xpm
+Style "xdos"       Icon dosemu.xpm
+Style "DOS in a BOX"       Icon dosemu.xpm
+
+
+##############################################################################
+#now define the menus - defer bindings until later
+
+# This menu is invoked as a sub-menu - it allows you to quit,
+# restart, or switch to another WM.
+AddToMenu "Quit-Verify" "Really Quit Fvwm? " Title
++              "Yes, Really Quit " Quit
++              "Restart fvwm2 " Restart fvwm2
++              "Restart fvwm " Restart fvwm
++              "Start mwm " Restart mwm
++              "" Nop
++              "No, Don't Quit " Nop
+
+# Provides a list of modules to fire off
+AddToMenu "Module-Popup" "Modules" Title
++              "FvwmButtons" Module FvwmButtons
++              "NoClutter" Module FvwmClean
++              "FvwmIdentify" Module FvwmIdent
++              "Banner" Module FvwmBanner
++              "Debug" Module FvwmDebug
++              "SaveDesktop" Module FvwmSaveDesk
++              "Pager" Module FvwmPager 0 4
++              "FvwmWinList" Module FvwmWinList
+
+
+# This menu will fire up some very common utilities
+AddToMenu "Utilities" "Utilities " Title
++              "Xterm " Exec exec xterm &
++              "Calculator " Exec exec xcalc &
++              "Xman " Exec exec xman &
++              "Xmag " Exec exec xmag &
++              "" Nop
++              "Modules" Popup Module-Popup
++              "" Nop
++              "Exit Fvwm " Popup Quit-Verify
+
+# This defines the change workspace menu
+AddToMenu Occupy-Workspace "Occupy Workspace" Title
++              "Workspace &1" WindowsDesk 0
++              "Workspace &2" WindowsDesk 1
++              "Workspace &3" WindowsDesk 2
++              "Workspace &4" WindowsDesk 3
++              "Workspace &5" WindowsDesk 4
+
+# This defines the most common window operations
+AddToMenu Window-Ops "Window Ops" Title
++              "Occupy Workspace" PopUp Occupy-Workspace
++              "&Move Alt+F7" Move
++              "&Size Alt+F8" Resize
++              "&Lower Alt+F3" Lower
++              "Raise " Raise
++              "(Un)Stick " Stick
++              "(Un)Mi&nimize Alt+F9" Iconify
++              "(Un)Ma&ximize Alt+F10" Maximize
++              "(Un)Maximize Vertical " Maximize 0 100
++              "" Nop
++              "&Close Alt+F4" Delete
++              "&Kill! " Destroy
+
+AddToMenu Window-Ops2 "Window Ops2" Title
++              "&Move Alt+F7" Move
++              "&Size Alt+F8" Resize
++              "(Un)Mi&nimize Alt+F9" Iconify
++              "(Un)Ma&ximize Alt+F10" Maximize
++              "&Lower Alt+F3" Lower
++              "" Nop
++              "&Close Alt+F4" Delete
++              "" Nop
++              "&ScrollBar" Module FvwmScroll 2 2
+
+############################################################################
+# COMPLEX FUNCTIONS
+#
+AddToFunc warp-or-run		"I" Next [$0 CirculateHit] Iconify -1
++				"I" Next [$0 CirculateHit] Focus
++				"I" None [$0] $1
+
+AddToFunc MailFunction		"I" Next [$0] Iconify -1
++				"I" Next [$0] focus
++				"I" None [$0] Exec $0 $1
+
+AddToFunc Move-or-Raise		"I" Raise
++				"M" Move
++				"D" Lower
+
+AddToFunc Move-or-Raise2        "M" Raise
++				"M" Move
++				"D" Lower
+
+AddToFunc Maximize-Func         "C" Maximize     0 100
++                               "D" Maximize     100 100
+
+AddToFunc Move-or-Iconify       "I" Raise
++                               "M" Move
++                               "D" Iconify
+
+AddToFunc Resize-or-Raise       "I" Raise
++                               "M" Resize
++                               "D" Lower
+
+AddToFunc Resize-or-Raise2      "M" Raise
++                               "M" Resize
++                               "D" Lower
+
+AddToFunc PrintFunction         "I" Raise
++                               "I" Exec xdpr -id $w
+
+AddToFunc Iconify-and-Raise     "I" Iconify
++                               "I" Raise
+
+
+##############################################################################
+# This defines the mouse bindings
+
+# Buttons:
+#   0   - Any
+#   1   - left
+#   2   - middle
+#   3   - right
+# Context:
+#   R   - Root Window
+#   W   - Application Window
+#   T   - Titlebar
+#   S   - window side, top or bottom bar
+#   F   - window frame (the  corners)
+#   I   - for an Icon window
+#   0-9 - titlebar butttons: 1 3 5 7 9    0 8 6 4 2
+#                            1 Menu/Close
+#                                               4 Iconify
+#                                                 2 Maximize/Minimize
+# Modifiers:
+#   N   - no modifiers
+#   C   - control
+#   S   - shift
+#   M   - Meta
+#   A   - any modifiers
+#   1   - X11 modifier mod1
+#   2   - X11 modifier mod1
+#   3   - X11 modifier mod1
+#   4   - X11 modifier mod1
+#   5   - X11 modifier mod1
+
+#
+# On Root Window
+#
+#     Button	Context Modifi 	Function
+Mouse 1		R   	A       Menu Utilities Nop
+Mouse 2		R    	A       Menu Window-Ops Nop
+Mouse 3		R    	A      	WindowList
+
+#
+# On Appilcation Window Decoration
+#
+#     Button	Context Modifi 	Function
+# the title bar buttons
+Mouse 0		1    	A      	Menu Window-Ops Close
+Mouse 0		2    	A     	Maximize-Func
+Mouse 0		4    	A     	Iconify
+# titlebar
+Mouse 1         T       A       Move-or-Raise
+Mouse 2         T       A       Menu Window-Ops2 Nop
+# rest of the frame
+Mouse 1         FS      A       Resize-or-Raise
+Mouse 2         FS      A       Menu Window-Ops2 Nop
+# Icon
+Mouse 1		I	A	Move-or-Iconify
+Mouse 2		I	A	Menu Window-Ops2 Iconify
+# anything
+Mouse 3		TSIF   	A      	RaiseLower
+
+
+############################################################################
+# Now some keyboard shortcuts.
+
+# Arrow Keys
+# press arrow + control anywhere, and move the pointer by 1% of a page
+Key Left	A	C	CursorMove -1 0
+Key Right	A	C	CursorMove +1 +0
+Key Up		A	C	CursorMove +0   -1
+Key Down	A	C	CursorMove +0   +1
+
+# press arrow + control meta key, and move the pointer by 1/10 of a page
+Key Left	A	CM	CursorMove -10 +0
+Key Right	A	CM	CursorMove +10 +0
+Key Up		A	CM	CursorMove +0   -10
+Key Down	A	CM	CursorMove +0   +10
+
+# Keyboard accelerators
+Key F1		A	M	Popup Window-Ops
+Key F2		A	M	Popup Utilities
+Key F3		A	M	Lower
+Key F4		A	M	Destroy
+Key F5		A	M	CirculateUp
+Key F6		A	M	CirculateDown
+Key F7		A	M	Move
+Key F8		A	M	Resize
+Key F9		A	M	Iconify
+Key F10		A	M	Maximize
+
+Key F1		W	C	WindowsDesk 0
+Key F2		W	C	WindowsDesk 1
+Key F3		W	C	WindowsDesk 2
+Key F4		W	C	WindowsDesk 3
+Key F5		W	C	WindowsDesk 4
+
+#Page Up/Dapge Down keys are used to scroll by one desktop page
+# in any context, press page up/down + control
+# in root context, just pressing page up/down is OK
+# 
+# I prefer the non-wrapping scroll. These are for example purposes only
+#Key Next	A       C       Scroll 100000 0
+#Key Next	R       N       Scroll 100000 0  
+#Key Prior	A       C       Scroll -100000 0
+#Key Prior	R       N       Scroll -100000 0
+
+
+#############################################################################
+# Stuff to do at start-up
+
+
+AddToFunc "InitFunction" "I" Exec xearth -pos 'fixed 50.5 13.4' &
++              "I" Module FvwmPager 0 4
++              "I" Module FvwmButtons
+
+#+	        "I" Exec "xsetroot" xsetroot -solid steelblue
+#+	        "I" Exec "xv" xv -rmode 0 -perfect -quit /home/calle/model.gif
+
+m4_include(`.fvwm2desk')m4_dnl
+
+AddToFunc "RestartFunction" "I" Module FvwmButtons
++              "I" Module FvwmPager 0 4
+
+
+
+############################################################################
+############################################################################
+##
+## Module Definitions
+##
+############################################################################
+############################################################################
+
+###################### GoodStuff button-bar ################################
+# Colors
+*FvwmButtonsFore Black
+*FvwmButtonsBack #908090
+
+# Font
+*FvwmButtonsFont fixed
+
+# Geometry - really likes to pick its own size, but giving a position is OK
+#*FvwmButtonsGeometry +5-5
+#*FvwmButtonsGeometry +0-1
+#*FvwmButtonsGeometry -5-95
+*FvwmButtonsGeometry -5-5
+
+*FvwmButtonsRows 1
+
+*FvwmButtons Xterm   xterm.xpm   Exec "xterm" exec xterm &
+*FvwmButtons Seyon   modem.xpm   Exec "Seyon" exec seyon &
+*FvwmButtons Mail    mail2.xpm   Exec "xterm" exec xterm -geometry 80x55 -e elm -P &
+*FvwmButtons News    news.xpm   Exec "xterm" exec xterm -geometry 80x55 -e tin &
+*FvwmButtons Netcape netcape.xpm   Exec "netscape" exec netscape &
+*FvwmButtons SaveDesc desk.xpm   Module FvwmSaveDesk
+
+########################### Pager #########################################
+*FvwmPagerBack #908090
+*FvwmPagerFore #484048
+*FvwmPagerHilight #cab3ca
+#*FvwmPagerGeometry x80-5-80
+*FvwmPagerGeometry x70-5-80
+*FvwmPagerLabel 0 General
+*FvwmPagerLabel 1 Mail/News
+*FvwmPagerLabel 2 Compile
+*FvwmPagerLabel 3 tmp
+*FvwmPagerLabel 4 irc
+*FvwmPagerSmallFont 5x8
+
+########################## Window-Identifier ###############################
+# Just choose colors and a fonts
+*FvwmIdentBack MidnightBlue
+*FvwmIdentFore Yellow
+*FvwmIdentFont -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+
+##########################FvwmWinList##################################
+*FvwmWinListBack #908090
+*FvwmWinListFore Black
+*FvwmWinListFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmWinListAction Click1 Iconify -1,Raise
+*FvwmWinListAction Click2 Iconify 1
+*FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
+*FvwmWinListUseSkipList
+*FvwmWinListGeometry +0-1

@@ -1,0 +1,21 @@
+2/27/95	Added start-up commands.  Those are specified by *FvwmFormCommand
+	options before any *FvwmFormButton options.
+
+	Added an example in man page, Capture, which is a front-end to xwd,
+	xwud, and xpr.
+
+2/15/95	Created this Changes file.
+
+	Made ^H do backspace in text input fields.
+
+	Added keyboard shortcuts for buttons.  Control chars (^@ .. ^_) that
+	are not editting commands, RETURN and TAB after the last text input
+	field, and F1 .. F35, can be used to activate a button.  The option
+	*FvwmFormButton has a backward compatible format change for this
+	feature.
+
+2/13/95	Announced to fvwm mailing list.
+
+2/11/95	Finished preliminary debugging, wrote manual page.
+
+2/7/95	Project started.

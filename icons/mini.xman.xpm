@@ -1,0 +1,20 @@
+/* XPM */
+static char * mini_xman_xpm[] = {
+"14 14 3 1 0 0",
+" 	c None",
+".	c black",
+"X	c white",
+"              ",
+"    .     .   ",
+"  ..X.   .X.  ",
+"..XXXX...XXX..",
+".XXXXXX.XXXXX.",
+".XXXXXX.XXXXX.",
+".XXXXXX.XXXXX.",
+".XXXXXX.XXXXX.",
+".XXXXXX.XXXXX.",
+".XXXXXX.XXXXX.",
+".XXX.XX.XX.XX.",
+".... .X.X. .X.",
+"      ...   ..",
+"              "};

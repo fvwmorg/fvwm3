@@ -1,0 +1,46 @@
+.\" t
+.\" @(#)FvwmTalk.1	1/12/94
+.TH FvwmTalk 1.20 "Jan 28 1994"
+.UC
+.SH NAME
+FvwmTalk \- the FVWM command line interface
+.SH SYNOPSIS
+FvwmTalk is spawned by fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+The FvwmTalk allows the user to type fvwm commands into a window, and
+have them executed immediately. These commands are usually specfified
+in the .fvwmrc file, or are bound to menu/mouse items as specified
+in that file. This tools is particularly useful for testing new
+configuration ideas, or for implementing temporary changes to your
+environment.
+
+.SH COPYRIGHTS
+The FvwmTalk program, and the concept for
+interfacing this module to the Window Manager, are all original work
+by Robert Nation
+
+Copyright 1994, Robert Nation. No guarantees or warranties or anything
+are provided or implied in any way whatsoever. Use this program at your
+own risk. Permission to use this program for any purpose is given,
+as long as the copyright is kept intact. 
+
+
+.SH INITIALIZATION
+So kill me, I can't remember what goes on.
+
+.SH INVOCATION
+FvwmTalk can be invoked by inserting the line 'Module FvwmTalk' in
+the .fvwmrc file. This can be placed on a line by itself, if FvwmTalk
+is to be spawned during fvwm's initialization, or can be bound to a
+menu or mouse button or keystroke to invoke it later. Fvwm will search
+directory specified in the ModulePath configuration option to attempt
+to locate FvwmTalk.
+
+.SH CONFIGURATION OPTIONS
+I plead ignorance here. Read the code.
+
+
+.SH AUTHOR
+Robert Nation
+

@@ -1,0 +1,205 @@
+.TH FvwmWharf 1.0 "October 1996" FvwmWharf
+.UC
+.SH NAME
+FvwmWharf \- the AfterStep application "dock" module ported to
+Fvwm.
+.SH SYNOPSIS
+FvwmWharf is spawned by Fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+The FvwmWharf module is a free-floating application loader that can
+execute programs, "Swallow" running programs, and contain "Folders" of
+more applications, among other things.  The user can press the first
+button at any time to trigger invocation of one of these functions, or
+the user can press button two in order to cause the entire Wharf
+to withdraw to the nearest corner in an iconized state.  FvwmWharf only 
+works when Fvwm is used as the window manager.
+
+.SH COPYRIGHTS
+The FvwmWharf module is copyright 1995 and 1996 by a variety of contributors.
+They are, in alphabetical order, Beat Christen, Frank Fejes, Alfredo 
+Kenji Kojima, Dan Weeks, and Bo Yang
+
+The GoodStuff program, and the concept for
+interfacing this module to the Window Manager, are all original work
+by Robert Nation
+
+No guarantees or warranties or anything
+are provided or implied in any way whatsoever. Use this program at your
+own risk. Permission to use this program for any purpose is given,
+as long as the copyright is kept intact. 
+
+
+.SH INITIALIZATION
+During initialization, \fIFvwmWharf\fP will search for a configuration
+file which describes the button panel geometry, color, icons, and
+actions. The format of 
+this file will be described later. The configuration file will be the
+one which Fvwm used during its initialization.
+
+If the FvwmWharf executable is linked to another name, ie ln -s
+FvwmWharf Pier, then another module called Pier can be
+started, with a completely different configuration than FvwmWharf,
+simply by changing the keywords FvwmWharf??? to Pier???. This way multiple
+button-bars can be used.
+
+.SH INVOCATION
+FvwmWharf should be invoked in the same way as other
+Fvwm modules.
+
+.SH CONFIGURATION OPTIONS
+The following options can be placed in the .steprc file
+
+.IP "*FvwmWharfAnimate"
+If specified, the opening and closing of Folders will be animated, 
+rather than simply drawn in one frame.
+
+.IP "*FvwmWharfAnimateMain"
+Designates that full-length Wharf windraws will be animated.
+
+.IP "*FvwmWharfBgColor \fIcolor\fP"
+If \fI*FvwmWharfTextureType 0\fP is specified, \fIFvwmWharf\fP's buttons
+will be filled with \fIcolor\fP.
+
+.IP "*FvwmWharfColumns \fIcolumns\fP"
+Specifies the number of columns of buttons to be created. If unspecified,
+the number of columns will be set to 1.
+If the columns are set to a number greater than 1 then there will be that number
+of columns with enough rows to satisfy the requested number of buttons.
+
+.IP "*FvwmWharfForceSize"
+If specified, will force pixmaps larger than 64x64 to the default
+size.  Pixmaps smaller than 64x64 are not supported.
+
+.IP "*FvwmWharfFullPush"
+If specified, the entire FvwmWharf button background will be moved down
+and to the right when pushed.  Especially useful with *FvwmWharfNoBorder
+textures.
+
+.IP "*FvwmWharfGeometry \fIgeometry\fP"
+Specifies the FvwmWharf window location and/or size. If the size is
+not specified, FvwmWharf will auto-size itself in a reasonable manner.
+The geometry is a standard X11 window geometry specification.  This option is
+pre-set in the NEXTSTEP(tm) style section for a consistent look and feel with NEXTSTEP(tm).
+Secondary FvwmWharf invocations from links may have their own geometry.
+
+.IP "*FvwmWharfMaxColors \fInumber\fP"
+Specifies the maximum \fInumber\fP of colors to use on a gradient
+fill.
+
+.IP "*FvwmWharfNoBorder"
+Denotes that beveled borders should not be drawn around the FvwmWharf button.
+Useful with textures that include their own bevels.
+
+.IP "*FvwmWharfPixmap \fIpixmap\fP"
+Sets the pixmap file to be used as \fIFvwmWharf\fP's button.  To be used
+with \fI*FvwmWharfTextureType 128\fP.
+
+.IP "*FvwmWharfTextureColor \fIfrom\fP \fIto\fP"
+When used with a \fI*FvwmWharfTextureType\fP of 1 to 5, designates the
+ends of the gradient range to be used on \fIFvwmWharf\fP's buttons.
+
+.IP "*FvwmWharfTextureType  \fItype\fP"
+Specifies the type of gradient fill to be used on 
+\fIFvwmWharf\fP's buttons.  Valid values are:
+.nf
+0 - No texture - use \fIFvwmWharfBgColor\fP to set the desired color
+1 - Gradient from upper-left to lower right
+2 - Horizontal one way gradient from top to bottom
+3 - Horizontal cylindrical gradient from top/bottom to center
+4 - Vertical one way gradient from left to right
+5 - Vertical cylindrical gradient from left/right to center
+128 - User specified pixmap
+.fi
+The default is the builtin \fIFvwmWharf\fP texture pixmap.
+
+.IP "*FvwmWharf \fIlabel icon command\fP"
+Specifies a window manager built-in command or folder to activate
+(folders will be discussed below), as described in the Fvwm
+man page, which should be executed when a button is pressed. The label
+field is an internal item that is still around from the GoodStuff module.
+The icon field
+specifies an X11 bitmap file, XPM color icon file, or a comma-delimited 
+set of pixmaps containing the
+icon(s) to display on the button. FvwmWharf will search through the path
+specified in the IconPath or PixmapPath configuration items to
+find the icon file.
+
+NOTE: Icons must have one transparent pixel or the definition of a transparent color in order to be valid.
+
+If \fIcommand\fP is an Fvwm Exec command, then the button will
+appear pushed in until the mouse button is released.
+
+A single extension to the Fvwm built-in command set is provided.
+A command of the form:
+.nf
+
+*FvwmWharf junk clock.xpm Swallow "Clock" asclock -shape -12 &
+
+.fi
+will cause FvwmWharf to spawn an asclock process, and capture 
+the first window whose name or resource is "Clock", and display it in
+the button-bar. This is handy for applications like xclock, xbiff,
+xload, asclock, and asmail. Modules can be swallowed by specifying  SwallowModule instead
+of just "swallow" NOTE: if you use xclock for this application, you will want
+to specify xclock -padding 0. 
+
+For certain applications that overrun the 48 pixel by 48 pixel boundary of FvwmWharf
+icons and Swallowed programs there is a special option called
+.I MaxSwallow.
+.I MaxSwallow
+will allow the application to draw itself larger than the 48x48 boundary.  It is 
+invoked the same way Swallow is.
+
+To create folder "slide-outs" in
+.B FvwmWharf
+the following format must be used:
+.nf
+
+*FvwmWharf files Folders.xpm Folder
+*FvwmWharf xftp 3DRings.xpm	Exec xftp &
+*FvwmWharf xdir FolderDeposit.xpm Exec xdir &
+*FvwmWharf moxfm FilingCabinet.xpm Exec moxfm &
+*FvwmWharf ~Folders
+
+.fi
+The first line of this set tells FvwmWharf that this button definition will be a 
+folder.  All of the button definitions between the
+.I Folder
+and the line with the definition of 
+.I *FvwmWharf ~Folders
+will appear on the "files" folder when it is exposed.  To expose the "files"
+folder simply click on the FvwmWharf button with the Folders.xpm icon showing.  A
+button bar will appear perpendicular to your FvwmWharf bar and toward the center
+of the screen.  On this smaller bar will be the three icons that were configured 
+between the 
+.I Folder
+and
+.I ~Folder
+parts of the FvwmWharf configuration.  As many folder buttons may be configured as
+is room on your screen.  The only items that may not be configured within
+folders are Swallowed applications and more folders.
+ 
+.SH DRAG AND DROP
+\fIFvwmWharf\fP supports the OffiX Drag and Drop standard.  In order to
+have Drag and Drop enabled on a particular button, the following syntax
+must be adhered to:
+.nf
+
+*FvwmWharf	nil      nil	     DropExec "\fIprogram\fP" \fIprogram\fP %s
+*FvwmWharf	\fIprogram\fP  \fIiconname\fP	Exec "\fIprogram\fP" \fIprogram\fP
+
+.fi
+
+The button will call \fIprogram\fP when pushed.  If a file is dragged
+onto into it, \fIprogram\fP will be called with %s being replaced by
+the dropped filename.
+
+.SH AUTHORS
+.nf
+Beat Christen (bchriste@iiic.ethz.ch)
+Frank Fejes (frank@ssax.com)
+Alfredo Kengi Kojima (kojima@inf.ufrgs.br)
+Dan Weeks (dan@mango.sfasu.edu)
+Bo Yang (eric@coeus.ucsd.edu)
+.fi

@@ -1,0 +1,33 @@
+/* XPM */
+static char *xenon_xpm[] = {
+/* width height ncolors chars_per_pixel */
+"22 22 4 1",
+/* colors */
+"` c black",
+"a c sea green",
+"b c white",
+"c c pale green",
+/* pixels */
+"bcccccccccccccccccccca",
+"cbcccccccccccccccccca`",
+"ccaaaaaaaaaaaaaaaaaa``",
+"ccaccaaaaaaaaaaccaaa``",
+"ccacc``aaaaaaaacc``a``",
+"ccaa```aaaaaaaaa```a``",
+"ccaa```aaaaaaaaa```a``",
+"ccaaaaaaaaaaaaaaaaaa``",
+"ccaaaaaaaaaaaaaaaaaa``",
+"ccaaaaaaaaaaaaaaaaaa``",
+"ccaaaaaaaaaaaaaaaaaa``",
+"ccaaaaaaaaaaaaaaaaaa``",
+"ccaaaaaaaaaaaaaaaaaa``",
+"ccaaaaaaaaaaaaaaaaaa``",
+"ccaaaaaaaaaaaaaaaaaa``",
+"ccaccaaaaaaaaaaccaaa``",
+"ccacc``aaaaaaaacc``a``",
+"ccaa```aaaaaaaaa```a``",
+"ccaa```aaaaaaaaa```a``",
+"ccaaaaaaaaaaaaaaaaaa``",
+"ca````````````````````",
+"a`````````````````````"
+};

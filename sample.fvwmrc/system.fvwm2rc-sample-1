@@ -1,0 +1,362 @@
+# this is a sample .fvwmrc file for fvwm-2.
+# Apparantly, you can retrieve sample .fvwmrc's from 
+# 	ftp://ftp.best.com/pub/tdgilman/Fvwmrcs
+# you can also submit your favourite .fvwmrc to
+#	tdgilman@best.com 
+# if you want to.
+
+
+# small up triangle
+ButtonStyle 2 4 50x35@1 65x65@0 35x65@0 50x35@1
+# small down triangle
+ButtonStyle 4 4 50x65@1 35x35@1 65x35@1 50x65@0
+
+# some other ButtonStyles:
+# large up triangle
+#ButtonStyle 2 4 50x25@1 75x75@0 25x75@0 50x25@1
+# large down triangle
+#ButtonStyle 4 4 50x75@1 25x25@1 75x25@1 50x75@0
+# big box
+#ButtonStyle 2 5 25x25@1 25x75@1 75x75@0 75x25@0 25x25@1
+# little box
+#ButtonStyle 8 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+# tall box
+#ButtonStyle 6 5 40x25@1 60x25@1 60x75@0 40x75@0 40x25@1
+# dot
+#ButtonStyle 4 5 45x45@1 55x45@1 55x55@0 45x55@0 45x45@1
+# an up arrow:
+#ButtonStyle 2 8 40x80@1 40x50@1 20x50@1 50x20@1 80x50@0 60x50@0 60x80@0 40x80@0
+# an X
+#ButtonStyle 3 13 26x29@1 34x21@1 50x35@1 70x21@1 79x29@1 63x48@0 79x65@1 70x75@0 50x61@0 34x75@0 26x65@0 44x48@1 26x29@0
+#
+#big box crossed by an arrow to a little box, good for iconify
+#ButtonStyle 4 14 20x20@1 20x70@1 70x70@0 70x20@0 20x20@1 60x60@0 60x50@0 60x60@0 50x60@0 60x60@0 60x80@0 80x80@0 80x60@0 60x60@0
+#
+# like twm's nested squares:
+#ButtonStyle 2 14 0x0@1 0x20@1 20x20@0 20x0@0 0x0@1 0x25@1 25x25@1 25x0@1 55x0@1 55x55@0 0x55@0 0x60@1 60x60@1 60x0@1
+#
+# 3 horiz lines, like sticky indicator
+#ButtonStyle 8 12 10x23@0 90x23@0 90x28@0 10x28@1 10x47@1 90x47@0 90x52@0 10x52@1 10x70@2 90x70@0 90x76@0 10x76@1
+
+
+EdgeResistance 250 10
+WindowFont		-adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
+IconFont		-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+EdgeScroll 100 100
+
+ModulePath /usr/lib/X11/fvwm2
+PixmapPath /usr/include/X11/pixmaps/
+IconPath   /usr/include/X11/bitmaps/
+
+HilightColor black palevioletred
+DeskTopSize 2x2
+MenuStyle maroon grey60 grey40 -adobe-times-bold-r-*-*-14-*-*-*-*-*-*-* fvwm
+ClickTime 750
+
+ColormapFocus FollowsMouse
+
+Style "*"           BorderWidth 5, HandleWidth 5
+Style "*"           Icon unknown1.xpm, Color Black/#40a0c0
+Style "*"           ActivePlacement, SmartPlacement
+Style "*"           MWMFunctions,MWMDecor,HintOverride
+Style "*"           DecorateTransient,IconBox 0 -10 -280 -1
+Style "Fvwm*"       NoTitle, NoHandles, Sticky, WindowListSkip,
+Style "Fvwm*"       BorderWidth 0,CirculateSkipIcon
+Style "Fvwm Pager"  StaysOnTop
+Style "FvwmPager"   StaysOnTop
+Style "FvwmBanner"  StaysOnTop
+Style "FvwmButtons" NoTitle, NoHandles, Sticky, WindowListSkip
+Style "FvwmButtons" BorderWidth 0, CirculateSkip
+Style "FvwmButtons" Icon toolbox.xpm,ClickToFocus
+Style "*lock"       NoTitle, NoHandles, Sticky, WindowListSkip
+Style "*lock"	    RandomPlacement
+Style "xbiff"       NoTitle, Sticky, WindowListSkip,ClickToFocus
+Style "Maker"       StartsOnDesk 1,RandomPlacement,ClickToFocus
+Style "matlab"      StartsOnDesk 3
+Style "signal"      StartsOnDesk 3 
+Style "rxvt"        Icon  term.xpm,SloppyFocus,IconBox -70 1 -1 -140
+Style "XTerm"       Icon xterm.xpm,IconBox -70 1 -1 -140
+Style "XTerm"       Color black/#aa80aa,MWMBorder,MWMButtons
+Style "Appointment" Icon datebook.xpm, NoButton 2, NoButton 4,ClickToFocus
+Style "xcalc"       Icon xcalc.xpm, NoButton 2,RandomPlacement,ClickToFocus
+Style "xmh"         Icon mail1.xpm, NoIconTitle,StickyIcon
+Style "xmh"	    RandomPlacement, StartsOnDesk 2, NoButton 2
+Style "xman"	    Icon xman.xpm,RandomPlacement,ClickToFocus
+Style "xvgr"	    Icon graphs.xpm,RandomPlacement,ClickToFocus
+Style "matlab"	    Icon math4.xpm,ClickToFocus
+Style "xmag"	    Icon mag_glass.xpm,RandomPlacement, ClickToFocus
+Style "xgraph"      Icon graphs.xpm,RandomPlacement,ClickToFocus
+Style "sppeed6"     Icon math3.xpm,NoTitle,ClickToFocus
+Style "sppeed6_user" Icon math4.xpm,NoTitle
+Style "xmosaic"     NoPPosition, color Green/Yellow,ClickToFocus
+Style "MetaCard"    RandomPlacement, ClickToFocus
+
+Key Left	A	C	Scroll -100 0
+Key Right	A	C	Scroll +100 +0
+Key Up		A	C	Scroll +0   -100
+Key Down	A	C	Scroll +0   +100
+Key Left	A	M	Scroll -10 +0
+Key Right	A	M	Scroll +10 +0
+Key Up		A	M	Scroll +0   -10
+Key Down	A	M	Scroll +0   +10
+Key Left	A	SC	CursorMove -1 0
+Key Right	A	SC	CursorMove +1 +0
+Key Up		A	SC	CursorMove +0   -1
+Key Down	A	SC	CursorMove +0   +1
+Key Left	A	SM	CursorMove -10 +0
+Key Right	A	SM	CursorMove +10 +0
+Key Up		A	SM	CursorMove +0   -10
+Key Down	A	SM	CursorMove +0   +10
+Key KP_F1	A	M	Popup "Utilities"
+Key KP_F2	A	M	Popup "Window-Ops"
+Key KP_F3	A	M	Module FvwmWinList 
+Key KP_F4	A	M	Iconify
+Key F5	A	M	Move        100p 100p
+Key F6	A	M	Resize   10 10
+Key F7	A	M	Next [*] focus
+Key F8	A	M	Prev [*] focus
+Key F10 	A	A	Next [CurrentDesk rxvt]Focus
+Key F11 	A	A	Prev [CurrentDesk rxvt]Focus
+Key F15		FTIWS	A	Raise
+
+Mouse 1	R   	A       Menu Utilities Nop
+Mouse 2	R    	A      	Menu Window-Ops Nop
+Mouse 3	R    	A      	WindowList
+Mouse 0	1    	A      	Menu Window-Ops2 Close
+Mouse 0	2    	A     	Maximize-Func
+Mouse 0	4    	A     	Iconify
+Mouse 1	F	A	Resize-or-Raise
+Mouse 1	TS	A	Move-or-Raise
+Mouse 1	I	A	Move-or-Iconify
+Mouse 2	I	A	Iconify
+Mouse 2	FST	A	Menu Window-Ops2 Nop
+Mouse 3	TSIF	A	RaiseLower
+
+########################Initialization Functions ############################
+AddToFunc InitFunction 	  "I" Module FvwmButtons
++			  "I" exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070
+
+AddToFunc RestartFunction "I" Module FvwmButtons
++			  "I" exec xsetroot -mod 2 2 -fg \#554055 -bg \#705070
+
+
+########################Menus ########################################
+AddToMenu Utilities	"Utilities"	Title 	
++			"Xterm"		Exec  exec xterm -e tcsh &
++			"Rxvt"		Exec  exec rxvt &
++			"Remote Logins"	Popup Remote-Logins
++			"Top"		Exec  exec rxvt -T Top -n Top -e top &
++			"Calculator"	Exec  exec xcalc &
++			"Xman"		Exec  exec xman &
++			"Xmag"		Exec  exec xmag &
++			"emacs"		Exec  exec xemacs &
++                       "Mail"          MailFunction xmh "-font fixed"
++			""		Nop
++			"Modules"	Popup Module-Popup
++			""		Nop		
++			"Exit Fvwm"	Popup Quit-Verify
+AddToMenu Window-Ops	"Window Ops"	Title		
++			"Move"		Move-or-Raise2
++			"Resize"	Resize-or-Raise2
++			"Raise"		Raise
++			"Lower"		Lower 
++		 	"(De)Iconify"	Iconify
++			"(Un)Stick"	Stick		
++			"(Un)Maximize"	maximize_func
++			""		Nop  
++			"Delete"	Delete	 
++			"Close"		Close	 
++			"Destroy"	Destroy
++			""		Nop		
++			"Refresh Screen" Refresh		
+AddToMenu Window-Ops2	"Move"		Move-or-Raise
++			"Resize"	Resize-or-Raise
++			"Raise"		Raise   	
++			"Lower"		Lower   	
++			"Iconify"	Iconify 	
++			"(Un)Stick"	Stick		
++			""		Nop     	
++			"Delete"	Delete	
++			"Close"		Close	  	
++			"Destroy"	Destroy 	
++			""		Nop 		
++			"ScrollBar" 	Module FvwmScroll 2 2	
++			"Print"         PrintFunction
+
+AddToMenu Remote-Logins	"dopey"	 Exec rsh dopey rxvt -display $HOSTDISPLAY &
++			"snoopy" Exec rsh snoopy rxvt -display $HOSTDISPLAY &
++			"grumpy" Exec rsh grumpy rxvt -display $HOSTDISPLAY &
++			"happy"	 Exec rsh happy rxvt -display $HOSTDISPLAY &
++			"bailey" Exec rsh bailey rxvt -display $HOSTDISPLAY &
++			"barnum" Exec rsh barnum rxvt -display $HOSTDISPLAY &
++			"joker"	 Exec rsh joker rxvt -display $HOSTDISPLAY &
++			"signal" Exec rxterm signal
+
+AddToMenu Module-Popup	"Modules"	Title	
++			"Button-Bar"	Module	FvwmButtons
++			"Clean-Up"	Module	FvwmClean
++			"Identify"	Module	FvwmIdent
++			"SaveDesktop"	Module  FvwmSave
++			"Debug"		Module	FvwmDebug
++			"Pager"		Module  FvwmPager 0 1
++			"WinList"	Module  FvwmWinList
++			"Background"	Module  FvwmBacker
++			"IconBox"	Module	FvwmIconBox
++			"Banner"	Module	FvwmBanner
++			"Talk"  	Module	FvwmTalk
++			"Prompt"	Module	FvwmPrompt "hello" raise
+
+AddToMenu Quit-Verify 	"Really Quit Fvwm?" Title	
++		      	"Yes, Really Quit"  Quit	
++                       "Restart Fvwm2"     Restart fvwm2
++		      	"Restart Fvwm"	    Restart fvwm
++		      	"Start twm"         Restart twm
++		      	"Start mwm"    	    Restart mwm
++	      	      	"Start olwm"        Restart /usr/openwin/bin/olwm
++		        "Start tvtwm"       Restart vtwm
++		      	"Start dummy"       Restart xterm
++		      	""		    Nop	
++		      	"No, Don't Quit"    Nop	
+
+########################Functions ########################################
+
+AddToFunc MailFunction	   "I" Next [$0] Iconify -1
++		           "I" Next [$0] focus
++			   "I" None [$0] Exec $0 $1
+
+AddToFunc Move-or-Raise		"I" Raise
++				"M" Move
++  				"D" Lower
+
+AddToFunc Move-or-Raise2	"M" Raise
++				"M" Move
++  				"D" Lower
+
+AddToFunc Maximize-Func		"M" Maximize	 0 100
++				"C" Maximize	 0 80
++				"D" Maximize	 100 100
+
+AddToFunc Move-or-Iconify	"I" Raise
++				"M" Move
++				"D" Iconify
+
+AddToFunc Resize-or-Raise	"I" Raise
++				"M" Resize
++				"D" Lower
+
+AddToFunc Resize-or-Raise2	"M" Raise
++				"M" Resize
++				"D" Lower
+
+AddToFunc PrintFunction		"I" Raise
++				"I" Exec xdpr -id $w
+
+AddToFunc Iconify-and-Raise     "I" Iconify
++                               "I" Raise
+
+################## FvwmButtons button-bar ################################
+# Colors
+*FvwmButtonsFore Black
+*FvwmButtonsBack #908090
+
+# Font
+*FvwmButtonsFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+# Geometry - really likes to pick its own size, but giving a position is OK
+*FvwmButtonsGeometry -1-1
+
+# Layout: specify rows or columns, not both
+*FvwmButtonsRows 2
+
+# xterm or rxvts on remote machines can be done like this
+# Output re-direction is csh style, not sh style
+# You will want to substitute your own hosts here!
+
+*FvwmButtons Dopey   rterm.xpm	Exec "XTerm" rsh dopey "exec rxvt -T dopey -display $HOSTDISPLAY </dev/null >&/dev/null & "&
+*FvwmButtons Grumpy  rterm.xpm	Exec "XTerm" rsh grumpy "exec rxvt -T grumpy -display $HOSTDISPLAY </dev/null >&/dev/null & "&
+*FvwmButtons Snoopy  rterm.xpm	Exec "XTerm" rsh snoopy "exec rxvt -T snoopy -display $HOSTDISPLAY </dev/null >&/dev/null & "&
+*FvwmButtons signal rterm.xpm	Exec "XTerm" rxterm signal &
+*FvwmButtons mail    mail2.xpm    Function MailFunction xmh "-font fixed"
+
+*FvwmButtons whatever  clock.xpm   Swallow "Clock" Exec rclock -bg \#908090 -geometry -1500-1500 -font -*-times-*-r-*-*-17-*-*-*-*-*-*-* -mailupdate 10 &
+*FvwmButtons(4x1) - whatever Swallow "FvwmPager" Module FvwmPager 0 3
+
+########################## Window-Identifier ###############################
+# Just choose colors and a fonts
+*FvwmIdentBack MidnightBlue
+*FvwmIdentFore Yellow
+*FvwmIdentFont -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+
+########################### Pager #########################################
+*FvwmPagerBack #908090
+*FvwmPagerFore #484048
+*FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmPagerHilight #cab3ca
+*FvwmPagerGeometry -1-1
+*FvwmPagerLabel 0 Misc
+*FvwmPagerLabel 1 Maker
+*FvwmPagerLabel 2 Mail
+*FvwmPagerLabel 3 Matlab
+*FvwmPagerSmallFont 5x8
+
+##########################FvwmWinList##################################
+*FvwmWinListBack #908090
+*FvwmWinListFore Black
+*FvwmWinListFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmWinListAction Click1 Iconify -1,Focus
+*FvwmWinListAction Click2 Iconify
+*FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
+*FvwmWinListUseSkipList
+*FvwmWinListGeometry +0-1
+                                      
+
+*FvwmBackerDesk 0 -solid steelblue
+*FvwmBackerDesk 1 -solid midnightblue
+
+*FvwmScrollBack grey40
+*FvwmScrollFore green
+	
+############################################################
+############################################################
+# Note that icons are shown in the module
+#    only if NoIcon commnand is applied.
+#Style     "*"  NoIcon
+
+############################################################
+*FvwmIconBoxIconBack    #cfcfcf
+*FvwmIconBoxIconHiFore  black
+*FvwmIconBoxIconHiBack  LightSkyBlue
+*FvwmIconBoxBack        #5f9ea0
+#*FvwmIconBoxFore       blue
+*FvwmIconBoxGeometry    5x1+0+0
+*FvwmIconBoxMaxIconSize 64x38
+*FvwmIconBoxFont        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+*FvwmIconBoxSortIcons   IconName
+*FvwmIconBoxPadding     4
+*FvwmIconBoxLines       10
+*FvwmIconBoxSBWidth     11
+*FvwmIconBoxPlacement   Left Top
+*FvwmIconBoxPixmap      fvwm.xpm
+#*FvwmIconBoxHideSC Horizontal
+*FvwmIconBoxSetWMIconSize
+*FvwmIconBoxHilightFocusWin
+#*FvwmIconBoxResolution          Desk
+*FvwmIconBoxMouse       1       Click           RaiseLower
+*FvwmIconBoxMouse       1       DoubleClick     Iconify
+*FvwmIconBoxMouse       2       Click           Iconify -1, Focus
+*FvwmIconBoxMouse       3       Click           Module FvwmIdent
+*FvwmIconBoxKey         r       RaiseLower
+*FvwmIconBoxKey         space   Iconify
+*FvwmIconBoxKey         d       Close
+*FvwmIconBoxKey         n       Next
+*FvwmIconBoxKey         p       Prev
+*FvwmIconBoxKey         h       Left
+*FvwmIconBoxKey         j       Down
+*FvwmIconBoxKey         k       Up
+*FvwmIconBoxKey         l       Right
+#
+# Icon file specifications
+#
+# Mostly, you don't have to specify icon files, as FvwmIconBox now
+# reads icon files specified in Style commands.
+#
+*FvwmIconBox            "Fvwm*"         -

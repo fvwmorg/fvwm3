@@ -1,0 +1,58 @@
+.\" t
+.\" @(#)FvwmConfig.1	1/12/94
+.TH FvwmConfig 1.20 "Mar 16 1994"
+.UC
+.SH NAME
+FvwmConfig \- the FVWM Configuration Aid (Braindead)
+.SH SYNOPSIS
+FvwmConfig is spawned by fvwm, so no command line invocation will work.
+From within the .fvwmrc file, FvwmConfig is spawned as follows:
+.nf
+.sp
+Module FvwmConfig
+.sp
+.fi
+or from within an fvwm pop-up menu:
+.nf
+.sp
+     AddToMenu Module-Popup "Modules" Title
+     +         "Configure"      Module FvwmConfig
+     +         "FvwmIdentify"   Module FvwmIdent
+     +         "Banner"         Module FvwmBanner
+     +         "SaveDesktop"    Module FvwmSave
+.sp
+.fi
+
+.SH DESCRIPTION
+The FvwmConfig helps users make very simple, basic changes to the
+current fvwm configuration.
+
+In order for FvwmConfig to make changes which will take effect for
+future X sessions, the user's or system's .fvwmrc file must
+end with the line "Read .fvwmrc-config". FvwmConfig will write its
+configuration out to the file $HOME/.fvwmrc-config, thus minimizing
+conflicts with other portions of the user's configuration.
+
+Since FvwmConfig is used to edit the user's configuration, it doesn't
+make much sense for it to be very configurable itself. There are no
+user-specifiable configuration options for FvwmConfig.
+
+Use of this module is discouraged, since the options it allows are
+far less in variety than fvwm itself can allow.
+
+FvwmConfig will not work as intended if ANY styles other than the
+default styles are applied to it.
+
+.SH COPYRIGHTS
+The FvwmConfig program, and the concept for interfacing this module to
+the Window Manager, are all original work by Robert Nation.
+
+Copyright 1994, Robert Nation. No guarantees or warranties or anything
+are provided or implied in any way whatsoever. Use this program at your
+own risk. Permission to use this program for any purpose is given,
+as long as the copyright is kept intact. 
+
+
+.SH AUTHOR
+Robert Nation 
+

@@ -1,0 +1,70 @@
+/* XPM */
+/*****************************************************************************/
+/**       The original pixmap (xterm-blank.xpm)                             **/
+/**       is kindly offered by Ion Cionca - 1992 -                          **/
+/**       Swiss Federal Institute of Technology                             **/
+/**       Central Computing Service                                         **/
+/*****************************************************************************/
+/** The BSD Demon pictures were drawn by John Lasseter. The pictures are    **/
+/** Copyright 1988 Marshall Kirk McKusick. All Rights Reserved.             **/
+/**                                                                         **/
+/** Non-commercial and personal use of the BSD Demon pictures is permitted. **/
+/** Mass production or commercial use requires explicit written permission. **/
+/** Permission may be obtained by writing to:                               **/
+/**                                                                         **/
+/** Marshall Kirk McKusicki						    **/
+/** 1614 Oxford St							    **/
+/** Berkeley, CA 94709-1608						    **/
+/** USA									    **/
+/**									    **/
+/*****************************************************************************/
+/** combination of both pictures by Slaven Rezic (eserte@cs.tu-berlin.de)   **/
+/*****************************************************************************/
+static char * xterm_bsd_xpm_1[] = {
+"64 38 8 1",
+" 	s mask  c none",
+"a      c gray70",
+".	c gray50",
+"X	c #8B8B26262929",
+"o	c darkolivegreen",
+"O	c gray85",
+"+	c white",
+"@	c black",
+"                                                                ",
+"               .                                                ",
+"              XX                                                ",
+"            XXo          XOOOOOOOOOOOOOOOOOOOOOOOOOOO           ",
+"           oXo.          ooOOOOOOOOOOOOOOOOOOOOOOOOOOO..        ",
+"           XXooXXXooo    oXoooooooooooooooooooooooOOOO..        ",
+"           XXXXXXXoXooo  oXooooooooooooooooooooooooOOO...       ",
+"           XXOOX .XXXXXXXXooo++o+oo+o++++oo+oooooooOOO...       ",
+"           XOOXOOOXXXXXXXooooooooooooooooooooooooooOOO....      ",
+"           XOO.OOOXXXXoXooooo++++o++o+++oooooooooooOOO....      ",
+"           OoO.OOOXXXXo@oooooooooooooooooooooooooooOOO.....     ",
+"          oooX.oOOXXX@@@oOOoo++++++++++o+++++ooooooOOO.....     ",
+"         oXXXXooOOXXX@@@ OOooooooooooooooooooooooooOOO.....     ",
+"      Xo XXXXXX..XXXXX@@ OOoo+++o++++o++oo+++ooooooOOO.....     ",
+"        .XXXXoXXXXXXX@@@ OOooooooooooooooooooooooooOOO.....     ",
+"     o  o XoXXXXXXXX@@@@ OOoo+oooooooooooooooooooooOOO.....     ",
+"      ooo  oXXXXXX@X@@@  OOooooooooooooooooooooooooOOO.....     ",
+"   .X ooo Xo oXXXX@@@@   OOoo++++o+o+++o+ooooooooooOOO.....     ",
+"     XX .oXo  XXXoX@@    OOooooooooooooooooooooooooOOO.....     ",
+"       XXXXoooXXXXXX@    OOoo+o++++ooooooooooooooooOOO.....     ",
+"       .oXoooXXXXXXX@@   OOOooooooooooooooooooooooOOOO....      ",
+"         XXoooXXXX@X@@   OOOOOOOOOOOOOOOOOOOOOOOOOOOOO...       ",
+"           XXXXXX@@@@@    OOOOOOOOOOOOOOOOOOOOOOOOOOO...        ",
+"            oXX@XX@@@@      .........................   ..      ",
+"            X@X@@@@@@@                                 ...      ",
+"            XXX@X@@@@X      ..............................      ",
+"            oXXXXX@@@@    .OOOOOOOOOOOOOOOOOOOOOOOOOOO....      ",
+"             XXXX@@@@@    .OOOOOOOOOOOOOOOOOO@@@@@@@OO....      ",
+"             X@X@@@@@@@ ...........................OOO...       ",
+"      .      @ X@XX@@@@@.OOOOOOOOOOOOOOOOOOOOOOOOO.....         ",
+"  . . oo.oXX.XXo.@@@@ @@@@@OOOOOOOOOOOOOOOOOOOOOO..      ...... ",
+"    X .. .o  oXXXX@@@@ O@@@@@@.+++++++++++++OOOOO..   .....   . ",
+"      ....  ..@@@@@@@@@@@@@@X@@XooOOOOOOOOOOOOOO..   ..OOO..  . ",
+"         . ..@@@@@@@@@@@@@@@@@++.X@@+++++++OOOO..    .OOOOO  .  ",
+"        .  @@@@@@@@@@@@@@@@XOXoOO@@@OOOOOOOOOO..     .     ..   ",
+"               @@X@@@@@X@..oXXX@@@@@...........      .......    ",
+"                         oXXX@@@@@@@                            ",
+"                               @@@@@                            "};

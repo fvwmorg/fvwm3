@@ -1,0 +1,23 @@
+
+How to install FvwmButtons in the fvwm-2.0.41 tree.
+
+NOTE: If you don't want to overwrite the old FvwmButtons, you should change
+all "FvwmButtons" below to some other name like "NewButtons". You should also
+edit the last line in the Imakefile to read "FvwmModuleTarget(NewButtons)".
+
+1) Untar the distribution inside fvwm-2.0.41/modules/FvwmButtons
+
+3) In that directory, type
+	xmkmf; make clean; make install
+   No need to recompile the whole thing :-) Unless of course you have applied
+   any of the related patches.
+
+4) Fire up FvwmTalk and try:  FvwmButtons SomeName /full/path/to/samplebuttonrc
+   (or NewButtons if that is what you called it)
+   This should produce a nice buttonbox on your screen. Try rescaling it a
+   little, maybe edit the file and experiment.
+
+5) If this did not work, check the error output from fvwm, this might provide
+   some info on what's wrong. Send the complete output to me if you like.
+   You can make it produce lot of output by uncommenting some of the DEBUG
+   defines in FvwmButtons.h.

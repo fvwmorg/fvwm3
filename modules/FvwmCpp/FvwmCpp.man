@@ -1,0 +1,134 @@
+.\" t
+.\" @(#)FvwmCpp.1	1/28/94
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.5i
+..
+.de EE
+.fi
+.in -.5i
+.if n .sp 1
+.if t .sp .5
+..
+.TH FvwmCpp 2.0 12/12/94
+.UC
+.SH NAME
+FvwmCpp \- the FVWM  Cpp pre-processor
+.SH SYNOPSIS
+FvwmCpp is spawned by fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+When called, this module will attempt to have /usr/lib/cpp pre-process
+the file specified in its invocation, and then have fvwm read the
+resulting file.
+
+.SH INVOCATION
+FvwmCpp can be invoked by inserting the line 'FvwmCpp' in the .fvwm2rc
+file. It can also be called from a menu or mouse binding.  If the user
+wants his entire .fvwm2rc file pre-processed with FvwmCpp, then fvwm
+should be invoked as:
+
+.EX
+fvwm2 -cmd "FvwmCpp .fvwm2rc"
+.EE
+
+Some options can be specified on the command line:
+.IP -Cppopt \fIoption\fP
+Lets you pass an option to the cpp program.  Not really needed as any unknown
+options will be passed on automatically.
+
+.IP -Cppprog \fIname\fP
+Instead of invoking "/usr/lib/cpp", fvwm will invoke \fIname\fP.
+
+.IP -outfile \fIfilename\fP
+Instead of creating a random unique name for the temporary file for
+the preprocessed rc file, this option will let you specify the name of
+the temporary file it will create.
+
+.IP -debug
+Causes the temporary file create by Cpp to
+be retained. This file is usually called "/tmp/fvwmrcXXXXXX"
+
+
+.SH CONFIGURATION OPTIONS
+FvwmCpp defines some values for use in the pre-processor file:
+
+.IP TWM_TYPE
+Always set to "fvwm".
+.IP SERVERHOST
+The name of the machine running the X Server.
+.IP CLIENTHOST
+The name of the machine running fvwm.
+.IP HOSTNAME
+The hostname of the machine running fvwm. Generally the same as CLIENTHOST.
+.IP OSTYPE
+The operating system for CLIENTHOST.
+.IP USER
+The name of the person running fvwm.
+.IP VERSION
+The X11 version.
+.IP REVISION
+The X11 revision number.
+.IP VENDOR
+The X server vendor.
+.IP RELEASE
+The X server release number.
+.IP WIDTH
+The screen width in pixels.
+.IP HEIGHT
+The screen height in pixels.
+.IP X_RESOLUTION
+Some distance/pixel measurement for the horizontal direction, I think.
+.IP Y_RESOLUTION
+Some distance/pixel measurement for the vertical direction, I think.
+.IP PLANES
+Number of color planes for the X server display
+.IP BITS_PER_RGB
+Number of bits in each rgb triplet.
+.IP CLASS
+The X11 visual class, ie PsuedoColor.
+.IP COLOR
+Yes or No, Yes if the display class is neither StaticGrey or GreyScale.
+.IP FVWM_VERSION
+The fvwm version number, ie 2.0
+.IP OPTIONS
+Some combination of SHAPE, XPM, NO_SAVEUNDERS, and Cpp, as defined in
+configure.h at compile time.
+.IP FVWMDIR
+The directory where fvwm looks for .fvwmrc and modules by default, as
+determined at compile time.
+
+.SH EXAMPLE PROLOG
+
+.EX
+#define TWM_TYPE fvwm
+#define SERVERHOST spx20
+#define CLIENTHOST grumpy
+#define HOSTNAME grumpy
+#define OSTYPE SunOS
+#define USER nation
+#define HOME /local/homes/dsp/nation
+#define VERSION 11
+#define REVISION 0
+#define VENDOR HDS human designed systems, inc. (2.1.2-D)
+#define RELEASE 4
+#define WIDTH 1280
+#define HEIGHT 1024
+#define X_RESOLUTION 3938
+#define Y_RESOLUTION 3938
+#define PLANES 8
+#define BITS_PER_RGB 8
+#define CLASS PseudoColor
+#define COLOR Yes
+#define FVWM_VERSION 2.0 pl 1
+#define OPTIONS SHAPE XPM Cpp 
+#define FVWMDIR /local/homes/dsp/nation/modules
+
+.EE
+
+.SH AUTHOR
+FvwmCpp is the result of a random bit mutation on a hard disk,
+presumably a result of a  cosmic-ray or some such thing.

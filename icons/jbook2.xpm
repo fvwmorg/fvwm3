@@ -1,0 +1,30 @@
+/* XPM */
+static char * jbook2_xpm[] = {
+/**/
+"16 16 8 1",
+/**/
+" 	s None	c None",
+".	c saddlebrown",
+"X	c gray85",
+"o	c white",
+"O	c gray45",
+"+	c gray70",
+"@	c gray60",
+"#	c gray55",
+/*÷dÄ¬÷dÇ\*/
+"                ",
+"                ",
+"                ",
+"............... ",
+"XoooooXOXooooo+ ",
+"X@#o@#XOX+o@+XO ",
+"Xoo@ooXOXo+ooX+ ",
+"@####@XOX##@@#+ ",
+"XoXXoXXOX@o+Xo+ ",
+"X@X#@#XOXo#o##O ",
+"Xo@o@oXOX+##Xo+ ",
+"@oo#o#XOXoo##o+ ",
+"X@@@##XOX@@@o#+ ",
+"@oooooXOXoooooO ",
+"............... ",
+"                "};

@@ -1,0 +1,23 @@
+/* XPM */
+static char * jgraph_xpm[] = {
+"16 16 4 1",
+" 	s None	c None",
+".	c gray30",
+"X	c white",
+"o	c red",
+"                ",
+"                ",
+"  ............. ",
+"  .XXX.XXX.XXX. ",
+"  oXXX.XXX.XXX. ",
+"  ooXX.XXX.XXX. ",
+"  oo........... ",
+"  .ooX.XXX.XXX. ",
+"  .XoX.XXXoooX. ",
+"  .Xoo.Xoo.Xoo. ",
+"  ...o..o....o. ",
+"  .XXoooXX.XXoo ",
+"  .XXXoXXX.XXXo ",
+"  .XXX.XXX.XXX. ",
+"  ............. ",
+"                "};

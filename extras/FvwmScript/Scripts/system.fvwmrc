@@ -1,0 +1,411 @@
+##############################################
+# Don't change the beginning of this file !!!#
+##############################################
+
+#DeskSetup,4749
+KillModule FvwmAuto
+ChangeDefaultFocus SloppyFocus
+EdgeScroll 0 0
+ColormapFocus FollowsMouse
+OpaqueMoveSize 10
+DeskTopSize 4 2
+#end
+
+#MenuSetup,1
+MenuStyle #000000 #d0d0d0 Black -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-* mwm
+#end
+
+#WinSetup,1
+WindowFont		-adobe-times-bold-r-*-*-14-*-*-*-*-*-*-*
+IconFont		-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+HilightColor Yellow #5c54c0
+Style "*"           BorderWidth 10, HandleWidth 10,IconBox 580x400-0-0
+Style "*"           Icon unknown1.xpm, Color #AAFF00/RoyalBlue
+Style "*"           ActivePlacement, SmartPlacement,SkipMapping
+Style "*"           MWMFunctions,HintOverride,MWMBorder
+Style "*"           DecorateTransient
+#end
+
+
+##############################################
+# Here, you can modify this file             #
+##############################################
+
+
+# small up triangle
+ButtonStyle 2 4 50x35@1 65x65@0 35x65@0 50x35@1
+# small down triangle
+ButtonStyle 4 4 50x65@1 35x35@1 65x35@1 50x65@0
+
+# some other ButtonStyles:
+# large up triangle
+#ButtonStyle 2 4 50x25@1 75x75@0 25x75@0 50x25@1
+# large down triangle
+#ButtonStyle 4 4 50x75@1 25x25@1 75x25@1 50x75@0
+# big box
+#ButtonStyle 2 5 25x25@1 25x75@1 75x75@0 75x25@0 25x25@1
+# little box
+#ButtonStyle 8 5 40x40@1 60x40@1 60x60@0 40x60@0 40x40@1
+# tall box
+#ButtonStyle 6 5 40x25@1 60x25@1 60x75@0 40x75@0 40x25@1
+# dot
+#ButtonStyle 4 5 45x45@1 55x45@1 55x55@0 45x55@0 45x45@1
+# an up arrow:
+#ButtonStyle 2 8 40x80@1 40x50@1 20x50@1 50x20@1 80x50@0 60x50@0 60x80@0 40x80@0
+# an X
+#ButtonStyle 3 13 26x29@1 34x21@1 50x35@1 70x21@1 79x29@1 63x48@0 79x65@1 70x75@0 50x61@0 34x75@0 26x65@0 44x48@1 26x29@0
+
+
+
+ModulePath /usr/lib/X11/fvwm
+PixmapPath /usr/X11/lib/TkDesk/images/next/:/usr/include/X11/pixmaps/:/usr/X11R6/include/X11/mini-icons/:/usr/X11R6/include/X11/3dpixmaps/normal:/usr/X11R6/include/X11/3dpixmaps/next/:/usr/X11R6/include/X11/3dpixmaps/small
+IconPath  /usr/X11/lib/TkDesk/images/next/:/usr/X11R6/include/X11/pixmaps/:/usr/X11R6/include/X11/mini-icons/
+
+*FvwmScriptPath /usr/X11/lib/X11/fvwm
+
+ClickTime 750
+# EdgeResistance 0 0
+
+
+Style "Fvwm*"       NoHandles, Sticky, WindowListSkip,
+Style "Fvwm*"       BorderWidth 8,CirculateSkipIcon
+Style "FvwmButtons" NoTitle, NoHandles, Sticky, WindowListSkip
+Style "FvwmButtons" BorderWidth 8, CirculateSkip
+Style "FvwmButtons" Icon toolbox.xpm
+Style "FvwmIdent"   Title
+Style "xbiff"       NoTitle, Sticky, WindowListSkip
+Style "Maker"       StartsOnDesk 1,RandomPlacement
+Style "rxvt"        Icon  term.xpm,SloppyFocus
+Style "XTerm"       Icon xterm.xpm
+Style "Appointment" Icon datebook.xpm, NoButton 2, NoButton 4
+Style "xcalc"       Icon xcalc.xpm, NoButton 2
+Style "xmh"         Icon mail1.xpm, NoIconTitle,StickyIcon
+Style "xmh"	    RandomPlacement, StartsOnDesk 2, NoButton 2
+Style "xman"	    Icon xman.xpm,RandomPlacement
+Style "xvgr"	    Icon graphs.xpm,RandomPlacement
+Style "matlab"	    Icon math4.xpm
+Style "xmag"	    Icon mag_glass.xpm,RandomPlacement
+Style "xgraph"      Icon graphs.xpm,RandomPlacement
+Style "sppeed6"     Icon math3.xpm,NoTitle
+Style "sppeed6_user" Icon math4.xpm,NoTitle
+Style "xmosaic"     NoPPosition, color Green/Yellow
+Style "textedit"    Icon editor.xpm
+Style "Edit"	    BorderWidth 5, HandleWidth 2,NoHandles, NoButton 2, NoButton 4
+Style "Edit"	    SloppyFocus,StaysOnTop, WindowListSkip
+Style "/mnt/floppy/" Icon floppy.xpm
+Style "/mnt/cdrom/" Icon cdisc.xpm
+Style "TkDesk Application Bar" Sticky, WindowListSkip, CirculateSkip,BorderWidth 0,NoTitle, NoHandles
+Style "Disk Usage"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Background #1"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Job Control"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Find Files"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Delete Files"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "File Information"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Rename File"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Copy, Move, Link Files"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "New File"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "New Directory"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Info"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Execute"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Control"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "File modified"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Starting..."  NoHandles, BorderWidth 8, NoButton 4,NoButton 2,NoButton 1
+Style "File exists"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2,NoButton 1
+Style "TkMan v1.7.3" Icon xman.xpm
+Style "Logout"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2,Sticky,StaysOnTop
+Style "shutdown"  NoHandles, NoTitle, BorderWidth 8, NoButton 4,NoButton 1,NoButton 2 ,Sticky,StaysOnTop
+Style "Screen Setup"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Bell Setup"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Keyboard Setup"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Pointer Setup"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Date"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+Style "Confirmation"  NoHandles, BorderWidth 8, NoButton 4,NoButton 2
+
+
+Mouse 1	R   	A       Menu Utilities Nop
+Mouse 2	R    	A      	Menu Window-Ops Nop
+Mouse 3	R    	A      	WindowList
+Mouse 1	1    	A      	Raise-or-Delete
+Mouse 2	1    	A      	Menu Window-Ops2
+Mouse 3	1    	A      	RaiseLower
+Mouse 0	2    	A     	Maximize-Func
+Mouse 0	4    	A     	Iconify
+Mouse 1	F	A	Resize-or-Raise
+Mouse 1	T	A	Move-or-Raise
+Mouse 1	S	A	Resize-or-Raise
+Mouse 1	I	A	Move-or-Iconify
+Mouse 2	I	A	Menu Window-Ops Nop
+Mouse 2	FST	A	Menu Window-Ops2 Nop
+Mouse 3	TSIF	A	RaiseLower
+
+
+########################Initialization Functions ############################
+AddToFunc InitFunction	  "I" Module FvwmScript Buttons
+#+			  "I" Module FvwmButtons 
+#+			  "I" Module FvwmBacker
+#+			  "I" Module FvwmAudio
+
+AddToFunc RestartFunction "I" Module FvwmScript Buttons
+#+			  "I" Module FvwmBacker
+#+			  "I" Module FvwmAudio
+########################Menus ########################################
+
+# The following menus form the bulk of the menu system I have hanging
+# off the GoodStuff module; they contain most of my commonly used
+# X-based tools.  Note that I use rxvt instead of xterm for most of my
+# shells due to memory constraints; if you use xterms or some variant
+# thereof (aixterm, cxterm, kxterm, etc.) you'll need to change quite
+# a few things.  --tabaer@magnus
+
+# A menu of VT100 size shells
+AddToMenu "80x25" "80x25 Shells" Nop
++              "" Nop
++              "Black on white" Exec exec color_xterm -sb -ls -geometry 80x25 -fg Black -bg White &
++              "Gold on black" Exec exec color_xterm -sb -ls -geometry 80x25 -fg gold1 -bg Black &
++              "Green on black" Exec exec color_xterm -sb -ls -geomtery 80x25 -fg green2 -bg Black &
++              "White on black" Exec exec color_xterm -sb -ls -geometry 80x25 -fg White -bg Black &
++              "Yellow on blue" Exec exec color_xterm -sb -ls -geometry 80x25 -fg Yellow -bg Blue &
+
+# A menu of slightly larger shells
+AddToMenu "80x40" "80x40 Shells" Nop
++              "" Nop
++              "Black on gray" Exec exec color_xterm -sb -ls -geometry 80x40 -fg Black -bg LightGray &
++              "Black on white" Exec exec color_xterm -sb -ls -geometry 80x40 -fg Black -bg White &
++              "Gold on black" Exec exec color_xterm -sb -ls -geometry 80x40 -fg gold1 -bg Black &
++              "Green on black" Exec exec color_xterm -sb -ls -geometry 80x40 -fg green2 -bg Black &
++              "White on black" Exec exec xterm -sb -ls -geometry 80x40 -fg White -bg Black &
++              "Yellow on blue" Exec exec xterm -sb -ls -geometry 80x40 -fg Yellow -bg Blue &
+
+AddToMenu "Pict" "Pict viewer" Nop
++              "" Nop
++              "Loupe" Exec exec xmag &
++              "Bitmap Viewer" Exec exec bitmap &
++              "PostScript Previewer" Exec exec ghostview -magstep 1 &
++              "XV" Exec exec xv &
++              "XFigure" Exec exec xfig &
++              "XPaint" Exec exec xpaint &
+
+AddToMenu "Prog" "Development" Nop
++              "" Nop
++              "EditRes" Exec exec editres &
++              "Lisp" Exec exec xterm -sb -bg grey -e clisp &
++              "XXGdb" Exec exec xxgdb &
++	       "Environnement C" Exec exec xwpe &
+
+# A set of NASTY time killers...
+AddToMenu "Games" "Games" Nop
++              "" Nop
++              "GnuChess" Exec exec xboard &
++              "Lander" Exec exec xlander &
++              "Xgalaga" Exec exec xgal &
++              "Xeyes" Exec exec xeyes &
++              "Xhextris" Exec exec xhextris &
++              "Xlogo" Exec exec xlogo &
++              "Xmahjongg" Exec exec xmahjongg &
++              "Xtetris" Exec exec xtetris &
++              "Xvier" Exec exec xvier &
++              "Doom" Exec exec xdoom &
+
+AddToMenu "ScreenSaver" "Screen Saver" Nop
++              "" Nop
++              "Bat" Exec exec xlock -nolock -nice 0 -mode bat &
++              "Blank" Exec exec xlock -nolock -nice 0 -mode blank &
++              "Blot" Exec exec xlock -nolock -nice 0 -mode blot &
++              "Bob" Exec exec xlock -nolock -nice 0 -mode bob &
++              "Bounce" Exec exec xlock -nolock -nice 0 -mode bounce &
++              "Flame" Exec exec xlock -nolock -nice 0 -mode flame &
++              "Galaxy" Exec exec xlock -nolock -nice 0 -mode galaxy &
++              "Grav" Exec exec xlock -nolock -nice 0 -mode grav &
++              "Helix" Exec exec xlock -nolock -nice 0 -mode helix &
++              "Hop" Exec exec xlock -nolock -nice 0 -mode hop &
++              "Hyper" Exec exec xlock -nolock -nice 0 -mode hyper &
++              "Kaleid" Exec exec xlock -nolock -nice 0 -mode kaleid &
++              "Life" Exec exec xlock -nolock -nice 0 -mode life &
++              "Life3d" Exec exec xlock -nolock -nice 0 -mode life3d &
++              "Maze" Exec exec xlock -nolock -nice 0 -mode maze &
++              "Pyro" Exec exec xlock -nolock -nice 0 -mode pyro &
++              "Qix" Exec exec xlock -nolock -nice 0 -mode qix &
++              "Random" Exec exec xlock -nolock -nice 0 -mode random &
++              "Rect" Exec exec xlock -nolock -nice 0 -mode rect &
++              "Rock" Exec exec xlock -nolock -nice 0 -mode rock &
++              "Rotor" Exec exec xlock -nolock -nice 0 -mode rotor &
+
+# Menu of silly things every X setup should have
+AddToMenu "Toys" "Toys" Nop
++              "" Nop
++              "X-Eyes" Exec exec xeyes &
++              "X-Roaches" Exec exec xroach &
+
+# Here are the top-level menus hanging off GoodStuff.  As you'll see,
+# they call other menus a lot.  --tabaer@magnus
+
+AddToMenu "Shells" "Shells" Nop
++              "" Nop
++              "80x25" PopUp 80x25
++              "80x40" PopUp 80x40
+# This defines the most common window operations
+# As with the key bindings (see below), these were appropriated from
+# a stock SGI .4Dwmrc file
+
+AddToMenu "Utilities" "Tools" Nop
++              "" Nop
++              "Clipboard" Exec exec xclipboard &
++              "Lecture CD audio" Exec exec workman &
++	       "Eject CD Rom" Exec exec eject &
++	       "Réglage son" Exec exec xmix &
++	       "Format disquette" Exec exec /sbin/formatdos &
++              "MemInfo" Exec meminfo &
++	       "Restart fvwm" Restart fvwm
++              "Shells" PopUp Shells
++              "Pict viewer" PopUp Pict
++              "Development" PopUp Prog
++	       "Modules" Popup Module-Popup
++	       "Demos" Popup Demos
++	       "ScreenSavers" Popup ScreenSaver
+
+
+AddToMenu "Demos" "Demos" Nop
++              "" Nop
++              "X Demos and Toys" PopUp Toys
++              "X Games" PopUp Games
+
+
+
+AddToMenu Window-Ops	"Window Ops"	Title		
++			"Move%mini.move.xpm%"		Move-or-Raise2
++			"Resize%mini.resize.xpm%"	Resize-or-Raise2
++			"Raise%mini.raise.xpm%"		Raise
++			"Lower%mini.lower.xpm%"		Lower 
++		 	"(De)Iconify"	Iconify
++			"(Un)Stick"	Stick		
++			"(Un)Maximize"	maximize_func
++			""		Nop  
++			"Delete%mini.destroy.xpm%"	Delete	 
++			"Close%mini.destroy.xpm%"		Close	 
++			"Destroy%mini.destroy.xpm%"	Destroy
++			""		Nop		
++			"Refresh Screen" Refresh		
+AddToMenu Window-Ops2	"Move%mini.move.xpm%"		Move-or-Raise2
++			"Resize%mini.resize.xpm%"	Resize-or-Raise2
++			"Raise%mini.raise.xpm%"		Raise
++			"Lower%mini.lower.xpm%"		Lower 
++		 	"(De)Iconify"	Iconify
++			"(Un)Stick"	Stick		
++			"(Un)Maximize"	maximize_func
++			""		Nop  
++			"Delete%mini.destroy.xpm%"	Delete	 
++			"Close%mini.destroy.xpm%"		Close	 
++			"Destroy%mini.destroy.xpm%"	Destroy
++			""		Nop 		
++			"ScrollBar" 	Module FvwmScroll 2 2	
++			"Print"         PrintFunction
+
+AddToMenu Module-Popup	"Modules"	Title	
++			"Button-Bar"	Module	FvwmButtons
++			"Clean-Up"	Module	FvwmClean
++			"Identify"	Module	FvwmIdent
++			"SaveDesktop"	Module  FvwmSave
++			"WinList"	Module  FvwmWinList
++			"Background"	Module  FvwmBacker
++			"IconBox"	Module	FvwmIconBox
++			"Banner"	Module	FvwmBanner
++			"Talk"  	Module	FvwmConsole
++			"Configuration"	Module	FvwmConfig
+
+########################Functions ########################################
+
+AddToFunc MailFunction	   "I" Next [$0] Iconify -1
++		           "I" Next [$0] focus
++			   "I" None [$0] Exec $0 $1
+
+AddToFunc Move-or-Raise		"I" Raise
++				"M" Move
++  				"D" Maximize 100 100
+
+AddToFunc Move-or-Raise2	"M" Raise
++				"M" Move
++  				"D" Lower
+
+AddToFunc Maximize-Func		"M" Maximize	 0 100
++				"C" Maximize	 0 80
++				"D" Maximize	 100 100
+
+AddToFunc Move-or-Iconify	"I" Raise
++				"M" Move
++				"D" Iconify
+
+AddToFunc Resize-or-Raise	"I" Raise
++				"M" Resize
++				"D" Lower
+
+AddToFunc Resize-or-Raise2	"M" Raise
++				"M" Resize
++				"D" Lower
+
+AddToFunc PrintFunction		"I" Raise
++				"I" Exec xdpr -id $w
+
+AddToFunc Iconify-and-Raise     "I" Iconify
++                               "I" Raise
+
+AddToFunc Raise-or-Delete    	"D" Close
+
+
+########################## Window-Identifier ###############################
+# Just choose colors and a fonts
+*FvwmIdentBack MidnightBlue
+*FvwmIdentFore Yellow
+*FvwmIdentFont -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+
+########################### Pager #########################################
+*FvwmPagerBack Grey85
+*FvwmPagerFore Black
+*FvwmPagerFont -adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*
+*FvwmPagerHilight Grey70
+*FvwmPagerGeometry 130x56-1500-1500
+*FvwmPagerLabel 0 FvwmPager
+*FvwmPagerSmallFont 5x8
+
+                                      
+
+*FvwmBackerDesk 0 xpmroot /usr/X11/include/X11/pixmaps/Xlogo.xpm
+*FvwmBackerDesk 1 xpmroot /usr/X11/include/X11/pixmaps/fond1.xpm
+
+*FvwmScrollBack grey40 
+*FvwmScrollFore green
+	
+############################################################
+############################################################
+# Note that icons are shown in the module
+#    only if NoIcon commnand is applied.
+#Style     "*"  NoIcon
+
+############################################################
+
+
+
+
+
+#*FvwmAudioPlayCmd playsnd
+#*FvwmAudioDir /usr/lib/sounds
+#*FvwmAudioDelay 0
+#*FvwmAudio startup exit.raw
+#*FvwmAudio shutdown exit.raw
+#*FvwmAudio iconify icon.raw
+#*FvwmAudio deiconify deicon.raw
+#*FvwmAudio unknown defaut.raw
+#*FvwmAudio destroy_window close.raw
+
+
+
+*FvwmWinListBack DarkOliveGreen
+*FvwmWinListFore PaleGoldenRod
+*FvwmWinListFont -*-new century schoolbook-bold-r-*-*-*-120-*-*-*-*-*-*
+*FvwmWinListAction Click1 Focus,Iconify -1,Focus
+*FvwmWinListAction Click2 Iconify
+*FvwmWinListAction Click3 Module "FvwmIdent" FvwmIdent
+*FvwmWinListUseSkipList
+*FvwmWinListUseIconNames
+*FvwmWinListGeometry -50-85
+# I like it achored
+*FvwmWinListNoAnchor

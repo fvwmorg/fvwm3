@@ -1,0 +1,96 @@
+March 21st, 1994: (All the patches should have been fixed/replaced by new mods)
+  - Changed <sys/varags.h> to <varargs.h>
+  - Added <ctype.h> to Mallocs.c
+  - Fonts now work.  (Stupid me)
+  - Added options:
+    *FvwmWinListGeometry {+-}<x>{+-}x   (size is ignored)
+    *FvwmWinListAction <action> <response>
+       Only Click1, Click2, Click3 are allowed as actions right now
+       Responses can be any Fvwm built in, or a comma seperated list of such.
+         (ie: '*FvwmWinListAction Click1 Iconify -1, Raise' will deiconify the
+          window and then raise it)
+       Click1 defaults to 'Iconify -1, Raise'
+       Click2 defaults to 'Iconify'
+       Click3 defaults to 'Lower'
+       (See config.sample for an example)
+    *FvwmWinListUseSkipList 
+       Will not show the windows listed in a 'WindowListSkip' line.
+    *FvwmWinListNoAnchor
+       FvwmWinList will, by default, anchor the corner which has gravity, use
+       this to undo it.  (btw, NW gravity and NoAnchor provide the same result.
+       (+x+y=NorthWest,+x-y=SouthWest,-x+y=NorthEast,-x-y=SouthEast)
+       This is so you can place the window list in the lower corners and
+       the list will not wrap past the screen edge.
+
+March 25st, 1994: (The patch should have be fixed/replaced by new mods)
+  - FvwmWinListUseIconNames
+       As it says, it will use the icon names instead of using the window
+       names.  People have mentioned that some window names become to long.
+  - FvwmWinList now skips windows if the name in the WindowListSkip line
+       matches the windows name, icon name, resource name, or resource class.
+       (This is the same way the built-in fvwm window list works)
+  - Changed some code so it doesn't redraw the window so often.
+  - Added man page.
+
+April 5th, 1994: (Patches should be overtaken by this release)
+  - Allowed FvwmWinList to be started up with an arguemnt 'Transient' to allow
+       it to work like the build in window list.  Right now if you use it in
+       transient mode it will only execute the command for Click1.  Looking
+       for suggestions about using other buttons.  Was considering using
+       modifiers (ie. Shift means button 2, etc)
+  - FvwmWinList now uses MWMDecorHints.  (Makes the 'Transient' mode look good)
+  - Buttons now stay down until you actually release the button.  You can click
+       and hold the button down and move across the buttons and the will go up
+       and down as to enter leave the area.  Actions are performed on button
+       release and not on press.
+  - FvwmWinList will unmap itself if it has no windows to display and will
+       remap itself when a new window it can display is opened.  If there
+       are no windows to display and you are using it in transient mode, it
+       will not come up.
+
+April 16th, 1994:
+  - Patched to use the new style way of WindowSkipList
+  - Cleaned up some definitions
+
+May 8th, 1994: This patch replaces the April 16th patch
+  - Re-did the patch because of bad hunk.
+  - Added strcasecmp for those who have 'NEED_STRCASECMP' defined.
+  - Fixed WinList drifting problem with BorderWidth of 0
+
+May 9th, 1994:
+  - Removed support for the old style of WindowSkipList, you must use Styles.
+  - Hopefully, the above will speed up processing of the list from fvwm and
+    it will not hang.  Please let me know if you still have problems, you
+    might.
+
+May, 1996:
+ * Modifications by Don Mahurin, May 1996
+ * Modifications Done to Add Title Icon support, focus highlighting and
+   Current Desk Only Option
+ * Some of this Code was taken from FvwmTaskBar
+
+ * Bug Notes:(Don Mahurin)
+
+ * Moving a window doesnt send M_CONFIGURE, as I thought it should. Desktop
+ * for that button is not updated.(So if FvwmWinListShowCurrentWindow is set
+ *  moving a window does not move it on the WinList
+
+ * There seems to be something incosistant about Resizing and the value given
+ * back as win_x, win_y with fvwm.  SEE RESIZE_BUG_HACK in the code for my work
+ * around.  Ok, Ill tell you about it:
+	XMoveResizeWindow sometimes assumes the x,y you pass it includes the
+	border width, other times it doesnt.  Specific to the program, When I
+	am only opening closing/minimizing Windows in the same desktop, borders
+	have to be added when adjusting.  But when I Adjust the window when
+        changing Desktops, 
+	I have to remove the border width( and a fudge factor). 
+ 
+ * Don Mahurin (dmahurin@donet.com)
+
+Sept.23, 1996.
+
+ - Ported MiniIcon changes to Fvwm2. Uses MiniIcon, MINI_ICON, not TITLE_ICONS ...
+
+ - Don Mahurin
+ - dmahurin@donet.com
+

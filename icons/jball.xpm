@@ -1,0 +1,29 @@
+/* XPM */
+static char * jbullet_xpm[] = {
+/* width height num_colors chars_per_pixel */
+"16 16 7 1",
+/* colors */
+" 	s None	c None",
+".	c black",
+"X	c gray70",
+"o	c gray55",
+"O	c gray85",
+"+	c gray45",
+"@	c gray30",
+/* pixels */
+"                ",
+"                ",
+"                ",
+"                ",
+"      ....      ",
+"     .Xoo..     ",
+"    .XOX...+    ",
+"    .OX...@+    ",
+"    .o....@+    ",
+"    .....@++    ",
+"     ..@@++     ",
+"      ++++      ",
+"                ",
+"                ",
+"                ",
+"                "};

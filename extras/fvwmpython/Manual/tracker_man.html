@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Tracker.py Manpage</title>
+  </head>
+
+  <body>
+      <h1>Tracker.py Manpage</h1>
+
+<tt>Tracker.py</tt> is a Python module that tracks changes to Fvwm
+windows.  By feeding it every packet that the <a href="fvwm_man.html">
+<tt>Fvwm.py</tt></a> module receives, your extension can maintain an
+accurate database of every window, and the entire desktop -- at least
+so far as Fvwm informs modules!
+
+<p>
+<h2>Synopsis</h2>
+<h3>Classes</h3>
+<dl>
+    <dt><tt>Tracker</tt>
+    <dd>A class which tracks changes to Fvwm windows, by processing
+	packets sent from Fvwm.
+
+    <dt><tt>Window</tt>
+    <dd>A class containing public instance variables describing the
+	attributes of an Fvwm window.
+</dl>
+
+<h2>Class Descriptions</h2>
+
+<h3><tt>Tracker</tt></h3>
+
+The <tt>Tracker</tt> class maintains a database of all the Fvwm
+windows, the module has been notified about.  Typically you do not
+instantiate a <tt>Tracker</tt> object directly; instead, you get an
+instance by calling <tt>FvwmModule.get_windowlist()</tt> in the
+<a href="fvwm_man.html">Fvwm.py</a> module.  This instance can then be
+fed any and all packets as they are read from Fvwm.  This keeps the
+database up-to-date.
+
+The <tt>Tracker</tt> class contains the following useful methods and
+public instance variables:
+
+<dl>
+    <dt><tt>feed_pkt(pkt)</tt>
+    <dd>Feed a packet object to the <tt>Tracker</tt>.  You can safely
+	feed the tracker all packets, which will keep it's internal
+	database up-to-date.
+
+    <dt><tt>window_count()</tt>
+    <dd>Returns the number of windows in the tracker's database.
+
+    <dt><tt>get_windows()</tt>
+    <dd>Returns a list of all windows in the database.
+
+    <dt><tt>get_window(db_entry)</tt>
+    <dd>Return the window indexed by <tt>db_entry</tt>, Fvwm's
+	internal database entry index for the window.
+
+    <dt><tt>x</tt>, <tt>y</tt>
+    <dd>Fvwm's current viewport origin.
+
+    <dt><tt>desk</tt>
+    <dd>Fvwm's currently active desk number.
+
+    <dt><tt>max_x</tt>, <tt>max_y</tt>
+    <dd>The maximum allowed values of the coordinates of the
+	upper-left hand corner of the viewport.
+</dl>
+
+<h3><tt>Window</tt></h3>
+
+The <tt>Window</tt> class is essentially a record, with public
+instance variables that describe all known attributes about every
+tracked window.  The instance variables are:
+
+<dl>
+    <dt><tt>name</tt>
+    <dd>The window's name.
+    <dt><tt>icon_name</tt>
+    <dd>The window's icon name.
+    <dt><tt>icon_file</tt>
+    <dd>The icon's file name.
+    <dt><tt>res_class</tt>
+    <dd>The window's resource class.
+    <dt><tt>res_name</tt>
+    <dd>The window's resource name.
+    <dt><tt>top_id</tt>
+    <dd>The application's top level window ID
+    <dt><tt>frame_id</tt>
+    <dd>The Fvwm frame window ID
+    <dt><tt>db_entry</tt>
+    <dd>Fvwm's internal database entry index for the window.
+    <dt><tt>x</tt>, <tt>y</tt>, <tt>width</tt>, <tt>height</tt>
+    <dd>The origin and size of the window
+    <dt><tt>desk</tt>
+    <dd>The desktop the window is currently on.
+    <dt><tt>flags</tt>
+    <dd>The window flags for the window.
+    <dt><tt>title_height</tt>
+    <dd>The window's title height.
+    <dt><tt>border_width</tt>
+    <dd>The window's border width.
+    <dt><tt>base_width</tt>, <tt>base height</tt>
+    <dd>The window's base width and height.
+    <dt><tt>resize_width_incr</tt>, <tt>resize_height_incr</tt>
+    <dd>The window's resize increment in both dimensions
+    <dt><tt>min_width</tt>, <tt>min_height</tt>,
+        <tt>max_width</tt>, <tt>max_height</tt>
+    <dd>The limits of the window's size in both dimensions
+    <dt><tt>icon_x</tt>, <tt>icon_y</tt>,
+	<tt>icon_width</tt>, <tt>icon_height</tt>
+    <dd>The icon's origin and size.
+    <dt><tt>icon_label_id</tt>
+    <dd>The icon's label window ID
+    <dt><tt>icon_pixmap_id</tt>
+    <dd>The icon's pixmap window ID
+    <dt><tt>gravity</tt>
+    <dd>The window's gravity
+    <dt><tt>text_color</tt>
+    <dd>The pixel value of the window's text color 
+    <dt><tt>border_color</tt>
+    <dd>The pixel value of the window's border color
+</dl>
+
+      <hr>
+      <address><a href="mailto:bwarsaw@python.org">
+      Barry A. Warsaw</a></address>
+<!-- Created: Fri Nov  1 16:11:29 EST 1996 -->
+<!-- hhmts start -->
+Last modified: Thu Dec 19 19:03:31 EST 
+<!-- hhmts end -->
+<br>&copy; 1996 Barry A. Warsaw
+  </body>
+</html>

@@ -1,0 +1,12 @@
+
+ - If icon-file is not given, look for a file called xx.icon in the
+   pixmap/bitmap directory, where xx is resource, class or window name 
+   (like 4Dwm. I don't know if this should be implemented in Fvwm or
+   in this module...)  
+
+ - "Page" option for *FvwmIconBoxResolution.
+
+ - Allows icons movable like mwm?
+
+ - Make my broken English get much better :)
+

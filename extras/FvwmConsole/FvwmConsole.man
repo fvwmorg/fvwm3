@@ -1,0 +1,135 @@
+.\" t
+.\" @(#)FvwmConsole.1x	7/16/96
+.TH FvwmConsole 1x "July 16 1996"
+.UC
+
+.SH NAME
+FvwmConsole \- the FVWM command input interface
+.SH SYNOPSIS
+FvwmConsole is spawned by fvwm, so no command line invocation will work.
+From within the .fvwm2rc file or from a menu, FvwmConsole takes any
+options xterm will take, except -name, and -title.
+
+.RS
+Module FvwmConsole -g 40x10 -fg black -bg green3
+.RE
+
+ The option -e can be used to choose its front-end:
+
+.RS
+FvwmConsole -e /usr/X11/lib/fvwm2/FvwmConsoleC.pl
+.RE
+
+Also X resources can be set in .Xdefaults file
+
+.RS
+FvwmConsole*VT100*geometry: 40x4
+.br
+FvwmConsole*font: 7x14
+.RE
+
+.SH DESCRIPTION
+FvwmConsole allows the user to type fvwm commands into xterm, and
+have them executed immediately. These commands are usually specified
+in the .fvwm2rc file, or are bound to menu/mouse items as specified
+in that file. This tools is particularly useful for testing new
+configuration ideas, or for implementing temporary changes to your
+environment.
+
+
+.SH Command Editor
+
+There are a few options. If GNU readline library is installed,
+add '#define HAVE_READLINE' in Imakefile and compile. 
+.br
+If Perl5 is installed, FvwmConsoleC.pl can be used as a command editor.
+This can be accomplished by either copying FvwmConsoleC.pl 
+to fvwmlib directory as FvwmConsoleC or
+invoking FvwmConsole with -e option.
+For example:
+
+.br
+FvwmConsole -e /usr/lib/X11/fvwm2/FvwmConsoleC.pl
+.br
+
+If neither one is installed, command line editor will call 
+gets function, which doesn't have editing functions.
+.br
+GNU readline and FvwmConsoleC.pl have some frequent used commands
+in common as default.
+These commands are similar to emacs. 
+For more details, refer GNU readline man and info pages, and
+FvwmConsoleC.pl man pages.
+
+.RS
+.PD 0
+.TP 8
+Cntl-A
+- beginning of line
+.TP
+Cntl-B
+- previous char
+.TP
+Cntl-D
+- delete char
+.TP
+Cntl-E
+- end of line
+.TP
+Cntl-F
+- next char
+.TP
+Cntl-H
+- backspace
+.TP 
+Cntl-K
+- erase to the end of line
+.TP
+Cntl-N
+- next line
+.TP
+Cntl-P
+- previous line
+.TP
+Cntl-R
+- search reverse
+.TP
+Cntl-U
+- delete line
+.TP
+Meta-B
+- previous word
+.TP
+Meta-F
+- next word
+.TP
+Esc <
+- beginning of history
+.TP
+Esc >
+- end of history
+.RE
+.PD
+.SH COPYRIGHTS
+Copyright 1996, Toshi Isogai. No guarantees or warranties are provided.
+Use this program at your own risk. Permission to use this program for
+any purpose is given, as long as the copyright is kept intact. 
+
+
+.SH INVOCATION
+FvwmConsole can be invoked by inserting the line 'Module FvwmConsole' in
+the .fvwm2rc file. This can be placed on a line by itself, if FvwmConsole
+is to be spawned during fvwm's initialization, or can be bound to a
+menu or mouse button or keystroke to invoke it later. Fvwm will search
+directory specified in the ModulePath configuration option to attempt
+to locate FvwmConsole.
+
+.SH CONFIGURATION OPTIONS
+FvwmConsole uses xterm. All resources set for xterm are inherited
+unless overridden by command line options.
+
+.SH SEE ALSO
+xterm(1), FvwmConsoleC.pl(1x), GNU readline library
+
+.SH AUTHOR
+Toshi Isogai  

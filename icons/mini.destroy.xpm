@@ -1,0 +1,26 @@
+/* XPM */
+static char *mini[] = {
+/* width height num_colors chars_per_pixel */
+"    14    14        5            1",
+/* colors */
+". c None",
+"# c Yellow2",
+"a c Red2",
+"b c Gray40",
+"c c Black",
+/* pixels */
+".........#.#..",
+".......#.#a.#.",
+"........a.#..a",
+"......bbbbb.#.",
+".....b....a.a.",
+"....cc...#.#..",
+"..cccc........",
+".cccccc.......",
+"cccc..cc......",
+"cccccb.c......",
+"cccccb.c......",
+"cccccc.c......",
+".ccccccc......",
+"..cccc........"
+};

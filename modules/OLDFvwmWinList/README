@@ -1,0 +1,114 @@
+If you have read the a previous README on this, you may want to skip to the
+CHANGELOG.  This file is very familiar to the last README.
+
+Well, here is a summary of what it will do (* = new):
+  - All memory in managed dynamically by linked lists, keeping in the spirit
+    of Fvwm to use as little memory as possible.
+  - Display all windows that Fvwm knows about in Fvwm style buttons
+  - Iconifying a window will place () around its name in the list
+  - Can be nicely shutdown by typing 'Q' or 'q' inside the window
+  - FvwmWinListGeometry {+-}<x>{+-}x   (size is ignored)
+  - FvwmWinListAction <action> <response>
+       Only Click1, Click2, Click3 are allowed as actions right now
+       Responses can be any Fvwm built in, or a comma seperated list of such.
+         (ie: '*FvwmWinListAction Click1 Iconify -1, Raise' will deiconify the
+          window and then raise it)
+       Click1 defaults to 'Iconify -1, Raise'
+       Click2 defaults to 'Iconify'
+       Click3 defaults to 'Lower'
+       (See config.sample for an example)
+  - FvwmWinListUseSkipList 
+       Will not show the windows listed with a 'WindowListSkip' style.
+  - FvwmWinListNoAnchor
+       FvwmWinList will, by default, anchor the corner which has gravity, use
+       this to undo it.  (btw, NW gravity and NoAnchor provide the same result.
+       (+x+y=NorthWest,+x-y=SouthWest,-x+y=NorthEast,-x-y=SouthEast)
+       This is so you can place the window list in the lower corners and
+       the list will not wrap past the screen edge.
+  - FvwmWinListUseIconNames
+       As it says, it will use the icon names instead of using the window
+       names.  People have mentioned that some window names become to long.
+  - Allowed FvwmWinList to be started up with an arguemnt 'Transient' to allow
+       it to work like the build in window list.  Right now if you use it in
+       transient mode it will only execute the command for Click1.  Looking
+       for suggestions about using other buttons.  Was considering using
+       modifiers (ie. Shift means button 2, etc)
+  - FvwmWinList now uses MWMDecorHints.  (Makes the 'Transient' mode look good)
+  - Buttons now stay down until you actually release the button.  You can click
+       and hold the button down and move across the buttons and the will go up
+       and down as to enter leave the area.  Actions are performed on button
+       release and not on press.
+  - FvwmWinList will unmap itself if it has no windows to display and will
+       remap itself when a new window it can display is opened.  If there
+       are no windows to display and you are using it in transient mode, it
+       will not come up.
+
+I have only run this under Linux on my 386/40 with 8megs, please let me know
+if you experience problems with compiling, running, or performance.  I want
+to tune it to run as efficient as possible, later in life.
+
+Now, the things I still want to do with it.  If you have suggestions, please
+send them to me, want to make this as useful as possible.
+
+To do: (in no particular order)
+ - Add the following configurable options:
+   - FvwmWinlistAction <action> <response>
+       Add more actions, like press, release, motion, 2x click, slide, etc.,
+         instead of just Click<x>
+   - FvwmWinlistOrientaion (down|across)
+       Should the buttons be a vertical or a horizontal list
+   - FvwmWinlistMaxWidth <x> 
+       Where x is the max pixel width of the window.
+   - FvwmWinlistTooLong (wrap|truncate|initials)
+       What to do if the names are too long.  (assuming you set MaxWidth)
+ - Allow the user to setup what is in the Op's and Detail's menu
+ - Possible allow diffent fonts/colors for submenus.
+ - Rob mentioned some people would like icons in the list if the window
+     if iconified.  I personally like the (), although  I am a but biased.
+     Let me know what you think/want, I will try.
+ - Place a small 3-D pixmap/bitmap next-to/around the windows that are
+     iconified instead of the ().
+ - Like to allow resizing of the window and have the buttons match the window
+     (ie.  You make it wider you get 2 columns of buttons, etc.)
+
+ - Fix the following:
+   - The function saferealloc, based on safemalloc by Rob Nation still doesn't
+     work correctly, I left it in the Mallocs.c file but I use the normal
+     realloc now.  (Being lazy on this one)
+   - Make compile compatability for all systems
+   - Tune FvwmWinList to be more efficient  (Low priority, right now)
+
+I am open to, actually I am trolling for, suggestions/improvments/ideas/rags
+on this.
+
+Here is a list of files included in the tar file:
+
+ButtonArray.c
+ButtonArray.h
+CHANGELOG
+Colors.c
+Colors.h
+FvwmWinList.README
+FvwmWinList.c
+FvwmWinList.h
+Imakefile
+List.c
+List.h
+Mallocs.c
+Mallocs.h
+config.sample
+wild.c
+
+You can unpack it by:
+
+cd /foo/fvwm/modules
+gzip -dc FvwmWinList-0.1.tar.gz | tar xf -
+
+That will unpack the source into /foo/fvwm/modules/FvwmWinList.
+
+
+If you want a binary distribution or diffs, let me know.
+
+Enjoy,
+Mike
+mfinger@mermaid.micro.umn.edu or Mike_Finger@atk.com

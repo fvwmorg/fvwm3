@@ -1,0 +1,37 @@
+This is the first version of the FvwmAudio module.  This program must
+be compiled in the fvwm/modules/FvwmAudio directory.
+
+This module can play different sounds depending on message types.   
+
+The following can be specified in your .fvwmrc:
+
+Here's a sample:
+*FvwmAudioPlayCmd /usr/bin/X11/demos/auplay
+*FvwmAudioDir /usr/lib/sounds
+*FvwmAudio startup Cheers.au
+*FvwmAudio shutdown Goodbye.au
+*FvwmAudio unknown doh.au
+*FvwmAudio add_window drip.au
+*FvwmAudio raise_window beep_pure_saw.au
+*FvwmAudio lower_window beep_pure_saw.au
+*FvwmAudio focus_change tap2.au
+*FvwmAudio destroy_window beep_drop_of_water.au
+*FvwmAudio iconify ploop.au
+*FvwmAudio deiconify beep_kind_warning.au
+
+Note that startup, shutdown, and unknown are builtin sound events that are 
+played when the module begins, ends, and when an unknown message is received.
+
+Sounds can be played using any independent audio player that can accept
+filenames a command line argument.
+
+This version of FvwmAudio has builtin rplay support which does not need to
+invoke an external audio player to play sounds.  The rplay support is
+enabled when FvwmAudio is compiled with HAVE_RPLAY defined (see the Imakefile)
+and when FvwmAudioPlayCmd is set to builtin-rplay.  rplay can be obtained
+via anonymous ftp at ftp.sdsu.edu in the /pub/rplay directory and at
+ftp.x.org in the /contrib/audio/rplay directory.
+
+Send questions and comments to Mark Boyns <boyns@sdsu.edu> and
+			       Mark Scott <mscott@mcd.mot.com>
+

@@ -1,0 +1,76 @@
+.\" t
+.\" @(#)FvwmScroll.1	4/14/94
+.TH FvwmScroll 1.20 "April 14 1994"
+.UC
+.SH NAME
+FvwmScroll \- the FVWM scroll-bar module
+.SH SYNOPSIS
+FvwmScroll is spawned by fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+The FvwmScroll module prompts the user to select a target window, if
+the module was not launched from within a window context in Fvwm.
+After that, it adds scroll bars to the selected window, to reduce the
+total desktop space consumed by the window.
+
+
+FvwmScroll reads the same .fvwmrc file as fvwm reads when it starts up,
+and looks for lines similar to "*FvwmScrollFore green".
+
+FvwmScroll should not be used with windows which move or resize
+themselves, nor should it be used with windows which set the
+WM_COLORMAP_WINDOWS property. Operation is fine with windows that have
+a private colormap.
+
+.SH COPYRIGHTS
+The FvwmScroll program, and the concept for
+interfacing this module to the Window Manager, are all original work
+by Robert Nation.
+
+Copyright 1994, Robert Nation. No guarantees or
+warranties or anything 
+are provided or implied in any way whatsoever. Use this program at your
+own risk. Permission to use this program for any purpose is given,
+as long as the copyright is kept intact. 
+
+
+.SH INITIALIZATION
+During initialization, \fIFvwmScroll\fP will eventually search a 
+configuration file which describes the colors to use.
+The configuration file is the same file that fvwm used during initialization.
+
+If the FvwmScroll executable is linked to another name, ie ln -s
+FvwmScroll MoreScroll, then another module called MoreScroll can be
+started, with a completely different configuration than FvwmScroll,
+simply by changing the keyword  FvwmScroll to MoreScroll.
+
+.SH INVOCATION
+FvwmScroll can be invoked by binding the action 'Module
+FvwmScroll x y' to a menu or key-stroke in the .fvwmrc file.
+The parameter x and y are integers, which describe the horizontal and
+vertical window size reduction.
+Fvwm will search
+directory specified in the ModulePath configuration option to attempt
+to locate FvwmScroll. Although nothing keeps you from launching
+FvwmScroll at start-up time, you probably don't want to.
+
+.SH CONFIGURATION OPTIONS
+FvwmScroll reads the same .fvwmrc file as fvwm reads when it starts up,
+and looks for lines as listed below:
+
+.IP "*FvwmScrollFore \fIcolor\fP"
+Tells the module to use \fIcolor\fP instead of grey for scroll bars 
+themselves.
+
+.IP "*FvwmScrollBack \fIcolor\fP"
+Tells the module to use \fIcolor\fP instead of black for the window
+background.
+
+.SH BUGS
+When the scroll bars are removed by clicking on the button in the
+lower right corner, the window does not restore its location
+correctly.
+
+.SH AUTHOR
+Robert Nation 
+

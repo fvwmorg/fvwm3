@@ -1,0 +1,279 @@
+WindowTitle {Screen Grabber}
+WindowSize 360 360		# Taille
+WindowPosition 191 50		# Position
+ForeColor	{black}
+BackColor	{grey85}
+ShadowColor	{grey55}
+HilightColor	{grey100}
+Font		-adobe-helvetica-bold-r-*-*-12-*
+
+Init
+ Begin
+  WarpPointer 1
+  Set $Ext = {.gif}
+  Set $Format = {| ppmtogif}
+ End
+ 
+Widget 1
+Property
+ Size 50 30
+ Position 190 320
+ Type PushButton
+ Title {OK}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 5)==1 Then
+    Do {Exec xwd } $Opt1 { } $Opt2 { | xwdtopnm } $Format { > }  (GetTitle 7) $Ext
+   Else
+    Do {Exec xwd } $Opt1 { } $Opt2 { | xwdtopnm | ppmtopgm | pnmtops | } (GetTitle 11)
+   Quit
+  End
+End
+
+Widget 2
+Property
+ Size 50 30
+ Position 280 320
+ Type PushButton
+ Title {Cancel}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do {Exec xset s } $TimeOut
+   Quit
+  End
+End
+
+Widget 3
+Property
+ Size 340 170
+ Position 10 10
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 4
+Property
+ Position 15 2
+ Type ItemDraw
+ Title {Dump to:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 5
+Property
+ Size 50 30
+ Position 30 30
+ Type RadioButton
+ Title {File}
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 6 0 
+  End
+End
+
+Widget 6
+Property
+ Size 50 30
+ Position 30 110
+ Type RadioButton
+ Title {Printer}
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 5 0 
+  End
+End
+
+Widget 7
+Property
+ Size 250 30
+ Position 75 27
+ Type TextField
+ Title {~/picture}
+ Value 200
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 8
+Property
+ Position 74 65
+ Type ItemDraw
+ Title {Format}
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 9
+Property
+ Position 130 60
+ Type PopupMenu
+ Title {GIF|PostScript|Tiff|X11 Pixmap|Pgm|Bmp|Sun rasterfile}
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 9)==1 Then
+   Begin
+    Set $Ext = {.gif}
+    Set $Format = {| ppmtogif}
+   End
+   Else
+   Begin
+    If (GetValue 9)==2 Then
+    Begin
+     Set $Ext = {.ps}
+     Set $Format = {| pnmtops}
+    End
+    Else
+    Begin
+     If (GetValue 9)==3 Then
+     Begin
+      Set $Ext = {.tif}
+      Set $Format = {| pnmtotiff}
+     End
+     Else
+     Begin
+      If (GetValue 9)==4 Then
+      Begin
+       Set $Ext = {.xpm}
+       Set $Format = {| ppmtoxpm}
+      End
+      Else
+      Begin
+       If (GetValue 9)==5 Then
+       Begin
+        Set $Ext = {.pgm}
+        Set $Format = { }
+       End
+       Else
+       Begin
+        If (GetValue 9)==6 Then
+        Begin
+         Set $Ext = {.bmp}
+         Set $Format = {| ppmtobmp}
+        End
+        Else
+        Begin
+         Set $Ext = {.ras}
+         Set $Format = {| pnmtorast}
+        End
+       End
+      End
+     End
+    End
+   End
+  End
+End
+
+Widget 10
+Property
+ Position 74 138
+ Type ItemDraw
+ Title {Command line}
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 11
+Property
+ Size 150 30
+ Position 175 135
+ Type TextField
+ Title {lpr}
+ Value 200
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 12
+Property
+ Size 340 100
+ Position 10 200
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 13
+Property
+ Position 15 192
+ Type ItemDraw
+ Title {Options:}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 14
+Property
+ Position 30 220
+ Type CheckBox
+ Title {Include frame}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 14)==1 Then
+    Set $Opt1 = {-frame} 
+   Else
+    Set $Opt1 = { } 
+  End
+End
+
+Widget 15
+Property
+ Position 30 260
+ Type CheckBox
+ Title {Select the root window}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 15)==1 Then
+    Set $Opt2 = {-root} 
+   Else
+    Set $Opt2 = { } 
+  End
+End
+
+
+

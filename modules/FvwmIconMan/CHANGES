@@ -1,0 +1,160 @@
+6/17/98		Version 1.3:
+			Added case sensitive sorting: *sort: namewithcase
+			Fixed bug where the manager window wouldn't get redrawn
+				in some cases.
+			
+
+4/14/98		Version 1.2:
+			Changed default color scheme to be black on grey.
+			Various bugfixes
+			Fixed bug where the selected window would be wrong
+				after the manager got resorted.
+			Changed sort option to accept either 'name' or 'id'
+
+12/31/97	Version 1.1:
+			When drawicons option is set to "always", always draw
+				the miniicons, regardless of whether the
+				windows are iconifed (from Neil Moore). A sad
+				result of setting this is that there is no
+				visual indication of which windows are
+				iconified. Since that code is due for cleanup
+				anyway, I'll handle that later.
+			sort option now takes one of these values: name, id,
+				or none.
+
+
+7/16/97		Version 1.0:
+			Force complete draw of manager window when it gets
+				mapped.
+
+6/9/97		Version 0.9.9a:
+			Fixed bug which led to compile error.
+
+6/7/97		Version 0.9.9:
+			Fixed bug where manager window wouldn't get
+				properly cleared when it became empty.
+			Changed function lookup to use bsearch
+			Added 'label <string>' function, to provide named
+				labels to jump to with bif, bifn and jmp.
+			Altered	get_current_man to always return the manager
+				if there is only one.
+
+4/19/97		Version 0.9.8:
+			Changed hash table size to 257.
+			Fixed bug where followfocus was ignored.
+			Hopefully fixed bug where some buttons wouldn't get
+				drawn when window shape changed.
+			MiniIcons should work on mono displays.
+			
+3/9/97		Version 0.9.7a:
+			maximum width changed from 1000 to screen width.
+
+2/11/97		Version 0.9.7:
+			When FvwmIconMan was started without a managergeometry
+			string, it would have an "Internal Error."
+			Added titlebutton option.
+			Added raisededge and sunkedge button styles.
+			Manager no longer unmaps when empty, drawing the
+				titlebutton instead.
+			Added builtin function "warp"
+
+2/10/97		Version 0.9.6:
+			Added call to XSync() after setting window shape,
+				otherwise, will get blank regions on next
+				redraw.
+
+2/7/97		Version 0.9.5:
+			Fixed bug which caused buttons to change size
+				when switching pages under high load.
+
+2/6/97		Version 0.9.4:
+			Added new action functions: bif, bifn, jmp, ret, print
+				so now you can have simple if statements
+			Fixed bug which caused manager to appear in surprising
+				places when moving from one page to another.
+
+2/5/97		Version 0.9.3
+			Fixed bug where if a window moves from one manager
+				to another (which can happen while FvwmIconMan
+				is receiving the window list from fvwm), it 
+				can end up using the format string of the 
+				wrong manager.
+			Fixed bug where if a window's name changes and
+				that causes it to be removed from manager,
+				it core dumps.
+			Fixed bug which could cause FvwmIconMan to deadlock.
+			Fixed window gravity bug which would cause corrupted
+				window contents for managers which grow upward
+				or leftward.
+			other minor bugs.
+
+2/4/97		Version 0.9.2:
+			Silly me, I forgot that realloc (NULL, ...) isn't
+				portable.
+
+2/3/97		Version 0.9.1:
+			rewrote almost all of the X code.
+			can have multiple columns now.
+			use shape extension if configured to.
+			added shape option.
+			added ButtonGeometry option.
+			renamed Geometry option to ManGeometry, which works
+				in units of buttons, not pixels.
+			junked the old actions and redid all that.
+
+12/8/96         Version 0.9:
+			added usewinlist option.
+			possibly fixed a bug.
+
+9/27/96		Version 0.8:
+			added miniicons.
+			should update windows less when page changes.
+
+8/13/96         Version 0.7b:
+			fixed some bugs.
+			added better error messages.
+			grab pointer when in transient mode.
+
+8/11/96         Version 0.7:
+			removed showtitle option. 
+			added new option format, which allows for printf-like
+				formatting of the label for the window buttons.
+			added title and iconname options.
+			added ability to run transiently, like WinList.
+
+7/10/96		Version 0.6:
+			Bugfixes
+
+6/23/96		Version 0.5:
+			fvwm 2.0.43 changes: Focus, SendToModule
+			redid actions, with builtin functions
+			display improvements
+			
+
+3/25/96		Version 0.4:
+			FvwmIconMan put into fvwm 2.0 distribution.
+			support for fvwm 1 discontinued
+			one bug fix: wouldn't work without a numManagers
+				line in .fvwm2rc
+
+2/06/96		Version 0.3:
+			added sort option
+			added followfocus option
+			added plain, focus, select, and focusandselect
+				styles
+			added select action
+			can now specify which manager takes which windows
+				by regular expressions against the
+				resource, class, icon, and title names
+				of a window
+			started migration to using libfvwm.a (probably won't
+				finish until I stop supporting fvwm 1)	
+			made an Imakefile
+			including a patch to fvwm's focus function
+			many bug fixes
+
+6/23/95         Version 0.2.
+                        added option to use title names
+                        added linux config
+
+6/17/95         Announced Version 0.1 to fvwm mailing list

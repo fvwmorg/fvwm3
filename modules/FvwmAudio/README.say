@@ -1,0 +1,7 @@
+Due to a patch from Albrecht Kadlec, there is now support for the rsynth
+'say' command and arbitrary strings instead of sound file names:
+
+	*FvwmAudioCommand /rsynth/say
+	*FvwmAudio close "window closed"
+
+				

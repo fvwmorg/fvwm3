@@ -1,0 +1,22 @@
+/* XPM */
+static char * mini_refresh_xpm[] = {
+"14 14 5 1 0 0",
+" 	c None",
+".	c yellow",
+"X	c green",
+"o	c LightBlue",
+"O	c magenta",
+"   .  ..  .   ",
+".  .  ..  .  .",
+" .XXXXXXXXXX. ",
+"  XXXXXXXXXX  ",
+"..XXooooooXX..",
+"  XXooooooXX  ",
+"..XXooooooXX..",
+"  XXooooooXX  ",
+"  XXXXXXXXXX  ",
+" .XXXXXXXXXX. ",
+".  OOOOOOOO  .",
+"  OOOOOOOOOO  ",
+" OOOOOOOOOOOO ",
+"OOOOOOOOOOOOOO"};

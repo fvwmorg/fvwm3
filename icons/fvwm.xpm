@@ -1,0 +1,44 @@
+/* XPM */
+static char *fvwm[] = {
+/* width height ncolors chars_per_pixel */
+"66 32 4 1",
+/* colors */
+"` c navy",
+"a c #60A0C0",
+"b c green",
+"c c red",
+/* pixels */
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaa`````aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaa``````aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaa``aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaa``aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaa```aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaa``aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaa``aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaa``aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaa````````a``aaaaaa``a``aaaaaa``aaaaaa``a``aa```aaa```aaaaaaaa",
+"aaaaaa````````a``aaaaa``aa``aaaaa```aaaaa``a```a`````a`````aaaaaaa",
+"aaaaaaaa``aaaaa``aaaaa``aa``aaaaa```aaaaa``a``aa``a``a``a``aaaaaaa",
+"aaaaaaaa``aaaaa```aaa``aaa```aaa`````aaa``aa``a``aa````aa``aaaaaaa",
+"aaaaaaaa``aaaaaa``aaa``aaaa``aaa``a``aaa``aa````aa````aa```aaaaaaa",
+"aaaaaaa```aaaaaa``aa``aaaaa``aa``aa``aa``aa````aaa```aaa``aaaaaaaa",
+"aaaaaaa```aaaaaa``aa``aaaaa``aa``aa``aa``aa```aaaa``aaaa``aaaaaaaa",
+"aaaaaaa``aaaaaaa``a``aaaaaa``a``aaa``a``aaa``aaaaa``aaaa``aaaaaaaa",
+"aaaaaaa``aaaaaaa``a``aaaaaa``a``aaa``a``aaa``aaaaa``aaaa``aaaaaaaa",
+"aaaaaa```aaaaaaa````aaaaaaa````aaaa````aaa``aaaaa```aaa```aaaaaaaa",
+"aaaaaa```aaaaaaaa``aaaaaaaaa``aaaaaa``aaaa``aaaaa``aaaa``aaaaaaaaa",
+"aaaaaa``aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaa``aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccccccccccccccaaaaaaa",
+"aaaaa```aaaaaaaaaaaaaaaaaaaaaaaaaaaaaccccccccccccccccccccccccccbaa",
+"aaaaa```aaaaaaaaaaaaaaaccccccccccccccccccccccccccccccbbbbbbbbbbaaa",
+"aaaaa``aaaaaaccccccccccccccccccccccccccccccbbbbbbbbbbaaaaaaaaaaaaa",
+"aaaaaccccccccccccccccccccccccccccbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaccccccccccccccccccccbbbbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaccccccccccbbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaabbbbbbbaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+};
+

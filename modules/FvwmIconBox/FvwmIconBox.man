@@ -1,0 +1,287 @@
+.\" t
+.\" @(#)FvwmIconBox.1	6/20/94
+.TH FvwmIconBox 0.64 "Jun 24 1994"
+.UC
+.SH NAME
+FvwmIconBox \- the FVWM iconbox module
+.SH SYNOPSIS
+FvwmIconBox is spawned by fvwm, so no command line invocation will work.
+
+.SH DESCRIPTION
+The FvwmIconBox module provides an icon manager. The user can do
+operations, like iconify and deiconify, for each icon shown in the
+module via mouse and keyboard. 
+
+FvwmIconBox reads the same .fvwmrc file as fvwm reads when it starts up,
+and looks for lines similar to "*FvwmIconBoxFore green".
+
+.SH COPYRIGHTS
+The FvwmIconBox program is original work of Nobutaka Suzuki.
+
+Copyright 1994, Nobutaka Suzuki. No guarantees or warranties or anything 
+are provided or implied in any way whatsoever. Use this program at your
+own risk. Permission to use this program for any purpose is given,
+as long as the copyright is kept intact. 
+
+
+.SH INITIALIZATION
+During initialization, \fIFvwmIconBox\fP will eventually search a 
+configuration file. The configuration file is the same file that fvwm
+used during initialization. 
+
+If the FvwmIconBox executable is linked to another name, ie ln -s
+FvwmIconBox MoreIconBox, then another module called MoreIconBox can be
+started, with a completely different configuration than FvwmIconBox,
+simply by changing the keyword  FvwmIconBox to MoreIconBox. This way
+multiple clutter-reduction programs can be used.
+
+.SH INVOCATION
+FvwmIconBox can be invoked by binding the action 'Module
+FvwmIconBox' to a menu or key-stroke in the .fvwmrc file.
+Fvwm will search directory specified in the ModulePath configuration
+option to attempt to locate FvwmIconBox. 
+
+.SH CONFIGURATION OPTIONS
+FvwmIconBox shows icons only if NoIcon is applied. Note that the
+NoIcon attribute should be set after the Icon attribute specification. 
+Otherwise the icon-box module might become nothing but an empty-box
+module. The module reads the same .fvwmrc file as fvwm reads when it
+starts up, and looks for lines as listed below:
+
+.IP "*FvwmIconBoxFore \fIcolor\fP"
+Tells the module to use \fIcolor\fP instead of white for the window
+foreground. This option affects only the foreground color of
+background_bitmap specified in *FvwmIconBoxPixmap option described
+below.  
+
+.IP "*FvwmIconBoxBack \fIcolor\fP"
+Tells the module to use \fIcolor\fP instead of black for the window
+background.
+
+.IP "*FvwmIconBoxIconFore \fIcolor\fP"
+Tells the module to use \fIcolor\fP instead of black for non-selected
+icon text. 
+
+.IP "*FvwmIconBoxIconBack \fIcolor\fP"
+Tells the module to use \fIcolor\fP instead of white for the
+non-selected icon background.
+
+.IP "*FvwmIconBoxIconHiFore \fIcolor\fP"
+Tells the module to use \fIcolor\fP instead of black for selected icon
+text.    
+
+.IP "*FvwmIconBoxIconHiBack \fIcolor\fP"
+Tells the module to use \fIcolor\fP instead of white for the selected
+icon background.
+
+.IP "*FvwmIconBoxPixmap \fIpixmap\fP"
+Tells the module to use \fIpixmap\fP for the window background_pixmap.
+
+.IP "*FvwmIconBoxFont \fIfontname\fP"
+Tells the module to use \fIfontname\fP instead of fixed for text.
+
+.IP "*FvwmIconBoxSortIcons \fIoption\fP"
+Tells the module to sort all icons in iconbox in alphabetical order.
+\fIoption\fP can be \fIWindowName\fP, \fIIconName\fP, \fIResClass\fP,
+and \fIResName\fP. For example, specifying \fIResClass\fP means that
+icons are sorted by using their resource-class strings. If
+\fIoption\fP is \fIResClass\fP or \fIResName\fP, an icon having no
+XA_WM_CLASS property is considered to be the "smallest" element.
+
+.IP "*FvwmIconBoxPadding \fInumber\fP"
+Specifies the number of pixels between icons. The default value is 5.
+
+.IP "*FvwmIconBoxSBWidth \fInumber\fP"
+Specifies the width of horizontal and vertical scrollbars. The default
+value is 9. 
+
+.IP "*FvwmIconBoxPlacement \fIprimary\fP \fIsecondary\fP"
+Specifies icon placement policy. \fIprimary\fP and \fIsecondary\fP can
+be \fITop\fP, \fIBottom\fP, \fILeft\fP and \fIRight\fP. The following
+eight combinations are available:  
+.nf
+.sp
+\fIprimary\fP      \fIsecondary\fP 
+
+ Left         Top
+ Left         Bottom
+ Right        Top
+ Right        Bottom
+ Top          Left
+ Top          Right
+ Bottom       Left
+ Bottom       Right
+.sp
+.fi
+.B "\fITop\fP:"
+Icons are placed from top to bottom.
+
+.B "\fIBottom\fP:"
+Icons are placed from bottom to top.
+
+.B "\fILeft\fP:"
+Icons are placed from left to right.
+
+.B "\fIRight\fP:"
+Icons are placed from right to left.
+
+For example, when the placement is "Left Top", icons are placed from
+left to right, and new rows are added from top to bottom. The default
+vale is "Left Bottom".
+
+.IP "*FvwmIconBoxLines"
+Specifies the number of icons placed in a line. If \fIprimary\fP is
+Left or Right, this value specifies the number of columns. 
+If \fIprimary\fP is Top or Bottom, this value specifies the number of
+rows. For example, seven icons are placed in a row if 
+*FvwmIconBoxLines is 7 and *FvwmIconBoxPlacement is "Left Top".
+The default value is 6. 
+
+.IP "*FvwmIconBoxHideSC \fIdirection\fP"
+Specifies the undisplayed scroll bar . \fIDirection\fP can be 
+either \fIHorizontal\fP or \fIVertical\fP.
+  
+.IP "*FvwmIconBoxGeometry \fI<width>x<height>{+-}<X>{+-}<Y>\fP"
+Specifies the location and/or size of FvwmIconBox. 
+\fIwidth\fP and \fIheight\fP are measured in icons, not pixels. 
+The default value is 6x1+0+0. 
+
+.IP "*FvwmIconBoxMaxIconSize \fI<width>x<height>\fP"
+Specifies the maximum size of icon bitmap. A bitmap larger than
+this size is clipped to this size. The default value is 48x48. In
+particular, if the height is 0, then icon bitmaps are not displayed and 
+only icon labels are drawn.
+
+.IP "*FvwmIconBoxMouse \fIButton\fP \fIAction\fP \fIResponse[, Response]\fP"
+Tells the module to do \fIResponse\fP when \fIAction\fP is done on
+button \fIButton\fP. Available \fIResponse\fPes are built-in commands
+in Fvwm (e.g. Iconify, Delete, Focus) and available \fIAction\fPs
+are Click and DoubleClick. 
+
+.IP "*FvwmIconBoxKey \fIKey\fP \fIResponse[, Response]\fP"
+Tells the module to do \fIResponse\fP when \fIKey\fP is pressed.
+Available \fIResponse\fPes are, besides Fvwm built-in commands, the 
+following six FvwmIconBox built-in commands: \fINext\fP, \fIPrev\fP, 
+\fILeft\fP, \fIRight\fP, \fIUp\fP, and \fIDown\fP. 
+
+.B "\fINext\fP:"
+Change the hilited-icon to the next. 
+
+.B "\fIPrev\fP:"
+Change the hilited-icon to the previous.
+
+.B "\fILeft\fP:"
+Move the slider of the horizontal scrollbar to left. Icons move
+to right accordingly.
+
+.B "\fIRight\fP:"
+Move the slider of the horizontal scrollbar to right. Icons move
+to left accordingly.
+
+.B "\fIUp\fP:"
+Move the slider of the vertical scrollbar to up. Icons move to
+down accordingly.
+
+.B "\fIDown\fP:"
+Move the slider of the vertical scrollbar to down. Icons move to
+up accordingly.
+
+.IP "*FvwmIconBox \fIwindowname\fP \fIbitmap-file\fP" 
+Specifies the bitmap to be displayed in iconbox for \fIwindowname\fP.
+This option "overrides" bitmap files specified in Style command.
+\fIWindowname\fP can be window name, class name, or resource name.
+\fIWindowname\fP  can contain "*" and "?" like Fvwm configuration
+file. The \fIbitmap-file\fP is either  the full  path name to a bitmap
+file, or a file in the IconPath or PixmapPath. If \fIbitmap-file\fP is
+specified to be "-", the icon for a window corresponding to
+\fIwindowname\fP is not shown in the iconbox. 
+
+.IP "*FvwmIconBoxSetWMIconSize"
+Tells the module to set XA_WM_ICON_SIZE property of the root window
+at the size which the module want icon windows to have. If you show 
+icon windows on not the root window but the module, it would be
+better to specify this option.
+
+.IP "*FvwmIconBoxHilightFocusWin"
+Tells the module to hilight the icon of the window which has the
+keyboard focus. The fore/back colors of the hilighted icon are those 
+specified in the *FvwmIconBoxIconHiFore and *FvwmIconBoxIconHiBack
+commands, respectively. 
+
+.IP "*FvwmIconBoxResolution \fIresolution\fP"
+If \fIresolution\fP is Desk, then the module shows only the icons on
+the current desk.  Currently, Desk is the only value \fIresolution\fP
+can take :) 
+
+.IP "*FvwmIconBoxFrameWidth \fIwidth1\fP \fIwidth2\fP"
+Specifies the frame-width of the module. \fIWidth1\fP corresponds to
+the width from the outer-border to the scroll-bar, and,  \fIwidth2\fP
+corresponds to the width from the scroll-bar to the internal-window
+displaying icons. The default values are 8 and 6, respectively.
+
+.SH SAMPLE CONFIGURATION
+The following are excepts from a .fvwmrc file which describe
+FvwmIconBox initialization commands:
+.nf
+.sp
+############################################################
+# Note that icons are shown in the module
+#    only if NoIcon attribute is applied.
+Style 	"*"	NoIcon
+
+############################################################
+*FvwmIconBoxIconBack    #cfcfcf
+*FvwmIconBoxIconHiFore  black
+*FvwmIconBoxIconHiBack  LightSkyBlue
+*FvwmIconBoxBack        #5f9ea0
+#*FvwmIconBoxFore       blue
+*FvwmIconBoxGeometry    5x1+0+0
+*FvwmIconBoxMaxIconSize 64x38
+*FvwmIconBoxFont        -adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-*-*
+*FvwmIconBoxSortIcons	IconName
+#*FvwmIconBoxSortIcons	ResClass
+*FvwmIconBoxPadding     4
+*FvwmIconBoxFrameWidth  9 7
+*FvwmIconBoxLines       10
+*FvwmIconBoxSBWidth     11
+*FvwmIconBoxPlacement   Left Top
+*FvwmIconBoxPixmap      fvwm.xpm
+#*FvwmIconBoxHideSC	Horizontal
+*FvwmIconBoxSetWMIconSize
+*FvwmIconBoxHilightFocusWin
+#*FvwmIconBoxResolution		Desk
+#
+# mouse bindings
+#
+*FvwmIconBoxMouse       1       Click           RaiseLower
+*FvwmIconBoxMouse       1       DoubleClick     Iconify
+*FvwmIconBoxMouse       2       Click           Iconify -1, Focus
+*FvwmIconBoxMouse       3       Click           Module FvwmIdent
+#
+# Key bindings
+#
+*FvwmIconBoxKey         r       RaiseLower
+*FvwmIconBoxKey         space   Iconify
+*FvwmIconBoxKey         d       Close
+#
+# FvwmIconBox built-in functions
+#
+*FvwmIconBoxKey         n       Next
+*FvwmIconBoxKey         p       Prev
+*FvwmIconBoxKey         h       Left
+*FvwmIconBoxKey         j       Down
+*FvwmIconBoxKey         k       Up
+*FvwmIconBoxKey         l       Right
+#
+# Icon file specifications 
+#
+# Mostly, you don't have to specify icon files, as FvwmIconBox now 
+# reads icon files specified in Style commands. 
+#
+*FvwmIconBox            "Fvwm*"         -
+.sp
+.fi
+
+.SH AUTHOR
+Nobutaka Suzuki (nobuta-s@is.aist-nara.ac.jp).
+

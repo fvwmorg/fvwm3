@@ -1,0 +1,58 @@
+#
+SHELL=/bin/sh
+
+@SET_MAKE@
+
+top_srcdir=@top_srcdir@
+srcdir=@srcdir@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+bin_dir=@exec_prefix@/bin
+x_includes=@x_includes@
+x_libraries=@x_libraries@
+fvwm_icons=@fvwm_icons@
+fvwm_rc=@fvwm_rc@
+fvwm_name=@fvwm_name@
+#
+# This is where the modules will be installed
+fvwm_dir=@prefix@/lib/X11/@fvwm_name@
+
+#
+# Libs
+X_LIBRARY=-lX11
+XPM_LIBRARY=-lXpm
+XEXT_LIBRARY=-lXext
+FVWM_LIBRARY=-l${fvwm_name}
+LIBS=-L${top_srcdir}/libs ${x_libraries} ${FVWM_LIBRARY} ${XPM_LIBRARY} ${XEXT_LIBRARY} ${X_LIBRARY} 
+
+EXTRA_DEFINES=-DXPM -DSHAPE
+CC=@CC@
+INCLUDES=-I${top_srcdir}/include ${x_includes}
+CFLAGS=${INCLUDES} @CFLAGS@ ${EXTRA_DEFINES} 
+MAKEDEPEND=@MAKEDEPEND@
+INSTALL=@INSTALL@
+INSTALL_PROGRAM=@INSTALL_PROGRAM@
+RM=@RM@
+
+PROG=FvwmTaskBar
+
+SRCS=FvwmTaskBar.c List.c ButtonArray.c Mallocs.c Colors.c Goodies.c Start.c
+OBJS=FvwmTaskBar.o List.o ButtonArray.o Mallocs.o Colors.o Goodies.o Start.o
+
+
+all: ${PROG}
+
+depend:
+	${MAKEDEPEND} ${CFLAGS} ${SRCS}
+
+install: all
+	${INSTALL_PROGRAM} ${PROG} ${fvwm_dir}
+
+clean:
+	${RM} ${PROG} ${OBJS} *~ core *.bak
+
+distclean: clean
+
+
+${PROG}: ${OBJS}
+	${CC} -o ${PROG} ${OBJS} ${LIBS}

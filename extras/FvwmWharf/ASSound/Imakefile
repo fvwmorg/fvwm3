@@ -1,0 +1,20 @@
+#include <../../../configure.h>
+
+COMPILER
+
+DEPLIBS = $(DEPXLIB)  ../../../lib/libafterstep.a   
+
+#ifdef AlphaArchitecture
+LOCAL_LIBRARIES = $(XPMLIB) $(XLIB) -ldnet_stub -L../../../lib -lafterstep     
+#else
+LOCAL_LIBRARIES = $(XPMLIB) $(XLIB) -L../../../lib -lafterstep
+#endif
+
+LINTLIBS = $(LINTXLIB)
+
+SRCS = ASSound.c
+OBJS = ASSound.o
+TARGET_DIR
+
+ComplexProgramTarget(ASSound)
+

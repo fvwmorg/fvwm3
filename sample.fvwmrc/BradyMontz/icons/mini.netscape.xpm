@@ -1,0 +1,25 @@
+/* XPM */
+static char *netscapemini[] = {
+/* width height num_colors chars_per_pixel */
+"    14    14       4            1",
+/* colors */
+". c White",
+"# c Black",
+"b c Gray50",
+"i c Blue4",
+/* pixels */
+"iiiiiiiiiiiiii",
+"iiibiibiibiiii",
+"ibi.biibiib.ii",
+"iii..biiibb.ii",
+"bib...bbiii.ii",
+"ibi.i..bibi.ii",
+"iib.ib..bib.bi",
+"ibb.ibb..bb.ib",
+"bib.ibib..b.ib",
+"bib.bibib...bb",
+"bbb.bbibbb..bb",
+"bb#bb#########",
+"##############",
+"##############"
+};

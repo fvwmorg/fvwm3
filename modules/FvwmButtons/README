@@ -1,0 +1,119 @@
+
+                 FvwmButtons 2.0.41-plural-Z-alpha 28.03.96
+
+-------------------------------------------------------------------------------
+
+This is a much improved version of FvwmButtons, previously known as GoodStuff.
+It provides full configuration for each button on colors, sizes, fonts etc,
+more control over swallowed windows, support for popup menus and actions bound
+to separate mouse buttons. See the home page for illustrative examples.
+
+Check out the FvwmButtons home page:
+  http://www.fm.unit.no/~jatotal/fvwm.html
+
+Thanks to the folks who tried it out, commented, reported bugs and stuff,
+especially those I remembered to write down here at the time, namely:
+  Brandon M. Browning <brandon@powertie.org>
+  Rich Derr <rhd@interaccess.com>
+  Romano Giannetti <romano@iet.unipi.it>                              Bugslayer
+  Angiolini Giorgio <angiolin@ic8wd2.settimo.italtel.it>
+  Albrecht Kadlec <albrecht@auto.tuwien.ac.at>
+  Dugeon Olivier <dugeon@lannion.cnet.fr>
+  Olly Stephens <olly@dylan.zycad.com>
+  HenSiong Tan <tan@stat.psu.edu>
+  Chris Taylor <shaggy@ctron.com>
+  Dirk Vangestel <gesteld@sebb.bel.alcatel.be>
+  Alan Wild <arwild01@scic.intel.com>
+  Emiel Witteman <ewittema@wi.leidenuniv.nl>
+  Christopher Wolf <cwolf@micro.ti.com>
+
+Thanks to Rob and Chuck for Fvwm!
+
+Jarl Totland <jatotal@stud.unit.no> (Until summer 96)
+             <jarl.totland@errors.bbs.no> (Forever, but seldom read)
+
+-------------------------------------------------------------------------------
+
+HACK:
+
+I have tried to keep the code as clean as possible, not introducing features
+that would mess things up. There is however one feature which is a hack only,
+and will be removed at a later stage when introducing a more general way in
+which you can achieve the same effect. That is:
+  Title (options) garblebrook
+The options (Left,Right,Center,Side) will probably all go, but "Side" is a
+very lousy solution, not very expandable. But until I have time to think out
+a nice and general way to handle real estate inside each button, it will 
+have to stay to provide the Menu Loop (tm). So there.
+
+
+SYNTAX:
+
+This is the syntax of the options part of the configuration file, written 
+out in approximate BNF:
+
+	options	   :=	option options
+		   |	option
+	option     :=	UNSIGNED 'x' UNSIGNED
+		   |	'Action' aoptions STRING
+		   |	'Back' STRING
+		   |	'Container' coptions
+		   |	'End'
+		   |	'Font' STRING
+		   |	'Fore' STRING
+		   |	'Frame' SIGNED
+		   |	'NoSize'
+		   |	'Padding' UNSIGNED
+		   |	'Padding' UNSIGNED UNSIGNED
+		   |	'Size' UNSIGNED UNSIGNED
+		   |	'Swallow' sflags STRING STRING
+		   |	'Title' tflags STRING
+
+	aoptions   :=	'(' aoptions2 ')'
+		   |	NULL
+	aoptions2  :=	aoption aoptions2
+		   |	aoption
+	aoption	   :=	'Mouse' UNSIGNED
+
+	coptions   :=	'(' coptions2 ')'
+		   |	NULL
+	coptions2  :=	coption coptions2
+		   |	coption
+	coption	   :=	'Action' aoptions STRING
+		   |	'Back' STRING
+		   |	'Columns' UNSIGNED
+		   |	'Font' STRING
+		   |	'Fore' STRING
+		   |	'Frame' SIGNED
+		   |	'NoSize'
+		   |	'Padding' UNSIGNED
+		   |	'Padding' UNSIGNED UNSIGNED
+		   |	'Size' UNSIGNED UNSIGNED
+		   |	'Swallow' soptions
+		   |	'Title' toptions
+
+	sflags     :=	'(' sflags2 ')'
+		   |	NULL
+	sflags2    :=	sflag sflags2
+		   |	sflag
+	sflag	   :=	'Close'
+		   |	'Hints'
+		   |	'Kill'
+		   |	'NoClose'
+		   |	'NoHints'
+		   |	'NoKill'
+		   |	'NoOld'
+		   |	'NoRespawn'
+		   |	'NoTitle'
+		   |	'Respawn'
+		   |	'UseOld'
+		   |	'UseTitle'
+
+	tflags     :=	'(' tflags2 ')'
+		   |    NULL
+	tflags2    :=	tflag tflags2
+		   |	tflag
+	tflag	   :=	'Center'
+		   |	'Left'
+		   |	'Right'
+		   |	'Side'

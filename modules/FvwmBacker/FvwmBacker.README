@@ -1,0 +1,36 @@
+This is version 0.1 of the FvwmBacker module.
+
+Description:  This is a pretty simple module.  When the desktop number changes,
+              it will execute the user specified command to change the 
+              background.  Like I said, pretty simple.  This was a quickly
+              written module, so please let me know of any bugs.
+
+To do:
+-----
+  - Change the system call to be fork/exec calls.
+
+
+I am open to, actually I am trolling for, suggestions/improvments/ideas/rags
+on this.
+
+Here is a list of files included in the tar file:
+
+FvwmBacker.README
+FvwmBacker.c
+FvwmBacker.h
+FvwmBacker.man
+Imakefile
+Mallocs.c
+Mallocs.h
+xsetroot_bits.c
+
+You can unpack it by:
+
+cd /foo/fvwm/modules
+gzip -dc FvwmBacker-0.1.tar.gz | tar xf -
+
+That will unpack the source into /foo/fvwm/modules/FvwmBacker.
+
+Enjoy,
+Mike
+mfinger@mermaid.micro.umn.edu or Mike_Finger@atk.com

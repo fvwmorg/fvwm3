@@ -1,0 +1,26 @@
+/* XPM */
+static char * jline_xpm[] = {
+/* width height num_colors chars_per_pixel */
+"16 16 4 1",
+/* colors */
+" 	s None	c None",
+".	c gray85",
+"X	c gray60",
+"o	c gray45",
+/* pixels */
+"                ",
+"                ",
+"                ",
+"                ",
+"                ",
+"                ",
+"  ...........X  ",
+"  .XXXXXXXXXXo  ",
+"  .XXXXXXXXXXo  ",
+"  Xooooooooooo  ",
+"                ",
+"                ",
+"                ",
+"                ",
+"                ",
+"                "};

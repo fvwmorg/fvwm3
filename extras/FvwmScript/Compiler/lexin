@@ -1,0 +1,152 @@
+%{
+# include "y.tab.h"
+# include "types.h"
+
+int numligne=1;
+%}
+
+
+bl		[ \t]*			
+nl		\n
+commentaire	#.*
+nb		[-+]?[0-9]*
+str		[^ = \t \n \( \) \< \> \} \{]+
+gstr		\{[^\{\}\n]*[\}\n]
+inf		<
+infeq		<=
+equal		==
+supeq		>=
+sup		>
+diff		<>
+get		=
+
+%%
+{bl}		;
+{commentaire}	;
+
+^{bl}+WindowTitle	{ return WINDOWTITLE; }
+^{bl}+WindowSize	{ return WINDOWSIZE; }
+^{bl}+WindowPosition	{ return WINDOWPOSITION; }
+^{bl}+ForeColor		{ return FORECOLOR; }
+^{bl}+BackColor		{ return BACKCOLOR; }
+^{bl}+ShadowColor	{ return SHADCOLOR; }
+^{bl}+HilightColor	{ return LICOLOR; }
+^{bl}+Widget		{ return OBJECT; }
+^{bl}+Property		{ return PROP; }
+^{bl}+Main		{ return MAIN; }
+^{bl}+End		{ return END; }
+^{bl}+Font		{ return FONT; }
+
+^{bl}+Type		{ return TYPE; }
+^{bl}+Size		{ return SIZE; }
+^{bl}+Position		{ return POSITION; }
+^{bl}+Value		{ return VALUE; }
+^{bl}+MinValue		{ return VALUEMIN; }
+^{bl}+MaxValue		{ return VALUEMAX; }
+^{bl}+Title		{ return TITLE; }
+^{bl}+SwallowExec	{ return SWALLOWEXEC; }
+^{bl}+Icon		{ return ICON; }
+^{bl}+Flags		{ return FLAGS; }
+Hidden			{ return HIDDEN; }
+CanBeSelected		{ return CANBESELECTED; }
+NoReliefString		{ return NORELIEFSTRING; }
+
+^{bl}+Do		{ return EXEC; }
+^{bl}+HideWidget	{ return HIDE; }
+^{bl}+ShowWidget	{ return SHOW; }
+^{bl}+ChangeValue	{ return CHVALUE; }
+^{bl}+ChangeMaxValue	{ return CHVALUEMAX; }
+^{bl}+ChangeMinValue	{ return CHVALUEMIN; }
+GetTitle		{ return GETTITLE; }
+GetValue		{ return GETVALUE; }
+GetOutput		{ return GETOUTPUT; }
+NumToHex		{ return NUMTOHEX; }
+HexToNum		{ return HEXTONUM; }
+Add			{ return ADD;}
+Mult			{ return MULT;}
+Div			{ return DIV;}
+StrCopy			{ return STRCOPY; }
+LaunchScript		{ return LAUNCHSCRIPT; }
+GetScriptFather		{ return GETSCRIPTFATHER; }
+ReceivFromScript	{ return RECEIVFROMSCRIPT; }
+RemainderOfDiv		{ return REMAINDEROFDIV; }
+GetTime			{ return GETTIME; }
+GetScriptArgument	{ return GETSCRIPTARG; }
+^{bl}+ChangePosition	{ return POSITION; }
+^{bl}+ChangeSize	{ return SIZE; }
+^{bl}+ChangeTitle	{ return TITLE; }
+^{bl}+ChangeIcon	{ return ICON; }
+^{bl}+ChangeFont	{ return FONT; }
+^{bl}+ChangeForeColor	{ return CHFORECOLOR; }
+^{bl}+ChangeBackColor	{ return CHBACKCOLOR; }
+^{bl}+Set		{ return SET; }
+^{bl}+SendSignal	{ return SENDSIGN; }
+^{bl}+Quit		{ return QUIT; }
+^{bl}+Init		{ return INIT; }
+^{bl}+PeriodicTasks	{ return PERIODICTASK; }
+^{bl}+For		{ return FOR; }
+^{bl}+WarpPointer	{ return WARP; }
+^{bl}+WriteToFile	{ return WRITETOFILE; }
+^{bl}+SendToScript	{ return SENDTOSCRIPT; }
+^{bl}+SingleClic	{ return SINGLECLIC; }
+^{bl}+DoubleClic	{ return DOUBLECLIC; }
+To			{ return TO; }
+Do			{ return DO; }
+^{bl}+If		{ return IF; }
+Then			{ return THEN; }
+Else			{ return ELSE; }
+
+{inf}			{ return INF; }
+{infeq}			{ return INFEQ; }
+{supeq}			{ return SUPEQ; }
+{sup}			{ return SUP; }
+{diff}			{ return DIFF; }
+{equal}			{ return EQUAL; }
+{get}			{ return GET; }
+
+^{bl}+While		{ return WHILE; }
+^{bl}+Case+[ \t]+message+[ \t]of { return CASE; }
+^{bl}+Begin		{ return BEG; }
+:			{ return POINT; }
+[\(]			{ return BEGF; }
+[\)]			{ return ENDF; }
+
+
+{nb}		{ yylval.number=atoi(yytext);
+                  return NUMBER;
+                }
+
+[\$]+{str}	{
+		  yylval.str=(char*) strdup(yytext+1);
+		  yylval.str[yyleng-1]='\0';
+                  return VAR;
+		}
+{gstr}		{ /* Str entre "" */
+		  yylval.str=(char*) strdup(yytext+1);
+		  yylval.str[yyleng-2]='\0';
+                  return GSTR;
+		}
+
+{str}		{ yylval.str=(char*) strdup(yytext);
+		  yylval.str[yyleng]='\0';
+                  return STR;
+		}
+
+
+{nl}		{ numligne++; }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,289 @@
+WindowTitle {FvwmButtons}
+WindowSize 548 95		# Taille
+WindowPosition 0 0		# Position
+ForeColor	{#000000}
+BackColor	{#d0d0d0}
+ShadowColor	{#858585}
+HilightColor	{#FFFFFF}
+Font		-adobe-helvetica-bold-r-*-*-12-*
+
+Init
+ Begin
+ End
+ 
+Widget 1
+Property
+ Size 65 65
+ Position 15 15
+ Type SwallowExec
+ Title {xclock}
+ Value -1
+ SwallowExec {exec xclock -analog -padding 0 -geometry 70x56-1500-1500 -fg MidnightBlue -hd Blue -hl Blue -bg Grey85 &}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 2
+Property
+ Size 40 71
+ Position 88 12
+ Type SwallowExec
+ Title {xload}
+ SwallowExec {exec xload -nolabel -bg Grey85 -fg Yellow -update 3 -geometry 30x56-1500-1500 &}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 3
+Property
+ Size 140 65
+ Position 136 15
+ Type SwallowExec
+ Title {FvwmPager}
+ Value -1
+ SwallowExec {Module FvwmPager 0 0}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 4
+Property
+ Size 281 85
+ Position 5 5
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 5
+Property
+ Size 251 85
+ Position 291 5
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 7
+Property
+ Size 1 1
+ Position 296 10
+ Type PushButton
+ Title {|XV|XPaint|Image Magic|XFig|XMag|Screen Dump}
+ Icon small.Paint2.xpm
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 7)==1 Then
+    Do {Exec xv &}
+   If (GetValue 7)==2 Then
+    Do {Exec xpaint &}
+   If (GetValue 7)==3 Then
+    Do {Exec xterm -geometry -5000-5000 -e display &}
+   If (GetValue 7)==4 Then
+    Do {Exec xfig &}
+   If (GetValue 7)==5 Then
+    Do {Exec xmag &}
+   If (GetValue 7)==6 Then
+    Do {Module FvwmScript ScreenDump}
+  End
+End
+
+Widget 8
+Property
+ Size 1 1
+ Position 331 10
+ Type PushButton
+ Title {|XCalc|HP 48GX}
+ Icon small.calc.next.xpm
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 8)==1 Then
+    Do {exec xcalc &}
+   If (GetValue 8)==2 Then
+    Do {exec x48 &}
+  End
+End
+
+Widget 9
+Property
+ Size 1 1
+ Position 366 10
+ Type PushButton
+ Title {|TextEdit|MEdit|XEdit|Axe|Netscape|Clipboard|Plan}
+ Icon small.note.next.xpm
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 9)==1 Then
+    Do {Exec textedit -En 30 &}
+   If (GetValue 9)==2 Then
+    Do {Exec medit &}
+   If (GetValue 9)==3 Then
+    Do {Exec xedit &}
+   If (GetValue 9)==4 Then
+    Do {Exec coaxe &}
+   If (GetValue 9)==5 Then
+    Do {Exec bash -c "netscape" &}
+   If (GetValue 9)==6 Then
+    Do {Exec xclipboard &}
+   If (GetValue 9)==7 Then
+    Do {Exec plan &}
+  End
+End
+
+Widget 10
+Property
+ Size 1 1
+ Position 471 10
+ Type PushButton
+ Title {|Random|Bat|Blot|Bouboule|Bounce|Flame|Galaxy|Grav|Helix|Hop|Maze}
+ Icon small.lock.xpm
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 10)==1 Then
+    Do {Exec xlock -nolock -nice 0 -mode random &}
+   If (GetValue 10)==2 Then
+    Do {Exec xlock -nolock -nice 0 -mode bat &}
+   If (GetValue 10)==3 Then
+    Do {Exec xlock -nolock -nice 0 -mode blot &}
+   If (GetValue 10)==4 Then
+    Do {Exec xlock -nolock -nice 0 -mode bouboule &}
+   If (GetValue 10)==5 Then
+    Do {Exec xlock -nolock -nice 0 -mode bounce &}
+   If (GetValue 10)==6 Then
+    Do {Exec xlock -nolock -nice 0 -mode flame &}
+   If (GetValue 10)==7 Then
+    Do {Exec xlock -nolock -nice 0 -mode galaxy &}
+   If (GetValue 10)==8 Then
+    Do {Exec xlock -nolock -nice 0 -mode grav &}
+   If (GetValue 10)==9 Then
+    Do {Exec xlock -nolock -nice 0 -mode helix &}
+   If (GetValue 10)==10 Then
+    Do {Exec xlock -nolock -nice 0 -mode hop &}
+   If (GetValue 10)==11 Then
+    Do {Exec xlock -nolock -nice 0 -mode maze &}
+  End
+End
+
+Widget 11
+Property
+ Size 1 1
+ Position 506 10
+ Type PushButton
+ Icon small.exit.xpm
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do {Module FvwmScript Quit}
+  End
+End
+
+Widget 12
+Property
+ Size 1 1
+ Position 436 10
+ Type PushButton
+ Title {|Display|Bell|Keyboard|Pointer|Date|Desktop}
+ Icon small.tools2_3d.xpm
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 12)==1 Then
+    Do {Module FvwmScript ScreenSetup}
+   If (GetValue 12)==2 Then
+    Do {Module FvwmScript BellSetup}
+   If (GetValue 12)==3 Then
+    Do {Module FvwmScript KeyboardSetup}
+   If (GetValue 12)==4 Then
+    Do {Module FvwmScript PointerSetup}
+   If (GetValue 12)==5 Then
+    Do {Module FvwmScript Date}
+   If (GetValue 12)==6 Then
+    Do {Module FvwmScript DeskSetup}
+  End
+End
+
+Widget 13
+Property
+ Size 1 1
+ Position 401 10
+ Type PushButton
+ Title {|TkMan|XMan}
+ Icon small.man.next.xpm
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 13)==1 Then
+    Do {Exec tkman &}
+   If (GetValue 13)==2 Then
+    Do {Exec xman -notopbox &}
+  End
+End
+
+Widget 6
+Property
+ Size 240 40
+ Position 296 45
+ Type SwallowExec
+ Title {TkDesk Application Bar}
+ SwallowExec {exec tkdesk &}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

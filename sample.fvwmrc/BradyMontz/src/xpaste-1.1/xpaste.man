@@ -1,0 +1,33 @@
+.TH xpaste 1 "May, 1990"
+.SH xpaste
+xpaste \- pop up a window within which the contents of the primary selection
+buffer is pasted.
+.SH SYNOPSIS
+.B xpaste
+.SH DESCRIPTION
+Xpaste will create a window containing the current contents of the primary
+selection buffer. The size of this window is dictated by the length of
+the longest line in the selection, the number of lines in the selection,
+and the size of the current font. Variable-width fonts are supported.
+.PP
+Clicking on the \fBDONE\fP button causes the window to go away.
+.SH OPTIONS
+Xpaste accepts all the standard X Toolkit command line options. 
+.SH WIDGETS
+The hierarchy of the widgets composing \fBxpaste\fP follow. The widget class
+name is given first, followed by the widget instance name.
+.sp
+.nf
+.ta .5i 1.0i 1.5i 2.0i
+XPaste	xpaste
+	Form	 form
+		Command	 done
+		AsciiString	 text
+.SH SEE ALSO
+X(1), xclipboard(1)
+.SH HISTORY
+Written by John DiMarco at the University of Toronto.
+.SH BUGS
+Selections containing tabs and/or binary data may cause
+.B xpaste 
+to size the window incorrectly. 

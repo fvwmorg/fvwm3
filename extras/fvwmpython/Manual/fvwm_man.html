@@ -1,0 +1,361 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+  <head>
+    <title>Fvwm.py Manpage</title>
+  </head>
+
+  <body>
+      <h1>Fvwm.py Manpage</h1>
+
+<p>
+<h2>Synposis</h2>
+This is a Python module that interfaces with the Fvwm module API.  It
+allows you to write Fvwm extensions in Python.  It is integrated with
+Python's Tkinter module, so you can easily write extensions that
+present a user interface.
+
+<h3>Classes</h3>
+<dl>
+    <dt><tt>FvwmModule</tt>
+    <dd>Top level class used to communicate with Fvwm.
+    <dt><tt>ConfigInfo</tt>
+    <dd>Class that encapsulates Fvwm module configuration lines.
+    <dt><tt>PacketReader</tt>
+    <dd>Class that encapsulates reading packets from Fvwm.  This is
+        actually represented by a family of derived classes, one per
+        packet type, the base class of which is <tt>Packet</tt>
+</dl>
+
+<h3>Exceptions</h3>
+<dl>
+    <dt><tt>PipeReadError</tt>
+    <dd>Indicates an error while reading the file descriptor from Fvwm.
+    <dt><tt>SynchronizationError</tt>
+    <dd>Indicates that a partial, incomplete, or invalid packet was read
+        from the Fvwm file descriptor.
+</dl>
+
+<h3><a name="modfuncs">Module Functions</a></h3>
+<dl>
+    <dt><tt>error(msg, exit=None, flag='ERROR')</tt>
+    <dd>This function writes an error message to the module's standard
+	error.  Typically, this will get displayed on the system
+	console.  <tt>msg</tt> must be a string.  Optional
+	<tt>exit</tt> is an integer; if provided, this function will
+	call <tt>sys.exit()</tt> with this value.  Optional
+	<tt>flag</tt> is a prefix to use when printing the message.
+    <dt><tt>debug(msg)</tt>
+    <dd>Print a debugging message on standard error.  As above,
+	<tt>msg</tt> must be a string.
+</dl>
+
+<h3><a name="modvars">Module Variables</a></h3>
+<dl>
+    <dt><tt>Contexts</tt>
+    <dd>A dictionary of mappings between <em>Context</em> names as
+	strings (as described in the Fvwm module documentation), and
+	their numeric value.  This dictionary also contains a reverse
+	mapping.
+    <dt><tt>Types</tt>
+    <dd>A dictionary of mappings between <em>Packet Types</em> as
+	strings and their numeric values.  This dictionary also
+	contains a reverse mapping.
+    <dt><tt>Flags</tt>
+    <dd>A dictionary of mappings between <em>Window flags</em> as
+	described in <tt>fvwm.h</tt> and their numeric values.  This
+	dictionary also contains a reverse mapping.
+    <dt><tt>Gravity</tt>
+    <dd>A dictionary of mappings between <em>Gravity flags</em> as
+	described in <tt>X11/X.h</tt> and their numeric values.  This
+	dictionary also contains a reverse mapping.
+</dl>
+    
+
+<h2>Class Descriptions</h2>
+
+<h3><tt>FvwmModule</tt></h3>
+
+The <tt>FvwmModule</tt> class is the main class for interaction with
+Fvwm.  In typically usage, you will derive from this class and your
+applications will instantiate only one of these objects.  The class
+provides an interface for sending commands to Fvwm, and a framework
+for dispatching callbacks on packets read from Fvwm.  It also provides
+conveniences for setting the Fvwm event mask, and for getting module
+configuration lines and the window list.
+
+<p>
+There are two complimentary frameworks for creating callbacks.  The
+first uses derived class methods, while the second uses registered
+functions with the latter always taking precedence.
+
+<p>
+Registration of callbacks is pretty simple.  You simply call
+<tt>FvwmModule.register()</tt> giving the packet name (as a string),
+and a callback function object.  The function should take two
+arguments, the first is the <tt>FvwmModule</tt> instance, and the
+second is the <a href="#pktobj" target="_self">packet object</a>.
+There is a complimentary
+<tt>FvwmModule.unregister()</tt> function.
+
+<p>
+<a name="pktnames">
+For derived class methods, the names of the Fvwm packet types are used
+as keys for lookup</a>.  The mapping between packet names and method
+names is pretty straightforward (the listing of packet names is
+described in the <em>Fvwm Module Interface</em> Document).  For a
+given packet name, the leading <tt>M_</tt> is removed, and the
+remaining symbol is stripped of underscores and converted to
+mixed-case format.  For example, when the <tt>M_ICON_LOCATION</tt>
+packet was received, the method <tt>IconLocation()</tt> would be called.
+Derived class methods take two arguments as well: <tt>self</tt>, and
+the <a href="#pktobj" target="_self">packet object</a>.
+
+<p>
+If no registered callback and no derived method is found to handle a
+given packet, the method <tt>FvwmModule.unhandled_packet()</tt> is
+called, which also takes <tt>self</tt> and the
+<a href="#pktobj" target="_self">packet object</a>.
+You can, of course, override this in your derived class.
+
+<p>
+The <tt>FvwmModule</tt> class has some other useful methods and public
+instance variables:
+<dl>
+    <dt><tt>send(command, window=WINDOW_NONE, cont=1)</tt>
+    <dd>Sends a command string to Fvwm.  Optional <tt>window</tt>
+        specifies the window to apply the command to (note that this
+        is the application's window ID; e.g. the <tt>top_id</tt> in
+        the <a href="tracker_man.html">Tracker</a> module's
+        <tt>Window</tt> class).  Optional
+        <tt>cont</tt> is the continuation flag (see the Fvwm module
+        documentation for details).
+    <dt><tt>set_mask(mask=None)</tt>
+    <dd>Sets the Fvwm event mask for the module.  Optional
+        <tt>mask</tt> can be a bit-wise OR of
+	<a href="#modvars" target="_self"><em>Context</em>
+	values</a>.  By default, the event mask is calculated
+	automatically by searching for all implemented packet handler
+	methods and registered callback handlers.
+
+    <dt><tt>start()</tt>
+    <dd>Start reading packets and dispatching on packet types.  If the
+	<tt>Tkinter</tt> module has been imported, and at least one
+	widget has been created, this will start the Tk mainloop.  Note
+        that currently, recursive mainloops with Tk doesn't seem to be
+	working properly.
+    <dt><tt>stop()</tt>
+    <dd>Stop reading packets.
+    <dt><tt>get_configinfo()</tt>
+    <dd>Returns a <tt>ConfigInfo</tt> instance which encapsulates the
+	configuration lines from Fvwm.
+    <dt><tt>get_windowlist()</tt>
+    <dd>Sends the <tt>Send_WindowList</tt> command to Fvwm and reads
+	all resulting packets, collating them into a
+	<a href="tracker_man.html">Tracker</a> instance, which is
+	returned.
+
+    <dt><tt>program</tt>
+    <dd>Contains <tt>argv[2]</tt> of the module's initial command line.
+    <dt><tt>configfile</tt>
+    <dd>Contains <tt>argv[3]</tt> of the module's initial command line.
+    <dt><tt>appcontext</tt>
+    <dd>Contains <tt>argv[4]</tt> of the module's initial command line.
+    <dt><tt>wincontext</tt>
+    <dd>Contains <tt>argv[5]</tt> of the module's initial command line.
+    <dt><tt>args</tt>
+    <dd>Contains a list of the <tt>argv[6:]</tt>
+	initial command line arguments.
+</dl>
+
+<h3><tt><a name="pktobj">Packet<a></tt></h3>
+
+The <tt>Packet</tt> class is not directly accessible by your code.
+Instead, instances of it (actually of classes derived from it) are
+passed into the callback functions and methods.  Packet classes are
+named in a manner similar to derived method names, except that the
+word <tt>Packet</tt> is appended to the name,
+e.g. <tt>AddWindowPacket</tt>.  Usually the actual packet class name
+isn't important.
+
+<p>
+All packet objects have a common collection of public instance
+variables:
+<dl>
+    <dt><tt>pktlen</tt>
+    <dd>Total length of the packet, including the header, in unsigned
+	longs.
+    <dt><tt>timestamp</tt>
+    <dd>The last timestamp received from the X server, expressed in
+	milliseconds (note that this is <em>not</em> the Unix time!).
+    <dt><tt>msgtype</tt>
+    <dd>The packet type, as an integer.
+    <dt><tt>pkthandler</tt>
+    <dd>The <a href="#pktnames" target="_self">
+	packet <em>callback</em> name</a> used to select a derived
+	class method for dispatch.
+</dl>
+
+<p>
+Packets also have packet dependent public instance variables:
+<dl>
+    <dt><tt>NewPagePacket</tt>
+    <dd><dl>
+	<dt><tt>x</tt>, <tt>y</tt>
+	<dd>The X and Y coordinates of the upper left corner of the
+	    current viewport on the virtual desktop.
+	<dt><tt>desk</tt>
+	<dd>The current desktop number.
+	<dt><tt>max_x</tt>, <tt>max_y</tt>
+	<dd>The maximum allowed values for the coordinates at the
+	    upper left corner of the viewport.
+	</dl>
+
+    <dt><tt>NewDeskPacket</tt>
+    <dd><dl>
+	<dt><tt>desk</tt>
+	<dd>The number of the currently active desktop.
+	</dl>
+
+    <dt><tt>AddWindowPacket</tt>, <tt>ConfigureWindowPacket</tt>
+    <dd><dl>
+	<dt><tt>top_id</tt>, <tt>frame_id</tt>
+	<dd>ID of the application's top level window and the Fvwm
+	    frame window, respectively.
+	<dt><tt>db_entry</tt>
+	<dd>Pointer to the Fvwm database entry.
+	<dt><tt>x</tt>, <tt>y</tt>, <tt>width</tt>, <tt>height</tt>
+	<dd>Location and size of the window's frame.
+	<dt><tt>desk</tt>
+	<dd>The desktop on which the window resides.
+	<dt><tt>flags</tt>
+	<dd>The window's flag field.
+	<dt><tt>title_height</tt>
+	<dd>The window's title height.
+	<dt><tt>border_width</tt>
+	<dd>The window's border width.
+	<dt><tt>base_width</tt>
+	<dd>The window's base width.
+	<dt><tt>base_height</tt>
+	<dd>The window's base height.
+	<dt><tt>resize_width_incr</tt>, <tt>resize_height_incr</tt>
+	<dd>The window's resize width and height increment,
+	    respectively.
+	<dt><tt>min_width</tt>, <tt>min_height</tt>,
+	    <tt>max_width</tt>, <tt>max_height</tt>
+	<dd>The window's minimum and maximum widths and heights.
+	<dt><tt>icon_label_id</tt>, <tt>icon_pixmap_id</tt>
+	<dd>The icon label's window ID (or zero) and the icon pixmap's
+	    window ID (or zero).
+	<dt><tt>gravity</tt>
+	<dd>Window gravity.
+	<dt><tt>text_color</tt>, <tt>border_color</tt>
+	<dd>Pixel value of the text and window border colors.
+	</dl>
+
+    <dt><tt>LowerWindowPacket</tt>, <tt>RaiseWindowPacket</tt>,
+	<tt>DestroyPacket</tt>, <tt>DeiconifyPacket</tt>,
+	<tt>MapPacket</tt>.
+    <dd><dl>
+	<dt><tt>top_id</tt>, <tt>frame_id</tt>
+	<dd>The ID of the affected application's top level window, and
+	    the ID fo the Fvwm frame.
+	<dt><tt>db_entry</tt>
+	<dd>The database entry for the window.
+	</dl>
+
+    <dt><tt>FocusChangePacket</tt>
+    <dd>This packet contains a superset of instances variables of
+	<tt>LowerWindowPacket</tt>.  The additional variables are:
+	<dl><dt><tt>text_color</tt>, <tt>border_color</tt>
+	    <dd>The pixel value of the text and window border colors.
+	</dl>
+
+    <dt><tt>IconifyPacket</tt>, <tt>IconLocationPacket</tt>
+    <dd>These packets contain a superset of the instance variables of
+	<tt>LowerWindowPacket</tt>.  The additional variables are:
+	<dl><dt><tt>x</tt>, <tt>y</tt>, <tt>width</tt>, <tt>height</tt>
+	    <dd>The location and size of the icon window.
+	</dl>
+
+    <dt><tt>WindowNamePacket</tt>, <tt>IconNamePacket</tt>,
+	<tt>ResClassPacket</tt>, <tt>ResNamePacket</tt>,
+	<tt>IconFilePacket</tt>.
+    <dd>These packets contain a superset of the instance variables of
+	<tt>LowerWindowPacket</tt>. The additional variable is:
+	<dl><dt><tt>name</tt>
+	    <dd>The name or class of the window or icon.
+	</dl>
+
+    <dt><tt>EndWindowlistPacket</tt>, <tt>EndConfigInfoPacket</tt>
+    <dd><em>No variables other than the common set.</em>
+
+    <dt><tt>ErrorPacket</tt>, <tt>ConfigInfoPacket</tt>,
+        <tt>DefaulticonPacket</tt>
+    <dd><dl><dt><tt>data</tt>
+	    <dd>The string data.
+	</dl>
+</dl>
+
+<h3>ConfigInfo</h3>
+
+<tt>FvwmModule.get_configinfo()</tt> returns an instance of this
+class, which provides a convenient encapsulation of Fvwm module
+configuration lines.  Instances of <tt>ConfigInfo</tt> have the
+following methods:
+
+<dl>
+    <dt><tt>get_infolines(re=None)</tt>
+    <dd>Returns all the configuration lines, as a list.  With optional
+	<tt>re</tt> parameter, only those lines
+	<tt>regex.match</tt>'ing the regular expression are returned.
+	Since the match starts at the beginning of the line, you do
+	not need to include the `*' character at the beginning of the
+	regular expression.
+</dl>
+
+and the following public instance variables:
+
+<dl>
+    <dt><tt>iconpath</tt>
+    <dd>The value of <tt>IconPath</tt>.
+    <dt><tt>pixmappath</tt>
+    <dd>The value of <tt>PixmapPath</tt>.
+    <dt><tt>clicktime</tt>
+    <dd>The value of <tt>ClickTime</tt>.
+</dl>
+
+<h2>Caveats</h2>
+
+There are several problems (IMO) with Fvwm's module API and functional
+interface.  Notably there isn't a way to set both the desk and page
+with one command, and this introduces ugly update timing conditions in
+modules (such as the <tt>FvwmPager</tt>).
+
+<p>
+The nastiest problem that I've not been able to work around is that
+Fvwm likes to send pixel values for various color parameters.  This
+isn't very useful to Tk based modules because Tk only understands X11
+color names and there seems to be no way to convert from a pixel value
+(e.g. 0 - 255 on an 8 bit framebuffer) to the X11 color,
+<em>without</em> using an X11 Python module.  Such a module does
+exist, but it's not distributed with Python and it's a shame to have
+to install and import that module just to decipher color
+parameters from Fvwm.
+
+<p>
+I wish instead that Fvwm would send an X11 color name.
+Understandably, sending the color's name as a string would introduce a
+variable width field in some packets.  Instead the RGB style name
+could be used; e.g. <tt>#RRGGBB</tt> (Tk allows up to 16 bits per
+intensity, so <tt>#RRRRGGGGBBBB</tt> would have to be passed).
+
+      <hr>
+      <address><a href="mailto:bwarsaw@python.org">
+      Barry A. Warsaw</a></address>
+<!-- Created: Fri Aug  9 10:58:17 EDT 1996 -->
+<!-- hhmts start -->
+Last modified: Thu Dec 19 18:58:27 EST 
+<!-- hhmts end -->
+<br>&copy; 1996 Barry A. Warsaw
+  </body>
+</html>

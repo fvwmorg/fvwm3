@@ -1,0 +1,437 @@
+WindowTitle {Screen}
+WindowSize 430 530		# Taille
+WindowPosition 191 15		# Position
+ForeColor	{black}
+BackColor	{grey85}
+ShadowColor	{grey55}
+HilightColor	{grey100}
+Font		-adobe-helvetica-bold-r-*-*-12-*
+
+Init
+ Begin
+  WarpPointer 2
+  If (GetOutput  {xset -q} 11 3) == yes Then
+   ChangeValue 10 1
+  Else
+   ChangeValue 11 1
+  ChangeTitle 14 (GetOutput {xset -q} 12 2)
+  ChangeTitle 15 (GetOutput {xset -q} 12 4)
+  Set $BColor=(StrCopy (GetOutput  {cat ~/.xinitrc-fvwm} 15 3) 2 8)
+  Do {Exec echo } (StrCopy (GetOutput  {cat ~/.xinitrc-fvwm} 15 3) 2 8) {>/dev/console}
+  If (StrCopy $BColor 1 1)<>{#} Then
+  Begin
+   Set $BColor={#0EC4B8}
+   ChangeTitle 7 (GetOutput  {cat ~/.xinitrc-fvwm} 15 2)
+   ChangeIcon 8 (GetTitle 7)
+   ChangeValue 4 0
+   ChangeValue 5 1
+  End
+  ChangeBackColor 6 $BColor
+  ChangeValue 20 (HexToNum (StrCopy $BColor 2 3))
+  ChangeValue 21 (HexToNum (StrCopy $BColor 4 5))
+  ChangeValue 22 (HexToNum (StrCopy $BColor 6 7))
+ End
+
+PeriodicTasks
+ Begin
+  Set $MSG=(ReceivFromScript $BROWSER)
+  If $MSG <> {No message} Then
+  Begin
+   ChangeTitle 7 $MSG
+   ChangeIcon 8 $MSG
+  End
+ End
+
+Widget 1
+Property
+ Size 50 30
+ Position 100 480
+ Type PushButton
+ Title {Apply}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Do {Exec xset s } (GetTitle 14) { } (GetTitle 15)
+   If (GetValue 10)==1 Then
+    Do {Exec xset s blank}
+   Else
+    Do {Exec xset s noblank}
+   If (GetValue 5) == 1 Then
+    Do {Exec xpmroot } (GetTitle 7)
+   Else
+    Do {Exec xsetroot -solid "} $BColor {"}
+  End
+End
+
+Widget 2
+Property
+ Size 50 30
+ Position 190 480
+ Type PushButton
+ Title {OK}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   If (GetValue 10)==1 Then
+    Set $tmp2 = { s blank}
+   Else
+    Set $tmp2 = { s noblank}
+   Do {Exec xset s } (GetTitle 14) { } (GetTitle 15) $tmp2
+   WriteToFile .xinitrc-fvwm {Exec xset s } (GetTitle 14) { } (GetTitle 15) $tmp2
+   If (GetValue 5) == 1 Then
+   Begin
+    Do {Exec xpmroot } (GetTitle 7)
+    WriteToFile .xinitrc-fvwm {xpmroot } (GetTitle 7)
+   End
+   Else
+   Begin
+    Do {Exec xsetroot -solid "} $BColor {"}
+    WriteToFile .xinitrc-fvwm {xsetroot -solid "} $BColor {"}
+   End
+   WriteToFile .xinitrc-fvwm {xset s } (GetTitle 14) { } (GetTitle 15) $tmp2
+   Quit
+  End
+End
+
+Widget 3
+Property
+ Size 50 30
+ Position 280 480
+ Type PushButton
+ Title {Cancel}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Quit
+  End
+End
+
+Widget 4
+Property
+ Position 30 30
+ Type RadioButton
+ Title {Uniform colour:}
+ Value 1
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 5 0 
+  End
+End
+
+Widget 5
+Property
+ Position 30 240
+ Type RadioButton
+ Title {Pixmap:}
+ Value 0
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 4 0 
+  End
+End
+
+Widget 6
+Property
+ Size 50 50
+ Position 60 80
+ Type ItemDraw
+ BackColor {#0EC4B8}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 23
+Property
+ Size 60 60
+ Position 55 75
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 24
+Property
+ Size 50 50
+ Position 58 140
+ Type ItemDraw
+ Title {#0EC4B8}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 20
+Property
+ Size 250 1
+ Position 155 20
+ Type HScrollBar
+ Value 14
+ MinValue 0
+ MaxValue 255
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $BColor = {#} (NumToHex (GetValue 20) 2) (NumToHex (GetValue 21) 2) (NumToHex (GetValue 22) 2)
+   ChangeTitle 24 $BColor
+   ChangeBackColor 6 $BColor
+  End
+End
+
+Widget 21
+Property
+ Size 250 1
+ Position 155 75
+ Type HScrollBar
+ Value 196
+ MinValue 0
+ MaxValue 255
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $BColor = {#} (NumToHex (GetValue 20) 2) (NumToHex (GetValue 21) 2) (NumToHex (GetValue 22) 2)
+   ChangeTitle 24 $BColor
+   ChangeBackColor 6 $BColor
+  End
+End
+
+Widget 22
+Property
+ Size 250 1
+ Position 155 130
+ Type HScrollBar
+ Value 184
+ MinValue 0
+ MaxValue 255
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $BColor = {#} (NumToHex (GetValue 20) 2) (NumToHex (GetValue 21) 2) (NumToHex (GetValue 22) 2)
+   ChangeTitle 24 $BColor
+   ChangeBackColor 6 $BColor
+  End
+End
+
+Widget 7
+Property
+ Size 280 30
+ Position 30 300
+ Type TextField
+ Title {/usr/X11/include/X11/pixmaps/fvwm2.xpm}
+ Value 200
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeIcon 8 (GetTitle 7) 
+  End
+End
+
+Widget 25
+Property
+ Position 327 299
+ Type PushButton
+ Title {Browser...}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   Set $ARG={FileBrowser } (GetTitle 7) { Hello word}
+   Set $BROWSER=(LaunchScript $ARG )
+  End
+End
+
+Widget 8
+Property
+ Size 175 75
+ Position 120 215
+ Type ItemDraw
+ Icon /usr/X11/include/X11/pixmaps/fvwm2.xpm
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 9
+Property
+ Size 179 79
+ Position 118 213
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 10
+Property
+ Position 50 380
+ Type RadioButton
+ Title {Blank}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 11 0
+  End
+End
+
+Widget 11
+Property
+ Position 50 425
+ Type RadioButton
+ Title {Pattern}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 10 0
+  End
+End
+
+Widget 12
+Property
+ Position 230 380
+ Type ItemDraw
+ Title {Timeout(s):}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 13
+Property
+ Position 230 425
+ Type ItemDraw
+ Title {Cycle(s):}
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 10 0
+  End
+End
+
+Widget 14
+Property
+ Size 80 79
+ Position 310 375
+ Type TextField
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 15
+Property
+ Size 80 79
+ Position 310 420
+ Type TextField
+Main
+ Case message of
+  SingleClic :
+  Begin
+   ChangeValue 10 0
+  End
+End
+
+Widget 16
+Property
+ Size 410 330
+ Position 10 13
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 17
+Property
+ Size 410 105
+ Position 10 355
+ Type Rectangle
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+Widget 18
+Property
+ Position 15 5
+ Type ItemDraw
+ Title {Background}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+Widget 19
+Property
+ Position 15 347
+ Type ItemDraw
+ Title {Screen-saver}
+Main
+ Case message of
+  SingleClic :
+  Begin
+  End
+End
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,26 @@
+0.63 to 0.64
+	1. Fixed a small problem related to icon-sorting.
+	2. Added *FvwmIconBoxFrameWidth option.
+
+0.62 to 0.63
+	0. Added files CHANGES and TO-DO.
+	1. Extended *FvwmIconBoxSortIcons so that icons are sorted in 
+	order of {window-name, resource-class, resource-name}, as well 
+	as in order of icon-name.  
+	
+0.61 to 0.62
+	1. Fixed *FvwmIconBoxMaxIconSize option to accept 0 as its
+	height value. 
+	2. Added *FvwmIconBoxResolutiion option. Currently, the only
+	possible resolution is Desk though.
+	3. Made a newly-added icon appended at the tail of icon list
+	instead of the head if not *FvwmIconBoxSortIcons.  
+
+0.60 to 0.61
+	1. Added *FvwmIconBoxHilightFocusWin option.
+
+0.51 to 0.60
+	I'm sorry things have fallen into oblivion :)
+
+0.50    
+	Incorporated into the fvwm distribution. Thank you Rob!

@@ -1,0 +1,13 @@
+/* 
+ * Imakefile for fvwm 2.0 -- FvwmAudio
+ */
+
+FVWM_SRCDIR = ../..
+#include "../../Fvwm.tmpl"
+
+SRCS = FvwmAudio.c
+OBJS = FvwmAudio.o
+
+LOCAL_LIBRARIES = $(FVWM_LIBS) $(AUDIO_LIBRARIES) $(XLIB)
+
+FvwmModuleTarget(FvwmAudio)

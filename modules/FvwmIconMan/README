@@ -1,0 +1,29 @@
+June 17, 1998
+-------------
+
+This is version 1.3 of FvwmIconMan, an icon manager modeled roughly on TWM's
+icon manager. The file CHANGES lists what's new with this version; and the
+included man page gives a description of the program and how to configure it,
+so I won't repeat it here.
+
+This version of FvwmIconMan can use MiniIcons and the Shape extension. If you
+want to use these features, you should have the appropriate defines set in 
+the Fvwm.tmpl file. 
+
+If something needs to be tweaked to make this more portable, then feel free to
+inform me, and I would greatly appreciate any suggestions towards improvement.
+
+I realize that the syntax for setting options is different from that used by
+other modules.
+
+I have discontinued support for fvwm 1. If you need to compile it for that
+version of fvwm, send me mail, and I'll tell you how. The version of
+FvwmIconMan included in the fvwm 2.0 distribution WILL NOT run under fvwm 1.
+
+To get FvwmIconMan:
+
+http://www.cs.arizona.edu/people/bradym/software/
+	or
+ftp://ftp.cs.arizona.edu/people/bradym
+
+bradym@cs.arizona.edu 

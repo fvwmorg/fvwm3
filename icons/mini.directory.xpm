@@ -1,0 +1,22 @@
+/* XPM */
+static char * mini_directory_xpm[] = {
+"16 16 3 1",
+" 	c None",
+".	c black",
+"X	c LightGoldenrod1",
+"                ",
+"                ",
+"                ",
+"   .....        ",
+" ..XXXXX....... ",
+" .X.....XXXXXX. ",
+" .XXXXXXXXXXXX. ",
+" .XXXXXXXXXXXX. ",
+" .XXXXXXXXXXXX. ",
+" .XXXXXXXXXXXX. ",
+" .XXXXXXXXXXXX. ",
+" .XXXXXXXXXXXX. ",
+" .XXXXXXXXXXXX. ",
+" .............. ",
+"                ",
+"                "};

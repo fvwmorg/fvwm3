@@ -1,0 +1,21 @@
+/* XPM */
+static char * mini_eye_xpm[] = {
+"14 14 4 1 0 0",
+" 	c None",
+".	c black",
+"X	c red",
+"o	c cyan",
+"     ..       ",
+"    ..        ",
+"   ...       X",
+"  ..oo.    XX ",
+" ..oooo. XX   ",
+"..ooooo.X     ",
+"..oooooo.     ",
+"..ooooo.X     ",
+" ..oooo. XX   ",
+"  ..oo.    XX ",
+"   ...       X",
+"    ..        ",
+"     ..       ",
+"              "};

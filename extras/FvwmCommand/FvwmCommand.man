@@ -1,0 +1,243 @@
+.\" t
+.\" @(#)FvwmCommand.1	7/19/97
+.de EX		\"Begin example
+.ne 5
+.if n .sp 1
+.if t .sp .5
+.nf
+.in +.25i
+..
+.de EE
+.fi
+.in -.25i
+.if n .sp 1
+.if t .sp .5
+..
+.ta .2i .4i .6i .8i 1i 1.2i 1.4i
+.TH FvwmCommand 1x "July 19 1997"
+.UC
+.SH NAME
+FvwmCommand \- FVWM command external interface
+.SH SYNOPSIS
+In .fvwm2rc file:
+
+.EX 
+Module FvwmCommandS [name]
+.EE
+
+Then, in script file or from shell:
+
+.EX
+FvwmCommand [-mrvw] [-i level] [-f name] [command...]
+.EE
+
+.SH DESCRIPTION
+
+FvwmCommand lets you monitor fvwm transaction and issue fvwm command 
+from a shell command line or scripts. 
+FvwmCommand takes each argument as a fvwm command. Quotes can be 
+used to send commands including spaces.
+
+.br
+FvwmCommand.pm is for perl scripts in order 
+to keep the syntax similar to fvwm configuration file. 
+
+.EX
+use FvwmCommand;
+if( $ARGV[0] eq 'home' ) { 
+    Desk 0,0; GotoPage '1 1'; 
+}elsif( $ARGV[0] eq 'jump' ) { 
+    Desk "0 2"; GotoPage 1, 1; 
+}
+.EE
+
+Commas can be used to separate Fvwm commands' arguments or quotes
+can be used combine them. The commands are case sensitive.
+
+.br
+FvwmCommand.sh is collection of functions for bourn shell or its
+cousines. It is to be sourced:
+
+.EX
+\&. FvwmCommand.sh
+.br
+DesktopSize 5x5
+.EE
+
+The commands in FvwmCommand.sh and FvwmCommand.pl are case sensitive. 
+
+
+.SH INVOCATION
+FvwmCommandS should be spawned once by fvwm, either in .fvwm2rc file,
+from menu, or from FvwmConsole.
+From then on, FvwmCommand
+can be called from a shell or script to execute fvwm commands.
+.SH OPTIONS
+.IP "\fI-f <name>\fR" 0.4i
+Specifies an alternative fifo set to communicate with FvwmCommandS.
+The default fifo set is ~/.FvwmCommand, in which
+~/.FvwmCommandC is used to send commands and ~/.FvwmCommandM is to receive
+messages.
+FvwmCommandS must have been invoked with the same <name> as its first argument
+prior to FvwmCommand invokation.
+This option is useful when a dedicated connection is necessary to run a background
+job while another connection is kept for interactive use.
+
+.IP "\fI-i <level>\fR"
+Specified the level of information FvwmCommand outputs.
+.sp
+.RS
+.IP 0 0.4i
+Error messages only. Note that Fvwm doesn't return any error messages in
+cases like below since 'windowid' itself is a valid command.
+.sp
+.EX
+FvwmCommand -i 0 'windowid abcd move'
+.EE
+.IP 1
+Errors and window configuration information. This is the default.
+.EX
+FvwmCommand FvwmIconMan 
+.EE
+The following infomation will show up.
+.EX
+0x03400003 window               FvwmIconMan
+0x03400003 icon                 FvwmIconMan
+0x03400003 class                FvwmModule
+0x03400003 resource             FvwmIconMan
+.EE
+The first column shows the window ID number, which can be used in 'windowid' command.
+The second column shows the information types. 
+The last column shows the information contents.
+If no information is returned, add -w <time> option. This might be needed in heavily
+loaded systems.
+.IP 2
+Above and static window information.
+.EX
+FvwmCommand -i2 'FvwmIconBox' 
+.EE
+The below is its output.
+.EX
+0x02400002 frame                x 0, y 0, width 410, height 116
+0x02400002 desktop              0
+0x02400002 StartIconic          no
+0x02400002 OnTop                no
+0x02400002 Sticky               yes
+0x02400002 WindowListSkip       yes
+0x02400002 SuppressIcon         no
+0x02400002 NoiconTitle          no
+0x02400002 Lenience             no
+0x02400002 StickyIcon           no
+0x02400002 CirculateSkipIcon    no
+0x02400002 CirculateSkip        no
+0x02400002 ClickToFocus         no
+0x02400002 SloppyFocus          no
+0x02400002 SkipMapping          no
+0x02400002 Handles              no
+0x02400002 Title                no
+0x02400002 Mapped               no
+0x02400002 Iconified            no
+0x02400002 Transient            no
+0x02400002 Raised               no
+0x02400002 Visible              no
+0x02400002 IconOurs             no
+0x02400002 PixmapOurs           no
+0x02400002 ShapedIcon           no
+0x02400002 Maximized            no
+0x02400002 WmTakeFocus          no
+0x02400002 WmDeleteWindow       yes
+0x02400002 IconMoved            no
+0x02400002 IconUnmapped         no
+0x02400002 MapPending           no
+0x02400002 HintOverride         yes
+0x02400002 MWMButtons           no
+0x02400002 MWMBorders           no
+0x02400002 title height         0
+0x02400002 border width         4
+0x02400002 base size            width 0, height 0
+0x02400002 size increment       width 72, height 66
+0x02400002 min size             width 114, height 108
+0x02400002 max size             width 32767, height 32767
+0x02400002 gravity              NorthWest
+0x02400002 pixel                text 0xffff, back 0x7bef
+0x02400002 window               FvwmIconBox
+0x02400002 icon                 FvwmIconBox
+0x02400002 class                FvwmIconBox
+0x02400002 resource             FvwmIconBox
+.EE
+.IP 3
+All information available.
+.EX
+FvwmCommand -i3 'Killmodule FvwmIcon*'    
+.EE
+This will report which windows are closed.
+.EX
+0x03400003 destroy
+0x02400002 destroy
+.EE
+.RE
+
+.IP "\fI-m\fR"
+Monitors fvwm window information transaction. FvwmCommand continuously outputs
+information it receives without exiting. This is used in a
+background job often combined with -i3 option in order to control windows
+dynamically.
+.EX
+FvwmCommand -mi3 | grep 'iconify'
+.EE
+It will report when windows are iconified or deiconified.
+.sp
+Note: FvwmCommand does not buffer its stdout but many utilities such as 
+grep or sed uses block buffer. The output of the next example will not show up
+until either FvwmCommand is terminated or stdout buffer from
+grep is filled.
+.EX
+FvwmCommand -mi3 | grep ' map' | 
+sed 's/\(0x[0-9a-f]*\).*/windowid \1 move 0 0/'
+.EE
+Instead, use tools with buffer control such as perl. The below will iconify 
+new windows when opened.
+.EX
+Fvwm -mi3 | perl -ne '
+$|=1; 
+print "windowid $1 iconify\\n" if /^(0x\\S+) add/;
+\' > ~/\.FvwmCommandC
+.EE
+.IP "\fI-r\fR"
+Waits for a reply before it exits. 
+FvwmCommand exits if no information or error is returned in a fixed amount of 
+time period.
+This option overrides this time limit and wait for at least one message
+back. 
+After the initial message, it will wait for another message for the time
+limit.
+This option is useful when the system is too load to make any predition
+when the system is responding AND the command causes some
+message to be sent back.
+
+.IP "\fI-v\fR"
+Returns FvwmCommand version number and exits.
+
+.IP "\fI-w <time>\fR"
+Waits for <time> micro seconds for a message.
+FvwmCommand exits if no information or error is returned in a fixed amount of 
+time period. The default is 500 ms. This option overrides this default value.
+.EX
+FvwmCommand -w 0 'killme'
+.EE
+
+.SH ERRORS
+If the following error message show up, it is most likely that FvwmCommandS
+is not running.
+.EX
+FvwmCommand error in opening message
+--No such file or directory--
+.EE
+
+.SH SEE ALSO
+fvwm2
+
+.SH AUTHOR
+Toshi Isogai  isogai@enshin.com
+
+

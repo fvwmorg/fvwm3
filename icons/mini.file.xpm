@@ -1,0 +1,22 @@
+/* XPM */
+static char * mini_file_xpm[] = {
+"16 16 3 1",
+" 	c None",
+".	c black",
+"X	c white",
+"                ",
+"   .......      ",
+"   .XXXXX..     ",
+"   .X.X.X. .    ",
+"   .XXXXX....   ",
+"   .X..X.XXX.   ",
+"   .XXXXXXXX.   ",
+"   .X.X...XX.   ",
+"   .XXXXXXXX.   ",
+"   .X..X...X.   ",
+"   .XXXXXXXX.   ",
+"   .X...X.XX.   ",
+"   .XXXXXXXX.   ",
+"   .XXXXXXXX.   ",
+"   ..........   ",
+"                "};

@@ -1,0 +1,23 @@
+/* XPM */
+static char * mini_dirlink_xpm[] = {
+"16 16 4 1",
+" 	c None",
+".	c black",
+"X	c gray50",
+"o	c LightGoldenrod1",
+"                ",
+"                ",
+"    .....       ",
+"  ..XXXXX.......",
+"  .....XXXXXXXX.",
+"..ooooo.......X.",
+".o.....oooooo.X.",
+".oooooooooooo.X.",
+".oooooooooooo.X.",
+".oooooooooooo.X.",
+".oooooooooooo.X.",
+".oooooooooooo.X.",
+".oooooooooooo...",
+".oooooooooooo.  ",
+"..............  ",
+"                "};
