@@ -270,15 +270,15 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 
 		if (!(GetDecor(t,left_buttons[i].state[bs].style) & FlatButton)) {
 		    if (GetDecor(t,left_buttons[i].state[bs].style) & SunkButton)
-			RelieveWindow(t,t->left_w[i],0,0,
+			RelieveWindowGC(dpy,t->left_w[i],0,0,
 				      t->title_height, t->title_height,
 				      (inverted ? ReliefGC : ShadowGC),
-				      (inverted ? ShadowGC : ReliefGC));
+				      (inverted ? ShadowGC : ReliefGC),2);
 		    else
-			RelieveWindow(t,t->left_w[i],0,0,
+			RelieveWindowGC(dpy,t->left_w[i],0,0,
 				      t->title_height, t->title_height,
 				      (inverted ? ShadowGC : ReliefGC),
-				      (inverted ? ReliefGC : ShadowGC));
+				      (inverted ? ReliefGC : ShadowGC),2);
 		}
 	    }
 	}
@@ -331,15 +331,15 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
 
 		if (!(GetDecor(t,right_buttons[i].state[bs].style) & FlatButton)) {
 		    if (GetDecor(t,right_buttons[i].state[bs].style) & SunkButton)
-			RelieveWindow(t,t->right_w[i],0,0,
+			RelieveWindowGC(dpy,t->right_w[i],0,0,
 				      t->title_height, t->title_height,
 				      (inverted ? ReliefGC : ShadowGC),
-				      (inverted ? ShadowGC : ReliefGC));
+				      (inverted ? ShadowGC : ReliefGC),2);
 		    else
-			RelieveWindow(t,t->right_w[i],0,0,
-				      t->title_height, t->title_height,
+			RelieveWindowGC(dpy,t->right_w[i],0,0,
+				      t->title_height-1, t->title_height,
 				      (inverted ? ShadowGC : ReliefGC),
-				      (inverted ? ReliefGC : ShadowGC));
+				      (inverted ? ReliefGC : ShadowGC),2);
 		}
 	    }
 	}
@@ -387,10 +387,10 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
       {
         /* draw the outside relief */
         if (t->flags & MWMBorders)
-          RelieveWindow(t,t->frame,0,0,t->frame_width,t->frame_height,rgc,sgc);
+          RelieveWindowGC(dpy,t->frame,0,0,t->frame_width,t->frame_height,rgc,sgc,2);
         else { /* FVWMBorder style has an extra line of shadow on top and left */
-          RelieveWindow(t,t->frame,-1,-1,t->frame_width+3,t->frame_height+3,sgc,sgc);
-          RelieveWindow(t,t->frame,1,1,t->frame_width-1,t->frame_height-1,rgc,sgc);
+          RelieveWindowGC(dpy,t->frame,0,0,t->frame_width+1,t->frame_height+1,sgc,sgc,1);
+          RelieveWindowGC(dpy,t->frame,1,1,t->frame_width-1,t->frame_height-1,rgc,sgc,2);
         }
         /* draw the inside relief for FvwmBorders 
          * Motif & FVWM borders drawn later (over the handles) */
@@ -399,12 +399,17 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
            !(borderflags & NoInset)
 #endif
            && t->boundary_width > 2)
-        { /* draw the inside relief for FVWMBorder that is overwritten by handles */
-          if (!(t->flags & MWMBorders))
-            RelieveWindow(t,t->frame,t->boundary_width-2,t->boundary_width-2,
+        { /* draw the inside relief */
+          if ((t->flags & MWMBorders))
+            RelieveWindowGC(dpy,t->frame,t->boundary_width-1,t->boundary_width-1,
+                        t->frame_width-(t->boundary_width<<1)+2,
+                        t->frame_height-(t->boundary_width<<1)+2,
+                        sgc,rgc,1);
+          else
+            RelieveWindowGC(dpy,t->frame,t->boundary_width-2,t->boundary_width-2,
                         t->frame_width-(t->boundary_width<<1)+5,
                         t->frame_height-(t->boundary_width<<1)+5,
-                        sgc,rgc);
+                        sgc,rgc,2);
         }
       
         /* draw the handles into the inset edge in case NoInset is set */
@@ -516,19 +521,19 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
            && t->boundary_width > 2)
         { /* draw the inside relief */
           if (t->flags & MWMBorders) /* single pixel inside border */
-            RelieveWindow(t,t->frame,t->boundary_width-1,t->boundary_width-1,
+            RelieveWindowGC(dpy,t->frame,t->boundary_width-1,t->boundary_width-1,
                         t->frame_width-(t->boundary_width<<1)+2,
                         t->frame_height-(t->boundary_width<<1)+2,
-                        sgc,rgc);
+                        sgc,rgc,2);
           else { /* 2 pixels + an extra shadow on bottom & right */
-            RelieveWindow(t,t->frame,t->boundary_width-2,t->boundary_width-2,
+            RelieveWindowGC(dpy,t->frame,t->boundary_width-2,t->boundary_width-2,
                         t->frame_width-(t->boundary_width<<1)+5,
                         t->frame_height-(t->boundary_width<<1)+5,
-                        sgc,rgc);
-            RelieveWindow(t,t->frame,t->boundary_width,t->boundary_width,
+                        sgc,rgc,2);
+            RelieveWindowGC(dpy,t->frame,t->boundary_width,t->boundary_width,
                         t->frame_width-(t->boundary_width<<1)+1,
                         t->frame_height-(t->boundary_width<<1)+1,
-                        sgc,sgc);
+                        sgc,sgc,2);
           }
         }
       
@@ -792,11 +797,11 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
    * title goes, so that its more legible. For color, no need */
   if(Scr.d_depth<2)
   {
-    RelieveWindow(t,t->title_w,0,0,hor_off-2,t->title_height,
-                  ReliefGC, ShadowGC);
-    RelieveWindow(t,t->title_w,hor_off+w+2,0,
+    RelieveWindowGC(dpy,t->title_w,0,0,hor_off-2,t->title_height,
+                  ReliefGC, ShadowGC,2);
+    RelieveWindowGC(dpy,t->title_w,hor_off+w+2,0,
                   t->title_width - w - hor_off-2,t->title_height,
-                  ReliefGC, ShadowGC);
+                  ReliefGC, ShadowGC,2);
     XFillRectangle(dpy,t->title_w,
                    (PressedW==t->title_w?ShadowGC:ReliefGC),
                    hor_off - 2, 0, w+4,t->title_height);
@@ -830,11 +835,11 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
 
       if (!(tb_style & FlatButton)) {
 	  if (tb_style & SunkButton)
-	      RelieveWindow(t,t->title_w,0,0,t->title_width,t->title_height,
-			    ShadowGC, ReliefGC);
+	      RelieveWindowGC(dpy,t->title_w,0,0,t->title_width,t->title_height,
+			    ShadowGC, ReliefGC,2);
 	  else
-	      RelieveWindow(t,t->title_w,0,0,t->title_width,t->title_height,
-			    ReliefGC, ShadowGC);
+	      RelieveWindowGC(dpy,t->title_w,0,0,t->title_width,t->title_height,
+			    ReliefGC, ShadowGC,2);
       }
 
       if(t->name != (char *)NULL)
@@ -849,70 +854,17 @@ void SetTitleBar (FvwmWindow *t,Bool onoroff, Bool NewTitle)
     int num = (int)(t->title_height/8) * 2 - 1;
     int min = t->title_height/2 - num*2 + 1;
     int max = t->title_height/2 + num*2 - 3;
-    for(i=min; i <= max; i+=3)
+    for(i=min; i <= max; i+=4)
     {
-      XDrawLine(dpy,t->title_w,ShadowGC,4,i,hor_off-5,i);
-      XDrawLine(dpy,t->title_w,ShadowGC,6+hor_off+w,i,t->title_width-4,i);
-      i+=1;
-      /* draw backwards to expose XServer bug */
-      XDrawLine(dpy,t->title_w,ReliefGC,hor_off-6,i,3,i);
-      XDrawLine(dpy,t->title_w,ReliefGC,t->title_width-5,i,5+hor_off+w,i);
+      RelieveWindowGC(dpy,t->title_w,4,i,hor_off-9,2,
+                      ReliefGC,ShadowGC,1);
+      RelieveWindowGC(dpy,t->title_w,hor_off+w+6,i,t->title_width-hor_off-w-10,2,
+                      ReliefGC,ShadowGC,1);
     }
   }
 
 }
 
-/****************************************************************************
- *
- *  Draws the relief pattern around a window
- * Simplified by the Hippo
- * Draws end points assuming CAP_NOT_LAST style in GC
- *
- ****************************************************************************/
-void RelieveWindow(FvwmWindow *t,Window win, int x,int y,int w,int h,
-		   GC ReliefGC, GC ShadowGC)
-{
-  XSegment seg[4];
-  int i;
-
-  i=0;
-  /* top */
-  seg[i].x1 = x;        seg[i].y1   = y;
-  seg[i].x2 = x+w;      seg[i++].y2 = y;
-  /* left */
-  seg[i].x1 = x;        seg[i].y1   = y;
-  seg[i].x2 = x;        seg[i++].y2 = y+h;
-  /* top inside */
-  if (h > 2) {
-    seg[i].x1 = x+1;      seg[i].y1   = y+1;
-    seg[i].x2 = x+w-1;    seg[i++].y2 = y+1;
-  }
-  /* left inside */
-  if (w > 2) {
-    seg[i].x1 = x+1;      seg[i].y1   = y+1;
-    seg[i].x2 = x+1;      seg[i++].y2 = y+h-1;
-  }
-  XDrawSegments(dpy, win, ReliefGC, seg, i);
-
-  i=0;
-  /* bottom */
-  seg[i].x1 = x;        seg[i].y1   = y+h-1;
-  seg[i].x2 = x+w;      seg[i++].y2 = y+h-1;
-  /* right */
-  seg[i].x1 = x+w-1;    seg[i].y1   = y;
-  seg[i].x2 = x+w-1;    seg[i++].y2 = y+h;
-  /* bottom inside */
-  if (h > 2) {
-    seg[i].x1 = x+1;      seg[i].y1   = y+h-2;
-    seg[i].x2 = x+w-1;    seg[i++].y2 = y+h-2;
-  }
-  /* right inside */
-  if (w > 2) {
-    seg[i].x1 = x+w-2;    seg[i].y1   = y+1;
-    seg[i].x2 = x+w-2;    seg[i++].y2 = y+h-1;
-  }
-  XDrawSegments(dpy, win, ShadowGC, seg, i);
-}
 
 #ifdef VECTOR_BUTTONS
 /****************************************************************************

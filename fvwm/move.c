@@ -804,11 +804,11 @@ void DisplayPosition (FvwmWindow *tmp_win, int x, int y,int Init)
     {
       XClearWindow(dpy,Scr.SizeWindow);
       if(Scr.d_depth >= 2)
-	RelieveWindow(tmp_win,Scr.SizeWindow,0,0,
+	RelieveWindowGC(dpy,Scr.SizeWindow,0,0,
 		      Scr.SizeStringWidth+ SIZE_HINDENT*2,
 		      Scr.StdFont.height + SIZE_VINDENT*2,
 		      Scr.StdReliefGC,
-		      Scr.StdShadowGC);
+		      Scr.StdShadowGC, 2);
 
     }
   else

@@ -194,9 +194,6 @@ extern void       RedoIconName(FvwmWindow *);
 extern void       DrawIconWindow(FvwmWindow *);
 extern void       CreateIconWindow(FvwmWindow *tmp_win, int def_x, int def_y);
 
-
-extern void RelieveWindow(FvwmWindow *, Window, int, int, int, int, GC, GC);
-
 void Maximize(F_CMD_ARGS);
 #ifdef  WINDOWSHADE
 void WindowShade(F_CMD_ARGS);
