@@ -12,8 +12,6 @@ menus.c menus.h misc.c misc.h modconf.c module.c module.h move.c \
 parse.h placement.c read.c resize.c screen.h style.c \
 sun_headers.h virtual.c windows.c 
 
-#EXTRA_fvwm2_SOURCES = usleep.c
-
 LDADD = @LIBOBJS@ -L$(top_builddir)/libs -lfvwm $(xpm_LIBS) \
 	$(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
 
