@@ -120,6 +120,8 @@ static char s_g_bits[] = {0x01, 0x02, 0x04, 0x08};
 
 Window icon_win;	       /* icon window */
 
+static int MyVx, MyVx;		/* copy of Scr.Vx/y for drag logic */
+
 static char *GetBalloonLabel(const PagerWindow *pw,const char *fmt);
 extern void ExitPager(void);
 
@@ -1097,6 +1099,9 @@ void DispatchEvent(XEvent *Event)
     }
     else if (Event->xbutton.button == 3)
     {
+      /* save initial virtual desk position for drag */
+      MyVx=Scr.Vx;
+      MyVy-Scr.Vy;
       for(i=0;i<ndesks;i++)
       {
 	if(Event->xany.window == Desks[i].w)
@@ -2252,12 +2257,12 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	sy = 0;
 	if(window_w != 0)
 	{
-		sx = 100 * (x * Scr.VWidth / window_w - Scr.Vx) /
+		sx = 100 * (x * Scr.VWidth / window_w - MyVx) /
 			Scr.MyDisplayWidth;
 	}
 	if(window_h != 0)
 	{
-		sy = 100 * (y * Scr.VHeight / window_h - Scr.Vy) /
+		sy = 100 * (y * Scr.VHeight / window_h - MyVy) /
 			Scr.MyDisplayHeight;
 	}
 #ifdef DEBUG
@@ -2267,11 +2272,11 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	/* Make sure weExecuteCommandQueue(); don't get stuck a few pixels fromt
 	 * the top/left border. Since sx/sy are ints, values between 0 and 1 are
 	 * rounded down. */
-	if (sx == 0 && x == 0 && Scr.Vx != 0)
+	if (sx == 0 && x == 0 && MyVx != 0)
 	{
 		sx = -1;
 	}
-	if (sy == 0 && y == 0 && Scr.Vy != 0)
+	if (sy == 0 && y == 0 && MyVy != 0)
 	{
 		sy = -1;
 	}
@@ -2279,6 +2284,8 @@ void Scroll(int window_w, int window_h, int x, int y, int Desk,
 	{
 		sprintf(command, "Scroll %d %d", sx, sy);
 		SendText(fd, command, 0);
+		MyVx+=sx;
+		MyVy+=sy;
 		Wait = 1;
 	}
 	if (Wait == 0)
