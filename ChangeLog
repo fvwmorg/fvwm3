@@ -1,3 +1,9 @@
+2000-02-07  olicha	<olivier.chapuis@free.fr>
+
+	* fvwm/virtual.c (checkPanFrames):
+	Fixed check pan frames if y edgescroll is 0 and x  edgescroll is not
+	0 (and conversely)
+	
 2000-02-07  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/update.c (apply_window_updates):

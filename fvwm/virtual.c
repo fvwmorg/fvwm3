@@ -546,7 +546,7 @@ Bool HandlePaging(int HorWarpSize, int VertWarpSize, int *xl, int *yt,
 void checkPanFrames(void)
 {
   Bool wrapX = (Scr.flags.edge_wrap_x) && Scr.VxMax;
-  Bool wrapY = (Scr.flags.edge_wrap_x) && Scr.VyMax;
+  Bool wrapY = (Scr.flags.edge_wrap_y) && Scr.VyMax;
 
   if(!(Scr.flags.windows_captured))
     return;
@@ -612,7 +612,8 @@ void checkPanFrames(void)
       XUnmapWindow(dpy,Scr.PanFrameLeft.win);
       Scr.PanFrameLeft.isMapped=False;
     }
-  else if ((Scr.Vx > 0 || wrapX) && Scr.PanFrameLeft.isMapped==False)
+  else if ((Scr.Vx > 0 || wrapX) && Scr.PanFrameLeft.isMapped==False
+	   && Scr.EdgeScrollX)
     {
       XMapRaised(dpy,Scr.PanFrameLeft.win);
       Scr.PanFrameLeft.isMapped=True;
@@ -623,7 +624,8 @@ void checkPanFrames(void)
       XUnmapWindow (dpy,Scr.PanFrameRight.win);
       Scr.PanFrameRight.isMapped=False;
     }
-  else if ((Scr.Vx < Scr.VxMax || wrapX) && Scr.PanFrameRight.isMapped==False)
+  else if ((Scr.Vx < Scr.VxMax || wrapX) && Scr.PanFrameRight.isMapped==False
+	   && Scr.EdgeScrollX)
     {
       XMapRaised(dpy,Scr.PanFrameRight.win);
       Scr.PanFrameRight.isMapped=True;
@@ -634,7 +636,8 @@ void checkPanFrames(void)
       XUnmapWindow(dpy,Scr.PanFrameTop.win);
       Scr.PanFrameTop.isMapped=False;
     }
-  else if ((Scr.Vy > 0 || wrapY) && Scr.PanFrameTop.isMapped==False)
+  else if ((Scr.Vy > 0 || wrapY) && Scr.PanFrameTop.isMapped==False
+	   && Scr.EdgeScrollY)
     {
       XMapRaised(dpy,Scr.PanFrameTop.win);
       Scr.PanFrameTop.isMapped=True;
@@ -645,7 +648,8 @@ void checkPanFrames(void)
       XUnmapWindow (dpy,Scr.PanFrameBottom.win);
       Scr.PanFrameBottom.isMapped=False;
     }
-  else if ((Scr.Vy < Scr.VyMax || wrapY) && Scr.PanFrameBottom.isMapped==False)
+  else if ((Scr.Vy < Scr.VyMax || wrapY) && Scr.PanFrameBottom.isMapped==False
+	   && Scr.EdgeScrollY)
     {
       XMapRaised(dpy,Scr.PanFrameBottom.win);
       Scr.PanFrameBottom.isMapped=True;
