@@ -194,7 +194,7 @@ void HandleFocusIn(void)
     }
     else
     {
-      DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None, CLEAR_ALL);
+      DrawDecorations(Scr.Hilite, PART_ALL, False, True, None, CLEAR_ALL);
       if (Scr.ColormapFocus == COLORMAP_FOLLOWS_FOCUS)
       {
 	if((Scr.Hilite)&&(!IS_ICONIFIED(Scr.Hilite)))
@@ -224,7 +224,7 @@ void HandleFocusIn(void)
     SET_FOCUS_CHANGE_BROADCAST_PENDING(Fw, 0);
     if (Fw != Scr.Hilite)
     {
-      DrawDecorations(Fw, DRAW_ALL, True, True, None, CLEAR_ALL);
+      DrawDecorations(Fw, PART_ALL, True, True, None, CLEAR_ALL);
     }
     focus_w = FW_W(Fw);
     focus_fw = FW_W_FRAME(Fw);
@@ -413,7 +413,7 @@ void HandlePropertyNotify(void)
     /* fix the name in the title bar */
     if(!IS_ICONIFIED(Fw))
       DrawDecorations(
-	Fw, DRAW_TITLE, (Scr.Hilite == Fw), True, None, CLEAR_ALL);
+	Fw, PART_TITLE, (Scr.Hilite == Fw), True, None, CLEAR_ALL);
 
     EWMH_SetVisibleName(Fw, False);
     /*
@@ -809,7 +809,7 @@ void HandleClientMessage(void)
 void HandleExpose(void)
 {
 	XRectangle r;
-	draw_window_parts draw_parts;
+	window_parts draw_parts;
 
 #if 0
 	/* This doesn't work well. Sometimes, the expose count is zero although
@@ -839,15 +839,15 @@ void HandleExpose(void)
 	/* redraw the decorations */
 	if (Event.xany.window == FW_W_TITLE(Fw))
 	{
-		draw_parts = DRAW_TITLE;
+		draw_parts = PART_TITLE;
 	}
 	else
 	{
-		draw_parts = DRAW_BUTTONS;
+		draw_parts = PART_BUTTONS;
 	}
 	if (FftSupport && Fw->title_font &&
 	    Fw->title_font->fftf.fftfont != NULL &&
-	    draw_parts == DRAW_TITLE)
+	    draw_parts == PART_TITLE)
 	{
 	  draw_clipped_decorations(
 		Fw, draw_parts, (Scr.Hilite == Fw), True,
@@ -1263,14 +1263,14 @@ void HandleMapNotify(void)
       is_window_border_minimal(Fw))
   {
     DrawDecorations(
-      Fw, DRAW_ALL, False, True, None, CLEAR_ALL);
+      Fw, PART_ALL, False, True, None, CLEAR_ALL);
   }
   else if (Fw == get_focus_window() && Fw != Scr.Hilite)
   {
     /* BUG 679: must redraw decorations here to make sure the window is properly
      * hilighted after being de-iconified by a key press. */
     DrawDecorations(
-      Fw, DRAW_ALL, True, True, None, CLEAR_ALL);
+      Fw, PART_ALL, True, True, None, CLEAR_ALL);
   }
   MyXUngrabServer (dpy);
   SET_MAPPED(Fw, 1);
@@ -1606,7 +1606,7 @@ void HandleButtonPress(void)
     }
     if (!IS_ICONIFIED(Fw))
     {
-      DrawDecorations(Fw, DRAW_ALL, True, True, PressedW, CLEAR_ALL);
+      DrawDecorations(Fw, PART_ALL, True, True, PressedW, CLEAR_ALL);
     }
   }
   else if (Fw && Event.xbutton.window == FW_W_PARENT(Fw) &&
@@ -1712,19 +1712,19 @@ void HandleButtonPress(void)
     if (Context == C_TITLE)
     {
       DrawDecorations(
-        Fw, DRAW_TITLE, (Scr.Hilite == Fw), True, PressedW,
+        Fw, PART_TITLE, (Scr.Hilite == Fw), True, PressedW,
 	CLEAR_ALL);
     }
     else if (Context & (C_LALL | C_RALL))
     {
       DrawDecorations(
-        Fw, DRAW_BUTTONS, (Scr.Hilite == Fw),
+        Fw, PART_BUTTONS, (Scr.Hilite == Fw),
 	True, PressedW, CLEAR_ALL);
     }
     else
     {
       DrawDecorations(
-	      Fw, DRAW_FRAME, (Scr.Hilite == Fw), 0, PressedW, CLEAR_ALL);
+	      Fw, PART_FRAME, (Scr.Hilite == Fw), 0, PressedW, CLEAR_ALL);
     }
   }
 
@@ -1779,19 +1779,19 @@ void HandleButtonPress(void)
     if (LocalContext == C_TITLE)
     {
       DrawDecorations(
-        ButtonWindow, DRAW_TITLE, (Scr.Hilite == ButtonWindow),
+        ButtonWindow, PART_TITLE, (Scr.Hilite == ButtonWindow),
 	True, None, CLEAR_ALL);
     }
     else if (LocalContext & (C_LALL | C_RALL))
     {
       DrawDecorations(
-        ButtonWindow, DRAW_BUTTONS, (Scr.Hilite == ButtonWindow), True,
+        ButtonWindow, PART_BUTTONS, (Scr.Hilite == ButtonWindow), True,
         OldPressedW, CLEAR_ALL);
     }
     else
     {
       DrawDecorations(
-        ButtonWindow, DRAW_FRAME, (Scr.Hilite == ButtonWindow), 0, None,
+        ButtonWindow, PART_FRAME, (Scr.Hilite == ButtonWindow), 0, None,
 	CLEAR_NONE);
     }
   }
@@ -2154,7 +2154,7 @@ void HandleLeaveNotify(void)
 	  DeleteFocus(True, True);
 	}
 	if (Scr.Hilite != NULL)
-	  DrawDecorations(Scr.Hilite, DRAW_ALL, False, True, None, CLEAR_ALL);
+	  DrawDecorations(Scr.Hilite, PART_ALL, False, True, None, CLEAR_ALL);
       }
     }
   }

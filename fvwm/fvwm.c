@@ -72,6 +72,7 @@
 #include "update.h"
 #include "window_flags.h"
 #include "move_resize.h"
+#include "borders.h"
 #include "frame.h"
 
 #include <X11/Xproto.h>

@@ -87,7 +87,7 @@ static void DoSetFocus(
     else
     {
       /* make sure the window is not hilighted */
-      DrawDecorations(fw, DRAW_ALL, False, False, None, CLEAR_ALL);
+      DrawDecorations(fw, PART_ALL, False, False, None, CLEAR_ALL);
     }
     return;
   }

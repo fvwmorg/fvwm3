@@ -1200,34 +1200,6 @@ void setup_frame_window(
 	return;
 }
 
-void setup_decor_window(
-	FvwmWindow *fw, int valuemask, XSetWindowAttributes *pattributes)
-{
-	/* stash attribute bits in case BorderStyle TiledPixmap overwrites */
-	Pixmap TexturePixmap;
-	Pixmap TexturePixmapSave = pattributes->background_pixmap;
-
-	valuemask |= CWBorderPixel | CWColormap | CWEventMask;
-	pattributes->border_pixel = 0;
-	pattributes->colormap = Pcmap;
-	pattributes->event_mask = XEVMASK_DECORW;
-	if (DFS_FACE_TYPE(GetDecor(fw, BorderStyle.inactive.style)) ==
-	    TiledPixmapButton)
-	{
-		TexturePixmap = GetDecor(fw,BorderStyle.inactive.u.p->picture);
-		if (TexturePixmap)
-		{
-			pattributes->background_pixmap = TexturePixmap;
-			valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
-		}
-	}
-
-	/* restore background */
-	pattributes->background_pixmap = TexturePixmapSave;
-
-	return;
-}
-
 void setup_title_window(
 	FvwmWindow *fw, int valuemask, XSetWindowAttributes *pattributes)
 {
@@ -1415,12 +1387,24 @@ void setup_resize_handle_windows(FvwmWindow *fw)
 	unsigned long valuemask;
 	XSetWindowAttributes attributes;
 	int i;
+	int c_grav[4] = {
+		NorthWestGravity,
+		NorthEastGravity,
+		SouthWestGravity,
+		SouthEastGravity
+	};
+	int s_grav[4] = {
+		NorthWestGravity,
+		NorthEastGravity,
+		SouthWestGravity,
+		NorthWestGravity
+	};
 
 	if (!HAS_BORDER(fw))
 	{
 		return;
 	}
-	valuemask = CWEventMask | CWBackingStore | CWSaveUnder;
+	valuemask = CWEventMask | CWBackingStore | CWSaveUnder | CWWinGravity;
 	attributes.event_mask = XEVMASK_BORDERW;
 	attributes.backing_store = NotUseful;
 	attributes.save_under = False;
@@ -1428,11 +1412,13 @@ void setup_resize_handle_windows(FvwmWindow *fw)
 	 * care of the mess */
 	for (i = 0; i < 4; i++)
 	{
+		attributes.win_gravity = c_grav[i];
 		FW_W_CORNER(fw, i) = XCreateWindow(
 			dpy, FW_W_FRAME(fw), -1, -1, 1, 1, 0, 0, InputOutput,
 			DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
 		XSaveContext(
 			dpy, FW_W_CORNER(fw, i), FvwmContext, (caddr_t)fw);
+		attributes.win_gravity = s_grav[i];
 		FW_W_SIDE(fw, i) = XCreateWindow(
 			dpy, FW_W_FRAME(fw), -1, -1, 1, 1, 0, 0, InputOutput,
 			DefaultVisual(dpy, Scr.screen), valuemask, &attributes);

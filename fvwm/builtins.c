@@ -2431,7 +2431,7 @@ void CMD_ChangeDecor(F_CMD_ARGS)
 		fw, fw->frame_g.x, fw->frame_g.y, fw->frame_g.width,
 		fw->frame_g.height - extra_height, True);
 	DrawDecorations(
-		fw, DRAW_ALL, (Scr.Hilite == fw), 2, None, CLEAR_ALL);
+		fw, PART_ALL, (Scr.Hilite == fw), 2, None, CLEAR_ALL);
 
 	return;
 }
@@ -2628,10 +2628,10 @@ void CMD_UpdateDecor(F_CMD_ARGS)
 			if (fw2->decor == found)
 			{
 				DrawDecorations(
-					fw2, DRAW_ALL, True, True, None,
+					fw2, PART_ALL, True, True, None,
 					CLEAR_ALL);
 				DrawDecorations(
-					fw2, DRAW_ALL, False, True, None,
+					fw2, PART_ALL, False, True, None,
 					CLEAR_ALL);
 			}
 		}
@@ -2639,12 +2639,12 @@ void CMD_UpdateDecor(F_CMD_ARGS)
 #endif
 		{
 			DrawDecorations(
-				fw2, DRAW_ALL, True, True, None, CLEAR_ALL);
+				fw2, PART_ALL, True, True, None, CLEAR_ALL);
 			DrawDecorations(
-				fw2, DRAW_ALL, False, True, None, CLEAR_ALL);
+				fw2, PART_ALL, False, True, None, CLEAR_ALL);
 		}
 	}
-	DrawDecorations(hilight, DRAW_ALL, True, True, None, CLEAR_ALL);
+	DrawDecorations(hilight, PART_ALL, True, True, None, CLEAR_ALL);
 }
 
 void CMD_ButtonStyle(F_CMD_ARGS)

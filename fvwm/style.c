@@ -42,7 +42,6 @@
 #include "update.h"
 #include "style.h"
 #include "libs/Colorset.h"
-#include "borders.h"
 #include "ewmh.h"
 #include "gnome.h"
 #include "icons.h"
@@ -51,6 +50,8 @@
 #include "geometry.h"
 #include "move_resize.h"
 #include "add_window.h"
+#include "borders.h"
+#include "frame.h"
 
 /* list of window names with attributes */
 static window_style *all_styles = NULL;

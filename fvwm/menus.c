@@ -43,7 +43,6 @@
 #include "cursor.h"
 #include "functions.h"
 #include "repeat.h"
-#include "borders.h"
 #include "misc.h"
 #include "move_resize.h"
 #include "screen.h"
@@ -56,6 +55,8 @@
 #include "libs/Flocale.h"
 #include <libs/gravity.h>
 #include "geometry.h"
+#include "borders.h"
+#include "frame.h"
 
 /* ---------------------------- local definitions --------------------------- */
 

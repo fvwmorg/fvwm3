@@ -1185,7 +1185,7 @@ static void RedrawTitle(
 
 static void get_common_decorations(
 	common_decorations_type *cd, FvwmWindow *t,
-	draw_window_parts draw_parts, Bool has_focus, int force,
+	window_parts draw_parts, Bool has_focus, int force,
 	Bool is_border, Bool do_change_gcs)
 {
 	color_quad *draw_colors;
@@ -1290,60 +1290,60 @@ static int border_context_to_parts(
 	if (context == C_FRAME || context == C_SIDEBAR ||
 	    context == (C_FRAME | C_SIDEBAR))
 	{
-		return DRAW_FRAME;
+		return PART_FRAME;
 	}
 	else if (context == C_F_TOPLEFT)
 	{
-		return DRAW_BORDER_NW;
+		return PART_BORDER_NW;
 	}
 	else if (context == C_F_TOPRIGHT)
 	{
-		return DRAW_BORDER_NE;
+		return PART_BORDER_NE;
 	}
 	else if (context == C_F_BOTTOMLEFT)
 	{
-		return DRAW_BORDER_SW;
+		return PART_BORDER_SW;
 	}
 	else if (context == C_F_BOTTOMRIGHT)
 	{
-		return DRAW_BORDER_SE;
+		return PART_BORDER_SE;
 	}
 	else if (context == C_SB_LEFT)
 	{
-		return DRAW_BORDER_W;
+		return PART_BORDER_W;
 	}
 	else if (context == C_SB_RIGHT)
 	{
-		return DRAW_BORDER_E;
+		return PART_BORDER_E;
 	}
 	else if (context == C_SB_TOP)
 	{
-		return DRAW_BORDER_N;
+		return PART_BORDER_N;
 	}
 	else if (context == C_SB_BOTTOM)
 	{
-		return DRAW_BORDER_S;
+		return PART_BORDER_S;
 	}
 	else if (context == C_TITLE)
 	{
-		return DRAW_TITLE;
+		return PART_TITLE;
 	}
 	else if (context & (C_LALL | C_RALL))
 	{
-		return DRAW_BUTTONS;
+		return PART_BUTTONS;
 	}
 
-	return DRAW_NONE;
+	return PART_NONE;
 }
 
 static int border_get_parts_and_pos_to_draw(
 	common_decorations_type *cd, FvwmWindow *fw,
-	draw_window_parts pressed_parts, draw_window_parts force_draw_parts,
+	window_parts pressed_parts, window_parts force_draw_parts,
 	rectangle *old_g, rectangle *new_g, Bool do_hilight,
 	border_relief_descr *br)
 {
-	draw_window_parts draw_parts;
-	draw_window_parts parts_to_light;
+	window_parts draw_parts;
+	window_parts parts_to_light;
 	rectangle sidebar_g_old;
 	DecorFaceStyle *borderstyle;
 	Bool has_x_marks;
@@ -1360,7 +1360,7 @@ static int border_get_parts_and_pos_to_draw(
 		&has_y_marks);
 	if (has_x_marks == True)
 	{
-		draw_parts |= DRAW_X_HANDLES;
+		draw_parts |= PART_X_HANDLES;
 		br->marks.has_x_marks = 1;
 	}
 	else
@@ -1369,7 +1369,7 @@ static int border_get_parts_and_pos_to_draw(
 	}
 	if (has_y_marks == True)
 	{
-		draw_parts |= DRAW_Y_HANDLES;
+		draw_parts |= PART_Y_HANDLES;
 		br->marks.has_y_marks = 1;
 	}
 	else
@@ -1377,56 +1377,32 @@ static int border_get_parts_and_pos_to_draw(
 		br->marks.has_y_marks = 0;
 	}
 	draw_parts |= (pressed_parts ^ fw->border_state.parts_inverted);
-	parts_to_light = (do_hilight == True) ? DRAW_FRAME : DRAW_NONE;
+	parts_to_light = (do_hilight == True) ? PART_FRAME : PART_NONE;
 	draw_parts |= (parts_to_light ^ fw->border_state.parts_lit);
-	draw_parts |= (~(fw->border_state.parts_drawn) & DRAW_FRAME);
+	draw_parts |= (~(fw->border_state.parts_drawn) & PART_FRAME);
 	draw_parts |= force_draw_parts;
 	if (old_g == NULL)
 	{
 		old_g = &fw->frame_g;
 	}
-	if (draw_parts == DRAW_FRAME)
+	if (draw_parts == PART_FRAME)
 	{
-		draw_parts |= DRAW_FRAME;
+		draw_parts |= PART_FRAME;
 		return draw_parts;
 	}
 	frame_get_sidebar_geometry(
 		fw, borderstyle, old_g, &sidebar_g_old, &has_x_marks_old,
 		&has_y_marks_old);
-	if (sidebar_g_old.x != br->sidebar_g.x)
-	{
-		draw_parts |= (DRAW_FRAME & (~DRAW_BORDER_W));
-	}
-	if (sidebar_g_old.y != br->sidebar_g.y)
-	{
-		draw_parts |= (DRAW_FRAME & (~DRAW_BORDER_N));
-	}
 	if (has_x_marks_old != has_x_marks)
 	{
-		draw_parts |= (DRAW_FRAME & (~(DRAW_BORDER_N | DRAW_BORDER_S)));
+		draw_parts |= (PART_FRAME & (~(PART_BORDER_N | PART_BORDER_S)));
 	}
 	if (has_y_marks_old != has_y_marks)
 	{
-		draw_parts |= (DRAW_FRAME & (~(DRAW_BORDER_W | DRAW_BORDER_E)));
+		draw_parts |= (PART_FRAME & (~(PART_BORDER_W | PART_BORDER_E)));
 	}
-	if (sidebar_g_old.width != br->sidebar_g.width)
-	{
-		draw_parts |=
-			DRAW_BORDER_N |
-			DRAW_BORDER_NE |
-			DRAW_BORDER_E |
-			DRAW_BORDER_SE |
-			DRAW_BORDER_S;
-	}
-	if (sidebar_g_old.height != br->sidebar_g.height)
-	{
-		draw_parts |=
-			DRAW_BORDER_W |
-			DRAW_BORDER_SW |
-			DRAW_BORDER_S |
-			DRAW_BORDER_SE |
-			DRAW_BORDER_E;
-	}
+	draw_parts |= frame_get_changed_border_parts(
+		&sidebar_g_old, &br->sidebar_g);
 
 	return draw_parts;
 }
@@ -1875,7 +1851,7 @@ static void border_draw_y_mark(
 }
 
 static void border_draw_part_marks(
-	border_relief_descr *br, rectangle *part_g, draw_window_parts part,
+	border_relief_descr *br, rectangle *part_g, window_parts part,
 	Pixmap dest_pix)
 {
 	int l;
@@ -1891,35 +1867,35 @@ static void border_draw_part_marks(
 	o = br->marks.offset_br;
 	switch (part)
 	{
-	case DRAW_BORDER_N:
+	case PART_BORDER_N:
 		border_draw_y_mark(br, 0, 0, dest_pix, False);
 		border_draw_y_mark(br, w, 0, dest_pix, True);
 		break;
-	case DRAW_BORDER_S:
+	case PART_BORDER_S:
 		border_draw_y_mark(br, 0, h + o, dest_pix, False);
 		border_draw_y_mark(br, w, h + o, dest_pix, True);
 		break;
-	case DRAW_BORDER_E:
+	case PART_BORDER_E:
 		border_draw_x_mark(br, w + o, 0, dest_pix, False);
 		border_draw_x_mark(br, w + o, h, dest_pix, True);
 		break;
-	case DRAW_BORDER_W:
+	case PART_BORDER_W:
 		border_draw_x_mark(br, 0, 0, dest_pix, False);
 		border_draw_x_mark(br, 0, h, dest_pix, True);
 		break;
-	case DRAW_BORDER_NW:
+	case PART_BORDER_NW:
 		border_draw_x_mark(br, 0, t, dest_pix, True);
 		border_draw_y_mark(br, l, 0, dest_pix, True);
 		break;
-	case DRAW_BORDER_NE:
+	case PART_BORDER_NE:
 		border_draw_x_mark(br, l + o, t, dest_pix, True);
 		border_draw_y_mark(br, 0, 0, dest_pix, False);
 		break;
-	case DRAW_BORDER_SW:
+	case PART_BORDER_SW:
 		border_draw_x_mark(br, 0, 0, dest_pix, False);
 		border_draw_y_mark(br, l, t + o, dest_pix, True);
 		break;
-	case DRAW_BORDER_SE:
+	case PART_BORDER_SE:
 		border_draw_x_mark(br, l + o, 0, dest_pix, False);
 		border_draw_y_mark(br, 0, t + o, dest_pix, False);
 		break;
@@ -1943,8 +1919,8 @@ inline static void border_set_part_background(
 
 static void border_draw_one_part(
 	common_decorations_type *cd, FvwmWindow *fw, rectangle *sidebar_g,
-	rectangle *frame_g, border_relief_descr *br, draw_window_parts part,
-	draw_window_parts draw_handles, Bool is_inverted, Bool do_hilight)
+	rectangle *frame_g, border_relief_descr *br, window_parts part,
+	window_parts draw_handles, Bool is_inverted, Bool do_hilight)
 {
 	rectangle part_g;
 	Pixmap p;
@@ -1977,11 +1953,11 @@ static void border_draw_one_part(
 
 static void border_draw_all_parts(
         common_decorations_type *cd, FvwmWindow *fw, border_relief_descr *br,
-	rectangle *frame_g, draw_window_parts draw_parts,
-	draw_window_parts pressed_parts, Bool do_hilight)
+	rectangle *frame_g, window_parts draw_parts,
+	window_parts pressed_parts, Bool do_hilight)
 {
-	draw_window_parts part;
-	draw_window_parts draw_handles;
+	window_parts part;
+	window_parts draw_handles;
 
 	/* get the description of the drawing directives */
 	border_get_border_relief_size_descr(&br->relief, fw, do_hilight);
@@ -1989,9 +1965,9 @@ static void border_draw_all_parts(
 	/* fetch the gcs used to draw the border */
 	border_get_border_gcs(&br->gcs, cd, fw, do_hilight);
 	/* draw everything in a big loop */
-	draw_handles = (draw_parts & DRAW_HANDLES);
+	draw_handles = (draw_parts & PART_HANDLES);
 fprintf(stderr, "drawing border parts 0x%04x\n", draw_parts);
-	for (part = DRAW_BORDER_N; (part & DRAW_FRAME); part <<= 1)
+	for (part = PART_BORDER_N; (part & PART_FRAME); part <<= 1)
 	{
 		if (part & draw_parts)
 		{
@@ -2021,11 +1997,11 @@ fprintf(stderr, "drawing border parts 0x%04x\n", draw_parts);
  ****************************************************************************/
 static void border_draw_border_parts(
 	common_decorations_type *cd, FvwmWindow *fw,
-	draw_window_parts pressed_parts, draw_window_parts force_draw_parts,
+	window_parts pressed_parts, window_parts force_draw_parts,
 	rectangle *old_g, rectangle *new_g, Bool do_hilight)
 {
 	border_relief_descr br;
-	draw_window_parts draw_parts;
+	window_parts draw_parts;
 
 	if (!HAS_BORDER(fw))
 	{
@@ -2038,18 +2014,18 @@ static void border_draw_border_parts(
 	/* determine the parts to draw and the position to place them */
 	if (HAS_DEPRESSABLE_BORDER(fw))
 	{
-		pressed_parts &= DRAW_FRAME;
+		pressed_parts &= PART_FRAME;
 	}
 	else
 	{
-		pressed_parts = DRAW_NONE;
+		pressed_parts = PART_NONE;
 	}
-	force_draw_parts &= DRAW_FRAME;
+	force_draw_parts &= PART_FRAME;
 	memset(&br, 0, sizeof(br));
 	draw_parts = border_get_parts_and_pos_to_draw(
 		cd, fw, pressed_parts, force_draw_parts, old_g, new_g,
 		do_hilight, &br);
-	if ((draw_parts & DRAW_FRAME) != DRAW_NONE)
+	if ((draw_parts & PART_FRAME) != PART_NONE)
 	{
 		border_draw_all_parts(
 			cd, fw, &br, new_g, draw_parts, pressed_parts,
@@ -2062,7 +2038,7 @@ static void border_draw_border_parts(
 /* ---------------------------- interface functions ------------------------- */
 
 void border_get_part_geometry(
-	FvwmWindow *fw, draw_window_parts part, rectangle *sidebar_g,
+	FvwmWindow *fw, window_parts part, rectangle *sidebar_g,
 	rectangle *ret_g, Window *ret_w)
 {
 	int bw;
@@ -2070,42 +2046,42 @@ void border_get_part_geometry(
 	bw = fw->boundary_width;
 	switch (part)
 	{
-	case DRAW_BORDER_N:
+	case PART_BORDER_N:
 		ret_g->x = sidebar_g->x;
 		ret_g->y = 0;
 		*ret_w = FW_W_SIDE(fw, 0);
 		break;
-	case DRAW_BORDER_E:
+	case PART_BORDER_E:
 		ret_g->x = 2 * sidebar_g->x + sidebar_g->width - bw;
 		ret_g->y = sidebar_g->y;
 		*ret_w = FW_W_SIDE(fw, 1);
 		break;
-	case DRAW_BORDER_S:
+	case PART_BORDER_S:
 		ret_g->x = sidebar_g->x;
 		ret_g->y = 2 * sidebar_g->y + sidebar_g->height - bw;
 		*ret_w = FW_W_SIDE(fw, 2);
 		break;
-	case DRAW_BORDER_W:
+	case PART_BORDER_W:
 		ret_g->x = 0;
 		ret_g->y = sidebar_g->y;
 		*ret_w = FW_W_SIDE(fw, 3);
 		break;
-	case DRAW_BORDER_NW:
+	case PART_BORDER_NW:
 		ret_g->x = 0;
 		ret_g->y = 0;
 		*ret_w = FW_W_CORNER(fw, 0);
 		break;
-	case DRAW_BORDER_NE:
+	case PART_BORDER_NE:
 		ret_g->x = sidebar_g->x + sidebar_g->width;
 		ret_g->y = 0;
 		*ret_w = FW_W_CORNER(fw, 1);
 		break;
-	case DRAW_BORDER_SW:
+	case PART_BORDER_SW:
 		ret_g->x = 0;
 		ret_g->y = sidebar_g->y + sidebar_g->height;
 		*ret_w = FW_W_CORNER(fw, 2);
 		break;
-	case DRAW_BORDER_SE:
+	case PART_BORDER_SE:
 		ret_g->x = sidebar_g->x + sidebar_g->width;;
 		ret_g->y = sidebar_g->y + sidebar_g->height;
 		*ret_w = FW_W_CORNER(fw, 3);
@@ -2115,20 +2091,20 @@ void border_get_part_geometry(
 	}
 	switch (part)
 	{
-	case DRAW_BORDER_N:
-	case DRAW_BORDER_S:
+	case PART_BORDER_N:
+	case PART_BORDER_S:
 		ret_g->width = sidebar_g->width;
 		ret_g->height = bw;
 		break;
-	case DRAW_BORDER_E:
-	case DRAW_BORDER_W:
+	case PART_BORDER_E:
+	case PART_BORDER_W:
 		ret_g->width = bw;
 		ret_g->height = sidebar_g->height;
 		break;
-	case DRAW_BORDER_NW:
-	case DRAW_BORDER_NE:
-	case DRAW_BORDER_SW:
-	case DRAW_BORDER_SE:
+	case PART_BORDER_NW:
+	case PART_BORDER_NE:
+	case PART_BORDER_SW:
+	case PART_BORDER_SE:
 		ret_g->width = sidebar_g->x;
 		ret_g->height = sidebar_g->y;
 		break;
@@ -2155,7 +2131,7 @@ int get_button_number(int context)
 }
 
 void draw_clipped_decorations_with_geom(
-	FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
+	FvwmWindow *t, window_parts draw_parts, Bool has_focus, int force,
 	Window expose_win, XRectangle *rclip, clear_window_parts clear_parts,
 	rectangle *old_g, rectangle *new_g)
 {
@@ -2204,7 +2180,7 @@ void draw_clipped_decorations_with_geom(
 				/* make sure that the previously highlighted
 				 * window got unhighlighted */
 				DrawDecorations(
-					Scr.Hilite, DRAW_ALL, False, True, None,
+					Scr.Hilite, PART_ALL, False, True, None,
 					CLEAR_ALL);
 			}
 			Scr.Hilite = t;
@@ -2231,13 +2207,13 @@ void draw_clipped_decorations_with_geom(
 	}
 
 	/* calculate some values and flags */
-	if ((draw_parts & DRAW_TITLE) && HAS_TITLE(t) &&
+	if ((draw_parts & PART_TITLE) && HAS_TITLE(t) &&
 	    is_title_redraw_allowed)
 	{
 		do_redraw_title = True;
 		do_change_gcs = True;
 	}
-	if ((draw_parts & DRAW_BUTTONS) && HAS_TITLE(t) &&
+	if ((draw_parts & PART_BUTTONS) && HAS_TITLE(t) &&
 	    is_button_redraw_allowed)
 	{
 		do_redraw_buttons = True;
@@ -2268,10 +2244,10 @@ void draw_clipped_decorations_with_geom(
 	{
 		RedrawTitle(&cd, t, has_focus, rclip);
 	}
-	if (cd.flags.has_color_changed || (draw_parts & DRAW_FRAME))
+	if (cd.flags.has_color_changed || (draw_parts & PART_FRAME))
 	{
-		draw_window_parts pressed_parts;
-		draw_window_parts force_parts;
+		window_parts pressed_parts;
+		window_parts force_parts;
 		int context;
 		int i;
 
@@ -2279,7 +2255,7 @@ void draw_clipped_decorations_with_geom(
 			&cd, t, draw_parts, has_focus, force, True, True);
 		context = frame_window_id_to_context(t, PressedW, &i);
 		pressed_parts = border_context_to_parts(context);
-		force_parts = (force) ? (draw_parts & DRAW_FRAME) : DRAW_NONE;
+		force_parts = (force) ? (draw_parts & PART_FRAME) : PART_NONE;
 		border_draw_border_parts(
 			&cd, t, pressed_parts, force_parts, old_g, new_g,
 			has_focus);
@@ -2292,7 +2268,7 @@ void draw_clipped_decorations_with_geom(
 }
 
 void draw_clipped_decorations(
-	FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
+	FvwmWindow *t, window_parts draw_parts, Bool has_focus, int force,
 	Window expose_win, XRectangle *rclip, clear_window_parts clear_parts)
 {
 	draw_clipped_decorations_with_geom(
@@ -2303,7 +2279,7 @@ void draw_clipped_decorations(
 }
 
 void DrawDecorations(
-	FvwmWindow *t, draw_window_parts draw_parts, Bool has_focus, int force,
+	FvwmWindow *t, window_parts draw_parts, Bool has_focus, int force,
 	Window expose_win, clear_window_parts clear_parts)
 {
 	draw_clipped_decorations(
@@ -2324,7 +2300,7 @@ void RedrawDecorations(FvwmWindow *fw)
 	/* domivogt (6-Jun-2000): Don't check if the window is visible here.
 	 * If we do, some updates are not applied and when the window becomes
 	 * visible again, the X Server may not redraw the window. */
-	DrawDecorations(fw, DRAW_ALL, (Scr.Hilite == fw), 2, None, CLEAR_ALL);
+	DrawDecorations(fw, PART_ALL, (Scr.Hilite == fw), 2, None, CLEAR_ALL);
 	Scr.Hilite = u;
 
 	return;

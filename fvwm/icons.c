@@ -1548,7 +1548,7 @@ void DeIconify(FvwmWindow *fw)
       SET_MAPPED(t, 1);
       SET_ICONIFIED_BY_PARENT(t, 0);
       if(Scr.Hilite == t)
-	DrawDecorations(t, DRAW_ALL, False, True, None, CLEAR_ALL);
+	DrawDecorations(t, PART_ALL, False, True, None, CLEAR_ALL);
 
       /* AS stuff starts here dje */
       if (FW_W_ICON_PIXMAP(t))
@@ -1621,7 +1621,7 @@ void DeIconify(FvwmWindow *fw)
        * in case it was stuck or unstuck while iconified. */
       tmp = Scr.Hilite;
       Scr.Hilite = t;
-      DrawDecorations(t, DRAW_ALL, False, True, None, CLEAR_ALL);
+      DrawDecorations(t, PART_ALL, False, True, None, CLEAR_ALL);
       Scr.Hilite = tmp;
     }
   }
@@ -1725,7 +1725,7 @@ void Iconify(FvwmWindow *fw, int def_x, int def_y)
 	XUnmapWindow(dpy, FW_W_ICON_PIXMAP(t));
 
       SetMapStateProp(t, IconicState);
-      DrawDecorations(t, DRAW_ALL, False, False, None, CLEAR_ALL);
+      DrawDecorations(t, PART_ALL, False, False, None, CLEAR_ALL);
       if (t == fw && !IS_ICONIFIED_BY_PARENT(fw))
       {
 	SET_DEICONIFY_PENDING(t, 1);

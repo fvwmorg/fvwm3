@@ -35,6 +35,7 @@
 #include "geometry.h"
 #include "gnome.h"
 #include "ewmh.h"
+#include "borders.h"
 #include "frame.h"
 
 /* ---------------------------- local definitions --------------------------- */
@@ -122,9 +123,7 @@ fprintf(stderr,"toggle: %s\n", (action) ? action : "default");
 		return;
 	}
 
-	/*
-	 * parse arguments
-	 */
+	/* parse arguments */
 	shade_dir = ParseDirectionArgument(action, NULL, -1);
 	if (shade_dir != -1)
 	{
@@ -180,12 +179,19 @@ fprintf(stderr, "toggle %d (%s) state %d (%s) title dir %s\n", toggle, get_dir_s
 		return;
 	}
 
-	/*
-	 * calculate start and end geometries
-	 */
+	/* draw the animation */
 	start_g = fw->frame_g;
 	get_unshaded_geometry(fw, &end_g);
 print_g("end1 ", &end_g);
+	resize_mode = (DO_SHRINK_WINDOWSHADE(fw)) ?
+		FRAME_MR_SHRINK : FRAME_MR_SCROLL;
+	mr_args = frame_create_move_resize_args(
+		fw, resize_mode, &start_g, &end_g, fw->shade_anim_steps);
+	frame_move_resize(fw, mr_args);
+	frame_free_move_resize_args(mr_args);
+
+	/* Update the window state after the animation.  The animation code
+	 * needs to know the old window state to work properly. */
 	SET_SHADED(fw, toggle);
 	if (toggle == 1)
 	{
@@ -194,19 +200,7 @@ print_g("end1 ", &end_g);
 print_g("end2 ", &end_g);
 	}
 
-	/*
-	 * do the animation
-	 */
-	resize_mode = (DO_SHRINK_WINDOWSHADE(fw)) ?
-		FRAME_MR_SHRINK : FRAME_MR_SCROLL;
-	mr_args = frame_create_move_resize_args(
-		fw, resize_mode, &start_g, &end_g, fw->shade_anim_steps);
-	frame_move_resize(fw, mr_args);
-	frame_free_move_resize_args(mr_args);
-
-	/*
-	 * update hints and inform modules
-	 */
+	/* update hints and inform modules */
 	BroadcastConfig(M_CONFIGURE_WINDOW, fw);
 	BroadcastPacket(
 		(toggle == 1) ? M_WINDOWSHADE : M_DEWINDOWSHADE, 3, FW_W(fw),

@@ -1,5 +1,14 @@
 2002-03-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/borders.c:
+	* fvwm/frame.c:
+	made good progress with frame layout rewrite. I think it is already
+	considerably faster.
+	some general clean up
+
+	* fvwm/add_window.c (setup_decor_window):
+	function removed
+
 	* fvwm/windowshade.c (CMD_WindowShade):
 	* fvwm/stack.c (verify_stack_ring_consistency):
 	(RaiseOrLowerWindow):
