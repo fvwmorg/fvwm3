@@ -1,3 +1,8 @@
+1999-04-26  Dan Espen  <dane@mk.bellcore.com>
+
+	* fvwm/fvwm.h: Make prototype for SigDone and Restart agree with
+	functions in fvwm.c.
+
 1999-04-26  Hippo
 
 	* libs/ModGraph.{h,c}: new functions InitGraphics/ParseGraphics for
