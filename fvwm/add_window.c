@@ -163,10 +163,8 @@ void setup_window_name(FvwmWindow *tmp_win)
 #ifdef I18N_MB
   char **list;
   int num;
-#endif
 
   if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
-#ifdef I18N_MB
   {
     if (text_prop.value)
     {
@@ -203,6 +201,7 @@ void setup_window_name(FvwmWindow *tmp_win)
     }
   }
 #else
+  if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
     tmp_win->name = (char *)text_prop.value;
 #endif
   else

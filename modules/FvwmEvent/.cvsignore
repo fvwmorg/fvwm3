@@ -3,3 +3,4 @@ Makefile.in
 FvwmEvent
 FvwmAudio
 .deps
+TAGS

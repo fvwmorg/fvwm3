@@ -118,7 +118,7 @@ static Bool blockand(char *dest, char *blk1, char *blk2, int length)
   for (i = 0; i < length; i++)
   {
     dest[i] = (blk1[i] & blk2[i]);
-    result &= dest[i];
+    result |= dest[i];
   }
 
   return (result) ? True : False;
@@ -132,7 +132,7 @@ static Bool blockunmask(char *dest, char *blk1, char *blk2, int length)
   for (i = 0; i < length; i++)
   {
     dest[i] = (blk1[i] & ~blk2[i]);
-    result &= dest[i];
+    result |= dest[i];
   }
 
   return (result) ? True : False;
@@ -241,7 +241,7 @@ static int Get_TBLR(char *token, unsigned char *IconFill) {
  *      merged_style - style resulting from the merge
  *      add_style    - the style to be added into the merge_style
  *      do_free      - free allocated parts of merge_style that are replaced
- +                     from ad_style
+ +                     from add_style
  *
  *  Note:
  *      The only trick here is that on and off flags/buttons are
@@ -538,7 +538,6 @@ void simplify_style_list(void)
   style_flags dummyflags;
   Bool has_modified = True;
   Bool is_merge_allowed;
-  Bool has_styles_in_between;
 
   Scr.flags.do_need_style_list_update = 0;
   /* repeat until nothing has been done for a complete pass */
@@ -546,7 +545,6 @@ void simplify_style_list(void)
   {
     is_merge_allowed = True;
     has_modified = False;
-    has_styles_in_between = True;
     /* Step 1:
      *   Remove styles that are completely overridden by later style
      *   definitions.  At the same time...
@@ -569,9 +567,6 @@ void simplify_style_list(void)
             /* The style is a subset of later style definitions; nuke it */
             window_style *tmp = SGET_PREV_STYLE(*cmp);
 
-#if 0
-fprintf(stderr,"subset: removing style %s\n", SGET_NAME(*cmp));
-#endif
             remove_style_from_list(cmp, True);
             cmp = tmp;
             has_modified = True;
@@ -580,9 +575,6 @@ fprintf(stderr,"subset: removing style %s\n", SGET_NAME(*cmp));
           {
             /* remove all styles that are overridden later from the style */
             free_style_mask(cmp, &sumflags);
-
-            if (has_styles_in_between)
-              is_merge_allowed = False;
 
             /* Add the style to the set */
             blockor((char *)&sumflags, (char *)&sumflags,
@@ -595,9 +587,6 @@ fprintf(stderr,"subset: removing style %s\n", SGET_NAME(*cmp));
               window_style *prev = SGET_PREV_STYLE(*cur);
               window_style *next = SGET_NEXT_STYLE(*cur);
 
-#if 0
-fprintf(stderr,"merging %s into %s\n", SGET_NAME(*cur), SGET_NAME(*cmp));
-#endif
               /* merge cmp into cur and delete it afterwards */
               merge_styles(cmp, cur, True);
               memcpy(cur, cmp, sizeof(window_style));
@@ -620,7 +609,6 @@ fprintf(stderr,"merging %s into %s\n", SGET_NAME(*cur), SGET_NAME(*cmp));
         }
         else
         {
-          has_styles_in_between = True;
           blockor((char *)&interflags, (char *)&interflags,
                   (char *)&cmp->flag_mask, sizeof(style_flags));
           cmp = SGET_PREV_STYLE(*cmp);
@@ -640,9 +628,6 @@ static void add_style_to_list(window_style *new_style)
    * used to merge duplicate entries, but that is no longer
    * appropriate since conflicting styles are possible, and the
    * last match should win! */
-#if 0
-fprintf(stderr,"adding style '%s'\n", SGET_NAME(*new_style));
-#endif
 
   if(last_style_in_list != NULL)
   {
@@ -695,25 +680,27 @@ static void remove_style_from_list(window_style *style, Bool do_free_style)
   }
 }
 
-static void remove_all_of_style_from_list(char *style_ref)
+static Bool remove_all_of_style_from_list(char *style_ref)
 {
   window_style *nptr = all_styles;
+  window_style *next;
+  Bool is_changed = False;
 
   /* loop though styles */
   while (nptr)
   {
+    next = SGET_NEXT_STYLE(*nptr);
     /* Check if it's to be wiped */
     if (!strcmp(SGET_NAME(*nptr), style_ref))
     {
       remove_style_from_list(nptr, True);
+      is_changed = True;
     }
-    else
-    {
-      /* No match - move on */
-      nptr = SGET_NEXT_STYLE(*nptr);
-    }
+    /* move on */
+    nptr = next;
   }
 
+  return is_changed;
 } /* end function */
 
 
@@ -730,9 +717,11 @@ void ProcessDestroyStyle(F_CMD_ARGS)
     return;
 
   /* Do it */
-  remove_all_of_style_from_list(name);
-  /* compact the current list of styles */
-  Scr.flags.do_need_style_list_update = 1;
+  if (remove_all_of_style_from_list(name))
+  {
+    /* compact the current list of styles */
+    Scr.flags.do_need_style_list_update = 1;
+  }
 }
 
 
@@ -771,23 +760,14 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
     /* If name/res_class/res_name match, merge */
     if (matchWildcards(SGET_NAME(*nptr),tmp_win->class.res_class) == TRUE)
     {
-#if 0
-fprintf(stderr,"c: merging style %s\n", SGET_NAME(*nptr));
-#endif
       merge_styles(styles, nptr, False);
     }
     else if (matchWildcards(SGET_NAME(*nptr),tmp_win->class.res_name) == TRUE)
     {
-#if 0
-fprintf(stderr,"r: merging style %s\n", SGET_NAME(*nptr));
-#endif
       merge_styles(styles, nptr, False);
     }
     else if (matchWildcards(SGET_NAME(*nptr),tmp_win->name) == TRUE)
     {
-#if 0
-fprintf(stderr,"n: merging style %s\n", SGET_NAME(*nptr));
-#endif
       merge_styles(styles, nptr, False);
     }
   }
@@ -960,7 +940,7 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->change_mask.use_backing_store = 1;
         }
 	else if(StrEquals(token, "BorderColorset"))
-	{	  
+	{
 	  found = True;
           *val = -1;
 	  GetIntegerArguments(rest, NULL, val, 1);
@@ -2405,8 +2385,17 @@ void ProcessNewStyle(F_CMD_ARGS)
       SSET_ICON_NAME(*ptmpstyle, NULL);
     }
   }
-  /* add temp name list to list */
-  add_style_to_list(ptmpstyle);
+  if (last_style_in_list &&
+      strcmp(SGET_NAME(*ptmpstyle), SGET_NAME(*last_style_in_list)) == 0)
+  {
+    /* merge with previous style */
+    merge_styles(last_style_in_list, ptmpstyle, True);
+  }
+  else
+  {
+    /* add temp name list to list */
+    add_style_to_list(ptmpstyle);
+  }
 }
 
 
@@ -2717,14 +2706,14 @@ void update_style_colorset(int colorset)
       temp->change_mask.use_colorset_hi = 1;
       Scr.flags.do_need_window_update = 1;
     }
-    if (SUSE_BORDER_COLORSET(&temp->flags) && 
+    if (SUSE_BORDER_COLORSET(&temp->flags) &&
 	SGET_BORDER_COLORSET(*temp) == colorset)
     {
       temp->has_style_changed = 1;
       temp->change_mask.use_border_colorset = 1;
       Scr.flags.do_need_window_update = 1;
     }
-    if (SUSE_BORDER_COLORSET_HI(&temp->flags) && 
+    if (SUSE_BORDER_COLORSET_HI(&temp->flags) &&
 	SGET_BORDER_COLORSET_HI(*temp) == colorset)
     {
       temp->has_style_changed = 1;
@@ -2795,7 +2784,8 @@ void update_window_color_hi_style(FvwmWindow *tmp_win, window_style *pstyle)
   {
     tmp_win->hicolors.fore = Colorset[cs].fg;
   }
-  if(SGET_BACK_COLOR_NAME_HI(*pstyle) != NULL && !SUSE_COLORSET_HI(&pstyle->flags))
+  if(SGET_BACK_COLOR_NAME_HI(*pstyle) != NULL &&
+     !SUSE_COLORSET_HI(&pstyle->flags))
   {
     tmp_win->hicolors.back = GetColor(SGET_BACK_COLOR_NAME_HI(*pstyle));
     tmp_win->hicolors.shadow = GetShadow(tmp_win->hicolors.back);

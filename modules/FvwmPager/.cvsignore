@@ -3,3 +3,4 @@ Makefile.in
 FvwmPager
 .deps
 bb.out
+TAGS

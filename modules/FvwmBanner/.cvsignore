@@ -2,3 +2,4 @@ Makefile
 Makefile.in
 FvwmBanner
 .deps
+TAGS

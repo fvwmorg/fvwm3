@@ -1463,7 +1463,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
       fi = fi->next_item;
     }
   WaitForButtonsUp(False);
-  /* THis is the right place to ungrab the pointer (see comment above). */
+  /* This is the right place to ungrab the pointer (see comment above). */
   UngrabEm(GRAB_NORMAL);
   for(i=0;i<10;i++)
     if(arguments[i] != NULL)
