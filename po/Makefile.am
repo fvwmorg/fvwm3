@@ -248,13 +248,13 @@ uninstall-local: uninstall-local-@USE_NLS@
 uninstall-local-no:
 uninstall-local-yes:
 	catalogs='$(CATALOGS)'; \
-	@all_domain='$(ALL_DOMAINS)'
-	for dom in $$all_domain; do
+	@all_domain='$(ALL_DOMAINS)' \
+	for dom in $$all_domain; do \
 	  for cat in $$catalogs; do \
 	    cat=`basename $$cat`; \
 	    lang=`echo $@ | sed -e 's/\.gmo$$//'`; \
 	    for lc in LC_MESSAGES $(EXTRA_LOCALE_CATEGORIES); do \
-	      rm -f $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo;
+	      rm -f $(DESTDIR)$(localedir)/$$lang/$$lc/$$dom.mo; \
 	    done; \
 	  done; \
 	done
