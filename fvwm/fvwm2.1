@@ -169,8 +169,8 @@ manager. Should not be used by a user.
 Causes fvwm to use
 .I config_command
 instead of
-.RB """"Read
-.IR .fvwm2rc """ \""
+.RB "'Read"
+.IR ".fvwm2rc'"
 as its initialization command.  (Note that up to 10
 .BR \-f " and " \-cmd
 parameters can be given, and they are executed in the order
@@ -198,8 +198,8 @@ Causes fvwm to read
 instead of
 .I .fvwm2rc
 as its initialization file.  This is equivalent to
-.RB """"-cmd " " Read
-.IR config_file """. \""
+.RB "-cmd 'Read"
+.IR "config_file'.
 .
 .TP
 .BI "-h"
@@ -906,7 +906,7 @@ to help you get started.
 The
 .SM Tab
 key pressed anywhere with the
-.M Meta
+.SM Meta
 key (same as the
 .SM Alt
 key on PC keyboards) held down pop-ups a window list.
@@ -1205,7 +1205,7 @@ to the name of the foreground color of colorset 3 (in
 rgb:rrrr/gggg/bbbb form).  Please refer to the man page of the
 .B FvwmTheme
 module for details about colorsets.  Note that although other
-parameters cannot be used in module configuration lines, is is
+parameters cannot be used in module configuration lines, it is
 possible to use this class of parameters.  They can be used
 wherever a module expects a color name.  Since the
 .B FvwmTheme
@@ -1258,6 +1258,7 @@ usefulness to the newcomer.
 
 .TP
 .BI "AddToMenu " menu-name " [" menu-label " " action "]"
+
 Begins or adds to a menu definition.  Typically a menu definition
 looks like this:
 .EX
@@ -1373,7 +1374,7 @@ AddToMenu SomeMenu
 This is another implementation of the file browser that uses
 sub-menus for subdirectories.
 
-Titles can be used within the menu . If you add the option
+Titles can be used within the menu. If you add the option
 .I top
 behind the keyword
 .BR Title ,
@@ -1446,9 +1447,9 @@ AddToMenu StartMenu@linux-menu.xpm@
 .EE
 creates a menu with a picture in its bottom left corner.
 
-If the menu-name contains also a sub-string set of by '^'s, then
-the text between '^'s is expected to be the name a of X11 color
-and the column containing the side picture is colorized with that
+If the menu-name also contains a sub-string surrounded by '^'s, then
+the text between '^'s is expected to be the name of an X11 color
+and the column containing the side picture is colored with that
 color.  You can set this color for a menu style using the
 .I SideColor
 option of the
@@ -1458,7 +1459,7 @@ command.  To get a literal '^', insert "^^".  Example:
 AddToMenu StartMenu@linux-menu.xpm@^blue^
 .EE
 creates a menu with a picture in its bottom left corner and
-colorizes with blue the region of the menu containing the picture.
+colors with blue the region of the menu containing the picture.
 
 In all the above cases, the name of the resulting menu is name
 specified, stripped of the substrings between the various
@@ -1582,7 +1583,7 @@ or
 .SM Space
 executes the current item;
 .SM Insert
-opens the "More..." sub-menu is any;
+opens the "More..." sub-menu if any;
 .SM Escape
 and
 .SM Delete
@@ -1593,7 +1594,7 @@ it was both invoked and terminated with a keystroke.
 
 The
 .I position
-arguments allow to place the menu somewhere on the screen, for
+arguments allow placement of the menu somewhere on the screen, for
 example centered on the visible screen or above a title bar.
 Basically it works like this: you specify a
 .I context-rectangle
@@ -2107,7 +2108,7 @@ the menu style.
 
 .I SideColor
 takes the name of an X11 color as an argument. This color is used
-to colorize the column containing the side picture (see
+to color the column containing the side picture (see
 above). The SideColor option can be overridden by a menu specific
 side color (see
 .BR AddToMenu ).
@@ -2490,10 +2491,10 @@ option on or off, or "toggle" to switch is back and forth.  If
 is omitted, the default setting is restored.
 
 .I FlickeringMoveWorkaround
-disables so called ConfigurNotify events that are usually sent to
+disables ConfigureNotify events that are usually sent to
 an application while it is moved.  If some windows flicker
 annoyingly while being moved, this option may help you.  Note that
-if this problem occurs its not a fvwm bug, it is a problem of the
+if this problem occurs it is not an fvwm bug, it is a problem of the
 application.
 
 .I MixedVisualWorkaround
@@ -2507,7 +2508,7 @@ PseudoColor root and fvwm using a 24 bit TrueColor visual).
 
 The
 .I ModalityIsEvil
-option controls if motif applications have the ability to have
+option controls whether Motif applications have the ability to have
 modal dialogs (dialogs that force you to close them first before
 you can do anything else).  The default is to not allow
 applications to have modal dialogs.  Use this option with care.
@@ -4316,7 +4317,7 @@ Note: You need
 .B libstroke
 installed and fvwm compiled with stroke support.
 .B libstroke
-can be obtained via anonymous ftp at
+can be obtained at
 .EX
 .B http://www.etla.net/~willey/projects/libstroke/
 .EE
@@ -4901,16 +4902,16 @@ window. This miniature icon can be drawn in a title-bar button
 .BR ButtonStyle ),
 and can be used by various fvwm modules
 .RB ( FvwmWinList ", " FvwmIconMan " and " FvwmTaskBar ).
-
 It takes the name of a pixmap as an argument.
-.IR WindowShadeShrinks " and " WindowShadeScrolls
+
+.I WindowShadeShrinks " and " WindowShadeScrolls
 control if the contents of a window that is being shaded with the
 .B WindowShade
 command are scrolled (default) or if they stay in place.
 
 The
 .I WindowShadeSteps
-option elects the number of steps for animation when shading a
+option selects the number of steps for animation when shading a
 window with
 .BR WindowShade .
 It takes one number as its argument.  If the number has a trailing
@@ -4968,6 +4969,7 @@ instructs fvwm to ignore the program supplied minimum and maximum
 size.  This can be handy for broken applications that refuse to be
 resized.  Don't use it if you don't need it.  The default
 (opposite) style is
+.I NoResizeOverride.
 
 .I MaxWindowSize " [ width [ p ]  height [ p ] ]"
 Tells fvwm the maximum width and height of a window.  The values
@@ -5020,7 +5022,7 @@ but uses
 as the fall-back method.
 
 .I MinOverlapPlacement
-automatically place new windows in a location in which the
+automatically places new windows in a location in which the
 overlapping area in pixels of other windows is minimal.  This
 placement policy especially tries to avoid overlapping icons and
 windows on higher layers.
@@ -5111,6 +5113,7 @@ Style * MinOverlapPlacement
 Style * SmartPlacement, ActivePlacement, CleverPlacement
   -->
 Style * MinOverlapPercentPlacement
+
 Style * ActivePlacementsHonorsStartsOnPage
   -->
 Style * ManualPlacementsHonorsStartsOnPage
@@ -5442,21 +5445,6 @@ Style Netscape* SkipMapping,              \\
                 StartsOnPage 1 1 1
 .EE
 Note that all properties for a window are or'ed together.  In the
-above example "FvwmPager" gets the property StaysOnTop via an
-exact window name match but also gets NoHandles, Sticky, and
-WindowListSkip by a match to "Fvwm*".  It gets NoTitle by virtue
-of a match to "*".  If conflicting styles are specified for a
-window, then the last style specified is used.  If the NoIcon
-attribute is set then the specified window simply disappears when
-it is iconified.  The window can be recovered through the
-window-list.  If Icon is set without an argument then the NoIcon
-attribute is cleared but no icon is specified.  An example which
-allows only the FvwmPager module icon to exist:
-.EX
-Style * NoIcon
-Style FvwmPager Icon
-.EE
-Note that all properties for a window are or'ed together.  In the
 above example "FvwmPager" gets the property
 .I StaysOnTop
 via an exact window name match but also gets
@@ -5465,6 +5453,21 @@ by a match to "Fvwm*".  It gets
 .I NoTitle
 by virtue of a match to "*".  If conflicting styles are specified
 for a window, then the last style specified are used.
+
+If the
+.I NoIcon
+attribute is set then the specified window simply disappears when
+it is iconified.  The window can be recovered through the
+window-list.  If
+.I Icon
+is set without an argument then the
+.I NoIcon
+attribute is cleared but no icon is specified.  An example which
+allows only the FvwmPager module icon to exist:
+.EX
+Style * NoIcon
+Style FvwmPager Icon
+.EE
 
 .TP
 .BI "DestroyStyle " style
@@ -5500,12 +5503,12 @@ Adds a button style to
 can be a button number, or one of "All", "Left" or "Right".
 .I state
 can be "ActiveUp," "ActiveDown" or "Inactive" or any of these
-three with "Toggled" prepended.  "ActiveUp" select to the style of
+three with "Toggled" prepended.  "ActiveUp" selects the style of
 the button when the window has the focus and the button is not
 pressed. "ActiveDown" is similar but applies when the button is
 pressed while the "Inactive" style is used for windows without the
 focus.  The "Toggled" prefix refers to maximized, shaded or sticky
-windows that have the corrseponding
+windows that have the corresponding
 .I MwmDecor...
 button style set.  If
 .I state
@@ -5624,7 +5627,8 @@ AddToDecor FlatDecor
    Inactive (-- flat)
  + TitleStyle -- flat
  + BorderStyle -- HiddenHandles NoInset
- + Style FlatStyle UseDecor FlatDecor, \\
+
+Style FlatStyle UseDecor FlatDecor, \\
      Color white/grey40,HandleWidth 4
 
 Style xterm UseStyle FlatStyle
@@ -5634,8 +5638,10 @@ An existing window's decor may be reassigned with
 A decor can be destroyed with
 .BR DestroyDecor .
 .EX
-AddToDecor FlatDecor
- + Style FlatStyle UseDecor FlatDecor, \\
+DestroyDecor FlatDecor
+AddToDecor FlatDecor ...
+
+Style FlatStyle UseDecor FlatDecor, \\
      Color white/grey40,HandleWidth 4
 .EE
 and now apply the style again:
@@ -5766,7 +5772,7 @@ states are used instead for buttons which have one of the
 hints, if the window is maximized, shaded or sticky, respectively.
 .EX
 AddToDecor Default
- + ButtonStyle 6 All               \\
+ + ButtonStyle 6                   \\
    Vector 4 50x25@1 85x75@0 15x75@0 50x25@1
  + ButtonStyle 6 ToggledActiveUp   \\
    Vector 4 50x75@0 85x25@1 15x25@0 50x75@0
@@ -5846,7 +5852,7 @@ inhibits the relief pattern from being drawn.
 .I UseTitleStyle
 causes the given button state to render the current title style
 before rendering the button's own styles.  The
-.IR Raised ", " Flat ", " and Sunk
+.IR Raised ", " Flat " and " Sunk
 .B TitleStyle
 flags are ignored since they are redundant in this context.
 
@@ -5956,7 +5962,8 @@ If the pixmap cannot be found, the button style reverts to
 Flags specific to the
 .I Pixmap
 style are
-.IR Left ", " Right ", " Top ", and " Bottom .
+.IR Left ", " Right ", "
+.IR Top ", and " Bottom .
 These can be used to justify the pixmap (default is centered for
 both directions).  Pixmap transparency is used for the color
 "None."  This style is partially destructive.
@@ -7002,13 +7009,13 @@ this is recommended to avoid conflicts.
 Deletes module configuration entries, so that new configuration
 lines may be entered instead.  This also sometimes the only way to
 turn back some module settings, previously defined.  This changes
-the the way a module runs during a fvwm session without
+the way a module runs during a fvwm session without
 restarting.  Wildcards can be used for portions of the name as
 well.
 
 The new non-conflicting syntax allows a delimiter, a colon and
-optional spaces, between the module name and the rest of the line,
-in this case a module name (or alias) can't have wildcards.
+optional spaces between the module name and the rest of the line.
+In this case a module name (or alias) can't have wildcards.
 .EX
 DestroyModuleConfig FvwmButtons*
 DestroyModuleConfig FvwmForm: Fore
