@@ -1,3 +1,9 @@
+1999-02-02  Hippo
+
+	* fvwm/menus.c (PaintMenu) Rewrote DGradient/BGradient menu code to
+	use only integer arithmetic and draw in one pass to fix some missing
+	pixel errors on some servers.
+
 1999-01-29  Hippo
 
 	* fvwm/menus.c (PaintMenu): Fixed {D,B}Gradient's being clipped by the

@@ -2002,7 +2002,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
         bounds.width = mr->width - 5;
         bounds.height = mr->height;
 
-        if ( type == HGradMenu ) {
+        if (type == HGradMenu) {
 	  if (mr->backgroundset == False)
 	  {
 	  register int i = 0;
@@ -2029,7 +2029,7 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	  }
 	  XClearWindow(dpy, mr->w);
         }
-        else if ( type == VGradMenu )
+        else if (type == VGradMenu)
         {
 	  if (mr->backgroundset == False)
 	  {
@@ -2055,102 +2055,27 @@ void PaintMenu(MenuRoot *mr, XEvent *pevent)
 	  }
 	  XClearWindow(dpy, mr->w);
         }
-        else if ( type == DGradMenu )
+        else /* D or BGradient */
         {
-	  register int i = 0, dc;
-	  float ds;
-	  int cindex = 0;
+	  register int i = 0, numLines;
+	  int cindex = -1;
 
 	  XSetClipMask(dpy, Scr.TransMaskGC, None);
-	  if( mr->width > mr->height )
+          numLines = mr->width + mr->height - 1;
+          for(i = 0; i < numLines; i++)
           {
-	    ds = (float) mr->height / mr->width;
-	    dc = mr->width * 2 / ms->look.face.u.grad.npixels + 1;
-	    for(i = 0; i < mr->width; i++)
-	    {
-	      if( i % dc == 0 )
-		XSetForeground(dpy, Scr.TransMaskGC,
-			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, (int)(i*ds), i, 0);
-	    }
-	    for(i = 0; i < mr->width; i++)
-	    {
-	      if( i % dc == 0 )
-		XSetForeground(dpy, Scr.TransMaskGC,
-			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, i, mr->height, mr->width,
-			(int)(i*ds));
-	    }
-	  }
-	  else
-	  {
-	    ds = (float) mr->width / mr->height;
-	    dc = mr->height * 2 / ms->look.face.u.grad.npixels + 1;
-	    for(i = 0; i < mr->height; i++)
-	    {
-	      if( i % dc == 0 )
-		XSetForeground(dpy, Scr.TransMaskGC,
-			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, i, (int)(i*ds), 0);
-	    }
-	    for(i = 0; i < mr->height; i++)
-	    {
-	      if( i % dc == 0 )
-		XSetForeground(dpy, Scr.TransMaskGC,
-			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, (int)(i*ds), mr->height,
-			mr->width, i);
-	    }
-	  }
-        }
-        else
-        {
-	  register int i = 0, dc;
-	  float ds;
-	  int cindex = 0;
-
-	  XSetClipMask(dpy, Scr.TransMaskGC, None);
-	  if( mr->width > mr->height )
-          {
-	    ds = (float) mr->height / mr->width;
-	    dc = mr->width * 2 / ms->look.face.u.grad.npixels + 1;
-	    for(i = 0; i < mr->width; i++)
-	    {
-	      if( i % dc == 0 )
-		XSetForeground(dpy, Scr.TransMaskGC,
-			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - (int)(i*ds), i,
-			mr->height);
-	    }
-	    for(i = 0; i < mr->width; i++)
-	    {
-	      if( i % dc == 0 )
-		XSetForeground(dpy, Scr.TransMaskGC,
-			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, i, 0, mr->width,
-			mr->height - (int)(i*ds));
-	    }
-	  }
-	  else
-          {
-	    ds = (float) mr->width / mr->height;
-	    dc = mr->height * 2 / ms->look.face.u.grad.npixels + 1;
-	    for(i = 0; i < mr->height; i++)
-	    {
-	      if( i % dc == 0 )
-		XSetForeground(dpy, Scr.TransMaskGC,
-			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, 0, mr->height - i, (int)(i*ds),
-			mr->height);
-	    }
-	    for(i = 0; i < mr->height; i++)
-	    {
-	      if( i % dc == 0 )
-		XSetForeground(dpy, Scr.TransMaskGC,
-			       ms->look.face.u.grad.pixels[cindex++]);
-	      XDrawLine(dpy, mr->w, Scr.TransMaskGC, (int)(i*ds), 0, mr->width,
-			mr->height - i);
-	    }
+            if((int)(i * ms->look.face.u.grad.npixels / numLines) > cindex)
+            {
+              /* pick the next colour (skip if necc.) */
+              cindex = i * ms->look.face.u.grad.npixels / numLines;
+              XSetForeground(dpy, Scr.TransMaskGC, ms->look.face.u.grad.pixels[cindex]);
+            }
+            if (type == DGradMenu)
+              XDrawLine(dpy, mr->w, Scr.TransMaskGC,
+	                0, i, i, 0);
+	    else /* BGradient */
+	      XDrawLine(dpy, mr->w, Scr.TransMaskGC,
+	                0, mr->height - 1 - i, i, mr->height - 1);
 	  }
         }
         break;
