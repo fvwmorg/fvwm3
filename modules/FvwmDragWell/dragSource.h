@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #ifndef _DRAG_SOURCE_H
 #define _DRAG_SOURCE_H
 
@@ -18,9 +33,9 @@ typedef struct DragSource_Struct {
   int version;
   XdndAtoms *atomSel;       /*Atoms used for xdnd*/
   float dragHalo; /*# of pixels the mouse has to move before a drag starts*/
-  XdndCursor *cursors;      
+  XdndCursor *cursors;
   unsigned int state;       /*holds state of the drag*/
-  unsigned short cachexRoot, cacheyRoot;  
+  unsigned short cachexRoot, cacheyRoot;
   unsigned short rx,ry,w,h; /*position of window in root*/
   Atom dropTargProperty;    /*holds the drop target property*/
 } DragSource;
@@ -28,11 +43,11 @@ typedef struct DragSource_Struct {
 #define XDND_MIN(a,b) ((a<b) ? a :b)
 
 /* These are the defines for the <state> bit of DragSource.  When saving state,
-   the usual choice is between using many shorts and bit twiddling.  Using 
-   shorts is faster than bit twiddling, but uses more space.  Since I can 
+   the usual choice is between using many shorts and bit twiddling.  Using
+   shorts is faster than bit twiddling, but uses more space.  Since I can
    envision many widgets each being DNDable(icons on desktop), we'll go with
    twiddling.  The format for the defines is groups of three, where the first
-   define is the bit position, and the second and third define what a 0 or 1 
+   define is the bit position, and the second and third define what a 0 or 1
    in that position means.
 */
 

@@ -82,7 +82,7 @@ static void SafeDefineCursor(Window w, Cursor cursor)
  *  myCursorNameToIndex: return the number of a X11 cursor from its
  *  name, if not found return -1.
  *  Do not know if all the ifdef are useful, but since we do not use Xmu
- *  for portability ...    
+ *  for portability ...
  ***********************************************************************/
 static int myCursorNameToIndex (char *cursor_name)
 {
@@ -291,14 +291,14 @@ static int myCursorNameToIndex (char *cursor_name)
 #endif
   };
 
-  int i,cond;
+  int cond;
   int down = 0;
   int up = (sizeof cursor_table / sizeof cursor_table[0]) - 1;
   int middle;
   char temp[20];
   char *s;
 
-  if (!cursor_name || cursor_name[0] == 0 || 
+  if (!cursor_name || cursor_name[0] == 0 ||
       strlen(cursor_name) >= sizeof temp)
     return -1;
   strcpy(temp, cursor_name);
@@ -383,10 +383,10 @@ void CursorStyle(F_CMD_ARGS)
     if (errpos && *errpos == '\0')
       my_nc = 0;
   }
-  else 
+  else
     nc = my_nc;
 
-  if (my_nc > -1) 
+  if (my_nc > -1)
     {
       /* newcursor was a number or the name of a X11 cursor */
       if ((nc < 0) || (nc >= XC_num_glyphs) || ((nc % 2) != 0))
@@ -496,7 +496,7 @@ void CursorStyle(F_CMD_ARGS)
  *  builtin function: (set)BusyCursor
  *  Defines in which cases fvwm "grab" the cursor during execution of
  *  certain functions.
- * 
+ *
  ***********************************************************************/
 void setBusyCursor(F_CMD_ARGS)
 {
@@ -522,7 +522,7 @@ void setBusyCursor(F_CMD_ARGS)
       break;
     }
 
-    flag = ParseToggleArgument(args, &args, -1, True); 
+    flag = ParseToggleArgument(args, &args, -1, True);
     if (flag == -1)
     {
       fvwm_msg(ERR, "BusyCursor", "error in boolean specification");

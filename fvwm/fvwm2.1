@@ -899,7 +899,7 @@ ChangeMenuStyle pixmap1 \\
 .B "DestroyMenu" "[\fIrecreate\fP] \fImenu\fP"
 Deletes a menu, so that subsequent references to it are no longer
 valid.  You can use this to change the contents of a menu during an
-fvwm session.  The menu can be rebuilt using AddToMenu. The optional
+fvwm session.  The menu can be rebuilt using AddToMenu.  The optional
 parameter \fIrecreate\fP tells fvwm not to throw away the menu completely
 but to throw away all the menu items (including the title).
 .EX
@@ -918,10 +918,14 @@ DestroyMenuStyle pixamp1
 .B "Menu" "\fImenu-name\fP [\fIposition\fP] [\fIdouble-click-action\fP]"
 Causes a previously defined menu to be popped up in a "sticky" manner.
 That is, if the user invokes the menu with a click action instead of a
-drag action, the menu will stay up.  The command
-\fIdouble-click-action\fP will be invoked if the user double-clicks
-(or hits the key rapidly twice if the menu is bound to a key) when
-bringing the menu up.
+drag action, the menu will stay up.  The command \fIdouble-click-action\fP
+will be invoked if the user double-clicks a button (or hits the key
+rapidly twice if the menu is bound to a key) when bringing up
+the menu.  If the double click action is not specified, double clicking
+on the menu does nothing.  However, if the menu begins with a menu
+item (i.e. not with a title or a separator) and the double click action
+is not given, double clicking will invoke the first item of the menu
+(but only if the pointer really was over the item).
 
 Several other commands affect menu operation.  See \fIMenuStyle\fP
 and \fISetAnimation\fP.  When in a menu, keyboard
@@ -1517,7 +1521,12 @@ purposes differ slightly.  The \fIposition\fP arguments are the same
 as for \fIMenu\fP.  The command \fIdefault-action\fP will be invoked
 if the user clicks a button to invoke the menu and releases it
 immediately again (or hits the key rapidly twice if the menu is bound
-to a key).
+to a key).  If the default action is not specified, double clicking
+on the menu does nothing.  However, if the menu begins with a menu
+item (i.e. not with a title or a separator) and the default action
+is not given, double clicking will invoke the first item of the menu
+(but only if the pointer really was over the item).
+
 
 To bind a previously defined pop-up menu to a key or mouse button:
 .sp

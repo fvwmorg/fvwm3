@@ -1,3 +1,14 @@
+1999-11-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmIconMan/xmanager.c (set_win_iconified):
+	-Wall fixes
+
+	* FvwmDragWell/fvwmDragWell.c:
+	* FvwmDragWell/xdndDragSource.c:
+	* FvwmDragWell/cursorStuff.c:
+	fixed tons of -Wall warnings, bugs, etc.
+	added GPL notice to all FvwmDragWell source files
+
 1999-10-31  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmDragWell/Makefile.am (INCLUDES): Remove /libs from top_srcdir.

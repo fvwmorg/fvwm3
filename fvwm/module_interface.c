@@ -43,6 +43,7 @@
 #include "fvwm.h"
 #include "fvwmsignal.h"
 #include "events.h"
+#include "bindings.h"
 #include "misc.h"
 #include "screen.h"
 #include "module_interface.h"
@@ -403,7 +404,7 @@ void executeModuleSync(F_CMD_ARGS)
     if (GrabEm(CRS_WAIT, GRAB_BUSY))
       need_ungrab = True;
   }
- 
+
   /* wait for module input */
   start_time = time(NULL);
 
@@ -1086,7 +1087,7 @@ void BroadcastColorset(int n)
 {
   int i;
   char *buf;
-  
+
   buf = DumpColorset(n, &Colorset[n]);
   for (i=0; i < npipes; i++)
   {

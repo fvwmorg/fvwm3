@@ -847,7 +847,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
     if(desperate)
     {
       if (executeModuleDesperate(
-	eventp,w,tmp_win,context,taction, &Module) == -1)
+	eventp,w,tmp_win,context,taction, &Module) == -1 && *function != 0)
       {
 	fvwm_msg(ERR, "ExecuteFunction",
 		 "No such command '%s'", function);

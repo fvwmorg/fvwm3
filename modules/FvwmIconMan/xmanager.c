@@ -16,6 +16,7 @@
 #include "config.h"
 
 #include <stdlib.h>
+#include "libs/Module.h"
 #include "FvwmIconMan.h"
 #include "x.h"
 #include "xmanager.h"
@@ -656,20 +657,23 @@ void set_win_iconified (WinData *win, int iconified)
       int abs_x, abs_y;
       Window junkw;
 
-      XTranslateCoordinates(theDisplay, win->manager->theWindow, theRoot, 
+      XTranslateCoordinates(theDisplay, win->manager->theWindow, theRoot,
 			    win->button->x, win->button->y, &abs_x, &abs_y,
 			    &junkw);
-      if (iconified) {
-        sprintf(string, "%s %d %d %d %d %d %d %d %d", win->manager->AnimCommand,
-		win->x, win->y, win->width, win->height,
+      if (iconified)
+      {
+        sprintf(string, "%s %d %d %d %d %d %d %d %d",
+                win->manager->AnimCommand,
+		(int)win->x, (int)win->y, (int)win->width, (int)win->height,
 		abs_x, abs_y, win->button->w, win->button->h);
       } else {
-        sprintf(string, "%s %d %d %d %d %d %d %d %d", win->manager->AnimCommand,
+        sprintf(string, "%s %d %d %d %d %d %d %d %d",
+                win->manager->AnimCommand,
 		abs_x, abs_y, win->button->w, win->button->h,
-		win->x, win->y, win->width, win->height);
+		(int)win->x, (int)win->y, (int)win->width, (int)win->height);
       }
-      SendText (Fvwm_fd, string, 0);
-  
+      SendText(Fvwm_fd, string, 0);
+
     }
     win->button->drawn_state.dirty_flags |= STATE_CHANGED;
   }

@@ -1,8 +1,23 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include "cursorStuff.h"
 /* copied and modified from Paul Sheer's xdndv2 library.*/
 
 //w x h = 29x25
-unsigned char dnd_copy_cursor_bits[] = 
+unsigned char dnd_copy_cursor_bits[] =
 {
   0x00, 0x00, 0x00, 0x00, 0xfe, 0xff, 0x0f, 0x00, 0x02, 0x00, 0x08, 0x01,
   0x02, 0x00, 0x08, 0x01, 0x02, 0x00, 0x08, 0x01, 0x02, 0x00, 0xe8, 0x0f,
@@ -123,10 +138,11 @@ XdndCursor xdndCursors[] =
 };
 
 
-//Sets up the cursors data for a dnd.
-// display - X display
-// rw - the root window
-int xdndCursorInit(Display *display, Window rw) {
+/*Sets up the cursors data for a dnd.
+ * display - X display
+ * rw - the root window */
+void xdndCursorInit(Display *display, Window rw)
+{
   Pixmap ip,mp;
   XdndCursor *cursorPtr;
   XColor black, white;
@@ -134,21 +150,22 @@ int xdndCursorInit(Display *display, Window rw) {
 
   // gets color info
   black.pixel = BlackPixel(display, DefaultScreen (display));
-  XQueryColor(display, DefaultColormap (display, DefaultScreen(display)), &black);
+  XQueryColor(display, DefaultColormap (display, DefaultScreen(display)),
+              &black);
   white.pixel = WhitePixel(display, DefaultScreen (display));
-  XQueryColor(display, DefaultColormap (display, DefaultScreen(display)), &white);
-  
-  
-  //now initialize the cursors
+  XQueryColor(display, DefaultColormap (display, DefaultScreen(display)),
+              &white);
+
+  /* now initialize the cursors */
   for (cursorPtr = &xdndCursors[0];cursorPtr->w != 0;cursorPtr++) {
-    ip = XCreateBitmapFromData(display, rw, (char *) cursorPtr->imageData, 
+    ip = XCreateBitmapFromData(display, rw, (char *) cursorPtr->imageData,
 			       cursorPtr->w, cursorPtr->h);
-    mp = XCreateBitmapFromData(display, rw, (char *) cursorPtr->maskData, 
+    mp = XCreateBitmapFromData(display, rw, (char *) cursorPtr->maskData,
 			       cursorPtr->w, cursorPtr->h);
     cursorPtr->cursor = XCreatePixmapCursor (display, ip, mp, &black, &white,
 					  cursorPtr->x, cursorPtr->y);
     XFreePixmap (display, ip);
     XFreePixmap (display, mp);
-    cursorPtr->action = XInternAtom (display, cursorPtr->actionStr, False); 
+    cursorPtr->action = XInternAtom (display, cursorPtr->actionStr, False);
   }
 }

@@ -638,8 +638,7 @@ MatchWinToSM(FvwmWindow *ewin,
              int *x_max, int *y_max, unsigned int *w_max, unsigned int *h_max,
              int *do_shade, int *do_max)
 {
-  int                 i, j;
-  FvwmWindow *t;
+  int i;
 
   for (i = 0; i < num_match; i++)
     {

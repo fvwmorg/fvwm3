@@ -31,6 +31,7 @@
 
 #include "fvwm.h"
 #include "builtins.h"
+#include "bindings.h"
 #include "events.h"
 #include "style.h"
 #include "icons.h"

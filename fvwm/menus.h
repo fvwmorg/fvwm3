@@ -580,6 +580,7 @@ typedef struct
   MenuOptions *pops;
   struct
   {
+    unsigned has_default_action : 1;
     unsigned is_menu_from_frame_or_window_or_titlebar : 1;
     unsigned is_sticky : 1;
     unsigned is_submenu : 1;
@@ -587,28 +588,36 @@ typedef struct
   } flags;
 } MenuParameters;
 
-
-/* Return values for UpdateMenu, do_menu, menuShortcuts */
-/* Just uses enum-s for their constant value, replaced a bunch of #define-s
- * before */
-/* This is a lame hack, in that "_BUTTON" is added to mean a button-release
-   caused the return-- the macros below help deal with the ugliness */
+/* Return values for UpdateMenu, do_menu, menuShortcuts.  This is a lame
+ * hack, in that "_BUTTON" is added to mean a button-release caused the
+ * return-- the macros below help deal with the ugliness. */
 typedef enum
 {
-    MENU_ERROR = -1,
-    MENU_NOP = 0,
-    MENU_DONE = 1,
-    MENU_DONE_BUTTON = 2,  /* must be MENU_DONE + 1 */
-    MENU_ABORTED = 3,
-    MENU_ABORTED_BUTTON = 4, /* must be MENU_ABORTED + 1 */
-    MENU_SUBMENU_DONE,
-    MENU_DOUBLE_CLICKED,
-    MENU_POPUP,
-    MENU_POPDOWN,
-    MENU_SELECTED,
-    MENU_NEWITEM,
-    MENU_TEAR_OFF
-} MenuStatus;
+  MENU_ERROR = -1,
+  MENU_NOP = 0,
+  MENU_DONE = 1,
+  MENU_DONE_BUTTON = 2,  /* must be MENU_DONE + 1 */
+  MENU_ABORTED = 3,
+  MENU_ABORTED_BUTTON = 4, /* must be MENU_ABORTED + 1 */
+  MENU_SUBMENU_DONE,
+  MENU_DOUBLE_CLICKED,
+  MENU_POPUP,
+  MENU_POPDOWN,
+  MENU_SELECTED,
+  MENU_NEWITEM,
+  MENU_TEAR_OFF
+} MenuRC;
+
+typedef struct
+{
+  MenuRC rc;
+  MenuRoot *tearoff_menu;
+  struct
+  {
+    unsigned is_first_item_selected : 1;
+    unsigned is_key_press : 1;
+  } flags;
+} MenuReturn;
 
 
 typedef struct MenuInfo
@@ -644,7 +653,7 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
 			  float *ppctMovement );
 MenuRoot *NewMenuRoot(char *name);
 void AddToMenu(MenuRoot *, char *, char *, Bool, Bool);
-MenuStatus do_menu(MenuParameters *pmp);
+void do_menu(MenuParameters *pmp, MenuReturn *pret);
 MenuRoot *FindPopup(char *popup_name);
 char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 		     MenuRoot *mr, MenuItem *mi, MenuOptions *pops);

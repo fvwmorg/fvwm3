@@ -1,3 +1,26 @@
+1999-11-03  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/windowlist.c (do_windowList):
+	* fvwm/menus.c (MenuInteraction):
+	(menu_func):
+	* fvwm/menus.h (MenuParameters):
+	* fvwm/menus.c (...):
+	* fvwm/windowlist.c (do_windowList):
+	rewrote return code use a return struct instead of an integer;
+	improved double-clicking on menus without a title
+
+1999-11-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/functions.c (ExecuteFunction):
+	no error message when empty command is encountered
+
+	* fvwm/session.c (MatchWinToSM):
+	* fvwm/module_interface.c:
+	* fvwm/builtins.c:
+	-Wall fixes
+
+	* fvwm/fvwm2.1: clarified default action with "Menu" and "Popup"
+
 1999-11-01  Mikhael Goikhman  migo@homemail.com
 
 	* NEWS: a note about the new default root cursor

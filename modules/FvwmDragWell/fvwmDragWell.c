@@ -1,3 +1,18 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 /*
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
@@ -50,6 +65,8 @@ extern DragSource dsg;
 extern void xdndInit(Display *, Window);
 extern void dragSourceInit(DragSource *,Display *,Window,Window);
 
+void XStartup(char *appName);
+void veryLongLoop();
 char *shuffleDown(char **,short *,int,int);
 int shrinkList(char **,short *,int,int);
 int dilateList(char **,short *,int,int);
@@ -62,6 +79,13 @@ void flushHistory();
 void GetXPMColorset(int);
 void getReliefColors();
 void createBackground();
+void createWindow();
+void parseOptions(void);
+void parseFvwmMessage(char *msg);
+int myXNextEvent(XEvent *event, char *fvwmMessage);
+Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action,
+                   Atom * typelist);
+void dragSrcInit(DragSource *ds,Display *dpy,Window root,Window client);
 static RETSIGTYPE TerminateHandler(int);
 
 int fd[2];      /*used for reading .fvwm2rc options*/
@@ -91,10 +115,10 @@ void deadPipe(int nonsense)
 int drawX(DragWellButton *but) {
   /*upper left to bottom right*/
   XDrawLine(xg.dpy, but->win, xg.antiReliefGC, but->wx+4, but->wy+4,
-	    but->wx+but->w-4,but->wy+but->h-4);  
+	    but->wx+but->w-4,but->wy+but->h-4);
   /*bottom left to upper right*/
   XDrawLine(xg.dpy, but->win, xg.antiReliefGC, but->wx+4, but->wy+but->h-5,
-	    but->wx+but->w-5,but->wy+4);  
+	    but->wx+but->w-5,but->wy+4);
 }
 #endif
 
@@ -103,18 +127,18 @@ int drawX(DragWellButton *but) {
 int main(int argc, char **argv)
 {
   Window app_win;
-  char *appNameStart;
 
-  
   fd[MODULE_TO_FVWM] = atoi (argv[1]); /*used to get info from .fvwm2rc*/
   fd[FVWM_TO_MODULE] = atoi (argv[2]);
-  
-  sscanf (argv[4], "%x", (unsigned int *)&app_win); 
+
+  sscanf (argv[4], "%x", (unsigned int *)&app_win);
 
   /*dsg.mfsErr  = fopen("/tmp/mfsErr","w");*/
 
   XStartup(argv[0]); /*initializes variables*/
   veryLongLoop(); /*event loop*/
+
+  return 0;
 }
 
 
@@ -128,8 +152,9 @@ int main(int argc, char **argv)
  *   x,y - the upper left corner of the button, in (Window win) coords.
  *   drawFunc - a function pointer for drawing something on the button
  */
-int initDragWellButton(DragWellButton *but,Window win, int x,int y,int w,int h, 
-		  int (*drawFunc)(DragWellButton *)) {
+void initDragWellButton(DragWellButton *but,Window win, int x, int y, int w,
+                        int h, int (*drawFunc)(DragWellButton *))
+{
   but->win = win;
   but->wx = x;
   but->wy = y;
@@ -146,7 +171,8 @@ int initDragWellButton(DragWellButton *but,Window win, int x,int y,int w,int h,
  * Arguments:
  *   but - the button to be drawn
  */
-int drawDragWellButton(DragWellButton *but) {
+void drawDragWellButton(DragWellButton *but)
+{
   (*(but->drawButFace))(but); /*draws face of button*/
   if (but->state==DRAGWELL_BUTTON_NOT_PUSHED)
     RelieveRectangle(xg.dpy, but->win, but->wx, but->wy, but->w - 1, but->h - 1,
@@ -175,7 +201,7 @@ int mouseInButton(DragWellButton *but, int x, int y) {
 
 /*dragwellAnimate - does an animation in the dragwell
  *  Does not return anything useful */
-void dragwellAnimate() {      
+void dragwellAnimate() {
   int i;
   int sleepTime;
   /*only one animation type for now*/
@@ -197,29 +223,29 @@ void dragwellAnimate() {
       XFlush(xg.dpy);
       usleep(sleepTime);
     }
-    drawDragWellButton(&dragBut); 
+    drawDragWellButton(&dragBut);
     break;
   }
 }
 
 
 /* Main event loop*/
-int veryLongLoop() {
-  int x,y,i,itemType;
-  Window rw,cw,clientWin;
-  int rx,ry,wx,wy,maskRet;
+void veryLongLoop()
+{
+  int x,y;
   XEvent xev;
   char fvwmMessage[512];
   int eventType;
-  const int hostnameStrLen=64;
-  char hostname[hostnameStrLen];
 
   initDragWellButton(&dragBut,xg.win,xg.dbx,xg.dby,xg.dbw,xg.dbh,dummy);
   dragBut.state = DRAGWELL_BUTTON_NOT_PUSHED;
   drawDragWellButton(&dragBut);
 
-  while (!isTerminated) {
-    if ((eventType=myXNextEvent (&xev,fvwmMessage))==FOUND_XEVENT) { /*get next event*/
+  while (!isTerminated)
+  {
+    /*get next event*/
+    if ((eventType=myXNextEvent (&xev,fvwmMessage))==FOUND_XEVENT)
+    {
 	/* we have a X event*/
 	switch(xev.type) {
 	case ButtonPress:
@@ -227,9 +253,9 @@ int veryLongLoop() {
 	  y = xev.xbutton.y;
 	  if (mg.dragState == DRAGWELLMENU_HAVE_DRAG_ITEM) {
 	    if (mouseInButton(&dragBut,x,y)) {
-	      if (mg.dragDataType==DRAG_DATA_TYPE_PATH) 
+	      if (mg.dragDataType==DRAG_DATA_TYPE_PATH)
 		mg.typelist[0] = mg.textUriAtom;
-	      else 
+	      else
 		mg.typelist[0] = XInternAtom(xg.dpy,mg.dragTypeStr,FALSE);
 	      xdndSrcDoDrag(&dsg,xg.win,mg.action,mg.typelist);
 	    }
@@ -268,10 +294,10 @@ static char *dragopts[] = {
   "DragData"
 };
 
-int parseFvwmMessage(char *msg) {
+void parseFvwmMessage(char *msg)
+{
   char *dragtype = NULL, *dragData = NULL;
   char *optString, *option, *args;
-  int i;
   const int hostnameStrLen=64;
   char hostname[hostnameStrLen];
 
@@ -301,8 +327,8 @@ int parseFvwmMessage(char *msg) {
     free(optString);
     optString = NULL;
   }
-  
-  if (dragtype != NULL) { 
+
+  if (dragtype != NULL) {
     strcpy(mg.dragTypeStr,dragtype);
     mg.dragDataType = DRAG_DATA_TYPE_NONPATH;
   } else {
@@ -354,15 +380,14 @@ TerminateHandler(int sig)
  * Arguments:
  *   appName - the name of the application.
  */
-int XStartup(char *appName) {
-  XSizeHints hints;
+void XStartup(char *appName)
+{
   char *appNameStart;
-  char tstr[128];
 
   /*setup exit stuff*/
 #ifdef HAVE_SIGACTION
   struct sigaction  sigact;
-  
+
 #ifdef SA_INTERRUPT
   sigact.sa_flags = SA_INTERRUPT;
 #else
@@ -373,7 +398,7 @@ int XStartup(char *appName) {
   sigaddset(&sigact.sa_mask, SIGTERM);
   sigaddset(&sigact.sa_mask, SIGINT);
   sigact.sa_handler = TerminateHandler;
-  
+
   sigaction(SIGPIPE, &sigact, NULL);
   sigaction(SIGTERM, &sigact, NULL);
   sigaction(SIGINT,  &sigact, NULL);
@@ -411,7 +436,7 @@ int XStartup(char *appName) {
   strcpy(xg.appName,appNameStart); /*save the name of the application*/
   InitPictureCMap(xg.dpy);
   AllocColorset(0);
-  
+
   /*get X stuff*/
   xg.xfd = XConnectionNumber(xg.dpy);
   xg.fdWidth = GetFdWidth();
@@ -447,14 +472,14 @@ int XStartup(char *appName) {
   getReliefColors();
   createWindow();
   createBackground();
-  
+
   mg.dragState = DRAGWELLMENU_NO_DRAG_ITEM;
   /*more initialization menu stuff, using font info*/
   /*mg.fontHeight = mg.font->max_bounds.ascent + mg.font->max_bounds.descent;*/
-  
+
   xdndInit(xg.dpy, xg.root);
   dragSrcInit(&dsg,xg.dpy,xg.root,xg.win);
-  
+
   mg.action = dsg.atomSel->xdndActionMove;
   mg.textUriAtom = XInternAtom(xg.dpy,"text/uri-list",FALSE);
   mg.typelist = (Atom *) malloc(4*sizeof(Atom));
@@ -500,17 +525,17 @@ void getReliefColors() {
 
 /* createBackground - sets the background of the dragwell window
  *  Arguments:*/
-void createBackground() {  
+void createBackground() {
   unsigned long gcm;
   XGCValues gcv;
   /*Graphic context stuff*/
   gcm = GCForeground|GCBackground|GCSubwindowMode;
   gcv.subwindow_mode = IncludeInferiors;
-  
-  gcv.foreground = xg.hilite; 
+
+  gcv.foreground = xg.hilite;
   gcv.background = xg.back;
   xg.hiliteGC = XCreateGC(xg.dpy, xg.win, gcm, &gcv);
-  
+
   gcv.foreground = xg.shadow;
   gcv.background = xg.back;
   xg.shadowGC = XCreateGC(xg.dpy, xg.win, gcm, &gcv);
@@ -518,7 +543,7 @@ void createBackground() {
   gcv.foreground = xg.fore;
   gcv.background = xg.back;
   xg.buttonGC = XCreateGC(xg.dpy, xg.win, gcm, &gcv);
-  
+
   if (xg.colorset >=0) { /*colorset*/
     GetXPMColorset(xg.colorset);
     XCopyArea(xg.dpy, xg.icon,
@@ -533,12 +558,10 @@ void createBackground() {
 
 /* parseOptions - loads in options from the .fvwm2rc file.
  * Arguments: */
-int parseOptions(void) {
+void parseOptions(void)
+{
   char *token,*next,*tline=NULL,*tline2,*resource;
-  char *arg1,*arg2,*sptr;
-  struct stat statbuf;
-  int foundADir = False,i,j;
-  int tmpMaxWidth=0;
+  char *arg1,*arg2;
 
   /* loop that parses through the .fvwm2rc line by line.*/
   for (GetConfigLine(fd,&tline); tline != NULL; GetConfigLine(fd,&tline)) {
@@ -549,7 +572,7 @@ int parseOptions(void) {
 	LoadColorset(next);
       }
       continue;
-    }     
+    }
     tline2 = GetNextToken(tline2, &arg1);
     if (!arg1)
       {
@@ -623,7 +646,7 @@ int parseOptions(void) {
       if (flags & YValue) {
 	xg.dby = g_y;
       }
-    }    
+    }
     free(resource);
     free(arg1);
     free(arg2);
@@ -633,7 +656,7 @@ int parseOptions(void) {
   if (!mg.nw) {
     /*Allocate font here because we need size information to create the main menu*/
     if (mg.fontname==NULL) {
-      mg.fontname = 
+      mg.fontname =
 	(char *) malloc(sizeof(char)*(strlen("-adobe-helvetica-bold-r-*-*-10-*-*-*-*-*-*-*")+1));
       strcpy(mg.fontname,"-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-*-*");
     }
@@ -675,14 +698,13 @@ void changeWindowName(Window win, char *str)
  *  colorset - the new colorset */
 static void change_colorset(int colorset)
 {
-  int cnt,row,col;
   if (colorset == xg.colorset && colorset >= 0)
   {
     /* update GCs */
     XFreeGC(xg.dpy, xg.buttonGC);
     XFreeGC(xg.dpy, xg.shadowGC);
     XFreeGC(xg.dpy, xg.hiliteGC);
-    
+
     /* update background pixmap */
     XClearArea(xg.dpy,xg.win,0,0,xg.w,xg.h,FALSE);
     getReliefColors();
@@ -699,14 +721,14 @@ static void change_colorset(int colorset)
 /***************************************************************************
  *
  * myXNextEvent - waits for the next event, which is either an XEvent,
- *                  or a fvwm2 event.  
+ *                  or a fvwm2 event.
  * Arguements:
  *   event - the XEvent that is possibly found.
  *   fvwmMessage - the FvwmMessage that is possibly found.
  * Returns FOUND_XEVENT if a XEvent was found.
  * Returns FOUND_FVWM_MESSAGE if a fvwm M_STRING packet was found.
  * Returns FOUND_NON_FVWM_MESSAGE for any other fvwm packet type.
- * Note that for fvwm packet type M_CONFIG(colorset), it updates the 
+ * Note that for fvwm packet type M_CONFIG(colorset), it updates the
  *  colorset
  * Borrowed from FvwmPager
  ****************************************************************************/
@@ -718,65 +740,83 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
   unsigned long *lptr;
   int colorset;
   if(XPending(xg.dpy)) /*look for an X event first*/
-    {
-      XNextEvent(xg.dpy,event); /*got an X event*/
-      return FOUND_XEVENT;
-    }
-  
+  {
+    XNextEvent(xg.dpy,event); /*got an X event*/
+    return FOUND_XEVENT;
+  }
+
   FD_ZERO(&in_fdset);
   FD_SET(xg.xfd,&in_fdset); /*look for x events*/
   FD_SET(fd[1],&in_fdset); /*look for fvwm2 events*/
   if (select(xg.fdWidth,SELECT_FD_SET_CAST &in_fdset, 0, 0, NULL) > 0) /*wait */
+  {
+    if(FD_ISSET(xg.xfd, &in_fdset))
     {
-      if(FD_ISSET(xg.xfd, &in_fdset)) {
-	if(XPending(xg.dpy)) {
-	  XNextEvent(xg.dpy,event); /*get an X event*/
-	  miss_counter = 0;
-	  return FOUND_XEVENT;
-	}
-	miss_counter++;
+      if(XPending(xg.dpy))
+      {
+        XNextEvent(xg.dpy,event); /*get an X event*/
+        miss_counter = 0;
+        return FOUND_XEVENT;
+      }
+      miss_counter++;
 #ifdef WORRY_ABOUT_MISSED_XEVENTS
-	if(miss_counter > 100) {
-	  deadPipe(0);
-	}
+      if(miss_counter > 100)
+      {
+	deadPipe(0);
+      }
 #endif
       }
-      
-      if(FD_ISSET(fd[1], &in_fdset)) {
+
+      if(FD_ISSET(fd[1], &in_fdset))
+      {
 	FvwmPacket* packet = ReadFvwmPacket(fd[1]);
 	/*packet format defined in libs/Module.h*/
-	if ( packet == NULL ) {
+	if ( packet == NULL )
+        {
 	  exit(0);
-	} else {
-	  if (packet->type==M_CONFIG_INFO) {
+	}
+        else
+        {
+	  if (packet->type==M_CONFIG_INFO)
+          {
 	    tline = (char*)&(packet->body[3]);
 	    token = PeekToken(tline, &tline);
 	    if (StrEquals(token, "Colorset"))/*colorset packet*/
-	      {
-		colorset = LoadColorset(tline);
-		change_colorset(colorset);
-	      }	    
+            {
+	      colorset = LoadColorset(tline);
+              change_colorset(colorset);
+            }
 	    return FOUND_FVWM_NON_MESSAGE;
-	  } else if (packet->type==M_STRING) {
-	    if (packet->size>3) {
-	      /*Note that "SendToModule" calls SendStrToModule(fvwm/module_interface.c) 
-	       * which seems to insert three pieces of data at the start of the body*/
-	      /*The quoting seems to be wrong in SendToModule*/
-	      /*Sending "SendToModule "FvwmDragWell"   dragitem "stuff"
-		yields ["  dragitem "stuff"]*/
+	  }
+          else if (packet->type==M_STRING)
+          {
+	    if (packet->size>3)
+            {
+	      /* Note that "SendToModule" calls
+               * SendStrToModule(fvwm/module_interface.c)
+	       * which seems to insert three pieces of data at the start of
+               * the body */
+	      /* The quoting seems to be wrong in SendToModule */
+	      /* Sending "SendToModule "FvwmDragWell"   dragitem "stuff"
+	       * yields ["  dragitem "stuff"]*/
 	      lptr = packet->body;
 	      msg = (char *) &(lptr[3]);
 	      strcpy(fvwmMessage,msg);
 	      return FOUND_FVWM_MESSAGE;
-	    } else {
+	    }
+            else
+            {
 	      return FOUND_FVWM_NON_MESSAGE;
 	    }
-	  } else {
+	  }
+          else
+          {
 	    return FOUND_FVWM_NON_MESSAGE;
 	  }
 	}
       }
     }
+  return FOUND_FVWM_NON_MESSAGE;
 }
 
 
@@ -784,32 +824,28 @@ int myXNextEvent(XEvent *event, char *fvwmMessage)
  * Arguments:
  *   but - the dragwell button
  * Does not return anything useful.*/
-int dummy(DragWellButton *but) {
+int dummy(DragWellButton *but)
+{
   if (but->state==DRAGWELL_BUTTON_PUSHED)
-    XFillRectangle(xg.dpy,xg.win,xg.buttonGC,xg.dbx+2,xg.dby+2,xg.dbw-4,xg.dbh-4);
+    XFillRectangle(xg.dpy,xg.win,xg.buttonGC,xg.dbx+2,xg.dby+2,xg.dbw-4,
+                   xg.dbh-4);
+  return 0;
 }
 
 
 
-/*createWindow - creates the drag window. 
+/*createWindow - creates the drag window.
  * Arguments:*/
-int createWindow() {
-  XWMHints wmhints;
-  XClassHint class1;
-
-  XTextProperty name;
+void createWindow()
+{
   unsigned long valuemask;
   XSetWindowAttributes attributes;
-  int n,m,w,h,i,x,y;
-  XGCValues gcv;
-  unsigned long gcm;
-
 
   valuemask = (CWBackPixmap | CWBorderPixel| CWColormap);
   attributes.background_pixel = xg.back;
   attributes.border_pixel = xg.fore;
   attributes.background_pixmap = None;
-  
+
   attributes.colormap = Pcmap;
   attributes.event_mask = (StructureNotifyMask);
   xg.win = XCreateWindow (xg.dpy, xg.root, xg.x, xg.y, xg.w,
@@ -864,9 +900,9 @@ int createWindow() {
  *   colorset - the colorset we are looking up*/
 void GetXPMColorset(int colorset)
 {
-  xg.icon=XCreatePixmap(xg.dpy,xg.win,xg.w,xg.h, Pdepth);  
+  xg.icon=XCreatePixmap(xg.dpy,xg.win,xg.w,xg.h, Pdepth);
   SetRectangleBackground(xg.dpy, xg.icon, 0, 0, xg.w,xg.h,
-			 &(Colorset[colorset]), 
+			 &(Colorset[colorset]),
 			 Pdepth, xg.buttonGC);
 
   return;

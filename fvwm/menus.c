@@ -183,9 +183,9 @@ extern Time lastTimestamp;
 static void draw_separator(Window, GC,GC,int, int,int,int,int);
 static void draw_underline(MenuRoot *mr, GC gc, int x, int y, char *txt,
 			   int coffset);
-static MenuStatus MenuInteraction(
-  MenuParameters *pmp, double_keypress *pdkp, Bool *pdo_warp_to_item,
-  Bool *phas_mouse_moved);
+static void MenuInteraction(
+  MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
+  Bool *pdo_warp_to_item, Bool *phas_mouse_moved);
 static int pop_menu_up(
   MenuRoot **pmenu, MenuRoot *parent_menu, FvwmWindow **pfw, int *pcontext,
   int x, int y, Bool prefer_left_submenu, Bool do_warp_to_item,
@@ -646,11 +646,11 @@ void update_menu(MenuRoot *mr)
  *
  * Returns one of MENU_NOP, MENU_ERROR, MENU_ABORTED, MENU_DONE
  ***************************************************************************/
-MenuStatus do_menu(MenuParameters *pmp)
+void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 {
   extern XEvent Event;
 
-  MenuStatus retval = MENU_NOP;
+  MenuRC retval = MENU_NOP;
   int x,y;
   Bool fFailedPopup = False;
   Bool fWasAlreadyPopped = False;
@@ -678,7 +678,8 @@ MenuStatus do_menu(MenuParameters *pmp)
   }
   if(pmp->menu == NULL)
   {
-    return MENU_ERROR;
+    pmret->rc = MENU_ERROR;
+    return;
   }
   key_press = (pmp->eventp && (pmp->eventp == (XEvent *)1 ||
 			       pmp->eventp->type == KeyPress));
@@ -724,7 +725,8 @@ MenuStatus do_menu(MenuParameters *pmp)
       {
 	/* GrabEm specifies the cursor to use */
 	XBell(dpy, 0);
-	return MENU_ABORTED;
+        pmret->rc = MENU_ABORTED;
+	return;
       }
       /* Make the menu appear under the pointer rather than warping */
       x -= menu_middle_x_offset(pmp->menu);
@@ -740,7 +742,8 @@ MenuStatus do_menu(MenuParameters *pmp)
       fFailedPopup = True;
       XBell(dpy, 0);
       UngrabEm(GRAB_MENU);
-      return MENU_ERROR;
+      pmret->rc = MENU_ERROR;
+      return;
     }
   }
   else
@@ -766,7 +769,10 @@ MenuStatus do_menu(MenuParameters *pmp)
     dkp.timestamp = (key_press) ? t0 : 0;
   }
   if (!fFailedPopup)
-    retval = MenuInteraction(pmp, &dkp, &do_warp_to_title, &has_mouse_moved);
+  {
+    MenuInteraction(pmp, pmret, &dkp, &do_warp_to_title, &has_mouse_moved);
+    retval = pmret->rc;
+  }
   else
     retval = MENU_ABORTED;
   if (!fWasAlreadyPopped)
@@ -788,7 +794,10 @@ MenuStatus do_menu(MenuParameters *pmp)
       (!key_press || (dkp.timestamp != 0 && !pmp->flags.is_submenu)))
   {
     /* dkp.timestamp is non-zero if a double-keypress occured! */
-    fDoubleClick = True;
+    if (pmp->flags.has_default_action || !pmret->flags.is_first_item_selected)
+    {
+      fDoubleClick = True;
+    }
   }
   dkp.timestamp = 0;
   if(!pmp->flags.is_submenu)
@@ -814,7 +823,8 @@ MenuStatus do_menu(MenuParameters *pmp)
 
   if (fDoubleClick)
     retval = MENU_DOUBLE_CLICKED;
-  return retval;
+  pmret->rc = retval;
+  return;
 }
 
 
@@ -830,8 +840,8 @@ MenuStatus do_menu(MenuParameters *pmp)
  * routine is called.
  * TKP - uses XLookupString so that keypad numbers work with windowlist
  ***********************************************************************/
-static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
-				MenuItem **pmiCurrent, double_keypress *pdkp)
+static void menuShortcuts(MenuRoot *mr, MenuReturn *pmret, XEvent *event,
+                          MenuItem **pmiCurrent, double_keypress *pdkp)
 {
   int fControlKey = event->xkey.state & ControlMask? True : False;
   int fShiftedKey = event->xkey.state & ShiftMask? True: False;
@@ -858,7 +868,8 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
       event->xkey.keycode == pdkp->keycode)
   {
     *pmiCurrent = NULL;
-    return MENU_SELECTED;
+    pmret->rc = MENU_SELECTED;
+    return;
   }
   pdkp->timestamp = 0;
   /* Is it okay to treat keysym-s as Ascii? */
@@ -909,16 +920,18 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
     if ( countHotkey > 1 )
     {
       *pmiCurrent = newItem;
-      return MENU_NEWITEM;
+      pmret->rc = MENU_NEWITEM;
+      return;
     }
     /* Do things the old way for unique hotkeys in the menu */
     else if ( countHotkey == 1  )
     {
       *pmiCurrent = newItem;
       if (newItem && MI_IS_POPUP(newItem))
-	return MENU_POPUP;
+        pmret->rc = MENU_POPUP;
       else
-	return MENU_SELECTED;
+        pmret->rc = MENU_SELECTED;
+      return;
     }
     /* MMH mikehan@best.com 2/7/99 */
   }
@@ -934,30 +947,36 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
   case XK_Escape:		/* Escape key pressed. Abort		*/
   case XK_Delete:
   case XK_KP_Separator:
-    return MENU_ABORTED;
-    break;
+    pmret->rc = MENU_ABORTED;
+    return;
 
   case XK_space:
   case XK_Return:
   case XK_KP_Enter:
-    return MENU_SELECTED;
-    break;
+    pmret->rc = MENU_SELECTED;
+    return;
 
   case XK_Left:
   case XK_KP_4:
     if (MST_USE_LEFT_SUBMENUS(mr))
     {
       if (miCurrent && MI_IS_POPUP(miCurrent))
-	return MENU_POPUP;
+      {
+        pmret->rc = MENU_POPUP;
+	return;
+      }
     }
     else
-      return MENU_POPDOWN;
+    {
+      pmret->rc = MENU_POPDOWN;
+      return;
+    }
     break;
 
   case XK_b: /* back */
   case XK_h: /* vi left */
-    return MENU_POPDOWN;
-    break;
+    pmret->rc = MENU_POPDOWN;
+    return;
 
   case XK_Insert:
   case XK_KP_0:
@@ -968,33 +987,47 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
       if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
       {
 	if (*pmiCurrent && MI_IS_POPUP(*pmiCurrent))
+        {
 	  /* enter the submenu */
-	  return MENU_POPUP;
+          pmret->rc = MENU_POPUP;
+	  return;
+        }
       }
       /* do nothing */
       *pmiCurrent = miCurrent;
     }
     else if (miCurrent && MI_IS_POPUP(miCurrent))
     {
-      return MENU_POPUP;
+      pmret->rc = MENU_POPUP;
+      return;
     }
-    return MENU_NOP;
+    pmret->rc = MENU_NOP;
+    return;
 
   case XK_Right:
   case XK_KP_6:
     if (!MST_USE_LEFT_SUBMENUS(mr))
     {
       if (miCurrent && MI_IS_POPUP(miCurrent))
-	return MENU_POPUP;
+      {
+        pmret->rc = MENU_POPUP;
+	return;
+      }
     }
     else
-      return MENU_POPDOWN;
+    {
+      pmret->rc = MENU_POPDOWN;
+      return;
+    }
     break;
 
   case XK_f: /* forward */
   case XK_l: /* vi right */
     if (miCurrent && MI_IS_POPUP(miCurrent))
-      return MENU_POPUP;
+    {
+      pmret->rc = MENU_POPUP;
+      return;
+    }
     break;
 
   case XK_Page_Up:
@@ -1067,16 +1100,18 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
       if (my < menu_y + MST_BORDER_WIDTH(mr))
       {
 	if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) != NULL)
-	  return MENU_NEWITEM;
+          pmret->rc = MENU_NEWITEM;
 	else
-	  return MENU_NOP;
+          pmret->rc = MENU_NOP;
+        return;
       }
       else if (my > menu_y + menu_height - MST_BORDER_WIDTH(mr))
       {
 	if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
-	  return MENU_NEWITEM;
+          pmret->rc = MENU_NEWITEM;
 	else
-	  return MENU_NOP;
+          pmret->rc = MENU_NOP;
+        return;
       }
       else
       {
@@ -1084,7 +1119,8 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
 	XWarpPointer(dpy, 0, MR_WINDOW(mr), 0, 0, 0, 0,
 		     menu_middle_x_offset(mr), my - menu_y);
 	*pmiCurrent = find_entry(NULL, NULL);
-	return MENU_NEWITEM;
+        pmret->rc = MENU_NEWITEM;
+	return;
       }
     }
 
@@ -1151,33 +1187,37 @@ static MenuStatus menuShortcuts(MenuRoot *mr, XEvent *event,
     if (newItem)
     {
       *pmiCurrent = newItem;
-      return MENU_NEWITEM;
+      pmret->rc = MENU_NEWITEM;
+      return;
     }
     else
-      return MENU_NOP;
+    {
+      pmret->rc = MENU_NOP;
+      return;
+    }
     break;
 
   case XK_Home:
   case XK_KP_7:
     if ((*pmiCurrent = get_selectable_item_from_index(mr,0)) != NULL)
-      return MENU_NEWITEM;
+      pmret->rc = MENU_NEWITEM;
     else
-      return MENU_NOP;
-    break;
+      pmret->rc = MENU_NOP;
+    return;
 
   case XK_End:
   case XK_KP_1:
     if ((*pmiCurrent = MR_LAST_ITEM(mr)) != NULL)
-      return MENU_NEWITEM;
+      pmret->rc = MENU_NEWITEM;
     else
-      return MENU_NOP;
-    break;
+      pmret->rc = MENU_NOP;
+    return;
 
 #ifdef TEAR_OFF_MENUS
   case XK_BackSpace:
 fprintf(stderr,"menu torn off\n");
-    return MENU_TEAR_OFF;
-    break;
+    pmret->rc = MENU_TEAR_OFF;
+    return;
 #endif
 
   default:
@@ -1188,7 +1228,7 @@ fprintf(stderr,"menu torn off\n");
     break;
   }
 
-  return MENU_NOP;
+  pmret->rc = MENU_NOP;
 }
 
 /***********************************************************************
@@ -1210,9 +1250,9 @@ fprintf(stderr,"menu torn off\n");
  *      MENU_SELECTED on item selection -- returns action * in *ret_paction
  *
  ***********************************************************************/
-static MenuStatus MenuInteraction(
-  MenuParameters *pmp, double_keypress *pdkp, Bool *pdo_warp_to_title,
-  Bool *phas_mouse_moved)
+static void MenuInteraction(
+  MenuParameters *pmp, MenuReturn *pmret, double_keypress *pdkp,
+  Bool *pdo_warp_to_title, Bool *phas_mouse_moved)
 {
   extern XEvent Event;
   MenuItem *mi = NULL;
@@ -1224,7 +1264,6 @@ static MenuStatus MenuInteraction(
   MenuRoot *mrNeedsPainting = NULL;
   int x_init = 0, y_init = 0;
   int x_offset = 0;
-  MenuStatus retval = MENU_NOP;
   int c10msDelays = 0;
   MenuOptions mops;
   struct
@@ -1248,6 +1287,7 @@ static MenuStatus MenuInteraction(
   /* Can't make this a member of the flags as we have to take its address. */
   Bool does_submenu_overlap = False;
 
+  pmret->rc = MENU_NOP;
   memset(&flags, 0, sizeof(flags));
   flags.do_force_reposition = 1;
 
@@ -1315,7 +1355,7 @@ static MenuStatus MenuInteraction(
 	;
     }
 
-    retval = 0;
+    pmret->rc = MENU_NOP;
     switch(Event.type)
     {
     case ButtonRelease:
@@ -1329,11 +1369,11 @@ static MenuStatus MenuInteraction(
 	continue;
 	/* break; */
       }
-      retval = (mi) ? MENU_SELECTED : MENU_ABORTED;
-      if (retval == MENU_SELECTED && mi && MI_IS_POPUP(mi) &&
+      pmret->rc = (mi) ? MENU_SELECTED : MENU_ABORTED;
+      if (pmret->rc == MENU_SELECTED && mi && MI_IS_POPUP(mi) &&
 	  !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
       {
-	retval = MENU_POPUP;
+	pmret->rc = MENU_POPUP;
 	flags.do_popup_now = True;
 	break;
       }
@@ -1353,21 +1393,21 @@ static MenuStatus MenuInteraction(
       /* Handle a key press events to allow mouseless operation */
       flags.is_key_press = True;
       x_offset = menu_middle_x_offset(pmp->menu);
-      retval = menuShortcuts(pmp->menu, &Event, &mi, pdkp);
-      if (retval == MENU_SELECTED && mi && MI_IS_POPUP(mi) &&
+      menuShortcuts(pmp->menu, pmret, &Event, &mi, pdkp);
+      if (pmret->rc == MENU_SELECTED && mi && MI_IS_POPUP(mi) &&
 	  !MST_DO_POPUP_AS_ROOT_MENU(pmp->menu))
-	retval = MENU_POPUP;
-      if (retval == MENU_POPDOWN ||
-	  retval == MENU_ABORTED ||
-	  retval == MENU_SELECTED
+	pmret->rc = MENU_POPUP;
+      if (pmret->rc == MENU_POPDOWN ||
+	  pmret->rc == MENU_ABORTED ||
+	  pmret->rc == MENU_SELECTED
 #ifdef TEAR_OFF_MENUS
-	  || retval == MENU_TEAR_OFF
+	  || pmret->rc == MENU_TEAR_OFF
 #endif
 	)
       {
 	goto DO_RETURN;
       }
-      if (retval == MENU_NEWITEM && mrMi == NULL)
+      if (pmret->rc == MENU_NEWITEM && mrMi == NULL)
       {
 	/* Set the MenuRoot of the current item in case we have just warped to
 	 * the menu from the void. */
@@ -1381,7 +1421,7 @@ static MenuStatus MenuInteraction(
 	warp_pointer_to_item(tmrMi, mi, False);
 	/* DBUG("MenuInteraction","Warping on keystroke to %s",mi->item);*/
       }
-      if (retval == MENU_POPUP && mi && MI_IS_POPUP(mi))
+      if (pmret->rc == MENU_POPUP && mi && MI_IS_POPUP(mi))
       {
 	flags.do_popup_and_warp = True;
 	DBUG("MenuInteraction","flags.do_popup_and_warp = True");
@@ -1441,7 +1481,7 @@ static MenuStatus MenuInteraction(
       if (mrMi != pmp->menu && mrMi != mrPopup)
       {
 	/* we're on an item from a prior menu */
-	retval = MENU_POPDOWN;
+	pmret->rc = MENU_POPDOWN;
 	pdkp->timestamp = 0;
 	goto DO_RETURN;
       }
@@ -1579,7 +1619,7 @@ static MenuStatus MenuInteraction(
 	  if (is_complex_function)
 	    free(action);
 	  /* Busy cursor stuff  */
-	  if (GrabPointerState & GRAB_BUSYMENU) 
+	  if (GrabPointerState & GRAB_BUSYMENU)
 	  {
 	    /* if we can't regrab then we can freeze fvwm */
 	    GrabPointerState &= ~GRAB_BUSYMENU;
@@ -1587,7 +1627,8 @@ static MenuStatus MenuInteraction(
 	    {
 	      XBell(dpy, 0);
 	      UngrabEm(GRAB_MENU);
-	      return MENU_ABORTED;
+              pmret->rc = MENU_ABORTED;
+	      return;
 	    }
 	  }
 	  /* restore the stuff we saved */
@@ -1633,7 +1674,7 @@ static MenuStatus MenuInteraction(
 	    {
 	      /* the menu deleted itself when execution the dynamic popup
 	       * action */
-	      retval = MENU_ERROR;
+	      pmret->rc = MENU_ERROR;
 	      goto DO_RETURN;
 	    }
 	  }
@@ -1669,6 +1710,7 @@ static MenuStatus MenuInteraction(
 	mp.pTmp_win = pmp->pTmp_win;
 	mp.button_window = pmp->button_window;
 	mp.pcontext = pmp->pcontext;
+	mp.flags.has_default_action = False;
 	mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
 	mp.flags.is_sticky = False;
 	mp.flags.is_submenu = True;
@@ -1678,8 +1720,9 @@ static MenuStatus MenuInteraction(
 	mp.ret_paction = pmp->ret_paction;
 
 	/* recursively do the new menu we've moved into */
-	retval = do_menu(&mp);
-	if (IS_MENU_RETURN(retval))
+	do_menu(&mp, pmret);
+
+	if (IS_MENU_RETURN(pmret->rc))
 	{
 	  pdkp->timestamp = 0;
 	  goto DO_RETURN;
@@ -1692,7 +1735,7 @@ static MenuStatus MenuInteraction(
 					   pmp);
 	  mrPopup = NULL;
 	}
-	if (retval == MENU_POPDOWN)
+	if (pmret->rc == MENU_POPDOWN)
 	{
 	  c10msDelays = 0;
 	  flags.do_force_reposition = True;
@@ -1776,7 +1819,8 @@ static MenuStatus MenuInteraction(
   } /* while (True) */
 
   DO_RETURN:
-  if (retval == MENU_POPDOWN)
+  pmret->flags.is_first_item_selected = False;
+  if (pmret->rc == MENU_POPDOWN)
   {
     if (MR_SELECTED_ITEM(pmp->menu))
       select_menu_item(pmp->menu, MR_SELECTED_ITEM(pmp->menu), False,
@@ -1785,7 +1829,7 @@ static MenuStatus MenuInteraction(
     {
       if (!pmp->flags.is_submenu)
 	/* abort a root menu rather than pop it down */
-	retval = MENU_ABORTED;
+	pmret->rc = MENU_ABORTED;
       if (pmp->parent_menu && MR_SELECTED_ITEM(pmp->parent_menu))
       {
 	warp_pointer_to_item(pmp->parent_menu,
@@ -1800,12 +1844,17 @@ static MenuStatus MenuInteraction(
       }
     }
   }
-  else if (retval == MENU_SELECTED)
+  else if (pmret->rc == MENU_SELECTED)
   {
     /* save action to execute so that the menu may be destroyed now */
     if (pmp->ret_paction)
       *pmp->ret_paction = (mi) ? strdup(MI_ACTION(mi)) : NULL;
-    retval = MENU_ADD_BUTTON_IF(flags.is_key_press, MENU_DONE);
+
+    if (mi && mi == MR_FIRST_ITEM(pmp->menu) && MI_IS_SELECTABLE(mi))
+    {
+      pmret->flags.is_first_item_selected = True;
+    }
+    pmret->rc = MENU_DONE;
     if (pmp->ret_paction && *pmp->ret_paction && mi && MI_IS_MENU(mi))
     {
       get_popup_options(pmp->menu, mi, &mops);
@@ -1858,7 +1907,7 @@ static MenuStatus MenuInteraction(
     }
   }
 #ifdef TEAR_OFF_MENUS
-  else if (retval == MENU_TEAR_OFF)
+  else if (pmret->rc == MENU_TEAR_OFF)
   {
 fprintf(stderr,"got MENU_TEAR_OFF\n");
     AddWindow(MR_WINDOW(pmp->menu), NULL);
@@ -1868,7 +1917,9 @@ fprintf(stderr,"got MENU_TEAR_OFF\n");
   {
     pop_menu_down_and_repaint_parent(&mrPopup, &does_submenu_overlap, pmp);
   }
-  return MENU_ADD_BUTTON_IF(flags.is_key_press,retval);
+  pmret->flags.is_key_press = flags.is_key_press;
+
+  return;
 }
 
 static int do_menus_overlap(
@@ -4710,6 +4761,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   char *menu_name = NULL;
   XEvent *teventp;
   MenuParameters mp;
+  MenuReturn mret;
   FvwmWindow *fw;
   int tc;
   extern FvwmWindow *Tmp_win;
@@ -4717,6 +4769,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   extern int Context;
 
   memset(&(mops.flags), 0, sizeof(mops.flags));
+  memset(&mret, 0, sizeof(MenuReturn));
   action = GetNextToken(action,&menu_name);
   action = GetMenuOptions(action, w, tmp_win, NULL, NULL, &mops);
   while (action && *action && isspace((unsigned char)*action))
@@ -4750,6 +4803,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   mp.button_window = ButtonWindow;
   tc = Context;
   mp.pcontext = &tc;
+  mp.flags.has_default_action = (action != NULL);
   mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
   mp.flags.is_sticky = fStaysUp;
   mp.flags.is_submenu = False;
@@ -4758,7 +4812,8 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   mp.pops = &mops;
   mp.ret_paction = &ret_action;
 
-  if (do_menu(&mp) == MENU_DOUBLE_CLICKED && action)
+  do_menu(&mp, &mret);
+  if (mret.rc == MENU_DOUBLE_CLICKED && action)
   {
     ExecuteFunction(action,tmp_win,eventp,context,*Module,EXPAND_COMMAND);
   }

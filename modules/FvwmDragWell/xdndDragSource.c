@@ -1,7 +1,23 @@
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+
 #include <stdio.h>
 #include <X11/Intrinsic.h>
 #include <X11/Xatom.h>
 #include <X11/Xmu/Xmu.h>
+#include <X11/Xmu/WinUtil.h>
 #include "dragSource.h"
 #include "cursorStuff.h"
 #include "fvwmDragWell.h"
@@ -15,6 +31,8 @@ extern XGlobals xg;
 DragSource dsg;
 XdndAtoms xdndAtoms;
 void xdndSrcSendDrop(DragSource *, Window, Window, unsigned long);
+int xdndSrcQueryDndAware (DragSource *ds, Window window, int *version,
+                          Atom * typelist);
 
 
 /* Determines if the cursor is in the rectangle .
@@ -50,7 +68,7 @@ void xevClientInit(XEvent *xev, Display *dpy, Window win, Atom messageType) {
  *   ds - the drag source.
  *   dstWin - the recipient of the event.
  *   srcWin - the drag source win
- *   typelist - the types the drag source supports, assumes that 
+ *   typelist - the types the drag source supports, assumes that
  *              the list is NULL terminated. */
 void xdndSrcSendEnter(DragSource *ds, Window dstWin, Window srcWin, Atom * typelist)
 {
@@ -61,9 +79,9 @@ void xdndSrcSendEnter(DragSource *ds, Window dstWin, Window srcWin, Atom * typel
   if (typelist != NULL) {
     while (typelist[nTypes++]!=0); /*get typelist length*/
   }
-  
+
   xevClientInit(&xevent,ds->display,dstWin,ds->atomSel->xdndEnter);
-  
+
   //data.l[0] : XID of source window
   //data.l[1] : Bit 0 is set if source supports more than three types.
   //            High byte is protocol version(min of source,target).  Version
@@ -83,7 +101,7 @@ void xdndSrcSendEnter(DragSource *ds, Window dstWin, Window srcWin, Atom * typel
 
 
 
-/* Sends a position event 
+/* Sends a position event
  *   ds - the drag source struct
  *   dstWin - the recipient of the event
  *   srcWin - the drag source window
@@ -113,69 +131,71 @@ void xdndSrcSendPosition(DragSource *ds, Window dstWin, Window srcWin, short x,
 /* Handles the receipt of a status event
  *   ds - the drag source struct
  *   xev - the status event
- *   cx,cy - the mouse x,y coords, in root frame, used if the event 
+ *   cx,cy - the mouse x,y coords, in root frame, used if the event
  *           is cached
  *   time - the time */
 void xdndSrcReceiveStatus(DragSource *ds, XEvent *xev,unsigned short *cx,
-			  unsigned short *cy, unsigned long time) {
-  XEvent xevent;
-  int n=0, i;
+			  unsigned short *cy, unsigned long time)
+{
   Atom action;
 
-  if (ds->dropTargWin != xev->xclient.data.l[0]) {
+  if (ds->dropTargWin != xev->xclient.data.l[0])
+  {
     return; /*Got ClientMessage:XdndStatus from wrong client window*/
   }
 
-  //data.l[0] : XID of target window
-  //data.l[1] : Bit 0 set if target accepts drop
-  //              Bit 1 set if target wants coordinates while in rectangle
-  //data.l[2,3] : Coordinates of box. (x,y) relative to root.  Null box ok.
-  //data.l[2] : (x<<16)|y
-  //data.l[3] : (w<<16)|h
-  //data.l[4] : action accepted by target.  Either should be one of sent actions,
-  //              XdndActionCopy, XdndActionPrivate, or None if drop will not be
-  //              accepted
+  /*
+   *data.l[0] : XID of target window
+   *data.l[1] : Bit 0 set if target accepts drop
+   *            Bit 1 set if target wants coordinates while in rectangle
+   *data.l[2,3] : Coordinates of box. (x,y) relative to root.  Null box ok.
+   *data.l[2] : (x<<16)|y
+   *data.l[3] : (w<<16)|h
+   *data.l[4] : action accepted by target.  Either should be one of sent
+   *            actions, XdndActionCopy, XdndActionPrivate, or None if drop
+   *             will not be accepted
+   */
 
   /*Need to remember that we have received at least one status event*/
   ds->state = XDND_SETBIT(ds->state,XDND_STATUS_RECVD_CNT,XDND_GOTONE_OR_MORE);
 
   /* Can we drop on the target?*/
-  if (xev->xclient.data.l[1] & 0x1) 
+  if (xev->xclient.data.l[1] & 0x1)
     ds->state = XDND_SETBIT(ds->state,XDND_DROPPABLE,XDND_CAN_DROP);
   else
     ds->state = XDND_SETBIT(ds->state,XDND_DROPPABLE,XDND_CANT_DROP);
 
   /* How to send position information*/
-  if (xev->xclient.data.l[1] & 0x2) 
+  if (xev->xclient.data.l[1] & 0x2)
     ds->state = XDND_SETBIT(ds->state,XDND_SEND_POS,XDND_ALWAYS_SEND);
   else
     ds->state = XDND_SETBIT(ds->state,XDND_SEND_POS,XDND_RECTSEND);
-  
+
   action = xev->xclient.data.l[4];
 
   ds->rx = (xev->xclient.data.l[2]&0xffff0000)>>16;
   ds->ry = xev->xclient.data.l[2]&0x0000ffff;
   ds->w = (xev->xclient.data.l[3]&0xffff0000)>>16;
-  ds->h = xev->xclient.data.l[3]&0x0000ffff;    
+  ds->h = xev->xclient.data.l[3]&0x0000ffff;
 
   if (XDND_GETBIT(ds->state,XDND_DROPPABLE) &&
       XDND_GETBIT(ds->state,XDND_BUTRELEASE_CACHE)) {
     /* button released, but waiting for status*/
-    if (action != None) 
+    if (action != None)
       xdndSrcSendDrop(ds, ds->dropTargWin, ds->dragSrcWin, time);
   } else {
     if ((XDND_GETBIT(ds->state,XDND_POS_CACHE))&&
 	(XDND_GETBIT(ds->state,XDND_WAIT_4_STATUS))) {
       /*only send position if ((always send motion)||(left box))*/
       ds->state = XDND_SETBIT(ds->state,XDND_WAIT_4_STATUS,XDND_NOTWAITING);
-      if (XDND_GETBIT(ds->state,XDND_SEND_POS) || 
+      if (XDND_GETBIT(ds->state,XDND_SEND_POS) ||
 	  !cursorInRect(ds,ds->cachexRoot,ds->cacheyRoot)) {
 	/* position cached*/
 	ds->state = XDND_SETBIT(ds->state,XDND_WAIT_4_STATUS,XDND_WAITING);
 	xdndSrcSendPosition(ds, ds->dropTargWin, ds->dragSrcWin, ds->cachexRoot,
 			    ds->cacheyRoot, time, action);
       }
-      XDND_SETBIT(ds->state,XDND_POS_CACHE,XDND_NOT_CACHED);
+      ds->state = XDND_SETBIT(ds->state,XDND_POS_CACHE,XDND_NOT_CACHED);
     } else {
       /*Not cacheing position, do nothing*/
       ds->state = XDND_SETBIT(ds->state,XDND_WAIT_4_STATUS,XDND_NOTWAITING);
@@ -193,7 +213,7 @@ void xdndSrcReceiveStatus(DragSource *ds, XEvent *xev,unsigned short *cx,
 void xdndSrcSendLeave(DragSource *ds, Window dstWin, Window srcWin) {
   XEvent xevent;
   xevClientInit(&xevent,ds->display,dstWin,ds->atomSel->xdndLeave);
-  
+
   //data.l[0] : XID of source window
   //data.l[1] : Reserved for future use.
   xevent.xclient.data.l[0] = srcWin;
@@ -248,16 +268,16 @@ void xdndSrcReceiveFinished(DragSource *ds, XEvent *xev) {
  * typelist - the types we support */
 
 Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) {
-  XEvent xev,txev;
+  XEvent xev;
   float x_mouse, y_mouse, radiusSqr;
-  int cacheTime;
+  int cacheTime = 0;
   XdndCursor *cursorPtr;
-  Window trackWindow, root_return, child_return, clientWin;
+  Window trackWindow, root_return, child_return;
   int mask_return;
-  int i;
   Bool retBool;
-  int version=0;
-  Atom retAction,target;
+  int version = 0;
+  Atom retAction = None;
+  Atom target;
   short doneDrag = False;
 
 
@@ -266,10 +286,10 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
     XNextEvent(ds->display,&xev);
     if (xev.type == ButtonRelease) {
       XSendEvent (ds->display, xev.xany.window, 0, ButtonReleaseMask, &xev);
-      return;
+      return None;
     }
   } while (xev.type != MotionNotify);
-  
+
   /*We moved, wait until motion radius is larger than ds->halo*/
   x_mouse = (float) xev.xmotion.x_root;
   y_mouse = (float) xev.xmotion.y_root;
@@ -279,7 +299,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
     XNextEvent(ds->display, &xev);
     if (xev.type == MotionNotify) {
       radiusSqr = SQR(x_mouse - xev.xmotion.x_root) +  \
-	SQR(y_mouse - xev.xmotion.y_root); 
+	SQR(y_mouse - xev.xmotion.y_root);
       if (radiusSqr > SQR(ds->dragHalo))
 	break;
       if (xev.type == ButtonRelease) {
@@ -302,8 +322,8 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
   /*Main Drag loop.  trackWindow is the current window the pointer is over.  Note
     that the actual client window of the top level widget of the application is
     *not* trackWindow, but is actually one of the children of trackWindow. */
-  XQueryPointer (ds->display, XDefaultRootWindow(ds->display), 
-			      &root_return, &child_return, &xev.xmotion.x_root, 
+  XQueryPointer (ds->display, XDefaultRootWindow(ds->display),
+			      &root_return, &child_return, &xev.xmotion.x_root,
 			      &xev.xmotion.y_root, &xev.xmotion.x,
 			      &xev.xmotion.y, &mask_return);
   trackWindow = child_return;
@@ -313,11 +333,11 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
     XNextEvent (ds->display, &xev);
     switch (xev.type) {
     case MotionNotify:
-      retBool = XQueryPointer (ds->display,  XDefaultRootWindow(ds->display), 
-			       &root_return, &child_return, &xev.xmotion.x_root, 
+      retBool = XQueryPointer (ds->display,  XDefaultRootWindow(ds->display),
+			       &root_return, &child_return, &xev.xmotion.x_root,
 			       &xev.xmotion.y_root, &xev.xmotion.x,
 			       &xev.xmotion.y, &mask_return);
-      
+
       if (trackWindow != child_return) {
 	/*Cancel old drag if initiated.*/
 	if (XDND_GETBIT(ds->state,XDND_IN_AWAREWIN)) {
@@ -329,7 +349,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 	if (child_return != None) {
 	  /* get new client window if not on root window.*/
 	  ds->dropTargWin = XmuClientWindow(ds->display,child_return);
-	  
+
 	  /*Setup new drag if XDndAware*/
 	  if (xdndSrcQueryDndAware (ds, ds->dropTargWin, &version, NULL)) {
 	    ds->state = XDND_SETBIT(ds->state,XDND_IN_AWAREWIN,XDND_AWARE);
@@ -340,13 +360,15 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 	  } else {
 	    ds->state = XDND_SETBIT(ds->state,XDND_IN_AWAREWIN,XDND_NOTAWARE);
 	  }
-	} 
+	}
       } else { /*haven't changed windows*/
 
-	if (XDND_GETBIT(ds->state,XDND_IN_AWAREWIN)) { /*in an XdndAware window*/
-	    /*Cache the position, and send when status is received*/
-	    ds->cachexRoot = xev.xmotion.x_root;
-	    ds->cacheyRoot = xev.xmotion.y_root;
+	if (XDND_GETBIT(ds->state,XDND_IN_AWAREWIN))
+        {
+          /*in an XdndAware window*/
+	  /*Cache the position, and send when status is received*/
+	  ds->cachexRoot = xev.xmotion.x_root;
+	  ds->cacheyRoot = xev.xmotion.y_root;
 	  /*Timeout after no status*/
 	  /*if ()&&(XDND_GETBIT(ds->state,XDND_WAIT_4_STATUS)) */
 	  if (XDND_GETBIT(ds->state,XDND_WAIT_4_STATUS)) {
@@ -355,12 +377,15 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 	    ds->state = XDND_SETBIT(ds->state,XDND_POS_CACHE,XDND_CACHED);
 	  } else {
 	    /*Not waiting for a status event*/
-	    if (XDND_GETBIT(ds->state,XDND_SEND_POS) || 
+	    if (XDND_GETBIT(ds->state,XDND_SEND_POS) ||
 		!cursorInRect(ds,xev.xmotion.x_root,xev.xmotion.y_root)) {
-	      /*if left the box or always send position, then send the position */
-	      xdndSrcSendPosition (ds, ds->dropTargWin, srcWin,xev.xmotion.x_root,
-				   xev.xmotion.y_root,xev.xmotion.time,action);
-	      ds->state = XDND_SETBIT(ds->state,XDND_WAIT_4_STATUS,XDND_WAITING);
+	      /* if left the box or always send position, then send the
+               * position */
+	      xdndSrcSendPosition(
+                  ds, ds->dropTargWin, srcWin,xev.xmotion.x_root,
+                  xev.xmotion.y_root,xev.xmotion.time,action);
+	      ds->state =
+                  XDND_SETBIT(ds->state,XDND_WAIT_4_STATUS,XDND_WAITING);
 	    }
 	  }
 	}
@@ -379,7 +404,8 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 	    ds->cachexRoot = xev.xmotion.x_root;
 	    ds->cacheyRoot = xev.xmotion.y_root;
 	    cacheTime = xev.xmotion.time;
-	    ds->state = XDND_SETBIT(ds->state,XDND_BUTRELEASE_CACHE,XDND_BUTCACHED);
+	    ds->state =
+                XDND_SETBIT(ds->state,XDND_BUTRELEASE_CACHE,XDND_BUTCACHED);
 	  } else {
 	    /*Not waiting for a status, send the drop event*/
 	    if (XDND_GETBIT(ds->state,XDND_DROPPABLE)) {
@@ -404,7 +430,7 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
       if (xev.xselectionrequest.selection==ds->atomSel->xdndSelection) {
 	if (xev.xselectionrequest.requestor == ds->dropTargWin) {
 	  target = xev.xselectionrequest.target;
-	  ds->dropTargProperty = xev.xselectionrequest.property;      
+	  ds->dropTargProperty = xev.xselectionrequest.property;
 	  XChangeProperty(ds->display,ds->dragSrcWin,ds->dropTargProperty,target,8,
 			  PropModeReplace,dropData,strlen(dropData)+1);
 	  memset(&xev, 0, sizeof (XEvent));
@@ -424,13 +450,12 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 	xdndSrcReceiveStatus(ds,&xev,0,0,cacheTime);
       } else if (xev.xclient.message_type==ds->atomSel->xdndFinished) {
 	xdndSrcReceiveFinished(ds,&xev);
-      gotoLabelDone: /*not used yet*/
 	doneDrag = TRUE;
       } else {
 	fprintf(stderr,"FvwmQFS:xdndDrag:Unknown client message in dragSource\n");
       }
       break;
- 
+
     default:
       break;
     }
@@ -442,19 +467,22 @@ Atom xdndSrcDoDrag(DragSource *ds, Window srcWin, Atom action, Atom * typelist) 
 }
 
 
-/* error handler for BadWindow errors.  Does nothing at the moment... 
+/* error handler for BadWindow errors.  Does nothing at the moment...
  * dpy - the display
  * errEv - the error Event */
-int xdndErrorHandler(Display *dpy, XErrorEvent *errEv) {
-  if (errEv->error_code == BadWindow) {
-    /* Well, the specification for Xdnd states that we should handle "BadWindow"
-       errors with an error handler.  I'm not real sure how to go beyond this point.
-       One option is to use "goto".  Another is to make doneDrag in the xdndSrcDoDrag
-       a global, and set it to TRUE here, but that is more dangerous.  For now, we will just
-       exit*/
+int xdndErrorHandler(Display *dpy, XErrorEvent *errEv)
+{
+  if (errEv->error_code == BadWindow)
+  {
+    /* Well, the specification for Xdnd states that we should handle
+     * "BadWindow" errors with an error handler.  I'm not real sure how to go
+     * beyond this point. One option is to use "goto".  Another is to make
+     * doneDrag in the xdndSrcDoDrag a global, and set it to TRUE here, but
+     * that is more dangerous.  For now, we will just exit */
     exit(1);
     /*goto gotoLabelDone;*/
   }
+  return 0;
 }
 
 
@@ -463,7 +491,7 @@ int xdndErrorHandler(Display *dpy, XErrorEvent *errEv) {
  * rw - the root window */
 void xdndInit(Display *display, Window rw) {
   xdndCursorInit(display, rw); /*initializes the cursors*/
-  /*Initializes the atoms.  Each DropTarget,DragSource points to this 
+  /*Initializes the atoms.  Each DropTarget,DragSource points to this
    *  structure.  Saves space.*/
   xdndAtoms.xdndAware =  XInternAtom(display, "XdndAware", False);;
   xdndAtoms.xdndEnter =  XInternAtom(display, "XdndEnter", False);
@@ -480,7 +508,7 @@ void xdndInit(Display *display, Window rw) {
   xdndAtoms.xdndActionPrivate = XInternAtom(display, "XdndActionPrivate", False);
   xdndAtoms.xdndTypeList = XInternAtom(display, "XdndTypeList", False);
   xdndAtoms.xdndActionList = XInternAtom(display, "XdndActionList", False);
-  xdndAtoms.xdndActionDescription = 
+  xdndAtoms.xdndActionDescription =
     XInternAtom(display, "XdndActionDescription", False);
   XSetErrorHandler(xdndErrorHandler);
 }
@@ -511,7 +539,8 @@ void dragSrcInit(DragSource *ds,Display *dpy,Window root,Window client) {
  * typelist - not used at this  point, could be used to compare the source type list
  *   with the drop target list if the target puts the supported types in it property list
 */
-int xdndSrcQueryDndAware (DragSource *ds, Window window, int *version, Atom * typelist)
+int xdndSrcQueryDndAware (DragSource *ds, Window window, int *version,
+                          Atom * typelist)
 {
   Atom actual;
   int format;
@@ -520,7 +549,7 @@ int xdndSrcQueryDndAware (DragSource *ds, Window window, int *version, Atom * ty
   Atom *types;
   int result = 1;
   *version = 0;
-  
+
   XGetWindowProperty (ds->display, window, ds->atomSel->xdndAware,
 		      0, 0x8000000L, False, XA_ATOM,
 		      &actual, &format,

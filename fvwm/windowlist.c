@@ -98,7 +98,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *func=NULL;
   char *tfunc=NULL;
   char *default_action = NULL;
-  MenuStatus menu_retval;
+  MenuReturn mret;
   XEvent *teventp;
   MenuOptions mops;
   int low_layer = 0;  /* show all layers by default */
@@ -111,8 +111,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   WindowConditionMask mask;
   char *cond_flags, *restofline;
 
-
   memset(&(mops.flags), 0, sizeof(mops.flags));
+  memset(&mret, 0, sizeof(MenuReturn));
   if (action && *action)
   {
     /* parse postitioning args */
@@ -464,6 +464,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   mp.button_window = ButtonWindow;
   tc = context;
   mp.pcontext = &tc;
+  mp.flags.has_default_action = (default_action && *default_action != 0);
   mp.flags.is_menu_from_frame_or_window_or_titlebar = False;
   mp.flags.is_sticky = True;
   mp.flags.is_submenu = False;
@@ -472,11 +473,11 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   mp.pops = &mops;
   mp.ret_paction = &ret_action;
 
-  menu_retval = do_menu(&mp);
+  do_menu(&mp, &mret);
   if (ret_action)
     free(ret_action);
   DestroyMenu(mr, False);
-  if (menu_retval == MENU_DOUBLE_CLICKED && default_action && *default_action)
+  if (mret.rc == MENU_DOUBLE_CLICKED && default_action && *default_action)
     ExecuteFunction(default_action,tmp_win,eventp,context,*Module,
 		    EXPAND_COMMAND);
   if (default_action != NULL)
