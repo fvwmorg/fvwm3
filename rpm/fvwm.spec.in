@@ -3,7 +3,7 @@
 
 %define ver @VERSION@
 %define rel 1
-%define c_p --without-gnome --without-rplay-library --sysconfdir=/etc --mandir=/usr/share/man
+%define c_p --without-gnome --without-rplay-library --sysconfdir=/etc
 %define m_p CFLAGS="-O2"
 
 # Different distributions expect sources to be in different places;
@@ -72,7 +72,7 @@ FVWM является мощным оконным менеджером для X Window System, соответствующим
 %build
 # gnome libs are only used in FvwmGtk, probably it is overhead to require them;
 # compiling without -g saves about 7Mb
-./configure --prefix=%{prefix} %{c_p}
+./configure --prefix=%{prefix} --mandir=/usr/share/man %{c_p}
 make %{m_p}
 
 %install

@@ -1,3 +1,9 @@
+2003-10-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmAnimate/FvwmAnimate.c:
+	* FvwmAnimate/FvwmAnimate.1:
+	added dynamical commands "pause", "play", "push", "pop", "reset"
+
 2003-09-02  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmScript/Widgets/Swallow.c (ProcessMsgSwallow):

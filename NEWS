@@ -24,11 +24,11 @@ Changes in development release 2.5.8 (not released yet)
   (default).  The method can be overridden manually if the
   detection does not work.
 
-* Fvwm supports tear off menus.  See the "Tear Off Menus" section
+* fvwm supports tear off menus.  See the "Tear Off Menus" section
   in the man page or press Backspace on any menu to try them out.
 
-* Fvwm now handles what Unicode calls "combining characters" (ie. marks
-  drawn on top of other characters)
+* fvwm now handles what Unicode calls "combining characters" (i.e.
+  marks drawn on top of other characters).
 
 * New commands WindowStyle and DestroyWindowStyle for individual
   (per window) styles.
@@ -36,6 +36,9 @@ Changes in development release 2.5.8 (not released yet)
 * The conditions !Current... and !Layer now work as expected.
 
 * Added a nice autohide script to the FAQ.
+
+* FvwmAnimate now supports dynamical commands "pause", "play",
+  "push", "pop" and "reset" to manipulate the playing state.
 
 -------------------------------------------------------------------
 

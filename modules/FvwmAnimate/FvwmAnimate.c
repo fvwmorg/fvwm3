@@ -79,6 +79,11 @@ static Bool stop_recvd = False;         /* got stop command */
 static Bool running = False;            /* whether we are initiialized or not */
 static Bool custom_recvd = False;       /* got custom command */
 
+#define MAX_SAVED_STATES 25
+static Bool play_state = True;          /* current state: pause or play */
+static unsigned int num_saved_play_states = 0;
+static Bool saved_play_states[MAX_SAVED_STATES];
+
 static struct
 {
     int screen;
@@ -866,6 +871,10 @@ static void Loop(void) {
 	  Scr.CurrentDesk = packet->body[0];
 	  break;
       case M_DEICONIFY:
+	if (play_state == False)
+	{
+		break;
+	}
 	if (packet->size < 15            /* If not all info needed, */
 	    || packet->body[5] == 0) {   /* or a "noicon" icon */
 	  break;                      /* don't animate it */
@@ -902,6 +911,10 @@ static void Loop(void) {
 #endif
 	break;
       case M_ICONIFY:
+	if (play_state == False)
+	{
+		break;
+	}
 	/* In Afterstep, this logic waited for M_CONFIGURE_WINDOW
 	     before animating.  To this time, I don't know why.
 	     (One is sent right after the other.)
@@ -939,27 +952,95 @@ static void Loop(void) {
 		   (int)time_accum));
 	break;
       case M_STRING:
-	/* This message lets anything create an animation. Eg:
-	   sendtomodule FvwmAnimate animate 1 1 10 10 100 100 100 100
-	  */
 	{
-	  int locs[8];
-	  int matched;
-	  /* fixme: make this case insensitive */
-	  matched = sscanf((char *)&packet->body[3],
-			   " animate %5d %5d %5d %5d %5d %5d %5d %5d",
-			   &locs[0], &locs[1], &locs[2], &locs[3],
-			   &locs[4], &locs[5], &locs[6], &locs[7]);
-	  if (matched == 8) {
-	    Animate.resize(locs[0], locs[1], locs[2], locs[3],
-			   locs[4], locs[5], locs[6], locs[7]);
-	    myaprintf((stderr,
-		   "animate, args %d+%d+%dx%d %d+%d+%dx%d.\n",
-		       locs[0], locs[1], locs[2], locs[3],
-		       locs[4], locs[5], locs[6], locs[7]));
-	  }
+		char *token;
+		char *line = (char *)&packet->body[3];
+
+		line = GetNextToken(line, &token);
+		if (!token)
+		{
+			break;
+		}
+
+		if (strcasecmp(token, "animate") == 0)
+		{
+			/* This message lets anything create an animation. Eg:
+			   SendToModule FvwmAnimate \
+			     animate 1 1 10 10 100 100 100 100
+			 */
+			int locs[8];
+			int matched;
+			matched = sscanf(
+				line, "%5d %5d %5d %5d %5d %5d %5d %5d",
+				&locs[0], &locs[1], &locs[2], &locs[3],
+				&locs[4], &locs[5], &locs[6], &locs[7]);
+			if (matched == 8 && play_state == True)
+			{
+				Animate.resize(
+					locs[0], locs[1], locs[2], locs[3],
+					locs[4], locs[5], locs[6], locs[7]);
+				myaprintf((stderr,
+					"animate %d+%d+%dx%d %d+%d+%dx%d\n",
+					locs[0], locs[1], locs[2], locs[3],
+					locs[4], locs[5], locs[6], locs[7]));
+			}
+			free(token);
+			break;
+		}
+		while (token)
+		{
+			if (strcasecmp(token, "reset") == 0)
+			{
+				play_state = True;
+				num_saved_play_states = 0;
+			}
+			else if (strcasecmp(token, "play") == 0)
+			{
+				play_state = True;
+			}
+			else if (strcasecmp(token, "pause") == 0)
+			{
+				play_state = False;
+			}
+			else if (strcasecmp(token, "push") == 0)
+			{
+				if (num_saved_play_states < MAX_SAVED_STATES)
+				{
+					saved_play_states[num_saved_play_states]
+						= play_state;
+				}
+				else
+				{
+					fprintf(
+						stderr,	"FvwmAnimate: Too many "
+						"nested push commands;\n\tthe "
+						"current state can not be "
+						"restored later using pop\n");
+				}
+				num_saved_play_states++;
+			}
+			else if (strcasecmp(token, "pop") == 0)
+			{
+				num_saved_play_states--;
+				if (num_saved_play_states < 0)
+				{
+					num_saved_play_states = 0;
+					fprintf(
+						stderr,	"FvwmAnimate: Got pop "
+						"without push, ignored\n");
+				}
+				else if (num_saved_play_states <
+					MAX_SAVED_STATES)
+				{
+					play_state = saved_play_states[
+						num_saved_play_states];
+				}
+			}
+			free(token);
+			line = GetNextToken(line, &token);
+		}
+		break;
 	}
-	break;
       case M_CONFIG_INFO:
 	myfprintf((stderr,"Got command: %s\n", (char *)&packet->body[3]));
 	ParseConfigLine((char *)&packet->body[3]);

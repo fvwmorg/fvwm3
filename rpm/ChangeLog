@@ -1,3 +1,9 @@
+2003-10-26  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm.spec.in:
+	* Makefile.am:
+	tweaked cparams and renamed make target
+
 2003-10-23  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm.spec.in:

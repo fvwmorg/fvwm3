@@ -65,4 +65,4 @@ rpm-regenerate:
 rpm-dist: dist rpm-this
 
 rpm-this: rpm-regenerate
-	(cd rpm && $(MAKE) $(AM_MAKEFLAGS) rpm) || exit 1
+	(cd rpm && $(MAKE) $(AM_MAKEFLAGS) this) || exit 1

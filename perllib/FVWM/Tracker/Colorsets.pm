@@ -43,6 +43,12 @@ sub observables ($) {
 sub start ($) {
 	my $self = shift;
 
+	# just an extra debug service for developers
+	$self->{module}->emulateEvent(M_CONFIG_INFO, [
+		0, 0, 0,
+		"Colorset 0 0 00c0c0 00e0e0 00a0a0 007070 0 0 0 0 64 0 0 0 0 0 0 0 0 0 64"
+	])	if $self->{module}->isDummy;
+
 	$self->{data} = {};
 	$self->addHandler(M_CONFIG_INFO, sub {
 		my $event = $_[1];
@@ -73,7 +79,7 @@ sub calculateInternals ($$) {
 	my $text = $args->{text};
 	$self->internalDie("No 'text' arg in M_CONFIG_INFO")
 		unless defined $text;
-	return undef if $text !~ /^colorset ([[:xdigit:]]+) ([[:xdigit:] ]+)$/i;
+	return undef if $text !~ /^colorset ([\da-f]+) ([\da-f ]+)$/i;
 
 	my $num = hex($1);
 	my @numbers = getTokens($2);
