@@ -1,3 +1,9 @@
+2002-04-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmPager/x_pager.c:
+	fixed initial position of 2 subwindows, current only for one desk;
+	fixed position of labels with LabelsBelow
+
 2002-04-25  Mikhael Goikhman  <migo@homemail.com>
 
 	* **/*.1:

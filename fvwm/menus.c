@@ -2446,7 +2446,7 @@ static void MenuInteraction(
   {
     pmret->rc = MENU_DOUBLE_CLICKED;
   }
-  if (pmret->rc == MENU_SELECTED && MI_FUNC_TYPE(mi) == F_TEARMENUOFF)
+  if (pmret->rc == MENU_SELECTED && mi && MI_FUNC_TYPE(mi) == F_TEARMENUOFF)
   {
     pmret->rc = (MR_IS_TEAR_OFF_MENU(pmp->menu)) ?
       MENU_KILL_TEAR_OFF_MENU : MENU_TEAR_OFF;

@@ -612,10 +612,10 @@ void initialize_pager(void)
 
   for(i=0;i<ndesks;i++)
   {
-    w = window_w/ndesks;
-    h = window_h;
-    x = w*i;
-    y = 0;
+    w = window_w / Rows;
+    h = window_h / Columns;
+    x = (w + 1) * (i % Rows);
+    y = (h + 1) * (i % Columns);
 
     /* create the GC for desk labels */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
@@ -687,9 +687,10 @@ void initialize_pager(void)
     attributes.border_pixel = (Desks[i].colorset < 0) ? fore_pix
       : Colorset[Desks[i].colorset].fg;
     attributes.event_mask = (ExposureMask | ButtonReleaseMask);
-    Desks[i].title_w = XCreateWindow(dpy, Scr.Pager_w, x, y, w, h, 1,
-				     CopyFromParent, InputOutput,
-				     CopyFromParent, valuemask, &attributes);
+    Desks[i].title_w = XCreateWindow(
+      dpy, Scr.Pager_w,
+      x - 1, y - 1, w, h,
+      1, CopyFromParent, InputOutput, CopyFromParent, valuemask, &attributes);
     attributes.event_mask = (ExposureMask | ButtonReleaseMask |
 			     ButtonPressMask |ButtonMotionMask);
     desk_h = (window_h - Rows * label_h - Rows + 1) / Rows;
@@ -725,9 +726,10 @@ void initialize_pager(void)
 	: Colorset[Desks[i].colorset].bg;
     }
 
-    Desks[i].w = XCreateWindow(dpy, Desks[i].title_w, x, y, w, desk_h, 1,
-			       CopyFromParent, InputOutput, CopyFromParent,
-			       valuemask, &attributes);
+    Desks[i].w = XCreateWindow(
+      dpy, Desks[i].title_w,
+      x - 1, LabelsBelow ? y - 1 : y + label_h - 1, w, desk_h,
+      1, CopyFromParent, InputOutput, CopyFromParent, valuemask, &attributes);
     if (Desks[i].colorset > -1 &&
 	Colorset[Desks[i].colorset].pixmap)
     {
@@ -1283,7 +1285,7 @@ void ReConfigure(void)
 	XMoveResizeWindow(dpy,Desks[i].title_w,
 			  (desk_w+1)*j-1,(desk_h+label_h+1)*k-1,
 			  desk_w,desk_h+label_h);
-	y_pos = (LabelsBelow ? 0 : label_h - 1);
+	y_pos = (LabelsBelow ? -1 : label_h - 1);
 	XMoveResizeWindow(dpy,Desks[i].w,-1, y_pos,
 			  desk_w,desk_h);
         if (Desks[i].colorset > -1 &&

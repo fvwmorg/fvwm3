@@ -1,3 +1,8 @@
+2002-04-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/menus.c:
+	fixed core dump on default Alt-Tab (Alt released when mouse is outside)
+
 2002-04-27  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/move_resize.c:
