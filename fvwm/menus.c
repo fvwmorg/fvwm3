@@ -669,7 +669,6 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
   static int y_start;
   static Bool has_mouse_moved = False;
 
-fprintf(stderr,"entering menu 0x%x\n", (int)pmp->menu);
   DBUG("do_menu","called");
 
   pmret->rc = MENU_NOP;
@@ -1402,10 +1401,8 @@ static void MenuInteraction(
 	  /* unpost the menu and propagate the event to the correct menu */
 	  pmret->rc = MENU_PROPAGATE_EVENT;
 	  pmret->menu = mrMi;
-fprintf(stderr,"2 menu 0x%x: propagating to 0x%x\n", (int)pmp->menu, (int)pmret->menu);
 	  goto DO_RETURN;
 	}
-else fprintf(stderr,"2 menu 0x%x: not propagating event for 0x%x (0x%x)\n", (int)pmp->menu, (int)mrMi, (int)pmret->menu);
       }
       pmret->rc = (mi) ? MENU_SELECTED : MENU_ABORTED;
       if (pmret->rc == MENU_SELECTED && mi && MI_IS_POPUP(mi) &&
