@@ -153,6 +153,7 @@ static const func_type func_config[] =
   CMD_ENTRY("destroystyle", CMD_DestroyStyle, F_DESTROY_STYLE, 0),
   CMD_ENTRY("direction", CMD_Direction, F_DIRECTION, 0),
   CMD_ENTRY("echo", CMD_Echo, F_ECHO, 0),
+  CMD_ENTRY("edgecommand", CMD_EdgeCommand, F_EDGE_COMMAND, 0),
   CMD_ENTRY("edgeresistance", CMD_EdgeResistance, F_EDGE_RES, 0),
   CMD_ENTRY("edgescroll", CMD_EdgeScroll, F_EDGE_SCROLL, 0),
   CMD_ENTRY("edgethickness", CMD_EdgeThickness, F_NOP, 0),

@@ -5,6 +5,9 @@ _+_A HREF="#2.4.6"_-_2.4.6_+_/A_-_.
 
 Changes in alpha release 2.5.1 (not released yet)
 
+* Fvwm commands can be invoked when the edge of the screen is hit
+  with the mouse.
+
 * Added a full support for the side window titles. New Style options
   TitleAtLeft and TitleAtRight added to TitleAtTop and TitleAtBottom.
 

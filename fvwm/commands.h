@@ -71,6 +71,7 @@ void CMD_DestroyModuleConfig(F_CMD_ARGS);
 void CMD_DestroyStyle(F_CMD_ARGS);
 void CMD_Direction(F_CMD_ARGS);
 void CMD_Echo(F_CMD_ARGS);
+void CMD_EdgeCommand(F_CMD_ARGS); 
 void CMD_EdgeResistance(F_CMD_ARGS);
 void CMD_EdgeScroll(F_CMD_ARGS);
 void CMD_EdgeThickness(F_CMD_ARGS);

@@ -1,3 +1,8 @@
+2002-04-06  Uwe Pross  <uwe.pross@gmx.net>
+
+	* FvwmAuto/FvwmAuto.1: 
+	Added hint to builtin command EdgeCommand
+
 2002-04-07  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmIconMan/ConfigFvwmIconMan:

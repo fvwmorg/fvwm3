@@ -66,6 +66,7 @@ typedef struct
 {
   Window win;
   int isMapped;
+  char * command ; /* command which is executed when the pan frame is entered */ 
 } PanFrame;
 
 typedef enum

@@ -2,8 +2,11 @@ To find out what should go in this file, see "Information For
 Maintainers of GNU Software" (maintain.texi), the section called
 "Recording Changes".
 
+Uwe Pross:
+EdgeCommand.
+
 Dave Trollope:
-Memroy management clean up patches.
+Memory management clean up patches.
 
 Daniel Henninger:
 Timeout feature in FvwmForm.

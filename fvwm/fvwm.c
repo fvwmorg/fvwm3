@@ -1517,6 +1517,12 @@ static void InitVariables(void)
   Scr.gs.use_inactive_buttons = DEFAULT_USE_INACTIVE_BUTTONS;
   /* Not the right place for this, should only be called once somewhere .. */
 
+  /* EdgeCommands - no edge commands by default */
+  Scr.PanFrameTop.command    = NULL ; 
+  Scr.PanFrameBottom.command = NULL ; 
+  Scr.PanFrameRight.command  = NULL ; 
+  Scr.PanFrameLeft.command   = NULL ; 
+
   return;
 }
 

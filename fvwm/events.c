@@ -1423,12 +1423,34 @@ void HandleEnterNotify(void)
 		Scr.flags.is_pointer_on_this_screen = 1;
 	}
 
-	/* an EnterEvent in one of the PanFrameWindows activates the Paging */
+	/* an EnterEvent in one of the PanFrameWindows activates the Paging or 
+	   an EdgeCommand */
 	if (ewp->window==Scr.PanFrameTop.win
 	    || ewp->window==Scr.PanFrameLeft.win
 	    || ewp->window==Scr.PanFrameRight.win
 	    || ewp->window==Scr.PanFrameBottom.win )
 	{
+
+	  /* check for edge commands */
+	  if ( ewp->window == Scr.PanFrameTop.win &&
+	       Scr.PanFrameTop.command != NULL ) {
+	    old_execute_function(NULL,Scr.PanFrameTop.command, Fw, &Event,C_WINDOW, -1, 0, NULL);
+	  }
+	  else if ( ewp->window == Scr.PanFrameBottom.win &&
+		    Scr.PanFrameBottom.command != NULL )  {
+	    old_execute_function(NULL,Scr.PanFrameBottom.command, Fw, &Event,C_WINDOW, -1, 0, NULL);
+	  }
+	  else if ( ewp->window == Scr.PanFrameLeft.win &&
+		    Scr.PanFrameLeft.command != NULL )  {
+	    old_execute_function(NULL,Scr.PanFrameLeft.command, Fw, &Event,C_WINDOW, -1, 0, NULL);
+	  }
+	  else if ( ewp->window == Scr.PanFrameRight.win &&
+		    Scr.PanFrameRight.command != NULL )  {
+	    old_execute_function(NULL,Scr.PanFrameRight.command, Fw, &Event,C_WINDOW, -1, 0, NULL);
+	  }
+	  else {
+	    /* no edge command for this pan frame - so we do HandlePaging */
+
 		int delta_x=0, delta_y=0;
 
 		/* this was in the HandleMotionNotify before, HEDU */
@@ -1437,6 +1459,7 @@ void HandleEnterNotify(void)
 			     &ewp->x_root,&ewp->y_root,
 			     &delta_x,&delta_y,True,True,False);
 		return;
+	  }
 	}
 	/* make sure its for one of our windows */
 	if (!Fw)

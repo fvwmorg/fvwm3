@@ -1,3 +1,41 @@
+2002-04-10  Dan Espen  <dane@mk.telcordia.com>
+
+	* AUTHORS: New author.
+
+	* NEWS: Edge Command.
+
+2002-04-09  Uwe Pross  <uwe.pross@gmx.net>
+
+	* fvwm/fvwm2.1:
+	Added EdgeCommand paragraph.
+	
+	* fvwm/events.c (HandleEnterNotify): 
+	Added execution of Scr.PanFrame*.command if set
+	
+	* fvwm/fvwm.c (InitVariables): 
+	Added init strings for pan frame commands.
+
+	* fvwm/virtual.c:
+	* fvwm/virtual.h: 
+	(checkPanFrames): 
+	Avoid hiding of pan frames if pan frame command	is set.
+	(CMD_EdgeCommand): 
+	Implementation of the buildin command EdgeCommand. First
+	implementation of this function.  
+
+	* fvwm/screen.h (struct): 
+	added char * command in structure Panframe to store the pan frame
+	command.
+
+	* fvwm/functions.c: 
+	added declaration of CMD_ENTRY("edgecommand") 
+
+	* fvwm/functions.h: 
+	added definition of Flag F_EDGE_COMMAND
+
+	* fvwm/commands.h: 
+	added definition of CMD_EdgeCommand(F_CMD_ARGS)
+
 2002-04-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm2.1:
@@ -33,6 +71,7 @@
 	new Style options TopTitleRotated / TopTitleNotRotated,
 	BottomTitleRotated / BottomTitleNotRotated
 
+>>>>>>> 1.1738
 2002-04-08  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Makefile.am:

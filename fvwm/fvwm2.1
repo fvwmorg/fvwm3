@@ -4730,6 +4730,64 @@ if you have no problem with it.  In the
 you can find a better solution of this problem.
 
 .TP
+.BI "EdgeCommand " "[direction [Function]]"
+Binds a specified fvwm built-in function 
+.I Function 
+to an edge of the screen. Direction may be one of 
+"North", "Top", "West", "Left", "South", "Bottom", "Right"
+and "East". If 
+.I Function 
+is omitted the binding for this edge is removed. If EdgeCommand is
+called without any arguments all edge bindings are removed. 
+
+.I Function 
+is executed when the mouse pointer
+enters the invisible pan frames that surround the visible screen.
+The binding works only if
+.I EdgeThickness 
+is set to a value greater than 0.
+If a function is bound to an edge, scrolling specified by 
+.I EdgeScroll 
+is disabled for this edge.
+It is possible to bind a function only to some edges
+and use the other edges for scrolling.
+This command is intended to raise or lower certain windows
+when the mouse pointer enters an edge.
+.I FvwmAuto 
+can be used get a delay when raising or lowering windows.
+The following example raises
+.I FvwmButtons 
+if the mouse pointer enters the top edge of the screen.
+.EX
+## Disable EdgeScrolling but make it possible to move 
+## windows over the screen edge
+EdgeResistance 10000 20
+
+## Set thickness of the edge of the screen to 1
+EdgeThickness 1 
+
+## Give focus to FvwmButtons if the mouse hits top edge
+EdgeCommand Top Next (FvwmButtons) Focus
+
+Module FvwmButtons
+Module FvwmAuto 100 "Silent AutoRaiseFunction" "Silent AutoLowerFunction"
+
+## If any window except FvwmButtons has focus when calling 
+## this function FvwmButtons are lowered 
+DestroyFunc AutoLowerFunction
+AddToFunc AutoLowerFunction
++ I Current (!FvwmButtons) All (FvwmButtons) Lower
+
+## If FvwmButtons has focus when calling this function raise it
+DestroyFunc AutoRaiseFunction
+AddToFunc AutoRaiseFunction
++ I Current (FvwmButtons) Raise
+.EE
+Normally, the invisible pan frames are only on the screen edges that
+border virtual pages.  If a screen edge has a command bound to it,
+the pan frame is always created on that edge.
+
+.TP
 .BI "GnomeButton"
 Used in conjunction with
 .B Mouse
