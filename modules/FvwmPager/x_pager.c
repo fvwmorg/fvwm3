@@ -836,8 +836,7 @@ void DispatchEvent(XEvent *Event)
   switch(Event->xany.type)
     {
     case EnterNotify:
-      if ( ShowBalloons )
-        MapBalloonWindow(Event);
+      HandleEnterNotify(Event);
       break;
     case LeaveNotify:
       if ( ShowBalloons )
@@ -1000,6 +999,47 @@ void DispatchEvent(XEvent *Event)
 	}
       break;
     }
+}
+
+void HandleEnterNotify(XEvent *Event)
+
+{
+  PagerWindow *t;
+  Bool is_icon_view = False;
+  extern Bool do_focus_on_enter;
+
+  if (!ShowBalloons && !do_focus_on_enter)
+    /* nothing to do */
+    return;
+
+  /* is this the best way to match X event window ID to PagerWindow ID? */
+  for ( t = Start; t != NULL; t = t->next )
+  {
+    if ( t->PagerView == Event->xcrossing.window )
+    {
+      break;
+    }
+    if ( t->IconView == Event->xcrossing.window )
+    {
+      is_icon_view = True;
+      break;
+    }
+  }
+  if (t == NULL)
+  {
+    return;
+  }
+
+  if (ShowBalloons)
+  {
+    MapBalloonWindow(t, is_icon_view);
+  }
+
+  if (do_focus_on_enter)
+  {
+    SendInfo(fd, "Silent Focus NoWarp", t->w);
+  }
+    
 }
 
 void HandleExpose(XEvent *Event, Bool redraw_subwindows)
@@ -2504,9 +2544,8 @@ void IconMoveWindow(XEvent *Event,PagerWindow *t)
 
 /* Just maps window ... draw stuff in it later after Expose event
    -- ric@giccs.georgetown.edu */
-void MapBalloonWindow (XEvent *event)
+void MapBalloonWindow(PagerWindow *t, Bool is_icon_view)
 {
-  PagerWindow *t;
   XWindowChanges window_changes;
   Window view = -1, dummy;
   int view_width = -1, view_height = -1;
@@ -2514,23 +2553,17 @@ void MapBalloonWindow (XEvent *event)
   extern char *BalloonBack;
   int i;
 
-  /* is this the best way to match X event window ID to PagerWindow ID? */
-  for ( t = Start; t != NULL; t = t->next ) {
-    if ( t->PagerView == event->xcrossing.window ) {
-      view = t->PagerView;
-      view_width = t->pager_view_width;
-      view_height = t->pager_view_height;
-      break;
-    }
-    if ( t->IconView == event->xcrossing.window ) {
-      view = t->IconView;
-      view_width = t->icon_view_width;
-      view_height = t->icon_view_height;
-      break;
-    }
+  if ( !is_icon_view )
+  {
+    view = t->PagerView;
+    view_width = t->pager_view_width;
+    view_height = t->pager_view_height;
   }
-  if (t == NULL) {
-    return;
+  else
+  {
+    view = t->IconView;
+    view_width = t->icon_view_width;
+    view_height = t->icon_view_height;
   }
 
   /* associate balloon with its pager window */

@@ -97,6 +97,10 @@ align the viewport to a page boundary. Dragging button 3 will
 cause the viewport to move as you drag but not switch desktops, even
 if the pointer moves to another desktop.
 
+With the \fI*FvwmPagerSloppyFocus\fP option the focus is transfered
+to the window pointed at with the mouse when the pointer is inside
+the pager.
+
 When iconified, the pager will work as a fully functional current page
 only pager. Windows and viewports can be moved within the icon of the
 pager. Users will want to make sure that they have no lines similar to
@@ -279,6 +283,12 @@ to its original position when the button is released. If \fIpixels\fP is
 less than zero the default value is used. The value set with the
 \fIMoveThreshold\fP command in fvwm is inherited by FvwmPager but can
 be overridden with this option.
+
+.IP "*FvwmPagerSloppyFocus"
+If the SloppyFocus option is used, you do not need to click into
+the mini window in the pager to give the real window the focus.
+Simply putting the pointer over the window inside the pager is
+enough.
 
 .IP "*FvwmPagerBalloons [\fItype\fP]"
 Show a balloon describing the window when the pointer is moved into

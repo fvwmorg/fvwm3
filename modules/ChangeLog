@@ -1,3 +1,11 @@
+1999-08-09  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
+
+	* FvwmPager/FvwmPager.c (ParseOptions): 
+	* FvwmPager/x_pager.c (HandleEnterNotify): 
+	(DispatchEvent): 
+	* FvwmPager/FvwmPager.h: new option 'FvwmPagerSloppyFocus': transfer
+	focus whenever a pager subwindow is entered with the mouse
+
 1999-08-08  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (HandleExpose):

@@ -1,5 +1,8 @@
 Changes in beta release 2.3.7 (August 1999)
 
+* *FvwmPagerSloppyFocus option: To focus a window, simply move the
+  pointer over the window's mini window in the pager.
+
 Changes in beta release 2.3.6 (August 1999)
 
 * New function variables $c, $r, $n.

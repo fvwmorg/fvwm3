@@ -100,6 +100,7 @@ char *ImagePath = NULL;
 int MoveThreshold = DEFAULT_MOVE_THRESHOLD;
 
 int ShowBalloons = 0, ShowPagerBalloons = 0, ShowIconBalloons = 0;
+Bool do_focus_on_enter = 1;
 char *BalloonTypeString = NULL;
 char *BalloonBack = NULL;
 char *BalloonFore = NULL;
@@ -1839,6 +1840,10 @@ void ParseOptions(void)
 	      MoveThreshold = val;
 	      MoveThresholdSetForModule = True;
 	    }
+	}
+      else if (StrEquals(resource, "SloppyFocus"))
+	{
+	  do_focus_on_enter = True;
 	}
       /* ... and get Balloon config options ...
          -- ric@giccs.georgetown.edu */
