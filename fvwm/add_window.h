@@ -16,6 +16,7 @@
 #ifndef ADD_WINDOW_H
 #define ADD_WINDOW_H
 
+void setup_focus_policy(FvwmWindow *tmp_win);
 void FetchWmProtocols(FvwmWindow *);
 FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin);
 void GetWindowSizeHints(FvwmWindow *);

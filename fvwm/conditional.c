@@ -303,6 +303,10 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
       DO_SKIP_ICON_CIRCULATE(fw))
     return 0;
 
+  if (!DO_SKIP_SHADED_CIRCULATE(mask) && IS_SHADED(fw) &&
+      DO_SKIP_SHADED_CIRCULATE(fw))
+    return 0;
+
   if (IS_ICONIFIED(fw) && IS_TRANSIENT(fw) && IS_ICONIFIED_BY_PARENT(fw))
     return 0;
 

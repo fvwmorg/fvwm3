@@ -171,7 +171,7 @@ static const struct functions func_config[] =
   {"gotodesk",     changeDesks_func, F_DESK,                0},
   {"gotodeskandpage",  gotoDeskAndPage_func, F_DESK,        0},
   {"gotopage",     goto_page_func,   F_GOTO_PAGE,           0},
-  {"hidesizewindow",HideSizeWindow,  F_HIDESIZEWINDOW,      0},
+  {"hidegeometrywindow",HideGeometryWindow,F_HIDEGEOMWINDOW,0},
   {"hilightcolor", SetHiColor,       F_HICOLOR,             0},
   {"iconfont",     LoadIconFont,     F_ICONFONT,            0},
   {"iconify",      iconify_function, F_ICONIFY,             FUNC_NEEDS_WINDOW},
@@ -851,7 +851,7 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   /* Only wait for an all-buttons-up condition after calls from
    * regular built-ins, not from complex-functions, menus or modules. */
   if(Module == -1)
-    WaitForButtonsUp();
+    WaitForButtonsUp(False);
 
   free(function);
   if (set_silent)
@@ -1309,7 +1309,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
       if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonPress))
 	{
 	  func->use_depth--;
-	  WaitForButtonsUp();
+	  WaitForButtonsUp(False);
 	  for(i=0;i<10;i++)
 	    if(arguments[i] != NULL)
 	      free(arguments[i]);
@@ -1399,7 +1399,7 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 	}
       fi = fi->next_item;
     }
-  WaitForButtonsUp();
+  WaitForButtonsUp(False);
   UngrabEm();
   for(i=0;i<10;i++)
     if(arguments[i] != NULL)

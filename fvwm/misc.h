@@ -66,7 +66,7 @@ void Destroy(FvwmWindow *);
 Bool GrabEm(int);
 void UngrabEm(void);
 int flush_expose(Window w);
-void WaitForButtonsUp(void);
+void WaitForButtonsUp(Bool do_handle_expose);
 void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);
 Bool StashEventTime (XEvent *ev);
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,

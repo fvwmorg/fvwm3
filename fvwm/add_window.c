@@ -96,62 +96,14 @@ static XrmOptionDescRec table [] = {
 void FetchWmProtocols(FvwmWindow *);
 void GetWindowSizeHints(FvwmWindow *);
 
+/***********************************************************************/
 
-/***********************************************************************
- *
- *  Procedure:
- *	AddWindow - add a new window to the fvwm list
- *
- *  Returned Value:
- *	(FvwmWindow *) - pointer to the FvwmWindow structure
- *
- *  Inputs:
- *	w	- the window id of the window to add
- *	iconm	- flag to tell if this is an icon manager window
- *
- ***********************************************************************/
-FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
+Bool setup_window_structure(
+  FvwmWindow **ptmp_win, Window w, FvwmWindow *ReuseWin)
 {
-  /* new fvwm window structure */
-  register FvwmWindow *tmp_win;
-  /* mask for create windows */
-  unsigned long valuemask;
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-  Pixmap TexturePixmap = None, TexturePixmapSave = None;
-#endif
-  unsigned long valuemask_save = 0;
-  /* attributes for create windows */
-  XSetWindowAttributes attributes;
-  /* area for merged styles */
-  window_style style;
-  /* used for faster access */
-  style_flags *sflags;
-  int i,width,height;
-  int a,b;
-/*  RBW - 11/02/1998  */
-  int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
-/**/
-  extern Bool NeedToResizeToo;
-  extern FvwmWindow *colormap_win;
-  int client_argc;
-  char **client_argv = NULL, *str_type;
-  Bool status;
-  XrmValue rm_value;
-  XTextProperty text_prop;
-  extern Boolean PPosOverride;
-#ifdef I18N_MB
-  char **list;
-  int num;
-#endif
+  FvwmWindow save_state;
+  FvwmWindow *savewin = NULL;
 
-  int do_shade = 0;
-  int do_maximize = 0;
-  int x_max, y_max;
-  unsigned int w_max, h_max;
-  FvwmWindow  save_state;
-  FvwmWindow  *savewin = NULL;
-
-  NeedToResizeToo = False;
   memset(&save_state, '\0', sizeof(FvwmWindow));
 
   /*
@@ -160,15 +112,15 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   */
   if (ReuseWin == NULL)
     {
-      tmp_win = (FvwmWindow *)safemalloc(sizeof(FvwmWindow));
-      if (tmp_win == (FvwmWindow *)0)
+      *ptmp_win = (FvwmWindow *)safemalloc(sizeof(FvwmWindow));
+      if (*ptmp_win == (FvwmWindow *)0)
         {
-          return NULL;
+          return False;
         }
     }
   else
     {
-      tmp_win = ReuseWin;
+      *ptmp_win = ReuseWin;
       savewin = &save_state;
       memcpy(savewin, ReuseWin, sizeof(FvwmWindow));
     }
@@ -179,25 +131,26 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
     also need tweaking, depending on what you want to preserve.
     For now, just zap any old information, except the desk.
   */
-  memset(tmp_win, '\0', sizeof(FvwmWindow));
-  tmp_win->w = w;
-  if (savewin != NULL)  {
-    tmp_win->Desk = savewin->Desk;
-    }
+  memset(*ptmp_win, '\0', sizeof(FvwmWindow));
+  (*ptmp_win)->w = w;
+  if (savewin != NULL)
+  {
+    (*ptmp_win)->Desk = savewin->Desk;
+  }
 
-  tmp_win->cmap_windows = (Window *)NULL;
+  (*ptmp_win)->cmap_windows = (Window *)NULL;
 #ifdef MINI_ICONS
-  tmp_win->mini_pixmap_file = NULL;
-  tmp_win->mini_icon = NULL;
+  (*ptmp_win)->mini_pixmap_file = NULL;
+  (*ptmp_win)->mini_icon = NULL;
 #endif
 
-  if(!PPosOverride)
-    if (XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
-		     &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
-      {
-	free((char *)tmp_win);
-	return(NULL);
-      }
+  return True;
+}
+
+void setup_window_name(FvwmWindow *tmp_win)
+{
+  XTextProperty text_prop;
+
   if ( XGetWMName(dpy, tmp_win->w, &text_prop) != 0 )
 #ifdef I18N_MB
   {
@@ -231,7 +184,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 #endif
   else
     tmp_win->name = NoName;
+}
 
+void setup_class_and_resource(FvwmWindow *tmp_win)
+{
   /* removing NoClass change for now... */
   tmp_win->class.res_name = NoResource;
   tmp_win->class.res_class = NoClass;
@@ -245,14 +201,15 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   FetchWmColormapWindows (tmp_win);
   if(!(XGetWindowAttributes(dpy,tmp_win->w,&(tmp_win->attr))))
     tmp_win->attr.colormap = Pcmap;
+}
 
+void setup_wm_hints(FvwmWindow *tmp_win)
+{
   tmp_win->wmhints = XGetWMHints(dpy, tmp_win->w);
+}
 
-  SET_TRANSIENT(tmp_win, !!XGetTransientForHint(dpy, tmp_win->w,
-						&tmp_win->transientfor));
-
-  tmp_win->old_bw = tmp_win->attr.border_width;
-
+void setup_style_and_decor(FvwmWindow *tmp_win, window_style *pstyle)
+{
 #ifdef SHAPE
   if (ShapesSupported)
   {
@@ -268,53 +225,28 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
 #endif /* SHAPE */
 
-
-  /* if the window is in the NoTitle list, or is a transient,
-   *  dont decorate it.
-   * If its a transient, and DecorateTransients was specified,
-   *  decorate anyway
-   */
   /*  Assume that we'll decorate */
   SET_HAS_BORDER(tmp_win, 1);
   SET_HAS_TITLE(tmp_win, 1);
 
-  /* get merged styles */
-  lookup_style(tmp_win, &style);
-
-  sflags = SGET_FLAGS_POINTER(style);
-
-  /* copy iconboxes ptr (if any) */
-  if (SHAS_ICON_BOXES(sflags))
-    tmp_win->IconBoxes = SGET_ICON_BOXES(style);
-  else
-    tmp_win->IconBoxes = NULL;
-  /* on and off buttons combined. */
-  tmp_win->buttons = SIS_BUTTON_DISABLED(sflags);
-  /* FIXME: shouldn't transients inherit the layer ? */
-  if (SUSE_LAYER(sflags))
-  {
-    set_default_layer(tmp_win, SGET_LAYER(style));
-    set_layer(tmp_win, SGET_LAYER(style));
-  }
-  else
-  {
-    set_default_layer(tmp_win, Scr.DefaultLayer);
-    set_layer(tmp_win, Scr.DefaultLayer);
-  }
-
 #ifdef USEDECOR
-  /* search for a UseDecor tag in the Style */
+  /* search for a UseDecor tag in the style */
   tmp_win->fl = NULL;
-  if (SGET_DECOR_NAME(style) != NULL) {
-      FvwmDecor *fl = &Scr.DefaultDecor;
-      for (; fl; fl = fl->next)
-	  if (strcasecmp(SGET_DECOR_NAME(style), fl->tag) == 0) {
-	      tmp_win->fl = fl;
-	      break;
-	  }
+  if (SGET_DECOR_NAME(*pstyle) != NULL)
+  {
+    FvwmDecor *fl = &Scr.DefaultDecor;
+
+    for (; fl; fl = fl->next)
+    {
+      if (strcasecmp(SGET_DECOR_NAME(*pstyle), fl->tag) == 0)
+      {
+	tmp_win->fl = fl;
+	break;
+      }
+    }
   }
   if (tmp_win->fl == NULL)
-      tmp_win->fl = &Scr.DefaultDecor;
+    tmp_win->fl = &Scr.DefaultDecor;
 #endif
 
   tmp_win->title_g.height = GetDecor(tmp_win,TitleHeight);
@@ -322,60 +254,42 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   GetMwmHints(tmp_win);
   GetOlHints(tmp_win);
 
-  SelectDecor(tmp_win, sflags, SGET_BORDER_WIDTH(style),
-	      SGET_HANDLE_WIDTH(style));
+  SelectDecor(tmp_win, &pstyle->flags, SGET_BORDER_WIDTH(*pstyle),
+	      SGET_HANDLE_WIDTH(*pstyle));
 
 #ifdef SHAPE
   /* set boundary width to zero for shaped windows */
   if (tmp_win->wShaped)
     tmp_win->boundary_width = 0;
 #endif /* SHAPE */
+}
 
-  memcpy(&(tmp_win->flags), sflags, sizeof(common_flags_type));
-  /* find a suitable icon pixmap */
-
-  if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconWindowHint))
-    {
-      if (SHAS_ICON(sflags) && (SICON_OVERRIDE(sflags) == ICON_OVERRIDE))
-        {
-          tmp_win->icon_bitmap_file = SGET_ICON_NAME(style);
-        }
-      else
-        {
-          tmp_win->icon_bitmap_file = NULL;
-        }
-    }
-  else if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconPixmapHint))
-    {
-      if (SHAS_ICON(sflags) && (SICON_OVERRIDE(sflags) != NO_ICON_OVERRIDE))
-        {
-          tmp_win->icon_bitmap_file = SGET_ICON_NAME(style);
-        }
-      else
-        {
-          tmp_win->icon_bitmap_file = NULL;
-        }
-    }
-  else if(SHAS_ICON(sflags))
-    {
-      /* an icon was specified */
-      tmp_win->icon_bitmap_file = SGET_ICON_NAME(style);
-    }
+void setup_icon_boxes(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  /* copy iconboxes ptr (if any) */
+  if (SHAS_ICON_BOXES(&pstyle->flags))
+    tmp_win->IconBoxes = SGET_ICON_BOXES(*pstyle);
   else
-    {
-      /* use default icon */
-      tmp_win->icon_bitmap_file = Scr.DefaultIcon;
-    }
+    tmp_win->IconBoxes = NULL;
+}
 
-#ifdef MINI_ICONS
-  if (SHAS_MINI_ICON(sflags)) {
-    tmp_win->mini_pixmap_file = SGET_MINI_ICON_NAME(style);
+void setup_layer(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  /* FIXME: shouldn't transients inherit the layer ? */
+  if (SUSE_LAYER(&pstyle->flags))
+  {
+    set_default_layer(tmp_win, SGET_LAYER(*pstyle));
+    set_layer(tmp_win, SGET_LAYER(*pstyle));
   }
-  else {
-    tmp_win->mini_pixmap_file = NULL;
+  else
+  {
+    set_default_layer(tmp_win, Scr.DefaultLayer);
+    set_layer(tmp_win, Scr.DefaultLayer);
   }
-#endif
+}
 
+void setup_frame_size(FvwmWindow *tmp_win, window_style *pstyle)
+{
   GetWindowSizeHints (tmp_win);
 
   /* Tentative size estimate */
@@ -383,10 +297,10 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height+
     2*tmp_win->boundary_width;
 
-  if (SHAS_MAX_WINDOW_SIZE(sflags))
+  if (SHAS_MAX_WINDOW_SIZE(&pstyle->flags))
   {
-    tmp_win->max_window_width = SGET_MAX_WINDOW_WIDTH(style);
-    tmp_win->max_window_height = SGET_MAX_WINDOW_HEIGHT(style);
+    tmp_win->max_window_width = SGET_MAX_WINDOW_WIDTH(*pstyle);
+    tmp_win->max_window_height = SGET_MAX_WINDOW_HEIGHT(*pstyle);
   }
   else
   {
@@ -395,178 +309,122 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   }
   ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
 		0, 0, False);
+}
+
+int setup_window_placement(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  int client_argc;
+  char **client_argv = NULL;
+  char *str_type;
+  Bool status;
+  XrmValue rm_value;
+/*  RBW - 11/02/1998  */
+  int tmpno1 = -1, tmpno2 = -1, tmpno3 = -1, spargs = 0;
+/**/
 
   /* Find out if the client requested a specific desk on the command line. */
   /*  RBW - 11/20/1998 - allow a desk of -1 to work.  */
-  if (XGetCommand (dpy, tmp_win->w, &client_argv, &client_argc)) {
-      XrmParseCommand (&db, table, 4, "fvwm", &client_argc, client_argv);
-      XFreeStringList(client_argv);
-      status = XrmGetResource (db, "fvwm.desk", "Fvwm.Desk",
-                               &str_type, &rm_value);
-      if ((status == True) && (rm_value.size != 0)) {
-          SGET_START_DESK(style) = atoi(rm_value.addr);
-          /*  RBW - 11/20/1998  */
-          if (SGET_START_DESK(style) > -1)
-            {
-              style.start_desk++;
-            }
-          /**/
-	  style.flags.use_start_on_desk = 1;
+  if (XGetCommand (dpy, tmp_win->w, &client_argv, &client_argc))
+  {
+    XrmParseCommand(&db, table, 4, "fvwm", &client_argc, client_argv);
+    XFreeStringList(client_argv);
+    status = XrmGetResource(db, "fvwm.desk", "Fvwm.Desk",
+			    &str_type, &rm_value);
+    if ((status == True) && (rm_value.size != 0))
+    {
+      SGET_START_DESK(*pstyle) = atoi(rm_value.addr);
+      /*  RBW - 11/20/1998  */
+      if (SGET_START_DESK(*pstyle) > -1)
+      {
+	SSET_START_DESK(*pstyle, SGET_START_DESK(*pstyle) + 1);
       }
+      pstyle->flags.use_start_on_desk = 1;
+    }
 /*  RBW - 11/02/1998  */
 /*  RBW - 11/20/1998 - allow desk or page specs of -1 to work.  */
-      /*  Handle the X Resource equivalent of StartsOnPage.  */
-      status = XrmGetResource (db, "fvwm.page", "Fvwm.Page", &str_type,
-			       &rm_value);
-      if ((status == True) && (rm_value.size != 0)) {
-          spargs = sscanf (rm_value.addr, "%d %d %d", &tmpno1, &tmpno2,
-			   &tmpno3);
-          switch (spargs)
-            {
-            case 1:
-              {
-		style.flags.use_start_on_desk = 1;
-                style.start_desk =  (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
-                break;
-              }
-            case 2:
-              {
-		style.flags.use_start_on_desk = 1;
-                style.start_page_x = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
-                style.start_page_y = (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
-                break;
-              }
-            case 3:
-              {
-		style.flags.use_start_on_desk = 1;
-                style.start_desk = (tmpno1 > -1) ? tmpno1 + 1 : tmpno1;
-                style.start_page_x = (tmpno2 > -1) ? tmpno2 + 1 : tmpno2;
-                style.start_page_y = (tmpno3 > -1) ? tmpno3 + 1 : tmpno3;
-                break;
-              }
-            default:
-              {
-                break;
-              }
-            }
+    /*  Handle the X Resource equivalent of StartsOnPage.  */
+    status = XrmGetResource (db, "fvwm.page", "Fvwm.Page", &str_type,
+			     &rm_value);
+    if ((status == True) && (rm_value.size != 0))
+    {
+      spargs = sscanf (rm_value.addr, "%d %d %d", &tmpno1, &tmpno2, &tmpno3);
+      switch (spargs)
+      {
+      case 1:
+	pstyle->flags.use_start_on_desk = 1;
+	SSET_START_DESK(*pstyle, (tmpno1 > -1) ? tmpno1 + 1 : tmpno1);
+	break;
+      case 2:
+	pstyle->flags.use_start_on_desk = 1;
+	SSET_START_PAGE_X(*pstyle, (tmpno1 > -1) ? tmpno1 + 1 : tmpno1);
+	SSET_START_PAGE_Y(*pstyle, (tmpno2 > -1) ? tmpno2 + 1 : tmpno2);
+	break;
+      case 3:
+	pstyle->flags.use_start_on_desk = 1;
+	SSET_START_DESK(*pstyle, (tmpno1 > -1) ? tmpno1 + 1 : tmpno1);
+	SSET_START_PAGE_X(*pstyle, (tmpno2 > -1) ? tmpno2 + 1 : tmpno2);
+	SSET_START_PAGE_Y(*pstyle, (tmpno3 > -1) ? tmpno3 + 1 : tmpno3);
+	break;
+      default:
+	break;
       }
-/**/
-      XrmDestroyDatabase (db);
-      db = NULL;
+    }
+
+    XrmDestroyDatabase (db);
+    db = NULL;
   }
 
-/*  RBW - 11/02/1998  */
-  if(!PlaceWindow(tmp_win, sflags, SGET_START_DESK(style),
-		  SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style)))
-    return NULL;
+  return PlaceWindow(tmp_win, &pstyle->flags, SGET_START_DESK(*pstyle),
+		     SGET_START_PAGE_X(*pstyle), SGET_START_PAGE_Y(*pstyle));
+}
 
-  /*
-   * Make sure the client window still exists.  We don't want to leave an
-   * orphan frame window if it doesn't.  Since we now have the server
-   * grabbed, the window can't disappear later without having been
-   * reparented, so we'll get a DestroyNotify for it.  We won't have
-   * gotten one for anything up to here, however.
-   */
-  MyXGrabServer(dpy);
-  if(XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY,
-		  &JunkWidth, &JunkHeight,
-		  &JunkBW,  &JunkDepth) == 0)
-    {
-      free((char *)tmp_win);
-      MyXUngrabServer(dpy);
-      return(NULL);
-    }
-
-  XSetWindowBorderWidth (dpy, tmp_win->w,0);
-  if (XGetWMIconName (dpy, tmp_win->w, &text_prop))
-    {
-      tmp_win->icon_name = (char *)text_prop.value;
-    }
-  else
-    {
-      tmp_win->icon_name = NULL;
-    }
-  if(tmp_win->icon_name==(char *)NULL)
-    tmp_win->icon_name = tmp_win->name;
-
-  SET_ICONIFIED(tmp_win, 0);
-  SET_ICON_UNMAPPED(tmp_win, 0);
-  SET_MAXIMIZED(tmp_win, 0);
-
-  update_window_color_style(tmp_win, &style);
-
-  /* add the window to the end of the fvwm list */
-  tmp_win->next = Scr.FvwmRoot.next;
-  tmp_win->prev = &Scr.FvwmRoot;
-  while (tmp_win->next != NULL)
+void get_default_window_background(
+  FvwmWindow *tmp_win, unsigned long *pvaluemask,
+  XSetWindowAttributes *pattributes)
+{
+  if(Pdepth < 2)
   {
-    tmp_win->prev = tmp_win->next;
-    tmp_win->next = tmp_win->next->next;
-  }
-  /* tmp_win->prev points to the last window in the list, tmp_win->next is
-   * NULL. Now fix the last window to point to tmp_win */
-  tmp_win->prev->next = tmp_win;
-  /*
-      RBW - 11/13/1998 - add it into the stacking order chain also.
-      This chain is anchored at both ends on Scr.FvwmRoot, there are
-      no null pointers.
-  */
-  add_window_to_stack_ring_after(tmp_win, &Scr.FvwmRoot);
-
-  /*
-      MatchWinToSM changes tmp_win->attr and the stacking order.
-      Thus it is important have this call *after* PlaceWindow and the
-      stacking order initialization.
-  */
-  MatchWinToSM(tmp_win, &x_max, &y_max, &w_max, &h_max, &do_shade,
-	       &do_maximize);
-
-  /* set up geometry */
-  tmp_win->frame_g.x = tmp_win->attr.x + tmp_win->old_bw;
-  tmp_win->frame_g.y = tmp_win->attr.y + tmp_win->old_bw;
-  tmp_win->frame_g.width = tmp_win->attr.width+2*tmp_win->boundary_width;
-  tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height
-			  + 2 * tmp_win->boundary_width;
-  ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
-		0, 0, False);
-  tmp_win->title_g.x = tmp_win->title_g.y = 0;
-  tmp_win->title_w = 0;
-  tmp_win->title_g.width = tmp_win->frame_g.width - 2*tmp_win->boundary_width;
-  if(tmp_win->title_g.width < 1)
-    tmp_win->title_g.width = 1;
-
-  /* create windows */
-
-  /* mono screens use a stipple pixmap to get greys */
-  if(Pdepth < 2) {
-    valuemask_save = CWBackPixmap;
+    *pvaluemask = CWBackPixmap;
     if(IS_STICKY(tmp_win))
-      attributes.background_pixmap = Scr.sticky_gray_pixmap;
+      pattributes->background_pixmap = Scr.sticky_gray_pixmap;
     else
-      attributes.background_pixmap = Scr.light_gray_pixmap;
-  } else {
-    valuemask_save = CWBackPixel;
-    attributes.background_pixel = tmp_win->BackPixel;
-    attributes.background_pixmap = None;
+      pattributes->background_pixmap = Scr.light_gray_pixmap;
   }
+  else
+  {
+    *pvaluemask = CWBackPixel;
+    pattributes->background_pixel = tmp_win->BackPixel;
+    pattributes->background_pixmap = None;
+  }
+}
 
-  valuemask = valuemask_save|CWCursor|CWColormap|CWBorderPixel|CWEventMask;
-  attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
-  attributes.colormap = Pcmap;
-  attributes.border_pixel = 0;
-  attributes.event_mask = (SubstructureRedirectMask | ButtonPressMask
-			   | ButtonReleaseMask | EnterWindowMask
-			   | LeaveWindowMask | ExposureMask
-			   | VisibilityChangeMask);
+void setup_frame_window(
+  FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes)
+{
+#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
+  Pixmap TexturePixmap = None;
+  Pixmap TexturePixmapSave;
 
   /* stash valuemask bits in case BorderStyle TiledPixmap overwrites */
+  TexturePixmapSave = pattributes->background_pixmap;
+#endif
+
+  valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask;
+  pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
+  pattributes->colormap = Pcmap;
+  pattributes->border_pixel = 0;
+  pattributes->event_mask = (SubstructureRedirectMask | ButtonPressMask
+			     | ButtonReleaseMask | EnterWindowMask
+			     | LeaveWindowMask | ExposureMask
+			     | VisibilityChangeMask);
+
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-  TexturePixmapSave = attributes.background_pixmap;
   if (DFS_FACE_TYPE(GetDecor(tmp_win, BorderStyle.inactive.style)) ==
       TiledPixmapButton)
     TexturePixmap = GetDecor(tmp_win,BorderStyle.inactive.u.p->picture);
-  if (TexturePixmap) {
-    attributes.background_pixmap = TexturePixmap;
+  if (TexturePixmap)
+  {
+    pattributes->background_pixmap = TexturePixmap;
     valuemask = (valuemask & ~CWBackPixel) | CWBackPixmap;
   }
 #endif
@@ -575,105 +433,136 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   tmp_win->frame = XCreateWindow(dpy, Scr.Root, tmp_win->frame_g.x,
 				 tmp_win->frame_g.y, tmp_win->frame_g.width,
 				 tmp_win->frame_g.height, 0, Pdepth,
-				 InputOutput, Pvisual, valuemask, &attributes);
+				 InputOutput, Pvisual, valuemask, pattributes);
+  XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);
+  XSaveContext(dpy, tmp_win->frame, FvwmContext, (caddr_t) tmp_win);
 
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   /* restore background */
-  attributes.background_pixmap = TexturePixmapSave;
+  pattributes->background_pixmap = TexturePixmapSave;
 #endif
+}
 
+void setup_title_window(
+  FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes)
+{
+  valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask;
+  pattributes->cursor = Scr.FvwmCursors[CRS_DEFAULT];
+  pattributes->colormap = Pcmap;
+  pattributes->border_pixel = 0;
+  pattributes->event_mask = (ButtonPressMask | ButtonReleaseMask
+			     | EnterWindowMask | LeaveWindowMask
+			     | ExposureMask);
+
+  tmp_win->title_g.x = tmp_win->boundary_width + tmp_win->title_g.height + 1;
+  tmp_win->title_g.y = tmp_win->boundary_width;
+  pattributes->cursor = Scr.FvwmCursors[CRS_TITLE];
+  tmp_win->title_w = XCreateWindow(dpy, tmp_win->frame,
+				   tmp_win->title_g.x,
+				   tmp_win->title_g.y,
+				   tmp_win->title_g.width,
+				   tmp_win->title_g.height, 0,
+				   CopyFromParent,
+				   InputOutput, CopyFromParent, valuemask,
+				   pattributes);
+  XSaveContext(dpy, tmp_win->title_w, FvwmContext, (caddr_t) tmp_win);
+}
+
+void setup_button_windows(
+  FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes)
+{
+  int i;
 
   /* restore valuemask to remember background */
-  valuemask = valuemask_save|CWCursor|CWColormap|CWBorderPixel|CWEventMask;
-  attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
-			   | EnterWindowMask | LeaveWindowMask | ExposureMask);
+  valuemask |= CWCursor|CWColormap|CWBorderPixel|CWEventMask;
+  pattributes->cursor = Scr.FvwmCursors[CRS_SYS];
+  pattributes->colormap = Pcmap;
+  pattributes->border_pixel = 0;
+  pattributes->event_mask = (ButtonPressMask | ButtonReleaseMask
+			   | EnterWindowMask | LeaveWindowMask
+			   | ExposureMask);
 
-  if (HAS_TITLE(tmp_win)) {
-    tmp_win->title_g.x = tmp_win->boundary_width + tmp_win->title_g.height + 1;
-    tmp_win->title_g.y = tmp_win->boundary_width;
-    attributes.cursor = Scr.FvwmCursors[CRS_TITLE];
-    tmp_win->title_w = XCreateWindow(dpy, tmp_win->frame,
-					tmp_win->title_g.x,
-					tmp_win->title_g.y,
-					tmp_win->title_g.width,
-					tmp_win->title_g.height, 0,
-					CopyFromParent,
-					InputOutput, CopyFromParent, valuemask,
-					&attributes);
-    attributes.cursor = Scr.FvwmCursors[CRS_SYS];
-    for(i = 4; i >= 0; i--) {
-      if((i < Scr.nr_left_buttons) && (tmp_win->left_w[i] > 0)) {
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-	/* domivogt (2-Oct-199): There used to be some code to set the button
-	 * background pixmap based on the border style if 'useborderstyle' was
-	 * set. But the variable checked for the flag didn't ever set the flag.
-	 * This is done when the button is drawn anyway. */
-	valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixel|CWEventMask;
-	attributes.background_pixmap = TexturePixmapSave;
-#if 0
-        if (TexturePixmap
-	    && GetDecor(tmp_win,left_buttons[i].flags) & UseBorderStyle) {
-	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixel|
-	    CWEventMask;
-	  attributes.background_pixmap = TexturePixmap;
-        } else {
-	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixel|
-	    CWEventMask;
-          attributes.background_pixmap = TexturePixmapSave;
-        }
-#endif
-#endif
-        tmp_win->left_w[i] = XCreateWindow (dpy, tmp_win->frame,
-					    tmp_win->title_g.height * i, 0,
-					    tmp_win->title_g.height,
-					    tmp_win->title_g.height, 0,
-					    CopyFromParent, InputOutput,
-					    CopyFromParent, valuemask,
-					    &attributes);
-      } else
-        tmp_win->left_w[i] = None;
+  for(i = 4; i >= 0; i--)
+  {
+    if((i < Scr.nr_left_buttons) && (tmp_win->left_w[i] > 0))
+    {
+      tmp_win->left_w[i] = XCreateWindow(dpy, tmp_win->frame,
+					 tmp_win->title_g.height * i, 0,
+					 tmp_win->title_g.height,
+					 tmp_win->title_g.height, 0,
+					 CopyFromParent, InputOutput,
+					 CopyFromParent, valuemask,
+					 pattributes);
+      XSaveContext(dpy, tmp_win->left_w[i], FvwmContext, (caddr_t) tmp_win);
+    }
+    else
+    {
+      tmp_win->left_w[i] = None;
+    }
 
-      if((i < Scr.nr_right_buttons) && (tmp_win->right_w[i] > 0)) {
-#if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
-	/* see comment for left buttons above */
-	valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixel|CWEventMask;
-          attributes.background_pixmap = TexturePixmapSave;
-#if 0
-        if (TexturePixmap
-	    && GetDecor(tmp_win,right_buttons[i].flags) & UseBorderStyle{
-	  valuemask = CWBackPixmap|CWCursor|CWColormap|CWBorderPixel|
-	    CWEventMask;
-          attributes.background_pixmap = TexturePixmap;
-        } else {
-	  valuemask=valuemask_save|CWCursor|CWColormap|CWBorderPixel|
-	    CWEventMask;
-          attributes.background_pixmap = TexturePixmapSave;
-        }
-#endif
-#endif
-        tmp_win->right_w[i] = XCreateWindow (dpy, tmp_win->frame,
-					     tmp_win->title_g.width
-					     - tmp_win->title_g.height * (i+1),
-					     0, tmp_win->title_g.height,
-					     tmp_win->title_g.height, 0,
-					     CopyFromParent, InputOutput,
-					     CopyFromParent, valuemask,
-					     &attributes);
-      } else
-        tmp_win->right_w[i] = None;
+    if((i < Scr.nr_right_buttons) && (tmp_win->right_w[i] > 0))
+    {
+      tmp_win->right_w[i] = XCreateWindow(dpy, tmp_win->frame,
+					  tmp_win->title_g.width
+					  - tmp_win->title_g.height * (i+1),
+					  0, tmp_win->title_g.height,
+					  tmp_win->title_g.height, 0,
+					  CopyFromParent, InputOutput,
+					  CopyFromParent, valuemask,
+					  pattributes);
+      XSaveContext(dpy, tmp_win->right_w[i], FvwmContext, (caddr_t) tmp_win);
+    }
+    else
+    {
+      tmp_win->right_w[i] = None;
     }
   }
+}
 
-  /* create the resize handles */
+void setup_parent_window(FvwmWindow *tmp_win)
+{
+  unsigned long valuemask;
+  XSetWindowAttributes attributes;
+
+  /* make sure this does not have a BackPixel or BackPixmap so that
+     that when the client dies there is no flash of BackPixel/BackPixmap */
+  /* may look odd with shaped windows if fvwm has shapes disabled */
+  valuemask = CWBackingStore | CWBackPixmap | CWBorderPixel | CWColormap
+	      | CWCursor | CWEventMask;
+  attributes.backing_store = NotUseful;
+  attributes.background_pixmap = None;
+  attributes.border_pixel = 0;
+  attributes.colormap = Pcmap;
+  attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
+  attributes.event_mask = SubstructureRedirectMask;
+  tmp_win->Parent = XCreateWindow(
+    dpy, tmp_win->frame, tmp_win->boundary_width,
+    tmp_win->boundary_width + tmp_win->title_g.height,
+    (tmp_win->frame_g.width - 2 * tmp_win->boundary_width),
+    (tmp_win->frame_g.height - 2 * tmp_win->boundary_width -
+     tmp_win->title_g.height),
+    0, CopyFromParent, InputOutput, CopyFromParent, valuemask, &attributes);
+
+  XSaveContext(dpy, tmp_win->Parent, FvwmContext, (caddr_t) tmp_win);
+}
+
+void setup_resize_handle_windows(FvwmWindow *tmp_win)
+{
+  unsigned long valuemask;
+  XSetWindowAttributes attributes;
+  int i;
+
   /* sides and corners are input only */
   /* title and buttons maybe one day */
   valuemask = CWCursor | CWEventMask;
   attributes.event_mask = (ButtonPressMask | ButtonReleaseMask
 			   | EnterWindowMask | LeaveWindowMask);
-  if(HAS_BORDER(tmp_win)) {
+  if(HAS_BORDER(tmp_win))
+  {
     /* Just dump the windows any old place and let SetupFrame take
      * care of the mess */
-    for(i=0;i<4;i++) {
+    for(i = 0; i < 4; i++)
+    {
       attributes.cursor = Scr.FvwmCursors[CRS_TOP_LEFT+i];
       tmp_win->corners[i] = XCreateWindow (dpy, tmp_win->frame, 0, 0,
 					   tmp_win->corner_width,
@@ -690,143 +579,94 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
 					 InputOnly,
 					 DefaultVisual(dpy, Scr.screen),
 					 valuemask, &attributes);
+      XSaveContext(dpy, tmp_win->sides[i], FvwmContext, (caddr_t) tmp_win);
+      XSaveContext(dpy, tmp_win->corners[i],FvwmContext, (caddr_t) tmp_win);
     }
   }
+}
 
-  /* create the parent of the client window */
-  /* make sure this does not have a BackPixel or BackPixmap so that
-     that when the client dies there is no flash of BackPixel/BackPixmap */
-  /* may look odd with shaped windows if fvwm has shapes disabled */
-  valuemask = CWBackingStore | CWBackPixmap | CWBorderPixel | CWColormap
-	      | CWCursor | CWEventMask;
-  attributes.backing_store = NotUseful;
-  attributes.background_pixmap = None;
-  attributes.colormap = Pcmap;
-  attributes.cursor = Scr.FvwmCursors[CRS_DEFAULT];
-  attributes.event_mask = SubstructureRedirectMask;
-  tmp_win->Parent = XCreateWindow (dpy, tmp_win->frame,
-				   tmp_win->boundary_width,
-				   tmp_win->boundary_width
-				   + tmp_win->title_g.height,
-				   (tmp_win->frame_g.width
-				   - 2 * tmp_win->boundary_width),
-				   (tmp_win->frame_g.height
-				   - 2 * tmp_win->boundary_width
-				   - tmp_win->title_g.height), 0,
-				   CopyFromParent,
-				   InputOutput, CopyFromParent, valuemask,
-				   &attributes);
+void setup_icon(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  XTextProperty text_prop;
 
-
-#ifdef MINI_ICONS
-  if (tmp_win->mini_pixmap_file) {
-    tmp_win->mini_icon = CachePicture (dpy, Scr.NoFocusWin, NULL,
-				       tmp_win->mini_pixmap_file,
-				       Scr.ColorLimit);
+  /* find a suitable icon pixmap */
+  if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconWindowHint))
+  {
+    if (SHAS_ICON(&pstyle->flags) &&
+	SICON_OVERRIDE(&pstyle->flags) == ICON_OVERRIDE)
+      tmp_win->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
+    else
+      tmp_win->icon_bitmap_file = NULL;
+ }
+  else if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconPixmapHint))
+  {
+    if (SHAS_ICON(&pstyle->flags) &&
+	SICON_OVERRIDE(&pstyle->flags) != NO_ICON_OVERRIDE)
+      tmp_win->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
+    else
+      tmp_win->icon_bitmap_file = NULL;
   }
-  else {
-    tmp_win->mini_icon = NULL;
+  else if(SHAS_ICON(&pstyle->flags))
+  {
+    /* an icon was specified */
+    tmp_win->icon_bitmap_file = SGET_ICON_NAME(*pstyle);
   }
-#endif
-
-  XMapSubwindows (dpy, tmp_win->frame);
-  XRaiseWindow(dpy, tmp_win->Parent);
-  XReparentWindow(dpy, tmp_win->w, tmp_win->Parent, 0, 0);
-
-  valuemask = CWEventMask | CWDontPropagate;
-  attributes.event_mask = (StructureNotifyMask | PropertyChangeMask |
-			   EnterWindowMask | LeaveWindowMask |
-			   ColormapChangeMask | FocusChangeMask);
-
-  attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask;
-
-  XChangeWindowAttributes (dpy, tmp_win->w, valuemask, &attributes);
-
-  XAddToSaveSet(dpy, tmp_win->w);
-
-  /*
-   * Reparenting generates an UnmapNotify event, followed by a MapNotify.
-   * Set the map state to FALSE to prevent a transition back to
-   * WithdrawnState in HandleUnmapNotify.  Map state gets set corrected
-   * again in HandleMapNotify.
-   */
-  SET_MAPPED(tmp_win, 0);
-  width = tmp_win->frame_g.width;
-  tmp_win->frame_g.width = 0;
-  height = tmp_win->frame_g.height;
-  tmp_win->frame_g.height = 0;
-
-  SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,width,height,
-	     True, False);
-
-  if (do_maximize) {
-    /* This is essentially Maximize, only we want the given dimensions */
-    SET_MAXIMIZED(tmp_win, 1);
-    ConstrainSize(tmp_win, &w_max, &h_max, 0, 0, False);
-    tmp_win->maximized_ht = h_max;
-    SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE, False);
-    SetBorder(tmp_win, Scr.Hilite == tmp_win, True, True, None);
-    /* fix orig values to not change page on unmaximize  */
-    if (tmp_win->orig_g.x >= Scr.MyDisplayWidth)
-      tmp_win->orig_g.x = tmp_win->orig_g.x % Scr.MyDisplayWidth;
-    if (tmp_win->orig_g.y >= Scr.MyDisplayHeight)
-      tmp_win->orig_g.y = tmp_win->orig_g.y % Scr.MyDisplayHeight;
+  else
+  {
+    /* use default icon */
+    tmp_win->icon_bitmap_file = Scr.DefaultIcon;
   }
 
-  if (do_shade) {
-    WindowShade(&Event, tmp_win->w, tmp_win, C_WINDOW, "", 0);
+  /* icon name */
+  if (XGetWMIconName(dpy, tmp_win->w, &text_prop))
+  {
+    tmp_win->icon_name = (char *)text_prop.value;
   }
+  else
+  {
+    tmp_win->icon_name = NULL;
+  }
+  if(tmp_win->icon_name==(char *)NULL)
+    tmp_win->icon_name = tmp_win->name;
+
   /* wait until the window is iconified and the icon window is mapped
    * before creating the icon window
    */
   tmp_win->icon_w = None;
-  GrabAllWindowButtons(dpy, tmp_win->frame, Scr.AllBindings, C_WINDOW,
-		       GetUnusedModifiers(), Scr.FvwmCursors[CRS_DEFAULT],
-		       True);
-  GrabAllWindowKeys(dpy, tmp_win->frame, Scr.AllBindings,
-		    C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
-		    GetUnusedModifiers(), True);
+}
 
-  XSaveContext(dpy, tmp_win->w, FvwmContext, (caddr_t) tmp_win);
-  XSaveContext(dpy, tmp_win->frame, FvwmContext, (caddr_t) tmp_win);
-  XSaveContext(dpy, tmp_win->Parent, FvwmContext, (caddr_t) tmp_win);
-  if (HAS_TITLE(tmp_win))
-    {
-      XSaveContext(dpy, tmp_win->title_w, FvwmContext, (caddr_t) tmp_win);
-      for(i=0;i<Scr.nr_left_buttons;i++)
-	XSaveContext(dpy, tmp_win->left_w[i], FvwmContext, (caddr_t) tmp_win);
-      for(i=0;i<Scr.nr_right_buttons;i++)
-	if(tmp_win->right_w[i] != None)
-	  XSaveContext(dpy, tmp_win->right_w[i], FvwmContext,
-		       (caddr_t) tmp_win);
-    }
-  if (HAS_BORDER(tmp_win))
-    {
-      for(i=0;i<4;i++)
-	{
-	  XSaveContext(dpy, tmp_win->sides[i], FvwmContext, (caddr_t) tmp_win);
-	  XSaveContext(dpy,tmp_win->corners[i],FvwmContext, (caddr_t) tmp_win);
-	}
-    }
-  if (!position_new_window_in_stack_ring(tmp_win, SDO_START_LOWERED(sflags))) {
-    XWindowChanges xwc;
-    xwc.sibling = get_next_window_in_stack_ring(tmp_win)->frame;
-    xwc.stack_mode = Above;
-    XConfigureWindow(dpy, tmp_win->frame, CWSibling|CWStackMode, &xwc);
+#ifdef MINI_ICONS
+void setup_mini_icon(FvwmWindow *tmp_win, window_style *pstyle)
+{
+  if (SHAS_MINI_ICON(&pstyle->flags))
+  {
+    tmp_win->mini_pixmap_file = SGET_MINI_ICON_NAME(*pstyle);
   }
-  MyXUngrabServer(dpy);
+  else
+  {
+    tmp_win->mini_pixmap_file = NULL;
+  }
 
-  XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
-		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
-  XTranslateCoordinates(dpy,tmp_win->frame,Scr.Root,JunkX,JunkY,
-			&a,&b,&JunkChild);
-  tmp_win->xdiff -= a;
-  tmp_win->ydiff -= b;
+  if (tmp_win->mini_pixmap_file)
+  {
+    tmp_win->mini_icon = CachePicture(dpy, Scr.NoFocusWin, NULL,
+				      tmp_win->mini_pixmap_file,
+				      Scr.ColorLimit);
+  }
+  else
+  {
+    tmp_win->mini_icon = NULL;
+  }
+}
+#endif
+
+void setup_focus_policy(FvwmWindow *tmp_win)
+{
   if(HAS_CLICK_FOCUS(tmp_win) || Scr.go.MouseFocusClickRaises)
   {
     int button;
-    /* need to grab all buttons for window that we are about to
-     * unhighlight */
+
+    /* need to grab all buttons for window */
     for(button = 1; button <= 3; button++)
     {
       XGrabButton(dpy, button, 0, tmp_win->frame, True, ButtonPressMask,
@@ -853,8 +693,358 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       } /* if */
     } /* for */
   } /* if */
-  BroadcastConfig(M_ADD_WINDOW,tmp_win);
+}
 
+/***********************************************************************
+ *
+ *  Procedure:
+ *	AddWindow - add a new window to the fvwm list
+ *
+ *  Returned Value:
+ *	(FvwmWindow *) - pointer to the FvwmWindow structure
+ *
+ *  Inputs:
+ *	w	- the window id of the window to add
+ *	iconm	- flag to tell if this is an icon manager window
+ *
+ ***********************************************************************/
+FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
+{
+  /* new fvwm window structure */
+  register FvwmWindow *tmp_win = NULL;
+  FvwmWindow *tmptmp_win = NULL;
+  /* mask for create windows */
+  unsigned long valuemask;
+  unsigned long valuemask_save = 0;
+  /* attributes for create windows */
+  XSetWindowAttributes attributes;
+  /* area for merged styles */
+  window_style style;
+  /* used for faster access */
+  style_flags *sflags;
+  int width,height;
+  int a,b;
+  extern FvwmWindow *colormap_win;
+  extern Boolean PPosOverride;
+#ifdef I18N_MB
+  char **list;
+  int num;
+#endif
+  int do_shade = 0;
+  int do_maximize = 0;
+  int x_max, y_max;
+  unsigned int w_max, h_max;
+  Bool do_resize_too = False;
+
+  /****** init window structure ******/
+
+  if (!setup_window_structure(&tmptmp_win, w, ReuseWin))
+    return NULL;
+  tmp_win = tmptmp_win;
+
+  /****** safety check ******/
+
+  if(!PPosOverride &&
+     XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
+		  &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth) == 0)
+  {
+    free((char *)tmp_win);
+    return NULL;
+  }
+
+  /****** window name ******/
+
+  setup_window_name(tmp_win);
+
+  /****** window class and resource ******/
+
+  setup_class_and_resource(tmp_win);
+
+  /****** WM hints ******/
+
+  setup_wm_hints(tmp_win);
+
+  /****** transient ******/
+
+  SET_TRANSIENT(tmp_win, !!XGetTransientForHint(dpy, tmp_win->w,
+						&tmp_win->transientfor));
+
+  /****** old border width ******/
+
+  tmp_win->old_bw = tmp_win->attr.border_width;
+
+  /****** basic style and decor ******/
+
+  /* If the window is in the NoTitle list, or is a transient, dont decorate it.
+   * If its a transient, and DecorateTransients was specified, decorate anyway.
+   */
+
+  /* get merged styles */
+  lookup_style(tmp_win, &style);
+  sflags = SGET_FLAGS_POINTER(style);
+  setup_style_and_decor(tmp_win, &style);
+  memcpy(&(FW_COMMON_FLAGS(tmp_win)), &(sflags->common),
+	 sizeof(common_flags_type));
+
+  /****** icon boxes ******/
+
+  setup_icon_boxes(tmp_win, &style);
+
+  /****** disabled buttons ******/
+
+  tmp_win->buttons = SIS_BUTTON_DISABLED(sflags);
+
+  /****** layer ******/
+
+  setup_layer(tmp_win, &style);
+
+  /****** calculate frame size ******/
+
+  setup_frame_size(tmp_win, &style);
+
+  /****** window placement ******/
+
+  switch (setup_window_placement(tmp_win, &style))
+  {
+  case 0:
+    /* failed */
+    return NULL;
+  case 1:
+    /* ok */
+    do_resize_too = False;
+    break;
+  case 2:
+  default:
+    /* resize window too */
+    do_resize_too = True;
+    break;
+  }
+
+  /****** safety check ******/
+
+  /*
+   * Make sure the client window still exists.  We don't want to leave an
+   * orphan frame window if it doesn't.  Since we now have the server
+   * grabbed, the window can't disappear later without having been
+   * reparented, so we'll get a DestroyNotify for it.  We won't have
+   * gotten one for anything up to here, however.
+   */
+  MyXGrabServer(dpy);
+  if(XGetGeometry(dpy, w, &JunkRoot, &JunkX, &JunkY,
+		  &JunkWidth, &JunkHeight,
+		  &JunkBW,  &JunkDepth) == 0)
+  {
+    free((char *)tmp_win);
+    MyXUngrabServer(dpy);
+    return NULL;
+  }
+
+  /****** border width ******/
+
+  XSetWindowBorderWidth (dpy, tmp_win->w,0);
+
+  /******  ******/
+
+  SET_ICONIFIED(tmp_win, 0);
+  SET_ICON_UNMAPPED(tmp_win, 0);
+  SET_MAXIMIZED(tmp_win, 0);
+
+  /****** window colors ******/
+
+  update_window_color_style(tmp_win, &style);
+
+  /****** window list ******/
+
+  /* add the window to the end of the fvwm list */
+  tmp_win->next = Scr.FvwmRoot.next;
+  tmp_win->prev = &Scr.FvwmRoot;
+  while (tmp_win->next != NULL)
+  {
+    tmp_win->prev = tmp_win->next;
+    tmp_win->next = tmp_win->next->next;
+  }
+  /* tmp_win->prev points to the last window in the list, tmp_win->next is
+   * NULL. Now fix the last window to point to tmp_win */
+  tmp_win->prev->next = tmp_win;
+
+  /****** stacking order ******/
+
+  /*
+      RBW - 11/13/1998 - add it into the stacking order chain also.
+      This chain is anchored at both ends on Scr.FvwmRoot, there are
+      no null pointers.
+  */
+  add_window_to_stack_ring_after(tmp_win, &Scr.FvwmRoot);
+
+  /****** session management ******/
+
+  /*
+      MatchWinToSM changes tmp_win->attr and the stacking order.
+      Thus it is important have this call *after* PlaceWindow and the
+      stacking order initialization.
+  */
+  MatchWinToSM(tmp_win, &x_max, &y_max, &w_max, &h_max, &do_shade,
+	       &do_maximize);
+
+  /****** geometry ******/
+
+  /* set up geometry */
+  tmp_win->frame_g.x = tmp_win->attr.x + tmp_win->old_bw;
+  tmp_win->frame_g.y = tmp_win->attr.y + tmp_win->old_bw;
+  tmp_win->frame_g.width = tmp_win->attr.width+2*tmp_win->boundary_width;
+  tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height
+			  + 2 * tmp_win->boundary_width;
+  ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
+		0, 0, False);
+  tmp_win->title_g.x = tmp_win->title_g.y = 0;
+  tmp_win->title_w = 0;
+  tmp_win->title_g.width = tmp_win->frame_g.width - 2*tmp_win->boundary_width;
+  if(tmp_win->title_g.width < 1)
+    tmp_win->title_g.width = 1;
+
+  /****** create windows ******/
+
+  get_default_window_background(tmp_win, &valuemask_save, &attributes);
+
+  /****** frame window ******/
+
+  setup_frame_window(tmp_win, valuemask_save, &attributes);
+
+  /****** title window ******/
+
+  if (HAS_TITLE(tmp_win))
+  {
+    setup_title_window(tmp_win, valuemask_save, &attributes);
+  }
+
+  /****** button windows ******/
+
+  if (HAS_TITLE(tmp_win))
+  {
+    setup_button_windows(tmp_win, valuemask_save, &attributes);
+  }
+
+  /****** resize handle windows ******/
+
+  setup_resize_handle_windows(tmp_win);
+
+  /****** parent of the client window ******/
+
+  setup_parent_window(tmp_win);
+
+  /****** icon ******/
+
+  setup_icon(tmp_win, &style);
+
+  /****** mini icon ******/
+
+#ifdef MINI_ICONS
+  setup_mini_icon(tmp_win, &style);
+#endif
+
+  /******  ******/
+
+  XMapSubwindows (dpy, tmp_win->frame);
+  XRaiseWindow(dpy, tmp_win->Parent);
+  XReparentWindow(dpy, tmp_win->w, tmp_win->Parent, 0, 0);
+
+  /******  ******/
+
+  valuemask = CWEventMask | CWDontPropagate;
+  attributes.event_mask = (StructureNotifyMask | PropertyChangeMask |
+			   EnterWindowMask | LeaveWindowMask |
+			   ColormapChangeMask | FocusChangeMask);
+
+  attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask;
+
+  XChangeWindowAttributes(dpy, tmp_win->w, valuemask, &attributes);
+
+  /******  ******/
+
+  XAddToSaveSet(dpy, tmp_win->w);
+
+  /******  ******/
+
+  /*
+   * Reparenting generates an UnmapNotify event, followed by a MapNotify.
+   * Set the map state to FALSE to prevent a transition back to
+   * WithdrawnState in HandleUnmapNotify.  Map state gets set corrected
+   * again in HandleMapNotify.
+   */
+  SET_MAPPED(tmp_win, 0);
+  width = tmp_win->frame_g.width;
+  tmp_win->frame_g.width = 0;
+  height = tmp_win->frame_g.height;
+  tmp_win->frame_g.height = 0;
+
+  /******  ******/
+
+  SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,width,height,
+	     True, False);
+
+  /****** maximize ******/
+
+  if (do_maximize)
+  {
+    /* This is essentially Maximize, only we want the given dimensions */
+    SET_MAXIMIZED(tmp_win, 1);
+    ConstrainSize(tmp_win, &w_max, &h_max, 0, 0, False);
+    tmp_win->maximized_ht = h_max;
+    SetupFrame(tmp_win, x_max, y_max, w_max, h_max, TRUE, False);
+    SetBorder(tmp_win, Scr.Hilite == tmp_win, True, True, None);
+    /* fix orig values to not change page on unmaximize  */
+    if (tmp_win->orig_g.x >= Scr.MyDisplayWidth)
+      tmp_win->orig_g.x = tmp_win->orig_g.x % Scr.MyDisplayWidth;
+    if (tmp_win->orig_g.y >= Scr.MyDisplayHeight)
+      tmp_win->orig_g.y = tmp_win->orig_g.y % Scr.MyDisplayHeight;
+  }
+
+  /****** windowshade ******/
+
+  if (do_shade)
+  {
+    WindowShade(&Event, tmp_win->w, tmp_win, C_WINDOW, "", 0);
+  }
+
+  /****** grab keys and buttons ******/
+
+  GrabAllWindowButtons(dpy, tmp_win->frame, Scr.AllBindings, C_WINDOW,
+		       GetUnusedModifiers(), Scr.FvwmCursors[CRS_DEFAULT],
+		       True);
+  GrabAllWindowKeys(dpy, tmp_win->frame, Scr.AllBindings,
+		    C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
+		    GetUnusedModifiers(), True);
+
+  /******  ******/
+
+  if (!position_new_window_in_stack_ring(tmp_win, SDO_START_LOWERED(sflags)))
+  {
+    XWindowChanges xwc;
+    xwc.sibling = get_next_window_in_stack_ring(tmp_win)->frame;
+    xwc.stack_mode = Above;
+    XConfigureWindow(dpy, tmp_win->frame, CWSibling|CWStackMode, &xwc);
+  }
+
+  /******  ******/
+
+  MyXUngrabServer(dpy);
+
+  /****** store window offset caused by decorating ******/
+
+  XGetGeometry(dpy, tmp_win->w, &JunkRoot, &JunkX, &JunkY,
+		   &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
+  XTranslateCoordinates(dpy,tmp_win->frame,Scr.Root,JunkX,JunkY,
+			&a,&b,&JunkChild);
+  tmp_win->xdiff -= a;
+  tmp_win->ydiff -= b;
+
+  /****** grab buttons for focus policy ******/
+
+  setup_focus_policy(tmp_win);
+
+  /****** inform modules of new window ******/
+
+  BroadcastConfig(M_ADD_WINDOW,tmp_win);
   BroadcastName(M_WINDOW_NAME,tmp_win->w,tmp_win->frame,
 		(unsigned long)tmp_win,tmp_win->name);
   BroadcastName(M_ICON_NAME,tmp_win->w,tmp_win->frame,
@@ -879,11 +1069,19 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
                       tmp_win->mini_pixmap_file);
 #endif
 
+  /******  ******/
+
   FetchWmProtocols (tmp_win);
   FetchWmColormapWindows (tmp_win);
+
+  /****** colormap ******/
+
   if(!(XGetWindowAttributes(dpy,tmp_win->w,&(tmp_win->attr))))
     tmp_win->attr.colormap = Pcmap;
-  if(NeedToResizeToo)
+
+  /****** resize window ******/
+
+  if(do_resize_too)
     {
       XWarpPointer(dpy, Scr.Root, Scr.Root, 0, 0, Scr.MyDisplayWidth,
 		   Scr.MyDisplayHeight,
@@ -899,18 +1097,21 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
       Event.xany.window = tmp_win->w;
       resize_window(&Event , tmp_win->w, tmp_win, C_WINDOW, "", 0);
     }
+
+  /****** window colormap ******/
+
   InstallWindowColormaps(colormap_win);
+
+  /****** gnome setup ******/
 
 #ifdef GNOME
   /* set GNOME hints on the window from flags set on tmp_win */
   GNOME_SetHints(tmp_win);
-#if 0
   GNOME_SetLayer(tmp_win);
-#endif
   GNOME_SetDesk(tmp_win);
 #endif
 
-  return (tmp_win);
+  return tmp_win;
 }
 
 
@@ -1210,3 +1411,4 @@ void GetWindowSizeHints(FvwmWindow *tmp)
                 orig_hints.win_gravity);
     }
 }
+

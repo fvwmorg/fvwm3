@@ -30,6 +30,7 @@
 #include "misc.h"
 #include "stack.h"
 #include "virtual.h"
+#include "style.h"
 
 
 
@@ -483,10 +484,10 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
   retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
   if (retval)
     {
-      style->start_desk = *(int*)retval;
+      SSET_START_DESK(*style, *(int*)retval);
       /* Allow special case of -1 to work. */
-      if (style->start_desk > -1)
-	style->start_desk++;
+      if (SGET_START_DESK(*style) > -1)
+	SSET_START_DESK(*style, SGET_START_DESK(*style) + 1);
       style->flags.use_start_on_desk = 1;
       style->flag_mask.use_start_on_desk = 1;
       free(retval);
@@ -499,8 +500,8 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
   retval = AtomGet(fwin->w, atom_get, XA_CARDINAL, &size);
   if (retval)
     {
-      style->layer = *(int*)retval;
-      style->flags.use_layer = (style->layer >= 0) ? 1 : 0;
+      SSET_LAYER(*style, *(int*)retval);
+      style->flags.use_layer = (SGET_LAYER(*style) >= 0) ? 1 : 0;
       style->flag_mask.use_layer = 1;
       free(retval);
     }
@@ -512,8 +513,9 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
     {
       if (*(int*)retval & WIN_STATE_STICKY)
 	{
-          style->flags.common.is_sticky = 1;
-          style->flag_mask.common.is_sticky = 1;
+	  SFSET_IS_STICKY(*style, 1);
+	  SMSET_IS_STICKY(*style, 1);
+	  SCSET_IS_STICKY(*style, 1);
 	}
 
       if (*(int*)retval & WIN_STATE_SHADED)
@@ -526,8 +528,9 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
 
       if (*(int*)retval & WIN_STATE_FIXED_POSITION)
 	{
-          style->flags.common.s.is_fixed = 1;
-          style->flag_mask.common.s.is_fixed = 1;
+	  SFSET_IS_FIXED(*style, 1);
+	  SMSET_IS_FIXED(*style, 1);
+	  SCSET_IS_FIXED(*style, 1);
 	}
 
       free(retval);
@@ -542,8 +545,9 @@ GNOME_GetStyle (FvwmWindow *fwin, window_style *style)
     {
       if (*retval & WIN_HINTS_SKIP_WINLIST)
 	{
-	  style->flags.common.s.do_window_list_skip = 1;
-	  style->flag_mask.common.s.do_window_list_skip = 1;
+	  SFSET_DO_WINDOW_LIST_SKIP(*style, 1);
+	  SMSET_DO_WINDOW_LIST_SKIP(*style, 1);
+	  SCSET_DO_WINDOW_LIST_SKIP(*style, 1);
 	}
 
       free(retval);

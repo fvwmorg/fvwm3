@@ -1,9 +1,99 @@
+1999-10-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/module_interface.c (executeModuleSync):
+	made a small performance enhancement
+
+1999-10-18 Olivier Chapuis <olivier.chapuis@free.fr>
+
+	* module_interface.c (executeModuleSync):  New logic in the
+	executeModuleSynch loop. Ctl-Alt-Escape allows to exit from a
+	ModuleSynchronous command.
+
+1999-10-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/add_window.c: moved most window creation stuff into separate
+	functions; still in progress
+	general cleanup
+
+	* fvwm/move_resize.c (resize_window):
+	the ButtonRelease after aborting a resize operation doesn't get passed
+	to the window below anymore
+
+1999-10-16  Eric Gillespie Jr.  <epg@pobox.com>
+
+	* fvwm/conditional.c (MatchesConditionMask): Tests for the
+	do_circulate_skip_shaded flag.
+
+	* fvwm/session.c (MatchWinToSM): Sets whether window has the
+	do_circulate_skip_shaded flag after session restart.
+
+	* fvwm/window_flags.h (DO_SKIP_SHADED_CIRCULATE):
+	(SET_DO_SKIP_SHADED_CIRCULATE):
+	(SETM_DO_SKIP_SHADED_CIRCULATE): New macros.
+
+	* fvwm/style.c (ProcessNewStyle): Looks for CirculateSkipShaded and
+	CirculateHitShaded styles.
+
+	* fvwm/fvwm.h: New flag do_circulate_skip_shaded
+
+1999-10-18  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/XError.c (PrintXErrorAndCoredump):
+	removed unused variable msg
+
+	* fvwm/move_resize.c (moveLoop):
+	window jumps back to original position immediately when a move is
+	terminated (fixes bug #59)
+	unmap geometry window immediately when the move ends
+
+	* fvwm/fvwm.c (FvwmErrorHandler):
+	* fvwm/move_resize.c (moveLoop):
+	(resize_window):
+	global 'bad_window' allows to terminate opaque move/resize when the
+	window has died
+
+	* fvwm/move_resize.c (moveLoop):
+	'Escape' switches back to original page
+
+	* fvwm/functions.c (ExecuteFunction):
+	(execute_complex_function):
+	* fvwm/move_resize.c (resize_window):
+	(moveLoop):
+	* fvwm/menus.c (do_menu):
+	use new signature of WaitForButtonsUp
+
+	* fvwm/misc.c (WaitForButtonsUp):
+	can handle expose events
+
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/move_resize.c (moveLoop):
+	* fvwm/placement.c (PlaceWindow):
+	replaced global 'NeedToResizeToo' with function return values
+
+	* fvwm/placement.c (SmartPlacement): now static
+
+1999-10-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (HideGeometryWindow): function renamed
+
+	* fvwm/session.c (SaveWindowStates): fixed session management fix
+	(RestartInSession): call CloseICCCM2().
+
+1999-10-17  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/style.c:
+	* fvwm/gnome.c (GNOME_GetStyle):
+	* fvwm/add_window.c (AddWIndow):
+	common styles now have access macros
+
 1999-10-16  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm2.1: several fixes; added the advice for using
 	initialization functions to start modules and applications.
 
 1999-10-16  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/focus.c (SetPointerEventPosition): fixed focus bug
 
 	* fvwm/style.c (handle_window_style_change):
 	* fvwm/builtins.c (HandleColorset):

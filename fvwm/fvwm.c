@@ -119,7 +119,10 @@ int JunkX = 0, JunkY = 0;
 Window JunkRoot, JunkChild;		/* junk window */
 unsigned int JunkWidth, JunkHeight, JunkBW, JunkDepth, JunkMask;
 
-Boolean debugging = False,PPosOverride;
+Bool debugging = False;
+Bool PPosOverride;
+
+Window bad_window = None;
 
 char **g_argv;
 int g_argc;
@@ -1914,6 +1917,11 @@ int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
 {
   extern int last_event_type;
 
+  if (event->error_code == BadWindow)
+  {
+    bad_window = event->resourceid;
+    return 0;
+  }
   /* some errors are acceptable, mostly they're caused by
    * trying to update a lost  window or free'ing another modules colors */
   if((event->error_code == BadWindow)||(event->request_code == X_GetGeometry)||

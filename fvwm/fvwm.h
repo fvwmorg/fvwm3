@@ -157,6 +157,7 @@ typedef struct
   {
     unsigned do_circulate_skip : 1;
     unsigned do_circulate_skip_icon : 1;
+    unsigned do_circulate_skip_shaded : 1;
     unsigned do_flip_transient : 1;
     unsigned do_grab_focus_when_created : 1;
     unsigned do_grab_focus_when_transient_created : 1;
@@ -287,7 +288,7 @@ typedef struct window_style
   int start_page_y; /* PageY */
   int max_window_width;
   int max_window_height;
-  icon_boxes *IconBoxes;                /* pointer to iconbox(s) */
+  icon_boxes *icon_boxes;               /* pointer to iconbox(s) */
   style_flags flags;
   style_flags flag_mask;
   style_flags change_mask;

@@ -47,7 +47,6 @@
 
 /* ----- move globals ----- */
 extern XEvent Event;
-Bool NeedToResizeToo;
 
 /* Animated move stuff added by Greg J. Badros, gjb@cs.washington.edu */
 
@@ -132,7 +131,7 @@ static int GetMoveArguments(char *action, int x, int y, int w, int h,
         GetOnePositionArgument(s2,y,h,pFinalY,(float)scrHeight/100,scrHeight))
       retval = 2;
     else
-      *fWarp = FALSE; /* make sure warping is off for interactive moves */
+      *fWarp = False; /* make sure warping is off for interactive moves */
   }
   /* Begine code ---cpatil*/
   else
@@ -206,8 +205,6 @@ static void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX,
     XMapRaised(dpy,Scr.SizeWindow);
   moveLoop(tmp_win, XOffset,YOffset,DragWidth,DragHeight, FinalX,FinalY,
 	   do_move_opaque,False);
-  if (!Scr.gs.do_hide_position_window)
-    XUnmapWindow(dpy,Scr.SizeWindow);
   if (Scr.bo.InstallRootCmap)
     UninstallRootColormap();
   else
@@ -271,7 +268,7 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
       /* don't waste time in the same spot */
       continue;
     XMoveWindow(dpy,w,currentX,currentY);
-    if (fWarpPointerToo == TRUE)
+    if (fWarpPointerToo == True)
     {
       XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,
 		    &JunkX,&JunkY,&pointerX,&pointerY,&JunkMask);
@@ -325,8 +322,7 @@ static void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX,
      * domivogt (28-apr-1999): That is because the keyboard was not grabbed.
      * works nicely now.
      */
-    if (XCheckMaskEvent(dpy,
-			ButtonPressMask|ButtonReleaseMask|KeyPressMask,
+    if (XCheckMaskEvent(dpy, ButtonPressMask|ButtonReleaseMask|KeyPressMask,
 			&Event))
     {
       StashEventTime(&Event);
@@ -375,7 +371,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
   int x,y;
   unsigned int width, height;
   int page_x, page_y;
-  Bool fWarp = FALSE;
+  Bool fWarp = False;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context,
 		     (fMoveToPage) ? CRS_SELECT : CRS_MOVE, ButtonPress))
@@ -404,7 +400,7 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
 	       &width, &height, &JunkBW, &JunkDepth);
   if (fMoveToPage)
   {
-    fAnimated = FALSE;
+    fAnimated = False;
     FinalX = x % Scr.MyDisplayWidth;
     FinalY = y % Scr.MyDisplayHeight;
     if(FinalX < 0)
@@ -485,17 +481,17 @@ void move_window_doit(F_CMD_ARGS, Bool fAnimated, Bool fMoveToPage)
 
 void move_window(F_CMD_ARGS)
 {
-  move_window_doit(eventp,w,tmp_win,context,action,Module,FALSE,FALSE);
+  move_window_doit(eventp,w,tmp_win,context,action,Module,False,False);
 }
 
 void animated_move_window(F_CMD_ARGS)
 {
-  move_window_doit(eventp,w,tmp_win,context,action,Module,TRUE,FALSE);
+  move_window_doit(eventp,w,tmp_win,context,action,Module,True,False);
 }
 
 void move_window_to_page(F_CMD_ARGS)
 {
-  move_window_doit(eventp,w,tmp_win,context,action,Module,FALSE,TRUE);
+  move_window_doit(eventp,w,tmp_win,context,action,Module,False,True);
 }
 
 /* This function does the SnapAttraction stuff. If takes x and y coordinates
@@ -759,11 +755,14 @@ static void DoSnapAttract(
  *
  * Move the rubberband around, return with the new window location
  *
+ * Returns True if the window has to be resized after the move.
+ *
  ****************************************************************************/
-void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
+Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      int Height, int *FinalX, int *FinalY,Bool do_move_opaque,
 	      Bool AddWindow)
 {
+  extern Window bad_window;
   Bool finished = False;
   Bool done;
   Bool aborted = False;
@@ -780,6 +779,25 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int cnx = 0;
   int cny = 0;
   Bool sent_cn = False;
+  Bool do_resize_too = False;
+  int x_bak;
+  int y_bak;
+  Window move_w = None;
+
+  bad_window = None;
+  if (IS_ICONIFIED(tmp_win))
+  {
+    if(tmp_win->icon_pixmap_w != None)
+      move_w = tmp_win->icon_pixmap_w;
+    else if (tmp_win->icon_w != None)
+      move_w = tmp_win->icon_w;
+  }
+  else
+  {
+    move_w = tmp_win->frame;
+  }
+  XGetGeometry(dpy, move_w, &JunkRoot, &x_bak, &y_bak, &JunkWidth, &JunkHeight,
+	       &JunkBW,&JunkDepth);
 
   /* make a copy of the tmp_win structure for sending to the pager */
   memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
@@ -799,7 +817,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
   DisplayPosition(tmp_win,xl,yt,True);
 
-  while (!finished)
+  while (!finished && bad_window != tmp_win->w)
   {
     /* wait until there is an interesting event */
     while (!XPending(dpy) ||
@@ -850,7 +868,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 
     } /* if (Event.type == MotionNotify) */
 
-    done = FALSE;
+    done = False;
     /* Handle a limited number of key press events to allow mouseless
      * operation */
     if (Event.type == KeyPress)
@@ -873,9 +891,10 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  *FinalX = tmp_win->icon_x_loc;
 	  *FinalY = tmp_win->icon_y_loc;
 	}
-	finished = TRUE;
+	aborted = True;
+	finished = True;
       }
-      done = TRUE;
+      done = True;
       break;
     case ButtonPress:
       XAllowEvents(dpy,ReplayPointer,CurrentTime);
@@ -886,14 +905,14 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  ((Event.xbutton.button == 5) && (button_mask & Button5Mask)))
       {
 	/* No new button was pressed, just a delayed event */
-	done = TRUE;
+	done = True;
 	break;
       }
       if(((Event.xbutton.button == 2)&&(!Scr.gs.EmulateMWM))||
 	 ((Event.xbutton.button == 1)&&(Scr.gs.EmulateMWM)&&
 	  (Event.xbutton.state & ShiftMask)))
       {
-	NeedToResizeToo = True;
+	do_resize_too = True;
 	/* Fallthrough to button-release */
       }
       else
@@ -917,10 +936,10 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    *FinalX = tmp_win->icon_x_loc;
 	    *FinalY = tmp_win->icon_y_loc;
 	  }
-	  aborted = 1;
-	  finished = TRUE;
+	  aborted = True;
+	  finished = True;
 	}
-	done = TRUE;
+	done = True;
 	break;
       }
     case ButtonRelease:
@@ -940,7 +959,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       }
       if (xl != xl_orig || yt != yt_orig || vx != Scr.Vx || vy != Scr.Vy)
       {
-          /* only snap if the window actually moved! */
+	/* only snap if the window actually moved! */
         DoSnapAttract(tmp_win, Width, Height, &xl, &yt);
       }
 
@@ -959,8 +978,8 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
       *FinalX = xl;
       *FinalY = yt;
 
-      done = TRUE;
-      finished = TRUE;
+      done = True;
+      finished = True;
       break;
 
     case MotionNotify:
@@ -1026,7 +1045,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	paged++;
       }  /* end while (paged) */
 
-      done = TRUE;
+      done = True;
       break;
 
     default:
@@ -1092,20 +1111,32 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
     }
   } /* while (!finished) */
 
-  if (aborted)
+  if (!Scr.gs.do_hide_position_window)
+    XUnmapWindow(dpy,Scr.SizeWindow);
+  if (aborted || bad_window == tmp_win->w)
   {
     if (vx != Scr.Vx || vy != Scr.Vy)
     {
       MoveViewport(vx, vy, False);
     }
+    if (aborted && do_move_opaque)
+    {
+      XMoveWindow(dpy, move_w, x_bak, y_bak);
+    }
+    if (bad_window == tmp_win->w)
+    {
+      XUnmapWindow(dpy, move_w);
+      XBell(dpy, 0);
+    }
   }
-  if (!NeedToResizeToo)
+  if (!do_resize_too)
     /* Don't wait for buttons to come up when user is placing a new window
      * and wants to resize it. */
-    WaitForButtonsUp();
+    WaitForButtonsUp(True);
   SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, 0);
+  bad_window = None;
 
-  return;
+  return do_resize_too;
 }
 
 /***********************************************************************
@@ -1199,7 +1230,7 @@ static char *hide_options[] =
   NULL
 };
 
-void HideSizeWindow(F_CMD_ARGS)
+void HideGeometryWindow(F_CMD_ARGS)
 {
   char *token = PeekToken(action, NULL);
 
@@ -1425,7 +1456,8 @@ void SetXORPixmap(F_CMD_ARGS)
  ****************************************************************************/
 void resize_window(F_CMD_ARGS)
 {
-  Bool finished = FALSE, done = FALSE, abort = FALSE;
+  extern Window bad_window;
+  Bool finished = False, done = False, abort = False;
   Bool do_resize_opaque;
   int x,y,delta_x,delta_y,stashed_x,stashed_y;
   Window ResizeWindow;
@@ -1449,6 +1481,7 @@ void resize_window(F_CMD_ARGS)
   int i;
   Bool called_from_title = False;
 
+  bad_window = False;
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_RESIZE, ButtonPress))
     return;
 
@@ -1510,11 +1543,11 @@ void resize_window(F_CMD_ARGS)
       tmp_win->orig_g.width = drag->width;
       tmp_win->orig_g.height = drag->height;
       SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		 drag->width, tmp_win->frame_g.height,FALSE,False);
+		 drag->width, tmp_win->frame_g.height,False,False);
     }
     else
       SetupFrame(tmp_win, tmp_win->frame_g.x, tmp_win->frame_g.y,
-		 drag->width, drag->height,FALSE,False);
+		 drag->width, drag->height,False,False);
     SetBorder(tmp_win,True,True,True,None);
 
     ResizeWindow = None;
@@ -1742,7 +1775,7 @@ void resize_window(F_CMD_ARGS)
     stashed_x = stashed_y = -1;
 
   /* loop to resize */
-  while(!finished)
+  while(!finished && bad_window != tmp_win->w)
   {
     /* block until there is an interesting event */
     while (!XCheckMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask |
@@ -1771,7 +1804,7 @@ void resize_window(F_CMD_ARGS)
 	  break;
       }
 
-    done = FALSE;
+    done = False;
     /* Handle a limited number of key press events to allow mouseless
      * operation */
     if(Event.type == KeyPress)
@@ -1780,7 +1813,7 @@ void resize_window(F_CMD_ARGS)
     {
     case ButtonPress:
       XAllowEvents(dpy,ReplayPointer,CurrentTime);
-      done = TRUE;
+      done = True;
       if (((Event.xbutton.button == 1) && (button_mask & Button1Mask)) ||
 	  ((Event.xbutton.button == 2) && (button_mask & Button2Mask)) ||
 	  ((Event.xbutton.button == 3) && (button_mask & Button3Mask)) ||
@@ -1796,13 +1829,13 @@ void resize_window(F_CMD_ARGS)
        *  - no button was started at the beginning and any button
        *    except button 1 was pressed. */
       if (button_mask || (Event.xbutton.button != 1))
-	fButtonAbort = TRUE;
+	fButtonAbort = True;
     case KeyPress:
       /* simple code to bag out of move - CKH */
       if (XLookupKeysym(&(Event.xkey),0) == XK_Escape || fButtonAbort)
       {
-	abort = TRUE;
-	finished = TRUE;
+	abort = True;
+	finished = True;
 	/* return pointer if aborted resize was invoked with key */
 	if (stashed_x >= 0)
 	{
@@ -1816,12 +1849,12 @@ void resize_window(F_CMD_ARGS)
 	  SetBorder(tmp_win,True,True,True,None);
 	}
       }
-      done = TRUE;
+      done = True;
       break;
 
     case ButtonRelease:
-      finished = TRUE;
-      done = TRUE;
+      finished = True;
+      done = True;
       break;
 
     case MotionNotify:
@@ -1849,7 +1882,7 @@ void resize_window(F_CMD_ARGS)
 		 do_resize_opaque);
       }
       fForceRedraw = False;
-      done = TRUE;
+      done = True;
     default:
       break;
     }
@@ -1882,7 +1915,7 @@ void resize_window(F_CMD_ARGS)
   if (!Scr.gs.do_hide_resize_window)
     XUnmapWindow(dpy, Scr.SizeWindow);
 
-  if(!abort)
+  if(!abort && bad_window != tmp_win->w)
   {
     /* size will be >= to requested */
     ConstrainSize(tmp_win, &drag->width, &drag->height, xmotion, ymotion,
@@ -1890,13 +1923,19 @@ void resize_window(F_CMD_ARGS)
     if (IS_SHADED(tmp_win))
     {
       SetupFrame(tmp_win, drag->x, drag->y,
-		 drag->width, tmp_win->frame_g.height, FALSE, False);
+		 drag->width, tmp_win->frame_g.height, False, False);
       tmp_win->orig_g.height = drag->height;
     }
     else
       SetupFrame(tmp_win, drag->x, drag->y, drag->width, drag->height,
-		 FALSE, False);
+		 False, False);
   }
+  if (bad_window == tmp_win->w)
+  {
+    XUnmapWindow(dpy, tmp_win->frame);
+    XBell(dpy, 0);
+  }
+
   if (Scr.bo.InstallRootCmap)
     UninstallRootColormap();
   else
@@ -1904,13 +1943,13 @@ void resize_window(F_CMD_ARGS)
   ResizeWindow = None;
   if (!do_resize_opaque)
     MyXUngrabServer(dpy);
-  UngrabEm();
   xmotion = 0;
   ymotion = 0;
-  WaitForButtonsUp();
-
+  WaitForButtonsUp(True);
+  UngrabEm();
   Scr.flags.edge_wrap_x = edge_wrap_x;
   Scr.flags.edge_wrap_y = edge_wrap_y;
+
   return;
 }
 
@@ -2661,7 +2700,7 @@ void Maximize(F_CMD_ARGS)
       new_height = tmp_win->title_g.height + tmp_win->boundary_width;
     else
       new_height = tmp_win->orig_g.height;
-    SetupFrame(tmp_win, new_x, new_y, new_width, new_height, TRUE, False);
+    SetupFrame(tmp_win, new_x, new_y, new_width, new_height, True, False);
     SetBorder(tmp_win, True, True, True, None);
   }
   else /* maximize */
@@ -2723,7 +2762,7 @@ void Maximize(F_CMD_ARGS)
     tmp_win->maximized_ht = new_height;
     if (IS_SHADED(tmp_win))
       new_height = tmp_win->frame_g.height;
-    SetupFrame(tmp_win,new_x,new_y,new_width,new_height,TRUE,False);
+    SetupFrame(tmp_win,new_x,new_y,new_width,new_height,True,False);
     SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);
   }
 }

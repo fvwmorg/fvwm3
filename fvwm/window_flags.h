@@ -42,6 +42,12 @@
           (fw)->flags.common.s.do_circulate_skip_icon = !!(x)
 #define SETM_DO_SKIP_ICON_CIRCULATE(fw,x) \
           (fw)->flag_mask.common.s.do_circulate_skip_icon = !!(x)
+#define DO_SKIP_SHADED_CIRCULATE(fw) \
+          ((fw)->flags.common.s.do_circulate_skip_shaded)
+#define SET_DO_SKIP_SHADED_CIRCULATE(fw,x) \
+          (fw)->flags.common.s.do_circulate_skip_shaded = !!(x)
+#define SETM_DO_SKIP_SHADED_CIRCULATE(fw,x) \
+          (fw)->flag_mask.common.s.do_circulate_skip_shaded = !!(x)
 #define DO_SKIP_WINDOW_LIST(fw) \
           ((fw)->flags.common.s.do_window_list_skip)
 #define SET_DO_SKIP_WINDOW_LIST(fw,x) \

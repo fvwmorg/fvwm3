@@ -431,31 +431,34 @@ int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit,
  * Discard superflous button events during this wait period.
  *
  ***************************************************************************/
-void WaitForButtonsUp(void)
+void WaitForButtonsUp(Bool do_handle_expose)
 {
   Bool AllUp = False;
   XEvent JunkEvent;
   unsigned int mask;
 
   while(!AllUp)
+  {
+    XAllowEvents(dpy,ReplayPointer,CurrentTime);
+    XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX, &JunkY, &JunkX,
+		  &JunkY, &mask);
+    if(!(mask&(Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask)))
+      AllUp = True;
+    /* handle expose events */
+    if (do_handle_expose && XPending(dpy) &&
+	XCheckMaskEvent(dpy, ExposureMask, &Event))
     {
-      XAllowEvents(dpy,ReplayPointer,CurrentTime);
-      XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-		    &JunkX, &JunkY, &JunkX, &JunkY, &mask);
-
-      if((mask&
-	  (Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))==0)
-	AllUp = True;
+      DispatchEvent(True);
     }
+  }
   XSync(dpy,0);
   while(XCheckMaskEvent(dpy,
 			ButtonPressMask|ButtonReleaseMask|ButtonMotionMask,
 			&JunkEvent))
-    {
-      StashEventTime (&JunkEvent);
-      XAllowEvents(dpy,ReplayPointer,CurrentTime);
-    }
-
+  {
+    StashEventTime (&JunkEvent);
+    XAllowEvents(dpy,ReplayPointer,CurrentTime);
+  }
 }
 
 /*****************************************************************************

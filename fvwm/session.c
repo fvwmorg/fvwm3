@@ -37,6 +37,7 @@
 #include "virtual.h"
 #include "stack.h"
 #include "gnome.h"
+#include "icccm2.h"
 
 extern int master_pid;
 
@@ -318,8 +319,8 @@ SaveWindowStates(FILE *f)
     {
       Bool is_icon_sticky;
 
-      if (XGetGeometry(dpy, ewin->w, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
-                       &JunkHeight, &JunkBW, &JunkDepth))
+      if (!XGetGeometry(dpy, ewin->w, &JunkRoot, &JunkX, &JunkY, &JunkWidth,
+			&JunkHeight, &JunkBW, &JunkDepth))
       {
           /* Don't save the state of windows that already died (i.e. modules)!
            */
@@ -667,6 +668,8 @@ MatchWinToSM(FvwmWindow *ewin,
 	      SET_ICON_STICKY(ewin, IS_ICON_STICKY(&(matches[i])));
 	      SET_DO_SKIP_ICON_CIRCULATE(ewin,
 					 DO_SKIP_ICON_CIRCULATE(&(matches[i])));
+	      SET_DO_SKIP_SHADED_CIRCULATE(ewin,
+					   DO_SKIP_SHADED_CIRCULATE(&(matches[i])));
 	      SET_DO_SKIP_CIRCULATE(ewin, DO_SKIP_CIRCULATE(&(matches[i])));
 	      SET_FOCUS_MODE(ewin, GET_FOCUS_MODE(&(matches[i])));
 	      ewin->name = matches[i].wm_name;
@@ -798,8 +801,7 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
     saveStateFile(filename);
     setSmProperties(sm_conn, filename, SmRestartImmediately);
 
-    XSelectInput(dpy, Scr.Root, 0);
-    XSync(dpy, 0);
+    CloseICCCM2();
     XCloseDisplay(dpy);
 
     SmcCloseConnection(sm_conn, 0, NULL);

@@ -24,7 +24,7 @@ void AnimatedMoveFvwmWindow(FvwmWindow *tmp_win, Window w, int startX,
 			    int startY, int endX, int endY,
 			    Bool fWarpPointerToo, int cmsDelay,
 			    float *ppctMovement);
-void moveLoop(FvwmWindow *,int,int,int,int,int *,int *,Bool,Bool);
+int moveLoop(FvwmWindow *,int,int,int,int,int *,int *,Bool,Bool);
 void move_window(F_CMD_ARGS);
 void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      unsigned long context, char *action,int* Module,
@@ -34,7 +34,7 @@ void move_window_to_page(F_CMD_ARGS);
 void SetMoveSmoothness(F_CMD_ARGS);
 void SetMoveThreshold(F_CMD_ARGS);
 void SetOpaque(F_CMD_ARGS);
-void HideSizeWindow(F_CMD_ARGS);
+void HideGeometryWindow(F_CMD_ARGS);
 void SetSnapAttraction(F_CMD_ARGS);
 void SetSnapGrid(F_CMD_ARGS);
 void SetXOR(F_CMD_ARGS);

@@ -17,10 +17,7 @@
 #define PLACEMENT_H
 
 /*  RBW - 11/02/1998  */
-int SmartPlacement(FvwmWindow *t, int width, int height,int *x,int *y,
-		   int pdeltax, int pdeltay);
-/*  RBW - 11/02/1998  */
-Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflag, int Desk, int PageX,
+int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflag, int Desk, int PageX,
 		 int PageY);
 void PlaceAgain_func(F_CMD_ARGS);
 

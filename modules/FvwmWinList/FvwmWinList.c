@@ -6,27 +6,21 @@
  * The author makes not guarantees or warantees, either express or
  * implied.  Feel free to use any contained here for any purpose, as long
  * and this and any other applicible copyrights are kept intact.
-
+ *
  * The functions in this source file that are based on part of the FvwmIdent
- * module for Fvwm are noted by a small copyright atop that function, all others
- * are copyrighted by Mike Finger.  For those functions modified/used, here is
- *  the full, origonal copyright:
+ * module for Fvwm are noted by a small copyright atop that function, all
+ * others are copyrighted by Mike Finger.  For those functions modified/used,
+ * here is the full, origonal copyright:
  *
  * Copyright 1994, Robert Nation and Nobutaka Suzuki.
  * No guarantees or warantees or anything
  * are provided or implied in any way whatsoever. Use this program at your
  * own risk. Permission to use this program for any purpose is given,
  * as long as the copyright is kept intact.
-
+ *
  * Modifications Done to Add Pixmaps, focus highlighting and Current Desk Only
  * By Don Mahurin, 1996, Some of this Code was taken from FvwmTaskBar
-
- * Bug Notes:(Don Mahurin)
-
- * Moving a window doesnt send M_CONFIGURE, as I thought it should. Desktop
- * for that button is not updated.
-
-*/
+ */
 
 /* This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -166,6 +160,7 @@ int ItemCountD(List *list )
 int main(int argc, char **argv)
 {
   char *temp, *s;
+  unsigned long mask;
 #ifdef HAVE_SIGACTION
   struct sigaction  sigact;
 #endif
@@ -251,14 +246,16 @@ int main(int argc, char **argv)
   /* Request a list of all windows,
    * wait for ConfigureWindow packets */
 
-  SetMessageMask(Fvwm_fd,
+  mask =
 #ifdef MINI_ICONS
 		 M_MINI_ICON |
 #endif
-		 M_CONFIGURE_WINDOW | M_ADD_WINDOW | M_DESTROY_WINDOW |\
-		 M_WINDOW_NAME | M_ICON_NAME | M_DEICONIFY | M_ICONIFY |\
-		 M_END_WINDOWLIST | M_NEW_DESK | M_FOCUS_CHANGE |\
-		 M_CONFIG_INFO | M_SENDCONFIG | M_LOCKONSEND);
+		 M_CONFIGURE_WINDOW | M_ADD_WINDOW | M_DESTROY_WINDOW |
+		 M_WINDOW_NAME | M_ICON_NAME | M_DEICONIFY | M_ICONIFY |
+		 M_END_WINDOWLIST | M_NEW_DESK | M_FOCUS_CHANGE |
+		 M_CONFIG_INFO | M_SENDCONFIG;
+
+  SetMessageMask(Fvwm_fd,mask);
 
   SendFvwmPipe("Send_WindowList",0);
 
@@ -267,6 +264,9 @@ int main(int argc, char **argv)
 
   /* tell fvwm we're running */
   SendFinishedStartupNotification(Fvwm_fd);
+
+  /* Need to lock on send here because of ModuleSynchronous */
+  SetMessageMask(Fvwm_fd, mask | M_LOCKONSEND);
 
   MainEventLoop();
 #ifdef FVWM_DEBUG_MSGS

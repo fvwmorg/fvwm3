@@ -27,8 +27,6 @@ static char *request_name(unsigned char code);
 
 void PrintXErrorAndCoredump(Display *dpy, XErrorEvent *error, char *MyName)
 {
-  char msg[256];
-
 #if 0
   /* can't call this from within an error handler! */
   XGetErrorText(dpy, error->error_code, msg, sizeof(msg));

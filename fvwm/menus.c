@@ -794,7 +794,7 @@ MenuStatus do_menu(MenuParameters *pmp)
   if(!pmp->flags.is_submenu)
   {
     UngrabEm();
-    WaitForButtonsUp();
+    WaitForButtonsUp(False);
     if (retval == MENU_DONE || retval == MENU_DONE_BUTTON)
     {
       if (pmp->ret_paction && *(pmp->ret_paction) && !fDoubleClick)

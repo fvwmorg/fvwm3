@@ -2110,7 +2110,7 @@ the window.
 
 
 .TP
-.B "HideSizeWindow" "[None|Move|Resize]"
+.B "HideGeometryWindow" "[None|Move|Resize]"
 Hides the position or size window that is usually shown when a window
 is moved or resized interactively.  To switch it of only for move
 respectively resize operations the optional parameters \fIMove\fP and
@@ -3226,6 +3226,7 @@ NoTitle / Title,
 NoHandles / Handles,
 WindowListSkip / WindowListHit,
 CirculateSkip / CirculateHit,
+CirculateSkipShaded / CirculateHitShaded,
 Layer,
 StaysOnTop / StaysOnBottom / StaysPut,
 Sticky / Slippery,
@@ -4287,8 +4288,9 @@ those farther away.
 Performs \fIcommand\fP (typically Focus) on the next window which
 satisfies all \fIconditions\fP.  Conditions are the same as for \fICurrent\fP
 with the addition of CirculateHit which overrides the CirculateSkip style
-attribute and CirculateHitIcon which overrides the CirculateSkipIcon style
-attribute for iconified windows.
+attribute, CirculateHitIcon which overrides the CirculateSkipIcon style
+attribute for iconified windows and CirculateHitShaded which does the
+same for shaded windows.
 
 
 .TP

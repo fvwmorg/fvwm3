@@ -80,13 +80,13 @@ static void GetGravityOffsets (FvwmWindow *tmp,int *xp,int *yp);
 #endif
 
 /*  RBW - 11/02/1998  */
-int SmartPlacement(FvwmWindow *t,
-		   int width,
-		   int height,
-		   int *x,
-		   int *y,
-		   int pdeltax,
-		   int pdeltay)
+static int SmartPlacement(FvwmWindow *t,
+			  int width,
+			  int height,
+			  int *x,
+			  int *y,
+			  int pdeltax,
+			  int pdeltay)
 {
   int PageBottom    =  Scr.MyDisplayHeight - pdeltay;
   int PageRight     =  Scr.MyDisplayWidth - pdeltax;
@@ -438,11 +438,16 @@ static int test_fit(FvwmWindow *t, int x11, int y11, int aoimin, int pdeltax,
 /**************************************************************************
  *
  * Handles initial placement and sizing of a new window
- * Returns False in the event of a lost window.
+ *
+ * Return value:
+ *
+ *   0 = window lost
+ *   1 = OK
+ *   2 = OK, window must be resized too
  *
  **************************************************************************/
 /*  RBW - 11/02/1998  */
-Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
+int PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
 		 int PageY)
 {
 /**/
@@ -453,6 +458,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
   int px = 0, py = 0, pdeltax = 0, pdeltay = 0;
   int PageRight = Scr.MyDisplayWidth, PageBottom = Scr.MyDisplayHeight;
   int smartlyplaced       =  False;
+  int rc = 1;
   Bool HonorStartsOnPage  =  False;
   extern Bool Restarting;
 /**/
@@ -461,7 +467,6 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
   yt = 0;
 
   GetGravityOffsets (tmp_win, &gravx, &gravy);
-
 
   /* Select a desk to put the window on (in list of priority):
    * 1. Sticky Windows stay on the current desk.
@@ -525,10 +530,10 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
 /**/
 
 /*  Don't alter the existing desk location during Capture/Recapture.  */
-  if (!PPosOverride)  {
+  if (!PPosOverride) {
     tmp_win->Desk = Scr.CurrentDesk;
-    }
-  if (SIS_STICKY(sflags))
+  }
+  if (SIS_STICKY(*sflags))
     tmp_win->Desk = Scr.CurrentDesk;
   else if ((SUSE_START_ON_DESK(sflags)) && Desk && HonorStartsOnPage)
     tmp_win->Desk = (Desk > -1) ? Desk - 1 : Desk;    /*  RBW - 11/20/1998  */
@@ -594,7 +599,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
     adjust the coordinates later. Otherwise, just switch to the target
     page - it's ever so much simpler.
 */
-    if (!SIS_STICKY(sflags) && SUSE_START_ON_DESK(sflags))
+    if (!SIS_STICKY(*sflags) && SUSE_START_ON_DESK(sflags))
     {
       if (PageX && PageY)
       {
@@ -727,7 +732,12 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
           DragHeight = tmp_win->frame_g.height;
 
           XMapRaised(dpy,Scr.SizeWindow);
-          moveLoop(tmp_win,0,0,DragWidth,DragHeight,&xl,&yt,False,True);
+	  if (moveLoop(tmp_win,0,0,DragWidth,DragHeight,&xl,&yt,False,True))
+	    /* resize too */
+	    rc = 2;
+	  else
+	    /* ok */
+	    rc = 1;
           XUnmapWindow(dpy,Scr.SizeWindow);
           MyXUngrabServer(dpy);
           UngrabEm();
@@ -765,7 +775,8 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
 
       if ( ( DO_NOT_SHOW_ON_MAP(tmp_win) && HonorStartsOnPage )  &&
 
-           ( (!(IS_TRANSIENT(tmp_win)) || SUSE_START_ON_PAGE_FOR_TRANSIENT(sflags)) &&
+           ( (!(IS_TRANSIENT(tmp_win)) ||
+	      SUSE_START_ON_PAGE_FOR_TRANSIENT(sflags)) &&
 
              ((SUSE_NO_PPOSITION(sflags)) ||
               !(tmp_win->hints.flags & PPosition)) &&
@@ -829,7 +840,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, style_flags *sflags, int Desk, int PageX,
     if(gravx > 0)
       tmp_win->attr.x -= 2*tmp_win->boundary_width;
   }
-  return True;
+  return rc;
 }
 
 

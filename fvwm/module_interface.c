@@ -34,6 +34,7 @@
 #include <ctype.h>
 #include <stdarg.h>
 #include <errno.h>
+#include <X11/keysym.h>
 
 #include <fcntl.h>
 #include <sys/time.h>
@@ -338,13 +339,15 @@ void executeModuleSync(F_CMD_ARGS)
   char *next;
   char *token;
   char *expect = NULL;
-  struct timeval timeout = {42, 0};
-  struct timeval *timeoutP = &timeout;
+  struct timeval timeout = {0, 1};
+  struct timeval *timeoutP = &timeout; /* use 1 usec timeout in select */
   int pipe_slot;
   fd_set in_fdset;
   fd_set out_fdset;
   Window targetWindow;
   extern fd_set_size_t fd_width;
+  time_t start_time;
+  XEvent tmpevent;
 
   if (!action)
     return;
@@ -389,22 +392,11 @@ void executeModuleSync(F_CMD_ARGS)
     return;
   }
 
-  /* wait for the message from the module */
-
   /* wait for module input */
+  start_time = time(NULL);
+
   while (1)
   {
-    if (sec > 0)
-    {
-      timeout.tv_sec = sec;
-      timeout.tv_usec = 0;
-      timeoutP = &timeout;
-    }
-    else
-    {
-      timeoutP = NULL;
-    }
-
     FD_ZERO(&in_fdset);
     FD_ZERO(&out_fdset);
     if(readPipes[pipe_slot] >= 0)
@@ -437,10 +429,19 @@ void executeModuleSync(F_CMD_ARGS)
         FlushQueue(pipe_slot);
       }
     }
-    else
+    usleep(1000);
+    if (difftime(time(NULL), start_time) >= sec && sec)
     {
       /* timeout */
       return;
+    }
+    /* Check for "Ctl-Alt-Escape" */
+    if (XPending(dpy) && XCheckMaskEvent(dpy, KeyPressMask, &tmpevent))
+    {
+      if (tmpevent.type == KeyPress &&
+	  XLookupKeysym(&(tmpevent.xkey),0) == XK_Escape &&
+	  tmpevent.xbutton.state & ControlMask)
+	return;
     }
   }
 }
