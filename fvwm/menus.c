@@ -1433,7 +1433,7 @@ static void MenuInteraction(
     if (pmp->event_propagate_to_submenu)
     {
       /* handle an event that was passed in from the parent menu */
-      memmove(&Event, pmp->event_propagate_to_submenu, sizeof(XEvent));
+      memcpy(&Event, pmp->event_propagate_to_submenu, sizeof(XEvent));
       pmp->event_propagate_to_submenu = NULL;
     }
     else if (flags.do_recycle_event)
@@ -2122,6 +2122,7 @@ static void MenuInteraction(
       if (flags.do_menu)
       {
 	MenuParameters mp;
+	XEvent e;
 
 	mp.menu = mrPopup;
 	mp.parent_menu = pmp->menu;
@@ -2137,12 +2138,20 @@ static void MenuInteraction(
 	mp.eventp = (flags.do_popup_and_warp) ? (XEvent *)1 : NULL;
 	mp.pops = &mops;
 	mp.ret_paction = pmp->ret_paction;
-	mp.event_propagate_to_submenu =
-	  (flags.do_propagate_event_into_submenu) ? &Event : NULL;
+	if (flags.do_propagate_event_into_submenu)
+	{
+	  memcpy(&e, &Event, sizeof(XEvent));
+	  mp.event_propagate_to_submenu = &e;
+	}
+	else
+	{
+	  mp.event_propagate_to_submenu = NULL;
+	}
 
 	/* recursively do the new menu we've moved into */
 	do_menu(&mp, pmret);
 
+	mp.event_propagate_to_submenu = NULL;
 	flags.do_propagate_event_into_submenu = False;
 	if (pmret->rc == MENU_PROPAGATE_EVENT)
 	{
