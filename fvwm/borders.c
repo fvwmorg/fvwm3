@@ -396,8 +396,13 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
       if((flush_expose(t->frame))||(expose_win == t->frame)||
          (expose_win == None))
       {
-        /* remove any lines drawn in the border */
-        XClearWindow(dpy, t->frame);
+        /* remove any lines drawn in the border if hidden handles or noinset
+         * and if a handle was pressed */
+#ifdef BORDERSTYLE
+        if ((PressedW == None) && (borderflags & (NoInset | HiddenHandles)))
+          XClearWindow(dpy, t->frame);
+#endif
+
         /* draw the inside relief */
         if(
 #ifdef BORDERSTYLE
