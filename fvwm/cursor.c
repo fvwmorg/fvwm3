@@ -255,7 +255,7 @@ static int myCursorNameToIndex (char *cursor_name)
 #endif
 #ifdef XC_shuttle
     {"shuttle",	XC_shuttle},
-#endif XC_sizing
+#endif
     {"sizing", XC_sizing},
 #ifdef XC_spider
     {"spider", XC_spider},

@@ -2204,7 +2204,7 @@ static void change_colorset(int colorset)
   recursive_change_colorset(UberButton->c, colorset);
 
   return;
-};
+}
 
 static void handle_colorset_packet(unsigned long *body)
 {

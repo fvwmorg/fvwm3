@@ -818,7 +818,7 @@ void UpdateWindowShape ()
   shape_count =
     ndesks + ((Scr.CurrentDesk < desk1 || Scr.CurrentDesk >desk2) ? 0 : 1);
 
-  shape = alloca (shape_count * sizeof (XRectangle));
+  shape = (XRectangle *)alloca (shape_count * sizeof (XRectangle));
 
   if (shape == NULL)
     return;

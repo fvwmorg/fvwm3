@@ -42,7 +42,7 @@ void HandleClientMessage(void);
 void HandlePropertyNotify(void);
 void HandleKeyPress(void);
 void HandleVisibilityNotify(void);
-STROKE_CODE(void HandleButtonRelease(void));
-STROKE_CODE(void HandleMotionNotify(void));
+STROKE_CODE(void HandleButtonRelease(void);)
+STROKE_CODE(void HandleMotionNotify(void);)
 
 #endif /* _EVENTS_ */

@@ -115,8 +115,8 @@ FvwmWindow *Tmp_win;		/* the current fvwm window */
 int last_event_type=0;
 Window last_event_window=0;
 
-STROKE_CODE(static int send_motion);
-STROKE_CODE(static char sequence[MAX_SEQUENCE+1]);
+STROKE_CODE(static int send_motion;)
+STROKE_CODE(static char sequence[MAX_SEQUENCE+1];)
 
 #ifdef SHAPE
 extern int ShapeEventBase;

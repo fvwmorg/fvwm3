@@ -1,3 +1,14 @@
+2000-05-01  Michael Han  <mikehan@best.com>
+
+	* modules/FvwmPager/x_pager.c (UpdateWindowShape):
+    * modules/FvwmButtons/FvwmButtons.c (change_colorset):
+    * fvwm/builtins.h:
+    * fvwm/cursor.c (myCursorNameToIndex):
+    * fvwm/bindings.h:
+    * fvwm/events.h:
+    * fvwm/events.c:
+	-Wall -ansi fixes, mostly removing extraneous semicolons.
+
 2000-05-01  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/module_interface.c (make_new_vpacket, CONFIGARGSNEW):
@@ -8,9 +19,9 @@
 
 2000-04-30  Michael Han  <mikehan@best.com>
 
-    * fvwm/bindings.c (ParseBinding):
-    * fvwm/session.c
-    -Wall fixes to hide variables if they're not going to be used
+	* fvwm/bindings.c (ParseBinding):
+	* fvwm/session.c
+	-Wall fixes to hide variables if they're not going to be used
 
 2000-04-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
