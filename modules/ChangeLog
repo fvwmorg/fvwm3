@@ -1,3 +1,20 @@
+2002-11-15  Jason Weber  <baboon@imonk.com>
+	* FvwmProxy/FvwmProxy.h:
+	* FvwmProxy/FvwmProxy.c:
+	Fixed Next to really ignore windows on other desks.
+	Added temp fix to use XFillRectangle vs. XClearWindow since the latter
+	wasn't using the proper select colorset background color.
+	Added .fvwm2rc configs for Width, Height, Separation, EnterSelect, and
+	ProxyMove.
+	Implemented the 'Prev" command.
+	Extended Next/Prev commands to remember where they left off.
+
+	* FvwmProxy/FvwmProxy.1:
+	Filled out a lot of the man page
+
+	* FvwmProxy/ConfigFvwmProxyDefaults:
+	Added some defaults
+
 2002-11-15  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmTheme/FvwmTheme.1: Language check, general edits,
