@@ -82,6 +82,134 @@ Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
   return True;
 }
 
+
+/*===================================================================
+  Raise a target and all higher FVWM-managed windows above any
+    override_redirects:
+    - locate the highest override_redirect above our target
+    - put all the FvwmWindows from the target to the highest FvwmWindow
+      below the highest override_redirect in the restack list
+    - configure our target window above the override_redirect sibling,
+      and restack.
+  ===================================================================*/
+static void raise_over_unmanaged(FvwmWindow *t)
+{
+Window junk;
+Window *tops;
+int i;
+unsigned int num;
+Bool found = False;
+Window OR_Above  =  0;
+Window topwin;
+Window *wins;
+int count = 0;
+FvwmWindow  *t2       =  NULL;
+FvwmWindow  *junkwin  =  NULL;
+unsigned int flags;
+XWindowChanges changes;
+XWindowAttributes wa;
+
+topwin = 0;
+topwin = Scr.FvwmRoot.stack_next->frame;
+found = False;
+XQueryTree(dpy, Scr.Root, &junk, &junk, &tops, &num);
+
+/*===================================================================
+  Locate the highest override_redirect window above our target, and
+  the highest of our windows below it.
+  ===================================================================*/
+for (i = 0; i < num; i++)  {
+  if (tops[i] == t->frame)  {
+    found = True;
+    }
+  if (found)  {
+    /*
+      It might be just as well (and quicker) just to check for the absence of
+      an FvwmContext instead of for override_redirect...
+    */
+    if (XGetWindowAttributes(dpy, tops[i], &wa))  {
+      if (wa.override_redirect == True)  {
+        /*  There's always at least 1 OR lurking somewhere...NoFocusWin.  */
+        if (i > 0)  {
+          if (XFindContext(dpy, tops[i - 1],
+              FvwmContext, (caddr_t *) &junkwin) != XCNOENT)  {
+            /*  save next lower non-OR win below highest OR...  */
+            topwin = tops[i - 1];
+            }
+          }
+          OR_Above = tops[i];
+        }
+      }
+/*
+    else  {
+      DBUG("raise_over_unmanaged",
+          "Error -  XGetWindowAttributes failed for window %8.8lx!\n",
+          tops[i]);
+      }
+*/
+    }    /*  end  if found  */
+  }      /*  end  for  */
+
+/*===================================================================
+  Count the windows we need to restack, then build the stack list.
+  ===================================================================*/
+if (OR_Above)
+  {
+  i = 0;
+  count = 0;
+  found = False;
+  for (t2 = t; (t2 != &Scr.FvwmRoot && ! found); t2 = t2->stack_prev)  {
+    count++;
+    if (IS_ICONIFIED(t2) && ! IS_ICON_SUPPRESSED(t2))  {
+      if (t2->icon_w != None)  {
+        count++;
+        }
+      if (t2->icon_pixmap_w != None)  {
+        count++;
+        }
+      }
+    if (t2->frame == topwin)  {
+      found = True;
+      }
+    }
+
+  i = 0;
+  found = False;
+  if (count > 0)  {
+    topwin = Scr.FvwmRoot.stack_next->frame;
+    wins = (Window*) safemalloc (count * sizeof (Window));
+    for (t2 = t; t2 != &Scr.FvwmRoot && ! found; t2 = t2->stack_prev)  {
+      wins[i++] = t2->frame;
+      if (IS_ICONIFIED(t2) && ! IS_ICON_SUPPRESSED(t2))  {
+        if (t2->icon_w != None)  {
+          wins[i++] = t2->icon_w;
+          }
+        if (t2->icon_pixmap_w != None)  {
+          wins[i++] = t2->icon_pixmap_w;
+          }
+        }
+      if (t2->frame == topwin)  {
+        found = True;
+        }
+      }
+
+    memset(&changes, '\0', sizeof(changes));
+    changes.sibling = OR_Above;
+    changes.stack_mode = Above;
+    flags = CWSibling|CWStackMode;
+
+    XConfigureWindow (dpy, topwin, flags, &changes);  
+    XRestackWindows (dpy, wins, i);
+    free (wins);
+    }
+  }       /*  end - we found an OR above our target  */
+
+
+XFree (tops);
+return;
+}
+
+
 static Bool must_move_transients(FvwmWindow *t, Bool do_lower,
 				 Bool *found_transient)
 {
@@ -330,13 +458,27 @@ static void inner_RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower,
 
   }
 
+
+  /*
+      This hack raises the target and all higher FVWM windows over any
+      override_redirect windows that may be above it. This is used to
+      cope with ill-bahaved applications that insist on using long-lived
+      override_redirects.
+  */
+  if (Scr.bo.RaiseOverUnmanaged && ! do_lower)
+    {
+    raise_over_unmanaged(t);
+    }
+
+
   if (!do_lower)
   {
     raisePanFrames();
 
     /*
      * The following is a hack to raise X windows over native windows
-     * which is needed for some (all ?) X servers running under windows NT.
+     * which is needed for some (all ?) X servers running under Windows
+     * or Windows NT.
      */
     if (Scr.bo.RaiseHackNeeded)
     {

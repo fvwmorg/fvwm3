@@ -1487,10 +1487,15 @@ applications to have modal dialogs.  Use this option with care.
 
 \fIRaiseOverNativeWindows\fP makes fvwm try to raise the windows
 it manages over native windows of the X servers host system. This
-is needed for some (all ?) X servers running under Windows NT. Fvwm
-tries to detect if it is running under such an X server and
+is needed for some (all ?) X servers running under Windows or Windows
+NT. Fvwm tries to detect if it is running under such an X server and
 initializes the flag accordingly.  This is the same option as it
 is listed under the GlobalOpts command.
+
+\fIRaiseOverUnmanaged\fP makes fvwm try to raise the windows it
+manages over override_redirect windows. This is used to cope with
+ill-mannered applications that use long-lived windows of this sort,
+contrary to ICCCM conventions.
 
 \fIFlickeringMoveWorkaround\fP disables so called 'ConfigurNotify'
 events that are usually sent to an application while it is moved.

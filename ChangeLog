@@ -1,3 +1,12 @@
+1999-09-18  Bob Woodside  <proteus@pcnet.com>
+
+	* fvwm/builtins.c:
+	* fvwm/fvwm2.1:
+	* fvwm/screen.h:
+	* fvwm/stack.c: Added new BugOpts option, RaiseAboveUnmanaged, for
+	co-existence with apps like KFM that use long-lived oerride_redirect
+	windows.
+
 1999-09-16  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS: announced a new default FvwmBanner logo

@@ -336,6 +336,7 @@ typedef struct ScreenInfo
     unsigned RaiseHackNeeded : 1;
     unsigned DisableConfigureNotify : 1;
     unsigned InstallRootCmap : 1;
+    unsigned RaiseOverUnmanaged : 1;
   } bo; /* bug workaround control options */
   struct
   {

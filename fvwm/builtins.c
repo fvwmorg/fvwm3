@@ -2576,6 +2576,22 @@ void SetBugOptions(F_CMD_ARGS)
 	break;
       }
     }
+    else if (StrEquals(opt, "RaiseOverUnmanaged"))
+    {
+      switch (toggle)
+      {
+      case -1:
+	Scr.bo.RaiseOverUnmanaged ^= 1;
+	break;
+      case 0:
+      case 1:
+	Scr.bo.RaiseOverUnmanaged = toggle;
+	break;
+      default:
+	Scr.bo.RaiseOverUnmanaged = 0;
+	break;
+      }
+    }
     else if (StrEquals(opt, "FlickeringMoveWorkaround"))
     {
       switch (toggle)
