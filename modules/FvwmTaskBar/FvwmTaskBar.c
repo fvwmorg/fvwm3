@@ -103,7 +103,6 @@ GC checkered;
 
 /* File type information */
 FILE  *console;
-fd_set_size_t  fd_width;
 int   Fvwm_fd[2];
 int   x_fd;
 
@@ -134,8 +133,12 @@ int  win_width    = 5,
      ButPressed   = -1,
      ButReleased  = -1,
      Checked      = 0,
-     BelayHide    = False,
-     AlarmSet     = NOT_SET;
+     BelayHide    = False;
+
+static volatile sig_atomic_t AlarmSet = NOT_SET;
+static volatile sig_atomic_t tip_window_alarm = False;
+static volatile sig_atomic_t hide_taskbar_alarm = False;
+
 
 int UpdateInterval = 30;
 
@@ -175,13 +178,13 @@ extern char *StartPopup;
 
 char *ImagePath   = NULL;
 
-static Bool tip_window_alarm = False;
-static Bool hide_taskbar_alarm = False;
-
 static void ParseConfig( void );
 static void ParseConfigLine(char *tline);
 static void ShutMeDown(void);
 static RETSIGTYPE TerminateHandler(int sig);
+static RETSIGTYPE Alarm(int sig);
+static void SetAlarm(int event);
+static void ClearAlarm(void);
 static int ErrorHandler(Display*, XErrorEvent*);
 
 /******************************************************************************
@@ -223,21 +226,25 @@ int main(int argc, char **argv)
   /* setup fvwm pipes */
   Fvwm_fd[0] = atoi(argv[1]);
   Fvwm_fd[1] = atoi(argv[2]);
-  fd_width = GetFdWidth();
 
 #ifdef HAVE_SIGACTION
   {
     struct sigaction  sigact;
 
     sigemptyset(&sigact.sa_mask);
-#ifdef SA_INTERRUPT
-    sigact.sa_flags = SA_INTERRUPT;
+#ifdef SA_RESTART
+    sigact.sa_flags = SA_RESTART;
 #else
     sigact.sa_flags = 0;
 #endif
     sigact.sa_handler = Alarm;
     sigaction(SIGALRM, &sigact, NULL);
 
+#ifdef SA_INTERRUPT
+    sigact.sa_flags = SA_INTERRUPT;
+#else
+    sigact.sa_flags = 0;
+#endif
     sigaddset(&sigact.sa_mask, SIGPIPE);
     sigaddset(&sigact.sa_mask, SIGTERM);
     sigaddset(&sigact.sa_mask, SIGINT);
@@ -251,6 +258,8 @@ int main(int argc, char **argv)
   fvwmSetSignalMask( sigmask(SIGTERM) | sigmask(SIGPIPE) | sigmask(SIGINT) );
 #endif
   signal (SIGPIPE, TerminateHandler);
+  signal (SIGTERM, TerminateHandler);
+  signal (SIGINT,  TerminateHandler);
   signal (SIGALRM, Alarm);
 #ifdef HAVE_SIGINTERRUPT
   siginterrupt(SIGPIPE, 1);
@@ -305,45 +314,38 @@ int main(int argc, char **argv)
 /******************************************************************************
   EndLessLoop -  Read and redraw until we get killed, blocking when can't read
 ******************************************************************************/
-void EndLessLoop()
+void EndLessLoop(void)
 {
   fd_set readset;
+  fd_set_size_t  fd_width;
   struct timeval tv;
 
-  while( !isTerminated ) {
+  fd_width = x_fd;
+  if (Fvwm_fd[1] > fd_width)
+    fd_width = Fvwm_fd[1];
+  ++fd_width;
+
+  while ( !isTerminated )
+  {
     FD_ZERO(&readset);
     FD_SET(Fvwm_fd[1], &readset);
     FD_SET(x_fd, &readset);
-    XPending(dpy);
-    tv.tv_sec  = 0;
+
+    tv.tv_sec  = UpdateInterval;
     tv.tv_usec = 0;
 
-    if ( !fvwmSelect(fd_width, &readset, NULL, NULL, &tv) ) {
-      for (;;) {
-        FD_ZERO(&readset);
-        FD_SET(Fvwm_fd[1], &readset);
-        FD_SET(x_fd, &readset);
-        XPending(dpy);
+    XFlush(dpy);
+    if ( fvwmSelect(fd_width, &readset, NULL, NULL, &tv) > 0 )
+    {
+      if (FD_ISSET(x_fd, &readset) || XPending(dpy))
+        LoopOnEvents();
 
-        tv.tv_sec  = UpdateInterval;
-        tv.tv_usec = 0;
-
-        if (fvwmSelect(fd_width, &readset, NULL, NULL, &tv) > 0)
-          break;
-        if ( isTerminated ) return;
-        DrawGoodies();
-      } /* for */
+      if (FD_ISSET(Fvwm_fd[1], &readset))
+        ReadFvwmPipe();
     }
 
-    if (FD_ISSET(x_fd, &readset))
-      LoopOnEvents();
-
-    if (FD_ISSET(Fvwm_fd[1], &readset)) {
-      ReadFvwmPipe();
-      DrawGoodies();
-    }
-
-  }
+    DrawGoodies();
+  } /* while */
 }
 
 
@@ -352,7 +354,7 @@ void EndLessLoop()
     Originally Loop() from FvwmIdent:
       Copyright 1994, Robert Nation and Nobutaka Suzuki.
 ******************************************************************************/
-void ReadFvwmPipe()
+void ReadFvwmPipe(void)
 {
     FvwmPacket* packet = ReadFvwmPacket(Fvwm_fd[1]);
     if ( packet == NULL )
@@ -539,7 +541,7 @@ void SendFvwmPipe(char *message, unsigned long window)
   while(1) {
     temp = strchr(hold, ',');
     if (temp != NULL) {
-      temp_msg = malloc(temp-hold+1);
+      temp_msg = safemalloc(temp-hold+1);
       strncpy(temp_msg, hold, (temp-hold));
       temp_msg[(temp-hold)] = '\0';
       hold = temp+1;
@@ -555,10 +557,9 @@ void SendFvwmPipe(char *message, unsigned long window)
     w = 1;
     write(Fvwm_fd[0], &w, sizeof(int));
 
-    if(temp_msg != hold)
-      free(temp_msg);
-    else
+    if(temp_msg == hold)
       break;
+    free(temp_msg);
   }
 }
 
@@ -803,7 +804,8 @@ void Swallow(unsigned long *body) {
 /******************************************************************************
   Alarm - Handle a SIGALRM - used to implement timeout events
 ******************************************************************************/
-void Alarm(int nonsense)
+static RETSIGTYPE
+Alarm(int nonsense)
 {
   XEvent event;
   Bool trigger_event = False;
@@ -811,7 +813,7 @@ void Alarm(int nonsense)
   switch(AlarmSet)
   {
   case SHOW_TIP:
-    if (tip_window_alarm == False)
+    if (!tip_window_alarm)
     {
       tip_window_alarm = True;
       trigger_event = True;
@@ -819,7 +821,7 @@ void Alarm(int nonsense)
     break;
 
   case HIDE_TASK_BAR:
-    if (hide_taskbar_alarm == False)
+    if (!hide_taskbar_alarm)
     {
       hide_taskbar_alarm = True;
       trigger_event = True;
@@ -832,10 +834,12 @@ void Alarm(int nonsense)
     event.xmotion.x = -1;
     event.xmotion.y = -1;
     event.xany.type = MotionNotify;
-    XSendEvent(dpy, win, False, MotionNotify, &event);
+    XSendEvent(dpy, win, False, EnterNotify, &event);
   }
   AlarmSet = NOT_SET;
+#if !defined(HAVE_SIGACTION) && !defined(USE_BSD_SIGNALS)
   signal (SIGALRM, Alarm);
+#endif
 }
 
 /******************************************************************************
@@ -870,17 +874,10 @@ void CheckForTip(int x, int y) {
   }
 
   if (Tip.type != NO_TIP) {
-    if (!AlarmSet && !Tip.open) {
-      alarm(1);
-      AlarmSet = 1;
-    }
     if (AlarmSet != SHOW_TIP && !Tip.open)
       SetAlarm(SHOW_TIP);
-  } else {
-    if (AlarmSet) {
-      alarm(0);
-      AlarmSet = 0;
-    }
+  }
+  else {
     ClearAlarm();
     if (Tip.open) ShowTipWindow(0);
   }
@@ -890,7 +887,7 @@ void CheckForTip(int x, int y) {
 /******************************************************************************
   LoopOnEvents - Process all the X events we get
 ******************************************************************************/
-void LoopOnEvents()
+void LoopOnEvents(void)
 {
   int  num = 0;
   char tmp[100];
@@ -1036,13 +1033,12 @@ void LoopOnEvents()
 	if (Event.xmotion.x < 0 && Event.xmotion.y < 0)
 	{
 	  /* This condition means that the event was triggered by an Alarm */
-	  fprintf(stderr, "got an alarm event\n");
-	  if (hide_taskbar_alarm == True)
+	  if (hide_taskbar_alarm)
 	  {
 	    hide_taskbar_alarm = False;
 	    HideTaskBar();
 	  }
-	  else if (tip_window_alarm == True)
+	  else if (tip_window_alarm)
 	  {
 	    tip_window_alarm = False;
 	    ShowTipWindow(1);
@@ -1122,8 +1118,8 @@ char *makename(char *string,long flags)
   char *ptr;
 
   ptr=safemalloc(strlen(string)+3);
+  *ptr = '\0';
   if (flags&F_ICONIFIED) strcpy(ptr,"(");
-  else strcpy(ptr,"");
   strcat(ptr,string);
   if (flags&F_ICONIFIED) strcat(ptr,")");
   return ptr;
@@ -1150,7 +1146,7 @@ char *temp;
 /******************************************************************************
   StartMeUp - Do X initialization things
 ******************************************************************************/
-void StartMeUp()
+void StartMeUp(void)
 {
    XSizeHints hints;
    XGCValues gcval;
@@ -1578,7 +1574,7 @@ void WarpTaskBar(int y) {
 /***********************************************************************
  RevealTaskBar -- Make taskbar fully visible
  ***********************************************************************/
-void RevealTaskBar() {
+void RevealTaskBar(void) {
   ClearAlarm();
 
   if (win_y < Midline)
@@ -1593,7 +1589,7 @@ void RevealTaskBar() {
 /***********************************************************************
  HideTaskbar -- Make taskbar partially visible
  ***********************************************************************/
-void HideTaskBar() {
+void HideTaskBar(void) {
   ClearAlarm();
 
   if (win_y < Midline)
@@ -1607,7 +1603,8 @@ void HideTaskBar() {
 /***********************************************************************
  SetAlarm -- Schedule a timeout event
  ************************************************************************/
-void SetAlarm(int event) {
+static void
+SetAlarm(int event) {
   AlarmSet = event;
   alarm(1);
 }
@@ -1615,11 +1612,10 @@ void SetAlarm(int event) {
 /***********************************************************************
  ClearAlarm -- Disable timeout events
  ************************************************************************/
-void ClearAlarm(void) {
-  if(AlarmSet) {
-    AlarmSet = NOT_SET;
-    alarm(0);
-  }
+static void
+ClearAlarm(void) {
+  AlarmSet = NOT_SET;
+  alarm(0);
 }
 
 /***********************************************************************

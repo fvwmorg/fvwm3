@@ -346,7 +346,6 @@ void PopupTipWindow(int px, int py, char *text) {
 }
 
 void ShowTipWindow(int open) {
-fprintf(stderr, "Showing tip win %lx %d\n", Tip.win, open);
   if (open) {
     if (Tip.win != None) {
       XMapRaised(dpy, Tip.win);

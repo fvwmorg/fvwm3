@@ -107,10 +107,12 @@ extern void EndLessLoop(void);
 extern void ReadFvwmPipe(void);
 extern void ProcessMessage(unsigned long type,unsigned long *body);
 extern void SendFvwmPipe(char *message,unsigned long window);
-extern void DeadPipe(int nonsense);
+extern void DeadPipe(int nonsense)  __attribute__((noreturn));
+/*
 extern void Alarm(int nonsense);
 extern void SetAlarm(int event);
 extern void ClearAlarm(void);
+*/
 extern void CheckForTip(int x, int y);
 extern void MakeMeWindow(void);
 extern void WaitForExpose(void);
