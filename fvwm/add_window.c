@@ -357,8 +357,9 @@ FvwmWindow *AddWindow(Window w)
 
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
   attributes.event_mask = (SubstructureRedirectMask | ButtonPressMask | 
-			   ButtonReleaseMask |EnterWindowMask | 
-			   LeaveWindowMask |ExposureMask);
+			   ButtonReleaseMask | EnterWindowMask | 
+			   LeaveWindowMask | ExposureMask |
+			   VisibilityChangeMask);
 
 #if defined(PIXMAP_BUTTONS) && defined(BORDERSTYLE)
   if ((GetDecor(tmp_win,BorderStyle.inactive.style) & ButtonFaceTypeMask) 
@@ -390,6 +391,7 @@ FvwmWindow *AddWindow(Window w)
 #endif
 
   attributes.save_under = FALSE;
+  attributes.event_mask &= ~VisibilityChangeMask;
 
   /* Thats not all, we'll double-reparent the window ! */
   attributes.cursor = Scr.FvwmCursors[DEFAULT];
@@ -568,8 +570,7 @@ FvwmWindow *AddWindow(Window w)
 
   valuemask = (CWEventMask | CWDontPropagate);
   attributes.event_mask = (StructureNotifyMask | PropertyChangeMask | 
-			   VisibilityChangeMask |  EnterWindowMask | 
-			   LeaveWindowMask | 
+			   EnterWindowMask | LeaveWindowMask | 
 			   ColormapChangeMask | FocusChangeMask);
 
   attributes.do_not_propagate_mask = ButtonPressMask | ButtonReleaseMask;

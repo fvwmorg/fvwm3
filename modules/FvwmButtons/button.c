@@ -322,9 +322,10 @@ button_info *alloc_button(button_info *ub,int num)
   b=(button_info*)mymalloc(sizeof(button_info));
   ub->c->buttons[num]=b;
 
-  b->flags = 0;
+  b->flags = b->posflags = 0;
   b->swallow = 0;
   b->BWidth = b->BHeight = 1;
+  b->BPosX = b->BPosY = 0;
   b->parent = ub;
   b->n = -1;
 
@@ -391,6 +392,103 @@ void NumberButtons(button_info *b)
 }
 
 /**
+*** PlaceAndExpandButton()
+*** Places a button in it's container and claims all needed slots.
+ **/
+char PlaceAndExpandButton(int x, int y, button_info *b, button_info *ub)
+{
+  int i,j,k;
+  container_info *c=ub->c;
+  
+  i = x+y*c->num_columns;
+  if (x>=c->num_columns || x<0)
+    {
+      fprintf(stderr,"%s: Button out of horizontal range. Quitting.\n",MyName);
+      fprintf(stderr,"Button=%d num_columns=%d BPosX=%d\n",
+	      i,c->num_columns,b->BPosX);
+      exit(1);
+    }
+  if (y>=c->num_rows || y<0)
+    {
+      if (b->posflags&b_PosFixed || !(ub->c->posflags&b_SizeSmart) || y<0)
+	{
+	  fprintf(stderr,"%s: Button out of vertical range. Quitting.\n",MyName);
+	  fprintf(stderr,"Button=%d num_rows=%d BPosY=%d\n",
+		  i,c->num_rows,b->BPosY);
+	  exit(1);
+	}
+      c->num_rows=y+b->BHeight;
+      c->num_buttons=c->num_columns*c->num_rows;
+      alloc_buttonlist(ub,c->num_buttons);
+    }
+  if(x+b->BWidth>c->num_columns)
+    {
+      fprintf(stderr,"%s: Button too wide. giving up\n",MyName);
+      fprintf(stderr,"Button=%d num_columns=%d bwidth=%d w=%d\n",
+	      i,c->num_columns,b->BWidth,x);
+      b->BWidth = c->num_columns-x;
+    }
+  if(y+b->BHeight>c->num_rows)
+    {
+      if (c->posflags&b_SizeSmart)
+	{
+	  c->num_rows=y+b->BHeight;
+	  c->num_buttons=c->num_columns*c->num_rows;
+	  alloc_buttonlist(ub,c->num_buttons);
+	}
+      else
+	{
+	  fprintf(stderr,"%s: Button too tall. Giving up\n",MyName);
+	  fprintf(stderr,"Button=%d num_rows=%d bheight=%d h=%d\n",
+		  i,c->num_rows,b->BHeight,y);
+	  b->BHeight = c->num_rows-y;
+	}
+    }
+  
+  /* check if buttons are free */
+  for(k=0;k<b->BHeight;k++)
+    for(j=0;j<b->BWidth;j++)
+      if (c->buttons[i+j+k*c->num_columns])
+	return 1;
+  /* claim all buttons */
+  for(k=0;k<b->BHeight;k++)
+    for(j=0;j<b->BWidth;j++)
+      c->buttons[i+j+k*c->num_columns] = b;
+  b->BPosX = x;
+  b->BPosY = y;
+  return 0;
+}
+
+/**
+*** ShrinkButton()
+*** Frees all but the upper left slot a button uses in it's container.
+ **/
+void ShrinkButton(button_info *b, container_info *c)
+{
+  int i,j,k,l;
+  
+  if (!b)
+    {
+      fprintf(stderr,"error: shrink1: button is empty but shouldn't\n");
+      exit(1);
+    }
+  i = b->BPosX+b->BPosY*c->num_columns;
+  /* free all buttons but the upper left corner */
+  for(k=0;k<b->BHeight;k++)
+    for(j=0;j<b->BWidth;j++)
+      if(j||k)
+	{
+	  l = i+j+k*c->num_columns;
+	  if (c->buttons[l] != b)
+	    {
+	      fprintf(stderr,"error: shrink2: button was stolen\n");
+	      exit(1);
+	    }
+	  c->buttons[l] = NULL;
+	}
+}
+
+/**
 *** ShuffleButtons()
 *** Orders and sizes the buttons in the UberButton, corrects num_rows and
 *** num_columns in containers.
@@ -398,100 +496,127 @@ void NumberButtons(button_info *b)
 void ShuffleButtons(button_info *ub)
 {
   int i,j,k,tb,sb;
-  int actual_buttons_used,first_avail_button;
+  int actual_buttons_used;
+  int next_button_x, next_button_y, num_items;
   button_info *b;
+  button_info **local_buttons;
   container_info *c=ub->c;
-
+  
+  /* make local copy of buttons in ub */
+  num_items = c->num_buttons;
+  local_buttons=(button_info**)mymalloc(sizeof(button_info)*num_items);
+  for(i=0;i<num_items;i++)
+    {
+      local_buttons[i] = c->buttons[i];
+      c->buttons[i] = NULL;
+    }
+  
   /* Allow for multi-width/height buttons */
   actual_buttons_used = 0;
-  for(i=0;i<c->num_buttons;i++)
-    actual_buttons_used+=c->buttons[i]->BWidth*c->buttons[i]->BHeight;
-
-  first_avail_button = c->num_buttons;
-  alloc_buttonlist(ub,actual_buttons_used);
-  c->num_buttons=actual_buttons_used;
-
-  /* Size and create the window */
-  if(c->num_rows==0 && c->num_columns==0)
-    c->num_rows=2;
-  if(c->num_columns==0)
-    c->num_columns=1+(c->num_buttons-1)/c->num_rows;
-  if(c->num_rows==0)
-    c->num_rows=1+(c->num_buttons-1)/c->num_columns;
-  while(c->num_rows * c->num_columns < c->num_buttons)
-    c->num_columns++;
-  while(c->num_rows * c->num_columns >= c->num_buttons + c->num_columns)
-    c->num_rows--;
-
-  for(i=0;i<c->num_buttons;i++)
+  for(i=0;i<num_items;i++)
+    actual_buttons_used+=local_buttons[i]->BWidth*local_buttons[i]->BHeight;
+  
+  if (!(c->posflags&b_SizeFixed)||!(c->num_rows)||!(c->num_columns))
     {
-      b=c->buttons[i];
+      /* Size and create the window */
+      if(c->num_rows==0 && c->num_columns==0)
+	c->num_rows=2;
+      if(c->num_columns==0)
+	c->num_columns=1+(actual_buttons_used-1)/c->num_rows;
+      if(c->num_rows==0)
+	c->num_rows=1+(actual_buttons_used-1)/c->num_columns;
+      while(c->num_rows * c->num_columns < actual_buttons_used)
+	c->num_columns++;
+      if (!(c->posflags&b_SizeFixed))
+	{
+	  while(c->num_rows*c->num_columns >= actual_buttons_used + c->num_columns)
+	    c->num_rows--;
+	}
+    }
+  
+  if (c->posflags&b_SizeSmart)
+    {
+      /* Set rows/columns to at least the height/width of largest button */
+      for(i=0;i<num_items;i++)
+	{
+	  b=local_buttons[i];
+          if (c->num_rows<b->BHeight) c->num_rows=b->BHeight;
+	  if (c->num_columns<b->BWidth) c->num_columns=b->BWidth;
+          if (b->posflags&b_PosFixed && c->num_columns<b->BWidth+b->BPosX)
+	    c->num_columns=b->BWidth+b->BPosX;
+          if (b->posflags&b_PosFixed && c->num_columns<b->BWidth-b->BPosX)
+	    c->num_columns=b->BWidth-b->BPosX;
+          if (b->posflags&b_PosFixed && c->num_rows<b->BHeight+b->BPosY)
+	    c->num_rows=b->BHeight+b->BPosY;
+          if (b->posflags&b_PosFixed && c->num_rows<b->BHeight-b->BPosY)
+	    c->num_rows=b->BHeight-b->BPosY;
+	}
+    }
+  
+  /* this was buggy before */
+  c->num_buttons = c->num_rows*c->num_columns;
+  alloc_buttonlist(ub,c->num_buttons);
+  
+  /* Shuffle subcontainers */
+  for(i=0;i<num_items;i++)
+    {
+      b=local_buttons[i];
       /* Shuffle subcontainers recursively */
       if(b && b->flags&b_Container)
 	ShuffleButtons(b);
-      if(b && (b->BHeight>1 || b->BWidth>1))
+    }
+  
+  /* Place fixed buttons as given in BPosX and BPosY */
+  for(i=0;i<num_items;i++)
+    {
+      b=local_buttons[i];
+      if (!(b->posflags&b_PosFixed)) continue;
+      /* recalculate position for negative offsets */
+      if (b->BPosX<0) b->BPosX=b->BPosX+c->num_columns-b->BWidth+1;
+      if (b->BPosY<0) b->BPosY=b->BPosY+c->num_rows-b->BHeight+1;
+      /* Move button if position given by user */
+      if (PlaceAndExpandButton(b->BPosX,b->BPosY,b,ub))
 	{
-	  /* If not enough room underneath, give up */
-	  if((c->num_rows - (i/c->num_columns)) < b->BHeight)
-	    {
-	      fprintf(stderr,"%s: Button too tall. Giving up\n",MyName);
-	      fprintf(stderr,"Button=%d num_rows=%d bheight=%d h=%d\n",
-		      i,c->num_rows,b->BHeight,
-		      c->num_rows-(i/c->num_columns));
-	      b->BHeight=c->num_rows-(i/c->num_columns);
-	    }
-	  if((c->num_columns - (i%c->num_columns)) < b->BWidth)
-	    {
-	      fprintf(stderr,"%s: Button too wide. Giving up.\n",MyName);
-	      fprintf(stderr,"Button=%d num_columns=%d bwidth=%d w=%d\n",
-		      i,c->num_columns,b->BWidth,
-		      c->num_columns-(i%c->num_rows));
-	      b->BWidth=c->num_columns-(i%c->num_rows);
-	    } 
-	  for(k=0;k<b->BHeight;k++)
-	    for(j=0;j<b->BWidth;j++)
-	      {
-		if((j>0)||(k>0))
-		  {
-		    /* Is there a button in the way for our UberButton? */
- 		    if(c->buttons[i+j+k*c->num_columns])
-		      {
-			first_avail_button = i+j+k*c->num_columns+1;
-			/* Find first button not in use, not already claimed,
-			   and not be the one we want to swap it with */
-			while((first_avail_button<c->num_buttons)&&
-			      (first_avail_button == i+j+k*c->num_columns||
-			       c->buttons[first_avail_button]||
-			       (button_belongs_to(ub,first_avail_button)<=i &&
-			       button_belongs_to(ub,first_avail_button)!=-1)))
-			  first_avail_button++;
-
-			if(first_avail_button >= c->num_buttons)
-			  {
-			    fprintf(stderr,"%s: Button confusion! Quitting\n",
-				    MyName);
-			    exit(1);
-			  }
-
-			/* The patched swapping here was done by
-			   palme@elphy.irz.hu-berlin.de */
-
-			/* Slide the offending buttons nearer the end */
-			tb=first_avail_button;
-			sb=tb-1;
-			while(sb>=i+j+k*c->num_columns)
-			  {
-			    /* Skip buttons which belongs to UberButtons */
-			    while(!c->buttons[sb]) sb--;
-			    c->buttons[tb--]=c->buttons[sb--];
-			    while(!c->buttons[tb]) tb--;
-			  }
-			c->buttons[i+j+k*c->num_columns]=NULL;
-		      }
-		  }
-	      }
+	  fprintf(stderr, "%s: Overlapping fixed buttons. Quitting.\n",MyName);
+	  fprintf(stderr, "Button=%d, x=%d, y=%d\n", i,b->BPosX,b->BPosY);
+	  exit(1);
 	}
     }
+  
+  /* place floating buttons dynamically */
+  next_button_x = next_button_y = 0; 
+  for(i=0;i<num_items;i++)
+    {
+      b=local_buttons[i];
+      if (b->posflags&b_PosFixed) continue;
+      
+      if (next_button_x+b->BWidth>c->num_columns)
+	{
+	  next_button_y++;
+	  next_button_x=0;
+        }
+      /* Search for next free position to accomodate button */
+      while (PlaceAndExpandButton(next_button_x,next_button_y,b,ub))
+	{
+	  next_button_x++;
+	  if (next_button_x+b->BWidth>c->num_columns)
+	    {
+	      next_button_y++;
+	      next_button_x=0;
+	      if (next_button_y>=c->num_rows)
+		{
+		  /* could not place button */
+		  fprintf(stderr,"%s: Button confusion! Quitting\n", MyName);
+		  exit(1);
+		}
+	    }
+	}
+    }
+  
+  /* shrink buttons in Container */
+  for(i=0;i<num_items;i++)
+    ShrinkButton(local_buttons[i], c);
+  free(local_buttons); 
 }
 
 /* ----------------------------- button iterator --------------------------- */
@@ -598,5 +723,3 @@ button_info *select_button(button_info *ub,int x,int y)
   return select_button(b,x-(i%ub->c->num_columns)*ub->c->ButtonWidth,
 		       y-(i/ub->c->num_columns)*ub->c->ButtonHeight);
 }
-
-

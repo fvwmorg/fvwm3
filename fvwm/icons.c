@@ -359,7 +359,7 @@ void RedoIconName(FvwmWindow *Tmp_win)
  ************************************************************************/
 void AutoPlace(FvwmWindow *t)
 {
-  int tw,th,tx,ty,temp_h,temp_w;
+  int tw,th,tx,ty;
   int base_x, base_y;
   int width,height;
   FvwmWindow *test_window;
@@ -807,7 +807,7 @@ void DeIconify(FvwmWindow *tmp_win)
   if(!tmp_win)
     return;
 
-  RaiseWindow(tmp_win);
+  /* AS dje  RaiseWindow(tmp_win); */
   /* now de-iconify transients */
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
     {
@@ -817,7 +817,21 @@ void DeIconify(FvwmWindow *tmp_win)
 	  t->flags |= MAPPED;
 	  if(Scr.Hilite == t)
 	    SetBorder (t, False,True,True,None);
-
+          
+          /* AS stuff starts here dje */
+          if (t->icon_pixmap_w) 
+            XUnmapWindow(dpy, t->icon_pixmap_w);
+	  if (t->icon_w) 
+	    XUnmapWindow(dpy, t->icon_w);
+          XFlush(dpy);
+	  Broadcast_v(M_DEICONIFY,11,t->w,t->frame,(unsigned long)t,
+                      t->icon_x_loc,
+                      t->icon_y_loc,
+                      t->icon_p_width,
+                      t->icon_w_height+t->icon_p_height, /* dje add w_height */
+                      t->frame_x,t->frame_y,
+                      t->frame_width,t->frame_height);
+          /* End AS */
 	  XMapWindow(dpy, t->w);
 	  if(t->Desk == Scr.CurrentDesk)
 	    {
@@ -835,13 +849,10 @@ void DeIconify(FvwmWindow *tmp_win)
 	  SetBorder(t,False,True,True,None);
 	  Scr.Hilite = tmp;
 	  XRaiseWindow(dpy,t->w);
-	  if (t->icon_w) 
-	    XUnmapWindow(dpy, t->icon_w);
-	  if (t->icon_pixmap_w) 
-	    XUnmapWindow(dpy, t->icon_pixmap_w);
-	  Broadcast(M_DEICONIFY,3,t->w,t->frame,(unsigned long)t,0,0,0,0);
 	}
     }
+
+  RaiseWindow(tmp_win); /* moved dje */
 
   if(tmp_win->flags & ClickToFocus)
     FocusOn(tmp_win,1);
@@ -929,11 +940,16 @@ void Iconify(FvwmWindow *tmp_win, int def_x, int def_y)
   AutoPlace(tmp_win);
   tmp_win->flags |= ICONIFIED;
   tmp_win->flags &= ~ICON_UNMAPPED;
-  Broadcast(M_ICONIFY,7,tmp_win->w,tmp_win->frame,
-	    (unsigned long)tmp_win,
-	    tmp_win->icon_x_loc,tmp_win->icon_y_loc,
+  Broadcast_v(M_ICONIFY,11,             /* iconify, num parms */
+            tmp_win->w,tmp_win->frame,(unsigned long)tmp_win,
+	    tmp_win->icon_x_loc,
+            tmp_win->icon_y_loc,
 	    tmp_win->icon_w_width, 
-	    tmp_win->icon_w_height+tmp_win->icon_p_height);
+	    tmp_win->icon_w_height+tmp_win->icon_p_height,
+            tmp_win->frame_x, /* next 4 added for Animate module */
+            tmp_win->frame_y,
+            tmp_win->frame_width,
+            tmp_win->frame_height);
   BroadcastConfig(M_CONFIGURE_WINDOW,tmp_win);
 
   LowerWindow(tmp_win);

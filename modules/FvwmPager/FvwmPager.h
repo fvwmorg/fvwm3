@@ -29,7 +29,7 @@ typedef struct ScreenInfo
 
 } ScreenInfo;
 
-typedef struct pager_window 
+typedef struct pager_window
 {
   char *t;
   Window w;
@@ -89,6 +89,14 @@ typedef struct desk_info
   char *Dcolor;
   char *label;
 } DeskInfo;
+
+typedef struct pager_string_list
+{
+  struct pager_string_list *next;
+  int desk;
+  char *Dcolor;
+  char *label;
+} PagerStringList;
 
 #define ON 1
 #define OFF 0

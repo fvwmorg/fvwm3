@@ -33,11 +33,7 @@ extern char *config_file;
 
 /* ----------------------------------- macros ------------------------------ */
 
-#define trimleft(s) {while(*s==' '||*s=='\t'||*s=='\n')(s)++;}
-#define trimright(s) {                                                        \
-  char *t=(s);while(*t!=0) t++;                                               \
-  if(t>s) while(*(t-1)==' '||*(t-1)=='\t'||*(t-1)=='\n') t--;                 \
-  *t=0;}
+#define trimleft(s) {while((s) && (*(s)==' '||*(s)=='\t'||*(s)=='\n'))(s)++;}
 
 /**
 *** seekright()
@@ -48,55 +44,20 @@ extern char *config_file;
 **/
 char *seekright(char **s)
 {
-  char *b,*t,*r,q;
-  trimleft(*s);
-  q=**s;
-  if(q=='"' || q=='`' || q=='\'')
-    {
-      b=t=(*s)++;
-      while(**s && (**s!=q || (*(*s-1)=='\\' && t--)))
-	*t++=*((*s)++);
-      if(!**s)
-	fprintf(stderr,"%s: Unterminated %c quote found\n",MyName,q);
-      else (*s)++;
-    }
-  else
-    {
-      b=t=*s;
-      while(**s && !isspace(**s) && **s!=')' && **s!=',')
-	(*s)++;
-      t=*s;
-    }
-  if(t<=b)
-    return NULL;
-  r=mymalloc(t-b+1);
-  strncpy(r,b,t-b);
-  r[t-b]=0;
-  return r;
-}
+  char *token = NULL;
+  char *line = *s;
 
-/**
-*** MatchSeveralLines()
-***
-*** Returns which, if any, of the strings in o[] matches start of s, t is moved
-*** after the end of the match.
-**/
-int MatchSeveralLines(char *s,char **o,char **t)
-{
-  int i=0,j;
-  if(s && o && o[0])
-    while(o[i])
-      {
-	j=0;while(o[i][j] && tolower(s[j])==tolower(o[i][j]))j++;
-	if(!o[i][j])
-	  {
-	    *t=&s[j];
-	    return i;
-	  }
-	i++;
-      }
-  *t=s;
-  return -1;
+  line = DoGetNextToken(line, &token, NULL, "),");
+  if (token && !*token)
+    {
+      free(token);
+      token = NULL;
+    }
+  if (*s != NULL && line == NULL)
+    line = strchr(*s, '\0');
+  *s = line;
+
+  return token;
 }
 
 /**
@@ -114,7 +75,7 @@ int ParseBack(char **ss)
       trimleft(s);
       if(*s==',')
 	s++;
-      else switch(MatchSeveralLines(s,opts,&s))
+      else switch(GetTokenIndex(s,opts,-1,&s))
 	{
 	case 0: /* Icon */
 	  r=1;
@@ -122,8 +83,9 @@ int ParseBack(char **ss)
 	  break;
 	default:
 	  t=seekright(&s);
-	  fprintf(stderr,"%s: Illegal back option \"%s\"\n",MyName,t);
-	  free(t);
+	  fprintf(stderr,"%s: Illegal back option \"%s\"\n",MyName,(t)?t:"");
+	  if (t)
+	    free(t);
 	}
     }
   if(*s) s++;
@@ -132,10 +94,44 @@ int ParseBack(char **ss)
 }
 
 /**
+*** ParseBoxSize()
+*** Parses the options possible to BoxSize
+**/
+void ParseBoxSize(char **ss, byte *posflags)
+{
+  char *opts[]={"dumb","fixed","smart",NULL};
+  char *s = *ss;
+  int m;
+ 
+  if (!s)
+    return;
+  *ss = GetNextTokenIndex(*ss, opts, 0, &m);
+  switch(m)
+    {
+    case 0:
+      *posflags &= ~(b_SizeFixed|b_SizeSmart);
+      break;
+    case 1:
+      *posflags |= b_SizeFixed;
+      *posflags &= ~b_SizeSmart;
+      break;
+    case 2:
+      *posflags |= b_SizeSmart;
+      *posflags &= ~b_SizeFixed;
+      break;
+    default:
+      *posflags &= ~(b_SizeFixed|b_SizeSmart);
+      fprintf(stderr,"%s: Illegal boxsize option \"%s\"\n",MyName, s);
+      break;
+    }
+  return;
+}
+
+/**
 *** ParseTitle()
 *** Parses the options possible to Title
 **/
-void ParseTitle(char **ss,byte *flags,byte *mask)
+void ParseTitle(char **ss, byte *flags, byte *mask)
 {
   char *titleopts[]={"left","right","center","side",NULL};
   char *t,*s=*ss;
@@ -145,7 +141,7 @@ void ParseTitle(char **ss,byte *flags,byte *mask)
       trimleft(s);
       if(*s==',')
 	s++;
-      else switch(MatchSeveralLines(s,titleopts,&s))
+      else switch(GetTokenIndex(s,titleopts,-1,&s))
 	{
 	case 0: /* Left */
 	  *flags&=~b_TitleHoriz;
@@ -167,8 +163,9 @@ void ParseTitle(char **ss,byte *flags,byte *mask)
 	  break;
 	default:
 	  t=seekright(&s);
-	  fprintf(stderr,"%s: Illegal title option \"%s\"\n",MyName,t);
-	  free(t);
+	  fprintf(stderr,"%s: Illegal title option \"%s\"\n",MyName,(t)?t:"");
+	  if (t)
+	    free(t);
 	}
     }
   if(*s) s++;
@@ -191,7 +188,7 @@ void ParseSwallow(char **ss,byte *flags,byte *mask)
       trimleft(s);
       if(*s==',')
 	s++;
-      else switch(MatchSeveralLines(s,swallowopts,&s))
+      else switch(GetTokenIndex(s,swallowopts,-1,&s))
 	{
 	case 0: /* NoHints */
 	  *flags|=b_NoHints;
@@ -243,8 +240,10 @@ void ParseSwallow(char **ss,byte *flags,byte *mask)
 	  break;
 	default:
 	  t=seekright(&s);
-	  fprintf(stderr,"%s: Illegal swallow option \"%s\"\n",MyName,t);
-	  free(t);
+	  fprintf(stderr,"%s: Illegal swallow option \"%s\"\n",MyName,
+		  (t)?t:"");
+	  if (t)
+	    free(t);
 	}
     }
   if(*s) s++;
@@ -258,7 +257,8 @@ void ParseSwallow(char **ss,byte *flags,byte *mask)
 void ParseContainer(char **ss,button_info *b)
 {
   char *conts[]={"columns","rows","font","frame","back","fore",
-		   "padding","title","swallow","nosize","size",NULL};
+		   "padding","title","swallow","nosize","size",
+		   "boxsize",NULL};
   char *t,*o,*s=*ss;
   int i,j;
 
@@ -267,7 +267,7 @@ void ParseContainer(char **ss,button_info *b)
       trimleft(s);
       if(*s==',')
 	s++;
-      else switch(MatchSeveralLines(s,conts,&s))
+      else switch(GetTokenIndex(s,conts,-1,&s))
 	{
 	case 0: /* Columns */
 	  b->c->num_columns=max(1,strtol(s,&t,10));
@@ -278,6 +278,7 @@ void ParseContainer(char **ss,button_info *b)
 	  s=t;
 	  break;
 	case 2: /* Font */
+	  if (b->c->font_string) free(b->c->font_string);
 	  b->c->font_string=seekright(&s);
 	  b->c->flags|=b_Font;
 	  break;
@@ -291,6 +292,7 @@ void ParseContainer(char **ss,button_info *b)
 	  if(*s=='(' && s++)
 	    if(ParseBack(&s))
 	      b->c->flags|=b_IconBack;
+	  if (b->c->back) free(b->c->back);
 	  b->c->back=seekright(&s);
 	  if(b->c->back)
 	    b->c->flags|=b_Back;
@@ -298,6 +300,7 @@ void ParseContainer(char **ss,button_info *b)
 	    b->c->flags&=~b_IconBack;
 	  break;
 	case 5: /* Fore */
+	  if (b->c->fore) free(b->c->fore);
 	  b->c->fore=seekright(&s);
 	  b->c->flags|=b_Fore;
 	  break;
@@ -330,9 +333,12 @@ void ParseContainer(char **ss,button_info *b)
 	    }
 	  else
 	    {
+	      char *temp;
 	      fprintf(stderr,"%s: Illegal title in container options\n",
 		      MyName);
-	      free(seekright(&s));
+	      temp = seekright(&s);
+	      if (temp)
+		free(temp);
 	    }
 	  break;
 	case 8: /* Swallow - flags */
@@ -347,10 +353,13 @@ void ParseContainer(char **ss,button_info *b)
 	    }
 	  else
 	    {
+	      char *temp;
 	      fprintf(stderr,"%s: Illegal swallow in container options\n",
 		      MyName);
-	      free(seekright(&s));
-	    }	    
+	      temp = seekright(&s);
+	      if (temp)
+		free(temp);
+	    }
 	  break;
 	case 9: /* NoSize */
 	  b->c->flags|=b_Size;
@@ -370,11 +379,16 @@ void ParseContainer(char **ss,button_info *b)
 	  else
 	    fprintf(stderr,"%s: Illegal size arguments\n",MyName);
 	  break;
+	case 11: /* BoxSize */
+	  ParseBoxSize(&s, &b->c->posflags);
+	  break;
 
 	default:
 	  t=seekright(&s);
-	  fprintf(stderr,"%s: Illegal container option \"%s\"\n",MyName,t);
-	  free(t);
+	  fprintf(stderr,"%s: Illegal container option \"%s\"\n",MyName,
+		  (t)?t:"");
+	  if (t)
+	    free(t);
 	}
     }
   if(*s) s++;
@@ -391,7 +405,7 @@ void ParseContainer(char **ss,button_info *b)
 void match_string(button_info **uberb,char *s)
 {
   button_info *b,*ub=*uberb;
-  int i,j;
+  int i,j,x,y;
   char *t,*o;
   b=alloc_button(ub,(ub->c->num_buttons)++);
   trimleft(s);
@@ -405,25 +419,35 @@ void match_string(button_info **uberb,char *s)
       trimleft(s);
       while(*s && *s!=')')
 	{
-	  if(*s>='0' && *s<='9')
+	  if((*s>='0' && *s<='9') || *s=='+' || *s=='-')
 	    {
-	      sscanf(s,"%dx%d",&i,&j);
-	      if(i>0) b->BWidth=i;
-	      if(j>0) b->BHeight=j;
-	      while(*s!=' ' && *s!='\t' && *s!=')' && *s!=',') s++;
+	      char *geom;
+	      int x,y,w,h,flags;
+	      geom=seekright(&s);
+	      if (geom)
+		{
+		  flags=XParseGeometry(geom, &x, &y, &w, &h);
+		  if(flags&WidthValue)  b->BWidth=w;
+		  if(flags&HeightValue) b->BHeight=h;
+		  if(flags&XValue) { b->BPosX=x; b->posflags|=b_PosFixed; }
+		  if(flags&YValue) { b->BPosY=y; b->posflags|=b_PosFixed; }
+		  if(flags&XNegative) b->BPosX=-1-x;
+		  if(flags&YNegative) b->BPosY=-1-y;
+		  free(geom);
+		}
 	      trimleft(s);
 	      continue;
 	    }
 	  if(*s==',' && s++)
 	    trimleft(s);
-	  switch(MatchSeveralLines(s,opts,&s))
+	  switch(GetTokenIndex(s,opts,-1,&s))
 	    {
 	    case 0: /* Back */
 	      trimleft(s);
 	      if(*s=='(' && s++)
 		if(ParseBack(&s))
 		  b->flags|=b_IconBack;
-	      if(b->flags&b_Back) free(b->back);
+	      if(b->flags&b_Back && b->back) free(b->back);
 	      b->back=seekright(&s);
 	      if(b->back)
 		b->flags|=b_Back;
@@ -432,13 +456,13 @@ void match_string(button_info **uberb,char *s)
 	      break;
 
 	    case 1: /* Fore */
-	      if(b->flags&b_Fore) free(b->fore);
+	      if(b->flags&b_Fore && b->fore) free(b->fore);
 	      b->fore=seekright(&s);
 	      b->flags|=b_Fore;
 	      break;
 
 	    case 2: /* Font */
-	      if(b->flags&b_Font) free(b->font_string);
+	      if(b->flags&b_Font && b->font_string) free(b->font_string);
 	      b->font_string=seekright(&s);
 	      b->flags|=b_Font;
 	      break;
@@ -576,7 +600,7 @@ void match_string(button_info **uberb,char *s)
 		}
 	      t=seekright(&s);
 	      if(t)
-		AddButtonAction(b,i,strdup(t));
+		AddButtonAction(b,i,t);
 	      else
 		fprintf(stderr,"%s: Missing action argument\n",MyName);
 	      break;
@@ -654,19 +678,24 @@ void match_string(button_info **uberb,char *s)
                 }
               }
 	      t = seekright(&s);
-              b->hangon = strdup(t);  /* which panel to popup */
+              b->hangon = t;  /* which panel to popup */
 	      break;
 
 	    default:
 	      t=seekright(&s);
-	      fprintf(stderr,"%s: Illegal button option \"%s\"\n",MyName,t);
-	      free(t);
+	      fprintf(stderr,"%s: Illegal button option \"%s\"\n",MyName,
+		      (t)?t:"");
+	      if (t)
+		free(t);
 	      break;
 	    }
 	  trimleft(s);
 	}
-      s++;
-      trimleft(s);
+      if (s && *s)
+	{
+	  s++;
+	  trimleft(s);
+	}
     }
 
   /* get title and iconname */
@@ -679,7 +708,12 @@ void match_string(button_info **uberb,char *s)
 	if(b->title)free(b->title);
     }
   else
-    free(seekright(&s));
+    {
+      char *temp;
+      temp = seekright(&s);
+      if (temp)
+	free(temp);
+    }
 
   if(!(b->flags&b_Icon))
     {
@@ -693,7 +727,12 @@ void match_string(button_info **uberb,char *s)
 	if(b->icon_file)free(b->icon_file);
     }
   else
-    free(seekright(&s));
+    {
+      char *temp;
+      temp = seekright(&s);
+      if (temp)
+	free(temp);
+    }
 
   trimleft(s);
 
@@ -739,10 +778,10 @@ void ParseConfigLine(button_info **ubb,char *s)
 {
   button_info *ub=*ubb;
   char *opts[]={"geometry","font","padding","columns","rows","back","fore",
-		  "frame","file","pixmap","panel",NULL};
+		  "frame","file","pixmap","panel","boxsize",NULL};
   int i,j,k;
 
-  switch(MatchSeveralLines(s,opts,&s))
+  switch(GetTokenIndex(s,opts,-1,&s))
     {
     case 0:/* Geometry */
       {
@@ -753,6 +792,8 @@ void ParseConfigLine(button_info **ubb,char *s)
 	if(i==1)
 	  {
 	    flags=XParseGeometry(geom,&g_x,&g_y,&width,&height);
+	    UberButton->w = 0;
+	    UberButton->h = 0;
 	    if(flags&WidthValue) w=width;
 	    if(flags&HeightValue) h=height;
 	    if(flags&XValue)    UberButton->x = g_x;
@@ -790,6 +831,8 @@ void ParseConfigLine(button_info **ubb,char *s)
       break;
     case 8:/* File */
       trimleft(s);
+      if (config_file)
+	free(config_file);
       config_file=seekright(&s);
       break;
     case 9:/* Pixmap */
@@ -807,6 +850,8 @@ void ParseConfigLine(button_info **ubb,char *s)
       CurrentPanel->next = NULL;
       CurrentPanel->uber = UberButton
                          = (button_info *) mymalloc(sizeof(button_info));
+      if (UberButton->title)
+	free(UberButton->title);
       UberButton->title = seekright(&s);
       UberButton->flags = 0;
       UberButton->parent = NULL;
@@ -815,6 +860,9 @@ void ParseConfigLine(button_info **ubb,char *s)
       UberButton->swallow = 0; /* subpanel is hidden initially */
       MakeContainer(UberButton);
       *ubb = UberButton;
+      break;
+    case 11: /* BoxSize */
+      ParseBoxSize(&s, &ub->c->posflags);
       break;
     default:
       trimleft(s);
@@ -877,14 +925,18 @@ void ParseOptions(button_info *ub)
   GetConfigLine(fd,&s);
   while(s && s[0])
     {
-      switch(MatchSeveralLines(s,items,&s))
+      switch(GetTokenIndex(s,items,-1,&s))
 	{
 	case -1:
 	  break;
 	case 0:
+	  if (iconPath)
+	    free(iconPath);
 	  CopyString(&iconPath,s);
 	  break;
 	case 1:
+	  if (pixmapPath)
+	    free(pixmapPath);
 	  CopyString(&pixmapPath,s);
 	  break;
 	case 2:                         /* colorlimit */
@@ -902,4 +954,3 @@ void ParseOptions(button_info *ub)
 
   return;
 }
-

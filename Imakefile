@@ -12,7 +12,8 @@ FVWM_SRCDIR = .
 
 BUILDSUBDIRS = \
 	  libs \
-  	  fvwm \
+	  fvwm \
+	  modules/FvwmAnimate \
 	  modules/FvwmAudio \
           modules/FvwmAuto \
           modules/FvwmBacker \

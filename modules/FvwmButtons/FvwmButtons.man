@@ -48,12 +48,24 @@ The following options int the .fvwmrc file are understood by FvwmButtons:
 .IP "*FvwmButtonsBack \fIcolor\fP"
 Specifies the background color for the buttons. A relief and a shadow color
 will also be calculated from this.
+.IP "*FvwmButtonsBoxSize \fIalgorithm\fP"
+This option specifies how serious FvwmButtons takes the Rows and Colums
+options (see below). It can be one of \fIdumb\fP, \fIfixed\fP or \fIsmart\fP.
+If fixed is given and both Rows and Columns are specified and non-zero,
+FvwmButtons will use exactly this numbers of rows and columns of button. If
+the box is too small to accomodate all buttons the module will fail. Using
+the smart option FvwmButtons is intelligent enough to enlarge the box so
+all buttons have a chance to fit. The number of columns is increased to at
+least the width of the widest button and new rows are added until all buttons
+can be placed. For best tolerance of configuration of errors use the
+smart option.
 .IP "*FvwmButtonsColumns \fIcolumns\fP"
 Specifies the number of columns of buttons to be created. If unspecified,
 the number of columns will be set to the number of buttons requested,
 divided by the number of rows. If both the rows and columns are
 specified, but do not specify as many buttons as are defined, then the
-users columns specification will be ignored.
+users columns specification will be ignored unless the value \fIfixed\fP
+was gived to the \fIBoxSize\fP option (see there).
 .IP "*FvwmButtonsFile \fIfilename\fP"
 Specifies that the configuration for this button is found in the file
 \fIfilename\fP, which will have to be given with full pathname, or is
@@ -91,9 +103,16 @@ Specifies the number of rows of buttons to be created. If unspecified,
 Specifies the contents of a button in the buttonbox.
 The following \fIoptions\fP, separated by commas or whitespace, can be
 given a button:
-.IP "  \fIwidth\fPx\fIheight\fP"
-The button will be \fIwidth\fP times the normal button width and \fIheight\fP
-times the normal button height.
+.IP "  \fIgeometry\fP"
+Specifies the size and position of the button within the FvwmButtons window
+or container. The button will be \fIwidth\fP times the normal button width
+and \fIheight\fP times the normal button height. If values for \fIx\fP and
+\fIy\fP are given, the button is placed x (y) button units from the left
+(top) of the container if x (y) is positive and x (y) units from the right
+(bottom) if x (y) is negative. The geometry is a standard X11 window geometry
+specification. Buttons with position arguments (x and y) are placed before
+thos without them. If two or more buttons are forced to overlap by this,
+FvwmButton exits with an error message.
 .IP "  Action [(\fIoptions\fP)] \fIcommand\fP"
 Specifies an fvwm command to be executed when the button is activated
 by pressing return or a mouse button. If \fIcommand\fP contains whitespace
@@ -307,18 +326,25 @@ If the number of columns is given, it calculates how many rows it needs
 to fit all the buttons.
 If neither is given, it assumes you want two rows, and finds the number of
 columns from that.
+If the BoxSize option is set to \fIsmart\fP at least the height/width of
+the tallest/widest button is used while the \fIfixed\fP value prevents the
+box from getting resized if both \fIrows\fP and \fIcolums\fP have been set
+to non-zero.
 .IP "Shuffling buttons"
 Now it has a large enough area to place the buttons in, all that is left is
-to place them right. The algorithm assumes the buttons are all of unit
-size, and places them in a left to right, top to bottom western fashion.
-Then it looks at button 1, and considers: Is this button larger than normal? 
-If it isn't, the same thing is done for the next buttons.
-When a button is found that is larger than 1x1, space must be provided for
-it. The algorithm assumes it is in the right coordinate, its upper left 
-corner should be unchanged. It then "slides" away the buttons that occupies
-the places needed for this button. The buttons are slid to the right, 
-wrapping around to the next line. When all the space has been cleared for
-this button the algorithm continues with the next button, doing the same.
+to place them right. There are two kinds ob buttons: fixed and floating
+buttons. A fixed button is forced to a specific slot in the button box by
+a x/y geometry argument. All other buttons are considered floating. Fixed
+buttons are placed first. Should a fixed button overlap another one or shall
+be place outside the buttons window, FvwmButtons exits with an error message.
+After that the floating buttons are placed.
+The algorithm tries to place the buttons in a left to right, top to bottom
+western fashion. If a button fits at the suggested position it is placed
+there, if not the current slot stays empty and the slot to the right will
+be considered. After the button has been placed, the next button is tried
+to be placed in the next slot and so on until all buttons are placed.
+Additional rows are added below the bottom line of buttons until all buttons
+are placed if necessary if the BoxSize option \fIsmart\fP is used.
 .IP "Containers"
 Containers are arranged by the same algorithm, in fact they are shuffled
 recursively as the algorithm finds them. 
@@ -329,36 +355,28 @@ equals 9 unit buttons total area. Assume you have requested 3 columns.
 .nf
 .sp
 1) +---+---+---+   2) +---+---+---+   3) +---+---+---+
-   | 1 | 2 | 3 |      | 1 | 2 |   |      | 1 | 2 |   |
-   +---+---+---+      +---+---+---+      +---+---+---+
-   | 4 | 5 | 6 |      | 3 | 4 | 5 |      | 3 |   | 4 |
-   +---+---+---+      +---+---+---+      +---+---+---+
-   |           |      | 6 |       |      | 5 | 6 |   |
+   | 1 |       |      | 1 |       |      | 1 |       |
+   +---+       +      +---+   2   +      +---+   2   +
+   |           |      |   |       |      | 3 |       |
+   +           +      +   +---+---+      +---+---+---+
+   |           |      |           |      | 5 | 6 |   |
    +-----------+      +---+-------+      +---+---+---+
 
-4) +---+---+---+   5) +---+-------+
-   | 1 | 2 |   |      | 1 |       |
-   +---+---+---+      +---+   2   |
-   | 3 |   |   |      | 3 |       |
-   +---+---+---+      +---+---+---+
-   | 4 | 5 | 6 |      | 4 | 5 | 6 |
-   +---+---+---+      +---+---+---+
+4) +---+---+---+   5) +---+-------+   6) +---+-------+
+   | 1 |       |      | 1 |       |      | 1 |       |
+   +---+   2   +      +---+   2   |      +---+   2   |
+   | 3 |       |      | 3 |       |      | 3 |       |
+   +---+---+---+      +---+---+---+      +---+-------+
+   | 4 |       |      | 4 | 5 |   |      | 4 | 5 | 6 |
+   +---+---+---+      +---+---+---+      +---+---+---+
 .sp
 .fi
-The algorithm starts as in figure 1. The first large button it finds is
-number 2, and it will try to free up each of the unit areas it occupies,
-in a left to right, top to bottom order. First it sees that button 3 
-is in its way, and it shifts all the buttons, giving figure 2. Now it
-finds that button 4 is in the way, so button 4 to 6 are shifted, yielding
-figure 3. Button 4 is still barring progress, so it shifts button 4 to 6
-once more, ending up at figure 4. Now all the button units required by
-button 2 are freed, and button 2 can be given its real size.
 .IP "What size will the buttons be?"
 When FvwmButtons has read the icons and fonts that are required by its
 configuration, it can find out which size is needed for every non-swallowing
 button. The unit button size of a container is set to be large enough to
 hold the largest button in it without squeezing it. Swallowed windows 
-are simple expected to be comfortable with the buttonsize they get 
+are simply expected to be comfortable with the buttonsize they get 
 from this scheme. If a particular configuration requires more space
 for a swallowed window, it can be set in that button's configuration line
 using the option "Size \fIwidth height\fP". This will tell FvwmButtons
@@ -390,6 +408,7 @@ Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
 *FvwmButtonsBack rgb:90/80/90
 *FvwmButtonsGeometry -135-5
 *FvwmButtonsRows 1
+*FvwmButtonsBoxSize smart
 *FvwmButtonsFont -*-helvetica-medium-r-*-*-12-*
 *FvwmButtonsPadding 2 2
 
@@ -436,6 +455,56 @@ used instead of the older \fI#908090\fP. If the latter specification
 is used in your configuration file, you should be sure to escape
 the hash in any of the \fIcommand\fPs which will be executed, or
 fvwm will consider the rest of the line a comment.
+
+Note that with the x/y geometry specs you can easily build button
+windows with gaps. Here is another example. You can not accomplish
+this without geometry specs for the buttons:
+.nf
+.sp
+##########################################################
+
+# Make it titlebar-less, sticky, and give it an icon	
+Style "FvwmButtons"	Icon toolbox.xpm, NoTitle, Sticky
+
+*FvwmButtonsFont        5x7
+*FvwmButtonsBack rgb:90/80/90
+*FvwmButtonsFore        black
+*FvwmButtonsFrame       1
+# 9x11 pixels per button, 4x4 pixels for the frame
+*FvwmButtonsGeometry    580x59+0-0
+*FvwmButtonsRows        5
+*FvwmButtonsColumns     64
+*FvwmButtonsBoxSize     fixed
+*FvwmButtonsPadding     1 1
+
+# Menu Popups
+*FvwmButtons(9x1+3+0, Padding 0, Title "Modules",     \\
+  Action `Menu Modulepopup mouse c -8p Nop`)
+# first row of buttons from left to right:
+*FvwmButtons(3x2+0+1, Icon my_lock.xpm, Action `Exec xlock`)
+*FvwmButtons(3x2+3+1, Icon my_recapture.xpm, Action Recapture)
+*FvwmButtons(3x2+6+1, Icon my_resize.xpm, Action Resize)
+*FvwmButtons(3x2+9+1, Icon my_move.xpm, Action Move)
+*FvwmButtons(3x2+12+1, Icon my_fvwmconsole.xpm,       \\
+  Action 'Module FvwmConsole')
+# second row of buttons from left to right:
+*FvwmButtons(3x2+0+3, Icon my_exit.xpm, Action QuitSave)
+*FvwmButtons(3x2+3+3, Icon my_restart.xpm, Action Restart)
+*FvwmButtons(3x2+6+3, Icon my_kill.xpm, Action Destroy)
+*FvwmButtons(3x2+9+3, Icon my_shell.xpm, Action 'Exec rxvt')
+# big items
+*FvwmButtons(10x5, Swallow (NoKill, NoCLose)          \\
+  "FvwmPager" 'FvwmPager * * -geometry 40x40-1024-1024')
+*FvwmButtons(6x5, Swallow "FvwmXclock" `Exec xclock   \\
+  -name FvwmXclock -geometry 40x40+0-0 -padding 1     \\
+  -analog -chime -bg rgb:90/80/90`)
+*FvwmButtons(13x5, Swallow (NoClose) "FvwmIconMan"    \\
+'Module FvwmIconMan')
+*FvwmButtons(20x5, Padding 0, Swallow "xosview"       \\
+  `Exec /usr/X11R6/bin/xosview -cpu -int -page -net   \\
+  -geometry 100x50+0-0 -font 5x7`)
+.sp
+.fi
 
 .SH COPYRIGHTS
 The FvwmButtons program, and the concept for

@@ -177,7 +177,7 @@ void FocusOn(FvwmWindow *t,int DeIconifyOnly)
 
   if(t->Desk != Scr.CurrentDesk)
   {
-    changeDesks(0,t->Desk);
+    changeDesks(t->Desk);
   }
 
 #ifndef NON_VIRTUAL
@@ -249,7 +249,7 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit)
 
   if(t->Desk != Scr.CurrentDesk)
   {
-    changeDesks(0,t->Desk);
+    changeDesks(t->Desk);
   }
 
 #ifndef NON_VIRTUAL
@@ -550,12 +550,11 @@ void destroy_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   mr = FindPopup(token);
   if (token)
     free(token);
-  while (mr && (mrContinuation = mr->continuation))
+  while (mr)
   {
+    mrContinuation = mr->continuation; /* save continuation before destroy */
     DestroyMenu(mr);
     mr = mrContinuation;
-    if (mr == NULL)
-      break;
   }
   return;
 }
@@ -792,7 +791,7 @@ void exec_setup(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   action = GetNextToken(action,&arg);
 
-  if (arg && (strcmp(arg,"")!=0)) /* specific shell was specified */
+  if (arg && *arg) /* specific shell was specified */
   {
     exec_shell_name = strdup(arg);
     free(arg);
@@ -960,6 +959,16 @@ void wait_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 }
 
 
+void flip_focus_reorder(FvwmWindow *w)
+{
+  if( w->next ) w->next->prev = w->prev;
+  if( w->prev ) w->prev->next = w->next;
+  w->next = Scr.FvwmRoot.next;
+  w->prev = &Scr.FvwmRoot;
+  if(Scr.FvwmRoot.next)Scr.FvwmRoot.next->prev = w;
+  Scr.FvwmRoot.next = w;
+}
+
 void flip_focus_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		unsigned long context, char *action, int *Module)
 {
@@ -968,20 +977,10 @@ void flip_focus_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   /* Reorder the window list */
   if( Scr.Focus ){
-    if( Scr.Focus->next ) Scr.Focus->next->prev = Scr.Focus->prev;
-    if( Scr.Focus->prev ) Scr.Focus->prev->next = Scr.Focus->next;
-    Scr.Focus->next = Scr.FvwmRoot.next;
-    Scr.Focus->prev = &Scr.FvwmRoot;
-    if(Scr.FvwmRoot.next)Scr.FvwmRoot.next->prev = Scr.Focus;
-    Scr.FvwmRoot.next = Scr.Focus;
+    flip_focus_reorder(Scr.Focus);
   }
   if( tmp_win != Scr.Focus ){
-    if( tmp_win->next ) tmp_win->next->prev = tmp_win->prev;
-    if( tmp_win->prev ) tmp_win->prev->next = tmp_win->next;
-    tmp_win->next = Scr.FvwmRoot.next;
-    tmp_win->prev = &Scr.FvwmRoot;
-    if(Scr.FvwmRoot.next)Scr.FvwmRoot.next->prev = tmp_win;
-    Scr.FvwmRoot.next = tmp_win;
+    flip_focus_reorder(tmp_win);
   }
 
   FocusOn(tmp_win,0);
@@ -1022,15 +1021,29 @@ void popup_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   MenuRoot *menu;
   extern int menuFromFrameOrWindowOrTitlebar;
   MenuItem *miExecuteAction;
+  char *menu_name = NULL;
+  MenuOptions mops;
 
-  menu = FindPopup(action);
+  mops.flags = 0;
+  action = GetNextToken(action,&menu_name);
+  action = GetMenuOptions(action,w,tmp_win,NULL,&mops);
+  menu = FindPopup(menu_name);
   if(menu == NULL)
   {
-    fvwm_msg(ERR,"popup_func","No such menu %s",action);
+    if(menu_name != NULL)
+    {
+      fvwm_msg(ERR,"popup_func","No such menu %s",menu_name);
+      free(menu_name);
+    }
     return;
   }
+
+  if(menu_name != NULL)
+    free(menu_name);
+
   menuFromFrameOrWindowOrTitlebar = FALSE;
-  do_menu(menu,NULL,&miExecuteAction,0,FALSE,(eventp->type == KeyPress));
+  do_menu(menu, NULL, &miExecuteAction, 0, FALSE,
+	  (eventp->type == KeyPress) ? (XEvent *)1 : NULL, &mops);
 }
 
 /* the function for the "Menu" command */
@@ -1042,8 +1055,12 @@ void staysup_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *default_action = NULL, *menu_name = NULL;
   MenuStatus menu_retval;
   MenuItem *miExecuteAction = NULL;
+  MenuOptions mops;
+  XEvent *teventp;
 
+  mops.flags = 0;
   action = GetNextToken(action,&menu_name);
+  action = GetMenuOptions(action,w,tmp_win,NULL,&mops);
   GetNextToken(action,&default_action);
   menu = FindPopup(menu_name);
   if(menu == NULL)
@@ -1057,13 +1074,17 @@ void staysup_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       free(default_action);
     return;
   }
-  menuFromFrameOrWindowOrTitlebar = FALSE;
-
-  menu_retval = do_menu(menu,NULL,&miExecuteAction,0,TRUE,(eventp->type == KeyPress));
-
   if(menu_name != NULL)
     free(menu_name);
-  if((menu_retval == MENU_DOUBLE_CLICKED)&&(default_action != NULL))
+  menuFromFrameOrWindowOrTitlebar = FALSE;
+
+  if (!default_action && eventp && eventp->type == KeyPress)
+    teventp = (XEvent *)1;
+  else
+    teventp = eventp;
+  menu_retval = do_menu(menu, NULL, &miExecuteAction, 0, TRUE, teventp, &mops);
+
+  if (menu_retval == MENU_DOUBLE_CLICKED && default_action && *default_action)
     ExecuteFunction(default_action,tmp_win,eventp,context,*Module);
   if(default_action != NULL)
     free(default_action);
@@ -1276,10 +1297,8 @@ void SetDeskSize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     fvwm_msg(ERR,"SetDeskSize","DeskTopSize arguments should be unitless");
   }
 
-  Scr.VxMax = val1;
-  Scr.VyMax = val2;
-  Scr.VxMax = Scr.VxMax*Scr.MyDisplayWidth - Scr.MyDisplayWidth;
-  Scr.VyMax = Scr.VyMax*Scr.MyDisplayHeight - Scr.MyDisplayHeight;
+  Scr.VxMax = val1*Scr.MyDisplayWidth - Scr.MyDisplayWidth;
+  Scr.VyMax = val2*Scr.MyDisplayHeight - Scr.MyDisplayHeight;
   if(Scr.VxMax <0)
     Scr.VxMax = 0;
   if(Scr.VyMax <0)
@@ -1511,10 +1530,10 @@ void SetMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #if 0 /* new parse syntax -- unfinished */
   if (action && *action)
   {
-    line = strdup(action);
+    line = action;
     while (line && *line)
     {
-      tok = GetToken(&line);
+      line = GetNextToken(line, &tok);
       if (StrEquals(tok,"Color"))
       {
         /* Color fg/bg/st */
@@ -2984,6 +3003,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
   Bool useCirculateHitIcon = (Direction) ? 0 : 1;
   unsigned long onFlags = 0;
   unsigned long offFlags = 0;
+  char closeopt;
 
   l=0;
 
@@ -2993,19 +3013,23 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
   t = action;
   while(isspace(*t)&&(*t!= 0))
     t++;
-  if(*t == '[')
+  if(*t == '[' || *t == '(')
   {
+    if (*t == '[')
+      closeopt = ']';
+    else
+      closeopt = ')';
     t++;
     tstart = t;
 
-    while((*t !=0)&&(*t != ']'))
+    while((*t !=0)&&(*t != closeopt))
     {
       t++;
       l++;
     }
     if(*t == 0)
     {
-      fvwm_msg(ERR,"Circulate","Conditionals require closing brace");
+      fvwm_msg(ERR,"Circulate","Conditionals require closing parenthesis");
       return NULL;
     }
       
@@ -3015,7 +3039,7 @@ FvwmWindow *Circulate(char *action, int Direction, char **restofline)
     strncpy(expression,tstart,l);
     expression[l] = 0;
     expression = GetNextToken(expression,&condition);
-    while((condition != NULL)&&(strlen(condition) > 0))
+    while (condition && *condition)
     {
       if     (mystrcasecmp(condition,"Iconic")==0)
         onFlags |= ICONIFIED;
@@ -3229,8 +3253,9 @@ void WindowIdFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   char *restofline,*num;
   unsigned long win;
 
-  restofline = strdup(action);
-  num = GetToken(&restofline);
+  restofline = action;
+  restofline = GetNextToken(restofline, &num);
+
   win = (unsigned long)strtol(num,NULL,0); /* SunOS doesn't have strtoul */
   if (num)
     free(num);
@@ -3246,8 +3271,6 @@ void WindowIdFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   {
     ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module);
   }
-  if (restofline)
-    free(restofline);
 }
 
 
@@ -3278,16 +3301,15 @@ void Recapture(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 void SetGlobalOptions(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
                       unsigned long context, char *action,int* Module)
 {
-  char *opt,*opts;
+  char *opt = NULL,*opts;
 
   if (!action || !action[0])
     return;
-  else
-    opts = strdup(action);
+  opts = action;
 
   /* fvwm_msg(DBG,"SetGlobalOptions","init action == '%s'\n",action); */
-
-  while ((opt = GetToken(&opts)))
+  for (opts = GetNextOption(opts, &opt); opt && *opt;
+       opts = GetNextOption(opts, &opt))
   {
     /* fvwm_msg(DBG,"SetGlobalOptions"," opt == '%s'\n",opt); */
     /* fvwm_msg(DBG,"SetGlobalOptions"," remaining == '%s'\n",opts?opts:"(NULL)"); */
@@ -3333,17 +3355,17 @@ void SetGlobalOptions(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     }
     else
       fvwm_msg(ERR,"GlobalOpts","Unknown Global Option '%s'",opt);
-
     if (opt) /* should never be null, but checking anyways... */
       free(opt);
   }
-  if (opts) /* should be empty at this point... */
-    free(opts);
+  if (opt)
+    free(opt);
 }
+
 void SetColorLimit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
                    unsigned long context, char *action,int* Module)
 {
-  long val1;
+  int val1;
   int val1_unit,n;
   
   n = GetOneArgument(action, &val1, &val1_unit);
@@ -3352,7 +3374,7 @@ void SetColorLimit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     return;
   }
   
-  Scr.ColorLimit = val1;
+  Scr.ColorLimit = (long)val1;
 }
 
 

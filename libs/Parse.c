@@ -77,6 +77,7 @@ char *PeekToken(const char *pstr)
   return tok;
 }
 
+#if 0
 /*
 ** GetToken: destructively rips next token from string, returning it
 **           (you should free returned string later)
@@ -102,6 +103,7 @@ char *GetToken(char **pstr)
 
   return tok;
 }
+#endif
 
 /*
 ** CmpToken: does case-insensitive compare on next token in string, leaving
@@ -140,9 +142,17 @@ int MatchToken(const char *pstr,char *tok)
 */
 void NukeToken(char **pstr)
 {
-  char *foo;
-  foo = GetToken(pstr);
-  free(foo);
+  char *tok;
+  char *next;
+  char *temp = NULL;
+
+  if (next = GetNextToken(*pstr, &tok))
+    temp = strdup(next);
+  if (pstr && *pstr)
+    free(*pstr);
+  *pstr = temp;
+  if (tok)
+    free(tok);
 }
 
 #if 0
@@ -169,35 +179,49 @@ char *GetNextToken(char *indata,char **token)
  * Return value is ptr to indata,updated to point to text after the word
  * which is extracted.
  * token is the extracted word, which is copied into a malloced
- * space, and must be freed after use. 
+ * space, and must be freed after use.
+ *
+ * spaces = string of characters to treat as spaces
+ * delims = string of characters delimiting token
+ *
+ * Use "spaces" and "delims" to define additional space/delimiter
+ * characters (spaces are skipped before a token, delimiters are not).
  *
  **************************************************************************/
-char *GetNextToken(char *indata,char **token)
+char *DoGetNextToken(char *indata, char **token, char *spaces, char *delims)
 { 
   char *t,*start, *end, *text;
+  int snum;
+  int dnum;
 
+  snum = (spaces) ? strlen(spaces) : 0;
+  dnum = (delims) ? strlen(delims) : 0;
   t = indata;
   if(t == NULL)
     {
       *token = NULL;
       return NULL;
     }
-  while(isspace(*t)&&(*t != 0))t++;
+  while ( (isspace(*t) || (snum && strchr(spaces, *t))) && (*t != 0) ) t++;
   start = t;
-  while(!isspace(*t)&&(*t != 0))
+  while (!(isspace(*t) ||
+	   (snum && strchr(spaces, *t)) || (dnum && strchr(delims, *t))) &&
+	 (*t != 0) )
     {
       /* Check for qouted text */
-      if(*t == '"')
+      if (IsQuote(*t))
 	{
+	  char c = *t;
+
 	  t++;
-	  while((*t != '"')&&(*t != 0))
+	  while((*t != c)&&(*t != 0))
 	    {
 	      /* Skip over escaped text, ie \" or \space */
 	      if((*t == '\\')&&(*(t+1) != 0))
 		t++;
 	      t++;
 	    }
-	  if(*t == '"')
+	  if(*t == c)
 	    t++;
 	}
       else
@@ -213,20 +237,22 @@ char *GetNextToken(char *indata,char **token)
   text = safemalloc(end-start+1);
   *token = text;
 
+  /* copy token */
   while(start < end)
     {
       /* Check for qouted text */
-      if(*start == '"')
+      if(IsQuote(*start))
 	{	
+	  char c = *start;
 	  start++;
-	  while((*start != '"')&&(*start != 0))
+	  while((*start != c)&&(*start != 0))
 	    {
 	      /* Skip over escaped text, ie \" or \space */
 	      if((*start == '\\')&&(*(start+1) != 0))
 		start++;
 	      *text++ = *start++;
 	    }
-	  if(*start == '"')
+	  if(*start == c)
 	    start++;
 	}
       else
@@ -245,3 +271,145 @@ char *GetNextToken(char *indata,char **token)
 }
 #endif /* 0 */
 
+char *GetNextToken(char *indata,char **token)
+{
+  return DoGetNextToken(indata, token, NULL, NULL);
+}
+char *GetNextOption(char *indata,char **token)
+{
+  return DoGetNextToken(indata, token, ",", NULL);
+}
+
+/****************************************************************************
+ *
+ * Works like GetNextToken, but with the following differences:
+ *
+ * If *indata begins with a "*" followed by the string module_name,
+ * it returns the string following directly after module_name as the
+ * new token. Otherwise NULL is returned.
+ * e.g. GetModuleResource("*FvwmPagerGeometry", &token, "FvwmPager")
+ * returns "Geometry" in token.
+ *
+ **************************************************************************/
+char *GetModuleResource(char *indata, char **resource, char *module_name)
+{
+  char *tmp;
+  char *next;
+
+  if (!module_name)
+    {
+      *resource = NULL;
+      return indata;
+    }
+  next = GetNextToken(indata, &tmp);
+  if (!tmp)
+    return next;
+
+  if (tmp[0] != '*' || mystrncasecmp(tmp+1, module_name, strlen(module_name)))
+    {
+      *resource = NULL;
+      return indata;
+    }
+  CopyString(resource, tmp+1+strlen(module_name));
+  free(tmp);
+  return next;
+}
+
+/****************************************************************************
+ *
+ * This function uses GetNextToken to parse action for up to num integer
+ * arguments. The number of values actually found is returned.
+ * If ret_action is non-NULL, a pointer to the next token is returned there.
+ *
+ **************************************************************************/
+int GetIntegerArguments(char *action, char **ret_action, int retvals[],int num)
+{
+  int i;
+  char *token;
+
+  for (i = 0; i < num && action; i++)
+    {
+      action = GetNextToken(action, &token);
+      if (token == NULL)
+	break;
+      if (sscanf(token, "%d", &(retvals[i])) != 1)
+	break;
+      free(token);
+      token = NULL;
+    }
+  if (token)
+    free(token);
+  if (ret_action != NULL)
+    *ret_action = action;
+
+  return i;
+}
+
+/***************************************************************************
+ *
+ * This function tries to match a token with a list of strings and returns
+ * the position of token in the array or -1 if no match is found. The last
+ * entry in the list must be NULL.
+ *
+ * len = 0 : only exact matches
+ * len < 0 : match, if token begins with one of the strings in list
+ * len > 0 : match, if the first len characters do match
+ *
+ * if next is non-NULL, *next will be set to point to the first character
+ * in token after the match.
+ *
+ **************************************************************************/
+int GetTokenIndex(char *token, char *list[], int len, char **next)
+{
+  int i;
+  int l;
+
+  if (!token && !list)
+    {
+      if (next)
+	*next = NULL;
+      return -1;
+    }
+  l = (len) ? len : strlen(token);
+  for (i = 0; list[i] != NULL; i++)
+    {
+      if (len < 0)
+	l = strlen(list[i]);
+      if (!mystrncasecmp(token, list[i], l))
+	break;
+    }
+  if (next)
+    {
+      *next = (list[i]) ? token + l : token;
+    }
+
+  return (list[i]) ? i : -1;
+}
+
+/***************************************************************************
+ *
+ * This function does roughly the same as GetTokenIndex but reads the
+ * token from ste string action with GetNextToken. The index is returned
+ * in *index. The return value is a pointer to the character after the
+ * token (just like the return value of GetNextToken).
+ *
+ **************************************************************************/
+char *GetNextTokenIndex(char *action, char *list[], int len, int *index)
+{
+  char *token;
+  char *next;
+
+  if (!index)
+    return action;
+
+  next = GetNextToken(action, &token);
+  if (!token)
+    {
+      *index = -1;
+      return action;
+    }
+  *index = GetTokenIndex(token, list, len, NULL);
+  free(token);
+
+  return (*index == -1) ? action : next;
+}

@@ -21,6 +21,7 @@ SRCS = \
 	icons.c \
 	menus.c \
 	misc.c \
+	modconf.c \
 	module.c \
 	move.c \
 	placement.c \
@@ -46,6 +47,7 @@ OBJS = \
 	icons.o \
 	menus.o \
 	misc.o \
+	modconf.o \
 	module.o \
 	move.o \
 	placement.o \

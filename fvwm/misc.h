@@ -178,7 +178,7 @@ extern void       GetWindowSizeHints(FvwmWindow *);
 extern void       SwitchPages(Bool,Bool);
 extern void       NextPage(void);
 extern void       PrevPage(void);
-extern void       moveLoop(FvwmWindow *, int, int, int,int, int *, int *,Bool,Bool);
+extern void       moveLoop(FvwmWindow *, int, int, int,int, int *, int *,Bool,Bool, XEvent *);
 
 extern void       Keyboard_shortcuts(XEvent *, int);
 extern void       RedoIconName(FvwmWindow *);
@@ -231,7 +231,7 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 extern void       SetFocus(Window,FvwmWindow *, Bool FocusByMouse);
 extern void       CheckAndSetFocus(void);
 extern void       initModules(void);
-extern void       HandleModuleInput(Window w, int channel);
+extern int        HandleModuleInput(Window w, int channel);
 extern void       match_string(struct config *, char *, char *, FILE *);
 extern void       no_popup(char *ptr);
 extern void       KillModule(int channel, int place);
@@ -244,6 +244,7 @@ extern void       GetIconWindow(FvwmWindow *tmp_win);
 extern void       GetIconBitmap(FvwmWindow *tmp_win);
 extern void SmartPlacement(FvwmWindow *t, int width, int height,int *x,int *y);
 extern void usage(void);
+void Broadcast_v(unsigned long event_type, unsigned long num_datum,...);
 void Broadcast(unsigned long event_type, unsigned long num_datum,
 	       unsigned long data1, unsigned long data2, 
 	       unsigned long data3, unsigned long data4,
@@ -275,6 +276,8 @@ void move_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		 unsigned long context,char *action, int *Module);
 void animated_move_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 			  unsigned long context,char *action, int *Module);
+void move_window_to_page(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+			 unsigned long context,char *action, int *Module);
 void set_animation(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		   unsigned long context, char *action,int* Module);
 void set_menudelay(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -295,8 +298,9 @@ void WarpOn(FvwmWindow *t,int warp_x, int x_unit, int warp_y, int y_unit);
 Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long flags,int Desk);
 void free_window_names (FvwmWindow *tmp, Bool nukename, Bool nukeicon);
 
-MenuStatus do_menu (MenuRoot *menu,MenuRoot *menuPrior, MenuItem **pmiExecuteAction,
-		    int cmenuDeep,Bool fSticks,Bool key_press);
+MenuStatus do_menu (MenuRoot *menu,MenuRoot *menuPrior,
+		    MenuItem **pmiExecuteAction, int cmenuDeep, Bool fSticks,
+		    XEvent *eventp, MenuOptions *pops);
 int check_allowed_function(MenuItem *mi);
 int check_allowed_function2(int function, FvwmWindow *t);
 void ReInstallActiveColormap(void);
@@ -399,11 +403,13 @@ void stick_function(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
 void changeDesks_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      unsigned long context,char *action, int *Module);
-void changeDesks(int val1, int val2);
+void changeDesks(int desk);
 void changeWindowsDesk(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		       unsigned long context, char *action, int *Module);
 
 int GetPositionArguments(char *action, int x, int y, int w, int h, int *pfinalX, int *pfinalY);
+char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
+		     MenuItem *mi, MenuOptions *pops);
 int GetTwoArguments(char *action, int *val1, int *val2, int *val1_unit, int *val2_unit);
 int GetOneArgument(char *action, int *val1, int *val1_unit);
 void goto_page_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
@@ -456,6 +462,9 @@ void add_item_to_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      unsigned long context,
 		      char *action, int *Module);
 void destroy_menu(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+		      unsigned long context,
+		      char *action, int *Module);
+void ModuleConfig(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		      unsigned long context,
 		      char *action, int *Module);
 void add_another_item(XEvent *eventp,Window w,FvwmWindow *tmp_win,

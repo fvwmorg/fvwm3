@@ -9,10 +9,12 @@ SRCS = \
 	GetFont.c \
 	Grab.c \
 	Module.c \
+	ModParse.c \
 	Parse.c \
 	Picture.c \
 	Strings.c \
 	System.c \
+	XResource.c \
 	envvar.c \
 	safemalloc.c \
 	sleep.c \
@@ -23,10 +25,12 @@ OBJS = \
 	GetFont.o \
 	Grab.o \
 	Module.o \
+	ModParse.o \
 	Parse.o \
 	Picture.o \
 	Strings.o \
 	System.o \
+	XResource.o \
 	envvar.o \
 	safemalloc.o \
 	sleep.o \

@@ -12,6 +12,12 @@ From within the .fvwmrc file, FvwmPager is spawned as follows:
 Module FvwmPager 0 3
 .sp
 .fi
+or
+.nf
+.sp
+Module FvwmPager * *
+.sp
+.fi
 or from within an fvwm pop-up menu:
 .nf
 .sp
@@ -24,7 +30,16 @@ AddToMenu Module-Popup "Modules"      Title
 +                      "Pager"        Module FvwmPager 0 3
 .sp
 .fi
-where "0" is the first desktop to show, and "3" is the last.
+or
+.nf
+.sp
++                      "Pager"        Module FvwmPager * *
+.sp
+.fi
+where "0" is the first desktop to show, and "3" is the last and
+"*" is the current dektop.  In the second format (with two asterisks)
+the current desk is always visible in the pager (and it is also the
+only one).
 
 .SH DESCRIPTION
 The FvwmPager module shows a miniature view of the Fvwm desktops which
@@ -152,21 +167,22 @@ Change the normal/highlight colors of the windows. \fIfore\fP and
 \fIhiFore\fP specify the colors as used for the font inside the windows.
 \fIback\fP and \fIhiBack\fP are used to fill the windows with.
 .IP "*FvwmPagerLabel \fIdesk label\fP"
-Assigns the text \fIlabel\fP to desk \fIdesk\fP in the pager window.
-Useful for assigning symbolic names to desktops, ie
+Assigns the text \fIlabel\fP to desk \fIdesk\fP (or the current desk
+if desk is "*") in the pager window. Useful for assigning symbolic names
+to desktops, i.e.
 .nf
 .sp
 *FvwmPagerLabel 1 Mail
 *FvwmPagerLabel 2 Maker
-*FvwmPagerLabel 2 Matlab
+*FvwmPagerLabel * Matlab
 .sp
 .fi
 
 .IP "*FvwmPagerDeskColor \fIdesk color\fP"
-Assigns the color \fIcolor\fP to desk \fIdesk\fP in the pager window.
-This replaces the background color for the particular \fIdesk\fP.  This
-only works when the pager is full sized.  When Iconified, the pager uses
-the color specified by *FvwmPagerBack.  
+Assigns the color \fIcolor\fP to desk \fIdesk\fP (or the current desk if
+desk is "*") in the pager window. This replaces the background color for
+the particular \fIdesk\fP.  This only works when the pager is full sized.
+When Iconified, the pager uses the color specified by *FvwmPagerBack.  
 .sp
 \fBTIP:\fP	Try using *FvwmPagerDeskColor in conjunction with
 FvwmCpp (or FvwmM4) and FvwmBacker to assign identical

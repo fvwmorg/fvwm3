@@ -6,8 +6,14 @@
    Description:		
 
    Modifications:	$Log$
-   Modifications:	Revision 1.1  1998/10/14 00:03:23  tibbs
-   Modifications:	Initial revision
+   Modifications:	Revision 1.2  1998/10/30 21:19:44  domivogt
+   Modifications:	merging for 2.1_pre_beta
+   Modifications:	
+   Modifications:	Revision 1.1.1.1.6.2  1998/10/28 21:49:23  domivogt
+   Modifications:	merged animate_icons and menu_position
+   Modifications:	
+   Modifications:	Revision 1.1.1.1.4.1  1998/10/26 17:49:52  domivogt
+   Modifications:	changes for menu position
    Modifications:	
 */
 

@@ -195,13 +195,21 @@ void initialize_pager(void)
     }
   if(Columns < 0)
     {
+      if (Rows == 0)
+	Rows = 1;
       Columns = ndesks/Rows;
       if(Rows*Columns < ndesks)
 	Columns++;
     }
 
   if(Rows*Columns < ndesks)
-    Rows = ndesks/Columns;
+    {
+      if (Columns == 0)
+	Columns = 1;
+      Rows = ndesks/Columns;
+      if (Rows*Columns < ndesks)
+	Rows++;
+    }
   if(window_w > 0)
     {
       window_w = ((window_w - n)/(n+1))*(n+1)+n;
@@ -369,7 +377,6 @@ void initialize_pager(void)
       XMapRaised(dpy,Desks[i].CPagerWin);
       XMapRaised(dpy,Desks[i].w);
       XMapRaised(dpy,Desks[i].title_w);
-
     }
   XMapRaised(dpy,Scr.Pager_w);
       
@@ -724,7 +731,7 @@ void ReConfigure(void)
 	    {
 	      XMoveResizeWindow(dpy,Desks[i].title_w,
 				(desk_w+1)*j-1,(desk_h+label_h+1)*k-1,
-				desk_w,window_h);
+				desk_w,desk_h+label_h);
 	      XMoveResizeWindow(dpy,Desks[i].w,-1,label_h - 1,
 				desk_w,desk_h);
 	      if(i == Scr.CurrentDesk - desk1)

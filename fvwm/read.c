@@ -1,10 +1,16 @@
-/****************************************************************************
+/*
+ * *************************************************************************
  * This module is all original code 
  * by Rob Nation 
  * Copyright 1993, Robert Nation
  *     You may use this code for any purpose, as long as the original
  *     copyright remains in the source code and all documentation
- ****************************************************************************/
+ *
+ * Changed 09/24/98 by Dan Espen:
+ * - remove logic that processed and saved module configuration commands.
+ * Its now in "modconf.c".
+ * *************************************************************************
+ */
 #include "../configure.h"
 
 #include <stdio.h>
@@ -25,14 +31,6 @@ extern Boolean debugging;
 
 char *fvwm_file = NULL;
 
-struct moduleInfoList
-{
-  char *data;
-  struct moduleInfoList *next;
-};
-
-struct moduleInfoList *modlistroot = NULL;
-
 int numfilesread = 0;
 
 static int last_read_failed=0;
@@ -43,36 +41,46 @@ static const char *read_system_rc_cmd="Read system"FVWMRC;
 static const char *read_system_rc_cmd="Read system.fvwm2rc";
 #endif
 
-void AddToModList(char *tline);
-
 extern void StartupStuff(void);
 
 /*
-** func to do actual read/piperead work
-*/
+ * func to do actual read/piperead work
+ * Arg 1 is file name to read.
+ * Arg 2 (optional) "Quiet" to suppress message on missing file.
+ */
 static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
                         unsigned long context, char *action,int* Module,
                         int piperead)
 {
   char *filename= NULL,*Home, *home_file, *ofilename = NULL;
+  char *option;                         /* optional arg to read */
   char *rest,*tline,line[1000];
   int HomeLen;
   FILE *fd;
   int thisfileno;
   extern XEvent Event;
+  char missing_quiet;                   /* missing file msg control */
 
   thisfileno = numfilesread;
   numfilesread++;
 
 /*  fvwm_msg(INFO,piperead?"PipeRead":"Read","action == '%s'",action); */
 
-  rest = GetNextToken(action,&ofilename);
+  rest = GetNextToken(action,&ofilename); /* read file name arg */
   if(ofilename == NULL)
   {
     fvwm_msg(ERR,piperead?"PipeRead":"Read","missing parameter");
     last_read_failed = 1;
     return;
   }
+  missing_quiet='n';                    /* init */
+  rest = GetNextToken(rest,&option);    /* read optional arg */
+  if (option != NULL) {                 /* if there is a second arg */
+    if (mystrncasecmp(option,"Quiet",5)==0) { /* is the arg "quiet"? */
+      missing_quiet='y';                /* no missing file message wanted */
+    } /* end quiet arg */
+    free(option);                       /* arg not needed after this */
+  } /* end there is a second arg */
 
   filename = ofilename;
 /*  fvwm_msg(INFO,piperead?"PipeRead":"Read","trying '%s'",filename); */
@@ -116,10 +124,12 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
   if(fd == NULL)
   {
-    fvwm_msg(ERR,
-             piperead?"PipeRead":"Read",
-             piperead?"command '%s' not run":"file '%s' not found in $HOME or "FVWMDIR,
-             ofilename);
+    if (missing_quiet == 'n') {         /* if quiet option not on */
+      fvwm_msg(ERR,
+               piperead?"PipeRead":"Read",
+               piperead?"command '%s' not run":"file '%s' not found in $HOME or "FVWMDIR,
+               ofilename);
+    } /* end quiet option not on */
     if((ofilename != filename)&&(filename != NULL))
     {
       free(filename);
@@ -155,11 +165,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     {
       fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);
     }
-    /* should these next checks be moved into ExecuteFunction? */
-    if((strlen(&tline[0])>1)&&(tline[0]!='#')&&(tline[0]!='*'))
-      ExecuteFunction(tline,tmp_win,eventp,context,*Module);
-    if(tline[0] == '*')
-      AddToModList(tline);
+    ExecuteFunction(tline,tmp_win,eventp,context,*Module);
     tline = fgets(line,(sizeof line)-1,fd);
   }
 
@@ -226,119 +232,3 @@ void PipeRead(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   }
 }
 
-void AddToModList(char *tline)
-{
-  struct moduleInfoList *t, *prev, *this;
-
-  /* Find end of list */
-  t = modlistroot;
-  prev = NULL;
-
-  while(t != NULL)
-  {
-    prev = t;
-    t = t->next;
-  }
-  
-  this = (struct moduleInfoList *)safemalloc(sizeof(struct moduleInfoList));
-  this->data = (char *)safemalloc(strlen(tline)+1);
-  this->next = NULL;
-  strcpy(this->data, tline);  
-  if(prev == NULL)
-  {
-    modlistroot = this;
-  }
-  else
-    prev->next = this;
-}
-      
-/* interface function for AddToModList */
-void AddModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                  unsigned long context, char *action,int* Module)
-{
-  AddToModList( action );
-}
-
-/**************************************************************/
-/* delete from module configuration                           */
-/**************************************************************/
-void DestroyModConfig(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-                      unsigned long context, char *action,int* Module)
-{
-  struct moduleInfoList *this, *that, *prev;
-  char *info;   /* info to be deleted - may contain wildcards */
-  char *mi;
-
-  action = GetNextToken(action,&info); 
-  if( info == NULL )
-  {
-    return;
-  }
-
-  this = modlistroot;
-  prev = NULL;
-
-  while(this != NULL)
-  {
-    GetNextToken( this->data, &mi);
-    that = this->next;
-    if( matchWildcards(info, mi+1) )
-    {
-      free(this->data);
-      free(this);
-      if( prev )
-      {
-        prev->next = that;
-      }
-      else
-      {
-        modlistroot = that;
-      }
-    }
-    else
-    {
-      prev = this;
-    }
-    this = that;
-  }
-}
-
-void SendDataToModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-	      unsigned long context, char *action, int *Module)
-{
-  struct moduleInfoList *t;
-  char *message,msg2[32];
-  extern char *IconPath;
-#ifdef XPM
-  extern char *PixmapPath;
-#endif
-
-  if (IconPath && strlen(IconPath))
-  {
-    message=safemalloc(strlen(IconPath)+11);
-    sprintf(message,"IconPath %s\n",IconPath);
-    SendName(*Module,M_CONFIG_INFO,0,0,0,message);
-    free(message);
-  }
-#ifdef XPM
-  if (PixmapPath && strlen(PixmapPath))
-  {
-    message=safemalloc(strlen(PixmapPath)+13);
-    sprintf(message,"PixmapPath %s\n",PixmapPath);
-    SendName(*Module,M_CONFIG_INFO,0,0,0,message);
-    sprintf(message,"ColorLimit %d\n",Scr.ColorLimit);
-    SendName(*Module,M_CONFIG_INFO,0,0,0,message);
-    free(message);
-  }
-#endif
-  sprintf(msg2,"ClickTime %d\n",Scr.ClickTime);
-  SendName(*Module,M_CONFIG_INFO,0,0,0,msg2);
-
-  t = modlistroot;
-  while(t != NULL)
-  {
-    SendName(*Module,M_CONFIG_INFO,0,0,0,t->data);
-    t = t->next;
-  }  
-  SendPacket(*Module,M_END_CONFIG_INFO,0,0,0,0,0,0,0,0);
-}

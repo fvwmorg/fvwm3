@@ -23,6 +23,11 @@
 #include <X11/keysym.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#ifdef __STDC__
+#include <stdarg.h>                     /* for Broadcast_v (varargs) */
+#else
+#include <varargs.h>
+#endif
 
 #include "fvwm.h"
 #include "menus.h"
@@ -261,7 +266,8 @@ void executeModule(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   return;
 }
 
-void HandleModuleInput(Window w, int channel)
+/* Changed to return 66, Locking code AS dje */
+int HandleModuleInput(Window w, int channel)
 {
   char text[256];
   int size;
@@ -273,7 +279,7 @@ void HandleModuleInput(Window w, int channel)
   if(n < sizeof(size))
     {
       KillModule(channel,1);
-      return;
+      return 0;
     }
 
   if(size >255)
@@ -289,7 +295,7 @@ void HandleModuleInput(Window w, int channel)
   if(n < size)
     {
       KillModule(channel,2);
-      return;
+      return 0;
     }
   
   text[n]=0;
@@ -297,7 +303,7 @@ void HandleModuleInput(Window w, int channel)
   if(n < sizeof(cont))
     {
       KillModule(channel,3);
-      return;
+      return 0;
     }
   if(cont == 0)
     {
@@ -308,18 +314,15 @@ void HandleModuleInput(Window w, int channel)
       extern int Context;
       FvwmWindow *tmp_win;
 
-      /* first, check to see if module config line */
-      if (text[0] == '*')
-      {
-        AddToModList(text);
-        return;
+      if(mystrncasecmp(text,"UNLOCK",6)==0) { /* synchronous response */
+        return 66;
       }
-
+      
       /* perhaps the module would like us to kill it? */
       if(mystrncasecmp(text,"KillMe",6)==0) 
       {
         KillModule(channel,12);
-        return;
+        return 0;
       }
 
       /* If a module does XUngrabPointer(), it can now get proper Popups */
@@ -355,7 +358,7 @@ void HandleModuleInput(Window w, int channel)
       Context = GetContext(tmp_win,&Event,&w);
       ExecuteFunction(text,tmp_win,&Event,Context ,channel); 
     }
-  return;
+  return 0;
 }
 
 
@@ -434,6 +437,32 @@ void SendPacket(int module, unsigned long event_type, unsigned long num_datum,
   PositiveWrite(module,body,(num_datum+4)*sizeof(body[0]));
 }
 
+/* This was written for the addl. args needed by FvwmAnimate.
+   This varargs function has the desirable trait of taking any
+   number of args.
+   Could/should be universally used. dje 8/28/98 */
+void Broadcast_v(unsigned long event_type, unsigned long num_datum,...) {
+  extern Time lastTimestamp;
+  int i;
+  va_list ap;                           /* for va macros */
+  unsigned long body[MAX_BODY_SIZE+HEADER_SIZE];
+  body[0] = START_FLAG;
+  body[1] = event_type;
+  body[2] = num_datum+HEADER_SIZE;
+  body[3] = lastTimestamp;    
+#ifdef __STDC__
+  va_start(ap,num_datum);               /* init va_list */
+#else
+  va_start(ap);
+#endif
+  for (i=HEADER_SIZE;i < num_datum+HEADER_SIZE; i++) {
+    body[i] = va_arg(ap, u_long);       /* copy args */
+  }
+  va_end(ap);                           /* clean up */
+  for(i=0;i<npipes;i++) {
+    PositiveWrite(i,body,(num_datum+4)*sizeof(body[0]));
+  }
+}
 void Broadcast(unsigned long event_type, unsigned long num_datum,
 	       unsigned long data1, unsigned long data2, unsigned long data3, 
 	       unsigned long data4, unsigned long data5, unsigned long data6,
@@ -612,12 +641,34 @@ void SendStrToModule(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 
 
 #include <sys/errno.h>
-FVWM_INLINE int PositiveWrite(int module, unsigned long *ptr, int size)
+/* This used to be marked "fvwm_inline".  I removed this
+   when I added the lockonsend logic.  The routine seems to big to
+   want to inline.  dje 9/4/98 */
+int PositiveWrite(int module, unsigned long *ptr, int size)
 {
   if((pipeOn[module]<0)||(!((PipeMask[module]) & ptr[1])))
     return -1;
 
   AddToQueue(module,ptr,size,0);
+  /* dje, from afterstep, for FvwmAnimate,
+     allows the module to synchronize with fvwm.
+     */
+  if (PipeMask[module] & M_LOCKONSEND) {
+    Window targetWindow;
+    int e;
+
+    FlushQueue(module);
+    fcntl(readPipes[module],F_SETFL,0);
+    while ((e = read(readPipes[module],&targetWindow, sizeof(Window))) > 0) {
+      if (HandleModuleInput(targetWindow,module) == 66) {
+        break;
+      }
+    }
+    if (e <= 0) {
+      KillModule(module,10);
+    }
+    fcntl(readPipes[module],F_SETFL,O_NDELAY);
+  }
   return size;
 }
 

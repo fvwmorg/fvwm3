@@ -50,11 +50,13 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   Window ResizeWindow;
   Bool flags;
   int val1, val2, val1_unit,val2_unit,n;
-
+  unsigned int expect_button = ~0;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE, ButtonPress))
     return;
-  
+
+  if (eventp->type == KeyPress)
+    expect_button = 0;
   if(check_allowed_function2(F_RESIZE,tmp_win) == 0
 #ifdef WINDOWSHADE
      || (tmp_win->buttons & WSHADE)
@@ -178,7 +180,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     {
       XMaskEvent(dpy, ButtonPressMask | ButtonReleaseMask | KeyPressMask |
 		 ButtonMotionMask | PointerMotionMask | ExposureMask,  &Event);
-      StashEventTime(&Event);      
+      StashEventTime(&Event);
 
       if (Event.type == MotionNotify) 
 	/* discard any extra motion events before a release */
@@ -199,6 +201,8 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	{
 	case ButtonPress:
 	  XAllowEvents(dpy,ReplayPointer,CurrentTime);
+	  if (expect_button != 0)
+	    expect_button = Event.xbutton.button;
 	case KeyPress:
 	  /* simple code to bag out of move - CKH */
 	  if (XLookupKeysym(&(Event.xkey),0) == XK_Escape)
@@ -210,6 +214,8 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	  break;
 
 	case ButtonRelease:
+	  if (expect_button != ~0 && Event.xbutton.button == expect_button)
+	    abort = TRUE;
 	  finished = TRUE;
 	  done = TRUE;
 	  break;
@@ -266,6 +272,7 @@ void resize_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   UngrabEm();
   xmotion = 0;
   ymotion = 0;
+  WaitForButtonsUp();
 
   Scr.flags |= flags & (EdgeWrapX|EdgeWrapY);
   return;

@@ -343,7 +343,7 @@ void initPanFrames()
 
 /***************************************************************************
  *
- *  Moves the viewport within thwe virtual desktop
+ *  Moves the viewport within the virtual desktop
  *
  ***************************************************************************/
 void MoveViewport(int newx, int newy, Bool grab)
@@ -423,6 +423,80 @@ void MoveViewport(int newx, int newy, Bool grab)
     MyXUngrabServer(dpy);
 }
 
+/**************************************************************************
+ *
+ * Parse arguments for "Desk" and "WindowsDesk":
+ *
+ * (nil)       : desk number = current desk
+ * n           : desk number = n
+ * 0 n         : desk number = n
+ * n           : desk number = current desk + n
+ * 0 n min max : desk number = n, but limit to min/max
+ * n min max   : desk number = current desk + n, but wrap around at desk #min
+ *               or desk #max
+ *
+ * The current desk number is returned if not enough parameters could be
+ * read (or if action is empty).
+ *
+ **************************************************************************/
+int GetDeskNumber(char *action)
+{
+int i;
+  int n;
+  int m;
+  int desk;
+  int val[4];
+  int min, max;
+
+  n = GetIntegerArguments(action, NULL, &(val[0]), 4);
+  if (n <= 0)
+    return Scr.CurrentDesk;
+  if (n == 1)
+    return val[0];
+  desk = Scr.CurrentDesk;
+  if (val[0] == 0)
+    {
+      /* absolute desk number */
+      desk = val[1];
+      m = 2;
+    }
+  else
+    {
+      /* relative desk number */
+      desk += val[0];
+      m = 1;
+    }
+  if (n >= m + 2)
+    {
+      /* handle limits */
+      if (val[m] <= val[m+1])
+	{
+	  min = val[m];
+	  max = val[m+1];
+	}
+      else
+	{
+	  min = val[m+1];
+	  max = val[m];
+	}
+      if (desk < min)
+	{
+	  if (val[0] < 0)
+	    desk = max;
+	  else
+	    desk = min;
+	}
+      else if (desk > max)
+	{
+	  if (val[0] > 0)
+	    desk = min;
+	  else
+	    desk = max;
+	}
+    }
+
+  return desk;
+}
 
 /**************************************************************************
  * 
@@ -434,29 +508,19 @@ void changeDesks_func(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 {
   int n,val1, val1_unit, val2, val2_unit;
 
-  n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
-  changeDesks(val1,val2);
+  changeDesks(GetDeskNumber(action));
 }
 
-void  changeDesks(int val1, int val2)
+void changeDesks(int desk)
 {
   int oldDesk;
   FvwmWindow *FocusWin = 0, *t;
   static FvwmWindow *StickyWin = 0;
 
   oldDesk = Scr.CurrentDesk;
-
-  if(val1 != 0)
-    {
-      Scr.CurrentDesk = Scr.CurrentDesk + val1;
-    }
-  else
-    {
-      Scr.CurrentDesk = val2;
-      if(Scr.CurrentDesk == oldDesk)
-	return;
-    }
-
+  Scr.CurrentDesk = desk;
+  if(Scr.CurrentDesk == oldDesk)
+    return;
   Broadcast(M_NEW_DESK,1,Scr.CurrentDesk,0,0,0,0,0,0);
   /* Scan the window list, mapping windows on the new Desk,
    * unmapping windows on the old Desk */
@@ -531,8 +595,7 @@ void  changeDesks(int val1, int val2)
 void changeWindowsDesk(XEvent *eventp,Window w,FvwmWindow *t,
 		       unsigned long context,char *action, int *Module)
 {
-  int val1, val2;
-  int val1_unit,val2_unit,n;
+  int desk;
   
   if (DeferExecution(eventp,&w,&t,&context,SELECT,ButtonRelease))
     return;
@@ -540,20 +603,8 @@ void changeWindowsDesk(XEvent *eventp,Window w,FvwmWindow *t,
   if(t == NULL)
     return;
 
-  n = GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit);
-
-  if(n != 2)
-  {
-    n = GetOneArgument(action, &val2, &val2_unit);
-    val1 = 0;
-  }
-
-  if(val1 != 0)
-    val1 += t->Desk;
-  else
-    val1 = val2;
-
-  if(val1 == t->Desk)
+  desk = GetDeskNumber(action);
+  if(desk == t->Desk)
     return;
 
   /* Scan the window list, mapping windows on the new Desk,
@@ -564,19 +615,19 @@ void changeWindowsDesk(XEvent *eventp,Window w,FvwmWindow *t,
     {
       if(t->Desk == Scr.CurrentDesk)
 	{
-	  t->Desk = val1;
+	  t->Desk = desk;
 	  UnmapIt(t);
 	}
-      else if(val1 == Scr.CurrentDesk)
+      else if(desk == Scr.CurrentDesk)
 	{
-	  t->Desk = val1;
+	  t->Desk = desk;
 	  /* If its an icon, auto-place it */
 	  if(t->flags & ICONIFIED)
 	    AutoPlace(t);
 	  MapIt(t);
 	}
       else
-	t->Desk = val1;
+	t->Desk = desk;
       
     }
   BroadcastConfig(M_CONFIGURE_WINDOW,t);

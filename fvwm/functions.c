@@ -34,8 +34,13 @@ extern int menuFromFrameOrWindowOrTitlebar;
 Bool desperate;
 
 /*
-** be sure to keep this list properly ordered for bsearch routine!
-*/
+ * be sure to keep this list properly ordered for bsearch routine!
+ *
+ * Note: the 3rd column of this table is no longer in use!
+ * Remove the field "code" from the structure "functions" in misc.c.
+ * Then remove the values from this table.
+ * dje 9/25/98
+ */
 static struct functions func_config[] =
 {
   {"+",            add_another_item, F_ADDMENU2,            FUNC_NO_WINDOW},
@@ -103,6 +108,8 @@ static struct functions func_config[] =
   {"ModulePath",   setModulePath,    F_MODULE_PATH,         FUNC_NO_WINDOW},
   {"Mouse",        ParseMouseEntry,  F_MOUSE,               FUNC_NO_WINDOW},
   {"Move",         move_window,      F_MOVE,                FUNC_NEEDS_WINDOW},
+  {"MoveToDesk",   changeWindowsDesk,F_CHANGE_WINDOWS_DESK, FUNC_NEEDS_WINDOW},
+  {"MoveToPage",   move_window_to_page,F_MOVE_TO_PAGE,      FUNC_NEEDS_WINDOW},
   {"Next",         NextFunc,         F_NEXT,                FUNC_NO_WINDOW},
   {"None",         NoneFunc,         F_NONE,                FUNC_NO_WINDOW},
   {"Nop",          Nop_func,         F_NOP,                 FUNC_NOP},
@@ -199,6 +206,20 @@ void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
   char *action, *taction;
   char *arguments[10];
   struct functions *bif;
+
+  if (strlen(&Action[0]) < 2) {         /* impossibly short command */
+    return;                             /* done */
+  }
+  if (Action[0] == '#') {               /* a comment */
+    return;                             /* done */
+  }
+  /* Note: the module config command, "*" can not be handled by the
+     regular command table because there is no required white space after
+     the asterisk. */
+  if (Action[0] == '*') {               /* a module config command */
+    ModuleConfig(NULL,0,0,0,Action,0);  /* process the command */
+    return;                             /* done */
+  }
 
   for(j=0;j<10;j++)
     arguments[j] = NULL;

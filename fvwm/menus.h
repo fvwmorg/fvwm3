@@ -51,6 +51,11 @@
 #define FUNC_TITLE 2
 #define FUNC_NOP 3
 
+#define MENU_IS_LEFT  0x01
+#define MENU_IS_RIGHT 0x02
+#define MENU_IS_UP    0x04
+#define MENU_IS_DOWN  0x08
+
 #include "../libs/fvwmlib.h"
 
 struct MenuRoot; /* forward declaration */
@@ -111,6 +116,8 @@ typedef struct MenuRoot
     Pixel sideColor;
     Bool colorize;
     short xoffset;
+    unsigned char flags; /* internal flags, deleted when menu pops down! */
+    int xanimation;      /* x distance window was moved by animation     */
 } MenuRoot;
 
 typedef struct Binding
@@ -123,6 +130,32 @@ typedef struct Binding
   char *Action;           /* What to do? */
   struct Binding *NextBinding; 
 } Binding;
+
+typedef struct
+{
+  int x;                  /* suggested x position */
+  int y;                  /* suggested y position */
+  float x_factor;         /* to take menu width into account (0, -1 or -0.5) */
+  float y_factor;         /* same with height */
+  Bool fRelative;         /* FALSE if referring to absolute screen position */
+} MenuPosHints;
+
+typedef struct
+{
+  MenuPosHints pos_hints;
+  unsigned char flags;
+} MenuOptions;
+
+/* menu options flags */
+#define MENU_NOWARP           0x01
+#define MENU_WARPTITLE        0x02
+#define MENU_FIXED            0x04
+#define MENU_SELECTINPLACE    0x08
+#define MENU_SELECTWARP       0x10
+#define MENU_HAS_POSHINTS     0x20
+
+extern MenuPosHints lastMenuPosHints;
+extern Bool fLastMenuPosHintsValid;
 
 
 /* Return values for UpdateMenu, do_menu, menuShortcuts */

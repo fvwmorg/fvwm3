@@ -100,15 +100,20 @@ void SetMessageMask(int *fd, unsigned long mask)
 }
 
 /***************************************************************************
- *
  * Gets a module configuration line from fvwm. Returns NULL if there are 
  * no more lines to be had. "line" is a pointer to a char *.
  *
+ * Changed 10/19/98 by Dan Espen:
+ *
+ * - The "isspace"  call was referring to  memory  beyond the end of  the
+ * input area.  This could have led to the creation of a core file. Added
+ * "body_size" to keep it in bounds.
  **************************************************************************/
 void GetConfigLine(int *fd, char **tline)
 {
   static int first_pass = 1;
   int count,done = 0;
+  int body_size;
   static char *line = NULL;
   unsigned long header[HEADER_SIZE];
 
@@ -124,13 +129,18 @@ void GetConfigLine(int *fd, char **tline)
   while(!done)
   {
     count = ReadFvwmPacket(fd[1],header,(unsigned long **)&line);
-    if(count > 0)
+    if(count > 0) {
       *tline = &line[3*sizeof(long)];
-    else 
+    } else {
       *tline = NULL;
-    if(*tline != NULL)
-    {
-      while(isspace(**tline))(*tline)++;
+    }
+    if(*tline != NULL) {
+      body_size = header[2]-HEADER_SIZE;
+      while((body_size > 0)
+            && isspace(**tline)) {
+        (*tline)++;
+        --body_size;
+      }
     }
 
 /*   fprintf(stderr,"%x %x\n",header[1],M_END_CONFIG_INFO);*/

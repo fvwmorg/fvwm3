@@ -33,9 +33,10 @@ Hey XEmacs, this is -*-text-*- mode
             is incorrectly configured, you have to override this in Fvwm.tmpl.
 	18. New version of FvwmIconMan
 	19. Changed prototype of bzero() in alpha_headers.h.
-	20. Applied Iconbox patch which added new styles IconGrid and IconFill.
+	20. Applied Iconbox patch which added new styles IconGrid and IconFill
+            from Dan Espen.
 	21. Applied Colorlimit patch which adds ColorLimit command to set
-            maxmimum number of colors fvwm can use for pixmaps. 
+            maxmimum number of colors fvwm can use for pixmaps from Dan Espen.
 	22. Applied DontFocusOffscreen patch.
 	23. Added StipledTitles globalopt.
 	24. Fix to fvwmrc_convert from Pete Forman. 
@@ -49,6 +50,39 @@ Hey XEmacs, this is -*-text-*- mode
 	28. Added Albrecht Kadlec's SetupModule() routine to fvwmlib.
 	29. Integrated MouseFocusOnStartup patch.
 	30. Put my fvwm configuration in sample.fvwm/BradyMontz.
+	31. Added FvwmAnimate which animates window Iconification.  This is
+            a port from Afterstep with enhancements by Dan Espen.
+	32. Extracted parsing routines from FvwmEvent and put in the libs
+	    directory for general use.
+	33. Modules can now operate synchronously with fvwm thru the
+	    M_LOCKONSEND flag (from Afterstep).
+	34. Modules can now be interactively configured with the M_SENDCONFIG
+	    flag.
+	35. Dominik Vogt <dominik_vogt@hp.com> is temporarily the new
+	    maintainer.
+	36. Added menu positioning patch and lots of bugfixes in the menu code.
+	37. Improved FvwmButtons to recognize button geometries and did some
+	    bugfixes.
+	38. Enhanced FvwmPager to allow showing always the current desk.
+	39. A range of valid desk numbers can be given to any command using
+	    desks.
+	40. New module XResources in the library to help future modules
+	    parsing configuration files and XResources.
+	41. Added a bugs section to the FvwmCpp manpage.
+	42. Did some cleanup on the manpage.
+	43. Added MoveToDesk and MoveToPage builtins and improved WindowsDesk
+	    command.
+	44. New variable $d for functions to get desktop number.
+	45. The RaiseLower bug has been fixed.
+	46. Enhancements to cursor navigation in menus.
+	47. Improved warping with menus.
+	48. Fixed memory leak and possible coredumps in WindowList function.
+	49. Fixed bugs in Parse.c in the library and added some convenience
+	    function.
+	50. Improved adding titles to menus.
+	51. Changed the syntax of Prev, Next, None and Current. The old
+	    syntax is still supported (but undocumented).
+
 
 2.0.46
        1. Patch to remove forgotten CLICKTORAISE #if check, from

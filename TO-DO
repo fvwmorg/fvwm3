@@ -41,15 +41,11 @@ Bugfixes:
     off the screen (like built in menus)
   - If programs raise their own windows (XEmacs 'other-frame', for example)
     new stacking order isn't communicated to fvwm
-  - RaiseLower doesn't work if only titlebar is obscured
   - Maximize XTerm, change font, UnMaximize, XTerm goes to wrong window size
   - Colormaps and xlock -install -mode blank (& swirl) interaction still
     isn't 100% correct?
   - bring back 'TogglePage'?
   - Setting Key's via FvwmTalk or Read requires Recapture to take effect?
-  - Popup menus require button press AND mouse movement to appear???
-  - Builtin winlist (and other menus) has extra keystrokes or mouse
-    movement needed sometimes
   - System Modal dialogs bug - popup menus shouldn't be allowed??  I think
     this is ok, actually...
   - Fix FvwmDeskTopScale size calculation
@@ -111,7 +107,6 @@ New stuff:
     module exec code & rc parser, or in modules themselves)
 
   - Improved FvwmPager (add/rename desktops on fly)
-  - Make pager have option to show current working desk (not just in icon)
   - A module that just has buttons for the active desktops, like desktop
     switcher in dtwm (COSE).  Could be munged into FvwmPager.
   - See if it's possible to drop windows onto the pager ala olvwm?
@@ -141,7 +136,7 @@ New stuff:
   - Add better overall icon handling options?
     Make an optional global free icon placement grid?
 
-  - More controll over icon appearance (non 3D, fg/bg colors, constant
+  - More control over icon appearance (non 3D, fg/bg colors, constant
     size, gradients, etc)?
 
   - Add StartsOnPage x y or something similiar to compliment
@@ -181,14 +176,8 @@ New stuff:
   - Add twm SqeezeTitle functionality to TitleStyle stuff & merge into
     Style command, perhaps???
 
-  - Make WindowsDesk able to operate relative to the current desk
-    (like the Desk command)
-
   - Allow neg vals for Maximize to indicate from bottom/right of screen
   - Allow neg vals for Move to indicate from bottom/right of screen
-
-  - Investigate impact of adding 'zoom' lines on (de)iconify ala olvwm???
-    Perhaps could be done as a module?
 
   - Add way to set keyword/value pairs to windows (via Atoms?) as a
     way for giving extra info to modules through style commands?
@@ -225,9 +214,6 @@ New stuff:
 
   - Allow env var to specify an additional read directory ($FVWMRCDIR
     or $FVWMHOME or something similiar)?
-
-  - Add way to specify max (& min?) desk number, and make desk change
-    functions wrap at bounds?
 
   - New module combining aspects of FvwmButtons, FvwmScript, FvwmForm,
     and Wharf to make one super module?  (FvwmGUI or something like that?)

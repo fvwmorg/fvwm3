@@ -61,7 +61,7 @@ int winCompare(const  FvwmWindow **a, const  FvwmWindow **b)
  * Change by PRB (pete@tecc.co.uk), 31/10/93.  Prepend a hot key
  * specifier to each item in the list.  This means allocating the
  * memory for each item (& freeing it) rather than just using the window
- * title directly.  */
+ * title directly. */
 void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		unsigned long context, char *action,int *Module)
 {
@@ -71,7 +71,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   FvwmWindow **windowList;
   int numWindows;
   int ii;
-  char *tname=NULL;
+  char tname[80];
   char loc[40],*name=NULL;
   int dwidth,dheight;
   char tlabel[50]="";
@@ -83,21 +83,36 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   int desk = Scr.CurrentDesk;
   int flags = SHOW_EVERYTHING;
   char *func=NULL;
+  char *tfunc=NULL;
+  char *default_action = NULL;
+  MenuStatus menu_retval;
+  XEvent *teventp;
+  MenuOptions mops;
 
+  mops.flags = 0;
   if (action && *action)
   {
-    line = strdup(action); /* local copy */
-    /* parse args */
+    /* parse postitioning args */
+    action = GetMenuOptions(action,w,tmp_win,NULL,&mops);
+    line = action;
+    /* parse options */
     while (line && *line)
     {
-      tok = GetToken(&line);
+      line = GetNextOption(line, &tok);
 
       if (StrEquals(tok,"Function"))
-        func = GetToken(&line);
+      {
+        line = GetNextOption(line, &func);
+      }
       else if (StrEquals(tok,"Desk"))
       {
-        desk = atoi(GetToken(&line));
-        flags &= ~SHOW_ALLDESKS;
+	free(tok);
+        line = GetNextOption(line, &tok);
+	if (tok)
+	{
+	  desk = atoi(tok);
+	  flags &= ~SHOW_ALLDESKS;
+	}
       }
       else if (StrEquals(tok,"CurrentDesk"))
       {
@@ -140,6 +155,8 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         flags |= SHOW_ONTOP;
       else if (StrEquals(tok,"OnlyOnTop"))
         flags = SHOW_ONTOP;
+      else if (!line || !*line)
+	default_action = strdup(tok);
       else
       {
         fvwm_msg(ERR,"WindowList","Unknown option '%s'",tok);
@@ -147,8 +164,6 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       if (tok)
         free(tok);
     }
-    if (line)
-      free(line);
   }
 
   globalFlags = flags;
@@ -171,8 +186,10 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     numWindows++;
   }
   windowList = malloc(numWindows*sizeof(t));
-  if (windowList == NULL) return;
-
+  if (windowList == NULL)
+  {
+    return;
+  }
   ii = 0;
   for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
   {
@@ -228,12 +245,11 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           name = t->icon_name;
         else
           name = t->name;
-        t_hot = safemalloc(strlen(name) + 48);
+        t_hot = safemalloc(strlen(name) + strlen(tname) + 48);
         sprintf(t_hot, "&%c.  %s", scut, name); /* Generate label */
 
         if (flags & SHOW_GEOMETRY)
         {
-          tname = safemalloc(80);
           tname[0]=0;
           if(t->flags & ICONIFIED)
             strcpy(tname, "(");
@@ -274,9 +290,18 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
           strcat(t_hot,tname);
         }
         if (func)
+	{
+	  tfunc = safemalloc(strlen(func) + 32);
           sprintf(tlabel,"%s %ld",func,t->w);
+	  free(func);
+	  func = NULL;
+	}
         else
+	{
+	  tfunc = safemalloc(40);
           sprintf(tlabel,"WindowListFunc %ld",t->w);
+	}
+	free(tfunc);
         AddToMenu(mr, t_hot, tlabel, FALSE);
 #ifdef MINI_ICONS
         /* Add the title pixmap */
@@ -290,19 +315,21 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 #endif
         if (t_hot)
           free(t_hot);
-        if (tname)
-          free(tname);
       }
     }
   }
 
   free(windowList);
-
   MakeMenu(mr);
-
-
-  do_menu(mr, NULL,&miExecuteAction,0, TRUE, (eventp->type == KeyPress));
-
+  if (!default_action && eventp && eventp->type == KeyPress)
+    teventp = (XEvent *)1;
+  else
+    teventp = eventp;
+  menu_retval = do_menu(mr, NULL, &miExecuteAction, 0, TRUE, teventp, &mops);
+  if (menu_retval == MENU_DOUBLE_CLICKED && default_action && *default_action)
+    ExecuteFunction(default_action,tmp_win,eventp,context,*Module);
+  if (default_action != NULL)
+    free(default_action);
   DestroyMenu(mr);
 }
 

@@ -35,7 +35,7 @@ char *CatString3(char *a, char *b, char *c)
   else
     strcpy(CatS, a);
   if(b != NULL)
-  strcat(CatS, b);
+    strcat(CatS, b);
   if(c != NULL)
     strcat(CatS, c);
   return CatS;
@@ -50,6 +50,11 @@ void CopyString(char **dest, char *source)
   int len;
   char *start;
   
+  if (source == NULL)
+    {
+      *dest = NULL;
+      return;
+    }
   while(((isspace(*source))&&(*source != '\n'))&&(*source != 0))
   {
     source++;
@@ -128,6 +133,8 @@ char *stripcpy(char *source)
   
 int StrEquals(char *s1,char *s2)
 {
+  if (!s1 && !s2)
+    return 1;
   if (!s1 || !s2)
     return 0;
   return (mystrcasecmp(s1,s2)==0);

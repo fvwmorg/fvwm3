@@ -107,12 +107,15 @@ void AnimatedMoveOfWindow(Window w,int startX,int startY,int endX, int endY,
  *
  ****************************************************************************/
 void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
-		      unsigned long context, char *action,int* Module, Bool fAnimated)
+		      unsigned long context, char *action,int* Module,
+		      Bool fAnimated, Bool fMoveToPage)
 {
   int FinalX, FinalY;
   int n;
   int x,y;
   int width, height;
+  int page_x, page_y;
+  int unit_x, unit_y;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, MOVE,ButtonPress))
     return;
@@ -132,11 +135,36 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 
   XGetGeometry(dpy, w, &JunkRoot, &x, &y, 
 	       &width, &height, &JunkBW, &JunkDepth);
-  n = GetPositionArguments(action,x,y,width+tmp_win->bw,height+tmp_win->bw,&FinalX,&FinalY);
-
-  if (n != 2)
-    InteractiveMove(&w,tmp_win,&FinalX,&FinalY,eventp);      
-      
+  if (fMoveToPage)
+    {
+      fAnimated = FALSE;
+      if (GetTwoArguments(action, &page_x, &page_y, &unit_x, &unit_y) != 2)
+	{
+	  fvwm_msg(ERR,"move_window_doit","MoveToPage requires two arguments");
+	  return;
+	}
+      if (unit_x != Scr.MyDisplayWidth || unit_y != Scr.MyDisplayHeight)
+	{
+	  fvwm_msg(ERR,"move_window_doit",
+		   "MoveToPage arguments should be unitless");
+	}
+      if (page_x < 0 || page_y < 0 || page_x*Scr.MyDisplayWidth > Scr.VxMax ||
+	  page_y*Scr.MyDisplayHeight > Scr.VyMax)
+	{
+	  fvwm_msg(ERR,"move_window_doit","MoveToPage: invalid page number");
+	  return;
+	}
+      tmp_win->flags &= ~STICKY;
+      FinalX = (x % Scr.MyDisplayWidth) + page_x*Scr.MyDisplayWidth - Scr.Vx;
+      FinalY = (y % Scr.MyDisplayHeight) + page_y*Scr.MyDisplayHeight - Scr.Vy;
+    }
+  else
+    {
+      n = GetPositionArguments(action,x,y,width+tmp_win->bw,
+			       height+tmp_win->bw,&FinalX,&FinalY);
+      if (n != 2)
+	InteractiveMove(&w,tmp_win,&FinalX,&FinalY,eventp);      
+    }
 
   if (w == tmp_win->frame)
   {
@@ -185,15 +213,20 @@ void move_window_doit(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 void move_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 		 unsigned long context, char *action,int* Module)
 {
-  move_window_doit(eventp,w,tmp_win,context,action,Module,FALSE);
+  move_window_doit(eventp,w,tmp_win,context,action,Module,FALSE,FALSE);
 }
 
 void animated_move_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 			  unsigned long context, char *action,int* Module)
 {
-  move_window_doit(eventp,w,tmp_win,context,action,Module,TRUE);
+  move_window_doit(eventp,w,tmp_win,context,action,Module,TRUE,FALSE);
 }
 
+void move_window_to_page(XEvent *eventp,Window w,FvwmWindow *tmp_win,
+			 unsigned long context, char *action,int* Module)
+{
+  move_window_doit(eventp,w,tmp_win,context,action,Module,FALSE,TRUE);
+}
 
 
 /****************************************************************************
@@ -203,12 +236,17 @@ void animated_move_window(XEvent *eventp,Window w,FvwmWindow *tmp_win,
  ****************************************************************************/
 void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	      int Height, int *FinalX, int *FinalY,Bool opaque_move,
-	      Bool AddWindow)
+	      Bool AddWindow, XEvent *eventp)
 {
   Bool finished = False;
   Bool done;
   int xl,yt,delta_x,delta_y,paged;
+  unsigned int expect_button;
 
+  if (eventp && eventp->type == KeyPress)
+    expect_button = 0;
+  else
+    expect_button = ~0;
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
 		&JunkX, &JunkY, &JunkMask);
   xl += XOffset;
@@ -267,6 +305,14 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    }
 	  else
 	    {
+	      if (expect_button == ~0)
+		{
+		  if(!opaque_move)
+		    MoveOutline(Scr.Root, 0, 0, 0, 0);
+		  *FinalX = tmp_win->frame_x;
+		  *FinalY = tmp_win->frame_y;
+		  finished = TRUE;
+		}
 	      done = 1;
 	      break;
 	    }
@@ -378,6 +424,7 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	    MoveOutline(Scr.Root, xl, yt, Width, Height);
 	}
     }
+  WaitForButtonsUp();
 }
 
 /***********************************************************************
@@ -551,7 +598,7 @@ void InteractiveMove(Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
   YOffset = origDragY - DragY;
   XMapRaised(dpy,Scr.SizeWindow);
   moveLoop(tmp_win, XOffset,YOffset,DragWidth,DragHeight, FinalX,FinalY,
-	   opaque_move,False);
+	   opaque_move,False,eventp);
 
   XUnmapWindow(dpy,Scr.SizeWindow);
   UninstallRootColormap();

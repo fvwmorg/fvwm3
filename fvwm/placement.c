@@ -387,7 +387,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk)
   /* I think it would be good to switch to the selected desk
    * whenever a new window pops up, except during initialization */
   if((!PPosOverride)&&(!(tmp_win->flags & SHOW_ON_MAP)))
-    changeDesks(0,tmp_win->Desk);  
+    changeDesks(tmp_win->Desk);  
 
 
   /* Desk has been selected, now pick a location for the window */
@@ -485,7 +485,7 @@ Bool PlaceWindow(FvwmWindow *tmp_win, unsigned long tflag,int Desk)
           
           XMapRaised(dpy,Scr.SizeWindow);
           moveLoop(tmp_win,0,0,DragWidth,DragHeight,
-                   &xl,&yt,False,True);
+                   &xl,&yt,False,True,NULL);
           XUnmapWindow(dpy,Scr.SizeWindow);
           MyXUngrabServer(dpy);
           UngrabEm();

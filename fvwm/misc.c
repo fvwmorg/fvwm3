@@ -25,6 +25,7 @@
 
 #include "fvwm.h"
 #include <X11/Xatom.h>
+#include <X11/Xutil.h>
 #include "menus.h"
 #include "misc.h"
 #include "parse.h"
@@ -484,6 +485,227 @@ int GetPositionArguments(char *action, int x, int y, int w, int h, int *pFinalX,
     return 0;
 }
 
+/*****************************************************************************
+ * Used by GetMenuOptions
+ *
+ * The vars are named for the x-direction, but this is used for both x and y
+ *****************************************************************************/
+static
+char *GetOneMenuPositionArgument(char *action,int x,int w,int *pFinalX,
+				 float *width_factor)
+{
+  char *token, *naction;
+  int val;
+  int length;
+  float factor = (float)w/100;
+
+  naction = GetNextToken(action, &token);
+  if (token == NULL)
+    return action;
+  length = strlen(token);
+  if (token[length-1] == 'p') {
+    factor = 1;  /* Use pixels, so don't multiply by factor */
+    token[length-1] = '\0';
+  }
+  if (strcmp(token,"c") == 0) {
+    *pFinalX = x + ((float)w)/2;
+    *width_factor = -0.5;
+  } else if (sscanf(token,"c-%d",&val) == 1) {
+    *pFinalX = x + ((float)w)/2 - val*factor;
+    *width_factor = -0.5;
+  } else if (sscanf(token,"c+%d",&val) == 1) {
+    *pFinalX = x + ((float)w)/2 + val*factor;
+    *width_factor = -0.5;
+  } else if (sscanf(token,"-%d",&val) == 1) {
+    *pFinalX = x + w - val*factor;
+    *width_factor = -1;
+  } else if (sscanf(token,"%d",&val) == 1) {
+    *pFinalX = x + val*factor;
+    *width_factor = 0;
+  } else {
+    naction = action;
+  }
+  free(token); 
+  return naction;
+}
+
+/*****************************************************************************
+ * GetMenuOptions is used for Menu, Popup and WindowList
+ * It parses strings matching
+ *
+ *   [ [context-rectangle] x y ] [special-options] [other arguments]
+ *
+ * and returns a pointer to the first part of the input string that doesn't
+ * match this syntax.
+ *
+ * See documentation for a detailed description.
+ ****************************************************************************/
+char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
+		     MenuItem *mi, MenuOptions *pops)
+{
+  char *tok = NULL, *naction = action, *taction;
+  int x, y, button, gflags;
+  unsigned int width, height;
+  Window context_window;
+  Bool fHasContext, fUseItemOffset;
+  Bool fValidPosHints = fLastMenuPosHintsValid;
+
+  fLastMenuPosHintsValid = FALSE;
+  if (pops == NULL) {
+    fvwm_msg(ERR,"GetMenuOptions","no MenuOptions pointer passed");
+    return action;
+  }
+  
+  taction = action;
+  while (action != NULL) {
+    /* ^ just to be able to jump to end of loop without 'goto' */
+    gflags = NoValue;
+    pops->flags = 0;
+    pops->pos_hints.fRelative = FALSE;
+    /* parse context argument (if present) */
+    naction = GetNextToken(taction, &tok);
+    
+    pops->pos_hints.fRelative = TRUE; /* set to FALSE for absolute hints! */
+    fUseItemOffset = FALSE;
+    fHasContext = TRUE;
+    if (StrEquals(tok, "context")) {
+      if (mi && mi->mr) context_window = mi->mr->w;
+      else if (tmp_win) {
+	if (tmp_win->flags & ICONIFIED) context_window=tmp_win->icon_pixmap_w;
+	else context_window = tmp_win->frame;
+      } else context_window = w;
+      pops->pos_hints.fRelative = TRUE;
+    } else if (StrEquals(tok,"menu")) {
+      if (mi && mi->mr) context_window = mi->mr->w;
+    } else if (StrEquals(tok,"item")) {
+      if (mi && mi->mr) {
+	context_window = mi->mr->w;
+	fUseItemOffset = TRUE;
+      }
+    } else if (StrEquals(tok,"icon")) {
+      if (tmp_win) context_window = tmp_win->icon_pixmap_w;
+    } else if (StrEquals(tok,"window")) {
+      if (tmp_win) context_window = tmp_win->frame;
+    } else if (StrEquals(tok,"interior")) {
+      if (tmp_win) context_window = tmp_win->w;
+    } else if (StrEquals(tok,"title")) {
+      if (tmp_win) {
+	if (tmp_win->flags & ICONIFIED) context_window = tmp_win->icon_w;
+	else context_window = tmp_win->title_w;
+      }
+    } else if (mystrncasecmp(tok,"button",6) == 0) {
+      if (sscanf(&(tok[6]),"%d",&button) != 1 ||
+		 tok[6] == '+' || tok[6] == '-' || button < 0 || button > 9) {
+	fHasContext = FALSE;
+      } else if (tmp_win) {
+	if (button == 0) button = 10;
+	if (button & 0x01) context_window = tmp_win->left_w[button/2];
+	else context_window = tmp_win->right_w[button/2-1];
+      }
+    } else if (StrEquals(tok,"root")) {
+      context_window = Scr.Root;
+      pops->pos_hints.fRelative = FALSE;
+    } else if (StrEquals(tok,"mouse")) {
+      context_window = 0;
+    } else if (StrEquals(tok,"rectangle")) {
+      int flags;
+      /* parse the rectangle */
+      free(tok);
+      naction = GetNextToken(taction, &tok);
+      if (tok == NULL) {
+	fvwm_msg(ERR,"GetMenuOptions","missing rectangle geometry");
+	return action;
+      }
+      flags = XParseGeometry(tok, &x, &y, &width, &height);
+      if ((flags & AllValues) != AllValues) {
+	free(tok);
+	fvwm_msg(ERR,"GetMenuOptions","invalid rectangle geometry");
+	return action;
+      }
+      if (flags & XNegative) x = Scr.MyDisplayWidth - x - width;
+      if (flags & YNegative) y = Scr.MyDisplayHeight - y - height;
+      pops->pos_hints.fRelative = FALSE;
+    } else if (StrEquals(tok,"this")) {
+      context_window = w;
+    } else {
+      /* no context string */
+      fHasContext = FALSE;
+    }
+    
+    free(tok);
+    if (fHasContext) taction = naction;
+    else naction = action;
+    
+    if (!context_window || !fHasContext
+	|| !XGetGeometry(dpy, context_window, &JunkRoot, &JunkX, &JunkY,
+			 &width, &height, &JunkBW, &JunkDepth)
+	|| !XTranslateCoordinates(
+	  dpy, context_window, Scr.Root, 0, 0, &x, &y, &JunkChild)) {
+      /* now window or could not get geometry */
+      XQueryPointer(dpy,Scr.Root,&JunkRoot,&JunkChild,&x,&y,&JunkX,&JunkY,
+		    &JunkMask);
+      width = height = 1;
+    } else if (fUseItemOffset) {
+      y += mi->y_offset;
+      height = mi->y_height;
+    }
+    
+    /* parse position arguments */
+    taction = GetOneMenuPositionArgument(
+      naction, x, width, &(pops->pos_hints.x), &(pops->pos_hints.x_factor));
+    naction = GetOneMenuPositionArgument(
+      taction, y, height, &(pops->pos_hints.y), &(pops->pos_hints.y_factor));
+    if (naction == taction) {
+      /* argument is missing or invalid */
+      if (fHasContext)
+	fvwm_msg(ERR,"GetMenuOptions","invalid position arguments");
+      naction = action;
+      taction = action;
+      break;
+    }
+    taction = naction;
+    pops->flags |= MENU_HAS_POSHINTS;
+    if (fValidPosHints == TRUE && pops->pos_hints.fRelative == TRUE) {
+      pops->pos_hints = lastMenuPosHints;
+    }
+    /* we want to do this only once */
+    break;
+  } /* while (1) */
+
+  if (!(pops->flags & MENU_HAS_POSHINTS) && fValidPosHints) {
+    DBUG("GetMenuOptions","recycling position hints");
+    pops->flags |= MENU_HAS_POSHINTS;
+    pops->pos_hints = lastMenuPosHints;
+    pops->pos_hints.fRelative = FALSE;
+  }
+
+  action = naction; 
+  /* parse additional options */
+  while (naction && *naction) {
+    naction = GetNextToken(action, &tok);
+    if (StrEquals(tok, "WarpTitle")) {
+      pops->flags = (pops->flags | MENU_WARPTITLE) & ~MENU_NOWARP;
+    } else if (StrEquals(tok, "NoWarp")) {
+      pops->flags = (pops->flags | MENU_NOWARP) & ~MENU_WARPTITLE;
+    } else if (StrEquals(tok, "Fixed")) {
+      pops->flags |= MENU_FIXED;
+    } else if (StrEquals(tok, "SelectInPlace")) {
+      pops->flags = pops->flags|MENU_SELECTINPLACE;
+    } else if (StrEquals(tok, "SelectWarp")) {
+      pops->flags = pops->flags|MENU_SELECTWARP;
+    } else {
+      free(tok);
+      break;
+    }
+    action = naction;
+    free (tok);
+  }
+  if (!(pops->flags|MENU_SELECTINPLACE)) {
+    pops->flags &= ~MENU_SELECTWARP;
+  }
+
+  return action;
+}
 
 int GetOneArgument(char *action, int *val1, int *val1_unit)
 {
@@ -509,6 +731,41 @@ int GetOneArgument(char *action, int *val1, int *val1_unit)
   return 1;
 }
 
+
+/***************************************************************************
+ * 
+ * Wait for all mouse buttons to be released 
+ * This can ease some confusion on the part of the user sometimes 
+ * 
+ * Discard superflous button events during this wait period.
+ *
+ ***************************************************************************/
+void WaitForButtonsUp()
+{
+  Bool AllUp = False;
+  XEvent JunkEvent;
+  unsigned int mask;
+
+  while(!AllUp)
+    {
+      XAllowEvents(dpy,ReplayPointer,CurrentTime);
+      XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
+		    &JunkX, &JunkY, &JunkX, &JunkY, &mask);    
+      
+      if((mask&
+	  (Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))==0)
+	AllUp = True;
+    }
+  XSync(dpy,0);
+  while(XCheckMaskEvent(dpy,
+			ButtonPressMask|ButtonReleaseMask|ButtonMotionMask,
+			&JunkEvent))
+    {
+      StashEventTime (&JunkEvent);
+      XAllowEvents(dpy,ReplayPointer,CurrentTime);
+    }
+
+}
 
 /*****************************************************************************
  *

@@ -56,6 +56,11 @@
 #define b_IconParent 0x4000 /* Parent button has an icon as background */
 #define b_TransBack 0x8000 /* Transparent background */
 
+/* flags for b->posflags */
+#define b_SizeFixed   0x01 /* User provided rows/columns may not be altered */
+#define b_PosFixed    0x02 /* User provided button position */
+#define b_SizeSmart   0x04 /* Improved button box sizing */
+
 /* Flags for b->swallow */
 #define b_Count       0x03 /* Init counter for swallowing */
 #define b_NoHints     0x04 /* Ignore window hints from swallowed window */
@@ -88,6 +93,7 @@ struct container_info_struct
   int xpos,ypos;
 
   ushort flags;            /* Which data are set in this container? */
+  byte posflags;           /* Button placement behaviour */
   byte justify;            /* b_Justify */
   byte justify_mask;       /* b_Justify */
   byte swallow;            /* b_Swallow */
@@ -109,6 +115,8 @@ struct button_info_struct
 {
   /* required fields */
   ushort flags;
+  byte posflags;           /* Button placement behaviour */
+  int  BPosX,BPosY;        /* position in button units from top left */
   byte BWidth,BHeight;     /* width and height in button units  */
   button_info *parent;
   int n;                   /* number in parent */

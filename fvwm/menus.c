@@ -21,6 +21,14 @@
       moves one item at a time
    Animated animated menus (along with animated move)
    */
+
+/* Dominik Vogt, Sep 1998
+   dominik_vogt@hp.com
+
+   Implemented position hints for menus and fixed a lot of bugs
+   (some cosmetic bugs and two or three coredumps). Rewrote large parts
+   of MenuInteraction and FPopupMenus.
+   */
     
 
 /***********************************************************************
@@ -51,14 +59,17 @@
 static void DrawTrianglePattern(Window,GC,GC,GC,GC,int,int,int,int);
 static void DrawSeparator(Window, GC,GC,int, int,int,int,int);
 static void DrawUnderline(Window w, GC gc, int x, int y, char *txt, int off);
-static MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior, MenuItem **pmiExecuteAction,
-			   int cmenuDeep,Bool fSticks);
+static MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
+				  MenuItem **pmiExecuteAction,int cmenuDeep,
+				  Bool fSticks);
 static void WarpPointerToTitle(MenuRoot *menu);
 static MenuItem *MiWarpPointerToItem(MenuItem *mi, Bool fSkipTitle);
 static void PopDownMenu(MenuRoot *mr);
-static Bool FPopupMenu(MenuRoot *menu, MenuRoot *menuPrior, int x, int y, Bool fWarpItem);
+static Bool FPopupMenu(MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
+		       Bool fWarpItem, MenuOptions *pops);
 static void GetPreferredPopupPosition(MenuRoot *mr, int *x, int *y);
 static int PopupPositionOffset(MenuRoot *mr);
+static void GetPopupOptions(MenuItem *mi, MenuOptions *pops);
 static void PaintEntry(MenuItem *mi);
 static void PaintMenu(MenuRoot *, XEvent *);
 static void SetMenuItemSelected(MenuItem *mi, Bool f);
@@ -77,35 +88,63 @@ extern XContext MenuContext;
 
 static FvwmWindow *s_Tmp_win=NULL;
 
+/* dirty patch to pass the last popups position hints to popup_func */
+MenuPosHints lastMenuPosHints;
+Bool fLastMenuPosHintsValid = FALSE;
+static Bool fIgnorePosHints = FALSE;
+static Bool fWarpPointerToTitle = FALSE;
+
+/* patch to allow double-keypress (like doubleclick) */
+unsigned int dkp_keystate;
+unsigned int dkp_keycode;
+Time dkp_timestamp;
+
 #define IS_TITLE_MENU_ITEM(mi) (((mi)?((mi)->func_type==F_TITLE):FALSE))
 #define IS_POPUP_MENU_ITEM(mi) (((mi)?((mi)->func_type==F_POPUP):FALSE))
 #define IS_SEPARATOR_MENU_ITEM(mi) ((mi)?(mi)->fIsSeparator:FALSE)
 #define IS_REAL_SEPARATOR_MENU_ITEM(mi) ((mi)?((mi)->fIsSeparator && StrEquals(mi->action,"nop") && !mi->strlen && !mi->strlen2):FALSE)
 #define IS_LABEL_MENU_ITEM(mi) ((mi)?((mi)->fIsSeparator && StrEquals(mi->action,"nop") && (mi->strlen || mi->strlen2)):FALSE)
 #define MENU_MIDDLE_OFFSET(menu) (menu->xoffset + (menu->width - menu->xoffset)/2)
+#define IS_LEFT_MENU(menu) (menu->flags & MENU_IS_LEFT)
+#define IS_RIGHT_MENU(menu) (menu->flags & MENU_IS_RIGHT)
+#define IS_UP_MENU(menu) (menu->flags & MENU_IS_UP)
+#define IS_DOWN_MENU(menu) (menu->flags & MENU_IS_DOWN)
+#define DOUBLECLICK_TIMEOUT (3*Scr.ClickTime)
 
 /****************************************************************************
  *
  * Initiates a menu pop-up
  *
- * Style = 1 = sticky menu, stays up on initial button release.
- * Style = 0 = transient menu, drops on initial release.
+ * fStick = TRUE  = sticky menu, stays up on initial button release.
+ * fStick = FALSE = transient menu, drops on initial release.
+ *
+ * eventp = 0: menu opened by mouse, do not warp
+ * eventp > 1: root menu opened by keypress with 'Menu', warp pointer and
+ *             allow 'double-keypress'.
+ * eventp = 1: menu opened by keypress, warp but forbid 'double-keypress'
+ *             this should always be used except in the call in 'staysup_func'
+ *             in builtin.c
  *
  * Returns one of MENU_NOP, MENU_ERROR, MENU_ABORTED, MENU_DONE
  ***************************************************************************/
-MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior, MenuItem **pmiExecuteAction,
-		   int cmenuDeep,Bool fStick, Bool key_press )
+MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
+		   MenuItem **pmiExecuteAction,int cmenuDeep,Bool fStick,
+		   XEvent *eventp, MenuOptions *pops)
 {
   MenuStatus retval=MENU_NOP;
   int x,y;
-  int x_start = -1,y_start = -1;
+  static int x_start, y_start;
   Bool fFailedPopup = FALSE;
   Bool fWasAlreadyPopped = FALSE;
+  Bool key_press;
+  Bool fDoubleClick = FALSE;
   Time t0;
   extern Time lastTimestamp;
+  static int cindirectDeep = 0;
 
   DBUG("do_menu","called");
 
+   key_press = (eventp && (eventp == (XEvent *)1 || eventp->type == KeyPress));
   /* this condition could get ugly */
   if(menu == NULL || menu->in_use) {
     /* DBUG("do_menu","menu->in_use for %s -- returning",menu->name); */
@@ -118,17 +157,31 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior, MenuItem **pmiExecuteAct
 		&x, &y, &JunkX, &JunkY, &JunkMask);
   /* Save these-- we want to warp back here if this is a top level
      menu brought up by a keystroke */
-  if (key_press && cmenuDeep == 0) {
-    x_start = x;
-    y_start = y;
+  if (cmenuDeep == 0 && cindirectDeep == 0) {
+    if (key_press) {
+      x_start = x;
+      y_start = y;
+    } else {
+      x_start = -1;
+      y_start = -1;
+    }
   }
-
+  /* calculate position from positioning hints */
+  if ((pops->flags & MENU_HAS_POSHINTS) && !fIgnorePosHints) {
+    pops->pos_hints.x += pops->pos_hints.x_factor * menu->width;
+    pops->pos_hints.y += pops->pos_hints.y_factor * menu->height;
+  }
   /* Figure out where we should popup, if possible */
   if (!FMenuMapped(menu)) {
     if(cmenuDeep > 0) {
       /* this is a submenu popup */
       assert(menuPrior);
-      GetPreferredPopupPosition(menuPrior, &x, &y);
+      if ((pops->flags & MENU_HAS_POSHINTS) && !fIgnorePosHints) {
+	x = pops->pos_hints.x;
+	y = pops->pos_hints.y;
+      } else {
+	GetPreferredPopupPosition(menuPrior, &x, &y);
+      }
     } else {
       /* we're a top level menu */
       mouse_moved = FALSE;
@@ -137,14 +190,19 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior, MenuItem **pmiExecuteAct
 	XBell(dpy,Scr.screen);
 	return MENU_ABORTED;
       }
-      /* Make the menu appear under the pointer rather than warping */
-      x -= MENU_MIDDLE_OFFSET(menu);
-      y -= Scr.EntryHeight/2;
+      if ((pops->flags & MENU_HAS_POSHINTS) && !fIgnorePosHints) {
+	x = pops->pos_hints.x;
+	y = pops->pos_hints.y;
+      } else {
+	/* Make the menu appear under the pointer rather than warping */
+	x -= MENU_MIDDLE_OFFSET(menu);
+	y -= Scr.EntryHeight/2 + 2;
+      }
     }
 
     /* FPopupMenu may move the x,y to make it fit on screen more nicely */
     /* it might also move menuPrior out of the way */
-    if (!FPopupMenu (menu, menuPrior, x, y, key_press /* warp */)) {
+    if (!FPopupMenu (menu, menuPrior, x, y, key_press /* warp */, pops)) {
       fFailedPopup = TRUE;
       XBell (dpy, Scr.screen);
     }
@@ -153,9 +211,18 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior, MenuItem **pmiExecuteAct
     fWasAlreadyPopped = TRUE;
     if (key_press) MiWarpPointerToItem(menu->first, TRUE /* skip Title */);
   }
+  fWarpPointerToTitle = FALSE;
 
   menu->in_use = TRUE;
-  cmenuDeep++;
+  /* Remember the key that popped up the root menu. */
+  if (!(cmenuDeep++)) {
+    if (eventp && eventp != (XEvent *)1) {
+      /* we have a real key event */
+      dkp_keystate = eventp->xkey.state;
+      dkp_keycode = eventp->xkey.keycode;
+    }
+    dkp_timestamp = (key_press) ? t0 : 0;
+  }
   if (!fFailedPopup)
     retval = MenuInteraction(menu,menuPrior,pmiExecuteAction,cmenuDeep,fStick);
   else
@@ -170,25 +237,37 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior, MenuItem **pmiExecuteAct
   menuFromFrameOrWindowOrTitlebar = FALSE;
   XFlush(dpy);
 
+  if (cmenuDeep == 0 && x_start >= 0 && y_start >= 0 &&
+      IS_MENU_BUTTON(retval)) {
+    /* warp pointer back to where invoked if this was brought up
+       with a keypress and we're returning from a top level menu,
+       and a button release event didn't end it */
+    XWarpPointer(dpy, 0, Scr.Root, 0, 0,
+		 Scr.MyDisplayWidth, Scr.MyDisplayHeight,x_start, y_start);
+  }
+
+  if (lastTimestamp-t0 < DOUBLECLICK_TIMEOUT && !mouse_moved &&
+      (!key_press || dkp_timestamp != 0)) {
+    /* dkp_timestamp is non-zero if a double-keypress occured! */
+    fDoubleClick = TRUE;
+  }
+  dkp_timestamp = 0;
   if(cmenuDeep == 0) {
     UngrabEm();
     WaitForButtonsUp();
-    if (retval == MENU_DONE || retval == MENU_DONE_BUTTON)
-      ExecuteFunction((*pmiExecuteAction)->action,ButtonWindow, &Event, Context,-1);
+    if (retval == MENU_DONE || retval == MENU_DONE_BUTTON) {
+      if (pmiExecuteAction && *pmiExecuteAction && !fDoubleClick) {
+	cindirectDeep++;
+	ExecuteFunction(
+	  (*pmiExecuteAction)->action,ButtonWindow, &Event,Context, -1);
+	cindirectDeep--;
+      }
+      fIgnorePosHints = FALSE;
+      fLastMenuPosHintsValid = FALSE;
+    }
   }
 
-  if (cmenuDeep == 0 &&
-      x_start >= 0 && y_start >= 0 &&
-      IS_MENU_BUTTON(retval)) {
-    /* warp pointer back to where invoked if this was brought up
-       with a keypress and we're returning from a top level menu, 
-       and a button release event didn't end it */
-    XWarpPointer(dpy, 0, Scr.Root, 0, 0,
-		 Scr.MyDisplayWidth, Scr.MyDisplayHeight,
-		 x_start, y_start);
-  }
-
-  if(((lastTimestamp-t0) < 3*Scr.ClickTime)&&(mouse_moved==FALSE))
+  if (fDoubleClick)
     retval = MENU_DOUBLE_CLICKED;
   return retval;
 }
@@ -202,7 +281,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior, MenuItem **pmiExecuteAct
  * Return value is a menu item
  ***********************************************************************/
 static
-MenuItem *FindEntry(int *px_offset /*NULL mans don't return this value */)
+MenuItem *FindEntry(int *px_offset /*NULL means don't return this value */)
 {
   MenuItem *mi;
   MenuRoot *mr;
@@ -211,7 +290,8 @@ MenuItem *FindEntry(int *px_offset /*NULL mans don't return this value */)
   Window Child;
 
   /* x_offset returns the x offset of the pointer in the found menu item */
-  *px_offset = 0;
+  if (px_offset)
+    *px_offset = 0;
 
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &Child,
 		&root_x,&root_y, &JunkX, &JunkY, &JunkMask);
@@ -227,7 +307,7 @@ MenuItem *FindEntry(int *px_offset /*NULL mans don't return this value */)
   for(mi=mr->first; mi; mi=mi->next)
     if(y>=mi->y_offset && y<=mi->y_offset+mi->y_height)
       break;
-  if(x<mr->xoffset || x>mr->width)
+  if(x<mr->xoffset || x>mr->width+2)
     mi = NULL;
 
   if (mi && px_offset)
@@ -324,20 +404,31 @@ int CmiFromMenu(MenuRoot *mr)
  * it was the escape key then the menu processing is aborted.
  * If none of these conditions are true, then the default processing
  * routine is called.
+ * TKP - uses XLookupString so that keypad numbers work with windowlist
  ***********************************************************************/
 static
 MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
 {
   int fControlKey = Event->xkey.state & ControlMask? TRUE : FALSE;
   int fShiftedKey = Event->xkey.state & ShiftMask? TRUE: FALSE;
-  KeySym keysym = XLookupKeysym(&Event->xkey,0);
+  KeySym keysym;
+  char keychar;
   MenuItem *newItem;
   MenuItem *miCurrent = pmiCurrent?*pmiCurrent:NULL;
   int index;
-  /* Is it okay to treat keysym-s as Ascii? */
 
+  /* handle double-keypress */
+  if (dkp_timestamp && lastTimestamp-dkp_timestamp < DOUBLECLICK_TIMEOUT &&
+      Event->xkey.state == dkp_keystate && Event->xkey.keycode == dkp_keycode){
+    *pmiCurrent = NULL;
+    return MENU_SELECTED;
+  }
+  dkp_timestamp = 0;
+  /* Is it okay to treat keysym-s as Ascii? */
+  /* No, because the keypad numbers don't work. Use XlookupString */
+  index = XLookupString(Event, &keychar, 1, &keysym, NULL);
   /* Try to match hot keys */
-  if (isgraph(keysym) && fControlKey == FALSE) { 
+  if (index == 1 && isgraph((int)keychar) && fControlKey == FALSE) { 
     /* allow any printable character to be a keysym, but be sure control
        isn't pressed */
     MenuItem *mi;
@@ -345,7 +436,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
     /* Search menu for matching hotkey */
     for (mi = menu->first; mi; mi = mi->next) {
       key = tolower(mi->chHotkey);
-      if (keysym == key) {
+      if (keychar == key) {
 	*pmiCurrent = mi;
 	if (IS_POPUP_MENU_ITEM(mi))
 	  return MENU_POPUP;
@@ -365,6 +456,10 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
       return MENU_SELECTED;
       break;
 
+    case XK_KP_Enter:
+      return MENU_SELECTED;
+      break;
+
     case XK_Left:
     case XK_b: /* back */
     case XK_h: /* vi left */
@@ -375,7 +470,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
     case XK_f: /* forward */
     case XK_l: /* vi right */
       if (IS_POPUP_MENU_ITEM(miCurrent))
-	  return MENU_POPUP;
+	return MENU_POPUP;
       break;
       
     case XK_Up:
@@ -388,14 +483,18 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
 	  return MENU_NOP;
       }
       if (isgraph(keysym))
-	  fControlKey = FALSE; /* don't use control modifier 
-				  for k or p, since those might
-				  be shortcuts too-- C-k, C-p will
-				  always work to do a single up */
-      if (fShiftedKey)
+	fControlKey = FALSE; /* don't use control modifier 
+				for k or p, since those might
+				be shortcuts too-- C-k, C-p will
+				always work to do a single up */
+      index = IndexFromMi(miCurrent);
+      if (index == 0)
+	/* wraparound */
+	index = CmiFromMenu(miCurrent->mr);
+      else if (fShiftedKey)
 	index = 0;
       else {
-	index = IndexFromMi(miCurrent) - (fControlKey?5:1);
+	index -= (fControlKey?5:1);
       }
       newItem = MiFromMenuIndex(miCurrent->mr,index);
       if (newItem) {
@@ -415,10 +514,10 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
 	  return MENU_NOP;
       }
       if (isgraph(keysym))
-	  fControlKey = FALSE; /* don't use control modifier
-				  for j or n, since those might
-				  be shortcuts too-- C-j, C-n will
-				  always work to do a single down */
+	fControlKey = FALSE; /* don't use control modifier
+				for j or n, since those might
+				be shortcuts too-- C-j, C-n will
+				always work to do a single down */
       if (fShiftedKey)
 	index = CmiFromMenu(miCurrent->mr);
       else {
@@ -429,6 +528,8 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
 	  index--;
       }
       newItem = MiFromMenuIndex(miCurrent->mr,index);
+      if (newItem == miCurrent)
+	newItem = MiFromMenuIndex(miCurrent->mr,0);
       if (newItem) {
 	*pmiCurrent = newItem;
 	return MENU_NEWITEM;
@@ -465,32 +566,41 @@ int c10msDelaysBeforePopup = 15;
  *      MENU_DONE_BUTTON on completion by button release
  *      MENU_ABORT on abort of menu by non-button-release (e.g. keyboard)
  *      MENU_ABORT_BUTTON on aborting by button release
- *      MENU_SELECTED on item selection -- returns MenuItem * in *pmiExecuteAction
+ *      MENU_SELECTED on item selection -- returns MenuItem * in
+ *                    *pmiExecuteAction
  *
  ***********************************************************************/
 static
-MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior, MenuItem **pmiExecuteAction,
-			   int cmenuDeep,Bool fSticks)
+MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
+			   MenuItem **pmiExecuteAction,int cmenuDeep,
+			   Bool fSticks)
 {
   Bool fPopupImmediately = USING_PREPOP_MENUS && !DELAY_POPUP_MENUS;
-  MenuItem *mi = NULL;
+  MenuItem *mi = NULL, *tmi;
+  MenuRoot *mr = NULL;
   MenuRoot *mrPopup = NULL;
   MenuRoot *mrNeedsPainting = NULL;
-  Bool fDoPopupNow = FALSE;  /* used for delay popups, to just popup the menu */
-  Bool fPopupAndWarp = FALSE;  /* used for keystrokes, to popup and move to that menu */
+  Bool fDoPopupNow = FALSE; /* used for delay popups, to just popup the menu */
+  Bool fPopupAndWarp = FALSE; /* used for keystrokes, to popup and move to that menu */
   Bool fKeyPress = FALSE;
   Bool fForceReposition = TRUE;
   int x_init = 0, y_init = 0;
   int x_offset = 0;
   MenuStatus retval = MENU_NOP;
   int c10msDelays = 0;
+  MenuOptions mops;
+  short f_type;
+  Bool fOffMenuAllowed = FALSE;
+  Bool fPopdown = FALSE;
+  Bool fPopup   = FALSE;
+  Bool fDoMenu  = FALSE;
 
+  mops.flags = 0;
   /* remember where the pointer was so we can tell if it has moved */
   XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
 		 &x_init, &y_init, &JunkX, &JunkY, &JunkMask);
 
-  while (TRUE)
-    {
+  while (TRUE) {
       fPopupAndWarp = FALSE;
       fDoPopupNow = FALSE;
       fKeyPress = FALSE;
@@ -499,12 +609,13 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior, MenuItem **pmiExe
 	Event.xmotion.time = lastTimestamp;
 	fForceReposition = FALSE;
       } else if (DELAY_POPUP_MENUS) {
-	while (XCheckMaskEvent(dpy, 
-			       ButtonPressMask|ButtonReleaseMask|ExposureMask | 
-			       KeyPressMask|VisibilityChangeMask|ButtonMotionMask, 
+	while (XCheckMaskEvent(dpy,
+			       ButtonPressMask|ButtonReleaseMask|
+			       ExposureMask|KeyPressMask|VisibilityChangeMask|
+			       ButtonMotionMask, 
 			       &Event) == FALSE) {
 	  usleep(MICRO_S_FOR_10MS);
-	  if (c10msDelays++ == c10msDelaysBeforePopup) {
+ 	  if (c10msDelays++ == c10msDelaysBeforePopup) {
 	    DBUG("MenuInteraction","Faking motion");
 	    /* fake a motion event, and set fDoPopupNow */
 	    Event.type = MotionNotify;
@@ -519,7 +630,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior, MenuItem **pmiExe
 		   KeyPressMask|VisibilityChangeMask|ButtonMotionMask, 
 		   &Event);
       }
-      /* DBUG("MenuInteraction","mrPopup=%s",mrPopup?mrPopup->name:"(none)"); */
+      /*DBUG("MenuInteraction","mrPopup=%s",mrPopup?mrPopup->name:"(none)");*/
+      
       StashEventTime(&Event);
       if (Event.type == MotionNotify) {
 	/* discard any extra motion events before a release */
@@ -527,7 +639,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior, MenuItem **pmiExe
 			       &Event))&&(Event.type != ButtonRelease));
       }
 
-      switch(Event.type) 
+      switch(Event.type)
 	{
 	case ButtonRelease:
 	  mi = FindEntry(&x_offset);
@@ -535,14 +647,20 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior, MenuItem **pmiExe
 	     for the first time if released OFF of the menu */
 	  if(fSticks) {
 	    fSticks = FALSE;
-            continue;
+	    continue;
 	    /* break; */
 	  }
 	  retval = mi?MENU_SELECTED:MENU_ABORTED;
+	  dkp_timestamp = 0;
 	  goto DO_RETURN;
-
-	case VisibilityNotify:
+	  
 	case ButtonPress:
+	  /* if the first event is a button press allow the release to
+	     select something */
+	  fSticks = FALSE;
+	  continue;
+	  
+	case VisibilityNotify:
 	  continue;
 
 	case KeyPress:
@@ -550,20 +668,20 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior, MenuItem **pmiExe
 	  fKeyPress = TRUE;
 	  x_offset = 0;
 	  retval = menuShortcuts(menu,&Event,&mi);
+	  if (retval == MENU_POPDOWN ||
+	      retval == MENU_ABORTED || 
+	      retval == MENU_SELECTED)
+	    goto DO_RETURN;
 	  /* now warp to the new menu-item, if any */
 	  if (mi) {
 	    MiWarpPointerToItem(mi,FALSE);
-	    /* DBUG("MenuInteraction","Warping on keystroke to %s",mi->item); */
+	    /* DBUG("MenuInteraction","Warping on keystroke to %s",mi->item);*/
 	  }
 	  if (retval == MENU_POPUP && IS_POPUP_MENU_ITEM(mi)) {
 	    fPopupAndWarp = TRUE;
 	    DBUG("MenuInteraction","fPopupAndWarp = TRUE");
 	    break;
 	  }
-	  if (retval == MENU_POPDOWN ||
-	      retval == MENU_ABORTED || 
-	      retval == MENU_SELECTED)
-	    goto DO_RETURN;
 	  break;
 	  
 	case MotionNotify:
@@ -580,7 +698,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior, MenuItem **pmiExe
 	  }
 	  mi = FindEntry(&x_offset);
 	  break;
-
+	  
 	case Expose:
 	  /* grab our expose events, let the rest go through */
 	  if((XFindContext(dpy, Event.xany.window,MenuContext,
@@ -588,31 +706,42 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior, MenuItem **pmiExe
 	    PaintMenu(mrNeedsPainting,&Event);
 	  }
 	  /* continue; */ /* instead of continuing, we want to
-                             dispatch this too by letting it fall
-                             through so window decorations get redrawn
-                             after being obscured by menus */
-          s_Tmp_win = Tmp_win; /* BUT we need to save Tmp_win first
-                                  because DispatchEvent changes
-                                  Tmp_win and messes up our calls to
-                                  check_allowed_function for stippling
-                                  disallowed menu items */
-
+	     dispatch this too by letting it fall
+	     through so window decorations get redrawn
+	     after being obscured by menus */
+	  s_Tmp_win = Tmp_win; /* BUT we need to save Tmp_win first
+				  because DispatchEvent changes
+				  Tmp_win and messes up our calls to
+				  check_allowed_function for stippling
+				  disallowed menu items */
+	  
 	default:
 	  DispatchEvent();
-          if (s_Tmp_win)
-          {
-            Tmp_win = s_Tmp_win; /* restore Tmp_win */
-            s_Tmp_win = NULL;
-            continue; /* now 'continue' if event was an expose */
-          }
+	  if (s_Tmp_win)
+	    {
+	      Tmp_win = s_Tmp_win; /* restore Tmp_win */
+	      s_Tmp_win = NULL;
+	      continue; /* now 'continue' if event was an expose */
+	    }
 	  break;
-	} /* switch */
+	} /* switch (Event.type) */
 
       /* Now handle new menu items, whether it is from a keypress or
 	 a pointer motion event */
       if (mi) {
 	/* we're on a menu item */
-	MenuRoot *mr = mi->mr;
+	fOffMenuAllowed = FALSE;
+	mr = mi->mr;
+	/* get pos hints for item's action */
+	GetPopupOptions(mi,&mops);
+
+	if (mr != menu && mr != mrPopup && mr != MrPopupForMi(mi)) {
+	  /* we're on an item from a prior menu */
+	  /* DBUG("MenuInteraction","menu %s: returning popdown",menu->name);*/
+	  retval = MENU_POPDOWN;
+	  dkp_timestamp = 0;
+	  goto DO_RETURN;
+	}
 
 	/* see if we're on a new item of this menu */
 	if (mi != menu->selected && mi->mr == menu) {
@@ -627,150 +756,223 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior, MenuItem **pmiExe
 	      mrPopup = NULL;
 	    }
 	  } else {
-	    /* DBUG("MenuInteraction","Menu %s had nothing else selected",menu->name); */
+	    /* DBUG("MenuInteraction","Menu %s had nothing else selected",
+	       menu->name); */
 	  }
 	  /* do stuff to highlight the new item; this
 	     sets menu->selected, too */
 	  SetMenuItemSelected(mi,TRUE);
-	}
+	} /* new item of the same menu */
 
-	if (mr != menu && mr != mrPopup && mr != MrPopupForMi(mi)) {
-	/* we're on an item from a prior menu */
-	  /* DBUG("MenuInteraction","menu %s: returning popdown",menu->name); */
-	  retval = MENU_POPDOWN;
-	  goto DO_RETURN;
-	} 
-	if (mr == mrPopup || fPopupAndWarp ||
-	    (!USING_PREPOP_MENUS && IS_POPUP_MENU_ITEM(mi) && x_offset >= mr->width*3/4)) {
-	  /* we've moved into a new popup menu (or we need to pop it up and move into it */
-	  if ((mr != mrPopup && !fPopupAndWarp) ||
-	      (MrPopupForMi(mi) != mrPopup && fPopupAndWarp)) {
-  	    /* DBUG("MenuInteraction","mr != mrPopup for menu %s",menu->name); */
-	    if (mrPopup) PopDownMenu(mrPopup);
-	    mrPopup = MrPopupForMi(mi);
+	/* check what has to be done with the item */
+	fPopdown = FALSE;
+	fPopup   = FALSE;
+	fDoMenu  = FALSE;
+
+	if (mr == mrPopup) {
+	  /* must make current popup menu a real menu */
+	  fDoMenu = TRUE;
+	}
+	else if (fPopupAndWarp) {
+	  /* must create a real menu and warp into it */
+	  if (mrPopup == NULL || mrPopup != MrPopupForMi(mi)) {
+	    fPopup = TRUE;
+	  } else {
+	    XRaiseWindow(dpy, mrPopup->w);
+	    MiWarpPointerToItem(mrPopup->first,TRUE);
 	  }
-	  /* DBUG("MenuInteraction","menu %s: doing menu %s",menu->name,mrPopup->name); */
-	  if (USING_PREPOP_MENUS && !FMenuMapped(mrPopup)) {
-	    /* We want to pop prepop menus so it doesn't *have* to be
-	       unpopped; do_menu pops down any menus it pops up, but 
-	       we want to be able to popdown w/o actually removing the menu */
-	    int x, y;
-	    GetPreferredPopupPosition(menu,&x,&y);
-	    FPopupMenu(mrPopup,menu,x,y,FALSE);
+	}
+	else if (IS_POPUP_MENU_ITEM(mi)) {
+	  if (x_offset >= mr->width*3/4 || fDoPopupNow || fPopupImmediately){
+	    /* must create a new menu or popup */
+	    if (mrPopup == NULL || mrPopup != MrPopupForMi(mi))
+	      fPopup = TRUE;
+	    else if (fPopupAndWarp)
+	      MiWarpPointerToItem(mrPopup->first,TRUE);
 	  }
+	} /* else if (IS_POPUP_MENU_ITEM(mi)) */
+	if (fPopup && mrPopup && mrPopup != MrPopupForMi(mi)) {
+	  /* must remove previous popup first */
+	  fPopdown = TRUE;
+	}
+	
+	if (fPopdown) {
+	  DBUG("MenuInteraction","Popping down");
+	  /* popdown previous popup */
+	  if (mrPopup) {
+	    PopDownMenu(mrPopup);
+	  }
+	  mrPopup = NULL;
+	  fPopdown = FALSE;
+	}
+	if (fPopup) {
+	  DBUG("MenuInteraction","Popping up");
+	  mrPopup = MrPopupForMi(mi);
+	  if (!mrPopup) {
+	    fDoMenu = FALSE;
+	    fPopdown = FALSE;
+	  } else {
+	    /* create a popup menu */
+	    if (!FMenuMapped(mrPopup)) {
+	      /* We want to pop prepop menus so it doesn't *have* to be
+		 unpopped; do_menu pops down any menus it pops up, but we
+		 want to be able to popdown w/o actually removing the menu */
+	      int x, y;
+	      if (mops.flags & MENU_HAS_POSHINTS) {
+		x = mops.pos_hints.x + mops.pos_hints.x_factor*mrPopup->width;
+		y = mops.pos_hints.y + mops.pos_hints.y_factor*mrPopup->height;
+	      } else {
+		GetPreferredPopupPosition(menu,&x,&y);
+	      }
+	      FPopupMenu(mrPopup,menu,x,y,fPopupAndWarp,&mops);
+	    }
+	    mi = FindEntry(NULL);
+	    if (mi && mi->mr == mrPopup) {
+	      fDoMenu = TRUE;
+	      fPopdown = (USING_FVWM_MENUS) ? TRUE : FALSE;
+	    }
+	  } /* if (mrPopup) */
+	} /* if (fPopup) */
+	if (fDoMenu) {
 	  /* recursively do the new menu we've moved into */
 	  retval = do_menu(mrPopup,menu,pmiExecuteAction,cmenuDeep,FALSE,
-			   fKeyPress || fPopupAndWarp);
-	  if (IS_MENU_RETURN(retval))
+			   (fPopupAndWarp) ? (XEvent *)1 : NULL, &mops);
+	  if (IS_MENU_RETURN(retval)) {
+	    dkp_timestamp = 0;
 	    goto DO_RETURN;
-	  if (retval == MENU_POPDOWN) {
-	    if (!USING_PREPOP_MENUS)
-	      mrPopup = NULL; /* !USING_PREPOP_MENUS means we always need mrPopup == NULL */
+	  }
+	  if (fPopdown || USING_FVWM_MENUS) {
+	    PopDownMenu(mrPopup);
+	    mrPopup = NULL;
+	  } else if (retval == MENU_POPDOWN) {
 	    c10msDelays = 0;
 	    fForceReposition = TRUE;
 	  }
-	  /* DBUG("MenuInteraction","Returned an mrPopup = %s",
-	       mrPopup?mrPopup->name:"(none)"); */
-	}
+	} /* if (fDoMenu) */
+
 	/* Now check whether we can animate the current popup menu 
 	   over to the right to unobscure the current menu;  this
 	   happens only when using animation */
-	if (USING_ANIMATED_MENUS && mrPopup) {
-	  int x, y, x_popup, y_popup;
-	  int x_where_popup_should_be;
-	  /* we have to see if we need menu to be moved */
-	  XGetGeometry( dpy, mrPopup->w, &JunkRoot, &x_popup, &y_popup, 
-			&JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
-	  XGetGeometry( dpy, menu->w, &JunkRoot, &x, &y, 
-			&JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
-	  x_where_popup_should_be = x + PopupPositionOffset(menu);
-	  if (x_popup < x_where_popup_should_be) {
-	    /* move it back */
-	    AnimatedMoveOfWindow(mrPopup->w,x_popup,y_popup,
-				 x_where_popup_should_be,
-				 y_popup,FALSE /* no warp ptr */,-1,NULL);
-	  }
+	tmi = FindEntry(NULL);
+	if (mrPopup && mrPopup->xanimation && USING_PREPOP_MENUS && tmi &&
+	  (tmi == menu->selected || tmi->mr != menu)) {
+	  int x_popup, y_popup;
+	  DBUG("MenuInteraction","Moving the popup menu back over");
+	  XGetGeometry(dpy, mrPopup->w, &JunkRoot, &x_popup, &y_popup, 
+		       &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
+	  /* move it back */
+	  AnimatedMoveOfWindow(mrPopup->w,x_popup,y_popup,
+			       x_popup-mrPopup->xanimation, y_popup,
+			       FALSE /* no warp ptr */,-1,NULL);
+	  mrPopup->xanimation = 0;
 	}
 	/* now check whether we should animate the current real menu 
-	   over the the right to unobscure the prior menu; only a very
+	   over to the right to unobscure the prior menu; only a very
 	   limited case where this might be helpful and not too disruptive */
-	if (USING_ANIMATED_MENUS && !USING_PREPOP_MENUS && 
-	    mrPopup == NULL && menuPrior != NULL &&
-	    x_offset < menu->width/4) {
-	  int x_prior, y_prior, x_menu, y_menu;
-	  int x_where_menu_should_be;
-	  DBUG("MenuInteraction","Considering moving the menu back over");
+	if (mrPopup == NULL && menuPrior != NULL && USING_FVWM_MENUS &&
+	    menu->xanimation != 0 && x_offset < menu->width/4) {
+	  int x_menu, y_menu;
+	  DBUG("MenuInteraction","Moving the menu back over");
 	  /* we have to see if we need menu to be moved */
 	  XGetGeometry( dpy, menu->w, &JunkRoot, &x_menu, &y_menu, 
 			&JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
-	  XGetGeometry( dpy, menuPrior->w, &JunkRoot, &x_prior, &y_prior, 
-			&JunkWidth, &JunkHeight, &JunkBW, &JunkDepth);
-	  x_where_menu_should_be = x_prior + PopupPositionOffset(menuPrior);
-	  if (x_menu < x_where_menu_should_be) {
-	    /* move it back */
-	    AnimatedMoveOfWindow(menu->w,x_menu,y_menu,
-				 x_where_menu_should_be,
-				 y_menu,TRUE /* warp ptr */,-1,NULL);
-	  }
+	  /* move it back */
+	  AnimatedMoveOfWindow(menu->w,x_menu,y_menu,
+			       x_menu - menu->xanimation,y_menu,
+			       TRUE /* warp ptr */,-1,NULL);
+	  menu->xanimation = 0;
 	}
-	/* now check to see if we need to pop up a new menu without
-	   moving into that popup */
-	if (USING_PREPOP_MENUS &&
-	    IS_POPUP_MENU_ITEM(mi) &&
-	    (fDoPopupNow || 
-	     (DELAY_POPUP_MENUS && x_offset >= mr->width*3/4) ||
-	     (fPopupImmediately && x_offset >= 0))) {
-	  int x, y;
-	  mrPopup = MrPopupForMi(mi);
-	  if (!FMenuMapped(mrPopup)) {
-	    /* DBUG("MenuInteraction","menu %s is popping up for viewing %s",
-		 menu->name,mrPopup->name); */
-	    GetPreferredPopupPosition(menu,&x,&y);
-	    FPopupMenu(mrPopup,menu,x,y,FALSE);
-	  }
-	}
-      }
-      else
-      {
+
+      } /* if (mi) */
+      else {
         /* moved off menu, deselect selected item... */
         if (menu->selected) { 
-          /* something else was already selected on this menu */
           SetMenuItemSelected(menu->selected,FALSE);
-          if (mrPopup) {
-            PopDownMenu(mrPopup);
-            mrPopup = NULL;
-          }
-        }
-      }
+          if (mrPopup && fOffMenuAllowed == FALSE) {
+	    int x, y, mx, my;
+	    unsigned int mw, mh;
+	    XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
+			   &x, &y, &JunkX, &JunkY, &JunkMask);
+	    XGetGeometry( dpy, menu->w, &JunkRoot, &mx, &my, 
+			  &mw, &mh, &JunkBW, &JunkDepth);
+	    if ((!IS_LEFT_MENU(mrPopup)  && x < mx)    ||
+		(!IS_RIGHT_MENU(mrPopup) && x > mx+mw) ||
+		(!IS_UP_MENU(mrPopup)    && y < my)    ||
+		(!IS_DOWN_MENU(mrPopup)  && y > my+mh)) {
+	      PopDownMenu(mrPopup);
+	      mrPopup = NULL;
+	    } else {
+	      fOffMenuAllowed = TRUE;
+	    }
+	  } /* if (mrPopup && fOffMenuAllowed == FALSE) */
+        } /* if (menu->selected) */
+      } /* else (!mi) */
       XFlush(dpy);
-    } /* while */
-  DO_RETURN:  
+    } /* while (TRUE) */
+
+  DO_RETURN:
+  if (mi) {
+    GetPopupOptions(mi, &mops);
+  }
   if (mrPopup) {
     PopDownMenu(mrPopup);
-    mrPopup = NULL;
   }
   if (retval == MENU_POPDOWN) {
     if (menu->selected)
       SetMenuItemSelected(menu->selected,FALSE);
-    if (fKeyPress && menuPrior)
-      MiWarpPointerToItem(menuPrior->selected, FALSE);
-    /* DBUG("MenuInteraction","Prior menu has %s selected",menuPrior?(menuPrior->selected?
-							      menuPrior->selected->item:"(no selected item)"):"(no prior menu)"); */
+    if (fKeyPress) {
+      if (cmenuDeep == 1)
+	/* abort a root menu rather than pop it down */
+	retval = MENU_ABORTED;
+      if (menuPrior && menuPrior->selected) {
+	MiWarpPointerToItem(menuPrior->selected, FALSE);
+	if (menuPrior->selected != FindEntry(NULL) &&
+	    menu->xanimation == 0) {
+	  XRaiseWindow(dpy, menuPrior->w);
+	}
+      }
+    }
+    /* DBUG("MenuInteraction","Prior menu has %s selected",
+       menuPrior?(menuPrior->selected?
+       menuPrior->selected->item:"(no selected item)"):"(no prior menu)"); */
   } else if (retval == MENU_SELECTED) {
-    /* DBUG("MenuInteraction","Got MENU_SELECTED for menu %s, on item %s",menu->name,mi->item); */
+    /* DBUG("MenuInteraction","Got MENU_SELECTED for menu %s, on item %s",
+       menu->name,mi->item); */
     *pmiExecuteAction = mi;
     retval = MENU_ADD_BUTTON_IF(fKeyPress,MENU_DONE);
   }
+  if ((retval == MENU_DONE || retval == MENU_DONE_BUTTON) &&
+      pmiExecuteAction && *pmiExecuteAction && (*pmiExecuteAction)->action) {
+    f_type = find_func_type((*pmiExecuteAction)->action);
+    if (f_type == F_POPUP || f_type == F_STAYSUP || f_type == F_WINDOWLIST) {
+      if (!(mops.flags & MENU_SELECTINPLACE)) {
+	fIgnorePosHints = TRUE;
+      } else {
+	if (mops.flags & MENU_HAS_POSHINTS) {
+	  lastMenuPosHints = mops.pos_hints;
+	} else {
+	  GetPreferredPopupPosition(
+	    menu, &lastMenuPosHints.x, &lastMenuPosHints.y);
+	  lastMenuPosHints.x_factor = 0;
+	  lastMenuPosHints.y_factor = 0;
+	  lastMenuPosHints.fRelative = FALSE;
+	}
+	fLastMenuPosHintsValid = TRUE;
+	if (mops.flags & MENU_SELECTWARP) {
+	  fWarpPointerToTitle = TRUE;
+	}
+      } /* else (mops.flags & MENU_SELECTINPLACE) */
+    } /* if (f_type == F_POPUP ||... */
+  } /* ((retval == MENU_DONE ||... */
   return MENU_ADD_BUTTON_IF(fKeyPress,retval);
 }
 
 static 
 void WarpPointerToTitle(MenuRoot *menu)
 {
-  int y = Scr.EntryHeight/2;
+  int y = Scr.EntryHeight/2 + 2;
   int x = MENU_MIDDLE_OFFSET(menu);
-  XWarpPointer(dpy, 0, menu->w, 0, 0, 0, 0, 
-	       x, y);
+  XWarpPointer(dpy, 0, menu->w, 0, 0, 0, 0, x, y);
 }
 
 static
@@ -795,108 +997,233 @@ MenuItem *MiWarpPointerToItem(MenuItem *mi, Bool fSkipTitle)
   return mi;
 }
 
+static
+int DoMenusOverlap(MenuRoot *mr, int x, int y, int width, int height,
+		   int tolerance)
+{
+  int prior_x, prior_y, x_overlap;
+  unsigned int prior_width, prior_height;
+
+  if (mr == NULL)
+    return 0;
+  XGetGeometry(dpy,mr->w,&JunkRoot,&prior_x,&prior_y,
+	       &prior_width,&prior_height,&JunkBW,&JunkDepth);
+  x_overlap = 0;
+  if (USING_FVWM_MENUS)
+    prior_width = prior_width * 2/3;
+  if (y <= prior_y + prior_height - 4 - tolerance &&
+      prior_y <= y + height - tolerance &&
+      x <= prior_x + prior_width - 4 - tolerance &&
+      prior_x <= x + width - tolerance) {
+    x_overlap = x - prior_x;
+    if (x <= prior_x) {
+      x_overlap--;
+    }
+  }
+  return x_overlap;
+}
+
 /***********************************************************************
  *
  *  Procedure:
  *	FPopupMenu - pop up a pull down menu
  *
  *  Inputs:
- *	menu	- the root pointer of the menu to pop up
- *	x, y	- location of upper left of menu
- *      center	- whether or not to center horizontally over position
+ *	menu	  - the root pointer of the menu to pop up
+ *	x, y	  - location of upper left of menu
+ *      fWarpItem - warp pointer to the first item after title
+ *      pops      - pointer to the menu options for new menu
  *
  ***********************************************************************/
 static
-Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, 
-		 int x, int y, Bool fWarpItem)
+Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
+		 Bool fWarpItem, MenuOptions *pops)
 {
   Bool fWarpTitle = FALSE;
-  if ((!menu)||(menu->w == None)||(menu->items == 0)||(menu->in_use))
+  Bool fLeft = FALSE;
+  Bool fRight = (pops->flags & MENU_HAS_POSHINTS) ? TRUE : FALSE;
+  int x_overlap, x_clipped_overlap;
+  MenuItem *mi = NULL;
+
+  DBUG("FPopupMenu","called");
+  if ((!menu)||(menu->w == None)||(menu->items == 0)||(menu->in_use)) {
+    fWarpPointerToTitle = FALSE;
     return False;
+  }
+  menu->flags &= ~(MENU_IS_LEFT | MENU_IS_RIGHT | MENU_IS_UP | MENU_IS_DOWN);
+  menu->xanimation = 0;
 
   /*  RepaintAlreadyReversedMenuItems(menu); */
 
   InstallRootColormap();
 
   /* First handle popups from button clicks on buttons in the title bar,
-     or the title bar itself */
-  if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_LALL))
-    {
-      y = Tmp_win->frame_y+Tmp_win->boundary_width+Tmp_win->title_height+1;
-      x = Tmp_win->frame_x + Tmp_win->boundary_width + 
-	ButtonPosition(Context,Tmp_win)*Tmp_win->title_height+1;
-    }
-  if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_RALL))
-    {
-      y = Tmp_win->frame_y+Tmp_win->boundary_width+Tmp_win->title_height+1;
-      x = Tmp_win->frame_x +Tmp_win->frame_width - Tmp_win->boundary_width-
-	ButtonPosition(Context,Tmp_win)*Tmp_win->title_height - menu->width+1;
-    }
-  if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_TITLE))
-    {
-      y = Tmp_win->frame_y+Tmp_win->boundary_width+Tmp_win->title_height+1;
-      if(x < Tmp_win->frame_x + Tmp_win->title_x)
-	x = Tmp_win->frame_x + Tmp_win->title_x;
-      if((x + menu->width) >
-	 (Tmp_win->frame_x + Tmp_win->title_x +Tmp_win->title_width))	
-	x = Tmp_win->frame_x + Tmp_win->title_x +Tmp_win->title_width-
-	  menu->width +1;
-    }
+     or the title bar itself. Position hints override this. */
+  if (!(pops->flags & MENU_HAS_POSHINTS)) {
+    if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_LALL))
+      {
+	y = Tmp_win->frame_y+Tmp_win->boundary_width+Tmp_win->title_height+1;
+	x = Tmp_win->frame_x + Tmp_win->boundary_width + 
+	  ButtonPosition(Context,Tmp_win)*Tmp_win->title_height+1;
+      }
+    if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_RALL))
+      {
+	y = Tmp_win->frame_y+Tmp_win->boundary_width+Tmp_win->title_height+1;
+	x = Tmp_win->frame_x +Tmp_win->frame_width - Tmp_win->boundary_width-
+	  ButtonPosition(Context,Tmp_win)*Tmp_win->title_height-menu->width+1;
+      }
+    if((Tmp_win)&&(menuPrior == NULL)&&(Context&C_TITLE))
+      {
+	y = Tmp_win->frame_y+Tmp_win->boundary_width+Tmp_win->title_height+1;
+	if(x < Tmp_win->frame_x + Tmp_win->title_x)
+	  x = Tmp_win->frame_x + Tmp_win->title_x;
+	if((x + menu->width) >
+	   (Tmp_win->frame_x + Tmp_win->title_x +Tmp_win->title_width))	
+	  x = Tmp_win->frame_x + Tmp_win->title_x +Tmp_win->title_width-
+	    menu->width +1;
+      }
+  } /* if (pops->flags & MENU_HAS_POSHINTS) */
 
-  if (x + menu->width > Scr.MyDisplayWidth - 2) {
-    /* does not fit horizontally */
-    if (menuPrior == NULL) {
-      /* Just move it if we're a top level menu */
-      x = Scr.MyDisplayWidth - menu->width-2;
-    } else if (USING_ANIMATED_MENUS) {
-      /* animated the prev menu over */
-      int startx, endx;
-      int starty, endy;
-      XGetGeometry(dpy,menuPrior->w,&JunkRoot,&startx,&starty,&JunkWidth,&JunkHeight,&JunkBW,&JunkDepth);
-      endx = startx - (x + menu->width - (Scr.MyDisplayWidth-2));
-      endy = starty;
-      AnimatedMoveOfWindow(menuPrior->w,startx,starty,endx,endy, TRUE, -1, NULL);
-      x = Scr.MyDisplayWidth - menu->width-2;
-    } else if (USING_MWM_MENUS || USING_WIN_MENUS) {
-      /* put this menu to the left of the previous one */
-      int prev_x, prev_y;
-      XGetGeometry(dpy,menuPrior->w,&JunkRoot,&prev_x,&prev_y,
-		   &JunkWidth,&JunkHeight,&JunkBW,&JunkDepth);
-      x = prev_x - menu->width + 2;
-    } else {
-      x = Scr.MyDisplayWidth - menu->width-2;
-    }
-  }
-
-  if (y + menu->height > Scr.MyDisplayHeight-2) {
-    /* does not fit vertically */
-    y = Scr.MyDisplayHeight - menu->height-2;
-    if (!USING_PREPOP_MENUS)
-      fWarpTitle = TRUE;
-  }
-
+  x_overlap = DoMenusOverlap(menuPrior, x, y,menu->width,menu->height, 3);
   /* clip to screen */
+  if (x + menu->width > Scr.MyDisplayWidth - 2)
+    x = Scr.MyDisplayWidth - 2 - menu->width;
+  if (y + menu->height > Scr.MyDisplayHeight)
+    y = Scr.MyDisplayHeight - menu->height;
   if (x < 0) x = 0;
   if (y < 0) y = 0;
 
+  if (menuPrior != NULL) {
+    int prev_x, prev_y, left_x, right_x;
+    unsigned int prev_width, prev_height;
+
+    /* try to find a better place */
+    XGetGeometry(dpy,menuPrior->w,&JunkRoot,&prev_x,&prev_y,
+		 &prev_width,&prev_height,&JunkBW,&JunkDepth);
+
+    /* check if menus overlap */
+    x_clipped_overlap = DoMenusOverlap(menuPrior, x, y,
+				       menu->width, menu->height, 3);
+    if (x_clipped_overlap &&
+	(!(pops->flags & MENU_HAS_POSHINTS) ||
+	 pops->pos_hints.fRelative == FALSE || x_overlap == 0)) {
+      /* menus do overlap, but do not reposition if overlap was caused by
+	 relative positioning hints */
+      Bool fDefaultLeft;
+      Bool fEmergencyLeft;
+
+      left_x = prev_x - menu->width + 2;
+      if (USING_FVWM_MENUS)
+	right_x = prev_x + prev_width * 2/3;
+      else
+	right_x = prev_x + prev_width - 2;
+      if (x+menu->width < (prev_x + right_x)/2 ||
+	  (x < (prev_x + right_x)/2 && -x > menu->width/2))
+	fDefaultLeft = TRUE;
+      else
+	fDefaultLeft = FALSE;
+      fEmergencyLeft = (prev_x > Scr.MyDisplayWidth - right_x) ? TRUE : FALSE;
+
+      if (USING_ANIMATED_MENUS) {
+	/* animate previous out of the way */
+	int left_x, right_x, end_x;
+	if (USING_FVWM_MENUS)
+	  left_x = x - prev_width * 2/3;
+	else
+	  left_x = x - prev_width + 3;
+	right_x = x + menu->width;
+	if (fDefaultLeft) {
+	  /* popup menu is left of old menu, try to move prior menu right */
+	  if (right_x + prev_width <=  Scr.MyDisplayWidth - 2)
+	    end_x = right_x;
+	  else if (left_x >= 0)
+	    end_x = left_x;
+	  else
+	    end_x = Scr.MyDisplayWidth - 2 - prev_width;
+	} else {
+	  /* popup menu is right of old menu, try to move prior menu left */
+	  if (left_x >= 0)
+	    end_x = left_x;
+	  else if (right_x + prev_width <=  Scr.MyDisplayWidth - 2)
+	    end_x = right_x;
+	  else
+	    end_x = 0;
+	}
+	menuPrior->xanimation += end_x - prev_x;
+	AnimatedMoveOfWindow(menuPrior->w,prev_x,prev_y,end_x,prev_y,
+			     TRUE, -1, NULL);
+      } /* if (USING_ANIMATED_MENUS) */
+      else if ((USING_MWM_MENUS || USING_WIN_MENUS) &&
+	       !(pops->flags & MENU_FIXED)) {
+	Bool fLeftIsOK = FALSE;
+	Bool fRightIsOK = FALSE;
+	Bool fUseLeft = FALSE;
+
+	if (left_x >= 0)
+	  fLeftIsOK = TRUE;
+	if (right_x + menu->width < Scr.MyDisplayWidth - 2)
+	  fRightIsOK = TRUE;
+	if (!fLeftIsOK && !fRightIsOK)
+	  fUseLeft = fEmergencyLeft;
+	else if (fLeftIsOK && (fDefaultLeft || !fRightIsOK))
+	  fUseLeft = TRUE;
+	else
+	  fUseLeft = FALSE;
+	x = (fUseLeft) ? TRUE : FALSE;
+      } /* else if (USING_MWM_MENUS || USING_WIN_MENUS) */
+    } /* if (x_clipped_overlap && ...) */
+    
+    if (x < prev_x)
+      menu->flags |= MENU_IS_LEFT;
+    if (x + menu->width > prev_x + prev_width)
+      menu->flags |= MENU_IS_RIGHT;
+    if (y < prev_y)
+      menu->flags |= MENU_IS_UP;
+    if (y + menu->height > prev_y + prev_height)
+      menu->flags |= MENU_IS_DOWN;
+    if (!(menu->flags & (MENU_IS_LEFT | MENU_IS_RIGHT)))
+      menu->flags |= MENU_IS_LEFT | MENU_IS_RIGHT;
+  } /* if (menuPrior) */
+    
+  /* popup the menu */
   XMoveWindow(dpy, menu->w, x, y);
   XMapRaised(dpy, menu->w);
 
+  if (!fWarpItem) {
+    mi = FindEntry(NULL);
+    if (mi && mi->mr == menu && mi != mi->mr->first) {
+      /* pointer is on an item of the popup */
+      if (USING_FVWM_MENUS || (USING_PREPOP_MENUS && menuPrior != NULL)) {
+	/* warp pointer if not on a root menu and MWM/WIN menuy style */
+	fWarpTitle = TRUE;
+      }
+    }
+  } /* if (!fWarpItem) */
+
+  if (pops->flags & MENU_NOWARP) {
+    fWarpTitle = FALSE;
+  } else if (pops->flags & MENU_WARPTITLE) {
+    fWarpTitle = TRUE;
+  }
+  if (fWarpPointerToTitle) {
+    fWarpTitle = TRUE;
+    fWarpPointerToTitle = FALSE;
+  }
   if (fWarpItem) {
     /* also warp */
-    DBUG("FPopupMenu","Warping");
+    DBUG("FPopupMenu","Warping to item");
     SetMenuItemSelected(
       MiWarpPointerToItem(menu->first, TRUE /* skip Title */),TRUE);
   } else if(fWarpTitle) {
     /* Warp pointer to middle of top line, since we don't
        want the user to come up directly on an option --
        Not with MWMMenus unless we're at the top level menu */
+    DBUG("FPopupMenu","Warping to title");
     WarpPointerToTitle(menu);
   }
   
   return True;
 }
-
 
 /* Set the selected-ness state of the menuitem passed in */
 static
@@ -913,10 +1240,33 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
 static
 MenuRoot *MrPopupForMi(MenuItem *mi)
 {
+  char *menu_name = NULL;
+  MenuRoot *tmp = NULL;
+
+  if (mi == NULL)
+    return NULL;
   /* just look past "Popup " in the action, and find that menu root */
-  if (mi)
-    return FindPopup(&mi->action[5]);
-  return NULL;
+  GetNextToken(&mi->action[5],&menu_name);
+  tmp = FindPopup(menu_name);
+  if (menu_name != NULL)
+    free(menu_name);
+  return tmp;
+}
+
+/* Returns the menu options for the menu that a given menu item pops up */
+static
+void GetPopupOptions(MenuItem *mi, MenuOptions *pops)
+{
+  char *junk = NULL, *action;
+
+  pops->flags &= ~MENU_HAS_POSHINTS;
+  if (mi == NULL)
+    return;
+  /* just look past "Popup " in the action */
+  action = GetNextToken(&mi->action[5],&junk);
+  if (junk != NULL)
+    free(junk);
+  action = GetMenuOptions(action,mi->mr->w,NULL,mi,pops);
 }
 
 
@@ -933,6 +1283,7 @@ void PopDownMenu(MenuRoot *mr)
   MenuItem *mi;
   assert(mr);
   
+  mr->flags = 0;
   XUnmapWindow(dpy, mr->w);
 
   UninstallRootColormap();
@@ -947,41 +1298,6 @@ void PopDownMenu(MenuRoot *mr)
     SetMenuItemSelected(mi,FALSE);
   }
   /* DBUG("PopDownMenu","popped down %s",mr->name); */
-}
-
-/***************************************************************************
- * 
- * Wait for all mouse buttons to be released 
- * This can ease some confusion on the part of the user sometimes 
- * 
- * Discard superflous button events during this wait period.
- *
- ***************************************************************************/
-void WaitForButtonsUp()
-{
-  Bool AllUp = False;
-  XEvent JunkEvent;
-  unsigned int mask;
-
-  while(!AllUp)
-    {
-      XAllowEvents(dpy,ReplayPointer,CurrentTime);
-      XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
-		    &JunkX, &JunkY, &JunkX, &JunkY, &mask);    
-      
-      if((mask&
-	  (Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask))==0)
-	AllUp = True;
-    }
-  XSync(dpy,0);
-  while(XCheckMaskEvent(dpy,
-			ButtonPressMask|ButtonReleaseMask|ButtonMotionMask,
-			&JunkEvent))
-    {
-      StashEventTime (&JunkEvent);
-      XAllowEvents(dpy,ReplayPointer,CurrentTime);
-    }
-
 }
 
 /***********************************************************************
@@ -1170,10 +1486,12 @@ void PaintEntry(MenuItem *mi)
   if(mi->func_type == F_POPUP)
     if(mi->state)
       DrawTrianglePattern(mr->w, ShadowGC, ReliefGC, ShadowGC, ReliefGC,
-			  mr->width-d-8, y_offset+d-1, mr->width-d-1, y_offset+d+7);
+			  mr->width-d-8, y_offset+d-1, mr->width-d-1,
+			  y_offset+d+7);
     else
       DrawTrianglePattern(mr->w, ReliefGC, ShadowGC, ReliefGC, Scr.MenuGC,
-			  mr->width-d-8, y_offset+d-1, mr->width-d-1, y_offset+d+7);
+			  mr->width-d-8, y_offset+d-1, mr->width-d-1,
+			  y_offset+d+7);
 
   if(mi->picture)
     {
@@ -1601,7 +1919,8 @@ void MakeMenu(MenuRoot *mr)
     }
   mr->in_use = 0;
   mr->height = y+2;
-  
+  mr->flags = 0;
+  mr->xanimation = 0;
   
 #ifndef NO_SAVEUNDERS   
   valuemask = (CWBackPixel | CWEventMask | CWCursor | CWSaveUnder);
@@ -1861,9 +2180,21 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk)
 {
   MenuItem *tmp;
   char *start,*end;
+  char *taction = NULL, *taction2 = NULL;
+  Bool fEmptyItem = FALSE;
+  Bool fEmptyAction = FALSE;
 
-  if(item == NULL)
-     return;
+  /* Just returning will probably cause a coredump somewhere else, so I think
+     we should continue with a default! */
+  /*
+   *  if(item == NULL)
+   *     return;
+   */
+  /* empty items screw up our menu when painted, so we replace them with a
+     separator */
+  if (item == NULL || *item == 0) item = "";
+  if (action == NULL || *action == 0) action = "Nop";
+  GetNextToken(action, &taction);
 
   tmp = (MenuItem *)safemalloc(sizeof(MenuItem));
   tmp->chHotkey = '\0';
@@ -1875,11 +2206,31 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk)
       menu->first = tmp;
       tmp->prev = NULL;
     }
+  else if (StrEquals(taction, "title"))
+    {
+      if (menu->first->action)
+	{
+	  GetNextToken(menu->first->action, &taction2);
+	}
+      if (StrEquals(taction2, "title"))
+	{
+	  tmp->next = menu->first->next;
+	  free(menu->first);
+	}
+      else
+	{
+	  tmp->next = menu->first;
+	}
+      tmp->prev = NULL;
+      menu->first = tmp;
+    }
   else
     {
       menu->last->next = tmp;
       tmp->prev = menu->last;
     }
+  if (taction) free(taction);
+  if (taction2) free(taction2);
   menu->last = tmp;
   tmp->picture=NULL;
   tmp->lpicture=NULL;

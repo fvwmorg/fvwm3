@@ -5,7 +5,11 @@ Things that should be done for the next release:
    background pixmaps. Optional extra arguments to Frame.. Frame f1 f2 would
    be for normal/depressed relief width... Frame f1 f2 f3 f4 could be 
    normal x/normal y/depressed x/depressed y relief widths...
-   AND implement padding _between_ buttons... how? Hmmm.
+  
+ AND
+
+   implement padding _between_ buttons... how? Hmmm.
+   -> Bunttons geometry patch allows this.
 
  * How about being able to put a pixmap to the background of FvwmButtons?
    A marble surface would be nice. Shading for frames can be done with

@@ -368,7 +368,7 @@ replace the dash with a space, then you need quotes: Popup "Window
 Ops".
 
 
-.IP "AddButtonStyle \fIbutton [state] [style] [\fP -- \fI[!]flag ... ]\fP"
+.IP "AddButtonStyle \fIbutton\fP [ \fIstate\fP ] [ \fIstyle\fP ] [ -- \fI[!]flag ...\fP ]"
 Adds a button style to \fIbutton\fP.  \fIbutton\fP can be a button
 number, or one of "All," "Left," or "Right."  \fIstate\fP can be
 "ActiveUp," "ActiveDown" or "Inactive."  If \fIstate\fP is omitted,
@@ -398,7 +398,7 @@ used to place additional pixmaps for both ActiveUp and ActiveDown
 states and a Vector button style is drawn on top of all state.
 
 
-.IP "AddTitleStyle \fI[state] [style] [\fP -- \fI[!]flag ... ]\fP"
+.IP "AddTitleStyle [ \fIstate\fP ] [ \fIstyle\fP ] [ -- \fI[!]flag ...\fP ]"
 Adds a title style to the title bar.  \fIstate\fP should be one of
 "ActiveUp," "ActiveDown," or "Inactive."  If \fIstate\fP is omitted,
 then the style is added to every state.  If the style and flags are
@@ -451,6 +451,60 @@ decorations are modified; changing Style options requires a Recapture
 instead).  A decor can be destroyed with DestroyDecor.
 
 
+.IP "AddToFunc"
+Begins or add to a function definition.  Here's an example:
+.EX
+AddToFunc Move-or-Raise         "I" Raise
++                               "M" Move
++                               "D" Lower         
+.EE
+The function name is Move-or-Raise, and could be invoked from a menu
+or a mouse binding or key binding:
+.EX
+Mouse 1 TS      A       Move-or-Raise
+.EE
+The quoted portion of the function tells what kind of action will
+trigger the command which follows it.  "I" stands for Immediate, and is
+executed as soon as the function is invoked.  "M" stands for Motion, i.e.
+if the user starts moving the mouse.  "C" stands for Click, i.e., if the
+user presses and releases the mouse in a short period of time
+(ClickTime milliseconds).  "D" stands for double-click.  The action "I"
+will cause an action to be performed on the button-press, if the
+function is invoked with prior knowledge of which window to act on.  
+
+The special symbols $d, $w and $0 through $9 are available in the
+ComplexFunctions or Macros, or whatever you want to call them.  Within
+a macro, $w is expanded to the window-id (expressed in 
+hex, i.e. 0x10023c) of the window for which the macro was called
+and $d is expanded to the current desk number. $0
+through $9 are the arguments to the macro, so if you call
+.EX
+Key F10	R	A	Function MailFunction xmh "-font fixed"
+.EE
+and MailFunction is
+
+.EX
+AddToFunc MailFunction  "I" Next [$0] Iconify -1
++                       "I" Next [$0] focus
++                       "I" None [$0] Exec $0 $1
+.EE
+Then the last line of the function becomes
+.EX
++                       "I" None [xmh] Exec xmh -font fixed
+.EE
+The expansion is performed as the function is executed, so you can use the
+same function with all sorts of different arguments.  I could use
+.EX
+Key F11	R	A	Function MailFunction zmail "-bg pink"
+.EE
+in the same .fvwm2rc, if I wanted.  An example of using $w is:
+.EX
+AddToFunc PrintFunction    "I" Raise
++                          "I" Exec xdpr -id $w
+.EE
+Note that $$ is expanded to $.
+
+
 .IP "AddToMenu"
 Begins or adds to a menu definition.  Typically a menu definition looks
 like this:
@@ -485,6 +539,9 @@ the user pops it up.  The remaining portion is a built-in command
 which should be executed if the user selects that menu item.  An empty
 menu-label ("") and the Nop function can be used to insert a separator
 into the menu.
+
+The menu title can be changed at any time just by adding a new "Title"
+line. The old title will be overwritten.
 
 If the menu-label contains a sub-string which is set off by stars,
 then the text between the stars is expected to be the name of an
@@ -537,60 +594,7 @@ In all the above cases, the name of the resulting menu is name specified,
 stripped of the substrings between the various delimiters.
 
   
-.IP "AddToFunc"
-Begins or add to a function definition.  Here's an example:
-.EX
-AddToFunc Move-or-Raise         "I" Raise
-+                               "M" Move
-+                               "D" Lower         
-.EE
-The function name is Move-or-Raise, and could be invoked from a menu
-or a mouse binding or key binding:
-.EX
-Mouse 1 TS      A       Move-or-Raise
-.EE
-The quoted portion of the function tells what kind of action will
-trigger the command which follows it.  "I" stands for Immediate, and is
-executed as soon as the function is invoked.  "M" stands for Motion, i.e.
-if the user starts moving the mouse.  "C" stands for Click, i.e., if the
-user presses and releases the mouse in a short period of time
-(ClickTime milliseconds).  "D" stands for double-click.  The action "I"
-will cause an action to be performed on the button-press, if the
-function is invoked with prior knowledge of which window to act on.  
-
-The special symbols $w and $0 through $9 are available in the
-ComplexFunctions or Macros, or whatever you want to call them.  Within
-a macro, $w is expanded to the window-id (expressed in 
-hex, i.e. 0x10023c) of the window for which the macro was called.  $0
-though $9 are the arguments to the macro, so if you call
-.EX
-Key F10	R	A	Function MailFunction xmh "-font fixed"
-.EE
-and MailFunction is
-
-.EX
-AddToFunc MailFunction     "I" Next [$0] Iconify -1
-+                          "I" Next [$0] focus
-+                          "I" None [$0] Exec $0 $1
-.EE
-Then the last line of the function becomes
-.EX
-+                          "I" None [xmh] Exec xmh -font fixed
-.EE
-The expansion is performed as the function is executed, so you can use the
-same function with all sorts of different arguments.  I could use
-.EX
-Key F11	R	A	Function MailFunction zmail "-bg pink"
-.EE
-in the same .fvwm2rc, if I wanted.  An example of using $w is:
-.EX
-AddToFunc PrintFunction         "I" Raise
-+                               "I" Exec xdpr -id $w
-.EE
-Note that $$ is expanded to $.
-
-
-.IP "AnimatedMove \fIx y\fP"
+.IP "AnimatedMove [ \fIx y\fP ]"
 
 Move a window in an animated way. Similar to Move command, below.
 Options are the same, except they are required, since it doesn't make
@@ -601,7 +605,7 @@ sense to have a user move the window interactively and animatedly.
 As might be expected, the makes the terminal beep.
 
 
-.IP "BorderStyle \fI[state] [style] [\fP -- \fI[!]flag ... ]\fP"
+.IP "BorderStyle [ \fIstate\fP ] [ \fIstyle\fP ] [ -- \fI[!]flag ...\fP ]"
 Defines a border style for windows.  \fIstate\fP can be either
 "Active" or "Inactive."  If \fIstate\fP is omitted, then the style is
 set for both states.  If the style and flags are enclosed in
@@ -645,7 +649,7 @@ Title-bar buttons can inherit the border style with the UseBorderStyle
 flag (see ButtonStyle).
 
 
-.IP "ButtonStyle \fIbutton [state] [style] [\fP -- \fI[!]flag ... ]\fP"
+.IP "ButtonStyle \fIbutton\fP [ \fIstate\fP ] [ \fIstyle\fP ] [ -- \fI[!]flag ...\fP ]"
 Sets the button style for a title-bar button.  \fIbutton\fP is the
 title-bar button number between 0 and 9, or one of "All," "Left,"
 "Right," or "Reset."  Button numbering is described in the Mouse
@@ -886,14 +890,14 @@ Solid frame and title colors (including shadows and gradients) are not
 controlled by this command.
 
 
-.IP "ColormapFocus [FollowsMouse | FollowsFocus]"
+.IP "ColormapFocus [ FollowsMouse | FollowsFocus ]"
 By default, fvwm installs the colormap of the window that the cursor
 is in.  If you use ColormapFocus FollowsFocus, then the installed
 colormap will be the one for the window that currently has the
 keyboard focus.
 
 
-.IP "Current [\fIconditions\fP] \fIcommand\fP"
+.IP "Current (\fIconditions\fP) \fIcommand\fP"
 Performs \fIcommand\fP on the current window if it satisfies all
 \fIconditions\fP.  Conditions include "Iconic", "!Iconic", "Visible",
 "!Visible", "Sticky", "!Sticky", "Maximized", "!Maximized",
@@ -904,6 +908,10 @@ the wildcards * and ?.  The window name, icon name, class, and
 resource will be considered when attempting to find a match.  The
 window name can begin with ! which will prevent \fIcommand\fP if any
 of the window name, icon name, class or resource match.
+
+Note that earlier versions of fvwm2 required the conditions to be
+enclosed in brackets instead of parentheses (this is still supported
+for backwards compatibility).
 
 
 .IP "CursorMove \fIhorizontal vertical\fP"
@@ -951,7 +959,7 @@ Sends a message to a window asking that it remove itself, frequently
 causing the application to exit.
 
 
-.IP "Desk \fIarg1 arg2\fP"
+.IP "Desk \fIarg1\fP [ \fIarg2\fP ] [ \fImin max\fP ]"
 Changes to another desktop (workspace, room). 
 
 If \fIarg1\fP is non zero then the next desktop number will be the
@@ -959,6 +967,11 @@ current desktop number plus \fIarg1\fP.  Desktop numbers can be
 negative.
 
 If \fIarg1\fP is zero then the new desktop number will be \fIarg2\fP.
+
+If \fImin\fP and \fImax\fP are given, the new desktop number will
+be no smaller than min and no bigger than max. Values out of this
+range are truncated (if you gave an absolute desk number) or wrapped
+around (if you gave a relative desk number).
 
 The number of active desktops is determined dynamically.  Only
 desktops which contain windows or are currently being displayed are
@@ -975,15 +988,6 @@ Destroys an application window, which usually causes the application
 to crash and burn.
 
 
-.IP "DestroyFunc"
-Deletes a function, so that subsequent references to it are no longer
-valid.  You can use this to change the contents of a function during an
-fvwm session.  The function can be rebuilt using AddToFunc.
-.EX
-	DestroyFunc "PrintFunction"
-.EE
-
-
 .IP "DestroyDecor \fIdecor\fP"
 Deletes the \fIdecor\fP defined with AddToDecor, so that subsequent
 references to it are no longer valid.  Windows using this \fIdecor\fP
@@ -991,6 +995,15 @@ revert to the default fvwm decor.  The decor named "Default" cannot be
 destroyed.
 .EX
 	DestroyDecor "CustomDecor1"
+.EE
+
+
+.IP "DestroyFunc"
+Deletes a function, so that subsequent references to it are no longer
+valid.  You can use this to change the contents of a function during an
+fvwm session.  The function can be rebuilt using AddToFunc.
+.EX
+	DestroyFunc "PrintFunction"
 .EE
 
 
@@ -1068,7 +1081,7 @@ Key F1 R N Exec rxvt -fg yellow -bg blue -e /bin/tcsh
 .EE
 
 
-.IP "ExecUseShell \fI[shell]\fP"
+.IP "ExecUseShell [ \fIshell\fP ]"
 Makes the Exec command use the specified shell, or the value of the
 $SHELL environment variable if no shell is specified, instead of the
 default Bourne shell (/bin/sh).
@@ -1079,7 +1092,8 @@ ExecUseShell /usr/local/bin/tcsh
 
 
 .IP "FlipFocus"
-Toggles focus between the last two focused windows.
+Toggles focus between the last two focused windows. Note that
+FlipFocus works only as the command argument of \fIPrev\fP.
 
 
 .IP "Focus"
@@ -1104,7 +1118,7 @@ The keyword "Function" may be omitted if "FunctionName" does not
 coincide with an fvwm built-in function name
 
 
-.IP "GlobalOpts \fI[options]\fP"
+.IP "GlobalOpts [ \fIoptions\fP ]"
 This is a TEMPORARY command used to set some global options which will
 later be handled as Style parms (or options to Style parms).  It
 currently handles the following:
@@ -1112,12 +1126,10 @@ SmartPlacementIsReallySmart/SmartPlacementIsNormal,
 ClickToFocusDoesntPassClick/ClickToFocusPassesClick,
 ClickToFocusDoesntRaise/ClickToFocusRaises,
 MouseFocusClickDoesntRaise/MouseFocusClickRaises,
-NoStipledTitles/StipledTitles
-.EX
-GlobalOpts ClickToFocusDoesntPassClick, ClickToFocusDoesntRaise
-.EE
+NoStipledTitles/StipledTitles GlobalOpts ClickToFocusDoesntPassClick,
+ClickToFocusDoesntRaise
 
-.IP "GotoPage  x y"
+.IP "GotoPage x y"
 Moves the desktop viewport to page (x,y).  The upper left page is
 (0,0), the upper right is (M,0), where M is one less than the current
 number of horizontal pages specified in the DeskTopSize command.  The
@@ -1214,12 +1226,13 @@ If the letter "p" is appended to each coordinate (horizontal and/or
 vertical), then the scroll amount will be measured in pixels.
 
 
-.IP "Menu \fImenu-name double-click-action\fP"
+.IP "Menu [ \fIposition\fP ] \fImenu-name\fP [ \fIdouble-click-action\fP ]"
 Causes a previously defined menu to be popped up in a "sticky" manner.
 That is, if the user invokes the menu with a click action instead of a
 drag action, the menu will stay up.  The command
 \fIdouble-click-action\fP will be invoked if the user double-clicks
-when bringing the menu up.
+(or hits the key rapidly twice if the menu is bound to a key) when
+bringing the menu up.
 
 Several other commands affect menu operation.  See \fIMenuStyle\fP, 
 \fISetAnimation\fP and \fISetMenuDelay\fP.  When in a menu, keyboard
@@ -1235,6 +1248,100 @@ executes the current item; Escape exits the current sequence of menus.
 The pointer will be warped to where it was when the menu was invoked if
 it was both invoked and terminated with a keystroke.
 
+The \fIposition\fP arguments allow to place the menu somewhere on the
+screen, for example centered on the visible screen or above a title
+bar.  Basically it works like this: you specify a \fIcontext-rectangle\fP
+and an offset to this rectangle by which the upper left corner of the menu
+is moved from the upper left corner of the rectangle.  The \fIposition\fP
+arguments consist of several parts:
+.EX
+[ [context-rectangle] x y ] [ special-options ]
+.EE
+The \fIcontext-rectangle\fP can be one of:
+.EX
+Root       the root window.
+Mouse      a 1x1 rectangle at the mouse position.
+Window     the window with the focus.
+Interior   the inside of the focused window.
+Title      the title of the focused window or icon.
+Button<n>  button #n of the focused window.
+Icon       the focused icon.
+Menu       the current menu.
+Item       the current menu item.
+Context    the current window, menu or icon.
+This       whatever widget the pointer is on
+           (e.g. a corner of a window or the root window).
+Rectangle <geometry>
+.in +11
+the rectangle defined by <\fIgeometry\fP> in X geometry
+format.  Width and height default to 1 if omitted.
+.in -11
+.EE
+If the context-rectangle is omitted "Mouse" is the default.
+Note that not all of these make sense under all circumstances
+(e.g. "Icon" if the pointer is on a menu).
+
+The offset values \fIx\fP and \fIy\fP specify how far the menu is
+moved from it's default position. A positive value means move the
+left (upper) edge of the menu right (down) from the left (upper)
+edge of the rectangle, a negative value means move the right (lower)
+edge of the menu left (up) from the right (lower) edge of the
+rectangle. By default, the numeric value given is interpreted as a
+percentage of the context rectangle's width (height), but a trailing
+"p" changes the interpretation to mean "pixels".  If x or y are
+prefixed with "c" the menu and the rectangle are centered above each
+other before the offset is applied.  Examples:
+.EX
+# window list in the middle of the screen
+WindowList Root c c
+
+# popup 8 pixels above the mouse pointer
+Popup name mouse c -8p
+
+# menu to the left of a window
+Menu name window -100 c+0
+
+# somewhere on the screen
+Menu name rectangle 512x384+1+1 -0 -0
+
+# centered vertially around a menu item
+AddToMenu foobar-menu
+ + "first item" Nop
+ + "special item" Popup "another menu" item +100 c
+ + "last item" Nop
+
+# above the first menu item
+AddToMenu foobar-menu
+ + "first item" Popup "another menu" +0 -100
+.EE
+Note that you can put a submenu far off the current menu so you could
+not reach it with the mouse without popping it down (fvwm menu style
+only).  But if the pointer leaves the current menu in the general
+direction of the submenu it will stay up.
+
+The \fIspecial-options\fP:
+
+.in +5
+The "animated" and "mwm" or "win" meny styles may move a menu somewhere
+else on the screen.  If you do not want this you can add \fIFixed\fP
+as an option. This might happen for example if you want the menu always
+in the top right corner of the screen.
+
+Where do you want a submenu to appear when you click on it's menu item?
+The default is to place the title under the cursor, but if you want it
+where the position arguments say, use the \fISelectInPlace\fP option.
+If you want the pointer on the title of the menu, use \fISelectWarp\fP
+too.
+
+The pointer is warped to the title of a submenu whenever the pointer
+would be on an item when the submenu is popped up ("fvwm" menu style) or
+never warped to thetitle at all ("mwm" or "win" menu styles). You can
+force (forbid) warping whenever the submenu is opened with the
+\fIWarpTitle\fP (\fINoWarp\fP) option.
+
+Note that the \fIspecial-options\fP do work with a normal menu that has
+no other position arguments.
+.in -5
 
 
 .IP "MenuStyle \fIforecolor backcolor shadecolor font style anim\fP"
@@ -1269,7 +1376,11 @@ the mwm IconBox), FvwmIconMan (like the twm icon manager), FvwmIdent
 FvwmPager (a mini version of the desktop), FvwmSave (saves the desktop
 state in .xinitrc style), FvwmSaveDesk (saves the desktop state in
 fvwm commands), FvwmScroll (puts scrollbars on any window), FvwmTalk
-(to interactively run fvwm commands), and FvwmWinList (a window list).
+(to interactively run fvwm commands), and FvwmWinList (a window list),
+FvwmAnimate (produces animation effects when a window is iconified or
+deiconifed).
+.\" Note: FvwmEvent is missing from this section.
+.\" Note: The "Optional Module Name" description is missing.
 These modules have their own man pages.  There are other modules out
 on there as well.
 
@@ -1339,21 +1450,44 @@ interpreted as a percentage of the screen width (height), but a trailing
 
 Simple Examples:
 .EX
-Mouse 1 T A Move           # Interactive move
-Mouse 2 T A Move 10 10     # Move window so top left is at (10%,10%)
-Mouse 3 T A Move 10p 10p   # Move top left to (10pixels,10pixels)
+# Interactive move
+Mouse 1 T A Move
+# Move window so top left is at (10%,10%)
+Mouse 2 T A Move 10 10
+# Move top left to (10pixels,10pixels)
+Mouse 3 T A Move 10p 10p
 .EE
 
 More complex examples (these can be bound as actions to keystrokes,
 etc.; only the command is shown, though):
 .EX
-Move -0 -0  # Move window so bottom right is at bottom right of screen
-Move w+5 50 # Move window 5% to the right, and to the middle vertically
-Move 40p w-10p  # Move window up 10 pixels, and so left edge is at x=40 pixels
+# Move window so bottom right is at bottom right of screen
+Move -0 -0
+# Move window 5% to the right, and to the middle vertically
+Move w+5 50
+# Move window up 10 pixels, and so left edge is at x=40
+# pixels
+Move 40p w-10p
 .EE
 
 See also the "AnimatedMove" command, above.
-  
+
+
+.IP "MoveToDesk \fIarg1\fP [ \fIarg2\fP ] [ \fImin max\fP ]"
+Moves the selected window to another desktop (workspace, room).
+
+The arguments are the same as for the \fPDesk\P command. MoveToDesk
+does the same as the WindowsDesk command.
+
+
+.IP "MoveToPage \fIx y\fP"
+Moves the selected window to another page (x,y). The upper left page is
+(0,0), the upper right is (M,0), where M is one less than the current
+number of horizontal pages specified in the DeskTopSize command.  The
+lower left page is (0,N), and the lower right page is (M,N), where N
+is the desktop's vertical size as specified in the DeskTopSize
+command.
+
 
 .IP "Nop"
 Does nothing.  This is used to insert a blank line or separator in a
@@ -1362,7 +1496,7 @@ inserted.  If it looks like Nop "", then a separator line is inserted.
 Can also be used as the double-click action for Menu.
 
 
-.IP "Next [\fIconditions\fP] \fIcommand\fP"
+.IP "Next (\fIconditions\fP) \fIcommand\fP"
 Performs \fIcommand\fP (typically Focus) on the next window which
 satisfies all \fIconditions\fP.  Conditions are the same as for \fICurrent\fP
 with the addition of CirculateHit which overrides the CirculateSkip style
@@ -1370,7 +1504,7 @@ attribute and CirculateHitIcon which overrides the CirculateSkipIcon style
 attribute for iconified windows.
 
 
-.IP "None [\fIarguments\fP] \fIcommand\fP"
+.IP "None (\fIconditions\fP) \fIcommand\fP"
 Performs \fIcommand\fP if no window which satisfies all
 \fIconditions\fP exists.  Conditions are the same as for \fINext\fP.
 
@@ -1378,14 +1512,14 @@ Performs \fIcommand\fP if no window which satisfies all
 .IP "OpaqueMoveSize \fIpercentage\fP"
 Tells \fIfvwm\fP the maximum size window with which opaque window
 movement should be used.  The percentage is percent of the total
- screen area.  With "OpaqueMoveSize 0" all windows will be moved using the
+screen area.  With "OpaqueMoveSize 0" all windows will be moved using the
 traditional rubber-band outline.  With "OpaqueMoveSize 100" all windows
 will be move as solid windows.  The default is "OpaqueMoveSize 5", which
 allows small windows to be moved in an opaque manner but large windows
 are moved as rubber-bands.
 
 
-.IP "PipeRead \fIcmd\fP"
+.IP "PipeRead \fIcmd option\fP"
 Causes fvwm to read commands output from the program named
 \fIcmd\fP.  Useful for building up dynamic menu entries based on a
 directories contents, for example.
@@ -1398,10 +1532,11 @@ a slash.  Environment variables can be used here as well (i.e.  $HOME
 or ${HOME}).
 
 
-.IP "Popup \fI\PopupName\fP"
+.IP "Popup \fIPopupName\fP [ \fIposition\fP ]"
 This built-in has two purposes: to bind a menu to a key or mouse
 button, and to bind a sub-menu into a menu.  The formats for the two
-purposes differ slightly.
+purposes differ slightly.  The \fIposition\fP arguments are the same
+as for \fIMenu\fP.
 
 To bind a previously defined pop-up menu to a key or mouse button:
 .sp
@@ -1464,7 +1599,7 @@ menus which will stay up on a click action.  See menu for an explanation
 of the interactive behaviour of menus.
 
 
-.IP "Prev"
+.IP "Prev (\fIconditions\fP) \fIcommand\fP"
 Performs \fIcommand\fP (typically Focus) on the previous window which
 satisfies all \fIconditions\fP.  Conditions are the same as for \fINext\fP.
 
@@ -1481,8 +1616,10 @@ Allows the user to raise a window.
 Alternately raises and lowers a window.
 
 
-.IP "Read \fIfilename\fP"
+.IP "Read \fIfilename option\fP"
 Causes fvwm to read commands from the file named \fIfilename\fP.
+If the option following the filename is "Quiet", no message is
+produced if the file is not found.
 
 
 .IP "Recapture"
@@ -1553,7 +1690,7 @@ above settings are the default.
 
 .IP "SetMenuDelay \fImilliseconds-delay\fP"
 Sets the time to delay before popping up the current menu item's popup menu
-when you're using MWM or WIN menus.  See also the \fIMenuStyle\fP command.
+when you're using mwm or win menus.  See also the \fIMenuStyle\fP command.
 
 .IP "SetEnv \fIvarname stringvalue\fP"
 Set an environment variable to a new value, similar to shell's export
@@ -1851,7 +1988,7 @@ Style "Fvwm Pager" Icon
 Does nothing.  This is used to insert a title line in a popup or menu.
 
 
-.IP "TitleStyle \fI[justification] [height num]\fP"
+.IP "TitleStyle [ \fIjustification\fP ] [ \fIheight num\fP ]"
 Sets attributes for the title bar.  Justifications can be "Centered",
 "RightJustified," or "LeftJustified."  \fIheight\fP sets the title
 bar's height to an amount in pixels.  Defaults are Centered and
@@ -1863,7 +2000,7 @@ TitleStyle LeftJustified Height 24
 .EE
 
 
-.IP "TitleStyle \fI[state] [style] [\fP -- \fI[!]flag ... ]\fP"
+.IP "TitleStyle [ \fIstate\fP ] [ \fIstyle\fP ] [ -- \fI[!]flag ...\fP ]"
 Sets the style for the title bar.  \fIstate\fP can be one of
 "ActiveUp," "ActiveDown," or "Inactive."  If \fIstate\fP is omitted,
 then the style is added to every state.  If parentheses are placed
@@ -1933,17 +2070,10 @@ to map itself, then switches to desk 2 and starts an xmh.  After the
 xmh window appears control moves to desk 0.
 
 
-.IP "WindowsDesk \fIarg1 [arg2]\fP"
-Moves the selected window to another desktop (workspace, room). 
+.IP "WindowsDesk \fIarg1\fP [ \fIarg2\fP ] [ \fImin max\fP ]"
+Moves the selected window to another desktop (workspace, room).
 
-If \fIarg1\fP is non zero then the next desktop number will be the
-current desktop number plus \fIarg1\fP.  Desktop numbers can be
-negative.
-
-If \fIarg1\fP is zero then the new desktop number will be \fIarg2\fP.
-
-If only one argument is given, moves the selected window the the
-desktop specified as \farg1\fP.
+The arguments are the same as for the \fPDesk\P command.
 
 
 .IP "WindowFont \fIfontname\fP"
@@ -1962,7 +2092,7 @@ WindowId 0x34567890 WarpToWindow 50 50
 Mostly this is useful for functions used with the WindowList builtin.
 
 
-.IP "WindowList \fI[options]\fP"
+.IP "WindowList [ \fIposition\fP ] [ \fIoptions\fP ] [ \fIdouble-click-action\fP ]"
 Generates a pop-up menu (and pops it up) in which the title and
 geometry of each of the windows currently on the desk top are shown.
 The geometry of iconified windows is shown in parenthesis.  Selecting
@@ -1978,6 +2108,21 @@ AddToFunc WindowListFunc "I" WindowId $0 Iconify -1
 .EE
 You can Destroy the builtin WindowListFunc and create your own if
 these defaults do not suit you.
+
+The \fIposition\fP arguments are the same as for \fIMenu\fP. The
+command \fIdouble-click-action\fP will be invoked if the user
+double-clicks (or hits the key rapidly twice if the menu is bound
+to a key) when bringing the window list.  The double-click-action
+must be quoted if it consists of more than one word.
+
+The double-click-action is useful to define a default window if you
+have bound the window list to a key (or button) like this:
+.EX
+Key Tab	A	M	WindowList "Prev FlipFocus"
+.EE
+Hitting Alt-Tab once it brings up the window list, if you hit it
+twice the focus is flipped between the current and the last focused
+window.
 
 The \fIoptions\fP passed to WindowList can be "NoGeometry", "Function
 <funcname>", "Desk <desknum>", "CurrentDesk", "NoIcons", "Icons",

@@ -1059,7 +1059,6 @@ void HandleButtonPress()
         XSync(dpy,0);
         return;
       }
-      
     }
   }
   else if ((Tmp_win) && !(Tmp_win->flags & ClickToFocus) &&
@@ -1406,7 +1405,7 @@ void HandleVisibilityNotify()
   
   DBUG("HandleVisibilityNotify","Routine Entered");
 
-  if(Tmp_win)
+  if(Tmp_win && Tmp_win->frame == last_event_window)
     {
       if(vevent->state == VisibilityUnobscured)
 	Tmp_win->flags |= VISIBLE;

@@ -87,6 +87,7 @@ enum {
     F_DESTROY,
     F_DELETE,
     F_MOVE,
+    F_MOVE_TO_PAGE,
     F_ICONIFY,
     F_STICK,
     F_RAISELOWER,

@@ -3,6 +3,7 @@
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
+#include <X11/Xresource.h>
 #include <ctype.h>
 
 /***********************************************************************
@@ -24,9 +25,9 @@ int matchWildcards(char *pattern, char *string);
  * Stuff for consistent parsing
  ***********************************************************************/
 #define EatWS(s) do { while ((s) && (isspace(*(s)) || *(s) == ',')) (s)++; } while (0)
-#define IsQuote(c) (c == '"' || c == '\'' || c =='`')
-#define IsBlockStart(c) (c == '[' || c == '{' || c == '(')
-#define IsBlockEnd(c,cs) ((c == ']' && cs == '[') || (c == '}' && cs == '{') || (c == ')' && cs == '('))
+#define IsQuote(c) ((c) == '"' || (c) == '\'' || (c) =='`')
+#define IsBlockStart(c) ((c) == '[' || (c) == '{' || (c) == '(')
+#define IsBlockEnd(c,cs) (((c) == ']' && (cs) == '[') || ((c) == '}' && (cs) == '{') || ((c) == ')' && (cs) == '('))
 #define MAX_TOKEN_LENGTH 255
 
 char *PeekToken(const char *pstr);
@@ -36,7 +37,13 @@ int MatchToken(const char *pstr,char *tok);
 void NukeToken(char **pstr);
 
 /* old style parse routine: */
+char *DoGetNextToken(char *indata,char **token, char *spaces, char *delims);
 char *GetNextToken(char *indata,char **token);
+char *GetNextOption(char *indata,char **token);
+char *GetModuleResource(char *indata, char **resource, char *module_name);
+int GetIntegerArguments(char *action, char**ret_action, int retvals[],int num);
+int GetTokenIndex(char *token, char *list[], int len, char **next);
+char *GetNextTokenIndex(char *action, char *list[], int len, int *index);
 
 /***********************************************************************
  * Various system related utils
@@ -97,5 +104,18 @@ void MyXGrabServer(Display *disp);
 void MyXUngrabServer(Display *disp);
 
 void send_clientmessage (Display *disp, Window w, Atom a, Time timestamp);
+
+/***********************************************************************
+ * Wrappers around Xrm routines (XResources.c)
+ ***********************************************************************/
+void MergeXResources(Display *dpy, XrmDatabase *pdb, Bool override);
+void MergeCmdLineResources(XrmDatabase *pdb, XrmOptionDescList opts,
+			   int num_opts, char *name, int *pargc, char **argv,
+			   Bool fNoDefaults);
+Bool MergeConfigLineResource(XrmDatabase *pdb, char *line, char *prefix,
+			     char *bindstr);
+Bool GetResourceString(XrmDatabase db, const char *resource,
+		       const char *prefix, char **val);
+
 
 #endif

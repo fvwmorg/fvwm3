@@ -266,12 +266,11 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
 	      l2 += strlen(arguments[n])-2;
 	      i++;
 	    }
-	  else if(input[i+1]=='w')
+	  else if(input[i+1]=='w' || input[i+1] == 'd')
 	    {
 	      l2 += 16;
 	      i++;
 	    }
-
 	}
       i++;
     }
@@ -296,6 +295,12 @@ char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
 		sprintf(&out[j],"0x%x",(unsigned int)tmp_win->w);
 	      else
 		sprintf(&out[j],"$w");
+	      j = strlen(out);
+	      i++;
+	    }
+	  else if(input[i+1] == 'd')
+	    {
+	      sprintf(&out[j], "%d", Scr.CurrentDesk);
 	      j = strlen(out);
 	      i++;
 	    }
