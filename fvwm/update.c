@@ -427,7 +427,14 @@ static void apply_window_updates(
 		/* frame_redraw_decorations needs to know if the window is
 		 * hilighted */
 		set_focus_window(focus_w);
-		border_redraw_decorations(t);
+		if (IS_ICONIFIED(t))
+		{
+			DrawIconWindow(t, True, True, False, NULL);
+		}
+		else
+		{
+			border_redraw_decorations(t);
+		}
 		set_focus_window(NULL);
 	}
 	if (flags->do_update_icon_size_limits)

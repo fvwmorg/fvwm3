@@ -1,5 +1,8 @@
 2002-09-26  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/update.c (apply_window_updates):
+	Fixed icons colorset update
+
 	* libs/FRender.c (FRenderRender):
 	Fixed bitmap rendering
 	
