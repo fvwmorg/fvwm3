@@ -1056,15 +1056,16 @@ void parse_colorset(int n, char *line)
 	/*
 	 * ---------- change the background colour ----------
 	 */
-	if (has_bg_changed || has_pixmap_changed)
+	if (has_bg_changed ||
+	    (has_pixmap_changed && (cs->color_flags & BG_AVERAGE) &&
+	     cs->pixmap != None &&
+	     cs->pixmap != ParentRelative &&
+	     !pixmap_is_a_bitmap))
 	{
 		Bool do_set_default_background = False;
 
 		/* note: no average for bitmap */
-		if ((cs->color_flags & BG_AVERAGE) &&
-		    cs->pixmap != None &&
-		    cs->pixmap != ParentRelative &&
-		    !pixmap_is_a_bitmap)
+		if (cs->color_flags & BG_AVERAGE)
 		{
 			/* calculate average background color */
 			XColor *colors;
@@ -1076,6 +1077,7 @@ void parse_colorset(int n, char *line)
 			double dred = 0.0, dblue = 0.0, dgreen = 0.0;
 			Pixmap pix;
 
+			has_bg_changed = True;
 			/* chose the good pixmap */
 			pix =
 			   (cs->picture != NULL &&
@@ -1188,10 +1190,7 @@ void parse_colorset(int n, char *line)
 				have_pixels_changed = True;
 			}
 		} /* user specified */
-		else if ((bg == NULL && has_bg_changed) ||
-			 ((cs->color_flags & BG_AVERAGE) &&
-			  (cs->pixmap == None || cs->pixmap == ParentRelative ||
-			   pixmap_is_a_bitmap)))
+		else if (bg == NULL && has_bg_changed)
 		{
 			/* default */
 			do_set_default_background = True;
@@ -1207,10 +1206,12 @@ void parse_colorset(int n, char *line)
 				have_pixels_changed = True;
 			}
 		}
-		has_bg_changed = True;
 
-		/* save the bg color for tinting */
-		cs->bg_saved = cs->bg;
+		if (has_bg_changed)
+		{
+			/* save the bg color for tinting */
+			cs->bg_saved = cs->bg;
+		}
 	} /* has_bg_changed */
 
 

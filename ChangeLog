@@ -1,3 +1,11 @@
+2002-11-25  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/move_resize.c (__move_loop):
+	Redraw the transparent decoration parts when a move is abored
+
+	* fvwm/colorset.c (parse_colorset):
+	Fixed the fgsh Colorset colors when the Image change but not the bg
+
 2002-11-24  Jason Weber  <baboon@imonk.com>
 	* fvwm/conditional.c
 	Extended Direction to allow CycleWest, CycleEast, etc that guarantees

@@ -2386,6 +2386,14 @@ Bool __move_loop(
 		if (aborted && do_move_opaque)
 		{
 			XMoveWindow(dpy, move_w, x_bak, y_bak);
+			if (draw_parts != PART_NONE)
+			{
+				border_draw_decorations(
+					fw, draw_parts,
+					((fw == get_focus_window())) ?
+					True : False,
+					True, CLEAR_ALL, NULL, NULL);	
+			}
 		}
 		if (bad_window == FW_W(fw))
 		{
