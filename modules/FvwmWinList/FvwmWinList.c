@@ -794,12 +794,13 @@ void LoopOnEvents(void)
 	    Event.xconfigure.send_event = True;
 	  }
 	}
-        if (Event.xconfigure.send_event) {
-          win_x = Event.xconfigure.x;
-          win_y = Event.xconfigure.y;
-          if (win_bg == ParentRelative)
-            RedrawWindow(True, True);
-        }
+        if (Event.xconfigure.send_event && (win_x != Event.xconfigure.x
+            || win_y != Event.xconfigure.y)) {
+	  win_x = Event.xconfigure.x;
+	  win_y = Event.xconfigure.y;
+	  if (win_bg == ParentRelative)
+	    RedrawWindow(True, True);
+	}
         break;
       case KeyPress:
         num=XLookupString(&Event.xkey,buffer,10,NULL,0);
