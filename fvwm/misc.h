@@ -52,6 +52,7 @@ int truncate_to_multiple (int x, int m);
 Bool move_into_rectangle(rectangle *move_rec, rectangle *target_rec);
 Bool IsRectangleOnThisPage(rectangle *rec, int desk);
 Bool IntersectsInterval(int x1, int width1, int x2, int width2);
+void merge_xrectangles(XRectangle *r1, XRectangle *r2);
 
 /*
 ** message levels for fvwm_msg:

@@ -488,3 +488,18 @@ Bool move_into_rectangle(rectangle *move_rec, rectangle *target_rec)
 
   return has_changed;
 }
+
+void merge_xrectangles(XRectangle *r1, XRectangle *r2)
+{
+  int x1 = min(r1->x, r2->x);
+  int y1 = min(r1->y, r2->y);
+  int x2 = max(r1->x + r1->width, r2->x + r2->width);
+  int y2 = max(r1->y + r1->height, r2->y + r2->height);
+
+  r1->x = x1;
+  r1->y = y1;
+  r1->width = x2 - x1;
+  r1->height = y2 - y1;
+
+  return;
+}

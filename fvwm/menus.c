@@ -3851,7 +3851,7 @@ static void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
 	    dpy, MR_WINDOW(mr), pmapgc, ST_FACE(ms).gradient_type,
 	    g_width, g_height, ST_FACE(ms).u.grad.npixels,
 	    ST_FACE(ms).u.grad.pixels, pmap,
-	    bw, bw, MR_WIDTH(mr) - bw, MR_HEIGHT(mr) - bw);
+	    bw, bw, MR_WIDTH(mr) - bw, MR_HEIGHT(mr) - bw, NULL);
 	  XSetWindowBackgroundPixmap(dpy, MR_WINDOW(mr), pmap);
 	  XFreeGC(dpy, pmapgc);
 	  XFreePixmap(dpy, pmap);

@@ -874,25 +874,38 @@ void HandleClientMessage(void)
  ***********************************************************************/
 void HandleExpose(void)
 {
+  XRectangle r;
+
   if (Event.xexpose.count != 0)
-    return;
-
-  DBUG("HandleExpose","Routine Entered");
-
+  {
+    flush_accumulate_expose(Event.xexpose.window, &Event);
+  }
+  r.x = Event.xexpose.x;
+  r.y = Event.xexpose.y;
+  r.width = Event.xexpose.width;
+  r.height = Event.xexpose.height;
   if (Tmp_win)
   {
     draw_window_parts draw_parts;
 
     if (Event.xany.window == Tmp_win->title_w)
+    {
       draw_parts = DRAW_TITLE;
+    }
     else if (Event.xany.window == Tmp_win->decor_w ||
 	     Event.xany.window == Tmp_win->frame)
+    {
       draw_parts = DRAW_FRAME;
+    }
     else
+    {
       draw_parts = DRAW_BUTTONS;
-    DrawDecorations(
-      Tmp_win, draw_parts, (Scr.Hilite == Tmp_win), True, Event.xany.window);
+    }
+    draw_clipped_decorations(
+      Tmp_win, draw_parts, (Scr.Hilite == Tmp_win), True, Event.xany.window,
+      &r);
   }
+
   return;
 }
 

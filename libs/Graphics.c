@@ -586,13 +586,10 @@ Bool CalculateGradientDimensions(
  * a new pixmap of the given depth, width and height is created. If it is not
  * None the gradient is drawn into it. The d_width, d_height, d_x and d_y
  * describe the traget rectangle within the drawable. */
-Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
-			      int type, int g_width, int g_height,
-			      int ncolors, Pixel *pixels,
-			      Drawable in_drawable,
-			      int d_x, int d_y,
-			      int d_width,
-			      int d_height)
+Drawable CreateGradientPixmap(
+  Display *dpy, Drawable d, GC gc, int type, int g_width, int g_height,
+  int ncolors, Pixel *pixels, Drawable in_drawable, int d_x, int d_y,
+  int d_width, int d_height, XRectangle *rclip)
 {
   Pixmap pixmap = None;
   XImage *image;
@@ -796,8 +793,16 @@ Drawable CreateGradientPixmap(Display *dpy, Drawable d, GC gc,
   xgcv.fill_style = FillSolid;
   xgcv.clip_mask = None;
   XChangeGC(dpy, gc, GCFunction|GCPlaneMask|GCFillStyle|GCClipMask, &xgcv);
+  if (rclip)
+  {
+    XSetClipRectangles(dpy, gc, 0, 0, rclip, 1, Unsorted);
+  }
   /* copy the image to the server */
   XPutImage(dpy, target, gc, image, 0, 0, t_x, t_y, t_width, t_height);
+  if (rclip)
+  {
+    XSetClipMask(dpy, gc, None);
+  }
   XDestroyImage(image);
   return target;
 }
@@ -843,7 +848,7 @@ Pixmap CreateGradientPixmapFromString(Display *dpy, Drawable d, GC gc,
 				  height_return))
     pixmap = CreateGradientPixmap(dpy, d, gc, type, *width_return,
 				  *height_return, ncolors, pixels, None, 0, 0,
-				  0, 0);
+				  0, 0, NULL);
 
   /* if the caller has not asked for the pixels there is probably a leak */
   if (!pixels_return) {
