@@ -220,7 +220,7 @@ void SetWindowBackgroundWithOffset(
 	if (FHaveShapeExtension && colorset->shape_mask)
 	{
 		mask = CreateBackgroundPixmap(
-			dpy, 0, width, height, colorset, 1, None, True);
+			dpy, None, width, height, colorset, 1, None, True);
 		if (mask != None)
 		{
 			FShapeCombineMask(

@@ -163,7 +163,8 @@ Contents
     7.10  The cat safe desktop :-)
     7.11  Lowering and moving windows.
     7.12  Toggling windows on and off.
-    7.13  Starting applications by clicking on an icon.
+    7.13  Starting applications by clicking on an icon (also known
+          as "docking" applications).
     7.14  Positioning a window using arithmetic.
     7.15  Hiding the mouse pointer
     7.16  Finding the mouse pointer
@@ -2377,7 +2378,8 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
 ----------------------------------------------------------------------
 
-7.13  Starting applications by clicking on an icon.
+7.13  Starting applications by clicking on an icon (also known as
+      "docking" applications).
 
    Normally an icon represents a minimized application.
    If you want to turn that around, and launch applications by clicking

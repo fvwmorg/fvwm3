@@ -1701,10 +1701,13 @@ void HandleEvents(
 		{
 			AdjustWindow(
 				evp->xconfigure.width, evp->xconfigure.height);
-			SetWindowBackground(
-				dpy, win, win_width, win_height,
-				&Colorset[colorset],
-				Pdepth, graph, True);
+			if (colorset >= 0)
+			{
+				SetWindowBackground(
+					dpy, win, win_width, win_height,
+					&Colorset[colorset], Pdepth, graph,
+					True);
+			}
 			*redraw = 1;
 		}
 		/* useful because of dynamic style change */

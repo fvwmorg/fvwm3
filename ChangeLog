@@ -1,3 +1,17 @@
+2003-03-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Colorset.c (SetWindowBackgroundWithOffset):
+	use None, not 0 for Window structures
+
+	* fvwm/events.c (InitEventHandlerJumpTable):
+	(HandleKeyRelease):
+	(__handle_key_event):
+	* fvwm/bindings.c (ParseBinding):
+	(activate_binding):
+	* libs/Bindings.h:
+	* fvwm/fvwm.1.in:
+	removed key release binding because they can not work reliably
+
 2003-03-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/functable.c (func_table):

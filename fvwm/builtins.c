@@ -764,7 +764,6 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 			}
 			acs[TBMP_BUTTONS].cs = -1;
 			df->u.mp.solid_flags &= ~(1 << TBMP_BUTTONS);
-			
 		}
 		s = SkipSpaces(s, NULL, 0);
 		s = GetNextTokenIndex(s, pm_names, 0, &pm_id);
@@ -793,7 +792,7 @@ static char *ReadMultiPixmapDecor(char *s, DecorFace *df)
 			{
 				PictureFreeColors(
 					dpy, Pcmap, &df->u.mp.pixels[i], 1, 0,
-					False); 
+					False);
 			}
 		}
 		free(pm);
@@ -1199,7 +1198,7 @@ int update_decorface_colorset(DecorFace *df, int cset)
 			}
 		}
 }
-	
+
 	return has_changed;
 }
 
@@ -1904,7 +1903,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			memset(&df->style, 0, sizeof(df->style));
 			if (n > 0 && val[0] >= 0)
 			{
-				
+
 				df->u.acs.cs = val[0];
 				alloc_colorset(val[0]);
 				DFS_FACE_TYPE(df->style) = ColorsetButton;
@@ -4049,7 +4048,7 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 
 	/* Force auto repeat off and grab the Keyboard to get proper
 	 * KeyRelease events if we need it.
-	 * Some computers do not support keyRelease events, can we
+	 * Some computers do not support KeyRelease events, can we
 	 * check this here ? No ? */
 	if (start_event_type == KeyPress && finish_on_release)
 	{

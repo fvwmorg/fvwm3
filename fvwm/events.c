@@ -1977,7 +1977,7 @@ void HandleFocusOut(const evh_args_t *ea)
 	return;
 }
 
-void __handle_key_event(const evh_args_t *ea, Bool is_release)
+void HandleKeyPress(const evh_args_t *ea)
 {
 	char *action;
 	FvwmWindow *sf;
@@ -2007,24 +2007,8 @@ void __handle_key_event(const evh_args_t *ea, Bool is_release)
 	{
 		context2 = ea->exc->w.wcontext;
 	}
-	if (is_release == False)
-	{
-		if (CheckTwoBindings(
-			    &is_second_binding, Scr.AllBindings, STROKE_ARG(0)
-			    kc, te->xkey.state, GetUnusedModifiers(),
-			    ea->exc->w.wcontext, BIND_KEYRELEASE, context2,
-			    BIND_PKEYRELEASE) != NULL)
-		{
-			MyXGrabKey(dpy);
-		}
-		type1 = BIND_KEYPRESS;
-		type2 = BIND_PKEYPRESS;
-	}
-	else
-	{
-		type1 = BIND_KEYRELEASE;
-		type2 = BIND_PKEYRELEASE;
-	}
+	type1 = BIND_KEYPRESS;
+	type2 = BIND_PKEYPRESS;
 	action = CheckTwoBindings(
 		&is_second_binding, Scr.AllBindings, STROKE_ARG(0) kc,
 		te->xkey.state, GetUnusedModifiers(), ea->exc->w.wcontext,
@@ -2047,10 +2031,6 @@ void __handle_key_event(const evh_args_t *ea, Bool is_release)
 		{
 			exc_destroy_context(exc);
 		}
-		if (is_release == True)
-		{
-			MyXUngrabKey(dpy);
-		}
 		XAllowEvents(dpy, AsyncKeyboard, CurrentTime);
 		return;
 	}
@@ -2064,10 +2044,7 @@ void __handle_key_event(const evh_args_t *ea, Bool is_release)
 
 		e = *te;
 		e.xkey.window = FW_W(sf);
-		FSendEvent(
-			dpy, e.xkey.window, False,
-			(is_release == True) ? KeyReleaseMask : KeyPressMask,
-			&e);
+		FSendEvent(dpy, e.xkey.window, False, KeyPressMask, &e);
 	}
 	else if (fw && te->xkey.window != FW_W(fw))
 	{
@@ -2075,26 +2052,9 @@ void __handle_key_event(const evh_args_t *ea, Bool is_release)
 
 		e = *te;
 		e.xkey.window = FW_W(fw);
-		FSendEvent(
-			dpy, e.xkey.window, False,
-			(is_release == True) ? KeyReleaseMask : KeyPressMask,
-			&e);
+		FSendEvent(dpy, e.xkey.window, False, KeyPressMask, &e);
 	}
 	XAllowEvents(dpy, AsyncKeyboard, CurrentTime);
-
-	return;
-}
-
-void HandleKeyPress(const evh_args_t *ea)
-{
-	__handle_key_event(ea, False);
-
-	return;
-}
-
-void HandleKeyRelease(const evh_args_t *ea)
-{
-	__handle_key_event(ea, True);
 
 	return;
 }
@@ -3212,7 +3172,6 @@ void InitEventHandlerJumpTable(void)
 	EventHandlerJumpTable[ClientMessage] =    HandleClientMessage;
 	EventHandlerJumpTable[PropertyNotify] =   HandlePropertyNotify;
 	EventHandlerJumpTable[KeyPress] =         HandleKeyPress;
-	EventHandlerJumpTable[KeyRelease] =       HandleKeyRelease;
 	EventHandlerJumpTable[VisibilityNotify] = HandleVisibilityNotify;
 	EventHandlerJumpTable[ColormapNotify] =   HandleColormapNotify;
 	if (FShapesSupported)

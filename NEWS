@@ -100,10 +100,6 @@ Changes in development release 2.5.5 (2-Dec-2002)
      OnlyStickyAcrossPages, OnlyStickyAcrossDesks.
    - New FvwmRearrange options -sp and -sd.
 
-* Key bindings can operate on the release of a key too.  Prefix the
-  key name with a '-' in the Key command.  Please read about the
-  caveats in the man page.
-
 * Fixed flickering in FvwmTaskBar, FvwmWinList, FvwmIconBox, FvwmForm,
   FvwmScript and FvwmScroll when xft fonts or icons with an alpha
   channel is used.

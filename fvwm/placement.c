@@ -1143,6 +1143,7 @@ Bool PlaceWindow(
 
 void CMD_PlaceAgain(F_CMD_ARGS)
 {
+	int old_desk;
 	char *token;
 	float noMovement[1] = {1.0};
 	float *ppctMovement = noMovement;
@@ -1169,6 +1170,7 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 			do_place_icon = True;
 		}
 	}
+	old_desk = fw->Desk;
 	if (IS_ICONIFIED(fw) && do_place_icon)
 	{
 		rectangle new_g;
@@ -1178,6 +1180,7 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 		{
 			return;
 		}
+		fw->Desk = Scr.CurrentDesk;
 		get_icon_geometry(fw, &old_g);
 		SET_ICON_MOVED(fw, 0);
 		AutoPlaceIcon(fw, NULL, False);
@@ -1189,6 +1192,11 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 	else
 	{
 		initial_window_options_type win_opts;
+#if 0
+extern Bool setup_window_placement(
+	FvwmWindow *fw, window_style *pstyle, rectangle *attr_g,
+	initial_window_options_type *win_opts);
+#endif
 
 		memset(&win_opts, 0, sizeof(win_opts));
 		lookup_style(fw, &style);
@@ -1196,13 +1204,23 @@ void CMD_PlaceAgain(F_CMD_ARGS)
 		attr_g.y = attr.y;
 		attr_g.width = attr.width;
 		attr_g.height = attr.height;
+#if 1
 		PlaceWindow(
-			exc, &style.flags, &attr_g, SGET_START_DESK(style),
+			exc, &style.flags, &attr_g,
+			SGET_START_DESK(style),
 			SGET_START_PAGE_X(style), SGET_START_PAGE_Y(style),
 			SGET_START_SCREEN(style), PLACE_AGAIN, &win_opts);
+#else
+		setup_window_placement(exc->w.fw, &style, &attr_g, &win_opts);
+#endif
 		AnimatedMoveFvwmWindow(
 			fw, FW_W_FRAME(fw), -1, -1, attr_g.x, attr_g.y, False,
 			-1, ppctMovement);
+	}
+	if (fw->Desk != old_desk)
+	{
+fprintf(stderr,"map on new desk: %d\n", fw->Desk);
+		do_move_window_to_desk(fw, fw->Desk);
 	}
 
 	return;
