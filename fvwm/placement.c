@@ -746,6 +746,7 @@ Bool PlaceWindow(
 			 &JunkBW,  &JunkDepth) == 0)
         {
 	  MyXUngrabServer(dpy);
+          UngrabEm(GRAB_NORMAL);
 	  return False;
 	}
 	MyXGrabKeyboard(dpy);
