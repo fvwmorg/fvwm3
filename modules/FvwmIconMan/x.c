@@ -918,7 +918,7 @@ void create_manager_window (int man_id)
     }
     if (man->pixmap[i] && man->pixmap[i] != ParentRelative)
       XFreePixmap(theDisplay, man->pixmap[i]);
-    if (Colorset[man->colorsets[i]].pixmap) {
+    if (man->colorsets[i] >= 0 && Colorset[man->colorsets[i]].pixmap) {
       man->pixmap[i] = CreateBackgroundPixmap(theDisplay, man->theWindow,
                        man->geometry.width, man->geometry.height,
                        &Colorset[man->colorsets[i]],
