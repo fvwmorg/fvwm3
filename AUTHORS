@@ -35,8 +35,8 @@ Use font for selected buttons in Start button.
 
 Scott Smedley:
 Wrote FvwmTabs module. Improved Perl module support. FakeKeyPress
-command. Window-specific key/mouse bindings. FvwmButtons: HoverIcon,
-HoverTitle, HoverColorset, PressIcon, PressTitle & PressColorset options.
+command. Window-specific key/mouse bindings. FvwmButtons: ActiveIcon,
+ActiveTitle, ActiveColorset, PressIcon, PressTitle & PressColorset options.
 FvwmWindowMenu: rewrote to use WindowList tracker.
 
 Francis Litterio:

@@ -1,3 +1,8 @@
+2005-01-28  Scott Smedley  <scottie7@tpg.com.au>
+
+	* fvwm/fvwm.1.in: elaborate on how window-specific bindings work.
+	* AUTHORS: s/Hover/Active/
+
 2005-01-19  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/bindings.c (ParseBinding): Patch from Frank Gruellich,

@@ -6027,14 +6027,24 @@ Key (*vim)  V A C --
 Key         V A C Echo ctrl-V-elsewhere
 .EE
 
-Note that a '--' action indicates that the event should not be
-intercepted by Fvwm and passed through to the underlying window
-instead. This is only a valid action for window-specific bindings.
+A '--' action indicates that the event should be propagated to the specified
+window to handle. This is only a valid action for window-specific bindings.
 
 This example shows how to display the WindowList when Button 3 is
 pressed on an rxvt window:
 .EX
 Mouse (rxvt) 3 A A WindowList
+.EE
+
+Note that Fvwm actually intercepts all events for a window-specific
+binding and (if the focussed window doesn't match any of the bindings)
+sends a synthetic copy of the event to the window. This should be
+transparent to most applications, however (for security reasons) some programs
+ignore these synthetic events by default - xterm is one of them. To enable
+handling of these events, add the following line to your ~/.Xdefaults file:
+
+.EX
+XTerm*allowSendEvents:  true
 .EE
 
 .I Modifiers
