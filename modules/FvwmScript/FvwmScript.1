@@ -50,7 +50,7 @@ A widget consists of eleven types of items: text labels, single-line text inputs
 radio buttons, checkbox, push buttons, horizontal and vertical scrollbars, rectangles,
 popup-menus, swallowexecs and mini scrollbars.
 .SH HEADING OF A SCRIPT
-The syntaxe is as follow:
+The syntax is as follow:
 
 .IP "WindowTitle \fIstring\fP"
 This option sets the window title.
@@ -178,7 +178,8 @@ displayed when pressing the right button.
 
 \fBValue\fP: if Value is equal to 1, the box is checked else it is not.
 
-.IP "\fBTextField\fP: Display a text input field. The text input field can be used to edit a single-line string."
+.IP "\fBTextField\fP: Display a text input field."
+The text input field can be used to edit a single-line string.
 
 \fBTitle\fP: content of text field.
 
@@ -208,13 +209,19 @@ displayed when pressing the right button.
 
 \fBMinValue\fP: lower limit of Value.
 
-.IP "\fBRectangle\fP: Display a rectangle. This type of widget can be used to decorate window."
+.IP "\fBRectangle\fP: Display a rectangle."
+ This type of widget can be used to decorate window.
 
-.IP "\fBSwallowExec\fP: This type of widget causes FvwmScript to spawn an process, and capture the first window whose name or resource is equal to Title, and display it in the script window."
+.IP "\fBSwallowExec\fP"
+This type of widget causes FvwmScript to spawn an process, and capture the first
+window whose name or resource is equal to Title, and display it in the script
+window.
 
-\fBTitle\fP: specify the window name which be captured and displayed in the script window.
+\fBTitle\fP: specify the window name which be captured and displayed in the
+script window.
  
-\fBSwallowExec\fP: specify the command line to execute to spawn the process. Modules canalso be swallowed.
+\fBSwallowExec\fP: specify the command line to execute to spawn the process.
+Modules canalso be swallowed.
 
 \fBValue\fP: specify the looking of the border. Possible value: -1, 0, 1.
 
@@ -222,9 +229,12 @@ displayed when pressing the right button.
 
 \fBValue\fP: specify what option is selected.
 
-\fBTitle\fP: the title has the following syntax: {Option 1|Option 2|...|Option N}."Option 1|Option 2|...|Option N" is the popup menu which is displayed when pressing mouse button.
+\fBTitle\fP: the title has the following syntax:
+{Option 1|Option 2|...|Option N}."Option 1|Option 2|...|Option N" is the
+popup menu which is displayed when pressing mouse button.
 
-.IP "\fBHDipstick\fP: Display a horizontal dipstick. This widget can be used to display disk usage."
+.IP "\fBHDipstick\fP: Display a horizontal dipstick."
+This widget can be used to display disk usage.
 
 \fBValue\fP: specify the current value of the dipstick.
 
@@ -240,18 +250,21 @@ displayed when pressing the right button.
 
 \fBMaxValue\fP: specify the maximum value of the dipstick.
 
-.IP "\fBList\fP: Display a list. List lets user to choose between various options."
+.IP "\fBList\fP: Display a list."
+List lets user to choose between various options.
 
 \fBValue\fP: specify which option is selected.
 
-\fBTitle\fP: title contains options displayed in the list. The syntaxe is the following:
-{Option 1|Option 2|...|Option N}. All menus are displayed at the top of window.
+\fBTitle\fP: title contains options displayed in the list. The syntaxe is the
+following: {Option 1|Option 2|...|Option N}. All menus are displayed at the top
+of window.
 
 .IP "\fBMenu\fP: Display a menu whom lets user to choose a option."
 
 \fBValue\fP: specify which option is selected.
 
-\fBTitle\fP: title contains options displayed in the menu. The syntaxe is the following:
+\fBTitle\fP: title contains options displayed in the menu. The syntaxe is the
+following:
 {Option 1|Option 2|...|Option N}.
 
 .SH INSTRUCTIONS
@@ -262,46 +275,66 @@ Here is the description of all instructions.
 
 .IP "ShowWidget \fIid\fP: show the widget numbered \fIid\fP."
 
-.IP "ChangeValue \fIid1 id2\fP: set the value of the widget numbered \fIid1\fP to \fIid2\fP."
+.IP "ChangeValue \fIid1 id2\fP"
+Set the value of the widget numbered \fIid1\fP to \fIid2\fP.
 
-.IP "ChangeMaxValue \fIid1 id2\fP: set the maximum value of the widget numbered \fIid1\fP to \fIid2\fP."
+.IP "ChangeMaxValue \fIid1 id2\fP"
+Set the maximum value of the widget numbered \fIid1\fP to \fIid2\fP.
 
-.IP "ChangeMinValue \fIid1 id2\fP: set the minimum value of the widget numbered \fIid1\fP to \fIid2\fP."
+.IP "ChangeMinValue \fIid1 id2\fP"
+Set the minimum value of the widget numbered \fIid1\fP to \fIid2\fP.
 
-.IP "ChangeTitle \fIid1 id2\fP: set the title of the widget numbered \fIid1\fP to \fIid2\fP."
+.IP "ChangeTitle \fIid1 id2\fP"
+Set the title of the widget numbered \fIid1\fP to \fIid2\fP.
 
-.IP "ChangeIcon \fIid1 id2\fP: set the icon of the widget numbered \fIid1\fP to \fIid2\fP."
+.IP "ChangeIcon \fIid1 id2\fP"
+Set the icon of the widget numbered \fIid1\fP to \fIid2\fP.
 
-.IP "ChangeForeColor \fIid1\fP {\fIcolor\fP}: set the foreground color of the widget numbered \fIid1\fP to {\fIcolor\fP}."
+.IP "ChangeForeColor \fIid1\fP {\fIcolor\fP}"
+Set the foreground color of the widget numbered \fIid1\fP to {\fIcolor\fP}.
 
-.IP "ChangeBackColor \fIid1\fP {\fIcolor\fP}: set the background color of the widget numbered \fIid1\fP to {\fIcolor\fP}.
+.IP "ChangeBackColor \fIid1\fP {\fIcolor\fP}"
+Set the background color of the widget numbered \fIid1\fP to {\fIcolor\fP}.
 
+.IP "ChangePosition \fIid1 x y\fP"
+Move the widget numbered \fIid1\fP to position (\fIx\fP,\fIy\fP).
 
-.IP "ChangePosition \fIid1 x y\fP: move the widget numbered \fIid1\fP to position (\fIx\fP,\fIy\fP)."
+.IP "ChangeSize \fIid1 width height\fP"
+Set the size of the widget numbered \fIid1\fP to (\fIwidth\fP,\fIheight\fP).
 
-.IP "ChangeSize \fIid1 width height\fP: set the size of the widget numbered \fIid1\fP to (\fIwidth\fP,\fIheight\fP)."
+.IP "ChangeFont \fIid1 newfont\fP"
+Set the font of the widget numbered \fIid1\fP to \fInewfont\fP.
 
-.IP "ChangeFont \fIid1 newfont\fP: set the font of the widget numbered \fIid1\fP to \fInewfont\fP."
+.IP "WarpPointer \fIid\fP"
+Warp the mouse pointer into the widget numbered \fIid\fP.
 
-.IP "WarpPointer \fIid\fP: warp the mouse pointer into the widget numbered \fIid\fP."
+.IP "WriteToFile \fIfilename\fP {\fIstr1\fP} {\fIstr2\fP} etc"
+Write to the file \fIfilename\fP the string which is the concatenation of all
+arguments \fIstr1\fP, \fIstr2\fP, etc.
 
-.IP "WriteToFile \fIfilename\fP {\fIstr1\fP} {\fIstr2\fP} etc: write to the file \fIfilename\fP the string which is the concatenation of all arguments \fIstr1\fP, \fIstr2\fP, etc."
+.IP "Do {\fIstr1\fP} {\fIstr2\fP} etc"
+Execute the command which is the concatenation of all arguments \fIstr1\fP,
+\fIstr2\fP, etc.
 
-.IP "Do {\fIstr1\fP} {\fIstr2\fP} etc: execute the command which is the concatenation of all arguments \fIstr1\fP, \fIstr2\fP, etc."
-
-.IP "Set $\fIvar\fP={\fIstr\fP1} {\fIstr2\fP} etc: concatenate all arguments to a string and set the variable $\fIvar\fP to this string."
+.IP "Set $\fIvar\fP={\fIstr\fP1} {\fIstr2\fP} etc"
+Concatenate all arguments to a string and set the variable $\fIvar\fP to this
+string.
 
 .IP "Quit: quit the program."
 
-.IP "SendSignal \fIid1 id2\fP: send a message numbered \fIid2\fP to widget \fIid1\fP."
+.IP "SendSignal \fIid1 id2\fP"
+Send a message numbered \fIid2\fP to widget \fIid1\fP.
 
-.IP "SendToScript \fIid_script\fP {\fIstr1\fP1} {\fIstr2\fP} etc: send a message to the script identified by id_script. The message is the concatenation of str1, str2...
+.IP "SendToScript \fIid_script\fP {\fIstr1\fP1} {\fIstr2\fP} etc"
+Send a message to the script identified by id_script. The message is the
+concatenation of str1, str2...
 
 .SH ARGUMENTS
-Most of commands use arguments. There is two kinds of argument: numbers and strings.
-A numerical argument is a value which is between -32000 and +32000. A string is always
-surrounded with brace. Variables always begin with the character "$" and can contains both
-number and string. 
+Most of commands use arguments. There is two kinds of argument: numbers and
+strings.
+A numerical argument is a value which is between -32000 and +32000. A string is
+always surrounded with brace. Variables always begin with the character "$" and
+can contains both number and string. 
 
 .SH FUNCTIONS
 All functions are used as argument. Functions can return both string and number.
@@ -311,38 +344,60 @@ The syntax is:
 .EE
 Here is the complete list of arguments:
 
-.IP "(GetTitle \fIid\fP): return the title of the widget numbered \fIid\fP."
+.IP "(GetTitle \fIid\fP)"
+Return the title of the widget numbered \fIid\fP.
 
-.IP "(GetValue \fIid\fP): return the current value of the widget numbered \fIid\fP."
+.IP "(GetValue \fIid\fP)"
+Return the current value of the widget numbered \fIid\fP.
 
-.IP "(GetOutput {\fIstr\fP} \fIint1 int2\fP): executes the command \fIstr\fP, gets the standart output and returns the word which is in the line \fIint1\fP and in the position \fIint2\fP. If \fIint2\fP is equal to -1, GetOutput returns the complete line."
+.IP "(GetOutput {\fIstr\fP} \fIint1 int2\fP)"
+Executes the command \fIstr\fP, gets the standard output and returns the word
+which is in the line \fIint1\fP and in the position \fIint2\fP. If \fIint2\fP
+is equal to -1, GetOutput returns the complete line.
 
-.IP "(NumToHex \fIint\fP): return the hexadecimal value of \fIint\fP."
+.IP "(NumToHex \fIint\fP)"
+Return the hexadecimal value of \fIint\fP.
 
-.IP "(HexToNum {\fIstr\fP}): return the decimal value of \fIstr\fP, \fIstr\fP must be an hexadecimal value."
+.IP "(HexToNum {\fIstr\fP})"
+Return the decimal value of \fIstr\fP, \fIstr\fP must be an hexadecimal value.
 
-.IP "(Add \fIint1 int2\fP): return the result of (\fIint1\fP+\fIint2\fP)."
+.IP "(Add \fIint1 int2\fP)"
+Return the result of (\fIint1\fP+\fIint2\fP).
 
-.IP "(Mult \fIint1 int2\fP): return the result of (\fIint1\fP*\fIint2\fP)."
+.IP "(Mult \fIint1 int2\fP)"
+Return the result of (\fIint1\fP*\fIint2\fP).
 
-.IP "(Div \fIint1 int2\fP): return the result of (\fIint1\fP/\fIint2\fP)."
+.IP "(Div \fIint1 int2\fP)"
+Return the result of (\fIint1\fP/\fIint2\fP).
 
-.IP "(StrCopy {\fIstr\fP} \fIint1 int2\fP): return the string whom is between position int1 and int2. For example, (StrCopy {Hello} 1 2) returns {He}"
+.IP "(StrCopy {\fIstr\fP} \fIint1 int2\fP)"
+Return the string whom is between position int1 and int2. For example,
+(StrCopy {Hello} 1 2) returns {He}
 
-.IP "(LaunchScript {\fIstr\fP}): this function launch the script named str and return an identification number. This number is necessary to use these functions SendToScript and ReceivFromScript. The string str contains the script name and some arguments."
+.IP "(LaunchScript {\fIstr\fP})"
+This function launch the script named str and return an identification number.
+This number is necessary to use these functions SendToScript and
+ReceiveFromScript. The string str contains the script name and some arguments.
 
-.IP "(GetScriptArgument {\fIint\fP}): this function return the argument script used in the function LaunchScript. If int is equal to zero, GetScriptArgument return the name of the script."
+.IP "(GetScriptArgument {\fIint\fP})"
+This function return the argument script used in the function LaunchScript.
+If int is equal to zero, GetScriptArgument return the name of the script.
 
-.IP "(GetScriptFather): this function return the identification number of the script father."
+.IP "(GetScriptFather)"
+This function return the identification number of the script father.
 
-.IP "(ReceivFromScript {\fIint\fP}): this function return the message sended by the script numbered int."
+.IP "(ReceivFromScript {\fIint\fP})"
+This function return the message sended by the script numbered int.
 
-.IP "(RemainderOfDiv {\fIint1 int2\fP}): this function return the remainder of the division (\fIint1\fP/\fIint2\fP)."
+.IP "(RemainderOfDiv {\fIint1 int2\fP}): t"
+This function return the remainder of the division (\fIint1\fP/\fIint2\fP).
 
-.IP "(GetTime): this function return the time in second."
+.IP "(GetTime)"
+This function return the time in second.
 
 .SH CONDITIONAL LOOPS
-There is three kind of conditional loops. The instruction "If-Then-Else" has the following syntax:
+There is three kind of conditional loops. The instruction "If-Then-Else" has the
+following syntax:
 .EX
 If $ToDo=={Open xcalc} Then
  Do {Exec xcalc &} 	 		# List of instructions
@@ -352,14 +407,17 @@ Begin
  Do {Exec echo xcalc killed > /dev/console}
 End
 .EE
-The second part "Else-Begin-End" is optional. If the loop contains only one instruction, Begin and End can be omitted. The instruction "While-Do" as the following syntax:
+The second part "Else-Begin-End" is optional. If the loop contains only one
+instruction, Begin and End can be omitted. The instruction "While-Do" as the
+following syntax:
 .EX
 While $i<5 Do
 Begin
  Set $i=(Add i 1)	 		# List of instructions
 End
 .EE
-Two strings can be compared with "==" and two numbers can be compared with "<", "<=", "==", ">=", ">". The loop "For-Do-Begin-End" has the following syntax:
+Two strings can be compared with "==" and two numbers can be compared with "<",
+"<=", "==", ">=", ">". The loop "For-Do-Begin-End" has the following syntax:
 .EX
 For $i=1 To 20 Do
 Begin
