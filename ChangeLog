@@ -1,3 +1,8 @@
+Tue Feb 23 13:02:33 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/module.c: include <sys/time.h> to ensure that FD_SET and
+	friends are found.  My Linux system needed this, don't ask me why.
+
 1999-02-23  Hippo
 
 	* fvwm/builtins.c: Emulate command updates feedback window position.

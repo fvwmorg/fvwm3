@@ -23,6 +23,7 @@
 
 #include <unistd.h>
 #include <fcntl.h>
+#include <sys/time.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 
