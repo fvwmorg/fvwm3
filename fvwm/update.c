@@ -20,6 +20,8 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"
@@ -92,7 +94,7 @@ static void apply_window_updates(
 	{
 		setup_focus_policy(t);
 		if (t == focus_w &&
-		    fpol_query_allow_user_focus(&FW_FOCUS_POLICY(t)))
+		    !fpol_query_allow_user_focus(&FW_FOCUS_POLICY(t)))
 		{
 			focus_w = NULL;
 			if (Scr.Hilite == t)

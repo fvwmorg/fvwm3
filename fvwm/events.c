@@ -59,6 +59,8 @@
 #include "libs/FShape.h"
 #include "libs/PictureBase.h"
 #include "libs/Colorset.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -1981,9 +1983,7 @@ void HandleKeyPress(const evh_args_t *ea)
 	char *action;
 	FvwmWindow *sf;
 	KeyCode kc;
-	int context2;
-	binding_t type1;
-	binding_t type2;
+	int kcontext;
 	const XEvent *te = ea->exc->x.etrigger;
 	const FvwmWindow * const fw = ea->exc->w.fw;
 	Bool is_second_binding;
@@ -1998,20 +1998,22 @@ void HandleKeyPress(const evh_args_t *ea)
 
 	/* Check if there is something bound to the key */
 	sf = get_focus_window();
-	if (sf != NULL && sf != ea->exc->w.fw)
+	if (sf == NULL)
 	{
-		context2 = C_WINDOW | C_ROOT;
+		kcontext = C_ROOT;
+	}
+	else if (sf == ea->exc->w.fw)
+	{
+		kcontext = ea->exc->w.wcontext;
 	}
 	else
 	{
-		context2 = ea->exc->w.wcontext;
+		kcontext = C_WINDOW;
 	}
-	type1 = BIND_KEYPRESS;
-	type2 = BIND_PKEYPRESS;
 	action = CheckTwoBindings(
 		&is_second_binding, Scr.AllBindings, STROKE_ARG(0) kc,
-		te->xkey.state, GetUnusedModifiers(), ea->exc->w.wcontext,
-		type1, context2, type2);
+		te->xkey.state, GetUnusedModifiers(), kcontext, BIND_KEYPRESS,
+		ea->exc->w.wcontext, BIND_PKEYPRESS);
 	if (action != NULL)
 	{
 		const exec_context_t *exc;
@@ -2021,7 +2023,7 @@ void HandleKeyPress(const evh_args_t *ea)
 		if (is_second_binding == False)
 		{
 			ecc.w.fw = sf;
-			ecc.w.wcontext = context2;
+			ecc.w.wcontext = kcontext;
 			exc = exc_clone_context(
 				ea->exc, &ecc, ECC_FW | ECC_WCONTEXT);
 		}

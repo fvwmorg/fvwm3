@@ -54,6 +54,8 @@
 #include "libs/FScreen.h"
 #include "libs/Picture.h"
 #include "libs/PictureUtils.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"

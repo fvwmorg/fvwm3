@@ -21,6 +21,9 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
+#include "libs/modifiers.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -377,13 +380,15 @@ static int ParseBinding(
 		return 0;
 	}
 
-	if (ParseContext(context_string, &context) && !is_silent)
+	if (wcontext_string_to_wcontext(
+		    context_string, &context) && !is_silent)
 	{
 		fvwm_msg(
 			WARN, "ParseBinding", "Illegal context in line %s",
 			tline);
 	}
-	if (ParseModifiers(modifier_string, &modifier) && !is_silent)
+	if (modifiers_string_to_modmask(modifier_string, &modifier) &&
+	    !is_silent)
 	{
 		fvwm_msg(
 			WARN, "ParseBinding", "Illegal modifier in line %s",
@@ -580,7 +585,7 @@ void CMD_IgnoreModifiers(F_CMD_ARGS)
 	{
 		mods_unused = DEFAULT_MODS_UNUSED;
 	}
-	else if (ParseModifiers(token, &mods_unused))
+	else if (modifiers_string_to_modmask(token, &mods_unused))
 	{
 		fvwm_msg(
 			ERR, "ignore_modifiers",

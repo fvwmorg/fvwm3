@@ -23,6 +23,8 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FShape.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

@@ -31,6 +31,8 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/charmap.h"
+#include "libs/modifiers.h"
 #include "fvwm.h"
 #include "execcontext.h"
 #include "misc.h"
@@ -1272,7 +1274,8 @@ static Bool style_parse_focus_policy_style(
 			break;
 		}
 		token = PeekToken(rest, NULL);
-		if (token == NULL || ParseModifiers(token, &val) == True)
+		if (token == NULL ||
+		    modifiers_string_to_modmask(token, &val) == 1)
 		{
 			val = DEF_FP_MODIFIERS;
 		}

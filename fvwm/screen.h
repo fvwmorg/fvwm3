@@ -32,6 +32,7 @@
 #define _SCREEN_
 
 #include "libs/flist.h"
+#include "libs/Bindings.h"
 
 #define SIZE_HINDENT 5
 #define SIZE_VINDENT 3

@@ -27,10 +27,10 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <unistd.h>                     /* for STDIN_FILENO */
-#include <sys/types.h>		/* for open */
-#include <sys/stat.h>		/* for open */
-#include <fcntl.h>		/* for open */
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 #include <errno.h>
 #include <X11/keysym.h>
 
@@ -40,6 +40,8 @@
 #include "libs/Picture.h"
 #include "libs/PictureUtils.h"
 #include "libs/FGettext.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "colorset.h"

@@ -7,11 +7,13 @@
 #include <X11/Xlib.h>
 #include <X11/Intrinsic.h>
 
-#include <libs/Flocale.h>
-#include <libs/Picture.h>
-#include <libs/Colorset.h>
-
 #include "libs/fvwmlib.h"
+#include "libs/Flocale.h"
+#include "libs/Picture.h"
+#include "libs/Colorset.h"
+#include "libs/Bindings.h"
+#include "libs/charmap.h"
+#include "libs/modifiers.h"
 
 #include "debug.h"
 #include "fvwm/fvwm.h"

@@ -20,6 +20,10 @@
 #include "libs/fvwmsignal.h"
 #include "libs/ftime.h"
 #include "libs/FGettext.h"
+#include "libs/Bindings.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
+#include "libs/modifiers.h"
 #ifdef HAVE_GETPWUID
 #  include <pwd.h>
 #endif
@@ -1809,7 +1813,7 @@ static void Key (int NbArg,long *TabArg)
     error = 1;
   }
 
-  if (ParseModifiers(in_modifier, &modifier)) {
+  if (modifiers_string_to_modmask(in_modifier, &modifier)) {
     fprintf(stderr,"[%s][Key]: bad modifier: %s\n",
 	    ScriptName,in_modifier);
     error = 1;

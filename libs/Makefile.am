@@ -12,7 +12,7 @@ libfvwm_a_SOURCES = \
 	PictureImageLoader.h PictureUtils.h Strings.h defaults.h envvar.h \
 	flist.h ftime.h fvwmlib.h fvwmrect.h fvwmsignal.h gravity.c gravity.h \
 	lang-strings.h queue.h safemalloc.h setpgrp.h vpacket.h wild.h \
-	Rectangles.h timeout.h \
+	Rectangles.h timeout.h charmap.h wcontext.h modifiers.h \
 	\
 	Flocale.c PictureUtils.c FScreen.c Graphics.c PictureGraphics.c \
 	Bindings.c FlocaleCharset.c Parse.c PictureImageLoader.c Colorset.c \
@@ -21,7 +21,8 @@ libfvwm_a_SOURCES = \
 	queue.c fvwmsignal.c System.c PictureBase.c Cursor.c Strings.c \
 	fvwmrect.c FRenderInit.c debug.c safemalloc.c FBidiJoin.c FBidi.c \
 	FCombineChars.c wild.c Grab.c Event.c ClientMsg.c setpgrp.c FShape.c \
-	FGettext.c Rectangles.c timeout.c flist.c
+	FGettext.c Rectangles.c timeout.c flist.c charmap.c wcontext.c \
+	modifiers.c
 
 libfvwm_a_LIBADD = @LIBOBJS@ @ALLOCA@
 

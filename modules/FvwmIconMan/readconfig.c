@@ -82,29 +82,6 @@ FunctionType builtin_functions[] = {
 
 static int num_builtins = sizeof(builtin_functions) / sizeof(FunctionType);
 
-
-
-struct charstring
-{
-	char key;
-	int  value;
-};
-
-struct charstring key_modifiers[]=
-{
-	{ 's', ShiftMask },
-	{ 'c', ControlMask },
-	{ 'm', Mod1Mask },
-	{ '1', Mod1Mask },
-	{ '2', Mod2Mask },
-	{ '3', Mod3Mask },
-	{ '4', Mod4Mask },
-	{ '5', Mod5Mask },
-	{ 'a', AnyModifier },
-	{ 'n', 0 },
-	{ 0, 0 }
-};
-
 #if FVWM_VERSION == 1
 static FILE *config_fp = NULL;
 #endif
@@ -331,58 +308,6 @@ static int extract_int(char *p, int *n)
 	*n = atoi(p) * sign;
 
 	return 1;
-}
-
-/*
- *
- * Gets the next "word" of input from char string indata.
- * "word" is a string with no spaces, or a qouted string.
- * Return value is ptr to indata,updated to point to text after the word
- * which is extracted.
- * token is the extracted word, which is copied into a malloced
- * space, and must be freed after use.
- *
- */
-
-static void find_context(
-	char *string, int *output, struct charstring *table, char *tline)
-{
-	int i=0, j=0;
-	Bool matched;
-	char tmp1;
-
-	*output=0;
-	i=0;
-	while (i < strlen(string))
-	{
-		j = 0;
-		matched = FALSE;
-		while (!matched && table[j].key != 0)
-		{
-			/* in some BSD implementations, tolower(c) is not
-			 * defined unless isupper(c) is true */
-			tmp1 = string[i];
-			if (isupper(tmp1))
-			{
-				tmp1 = tolower(tmp1);
-			}
-			/* end of ugly BSD patch */
-
-			if (tmp1 == table[j].key)
-			{
-				*output |= table[j].value;
-				matched = TRUE;
-			}
-			j++;
-		}
-		if (!matched)
-		{
-			ConsoleMessage("Bad line: %s\n", current_line);
-			ConsoleMessage("Bad context: %s\n", string);
-		}
-		i++;
-	}
-	return;
 }
 
 static char *parse_button(char *string, BuiltinArg *arg, int *flag,
@@ -757,7 +682,7 @@ Binding *ParseMouseEntry(char *tline)
   if((n1 != 1)||(n2 != 1))
     ConsoleMessage("Mouse binding: Syntax error");
 
-  find_context(modifiers,&mods,key_modifiers,tline);
+  modifiers_string_to_modmask(modifiers, &mods);
   if((mods & AnyModifier)&&(mods&(~AnyModifier))) {
     ConsoleMessage("Binding specified AnyModifier and other modifers too. "
 		    "Excess modifiers will be ignored.");
@@ -812,7 +737,7 @@ static Binding *ParseKeyEntry(char *tline)
   if((n1 != 1)||(n2 != 1))
     ConsoleMessage("Syntax error in line %s",tline);
 
-  find_context(modifiers,&mods,key_modifiers,tline);
+  modifiers_string_to_modmask(modifiers, &mods);
   if((mods & AnyModifier)&&(mods&(~AnyModifier))) {
     ConsoleMessage("Binding specified AnyModifier and other modifers too. Excess modifiers will be ignored.");
   }

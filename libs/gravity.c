@@ -422,15 +422,15 @@ direction_t gravity_parse_dir_argument(
 	int rc;
 	char *next;
 	char *optlist[] = {
-		"N",  "North",     "Top",         "t", "Up",         "u",
-		"E",  "East",      "Right",       "r", "Right",      "r",
-		"S",  "South",     "Bottom",      "b", "Down",       "d",
-		"W",  "West",      "Left",        "l", "Left",       "l",
-		"NE", "NorthEast", "TopRight",    "tr", "UpRight",   "ur",
-		"SE", "SouthEast", "BottomRight", "br", "DownRight", "dr",
-		"SW", "SouthWest", "BottomLeft",  "bl", "DownLeft",  "dl",
-		"NW", "NorthWest", "TopLeft",     "tl", "UpLeft",    "ul",
-		"C",  "Center",    "Centre",      NULL, NULL,        NULL,
+		"-", "N",  "North",     "Top",         "t", "Up",         "u",
+		"]", "E",  "East",      "Right",       "r", "Right",      "r",
+		"_", "S",  "South",     "Bottom",      "b", "Down",       "d",
+		"[", "W",  "West",      "Left",        "l", "Left",       "l",
+		"^", "NE", "NorthEast", "TopRight",    "tr", "UpRight",   "ur",
+		">", "SE", "SouthEast", "BottomRight", "br", "DownRight", "dr",
+		"v", "SW", "SouthWest", "BottomLeft",  "bl", "DownLeft",  "dl",
+		"<", "NW", "NorthWest", "TopLeft",     "tl", "UpLeft",    "ul",
+		".", "C",  "Center",    "Centre",      NULL, NULL,        NULL,
 		NULL
 	};
 
@@ -443,7 +443,7 @@ direction_t gravity_parse_dir_argument(
 	}
 	else
 	{
-		rc = index / 6;
+		rc = index / 7;
 	}
 	if (ret_action)
 	{

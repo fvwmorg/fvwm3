@@ -31,6 +31,8 @@
 #include "colorset.h"
 #include "schedule.h"
 #include "libs/FGettext.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
 
 /* ---------------------------- local definitions -------------------------- */
 
@@ -50,123 +52,125 @@ extern char const * const Fvwm_VersionInfo;
 
 static char *function_vars[] =
 {
-	"fg.cs",
 	"bg.cs",
-	"hilight.cs",
-	"shadow.cs",
-	"fgsh.cs",
-	"gt.",
-	"desk.name",
-	"desk.n",
-	"desk.width",
-	"desk.height",
-	"desk.pagesx",
-	"desk.pagesy",
-	"vp.x",
-	"vp.y",
-	"vp.width",
-	"vp.height",
-	"page.nx",
-	"page.ny",
-	"w.id",
-	"w.name",
-	"w.iconname",
-	"w.class",
-	"w.resource",
-	"w.x",
-	"w.y",
-	"w.width",
-	"w.height",
+	"cond.rc",
+	"cw.height",
+	"cw.width",
 	"cw.x",
 	"cw.y",
-	"cw.width",
-	"cw.height",
-	"it.x",
-	"it.y",
-	"it.width",
-	"it.height",
-	"ip.x",
-	"ip.y",
-	"ip.width",
-	"ip.height",
+	"desk.height",
+	"desk.n",
+	"desk.name",
+	"desk.pagesx",
+	"desk.pagesy",
+	"desk.width",
+	"fg.cs",
+	"fgsh.cs",
+	"func.context",
+	"gt.",
+	"hilight.cs",
+	"i.height",
+	"i.width",
 	"i.x",
 	"i.y",
-	"i.width",
-	"i.height",
-	"screen",
-	"schedule.last",
-	"schedule.next",
-	"cond.rc",
-	"pointer.x",
-	"pointer.y",
-	"pointer.wx",
-	"pointer.wy",
+	"ip.height",
+	"ip.width",
+	"ip.x",
+	"ip.y",
+	"it.height",
+	"it.width",
+	"it.x",
+	"it.y",
+	"page.nx",
+	"page.ny",
 	"pointer.cx",
 	"pointer.cy",
-	"version.num",
+	"pointer.wx",
+	"pointer.wy",
+	"pointer.x",
+	"pointer.y",
+	"schedule.last",
+	"schedule.next",
+	"screen",
+	"shadow.cs",
 	"version.info",
 	"version.line",
+	"version.num",
+	"vp.height",
+	"vp.width",
+	"vp.x",
+	"vp.y",
+	"w.class",
+	"w.height",
+	"w.iconname",
+	"w.id",
+	"w.name",
+	"w.resource",
+	"w.width",
+	"w.x",
+	"w.y",
 	NULL
 };
 
 enum
 {
-	VAR_FG_CS,
 	VAR_BG_CS,
-	VAR_HILIGHT_CS,
-	VAR_SHADOW_CS,
-	VAR_FGSH_CS,
-	VAR_GT,
-	VAR_DESK_NAME,
-	VAR_DESK_N,
-	VAR_DESK_WIDTH,
-	VAR_DESK_HEIGHT,
-	VAR_DESK_PAGESX,
-	VAR_DESK_PAGESY,
-	VAR_VP_X,
-	VAR_VP_Y,
-	VAR_VP_WIDTH,
-	VAR_VP_HEIGHT,
-	VAR_PAGE_NX,
-	VAR_PAGE_NY,
-	VAR_W_ID,
-	VAR_W_NAME,
-	VAR_W_ICONNAME,
-	VAR_W_CLASS,
-	VAR_W_RESOURCE,
-	VAR_W_X,
-	VAR_W_Y,
-	VAR_W_WIDTH,
-	VAR_W_HEIGHT,
+	VAR_COND_RC,
+	VAR_CW_HEIGHT,
+	VAR_CW_WIDTH,
 	VAR_CW_X,
 	VAR_CW_Y,
-	VAR_CW_WIDTH,
-	VAR_CW_HEIGHT,
-	VAR_IT_X,
-	VAR_IT_Y,
-	VAR_IT_WIDTH,
-	VAR_IT_HEIGHT,
-	VAR_IP_X,
-	VAR_IP_Y,
-	VAR_IP_WIDTH,
-	VAR_IP_HEIGHT,
+	VAR_DESK_HEIGHT,
+	VAR_DESK_N,
+	VAR_DESK_NAME,
+	VAR_DESK_PAGESX,
+	VAR_DESK_PAGESY,
+	VAR_DESK_WIDTH,
+	VAR_FG_CS,
+	VAR_FGSH_CS,
+	VAR_FUNC_CONTEXT,
+	VAR_GT_,
+	VAR_HILIGHT_CS,
+	VAR_I_HEIGHT,
+	VAR_I_WIDTH,
 	VAR_I_X,
 	VAR_I_Y,
-	VAR_I_WIDTH,
-	VAR_I_HEIGHT,
-	VAR_SCREEN,
-	VAR_SCHEDULE_LAST,
-	VAR_SCHEDULE_NEXT,
-	VAR_COND_RC,
-	VAR_POINTER_X,
-	VAR_POINTER_Y,
-	VAR_POINTER_WX,
-	VAR_POINTER_WY,
+	VAR_IP_HEIGHT,
+	VAR_IP_WIDTH,
+	VAR_IP_X,
+	VAR_IP_Y,
+	VAR_IT_HEIGHT,
+	VAR_IT_WIDTH,
+	VAR_IT_X,
+	VAR_IT_Y,
+	VAR_PAGE_NX,
+	VAR_PAGE_NY,
 	VAR_POINTER_CX,
 	VAR_POINTER_CY,
-	VAR_VERSION_NUM,
+	VAR_POINTER_WX,
+	VAR_POINTER_WY,
+	VAR_POINTER_X,
+	VAR_POINTER_Y,
+	VAR_SCHEDULE_LAST,
+	VAR_SCHEDULE_NEXT,
+	VAR_SCREEN,
+	VAR_SHADOW_CS,
 	VAR_VERSION_INFO,
 	VAR_VERSION_LINE,
+	VAR_VERSION_NUM,
+	VAR_VP_HEIGHT,
+	VAR_VP_WIDTH,
+	VAR_VP_X,
+	VAR_VP_Y,
+	VAR_W_CLASS,
+	VAR_W_HEIGHT,
+	VAR_W_ICONNAME,
+	VAR_W_ID,
+	VAR_W_NAME,
+	VAR_W_RESOURCE,
+	VAR_W_WIDTH,
+	VAR_W_X,
+	VAR_W_Y
 } extended_vars;
 
 /* ---------------------------- exported variables (globals) --------------- */
@@ -174,7 +178,8 @@ enum
 /* ---------------------------- local functions ---------------------------- */
 
 static signed int expand_vars_extended(
-	char *var_name, char *output, FvwmWindow *fw, cond_rc_t *cond_rc)
+	char *var_name, char *output, cond_rc_t *cond_rc,
+	const exec_context_t *exc)
 {
 	char *s;
 	char *rest;
@@ -192,6 +197,7 @@ static signed int expand_vars_extended(
 	Bool is_numeric = False;
 	Bool is_x;
 	Window context_w = Scr.Root;
+	FvwmWindow *fw = exc->w.fw;
 
 	/* allow partial matches for *.cs variables */
 	switch ((i = GetTokenIndex(var_name, function_vars, -1, &rest)))
@@ -239,7 +245,7 @@ static signed int expand_vars_extended(
 			break;
 		}
 		return pixel_to_color_string(dpy, Pcmap, pixel, target, False);
-	case VAR_GT:
+	case VAR_GT_:
 	{
 		if (rest == NULL)
 		{
@@ -340,8 +346,8 @@ static signed int expand_vars_extended(
 	case VAR_W_ID:
 		if (fw && !IS_EWMH_DESKTOP(FW_W(fw)))
 		{
-			sprintf(target, "0x%x", (unsigned int)FW_W(fw));
-			string = target;
+			sprintf(dummy, "0x%x", (unsigned int)FW_W(fw));
+			string = dummy;
 		}
 		break;
 	case VAR_W_NAME:
@@ -629,6 +635,11 @@ static signed int expand_vars_extended(
 	case VAR_VERSION_LINE:
 		string = Fvwm_VersionInfo;
 		break;
+	case VAR_FUNC_CONTEXT:
+		dummy[0] = wcontext_wcontext_to_char(exc->w.wcontext);
+		dummy[1] = 0;
+		string = dummy;
+		break;
 	default:
 		/* unknown variable - try to find it in the environment */
 		string = getenv(var_name);
@@ -651,8 +662,8 @@ static signed int expand_vars_extended(
 /* ---------------------------- interface functions ------------------------ */
 
 char *expand_vars(
-	char *input, char *arguments[], FvwmWindow *fw, Bool addto, Bool ismod,
-	cond_rc_t *cond_rc)
+	char *input, char *arguments[], Bool addto, Bool ismod,
+	cond_rc_t *cond_rc, const exec_context_t *exc)
 {
 	int l, i, l2, n, k, j, m;
 	int xlen;
@@ -660,6 +671,7 @@ char *expand_vars(
 	char *var;
 	const char *string = NULL;
 	Bool is_string = False;
+	FvwmWindow *fw = exc->w.fw;
 
 	l = strlen(input);
 	l2 = l;
@@ -698,7 +710,8 @@ char *expand_vars(
 					if (!addto)
 					{
 						xlen = expand_vars_extended(
-							var, NULL, fw, cond_rc);
+							var, NULL, cond_rc,
+							exc);
 						if (xlen >= 0)
 						{
 							l2 += xlen - (k + 2);
@@ -830,7 +843,7 @@ char *expand_vars(
 					/* handle variable name */
 					k = strlen(var);
 					xlen = expand_vars_extended(
-						var, &out[j], fw, cond_rc);
+						var, &out[j], cond_rc, exc);
 					input[m] = ']';
 					if (xlen >= 0)
 					{

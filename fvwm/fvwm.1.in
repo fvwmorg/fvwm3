@@ -126,12 +126,12 @@ commonly called fvwm2 to distinguish it from the former version
 version 2.x a long time ago we simply call version 2.x and all
 versions to come, fvwm, throughout this document, and the
 executable program is named fvwm.  There is an fvwm offspring
-called fvwm95, it is mostly a patch for fvwm-2.0.43.  The main
-goal of fvwm95 was to supply a Windows 95 like look and feel.
-Since then fvwm has been greatly enhanced and practically all
-fvwm95 features can be imitated by fvwm.
+called fvwm95, it is mostly a patched version of fvwm-2.0.43.  The
+main goal of fvwm95 was to supply a Windows 95 like look and feel.
+Since then, fvwm has been greatly enhanced and practically all
+fvwm95 features can be achieved by fvwm.
 
-Fvwm provides both a large
+Fvwm provides both, a large
 .I virtual desktop
 and
 .I multiple disjoint desktops
@@ -144,17 +144,16 @@ unrelated to the others.
 
 Fvwm provides
 .I keyboard accelerators
-which allow you to perform most window-manager functions,
+which allow you to perform most window manager functions,
 including moving and resizing windows, and operating the menus,
 using keyboard shortcuts.
 
-Fvwm has also blurred the distinction between configuration
-commands and action commands that most window-managers make.
+Fvwm has also overcome the distinction between configuration
+commands and action commands that most window managers make.
 Configuration commands typically set fonts, colors, menu contents,
 key and mouse function bindings, while action commands
 do things like raise and lower windows.  Fvwm makes no such
-distinction, and allows, to the extent that is practical, anything
-to be changed at any time.
+distinction, and allows anything to be changed at any time.
 
 Other noteworthy differences between fvwm and other X11 window
 managers are the introduction of the
@@ -170,7 +169,7 @@ policy is provided for use with windows into which one never types
 (e.g. xclock, oclock, xbiff, xeyes, tuxeyes) - for example, if a
 SloppyFocus terminal window has focus, moving the pointer over a
 .I NeverFocus
-decoration window won't deprive the terminal of focus.
+decoration window does not deprive the terminal of focus.
 
 .SH OPTIONS
 
@@ -876,12 +875,12 @@ WM_HINTS(WM_HINTS):
 should not be given the keyboard input focus by the window
 manager. These windows can take the input focus by themselves,
 however.  A number of applications set this property, and yet
-expect the window-manager to give them the keyboard focus anyway,
-so fvwm provides a window-style,
+expect the window manager to give them the keyboard focus anyway,
+so fvwm provides a window style,
 .IR Lenience ", "
 which allows fvwm to overlook this
 .SM ICCCM
-rule.  Even with this window-style it is not guaranteed that the
+rule.  Even with this window style it is not guaranteed that the
 application accepts focus.
 
 The differences between
@@ -1334,23 +1333,23 @@ character.  The
 .I directions
 are a space separated list of fvwm directions:
 
-.IR N ", "  North ", "     Top ", "         t ", "  Up ", "        u
+.IR N ", "  North ", "     Top ", "         t ", "  Up ", "        u ", " "-"
 
-.IR E ", "  East ", "      Right ", "       r ", "  Right ", "     r
+.IR E ", "  East ", "      Right ", "       r ", "  Right ", "     r ", " "]"
 
-.IR S ", "  South ", "     Bottom ", "      b ", "  Down ", "      d
+.IR S ", "  South ", "     Bottom ", "      b ", "  Down ", "      d ", " _
 
-.IR W ", "  West ", "      Left ", "        l ", "  Left ", "      l
+.IR W ", "  West ", "      Left ", "        l ", "  Left ", "      l ", " "["
 
-.IR NE ", " NorthEast ", " TopRight ", "    tr ", " UpRight ", "   ur
+.IR NE ", " NorthEast ", " TopRight ", "    tr ", " UpRight ", "   ur ", " "^"
 
-.IR SE ", " SouthEast ", " BottomRight ", " br ", " DownRight ", " dr
+.IR SE ", " SouthEast ", " BottomRight ", " br ", " DownRight ", " dr ", " ">"
 
-.IR SW ", " SouthWest ", " BottomLeft ", "  bl ", " DownLeft ", "  dl
+.IR SW ", " SouthWest ", " BottomLeft ", "  bl ", " DownLeft ", "  dl ", " "v"
 
-.IR NW ", " NorthWest ", " TopLeft ", "     tl ", " UpLeft ", "    ul
+.IR NW ", " NorthWest ", " TopLeft ", "     tl ", " UpLeft ", "    ul ", " "<"
 
-.IR C ", " Center ", "     Centre
+.IR C ", " Center ", "     Centre ", " .
 
 a shadow is displayed in each given direction.
 .I All
@@ -1591,15 +1590,15 @@ kinds of quotes.
 
 .SH COMMAND EXPANSION
 
-Whenever a fvwm command line is executed, fvwm performs parameter
+Whenever an fvwm command line is executed, fvwm performs parameter
 expansion.  A parameter is a '$' followed by a word enclosed in
 brackets ($[...]) or a single special character.  If fvwm encounters
 an unquoted parameter on the command line it expands it to a string
 indicated by the parameter name.  Unknown parameters are left
-untouched. Parameter expansion is performed before quoting.  To
-quote a '$' use "$$".
+untouched.  Parameter expansion is performed before quoting.  To
+get a literal '$' use "$$".
 
-In the past some single letter variables were supported.  It is
+In the past, some single letter variables were supported.  It is
 deprecated now, since they cause a number of problems.  You should
 use the longer substitutes instead.
 
@@ -1607,7 +1606,7 @@ Example:
 
 .EX
 # Print the current desk number, horizontal page number
-# and the window's class (unexpended here, no window).
+# and the window's class (unexpanded here, no window).
 Echo $[desk.n] $[page.nx] $[w.class]
 .EE
 
@@ -1885,6 +1884,18 @@ in the command list.
 .in -.5i
 
 .in +.5i
+$[func.context]
+.in +.3i
+The context character of the running command as used in the
+.BS Mouse ", " Key " or " PointerKey
+command.  This is useful for example with:
+.EX
+Mouse 3 FS N WindowShade $$[func.context]
+.EE
+.in -.3i
+.in -.5i
+
+.in +.5i
 $[gt.str]
 .in +.3i
 return the translation of
@@ -1926,13 +1937,13 @@ real life applications of scripting.  Please refer to the sections
 .B COMMANDS FOR USER FUNCTIONS AND SHELL COMMANDS
 and
 .B CONDITIONAL COMMANDS
-for details.  A word of warning:  During execution of complex
+for details.  A word of warning:  during execution of complex
 functions, fvwm needs to take all input from the mouse pointer
 (the pointer is "grabbed" in the slang of X).  No other programs
 can receive any input from the pointer while a function is run.
 This can confuse some programs.  For example, the xwd program
 refuses to make screen shots when run from a complex function.  To
-achieve the same functionality you can use the.
+achieve the same functionality you can use the
 .BR Read " or " PipeRead
 command instead.
 

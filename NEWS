@@ -14,6 +14,11 @@ Changes in development release 2.5.8 (not released yet)
   levels to break out of.  Break now has a return code of -2
   ("Break").
 
+* Directions can be abbreviated with -, _, [, ], <, >, v or ^ like
+  in key or mouse bindings.
+
+* New extended variable $[func.context].
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.7 (30-May-2003)

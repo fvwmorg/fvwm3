@@ -29,6 +29,8 @@
 #include <stdio.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"

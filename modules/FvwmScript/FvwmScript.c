@@ -30,6 +30,9 @@
 #include "libs/FRender.h"
 #include "libs/FRenderInit.h"
 #include "libs/FGettext.h"
+#include "libs/Bindings.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
 
 #ifdef MEMDEBUG                 /* For debugging */
 #include <unchecked.h>

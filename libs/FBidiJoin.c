@@ -187,7 +187,6 @@ shape_n_join(
 	const char_shaped_t *prev;
 	const char_shaped_t *curr;
 	const char_shaped_t *next;
-	FriBidiChar combined;
 
 	list = (const char_shaped_t **)safemalloc(
 		(str_len + 2) * sizeof(char_shaped_t *));

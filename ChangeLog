@@ -1,10 +1,55 @@
+2003-07-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/update.c (apply_window_updates):
+	fixed drawing of window decorations when "Style * Neverfocus" is used
+
+	* fvwm/events.c (HandleKeyPress):
+	fixed a bug with key binding contexts
+
+	* fvwm/functions.c (__execute_function):
+	* fvwm/expand.c (expand_vars):
+	(expand_vars_extended):
+	new extended variable $[func.context]
+
+	* libs/Bindings.h:
+	* libs/Bindings.c:
+	moved some code to the new files
+
+	* libs/charmap.h:
+	* libs/charmap.c:
+	* libs/modifiers.h:
+	* libs/modifiers.c:
+	* libs/wcontext.c:
+	* libs/wcontext.h:
+	new files
+
+	* libs/Bindings.c:
+	fixed a problem with uninitialised global variable
+
+2003-07-04  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* libs/Bindings.c (key_modifiers):
+	moved to new file wcontext.c
+
+	* libs/gravity.c (gravity_parse_dir_argument):
+	added aliases for compass directions:
+	  - = N
+	  _ = S
+	  [ = W
+	  ] = E
+	  ^ = NE
+	  > = SE
+	  v = SW
+	  [ = nw
+	  . = center
+
 2003-07-02  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/FBidi.h:
 	* libs/Flocale.c (FlocaleDrawString):
 	(FlocaleRotateDrawString):
 	Fixes to work without Fribidi
-	
+
 2003-07-01  Marcus Lundblad  <ml@update.uu.se>
 
 	* todo-2.6:
@@ -15,8 +60,8 @@
 	* libs/FbidiJoin.c (get_shaped_combined_char):
 	(shape_n_join):
 	Removed unused (get_shaped_combined_char) and commented out code
-	Combining ligatures done in FCombineChars 
-	
+	Combining ligatures done in FCombineChars
+
 2003-07-01  Marcus Lundblad  <ml@update.uu.se>
 
 	* libs/Flocale.c (FlocaleDrawString):
@@ -28,7 +73,7 @@
 	* libs/FCombineChars.h:
 	* libs/FCombineChars.c (FCombineChars):
 	Added support for drawing superimposed combining characters
- 
+
 2003-07-01  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/commands.h:

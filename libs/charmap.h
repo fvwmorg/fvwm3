@@ -1,7 +1,7 @@
 /* -*-c-*- */
 
-#ifndef EXPAND_H
-#define EXPAND_H
+#ifndef CHARMAP_H
+#define CHARMAP_H
 
 /* ---------------------------- included header files ---------------------- */
 
@@ -11,12 +11,20 @@
 
 /* ---------------------------- type definitions --------------------------- */
 
+typedef struct
+{
+	char key;
+	int  value;
+} charmap_t;
+
+/* ---------------------------- forward declarations ----------------------- */
+
 /* ---------------------------- exported variables (globals) --------------- */
 
 /* ---------------------------- interface functions ------------------------ */
 
-char *expand_vars(
-	char *input, char *arguments[], Bool addto, Bool ismod,
-	cond_rc_t *cond_rc, const exec_context_t *exc);
+int charmap_string_to_mask(
+	int *ret, const char *string, charmap_t *table, char *errstring);
+char charmap_mask_to_char(int mask, charmap_t *table);
 
-#endif /* EXPAND_H */
+#endif /* CHARMAP_H */

@@ -43,6 +43,8 @@
 #include "libs/Picture.h"
 #include "libs/PictureGraphics.h"
 #include "libs/FRenderInit.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
 #include "fvwm.h"
 #include "execcontext.h"
 #include "externs.h"

@@ -1,22 +1,28 @@
 /* -*-c-*- */
 
-#ifndef EXPAND_H
-#define EXPAND_H
+#ifndef MODIFIERS_H
+#define MODIFIERS_H
 
 /* ---------------------------- included header files ---------------------- */
 
 /* ---------------------------- global definitions ------------------------- */
 
+#define ALL_MODIFIERS (ShiftMask|LockMask|ControlMask|Mod1Mask|Mod2Mask|\
+	Mod3Mask|Mod4Mask|Mod5Mask)
+
 /* ---------------------------- global macros ------------------------------ */
 
 /* ---------------------------- type definitions --------------------------- */
 
+/* ---------------------------- forward declarations ----------------------- */
+
 /* ---------------------------- exported variables (globals) --------------- */
+
+extern charmap_t key_modifiers[];
+extern unsigned int modifier_mapindex_to_mask[];
 
 /* ---------------------------- interface functions ------------------------ */
 
-char *expand_vars(
-	char *input, char *arguments[], Bool addto, Bool ismod,
-	cond_rc_t *cond_rc, const exec_context_t *exc);
+int modifiers_string_to_modmask(char *in_modifiers, int *out_modifier_mask);
 
-#endif /* EXPAND_H */
+#endif /* MODIFIERS_H */

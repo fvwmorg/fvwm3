@@ -33,6 +33,8 @@
 #include <X11/keysym.h>
 
 #include "libs/fvwmlib.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "cursor.h"
@@ -505,7 +507,7 @@ static void __execute_function(
 	if (function)
 	{
 		function = expand_vars(
-			function, arguments, exc->w.fw, False, False, func_rc);
+			function, arguments, False, False, func_rc, exc);
 	}
 	if (function && function[0] != '*')
 	{
@@ -550,9 +552,9 @@ static void __execute_function(
 	if (!(exec_flags & FUNC_DONT_EXPAND_COMMAND))
 	{
 		expaction = expand_vars(
-			taction, arguments, exc->w.fw, (bif) ?
+			taction, arguments, (bif) ?
 			!!(bif->flags & FUNC_ADD_TO) :
-			False, (taction[0] == '*'), func_rc);
+			False, (taction[0] == '*'), func_rc, exc);
 		if (func_depth <= 1)
 		{
 			must_free_string = set_repeat_data(

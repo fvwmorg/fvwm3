@@ -12,7 +12,6 @@
 #include <ctype.h>
 
 #include "fvwmrect.h"
-#include "Bindings.h"
 
 /*
  * Generic debugging

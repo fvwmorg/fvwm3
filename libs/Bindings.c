@@ -17,153 +17,21 @@
 #include "config.h"
 
 #include <stdio.h>
-#include <signal.h>
-#include <ctype.h>
-#include <unistd.h>
 
 #include <X11/keysym.h>
 #include <X11/X.h>
 #include <X11/Xlib.h>
 
-#include "fvwmlib.h"
-
-struct charstring
-{
-	char key;
-	int  value;
-};
+#include "libs/fvwmlib.h"
+#include "libs/Bindings.h"
+#include "libs/charmap.h"
+#include "libs/wcontext.h"
+#include "libs/modifiers.h"
 
 static Bool is_grabbing_everything = False;
 
-/* The keys must be in lower case! */
-static struct charstring win_contexts[]=
-{
-	{'d', C_EWMH_DESKTOP},
-	{'f', C_FRAME},
-	{'<', C_F_TOPLEFT},
-	{'^', C_F_TOPRIGHT},
-	{'>', C_F_BOTTOMRIGHT},
-	{'v', C_F_BOTTOMLEFT},
-	{'i', C_ICON},
-	{'r', C_ROOT},
-	{'s', C_SIDEBAR},
-	{'[', C_SB_LEFT},
-	{']', C_SB_RIGHT},
-	{'-', C_SB_TOP},
-	{'_', C_SB_BOTTOM},
-	{'t', C_TITLE},
-	{'w', C_WINDOW},
-	{'1', C_L1},
-	{'2', C_R1},
-	{'3', C_L2},
-	{'4', C_R2},
-	{'5', C_L3},
-	{'6', C_R3},
-	{'7', C_L4},
-	{'8', C_R4},
-	{'9', C_L5},
-	{'0', C_R5},
-	{'a', C_ALL},
-	{0, 0}
-};
-
-/* The keys musat be in lower case! */
-static struct charstring key_modifiers[]=
-{
-	{'s',ShiftMask},
-	{'c',ControlMask},
-	{'l',LockMask},
-	{'m',Mod1Mask},
-	{'1',Mod1Mask},
-	{'2',Mod2Mask},
-	{'3',Mod3Mask},
-	{'4',Mod4Mask},
-	{'5',Mod5Mask},
-	{'a',AnyModifier},
-	{'n',0},
-	{0,0}
-};
-
-/* Table to translate a modifier map index to a modifier that we define that
- * generates that index.  This mapping can be chosen by each client, but the
- * settings below try to emulate the usual terminal behaviour. */
-static unsigned int modifier_mapindex_to_mask[8] =
-{
-	ShiftMask,
-	Mod3Mask, /* Alt Gr */
-	Mod3Mask | ShiftMask,
-	/* Just guessing below here - LockMask is not used anywhere*/
-	ControlMask,
-	Mod1Mask, /* Alt/Meta on XFree86 */
-	Mod2Mask, /* Num lock on XFree86 */
-	Mod4Mask,
-	Mod5Mask, /* Scroll lock on XFree86 */
-};
-
-static int key_min;
-static int key_max;
-
-/*
- *
- * Turns a  string context of context or modifier values into an array of
- * true/false values (bits)
- *
- */
-static Bool find_context(
-	const char *string, int *output, struct charstring *table)
-{
-	int i;
-	int len = strlen( string );
-	Bool error = False;
-
-	*output=0;
-
-	for ( i = 0; i < len; ++i )
-	{
-		int j = 0, matched = 0;
-		char c = string[i];
-
-		/* The following comment strikes me as unlikely, but I leave it
-		 * (and  code) intact.  -- Steve Robbins, 28-mar-1999 */
-		/* in some BSD implementations, tolower(c) is not defined
-		 * unless isupper(c) is true */
-		if ( isupper(c) )
-		{
-			c = tolower( c );
-		}
-		while ( table[j].key != 0 )
-		{
-			if ( table[j].key == c )
-			{
-				*output |= table[j].value;
-				matched = 1;
-				break;
-			}
-			++j;
-		}
-		if (!matched)
-		{
-			fprintf(
-				stderr,
-				"find_context: bad context or modifier %c\n",
-				c);
-			error = True;
-		}
-	}
-	return error;
-}
-
-/* Converts the input string into a mask with bits for the contexts */
-Bool ParseContext(char *in_context, int *out_context_mask)
-{
-	return find_context(in_context, out_context_mask, win_contexts);
-}
-
-/* Converts the input string into a mask with bits for the modifiers */
-Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask)
-{
-	return find_context(in_modifiers, out_modifier_mask, key_modifiers);
-}
+static int key_min = 0;
+static int key_max = 0;
 
 /* Free the memory use by a binding. */
 void FreeBindingStruct(Binding *b)
@@ -690,7 +558,6 @@ void GrabAllWindowKeys(
 
 	return;
 }
-
 
 void GrabWindowButton(
 	Display *dpy, Window w, Binding *binding, unsigned int contexts,

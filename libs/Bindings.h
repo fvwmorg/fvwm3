@@ -7,46 +7,6 @@
 
 #define binding_t_t    unsigned char
 
-/* contexts for button presses */
-#define C_NO_CONTEXT        0x00
-#define C_WINDOW            0x01
-#define C_TITLE             0x02
-#define C_ICON              0x04
-#define C_ROOT              0x08
-/*                          0x10*/
-/*                          0x20*/
-#define C_L1                0x40
-#define C_R1                0x80
-#define C_L2               0x100
-#define C_R2               0x200
-#define C_L3               0x400
-#define C_R3               0x800
-#define C_L4              0x1000
-#define C_R4              0x2000
-#define C_L5              0x4000
-#define C_R5              0x8000
-#define C_UNMANAGED      0x10000
-#define C_EWMH_DESKTOP   0x20000
-#define C_F_TOPLEFT     0x100000
-#define C_F_TOPRIGHT    0x200000
-#define C_F_BOTTOMLEFT  0x400000
-#define C_F_BOTTOMRIGHT 0x800000
-#define C_SB_LEFT      0x1000000
-#define C_SB_RIGHT     0x2000000
-#define C_SB_TOP       0x4000000
-#define C_SB_BOTTOM    0x8000000
-#define C_IGNORE_ALL  0x80000000
-#define C_FRAME       (C_F_TOPLEFT|C_F_TOPRIGHT|C_F_BOTTOMLEFT|C_F_BOTTOMRIGHT)
-#define C_SIDEBAR     (C_SB_LEFT|C_SB_RIGHT|C_SB_TOP|C_SB_BOTTOM)
-#define C_RALL        (C_R1|C_R2|C_R3|C_R4|C_R5)
-#define C_LALL        (C_L1|C_L2|C_L3|C_L4|C_L5)
-#define C_DECOR       (C_LALL|C_RALL|C_TITLE|C_FRAME|C_SIDEBAR)
-#define C_ALL         (C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|\
-		       C_LALL|C_RALL|C_EWMH_DESKTOP)
-
-#define ALL_MODIFIERS (ShiftMask|LockMask|ControlMask|Mod1Mask|Mod2Mask|\
-		       Mod3Mask|Mod4Mask|Mod5Mask)
-
 /* ---------------------------- global macros ------------------------------ */
 
 #define BIND_IS_KEY_PRESS(t) ((t) == BIND_KEYPRESS || (t) == BIND_PKEYPRESS)
@@ -83,8 +43,6 @@ typedef struct Binding
 
 /* ---------------------------- interface functions ------------------------ */
 
-Bool ParseContext(char *in_context, int *out_context_mask);
-Bool ParseModifiers(char *in_modifiers, int *out_modifier_mask);
 void CollectBindingList(
 	Display *dpy, Binding **pblist_src, Binding **pblist_dest,
 	binding_t type, STROKE_ARG(void *stroke) int button, KeySym keysym,
