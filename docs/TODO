@@ -12,23 +12,17 @@ too...
 
 Cleanups:
 
-  - Reindent the code and implement coding conventions (minimal).
   - Modules should be installed with 'install-exec', rather than
     'install-data' target.  This requires putting 'exec' in the
     automake variable for the module directory; i.e. moduledir -->
     moduleexecdir?
-  - clean up code duplication (esp in modules) - more stuff in
-    libfvwm.a, plus perhaps a second module lib?
 
 ----------------------------------------------------------------------
 
 Bugfixes:
 
-  - Make transient FvwmWinList reposition itself & pointer if popped up
-    off the screen (like built in menus)
   - Colormaps and xlock -install -mode blank (& swirl) interaction still
     isn't 100% correct?
-  - Should also have way to make windows off desktop be recovered easier
 
 ----------------------------------------------------------------------
 
