@@ -21,15 +21,6 @@
 # error One of waitpid or wait3 is needed.
 #endif
 
-typedef enum {
-  ADDED_NONE = 0,
-  ADDED_MENU,
-#ifdef USEDECOR
-  ADDED_DECOR,
-#endif
-  ADDED_FUNCTION
-} last_added_item_type;
-
 typedef struct name_list_struct
 {
   struct name_list_struct *next;   /* pointer to the next name */
@@ -219,23 +210,6 @@ extern void       CaptureOneWindow(FvwmWindow *fw, Window window);
 extern void       CaptureAllWindows(void);
 extern void       SetTimer(int);
 extern int        flush_expose(Window w);
-
-
-/* --- functions.c --- */
-void find_func_type(char *action, short *func_type, Bool *func_needs_window);
-FvwmFunction *FindFunction(char *function_name);
-extern FvwmFunction *NewFvwmFunction(char *name);
-void ComplexFunction(F_CMD_ARGS);
-void ComplexFunction2(F_CMD_ARGS, Bool *desperate);
-void DestroyFunction(FvwmFunction *func);
-extern int DeferExecution(XEvent *, Window *,FvwmWindow **, unsigned long *,
-			  int, int);
-void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
-		     unsigned long context, int Module);
-void AddToFunction(FvwmFunction *func, char *action);
-void repeat_function(F_CMD_ARGS);
-/* --- end of functions.c --- */
-
 
 void do_windowList(F_CMD_ARGS);
 extern void       RaiseThisWindow(int);
@@ -513,6 +487,17 @@ void GNOME_SetCurrentDesk(void);
 void GNOME_SetClientList(void);
 
 #endif /* GNOME */
+
+
+/* needed in misc.h */
+typedef enum {
+  ADDED_NONE = 0,
+  ADDED_MENU,
+#ifdef USEDECOR
+  ADDED_DECOR,
+#endif
+  ADDED_FUNCTION
+} last_added_item_type;
 
 void set_last_added_item(last_added_item_type type, void *item);
 

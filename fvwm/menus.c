@@ -264,7 +264,8 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
       if (pmiExecuteAction && *pmiExecuteAction && !fDoubleClick) {
 	cindirectDeep++;
 	ExecuteFunction(
-	  (*pmiExecuteAction)->action,ButtonWindow, &Event,Context, -1);
+	  (*pmiExecuteAction)->action,ButtonWindow, &Event,Context, -1,
+	  EXPAND_COMMAND);
 	cindirectDeep--;
       }
       fIgnorePosHints = FALSE;
@@ -3028,7 +3029,7 @@ static void menu_func(F_CMD_ARGS, Bool fStaysUp)
   if ((do_menu(menu, NULL, &miExecuteAction, 0, fStaysUp, teventp, &mops) ==
        MENU_DOUBLE_CLICKED) && action)
   {
-    ExecuteFunction(action,tmp_win,eventp,context,*Module);
+    ExecuteFunction(action,tmp_win,eventp,context,*Module,EXPAND_COMMAND);
   }
 }
 

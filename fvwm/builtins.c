@@ -2740,7 +2740,7 @@ void AddToDecor(FvwmDecor *fl, char *s)
   if (!*s)
     return;
   cur_decor = fl;
-  ExecuteFunction(s,NULL,&Event,C_ROOT,-1);
+  ExecuteFunction(s,NULL,&Event,C_ROOT,-1,EXPAND_COMMAND);
   cur_decor = NULL;
 }
 
@@ -2827,7 +2827,7 @@ void DestroyDecor(F_CMD_ARGS)
 	{
 	    if (fw->fl == found)
 	      ExecuteFunction("ChangeDecor Default",fw,eventp,
-			      C_WINDOW,*Module);
+			      C_WINDOW,*Module,EXPAND_COMMAND);
 	    fw = fw->next;
 	}
 	prev->next = found->next;
@@ -3552,7 +3552,7 @@ void PrevFunc(F_CMD_ARGS)
   found = Circulate(action, -1, &restofline);
   if(found && restofline)
   {
-    ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module);
+    ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module,EXPAND_COMMAND);
   }
 
 }
@@ -3565,7 +3565,7 @@ void NextFunc(F_CMD_ARGS)
   found = Circulate(action, 1, &restofline);
   if(found && restofline)
   {
-    ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module);
+    ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module,EXPAND_COMMAND);
   }
 
 }
@@ -3578,7 +3578,7 @@ void NoneFunc(F_CMD_ARGS)
   found = Circulate(action, 1, &restofline);
   if(!found && restofline)
   {
-    ExecuteFunction(restofline,NULL,eventp,C_ROOT,*Module);
+    ExecuteFunction(restofline,NULL,eventp,C_ROOT,*Module,EXPAND_COMMAND);
   }
 }
 
@@ -3590,7 +3590,7 @@ void CurrentFunc(F_CMD_ARGS)
   found = Circulate(action, 0, &restofline);
   if(found && restofline)
   {
-    ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module);
+    ExecuteFunction(restofline,found,eventp,C_WINDOW,*Module,EXPAND_COMMAND);
   }
 }
 
@@ -3627,7 +3627,7 @@ void AllFunc(F_CMD_ARGS)
 
   for (i = 0; i < num; i++)
     {
-       ExecuteFunction(restofline,g[i],eventp,C_WINDOW,*Module);
+       ExecuteFunction(restofline,g[i],eventp,C_WINDOW,*Module,EXPAND_COMMAND);
     }
 
   free (g);
@@ -3769,7 +3769,8 @@ void DirectionFunc(F_CMD_ARGS)
   } /* for */
 
   if (best_window)
-    ExecuteFunction(restofline, best_window, eventp, C_WINDOW, *Module);
+    ExecuteFunction(restofline, best_window, eventp, C_WINDOW, *Module,
+		    EXPAND_COMMAND);
 
   FreeConditionMask(&mask);
 }
@@ -3782,7 +3783,7 @@ void PickFunc(F_CMD_ARGS)
   if (DeferExecution(eventp,&w,&tmp_win,&context, SELECT,ButtonRelease))
     return;
 
-  ExecuteFunction(action, tmp_win, eventp, C_WINDOW, *Module);
+  ExecuteFunction(action, tmp_win, eventp, C_WINDOW, *Module, EXPAND_COMMAND);
 }
 
 void WindowIdFunc(F_CMD_ARGS)
@@ -3829,7 +3830,7 @@ void WindowIdFunc(F_CMD_ARGS)
     if (t->w == win) {
       /* do it if no conditions or the conditions match */
       if (!use_condition || MatchesConditionMask(t, &mask))
-        ExecuteFunction(action,t,eventp,C_WINDOW,*Module);
+        ExecuteFunction(action,t,eventp,C_WINDOW,*Module,EXPAND_COMMAND);
       break;
   }
 

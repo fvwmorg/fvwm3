@@ -412,7 +412,7 @@ void HandleKeyPress(void)
 			KEY_BINDING);
   if (action != NULL)
     {
-      ExecuteFunction(action,Tmp_win, &Event, Context, -1);
+      ExecuteFunction(action,Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
       return;
     }
 
@@ -605,13 +605,13 @@ void HandlePropertyNotify(void)
       if (!was_urgent && (Tmp_win->wmhints->flags & XUrgencyHint))
 	{
 	  ExecuteFunction("Function UrgencyFunc",
-			  Tmp_win,&Event,C_WINDOW,-1);
+			  Tmp_win,&Event,C_WINDOW,-1,EXPAND_COMMAND);
 	}
 
       if (was_urgent && !(Tmp_win->wmhints->flags & XUrgencyHint))
 	{
 	  ExecuteFunction("Function UrgencyDoneFunc",
-			  Tmp_win,&Event,C_WINDOW,-1);
+			  Tmp_win,&Event,C_WINDOW,-1,EXPAND_COMMAND);
 	}
       break;
     case XA_WM_NORMAL_HINTS:
@@ -690,7 +690,7 @@ void HandleClientMessage(void)
                    &(button.xmotion.y_root),
                    &JunkX, &JunkY, &JunkMask);
     button.type = 0;
-    ExecuteFunction("Iconify",Tmp_win, &button,C_FRAME,-1);
+    ExecuteFunction("Iconify",Tmp_win, &button,C_FRAME,-1, EXPAND_COMMAND);
     return;
   }
 
@@ -1242,7 +1242,7 @@ void HandleButtonPress(void)
 			Event.xbutton.state, GetUnusedModifiers(), Context,
 			MOUSE_BINDING);
   if (action != NULL)
-    ExecuteFunction(action,Tmp_win, &Event, Context, -1);
+    ExecuteFunction(action,Tmp_win, &Event, Context, -1, EXPAND_COMMAND);
 
   OldPressedW = PressedW;
   PressedW = None;

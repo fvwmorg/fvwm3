@@ -35,8 +35,8 @@
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
 #include <X11/cursorfont.h>
-#include "misc.h"
 #include "functions.h"
+#include "misc.h"
 
 #define SIZE_HINDENT 5
 #define SIZE_VINDENT 3

@@ -377,7 +377,7 @@ int HandleModuleInput(Window w, int channel)
       Event.xbutton.y = 0;
       Event.xbutton.subwindow = None;
       Context = GetContext(tmp_win,&Event,&w);
-      ExecuteFunction(text,tmp_win,&Event,Context ,channel);
+      ExecuteFunction(text,tmp_win,&Event,Context,channel,EXPAND_COMMAND);
     }
   return 0;
 }

@@ -409,7 +409,8 @@ static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d, Bool may_time_out)
  *
  ***********************************************************************/
 void ExecuteFunction(char *Action, FvwmWindow *tmp_win, XEvent *eventp,
-		     unsigned long context, int Module)
+		     unsigned long context, int Module,
+		     expand_command_type expand_cmd)
 {
   Window w;
   int matched,j;
@@ -924,7 +925,7 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 	  else
 	    w = None;
 	  taction = expand(fi->action,arguments,tmp_win,False);
-	  ExecuteFunction(taction,tmp_win,eventp,context,-2);
+	  ExecuteFunction(taction,tmp_win,eventp,context,-2,EXPAND_COMMAND);
 	  free(taction);
 	}
       else
@@ -1000,7 +1001,7 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 	  else
 	    w = None;
 	  taction = expand(fi->action,arguments,tmp_win,False);
-	  ExecuteFunction(taction,tmp_win,ev,context,-2);
+	  ExecuteFunction(taction,tmp_win,ev,context,-2,EXPAND_COMMAND);
 	  free(taction);
 	}
       fi = fi->next_item;
@@ -1031,21 +1032,23 @@ void repeat_function(F_CMD_ARGS)
   case 1: /* complex */
 fprintf(stderr,"repeating complex %s\n",repeat_last_complex_function);
     ExecuteFunction(repeat_last_complex_function, tmp_win, eventp, context,
-		    *Module);
+		    *Module, DONT_EXPAND_COMMAND);
     break;
   case 2: /* builtin */
 fprintf(stderr,"repeating builtin %s\n",repeat_last_builtin_function);
     ExecuteFunction(repeat_last_builtin_function, tmp_win, eventp, context,
-		    *Module);
+		    *Module, DONT_EXPAND_COMMAND);
     break;
   case 3: /* module */
 fprintf(stderr,"repeating module %s\n",repeat_last_module);
-    ExecuteFunction(repeat_last_module, tmp_win, eventp, context, *Module);
+    ExecuteFunction(repeat_last_module, tmp_win, eventp, context, *Module,
+		    DONT_EXPAND_COMMAND);
     break;
   case 0: /* function */
   default:
 fprintf(stderr,"repeating %s\n",repeat_last_function);
-    ExecuteFunction(repeat_last_function, tmp_win, eventp, context, *Module);
+    ExecuteFunction(repeat_last_function, tmp_win, eventp, context, *Module,
+		    DONT_EXPAND_COMMAND);
     break;
   }
 }

@@ -1,3 +1,47 @@
+1999-04-06  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/misc.h:
+	* fvwm/screen.h:
+	moved typedef of last_added_item_type to misc.h
+
+	* fvwm/windows.c (do_windowList):
+	* fvwm/read.c (ReadSubFunc):
+	(ReadFile):
+	(PipeRead):
+	* fvwm/module.c (HandleModuleInput):
+	* fvwm/menus.c (menu_func):
+	(do_menu):
+	* fvwm/fvwm.c (main):
+	(StartupStuff):
+	(SetRCDefaults):
+	(Done):
+	* fvwm/functions.c (repeat_function):
+	(ComplexFunction2):
+	* fvwm/events.c (HandleKeyPress):
+	(HandlePropertyNotify):
+	(HandleClientMessage):
+	(HandleButtonPress):
+	* fvwm/builtins.c (AddToDecor):
+	(DestroyDecor):
+	(PrevFunc):
+	(NextFunc):
+	(NoneFunc):
+	(CurrentFunc):
+	(AllFunc):
+	(DirectionFunc):
+	(PickFunc):
+	(WindowIdFunc):
+	use new parameter to ExecuteFunction
+	* fvwm/functions.c (ExecuteFunction):
+	additional input parameter: expand_cmd (suppress expanding '$...' on
+	the command line).
+
+	* fvwm/functions.h:
+	* fvwm/misc.h:
+	moved function prototypes for functions.c into functions.h
+
+	* fvwm/functions.h: removed ONE_AND_A_HALF_CLICKS (unused)
+
 1999-04-05  Tomas Ogren  <stric@ing.umu.se>
 
 	* fvwm/{colormaps.c,events.c,fvwm.c,gnome.c,icccm2.c,misc.c,misc.h,module.c,module.h,session.c,virtual.c}:

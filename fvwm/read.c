@@ -147,7 +147,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
 		 "file '%s' not found.", filename);
       else
 	fvwm_msg(ERR, cmdname,
-		 "file '%s' not found, looked for %s%s and %s", 
+		 "file '%s' not found, looked for %s%s and %s",
                  ofilename+dot_flipper,user_home_ptr,ofilename,filename);
     } /* end quiet option not on */
     if((ofilename != filename)&&(filename != NULL))
@@ -192,7 +192,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     {
       fvwm_msg(DBG,"ReadSubFunc","about to exec: '%s'",tline);
     }
-    ExecuteFunction(tline,tmp_win,eventp,context,*Module);
+    ExecuteFunction(tline,tmp_win,eventp,context,*Module,EXPAND_COMMAND);
     tline = fgets(line,(sizeof line)-1,fd);
   }
 
@@ -217,7 +217,8 @@ void ReadFile(F_CMD_ARGS)
   if (fFvwmInStartup && last_read_failed && this_read == 0)
   {
     fvwm_msg(INFO,"Read","trying to read system rc file");
-    ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1);
+    ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1,
+		    EXPAND_COMMAND);
   }
 }
 
@@ -235,7 +236,7 @@ void PipeRead(F_CMD_ARGS)
   if (fFvwmInStartup && last_read_failed && this_read == 0)
   {
     fvwm_msg(INFO,"PipeRead","trying to read system rc file");
-    ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1);
+    ExecuteFunction((char *)read_system_rc_cmd,NULL,&Event,C_ROOT,-1,
+		    EXPAND_COMMAND);
   }
 }
-

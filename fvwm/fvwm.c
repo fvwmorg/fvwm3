@@ -547,13 +547,15 @@ int main(int argc, char **argv)
     int i;
     for(i=0;i<num_config_commands;i++)
     {
-      ExecuteFunction(config_commands[i], NULL,&Event,C_ROOT,-1);
+      ExecuteFunction(config_commands[i], NULL,&Event,C_ROOT,-1,
+		      EXPAND_COMMAND);
       free(config_commands[i]);
     }
   }
   else
   {
-    ExecuteFunction(default_config_command, NULL,&Event,C_ROOT,-1);
+    ExecuteFunction(default_config_command, NULL,&Event,C_ROOT,-1,
+		    EXPAND_COMMAND);
   }
 
   DBUG("main","Done running config_commands");
@@ -667,13 +669,15 @@ void StartupStuff(void)
   {
     func = FindFunction("RestartFunction");
     if(func != NULL)
-      ExecuteFunction("Function RestartFunction",NULL,&Event,C_ROOT,-1);
+      ExecuteFunction("Function RestartFunction",NULL,&Event,C_ROOT,-1,
+		      EXPAND_COMMAND);
   }
   else
   {
     func = FindFunction("InitFunction");
     if(func != NULL)
-      ExecuteFunction("Function InitFunction",NULL,&Event,C_ROOT,-1);
+      ExecuteFunction("Function InitFunction",NULL,&Event,C_ROOT,-1,
+		      EXPAND_COMMAND);
   }
 
   /*
@@ -846,7 +850,7 @@ void SetRCDefaults(void)
 
   while (defaults[i])
   {
-    ExecuteFunction(defaults[i],NULL,&Event,C_ROOT,-1);
+    ExecuteFunction(defaults[i],NULL,&Event,C_ROOT,-1,EXPAND_COMMAND);
     i++;
   }
 } /* SetRCDefaults */
@@ -1597,7 +1601,8 @@ void Done(int restart, char *command)
 
   func = FindFunction("ExitFunction");
   if(func != NULL)
-    ExecuteFunction("Function ExitFunction",NULL,&Event,C_ROOT,-1);
+    ExecuteFunction("Function ExitFunction",NULL,&Event,C_ROOT,-1,
+		    EXPAND_COMMAND);
 
   /* Close all my pipes */
   ClosePipes();
