@@ -158,7 +158,7 @@ void CloseSocket() {
 void server ( void ) {
   struct sockaddr_un sas, csas;
   int  len;
-  socklen_t clen;     /* length of sockaddr */
+  size_t clen;     /* length of sockaddr */
   char buf[MAX_COMMAND_SIZE];      /*  command line buffer */
   char *tline;
   char ver[40];

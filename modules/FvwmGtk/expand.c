@@ -35,7 +35,7 @@ typedef struct str_struct
 static str *
 split_string (char *val, str *pre)
 {
-  char *s, *t;
+  char *s = NULL, *t = NULL;
   char *v = val;
   str *curr = pre;
 

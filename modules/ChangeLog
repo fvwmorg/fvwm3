@@ -1,3 +1,9 @@
+1999-07-10  Tomas Ogren  <stric@ing.umu.se>
+
+	* FvwmConsole/FvwmConsole.c: s/socklen_t/size_t/ - socklen_t doesn't
+	exist on neither Solaris 2.6 nor IRIX 6.5.4f
+	* FvwmGtk/expand.c: Initialize a variable to NULL
+
 1999-07-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmWharf/FvwmWharf.c (Loop):
