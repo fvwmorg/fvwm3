@@ -1,3 +1,7 @@
+2000-01-18  Brad Giaccio  <bgiaccio@psrw.com>
+
+	* FvwmButtons/parse.c (my_get_font): patch to handle font as last option
+
 2000-01-21  Chris Rankin  <rankinc@zipworld.com.au>
 
 	* FvwmIconMan/FvwmIconMan.c

@@ -99,6 +99,13 @@ static char *my_get_font(char **s)
       /* remove leading whitespace */
     }
   }
+
+  len = strlen(option) -1;
+  if (option[len] == ')' )
+  {
+    option[len] = 0;
+  }
+
   return option;
 }
 
