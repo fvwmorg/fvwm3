@@ -112,8 +112,8 @@ static void activate_binding(
 		 */
 		GrabWindowKeyOrButton(
 			dpy, Scr.Root, binding,
-			C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR|C_ROOT|C_ICON|
-			C_EWMH_DESKTOP, GetUnusedModifiers(), None, do_grab);
+			C_WINDOW | C_DECOR | C_ROOT | C_ICON | C_EWMH_DESKTOP,
+			GetUnusedModifiers(), None, do_grab);
 	}
 	if (fFvwmInStartup == True)
 	{
@@ -133,14 +133,13 @@ static void activate_binding(
 				GetUnusedModifiers(), None, do_grab);
 		}
 		if (!IS_EWMH_DESKTOP(FW_W(t)) &&
-		    (binding->Context & (C_WINDOW|C_TITLE|C_RALL|C_LALL|
-					 C_SIDEBAR)) &&
+		    (binding->Context & (C_WINDOW | C_DECOR)) &&
 		    binding->type == KEY_BINDING)
 		{
 			GrabWindowKey(
 				dpy, FW_W_FRAME(t), binding,
-				C_WINDOW|C_TITLE|C_RALL|C_LALL|C_SIDEBAR,
-				GetUnusedModifiers(), do_grab);
+				C_WINDOW | C_DECOR, GetUnusedModifiers(),
+				do_grab);
 		}
 		if (binding->Context & C_ICON)
 		{

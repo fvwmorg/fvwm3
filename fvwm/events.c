@@ -153,7 +153,6 @@ static PFEH EventHandlerJumpTable[LASTEvent];
 XEvent Event;                           /* the current event */
 FvwmWindow *Fw = NULL;                  /* the current fvwm window */
 int last_event_type = 0;
-Time lastTimestamp = CurrentTime;       /* until Xlib does this for us */
 Window PressedW = None;
 fd_set init_fdset;
 
@@ -1565,7 +1564,6 @@ ENTER_DBG((stderr, "en: exit: NU: not frame window\n"));
 	if (!fFvwmInStartup && !is_tear_off_menu &&
 	    FCheckTypedWindowEvent(dpy, ewp->window, LeaveNotify, &d))
 	{
-		StashEventTime(&d);
 		if (d.xcrossing.mode == NotifyNormal &&
 		    d.xcrossing.detail != NotifyInferior)
 		{
@@ -1957,14 +1955,13 @@ void HandleKeyPress(const evh_args_t *ea)
 	{
 		button_window = Fw;
 		old_execute_function(
-			NULL, action, Fw, &Event, context, -1, 0, NULL);
+			NULL, action, Fw, &ea->e, context, -1, 0, NULL);
 		button_window = NULL;
 		return;
 	}
 
 	/* if we get here, no function key was bound to the key.  Send it
-	 * to the client if it was in a window we know about.
-	 */
+	 * to the client if it was in a window we know about. */
 	sf = get_focus_window();
 	if (sf && Event.xkey.window != FW_W(sf))
 	{
@@ -3239,31 +3236,25 @@ void InitEventHandlerJumpTable(void)
 #endif /* MOUSE_DROPPINGS */
 }
 
-/***********************************************************************
- *
- *  Procedure:
- *      DispatchEvent - handle a single X event stored in global var Event
- *
- ************************************************************************/
-void DispatchEvent(Bool preserve_Fw)
+/* handle a single X event */
+void dispatch_event(XEvent *e, Bool preserve_Fw)
 {
-	Window w = Event.xany.window;
+	Window w = e->xany.window;
 	FvwmWindow *s_Fw = NULL;
 
-	DBUG("DispatchEvent","Routine Entered");
+	DBUG("dispatch_event","Routine Entered");
 
 	if (preserve_Fw)
 	{
 		s_Fw = Fw;
 	}
-	StashEventTime(&Event);
 	XFlush(dpy);
 	if (w == Scr.Root)
 	{
-		if ((Event.type == ButtonPress || Event.type == ButtonRelease)
-		    && Event.xbutton.subwindow != None)
+		if ((e->type == ButtonPress || e->type == ButtonRelease) &&
+		    e->xbutton.subwindow != None)
 		{
-			w = Event.xbutton.subwindow;
+			w = e->xbutton.subwindow;
 		}
 	}
 	if (w == Scr.Root ||
@@ -3271,13 +3262,13 @@ void DispatchEvent(Bool preserve_Fw)
 	{
 		Fw = NULL;
 	}
-	last_event_type = Event.type;
-	if (EventHandlerJumpTable[Event.type])
+	last_event_type = e->type;
+	if (EventHandlerJumpTable[e->type])
 	{
 		evh_args_t ea;
 
-		ea.e = Event;
-		(*EventHandlerJumpTable[Event.type])(&ea);
+		ea.e = *e;
+		(*EventHandlerJumpTable[e->type])(&ea);
 	}
 
 #ifdef C_ALLOCA
@@ -3300,7 +3291,7 @@ void DispatchEvent(Bool preserve_Fw)
 			Fw = NULL;
 		}
 	}
-	DBUG("DispatchEvent","Leaving Routine");
+	DBUG("dispatch_event","Leaving Routine");
 
 	return;
 }
@@ -3313,6 +3304,8 @@ void DispatchEvent(Bool preserve_Fw)
  ************************************************************************/
 void HandleEvents(void)
 {
+	XEvent ev;
+
 	DBUG("HandleEvents","Routine Entered");
 	STROKE_CODE(send_motion = False);
 	while (!isTerminated)
@@ -3330,9 +3323,9 @@ void HandleEvents(void)
 		{
 			simplify_style_list();
 		}
-		if (My_XNextEvent(dpy, &Event))
+		if (My_XNextEvent(dpy, &ev))
 		{
-			DispatchEvent(False);
+			dispatch_event(&ev, False);
 		}
 	}
 }
@@ -3377,8 +3370,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 	{
 		DBUG("My_XNextEvent","taking care of queued up events"
 		     " & returning (1)");
-		FNextEvent(dpy,event);
-		StashEventTime(event);
+		FNextEvent(dpy, event);
 		return 1;
 	}
 
@@ -3567,7 +3559,6 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 		DBUG("My_XNextEvent",
 		     "taking care of queued up events & returning (2)");
 		FNextEvent(dpy,event);
-		StashEventTime(event);
 		return 1;
 	}
 
@@ -3578,7 +3569,7 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 /***********************************************************************
  *
  *  Procedure:
- *      Find the Fvwm context for the Event.
+ *      Find the Fvwm context for the event.
  *
  ************************************************************************/
 int GetContext(FvwmWindow *t, const XEvent *e, Window *w)
@@ -3644,7 +3635,6 @@ int GetContext(FvwmWindow *t, const XEvent *e, Window *w)
 	return context;
 }
 
-
 /**************************************************************************
  *
  * Removes expose events for a specific window from the queue
@@ -3689,7 +3679,6 @@ int flush_accumulate_expose(Window w, XEvent *e)
 	return i;
 }
 
-
 /**************************************************************************
  *
  * Removes all expose events from the queue and does the necessary redraws
@@ -3697,81 +3686,28 @@ int flush_accumulate_expose(Window w, XEvent *e)
  *************************************************************************/
 void handle_all_expose(void)
 {
-	XEvent old_event;
+	void *saved_event;
+	XEvent evdummy;
 
-	memcpy(&old_event, &Event, sizeof(XEvent));
+	saved_event = fev_save_event();
 	FPending(dpy);
-	while (FCheckMaskEvent(dpy, ExposureMask, &Event))
+	while (FCheckMaskEvent(dpy, ExposureMask, &evdummy))
 	{
 		/* note: handling Expose events will never modify the global
 		 * Fw */
-		DispatchEvent(True);
+		dispatch_event(&evdummy, True);
 	}
-	memcpy(&Event, &old_event, sizeof(XEvent));
+	fev_restore_event(saved_event);
 
 	return;
 }
 
-/****************************************************************************
- *
- * Records the time of the last processed event. Used in XSetInputFocus
- *
- ****************************************************************************/
-Bool StashEventTime (const XEvent *ev)
-{
-	Time NewTimestamp = CurrentTime;
-
-	switch (ev->type)
-	{
-	case KeyPress:
-	case KeyRelease:
-		NewTimestamp = ev->xkey.time;
-		break;
-	case ButtonPress:
-	case ButtonRelease:
-		NewTimestamp = ev->xbutton.time;
-		break;
-	case MotionNotify:
-		NewTimestamp = ev->xmotion.time;
-		break;
-	case EnterNotify:
-	case LeaveNotify:
-		NewTimestamp = ev->xcrossing.time;
-		break;
-	case PropertyNotify:
-		NewTimestamp = ev->xproperty.time;
-		break;
-	case SelectionClear:
-		NewTimestamp = ev->xselectionclear.time;
-		break;
-	case SelectionRequest:
-		NewTimestamp = ev->xselectionrequest.time;
-		break;
-	case SelectionNotify:
-		NewTimestamp = ev->xselection.time;
-		break;
-	default:
-		return False;
-	}
-	/* Only update if the new timestamp is later than the old one, or
-	 * if the new one is from a time at least 30 seconds earlier than the
-	 * old one (in which case the system clock may have changed) */
-	if (NewTimestamp > lastTimestamp ||
-	    lastTimestamp - NewTimestamp > CLOCK_SKEW_MS)
-	{
-		lastTimestamp = NewTimestamp;
-	}
-
-	return True;
-}
-
 /* CoerceEnterNotifyOnCurrentWindow()
- * Pretends to get a HandleEnterNotify on the
- * window that the pointer currently is in so that
- * the focus gets set correctly from the beginning
- * Note that this presently only works if the current
- * window is not click_to_focus;  I think that
- * that behaviour is correct and desirable. --11/08/97 gjb */
+ * Pretends to get a HandleEnterNotify on the window that the pointer
+ * currently is in so that the focus gets set correctly from the beginning.
+ * Note that this presently only works if the current window is not
+ * click_to_focus;  I think that that behaviour is correct and desirable.
+ * --11/08/97 gjb */
 void CoerceEnterNotifyOnCurrentWindow(void)
 {
 	Window child;
@@ -3830,7 +3766,7 @@ int discard_events(long event_mask)
 	XSync(dpy, 0);
 	for (count = 0; FCheckMaskEvent(dpy, event_mask, &e); count++)
 	{
-		StashEventTime(&e);
+		/* nothing */
 	}
 
 	return count;
@@ -3846,7 +3782,7 @@ int discard_window_events(Window w, long event_mask)
 	XSync(dpy, 0);
 	for (count = 0; FCheckWindowEvent(dpy, w, event_mask, &e); count++)
 	{
-		StashEventTime(&e);
+		/* nothing */
 	}
 
 	return count;
@@ -3920,7 +3856,7 @@ void WaitForButtonsUp(Bool do_handle_expose)
 			case Expose:
 				/* note: handling Expose events will never
 				 * modify the global Fw */
-				DispatchEvent(True);
+				dispatch_event(&Event, True);
 				break;
 			default:
 				break;

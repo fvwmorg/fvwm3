@@ -226,7 +226,7 @@ int squeue_get_next_ms(void)
 	{
 		return -1;
 	}
-	if (cmp_times(lastTimestamp, obj->time_to_execute) >= 0)
+	if (cmp_times(fev_get_evtime(), obj->time_to_execute) >= 0)
 	{
 		/* jobs pending to be executed immediately */
 		ms = 0;
@@ -234,7 +234,7 @@ int squeue_get_next_ms(void)
 	else
 	{
 		/* execute jobs later */
-		ms =  obj->time_to_execute - lastTimestamp;
+		ms =  obj->time_to_execute - fev_get_evtime();
 	}
 
 	return ms;
@@ -280,7 +280,7 @@ void CMD_Schedule(F_CMD_ARGS)
 #else
 	/* with this version, scheduled commands may be executed later than
 	 * intended. */
-	current_time = lastTimestamp;
+	current_time = fev_get_evtime();
 #endif
 	time = current_time + (Time)ms;
 	/* get the job group id to schedule */

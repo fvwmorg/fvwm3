@@ -454,7 +454,7 @@ void NewFontAndColor(FlocaleFont *flf, Pixel color, Pixel backcolor)
  *
  ****************************************************************************/
 void Keyboard_shortcuts(
-	XEvent *Event, FvwmWindow *fw, int *x_defect, int *y_defect,
+	XEvent *ev, FvwmWindow *fw, int *x_defect, int *y_defect,
 	int ReturnEvent)
 {
 	int x_move_size = 0;
@@ -466,7 +466,7 @@ void Keyboard_shortcuts(
 		y_move_size = fw->hints.height_inc;
 	}
 	fvwmlib_keyboard_shortcuts(
-		dpy, Scr.screen, Event, x_move_size, y_move_size, x_defect,
+		dpy, Scr.screen, ev, x_move_size, y_move_size, x_defect,
 		y_defect, ReturnEvent);
 
 	return;
@@ -567,7 +567,6 @@ Time get_server_time(void)
 	FWindowEvent(dpy, Scr.NoFocusWin, PropertyChangeMask, &xev);
 	attr.event_mask = XEVMASK_NOFOCUSW;
 	XChangeWindowAttributes(dpy, Scr.NoFocusWin, CWEventMask, &attr);
-	StashEventTime(&xev);
 
 	return xev.xproperty.time;
 }

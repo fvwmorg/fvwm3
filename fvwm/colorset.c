@@ -162,7 +162,7 @@ static void add_to_junk(Pixmap pixmap)
 	if (!cleanup_scheduled)
 	{
 		CMD_Schedule(
-			NULL, NULL, 0, NULL, 0, "3000 CleanupColorsets", NULL);
+			NULL, 0, NULL, 0, "3000 CleanupColorsets", NULL);
 		cleanup_scheduled = True;
 	}
 
@@ -305,7 +305,6 @@ static void parse_pixmap(
 	static char *name = "parse_colorset(pixmap)";
 	FvwmPictureAttributes fpa;
 
-	
 	/* dither */
 	fpa.mask = 0;
 	if (cs->dither && Pdepth <= 16)
@@ -655,7 +654,7 @@ void parse_colorset(int n, char *line)
 			}
 			if (tmp != cs->fg_alpha)
 			{
-				cs->fg_alpha = tmp; 
+				cs->fg_alpha = tmp;
 				has_fg_alpha_changed = True;
 			}
 			break;
@@ -754,7 +753,7 @@ void parse_colorset(int n, char *line)
 				cs, args, &bg_tint, BG_TINT_SUPPLIED,
 				&has_bg_tint_changed, &percent);
 			cs->bg_tint_percent = percent;
-			break;	
+			break;
 		case 31: /* dither */
 			if (cs->pixmap_args || cs->gradient_args)
 			{
@@ -805,7 +804,7 @@ void parse_colorset(int n, char *line)
 			parse_simple_tint(
 				cs, args, &icon_tint, ICON_TINT_SUPPLIED,
 				&has_icon_tint_changed, &percent);
-			if (has_icon_tint_changed && 
+			if (has_icon_tint_changed &&
 			    percent != cs->icon_tint_percent)
 			{
 				cs->icon_tint_percent = percent;
@@ -1053,7 +1052,7 @@ void parse_colorset(int n, char *line)
 				color.blue = dblue / k;
 				{
 					Pixel old_bg = cs->bg;
-					
+
 					PictureFreeColors(
 						dpy, Pcmap, &cs->bg, 1, 0, True);
 					PictureAllocColor(
@@ -1219,7 +1218,7 @@ void parse_colorset(int n, char *line)
 	{
 		if (cs->fg_tint_percent == 0)
 		{
-			
+
 			Pixel old_fg = cs->fg;
 
 			PictureFreeColors(dpy, Pcmap, &cs->fg, 1, 0, True);
@@ -1245,8 +1244,8 @@ void parse_colorset(int n, char *line)
 			}
 		}
 	}
-	
-	
+
+
 	/*
 	 * ---------- change the hilight colour ----------
 	 */

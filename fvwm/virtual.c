@@ -515,17 +515,17 @@ int HandlePaging(
 	if (!is_timestamp_valid)
 	{
 		is_timestamp_valid = True;
-		my_timestamp = lastTimestamp;
+		my_timestamp = fev_get_evtime();
 		is_last_position_valid = False;
 		add_time = 0;
 		last_x = -1;
 		last_y = -1;
 	}
-	else if (my_last_timestamp != lastTimestamp)
+	else if (my_last_timestamp != fev_get_evtime())
 	{
 		add_time = 0;
 	}
-	my_last_timestamp = lastTimestamp;
+	my_last_timestamp = fev_get_evtime();
 
 	do
 	{
@@ -540,7 +540,6 @@ int HandlePaging(
 		     FCheckWindowEvent(
 			     dpy, Scr.PanFrameRight.win, LeaveWindowMask, pev)))
 		{
-			StashEventTime(pev);
 			is_timestamp_valid = False;
 			add_time = 0;
 			return 0;
@@ -585,7 +584,7 @@ int HandlePaging(
 			 * set since we can't be sure that HandlePaging will be
 			 * called again. */
 			is_timestamp_valid = True;
-			my_timestamp = lastTimestamp;
+			my_timestamp = fev_get_evtime();
 			add_time = 0;
 			last_x = x;
 			last_y = y;
@@ -597,10 +596,10 @@ int HandlePaging(
 		usleep(10000);
 		add_time += 10;
 	} while (fLoop &&
-		 lastTimestamp - my_timestamp + add_time <
+		 fev_get_evtime() - my_timestamp + add_time <
 		 Scr.ScrollResistance);
 
-	if (lastTimestamp - my_timestamp + add_time < Scr.ScrollResistance)
+	if (fev_get_evtime() - my_timestamp + add_time < Scr.ScrollResistance)
 	{
 		return 0;
 	}
@@ -1230,7 +1229,7 @@ void MoveViewport(int newx, int newy, Bool grab)
 	/* do this with PanFrames too ??? HEDU */
 	while (FCheckTypedEvent(dpy, MotionNotify, &e))
 	{
-		StashEventTime(&e);
+		/* nothing */
 	}
 	if (grab)
 	{

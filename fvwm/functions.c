@@ -174,7 +174,6 @@ if (FinishEvent == 0) { fprintf(stderr, "bug: DeferExecturion called without fin
 			ExposureMask | KeyPressMask | VisibilityChangeMask |
 			ButtonMotionMask | PointerMotionMask
 			/* | EnterWindowMask | LeaveWindowMask*/, eventp);
-		StashEventTime(eventp);
 
 		if (eventp->type == KeyPress)
 		{
@@ -210,7 +209,7 @@ if (FinishEvent == 0) { fprintf(stderr, "bug: DeferExecturion called without fin
 		}
 		if (!done)
 		{
-			DispatchEvent(False);
+			dispatch_event(&Event, False);
 		}
 	}
 
@@ -377,16 +376,15 @@ static cfunc_action_type CheckActionType(
 	Time t0;
 	int dist;
 	XEvent old_event;
-	extern Time lastTimestamp;
 	Bool do_sleep = False;
 
 	xcurrent = x;
 	ycurrent = y;
-	t0 = lastTimestamp;
+	t0 = fev_get_evtime();
 	dist = Scr.MoveThreshold;
 
-	while ((total < Scr.ClickTime && lastTimestamp - t0 < Scr.ClickTime) ||
-	       !may_time_out)
+	while ((total < Scr.ClickTime &&
+		fev_get_evtime() - t0 < Scr.ClickTime) || !may_time_out)
 	{
 		if (!(x - xcurrent <= dist && xcurrent - x <= dist &&
 		      y - ycurrent <= dist && ycurrent - y <= dist))
@@ -409,7 +407,6 @@ static cfunc_action_type CheckActionType(
 			    PointerMotionMask|ButtonPressMask|ExposureMask, d))
 		{
 			do_sleep = 0;
-			StashEventTime(d);
 			switch (d->xany.type)
 			{
 			case ButtonRelease:
@@ -444,7 +441,7 @@ static cfunc_action_type CheckActionType(
 				memcpy(&Event, d, sizeof(XEvent));
 				/* note: handling Expose events never modifies
 				 * the global Fw */
-				DispatchEvent(True);
+				dispatch_event(&Event, True);
 				memcpy(&Event, &old_event, sizeof(XEvent));
 				break;
 			default:

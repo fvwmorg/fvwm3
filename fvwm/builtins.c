@@ -2036,7 +2036,7 @@ void CMD_Wait(F_CMD_ARGS)
 		}
 		if (My_XNextEvent(dpy, &Event))
 		{
-			DispatchEvent(False);
+			dispatch_event(&Event, False);
 			if (Event.type == MapNotify)
 			{
 				if (!*wait_string)
@@ -2070,7 +2070,7 @@ void CMD_Wait(F_CMD_ARGS)
 					Scr.AllBindings, STROKE_ARG(0)
 					Event.xkey.keycode,
 					Event.xkey.state, GetUnusedModifiers(),
-					GetContext(Fw,&Event,&nonewin),
+					GetContext(Fw, &Event, &nonewin),
 					KEY_BINDING);
 				if (escape != NULL)
 				{
@@ -3276,7 +3276,7 @@ void CMD_FakeClick(F_CMD_ARGS)
 				e.xbutton.window = w;
 				e.xbutton.subwindow = None;
 				e.xbutton.root = root;
-				e.xbutton.time = lastTimestamp;
+				e.xbutton.time = fev_get_evtime();
 				e.xbutton.x = x;
 				e.xbutton.y = y;
 				e.xbutton.x_root = rx;
@@ -3531,9 +3531,6 @@ void CMD_StrokeFunc(F_CMD_ARGS)
 			dpy,  ButtonPressMask | ButtonReleaseMask |
 			KeyPressMask | KeyReleaseMask | ButtonMotionMask |
 			PointerMotionMask, &e);
-		/* Records the time */
-		StashEventTime(&e);
-
 		switch (e.type)
 		{
 		case MotionNotify:

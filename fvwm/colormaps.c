@@ -82,6 +82,7 @@ void set_client_controls_colormaps(Bool flag)
  */
 void colormap_handle_colormap_notify(const XEvent *e)
 {
+	XEvent evdummy;
 	XColormapEvent *cevent = (XColormapEvent *)e;
 	Bool ReInstall = False;
 	XWindowAttributes attr;
@@ -110,7 +111,7 @@ void colormap_handle_colormap_notify(const XEvent *e)
 		ReInstall = True;
 	}
 
-	while (FCheckTypedEvent(dpy,ColormapNotify,&Event))
+	while (FCheckTypedEvent(dpy, ColormapNotify, &evdummy))
 	{
 		if (XFindContext(
 			    dpy, cevent->window, FvwmContext,

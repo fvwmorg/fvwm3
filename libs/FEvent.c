@@ -24,6 +24,9 @@
 
 #include <stdio.h>
 
+#include "libs/ftime.h"
+#include "libs/safemalloc.h"
+
 /* ---------------------------- local definitions --------------------------- */
 
 /* ---------------------------- local macros -------------------------------- */
@@ -39,12 +42,101 @@
 /* ---------------------------- local variables ----------------------------- */
 
 static XEvent fev_event;
+/* until Xlib does this for us */
+Time fev_last_timestamp = CurrentTime;
 
 /* ---------------------------- exported variables (globals) ---------------- */
 
 /* ---------------------------- local functions ----------------------------- */
 
+/* Records the time of the last processed event. */
+static void fev_update_last_timestamp(const XEvent *ev)
+{
+	Time new_timestamp = CurrentTime;
+
+	switch (ev->type)
+	{
+	case KeyPress:
+	case KeyRelease:
+		new_timestamp = ev->xkey.time;
+		break;
+	case ButtonPress:
+	case ButtonRelease:
+		new_timestamp = ev->xbutton.time;
+		break;
+	case MotionNotify:
+		new_timestamp = ev->xmotion.time;
+		break;
+	case EnterNotify:
+	case LeaveNotify:
+		new_timestamp = ev->xcrossing.time;
+		break;
+	case PropertyNotify:
+		new_timestamp = ev->xproperty.time;
+		break;
+	case SelectionClear:
+		new_timestamp = ev->xselectionclear.time;
+		break;
+	case SelectionRequest:
+		new_timestamp = ev->xselectionrequest.time;
+		break;
+	case SelectionNotify:
+		new_timestamp = ev->xselection.time;
+		break;
+	default:
+		return;
+	}
+	/* Only update if the new timestamp is later than the old one, or
+	 * if the new one is from a time at least 30 seconds earlier than the
+	 * old one (in which case the system clock may have changed) */
+	if (new_timestamp > fev_last_timestamp ||
+	    fev_last_timestamp - new_timestamp > CLOCK_SKEW_MS)
+	{
+		fev_last_timestamp = new_timestamp;
+	}
+
+	return;
+}
+
 /* ---------------------------- interface functions ------------------------- */
+
+Time fev_get_evtime(void)
+{
+	return fev_last_timestamp;
+}
+
+int fev_get_evtype__remove_me(void)
+{
+	return fev_event.type;
+}
+
+void fev_fake_event(XEvent *ev)
+{
+	fev_event = *ev;
+	fev_update_last_timestamp(ev);
+
+	return;
+}
+
+void *fev_save_event(void)
+{
+	XEvent *ev;
+
+	ev = (XEvent *)safemalloc(sizeof(XEvent));
+	*ev = fev_event;
+
+	return ev;
+}
+
+void fev_restore_event(void *ev)
+{
+	fev_event = *(XEvent *)ev;
+	free(ev);
+
+	return;
+}
+
+/* ---------------------------- X event replacements ------------------------ */
 
 XTimeCoord *FGetMotionEvents(
 	Display *display, Window w, Time start, Time stop, int *nevents_return)
@@ -75,6 +167,7 @@ Bool FCheckIfEvent(
 
 	rc = XCheckIfEvent(display, &fev_event, predicate, arg);
 	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }
@@ -86,6 +179,7 @@ Bool FCheckMaskEvent(
 
 	rc = XCheckMaskEvent(display, event_mask, &fev_event);
 	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }
@@ -97,6 +191,7 @@ Bool FCheckTypedEvent(
 
 	rc = XCheckTypedEvent(display, event_type, &fev_event);
 	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }
@@ -108,6 +203,7 @@ Bool FCheckTypedWindowEvent(
 
 	rc = XCheckTypedWindowEvent(display, w, event_type, &fev_event);
 	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }
@@ -119,6 +215,7 @@ Bool FCheckWindowEvent(
 
 	rc = XCheckWindowEvent(display, w, event_mask, &fev_event);
 	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }
@@ -142,6 +239,7 @@ int FIfEvent(
 
 	rc = XIfEvent(display, &fev_event, predicate, arg);
 	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }
@@ -153,6 +251,7 @@ int FMaskEvent(
 
 	rc = XMaskEvent(display, event_mask, &fev_event);
 	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }
@@ -164,6 +263,7 @@ int FNextEvent(
 
 	rc = XNextEvent(display, &fev_event);
 	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }
@@ -175,6 +275,7 @@ int FPeekEvent(
 
 	rc = XPeekEvent(display, &fev_event);
 	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }
@@ -188,6 +289,7 @@ int FPeekIfEvent(
 
 	rc = XPeekIfEvent(display, &fev_event, predicate, arg);
 	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }
@@ -267,6 +369,7 @@ int FWindowEvent(
 
 	rc = XWindowEvent(display, w, event_mask, &fev_event);
 	*event_return = fev_event;
+	fev_update_last_timestamp(event_return);
 
 	return rc;
 }

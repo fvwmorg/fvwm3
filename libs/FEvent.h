@@ -33,6 +33,23 @@ typedef XEvent FEvent;
 
 /* ---------------------------- interface functions ------------------------- */
 
+/* get the latest event time */
+Time fev_get_evtime(void);
+
+/*!!!remove this function once the exec context manager is there */
+int fev_get_evtype__remove_me(void);
+
+/* announce a faked event to the FEvent module */
+void fev_fake_event(XEvent *ev);
+
+/* temporarily store the cached event in allocated memory */
+void *fev_save_event(void);
+
+/* restore an event saved with fev_save_event and free the memory it uses */
+void fev_restore_event(void *ev);
+
+/* ---------------------------- X event replacements ------------------------ */
+
 /* Replacements for X functions */
 XTimeCoord *FGetMotionEvents(
 	Display *display, Window w, Time start, Time stop, int *nevents_return);

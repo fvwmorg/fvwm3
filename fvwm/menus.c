@@ -34,6 +34,7 @@
 #include <assert.h>
 #include <X11/keysym.h>
 
+#include "libs/ftime.h"
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
 #include "libs/Picture.h"
@@ -69,9 +70,6 @@ extern XContext MenuContext;
 /* We need to use this structure to make sure the other parts of fvwm work with
  * the most recent event. */
 extern XEvent Event;
-
-/* This one is only read, never written */
-extern Time lastTimestamp;
 
 /* ---------------------------- included code files ------------------------- */
 
@@ -763,7 +761,7 @@ static void menuShortcuts(
 	/*** handle double-keypress ***/
 
 	if (pdkp->timestamp &&
-	    lastTimestamp - pdkp->timestamp <
+	    fev_get_evtime() - pdkp->timestamp <
 	    MST_DOUBLE_CLICK_TIME(pmp->menu) &&
 	    event->xkey.state == pdkp->keystate &&
 	    event->xkey.keycode == pdkp->keycode)
@@ -1221,7 +1219,7 @@ static Bool is_double_click(
 	{
 		return False;
 	}
-	if (lastTimestamp - t0 >= MST_DOUBLE_CLICK_TIME(pmp->menu))
+	if (fev_get_evtime() - t0 >= MST_DOUBLE_CLICK_TIME(pmp->menu))
 	{
 		return False;
 	}
@@ -3602,16 +3600,13 @@ static int pop_menu_up(
 		char *menu_name;
 		saved_pos_hints pos_hints;
 		Bool is_busy_grabbed = False;
-		Time t;
 		exec_func_args_type efa;
-		extern XEvent Event;
 		int mapped_copies = MR_MAPPED_COPIES(mr);
 
 		/* save variables that we still need but that may be
 		 * overwritten */
 		menu_name = safestrdup(MR_NAME(mr));
 		pos_hints = last_saved_pos_hints;
-		t = lastTimestamp;
 		if (Scr.BusyCursor & BUSY_DYNAMICMENU)
 		{
 			is_busy_grabbed = GrabEm(CRS_WAIT, GRAB_BUSYMENU);
@@ -3632,7 +3627,6 @@ static int pop_menu_up(
 			UngrabEm(GRAB_BUSYMENU);
 		}
 		/* restore the stuff we saved */
-		lastTimestamp = t;
 		last_saved_pos_hints = pos_hints;
 		/* See if the window has been deleted */
 		if (!check_if_fvwm_window_exists(*pfw))
@@ -4254,13 +4248,10 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 		/* Finally execute the popdown action (if defined). */
 		saved_pos_hints pos_hints;
 		exec_func_args_type efa;
-		Time t;
-		extern XEvent Event;
 
 		/* save variables that we still need but that may be
 		 * overwritten */
 		pos_hints = last_saved_pos_hints;
-		t = lastTimestamp;
 		/* Execute the action */
 		memset(&efa, 0, sizeof(efa));
 		efa.cond_rc = NULL;
@@ -4274,7 +4265,6 @@ static void pop_menu_down(MenuRoot **pmr, MenuParameters *pmp)
 		execute_function(&efa);
 		/* restore the stuff we saved */
 		last_saved_pos_hints = pos_hints;
-		lastTimestamp = t;
 		if (!check_if_fvwm_window_exists(*(pmp->pfw)))
 		{
 			*(pmp->pfw) = NULL;
@@ -4378,13 +4368,11 @@ static void __mloop_init(
 	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi,
 	MenuOptions *pops)
 {
-	extern XEvent Event;
-
 	memset(in, 0, sizeof(*in));
 	in->e = &Event;
 	in->mif.do_force_reposition = 1;
 	memset(med, 0, sizeof(*med));
-	msi->t0 = lastTimestamp;
+	msi->t0 = fev_get_evtime();
 	pmret->rc = MENU_NOP;
 	memset(pops, 0, sizeof(*pops));
 	/* remember where the pointer was so we can tell if it has moved */
@@ -4407,7 +4395,10 @@ static void __mloop_get_event_timeout_loop(
 	MenuParameters *pmp,
 	mloop_evh_input_t *in, mloop_evh_data_t *med, mloop_static_info_t *msi)
 {
-	while (!FPending(dpy) || !FCheckMaskEvent(dpy, msi->event_mask, &Event))
+	XEvent evdummy;
+
+	while (!FPending(dpy) || !FCheckMaskEvent(
+		       dpy, msi->event_mask, &evdummy))
 	{
 		Bool is_popup_timed_out =
 			(MST_POPUP_DELAY(pmp->menu) > 0 &&
@@ -4490,7 +4481,7 @@ static void __mloop_get_event_timeout_loop(
 		{
 			/* fake a motion event, and set in->mif.do_popup_now */
 			Event.type = MotionNotify;
-			Event.xmotion.time = lastTimestamp;
+			Event.xmotion.time = fev_get_evtime();
 			in->mif.is_motion_faked = True;
 			break;
 		}
@@ -4554,7 +4545,7 @@ static mloop_ret_code_t __mloop_get_event(
 		if (in->mif.do_force_reposition)
 		{
 			Event.type = MotionNotify;
-			Event.xmotion.time = lastTimestamp;
+			Event.xmotion.time = fev_get_evtime();
 			in->mif.is_motion_faked = True;
 			in->mif.do_force_reposition = False;
 			in->mif.is_popped_up_by_timeout = False;
@@ -4598,7 +4589,6 @@ static mloop_ret_code_t __mloop_get_event(
 	} /* !in->mif.do_recycle_event */
 
 	in->mif.is_pointer_in_active_item_area = False;
-	StashEventTime(&Event);
 	if (Event.type == MotionNotify)
 	{
 		/* discard any extra motion events before a release */
@@ -4874,7 +4864,7 @@ static mloop_ret_code_t __mloop_handle_event(
 		 * redrawn after being obscured by menus. */
 		/* We need to preserve the Fw here! Note that handling an Expose
 		 * event will never invalidate the Fw. */
-		DispatchEvent(True);
+		dispatch_event(in->e, True);
 		return MENU_MLOOP_RET_LOOP;
 
 	case ClientMessage:
@@ -4923,11 +4913,11 @@ static mloop_ret_code_t __mloop_handle_event(
 
 	default:
 		/* We must not dispatch events here.  There is no guarantee that
-		 * DispatchEvent doesn't destroy a window stored in the menu
+		 * dispatch_event doesn't destroy a window stored in the menu
 		 * structures.  Anyway, no events should ever get here except
 		 * to tear off menus and these must be handled individually. */
 #if 0
-		DispatchEvent(False);
+		dispatch_event(in->e);
 #endif
 		break;
 	}
@@ -5206,13 +5196,11 @@ static mloop_ret_code_t __mloop_do_popup(
 		 * The user defined missing_submenu_action may create it. */
 		Bool is_complex_function;
 		Bool is_busy_grabbed = False;
-		Time t;
 		char *menu_name;
 		char *action;
 		extern XEvent Event;
 		char *missing_action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
 
-		t = lastTimestamp;
 		menu_name = PeekToken(
 			SkipNTokens(MI_ACTION(med->mi), 1), NULL);
 		if (!menu_name)
@@ -5263,7 +5251,6 @@ static mloop_ret_code_t __mloop_do_popup(
 			UngrabEm(GRAB_BUSYMENU);
 		}
 		/* restore the stuff we saved */
-		lastTimestamp = t;
 		if (!check_if_fvwm_window_exists(*(pmp->pfw)))
 		{
 			*(pmp->pfw) = NULL;
@@ -6123,7 +6110,7 @@ void do_menu(MenuParameters *pmp, MenuReturn *pmret)
 	Bool is_pointer_ungrabbed = False;
 	Bool do_menu_interaction;
 	Bool do_check_pop_down;
-	Time t0 = lastTimestamp;
+	Time t0 = fev_get_evtime();
 	XEvent tmpevent;
 	double_keypress dkp;
 	/* don't save these ones, we want them to work even within recursive

@@ -6,8 +6,8 @@
   0 distribution issues
   0 testing
 ----------------------
-  1 open items
-186 items closed/postponed
+  0 open items
+187 items closed/postponed
 187 items in total
 
 ---------- To be verified: ---------------------------------------
@@ -18,29 +18,12 @@
 
 ---------- Distribution issues: ----------------------------------
 
-185) Update release date in man pages and possibly other files:
-     fvwm-web/download.html
-     fvwm-web/index.html
-     fvwm-web/generated/AUTHORS.html
-     fvwm-web/generated/FAQ.html
-     fvwm-web/generated/NEWS.html
-     [done]:
-     .fvwm/ChangeLog
-     .fvwm/NEWS
-     .fvwm/fvwm/fvwm2.1
-     .fvwm/configure.in
-     .fvwm/docs/FAQ
-     .fvwm/docs/fvwm.lsm.in
-     .fvwm/**/*.1
-
 ---------- Testing: ----------------------------------------------
 
 ---------- Closed recently: --------------------------------------
 
 ---------- Postponed until after 2.4: ----------------------------
 
- 11) Add FvwmKb module?
-     [delayed until after 2.4]
  17) Fix the bug that causes icons to lose management (bug #352).
      [couldn't reproduce this yet; can anybody who has netcool
      event manager try it?]
@@ -49,9 +32,6 @@
      (Datek's "Streamer", CodeWarrior).
      [optional]
      -> [unreproducible]
- 34) Update and run the purify script again.
-     [The remaining leak with default button vectors seems to
-     be unfixable]
 116) Fix problem that can cause long icon titles to be expanded
      although the pointer is not over it.
      [reported by Mikhael]
@@ -61,9 +41,6 @@
 117) Investigate icons disappearing if icon changes while on a
      different desk.
      [reported by Julian Gilbey/David Cunningham on 16-Mar-2000]
-118) Investigate "FvwmPager & StaysOnTop" bug (#543).
-     [reported by Nadim Shaikli <nadim.shaikli@intel.com>]
-     [no response, consider this fixed]
 122) Investigate FvwmButtons panel problem.
      [reported by Robert H. Ford II <rhford2@lucent.com> on 18-Feb-2000]
      -> [no usable feedback]
@@ -96,9 +73,6 @@
 172) Investigate travelling rxvt-2.7.4
      [reported by PDS]
      -> [unreproducible, not serious anyway]
-179) Fix module communication between FvwmConsole and
-     FvwmConsoleC.
-     [workaround for now]
 
 ---------- Closed: -----------------------------------------------
 
@@ -116,6 +90,9 @@
  9)  Set up RPM packages.
  10) Remove 'PopupAsRootMenu' menu style (?).
      [rejected]
+ 11) Add FvwmKb module?
+     [delayed until after 2.4]
+     [author lost interest]
  12) Set up bzip2 tarballs.
  13) Use a 'busy' pointer during startup.
  14) Figure out what the problem with Amaya is.
@@ -154,6 +131,9 @@
  31) 'Maximize grow grow' works only on the current page.
  33) Test the GNOME patches.
      [skipped, patches are simple, fix problems when they show up]
+ 34) Update and run the purify script again.
+     [The remaining leak with default button vectors seems to
+     be unfixable]
  35) Test the strokes patch.
      [skipped, patches are simple, fix problems when they show up]
  36) Test the new menu styles (ItemFormat and menu layout)
@@ -278,6 +258,9 @@
 113) FvwmForm sets no class/resource.
 114) FvwmIdent sets no class/resource.
 115) FvwmWharf sets no class/resource.
+118) Investigate "FvwmPager & StaysOnTop" bug (#543).
+     [reported by Nadim Shaikli <nadim.shaikli@intel.com>]
+     [no response, consider this fixed]
 119) MaxSwallow does not work in FvwmWharf e.g. with
      'xload -g 50x50'.
      [reported by Dominik]
@@ -369,6 +352,9 @@
      step w/ exceed.
      [Exceed bug, no idea how to work around this]
 178) Fix incompatible function names in FvwmCommand perl module.
+179) Fix module communication between FvwmConsole and
+     FvwmConsoleC.
+     [getline bug]
 180) Decide if the FAQ will become version specific or not.  If it
      will, multiple copies have to be kept on the home page.
 181) Adapt fvwm24_convert script to handle new placement style
@@ -377,5 +363,19 @@
 183) Fix remaining session management bugs.
 184) Adapt fvwm24_convert script to warn users about new
      FvwmButtons panel syntax.
+185) Update release date in man pages and possibly other files:
+     fvwm-web/download.html
+     fvwm-web/index.html
+     fvwm-web/generated/AUTHORS.html
+     fvwm-web/generated/FAQ.html
+     fvwm-web/generated/NEWS.html
+     .fvwm/ChangeLog
+     .fvwm/NEWS
+     .fvwm/fvwm/fvwm2.1
+     .fvwm/configure.in
+     .fvwm/docs/FAQ
+     .fvwm/docs/fvwm.lsm.in
+     .fvwm/**/*.1
+     [done]
 186) Update fvwm24_convert man page.
 187) Finalize handling of continued lines in fvwm24_convert.

@@ -1008,7 +1008,6 @@ static void AnimatedMoveAnyWindow(
 			    dpy, ButtonPressMask|ButtonReleaseMask|KeyPressMask,
 			    &Event))
 		{
-			StashEventTime(&Event);
 			/* finish the move immediately */
 			XMoveWindow(dpy,w,endX,endY);
 			if (menu_root != NULL)
@@ -1842,7 +1841,7 @@ Bool moveLoop(
 						&yt);
 				}
 				Event.type = MotionNotify;
-				Event.xmotion.time = lastTimestamp;
+				Event.xmotion.time = fev_get_evtime();
 				Event.xmotion.x_root = xl - XOffset;
 				Event.xmotion.y_root = yt - YOffset;
 				Event.xmotion.same_screen = True;
@@ -1856,7 +1855,6 @@ Bool moveLoop(
 				   KeyPressMask | PointerMotionMask |
 				   ButtonMotionMask | ExposureMask, &Event);
 		}
-		StashEventTime(&Event);
 
 		/* discard any extra motion events before a logical release */
 		if (Event.type == MotionNotify)
@@ -1882,7 +1880,6 @@ Bool moveLoop(
 				}
 			}
 			/*** end of code borrowed from icewm ***/
-			StashEventTime(&Event);
 
 		} /* if (Event.type == MotionNotify) */
 
@@ -2131,7 +2128,7 @@ Bool moveLoop(
 				 * event causes some drawing */
 				switch_move_resize_grid(False);
 			}
-			DispatchEvent(False);
+			dispatch_event(&Event, False);
 			if (!do_move_opaque)
 			{
 				draw_move_resize_grid(
@@ -2503,18 +2500,8 @@ void CMD_XorPixmap(F_CMD_ARGS)
 
 /* ----------------------------- resizing code ----------------------------- */
 
-/***********************************************************************
- *
- * window resizing borrowed from the "wm" window manager
- *
- ***********************************************************************/
-
-/****************************************************************************
- *
- * Starts a window resize operation
- *
- ****************************************************************************/
-static Bool resize_window(F_CMD_ARGS)
+/* Starts a window resize operation */
+static Bool __resize_window(F_CMD_ARGS)
 {
 	extern Window bad_window;
 	Bool finished = False, is_done = False, is_aborted = False;
@@ -2864,7 +2851,7 @@ static Bool resize_window(F_CMD_ARGS)
 	}
 	/* kick off resizing without requiring any motion if invoked with a key
 	 * press */
-	if (eventp->type == KeyPress)
+	if (fev_get_evtype__remove_me() == KeyPress)
 	{
 		if (FQueryPointer(
 			    dpy, Scr.Root, &JunkRoot, &JunkChild, &stashed_x,
@@ -2899,7 +2886,7 @@ static Bool resize_window(F_CMD_ARGS)
 			{
 				/* Fake an event to force window reposition */
 				Event.type = MotionNotify;
-				Event.xmotion.time = lastTimestamp;
+				Event.xmotion.time = fev_get_evtime();
 				fForceRedraw = True;
 				break;
 			}
@@ -2908,8 +2895,6 @@ static Bool resize_window(F_CMD_ARGS)
 		{
 			FMaskEvent(dpy, evmask, &Event);
 		}
-		StashEventTime(&Event);
-
 		if (Event.type == MotionNotify)
 		{
 			/* discard any extra motion events before a release */
@@ -2918,7 +2903,6 @@ static Bool resize_window(F_CMD_ARGS)
 				       PointerMotionMask | ButtonReleaseMask |
 				       ButtonPressMask, &Event))
 			{
-				StashEventTime(&Event);
 				if (Event.type == ButtonRelease ||
 				    Event.type == ButtonPress)
 				{
@@ -3042,7 +3026,7 @@ static Bool resize_window(F_CMD_ARGS)
 				/* must undraw the rubber band in case the
 				 * event causes some drawing */
 				switch_move_resize_grid(False);
-			DispatchEvent(False);
+			dispatch_event(&Event, False);
 			if (!do_resize_opaque)
 			{
 				draw_move_resize_grid(
@@ -3159,7 +3143,7 @@ static Bool resize_window(F_CMD_ARGS)
 
 void CMD_Resize(F_CMD_ARGS)
 {
-	resize_window(F_PASS_ARGS);
+	__resize_window(F_PASS_ARGS);
 
 	return;
 }
@@ -3970,7 +3954,7 @@ void CMD_ResizeMaximize(F_CMD_ARGS)
 	/* keep a copy of the old geometry */
 	normal_g = fw->normal_g;
 	/* resize the window normally */
-	was_resized = resize_window(F_PASS_ARGS);
+	was_resized = __resize_window(F_PASS_ARGS);
 	if (was_resized == True)
 	{
 		/* set the new geometry as the maximized geometry and restore

@@ -31,7 +31,7 @@
 
 /* ---------------------------- interface functions ------------------------- */
 
-void DispatchEvent(Bool preserve_fw);
+void dispatch_event(XEvent *e, Bool preserve_Fw);
 int GetContext(FvwmWindow *, const XEvent *, Window *dummy);
 int My_XNextEvent(Display *dpy, XEvent *event);
 int flush_expose(Window w);

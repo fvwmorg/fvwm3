@@ -1,3 +1,94 @@
+2002-09-05  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/move_resize.c (__resize_window):
+	* fvwm/colorset.c (add_to_junk):
+
+	* fvwm/move_resize.c (__resize_window):
+	renamed function and changed callers
+
+	* fvwm/fvwm.h (F_PASS_ARGS):
+	(F_CMD_ARGS):
+	removed eventp command argument
+
+	* fvwm/events.c (DispatchEvent):
+	(dispatch_event):
+	renamed function, added event argument and changed all callers
+
+	* libs/FEvent.c (fev_fake_event):
+	* libs/FEvent.c (fev_get_evtype__remove_me):
+	new functions
+
+	* fvwm/menus.c (menuShortcuts):
+	(is_double_click):
+	(pop_menu_up):
+	(pop_menu_up):
+	(pop_menu_down):
+	(pop_menu_down):
+	(__mloop_init):
+	(__mloop_get_event_timeout_loop):
+	(__mloop_get_event):
+	(__mloop_do_popup):
+	(__mloop_do_popup):
+	(do_menu):
+	* fvwm/builtins.c (CMD_FakeClick):
+	* fvwm/functions.c (CheckActionType):
+	(CheckActionType):
+	* fvwm/focus.c (__try_program_focus):
+	(__try_program_focus):
+	* fvwm/icccm2.c (SetupICCCM2):
+	* fvwm/virtual.c (HandlePaging):
+	(HandlePaging):
+	(HandlePaging):
+	(HandlePaging):
+	(HandlePaging):
+	(HandlePaging):
+	* fvwm/module_interface.c (make_vpacket):
+	(make_new_vpacket):
+	* fvwm/schedule.c (squeue_get_next_ms):
+	(squeue_get_next_ms):
+	(CMD_Schedule):
+	* fvwm/stack.c (BroadcastRestack):
+	* fvwm/move_resize.c (resize_window):
+	(moveLoop):
+	* libs/FEvent.c (fev_get_evtime):
+	removed global lastTimestamp; use fev_get_evtime() from FEvent.c instead
+
+	* fvwm/events.c (HandleEnterNotify):
+	(DispatchEvent):
+	(My_XNextEvent):
+	(discard_events):
+	(discard_window_events):
+	* fvwm/move_resize.c (AnimatedMoveAnyWindow):
+	(moveLoop):
+	(resize_window):
+	* fvwm/menus.c (__mloop_get_event):
+	* fvwm/virtual.c (HandlePaging):
+	(MoveViewport):
+	* fvwm/functions.c (DeferExecution):
+	(CheckActionType):
+	* fvwm/misc.c (get_server_time):
+	* fvwm/builtins.c (CMD_StrokeFunc):
+	* fvwm/menus.c (pop_menu_up):
+	(pop_menu_down):
+	(__mloop_init):
+	* libs/FEvent.c (fev_update_last_timestamp):
+	removed StashEventTime function; handle this directly in FEvent.c
+
+	* fvwm/module_interface.c (ExecuteModuleCommand):
+	* fvwm/misc.c (Keyboard_shortcuts):
+	* fvwm/colormaps.c (colormap_handle_colormap_notify):
+	* fvwm/events.c (handle_all_expose):
+	(dispatch_event):
+	(HandleEvents):
+	(HandleKeyPress):
+	don't use Event global anymore
+
+	* fvwm/bindings.c (activate_binding):
+	fixed key bindings on window corners
+
+	* libs/fvwmlib.h (C_DECOR):
+	context including all parts of the decorations
+
 2002-09-04  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/FEvent.h:

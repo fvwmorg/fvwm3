@@ -727,6 +727,7 @@ void ExecuteModuleCommand(Window w, int module, char *text)
 {
 	int context;
 	FvwmWindow *fw;
+	XEvent e;
 
 	if (XFindContext (dpy, w, FvwmContext, (caddr_t *) &fw) == XCNOENT)
 	{
@@ -740,45 +741,42 @@ void ExecuteModuleCommand(Window w, int module, char *text)
 	 */
 	if (FQueryPointer(
 		    dpy, Scr.Root, &JunkRoot, &JunkChild, &JunkX,&JunkY,
-		    &Event.xbutton.x_root,&Event.xbutton.y_root,&JunkMask) ==
+		    &e.xbutton.x_root, &e.xbutton.y_root, &JunkMask) ==
 	    False)
 	{
 		/* pointer is not on this screen */
 		/* If a module does XUngrabPointer(), it can now get proper
 		 * Popups */
-		Event.xbutton.window = Scr.Root;
-		Event.xbutton.button = 1;
-		Event.xbutton.subwindow = None;
+		e.xbutton.window = Scr.Root;
 		fw = NULL;
 	}
 	else
 	{
-		Event.xbutton.window = w;
-		Event.xbutton.button = 1;
-		Event.xbutton.subwindow = None;
-		context = GetContext(fw,&Event,&w);
+		e.xbutton.window = w;
 	}
+	e.xbutton.subwindow = None;
+	e.xbutton.button = 1;
 	/* If a module does XUngrabPointer(), it can now get proper Popups */
 	if (StrEquals(text, "popup"))
 	{
-		Event.xbutton.type = ButtonPress;
+		e.xbutton.type = ButtonPress;
 	}
 	else
 	{
-		Event.xbutton.type = ButtonRelease;
+		e.xbutton.type = ButtonRelease;
 	}
-	Event.xbutton.x = 0;
-	Event.xbutton.y = 0;
-	context = GetContext(fw, &Event, &w);
-	old_execute_function(NULL, text, fw, &Event, context, module, 0, NULL);
+	e.xbutton.x = 0;
+	e.xbutton.y = 0;
+	fev_fake_event(&e);
+	context = GetContext(fw, &e, &w);
+	old_execute_function(NULL, text, fw, &e, context, module, 0, NULL);
 
 	return;
 }
 
-
 RETSIGTYPE DeadPipe(int sig)
-{}
-
+{
+}
 
 void KillModule(int channel)
 {
@@ -856,7 +854,6 @@ static unsigned long *
 make_vpacket(unsigned long *body, unsigned long event_type,
 	     unsigned long num, va_list ap)
 {
-	extern Time lastTimestamp;
 	unsigned long *bp = body;
 
 	/* truncate long packets */
@@ -867,7 +864,7 @@ make_vpacket(unsigned long *body, unsigned long event_type,
 	*(bp++) = START_FLAG;
 	*(bp++) = event_type;
 	*(bp++) = num+FvwmPacketHeaderSize;
-	*(bp++) = lastTimestamp;
+	*(bp++) = fev_get_evtime();
 
 	for (; num > 0; --num)
 	{
@@ -893,7 +890,6 @@ static unsigned long
 make_new_vpacket(unsigned char *body, unsigned long event_type,
 		 unsigned long num, va_list ap)
 {
-	extern Time lastTimestamp;
 	unsigned long arglen;
 	unsigned long bodylen = 0;
 	unsigned long *bp = (unsigned long *)body;
@@ -906,7 +902,7 @@ make_new_vpacket(unsigned char *body, unsigned long event_type,
 	*(bp++) = event_type;
 	/*  Skip length field, we don't know it yet. */
 	bp++;
-	*(bp++) = lastTimestamp;
+	*(bp++) = fev_get_evtime();
 
 	for (; num > 0; --num)
 	{

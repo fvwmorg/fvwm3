@@ -401,6 +401,7 @@ int GetEqualSizeChildren(
 #define C_SIDEBAR     (C_SB_LEFT|C_SB_RIGHT|C_SB_TOP|C_SB_BOTTOM)
 #define C_RALL        (C_R1|C_R2|C_R3|C_R4|C_R5)
 #define C_LALL        (C_L1|C_L2|C_L3|C_L4|C_L5)
+#define C_DECOR       (C_LALL|C_RALL|C_TITLE|C_FRAME|C_SIDEBAR)
 #define C_ALL         (C_WINDOW|C_TITLE|C_ICON|C_ROOT|C_FRAME|C_SIDEBAR|\
 		       C_LALL|C_RALL|C_EWMH_DESKTOP)
 

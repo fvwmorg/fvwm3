@@ -152,7 +152,6 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 	FvwmWindow *t, *t2;
 	int num, i;
 	unsigned long *body, *bp, length;
-	extern Time lastTimestamp;
 
 	if (s2 == &Scr.FvwmRoot)
 	{
@@ -201,7 +200,7 @@ static void BroadcastRestack(FvwmWindow *s1, FvwmWindow *s2)
 	*(bp++) = START_FLAG;
 	*(bp++) = M_RESTACK;
 	*(bp++) = length;
-	*(bp++) = lastTimestamp;
+	*(bp++) = fev_get_evtime();
 	for (t2 = t; num != 0; num--, t2 = t2->stack_next)
 	{
 		*(bp++) = FW_W(t2);

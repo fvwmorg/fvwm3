@@ -82,7 +82,7 @@ int GetTwoArguments(
 void NewFontAndColor(
 	FlocaleFont *flf, Pixel color, Pixel backcolor);
 void Keyboard_shortcuts(
-	XEvent *Event, FvwmWindow *fw, int *x_defect, int *y_defect,
+	XEvent *ev, FvwmWindow *fw, int *x_defect, int *y_defect,
 	int ReturnEvent);
 Bool check_if_fvwm_window_exists(
 	FvwmWindow *fw);

@@ -53,7 +53,6 @@ extern char NoClass[];
 extern char NoResource[];
 extern XGCValues Globalgcv;
 extern unsigned long Globalgcm;
-extern Time lastTimestamp;
 extern XEvent Event;
 extern int master_pid;
 extern Display *dpy;

@@ -83,9 +83,9 @@ SetupICCCM2(Bool replace_wm)
 			dpy, running_wm_win, CWEventMask, &attr);
 	}
 
-	/* We are not yet in the event loop, thus lastTimestamp will not
-	   be ready. Have to get a timestamp manually by provoking a
-	   PropertyNotify. */
+	/* We are not yet in the event loop, thus fev_get_evtime() will not
+	 * be ready.  Have to get a timestamp manually by provoking a
+	 * PropertyNotify. */
 	managing_since = get_server_time();
 
 	XSetSelectionOwner(dpy, _XA_WM_SX, Scr.NoFocusWin, managing_since);
