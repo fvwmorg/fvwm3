@@ -1387,13 +1387,10 @@ void HandleUnmapNotify(void)
 			     0, 0, &dstx, &dsty, &dumwin))
   {
     XEvent ev;
-    Bool reparented;
 
     MyXGrabServer(dpy);
-    reparented = XCheckTypedWindowEvent (dpy, Event.xunmap.window,
-					 ReparentNotify, &ev);
     SetMapStateProp (Tmp_win, WithdrawnState);
-    if (reparented)
+    if (XCheckTypedWindowEvent(dpy, Event.xunmap.window, ReparentNotify, &ev))
     {
       if (Tmp_win->old_bw)
 	XSetWindowBorderWidth (dpy, Event.xunmap.window, Tmp_win->old_bw);
@@ -1407,6 +1404,7 @@ void HandleUnmapNotify(void)
     }
     XRemoveFromSaveSet (dpy, Event.xunmap.window);
     XSelectInput (dpy, Event.xunmap.window, NoEventMask);
+    XSync(dpy, 0);
     MyXUngrabServer(dpy);
   }
   destroy_window(Tmp_win);		/* do not need to mash event before */
