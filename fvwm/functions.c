@@ -1055,7 +1055,6 @@ static void ComplexFunction(F_CMD_ARGS)
 static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
 				     expand_command_type expand_cmd)
 {
-  static unsigned int cfunc_depth = 0;
   cfunc_action_type type = CF_MOTION;
   char c;
   FunctionItem *fi;
@@ -1092,7 +1091,6 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
   if(eventp->type == ButtonPress)
     eventp->type = ButtonRelease;
   func->use_depth++;
-  cfunc_depth++;
   fi = func->first_item;
   while(fi != NULL)
     {
@@ -1128,7 +1126,6 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
   if(!Persist)
     {
       func->use_depth--;
-      cfunc_depth--;
       for(i=0;i<10;i++)
 	if(arguments[i] != NULL)
 	  free(arguments[i]);
@@ -1142,7 +1139,6 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
       if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonPress))
 	{
 	  func->use_depth--;
-	  cfunc_depth--;
 	  WaitForButtonsUp();
 	  for(i=0;i<10;i++)
 	    if(arguments[i] != NULL)
@@ -1154,7 +1150,6 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
   if(!GrabEm(CRS_NONE))
     {
       func->use_depth--;
-      cfunc_depth--;
       XBell(dpy, 0);
       for(i=0;i<10;i++)
 	if(arguments[i] != NULL)
@@ -1240,5 +1235,4 @@ static void execute_complex_function(F_CMD_ARGS, Bool *desperate,
     if(arguments[i] != NULL)
       free(arguments[i]);
   func->use_depth--;
-  cfunc_depth--;
 }
