@@ -614,8 +614,8 @@ Drawable CreateGradientPixmap(
   Drawable target;
   int t_x;
   int t_y;
-  unsigned int t_width;
-  unsigned int t_height;
+  int t_width;
+  int t_height;
 
   if (g_height < 0 || g_width < 0 || d_width < 0 || d_height < 0)
   	return None;
