@@ -62,6 +62,7 @@
 #include "read.h"
 #include "colors.h"
 #include "focus.h"
+#include "update.h"
 
 #include <X11/Xproto.h>
 #include <X11/Xatom.h>
@@ -616,6 +617,7 @@ int main(int argc, char **argv)
 
   DBUG("main","Setting up rc file defaults...");
   SetRCDefaults();
+  flush_window_updates();
 
   DBUG("main","Running config_commands...");
   if (num_config_commands > 0)
