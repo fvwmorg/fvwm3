@@ -43,21 +43,13 @@ void setup_icon_font(
 	FvwmWindow *fw, window_style *pstyle, Bool do_destroy);
 void setup_style_and_decor(
 	FvwmWindow *fw, window_style *pstyle, short *buttons);
-void setup_auxiliary_windows(
-	FvwmWindow *fw, Bool setup_frame_and_parent, short buttons);
 void setup_frame_attributes(
 	FvwmWindow *fw, window_style *pstyle);
-void destroy_auxiliary_windows(
-	FvwmWindow *fw, Bool destroy_frame_and_parent);
 void change_auxiliary_windows(
 	FvwmWindow *fw, short buttons);
-void setup_key_and_button_grabs(
-	FvwmWindow *fw);
 void setup_frame_geometry(
 	FvwmWindow *fw);
 void setup_frame_size_limits(
-	FvwmWindow *fw, window_style *pstyle);
-void setup_icon_size_limits(
 	FvwmWindow *fw, window_style *pstyle);
 void increase_icon_hint_count(
 	FvwmWindow *fw);

@@ -428,8 +428,9 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
   {
     if (FW_W_ICON_TITLE(fw))
     {
-      XDestroyWindow(dpy, FW_W_ICON_TITLE(fw));
       XDeleteContext(dpy, FW_W_ICON_TITLE(fw), FvwmContext);
+      XDestroyWindow(dpy, FW_W_ICON_TITLE(fw));
+      XFlush(dpy);
       FW_W_ICON_TITLE(fw) = None;
     }
   }
@@ -521,6 +522,7 @@ void CreateIconWindow(FvwmWindow *fw, int def_x, int def_y)
     /* destroy the old window */
     XDestroyWindow(dpy, old_icon_pixmap_w);
     XDeleteContext(dpy, old_icon_pixmap_w, FvwmContext);
+    XFlush(dpy);
     is_old_icon_shaped = False;
   }
 

@@ -1,3 +1,24 @@
+2002-07-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c:
+	added tons of crash debug code
+
+	* fvwm/add_window.c:
+	made a lot of internal functions static
+
+	* fvwm/add_window.c (setup_button_windows):
+	(destroy_title_window):
+	(destroy_button_windows):
+	(destroy_resize_handle_windows):
+	(destroy_auxiliary_windows):
+	(destroy_icon):
+	(destroy_window):
+	* fvwm/icons.c (CreateIconWindow):
+	safety patches w/ XDeleteContext
+
+	* fvwm/menus.c (DestroyMenu):
+	fixed a crash w/ accessing already deleted menus
+
 2002-07-25  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/menus.c (get_menu_options):
