@@ -8080,7 +8080,7 @@ DestroyDecor CustomDecor1
 .EE
 
 .TP
-.BI "TitleStyle [" justification "] [" Height " [" num "]]" [" MinHeight " [" num "]]"
+.BI "TitleStyle [" justification "] [" Height " [" num "]] [" MinHeight " [" num "]]"
 This command is deprecated and will be removed in the future.  There
 are plans to replace it with a more flexible solution in fvwm-3.0.
 
