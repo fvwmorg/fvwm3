@@ -38,6 +38,6 @@
 
 /* Function Prototypes */
 char *saferealloc(char *ptr, size_t length);
-void UpdateString(char **string,char *value);
+void UpdateString(char **string, const char *value);
 
 #endif

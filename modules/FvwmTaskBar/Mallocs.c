@@ -61,7 +61,7 @@ char *saferealloc(char *ptr, size_t length)
   return newptr;
 }
 
-void UpdateString(char **string,char *value)
+void UpdateString(char **string, const char *value)
 {
   if (value==NULL)
     return;

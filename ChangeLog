@@ -1,3 +1,24 @@
+1999-07-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/fvwm.c:
+	* fvwm/session.c:
+	Temporary fvwm state files now have .fs- prefix (hence .fs-restart),
+	since .fvwm is already a common prefix for persistent fvwm configs.
+	Added a header to the fs file saying that the file must not be deleted.
+	* fvwm/fvwm.c (StartupStuff): remove a state file only on Restaring
+
+	* fvwm/session.c (saveStateFile, setRealStateFilename): new functions
+	* fvwm/session.c: Some code rearrangement using new functions.
+	The purpose is localization (reducing passing FILE * between functions;
+	free() in the same function as malloc() etc.).
+
+	* fvwm/fvwm2.1:
+	* fvwm/fvwm.c (Done):
+	* session.c (RestartInSession, saveStateFile):
+	Fixed --dont-preserve-state. Creates an empty state file, hence can
+	be used under SM too (got X hang); and can now be mixed with other
+	Restart parameters, but must be first.
+
 1999-07-09  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* libs/Module.c (positive_read):

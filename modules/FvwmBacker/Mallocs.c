@@ -56,7 +56,7 @@ char *newptr;
   return ptr;
 }
 
-void UpdateString(char **string,char *value)
+void UpdateString(char **string, const char *value)
 {
   if (value==NULL) return;
   if (*string==NULL) *string=safemalloc(strlen(value)+1);

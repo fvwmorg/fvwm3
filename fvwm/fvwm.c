@@ -120,8 +120,8 @@ int g_argc;
 #ifdef SESSION
 char *client_id = NULL;
 #endif
-char *restore_filename = NULL;
-char *restart_restore_filename = NULL;  /* $HOME/.fvwm_restart */
+char *state_filename = NULL;
+char *restart_state_filename = NULL;  /* $HOME/.fs-restart */
 
 /* assorted gray bitmaps for decorative borders */
 #define g_width 2
@@ -221,7 +221,7 @@ int main(int argc, char **argv)
       {
 	if (++i >= argc)
 	  usage();
-	restore_filename = argv[i];
+	state_filename = argv[i];
       }
     else if (strncasecmp(argv[i],"-s",2)==0)
     {
@@ -568,16 +568,16 @@ int main(int argc, char **argv)
     }
   }
 
-  restart_restore_filename =
-    strdup(CatString2(user_home_dir, "/.fvwm_restart"));
-  if (!restore_filename && Restarting)
-    restore_filename = restart_restore_filename;
+  restart_state_filename =
+    strdup(CatString2(user_home_dir, "/.fs-restart"));
+  if (!state_filename && Restarting)
+    state_filename = restart_state_filename;
 
   /*
      This should be done early enough to have the window states loaded
      before the first call to AddWindow.
    */
-  LoadWindowStates(restore_filename);
+  LoadWindowStates(state_filename);
 
   Scr.FvwmCursors = CreateCursors(dpy);
   InitVariables();
@@ -722,9 +722,6 @@ int main(int argc, char **argv)
 */
 void StartupStuff(void)
 {
-/* migo - delete
-  FvwmFunction *func;
-*/
   const char *initFuncName;
 
   CaptureAllWindows();
@@ -738,40 +735,25 @@ void StartupStuff(void)
   if (Scr.ClickTime < 0)
     Scr.ClickTime = -Scr.ClickTime;
 
-  /* migo - 03/Jul/1999 - execute [Session]{Init|Restart}Function */
+  /* migo (03-Jul-1999): execute [Session]{Init|Restart}Function */
   initFuncName = getInitFunctionName(Restarting == True);
   if (FindFunction(initFuncName)) {
     char *action = strdup(CatString2("Function ", initFuncName));
     ExecuteFunction(action, NULL, &Event, C_ROOT, -1, EXPAND_COMMAND);
     free(action);
   }
-/* migo - delete
-  if(Restarting)
-  {
-    func = FindFunction("RestartFunction");
-    if(func != NULL)
-      ExecuteFunction("Function RestartFunction",NULL,&Event,C_ROOT,-1,
-		      EXPAND_COMMAND);
-  }
-  else
-  {
-    func = FindFunction("InitFunction");
-    if(func != NULL)
-      ExecuteFunction("Function InitFunction",NULL,&Event,C_ROOT,-1,
-		      EXPAND_COMMAND);
-  }
-*/
 
   /*
      This should be done after the initialization is finished, since
      it directly changes the global state.
    */
-  LoadGlobalState(restore_filename);
+  LoadGlobalState(state_filename);
 
   /*
-  ** migo - 20/Jun/1999 - Remove state file after usage.
+  ** migo (20-Jun-1999): Remove state file after usage.
+  ** migo (09-Jul-1999): but only on restart, otherwise it can be reused.
   */
-  unlink(restore_filename);
+  if (Restarting) unlink(state_filename);
 
   XUngrabPointer(dpy, CurrentTime);
 
@@ -1724,10 +1706,6 @@ RETSIGTYPE SigDone(int sig)
 /* if restart is true, command must not be NULL... */
 void Done(int restart, char *command)
 {
-  Bool do_preserve_state = True;
-/* migo - delete
-  FvwmFunction *func;
-*/
   const char *exitFuncName;
 
   if (!restart)
@@ -1735,19 +1713,13 @@ void Done(int restart, char *command)
       MoveViewport(0,0,False);
     }
 
-  /* migo - 03/Jul/1999 - execute [Session]ExitFunction */
+  /* migo (03/Jul/1999): execute [Session]ExitFunction */
   exitFuncName = getInitFunctionName(2);
   if (FindFunction(exitFuncName)) {
     char *action = strdup(CatString2("Function ", exitFuncName));
     ExecuteFunction(action, NULL, &Event, C_ROOT, -1, EXPAND_COMMAND);
     free(action);
   }
-/* migo - delete
-  func = FindFunction("ExitFunction");
-  if(func != NULL)
-    ExecuteFunction("Function ExitFunction",NULL,&Event,C_ROOT,-1,
-		    EXPAND_COMMAND);
-*/
 
   /* Close all my pipes */
   ClosePipes();
@@ -1761,27 +1733,22 @@ void Done(int restart, char *command)
 
   if (restart)
   {
+    Bool doPreserveState = True;
     SaveDesktopState();
 
-    if (command)
-    {
-      while (isspace(command[0]))
-	command++;
+    if (command) {
+      while (isspace(command[0])) command++;
+      if (strncmp(command, "--dont-preserve-state", 21) == 0) {
+        doPreserveState = False;
+        command += 21;
+        while (isspace(command[0])) command++;
+      }
     }
     if (command[0] == '\0')
       command = NULL; /* native restart */
 
-    if (command)
-    {
-      if (StrEquals(PeekToken(command, NULL), "--dont-preserve-state"))
-      {
-	do_preserve_state = False;
-	command = NULL;
-      }
-    }
-    if (do_preserve_state)
-      /* won't return under SM on Restart without parameters */
-      RestartInSession(restart_restore_filename, command == NULL);
+    /* won't return under SM on Restart without parameters */
+    RestartInSession(restart_state_filename, command == NULL, doPreserveState);
 
     /*
       RBW - 06/08/1999 - without this, windows will wander to other pages on
@@ -2085,7 +2052,7 @@ static const char *initFunctionNames[4] = {
 void setInitFunctionName(int n, const char *name)
 {
   initFunctionNames[n >= 0 && n < 3? n: 3] = name;
- }
+}
 
 const char *getInitFunctionName(int n)
 {

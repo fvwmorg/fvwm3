@@ -36,4 +36,4 @@
 /* Function Prototypes */
 char *safemalloc(int length);
 char *saferealloc(char *ptr, int length);
-void UpdateString(char **string,char *value);
+void UpdateString(char **string, const char *value);

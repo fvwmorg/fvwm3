@@ -1,3 +1,14 @@
+1999-07-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmForm/FormFvwmRootCursor.pl:
+	* FvwmForm/FormFvwmRootCursor.:
+	Initial cursor is now checked, more colors, cursor names are 5 in row
+	to help people with 800x600 screens.
+
+	* FvwmTaskBar/Mallocs.[hc]:
+	* FvwmBacker/Mallocs.[hc]:
+	Added const to char * in UpdateString().
+
 1999-07-10  Chris Rankin <rankinc@zipworld.com.au>
 
 	* FvwmTaskBar/FvwmTaskBar.c

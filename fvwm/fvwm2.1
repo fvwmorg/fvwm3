@@ -2881,14 +2881,6 @@ Key F1 R N Restart xterm -n '"X console"' \\
   -T \\"X\\ console\\" -e fvwm1 -s
 .EE
 
-Restart command without parameters preserves most per-window state by
-writing it to a file named .fvwm_restart in the user's home directory.
-
-.IP "Restart --dont-preserve-state"
-Runs the same command that was used to start fvwm initially like Restart
-without any parameters would do, but it does not save any window states
-over the restart.
-
 .IP "Restart --pass-args \fIWindowManagerName\fP"
 The same as 'Restart' without parameters but the name for a window manager
 is replaced with the specified \fIWindowManagerName\fP and original arguments
@@ -2897,6 +2889,13 @@ are preserved.
 This command is useful if you use initial arguments (like "-cmd FvwmCpp")
 and want to switch to another fvwm version without losing the initial
 arguments.
+
+.IP "Restart --dont-preserve-state [ \fIother-params\fP ]"
+The same as 'Restart [ other-params ]', but it does not save any window states
+over the restart.
+
+Without this option, Restart command preserves most per-window state
+by writing it to a file named .fs-restart in the user's home directory.
 
 .IP "Scroll \fIhorizonal vertical\fP"
 Scrolls the virtual desktop's viewport by \fIhorizontal\fP pages in
@@ -3790,7 +3789,8 @@ Fvwm2 tries to contact this session manager.
 .TP
 SM_SAVE_DIR
 if this is set, fvwm2 saves its session data in this directory. Otherwise
-it uses $HOME.
+it uses $HOME. Note, the saved files are named .fs-?????? and normally will
+be removed automatically when not used anymore.
 
 .SH BUGS
 As of fvwm2 2.2 there were exactly 46.144 unidentified bugs.
