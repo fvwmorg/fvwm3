@@ -521,17 +521,15 @@ static void frame_set_decor_gravities(
 	xcwa.bit_gravity = grav->client_grav;
 	XChangeWindowAttributes(dpy, FW_W(fw), valuemask, &xcwa);
 	xcwa.win_gravity = grav->parent_grav;
-	xcwa.bit_gravity = grav->parent_grav;
+	valuemask = CWWinGravity;
 	XChangeWindowAttributes(dpy, FW_W_PARENT(fw), valuemask, &xcwa);
 	if (!HAS_TITLE(fw))
 	{
 		return;
 	}
 	xcwa.win_gravity = grav->title_grav;
-	xcwa.bit_gravity = grav->title_grav;
 	XChangeWindowAttributes(dpy, FW_W_TITLE(fw), valuemask, &xcwa);
 	xcwa.win_gravity = grav->lbutton_grav;
-	xcwa.bit_gravity = grav->lbutton_grav;
 	for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
 	{
 		if (FW_W_BUTTON(fw, i))
@@ -541,7 +539,6 @@ static void frame_set_decor_gravities(
 		}
 	}
 	xcwa.win_gravity = grav->rbutton_grav;
-	xcwa.bit_gravity = grav->rbutton_grav;
 	for (i = 1; i < NUMBER_OF_BUTTONS; i += 2)
 	{
 		if (FW_W_BUTTON(fw, i))
