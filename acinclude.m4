@@ -777,8 +777,8 @@ int main ()
           LIBS="$ac_save_LIBS"
        fi
      fi
-     IMLIB_CFLAGS=""
-     IMLIB_LIBS=""
+     GDK_IMLIB_CFLAGS=""
+     GDK_IMLIB_LIBS=""
      ifelse([$3], , :, [$3])
   fi
   AC_SUBST(GDK_IMLIB_CFLAGS)

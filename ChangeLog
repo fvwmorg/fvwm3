@@ -1,3 +1,9 @@
+2001-07-06  Mikhael Goikhman  <migo@homemail.com>
+
+	* acinclude.m4:
+	Replaced forgotten instances of IMLIB_{CFLAGS,LIBS} to GDK_IMLIB_*.
+	This fixes "make FvwmGtk" on systems with bogus imlib-config.
+
 2001-07-05  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
