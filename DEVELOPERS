@@ -3,6 +3,10 @@
 
 These notes are intended for code developers.
 
+You will need GNU gcc and GNU make to use the sources from the CVS
+server.  If you do not have these tools available, build from the tar
+file distribution instead, available from ftp.hpc.uh.edu.
+
 All the derived files (the configure script, config.h.in, and all the
 Makefile.in's) are checked into the repository.  Hence, you need to
 know NOTHING about autoconf/automake to check out the sources and
@@ -37,6 +41,7 @@ Notice that you have to add all files, C-code *and* headers, to the
 _SOURCES line.  This is vital, because this is the list of files that are
 packed into the distribution.  If you leave one out, nobody will be able
 to build the distributed tar file!
+
 
 Changing configure.in
 ---------------------
@@ -93,152 +98,31 @@ some _SOURCES line.  But trust me, it will save your bacon in this way
 some day!
 
 
+Modules and Extras
+------------------
 
+The "extra" modules are normally neither built nor installed.  They
+are, however, autoconfigured like the regular modules.  If you just
+want to build one or two extra modules, you can do:
 
-			Changes and Rearranges
-			----------------------
+    ./configure
+    make; make install
+    cd extras/foo
+    make; make install
 
-Of historical interest only, here are some notes on the conversion to
-GNU autoconf.  Some of this is outdated now, so don't rely too heavily
-upon it.  For installation info, see INSTALL and INSTALL.fvwm.
+On the other hand, if you want to build & install everything, you can
+arrange to treat the "extra" modules on the same footing as the
+regular modules.  The configure flag "enable-extras" turns on this
+behaviour.  If you do: 
 
-The biggest change, of course, is that all traces of Imakefile stuff
-is removed, replaced by all kinds of autoconf detrius.
+    ./configure --enable-extras make; make install
 
-In general: all the options formerly contained in the files Fvwm.tmpl
-and configure.h got replaced by options to the "configure" script.
-Hopefully the correspondence is clear: use "configure --help" for a
-complete list of options.
-
-I've not touched anything in the following subdirectories: docs and
-icons.  None of that appears to be used in the current Imakefiles,
-anyway.  I also didn't do anything with sample.fvwm2rc, so one has to
-install that file by hand.
-
-One change in behaviour is that the libraries Xpm, rplay, and readline
-are probed for automatically & used if found.  If you have one of
-these libraries installed but do NOT want to use it, you must
-explicitly say so, using --without-lib-xpm or --without-lib-rplay.
-
-Another class of changes was due to the fact that autoconf really
-prefers to deal with manpages that end in '.1', rather than '.man'.
-
-
-			Modules and Extras
-			------------------
-
-The "extra" modules are treated just like the regular ones, as far as
-configuration goes.  However, by default, "make" will not recurse into
-"extras".  The --enable-extras flag changes this behaviour.
-
-The two exceptions to this are the fvwmperl and fvwmpython extras.
-Being short of time, not to mention a bit lazy, nothing in these
-directories are installed.  You'll have to copy them by hand (and edit
-the interpreter path, if required).  I promise to fix this in the
-future.
+then all the "extra" modules are built and installed alongside the regular
+ones.  
 
 There are short notes at the top of all the extras/*/Makefile.am files
-about what may have differed vis-a-vis the old Imakefiles.
+about what may have differed vis-a-vis the old Imakefiles.  Some of
+the modules, for example (currently fvwmpython and fvwmperl) have no
+install rules at all.
 
 
-			Changes to FVWM Sources
-			-----------------------
-
-Initially, I tried to keep the changes to source code proper to a
-minimum.  There were a few minor changes required, and I did fix some
-buglets.  After about version smr-2.0.46.3, however, I have been
-fixing portability-related bugs in the code.
-
-The old configure.h file was removed; in its place, the configure
-script builds a file of the same name.  The new configure.h has
-basically everything the old one did, plus a lot of what was in
-Fvwm.tmpl.  You do not edit configure.h; instead, you select
-appropriate options when running configure.  Use "configure --help"
-to discover what these options are called.
-
-All files must include <configure.h> *before* doing anything else.  I
-had to change a few source files that violated this constraint.  I
-didn't systematically check all sources, however, so there may be some
-left to change.
-
-The file version.h was removed.  It is now superfluous, since the
-preprocessor symbol VERSION is now defined in configure.h.  All C
-files had "#include <version.h>" removed.
-
-A new file, lang-strings.h was created with all the language strings
-found in the old configure.h.  Only one file (fvwm/decorations.c)
-actually needs it; #include <lang-strings.h> was added there.
-
-In short: with one exception, all the above changes to source were of
-the form of rearranging includes.  The one exception was the
-FvwmIconMan module, which re-defined the preprocessor symbol VERSION;
-I changed that to a new symbol IM_VERSION.
-
-The directory for the config file was changed from FVWMDIR to
-FVWMCONFIG_DIR, in fvwm/read.c.
-
-Four places in fvwm/builtins.c had a call to GetOneArgument with the
-wrong kind of pointer as the second argument; these I fixed.
-
-
-
-			Hacking Autoconfigured Source
-			-----------------------------
-
-To work on the autoconfigured fvwm sources, you need:
-
-* GNU automake version 1.3b, available at ftp.cygnus.com:/pub/tromey
-* GNU autoconf version 2.12, available from prep.ai.mit.edu and all
-  mirror sites
-* various tools, like a good M4 and sed to make these work
-
-Once this is all in place, you should CD to the top of the source
-directory, and do
-
-	automake --foreign
-
-This puts some extra rules in the generated makefiles, useful for
-maintainers.  There are really two versions of Makefiles: those for
-maintainers -- with extra rules -- and those for end users, which are
-generated when a distribution is built.
-
-The maintainer version of the makefiles include rules for
-automatically tracking dependencies.  I think these will choke a
-non-GNU make, but I'm not sure.  Let me know if this happens and I'll
-update the file.  Automake's "--foreign" flag specifies that it does
-not need to conform to all requirements that a "GNU" package would.
-
-Now, as long as you don't do anything too drastic, you should be able
-to just configure & build.  Any new source files (.c *OR* .h) must be
-noted in the corresponding Makefile.am.  You should only edit
-Makefile.am; in rare cases you may need to modify configure.in or
-acconfig.h.  The rest of them are built.
-
-
-			Building a Distribution
-			-----------------------
-
-The makefiles (both versions) have targets to build and check a
-distribution: "dist" and "distcheck".
-
-Building a distribution does three things: it packages the sources and
-makefiles into a bundle (.tar.gz, by default, but zip's, and shar's
-are also possible), it puts the source dependency info into the
-Makefiles, and it removes some of the extra maintainer-mode rules.
-This means it is possible to build fvwm using the distributed
-makefiles with any brand of make.
-
-The 'distcheck' target is a godsend for checking that the constructed
-distribution is indeed sound.  Roughly, it takes the .tar.gz file
-generated by "make dist", untars it, uses *those* files to do a
-configure, build, and install.  Not to worry: it does the install into
-temporary directories, not /usr/local/bin!
-
-One thing I've learned the hard way: you have to configure with ALL
-THE OPTIONAL SUBDIRECTORIES in order to build a distribution.  In
-short: this means you need Xpm, and a C++ compiler, AND you have to
-configure using both AND configure --enable-extras.  The reason for
-this is: a couple of subdirectories are only built when using Xpm
-(xpmroot, for example) or C++ (extras/FvwmConfig).  It is fine for end
-users to not build these.  However, the distribution-maker has to have
-all the directories enabled for the "make dist" to work.
