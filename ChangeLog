@@ -1,3 +1,8 @@
+2002-06-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/menuitem.c (menuitem_paint):
+	fixed fg color of the inactive disabled menu item
+
 2002-06-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* **/*.c:

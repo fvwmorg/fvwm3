@@ -558,6 +558,12 @@ void menuitem_paint(
 			on_gc = ST_MENU_RELIEF_GC(ms);
 			on_cs = -1;
 		}
+
+		off_gc = ST_MENU_GC(ms);
+		if (ST_HAS_MENU_CSET(ms))
+		{
+			off_cs = ST_CSET_MENU(ms);
+		}
 	}
 	else
 	{
@@ -567,11 +573,9 @@ void menuitem_paint(
 		{
 			on_cs = ST_CSET_GREYED(ms);
 		}
-	}
-	off_gc = ST_MENU_GC(ms);
-	if (ST_HAS_MENU_CSET(ms))
-	{
-		off_cs = ST_CSET_MENU(ms);
+
+		off_gc = on_gc;
+		off_cs = on_cs;
 	}
 	if (!is_item_selected)
 	{

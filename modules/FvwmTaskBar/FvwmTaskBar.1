@@ -272,6 +272,10 @@ on the mail icon.
 Specifies the interval between checks for new mail. The default is
 ten seconds. A value of zero or less switches mail checking off.
 
+Note, this value is only relable when greater than the \fIUpdateInterval\fP
+value. The mail check is done either on any redraw (like a focus change)
+or every nearest factor of the \fIUpdateInterval\fP value.
+
 .IP "*FvwmTaskBar: IgnoreOldMail"
 If set, draw no bitmap if there is no new mail.
 

@@ -201,8 +201,8 @@ Bool GoodiesParseConfig(char *tline)
     do_check_mail = (has_mailpath && (mailcheck_interval > 0));
     break;
   case 2: /* Mailcheck */
-    do_check_mail = MAILCHECK_DEFAULT;
-    sscanf(rest, "%d", &do_check_mail);
+    mailcheck_interval = MAILCHECK_DEFAULT;
+    sscanf(rest, "%d", &mailcheck_interval);
     do_check_mail = (has_mailpath && (mailcheck_interval > 0));
     break;
   case 3: /* ClockFormat */
@@ -330,7 +330,8 @@ void DrawGoodies(void)
 
   if (!do_check_mail)
     return;
-  if (timer - last_mail_check >= 10) {
+  if (timer - last_mail_check >= mailcheck_interval)
+  {
     cool_get_inboxstatus();
     last_mail_check = timer;
     if (newmail)

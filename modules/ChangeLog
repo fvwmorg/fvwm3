@@ -1,3 +1,9 @@
+2002-06-28  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmTaskBar/Goodies.c (GoodiesParseConfig):
+	* FvwmTaskBar/FvwmTaskBar.1:
+	fixed MailCheck option, enhanced its description
+
 2002-06-25  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmIdent/FvwmIdent.c (MakeList):
