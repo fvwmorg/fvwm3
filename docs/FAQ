@@ -753,20 +753,25 @@ A: The built in command WindowList provides a very close approximation
    This will just list the windows on the current desk (titles only).
 
    The other GUI has the feature of selecting the previous window if
-   Alt-TAB is hit and released quickly.  This behavior cannot be
-   exactly duplicated but similar functionality can be assigned to
-   hitting Alt-TAB twice in quick succession (like a double click for
-   keys):
+   Alt-TAB is hit and released quickly.  This behavior can be exactly
+   duplicated with 2.5.1 or later but not with earlier fvwm versions.
 
-      DestroyFunc my_dbltab2
-      AddToFunc   my_dbltab2
-      + I WindowListFunc
+     Key Tab A M WindowList Root c c \
+       CurrentDesk, NoGeometry, CurrentAtEnd, IconifiedAtEnd
 
-      DestroyFunc my_dbltab
-      AddToFunc   my_dbltab
-      + I Prev (CurrentDesk) my_dbltab2
+   Similar functionality can be assigned to hitting Alt-TAB twice in
+   quick succession (like a double click for keys):
 
-      Key Tab A M WindowList Root c c CurrentDesk NoGeometry my_dbltab
+     DestroyFunc my_dbltab2
+     AddToFunc   my_dbltab2
+     + I WindowListFunc
+
+     DestroyFunc my_dbltab
+     AddToFunc   my_dbltab
+     + I Prev (CurrentDesk) my_dbltab2
+
+     Key Tab A M WindowList Root c c \
+       CurrentDesk, NoGeometry my_dbltab
 
    There are a lot of options to the WindowList command to control
    which windows are listed in which order and it may not be possible
