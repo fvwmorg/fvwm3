@@ -478,6 +478,7 @@ main ()
 
 
 dnl contents of imlib.m4
+dnl modified by migo - write diagnostics to >&5 (i.e. config.log) not stdout
 
 # Configure paths for IMLIB
 # Frank Belew     98-8-31
@@ -495,8 +496,8 @@ AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX prefix for IMLIB files (opti
             imlib_prefix="$withval", imlib_prefix="")
 AC_ARG_WITH(imlib-exec-prefix,[  --with-imlib-exec-prefix=PFX  exec prefix for IMLIB files (optional)],
             imlib_exec_prefix="$withval", imlib_exec_prefix="")
-#AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest       do not try to compile and run a test IMLIB program],
-#		    , enable_imlibtest=yes)
+AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest       do not try to compile and run a test IMLIB program],
+            , enable_imlibtest=yes)
 
   if test x$imlib_exec_prefix != x ; then
      imlib_args="$imlib_args --exec-prefix=$imlib_exec_prefix"
@@ -634,8 +635,8 @@ AC_ARG_WITH(imlib-prefix,[  --with-imlib-prefix=PFX prefix for IMLIB files (opti
             imlib_prefix="$withval", imlib_prefix="")
 AC_ARG_WITH(imlib-exec-prefix,[  --with-imlib-exec-prefix=PFX  exec prefix for IMLIB files (optional)],
             imlib_exec_prefix="$withval", imlib_exec_prefix="")
-#AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest       do not try to compile and run a test IMLIB program],
-#		    , enable_imlibtest=yes)
+AC_ARG_ENABLE(imlibtest, [  --disable-imlibtest       do not try to compile and run a test IMLIB program],
+            , enable_imlibtest=yes)
 
   if test x$imlib_exec_prefix != x ; then
      imlib_args="$imlib_args --exec-prefix=$imlib_exec_prefix"
@@ -680,7 +681,9 @@ dnl
 #include <Imlib.h>
 #include <gdk_imlib.h>
 
+/* migo: GdkImlibColor is not used and its spelling here is incorrect anyway
 GdkImLibColor testcolor;
+*/
 
 int main ()
 {
@@ -724,14 +727,19 @@ int main ()
   else
      AC_MSG_RESULT(no)
      if test "$IMLIBCONF" = "no" ; then
+                       (echo "*** The imlib-config script installed by IMLIB could not be found" >&5) 2>/dev/null || \
        echo "*** The imlib-config script installed by IMLIB could not be found"
+                       (echo "*** If IMLIB was installed in PREFIX, make sure PREFIX/bin is in" >&5) 2>/dev/null || \
        echo "*** If IMLIB was installed in PREFIX, make sure PREFIX/bin is in"
+                       (echo "*** your path, or set the IMLIBCONF environment variable to the" >&5) 2>/dev/null || \
        echo "*** your path, or set the IMLIBCONF environment variable to the"
+                       (echo "*** full path to imlib-config." >&5) 2>/dev/null || \
        echo "*** full path to imlib-config."
      else
        if test -f conf.gdkimlibtest ; then
         :
        else
+                          (echo "*** Could not run IMLIB test program, checking why..." >&5) 2>/dev/null || \
           echo "*** Could not run IMLIB test program, checking why..."
           CFLAGS="$CFLAGS $GDK_IMLIB_CFLAGS"
           LIBS="$LIBS $GDK_IMLIB_LIBS"
@@ -740,19 +748,32 @@ int main ()
 #include <Imlib.h>
 #include <gdk_imlib.h>
 ],      [ return 0; ],
-        [ echo "*** The test program compiled, but did not run. This usually means"
+        [                 (echo "*** The test program compiled, but did not run. This usually means" >&5) 2>/dev/null || \
+          echo "*** The test program compiled, but did not run. This usually means"
+                          (echo "*** that the run-time linker is not finding IMLIB or finding the wrong" >&5) 2>/dev/null || \
           echo "*** that the run-time linker is not finding IMLIB or finding the wrong"
+                          (echo "*** version of IMLIB. If it is not finding IMLIB, you'll need to set your" >&5) 2>/dev/null || \
           echo "*** version of IMLIB. If it is not finding IMLIB, you'll need to set your"
+                          (echo "*** LD_LIBRARY_PATH environment variable, or edit /etc/ld.so.conf to point" >&5) 2>/dev/null || \
           echo "*** LD_LIBRARY_PATH environment variable, or edit /etc/ld.so.conf to point"
+                          (echo "*** to the installed location  Also, make sure you have run ldconfig if that" >&5) 2>/dev/null || \
           echo "*** to the installed location  Also, make sure you have run ldconfig if that"
+                          (echo "*** is required on your system" >&5) 2>/dev/null || \
           echo "*** is required on your system"
-	  echo "***"
+                          (echo "***" >&5) 2>/dev/null || \
+          echo "***"
+                          (echo "*** If you have an old version installed, it is best to remove it, although" >&5) 2>/dev/null || \
           echo "*** If you have an old version installed, it is best to remove it, although"
+                          (echo "*** you may also be able to get things to work by modifying LD_LIBRARY_PATH" >&5) 2>/dev/null || \
           echo "*** you may also be able to get things to work by modifying LD_LIBRARY_PATH"],
-        [ echo "*** The test program failed to compile or link. See the file config.log for the"
+        [                 (echo "*** The test program failed to compile or link. See the file config.log for the" >&5) 2>/dev/null || \
+          echo "*** The test program failed to compile or link. See the file config.log for the"
+                          (echo "*** exact error that occured. This usually means IMLIB was incorrectly installed" >&5) 2>/dev/null || \
           echo "*** exact error that occured. This usually means IMLIB was incorrectly installed"
+                          (echo "*** or that you have moved IMLIB since it was installed. In the latter case, you" >&5) 2>/dev/null || \
           echo "*** or that you have moved IMLIB since it was installed. In the latter case, you"
-          echo "*** may want to edit the imlib-config script: $IMLIBCONF" ])
+                          (echo "*** may want to edit the imlib-config script: $IMLIBCONF" >&5) 2>/dev/null || \
+          echo "*** may want to edit the imlib-config script: $IMLIBCONF"])
           CFLAGS="$ac_save_CFLAGS"
           LIBS="$ac_save_LIBS"
        fi
