@@ -217,8 +217,8 @@ void update_last_string(char **pdest, char **pdest2, char *src,
     }
   else
     {
-      if (*pdest)
-	free(*pdest);
+/* dje, try leaking instead      if (*pdest) */
+/* 	free(*pdest); */
       *pdest = src;
     }
   *pdest2 = *pdest;

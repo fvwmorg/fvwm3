@@ -1,3 +1,7 @@
+1999-03-31  Dan Espen  <dane@mk.bellcore.com>
+
+	* fvwm/Makefile.am (fvwm2_SOURCES): gnome.c listed twice.
+
 1999-03-30  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/functions.c: sorted functions
