@@ -1,5 +1,5 @@
 Note, the changes for the last STABLE release start with release
-_+_A HREF="#2.4.9"_-_2.4.9_+_/A_-_.
+_+_A HREF="#2.4.10"_-_2.4.10_+_/A_-_.
 
 -------------------------------------------------------------------
 
@@ -347,9 +347,48 @@ Changes in alpha release 2.5.0 (27-Jan-2002)
 
 -------------------------------------------------------------------
 
-_+_A NAME="2.4.9"_-_
-Changes in stable release 2.4.9 (11-Aug-2002)
+_+_A NAME="2.4.10"_-_
+Changes in stable release 2.4.10 (15-Sep-2002)
 _+_/A_-_
+
+* The commands Maximize, Resize and ResizeMove can be used on icons
+  as it was in 2.2.x.
+
+* Fixed hilighting of menu items with HGradient and VGradient
+  MenuFace.  Reduced flickering with these options.
+
+* Fixed a minor problem with entering submenus via keyboard.
+
+* Fixed race conditions in FvwmTaskBar with AutoStick that caused
+  it to hang.
+
+* Fixed drawing of pager balloons with BalloonBack option.
+
+* Fixed drawing of SidePic menu background with B/D gradients.
+
+* Fixed drawing of menu item reliefs with gradient menu faces.
+
+* Fixed key bindings on window corners.
+
+* Fixed FvwmTaskBar i18n font loading
+
+* Fixed StackTransientParent style without RaiseTransient or
+  LowerTransient on the parent window.
+
+* StackTransientParent works only on parent window if it is on the
+  same layer.
+
+* Fixed handling of window group hint with the (De)Iconify
+  command.
+
+* No more flickering when a transient overlapping its parent window
+  is lowered.
+
+* Fixed hilighting of unfocused windows.
+
+-------------------------------------------------------------------
+
+Changes in stable release 2.4.10 (11-Aug-2002)
 
 * Fixed interaction bug between CascadePlacement and StartsOnPage -
   if the target page was at a negative x or y page displacement

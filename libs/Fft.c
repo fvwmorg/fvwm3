@@ -367,7 +367,10 @@ void FftDrawString(
 	fftdraw = FftDrawCreate(dpy, (Drawable)fws->win, Pvisual, Pcmap);
 	if (fws->flags.has_clip_region)
 	{
-		FftDrawSetClip(fftdraw, fws->clip_region);
+		if (FftDrawSetClip(fftdraw, fws->clip_region) == False)
+		{
+			/* just to suppress a compiler warning */
+		}
 	}
 	if (has_fg_pixels)
 	{
