@@ -243,15 +243,15 @@ Build and test the release tarballs:
     and
       "fvwm-x.y.z.tar.bz2 - ready for distribution"
 
-Update the release dates and numbers:
+Tag the release:
 
 * Important note: Before you proceed, please ask yourself if the
   code is ready to be released:
 
-  - Have you committed patches only hours or even minutes ago?
-  - Have there been any big changes in the last few days?
-  - Are there any important parts that are not well tested?
-  - Are you tired from work or have you been hacking fvwm for many
+  * Have you committed patches only hours or even minutes ago?
+  * Have there been any big changes in the last few days?
+  * Are there any important parts that are not well tested?
+  * Are you tired from work or have you been hacking fvwm for many
     hours in a row?
 
   Should your answer to any of these questions be 'yes', please do
@@ -264,19 +264,23 @@ Update the release dates and numbers:
   Should something go wrong and you are not sure about the correct
   fixes, please ask on the fvwm-workers list for help.
 
-  Be sure to do the changes in that order, so you get the
-  label on the right version of configure.in.
+  It's important that the files included in the release tarballs
+  and the tagged files are identical.
 
   - Tag the CVS tree (replace x, y and z):
       cvs tag version-x_y_z
 
 Upload the release:
 
+  Hopefully you didn't change any files after the last commit.
+  Otherwise commit your changes and return to the previous sections,
+  i.e. rebuild tarballs using "make distcheck2" and retag the tree.
+
   - Upload the files fvwm-x.y.z.tar.gz and fvwm-x.y.z.tar.bz2 to
     ftp://ftp.fvwm.org/pub/incoming/fvwm
   - Notify fvwm-owner@fvwm.org of the upload.
 
-Update the stable/development branch:
+Increase the version number:
 
   - Increase the version number in configure.in (see above)
   - Create a new section for future changes in the NEWS file.
