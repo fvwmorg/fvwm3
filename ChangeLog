@@ -1,3 +1,7 @@
+2002-09-13  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/fvwm.1.in: Add -cmd module timeout information.
+
 2002-09-13  olicha  <olivier.chapuis@free.fr>
 
 	* libs/Colorset.c (CreateBackgroundPixmap):

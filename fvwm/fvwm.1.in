@@ -174,6 +174,20 @@ as its initialization command.  (Note that up to 10
 .BR \-f " and " \-cmd
 parameters can be given, and they are executed in the order
 specified.)
+
+Any module started by command line arguments is assumed to be
+a module that sends back config commands.  All command line modules
+have to quit before fvwm proceeds on to the InitFunction and
+setting border decorations and styles.  There is a potential deadlock
+if you start a module other than FvwmCpp/FvwmM4 but there is a timeout
+so fvwm will eventually get going.
+
+As an example,
+starting the pager this way hangs fvwm until the timeout, but this works:
+.EX
+  fvwm -cmd "AddToFunc StartFunction I Module FvwmPager"
+.EE
+
 .TP
 .BI "-d " displayname
 Manage the display called
