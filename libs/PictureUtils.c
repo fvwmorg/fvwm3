@@ -330,20 +330,37 @@ void PictureReduceRGBColor(XColor *c, int color_limit)
  * rgb to pixel, from imilib2
  *
  * ***************************************************************************/
+static
+void decompose_mask(unsigned long mask, int *shift, int *prec)
+{
+	*shift = 0;
+	*prec = 0;
+
+	while (!(mask & 0x1))
+	{
+		(*shift)++;
+		mask >>= 1;
+	}
+
+	while (mask & 0x1)
+	{
+		(*prec)++;
+		mask >>= 1;
+	}
+}
+
 Pixel PictureRGBtoPixel(int r, int g, int b)
 {
-	static int rshift = 0;
-	static int gshift = 0;
-	static int bshift = 0;
+	static int red_shift = 0;
+	static int green_shift = 0;
+	static int blue_shift = 0;
+	static int red_prec = 0;
+	static int green_prec = 0;
+	static int blue_prec = 0;
 	static Bool init = False;
-	int i;
-	CARD32 val;
-	int rm = Pvisual->red_mask;
-	int gm = Pvisual->green_mask;
-	int bm = Pvisual->blue_mask;
 
 #ifndef USE_OLD_COLOR_LIMIT_METHODE
-	if (PpaletteColorLimit > 0)
+	if (PpaletteColorLimit > 0 && Pct)
 	{
 		switch (PpaletteType)
 		{
@@ -401,69 +418,18 @@ Pixel PictureRGBtoPixel(int r, int g, int b)
 		XAllocColor(Pdpy, Pcmap, &c);
 		return c.pixel;
 	}
-	
 #endif
-	if ((rm == 0xf800) && (gm == 0x7e0) && (bm == 0x1f)) /* 565 */
-	{
-		return (((r << 8) & 0xf800) |
-			((g << 3) & 0x07e0) |
-			((b >> 3) & 0x001f));
-	}
-	if ((rm == 0xff0000) && (gm == 0xff00) && (bm == 0xff)) /* 888 */
-	{
-		return (((r << 16) & 0xff0000) |
-			((g << 8 ) & 0x00ff00) |
-			((b      ) & 0x0000ff));
-	}
-	if ((rm == 0x7c00) && (gm == 0x3e0) && (bm == 0x1f)) /* 555 */
-	{
-		return (((r << 7) & 0x7c00) |
-			((g << 2) & 0x03e0) |
-			((b >> 3) & 0x001f));
-	}
+
 	if (!init)
 	{
 		init = True;
-		for (i = 31; i >= 0; i--)
-		{
-			if (rm >= (1 << i))
-			{
-				rshift = i - 7;
-				break;
-			}
-		}
-		for (i = 31; i >= 0; i--)
-		{
-			if (gm >= (1 << i))
-			{
-				gshift = i - 7;
-				break;
-			}
-		}
-
-		for (i = 31; i >= 0; i--)
-		{
-			if (bm >= (1 << i))
-			{
-				bshift = i - 7;
-				break;
-			}
-		}
+		decompose_mask(Pvisual->red_mask, &red_shift, &red_prec);
+		decompose_mask(Pvisual->green_mask, &green_shift, &green_prec);
+		decompose_mask(Pvisual->blue_mask, &blue_shift, &blue_prec);
 	}
-
-	if (rshift >= 0)
-		val = ((r << rshift) & rm);
-	else
-		val = ((r >> (-rshift)) & rm);
-	if (gshift >= 0)
-		val |= ((g << gshift) & gm);
-	else
-		val |= ((g >> (-gshift)) & gm);
-	if (bshift >= 0)
-		val |= ((b << bshift) & bm);
-	else
-		val |= ((b >> (-bshift)) & bm);
-	return (Pixel)val;
+	return (Pixel)((((r >> (8 - red_prec)) << red_shift) +
+	       ((g >> (8 - green_prec)) << green_shift) +
+	       ((b >> (8 - blue_prec)) << blue_shift)));
 }
 
 int PictureAllocColor(Display *dpy, Colormap cmap, XColor *c, int no_limit)
