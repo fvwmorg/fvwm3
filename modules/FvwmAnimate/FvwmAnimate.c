@@ -40,6 +40,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#define XLIB_ILLEGAL_ACCESS
 #include "config.h"
 
 #include <stdlib.h>
@@ -59,6 +60,7 @@
 
 #define AS_PI 3.14159265358979323846
 
+static Bool UseFvwmLook = True;
 static Display *dpy;
 static int scr;
 static Window root;
@@ -705,7 +707,7 @@ int main(int argc, char **argv) {
           (M_ICONIFY|M_DEICONIFY
            |M_LOCKONSEND|M_SENDCONFIG|M_CONFIG_INFO));
   SendInfo(Channel, mask_mesg, 0);      /* tell fvwm about our mask */
-  CreateDrawGC();                       /* create initial GC */
+  if (!DrawGC) CreateDrawGC();		/* create initial GC if necc. */
   SendText(Channel,"Nop",0);
   DefineMe();
   running = 'y';                        /* out of initialization phase */
@@ -890,6 +892,21 @@ void ParseConfigLine(char *buf) {
   if (buf[strlen(buf)-1] == '\n') {     /* if line ends with newline */
     buf[strlen(buf)-1] = '\0';	/* strip off \n */
   }
+  /* look for fvwm graphics to use */
+  if (UseFvwmLook && (strncasecmp(buf, "default_graphics ", 17) == 0)) {
+    long junk;
+    GContext gcontext;
+    if (10 != sscanf(buf + 17, "%lx %lx %lx %lx %lx %lx %lx %lx %lx %lx\n",
+                     &junk, &junk, &junk, &gcontext, &junk,
+                     &junk, &junk, &junk, &junk, &junk)) {
+      fprintf(stderr, "badly formed DefaultGraphics line\n");
+      exit(1);
+    }
+    if (!DrawGC)
+      CreateDrawGC();
+    DrawGC->gid = gcontext;
+    return;
+  }
   /* Search for MyName (normally *FvwmAnimate) */
   if (strncasecmp(buf, MyName, MyNameLen) == 0) {/* If its for me */
     myfprintf((stderr,"Found line for me: %s\n", buf));
@@ -932,6 +949,10 @@ void ParseConfigLine(char *buf) {
             && (strcasecmp(q,"White^Black") != 0)) {
           Animate.color = (char *)strdup(q); /* make copy of name */
         }
+        if (UseFvwmLook) {
+          UseFvwmLook = False;
+          DrawGC = NULL;
+        }
         CreateDrawGC();                 /* update GC */
         break;
       case Delay_arg:                   /* Delay */
@@ -968,6 +989,10 @@ void ParseConfigLine(char *buf) {
         break;
       case Width_arg:                 /* Width */
         Animate.width = atoi(q);
+        if (UseFvwmLook) {
+          UseFvwmLook = False;
+          DrawGC = NULL;
+        }
         CreateDrawGC();                 /* update GC */
         break;
       default:

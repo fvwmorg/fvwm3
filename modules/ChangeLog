@@ -1,3 +1,8 @@
+1999-04-20
+
+	* FvwmAnimate now uses the Default_graphics config command to inherit
+	the visuals of fvwm. Only works if you don't specify color or width.
+
 1999-04-20  Bob Woodside  <proteus@pcnet.com>
 
 	* modules/FvwmIconMan/fvwm.c: Corrected a misplacement of the flags in
