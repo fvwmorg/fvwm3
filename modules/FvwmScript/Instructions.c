@@ -857,7 +857,8 @@ static void ChangeFont (int NbArg,long *TabArg)
  i++;
  arg[1]=CalcArg(TabArg,&i);
  IdItem= TabIdObj[atoi(arg[0])];
-
+ if (tabxobj[IdItem]->font)
+   free(tabxobj[IdItem]->font);
  tabxobj[IdItem]->font=strdup(arg[1]);
 #ifdef I18N_MB
  /* Hmm.. Fontset is not freed. However, original alogrithm does not consider

@@ -14,7 +14,7 @@
  */
 
 #include "Tools.h"
-
+#define SUPPORT_CLIC
 
 /***********************************************/
 /* Fonction pour ItemDraw                      */
@@ -106,6 +106,11 @@ void InitItemDraw(struct XObj *xobj)
 		       &Colorset[xobj->colorset], Pdepth,
 		       xobj->gc, True);
  XSelectInput(dpy, xobj->win, ExposureMask);
+#ifdef SUPPORT_CLIC
+ /* x and y value of a clic */
+ xobj->value2 = -1;
+ xobj->value3 = -1;
+#endif
 }
 
 void DestroyItemDraw(struct XObj *xobj)
@@ -124,6 +129,78 @@ void DrawItemDraw(struct XObj *xobj)
 
 void EvtMouseItemDraw(struct XObj *xobj,XButtonEvent *EvtButton)
 {
+#ifdef SUPPORT_CLIC
+ static XEvent event;
+ int End=1;
+ unsigned int modif;
+ int x1,x2,y1,y2;
+ Window Win1,Win2;
+ Window WinBut=0;
+ int In = 0;
+ XSegment segm[2];
+ int asc,desc,dir;
+ XCharStruct struc;
+ 
+ while (End)
+ {
+  XNextEvent(dpy, &event);
+  switch (event.type)
+    {
+      case EnterNotify:
+	   XQueryPointer(dpy,*xobj->ParentWin,
+		&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
+	   if (WinBut==0)
+	   {
+	    WinBut=Win2;
+	    /* Mouse on button */
+	     XTextExtents(xobj->xfont,"lp",strlen("lp"),&dir,&asc,&desc,&struc);
+	     In=1;
+	   }
+	   else
+	   {
+	    if (Win2==WinBut)
+	    {
+	    /* Mouse on button */
+	     In=1;
+	    }
+	    else if (In)
+	    {
+	     In=0;
+	     /* Mouse not on button */
+	    }
+	   }
+	  break;
+      case LeaveNotify:
+	   XQueryPointer(dpy,*xobj->ParentWin,
+		&Win1,&Win2,&x1,&y1,&x2,&y2,&modif);
+	   if (Win2==WinBut)
+	   {
+	    In=1;
+	    /* Mouse on button */
+	   }
+	   else if (In)
+	   {
+	    /* Mouse not on button */
+	    In=0;
+	   }
+	  break;
+      case ButtonRelease:
+	   End=0;
+	   /* Mouse not on button */
+	   if (In)
+	   {
+	    /* Envoie d'un message vide de type SingleClic pour un 
+	     *  clique souris */
+	    XQueryPointer(dpy,*xobj->ParentWin,
+		&Win1,&Win2,&x1,&y1,&x2,&y2,&modif); 
+	    xobj->value2=x2-xobj->x;
+	    xobj->value3=y2-xobj->y;
+	    SendMsg(xobj,SingleClic);
+	   }
+	  break;
+     }
+ }
+#endif
 }
 
 void EvtKeyItemDraw(struct XObj *xobj,XKeyEvent *EvtKey)

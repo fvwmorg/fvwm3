@@ -1,3 +1,11 @@
+2000-10-16  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmScript/Instruction.c (ChangeFont):
+	Fixed a memory leaks
+
+	* FvwmScript/Widget/ItemDraw.c:
+	Item Draw support a clic (put this in #ifdef)
+	
 2000-10-11  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmTaskBar/FvwmTaskBar.c:
