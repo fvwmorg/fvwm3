@@ -1840,10 +1840,8 @@ static void MenuInteraction(
 	    action = MR_MISSING_SUBMENU_FUNC(pmp->menu);
 	  }
 	  /* Busy cursor stuff */
-#ifdef BUSYCURSOR
 	  if (Scr.BusyCursor & BUSY_DYNAMICMENU)
 	    GrabEm(CRS_WAIT, GRAB_BUSYMENU);
-#endif
 	  /* Execute the action */
 	  ExecuteFunctionSaveTmpWin(
 	    action, *(pmp->pTmp_win), &Event, *(pmp->pcontext) , -2,
@@ -1851,7 +1849,6 @@ static void MenuInteraction(
 	  if (is_complex_function)
 	    free(action);
 	  /* Busy cursor stuff	*/
-#ifdef BUSYCURSOR
 	  if (GrabPointerState & GRAB_BUSYMENU)
 	  {
 	    /* if we can't regrab then we can freeze fvwm */
@@ -1864,7 +1861,6 @@ static void MenuInteraction(
 	      return;
 	    }
 	  }
-#endif
 	  /* restore the stuff we saved */
 	  lastTimestamp = t;
 	  *pdo_warp_to_title = f;
@@ -2272,14 +2268,11 @@ static int pop_menu_up(
     pos_hints = last_saved_pos_hints;
     f = *pdo_warp_to_title;
     t = lastTimestamp;
-#ifdef BUSYCURSOR
     if (Scr.BusyCursor & BUSY_DYNAMICMENU)
       GrabEm(CRS_WAIT, GRAB_BUSYMENU);
-#endif
     /* Execute the action */
     ExecuteFunctionSaveTmpWin(MR_POPUP_ACTION(mr), *pfw, &Event,
 			      *pcontext, -2, DONT_EXPAND_COMMAND, NULL);
-#ifdef BUSYCURSOR
     if (GrabPointerState & GRAB_BUSYMENU)
     {
       GrabPointerState &= ~GRAB_BUSYMENU;
@@ -2290,7 +2283,6 @@ static int pop_menu_up(
 	return MENU_ABORTED;
       }
     }
-#endif
     /* restore the stuff we saved */
     lastTimestamp = t;
     *pdo_warp_to_title = f;

@@ -99,9 +99,7 @@ Bool fFvwmInStartup = True;     /* Set to False when startup has finished */
 Bool DoingCommandLine = False;	/* Set True before each cmd line arg */
 
 /* Grab pointer state. Set by GrabEm, UngrabEm, menus.c and StartupStuff */
-#ifdef BUSYCURSOR
 Bool GrabPointerState = GRAB_STARTUP;
-#endif
 #define MAX_CFG_CMDS 10
 static char *config_commands[MAX_CFG_CMDS];
 static int num_config_commands=0;
@@ -778,9 +776,7 @@ void StartupStuff(void)
 
   /* It is safe to Ungrab here: if not and one of the init functions not
    * finish we've got a complet freeze ! */
-#ifdef BUSYCURSOR
   GrabPointerState = GRAB_NONE;
-#endif
   XUngrabPointer(dpy, CurrentTime);
 
   /* migo (04-Sep-1999): execute StartFunction */
@@ -1534,9 +1530,7 @@ static void InitVariables(void)
 
   Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
-#ifdef BUSYCURSOR
   Scr.BusyCursor = BUSY_RECAPTURE;
-#endif
   Scr.NoBoundaryWidth = 1;
   Scr.BoundaryWidth = BOUNDARY_WIDTH;
   Scr.Hilite = NULL;

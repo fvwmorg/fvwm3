@@ -530,7 +530,6 @@ void CursorStyle(F_CMD_ARGS)
     SafeDefineCursor(Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
 }
 
-#ifdef BUSYCURSOR
 /***********************************************************************
  *
  *  builtin function: (set)BusyCursor
@@ -572,33 +571,47 @@ void setBusyCursor(F_CMD_ARGS)
     switch(GetTokenIndex(option, optlist, 0, NULL))
     {
     case 0: /* read */
-      if (flag) Scr.BusyCursor |= BUSY_READ;
-      else Scr.BusyCursor &= ~BUSY_READ;
+      if (flag)
+        Scr.BusyCursor |= BUSY_READ;
+      else
+        Scr.BusyCursor &= ~BUSY_READ;
       break;
 
     case 1: /* recapture */
-      if (flag) Scr.BusyCursor |= BUSY_RECAPTURE;
-      else Scr.BusyCursor &= ~BUSY_RECAPTURE;
+      if (flag)
+        Scr.BusyCursor |= BUSY_RECAPTURE;
+      else
+        Scr.BusyCursor &= ~BUSY_RECAPTURE;
       break;
 
     case 2: /* wait */
-      if (flag) Scr.BusyCursor |= BUSY_WAIT;
-      else Scr.BusyCursor &= ~BUSY_WAIT;
+      if (flag)
+        Scr.BusyCursor |= BUSY_WAIT;
+      else
+        Scr.BusyCursor &= ~BUSY_WAIT;
       break;
 
     case 3: /* modulesynchronous */
-      if (flag) Scr.BusyCursor |= BUSY_MODULESYNCHRONOUS;
-      else Scr.BusyCursor &= ~BUSY_MODULESYNCHRONOUS;
+      if (flag)
+        Scr.BusyCursor |= BUSY_MODULESYNCHRONOUS;
+      else
+        Scr.BusyCursor &= ~BUSY_MODULESYNCHRONOUS;
       break;
 
     case 4: /* dynamicmenu */
-      if (flag) Scr.BusyCursor |= BUSY_DYNAMICMENU;
-      else Scr.BusyCursor &= ~BUSY_DYNAMICMENU;
+      if (flag)
+        Scr.BusyCursor |= BUSY_DYNAMICMENU;
+      else
+        Scr.BusyCursor &= ~BUSY_DYNAMICMENU;
       break;
 
     case 5: /* "*" */
-      if (flag) Scr.BusyCursor |= (BUSY_READ | BUSY_RECAPTURE | BUSY_WAIT | BUSY_MODULESYNCHRONOUS | BUSY_DYNAMICMENU);
-      else Scr.BusyCursor &= ~(BUSY_READ | BUSY_RECAPTURE | BUSY_WAIT | BUSY_MODULESYNCHRONOUS | BUSY_DYNAMICMENU);
+      if (flag)
+        Scr.BusyCursor |= (BUSY_READ | BUSY_RECAPTURE | BUSY_WAIT |
+                           BUSY_MODULESYNCHRONOUS | BUSY_DYNAMICMENU);
+      else
+        Scr.BusyCursor &= ~(BUSY_READ | BUSY_RECAPTURE | BUSY_WAIT |
+                            BUSY_MODULESYNCHRONOUS | BUSY_DYNAMICMENU);
       break;
 
     default:
@@ -607,4 +620,3 @@ void setBusyCursor(F_CMD_ARGS)
     }
   }
 }
-#endif

@@ -262,9 +262,7 @@ typedef struct ScreenInfo
   FvwmWindow *pushed_window;	/* saved window to install when pushes drops
 				   to zero */
   Cursor *FvwmCursors;
-#ifdef BUSYCURSOR
   int BusyCursor;               /* context where we display the busy cursor */
-#endif
   char *DefaultIcon;            /* Icon to use when no other icons are found */
 
   int TopLayer;

@@ -118,9 +118,7 @@ static const func_type func_config[] =
   {"beep",         Bell,             F_BEEP,                 0},
   {"borderstyle",  SetBorderStyle,   F_BORDERSTYLE,          FUNC_DECOR},
   {"bugopts",      SetBugOptions,    F_BUG_OPTS,             0},
-#ifdef BUSYCURSOR
   {"busycursor",   setBusyCursor,    F_BUSY_CURSOR,          0},
-#endif
   {"buttonstate",  cmd_button_state, F_BUTTON_STATE,         0},
   {"buttonstyle",  ButtonStyle,      F_BUTTON_STYLE,         FUNC_DECOR},
 #ifdef USEDECOR
@@ -829,10 +827,15 @@ void ExecuteFunction(
   }
   skip = taction - Action;
 
-  GetNextToken(taction, &function);
-  if (!function)
-    function = strdup("");
-  bif = FindBuiltinFunction(function);
+  function = PeekToken(taction, &action);
+  function = expand(function, arguments, tmp_win, False);
+  if (function)
+    bif = FindBuiltinFunction(function);
+  else
+  {
+    bif = NULL;
+    function = "";
+  }
 
 #ifdef USEDECOR
   if (Scr.cur_decor && Scr.cur_decor != &Scr.DefaultDecor &&
@@ -855,7 +858,6 @@ void ExecuteFunction(
   }
   taction = expaction + skip;
   j = 0;
-  action = SkipNTokens(taction, 1);
   if (expand_cmd == EXPAND_COMMAND)
   {
     if (func_depth <= 1)
@@ -889,7 +891,6 @@ void ExecuteFunction(
   if(Module == -1)
     WaitForButtonsUp(False);
 
-  free(function);
   if (set_silent)
     Scr.flags.silent_functions = 0;
 

@@ -357,9 +357,7 @@ void executeModuleSync(F_CMD_ARGS)
   extern fd_set_size_t fd_width;
   time_t start_time;
   Bool done = False;
-#ifdef BUSYCURSOR
   Bool need_ungrab = False;
-#endif
   char *escape = NULL;
   XEvent tmpevent;
   extern FvwmWindow *Tmp_win;
@@ -407,14 +405,12 @@ void executeModuleSync(F_CMD_ARGS)
     return;
   }
 
-#ifdef BUSYCURSOR
   /* Busy cursor stuff */
   if (Scr.BusyCursor & BUSY_MODULESYNCHRONOUS)
   {
     if (GrabEm(CRS_WAIT, GRAB_BUSY))
       need_ungrab = True;
   }
-#endif
 
   /* wait for module input */
   start_time = time(NULL);
@@ -476,9 +472,8 @@ void executeModuleSync(F_CMD_ARGS)
       }
     }
   } /* while */
-#ifdef BUSYCURSOR
-  if (need_ungrab) UngrabEm(GRAB_BUSY);
-#endif
+  if (need_ungrab)
+    UngrabEm(GRAB_BUSY);
 }
 
 

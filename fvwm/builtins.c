@@ -698,15 +698,12 @@ void refresh_win_function(F_CMD_ARGS)
 void wait_func(F_CMD_ARGS)
 {
   Bool done = False;
-#ifdef BUSYCURSOR
   Bool redefine_cursor = False;
-#endif
   char *escape;
   Window nonewin = None;
   extern FvwmWindow *Tmp_win;
   char *wait_string, *rest;
 
-#if 1
   /* try to get a single token */
   rest = GetNextToken(action, &wait_string);
   if (wait_string)
@@ -718,50 +715,31 @@ void wait_func(F_CMD_ARGS)
       int i;
       char *temp;
 
-fprintf(stderr,"more tokens\n");
       /* nope, multiple tokens - try old syntax */
 
       /* strip leading and trailing whitespace */
       temp = action;
       while (*temp && isspace((unsigned char)*temp))
         temp++;
-fprintf(stderr,"temp='%s'\n", temp);
       wait_string = strdup(temp);
       for (i = strlen(wait_string) - 1; i >= 0 && isspace(wait_string[i]); i--)
       {
         wait_string[i] = 0;
       }
-fprintf(stderr,"ws='%s'\n", wait_string);
     }
   }
   else
   {
     wait_string = strdup("");
   }
-fprintf(stderr,"waiting for '%s'\n", wait_string);
-#else
-  rest = GetNextToken(action, &wait_string);
-  if (!wait_string)
-    return;
-  while (*rest && isspace((unsigned char)*rest))
-    rest++;
-  if (*rest != '\0')
-  {
-    fvwm_msg(ERR, "wait_func", "Unexpected string after Wait %s", wait_string);
-    free(wait_string);
-    return;
-  }
-#endif
 
   while(!done)
   {
-#ifdef BUSYCURSOR
     if (BUSY_WAIT & Scr.BusyCursor)
     {
       XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_WAIT]);
       redefine_cursor = True;
     }
-#endif
     if(My_XNextEvent(dpy, &Event))
     {
       DispatchEvent(False);
@@ -794,10 +772,8 @@ fprintf(stderr,"waiting for '%s'\n", wait_string);
       }
     }
   }
-#ifdef BUSYCURSOR
   if (redefine_cursor)
     XDefineCursor(dpy, Scr.Root, Scr.FvwmCursors[CRS_ROOT]);
-#endif
 
   free(wait_string);
 }
@@ -2360,19 +2336,15 @@ void SetEnv(F_CMD_ARGS)
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
   XEvent event;
-#ifdef BUSYCURSOR
   Bool need_ungrab = False;
-#endif
 
   if (fSingle)
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
       return;
-#ifdef BUSYCURSOR
   if (BUSY_RECAPTURE & Scr.BusyCursor)
     if (GrabEm(CRS_WAIT, GRAB_BUSY))
       need_ungrab = True;
   GrabEm(CRS_WAIT, GRAB_BUSY);
-#endif
   XSync(dpy,0);
   MyXGrabServer(dpy);
   XSync(dpy,0);
@@ -2389,10 +2361,8 @@ static void do_recapture(F_CMD_ARGS, Bool fSingle)
 			 &event) != False)
     ;
   MyXUngrabServer(dpy);
-#ifdef BUSYCURSOR
   if (need_ungrab)
     UngrabEm(GRAB_BUSY);
-#endif
   XSync(dpy, 0);
 }
 

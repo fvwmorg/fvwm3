@@ -65,9 +65,7 @@ extern XContext FvwmContext;
 extern Bool fFvwmInStartup;
 extern Bool DoingCommandLine;
 extern Bool debugging;
-#ifdef BUSYCURSOR
 extern int GrabPointerState;
-#endif
 extern Boolean ShapesSupported;
 extern Window JunkRoot, JunkChild;
 extern int JunkX, JunkY;
