@@ -75,14 +75,14 @@ void DefineMe() {
   CMD0X("*FormFvwmFormLine         expand");
   CMD0X("*FormFvwmFormButton       quit \"F1 - Save & Restart This Form\" F1");
   CMD0X("*FormFvwmFormCommand DestroyModuleConfig FormFvwmFormDefault*");
-  CMD0X("*FormFvwmFormCommand !/bin/echo \"# This file created by FvwmForm\
-\
-*FvwmFormDefaultFont $(TextFont)\
-*FvwmFormDefaultInputFont $(InputFont)\
-*FvwmFormDefaultButtonFont $(ButtonFont)\
-*FvwmFormDefaultFore $(TextColorFG)\
-*FvwmFormDefaultBack $(TextColorBG)\
-*FvwmFormDefaultItemFore $(ButtonFG)\
+  CMD0X("*FormFvwmFormCommand !/bin/echo \"# This file last created by\
+ FvwmForm on: `/bin/date`.\n\
+*FvwmFormDefaultFont $(TextFont)\n\
+*FvwmFormDefaultInputFont $(InputFont)\n\
+*FvwmFormDefaultButtonFont $(ButtonFont)\n\
+*FvwmFormDefaultFore $(TextColorFG)\n\
+*FvwmFormDefaultBack $(TextColorBG)\n\
+*FvwmFormDefaultItemFore $(ButtonFG)\n\
 *FvwmFormDefaultItemBack $(ButtonBG)\
 \" > .FvwmForm");
   CMD0X("*FormFvwmFormCommand *FvwmFormDefaultRead n"); /* force reread */

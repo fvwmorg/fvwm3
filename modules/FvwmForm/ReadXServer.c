@@ -16,9 +16,14 @@
 #include <X11/cursorfont.h>
 #define XK_MISCELLANY
 #include <X11/keysymdef.h>
+#include <X11/Xatom.h>                  /* for XA_CUT_BUFFER0 */
 
 #include <FvwmForm.h>
 
+static void process_regular_char_input(char *buf);
+static int process_tabtypes(char * buf);
+static void process_button_release(XEvent *event, Item *item);
+static void process_paste_request (XEvent *event, Item *item);
 static void ToggleChoice (Item *item);
 static void ResizeFrame (void);
 
@@ -30,7 +35,7 @@ void ReadXServer ()
   int shft;                             /* keyboard shift state */
   Item *item, *old_item;
   KeySym ks;
-  char *sp, *dp, *ep;
+  char *sp, *dp;
   static unsigned char buf[10];         /* unsigned for international */
   static int n;
 
@@ -207,77 +212,17 @@ void ReadXServer ()
 	case '\n':
 	case '\015':
 	case '\016':  /* LINEFEED, TAB, RETURN, ^N, jump to the next field */
-          /* Note: the input field ring used with ^P above
-             could probably make this a lot simpler. dje 12/20/98 */
-          /* Code tracks cursor. */
-          item = root_item_ptr;         /* init item ptr */
-          if (CF.cur_input != 0) {          /* if in text */
-            item = CF.cur_input->header.next; /* move to next item */
+          switch (process_tabtypes(&buf[0])) {
+            case 0: goto no_redraw;break;
+            case 1: goto redraw;break;
           }
-	  for ( ; item != 0;
-               item = item->header.next) {/* find next input item */
-	    if (item->type == I_INPUT) {
-	      old_item = CF.cur_input;
-	      old_item->input.o_cursor = CF.rel_cursor;
-	      CF.cur_input = item;
-	      RedrawItem(old_item, 1);
-	      CF.rel_cursor = item->input.o_cursor;
-	      CF.abs_cursor = CF.rel_cursor - item->input.left;
-	      goto redraw;
-	    }
-	  }
-	  /* end of all text input fields, check for buttons */
-	  for (item = root_item_ptr; item != 0;
-               item = item->header.next) {/* all items */
-	    myfprintf((stderr, "Button: keypress==%d\n",
-		    item->button.keypress));
-	    if (item->type == I_BUTTON && item->button.keypress == buf[0]) {
-	      RedrawItem(item, 1);
-	      usleep(MICRO_S_FOR_10MS);
-	      RedrawItem(item, 0);
-	      DoCommand(item);
-	      goto no_redraw;
-	    }
-	  }
-	  /* goto the first text input field */
-	  for (item = root_item_ptr; item != 0;
-               item = item->header.next) {/* all items */
-	    if (item->type == I_INPUT) {
-	      old_item = CF.cur_input;
-	      old_item->input.o_cursor = CF.rel_cursor;
-	      CF.cur_input = item;
-	      RedrawItem(old_item, 1);
-	      CF.rel_cursor = item->input.o_cursor;
-	      CF.abs_cursor = CF.rel_cursor - item->input.left;
-	      goto redraw;
-	    }
-	  }
 	  break;
 	default:
 	  old_cursor = CF.abs_cursor;
 	  if((buf[0] >= ' ' &&
               buf[0] < '\177') ||
              (buf[0] >= 160)) {         /* regular or intl char */
-	    if (++(CF.cur_input->input.n) >= CF.cur_input->input.buf) {
-	      CF.cur_input->input.buf += CF.cur_input->input.size;
-	      CF.cur_input->input.value = 
-		(char *)realloc(CF.cur_input->input.value,
-				CF.cur_input->input.buf);
-	    }
-	    dp = CF.cur_input->input.value + CF.cur_input->input.n;
-	    sp = dp - 1;
-	    ep = CF.cur_input->input.value + CF.rel_cursor;
-	    for (; *dp = *sp, sp != ep; sp--, dp--);
-	    *ep = buf[0];
-	    CF.rel_cursor++;
-	    CF.abs_cursor++;
-	    if (CF.abs_cursor >= CF.cur_input->input.size) {
-	      if (CF.rel_cursor < CF.cur_input->input.n)
-		CF.abs_cursor = CF.cur_input->input.size - 1;
-	      else
-		CF.abs_cursor = CF.cur_input->input.size;
-	      CF.cur_input->input.left = CF.rel_cursor - CF.abs_cursor;
-	    }
+            process_regular_char_input(&buf[0]); /* insert into input field */
 	    goto redraw_newcursor;
 	  }
 	  /* unrecognized key press, check for buttons */
@@ -380,6 +325,9 @@ void ReadXServer ()
 		CF.rel_cursor == item->input.left + item->input.size)
 	      item->input.left++;
 	    CF.abs_cursor = CF.rel_cursor - item->input.left;
+            if (event.xbutton.button == Button2) { /* if paste request */
+              process_paste_request (&event, item);
+            }
 	    RedrawItem(item, 0);
 	  }
 	  if (item->type == I_CHOICE)
@@ -392,21 +340,7 @@ void ReadXServer ()
 	  }
 	  break;
 	case ButtonRelease:
-	  RedrawItem(item, 0);
-	  if (CF.grab_server && CF.server_grabbed) {
-	    XGrabPointer(dpy, CF.frame, True, 0, GrabModeAsync, GrabModeAsync,
-			 None, None, CurrentTime);
-	    XFlush(dpy);
-	  } else {
-	    XUngrabPointer(dpy, CurrentTime);
-	    XFlush(dpy);
-	  }
-	  if (event.xbutton.x >= 0 && 
-	      event.xbutton.x < item->header.size_x &&
-	      event.xbutton.y >= 0 &&
-	      event.xbutton.y < item->header.size_y) {
-	    DoCommand(item);
-	  }
+          process_button_release(&event, item);
 	  break;
 	}
       }
@@ -414,6 +348,146 @@ void ReadXServer ()
   }  /* while loop */
 }
 
+/* Note that tab, return, linefeed, ^n, all do the same thing
+   except when it comes to matching a command button hotkey.
+
+   Return 1 to redraw, 0 for no redraw */
+static int process_tabtypes(char * buf) {
+  Item *item, *old_item;
+  /* Note: the input field ring used with ^P above
+             could probably make this a lot simpler. dje 12/20/98 */
+          /* Code tracks cursor. */
+  item = root_item_ptr;         /* init item ptr */
+  if (CF.cur_input != 0) {          /* if in text */
+    item = CF.cur_input->header.next; /* move to next item */
+  }
+  for ( ; item != 0;
+        item = item->header.next) {/* find next input item */
+    if (item->type == I_INPUT) {
+      old_item = CF.cur_input;
+      old_item->input.o_cursor = CF.rel_cursor;
+      CF.cur_input = item;
+      RedrawItem(old_item, 1);
+      CF.rel_cursor = item->input.o_cursor;
+      CF.abs_cursor = CF.rel_cursor - item->input.left;
+      return (1);                       /* cause redraw */
+    }
+  }
+  /* end of all text input fields, check for buttons */
+  for (item = root_item_ptr; item != 0;
+       item = item->header.next) {/* all items */
+    myfprintf((stderr, "Button: keypress==%d vs buf %d\n",
+               item->button.keypress, buf[0]));
+    if (item->type == I_BUTTON && item->button.keypress == buf[0]) {
+      RedrawItem(item, 1);
+      usleep(MICRO_S_FOR_10MS);
+      RedrawItem(item, 0);
+      DoCommand(item);
+      return (0);                       /* cause no_redraw */
+    }
+  }
+  /* goto the first text input field */
+  for (item = root_item_ptr; item != 0;
+       item = item->header.next) {/* all items */
+    if (item->type == I_INPUT) {
+      old_item = CF.cur_input;
+      old_item->input.o_cursor = CF.rel_cursor;
+      CF.cur_input = item;
+      RedrawItem(old_item, 1);
+      CF.rel_cursor = item->input.o_cursor;
+      CF.abs_cursor = CF.rel_cursor - item->input.left;
+      return (1);                       /* goto redraw */
+    }
+  }
+  return (-1);
+}
+
+static void process_regular_char_input(char *buf) {
+  char *sp, *dp, *ep;
+  if (++(CF.cur_input->input.n) >= CF.cur_input->input.buf) {
+    CF.cur_input->input.buf += CF.cur_input->input.size;
+    CF.cur_input->input.value = 
+      (char *)realloc(CF.cur_input->input.value,
+                      CF.cur_input->input.buf);
+  }
+  dp = CF.cur_input->input.value + CF.cur_input->input.n;
+  sp = dp - 1;
+  ep = CF.cur_input->input.value + CF.rel_cursor;
+  for (; *dp = *sp, sp != ep; sp--, dp--);
+  *ep = buf[0];
+  CF.rel_cursor++;
+  CF.abs_cursor++;
+  if (CF.abs_cursor >= CF.cur_input->input.size) {
+    if (CF.rel_cursor < CF.cur_input->input.n)
+      CF.abs_cursor = CF.cur_input->input.size - 1;
+    else
+      CF.abs_cursor = CF.cur_input->input.size;
+    CF.cur_input->input.left = CF.rel_cursor - CF.abs_cursor;
+  }
+}
+static void process_button_release(XEvent *event, Item *item) {
+  RedrawItem(item, 0);
+  if (CF.grab_server && CF.server_grabbed) {
+    XGrabPointer(dpy, CF.frame, True, 0, GrabModeAsync, GrabModeAsync,
+                 None, None, CurrentTime);
+  } else {
+    XUngrabPointer(dpy, CurrentTime);
+  }
+  XFlush(dpy);
+  if (event->xbutton.x >= 0 && 
+      event->xbutton.x < item->header.size_x &&
+      event->xbutton.y >= 0 &&
+      event->xbutton.y < item->header.size_y) {
+    DoCommand(item);
+  }
+}
+/* Process a paste.  This can be any size.
+   Right now, the input loop can't just be fed characters.
+   Send plain text and newlines to the 2 subroutines that want them.
+   */
+static void process_paste_request (XEvent *event, Item *item) {
+  Atom actual_type;
+  int actual_format;
+  unsigned long nitems, bytes_after, nread;
+  unsigned char *data, *h, buf[256];
+  unsigned char *c;
+
+  nread = 0;                            /* init read offset */
+  h = buf;                              /* starting point */
+  do {
+    if (XGetWindowProperty (dpy,
+                            DefaultRootWindow (dpy),
+                            XA_CUT_BUFFER0,
+                            nread/4, 1024,   /* offset, length */
+                            False,           /* delete */
+                            AnyPropertyType, /* request type */
+                            &actual_type,
+                            &actual_format, &nitems, &bytes_after, 
+                            (unsigned char **)&data) != Success) {
+      return;                           /* didn't work, give up */
+    } /* end didn't work */
+    if (actual_type != XA_STRING) {     /* if something other than text */
+      return;                           /* give up */
+    }
+    for (c = data; c != data + nitems; c++) { /* each char */
+      switch (*c) {
+      case '\t':
+      case '\n':
+      case '\015':
+      case '\016':  /* LINEFEED, TAB, RETURN, ^N, jump to the next field */
+        process_tabtypes(c);
+        break;
+      default:
+        process_regular_char_input(c);
+        break;
+      } /* end swtich on char type */
+    } /* end each char */
+    myfprintf((stderr,"See paste data, %s, nread %d, nitems %d\n",
+            data, (int)nread, (int)nitems));
+    nread += nitems;
+    XFree (data);
+  } while (bytes_after > 0);
+}
 static void ToggleChoice (Item *item)
 {
   int i;
