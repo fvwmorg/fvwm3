@@ -616,8 +616,8 @@ static void get_common_decorations(
 	}
 	cd->fore_color = draw_colors->fore;
 	cd->back_color = draw_colors->back;
-	cd->border_fore_color = draw_colors->fore;
-	cd->border_back_color = draw_colors->back;
+	cd->border_fore_color = border_draw_colors->fore;
+	cd->border_back_color = border_draw_colors->back;
 	if (do_change_gcs)
 	{
 		Globalgcv.foreground = draw_colors->hilight;
@@ -1483,16 +1483,17 @@ static void border_fill_pixmap_background(
 
 	do_tile = (bg->flags.use_pixmap && bg->pixmap.flags.is_tiled) ?
 		True : False;
+	xgcv.fill_style = FillSolid;
+	valuemask = GCFillStyle;
 	if (!bg->flags.use_pixmap)
 	{
 		/* solid pixel */
-		xgcv.fill_style = FillSolid;
 		xgcv.foreground = bg->pixel;
 		xgcv.clip_x_origin = 0;
 		xgcv.clip_y_origin = 0;
 		xgcv.clip_mask = None;
-		valuemask = GCFillStyle | GCForeground | GCClipMask |
-			GCClipXOrigin | GCClipYOrigin;
+		valuemask |= GCForeground | GCClipMask | GCClipXOrigin |
+			GCClipYOrigin;
 		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
 		XFillRectangle(
 			dpy, dest_pix, Scr.TileGC, 0, 0, pixmap_g->width,
@@ -1503,7 +1504,7 @@ static void border_fill_pixmap_background(
 		/* pixmap, offset stored in pixmap_g->x/y */
 		xgcv.foreground = cd->fore_color;
 		xgcv.background = cd->back_color;
-		valuemask = GCForeground|GCBackground;
+		valuemask |= GCForeground|GCBackground;
 		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
 		PGraphicsRenderPixmaps(
 			dpy, Scr.NoFocusWin, bg->pixmap.p, bg->pixmap.shape,
@@ -1519,7 +1520,7 @@ static void border_fill_pixmap_background(
 		/* tiled pixmap */
 		xgcv.foreground = cd->fore_color;
 		xgcv.background = cd->back_color;
-		valuemask = GCForeground|GCBackground;
+		valuemask |= GCForeground|GCBackground;
 		XChangeGC(dpy, Scr.TileGC, valuemask, &xgcv);
 		PGraphicsRenderPixmaps(
 			dpy, Scr.NoFocusWin, bg->pixmap.p, bg->pixmap.shape,
@@ -1602,11 +1603,14 @@ static void border_get_border_background(
 			xgcv.ts_x_origin = - relative_g->x;
 			xgcv.ts_y_origin = - relative_g->y;
 			XChangeGC(
-				dpy, Scr.TitleGC, GCTile | GCTileStipXOrigin |
+				dpy, Scr.TileGC, GCTile | GCTileStipXOrigin |
 				GCTileStipYOrigin | GCFillStyle, &xgcv);
 			XFillRectangle(
-				dpy, bg->pixmap.p, Scr.TitleGC, 0, 0,
+				dpy, bg->pixmap.p, Scr.TileGC, 0, 0,
 				part_g->width, part_g->height);
+			xgcv.fill_style = FillSolid;
+			xgcv.tile = None;
+			XChangeGC(dpy, Scr.TileGC, GCTile|GCFillStyle, &xgcv);
 		}
 		bg->flags.use_pixmap = 1;
 		bg->pixmap.shape = None;
@@ -2132,11 +2136,14 @@ static void border_draw_decor_to_pixmap(
 			xgcv.ts_x_origin = - pixmap_g->x + td->bar_g.x;
 			xgcv.ts_y_origin = -pixmap_g->y + td->bar_g.y;
 			XChangeGC(
-				dpy, Scr.TitleGC, GCTile | GCTileStipXOrigin |
+				dpy, Scr.TileGC, GCTile | GCTileStipXOrigin |
 				GCTileStipYOrigin | GCFillStyle, &xgcv);
 			XFillRectangle(
-				dpy, tmp, Scr.TitleGC, 0, 0,
+				dpy, tmp, Scr.TileGC, 0, 0,
 				pixmap_g->width, pixmap_g->height);
+			xgcv.fill_style = FillSolid;
+			xgcv.tile = None;
+			XChangeGC(dpy, Scr.TileGC, GCTile|GCFillStyle, &xgcv);
 			bg.pixmap.p = tmp;
 			bg.pixmap.g.width = pixmap_g->width;
 			bg.pixmap.g.height = pixmap_g->height;

@@ -1,3 +1,11 @@
+2002-11-28  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/borders.c (border_get_border_background):
+	(border_draw_decor_to_pixmap):
+	(border_fill_pixmap_background):
+	Scr.TitleGC/Scr.TileGC cleanup. I will rename TileGC to BorderGC
+	soon.
+
 2002-11-26  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/fvwm.c (InitVariables):
