@@ -953,22 +953,28 @@ Bool PlaceWindow(
       /* fall through to cascade placement */
     case PLACE_CASCADE:
     case PLACE_CASCADE_B:
-      /*  either "smart" placement fail and the second choice is "random"
-	  placement (TileCascade) or we have a "random" placement in any case
+      /*  either "smart" placement fail and the second choice is "cascade"
+	  placement (TileCascade) or we have a "cascade" placement in any case
 	  (Cascade) or we have a crazy SPLACEMENT_MODE(sflags) value set with
 	  the old Style Dumb/Smart, Random/Active, Smart/SmartOff (i.e.:
 	  Dumb+Random+Smart or Dumb+Active+Smart)
       */
-      if ((Scr.randomx += fw->title_thickness) > screen_g.width / 2)
+      if (Scr.cascade_window != NULL)
       {
-	Scr.randomx = fw->title_thickness;
+	Scr.cascade_x += fw->title_thickness;
+	Scr.cascade_y += 2 * fw->title_thickness;
       }
-      if ((Scr.randomy += 2 * fw->title_thickness) > screen_g.height / 2)
+      Scr.cascade_window = fw;
+      if (Scr.cascade_x > screen_g.width / 2)
       {
-	Scr.randomy = 2 * fw->title_thickness;
+	Scr.cascade_x = fw->title_thickness;
       }
-      attr_g->x = Scr.randomx + PageLeft - pdeltax;
-      attr_g->y = Scr.randomy + PageTop - pdeltay;
+      if (Scr.cascade_y > screen_g.height / 2)
+      {
+	Scr.cascade_y = 2 * fw->title_thickness;
+      }
+      attr_g->x = Scr.cascade_x + PageLeft - pdeltax;
+      attr_g->y = Scr.cascade_y + PageTop - pdeltay;
       /* try to keep the window on the screen */
       fw->frame_g.x = PageLeft + attr_g->x + fw->attr_backup.border_width + 10;
       fw->frame_g.y = PageTop + attr_g->y + fw->attr_backup.border_width + 10;
@@ -978,13 +984,13 @@ Bool PlaceWindow(
       {
 	attr_g->x = PageRight - attr_g->width - fw->attr_backup.border_width -
 		b.total_size.width;
-	Scr.randomx = 0;
+	Scr.cascade_x = 0;
       }
       if (attr_g->y + fw->frame_g.height >= PageBottom)
       {
 	attr_g->y = PageBottom - attr_g->height - fw->attr_backup.border_width -
 		b.total_size.height;
-	Scr.randomy = 0;
+	Scr.cascade_y = 0;
       }
       break;
     case PLACE_MINOVERLAP:

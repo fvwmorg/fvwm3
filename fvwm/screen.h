@@ -352,8 +352,9 @@ typedef struct ScreenInfo
   int EdgeScrollY;              /* #pixels to scroll on screen edge */
   unsigned char buttons2grab;   /* buttons to grab in click to focus mode */
   int NumBoxes;
-  int randomx;                  /* values used for randomPlacement */
-  int randomy;
+  int cascade_x;                /* values used for CascadePlacement */
+  int cascade_y;
+  FvwmWindow *cascade_window;
   int VxMax;                    /* Max location for top left of virt desk*/
   int VyMax;
   int Vx;                       /* Current loc for top left of virt desk */

@@ -619,6 +619,10 @@ static void adjust_fvwm_internal_windows(FvwmWindow *fw)
 	{
 		Scr.focus_in_pending_window = NULL;
 	}
+	if (Scr.cascade_window == fw)
+	{
+		Scr.cascade_window = NULL;
+	}
 
 	return;
 }

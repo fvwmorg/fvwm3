@@ -1463,7 +1463,10 @@ static void InitVariables(void)
   /* set major operating modes */
   Scr.NumBoxes = 0;
 
-  Scr.randomx = Scr.randomy = 0;
+  Scr.cascade_x = Scr.cascade_y = 0;
+  /* the last Cascade placed window or NULL, we don't want NULL initially */
+  Scr.cascade_window = &Scr.FvwmRoot;
+
   Scr.buttons2grab = 0;
 
   /* initialisation of the head of the desktops info */
