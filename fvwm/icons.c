@@ -180,6 +180,7 @@ ICON_DBG((stderr,"ciw: iwh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tm
 	ds = EWMH_SetIconFromWMIcon(tmp_win, NULL, ds, False);
       }
 ICON_DBG((stderr,"ciw: inh%s used '%s'\n", (tmp_win->icon_p_height)?"":" not",tmp_win->name));
+      break;
     case 4:
       /* Finally, try to get icon bitmap from the application */
       if (tmp_win->wmhints && (tmp_win->wmhints->flags & IconPixmapHint))

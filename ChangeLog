@@ -1,3 +1,12 @@
+2001-11-20  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/icons.c (GetIcon):
+	* fvwm/add_window.c (setup_icon):
+	Fixed icons order choice and other minor bugs
+
+	* fvwm/ewmh_icons.c (EWMH_SetWmIconFromPixmap):
+	Fixed a core dump if there is no MiniIcon
+
 2001-11-18  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ewmh.{c,h} (add_kst_item):

@@ -145,10 +145,13 @@ CARD32 *EWMH_SetWmIconFromPixmap(FvwmWindow *fwin,
   if (is_mini_icon)
   {
 #ifdef MINI_ICONS
-    pixmap = fwin->mini_icon->picture;
-    mask = fwin->mini_icon->mask;
-    width = fwin->mini_icon->width;
-    height = fwin->mini_icon->height;
+    if (fwin->mini_icon != NULL)
+    {
+      pixmap = fwin->mini_icon->picture;
+      mask = fwin->mini_icon->mask;
+      width = fwin->mini_icon->width;
+      height = fwin->mini_icon->height;
+    }
 #endif
   }
   else

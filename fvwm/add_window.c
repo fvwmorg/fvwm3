@@ -1079,8 +1079,8 @@ ICON_DBG((stderr,"si: iwh ignored '%s'\n", tmp_win->name));
     {
 ICON_DBG((stderr,"si: using iwh '%s'\n", tmp_win->name));
       tmp_win->icon_bitmap_file = NULL;
+      SET_HAS_EWMH_ICON(tmp_win, EWMH_WINDOW_ICON);
     }
-    SET_HAS_EWMH_ICON(tmp_win, EWMH_WINDOW_ICON);
   }
   else if((tmp_win->wmhints) && (tmp_win->wmhints->flags & IconPixmapHint))
   {
@@ -1110,7 +1110,7 @@ ICON_DBG((stderr,"si: using default '%s'\n", tmp_win->name));
   }
 
   /* icon name */
-  if (!EWMH_WMIconName(tmp_win, NULL, NULL));
+  if (!EWMH_WMIconName(tmp_win, NULL, NULL))
       GET_NAME_PROPERTY(XGetWMIconName, tmp_win->w, &(tmp_win->icon_name),
 			&(tmp_win->icon_name_list));
   if (tmp_win->icon_name == NoName)
