@@ -392,8 +392,6 @@ static void __check_click_to_focus_or_raise(
 			ret_args->do_raise = 0;
 		}
 	}
-
-
 	if (ret_args->do_focus || ret_args->do_raise)
 	{
 		if (!((ret_args->do_focus &&
@@ -501,13 +499,7 @@ static Bool __handle_click_to_focus(FvwmWindow *fw, int context)
 		break;
 	}
 	SetFocusWindow(fw, True, set_by);
-
-	/* update the decorations */
-	if (!IS_ICONIFIED(fw))
-	{
-		border_draw_decorations(
-			fw, PART_ALL, True, True, CLEAR_ALL, NULL, NULL);
-	}
+	focus_grab_buttons(fw);
 
 	return focus_is_focused(fw);
 }
@@ -626,7 +618,7 @@ static void __handle_bpress_on_managed(XEvent *e, FvwmWindow *fw)
 	context = GetContext(fw, e, &PressedW);
 	/* Now handle click to focus and click to raise. */
 	__handle_focus_raise_click(&f, e, fw, context);
-fprintf(stderr,"hbom: f %d, r %d, ff %d, sc %d\n", f.do_focus, f.do_raise, f.do_forbid_function, f.do_swallow_click);
+fprintf(stderr,"hbom: f %d, r %d, ff %d, sc %d, 0x%08x '%s'\n", f.do_focus, f.do_raise, f.do_forbid_function, f.do_swallow_click, (int)Fw, (fw)?fw->visible_name:"(null)");
 	if (f.do_focus)
 	{
 		if (!__handle_click_to_focus(fw, context))
@@ -675,10 +667,6 @@ fprintf(stderr,"hbom: f %d, r %d, ff %d, sc %d\n", f.do_focus, f.do_raise, f.do_
 		SET_SCHEDULED_FOR_RAISE(fw, 0);
 	}
 	/* clean up */
-	if (f.do_focus)
-	{
-		focus_grab_buttons(fw);
-	}
 	if (!f.do_swallow_click)
 	{
 		/* pass the click to the application */
@@ -2525,7 +2513,6 @@ void HandlePropertyNotify(void)
 		{
 			return;
 		}
-
 		free_window_names (Fw, True, False);
 		Fw->name = new_name;
 		if (Fw->name.name &&
@@ -2533,17 +2520,13 @@ void HandlePropertyNotify(void)
 		{
 			(Fw->name.name)[MAX_WINDOW_NAME_LEN] = 0;
 		}
-
 		SET_NAME_CHANGED(Fw, 1);
-
 		if (Fw->name.name == NULL)
 		{
 			Fw->name.name = NoName; /* must not happen */
 		}
-
 		setup_visible_name(Fw, False);
 		BroadcastWindowIconNames(Fw, True, False);
-
 		/* fix the name in the title bar */
 		if (!IS_ICONIFIED(Fw))
 		{
@@ -2551,7 +2534,6 @@ void HandlePropertyNotify(void)
 				Fw, PART_TITLE, (Scr.Hilite == Fw), True,
 				CLEAR_ALL, NULL, NULL);
 		}
-
 		EWMH_SetVisibleName(Fw, False);
 		/*
 		 * if the icon name is NoName, set the name of the icon to be
@@ -2578,7 +2560,6 @@ void HandlePropertyNotify(void)
 		{
 			return;
 		}
-
 		free_window_names(Fw, False, True);
 		Fw->icon_name = new_name;
 		if (Fw->icon_name.name && strlen(Fw->icon_name.name) >
@@ -2587,7 +2568,6 @@ void HandlePropertyNotify(void)
 			/* limit to prevent hanging X server */
 			(Fw->icon_name.name)[MAX_ICON_NAME_LEN] = 0;
 		}
-
 		SET_WAS_ICON_NAME_PROVIDED(Fw, 1);
 		if (Fw->icon_name.name == NULL)
 		{
@@ -2595,7 +2575,6 @@ void HandlePropertyNotify(void)
 			SET_WAS_ICON_NAME_PROVIDED(Fw, 0);
 		}
 		setup_visible_name(Fw, True);
-
 		BroadcastWindowIconNames(Fw, False, True);
 		RedoIconName(Fw);
 		EWMH_SetVisibleName(Fw, True);

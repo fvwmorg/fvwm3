@@ -1,5 +1,17 @@
 2002-08-10  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (__handle_click_to_focus):
+	removed redundant code
+
+	* fvwm/focus.c (__set_focus_to_fwin):
+	(set_focus_to_fwin):
+	fixed redrawing the border w/ mousey focus when the window was entered,
+	then the border was clicked before the FocusIn event arrived
+
+	* fvwm/events.c (__handle_bpress_on_managed):
+	* fvwm/style.c (parse_and_set_window_style):
+	fixed some small focus problems
+
 	* fvwm/fvwm.c:
 	reformatted and cleaned up
 
