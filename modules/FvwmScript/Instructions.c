@@ -267,7 +267,7 @@ static char *FuncGetOutput(int *NbArg, long *TabArg)
    BufCom=(char*)calloc(sizeof(char),maxsize);
    size=fread(BufCom,1,maxsize,f);
    pclose(f);
-   strcpy(Command,cmndbuf);
+   strncpy(Command,cmndbuf,256);
    TimeCom=time(NULL);
   }
  }
@@ -634,9 +634,9 @@ static char *ReceivFromScript (int *NbArg,long *TabArg)
  if (event.xselection.property!=None)
   if (event.xselection.selection==ASend)
   {
-   XGetWindowProperty(dpy,event.xselection.requestor,event.xselection.property,0,
- 	8192,False,event.xselection.target,&type,&format,&longueur,&octets_restant,
- 	&donnees);
+   XGetWindowProperty(dpy,event.xselection.requestor,event.xselection.property,
+		      0,8192,False,event.xselection.target,&type,&format,
+		      &longueur,&octets_restant,&donnees);
    if (longueur>0)
    {
     msg=(char*)realloc((void*)msg,(longueur+1)*sizeof(char));
@@ -695,6 +695,7 @@ static void HideObj (int NbArg,long *TabArg)
 
  arg[0]=CalcArg(TabArg,&i);
  IdItem= TabIdObj[atoi(arg[0])];
+
 
  tabxobj[IdItem]->flags[0]=True;
  /* On cache la fentre pour la faire disparaitre */
