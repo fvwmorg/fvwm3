@@ -590,6 +590,7 @@ static Bool resize_move_window(F_CMD_ARGS)
   int x,y;
   Bool fWarp = False;
   Bool fPointer = False;
+  Bool has_focus;
   int dx;
   int dy;
 
@@ -658,7 +659,8 @@ static Bool resize_move_window(F_CMD_ARGS)
     tmp_win->normal_g.x += dx;
     tmp_win->normal_g.y += dy;
   }
-  DrawDecorations(tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
+  has_focus = (tmp_win == get_focus_window())? True : False;
+  DrawDecorations(tmp_win, DRAW_ALL, has_focus, True, None, CLEAR_ALL);
   update_absolute_geometry(tmp_win);
   maximize_adjust_offset(tmp_win);
   XSync(dpy, 0);
