@@ -343,9 +343,12 @@ sub processMessage ($$) {
 	}
 
 	elsif ($action eq "preprocess") {
-		@ARGV = getTokens($rest);
+		@ARGV = split(/ /, $rest);
 		initPreprocessVars();
-		GetOptions(%$preprocessOptions) || return;
+		my $parser = new Getopt::Long::Parser(
+			config => [qw(pass_through require_order)]
+		);
+		$parser->getoptions(%$preprocessOptions) || return;
 
 		preprocess($ppArgs, join(" ", @ARGV));
 	}

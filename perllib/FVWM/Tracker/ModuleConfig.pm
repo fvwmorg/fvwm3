@@ -168,22 +168,22 @@ or:
 
 It is possible to specify additional parameters that this tracker understands.
 
-    ConfigType     - "hash" or "array"
+    ConfigType     - "hash" (default) or "array"
     ModuleName     - module to query, the default is $module->name
     LineFilter     - "asis", "spacefree" (default), "lowerkeys", "upperkeys"
     DefaultConfig  - the config hash/array of config to initially use
 
 =item B<data> [I<line-key-or-number>]
 
-Returns an array ref of configuration hashes or one hash ref (if
-I<line-key-or-number> is given).
+Returns either array ref of configuration hash refs, or one hash ref if
+I<line-key-or-number> is given.
 
 Returns I<undef> if the configuration line for I<line-key-or-number> is not
 defined.
 
 =item B<dump> [I<line-key-or-number>]
 
-Works similarly like B<data>, but returns one or many debug lines.
+Works similarly to B<data>, but returns one or many debug lines.
 
 Returns an empty string if no module configuration is defined.
 

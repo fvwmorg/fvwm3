@@ -109,7 +109,7 @@ Using B<FVWM::Module> $module object:
 
 =item B<data>
 
-Returns hash ref representing the current page/desk with the following keys:
+Returns hash ref representing the current page/desk, with the following keys:
 
     desk_n
     page_nx

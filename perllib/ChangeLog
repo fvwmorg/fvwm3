@@ -1,3 +1,14 @@
+2003-06-06  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/create-commands:
+	* FVWM/Commands.pm:
+	fix parsing of the changed command structure in functable.c
+
+	* FVWM/Module.pm.in:
+	* FVWM/Tracker.pm:
+	* FVWM/Tracker/*.pm:
+	some fixes in the documentation
+
 2003-05-30  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/Tracker.pm:

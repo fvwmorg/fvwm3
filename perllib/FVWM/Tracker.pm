@@ -217,9 +217,9 @@ When a tracker is created it may enter its own event loop to gather an
 initial data, so the returned tracker object already has the initial data.
 It also continues to update the data automatically until it is stopped.
 
-This package is a superclass for the concrete tracker implementations,
-it defines a common Tracker API, like a way to access the tracked data
-and define high level events for a tracker caller to observe.
+This package is a superclass for the concrete tracker implementations.
+It defines the common Tracker API, including a way to access the tracked data
+and to define high level events for the tracker caller to observe.
 
 =head1 SYNOPSYS
 
@@ -297,7 +297,8 @@ data to the given key.
 
 =item B<dump>
 
-Prints the whole tracker data in the human readable form, useful for debugging.
+Returns the string representing the whole tracker data in the human readable
+form, useful for debugging.
 
 Usually subclasses add an optional parameter I<key> that limits the whole
 data to the given key.
@@ -332,7 +333,7 @@ all handlers so they may be deleted at once using B<deleteHandlers>.
 
 =item B<deleteHandlers> [I<handler-ids>]
 
-Deletes all handlers defined using addHandler or the once specified
+Deletes all handlers defined using addHandler or the ones specified
 using an optional I<handler-ids> array ref.
 
 =item B<notify> I<observable> [I<observable-params>]

@@ -119,12 +119,12 @@ Using B<FVWM::Module> $module object:
 
 =item B<data> [I<colorset-num>]
 
-Returns an array ref of colorset hashes of one hash ref (if
-I<colorset-num> is given).
+Returns either array ref of colorset hash refs, or one hash ref if
+I<colorset-num> is given. The hash keys are not finalized yet.
 
 =item B<dump> [I<colorset-num>]
 
-Works similarly like B<data>, but returns one or several debug lines.
+Works similarly to B<data>, but returns debug line(s) for one or all colorsets.
 
 =back
 

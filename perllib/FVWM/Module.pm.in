@@ -697,6 +697,13 @@ Event types needed for the 4 mask parameters are defined in B<FVWM::Constants>.
 Set I<Debug> to 2 to nicely dump all module sent and and received data,
 Setting it to 3 makes it even more verbose.
 
+Some options cause an automatically parsing of the module command line args.
+See L<Getopt::Long> for the format of the hash ref accepted by
+I<EnableOptions> parameter. If boolean I<EnableAlias> parameter is given,
+then the alias argument may be specified anywhere on the command line, for
+example before or after long/short options or even in between, as long as
+there are no conflicts with some non-mandatory option arguments.
+
 =item B<version>
 
 Returns FVWM version string I<x.y.z>.

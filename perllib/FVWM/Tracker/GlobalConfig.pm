@@ -111,7 +111,7 @@ Using B<FVWM::Module> $module object:
 or:
 
     my $configTracker = $module->track("GlobalConfig");
-    my $xineramaInfo = $configTracker->data('Xinerama');
+    my $xineramaInfo = $configTracker->data('XineramaConfig');
     my $desktop2Name = $configTracker->data('DesktopName 2');
 
 =head1 OVERRIDDEN METHODS
@@ -120,12 +120,13 @@ or:
 
 =item B<data> [I<key>]
 
-Returns a hash ref of all global configuration values of one value (if
-I<key> is given).
+Returns either hash ref of all global configuration values, or one value if
+I<key> is given.
 
 =item B<dump> [I<key>]
 
-Works similarly to B<data>, but returns one or many debug lines.
+Works similarly to B<data>, but returns debug lines for one or all global
+configuration values.
 
 =back
 

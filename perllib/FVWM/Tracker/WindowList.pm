@@ -187,12 +187,12 @@ To be written.
 
 =item B<data> [I<window-id>]
 
-Returns an array ref of window hashes of one hash ref (if
-I<window-id> is given).
+Returns array ref of window hash refs. or one window hash ref if
+I<window-id> is given. The hash keys are not finalized yet.
 
 =item B<dump> [I<window-id>]
 
-Works similarly like B<data>, but returns one or several debug lines.
+Works similarly to B<data>, but returns debug lines for one or all windows.
 
 =back
 

@@ -214,18 +214,19 @@ say, called every 10 minutes (600 seconds).
 
 =item B<data> [I<sheduled-id>]
 
-Returns an array ref of hashes of one hash ref (if I<sheduled-id> is given)
-with keys:
+Returns either array ref of hash refs, or one hash ref if
+I<sheduled-id> is given. The hash keys are:
 
-    sentTime   - unix seconds
-    seconds    - requested seconds
+    sentTime   - unix time (seconds since 1970)
+    seconds    - requested alarm seconds
     fvwmId     - internal I<fvwm>'s Schedule id
-    callback   - the alarm callback, CODE ref
+    callback   - alarm callback, CODE ref
     params     - ARRAY ref of optional callback parameters
 
 =item B<dump> [I<sheduled-id>]
 
-Works similarly to B<data>, but returns one or many debug lines.
+Works similarly to B<data>, but returns one or many debug lines (one line
+per scheduled alarm).
 
 If no scheduled callbacks are active, the empty string is returned as expected.
 
