@@ -1,5 +1,8 @@
 2002-04-06  olicha  <olivier.chapuis@free.fr>
 
+	* libs/Makefile.am: 
+	Remove a F
+
 	* configure.in: 
 	Fixed png detection
 
