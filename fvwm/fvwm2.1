@@ -7115,13 +7115,19 @@ fvwm to $HOME/.fvwm, which is the default user's data directory.
 .I SESSION_MANAGER
 Fvwm tries to contact this session manager.
 .TP
+.I SESSION_MANAGER_NAME
+This is used mainly to determine xsm running to work around its bug.
+If this variable is set to "xsm", DiscardCommand is set as xsm expects it
+and not as XSMP requires.  If you run FVWM under xsm, you should set this
+variable to "xsm", otherwise old state files are not removed.
+.TP
 .I SM_SAVE_DIR
 If this is set, fvwm saves its session data in this directory. Otherwise
 it uses
 .IR $HOME .
-Note, the saved files are named
+Note, the state files are named
 .I .fs-??????
-and normally will be removed automatically when not used anymore.
+and normally are removed automatically when not used anymore.
 
 .SH AUTHORS
 

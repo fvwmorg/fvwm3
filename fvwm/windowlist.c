@@ -387,6 +387,9 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         else
           name = t->name;
 
+        if (!name)
+          name = "NULL_NAME";
+
         t_hot = safemalloc(strlen(name) + 48);
 	if (use_hotkey)
           sprintf(t_hot, "&%c. ", scut);         /* Generate label */
