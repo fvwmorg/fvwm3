@@ -89,7 +89,7 @@ Main
       Begin
       Do {Exec sync}
       Do {Exec /sbin/shutdown -h now}
-      Quit
+      Quit   
       End
      End
     End
@@ -144,7 +144,7 @@ Main
    ChangeValue 8 0
    ChangeValue 9 0
    ChangeValue 10 0
-   Set $ToDo = Logout
+   Set $ToDo = Restart
   End
 End
 
@@ -162,7 +162,7 @@ Main
    ChangeValue 7 0
    ChangeValue 9 0
    ChangeValue 10 0
-   Set $ToDo = Logout
+   Set $Todo = RestartWith
   End
 End
 

@@ -1,8 +1,13 @@
+2000-01-04  olicha <olivier.chapuis@free.fr>
+
+	* FvwmScript/Scripts/ScriptFvwmQuit
+	Fixed restart in ScriptFvwmQuit
+	
 2000-01-04  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmIconMan/x.c (X_init_manager):
-	allow the buttongeometry option to reduce the button height to a minimum
-	of the font height
+	allow the buttongeometry option to reduce the button height to a 
+	minimum of the font height
 
 2000-01-04  olicha <olivier.chapuis@free.fr>
 
