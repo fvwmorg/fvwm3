@@ -1960,7 +1960,6 @@ FvwmWindow *AddWindow(
 	/* used for faster access */
 	style_flags *sflags;
 	short buttons;
-	extern FvwmWindow *colormap_win;
 	int do_shade = 0;
 	int shade_dir = 0;
 	int do_maximize = 0;
@@ -2285,7 +2284,7 @@ FvwmWindow *AddWindow(
 	}
 
 	/****** window colormap ******/
-	InstallWindowColormaps(colormap_win);
+	ReInstallActiveColormap();
 
 	/****** ewmh setup *******/
 	EWMH_WindowInit(fw);
@@ -2869,8 +2868,8 @@ void destroy_window(FvwmWindow *fw)
 
 	/****** adjust fvwm internal windows II ******/
 
-	/* restore_focus_after_unmap takes care of Scr.pushed_window and
-	 * colormap_win */
+	/* restore_focus_after_unmap takes care of Scr.pushed_window and the
+	 * colormap window */
 	if (fw == Scr.Ungrabbed)
 	{
 		Scr.Ungrabbed = NULL;

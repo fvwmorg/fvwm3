@@ -1,8 +1,12 @@
 2002-05-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmM4/FvwmM4.c (m4_defs):
-	* FvwmIconMan/xmanager.h:
 	* FvwmCpp/FvwmCpp.c (cpp_defs):
+	open tempfile with 0600 mode
+
+	* FvwmIconMan/xmanager.h:
+	* FvwmCpp/FvwmCpp.c:
+	* FvwmCpp/FvwmM4.c:
 	remove MULTIBYTE ifdefs
 
 2002-05-26  Dominik Vogt  <dominik.vogt@gmx.de>

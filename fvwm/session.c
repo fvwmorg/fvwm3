@@ -24,8 +24,11 @@
 #include "config.h"
 
 #include <stdio.h>
+#ifdef HAVE_GETPWUID
 #include <pwd.h>
+#endif
 #include <signal.h>
+#include <fcntl.h>
 
 #include "libs/fvwmlib.h"
 #include <libs/gravity.h>
@@ -148,14 +151,44 @@ static void setRealStateFilename(char *filename)
 
 static char *getUniqueStateFilename(void)
 {
-  const char *path = getenv("SM_SAVE_DIR");
-  struct passwd *pwd;
+	const char *path = getenv("SM_SAVE_DIR");
+	char *filename;
+	int fd;
 
-  if (!path) {
-    pwd = getpwuid(getuid());
-    path = pwd->pw_dir;
+	if (!path)
+	{
+		path = getenv ("HOME");
+	}
+
+#ifdef HAVE_GETPWUID
+	if (!path)
+	{
+		struct passwd *pwd;
+
+		pwd = getpwuid(getuid());
+		if (pwd)
+		{
+			path = pwd->pw_dir;
+		}
   }
-  return tempnam(path, ".fs-");
+#endif
+	if (!path)
+	{
+		return NULL;
+	}
+
+	filename = tempnam(path, ".fs-");
+	if ((fd = open (filename, O_WRONLY | O_EXCL | O_CREAT, 0600)) == -1)
+	{
+		free (filename);
+		filename = NULL;
+	}
+	else
+	{
+		close (fd);
+	}
+
+	return filename;
 }
 
 #else

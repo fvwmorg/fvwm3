@@ -1,5 +1,14 @@
 2002-05-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/focus.c (restore_focus_after_unmap):
+	fixed a problem w/ colormap transition when transient window died
+
+	* fvwm/add_window.c (AddWindow):
+	clean up
+
+	* fvwm/session.c (getUniqueStateFilename):
+	applied security patch by Jan Echternach
+
 	* fvwm/fvwm.c (InitVariables):
 	Properly initialise Scr.flags.is_pointer_on_this_screen
 
