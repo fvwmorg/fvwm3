@@ -53,6 +53,7 @@ typedef enum
   CRS_BOTTOM_EDGE,
   CRS_LEFT_EDGE,
   CRS_ROOT,
+  CRS_STROKE,
   CRS_MAX
 } cursor_type;
 
