@@ -1101,7 +1101,7 @@ void SetRCDefaults(void)
     "XORValue 0",
     "DefaultFont fixed",
     "DefaultColors black grey",
-    "MenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey",
+    DEFAULT_MENU_STYLE,
     "TitleStyle Centered -- Raised",
     "Style * Color lightgrey/dimgrey",
     "Style * HilightFore black, HilightBack grey",

@@ -1,3 +1,27 @@
+2001-01-20  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/menus.c (parse_vertical_spacing_line):
+	moved some variables to defaults.h
+	(paint_item):
+	fixed drawing with large relief widths and a title after a separator or
+	title
+	(find_entry):
+	fixed problem with calculation of vertical item offsets with very thick
+	reliefs
+
+	* fvwm/fvwm.c (SetRCDefaults):
+	* libs/defaults.h (DEFAULT_MENU_STYLE):
+	moved default menu style to defaults.h
+
+	* fvwm/menus.c (size_menu_horizontally):
+	(size_menu_vertically):
+	menu item layout fix w/ long titles
+	allow negative spacing arguments
+	corrected hilighting area of item with only one %| in the item format
+	allow trailing dot in item format, e.g. "%10.r"
+	allow %<Space> and %<Tab> in addition to <Space> and <Tab> without '%'
+	fixed layout of items with a sub menu triangle only
+
 2001-01-20  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm/add_window.c (setup_icon, AddWindow):

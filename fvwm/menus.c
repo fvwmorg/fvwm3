@@ -374,6 +374,7 @@ static MenuItem *find_entry(
 		&root_x,&root_y, &JunkX, &JunkY, &JunkMask);
   if (XFindContext(dpy, Child, MenuContext, (caddr_t *)&mr) == XCNOENT)
   {
+fprintf(stderr,"pointer in no menu item\n");
     return NULL;
   }
 
@@ -383,12 +384,13 @@ static MenuItem *find_entry(
   XQueryPointer(dpy, Child, &JunkRoot, &JunkChild,
 		&root_x,&root_y, &x, &y, &JunkMask);
 
+#if 0
   r = MST_RELIEF_THICKNESS(mr) / 2;
   /* look for the entry that the mouse is in */
-  for(mi = MR_FIRST_ITEM(mr); mi; mi = MI_NEXT_ITEM(mi))
+  for (mi = MR_FIRST_ITEM(mr); mi; mi = MI_NEXT_ITEM(mi))
   {
-    int a ;
-    int b ;
+    int a;
+    int b;
 
     a = (MI_PREV_ITEM(mi) && MI_IS_SELECTABLE(MI_PREV_ITEM(mi))) ? r : 0;
     if (!MI_IS_SELECTABLE(mi))
@@ -403,6 +405,28 @@ static MenuItem *find_entry(
       break;
     }
   }
+#else
+  r = MST_RELIEF_THICKNESS(mr);
+  /* look for the entry that the mouse is in */
+  for (mi = MR_FIRST_ITEM(mr); mi; mi = MI_NEXT_ITEM(mi))
+  {
+    int a;
+    int b;
+
+    a = (MI_PREV_ITEM(mi) && MI_IS_SELECTABLE(MI_PREV_ITEM(mi))) ? r / 2 : 0;
+    if (!MI_IS_SELECTABLE(mi))
+      b = 0;
+    else if (MI_NEXT_ITEM(mi) && MI_IS_SELECTABLE(MI_NEXT_ITEM(mi)))
+      b = r / 2;
+    else
+      b = r;
+    if (y >= MI_Y_OFFSET(mi) - a &&
+	y < MI_Y_OFFSET(mi) + MI_HEIGHT(mi) + b)
+    {
+      break;
+    }
+  }
+#endif
   if (x < MR_ITEM_X_OFFSET(mr) ||
       x >= MR_ITEM_X_OFFSET(mr) + MR_ITEM_WIDTH(mr) - 1)
   {
@@ -412,6 +436,7 @@ static MenuItem *find_entry(
   if (mi && px_offset)
     *px_offset = x;
 
+fprintf(stderr,"pointer in item 0x%0x8 '%s'\n", (int)mi, mi?MI_LABEL(mi)[0]:"");
   return mi;
 }
 
@@ -3434,8 +3459,10 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     /* Separate the title. */
     if (MST_TITLE_UNDERLINES(mr) > 0 && mi != MR_FIRST_ITEM(mr))
     {
-      text_y += MENU_SEPARATOR_HEIGHT + relief_thickness;
-      y = y_offset + relief_thickness;
+      int add = (MI_IS_SELECTABLE(MI_PREV_ITEM(mi))) ? relief_thickness : 0;
+
+      text_y += MENU_SEPARATOR_HEIGHT + add;
+      y = y_offset + add;
       if (sx1 < sx2)
 	draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);
     }
@@ -4380,24 +4407,33 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
       {
       case '%':
 	format++;
+	chars = 0;
 	gap_left = 0;
 	gap_right = 0;
 
 	/* Insert a gap of %d pixels. */
 	if (sscanf(format, "%d.%d%n", &gap_left, &gap_right, &chars) >= 2 ||
+	    (sscanf(format, "%d.%n", &gap_left, &chars) >= 1 && chars > 0) ||
 	    sscanf(format, "%d%n", &gap_left, &chars) >= 1 ||
 	    sscanf(format, ".%d%n", &gap_right, &chars) >= 1)
 	{
-	  if (gap_left >= Scr.MyDisplayWidth || gap_left < 0)
+	  if (gap_left > Scr.MyDisplayWidth ||
+	      gap_left < -Scr.MyDisplayWidth)
 	  {
 	    gap_left = 0;
 	  }
-	  if (gap_right >= Scr.MyDisplayWidth || gap_right < 0)
+	  if (gap_right > Scr.MyDisplayHeight ||
+	      gap_right < -Scr.MyDisplayHeight)
 	  {
 	    gap_right = 0;
 	  }
 	  /* Skip the number. */
 	  format += chars;
+	}
+	else if (*format == '.')
+	{
+	  /* Skip a dot without values */
+	  format++;
 	}
 	if (!*format)
 	  break;
@@ -4531,6 +4567,14 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	  /* Simply add a gap. */
 	  x += gap_right + gap_left;
 	  break;
+	case '\t':
+	  x +=
+	    MENU_TAB_WIDTH * XTextWidth(MST_PSTDFONT(msp->menu)->font, " ", 1);
+	  break;
+	case ' ':
+	  /* Advance the x position. */
+	  x += XTextWidth(MST_PSTDFONT(msp->menu)->font, format, 1);
+	  break;
 	default:
 	  /* Ignore unknown characters. */
 	  break;
@@ -4567,12 +4611,16 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
     {
       MR_TRIANGLE_X_OFFSET(msp->menu) = 2 * Scr.MyDisplayWidth;
     }
+    msp->flags.is_popup_indicator_used = triangle_placed;
 
     total_width = x - MST_BORDER_WIDTH(msp->menu);
     d = (sidepic_space + 2 * relief_thickness +
 	 max(msp->max.title_width, msp->max.picture_width)) - total_width;
     if (d > 0)
     {
+      int m = 1 - left_objects;
+      int n = 1 + used_objects - left_objects - right_objects;
+
       /* The title is larger than all menu items. Stretch the gaps between the
        * items up to the total width of the title. */
       for (i = 0; i < used_objects; i++)
@@ -4586,8 +4634,15 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
 	  }
 	  else
 	  {
+#if 0
 	    /* Neither left nor right aligned item. */
 	    *(item_order[i]) += d / 2;
+#else
+	    /* Neither left nor right aligned item. Divide the overhead gap
+	     * evenly between the items. */
+
+	    *(item_order[i]) += d * (m + i) / n;
+#endif
 	  }
 	}
       }
@@ -4601,14 +4656,24 @@ static void size_menu_horizontally(MenuSizingParameters *msp)
     MR_ITEM_WIDTH(msp->menu) = total_width - sidepic_space;
     MR_ITEM_X_OFFSET(msp->menu) = MST_BORDER_WIDTH(msp->menu);
     if (sidepic_is_left)
+    {
       MR_ITEM_X_OFFSET(msp->menu) += sidepic_space;
+    }
     if (!relief_begin_placed)
+    {
       MR_HILIGHT_X_OFFSET(msp->menu) = MR_ITEM_X_OFFSET(msp->menu);
+    }
     if (relief_end_placed)
+    {
       MR_HILIGHT_WIDTH(msp->menu) =
 	MR_HILIGHT_WIDTH(msp->menu) - MR_HILIGHT_X_OFFSET(msp->menu);
+    }
     else
-      MR_HILIGHT_WIDTH(msp->menu) = MR_ITEM_WIDTH(msp->menu);
+    {
+      MR_HILIGHT_WIDTH(msp->menu) =
+	MR_ITEM_WIDTH(msp->menu) + MR_ITEM_X_OFFSET(msp->menu) -
+	MR_HILIGHT_X_OFFSET(msp->menu);
+    }
   }
 
   /* Now calculate the offsets for the individual labels. */
@@ -4668,7 +4733,6 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
   MR_ITEM_TEXT_Y_OFFSET(msp->menu) =
     MST_PSTDFONT(msp->menu)->y + relief_thickness +
     MST_ITEM_GAP_ABOVE(msp->menu);
-
   simple_entry_height =	MST_PSTDFONT(msp->menu)->height +
     MST_ITEM_GAP_ABOVE(msp->menu) + MST_ITEM_GAP_BELOW(msp->menu);
 
@@ -4678,14 +4742,13 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
   for (cItems = 0, mi = MR_FIRST_ITEM(msp->menu); mi != NULL;
        mi = MI_NEXT_ITEM(mi), cItems++)
   {
-    int separator_height;
     Bool last_item_has_relief =
       (MI_PREV_ITEM(mi)) ? MI_IS_SELECTABLE(MI_PREV_ITEM(mi)) : False;
     Bool has_mini_icon = False;
+    int separator_height;
 
     separator_height = (last_item_has_relief) ?
       MENU_SEPARATOR_HEIGHT + relief_thickness : MENU_SEPARATOR_TOTAL_HEIGHT;
-
     MI_Y_OFFSET(mi) = y;
     if (MI_IS_TITLE(mi) && MI_IS_TITLE_CENTERED(mi))
     {
@@ -4699,8 +4762,9 @@ static Bool size_menu_vertically(MenuSizingParameters *msp)
     }
     else
     {
-      /* Normal text entry */
-      if (MI_HAS_TEXT(mi) && msp->used_item_labels)
+      /* Normal text entry or an entry with a sub menu triangle */
+      if ((MI_HAS_TEXT(mi) && msp->used_item_labels) ||
+	  (MI_IS_POPUP(mi) && msp->flags.is_popup_indicator_used))
       {
 	MI_HEIGHT(mi) = simple_entry_height + relief_thickness;
       }
@@ -4904,6 +4968,8 @@ static void make_menu(MenuRoot *mr)
     memset(&msp, 0, sizeof(MenuSizingParameters));
     msp.menu = mr;
     calculate_item_sizes(&msp);
+    /* Call size_menu_horizontally first because it calculated some values used
+     * by size_menu_vertically. */
     size_menu_horizontally(&msp);
     has_continuation_menu = size_menu_vertically(&msp);
     /* repeat this step if the menu was split */
@@ -5741,7 +5807,8 @@ void DestroyMenuStyle(F_CMD_ARGS)
   }
   else if (ms == Menus.DefaultStyle)
   {
-    fvwm_msg(ERR,"DestroyMenuStyle", "cannot destroy default menu style");
+    fvwm_msg(ERR,"DestroyMenuStyle", "cannot destroy default menu style. "
+	     "To reset the default menu style use\n  %s", DEFAULT_MENU_STYLE);
     return;
   }
   else if (ST_USAGE_COUNT(ms) != 0)
@@ -5964,8 +6031,8 @@ static void parse_vertical_spacing_line(
   int val[2];
 
   if (GetIntegerArguments(args, NULL, val, 2) != 2 ||
-      val[0] < -5 || val[0] > 100 ||
-      val[1] < -5 || val[1] > 100)
+      val[0] < MIN_VERTICAL_SPACING || val[0] > MAX_VERTICAL_SPACING ||
+      val[1] < MIN_VERTICAL_SPACING || val[1] > MAX_VERTICAL_SPACING)
   {
     /* illegal or missing parameters, return to default */
     *above = above_default;

@@ -51,6 +51,10 @@
 /***************************************************************
  * These values may be adjusted to fine tune the menu looks.
  ***************************************************************/
+/* The first option of the default menu style must be fvwm/win/mwm/....
+ * fvwm may crash if not. */
+#define DEFAULT_MENU_STYLE               \
+ "MenuStyle * fvwm, Foreground black, Background grey, Greyed slategrey"
 #define DEFAULT_CLICKTIME		 150 /* ms */
 #define DEFAULT_POPUP_DELAY		  15 /* ms*10 */
 #define DEFAULT_POPDOWN_DELAY		  15 /* ms*10 */
@@ -87,6 +91,10 @@
 /*   same for titles */
 #define DEFAULT_MENU_TITLE_TEXT_Y_OFFSET   (DEFAULT_MENU_ITEM_TEXT_Y_OFFSET)
 #define DEFAULT_MENU_TITLE_TEXT_Y_OFFSET2  (DEFAULT_MENU_ITEM_TEXT_Y_OFFSET2)
+/* minimum for above value */
+#define MIN_VERTICAL_SPACING            -100 /* pixels */
+/* maximum for above value */
+#define MAX_VERTICAL_SPACING             100 /* pixels */
 /* width of a tab in the item format of a menu */
 #define MENU_TAB_WIDTH                     8 /* spaces */
 

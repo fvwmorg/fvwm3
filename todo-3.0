@@ -36,3 +36,6 @@ In no particular order and maybe best to do in parts (3.0, 3.2 ...)
  32) Key/Button dependent bindings in menus.
  33) Pressing the submenu trinagle may have a different effect than pressing the
      main body of the item (like icewm).
+ 34) Limit menu width or even parts of the item format.
+ 35) Multi colums menus a la Windows or scrolling menus like MacOs?
+ 36) Includable menus or menu sections.

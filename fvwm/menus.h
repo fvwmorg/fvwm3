@@ -626,6 +626,10 @@ typedef struct
     unsigned short triangle_width;
     unsigned short title_width;
   } max;
+  struct
+  {
+    unsigned is_popup_indicator_used : 1;
+  } flags;
 } MenuSizingParameters;
 
 /* Return values for UpdateMenu, do_menu, menuShortcuts.  This is a lame
