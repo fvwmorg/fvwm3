@@ -1,3 +1,8 @@
+1999-03-09  Andrew T. Veliath  <andrewtv@usa.net>
+
+	* FvwmRearrange/FvwmRearrange.c: Add GPL header and reformat some
+	code.
+
 Tue Mar  9 19:48:47 1999  DanEspen  <dje@blue>
 
 	* FvwmForm/ReadXServer.c (process_paste_data): You can now use button
