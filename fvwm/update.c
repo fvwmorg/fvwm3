@@ -60,7 +60,8 @@
 #include "stack.h"
 
 static void init_style(
-	FvwmWindow *old_t, FvwmWindow *t, window_style *pstyle, short *pbuttons)
+	FvwmWindow *old_t, FvwmWindow *t, window_style *pstyle,
+	short *pbuttons)
 {
 	/* copy the window structure because we still need some old values. */
 	memcpy(old_t, t, sizeof(FvwmWindow));
@@ -164,7 +165,8 @@ static void apply_window_updates(
 		EWMH_SetVisibleName(t, True);
 	}
 
-	if (flags->do_update_window_font || flags->do_update_window_font_height)
+	if (flags->do_update_window_font ||
+	    flags->do_update_window_font_height)
 	{
 		if (!is_style_initialised)
 		{
@@ -224,7 +226,7 @@ static void apply_window_updates(
 		{
 			new_g = &t->normal_g;
 		}
-		get_relative_geometry(&t->frame_g, new_g);
+		get_relative_geometry(&frame_g, new_g);
 
 		flags->do_setup_frame = True;
 		flags->do_redraw_decoration = True;
@@ -309,6 +311,7 @@ static void apply_window_updates(
 	}
 	if (flags->do_setup_frame)
 	{
+		setup_title_geometry(t, pstyle);
 		frame_force_setup_window(
 			t, frame_g.x, frame_g.y, frame_g.width, frame_g.height,
                         True);

@@ -816,7 +816,7 @@ Drawable CreateGradientPixmap(
       break;
     default:
       /* placeholder function, just fills the pixmap with the first color */
-      memset(image->data, 0, image->bytes_per_line * g_width);
+      memset(image->data, 0, image->bytes_per_line * t_height);
       XAddPixel(image, pixels[0]);
       break;
   }

@@ -1770,7 +1770,7 @@ void HandleButtonPress(void)
     {
       DrawDecorations(
         ButtonWindow, PART_FRAME, (Scr.Hilite == ButtonWindow), 0, None,
-	CLEAR_NONE);
+	CLEAR_ALL);
     }
   }
   ButtonWindow = NULL;

@@ -1121,10 +1121,14 @@ static void frame_move_resize_step(
                 grav.client_grav = StaticGravity;
                 frame_set_decor_gravities(fw, &grav);
         }
-	/* draw the border and the titlebar */
-	draw_decorations_with_geom(
-		fw, PART_ALL, (mra->w_with_focus != None) ? True : False,
-		do_force, CLEAR_NONE, &mra->current_g, &mra->next_g);
+	/* setup the title bar */
+	setup_parts = PART_TITLE;
+	if (mra->curr_titlebar_compression != mra->next_titlebar_compression ||
+            mra->mode == FRAME_MR_FORCE_SETUP)
+	{
+		setup_parts |= PART_BUTTONS;
+	}
+	frame_setup_title_bar(fw, &mra->next_g, setup_parts, &mra->dstep_g);
 	/* setup the border */
 	if (mra->mode == FRAME_MR_SETUP || mra->mode == FRAME_MR_FORCE_SETUP)
 	{
@@ -1136,14 +1140,10 @@ static void frame_move_resize_step(
 			&mra->curr_sidebar_g, &mra->next_sidebar_g);
 	}
 	frame_setup_border(fw, &mra->next_g, setup_parts, &mra->dstep_g);
-	/* setup the title bar */
-	setup_parts = PART_TITLE;
-	if (mra->curr_titlebar_compression != mra->next_titlebar_compression ||
-            mra->mode == FRAME_MR_FORCE_SETUP)
-	{
-		setup_parts |= PART_BUTTONS;
-	}
-	frame_setup_title_bar(fw, &mra->next_g, setup_parts, &mra->dstep_g);
+	/* draw the border and the titlebar */
+	draw_decorations_with_geom(
+		fw, PART_ALL, (mra->w_with_focus != None) ? True : False,
+		do_force, CLEAR_NONE, &mra->current_g, &mra->next_g);
 	/* setup the client and the parent windows */
 	w = mra->next_g.width - mra->b_g.total_size.width;
 	if (w < 1)

@@ -1077,7 +1077,7 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			 (strlen(style)<=2 && isdigit(*style)))
 		{
 			/* normal coordinate list button style */
-			int i, num_coords, num, line_style;
+			int i, num_coords, num;
 			struct vector_coords *vc = &df->u.vector;
 
 			/* get number of points */
@@ -1102,17 +1102,21 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 			}
 
 			vc->num = num_coords;
-			vc->line_style = 0;
 			vc->use_fgbg = 0;
-			vc->x = (int *) safemalloc (sizeof (int) * num_coords);
-			vc->y = (int *) safemalloc (sizeof (int) * num_coords);
+			vc->x = safemalloc(sizeof(char) * num_coords);
+			vc->y = safemalloc(sizeof(char) * num_coords);
+			vc->c = safemalloc(sizeof(char) * num_coords);
 
 			/* get the points */
 			for (i = 0; i < vc->num; ++i)
 			{
+				int x;
+				int y;
+				int c;
+
 				/* X x Y @ line_style */
-				num = sscanf(s,"%dx%d@%d%n",&vc->x[i],&vc->y[i],
-					     &line_style, &offset);
+				num = sscanf(
+					s,"%dx%d@%d%n", &x, &y, &c, &offset);
 				if (num != 3)
 				{
 					if (verbose)
@@ -1124,22 +1128,38 @@ Bool ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
 					}
 					free(vc->x);
 					free(vc->y);
+					free(vc->c);
 					vc->x = NULL;
 					vc->y = NULL;
+					vc->c = NULL;
 					return False;
 				}
-				if (line_style % 2)
+				if (x < 0)
 				{
-					vc->line_style |= (1 << i);
+					x = 0;
 				}
-				if (line_style >= 2)
+				if (x > 100)
 				{
-					vc->use_fgbg |= (1 << i);
+					x = 100;
 				}
-				if (line_style == 4)
+				if (y < 0)
 				{
-					/* transparent */
-					vc->line_style = 4;
+					y = 0;
+				}
+				if (y > 100)
+				{
+					y = 100;
+				}
+				if (c < 0 || c > 4)
+				{
+					c = 4;
+				}
+				vc->x[i] = x;
+				vc->y[i] = y;
+				vc->c[i] = c;
+				if (c == 2 || c == 3)
+				{
+					vc->use_fgbg = 1;
 				}
 				s += offset;
 			}

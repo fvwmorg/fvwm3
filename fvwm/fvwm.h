@@ -621,7 +621,6 @@ typedef struct FvwmWindow
 	/* is this a shaped window */
 	int wShaped;
 	Pixmap title_background_pixmap;
-	Pixmap button_background_pixmap[NUMBER_OF_BUTTONS];
 
 	short boundary_width;
 	short corner_width;

@@ -1,4 +1,22 @@
+2002-03-22  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.c (LoadDefaultLeftButton):
+	(LoadDefaultRightButton):
+	* fvwm/borders.c (border_draw_vector_to_pixmap):
+	* fvwm/screen.h (DecorFace):
+	* fvwm/builtins.c (ReadDecorFace):
+	fixed transparent vector line support
+
+	* libs/Graphics.c (CreateGradientPixmap):
+	fixed potential core dump with illegal gradients
+
 2002-03-21  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/fvwm.h (FvwmWindow):
+	removed button_background_pixmap member
+
+	* fvwm/update.c (apply_window_updates):
+	fixed changing the decoration size
 
 	* fvwm/windowshade.c (CMD_WindowShade):
 	* fvwm/frame.c (frame_setup_border):

@@ -127,83 +127,83 @@ typedef struct
 
 typedef struct DecorFace
 {
-  DecorFaceStyle style;
-  struct
-  {
-    Picture *p;
+	DecorFaceStyle style;
+	struct
+	{
+		Picture *p;
 #ifdef FANCY_TITLEBARS
-    Picture **multi_pixmaps;
-    short multi_stretch_flags;
+		Picture **multi_pixmaps;
+		short multi_stretch_flags;
 #endif
-    Pixel back;
-    struct
-    {
-      int npixels;
-      Pixel *pixels;
-      char gradient_type;
-    } grad;
-    struct vector_coords
-    {
-      int num;
-      int *x;
-      int *y;
-      unsigned long line_style;
-      unsigned long use_fgbg;
-    } vector;
-  } u;
+		Pixel back;
+		struct
+		{
+			int npixels;
+			Pixel *pixels;
+			char gradient_type;
+		} grad;
+		struct vector_coords
+		{
+			int num;
+			signed char *x;
+			signed char *y;
+			signed char *c;
+			unsigned use_fgbg : 1;
+		} vector;
+	} u;
 
-  struct DecorFace *next;
+	struct DecorFace *next;
 
-  struct
-  {
-    unsigned has_changed : 1;
-  } flags;
+	struct
+	{
+		unsigned has_changed : 1;
+	} flags;
 } DecorFace;
 
 typedef enum
 {
-  BS_All = -1,
-  BS_ActiveUp,
-  BS_ActiveDown,
-  BS_Inactive,
-  BS_ToggledActiveUp,
-  BS_ToggledActiveDown,
-  BS_ToggledInactive,
-  BS_MaxButtonState
+	BS_All = -1,
+	BS_ActiveUp,
+	BS_ActiveDown,
+	BS_Inactive,
+	BS_ToggledActiveUp,
+	BS_ToggledActiveDown,
+	BS_ToggledInactive,
+	BS_MaxButtonState
 } ButtonState;
 
 typedef enum
 {
-  /* The first five are used in title buttons.  These can't be renumbered
-   * without extending the mwm_decor_flags member below and adapting the style
-   * structure. */
-  MWM_DECOR_MENU     = 0x1,
-  MWM_DECOR_MINIMIZE = 0x2,
-  MWM_DECOR_MAXIMIZE = 0x4,
-  MWM_DECOR_SHADE    = 0x8,
-  MWM_DECOR_STICK    = 0x10,
-  /* --- */
-  MWM_DECOR_BORDER   = 0x20,
-  MWM_DECOR_RESIZEH  = 0x40,
-  MWM_DECOR_TITLE    = 0x80,
-  MWM_DECOR_ALL      = 0x100,
-  MWM_DECOR_EVERYTHING = 0xff
+	/* The first five are used in title buttons.  These can't be
+	 * renumbered without extending the mwm_decor_flags member below and
+	 * adapting the style structure. */
+	MWM_DECOR_MENU     = 0x1,
+	MWM_DECOR_MINIMIZE = 0x2,
+	MWM_DECOR_MAXIMIZE = 0x4,
+	MWM_DECOR_SHADE    = 0x8,
+	MWM_DECOR_STICK    = 0x10,
+	/* --- */
+	MWM_DECOR_BORDER   = 0x20,
+	MWM_DECOR_RESIZEH  = 0x40,
+	MWM_DECOR_TITLE    = 0x80,
+	MWM_DECOR_ALL      = 0x100,
+	MWM_DECOR_EVERYTHING = 0xff
 } mwm_flags;
 
 typedef struct
 {
-  unsigned just : 2; /* was JustificationType : 2 */
-  int layer;
-  struct
-  {
-    unsigned has_changed : 1;
-    mwm_flags mwm_decor_flags : 9;
-    /* Support {ButtonStyle <number> - Layer 4} construction, so button
-     * can be rendered 'pressed in' when the window is assigned to a
-     * particular layer. */
-    unsigned has_layer : 1;
-  } flags;
-  DecorFace state[BS_MaxButtonState];
+	unsigned just : 2; /* was JustificationType : 2 */
+	int layer;
+	struct
+	{
+		unsigned has_changed : 1;
+		mwm_flags mwm_decor_flags : 9;
+		/* Support {ButtonStyle <number> - Layer 4} construction, so
+		 * button can be rendered 'pressed in' when the window is
+		 * assigned to a particular layer. */
+		unsigned has_layer : 1;
+	} flags;
+	DecorFace state[BS_MaxButtonState];
 } TitleButton;
 
 #define TB_FLAGS(tb)              ((tb).flags)
