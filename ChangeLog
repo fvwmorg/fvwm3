@@ -1,10 +1,15 @@
+2003-01-26  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* configure.in:
+	added tests/hints/Makefile.am
+
 2003-01-24  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/fvwm.1.in: Fixed next->previous in Prev command.
 
 2003-01-20  Dan Espen  <dane@mk.telcordia.com>
 
-	* sample.fvwmrc/DecorWin95: 
+	* sample.fvwmrc/DecorWin95:
 	* sample.fvwmrc/DecorMwm: Remove bad mouse binding, that I meant to
 	Replace a long time ago.
 

@@ -1046,6 +1046,7 @@ dnl
 	docs/Makefile
 	sample.fvwmrc/Makefile
 	tests/Makefile
+	tests/hints/Makefile
 	po/Makefile
 dnl
 	modules/FvwmAnimate/Makefile
