@@ -1,4 +1,13 @@
+1999-06-06  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (get_xy_from_position_hints): fixed a bug in position
+	hints for root menus
+	(get_selectable_item_index): fixed bug in cursor key menu navigation
+
 1999-06-05  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (size_menu_horizontally): removed 'fix' in placement of
+	%r and %c columns (titles not drawn properly)
 
 	* configure.in: changed version to 2.3.4
 

@@ -332,10 +332,10 @@ static MenuItem *warp_pointer_to_item(MenuRoot *mr, MenuItem *mi,
 {
   if (do_skip_title)
   {
-    while (mi->next != NULL && (MI_IS_SEPARATOR(mi) || MI_IS_TITLE(mi)))
+    while (MI_NEXT_ITEM(mi) != NULL && (MI_IS_SEPARATOR(mi) || MI_IS_TITLE(mi)))
     {
       /* skip separators and titles until the first 'real' item is found */
-      mi = mi->next;
+      mi = MI_NEXT_ITEM(mi);
     }
   }
   if (mi == NULL)
@@ -392,13 +392,13 @@ static MenuItem *find_entry(
 
   r = MR_STYLE(mr)->look.ReliefThickness / 2;
   /* look for the entry that the mouse is in */
-  for(mi = MR_FIRST_ITEM(mr); mi; mi = mi->next)
+  for(mi = MR_FIRST_ITEM(mr); mi; mi = MI_NEXT_ITEM(mi))
   {
     int a ;
     int b ;
 
-    a = (mi->prev && MI_IS_SELECTABLE(mi->prev)) ? r : 0;
-    b = (mi->next && MI_IS_SELECTABLE(mi->next)) ? r : 0;
+    a = (MI_PREV_ITEM(mi) && MI_IS_SELECTABLE(MI_PREV_ITEM(mi))) ? r : 0;
+    b = (MI_NEXT_ITEM(mi) && MI_IS_SELECTABLE(MI_NEXT_ITEM(mi))) ? r : 0;
     if (y >= MI_Y_OFFSET(mi) - a &&
 	y < MI_Y_OFFSET(mi) + MI_HEIGHT(mi) + b -
 	((MI_IS_SELECTABLE(mi)) ? MR_STYLE(mr)->look.ReliefThickness : 0))
@@ -429,9 +429,9 @@ static int get_selectable_item_index(MenuRoot *mr, MenuItem *miTarget)
   int i = 0;
   MenuItem *mi;
 
-  for (mi = MR_FIRST_ITEM(mr); mi && mi != miTarget; mi = mi->next)
+  for (mi = MR_FIRST_ITEM(mr); mi && mi != miTarget; mi = MI_NEXT_ITEM(mi))
   {
-    if (!MI_IS_SELECTABLE(mi))
+    if (MI_IS_SELECTABLE(mi))
       i++;
   }
   if (mi == miTarget)
@@ -448,7 +448,7 @@ static MenuItem *get_selectable_item_from_index(MenuRoot *mr, int index)
   MenuItem *miLastOk = NULL;
 
   for (mi = MR_FIRST_ITEM(mr); mi && (i < index || miLastOk == NULL);
-       mi=mi->next)
+       mi=MI_NEXT_ITEM(mi))
   {
     if (!MI_IS_SEPARATOR(mi) && !MI_IS_TITLE(mi))
     {
@@ -792,7 +792,7 @@ static MenuStatus menuShortcuts(MenuRoot *menu, XEvent *event,
 	  newItem = mi;
 
       }
-      mi = (mi == MR_LAST_ITEM(menu)) ? MR_FIRST_ITEM(menu) : mi->next;
+      mi = (mi == MR_LAST_ITEM(menu)) ? MR_FIRST_ITEM(menu) : MI_NEXT_ITEM(mi);
     }
     while (mi != mi1);
 
@@ -1523,6 +1523,7 @@ static MenuStatus MenuInteraction(
 	last_saved_pos_hints.pos_hints.context_x_factor = 0;
 	last_saved_pos_hints.pos_hints.y_factor = 0;
 	last_saved_pos_hints.pos_hints.is_relative = False;
+	last_saved_pos_hints.pos_hints.is_menu_relative = False;
 	submenu = mr_popup_for_mi(pmp->menu, mi);
 	if (submenu &&
 	    MR_WINDOW(submenu) != None &&
@@ -2438,7 +2439,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     }
 
     /* Botton of the menu */
-    if(mi->next == NULL)
+    if(MI_NEXT_ITEM(mi) == NULL)
     {
       for (i = bw; i-- ; )
       {
@@ -2454,7 +2455,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 
     /* Left and right side of the menu. */
     RelieveHalfRectangle(MR_WINDOW(mr), 0, y_offset, MR_WIDTH(mr),
-			 y_height + ((!mi->next && MI_IS_SELECTABLE(mi)) ?
+			 y_height + ((!MI_NEXT_ITEM(mi) && MI_IS_SELECTABLE(mi)) ?
 				     relief_thickness : 0),
 			 bw, ReliefGC, ShadowGC);
   }
@@ -2489,7 +2490,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
     )
   {
     int d = 0;
-    if (mi->prev && MR_SELECTED_ITEM(mr) == mi->prev)
+    if (MI_PREV_ITEM(mi) && MR_SELECTED_ITEM(mr) == MI_PREV_ITEM(mi))
     {
       /* Don't paint over the hilight relief. */
       d = relief_thickness;
@@ -2559,7 +2560,7 @@ static void paint_item(MenuRoot *mr, MenuItem *mi, FvwmWindow *fw,
 	if (sx1 < sx2)
 	  draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);
       }
-      if(mi->next != NULL)
+      if(MI_NEXT_ITEM(mi) != NULL)
       {
 	y = y_offset + y_height - SEPARATOR_HEIGHT;
 	draw_separator(MR_WINDOW(mr), ShadowGC, ReliefGC, sx1, y, sx2, y, 1);
@@ -3097,7 +3098,7 @@ void paint_menu(MenuRoot *mr, XEvent *pevent, FvwmWindow *fw)
     }
   }
 
-  for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = mi->next)
+  for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
   {
     /* be smart about handling the expose, redraw only the entries
      * that we need to */
@@ -3211,7 +3212,7 @@ void DestroyMenu(MenuRoot *mr, Bool recreate)
     mi = MR_FIRST_ITEM(mr);
     while(mi != NULL)
     {
-      tmp2 = mi->next;
+      tmp2 = MI_NEXT_ITEM(mi);
       FreeMenuItem(mi);
       mi = tmp2;
     }
@@ -3374,7 +3375,7 @@ static void size_menu_horizontally(MenuRoot *mr)
     lcr_column[i] = 'l';
 
   /* Calculate the widths for all columns of all items. */
-  for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = mi->next)
+  for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
   {
     if(MI_IS_POPUP(mi))
     {
@@ -3386,7 +3387,7 @@ static void size_menu_horizontally(MenuRoot *mr)
 
       /* titles stretch over the whole menu width, so count the maximum
        * separately if the title is unformatted. */
-      for (j = 0; j < MAX_ITEM_LABELS; j++)
+      for (j = 1; j < MAX_ITEM_LABELS; j++)
       {
 	if (MI_LABEL(mi)[j] != NULL)
 	{
@@ -3713,7 +3714,7 @@ static void size_menu_horizontally(MenuRoot *mr)
   }
 
   /* Now calculate the offsets for the individual labels. */
-  for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = mi->next)
+  for (mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi))
   {
     for (i = 0; i < MAX_ITEM_LABELS; i++)
     {
@@ -3774,11 +3775,11 @@ static void size_menu_vertically(MenuRoot *mr)
   /* mi_prev trails one behind mi, since we need to move that
      into a newly-made menu if we run out of space */
   y = MR_BORDER_WIDTH(mr);
-  for (cItems = 0, mi = MR_FIRST_ITEM(mr); mi != NULL; mi = mi->next, cItems++)
+  for (cItems = 0, mi = MR_FIRST_ITEM(mr); mi != NULL; mi = MI_NEXT_ITEM(mi), cItems++)
   {
     int separator_height;
     Bool last_item_has_relief =
-      (mi->prev) ? MI_IS_SELECTABLE(mi->prev) : False;
+      (MI_PREV_ITEM(mi)) ? MI_IS_SELECTABLE(MI_PREV_ITEM(mi)) : False;
 
     separator_height = (last_item_has_relief) ?
       SEPARATOR_HEIGHT + relief_thickness : SEPARATOR_TOTAL_HEIGHT;
@@ -3800,7 +3801,7 @@ static void size_menu_vertically(MenuRoot *mr)
 	  /* Space to draw the separator plus a gap above */
 	  MI_HEIGHT(mi) += separator_height;
 	}
-	if(mi->next != NULL)
+	if(MI_NEXT_ITEM(mi) != NULL)
 	{
 	  /* Space to draw the separator */
 	  MI_HEIGHT(mi) += SEPARATOR_HEIGHT;
@@ -3857,11 +3858,11 @@ static void size_menu_vertically(MenuRoot *mr)
       MenuRoot *menuContinuation;
 
       /* Remove items form the menu until it fits (plus a 'More' entry). */
-      while (mi->prev != NULL)
+      while (MI_PREV_ITEM(mi) != NULL)
       {
 	/* Remove current item. */
 	y -= MI_HEIGHT(mi);
-	mi = mi->prev;
+	mi = MI_PREV_ITEM(mi);
 	cItems--;
 	if (y + MR_BORDER_WIDTH(mr) + simple_entry_height + 2*relief_thickness
 	    <= Scr.MyDisplayHeight)
@@ -3871,7 +3872,7 @@ static void size_menu_vertically(MenuRoot *mr)
 	  break;
 	}
       }
-      if (!does_fit || mi->prev == NULL)
+      if (!does_fit || MI_PREV_ITEM(mi) == NULL)
       {
 	fvwm_msg(ERR, "size_menu_vertically",
 		 "Menu entry does not fit on screen");
@@ -3891,15 +3892,15 @@ static void size_menu_vertically(MenuRoot *mr)
       MR_CONTINUATION_MENU(mr) = menuContinuation;
 
       /* Now move this item and the remaining items into the new menu */
-      MR_FIRST_ITEM(menuContinuation) = mi->next;
+      MR_FIRST_ITEM(menuContinuation) = MI_NEXT_ITEM(mi);
       MR_LAST_ITEM(menuContinuation) = MR_LAST_ITEM(mr);
       MR_ITEMS(menuContinuation) = MR_ITEMS(mr) - cItems;
-      mi->next->prev = NULL;
+      MI_NEXT_ITEM(mi)->prev = NULL;
 
       /* mi_prev is now the last item in the mirent menu */
       MR_LAST_ITEM(mr) = mi;
       MR_ITEMS(mr) = cItems;
-      mi->next = NULL;
+      MI_NEXT_ITEM(mi) = NULL;
 
       /* And add the entry pointing to the new menu */
       AddToMenu(mr, "More&...", szMenuContinuationActionAndName,
@@ -5679,11 +5680,14 @@ static int float_to_int_with_tolerance(float f)
 {
   int low;
 
-  low = (int)(f - ROUNDING_ERROR_TOLERANCE);
+  if (f < 0)
+    low = (int)(f - ROUNDING_ERROR_TOLERANCE);
+  else
+    low = (int)(f + ROUNDING_ERROR_TOLERANCE);
   if ((int)f != low)
     return low;
   else
-    return (int)(f + ROUNDING_ERROR_TOLERANCE);
+    return (int)(f);
 }
 
 static void get_xy_from_position_hints(
@@ -5695,24 +5699,31 @@ static void get_xy_from_position_hints(
 
   *ret_x = ph->x;
   *ret_y = ph->y;
-  if (ph->is_relative)
+  if (ph->is_menu_relative)
   {
     if (do_reverse_x)
     {
       *ret_x -= ph->x_offset;
       x_add =
 	width * (-1.0 - ph->x_factor) +
-	context_width * (1.0 - ph->context_x_factor);
+	ph->menu_width * (1.0 - ph->context_x_factor);
     }
     else
     {
       *ret_x += ph->x_offset;
-      x_add = width * ph->x_factor + context_width * ph->context_x_factor;
+      x_add =
+	width * ph->x_factor +
+	ph->menu_width * ph->context_x_factor;
     }
     y_add = height * ph->y_factor;
-    *ret_x = ph->x + float_to_int_with_tolerance(x_add);
-    *ret_y = ph->y + float_to_int_with_tolerance(y_add);
   }
+  else
+  {
+    x_add = width * ph->x_factor;
+    y_add = height * ph->y_factor;
+  }
+  *ret_x += float_to_int_with_tolerance(x_add);
+  *ret_y += float_to_int_with_tolerance(y_add);
 }
 
 /*****************************************************************************
@@ -5823,13 +5834,13 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
   unsigned int height;
   int dummy_int;
   float dummy_float;
+  Bool dummy_flag;
   Window context_window = 0;
   Bool fHasContext, fUseItemOffset;
   Bool fValidPosHints =
     last_saved_pos_hints.flags.is_last_menu_pos_hints_valid;
   /* If this is set we may want to reverse the position hints, so don't sum up
    * the totals right now. This is useful for the SubmenusLeft style. */
-  Bool unknown_context_direction = False;
 
   last_saved_pos_hints.flags.is_last_menu_pos_hints_valid = False;
   if (pops == NULL)
@@ -5846,6 +5857,8 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     /* ^ just to be able to jump to end of loop without 'goto' */
     gflags = NoValue;
     pops->pos_hints.is_relative = False;
+    pops->pos_hints.menu_width = 0;
+    pops->pos_hints.is_menu_relative = False;
     /* parse context argument (if present) */
     naction = GetNextToken(taction, &tok);
     if (!tok)
@@ -5874,10 +5887,11 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     }
     else if (StrEquals(tok,"menu"))
     {
-      if (mi && mr)
+      if (mr)
       {
 	context_window = MR_WINDOW(mr);
-	unknown_context_direction = True;
+	pops->pos_hints.is_menu_relative = True;
+	pops->pos_hints.menu_width = MR_WIDTH(mr);
       }
     }
     else if (StrEquals(tok,"item"))
@@ -5886,7 +5900,8 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
       {
 	context_window = MR_WINDOW(mr);
 	fUseItemOffset = True;
-	unknown_context_direction = True;
+	pops->pos_hints.is_menu_relative = True;
+	pops->pos_hints.menu_width = MR_WIDTH(mr);
       }
     }
     else if (StrEquals(tok,"icon"))
@@ -5970,7 +5985,10 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
 
       context_window = w;
       if (XFindContext(dpy, w, MenuContext, (caddr_t *)&dummy_mr) != XCNOENT)
-	unknown_context_direction = True;
+      {
+	pops->pos_hints.is_menu_relative = True;
+	pops->pos_hints.menu_width = MR_WIDTH(mr);
+      }
     }
     else
     {
@@ -6006,12 +6024,18 @@ char *GetMenuOptions(char *action, Window w, FvwmWindow *tmp_win,
     taction = get_one_menu_position_argument(
       naction, x, width, &(pops->pos_hints.x), &(pops->pos_hints.x_offset),
       &(pops->pos_hints.x_factor), &(pops->pos_hints.context_x_factor),
-      &pops->pos_hints.is_relative);
-    pops->pos_hints.x = x;
+      &pops->pos_hints.is_menu_relative);
+    if (pops->pos_hints.is_menu_relative)
+    {
+      pops->pos_hints.x = x;
+      if (pops->pos_hints.menu_width == 0 && mr)
+      {
+	pops->pos_hints.menu_width = MR_WIDTH(mr);
+      }
+    }
     naction = get_one_menu_position_argument(
       taction, y, height, &(pops->pos_hints.y), &dummy_int,
-      &(pops->pos_hints.y_factor), &dummy_float,
-      &pops->pos_hints.is_relative);
+      &(pops->pos_hints.y_factor), &dummy_float, &dummy_flag);
     if (naction == taction)
     {
       /* argument is missing or invalid */

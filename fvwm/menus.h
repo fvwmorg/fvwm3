@@ -399,10 +399,12 @@ typedef struct
   int x;                  /* suggested x position */
   int y;                  /* suggested y position */
   int x_offset;           /* additional offset to x */
+  int menu_width;         /* width of the parent menu or item */
   float x_factor;         /* to take menu width into account (0, -1 or -0.5) */
   float context_x_factor; /* additional offset factor to x */
   float y_factor;         /* same with height */
   Bool is_relative;       /* FALSE if referring to absolute screen position */
+  Bool is_menu_relative;  /* TRUE if referring to a part of a menu */
 } MenuPosHints;
 
 typedef struct
