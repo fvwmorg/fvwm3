@@ -240,7 +240,7 @@ void fvwm_msg(int type,char *id,char *msg,...)
 
   va_start(args,msg);
   vfprintf(stderr, msg, args);
-  va_end(args,msg);
+  va_end(args);
 
   fprintf(stderr,"\n");
   if (type == ERR)
@@ -250,7 +250,7 @@ void fvwm_msg(int type,char *id,char *msg,...)
     sprintf(tmp,"[FVWM][%s]: %s ",id,typestr);
     va_start(args,msg);
     vsprintf(tmp+strlen(tmp), msg, args);
-    va_end(args,msg);
+    va_end(args);
     tmp[strlen(tmp)+1]='\0';
     tmp[strlen(tmp)]='\n';
     if (strlen(tmp) >= MAX_MODULE_INPUT_TEXT_LEN)
