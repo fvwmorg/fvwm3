@@ -1,3 +1,10 @@
+Fri Mar 19 19:50:08 1999  Steve ROBBINS  
+
+	* FvwmEvent/Makefile.am
+	* FvwmForm/Makefile.am
+	* FvwmTaskBar/Makefile.am: remove repeated include directive from
+	INCLUDES.
+
 1999-03-19  Hippo
 
 	* FvwmWinList/*: new option FollowWindowList: shows the windows in the
