@@ -424,6 +424,10 @@ Bool MatchBinding(Display *dpy, Binding *b,
 		  int button, KeySym keysym,
 		  unsigned int modifier,unsigned int dead_modifiers,
 		  int Context, BindingType type);
+Bool MatchBindingExactly(
+  Display *dpy, Binding *b, STROKE_ARG(void *stroke)
+  int button, KeyCode keycode, unsigned int modifier, int Context,
+  BindingType type);
 void GrabWindowKey(Display *dpy, Window w, Binding *binding,
 		   unsigned int contexts, unsigned int dead_modifiers,
 		   Bool fGrab);

@@ -210,27 +210,15 @@ Bool RemoveMatchingBinding(
 
   for (t = *pblist, prev = NULL; t; prev = t, t = t->NextBinding)
   {
-    if (t->type == type)
+    if (MatchBindingExactly(dpy, t, STROKE_ARG(stroke)
+                            button, keycode, modifiers, contexts, type))
     {
-      if (((type == KEY_BINDING &&
-	    t->Button_Key == keycode) ||
-	   STROKE_CODE(
-	     (type == STROKE_BINDING &&
-	      t->Button_Key == button &&
-	      (strcmp(t->Stroke_Seq,stroke) == 0)) ||
-	     )
-	   (type == MOUSE_BINDING &&
-	    t->Button_Key == button)) &&
-	  (t->Context == contexts) &&
-	  (t->Modifier == modifiers))
-      {
-	/* found a matching binding - remove it */
-	UnlinkBinding(pblist, t, prev);
-	FreeBindingStruct(t);
-        t = NULL;
-	/* break out of the loop */
-	return True;
-      }
+      /* found a matching binding - remove it */
+      UnlinkBinding(pblist, t, prev);
+      FreeBindingStruct(t);
+      t = NULL;
+      /* break out of the loop */
+      return True;
     }
   }
 
@@ -443,6 +431,33 @@ Bool MatchBinding(Display *dpy, Binding *b,
   }
   return False;
 }
+
+/* same as above, but only returns exactly matching bindings, i.e. wildcards for
+ * mouse buttons and modifiers must match exactly. */
+Bool MatchBindingExactly(
+  Display *dpy, Binding *b, STROKE_ARG(void *stroke)
+  int button, KeyCode keycode, unsigned int modifier, int Context,
+  BindingType type)
+{
+  if (b->type == type)
+  {
+    if (
+        (
+          (type == KEY_BINDING && b->Button_Key == keycode) ||
+          STROKE_CODE(
+            (type == STROKE_BINDING && b->Button_Key == button &&
+             (strcmp(b->Stroke_Seq,stroke) == 0)) ||
+              )
+          (type == MOUSE_BINDING && b->Button_Key == button)) &&
+        (b->Context == Context) &&
+        (b->Modifier == modifier))
+    {
+      return True;
+    }
+  }
+  return False;
+}
+
 
 /***********************************************************************
  *

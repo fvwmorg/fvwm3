@@ -221,13 +221,16 @@ int ParseBinding(
     Binding *b;
     Binding *prev;
     Binding *tmp;
+    KeyCode keycode = 0;
 
+    if (type == KEY_BINDING)
+      keycode = XKeysymToKeycode(dpy, keysym);
     for (b = *pblist, prev = NULL; b != NULL; prev = b, b = tmp)
     {
       tmp = b->NextBinding;
-      if (MatchBinding(
+      if (MatchBindingExactly(
 	dpy, b, STROKE_ARG(stroke)
-	button, keysym, mods, GetUnusedModifiers(), contexts, type))
+	button, keycode, mods, contexts, type))
       {
 	/* found a matching binding */
 	if (is_unbind_request && !is_binding_removed)
