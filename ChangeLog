@@ -1,5 +1,9 @@
 1999-05-28  Bob Woodside  <proteus@pcnet.com>
 
+	* fvwm/virtual.c (changeDesks): Removed testing code.
+
+1999-05-28  Bob Woodside  <proteus@pcnet.com>
+
 	* fvwm/add_window.c (AddWindow): Preserve the desk setting when re-
         using an FvwmWindow struct, to keep Recapture from losing track of
         which desk a window is on.

@@ -749,13 +749,11 @@ void changeDesks_func(F_CMD_ARGS)
 
 void changeDesks(int desk)
 {
+
 /*
-    RBW -
-    This is the new desk switch handling. If you'd like to do some performance
-    comparisons with the old version, add a define for OLD_DESKSWITCH.
+  RBW - the unmapping operations are now removed to their own functions so
+  they can also be used by the new GoToDeskAndPage command.
 */
-#ifndef OLD_DESKSWITCH
-/*=======================================*/
 if (Scr.CurrentDesk != desk)
   {
     UnmapDesk(Scr.CurrentDesk, True);
@@ -767,118 +765,6 @@ if (Scr.CurrentDesk != desk)
     GNOME_SetDeskCount();
 #endif
   }
-/*=======================================*/
-
-#else
-/*
-    This is the old desk switch code. It is left here temporarily for testing.
-    If you compile with this version, note that it is not invoked by changing
-    desks with the Pager - you'll have to invoke a GoToDesk via a key binding
-    or something - maybe issue the command from FvwmConsole. Pager now uses
-    the new GoToDeskAndPage command.
-*/
-  int oldDesk;
-  FvwmWindow *FocusWin = 0, *t, *t1;
-  static FvwmWindow *StickyWin = 0;
-
-  oldDesk = Scr.CurrentDesk;
-  Scr.CurrentDesk = desk;
-  if(Scr.CurrentDesk == oldDesk)
-    return;
-  BroadcastPacket(M_NEW_DESK, 1, Scr.CurrentDesk);
-  /* Scan the window list, mapping windows on the new Desk,
-   * unmapping windows on the old Desk */
-  MyXGrabServer(dpy);
-
-/*
-    RBW - 11/13/1998  - new:  chase the chain bidirectionally, unmapping
-    windows bottom-up and mapping them top-down, to minimize expose-redraw
-    overhead. Use the new  stacking-order chain, rather than the old
-    last-focussed chain.
-*/
-  t = Scr.FvwmRoot.stack_next;
-  t1 = Scr.FvwmRoot.stack_prev;
-  while (t != &Scr.FvwmRoot || t1 != &Scr.FvwmRoot)
-    {
-      if (t != &Scr.FvwmRoot)
-        {
-              if(!(IS_ICONIFIED(t) && IS_ICON_STICKY(t)) &&
-		 !IS_STICKY(t) && !IS_ICON_UNMAPPED(t))
-                 {
-	          if(t->Desk == Scr.CurrentDesk)
-	           {
-	            MapIt(t);
-	            if (t->FocusDesk == Scr.CurrentDesk)
-	             {
-		      FocusWin = t;
-		     }
-	           }
-	         }
-              else
-	        /*
-		    Only need to do these in one of the passes...
-		*/
-	        {
-	         /* Window is sticky */
-	         t->Desk = Scr.CurrentDesk;
-	         if (Scr.Focus == t)
-	          {
-	           t->FocusDesk =oldDesk;
-	           StickyWin = t;
-	          }
-	        }
-          t = t->stack_next;
-        }
-      if (t1 != &Scr.FvwmRoot)
-        {
-             /* Only change mapping for non-sticky windows */
-             if(!(IS_ICONIFIED(t1) && IS_ICON_STICKY(t1)) &&
-	        !(IS_STICKY(t1)) && !IS_ICON_UNMAPPED(t1))
-	      {
-	       if(t1->Desk == oldDesk)
-	        {
-	         if (Scr.Focus == t1)
-		   t1->FocusDesk = oldDesk;
-	         else
-		   t1->FocusDesk = -1;
-	         UnmapIt(t1);
-	        }
-	      }
-          t1 = t1->stack_prev;
-        }
-    }
-
-
-  MyXUngrabServer(dpy);
-  for (t = Scr.FvwmRoot.next; t != NULL; t = t->next)
-    {
-      /* If its an icon, and its sticking, autoplace it so
-       * that it doesn't wind up on top a a stationary
-       * icon */
-      if((IS_STICKY(t) || IS_ICON_STICKY(t)) &&
-	 IS_ICONIFIED(t) && !IS_ICON_MOVED(t) &&
-	 !IS_ICON_UNMAPPED(t))
-	AutoPlaceIcon(t);
-    }
-
-  if((FocusWin)&&(HAS_CLICK_FOCUS(FocusWin)))
-#ifndef NO_REMEMBER_FOCUS
-    SetFocus(FocusWin->w, FocusWin,0);
-  /* OK, someone beat me up, but I don't like this. If you are a predominantly
-   * focus-follows-mouse person, but put in one sticky click-to-focus window
-   * (typically because you don't really want to give focus to this window),
-   * then the following lines are screwed up. */
-/*  else if (StickyWin && (StickyWin->flags && STICKY))
-    SetFocus(StickyWin->w, StickyWin,1);*/
-  else if ((FocusWin) && (!HAS_NEVER_FOCUS(FocusWin)))
-#endif
-    SetFocus(Scr.NoFocusWin,NULL,1);
-
-#ifdef GNOME
-  GNOME_SetCurrentDesk();
-  GNOME_SetDeskCount();
-#endif
-#endif
 
 return;
 }
