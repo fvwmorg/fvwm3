@@ -124,11 +124,11 @@ color_mult (unsigned short *red,
 	max = g;
 	if (b < r) {
 	  min = b;
-	  min_max_state = G_MAX_R_MIN;
+	  min_max_state = G_MAX_B_MIN;
 	  a = r - b;
 	} else {
 	  min = r;
-	  min_max_state = G_MAX_B_MIN;
+	  min_max_state = G_MAX_R_MIN;
 	  a = b - r; 
 	}
       } else {

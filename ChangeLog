@@ -1,3 +1,8 @@
+1998-12-09  Dominik Vogt  <dominik_vogt@hp.com>
+
+	* libs/ColorUtils.c (color_mult): applied fix by Adam Rice that caused
+	some colours to be wrong
+
 1998-12-09  Bob Woodside  <proteus@pcnet.com>
 
 	* fvwm/virtual.c (GetDeskNumber): changed parsing to restore old
