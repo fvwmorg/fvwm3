@@ -1,3 +1,8 @@
+1999-10-11  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/FvwmPager.c (ParseOptions):
+	* FvwmPager/x_pager.c (initialize_pager): new option 'SolidSeparators'
+
 1999-10-08  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmRearrange/Makefile.am (FvwmCascade):

@@ -110,6 +110,7 @@ int Wait = 0;
 XErrorHandler FvwmErrorHandler(Display *, XErrorEvent *);
 extern Bool is_transient;
 extern Bool do_ignore_next_button_release;
+extern Bool use_dashed_separators;
 
 
 /* assorted gray bitmaps for decorative borders */
@@ -560,7 +561,7 @@ void initialize_pager(void)
     /* create the vrtual page boundary GC */
     gcv.foreground = (Desks[i].colorset < 0) ? fore_pix
       : Colorset[Desks[i].colorset % nColorsets].fg;
-    gcv.line_style = LineOnOffDash;
+    gcv.line_style = (use_dashed_separators) ? LineOnOffDash : LineSolid;
     Desks[i].DashedGC = XCreateGC(dpy, Scr.Pager_w,
 				  GCForeground | GCLineStyle, &gcv);
 

@@ -105,6 +105,7 @@ int MoveThreshold = DEFAULT_MOVE_THRESHOLD;
 
 int ShowBalloons = 0, ShowPagerBalloons = 0, ShowIconBalloons = 0;
 Bool do_focus_on_enter = False;
+Bool use_dashed_separators = True;
 char *BalloonTypeString = NULL;
 char *BalloonBack = NULL;
 char *BalloonFore = NULL;
@@ -1917,6 +1918,10 @@ void ParseOptions(void)
     else if (StrEquals(resource, "SloppyFocus"))
     {
       do_focus_on_enter = True;
+    }
+    else if (StrEquals(resource, "SolidSeparators"))
+    {
+      use_dashed_separators = False;
     }
     /* ... and get Balloon config options ...
        -- ric@giccs.georgetown.edu */

@@ -2,6 +2,8 @@ Changes in beta release 2.3.10
 
 * New options for the WindowList command: UseListSkip and OnlySkipList.
 
+* New FvwmPager option SolidSeparators
+
 Changes in beta release 2.3.9 (October 1999)
 
 * Color names from colorsets can be used in fvwm command ($[fg.cs<n>],
