@@ -1,3 +1,7 @@
+1999-10-15  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/builtins.c (ReadDecorFace): terminate 'style' string
+
 1999-10-14  Brad Giaccio  <bgiaccio@psrw.com>
 
 	* fvwm/builtins.c (HandleColorset):

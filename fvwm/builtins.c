@@ -1092,7 +1092,7 @@ void SetDefaultColors(F_CMD_ARGS)
       Scr.DefaultColorset = atoi(back);
 	  AllocColorset(Scr.DefaultColorset);
     }
-  else 
+  else
     {
   if (!StrEquals(fore, "-"))
     {
@@ -1112,7 +1112,7 @@ void SetDefaultColors(F_CMD_ARGS)
   free(fore);
   free(back);
 
-  if(Scr.DefaultColorset < nColorsets) 
+  if(Scr.DefaultColorset < nColorsets)
   {
   ApplyDefaultFontAndColors();
   }
@@ -1452,6 +1452,7 @@ Boolean ReadDecorFace(char *s, DecorFace *df, int button, int verbose)
       fvwm_msg(ERR, "ReadDecorFace", "error in face `%s'", s);
     return False;
   }
+  style[255] = 0;
 
   if (strncasecmp(style, "--", 2) != 0)
   {

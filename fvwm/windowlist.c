@@ -53,6 +53,7 @@ extern FvwmWindow *ButtonWindow;
 #define NO_DESK_SORT  (1<<6)
 #define SHOW_ICONNAME (1<<7)
 #define SHOW_ALPHABETIC (1<<8)
+#define SHOW_INFONOTGEO (1<<9)
 #define SHOW_EVERYTHING (SHOW_GEOMETRY | SHOW_ALLDESKS | SHOW_NORMAL | SHOW_ICONIC | SHOW_STICKY)
 
 /* Function to compare window title names
@@ -174,6 +175,11 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         flags |= SHOW_ICONNAME;
       else if (StrEquals(tok,"NoGeometry"))
         flags &= ~SHOW_GEOMETRY;
+      else if (StrEquals(tok,"NoGeometryWithInfo"))
+      {
+        flags &= ~SHOW_GEOMETRY;
+        flags |= SHOW_INFONOTGEO;
+      }
       else if (StrEquals(tok,"Geometry"))
         flags |= SHOW_GEOMETRY;
       else if (StrEquals(tok,"NoIcons"))
@@ -333,7 +339,7 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         if (t->Desk != last_desk_displayed)
         {
           if (last_desk_displayed != INT_MIN)
-            if (flags & SHOW_GEOMETRY)
+            if ((flags & SHOW_GEOMETRY) || (flags & SHOW_INFONOTGEO))
             AddToMenu(mr, NULL, NULL, FALSE, FALSE);
           last_desk_displayed = t->Desk;
         }
@@ -343,8 +349,31 @@ void do_windowList(XEvent *eventp,Window w,FvwmWindow *tmp_win,
         else
           name = t->name;
         t_hot = safemalloc(strlen(name) + strlen(tname) + 48);
-        sprintf(t_hot, "&%c.  %s", scut, name); /* Generate label */
+
+        if(flags & SHOW_INFONOTGEO)
+          sprintf(t_hot, "&%c.  ", scut);         /* Generate label */
+        else
+          sprintf(t_hot, "&%c.  %s", scut, name); /* Generate label */
+
         if (scut++ == '9') scut = 'A';	/* Next shortcut key */
+
+        if (flags & SHOW_INFONOTGEO)
+        {
+          tname[0]=0;
+          if(!IS_ICONIFIED(t))
+          {
+            sprintf(loc,"%d:", t->Desk);
+            strcat(tname,loc);
+          }
+          else
+            strcat(tname, "(");
+          strcat(tname, name);
+          if(IS_ICONIFIED(t))
+            strcat(tname, ")");
+          strcat(t_hot,"\t");
+          strcat(t_hot,tname);
+        }
+
 
         if (flags & SHOW_GEOMETRY)
         {
