@@ -36,18 +36,19 @@ LDADD = \
 	-L$(top_builddir)/libs -lfvwm $(Xft_LIBS) $(X_LIBS) $(xpm_LIBS) \
 	$(stroke_LIBS) $(X_PRE_LIBS) $(Xinerama_LIBS) -lXext -lX11 \
 	$(X_EXTRA_LIBS) -lm $(iconv_LIBS) $(Xrender_LIBS) $(Bidi_LIBS) \
-	$(png_LIBS)
+	$(png_LIBS) $(intl_LIBS)
 
 INCLUDES = \
 	-I$(top_srcdir) -I$(top_srcdir)/libs $(stroke_CFLAGS) $(Xft_CFLAGS) \
 	$(xpm_CFLAGS) $(X_CFLAGS) $(iconv_CFLAGS) $(Xrender_CFLAGS) \
-	$(Bidi_CFLAGS) $(png_CFLAGS)
+	$(Bidi_CFLAGS) $(png_CFLAGS) $(intl_CFLAGS)
 
 AM_CFLAGS = \
 	-DFVWM_MODULEDIR=\"$(FVWM_MODULEDIR)\" \
 	-DFVWM_DATADIR=\"$(FVWM_DATADIR)\" \
 	-DFVWM_CONFDIR=\"$(FVWM_CONFDIR)\" \
-	-DFVWM_COLORSET_PRIVATE=1
+	-DFVWM_COLORSET_PRIVATE=1 \
+	-DLOCALEDIR=\"$(LOCALEDIR)\"
 
 ## Create compatibility symlinks if available
 

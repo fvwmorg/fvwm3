@@ -34,6 +34,7 @@
 #include "libs/Colorset.h"
 #include "libs/Module.h"
 #include "libs/Rectangles.h"
+#include "libs/FGettext.h"
 #include "Goodies.h"
 #include "FvwmTaskBar.h"
 #include "Mallocs.h"
@@ -454,13 +455,22 @@ void CreateDateWindow(void)
 
 void CreateMailTipWindow()
 {
-  char str[20];
+	const char *str;
 
-  if (!anymail)
-    sprintf(str, "No new mail");
-  else
-    sprintf(str, "You have %smail", (newmail || unreadmail) ? "new " : "");
-  PopupTipWindow(win_width, 0, str);
+	if (!anymail)
+	{
+		str = _("No new mail");
+	}
+	else if (newmail || unreadmail)
+	{
+		str = _("You have new mail");
+	}
+	else
+	{
+		str = _("You have mail");
+	}
+
+	PopupTipWindow(win_width, 0, str);
 }
 
 void RedrawTipWindow(void)

@@ -14,8 +14,8 @@ ColormapFocus FollowsMouse
 
 # default Styles:
 # make sure these fonts exist on your system:
-Style *           Font -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
-Style *           IconFont -adobe-times-bold-r-*-*-18-*-*-*-*-*-*-*
+Style *           Font -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-*
+Style *           IconFont -adobe-times-bold-r-*-*-12-*-*-*-*-*-*-*
 Style *           HilightFore black, HilightBack palevioletred
 Style *           BorderWidth 7, HandleWidth 7
 Style *           Icon unknown1.xpm, Color lightgrey/dimgrey
@@ -88,25 +88,25 @@ AddToFunc SessionInitFunction
 
 ######################## Menus ###################
 DestroyMenu MenuFvwmRoot
-AddToMenu MenuFvwmRoot  "Root Menu"             Title
+AddToMenu MenuFvwmRoot  "$[gt.Root Menu]"             Title
 +                       "&1. XTerm"             Exec exec xterm
 +                       "&2. Rxvt"              Exec exec rxvt
 +                       ""              Nop
-+                       "&R. Remote Logins"     Popup MenuFvwmLogins
++                       "&R. $[gt.Remote Logins]"     Popup MenuFvwmLogins
 +                       ""              Nop
-+                       "&U. Utilities"         Popup MenuFvwmUtilities
++                       "&U. $[gt.Utilities]"         Popup MenuFvwmUtilities
 +                       ""              Nop
-+                       "&M. Fvwm Modules"      Popup MenuFvwmModules
-+                       "&W. Fvwm Window Ops"   Popup MenuFvwmWindowOps
-+                       "&S. Fvwm Config Ops"   Popup MenuFvwmConfig
++                       "&M. $[gt.Fvwm Modules]"      Popup MenuFvwmModules
++                       "&W. $[gt.Fvwm Window Ops]"   Popup MenuFvwmWindowOps
++                       "&S. $[gt.Fvwm Config Ops]"   Popup MenuFvwmConfig
 +                       ""              Nop
-+                       "&F. Refresh Screen"   Refresh
-+                       "&C. Recapture Screen" Recapture
++                       "&F. $[gt.Refresh Screen]"   Refresh
++                       "&C. $[gt.Recapture Screen]" Recapture
 +                       ""              Nop
-+                       "&X. Exit Fvwm" Popup MenuFvwmQuitVerify
++                       "&X. $[gt.Exit Fvwm]" Popup MenuFvwmQuitVerify
 
 DestroyMenu MenuFvwmUtilities
-AddToMenu MenuFvwmUtilities     "MenuFvwmUtilities" Title
+AddToMenu MenuFvwmUtilities     "$[gt.Utilities]" Title
 +                       "&T. Top"       Exec exec xterm -T Top -n Top -e top
 +                       "&C. Calculator" Exec exec xcalc
 +                       "&M. Xman"      Exec exec xman
@@ -118,49 +118,49 @@ AddToMenu MenuFvwmUtilities     "MenuFvwmUtilities" Title
 +                       ""              Nop
 +                       "&L. XLock"     Exec exec xlock -mode random
 +                       ""              Nop
-+                       "&D. Reset X defaults" Exec xrdb -load $HOME/.Xdefaults
++                       "&D. $[gt.Reset X defaults]" Exec xrdb -load $HOME/.Xdefaults
 
 DestroyMenu MenuFvwmConfig
-AddToMenu MenuFvwmConfig "Fvwm Config Ops" Title
-+ "&S. Sloppy Focus"        FuncFvwmFocusPolicyChange SloppyFocus
-+ "&C. Click To Focus"      FuncFvwmFocusPolicyChange ClickToFocus
-+ "&F. Focus Follows Mouse" FuncFvwmFocusPolicyChange FocusFollowsMouse
+AddToMenu MenuFvwmConfig "$[gt.Fvwm Config Ops]" Title
++ "&S. $[gt.Sloppy Focus]"        FuncFvwmFocusPolicyChange SloppyFocus
++ "&C. $[gt.Click To Focus]"      FuncFvwmFocusPolicyChange ClickToFocus
++ "&F. $[gt.Focus Follows Mouse]" FuncFvwmFocusPolicyChange FocusFollowsMouse
 + "" Nop
-+ "&1. Colormap Follows Mouse" ColormapFocus FollowsMouse
-+ "&2. Colormap Follows Focus" ColormapFocus FollowsFocus
++ "&1. $[gt.Colormap Follows Mouse]" ColormapFocus FollowsMouse
++ "&2. $[gt.Colormap Follows Focus]" ColormapFocus FollowsFocus
 + "" Nop
-+ "&3. Full Paging ON"           EdgeScroll 100 100
-+ "&4. All Paging OFF"           EdgeScroll 0 0
-+ "&5. Horizontal Paging Only"   EdgeScroll 100 0
-+ "&6. Vertical Paging Only"     EdgeScroll 0 100
-+ "&7. Partial Paging"           EdgeScroll 50 50
-+ "&8. Full Paging && Edge Wrap" EdgeScroll 100000 100000
++ "&3. $[gt.Full Paging ON]"           EdgeScroll 100 100
++ "&4. $[gt.All Paging OFF]"           EdgeScroll 0 0
++ "&5. $[gt.Horizontal Paging Only]"   EdgeScroll 100 0
++ "&6. $[gt.Vertical Paging Only]"     EdgeScroll 0 100
++ "&7. $[gt.Partial Paging]"           EdgeScroll 50 50
++ "&8. $[gt.Full Paging && Edge Wrap]" EdgeScroll 100000 100000
 
 # The window Ops menus exhibit a different HotKey style.
 # There are 2 versions of the WindowOps Menu, meant to be bound to different
 # things.  Here is the "common" part:
 DestroyFunc FuncFvwmWindowCommon
 AddToFunc FuncFvwmWindowCommon
-+ I AddToMenu $0 &Move              Move
-+ I AddToMenu $0 &Resize            Resize
-+ I AddToMenu $0 R&aise             Raise
-+ I AddToMenu $0 &Lower             Lower
-+ I AddToMenu $0 (De)&Iconify       Iconify
-+ I AddToMenu $0 (Un)&Stick         Stick
-+ I AddToMenu $0 (Un)Ma&ximize      Maximize
++ I AddToMenu $0 "$[gt.&Move]"              Move
++ I AddToMenu $0 "$[gt.&Resize]"            Resize
++ I AddToMenu $0 "$[gt.R&aise]"             Raise
++ I AddToMenu $0 "$[gt.&Lower]"             Lower
++ I AddToMenu $0 "$[gt.(De)&Iconify]"       Iconify
++ I AddToMenu $0 "$[gt.(Un)&Stick]"         Stick
++ I AddToMenu $0 "$[gt.(Un)Ma&ximize]"      Maximize
 + I AddToMenu $0 ""                 Nop
-+ I AddToMenu $0 &Delete            Delete
-+ I AddToMenu $0 &Close             Close
-+ I AddToMenu $0 Destroy            Destroy
++ I AddToMenu $0 "$[gt.&Delete]"            Delete
++ I AddToMenu $0 "$[gt.&Close]"             Close
++ I AddToMenu $0 "$[gt.Destroy]"            Destroy
 + I AddToMenu $0 ""                 Nop
 
 # First windowops menu, bound to:
 # mouse 2 on root
 # Root menu
 DestroyMenu MenuFvwmWindowOps
-AddToMenu MenuFvwmWindowOps     "Window Ops"    Title
+AddToMenu MenuFvwmWindowOps     "$[gt.Window Ops]"    Title
 FuncFvwmWindowCommon MenuFvwmWindowOps
-+ "Re&fresh Window" RefreshWindow
++ "$[gt.Re&fresh Window]" RefreshWindow
 
 # Second windowops menu, bound to:
 # any mouse on titlebar button 1
@@ -169,8 +169,8 @@ DestroyMenu MenuFvwmWindowOps2
 AddToMenu MenuFvwmWindowOps2
 FuncFvwmWindowCommon MenuFvwmWindowOps2
 + Scroll&Bar       Module FvwmScroll 2 2
-+ &Print           FuncFvwmPrint
-+ "Print Re&verse" FuncFvwmPrintReverse
++ "&$[gt.Print]"           FuncFvwmPrint
++ "$[gt.Print Re&verse]" FuncFvwmPrintReverse
 
 # 3 different ways to log on, take your pick:
 DestroyFunc FuncFvwmRloginXterm
@@ -191,8 +191,8 @@ AddToMenu MenuFvwmLogins
 + s&ignal Exec rxterm signal
 
 DestroyMenu MenuFvwmModules
-AddToMenu MenuFvwmModules "Fvwm Modules"        Title
-+ "&1. Control Animation" Popup  MenuFvwmAnimate
+AddToMenu MenuFvwmModules "$[gt.Fvwm Modules]"        Title
++ "&1. $[gt.Control Animation]" Popup  MenuFvwmAnimate
 + "&B. Button-Bar"        Module FvwmButtons
 + "&O. IconBox"           FuncFvwmConfigureIconBox
 + "&F. Forms"             Popup  MenuFvwmForms
@@ -201,25 +201,25 @@ AddToMenu MenuFvwmModules "Fvwm Modules"        Title
 + "&N. Banner"            Module FvwmBanner
 + "&C. Console"           Module FvwmConsole
 + "&P. Pager"             Module FvwmPager 0 0
-+ "&2. Pager (2 desks)"   Module FvwmPager 0 1
++ "&2. Pager (2 $[gt.desks])"   Module FvwmPager 0 1
 + "&R. Backer"            Module FvwmBacker
 + "&S. ScrollBar"         Module FvwmScroll 50 50
 + "&T. FvwmTaskBar"       Module FvwmTaskBar
 + "&U. AutoRaise"         Module FvwmAuto 200 Raise Nop
 + "&W. WinList"           Module FvwmWinList
-+ "&X. Stop Module Menu"  Popup  MenuFvwmStopModule
++ "&X. $[gt.Stop Module Menu]"  Popup  MenuFvwmStopModule
 
 DestroyMenu MenuFvwmStopModule
-AddToMenu MenuFvwmStopModule "Stop Fvwm Modules" Title
-+ "&B. Stop Button-Bar"  KillModule FvwmButtons
-+ "&O. Stop IconBox"     KillModule FvwmIconBox
-+ "&M. Stop IconMan"     KillModule FvwmIconMan
-+ "&P. Stop Pager"       KillModule FvwmPager
-+ "&R. Stop Backer"      KillModule FvwmBacker
-+ "&S. Stop ScrollBar"   KillModule FvwmScroll
-+ "&T. Stop FvwmTaskBar" KillModule FvwmTaskBar
-+ "&U. Stop AutoRaise"   KillModule FvwmAuto
-+ "&W. Stop WinList"     KillModule FvwmWinList
+AddToMenu MenuFvwmStopModule "$[gt.Stop Fvwm Modules]" Title
++ "&B. $[gt.Stop] Button-Bar"  KillModule FvwmButtons
++ "&O. $[gt.Stop] IconBox"     KillModule FvwmIconBox
++ "&M. $[gt.Stop] IconMan"     KillModule FvwmIconMan
++ "&P. $[gt.Stop] Pager"       KillModule FvwmPager
++ "&R. $[gt.Stop] Backer"      KillModule FvwmBacker
++ "&S. $[gt.Stop] ScrollBar"   KillModule FvwmScroll
++ "&T. $[gt.Stop] FvwmTaskBar" KillModule FvwmTaskBar
++ "&U. $[gt.Stop] AutoRaise"   KillModule FvwmAuto
++ "&W. $[gt.Stop] WinList"     KillModule FvwmWinList
 
 DestroyMenu MenuFvwmForms
 AddToMenu MenuFvwmForms
@@ -238,21 +238,21 @@ AddToFunc FuncFvwmConfigureIconBox
 + I Style     *  NoIcon
 
 DestroyMenu MenuFvwmQuitVerify
-AddToMenu MenuFvwmQuitVerify "Really Quit Fvwm?" Title
-+ "&Q. Yes, Really Quit" Quit
+AddToMenu MenuFvwmQuitVerify "$[gt.Really Quit Fvwm?]" Title
++ "&Q. $[gt.Yes, Really Quit]" Quit
 + ""                     Nop
-+ "&R. Restart"          Restart
++ "&R. $[gt.Restart]"          Restart
 + ""                     Nop
-+ "&T. Start twm"        Restart twm
-+ "&C. Start ctwm"       Restart ctwm
-+ "&2. Start tvtwm"      Restart tvtwm
-+ "&V. Start vtwm"       Restart vtwm
-+ "&M. Start mwm"        Restart mwm
-+ "&O. Start olwm"       Restart /usr/openwin/bin/olwm
++ "&T. $[gt.Start] twm"        Restart twm
++ "&C. $[gt.Start] ctwm"       Restart ctwm
++ "&2. $[gt.Start] tvtwm"      Restart tvtwm
++ "&V. $[gt.Start] vtwm"       Restart vtwm
++ "&M. $[gt.Start] mwm"        Restart mwm
++ "&O. $[gt.Start] olwm"       Restart /usr/openwin/bin/olwm
 + ""                     Nop
-+ "&X. Just an Xterm"    Restart xterm -n '"X Console"' -T '"X Console"'
++ "&X. $[gt.Just an Xterm]"    Restart xterm -n '"X Console"' -T '"X Console"'
 + ""                     Nop
-+ "&N. No, Don't Quit"   Nop
++ "&N. $[gt.No, Don't Quit]"   Nop
 
 ######################## Sample Functions ##########################
 

@@ -22,6 +22,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/FGettext.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "execcontext.h"
@@ -2038,6 +2039,8 @@ void CMD_DesktopName(F_CMD_ARGS)
 	if (!fFvwmInStartup)
 	{
 		char *msg;
+		const char *default_desk_name = _("Desk");
+
 		/* should send the info to the FvwmPager and set the EWMH
 		 * desktop names */
 		if (action != NULL && *action && *action != '\n')
@@ -2047,8 +2050,10 @@ void CMD_DesktopName(F_CMD_ARGS)
 		}
 		else
 		{
-			msg = (char *)safemalloc(84);
-			sprintf(msg, "DesktopName %d Desk %d", desk, desk);
+			msg = (char *)safemalloc(strlen(default_desk_name)+44);
+			sprintf(
+				msg, "DesktopName %d %s %d", desk,
+				default_desk_name, desk);
 		}
 		BroadcastConfigInfoString(msg);
 		free(msg);

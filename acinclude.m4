@@ -1397,3 +1397,239 @@ fi
 AC_SUBST(XFT_CFLAGS)
 AC_SUBST(XFT_LIBS)
 ])
+
+#-----------------------------------------------------------------------------
+# gettext stuff  
+
+AC_DEFUN([AM_GNU_FGETTEXT],
+[
+  AC_REQUIRE([AM_PO_SUBDIRS])dnl
+
+  intl_LIBS=
+  intl_CFLAGS=
+  POSUB=
+
+  found_gettext=yes
+
+  dnl check for the necessary stuff in the libc
+  dnl the pbs is that we can detect this stuff but in fact the included
+  dnl libintl.h is from gettext
+  dnl Moreover, we do not try to use other implementation, but we may try
+  dnl one day 
+  $UNSET ac_cv_header_intl_h
+  $UNSET ac_cv_func_gettext
+  $UNSET ac_cv_func_bindtextdomain
+  $UNSET ac_cv_func_textdomain
+  dnl a "gnu extension"
+  $UNSET ac_cv_func_dgettext
+  #bind_textdomain_codeset
+  AC_CHECK_HEADER(libintl.h,
+    [AC_CHECK_FUNCS(gettext bindtextdomain textdomain dgettext,,
+      found_gettext=no)], found_gettext=no)
+
+  AC_MSG_CHECKING([for gnu gettext in libc])
+  if test x"$found_gettext" = "xyes"; then
+    problem_gettext=" (libc)"
+    AC_MSG_RESULT([yes])
+    AC_MSG_CHECKING(if a simple gettext program link)
+    AC_TRY_LINK([
+      #include <libintl.h>
+      ],
+      [const char *c; c = gettext("foo");], 
+      found_gettext=yes;problem_gettext=" (libc)", found_gettext=no)
+    AC_MSG_RESULT($found_gettext)
+  else
+    AC_MSG_RESULT([no])
+  fi
+
+  if test x"$found_gettext" = xno; then
+    dnl not found, check for libintl
+    $UNSET ac_cv_header_intl_h
+    $UNSET ac_cv_lib_intl_bindtextdomain
+    $UNSET ac_cv_lib_intl_textdomain
+    $UNSET ac_cv_lib_intl_dgettext
+    smr_CHECK_LIB(intl, intl, for Native Language Support,
+      bindtextdomain, libintl.h)
+    if test x"$intl_LIBS" != x; then
+      no_textdomain=no
+      no_dgettext=no
+      AC_CHECK_LIB(intl, textdomain,, no_textdomain=yes,
+        [$intl_LIBS $iconv_LIBS])
+      if test "$no_textdomain" != "yes"; then
+        AC_CHECK_LIB(intl, dgettext,, no_dgettext=yes, [$intl_LIBS $iconv_LIBS])
+        if test "$no_dgettext" != "yes"; then
+          ac_save_CFLAGS="$CFLAGS"
+          ac_save_LIBS="$LIBS"
+          CFLAGS="$CFLAGS $intl_CFLAGS $iconv_CFLAGS"
+          LIBS="$LIBS $intl_LIBS $iconv_LIBS"
+          AC_MSG_CHECKING(if a simple gettext program link)
+          AC_TRY_LINK([
+          #include <libintl.h>
+          ],
+          [const char *c; c = gettext("foo");], 
+          found_gettext=yes;problem_gettext=" (intl library)", found_gettext=no)
+          AC_MSG_RESULT($found_gettext)
+          CFLAGS="$ac_save_CFLAGS"
+          LIBS="$ac_save_LIBS"
+        fi
+      fi
+    fi
+  fi
+
+  if test "$found_gettext" = "yes"; then
+    dnl Mark actions to use GNU gettext tools.
+    CATOBJEXT=.gmo
+    USE_NLS=yes
+    dnl We need to process the po/ directory.
+    POSUB=po
+  else
+    USE_NLS=no
+  fi
+
+  dnl Make the po/ variables we use known to autoconf
+])
+
+
+dnl Checks for all prerequisites of the po subdirectory,
+dnl except for USE_NLS.
+AC_DEFUN([AM_PO_SUBDIRS],
+[
+  AC_REQUIRE([AC_PROG_MAKE_SET])dnl
+  AC_REQUIRE([AC_PROG_INSTALL])dnl
+  AC_REQUIRE([AM_MKINSTALLDIRS])dnl
+
+  dnl Perform the following tests also if --disable-nls has been given,
+  dnl because they are needed for "make dist" to work.
+
+  dnl Search for GNU msgfmt in the PATH.
+  dnl The first test excludes Solaris msgfmt and early GNU msgfmt versions.
+  dnl The second test excludes FreeBSD msgfmt.
+  AM_PATH_PROG_WITH_TEST(MSGFMT, msgfmt,
+    [$ac_dir/$ac_word --statistics /dev/null >/dev/null 2>&1 &&
+     (if $ac_dir/$ac_word --statistics /dev/null 2>&1 >/dev/null | grep usage >/dev/null; then exit 1; else exit 0; fi)],
+    :)
+  AC_PATH_PROG(GMSGFMT, gmsgfmt, $MSGFMT)
+
+  dnl Search for GNU xgettext 0.11 or newer in the PATH.
+  dnl The first test excludes Solaris xgettext and early GNU xgettext versions.
+  dnl The second test excludes FreeBSD xgettext.
+  AM_PATH_PROG_WITH_TEST(XGETTEXT, xgettext,
+    [$ac_dir/$ac_word --omit-header --copyright-holder= /dev/null >/dev/null 2>&1 &&
+     (if $ac_dir/$ac_word --omit-header --copyright-holder= /dev/null 2>&1 >/dev/null | grep usage >/dev/null; then exit 1; else exit 0; fi)],
+    :)
+  dnl Remove leftover from FreeBSD xgettext call.
+  rm -f messages.po
+
+  dnl Search for GNU msgmerge 0.11 or newer in the PATH.
+  AM_PATH_PROG_WITH_TEST(MSGMERGE, msgmerge,
+    [$ac_dir/$ac_word --update -q /dev/null /dev/null >/dev/null 2>&1], :)
+
+  dnl This could go away some day; the PATH_PROG_WITH_TEST already does it.
+  dnl Test whether we really found GNU msgfmt.
+  if test "$GMSGFMT" != ":"; then
+    dnl If it is no GNU msgfmt we define it as : so that the
+    dnl Makefiles still can work.
+    if $GMSGFMT --statistics /dev/null >/dev/null 2>&1 &&
+       (if $GMSGFMT --statistics /dev/null 2>&1 >/dev/null | grep usage >/dev/null; then exit 1; else exit 0; fi); then
+      : ;
+    else
+      GMSGFMT=`echo "$GMSGFMT" | sed -e 's,^.*/,,'`
+      AC_MSG_RESULT(
+        [found $GMSGFMT program is not GNU msgfmt; ignore it])
+      GMSGFMT=":"
+    fi
+  fi
+
+  dnl This could go away some day; the PATH_PROG_WITH_TEST already does it.
+  dnl Test whether we really found GNU xgettext.
+  if test "$XGETTEXT" != ":"; then
+    dnl If it is no GNU xgettext we define it as : so that the
+    dnl Makefiles still can work.
+    if $XGETTEXT --omit-header --copyright-holder= /dev/null >/dev/null 2>&1 &&
+       (if $XGETTEXT --omit-header --copyright-holder= /dev/null 2>&1 >/dev/null | grep usage >/dev/null; then exit 1; else exit 0; fi); then
+      : ;
+    else
+      AC_MSG_RESULT(
+        [found xgettext program is not GNU xgettext; ignore it])
+      XGETTEXT=":"
+    fi
+    dnl Remove leftover from FreeBSD xgettext call.
+    rm -f messages.po
+  fi
+
+  AC_PATH_PROG(MSGUNIQ, msguniq, $MSGUNIQ)
+
+  AC_MSG_CHECKING([for NLS fvwm messages catalogs])
+  AC_MSG_RESULT([$ALL_LINGUAS])
+  POFILES=
+  GMOFILES=
+  UPDATEPOFILES=
+  DUMMYPOFILES=
+  for lang in $ALL_LINGUAS; do
+    for dom in $ALL_DOMAINS; do
+      POFILES="$POFILES $dom.$lang.po"
+      GMOFILES="$GMOFILES $dom.$lang.gmo"
+      UPDATEPOFILES="$UPDATEPOFILES $dom.$lang.po-update"
+      DUMMYPOFILES="$DUMMYPOFILES $dom.$lang.nop"
+    done
+  done
+  # CATALOGS depends on both $ac_dir and the user's LINGUAS environment variable.
+  INST_LINGUAS=
+  AC_MSG_CHECKING([for NLS desired catalogs to be installed])
+  if test "%UNSET%" != "$LINGUAS"; then
+    AC_MSG_RESULT([$LINGUAS])  
+  else
+    AC_MSG_RESULT([all])
+  fi
+  AC_MSG_CHECKING([for NLS messages catalogs to be installed])
+  if test -n "$ALL_LINGUAS"; then
+    for presentlang in $ALL_LINGUAS; do
+      useit=no
+      if test "%UNSET%" != "$LINGUAS"; then
+        desiredlanguages="$LINGUAS"
+      else
+        desiredlanguages="$ALL_LINGUAS"
+      fi
+      for desiredlang in $desiredlanguages; do
+        # Use the presentlang catalog if desiredlang is
+        #   a. equal to presentlang, or
+        #   b. a variant of presentlang (because in this case,
+        #      presentlang can be used as a fallback for messages
+        #      which are not translated in the desiredlang catalog).
+        case "$desiredlang" in
+          "$presentlang"*) useit=yes;;
+        esac
+      done
+      if test $useit = yes; then
+        INST_LINGUAS="$INST_LINGUAS $presentlang"
+      fi
+    done
+  fi
+  AC_MSG_RESULT([$INST_LINGUAS])
+  CATALOGS=
+  if test -n "$INST_LINGUAS"; then
+    for lang in $INST_LINGUAS; do
+      CATALOGS="$CATALOGS $lang.gmo"
+    done
+  fi
+
+])
+
+
+AC_DEFUN([AM_MKINSTALLDIRS],
+[
+  dnl If the AC_CONFIG_AUX_DIR macro for autoconf is used we possibly
+  dnl find the mkinstalldirs script in another subdir but $(top_srcdir).
+  dnl Try to locate is.
+  MKINSTALLDIRS=
+  if test -n "$ac_aux_dir"; then
+    MKINSTALLDIRS="$ac_aux_dir/mkinstalldirs"
+  fi
+  if test -z "$MKINSTALLDIRS"; then
+    MKINSTALLDIRS="\$(top_srcdir)/mkinstalldirs"
+  fi
+])
+
+
+dnl Usage: AM_GNU_GETTEXT_VERSION([gettext-version])
+AC_DEFUN([AM_GNU_GETTEXT_VERSION], [])

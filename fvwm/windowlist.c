@@ -33,6 +33,7 @@
 
 #include "libs/fvwmlib.h"
 #include "libs/FScreen.h"
+#include "libs/FGettext.h"
 #include "fvwm.h"
 #include "externs.h"
 #include "functions.h"
@@ -90,20 +91,20 @@ static char *get_desk_title(int desk, unsigned long flags, Bool is_top_title)
 		{
 			sprintf(tlabel, "%s%s", desk_name,
 				(is_top_title && (flags & SHOW_GEOMETRY)) ?
-				"\tGeometry" : "");
+				_("\tGeometry") : "");
 		}
 		else
 		{
 			sprintf(tlabel,"%d: %s%s", desk, desk_name,
 				(is_top_title && (flags & SHOW_GEOMETRY)) ?
-				"\tGeometry" : "");
+				_("\tGeometry") : "");
 		}
 	}
 	else
 	{
-		sprintf(tlabel,"Desk: %d%s",desk,
+		sprintf(tlabel,_("Desk: %d%s"),desk,
 			(is_top_title && (flags & SHOW_GEOMETRY)) ?
-			"\tGeometry" : "");
+			_("\tGeometry") : "");
 	}
 
 	return tlabel;

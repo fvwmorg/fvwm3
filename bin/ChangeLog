@@ -1,3 +1,9 @@
+2002-11-28  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm-config.1:
+	* fvwm-config.in: 
+	localedir and gettext
+
 2002-11-10  Mikhael Goikhman  <migo@homemail.com>
 
 	* fvwm-bug.1:

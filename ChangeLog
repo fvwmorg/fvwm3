@@ -1,3 +1,30 @@
+2002-11-28  olicha  <olivier.chapuis@free.fr>
+
+	* acconfig.h:
+	* fvwm/Makefile.am:
+	* Makefile.am:
+	* configure.in:
+	* acinclude.m4:
+	Added NLS support with gnu gettext
+
+	* fvwm/fvwm.c (main):
+	FGettextInit
+
+	* fvwm/expand.c (expand_vars_extended):
+	New extanded variable $[gt.any_string]
+
+	* fvwm/virtual.c (CMD_DesktopName):
+	* fvwm/windowlist.c (get_desk_title):
+	* fvwm/expand.c (expand_vars_extended):
+	* fvwm/fvwm.c (SetRCDefaults):
+	* fvwm/ConfigFvwmSetup:
+	Mark some strings to be translated
+
+	* libs/FGettext.c (new file): 
+	* libs/FGettext.c (new file):
+	* libs/Makefile.am:
+	gnu gettext libintl warper
+
 2002-11-29  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (RestoreWithdrawnLocation):

@@ -33,6 +33,7 @@
 #include "virtual.h"
 #include "colorset.h"
 #include "schedule.h"
+#include "libs/FGettext.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -57,6 +58,7 @@ static char *function_vars[] =
 	"hilight.cs",
 	"shadow.cs",
 	"fgsh.cs",
+	"gt.",
 	"desk.name",
 	"desk.width",
 	"desk.height",
@@ -106,6 +108,7 @@ enum
 	VAR_HILIGHT_CS,
 	VAR_SHADOW_CS,
 	VAR_FGSH_CS,
+	VAR_GT,
 	VAR_DESK_NAME,
 	VAR_DESK_WIDTH,
 	VAR_DESK_HEIGHT,
@@ -217,6 +220,25 @@ static int expand_vars_extended(
 			break;
 		}
 		return pixel_to_color_string(dpy, Pcmap, pixel, target, False);
+	case VAR_GT:
+	{
+		const char *gt;
+
+		if (rest == NULL)
+		{
+			return 0;
+		}
+		gt = _(rest);
+		if (gt == NULL)
+		{
+			return 0;
+		}
+		if (output)
+		{
+			strcpy(output, gt);
+		}
+		return strlen(gt);
+	}
 	case VAR_DESK_NAME:
 		if (sscanf(rest, "%d%n", &cs, &n) < 1)
 		{
@@ -230,8 +252,9 @@ static int expand_vars_extended(
 		s = GetDesktopName(cs);
 		if (s == NULL)
 		{
-			s = (char *)safemalloc(23 * sizeof(char));
-			sprintf(s, "Desk %i", cs);
+			const char *ddn = _("Desk");
+			s = (char *)safemalloc(19 + strlen(ddn));
+			sprintf(s, "%s %i", ddn, cs);
 			l = strlen(s);
 			if (output)
 			{

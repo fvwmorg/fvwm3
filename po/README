@@ -1,0 +1,81 @@
+* Requirement for Translators and developers: gettext-0.11.5
+   
+     http://www.gnu.org/software/gettext/
+
+  Read the doc. However, the logic used is a bit different
+  than the gettext logic
+
+* For translators:
+
+  Contact fvwm-workers@fvwm.org
+
+
+* For programmers:
+
+  To be written
+
+
+* For creating a new catalogs, say LL_CC (e.g., fr, zh_CN):
+
+  - Edit configure.in and add LL_CC to ALL_LINGUAS
+  - cd to po/
+  - create a domain.LL_CC.po file for all files domain.pot:
+      
+      msginit -i fvwm.pot -l LL_CC -o fvwm.LL_CC.po
+      msginit -i FvwmTaskBar.pot -l LL_CC -o FvwmTaskBar.LL_CC.po
+      ...
+
+    The --no-translator option can be useful under certain situation
+    (e.g., you do not use the LL_CC locale). In this case you should
+    edit the files you have created and in particular set the
+    appropriate CHARSET.
+
+  - Then, you can start the translation of fvwm.LL_CC.po,
+    FvwmTaskBar.LL_CC.po ...etc
+    
+    NOTE: You should "make domain.LL_CC.gmo" before make install
+          and test your translation visually!
+
+* make:
+
+    - make [all] should do nothing (but, maybe, recreating the
+      Makefile). "make install" install! But see the previous NOTE.
+
+    - The following (re)build everything (safe):
+
+      make po-update
+
+    - If some messages have changed in some source files in "domain":
+    
+       make domain.pot-update
+
+      update domain.pot. Then you can
+       
+       make domain.LL_CC.po
+
+      to get the new messages for translation. After translation:
+
+       make domain.LL_CC.gmo   # create a binary mo file from the po one
+       make install
+       restart fvwm
+      
+      for visual testing.
+
+    - Other targets:
+      
+      make update-gmo  # build all the binary gmo files
+
+* Creation of a new domain: ask the fvwm-workers@fvwm.org.
+
+   Basically:
+
+    - Update ALL_DOMAINS in configure.in
+    - Add NEW_DOMAIN in configure.in
+    - Create po/$NEW_DOMAIN.pot (xgettext) and add it to EXTRA_DIST
+      (todo: remove this step)
+    - Set the files which contains msg NEW_DOMAIN = file1 file2 ...
+      in the beginning of po/Makefile.am
+    - Add $(srcdir)/$(NEW_DOMAIN).pot: and $(NEW_DOMAIN).pot-update:
+      in po/Makfile.am
+    - Update $(POFILES): and update-po: in po/Makfile.am
+      (todo: remove this step)

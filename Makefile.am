@@ -4,8 +4,7 @@
 ## Make sure we have a current version of automake
 AUTOMAKE_OPTIONS = 1.4
 
-SUBDIRS = \
-	libs \
+SUBDIRS = libs \
 	fvwm \
 	modules \
 	bin \
@@ -14,9 +13,10 @@ SUBDIRS = \
 	docs \
 	rpm \
 	sample.fvwmrc \
+	$(POSUB) \
 	tests
 
-EXTRA_DIST = \
+EXTRA_DIST = config.rpath  \
 	INSTALL.fvwm \
 	vms/README \
 	vms/config.h \
@@ -61,3 +61,4 @@ rpm-dist: dist rpm-this
 
 rpm-this:
 	(cd rpm && $(MAKE) $(AM_MAKEFLAGS) rpm) || exit 1
+

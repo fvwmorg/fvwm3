@@ -75,6 +75,7 @@
 #include "move_resize.h"
 #include "frame.h"
 #include "menus.h"
+#include "libs/FGettext.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -1349,28 +1350,35 @@ static void SetRCDefaults(void)
 {
 	int i;
 	/* set up default colors, fonts, etc */
-	char *defaults[] = {
-		"XORValue 0",
-		"DefaultFont",
-		"DefaultColors black grey",
-		DEFAULT_MENU_STYLE,
-		"TitleStyle Centered -- Raised",
-		"Style * Color lightgrey/dimgrey",
-		"Style * HilightFore black, HilightBack grey",
-		"AddToMenu MenuFvwmRoot \"Builtin Menu\" Title",
-		"+ \"&1. XTerm\" Exec xterm",
-		"+ \"&2. Setup Form\" Module FvwmForm FvwmForm-Setup",
-		"+ \"&3. Setup 95 Script\" Module FvwmScript"
-		" FvwmScript-Setup95",
-		"+ \"&4. Issue FVWM commands\" Module FvwmConsole",
-		"+ \"&R. Restart FVWM\" Restart",
-		"+ \"&X. Exit FVWM\" Quit",
-		"Mouse 0 R N Menu MenuFvwmRoot",
-		"Read "FVWM_DATADIR"/ConfigFvwmDefaults",
-		NULL
+	const char *defaults[][3] = {
+		{"XORValue 0","",""},
+		{"DefaultFont","",""},
+		{"DefaultColors black grey","",""},
+		{DEFAULT_MENU_STYLE,"",""},
+		{"TitleStyle Centered -- Raised"},
+		{"Style * Color lightgrey/dimgrey","",""},
+		{"Style * HilightFore black, HilightBack grey","",""},
+		{"AddToMenu MenuFvwmRoot \"",
+		 _("Builtin Menu"), "\" Title"},
+		{"+ \"&1. XTerm\" Exec xterm","",""},
+		{"+ \"&2. ",
+		_("Setup Form"),
+		"\" Module FvwmForm FvwmForm-Setup"},
+		{"+ \"&3. ",
+		 _("Setup 95 Script"), 
+		 "\" Module FvwmScript FvwmScript-Setup95"},
+		{"+ \"&4. ",
+		 _("Issue FVWM commands"),
+		"\" Module FvwmConsole"},
+		{"+ \"&R. ",
+		 _("Restart FVWM"), "\" Restart"},
+		{"+ \"&X. ", gettext("Exit FVWM"), "\" Quit"},
+		{"Mouse 0 R N Menu MenuFvwmRoot","",""},
+		{"Read "FVWM_DATADIR"/ConfigFvwmDefaults","",""},
+		{NULL,NULL,NULL}
 	};
 
-	for (i = 0; defaults[i]; i++)
+	for (i = 0; defaults[i][0]; i++)
 	{
 		const exec_context_t *exc;
 		exec_context_changes_t ecc;
@@ -1378,7 +1386,10 @@ static void SetRCDefaults(void)
 		ecc.type = EXCT_INIT;
 		ecc.w.wcontext = C_ROOT;
 		exc = exc_create_context(&ecc, ECC_TYPE | ECC_WCONTEXT);
-		execute_function(NULL, exc, defaults[i], 0);
+		execute_function(
+			NULL, exc,
+			CatString3(defaults[i][0],defaults[i][1],defaults[i][2]),
+			0);
 		exc_destroy_context(exc);
 	}
 
@@ -1670,9 +1681,11 @@ int main(int argc, char **argv)
 		g_argv[i] = argv[i];
 	}
 	g_argv[g_argc] = NULL;
-	setVersionInfo();
-	FlocaleInit(LC_CTYPE, "", "", "FVWM");
 
+	FlocaleInit(LC_CTYPE, "", "", "FVWM");
+	FGettextInit("fvwm", LOCALEDIR, "FVWM");
+
+	setVersionInfo();
 	/* Put the default module directory into the environment so it can be
 	 * used later by the config file, etc.  */
 	putenv("FVWM_MODULEDIR=" FVWM_MODULEDIR);
@@ -2354,8 +2367,8 @@ int main(int argc, char **argv)
 			    CatString3(FVWM_CONFDIR, "/system", FVWMRC), exc))
 		{
 			fvwm_msg(
-				ERR, "main", "Cannot read startup file, tried: "
-				"\n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t%s/system"
+				ERR, "main", "Cannot read startup file, tried:"
+				" \n\t%s/%s\n\t%s/%s\n\t%s/%s\n\t%s/system"
 				"%s\n\t%s/system%s", fvwm_userdir, FVWMRC,
 				home_dir, FVWMRC, FVWM_DATADIR, FVWMRC,
 				FVWM_DATADIR, FVWMRC, FVWM_CONFDIR, FVWMRC);

@@ -75,6 +75,7 @@
 #include "libs/gravity.h"
 #include "libs/FRender.h"
 #include "libs/FRenderInit.h"
+#include "libs/FGettext.h"
 
 #include "FvwmTaskBar.h"
 #include "ButtonArray.h"
@@ -266,6 +267,7 @@ int main(int argc, char **argv)
 
   FlocaleInit(LC_CTYPE, "", "", "FvwmTaskBar");
   setlocale(LC_TIME, "");
+  FGettextInit("FvwmTaskBar", LOCALEDIR, "FvwmTaskBar");
 
   for (i = 3; i < NUMBER_OF_MOUSE_BUTTONS; i++)
   {
@@ -1303,7 +1305,7 @@ void CheckForTip(int x, int y)
   if (MouseInStartButton(x, y, &whichButton, &startButtonPressed)) {
     if((!whichButton) && (First_Start_Button->isStartButton))
     {
-      if (Tip.type != START_TIP) PopupTipWindow(3, 0, "Click here to start");
+      if (Tip.type != START_TIP) PopupTipWindow(3, 0, _("Click here to start"));
       Tip.type = START_TIP;
     }
     else

@@ -80,6 +80,10 @@
 /* Define if nl_langinfo is available */
 #undef HAVE_CODESET
 
+/* Define to 1 if translation of program messages to the user's native
+   language is requested. */
+#undef HAVE_NLS
+
 /* Define if you want the Shaped window extensions.
  * Shaped window extensions seem to increase the window managers RSS
  * by about 60 Kbytes. They provide for leaving a title-bar on the window
