@@ -829,6 +829,19 @@ will fail.  Next it will look for a user-defined complex
 function called "HelpMe".  If no such user defined function
 exists, Fvwm will try to execute a module called "HelpMe".
 
+Note: There are many commands that affect look and feel of
+specific, some or all windows, like
+.BR Style ", " Mouse ", the " FvwmTheme
+module and many others.  For performance reasons such changes
+are not applied immediately but only when fvwm is idle, i.e.
+no user interaction or module input is pending.  Specifically, new
+.B Style
+options that are set in a function are not applied until after the
+function has completed.  This can sometimes lead to unwanted effects.
+To force that all pending changes are applied immediately, use the
+.BR Refresh " or " RefreshWindow
+commands.
+
 .SS QUOTING
 
 Quotes are required only when needed to make fvwm consider two or more
@@ -2933,7 +2946,7 @@ AddToFunc lower-to-bottom
 .EE
 
 .TP
-.BI "Move [[" w | m ] x " [" w | m ] y " [" Warp "]] | [" pointer "]"
+.BI "Move [[" w | m ] x [ p "] [" w | m ] y [ p "] [" Warp "]] | [" pointer "]"
 Allows the user to move a window.  If called from somewhere in a
 window or its border, then that window will be moved.  If called from
 the root window then the user will be allowed to select the target
@@ -2947,8 +2960,12 @@ pointer position before starting the operation; this is mainly
 intended for internal use by modules like
 .BR FvwmPager .
 
-The operation can be aborted with Escape or by pressing any mouse button
-(except button 1 which confirms the move).
+The operation can be aborted with Escape or by pressing mouse button 2.
+Pressing button 3 sets the
+.I MovedButton3
+condition (see
+.B Current
+command).
 
 If the optional arguments
 .IR x " and " y
@@ -2966,7 +2983,9 @@ relative to its current position, add the
 value.  To move the window to a position relative to the
 current location of the pointer, add the
 .RI ' m '
-(for "mouse") prefix.
+(for "mouse") prefix.  To leave either coordinate unchanged, a
+'-' can be specified in place of
+.IR x " or " y .
 
 Simple Examples:
 .EX
@@ -2999,6 +3018,23 @@ Move m+0 m+0
 See also the
 .B AnimatedMove
 command above.
+
+.TP
+.BI "MoveResize " "width height x y" " [" Warp "]"
+This command does the same as the
+.BR Move " and " Resize
+commands, but in a single call which is less visually disturbing.
+The arguments
+.IR width ", " height ", " x ", " y " and " Warp
+have the same meaning as in the
+.BR Move " and " Resize
+commands (including all prefixes and suffixes).
+
+Example:
+.EX
+# Move the window to the top left corner
+MoveResize w+0 -10p 0 -20p
+.EE
 
 .TP
 .BI "MoveToDesk " prev " | " arg1 " [" arg2 "] [" "min max" "]"
@@ -3141,7 +3177,7 @@ style is used; see
 command) otherwise it is lowered.
 
 .TP
-.BI "Resize [" x [ p | c "] " y [ p | c "]]"
+.BI "Resize [" width [ p | c "] " height [ p | c "]] | [" bottomright | "br x y" "]"
 Allows to resize a window.  If called from somewhere in a window
 or its border, then that window will be resized.  If called from
 the root window then the user will be allowed to select the target
@@ -3151,21 +3187,38 @@ The operation can be aborted with Escape or by pressing any mouse button
 (except button 1 which confirms it).
 
 If the optional arguments
-.IR x " and " y
+.IR width " and " height
 are provided, then the window will be resized so that its dimensions are
-.IR x " by " y .
-The units of x and y are percent-of-screen, unless a letter
+.IR width " by " height .
+The units of
+.IR width " and " height
+are percent-of-screen, unless a letter
 .RI ' p '
 is appended to one or both coordinates, in which case the location is
 specified in pixels.  With a
 .RI ' c '
 suffix the unit defined by the client application (hence the
-c) is used. So you can say
-
+c) is used.  So you can say
 .EX
 Resize 80c 24c
 .EE
 to make a terminal window just big enough for 80x24 characters.
+Both,
+.IR width " and " height
+can be negative.  In this case the new size will be the screen
+size minus the given value.  If either value is zero, the
+corresponding dimension of the window is left untouched.
+
+An alternate syntax is used if the keyword
+.IR bottomright " or in short " br
+follows the command name.  In this case, the arguments
+.IR x "and " y
+specify the desired position of the bottom right corner of
+the window.  They are interpreted exactly like the
+.IR x "and " y
+arguments of the
+.B Move
+command.
 
 .TP
 .BI "SetAnimation " milliseconds-delay " [" fractions-to-move-list "]"
@@ -3436,7 +3489,9 @@ screen width, i.e. -25 is the same as 75.  If
 is "grow", it will maximize to current available space until
 finding any obstacle.  The vertical resizing is similar.  If both
 horizontal and vertical values are "grow", it will expand
-vertically first, then horizontally to find space.  For example, the
+vertically first, then horizontally to find space.  Instead of
+the horizontal "grow" argument, "growleft" or "growright" can
+be used respectively "growup" and "growdown".  For example, the
 following will add a title-bar button to switch a window to the full
 vertical size of the screen:
 .EX
@@ -3463,9 +3518,9 @@ Values larger than 100 can be used with caution.
 
 .TP
 .BI "Recapture"
-Causes fvwm to recapture all of its windows.  This ensures that the
-latest style parameters will be used.  The recapture operation is
-visually disturbing.
+Causes fvwm to recapture all of its windows.  This
+ensures that the latest style parameters will be used.  The
+recapture operation is visually disturbing.
 
 Since fvwm version 2.4 only very few
 .B Style
@@ -3473,9 +3528,6 @@ options need a
 .B Recapture
 to take effect (e.g.
 .IR UseStyle ).
-The
-.B Recapture
-command will become obsolete soon.
 
 .TP
 .BI "RecaptureWindow"
@@ -3486,10 +3538,18 @@ command above.
 .TP
 .BI "Refresh"
 Causes all windows on the screen to redraw themselves.
+All pending updates of window redraws are applied if necessary.
+E.g. if
+.BR Style " or " TitleStyle
+commands were issued inside a fvwm function.
 
 .TP
 .BI "RefreshWindow"
 Causes the chosen window to redraw itself.
+All pending updates of window redraws are applied if necessary.
+E.g. if
+.BR Style " or " TitleStyle
+commands were issued inside a fvwm function.
 
 .TP
 .BI "Stick [" bool "]"
@@ -4543,6 +4603,35 @@ The window is placed when a mouse button or any key except
 .SM Escape
 is pressed which aborts manual placement.  If the user aborts
 placing the window it is dumped in the top left corner of the screen.
+If mouse button 2 is pressed during the initial placement of a window
+(respectively
+.SM Shift
+and mouse button 1 in case Mwm emulation has been enabled with the
+.B Emulate
+command), the user is asked to resize the window too.  Pressing
+button 3 sets the
+.I MovedButton3
+condition (see
+.B Current
+command).
+
+Example:
+.EX
+Style * ActivePlacement, DumbPlacement
+
+*FvwmEventPassID
+*FvwmEventadd_window GrowDownFunc
+AddToFunc StartFunction
++ I FvwmEvent
+
+AddToFunc GrowDownFunc
++ I windowid $0 (MovedButton3) \\
+  Resize bottomright - -0p
+.EE
+Now, whenever a window with the name or class "XTerm" is created
+and the user presses button 3 to finish initial placement, the
+window is automatically enlarged until it hits the bottom screen
+border.
 
 .I RandomPlacement
 causes windows which would normally require user placement to be
@@ -6065,7 +6154,7 @@ command.
 .BI "Current [(" conditions ")] " command
 Performs
 .I command
-on the current window if it satisfies all
+on the currently focused window if it satisfies all
 .IR conditions .
 Conditions include
 "Iconic", "!Iconic",
@@ -6076,6 +6165,7 @@ Conditions include
 "Maximized", "!Maximized",
 "Shaded", "!Shaded",
 "Transient", "!Transient",
+"MovedButton3", "!MovedButton3",
 "CurrentDesk", "CurrentPage", and "CurrentPageAnyDesk".
 In addition, the
 .I condition
@@ -6088,6 +6178,16 @@ if any of the window name, icon name, class or resource match.
 
 The argument of the "Layer" condition defaults to the layer of the
 focus window.
+
+The "MovedButton3" condition is fulfilled if the last interactive
+motion of the window (with the
+.B Move
+command) was ended by pressing mouse button 3.  This is especially
+useful with the
+.I ActivePlacement
+option of the
+.B Style
+command.
 
 Note that earlier versions of fvwm required the conditions to be
 enclosed in brackets instead of parentheses (this is still supported

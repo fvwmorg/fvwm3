@@ -137,75 +137,87 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
   while (condition)
   {
     if (StrEquals(condition,"Iconic"))
-      {
-	SET_ICONIFIED(mask, 1);
-	SETM_ICONIFIED(mask, 1);
-      }
+    {
+      SET_ICONIFIED(mask, 1);
+      SETM_ICONIFIED(mask, 1);
+    }
     else if(StrEquals(condition,"!Iconic"))
-      {
-	SET_ICONIFIED(mask, 0);
-	SETM_ICONIFIED(mask, 1);
-      }
+    {
+      SET_ICONIFIED(mask, 0);
+      SETM_ICONIFIED(mask, 1);
+    }
     else if(StrEquals(condition,"Visible"))
-      {
-	SET_PARTIALLY_VISIBLE(mask, 1);
-	SETM_PARTIALLY_VISIBLE(mask, 1);
-      }
+    {
+      SET_PARTIALLY_VISIBLE(mask, 1);
+      SETM_PARTIALLY_VISIBLE(mask, 1);
+    }
     else if(StrEquals(condition,"!Visible"))
-      {
-	SET_PARTIALLY_VISIBLE(mask, 0);
-	SETM_PARTIALLY_VISIBLE(mask, 1);
-      }
+    {
+      SET_PARTIALLY_VISIBLE(mask, 0);
+      SETM_PARTIALLY_VISIBLE(mask, 1);
+    }
+#ifdef POST_24_FEATURES
+    else if(StrEquals(condition,"MovedButton3"))
+    {
+      SET_PLACED_WB3(mask, 1);
+      SETM_PLACED_WB3(mask, 1);
+    }
+    else if(StrEquals(condition,"!MovedButton3"))
+    {
+      SET_PLACED_WB3(mask, 0);
+      SETM_PLACED_WB3(mask, 1);
+    }
+#endif
     else if(StrEquals(condition,"Raised"))
-      {
-	SET_FULLY_VISIBLE(mask, 1);
-	SETM_FULLY_VISIBLE(mask, 1);
-      }
+    {
+      SET_FULLY_VISIBLE(mask, 1);
+      SETM_FULLY_VISIBLE(mask, 1);
+    }
     else if(StrEquals(condition,"!Raised"))
-      {
-	SET_FULLY_VISIBLE(mask, 0);
-	SETM_FULLY_VISIBLE(mask, 1);
-      }
+    {
+      SET_FULLY_VISIBLE(mask, 0);
+      SETM_FULLY_VISIBLE(mask, 1);
+    }
     else if(StrEquals(condition,"Sticky"))
-      {
-	SET_STICKY(mask, 1);
-	SETM_STICKY(mask, 1);
-      }
+    {
+      SET_STICKY(mask, 1);
+      SETM_STICKY(mask, 1);
+    }
     else if(StrEquals(condition,"!Sticky"))
-      {
-	SET_STICKY(mask, 0);
-	SETM_STICKY(mask, 1);
-      }
+    {
+      SET_STICKY(mask, 0);
+      SETM_STICKY(mask, 1);
+    }
     else if(StrEquals(condition,"Maximized"))
-      {
-	SET_MAXIMIZED(mask, 1);
-	SETM_MAXIMIZED(mask, 1);
-      }
+    {
+      SET_MAXIMIZED(mask, 1);
+      SETM_MAXIMIZED(mask, 1);
+    }
     else if(StrEquals(condition,"!Maximized"))
-      {
-	SET_MAXIMIZED(mask, 0);
-	SETM_MAXIMIZED(mask, 1);
-      }
+    {
+      SET_MAXIMIZED(mask, 0);
+      SETM_MAXIMIZED(mask, 1);
+    }
     else if(StrEquals(condition,"Shaded"))
-      {
-	SET_SHADED(mask, 1);
-	SETM_SHADED(mask, 1);
-      }
+    {
+      SET_SHADED(mask, 1);
+      SETM_SHADED(mask, 1);
+    }
     else if(StrEquals(condition,"!Shaded"))
-      {
-	SET_SHADED(mask, 0);
-	SETM_SHADED(mask, 1);
-      }
+    {
+      SET_SHADED(mask, 0);
+      SETM_SHADED(mask, 1);
+    }
     else if(StrEquals(condition,"Transient"))
-      {
-	SET_TRANSIENT(mask, 1);
-	SETM_TRANSIENT(mask, 1);
-      }
+    {
+      SET_TRANSIENT(mask, 1);
+      SETM_TRANSIENT(mask, 1);
+    }
     else if(StrEquals(condition,"!Transient"))
-      {
-	SET_TRANSIENT(mask, 0);
-	SETM_TRANSIENT(mask, 1);
-      }
+    {
+      SET_TRANSIENT(mask, 0);
+      SETM_TRANSIENT(mask, 1);
+    }
     else if(StrEquals(condition,"CurrentDesk"))
       mask->my_flags.needs_current_desk = 1;
     else if(StrEquals(condition,"CurrentPage"))

@@ -193,6 +193,9 @@ static const func_type func_config[] =
   {"moduletimeout", setModuleTimeout, F_NOP,                 0},
   {"mouse",        mouse_binding,    F_MOUSE,                0},
   {"move",         move_window,      F_MOVE,                 FUNC_NEEDS_WINDOW},
+#ifdef POST_24_FEATURES
+  {"moveresize",   move_resize_window,F_MOVERESIZE,          FUNC_NEEDS_WINDOW},
+#endif
   {"movesmoothness",SetMoveSmoothness,F_MOVE_SMOOTHNESS,     0},
   {"movethreshold",SetMoveThreshold, F_MOVE_THRESHOLD,       0},
   {"movetodesk",   move_window_to_desk,F_MOVE_TO_DESK,       FUNC_NEEDS_WINDOW},

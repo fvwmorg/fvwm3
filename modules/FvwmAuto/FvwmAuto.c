@@ -227,12 +227,29 @@ main(int argc, char **argv)
     }
   }
 
+#ifdef ENABLE_RAISELOWER_HACK
   m_mask = M_FOCUS_CHANGE;
   /* A hack; disable special raise/lower support on general actions. */
+
+#ifdef WANT_BUGGY_RAISELOWER_HACK
+  /* migo, please delete this ifdef branch when you've read the comment below */
+  /* this is not correct: locking on raise is also necessary if only a 'lower'
+   * action is specified and vice versa. */
   if (matchWildcards("*Raise*", CatString2(enter_fn, leave_fn)))
     m_mask |= M_RAISE_WINDOW;
   if (matchWildcards("*Lower*", CatString2(enter_fn, leave_fn)))
     m_mask |= M_LOWER_WINDOW;
+#else
+  /* this is correct */
+  if (matchWildcards("*Raise*", CatString2(enter_fn, leave_fn)) ||
+      matchWildcards("*Lower*", CatString2(enter_fn, leave_fn)))
+    m_mask |= M_RAISE_WINDOW | M_LOWER_WINDOW;
+#endif
+#else
+  /* and what if the action is a function name that doesn't have 'raise' or
+   * 'lower' in its name? */
+  m_mask = M_FOCUS_CHANGE | M_RAISE_WINDOW | M_LOWER_WINDOW;
+#endif
 
   SetMessageMask(fd, m_mask);
   /* tell fvwm we're running */

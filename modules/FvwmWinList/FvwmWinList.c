@@ -90,11 +90,17 @@ int x_fd;
 
 /* X related things */
 Display *dpy;
-Window Root, win;
-int screen,ScreenWidth,ScreenHeight;
-Pixel back[MAX_COLOUR_SETS], fore[MAX_COLOUR_SETS];
-GC  graph[MAX_COLOUR_SETS],shadow[MAX_COLOUR_SETS],hilite[MAX_COLOUR_SETS];
-GC  background[MAX_COLOUR_SETS];
+Window Root;
+Window  win;
+int screen;
+int ScreenWidth;
+int ScreenHeight;
+Pixel back[MAX_COLOUR_SETS];
+Pixel fore[MAX_COLOUR_SETS];
+GC graph[MAX_COLOUR_SETS];
+GC shadow[MAX_COLOUR_SETS];
+GC hilite[MAX_COLOUR_SETS];
+GC background[MAX_COLOUR_SETS];
 Pixmap win_bg;
 XFontStruct *ButtonFont;
 #ifdef I18N_MB
@@ -107,9 +113,24 @@ Atom MwmAtom = None;
 
 /* Module related information */
 char *Module;
-int WindowState=0,win_width=5,win_height=5,win_grav,win_x,win_y,win_title,win_border_x=0,win_border_y=0;
-int Clength,Transient=0,Pressed=0,ButPressed,Checked=0;
-int MinWidth=DEFMINWIDTH,MaxWidth=DEFMAXWIDTH;
+int WindowState=0;
+int win_width=5;
+int win_height=5;
+int win_grav;
+int win_x;
+int win_y;
+int win_title;
+#ifdef OLD_BUGGY_WINDOW_PLACEMENT
+int win_border_x=0;
+int win_border_y=0;
+#endif
+int Clength;
+int Transient=0;
+int Pressed=0;
+int ButPressed;
+int Checked=0;
+int MinWidth=DEFMINWIDTH;
+int MaxWidth=DEFMAXWIDTH;
 ButtonArray buttons;
 List windows;
 char *ClickAction[3]={"Iconify -1,Raise","Iconify","Lower"},*EnterAction,
@@ -119,9 +140,13 @@ char *ClickAction[3]={"Iconify -1,Raise","Iconify","Lower"},*EnterAction,
 int colorset[MAX_COLOUR_SETS];
 Pixmap pixmap[MAX_COLOUR_SETS];
 char *font_string = "fixed";
-Bool UseSkipList = False, Anchor = True, UseIconNames = False,
-     LeftJustify = False, TruncateLeft = False, ShowFocus = True,
-     Follow = False;
+Bool UseSkipList = False;
+Bool Anchor = True;
+Bool UseIconNames = False;
+Bool LeftJustify = False;
+Bool TruncateLeft = False;
+Bool ShowFocus = True;
+Bool Follow = False;
 int ReliefWidth = 2;
 
 long CurrentDesk = 0;
@@ -342,6 +367,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       cfgpacket = (void *) body;
       /* We get the win_borders only when WinList  map it self, this is ok
        *  since we need it only after an unmap */
+#ifdef OLD_BUGGY_WINDOW_PLACEMENT
       if ( cfgpacket->w == win)
       {
 	win_border_x = win_border_y = cfgpacket->border_width;
@@ -351,6 +377,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	    && HAS_BOTTOM_TITLE(cfgpacket)))
 	  win_border_y +=  cfgpacket->title_height;
       }
+#endif
       if ((i = FindItem(&windows,cfgpacket->w))!=-1)
       {
 	if(UpdateItemDesk(&windows, cfgpacket->w, cfgpacket->desk) > 0)
@@ -691,7 +718,8 @@ ParseConfigLine(char *tline)
 	/* set the window background */
 	win_bg = None;
 	for (i = 0; i != MAX_COLOUR_SETS; i++)
-	    if (colorset[i] >= 0 && Colorset[colorset[i]].pixmap == ParentRelative)
+	    if (colorset[i] >= 0 &&
+		Colorset[colorset[i]].pixmap == ParentRelative)
 	      win_bg = ParentRelative;
 	if (old_win_bg != win_bg)
 	  XSetWindowBackgroundPixmap(dpy, win, win_bg);
@@ -935,6 +963,7 @@ void AdjustWindow(Bool force)
   }
   if (WindowState && (new_height!=win_height || new_width!=win_width))
   {
+#ifdef OLD_BUGGY_WINDOW_PLACEMENT
     if (Anchor)
     {
       /* compensate for fvwm borders when going from unmapped to mapped */
@@ -966,7 +995,11 @@ void AdjustWindow(Bool force)
     }
     else
       XResizeWindow(dpy, win, new_width, new_height);
-
+    /* The new code is sooo much simpler :-) */
+#else
+    /* This relies on fvwm honouring South/East gemoetry when resizing. */
+    XResizeWindow(dpy, win, new_width, new_height);
+#endif
   }
   UpdateArray(&buttons,new_width);
   if (new_height>0) win_height = new_height;
@@ -1024,7 +1057,6 @@ void MakeMeWindow(void)
   int i;
   XSetWindowAttributes attr;
 
-
   if ((count = ItemCountD(&windows))==0 && Transient) exit(0);
   AdjustWindow(False);
 
@@ -1061,6 +1093,15 @@ void MakeMeWindow(void)
       else  hints.win_gravity=NorthWestGravity;
     }
 
+#ifndef OLD_BUGGY_WINDOW_PLACEMENT
+    if (!Anchor)
+    {
+      if (hints.win_gravity == SouthWestGravity)
+	hints.win_gravity=NorthWestGravity;
+      else if (hints.win_gravity == SouthEastGravity)
+	hints.win_gravity=NorthEastGravity;
+    }
+#endif
   }
 
   if (Transient)
@@ -1265,7 +1306,7 @@ void ShutMeDown(void)
 ******************************************************************************/
 void ChangeWindowName(char *str)
 {
-XTextProperty name;
+  XTextProperty name;
   if (XStringListToTextProperty(&str,1,&name) == 0) {
     fprintf(stderr,"%s: cannot allocate window name.\n",Module);
     return;

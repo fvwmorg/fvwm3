@@ -111,7 +111,9 @@ Specifies that only windows on the current desk are displayed.
 
 .IP "*FvwmWinListNoAnchor"
 By default, FvwmWinList will anchor the gravity corner so the window will grow
-in the opposite direction.  This undoes that option.
+in the opposite direction.  This undoes that option, i.e. the window will
+always grow down.  Do not use this option if a negative geometry was
+specified.
 
 .IP "*FvwmWinListUseIconNames"
 Tells FvwmWinList to use the icon name of the window instead of the full window

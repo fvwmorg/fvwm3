@@ -25,6 +25,9 @@ void AnimatedMoveFvwmWindow(
   Bool fWarpPointerToo, int cmsDelay, float *ppctMovement);
 int moveLoop(FvwmWindow *,int,int,int,int,int *,int *,Bool,Bool);
 void move_window(F_CMD_ARGS);
+#ifdef POST_24_FEATURES
+void move_resize_window(F_CMD_ARGS);
+#endif
 void move_window_doit(
   XEvent *eventp,Window w,FvwmWindow *tmp_win, unsigned long context,
   char *action,int* Module, Bool do_animate, Bool do_move_to_page);

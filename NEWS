@@ -3,6 +3,24 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.17 (not released yet)
 
+* The commands Refresh and RefreshWindow apply all outstanding visual
+  changes of a window.
+
+* New options GroUp, GrowDown, GrowLeft, GrowRight to the Maximize
+  command.
+
+* New command MoveResize combined Move and Resize commands.
+
+* New options '-' to Move command to leave either coordinate unchanged.
+
+* New options "bottomright" and "br" to Resize command.
+
+* Resize command can take negative arguments.  A zero argument leaves
+  the corresponding dimension untouched.
+
+* New condition "MovedButton3" that is true if the last interactive
+  Move command was finished by pressing mouse button 3.
+
 * $FVWM_USERHOME used to set the fvwm user directory renamed to $FVWM_USERDIR.
 
 * The default fvwm user directory is now $HOME/.fvwm, not $HOME,

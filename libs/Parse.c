@@ -563,7 +563,8 @@ char *GetNextTokenIndex(char *action, char *list[], int len, int *index)
 /***************************************************************************
  *
  * Parses two integer arguments given in the form <int><character><int>.
- * character can be ' ' or 'x', but any other character is allowed too.
+ * character can be ' ' or 'x', but any other character is allowed too
+ * (except 'p' or 'P').
  *
  **************************************************************************/
 int GetRectangleArguments(char *action, int *width, int *height)

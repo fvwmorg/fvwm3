@@ -152,18 +152,23 @@ static int GetOnePositionArgument(
  * Returns 2 when x & y have parsed without error, 0 otherwise
  */
 static int GetMoveArguments(
-  char *action, int x, int y, int w, int h, int *pFinalX, int *pFinalY,
+  char **paction, int w, int h, int *pFinalX, int *pFinalY,
   Bool *fWarp, Bool *fPointer)
 {
   char *s1 = NULL;
   char *s2 = NULL;
   char *warp = NULL;
+  char *action;
+  char *naction;
   int scrWidth = Scr.MyDisplayWidth;
   int scrHeight = Scr.MyDisplayHeight;
   int retval = 0;
 
+  if (!paction)
+    return 0;
+  action = *paction;
   action = GetNextToken(action, &s1);
-  if (s1 && StrEquals(s1, "pointer"))
+  if (s1 && fPointer && StrEquals(s1, "pointer"))
   {
       *fPointer = True;
       free(s1);
@@ -172,21 +177,41 @@ static int GetMoveArguments(
   else
   {
     action = GetNextToken(action, &s2);
-    warp = PeekToken(action, &action);
-    *fWarp = StrEquals(warp, "Warp");
+    if (fWarp)
+    {
+      warp = PeekToken(action, &naction);
+      if (StrEquals(warp, "Warp"))
+      {
+	*fWarp = True;
+	action = naction;
+      }
+    }
   }
 
   if (s1 != NULL && s2 != NULL)
   {
-    if (GetOnePositionArgument(s1, x, w, pFinalX, (float)scrWidth/100,
-			       scrWidth, True) &&
-        GetOnePositionArgument(s2, y, h, pFinalY, (float)scrHeight/100,
-			       scrHeight, False))
-      retval = 2;
-    else
+    retval = 0;
+    if (StrEquals(s1, "-"))
+    {
+      retval++;
+    }
+    else if (GetOnePositionArgument(
+      s1, *pFinalX, w, pFinalX, (float)scrWidth/100, scrWidth, True))
+    {
+      retval++;
+    }
+    if (StrEquals(s2, "-"))
+    {
+      retval++;
+    }
+    else if (GetOnePositionArgument(
+      s2, *pFinalY, h, pFinalY, (float)scrHeight/100, scrHeight, False))
+    {
+      retval++;
+    }
+    if (retval == 0)
       *fWarp = False; /* make sure warping is off for interactive moves */
   }
-  /* Begine code ---cpatil*/
   else
   {
     /* not enough arguments, switch to current page. */
@@ -205,8 +230,204 @@ static int GetMoveArguments(
   if (s2)
     free(s2);
 
+  *paction = action;
   return retval;
 }
+
+static int GetResizeArguments(
+  char **paction, int x, int y, int w_base, int h_base, int w_inc, int h_inc,
+  int bw, int h_title, int *pFinalW, int *pFinalH)
+{
+  int unit_table[3];
+  int values[2];
+  int suffix[2];
+  int n;
+  char *naction;
+  char *token;
+  int w = *pFinalW;
+  int h = *pFinalH;
+
+  if (!paction)
+    return 0;
+
+  token = PeekToken(*paction, &naction);
+  if (StrEquals(token, "bottomright") || StrEquals(token, "br"))
+  {
+    int nx = x + *pFinalW - 1;
+    int ny = y + *pFinalH - 1;
+
+    n = GetMoveArguments(&naction, 0, 0, &nx, &ny, NULL, NULL);
+    if (n < 2)
+      return 0;
+    *pFinalW = nx - x + 1;
+    *pFinalH = ny - y + 1;
+    *paction = naction;
+  }
+  else
+  {
+    n = GetSuffixedIntegerArguments(*paction, NULL, values, 2, "pc", suffix);
+    if (n < 2)
+      return 0;
+    *paction = SkipNTokens(*paction, 2);
+
+    if (*pFinalW == 0)
+      *pFinalW = w;
+    else
+    {
+      /* convert the value/suffix pairs to pixels */
+      unit_table[0] = Scr.MyDisplayWidth;
+      unit_table[1] = 100;
+      unit_table[2] = 100 * w_inc;
+      *pFinalW = SuffixToPercentValue(values[0], suffix[0], unit_table);
+      if (*pFinalW < 0)
+	*pFinalW += Scr.MyDisplayWidth;
+      else
+      {
+	if (suffix[0] == 2)
+	{
+	  /* account for base width */
+	  *pFinalW += w_base;
+	}
+	*pFinalW += 2 * bw;
+      }
+    }
+
+    if (*pFinalH == 0)
+      *pFinalH = h;
+    else
+    {
+      unit_table[0] = Scr.MyDisplayHeight;
+      unit_table[2] = 100 * h_inc;
+      *pFinalH = SuffixToPercentValue(values[1], suffix[1], unit_table);
+      if (*pFinalH < 0)
+	*pFinalH += Scr.MyDisplayHeight;
+      else
+      {
+	if (suffix[1] == 2)
+	{
+	  /* account for base height */
+	  *pFinalH += h_base;
+	}
+	*pFinalH += h_title + 2 * bw;
+      }
+    }
+  }
+
+  return n;
+}
+
+#ifdef POST_24_FEATURES
+static int GetMoveResizeArguments(
+  char **paction, int w_base, int h_base, int w_inc, int h_inc, int bw,
+  int h_title, int *pFinalX, int *pFinalY, int *pFinalW, int *pFinalH,
+  Bool *fWarp, Bool *fPointer)
+{
+  char *action = *paction;
+
+  if (!paction)
+    return 0;
+  if (GetResizeArguments(
+    &action, *pFinalX, *pFinalY, w_base, h_base, w_inc, h_inc, bw, h_title,
+    pFinalW, pFinalH) < 2)
+  {
+    return 0;
+  }
+  if (GetMoveArguments(
+    &action, *pFinalW, *pFinalH, pFinalX, pFinalY, fWarp, NULL) < 2)
+  {
+    return 0;
+  }
+  *paction = action;
+
+  return 4;
+}
+
+void move_resize_window(F_CMD_ARGS)
+{
+  int FinalX = 0;
+  int FinalY = 0;
+  int FinalW = 0;
+  int FinalH = 0;
+  int n;
+  int x,y;
+  Bool fWarp = False;
+  Bool fPointer = False;
+  int dx;
+  int dy;
+
+  if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_RESIZE, ButtonPress))
+    return;
+  if (tmp_win == NULL)
+    return;
+  /* can't resize icons */
+  if(IS_ICONIFIED(tmp_win))
+    return;
+  if (IS_FIXED(tmp_win))
+    return;
+  if(check_if_function_allowed(F_RESIZE,tmp_win,True,NULL) == 0)
+  {
+    XBell(dpy, 0);
+    return;
+  }
+
+  /* gotta have a window */
+  w = tmp_win->frame;
+  XGetGeometry(dpy, w, &JunkRoot, &x, &y,
+	       &FinalW, &FinalH, &JunkBW, &JunkDepth);
+  FinalX = x;
+  FinalY = y;
+
+  n = GetMoveResizeArguments(
+    &action,
+    tmp_win->hints.base_width, tmp_win->hints.base_height,
+    tmp_win->hints.width_inc, tmp_win->hints.height_inc,
+    tmp_win->boundary_width, tmp_win->title_g.height,
+    &FinalX, &FinalY, &FinalW, &FinalH, &fWarp, &fPointer);
+  if (n < 4)
+    return;
+
+  if (IS_MAXIMIZED(tmp_win))
+  {
+    /* must redraw the buttons now so that the 'maximize' button does not stay
+     * depressed. */
+    SET_MAXIMIZED(tmp_win, 0);
+    DrawDecorations(
+      tmp_win, DRAW_BUTTONS, (tmp_win == Scr.Hilite), True, None);
+  }
+  dx = FinalX - tmp_win->frame_g.x;
+  dy = FinalY - tmp_win->frame_g.y;
+  /* size will be less or equal to requested */
+  constrain_size(tmp_win, &FinalW, &FinalH, 0, 0, False);
+  if (IS_SHADED(tmp_win))
+  {
+    SetupFrame(tmp_win, FinalX, FinalY, FinalW, tmp_win->frame_g.height, False);
+  }
+  else
+  {
+    SetupFrame(tmp_win, FinalX, FinalY, FinalW, FinalH, True);
+  }
+  if (fWarp)
+    XWarpPointer(dpy, None, None, 0, 0, 0, 0, FinalX - x, FinalY - y);
+  if (IS_MAXIMIZED(tmp_win))
+  {
+    tmp_win->max_g.x += dx;
+    tmp_win->max_g.y += dy;
+  }
+  else
+  {
+    tmp_win->normal_g.x += dx;
+    tmp_win->normal_g.y += dy;
+  }
+  DrawDecorations(tmp_win, DRAW_ALL, True, True, None);
+  update_absolute_geometry(tmp_win);
+  maximize_adjust_offset(tmp_win);
+  XSync(dpy, 0);
+  GNOME_SetWinArea(tmp_win);
+
+  return;
+}
+#endif
+
 
 static void InteractiveMove(
   Window *win, FvwmWindow *tmp_win, int *FinalX, int *FinalY, XEvent *eventp,
@@ -491,8 +712,10 @@ void move_window_doit(F_CMD_ARGS, Bool do_animate, Bool do_move_to_page)
   }
   else
   {
+    FinalX = x;
+    FinalY = y;
     n = GetMoveArguments(
-      action, x, y, width, height, &FinalX, &FinalY, &fWarp, &fPointer);
+      &action, width, height, &FinalX, &FinalY, &fWarp, &fPointer);
 
     if (n != 2 || fPointer)
       InteractiveMove(&w, tmp_win, &FinalX, &FinalY, eventp, fPointer);
@@ -879,6 +1102,9 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int cny = 0;
   Bool sent_cn = False;
   Bool do_resize_too = False;
+#ifdef POST_24_FEATURES
+  Bool do_exec_placement_func = False;
+#endif
   int x_bak;
   int y_bak;
   Window move_w = None;
@@ -1019,8 +1245,17 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 	  (Event.xbutton.state & ShiftMask)))
       {
 	do_resize_too = True;
+	do_exec_placement_func = False;
 	/* Fallthrough to button-release */
       }
+#ifdef POST_24_FEATURES
+      else if(Event.xbutton.button == 3)
+      {
+	do_exec_placement_func = True;
+	do_resize_too = False;
+	/* Fallthrough to button-release */
+      }
+#endif
       else
       {
 	/* Abort the move if
@@ -1218,10 +1453,22 @@ Bool moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   {
     SET_ICON_MOVED(tmp_win, 1);
   }
+#ifndef POST_24_FEATURES
   if (!do_resize_too)
     /* Don't wait for buttons to come up when user is placing a new window
      * and wants to resize it. */
     WaitForButtonsUp(True);
+#else
+  if (!do_resize_too)
+    /* Don't wait for buttons to come up when user is placing a new window
+     * and wants to resize it. */
+    WaitForButtonsUp(True);
+  SET_PLACED_WB3(tmp_win, do_exec_placement_func);
+  if (do_exec_placement_func)
+  {
+    do_resize_too = 0;
+  }
+#endif
   SET_WINDOW_BEING_MOVED_OPAQUE(tmp_win, 0);
   bad_window = None;
 
@@ -1553,8 +1800,10 @@ void resize_window(F_CMD_ARGS)
   Bool fButtonAbort = False;
   Bool fForceRedraw = False;
   int n;
+#ifndef POST_24_FEATURES
   int values[2];
   int suffix[2];
+#endif
   unsigned int button_mask = 0;
   rectangle sdrag;
   rectangle sorig;
@@ -1605,6 +1854,17 @@ void resize_window(F_CMD_ARGS)
 
   do_resize_opaque = (IS_SHADED(tmp_win)) ? False : DO_RESIZE_OPAQUE(tmp_win);
   /* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
+
+#ifdef POST_24_FEATURES
+  drag->width = tmp_win->frame_g.width;
+  drag->height = tmp_win->frame_g.height;
+  n = GetResizeArguments(
+    &action, tmp_win->frame_g.x, tmp_win->frame_g.y,
+    tmp_win->hints.base_width, tmp_win->hints.base_height,
+    tmp_win->hints.width_inc, tmp_win->hints.height_inc,
+    tmp_win->boundary_width, tmp_win->title_g.height,
+    &(drag->width), &(drag->height));
+#else
   n = GetSuffixedIntegerArguments(action, NULL, values, 2, "pc", suffix);
   if(n == 2)
   {
@@ -1631,7 +1891,11 @@ void resize_window(F_CMD_ARGS)
 
     drag->width += (2*tmp_win->boundary_width);
     drag->height += (tmp_win->title_g.height + 2*tmp_win->boundary_width);
+  }
+#endif
 
+  if(n == 2)
+  {
     /* size will be less or equal to requested */
     constrain_size(
       tmp_win, &drag->width, &drag->height, xmotion, ymotion, False);
@@ -2369,9 +2633,14 @@ static void move_sticky_window_to_same_page(
   }
 
 }
-
+#ifdef POST_24_FEATURES
+static void MaximizeHeight(
+  FvwmWindow *win, unsigned int win_width, int win_x, unsigned int *win_height,
+  int *win_y, Bool grow_up, Bool grow_down)
+#else
 static void MaximizeHeight(FvwmWindow *win, unsigned int win_width, int win_x,
 			   unsigned int *win_height, int *win_y)
+#endif
 {
   FvwmWindow *cwin;
   int x11, x12, x21, x22;
@@ -2429,12 +2698,24 @@ static void MaximizeHeight(FvwmWindow *win, unsigned int win_width, int win_x,
       }
     }
   }
+#ifdef POST_24_FEATURES
+  if (!grow_up)
+    new_y1 = y11;
+  if (!grow_down)
+    new_y2 = y12;
+#endif
   *win_height = new_y2 - new_y1;
   *win_y = new_y1;
 }
 
+#ifdef POST_24_FEATURES
+static void MaximizeWidth(
+  FvwmWindow *win, unsigned int *win_width, int *win_x, unsigned int win_height,
+  int win_y, Bool grow_left, Bool grow_right)
+#else
 static void MaximizeWidth(FvwmWindow *win, unsigned int *win_width, int *win_x,
 			  unsigned int win_height, int win_y)
+#endif
 {
   FvwmWindow *cwin;
   int x11, x12, x21, x22;
@@ -2492,6 +2773,12 @@ static void MaximizeWidth(FvwmWindow *win, unsigned int *win_width, int *win_x,
       }
     }
   }
+#ifdef POST_24_FEATURES
+  if (!grow_left)
+    new_x1 = x11;
+  if (!grow_right)
+    new_x2 = x12;
+#endif
   *win_width  = new_x2 - new_x1;
   *win_x = new_x1;
 }
@@ -2509,8 +2796,15 @@ void Maximize(F_CMD_ARGS)
   int toggle;
   char *token;
   char *taction;
+#ifndef POST_24_FEATURES
   Bool grow_x = False;
   Bool grow_y = False;
+#else
+  Bool grow_up = False;
+  Bool grow_down = False;
+  Bool grow_left = False;
+  Bool grow_right = False;
+#endif
   rectangle new_g;
 
   if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
@@ -2539,10 +2833,29 @@ void Maximize(F_CMD_ARGS)
   token = PeekToken(action, &taction);
   if (token && StrEquals(token, "grow"))
   {
+#ifndef POST_24_FEATURES
     grow_x = True;
+#else
+    grow_left = True;
+    grow_right = True;
+#endif
     val1 = 100;
     val1_unit = Scr.MyDisplayWidth;
   }
+#ifdef POST_24_FEATURES
+  else if (token && StrEquals(token, "growleft"))
+  {
+    grow_left = True;
+    val1 = 100;
+    val1_unit = Scr.MyDisplayWidth;
+  }
+  else if (token && StrEquals(token, "growright"))
+  {
+    grow_right = True;
+    val1 = 100;
+    val1_unit = Scr.MyDisplayWidth;
+  }
+#endif
   else
   {
     if (GetOnePercentArgument(token, &val1, &val1_unit) == 0)
@@ -2569,10 +2882,29 @@ void Maximize(F_CMD_ARGS)
   token = PeekToken(taction, NULL);
   if (token && StrEquals(token, "grow"))
   {
+#ifndef POST_24_FEATURES
     grow_y = True;
+#else
+    grow_up = True;
+    grow_down = True;
+#endif
     val2 = 100;
     val2_unit = Scr.MyDisplayHeight;
   }
+#ifdef POST_24_FEATURES
+  else if (token && StrEquals(token, "growup"))
+  {
+    grow_up = True;
+    val2 = 100;
+    val2_unit = Scr.MyDisplayHeight;
+  }
+  else if (token && StrEquals(token, "growdown"))
+  {
+    grow_down = True;
+    val2 = 100;
+    val2_unit = Scr.MyDisplayHeight;
+  }
+#endif
   else
   {
     if (GetOnePercentArgument(token, &val2, &val2_unit) == 0)
@@ -2630,25 +2962,41 @@ void Maximize(F_CMD_ARGS)
     }
 
     /* handle command line arguments */
+#ifdef POST_24_FEATURES
+    if (grow_up || grow_down)
+    {
+      MaximizeHeight(tmp_win, new_g.width, new_g.x, &new_g.height, &new_g.y,
+		     grow_up, grow_down);
+    }
+#else
     if (grow_y)
     {
       MaximizeHeight(tmp_win, new_g.width, new_g.x, &new_g.height, &new_g.y);
     }
+#endif
     else if(val2 > 0)
     {
       new_g.height = val2 * val2_unit / 100;
       new_g.y = page_y;
     }
+#ifdef POST_24_FEATURES
+    if (grow_left || grow_right)
+    {
+      MaximizeWidth(tmp_win, &new_g.width, &new_g.x, new_g.height, new_g.y,
+		    grow_left, grow_right);
+    }
+#else
     if (grow_x)
     {
       MaximizeWidth(tmp_win, &new_g.width, &new_g.x, new_g.height, new_g.y);
     }
+#endif
     else if(val1 >0)
     {
       new_g.width = val1 * val1_unit / 100;
       new_g.x = page_x;
     }
-    if(val1 ==0 && val2==0)
+    if(val1 == 0 && val2 == 0)
     {
       new_g.x = page_x;
       new_g.y = page_y;

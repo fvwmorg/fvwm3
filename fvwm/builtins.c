@@ -674,6 +674,10 @@ static void refresh_window(Window w)
 		    CopyFromParent, valuemask,
 		    &attributes);
   XMapWindow(dpy, w);
+  if (Scr.flags.do_need_window_update)
+  {
+    flush_window_updates();
+  }
   XDestroyWindow(dpy, w);
   XFlush(dpy);
 }

@@ -66,6 +66,8 @@ Contents
     3.15  I don't like the gaps in my icon box when I de-iconify an
           application. Is there some kind of auto arrange function?
     3.16  How do I set up a fvwm menu item that shuts down my Linux machine?
+    3.17  Although the Recapture commands is obsolete, I still need it to
+          apply certain style changes.
 
 4. Modules
 
@@ -1000,6 +1002,24 @@ A: Write a little shell script to run the shutdown command.
 
    Add a menu item to your FVWM root menu (or wherever) that invokes
    "sudo /my/script/name".
+
+----------------------------------------------------------------------
+
+3.17  Although the Recapture commands is obsolete, I still need it to
+      apply certain style changes.
+
+A: Excerpt from the man page:
+
+   There are many commands that affect look and feel of specific,
+   some or all windows, like Style, Mouse, the FvwmTheme module and
+   many others.  For performance reasons such changes are not applied
+   immediately but only when fvwm is idle, i.e. no user interaction
+   or module input is pending.  Specifically, new Style options that
+   are set in a function are not applied until after the function has
+   completed.  This can sometimes lead to unwanted effects. To force
+   that all pending changes are applied immediately, use the Refresh
+   or RefreshWindow commands.
+
 
 ======================================================================
                              4 - Modules

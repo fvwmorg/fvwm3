@@ -1,3 +1,19 @@
+2000-05-02  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmAuto/FvwmAuto.c (main):
+	fixed raiselower hack
+	removed raiselower hack for now; what if the action is a function w/o
+	'raise' or 'lower' in its name?
+
+	* FvwmWinList/FvwmWinList.c (MakeMeWindow):
+	(AdjustWindow):
+	simplified placement code when window height changes
+	fixed placement of window list with negative y geometry and
+	TitleAtBottom
+
+	* FvwmWinList/FvwmWinList.1:
+	Clarified NoAnchor option.
+
 2000-04-27  Mikhael Goikhman  migo@homemail.com
 
 	* FvwmAuto/FvwmAuto.c (main):
