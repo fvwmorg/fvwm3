@@ -1,3 +1,8 @@
+2001-03-27  Mikhael Goikhman  <migo@homemail.com>
+
+	* fvwm/session.c (get_version_string):
+	window_flags changed, so state file version should be increased
+
 2001-03-27  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/add_window.c (setup_style_and_decor):
