@@ -1262,7 +1262,8 @@ void DrawIconGrid(int erase)
       else
 	{
 	  if (Desks[tmp].bgPixmap)
-	    XSetWindowBackgroundPixmap(dpy, icon_win,Desks[tmp].bgPixmap->picture);
+	    XSetWindowBackgroundPixmap(dpy,
+				       icon_win,Desks[tmp].bgPixmap->picture);
 	  else if (Desks[tmp].Dcolor)
 	    XSetWindowBackground(dpy, icon_win, GetColor(Desks[tmp].Dcolor));
 	  else if (PixmapBack)

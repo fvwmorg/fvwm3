@@ -1,3 +1,32 @@
+1999-07-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* sample.fvwmrc/Makefile.am: added a win95 like config file
+
+	* fvwm/stack.c (RaiseOrLowerWindow):
+	* fvwm/fvwm.c (Done): remove unused variables
+
+	* fvwm/window_flags.h (DO_LOWER_TRANSIENT):
+	* fvwm/style.h (SDO_LOWER_TRANSIENT):
+	* fvwm/stack.c (RaiseOrLowerWindow):
+	(LowerWindow):
+	(RaiseWindow):
+	(must_move_transients):
+	* fvwm/fvwm.h (common_flags_type): Improved transient raising/lowering
+	and introduced LowerTransient/DontLowerTransient styles
+
+	* fvwm/style.c (ProcessNewStyle):
+	(merge_styles):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/move_resize.c (ConstrainSize):
+	* fvwm/fvwm.c (InitVariables):
+	* fvwm/fvwm.h (window_style):
+	* fvwm/style.h (SGET_MAX_WINDOW_WIDTH):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/builtins.c (SetMaxWindowSize):
+	* fvwm/functions.h:
+	* fvwm/functions.c (func_config): removed MaxWindowSize command and
+	introduced a style with the same syntax
+
 1999-07-08  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/virtual.c (HandlePaging): fixed edge scrolling with the mouse

@@ -141,6 +141,7 @@ typedef struct
   unsigned do_grab_focus_when_created : 1;
   unsigned do_grab_focus_when_transient_created : 1;
   unsigned do_not_show_on_map : 1;
+  unsigned do_lower_transient : 1;
   unsigned do_raise_transient : 1;
   unsigned do_start_iconic : 1;
   unsigned do_window_list_skip : 1;
@@ -211,6 +212,7 @@ typedef struct
   unsigned has_color_fore : 1;
   unsigned has_handle_width : 1;
   unsigned has_icon : 1;
+  unsigned has_max_window_size : 1;
 #ifdef MINI_ICONS
   unsigned has_mini_icon : 1;
 #endif
@@ -252,6 +254,8 @@ typedef struct window_style
   int start_desk; /* Desk */
   int start_page_x; /* PageX */
   int start_page_y; /* PageY */
+  int max_window_width;
+  int max_window_height;
   icon_boxes *IconBoxes;                /* pointer to iconbox(s) */
 } window_style;
 
@@ -351,6 +355,9 @@ typedef struct FvwmWindow
 
     int default_layer;
     int layer;
+
+    int max_window_width;
+    int max_window_height;
 
 } FvwmWindow;
 

@@ -302,8 +302,6 @@ typedef struct ScreenInfo
   int VyMax;
   int Vx;                       /* Current loc for top left of virt desk */
   int Vy;
-  int MaxWindowWidth;
-  int MaxWindowHeight;
   int shade_anim_steps;
 
   int ClickTime;               /*Max button-click delay for Function built-in*/

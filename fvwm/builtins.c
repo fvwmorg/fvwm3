@@ -3999,27 +3999,3 @@ void setShadeAnim(F_CMD_ARGS)
 
   return;
 }
-
-void SetMaxWindowSize(F_CMD_ARGS)
-{
-  int val1, val2, val1_unit, val2_unit;
-
-  if (GetTwoArguments(action, &val1, &val2, &val1_unit, &val2_unit) != 2)
-  {
-    Scr.MaxWindowWidth = DEFAULT_MAX_WINDOW_WIDTH;
-    Scr.MaxWindowHeight = DEFAULT_MAX_WINDOW_HEIGHT;
-    return;
-  }
-  Scr.MaxWindowWidth = val1 * val1_unit / 100;
-  Scr.MaxWindowHeight = val2 * val2_unit / 100;
-  if (Scr.MaxWindowWidth < DEFAULT_MIN_MAX_WINDOW_WIDTH)
-  {
-    Scr.MaxWindowWidth = DEFAULT_MIN_MAX_WINDOW_WIDTH;
-  }
-  if (Scr.MaxWindowHeight < DEFAULT_MIN_MAX_WINDOW_HEIGHT)
-  {
-    Scr.MaxWindowHeight = DEFAULT_MIN_MAX_WINDOW_HEIGHT;
-  }
-
-  return;
-}

@@ -144,6 +144,11 @@ void merge_styles(window_style *merged_style, window_style *add_style)
     merged_style->back_color_name = add_style->back_color_name;
   if(add_style->flags.has_handle_width)
     merged_style->handle_width = add_style->handle_width;
+  if(add_style->flags.has_max_window_size)
+  {
+    merged_style->max_window_width = add_style->max_window_width;
+    merged_style->max_window_height = add_style->max_window_height;
+  }
 
   /* merge the style flags */
   merge_flags = (char *)&(merged_style->flags);
@@ -476,6 +481,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	  found = True;
           tmpstyle.flags.common.do_raise_transient = 0;
           tmpstyle.flag_mask.common.do_raise_transient = 1;
+        }
+        else if(StrEquals(token, "DONTLOWERTRANSIENT"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_lower_transient = 0;
+          tmpstyle.flag_mask.common.do_lower_transient = 1;
         }
         break;
 
@@ -832,6 +843,12 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
 	    tmpstyle.layer = -9;
 	  }
 	}
+        else if(StrEquals(token, "LOWERTRANSIENT"))
+        {
+	  found = True;
+          tmpstyle.flags.common.do_lower_transient = 1;
+          tmpstyle.flag_mask.common.do_lower_transient = 1;
+        }
         break;
 
       case 'm':
@@ -880,6 +897,40 @@ void ProcessNewStyle(XEvent *eventp, Window w, FvwmWindow *tmp_win,
           tmpstyle.flags.common.do_grab_focus_when_created = 0;
           tmpstyle.flag_mask.common.do_grab_focus_when_created = 1;
         }
+        else if(StrEquals(token, "MAXWINDOWSIZE"))
+	{
+	  int val1;
+	  int val2;
+	  int val1_unit;
+	  int val2_unit;
+
+	  found = True;
+	  num = GetTwoArguments(rest, &val1, &val2, &val1_unit, &val2_unit);
+	  if (num != 2)
+	  {
+	    val1 = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+	    val2 = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
+	  }
+	  else
+	  {
+	    val1 = val1 * val1_unit / 100;
+	    val2 = val1 * val1_unit / 100;
+	  }
+	  if (val1 < DEFAULT_MIN_MAX_WINDOW_WIDTH ||
+	      val1 > DEFAULT_MAX_MAX_WINDOW_WIDTH)
+	  {
+	    val1 = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+	  }
+	  if (val2 < DEFAULT_MIN_MAX_WINDOW_HEIGHT ||
+	      val2 > DEFAULT_MAX_MAX_WINDOW_HEIGHT)
+	  {
+	    val2 = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
+	  }
+	  tmpstyle.max_window_width = val1;
+	  tmpstyle.max_window_height = val2;
+	  tmpstyle.flags.has_max_window_size = 1;
+	  tmpstyle.flag_mask.has_max_window_size = 1;
+	}
         break;
 
       case 'n':

@@ -272,6 +272,9 @@ int main(int argc, char **argv)
     else if (strncasecmp(argv[i],"-blackout",9)==0)
     {
       /* obsolete option */
+      fvwm_msg(WARN, "main", "The -blackout option is obsolete, it may be "
+	       "removed in the future.",
+              VERSION,__DATE__,__TIME__);
     }
     else if (strncasecmp(argv[i], "-replace", 8) == 0)
     {
@@ -1600,8 +1603,6 @@ static void InitVariables(void)
   Scr.VyMax = 2*Scr.MyDisplayHeight;
 
   Scr.Vx = Scr.Vy = 0;
-  Scr.MaxWindowWidth = DEFAULT_MAX_WINDOW_WIDTH;
-  Scr.MaxWindowHeight = DEFAULT_MAX_WINDOW_HEIGHT;
 
   Scr.shade_anim_steps = 0;
 
@@ -1772,9 +1773,6 @@ void Done(int restart, char *command)
 
     if (command)
     {
-      char *token;
-      char *next;
-
       if (StrEquals(PeekToken(command, NULL), "--dont-preserve-state"))
       {
 	do_preserve_state = False;
@@ -1890,8 +1888,7 @@ int FvwmErrorHandler(Display *dpy, XErrorEvent *event)
      (event->request_code==X_GrabButton)||
      (event->request_code==X_ChangeWindowAttributes)||
      (event->request_code == X_InstallColormap))
-    return 0 ;
-
+    return 0;
 
   fvwm_msg(ERR,"FvwmErrorHandler","*** internal error ***");
   fvwm_msg(ERR,"FvwmErrorHandler","Request %d, Error %d, EventType: %d",
@@ -2082,6 +2079,11 @@ static const char *initFunctionNames[4] = {
 };
 
 void setInitFunctionName(int n, const char *name)
-  { initFunctionNames[n >= 0 && n < 3? n: 3] = name; }
+{
+  initFunctionNames[n >= 0 && n < 3? n: 3] = name;
+ }
+
 const char *getInitFunctionName(int n)
-  { return initFunctionNames[n >= 0 && n < 3? n: 3]; }
+{
+  return initFunctionNames[n >= 0 && n < 3? n: 3];
+}

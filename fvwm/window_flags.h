@@ -33,6 +33,7 @@
           (fw)->flags.common.do_circulate_skip_icon = !!(x)
 #define SETM_DO_SKIP_ICON_CIRCULATE(fw,x) \
           (fw)->flag_mask.common.do_circulate_skip_icon = !!(x)
+#define DO_LOWER_TRANSIENT(fw) ((fw)->flags.common.do_lower_transient)
 #define DO_RAISE_TRANSIENT(fw) ((fw)->flags.common.do_raise_transient)
 #define DO_NOT_SHOW_ON_MAP(fw)  \
           ((fw)->flags.common.do_not_show_on_map)

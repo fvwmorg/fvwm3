@@ -82,120 +82,129 @@ Bool position_new_window_in_stack_ring(FvwmWindow *t, Bool do_lower)
   return True;
 }
 
-/*
-   Raise t and its transients to the top of its layer.
-   For the pager to work properly it is necessary that
-   RaiseWindow *always* sends a proper M_RESTACK packet,
-   even if the stacking order didn't change.
-*/
-void RaiseWindow(FvwmWindow *t)
+static Bool must_move_transients(FvwmWindow *t, Bool do_lower)
 {
-  FvwmWindow *s, *r, *t2, *next, tmp_r, tmp_s;
+  /* raise */
+  if ((!do_lower && DO_RAISE_TRANSIENT(t)) ||
+      (do_lower && DO_RAISE_TRANSIENT(t)))
+  {
+    Bool scanning_above_window = True;
+    Bool found_transient_window = False;
+    FvwmWindow *q;
+
+    for (q = Scr.FvwmRoot.stack_next; q != &Scr.FvwmRoot; q = q->stack_next)
+    {
+      if (t->layer < q->layer)
+      {
+	/* We're not interested in higher layers. */
+	continue;
+      }
+      if (t->layer > q->layer)
+      {
+	/* We are at the end of this layer. Stop scanning windows. */
+	break;
+      }
+      else if (t == q)
+      {
+	/* We found our window. All further transients are below it. */
+	scanning_above_window = False;
+      }
+      else if (IS_TRANSIENT(q) && (q->transientfor == t->w))
+      {
+	/* found a transient */
+	found_transient_window = True;
+	if (!do_lower && !scanning_above_window)
+	{
+	  /* It's below the window, so it must be raised. */
+	  return True;
+	}
+      }
+      else if ((scanning_above_window && !do_lower) ||
+	       (found_transient_window && do_lower))
+      {
+	/* raise: The window is not raised, so itself and all transients will
+	 * be raised. */
+	/* lower: There is a transient above some other window, so we have to
+	 * lower. */
+	return True;
+      }
+    }
+  }
+  return False;
+}
+
+static void RaiseOrLowerWindow(FvwmWindow *t, Bool do_lower)
+{
+  FvwmWindow *s, *r, *t2, *next, tmp_r;
   unsigned int flags;
   int i, count;
   XWindowChanges changes;
   Window *wins;
-  Bool must_raise_transients = False;
+  Bool do_move_transients;
+  int test_layer;
 
-  if (DO_RAISE_TRANSIENT(t))
-    {
-      Bool scanning_above_window = True;
-      FvwmWindow *q;
-
-      for (q = Scr.FvwmRoot.stack_next; q != &Scr.FvwmRoot; q = q->stack_next)
-	{
-	  if (t->layer < q->layer)
-	    {
-	      /* We're not interested in higher layers. */
-	      continue;
-	    }
-	  if (t->layer > q->layer)
-	    {
-	      /* We are at the end of this layer. Stop scanning windows. */
-	      break;
-	    }
-	  else if (t == q)
-	    {
-	      /* We found our window. All further transients are below it. */
-	      scanning_above_window = False;
-	    }
-	  else if (IS_TRANSIENT(q) && (q->transientfor == t->w))
-	    {
-	      /* found a transient */
-	      if (!scanning_above_window)
-		{
-		  /* It's below the window, so it must be raised. */
-		  must_raise_transients = True;
-		  break;
-		}
-	    }
-	  else if (scanning_above_window)
-	    {
-	      /* The window is not raised, so itself and all transients will
-	       * be raised. */
-	      must_raise_transients = True;
-	      break;
-	    }
-	}
-    }
+  do_move_transients = must_move_transients(t, do_lower);
 
   /* detach t, so it doesn't make trouble in the loops */
   remove_window_from_stack_ring(t);
 
   count = 1;
   if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
-    {
-      count += 2;
-    }
+  {
+    count += 2;
+  }
 
-  if (must_raise_transients)
+  if (do_move_transients)
+  {
+    /* collect the transients in a temp list */
+    tmp_r.stack_prev = &tmp_r;
+    tmp_r.stack_next = &tmp_r;
+    for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
     {
-      /* collect the transients in a temp list */
-      tmp_s.stack_prev = &tmp_r;
-      tmp_r.stack_next = &tmp_s;
-      for (t2 = Scr.FvwmRoot.stack_next; t2 != &Scr.FvwmRoot; t2 = next)
+      next = t2->stack_next;
+      if ((IS_TRANSIENT(t2)) && (t2->transientfor == t->w) &&
+	  (t2->layer == t->layer))
+      {
+	/* t2 is a transient to lower */
+	count++;
+	if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
 	{
-	  next = t2->stack_next;
-	  if ((IS_TRANSIENT(t2)) && (t2->transientfor == t->w) &&
-	      (t2->layer == t->layer))
-	    {
-	      /* t2 is a transient to raise */
-	      count++;
-	      if (IS_ICONIFIED(t2) && !IS_ICON_SUPPRESSED(t2))
-		{
-		  count += 2;
-		}
-
-	      /* unplug it */
-	      remove_window_from_stack_ring(t2);
-
-	      /* put it above tmp_s */
-	      t2->stack_next = &tmp_s;
-	      t2->stack_prev = tmp_s.stack_prev;
-	      t2->stack_next->stack_prev = t2;
-	      t2->stack_prev->stack_next = t2;
-	    }
+	  count += 2;
 	}
-    }
 
+	/* unplug it */
+	remove_window_from_stack_ring(t2);
+
+	/* put it above tmp_r */
+	t2->stack_next = &tmp_r;
+	t2->stack_prev = tmp_r.stack_prev;
+	t2->stack_prev->stack_next = t2;
+	tmp_r.stack_prev = t2;
+      }
+    }
+  }
+
+  test_layer = t->layer;
+  if (do_lower)
+    test_layer--;
   /* now find the place to reinsert t and friends */
   for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
+  {
+    if (test_layer >= s->layer)
     {
-      if (t->layer >= s->layer)
-	{
-	  break;
-        }
+      break;
     }
+  }
   r = s->stack_prev;
 
-  if (must_raise_transients)
-    {
-      /* insert all transients between r and s. */
-      r->stack_next = tmp_r.stack_next;
-      r->stack_next->stack_prev = r;
-      s->stack_prev = tmp_s.stack_prev;
-      s->stack_prev->stack_next = s;
-    }
+  if (do_move_transients && tmp_r.stack_next != &tmp_r)
+  {
+    /* insert all transients between r and s. */
+    r->stack_next = tmp_r.stack_next;
+    tmp_r.stack_next->stack_prev = r;
+    s->stack_prev = tmp_r.stack_prev;
+    tmp_r.stack_prev->stack_next = s;
+  }
 
   /* don't forget t itself */
   add_window_to_stack_ring_after(t, s->stack_prev);
@@ -206,7 +215,7 @@ void RaiseWindow(FvwmWindow *t)
   for (t2 = r->stack_next; t2 != s; t2 = t2->stack_next)
     {
       if (i >= count) {
-	fvwm_msg (ERR, "RaiseWindow", "more transients than expected");
+	fvwm_msg (ERR, "RaiseOrLowerWindow", "more transients than expected");
 	break;
       }
       wins[i++] = t2->frame;
@@ -239,13 +248,15 @@ void RaiseWindow(FvwmWindow *t)
 
   free (wins);
 
-  raisePanFrames();
+  if (!do_lower)
+  {
+    raisePanFrames();
 
-  /*
-     The following is a hack to raise X windows over native windows
-     which is needed for some (all ?) X servers running under windows NT.
-   */
-  if (Scr.go.RaiseHackNeeded)
+    /*
+     * The following is a hack to raise X windows over native windows
+     * which is needed for some (all ?) X servers running under windows NT.
+     */
+    if (Scr.go.RaiseHackNeeded)
     {
       Window junk;
       Window *tops;
@@ -256,64 +267,33 @@ void RaiseWindow(FvwmWindow *t)
       XQueryTree (dpy, Scr.Root, &junk, &junk, &tops, &num);
 
       /* raise from tmp_win upwards to get them above NT windows */
-      for (i = 0; i < num; i++) {
-        if (tops[i] == t->frame) found = True;
-        if (found) XRaiseWindow (dpy, tops[i]);
+      for (i = 0; i < num; i++)
+      {
+        if (tops[i] == t->frame)
+	  found = True;
+        if (found)
+	  XRaiseWindow (dpy, tops[i]);
       }
-
       XFree (tops);
     }
+  }
 }
-
+/*
+   Raise t and its transients to the top of its layer.
+   For the pager to work properly it is necessary that
+   RaiseWindow *always* sends a proper M_RESTACK packet,
+   even if the stacking order didn't change.
+*/
+void RaiseWindow(FvwmWindow *t)
+{
+  RaiseOrLowerWindow(t, False);
+  return;
+}
 
 void LowerWindow(FvwmWindow *t)
 {
-  FvwmWindow *s;
-  XWindowChanges changes;
-  unsigned int flags;
-
-  for (s = Scr.FvwmRoot.stack_next; s != &Scr.FvwmRoot; s = s->stack_next)
-    {
-      if (t->layer > s->layer)
-        {
-	  break;
-        }
-    }
-
-  if (s == t->stack_next)
-    {
-      return;
-    }
-
-  remove_window_from_stack_ring(t);
-  add_window_to_stack_ring_after(t, s->stack_prev);
-
-  changes.sibling = s->frame;
-  if (changes.sibling != None)
-    {
-      changes.stack_mode = Above;
-      flags = CWSibling|CWStackMode;
-    }
-  else
-    {
-      changes.stack_mode = Below;
-      flags = CWStackMode;
-    }
-
-  XConfigureWindow(dpy, t->frame, flags, &changes);
-
-  if (IS_ICONIFIED(t) && !IS_ICON_SUPPRESSED(t))
-    {
-      changes.sibling = t->frame;
-      changes.stack_mode = Below;
-      flags = CWSibling|CWStackMode;
-      if (t->icon_w != None)
-	XConfigureWindow(dpy, t->icon_w, flags, &changes);
-      if (t->icon_pixmap_w != None)
-	XConfigureWindow(dpy, t->icon_pixmap_w, flags, &changes);
-    }
-
-  BroadcastRestack (t->stack_prev, t->stack_next);
+  RaiseOrLowerWindow(t, True);
+  return;
 }
 
 

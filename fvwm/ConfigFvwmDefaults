@@ -26,5 +26,6 @@ AddToFunc UrgencyDoneFunc I Nop
 # Alt-Tab:
 Key Tab A M WindowList Root c c NoDeskSort
 # Default styles
-Style * GrabFocusTransient, RandomPlacement, SmartPlacement, RaiseTransient
+Style * GrabFocusTransient, LowerTransient, RaiseTransient
+Style * RandomPlacement, SmartPlacement
 Style * Title, MouseFocus, GrabFocusOff

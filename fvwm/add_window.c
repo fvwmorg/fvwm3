@@ -371,6 +371,16 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin)
   tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height+
     2*tmp_win->boundary_width;
 
+  if (SHAS_MAX_WINDOW_SIZE(sflags))
+  {
+    tmp_win->max_window_width = SGET_MAX_WINDOW_WIDTH(style);
+    tmp_win->max_window_height = SGET_MAX_WINDOW_HEIGHT(style);
+  }
+  else
+  {
+    tmp_win->max_window_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+    tmp_win->max_window_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
+  }
   ConstrainSize(tmp_win, &tmp_win->frame_g.width, &tmp_win->frame_g.height,
 		False, 0, 0);
 
@@ -1012,19 +1022,19 @@ void GetWindowSizeHints(FvwmWindow *tmp)
     {
       if(tmp->hints.max_width < tmp->hints.min_width)
         {
-	  tmp->hints.max_width = DEFAULT_MAX_WINDOW_WIDTH;
+	  tmp->hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
           broken_hints = 5;
         }
       if(tmp->hints.max_height < tmp->hints.min_height)
         {
-	  tmp->hints.max_height = DEFAULT_MAX_WINDOW_HEIGHT;
+	  tmp->hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
           broken_hints = 6;
         }
     }
   else
     {
-      tmp->hints.max_width = DEFAULT_MAX_WINDOW_WIDTH;
-      tmp->hints.max_height = DEFAULT_MAX_WINDOW_HEIGHT;
+      tmp->hints.max_width = DEFAULT_MAX_MAX_WINDOW_WIDTH;
+      tmp->hints.max_height = DEFAULT_MAX_MAX_WINDOW_HEIGHT;
     }
 
   /*

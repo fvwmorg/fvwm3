@@ -1,5 +1,9 @@
 Changes in beta release 2.3.6 (July 1999)
 
+* The new styles LowerTransient and DontLowerTransient allow to control if the
+  transients of a window are lowered when the window itself is lowered
+  (default) or not.
+
 * The Restart function has been partially rewritten. If you were using
   'Restart' without any parameters and wonder why changes in your configuration
   file are not used during a restart you should use
@@ -8,7 +12,7 @@ Changes in beta release 2.3.6 (July 1999)
 * New menu styles VerticalItemSpacing and VerticalTitleSpacing allow control
   over the height of menu items and titles.
 
-Changes in beta release 2.3.5 (July 1999)
+Changes in alpha release 2.3.5 (July 1999)
 
 * New special functions Session{Init|Restart|Exit}Function are called instead
   of {Init|Restart|Exit}Function when running under a session manager.
@@ -39,7 +43,7 @@ Changes in beta release 2.3.5 (July 1999)
 * The cursors used for resizing and selecting windows and handling menus have
   changed.
 
-Changes in beta release 2.3.4 (June 1999)
+Changes in alpha release 2.3.4 (June 1999)
 
 * Fvwm2 is GNOME compliant.
 

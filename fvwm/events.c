@@ -1286,9 +1286,9 @@ void HandleUnmapNotify(void)
   XFlush (dpy);
 
   if (focus_grabbed)
-   {
-     CoerceEnterNotifyOnCurrentWindow();
-   }
+  {
+    CoerceEnterNotifyOnCurrentWindow();
+  }
 
 #ifdef GNOME
   GNOME_SetClientList();

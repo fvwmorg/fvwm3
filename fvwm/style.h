@@ -25,6 +25,7 @@
           ((sf)->common.do_grab_focus_when_transient_created)
 #define SDO_SKIP_CIRCULATE(sf)        ((sf)->common.do_circulate_skip)
 #define SDO_SKIP_CIRCULATE_ICON(sf)   ((sf)->common.circulate_skip_icon)
+#define SDO_LOWER_TRANSIENT(sf)       ((sf)->common.do_lower_transient)
 #define SDO_RAISE_TRANSIENT(sf)       ((sf)->common.do_raise_transient)
 #define SDO_NOT_SHOW_ON_MAP(sf)       ((sf)->common.do_not_show_on_map)
 #define SDO_SKIP_WINDOW_LIST(sf)      ((sf)->common.do_window_list_skip)
@@ -56,6 +57,7 @@
 #define SHAS_COLOR_FORE(sf)           ((sf)->has_color_fore)
 #define SHAS_HANDLE_WIDTH(sf)         ((sf)->has_handle_width)
 #define SHAS_ICON(sf)                 ((sf)->has_icon)
+#define SHAS_MAX_WINDOW_SIZE(sf)      ((sf)->has_max_window_size)
 #ifdef MINI_ICONS
 #define SHAS_MINI_ICON(sf)            ((sf)->has_mini_icon)
 #endif
@@ -88,6 +90,8 @@
 #define SGET_START_DESK(style)        ((style).start_desk)
 #define SGET_START_PAGE_X(style)      ((style).start_page_x)
 #define SGET_START_PAGE_Y(style)      ((style).start_page_y)
+#define SGET_MAX_WINDOW_WIDTH(style)  ((style).max_window_width)
+#define SGET_MAX_WINDOW_HEIGHT(style) ((style).max_window_height)
 #define SGET_ICON_BOXES(style)        ((style).IconBoxes)
 
 

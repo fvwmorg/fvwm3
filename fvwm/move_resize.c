@@ -1602,15 +1602,16 @@ void ConstrainSize(FvwmWindow *tmp_win, int *widthp, int *heightp,
 
     maxWidth = tmp_win->hints.max_width;
     maxHeight =  tmp_win->hints.max_height;
-    if (maxWidth > Scr.MaxWindowWidth - 2 * tmp_win->boundary_width)
+
+    if (maxWidth > tmp_win->max_window_width - 2 * tmp_win->boundary_width)
     {
-      maxWidth = Scr.MaxWindowWidth - 2 * tmp_win->boundary_width;
+      maxWidth = tmp_win->max_window_width - 2 * tmp_win->boundary_width;
     }
-    if (maxHeight > Scr.MaxWindowHeight - 2*tmp_win->boundary_width -
+    if (maxHeight > tmp_win->max_window_height - 2*tmp_win->boundary_width -
 	tmp_win->title_g.height)
     {
       maxHeight =
-	Scr.MaxWindowHeight - 2*tmp_win->boundary_width -
+	tmp_win->max_window_height - 2*tmp_win->boundary_width -
 	tmp_win->title_g.height;
     }
 

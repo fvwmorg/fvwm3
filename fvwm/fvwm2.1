@@ -1918,17 +1918,6 @@ If the letter "p" is appended to each coordinate (horizontal and/or
 vertical), then the scroll amount will be measured in pixels.
 
 
-.IP "MaxWindowSize [ \fIwidth\fP \fIheight\fP ]"
-Tells \fIfvwm2\fP the maximum width and height of a window when it is
-initially created.  The values are the percentage of the total screen
-area.  If the letter "p" is appended to wither of the values, the
-numbers are interpreted as pixels. This command is useful to force
-large application windows to be fully visible.  Neither \fIheight\fP
-nor \fIwidth\fP may be less than 100 pixels.  If you omit the
-parameters or their values are invalid, both limits are set to 32767
-pixels (which is the default).
-
-
 .IP "Menu \fImenu-name\fP [ \fIposition\fP ] [ \fIdouble-click-action\fP ]"
 Causes a previously defined menu to be popped up in a "sticky" manner.
 That is, if the user invokes the menu with a click action instead of a
@@ -3105,18 +3094,27 @@ StartsOnDesk/StartsOnPage/StartsAnyWhere, IconTitle/NoIconTitle,
 MWMButtons/FvwmButtons, MWMBorder/FvwmBorder, MWMDecor/NoDecorHint,
 MWMFunctions/NoFuncHint, HintOverride/NoOverride, NoButton/Button,
 ResizeHintOverride/NoResizeOverride,
-OLDecor/NoOLDecor, StickyIcon/SlipperyIcon,
-SmartPlacement/DumbPlacement, RandomPlacement/ActivePlacement,
+OLDecor/NoOLDecor,
+StickyIcon/SlipperyIcon,
+SmartPlacement/DumbPlacement,
+RandomPlacement/ActivePlacement,
 DecorateTransient/NakedTransient,
 RaiseTransient/DontRaiseTransient,
-SkipMapping/ShowMapping, UseDecor,
-UseStyle, NoPPosition/UsePPosition, Lenience/NoLenience,
+LowerTransient/DontLowerTransient,
+SkipMapping/ShowMapping,
+UseDecor,
+UseStyle,
+NoPPosition/UsePPosition,
+Lenience/NoLenience,
 ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse/NeverFocus,
-StartsLowered/StartsRaised, GrabFocus/GrabFocusOff,
-GrabFocusTransient/GrabFocusTransientOff, IgnoreRestack/AllowRestack,
+StartsLowered/StartsRaised,
+GrabFocus/GrabFocusOff,
+GrabFocusTransient/GrabFocusTransientOff,
+IgnoreRestack/AllowRestack,
 FixedPosition/VariablePosition,
 IconOverride/NoIconOverride/NoActiveIconOverride,
-DepressableBorder/FirmBorder.
+DepressableBorder/FirmBorder,
+MaxWindowSize.
 
 In the above list some options are listed as
 style-option/opposite-style-option.  The opposite-style-option for
@@ -3133,10 +3131,15 @@ buttons to the sides and the client window of an undecorated window
 ('S' and 'W' contexts in bindings, see \fIMouse\fP and \fIKey\fP commands).
 
 A window with the \fIRaiseTransient\fP style that has transient windows
-will raise all its transients when it is raised. If it is already
+will raise all its transients when it is raised.  If it is already
 raised but still below some transients it will be raised above them.
-The \fIDontRaiseTransient\fP style disables this behaviour. The window
-is raised and lowered as any other window without transients.
+The \fIDontRaiseTransient\fP style disables this behaviour.  All windows
+are then treated as if they had no transients.
+
+A window with the \fILowerTransient\fP style that has transient windows
+will lower all its transients when it is lowered.  The
+\fIDontLowerTransient\fP style disables this behaviour.  All windows
+are then treated as if they had no transients.
 
 \fIIcon\fP takes an (optional) unquoted string argument which is the icon
 bitmap or pixmap to use. Icons specified this way override pixmap icons, but
@@ -3288,7 +3291,7 @@ StartsOnPage in conjunction with SkipMapping is a useful technique when you
 want to start an app on some other page and continue with what you were
 doing, rather than waiting for it to appear.
 
-\fILayer\fP accepts one argument: a nonnegative integer. This is
+\fILayer\fP accepts one a argument: a non-negative integer. This is
 the layer the window is put in.
 
 \fIStaysOnTop\fP puts the window in the top layer. This layer can
@@ -3305,6 +3308,16 @@ to place the window if it does not have resize-handles.
 
 \fIHandleWidth\fP takes a numeric argument which is the width of the border
 to place the window if it does have resize-handles.
+
+\fIMaxWindowSize\fP [ \fIwidth\fP \fIheight\fP ]"
+Tells \fIfvwm2\fP the maximum width and height of a window when it is
+initially created.  The values are the percentage of the total screen
+area.  If the letter "p" is appended to wither of the values, the
+numbers are interpreted as pixels. This command is useful to force
+large application windows to be fully visible.  Neither \fIheight\fP
+nor \fIwidth\fP may be less than 100 pixels.  If you omit the
+parameters or their values are invalid, both limits are set to 32767
+pixels (which is the default).
 
 \fIButton\fP and \fINoButton\fP take a numeric argument which is the
 number of the title-bar button which is to be included/omitted.
