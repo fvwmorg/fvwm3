@@ -33,10 +33,10 @@ extern struct queue_buff_struct **pipeQueue;
 
 #define M_NEW_PAGE           (1)
 #define M_NEW_DESK           (1<<1)
-#define M_ADD_WINDOW         (1<<2)
+#define M_OLD_ADD_WINDOW         (1<<2)
 #define M_RAISE_WINDOW       (1<<3)
 #define M_LOWER_WINDOW       (1<<4)
-#define M_CONFIGURE_WINDOW   (1<<5)
+#define M_OLD_CONFIGURE_WINDOW   (1<<5)
 #define M_FOCUS_CHANGE       (1<<6)
 #define M_DESTROY_WINDOW     (1<<7)
 #define M_ICONIFY            (1<<8)
@@ -68,8 +68,9 @@ extern struct queue_buff_struct **pipeQueue;
 #define M_LOCKONSEND         (1<<26)
 #define M_SENDCONFIG         (1<<27)
 #define M_RESTACK            (1<<28)
-#define M_NEW_LOOK           (1<<29)
-#define MAX_MESSAGES         30
+#define M_ADD_WINDOW         (1<<29)
+#define M_CONFIGURE_WINDOW   (1<<30)
+#define MAX_MESSAGES         31
 
 /*
  * MAX_MASK is used to initialize the pipeMask array.  In a few places
@@ -88,8 +89,11 @@ extern struct queue_buff_struct **pipeQueue;
  * creating and looping  over  large arrays.  The  impact seems  to be in
  * module.c, modconf.c and event.c.  dje 10/2/98
  */
-#define MAX_MASK             (((1<<MAX_MESSAGES)-1)\
+/* this is a bit long winded to allow MAX_MESSAGE to be 32 and not get an
+ * integer overflow with (1 << MAX_MESSAGES) */
+#define MAX_MASK             ((((1<<(MAX_MESSAGES-1))-1)+(1<<(MAX_MESSAGES-1)))\
                               &~(M_LOCKONSEND + M_SENDCONFIG))
+
 
 /*
  * M_LOCKONSEND  when set causes fvwm to  wait for the  module to send an

@@ -495,6 +495,7 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
     PositiveWrite(i, body, (num_datum+HEADER_SIZE)*sizeof(body[0]));
 }
 
+/* this is broken, the flags may not fit in a word */
 #define CONFIGARGS(_t) 24,\
             (_t)->w,\
             (_t)->frame,\
@@ -521,15 +522,100 @@ BroadcastPacket(unsigned long event_type, unsigned long num_datum, ...)
             (_t)->TextPixel,\
             (_t)->BackPixel
 
+#ifndef DISABLE_MBC
+#define OLDCONFIGARGS(_t) 24,\
+            (_t)->w,\
+            (_t)->frame,\
+            (unsigned long)(_t),\
+            (_t)->frame_x,\
+            (_t)->frame_y,\
+            (_t)->frame_width,\
+            (_t)->frame_height,\
+            (_t)->Desk,\
+            old_flags,\
+            (_t)->title_height,\
+            (_t)->boundary_width,\
+            ((_t)->hints.flags & PBaseSize) ? (_t)->hints.base_width : 0,\
+            ((_t)->hints.flags & PBaseSize) ? (_t)->hints.base_height: 0,\
+            ((_t)->hints.flags & PResizeInc)? (_t)->hints.width_inc  : 1,\
+            ((_t)->hints.flags & PResizeInc)? (_t)->hints.height_inc : 1,\
+            (_t)->hints.min_width,\
+            (_t)->hints.min_height,\
+            (_t)->hints.max_width,\
+            (_t)->hints.max_height,\
+            (_t)->icon_w,\
+            (_t)->icon_pixmap_w,\
+            (_t)->hints.win_gravity,\
+            (_t)->TextPixel,\
+            (_t)->BackPixel
+
+#define SETOLDFLAGS \
+{ int i = 1; \
+  old_flags += DO_START_ICONIC(t)		? i : 0; i++; \
+  old_flags += False /* OnTop */		? i : 0; i++; \
+  old_flags += IS_STICKY(t)			? i : 0; i++; \
+  old_flags += DO_SKIP_WINDOW_LIST(t)		? i : 0; i++; \
+  old_flags += IS_ICON_SUPPRESSED(t)		? i : 0; i++; \
+  old_flags += HAS_NO_ICON_TITLE(t)		? i : 0; i++; \
+  old_flags += IS_LENIENT(t)			? i : 0; i++; \
+  old_flags += IS_ICON_STICKY(t)		? i : 0; i++; \
+  old_flags += DO_SKIP_ICON_CIRCULATE(t)	? i : 0; i++; \
+  old_flags += DO_SKIP_CIRCULATE(t)		? i : 0; i++; \
+  old_flags += HAS_CLICK_FOCUS(t)		? i : 0; i++; \
+  old_flags += HAS_SLOPPY_FOCUS(t)		? i : 0; i++; \
+  old_flags += !DO_NOT_SHOW_ON_MAP(t)		? i : 0; i++; \
+  old_flags += HAS_BORDER(t)			? i : 0; i++; \
+  old_flags += HAS_TITLE(t)			? i : 0; i++; \
+  old_flags += IS_MAPPED(t)			? i : 0; i++; \
+  old_flags += IS_ICONIFIED(t)			? i : 0; i++; \
+  old_flags += IS_TRANSIENT(t)			? i : 0; i++; \
+  old_flags += False /* Raised */		? i : 0; i++; \
+  old_flags += IS_VISIBLE(t)			? i : 0; i++; \
+  old_flags += IS_ICON_OURS(t)			? i : 0; i++; \
+  old_flags += IS_PIXMAP_OURS(t)		? i : 0; i++; \
+  old_flags += IS_ICON_SHAPED(t)		? i : 0; i++; \
+  old_flags += IS_MAXIMIZED(t)			? i : 0; i++; \
+  old_flags += WM_TAKES_FOCUS(t)		? i : 0; i++; \
+  old_flags += WM_DELETES_WINDOW(t)		? i : 0; i++; \
+  old_flags += IS_ICON_MOVED(t)			? i : 0; i++; \
+  old_flags += IS_ICON_UNMAPPED(t)		? i : 0; i++; \
+  old_flags += IS_MAP_PENDING(t)		? i : 0; i++; \
+  old_flags += HAS_MWM_OVERRIDE_HINTS(t)	? i : 0; i++; \
+  old_flags += HAS_MWM_BUTTONS(t)		? i : 0; i++; \
+  old_flags += HAS_MWM_BORDER(t)		? i : 0; i++; }
+#endif /* DISABLE_MBC */
+  
 void SendConfig(int module, unsigned long event_type, const FvwmWindow *t)
 {
   SendPacket(module, event_type, CONFIGARGS(t));
+#ifndef DISABLE_MBC
+  /* send out an old version of the packet to keep old mouldules happy */
+  {
+    long old_flags;
+    SETOLDFLAGS
+    fprintf(stderr, "old_flags = 0x%x\n", old_flags);
+    SendPacket(module, event_type == M_ADD_WINDOW ?
+                       M_OLD_ADD_WINDOW : M_OLD_CONFIGURE_WINDOW,
+               OLDCONFIGARGS(t));
+  }
+#endif /* DISABLE_MBC */
 }
 
 
 void BroadcastConfig(unsigned long event_type, const FvwmWindow *t)
 {
   BroadcastPacket(event_type, CONFIGARGS(t));
+#ifndef DISABLE_MBC
+  /* send out an old version of the packet to keep old mouldules happy */
+  {
+    long old_flags;
+    SETOLDFLAGS
+    fprintf(stderr, "old_flags = 0x%x\n", old_flags);
+    BroadcastPacket(event_type == M_ADD_WINDOW ?
+                    M_OLD_ADD_WINDOW : M_OLD_CONFIGURE_WINDOW,
+                    OLDCONFIGARGS(t));
+  }
+#endif /* DISABLE_MBC */
 }
 
 
@@ -548,13 +634,11 @@ void BroadcastConfig(unsigned long event_type, const FvwmWindow *t)
 
 void SendLook(int module)
 {
-  SendPacket(module, M_NEW_LOOK, LOOKPACKET);
 }
 
 
 void BroadcastLook()
 {
-  BroadcastPacket(M_NEW_LOOK, LOOKPACKET);
 }
 
 

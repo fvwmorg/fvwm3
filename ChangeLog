@@ -1,3 +1,13 @@
+1999-04-16  Hippo
+
+	* fvwm/module.{h,c}: Removed M_NEW_LOOK, will be a text config line
+	* fvwm/module.h: Fixed macro MAX_MESSAGE to allow 32 message types
+	* fvwm/module.h: renamed M_ADD_WINDOW to M_OLD_ADD_WINDOW, renamed
+	M_CONFIGURE_WINDOW to M_OLD_CONFIGURE_WINDOW.
+	* fvwm/module.h: added new messages M_ADD_WINDOW & M_CONFIGURE_WINDOW.
+	* fvwm/module.c: (SendConfig/BroadcastConfig) send out old and new
+	versions of packets to allow old modules to get the right flags.
+
 Thu Apr 15 10:50:17 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
 
 	* fvwm/virtual.c (scroll): removed unused variable.
