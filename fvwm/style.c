@@ -1970,19 +1970,19 @@ void ProcessNewStyle(F_CMD_ARGS)
 	  ptmpstyle->flag_mask.do_save_under = 1;
 	  ptmpstyle->change_mask.do_save_under = 1;
         }
-	else if(StrEquals(token, "StipledTitle"))
+	else if(StrEquals(token, "StippledTitle"))
 	{
 	  found = True;
-	  SFSET_HAS_STIPLED_TITLE(*ptmpstyle, 1);
-	  SMSET_HAS_STIPLED_TITLE(*ptmpstyle, 1);
-	  SCSET_HAS_STIPLED_TITLE(*ptmpstyle, 1);
+	  SFSET_HAS_STIPPLED_TITLE(*ptmpstyle, 1);
+	  SMSET_HAS_STIPPLED_TITLE(*ptmpstyle, 1);
+	  SCSET_HAS_STIPPLED_TITLE(*ptmpstyle, 1);
 	}
-	else if(StrEquals(token, "StipledTitleOff"))
+	else if(StrEquals(token, "StippledTitleOff"))
 	{
 	  found = True;
-	  SFSET_HAS_STIPLED_TITLE(*ptmpstyle, 0);
-	  SMSET_HAS_STIPLED_TITLE(*ptmpstyle, 1);
-	  SCSET_HAS_STIPLED_TITLE(*ptmpstyle, 1);
+	  SFSET_HAS_STIPPLED_TITLE(*ptmpstyle, 0);
+	  SMSET_HAS_STIPPLED_TITLE(*ptmpstyle, 1);
+	  SCSET_HAS_STIPPLED_TITLE(*ptmpstyle, 1);
 	}
         break;
 
@@ -2258,9 +2258,9 @@ void check_window_style_change(
   }
 
   /*
-   *has_stipled_title
+   * has_stippled_title
    */
-  if (SCHAS_STIPLED_TITLE(*ret_style))
+  if (SCHAS_STIPPLED_TITLE(*ret_style))
   {
     flags->do_redraw_decoration = True;
   }

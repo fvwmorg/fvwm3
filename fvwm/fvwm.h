@@ -197,7 +197,7 @@ typedef struct
     unsigned has_mwm_override : 1;
     unsigned has_no_icon_title : 1;
     unsigned has_override_size : 1;
-    unsigned has_stipled_title : 1;
+    unsigned has_stippled_title : 1;
     unsigned is_fixed : 1;
     unsigned is_icon_sticky : 1;
     unsigned is_icon_suppressed : 1;

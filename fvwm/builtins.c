@@ -2374,11 +2374,11 @@ void SetGlobalOptions(F_CMD_ARGS)
     }
     else if (StrEquals(opt,"NOSTIPLEDTITLES"))
     {
-      replace = "* StipledTitleOff";
+      replace = "* StippledTitleOff";
     }
     else if (StrEquals(opt,"STIPLEDTITLES"))
     {
-      replace = "* StipledTitle";
+      replace = "* StippledTitle";
     }
     else if (StrEquals(opt,"CAPTUREHONORSSTARTSONPAGE"))
     {

@@ -92,12 +92,12 @@
           (fw)->flags.common.s.has_bottom_title = !!(x)
 #define SETM_HAS_BOTTOM_TITLE(fw,x) \
           (fw)->flag_mask.common.s.has_bottom_title = !!(x)
-#define HAS_STIPLED_TITLE(fw)  \
-          ((fw)->flags.common.s.has_stipled_title)
-#define SET_HAS_STIPLED_TITLE(fw,x) \
-          (fw)->flags.common.s.has_stipled_title = !!(x)
-#define SETM_HAS_STIPLED_TITLE(fw,x) \
-          (fw)->flag_mask.common.s.has_stipled_title = !!(x)
+#define HAS_STIPPLED_TITLE(fw)  \
+          ((fw)->flags.common.s.has_stippled_title)
+#define SET_HAS_STIPPLED_TITLE(fw,x) \
+          (fw)->flags.common.s.has_stippled_title = !!(x)
+#define SETM_HAS_STIPPLED_TITLE(fw,x) \
+          (fw)->flag_mask.common.s.has_stippled_title = !!(x)
 #define IS_ICON_STICKY(fw)     ((fw)->flags.common.s.is_icon_sticky)
 #define SET_ICON_STICKY(fw,x)  (fw)->flags.common.s.is_icon_sticky = !!(x)
 #define SETM_ICON_STICKY(fw,x) \
