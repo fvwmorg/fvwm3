@@ -1,3 +1,10 @@
+2002-01-18  olicha  <olivier.chapuis@free.fr>
+
+	* xpmroot.1:
+	Remove the documentations of the new xpmroot options as There is
+	something that I do not understand with the "memory of the
+	background of the root window"
+
 2002-01-16  olicha  <olivier.chapuis@free.fr>
 
 	* xpmroot.c (main): 
