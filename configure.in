@@ -2,24 +2,22 @@ dnl Process this file with autoconf to produce a configure script.
 dnl
 AC_PREREQ(2.13)
 AC_INIT(fvwm/fvwm.c)
-AM_INIT_AUTOMAKE(fvwm, 2.5.3)
-AM_CONFIG_HEADER(config.h)
-
-dnl fvwm varaiable settings
 
 dnl for development versions
 RELDATELONG="not released yet"
 RELDATESHORT="not released yet"
 RELDATENUM="not released yet"
+RELISDEVEL="-devel"
 dnl for released versions
 dnl RELDATELONG="24 June 2002"
 dnl RELDATESHORT="24-Jun-2002"
 dnl RELDATENUM="2002-06-24"
-AC_SUBST(RELDATELONG)
-AC_SUBST(RELDATESHORT)
-AC_SUBST(RELDATENUM)
+dnl RELISDEVEL=""
 
-dnl constant settings
+AM_INIT_AUTOMAKE(fvwm, 2.5.3${RELISDEVEL})
+AM_CONFIG_HEADER(config.h)
+
+dnl constant variable settings
 FVWMNAMEUCASE="FVWM"
 FVWMNAMELONG="F? Virtual Window Manager"
 FVWMHOMEPAGE="fvwm.org"
@@ -30,6 +28,10 @@ FVWMALTFTPDIR="/pub/Linux/X11/window-managers/"
 FVWMLIST="fvwmfvwm.org"
 FVWMWORKERSLIST="fvwm-workers@fvwm.org"
 FVWMWORKERSLISTLONG="fvwm workers list <fvwm-workers@fvwm.org>"
+
+AC_SUBST(RELDATELONG)
+AC_SUBST(RELDATESHORT)
+AC_SUBST(RELDATENUM)
 AC_SUBST(FVWMNAMEUCASE)
 AC_SUBST(FVWMNAMELONG)
 AC_SUBST(FVWMHOMEPAGE)
