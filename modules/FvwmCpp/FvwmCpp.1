@@ -57,6 +57,17 @@ important even if has read-only protection.
 Causes the temporary file create by Cpp to
 be retained. This file is usually called "/tmp/fvwmrcXXXXXX"
 
+.IP -lock
+If you want to use this option you need to start FvwmCpp with 
+ModuleSynchronous. This option causes fvwm to wait that the pre-process
+finish and that FvwmCpp asks fvwm to Read the pre-processed file before 
+continuing. This may be useful at startup if you use a session manager 
+as Gnome. Also, this is useful if you want to process and run a Form in 
+a fvwm function.
+
+.IP -noread
+Causes the pre-processed file to be not read by fvwm. Useful to
+pre-process a FvwmScript script with FvwmCpp.
 
 .SH CONFIGURATION OPTIONS
 FvwmCpp defines some values for use in the pre-processor file:
@@ -83,6 +94,8 @@ The X11 revision number.
 The X server vendor.
 .IP RELEASE
 The X server release number.
+.IP SCREEN
+The screen number.
 .IP WIDTH
 The screen width in pixels.
 .IP HEIGHT
@@ -130,6 +143,7 @@ The value of $SESSION_MANAGER. Undefined if this variable is not set.
 #define REVISION 0
 #define VENDOR HDS human designed systems, inc. (2.1.2-D)
 #define RELEASE 4
+#define SCREEN 0
 #define WIDTH 1280
 #define HEIGHT 1024
 #define X_RESOLUTION 3938

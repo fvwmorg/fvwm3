@@ -88,7 +88,10 @@ int main(int argc, char **argv)
   char *display_name = NULL;
   char *filename = NULL;
   char *tmp_file, read_string[80],delete_string[80];
-  int i,m4_debug = 0;
+  int i;
+  int m4_debug = 0;
+  int lock = 0;
+  int noread = 0;
 
   m4_enable = True;
   m4_prefix = False;
@@ -154,6 +157,14 @@ int main(int argc, char **argv)
 	{
 	  m4_debug = 1;
 	}
+      else if(strcasecmp(argv[i], "-lock") == 0)
+	{
+	  lock = 1;
+	}
+      else if(strcasecmp(argv[i], "-noread") == 0)
+	{
+	  noread = 1;
+	}
       else if (strncasecmp(argv[i],"-",1) == 0)
 	{
 	  /* pass on any other arguments starting with '-' to m4 */
@@ -180,13 +191,21 @@ int main(int argc, char **argv)
   /* set up G */
   InitPictureCMap(dpy);
 
-  /* tell fvwm we're running */
+  /* tell fvwm we're running if -lock is not used */
+  if (!lock)
   SendFinishedStartupNotification(fd);
 
   tmp_file = m4_defs(dpy, display_name,m4_options, filename);
 
+  if (!noread)
+    {
   sprintf(read_string,"read %s\n",tmp_file);
   SendInfo(fd,read_string,0);
+    }
+
+  /* tell fvwm to continue if -lock is used */
+  if (lock)
+    SendFinishedStartupNotification(fd);
 
   /* For a debugging version, we may wish to omit this part. */
   /* I'll let some m4 advocates clean this up */

@@ -1,3 +1,10 @@
+1999-10-04 Olivier Chapuis <olivier.chapuis@free.fr>
+	* FvwmCpp/FvwmCpp.c (main):
+	* FvwmCpp/FvwmCpp.1:
+	* FvwmM4/FvwmM4.c (main):
+	* FvwmM4/FvwmM4.1:
+	New options -noread and -lock
+
 1999-10-03  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/fvwm2.1: rewrote section about command line parameter expansion

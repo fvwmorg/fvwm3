@@ -161,8 +161,7 @@ fprintf(stderr,"\nstart %d (ri = %d, hnw = %d, usec = %d)\n", count++, raise_imm
     }
     else
     {
-      delay->tv_sec = 0;
-      delay->tv_usec = 0;
+      /* delay is already a NULL pointer */
     }
 #ifdef DEBUG
 fprintf(stderr,"select: delay = ");

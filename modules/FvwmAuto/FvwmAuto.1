@@ -25,13 +25,13 @@ The correct syntax is:
 .EX
 Module FvwmAuto Timeout [EnterCommand [LeaveCommand]]
 .sp
-AddToMenu Modules "Modules"      Title
-+                 "Audio"        Module FvwmAudio
-+                 "Auto"         Module FvwmAuto 300 raise lower
-+                 "Buttons"      Module FvwmButtons
-+                 "Ident"        Module FvwmIdent
-+                 "Banner"       Module FvwmBanner
-+                 "Pager"        Module FvwmPager 0 3
+AddToMenu Modules Modules Title
++                 Audio   Module FvwmAudio
++                 Auto    Module FvwmAuto 300 "silent raise" "sient lower"
++                 Buttons Module FvwmButtons
++                 Ident   Module FvwmIdent
++                 Banner  Module FvwmBanner
++                 Pager   Module FvwmPager 0 3
 .EE
 .fi
 The \fITimeout\fP argument is required. It specifies how long a window must
