@@ -3,6 +3,8 @@ _+_A HREF="#2.2.4"_-_2.2.4_+_/A_-_.
 
 Changes in beta release 2.3.25 (not released yet)
 
+* Removed the now obsolete 'Recapture' option of the BusyCursor command.
+
 Changes in beta release 2.3.24 (2000-11-28)
 
 * WindowId and WarpToFunction have been enhanced to handle windows on

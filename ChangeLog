@@ -1,5 +1,23 @@
 2000-12-03  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/cursor.c (setBusyCursor):
+	* fvwm/cursor.h:
+	* fvwm/fvwm.c (Reborder):
+	(CaptureOneWindow):
+	(InitVariables):
+	* fvwm/events.c (HandleUnmapNotify):
+	* fvwm/add_window.c (RestoreWithdrawnLocation):
+	(RestoreWithdrawnLocation):
+	* fvwm/builtins.c (do_recapture):
+	(do_recapture):
+	* fvwm/fvwm.c (CaptureOneWindow):
+	(CaptureAllWindows):
+	Reinstated some kind of the old blackout window but do not draw anything
+	in it; hopefully this means that the old state of the desktop is visible
+	during a recapture. This way it is not necessary to unmap windows during
+	a recapture and thus applications like ddd do not iconify themselves.
+	Removed the BUSY_RECAPTURE busy cursor context which is now obsolete.
+
 	* fvwm/fvwm.c (main):
 	grap pointer asynchronously to prevent lockup in window placement now
 	that most XAllowEvents() calls are gone

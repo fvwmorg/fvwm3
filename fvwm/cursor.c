@@ -561,8 +561,7 @@ void setBusyCursor(F_CMD_ARGS)
   char *args = NULL;
   int flag = -1;
   char *optlist[] = {
-    "read", "recapture", "wait", "modulesynchronous",
-    "dynamicmenu", "*", NULL
+    "read", "wait", "modulesynchronous", "dynamicmenu", "*", NULL
   };
 
   while (action  && *action != '\0')
@@ -596,41 +595,32 @@ void setBusyCursor(F_CMD_ARGS)
         Scr.BusyCursor &= ~BUSY_READ;
       break;
 
-    case 1: /* recapture */
-      if (flag)
-        Scr.BusyCursor |= BUSY_RECAPTURE;
-      else
-        Scr.BusyCursor &= ~BUSY_RECAPTURE;
-      break;
-
-    case 2: /* wait */
+    case 1: /* wait */
       if (flag)
         Scr.BusyCursor |= BUSY_WAIT;
       else
         Scr.BusyCursor &= ~BUSY_WAIT;
       break;
 
-    case 3: /* modulesynchronous */
+    case 2: /* modulesynchronous */
       if (flag)
         Scr.BusyCursor |= BUSY_MODULESYNCHRONOUS;
       else
         Scr.BusyCursor &= ~BUSY_MODULESYNCHRONOUS;
       break;
 
-    case 4: /* dynamicmenu */
+    case 3: /* dynamicmenu */
       if (flag)
         Scr.BusyCursor |= BUSY_DYNAMICMENU;
       else
         Scr.BusyCursor &= ~BUSY_DYNAMICMENU;
       break;
 
-    case 5: /* "*" */
+    case 4: /* "*" */
       if (flag)
-        Scr.BusyCursor |= (BUSY_READ | BUSY_RECAPTURE | BUSY_WAIT |
-                           BUSY_MODULESYNCHRONOUS | BUSY_DYNAMICMENU);
+        Scr.BusyCursor |= BUSY_ALL;
       else
-        Scr.BusyCursor &= ~(BUSY_READ | BUSY_RECAPTURE | BUSY_WAIT |
-                            BUSY_MODULESYNCHRONOUS | BUSY_DYNAMICMENU);
+        Scr.BusyCursor &= ~(BUSY_ALL);
       break;
 
     default:

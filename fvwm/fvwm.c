@@ -810,7 +810,8 @@ void StartupStuff(void)
  *
  ***********************************************************************/
 
-void CaptureOneWindow(FvwmWindow *fw, Window window)
+void CaptureOneWindow(
+  FvwmWindow *fw, Window window, Window keep_on_top_win, Window parent_win)
 {
   Window w;
   Atom atype;
@@ -850,19 +851,86 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
 
     XSelectInput(dpy, fw->w, 0);
     w = fw->w;
-    XUnmapWindow(dpy,fw->frame);
-    XUnmapWindow(dpy,w);
-    RestoreWithdrawnLocation(fw,True);
+    XUnmapWindow(dpy, fw->frame);
+    /* This unmap may cause some applications think that they are iconified
+     * (e.g. ddd).  Thus, when the window is remapped, it will become iconic.
+     */
+    RestoreWithdrawnLocation(fw, True, parent_win);
     SET_DO_REUSE_DESTROYED(fw, 1); /* RBW - 1999/03/20 */
     destroy_window(fw);
     Event.xmaprequest.window = w;
-    HandleMapRequestKeepRaised(None, fw);
+    HandleMapRequestKeepRaised(keep_on_top_win, fw);
     /* Clean out isIconicState here, otherwise all new windos may start
      * iconified. */
     isIconicState = DontCareState;
     /* restore previous value */
     PPosOverride = f;
   }
+
+  return;
+}
+
+/* Put a transparent window all over the screen to hide what happens below. */
+static void hide_screen(
+  Bool do_hide, Window *ret_hide_win, Window *ret_parent_win)
+{
+  static Bool is_hidden = False;
+  static Window hide_win = None;
+  static Window parent_win = None;
+  XSetWindowAttributes xswa;
+  unsigned long valuemask;
+
+  if (do_hide == is_hidden)
+  {
+    /* nothing to do */
+    if (ret_hide_win)
+      *ret_hide_win = hide_win;
+    if (ret_parent_win)
+      *ret_parent_win = parent_win;
+
+    return;
+  }
+  is_hidden = do_hide;
+  if (do_hide)
+  {
+    xswa.override_redirect = True;
+    xswa.cursor = Scr.FvwmCursors[CRS_WAIT];
+    valuemask = CWOverrideRedirect|CWCursor;
+    hide_win = XCreateWindow(
+      dpy, Scr.Root, 0, 0, Scr.MyDisplayWidth, Scr.MyDisplayHeight, 0,
+      CopyFromParent, InputOutput, CopyFromParent, valuemask, &xswa);
+    if (hide_win)
+    {
+      /* When recapturing, all windows are reparented to this window. If they
+       * are reparented to the root window, they will flash over the hide_win
+       * with XFree.  So reparent them to an unmapped window that looks like the
+       * root window. */
+      parent_win = XCreateWindow(
+	dpy, Scr.Root, 0, 0, Scr.MyDisplayWidth, Scr.MyDisplayHeight, 0,
+	CopyFromParent, InputOutput, CopyFromParent, valuemask, &xswa);
+      if (!parent_win)
+      {
+	XDestroyWindow(dpy, hide_win);
+	hide_win = None;
+      }
+      else
+      {
+	XMapWindow(dpy, hide_win);
+	XSync(dpy, 0);
+      }
+    }
+  }
+  else
+  {
+    XDestroyWindow(dpy, hide_win);
+    XDestroyWindow(dpy, parent_win);
+    XSync(dpy,0);
+    hide_win = None;
+  }
+  if (ret_hide_win)
+    *ret_hide_win = hide_win;
+  if (ret_parent_win)
+    *ret_parent_win = parent_win;
 
   return;
 }
@@ -926,14 +994,19 @@ void CaptureAllWindows(void)
   }
   else /* must be recapture */
   {
+    Window keep_on_top_win;
+    Window parent_win;
+
+    hide_screen(True, &keep_on_top_win, &parent_win);
     /* reborder all windows */
     for (i=0;i<nchildren;i++)
     {
       if (XFindContext(dpy, children[i], FvwmContext, (caddr_t *)&tmp)!=XCNOENT)
       {
-        CaptureOneWindow(tmp, children[i]);
+        CaptureOneWindow(tmp, children[i], keep_on_top_win, parent_win);
       }
     }
+    hide_screen(False, NULL, NULL);
   }
 
   isIconicState = DontCareState;
@@ -1606,7 +1679,7 @@ static void InitVariables(void)
 
   Scr.MyDisplayWidth = DisplayWidth(dpy, Scr.screen);
   Scr.MyDisplayHeight = DisplayHeight(dpy, Scr.screen);
-  Scr.BusyCursor = BUSY_RECAPTURE;
+  Scr.BusyCursor = BUSY_NONE;
   Scr.Hilite = NULL;
   Scr.Focus = NULL;
   Scr.PreviousFocus = NULL;
@@ -1711,7 +1784,7 @@ static void Reborder(void)
   for (tmp = Scr.FvwmRoot.stack_prev; tmp != &Scr.FvwmRoot;
        tmp = tmp->stack_prev)
   {
-    RestoreWithdrawnLocation (tmp,True);
+    RestoreWithdrawnLocation (tmp, True, Scr.Root);
     XUnmapWindow(dpy,tmp->frame);
     XDestroyWindow(dpy,tmp->frame);
   }

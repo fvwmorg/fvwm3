@@ -2427,36 +2427,25 @@ void UnsetEnv(F_CMD_ARGS)
 
 static void do_recapture(F_CMD_ARGS, Bool fSingle)
 {
-  Bool need_ungrab = False;
-
   if (fSingle)
+  {
     if (DeferExecution(eventp,&w,&tmp_win,&context, CRS_SELECT,ButtonRelease))
       return;
-  /* FIXME: domivogt (1-Jun-2000): For some reason unknown to me the pointer
-   * grab fails if an icon is focused.  So, to prevent fvwm from hanging, do not
-   * use the BUSY_CURSOR in this case.  This is not a proper fix, but I am out
-   * of ideas. */
-  if ((!Scr.Focus || !IS_ICONIFIED(Scr.Focus)) &&
-      (Scr.BusyCursor & BUSY_RECAPTURE))
-  {
-    if (GrabEm(CRS_WAIT, GRAB_BUSY))
-      need_ungrab = True;
   }
   XSync(dpy,0);
   MyXGrabServer(dpy);
   if (fSingle)
-    CaptureOneWindow(tmp_win, tmp_win->w);
+    CaptureOneWindow(tmp_win, tmp_win->w, None, None);
   else
     CaptureAllWindows();
   /* Throw away queued up events. We don't want user input during a
    * recapture. The window the user clicks in might disapper at the very same
    * moment and the click goes through to the root window. Not good */
+  XAllowEvents(dpy, AsyncPointer, CurrentTime);
   discard_events(
     ButtonPressMask|ButtonReleaseMask|ButtonMotionMask|PointerMotionMask|
     EnterWindowMask|LeaveWindowMask|KeyPressMask|KeyReleaseMask);
   MyXUngrabServer(dpy);
-  if (need_ungrab)
-    UngrabEm(GRAB_BUSY);
   XSync(dpy, 0);
 }
 

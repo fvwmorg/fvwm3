@@ -1942,8 +1942,7 @@ void destroy_window(FvwmWindow *tmp_win)
  *  Puts windows back where they were before fvwm took over
  *
  ************************************************************************/
-#include "icons.h"
-void RestoreWithdrawnLocation (FvwmWindow *tmp, Bool restart)
+void RestoreWithdrawnLocation(FvwmWindow *tmp, Bool restart, Window parent)
 {
   int w2,h2;
   unsigned int mask;
@@ -2005,7 +2004,8 @@ void RestoreWithdrawnLocation (FvwmWindow *tmp, Bool restart)
       }
     }
   }
-  XReparentWindow (dpy, tmp->w, Scr.Root, xwc.x, xwc.y);
+  XReparentWindow(
+    dpy, tmp->w, (parent == None) ? Scr.Root : parent, xwc.x, xwc.y);
 
   if(IS_ICONIFIED(tmp) && !IS_ICON_SUPPRESSED(tmp))
   {

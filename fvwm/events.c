@@ -904,7 +904,9 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
   OnThisPage = IsRectangleOnThisPage(&(Tmp_win->frame_g), Tmp_win->Desk);
 
   if(KeepRaised != None)
-    XRaiseWindow(dpy,KeepRaised);
+  {
+    XRaiseWindow(dpy, KeepRaised);
+  }
   /* If it's not merely iconified, and we have hints, use them. */
   if (!IS_ICONIFIED(Tmp_win))
   {
@@ -932,8 +934,8 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
       {
 	Bool do_grab_focus;
 
-	XMapWindow(dpy, Tmp_win->w);
 	XMapWindow(dpy, Tmp_win->frame);
+	XMapWindow(dpy, Tmp_win->w);
 	SET_MAP_PENDING(Tmp_win, 1);
 	SetMapStateProp(Tmp_win, NormalState);
 	if (Scr.flags.is_map_desk_in_progress)
@@ -979,8 +981,11 @@ void HandleMapRequestKeepRaised(Window KeepRaised, FvwmWindow *ReuseWin)
       }
       else
       {
+#if 0
+	/* nope, this is forbidden by the ICCCM */
 	XMapWindow(dpy, Tmp_win->w);
 	SetMapStateProp(Tmp_win, NormalState);
+#endif
       }
       break;
 
@@ -1258,7 +1263,7 @@ void HandleUnmapNotify(void)
     }
     else
     {
-      RestoreWithdrawnLocation (Tmp_win,False);
+      RestoreWithdrawnLocation (Tmp_win, False, Scr.Root);
     }
     XRemoveFromSaveSet (dpy, Event.xunmap.window);
     XSelectInput (dpy, Event.xunmap.window, NoEventMask);
