@@ -390,7 +390,7 @@ A: Sure - here's one from Graeme McCaffery:
      add multiple window managers to the CDE login menu:
 
        _+_A HREF="http://twirl.mcc.ac.uk/~zzassgl/wm.html"_-_CDE login Link_+_/A_-_
-     
+
 ----------------------------------------------------------------------
 
 2.3  I'm trying to compile FVWM under SunOS using cc, but the compiler
@@ -617,7 +617,7 @@ A: Although fvwm has commands for binding movements to keystrokes,
 
       First, set up the Num Lock key so that Shift+Num_Lock toggles mouse keys:
 
-       xmodmap -e "keysym Num_lock = Num_Lock Pointer_EnableKeys"
+       xmodmap -e "keysym Num_Lock = Num_Lock Pointer_EnableKeys"
 
       (XFree86 3.1.2E is based on R6.1 and has the X Keyboard Extension;
       it also has a binding to Pointer_EnableKeys in its default keymap.
