@@ -501,9 +501,20 @@ void AutoPlaceIcon(FvwmWindow *t)
   else
     {
       base_x=((t->frame_g.x+Scr.Vx+(t->frame_g.width>>1))/Scr.MyDisplayWidth)*
-	Scr.MyDisplayWidth - Scr.Vx;
+	Scr.MyDisplayWidth;
       base_y=((t->frame_g.y+Scr.Vy+(t->frame_g.height>>1))/
-	      Scr.MyDisplayHeight)*Scr.MyDisplayHeight - Scr.Vy;
+	      Scr.MyDisplayHeight)*Scr.MyDisplayHeight;
+      /* limit icon position to desktop */
+      if (base_x > Scr.VxMax)
+	base_x = Scr.VxMax;
+      if (base_x < 0)
+	base_x = 0;
+      if (base_y > Scr.VyMax)
+	base_y = Scr.VyMax;
+      if (base_y < 0)
+	base_y = 0;
+      base_x -= Scr.Vx;
+      base_y -= Scr.Vy;
     }
   if(IS_ICON_MOVED(t))
     {
@@ -877,7 +888,7 @@ void GetIconBitmap(FvwmWindow *tmp_win)
 	       (unsigned int *)&tmp_win->icon_p_height, &JunkBW, &JunkDepth);
   tmp_win->iconPixmap = tmp_win->wmhints->icon_pixmap;
   tmp_win->iconDepth = JunkDepth;
-  
+
 #ifdef SHAPE
   if (ShapesSupported)
   {

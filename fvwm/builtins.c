@@ -41,6 +41,7 @@
 #include "module_interface.h"
 #include "stack.h"
 #include "move_resize.h"
+#include "defaults.h"
 
 static int shade_anim_steps=0;
 
@@ -993,6 +994,15 @@ void SetEdgeResistance(F_CMD_ARGS)
   Scr.MoveResistance = val[1];
 }
 
+void SetMoveThreshold(F_CMD_ARGS)
+{
+  int val = 0;
+
+  if (GetIntegerArguments(action, NULL, &val, 1) < 1 || val < 0)
+    Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
+  Scr.MoveThreshold = val;
+}
+
 void SetColormapFocus(F_CMD_ARGS)
 {
   if (MatchToken(action,"FollowsFocus"))
@@ -1825,10 +1835,10 @@ void SetDefaultBackground(F_CMD_ARGS)
 {
   char *type = NULL;
   char *rest = NULL;
-  
+
   action = GetNextToken(action, &type);
   action = GetNextToken(action, &rest);
-  
+
   /* no args mean restore what was set with DefaultColors */
   if (!type) {
     if (Scr.bgtype.bits.is_pixmap)
@@ -1841,10 +1851,10 @@ void SetDefaultBackground(F_CMD_ARGS)
       free(type);
       return;
     }
-      
+
     if (StrEquals(type, "TiledPixmap") || StrEquals(type, "Pixmap")) {
       Picture *pic = CachePicture(dpy, Scr.NoFocusWin, NULL, rest, Scr.ColorLimit);
-      
+
       if (pic && pic->depth == Scr.depth) {
 	Pixmap newpixmap = XCreatePixmap(dpy, Scr.NoFocusWin, pic->width,
 					 pic->height, Scr.depth);
@@ -1869,7 +1879,7 @@ void SetDefaultBackground(F_CMD_ARGS)
     free(type);
     free(rest);
   }
-    
+
   ApplyDefaultFontAndColors();
 }
 

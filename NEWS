@@ -1,5 +1,8 @@
 Changes in alpha release 2.3.2 (April 1999)
 
+* The MoveThreshold command lets the user fine tune the threshold when a click
+  becomes a move.
+
 * New style IconOverride/NoIconOverride/NoActiveIconOverride to
   influence the overriding behaviour of the Icon style.
 

@@ -151,26 +151,31 @@ typedef struct MenuStyle {
 
 struct MenuRoot; /* forward declaration */
 
+/* IMPORTANT NOTE: Don't put members into this struct that can change while the
+ * menu is visible! This will wreak havoc on recursive menus when they finally
+ * get implemented. */
 typedef struct MenuItem
 {
     struct MenuRoot *mr;        /* the menu this item is in */
     struct MenuItem *next;	/* next menu item */
     struct MenuItem *prev;	/* prev menu item */
+
     char *item;			/* the character string displayed on left*/
     char *item2;	        /* the character string displayed on right*/
+    short strlen;		/* strlen(item) */
+    short strlen2;		/* strlen(item2) */
+
     Picture *picture;           /* Pixmap to show  above label*/
     Picture *lpicture;          /* Pixmap to show to left of label */
-    char *action;		/* action to be performed */
-    short item_num;		/* item number of this menu */
+
     short x;			/* x coordinate for text (item) */
     short x2;			/* x coordinate for text (item2) */
     short xp;                   /* x coordinate for picture */
     short y_offset;		/* y coordinate for item */
     short y_height;		/* y height for item */
+
+    char *action;		/* action to be performed */
     short func_type;		/* type of built in function */
-    short state;		/* video state, 0 = normal, 1 = reversed */
-    short strlen;		/* strlen(item) */
-    short strlen2;		/* strlen(item2) */
     short hotkey;		/* Hot key offset (pete@tecc.co.uk).
 				   0 - No hot key
 				   +ve - offset to hot key char in item
@@ -179,7 +184,13 @@ typedef struct MenuItem
 				   refer to the *first* character)
 				   */
     char chHotkey;
-    short fIsSeparator;          /* 1 if this is a separator or a title */
+    struct
+    {
+      unsigned is_separator;
+      unsigned is_title;
+      unsigned is_popup;
+      unsigned is_menu;
+    } flags;
 } MenuItem;
 
 typedef struct MenuRoot
@@ -211,10 +222,11 @@ typedef struct MenuRoot
     short width;		/* width of the menu for 1st col */
     short width2;		/* width of the menu for 2nd col */
     short width3;               /* width of the submenu triangle col */
+    short xoffset;              /* the distance between the left border and the
+				 * beginning of the menu items */
     short items;		/* number of items in the menu */
     Picture *sidePic;
     Pixel sideColor;
-    short xoffset;
     MenuStyle *ms;        /* Menu Face    */
     union                 /* internal flags, deleted when menu pops down! */
     {

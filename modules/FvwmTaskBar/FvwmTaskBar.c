@@ -6,7 +6,7 @@
  *
  * Minor hack by TKP to enable autohide to work with pages (leaves 2 pixels
  * visible so that the 1 pixel panframes don't get in the way)
- * 
+ *
  * Merciless hack by RBW for the Great Style Flag Rewrite - 04/20/1999.
  * This module slightly abused the old flags word, inventing new meanings for
  * certain bits. Therefore, I'm leaving all that infrastructure alone, only
@@ -156,6 +156,9 @@ Colormap PictureCMap;
 
 char *ImagePath   = NULL;
 
+static Bool tip_window_alarm = False;
+static Bool hide_taskbar_alarm = False;
+
 static void ParseConfig( void );
 static void ParseConfigLine(char *tline);
 
@@ -200,12 +203,11 @@ int main(int argc, char **argv)
   signal (SIGALRM, Alarm);
 
   SetMessageMask(Fvwm_fd,M_ADD_WINDOW | M_CONFIGURE_WINDOW | M_DESTROY_WINDOW |
-		 M_WINDOW_NAME | M_ICON_NAME | M_RES_NAME | M_DEICONIFY | M_ICONIFY |
-		 M_END_WINDOWLIST | M_FOCUS_CHANGE |
-		M_CONFIG_INFO | M_END_CONFIG_INFO
+		 M_WINDOW_NAME | M_ICON_NAME | M_RES_NAME | M_DEICONIFY |
+		 M_ICONIFY | M_END_WINDOWLIST | M_FOCUS_CHANGE |
+		 M_CONFIG_INFO | M_END_CONFIG_INFO
 #ifdef FVWM95
-		| M_FUNCTION_END |
-		M_SCROLLREGION
+		 | M_FUNCTION_END | M_SCROLLREGION
 #endif
 #ifdef MINI_ICONS
 		 | M_MINI_ICON
@@ -352,7 +354,8 @@ void ProcessMessage(unsigned long type,unsigned long *body)
        Window redraw and rewarping gets handled by XEvent
        ConfigureNotify code. */
     cfgpacket = (ConfigWinPacket *) body;
-    if (!ShowTransients && (IS_TRANSIENT(cfgpacket))) break;
+    if (!ShowTransients && (IS_TRANSIENT(cfgpacket)))
+      break;
     if (cfgpacket->w == win) {
       if (win_border != (int)cfgpacket->border_width) {
 	win_x = win_border = (int)cfgpacket->border_width;
@@ -364,12 +367,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 
         XMoveResizeWindow(dpy, win, win_x, win_y,
                           ScreenWidth-(win_border<<1), win_height);
-
       }
       break;
     }
 
-    if (FindItem(&windows, cfgpacket->w) != -1) break;
+    if (FindItem(&windows, cfgpacket->w) != -1)
+      break;
     if (!(DO_SKIP_WINDOW_LIST(cfgpacket)) || !UseSkipList) {
       AddItem(&windows,
         cfgpacket->w,
@@ -379,8 +382,10 @@ void ProcessMessage(unsigned long type,unsigned long *body)
     break;
 
   case M_DESTROY_WINDOW:
-    if ((i = DeleteItem(&windows, body[0])) == -1) break;
-    if (FindItem(&swallowed, body[0]) != -1) break;
+    if ((i = DeleteItem(&windows, body[0])) == -1)
+      break;
+    if (FindItem(&swallowed, body[0]) != -1)
+      break;
     RemoveButton(&buttons, i);
     redraw = 1;
     break;
@@ -736,19 +741,37 @@ void Swallow(unsigned long *body) {
 /******************************************************************************
   Alarm - Handle a SIGALRM - used to implement timeout events
 ******************************************************************************/
-void Alarm(int nonsense) {
+void Alarm(int nonsense)
+{
+  XEvent event;
+  Bool trigger_event = False;
 
-  switch(AlarmSet) {
-
+  switch(AlarmSet)
+  {
   case SHOW_TIP:
-    ShowTipWindow(1);
+    if (tip_window_alarm == False)
+    {
+      tip_window_alarm = True;
+      trigger_event = True;
+    }
     break;
 
   case HIDE_TASK_BAR:
-    HideTaskBar();
+    if (hide_taskbar_alarm == False)
+    {
+      hide_taskbar_alarm = True;
+      trigger_event = True;
+    }
     break;
   }
 
+  if (trigger_event)
+  {
+    event.xmotion.x = -1;
+    event.xmotion.y = -1;
+    event.xany.type = MotionNotify;
+    XSendEvent(dpy, win, False, MotionNotify, &event);
+  }
   AlarmSet = NOT_SET;
   signal (SIGALRM, Alarm);
 }
@@ -816,6 +839,12 @@ void LoopOnEvents()
   while(XPending(dpy)) {
     redraw = -1;
     XNextEvent(dpy, &Event);
+    if (Event.xany.type == ConfigureNotify)
+    {
+      /* Purge all but the last configure events */
+      while(XCheckTypedEvent(dpy, ConfigureNotify, &Event))
+	;
+    }
 
     switch(Event.type) {
       case ButtonRelease:
@@ -881,7 +910,7 @@ void LoopOnEvents()
           if (Event.xexpose.window == Tip.win)
             redraw = 0;
           else
-	      redraw = 1;
+	    redraw = 1;
 	}
         break;
 
@@ -942,6 +971,21 @@ void LoopOnEvents()
         break;
 
       case MotionNotify:
+	if (Event.xmotion.x < 0 && Event.xmotion.y < 0)
+	{
+	  /* This condition means that the event was triggered by an Alarm */
+	  if (hide_taskbar_alarm == True)
+	  {
+	    hide_taskbar_alarm = False;
+	    HideTaskBar();
+	  }
+	  else if (tip_window_alarm == True)
+	  {
+	    tip_window_alarm = False;
+	    ShowTipWindow(1);
+	  }
+	  break;
+	}
 	if (MouseInStartButton(Event.xmotion.x, Event.xbutton.y)) {
 	  if (SomeButtonDown(Event.xmotion.state))
 	    redraw = StartButtonUpdate(NULL, BUTTON_DOWN) ? 0 : -1;
@@ -970,7 +1014,8 @@ void LoopOnEvents()
         if ((Event.xconfigure.width != win_width ||
 	     Event.xconfigure.height != win_height)) {
 	  AdjustWindow(Event.xconfigure.width, Event.xconfigure.height);
-          if (AutoStick) WarpTaskBar(win_y);
+          if (AutoStick)
+	    WarpTaskBar(win_y);
 	  redraw = 1;
         }
         else if (Event.xconfigure.x != win_x || Event.xconfigure.y != win_y) {
@@ -1416,7 +1461,8 @@ void WarpTaskBar(int y) {
     win_y = (int)ScreenHeight - win_height - win_border;
 
   XMoveWindow(dpy, win, win_x, win_y);
-  if (AutoHide) SetAlarm(HIDE_TASK_BAR);
+  if (AutoHide)
+    SetAlarm(HIDE_TASK_BAR);
 
   /* Prevent oscillations caused by race with
      time delayed TaskBarHide().  Is there any way

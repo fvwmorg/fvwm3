@@ -1,6 +1,41 @@
+1999-05-15  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/menus.c (AddToMenu): removed and rewrote some macros; menu item
+	drawing may have new bugs now
+
+	* fvwm/menus.c (AddToMenu):
+	* fvwm/menus.h (MenuItem): removed unused member item_num
+
+	* fvwm/menus.c (SetMenuItemSelected):
+	(paint_menu_item):
+	(AddToMenu):
+	* fvwm/menus.h (MenuItem): removed the dynamic member 'state'; all
+	other parts of this struct don't change while the menu is up
+
+	* fvwm/menus.c (MenuInteraction): use Scr.MoveThreshold in menus too
+	(MakeMenu): fixed WindowList title
+
+	* fvwm/fvwm.c (InitVariables): initialise default move threshold
+
+	* fvwm/defaults.h: #define for default move threshold
+
+1999-05-14  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/builtins.c (SetMoveThreshold): added a safety check
+
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/parse.h (enum):
+	* fvwm/misc.h:
+	* fvwm/functions.c (func_config):
+	* fvwm/builtins.c (SetMoveThreshold):
+	applied MoveThreshold patch by Andrew Morton
+
+	* fvwm/icons.c (AutoPlaceIcon): Force icon on desktop even if center of
+	window is off the desk's borders
+
 1999-05-13  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/fvwm.c (CaptureOneWindow): set PPosOverride in 
+	* fvwm/fvwm.c (CaptureOneWindow): set PPosOverride in
 	CaptureOneWindow, to avoid jumping windows with RecaptureWindow
 
 	* fvwm/builtins.c (Maximize): Call SetBorder when maximizing,
@@ -20,10 +55,10 @@
 
 1999-05-12  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/menus.c (do_menu): set *ret_paction to NULL after 
-	freeing it. This fixes coredumps from do_windowList (bugs 
+	* fvwm/menus.c (do_menu): set *ret_paction to NULL after
+	freeing it. This fixes coredumps from do_windowList (bugs
 	#332 and #339).
-	
+
 1999-05-12  Dan Espen  <dane@mk.bellcore.com>
 
 	* INSTALL.fvwm (Configuration File): Some clarification on config files
@@ -34,20 +69,20 @@
 
 1999-05-12  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/builtins.c (Maximize): make windows go back to their 
-	original location upon unmaximization again. 
+	* fvwm/builtins.c (Maximize): make windows go back to their
+	original location upon unmaximization again.
 
 1999-05-11  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
-	* fvwm/fvwm.h (style_flags): new member icon_override. 
+	* fvwm/fvwm.h (style_flags): new member icon_override.
 
 	* fvwm/style.h (SICON_OVERRIDE): macro to access icon_override.
 
 	* fvwm/style.c (ProcessNewStyle): new style option
 	IconOverride/NoActiveIconOverride/NoIconOverride sets
 	icon_override.
-	
-	* fvwm/add_window.c (AddWindow): change logic for determining 
+
+	* fvwm/add_window.c (AddWindow): change logic for determining
 	the icon. It uses the icon_override style flag now.
 
 	* NEWS:

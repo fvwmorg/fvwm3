@@ -1070,7 +1070,7 @@ keyboard focus.
 Performs \fIcommand\fP on the current window if it satisfies all
 \fIconditions\fP.  Conditions include "Iconic", "!Iconic", "Visible",
 "!Visible", "Layer [ n ]", "Sticky", "!Sticky", "Maximized",
-"!Maximized", "Transient", "!Transient", "CurrentDesk", "CurrentPage", 
+"!Maximized", "Transient", "!Transient", "CurrentDesk", "CurrentPage",
 and "CurrentPageAnyDesk".  In addition, the condition
 may include a window name to match to.  The window name may include
 the wildcards * and ?.  The window name, icon name, class, and
@@ -2309,6 +2309,16 @@ is a replacement for the old WindowsDesk command, which can no longer
 be used.
 
 
+.IP "MoveThreshold [ \fIpixels\fP ]"
+When the user presses a mouse button upon an object \fIfvwm2\fP
+waits to see if the action is a click or a drag.  If the mouse
+moves by more than \fIpixels\fP pixels it is assumed to be a drag.
+
+Previous versions of \fIfvwm2\fP hardwired \fIpixels\fP to 3, which
+is now the default value. If \fIpixels\fP is negative or omitted the
+default value is restored.
+
+
 .IP "MoveToPage [ \fIx[p]\fP \fIy\fP[p] ] | [ \fIprev\fP ]"
 Moves the selected window to another page (x,y). The upper left page is
 (0,0), the upper right is (M,0), where M is one less than the current
@@ -2720,7 +2730,7 @@ UseStyle, NoPPosition/UsePPosition, Lenience/NoLenience,
 ClickToFocus/SloppyFocus/MouseFocus|FocusFollowsMouse/NeverFocus,
 StartsLowered/StartsRaised, GrabFocus/GrabFocusOff,
 GrabFocusTransient/GrabFocusTransientOff, IgnoreRestack/AllowRestack,
-FixedPosition/VariablePosition, 
+FixedPosition/VariablePosition,
 IconOverride/NoIconOverride/NoActiveIconOverride.
 
 In the above list some options are listed as
@@ -2741,9 +2751,9 @@ buttons to the sides and the client window of an undecorated window
 bitmap or pixmap to use. Icons specified this way override pixmap icons, but
 not icon windows, provided by the client in the WM_HINTS property. The
 IconOverride style changes the behaviour to override any client-provided
-icons; the NoIconOverride style changes the behaviour to not override 
-any client-provided icons; the default overriding behaviour can be 
-activated with the NoActiveIconOverride style. 
+icons; the NoIconOverride style changes the behaviour to not override
+any client-provided icons; the default overriding behaviour can be
+activated with the NoActiveIconOverride style.
 
 There is one exception to these rules, namely
 .EX

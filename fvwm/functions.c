@@ -168,6 +168,7 @@ static const struct functions func_config[] =
   {"modulepath",   setModulePath,    F_MODULE_PATH,         0},
   {"mouse",        mouse_binding,    F_MOUSE,               0},
   {"move",         move_window,      F_MOVE,                FUNC_NEEDS_WINDOW},
+  {"movethreshold",SetMoveThreshold, F_MOVE_THRESHOLD,      0},
   {"movetodesk",   move_window_to_desk,F_MOVE_TO_DESK,      FUNC_NEEDS_WINDOW},
   {"movetopage",   move_window_to_page,F_MOVE_TO_PAGE,      FUNC_NEEDS_WINDOW},
   {"next",         NextFunc,         F_NEXT,                0},
@@ -383,16 +384,18 @@ static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d, Bool may_time_out)
 {
   int xcurrent,ycurrent,total = 0;
   Time t0;
+  int dist;
   extern Time lastTimestamp;
 
   xcurrent = x;
   ycurrent = y;
   t0 = lastTimestamp;
+  dist = Scr.MoveThreshold;
 
   while(((total < Scr.ClickTime && lastTimestamp - t0 < Scr.ClickTime) ||
 	 !may_time_out) &&
-	x - xcurrent < 3 && x - xcurrent > -3 &&
-	y - ycurrent < 3 && y - ycurrent > -3)
+	x - xcurrent < dist && x - xcurrent > -dist &&
+	y - ycurrent < dist && y - ycurrent > -dist)
     {
       usleep(20000);
       total+=20;

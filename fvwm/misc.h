@@ -151,6 +151,7 @@ void set_func(char *, FILE *, char **,int *);
 void copy_config(FILE **config_fd);
 void SetEdgeScroll(F_CMD_ARGS);
 void SetEdgeResistance(F_CMD_ARGS);
+void SetMoveThreshold(F_CMD_ARGS);
 void CursorStyle(F_CMD_ARGS);
 void ButtonStyle(F_CMD_ARGS);
 #ifdef MULTISTYLE

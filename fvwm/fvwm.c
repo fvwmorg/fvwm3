@@ -773,7 +773,7 @@ void CaptureOneWindow(FvwmWindow *fw, Window window)
   if (fw == NULL)
     return;
   if(XFindContext(dpy, window, FvwmContext, (caddr_t *)&fw)!=XCNOENT)
-  {  
+  {
     PPosOverride = True;
     isIconicState = DontCareState;
     if(XGetWindowProperty(dpy, fw->w, _XA_WM_STATE, 0L, 3L, False,
@@ -1577,6 +1577,7 @@ void InitVariables(void)
   Scr.SnapGridX = 1;
   Scr.SnapGridY = 1;
   Scr.OpaqueSize = 5;
+  Scr.MoveThreshold = DEFAULT_MOVE_THRESHOLD;
   /* ClickTime is set to the positive value upon entering the event loop. */
   Scr.ClickTime = -DEFAULT_CLICKTIME;
   Scr.ColormapFocus = COLORMAP_FOLLOWS_MOUSE;

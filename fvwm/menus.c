@@ -118,16 +118,20 @@ static unsigned int dkp_keystate;
 static unsigned int dkp_keycode;
 static Time dkp_timestamp;
 
-#define IS_TITLE_MENU_ITEM(mi) (((mi)?((mi)->func_type==F_TITLE):FALSE))
-#define IS_POPUP_MENU_ITEM(mi) (((mi)?((mi)->func_type==F_POPUP):FALSE))
-#define IS_SEPARATOR_MENU_ITEM(mi) ((mi)?(mi)->fIsSeparator:FALSE)
-#define IS_REAL_SEPARATOR_MENU_ITEM(mi) ((mi)?((mi)->fIsSeparator && StrEquals((mi)->action,"nop") && !((mi)->strlen) && !((mi)->strlen2)):FALSE)
-#define IS_LABEL_MENU_ITEM(mi) ((mi)?((mi)->fIsSeparator && StrEquals((mi)->action,"nop") && ((mi)->strlen || ((mi)->strlen2))):FALSE)
-#define MENU_MIDDLE_OFFSET(menu) ((menu)->xoffset + ((menu)->width - (menu)->xoffset)/2)
+#define IS_TITLE_ITEM(mi) ((mi)->flags.is_title)
+#define IS_POPUP_ITEM(mi) ((mi)->flags.is_popup)
+#define IS_MENU_ITEM(mi) ((mi)->flags.is_menu)
+#define IS_SEPARATOR_ITEM(mi) ((mi)->flags.is_separator)
 #define IS_LEFT_MENU(menu) ((menu)->flags.f.is_left)
 #define IS_RIGHT_MENU(menu) ((menu)->flags.f.is_right)
 #define IS_UP_MENU(menu) ((menu)->flags.f.is_up)
 #define IS_DOWN_MENU(menu) ((menu)->flags.f.is_down)
+
+
+static int menu_middle_offset(MenuRoot *menu)
+{
+  return menu->xoffset + (menu->width - menu->xoffset)/2;
+}
 
 /****************************************************************************
  *
@@ -204,7 +208,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior, char **ret_paction,
 	return MENU_ABORTED;
       }
       /* Make the menu appear under the pointer rather than warping */
-      x -= MENU_MIDDLE_OFFSET(menu);
+      x -= menu_middle_offset(menu);
       y -= menu->ms->look.EntryHeight/2 + 2;
     }
 
@@ -359,7 +363,7 @@ int IndexFromMi(MenuItem *miTarget)
   MenuRoot *mr = miTarget->mr;
   MenuItem *mi = mr->first;
   for (; mi && mi != miTarget; mi = mi->next) {
-    if (!IS_TITLE_MENU_ITEM(mi) && !IS_SEPARATOR_MENU_ITEM(mi))
+    if (!IS_SEPARATOR_ITEM(mi))
       i++;
   }
   if (mi == miTarget) {
@@ -384,7 +388,7 @@ MenuItem *MiFromMenuIndex(MenuRoot *mr, int index)
   MenuItem *mi = mr->first;
   MenuItem *miLastOk = NULL;
   for (; mi && (i < index || miLastOk == NULL); mi=mi->next) {
-    if (!IS_TITLE_MENU_ITEM(mi) && !IS_SEPARATOR_MENU_ITEM(mi)) {
+    if (!IS_SEPARATOR_ITEM(mi)) {
       miLastOk = mi;
       i++;
     }
@@ -479,7 +483,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
     else if ( countHotkey == 1  )
     {
       *pmiCurrent = newItem;
-      if ( IS_POPUP_MENU_ITEM( newItem ) )
+      if (newItem && IS_POPUP_ITEM(newItem))
 	return MENU_POPUP;
       else
 	return MENU_SELECTED;
@@ -509,7 +513,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
     case XK_KP_6:
     case XK_f: /* forward */
     case XK_l: /* vi right */
-      if (IS_POPUP_MENU_ITEM(miCurrent))
+      if (miCurrent && IS_POPUP_ITEM(miCurrent))
 	return MENU_POPUP;
       break;
 
@@ -567,8 +571,7 @@ MenuStatus menuShortcuts(MenuRoot *menu,XEvent *Event,MenuItem **pmiCurrent)
       else {
 	index = IndexFromMi(miCurrent) + (fControlKey?5:1);
 	/* correct for the case that we're between items */
-	if (IS_SEPARATOR_MENU_ITEM(miCurrent) ||
-	    IS_TITLE_MENU_ITEM(miCurrent))
+	if (IS_SEPARATOR_ITEM(miCurrent))
 	  index--;
       }
       newItem = MiFromMenuIndex(miCurrent->mr,index);
@@ -720,8 +723,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    continue;
 	    /* break; */
 	  }
-	  retval = mi?MENU_SELECTED:MENU_ABORTED;
-	  if (retval == MENU_SELECTED && IS_POPUP_MENU_ITEM(mi) &&
+	  retval = (mi) ? MENU_SELECTED : MENU_ABORTED;
+	  if (retval == MENU_SELECTED && mi && IS_POPUP_ITEM(mi) &&
 	      !menu->ms->feel.f.PopupAsRootmenu)
 	    {
 	      retval = MENU_POPUP;
@@ -745,7 +748,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  fKeyPress = TRUE;
 	  x_offset = 0;
 	  retval = menuShortcuts(menu,&Event,&mi);
-	  if (retval == MENU_SELECTED && IS_POPUP_MENU_ITEM(mi) &&
+	  if (retval == MENU_SELECTED && mi && IS_POPUP_ITEM(mi) &&
 	      !menu->ms->feel.f.PopupAsRootmenu)
 	    retval = MENU_POPUP;
 	  if (retval == MENU_POPDOWN ||
@@ -757,7 +760,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    MiWarpPointerToItem(mi,FALSE);
 	    /* DBUG("MenuInteraction","Warping on keystroke to %s",mi->item);*/
 	  }
-	  if (retval == MENU_POPUP && IS_POPUP_MENU_ITEM(mi)) {
+	  if (retval == MENU_POPUP && mi && IS_POPUP_ITEM(mi)) {
 	    fPopupAndWarp = TRUE;
 	    DBUG("MenuInteraction","fPopupAndWarp = TRUE");
 	    break;
@@ -769,8 +772,10 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    int x_root, y_root;
 	    XQueryPointer( dpy, Scr.Root, &JunkRoot, &JunkChild,
 			   &x_root,&y_root, &JunkX, &JunkY, &JunkMask);
-	    if(x_root-x_init > 3 || x_init-x_root > 3 ||
-	       y_root-y_init > 3 || y_init-y_root > 3) {
+	    if(x_root-x_init > Scr.MoveThreshold ||
+	       x_init-x_root > Scr.MoveThreshold ||
+	       y_root-y_init > Scr.MoveThreshold ||
+	       y_init-y_root > Scr.MoveThreshold) {
 	      /* global variable remember that this isn't just
 		 a click any more since the pointer moved */
 	      mouse_moved = TRUE;
@@ -858,7 +863,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    fDoMenu = TRUE;
 	  }
 	}
-	else if (IS_POPUP_MENU_ITEM(mi)) {
+	else if (mi && IS_POPUP_ITEM(mi)) {
 	  if (x_offset >= mi->mr->width*3/4 || fDoPopupNow ||
 	      fPopupImmediately) {
 	    /* must create a new menu or popup */
@@ -867,7 +872,7 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    else if (fPopupAndWarp)
 	      MiWarpPointerToItem(mrPopup->first,TRUE);
 	  }
-	} /* else if (IS_POPUP_MENU_ITEM(mi)) */
+	} /* else if (mi && IS_POPUP_ITEM(mi)) */
 	if (fPopup && mrPopup && mrPopup != mrMiPopup) {
 	  /* must remove previous popup first */
 	  fPopdown = TRUE;
@@ -1032,11 +1037,8 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
       *ret_paction = strdup(mi->action);
     retval = MENU_ADD_BUTTON_IF(fKeyPress,MENU_DONE);
     if (ret_paction && *ret_paction && mi) {
-      switch (mi->func_type)
+      if (IS_MENU_ITEM(mi))
       {
-      case F_POPUP:
-      case F_STAYSUP:
-      case F_WINDOWLIST:
 	GetPopupOptions(mi, &mops);
 	if (!(mops.flags.f.select_in_place)) {
 	  fIgnorePosHints = TRUE;
@@ -1055,9 +1057,6 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    fWarpPointerToTitle = TRUE;
 	  }
 	} /* else (mops.flags.f.select_in_place) */
-	break;
-      default:
-	break;
       }
     } /* ((retval == MENU_DONE ||... */
   }
@@ -1068,7 +1067,7 @@ static
 void WarpPointerToTitle(MenuRoot *menu)
 {
   int y = menu->ms->look.EntryHeight/2 + 2;
-  int x = MENU_MIDDLE_OFFSET(menu);
+  int x = menu_middle_offset(menu);
   XWarpPointer(dpy, 0, menu->w, 0, 0, 0, 0, x, y);
 }
 
@@ -1077,12 +1076,11 @@ MenuItem *MiWarpPointerToItem(MenuItem *mi, Bool fSkipTitle)
 {
   MenuRoot *menu = mi->mr;
   int y;
-  int x = MENU_MIDDLE_OFFSET(menu);
+  int x = menu_middle_offset(menu);
 
   if (fSkipTitle)
   {
-    while (mi->next != NULL &&
-	   (IS_TITLE_MENU_ITEM(mi) || IS_SEPARATOR_MENU_ITEM(mi)))
+    while (mi->next != NULL && IS_SEPARATOR_ITEM(mi))
       /* skip separators and titles until the first 'real' item is found */
       mi = mi->next;
   }
@@ -1441,10 +1439,9 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
 {
   if (f == True && mi->mr->selected != NULL && mi->mr->selected != mi)
     SetMenuItemSelected(mi->mr->selected, False);
-  if (f == False && mi->mr->selected == NULL)
+  else if (f == False && mi->mr->selected == NULL)
     return;
-
-  if (mi->state == f)
+  else if (f == True && mi->mr->selected == mi)
     return;
 
 #ifdef GRADIENT_BUTTONS
@@ -1511,7 +1508,6 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
   }
 #endif
 
-  mi->state = f;
   mi->mr->selected = (f) ? mi : NULL;
   paint_menu_item(mi);
 }
@@ -1547,7 +1543,7 @@ MenuRoot *MrPopupForMi(MenuItem *mi)
   MenuRoot *tmp = NULL;
 
   /* This checks if mi is != NULL too */
-  if (!IS_POPUP_MENU_ITEM(mi))
+  if (!mi || !IS_POPUP_ITEM(mi))
     return NULL;
   /* just look past "Popup " in the action, and find that menu root */
   GetNextToken(SkipNTokens(mi->action, 1), &menu_name);
@@ -1698,13 +1694,18 @@ void paint_menu_item(MenuItem *mi)
   Bool fClear = False;
 #ifdef GRADIENT_BUTTONS
   Bool fGradient;
+  Bool fSelected;
   int sw = 0;
+
+  if (!mi)
+    return;
+
+  fSelected = (mi == mi->mr->selected) ? True : False;
 
   if (mr->sidePic != NULL)
     sw = mr->sidePic->width + 5;
   else if (mr->ms->look.sidePic != NULL)
     sw = mr->ms->look.sidePic->width + 5;
-
 
   switch (mi->mr->ms->look.face.type)
   {
@@ -1741,13 +1742,11 @@ void paint_menu_item(MenuItem *mi)
 
   /* Hilight background */
   if (mr->ms->look.f.Hilight) {
-    if (mi->state && (!mi->fIsSeparator) &&
+    if (fSelected && !IS_SEPARATOR_ITEM(mi) &&
 	(((*mi->item)!=0) || mi->picture || mi->lpicture)) {
-      int d = (th == 2 && mi->prev && mi->prev->state) ? 1 : 0;
-
       XChangeGC(dpy, Scr.ScratchGC1, Globalgcm, &Globalgcv);
       XFillRectangle(dpy, mr->w, mr->ms->look.MenuActiveBackGC, mr->xoffset+3,
-		       y_offset + d, mr->width - mr->xoffset-6, y_height - d);
+		       y_offset, mr->width - mr->xoffset-6, y_height);
     } else if (th == 0) {
 #ifdef GRADIENT_BUTTONS
       if (!fGradient)
@@ -1770,7 +1769,7 @@ void paint_menu_item(MenuItem *mi)
 #endif
     {
 
-      if (th == 2 && mi->prev && mi->prev->state)
+      if (th == 2 && mi->prev && mi->prev == mi->mr->selected)
 	XClearArea(dpy, mr->w,mr->xoffset,y_offset+1,mr->width,y_height-1,0);
       else
 	XClearArea(dpy, mr->w, mr->xoffset, y_offset - th + 1, mr->width,
@@ -1782,7 +1781,7 @@ void paint_menu_item(MenuItem *mi)
 
   /* Hilight 3D */
   if (mr->ms->look.ReliefThickness > 0) {
-    if ((mi->state)&&(!mi->fIsSeparator)&&
+    if ((fSelected)&&(!IS_SEPARATOR_ITEM(mi))&&
 	(((*mi->item)!=0 || mi->strlen2) || mi->picture || mi->lpicture))
     {
       RelieveRectangle(dpy,mr->w, mr->xoffset + th + 1, y_offset,
@@ -1814,7 +1813,7 @@ void paint_menu_item(MenuItem *mi)
     DrawSeparator(mr->w,ShadowGC,ShadowGC,1,mr->height-2,
                   mr->width-1, mr->height-2,1);
 
-  if(IS_TITLE_MENU_ITEM(mi))
+  if(IS_TITLE_ITEM(mi))
   {
     if(mr->ms->look.TitleUnderlines == 2)
     {
@@ -1844,7 +1843,7 @@ void paint_menu_item(MenuItem *mi)
     text_y += HEIGHT_EXTRA/2;
 
   /* see if it's an actual separator (titles are also separators) */
-  if(mi->fIsSeparator && !IS_TITLE_MENU_ITEM(mi) && !IS_LABEL_MENU_ITEM(mi))
+  if (IS_SEPARATOR_ITEM(mi) && !IS_TITLE_ITEM(mi))
   {
       int d = (mr->ms->look.f.LongSeparators) ? 4 : 6;
 
@@ -1858,14 +1857,14 @@ void paint_menu_item(MenuItem *mi)
   if(mi == mr->first)
     DrawSeparator(mr->w,ReliefGC,ReliefGC,mr->xoffset,0, mr->width-1,0,-1);
 
-  if(!mi || check_if_function_allowed(mi->func_type,my_Tmp_win,False,mi->item))
+  if(check_if_function_allowed(mi->func_type,my_Tmp_win,False,mi->item))
   {
-    if(mi->state && !IS_TITLE_MENU_ITEM(mi))
+    if(fSelected && !IS_TITLE_ITEM(mi))
       currentGC = mr->ms->look.MenuActiveGC;
     else
       currentGC = mr->ms->look.MenuGC;
     if (mr->ms->look.f.Hilight && !mr->ms->look.f.hasActiveFore &&
-	mi->state && mi->fIsSeparator == FALSE)
+	fSelected && IS_SEPARATOR_ITEM(mi) == FALSE)
       /* Use a lighter color for highlighted windows menu items for win mode */
       currentGC = mr->ms->look.MenuReliefGC;
   }
@@ -1891,8 +1890,8 @@ void paint_menu_item(MenuItem *mi)
 		 mi->item2, -1 - mi->hotkey);
 
   d=(mr->ms->look.EntryHeight-7)/2;
-  if(mi->func_type == F_POPUP) {
-    if(mi->state)
+  if(IS_POPUP_ITEM(mi)) {
+    if(fSelected)
       DrawTrianglePattern(mr->w, ShadowGC, ReliefGC, ShadowGC, ReliefGC,
 			  mr->width-13, y_offset+d-1, mr->width-7,
 			  y_offset+d+7, mr->ms->look.f.TriangleRelief);
@@ -2481,29 +2480,41 @@ void MakeMenu(MenuRoot *mr)
   mr->width3 = 0;
   for (cur = mr->first; cur != NULL; cur = cur->next)
     {
-      if(cur->func_type == F_POPUP)
+      int tw = 0;
+      if(IS_POPUP_ITEM(cur))
 	mr->width3 = 15;
 
       width = XTextWidth(mr->ms->look.pStdFont->font, cur->item, cur->strlen);
-      if (IS_TITLE_MENU_ITEM(cur))
-      {
-	/* titles stretch over the whole menu width, so count the maximum
-	 * separately */
-	if (width > title_width)
-	  title_width = width;
-	continue;
-      }
       if(cur->picture && width < cur->picture->width)
 	width = cur->picture->width;
       if (width <= 0)
 	width = 1;
+      if (IS_TITLE_ITEM(cur))
+      {
+	/* titles stretch over the whole menu width, so count the maximum
+	 * separately */
+	tw = width;
+      }
+
+      if (tw)
+      {
+	if (cur->strlen == 0)
+	{
+	  if (tw > title_width)
+	    title_width = tw;
+	  continue;
+	}
+	else
+	{
+	  width = tw;
+	}
+      }
       if (width > mr->width)
 	mr->width = width;
-
       width = XTextWidth(mr->ms->look.pStdFont->font, cur->item2,cur->strlen2);
-      cur->x2 = -width;
       if (width < 0)
 	width = 0;
+      cur->x2 = -width;
       if (width > mr->width2)
 	mr->width2 = width;
       if((width==0)&&(cur->strlen2>0))
@@ -2531,7 +2542,7 @@ void MakeMenu(MenuRoot *mr)
       cur->mr = mr;
       cur->y_offset = y;
       cur->x = 5+mr->width0;
-      if(IS_TITLE_MENU_ITEM(cur))
+      if(IS_TITLE_ITEM(cur))
 	{
 	  width = XTextWidth(mr->ms->look.pStdFont->font, cur->item,
 			     cur->strlen);
@@ -2557,7 +2568,6 @@ void MakeMenu(MenuRoot *mr)
 	    cur->y_height = HEIGHT_SEPARATOR;
 	  }
 	  /* Titles are separators, too */
-	  cur->fIsSeparator = TRUE;
 	}
       else if((cur->strlen==0)&&(cur->strlen2 == 0)&&
 	      /* added check for NOP to distinguish from items with no text,
@@ -2565,16 +2575,15 @@ void MakeMenu(MenuRoot *mr)
               StrEquals(cur->action,"nop")) {
 	/* Separator */
 	cur->y_height = HEIGHT_SEPARATOR;
-	cur->fIsSeparator = TRUE;
-	}
+	cur->flags.is_separator = TRUE;
+      }
       else {
 	/* Normal text entry */
-	cur->fIsSeparator = FALSE;
         if ((cur->strlen==0)&&(cur->strlen2 == 0))
           cur->y_height = HEIGHT_EXTRA;
         else
           cur->y_height = mr->ms->look.EntryHeight;
-	}
+      }
       if(cur->picture)
 	cur->y_height += cur->picture->height;
       if(cur->lpicture && cur->y_height < cur->lpicture->height+4)
@@ -3047,9 +3056,28 @@ void AddToMenu(MenuRoot *menu, char *item, char *action, Bool fPixmapsOk,
     tmp->strlen2 = 0;
 
   tmp->action = stripcpy(action);
-  tmp->state = 0;
   find_func_type(tmp->action, &(tmp->func_type), NULL);
-  tmp->item_num = menu->items++;
+  memset(&(tmp->flags), 0, sizeof(tmp->flags));
+  switch (tmp->func_type)
+  {
+  case F_POPUP:
+    tmp->flags.is_popup = TRUE;
+  case F_WINDOWLIST:
+  case F_STAYSUP:
+    tmp->flags.is_menu = TRUE;
+    break;
+  case F_TITLE:
+    tmp->flags.is_separator = TRUE;
+    tmp->flags.is_title = TRUE;
+    break;
+  default:
+    if(tmp->strlen == 0 && tmp->strlen2 == 0 && StrEquals(tmp->action,"nop"))
+      /* check for NOP to distinguish from items with no text, only pixmap */
+      tmp->flags.is_separator = TRUE;
+    break;
+  }
+
+  menu->items++;
 }
 
 /***********************************************************************

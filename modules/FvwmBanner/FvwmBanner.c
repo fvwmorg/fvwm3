@@ -23,6 +23,7 @@
 
 #include <ctype.h>
 
+#include <X11/Xlib.h>
 #include <X11/StringDefs.h>
 #include <X11/Intrinsic.h>
 #include <X11/Shell.h>
@@ -94,6 +95,7 @@ int main(int argc, char **argv)
   int fd_width ;
   struct timeval value;
   int fd[2];
+  XSetWindowAttributes attr;
 
   fd_width = GetFdWidth();
 
@@ -183,7 +185,8 @@ int main(int argc, char **argv)
 
 
   /* Set assorted info for the window */
-  XSetTransientForHint(dpy,win,Root);
+  attr.override_redirect = True;
+  XChangeWindowAttributes(dpy, win, CWOverrideRedirect, &attr);
   wm_del_win = XInternAtom(dpy,"WM_DELETE_WINDOW",False);
   XSetWMProtocols(dpy,win,&wm_del_win,1);
 
