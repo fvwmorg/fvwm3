@@ -2339,6 +2339,7 @@ void CMD_Close(F_CMD_ARGS)
 	{
 		XKillClient(dpy, FW_W(fw));
 	}
+
 	destroy_window(fw);
 	XFlush(dpy);
 

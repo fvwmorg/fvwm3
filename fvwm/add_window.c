@@ -106,6 +106,23 @@ char NoResource[] = "NoResource"; /* Class if no res_name in class hints */
 
 /* ---------------------------- local functions ----------------------------- */
 
+static void delete_client_context(FvwmWindow *fw)
+{
+	FvwmWindow *cw;
+
+	/* We can not simply delete the context.  X might have reused the
+	 * window structure so we would delete the context that was established
+	 * by another FvwmWindow structure in the mean time. */
+	if (XFindContext(
+		    dpy, FW_W(fw), FvwmContext, (caddr_t *)&cw) !=
+	    XCNOENT && cw == fw)
+	{
+		XDeleteContext(dpy, FW_W(fw), FvwmContext);
+	}
+
+	return;
+}
+
 /***********************************************************************
  *
  *  Procedure:
@@ -1181,7 +1198,7 @@ static void destroy_auxiliary_windows(
 	{
 		XDeleteContext(dpy, FW_W_FRAME(fw), FvwmContext);
 		XDeleteContext(dpy, FW_W_PARENT(fw), FvwmContext);
-		XDeleteContext(dpy, FW_W(fw), FvwmContext);
+		delete_client_context(fw);
 		XDestroyWindow(dpy, FW_W_FRAME(fw));
 	}
 	if (HAS_TITLE(fw))
@@ -3011,6 +3028,8 @@ void destroy_window(FvwmWindow *fw)
 		{
 			fw->next->prev = fw->prev;
 		}
+		fw->next = NULL;
+		fw->prev = NULL;
 
 		/****** also remove it from the stack ring ******/
 
@@ -3028,13 +3047,17 @@ void destroy_window(FvwmWindow *fw)
 	     Scr.flags.is_executing_menu_function) &&
 	    !DO_REUSE_DESTROYED(fw))
 	{
+		if (IS_SCHEDULED_FOR_DESTROY(fw))
+		{
+			return;
+		}
 		/* mark window for destruction */
 		SET_SCHEDULED_FOR_DESTROY(fw, 1);
 		Scr.flags.is_window_scheduled_for_destroy = 1;
 		/* this is necessary in case the application destroys the
 		 * client window and a new window is created with the same
 		 * window id */
-		XDeleteContext(dpy, FW_W(fw), FvwmContext);
+		delete_client_context(fw);
 		XFlush(dpy);
 		/* unmap the the window to fake that it was already removed */
 		if (IS_ICONIFIED(fw))

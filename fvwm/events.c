@@ -2581,7 +2581,8 @@ void HandlePropertyNotify(const evh_args_t *ea)
 				}
 			}
 			if (t->icon_alphaPixmap != None ||
-			    (cs >= 0 && Colorset[cs].icon_alpha_percent < 100) ||
+			    (cs >= 0 &&
+			     Colorset[cs].icon_alpha_percent < 100) ||
 			    CSET_IS_TRANSPARENT_PR(b_cs) ||
 			    (!IS_ICON_SHAPED(t) &&
 			     t->icon_background_padding > 0))
@@ -2734,7 +2735,8 @@ void HandlePropertyNotify(const evh_args_t *ea)
 	case XA_WM_HINTS:
 		flush_property_notify(XA_WM_HINTS, FW_W(fw));
 		/* clasen@mathematik.uni-freiburg.de - 02/01/1998 - new -
-		   the urgency flag is an ICCCM 2.0 addition to the WM_HINTS. */
+		 * the urgency flag is an ICCCM 2.0 addition to the WM_HINTS.
+		 */
 		old_wmhints_flags = 0;
 		if (fw->wmhints)
 		{

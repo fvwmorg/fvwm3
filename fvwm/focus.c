@@ -170,7 +170,8 @@ static void __update_windowlist(
 	int is_focus_by_flip_focus_cmd)
 {
 	lastFocusType = (is_focus_by_flip_focus_cmd) ? True : False;
-	if (fw == NULL || focus_is_focused(fw) || fw == &Scr.FvwmRoot)
+	if (fw == NULL || focus_is_focused(fw) || fw == &Scr.FvwmRoot ||
+	    IS_SCHEDULED_FOR_DESTROY(fw))
 	{
 		return;
 	}

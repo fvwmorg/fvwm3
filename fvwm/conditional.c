@@ -1604,7 +1604,7 @@ void CMD_On(F_CMD_ARGS)
 			case 'I':
 				im = True;
 				type = R_OK;
-				break;	
+				break;
 			default:
 				/* cannot happen */
 				break;
