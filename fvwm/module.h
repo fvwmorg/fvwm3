@@ -97,5 +97,5 @@ void BroadcastMiniIcon(unsigned long event_type,
 		       unsigned long data5, unsigned long data6,
 		       unsigned long data7, unsigned long data8,
 		       const char *name);
-
+void FlushOutputQueues();
 #endif /* MODULE_H */

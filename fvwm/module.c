@@ -744,6 +744,16 @@ void FlushQueue(int module)
     }
 }
 
+void FlushOutputQueues()
+{
+  int i;
+  
+  for(i = 0; i < npipes; i++) {
+    if(writePipes[i] >= 0) {
+      FlushQueue(i);
+    }
+  }
+}
 
 void send_list_func(XEvent *eventp, Window w, FvwmWindow *tmp_win,
                     unsigned long context, char *action, int *Module)

@@ -69,6 +69,7 @@ void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX, int startY
   lastY = startY;
 
   if (deltaX == 0 && deltaY == 0) return; /* go nowhere fast */
+
   do {
     currentX = startX + deltaX * (*ppctMovement);
     currentY = startY + deltaY * (*ppctMovement);
@@ -106,6 +107,13 @@ void AnimatedMoveAnyWindow(FvwmWindow *tmp_win, Window w, int startX, int startY
     }
 #endif /* NO_ETERM_SUPPORT */
     XFlush(dpy);
+    if (tmp_win) {
+      tmp_win->frame_x = currentX;
+      tmp_win->frame_y = currentY;
+      BroadcastConfig(M_CONFIGURE_WINDOW, tmp_win);
+      FlushOutputQueues();
+    }
+    
     usleep(cmsDelay*1000); /* usleep takes microseconds */
 #ifdef GJB_ALLOW_ABORTING_ANIMATED_MOVES
     /* this didn't work for me -- maybe no longer necessary since
@@ -459,7 +467,11 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
   int xl,yt,delta_x,delta_y,paged;
   unsigned int button_mask = 0;
   unsigned int bw = tmp_win->bw;
+  FvwmWindow tmp_win_copy;
 
+  /* make a copy of the tmp_win structure for sending to the pager */
+  memcpy(&tmp_win_copy, tmp_win, sizeof(FvwmWindow));
+  
   XQueryPointer(dpy, Scr.Root, &JunkRoot, &JunkChild,&xl, &yt,
 		&JunkX, &JunkY, &button_mask);
   button_mask &= Button1Mask|Button2Mask|Button3Mask|Button4Mask|Button5Mask;
@@ -680,6 +692,12 @@ void moveLoop(FvwmWindow *tmp_win, int XOffset, int YOffset, int Width,
 #endif
 	}
 #endif /* NO_ETERM_SUPPORT */
+      if(opaque_move) { /* no point in doing this if server grabbed */
+        tmp_win_copy.frame_x = xl;
+        tmp_win_copy.frame_y = yt;
+        BroadcastConfig(M_CONFIGURE_WINDOW, &tmp_win_copy);
+        FlushOutputQueues();
+      }
     }
   if (!NeedToResizeToo)
     /* Don't wait for buttons to come up when user is placing a new window
