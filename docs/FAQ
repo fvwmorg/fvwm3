@@ -1200,19 +1200,19 @@ A: The following discusses a general solution, you should substitute
 
      AddToFunc StartFunction I Module FvwmEvent
 
-   The sample to use with fvwm 2.3.21+ versions (this moves a newly
-   created window "My Window" only, and switches to all new windows):
+   The sample to use with latest fvwm 2.4.x and 2.5.x versions.  This
+   moves a newly created window named "My Window", and wraps a pointer
+   to all new windows regardless of their name:
 
      *FvwmEvent-NewWindow: Cmd
-     *FvwmEvent-NewWindow: PassId
      *FvwmEvent-NewWindow: StartDelay 4
      *FvwmEvent-NewWindow: add_window FuncFocusWindow
 
      DestroyFunc FuncFocusWindow
      AddToFunc   FuncFocusWindow
-     + I WindowId $0 ("My Window") Move 200p 100p
-     + I WindowId $0 Focus
-     + I WindowId $0 WarpToWindow
+     + I ThisWindow ("My Window") Move 200p 100p
+     + I Focus
+     + I WarpToWindow
 
      AddToFunc StartFunction I FvwmEvent FvwmEvent-NewWindow
 

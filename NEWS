@@ -34,6 +34,10 @@ Changes in development release 2.5.7 (not released yet)
   a prefix "WindowId $0" is not needed in its definition anymore
   and it is advised to remove it in user configs.
 
+* FvwmEvent now executes all window related events within a window
+  context, so PassId is not needed anymore, and all prefixes
+  "WindowId $0" may be removed in user event handlers.
+
 -------------------------------------------------------------------
 
 Changes in development release 2.5.6 (28-Feb-2003)

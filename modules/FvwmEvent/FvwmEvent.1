@@ -128,10 +128,10 @@ You can even call different shell commands for each event just by setting
 .nf
 .sp
 	*FvwmEvent: Cmd exec
-	*FvwmEvent: add_window killname "APPL ERROR"
+	*FvwmEvent: add_window 'killname "APPL ERROR"'
 .sp
 .fi
-.IP "*FvwmEvent: PassID"
+.IP "*FvwmEvent: PassId"
 Specifies that the event action will have an ID parameter added to the end
 of the command line. Most events will have the windowID of the window that the
 event refers to, new_desk will have the new desk number. The windowID is a
@@ -149,10 +149,10 @@ e.g. for audio-events:
 
 	*FvwmEvent: new_page beam_trek.au
 	*FvwmEvent: new_desk beam_trek.au
-	*FvwmEvent: add_window drip.au
+	*FvwmEvent: old_add_window drip.au
 	*FvwmEvent: raise_window swoosh.au
 	*FvwmEvent: lower_window swoosh.au
-	*FvwmEvent: configure_window hammer.au
+	*FvwmEvent: old_configure_window hammer.au
 	*FvwmEvent: focus_change boing.au
 	*FvwmEvent: enter_window boing.au
 	*FvwmEvent: leave_window boing.au
@@ -174,12 +174,26 @@ e.g. for audio-events:
 	*FvwmEvent: icon_file beep.au
 	*FvwmEvent: default_icon beep.au
 	*FvwmEvent: string plapper.au
-
 	*FvwmEvent: mini_icon beep.au
 	*FvwmEvent: windowshade beep.au
 	*FvwmEvent: dewindowshade beep.au
+
+	*FvwmEvent: visible_name beep.au
+	*FvwmEvent: sendconfig beep.au
+	*FvwmEvent: restack beep.au
+	*FvwmEvent: add_window beep.au
+	*FvwmEvent: configure_window beep.au
+
+	*FvwmEvent: visible_icon_name beep.au
+	*FvwmEvent: enter_window beep.au
+	*FvwmEvent: leave_window beep.au
+	*FvwmEvent: property_change beep.au
 .sp
 .fi
+The window related event handlers are executed within a window
+context.  Previously PassId was used for this purpose, but now using
+PassId is not needed.
+
 Note: The enter_window event is generated when the pointer enters
 a window.  With the -passid option, that window's id is passed to
 fvwm.  An enter_window event is generated too when the pointer

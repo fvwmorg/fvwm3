@@ -1,10 +1,17 @@
+2003-04-16  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmEvent/FvwmEvent.c:
+	* FvwmEvent/FvwmEvent.1:
+	window related event handlers are now executed within a window id,
+	so PassId is not really needed; several fixes
+
 2003-04-15  Mikhael Goikhman  <migo@homemail.com>
 
-	* modules/FvwmGtk/FvwmGtk.1:
-	* modules/FvwmGtk/windowlist.c:
-	* modules/FvwmProxy/FvwmProxy.1:
-	* modules/FvwmProxy/FvwmProxy.c:
-	* modules/FvwmWindowMenu/FvwmWindowMenu.in:
+	* FvwmGtk/FvwmGtk.1:
+	* FvwmGtk/windowlist.c:
+	* FvwmProxy/FvwmProxy.1:
+	* FvwmProxy/FvwmProxy.c:
+	* FvwmWindowMenu/FvwmWindowMenu.in:
 	WindowListFunc is executed now within a window context,
 	so "WindowId $0" is not needed anymore in its definition
 	These 3 windolist modules support execution of WindowListFunc

@@ -4265,9 +4265,9 @@ without a key name.
 
 If you pass in a function via
 .IR "Function funcname" ,
-$0 is the window id:
+it is called within a window context of the selected window:
 .EX
-AddToFunc IFunc I WindowId $0 Iconify toggle
+AddToFunc IFunc I Iconify toggle
 WindowList Function IFunc, NoSticky, \\
   CurrentDesk, NoIcons
 .EE
@@ -9749,12 +9749,21 @@ WindowId 0x34567890 Raise
 WindowId root 1 WarpToWindow 50 50
 WindowId $0 (Silly_Popup) Delete
 .EE
-Mostly this is useful for functions used with the
+In the past this command was mostly useful for functions used with
+the
 .B WindowList
 command, or for selective processing of
 .B FvwmEvent
-calls (as in the last example).  Returns -1 if no window with the
-given id exists.
+calls (as in the last example), but currently these handler functions
+are called within a window context, so this command is not really
+needed in these cases.  Still it may be useful if, for example, the
+window id should be stored in the environment variable for a further
+proceeding.
+.EX
+Pick SetEnv BOOKMARKED_WINDOW $[w.id]
+WindowId $[BOOKMARKED_WINDOW] WarpToWindow
+.EE
+Returns -1 if no window with the given id exists.
 
 .TP
 .BI NoWindow " command"

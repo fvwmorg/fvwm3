@@ -1,3 +1,12 @@
+2003-04-16  Mikhael Goikhman  <migo@homemail.com>
+
+	* NEWS:
+	documented FvwmEvent behaviour of executing window related event
+	handlers within a window context
+
+	* fvwm/fvwm.1.in:
+	updated WindowId entry
+
 2003-04-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/schedule.c (deschedule):
