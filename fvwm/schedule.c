@@ -35,6 +35,10 @@ typedef struct
   Time time_to_execute;
   Window window;
   char *command;
+  struct
+  {
+    unsigned is_scheduled_for_destruction : 1;
+  } flags;
 } sq_object_type;
 
 static int last_schedule_id = 0;
@@ -76,7 +80,8 @@ static int deschedule_obj_func(void *object, void *args)
 {
 	sq_object_type *obj = object;
 
-	if (obj->id == *(int *)args)
+	if (obj->id == *(int *)args &&
+	    !obj->flags.is_scheduled_for_destruction)
 	{
 		if (obj->command != NULL)
 		{
@@ -125,6 +130,7 @@ static void schedule(
 	}
 	/* create the new object */
 	new_obj = (sq_object_type *)safemalloc(sizeof(sq_object_type));
+	memset(new_obj, 0, sizeof(sq_object_type));
 	new_obj->window = window;
 	new_obj->command = safestrdup(command);
 	new_obj->time_to_execute = time_to_execute;
@@ -164,6 +170,7 @@ static int execute_obj_func(void *object, void *args)
 			XEvent ev;
 			FvwmWindow *fw;
 
+			obj->flags.is_scheduled_for_destruction = 1;
 			memset(&efa, 0, sizeof(efa));
 			memset(&ev, 0, sizeof(ev));
 			efa.eventp = &ev;
@@ -238,6 +245,7 @@ int squeue_get_next_id(void)
 	return next_schedule_id;
 }
 
+
 int squeue_get_last_id(void)
 {
 	return last_schedule_id;
@@ -266,7 +274,14 @@ void CMD_Schedule(F_CMD_ARGS)
         {
                 ms = 0;
         }
+#if 0
+	/* eats up way too much cpu if schedule is used excessively */
         current_time = get_server_time();
+#else
+	/* with this version, scheduled commands may be executed later than
+	 * intended. */
+        current_time = lastTimestamp;
+#endif
         time = current_time + (Time)ms;
 	/* get the job group id to schedule */
 	n = GetIntegerArguments(action, &taction, &id, 1);
@@ -315,5 +330,4 @@ void CMD_Deschedule(F_CMD_ARGS)
 	deschedule(pid);
 
 	return;
-
 }

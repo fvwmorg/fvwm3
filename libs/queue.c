@@ -38,7 +38,7 @@ void fqueue_init(fqueue *fq)
 	return;
 }
 
-#if 0
+#if 1
 unsigned int fqueue_get_length(fqueue *fq)
 {
 	unsigned int len;

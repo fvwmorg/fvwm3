@@ -85,6 +85,7 @@ SetupICCCM2 (Bool replace_wm)
      be ready. Have to get a timestamp manually by provoking a
      PropertyNotify. */
   managing_since = get_server_time();
+fprintf(stderr,"%d\n", (int)lastTimestamp);
 
   XSetSelectionOwner (dpy, _XA_WM_SX, Scr.NoFocusWin, managing_since);
   if (XGetSelectionOwner (dpy, _XA_WM_SX) != Scr.NoFocusWin) {

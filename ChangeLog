@@ -1,3 +1,12 @@
+2002-01-31  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/builtins.c (CMD_WindowShade):
+	don't redraw the decorations if window was not shaded or unshaded
+
+	* fvwm/schedule.c (deschedule_obj_func):
+	(execute_obj_func):
+	fixed core dump when a scheduled command deschedules itself
+
 2002-01-31  olicha  <olivier.chapuis@free.fr>
 
 	* NEWS:

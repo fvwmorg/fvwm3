@@ -167,7 +167,14 @@ void CMD_WindowShade(F_CMD_ARGS)
     }
   }
   if (toggle == -1)
+  {
     toggle = (IS_SHADED(tmp_win)) ? 0 : 1;
+  }
+  else if (!IS_SHADED(tmp_win) == !toggle)
+  {
+    /* nothing to do */
+    return;
+  }
 
   /* prepare some convenience variables */
   frame_g = tmp_win->frame_g;
