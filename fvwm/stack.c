@@ -216,7 +216,7 @@ FvwmWindow *get_transientfor_fvwmwindow(FvwmWindow *t)
   if (!t || !IS_TRANSIENT(t) || t->transientfor == Scr.Root ||
       t->transientfor == None)
     return NULL;
-  for (s = Scr.FvwmRoot.next; s != &Scr.FvwmRoot; s = s->next)
+  for (s = Scr.FvwmRoot.next; s != NULL; s = s->next)
   {
     if (s->w == t->transientfor)
     {

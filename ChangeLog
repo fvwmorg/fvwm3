@@ -1,3 +1,8 @@
+2000-12-26  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/stack.c (get_transientfor_fvwmwindow): Treat root window list
+	as a null terminated list.
+
 2000-12-26  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* NEWS, configure.in:
