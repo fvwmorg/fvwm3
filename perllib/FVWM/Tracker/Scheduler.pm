@@ -25,17 +25,19 @@ sub observables ($) {
 }
 
 sub new ($$%) {
-   my $class = shift;
-   my $module = shift;
-   my %params = @_;
+	my $class = shift;
+	my $module = shift;
+	my %params = @_;
 
-   my $self = $class->FVWM::Tracker::new($module);
+	my $self = $class->FVWM::Tracker::new($module);
 
 	$self->{randomBaseNumber} = 8000000 + int(rand(900000));
 	$self->{sentStringPrefix} = "FVWM::Tracker::Scheduler alarm ";
-   $self->{moduleName} = $params{ModuleName} || $self->{module}->name;
+	$self->{moduleName} = $params{ModuleName} || $self->{module}->name;
+	$self->{useAlarm} = (exists $params{UseAlarm}?
+		$params{UseAlarm}: $module->isDummy)? 1: 0;
 
-   return $self;  
+	return $self;
 }
 
 sub start ($) {
@@ -85,10 +87,20 @@ sub sendSchedule ($$) {
 	my $self = shift;
 	my $scheduleId = shift;
 	my $sd = $self->{data}->{$scheduleId};
-	my $mSeconds = $sd->{seconds} * 1000;
 
-	$self->{module}->send("Schedule $mSeconds $sd->{fvwmId} SendToModule " .
-		"$self->{moduleName} $self->{sentStringPrefix}$scheduleId");
+	my $string = "$self->{sentStringPrefix}$scheduleId";
+	if ($self->{useAlarm}) {
+		$SIG{ALRM} = sub {
+			$self->{module}->invokeHandler(
+				new FVWM::Event(M_STRING, [ 0, 0, 0, $string ])
+			);
+		};
+		alarm($sd->{seconds});
+	} else {
+		my $mSeconds = $sd->{seconds} * 1000;
+		$self->{module}->send("Schedule $mSeconds $sd->{fvwmId} "
+			. "SendToModule $self->{moduleName} $string");
+	}
 	$sd->{sentTime} = time();
 }
 
@@ -172,9 +184,16 @@ This tracker defines the following observables:
 But it is suggested not to use the usual tracker B<observe>/B<unobserve> API,
 but to use the B<schedule>/B<deschedule>/B<reschedule> API instead.
 
+This tracker uses the I<fvwm> command B<Schedule> to get a notification.
+It is possible to use the perl I<alarm>. This is the default if the module
+is run in the dummy mode. To set it explicitly, pass I<UseAlarm> boolean
+value when the tracker is created. Note that alarm signals are not relable
+in some perl versions, on some systems and with some kind of applications,
+don't expect the alarm method to work at all.
+
 =head1 SYNOPSYS
  
-Using B<FVWM::Module> $module object (preferably):
+Using B<FVWM::Module> $module object:
 
     my $scheduler = $module->track("Scheduler");
     $scheduler->schedule(40,

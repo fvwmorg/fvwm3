@@ -147,6 +147,9 @@ int LoadColorset(char *line)
 		return -1;
 	}
 	line += chars;
+
+	/* migo: if you modify this sscanf or other colorset definitions,
+	 * please update perllib/FVWM/Tracker/Colorsets.pm too */
 	if (sscanf(line,
 		   "%lx %lx %lx %lx %lx %lx %lx %lx %lx "
 		   "%x %x %x %x %x %x %x %x %x %x %x",

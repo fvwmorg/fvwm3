@@ -180,11 +180,12 @@ sub requestWindowListEvents ($) {
 	$self->{module}->postponeSend("Send_WindowList");
 }
 
-sub requestConfigInfoEvents ($) {
+sub requestConfigInfoEvents ($;$) {
 	my $self = shift;
+	my $name = shift;
 	warn "requestConfigInfoEvents() called after start()" if $self->{active};
 	$self->addHandler(M_END_CONFIG_INFO, sub { $_[0]->terminate; });
-	$self->{module}->postponeSend("Send_ConfigInfo");
+	$self->{module}->postponeSend("Send_ConfigInfo" . ($name? " *$name": ""));
 }
 
 sub internalDie ($$) {

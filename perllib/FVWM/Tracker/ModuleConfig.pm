@@ -66,14 +66,15 @@ sub start ($) {
 		$self->calculateInternals($event->args);
 	});
 
-	$self->requestConfigInfoEvents;
+	$self->requestConfigInfoEvents($self->{moduleName});
 
 	my $result = $self->SUPER::start;
 
 	$self->deleteHandlers;
 
-	$self->addHandler(M_CONFIG_INFO, sub {
+	$self->addHandler(M_CONFIG_INFO | M_SENDCONFIG, sub {
 		my $event = $_[1];
+		return unless $event->type == M_CONFIG_INFO;
 		my $info = $self->calculateInternals($event->args);
 		return unless defined $info;
 		$self->notify("config line added", $info);
@@ -157,8 +158,19 @@ Using B<FVWM::Module> $module object:
 or:
 
     my $configTracker = $module->track(
-        "ModuleConfig", InitialConfig => { Font => 'fixed' } );
+        "ModuleConfig", DefaultConfig => { Font => 'fixed' } );
     my $font = $configTracker->data('Font');
+
+=head1 NEW METHODS
+
+=over 4
+
+=item B<init> I<params>
+
+Makes it possible to change the parameters of this tracker on the fly.
+Use with caution. See B<new> method for the description of the I<params> hash.
+
+=back
 
 =head1 OVERRIDDEN METHODS
 
@@ -168,7 +180,7 @@ or:
 
 It is possible to specify additional parameters that this tracker understands.
 
-    ConfigType     - "hash" (default) or "array"
+    ConfigType     - string "hash" (default) or "array"
     ModuleName     - module to query, the default is $module->name
     LineFilter     - "asis", "spacefree" (default), "lowerkeys", "upperkeys"
     DefaultConfig  - the config hash/array of config to initially use

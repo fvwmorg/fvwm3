@@ -19,9 +19,10 @@ use strict;
 
 use FVWM::Module::Toolkit qw(base Gtk);
 
-sub eventLoop ($) {
+sub eventLoop ($@) {
 	my $self = shift;
 
+	$self->eventLoopPrepared(@_);
 	Gtk::Gdk->input_add(
 		$self->{istream}->fileno, ['read'],
 		sub ($$$) {
@@ -30,12 +31,12 @@ sub eventLoop ($) {
 			unless ($self->processPacket($self->readPacket)) {
 				Gtk->main_quit;
 			}
+			$self->eventLoopPrepared(@_);
 			return 1;
 		}
 	);
 	Gtk->main;
-	$self->debug("exited Gtk event loop", 3);
-	$self->disconnect;
+	$self->eventLoopFinished(@_);
 }
 
 sub showError ($$;$) {

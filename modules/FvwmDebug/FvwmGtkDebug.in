@@ -38,21 +38,26 @@ my $defaultXMask = MAX_XMSG_MASK &
 	~(MX_ENTER_WINDOW | MX_LEAVE_WINDOW | MX_VISIBLE_ICON_NAME);
 $defaultXMask &= ~M_EXTENDED_MSG;
 
-my $mask = $defaultMask;
+my $mask  = $defaultMask;
 my $xmask = $defaultXMask;
-my $newMask = $mask;
-my $newXMask = $xmask;
+my $debug = 0;
 
 my $options = {
 	'm|mask=i'  => \$mask,
 	'x|xmask=i' => \$xmask,
+	'd|debug=i' => \$debug,
 };
 
 my $module = new FVWM::Module::Gtk(
 	Name => "FvwmGtkDebug",
 	EnableOptions => $options,
-#	Debug => 1,
+	Debug => \$debug,
 );
+
+$mask  = MAX_MSG_MASK  if $mask  == -1;
+$xmask = MAX_XMSG_MASK if $xmask == -1;
+my $newMask  = $mask;
+my $newXMask = $xmask;
 
 # ----------------------------------------------------------------------------
 # functions
@@ -425,7 +430,8 @@ sub updateCurrentEventWidgets (;$) {
 	my $currentEventNumChanged = $currentEventNum != $num;
 	$currentEventNum = $num;
 	my $eventNumAdj = new Gtk::Adjustment($num, 1, $maxNum, 1, 10, 0);
-	$eventNum->configure($eventNumAdj, 0.5, 0);
+	# this line does not work with Gtk 0.6123, no idea how to replace it
+	$eventNum->configure($eventNumAdj, 0.5, 0) if $Gtk::VERSION > 0.62;
 	$eventTotalNum->set_text($maxNum);
 
 	return unless $currentEventNumChanged
@@ -586,19 +592,20 @@ $module->addHandler(MAX_XMSG_MASK | M_EXTENDED_MSG, \&storeEvent);
 sub emulateSomeEvents () {
 	$module->invokeHandler(new FVWM::Event(M_NEW_DESK, [ $currentEventNum ]));
 	$module->invokeHandler(new FVWM::Event(M_MAP, [ 0x123, 0x456, 789 ]));
-	$module->invokeHandler(new FVWM::Event(M_NEW_PAGE, [ 0, 0, 2, 800, 600 ]));
-}
-
-sub emulateSomeEventForever () {
-	emulateSomeEvents() if $monitoring;
-	alarm(20);
+	$module->invokeHandler(new FVWM::Event(M_NEW_PAGE, [ 0, 0, 2, 800, 600, 3, 3 ]));
 }
 
 if ($module->isDummy) {
+	$module->showMessage("This module is executed in the dummy mode.\n\n"
+		. "Every 20 seconds fake events are generated.\n\n"
+		. "There are known alarm problems with perl-5.8.0 + Gtk-Perl.");
 	emulateSomeEvents();
 	emulateSomeEvents();
-	$SIG{ALRM} = \&emulateSomeEventForever;
-	alarm(20);
+	my $scheduler = $module->track('Scheduler');
+	$scheduler->schedule(20, sub {
+		emulateSomeEvents() if $monitoring;
+		$scheduler->reschedule;
+	});
 }
 
 $module->eventLoop;
@@ -610,7 +617,7 @@ __END__
 
 =head1 NAME
 
-FvwmGtkDebug - the graphical FVWM module debugger
+FvwmGtkDebug - graphical interactive FVWM module debugger
 
 =head1 SYNOPSIS
 
@@ -618,7 +625,7 @@ FvwmGtkDebug should be spawned by fvwm(1).
 
 To run this module, place this command somewhere in the configuration:
 
-  Module FvwmGtkDebug
+    Module FvwmGtkDebug
 
 To stop this module, just close the GUI window, the usual KillModule works too.
 
@@ -637,18 +644,28 @@ There are several command line switches:
 B<FvwmGtkDebug>
 [ B<--mask> I<mask> ]
 [ B<--xmask> I<mask> ]
+[ B<--debug> I<level> ]
 
 Long switches may be abbreviated to shorter switches.
 
-B<-m>|B<--mask> I<mask> - set the initial module mask,
-this mask may be changed interactivelly at any time
+B<-m>|B<--mask> I<mask> - set the initial module mask, 31 bit integer.
+This mask may be changed interactivelly at any time.
+By default almost all events are monitored (except for some flood events
+like I<CONFIGURE_WINDOW> or I<FOCUS_WINDOW>. The special value of I<-1>
+sets the maximal mask.
 
-B<-x>|B<--xmask> I<mask> - set the initial module extended mask,
-this mask may be changed interactivelly at any time
+B<-x>|B<--xmask> I<mask> - set the initial module extended mask, 31 bit integer.
+This mask may be changed interactivelly at any time.
+By default almost all events are monitored (except for some flood events
+like I<ENTER_WINDOW> or I<LEAVE_WINDOW>. The special value of I<-1>
+sets the maximal extended mask.
+
+B<-d>|B<--debug> I<level> - use the Perl library debugging mechanism.
+The useful I<level>s are 2 to 4.
 
 =head1 SEE ALSO
 
-See L<FvwmDebug>.
+See also L<FvwmDebug>.
 
 =head1 AUTHOR
 

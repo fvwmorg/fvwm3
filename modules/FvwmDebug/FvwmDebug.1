@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "FVWMDEBUG 1"
-.TH FVWMDEBUG 1 "2003-06-06" "perl v5.8.0" "FVWM Module"
+.TH FVWMDEBUG 1 "2003-06-09" "perl v5.8.0" "FVWM Module"
 .SH "NAME"
 FvwmDebug \- the FVWM module debugger
 .SH "SYNOPSIS"
@@ -158,8 +158,8 @@ or similar window.
 There are several command line switches:
 .PP
 \&\fBFvwmDebug\fR
-[ \fB\-\-noargs\fR ]
-[ \fB\-\-nonames\fR ]
+[ \fB\-\-args\fR|\fB\-\-noargs\fR ]
+[ \fB\-\-events\fR|\fB\-\-noevents\fR ]
 [ \fB\-\-log\fR \fIfile\fR ]
 [ \fB\-\-xconsole\fR ]
 [ \fB\-\-mask\fR \fImask\fR ]
@@ -171,41 +171,55 @@ There are several command line switches:
 .PP
 Long switches may be abbreviated to shorter switches.
 .PP
-\&\fB\-\-noargs\fR \- do not print all event arguments, just event name.
+\&\fB\-\-noargs\fR \- do not print all arguments of the event, just its name.
 \&\fB\-\-args\fR is the default.
 .PP
 \&\fB\-\-noevents\fR \- do not print even event names, implies \fB\-\-noargs\fR.
-May be useful if \fB\-\-track\fR or/and \fB\-\-debug\fR is used.
+It is similar in effect to setting both \fB\-\-mask\fR and \fB\-\-xmask\fR to 0,
+but the events are actually received by the module, they are just not printed.
+.PP
+This option may be useful if \fB\-\-track\fR or/and \fB\-\-debug\fR is used.
+.PP
+The default is \fB\-\-events\fR normally, and \fB\-\-noevents\fR if one or more
+\&\fB\-\-track\fR options specified.
 .PP
 \&\fB\-l\fR|\fB\-\-log\fR \fIfile\fR \- specify the log file name instead of the standard
 error stream. If the log file can't be open for writting, the default
-standard error stream is used. The \fIfile\fR may start with a pipe '|', this
-is similar to the usual meaning of a pipe, the output is piped to the
-specified command. See also \fB\-\-xconsole\fR option.
+standard error stream is used.
+.PP
+The \fIfile\fR may start with a pipe '|', this is similar to the usual meaning
+of a pipe, the output is piped to the specified command. See also
+\&\fB\-\-xconsole\fR option.
 .PP
 \&\fB\-xc\fR|\fB\-\-xconsole\fR \- this is a shortcut for:
 .PP
 .Vb 1
-\&    --log '|xconsole -file /dev/stdin -geometry 600x400 -notify'
+\&    FvwmDebug --log '|xconsole -file /dev/stdin -geometry 600x400 -notify'
 .Ve
 .PP
 That shows the module output in the \fIxconsole\fR window rather than
 the standard error stream.
 .PP
-\&\fB\-m\fR|\fB\-\-mask\fR \fImask\fR \- set the module mask
+\&\fB\-m\fR|\fB\-\-mask\fR \fImask\fR \- set the module mask, 31 bit integer.
+By default almost all events are monitored (except for some flood events
+like \fI\s-1CONFIGURE_WINDOW\s0\fR or \fI\s-1FOCUS_WINDOW\s0\fR. The special value of \fI\-1\fR
+sets the maximal mask.
 .PP
-\&\fB\-x\fR|\fB\-\-xmask\fR \fImask\fR \- set the module extended mask
+\&\fB\-x\fR|\fB\-\-xmask\fR \fImask\fR \- set the module extended mask, 31 bit integer.
+By default almost all events are monitored (except for some flood events
+like \fI\s-1ENTER_WINDOW\s0\fR or \fI\s-1LEAVE_WINDOW\s0\fR. The special value of \fI\-1\fR
+sets the maximal extended mask.
 .PP
 \&\fB\-d\fR|\fB\-\-debug\fR \fIlevel\fR \- use the Perl library debugging mechanism.
 The useful \fIlevel\fRs are 2 to 4.
 .PP
 \&\fB\-t\fR|\fB\-\-track\fR \fItracker-name\fR \- create the given Perl library tracker and
 observe its main observable. This option may be specified multiple times.
-If you use this option you may try \fB\-\-noevents\fR.
-You may optionally try \fB\-\-debug\fR too, for example:
+This options implies \fB\-\-noevents\fR unless explicitely overwritten.
+You may optionally try \fB\-\-debug\fR, for example:
 .PP
 .Vb 1
-\&    -xc --track PageInfo --track GlobalConfig --noevents --debug 3
+\&    FvwmDebug -xc --track PageInfo --track GlobalConfig --debug 3
 .Ve
 .PP
 Run \*(L"fvwm\-perllib man\*(R" to get the names of all existing trackers in your

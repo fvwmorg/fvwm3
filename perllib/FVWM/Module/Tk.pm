@@ -40,6 +40,7 @@ sub new ($$@) {
 sub eventLoop ($) {
 	my $self = shift;
 
+	$self->eventLoopPrepared(@_);
 	my $top = $self->{topLevel};
 	$top->fileevent($self->{istream},
 		readable => sub {
@@ -47,10 +48,11 @@ sub eventLoop ($) {
 				$self->disconnect;
 				$top->destroy;
 			}
+			$self->eventLoopPrepared(@_);
 		}
 	);
 	MainLoop;
-	$self->debug("exited Tk event loop", 3);
+	$self->eventLoopFinished(@_);
 }
 
 sub showError ($$;$) {

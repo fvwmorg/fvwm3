@@ -1,3 +1,23 @@
+2003-06-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* FVWM/Module.pm.in:
+	* FVWM/Module/Gtk.pm:
+	* FVWM/Module/Gtk2.pm:
+	* FVWM/Module/Tk.pm:
+	improved eventLoop regarding dynamical tracker creation/stopping
+
+	* FVWM/Tracker.pm:
+	optimize Send_ConfigInfo to limit to the current module if requested
+
+	* FVWM/Tracker/Colorsets.pm:
+	implemented colorset config parsing, now Colorsets are usable
+
+	* FVWM/Tracker/ModuleConfig.pm:
+	actually allow dynamical config notification
+
+	* FVWM/Tracker/Scheduler.pm:
+	optionally support alarm-based notification too
+
 2003-06-06  Mikhael Goikhman  <migo@homemail.com>
 
 	* FVWM/create-commands:

@@ -1,3 +1,8 @@
+2003-06-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* libs/Colorset.c (LoadColorset):
+	added a note to update Colorsets.pm too when the format is changed
+
 2003-06-09  Mikhael Goikhman  <migo@homemail.com>
 
 	* WindowStyle_proposal.txt:

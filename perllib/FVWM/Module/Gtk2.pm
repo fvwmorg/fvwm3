@@ -22,6 +22,7 @@ use FVWM::Module::Toolkit qw(base Gtk2);
 sub eventLoop ($) {
 	my $self = shift;
 
+	$self->eventLoopPrepared(@_);
 	Gtk2::Gdk->input_add(
 		$self->{istream}->fileno, ['read'],
 		sub ($$$) {
@@ -30,12 +31,12 @@ sub eventLoop ($) {
 			unless ($self->processPacket($self->readPacket)) {
 				Gtk2->main_quit;
 			}
+			$self->eventLoopPrepared(@_);
 			return 1;
 		}
 	);
 	Gtk2->main;
-	$self->debug("exited Gtk2 event loop", 3);
-	$self->disconnect;
+	$self->eventLoopFinished(@_);
 }
 
 sub showError ($$;$) {

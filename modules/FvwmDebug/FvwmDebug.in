@@ -29,14 +29,20 @@ BEGIN {
 use lib "@FVWM_PERLLIBDIR@";
 use FVWM::Module;
 
+my $defaultMask = MAX_MSG_MASK &
+	~(M_FOCUS_CHANGE | M_CONFIGURE_WINDOW | M_VISIBLE_NAME | M_ICON_NAME);
+my $defaultXMask = MAX_XMSG_MASK &
+	~(MX_ENTER_WINDOW | MX_LEAVE_WINDOW | MX_VISIBLE_ICON_NAME);
+$defaultXMask &= ~M_EXTENDED_MSG;
+
+my $mask  = $defaultMask;
+my $xmask = $defaultXMask;
 my $debug = 0;
 my $showArgs = 1;
-my $showEvents = 1;
+my $showEvents = undef;
 my $logFile = undef;
 my $xconsole = 0;
 my $logStream = \*STDERR;
-my $mask = MAX_MSG_MASK;
-my $xmask = MAX_XMSG_MASK;
 my $sendConfigInfo = 0;
 my $sendWindowList = 0;
 my @trackerNames = ();
@@ -56,17 +62,22 @@ my $options = {
 };
 
 my $module = new FVWM::Module(
-	Name => "FvwmDebug",
-	EnableOptions => $options,
+	Name  => "FvwmDebug",
 	Debug => \$debug,
+	EnableOptions => $options,
 );
+
+$showEvents = (@trackerNames? 0: 1) unless defined $showEvents;
+$mask  = MAX_MSG_MASK  if $mask  == -1;
+$xmask = MAX_XMSG_MASK if $xmask == -1;
 
 $module->debug("argv = '" . join("', '", @moduleArgs) . "'\n");
 $module->mask($mask);
 $module->xmask($xmask);
 
-$module->addHandler($mask, \&showEvent);
-$module->addHandler($xmask | M_EXTENDED_MSG, \&showEvent);
+#$module->addHandler($mask, \&showEvent);
+#$module->addHandler($xmask | M_EXTENDED_MSG, \&showEvent);
+$module->addHandler(MAX_MSG_MASK, \&showEvent);
 
 $module->addHandler(ON_EXIT, sub { system("killall xconsole"); }) if $xconsole;
 $logFile = '|xconsole -file /dev/stdin -geometry 600x400 -notify' if $xconsole;
@@ -171,8 +182,8 @@ or similar window.
 There are several command line switches:
 
 B<FvwmDebug>
-[ B<--noargs> ]
-[ B<--nonames> ]
+[ B<--args>|B<--noargs> ]
+[ B<--events>|B<--noevents> ]
 [ B<--log> I<file> ]
 [ B<--xconsole> ]
 [ B<--mask> I<mask> ]
@@ -184,38 +195,52 @@ B<FvwmDebug>
 
 Long switches may be abbreviated to shorter switches.
 
-B<--noargs> - do not print all event arguments, just event name.
+B<--noargs> - do not print all arguments of the event, just its name.
 B<--args> is the default.
 
 B<--noevents> - do not print even event names, implies B<--noargs>.
-May be useful if B<--track> or/and B<--debug> is used.
+It is similar in effect to setting both B<--mask> and B<--xmask> to 0,
+but the events are actually received by the module, they are just not printed.
+
+This option may be useful if B<--track> or/and B<--debug> is used.
+
+The default is B<--events> normally, and B<--noevents> if one or more
+B<--track> options specified.
 
 B<-l>|B<--log> I<file> - specify the log file name instead of the standard
 error stream. If the log file can't be open for writting, the default
-standard error stream is used. The I<file> may start with a pipe '|', this
-is similar to the usual meaning of a pipe, the output is piped to the
-specified command. See also B<--xconsole> option.
+standard error stream is used.
+
+The I<file> may start with a pipe '|', this is similar to the usual meaning
+of a pipe, the output is piped to the specified command. See also
+B<--xconsole> option.
 
 B<-xc>|B<--xconsole> - this is a shortcut for:
 
-    --log '|xconsole -file /dev/stdin -geometry 600x400 -notify'
+    FvwmDebug --log '|xconsole -file /dev/stdin -geometry 600x400 -notify'
 
 That shows the module output in the I<xconsole> window rather than
 the standard error stream.
 
-B<-m>|B<--mask> I<mask> - set the module mask
+B<-m>|B<--mask> I<mask> - set the module mask, 31 bit integer.
+By default almost all events are monitored (except for some flood events
+like I<CONFIGURE_WINDOW> or I<FOCUS_WINDOW>. The special value of I<-1>
+sets the maximal mask.
 
-B<-x>|B<--xmask> I<mask> - set the module extended mask
+B<-x>|B<--xmask> I<mask> - set the module extended mask, 31 bit integer.
+By default almost all events are monitored (except for some flood events
+like I<ENTER_WINDOW> or I<LEAVE_WINDOW>. The special value of I<-1>
+sets the maximal extended mask.
 
 B<-d>|B<--debug> I<level> - use the Perl library debugging mechanism.
 The useful I<level>s are 2 to 4.
 
 B<-t>|B<--track> I<tracker-name> - create the given Perl library tracker and
 observe its main observable. This option may be specified multiple times.
-If you use this option you may try B<--noevents>.
-You may optionally try B<--debug> too, for example:
+This options implies B<--noevents> unless explicitely overwritten.
+You may optionally try B<--debug>, for example:
 
-    -xc --track PageInfo --track GlobalConfig --noevents --debug 3
+    FvwmDebug -xc --track PageInfo --track GlobalConfig --debug 3
 
 Run "fvwm-perllib man" to get the names of all existing trackers in your
 installed Perl library.

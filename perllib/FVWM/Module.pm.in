@@ -73,8 +73,9 @@ sub debug ($$;$) {
 	my $msg = shift;
 	my $level = shift;
 	$level = 1 unless defined $level;
-	$level = $ENV{FVWM_MODULE_DEBUG} if exists $ENV{FVWM_MODULE_DEBUG};
-	return if $self->{debug} < $level;
+	my $debugLevel = $self->{debug};
+	$debugLevel = $ENV{FVWM_MODULE_DEBUG} if exists $ENV{FVWM_MODULE_DEBUG};
+	return if $debugLevel < $level;
 	$msg =~ s/\n$//s;
 	$self->showDebug($msg);
 }
@@ -99,7 +100,7 @@ sub new ($@) {
 
 	# initialize module from argv
 	my ($outFd, $inFd, $rcFile, $winId, $context);
-	if (@ARGV >= 5) {
+	if (@ARGV >= 5 && $ARGV[0] =~ /^\d+$/ && $ARGV[1] =~ /^\d+$/) {
 		$self->{isDummy} = 0;
 		($outFd, $inFd, $rcFile, $winId, $context) = splice(@ARGV, 0, 5);
 	} else {
@@ -147,6 +148,8 @@ sub new ($@) {
 	$self->{handlers} = {};
 	$self->{shouldSendUnlock} = 0;
 	$self->{shouldSendReady} = 1;
+	$self->{addMask} = 0;
+	$self->{addXMask} = 0;
 
 	$self->{heldCommandArgs} = [];
 	$self->{usedTrackerClasses} = {};
@@ -205,7 +208,7 @@ sub mask ($;$) {
 		$self->internalDie("mask() can't get extended mask, use xmask()")
 			if $self->isEventExtended($mask);
 		my $oldMask = $self->{mask};
-		$self->send("SET_MASK $mask")
+		$self->sendMask($mask, $self->{addMask})
 			unless defined $oldMask && $oldMask == $mask;
 		$self->{mask} = $mask;
 		return $oldMask;
@@ -219,7 +222,7 @@ sub xmask ($;$) {
 	if (defined $mask) {
 		$mask &= ~M_EXTENDED_MSG;
 		my $oldMask = $self->{xmask};
-		$self->send("SET_MASK " . ($mask | M_EXTENDED_MSG))
+		$self->sendMask($mask | M_EXTENDED_MSG, $self->{addXMask})
 			unless defined $oldMask && $oldMask == $mask;
 		$self->{xmask} = $mask;
 		return $oldMask;
@@ -355,6 +358,14 @@ sub sendUnlock ($) {
 	$self->{shouldSendUnlock} = 0;
 }
 
+sub sendMask ($$;$) {
+	my $self = shift;
+	my $mask = shift;
+	my $addMask = shift || 0;
+
+	$self->send("SET_MASK " . ($mask | $addMask));
+}
+
 sub terminate ($;$) {
 	my $self = shift;
 	my $continue = shift || 0;
@@ -462,39 +473,81 @@ sub processPacket ($;$$) {
 	return $continue;
 }
 
-sub eventLoop ($;$) {
+sub eventLoopPrepared ($@) {
 	my $self = shift;
 	my $tracking = shift()? 1: 0;
 
-	$self->sendReady unless $tracking;
-
+	if (!$self->{isInEventLoop}) {
+		$self->sendReady unless $tracking;
+		$self->debug("entered event loop", 3 + $tracking);
+		$self->{isInEventLoop} = 1;
+	}
+	
 	# update module masks to handle trackers if needed
 	my $addMask  = 0;
 	my $addXMask = 0;
 	foreach (values %{$self->{trackers}}) {
-		my ($mask0, $xmask0) = $_->masks;
-		$addMask  |= $mask0;
-		$addXMask |= $xmask0;
+		my ($mask, $xmask) = $_->masks;
+		$addMask  |= $mask;
+		$addXMask |= $xmask;
 	}
-	my $oldMask  = $self->mask ($self->mask  | $addMask)  if $addMask;
-	my $oldXMask = $self->xmask($self->xmask | $addXMask) if $addXMask;
+	$self->sendMask($self->mask, $self->{addMask} = $addMask)
+		if $addMask != $self->{addMask};
+	$self->sendMask($self->xmask | M_EXTENDED_MSG, $self->{addXMask} = $addXMask)
+		if $addXMask != $self->{addXMask};
 
-	$self->debug("entered event loop", 3 + $tracking);
+	# execute postponed commands if any
+	$self->send(@{shift @{$self->{heldCommandArgs}}})
+		while @{$self->{heldCommandArgs}};
+}
+
+sub eventLoopFinished ($@) {
+	my $self = shift;
+	my $tracking = shift()? 1: 0;
+
+	$self->debug("exited event loop", 3 + $tracking);
+	$self->disconnect unless $tracking;
+
+	$self->{isInEventLoop} = 0;
+}
+
+sub eventLoop ($@) {
+	my $self = shift;
+#	my $tracking = shift()? 1: 0;
+
+#	$self->sendReady unless $tracking;
+
+#	# update module masks to handle trackers if needed
+#	my $addMask  = 0;
+#	my $addXMask = 0;
+#	foreach (values %{$self->{trackers}}) {
+#		my ($mask0, $xmask0) = $_->masks;
+#		$addMask  |= $mask0;
+#		$addXMask |= $xmask0;
+#	}
+#	my $oldMask  = $self->mask ($self->mask  | $addMask)  if $addMask;
+#	my $oldXMask = $self->xmask($self->xmask | $addXMask) if $addXMask;
+
+#	$self->debug("entered event loop", 3 + $tracking);
+
 	while (1) {
-		# first execute postponed commands if any
-		$self->send(@{shift @{$self->{heldCommandArgs}}})
-			while @{$self->{heldCommandArgs}};
+		$self->eventLoopPrepared(@_);
+#		# first execute postponed commands if any
+#		$self->send(@{shift @{$self->{heldCommandArgs}}})
+#			while @{$self->{heldCommandArgs}};
 
 		# catch exceptions during read, for example from alarm() handler,
 		# but don't catch errors (or die) in event handlers
 		$self->processPacket(eval { $self->readPacket }) || last;
 	}
-	$self->debug("exited event loop", 3 + $tracking);
-	$self->disconnect unless $tracking;
 
-	# restore module masks if needed
-	$self->mask ($oldMask)  if $tracking && $addMask;
-	$self->xmask($oldXMask) if $tracking && $addXMask;
+	$self->eventLoopFinished(@_);
+#	$self->debug("exited event loop", 3 + $tracking);
+#	$self->disconnect unless $tracking;
+
+#	# restore module masks if needed
+#	$self->mask ($oldMask)  if $tracking && $addMask;
+#	$self->xmask($oldXMask) if $tracking && $addXMask;
 }
 
 sub track ($$;$@) {
@@ -962,9 +1015,17 @@ B<sendUnlock> if needed.
 You should not really worry about this method, it is called automatically
 from the event loop.
 
-=item B<readConfigInfo>
+=item B<eventLoopPrepared>
 
-Not implemented yet.
+Called from B<eventLoop> every time before reading the packet for new data.
+Subclasses should pass this method the same arguments that B<eventLoop>
+received for a possible future use.
+
+=item B<eventLoopFinished>
+
+Called from B<eventLoop> just before the return.
+Subclasses should pass this method the same arguments that B<eventLoop>
+received for a possible future use.
 
 =item B<isEventExtended> I<type>
 

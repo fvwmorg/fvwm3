@@ -17,6 +17,20 @@ package FVWM::Tracker::Colorsets;
 use strict;
 
 use FVWM::Tracker qw(base);
+use General::Parse;
+
+use constant CS_FIELDS => qw(
+	fg bg hilite shadow fgsh tint icon_tint
+	pixmap shape_mask fg_alpha_percent width height
+	pixmap_type shape_width shape_height shape_type
+	tint_percent do_dither_icon icon_tint_percent icon_alpha_percent
+);
+
+use constant PIXMAP_TYPES => qw(
+	PIXMAP_TILED PIXMAP_STRETCH_X PIXMAP_STRETCH_Y
+	PIXMAP_STRETCH PIXMAP_STRETCH_ASPECT
+	PIXMAP_ROOT_PIXMAP_PURE PIXMAP_ROOT_PIXMAP_TRAN
+);
 
 sub observables ($) {
 	return [
@@ -41,9 +55,9 @@ sub start ($) {
 
 	$self->addHandler(M_CONFIG_INFO, sub {
 		my $event = $_[1];
-		my $num = $self->calculateInternals($event->args);
+		my ($num, $oldHash) = $self->calculateInternals($event->args);
 		return unless defined $num;
-		$self->notify("colorset changed", $num);
+		$self->notify("colorset changed", $num, $oldHash);
 	});
 
 	return $result;
@@ -57,13 +71,23 @@ sub calculateInternals ($$) {
 	my $text = $args->{text};
 	$self->internalDie("No 'text' arg in M_CONFIG_INFO")
 		unless defined $text;
-	return undef unless $text =~ /^colorset (\d+) (.*)$/i;
+	return undef if $text !~ /^colorset ([[:xdigit:]]+) ([[:xdigit:] ]+)$/i;
 
-	my $num = $1;
-	my $rest = $2;
-	$self->{data}->{$num} = $rest;
+	my $num = hex($1);
+	my @numbers = getTokens($2);
+	return undef if @numbers != 20;
 
-	return $num;
+	# memory used for keys may be optimized later
+	my $newHash = {};
+	my $i = 0;
+	foreach (CS_FIELDS) {
+		$newHash->{$_} = hex($numbers[$i++]);
+	}
+
+	my $oldHash = $self->{data}->{$num};
+	$self->{data}->{$num} = $newHash;
+
+	return wantarray? ($num, $oldHash): $num;
 }
 
 sub data ($;$) { 
@@ -83,8 +107,17 @@ sub dump ($;$) {
 
 	my $string = "";
 	foreach (@nums) {
-		my $csData = $data->{$_};
-		$string .= "Colorset $_ $csData\n";
+		my $csHash = $data->{$_};
+		$string .= "Colorset $_";
+		my $i = 0;
+		foreach (CS_FIELDS) {
+			my $value = $csHash->{$_};
+			$i++;
+			next if $i > 5 && ($value == 0 || /alpha_percent/ && $value == 100);
+			$value = ("#" . sprintf("%06lx", $value)) if $i <= 7;
+			$string .= " $_=$value";
+		}
+		$string .= "\n";
 	}
 	return $string;
 }
@@ -98,11 +131,12 @@ __END__
 This is a subclass of B<FVWM::Tracker> that enables to read the colorset
 definitions.
 
-This tracker defines the following observables:
+This tracker defines the following observable:
 
     "colorset changed"
 
-NOT USABLE YET.
+that is notified using 2 additional parameters: colorset number and
+old colorset data hash ref.
 
 =head1 SYNOPSYS
  
@@ -113,6 +147,17 @@ Using B<FVWM::Module> $module object:
     my $cs2_fg = $csHash->{2}->{fg} || 'black';
     my $cs5_bg = $csTracker->data(5)->{bg} || 'gray';
 
+    $csTracker->observe(sub {
+        my ($module, $tracker, $data, $num, $oldHash) = @_;
+        my $newHash = $data->{$num};
+
+        if ($oldHash->{pixmap} == 0 && $newHash->{pixmap}) {
+            my $pixmapType = $newHash->{pixmap_type};
+            my $pixmapName = ($tracker->PIXMAP_TYPES)[$pixmapType];
+            $module->debug("Colorset: $num, Pixmap type: $pixmapName");
+        }
+    };
+
 =head1 OVERRIDDEN METHODS
 
 =over 4
@@ -120,7 +165,8 @@ Using B<FVWM::Module> $module object:
 =item B<data> [I<colorset-num>]
 
 Returns either array ref of colorset hash refs, or one hash ref if
-I<colorset-num> is given. The hash keys are not finalized yet.
+I<colorset-num> is given. The hash keys are listed in CS_FIELDS, the
+constant of this class.
 
 =item B<dump> [I<colorset-num>]
 

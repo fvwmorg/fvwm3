@@ -1,3 +1,12 @@
+2003-06-10  Mikhael Goikhman  <migo@homemail.com>
+
+	* FvwmDebug/FvwmDebug.in:
+	* FvwmDebug/FvwmDebug.1:
+	* FvwmDebug/FvwmGtkDebug.in:
+	* FvwmDebug/FvwmGtkDebug.1:
+	make 2 modules behave consistently regarding --mask, --debug;
+	several more improvements
+
 2003-06-06  olicha  <olivier.chapuis@free.fr>
 
 	* FvwmBanner/FvwmBanner.c (main):
