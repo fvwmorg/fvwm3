@@ -315,65 +315,17 @@ void SendConfigureNotify(
  *      HandleButtonPress - ButtonPress event handler
  *
  ***********************************************************************/
-void HandleButtonPress(void)
+static Bool __handle_focus_raise_click(
+	FvwmWindow *Fw, Bool *ret_do_pass_click, Bool *ret_do_regrab_buttons,
+ 	Bool *ret_do_wait_for_button_release)
 {
 	int context;
-	int local_context;
-	char *action;
-	FvwmWindow *button_window;
-	Window OldPressedW;
-	Window eventw;
-	Bool do_regrab_buttons = False;
-	Bool do_pass_click = True;
-	Bool do_wait_for_button_release = False;
-	Bool has_binding = False;
 	Bool is_focused;
 
-	DBUG("HandleButtonPress","Routine Entered");
-
-	GrabEm(CRS_NONE, GRAB_PASSIVE);
-	if (!Fw &&
-	    Event.xbutton.window != Scr.PanFrameTop.win &&
-	    Event.xbutton.window != Scr.PanFrameBottom.win &&
-	    Event.xbutton.window != Scr.PanFrameLeft.win &&
-	    Event.xbutton.window != Scr.PanFrameRight.win &&
-	    Event.xbutton.window != Scr.Root)
-	{
-		/* event in unmanaged window or subwindow of a client */
-		XAllowEvents(dpy,ReplayPointer,CurrentTime);
-		XFlush(dpy);
-		UngrabEm(GRAB_PASSIVE);
-		return;
-	}
-	if (Event.xbutton.subwindow != None &&
-	    (Fw == None || Event.xany.window != FW_W(Fw)))
-	{
-		eventw = Event.xbutton.subwindow;
-	}
-	else
-	{
-		eventw = Event.xany.window;
-	}
-	if (is_frame_hide_window(eventw) ||
-	    (Fw != NULL && eventw == FW_W_FRAME(Fw)))
-	{
-		/* ignore it */
-		XAllowEvents(dpy,ReplayPointer,CurrentTime);
-		XFlush(dpy);
-		UngrabEm(GRAB_PASSIVE);
-		return;
-	}
-	if (!XGetGeometry(dpy, eventw, &JunkRoot, &JunkX, &JunkY,
-			  &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
-	{
-		/* The window has already died. Just pass the event to the
-		 * application. */
-		XAllowEvents(dpy,ReplayPointer,CurrentTime);
-		XFlush(dpy);
-		UngrabEm(GRAB_PASSIVE);
-		return;
-	}
 	is_focused = focus_is_focused(Fw);
+	*ret_do_pass_click = True;
+	*ret_do_regrab_buttons = False;
+	*ret_do_wait_for_button_release = False;
 	if (Fw && !fpol_query_allow_user_focus(&FW_FOCUS_POLICY(Fw)))
 	{
 		/* It might seem odd to try to focus a window that never is
@@ -411,7 +363,7 @@ void HandleButtonPress(void)
 			 * modify the stacking order will reset this flag. */
 			SET_SCHEDULED_FOR_RAISE(Fw, 1);
 		}
-		do_regrab_buttons = True;
+		*ret_do_regrab_buttons = True;
 
 		if (!IS_ICONIFIED(Fw) && context == C_WINDOW)
 		{
@@ -434,8 +386,8 @@ void HandleButtonPress(void)
 			else /* don't pass click to just focused window */
 			{
 				XAllowEvents(dpy,AsyncPointer,CurrentTime);
-				do_wait_for_button_release = True;
-				do_pass_click = False;
+				*ret_do_wait_for_button_release = True;
+				*ret_do_pass_click = False;
 			}
 		}
 		if (!IS_ICONIFIED(Fw))
@@ -471,7 +423,7 @@ void HandleButtonPress(void)
 				XAllowEvents(dpy,ReplayPointer,CurrentTime);
 				XFlush(dpy);
 				UngrabEm(GRAB_PASSIVE);
-				return;
+				return True;
 			}
 			else
 			{
@@ -524,7 +476,7 @@ void HandleButtonPress(void)
 					Scr.Ungrabbed = tmp;
 					XFlush(dpy);
 					UngrabEm(GRAB_PASSIVE);
-					return;
+					return True;
 				}
 				else
 				{
@@ -535,6 +487,73 @@ void HandleButtonPress(void)
 		}
 		focus_grab_buttons(Fw, True);
 		Scr.Ungrabbed = tmp;
+	}
+
+	return False;
+}
+
+void HandleButtonPress(void)
+{
+	int context;
+	int local_context;
+	char *action;
+	FvwmWindow *button_window;
+	Window OldPressedW;
+	Window eventw;
+	Bool do_regrab_buttons;
+	Bool do_pass_click;
+	Bool do_wait_for_button_release;
+	Bool has_binding = False;
+
+	DBUG("HandleButtonPress","Routine Entered");
+
+	GrabEm(CRS_NONE, GRAB_PASSIVE);
+	if (!Fw &&
+	    Event.xbutton.window != Scr.PanFrameTop.win &&
+	    Event.xbutton.window != Scr.PanFrameBottom.win &&
+	    Event.xbutton.window != Scr.PanFrameLeft.win &&
+	    Event.xbutton.window != Scr.PanFrameRight.win &&
+	    Event.xbutton.window != Scr.Root)
+	{
+		/* event in unmanaged window or subwindow of a client */
+		XAllowEvents(dpy,ReplayPointer,CurrentTime);
+		XFlush(dpy);
+		UngrabEm(GRAB_PASSIVE);
+		return;
+	}
+	if (Event.xbutton.subwindow != None &&
+	    (Fw == None || Event.xany.window != FW_W(Fw)))
+	{
+		eventw = Event.xbutton.subwindow;
+	}
+	else
+	{
+		eventw = Event.xany.window;
+	}
+	if (is_frame_hide_window(eventw) ||
+	    (Fw != NULL && eventw == FW_W_FRAME(Fw)))
+	{
+		/* ignore it */
+		XAllowEvents(dpy,ReplayPointer,CurrentTime);
+		XFlush(dpy);
+		UngrabEm(GRAB_PASSIVE);
+		return;
+	}
+	if (!XGetGeometry(dpy, eventw, &JunkRoot, &JunkX, &JunkY,
+			  &JunkWidth, &JunkHeight, &JunkBW, &JunkDepth))
+	{
+		/* The window has already died. Just pass the event to the
+		 * application. */
+		XAllowEvents(dpy,ReplayPointer,CurrentTime);
+		XFlush(dpy);
+		UngrabEm(GRAB_PASSIVE);
+		return;
+	}
+	if (__handle_focus_raise_click(
+		    Fw, &do_pass_click, &do_regrab_buttons,
+		    &do_wait_for_button_release) == True)
+	{
+		return;
 	}
 
 	context = GetContext(Fw, &Event, &PressedW);

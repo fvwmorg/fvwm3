@@ -724,7 +724,106 @@ static void __activate_window_by_command(
 	return;
 }
 
+static void __focus_grab_one_button(
+	FvwmWindow *fw, int button, int grab_buttons)
+{
+	register Bool do_grab;
+	register unsigned int mods;
+	register unsigned int max = GetUnusedModifiers();
+	register unsigned int living_modifiers = ~max;
+
+#if 0
+	/* RBW - Set flag for grab or ungrab according to how we were called. */
+	if (!is_focused)
+	{
+		do_grab = !!(grab_buttons & (1 << button));
+	}
+	else
+	{
+		do_grab = !(grab_buttons & (1 << button));
+	}
+#else
+	if ((grab_buttons & (1 << button)) ==
+	    (fw->grabbed_buttons & (1 << button)))
+	{
+		return;
+	}
+	do_grab = !!(grab_buttons & (1 << button));
+#endif
+
+	/* handle all bindings for the dead modifiers */
+	for (mods = 0; mods <= max; mods++)
+	{
+		/* Since mods starts with 1 we don't need to test if
+		 * mods contains a dead modifier. Otherwise both, dead
+		 * and living modifiers would be zero ==> mods == 0 */
+		if (mods & living_modifiers)
+		{
+			continue;
+		}
+		if (do_grab)
+		{
+			XGrabButton(
+				dpy, button + 1, mods, FW_W_PARENT(fw), True,
+				ButtonPressMask, GrabModeSync, GrabModeAsync,
+				None, None);
+			/* Set window flags accordingly as we grab or ungrab. */
+			fw->grabbed_buttons |= (1 << button);
+		}
+		else
+		{
+			XUngrabButton(dpy, button + 1, mods, FW_W_PARENT(fw));
+			fw->grabbed_buttons &= ~(1 << button);
+		}
+	}
+
+	return;
+}
+
 /* ---------------------------- interface functions ------------------------- */
+
+void focus_grab_buttons(FvwmWindow *fw, Bool is_focused)
+{
+	int i;
+	Bool do_grab_window = False;
+	int grab_buttons = Scr.buttons2grab;
+
+	if (!fw || IS_SCHEDULED_FOR_DESTROY(fw))
+	{
+		/* It's pointless to grab buttons on dying windows */
+		return;
+	}
+	do_grab_window = focus_query_grab_buttons(fw, is_focused);
+	if (do_grab_window == True)
+	{
+		grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
+	}
+
+#if 0
+	/*
+	  RBW - If we've come here to grab and all buttons are already grabbed,
+	  or to ungrab and none is grabbed, then we've nothing to do.
+	*/
+	if ((!is_focused && grab_buttons == fw->grabbed_buttons) ||
+	    (is_focused && ((fw->grabbed_buttons & grab_buttons) == 0)))
+	{
+		return;
+	}
+#else
+	if (grab_buttons != fw->grabbed_buttons)
+#endif
+	{
+		MyXGrabServer(dpy);
+		Scr.Ungrabbed = (do_grab_window) ? NULL : fw;
+		for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
+		{
+			__focus_grab_one_button(fw, i, grab_buttons);
+		} /* for */
+		MyXUngrabServer (dpy);
+	}
+
+	return;
+}
 
 Bool focus_does_accept_input_focus(FvwmWindow *fw)
 {
@@ -928,113 +1027,6 @@ Bool IsLastFocusSetByMouse(void)
 	return lastFocusType;
 }
 
-void focus_grab_buttons(FvwmWindow *fw, Bool is_focused)
-{
-	int i;
-	Bool do_grab_window = False;
-	unsigned char grab_buttons = Scr.buttons2grab;
-
-	if (!fw || IS_SCHEDULED_FOR_DESTROY(fw))
-	{
-		/* It's pointless to grab buttons on dying windows */
-		return;
-	}
-	do_grab_window = focus_query_grab_buttons(fw, is_focused);
-	if (do_grab_window == True)
-	{
-		grab_buttons = ((1 << NUMBER_OF_MOUSE_BUTTONS) - 1);
-	}
-
-#if 0
-	/*
-	  RBW - If we've come here to grab and all buttons are already grabbed,
-	  or to ungrab and none is grabbed, then we've nothing to do.
-	*/
-	if ((!is_focused && grab_buttons == fw->grabbed_buttons) ||
-	    (is_focused && ((fw->grabbed_buttons & grab_buttons) == 0)))
-	{
-		return;
-	}
-#else
-	if (grab_buttons != fw->grabbed_buttons)
-#endif
-	{
-		Bool do_grab;
-
-		MyXGrabServer(dpy);
-		Scr.Ungrabbed = (do_grab_window) ? NULL : fw;
-		for (i = 0; i < NUMBER_OF_MOUSE_BUTTONS; i++)
-		{
-#if 0
-			/*  RBW - Set flag for grab or ungrab according to how
-			 * we were called. */
-			if (!is_focused||1)
-			{
-				do_grab = !!(grab_buttons & (1 << i));
-			}
-			else
-			{
-				do_grab = !(grab_buttons & (1 << i));
-			}
-#else
-			if ((grab_buttons & (1 << i)) ==
-			    (fw->grabbed_buttons & (1 << i)))
-				continue;
-			do_grab = !!(grab_buttons & (1 << i));
-#endif
-
-			{
-				register unsigned int mods;
-				register unsigned int max =
-					GetUnusedModifiers();
-				register unsigned int living_modifiers = ~max;
-
-				/* handle all bindings for the dead modifiers */
-				for (mods = 0; mods <= max; mods++)
-				{
-					/* Since mods starts with 1 we don't
-					 * need to test if mods contains a dead
-					 * modifier. Otherwise both, dead and
-					 * living * modifiers would be zero ==>
-					 * mods == 0 */
-					if (!(mods & living_modifiers))
-					{
-						if (do_grab)
-						{
-							XGrabButton(
-								dpy, i + 1,
-								mods,
-								FW_W_PARENT(fw),
-								True,
-								ButtonPressMask,
-								GrabModeSync,
-								GrabModeAsync,
-								None, None);
-							/*  Set each FvwmWindow
-							 * flag accordingly, as
-							 * we grab or ungrab. */
-							fw->grabbed_buttons |=
-								(1<<i);
-						}
-						else
-						{
-							XUngrabButton(
-								dpy, (i+1),
-								mods,
-								FW_W_PARENT(fw)
-								);
-							fw->grabbed_buttons &=
-								!(1<<i);
-						}
-					}
-				} /* for */
-			}
-		} /* for */
-		MyXUngrabServer (dpy);
-	}
-
-	return;
-}
 
 /* same as above, but forces to regrab buttons on the window under the pointer
  * if necessary */
@@ -1055,7 +1047,7 @@ void focus_grab_buttons_on_pointer_window(void)
 		/* pointer is not over a window */
 		return;
 	}
-	focus_grab_buttons(fw, (fw == get_focus_window()));
+	focus_grab_buttons(fw, focus_is_focused(fw));
 
 	return;
 }
