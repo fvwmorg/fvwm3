@@ -1,3 +1,8 @@
+1999-02-15  Bob Woodside <proteus@pcnet.com>
+
+	* FvwmConsole/FvwmConsole.h: Switched the order of the includes for
+	un.h and sockets.h, to correct a compile failure under Linux 2.2.1.
+
 1999-02-14  Dominik Vogt  <dominik_vogt@hp.com>
 
 	* FvwmGoodStuff/FvwmGoodStuff.c (RelieveWindow):
