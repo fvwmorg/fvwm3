@@ -186,8 +186,7 @@ static void ReadSubFunc(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   last_read_failed = 0;
 }
 
-void ReadFile(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-              unsigned long context, char *action,int* Module)
+void ReadFile(F_CMD_ARGS)
 {
   int this_read = numfilesread;
 
@@ -196,7 +195,7 @@ void ReadFile(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     fvwm_msg(DBG,"ReadFile","about to attempt '%s'",action);
   }
 
-  ReadSubFunc(eventp,junk,tmp_win,context,action,Module,0);
+  ReadSubFunc(eventp,w,tmp_win,context,action,Module,0);
 
   if (last_read_failed && this_read == 0)
   {
@@ -205,8 +204,7 @@ void ReadFile(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
   }
 }
 
-void PipeRead(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
-              unsigned long context, char *action,int* Module)
+void PipeRead(F_CMD_ARGS)
 {
   int this_read = numfilesread;
 
@@ -215,7 +213,7 @@ void PipeRead(XEvent *eventp,Window junk,FvwmWindow *tmp_win,
     fvwm_msg(DBG,"PipeRead","about to attempt '%s'",action);
   }
 
-  ReadSubFunc(eventp,junk,tmp_win,context,action,Module,1);
+  ReadSubFunc(eventp,w,tmp_win,context,action,Module,1);
 
   if (last_read_failed && this_read == 0)
   {

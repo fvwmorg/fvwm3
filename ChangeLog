@@ -1,3 +1,30 @@
+1999-03-09  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/misc.h:
+	* fvwm/menus.c (FindPopup):
+	* fvwm/functions.c (ComplexFunction2):
+	(FindFunction):
+	Removed harmful GetNextToken from FindPopup and FindFunction. This is
+	done before these functions are called now. (Bug found by Julian
+	Gilbey).
+
+	* utils/fvwmrc_convert: applied patch by Julian Gilbey
+
+	* fvwm/fvwm2.1 (AddToFunc): description of below patch
+
+	* fvwm/functions.c (expand): Added special variables $x and $y for
+	complex functions.  These expand to the x and y coordinates of
+	the viewport. (Patch by Will French  <wfrench@interport.net>)
+
+	* fvwm/functions.c (IsClick): first click in function does not time out
+	(ComplexFunction2): Do not assume 'Move' operation if the button has
+	not been released within Scr.ClickTime. Just wait for the ButtonRelease
+	before making the decision.
+
+1999-03-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* fvwm/read.c (ReadFile): use F_CMD_ARGS
+
 1999-03-08  Hippo
 
 	* libs/Graphics.c New function RelieveWindowGC() - draws relief lines of

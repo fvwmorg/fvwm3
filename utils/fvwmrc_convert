@@ -23,16 +23,17 @@
 # Originally written by Martin Kraemer <Martin.Kraemer@mch.sni.de>
 # Corrected, extended, and modified by Grant McDorman <grant@isgtec.com>
 # 24 May 95
-# Addtional corrections and extensions by Bill Oswald <wamo@vnet.ibm.com>
+# Additional corrections and extensions by Bill Oswald <wamo@vnet.ibm.com>
 # 8 Mar 96 thru 18 Jul 96
 # Minor corrections to make it easier to customize by Charles Hines 08/01/96
-#
+# Further minor corrections by Julian Gilbey <jdg@debian.org> based on those
+# of Austin Donnelly <and1000@debian.org>, 1 Mar 1999
+# Further major corrections by Julian Gilbey <jdg@debian.org>, 3 Mar 1999
 
 echo "fvwmrc-to-fvwm2rc"
 
 # Point this to your gawk/nawk/awk exec:
-AWK=/usr/local/bin/gawk
-#AWK=/bin/awk
+AWK=/usr/bin/awk
 
 if [ ! -x $AWK ];then
    echo "$AWK missing, cannot run"
@@ -91,7 +92,7 @@ BEGIN   {
 	next;
 }
 
-/^$/                            {   # Empty line, pass it thru
+/^[ \t]*$/                            {   # Empty line, pass it thru
 	print $0;
 	next;
 }
@@ -99,6 +100,9 @@ BEGIN   {
 ################ Rename common items ##############
 /Restart/ && /fvwm/             { gsub("fvwm", "fvwm2"); } # try and leave paths alone
 /GoodStuff/                     { gsub("GoodStuff", "FvwmButtons"); }
+
+############ Chop off trailing "&" from Exec commands ##########
+/^Exec[ \t]+/ || /[ \t]+Exec[ \t]+/ { gsub ("\&[ \t]*$",""); }
 
 ################ Highlight Colors ##############
 /^[ \t]*HiBackColor[ \t]*/	{
@@ -192,7 +196,7 @@ BEGIN   {
 /^[ \t]*ButtonStyle[ \t]*/	{
         if ($2 == ":") {  # new style already
            if (NF != $4+4)
-	       print "ERROR: ButtonStyle command incorrect" >"'$TTY'";
+	       print "ERROR: ButtonStyle command incorrect\n" NR $0 >"'$TTY'";
 	   printf ("%s %d %d", $1, $3, $4);
 	   for (i=5; i<=NF; ++i)
 	       printf (" %s", $i);
@@ -205,7 +209,7 @@ BEGIN   {
 	   x=substr($3,1,p-1)/2;
 	   y=substr($3,p+1)/2;
 	   printf ("%s %s 5 %dx%d@0 %dx%d@0 %dx%d@0 %dx%d@1 %dx%d@1\n",
-		    $1, $2, 50-x,50+y, 50+x,50+y, 50-x,50-y, 50+x,50-y,
+		    $1, $2, 50-x,50+y, 50+x,50+y, 50+x,50-y, 50-x,50-y,
 		    50-x,50+y);
 	}
 	next;
@@ -231,9 +235,9 @@ BEGIN   {
 /^[ \t]*IconFont[ \t]*/		{ print $0; next; }
 /^[ \t]*SuppressIcons[ \t]*/	{ print "Style \"*\" NoIcon"; next; }
 /^[ \t]*StickyIcons[ \t]*/	{ print "Style \"*\" StickyIcon"; next; }
-/^[ \t]*ModulePath[ \t]*/	{ gsub("/fvwm", "/fvwm2"); print $0; next; }
-/^[ \t]*PixmapPath[ \t]*/	{ gsub("/fvwm", "/fvwm2"); print $0; next; }
-/^[ \t]*IconPath[ \t]*/		{ gsub("/fvwm", "/fvwm2"); print $0; next; }
+/^[ \t]*ModulePath[ \t]*/	{ print "#! (ModulePath command commented out)\n#" $0; next; }
+/^[ \t]*PixmapPath[ \t]*/	{ print $0; next; }
+/^[ \t]*IconPath[ \t]*/		{ print $0; next; }
 # note: Icon must be followed by some white space
 /^[ \t]*Icon[ \t]+/		{ printf "Style %s Icon %s\n", $2, $3; next; }
 
@@ -275,24 +279,59 @@ BEGIN   {
 ########## Etc ##########
 /^[ \t]*Lenience[ \t]*/		{ print "Style \"*\" " $0; next; }
 /^[ \t]*Style[ \t]*/		{ print $0; next; }
-/^[ \t]*Key[ \t]*/		{ print $0; next; }
-/^[ \t]*Mouse[ \t]*/		{
-	if (sub("[ 	]Pop[uU]p[ 	]", " Menu ")) {
-	    if (!warn["Mouse"]) {
-		print "Note: Setting mouse bindings to sticky menus">"'$TTY'";
-		warn["Mouse"] = TRUE;
-	    }
-	    if (index($6, "\"") == 1) {
-	       gsub("\"", "")
-	       if (NF > 6) {
-	          for (i = 6; i <= NF; i++)
-                    sub($i " ", $i)
-	       }
-	    } 
-	    sub("$", " Nop");
- 	}
-	print $0; next;
+# Key keyname context mods (Exec|Module|Restart) ...
+#  used to be followed by a "name"; it is no longer
+/^[ \t]*Key[ \t]+[^ \t]+[ \t]+[^ \t]+[ \t]+[^ \t]+[ \t]+(Exec|Module|Restart)[ \t]+\"/  {
+	# not going to handle escaped quotes
+	label=$6;
+	first=7;
+	quoted=substr(label, 1, 1)=="\"" &&
+		substr(label, length(label), 1)!="\"";
+	for (i=7;i<=NF && quoted;i++) {
+		label=$i;
+		quoted=substr(label, length(label), 1)!="\"";
+		first=i + 1;
+	}
+	printf ("%s %s %s %s %s", $1, $2, $3, $4, $5);
+	for (i=first; i<=NF; ++i)
+		printf (" %s", $i);
+	printf ("\n");
+	next;
 }
+# Any other Key command
+/^[ \t]*Key[ \t]*/		{ print $0; next; }
+
+# Similarly with Mouse commands
+/^[ \t]*Mouse[ \t]+[^ \t]+[ \t]+[^ \t]+[ \t]+[^ \t]+[ \t]+(Exec|Module|Restart)[ \t]+\"/  {
+	# not going to handle escaped quotes
+	label=$6;
+	first=7;
+	quoted=substr(label, 1, 1)=="\"" &&
+		substr(label, length(label), 1)!="\"";
+	for (i=7;i<=NF && quoted;i++) {
+		label=$i;
+		quoted=substr(label, length(label), 1)!="\"";
+		first=i + 1;
+	}
+	printf ("%s %s %s %s %s", $1, $2, $3, $4, $5);
+	for (i=first; i<=NF; ++i)
+		printf (" %s", $i);
+	printf ("\n");
+	next;
+}
+
+/^[ \t]*Mouse[ \t]*/		{ print $0; next; }
+# This is probably not necessary
+# /^[ \t]*Mouse[ \t]*/		{
+# 		 if (sub("[ \t]Pop[uU]p[ \t]", " Menu ")) {
+# 			  if (!warn["Mouse"]) {
+# 			 print "Note: Setting mouse bindings to sticky menus">"'$TTY'";
+# 			 warn["Mouse"] = TRUE;
+# 			  }
+# 			  sub("$", " Nop");
+# 		 }
+# 		 print $0; next;
+# }
 
 /^[ \t]*WindowListSkip[ \t]*/	{ printf "Style %s WindowListSkip", $2; next; }
 /^[ \t]*WindowFont[ \t]*/	{ print $0; next; }
@@ -307,12 +346,12 @@ BEGIN   {
 	next;
 }
 
-/^[ \t]**FvwmButtons[ \t]*/	{
+/^[ \t]*FvwmButtons[ \t]*/	{
 	sub("[ 	]Swallow[ 	]*[^ 	]*", "& Exec");
 	print $0;
 	if (length($0) > 199)
 	{
-	    print "Warning: line too long" >"'$TTY'";
+	    print "Warning: line" NR "too long" >"'$TTY'";
 	    print ">> " $0 >"'$TTY'";
 	}
 	if (!warn["GoodStuff"])
@@ -362,19 +401,26 @@ BEGIN   {
         infunction=FALSE;
 	inpopup=TRUE;
 
+	label=$2;
 	if (index($2, "\"") == 1) {
-	   tstr = ""
-	   for (i = 2; index(substr($i, 2), "\"") < length($i) && i <= NF; i++)
-              tstr = sprintf("%s%s", tstr, $i);
-	   prefix = "AddToMenu " substr(tstr, 2, length(tstr) - 2)
-        } else
-	   prefix="AddToMenu " $2;
+	   # not going to handle escaped quotes
+	   first=3;
+	   quoted=substr(label, 1, 1)=="\"" &&
+	      substr(label, length(label), 1)!="\"";
+	   for (i=3;i<=NF && quoted;i++) {
+	      label=label " " $i;
+	      quoted=substr(label, length(label), 1)!="\"";
+	      first=i + 1;
+	   }
+	}
+
+	prefix="AddToMenu " label;
 	next;
 }
 
 /^[ \t]*EndPopup[ \t]*/		{
         if (!inpopup)
-	   print "ERROR: EndPopup outside of popup" >"'$TTY'";
+	   print "ERROR: EndPopup outside of popup\n" NR $0 >"'$TTY'";
         inpopup=FALSE;
 	prefix="";
 	next;
@@ -400,7 +446,17 @@ BEGIN   {
 }
 
 /^[ \t]*Pager[ \t]*/		{
-        print "#! " $0 " [deleted]";
+	print "#! " $0 " [deleted]";
+	print "#! An FvwmPager config to emulate builtin pager would be as follows:"
+	print "# *FvwmPagerBack SlateGrey";
+	print "# *FvwmPagerFore Black";
+	print "# *FvwmPagerFont none";
+	print "# *FvwmPagerHilight SlateBlue4";
+	print "# *FvwmPagerGeometry <xsize> <ysize>";
+	print "# *FvwmPagerSmallFont -*-times-medium-r-*-*-*-80-*-*-*-*-*-*";
+	print "# *FvwmPagerDeskTopScale 32";
+	print "# #! Now start pager";
+	print "# Module FvwmPager 0 0";
 	if (warned[$1]==FALSE) {
            print "Warning: " $1 " omitted, internal pager is obsolete (use FvwmPager)" >"'$TTY'";
 	   warned[$1] = TRUE;

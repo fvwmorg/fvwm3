@@ -517,10 +517,11 @@ user presses and releases the mouse in a short period of time
 will cause an action to be performed on the button-press, if the
 function is invoked with prior knowledge of which window to act on.
 
-The special symbols $d, $w and $0 through $9 are available in the
+The special symbols $d, $w, $x, $y and $0 through $9 are available in the
 ComplexFunctions or Macros, or whatever you want to call them.  Within
 a macro, $w is expanded to the window-id (expressed in
-hex, i.e. 0x10023c) of the window for which the macro was called
+hex, i.e. 0x10023c) of the window for which the macro was called, $x and $y
+are expanded to the current coordinates of the viewport
 and $d is expanded to the current desk number. $0
 through $9 are the arguments to the macro, so if you call
 .EX

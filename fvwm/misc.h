@@ -334,8 +334,8 @@ char *GetNextPtr(char *ptr);
 void InteractiveMove(Window *w, FvwmWindow *tmp_win, int *FinalX, int *FinalY,
 		     XEvent *eventp);
 
-FvwmFunction *FindFunction(char *action);
-MenuRoot *FindPopup(char *action);
+FvwmFunction *FindFunction(char *function_name);
+MenuRoot *FindPopup(char *popup_name);
 
 void Bell(F_CMD_ARGS);
 void scroll(F_CMD_ARGS);

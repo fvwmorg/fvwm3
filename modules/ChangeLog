@@ -1,3 +1,13 @@
+1999-03-08  Dominik Vogt  <dominik_vogt@gmx.de>
+
+	* FvwmButtons/FvwmButtons.c (main): do not quit if a subpanel is empty,
+	instead remove the subpanel from the list
+
+	* FvwmButtons/parse.c (ParseConfigLine): fixed coredump (don't free
+	uninitialised memory); init CurrentPanel with zeros
+
+	* FvwmButtons/FvwmButtons.c (main): init CurrentPanel with zeros
+
 1999-03-07  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmPager/x_pager.c (FvwmErrorHandler): switched on X error handler

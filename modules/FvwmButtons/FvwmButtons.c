@@ -479,6 +479,7 @@ int main(int argc, char **argv)
   int x,y,maxx,maxy,border_width,depth;
   char *temp, *s;
   button_info *b,*ub;
+  panel_info *LastPanel;
 
   temp=argv[0];
   s=strrchr(argv[0],'/');
@@ -554,12 +555,8 @@ int main(int argc, char **argv)
   oldErrorHandler=XSetErrorHandler(myErrorHandler);
 
   UberButton=(button_info*)mymalloc(sizeof(button_info));
-  UberButton->flags=0;
-  UberButton->parent=NULL;
   UberButton->BWidth=1;
   UberButton->BHeight=1;
-  UberButton->font = NULL;
-  UberButton->font_string = NULL;
   MakeContainer(UberButton);
 
   dpw = DisplayWidth(Dpy,screen);
@@ -571,6 +568,7 @@ int main(int argc, char **argv)
 
   CurrentPanel = MainPanel
                = (panel_info *) mymalloc(sizeof(panel_info));
+  memset(CurrentPanel, 0, sizeof(panel_info));
   MainPanel->next = NULL;
   MainPanel->uber = UberButton;
   UberButton->title   = MyName;
@@ -578,77 +576,87 @@ int main(int argc, char **argv)
 
   ParseOptions(UberButton);
 
-  CurrentPanel = MainPanel; /* reassign CurrentPanel */
-  while (CurrentPanel)
-  { UberButton = CurrentPanel->uber;
+  for (CurrentPanel = MainPanel, LastPanel = NULL;
+       CurrentPanel != NULL;
+       LastPanel = CurrentPanel, CurrentPanel = CurrentPanel->next)
+  {
+    UberButton = CurrentPanel->uber;
 
-  if(UberButton->c->num_buttons==0)
-    {
-      fprintf(stderr,"%s: No buttons defined. Quitting\n", MyName);
-      exit(0);
-    }
-
-# ifdef DEBUG_INIT
-  fprintf(stderr,"OK\n%s: Shuffling...",MyName);
-# endif
-
-  ShuffleButtons(UberButton);
-  NumberButtons(UberButton);
-
-# ifdef DEBUG_INIT
-  fprintf(stderr,"OK\n%s: Loading data...\n",MyName);
-# endif
-
-  /* Load fonts and icons, calculate max buttonsize */
-  maxx=0;maxy=0;
-  InitPictureCMap(Dpy,Root); /* store the root cmap */
-  RecursiveLoadData(UberButton,&maxx,&maxy);
+    /* Don't quit if only a subpanel is empty */
+    if(UberButton->c->num_buttons==0)
+      {
+	if (LastPanel == NULL)
+	  {
+	    fprintf(stderr,"%s: No buttons defined. Quitting\n", MyName);
+	    exit(0);
+	  }
+	else
+	  {
+	    /* Remove empty panel and leak any memory in the uber button */
+	    LastPanel->next = CurrentPanel->next;
+	    continue;
+	  }
+      }
 
 # ifdef DEBUG_INIT
-  fprintf(stderr,"%s: Creating main window...",MyName);
+    fprintf(stderr,"OK\n%s: Shuffling...",MyName);
 # endif
 
-  CreateWindow(UberButton,maxx,maxy);
+    ShuffleButtons(UberButton);
+    NumberButtons(UberButton);
+
+# ifdef DEBUG_INIT
+    fprintf(stderr,"OK\n%s: Loading data...\n",MyName);
+# endif
+
+    /* Load fonts and icons, calculate max buttonsize */
+    maxx=0;maxy=0;
+    InitPictureCMap(Dpy,Root); /* store the root cmap */
+    RecursiveLoadData(UberButton,&maxx,&maxy);
+
+# ifdef DEBUG_INIT
+    fprintf(stderr,"%s: Creating main window...",MyName);
+# endif
+
+    CreateWindow(UberButton,maxx,maxy);
 
     CurrentPanel->uber->IconWinParent = MyWindow;
     CurrentPanel->uber->icon_w = maxx;
     CurrentPanel->uber->icon_h = maxy;
 
 # ifdef DEBUG_INIT
-  fprintf(stderr,"OK\n%s: Creating icon windows...",MyName);
+    fprintf(stderr,"OK\n%s: Creating icon windows...",MyName);
 # endif
 
-  i=-1;ub=UberButton;
-  while(NextButton(&ub,&b,&i,0))
-    if(b->flags&b_Icon)
-      {
+    i=-1;ub=UberButton;
+    while(NextButton(&ub,&b,&i,0))
+      if(b->flags&b_Icon)
+	{
 #ifdef DEBUG_INIT
-	fprintf(stderr,"0x%06x...",(ushort)b);
+	  fprintf(stderr,"0x%06x...",(ushort)b);
 #endif
-	CreateIconWindow(b);
-      }
+	  CreateIconWindow(b);
+	}
 
 # ifdef DEBUG_INIT
-  fprintf(stderr,"OK\n%s: Configuring windows...",MyName);
+    fprintf(stderr,"OK\n%s: Configuring windows...",MyName);
 # endif
 
-  XGetGeometry(Dpy,MyWindow,&root,&x,&y,(ushort*)&Width,(ushort*)&Height,
-	       (ushort*)&border_width,(ushort*)&depth);
-  SetButtonSize(UberButton,Width,Height);
-  i=-1;ub=UberButton;
-  while(NextButton(&ub,&b,&i,0))
-    ConfigureIconWindow(b);
+    XGetGeometry(Dpy,MyWindow,&root,&x,&y,(ushort*)&Width,(ushort*)&Height,
+		 (ushort*)&border_width,(ushort*)&depth);
+    SetButtonSize(UberButton,Width,Height);
+    i=-1;ub=UberButton;
+    while(NextButton(&ub,&b,&i,0))
+      ConfigureIconWindow(b);
 
 # ifdef SHAPE
-  if(UberButton->c->flags&b_TransBack)
-    SetTransparentBackground(UberButton,Width,Height);
+    if(UberButton->c->flags&b_TransBack)
+      SetTransparentBackground(UberButton,Width,Height);
 # endif
 
     i=-1;ub=UberButton;
     while(NextButton(&ub,&b,&i,0))
       MakeButton(b);
-
-    CurrentPanel = CurrentPanel->next;
   }
   CurrentPanel = MainPanel;
   UberButton   = CurrentPanel->uber;
@@ -1533,40 +1541,31 @@ int My_XNextEvent(Display *Dpy, XEvent *event)
   static int miss_counter = 0;
   unsigned long *body;
 
-fprintf(stderr, "mxne in\n");
   if(XPending(Dpy))
     {
       XNextEvent(Dpy,event);
 #     ifdef DEBUG_EVENTS
       DebugEvents(event);
 #     endif
-fprintf(stderr, "mxne out 1\n");
       return 1;
     }
-fprintf(stderr, "mxne 1\n");
 
   FD_ZERO(&in_fdset);
   FD_SET(x_fd,&in_fdset);
   FD_SET(fd[1],&in_fdset);
 
-fprintf(stderr, "mxne 2\n");
   if (select(fd_width,SELECT_TYPE_ARG234 &in_fdset, 0, 0, NULL) > 0)
   {
 
-fprintf(stderr, "mxne 3\n");
   if(FD_ISSET(x_fd, &in_fdset))
     {
-fprintf(stderr, "mxne 4\n");
       if(XPending(Dpy))
 	{
-fprintf(stderr, "mxne 5\n");
 	  XNextEvent(Dpy,event);
-fprintf(stderr, "mxne 6\n");
 	  miss_counter = 0;
 #         ifdef DEBUG_EVENTS
 	  DebugEvents(event);
 #         endif
-fprintf(stderr, "mxne out 2\n");
 	  return 1;
 	}
       else
@@ -1575,22 +1574,16 @@ fprintf(stderr, "mxne out 2\n");
 	DeadPipe(0);
     }
 
-fprintf(stderr, "mxne 7\n");
   if(FD_ISSET(fd[1], &in_fdset))
     {
-fprintf(stderr, "mxne 8\n");
       if((count = ReadFvwmPacket(fd[1], header, &body)) > 0)
 	{
-fprintf(stderr, "mxne 9\n");
 	  process_message(header[1],body);
 	  free(body);
 	}
-fprintf(stderr, "mxne 10\n");
     }
-fprintf(stderr, "mxne 11\n");
 
   }
-fprintf(stderr, "mxne out 3\n");
   return 0;
 }
 

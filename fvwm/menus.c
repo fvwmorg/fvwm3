@@ -1417,28 +1417,25 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
   PaintEntry(mi);
 }
 
-MenuRoot *FindPopup(char *action)
+/* FindPopup expects a token as the input. Make sure you have used
+ * GetNextToken before passing a menu name to remove quotes (if necessary) */
+MenuRoot *FindPopup(char *popup_name)
 {
-  char *tmp;
   MenuRoot *mr;
 
-  GetNextToken(action,&tmp);
-
-  if(tmp == NULL)
+  if(popup_name == NULL)
     return NULL;
 
   mr = Scr.menus.all;
   while(mr != NULL)
   {
     if(mr->name != NULL)
-      if(strcasecmp(tmp,mr->name)== 0)
+      if(strcasecmp(popup_name,mr->name)== 0)
       {
-        free(tmp);
         return mr;
       }
     mr = mr->next;
   }
-  free(tmp);
   return NULL;
 
 }
@@ -1447,7 +1444,7 @@ MenuRoot *FindPopup(char *action)
 static
 MenuRoot *MrPopupForMi(MenuItem *mi)
 {
-  char *menu_name = NULL;
+  char *menu_name;
   MenuRoot *tmp = NULL;
 
   /* This checks if mi is != NULL too */

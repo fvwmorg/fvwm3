@@ -28,7 +28,7 @@
 #include "module.h"
 
 static char *expand(char *input, char *arguments[],FvwmWindow *tmp_win);
-static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d);
+static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d,Bool may_time_out);
 
 extern XEvent Event;
 extern FvwmWindow *Tmp_win;
@@ -636,28 +636,25 @@ void DestroyFunction(FvwmFunction *func)
 }
 
 
-FvwmFunction *FindFunction(char *action)
+/* FindFunction expects a token as the input. Make sure you have used
+ * GetNextToken before passing a function name to remove quotes */
+FvwmFunction *FindFunction(char *function_name)
 {
-  char *tmp;
   FvwmFunction *func;
 
-  GetNextToken(action,&tmp);
-
-  if(tmp == NULL)
+  if(function_name == NULL || *function_name == 0)
     return NULL;
 
   func = Scr.functions;
   while(func != NULL)
   {
     if(func->name != NULL)
-      if(strcasecmp(tmp, func->name) == 0)
+      if(strcasecmp(function_name, func->name) == 0)
       {
-        free(tmp);
         return func;
       }
     func = func->next_func;
   }
-  free(tmp);
   return NULL;
 
 }
@@ -669,7 +666,7 @@ FvwmFunction *FindFunction(char *action)
  * clicking, but is moving the cursor
  *
  ****************************************************************************/
-static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d)
+static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d, Bool may_time_out)
 {
   int xcurrent,ycurrent,total = 0;
   Time t0;
@@ -679,10 +676,10 @@ static Bool IsClick(int x,int y,unsigned EndMask, XEvent *d)
   ycurrent = y;
   t0 = lastTimestamp;
 
-  while((total < Scr.ClickTime)&&
-	(x - xcurrent < 3)&&(x - xcurrent > -3)&&
-        (y - ycurrent < 3)&&(y - ycurrent > -3)&&
-	((lastTimestamp - t0) < Scr.ClickTime))
+  while(((total < Scr.ClickTime && lastTimestamp - t0 < Scr.ClickTime) ||
+	 !may_time_out) &&
+	x - xcurrent < 3 && x - xcurrent > -3 &&
+	y - ycurrent < 3 && y - ycurrent > -3)
     {
       usleep(20000);
       total+=20;
@@ -721,12 +718,18 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
   Bool Persist = False;
   Bool HaveDoubleClick = False;
   Bool NeedsTarget = False;
-  char *arguments[10], *junk, *taction;
+  char *arguments[10], *taction;
+  char* func_name;
   int x, y ,i;
   XEvent d, *ev;
   FvwmFunction *func;
 
-  func = FindFunction(action);
+  /* FindFunction expects a token, not just a quoted string */
+  taction = GetNextToken(action,&func_name);
+  if (func_name == NULL)
+    return;
+  func = FindFunction(func_name);
+  free(func_name);
   if(func == NULL)
     {
       if(*desperate == 0)
@@ -735,10 +738,6 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
     }
   *desperate = 0;
   /* Get the argument list */
-  /* First entry in action is the function-name, ignore it */
-  action = GetNextToken(action,&junk);
-  if(junk != NULL)
-    free(junk);
   for(i=0;i<10;i++)
     action = GetNextToken(action,&arguments[i]);
   /* see functions.c to find out which functions need a window to operate on */
@@ -807,8 +806,8 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 
 
   /* Wait and see if we have a click, or a move */
-  /* wait 100 msec, see if the user releases the button */
-  if(IsClick(x,y,ButtonReleaseMask,&d))
+  /* wait for0ever, see if the user releases the button */
+  if(IsClick(x,y,ButtonReleaseMask,&d,False))
     {
       ev = &d;
       type = CLICK;
@@ -816,13 +815,13 @@ void ComplexFunction2(F_CMD_ARGS, Bool *desperate)
 
   /* If it was a click, wait to see if its a double click */
   if((HaveDoubleClick) && (type == CLICK) &&
-     (IsClick(x,y,ButtonPressMask, &d)))
+     (IsClick(x,y,ButtonPressMask, &d, True)))
     {
       type = ONE_AND_A_HALF_CLICKS;
       ev = &d;
     }
   if((HaveDoubleClick) && (type == ONE_AND_A_HALF_CLICKS) &&
-     (IsClick(x,y,ButtonReleaseMask, &d)))
+     (IsClick(x,y,ButtonReleaseMask, &d, True)))
     {
       type = DOUBLE_CLICK;
       ev = &d;
@@ -878,7 +877,8 @@ static char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
 	      l2 += strlen(arguments[n])-2;
 	      i++;
 	    }
-	  else if(input[i+1]=='w' || input[i+1] == 'd')
+	  else if(input[i+1] == 'd' || input[i+1] == 'w' ||
+		  input[i+1] == 'x' || input[i+1] == 'y')
 	    {
 	      l2 += 16;
 	      i++;
@@ -914,6 +914,17 @@ static char *expand(char *input, char *arguments[],FvwmWindow *tmp_win)
 	    {
 	      sprintf(&out[j], "%d", Scr.CurrentDesk);
 	      j += strlen(&out[j]);
+	      i++;
+	    }
+	  else if(input[i+1] == 'x')
+	    {
+	      sprintf(&out[j], "%d", Scr.Vx);
+	      j += strlen(&out[j]);
+	      i++;
+	    }
+	  else if(input[i+1] == 'y')
+	    {
+	      sprintf(&out[j], "%d", Scr.Vy);
 	      i++;
 	    }
 	  else if(input[i+1] == '$')

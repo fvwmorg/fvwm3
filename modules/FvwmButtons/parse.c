@@ -910,17 +910,14 @@ void ParseConfigLine(button_info **ubb,char *s)
       s = trimleft(s);
       CurrentPanel->next = (panel_info *) mymalloc(sizeof(panel_info));
       CurrentPanel = CurrentPanel->next;
-      CurrentPanel->next = NULL;
+      memset(CurrentPanel, 0, sizeof(panel_info));
       CurrentPanel->uber = UberButton
                          = (button_info *) mymalloc(sizeof(button_info));
-      if (UberButton->title)
-	free(UberButton->title);
       UberButton->title = seekright(&s);
-      UberButton->flags = 0;
-      UberButton->parent = NULL;
       UberButton->BWidth = 1;
       UberButton->BHeight = 1;
-      UberButton->swallow = 0; /* subpanel is hidden initially */
+      /*subpanel is hidden initially */
+      UberButton->swallow = 0;
       MakeContainer(UberButton);
       ub = *ubb = UberButton;
       break;

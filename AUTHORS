@@ -17,6 +17,9 @@ Dan Espen:
 Color Limiting, Multiple IconBoxes, Iconification Animation, new 3d
 hilight/shadow calc from scwm as a library routine, updated web docs.
 
+Will French:
+$d, $x and $y macros for functions.
+
 German Gomez Garcia:
 Named MenuStyles.
 
