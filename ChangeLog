@@ -1,5 +1,10 @@
 1999-06-24  Dominik Vogt  <dominik_vogt@gmx.de>
 
+	* fvwm/fvwm2.1 (IconBox): added a hint how to get auto arranging icons
+
+	* fvwm/events.c (HandleMapRequestKeepRaised): fixed bug causing windows
+	to always start iconic in conjunction with RecaptureWindow
+
 	* fvwm/move_resize.c (move_window):
 	* fvwm/module_interface.c (HandleModuleInput): removed stray fprintfs
 

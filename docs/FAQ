@@ -63,7 +63,8 @@ Contents
 	  disappeared!  How do I get them back?
     3.14  Some applications (e.g. Eterm) don't use the icon I defined for them.
           Why?
-    3.14  My Eterms don't use the icon I defined for them. Why?
+    3.15  I don't like tha gaps in my icon box when I de-iconify an
+          application. Is there some kind of auto arrange function?
 
 4. Modules
 
@@ -909,6 +910,45 @@ A: Eterm provides its own icon and fvwm does not know if it is a plain
    icon with a style command:
 
      Style <application-name> IconOverride
+
+----------------------------------------------------------------------
+
+3.15  I don't like tha gaps in my icon box when I de-iconify an
+      application. Is there some kind of auto arrange function?
+
+A: Assuming you are using the IconBox option of the Style command this
+   can be done with a tricky fvwm function. Put the DeiconifyAndRearrange
+   function below in your configuration file:
+
+     AddToFunc DeiconifyAndRearrange
+      + C Iconify off
+      + C All (CurrentDesk Iconic) RecaptureWindow
+
+   And then replace all places where you call the Iconify builtin
+   function to de-iconify an icon with a call to the new function. For
+   example replace
+
+     AddToFunc IconFunc
+      + C Iconify off
+      + M Raise
+      + M Move
+      + D Iconify off
+
+   with
+
+     AddToFunc IconFunc
+      + C DeiconifyAndRearrange
+      + M Raise
+      + M Move
+      + D DeiconifyAndRearrange
+
+   and
+
+     Mouse 1 I A Iconify off
+
+   with
+
+     Mouse 1 I A DeiconifyAndRearrange
 
 ======================================================================
                              4 - Modules

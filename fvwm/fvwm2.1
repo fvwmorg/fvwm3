@@ -3067,6 +3067,49 @@ one style must be defined in one command.  For example:
 Style * IconBox -80x200-1-1, \\
         IconBox 1000x70-1-1
 .EE
+Hint: You can auto arrange your icons in the icon box with a simple
+fvwm function. Put the DeiconifyAndRearrange function below in your
+configuration file:
+
+.EX
+AddToFunc DeiconifyAndRearrange
+ + C Iconify off
+ + C All (CurrentDesk Iconic) RecaptureWindow
+.EE
+
+And then replace all places where you call the Iconify
+builtin function to de-iconify an icon with a call to the new
+function. For example replace
+
+.EX
+AddToFunc IconFunc
+ + C Iconify off
+ + M Raise
+ + M Move
+ + D Iconify off
+.EE
+
+with
+
+.EX
+AddToFunc IconFunc
+ + C DeiconifyAndRearrange
+ + M Raise
+ + M Move
+ + D DeiconifyAndRearrange
+.EE
+
+and
+
+.EX
+Mouse 1 I A Iconify off
+.EE
+
+with
+
+.EX
+Mouse 1 I A DeiconifyAndRearrange
+.EE
 
 \fIIconGrid\fP takes 2 numeric arguments greater than zero.
 .EX
