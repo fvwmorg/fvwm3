@@ -1008,6 +1008,22 @@ void set_focus_model(FvwmWindow *fw)
  * applications that use the passive focus model but manage focus in their own
  * sub windows and should thus use the locally active focus model instead.
  * There are many examples like netscape or ddd. */
+void focus_force_refresh_focus(FvwmWindow *fw)
+{
+	XWindowAttributes winattrs;
+
+	MyXGrabServer(dpy);
+	if (XGetWindowAttributes(dpy, FW_W(fw), &winattrs))
+	{
+		XSelectInput(
+			dpy, FW_W(fw),
+			winattrs.your_event_mask & ~FocusChangeMask);
+		FOCUS_SET(FW_W(fw));
+		XSelectInput(dpy, FW_W(fw), winattrs.your_event_mask);
+	}
+	MyXUngrabServer(dpy);
+}
+
 void refresh_focus(FvwmWindow *fw)
 {
 	Bool do_refresh = False;
@@ -1034,18 +1050,7 @@ void refresh_focus(FvwmWindow *fw)
 	}
 	if (do_refresh)
 	{
-		XWindowAttributes winattrs;
-
-		MyXGrabServer(dpy);
-		if (XGetWindowAttributes(dpy, FW_W(fw), &winattrs))
-		{
-			XSelectInput(
-				dpy, FW_W(fw),
-				winattrs.your_event_mask & ~FocusChangeMask);
-			FOCUS_SET(FW_W(fw));
-			XSelectInput(dpy, FW_W(fw), winattrs.your_event_mask);
-		}
-		MyXUngrabServer(dpy);
+		focus_force_refresh_focus(fw);
 	}
 
 	return;

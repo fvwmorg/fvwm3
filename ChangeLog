@@ -1,5 +1,23 @@
 2002-08-05  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/focus.c (focus_force_refresh_focus):
+	* fvwm/events.c (HandleEnterNotify):
+	(HandlePropertyNotify):
+	(HandleButtonPress):
+	* fvwm/icons.c (DeIconify):
+	* fvwm/virtual.c (MapDesk):
+	* fvwm/focus_policy.c (fpol_query_allow_user_focus):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/module_interface.c:
+	* fvwm/conditional.c (MatchesConditionMask):
+	more GFPR work
+
+	* fvwm/icons.c (Iconify):
+	removed "#if 0"ed code
+
+	* fvwm/module_interface.c:
+	disabled the old ConfigureWindow module interface
+
 	* vms/vms.c:
 	* libs/fvwmsignal.h:
 	* libs/Picture.c:

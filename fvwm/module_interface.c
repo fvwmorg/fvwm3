@@ -56,6 +56,9 @@
 #include "geometry.h"
 #include "fvwmsignal.h"
 
+/* Diasable old ConfigureWindow module interface */
+#define DISABLE_MBC
+
 /*
  * Use POSIX behaviour if we can, otherwise use SysV instead
  */
@@ -1104,8 +1107,8 @@ static void BroadcastNewPacket(unsigned long event_type,
 	old_flags |= IS_ICON_STICKY(t)                ? i : 0; i<<=1; \
 	old_flags |= DO_SKIP_ICON_CIRCULATE(t)        ? i : 0; i<<=1; \
 	old_flags |= DO_SKIP_CIRCULATE(t)             ? i : 0; i<<=1; \
-	old_flags |= HAS_CLICK_FOCUS(t)               ? i : 0; i<<=1; \
-	old_flags |= HAS_SLOPPY_FOCUS(t)              ? i : 0; i<<=1; \
+	old_flags |= HASx_CLICK_FOCUS(t)               ? i : 0; i<<=1; \
+	old_flags |= HASx_SLOPPY_FOCUS(t)              ? i : 0; i<<=1; \
 	old_flags |= !DO_NOT_SHOW_ON_MAP(t)           ? i : 0; i<<=1; \
 	old_flags |= !HAS_NO_BORDER(t)                ? i : 0; i<<=1; \
 	old_flags |= HAS_TITLE(t)                     ? i : 0; i<<=1; \

@@ -435,16 +435,15 @@ static void MapDesk(int desk, Bool grab)
 	}
 
 	/*  If a sticky window has focus, don't disturb it.  */
-	if (!StickyWin)
+	if (!StickyWin && FocusWin)
 	{
-		/*  Otherwise, handle remembering the last-focused clicky
+		/* Otherwise, handle remembering the last-focused clicky
 		 * window.  */
-		if (FocusWin &&
-		    (HAS_CLICK_FOCUS(FocusWin) || HAS_SLOPPY_FOCUS(FocusWin)))
+		if (!FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(FocusWin)))
 		{
 			ReturnFocusWindow(FocusWin, 1);
 		}
-		else if (FocusWin && !HAS_NEVER_FOCUS(FocusWin))
+		else
 		{
 			DeleteFocus(True, True);
 		}

@@ -1762,12 +1762,13 @@ void DeIconify(FvwmWindow *fw)
 	{
 		/* update the focus to make sure the application knows its
 		 * state */
-		if (HAS_CLICK_FOCUS(fw) || HAS_SLOPPY_FOCUS(fw))
+		if (!FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(fw)))
 		{
 			SetFocusWindow(fw, False, True);
 		}
 	}
-	else if (HAS_CLICK_FOCUS(fw))
+	else if (FP_DO_FOCUS_CLICK_CLIENT(FW_FOCUS_POLICY(fw)) ||
+		 FP_DO_FOCUS_CLICK_DECOR(FW_FOCUS_POLICY(fw)))
 	{
 		SetFocusWindow(fw, True, True);
 	}
@@ -1812,12 +1813,6 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 		return;
 	}
 	eventMask = winattrs.your_event_mask;
-#if 0
-	if (fw == Scr.Hilite && HAS_CLICK_FOCUS(fw) && fw->next)
-	{
-		SetFocusWindow(fw->next, 1);
-	}
-#endif
 
 	mark_transient_subtree(fw, MARK_ALL_LAYERS, MARK_ALL, False, True);
 	sf = get_focus_window();
@@ -1957,22 +1952,6 @@ void Iconify(FvwmWindow *fw, initial_window_options_type *win_opts)
 			XMapWindow(dpy, FW_W_ICON_PIXMAP(fw));
 		}
 	}
-#if 0
-	if (HAS_CLICK_FOCUS(fw) || HAS_SLOPPY_FOCUS(fw))
-	{
-		if (fw == get_focus_window())
-		{
-			if (HAS_CLICK_FOCUS(fw) && fw->next)
-			{
-				SetFocusWindow(fw->next, 1);
-			}
-			else
-			{
-				DeleteFocus(1);
-			}
-		}
-	}
-#endif
 	if ((sf = get_focus_window()))
 	{
 		focus_grab_buttons(sf, True);

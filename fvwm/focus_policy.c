@@ -107,11 +107,24 @@ int fpol_query_allow_set_focus(
 	return 0;
 }
 
+int fpol_query_allow_user_focus(
+	focus_policy_t *fpol)
+{
+	int flag = 0;
+
+	flag |= FP_DO_FOCUS_ENTER(*fpol);
+	flag |= FP_DO_FOCUS_CLICK_CLIENT(*fpol);
+	flag |= FP_DO_FOCUS_CLICK_DECOR(*fpol);
+	flag |= FP_DO_FOCUS_BY_FUNCTION(*fpol);
+
+	return !!flag;
+}
+
 #if 0
 /*** to do: ***/
 
 /*!!!*/unsigned do_focus_enter : 1;
-/*!!!*/unsigned do_unfocus_leave : 1;
+unsigned do_unfocus_leave : 1;
 /*!!!*/unsigned do_focus_click_client : 1;
 /*!!!*/unsigned do_focus_click_decor : 1;
 /*!!!*/unsigned do_focus_by_program : 1;

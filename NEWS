@@ -5,6 +5,9 @@ _+_A HREF="#2.4.8"_-_2.4.8_+_/A_-_.
 
 Changes in alpha release 2.5.3 (not released yet)
 
+* Removed the old module interface for ConfigureWindow packets.
+  External modules relying on this interface no longer work.
+
 * Fixed interaction bug between CascadePlacement and StartsOnPage -
   if the target page was at a negative x or y page displacement
   from the current viewport, the window would be placed on the

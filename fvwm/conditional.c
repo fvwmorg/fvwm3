@@ -468,7 +468,7 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 		Bool f;
 
 		f = focus_does_accept_input_focus(fw);
-		if (fw && HAS_NEVER_FOCUS(fw))
+		if (fw && !FP_DO_FOCUS_BY_FUNCTION(FW_FOCUS_POLICY(fw)))
 		{
 			f = False;
 		}

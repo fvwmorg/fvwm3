@@ -374,7 +374,7 @@ void HandleButtonPress(void)
 		return;
 	}
 	is_focused = focus_is_focused(Fw);
-	if (Fw && HAS_NEVER_FOCUS(Fw))
+	if (Fw && !fpol_query_allow_user_focus(&FW_FOCUS_POLICY(Fw)))
 	{
 		/* It might seem odd to try to focus a window that never is
 		 * given focus by fvwm, but the window might want to take focus
@@ -1316,7 +1316,7 @@ ENTER_DBG((stderr, "++++++++ en (%d): 0x%08x mode 0x%x detail 0x%x '%s'\n", ++ec
 	if (ewp->window == Scr.Root && ewp->subwindow == None &&
 	    ewp->detail == NotifyInferior && ewp->mode == NotifyNormal)
 	{
-		 BroadcastPacket(MX_ENTER_WINDOW, 3, Scr.Root, NULL, NULL);
+		BroadcastPacket(MX_ENTER_WINDOW, 3, Scr.Root, NULL, NULL);
 	}
 	if (Scr.ColormapFocus == COLORMAP_FOLLOWS_MOUSE)
 	{
@@ -1359,7 +1359,7 @@ ENTER_DBG((stderr, "en: exit: iwfd\n"));
 		    ewp->window != FW_W_ICON_TITLE(Fw) &&
 		    ewp->window != FW_W_ICON_PIXMAP(Fw))
 		{
-		/* Ignore EnterNotify that received by any of the sub
+			/* Ignore EnterNotify that received by any of the sub
 			 * windows that don't handle this event.  unclutter
 			 * triggers these events sometimes, re focusing an
 			 * unfocused window under the pointer */
@@ -1461,7 +1461,7 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		{
 			Scr.flags.is_pointer_on_this_screen = 1;
 			if (lf && lf != &Scr.FvwmRoot &&
-			    (HAS_SLOPPY_FOCUS(lf) || HAS_CLICK_FOCUS(lf)))
+			    !FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(lf)))
 			{
 				SetFocusWindow(lf, True, True);
 			}
@@ -1476,7 +1476,8 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 			}
 			set_last_screen_focus_window(NULL);
 		}
-		else if (!(sf = get_focus_window()) || HAS_MOUSE_FOCUS(sf))
+		else if (!(sf = get_focus_window()) ||
+			 FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
 		{
 			DeleteFocus(True, True);
 		}
@@ -1555,36 +1556,25 @@ ENTER_DBG((stderr, "en: exit: found LeaveNotify\n"));
 		return;
 	}
 	if (Event.xcrossing.window == FW_W_FRAME(Fw) ||
-	     Event.xcrossing.window == FW_W_ICON_TITLE(Fw) ||
-	     Event.xcrossing.window == FW_W_ICON_PIXMAP(Fw))
+	    Event.xcrossing.window == FW_W_ICON_TITLE(Fw) ||
+	    Event.xcrossing.window == FW_W_ICON_PIXMAP(Fw))
 	{
 		BroadcastPacket(
 			MX_ENTER_WINDOW, 3, FW_W(Fw), FW_W_FRAME(Fw),
 			(unsigned long)Fw);
 	}
 	sf = get_focus_window();
-	if (sf && Fw != sf && HAS_MOUSE_FOCUS(sf))
+	if (sf && Fw != sf && FP_DO_UNFOCUS_LEAVE(FW_FOCUS_POLICY(sf)))
 	{
 ENTER_DBG((stderr, "en: delete focus\n"));
 		DeleteFocus(True, True);
 	}
-	if (HAS_MOUSE_FOCUS(Fw) || HAS_SLOPPY_FOCUS(Fw))
+	if (FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(Fw)))
 	{
 ENTER_DBG((stderr, "en: set mousey focus\n"));
 		SetFocusWindow(Fw, True, True);
 	}
-	else if (HAS_NEVER_FOCUS(Fw))
-	{
-		/* Give the window a chance to grab the buttons needed for
-		 * raise-on-click */
-		if (sf != Fw)
-		{
-			focus_grab_buttons(Fw, False);
-			focus_grab_buttons(sf, True);
-		}
-	}
-	else if (HAS_CLICK_FOCUS(Fw) && Fw == get_focus_window() &&
-		 focus_does_accept_input_focus(Fw))
+	else if (focus_is_focused(Fw) && focus_does_accept_input_focus(Fw))
 	{
 		/* We have to refresh the focus window here in case we left the
 		 * focused fvwm window.  Motif apps may lose the input focus
@@ -1592,6 +1582,14 @@ ENTER_DBG((stderr, "en: set mousey focus\n"));
 		 * applications that want to handle it themselves. */
 		FOCUS_SET(FW_W(Fw));
 	}
+	else if (sf != Fw && !fpol_query_allow_user_focus(&FW_FOCUS_POLICY(Fw)))
+	{
+		/* Give the window a chance to grab the buttons needed for
+		 * raise-on-click */
+		focus_grab_buttons(Fw, False);
+		focus_grab_buttons(sf, True);
+	}
+
 	/* We get an EnterNotify with mode == UnGrab when fvwm releases the
 	 * grab held during iconification. We have to ignore this, or icon
 	 * title will be initially raised. */
@@ -2849,14 +2847,11 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 		}
 		else if (Event.xproperty.atom == _XA_WM_STATE)
 		{
-			if (Fw && HAS_CLICK_FOCUS(Fw) &&
-			    Fw == get_focus_window())
+			if (Fw && OnThisPage && focus_is_focused(Fw) &&
+			    FP_DO_FOCUS_ENTER(FW_FOCUS_POLICY(Fw)))
 			{
-				if (OnThisPage)
-				{
-					set_focus_window(NULL);
-					SetFocusWindow(Fw, False, True);
-				}
+				/* refresh the focus - why? */
+				focus_force_refresh_focus(Fw);
 			}
 		}
 		else
