@@ -47,6 +47,7 @@ Highlights:
 
  ** Improved multi head support.
 
+ ** A follow up release supporting Xinerama is planned soon.
 
 And more:
 ---------
@@ -458,3 +459,21 @@ Miscellaneous:
    comfortably be used in shell scripts.  The tradeoff is that it
    does not report errors any more.  To get the old behaviour run
    FvwmCommand with the "-i 1" option.
+
+
+Contact information:
+--------------------
+
+ * The official fvwm homepage:
+
+     http://www.fvwm.org/
+
+ * Questions about the release can be asked on our mailing list:
+
+     fvwm@fvwm.org
+
+ * Bugs can be reported either at the fvwm-workers mailing list or
+   through our bug tracking system:
+
+     http://www.fvwm.org/cgi-bin/fvwm-bug
+     fvwm-workers@fvwm.org
