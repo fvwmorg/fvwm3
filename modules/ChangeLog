@@ -1,5 +1,16 @@
 2002-11-11  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* FvwmProxy/FvwmProxy.c:
+	many enhancements
+	(CloseOneWindow):
+	(OpenOneWindow):
+	(delete_ProxyWindow):
+	do not destroy proxy windows when closing them
+	(MarkProxy):
+	(ProcessMessage):
+	(DispatchEvent):
+	fixed race condition w/ EnterNotify
+
 	* FvwmProxy/ConfigFvwmProxyDefaults:
 	added file
 

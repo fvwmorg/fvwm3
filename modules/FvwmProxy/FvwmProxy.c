@@ -240,15 +240,19 @@ static ProxyWindow *new_ProxyWindow(void)
 
 static void delete_ProxyWindow(ProxyWindow *p)
 {
-	if(p)
+	if (p)
 	{
-		if(p->name)
+		if (p->name)
 		{
 			free(p->name);
 		}
-		if(p->iconname)
+		if (p->iconname)
 		{
 			free(p->iconname);
+		}
+		if (p->proxy != None)
+		{
+			XDestroyWindow(dpy, p->proxy);
 		}
 		free(p);
 	}
@@ -448,14 +452,18 @@ static void OpenOneWindow(ProxyWindow *proxy)
 		return;
 	}
 	attributes.override_redirect = True;
-	proxy->proxy=XCreateWindow(
-		dpy, rootWindow, proxy->proxyx, proxy->proxyy,
-		proxy->proxyw, proxy->proxyh,border,
-		DefaultDepth(dpy,screen), InputOutput, Pvisual,
-		valuemask, &attributes);
-	XSelectInput(dpy,proxy->proxy,ButtonPressMask|ExposureMask|
-		     ButtonMotionMask);
-	XMapRaised(dpy,proxy->proxy);
+	if (proxy->proxy == None)
+	{
+		proxy->proxy = XCreateWindow(
+			dpy, rootWindow, proxy->proxyx, proxy->proxyy,
+			proxy->proxyw, proxy->proxyh,border,
+			DefaultDepth(dpy,screen), InputOutput, Pvisual,
+			valuemask, &attributes);
+		XSelectInput(
+			dpy, proxy->proxy, ButtonPressMask | ExposureMask |
+			ButtonMotionMask | EnterWindowMask);
+	}
+	XMapRaised(dpy, proxy->proxy);
 	DrawProxyBackground(proxy);
 	proxy->flags.is_shown = 1;
 
@@ -482,7 +490,7 @@ static void CloseOneWindow(ProxyWindow *proxy)
 	}
 	if (proxy->flags.is_shown)
 	{
-		XDestroyWindow(dpy, proxy->proxy);
+		XUnmapWindow(dpy, proxy->proxy);
 		proxy->flags.is_shown = 0;
 	}
 
@@ -775,25 +783,24 @@ static void StartProxies(void)
 	OpenWindows();
 }
 
-static void MarkProxy(Window w)
+static void MarkProxy(ProxyWindow *new_proxy)
 {
 	ProxyWindow *old_proxy;
 
 	old_proxy = selectProxy;
-	selectProxy = FindProxy(w);
+	selectProxy = new_proxy;
 	if (selectProxy != old_proxy)
 	{
-		if (old_proxy != 0)
+		if (old_proxy != NULL)
 		{
 			DrawProxyBackground(old_proxy);
 			DrawProxy(old_proxy);
 		}
-		if (selectProxy != 0)
+		if (selectProxy != NULL)
 		{
 			DrawProxyBackground(selectProxy);
 			DrawProxy(selectProxy);
 		}
-		XSync(dpy, 0);
 	}
 	if (selectProxy != NULL)
 	{
@@ -968,13 +975,17 @@ static void ProcessMessage(FvwmPacket* packet)
 
 			if (next == NULL)
 			{
-				w = None;
+				proxy = NULL;
 			}
 			else if (sscanf(next, "0x%x", (int *)&w) < 1)
 			{
-				w = None;
+				proxy = NULL;
 			}
-			MarkProxy(w);
+			else
+			{
+				proxy = FindProxy(w);
+			}
+			MarkProxy(proxy);
 		}
 		else if(StrEquals(token, "Colorset"))
 		{
@@ -1040,6 +1051,7 @@ static void DispatchEvent(XEvent *pEvent)
 {
 	Window window=pEvent->xany.window;
 	ProxyWindow *proxy;
+	int dx,dy;
 
 	switch(pEvent->xany.type)
 	{
@@ -1053,8 +1065,6 @@ static void DispatchEvent(XEvent *pEvent)
 		}
 		break;
 	case ButtonPress:
-	{
-		ProxyWindow *proxy;
 		proxy = FindProxy(window);
 		if(proxy)
 		{
@@ -1066,13 +1076,8 @@ static void DispatchEvent(XEvent *pEvent)
 		}
 		mousex=pEvent->xbutton.x_root;
 		mousey=pEvent->xbutton.y_root;
-	}
-	break;
+		break;
 	case MotionNotify:
-	{
-		int dx,dy;
-		ProxyWindow *proxy;
-
 		proxy = FindProxy(window);
 		fprintf(errorFile,"MotionNotify %4d,%4d\n",
 			pEvent->xmotion.x_root,pEvent->xmotion.y_root);
@@ -1089,8 +1094,19 @@ static void DispatchEvent(XEvent *pEvent)
 
 		mousex=pEvent->xbutton.x_root;
 		mousey=pEvent->xbutton.y_root;
-	}
-	break;
+		break;
+	case EnterNotify:
+		proxy = FindProxy(pEvent->xcrossing.window);
+		if (pEvent->xcrossing.mode == NotifyNormal)
+		{
+			MarkProxy(proxy);
+		}
+		else if (pEvent->xcrossing.mode == NotifyUngrab &&
+			 proxy != NULL && proxy != selectProxy)
+		{
+			MarkProxy(proxy);
+		}
+		break;
 	default:
 		fprintf(errorFile,"Unrecognized XEvent %d\n",
 			pEvent->xany.type);
