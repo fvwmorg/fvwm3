@@ -1,3 +1,11 @@
+2002-12-02  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/ewmh_icons.c (EWMH_SetIconFromWMIcon):
+	* libs/PictureImageLoader.c (PImageCreatePixmapFromArgbData):
+	(PImageLoadPng):
+	* libs/PictureImageLoader.h:
+	Fixed image loading on bigedian machine
+
 2002-12-01  Mikhael Goikhman  <migo@homemail.com>
 
 	* libs/FBidi.c (FBidiConvert):

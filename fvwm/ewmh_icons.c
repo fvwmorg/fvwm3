@@ -184,7 +184,6 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 				 Bool is_mini_icon)
 {
 	CARD32 *new_icon = NULL;
-	unsigned char *c_new_icon;
 	int keep_start = 0, keep_length = 0;
 	int width = 0, height = 0;
 	unsigned int i,j,k,l,m;
@@ -348,9 +347,8 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 	new_icon[keep_length] = width;
 	new_icon[1+keep_length] = height;
 
-	c_new_icon = (unsigned char *)new_icon;
 	k = 0;
-	l = 4 * (2 + keep_length);
+	l = (2 + keep_length);
 	m = 0;
 
 	switch(image->depth)
@@ -358,18 +356,17 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 	case 1:
 	{
 		XColor colors[2];
-		unsigned short fg[3];
-		unsigned short bg[3];
+		CARD32 fg,bg;
 
 		colors[0].pixel = fwin->colors.fore;
 		colors[1].pixel = fwin->colors.back;
 		XQueryColors(dpy, Pcmap, colors, 2);
-		fg[0] = colors[0].blue >> 8;
-		fg[1] = colors[0].green >> 8;
-		fg[2] = colors[0].red >> 8;
-		bg[0] = colors[1].blue >> 8;
-		bg[1] = colors[1].green >> 8;
-		bg[2] = colors[1].red >> 8;
+		fg = 0xff000000 + (((colors[0].red >> 8) & 0xff) << 16) +
+			(((colors[0].green >> 8) & 0xff) << 8) +
+			((colors[0].blue >> 8) & 0xff);
+		bg = 0xff000000 + (((colors[1].red >> 8) & 0xff) << 16) +
+			(((colors[1].green >> 8) & 0xff) << 8) +
+			((colors[1].blue >> 8) & 0xff);
 		for (j = 0; j < height; j++)
 		{
 			for (i = 0; i < width; i++)
@@ -377,26 +374,17 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 				if (m_image != NULL &&
 				    (XGetPixel(m_image, i, j) == 0))
 				{
-					c_new_icon[l++] = 0;
-					c_new_icon[l++] = 0;
-					c_new_icon[l++] = 0;
-					c_new_icon[l++] = 0;
+					new_icon[l++] = 0;
 				}
 				else
 				{
 					if (XGetPixel(image, i, j) == 0)
 					{
-						c_new_icon[l++] = bg[0];
-						c_new_icon[l++] = bg[1];
-						c_new_icon[l++] = bg[2];
-						c_new_icon[l++] = 255;
+						new_icon[l++] = bg;
 					}
 					else
 					{
-						c_new_icon[l++] = fg[0];
-						c_new_icon[l++] = fg[1];
-						c_new_icon[l++] = fg[2];
-						c_new_icon[l++] = 255;
+						new_icon[l++] = fg;
 					}
 				}
 			}
@@ -446,18 +434,18 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 			{
 				if (cm[m] > 0)
 				{
-					c_new_icon[l++] = colors[k].blue >> 8;
-					c_new_icon[l++] = colors[k].green >> 8;
-					c_new_icon[l++] = colors[k].red >> 8;
-					c_new_icon[l++] = cm[m];
+					new_icon[l++] =
+						((cm[m] & 0xff) << 24) +
+						(((colors[k].red >> 8) & 0xff)
+						 << 16) +
+						(((colors[k].green >> 8) & 0xff)
+						 << 8) +
+						((colors[k].blue >> 8) & 0xff);
 					k++;
 				}
 				else
 				{
-					c_new_icon[l++] = 0;
-					c_new_icon[l++] = 0;
-					c_new_icon[l++] = 0;
-					c_new_icon[l++] = 0;
+					new_icon[l++] = 0;
 				}
 				m++;
 			}
@@ -468,22 +456,6 @@ CARD32 *ewmh_SetWmIconFromPixmap(FvwmWindow *fwin,
 	}
 	} /* switch */
 
-#if 0 /* this is dramatically slow */
-	for (j = 0; j < height; j++)
-		for (i = 0; i < width; i++)
-		{
-			c.pixel = XGetPixel(image, i, j);
-			XQueryColor(dpy, Pcmap, &c);
-			k = 4*(i + j*width +2 +keep_length);
-			c_new_icon[k] = (unsigned short)c.blue >> 8;
-			c_new_icon[k+1] = (unsigned short)c.green >> 8;
-			c_new_icon[k+2] = (unsigned short)c.red >> 8;
-			if (m_image != None && (XGetPixel(m_image, i, j) == 0))
-				c_new_icon[k+3] = 0;
-			else
-				c_new_icon[k+3] = 255;
-		}
-#endif
 
 	if (is_mini_icon)
 	{
@@ -734,7 +706,7 @@ int EWMH_SetIconFromWMIcon(FvwmWindow *fwin, CARD32 *list, unsigned int size,
 			FRenderGetAlphaDepth());
 	}
 	if (!PImageCreatePixmapFromArgbData(
-		dpy, Scr.Root, (unsigned char *)list, start, width, height,
+		dpy, Scr.Root, list, start, width, height,
 		pixmap, mask, alpha, &have_alpha, &nalloc_pixels, &alloc_pixels,
 		&no_limit, fpa) || pixmap == None)
 	{

@@ -224,7 +224,7 @@ Bool PImageLoadPng(FIMAGE_CMD_ARGS)
 		*alpha = XCreatePixmap(dpy, win, w, h, FRenderGetAlphaDepth());
 	}
 	if (!PImageCreatePixmapFromArgbData(
-		dpy, win, (unsigned char *)data, 0, w, h, *pixmap, *mask,
+		dpy, win, data, 0, w, h, *pixmap, *mask,
 		*alpha, &have_alpha, nalloc_pixels, alloc_pixels, no_limit, fpa)
 	    || *pixmap == None)
 	{
@@ -469,7 +469,7 @@ Bool PImageLoadBitmap(FIMAGE_CMD_ARGS)
  *
  * ***************************************************************************/
 Bool PImageCreatePixmapFromArgbData(
-	Display *dpy, Window win, unsigned char *data, int start, int width,
+	Display *dpy, Window win, CARD32 *data, int start, int width,
 	int height, Pixmap pixmap, Pixmap mask, Pixmap alpha, int *have_alpha,
 	int *nalloc_pixels, Pixel **alloc_pixels, int *no_limit,
 	FvwmPictureAttributes fpa)
@@ -541,7 +541,8 @@ Bool PImageCreatePixmapFromArgbData(
 		!!(fpa.mask & FPAM_NO_ALLOC_PIXELS), 
 		!!(fpa.mask & FPAM_DITHER),
 		True);
-	k = 4*start;
+
+	k = start;
 	c.flags = DoRed | DoGreen | DoBlue;
 	if (!use_alpha_pix)
 	{
@@ -551,11 +552,11 @@ Bool PImageCreatePixmapFromArgbData(
 	{
 		for (i = 0; i < width; i++)
 		{
-			c.blue = data[k++];
-			c.green = data[k++];
-			c.red = data[k++];
-			a = data[k++];
-
+			c.blue = data[k] & 0xff;
+			c.green = (data[k] >> 8) & 0xff;
+			c.red = (data[k] >> 16) & 0xff;
+			a = (data[k] >> 24) & 0xff;;
+			k++;
 			if (a > alpha_limit)
 			{
 				PictureAllocColorImage(
