@@ -161,8 +161,6 @@ static void discard_events(long event_type, Window w, XEvent *last_ev)
  *	CalcGeom - calculates the size and position of a mini-window
  *	given the real window size.
  *	You can always tell bad code by the size of the comments.
- *
- *	dv: Some people say that good code does not nee lengthy comments. :-)
  */
 static void CalcGeom(PagerWindow *t, int win_w, int win_h,
 		     int *x_ret, int *y_ret, int *w_ret, int *h_ret)
@@ -179,7 +177,7 @@ static void CalcGeom(PagerWindow *t, int win_w, int win_h,
   virt += t->width - 1;
 
   /* to calculate the right edge, mirror the window and use the same
-   * calculations as for the loeft edge for consistency. */
+   * calculations as for the left edge for consistency. */
   virt2 = Scr.VWidth - 1 - virt;
   edge2 = (virt2 * win_w) / Scr.VWidth;
 
@@ -1606,6 +1604,8 @@ void ReConfigureIcons(Bool do_reconfigure_desk_only)
     if (do_reconfigure_desk_only && t->desk != Scr.CurrentDesk)
       continue;
     CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
+    t->icon_view_x = x;
+    t->icon_view_y = y;
     t->icon_view_width = w;
     t->icon_view_height = h;
     if(Scr.CurrentDesk == t->desk)
@@ -1961,6 +1961,8 @@ void AddNewWindow(PagerWindow *t)
 	}
 
 	CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
+	t->icon_view_x = x;
+	t->icon_view_y = y;
 	t->icon_view_width = w;
 	t->icon_view_height = h;
 	if(Scr.CurrentDesk != t->desk)
@@ -2050,6 +2052,8 @@ void ChangeDeskForWindow(PagerWindow *t,long newdesk)
 
   CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
   size_changed = (t->icon_view_width != w || t->icon_view_height != h);
+  t->icon_view_x = x;
+  t->icon_view_y = y;
   t->icon_view_width = w;
   t->icon_view_height = h;
   if(Scr.CurrentDesk != t->desk)
@@ -2123,10 +2127,10 @@ void MoveResizePagerView(PagerWindow *t, Bool do_force_redraw)
   }
 
   CalcGeom(t, icon_w, icon_h, &x, &y, &w, &h);
-  position_changed = (t->pager_view_x != x || t->pager_view_y != y);
+  position_changed = (t->icon_view_x != x || t->icon_view_y != y);
   size_changed = (t->icon_view_width != w || t->icon_view_height != h);
-  t->pager_view_x = x;
-  t->pager_view_y = y;
+  t->icon_view_x = x;
+  t->icon_view_y = y;
   t->icon_view_width = w;
   t->icon_view_height = h;
   if (Scr.CurrentDesk == t->desk)

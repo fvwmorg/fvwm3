@@ -54,6 +54,11 @@ Changes in alpha release 2.5.11 (not released yet)
 
 * New option MailDir in FvwmTaskBar.
 
+* MoveToPage command:
+
+    New options wrapx, wrapy, nodesklimitx and nodesklimity.
+    New suffix 'w' to allow for window relative movement.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.10 (19-Mar-2004)

@@ -1328,99 +1328,148 @@ Bool get_page_arguments(char *action, int *page_x, int *page_y)
 	int suffix[2];
 	char *token;
 	char *taction;
-	Bool xwrap = False;
-	Bool ywrap = False;
+	int wrapx;
+	int wrapy;
+	int limitdeskx;
+	int limitdesky;
+	int startx;
+	int starty;
 
-	taction = GetNextToken(action, &token);
-	if (token == NULL)
+	wrapx = 0;
+	wrapy = 0;
+	limitdeskx = 1;
+	limitdesky = 1;
+	startx = *page_x;
+	starty = *page_y;
+	for (; ; action = taction)
 	{
-		*page_x = Scr.Vx;
-		*page_y = Scr.Vy;
-		return True;
-	}
-	if (StrEquals(token, "prev"))
-	{
-		/* last page selected */
-		*page_x = prev_page_x;
-		*page_y = prev_page_y;
-		free(token);
-		return True;
-	}
-	if (StrEquals(token, "xwrap"))
-	{
-		xwrap = True;
-	}
-	else if (StrEquals(token, "ywrap"))
-	{
-		ywrap = True;
-	}
-	else if (StrEquals(token, "xywrap"))
-	{
-		xwrap = True;
-		ywrap = True;
-	}
-	free(token);
-	if (xwrap || ywrap)
-	{
-		GetNextToken(taction, &token);
+		int do_reverse;
+
+		token = PeekToken(action, &taction);
 		if (token == NULL)
 		{
 			*page_x = Scr.Vx;
 			*page_y = Scr.Vy;
 			return True;
 		}
-		action = taction;
-		free(token);
+		if (StrEquals(token, "prev"))
+		{
+			/* last page selected */
+			*page_x = prev_page_x;
+			*page_y = prev_page_y;
+			return True;
+		}
+		do_reverse = 0;
+		for ( ; *token == '!'; token++)
+		{
+			do_reverse = !do_reverse;
+		}
+		if (StrEquals(token, "wrapx"))
+		{
+			wrapx = (1 ^ do_reverse);
+		}
+		else if (StrEquals(token, "wrapy"))
+		{
+			wrapy = (1 ^ do_reverse);
+		}
+		else if (StrEquals(token, "nodesklimitx"))
+		{
+			limitdeskx = (0 ^ do_reverse);
+		}
+		else if (StrEquals(token, "nodesklimitx"))
+		{
+			limitdesky = (0 ^ do_reverse);
+		}
+		else
+		{
+			/* no more options */
+			break;
+		}
 	}
 
-	if (GetSuffixedIntegerArguments(action, NULL, val, 2, "p", suffix) !=
+	if (GetSuffixedIntegerArguments(action, NULL, val, 2, "pw", suffix) !=
 	    2)
 	{
 		return 0;
 	}
 
-	if (val[0] >= 0 || suffix[0] == 1)
+	if (suffix[0] == 1)
+	{
+		*page_x = val[0] * Scr.MyDisplayWidth + Scr.Vx;
+	}
+	else if (suffix[0] == 2)
+	{
+		*page_x += val[0] * Scr.MyDisplayWidth;
+	}
+	else if (val[0] >= 0)
 	{
 		*page_x = val[0] * Scr.MyDisplayWidth;
 	}
 	else
 	{
-		*page_x = (val[0]+1) * Scr.MyDisplayWidth + Scr.VxMax;
+		*page_x = (val[0] + 1) * Scr.MyDisplayWidth + Scr.VxMax;
 	}
-	if (val[1] >= 0 || suffix[1] == 1)
+	if (suffix[1] == 1)
+	{
+		*page_y = val[1] * Scr.MyDisplayHeight + Scr.Vy;
+	}
+	else if (suffix[1] == 2)
+	{
+		*page_y += val[1] * Scr.MyDisplayHeight;
+	}
+	else if (val[1] >= 0)
 	{
 		*page_y = val[1] * Scr.MyDisplayHeight;
 	}
 	else
 	{
-		*page_y = (val[1]+1) * Scr.MyDisplayHeight + Scr.VyMax;
-	}
-	/* handle 'p' suffix */
-	if (suffix[0] == 1)
-	{
-		*page_x += Scr.Vx;
-	}
-	if (suffix[1] == 1)
-	{
-		*page_y += Scr.Vy;
+		*page_y = (val[1] + 1) * Scr.MyDisplayHeight + Scr.VyMax;
 	}
 
 	/* limit to desktop size */
-	if (*page_x < 0)
+	if (limitdeskx && !wrapx)
 	{
-		*page_x = 0;
+		if (*page_x < 0)
+		{
+			*page_x = 0;
+		}
+		else if (*page_x > Scr.VxMax)
+		{
+			*page_x = Scr.VxMax;
+		}
 	}
-	if (*page_y < 0)
+	else if (limitdeskx && wrapx)
 	{
-		*page_y = 0;
+		while (*page_x < 0)
+		{
+			*page_x += Scr.VxMax + Scr.MyDisplayWidth;
+		}
+		while (*page_x > Scr.VxMax)
+		{
+			*page_x -= Scr.VxMax + Scr.MyDisplayWidth;
+		}
 	}
-	if (*page_x > Scr.VxMax)
+	if (limitdesky && !wrapy)
 	{
-		*page_x = Scr.VxMax;
+		if (*page_y < 0)
+		{
+			*page_y = 0;
+		}
+		else if (*page_y > Scr.VyMax)
+		{
+			*page_y = Scr.VyMax;
+		}
 	}
-	if (*page_y > Scr.VyMax)
+	else if (limitdesky && wrapy)
 	{
-		*page_y = Scr.VyMax;
+		while (*page_y < 0)
+		{
+			*page_y += Scr.VyMax + Scr.MyDisplayHeight;
+		}
+		while (*page_y > Scr.VyMax)
+		{
+			*page_y -= Scr.VyMax + Scr.MyDisplayHeight;
+		}
 	}
 
 	return True;
@@ -1860,6 +1909,8 @@ void CMD_GotoPage(F_CMD_ARGS)
 	int x;
 	int y;
 
+	x = Scr.Vx;
+	y = Scr.Vy;
 	if (!get_page_arguments(action, &x, &y))
 	{
 		fvwm_msg(

@@ -1,3 +1,11 @@
+2004-09-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmPager/x_pager.c (ReConfigureIcons):
+	(AddNewWindow):
+	(ChangeDeskForWindow):
+	(MoveResizePagerView):
+	sometimes, a window being moved did not get updated in the pager,
+
 2004-09-17  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* FvwmCommand/FvwmCommand.c (main):

@@ -4950,10 +4950,11 @@ is negative or omitted the default value (which might be increased
 when 16000x9000 pixel displays become affordable) is restored.
 
 .TP
-.B "MoveToPage [\fIx\fP\
-[\fIp\fP\
+.B "MoveToPage [\fIoptions\fP
+] [\fIx\fP\
+[\fIp\fP|\fIw\fP\
 ] \fIy\fP\
-[\fIp\fP\
+[\fIp\fP|\fIw\fP\
 ]] | [\fIprev\
 ]"
 Moves the selected window to another page (x,y).  The upper left
@@ -4966,13 +4967,32 @@ the rightmost/lowest page.  If
 .IR x " and " y
 are not given, the window is moved to the current page (a window
 that has the focus but is off-screen can be retrieved with this).
-Moving windows to a page relative to the current one can be
+Moving windows to a page relative to the current page can be
 achieved by adding a trailing
 .RI ' p '
-after any or both numerical arguments.  To move a window to the
-previous page use
+after any or both numerical arguments.  To move the window
+relative to its current location, add a trailing
+.RI ' w '.
+To move a window to the previous page use
 .I prev
 as the single argument.
+
+Windows are usually not moved beyond desk boundaries.
+
+Possible
+.I options
+are
+.IR wrapx " and " wrapy
+to wrap around the x or y coordinate when the window is moved
+beyond the border of the desktop. For example, with
+.IR wrapx ,
+when the window moves past the right edge of the desktop, it
+reappears on the left edge.  The options
+.IR nodesklimitx " and " nodesklimit
+allow movind windows beyond the desk boundaries in x and y
+direction (disabling the
+.IR wrapx " and " wrapy
+options).
 
 Examples:
 .EX
@@ -4986,8 +5006,8 @@ MoveToPage -1 -1
 MoveToPage prev
 
 # Move window two pages to the right and one
-# page up
-MoveToPage +2p -1p
+# page up, wrap at desk boundaries
+MoveToPage wrapx wrapy +2p -1p
 .EE
 
 .TP

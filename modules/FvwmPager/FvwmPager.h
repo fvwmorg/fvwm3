@@ -84,6 +84,8 @@ typedef struct pager_window
   int pager_view_y;
   int pager_view_width;
   int pager_view_height;
+  int icon_view_x;
+  int icon_view_y;
   int icon_view_width;
   int icon_view_height;
 

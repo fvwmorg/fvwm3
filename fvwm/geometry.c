@@ -97,6 +97,16 @@ void get_relative_geometry(rectangle *rel_g, rectangle *abs_g)
 	return;
 }
 
+void get_absolute_geometry(rectangle *abs_g, rectangle *rel_g)
+{
+	abs_g->x = rel_g->x + Scr.Vx;
+	abs_g->y = rel_g->y + Scr.Vy;
+	abs_g->width = rel_g->width;
+	abs_g->height = rel_g->height;
+
+	return;
+}
+
 void gravity_translate_to_northwest_geometry(
 	int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g)
 {
@@ -1312,6 +1322,35 @@ void resize_icon_title_height(FvwmWindow *fw, int dh)
 	return;
 }
 
+void get_page_offset_rectangle(
+	int *ret_page_x, int *ret_page_y, rectangle *r)
+{
+	int xoff = Scr.Vx % Scr.MyDisplayWidth;
+	int yoff = Scr.Vy % Scr.MyDisplayHeight;
+
+	/* maximize on the page where the center of the window is */
+	*ret_page_x = truncate_to_multiple(
+		r->x + r->width / 2 + xoff, Scr.MyDisplayWidth) - xoff;
+	*ret_page_y = truncate_to_multiple(
+		r->y + r->height / 2 + yoff, Scr.MyDisplayHeight) - yoff;
+
+	return;
+}
+
+void get_page_offset(
+	int *ret_page_x, int *ret_page_y, FvwmWindow *fw)
+{
+	rectangle r;
+
+	r.x = fw->frame_g.x;
+	r.y = fw->frame_g.y;
+	r.width = fw->frame_g.width;
+	r.height = fw->frame_g.height;
+	get_page_offset_rectangle(ret_page_x, ret_page_y, &r);
+
+	return;
+}
+
 void get_page_offset_check_visible(
 	int *ret_page_x, int *ret_page_y, FvwmWindow *fw)
 {
@@ -1324,20 +1363,10 @@ void get_page_offset_check_visible(
 	}
 	else
 	{
-		int xoff = Scr.Vx % Scr.MyDisplayWidth;
-		int yoff = Scr.Vy % Scr.MyDisplayHeight;
-
-		/* maximize on the page where the center of the window is */
-		*ret_page_x = truncate_to_multiple(
-			fw->frame_g.x + fw->frame_g.width / 2 + xoff,
-			Scr.MyDisplayWidth) - xoff;
-		*ret_page_y = truncate_to_multiple(
-			fw->frame_g.y + fw->frame_g.height / 2 + yoff,
-			Scr.MyDisplayHeight) - yoff;
+		get_page_offset(ret_page_x, ret_page_y, fw);
 	}
 
 	return;
 }
 
 /* ---------------------------- builtin commands --------------------------- */
-

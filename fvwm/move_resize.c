@@ -329,7 +329,10 @@ static int GetOnePositionArgument(
 			/* pointer is on a different screen - that's okay here
 			 */
 		}
-		*pFinalX += (is_x) ? x : y;
+		else
+		{
+			*pFinalX += (is_x) ? x : y;
+		}
 	}
 
 	return 1;
@@ -1413,17 +1416,20 @@ static void __move_window(F_CMD_ARGS, Bool do_animate, int mode)
 	{
 		rectangle r;
 		rectangle s;
+		rectangle t;
 
 		do_animate = False;
+		r.x = x;
+		r.y = y;
+		r.width = width;
+		r.height = height;
+		get_absolute_geometry(&t, &r);
+		get_page_offset_rectangle(&page_x, &page_y, &t);
 		if (!get_page_arguments(action, &page_x, &page_y))
 		{
 			page_x = Scr.Vx;
 			page_y = Scr.Vy;
 		}
-		r.x = x;
-		r.y = y;
-		r.width = width;
-		r.height = height;
 		s.x = page_x - Scr.Vx;
 		s.y = page_y - Scr.Vy;
 		s.width = Scr.MyDisplayWidth;

@@ -1,3 +1,14 @@
+2004-09-27  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/geometry.c (get_page_offset):
+	(get_page_offset_rectangle):
+	(get_absolute_geometry):
+	new functions
+
+	* fvwm/move_resize.c (__move_window):
+	* fvwm/virtual.c (CMD_GotoPage):
+	(get_page_arguments):
+
 2004-09-24  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* libs/Flocale.c (FlocaleGetNameProperty):
