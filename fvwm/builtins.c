@@ -2726,7 +2726,7 @@ void ChangeDecor(F_CMD_ARGS)
     tmp_win->frame_g.height = 0;
     tmp_win->frame_g.width = 0;
     SetupFrame(tmp_win,x,y,width,height,True,False);
-    SetBorder(tmp_win,Scr.Hilite == tmp_win,True,True,None);
+    SetBorder(tmp_win,Scr.Hilite == tmp_win,2,True,None);
 }
 
 /*****************************************************************************
@@ -3007,6 +3007,8 @@ void ButtonStyle(F_CMD_ARGS)
 		  SetButtonFlag(MWMDecorMaximize);
                 } else if (strncasecmp(tok,"MWMDecorShade",13)==0) {
 		  SetButtonFlag(MWMDecorShade);
+                } else if (strncasecmp(tok,"MWMDecorStick",13)==0) {
+		  SetButtonFlag(MWMDecorStick);
 		} else {
 		  fvwm_msg(ERR, "ButtonStyle",
 			   "unknown title button flag %s -- line: %s",
@@ -3294,6 +3296,16 @@ void CreateConditionMask(char *flags, WindowConditionMask *mask)
       {
 	SET_MAXIMIZED(mask, 0);
 	SETM_MAXIMIZED(mask, 1);
+      }
+    else if(StrEquals(condition,"Shaded"))
+      {
+	SET_SHADED(mask, 1);
+	SETM_SHADED(mask, 1);
+      }
+    else if(StrEquals(condition,"!Shaded"))
+      {
+	SET_SHADED(mask, 0);
+	SETM_SHADED(mask, 1);
       }
     else if(StrEquals(condition,"Transient"))
       {

@@ -184,7 +184,8 @@ enum {
   MWMDecorMenu                = (1<<0),
   MWMDecorMinimize            = (1<<1),
   MWMDecorMaximize            = (1<<2),
-  MWMDecorShade               = (1<<3)
+  MWMDecorShade               = (1<<3),
+  MWMDecorStick               = (1<<4)
 };
 
 enum ButtonState {

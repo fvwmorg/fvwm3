@@ -1,3 +1,26 @@
+1999-05-22  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* NEWS:
+	* fvwm/fvwm2.1: 
+	* fvwm/screen.h: 
+	* fvwm/borders.c (DrawButton): 
+	* fvwm/builtins.c (ButtonStyle): add MWMDecorStick as a button
+	style flag to support toggle buttons for the Stick function.
+	
+	* fvwm/borders.c (SetBorder): 
+	* fvwm/builtins.c (ChangeDecor): Make SetBorder with force > 1
+	mean: do a *full* redraw, including backgrounds. Use this to 
+	fix ChangeDecor.
+
+	* fvwm/builtins.c (CreateConditionMask): 
+	* NEWS:
+	* fvwm/fvwm2.1: Add [!]Shaded to the supported conditions.
+
+1999-05-21  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/fvwm2.1: replace one occurance of MWMDecorMax by
+	MWMDecorShade.
+
 1999-05-22  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* fvwm/menus.c (NewMenuStyle): new options HoldSubmenus and

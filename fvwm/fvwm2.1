@@ -987,14 +987,18 @@ Style option requests not to show this button, it will be hidden.
 "MWMDecorMax" should be assigned to title bar buttons which maximize
 the window.  The default assignment is the rightmost button.  When a
 window with the MWMFunctions Style option requests not to show this
-button, it will be hidden.  When The window is maximized, the vector
+button, it will be hidden.  When the window is maximized, the vector
 pattern on the button looks pressed in.
 
-"MWMDecorMax" should be assigned to title bar buttons which shade
+"MWMDecorShade" should be assigned to title bar buttons which shade
 the window (see \fIWindowShade\fP command).  When a window with the
 MWMFunctions Style option requests not to show the minimize button,
-this button will be hidden.  When The window is shaded, the vector
+this button will be hidden.  When the window is shaded, the vector
 pattern on the button looks pressed in.
+
+"MWMDecorStick" should be assigned to title bar buttons which make
+the window sticky.  When the window is sticky, the vector pattern on 
+the button looks pressed in.
 
 
 .IP "ChangeDecor \fIdecor\fP"
@@ -1071,7 +1075,8 @@ keyboard focus.
 Performs \fIcommand\fP on the current window if it satisfies all
 \fIconditions\fP.  Conditions include "Iconic", "!Iconic", "Visible",
 "!Visible", "Layer [ n ]", "Sticky", "!Sticky", "Maximized",
-"!Maximized", "Transient", "!Transient", "CurrentDesk", "CurrentPage",
+"!Maximized", "Shaded", "!Shaded", "Transient", "!Transient", 
+"CurrentDesk", "CurrentPage",
 and "CurrentPageAnyDesk".  In addition, the condition
 may include a window name to match to.  The window name may include
 the wildcards * and ?.  The window name, icon name, class, and

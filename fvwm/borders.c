@@ -73,6 +73,7 @@ static void change_window_color(Window w, unsigned long valuemask,
 {
   XChangeWindowAttributes(dpy, w, valuemask, attributes);
   XClearWindow(dpy, w);
+fprintf(stderr, "change window color\n");
 }
 
 /* rules to get button state */
@@ -119,6 +120,8 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
   int rwidth; /* relief width */
   Bool shaded;
 
+fprintf(stderr,"SetBorder %d %d %d %#lx\n", 
+	onoroff, force, Mapped, expose_win);
   if(!t)
     return;
 
@@ -135,7 +138,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     if((!force)&&(Scr.Hilite == t))
       return;
 
-    if(Scr.Hilite != t)
+    if((Scr.Hilite != t)||(force > 1))
       NewColor = True;
 
     /* make sure that the previously highlighted window got unhighlighted */
@@ -168,7 +171,7 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     if((!force)&&(Scr.Hilite != t))
       return;
 
-    if(Scr.Hilite == t)
+    if((Scr.Hilite == t)||(force > 1))
     {
       Scr.Hilite = NULL;
       NewColor = True;
@@ -194,6 +197,9 @@ void SetBorder (FvwmWindow *t, Bool onoroff,Bool force,Bool Mapped,
     XChangeGC(dpy,Scr.ScratchGC2,Globalgcm,&Globalgcv);
     ShadowGC = Scr.ScratchGC2;
   }
+
+if (NewColor)
+  fprintf(stderr, "new color\n");
 
   /* MWMBorder style means thin 3d effects */
   rwidth = (HAS_MWM_BORDER(t) ? 1 : 2);
@@ -697,7 +703,8 @@ void DrawButton(FvwmWindow *t, Window win, int w, int h,
     case VectorButton:
       if(HAS_MWM_BUTTONS(t) &&
 	 ((stateflags & MWMDecorMaximize && IS_MAXIMIZED(t)) ||
-	  (stateflags & MWMDecorShade && IS_SHADED(t))))
+	  (stateflags & MWMDecorShade && IS_SHADED(t)) ||
+	  (stateflags & MWMDecorStick && IS_STICKY(t))))
 	DrawLinePattern(win, ShadowGC, ReliefGC, &bf->u.vector, w, h);
       else
 	DrawLinePattern(win, ReliefGC, ShadowGC, &bf->u.vector, w, h);

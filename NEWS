@@ -1,5 +1,10 @@
 Changes in alpha release 2.3.3 (May 1999)
 
+* New button style flag MWMDecorStick to support toggle buttons for the
+  Stick function.
+
+* New condition [!]shaded for Current and other commands taking conditions.
+
 * New menu styles HoldSubmenus/DeleteSubmenus. HoldSubmenus is the new default
   for mwm and fvwm menus. When you move back from a submenu to its parent menu
   the submenu remains visible.
