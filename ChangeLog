@@ -1,3 +1,9 @@
+2003-01-02  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/icons.c (GetIconPicture):
+	(SetIconPixmapSize):
+	Fixed IconSize style for non shaped depth > 1 pixmaps
+
 2002-01-02  Mikhael Goikhman  <migo@homemail.com>
 
 	* NEWS:

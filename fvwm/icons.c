@@ -174,7 +174,8 @@ void setup_icon_title_size(FvwmWindow *fw)
 static void SetIconPixmapSize(
 	Pixmap *icon, unsigned int width, unsigned int height,
 	unsigned int depth, unsigned int newWidth, unsigned int newHeight,
-	Bool force_centering, int resize_type, unsigned int freeOldPixmap)
+	Bool force_centering, int resize_type, int *nrx, int *nry,
+	unsigned int freeOldPixmap)
 {
 	Pixmap oldPixmap;
 	Pixmap resizedPixmap = None;
@@ -182,6 +183,9 @@ static void SetIconPixmapSize(
 	GC gc;
 	XGCValues gc_init;
 	
+	*nrx = 0;
+	*nry = 0;
+
 	/* Check for invalid dimensions */
 	if (newWidth == 0 || newHeight == 0)
 	{
@@ -243,11 +247,12 @@ static void SetIconPixmapSize(
 		 * vertically if the new height is smaller than the old.
 		 * Otherwise, place the icon on the bottom, along the title bar.
 		 */
+		*nrx = (newWidth - width) / 2;
+		*nry = (newHeight > height && !force_centering) ?
+			newHeight - height : (newHeight - height) / 2;
 		XCopyArea(
 			dpy, (resizedPixmap)? resizedPixmap:oldPixmap, *icon,
-			gc, 0, 0, width, height, (newWidth - width) / 2,
-			(newHeight > height && !force_centering) ?
-			newHeight - height : (newHeight - height) / 2);
+			gc, 0, 0, width, height, *nrx, *nry);
 	}
 
 	XFreeGC(dpy, gc);
@@ -423,6 +428,7 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 		{
 			/* Resize the icon Pixmap */
 			int force_centering = False;
+			int nrx, nry;
 
 			ICON_DBG((stderr,"ciw: Changing icon (%s) from %dx%d to"
 				  " %dx%d\n", fw->name,
@@ -441,7 +447,9 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 				fw->icon_g.picture_w_g.width,
 				fw->icon_g.picture_w_g.height, fw->iconDepth,
 				newWidth, newHeight, force_centering,
-				fw->icon_resize_type, IS_PIXMAP_OURS(fw));
+				fw->icon_resize_type, &nrx, &nry,
+				IS_PIXMAP_OURS(fw));
+
 			/* Resize the icon mask Pixmap if one was defined */
 			if (fw->icon_maskPixmap)
 			{
@@ -450,11 +458,29 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 					fw->icon_g.picture_w_g.width,
 					fw->icon_g.picture_w_g.height, 1,
 					newWidth, newHeight, force_centering,
-					fw->icon_resize_type,
+					fw->icon_resize_type, &nrx, &nry,
 					IS_PIXMAP_OURS(fw));
 			}
+			else if ((nrx > 0 || nry > 0) && fw->iconDepth > 1)
+			{
+				fw->icon_maskPixmap = XCreatePixmap(
+					dpy, fw->iconPixmap,
+					newWidth, newHeight, 1);
+				XSetForeground(dpy, Scr.MonoGC, 0);
+				XFillRectangle(
+					dpy, fw->icon_maskPixmap, Scr.MonoGC,
+					0, 0, newWidth, newHeight);
+				XSetForeground(dpy, Scr.MonoGC, 1);
+				XFillRectangle(
+					dpy, fw->icon_maskPixmap, Scr.MonoGC,
+					nrx, nry, fw->icon_g.picture_w_g.width,
+					fw->icon_g.picture_w_g.height);
+				XSetForeground(dpy, Scr.MonoGC, 0);
+				/* set it shaped ? YES */
+				SET_ICON_SHAPED(fw, 1);
+			}
 
-			/* Resize the icon mask Pixmap if one was defined */
+			/* Resize the icon alpha Pixmap if one was defined */
 			if (fw->icon_alphaPixmap)
 			{
 				SetIconPixmapSize(
@@ -463,7 +489,7 @@ ICON_DBG((stderr,"ciw: iph%s used '%s'\n", (fw->icon_g.picture_w_g.height)?"":" 
 					fw->icon_g.picture_w_g.height,
 					FRenderGetAlphaDepth(), newWidth,
 					newHeight, force_centering,
-					fw->icon_resize_type,
+					fw->icon_resize_type, &nrx, &nry,
 					IS_PIXMAP_OURS(fw));
 			}
 
