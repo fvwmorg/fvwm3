@@ -12,6 +12,9 @@ Changes in alpha release 2.5.2 (not released yet)
 * Always display the current desk number in the FvwmPager window
   title.
 
+* Allow to bind a function to the focus click and pass it to the
+  application at the same time.
+
 -------------------------------------------------------------------
 
 Changes in alpha release 2.5.1 (26-Apr-2002)

@@ -1,5 +1,9 @@
 2002-05-21  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/events.c (HandleButtonPress):
+	allow to pass the focus click to applications and have a function bound
+	to it at the same time
+
 	* fvwm/fvwm.c:
 	* fvwm/colorset.h:
 	fixed compilation problem

@@ -18,30 +18,30 @@
  * by Rob Nation
  ****************************************************************************/
 /*****************************************************************************/
-/**       Copyright 1988 by Evans & Sutherland Computer Corporation,        **/
-/**                          Salt Lake City, Utah                           **/
+/**	  Copyright 1988 by Evans & Sutherland Computer Corporation,	    **/
+/**			     Salt Lake City, Utah			    **/
 /**  Portions Copyright 1989 by the Massachusetts Institute of Technology   **/
-/**                        Cambridge, Massachusetts                         **/
-/**                                                                         **/
-/**                           All Rights Reserved                           **/
-/**                                                                         **/
+/**			   Cambridge, Massachusetts			    **/
+/**									    **/
+/**			      All Rights Reserved			    **/
+/**									    **/
 /**    Permission to use, copy, modify, and distribute this software and    **/
 /**    its documentation  for  any  purpose  and  without  fee is hereby    **/
-/**    granted, provided that the above copyright notice appear  in  all    **/
-/**    copies and that both  that  copyright  notice  and  this  permis-    **/
+/**    granted, provided that the above copyright notice appear	 in  all    **/
+/**    copies and that both  that  copyright  notice  and  this	 permis-    **/
 /**    sion  notice appear in supporting  documentation,  and  that  the    **/
 /**    names of Evans & Sutherland and M.I.T. not be used in advertising    **/
-/**    in publicity pertaining to distribution of the  software  without    **/
-/**    specific, written prior permission.                                  **/
-/**                                                                         **/
+/**    in publicity pertaining to distribution of the  software	 without    **/
+/**    specific, written prior permission.				    **/
+/**									    **/
 /**    EVANS & SUTHERLAND AND M.I.T. DISCLAIM ALL WARRANTIES WITH REGARD    **/
 /**    TO THIS SOFTWARE, INCLUDING ALL IMPLIED WARRANTIES  OF  MERCHANT-    **/
-/**    ABILITY  AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
+/**    ABILITY	AND  FITNESS,  IN  NO  EVENT SHALL EVANS & SUTHERLAND OR    **/
 /**    M.I.T. BE LIABLE FOR ANY SPECIAL, INDIRECT OR CONSEQUENTIAL  DAM-    **/
-/**    AGES OR  ANY DAMAGES WHATSOEVER  RESULTING FROM LOSS OF USE, DATA    **/
+/**    AGES OR	ANY DAMAGES WHATSOEVER	RESULTING FROM LOSS OF USE, DATA    **/
 /**    OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER    **/
-/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH  THE  USE    **/
-/**    OR PERFORMANCE OF THIS SOFTWARE.                                     **/
+/**    TORTIOUS ACTION, ARISING OUT OF OR IN  CONNECTION  WITH	THE  USE    **/
+/**    OR PERFORMANCE OF THIS SOFTWARE.					    **/
 /*****************************************************************************/
 
 /* ---------------------------- included header files ----------------------- */
@@ -101,7 +101,7 @@
 /* ---------------------------- local definitions --------------------------- */
 
 #ifndef XUrgencyHint
-#define XUrgencyHint            (1L << 8)
+#define XUrgencyHint		(1L << 8)
 #endif
 
 /*
@@ -201,7 +201,7 @@ static Bool test_map_request(
 	Bool rc;
 
 	cie_args = (check_if_event_args *)arg;
-        cie_args->ret_does_match = False;
+	cie_args->ret_does_match = False;
 	if (event->type == MapRequest &&
 	    event->xmaprequest.window == cie_args->w)
 	{
@@ -226,7 +226,7 @@ static Bool test_resizing_event(
 	Bool rc;
 
 	cie_args = (check_if_event_args *)arg;
-        cie_args->ret_does_match = False;
+	cie_args->ret_does_match = False;
 	if (event->xany.window != cie_args->w)
 	{
 		return False;
@@ -430,14 +430,14 @@ void HandleButtonPress(void)
 			if (!DO_NOT_PASS_CLICK_FOCUS_CLICK(Fw) ||
 			    get_focus_window() != Fw)
 			{
-				XAllowEvents(dpy,ReplayPointer,CurrentTime);
-				/*	return;*/
+				/* fall through and pass the click to the app
+				 * later. */
 			}
 			else /* don't pass click to just focused window */
 			{
 				XAllowEvents(dpy,AsyncPointer,CurrentTime);
+				UngrabEm(GRAB_PASSIVE);
 			}
-			UngrabEm(GRAB_PASSIVE);
 		}
 		if (!IS_ICONIFIED(Fw))
 		{
@@ -795,10 +795,10 @@ void HandleConfigureRequest(void)
 
 	/*
 	 * According to the July 27, 1988 ICCCM draft, we should ignore size
-         * and position fields in the WM_NORMAL_HINTS property when we map a
-         * window. Instead, we'll read the current geometry.  Therefore, we
-         * should respond to configuration requests for windows which have
-         * never been mapped.
+	 * and position fields in the WM_NORMAL_HINTS property when we map a
+	 * window. Instead, we'll read the current geometry.  Therefore, we
+	 * should respond to configuration requests for windows which have
+	 * never been mapped.
 	 */
 	if (!Fw || cre->window == FW_W_ICON_TITLE(Fw) ||
 	    cre->window == FW_W_ICON_PIXMAP(Fw))
@@ -880,7 +880,7 @@ void HandleConfigureRequest(void)
 		}
 	}
 
-	/*  Stacking order change requested...  */
+	/*  Stacking order change requested...	*/
 	/*  Handle this *after* geometry changes, since we need the new
 	    geometry in occlusion calculations */
 	if ((cre->value_mask & CWStackMode) && !DO_IGNORE_RESTACK(Fw))
@@ -890,7 +890,7 @@ void HandleConfigureRequest(void)
 		if (cre->value_mask & CWSibling)
 		{
 			if (XFindContext(dpy, cre->above, FvwmContext,
-                                         (caddr_t *) &otherwin) == XCNOENT)
+					 (caddr_t *) &otherwin) == XCNOENT)
 			{
 				otherwin = NULL;
 			}
@@ -902,8 +902,8 @@ void HandleConfigureRequest(void)
 		if ((cre->detail != Above) && (cre->detail != Below))
 		{
 			HandleUnusualStackmodes(
-                                cre->detail, Fw, cre->window, otherwin,
-                                cre->above);
+				cre->detail, Fw, cre->window, otherwin,
+				cre->above);
 		}
 		/* only allow clients to restack windows within their layer */
 		else if (!otherwin || compare_window_layers(otherwin, Fw) != 0)
@@ -1017,11 +1017,11 @@ void HandleConfigureRequest(void)
 			(CWX | CWY | CWWidth | CWHeight | CWBorderWidth);
 #if 0
 		/* free some CPU */
-                /* dv (7 May 2002): No, it's better to reschedule processes here
-                 * because some funny applications (XMMS, GTK) seem to expect
-                 * that ConfigureRequests are handles instantly or they will
-                 * freak out. */
-                usleep(1);
+		/* dv (7 May 2002): No, it's better to reschedule processes here
+		 * because some funny applications (XMMS, GTK) seem to expect
+		 * that ConfigureRequests are handles instantly or they will
+		 * freak out. */
+		usleep(1);
 #endif
 		while (1)
 		{
@@ -1042,7 +1042,7 @@ void HandleConfigureRequest(void)
 			{
 				/* Can't merge events with a PropertyNotify in
 				 * between.  The event is still on the queue.
-                                 */
+				 */
 				break;
 			}
 			else if (args.ret_type != ConfigureRequest)
@@ -1102,13 +1102,13 @@ void HandleConfigureRequest(void)
 #if 0
 		fprintf(stderr,
 			"cre: %d(%d) %d(%d) %d(%d)x%d(%d) fw 0x%08x w 0x%08x "
-                        "ew 0x%08x  '%s'\n",
+			"ew 0x%08x  '%s'\n",
 			cre->x, (int)(cre->value_mask & CWX),
 			cre->y, (int)(cre->value_mask & CWY),
 			cre->width, (int)(cre->value_mask & CWWidth),
 			cre->height, (int)(cre->value_mask & CWHeight),
 			(int)FW_W_FRAME(Fw), (int)FW_W(Fw), (int)cre->window,
-                        (Fw->name.name) ? Fw->name.name : "");
+			(Fw->name.name) ? Fw->name.name : "");
 #endif
 		/* Don't modify frame_XXX fields before calling SetupWindow! */
 		dx = 0;
@@ -1184,7 +1184,7 @@ void HandleConfigureRequest(void)
 		/*
 		 * SetupWindow (x,y) are the location of the upper-left outer
 		 * corner and are passed directly to XMoveResizeWindow (frame).
-		 *  The (width,height) are the inner size of the frame.  The
+		 *  The (width,height) are the inner size of the frame.	 The
 		 * inner width is the same as the requested client window
 		 * width; the inner height is the same as the requested client
 		 * window height plus any title bar slop.
@@ -1349,7 +1349,7 @@ void HandleEnterNotify(void)
 		/* Ignore events generated by grabbing or ungrabbing the
 		 * pointer.  However, there is no way to prevent the client
 		 * application from handling this event and, for example,
-		 * grabbing the focus.  This will interfere with functions that
+		 * grabbing the focus.	This will interfere with functions that
 		 * transferred the focus to a different window. */
 		if (is_initial_ungrab_pending)
 		{
@@ -1445,31 +1445,31 @@ void HandleEnterNotify(void)
 	  /* check for edge commands */
 	  if (ewp->window == Scr.PanFrameTop.win &&
 	       Scr.PanFrameTop.command != NULL)
-          {
-                  old_execute_function(
-                          NULL, Scr.PanFrameTop.command, Fw, &Event,
-                          C_WINDOW, -1, 0, NULL);
+	  {
+		  old_execute_function(
+			  NULL, Scr.PanFrameTop.command, Fw, &Event,
+			  C_WINDOW, -1, 0, NULL);
 	  }
 	  else if (ewp->window == Scr.PanFrameBottom.win &&
 		    Scr.PanFrameBottom.command != NULL)
-          {
-                  old_execute_function(
-                          NULL, Scr.PanFrameBottom.command, Fw, &Event,
-                          C_WINDOW, -1, 0, NULL);
+	  {
+		  old_execute_function(
+			  NULL, Scr.PanFrameBottom.command, Fw, &Event,
+			  C_WINDOW, -1, 0, NULL);
 	  }
 	  else if (ewp->window == Scr.PanFrameLeft.win &&
 		    Scr.PanFrameLeft.command != NULL)
-          {
-                  old_execute_function(
-                          NULL, Scr.PanFrameLeft.command, Fw, &Event,
-                          C_WINDOW, -1, 0, NULL);
+	  {
+		  old_execute_function(
+			  NULL, Scr.PanFrameLeft.command, Fw, &Event,
+			  C_WINDOW, -1, 0, NULL);
 	  }
 	  else if (ewp->window == Scr.PanFrameRight.win &&
 		    Scr.PanFrameRight.command != NULL)
-          {
-                  old_execute_function(
-                          NULL, Scr.PanFrameRight.command, Fw, &Event,
-                          C_WINDOW, -1, 0, NULL);
+	  {
+		  old_execute_function(
+			  NULL, Scr.PanFrameRight.command, Fw, &Event,
+			  C_WINDOW, -1, 0, NULL);
 	  }
 	  else {
 	    /* no edge command for this pan frame - so we do HandlePaging */
@@ -1518,7 +1518,7 @@ void HandleEnterNotify(void)
 		 do_accept_input_focus(Fw))
 	{
 		/* We have to refresh the focus window here in case we left the
-		 * focused fvwm window.  Motif apps may lose the input focus
+		 * focused fvwm window.	 Motif apps may lose the input focus
 		 * otherwise.  But do not try to refresh the focus of
 		 * applications that want to handle it themselves. */
 		FOCUS_SET(FW_W(Fw));
@@ -1564,8 +1564,8 @@ void HandleExpose(void)
 {
 #if 0
 	/* This doesn't work well. Sometimes, the expose count is zero although
-	 * dozens of expose events are pending.  This happens all the time
-	 * during a shading animation.  Simply flush expose events
+	 * dozens of expose events are pending.	 This happens all the time
+	 * during a shading animation.	Simply flush expose events
 	 * unconditionally. */
 	if (Event.xexpose.count != 0)
 	{
@@ -1820,7 +1820,7 @@ void HandleLeaveNotify(void)
 		/* Ignore events generated by grabbing or ungrabbing the
 		 * pointer.  However, there is no way to prevent the client
 		 * application from handling this event and, for example,
-		 * grabbing the focus.  This will interfere with functions that
+		 * grabbing the focus.	This will interfere with functions that
 		 * transferred the focus to a different window. */
 		if (Event.xcrossing.mode == NotifyGrab && Fw &&
 		    (Event.xcrossing.window == FW_W(Fw) ||
@@ -2307,7 +2307,7 @@ void HandlePropertyNotify(void)
 	{
 		/* background change */
 		/* _XA_XSETROOT_ID is used by fvwm-root, xli and more (xv sends
-		 * no property  notify?).  _XA_XROOTPMAP_ID is used by Esetroot
+		 * no property	notify?).  _XA_XROOTPMAP_ID is used by Esetroot
 		 * compatible program: the problem here is that with some
 		 * Esetroot compatible program we get the message _before_ the
 		 * background change. This is fixed with Esetroot 9.2 (not yet
@@ -2464,13 +2464,13 @@ void HandlePropertyNotify(void)
 		 * pixmap or window or has reset the hints to `no icon'.
 		 */
 		if ((Fw->wmhints->flags & IconPixmapHint) ||
-		    (old_wmhints_flags       & IconPixmapHint))
+		    (old_wmhints_flags	     & IconPixmapHint))
 		{
 ICON_DBG((stderr,"hpn: iph changed (%d) '%s'\n", !!(int)(Fw->wmhints->flags & IconPixmapHint), Fw->name));
 			has_icon_pixmap_hint_changed = True;
 		}
 		if ((Fw->wmhints->flags & IconWindowHint) ||
-		    (old_wmhints_flags       & IconWindowHint))
+		    (old_wmhints_flags	     & IconWindowHint))
 		{
 ICON_DBG((stderr,"hpn: iwh changed (%d) '%s'\n", !!(int)(Fw->wmhints->flags & IconWindowHint), Fw->name));
 			has_icon_window_hint_changed = True;
@@ -2590,8 +2590,8 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 		cie_args.cr_value_mask = 0;
 		XCheckIfEvent(dpy, &e, test_resizing_event, (char *)&cie_args);
 #if 0
-                /* dv (7 May 2002): Must handle this immediately since xterm
-                 * relies on that behaviour. */
+		/* dv (7 May 2002): Must handle this immediately since xterm
+		 * relies on that behaviour. */
 		if (cie_args.ret_type == PropertyNotify)
 		{
 			/* do nothing */
@@ -2669,7 +2669,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 				get_relative_geometry(&new_g, &Fw->normal_g);
 				if (IS_SHADED(Fw))
 					get_shaded_geometry(Fw, &new_g, &new_g);
-                                frame_setup_window_app_request(
+				frame_setup_window_app_request(
 					Fw, new_g.x, new_g.y, new_g.width,
 					new_g.height, False);
 			}
@@ -2682,7 +2682,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 				/* domivogt (07-Apr-2000): as terrible hack to
 				 * work around a xterm bug: when the font size
 				 * is changed in a xterm, xterm simply assumes
-				 * that the wm will grant its new size.  Of
+				 * that the wm will grant its new size.	 Of
 				 * course this is wrong if the xterm is
 				 * maximised.  To make xterm happy, we first
 				 * send a ConfigureNotify with the current
@@ -2712,7 +2712,7 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Fw->name));
 						get_shaded_geometry(
 							Fw, &new_g, &new_g);
 					}
-                                        frame_setup_window_app_request(
+					frame_setup_window_app_request(
 						Fw, new_g.x, new_g.y,
 						new_g.width, new_g.height,
 						False);
@@ -2826,7 +2826,7 @@ void HandleReparentNotify(void)
 /***********************************************************************
  *
  *  Procedure:
- *      HandleShapeNotify - shape notification event handler
+ *	HandleShapeNotify - shape notification event handler
  *
  ***********************************************************************/
 void HandleShapeNotify (void)
@@ -2949,7 +2949,7 @@ void HandleUnmapNotify(void)
 
 	/*
 	 * The program may have unmapped the client window, from either
-	 * NormalState or IconicState.  Handle the transition to WithdrawnState.
+	 * NormalState or IconicState.	Handle the transition to WithdrawnState.
 	 *
 	 * We need to reparent the window back to the root (so that fvwm exiting
 	 * won't cause it to get mapped) and then throw away all state (pretend
@@ -3008,7 +3008,7 @@ void HandleUnmapNotify(void)
  *
  *  Procedure:
  *	HandleVisibilityNotify - record fully visible windows for
- *      use in the RaiseLower function and the OnTop type windows.
+ *	use in the RaiseLower function and the OnTop type windows.
  *
  ************************************************************************/
 void HandleVisibilityNotify(void)
@@ -3051,28 +3051,28 @@ void InitEventHandlerJumpTable(void)
 	{
 		EventHandlerJumpTable[i] = NULL;
 	}
-	EventHandlerJumpTable[Expose] =           HandleExpose;
-	EventHandlerJumpTable[DestroyNotify] =    HandleDestroyNotify;
-	EventHandlerJumpTable[MapRequest] =       HandleMapRequest;
-	EventHandlerJumpTable[MapNotify] =        HandleMapNotify;
-	EventHandlerJumpTable[UnmapNotify] =      HandleUnmapNotify;
-	EventHandlerJumpTable[ButtonPress] =      HandleButtonPress;
-	EventHandlerJumpTable[EnterNotify] =      HandleEnterNotify;
-	EventHandlerJumpTable[LeaveNotify] =      HandleLeaveNotify;
-	EventHandlerJumpTable[FocusIn] =          HandleFocusIn;
-	EventHandlerJumpTable[FocusOut] =         HandleFocusOut;
+	EventHandlerJumpTable[Expose] =		  HandleExpose;
+	EventHandlerJumpTable[DestroyNotify] =	  HandleDestroyNotify;
+	EventHandlerJumpTable[MapRequest] =	  HandleMapRequest;
+	EventHandlerJumpTable[MapNotify] =	  HandleMapNotify;
+	EventHandlerJumpTable[UnmapNotify] =	  HandleUnmapNotify;
+	EventHandlerJumpTable[ButtonPress] =	  HandleButtonPress;
+	EventHandlerJumpTable[EnterNotify] =	  HandleEnterNotify;
+	EventHandlerJumpTable[LeaveNotify] =	  HandleLeaveNotify;
+	EventHandlerJumpTable[FocusIn] =	  HandleFocusIn;
+	EventHandlerJumpTable[FocusOut] =	  HandleFocusOut;
 	EventHandlerJumpTable[ConfigureRequest] = HandleConfigureRequest;
-	EventHandlerJumpTable[ClientMessage] =    HandleClientMessage;
-	EventHandlerJumpTable[PropertyNotify] =   HandlePropertyNotify;
-	EventHandlerJumpTable[KeyPress] =         HandleKeyPress;
+	EventHandlerJumpTable[ClientMessage] =	  HandleClientMessage;
+	EventHandlerJumpTable[PropertyNotify] =	  HandlePropertyNotify;
+	EventHandlerJumpTable[KeyPress] =	  HandleKeyPress;
 	EventHandlerJumpTable[VisibilityNotify] = HandleVisibilityNotify;
-	EventHandlerJumpTable[ColormapNotify] =   HandleColormapNotify;
+	EventHandlerJumpTable[ColormapNotify] =	  HandleColormapNotify;
 	if (FShapesSupported)
 	{
 		EventHandlerJumpTable[FShapeEventBase+FShapeNotify] =
 			HandleShapeNotify;
 	}
-	EventHandlerJumpTable[SelectionClear]   = HandleSelectionClear;
+	EventHandlerJumpTable[SelectionClear]	= HandleSelectionClear;
 	EventHandlerJumpTable[SelectionRequest] = HandleSelectionRequest;
 	EventHandlerJumpTable[ReparentNotify] = HandleReparentNotify;
 	STROKE_CODE(EventHandlerJumpTable[ButtonRelease] = HandleButtonRelease);
@@ -3327,9 +3327,9 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
 		/* Express route out of FVWM ... */
 		if (isTerminated)
-                {
-                        return 0;
-                }
+		{
+			return 0;
+		}
 	} while (num_fd < 0);
 
 	if (num_fd > 0)
