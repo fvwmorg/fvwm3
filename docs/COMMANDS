@@ -68,108 +68,110 @@ The currently recognized fvwm commands:
   Function              - Execute an Fvwm function
   GlobalOpts            - Obsolete option setting, replaced by Style *
   GnomeButton           - Pass mouse button presses on root to gnome program
-  GnomeShowDesks        - 
-  GotoDesk              -
-  GotoDeskAndPage       -
-  GotoPage              -
-  HideGeometryWindow    -
-  HilightColor          -
-  HilightColorset       -
-  IconFont              -
-  Iconify               -
-  IconPath              -
-  IgnoreModifiers       -
-  ImagePath             -
-  Key                   -
-  KillModule            -
-  Layer                 -
-  Lower                 -
-  Maximize              -
-  Menu                  -
-  MenuStyle             -
-  Module                -
-  ModulePath            -
-  ModuleSynchronous     -
-  ModuleTimeout         -
-  Mouse                 -
-  Move                  -
-  MoveThreshold         -
-  MoveToDesk            -
-  MoveToPage            -
-  MoveToScreen          -
-  Next                  -
-  None                  -
-  Nop                   -
-  NoWindow              -
-  OpaqueMoveSize        -
-  Pick                  -
-  PipeRead              -
-  PixmapPath            -
-  PlaceAgain            -
-  PointerKey            -
-  PointerWindow         -
-  Popup                 -
-  Prev                  -
-  PrintInfo             -
-  PropertyChange        -
-  Quit                  -
-  QuitScreen            -
-  QuitSession           -
-  Raise                 -
-  RaiseLower            -
-  Read                  -
-  ReadWriteColors       -
-  Recapture             -
-  RecaptureWindow       -
-  Refresh               -
-  RefreshWindow         -
-  Repeat                -
-  Resize                -
-  ResizeMaximize        -
-  ResizeMove            -
-  ResizeMoveMaximize    -
-  Restart               -
-  SaveQuitSession       -
-  SaveSession           -
-  Schedule              -
-  Scroll                -
-  Send_ConfigInfo       -
-  Send_WindowList       -
-  SendToModule          -
-  set_mask              -
-  set_nograb_mask       -
-  set_sync_mask         -
-  SetAnimation          -
-  SetEnv                -
-  Silent                -
-  SnapAttraction        -
-  SnapGrid              -
-  State                 -
-  Stick                 -
-  Stroke                -
-  StrokeFunc            -
-  Style                 -
-  TearMenuOff           -
-  ThisWindow            -
-  Title                 -
-  TitleStyle            -
-  Unalias               -
-  UnsetEnv              -
-  UpdateDecor           -
-  UpdateStyles          -
-  Wait                  -
-  WarpToWindow          -
-  WindowFont            -
-  WindowId              -
-  WindowList            -
-  WindowShade           -
-  WindowShadeAnimate    -
-  Xinerama              -
-  XineramaPrimaryScreen -
-  XineramaSls           -
-  XineramaSlsScreens    -
-  XineramaSlsSize       -
-  XorPixmap             -
-  XorValue              -
-  XSync                 -
-  XSynchronize          -
+  GnomeShowDesks        - ?Not documented
+  GotoDesk              - Switch viewport to another desk
+  GotoDeskAndPage       - Switch viewport to another desk and page
+  GotoPage              - Switch viewport to another page
+  HideGeometryWindow    - Hide/show the position/size window
+  HilightColor          - Obsolete command use Style options HighlightFore/Back
+  HilightColorset       - Obsolete command use Style options HighlightColorset
+  IconFont              - Obsolete command use Style option IconFont
+  Iconify               - Change iconification status of a window
+  IconPath              - Obsolete command replaced by ImagePath
+  IgnoreModifiers       - Modifiers to ignore on mouse and key bindings
+  ImagePath             - Directories to search for images
+  Key                   - Bind or unbind a key to an fvwm action
+  KillModule            - Stops an fvwm module
+  Layer                 - Change the layer of a window
+  Lower                 - Lowers a window within a layer
+  Maximize              - Toggle fullscreen status of a window
+  Menu                  - Display a menu
+  MenuStyle             - Control appearance and behavior of a menu
+  Module                - Invoke an fvwm module
+  ModulePath            - Modify the directories to search for an fvwm module
+  ModuleSynchronous     - Invoke and fvwm module synchronously
+  ModuleTimeout         - Set timeout value for response from module
+  Mouse                 - Bind or unbind a mouse button press to an fvwm action
+  Move                  - Move a window
+  MoveThreshold         - Set number of pixels in a click vs. a drag
+  MoveToDesk            - Move selected window to another desk
+  MoveToPage            - Move selected window to another page
+  MoveToScreen          - Moves the selected window to another Xinerama screen
+  Next                  - Find the next window matching conditions and run command
+  None                  - Perform command if no window matches conditions
+  Nop                   - Do nothing (used internally)
+  NoWindow              - Prefix that runs a command without a window context
+  OpaqueMoveSize        - Set maximum size window fvwm should move opaquely
+  Pick                  - Controls window picked for command?
+  PipeRead              - Execute a command, interpret output as fvwm commands
+  PixmapPath            - Obsolete command replaced by ImagePath
+  PlaceAgain            - Replace a window using initial window placement logic
+  PointerKey            - Bind an action to a key based on pointer location not focus
+  PointerWindow         - Do command if window under pointer meets conditions
+  Popup                 - Pop up a menu
+  Prev                  - Find the previous window matching conditions and run command
+  PrintInfo             - Print information about the state of fvwm
+  PropertyChange        - ?Not documented
+  Quit                  - Exit fvwm
+  QuitScreen            - Stop managing the screen this command is issued on
+  QuitSession           - Cause session manager to shut down fvwm
+  Raise                 - Raise a window in a layer
+  RaiseLower            - Alternately raise or lower a window in a layer
+  Read                  - Read fvwm commands from a file
+  ReadWriteColors       - ?Not documented
+  Recapture             - Obsolete command used to reapply styles to all windows
+  RecaptureWindow       - Obsolete command used to reapply styles to one window
+  Refresh               - Cause all windows to redraw themselves
+  RefreshWindow         - Cause one window to redraw itself
+  Repeat                - ?Not documented
+  Resize                - Cause a window to be resized
+  ResizeMaximize        - Resize a window and mark window as maximized
+  ResizeMove            - Resize and move in one operation
+  ResizeMoveMaximize    - Resize and move in one operation and mark window as maximized
+  Restart               - Restart fvwm
+  SaveQuitSession       - Cause session manager to save and shutdown fvwm
+  SaveSession           - Cause session manager to save the session
+  Schedule              - Run an fvwm command after a delay
+  Scroll                - Scroll the desktop viewport
+  Send_ConfigInfo       - ?Not documented - internal command
+  Send_WindowList       - ?Not documented - internal command
+  SendToModule          - Send a string to a module
+  set_mask              - ?Not documented - internal command
+  set_nograb_mask       - ?Not documented - internal command
+  set_sync_mask         - ?Not documented - internal command
+  SetAnimation          - Control animated moves and menus
+  SetEnv                - Set an environment variable
+  Silent                - Suppress errors on command, avoid window selection
+  SnapAttraction        - Control attraction of windows during move
+  SnapGrid              - Control grid used with SnapAttraction
+  State                 - Control used defined window states
+  Stick                 - Change window stickyness
+  StickAcrossDesks      - Change window stickyness on a desk basis
+  StickAcrossPages      - Change window stickyness on a page basis
+  Stroke                - Bind a stroke to an fvwm action
+  StrokeFunc            - Record stroke and execute corresponding stroke action
+  Style                 - Set attributes of window(s) that match a pattern
+  TearMenuOff           - ?Not documented - command under development
+  ThisWindow            - Execute command if current window matches conditions
+  Title                 - Insert title into a menu
+  TitleStyle            - Control window title
+  Unalias               - ?Not documented
+  UnsetEnv              - Remove an environment variable
+  UpdateDecor           - Deprecated command that updated window decors
+  UpdateStyles          - Cause styles to update while still in a function
+  Wait                  - Pause until a matching window appears
+  WarpToWindow          - Warp the pointer to a window
+  WindowFont            - Obsolete command replaced by Style Font
+  WindowId              - Execute command for window matching the windowid
+  WindowList            - Popup a menu to select a window
+  WindowShade           - Shade/unshade a window
+  WindowShadeAnimate    - Obsolete command, use windowshadesteps
+  Xinerama              - Control Xinerama support
+  XineramaPrimaryScreen - Identify Xinerama primary screen
+  XineramaSls           - Control single logical screen support
+  XineramaSlsScreens    - Configure layout for single logical screen
+  XineramaSlsSize       - Configure layout for single logical screen sizes
+  XorPixmap             - Use a pixmap for move/resize rubberband
+  XorValue              - Change bits used for move/resize rubberband
+  XSync                 - Debugging command sends all pending requests to X server
+  XSynchronize          - Debugging command causes all X requests to be synchronous
