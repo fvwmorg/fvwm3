@@ -1,3 +1,8 @@
+Mon Nov 16 20:30:16 1998  DanEspen  <dje@blue>
+
+      * libs/ColorUtils.c (BRIGHTNESS_FACTOR): Set adjustment factors
+      to fvwm2 defaults instead of scwm numbers.   
+
 Sun Nov 15 12:24:12 1998  DanEspen  <dje@blue>
 
 	* NEWS: Document shadow/hilite change.
