@@ -106,7 +106,8 @@ static void activate_binding(
 	{
 		return;
 	}
-	if (do_grab_root)
+	if (do_grab_root ||
+	    (binding->type == KEY_BINDING && binding->Context == C_ALL))
 	{
 		/* necessary for key bindings that work over unfocused windows
 		 */
