@@ -59,6 +59,19 @@
 #include "libs/Module.h"
 #include "libs/fvwmlib.h"
 
+/* here is the old double parens trick. */
+/* #define DEBUG */
+#ifdef DEBUGTOFILE
+#define DEBUG
+#endif
+#ifdef DEBUG
+#define myfprintf(X) \
+  fprintf X;\
+  fflush (stderr);
+#else
+#define myfprintf(X)
+#endif
+
 /***********************************************************************
  *
  *  Procedure:
@@ -67,6 +80,7 @@
  ***********************************************************************/
 void DeadPipe(int nonsense)
 {
+  myfprintf((stderr,"Leaving via DeadPipe\n"));
   exit(0);
 }
 
@@ -93,6 +107,14 @@ int main(int argc, char **argv)
   struct timeval *delay;
   fd_set in_fdset;
   char raise_immediately;
+#ifdef DEBUG
+  int count = 0;
+  char big_int_area[32];
+#endif
+
+#ifdef DEBUGTOFILE
+  freopen(".FvwmAutoDebug","w",stderr);
+#endif
 
   if(argc < 7 || argc > 9)
   {
@@ -143,16 +165,12 @@ int main(int argc, char **argv)
   {
     char raise_window_now;
     static char have_new_window = 0;
-#ifdef DEBUG
-static int count = 0;
-#endif
 
     FD_ZERO(&in_fdset);
     FD_SET(fd[1],&in_fdset);
 
-#ifdef DEBUG
-fprintf(stderr,"\nstart %d (ri = %d, hnw = %d, usec = %d)\n", count++, raise_immediately, have_new_window, usec);
-#endif
+    myfprintf((stderr,"\nstart %d (ri = %d, hnw = %d, usec = %d)\n",
+               count++, raise_immediately, have_new_window, usec));
     if (!raise_immediately)
     {
       /* fill in struct - modified by select() */
@@ -164,12 +182,10 @@ fprintf(stderr,"\nstart %d (ri = %d, hnw = %d, usec = %d)\n", count++, raise_imm
       /* delay is already a NULL pointer */
     }
 #ifdef DEBUG
-fprintf(stderr,"select: delay = ");
-if (have_new_window)
-fprintf(stderr,"%d usecs\n", delay->tv_usec);
-else fprintf(stderr,"infinite\n");
+    sprintf(big_int_area,"%d usecs",delay->tv_usec);
 #endif
-
+    myfprintf((stderr,"select: delay = %s\n",
+               (have_new_window) ? big_int_area : "infinite" ));
     select(fd_width, SELECT_FD_SET_CAST &in_fdset, 0, 0,
 	   (have_new_window) ? delay : NULL);
 
@@ -177,43 +193,35 @@ else fprintf(stderr,"infinite\n");
     if (FD_ISSET(fd[1], &in_fdset))
     {
       FvwmPacket *packet = ReadFvwmPacket(fd[1]);
-#ifdef DEBUG
-fprintf(stderr,"pw = 0x%x, fw=0x%x, rw = 0x%x, lw=0x%x\n", packet->body[0],focus_win,raised_win,last_win);
-#endif
       if ( packet == NULL )
       {
+        myfprintf((stderr,"Leaving because of null packet\n"));
 	exit(0);
       }
+      myfprintf((stderr,"pw = 0x%x, fw=0x%x, rw = 0x%x, lw=0x%x\n",
+                packet->body[0],focus_win,raised_win,last_win));
       switch (packet->type)
       {
       case M_FOCUS_CHANGE:
 	/* it's a focus package */
 	focus_win = packet->body[0];
-#ifdef DEBUG
-fprintf(stderr,"focus change\n");
-#endif
+        myfprintf((stderr,"focus change\n"));
 	if (focus_win != raised_win)
 	{
-#ifdef DEBUG
-fprintf(stderr,"its a new window\n");
-#endif
+          myfprintf((stderr,"its a new window\n"));
 	  have_new_window = 1;
 	  raise_window_now = raise_immediately;
 	}
 #ifdef DEBUG
-else fprintf(stderr,"no new window\n");
+        else myfprintf((stderr,"no new window\n"));
 #endif
 	break;
       case M_RAISE_WINDOW:
-#ifdef DEBUG
-fprintf(stderr,"raise packet 0x%x\n", packet->body[0]);
-#endif
+        myfprintf((stderr,"raise packet 0x%x\n", packet->body[0]));
 	raised_win = packet->body[0];
 	if (have_new_window && focus_win == raised_win)
 	{
-#ifdef DEBUG
-fprintf(stderr,"its the old window: don't raise\n");
-#endif
+          myfprintf((stderr,"its the old window: don't raise\n"));
 	  have_new_window = 0;
 	}
 	break;
@@ -224,17 +232,13 @@ fprintf(stderr,"its the old window: don't raise\n");
     {
       if (have_new_window)
       {
-#ifdef DEBUG
-fprintf(stderr,"must raise now\n");
-#endif
+        myfprintf((stderr,"must raise now\n"));
 	raise_window_now = 1;
       }
     }
     if (raise_window_now)
     {
-#ifdef DEBUG
-fprintf(stderr,"raising 0x%x\n", focus_win);
-#endif
+      myfprintf((stderr,"raising 0x%x\n", focus_win));
       if (last_win && leave_fn)
       {
 	/* if focus_win isn't the root */
