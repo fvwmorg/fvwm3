@@ -1210,6 +1210,8 @@ int DeferExecution(
     return True;
   }
 
+  XGrabKeyboard(
+    dpy, Scr.Root, False, GrabModeAsync, GrabModeAsync, CurrentTime);
   while (!finished)
   {
     done = 0;
@@ -1255,6 +1257,7 @@ int DeferExecution(
 
   }
 
+  XUngrabKeyboard(dpy, CurrentTime);
   UngrabEm(GRAB_NORMAL);
   *w = eventp->xany.window;
   if(((*w == Scr.Root)||(*w == Scr.NoFocusWin))

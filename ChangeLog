@@ -1,5 +1,8 @@
 2001-04-15  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/functions.c (DeferExecution):
+	grab keyboard when selecting a window to fix similar problem
+
 	* fvwm/placement.c (PlaceWindow):
 	wire frame placement fix w/ keyboard
 
