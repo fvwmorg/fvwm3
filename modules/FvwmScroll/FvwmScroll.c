@@ -101,8 +101,7 @@ int main(int argc, char **argv)
   ScreenWidth = DisplayWidth(dpy,screen);
   
   SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO | M_SENDCONFIG);
-  G = (Graphics *)safemalloc(sizeof(Graphics));
-  memset(G, 0, sizeof(Graphics));
+  G = CreateGraphics();
   G->create_reliefGC = True;
   G->create_shadowGC = True;
   InitGraphics(dpy, G);

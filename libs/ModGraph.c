@@ -20,6 +20,15 @@
 #include "libs/ModGraph.h"
 
 /***************************************************************************
+ * create and initialize the structure used to stash graphics things
+ **************************************************************************/
+Graphics *CreateGraphics() {
+  Graphics *G = (Graphics *)safemalloc(sizeof(Graphics));
+  memset(G, 0, sizeof(Graphics));
+  return G;
+}
+
+/***************************************************************************
  * Initialises graphics stuff ready for geting graphics config from fvwm
  **************************************************************************/
 void InitGraphics(Display *dpy, Graphics *G) {

@@ -1,3 +1,7 @@
+1999-04-29  Hippo
+
+	* lib/ModGraph.{h,c}: new function (Graphics *)CreateGraphics(void);
+
 1999-04-28  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* fvwm/session.c (callback_save_yourself2): set the

@@ -124,8 +124,7 @@ int main(int argc, char **argv)
   screen= DefaultScreen(dpy);
   Root = RootWindow(dpy, screen);
   
-  G = (Graphics *)safemalloc(sizeof(Graphics));
-  memset(G, 0, sizeof(Graphics));
+  G = CreateGraphics();
   G->create_foreGC = True;
   InitGraphics(dpy, G);
 

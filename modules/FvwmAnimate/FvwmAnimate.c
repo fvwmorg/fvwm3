@@ -699,8 +699,7 @@ int main(int argc, char **argv) {
   root = DefaultRootWindow(dpy);
   scr = DefaultScreen(dpy);
 
-  G = (Graphics *)safemalloc(sizeof(Graphics));
-  memset(G, 0, sizeof(Graphics));
+  G = CreateGraphics();
   G->create_drawGC = True;
   InitGraphics(dpy, G);
 
