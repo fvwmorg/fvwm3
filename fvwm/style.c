@@ -63,7 +63,7 @@ static window_style *all_styles = NULL;
 static window_style *last_style_in_list = NULL;
 static void remove_style_from_list(window_style *style, Bool do_free_style);
 
-#define SAFEFREE( p )  {if (p)  free(p);}
+#define SAFEFREE( p )  {if (p) {free(p);(p)=NULL;}}
 
 
 /***********************************************************************
