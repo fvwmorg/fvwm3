@@ -1563,17 +1563,12 @@ int My_XNextEvent(Display *dpy, XEvent *event)
 
   DBUG("My_XNextEvent","Routine Entered");
 
-  /* Do this IMMEDIATELY prior to select, to prevent any nasty
-   * queued up X events from just hanging around waiting to be
-   * flushed */
-  XFlush(dpy);
-  if(XPending(dpy))
-    {
-      DBUG("My_XNextEvent","taking care of queued up events & returning");
-      XNextEvent(dpy,event);
-      StashEventTime(event);
-      return 1;
-    }
+  if(XPending(dpy)) {
+    DBUG("My_XNextEvent","taking care of queued up events & returning");
+    XNextEvent(dpy,event);
+    StashEventTime(event);
+    return 1;
+  }
 
   DBUG("My_XNextEvent","no X events waiting - about to reap children");
   /* Zap all those zombies! */
@@ -1599,17 +1594,12 @@ int My_XNextEvent(Display *dpy, XEvent *event)
   if (sm_fd >= 0) FD_SET(sm_fd, &in_fdset);
 #endif
   FD_ZERO(&out_fdset);
-  for(i=0; i<npipes; i++)
-    {
-      if(readPipes[i]>=0)
-	{
-	  FD_SET(readPipes[i], &in_fdset);
-	}
-      if(pipeQueue[i]!= NULL)
-	{
-	  FD_SET(writePipes[i], &out_fdset);
-	}
-    }
+  for(i=0; i<npipes; i++) {
+    if(readPipes[i]>=0)
+      FD_SET(readPipes[i], &in_fdset);
+    if(pipeQueue[i]!= NULL)
+      FD_SET(writePipes[i], &out_fdset);
+  }
 
   DBUG("My_XNextEvent","waiting for module input/output");
   XFlush(dpy);
@@ -1617,48 +1607,37 @@ int My_XNextEvent(Display *dpy, XEvent *event)
              SELECT_TYPE_ARG234 &in_fdset,
              SELECT_TYPE_ARG234 &out_fdset,
              SELECT_TYPE_ARG234 0,
-             SELECT_TYPE_ARG5   timeoutP) > 0)
-  {
+             SELECT_TYPE_ARG5   timeoutP) > 0) {
 
-  /* Check for module input. */
-  for(i=0;i<npipes;i++)
-    {
-      if(readPipes[i] >= 0)
-	{
-	  if(FD_ISSET(readPipes[i], &in_fdset))
-	    {
-	      if( read(readPipes[i],&targetWindow, sizeof(Window)) >0 )
-		{
-                  DBUG("My_XNextEvent","calling HandleModuleInput");
-		  HandleModuleInput(targetWindow,i);
-		}
-              else
-		{
-                  DBUG("My_XNextEvent","calling KillModule");
-		  KillModule(i,10);
-		}
-	    }
-	}
-      if(writePipes[i] >= 0)
-	{
-	  if(FD_ISSET(writePipes[i], &out_fdset))
-	    {
-              DBUG("My_XNextEvent","calling FlushQueue");
-	      FlushQueue(i);
-	    }
-	}
-    } /* for */
+    /* Check for module input. */
+    for (i=0; i<npipes; i++) {
+      if ((readPipes[i] >= 0) && FD_ISSET(readPipes[i], &in_fdset)) {
+        if (read(readPipes[i], &targetWindow, sizeof(Window)) > 0) {
+          DBUG("My_XNextEvent","calling HandleModuleInput");
+          HandleModuleInput(targetWindow,i);
+	} else {
+          DBUG("My_XNextEvent","calling KillModule");
+          KillModule(i,10);
+        }
+      }
+      if ((writePipes[i] >= 0) && FD_ISSET(writePipes[i], &out_fdset)) {
+        DBUG("My_XNextEvent","calling FlushQueue");
+        FlushQueue(i);
+      }
+    }
+
 #ifdef SESSION
-  if ((sm_fd >= 0) && (FD_ISSET(sm_fd, &in_fdset))) ProcessICEMsgs();
+    if ((sm_fd >= 0) && (FD_ISSET(sm_fd, &in_fdset))) ProcessICEMsgs();
 #endif
+
   } else {
-  /* select has timed out, things must have calmed down so let's decorate */
+    /* select has timed out, things must have calmed down so let's decorate */
     if (fFvwmInStartup) {
       fvwm_msg(ERR, "My_XNextEvent",
                "Some command line modules have not quit, Starting up after timeout.\n");
       StartupStuff();
       timeoutP = NULL; /* set an infinite timeout to stop ticking */
-  }
+    }
   }
 
   DBUG("My_XNextEvent","leaving My_XNextEvent");
