@@ -136,10 +136,12 @@ int activecolorset = -1;
 static int globalcolorset = -1;
 static int globalballooncolorset = -1;
 static int globalhighcolorset = -1;
-Pixel win_back_pix = -1;
-Pixel win_fore_pix = -1;
-Pixel win_hi_back_pix = -1;
-Pixel win_hi_fore_pix = -1;
+Pixel win_back_pix;
+Pixel win_fore_pix;
+Bool win_pix_set = False;
+Pixel win_hi_back_pix;
+Pixel win_hi_fore_pix;
+Bool win_hi_pix_set = False;
 char fAlwaysCurrentDesk = 0;
 PagerStringList string_list = { NULL, 0, -1, -1, -1, NULL, NULL, NULL };
 Bool is_transient = False;
@@ -600,7 +602,7 @@ void list_add(unsigned long *body)
   (*prev)->icon_w = cfgpacket->icon_w;
   (*prev)->icon_pixmap_w = cfgpacket->icon_pixmap_w;
 
-  if ((win_fore_pix != -1) && (win_back_pix != -1))
+  if (win_pix_set)
   {
         (*prev)->text = win_fore_pix;
         (*prev)->back = win_back_pix;
@@ -649,7 +651,7 @@ void list_configure(unsigned long *body)
   t->icon_w = cfgpacket->icon_w;
   t->icon_pixmap_w = cfgpacket->icon_pixmap_w;
 
-  if ((win_fore_pix != -1) && (win_back_pix != -1))
+  if (win_pix_set)
   {
     t->text = win_fore_pix;
     t->back = win_back_pix;
@@ -733,7 +735,7 @@ void list_focus(unsigned long *body)
   extern Pixel focus_pix, focus_fore_pix;
   target_w = body[0];
 
-  if ((win_hi_fore_pix != -1) && (win_hi_back_pix != -1))
+  if (win_hi_pix_set)
   {
     focus_pix = win_hi_back_pix;
     focus_fore_pix = win_hi_fore_pix;

@@ -55,6 +55,7 @@ Pixel focus_pix;
 Pixel focus_fore_pix;
 extern int windowcolorset, activecolorset;
 extern Pixel win_back_pix, win_fore_pix, win_hi_back_pix, win_hi_fore_pix;
+extern Bool win_pix_set, win_hi_pix_set;
 extern int window_w, window_h,window_x,window_y,usposition,uselabel,xneg,yneg;
 extern int StartIconic;
 extern int MiniIcons;
@@ -295,19 +296,23 @@ void initialize_pager(void)
   if (windowcolorset >= 0) {
     win_back_pix = Colorset[windowcolorset].bg;
     win_fore_pix = Colorset[windowcolorset].fg;
+    win_pix_set = True;
   } else if (WindowBack && WindowFore)
   {
-    win_back_pix	= GetColor(WindowBack);
-    win_fore_pix	= GetColor(WindowFore);
+    win_back_pix = GetColor(WindowBack);
+    win_fore_pix = GetColor(WindowFore);
+    win_pix_set = True;
   }
 
   if (activecolorset >= 0) {
     win_hi_back_pix = Colorset[activecolorset].bg;
     win_hi_fore_pix = Colorset[activecolorset].fg;
+    win_hi_pix_set = True;
   } else if (WindowHiBack && WindowHiFore)
   {
-    win_hi_back_pix	= GetColor(WindowHiBack);
-    win_hi_fore_pix	= GetColor(WindowHiFore);
+    win_hi_back_pix = GetColor(WindowHiBack);
+    win_hi_fore_pix = GetColor(WindowHiFore);
+    win_hi_pix_set = True;
   }
 
   balloon_border_pix = (!BalloonBorderColor)
