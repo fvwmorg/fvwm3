@@ -646,6 +646,7 @@ static void ct_Input(char *cp) {
     * item->input.size + 2 * TEXT_SPC + 2 * BOX_SPC;
   item->header.size_y = FontHeight(item->header.dt_ptr->dt_font_struct)
     + 3 * TEXT_SPC + 2 * BOX_SPC;
+  myfprintf((stderr,"Input size_y is %d\n",item->header.size_y));
 
   if (CF.cur_input == 0) {                 /* first input field */
     item->input.next_input = item;      /* ring, next field is first field */
@@ -1112,6 +1113,8 @@ void RedrawItem (Item *item, int click)
                      item->header.dt_ptr->dt_colors[c_item_bg]);
       XDrawLine(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
 		x, BOX_SPC, x, dy - BOX_SPC);
+      myfprintf((stderr,"Line %d/%d - %d/%d (first)\n",
+                     x, BOX_SPC, x, dy - BOX_SPC));
     }
     len = item->input.n - item->input.left;
     XSetForeground(dpy, item->header.dt_ptr->dt_item_GC,
@@ -1135,6 +1138,8 @@ void RedrawItem (Item *item, int click)
         + FontWidth(item->header.dt_ptr->dt_font_struct) * CF.abs_cursor - 1;
       XDrawLine(dpy, item->header.win, item->header.dt_ptr->dt_item_GC,
 		x, BOX_SPC, x, dy - BOX_SPC);
+      myfprintf((stderr,"Line %d/%d - %d/%d\n",
+                 x, BOX_SPC, x, dy - BOX_SPC));
     }
     myfprintf((stderr,"Just drew input field. click %d\n",(int)click));
     break;

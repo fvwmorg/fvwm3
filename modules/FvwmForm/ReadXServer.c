@@ -225,13 +225,13 @@ void ReadXServer ()
 	    dp = sp - 1;
 	    for (; *dp = *sp, *sp != '\0'; dp++, sp++);
 	    CF.cur_input->input.n--;
-	    goto redraw;
+	    goto redraw_newcursor;
 	  }
 	  break;
 	case '\013':  /* ^K */
 	  CF.cur_input->input.value[CF.rel_cursor] = '\0';
 	  CF.cur_input->input.n = CF.rel_cursor;
-	  goto redraw;
+	  goto redraw_newcursor;
 	case '\025':  /* ^U */
 	  old_cursor = CF.abs_cursor;
 	  CF.cur_input->input.value[0] = '\0';
@@ -289,9 +289,16 @@ void ReadXServer ()
 	  XSetForeground(dpy, CF.cur_input->header.dt_ptr->dt_item_GC,
                          CF.cur_input->header.dt_ptr->dt_colors[c_item_bg]);
           /* clear from the (old_cursor - 1) to the rest of the line */
+          /* For some reason, you have to clear one more pixel than the line
+             cursor takes or the bottom of the input box has a pixel drop.
+             dje 9/3/99 */
 	  XClearArea(dpy, CF.cur_input->header.win, x, BOX_SPC,
 		     CF.cur_input->header.size_x - BOX_SPC -2 - x,
-		     dy - 2 * BOX_SPC, False);
+		     dy - 2 * BOX_SPC + 1, False);
+          myfprintf((stderr,"clearing %d/%d %d/%d\n",
+                         x, BOX_SPC,
+                         CF.cur_input->header.size_x - BOX_SPC -2 - x,
+                         dy - BOX_SPC + 1));
 	}
       redraw:
 	{
@@ -327,6 +334,8 @@ void ReadXServer ()
 	  XDrawLine(dpy, CF.cur_input->header.win,
                     CF.cur_input->header.dt_ptr->dt_item_GC,
 		    x, BOX_SPC, x, dy - BOX_SPC);
+          myfprintf((stderr,"Line %d/%d - %d/%d (char)\n",
+                     x, BOX_SPC, x, dy - BOX_SPC));
 	}
       no_redraw:
 	break;  /* end of case KeyPress */
@@ -513,7 +522,7 @@ static void process_paste_request (XEvent *event, Item *item) {
       switch (*c) {
       case '\t':                        /* TAB */
         if (CF.cur_input == CF.cur_input->input.next_input) { /* 1 ip field */
-          process_tabtypes((unsigned char *)" ");     /* paste tab as space */
+          process_regular_char_input((unsigned char *)" "); /* paste space */
         } else {
           process_tabtypes(c);          /* jump to the next field */
         }

@@ -1,3 +1,12 @@
+Thu Sep  2 19:28:55 1999  DanEspen  <dje@blue>
+
+	* FvwmForm/Makefile.am (INCLUDES): Remove use of $< on explicit rule,
+	not allowed on inferior makes.
+
+	* FvwmForm/ReadXServer.c,FvwmForm/FvwmForm.c: Paste tab as a space
+ 	when the input form only has one input field.  Fix pixel dropping,
+ 	bad refresh with ^k and ^d.
+
 1999-09-03  Dominik Vogt  <dominik_vogt@gmx.de>
 
 	* FvwmIconMan/x.c: fixed redrawing of IconMan
