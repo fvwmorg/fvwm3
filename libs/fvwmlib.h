@@ -178,4 +178,8 @@ Bool GetResourceString(XrmDatabase db, const char *resource,
 		       const char *prefix, char **val);
 
 
+/* things in Graphics.c */
+void RelieveWindowGC(Display *dpy, Window win, int x,int y,int w,int h,
+		     GC ReliefGC, GC ShadowGC, int line_width);
+
 #endif

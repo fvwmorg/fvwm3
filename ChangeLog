@@ -1,3 +1,8 @@
+1999-03-08  Hippo
+
+	* libs/Graphics.c New function RelieveWindowGC() - draws relief lines of
+	arbitrary thickness around a rectangle.
+
 1999-03-07  Tomas Ogren  <stric@ing.umu.se>
 
 	* fvwm/resize.c, fvwm/move.c, fvwm/virtual.c: Removed some extra ;'s
