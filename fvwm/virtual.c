@@ -1431,14 +1431,25 @@ void do_move_window_to_desk(FvwmWindow *tmp_win, int desk)
 /* function with parsing of command line */
 void CMD_MoveToDesk(F_CMD_ARGS)
 {
-  int desk;
+	int desk;
 
-  if (DeferExecution(eventp,&w,&tmp_win,&context,CRS_SELECT,ButtonRelease))
-    return;
-  desk = GetDeskNumber(action);
-  if (desk == tmp_win->Desk)
-    return;
-  do_move_window_to_desk(tmp_win, desk);
+	if (DeferExecution(
+		    eventp, &w, &tmp_win, &context, CRS_SELECT, ButtonRelease))
+	{
+		return;
+	}
+	desk = GetDeskNumber(action);
+	if (IS_STICKY(tmp_win))
+	{
+		handle_stick(F_PASS_ARGS, 0);
+	}
+	if (desk == tmp_win->Desk)
+	{
+		return;
+	}
+	do_move_window_to_desk(tmp_win, desk);
+
+	return;
 }
 
 

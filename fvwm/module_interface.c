@@ -915,7 +915,7 @@ static void BroadcastNewPacket(unsigned long event_type,
             (_t)->frame_g.height,\
             (_t)->Desk,\
             (_t)->flags,\
-            (_t)->title_g.height,\
+            (_t)->title_thickness,\
             (_t)->boundary_width,\
 	    (_t)->hints.base_width,\
 	    (_t)->hints.base_height,\
@@ -945,7 +945,7 @@ static void BroadcastNewPacket(unsigned long event_type,
             (_t)->frame_g.height,\
             (_t)->Desk,\
             old_flags,\
-            (_t)->title_g.height,\
+            (_t)->title_thickness,\
             (_t)->boundary_width,\
 	    (_t)->hints.base_width,\
 	    (_t)->hints.base_height,\
@@ -1032,7 +1032,7 @@ static void BroadcastNewPacket(unsigned long event_type,
 	    (unsigned long)(0),\
             &(*(_t))->layer,\
 	    (unsigned long)(0),\
-            &(*(_t))->title_g.height,\
+            &(*(_t))->title_thickness,\
 	    (unsigned long)(0),\
             &(*(_t))->boundary_width,\
 	    (unsigned long)(0),\
@@ -1185,13 +1185,13 @@ BroadcastWindowIconNames(FvwmWindow *t, Bool window, Bool icon)
 {
   if (window)
   {
-    BroadcastName(M_WINDOW_NAME,t->w,t->frame,(unsigned long)t,t->name);
+    BroadcastName(M_WINDOW_NAME,t->w,t->frame,(unsigned long)t,t->name.name);
     BroadcastName(M_VISIBLE_NAME,t->w,t->frame,(unsigned long)t,
 		  t->visible_name);
   }
   if (icon)
   {
-    BroadcastName(M_ICON_NAME,t->w,t->frame,(unsigned long)t,t->icon_name);
+    BroadcastName(M_ICON_NAME,t->w,t->frame,(unsigned long)t,t->icon_name.name);
     BroadcastName(MX_VISIBLE_ICON_NAME,t->w,t->frame,
 		  (unsigned long)t,t->visible_icon_name);
   }
@@ -1677,9 +1677,9 @@ void CMD_Send_WindowList(F_CMD_ARGS)
 	{
 	  SendConfig(*Module,M_CONFIGURE_WINDOW,t);
 	  SendName(*Module,M_WINDOW_NAME,t->w,t->frame,
-		   (unsigned long)t,t->name);
+		   (unsigned long)t,t->name.name);
 	  SendName(*Module,M_ICON_NAME,t->w,t->frame,
-		   (unsigned long)t,t->icon_name);
+		   (unsigned long)t,t->icon_name.name);
 	  SendName(*Module,M_VISIBLE_NAME,t->w,t->frame,
 		   (unsigned long)t,t->visible_name);
 	  SendName(*Module,MX_VISIBLE_ICON_NAME,t->w,t->frame,

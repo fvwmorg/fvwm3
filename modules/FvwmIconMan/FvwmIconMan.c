@@ -181,7 +181,7 @@ main(int argc, char **argv)
   }
 #endif
 
-  FInitLocale(LC_CTYPE, "", "", "FvwmIconMan");
+  FlocaleInit(LC_CTYPE, "", "", "FvwmIconMan");
 
   OpenConsole(OUTPUT_FILE);
 

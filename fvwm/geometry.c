@@ -30,6 +30,7 @@
 #include "screen.h"
 #include "geometry.h"
 #include "module_interface.h"
+#include "borders.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -128,13 +129,14 @@ void gravity_get_naked_geometry(
 {
 	int xoff;
 	int yoff;
+	size_borders b;
 
+	get_window_borders(t, &b);
 	gravity_get_offsets(gravity, &xoff, &yoff);
 	dest_g->x = orig_g->x + ((xoff + 1) * (orig_g->width - 1)) / 2;
 	dest_g->y = orig_g->y + ((yoff + 1) * (orig_g->height - 1)) / 2;
-	dest_g->width = orig_g->width - 2 * t->boundary_width;
-	dest_g->height =
-		orig_g->height - 2 * t->boundary_width - t->title_g.height;
+	dest_g->width = orig_g->width - b.total_size.width;
+	dest_g->height = orig_g->height - b.total_size.height;
 
 	return;
 }
@@ -143,10 +145,12 @@ void gravity_get_naked_geometry(
 void gravity_add_decoration(
 	int gravity, FvwmWindow *t, rectangle *dest_g, rectangle *orig_g)
 {
+	size_borders b;
+
+	get_window_borders(t, &b);
 	*dest_g = *orig_g;
 	gravity_resize(
-		gravity, dest_g, 2 * t->boundary_width,
-		2 * t->boundary_width + t->title_g.height);
+		gravity, dest_g, b.total_size.width, b.total_size.height);
 
 	return;
 }
@@ -190,40 +194,233 @@ void gravity_translate_to_northwest_geometry_no_bw(
 	return;
 }
 
+void get_title_geometry(
+	FvwmWindow *tmp_win, rectangle *ret_g)
+{
+	size_borders b;
+	size_borders nt;
+	int w;
+	int h;
+
+	get_window_borders(tmp_win, &b);
+	get_window_borders_no_title(tmp_win, &nt);
+	w = (ret_g->width > 0) ? ret_g->width : tmp_win->frame_g.width;
+	h = (ret_g->height > 0) ? ret_g->height : tmp_win->frame_g.height;
+	ret_g->x = nt.top_left.width;
+	ret_g->y = nt.top_left.height;
+	switch (GET_TITLE_DIR(tmp_win))
+	{
+	case DIR_S:
+		ret_g->y = h - b.bottom_right.height;
+		/* fall through */
+	case DIR_N:
+		ret_g->width = w - b.total_size.width;
+		ret_g->height = tmp_win->title_thickness;
+		break;
+	case DIR_E:
+		ret_g->x = w - b.bottom_right.width;
+		/* fall through */
+	case DIR_W:
+		ret_g->width = tmp_win->title_thickness;
+		ret_g->height = h - b.total_size.height;
+		break;
+	default:
+		break;
+	}
+
+	return;
+}
+
+int get_title_gravity(
+	FvwmWindow *tmp_win)
+{
+	int grav = NorthWestGravity;
+
+	switch (GET_TITLE_DIR(tmp_win))
+	{
+	case DIR_N:
+		grav = NorthWestGravity;
+		break;
+	case DIR_S:
+		grav = SouthEastGravity;
+		break;
+	case DIR_W:
+		grav = NorthWestGravity;
+		break;
+	case DIR_E:
+		grav = SouthEastGravity;
+		break;
+	}
+
+	return grav;
+}
+
+void get_title_gravity_factors(
+	FvwmWindow *tmp_win, int *ret_fx, int *ret_fy)
+{
+	switch (GET_TITLE_DIR(tmp_win))
+	{
+	case DIR_N:
+		*ret_fx = 0;
+		*ret_fy = 1;
+		break;
+	case DIR_S:
+		*ret_fx = 0;
+		*ret_fy = -1;
+		break;
+	case DIR_W:
+		*ret_fx = 1;
+		*ret_fy = 0;
+		break;
+	case DIR_E:
+		*ret_fx = -1;
+		*ret_fy = 0;
+		break;
+	}
+
+	return;
+}
+
+Bool get_title_button_geometry(
+	FvwmWindow *tmp_win, rectangle *ret_g, int context)
+{
+	int bnum;
+
+	if (context & C_TITLE)
+	{
+		ret_g->width = 0;
+		ret_g->height = 0;
+		get_title_geometry(tmp_win, ret_g);
+
+		return True;
+
+	}
+	bnum = get_button_number(context);
+	if (bnum < 0 || tmp_win->button_w[bnum] == None)
+	{
+		return False;
+	}
+	if (XGetGeometry(
+		dpy, tmp_win->button_w[bnum], &JunkRoot, &ret_g->x, &ret_g->y,
+		&ret_g->width, &ret_g->height, &JunkBW, &JunkDepth) == 0)
+	{
+		return False;
+	}
+	XTranslateCoordinates(
+		dpy, tmp_win->decor_w, Scr.Root, ret_g->x, ret_g->y, &ret_g->x,
+		&ret_g->y, &JunkChild);
+
+	return True;
+}
+
+void get_title_font_size_and_offset(
+	FvwmWindow *tmp_win, direction_type title_dir, int *size, int *offset)
+{
+	int decor_size;
+	int extra_size;
+	int font_size;
+	int min_offset;
+	int fh;
+
+	/* adjust font offset according to height specified in title style */
+	decor_size = tmp_win->decor->title_height;
+	fh = tmp_win->title_font->height + EXTRA_TITLE_FONT_HEIGHT;
+	switch (title_dir)
+	{
+	case DIR_W:
+	case DIR_E:
+		font_size = tmp_win->title_font->max_char_width +
+			EXTRA_TITLE_FONT_WIDTH;
+		if (font_size < fh)
+		{
+			font_size = fh;
+		}
+		min_offset =
+			(EXTRA_TITLE_FONT_HEIGHT + 1) / 2 -
+			tmp_win->title_font->min_char_offset;
+		break;
+	case DIR_N:
+	case DIR_S:
+	default:
+		font_size = fh;
+		min_offset = tmp_win->title_font->ascent;
+		break;
+	}
+	extra_size = (decor_size > 0) ? decor_size - font_size : 0;
+	*offset = min_offset;
+	if (extra_size > 0)
+	{
+		*offset += extra_size / 2;
+	}
+	*size = font_size + extra_size;
+
+	return;
+}
+
+void get_icon_corner(
+	FvwmWindow *tmp_win, rectangle *ret_g)
+{
+	switch (GET_TITLE_DIR(tmp_win))
+	{
+	case DIR_N:
+	case DIR_W:
+		ret_g->x = tmp_win->frame_g.x;
+		ret_g->y = tmp_win->frame_g.y;
+		break;
+	case DIR_S:
+		ret_g->x = tmp_win->frame_g.x;
+		ret_g->y = tmp_win->frame_g.y + tmp_win->frame_g.height -
+			ret_g->height;
+		break;
+	case DIR_E:
+		ret_g->x = tmp_win->frame_g.x + tmp_win->frame_g.width -
+			ret_g->width;
+		ret_g->y = tmp_win->frame_g.y;
+		break;
+	}
+
+	return;
+}
+
 void get_shaded_geometry(
 	FvwmWindow *tmp_win, rectangle *small_g, rectangle *big_g)
 {
 	size_borders b;
 	/* this variable is necessary so the function can be called with
 	 * small_g == big_g */
+	int big_width = big_g->width;
 	int big_height = big_g->height;
 
 	get_window_borders(tmp_win, &b);
+	*small_g = *big_g;
 	switch (SHADED_DIR(tmp_win))
 	{
-	case DIR_N:
-		small_g->width = big_g->width;
-		small_g->height = b.total_size.height;
-		small_g->x = big_g->x;
-		small_g->y = big_g->y;
-		break;
 	case DIR_S:
-		small_g->width = big_g->width;
-		small_g->height = b.total_size.height;
-		small_g->x = big_g->x;
-		small_g->y = big_g->y + big_height - small_g->height;
-		break;
-#if 0
-	case DIR_W:
-	case DIR_E:
-	case DIR_NW:
-	case DIR_NE:
 	case DIR_SW:
 	case DIR_SE:
+		small_g->y = big_g->y + big_height - small_g->height;
+		/* fall through */
+	case DIR_N:
+	case DIR_NW:
+	case DIR_NE:
+		small_g->height = b.total_size.height;
 		break;
-#endif
 	default:
-		*small_g = *big_g;
+		break;
+	}
+	switch (SHADED_DIR(tmp_win))
+	{
+	case DIR_E:
+	case DIR_NE:
+	case DIR_SE:
+		small_g->x = big_g->x + big_width - small_g->width;
+		/* fall through */
+	case DIR_W:
+	case DIR_NW:
+	case DIR_SW:
+		small_g->width = b.total_size.width;
+		break;
+	default:
 		break;
 	}
 
@@ -253,6 +450,41 @@ void get_unshaded_geometry(
 	return;
 }
 
+void get_shaded_client_window_pos(
+	FvwmWindow *tmp_win, rectangle *ret_g)
+{
+	rectangle big_g;
+	size_borders b;
+
+	get_window_borders(tmp_win, &b);
+	big_g = (IS_MAXIMIZED(tmp_win)) ? tmp_win->max_g : tmp_win->normal_g;
+	get_relative_geometry(&big_g, &big_g);
+	switch (SHADED_DIR(tmp_win))
+	{
+	case DIR_S:
+	case DIR_SW:
+	case DIR_SE:
+		ret_g->y = 1 - big_g.height + b.total_size.height;
+		break;
+	default:
+		ret_g->y = 0;
+		break;
+	}
+	switch (SHADED_DIR(tmp_win))
+	{
+	case DIR_E:
+	case DIR_NE:
+	case DIR_SE:
+		ret_g->x = 1 - big_g.width + b.total_size.width;
+		break;
+	default:
+		ret_g->x = 0;
+		break;
+	}
+
+	return;
+}
+
 /* returns the dimensions of the borders */
 void get_window_borders(
 	FvwmWindow *tmp_win, size_borders *borders)
@@ -261,13 +493,20 @@ void get_window_borders(
 	borders->bottom_right.width = tmp_win->boundary_width;
 	borders->top_left.height = tmp_win->boundary_width;
 	borders->bottom_right.height = tmp_win->boundary_width;
-	if (HAS_BOTTOM_TITLE(tmp_win))
+	switch (GET_TITLE_DIR(tmp_win))
 	{
-		borders->bottom_right.height += tmp_win->title_g.height;
-	}
-	else
-	{
-		borders->top_left.height += tmp_win->title_g.height;
+	case DIR_N:
+		borders->top_left.height += tmp_win->title_thickness;
+		break;
+	case DIR_S:
+		borders->bottom_right.height += tmp_win->title_thickness;
+		break;
+	case DIR_W:
+		borders->top_left.width += tmp_win->title_thickness;
+		break;
+	case DIR_E:
+		borders->bottom_right.width += tmp_win->title_thickness;
+		break;
 	}
 	borders->total_size.width =
 		borders->top_left.width + borders->bottom_right.width;
@@ -276,6 +515,54 @@ void get_window_borders(
 
 	return;
 }
+
+/* returns the dimensions of the borders without the title */
+void get_window_borders_no_title(
+	FvwmWindow *tmp_win, size_borders *borders)
+{
+	borders->top_left.width = tmp_win->boundary_width;
+	borders->bottom_right.width = tmp_win->boundary_width;
+	borders->top_left.height = tmp_win->boundary_width;
+	borders->bottom_right.height = tmp_win->boundary_width;
+	borders->total_size.width =
+		borders->top_left.width + borders->bottom_right.width;
+	borders->total_size.height =
+		borders->top_left.height + borders->bottom_right.height;
+
+	return;
+}
+
+void set_window_border_size(
+	FvwmWindow *tmp_win, short used_width)
+{
+	if (used_width <= 0)
+	{
+		tmp_win->boundary_width = 0;
+	}
+	else
+	{
+		tmp_win->boundary_width = used_width;
+	}
+
+	return;
+}
+
+/* Returns True if all window borders are only 1 pixel thick (or less). */
+Bool is_window_border_minimal(
+	FvwmWindow *tmp_win)
+{
+	size_borders nt;
+
+	get_window_borders_no_title(tmp_win, &nt);
+	if (nt.top_left.width > 1 || nt.top_left.height > 1 ||
+	    nt.bottom_right.width > 1 || nt.bottom_right.height > 1)
+	{
+		return False;
+	}
+
+	return True;
+}
+
 
 /* This function returns the geometry of the client window.  If the window is
  * shaded, the unshaded geometry is used instead. */
@@ -315,10 +602,6 @@ void update_absolute_geometry(FvwmWindow *tmp_win)
 {
 	rectangle *dest_g;
 
-#if 0
-	fprintf(stderr,"uag: called for window '%s'\n", tmp_win->name);
-#endif
-
 	/* store orig values in absolute coords */
 	dest_g = (IS_MAXIMIZED(tmp_win)) ? &tmp_win->max_g : &tmp_win->normal_g;
 	dest_g->x = tmp_win->frame_g.x + Scr.Vx;
@@ -332,21 +615,6 @@ void update_absolute_geometry(FvwmWindow *tmp_win)
 	{
 		dest_g->y += tmp_win->frame_g.height - dest_g->height;
 	}
-#if 0
-	fprintf(stderr,"     frame:  %5d %5d, %4d x %4d\n", tmp_win->frame_g.x,
-		tmp_win->frame_g.y, tmp_win->frame_g.width,
-		tmp_win->frame_g.height);
-	fprintf(stderr,"     normal: %5d %5d, %4d x %4d\n",
-		tmp_win->normal_g.x, tmp_win->normal_g.y,
-		tmp_win->normal_g.width, tmp_win->normal_g.height);
-	if (IS_MAXIMIZED(tmp_win))
-	{
-		fprintf(stderr,"     max:    %5d %5d, %4d x %4d, %5d %5d\n",
-			tmp_win->max_g.x, tmp_win->max_g.y,
-			tmp_win->max_g.width, tmp_win->max_g.height,
-			tmp_win->max_offset.x, tmp_win->max_offset.y);
-	}
-#endif
 
 	return;
 }
@@ -365,43 +633,25 @@ void maximize_adjust_offset(FvwmWindow *tmp_win)
 	}
 	off_x = tmp_win->normal_g.x - tmp_win->max_g.x - tmp_win->max_offset.x;
 	off_y = tmp_win->normal_g.y - tmp_win->max_g.y - tmp_win->max_offset.y;
-#if 0
-	fprintf(stderr,"mao: xo=%d, yo=%d\n", off_x, off_y);
-#endif
 	if (off_x >= Scr.MyDisplayWidth)
 	{
 		tmp_win->normal_g.x -=
 			(off_x / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
-#if 0
-		fprintf(stderr, "mao: x -= %d\n",
-			(off_x / Scr.MyDisplayWidth) * Scr.MyDisplayWidth);
-#endif
 	}
 	else if (off_x <= -Scr.MyDisplayWidth)
 	{
 		tmp_win->normal_g.x +=
 			((-off_x) / Scr.MyDisplayWidth) * Scr.MyDisplayWidth;
-#if 0
-		fprintf(stderr, "mao: x += %d\n", ((-off_x) / Scr.MyDisplayWidth) * Scr.MyDisplayWidth);
-#endif
 	}
 	if (off_y >= Scr.MyDisplayHeight)
 	{
 		tmp_win->normal_g.y -=
 			(off_y / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
-#if 0
-		fprintf(stderr, "mao: y -= %d\n",
-			(off_y / Scr.MyDisplayHeight) * Scr.MyDisplayHeight);
-#endif
 	}
 	else if (off_y <= -Scr.MyDisplayHeight)
 	{
 		tmp_win->normal_g.y +=
 			((-off_y) / Scr.MyDisplayHeight) * Scr.MyDisplayHeight;
-#if 0
-		fprintf(stderr, "mao: y += %d\n",
-			((-off_y) / Scr.MyDisplayHeight) * Scr.MyDisplayHeight);
-#endif
 	}
 
 	return;
@@ -417,11 +667,11 @@ void maximize_adjust_offset(FvwmWindow *tmp_win)
  *      borrowed from uwm's CheckConsistency routine.
 *
 ***********************************************************************/
+#define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 void constrain_size(
 	FvwmWindow *tmp_win, unsigned int *widthp, unsigned int *heightp,
 	int xmotion, int ymotion, int flags)
 {
-#define MAKEMULT(a,b) ((b==1) ? (a) : (((int)((a)/(b))) * (b)) )
 	int minWidth, minHeight, maxWidth, maxHeight, xinc, yinc, delta;
 	int baseWidth, baseHeight;
 	int dwidth = *widthp, dheight = *heightp;
@@ -429,6 +679,7 @@ void constrain_size(
 	int roundUpY = 0;
 	int old_w = 0;
 	int old_h = 0;
+	size_borders b;
 
 	if (IS_MAXIMIZED(tmp_win) && (flags & CS_UPDATE_MAX_DEFECT))
 	{
@@ -437,8 +688,9 @@ void constrain_size(
 		old_w = *widthp;
 		old_h = *heightp;
 	}
-	dwidth -= 2 *tmp_win->boundary_width;
-	dheight -= (tmp_win->title_g.height + 2 * tmp_win->boundary_width);
+	get_window_borders(tmp_win, &b);
+	dwidth -= b.total_size.width;
+	dheight -= b.total_size.height;
 
 	minWidth = tmp_win->hints.min_width;
 	minHeight = tmp_win->hints.min_height;
@@ -446,17 +698,14 @@ void constrain_size(
 	maxWidth = tmp_win->hints.max_width;
 	maxHeight =  tmp_win->hints.max_height;
 
-	if (maxWidth > tmp_win->max_window_width - 2 * tmp_win->boundary_width)
+	if (maxWidth > tmp_win->max_window_width - b.total_size.width)
 	{
-		maxWidth = tmp_win->max_window_width -
-			2 * tmp_win->boundary_width;
+		maxWidth = tmp_win->max_window_width - b.total_size.width;
 	}
-	if (maxHeight > tmp_win->max_window_height - 2*tmp_win->boundary_width -
-	    tmp_win->title_g.height)
+	if (maxHeight > tmp_win->max_window_height - b.total_size.height)
 	{
 		maxHeight =
-			tmp_win->max_window_height - 2*tmp_win->boundary_width -
-			tmp_win->title_g.height;
+			tmp_win->max_window_height - b.total_size.height;
 	}
 
 	baseWidth = tmp_win->hints.base_width;
@@ -667,9 +916,8 @@ void constrain_size(
 	/*
 	 * Fourth, account for border width and title height
 	 */
-	*widthp = dwidth + 2*tmp_win->boundary_width;
-	*heightp = dheight + tmp_win->title_g.height +
-		2 * tmp_win->boundary_width;
+	*widthp = dwidth + b.total_size.width;
+	*heightp = dheight + b.total_size.height;
 	if (IS_MAXIMIZED(tmp_win) && (flags & CS_UPDATE_MAX_DEFECT))
 	{
 		/* update size defect for maximized window */

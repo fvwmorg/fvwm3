@@ -500,6 +500,7 @@ void DrawIconWindow(FvwmWindow *tmp_win)
   Pixel BackColor;
   color_quad *draw_colors;
   int is_expanded = IS_ICON_ENTERED(tmp_win);
+  FlocaleWinString fstr;
 
   if (IS_ICON_SUPPRESSED(tmp_win))
     return;
@@ -651,13 +652,15 @@ void DrawIconWindow(FvwmWindow *tmp_win)
       r.height = ICON_HEIGHT(tmp_win);
       XSetClipRectangles(dpy, Scr.TitleGC, 0, 0, &r, 1, Unsorted);
     }
-    Scr.TitleStr->str = tmp_win->visible_icon_name;
-    Scr.TitleStr->win =  tmp_win->icon_title_w;
-    Scr.TitleStr->x = x_title;
-    Scr.TitleStr->y = tmp_win->icon_g.title_w_g.height -
+    memset(&fstr, 0, sizeof(fstr));
+    fstr.str = tmp_win->visible_icon_name;
+    fstr.win =  tmp_win->icon_title_w;
+    fstr.gc = Scr.TitleGC;
+    fstr.x = x_title;
+    fstr.y = tmp_win->icon_g.title_w_g.height -
       tmp_win->icon_font->height +
       tmp_win->icon_font->ascent + ICON_TITLE_VERT_TEXT_OFFSET;
-    FlocaleDrawString(dpy, tmp_win->icon_font, Scr.TitleStr, 0);
+    FlocaleDrawString(dpy, tmp_win->icon_font, &fstr, 0);
     RelieveRectangle(
 	    dpy, tmp_win->icon_title_w, 0, 0, w_title_w - 1,
 	    ICON_HEIGHT(tmp_win) - 1, Relief, Shadow, ICON_RELIEF_WIDTH);
@@ -951,15 +954,7 @@ void AutoPlaceIcon(FvwmWindow *t)
     rectangle g;
 
     get_icon_geometry(t, &g);
-    g.x = t->frame_g.x;
-    if (HAS_BOTTOM_TITLE(t))
-    {
-      g.y = t->frame_g.y + t->frame_g.height - g.height;
-    }
-    else
-    {
-      g.y = t->frame_g.y;
-    }
+    get_icon_corner(t, &g);
     fscr.xypos.x = g.x + g.width / 2;
     fscr.xypos.y = g.y + g.height / 2;
     FScreenGetScrRect(&fscr, FSCREEN_XYPOS, &sx, &sy, &sw, &sh);

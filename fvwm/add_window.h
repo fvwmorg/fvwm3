@@ -24,6 +24,8 @@ void setup_visible_name(FvwmWindow *tmp_win, Bool is_icon);
 void setup_wm_hints(FvwmWindow *tmp_win);
 void setup_placement_penalty(FvwmWindow *tmp_win, window_style *pstyle);
 void setup_focus_policy(FvwmWindow *tmp_win);
+void setup_title_geometry(
+	FvwmWindow *tmp_win, window_style *pstyle);
 void setup_window_font(
   FvwmWindow *tmp_win, window_style *pstyle, Bool do_destroy);
 void setup_icon_font(

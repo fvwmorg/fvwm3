@@ -104,7 +104,7 @@ ShutdownX(void)
   /* execute the QuitFunc */
   if (x11base->quitfunc != NULL)
     ExecBloc(x11base->quitfunc);
-  
+
   if (is_dead_pipe)
     return;
 
@@ -318,7 +318,7 @@ void Xinit(int IsFather)
   FShapeInit(dpy);
   FlocaleAllocateWinString(&FwinString);
   XSetErrorHandler(myErrorHandler);
-  
+
 #ifdef MEMDEBUG
   __bounds_debug_no_checking=False;
 #endif
@@ -602,7 +602,7 @@ void BuildGUI(int IsFather)
   x11base->periodictasks = scriptprop->periodictasks;
   /* the QuitFunc */
   x11base->quitfunc = scriptprop->quitfunc;
-   
+
   /*Si un bloc d'initialisation du script existe, on l'execute ici */
   if (scriptprop->initbloc != NULL)
   {
@@ -747,7 +747,7 @@ void UpdateRootTransparency(void)
     for (i=0; i<nbobj; i++)
     {
       if (Rectangle != tabxobj[i]->TypeWidget &&
-	  SwallowExec != tabxobj[i]->TypeWidget && 
+	  SwallowExec != tabxobj[i]->TypeWidget &&
 	  ((tabxobj[i]->colorset > 0 &&
 	   Colorset[tabxobj[i]->colorset].pixmap == ParentRelative)))
       {
@@ -825,7 +825,7 @@ void ReadXServer (void)
       /* check for bindings defined by the Key instruction */
       if ((action = CheckBinding(BindingsList, STROKE_ARG(0)
 				 event.xkey.keycode,
-				 event.xkey.state, LockMask, 
+				 event.xkey.state, LockMask,
 				 C_WINDOW, KEY_BINDING)) != NULL)
       {
 	SendMsgAndString(action, "CheckBinding");
@@ -1040,7 +1040,7 @@ void MainLoop (void)
 	      for (i=0; i<nbobj; i++)
 	      {
 		if (Rectangle != tabxobj[i]->TypeWidget &&
-		    SwallowExec != tabxobj[i]->TypeWidget && 
+		    SwallowExec != tabxobj[i]->TypeWidget &&
 		    ((tabxobj[i]->colorset > 0 &&
 		      Colorset[tabxobj[i]->colorset].pixmap == ParentRelative)))
 		{
@@ -1137,7 +1137,7 @@ int main (int argc, char **argv)
   int IsFather;
   int i;
 
-  FInitLocale(LC_CTYPE, "", "", "FvwmScript");
+  FlocaleInit(LC_CTYPE, "", "", "FvwmScript");
 
   ModuleName = GetFileNameFromPath(argv[0]);
 

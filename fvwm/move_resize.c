@@ -268,7 +268,7 @@ static int GetMoveArguments(
 }
 
 static int ParseOneResizeArgument(
-  char *arg, int scr_size, int base_size, int size_inc, int bw, int title_size,
+  char *arg, int scr_size, int base_size, int size_inc, int add_size,
   int *ret_size)
 {
   int unit_table[3];
@@ -301,7 +301,7 @@ static int ParseOneResizeArgument(
 	  /* account for base width */
 	  *ret_size += base_size;
 	}
-	*ret_size += title_size + 2 * bw;
+	*ret_size += add_size;
       }
     }
   }
@@ -310,8 +310,8 @@ static int ParseOneResizeArgument(
 }
 
 static int GetResizeArguments(
-  char **paction, int x, int y, int w_base, int h_base, int w_inc, int h_inc,
-  int bw, int h_title, int *pFinalW, int *pFinalH)
+	char **paction, int x, int y, int w_base, int h_base, int w_inc,
+	int h_inc, size_borders *sb, int *pFinalW, int *pFinalH)
 {
   int n;
   char *naction;
@@ -350,9 +350,9 @@ static int GetResizeArguments(
 
     n = 0;
     n += ParseOneResizeArgument(
-      s1, Scr.MyDisplayWidth, w_base, w_inc, bw, 0, pFinalW);
+      s1, Scr.MyDisplayWidth, w_base, w_inc, sb->total_size.width, pFinalW);
     n += ParseOneResizeArgument(
-      s2, Scr.MyDisplayHeight, h_base, h_inc, bw, h_title, pFinalH);
+      s2, Scr.MyDisplayHeight, h_base, h_inc, sb->total_size.height, pFinalH);
     free(s1);
     free(s2);
     if (n < 2)
@@ -363,16 +363,16 @@ static int GetResizeArguments(
 }
 
 static int GetResizeMoveArguments(
-  char **paction, int w_base, int h_base, int w_inc, int h_inc, int bw,
-  int h_title, int *pFinalX, int *pFinalY, int *pFinalW, int *pFinalH,
-  Bool *fWarp, Bool *fPointer)
+	char **paction, int w_base, int h_base, int w_inc, int h_inc,
+	size_borders *sb, int *pFinalX, int *pFinalY, int *pFinalW,
+	int *pFinalH, Bool *fWarp, Bool *fPointer)
 {
   char *action = *paction;
 
   if (!paction)
     return 0;
   if (GetResizeArguments(
-    &action, *pFinalX, *pFinalY, w_base, h_base, w_inc, h_inc, bw, h_title,
+    &action, *pFinalX, *pFinalY, w_base, h_base, w_inc, h_inc, sb,
     pFinalW, pFinalH) < 2)
   {
     return 0;
@@ -465,6 +465,7 @@ static void DisplayPosition(
   char str[100];
   int offset;
   fscreen_scr_arg fscr;
+  FlocaleWinString fstr;
 
   if (Scr.gs.do_hide_position_window)
     return;
@@ -498,12 +499,15 @@ static void DisplayPosition(
 	    FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
   offset += GEOMETRY_WINDOW_BW;
 
-  Scr.ScratchStr->str = str;
-  Scr.ScratchStr->win = Scr.SizeWindow;
-  Scr.ScratchStr->gc = Scr.StdGC;
-  Scr.ScratchStr->x = offset;
-  Scr.ScratchStr->y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;;
-  FlocaleDrawString(dpy, Scr.DefaultFont, Scr.ScratchStr, 0);
+  memset(&fstr, 0, sizeof(fstr));
+  fstr.str = str;
+  fstr.win = Scr.SizeWindow;
+  fstr.gc = Scr.StdGC;
+  fstr.x = offset;
+  fstr.y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;
+  FlocaleDrawString(dpy, Scr.DefaultFont, &fstr, 0);
+
+  return;
 }
 
 
@@ -519,65 +523,75 @@ static void DisplayPosition(
  *
  ***********************************************************************/
 static void DisplaySize(
-  FvwmWindow *tmp_win, XEvent *eventp, int width, int height, Bool Init,
-  Bool resetLast)
+	FvwmWindow *tmp_win, XEvent *eventp, int width, int height, Bool Init,
+	Bool resetLast)
 {
-  char str[100];
-  int dwidth,dheight,offset;
-  static int last_width = 0;
-  static int last_height = 0;
+	char str[100];
+	int dwidth,dheight,offset;
+	size_borders b;
+	static int last_width = 0;
+	static int last_height = 0;
+	FlocaleWinString fstr;
 
-  if (Scr.gs.do_hide_resize_window)
-    return;
-  position_geometry_window(eventp);
-  if (resetLast)
-  {
-    last_width = 0;
-    last_height = 0;
-  }
-  if (last_width == width && last_height == height)
-    return;
+	if (Scr.gs.do_hide_resize_window)
+	{
+		return;
+	}
+	position_geometry_window(eventp);
+	if (resetLast)
+	{
+		last_width = 0;
+		last_height = 0;
+	}
+	if (last_width == width && last_height == height)
+	{
+		return;
+	}
+	last_width = width;
+	last_height = height;
 
-  last_width = width;
-  last_height = height;
+	get_window_borders(tmp_win, &b);
+	dheight = height - b.total_size.height;
+	dwidth = width - b.total_size.width;
+	dwidth -= tmp_win->hints.base_width;
+	dheight -= tmp_win->hints.base_height;
+	dwidth /= tmp_win->hints.width_inc;
+	dheight /= tmp_win->hints.height_inc;
 
-  dheight = height - tmp_win->title_g.height - 2*tmp_win->boundary_width;
-  dwidth = width - 2*tmp_win->boundary_width;
+	(void) sprintf (str, GEOMETRY_WINDOW_SIZE_STRING, dwidth, dheight);
+	if (Init)
+	{
+		XClearWindow(dpy,Scr.SizeWindow);
+	}
+	else
+	{
+		/* just clear indside the relief lines to reduce flicker */
+		XClearArea(
+			dpy, Scr.SizeWindow, GEOMETRY_WINDOW_BW,
+			GEOMETRY_WINDOW_BW, Scr.SizeStringWidth,
+			Scr.DefaultFont->height, False);
+	}
 
-  dwidth -= tmp_win->hints.base_width;
-  dheight -= tmp_win->hints.base_height;
-  dwidth /= tmp_win->hints.width_inc;
-  dheight /= tmp_win->hints.height_inc;
+	if (Pdepth >= 2)
+	{
+		RelieveRectangle(
+			dpy, Scr.SizeWindow, 0, 0,
+			Scr.SizeStringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
+			Scr.DefaultFont->height + GEOMETRY_WINDOW_BW*2 - 1,
+			Scr.StdReliefGC, Scr.StdShadowGC, GEOMETRY_WINDOW_BW);
+	}
+	offset = (Scr.SizeStringWidth -
+		  FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
+	offset += GEOMETRY_WINDOW_BW;
+	memset(&fstr, 0, sizeof(fstr));
+	fstr.str = str;
+	fstr.win = Scr.SizeWindow;
+	fstr.gc = Scr.StdGC;
+	fstr.x = offset;
+	fstr.y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;
+	FlocaleDrawString(dpy, Scr.DefaultFont, &fstr, 0);
 
-  (void) sprintf (str, GEOMETRY_WINDOW_SIZE_STRING, dwidth, dheight);
-  if (Init)
-  {
-    XClearWindow(dpy,Scr.SizeWindow);
-  }
-  else
-  {
-    /* just clear indside the relief lines to reduce flicker */
-    XClearArea(dpy, Scr.SizeWindow, GEOMETRY_WINDOW_BW, GEOMETRY_WINDOW_BW,
-	       Scr.SizeStringWidth, Scr.DefaultFont->height, False);
-  }
-
-  if (Pdepth >= 2)
-  {
-    RelieveRectangle(
-      dpy, Scr.SizeWindow, 0, 0,
-      Scr.SizeStringWidth + GEOMETRY_WINDOW_BW * 2 - 1,
-      Scr.DefaultFont->height + GEOMETRY_WINDOW_BW*2 - 1,
-      Scr.StdReliefGC, Scr.StdShadowGC, GEOMETRY_WINDOW_BW);
-  }
-  offset = (Scr.SizeStringWidth -
-	    FlocaleTextWidth(Scr.DefaultFont, str, strlen(str))) / 2;
-  offset += GEOMETRY_WINDOW_BW;
-  Scr.ScratchStr->str = str;
-  Scr.ScratchStr->win = Scr.SizeWindow;
-  Scr.ScratchStr->gc = Scr.StdGC;
-  Scr.ScratchStr->x = offset;
-  Scr.ScratchStr->y = Scr.DefaultFont->ascent + GEOMETRY_WINDOW_BW;
-  FlocaleDrawString(dpy, Scr.DefaultFont, Scr.ScratchStr, 0);
+	return;
 }
 
 static Bool resize_move_window(F_CMD_ARGS)
@@ -593,6 +607,7 @@ static Bool resize_move_window(F_CMD_ARGS)
   Bool has_focus;
   int dx;
   int dy;
+  size_borders b;
 
   if (!is_function_allowed(F_MOVE, NULL, tmp_win, True, False))
   {
@@ -615,12 +630,12 @@ static Bool resize_move_window(F_CMD_ARGS)
   FinalX = x;
   FinalY = y;
 
+  get_window_borders(tmp_win, &b);
   n = GetResizeMoveArguments(
     &action,
     tmp_win->hints.base_width, tmp_win->hints.base_height,
     tmp_win->hints.width_inc, tmp_win->hints.height_inc,
-    tmp_win->boundary_width, tmp_win->title_g.height,
-    &FinalX, &FinalY, &FinalW, &FinalH, &fWarp, &fPointer);
+    &b, &FinalX, &FinalY, &FinalW, &FinalH, &fWarp, &fPointer);
   if (n < 4)
   {
     return False;
@@ -1001,7 +1016,10 @@ static void move_window_doit(F_CMD_ARGS, Bool do_animate, int mode)
     rectangle s;
 
     do_animate = False;
-    SET_STICKY(tmp_win, 0);
+    if (IS_STICKY(tmp_win))
+    {
+	    handle_stick(F_PASS_ARGS, 0);
+    }
 
     if (!get_page_arguments(action, &page_x, &page_y))
     {
@@ -2241,6 +2259,7 @@ static Bool resize_window(F_CMD_ARGS)
   int px;
   int py;
   int i;
+  size_borders b;
   Bool called_from_title = False;
 
   bad_window = False;
@@ -2277,12 +2296,12 @@ static Bool resize_window(F_CMD_ARGS)
   /* no suffix = % of screen, 'p' = pixels, 'c' = increment units */
   drag->width = tmp_win->frame_g.width;
   drag->height = tmp_win->frame_g.height;
+  get_window_borders(tmp_win, &b);
   n = GetResizeArguments(
     &action, tmp_win->frame_g.x, tmp_win->frame_g.y,
     tmp_win->hints.base_width, tmp_win->hints.base_height,
     tmp_win->hints.width_inc, tmp_win->hints.height_inc,
-    tmp_win->boundary_width, tmp_win->title_g.height,
-    &(drag->width), &(drag->height));
+    &b, &(drag->width), &(drag->height));
 
   if (n == 2)
   {
@@ -2702,28 +2721,25 @@ static Bool resize_window(F_CMD_ARGS)
 
   if(!is_aborted && bad_window != tmp_win->w)
   {
+    rectangle new_g;
+
     /* size will be >= to requested */
     constrain_size(
       tmp_win, (unsigned int *)&drag->width, (unsigned int *)&drag->height,
       xmotion, ymotion, CS_ROUND_UP);
     if (IS_SHADED(tmp_win))
     {
-      if (HAS_BOTTOM_TITLE(tmp_win))
-      {
-	SetupFrame(tmp_win, drag->x, tmp_win->frame_g.y,
-		   drag->width, tmp_win->frame_g.height, False);
-      }
-      else
-      {
-	SetupFrame(tmp_win, drag->x, drag->y,
-		   drag->width, tmp_win->frame_g.height, False);
-      }
-      tmp_win->normal_g.height = drag->height;
+      get_shaded_geometry(tmp_win, &new_g, drag);
     }
     else
     {
-      SetupFrame(
-	tmp_win, drag->x, drag->y, drag->width, drag->height, False);
+      new_g = *drag;
+    }
+    SetupFrame(tmp_win, new_g.x, new_g.y, new_g.width, new_g.height, False);
+    if (IS_SHADED(tmp_win))
+    {
+      tmp_win->normal_g.width = drag->width;
+      tmp_win->normal_g.height = drag->height;
     }
   }
   if (is_aborted && was_maximized)

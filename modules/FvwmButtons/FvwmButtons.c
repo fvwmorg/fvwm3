@@ -148,7 +148,6 @@ static Pixel hilite_pix, back_pix, shadow_pix, fore_pix;
 GC  NormalGC;
 /* needed for relief drawing only */
 GC  ShadowGC;
-FlocaleWinString *FwinString;
 
 static int Width,Height;
 static int x= -30000,y= -30000;
@@ -641,7 +640,7 @@ int main(int argc, char **argv)
   button_info *b,*ub;
   int geom_option_argc = 0;
 
-  FInitLocale(LC_CTYPE, "", "", "FvwmButtons");
+  FlocaleInit(LC_CTYPE, "", "", "FvwmButtons");
 
   MyName = GetFileNameFromPath(argv[0]);
 
@@ -927,9 +926,10 @@ void Loop(void)
   static int ex=10000,ey=10000,ex2=0,ey2=0;
   button_info *tmpb;
 #endif
-  char *tmp = NULL;
-  MULTIBYTE_CODE(char **tmp_list = NULL);
+  FlocaleNameString tmp;
 
+  tmp.name = NULL;
+  tmp.name_list = NULL;
   while( !isTerminated )
   {
     if(My_XNextEvent(Dpy,&Event))
@@ -1215,18 +1215,18 @@ void Loop(void)
 	      else
 		i2=i;
 
-	      tmp=mymalloc(strlen(act)+1);
-	      strcpy(tmp,"Exec ");
+	      tmp.name = mymalloc(strlen(act)+1);
+	      strcpy(tmp.name, "Exec ");
 	      while(act[i2]!=0 && isspace((unsigned char)act[i2]))
 		i2++;
-	      strcat(tmp,&act[i2]);
+	      strcat(tmp.name ,&act[i2]);
 	      if (is_transient)
 	      {
 		/* delete the window before continuing */
 		XDestroyWindow(Dpy, MyWindow);
 		XSync(Dpy, 0);
 	      }
-	      MySendText(fd,tmp,0);
+	      MySendText(fd,tmp.name,0);
 	      if (is_transient)
 	      {
 		/* and exit */
@@ -1236,7 +1236,7 @@ void Loop(void)
 	      {
 		XWithdrawWindow(Dpy, MyWindow, screen);
 	      }
-	      free(tmp);
+	      free(tmp.name);
 	    } /* exec */
 	    else if(strncasecmp(act,"DumpButtons",11)==0)
 	      DumpButtons(UberButton);
@@ -1299,12 +1299,11 @@ void Loop(void)
 	      if(b->flags&b_Title)
 		free(b->title);
 	      b->flags|=b_Title;
-	      FlocaleGetNameProperty(XGetWMName, Dpy, swin,
-				     MULTIBYTE_ARG(&tmp_list) &tmp);
-	      if (tmp != NULL)
+	      FlocaleGetNameProperty(XGetWMName, Dpy, swin, &tmp);
+	      if (tmp.name != NULL)
 	      {
-		CopyString(&b->title,tmp);
-		FlocaleFreeNameProperty(MULTIBYTE_ARG(&tmp_list) &tmp);
+		CopyString(&b->title,tmp.name);
+		FlocaleFreeNameProperty(&tmp);
 	      }
 	      else
 	      {
@@ -2027,9 +2026,6 @@ void CreateUberButtonWindow(button_info *ub,int maxx,int maxy)
   gcv.background = fore_pix;
   ShadowGC = fvwmlib_XCreateGC(Dpy, MyWindow, gcm, &gcv);
 
-  /* for text drawing */
-  FlocaleAllocateWinString(&FwinString);
-
   if (ub->c->flags&b_Colorset)
   {
     SetWindowBackground(
@@ -2498,10 +2494,21 @@ void process_message(unsigned long type,unsigned long *body)
     {
       button_lborder = button_rborder = button_tborder = button_bborder
 	= cfgpacket->border_width;
-      if (HAS_BOTTOM_TITLE(cfgpacket))
-	button_bborder += cfgpacket->title_height;
-      else
+      switch (GET_TITLE_DIR(cfgpacket))
+      {
+      case DIR_N:
 	button_tborder += cfgpacket->title_height;
+	break;
+      case DIR_S:
+	button_bborder += cfgpacket->title_height;
+	      break;
+      case DIR_W:
+	button_lborder += cfgpacket->title_height;
+	      break;
+      case DIR_E:
+	button_rborder += cfgpacket->title_height;
+	      break;
+      }
     }
     break;
   case MX_PROPERTY_CHANGE:
@@ -2822,8 +2829,9 @@ void swallow(unsigned long *body)
   int i;
   unsigned int d;
   Window p;
-  char *temp = NULL;
-  MULTIBYTE_CODE(char **temp_list = NULL);
+  FlocaleNameString temp;
+  temp.name = NULL;
+  temp.name_list = NULL;
 
   while(NextButton(&ub,&b,&button,0))
   {
@@ -2918,12 +2926,11 @@ void swallow(unsigned long *body)
 	  if (b->flags & b_Title)
 	    free(b->title);
 	  b->flags |= b_Title;
-	  FlocaleGetNameProperty(XGetWMName, Dpy, swin,
-				 MULTIBYTE_ARG(&temp_list) &temp);
-	  if (temp != NULL)
+	  FlocaleGetNameProperty(XGetWMName, Dpy, swin, &temp);
+	  if (temp.name != NULL)
 	  {
-	    CopyString(&b->title, temp);
-	    FlocaleFreeNameProperty(MULTIBYTE_ARG(&temp_list) &temp);
+	    CopyString(&b->title, temp.name);
+	    FlocaleFreeNameProperty(&temp);
 	  }
 	  else
 	  {

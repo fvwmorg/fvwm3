@@ -431,8 +431,8 @@ Bool MatchesConditionMask(FvwmWindow *fw, WindowConditionMask *mask)
 
 	/* Yes, I know this could be shorter, but it's hard to understand then
 	 */
-	fMatchesName = matchWildcards(mask->name, fw->name);
-	fMatchesIconName = matchWildcards(mask->name, fw->icon_name);
+	fMatchesName = matchWildcards(mask->name, fw->name.name);
+	fMatchesIconName = matchWildcards(mask->name, fw->icon_name.name);
 	fMatchesClass = (fw->class.res_class &&
 			 matchWildcards(mask->name,fw->class.res_class));
 	fMatchesResource = (fw->class.res_name &&

@@ -335,8 +335,7 @@ void HandlePropertyNotify(void)
   int old_height_inc;
   int old_base_width;
   int old_base_height;
-  char *new_name = NULL;
-  MULTIBYTE_CODE(char **new_name_list);
+  FlocaleNameString new_name;
 
   DBUG("HandlePropertyNotify","Routine Entered");
 
@@ -390,24 +389,21 @@ void HandlePropertyNotify(void)
     flush_property_notify(XA_WM_NAME, Tmp_win->w);
     if (HAS_EWMH_WM_NAME(Tmp_win))
       return;
-    FlocaleGetNameProperty(XGetWMName, dpy, Tmp_win->w,
-			   MULTIBYTE_ARG(&new_name_list)
-			   &new_name);
-    if (new_name == NULL)
+    FlocaleGetNameProperty(XGetWMName, dpy, Tmp_win->w, &new_name);
+    if (new_name.name == NULL)
     {
       return;
     }
 
     free_window_names (Tmp_win, True, False);
     Tmp_win->name = new_name;
-    MULTIBYTE_CODE(Tmp_win->name_list = new_name_list);
-    if (Tmp_win->name && strlen(Tmp_win->name) > MAX_WINDOW_NAME_LEN)
-      Tmp_win->name[MAX_WINDOW_NAME_LEN] = 0;
+    if (Tmp_win->name.name && strlen(Tmp_win->name.name) > MAX_WINDOW_NAME_LEN)
+      (Tmp_win->name.name)[MAX_WINDOW_NAME_LEN] = 0;
 
     SET_NAME_CHANGED(Tmp_win, 1);
 
-    if (Tmp_win->name == NULL)
-      Tmp_win->name = NoName; /* must not happen */
+    if (Tmp_win->name.name == NULL)
+      Tmp_win->name.name = NoName; /* must not happen */
 
     setup_visible_name(Tmp_win, False);
     BroadcastWindowIconNames(Tmp_win, True, False);
@@ -435,25 +431,25 @@ void HandlePropertyNotify(void)
     flush_property_notify(XA_WM_ICON_NAME, Tmp_win->w);
     if (HAS_EWMH_WM_ICON_NAME(Tmp_win))
       return;
-    FlocaleGetNameProperty(XGetWMIconName, dpy, Tmp_win->w,
-			   MULTIBYTE_ARG(&new_name_list)
-			   &new_name);
-    if (new_name == NULL)
+    FlocaleGetNameProperty(XGetWMIconName, dpy, Tmp_win->w, &new_name);
+    if (new_name.name == NULL)
     {
       return;
     }
 
-    free_window_names (Tmp_win, False, True);
+    free_window_names(Tmp_win, False, True);
     Tmp_win->icon_name = new_name;
-    MULTIBYTE_CODE(Tmp_win->icon_name_list = new_name_list);
-    if (Tmp_win->icon_name && strlen(Tmp_win->icon_name) > MAX_ICON_NAME_LEN)
+    if (Tmp_win->icon_name.name && strlen(Tmp_win->icon_name.name) >
+	MAX_ICON_NAME_LEN)
+    {
       /* limit to prevent hanging X server */
-      Tmp_win->icon_name[MAX_ICON_NAME_LEN] = 0;
+      (Tmp_win->icon_name.name)[MAX_ICON_NAME_LEN] = 0;
+    }
 
     SET_WAS_ICON_NAME_PROVIDED(Tmp_win, 1);
-    if (Tmp_win->icon_name == NULL)
+    if (Tmp_win->icon_name.name == NULL)
     {
-      Tmp_win->icon_name = Tmp_win->name;
+      Tmp_win->icon_name .name= Tmp_win->name.name;
       SET_WAS_ICON_NAME_PROVIDED(Tmp_win, 0);
     }
     setup_visible_name(Tmp_win, True);
@@ -612,12 +608,14 @@ ICON_DBG((stderr,"hpn: icon changed '%s'\n", Tmp_win->name));
       }
       else
       {
+	size_borders b;
+
+	get_window_borders(Tmp_win, &b);
 	/* we have to resize the unmaximized window to keep the size in
 	 * resize increments constant */
-	units_w = Tmp_win->normal_g.width - 2 * Tmp_win->boundary_width -
-	  old_base_width;
-	units_h = Tmp_win->normal_g.height - Tmp_win->title_g.height -
-	  2 * Tmp_win->boundary_width - old_base_height;
+	units_w = Tmp_win->normal_g.width - b.total_size.width - old_base_width;
+	units_h = Tmp_win->normal_g.height - b.total_size.height -
+		old_base_height;
 	units_w /= old_width_inc;
 	units_h /= old_height_inc;
 
@@ -1263,7 +1261,8 @@ void HandleMapNotify(void)
       SetFocusWindow(Tmp_win, True, True);
     }
   }
-  if((!(HAS_BORDER(Tmp_win)|HAS_TITLE(Tmp_win)))&&(Tmp_win->boundary_width <2))
+  if (!HAS_BORDER(Tmp_win) && !HAS_TITLE(Tmp_win) &&
+      is_window_border_minimal(Tmp_win))
   {
     DrawDecorations(
       Tmp_win, DRAW_ALL, False, True, Tmp_win->decor_w, CLEAR_ALL);
@@ -1272,7 +1271,8 @@ void HandleMapNotify(void)
   {
     /* BUG 679: must redraw decorations here to make sure the window is properly
      * hilighted after being de-iconified by a key press. */
-    DrawDecorations(Tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
+    DrawDecorations(
+      Tmp_win, DRAW_ALL, True, True, None, CLEAR_ALL);
   }
   MyXUngrabServer (dpy);
   SET_MAPPED(Tmp_win, 1);
@@ -2362,6 +2362,7 @@ void HandleConfigureRequest(void)
 
   if (cre->window == Tmp_win->w)
   {
+    size_borders b;
 #if 0
 fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
         cre->x, (int)(cre->value_mask & CWX),
@@ -2395,23 +2396,16 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
       Tmp_win->old_bw = cre->border_width;
     }
     /* override even if border change */
-
+    get_window_borders(Tmp_win, &b);
     if (cre->value_mask & CWX)
-      dx = cre->x - Tmp_win->frame_g.x - Tmp_win->boundary_width;
+      dx = cre->x - Tmp_win->frame_g.x - b.top_left.width;
     if (cre->value_mask & CWY)
-      dy = cre->y - Tmp_win->frame_g.y - Tmp_win->boundary_width -
-	Tmp_win->title_top_height;
-    if (cre->value_mask & CWWidth)
-      dw = cre->width - (Tmp_win->frame_g.width - 2 * Tmp_win->boundary_width);
-
+      dy = cre->y - Tmp_win->frame_g.y - b.top_left.height;
     if (cre->value_mask & CWHeight)
     {
-      if (cre->height < (WINDOW_FREAKED_OUT_HEIGHT - Tmp_win->title_g.height -
-			 2 * Tmp_win->boundary_width))
+      if (cre->height < (WINDOW_FREAKED_OUT_SIZE - b.total_size.height))
       {
-	dh = cre->height - (Tmp_win->frame_g.height -
-			    2 * Tmp_win->boundary_width -
-			    Tmp_win->title_g.height);
+	dh = cre->height - (Tmp_win->frame_g.height - b.total_size.height);
       }
       else
       {
@@ -2420,6 +2414,19 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
 	 * we won't use 'height' in this case anyway */
 	/* inform the buggy app about the size that *we* want */
 	do_send_event = True;
+      }
+    }
+    if (cre->value_mask & CWWidth)
+    {
+      if (cre->width < (WINDOW_FREAKED_OUT_SIZE - b.total_size.width))
+      {
+	dw = cre->width - (Tmp_win->frame_g.width - b.total_size.width);
+      }
+      else
+      {
+	/* see above */
+	do_send_event = True;
+	dh = 0;
       }
     }
 
@@ -2432,7 +2439,10 @@ fprintf(stderr, "cre: %d(%d) %d(%d) %d(%d)x%d(%d) w 0x%08x '%s'\n",
      */
     new_g = Tmp_win->frame_g;
     if (IS_SHADED(Tmp_win))
+    {
+      new_g.width = Tmp_win->normal_g.width;
       new_g.height = Tmp_win->normal_g.height;
+    }
     oldnew_w = new_g.width + dw;
     oldnew_h = new_g.height + dh;
     constr_w = oldnew_w;
@@ -2610,6 +2620,7 @@ void SendConfigureNotify(
   Bool send_for_frame_too)
 {
   XEvent client_event;
+  size_borders b;
 
   if (!tmp_win || IS_SHADED(tmp_win))
     return;
@@ -2617,12 +2628,11 @@ void SendConfigureNotify(
   client_event.xconfigure.display = dpy;
   client_event.xconfigure.event = tmp_win->w;
   client_event.xconfigure.window = tmp_win->w;
-  client_event.xconfigure.x = x + tmp_win->boundary_width;
-  client_event.xconfigure.y = y + tmp_win->boundary_width +
-    tmp_win->title_top_height;
-  client_event.xconfigure.width = w - 2 * tmp_win->boundary_width;
-  client_event.xconfigure.height = h -
-    2 * tmp_win->boundary_width - tmp_win->title_g.height;
+  get_window_borders(tmp_win, &b);
+  client_event.xconfigure.x = x + b.top_left.width;
+  client_event.xconfigure.y = y + b.top_left.height;
+  client_event.xconfigure.width = w - b.total_size.width;
+  client_event.xconfigure.height = h - b.total_size.height;
   client_event.xconfigure.border_width = bw;
   client_event.xconfigure.above = tmp_win->frame;
   client_event.xconfigure.override_redirect = False;
@@ -2649,19 +2659,27 @@ void SendConfigureNotify(
  ***********************************************************************/
 void HandleShapeNotify (void)
 {
-  DBUG("HandleShapeNotify","Routine Entered");
+	DBUG("HandleShapeNotify","Routine Entered");
 
-  if (FShapesSupported)
-  {
-    FShapeEvent *sev = (FShapeEvent *) &Event;
+	if (FShapesSupported)
+	{
+		FShapeEvent *sev = (FShapeEvent *) &Event;
 
-    if (!Tmp_win)
-      return;
-    if (sev->kind != FShapeBounding)
-      return;
-    Tmp_win->wShaped = sev->shaped;
-    SetShape(Tmp_win, Tmp_win->frame_g.width);
-  }
+		if (!Tmp_win)
+		{
+			return;
+		}
+		if (sev->kind != FShapeBounding)
+		{
+			return;
+		}
+		Tmp_win->wShaped = sev->shaped;
+		SetShape(
+			Tmp_win, Tmp_win->frame_g.width,
+			Tmp_win->frame_g.height);
+	}
+
+	return;
 }
 
 /***********************************************************************

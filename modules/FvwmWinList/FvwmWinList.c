@@ -231,7 +231,7 @@ int main(int argc, char **argv)
     Clength = strlen(Module);
   }
 
-  FInitLocale(LC_CTYPE, "", "", "FvwmWinList");
+  FlocaleInit(LC_CTYPE, "", "", "FvwmWinList");
 
   Fvwm_fd[0] = atoi(argv[1]);
   Fvwm_fd[1] = atoi(argv[2]);
@@ -385,10 +385,19 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       {
 	win_border_x = win_border_y = cfgpacket->border_width;
 	if (((win_grav == NorthWestGravity || win_grav == NorthEastGravity)
-	     && !HAS_BOTTOM_TITLE(cfgpacket)) ||
+	     && HAS_TITLE_DIR(cfgpacket, DIR_N)) ||
 	    ((win_grav == SouthWestGravity || win_grav == SouthEastGravity)
-	    && HAS_BOTTOM_TITLE(cfgpacket)))
+	    && HAS_TITLE_DIR(cfgpacket, DIR_S)))
+	{
 	  win_border_y +=  cfgpacket->title_height;
+	}
+	if (((win_grav == NorthWestGravity || win_grav == SouthWestGravity)
+	     && HAS_TITLE_DIR(cfgpacket, DIR_W)) ||
+	    ((win_grav == NorthEastGravity || win_grav == SouthEastGravity)
+	     && HAS_TITLE_DIR(cfgpacket, DIR_E)))
+	{
+	  win_border_x +=  cfgpacket->title_height;
+	}
       }
 #endif
       if ((i = FindItem(&windows,cfgpacket->w))!=-1)

@@ -45,6 +45,7 @@
 #include "stack.h"
 #include "focus.h"
 #include "virtual.h"
+#include "geometry.h"
 
 extern FvwmWindow *Tmp_win;
 extern FvwmWindow *ButtonWindow;
@@ -500,6 +501,8 @@ void CMD_WindowList(F_CMD_ARGS)
         }
 	else if (flags & SHOW_GEOMETRY)
         {
+	  size_borders b;
+
           tname[0]=0;
           if(IS_ICONIFIED(t))
             strcpy(tname, "(");
@@ -509,12 +512,11 @@ void CMD_WindowList(F_CMD_ARGS)
 	    sprintf(loc,"%d(%d):",t->Desk, get_layer(t));
           strcat(tname,loc);
 
-          dheight = t->frame_g.height - t->title_g.height -2*t->boundary_width;
-          dwidth = t->frame_g.width - 2*t->boundary_width;
-
+	  get_window_borders(t, &b);
+          dheight = t->frame_g.height - b.total_size.height;
+          dwidth = t->frame_g.width - b.total_size.width;
           dwidth -= t->hints.base_width;
           dheight -= t->hints.base_height;
-
           dwidth /= t->hints.width_inc;
           dheight /= t->hints.height_inc;
 

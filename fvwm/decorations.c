@@ -66,6 +66,7 @@
 #include "lang-strings.h"
 #include "update.h"
 #include "style.h"
+#include "geometry.h"
 
 
 extern Atom _XA_MwmAtom;
@@ -278,6 +279,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
   int i;
   short border_width;
   short handle_width;
+  short used_width;
   PropMwmHints *prop;
   style_flags *sflags = &(pstyle->flags);
 
@@ -437,13 +439,12 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
   SET_HAS_TITLE(t, 0);
   SET_HAS_BORDER(t, 0);
 
-  t->boundary_width = 0;
-
+  used_width = 0;
   if(decor & MWM_DECOR_BORDER)
   {
     /* A narrow border is displayed (5 pixels - 2 relief, 1 top,
      * (2 shadow) */
-    t->boundary_width = border_width;
+    used_width = border_width;
   }
   if(decor & MWM_DECOR_TITLE)
   {
@@ -456,7 +457,7 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
     /* A wide border, with corner tiles is desplayed
      * (10 pixels - 2 relief, 2 shadow) */
     SET_HAS_BORDER(t, 1);
-    t->boundary_width = handle_width;
+    used_width = handle_width;
   }
   if(!(decor & MWM_DECOR_MENU))
   {
@@ -520,11 +521,10 @@ void SelectDecor(FvwmWindow *t, window_style *pstyle, short *buttons)
       t->nr_right_buttons--;
   }
 
-  if(t->boundary_width <= 0)
-  {
-    t->boundary_width = 0;
-    SET_HAS_BORDER(t, 0);
-  }
+  set_window_border_size(t, used_width);
+  SET_HAS_BORDER(t, used_width);
+
+  return;
 }
 
 /*

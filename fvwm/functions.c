@@ -890,9 +890,9 @@ static char *expand(
 	    }
 	    break;
 	  case 'n':
-	    if (tmp_win->name && tmp_win->name[0])
+	    if (tmp_win->name.name && tmp_win->name.name[0])
 	    {
-	      string = tmp_win->name;
+	      string = tmp_win->name.name;
 	    }
 	    break;
 	  }
@@ -1051,9 +1051,9 @@ static char *expand(
 	    }
 	    break;
 	  case 'n':
-	    if (tmp_win->name && tmp_win->name[0])
+	    if (tmp_win->name.name && tmp_win->name.name[0])
 	    {
-	      string = tmp_win->name;
+	      string = tmp_win->name.name;
 	    }
 	    break;
 	  }

@@ -146,7 +146,7 @@ int  win_width    = 5,
      win_y,
      win_border = 4,
      win_has_title = 0,
-     win_has_bottom_title = 0,
+     win_title_dir = 0,
      win_title_height = 0,
      win_is_shaded = 0,
      button_width = DEFAULT_BTN_WIDTH,
@@ -252,7 +252,7 @@ int main(int argc, char **argv)
   char *s;
   int i;
 
-  FInitLocale(LC_CTYPE, "", "", "FvwmTaskBar");
+  FlocaleInit(LC_CTYPE, "", "", "FvwmTaskBar");
   setlocale(LC_TIME, "");
 
   for (i = 3; i < NUMBER_OF_MOUSE_BUTTONS; i++)
@@ -497,7 +497,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
       if (win_border != (short)cfgpacket->border_width ||
 	  win_title_height != (int)cfgpacket->title_height ||
 	  win_has_title != HAS_TITLE(cfgpacket) ||
-	  win_has_bottom_title != HAS_BOTTOM_TITLE(cfgpacket))
+	  win_title_dir != GET_TITLE_DIR(cfgpacket))
       {
 	XSizeHints hints;
 	long dumy;
@@ -506,7 +506,7 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	win_width = screen_g.width-(win_border<<1);
 	win_title_height = (int)cfgpacket->title_height;
 	win_has_title = HAS_TITLE(cfgpacket);
-	win_has_bottom_title = HAS_BOTTOM_TITLE(cfgpacket);
+	win_title_dir = GET_TITLE_DIR(cfgpacket);
 
 	if (AutoStick)
 	{
@@ -517,14 +517,16 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	    {
 	      win_y = screen_g.height -
 		(AutoHide ?
-		 VISIBLE_PIXELS() - win_title_height*win_has_bottom_title :
+		 VISIBLE_PIXELS() -
+		 win_title_height * HAS_TITLE_DIR(cfgpacket, DIR_S) :
 		 win_height + win_border);
 	    }
 	    else
 	    {
 	      win_y = AutoHide ?
-		VISIBLE_PIXELS() + win_title_height*win_has_bottom_title
-		- win_height : win_border + win_title_height;
+		VISIBLE_PIXELS() +
+		      win_title_height * HAS_TITLE_DIR(cfgpacket, DIR_S) -
+		      win_height : win_border + win_title_height;
 	    }
 	  }
 	  else
@@ -532,12 +534,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	    if (win_y > Midline)
 	    {
 	      win_y = screen_g.height - win_border -
-		(win_has_bottom_title)*win_height;
+		HAS_TITLE_DIR(cfgpacket, DIR_S) * win_height;
 	    }
 	    else
 	    {
 	      win_y = win_title_height + win_border -
-		(win_has_bottom_title)*win_height;
+		HAS_TITLE_DIR(cfgpacket, DIR_S) * win_height;
 	    }
 	  }
 	  win_y += screen_g.y;
@@ -567,12 +569,12 @@ void ProcessMessage(unsigned long type,unsigned long *body)
 	  if (win_y > Midline)
 	  {
 	    win_y = screen_g.height - win_border -
-	      (win_has_bottom_title)*win_height;
+	      (win_title_dir == DIR_S) * win_height;
 	  }
 	  else
 	  {
 	    win_y = win_title_height + win_border -
-	      (win_has_bottom_title)*win_height;
+	      (win_title_dir == DIR_S) * win_height;
 	  }
 	}
 	else
@@ -2222,9 +2224,9 @@ void HideTaskBar()
     {
       /* pointer is on a different screen - that's okay here */
     }
-    if (wy >= -(win_border + win_title_height*(1-win_has_bottom_title)) &&
+    if (wy >= - (win_border + win_title_height * (win_title_dir != DIR_S)) &&
 	wy < win_height + win_border +
-	win_title_height*win_has_bottom_title)
+	win_title_height * (win_title_dir == DIR_S))
     {
       if (wy < 0 || wy >= win_height || wx < 0 || wx >= win_width)
 	SetAlarm(HIDE_TASK_BAR);
@@ -2238,7 +2240,7 @@ void HideTaskBar()
   if (win_y < Midline)
   {
     new_win_y = screen_g.y + VISIBLE_PIXELS() +
-      win_title_height*win_has_bottom_title - win_height;
+      win_title_height * (win_title_dir == DIR_S) - win_height;
     for (; win_y>=new_win_y; win_y -=inc_y)
     {
       XMoveWindow(dpy, win, win_x, win_y);
@@ -2248,7 +2250,7 @@ void HideTaskBar()
   else
   {
     new_win_y = screen_g.y + screen_g.height - VISIBLE_PIXELS() +
-      win_title_height*win_has_bottom_title;
+      win_title_height * (win_title_dir == DIR_S);
     for (; win_y<=new_win_y; win_y +=inc_y)
     {
       XMoveWindow(dpy, win, win_x, win_y);

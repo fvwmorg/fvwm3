@@ -432,8 +432,8 @@ SaveWindowStates(FILE *f)
         fprintf(f, "  [RES_NAME] %s\n", ewin->class.res_name);
       if (ewin->class.res_name)
         fprintf(f, "  [RES_CLASS] %s\n", ewin->class.res_class);
-      if (ewin->name)
-        fprintf(f, "  [WM_NAME] %s\n", ewin->name);
+      if (ewin->name.name)
+        fprintf(f, "  [WM_NAME] %s\n", ewin->name.name);
 
       wm_command = NULL;
       wm_command_count = 0;
@@ -693,7 +693,7 @@ static Bool matchWin(FvwmWindow *w, Match *m)
       if (xstreq(w->class.res_name, m->res_name) &&
           xstreq(w->class.res_class, m->res_class) &&
           (IS_NAME_CHANGED(w) || IS_NAME_CHANGED(m) ||
-           xstreq(w->name, m->wm_name)))
+           xstreq(w->name.name, m->wm_name)))
       {
         if (client_id)
         {
@@ -788,7 +788,7 @@ MatchWinToSM(FvwmWindow *ewin, int *do_shade, int *shade_dir, int *do_max)
 	if (matches[i].wm_name)
 	{
 	  free_window_names(ewin, True, False);
-	  ewin->name = matches[i].wm_name;
+	  ewin->name.name = matches[i].wm_name;
 	  setup_visible_name(ewin, False);
 	}
       }

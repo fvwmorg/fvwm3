@@ -554,6 +554,7 @@ Bool PlaceWindow(
   int PageRight;
   int PageBottom;
   rectangle screen_g;
+  size_borders b;
   Bool rc = False;
   struct
   {
@@ -935,7 +936,8 @@ Bool PlaceWindow(
       tmp_win->attr.x = xl;
       break;
     case PLACE_MINOVERLAPPERCENT:
-      CleverPlacement(tmp_win, sflags, &screen_g, &xl, &yt, pdeltax, pdeltay, 1);
+      CleverPlacement(
+	      tmp_win, sflags, &screen_g, &xl, &yt, pdeltax, pdeltay, 1);
       flags.is_smartly_placed = True;
       break;
     case PLACE_TILECASCADE:
@@ -954,13 +956,13 @@ Bool PlaceWindow(
 	  the old Style Dumb/Smart, Random/Active, Smart/SmartOff (i.e.:
 	  Dumb+Random+Smart or Dumb+Active+Smart)
       */
-      if ((Scr.randomx += tmp_win->title_g.height) > screen_g.width / 2)
+      if ((Scr.randomx += tmp_win->title_thickness) > screen_g.width / 2)
       {
-	Scr.randomx = tmp_win->title_g.height;
+	Scr.randomx = tmp_win->title_thickness;
       }
-      if ((Scr.randomy += 2 * tmp_win->title_g.height) > screen_g.height / 2)
+      if ((Scr.randomy += 2 * tmp_win->title_thickness) > screen_g.height / 2)
       {
-	Scr.randomy = 2 * tmp_win->title_g.height;
+	Scr.randomy = 2 * tmp_win->title_thickness;
       }
       tmp_win->attr.x = Scr.randomx + PageLeft - pdeltax;
       tmp_win->attr.y = Scr.randomy + PageTop - pdeltay;
@@ -968,22 +970,23 @@ Bool PlaceWindow(
       tmp_win->frame_g.x = PageLeft + tmp_win->attr.x + tmp_win->old_bw + 10;
       tmp_win->frame_g.y = PageTop + tmp_win->attr.y + tmp_win->old_bw + 10;
 
+      get_window_borders(tmp_win, &b);
       if (tmp_win->attr.x + tmp_win->frame_g.width >= PageRight)
       {
 	tmp_win->attr.x = PageRight - tmp_win->attr.width
-	  - tmp_win->old_bw - 2*tmp_win->boundary_width;
+	  - tmp_win->old_bw - b.total_size.width;
 	Scr.randomx = 0;
       }
       if (tmp_win->attr.y + tmp_win->frame_g.height >= PageBottom)
       {
 	tmp_win->attr.y = PageBottom - tmp_win->attr.height
-	  - tmp_win->old_bw - tmp_win->title_g.height -
-	  2*tmp_win->boundary_width;
+	  - tmp_win->old_bw - b.total_size.height;
 	Scr.randomy = 0;
       }
       break;
     case PLACE_MINOVERLAP:
-      CleverPlacement(tmp_win, sflags, &screen_g, &xl, &yt, pdeltax, pdeltay, 0);
+      CleverPlacement(
+	      tmp_win, sflags, &screen_g, &xl, &yt, pdeltax, pdeltay, 0);
       flags.is_smartly_placed = True;
       break;
     default:
@@ -1107,10 +1110,10 @@ Bool PlaceWindow(
       final_g.height = 0;
       if (mode == PLACE_INITIAL)
       {
+	get_window_borders(tmp_win, &b);
         gravity_resize(
           tmp_win->hints.win_gravity, &final_g,
-          2 * tmp_win->boundary_width,
-          2 * tmp_win->boundary_width + tmp_win->title_g.height);
+          b.total_size.width, b.total_size.height);
       }
       tmp_win->attr.x = final_g.x;
       tmp_win->attr.y = final_g.y;

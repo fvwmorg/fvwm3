@@ -182,9 +182,11 @@ static
 char *utf8_to_charset(const char *in, unsigned int in_size)
 {
   char *out = NULL;
+  const char *charset;
 
-  if (Fcharset != NULL)
-    out = convert_charsets(UTF8_CHARSET_NAME, Fcharset, in, in_size);
+  charset = FlocaleGetCharset();
+  if (charset != NULL)
+    out = convert_charsets(UTF8_CHARSET_NAME, charset, in, in_size);
 
   return out;
 }
@@ -196,9 +198,11 @@ static
 char *charset_to_utf8(const char *in, unsigned int in_size)
 {
   char *out = NULL;
+  const char *charset;
 
-  if (Fcharset != NULL)
-    out = convert_charsets(Fcharset,UTF8_CHARSET_NAME, in, in_size);
+  charset = FlocaleGetCharset();
+  if (charset != NULL)
+    out = convert_charsets(charset,UTF8_CHARSET_NAME, in, in_size);
 
   return out;
 }
@@ -290,7 +294,7 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
     free_window_names(fwin, False, True);
   }
 
-  fwin->icon_name = tmp_str;
+  fwin->icon_name.name = tmp_str;
 
   SET_HAS_EWMH_WM_ICON_NAME(fwin, 1);
   SET_WAS_ICON_NAME_PROVIDED(fwin, 1);
@@ -301,8 +305,8 @@ int EWMH_WMIconName(EWMH_CMD_ARGS)
     return 1;
   }
 
-  if (fwin->icon_name && strlen(fwin->icon_name) > MAX_ICON_NAME_LEN)
-    fwin->icon_name[MAX_ICON_NAME_LEN] = 0;
+  if (fwin->icon_name.name && strlen(fwin->icon_name.name) > MAX_ICON_NAME_LEN)
+    (fwin->icon_name.name)[MAX_ICON_NAME_LEN] = 0;
 
   setup_visible_name(fwin, True);
   EWMH_SetVisibleName(fwin, True);
@@ -337,7 +341,7 @@ int EWMH_WMName(EWMH_CMD_ARGS)
   if (ev != NULL)
     free_window_names(fwin, True, False);
 
-  fwin->name = tmp_str;
+  fwin->name.name = tmp_str;
   SET_HAS_EWMH_WM_NAME(fwin, 1);
 
   if (ev == NULL)
@@ -345,8 +349,8 @@ int EWMH_WMName(EWMH_CMD_ARGS)
     return 1;
   }
 
-  if (fwin->name && strlen(fwin->name) > MAX_WINDOW_NAME_LEN)
-      fwin->name[MAX_WINDOW_NAME_LEN] = 0;
+  if (fwin->name.name && strlen(fwin->name.name) > MAX_WINDOW_NAME_LEN)
+      (fwin->name.name[MAX_WINDOW_NAME_LEN]) = 0;
 
   setup_visible_name(fwin, False);
   SET_NAME_CHANGED(fwin, 1);
@@ -402,7 +406,7 @@ void EWMH_SetDesktopNames(void)
   names = (void *)safemalloc(sizeof(*names)*nbr);
   for (i = 0; i < nbr; i++)
   {
-    names[i] = 
+    names[i] =
 	(unsigned char *)charset_to_utf8(s->name, strlen(s->name));
     s = s->next;
   }

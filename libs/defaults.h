@@ -128,8 +128,24 @@
 
 /*** fonts ***/
 #define EXTRA_TITLE_FONT_HEIGHT		   3 /* pixels */
+#define EXTRA_TITLE_FONT_WIDTH		   3 /* pixels */
 #define MIN_FONT_HEIGHT			   (EXTRA_TITLE_FONT_HEIGHT + 2)
 #define MAX_FONT_HEIGHT			 256 /* pixels */
+
+/*** Flocale ***/
+#define FLOCALE_MB_FALLBACK_FONT \
+	"-*-fixed-medium-r-semicondensed-*-13-*," \
+	"-*-fixed-medium-r-normal-*-14-*," \
+	"-*-medium-r-normal-*-16-*"
+/* rationale: -*-fixed-medium-r-semicondensed-*-13-* should gives "fixed" in
+   most non multibyte charset (?).
+   -*-fixed-medium-r-normal-*-14-* is ok for jsx
+   -*-medium-r-normal-*-16-* is for gb
+   Of course this is for XFree. Any help for other X server basic font set
+   is welcome.
+*/
+#define FLOCALE_FALLBACK_FONT "fixed"
+#define FLOCALE_NUMBER_MISS_CSET_ERR_MSG 5
 
 /*** window geometry ***/
 #define DEFAULT_MIN_MAX_WINDOW_WIDTH	 100 /* pixels */
@@ -137,7 +153,7 @@
 #define DEFAULT_MAX_MAX_WINDOW_WIDTH   32767 /* pixels */
 #define DEFAULT_MAX_MAX_WINDOW_HEIGHT  32767 /* pixels */
 /* this value is used in a bugfix */
-#define WINDOW_FREAKED_OUT_HEIGHT      65500 /* pixels */
+#define WINDOW_FREAKED_OUT_SIZE        65500 /* pixels */
 
 /* geometry window */
 #define GEOMETRY_WINDOW_BW                 2 /* pixels */

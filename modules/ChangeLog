@@ -1,3 +1,27 @@
+2002-03-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmTaskBar/FvwmTaskBar.c (main):
+	* FvwmWinList/FvwmWinList.c (main):
+	* FvwmScript/FvwmScript.c (main):
+	* FvwmPager/FvwmPager.c (main):
+	* FvwmIconMan/FvwmIconMan.c (main):
+	* FvwmIconBox/FvwmIconBox.c (main):
+	* FvwmForm/FvwmForm.c (main):
+	* FvwmButtons/FvwmButtons.c (main):
+	(Loop):
+	(swallow):
+	use new interfaces in Flocale.h
+
+2002-03-08  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* FvwmWinList/FvwmWinList.c (ProcessMessage):
+	* FvwmTaskBar/FvwmTaskBar.c (ProcessMessage):
+	(HideTaskBar):
+	* FvwmDebug/FvwmDebug.c (list_configure):
+	* FvwmButtons/FvwmButtons.c (process_message):
+	* FvwmCommand/FvwmCommand.c (list_configure):
+	don't use HAS_BOTTOM_TITLE any more
+
 2002-03-08  Dan Espen  <dane@mk.telcordia.com>
 
 	* FvwmForm/ReadXServer.c: Some comments.

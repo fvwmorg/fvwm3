@@ -336,9 +336,6 @@ typedef struct ScreenInfo
   GC TitleGC;
   int SizeStringWidth;	        /* minimum width of size window */
 
-  FlocaleWinString *TitleStr;       /* title fvwm window string */
-  FlocaleWinString *ScratchStr;
-
   FvwmDecor DefaultDecor;	/* decoration style(s) */
   FvwmDecor *cur_decor;
 

@@ -177,10 +177,11 @@ void setup_window_name_count(FvwmWindow *tmp_win)
   int count = 0;
   Bool done = False;
 
-  if (!tmp_win->name)
+  if (!tmp_win->name.name)
     done = True;
 
-  if (tmp_win->icon_name && strcmp(tmp_win->name, tmp_win->icon_name) == 0)
+  if (tmp_win->icon_name.name &&
+      strcmp(tmp_win->name.name, tmp_win->icon_name.name) == 0)
     count = tmp_win->icon_name_count;
 
   while (!done)
@@ -190,9 +191,10 @@ void setup_window_name_count(FvwmWindow *tmp_win)
     {
       if (t == tmp_win)
 	continue;
-      if ((t->name && strcmp(t->name, tmp_win->name) == 0 &&
+      if ((t->name.name && strcmp(t->name.name, tmp_win->name.name) == 0 &&
 	  t->name_count == count) ||
-	  (t->icon_name && strcmp(t->icon_name, tmp_win->name) == 0 &&
+	  (t->icon_name.name &&
+	   strcmp(t->icon_name.name, tmp_win->name.name) == 0 &&
 	   t->icon_name_count == count))
       {
 	count++;
@@ -209,11 +211,14 @@ static void setup_icon_name_count(FvwmWindow *tmp_win)
   int count = 0;
   Bool done = False;
 
-  if (!tmp_win->icon_name)
+  if (!tmp_win->icon_name.name)
     done = True;
 
-  if (tmp_win->name && strcmp(tmp_win->name, tmp_win->icon_name) == 0)
+  if (tmp_win->name.name &&
+      strcmp(tmp_win->name.name, tmp_win->icon_name.name) == 0)
+  {
     count = tmp_win->name_count;
+  }
 
   while (!done)
   {
@@ -222,9 +227,10 @@ static void setup_icon_name_count(FvwmWindow *tmp_win)
     {
       if (t == tmp_win)
 	continue;
-      if ((t->icon_name && strcmp(t->icon_name, tmp_win->icon_name) == 0 &&
-	  t->icon_name_count == count) ||
-	  (t->name && strcmp(t->name, tmp_win->icon_name) == 0 &&
+      if ((t->icon_name.name &&
+	   strcmp(t->icon_name.name, tmp_win->icon_name.name) == 0 &&
+	   t->icon_name_count == count) ||
+	  (t->name.name && strcmp(t->name.name, tmp_win->icon_name.name) == 0 &&
 	   t->name_count == count))
       {
 	count++;
@@ -248,27 +254,27 @@ void setup_visible_name(FvwmWindow *tmp_win, Bool is_icon)
   if (is_icon)
   {
     if (tmp_win->visible_icon_name != NULL &&
-	tmp_win->visible_icon_name != tmp_win->icon_name &&
-	tmp_win->visible_icon_name != tmp_win->name &&
+	tmp_win->visible_icon_name != tmp_win->icon_name.name &&
+	tmp_win->visible_icon_name != tmp_win->name.name &&
 	tmp_win->visible_icon_name != NoName)
     {
       free(tmp_win->visible_icon_name);
       tmp_win->visible_icon_name = NULL;
     }
-    name = tmp_win->icon_name;
+    name = tmp_win->icon_name.name;
     setup_icon_name_count(tmp_win);
     count = tmp_win->icon_name_count;
   }
   else
   {
     if (tmp_win->visible_name != NULL &&
-	tmp_win->visible_name != tmp_win->name &&
+	tmp_win->visible_name != tmp_win->name.name &&
 	tmp_win->visible_name != NoName)
     {
       free(tmp_win->visible_name);
       tmp_win->visible_name = NULL;
     }
-    name = tmp_win->name;
+    name = tmp_win->name.name;
     setup_window_name_count(tmp_win);
     count = tmp_win->name_count;
   }
@@ -303,11 +309,9 @@ void setup_window_name(FvwmWindow *tmp_win)
 {
   if (!EWMH_WMName(tmp_win, NULL, NULL, 0))
   {
-    tmp_win->name = NoName;
-    MULTIBYTE_CODE(tmp_win->name_list = NULL);
-    FlocaleGetNameProperty(XGetWMName, dpy, tmp_win->w,
-			   MULTIBYTE_ARG(&(tmp_win->name_list))
-			   &(tmp_win->name));
+    tmp_win->name.name = NoName;
+    tmp_win->name.name_list = NULL;
+    FlocaleGetNameProperty(XGetWMName, dpy, tmp_win->w, &(tmp_win->name));
   }
 
   if (debugging)
@@ -351,11 +355,29 @@ static void destroy_window_font(FvwmWindow *tmp_win)
   SET_USING_DEFAULT_WINDOW_FONT(tmp_win, 1);
 }
 
+void setup_title_geometry(
+	FvwmWindow *tmp_win, window_style *pstyle)
+{
+	int width;
+	int offset;
+
+	get_title_font_size_and_offset(
+		tmp_win, STITLE_DIR(pstyle->flags), &width, &offset);
+	tmp_win->title_thickness = width;
+	tmp_win->title_text_offset = offset;
+	tmp_win->corner_width =
+		tmp_win->title_thickness + tmp_win->boundary_width;
+	if (!HAS_TITLE(tmp_win))
+	{
+		tmp_win->title_thickness = 0;
+	}
+
+	return;
+}
+
 void setup_window_font(
   FvwmWindow *tmp_win, window_style *pstyle, Bool do_destroy)
 {
-  int height;
-
   /* get rid of old font */
   if (do_destroy)
   {
@@ -379,31 +401,7 @@ void setup_window_font(
     }
     SET_WINDOW_FONT_LOADED(tmp_win, 1);
   }
-
-  /* adjust font offset according to height specified in title style */
-  if (tmp_win->decor->title_height)
-  {
-    height = tmp_win->decor->title_height;
-    tmp_win->title_text_y = tmp_win->title_font->ascent +
-      (height - (tmp_win->title_font->height + EXTRA_TITLE_FONT_HEIGHT)) / 2;
-    if (tmp_win->title_text_y < tmp_win->title_font->ascent)
-      tmp_win->title_text_y = tmp_win->title_font->ascent;
-    tmp_win->title_g.height = height;
-  }
-  else
-  {
-    height = tmp_win->title_font->height;
-    tmp_win->title_text_y = tmp_win->title_font->ascent;
-    tmp_win->title_g.height =
-      tmp_win->title_font->height + EXTRA_TITLE_FONT_HEIGHT;
-  }
-  tmp_win->corner_width = tmp_win->title_g.height + tmp_win->boundary_width;
-  if (!HAS_TITLE(tmp_win))
-  {
-    tmp_win->title_g.height = 0;
-  }
-  tmp_win->title_top_height =
-    (HAS_BOTTOM_TITLE(tmp_win)) ? 0 : tmp_win->title_g.height;
+  setup_title_geometry(tmp_win, pstyle);
 
   return;
 }
@@ -538,7 +536,9 @@ void setup_style_and_decor(
   if (FHaveShapeExtension)
   {
     if (tmp_win->wShaped)
-      tmp_win->boundary_width = 0;
+    {
+      set_window_border_size(tmp_win, 0);
+    }
   }
 
   /****** window colors ******/
@@ -837,23 +837,17 @@ void setup_decor_window(
 void setup_title_window(
   FvwmWindow *tmp_win, int valuemask, XSetWindowAttributes *pattributes)
 {
-  valuemask |= CWCursor | CWEventMask;
-  pattributes->cursor = Scr.FvwmCursors[CRS_TITLE];
-  pattributes->event_mask = XEVMASK_TITLEW;
+	valuemask |= CWCursor | CWEventMask;
+	pattributes->cursor = Scr.FvwmCursors[CRS_TITLE];
+	pattributes->event_mask = XEVMASK_TITLEW;
 
-  /* set up the title geometry - the height is already known from the decor */
-  tmp_win->title_g.width = tmp_win->frame_g.width - 2*tmp_win->boundary_width;
-  if(tmp_win->title_g.width < 1)
-    tmp_win->title_g.width = 1;
-  tmp_win->title_g.x = tmp_win->boundary_width + tmp_win->title_g.height + 1;
-  tmp_win->title_g.y = tmp_win->boundary_width;
+	tmp_win->title_w =
+		XCreateWindow(
+			dpy, tmp_win->decor_w, 0, 0, 1, 1, 0, CopyFromParent,
+			InputOutput, CopyFromParent, valuemask, pattributes);
+	XSaveContext(dpy, tmp_win->title_w, FvwmContext, (caddr_t) tmp_win);
 
-  tmp_win->title_w =
-    XCreateWindow(
-      dpy, tmp_win->decor_w, tmp_win->title_g.x, tmp_win->title_g.y,
-      tmp_win->title_g.width, tmp_win->title_g.height, 0, CopyFromParent,
-      InputOutput, CopyFromParent, valuemask, pattributes);
-  XSaveContext(dpy, tmp_win->title_w, FvwmContext, (caddr_t) tmp_win);
+	return;
 }
 
 void destroy_title_window(FvwmWindow *tmp_win, Bool do_only_delete_context)
@@ -896,11 +890,8 @@ void setup_button_windows(
     {
       tmp_win->button_w[i] =
 	XCreateWindow(
-	  dpy, tmp_win->decor_w, (i < NR_LEFT_BUTTONS) ?
-	  (tmp_win->title_g.height * i) :
-	  (tmp_win->title_g.width - tmp_win->title_g.height * (i+1)),
-	  0, tmp_win->title_g.height, tmp_win->title_g.height, 0,
-	  CopyFromParent, InputOutput, CopyFromParent, valuemask, pattributes);
+	  dpy, tmp_win->decor_w, 0, 0, 1, 1, 0, CopyFromParent, InputOutput,
+	  CopyFromParent, valuemask, pattributes);
       XSaveContext(dpy, tmp_win->button_w[i], FvwmContext, (caddr_t) tmp_win);
     }
     else if (tmp_win->button_w[i] != None && !has_button)
@@ -946,6 +937,8 @@ void change_button_windows(
 
 void setup_parent_window(FvwmWindow *tmp_win)
 {
+  size_borders b;
+
   XSetWindowAttributes attributes;
   int valuemask = CWBackingStore | CWBackPixmap | CWCursor | CWEventMask
   		  | CWSaveUnder;
@@ -958,12 +951,11 @@ void setup_parent_window(FvwmWindow *tmp_win)
 
   /* This window is exactly the same size as the client for the
      benefit of some clients */
+  get_window_borders(tmp_win, &b);
   tmp_win->Parent = XCreateWindow(
-    dpy, tmp_win->frame, tmp_win->boundary_width,
-    tmp_win->boundary_width + tmp_win->title_g.height,
-    (tmp_win->frame_g.width - 2 * tmp_win->boundary_width),
-    (tmp_win->frame_g.height - 2 * tmp_win->boundary_width -
-     tmp_win->title_g.height),
+    dpy, tmp_win->frame, b.top_left.width, b.top_left.height,
+    tmp_win->frame_g.width - b.total_size.width,
+    (tmp_win->frame_g.height - b.total_size.height),
     0, CopyFromParent, InputOutput, CopyFromParent, valuemask, &attributes);
 
   XSaveContext(dpy, tmp_win->Parent, FvwmContext, (caddr_t) tmp_win);
@@ -994,8 +986,7 @@ void setup_resize_handle_windows(FvwmWindow *tmp_win)
       attributes.cursor = Scr.FvwmCursors[CRS_TOP+i];
       tmp_win->sides[i] =
 	XCreateWindow(
-	  dpy, tmp_win->decor_w, 0, 0, tmp_win->boundary_width,
-	  tmp_win->boundary_width, 0, 0, InputOnly,
+	  dpy, tmp_win->decor_w, 0, 0, 1, 1, 0, 0, InputOnly,
 	  DefaultVisual(dpy, Scr.screen), valuemask, &attributes);
       XSaveContext(dpy, tmp_win->sides[i], FvwmContext, (caddr_t) tmp_win);
       XSaveContext(dpy, tmp_win->corners[i], FvwmContext, (caddr_t) tmp_win);
@@ -1026,9 +1017,8 @@ static void resize_resize_handle_windows(FvwmWindow *tmp_win)
 {
         int i;
 
-        tmp_win->corner_width =
-                tmp_win->title_g.height + tmp_win->boundary_width;
-
+	tmp_win->corner_width =
+		tmp_win->title_thickness + tmp_win->boundary_width;
         if (HAS_BORDER(tmp_win))
         {
                 /* Just dump the windows any old place and let SetupFrame take
@@ -1051,7 +1041,7 @@ void change_resize_handle_windows(FvwmWindow *tmp_win)
   else if (!HAS_BORDER(tmp_win) && tmp_win->sides[0] != None)
     destroy_resize_handle_windows(tmp_win, False);
   else if (tmp_win->corner_width !=
-           tmp_win->title_g.height + tmp_win->boundary_width)
+           tmp_win->title_thickness + tmp_win->boundary_width)
   {
     resize_resize_handle_windows(tmp_win);
   }
@@ -1254,15 +1244,14 @@ ICON_DBG((stderr,"si: using default '%s'\n", tmp_win->name));
   /* icon name */
   if (!EWMH_WMIconName(tmp_win, NULL, NULL, 0))
   {
-    tmp_win->icon_name = NoName;
-    MULTIBYTE_CODE(tmp_win->icon_name_list = NULL);
-    FlocaleGetNameProperty(XGetWMIconName, dpy, tmp_win->w,
-			   MULTIBYTE_ARG(&(tmp_win->icon_name_list))
-			   &(tmp_win->icon_name));
+    tmp_win->icon_name.name = NoName;
+    tmp_win->icon_name.name_list = NULL;
+    FlocaleGetNameProperty(
+	    XGetWMIconName, dpy, tmp_win->w, &(tmp_win->icon_name));
   }
-  if (tmp_win->icon_name == NoName)
+  if (tmp_win->icon_name.name == NoName)
   {
-    tmp_win->icon_name = tmp_win->name;
+    tmp_win->icon_name.name = tmp_win->name.name;
     SET_WAS_ICON_NAME_PROVIDED(tmp_win, 0);
   }
   setup_visible_name(tmp_win, True);
@@ -1437,6 +1426,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
   int do_maximize = 0;
   Bool used_sm = False;
   Bool do_resize_too = False;
+  size_borders b;
 
   /****** init window structure ******/
   if (!setup_window_structure(&tmptmp_win, w, ReuseWin)) {
@@ -1548,6 +1538,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
    * Thus it is important have this call *after* PlaceWindow and the
    * stacking order initialization.
    */
+  get_window_borders(tmp_win, &b);
   used_sm = MatchWinToSM(tmp_win, &do_shade, &shade_dir, &do_maximize);
   if (used_sm)
   {
@@ -1557,8 +1548,7 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
       &tmp_win->normal_g);
     gravity_resize(
       tmp_win->hints.win_gravity, &tmp_win->normal_g,
-      2 * tmp_win->boundary_width,
-      2 * tmp_win->boundary_width + tmp_win->title_g.height);
+      b.total_size.width, b.total_size.height);
     tmp_win->frame_g = tmp_win->normal_g;
     tmp_win->frame_g.x -= Scr.Vx;
     tmp_win->frame_g.y -= Scr.Vy;
@@ -1592,9 +1582,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
       SET_SHADED(tmp_win, 0);
     }
     /* Tentative size estimate */
-    tmp_win->frame_g.width = tmp_win->attr.width + 2 * tmp_win->boundary_width;
-    tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height +
-      2 * tmp_win->boundary_width;
+    tmp_win->frame_g.width = tmp_win->attr.width + b.total_size.width;
+    tmp_win->frame_g.height = tmp_win->attr.height + b.total_size.height;
 
     /****** calculate frame size ******/
     setup_frame_size_limits(tmp_win, &style);
@@ -1608,9 +1597,8 @@ FvwmWindow *AddWindow(Window w, FvwmWindow *ReuseWin, Bool is_menu)
     /* set up geometry */
     tmp_win->frame_g.x = tmp_win->attr.x;
     tmp_win->frame_g.y = tmp_win->attr.y;
-    tmp_win->frame_g.width = tmp_win->attr.width + 2 * tmp_win->boundary_width;
-    tmp_win->frame_g.height = tmp_win->attr.height + tmp_win->title_g.height
-      + 2 * tmp_win->boundary_width;
+    tmp_win->frame_g.width = tmp_win->attr.width + b.total_size.width;
+    tmp_win->frame_g.height = tmp_win->attr.height + b.total_size.height;
     gravity_constrain_size(
       tmp_win->hints.win_gravity, tmp_win, &tmp_win->frame_g, 0);
 
@@ -2104,51 +2092,51 @@ void free_window_names(FvwmWindow *tmp, Bool nukename, Bool nukeicon)
     return;
 
   if (nukename && tmp->visible_name &&
-      tmp->visible_name != tmp->name &&
+      tmp->visible_name != tmp->name.name &&
       tmp->visible_name != NoName)
   {
     free(tmp->visible_name);
     tmp->visible_name = NULL;
   }
   if (nukeicon && tmp->visible_icon_name &&
-      tmp->visible_icon_name != tmp->name &&
-      tmp->visible_icon_name != tmp->icon_name &&
+      tmp->visible_icon_name != tmp->name.name &&
+      tmp->visible_icon_name != tmp->icon_name.name &&
       tmp->visible_icon_name != NoName)
   {
     free(tmp->visible_icon_name);
     tmp->visible_icon_name = NULL;
   }
-  if (nukename && tmp->name)
+  if (nukename && tmp->name.name)
   {
 #ifdef CODE_WITH_LEAK_I_THINK
-    if (tmp->name != tmp->icon_name && tmp->name != NoName)
-      FlocaleFreeNameProperty(MULTIBYTE_ARG(&(tmp->name_list)) &(tmp->name));
+    if (tmp->name.name != tmp->icon_name.name && tmp->name.name != NoName)
+      FlocaleFreeNameProperty(&(tmp->name));
 #else
-    if (tmp->icon_name == tmp->name)
-      tmp->icon_name = NoName;
-    if (tmp->visible_icon_name == tmp->name)
-      tmp->visible_icon_name = tmp->icon_name;
-    if (tmp->name != NoName)
+    if (tmp->icon_name.name == tmp->name.name)
+      tmp->icon_name.name = NoName;
+    if (tmp->visible_icon_name == tmp->name.name)
+      tmp->visible_icon_name = tmp->icon_name.name;
+    if (tmp->name.name != NoName)
     {
-      FlocaleFreeNameProperty(MULTIBYTE_ARG(&(tmp->name_list)) &(tmp->name));
+      FlocaleFreeNameProperty(&(tmp->name));
       tmp->visible_name = NULL;
     }
 #endif
   }
-  if (nukeicon && tmp->icon_name)
+  if (nukeicon && tmp->icon_name.name)
   {
 #ifdef CODE_WITH_LEAK_I_THINK
-    if ((tmp->name != tmp->icon_name || nukename) && tmp->icon_name != NoName)
+    if ((tmp->name.name != tmp->icon_name.name || nukename) &&
+	tmp->icon_name.name != NoName)
     {
-      FlocaleFreeNameProperty(MULTIBYTE_ARG(&(tmp->icon_name_list))
-			      &(tmp->icon_name));
+      FlocaleFreeNameProperty(&(tmp->icon_name));
       tmp->visible_icon_name = NULL;
     }
 #else
-    if ((tmp->name != tmp->icon_name) && tmp->icon_name != NoName)
+    if ((tmp->name.name != tmp->icon_name.name) &&
+	tmp->icon_name.name != NoName)
     {
-      FlocaleFreeNameProperty(MULTIBYTE_ARG(&(tmp->icon_name_list))
-			      &(tmp->icon_name));
+      FlocaleFreeNameProperty(&(tmp->icon_name));
       tmp->visible_icon_name = NULL;
     }
 #endif

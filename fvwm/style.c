@@ -771,7 +771,7 @@ void CMD_DestroyStyle(F_CMD_ARGS)
   {
     if (matchWildcards(name, t->class.res_class) == TRUE ||
 	matchWildcards(name, t->class.res_name) == TRUE ||
-	matchWildcards(name, t->name) == TRUE)
+	matchWildcards(name, t->name.name) == TRUE)
     {
       SET_STYLE_DELETED(t, 1);
       Scr.flags.do_need_window_update = 1;
@@ -812,7 +812,7 @@ void lookup_style(FvwmWindow *tmp_win, window_style *styles)
     {
       merge_styles(styles, nptr, False);
     }
-    else if (matchWildcards(SGET_NAME(*nptr),tmp_win->name) == TRUE)
+    else if (matchWildcards(SGET_NAME(*nptr),tmp_win->name.name) == TRUE)
     {
       merge_styles(styles, nptr, False);
     }
@@ -2637,16 +2637,32 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	else if (StrEquals(token, "TitleAtBottom"))
         {
 	  found = True;
-	  SFSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
-	  SMSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
-	  SCSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
+	  SFSET_TITLE_DIR(*ptmpstyle, DIR_S);
+	  SMSET_TITLE_DIR(*ptmpstyle, 1);
+	  SCSET_TITLE_DIR(*ptmpstyle, 1);
         }
         else if (StrEquals(token, "TitleAtTop"))
         {
 	  found = True;
-	  SFSET_HAS_BOTTOM_TITLE(*ptmpstyle, 0);
-	  SMSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
-	  SCSET_HAS_BOTTOM_TITLE(*ptmpstyle, 1);
+	  SFSET_TITLE_DIR(*ptmpstyle, DIR_N);
+	  SMSET_TITLE_DIR(*ptmpstyle, 1);
+	  SCSET_TITLE_DIR(*ptmpstyle, 1);
+        }
+	else if (StrEquals(token, "TitleLeft") ||
+		 StrEquals(token, "TitleAtLeft"))
+        {
+	  found = True;
+	  SFSET_TITLE_DIR(*ptmpstyle, DIR_W);
+	  SMSET_TITLE_DIR(*ptmpstyle, 1);
+	  SCSET_TITLE_DIR(*ptmpstyle, 1);
+        }
+        else if (StrEquals(token, "TitleRight") ||
+		 StrEquals(token, "TitleAtRight"))
+        {
+	  found = True;
+	  SFSET_TITLE_DIR(*ptmpstyle, DIR_E);
+	  SMSET_TITLE_DIR(*ptmpstyle, 1);
+	  SCSET_TITLE_DIR(*ptmpstyle, 1);
         }
         break;
 
@@ -3003,11 +3019,11 @@ void check_window_style_change(
   }
 
   /*
-   * has_bottom_title
+   * title_dir
    */
-  if (SCHAS_BOTTOM_TITLE(*ret_style))
+  if (SCTITLE_DIR(*ret_style))
   {
-    flags->do_setup_frame = True;
+    flags->do_update_title_dir = True;
   }
 
   /*

@@ -64,7 +64,7 @@ static void dump_stack_ring(void)
   for (t1 = Scr.FvwmRoot.stack_next; t1 != &Scr.FvwmRoot; t1 = t1->stack_next)
   {
     fprintf(stderr,"    l=%d fw=0x%08x f=0x%08x '%s'\n", t1->layer,
-	    (int)t1, (int)t1->frame, t1->name);
+	    (int)t1, (int)t1->frame, t1->name.name);
   }
 
   return;
@@ -95,9 +95,8 @@ void verify_stack_ring_consistency(void)
 	stderr,
 	"vsrc: stack ring is corrupt! "
 	"'%s' (layer %d) is above '%s' (layer %d/%d)\n",
-	t1->name, t1->layer, t2->name, t2->layer, last_layer);
+	t1->name.name, t1->layer, t2->name.name, t2->layer, last_layer);
       dump_stack_ring();
-abort();
       return;
     }
     last_layer = t1->layer;
@@ -116,7 +115,6 @@ abort();
       "0x%08x -> 0x%08x but 0x%08x <- 0x%08x\n",
       (int)t2, (int)t1, (int)(t1->stack_prev), (int)t1);
     dump_stack_ring();
-abort();
     return;
   }
   MyXGrabServer(dpy);
@@ -135,13 +133,13 @@ abort();
     if (i == nchildren)
     {
       fprintf(stderr,"vsrc: window already died: fw=0x%08x w=0x%08x '%s'\n",
-	      (int)t1, (int)t1->frame, t1->name);
+	      (int)t1, (int)t1->frame, t1->name.name);
     }
     else if (i >= last_index)
     {
       fprintf(
 	stderr, "vsrc: window is at wrong position in stack ring: "
-	"fw=0x%08x f=0x%08x '%s'\n", (int)t1, (int)t1->frame, t1->name);
+	"fw=0x%08x f=0x%08x '%s'\n", (int)t1, (int)t1->frame, t1->name.name);
       dump_stack_ring();
       fprintf(stderr,"dumping X stacking order:\n");
       for (i = nchildren; i-- > 0; )
@@ -159,7 +157,6 @@ abort();
       }
       MyXUngrabServer(dpy);
       XFree(children);
-abort();
       return;
     }
     last_index = i;

@@ -82,7 +82,6 @@ static void apply_window_updates(
 		}
 	}
 
-	t->title_top_height = (HAS_BOTTOM_TITLE(t)) ? 0 : t->title_g.height;
 	if (flags->do_update_window_grabs)
 	{
 		focus_grab_buttons(t, False);
@@ -219,6 +218,52 @@ static void apply_window_updates(
 			new_g = &t->normal_g;
 		}
 		get_relative_geometry(&t->frame_g, new_g);
+
+		flags->do_setup_frame = True;
+		flags->do_redraw_decoration = True;
+	}
+	if (flags->do_update_title_dir)
+	{
+		size_borders b_old;
+		size_borders b_new;
+		rectangle unshaded_g;
+		int dw;
+		int dh;
+
+		get_unshaded_geometry(t, &unshaded_g);
+		get_window_borders(t, &b_old);
+		SET_TITLE_DIR(t, STITLE_DIR(pstyle->flags));
+		setup_title_geometry(t, pstyle);
+		get_window_borders(t, &b_new);
+		dw = b_new.total_size.width - b_old.total_size.width;
+		dh = b_new.total_size.height - b_old.total_size.height;
+
+		t->frame_g = t->normal_g;
+		gravity_resize(t->hints.win_gravity, &t->frame_g, dw, dh);
+		gravity_constrain_size(t->hints.win_gravity, t, &t->frame_g, 0);
+		t->normal_g = t->frame_g;
+		if (IS_MAXIMIZED(t))
+		{
+			t->frame_g = t->max_g;
+			gravity_resize(
+				t->hints.win_gravity, &t->frame_g, dw, dh);
+			gravity_constrain_size(
+				t->hints.win_gravity, t, &t->frame_g,
+				CS_UPDATE_MAX_DEFECT);
+			t->max_g = t->frame_g;
+		}
+		if (IS_SHADED(t))
+		{
+			get_shaded_geometry(t, &t->frame_g, &unshaded_g);
+		}
+		else if (IS_MAXIMIZED(t))
+		{
+			get_relative_geometry(&t->frame_g, &t->max_g);
+		}
+		else
+		{
+			get_relative_geometry(&t->frame_g, &t->normal_g);
+		}
 
 		flags->do_setup_frame = True;
 		flags->do_redraw_decoration = True;
@@ -375,7 +420,7 @@ static void apply_window_updates(
 		if (Scr.Hilite != NULL && t == Scr.Hilite)
 		{
 			fprintf(stderr, "fc broadcast 0x%08x '%s'\n",
-				(int)Scr.Hilite, Scr.Hilite->name);
+				(int)Scr.Hilite, Scr.Hilite->name.name);
 			BroadcastPacket(
 				M_FOCUS_CHANGE, 5, Scr.Hilite->w,
 				Scr.Hilite->frame, 0,

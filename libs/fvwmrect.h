@@ -15,6 +15,9 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 
+#ifndef FVWMRECT_H
+#define FVWMRECT_H
+
 /* ---------------------------- included header files ----------------------- */
 
 /* ---------------------------- global definitions -------------------------- */
@@ -56,3 +59,5 @@ typedef struct
 
 /* Returns 1 if the given rectangles intersect and 0 otherwise */
 int fvwmrect_do_rectangles_intersect(rectangle *r, rectangle *s);
+
+#endif /* FVWMRECT_H */

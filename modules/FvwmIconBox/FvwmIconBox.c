@@ -196,7 +196,7 @@ int main(int argc, char **argv)
   char *temp, *s;
   XIconSize* size;
 
-  FInitLocale(LC_CTYPE, "", "", "FvwmIconBox");
+  FlocaleInit(LC_CTYPE, "", "", "FvwmIconBox");
 
   temp = argv[0];
   s=strrchr(argv[0], '/');

@@ -1,3 +1,211 @@
+2002-03-09  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* **/*.[ch]:
+	implemented titleatleft and titleatright styles; titles are not drawn
+	vertically yet
+
+	* fvwm/style.c (check_window_style_change):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/ewmh_names.c (EWMH_WMIconName):
+	(EWMH_WMName):
+	(charset_to_utf8):
+	* fvwm/ewmh.c (ksmserver_workarround):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/conditional.c (MatchesConditionMask):
+	* fvwm/fvwm.c (main):
+	* fvwm/session.c (SaveWindowStates):
+	(matchWin):
+	(MatchWinToSM):
+	* fvwm/functions.c (expand):
+	* fvwm/stack.c (dump_stack_ring):
+	(verify_stack_ring_consistency):
+	* fvwm/module_interface.c (BroadcastWindowIconNames):
+	(CMD_Send_WindowList):
+	* fvwm/add_window.c (free_window_names):
+	(free_window_names):
+	* fvwm/events.c (HandlePropertyNotify):
+	* fvwm/builtins.c (CMD_Wait):
+	* fvwm/style.c (CMD_DestroyStyle):
+	(lookup_style):
+	Adapted to changes of Flocale.h
+
+	* acconfig.h:
+	removed COMPUND_TEXT ifdef
+
+	* configure.in:
+	mutibyte defaults to on
+
+	* acconfig.h:
+	* libs/Flocale.c:
+	* libs/Flocale.h:
+	* fvwm/fvwm.h (FvwmWindow):
+	cleaned up Flocale stuff for better information hiding
+
+	* libs/Flocale.c (get_FlocaleFontSet):
+	(get_FlocaleFont):
+	added a new font strucht member min_char_offset for vertical text
+
+	* libs/Flocale.c (get_FlocaleFontSet):
+	fixed a bug in descent calculation
+
+	* fvwm/fvwm.h (FvwmWindow):
+	removed title_g
+
+	* fvwm/borders.c (RedrawButtons):
+	(SetupTitleBar):
+	(RedrawBorder):
+	(SetupFrame):
+	(RedrawTitle):
+	(DrawMultiPixmapTitlebar):
+	don't use title_g or boundary_width
+
+	* libs/Flocale.c (FlocaleTextWidth):
+	* libs/Flocale.c (FlocaleDrawString):
+	added interface for vertical strings
+	* libs/Flocale.h (FlocaleWinString):
+	added flags structure w/ is_vertical_string flag
+
+	* fvwm/borders.c (RedrawTitle):
+	(DrawMultiPixmapTitlebar):
+	* fvwm/screen.h (ScreenInfo):
+	* fvwm/icons.c (DrawIconWindow):
+	* fvwm/move_resize.c (DisplayPosition):
+	(DisplaySize):
+	* fvwm/screen.h (ScreenInfo):
+	removed ScratchStr and TitleStr; *please* don't use global variables
+	without need
+
+	* fvwm/move_resize.c (ParseOneResizeArgument):
+	(GetResizeArguments):
+	(GetResizeMoveArguments):
+	(resize_window):
+	(resize_move_window):
+	* fvwm/module_interface.c (CONFIGARGS):
+	(OLDCONFIGARGS):
+	(CONFIGARGSNEW):
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/add_window.c (setup_title_window):
+	(setup_button_windows):
+	(setup_parent_window):
+	(resize_resize_handle_windows):
+	(change_resize_handle_windows):
+	(AddWindow):
+	* fvwm/geometry.c (get_window_borders):
+	(gravity_get_naked_geometry):
+	(gravity_add_decoration):
+	(constrain_size):
+	don't use title_g.width and title_g.height anymore
+
+	* libs/defaults.h (EXTRA_TITLE_FONT_WIDTH):
+	new macro
+
+	* fvwm/borders.c (SetupTitleBar):
+	* fvwm/add_window.c (setup_title_window):
+	don't use title_g.x and title_g.y anymore
+	(setup_title_geometry):
+	new function
+
+	* fvwm/fvwm.h (FvwmWindow):
+	replaced title_g by title_length and title_thickness
+	renamed title_text_y to title_text_offset
+
+	* fvwm/add_window.c (setup_style_and_decor):
+	(setup_parent_window):
+	* fvwm/decorations.c (SelectDecor):
+	* fvwm/placement.c (PlaceWindow):
+	* fvwm/windowlist.c (CMD_WindowList):
+	* fvwm/events.c (SendConfigureNotify):
+	(HandlePropertyNotify):
+	(HandleMapNotify):
+	* fvwm/move_resize.c (DisplaySize):
+	(ParseOneResizeArgument):
+	(GetResizeArguments):
+	(GetResizeMoveArguments):
+	(resize_window):
+	(resize_move_window):
+	* fvwm/geometry.c (gravity_get_naked_geometry):
+	(gravity_add_decoration):
+	(constrain_size):
+	don't use boundary_width anymore
+
+	* fvwm/borders.c (SetupTitleBar):
+	made static
+
+	* fvwm/fvwmdebug.c:
+	removed outdated file that was never used
+
+	* fvwm/move_resize.c (move_window_doit):
+	fixed GNOME and EWMH hints when unsticking a window
+
+	* fvwm/virtual.c (CMD_MoveToDesk):
+	unstick windows when MoveToDesk is used
+
+	* fvwm/builtins.c:
+	* fvwm/windowshade.c (CMD_WindowShade):
+	(CMD_WindowShadeAnimate):
+	functions moved to windowshade.c
+
+	* fvwm/window_flags.h:
+	* fvwm/menus.c (pop_menu_up):
+	* fvwm/builtins.c (CMD_WindowShade):
+	* fvwm/move_resize.c (resize_window):
+	* fvwm/icons.c (AutoPlaceIcon):
+	* fvwm/borders.c (SetupFrame):
+	don't use HAS_BOTTOM_TITLE any more
+	(ButtonPosition):
+	function removed
+
+	* fvwm/geometry.c (get_title_font_width_and_offset):
+	* fvwm/geometry.c (set_window_border_size):
+	* fvwm/geometry.c (is_window_border_minimal):
+	* fvwm/geometry.c (get_window_borders_no_title):
+	* fvwm/geometry.c (get_shaded_client_window_pos):
+	* fvwm/geometry.c (get_icon_corner):
+	* fvwm/geometry.c (get_title_gravity):
+	* fvwm/geometry.c (get_title_geometry):
+	* fvwm/borders.c (get_button_number):
+	new functions
+
+	* fvwm/borders.c (SetupFrame):
+	(SetShape):
+	* fvwm/events.c (HandleShapeNotify):
+	* fvwm/borders.c (SetupTitleBar):
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/add_window.c (setup_window_font):
+	removed title_top_height
+
+	* libs/defaults.h (WINDOW_FREAKED_OUT_SIZE):
+	renamed
+
+	* fvwm/events.c (SendConfigureNotify):
+	* fvwm/events.c (HandleConfigureRequest):
+	preparations for W/E titles
+	don't use title_top_height any more
+
+	* fvwm/ewmh_events.c (ewmh_WMStateShaded):
+	use title_dir flags
+
+	* fvwm/geometry.c (get_window_borders):
+	* fvwm/style.c (parse_and_set_window_style):
+	(check_window_style_change):
+	* fvwm/style.h (SCSET_TITLE_DIR):
+	* fvwm/window_flags.h (GET_TITLE_DIR):
+	* fvwm/fvwm.h (struct):
+	replaced has_bottom_title flag with title_dir that can be DIR_N, DIR_S,
+	DIR_W or DIR_E
+
+	* libs/Parse.c (ParseDirectionArgument):
+	* libs/Parse.h:
+	use new type direction_type
+
+2002-03-06  Dominik Vogt  <dominik.vogt@gmx.de>
+
+	* fvwm/ewmh.c (EWMH_SetFrameStrut):
+	use function from geometry.c to get the border size
+
+	* fvwm/geometry.c (get_shaded_geometry):
+	added code for shading in all directions
+
 2002-03-07  Dan Espen  <dane@mk.telcordia.com>
 
 	* fvwm/bindings.c (ParseBinding): Handle key_string lengths up to 30.

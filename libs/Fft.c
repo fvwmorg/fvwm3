@@ -1,137 +1,225 @@
-#include "config.h"
+/* -*-c-*- */
+/* This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.	 See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307	 USA
+ */
 
-#ifdef HAVE_XFT
+/* ---------------------------- included header files ----------------------- */
+
+#include <config.h>
 
 #include <stdio.h>
 
 #include <X11/Xlib.h>
 #include "safemalloc.h"
 #include "Strings.h"
-#include "Flocale.h"
+#include "Fft.h"
 
-static Display *xftdpy = NULL;
-static int xftscreen;
-static int xft_initialized = False;
+/* ---------------------------- local definitions --------------------------- */
+
+/* ---------------------------- local macros -------------------------------- */
+
+/* ---------------------------- imports ------------------------------------- */
 
 /* we cannot include Picture.h */
 extern Colormap Pcmap;
 extern Visual *Pvisual;
 
+/* ---------------------------- included code files ------------------------- */
+
+/* ---------------------------- local types --------------------------------- */
+
+/* ---------------------------- forward declarations ------------------------ */
+
+/* ---------------------------- local variables ----------------------------- */
+
+static Display *fftdpy = NULL;
+static int fftscreen;
+static int fft_initialized = False;
+
+/* ---------------------------- exported variables (globals) ---------------- */
+
+/* ---------------------------- local functions ----------------------------- */
+
 static
-void init_xft(Display *dpy)
+void init_fft(Display *dpy)
 {
-  xftdpy = dpy;
-  xftscreen = DefaultScreen(dpy);
-  xft_initialized = True;
+	fftdpy = dpy;
+	fftscreen = DefaultScreen(dpy);
+	fft_initialized = True;
 }
 
 /* FIXME: a better method? */
 static
-Bool is_utf8_encoding(XftFont *f)
+Bool is_utf8_encoding(FftFont *f)
 {
-  int i = 0;
-  XftPatternElt *e;
+	int i = 0;
+	FftPatternElt *e;
 
-  while(i < f->pattern->num)
-  {
-    e = &f->pattern->elts[i];
-    if (StrEquals(e->object, XFT_ENCODING))
-    {
-      if (StrEquals(e->values->value.u.s, "iso10646-1"))
-      {
-	return True;
-      }
-      else
+	while(i < f->pattern->num)
+	{
+		e = &f->pattern->elts[i];
+		if (StrEquals(e->object, FFT_ENCODING))
+		{
+			if (StrEquals(e->values->value.u.s, "iso10646-1"))
+			{
+				return True;
+			}
+			else
+			{
+				return False;
+			}
+		}
+		i++;
+	}
 	return False;
-    }
-    i++;
-  }
-  return False;
 }
 
-FlocaleFont *get_FlocaleXftFont(Display *dpy, char *fontname)
+/* ---------------------------- interface functions ------------------------- */
+
+void FftGetFontHeights(
+	FftFontType *fftf, int *height, int *ascent, int *descent)
 {
-  XftFont *xftfont = NULL;
-  FlocaleFont *flf = NULL;
-  XGlyphInfo	extents;
+	/* fft font height may be > fftfont->ascent + fftfont->descent, this
+	 * depends on the minspace value */
+	*height = fftf->fftfont->height;
+	*ascent = fftf->fftfont->ascent;
+	*descent = fftf->fftfont->descent;
 
-  if (!fontname)
-    return NULL;
-
-  if (!xft_initialized)
-    init_xft(dpy);
-
-  xftfont = XftFontOpenName (dpy, xftscreen, fontname);
-
-  if (!xftfont)
-    return NULL;
-
-  flf = (FlocaleFont *)safemalloc(sizeof(FlocaleFont));
-  flf->count = 1;
-  flf->xftfont = xftfont;
-  flf->utf8 = is_utf8_encoding(xftfont);
-  MULTIBYTE_CODE(flf->fontset = None);
-  flf->font = NULL;
-  /* xft font height may be > xftfont->ascent + xftfont->descent, this
-   * depends on the minspace value */
-  /*flf->height = xftfont->ascent + xftfont->descent;*/
-  flf->height = xftfont->height;
-  flf->ascent = xftfont->ascent;
-  flf->descent = xftfont->descent;
-  /* FIXME */
-  if (flf->utf8)
-    XftTextExtentsUtf8(xftdpy, xftfont, "W", 1, &extents);
-  else
-    XftTextExtents8(xftdpy, xftfont, "W", 1, &extents);
-  flf->max_char_width = extents.xOff;
-  return flf;
+	return;
 }
 
-
-void FftDrawString(Display *dpy, Window win, FlocaleFont *flf, GC gc,
-		   int x, int y, char *str, int len)
+void FftGetFontWidths(
+	FftFontType *fftf, int *max_char_width, int *min_char_offset)
 {
-  XftDraw *xftdraw = NULL;
-  XGCValues vr;
-  XColor xfg;
-  XftColor xft_fg;
+	FGlyphInfo extents;
 
-  xftdraw = XftDrawCreate(dpy, (Drawable) win, Pvisual, Pcmap);
-  if (XGetGCValues(dpy, gc, GCForeground, &vr))
-  {
-    xfg.pixel = vr.foreground; 
-  }
-  else
-  {
-    fprintf(stderr, "[fvwmlibs][FftDrawString]: ERROR -- cannot found color\n");
-    xfg.pixel = WhitePixel(dpy, xftscreen);
-  }
+	/* FIXME */
+	if (fftf->utf8)
+	{
+#ifdef A_SYSTEM_THAT_HAS_THIS_FUNCTION
+		FftTextExtentsUtf8(fftdpy, fftf->fftfont, "W", 1, &extents);
+#endif
+	}
+	else
+	{
+		FftTextExtents8(fftdpy, fftf->fftfont, "W", 1, &extents);
+	}
+	*max_char_width = extents.xOff;
+	/* FIXME: hos do you calculate this? */
+	*min_char_offset = 0;
 
-  XQueryColor(dpy, Pcmap, &xfg);
-  xft_fg.color.red = xfg.red;
-  xft_fg.color.green = xfg.green;
-  xft_fg.color.blue = xfg.blue;
-  xft_fg.color.alpha = 0xffff;
-  xft_fg.pixel = xfg.pixel;
-  
-  if (flf->utf8)
-    XftDrawStringUtf8(xftdraw,
-		      &xft_fg, flf->xftfont, x, y, (unsigned char *) str, len);
-  else
-    XftDrawString8(xftdraw,
-		   &xft_fg, flf->xftfont, x, y, (unsigned char *) str, len);
-  XftDrawDestroy (xftdraw);
+	return;
 }
 
-int FftTextWidth(FlocaleFont *flf, char *str, int len)
+FftFontType *FftGetFont(Display *dpy, char *fontname)
 {
-  XGlyphInfo	extents;
+	FftFont *fftfont = NULL;
+	FftFontType *fftf = NULL;
 
-  if (flf->utf8)
-    XftTextExtentsUtf8(xftdpy, flf->xftfont, str, len, &extents);
-  else
-    XftTextExtents8(xftdpy, flf->xftfont, str, len, &extents);
-  return extents.xOff;
+	if (!FftSupport)
+	{
+		return NULL;
+	}
+	if (!fontname)
+	{
+		return NULL;
+	}
+	if (!fft_initialized)
+	{
+		init_fft(dpy);
+	}
+	fftfont = FftFontOpenName(dpy, fftscreen, fontname);
+	if (!fftfont)
+	{
+		return NULL;
+	}
+	fftf = (FftFontType *)safemalloc(sizeof(FftFontType));
+	fftf->fftfont = fftfont;
+	fftf->utf8 = is_utf8_encoding(fftfont);
+
+	return fftf;
 }
 
-#endif /* HAVE_XFT */
+void FftDrawString(
+	Display *dpy, Window win, FftFontType *flf, GC gc, int x, int y,
+	char *str, int len)
+{
+	FftDraw *fftdraw = NULL;
+	XGCValues vr;
+	XColor xfg;
+	FftColor fft_fg;
+
+	if (!FftSupport)
+	{
+		return;
+	}
+	/* FIXME: calculations for vertical text needed */
+	fftdraw = FftDrawCreate(dpy, (Drawable)win, Pvisual, Pcmap);
+	if (XGetGCValues(dpy, gc, GCForeground, &vr))
+	{
+		xfg.pixel = vr.foreground;
+	}
+	else
+	{
+		fprintf(stderr, "[fvwmlibs][FftDrawString]: ERROR --"
+			" cannot found color\n");
+		xfg.pixel = WhitePixel(dpy, fftscreen);
+	}
+
+	XQueryColor(dpy, Pcmap, &xfg);
+	fft_fg.color.red = xfg.red;
+	fft_fg.color.green = xfg.green;
+	fft_fg.color.blue = xfg.blue;
+	fft_fg.color.alpha = 0xffff;
+	fft_fg.pixel = xfg.pixel;
+
+	if (flf->utf8)
+	{
+#ifdef A_SYSTEM_THAT_HAS_THIS_FUNCTION
+		FftDrawStringUtf8(
+			fftdraw, &fft_fg, flf->fftfont, x, y,
+			(unsigned char *) str, len);
+#endif
+	}
+	else
+	{
+		FftDrawString8(
+			fftdraw, &fft_fg, flf->fftfont, x, y,
+			(unsigned char *) str, len);
+	}
+	FftDrawDestroy (fftdraw);
+}
+
+int FftTextWidth(FftFontType *fftf, char *str, int len)
+{
+	FGlyphInfo extents;
+
+	if (!FftSupport)
+	{
+		return 0;
+	}
+	/* FIXME: calculations for vertical text needed */
+	if (fftf->utf8)
+	{
+#ifdef A_SYSTEM_THAT_HAS_THIS_FUNCTION
+		FftTextExtentsUtf8(fftdpy, fftf->fftfont, str, len, &extents);
+#endif
+	}
+	else
+	{
+		FftTextExtents8(fftdpy, fftf->fftfont, str, len, &extents);
+	}
+
+	return extents.xOff;
+}

@@ -741,8 +741,6 @@ void list_configure(unsigned long *body)
 	    DO_SKIP_WINDOW_LIST( cfgpacket ) );
     printf( "focus_mode: %d\n",
 	    GET_FOCUS_MODE( cfgpacket ) );
-    printf( "has_bottom_title: %d\n",
-	    HAS_BOTTOM_TITLE( cfgpacket ) );
     printf( "has_depressable_border: %d\n",
 	    HAS_DEPRESSABLE_BORDER( cfgpacket ) );
     printf( "has_mwm_border: %d\n",
@@ -825,6 +823,8 @@ void list_configure(unsigned long *body)
 	    IS_WINDOW_FONT_LOADED( cfgpacket ) );
     printf( "is_window_shaded %d\n",
 	    IS_SHADED( cfgpacket ) );
+    printf( "title_dir: %d\n",
+	    GET_TITLE_DIR( cfgpacket ) );
   }
 
   printf( "0x%08lx %-20s %ld\n",

@@ -46,6 +46,7 @@
 #include "decorations.h"
 #include "ewmh.h"
 #include "ewmh_intern.h"
+#include "geometry.h"
 
 typedef struct kst_item
 {
@@ -912,18 +913,18 @@ float EWMH_GetStrutIntersection(
 void EWMH_SetFrameStrut(FvwmWindow *fwin)
 {
   CARD32 val[4];
-  int border_width = fwin->boundary_width;
+  size_borders b;
+
+  get_window_borders(fwin, &b);
 
   /* left */
-  val[0] = border_width;
+  val[0] = b.top_left.width;
   /* right */
-  val[1] = border_width;
+  val[1] = b.bottom_right.width;
   /* top */
-  val[2] = border_width +
-    ((HAS_TITLE(fwin) && !HAS_BOTTOM_TITLE(fwin))? fwin->title_g.height : 0);
+  val[2] = b.top_left.height;
   /* bottom */
-  val[3] = border_width +
-    ((HAS_TITLE(fwin) && HAS_BOTTOM_TITLE(fwin))? fwin->title_g.height : 0);
+  val[3] = b.top_left.height;
 
   ewmh_ChangeProperty(fwin->w, "_KDE_NET_WM_FRAME_STRUT",
 		      EWMH_ATOM_LIST_FVWM_WIN, (unsigned char *)&val, 4);
@@ -1173,11 +1174,11 @@ static
 int ksmserver_workarround(FvwmWindow *fwin)
 {
 
-  if (fwin->name != NULL && fwin->class.res_name != NULL &&
-      fwin->icon_name != NULL && fwin->class.res_class != NULL &&
-      strcmp(fwin->name,"ksmserver") == 0 &&
+  if (fwin->name.name != NULL && fwin->class.res_name != NULL &&
+      fwin->icon_name.name != NULL && fwin->class.res_class != NULL &&
+      strcmp(fwin->name.name,"ksmserver") == 0 &&
       strcmp(fwin->class.res_class,"ksmserver") == 0 &&
-      strcmp(fwin->icon_name,"ksmserver") == 0 &&
+      strcmp(fwin->icon_name.name,"ksmserver") == 0 &&
       strcmp(fwin->class.res_name,"unnamed") == 0)
   {
     int layer = 0;

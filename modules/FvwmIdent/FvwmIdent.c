@@ -116,7 +116,7 @@ int main(int argc, char **argv)
   int Clength;
   char *tline;
 
-  FInitLocale(LC_CTYPE, "", "", "FvwmIdent");
+  FlocaleInit(LC_CTYPE, "", "", "FvwmIdent");
 
   /* Save the program name for error messages and config parsing */
   temp = argv[0];

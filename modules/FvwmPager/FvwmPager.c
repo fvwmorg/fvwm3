@@ -171,7 +171,7 @@ int main(int argc, char **argv)
   int JunkX, JunkY;
   unsigned JunkMask;
 
-  FInitLocale(LC_CTYPE, "", "", "FvwmPager");
+  FlocaleInit(LC_CTYPE, "", "", "FvwmPager");
 
   /* Save our program  name - for error messages */
   MyName = GetFileNameFromPath(argv[0]);

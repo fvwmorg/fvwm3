@@ -99,54 +99,26 @@ static void ClipClear(Window win, XRectangle *rclip, Bool do_flush_expose)
   return;
 }
 
-/***********************************************************************
- * change by KitS@bartley.demon.co.uk to correct popups off title buttons
- *
- *  Procedure:
- *ButtonPosition - find the actual position of the button
- *                 since some buttons may be disabled
- *
- *  Returned Value:
- *The button count from left or right taking in to account
- *that some buttons may not be enabled for this window
- *
- *  Inputs:
- *      context - context as per the global Context
- *      t       - the window (FvwmWindow) to test against
- *
- ***********************************************************************/
-int ButtonPosition(int context, FvwmWindow *t)
+int get_button_number(int context)
 {
-  int i = 0;
-  int buttons = -1;
-  int end = Scr.nr_left_buttons;
+	int i;
 
-  if (context & C_RALL)
-  {
-    i  = 1;
-    end = Scr.nr_right_buttons;
-  }
-  {
-    for (; i / 2 < end; i += 2)
-    {
-      if (t->button_w[i])
-      {
-	buttons++;
-      }
-      /* is this the button ? */
-      if (((1 << i) * C_L1) & context)
-	return buttons;
-    }
-  }
-  /* you never know... */
-  return 0;
+	for (i = 0; (C_L1 << i) & (C_LALL | C_RALL); i++)
+	{
+		if (context & (C_L1 << i))
+		{
+			return i;
+		}
+	}
+
+	return -1;
 }
 
 static void change_window_background(
-  Window w, unsigned long valuemask, XSetWindowAttributes *attributes)
+	Window w, unsigned long valuemask, XSetWindowAttributes *attributes)
 {
-  XChangeWindowAttributes(dpy, w, valuemask, attributes);
-  XClearWindow(dpy, w);
+	XChangeWindowAttributes(dpy, w, valuemask, attributes);
+	XClearWindow(dpy, w);
 }
 
 /****************************************************************************
@@ -225,9 +197,8 @@ static void clip_button_pixmap(
 static void DrawButton(
   FvwmWindow *t, Window win, int w, int h, DecorFace *df, GC ReliefGC,
   GC ShadowGC, Pixel fore_color, Pixel back_color, Bool is_lowest,
-  mwm_flags stateflags, int set_layer, int layer,
-  int left1right0, XRectangle *rclip,
-  Pixmap *pbutton_background_pixmap)
+  mwm_flags stateflags, int set_layer, int layer, int left1right0,
+  XRectangle *rclip, Pixmap *pbutton_background_pixmap)
 {
   register DecorFaceType type = DFS_FACE_TYPE(df->style);
   Picture *p;
@@ -505,128 +476,222 @@ static void RenderIntoWindow(GC gc, Picture *src, Window dest, int x_start,
   XFreePixmap(dpy, pm);
 }
 
+static int get_multipm_length(
+	FvwmWindow *tmp_win, Picture **pm, int part)
+{
+	if (pm[part] == NULL)
+	{
+		return 0;
+	}
+	else if (HAS_VERTICAL_TITLE(tmp_win))
+	{
+		return pm[part]->height;
+	}
+	else
+	{
+		return pm[part]->width;
+	}
+}
+
 /****************************************************************************
  *
  *  Redraws multi-pixmap titlebar (tril@igs.net)
  *
  ****************************************************************************/
-static void DrawMultiPixmapTitlebar(FvwmWindow *window, DecorFace *df)
+#define SWAP_ARGS(f,a1,a2) (f)?(a2):(a1),(f)?(a1):(a2)
+static void DrawMultiPixmapTitlebar(FvwmWindow *tmp_win, DecorFace *df)
 {
-  Window       title_win;
-  GC           gc;
-  char        *title;
-  Picture    **pm;
-  short        stretch_flags;
-  int          title_width, title_height, text_width, text_offset, text_y_pos;
-  int          left_space, right_space, under_offset, under_width;
+	Window title_win;
+	GC gc;
+	char *title;
+	Picture **pm;
+	short stretch_flags;
+	int text_length, text_pos, text_offset;
+	int before_space, after_space, under_offset, under_width;
+	int size;
+	FlocaleWinString fstr;
+	rectangle tmp_g;
+	Bool has_vt = HAS_VERTICAL_TITLE(tmp_win);
 
-  pm = df->u.multi_pixmaps;
-  stretch_flags = df->u.multi_stretch_flags;
-  gc = Scr.TitleGC;
-  XSetClipMask(dpy, gc, None);
-  title_win = window->title_w;
-  title = window->visible_name;
-  title_width = window->title_g.width;
-  title_height = window->title_g.height;
+	pm = df->u.multi_pixmaps;
+	stretch_flags = df->u.multi_stretch_flags;
+	gc = Scr.TitleGC;
+	XSetClipMask(dpy, gc, None);
+	title_win = tmp_win->title_w;
+	title = tmp_win->visible_name;
 
+	tmp_g.width = 0;
+	tmp_g.height = 0;
+	get_title_geometry(tmp_win, &tmp_g);
+	if (pm[TBP_MAIN])
+	{
+		RenderIntoWindow(
+			gc, pm[TBP_MAIN], title_win, 0, 0, tmp_g.width,
+			tmp_g.height, (stretch_flags & (1 << TBP_MAIN)));
+	}
+	else if (!title)
+	{
+		RenderIntoWindow(
+			gc, pm[TBP_LEFT_MAIN], title_win, 0, 0, tmp_g.width,
+			tmp_g.height, (stretch_flags & (1 << TBP_LEFT_MAIN)));
+	}
 
-  if (pm[TBP_MAIN])
-    RenderIntoWindow(gc, pm[TBP_MAIN], title_win, 0, 0, title_width,
-                     title_height, (stretch_flags & (1 << TBP_MAIN)));
-  else if (!title)
-    RenderIntoWindow(gc, pm[TBP_LEFT_MAIN], title_win, 0, 0, title_width,
-                     title_height, (stretch_flags & (1 << TBP_LEFT_MAIN)));
+	if (title)
+	{
+		int len = strlen(title);
 
-  if (title) {
-    text_width = FlocaleTextWidth(window->title_font, title, strlen(title));
-    if (text_width > title_width)
-      text_width = title_width;
-    switch (TB_JUSTIFICATION(GetDecor(window, titlebar))) {
-    case JUST_LEFT:
-      text_offset = TITLE_PADDING;
-      if (pm[TBP_LEFT_OF_TEXT])
-        text_offset += pm[TBP_LEFT_OF_TEXT]->width;
-      if (pm[TBP_LEFT_END])
-        text_offset += pm[TBP_LEFT_END]->width;
-      if (text_offset > title_width - text_width)
-        text_offset = title_width - text_width;
-      break;
-    case JUST_RIGHT:
-      text_offset = title_width - text_width - TITLE_PADDING;
-      if (pm[TBP_RIGHT_OF_TEXT])
-        text_offset -= pm[TBP_RIGHT_OF_TEXT]->width;
-      if (pm[TBP_RIGHT_END])
-        text_offset -= pm[TBP_RIGHT_END]->width;
-      if (text_offset < 0)
-        text_offset = 0;
-      break;
-    default:
-      text_offset = (title_width - text_width) / 2;
-      break;
-    }
-    under_offset = text_offset;
-    under_width = text_width;
-    /* If there's title padding, put it *inside* the undertext area: */
-    if (under_offset >= TITLE_PADDING) {
-      under_offset -= TITLE_PADDING;
-      under_width += TITLE_PADDING;
-    }
-    if (under_offset + under_width + TITLE_PADDING <= title_width)
-      under_width += TITLE_PADDING;
-    left_space = under_offset;
-    right_space = title_width - left_space - under_width;
+		if (has_vt)
+		{
+			len = -len;
+		}
+		text_length = FlocaleTextWidth(tmp_win->title_font, title, len);
+		if (text_length > tmp_win->title_length)
+		{
+			text_length = tmp_win->title_length;
+		}
+		switch (TB_JUSTIFICATION(GetDecor(tmp_win, titlebar)))
+		{
+		case JUST_LEFT:
+			text_pos = TITLE_PADDING;
+			text_pos += get_multipm_length(
+				tmp_win, pm, TBP_LEFT_OF_TEXT);
+			text_pos += get_multipm_length(
+				tmp_win, pm, TBP_LEFT_END);
+			if (text_pos > tmp_win->title_length - text_length)
+			{
+				text_pos = tmp_win->title_length - text_length;
+			}
+			break;
+		case JUST_RIGHT:
+			text_pos = tmp_win->title_length - text_length -
+				TITLE_PADDING;
+			text_pos -= get_multipm_length(
+				tmp_win, pm, TBP_RIGHT_OF_TEXT);
+			text_pos -= get_multipm_length(
+				tmp_win, pm, TBP_RIGHT_END);
+			if (text_pos < 0)
+			{
+				text_pos = 0;
+			}
+			break;
+		default:
+			text_pos = (tmp_win->title_length - text_length) / 2;
+			break;
+		}
 
-    if (pm[TBP_LEFT_MAIN] && left_space > 0)
-      RenderIntoWindow(gc, pm[TBP_LEFT_MAIN], title_win, 0, 0, left_space,
-                       title_height, (stretch_flags & (1 << TBP_LEFT_MAIN)));
-    if (pm[TBP_RIGHT_MAIN] && right_space > 0)
-      RenderIntoWindow(gc, pm[TBP_RIGHT_MAIN], title_win,
-                       under_offset + under_width, 0, right_space,
-                       title_height, (stretch_flags & (1 << TBP_RIGHT_MAIN)));
-    if (pm[TBP_UNDER_TEXT] && under_width > 0)
-      RenderIntoWindow(gc, pm[TBP_UNDER_TEXT], title_win, under_offset, 0,
-                       under_width, title_height,
-                       (stretch_flags & (1 << TBP_UNDER_TEXT)));
-    if (pm[TBP_LEFT_OF_TEXT] &&
-        pm[TBP_LEFT_OF_TEXT]->width <= left_space) {
-      XCopyArea(dpy, pm[TBP_LEFT_OF_TEXT]->picture, title_win, gc, 0, 0,
-                pm[TBP_LEFT_OF_TEXT]->width, title_height,
-                under_offset - pm[TBP_LEFT_OF_TEXT]->width, 0);
-      left_space -= pm[TBP_LEFT_OF_TEXT]->width;
-    }
-    if (pm[TBP_RIGHT_OF_TEXT] &&
-        pm[TBP_RIGHT_OF_TEXT]->width <= right_space) {
-      XCopyArea(dpy, pm[TBP_RIGHT_OF_TEXT]->picture, title_win, gc, 0, 0,
-                pm[TBP_RIGHT_OF_TEXT]->width, title_height,
-                under_offset + under_width, 0);
-      right_space -= pm[TBP_RIGHT_OF_TEXT]->width;
-    }
+		under_offset = text_pos;
+		under_width = text_length;
+		/* If there's title padding, put it *inside* the undertext
+		 * area: */
+		if (under_offset >= TITLE_PADDING)
+		{
+			under_offset -= TITLE_PADDING;
+			under_width += TITLE_PADDING;
+		}
+		if (under_offset + under_width + TITLE_PADDING <=
+		    tmp_win->title_length)
+		{
+			under_width += TITLE_PADDING;
+		}
+		before_space = under_offset;
+		after_space = tmp_win->title_length - before_space -
+			under_width;
 
-    text_y_pos = title_height
-                 - (title_height - window->title_font->font->ascent) / 2
-                 - 1;
-    if (title_height > 19)
-      text_y_pos--;
-    if (text_y_pos < 0)
-      text_y_pos = 0;
+		if (pm[TBP_LEFT_MAIN] && before_space > 0)
+		{
+			RenderIntoWindow(
+				gc, pm[TBP_LEFT_MAIN], title_win, 0, 0,
+				SWAP_ARGS(has_vt, before_space,
+					  tmp_win->title_thickness),
+				(stretch_flags & (1 << TBP_LEFT_MAIN)));
+		}
+		if (pm[TBP_RIGHT_MAIN] && after_space > 0)
+		{
+			RenderIntoWindow(
+				gc, pm[TBP_RIGHT_MAIN], title_win,
+				SWAP_ARGS(has_vt, under_offset + under_width,
+					  0),
+				SWAP_ARGS(has_vt, after_space,
+					  tmp_win->title_thickness),
+				(stretch_flags & (1 << TBP_RIGHT_MAIN)));
+		}
+		if (pm[TBP_UNDER_TEXT] && under_width > 0)
+		{
+			RenderIntoWindow(
+				gc, pm[TBP_UNDER_TEXT], title_win,
+				SWAP_ARGS(has_vt, under_offset, 0),
+				SWAP_ARGS(has_vt, under_width,
+					  tmp_win->title_thickness),
+				(stretch_flags & (1 << TBP_UNDER_TEXT)));
+		}
+		size = get_multipm_length(tmp_win, pm, TBP_LEFT_OF_TEXT);
+		if (size > 0 && size <= before_space)
+		{
 
-    Scr.TitleStr->str = window->visible_name;
-    Scr.TitleStr->win = title_win;
-    Scr.TitleStr->y = text_y_pos;
-    Scr.TitleStr->x = text_offset;
-    Scr.TitleStr->gc = gc;
-    FlocaleDrawString(dpy, window->title_font, Scr.TitleStr, 0);
-  }
-  else
-    left_space = right_space = title_width;
+			XCopyArea(
+				dpy, pm[TBP_LEFT_OF_TEXT]->picture, title_win,
+				gc, 0, 0,
+				SWAP_ARGS(has_vt, size,
+					  tmp_win->title_thickness),
+				SWAP_ARGS(has_vt, under_offset - size, 0));
+			before_space -= size;
+		}
+		size = get_multipm_length(tmp_win, pm, TBP_RIGHT_OF_TEXT);
+		if (size > 0 && size <= after_space)
+		{
+			XCopyArea(
+				dpy, pm[TBP_RIGHT_OF_TEXT]->picture, title_win,
+				gc, 0, 0,
+				SWAP_ARGS(has_vt, size,
+					  tmp_win->title_thickness),
+				SWAP_ARGS(has_vt, under_offset + under_width,
+					  0));
+			after_space -= size;
+		}
 
-  if (pm[TBP_LEFT_END] && pm[TBP_LEFT_END]->width <= left_space)
-    XCopyArea(dpy, pm[TBP_LEFT_END]->picture, title_win, gc, 0, 0,
-              pm[TBP_LEFT_END]->width, title_height, 0, 0);
-  if (pm[TBP_RIGHT_END] && pm[TBP_RIGHT_END]->width <= right_space)
-    XCopyArea(dpy, pm[TBP_RIGHT_END]->picture, title_win, gc, 0, 0,
-              pm[TBP_RIGHT_END]->width, title_height,
-              title_width - pm[TBP_RIGHT_END]->width, 0);
+		get_title_font_size_and_offset(
+			tmp_win, GET_TITLE_DIR(tmp_win), &size, &text_offset);
+		memset(&fstr, 0, sizeof(fstr));
+		fstr.str = tmp_win->visible_name;
+		fstr.win = title_win;
+		if (has_vt)
+		{
+			fstr.x = text_offset;
+			fstr.y = text_pos;
+		}
+		else
+		{
+			fstr.y = text_offset;
+			fstr.x = text_pos;
+		}
+		fstr.gc = gc;
+		fstr.flags.is_vertical_string = HAS_VERTICAL_TITLE(tmp_win);
+		FlocaleDrawString(dpy, tmp_win->title_font, &fstr, 0);
+	}
+	else
+	{
+		before_space = tmp_win->title_length / 2;
+		after_space = tmp_win->title_length / 2;
+	}
+
+	size = get_multipm_length(tmp_win, pm, TBP_LEFT_END);
+	if (size > 0 && size <= before_space)
+	{
+		XCopyArea(
+			dpy, pm[TBP_LEFT_END]->picture, title_win, gc, 0, 0,
+			SWAP_ARGS(has_vt, size, tmp_win->title_thickness),
+			0, 0);
+	}
+	size = get_multipm_length(tmp_win, pm, TBP_RIGHT_END);
+	if (size > 0 && size <= after_space)
+	{
+		XCopyArea(
+			dpy, pm[TBP_RIGHT_END]->picture, title_win, gc, 0, 0,
+			SWAP_ARGS(has_vt, size, tmp_win->title_thickness),
+			tmp_win->title_length - size, 0);
+	}
+
+	return;
 }
 
 #endif /* FANCY_TITLEBARS */
@@ -750,7 +815,7 @@ static void RedrawBorder(
   flush_expose(t->decor_w);
 #endif
 
-  if (t->boundary_width < 2)
+  if (is_window_border_minimal(t))
   {
     /*
      * for mono - put a black border on
@@ -1278,20 +1343,21 @@ static void RedrawButtons(
 	  is_lowest = True;
 	  for (; tsdf; tsdf = tsdf->next)
 	  {
-	    DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
-		       tsdf, cd->relief_gc, cd->shadow_gc,
-		       cd->fore_color, cd->back_color, is_lowest,
- 		       TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])),
-		       TB_FLAGS(t->decor->buttons[i]).has_layer,
-		       TB_LAYER(t->decor->buttons[i]), left1right0, NULL,
-		       pass_bg_pixmap);
+	    DrawButton(
+		    t, t->button_w[i], t->title_thickness, t->title_thickness,
+		    tsdf, cd->relief_gc, cd->shadow_gc,
+		    cd->fore_color, cd->back_color, is_lowest,
+		    TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])),
+		    TB_FLAGS(t->decor->buttons[i]).has_layer,
+		    TB_LAYER(t->decor->buttons[i]), left1right0, NULL,
+		    pass_bg_pixmap);
 	    is_lowest = False;
 	  }
 	}
 	is_lowest = True;
 	for (; df; df = df->next)
 	{
-	  DrawButton(t, t->button_w[i], t->title_g.height, t->title_g.height,
+	  DrawButton(t, t->button_w[i], t->title_thickness, t->title_thickness,
   		     df, cd->relief_gc, cd->shadow_gc,
   		     cd->fore_color, cd->back_color, is_lowest,
  		     TB_MWM_DECOR_FLAGS(GetDecor(t, buttons[i])),
@@ -1311,8 +1377,8 @@ static void RedrawButtons(
 	    reverse = !is_inverted;
 	  case DFS_BUTTON_IS_UP:
 	    RelieveRectangle2(
-	      dpy, t->button_w[i], 0, 0, t->title_g.height - 1,
-	      t->title_g.height - 1, (reverse ? cd->shadow_gc : cd->relief_gc),
+	      dpy, t->button_w[i], 0, 0, t->title_thickness - 1,
+	      t->title_thickness - 1, (reverse ? cd->shadow_gc : cd->relief_gc),
 	      (reverse ? cd->relief_gc : cd->shadow_gc), cd->relief_width);
 	    break;
 	  default:
@@ -1334,9 +1400,10 @@ static void RedrawButtons(
 static void RedrawTitle(
   common_decorations_type *cd, FvwmWindow *t, Bool has_focus, XRectangle *rclip)
 {
-  int hor_off;
-  int w;
+  int offset;
+  int length;
   int i;
+  FlocaleWinString fstr;
   enum ButtonState title_state;
   DecorFaceStyle *tb_style;
   Pixmap *pass_bg_pixmap;
@@ -1344,6 +1411,7 @@ static void RedrawTitle(
   GC sgc = cd->shadow_gc;
   Bool reverse = False;
   Bool is_clipped = False;
+  Bool has_vt;
   Bool toggled =
     (HAS_MWM_BUTTONS(t) &&
      ((TB_HAS_MWM_DECOR_MAXIMIZE(GetDecor(t, titlebar)) && IS_MAXIMIZED(t))||
@@ -1364,16 +1432,16 @@ static void RedrawTitle(
 
   if (t->visible_name != (char *)NULL)
   {
-    w = FlocaleTextWidth(
+    length = FlocaleTextWidth(
       t->title_font, t->visible_name, strlen(t->visible_name));
-    if (w > t->title_g.width - 12)
-      w = t->title_g.width - 4;
-    if (w < 0)
-      w = 0;
+    if (length > t->title_length - 12)
+      length = t->title_length - 4;
+    if (length < 0)
+      length = 0;
   }
   else
   {
-    w = 0;
+    length = 0;
   }
 
   title_state = get_button_state(has_focus, toggled, t->title_w);
@@ -1381,14 +1449,14 @@ static void RedrawTitle(
   switch (TB_JUSTIFICATION(GetDecor(t, titlebar)))
   {
   case JUST_LEFT:
-    hor_off = WINDOW_TITLE_TEXT_OFFSET;
+    offset = WINDOW_TITLE_TEXT_OFFSET;
     break;
   case JUST_RIGHT:
-    hor_off = t->title_g.width - w - WINDOW_TITLE_TEXT_OFFSET;
+    offset = t->title_length - length - WINDOW_TITLE_TEXT_OFFSET;
     break;
   case JUST_CENTER:
   default:
-    hor_off = (t->title_g.width - w) / 2;
+    offset = (t->title_length - length) / 2;
     break;
   }
 
@@ -1425,30 +1493,48 @@ static void RedrawTitle(
   /*
    * draw title
    */
-  Scr.TitleStr->str = t->visible_name;
-  Scr.TitleStr->win = t->title_w;
-  Scr.TitleStr->x = hor_off;
-  Scr.TitleStr->y = t->title_text_y + 1;
+  memset(&fstr, 0, sizeof(fstr));
+  fstr.str = t->visible_name;
+  fstr.win = t->title_w;
+  fstr.flags.is_vertical_string = HAS_VERTICAL_TITLE(t);
+  if (HAS_VERTICAL_TITLE(t))
+  {
+    fstr.y = offset;
+    fstr.x = t->title_text_offset + 1;
+    has_vt = True;
+  }
+  else
+  {
+    fstr.x = offset;
+    fstr.y = t->title_text_offset + 1;
+    has_vt = False;
+  }
+  fstr.gc = Scr.TitleGC;
   if (Pdepth < 2)
   {
     XFillRectangle(
-      dpy, t->title_w, ((PressedW == t->title_w) ? sgc : rgc), hor_off - 2, 0,
-      w+4,t->title_g.height);
+      dpy, t->title_w, ((PressedW == t->title_w) ? sgc : rgc), offset - 2, 0,
+      length+4, t->title_thickness);
     if(t->visible_name != (char *)NULL)
     {
-      FlocaleDrawString(dpy, t->title_font, Scr.TitleStr, 0);
+      FlocaleDrawString(dpy, t->title_font, &fstr, 0);
     }
     /* for mono, we clear an area in the title bar where the window
      * title goes, so that its more legible. For color, no need */
     RelieveRectangle(
-      dpy, t->title_w, 0, 0, hor_off - 3, t->title_g.height - 1, rgc, sgc,
-      cd->relief_width);
+      dpy, t->title_w, 0, 0,
+      SWAP_ARGS(has_vt, offset - 3, t->title_thickness - 1),
+      rgc, sgc, cd->relief_width);
     RelieveRectangle(
-      dpy, t->title_w, hor_off + w + 2, 0, t->title_g.width - w - hor_off - 3,
-      t->title_g.height - 1, rgc, sgc, cd->relief_width);
+      dpy, t->title_w,
+      SWAP_ARGS(has_vt, offset + length + 2, 0),
+      SWAP_ARGS(has_vt, t->title_length - length - offset - 3,
+		t->title_thickness - 1),
+      rgc, sgc, cd->relief_width);
     XDrawLine(
-      dpy, t->title_w, sgc, hor_off + w + 1, 0, hor_off + w + 1,
-      t->title_g.height);
+      dpy, t->title_w, sgc,
+      SWAP_ARGS(has_vt, 0, offset + length + 1),
+      SWAP_ARGS(has_vt, offset + length + 1, t->title_thickness));
   }
   else
   {
@@ -1466,11 +1552,10 @@ static void RedrawTitle(
       for (; df; df = df->next)
       {
 	DrawButton(
-	  t, t->title_w, t->title_g.width, t->title_g.height, df, sgc,
-	  rgc, cd->fore_color, cd->back_color, is_lowest, 0,
-          0, 0,
-          1, rclip,
-          pass_bg_pixmap);
+	  t, t->title_w,
+	  SWAP_ARGS(has_vt, t->title_length, t->title_thickness),
+	  df, sgc, rgc, cd->fore_color, cd->back_color, is_lowest, 0, 0, 0, 1,
+	  rclip, pass_bg_pixmap);
 	is_lowest = False;
       }
     }
@@ -1479,11 +1564,10 @@ static void RedrawTitle(
       for (; df; df = df->next)
       {
 	DrawButton(
-	  t, t->title_w, t->title_g.width, t->title_g.height, df, rgc,
-	  sgc, cd->fore_color, cd->back_color, is_lowest, 0,
-          0, 0,
-          1, rclip,
-          pass_bg_pixmap);
+	  t, t->title_w,
+	  SWAP_ARGS(has_vt, t->title_length, t->title_thickness),
+	  df, rgc, sgc, cd->fore_color, cd->back_color, is_lowest, 0, 0, 0,
+          1, rclip, pass_bg_pixmap);
 	is_lowest = False;
       }
     }
@@ -1493,7 +1577,7 @@ static void RedrawTitle(
         != MultiPixmap)
 #endif
     {
-      FlocaleDrawString(dpy, t->title_font, Scr.TitleStr, 0);
+      FlocaleDrawString(dpy, t->title_font, &fstr, 0);
     }
 
     /*
@@ -1505,7 +1589,8 @@ static void RedrawTitle(
       reverse = 1;
     case DFS_BUTTON_IS_UP:
       RelieveRectangle2(
-	dpy, t->title_w, 0, 0, t->title_g.width - 1, t->title_g.height - 1,
+	dpy, t->title_w, 0, 0,
+	SWAP_ARGS(has_vt, t->title_length - 1, t->title_thickness - 1),
 	(reverse) ? sgc : rgc, (reverse) ? rgc : sgc, cd->relief_width);
       break;
     default:
@@ -1522,14 +1607,14 @@ static void RedrawTitle(
   {
     /* an odd number of lines every WINDOW_TITLE_STICK_VERT_DIST pixels */
     int num =
-      (int)(t->title_g.height / WINDOW_TITLE_STICK_VERT_DIST / 2) * 2 - 1;
-    int min = t->title_g.height / 2 - num * 2 + 1;
+      (int)(t->title_thickness / WINDOW_TITLE_STICK_VERT_DIST / 2) * 2 - 1;
+    int min = t->title_thickness / 2 - num * 2 + 1;
     int max =
-            t->title_g.height / 2 + num * 2 - WINDOW_TITLE_STICK_VERT_DIST + 1;
+            t->title_thickness / 2 + num * 2 - WINDOW_TITLE_STICK_VERT_DIST + 1;
     int left_x = WINDOW_TITLE_STICK_OFFSET;
-    int left_w = hor_off - left_x - WINDOW_TITLE_TO_STICK_GAP;
-    int right_x = hor_off + w + WINDOW_TITLE_TO_STICK_GAP - 1;
-    int right_w = t->title_g.width - right_x - WINDOW_TITLE_STICK_OFFSET;
+    int left_w = offset - left_x - WINDOW_TITLE_TO_STICK_GAP;
+    int right_x = offset + length + WINDOW_TITLE_TO_STICK_GAP - 1;
+    int right_w = t->title_length - right_x - WINDOW_TITLE_STICK_OFFSET;
 
     if (left_w < WINDOW_TITLE_STICK_MIN_WIDTH)
     {
@@ -1539,19 +1624,25 @@ static void RedrawTitle(
     if (right_w < WINDOW_TITLE_STICK_MIN_WIDTH)
     {
       right_w = WINDOW_TITLE_STICK_MIN_WIDTH;
-      right_x = t->title_g.width - WINDOW_TITLE_STICK_MIN_WIDTH - 1;
+      right_x = t->title_length - WINDOW_TITLE_STICK_MIN_WIDTH - 1;
     }
     for (i = min; i <= max; i += WINDOW_TITLE_STICK_VERT_DIST)
     {
       if (left_w > 0)
       {
 	RelieveRectangle(
-          dpy, t->title_w, left_x, i, left_w, 1, sgc, rgc, 1);
+          dpy, t->title_w,
+	  SWAP_ARGS(has_vt, left_x, i),
+	  SWAP_ARGS(has_vt, left_w, 1),
+	  sgc, rgc, 1);
       }
       if (right_w > 0)
       {
 	RelieveRectangle(
-          dpy, t->title_w, right_x, i, right_w, 1, sgc, rgc, 1);
+          dpy, t->title_w,
+	  SWAP_ARGS(has_vt, right_x, i),
+	  SWAP_ARGS(has_vt, right_w, 1),
+	  sgc, rgc, 1);
       }
     }
   }
@@ -1567,106 +1658,122 @@ static void RedrawTitle(
 }
 
 
-void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
+static void SetupTitleBar(FvwmWindow *tmp_win, int w, int h)
 {
   XWindowChanges xwc;
   unsigned long xwcm;
   int i;
   int buttons = 0;
-  int ww = tmp_win->frame_g.width - 2 * tmp_win->boundary_width;
+  int wsize;
   int rest = 0;
   int bw;
+  int title_off;
+  int *px;
+  int *py;
+  int *pwidth;
+  int *pheight;
+  int space;
+  rectangle tmp_g;
+  size_borders b;
 
-  if (HAS_BOTTOM_TITLE(tmp_win))
+  get_window_borders(tmp_win, &b);
+  if (HAS_VERTICAL_TITLE(tmp_win))
   {
-    tmp_win->title_g.y =
-      h - tmp_win->boundary_width - tmp_win->title_g.height;
-    tmp_win->title_top_height = 0;
+	  space = h;
+	  px = &xwc.y;
+	  py = &xwc.x;
+	  pwidth = &xwc.height;
+	  pheight = &xwc.width;
+	  wsize = tmp_win->frame_g.height - b.total_size.height;
   }
   else
   {
-    tmp_win->title_g.y = tmp_win->boundary_width;
-    tmp_win->title_top_height = tmp_win->title_g.height;
+	  space = w;
+	  px = &xwc.x;
+	  py = &xwc.y;
+	  pwidth = &xwc.width;
+	  pheight = &xwc.height;
+	  wsize = tmp_win->frame_g.width - b.total_size.width;
   }
-  tmp_win->title_g.x = tmp_win->boundary_width;
-
+  tmp_g.width = w;
+  tmp_g.height = h;
+  get_title_geometry(tmp_win, &tmp_g);
   xwcm = CWX | CWY | CWHeight | CWWidth;
-  xwc.y = tmp_win->title_g.y;
-  xwc.width = tmp_win->title_g.height;
-  xwc.height = tmp_win->title_g.height;
+  xwc.x = tmp_g.x;
+  xwc.y = tmp_g.y;
+  xwc.width = tmp_win->title_thickness;
+  xwc.height = tmp_win->title_thickness;
   for (i = 0; i < NUMBER_OF_BUTTONS; i++)
   {
     if (tmp_win->button_w[i])
       buttons++;
   }
-  ww = tmp_win->frame_g.width - 2 * tmp_win->boundary_width -
-    tmp_win->title_g.width;
-  if (ww < buttons * xwc.width)
+  if (wsize < buttons * *pwidth)
   {
-    xwc.width = ww / buttons;
-    if (xwc.width < 1)
-      xwc.width = 1;
-    if (xwc.width > tmp_win->title_g.height)
-      xwc.width = tmp_win->title_g.height;
-    rest = ww - buttons * xwc.width;
+    *pwidth = wsize / buttons;
+    if (*pwidth < 1)
+      *pwidth = 1;
+    if (*pwidth > tmp_win->title_thickness)
+      *pwidth = tmp_win->title_thickness;
+    rest = wsize - buttons * *pwidth;
     if (rest > 0)
-      xwc.width++;
+      (*pwidth)++;
   }
   /* left */
-  xwc.x = tmp_win->boundary_width;
+  title_off = *px;
   for (i = 0; i < NUMBER_OF_BUTTONS; i += 2)
   {
     if (tmp_win->button_w[i] != None)
     {
-      if (xwc.x + xwc.width < w - tmp_win->boundary_width)
+      if (*px + *pwidth < space - tmp_win->boundary_width)
       {
 	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
-	xwc.x += xwc.width;
-        tmp_win->title_g.x += xwc.width;
+	*px += *pwidth;
+        title_off += *pwidth;
       }
       else
       {
-	xwc.x = -tmp_win->title_g.height;
+	*px = -tmp_win->title_thickness;
 	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
       }
       rest--;
       if (rest == 0)
       {
-        xwc.width--;
+        (*pwidth)--;
       }
     }
   }
-  bw = xwc.width;
+  bw = *pwidth;
 
   /* title */
-  if (tmp_win->title_g.width <= 0 || ww < 0)
-    tmp_win->title_g.x = -10;
-  xwc.x = tmp_win->title_g.x;
-  xwc.width = tmp_win->title_g.width;
+  if (tmp_win->title_length <= 0 || wsize < 0)
+    title_off = -10;
+  *px = title_off;
+  *pwidth = tmp_win->title_length;
   XConfigureWindow(dpy, tmp_win->title_w, xwcm, &xwc);
 
   /* right */
-  xwc.width = bw;
-  xwc.x = w - tmp_win->boundary_width - xwc.width;
+  *pwidth = bw;
+  *px = space - tmp_win->boundary_width - *pwidth;
   for (i = 1 ; i < NUMBER_OF_BUTTONS; i += 2)
   {
     if (tmp_win->button_w[i] != None)
     {
-      if (xwc.x > tmp_win->boundary_width)
+      if (*px > tmp_win->boundary_width)
       {
 	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
-	xwc.x -= xwc.width;
+	*px -= *pwidth;
       }
       else
       {
-	xwc.x = -tmp_win->title_g.height;
+	*px = -tmp_win->title_thickness;
 	XConfigureWindow(dpy, tmp_win->button_w[i], xwcm, &xwc);
       }
       rest--;
       if (rest == 0)
       {
-        xwc.width--;
-        xwc.x++;
+        (*pwidth)--;
+        (*px)++;
       }
     }
   }
@@ -1924,7 +2031,7 @@ void DrawDecorations(
  *      window was moved but not resized.)
  *
  ************************************************************************/
-
+#define SIGN(x) (((x) < 0) ? -1 : !!(x))
 void SetupFrame(
   FvwmWindow *tmp_win, int x, int y, int w, int h, Bool sendEvent)
 {
@@ -1937,8 +2044,7 @@ void SetupFrame(
   int ywidth;
   int left;
   int right;
-  int shaded = IS_SHADED(tmp_win);
-
+  int is_shaded = IS_SHADED(tmp_win);
   int xmove_sign;
   int ymove_sign;
   int xsize_sign;
@@ -1948,9 +2054,8 @@ void SetupFrame(
   int id = 0;
   int dx;
   int dy;
-  int px;
-  int py;
   int decor_gravity;
+  size_borders b;
   Bool is_order_reversed = False;
 
 #ifdef FVWM_DEBUG_MSGS
@@ -1981,21 +2086,13 @@ void SetupFrame(
     sendEvent = True;
 
   /* optimization code for opaque resize */
-#define SIGN(x) (((x) < 0) ? -1 : !!(x))
   xmove_sign = SIGN(x - tmp_win->frame_g.x);
   ymove_sign = SIGN(y - tmp_win->frame_g.y);
   xsize_sign = SIGN(w - tmp_win->frame_g.width);
   ysize_sign = SIGN(h - tmp_win->frame_g.height);
 #undef SIGN
 
-  if (HAS_BOTTOM_TITLE(tmp_win))
-  {
-    decor_gravity = SouthEastGravity;
-  }
-  else
-  {
-    decor_gravity = NorthWestGravity;
-  }
+  decor_gravity = get_title_gravity(tmp_win);
 
   if (xsize_sign != 0 || ysize_sign != 0)
   {
@@ -2013,14 +2110,23 @@ void SetupFrame(
    * Set up the title geometry first
    */
 
+  get_window_borders(tmp_win, &b);
   if (is_resized)
   {
     left = tmp_win->nr_left_buttons;
     right = tmp_win->nr_right_buttons;
-    tmp_win->title_g.width = w - (left + right) * tmp_win->title_g.height
-                           - 2 * tmp_win->boundary_width;
-    if(tmp_win->title_g.width < 1)
-      tmp_win->title_g.width = 1;
+    if (HAS_VERTICAL_TITLE(tmp_win))
+    {
+      tmp_win->title_length =
+	h - (left + right) * tmp_win->title_thickness - b.total_size.height;
+    }
+    else
+    {
+      tmp_win->title_length =
+	w - (left + right) * tmp_win->title_thickness - b.total_size.width;
+    }
+    if (tmp_win->title_length < 1)
+      tmp_win->title_length = 1;
   }
 
   /*
@@ -2029,13 +2135,10 @@ void SetupFrame(
 
   set_decor_gravity(
     tmp_win, decor_gravity, NorthWestGravity, NorthWestGravity);
-  tmp_win->attr.width = w - 2 * tmp_win->boundary_width;
-  tmp_win->attr.height =
-    h - tmp_win->title_g.height - 2*tmp_win->boundary_width;
+  tmp_win->attr.width = w - b.total_size.width;
+  tmp_win->attr.height = h - b.total_size.height;
   if (tmp_win->attr.height <= 1 || tmp_win->attr.width <= 1)
     is_order_reversed = 0;
-  px = tmp_win->boundary_width;
-  py = tmp_win->boundary_width + tmp_win->title_top_height;
   dx = 0;
   dy = 0;
   if (is_order_reversed && decor_gravity == SouthEastGravity)
@@ -2064,19 +2167,20 @@ void SetupFrame(
       XMoveResizeWindow(dpy, tmp_win->frame, x, y, w, h);
       break;
     case 1:
-      if (!shaded)
+      if (!is_shaded)
       {
 	XMoveResizeWindow(
-	dpy, tmp_win->Parent, px, py, max(tmp_win->attr.width, 1),
+		dpy, tmp_win->Parent, b.top_left.width, b.top_left.height,
+		max(tmp_win->attr.width, 1),
 	max(tmp_win->attr.height, 1));
       }
       else
       {
-        XMoveWindow(dpy, tmp_win->Parent, px, py);
+        XMoveWindow(dpy, tmp_win->Parent, b.top_left.width, b.top_left.height);
       }
       break;
     case 2:
-      if (!shaded)
+      if (!is_shaded)
       {
 	XResizeWindow(
 	  dpy, tmp_win->w, max(tmp_win->attr.width, 1),
@@ -2084,18 +2188,12 @@ void SetupFrame(
 	/* This reduces flickering */
 	XSync(dpy, 0);
       }
-      else if (HAS_BOTTOM_TITLE(tmp_win))
-      {
-	rectangle big_g;
-
-	big_g = (IS_MAXIMIZED(tmp_win)) ? tmp_win->max_g : tmp_win->normal_g;
-	get_relative_geometry(&big_g, &big_g);
-	XMoveWindow(dpy, tmp_win->w, 0, 1 - big_g.height +
-		    2 * tmp_win->boundary_width + tmp_win->title_g.height);
-      }
       else
       {
-	XMoveWindow(dpy, tmp_win->w, 0, 0);
+	rectangle g;
+
+	get_shaded_client_window_pos(tmp_win, &g);
+	XMoveWindow(dpy, tmp_win->w, g.x, g.y);
       }
 
       break;
@@ -2130,7 +2228,7 @@ void SetupFrame(
       tmp_win->visual_corner_width = tmp_win->corner_width;
       if(w < 2*tmp_win->corner_width)
         tmp_win->visual_corner_width = w / 3;
-      if (h < 2*tmp_win->corner_width && !shaded)
+      if (h < 2*tmp_win->corner_width && !is_shaded)
         tmp_win->visual_corner_width = h / 3;
       xwidth = w - 2 * tmp_win->visual_corner_width;
       ywidth = h - 2 * tmp_win->visual_corner_width;
@@ -2140,7 +2238,7 @@ void SetupFrame(
       if(ywidth<2)
         ywidth = 2;
 
-      if (IS_SHADED(tmp_win))
+      if (is_shaded)
 	add = tmp_win->visual_corner_width / 3;
       else
 	add = 0;
@@ -2157,7 +2255,7 @@ void SetupFrame(
         {
 	  xwc.x = w - tmp_win->boundary_width;
           xwc.y = tmp_win->visual_corner_width;
-	  if (IS_SHADED(tmp_win))
+	  if (is_shaded)
 	  {
 	    xwc.y /= 3;
 	    xwc.height = add + 2;
@@ -2180,7 +2278,7 @@ void SetupFrame(
         {
 	  xwc.x = 0;
           xwc.y = tmp_win->visual_corner_width;
-	  if (IS_SHADED(tmp_win))
+	  if (is_shaded)
 	  {
 	    xwc.y /= 3;
 	    xwc.height = add + 2;
@@ -2221,7 +2319,7 @@ void SetupFrame(
 
   if (FShapesSupported && tmp_win->wShaped && is_resized)
   {
-    SetShape(tmp_win, w);
+    SetShape(tmp_win, w, h);
   }
 
   /*
@@ -2231,12 +2329,11 @@ void SetupFrame(
   XSync(dpy,0);
   /* must not send events to shaded windows because this might cause them to
    * look at their current geometry */
-  if (sendEvent && !shaded)
+  if (sendEvent && !is_shaded)
   {
     SendConfigureNotify(tmp_win, x, y, w, h, 0, True);
 #ifdef FVWM_DEBUG_MSGS
-    fvwm_msg(DBG,"SetupFrame","Sent ConfigureNotify (w == %d, h == %d)",
-             w,h);
+    fvwm_msg(DBG,"SetupFrame","Sent ConfigureNotify (w == %d, h == %d)", w, h);
 #endif
   }
 
@@ -2309,38 +2406,47 @@ void set_decor_gravity(
  * Sets up the shaped window borders
  *
  ****************************************************************************/
-void SetShape(FvwmWindow *tmp_win, int w)
+void SetShape(FvwmWindow *tmp_win, int w, int h)
 {
-  if (FShapesSupported)
-  {
-    if (tmp_win->wShaped)
-    {
-      XRectangle rect;
+	if (FShapesSupported)
+	{
+		if (tmp_win->wShaped)
+		{
+			XRectangle rect;
+			rectangle r;
+			size_borders b;
 
-      FShapeCombineShape(
-	dpy, tmp_win->frame, FShapeBounding, tmp_win->boundary_width,
-	tmp_win->title_top_height + tmp_win->boundary_width, tmp_win->w,
-	FShapeBounding, FShapeSet);
-      if (tmp_win->title_w)
-      {
-	/* windows w/ titles */
-	rect.x = tmp_win->boundary_width;
-	rect.y = tmp_win->title_g.y;
-	rect.width = w - 2*tmp_win->boundary_width;
-	rect.height = tmp_win->title_g.height;
+			get_window_borders(tmp_win, &b);
+			FShapeCombineShape(
+				dpy, tmp_win->frame, FShapeBounding,
+				b.top_left.width, b.top_left.height,
+				tmp_win->w, FShapeBounding, FShapeSet);
+			if (tmp_win->title_w)
+			{
+				/* windows w/ titles */
+				r.width = w;
+				r.height = h;
+				get_title_geometry(tmp_win, &r);
+				rect.x = r.x;
+				rect.y = r.y;
+				rect.width = r.width;
+				rect.height = r.height;
 
-	FShapeCombineRectangles(
-	  dpy, tmp_win->frame, FShapeBounding, 0, 0, &rect, 1, FShapeUnion,
-	  Unsorted);
-      }
-    }
-    else
-    {
-      /* unset shape */
-      FShapeCombineMask(
-	dpy, tmp_win->frame, FShapeBounding, 0, 0, None, FShapeSet);
-    }
-  }
+				FShapeCombineRectangles(
+					dpy, tmp_win->frame, FShapeBounding, 0,
+					0, &rect, 1, FShapeUnion, Unsorted);
+			}
+		}
+		else
+		{
+			/* unset shape */
+			FShapeCombineMask(
+				dpy, tmp_win->frame, FShapeBounding, 0, 0,
+				None, FShapeSet);
+		}
+	}
+
+	return;
 }
 
 /****************************************************************************

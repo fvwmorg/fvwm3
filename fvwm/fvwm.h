@@ -196,6 +196,7 @@ typedef struct
 	unsigned is_sticky : 1;
 	unsigned has_icon_font : 1;
 	unsigned has_window_font : 1;
+	unsigned title_dir : 2;
 	/* static flags that do not change dynamically after the window has been
 	 * created */
 	struct
@@ -203,6 +204,12 @@ typedef struct
 		unsigned do_circulate_skip : 1;
 		unsigned do_circulate_skip_icon : 1;
 		unsigned do_circulate_skip_shaded : 1;
+		unsigned do_ewmh_donate_icon : 1;
+		unsigned do_ewmh_donate_mini_icon : 1;
+		unsigned do_ewmh_ignore_state_hints : 1;
+		unsigned do_ewmh_ignore_strut_hints : 1;
+		unsigned do_ewmh_mini_icon_override : 1;
+		unsigned do_ewmh_use_stacking_hints : 1;
 		unsigned do_grab_focus_when_created : 1;
 		unsigned do_grab_focus_when_transient_created : 1;
 		unsigned do_iconify_window_groups : 1;
@@ -222,6 +229,7 @@ typedef struct
 		unsigned do_stack_transient_parent : 1;
 		unsigned do_start_iconic : 1;
 		unsigned do_window_list_skip : 1;
+		unsigned ewmh_maximize_mode : 2; /* see ewmh.h */
 #define FOCUS_MOUSE   0x0
 #define FOCUS_CLICK   0x1
 #define FOCUS_SLOPPY  0x2
@@ -251,13 +259,6 @@ typedef struct
 		unsigned use_icon_position_hint : 1;
 		unsigned use_indexed_window_name : 1;
 		unsigned use_indexed_icon_name : 1;
-		unsigned do_ewmh_mini_icon_override : 1;
-		unsigned do_ewmh_donate_icon : 1;
-		unsigned do_ewmh_donate_mini_icon : 1;
-		unsigned do_ewmh_use_stacking_hints : 1;
-		unsigned do_ewmh_ignore_strut_hints : 1;
-		unsigned do_ewmh_ignore_state_hints : 1;
-		unsigned ewmh_maximize_mode : 2; /* see ewmh.h */
 	} s;
 } common_flags_type;
 
@@ -545,15 +546,9 @@ typedef struct window_style
 typedef struct FvwmWindow
 {
 	/* name of the window */
-	char *name;
+	FlocaleNameString name;
 	/* name of the icon */
-	char *icon_name;
-#ifdef MULTIBYTE
-	/* window name list */
-	char **name_list;
-	/* icon name list */
-	char **icon_name_list;
-#endif
+	FlocaleNameString icon_name;
 	char *visible_name;
 	char *visible_icon_name;
 	int name_count;
@@ -607,10 +602,9 @@ typedef struct FvwmWindow
 	/* title font */
 	FlocaleFont *title_font;
 	/* /Y coordinate to draw the title name */
-	short title_text_y;
-	rectangle title_g;
-	/* title height/0 for top/bottom titles */
-	short title_top_height;
+	short title_text_offset;
+	short title_length;
+	short title_thickness;
 	struct
 	{
 		/* geometry of the icon picture window */

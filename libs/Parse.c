@@ -327,6 +327,7 @@ int MatchToken(char *pstr,char *tok)
   return rc;
 }
 
+/* unused at the moment */
 /*
    function:		XCmpToken
    description:	        compare 1st word of s to 1st word of t
@@ -338,19 +339,21 @@ int MatchToken(char *pstr,char *tok)
 
 int XCmpToken(const char *s, const char **t)
 {
-    register const char *w=*t;
+	register const char *w=*t;
 
-    if (w==NULL) return 1;		/* non existant word */
-    if (s==NULL) return -1;		/* non existant string */
+	if (w==NULL)
+		return 1;		/* non existant word */
+	if (s==NULL)
+		return -1;		/* non existant string */
 
-    while ( *w && (*s==*w || toupper(*s)==toupper(*w)) )
-	s++,w++;
+	while ( *w && (*s==*w || toupper(*s)==toupper(*w)) )
+		s++,w++;
 
-    if ((*s=='\0' && (ispunct(*w) || isspace(*w)))||
-	(*w=='\0' && (ispunct(*s) || isspace(*s))) )
-	return 0;			/* 1st word equal */
-    else
-	return toupper(*s)-toupper(*w);	/* smaller/greater */
+	if ((*s=='\0' && (ispunct(*w) || isspace(*w)))||
+	    (*w=='\0' && (ispunct(*s) || isspace(*s))) )
+		return 0;			/* 1st word equal */
+	else
+		return toupper(*s)-toupper(*w);	/* smaller/greater */
 }
 
 
@@ -755,22 +758,22 @@ int ParseToggleArgument(
 
 /* Parses the next token in action and returns
  *
- *   0 if it is North, Top or Up
- *   1 if it is East, Right or Right
- *   2 if it is South, Bottom or Down
- *   3 if it is West, Left or Left
- *   4 if it is NorthEast, TopRight or UpRight
- *   5 if it is SouthEast, BottomRight or DownRight
- *   6 if it is SouthWest, BottomLeft or DownLeft
- *   7 if it is NorthWest, TopLeft or UpLeft
+ *   0 if it is N, North, Top or Up
+ *   1 if it is E, East, Right or Right
+ *   2 if it is S, South, Bottom or Down
+ *   3 if it is E, West, Left or Left
+ *   4 if it is NE, NorthEast, TopRight or UpRight
+ *   5 if it is SE, SouthEast, BottomRight or DownRight
+ *   6 if it is SW, SouthWest, BottomLeft or DownLeft
+ *   7 if it is NW, NorthWest, TopLeft or UpLeft
  *   default_ret if no string matches.
  *
  * A pointer to the first character in action behind the token is returned
  * through ret_action in this case. ret_action may be NULL. If the token
  * matches none of these strings the default_ret value is returned and the
  * action itself is passed back in ret_action. */
-int ParseDirectionArgument(
-	char *action, char **ret_action, int default_ret)
+direction_type ParseDirectionArgument(
+	char *action, char **ret_action, direction_type default_ret)
 {
 	int index;
 	int rc;
@@ -803,7 +806,7 @@ int ParseDirectionArgument(
 		*ret_action = next;
 	}
 
-	return rc;
+	return (direction_type)rc;
 }
 
 /* Strips the path from 'path' and returns the last component in a malloc'ed

@@ -199,8 +199,8 @@ int main(int argc, char **argv)
 
   setVersionInfo();
 
-  FInitLocale(LC_CTYPE, "", "", "FVWM");
-  FInitCharset("FVWM");
+  FlocaleInit(LC_CTYPE, "", "", "FVWM");
+  FlocaleInitCharset("FVWM");
 
   /* Put the default module directory into the environment so it can be used
      later by the config file, etc.  */
@@ -1404,10 +1404,6 @@ static void InitVariables(void)
 
   /* create graphics contexts */
   CreateGCs();
-
-  FlocaleAllocateWinString(&(Scr.TitleStr));
-  Scr.TitleStr->gc = Scr.TitleGC;
-  FlocaleAllocateWinString(&(Scr.ScratchStr));
 
   if (Pdepth <= 8) {               /* if the color is limited */
     /* a number > than the builtin table! */

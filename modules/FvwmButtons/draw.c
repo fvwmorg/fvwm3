@@ -297,7 +297,7 @@ void RedrawButton(button_info *b,int clean)
     clean = 1;
   }
 #endif
-  
+
   RelieveButton(MyWindow,f,x,y,BW,BH,hc,sc,rev ^ rev_xor);
 
   /* ----------------------------------------------------------------------- */
@@ -344,7 +344,7 @@ void RedrawButton(button_info *b,int clean)
     else if (buttonSwallowCount(b) == 3 && (b->flags & b_Swallow) &&
 	     b->flags & b_Colorset)
     {
-      /* Set the back color of the buttons for shaped apps (olicha 00-03-09) 
+      /* Set the back color of the buttons for shaped apps (olicha 00-03-09)
        * and also for transparent modules */
       SetRectangleBackground(
 	Dpy, MyWindow, x+f, y+f, BW-2*f, BH-2*f, &Colorset[b->colorset],
@@ -530,6 +530,9 @@ void DrawTitle(button_info *b,Window win,GC gc)
 
   if(*s && l>0 && BH>=Ffont->height) /* Clip it somehow? */
   {
+    FlocaleWinString *FwinString;
+
+    FlocaleAllocateWinString(&FwinString);
     FwinString->str = s;
     FwinString->win = win;
     FwinString->gc = gc;

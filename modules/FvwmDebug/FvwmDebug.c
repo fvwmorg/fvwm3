@@ -591,7 +591,6 @@ void list_configure(const unsigned long *body)
     fprintf(output,"\t\tdo_start_iconic: %d\n", DO_START_ICONIC(p));
     fprintf(output,"\t\tdo_window_list_skip: %d\n", DO_SKIP_WINDOW_LIST(p));
     fprintf(output,"\t\tfocus_mode: %d\n", GET_FOCUS_MODE(p));
-    fprintf(output,"\t\thas_bottom_title: %d\n", HAS_BOTTOM_TITLE(p));
     fprintf(output,"\t\thas_depressable_border: %d\n",
 	    HAS_DEPRESSABLE_BORDER(p));
     fprintf(output,"\t\thas_mwm_border: %d\n", HAS_MWM_BORDER(p));
@@ -637,6 +636,7 @@ void list_configure(const unsigned long *body)
 	    IS_WINDOW_BEING_MOVED_OPAQUE(p));
     fprintf(output,"\t\tis_window_font_loaded: %d\n", IS_WINDOW_FONT_LOADED(p));
     fprintf(output,"\t\tis_window_shaded %d\n", IS_SHADED(p));
+    fprintf(output,"\t\ttitle_dir: %d\n", GET_TITLE_DIR(p));
     fflush(output);
   }
 }

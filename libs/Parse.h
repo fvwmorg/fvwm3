@@ -22,15 +22,20 @@
 /* ---------------------------- global definitions -------------------------- */
 
 #define MAX_TOKEN_LENGTH 1023
-
-#define DIR_N  0
-#define DIR_E  1
-#define DIR_S  2
-#define DIR_W  3
-#define DIR_NE 4
-#define DIR_SE 5
-#define DIR_SW 6
-#define DIR_NW 7
+typedef enum
+{
+	DIR_NONE = -1,
+	DIR_N = 0,
+	DIR_E = 1,
+	DIR_S = 2,
+	DIR_W = 3,
+	DIR_MAJOR_MASK = 3,
+	DIR_NE = 4,
+	DIR_SE = 5,
+	DIR_SW = 6,
+	DIR_NW = 7,
+	DIR_MASK = 7,
+} direction_type;
 
 /* ---------------------------- global macros ------------------------------- */
 
@@ -91,13 +96,12 @@ int GetTokenIndex(char *token, char **list, int len, char **next);
 char *GetNextTokenIndex(char *action, char **list, int len, int *index);
 int GetRectangleArguments(char *action, int *width, int *height);
 int GetOnePercentArgument(char *action, int *value, int *unit_io);
-int GetTwoPercentArguments(char *action, int *val1, int *val2, int *val1_unit,
-			   int *val2_unit);
+int GetTwoPercentArguments(
+	char *action, int *val1, int *val2, int *val1_unit, int *val2_unit);
 int ParseToggleArgument(
 	char *action, char **ret_action, int default_ret, char no_toggle);
-int ParseDirectionArgument(
-	char *action, char **ret_action, int default_ret);
-
+direction_type ParseDirectionArgument(
+	char *action, char **ret_action, direction_type default_ret);
 int XCmpToken(const char *s, const char **t);
 char *GetFileNameFromPath(char *path);
 

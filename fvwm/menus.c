@@ -54,6 +54,7 @@
 #include "defaults.h"
 #include "libs/FScreen.h"
 #include "libs/Flocale.h"
+#include "geometry.h"
 
 /* ---------------------------- local definitions --------------------------- */
 
@@ -2815,65 +2816,25 @@ static int pop_menu_up(
 	if (!pops->flags.has_poshints && fw && parent_menu == NULL &&
 	    pmp->flags.is_first_root_menu)
 	{
-		int old_y = y;
 		int cx;
 		int cy;
+		int gx;
+		int gy;
 		Bool has_context;
+		rectangle button_g;
 
-		if (HAS_BOTTOM_TITLE(fw))
-		{
-			y = fw->frame_g.y + fw->frame_g.height -
-				fw->boundary_width - fw->title_g.height -
-				MR_HEIGHT(mr);
-			cy = fw->frame_g.y - fw->boundary_width -
-				fw->title_g.height / 2;
-		}
-		else
-		{
-			y = fw->frame_g.y + fw->boundary_width +
-				fw->title_g.height;
-			cy = y - fw->title_g.height / 2;
-		}
-		has_context = 0;
-		if (context&C_LALL)
-		{
-			x = fw->frame_g.x + fw->boundary_width +
-				ButtonPosition(context, fw) *
-				fw->title_g.height;
-			cx = x + fw->title_g.height / 2;
-			has_context = 1;
-		}
-		else if (context&C_RALL)
-		{
-			x = fw->frame_g.x + fw->frame_g.width -
-				fw->boundary_width -
-				ButtonPosition(context, fw) *
-				fw->title_g.height - MR_WIDTH(mr);
-			cx = x + fw->title_g.height / 2;
-			has_context = 1;
-		}
-		else if (context&C_TITLE)
-		{
-			if (x < fw->frame_g.x + fw->title_g.x)
-			{
-				x = fw->frame_g.x + fw->title_g.x;
-			}
-			if (x + MR_WIDTH(mr) >
-			    fw->frame_g.x + fw->title_g.x + fw->title_g.width)
-			{
-				x = fw->frame_g.x + fw->title_g.x +
-					fw->title_g.width - MR_WIDTH(mr);
-			}
-			cx = x;
-			has_context = 1;
-		}
-		else
-		{
-			y = old_y;
-		}
+		has_context = get_title_button_geometry(fw, &button_g, context);
 		if (has_context)
 		{
 			fscreen_scr_arg fscr;
+
+			get_title_gravity_factors(fw, &gx, &gy);
+			x = button_g.x + (gx == 1) * button_g.width -
+				(gx == -1) * MR_WIDTH(mr);
+			y = button_g.y + (gy == 1) * button_g.height -
+				(gy == -1) * MR_HEIGHT(mr);
+			cx = button_g.x + button_g.width / 2;
+			cy = button_g.y + button_g.height / 2;
 
 			pops->pos_hints.has_screen_origin = True;
 			fscr.xypos.x = cx;

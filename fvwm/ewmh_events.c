@@ -583,7 +583,7 @@ int ewmh_WMStateShaded(EWMH_CMD_ARGS)
     if (!DO_EWMH_IGNORE_STATE_HINTS(style))
     {
       SET_SHADED(fwin, 1);
-      SET_SHADED_DIR(fwin, (SHAS_BOTTOM_TITLE(style->flags)) ? DIR_S : DIR_N);
+      SET_SHADED_DIR(fwin, GET_TITLE_DIR(fwin));
     }
     SET_HAS_EWMH_INIT_SHADED_STATE(fwin, EWMH_STATE_HAS_HINT);
     return 0;

@@ -91,12 +91,13 @@
           (fw)->flags.common.s.do_start_iconic = !!(x)
 #define SETM_DO_START_ICONIC(fw,x) \
           (fw)->flag_mask.common.s.do_start_iconic = !!(x)
-
-#define HAS_BOTTOM_TITLE(fw)   ((fw)->flags.common.s.has_bottom_title)
-#define SET_HAS_BOTTOM_TITLE(fw,x) \
-          (fw)->flags.common.s.has_bottom_title = !!(x)
-#define SETM_HAS_BOTTOM_TITLE(fw,x) \
-          (fw)->flag_mask.common.s.has_bottom_title = !!(x)
+#define GET_TITLE_DIR(fw)    ((fw)->flags.common.title_dir)
+#define HAS_TITLE_DIR(fw,x)  ((fw)->flags.common.title_dir == x)
+#define SET_TITLE_DIR(fw,x)  ((fw)->flags.common.title_dir = x)
+#define SETM_TITLE_DIR(fw,x) \
+	  (fw)->flag_mask.common.title_dir = DIR_MAJOR_MASK * !!(x)
+#define HAS_VERTICAL_TITLE(fw) \
+          (HAS_TITLE_DIR(fw,DIR_W) || HAS_TITLE_DIR(fw,DIR_E))
 #define HAS_STIPPLED_TITLE(fw)  \
           ((fw)->flags.common.s.has_stippled_title)
 #define SET_HAS_STIPPLED_TITLE(fw,x) \
