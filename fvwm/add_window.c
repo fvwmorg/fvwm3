@@ -939,7 +939,7 @@ void FetchWmProtocols (FvwmWindow *tmp)
 void GetWindowSizeHints(FvwmWindow *tmp)
 {
   long supplied = 0;
-  Bool broken_hints = False;
+  int broken_hints = 0;
 
   if (HAS_OVERRIDE_SIZE_HINTS(tmp) ||
       !XGetWMNormalHints (dpy, tmp->w, &tmp->hints, &supplied))
@@ -952,12 +952,12 @@ void GetWindowSizeHints(FvwmWindow *tmp)
       if (tmp->hints.width_inc <= 0)
         {
           tmp->hints.width_inc = 1;
-	  broken_hints = True;
+	  broken_hints = 1;
         }
       if (tmp->hints.height_inc <= 0)
         {
           tmp->hints.height_inc = 1;
-	  broken_hints = True;
+	  broken_hints = 2;
         }
     }
   else
@@ -971,13 +971,13 @@ void GetWindowSizeHints(FvwmWindow *tmp)
       if (tmp->hints.min_width <= 0)
         {
 	  if (tmp->hints.min_width < 0)
-	    broken_hints = True;
+	    broken_hints = 3;
           tmp->hints.min_width = 1;
         }
       if (tmp->hints.min_height <= 0)
         {
 	  if (tmp->hints.min_height < 0)
-	    broken_hints = True;
+	    broken_hints = 4;
           tmp->hints.min_height = 1;
         }
     }
@@ -1000,12 +1000,12 @@ void GetWindowSizeHints(FvwmWindow *tmp)
       if(tmp->hints.max_width < tmp->hints.min_width)
         {
 	  tmp->hints.max_width = Scr.MaxWindowWidth;
-          broken_hints = True;
+          broken_hints = 5;
         }
       if(tmp->hints.max_height < tmp->hints.min_height)
         {
 	  tmp->hints.max_height = Scr.MaxWindowHeight;
-          broken_hints = True;
+          broken_hints = 6;
         }
     }
   else
@@ -1024,12 +1024,12 @@ void GetWindowSizeHints(FvwmWindow *tmp)
       if (tmp->hints.base_width < 0)
         {
           tmp->hints.base_width = 0;
-          broken_hints = True;
+          broken_hints = 7;
         }
       if (tmp->hints.base_height < 0)
         {
           tmp->hints.base_height = 0;
-          broken_hints = True;
+          broken_hints = 8;
         }
       if ((tmp->hints.base_width > tmp->hints.min_width) ||
           (tmp->hints.base_height > tmp->hints.min_height))
@@ -1045,7 +1045,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 #if 0
  	/* Keep silent about this, since the Xlib manual actually
   	   recommends making min <= base <= max ! */
-          broken_hints = True;
+          broken_hints = 0;
 #endif
         }
     }
@@ -1105,7 +1105,7 @@ void GetWindowSizeHints(FvwmWindow *tmp)
         (((double)minAspectX * (double)maxAspectY) >
          ((double)maxAspectX * (double)minAspectY)))
      {
-        broken_hints = True;
+        broken_hints = 9;
         tmp->hints.flags &= ~PAspect;
         fvwm_msg (WARN, "GetWindowSizeHints",
                  "%s window %#lx has broken aspect ratio: %d/%d - %d/%d\n",
@@ -1148,10 +1148,21 @@ void GetWindowSizeHints(FvwmWindow *tmp)
 
   if (broken_hints)
     {
+      XSizeHints orig_hints;
+      XGetWMNormalHints (dpy, tmp->w, &orig_hints, &supplied);
       fvwm_msg (WARN, "GetWindowSizeHints",
-               "%s window %#lx has broken size hints\n"
-               "Please report this to fvwm-workers@fvwm.org\n",
-                tmp->name, tmp->w);
+               "%s window %#lx has broken (%d) size hints\n"
+               "Please report this to fvwm-workers@fvwm.org\n"
+               "%ld %d %d %d %d %d %d %d/%d %d/%d %d %d %d\n",
+                tmp->name, tmp->w, broken_hints,
+                orig_hints.flags,
+                orig_hints.min_width, orig_hints.min_height,
+                orig_hints.max_width, orig_hints.max_height,
+                orig_hints.width_inc, orig_hints.height_inc,
+                orig_hints.min_aspect.x, orig_hints.min_aspect.y,
+                orig_hints.max_aspect.x, orig_hints.max_aspect.y,
+                orig_hints.base_width, orig_hints.base_height,
+                orig_hints.win_gravity);
     }
 }
 

@@ -1,3 +1,8 @@
+1999-06-25  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
+
+	* fvwm/add_window.c (GetWindowSizeHints): print the
+	cause of brokenness and the broken size hints.
+
 1999-06-25  Chris Rankin  <rankinc@zipworld.com.au>
 
     * modules/FvwmTaskBar.c: New signal handling (fvwmsignal.o)
