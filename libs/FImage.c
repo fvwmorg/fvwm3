@@ -92,14 +92,14 @@ static void FShmSafeCreateImage(
 		IPC_PRIVATE,
 		fim->im->bytes_per_line * fim->im->height,
 		IPC_CREAT|0777);
-	if (fim->shminfo->shmid == 0)
+	if (fim->shminfo->shmid <= 0)
 	{
 		error = True;
 		goto bail;
 	}
 	fim->shminfo->shmaddr = fim->im->data = Fshmat(
 		fim->shminfo->shmid, 0, 0);
-	if (fim->shminfo->shmaddr == NULL)
+	if (fim->shminfo->shmaddr == (char *)(-1))
 	{
 		error = True;
 		goto bail;
