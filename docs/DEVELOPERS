@@ -174,11 +174,11 @@ the second digit.  The script will ask you for a name and mail address
 to be used in the ChangeLog entry.
 
 Note that you need to have actually built everything before packing
-the distribution, hence step 2.  Among other things, this generates
+the distribution, hence steps 3 to 5.  Among other things, this generates
 the proper dependency information for insertion into Makefile.in's
-generated in step 5.
+generated in step 8.
 
-Step 5 will create the tar file, then unpack it and attempt a build &
+Step 8 will create the tar file, then unpack it and attempt a build &
 install (to a scratch directory, not /usr/local).  This makes sure
 that you really DID include all the files necessary to build the
 package into the tar file. It may be hard to appreciate how useful
