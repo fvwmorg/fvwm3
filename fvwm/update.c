@@ -75,7 +75,12 @@ static void apply_window_updates(
 	FvwmWindow old_t;
 	short buttons;
 	Bool is_style_initialised = False;
+        rectangle frame_g;
 
+        frame_g.x = t->frame_g.x;
+        frame_g.y = t->frame_g.y;
+        frame_g.width = t->frame_g.width;
+        frame_g.height = t->frame_g.height;
 	if (flags->do_update_gnome_styles)
 	{
 		if (!SDO_IGNORE_GNOME_HINTS(pstyle->flags))
@@ -248,31 +253,31 @@ static void apply_window_updates(
 		dw = b_new.total_size.width - b_old.total_size.width;
 		dh = b_new.total_size.height - b_old.total_size.height;
 
-		t->frame_g = t->normal_g;
-		gravity_resize(t->hints.win_gravity, &t->frame_g, dw, dh);
-		gravity_constrain_size(t->hints.win_gravity, t, &t->frame_g, 0);
-		t->normal_g = t->frame_g;
+		frame_g = t->normal_g;
+		gravity_resize(t->hints.win_gravity, &frame_g, dw, dh);
+		gravity_constrain_size(t->hints.win_gravity, t, &frame_g, 0);
+		t->normal_g = frame_g;
 		if (IS_MAXIMIZED(t))
 		{
-			t->frame_g = t->max_g;
+			frame_g = t->max_g;
 			gravity_resize(
-				t->hints.win_gravity, &t->frame_g, dw, dh);
+				t->hints.win_gravity, &frame_g, dw, dh);
 			gravity_constrain_size(
-				t->hints.win_gravity, t, &t->frame_g,
+				t->hints.win_gravity, t, &frame_g,
 				CS_UPDATE_MAX_DEFECT);
-			t->max_g = t->frame_g;
+			t->max_g = frame_g;
 		}
 		if (IS_SHADED(t))
 		{
-			get_shaded_geometry(t, &t->frame_g, &unshaded_g);
+			get_shaded_geometry(t, &frame_g, &unshaded_g);
 		}
 		else if (IS_MAXIMIZED(t))
 		{
-			get_relative_geometry(&t->frame_g, &t->max_g);
+			get_relative_geometry(&frame_g, &t->max_g);
 		}
 		else
 		{
-			get_relative_geometry(&t->frame_g, &t->normal_g);
+			get_relative_geometry(&frame_g, &t->normal_g);
 		}
 
 		flags->do_setup_frame = True;
@@ -283,22 +288,21 @@ static void apply_window_updates(
 		rectangle old_g;
 
 		setup_frame_size_limits(t, pstyle);
-		old_g = t->frame_g;
-		t->frame_g = t->normal_g;
-		gravity_constrain_size(
-			t->hints.win_gravity, t, &(t->frame_g), 0);
-		t->normal_g = t->frame_g;
+		old_g = frame_g;
+		frame_g = t->normal_g;
+		gravity_constrain_size(t->hints.win_gravity, t, &frame_g, 0);
+		t->normal_g = frame_g;
 		if (IS_MAXIMIZED(t))
 		{
-			t->frame_g = t->max_g;
+			frame_g = t->max_g;
 			gravity_constrain_size(
-				t->hints.win_gravity, t, &(t->frame_g),
+				t->hints.win_gravity, t, &frame_g,
 				CS_UPDATE_MAX_DEFECT);
-			t->max_g = t->frame_g;
+			t->max_g = frame_g;
 		}
-		t->frame_g = old_g;
+		frame_g = old_g;
 		gravity_constrain_size(
-			t->hints.win_gravity, t, &(t->frame_g), 0);
+			t->hints.win_gravity, t, &frame_g, 0);
 
 		flags->do_setup_frame = True;
 		flags->do_redraw_decoration = True;
@@ -306,8 +310,8 @@ static void apply_window_updates(
 	if (flags->do_setup_frame)
 	{
 		frame_force_setup_window(
-			t, t->frame_g.x, t->frame_g.y, t->frame_g.width,
-			t->frame_g.height, True);
+			t, frame_g.x, frame_g.y, frame_g.width, frame_g.height,
+                        True);
 		GNOME_SetWinArea(t);
 		EWMH_SetFrameStrut(t);
 	}

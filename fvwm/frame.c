@@ -153,6 +153,7 @@ static void get_resize_decor_gravities_one_axis(
 	frame_move_resize_mode axis_mode, direction_type neg_dir,
 	direction_type pos_dir)
 {
+
 	int title_grav;
 	int neg_grav;
 	int pos_grav;
@@ -502,10 +503,6 @@ static void frame_setup_window_internal(
 		frame_move_resize(fw, mr_args);
 		frame_free_move_resize_args(mr_args);
 		fw->frame_g = *frame_g;
-		if (FShapesSupported && fw->wShaped)
-		{
-			frame_setup_shape(fw, new_g.width, new_g.height);
-		}
 	}
 	else if (is_moved)
 	{
@@ -1037,6 +1034,9 @@ static void frame_move_resize_step(
 	window_parts setup_parts;
 	XSetWindowAttributes xswa;
 	Bool dummy;
+        Bool is_setup;
+        Bool do_resize_frame_first = False;
+        int do_force;
 	int i;
 	int w;
 	int h;
@@ -1047,6 +1047,9 @@ static void frame_move_resize_step(
 	} flags;
 
 	/* preparations */
+        is_setup = (mra->mode == FRAME_MR_FORCE_SETUP ||
+                    mra->mode == FRAME_MR_SETUP);
+        do_force = (mra->mode == FRAME_MR_FORCE_SETUP);
 	i = mra->current_step;
 	mra->next_g = mra->start_g;
 	mra->next_g.x += (mra->delta_g.x * i) / mra->anim_steps;
@@ -1065,6 +1068,12 @@ static void frame_move_resize_step(
 		(mra->flags.was_hidden && !mra->flags.is_hidden);
 	flags.do_unhide_parent =
 		(!mra->flags.was_hidden && mra->flags.is_hidden);
+        if (is_setup && mra->dstep_g.x == 0 && mra->dstep_g.y == 0 &&
+            mra->dstep_g.width == 0 && mra->dstep_g.height == 0)
+        {
+                do_resize_frame_first = True;
+                do_force = 1;
+        }
 	/*
 	 * resize everything
 	 */
@@ -1088,10 +1097,20 @@ static void frame_move_resize_step(
 		XChangeWindowAttributes(
 			dpy, FW_W_PARENT(fw), CWWinGravity, &xswa);
 	}
+        if (do_resize_frame_first == True)
+        {
+                /* The caller has already set the frame geometry. Resize the
+                 * frame first so the sub windows are not moved to funny places
+                 * later. */
+                XMoveResizeWindow(
+                        dpy, FW_W_FRAME(fw), mra->next_g.x, mra->next_g.y,
+                        mra->next_g.width, mra->next_g.height);
+        }
 	/* setup the border */
 	draw_clipped_decorations_with_geom(
 		fw, PART_FRAME, (mra->w_with_focus != None) ? True : False,
-		False, None, NULL, CLEAR_NONE, &mra->current_g, &mra->next_g);
+		do_force, None, NULL, CLEAR_NONE, &mra->current_g,
+                &mra->next_g);
 	if (mra->mode == FRAME_MR_SETUP || mra->mode == FRAME_MR_FORCE_SETUP)
 	{
 		setup_parts = PART_FRAME;
@@ -1121,17 +1140,28 @@ static void frame_move_resize_step(
 	{
 		h = 1;
 	}
-	if (mra->mode == FRAME_MR_SETUP || mra->mode == FRAME_MR_FORCE_SETUP ||
-            mra->mode == FRAME_MR_OPAQUE)
-	{
-		XResizeWindow(dpy, FW_W(fw), w, h);
-	}
-	XResizeWindow(dpy, FW_W_PARENT(fw), w, h);
+        switch (mra->mode)
+        {
+        case FRAME_MR_SETUP:
+        case FRAME_MR_FORCE_SETUP:
+        case FRAME_MR_OPAQUE:
+		XMoveResizeWindow(dpy, FW_W(fw), 0, 0, w, h);
+                XMoveResizeWindow(
+                        dpy, FW_W_PARENT(fw), mra->b_g.top_left.width,
+                        mra->b_g.top_left.height, w, h);
+                break;
+        case FRAME_MR_SHRINK:
+        case FRAME_MR_SCROLL:
+                XResizeWindow(dpy, FW_W_PARENT(fw), w, h);
+                break;
+        }
 	/* setup the frame */
-	XMoveResizeWindow(
-		dpy, FW_W_FRAME(fw), mra->next_g.x, mra->next_g.y,
-		mra->next_g.width, mra->next_g.height);
-	fw->frame_g = mra->next_g;
+        if (do_resize_frame_first == False)
+        {
+                XMoveResizeWindow(
+                        dpy, FW_W_FRAME(fw), mra->next_g.x, mra->next_g.y,
+                        mra->next_g.width, mra->next_g.height);
+        }
 	/*!!! remove when title/buttons are drawn in the window background */
 	draw_clipped_decorations_with_geom(
 		fw, setup_parts, (mra->w_with_focus != None) ? True : False,
@@ -1147,6 +1177,12 @@ static void frame_move_resize_step(
 		XMapWindow(dpy, FW_W_PARENT(fw));
 	}
 	/*!!! update the window shape*/
+        /*!!! have to do this the right way later */
+        if (FShapesSupported && fw->wShaped)
+        {
+                frame_setup_shape(fw, mra->next_g.width, mra->next_g.height);
+        }
+	fw->frame_g = mra->next_g;
 
 	return;
 }

@@ -2318,7 +2318,6 @@ static Bool resize_window(F_CMD_ARGS)
     gravity_resize(
       fw->hints.win_gravity, &new_g,
       drag->width - new_g.width, drag->height - new_g.height);
-    fw->frame_g = new_g;
     if (IS_SHADED(fw))
     {
       frame_setup_window(
@@ -3236,7 +3235,6 @@ static void unmaximize_fvwm_window(
 	}
 	frame_setup_window(
 		fw, new_g.x, new_g.y, new_g.width, new_g.height, True);
-	fw->frame_g = new_g;
 	DrawDecorations(fw, PART_ALL, True, True, None, CLEAR_ALL);
 
 	return;

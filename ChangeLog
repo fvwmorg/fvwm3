@@ -1,5 +1,21 @@
 2002-03-19  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* fvwm/style.c (parse_and_set_window_style):
+	(parse_and_set_window_style):
+	allow to abbreviate [Counter]ClockWise with [C]CW
+
+	* fvwm/frame.c (frame_move_resize_step):
+	fixed
+
+	* fvwm/geometry.c (gravity_constrain_size):
+	removed useless code
+
+	* fvwm/update.c (apply_window_updates):
+	* fvwm/add_window.c (AddWindow):
+	* fvwm/move_resize.c (unmaximize_fvwm_window):
+	(resize_window):
+	do not write into frame_g. only frame.c should do this
+
 	* libs/defaults.h (MIN_WINDOW_TITLEBUTTON_LENGTH):
 	(MIN_WINDOW_TITLE_LENGTH):
 	new default values

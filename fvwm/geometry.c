@@ -850,33 +850,28 @@ void constrain_size(
 void gravity_constrain_size(
 	int gravity, FvwmWindow *t, rectangle *rect, int flags)
 {
-	rectangle old_g = t->frame_g;
-	rectangle new_g = *rect;
-	int new_width = new_g.width;
-	int new_height = new_g.height;
+	int new_width = rect->width;
+	int new_height = rect->height;
 
-	t->frame_g = *rect;
 	if (IS_MAXIMIZED(t) && (flags & CS_UPDATE_MAX_DEFECT))
 	{
 		gravity_resize(
-			gravity, &new_g, t->max_g_defect.width,
+			gravity, rect, t->max_g_defect.width,
 			t->max_g_defect.height);
 		t->max_g_defect.width = 0;
 		t->max_g_defect.height = 0;
-		new_width = new_g.width;
-		new_height = new_g.height;
+		new_width = rect->width;
+		new_height = rect->height;
 	}
 	constrain_size(
 		t, (unsigned int *)&new_width, (unsigned int *)&new_height, 0,
 		0, flags);
-	if (new_g.width != new_width || new_g.height != new_height)
+	if (rect->width != new_width || rect->height != new_height)
 	{
 		gravity_resize(
-			gravity, &new_g, new_width - new_g.width,
-			new_height - new_g.height);
+			gravity, rect, new_width - rect->width,
+			new_height - rect->height);
 	}
-	t->frame_g = old_g;
-	*rect = new_g;
 
 	return;
 }

@@ -1839,14 +1839,16 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
         break;
 
       case 'l':
-	if (StrEquals(token, "LeftTitleRotatedClockWise"))
+	if (StrEquals(token, "LeftTitleRotatedClockWise") ||
+            StrEquals(token, "LeftTitleRotatedCW"))
 	{
 	  found = True;
 	  SFSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	  SMSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	  SCSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	}
-	else if (StrEquals(token, "LeftTitleRotatedCounterClockWise"))
+	else if (StrEquals(token, "LeftTitleRotatedCounterClockWise") ||
+                 StrEquals(token, "LeftTitleRotatedCCW"))
 	{
 	  found = True;
 	  SFSET_IS_LEFT_TITLE_ROTATED_CW(*ptmpstyle, 0);
@@ -2369,14 +2371,16 @@ void parse_and_set_window_style(char *action, window_style *ptmpstyle)
 	  SMSET_DO_RESIZE_OPAQUE(*ptmpstyle, 1);
 	  SCSET_DO_RESIZE_OPAQUE(*ptmpstyle, 1);
         }
-	else if (StrEquals(token, "RightTitleRotatedClockWise"))
+	else if (StrEquals(token, "RightTitleRotatedClockWise") ||
+                 StrEquals(token, "RightTitleRotatedCW"))
 	{
 	  found = True;
 	  SFSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	  SMSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	  SCSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 1);
 	}
-	else if (StrEquals(token, "RightTitleRotatedCounterClockWise"))
+	else if (StrEquals(token, "RightTitleRotatedCounterClockWise") ||
+                 StrEquals(token, "RightTitleRotatedCCW"))
 	{
 	  found = True;
 	  SFSET_IS_RIGHT_TITLE_ROTATED_CW(*ptmpstyle, 0);
