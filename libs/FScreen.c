@@ -421,6 +421,10 @@ Bool FScreenGetScrRect(
 {
   fscreen_scr_arg tmp;
 
+  if (num_screens == 0)
+  {
+    screen = FSCREEN_GLOBAL;
+  }
   switch (screen)
   {
   case FSCREEN_GLOBAL:

@@ -1,9 +1,6 @@
 Possible things to do for perfect(?) Xinerama support:
 ------------------------------------------------------
 
- 2) Icon placement:
-    a) place icons on Xinerama screens
-    b) prevent icons from being placed in the void
  6) Commands and styles:
     a) EdgeResistance
     b) Move/Resize/Resizemove
@@ -45,15 +42,17 @@ Still to do:
 
 Optional to do:
 ---------------
-2 a
 6 b f
+8 e
 
 Already done:
 -------------
  1) Window placement:
     a) place windows on Xinerama screens
     b) prevent windows from being placed in the void
-2 b
+ 2) Icon placement:
+    a) place icons on Xinerama screens
+    b) prevent icons from being placed in the void
  3) Menus:
     a) Place menus on Xinerama screens
     b) Resize menus to fit Xinerama screens
@@ -83,3 +82,4 @@ Not to be done:
 ---------------
 6 e (not useful, EdgeResistance is good enough)
 6 h (only the X server can do this in a clean way)
+8 a c (both replaced by 8f)

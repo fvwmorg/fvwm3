@@ -1,6 +1,50 @@
-Fvwm 2.4.1 is a bug fix release for version 2.4.0.
+Fvwm 2.4.1 is a bug fix release for version 2.4.0.  It also
+introduces full Xinerama support and a few other new features.
 
-** Fvwm2 Man page formats correctly on non-Linux platforms.
+New features and improvements:
+------------------------------
+
+** Added Xinerama support.
+
+** New commands Xinerama and MoveToScreen.
+
+** New context rectangle option XineramaRoot for the menu commands.
+
+** New conditions CurrentGlobalPage, CurrentGlobalPageAnyDesk and
+   AcceptsFocus for conditional commands.
+
+** New style option StartsOnScreen.
+
+** New style options NoUSPosition, UseUSPosition,
+   NoTransientPPosition, UseTransientPPosition,
+   NoTransientUSPosition, and UseTransientUSPosition.  These work
+   similar to the old styles NoPPosition and UsePPosition.
+
+** New option "screen" for Maximize command.
+
+** New Geometry option for FvwmForm.
+
+** New Screen resolution and ShowOnlyIcons options for FvwmIconMan.
+
+** New options PageOnly and ScreenOnly for FvwmTaskBar.
+
+** FvwmIconBox, FvwmTaskBar and FvwmWinList support aliases.
+
+** Enhancements in fvwm-menu-headlines and support for 10 more sites.
+
+** Color enhancements in button vectors: @2 is bg color, @3 is fg color.
+
+** Improved detection of the Shape library.
+
+** Work around a key binding problem with keys that generate the same
+   symbol with more than one key code (e.g. Shift-F1 = F11).
+
+Bug fixes:
+----------
+
+** Problem with "make FvwmGtk" and imlib fixed.
+
+** Problem with FvwmIconBox exitting on 64 bit platforms fixed.
 
 ** A bug in fvwm24_convert is fixed.
 
@@ -14,6 +58,63 @@ Fvwm 2.4.1 is a bug fix release for version 2.4.0.
 
 ** Fixed problems with autoconf-2.50.
 
-** Problem with "make FvwmGtk" and imlib fixed.
+** Fvwm2 Man page formats correctly on non-Linux platforms.
 
-** Problem with FvwmIconBox exitting on 64 bit platforms fixed.
+** Fixed FvwmButtons button titles not being erased for swallowed
+   windows that showed up on certain setups.
+
+** Fixed bug that caused transient windows to be buried below their
+   parents with the "BugOpts RaiseOverUnmanaged on".  This occured
+   with the system.fvwm2rc-sample-95 configuration.
+
+** Fixed ClickToFocus focus policy when iconifying the focused window.
+
+** Fixed some focus problems in conjunction with unclutter vs xv/xmms
+   and Open Look applications.
+
+** Fixed a problem that could cause windows to be lost off screen
+   with interactive window motion.
+
+** Fixed some FvwmTaskBar autohide problem.
+
+** Fixed a display string problem in FvwmForm.
+
+** Fixed a problem with FvwmTheme shadow colours.
+
+** Fixed the CirculateSkipIcon and CirculateSkipShaded options in
+   conditional commands.
+
+** Fixed a formatting problem of the man page on AIX, Solaris, and
+   some other UNIX variants.
+
+** Fixed a problems with FvwmIconBox exiting on 64 bit platforms.
+
+** Fixed parameters of fvwm24_convert.
+
+** Fixed a number of building problems related to old vendor unices,
+   libstroke-0.5, autoconf-2.50, bogus gnome-config and imlib-config.
+
+** Fixed drawing of title bar buttons with MWMDecorStick.
+
+** Fixed missing button or key events over the pan frames.
+
+** Fixed placement of the FvwmDragWell, FvwmButtons and FvwmForm modules.
+
+** Fixed parsing double quotes in FvwmPager's Font and SmallFont options.
+   Fixed FvwmPager crash with certain font strings.
+
+** Fixed button grabbing problem for buttons > 3 in FvwmTaskBar.
+
+** Fixed some exotic problems with window gravity and resizing windows.
+
+** Fixed a problem with maximizing windows with the vieport not starting
+   on a page boundary.
+
+** Fixed handling of parentheses in FvwmButtons button actions.
+
+** The Desk option of FvwmBacker is compatible to earlier version.
+   Desk or Page coordinates can be omitted to indicate that desk
+   or page changes trigger no action at all.
+
+** Fixed several escaping errors in fvwm-menu-directory, so files and
+   directories containing special chars and spaces should work.

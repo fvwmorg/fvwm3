@@ -256,11 +256,7 @@ static void apply_window_updates(
   if (flags->do_update_icon)
   {
     change_icon(t, pstyle);
-    if (IS_ICONIFIED(t))
-    {
-      SET_ICONIFIED(t, 0);
-      Iconify(t, 0, 0);
-    }
+    flags->do_update_icon_placement = True;
     flags->do_update_icon_title = False;
   }
   if (flags->do_update_icon_title)
@@ -268,6 +264,14 @@ static void apply_window_updates(
     RedoIconName(t);
     if (IS_ICONIFIED(t))
       DrawIconWindow(t);
+  }
+  if (flags->do_update_icon_placement)
+  {
+    if (IS_ICONIFIED(t))
+    {
+      SET_ICONIFIED(t, 0);
+      Iconify(t, 0, 0);
+    }
   }
   if (flags->do_setup_focus_policy)
   {
@@ -362,7 +366,10 @@ void flush_window_updates(void)
   {
     check_window_style_change(t, &flags, &style);
     if (Scr.flags.has_xinerama_state_changed)
+    {
       flags.do_update_icon_boxes = True;
+      flags.do_update_icon_placement = True;
+    }
     if (Scr.flags.has_nr_buttons_changed)
       flags.do_redecorate = True;
     /* TODO: this is not optimised for minimal redrawing yet*/

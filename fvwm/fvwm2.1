@@ -398,7 +398,23 @@ XTerm*Page: 3 2 1
 .EE
 
 
-.SH THE VIRTUAL DESKTOP
+.SH USE ON MULTI-SCREEN DISPLAYS
+
+If the
+.B -s
+command line argument is not given, fvwm automatically starts up
+on every screen on the specified display.  After fvwm starts each
+screen is treated independently.  Restarts of fvwm need to be
+performed separately on each screen.  The use of
+.EX
+ EdgeScroll 0 0
+.EE
+is strongly recommended for multi-screen displays.  You may need
+to quit on each screen to quit from the X session completely.
+This is not to be confused with Xinerama support.
+
+
+.SH XINERAMA SUPPORT
 
 Fvwm supports the Xinerama extension of newer X servers which
 is similar to multi head support (multiple screens) but allows to
@@ -413,11 +429,45 @@ windows over the screen edge between two Xinerama screens.
 Xinerama support can be enabled or disabled on the fly or from the
 configuration file with the
 .B Xinerama
+command.  Many modules and commands work nicely with Xinerama
+displays.
+
+Everywhere where a geometry in the usual X format can be supplied,
+fvwm's Xinerama extension allows to specify a screen in addition
+to the geometry (or even the screen alone).  To do this, a '@' is
+added to the end of the geometry string followed by either the
+screen number or a letter.  A number is taken as the number of the
+Xinerama screen to be used (as configured in the X server).  The
+letter can be one of 'g' for the global screen (the rectangle that
+encloses all Xinerama screens), 'p' for the primary screen (see
+below), 'c' for the current screen (the one that currently
+contains the pointer).  If the X server does not support Xinerama
+or only one screen is used, the screen bit is ignored.
+
+.EX
+Style * IconBox 64x300-0-0@p
+.EE
+
+Xinerama support can be configured to use a primary screen.  New
+windows and icons are usually placed on this screen - unless fvwm
+is told otherwise.  The primary screen is screen 0 by default but
+can be changed with the
+.B Xinerama
 command.
-Xinerama support does not work too well if the involved screens
-use different resolutions.  In this situation, windows may get
-stuck in the portion of the whole desktop that belongs to neither
-screen.
+
+Xinerama support was designed to work out of the box with the same
+configurations file that would work on a single screen.  It may
+not work too well if the involved screens use different screen
+resolutions.  In this situation, windows may get stuck in the
+portion of the whole desktop that belongs to neither screen.  If
+this happens, the windows or icons can be retrieved with the
+command
+
+.EX
+All MoveToScreen
+.EE
+
+that can be entered in an FvwmConsole window or with FvwmCommand.
 
 
 .SH INITIALIZATION
@@ -771,6 +821,7 @@ keyboard key.  It is left as an exercise for the user to decide
 which function make sense for initialization and which ones make
 sense for run-time.
 
+
 .SH SUPPLIED CONFIGURATION
 
 A sample configuration file,
@@ -819,20 +870,6 @@ and
 .SM Ctrl-l
 ) can be used instead of the arrow keys.
 
-
-.SH USE ON MULTI-SCREEN DISPLAYS
-
-If the
-.B -s
-command line argument is not given, fvwm automatically starts up
-on every screen on the specified display.  After fvwm starts each
-screen is treated independently.  Restarts of fvwm need to be
-performed separately on each screen.  The use of
-.EX
- EdgeScroll 0 0
-.EE
-is strongly recommended for multi-screen displays.  You may need
-to quit on each screen to quit from the X session completely.
 
 .SH SESSION MANAGEMENT
 
@@ -7576,4 +7613,6 @@ or reported through the bug tracking system.
 The official fvwm homepage is
 .BR http://www.fvwm.org/ .
 
-\" LocalWords:  XTerm xterm rc fvwm Linux ICCCM CDE XView
+\" LocalWords:  XTerm xterm rc fvwm Linux ICCCM CDE XView XINERAMA Xinerama
+\"  LocalWords:  EdgeResistance fvwm's IconBox MoveToScreen FvwmConsole
+\"  LocalWords:  FvwmCommand
