@@ -1,3 +1,9 @@
+2003-06-06  olicha  <olivier.chapuis@free.fr>
+
+	* FvwmBanner/FvwmBanner.c (main):
+	Set msg mask to M_CONFIG_INFO | M_END_CONFIG_INFO to fix a
+	"Failed to write descriptor to module" bug
+	
 2003-06-06  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmDebug/FvwmDebug.in:

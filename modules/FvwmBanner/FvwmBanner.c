@@ -157,6 +157,8 @@ int main(int argc, char **argv)
   FScreenInit(dpy);
   FShapeInit(dpy);
   FRenderInit(dpy);
+  //SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO  | M_SENDCONFIG);
+  SetMessageMask(fd, M_CONFIG_INFO | M_END_CONFIG_INFO);
   parseOptions(fd);
 
   /* chick in the neck situation:
