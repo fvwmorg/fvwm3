@@ -74,6 +74,7 @@ char *imagePath = NULL;
 int save_color_limit = 0;                   /* color limit from config */
 
 extern void InitCom(void);
+static void TryToFind(char *filename);
 
 
 /* Exit procedure - called whenever we call exit(), or when main() ends */
@@ -151,8 +152,16 @@ void ReadConfig (char *ScriptName)
   extern FILE *yyin;
   char s[FILENAME_MAX];
 
+  /* This is legacy support.  The first try is the command line file name
+     with the scriptfile directory.  If the scriptfile directory wasn't set
+     it ends up trying the command line file name undecorated, which
+     could be a full path, or it could be relative to the current directory.
+     Not very pretty, dje 12/26/99 */
   sprintf(s,"%s%s%s",ScriptPath,(!*ScriptPath ? "" : "/"),ScriptName);
   yyin=fopen(s,"r");
+  if (yyin == NULL) {                   /* file not found yet, */
+    TryToFind(ScriptName);                   /* look in some other places */
+  }
   if (yyin == NULL)
   {
    fprintf(stderr,"Can't open the script %s\n",s);
@@ -165,6 +174,30 @@ void ReadConfig (char *ScriptName)
   /* Fermeture du script */
 
   fclose(yyin);
+}
+
+/* Original method for finding the config file didn't work,
+   try using the same strategy fvwm uses in its read command.
+   1. If the file name starts with a slash, just try it.
+   2. Look in the home directory, using FVWM_USERHOME.
+   3. If that doesn't work, look in FVWM_CONFIGDIR.
+   The extern "yyin" indicates success or failure.
+*/
+static void TryToFind(char *filename) {
+  extern FILE *yyin;
+  char path[FILENAME_MAX];
+
+  if (filename[0] == '/') {             /* if absolute path */
+    yyin = fopen(filename,"r");
+    return;
+  }
+  sprintf(path,"%s/%s",getenv("FVWM_USERHOME"),filename);
+  yyin = fopen( path, "r" );
+  if ( yyin == NULL ) {
+    sprintf(path,"%s/%s",FVWM_CONFIGDIR, filename );
+    yyin = fopen( path, "r" );
+  }
+  return;
 }
 
 /* Quitter par l'option Delete du bouton de la fenetre */

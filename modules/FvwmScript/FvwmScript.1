@@ -30,16 +30,21 @@ This script is not included in the configuration file of Fvwm.
 
 .SH INVOCATION
 FvwmScript can be invoked by inserting the line `Module
-FvwmScript name_of_script' in the .fvwmrc file. All scripts used by
-FvwmScript are located in a directory whom is specified in .fvwmrc by the
-command line `*FvwmScriptPath path_of_the_script_directory'.
-This can be placed on a line by itself, if FvwmScript is to be spawned during
-fvwm's initialization, or can be bound to a menu or mouse
-button or keystroke to invoke it later. Fvwm will search
-directory specified in the ModulePath configuration option
-to attempt to locate FvwmScript.
+FvwmScript name_of_script' in the .fvwmrc file.
+The file "name_of_script" can start with a slash, in which case, it's
+a fully qualified path, and the file is read.
+If "name_of_script" does not start with a slash, FvwmScript will look
+in a few different places.
+If  the   .fvwmrc contained   the  command  line  `*FvwmScriptPath
+path_of_the_script_directory', FvwmScript will try that directory.
+If that doesn't work, FvwmScript tries the system configuration directory
+and the user configuration directory as described under the "Read"
+command in the fvwm2 man page.
 
-Be sure to set ModulePath in your .fvwmrc file to include FvwmScript's path.
+The command to start FvwmScript can be placed on a line by itself,
+if FvwmScript is to be spawned during
+fvwm's initialization, or can be bound to a menu or mouse
+button or keystroke to invoke it later.
 .SH ANATOMY OF A SCRIPT
 FvwmScript uses a particular programming language. A script is composed of
 four parts. Heading contains general characteristics of the window and
