@@ -165,6 +165,8 @@ Contents
     7.12  Toggling windows on and off.
     7.13  Starting applications by clicking on an icon.
     7.14  Positioning a window using arithmetic.
+    7.15  Hiding the mouse pointer
+    7.16  Finding the mouse pointer
 
 
 ======================================================================
@@ -2424,3 +2426,24 @@ A: OK, 93 is a joke, we know you don't have 93 buttons, but we've
 
     ThisWindow may be removed, it is only needed to avoid errors when
     CenterWindow is called without a window context.
+
+----------------------------------------------------------------------
+
+    7.15  Hiding the mouse pointer
+
+    Some users don't like the mouse pointer getting in the way of
+    what they are looking at.  You might want to search for and
+    install the "unclutter" program.  Unclutter hides the mouse
+    pointer after you haven't moved the mouse for a while.
+
+----------------------------------------------------------------------
+
+    7.16  Finding the mouse pointer
+
+    Sometimes its hard to see the mouse pointer.
+    Heres a way to find it:
+
+    Key Super_L A A Exec xmessage -name "SmallBlob" -bg red -fg white\
+      -nearmouse -timeout 1 'I am here!'
+    Style SmallBlob UsePPosition, NoTitle, NoHandles, BorderWidth 10
+
