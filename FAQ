@@ -96,6 +96,7 @@ INDEX
        44) FvwmButtons Swallow command does not work.
        45) Is it possible to raise a window when I click into the
            window itself, not just the border?
+       46) Menus with gradient backgrounds flicker or are very slow.
 
 ======================================================================
 
@@ -780,7 +781,7 @@ A: Doubtful, althougth I'd like to see it too.  I believe that it'd be
    which would give programs started when that desk is active that
    colormap, how would you deal with windows being moved across desks?
 
-   Plus fvwm itself needs certain colormap entries for all of it's
+   Plus fvwm itself needs certain colormap entries for all of its
    drawing (borders, menus, etc), so these colors would have to be
    pre-allocated in all of the colormaps, or something like that.
 
@@ -1010,6 +1011,39 @@ A: Any version later than 2.0.46 (i.e. 2.1.x or later) has this
    the Style command:
 
      GlobalOpts MouseFocusClickRaises
+
+----------------------------------------------------------------------
+
+46) Menus with gradient backgrounds flicker or are very slow.
+
+A: The flickering is caused by fvwm constantly redrawing the menus
+   when a submenu pops up or down. One way to do this is to use a
+   X server with backing storage (XFree86 has backing storage
+   support, I don't know about other servers but I guess that any
+   decent X server has it). If your Xserver is started with the
+   -bs option, remove it. If not try the -wm option, for example:
+
+     startx -- -wm
+
+   You may have to adapt this example to your system (e.g. if you
+   use xinit to start X).
+
+   If that doesn't help, either because your X server does not have
+   backing storage or because system resources are limited, make
+   sure submenus do not overlap the parent menu:
+
+     MenuStyle <stylename> PopupOffset 1 100
+
+   Unfortunately this does not work properly with the fvwm
+   menu style.
+
+   For the speed problem both suggestions above might help too.
+   Another thing to try is to turn hilighting of the active menu
+   item other than by forground color off. Put these lines in your
+   .fvwm2rc after the menu styles have been defined:
+
+     MenuStyle <stylename> Hilight3DOff, HilightBackOff
+     MenuStyle <Stylename> ActiveFore <preferred color>
 
 ----------------------------------------------------------------------
 

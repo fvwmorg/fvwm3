@@ -1,5 +1,22 @@
 1999-01-03  Dominik Vogt  <dominik_vogt@hp.com>
 
+	* fvwm/menus.c (MenuInteraction): fixed various bugs in drawing
+	gradient menus when overlapping the parent menu. Fixed bug with
+	hilighting an item before the menu was painted (it stayed hilighted
+	with gradient menus and Hilight3D).
+
+	(MenuInteraction): fixed a *bad* bug with MenuStyles. At several places
+	I used the style of the submenu instead of the menu itself.
+
+	* FAQ:
+	* fvwm/fvwm2.1: Some comments on gradient menus
+
+	* fvwm/menus.c (DoMenusOverlap): fixed PopupOffsetAdd in MenuStyle
+	(only positive values worked)
+
+	* fvwm/builtins.c (NewMenuStyle): fixed coredump with menu styles
+	other than *
+
 	* fvwm/fvwm2.1: Removed SetMenuStyle, updated MenuStyle (and others)
 
 	* fvwm/fvwm.c (SetRCDefaults): changed SetMenuStyle to MenuStyle

@@ -1733,6 +1733,34 @@ MenuFace HGradient 128 2 Red 40 Maroon 60 White
 MenuFace Solid Maroon
 .EE
 
+If you encounter performance problems with gradient backgrounds
+you can try one or all of the following:
+
+Turn Hilighting of the active menu item other than forground color
+off:
+
+.EX
+MenuStyle <stylename> Hilight3DOff, HilightBackOff
+MenuStyle ActiveFore <preferred color>
+.EE
+
+Make sure submenus do not overlap the parent menu. This can prevent
+menus being redrawn every time a submenu pops up or down.
+
+.EX
+MenuStyle <stylename> PopupOffset 1 100
+.EE
+
+Run you X server with backing storage. If your Xserver is started
+with the -bs option, turn it off. If not try the -wm option.
+
+.EX
+startx -- -wm
+.EE
+
+You may have to adapt this example to your system (e.g. if you
+use xinit to start X).
+
 \fIPopupDelay\fP requires one numeric argument. This value is the
 delay in milliseconds before a sub-menu is popped up when the
 pointer moves over a menu item that has a sub-menu. If the value

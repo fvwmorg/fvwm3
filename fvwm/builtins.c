@@ -1793,7 +1793,7 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   char *tmp;
   MenuStyle *ms;
   MenuStyle *tmpms;
-  Bool is_new_style = False;
+  Bool is_initialised = True;
   Bool gc_changed = False;
   Bool is_default_style = False;
   int val[2];
@@ -1823,13 +1823,13 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
   else
     {
       tmpms->name = name;
-      is_new_style = True;
+      is_initialised = False;
     }
 
   /* Parse the options. */
   while (action && *action)
     {
-      if (is_new_style)
+      if (is_initialised == False)
 	{
 	  /* some default configuration goes here for the new menu style */
 	  tmpms->look.MenuColors.back = GetColor("white");
@@ -1863,7 +1863,6 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       case 0: /* fvwm */
       case 1: /* mwm */
       case 2: /* win */
-	/* is_new_style != 0 means we have to set some default values now */
 	if (i == 0) {
 	  tmpms->feel.PopupOffsetPercent = 67;
 	  tmpms->feel.PopupOffsetAdd = 0;
@@ -1908,10 +1907,10 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
 	tmpms->look.pStdFont = &Scr.StdFont;
 	gc_changed = True;
 
-	if (is_new_style)
+	if (is_initialised == False)
 	  {
 	    /* now begin the real work */
-	    is_new_style = 0;
+	    is_initialised = True;
 	    continue;
 	  }
 	break;
@@ -2163,7 +2162,7 @@ static void NewMenuStyle(XEvent *eventp,Window w,FvwmWindow *tmp_win,
       Scr.menus.DefaultStyle = tmpms;
       tmpms->next = NULL;
     }
-  else if (!is_new_style)
+  else if (ms != NULL)
     {
       /* copy our new menu face over the old one */
       memcpy(ms, tmpms, sizeof(MenuStyle));

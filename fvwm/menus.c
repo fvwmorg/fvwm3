@@ -79,8 +79,10 @@ static MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 static void WarpPointerToTitle(MenuRoot *menu);
 static MenuItem *MiWarpPointerToItem(MenuItem *mi, Bool fSkipTitle);
 static void PopDownMenu(MenuRoot *mr);
+static int DoMenusOverlap(MenuRoot *mr, int x, int y, int width, int height,
+			  Bool fTolerant);
 static Bool FPopupMenu(MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
-		       Bool fWarpItem, MenuOptions *pops);
+		       Bool fWarpItem, MenuOptions *pops, Bool *ret_overlap);
 static void GetPreferredPopupPosition(MenuRoot *mr, int *x, int *y);
 static int PopupPositionOffset(MenuRoot *mr);
 static void GetPopupOptions(MenuItem *mi, MenuOptions *pops);
@@ -214,7 +216,7 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
 
     /* FPopupMenu may move the x,y to make it fit on screen more nicely */
     /* it might also move menuPrior out of the way */
-    if (!FPopupMenu (menu, menuPrior, x, y, key_press /* warp */, pops)) {
+    if (!FPopupMenu (menu, menuPrior, x, y, key_press /*warp*/, pops, NULL)) {
       fFailedPopup = TRUE;
       XBell (dpy, 0);
     }
@@ -244,7 +246,6 @@ MenuStatus do_menu(MenuRoot *menu, MenuRoot *menuPrior,
 
   if (!fWasAlreadyPopped)
     PopDownMenu(menu);
-
   /* FIX: this global is bad */
   menuFromFrameOrWindowOrTitlebar = FALSE;
   XFlush(dpy);
@@ -610,6 +611,23 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
   Bool fMotionFirst = FALSE;
   Bool fReleaseFirst = FALSE;
   Bool fFakedMotion = FALSE;
+  Bool fSubmenuOverlaps = False;
+#ifdef GRADIENT_BUTTONS
+  Bool fGradient;
+
+  switch (menu->ms->look.face.type)
+  {
+  case HGradMenu:
+  case VGradMenu:
+  case DGradMenu:
+  case BGradMenu:
+    fGradient = True;
+    break;
+  default:
+    fGradient = False;
+    break;
+  }
+#endif
 
   mops.flags.allflags = 0;
   fPopupImmediately = (menu->ms->feel.f.PrepopMenus &&
@@ -728,6 +746,13 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  /* grab our expose events, let the rest go through */
 	  if((XFindContext(dpy, Event.xany.window,MenuContext,
 			   (caddr_t *)&mrNeedsPainting)!=XCNOENT)) {
+	    /* don't redraw multiple times in a row */
+	    if (mrNeedsPainting == menu) {
+	      if (menu->flags.f.redrawn == 1)
+		continue;
+	      else
+		menu->flags.f.redrawn = 1;
+	    }
 	    PaintMenu(mrNeedsPainting,&Event);
 	  }
 	  /* continue; */ /* instead of continuing, we want to
@@ -772,11 +797,21 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	     so we need to unselect the old item */
 	  if (menu->selected) {
 	    /* something else was already selected on this menu */
-	    SetMenuItemSelected(menu->selected,FALSE);
 	    if (mrPopup) {
 	      PopDownMenu(mrPopup);
 	      mrPopup = NULL;
+#ifdef GRADIENT_BUTTONS
+	      if (fSubmenuOverlaps && fGradient) {
+		PaintMenu(menu, NULL);
+		menu->flags.f.redrawn = 1;
+	      }
+#endif
+	      fSubmenuOverlaps = False;
 	    }
+	    /* We have to pop down the menu before unselecting the item in case
+	     * we are using gradient menus. The recalled image would paint over
+	     * the submenu. */
+	    SetMenuItemSelected(menu->selected,FALSE);
 	  } else {
 	    /* DBUG("MenuInteraction","Menu %s had nothing else selected",
 	       menu->name); */
@@ -823,6 +858,13 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	  /* popdown previous popup */
 	  if (mrPopup) {
 	    PopDownMenu(mrPopup);
+#ifdef GRADIENT_BUTTONS
+	      if (fSubmenuOverlaps && fGradient) {
+		PaintMenu(menu, NULL);
+		menu->flags.f.redrawn = 1;
+	      }
+#endif
+	    fSubmenuOverlaps = False;
 	  }
 	  mrPopup = NULL;
 	  fPopdown = FALSE;
@@ -848,13 +890,15 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	      } else {
 		GetPreferredPopupPosition(menu,&x,&y);
 	      }
-	      FPopupMenu(mrPopup,menu,x,y,fPopupAndWarp,&mops);
+	      FPopupMenu(mrPopup, menu, x, y, fPopupAndWarp, &mops,
+			 &fSubmenuOverlaps);
+	      menu->flags.f.redrawn = 0;
 	    }
-	    if (mrPopup->mrDynamicPrev == mr) {
+	    if (mrPopup->mrDynamicPrev == menu) {
 	      mi = FindEntry(NULL);
 	      if (mi && mi->mr == mrPopup) {
 		fDoMenu = TRUE;
-		fPopdown = !mr->ms->feel.f.PrepopMenus;
+		fPopdown = !menu->ms->feel.f.PrepopMenus;
 	      }
 	    }
 	    else {
@@ -874,9 +918,16 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 	    dkp_timestamp = 0;
 	    goto DO_RETURN;
 	  }
-	  if (fPopdown || !mr->ms->feel.f.PrepopMenus) {
+	  if (fPopdown || !menu->ms->feel.f.PrepopMenus) {
 	    PopDownMenu(mrPopup);
 	    mrPopup = NULL;
+#ifdef GRADIENT_BUTTONS
+	      if (fSubmenuOverlaps && fGradient) {
+		PaintMenu(menu, NULL);
+		menu->flags.f.redrawn = 1;
+	      }
+#endif
+	    fSubmenuOverlaps = False;
 	  }
 	  if (retval == MENU_POPDOWN) {
 	    c10msDelays = 0;
@@ -935,6 +986,13 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
 		(!IS_DOWN_MENU(mrPopup)  && y > my+mh)) {
 	      PopDownMenu(mrPopup);
 	      mrPopup = NULL;
+#ifdef GRADIENT_BUTTONS
+	      if (fSubmenuOverlaps && fGradient) {
+		PaintMenu(menu, NULL);
+		menu->flags.f.redrawn = 1;
+	      }
+#endif
+	      fSubmenuOverlaps = False;
 	    } else {
 	      fOffMenuAllowed = TRUE;
 	    }
@@ -947,6 +1005,13 @@ MenuStatus MenuInteraction(MenuRoot *menu,MenuRoot *menuPrior,
   DO_RETURN:
   if (mrPopup) {
     PopDownMenu(mrPopup);
+#ifdef GRADIENT_BUTTONS
+	      if (fSubmenuOverlaps && fGradient) {
+		PaintMenu(menu, NULL);
+		menu->flags.f.redrawn = 1;
+	      }
+#endif
+    fSubmenuOverlaps = False;
   }
   if (retval == MENU_POPDOWN) {
     if (menu->selected)
@@ -1031,21 +1096,36 @@ MenuItem *MiWarpPointerToItem(MenuItem *mi, Bool fSkipTitle)
 
 static
 int DoMenusOverlap(MenuRoot *mr, int x, int y, int width, int height,
-		   int tolerance)
+		   Bool fTolerant)
 {
   int prior_x, prior_y, x_overlap;
   unsigned int prior_width, prior_height;
+  int tolerance1;
+  int tolerance2;
 
   if (mr == NULL)
     return 0;
+
+  if (fTolerant)
+    {
+      tolerance1 = 3;
+      if (mr->ms->feel.PopupOffsetAdd < 0)
+	tolerance1 -= mr->ms->feel.PopupOffsetAdd;
+      tolerance2 = tolerance1 + 4;
+    }
+  else
+    {
+      tolerance1 = 1;
+      tolerance2 = 1;
+    }
   XGetGeometry(dpy,mr->w,&JunkRoot,&prior_x,&prior_y,
 	       &prior_width,&prior_height,&JunkBW,&JunkDepth);
   x_overlap = 0;
   prior_width = prior_width * mr->ms->feel.PopupOffsetPercent / 100;
-  if (y <= prior_y + prior_height - 4 - tolerance &&
-      prior_y <= y + height - tolerance &&
-      x <= prior_x + prior_width - 4 - tolerance &&
-      prior_x <= x + width - tolerance) {
+  if (y <= prior_y + prior_height - tolerance2 &&
+      prior_y <= y + height - tolerance1 &&
+      x <= prior_x + prior_width - tolerance2 &&
+      prior_x <= x + width - tolerance1) {
     x_overlap = x - prior_x;
     if (x <= prior_x) {
       x_overlap--;
@@ -1068,7 +1148,7 @@ int DoMenusOverlap(MenuRoot *mr, int x, int y, int width, int height,
  ***********************************************************************/
 static
 Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
-		 Bool fWarpItem, MenuOptions *pops)
+		 Bool fWarpItem, MenuOptions *pops, Bool *ret_overlap)
 {
   Bool fWarpTitle = FALSE;
   int x_overlap, x_clipped_overlap;
@@ -1083,6 +1163,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 #ifdef GRADIENT_BUTTONS
   menu->flags.f.painted = 0;
 #endif
+  menu->flags.f.redrawn = 0;
   menu->flags.f.is_left = 0;
   menu->flags.f.is_right = 0;
   menu->flags.f.is_up = 0;
@@ -1119,7 +1200,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 	    menu->width +1;
       }
   } /* if (pops->flags.f.has_poshints) */
-  x_overlap = DoMenusOverlap(menuPrior, x, y,menu->width,menu->height, 3);
+  x_overlap = DoMenusOverlap(menuPrior, x, y,menu->width,menu->height,True);
   /* clip to screen */
   if (x + menu->width > Scr.MyDisplayWidth - 2)
     x = Scr.MyDisplayWidth - 2 - menu->width;
@@ -1138,7 +1219,7 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
 
     /* check if menus overlap */
     x_clipped_overlap = DoMenusOverlap(menuPrior, x, y,
-				       menu->width, menu->height, 3);
+				       menu->width, menu->height, True);
     if (x_clipped_overlap &&
 	(!(pops->flags.f.has_poshints) ||
 	 pops->pos_hints.fRelative == FALSE || x_overlap == 0)) {
@@ -1224,6 +1305,10 @@ Bool FPopupMenu (MenuRoot *menu, MenuRoot *menuPrior, int x, int y,
   /* popup the menu */
   XMoveWindow(dpy, menu->w, x, y);
   XMapRaised(dpy, menu->w);
+  if (ret_overlap)
+    *ret_overlap =
+      DoMenusOverlap(menuPrior, x, y, menu->width, menu->height, False) ?
+      True : False;
 
   if (!fWarpItem) {
     mi = FindEntry(NULL);
@@ -1280,11 +1365,16 @@ void SetMenuItemSelected(MenuItem *mi, Bool f)
   case VGradMenu:
   case DGradMenu:
   case BGradMenu:
-    if (f == True && mi->mr->flags.f.painted)
+    if (f == True)
     {
       int iy, ih;
       int mw, mh;
 
+      if (!mi->mr->flags.f.painted)
+      {
+	PaintMenu(mi->mr, NULL);
+	mi->mr->flags.f.redrawn = 1;
+      }
       iy = mi->y_offset - 2;
       ih = mi->y_height + 4;
       if (iy < 0)
@@ -1393,7 +1483,9 @@ void PopDownMenu(MenuRoot *mr)
   if ((mi = mr->selected) != NULL) {
     SetMenuItemSelected(mi,FALSE);
   }
+
   /* DBUG("PopDownMenu","popped down %s",mr->name); */
+  return;
 }
 
 /***********************************************************************
@@ -1817,7 +1909,7 @@ void DrawTrianglePattern(Window w,GC GC1,GC GC2,GC GC3,GC gc,int l,int u,
  *	PaintMenu - draws the entire menu
  *
  ***********************************************************************/
-void PaintMenu(MenuRoot *mr, XEvent *e)
+void PaintMenu(MenuRoot *mr, XEvent *pevent)
 {
   MenuItem *mi;
   MenuStyle *ms = mr->ms;
@@ -2037,8 +2129,8 @@ void PaintMenu(MenuRoot *mr, XEvent *e)
      * that we need to */
     if( (mr->ms->look.face.type != SolidMenu &&
 	 mr->ms->look.face.type != SimpleMenu) ||
-	(e->xexpose.y < (mi->y_offset + mi->y_height) &&
-	 (e->xexpose.y + e->xexpose.height) > mi->y_offset))
+	(pevent->xexpose.y < (mi->y_offset + mi->y_height) &&
+	 (pevent->xexpose.y + pevent->xexpose.height) > mi->y_offset))
     {
       PaintEntry(mi);
     }
@@ -2048,6 +2140,7 @@ void PaintMenu(MenuRoot *mr, XEvent *e)
   XSync(dpy, 0);
   return;
 }
+
 
 void FreeMenuItem(MenuItem *mi)
 {
@@ -2546,7 +2639,6 @@ void scanForPixmap(char *instring, Picture **p, char identifier)
 	      *tstart++ = *txt++;
 	    }
 	  *tstart = 0;
-if (pp && *p != NULL)fprintf(stderr,"********* overwriting picture!! ********\n");
 	  if (pp)
 	    *p = pp;
 	  else
