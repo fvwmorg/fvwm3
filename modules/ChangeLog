@@ -1,3 +1,8 @@
+1999-08-04  Dominik Vogt  <domivogt@bvstp038.bbn.hp.com>
+
+	* FvwmAuto/FvwmAuto.c (main): fixed raising when windows are switched
+	before FvwmAuto raises the last window
+
 1999-08-03  Mikhael Goikhman  <migo@homemail.com>
 
 	* FvwmWharf/FvwmWharf.c: MaxSwallow limited to 64x64
