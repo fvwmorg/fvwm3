@@ -348,8 +348,8 @@ void Maximize(XEvent *eventp,Window w,FvwmWindow *tmp_win,
     /* Unmaximizing is slightly tricky since we want the window to
        stay on the same page, even if we have move to a different page
        in the meantime. */
-    new_x = tmp_win->frame_x + (tmp_win->orig_x % Scr.MyDisplayWidth);
-    new_y = tmp_win->frame_y + (tmp_win->orig_y % Scr.MyDisplayHeight);
+    new_x = (tmp_win->frame_x / Scr.MyDisplayWidth) + (tmp_win->orig_x % Scr.MyDisplayWidth);
+    new_y = (tmp_win->frame_y / Scr.MyDisplayHeight) + (tmp_win->orig_y % Scr.MyDisplayHeight);
     new_width = tmp_win->orig_wd;
 #ifdef WINDOWSHADE
     if (tmp_win->buttons & WSHADE)

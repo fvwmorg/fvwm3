@@ -1,5 +1,8 @@
 1999-03-04  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
+	* fvwm/builtins.c (Maximize): Make partially maximized
+	windows unmaximize to their original position.
+
 	* fvwm/borders.c (SetupFrame): do XResizeWindow on tmp->w
 	even if shaded. This fixes animated WindowShade.
 
