@@ -339,7 +339,6 @@ main(int argc, char **argv)
 	}
 	buf = safemalloc(len);
 
-fprintf(stderr,"FvwmAuto: em %d, lm %d, enter '%s', leave '%s'\n", use_enter_mode, use_leave_mode, enter_fn, leave_fn);
 	while (!isTerminated)
 	{
 		char raise_window_now;
