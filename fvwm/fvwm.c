@@ -491,6 +491,39 @@ static int parseCommandArgs(
 
 /*
  *
+ */
+static
+char *get_display_name(char *display_name, int screen_num)
+{
+	char *msg;
+	char *new_dn;
+	char *cp;
+	char string_screen_num[32];
+
+	CopyString(&msg, display_name);
+	cp = strchr(msg, ':');
+	if (cp != NULL)
+	{
+		cp = strchr(cp, '.');
+		if (cp != NULL)
+		{
+			/* truncate at display part */
+			*cp = '\0';
+		}
+	}
+	sprintf(string_screen_num, ".%d", screen_num);
+	new_dn = safemalloc(
+		strlen(msg) + strlen(string_screen_num) + 1);
+	new_dn[0] = '\0';
+	strcat(new_dn, msg);
+	strcat(new_dn, string_screen_num);
+	free(msg);
+
+	return new_dn;
+}
+
+/*
+ *
  *  Procedure:
  *      Done - tells FVWM to clean up and exit
  *
@@ -1229,7 +1262,7 @@ static void usage(int is_verbose)
 		" [-d display]"
 		" [-f cfgfile]"
 		" [-c cmd]"
-		" [-s]"
+		" [-s [screen_num]]"
 		" [-I vis-id | -C vis-class]"
 		" [-l colors"
 		" [-L|A|S|P] ...]"
@@ -1258,7 +1291,7 @@ static void usage(int is_verbose)
 		" -L:           strict color limit\n"
 		" -P:           visual palette\n"
 		" -r:           replace running window manager\n"
-		" -s:           manage a single screen\n"
+		" -s [screen]:  manage a single screen\n"
 		" -S:           static palette\n"
 		" -V:           print version information\n"
 		);
@@ -1679,6 +1712,7 @@ int main(int argc, char **argv)
 	char *display_string;
 	char message[255];
 	Bool do_force_single_screen = False;
+	int single_screen_num = -1;
 	Bool replace_wm = False;
 	int visualClass = -1;
 	int visualId = -1;
@@ -1791,6 +1825,16 @@ int main(int argc, char **argv)
 			 strcmp(argv[i], "--single-screen") == 0)
 		{
 			do_force_single_screen = True;
+			if (i+1 < argc && argv[i+1][0] != '-')
+			{
+				i++;
+				if (sscanf(argv[i], "%d", &single_screen_num) ==
+				    0)
+				{
+					usage(0);
+					exit(1);
+				} 
+			}
 		}
 		else if (strcmp(argv[i], "-d") == 0 ||
 			 strcmp(argv[i], "-display") == 0 ||
@@ -1990,48 +2034,101 @@ int main(int argc, char **argv)
 	DBUG("main", "Installing signal handlers");
 	InstallSignals();
 
-	if (!(Pdpy = dpy = XOpenDisplay(display_name)))
+	if (single_screen_num >= 0)
 	{
-		fvwm_msg(
-			ERR, "main", "can't open display %s",
-			XDisplayName(display_name));
-		exit (1);
-	}
-	atexit(catch_exit);
-	Scr.screen= DefaultScreen(dpy);
-	Scr.NumberOfScreens = ScreenCount(dpy);
+		char *dn = NULL;
 
+		if (display_name)
+		{
+			dn = display_name;
+		}
+		if (!dn)
+		{
+			dn = getenv("DISPLAY");
+		}
+		if (!dn)
+		{
+			/* should never happen ? */
+			if (!(dpy = XOpenDisplay(dn)))
+			{
+				fvwm_msg(
+					ERR, "main", "can't open display %s"
+					"to get the default display",
+					XDisplayName(dn));
+			}
+			else
+			{
+				dn = XDisplayString(dpy);
+			}
+		}
+		if (dn == NULL)
+		{
+			fvwm_msg(
+				ERR, "main", "Cannot found default display (%s)",
+				XDisplayName(dn));
+		}
+		else
+		{
+			char *new_dn;
+			
+			new_dn = get_display_name(dn, single_screen_num);
+			if (dpy && strcmp(new_dn, dn) == 0)
+			{
+				/* allready opened */
+				Pdpy = dpy;
+			}
+			else if (dpy)
+			{
+				XCloseDisplay(dpy);
+				dpy = NULL;
+			}
+			if (!dpy && !(Pdpy = dpy = XOpenDisplay(new_dn)))
+			{
+				fvwm_msg(
+					ERR, "main",
+					"can't open display %s, single screen "
+					"number %d maybe not correct",
+					new_dn, single_screen_num);
+			}
+			Scr.screen = single_screen_num;
+			Scr.NumberOfScreens = ScreenCount(dpy);
+			free(new_dn);
+		}
+	}
+
+	if (!dpy)
+	{
+		if(!(Pdpy = dpy = XOpenDisplay(display_name)))
+		{
+			fvwm_msg(
+				ERR, "main", "can't open display %s",
+				XDisplayName(display_name));
+			exit (1);
+		}
+		Scr.screen= DefaultScreen(dpy);
+		Scr.NumberOfScreens = ScreenCount(dpy);
+	}
+
+	atexit(catch_exit);
 	master_pid = getpid();
 
 	if (!do_force_single_screen)
 	{
 		int myscreen = 0;
-		char *cp;
+		char *new_dn;
+		char *dn;
 
-		strcpy(message, XDisplayString(dpy));
+		dn = XDisplayString(dpy);
 		for (i=0;i<Scr.NumberOfScreens;i++)
 		{
 			if (i != Scr.screen && fork() == 0)
 			{
 				myscreen = i;
-				/* Truncate the string 'whatever:n.n' to
-				 * 'whatever:n', and then append the screen
-				 * number. */
-				cp = strchr(message, ':');
-				if (cp != NULL)
-				{
-					cp = strchr(cp, '.');
-					if (cp != NULL)
-					{
-						/* truncate at display part */
-						*cp = '\0';
-					}
-				}
-				sprintf(message + strlen(message), ".%d",
-					myscreen);
-				Pdpy = dpy = XOpenDisplay(message);
+				new_dn = get_display_name(dn, myscreen);
+				Pdpy = dpy = XOpenDisplay(new_dn);
 				Scr.screen = myscreen;
 				Scr.NumberOfScreens = ScreenCount(dpy);
+				free(new_dn);
 
 				break;
 			}

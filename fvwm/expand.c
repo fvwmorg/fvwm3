@@ -50,9 +50,20 @@ extern char const * const Fvwm_VersionInfo;
 
 /* ---------------------------- local variables ---------------------------- */
 
-static char *function_vars[] =
+static char *partial_function_vars[] =
 {
 	"bg.cs",
+	"desk.name",
+	"fg.cs",
+	"fgsh.cs",
+	"gt.",
+	"hilight.cs",
+	"shadow.cs",
+	NULL
+};
+
+static char *function_vars[] =
+{
 	"cond.rc",
 	"cw.height",
 	"cw.width",
@@ -60,15 +71,10 @@ static char *function_vars[] =
 	"cw.y",
 	"desk.height",
 	"desk.n",
-	"desk.name",
 	"desk.pagesx",
 	"desk.pagesy",
 	"desk.width",
-	"fg.cs",
-	"fgsh.cs",
 	"func.context",
-	"gt.",
-	"hilight.cs",
 	"i.height",
 	"i.width",
 	"i.x",
@@ -92,7 +98,6 @@ static char *function_vars[] =
 	"schedule.last",
 	"schedule.next",
 	"screen",
-	"shadow.cs",
 	"version.info",
 	"version.line",
 	"version.num",
@@ -115,6 +120,16 @@ static char *function_vars[] =
 enum
 {
 	VAR_BG_CS,
+	VAR_DESK_NAME,
+	VAR_FG_CS,
+	VAR_FGSH_CS,
+	VAR_GT_,
+	VAR_HILIGHT_CS,
+	VAR_SHADOW_CS,
+} partial_extended_vars;
+
+enum
+{
 	VAR_COND_RC,
 	VAR_CW_HEIGHT,
 	VAR_CW_WIDTH,
@@ -122,15 +137,10 @@ enum
 	VAR_CW_Y,
 	VAR_DESK_HEIGHT,
 	VAR_DESK_N,
-	VAR_DESK_NAME,
 	VAR_DESK_PAGESX,
 	VAR_DESK_PAGESY,
 	VAR_DESK_WIDTH,
-	VAR_FG_CS,
-	VAR_FGSH_CS,
 	VAR_FUNC_CONTEXT,
-	VAR_GT_,
-	VAR_HILIGHT_CS,
 	VAR_I_HEIGHT,
 	VAR_I_WIDTH,
 	VAR_I_X,
@@ -154,7 +164,6 @@ enum
 	VAR_SCHEDULE_LAST,
 	VAR_SCHEDULE_NEXT,
 	VAR_SCREEN,
-	VAR_SHADOW_CS,
 	VAR_VERSION_INFO,
 	VAR_VERSION_LINE,
 	VAR_VERSION_NUM,
@@ -199,8 +208,8 @@ static signed int expand_vars_extended(
 	Window context_w = Scr.Root;
 	FvwmWindow *fw = exc->w.fw;
 
-	/* allow partial matches for *.cs variables */
-	switch ((i = GetTokenIndex(var_name, function_vars, -1, &rest)))
+	/* allow partial matches for *.cs, gt, ... etc. variables */
+	switch ((i = GetTokenIndex(var_name, partial_function_vars, -1, &rest)))
 	{
 	case VAR_FG_CS:
 	case VAR_BG_CS:

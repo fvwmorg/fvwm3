@@ -93,7 +93,8 @@ fvwm \- @FVWMNAMELONG@ for X11
 .RB [ \-f
 .IR       config-file ]
 .RB [ \-r ]
-.RB [ \-s ]
+.RB [ \-s
+.IR       [ screen_num ] ]
 .RB [ \-V ]
 .RB [ \-C
 .IR       visual-class
@@ -242,12 +243,16 @@ This option is used when fvwm is started by a session manager.
 Should not be used by a user.
 .TP
 .BR "-s" " | " "--single-screen"
+.RI "[" screen_num "]"
 On a multi-screen display, run fvwm only on the screen named in
 the
 .I $DISPLAY
 environment variable or provided through the
 .B -d
-option. Normally, fvwm attempts to start up on all screens of a
+option. The optional argument
+.I screen_num
+should be positive or null and override the screen number.
+Normally, fvwm attempts to start up on all screens of a
 multi-screen display.
 .TP
 .BR "-V" " | " "--version"

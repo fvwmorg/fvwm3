@@ -1329,6 +1329,8 @@ void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style)
 	Atom *val;
 	ewmh_atom *list = ewmh_atom_window_type;
 	unsigned int size = 0;
+	int i = 0;
+	Bool found = False;
 
 	fwin->ewmh_window_type = 0;
 	val = ewmh_AtomGetByName(
@@ -1340,15 +1342,20 @@ void ewmh_HandleWindowType(FvwmWindow *fwin, window_style *style)
 		return;
 	}
 
-	/* we support only one window type: the first one */
-	/* FIXME: in fact we should take the first that we support */
-	while(list->name != NULL)
+	/* we support only one window type: the first that we support */
+	while(i < size && !found)
 	{
-		if (list->atom == val[0])
+		list = ewmh_atom_window_type;
+		while(list->name != NULL && !found)
 		{
-			list->action(fwin, NULL, style, 0);
+			if (list->atom == val[i])
+			{
+				list->action(fwin, NULL, style, 0);
+				found = True;
+			}
+			list++;
 		}
-		list++;
+		i++;
 	}
 	free(val);
 }

@@ -1,3 +1,40 @@
+2003-07-25  olicha  <olivier.chapuis@free.fr>
+
+	* fvwm/ewmh.c (ewmh_HandleWindowType): 
+	Fixed handling of the _NET_WINDOW_TYPE prop when there are more
+	that one type and we do not support the first one.
+
+	* fvwm/expand.c (expand_vars_extended): 
+	Fixed conflict between extended variables name (desk.name and
+	desk.n)
+
+	* fvwm/session.c (callback_save_yourself):
+	Respect the SmSaveGlobal save type. This should fix some session
+	locking in the sm protocol
+
+	* fvwm/session.c (setSmProperties):
+	(SessionInit):
+	Set some sm properties when fvwm start for fixing a problem with
+	the restart style hint after a restart.
+
+	* fvwm/fvwm.c (get_display_name):
+	(usage):
+	(main):
+	* fvwm/session.c (setSmProperties):
+	* fvwm/fvwm.1.in
+	Added a possible positive or null arg to --single-screen which
+	forces fvwm to start on the "current" display and the given
+	screen. Use this to fix fvwm starting under a session manager:
+	specify only the screen and not the display.screen for the
+	restart sm command.
+
+	* fvwm/fvwm.c (main):
+	Fixed possible memory corruption if a display has more than
+	10 screens.
+
+	* fvwm/session.c (*):
+	Better debuging msg
+
 2003-07-24  Mikhael Goikhman  <migo@homemail.com>
 
 	* M acinclude.m4

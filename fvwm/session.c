@@ -49,8 +49,9 @@
 
 /* ---------------------------- local definitions -------------------------- */
 
-/*#define FVWM_DEBUG_MSGS 1*/
-/*#define FVWM_DEBUG_DEVEL 1*/
+/*#define FVWM_SM_DEBUG_PROTO*/
+/*#define FVWM_SM_DEBUG_WINMATCH*/
+/*#define FVWM_SM_DEBUG_FILES*/
 
 /* ---------------------------- local macros ------------------------------- */
 
@@ -605,7 +606,7 @@ static Bool matchWin(FvwmWindow *w, Match *m)
 		} /* else no window roles */
 	} /* if client_id's agree */
 
-#ifdef FVWM_DEBUG_DEVEL
+#ifdef FVWM_SM_DEBUG_WINMATCH
 	fprintf(stderr,
 		"\twin(%s, %s, %s, %s, %s,",
 		w->class.res_name, w->class.res_class, w->name.name,
@@ -695,13 +696,13 @@ static int saveStateFile(char *filename)
 	if (fclose(f) != 0)
 		return 0;
 
-#ifdef FVWM_DEBUG_DEVEL
+#ifdef FVWM_SM_DEBUG_FILES
 	system(CatString3(
 		       "mkdir -p /tmp/fs-save; cp ", filename,
 		       " /tmp/fs-save"));
 #endif
-#ifdef FVWM_DEBUG_MSGS
-	fprintf(stderr, "\tSaving %s\n", filename);
+#if defined(FVWM_SM_DEBUG_PROTO) || defined(FVWM_SM_DEBUG_FILES)
+	fprintf(stderr, "[FVWM_SMDEBUG] Saving %s\n", filename);
 #endif
 
 	return success;
@@ -717,12 +718,13 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 	SmPropValue prop1val, prop2val, prop3val, prop4val, prop7val;
 	struct passwd *pwd;
 	char *user_id;
+	char screen_num[32];
 	int numVals, i, priority = 30;
-	Bool xsmDetected;
+	Bool xsmDetected = False;
 
-#ifdef FVWM_DEBUG_MSGS
-	fprintf(stderr, "\t[setSmProperties] state filename: %s%s\n", filename,
-		sm_conn? "": " - not connected");
+#ifdef FVWM_SM_DEBUG_PROTO
+	fprintf(stderr, "[FVWM_SMDEBUG][setSmProperties] state filename: %s%s\n",
+		(filename)? filename:"(null)", sm_conn? "": " - not connected");
 #endif
 
 	if (!sm_conn)
@@ -761,15 +763,19 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 	prop4val.value = (SmPointer) &priority;
 	prop4val.length = 1;
 
+	sprintf(screen_num, "%d", (int)Scr.screen);
+
 	prop5.name = SmCloneCommand;
 	prop5.type = SmLISTofARRAY8;
-	prop5.vals = (SmPropValue *)malloc((g_argc + 1) * sizeof (SmPropValue));
+	prop5.vals = (SmPropValue *)malloc((g_argc + 2) * sizeof (SmPropValue));
 	numVals = 0;
 	for (i = 0; i < g_argc; i++)
 	{
 		if (strcmp (g_argv[i], "-clientId") == 0 ||
 		    strcmp (g_argv[i], "-restore") == 0 ||
-		    strcmp (g_argv[i], "-d") == 0)
+		    strcmp (g_argv[i], "-d") == 0 ||
+		    (strcmp (g_argv[i], "-s") == 0 && i+1 < g_argc &&
+		     g_argv[i+1][0] != '-'))
 		{
 			i++;
 		}
@@ -779,86 +785,98 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 			prop5.vals[numVals++].length = strlen (g_argv[i]);
 		}
 	}
+
+	prop5.vals[numVals].value = (SmPointer) "-s";
+	prop5.vals[numVals++].length = 2;
+
+	prop5.vals[numVals].value = (SmPointer) screen_num;
+	prop5.vals[numVals++].length = strlen (screen_num);
+
+
 	prop5.num_vals = numVals;
 
-	prop6.name = SmRestartCommand;
-	prop6.type = SmLISTofARRAY8;
-
-	prop6.vals = (SmPropValue *)malloc(
-		(g_argc + 7) * sizeof (SmPropValue));
-
-	numVals = 0;
-
-	for (i = 0; i < g_argc; i++)
+	if (filename)
 	{
-		if (strcmp (g_argv[i], "-clientId") == 0 ||
-		    strcmp (g_argv[i], "-restore") == 0 ||
-		    strcmp (g_argv[i], "-d") == 0)
+		prop6.name = SmRestartCommand;
+		prop6.type = SmLISTofARRAY8;
+
+		prop6.vals = (SmPropValue *)malloc(
+			(g_argc + 6) * sizeof (SmPropValue));
+
+		numVals = 0;
+
+		for (i = 0; i < g_argc; i++)
 		{
-			i++;
+			if (strcmp (g_argv[i], "-clientId") == 0 ||
+			    strcmp (g_argv[i], "-restore") == 0 ||
+			    strcmp (g_argv[i], "-d") == 0 ||
+			    (strcmp (g_argv[i], "-s") == 0 && i+1 < g_argc &&
+			     g_argv[i+1][0] != '-'))
+			{
+				i++;
+			}
+			else if (strcmp (g_argv[i], "-s") != 0)
+			{
+				prop6.vals[numVals].value =
+					(SmPointer) g_argv[i];
+				prop6.vals[numVals++].length =
+					strlen (g_argv[i]);
+			}
 		}
-		else if (strcmp (g_argv[i], "-s") != 0)
+
+		prop6.vals[numVals].value = (SmPointer) "-s";
+		prop6.vals[numVals++].length = 2;
+
+		prop6.vals[numVals].value = (SmPointer) screen_num;
+		prop6.vals[numVals++].length = strlen (screen_num);
+
+		prop6.vals[numVals].value = (SmPointer) "-clientId";
+		prop6.vals[numVals++].length = 9;
+
+		prop6.vals[numVals].value = (SmPointer) sm_client_id;
+		prop6.vals[numVals++].length = strlen (sm_client_id);
+
+		prop6.vals[numVals].value = (SmPointer) "-restore";
+		prop6.vals[numVals++].length = 8;
+
+		prop6.vals[numVals].value = (SmPointer) filename;
+		prop6.vals[numVals++].length = strlen (filename);
+
+		prop6.num_vals = numVals;
+
+		prop7.name = SmDiscardCommand;
+
+		xsmDetected = StrEquals(getenv("SESSION_MANAGER_NAME"), "xsm");
+
+		if (xsmDetected)
 		{
-			prop6.vals[numVals].value = (SmPointer) g_argv[i];
-			prop6.vals[numVals++].length = strlen (g_argv[i]);
+			/* the protocol spec says that the discard command
+			   should be LISTofARRAY8 on posix systems, but xsm
+			   demands that it be ARRAY8.
+			*/
+			char *discardCommand = alloca(
+				(10 + strlen(filename)) * sizeof(char));
+			sprintf (discardCommand, "rm -f '%s'", filename);
+			prop7.type = SmARRAY8;
+			prop7.num_vals = 1;
+			prop7.vals = &prop7val;
+			prop7val.value = (SmPointer) discardCommand;
+			prop7val.length = strlen (discardCommand);
 		}
-	}
-
-	prop6.vals[numVals].value = (SmPointer) "-d";
-	prop6.vals[numVals++].length = 2;
-
-	prop6.vals[numVals].value = (SmPointer) XDisplayString (dpy);
-	prop6.vals[numVals++].length = strlen (XDisplayString (dpy));
-
-	prop6.vals[numVals].value = (SmPointer) "-s";
-	prop6.vals[numVals++].length = 2;
-
-	prop6.vals[numVals].value = (SmPointer) "-clientId";
-	prop6.vals[numVals++].length = 9;
-
-	prop6.vals[numVals].value = (SmPointer) sm_client_id;
-	prop6.vals[numVals++].length = strlen (sm_client_id);
-
-	prop6.vals[numVals].value = (SmPointer) "-restore";
-	prop6.vals[numVals++].length = 8;
-
-	prop6.vals[numVals].value = (SmPointer) filename;
-	prop6.vals[numVals++].length = strlen (filename);
-
-	prop6.num_vals = numVals;
-
-	prop7.name = SmDiscardCommand;
-
-	xsmDetected = StrEquals(getenv("SESSION_MANAGER_NAME"), "xsm");
-
-	if (xsmDetected)
-	{
-		/* the protocol spec says that the discard command
-		   should be LISTofARRAY8 on posix systems, but xsm
-		   demands that it be ARRAY8.
-		*/
-		char *discardCommand = alloca(
-			(10 + strlen(filename)) * sizeof(char));
-		sprintf (discardCommand, "rm -f '%s'", filename);
-		prop7.type = SmARRAY8;
-		prop7.num_vals = 1;
-		prop7.vals = &prop7val;
-		prop7val.value = (SmPointer) discardCommand;
-		prop7val.length = strlen (discardCommand);
-		/*#else*/
-	}
-	else
-	{
-		prop7.type = SmLISTofARRAY8;
-		prop7.num_vals = 3;
-		prop7.vals = (SmPropValue *) malloc (3 * sizeof (SmPropValue));
-		prop7.vals[0].value = "rm";
-		prop7.vals[0].length = 2;
-		prop7.vals[1].value = "-f";
-		prop7.vals[1].length = 2;
-		prop7.vals[2].value = filename;
-		prop7.vals[2].length = strlen (filename);
-		/*#endif*/
+		else
+		{
+			prop7.type = SmLISTofARRAY8;
+			prop7.num_vals = 3;
+			prop7.vals =
+				(SmPropValue *) malloc (
+					3 * sizeof (SmPropValue));
+			prop7.vals[0].value = "rm";
+			prop7.vals[0].length = 2;
+			prop7.vals[1].value = "-f";
+			prop7.vals[1].length = 2;
+			prop7.vals[2].value = filename;
+			prop7.vals[2].length = strlen (filename);
+		}
 	}
 
 	props[0] = &prop1;
@@ -866,17 +884,24 @@ setSmProperties(SmcConn sm_conn, char *filename, char hint)
 	props[2] = &prop3;
 	props[3] = &prop4;
 	props[4] = &prop5;
-	props[5] = &prop6;
-	props[6] = &prop7;
 
-	SmcSetProperties (sm_conn, 7, props);
-
-	free ((char *) prop5.vals);
-	free ((char *) prop6.vals);
-	if (!xsmDetected)
+	if (filename)
 	{
-		free ((char *) prop7.vals);
+		props[5] = &prop6;
+		props[6] = &prop7;
+		SmcSetProperties (sm_conn, 7, props);
+
+		free ((char *) prop6.vals);
+		if (!xsmDetected)
+		{
+			free ((char *) prop7.vals);
+		}
 	}
+	else
+	{
+		SmcSetProperties (sm_conn, 5, props);
+	}
+	free ((char *) prop5.vals);
 }
 #endif
 
@@ -887,8 +912,8 @@ callback_save_yourself2(SmcConn sm_conn, SmPointer client_data)
 	Bool success = 0;
 	char *filename = getUniqueStateFilename();
 
-#ifdef FVWM_DEBUG_MSGS
-	fprintf(stderr, "\t[callback_save_yourself2]\n");
+#ifdef FVWM_SM_DEBUG_PROTO
+	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself2]\n");
 #endif
 
 	success = saveStateFile(filename);
@@ -908,20 +933,42 @@ callback_save_yourself(SmcConn sm_conn, SmPointer client_data,
 		       int save_style, Bool shutdown, int interact_style,
 		       Bool fast)
 {
-#ifdef FVWM_DEBUG_MSGS
-	fprintf(stderr, "\t[callback_save_yourself] (save=%d, shut=%d,"
-		" intr=%d, fast=%d)\n", save_style, shutdown, interact_style,
-		fast);
+#ifdef FVWM_SM_DEBUG_PROTO
+	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself] "
+		"(save=%d, shut=%d, intr=%d, fast=%d)\n",
+		save_style, shutdown, interact_style, fast);
 #endif
 
+	if (save_style == SmSaveGlobal)
+	{
+		/* nothing to do */
+#ifdef FVWM_SM_DEBUG_PROTO
+		fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself] "
+		"Global Save type ... do nothing\n");
+#endif
+		SmcSaveYourselfDone (sm_conn, True);
+		sent_save_done = 1;
+		return;
+		
+	}
+#ifdef FVWM_SM_DEBUG_PROTO
+	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_yourself] "
+		"Both or Local save type, going to phase 2 ...");
+#endif
 	if (!SmcRequestSaveYourselfPhase2(
 		    sm_conn, callback_save_yourself2, NULL))
 	{
 		SmcSaveYourselfDone (sm_conn, False);
 		sent_save_done = 1;
+#ifdef FVWM_SM_DEBUG_PROTO
+		fprintf(stderr, " failed!\n");
+#endif	
 	}
 	else
 	{
+#ifdef FVWM_SM_DEBUG_PROTO
+		fprintf(stderr, " OK\n");
+#endif	
 		sent_save_done = 0;
 	}
 
@@ -931,8 +978,8 @@ callback_save_yourself(SmcConn sm_conn, SmPointer client_data,
 static void
 callback_die(SmcConn sm_conn, SmPointer client_data)
 {
-#ifdef FVWM_DEBUG_MSGS
-	fprintf(stderr, "\t[callback_die]\n");
+#ifdef FVWM_SM_DEBUG_PROTO
+	fprintf(stderr, "[FVWM_SMDEBUG][callback_die]\n");
 #endif
 
 	SmcCloseConnection(sm_conn, 0, NULL);
@@ -948,8 +995,8 @@ callback_die(SmcConn sm_conn, SmPointer client_data)
 static void
 callback_save_complete(SmcConn sm_conn, SmPointer client_data)
 {
-#ifdef FVWM_DEBUG_MSGS
-	fprintf(stderr, "\t[callback_save_complete]\n");
+#ifdef FVWM_SM_DEBUG_PROTO
+	fprintf(stderr, "[FVWM_SMDEBUG][callback_save_complete]\n");
 #endif
 
 	return;
@@ -958,8 +1005,8 @@ callback_save_complete(SmcConn sm_conn, SmPointer client_data)
 static void
 callback_shutdown_cancelled(SmcConn sm_conn, SmPointer client_data)
 {
-#ifdef FVWM_DEBUG_MSGS
-	fprintf(stderr, "\t[callback_shutdown_cancelled]\n");
+#ifdef FVWM_SM_DEBUG_PROTO
+	fprintf(stderr, "[FVWM_SMDEBUG][callback_shutdown_cancelled]\n");
 #endif
 
 	if (!sent_save_done)
@@ -1154,10 +1201,10 @@ LoadWindowStates(char *filename)
 		return;
 	}
 
-#ifdef FVWM_DEBUG_MSGS
-	fprintf(stderr, "\tLoading %s\n", filename);
+#if defined(FVWM_SM_DEBUG_PROTO) ||  defined(FVWM_SM_DEBUG_FILES)
+	fprintf(stderr, "[FVWM_SMDEBUG] Loading %s\n", filename);
 #endif
-#ifdef FVWM_DEBUG_DEVEL
+#ifdef FVWM_SM_DEBUG_FILES
 	system(CatString3(
 		       "mkdir -p /tmp/fs-load; cp ", filename,
 		       " /tmp/fs-load"));
@@ -1507,8 +1554,9 @@ RestartInSession (char *filename, Bool isNative, Bool _doPreserveState)
 
 		SmcCloseConnection(sm_conn, 0, NULL);
 
-#ifdef FVWM_DEBUG_MSGS
-		fprintf(stderr, "[FVWM]: Exiting, now SM must restart us.\n");
+#ifdef  FVWM_SM_DEBUG_PROTO
+		fprintf(stderr, "[FVWM_SMDEBUG]: Exiting, now SM must "
+			"restart us.\n");
 #endif
 		/* Close all my pipes */
 		ClosePipes();
@@ -1566,13 +1614,22 @@ SessionInit(void)
 				error_string_ret);
 		}
 		sm_fd = -1;
+#ifdef FVWM_SM_DEBUG_PROTO
+		fprintf(stderr,"[FVWM_SMDEBUG] No SM connection\n");
+#endif
 	}
 	else
 	{
 		sm_fd = IceConnectionNumber(SmcGetIceConnection(sm_conn));
+#ifdef FVWM_SM_DEBUG_PROTO
+		fprintf(stderr,"[FVWM_SMDEBUG] Connectecd to a SM\n");
+#endif
 		setInitFunctionName(0, "SessionInitFunction");
 		setInitFunctionName(1, "SessionRestartFunction");
 		setInitFunctionName(2, "SessionExitFunction");
+		/* basically to restet our restart style hint after a
+		 * restart */ 
+		setSmProperties(sm_conn, NULL, SmRestartIfRunning);
 	}
 
 	return;
@@ -1583,6 +1640,9 @@ ProcessICEMsgs(void)
 {
 	IceProcessMessagesStatus status;
 
+#ifdef FVWM_SM_DEBUG_PROTO
+	fprintf(stderr,"[FVWM_SMDEBUG][ProcessICEMsgs] %i\n", (int)sm_fd);
+#endif
 	if (sm_fd < 0)
 	{
 		return;
