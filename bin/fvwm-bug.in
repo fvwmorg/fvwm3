@@ -9,8 +9,9 @@
 
 PACKAGE="@PACKAGE@"
 VERSION="@VERSION@"
-
+script=`basename $0`
 address=""
+
 while test $# -gt 0; do
 	case "$1" in
 		--help|-help|-h|-\?)
@@ -22,7 +23,7 @@ Options:
 	[-h]	[--help] [-?]
 	[-v]	[--version] [-V]
 
-address is an alternative email address to send the bug report to
+address is an alternative email address to send the bug report to;
 	by default, addresses of the local admin or developers are used
 EOF
 			exit 0 ;;
