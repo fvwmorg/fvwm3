@@ -1,5 +1,10 @@
 2000-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
 
+	* NEWS, configure.in:
+	changed version to 2.3.25
+
+2000-11-28  Dominik Vogt  <dominik.vogt@gmx.de>
+
 	* fvwm/menus.c (do_menu):
 	handle expose in WaitForButtonsUp
 
