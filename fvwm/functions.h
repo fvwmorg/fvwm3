@@ -46,7 +46,7 @@ typedef struct
 /* ---------------------------- interface functions ------------------------ */
 
 void find_func_t(
-	char *action, short *func_t, unsigned char *flags);
+	char *action, short *func_t, FUNC_FLAGS_TYPE *flags);
 Bool functions_is_complex_function(
 	const char *function_name);
 void execute_function(

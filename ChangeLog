@@ -1,5 +1,8 @@
 2003-12-16  olicha  <olivier.chapuis@free.fr>
 
+	* fvwm/functions.h:
+	Used the FUNC_FLAGS_TYPE in find_func_t declaration
+
 	* sample.fvwmrc/system.fvwm2rc-sample-95:
 	Added some Xft fonts
 
