@@ -275,7 +275,7 @@ void parse_colorset(int n, char *line)
 	Window win = Scr.SizeWindow;
 	static GC gc = None, monoGC = None;
 
-	/* initialize statucs */
+	/* initialize statics */
 	if (gc == None)
 	{
 		gc = fvwmlib_XCreateGC(dpy, win, 0, &xgcv);
@@ -283,67 +283,7 @@ void parse_colorset(int n, char *line)
 	}
 
 	/* make sure it exists and has sensible contents */
-	if (nColorsets <= n) {
-		Colorset = (colorset_struct *)saferealloc(
-			(char *)Colorset, (n + 1) * sizeof(colorset_struct));
-		memset(
-			&Colorset[nColorsets], 0,
-			(n + 1 - nColorsets) * sizeof(colorset_struct));
-	}
-
-	/* initialize new colorsets to black on gray */
-	while (nColorsets <= n)
-	{
-		colorset_struct *ncs = &Colorset[nColorsets];
-
-		have_pixels_changed = True;
-		if (privateCells && XAllocColorCells(
-			/* grab four writeable cells */
-			dpy, Pcmap, False, NULL, 0, &(ncs->fg), 4))
-		{
-			XColor *colorp;
-
-			/* set the fg color */
-			MyXParseColor(black, &color);
-			color.pixel = ncs->fg;
-			XStoreColor(dpy, Pcmap, &color);
-			/* set the bg */
-			MyXParseColor(gray, &color);
-			color.pixel = ncs->bg;
-			XStoreColor(dpy, Pcmap, &color);
-			/* calculate and set the hilite */
-			colorp = GetHiliteColor(ncs->bg);
-			colorp->pixel = ncs->hilite;
-			XStoreColor(dpy, Pcmap, colorp);
-			/* calculate and set the shadow */
-			colorp = GetShadowColor(ncs->bg);
-			colorp->pixel = ncs->shadow;
-			XStoreColor(dpy, Pcmap, colorp);
-		}
-		else
-		{
-			/* grab four shareable colors */
-			if (Pdepth < 2) {
-				/* monochrome monitors get black on white */
-				/* FIXME: with a gray pixmap background */
-				ncs->fg = GetColor(black);
-				ncs->bg = GetColor(white);
-				ncs->hilite = GetColor(white);
-				ncs->shadow = GetColor(black);
-			}
-			else
-			{
-				ncs->fg = GetColor(black);
-				ncs->bg = GetColor(gray);
-				ncs->hilite = GetHilite(ncs->bg);
-				ncs->shadow = GetShadow(ncs->bg);
-			}
-			/* set flags for fg contrast, bg average */
-			/* in case just a pixmap is given */
-			ncs->color_flags = FG_CONTRAST | BG_AVERAGE;
-		}
-		nColorsets++;
-	}
+	alloc_colorset(n);
 
 	cs = &Colorset[n];
 
@@ -936,12 +876,6 @@ void parse_colorset(int n, char *line)
 		free(hi);
 	if (sh)
 		free(sh);
-
-	/* if privateCells are not being used and XAllocColor has been used
-	 * we are stuck in sharedCells behaviour forever */
-	/* have_pixels_changed will be set if a new colorset has been made */
-	if (!privateCells && have_pixels_changed)
-		sharedCells = True;
 }
 
 /*****************************************************************************
@@ -954,10 +888,81 @@ void alloc_colorset(int n)
 	/* do nothing if it already exists */
 	if (n < nColorsets)
 		return;
+	else {
+		Colorset = (colorset_struct *)saferealloc(
+			(char *)Colorset, (n + 1) * sizeof(colorset_struct));
+		memset(
+			&Colorset[nColorsets], 0,
+			(n + 1 - nColorsets) * sizeof(colorset_struct));
+	}
 
-	/* parse_colorset resizes the array if necessary
-	 * so just use it to get a sensible default */
-	parse_colorset(n, "");
+	/* initialize new colorsets to black on gray */
+	while (nColorsets <= n)
+	{
+		colorset_struct *ncs = &Colorset[nColorsets];
+
+		/* try to allocate private colormap entries if required */
+		if (privateCells && XAllocColorCells(
+			/* grab four writeable cells */
+			dpy, Pcmap, False, NULL, 0, &(ncs->fg), 4))
+		{
+			XColor color;
+			XColor *colorp;
+
+			/* set the fg color */
+			MyXParseColor(black, &color);
+			color.pixel = ncs->fg;
+			XStoreColor(dpy, Pcmap, &color);
+			/* set the bg */
+			MyXParseColor(gray, &color);
+			color.pixel = ncs->bg;
+			XStoreColor(dpy, Pcmap, &color);
+			/* calculate and set the hilite */
+			colorp = GetHiliteColor(ncs->bg);
+			colorp->pixel = ncs->hilite;
+			XStoreColor(dpy, Pcmap, colorp);
+			/* calculate and set the shadow */
+			colorp = GetShadowColor(ncs->bg);
+			colorp->pixel = ncs->shadow;
+			XStoreColor(dpy, Pcmap, colorp);
+		}
+		/* otherwise allocate shared ones and turn off private flag */
+		else
+		{
+			sharedCells = True;
+			privateCells = False;
+			/* grab four shareable colors */
+			if (Pdepth < 2) {
+				char g_bits[] = {0x0a, 0x05, 0x0a, 0x05,
+						 0x08, 0x02, 0x08, 0x02,
+						 0x01, 0x02, 0x04, 0x08};
+				/* monochrome monitors get black on white */
+				/* with a gray pixmap background */
+				ncs->fg = GetColor(black);
+				ncs->bg = GetColor(white);
+				ncs->hilite = GetColor(white);
+				ncs->shadow = GetColor(black);
+				ncs->pixmap = XCreatePixmapFromBitmapData(
+					dpy, Scr.NoFocusWin,
+					&g_bits[4 * (nColorsets % 3)], 4, 4,
+					BlackPixel(dpy, Scr.screen),
+					WhitePixel(dpy, Scr.screen), Pdepth);
+				ncs->width = 4;
+				ncs->height = 4;
+			}
+			else
+			{
+				ncs->fg = GetColor(black);
+				ncs->bg = GetColor(gray);
+				ncs->hilite = GetHilite(ncs->bg);
+				ncs->shadow = GetShadow(ncs->bg);
+			}
+			/* set flags for fg contrast, bg average */
+			/* in case just a pixmap is given */
+			ncs->color_flags = FG_CONTRAST | BG_AVERAGE;
+		}
+		nColorsets++;
+	}
 }
 
 /* ---------------------------- builtin commands ---------------------------- */

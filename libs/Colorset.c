@@ -50,21 +50,15 @@ void AllocColorset(int n)
   Colorset = (colorset_struct *)saferealloc((char *)Colorset,
 					    ++n * sizeof(colorset_struct));
 
-  /* zero out the new members */
-  memset(&Colorset[nColorsets], 0, (n - nColorsets) * sizeof(colorset_struct));
-
-  /* copy colorset 0 pixels into new members so that if undefined ones are
-   * referenced at least they don't give black on black */
-  if (n > 1)
-  {
+  /* zero out colorset 0
+     it's always defined so will be filled in during module startup */
+  if (n == 0)
+    memset(&Colorset[nColorsets], 0, (n - nColorsets) * sizeof(colorset_struct));
+  else
+    /* copy colorset 0 into new members so that if undefined ones are
+     * referenced at least they don't give black on black */
     for ( ; nColorsets < n; nColorsets++)
-    {
-      Colorset[nColorsets].fg = Colorset[0].fg;
-      Colorset[nColorsets].bg = Colorset[0].bg;
-      Colorset[nColorsets].hilite = Colorset[0].hilite;
-      Colorset[nColorsets].shadow = Colorset[0].shadow;
-    }
-  }
+      memcpy(&Colorset[nColorsets], Colorset, sizeof(colorset_struct));
 
   nColorsets = n;
 }

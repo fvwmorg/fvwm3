@@ -1,3 +1,9 @@
+2002-04-19  Hippo
+
+	* fvwm/colorset.c:
+	* libs/Colorset.c:
+	fixed running out of colors on 8bpp with ReadWriteColors
+
 2002-04-19  Mikhael Goikhman  <migo@homemail.com>
 
 	* configure.in:
