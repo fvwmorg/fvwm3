@@ -690,7 +690,9 @@ int ProcessXEvent(int x, int y)
 			    (x != Event.xconfigure.x ||
 			     y != Event.xconfigure.y))
 			{
+				static Bool is_initial_cn = True;
 				Bool do_eat_expose = False;
+
 				x = Event.xconfigure.x;
 				y = Event.xconfigure.y;
 				/* flush any expose events */
@@ -712,7 +714,8 @@ int ProcessXEvent(int x, int y)
 				{
 					do_eat_expose = True;
 				}
-				if (do_eat_expose == True)
+				if (do_eat_expose == True &&
+				    is_initial_cn == False)
 				{
 					while (FCheckTypedEvent(
 						dpy, Expose, &Event))
@@ -720,6 +723,7 @@ int ProcessXEvent(int x, int y)
 						/* nothing */
 					}
 				}
+				is_initial_cn = False;
 			}
 			break;
 		}
