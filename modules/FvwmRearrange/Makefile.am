@@ -4,26 +4,24 @@
 moduledir = @FVWM_MODULEDIR@
 module_PROGRAMS = FvwmRearrange 
 
-## We use _SCRIPTS because it is the easiest way to get them installed with the
-## executable bit set.  Using _PROGRAMS ran into trouble because automake
-## insisted on creating compile & link rules for them.
+## These modules were made obsolete in November, 1998.
+## Remove from fvwm distribution no later than October, 1999.
 module_SCRIPTS = FvwmCascade FvwmTile
-FvwmCascade FvwmTile: FvwmRearrange
-	$(LN_S) $< $@
+FvwmCascade:
+	echo "#!/bin/sh" > $@
+	echo echo Obsolete module '$$0', replace with FvwmRearrange. >> $@
+	echo exec ${moduledir}/FvwmRearrange -cascade '$$@' >> $@
+FvwmTile:
+	echo "#!/bin/sh" > $@
+	echo echo Obsolete module '$$0', replace with FvwmRearrange. >> $@
+	echo exec ${moduledir}/FvwmRearrange -tile '$$@' >> $@
 
-man_MANS = FvwmRearrange.1 FvwmTile.1 FvwmCascade.1
-FvwmTile.1 FvwmCascade.1: FvwmRearrange.1
-	$(LN_S) $< $@
-
-EXTRA_DIST = FvwmRearrange.1
+EXTRA_DIST = $(man_MANS)
+man_MANS = FvwmRearrange.1
+CLEANFILES = $(module_SCRIPTS)
 
 FvwmRearrange_SOURCES = FvwmRearrange.c
-#FvwmCascade_SOURCES =
-#FvwmTile_SOURCES =
-
 FvwmRearrange_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
-#FvwmCascade_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
-#FvwmTile_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 ## Xpm note: while this module may not depend on Xpm explicitly,
 ## there are sometimes dependencies through functions in libfvwm

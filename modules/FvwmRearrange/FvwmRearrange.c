@@ -34,7 +34,7 @@
 
 #include <X11/Xlib.h>
 
-#include "../../libs/fvwmlib.h"
+#include "fvwmlib.h"
 #include "../../fvwm/module.h"
 #include "../../fvwm/fvwm.h"
 

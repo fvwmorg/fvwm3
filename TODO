@@ -13,8 +13,13 @@ too...
 Cleanups:
 
   - Reindent the code and implement coding conventions(minimal).
-  - Remove texture and Bradys config from the distribution (make a
-    new distribution for that stuff?)
+  - The directories textures and sample.fvwmrc/BradyMontz have been
+    removed from the distribution.  Should we create a new
+    distribution for them?  Remove them from CVS?
+  - Modules should be installed with 'install-exec', rather than
+    'install-data' target.  This requires putting 'exec' in the
+    automake variable for the module directory; i.e. moduledir -->
+    moduleexecdir? 
   - Make fvwmlib a shared lib?
   - Copyrights (GPL?)
 

@@ -89,17 +89,12 @@ module_PROGRAMS = FvwmRearrange
 
 module_SCRIPTS = FvwmCascade FvwmTile
 
-man_MANS = FvwmRearrange.1 FvwmTile.1 FvwmCascade.1
-
-EXTRA_DIST = FvwmRearrange.1
+EXTRA_DIST = $(man_MANS)
+man_MANS = FvwmRearrange.1
+CLEANFILES = $(module_SCRIPTS)
 
 FvwmRearrange_SOURCES = FvwmRearrange.c
-#FvwmCascade_SOURCES =
-#FvwmTile_SOURCES =
-
 FvwmRearrange_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
-#FvwmCascade_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
-#FvwmTile_DEPENDENCIES = $(top_builddir)/libs/libfvwm.a
 
 LDADD = -L$(top_builddir)/libs -lfvwm $(xpm_LIBS)  \
     $(X_LIBS) $(X_PRE_LIBS) -lXext -lX11 $(X_EXTRA_LIBS)
@@ -347,6 +342,7 @@ installdirs:
 mostlyclean-generic:
 
 clean-generic:
+	-test -z "$(CLEANFILES)" || rm -f $(CLEANFILES)
 
 distclean-generic:
 	-rm -f Makefile $(CONFIG_CLEAN_FILES)
@@ -383,10 +379,14 @@ install uninstall all installdirs mostlyclean-generic distclean-generic \
 clean-generic maintainer-clean-generic clean mostlyclean distclean \
 maintainer-clean
 
-FvwmCascade FvwmTile: FvwmRearrange
-	$(LN_S) $< $@
-FvwmTile.1 FvwmCascade.1: FvwmRearrange.1
-	$(LN_S) $< $@
+FvwmCascade:
+	echo "#!/bin/sh" > $@
+	echo echo Obsolete module '$$0', replace with FvwmRearrange. >> $@
+	echo exec ${moduledir}/FvwmRearrange -cascade '$$@' >> $@
+FvwmTile:
+	echo "#!/bin/sh" > $@
+	echo echo Obsolete module '$$0', replace with FvwmRearrange. >> $@
+	echo exec ${moduledir}/FvwmRearrange -tile '$$@' >> $@
 
 # Tell versions [3.59,3.63) of GNU make to not export all variables.
 # Otherwise a system limit (for SysV at least) may be exceeded.

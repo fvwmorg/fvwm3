@@ -1,3 +1,8 @@
+Sat Nov 14 00:10:37 1998  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* FvwmRearrange/Makefile.am: Install scripts for FvwmCascade and
+	FvwmTile, as making a symbolic link proved painful to achieve.
+
 1998-11-13  Paul D. Smith  <psmith@gnu.org>
 
 	* FvwmButtons/parse.c (ParseConfigFile): Make sure line
