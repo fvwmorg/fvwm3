@@ -1,3 +1,7 @@
+1999-11-23  Dan Espen  <dane@mk.telcordia.com>
+
+	* fvwm/fvwm2.1 (DestroyStyle): Removed duplicated section.
+
 1999-11-23  Dominik Vogt  <dominik.vogt@gmx.de>
 
 	* fvwm/virtual.c (MoveViewport):

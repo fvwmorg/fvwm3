@@ -3908,24 +3908,6 @@ styles starting with "Application".
 
 
 .TP
-.B "DestroyStyle" "\fIstyle\fP"
-Deletes the style named "\fIstyle\fP". This will not affect currently visible
-windows (they each have a copy of their styles, which will remain unaffected).
-Note that \fPstyle\fP is not a wild-carded search string, but rather a
-case-sensitive string that should exactly match the original \fBStyle\fP
-command.
-
-Destroying style \fI*\fP can be done, but isn't really to be recommended!
-For example:
-.EX
-DestroyStyle Application*
-.EE
-
-This will remove all settings for the style named "\fIApplication*\fP", NOT all
-styles starting with "Application".
-
-
-.TP
 .B "TitleStyle" "[\fIjustification\fP] [\fIheight num\fP]"
 Sets attributes for the title bar.  Justifications can be "Centered",
 "RightJustified," or "LeftJustified."  \fIheight\fP sets the title
