@@ -4,8 +4,8 @@
 #  This script demonstates the fvwm menu DynamicPopupAction functionality.
 #  You can use a more configurable fvwm-menu-directory instead.
 #  The line below almost exactly simulates this script:
-#    fvwm-menu-directory --reuse --links --order 4 --exec-file vi --name NAME \
-#      --special-dirs --exec-title -
+#    fvwm-menu-directory --reuse --links --order 4 --name <menu name> \
+#      --exec-file vi --exec-title - --special-dirs
 ###
 #
 #  Modification History
@@ -19,7 +19,7 @@
 #  this script:
 #
 #  AddToMenu <menu name>
-#  + DynamicPopupAction Piperead 'fvwm_make_browse_menu.sh <menu name>
+#  + DynamicPopupAction Piperead 'fvwm_make_browse_menu.sh <menu name>'
 
 #
 # configuration section
