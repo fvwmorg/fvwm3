@@ -912,12 +912,15 @@ void FlocaleFreeNameProperty(FlocaleNameString *ptext)
 {
 	if (FlocaleMultibyteSupport && ptext->name_list != NULL)
 	{
+		if (ptext->name != NULL && ptext->name != *ptext->name_list)
+			XFree(ptext->name);
 		XFreeStringList(ptext->name_list);
-		*ptext->name_list = NULL;
+		ptext->name_list = NULL;
 	}
 	else if (FlocaleCompoundText)
 	{
-		free(ptext->name);
+		free(ptext->name); /* this is not reall needed IMHO we
+				    * can XFree I think (olicha) */
 	}
 	else
 	{

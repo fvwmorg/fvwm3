@@ -1,3 +1,8 @@
+2002-03-20  olicha  <olivier.chapuis@free.fr>
+
+	* libs/Flocale.c (FlocaleFreeNameProperty):
+	Fixed random core dump
+
 2002-03-19  olicha  <olivier.chapuis@free.fr>
 
 	* fvwm/ConfigFvwmDefaults:
