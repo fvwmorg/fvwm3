@@ -240,7 +240,7 @@ int ParseBinding(
 	unsigned char *buttons_grabbed, Bool do_ungrab_root, Bool is_silent)
 {
 	char *action, context_string[20], modifier_string[20], *ptr, *token;
-	char key_string[31] = "";
+	char key_string[201] = "";
 	int button = 0;
 	int n1=0,n2=0,n3=0;
 	KeySym keysym = NoSymbol;
@@ -259,7 +259,7 @@ int ParseBinding(
 		if (type == KEY_BINDING)
 		{
 			/* see len of key_string above */
-			n1 = sscanf(token,"%30s", key_string);
+			n1 = sscanf(token,"%200s", key_string);
 		}
 #ifdef HAVE_STROKE
 		else if (type == STROKE_BINDING)
