@@ -155,13 +155,10 @@ char* searchPath( const char* path, const char* filename,
  * Stuff for dealing w/ bitmaps & pixmaps:
  ***********************************************************************/
 
-#define DARKNESS_FACTOR 0.5
-#define BRIGHTNESS_FACTOR 1.4
-#define CONTRAST_MIN 0x2800
+XColor *GetShadowColor(Pixel);
+XColor *GetHiliteColor(Pixel);
 Pixel GetShadow(Pixel);
 Pixel GetHilite(Pixel);
-void color_mult (unsigned short *red, unsigned short *green,
-		 unsigned short *blue, double k);
 
 /* This function converts the colour stored in a colorcell (pixel) into the
  * string representation of a colour.  The output is printed at the

@@ -311,10 +311,10 @@ static void parse_colorset(char *line)
   /* initialize new colorsets to black on gray */
   while (nColorsets <= n) {
     colorset_struct *ncs = &Colorset[nColorsets];
-    short red, green, blue;
-
     have_pixels_changed = True;
     if (privateCells) {
+      XColor *colorp;
+
       /* grab four writeable cells */
       XAllocColorCells(dpy, Pcmap, False, NULL, 0, &(ncs->fg), 4);
       /* set the fg color */
@@ -323,18 +323,16 @@ static void parse_colorset(char *line)
       XStoreColor(dpy, Pcmap, &color);
       /* set the bg */
       XParseColor(dpy, Pcmap, gray, &color);
-      red = color.red; green = color.green; blue = color.blue;
       color.pixel = ncs->bg;
       XStoreColor(dpy, Pcmap, &color);
       /* calculate and set the hilite */
-      color_mult(&color.red, &color.green, &color.blue, BRIGHTNESS_FACTOR);
-      color.pixel = ncs->hilite;
-      XStoreColor(dpy, Pcmap, &color);
+      colorp = GetHiliteColor(ncs->bg);
+      colorp->pixel = ncs->hilite;
+      XStoreColor(dpy, Pcmap, colorp);
       /* calculate and set the shadow */
-      color.red = red; color.green = green; color.blue = blue;
-      color_mult(&color.red, &color.green, &color.blue, DARKNESS_FACTOR);
-      color.pixel = ncs->shadow;
-      XStoreColor(dpy, Pcmap, &color);
+      colorp = GetShadowColor(ncs->bg);
+      colorp->pixel = ncs->shadow;
+      XStoreColor(dpy, Pcmap, colorp);
     } else {
       /* grab four shareable colors */
       Colorset[nColorsets].fg = GetColor(black);
@@ -806,13 +804,11 @@ static void parse_colorset(char *line)
     else if (hi == NULL)
     {
       if (privateCells) {
-        /* calculate from the background, Can't use GetHilite() because
-         * it uses XAllocColor */
-	color.pixel = cs->bg;
-	XQueryColor(dpy, Pcmap, &color);
-	color_mult(&color.red, &color.green, &color.blue, BRIGHTNESS_FACTOR);
-	color.pixel = cs->hilite;
-	XStoreColor(dpy, Pcmap, &color);
+	XColor *colorp;
+
+	colorp = GetHiliteColor(cs->bg);
+	colorp->pixel = cs->hilite;
+	XStoreColor(dpy, Pcmap, colorp);
       } else {
 	Pixel old_hilite = cs->hilite;
 
@@ -849,11 +845,11 @@ static void parse_colorset(char *line)
     else if (sh == NULL)
     {
       if (privateCells) {
-	color.pixel = cs->bg;
-	XQueryColor(dpy, Pcmap, &color);
-	color_mult(&color.red, &color.green, &color.blue, DARKNESS_FACTOR);
-	color.pixel = cs->shadow;
-	XStoreColor(dpy, Pcmap, &color);
+	XColor *colorp;
+
+	colorp = GetShadowColor(cs->bg);
+	colorp->pixel = cs->shadow;
+	XStoreColor(dpy, Pcmap, colorp);
       } else {
 	Pixel old_shadow = cs->shadow;
 
