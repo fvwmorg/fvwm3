@@ -756,6 +756,7 @@ void SetRCDefaults()
     "Style \"*\" Color lightgrey/dimgrey, Title",
     "Style \"*\" RandomPlacement, SmartPlacement",
     "AddToMenu builtin_menu \"Builtin Menu\" Title",
+    "+ \"XTerm\" Exec xterm",
     "+ \"Exit FVWM\" Quit",
     "Mouse 1 R N Popup builtin_menu",
     "AddToFunc WindowListFunc \"I\" WindowId $0 Iconify -1",

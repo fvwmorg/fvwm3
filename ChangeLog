@@ -1,3 +1,9 @@
+Mon Mar 15 22:17:04 1999  Steve Robbins  <steve@nyongwa.montreal.qc.ca>
+
+	* fvwm/fvwm.c (SetRCDefaults): add "Exec xterm" to builtin menu.
+	Very handy for the times that you f*@# up an install by forgetting
+	to install a config file.
+
 1999-03-15  Matthias Clasen  <clasen@mathematik.uni-freiburg.de>
 
 	* libs/Module.c (SendText): Send packets atomically in order
